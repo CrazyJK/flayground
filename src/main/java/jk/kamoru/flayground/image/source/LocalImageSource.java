@@ -10,6 +10,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import jk.kamoru.flayground.image.ImageNotfoundException;
 import jk.kamoru.flayground.image.domain.Image;
 import lombok.extern.slf4j.Slf4j;
 
@@ -43,11 +44,10 @@ public class LocalImageSource implements ImageSource<Image> {
 
 	@Override
 	public Image get(int idx) {
-		try {
+		if (-1 < idx && idx < imageList.size())
 			return imageList.get(idx);
-		} catch (IndexOutOfBoundsException e) {
+		else 
 			throw new ImageNotfoundException(idx);
-		}
 	}
 
 	@Override

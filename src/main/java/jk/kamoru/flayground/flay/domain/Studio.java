@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.video.domain;
+package jk.kamoru.flayground.flay.domain;
 
 import java.net.URL;
 

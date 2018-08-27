@@ -1,6 +1,7 @@
-package jk.kamoru.flayground.video.domain;
+package jk.kamoru.flayground.flay.domain;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import lombok.Data;
@@ -11,11 +12,11 @@ import lombok.NoArgsConstructor;
 public class Video {
 	
 	// files
-	List<File> videoList;
-	List<File> subtitlesList;
+	List<File> videoFileList = new ArrayList<>();
+	List<File> subtitlesFileList = new ArrayList<>();
 	File coverFile;
 	File infoFile;
-	List<File> videoCandidates;
+	List<File> candidateFileList = new ArrayList<>();
 
 	// base info
 	Studio studio;
@@ -30,4 +31,20 @@ public class Video {
 	int rank;
 	List<Tag> tagList;
 	
+	public void addVideoFile(File file) {
+		videoFileList.add(file);
+	}
+	
+	public void addSubtitlesFile(File file) {
+		subtitlesFileList.add(file);
+	}
+	
+	public void addCandidates(File file) {
+		candidateFileList.add(file);
+	}
+
+	public void addTag(Tag tag) {
+		tagList.add(tag);
+	}
+
 }

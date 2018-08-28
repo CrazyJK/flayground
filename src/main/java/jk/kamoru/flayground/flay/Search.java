@@ -1,12 +1,26 @@
 package jk.kamoru.flayground.flay;
 
-import jk.kamoru.flayground.flay.domain.Video;
+import org.apache.commons.lang3.StringUtils;
 
+import lombok.Data;
+
+@Data
 public class Search {
 
-	public boolean contains(Video v) {
-		// TODO Auto-generated method stub
+	String query;
+	Boolean favorite;
+	
+	public <T> boolean contains(T domain) {
+		if (StringUtils.isBlank(query) && favorite == null) {
+			return true;
+		} else if (!StringUtils.isBlank(query) && favorite == null) {
+			return StringUtils.containsIgnoreCase(domain.toString(), query);
+		} else if (StringUtils.isBlank(query) && favorite != null) {
+			return StringUtils.containsIgnoreCase(domain.toString(), "favorite=" + favorite);
+		} else if (!StringUtils.isBlank(query) && favorite != null) {
+			return StringUtils.containsIgnoreCase(domain.toString(), query)
+					&& StringUtils.containsIgnoreCase(domain.toString(), "favorite=" + favorite);
+		} 
 		return false;
 	}
-
 }

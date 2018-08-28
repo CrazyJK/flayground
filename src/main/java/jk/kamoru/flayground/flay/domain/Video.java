@@ -24,12 +24,7 @@ public class Video {
 	String title;
 	List<Actress> actressList;
 	String release;
-
-	// extra info
-	String overview;
-	int playCount;
-	int rank;
-	List<Tag> tagList;
+	Info info;
 	
 	public void addVideoFile(File file) {
 		videoFileList.add(file);
@@ -41,10 +36,6 @@ public class Video {
 	
 	public void addCandidates(File file) {
 		candidateFileList.add(file);
-	}
-
-	public void addTag(Tag tag) {
-		tagList.add(tag);
 	}
 
 }

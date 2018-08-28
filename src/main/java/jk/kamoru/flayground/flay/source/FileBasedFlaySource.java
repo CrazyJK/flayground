@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import jk.kamoru.flayground.flay.ActressNotfoundException;
 import jk.kamoru.flayground.flay.StudioNotfoundException;
@@ -24,10 +25,11 @@ public class FileBasedFlaySource implements FlaySource {
 	
 	private String[] paths;
 	
+	@Autowired FlayFactory flayFactory;
+	
 	Map<String, Video> videoMap = new HashMap<>();
 	Map<String, Studio> studioMap = new HashMap<>();
 	Map<String, Actress> actressMap = new HashMap<>();
-	
 	
 	public FileBasedFlaySource(String...paths) {
 		this.paths = paths;
@@ -36,8 +38,11 @@ public class FileBasedFlaySource implements FlaySource {
 	@PostConstruct
 	@Override
 	public synchronized void load() {
+		
+		initiateMap();
+		
 		for (File file : listFiles()) {
-			Result result = FlayFactory.parse(file);
+			Result result = flayFactory.parse(file);
 			
 			if (!result.valid) {
 				log.warn("invalid file {}", file);
@@ -46,7 +51,7 @@ public class FileBasedFlaySource implements FlaySource {
 			
 			Video video = null;
 			if (!videoMap.containsKey(result.getOpus())) {
-				video = FlayFactory.newVideo(result);
+				video = flayFactory.newVideo(result);
 				videoMap.put(video.getOpus(), video);
 
 				Studio studio = video.getStudio();
@@ -63,8 +68,14 @@ public class FileBasedFlaySource implements FlaySource {
 				video = videoMap.get(result.getOpus());
 			}
 			
-			FlayFactory.addFile(video, file);
+			flayFactory.addFile(video, file);
 		}
+	}
+	
+	private void initiateMap() {
+		videoMap = new HashMap<>();
+		studioMap = new HashMap<>();
+		actressMap = new HashMap<>();
 	}
 	
 	private Collection<File> listFiles() {
@@ -75,7 +86,7 @@ public class FileBasedFlaySource implements FlaySource {
 				found.addAll(FileUtils.listFiles(dir, null, true));
 			}
 			else {
-				log.warn("Wrong path {}", dir);
+				log.warn("Wrong source path {}", dir);
 			}
 		}
 		return found;

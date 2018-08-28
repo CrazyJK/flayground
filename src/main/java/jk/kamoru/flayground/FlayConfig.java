@@ -5,16 +5,22 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import jk.kamoru.flayground.flay.source.FileBasedFlaySource;
+import jk.kamoru.flayground.flay.source.FlayFactory;
 import jk.kamoru.flayground.flay.source.FlaySource;
 
 @Configuration
 public class FlayConfig {
 
 	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;
+	@Value("${path.info}") String infoPath;
 	
 	@Bean("instanceFlaySource")
 	public FlaySource instanceFlaySource() {
 		return new FileBasedFlaySource(instancePaths);
 	}
 
+	@Bean
+	public FlayFactory flayFactory() {
+		return new FlayFactory(infoPath);
+	}
 }

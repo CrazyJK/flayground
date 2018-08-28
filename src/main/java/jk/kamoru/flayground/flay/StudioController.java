@@ -5,6 +5,7 @@ import java.util.Collection;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +20,7 @@ public class StudioController {
 	@Autowired FlayService<Studio> studioService;
 	
 	@GetMapping("/{name}")
-	public Studio getVideo(@PathVariable String name) {
+	public Studio get(@PathVariable String name) {
 		return studioService.get(name);
 	}
 	
@@ -28,4 +29,8 @@ public class StudioController {
 		return studioService.getList(search);
 	}
 
+	@PatchMapping("/{name}")
+	public Studio update(@ModelAttribute Studio studio) {
+		return studioService.update(studio);
+	}
 }

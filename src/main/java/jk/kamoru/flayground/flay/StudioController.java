@@ -29,8 +29,9 @@ public class StudioController {
 		return studioService.getList(search);
 	}
 
-	@PatchMapping("/{name}")
-	public Studio update(@ModelAttribute Studio studio) {
-		return studioService.update(studio);
-	}
+//	@PatchMapping("/{name}")
+//	public Studio update(@ModelAttribute Studio studio) {
+//		return studioService.update(studio);
+//	}
+
 }

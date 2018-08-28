@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import jk.kamoru.flayground.flay.domain.info.VideoInfo;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -24,7 +25,7 @@ public class Video {
 	String title;
 	List<Actress> actressList;
 	String release;
-	Info info;
+	VideoInfo info;
 	
 	public void addVideoFile(File file) {
 		videoFileList.add(file);

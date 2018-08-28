@@ -21,5 +21,5 @@ public interface FlaySource {
 	Collection<Actress> getActressList();
 	
 	Actress getActress(String name);
-	
+
 }

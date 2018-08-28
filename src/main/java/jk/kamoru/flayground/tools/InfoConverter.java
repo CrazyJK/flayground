@@ -27,14 +27,15 @@ import lombok.NoArgsConstructor;
 
 public class InfoConverter {
 
-	static String  srcPath = "/home/kamoru/workspace/FlayOn/crazy/InfoConvert";
-	static String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
+	static String  srcPath = "J:\\Crazy\\_info";
+	static String destPath = "J:\\Crazy\\Info";
 	
 	static String[] videoPaths = new String[] {
-			"/home/kamoru/workspace/FlayOn/crazy/Archive",
-			"/home/kamoru/workspace/FlayOn/crazy/Storage",
-			"/home/kamoru/workspace/FlayOn/crazy/Cover",
-			"/home/kamoru/workspace/FlayOn/crazy/Stage"
+			"J:\\Crazy\\Storage", 
+			"K:\\Crazy\\Cover", 
+			"J:\\Crazy\\Cover", 
+			"K:\\Crazy\\Stage", 		  
+			"J:\\Crazy\\Stage"
 	};
 	
 	void start() {

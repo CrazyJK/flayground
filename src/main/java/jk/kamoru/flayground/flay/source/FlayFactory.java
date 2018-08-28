@@ -12,10 +12,10 @@ import org.apache.commons.lang3.StringUtils;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jk.kamoru.flayground.flay.domain.Actress;
-import jk.kamoru.flayground.flay.domain.Info;
 import jk.kamoru.flayground.flay.domain.Studio;
 import jk.kamoru.flayground.flay.domain.Tag;
 import jk.kamoru.flayground.flay.domain.Video;
+import jk.kamoru.flayground.flay.domain.info.VideoInfo;
 import lombok.Data;
 
 public class FlayFactory {
@@ -70,9 +70,9 @@ public class FlayFactory {
 		return video;
 	}
 
-	private Info newInfo(String opus) {
+	private VideoInfo newInfo(String opus) {
 		List<Tag> tagList = new ArrayList<>();
-		return new Info(opus, new Integer(0), new Integer(0), "", new Date(0), tagList);
+		return new VideoInfo(opus, new Integer(0), new Integer(0), "", new Date(0), tagList);
 	}
 
 	private Studio newStudio(String name) {
@@ -143,7 +143,7 @@ public class FlayFactory {
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			if (FileUtils.readFileToByteArray(file).length > 0) {
-				video.setInfo(mapper.readValue(file, Info.class));
+				video.setInfo(mapper.readValue(file, VideoInfo.class));
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to load info " + file, e);

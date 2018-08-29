@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.springframework.core.GenericTypeResolver;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -38,10 +40,21 @@ public abstract class JsonInfoSource<T extends Info<K>, K> implements InfoSource
 				return t;
 			}
 		}
-		
 		throw new InfoNotfoundException(key);
 	}
 
+	@SuppressWarnings("unchecked")
+	private T getInstance(K key) {
+		Class<T> resolveType = (Class<T>) GenericTypeResolver.resolveTypeArgument(getClass(), JsonInfoSource.class);
+		try {
+			T newInstance = resolveType.newInstance();
+			newInstance.setKey(key)
+			return newInstance;
+		} catch (InstantiationException | IllegalAccessException e) {
+			throw new IllegalStateException("", e);
+		}
+	}
+	
 	@Override
 	public void create(T createT) {
 		try {

@@ -3,7 +3,6 @@ package jk.kamoru.flayground.flay.domain.info;
 import java.util.Date;
 import java.util.List;
 
-import jk.kamoru.flayground.flay.domain.Tag;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,14 +10,22 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class VideoInfo implements Info {
+public class Video implements Info<String> {
 
-	long id;
 	String opus;
-	Integer playCount;
+	Integer play;
 	Integer rank;
-	String overview;
+	String comment;
 	Date lastAccess;
-	List<Tag> tags;
+	List<Tag> tagList;
+
+	@Override
+	public String getKey() {
+		return opus;
+	}
+	@Override
+	public void setKey(String key) {
+		this.opus = key;
+	}
 
 }

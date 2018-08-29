@@ -1,9 +1,9 @@
 package jk.kamoru.flayground.flay.domain.info;
 
-public interface Info {
+public interface Info<K> {
 
-	long getId();
+	K getKey();
 	
-	void setId(long id);
+	void setKey(K key);
 
 }

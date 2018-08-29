@@ -3,13 +3,22 @@ package jk.kamoru.flayground.flay.service;
 import java.util.Collection;
 
 import jk.kamoru.flayground.flay.Search;
+import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.flay.domain.info.Actress;
+import jk.kamoru.flayground.flay.domain.info.Tag;
 
-public interface FlayService<T> {
+public interface FlayService {
 
-	Collection<T> getList(Search search);
+	Collection<Flay> getFlayList(Search search);
 	
-	T get(String key);
+	Flay getFlay(String key);
 
-//	T update(T domain);
+	Collection<Actress> getActressList(Search search);
+
+	Actress getActress(String name);
+
+	Collection<Tag> getTagList();
+
+	Actress getTag(String name);
 
 }

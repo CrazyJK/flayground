@@ -11,25 +11,18 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jk.kamoru.flayground.flay.ActressNotfoundException;
-import jk.kamoru.flayground.flay.StudioNotfoundException;
-import jk.kamoru.flayground.flay.VideoNotfoundException;
-import jk.kamoru.flayground.flay.domain.Actress;
-import jk.kamoru.flayground.flay.domain.Studio;
-import jk.kamoru.flayground.flay.domain.Video;
+import jk.kamoru.flayground.flay.FlayNotfoundException;
+import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlayFactory.Result;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FileBasedFlaySource implements FlaySource {
 	
-	private String[] paths;
-	
 	@Autowired FlayFactory flayFactory;
 	
-	Map<String, Video> videoMap = new HashMap<>();
-	Map<String, Studio> studioMap = new HashMap<>();
-	Map<String, Actress> actressMap = new HashMap<>();
+	Map<String, Flay> flayMap;
+	private String[] paths;
 	
 	public FileBasedFlaySource(String...paths) {
 		this.paths = paths;
@@ -39,7 +32,7 @@ public class FileBasedFlaySource implements FlaySource {
 	@Override
 	public synchronized void load() {
 		
-		initiateMap();
+		flayMap = new HashMap<>();
 		
 		for (File file : listFiles()) {
 			Result result = flayFactory.parse(file);
@@ -49,34 +42,18 @@ public class FileBasedFlaySource implements FlaySource {
 				continue;
 			}
 			
-			Video video = null;
-			if (!videoMap.containsKey(result.getOpus())) {
-				video = flayFactory.newVideo(result);
-				videoMap.put(video.getOpus(), video);
-
-				Studio studio = video.getStudio();
-				if (!studioMap.containsKey(studio.getName())) {
-					studioMap.put(studio.getName(), studio);
-				}
-				
-				for (Actress actress : video.getActressList()) {
-					if (!actressMap.containsKey(actress.getName())) {
-						actressMap.put(actress.getName(), actress);
-					}
-				}
+			Flay flay = null;
+			if (!flayMap.containsKey(result.getOpus())) {
+				flay = flayFactory.newFlay(result);
+				flayMap.put(flay.getOpus(), flay);
 			} else {
-				video = videoMap.get(result.getOpus());
+				flay = flayMap.get(result.getOpus());
 			}
 			
-			flayFactory.addFile(video, file);
+			flayFactory.addFile(flay, file);
 		}
 	}
 	
-	private void initiateMap() {
-		videoMap = new HashMap<>();
-		studioMap = new HashMap<>();
-		actressMap = new HashMap<>();
-	}
 	
 	private Collection<File> listFiles() {
 		Collection<File> found = new ArrayList<>();
@@ -93,42 +70,16 @@ public class FileBasedFlaySource implements FlaySource {
 	}
 
 	@Override
-	public Collection<Video> getVideoList() {
-		return videoMap.values();
+	public Collection<Flay> getList() {
+		return flayMap.values();
 	}
 
 	@Override
-	public Video getVideo(String opus) {
-		if (videoMap.containsKey(opus))
-			return videoMap.get(opus);
+	public Flay get(String opus) {
+		if (flayMap.containsKey(opus))
+			return flayMap.get(opus);
 		else
-			throw new VideoNotfoundException(opus);
-	}
-
-	@Override
-	public Collection<Studio> getStudioList() {
-		return studioMap.values();
-	}
-
-	@Override
-	public Studio getStudio(String name) {
-		if (studioMap.containsKey(name))
-			return studioMap.get(name);
-		else
-			throw new StudioNotfoundException(name);
-	}
-
-	@Override
-	public Collection<Actress> getActressList() {
-		return actressMap.values();
-	}
-
-	@Override
-	public Actress getActress(String name) {
-		if (actressMap.containsKey(name))
-			return actressMap.get(name);
-		else
-			throw new ActressNotfoundException(name);
+			throw new FlayNotfoundException(opus);
 	}
 
 }

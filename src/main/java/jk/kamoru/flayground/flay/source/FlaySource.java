@@ -2,24 +2,14 @@ package jk.kamoru.flayground.flay.source;
 
 import java.util.Collection;
 
-import jk.kamoru.flayground.flay.domain.Actress;
-import jk.kamoru.flayground.flay.domain.Studio;
-import jk.kamoru.flayground.flay.domain.Video;
+import jk.kamoru.flayground.flay.domain.Flay;
 
 public interface FlaySource {
 
 	void load();
 	
-	Collection<Video> getVideoList();
+	Collection<Flay> getList();
 	
-	Video getVideo(String opus);
-
-	Collection<Studio> getStudioList();
-	
-	Studio getStudio(String name);
-	
-	Collection<Actress> getActressList();
-	
-	Actress getActress(String name);
+	Flay get(String key);
 
 }

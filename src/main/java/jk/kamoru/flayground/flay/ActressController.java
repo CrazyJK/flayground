@@ -9,23 +9,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jk.kamoru.flayground.flay.domain.Actress;
+import jk.kamoru.flayground.flay.domain.info.Actress;
 import jk.kamoru.flayground.flay.service.FlayService;
 
 @RestController
 @RequestMapping("/flay/actress")
 public class ActressController {
 
-	@Autowired FlayService<Actress> actressService;
+	@Autowired FlayService flayService;
 	
 	@GetMapping("/{name}")
-	public Actress getVideo(@PathVariable String name) {
-		return actressService.get(name);
+	public Actress get(@PathVariable String name) {
+		return flayService.getActress(name);
 	}
 	
 	@GetMapping("/list")
 	public Collection<Actress> getList(@ModelAttribute Search search) {
-		return actressService.getList(search);
+		return flayService.getActressList(search);
 	}
 
 }

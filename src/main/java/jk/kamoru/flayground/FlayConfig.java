@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import jk.kamoru.flayground.flay.source.FileBasedFlaySource;
-import jk.kamoru.flayground.flay.source.FlayFactory;
 import jk.kamoru.flayground.flay.source.FlaySource;
 
 @Configuration
@@ -19,8 +18,4 @@ public class FlayConfig {
 		return new FileBasedFlaySource(instancePaths);
 	}
 
-	@Bean
-	public FlayFactory flayFactory() {
-		return new FlayFactory(infoPath);
-	}
 }

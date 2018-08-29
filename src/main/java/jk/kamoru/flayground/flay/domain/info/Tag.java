@@ -4,13 +4,22 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TagInfo implements Info {
+@Data
+public class Tag implements Info<String> {
 
-	long id;
 	String name;
 	String description;
+
+	@Override
+	public String getKey() {
+		return name;
+	}
+
+	@Override
+	public void setKey(String key) {
+		this.name = key;
+	}
 
 }

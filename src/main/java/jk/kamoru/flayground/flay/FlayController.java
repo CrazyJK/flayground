@@ -9,23 +9,23 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import jk.kamoru.flayground.flay.domain.Video;
+import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayService;
 
 @RestController
 @RequestMapping("/flay/video")
-public class VideoController {
+public class FlayController {
 
-	@Autowired FlayService<Video> videoService;
-	
-	@GetMapping("/{opus}")
-	public Video getVideo(@PathVariable String opus) {
-		return videoService.get(opus);
-	}
+	@Autowired FlayService flayService;
 	
 	@GetMapping("/list")
-	public Collection<Video> getList(@ModelAttribute Search search) {
-		return videoService.getList(search);
+	public Collection<Flay> getList(@ModelAttribute Search search) {
+		return flayService.getFlayList(search);
+	}
+
+	@GetMapping("/{opus}")
+	public Flay get(@PathVariable String opus) {
+		return flayService.getFlay(opus);
 	}
 
 }

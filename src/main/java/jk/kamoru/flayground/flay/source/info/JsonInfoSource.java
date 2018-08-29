@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.flay.source;
+package jk.kamoru.flayground.flay.source.info;
 
 import java.io.File;
 import java.io.IOException;
@@ -7,14 +7,15 @@ import java.util.List;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jk.kamoru.flayground.flay.InfoNotfoundException;
 import jk.kamoru.flayground.flay.domain.info.Info;
 
-public abstract class JsonInfoSource<T extends Info> implements InfoSource<T> {
+public abstract class JsonInfoSource<T extends Info<K>, K> implements InfoSource<T, K> {
 
 	List<T> list;
 
 	abstract File getInfoFile();
-
+	
 	void load() {
 		File infoFile = getInfoFile();
 		ObjectMapper mapper = new ObjectMapper();
@@ -31,25 +32,30 @@ public abstract class JsonInfoSource<T extends Info> implements InfoSource<T> {
 	}
 
 	@Override
-	public T get(long id) {
+	public T get(K key) {
 		for (T t : list) {
-			if (t.getId() == id) {
+			if (t.getKey().equals(key)) {
 				return t;
 			}
 		}
-		throw new InfoNotfoundException(id);
+		
+		throw new InfoNotfoundException(key);
 	}
 
 	@Override
 	public void create(T createT) {
-		createT.setId(nextId());
-		list.add(createT);
-		save();
+		try {
+			get(createT.getKey());
+			throw new IllegalStateException("duplicated key " + createT.getKey());
+		} catch(InfoNotfoundException e) {
+			list.add(createT);
+			save();
+		}
 	}
 
 	@Override
 	public void update(T updateT) {
-		T t = get(updateT.getId());
+		T t = get(updateT.getKey());
 		list.remove(t);
 		list.add(t);
 		save();
@@ -57,7 +63,7 @@ public abstract class JsonInfoSource<T extends Info> implements InfoSource<T> {
 
 	@Override
 	public void delete(T deleteT) {
-		T t = get(deleteT.getId());
+		T t = get(deleteT.getKey());
 		list.remove(t);
 		save();
 	}
@@ -70,16 +76,5 @@ public abstract class JsonInfoSource<T extends Info> implements InfoSource<T> {
 			throw new IllegalStateException("Fail to save info file " + getInfoFile(), e);
 		}
 	}
-
-	private long nextId() {
-		long next = 0;
-		for (T t : list) {
-			if (next < t.getId()) {
-				next = t.getId() + 1;
-			}
-		}
-		return next;
-	}
-
 
 }

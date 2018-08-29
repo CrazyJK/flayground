@@ -1,14 +1,14 @@
-package jk.kamoru.flayground.flay.source;
+package jk.kamoru.flayground.flay.source.info;
 
 import java.util.List;
 
 import jk.kamoru.flayground.flay.domain.info.Info;
 
-public interface InfoSource<T extends Info> {
+public interface InfoSource<T extends Info<K>, K> {
 
 	List<T> getList();
 	
-	T get(long id);
+	T get(K key);
 	
 	void create(T createT);
 	

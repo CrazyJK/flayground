@@ -4,37 +4,39 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import jk.kamoru.flayground.flay.domain.info.VideoInfo;
+import jk.kamoru.flayground.flay.domain.info.Actress;
+import jk.kamoru.flayground.flay.domain.info.Video;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data
 @NoArgsConstructor
-public class Video {
+@Data
+public class Flay {
+
+	// key
+	String studio;
+	String opus;
+	String title;
+	List<Actress> actressList;
+	String release;
 	
 	// files
-	List<File> videoFileList = new ArrayList<>();
+	List<File> movieFileList = new ArrayList<>();
 	List<File> subtitlesFileList = new ArrayList<>();
 	File coverFile;
 	File infoFile;
 	List<File> candidateFileList = new ArrayList<>();
 
-	// base info
-	Studio studio;
-	String opus;
-	String title;
-	List<Actress> actressList;
-	String release;
-	VideoInfo info;
-	
-	public void addVideoFile(File file) {
-		videoFileList.add(file);
+	Video video;
+
+	public void addMovieFile(File file) {
+		movieFileList.add(file);
 	}
-	
+
 	public void addSubtitlesFile(File file) {
 		subtitlesFileList.add(file);
 	}
-	
+
 	public void addCandidates(File file) {
 		candidateFileList.add(file);
 	}

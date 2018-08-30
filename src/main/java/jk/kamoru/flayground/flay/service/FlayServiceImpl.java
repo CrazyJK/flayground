@@ -14,13 +14,13 @@ import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.domain.info.Actress;
 import jk.kamoru.flayground.flay.domain.info.Tag;
 import jk.kamoru.flayground.flay.source.FlaySource;
-import jk.kamoru.flayground.flay.source.info.TagInfoSource;
+import jk.kamoru.flayground.flay.source.info.InfoSource;
 
 @Service
 public class FlayServiceImpl implements FlayService {
 
 	@Autowired FlaySource flaySource;
-	@Autowired TagInfoSource tagInfoSource;
+	@Autowired InfoSource<Tag, String> tagInfoSource;
 	
 	@Override
 	public Collection<Flay> getFlayList(Search search) {
@@ -70,45 +70,45 @@ public class FlayServiceImpl implements FlayService {
 	}
 
 	@Override
-	public Collection<Flay> findFlayByKeyValue(String key, String value) {
-		if ("studio".equalsIgnoreCase(key)) {
+	public Collection<Flay> findFlayByKeyValue(String field, String value) {
+		if ("studio".equalsIgnoreCase(field)) {
 			return flaySource.getList().stream().filter(f -> {
 				return f.getStudio().equals(value);
 			}).collect(Collectors.toList());
-		} else if ("title".equalsIgnoreCase(key)) {
+		} else if ("title".equalsIgnoreCase(field)) {
 			return flaySource.getList().stream().filter(f -> {
 				return f.getTitle().contains(value);
 			}).collect(Collectors.toList());
-		} else if ("actress".equalsIgnoreCase(key)) {
+		} else if ("actress".equalsIgnoreCase(field)) {
 			return flaySource.getList().stream().filter(f -> {
 				return f.getActressList().stream().anyMatch(a -> {
 					return a.getName().equals(value);
 				});
 			}).collect(Collectors.toList());
-		} else if ("release".equalsIgnoreCase(key)) {
+		} else if ("release".equalsIgnoreCase(field)) {
 			return flaySource.getList().stream().filter(f -> {
 				return f.getRelease().startsWith(value);
 			}).collect(Collectors.toList());
-		} else if ("rank".equalsIgnoreCase(key)) {
+		} else if ("rank".equalsIgnoreCase(field)) {
 			return flaySource.getList().stream().filter(f -> {
-				return f.getVideo().getRank().equals(new Integer(value));
+				return f.getVideo().getRank() == new Integer(value).intValue();
 			}).collect(Collectors.toList());
-		} else if ("play".equalsIgnoreCase(key)) {
+		} else if ("play".equalsIgnoreCase(field)) {
 			return flaySource.getList().stream().filter(f -> {
-				return f.getVideo().getPlay().equals(new Integer(value));
+				return f.getVideo().getPlay() == new Integer(value).intValue();
 			}).collect(Collectors.toList());
-		} else if ("comment".equalsIgnoreCase(key)) {
+		} else if ("comment".equalsIgnoreCase(field)) {
 			return flaySource.getList().stream().filter(f -> {
 				return f.getVideo().getComment().contains(value);
 			}).collect(Collectors.toList());
-		} else if ("tag".equalsIgnoreCase(key)) {
+		} else if ("tag".equalsIgnoreCase(field)) {
 			return flaySource.getList().stream().filter(f -> {
 				return f.getVideo().getTags().stream().anyMatch(t -> {
 					return t.getName().contains(value) || t.getDescription().contains(value);
 				});
 			}).collect(Collectors.toList());
 		} else {
-			throw new IllegalStateException("unknown key");
+			throw new IllegalStateException("unknown field");
 		}
 	}
 

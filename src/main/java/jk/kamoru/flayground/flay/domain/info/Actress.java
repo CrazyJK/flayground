@@ -15,8 +15,8 @@ public class Actress implements Info<String> {
 	String localName;
 	String birth;
 	String body;
-	Integer height;
-	Integer debut;
+	int height;
+	int debut;
 	String comment;
 	boolean favorite;
 	File cover;

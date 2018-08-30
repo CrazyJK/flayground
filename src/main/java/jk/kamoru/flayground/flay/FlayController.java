@@ -28,9 +28,9 @@ public class FlayController {
 		return flayService.getFlay(opus);
 	}
 
-	@GetMapping("/find/{key}/{value}")
-	public Collection<Flay> findByKeyValue(@PathVariable String key, @PathVariable String value) {
-		return flayService.findFlayByKeyValue(key, value);
+	@GetMapping("/find/{field}/{value}")
+	public Collection<Flay> findByKeyValue(@PathVariable String field, @PathVariable String value) {
+		return flayService.findFlayByKeyValue(field, value);
 	}
 
 }

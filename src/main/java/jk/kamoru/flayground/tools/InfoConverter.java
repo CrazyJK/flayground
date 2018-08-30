@@ -19,9 +19,21 @@ import lombok.NoArgsConstructor;
 
 public class InfoConverter {
 
-	final String[] srcPaths = new String[] {"/home/kamoru/workspace/FlayOn/crazy"};
-	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
-	
+//	final String[] srcPaths = new String[] {"/home/kamoru/workspace/FlayOn/crazy"};
+//	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
+
+	final String[] srcPaths = new String[] {
+			"J:\\Crazy\\Info_v1",
+			"J:\\Crazy\\Archive",
+			"J:\\Crazy\\Cover",
+			"J:\\Crazy\\Stage",
+			"J:\\Crazy\\Storage",
+			"K:\\Crazy\\Cover",
+			"K:\\Crazy\\Stage",
+			"K:\\Crazy\\Storage"
+	};
+	final String destPath = "J:\\Crazy\\Info";
+
 	void start() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		List<Actress> actressList = new ArrayList<>();
@@ -84,18 +96,22 @@ public class InfoConverter {
 class Tag {
 	@JsonIgnore int id;
 	String name;
-	String description;
+	String description = "";
 	@JsonIgnore int count;
+
+	public void setDescription(String desc) {
+		this.description = desc == null ? "" : desc;
+	}
 }
 
 @Data
 @NoArgsConstructor
 class FromVideo {
 	String opus;
-	Integer playCount;
-	Integer rank;
-	String overview;
-	Date lastAccess;
+	Integer playCount = 0;
+	Integer rank = 0;
+	String overview = "";
+	Date lastAccess = new Date(0);
 	List<Tag> tags = new ArrayList<>();
 
 }
@@ -104,9 +120,31 @@ class FromVideo {
 @NoArgsConstructor
 class ToVideo {
 	String opus;
-	Integer play;
-	Integer rank;
-	String comment;
-	Date lastAccess;
-	List<Tag> tags;
+	int play = 0;
+	int rank = 0;
+	String comment = "";
+	Date lastAccess = new Date(0);
+	List<Tag> tags = new ArrayList<>();
+	
+	public void setOpus(String opus) {
+		this.opus = opus;
+	}
+	public void setPlay(Integer play) {
+		
+		this.play = play == null ? 0 : play;
+	}
+	public void setRank(Integer rank) {
+		this.rank = rank == null ? 0 : rank;
+	}
+	public void setComment(String comment) {
+		this.comment = comment == null ? "" : comment;
+	}
+	public void setLastAccess(Date lastAccess) {
+		this.lastAccess = lastAccess == null ? new Date(9) : lastAccess;
+	}
+	public void setTags(List<Tag> tags) {
+		this.tags = tags == null ? new ArrayList<Tag>() : tags;
+	}
+	
+	
 }

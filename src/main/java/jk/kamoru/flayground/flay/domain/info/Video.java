@@ -1,5 +1,6 @@
 package jk.kamoru.flayground.flay.domain.info;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -13,8 +14,8 @@ import lombok.NoArgsConstructor;
 public class Video implements Info<String> {
 
 	String opus;
-	Integer play;
-	Integer rank;
+	int play;
+	int rank;
 	String comment;
 	Date lastAccess;
 	List<Tag> tags;
@@ -25,6 +26,7 @@ public class Video implements Info<String> {
 		this.rank = 0;
 		this.comment = "";
 		this.lastAccess = new Date(0);
+		tags = new ArrayList<>();
 	}
 
 	@Override

@@ -11,15 +11,15 @@ import org.springframework.stereotype.Component;
 import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.domain.info.Actress;
-import jk.kamoru.flayground.flay.source.info.ActressInfoSource;
-import jk.kamoru.flayground.flay.source.info.VideoInfoSource;
+import jk.kamoru.flayground.flay.domain.info.Video;
+import jk.kamoru.flayground.flay.source.info.InfoSource;
 import lombok.Data;
 
 @Component
 public class FlayFactory {
 
-	@Autowired VideoInfoSource videoInfoSource;
-	@Autowired ActressInfoSource actressInfoSource;
+	@Autowired InfoSource<Video, String> videoInfoSource;
+	@Autowired InfoSource<Actress, String> actressInfoSource;
 	
 	public Result parse(File file) {
 		Result result = new Result();

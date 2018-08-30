@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import javax.annotation.PostConstruct;
+
 import org.springframework.core.GenericTypeResolver;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -18,6 +20,7 @@ public abstract class JsonInfoSource<T extends Info<K>, K> implements InfoSource
 
 	abstract File getInfoFile();
 	
+	@PostConstruct
 	void load() {
 		File infoFile = getInfoFile();
 		ObjectMapper mapper = new ObjectMapper();
@@ -48,7 +51,7 @@ public abstract class JsonInfoSource<T extends Info<K>, K> implements InfoSource
 		Class<T> resolveType = (Class<T>) GenericTypeResolver.resolveTypeArgument(getClass(), JsonInfoSource.class);
 		try {
 			T newInstance = resolveType.newInstance();
-			newInstance.setKey(key)
+			newInstance.setKey(key);
 			return newInstance;
 		} catch (InstantiationException | IllegalAccessException e) {
 			throw new IllegalStateException("", e);

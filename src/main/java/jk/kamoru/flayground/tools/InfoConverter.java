@@ -19,7 +19,7 @@ import lombok.NoArgsConstructor;
 
 public class InfoConverter {
 
-	final String[] srcPaths = new String[] {"/home/kamoru/workspace/FlayOn/real/src"};
+	final String[] srcPaths = new String[] {"/home/kamoru/workspace/FlayOn/crazy"};
 	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
 	
 	void start() throws Exception {
@@ -36,15 +36,19 @@ public class InfoConverter {
 				
 				String suffix = StringUtils.substringAfterLast(file.getName(), ".");
 
-				if ("actress".equals(suffix)) {
-					actressList.add(mapper.readValue(file, Actress.class));
-				} 
-				else if ("info".equals(suffix)) {
-					fromVideoList.add(mapper.readValue(file, FromVideo.class));
-				} 
-				else if ("tag.data".equals(file.getName())) {
-					tagList = mapper.readValue(file, new TypeReference<List<Tag>>() {});
-				} 
+				try {
+					if ("actress".equals(suffix)) {
+						actressList.add(mapper.readValue(file, Actress.class));
+					} 
+					else if ("info".equals(suffix)) {
+						fromVideoList.add(mapper.readValue(file, FromVideo.class));
+					} 
+					else if ("tag.data".equals(file.getName())) {
+						tagList = mapper.readValue(file, new TypeReference<List<Tag>>() {});
+					} 
+				} catch(Exception e) {
+					System.err.format("fail to read %s%n", file);
+				}
 			}
 		}
 		

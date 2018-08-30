@@ -12,6 +12,11 @@ public class Tag implements Info<String> {
 	String name;
 	String description;
 
+	public Tag(String key) {
+		setKey(key);
+		this.description = "";
+	}
+
 	@Override
 	public String getKey() {
 		return name;

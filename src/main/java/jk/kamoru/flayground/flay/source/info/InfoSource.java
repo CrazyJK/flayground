@@ -9,7 +9,9 @@ public interface InfoSource<T extends Info<K>, K> {
 	List<T> getList();
 	
 	T get(K key);
-	
+
+	T getOrNew(K key);
+
 	void create(T createT);
 	
 	void update(T updateT);

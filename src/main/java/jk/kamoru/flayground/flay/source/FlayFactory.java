@@ -8,6 +8,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.domain.info.Actress;
 import jk.kamoru.flayground.flay.source.info.ActressInfoSource;
@@ -16,10 +17,6 @@ import lombok.Data;
 
 @Component
 public class FlayFactory {
-
-	public static final String SUFFIX_VIDEO 	= "avi,mpg,mkv,wmv,mp4,mov,rmvb";
-	public static final String SUFFIX_IMAGE 	= "jpg,jpeg,png,gif,jfif,webp";
-	public static final String SUFFIX_SUBTITLES = "smi,srt,ass,smil";
 
 	@Autowired VideoInfoSource videoInfoSource;
 	@Autowired ActressInfoSource actressInfoSource;
@@ -58,7 +55,7 @@ public class FlayFactory {
 		flay.setTitle(result.title);
 		flay.setActressList(newActressList(result.actress));
 		flay.setRelease(result.release);
-		flay.setVideo(videoInfoSource.get(result.opus));
+		flay.setVideo(videoInfoSource.getOrNew(result.opus));
 		return flay;
 	}
 
@@ -69,18 +66,18 @@ public class FlayFactory {
 			for (String str : StringUtils.split(name)) {
 				onePerson += str + " ";
 			}
-			list.add(actressInfoSource.get(onePerson.trim()));
+			list.add(actressInfoSource.getOrNew(onePerson.trim()));
 		}
 		return list;
 	}
 
 	public void addFile(Flay flay, File file) {
 		String suffix = StringUtils.substringAfterLast(file.getName(), ".");
-		if (SUFFIX_VIDEO.contains(suffix)) {
+		if (FlayConfig.SUFFIX_VIDEO.contains(suffix)) {
 			flay.addMovieFile(file);
-		} else if (SUFFIX_SUBTITLES.contains(suffix)) {
+		} else if (FlayConfig.SUFFIX_SUBTITLES.contains(suffix)) {
 			flay.addSubtitlesFile(file);
-		} else if (SUFFIX_IMAGE.contains(suffix)) {
+		} else if (FlayConfig.SUFFIX_IMAGE.contains(suffix)) {
 			flay.setCoverFile(file);
 		}
 	}

@@ -18,11 +18,18 @@ public class Actress implements Info<String> {
 	Integer height;
 	Integer debut;
 	String comment;
-	File cover;
 	boolean favorite;
+	File cover;
 	
 	public Actress(String name) {
-		this.name = name;
+		setKey(name);
+		this.localName = "";
+		this.birth = "";
+		this.body = "";
+		this.height = 0;
+		this.debut = 0;
+		this.comment = "";
+		this.favorite = false;
 	}
 
 	@Override

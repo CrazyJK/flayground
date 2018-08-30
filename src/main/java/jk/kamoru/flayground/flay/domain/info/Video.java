@@ -17,12 +17,21 @@ public class Video implements Info<String> {
 	Integer rank;
 	String comment;
 	Date lastAccess;
-	List<Tag> tagList;
+	List<Tag> tags;
+
+	public Video(String key) {
+		setKey(key);
+		this.play = 0;
+		this.rank = 0;
+		this.comment = "";
+		this.lastAccess = new Date(0);
+	}
 
 	@Override
 	public String getKey() {
 		return opus;
 	}
+
 	@Override
 	public void setKey(String key) {
 		this.opus = key;

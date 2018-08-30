@@ -6,8 +6,6 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
-import org.springframework.core.GenericTypeResolver;
-
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -20,12 +18,16 @@ public abstract class JsonInfoSource<T extends Info<K>, K> implements InfoSource
 
 	abstract File getInfoFile();
 	
+	abstract TypeReference<List<T>> getTypeReference();
+	
+	abstract T newInstance(K key);
+	
 	@PostConstruct
 	void load() {
 		File infoFile = getInfoFile();
 		ObjectMapper mapper = new ObjectMapper();
 		try {
-			list = mapper.readValue(infoFile, new TypeReference<List<T>>() {});
+			list = mapper.readValue(infoFile, getTypeReference());
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to load info file " + infoFile, e);
 		}	
@@ -46,18 +48,15 @@ public abstract class JsonInfoSource<T extends Info<K>, K> implements InfoSource
 		throw new InfoNotfoundException(key);
 	}
 
-	@SuppressWarnings("unchecked")
-	private T getInstance(K key) {
-		Class<T> resolveType = (Class<T>) GenericTypeResolver.resolveTypeArgument(getClass(), JsonInfoSource.class);
+	@Override
+	public T getOrNew(K key) {
 		try {
-			T newInstance = resolveType.newInstance();
-			newInstance.setKey(key);
-			return newInstance;
-		} catch (InstantiationException | IllegalAccessException e) {
-			throw new IllegalStateException("", e);
+			return get(key);
+		} catch(InfoNotfoundException e) {
+			return newInstance(key);
 		}
 	}
-	
+
 	@Override
 	public void create(T createT) {
 		try {

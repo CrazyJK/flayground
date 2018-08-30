@@ -13,12 +13,14 @@ public interface FlayService {
 	
 	Flay getFlay(String key);
 
+	Collection<Flay> findFlayByKeyValue(String key, String value);
+
 	Collection<Actress> getActressList(Search search);
 
 	Actress getActress(String name);
 
 	Collection<Tag> getTagList();
 
-	Actress getTag(String name);
+	Tag getTag(String name);
 
 }

@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Vertical Video View</title>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<link rel="stylesheet" href="/css/crazy.common.range.css"/>
+<link rel="stylesheet" href="/css/video.vertical.css"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/video.common.js"></script>
+<script type="text/javascript" src="/js/video.vertical.js"></script>
+</head>
+<body>
+
+	<div id="wrap_overlay">
+		<div id="overlay">
+			<div id="overlay_body"></div>
+		</div>
+		<script type="text/javascript">
+			loading.on("Initiating");
+		</script>
+	</div>
+
+	<div id="wrap_background_image">
+		<div class="row" id="background_images">
+			<div class="col" id="image_pane_0"></div>
+			<div class="col" id="image_pane_1"></div>
+			<div class="col" id="image_pane_2"></div>
+			<div class="col" id="image_pane_3"></div>
+		</div>
+	</div>
+
+	<div id="wrap_body">
+		<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
+			<input class="search" type="search" id="search" placeholder="Search...">
+			<div class="divider"></div>
+			<label class="input"><input type="checkbox" id="favorite"><span>Fav</span></label>
+			<label class="input"><input type="checkbox" id="video" checked="checked"><span>V</span></label>
+			<label class="input"><input type="checkbox" id="subtitles"><span>S</span></label>
+			<div class="divider"></div>
+			<span class="input-group">
+				<label><input type="checkbox" id="rank0" checked="checked"><span>0</span></label>
+				<label><input type="checkbox" id="rank1"><span>1</span></label>
+				<label><input type="checkbox" id="rank2"><span>2</span></label>
+				<label><input type="checkbox" id="rank3"><span>3</span></label>
+				<label><input type="checkbox" id="rank4"><span>4</span></label>
+				<label><input type="checkbox" id="rank5"><span>5</span></label>
+			</span>
+			<div class="divider"></div>
+			<span class="input-group">
+				<label><input type="radio" name="sort" value="S"><span>S</span></label>
+				<label><input type="radio" name="sort" value="O"><span>O</span></label>
+				<label><input type="radio" name="sort" value="T"><span>T</span></label>
+				<label><input type="radio" name="sort" value="A"><span>A</span></label>
+				<label><input type="radio" name="sort" value="R"><span>R</span></label>
+				<label><input type="radio" name="sort" value="M" checked="checked"><span>M</span></label>
+			</span>
+			<div class="divider"></div>
+			<label class="input"><input type="checkbox" id="tags"><span>Tag</span></label>
+			<div class="divider"></div>
+			<span class="input-group">
+				<label><input type="checkbox" id="autoSlide"><span>Slide</span></label>
+				<label><input type="radio" name="autoSlideMode" value="F"><span>F</span></label>
+				<label><input type="radio" name="autoSlideMode" value="R" checked="checked"><span>R</span></label>
+			</span>
+			<div class="divider"></div>
+			<button class="btn btn-sm btn-link toggle-option text-dark"><i class="fa fa-ellipsis-v"></i></button>
+		</nav>
+	
+		<div id="selectTags" class="bg-light">
+			<label class="input float-left"><input type="checkbox" id="tagPopup"><span>Pop</span></label>
+			<label class="input float-right"><input type="checkbox" id="tagCheck"><span><i class="fa fa-check"></i></span></label>
+			<div class="tag-list"></div>
+		</div>
+		
+		<div id="options" class="bg-light">
+			<ul class="list-unstyled mb-0">
+				<li><button class="btn btn-sm btn-link btn-reload"><i class="fa fa-refresh"></i> reload Data</button></li>
+			</ul>
+		</div>
+	
+		<div id="pageContent">
+			<div class="video-wrapper">
+				<div class="info-wrapper">
+					<dl>
+						<dd><label class="text hover info-studio">Studio</label></dd>
+						<dd><label class="text info-opus">Opus</label></dd>
+						<dd><label class="text info-release">Release</label></dd>
+						<dd><label class="text info-modified">Modified</label></dd>
+						<dd><label class="text hover info-video">Video</label></dd>
+						<dd><label class="text hover info-subtitles">Subtitles</label></dd>
+						<dd><label class="text hover info-overview">Overview</label>
+							<input class="info-overview-input" placeholder="Overview"/></dd>
+						<dt><span class="ranker">
+								<label><input type="radio" name="ranker" value="-1"><i class="fa fa-thumbs-down r-1"></i></label>
+								<label><input type="radio" name="ranker" value="0"><i class="fa fa-circle r0"></i></label>
+								<label><input type="radio" name="ranker" value="1"><i class="fa fa-star r1"></i></label>
+								<label><input type="radio" name="ranker" value="2"><i class="fa fa-star r2"></i></label>
+								<label><input type="radio" name="ranker" value="3"><i class="fa fa-star r3"></i></label>
+								<label><input type="radio" name="ranker" value="4"><i class="fa fa-star r4"></i></label>
+								<label><input type="radio" name="ranker" value="5"><i class="fa fa-star r5"></i></label>
+							</span>
+						</dt>
+						<dt><label class="text hover lg info-title nowrap">Title</label></dt>
+					</dl>
+				</div>
+				<div class="cover-wrapper">
+					<div class="cover-wrapper-inner prev"><div class="cover-box"></div></div>
+					<div class="cover-wrapper-inner curr"><div class="cover-box"></div></div>
+					<div class="cover-wrapper-inner next"><div class="cover-box"></div></div>
+				</div>
+				<div class="info-wrapper">
+					<dl><dd class="info-wrapper-actress"><label class="text hover info-actress">Actress</label></dd></dl>
+				</div>
+				<div class="tag-wrapper container">
+					<div id="videoTags" class="tag-list"></div>
+					<button type="button" class="btn btn-sm btn-link text-dark" data-toggle="collapse" data-target="#newTagForm"><i class="fa fa-plus"></i></button>
+					<div id="newTagForm" class="collapse input-group input-group-sm">
+						<input id="newTagName" class="form-control" placeholder="Name"/>
+						<input id="newTagDesc" class="form-control" placeholder="Description"/>
+						<div class="input-group-append">
+							<button class="btn btn-primary btn-tag-save">Regist</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<nav class="fixed-bottom">
+			<div class="notice-bar"></div>
+			<ul class="pagination pagination-sm justify-content-center bg-light">
+				<li class="page-item"><a class="page-link" href="#">1</a></li>
+				<li class="page-item active"><a class="page-link" href="#">2</a></li>
+				<li class="page-item"><a class="page-link" href="#">3</a></li>
+				<li class="page-item"><a class="page-link" href="#">4</a></li>
+				<li class="page-item"><a class="page-link" href="#">5</a></li>
+			</ul>
+		</nav>
+	</div>
+	
+</body>
+</html>

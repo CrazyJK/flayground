@@ -1,0 +1,466 @@
+@charset "UTF-8";
+
+body {
+	background-color: #000;	
+}
+
+/* Customize the label (the container) */
+label.input, span.input-group > label {
+	display: inline-block;
+	margin: .25rem;
+	cursor: pointer;
+}
+/* Hide the browser's default checkbox */
+label.input > input, span.input-group > label > input {
+	display: none;
+}
+/* Create a custom checkbox */
+label.input > span, span.input-group > label > span {
+	background-color: #eee;
+	border: 1px solid #eee;
+	border-radius: 0.25rem;
+	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
+	color: #212529;
+	font-weight: 700;
+	padding: .125rem .5rem;
+	transition: all .3s;
+}
+label.input.sm > span, span.input-group.sm > label > span {
+	font-size: 80%;
+}
+label.input.lg > span, span.input-group.lg > label > span {
+	font-size: 120%;
+}
+label.input.dark > span, span.input-group.dark > label > span {
+	background-color: var(--gray);
+	border-color: var(--gray);
+}
+/* Create a custom radio */
+label.input > input[type='radio'] ~ span, span.input-group > label > input[type='radio'] ~ span {
+	border-radius: 0.75rem;
+}
+/* On mouse-over, add a grey background color */
+label.input:hover input ~ span, span.input-group > label:hover input ~ span {
+	background-color: #ccc;
+	border-color: #ccc;
+	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+}
+/* When the checkbox is checked, add a blue background */
+label.input input:checked ~ span, span.input-group > label > input:checked ~ span {
+	color: var(--light);
+	background-color: midnightblue;
+	border: 1px solid midnightblue;
+	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+}
+label.input.primary input:checked ~ span, span.input-group.primary > label > input:checked ~ span {
+	background-color: var(--primary);
+	border-color: var(--primary);
+}
+label.input.success input:checked ~ span, span.input-group.success > label > input:checked ~ span {
+	background-color: var(--success);
+	border-color: var(--success);
+}
+label.input.info input:checked ~ span, span.input-group.info > label > input:checked ~ span {
+	background-color: var(--info);
+	border-color: var(--info);
+}
+label.input.warning input:checked ~ span, span.input-group.warning > label > input:checked ~ span {
+	background-color: var(--warning);
+	border-color: var(--warning);
+}
+label.input.danger input:checked ~ span, span.input-group.danger > label > input:checked ~ span {
+	background-color: var(--danger);
+	border-color: var(--danger);
+}
+label.input.dark input:checked ~ span, span.input-group.dark input:checked ~ span {
+	background-color: var(--dark);
+	border-color: var(--dark);
+}
+
+span.input-group {
+	display: inline-flex;
+	background-color: #eee;
+	border-radius: .75rem;
+	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .125);
+	margin: 4px;
+	width: initial;
+}
+span.input-group.dark {
+	background-color: #655c5c;
+}
+span.input-group:hover {
+	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+}
+span.input-group > label:first-child {
+	margin: 0 1px 0 0;
+}
+span.input-group > label {
+	margin: 0 1px;
+}
+span.input-group > label:last-child {
+	margin: 0 0 0 1px;
+}
+span.input-group > label > span {
+	border: 1px solid transparent;
+	box-shadow: none;
+}
+
+/* input search */
+input.search {
+	background-color : #fafafa;
+	border: 1px solid #eee;
+	border-radius: .25rem;
+	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
+	color: #333; 
+	margin: 0 4px;
+	padding: .125rem .5rem;
+	height: 27px;
+	width: 150px;
+	transition: all .3s;
+}
+
+input.search.dark {
+	background-color : #ccc;
+}
+
+input.search:focus, input.search:hover {
+	border: 1px solid #eee;
+	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+	outline: none;
+}
+
+/* input range ranker */
+label.range {
+	display: inline-flex;
+	background-color: #fff;
+	border-radius: 12px;
+	border: 1px solid #eee;
+	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
+	padding: 0;
+	padding-left: 4px;
+	margin: 0 4px;
+	transition: all .3s;
+}
+label.range.dark {
+	background-color: var(--gray);
+}
+label.range.dark:hover {
+	background-color : #ccc;
+}
+label.range > input[type='range'] {
+	/* display: inline-block; */
+	width: 150px;
+}
+label.range input[type='range'] ~ span {
+	padding: 1px 6px;
+	display: table-cell;
+	font-weight: 700;
+}
+
+/* custom input range */
+.ranker {
+    display: inline-flex;
+    background-color: #fafafa;
+    border-radius: .75rem;
+	border: 1px solid #eee;
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
+    margin: 4px;
+    width: initial;
+	transition: all .3s;
+}
+.ranker:hover {
+	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+}
+.ranker.dark {
+	background-color: #212529;
+	color: #fafafa;
+}
+.ranker input {
+	display: none;
+}
+.ranker > label:first-child {
+	margin: 0  4px 0 4px;
+	padding: 0;
+	padding-top: 3px;
+}
+.ranker > label {
+	cursor: pointer;
+	margin: 0 4px 0 0;
+	padding: 0;
+	padding-top: 3px;
+}
+.ranker input ~ i {
+	color: #e0e0e0;
+	transition: all .3s;
+	font-size: 20px;
+}
+.ranker:hover input ~ i {
+	color: #ccc;
+}
+.ranker input:checked ~ i.r-1, .ranker input ~ i.r-1:hover {
+	color: rgba(0, 0, 255, .75);
+}
+.ranker input:checked ~ i.r0, .ranker input ~ i.r0:hover {
+	color: rgba(0, 255, 0, .3);
+}
+.ranker input:checked ~ i.r1, .ranker input ~ i.r1:hover {
+	color: rgba(255, 0, 0, .15);
+}
+.ranker input:checked ~ i.r2, .ranker input ~ i.r2:hover {
+	color: rgba(255, 0, 0, .3);
+}
+.ranker input:checked ~ i.r3, .ranker input ~ i.r3:hover {
+	color: rgba(255, 0, 0, .45);
+}
+.ranker input:checked ~ i.r4, .ranker input ~ i.r4:hover {
+	color: rgba(255, 0, 0, .6);
+}
+.ranker input:checked ~ i.r5, .ranker input ~ i.r5:hover {
+	color: rgba(255, 0, 0, .75);
+}
+
+/* label text */
+label.text {
+	background-color: #fafafa;
+	border: 1px solid #e0e0e0;
+	border-radius: .25rem;
+	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
+	color: #212529;
+	font-weight: 700;
+	margin: 4px 2px;
+	padding: .125rem .5rem;
+	transition: all .3s;
+}
+label.text.dark {
+	background-color: #212529;
+	color: #fafafa;
+}
+label.text.primary {
+	background-color: var(--primary);
+	color: var(--light);
+}
+label.text.success {
+	background-color: var(--success);
+	color: var(--light);
+}
+label.text.info {
+	background-color: var(--info);
+	color: var(--light);
+}
+label.text.warning {
+	background-color: var(--warning);
+	color: var(--light);
+}
+label.text.danger {
+	background-color: var(--danger);
+	color: var(--light);
+}
+label.text.hover {
+	cursor: pointer;
+}
+label.text.hover:hover {
+ 	text-shadow: 1px 1px 2px #a9a3a3;
+	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+}
+label.text.dark.hover:hover {
+	text-shadow: 1px 1px 0 #000000;
+    box-shadow: 0 0.125rem 0.25rem rgba(255, 255, 255, .25);
+    background-color: #103356;	
+}
+label.text:empty {
+	display: none;
+}
+label.text.lg {
+	font-size: 120%;
+}
+label.text.sm {
+	font-size: 80%;
+}
+
+.nowrap {
+	width: inherit;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	vertical-align: bottom;
+}
+
+.divider {
+	width: 1rem;
+	display: inline-flex;
+}
+
+.hover {
+	cursor: pointer;
+}
+
+/* layout */
+#overlay {
+	position: fixed;
+	display: none;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, .5);
+	z-index: 9999;
+	cursor: pointer;
+}
+#overlay > #overlay_body {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
+	color: white;
+	font-size: 3rem;
+}
+
+/* side nav */
+#crazySidenav ul i.fa {
+	width: 1rem;
+	text-align: center;
+	margin-right: .5rem;
+}
+.sidenav-openbtn {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 50px;
+	height: 50px;
+	z-index: 9999;
+	font-size: 2rem;
+	cursor: pointer;
+	padding-left: 4px;
+}
+.sidenav-openbtn > i {
+	opacity: 0;
+	transition: all .5s;
+}
+.sidenav-openbtn:hover > i {
+	opacity: 1;
+}
+.sidenav {
+    height: 100%; /* 100% Full-height */
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; /* Stay in place */
+    z-index: 9998; /* Stay on top */
+    top: 0; /* Stay at the top */
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow: hidden; /* Disable horizontal scroll */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+    padding-top: 50px;
+    
+}
+.sidenav:hover {
+	width: 200px;
+}
+.sidenav input[type="color"] {
+	background-color: transparent;
+    border: 1px solid #fff;
+    border-radius: .25rem;
+    margin-left: .5rem;
+    padding: 0;
+    width: 50px;
+}
+
+#wrap_background_image {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: 0;
+	padding: 0;
+	z-index: -5;
+}
+
+#background_images {
+	background-color: rgba(0, 0, 0, .5);
+	height: 100%;
+	margin: 0;
+	padding: 0 1rem;
+	z-index: -4;
+}
+
+#background_images.transparent {
+	background-color: transparent;
+}
+
+#background_images .col {
+	z-index: -3;
+}
+#background_images img {
+	cursor: pointer;
+	margin-top: 2rem;
+	width: inherit;
+	transition: height 1s;
+	z-index: -2;
+}
+
+#wrap_body {
+	z-index: 1;
+	transition: margin-left 0.5s;
+}
+
+#wrap_body > div {
+	z-index: 74;
+}
+
+
+#pageContent {
+	margin-top: 56px;
+	padding-top: .5rem;
+}
+
+.fixed-center {
+	position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+}
+
+.content-box {
+	background-color: rgba(0, 0, 0, .75);
+	border-radius: .5rem;
+    border: 1px solid #fff;
+	margin: .5rem;	
+	padding: .5rem;
+	color: #fff;
+}
+
+/* default color for bootstrap 4 */
+.page-item.active .page-link {
+    background-color: midnightblue;
+    border-color: midnightblue;
+}
+.btn-link, .btn-link:hover {
+    color: midnightblue;
+}
+.img-thumbnail {
+    background-color: transparent;
+}
+
+/* dark theme */
+body.bg-dark ul.pagination .page-item .page-link {
+	background-color: #212529;
+	color: #fafafa;
+}
+body.bg-dark ul.pagination .page-item.active .page-link {
+	border-color: #dee2e6;
+	background-color: #000;
+}
+body.bg-dark .btn-link {
+	color: #fafafa;
+}
+body.bg-dark nav.navbar, body.bg-dark ul.pagination, body.bg-dark .bg-light {
+	background-color: #2d2d2d !important;
+}
+
+body.bg-dark .fa-plus:before, body.bg-dark .fa-ellipsis-v:before {
+    text-shadow: 0 0 .25rem antiquewhite;
+}

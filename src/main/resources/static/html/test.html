@@ -3,10 +3,27 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+$.ajax({
+	url: '/flay/video/list',
+	cache: false
+}).done(function(list) {
+	var ol = $("ol");
+	$.each(list, function(idx, video) {
+		$("<li>").append(
+				$("<label>").html(video.studio),
+				$("<label>").html(video.opus),
+				$("<label>").html(video.title),
+				$("<label>").html(video.release)
+		).appendTo(ol);
+	});
+});
+</script>
 </head>
 <body>
 
-<img src="file:///home/kamoru/workspace/FlayOn/crazy/image/we_built_this_city___2015_remake_by_fredy3d-d8nxyfa.jpg">
+	<ol></ol>
 
 </body>
 </html>

@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.flay.source.info;
+package jk.kamoru.flayground.info.source;
 
 import java.io.File;
 import java.io.FilenameFilter;
@@ -16,12 +16,12 @@ import org.springframework.stereotype.Repository;
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import jk.kamoru.flayground.FlayConfig;
-import jk.kamoru.flayground.flay.domain.info.Actress;
+import jk.kamoru.flayground.info.domain.Actress;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Repository
-public class ActressInfoSource extends JsonInfoSource<Actress, String> {
+public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
 	private static final String FILE_NAME = "actress.json";
 

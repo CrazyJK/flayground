@@ -14,29 +14,29 @@ import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayService;
 
 @RestController
-@RequestMapping("/flay/video")
+@RequestMapping("/flay")
 public class FlayController {
 
 	@Autowired FlayService flayService;
 	
 	@GetMapping("/list")
 	public Collection<Flay> getList(@ModelAttribute Search search) {
-		return flayService.getFlayList(search);
+		return flayService.find(search);
 	}
 
 	@GetMapping("/opus")
 	public Collection<String> getOpusList(@ModelAttribute Search search) {
-		return flayService.getFlayList(search).stream().map(f -> f.getOpus()).collect(Collectors.toList());
+		return flayService.find(search).stream().map(f -> f.getOpus()).collect(Collectors.toList());
 	}
 
 	@GetMapping("/{opus}")
 	public Flay get(@PathVariable String opus) {
-		return flayService.getFlay(opus);
+		return flayService.get(opus);
 	}
 
 	@GetMapping("/find/{field}/{value}")
-	public Collection<Flay> findByKeyValue(@PathVariable String field, @PathVariable String value) {
-		return flayService.findFlayByKeyValue(field, value);
+	public Collection<Flay> findByFieldValue(@PathVariable String field, @PathVariable String value) {
+		return flayService.findByKeyValue(field, value);
 	}
 
 }

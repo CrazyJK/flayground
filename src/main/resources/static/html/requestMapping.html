@@ -2,28 +2,43 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Request Mapping List</title>
+<link rel="icon" type="image/x-icon" href="/img/favicon/flay.ico"/>
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css">
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $.ajax({
-	url: '/flay/video/list',
+	url: '/requestMappingList',
 	cache: false
 }).done(function(list) {
-	var ol = $("ol");
-	$.each(list, function(idx, video) {
-		$("<li>").append(
-				$("<label>").html(video.studio),
-				$("<label>").html(video.opus),
-				$("<label>").html(video.title),
-				$("<label>").html(video.release)
-		).appendTo(ol);
+	var $wrap = $("tbody");
+	$.each(list, function(idx, mapping) {
+		$("<tr>").append(
+				$("<td>").append(
+						$("<a>", {href: mapping.reqPattern, target: '_blank'}).html(mapping.reqPattern)
+				),
+				$("<td>").html(mapping.reqMethod),
+				$("<td>").html(mapping.beanType + "." + mapping.beanMethod)
+		).appendTo($wrap);
 	});
 });
 </script>
 </head>
 <body>
 
-	<ol></ol>
+	<div class="container">
+		<table class="table table-sm">
+			<thead>
+				<tr>
+					<th>Url pattern</th>
+					<th>Method</th>
+					<th>Class.method</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
 
 </body>
 </html>

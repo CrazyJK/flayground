@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.flay.domain.info;
+package jk.kamoru.flayground.info.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 

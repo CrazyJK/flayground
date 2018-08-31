@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.flay;
+package jk.kamoru.flayground.info;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;

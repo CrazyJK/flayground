@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jk.kamoru.flayground.flay.FlayNotfoundException;
@@ -38,7 +39,12 @@ public class FileBasedFlaySource implements FlaySource {
 			Result result = flayFactory.parse(file);
 			
 			if (!result.valid) {
-				log.warn("invalid file {}", file);
+				String suffix = StringUtils.substringAfterLast(file.getName(), ".");
+				if ("actress studio".contains(suffix)) {
+					// v1 info file. pass!!
+				} else {
+					log.warn("invalid file {}", file);
+				}
 				continue;
 			}
 			
@@ -63,14 +69,14 @@ public class FileBasedFlaySource implements FlaySource {
 				found.addAll(FileUtils.listFiles(dir, null, true));
 			}
 			else {
-				log.warn("Wrong source path {}", dir);
+				log.warn("Invalid source path {}", dir);
 			}
 		}
 		return found;
 	}
 
 	@Override
-	public Collection<Flay> getList() {
+	public Collection<Flay> list() {
 		return flayMap.values();
 	}
 

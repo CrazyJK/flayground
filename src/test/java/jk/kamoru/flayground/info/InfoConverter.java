@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.tools;
+package jk.kamoru.flayground.info;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import jk.kamoru.flayground.flay.domain.info.Actress;
+import jk.kamoru.flayground.info.domain.Actress;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

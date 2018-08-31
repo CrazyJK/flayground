@@ -1,6 +1,8 @@
-package jk.kamoru.flayground.flay.domain.info;
+package jk.kamoru.flayground.info.domain;
 
 import java.io.File;
+
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Actress implements Info<String> {
 
+	@NotNull
 	String name;
 	String localName;
 	String birth;

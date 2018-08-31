@@ -1,8 +1,10 @@
-package jk.kamoru.flayground.flay.domain.info;
+package jk.kamoru.flayground.info.domain;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import javax.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,6 +15,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Video implements Info<String> {
 
+	@NotNull
 	String opus;
 	int play;
 	int rank;

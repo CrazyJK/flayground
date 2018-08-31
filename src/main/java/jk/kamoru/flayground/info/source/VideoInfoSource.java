@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.flay.source.info;
+package jk.kamoru.flayground.info.source;
 
 import java.io.File;
 import java.util.List;
@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import jk.kamoru.flayground.flay.domain.info.Video;
+import jk.kamoru.flayground.info.domain.Video;
 
 @Repository
-public class VideoInfoSource extends JsonInfoSource<Video, String> {
+public class VideoInfoSource extends InfoSourceJsonAdapter<Video, String> {
 
 	private static final String FILE_NAME = "video.json";
 	

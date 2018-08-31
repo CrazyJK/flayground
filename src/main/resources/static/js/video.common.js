@@ -3,14 +3,11 @@
  */
 
 var view = {
-		studio: function(name) {
-			popup.open(PATH + "/video/studio/" + name, "studioDetail-" + name, 850, 600);
-		},
 		video: function(opus) {
-			popup.open(PATH + "/video/" + opus, "videoDetail-" + opus, 800, 640);
+			popup.open(PATH + "/info/video/" + opus, "videoDetail-" + opus, 800, 640);
 		},
 		actress: function(name) {
-			popup.open(PATH + "/video/actress/" + name, "actressDetail-" + name, 850, 600);
+			popup.open(PATH + "/info/actress/" + name, "actressDetail-" + name, 850, 600);
 		}
 };
 

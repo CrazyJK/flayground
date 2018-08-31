@@ -9,6 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,7 @@ public class ImageRequestHandler {
 	@GetMapping("/cover/{opus}")
 	@ResponseBody
 	public HttpEntity<byte[]> getCover(@PathVariable String opus) throws IOException {
-		return getImageEntity(flayService.getFlay(opus).getCoverFile());
+		return getImageEntity(flayService.get(opus).getCoverFile());
 	}
 
 	@GetMapping("/image/{idx}")
@@ -59,7 +60,7 @@ public class ImageRequestHandler {
 	MediaType probeMediaType(File file) {
  		try {
 			return MediaType.valueOf(Files.probeContentType(file.toPath()));
-		} catch (IOException e) {
+		} catch (InvalidMediaTypeException | IOException e) {
 			String suffix = StringUtils.substringAfterLast(file.getName(), ".");
 			if ("webp".equalsIgnoreCase(suffix)) {
 				return MediaType.valueOf("image/webp");

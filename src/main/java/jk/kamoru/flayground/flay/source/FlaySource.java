@@ -8,8 +8,8 @@ public interface FlaySource {
 
 	void load();
 	
-	Collection<Flay> getList();
-	
 	Flay get(String key);
+	
+	Collection<Flay> list();
 
 }

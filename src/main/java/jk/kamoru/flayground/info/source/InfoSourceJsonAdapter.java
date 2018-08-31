@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.flay.source.info;
+package jk.kamoru.flayground.info.source;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,10 +9,12 @@ import javax.annotation.PostConstruct;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jk.kamoru.flayground.flay.InfoNotfoundException;
-import jk.kamoru.flayground.flay.domain.info.Info;
+import jk.kamoru.flayground.info.InfoNotfoundException;
+import jk.kamoru.flayground.info.domain.Info;
+import lombok.extern.slf4j.Slf4j;
 
-public abstract class JsonInfoSource<T extends Info<K>, K> implements InfoSource<T, K> {
+@Slf4j
+public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> implements InfoSource<T, K> {
 
 	List<T> list;
 
@@ -28,13 +30,14 @@ public abstract class JsonInfoSource<T extends Info<K>, K> implements InfoSource
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			list = mapper.readValue(infoFile, getTypeReference());
+			log.info("{} loaded in {}", list.size(), getInfoFile().getName());
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to load info file " + infoFile, e);
 		}	
 	}
 	
 	@Override
-	public List<T> getList() {
+	public List<T> list() {
 		return list;
 	}
 

@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.flay.source.info;
+package jk.kamoru.flayground.info.source;
 
 import java.io.File;
 import java.util.List;
@@ -8,10 +8,10 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import jk.kamoru.flayground.flay.domain.info.Tag;
+import jk.kamoru.flayground.info.domain.Tag;
 
 @Repository
-public class TagInfoSource extends JsonInfoSource<Tag, String> {
+public class TagInfoSource extends InfoSourceJsonAdapter<Tag, String> {
 
 	private static final String FILE_NAME = "tag.json";
 	

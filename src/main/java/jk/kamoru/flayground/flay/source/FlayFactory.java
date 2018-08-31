@@ -10,16 +10,16 @@ import org.springframework.stereotype.Component;
 
 import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
-import jk.kamoru.flayground.flay.domain.info.Actress;
-import jk.kamoru.flayground.flay.domain.info.Video;
-import jk.kamoru.flayground.flay.source.info.InfoSource;
+import jk.kamoru.flayground.info.domain.Actress;
+import jk.kamoru.flayground.info.service.ActressInfoService;
+import jk.kamoru.flayground.info.service.VideoInfoService;
 import lombok.Data;
 
 @Component
 public class FlayFactory {
 
-	@Autowired InfoSource<Video, String> videoInfoSource;
-	@Autowired InfoSource<Actress, String> actressInfoSource;
+	@Autowired VideoInfoService videoInfoService;
+	@Autowired ActressInfoService actressInfoService;
 	
 	public Result parse(File file) {
 		Result result = new Result();
@@ -55,7 +55,7 @@ public class FlayFactory {
 		flay.setTitle(result.title);
 		flay.setActressList(newActressList(result.actress));
 		flay.setRelease(result.release);
-		flay.setVideo(videoInfoSource.getOrNew(result.opus));
+		flay.setVideo(videoInfoService.getOrNew(result.opus));
 		return flay;
 	}
 
@@ -66,7 +66,7 @@ public class FlayFactory {
 			for (String str : StringUtils.split(name)) {
 				onePerson += str + " ";
 			}
-			list.add(actressInfoSource.getOrNew(onePerson.trim()));
+			list.add(actressInfoService.getOrNew(onePerson.trim()));
 		}
 		return list;
 	}

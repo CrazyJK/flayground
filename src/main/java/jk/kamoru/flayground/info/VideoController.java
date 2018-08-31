@@ -13,43 +13,43 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jk.kamoru.flayground.flay.Search;
-import jk.kamoru.flayground.info.domain.Tag;
-import jk.kamoru.flayground.info.service.TagInfoService;
+import jk.kamoru.flayground.info.domain.Video;
+import jk.kamoru.flayground.info.service.VideoInfoService;
 
 @RestController
-@RequestMapping("/info/tag")
-public class TagController {
+@RequestMapping("/info/video")
+public class VideoController {
 
-	@Autowired TagInfoService tagInfoService;
+	@Autowired VideoInfoService videoInfoService;
 	
-	@GetMapping("/{name}")
-	public Tag get(@PathVariable String name) {
-		return tagInfoService.get(name);
+	@GetMapping("/{opus}")
+	public Video get(@PathVariable String opus) {
+		return videoInfoService.get(opus);
 	}
 	
 	@GetMapping("/list")
-	public Collection<Tag> list() {
-		return tagInfoService.list();
+	public Collection<Video> list() {
+		return videoInfoService.list();
 	}
 	
 	@GetMapping("/find")
-	public Collection<Tag> find(Search search) {
-		return tagInfoService.find(search);
+	public Collection<Video> find(Search search) {
+		return videoInfoService.find(search);
 	}
 
 	@PostMapping
-	public void create(@ModelAttribute Tag tag) {
-		tagInfoService.create(tag);
+	public void create(@ModelAttribute Video video) {
+		videoInfoService.create(video);
 	}
 	
 	@PatchMapping
-	public void update(@ModelAttribute Tag tag) {
-		tagInfoService.update(tag);
+	public void update(@ModelAttribute Video video) {
+		videoInfoService.update(video);
 	}
 	
 	@DeleteMapping
-	public void delete(@ModelAttribute Tag tag) {
-		tagInfoService.delete(tag);
+	public void delete(@ModelAttribute Video video) {
+		videoInfoService.delete(video);
 	}
 
 }

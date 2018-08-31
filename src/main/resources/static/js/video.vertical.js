@@ -24,11 +24,11 @@ $(document).ready(function() {
 
 function loadData() {
 	// load tag list
-	restCall(PATH + "/flay/tag/list", {showLoading: false}, (list) => {
+	restCall(PATH + "/info/tag/list", {showLoading: false}, (list) => {
 		tagList = list;
 
 		// load video list
-		restCall(PATH + '/flay/video/list', {data: {p: 0}, title: "Load video"}, (list) => {
+		restCall(PATH + '/flay/list', {data: {p: 0}, title: "Load video"}, (list) => {
 			videoList = list;
 
 			deploy();
@@ -262,13 +262,23 @@ function collectList() {
 		} 
 		
 		if (fav) {
-			if (!flay.video.favorite) {
+			var found = false;
+			$.each(flay.actressList, function(idx, actress) {
+				if (actress.favorite) {
+					found = true;
+				}
+			});
+			if (!found) {
 				continue;
 			}
 		}
-		
+
 		if (query != '') {
-			var fullname = flay.studio + flay.opus + flay.title + flay.actressList + flay.release + flay.comment;
+			var actressNames = '';
+			$.each(flay.actressList, function(idx, actress) {
+				actressNames += actress.name + ' ';
+			});
+			var fullname = flay.studio + flay.opus + flay.title + actressNames + flay.release + flay.comment;
 			if (fullname.indexOf(query) < 0) {
 				continue;
 			}
@@ -579,10 +589,10 @@ function showVideo(direction) {
 							$("<label>", {'class': 'text hover info-actress'}).data("actress", actress).html(actress.name),
 							$("<label>", {'class': 'text info-actress-extra'}).html(actress.localName),
 							$("<label>", {'class': 'text info-actress-extra'}).html(actress.birth),
-							$("<label>", {'class': 'text info-actress-extra'}).html(actress.age),
-							$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut),
+							$("<label>", {'class': 'text info-actress-extra'}).html(ageCalculateAge(actress.birth)),
+							$("<label>", {'class': 'text info-actress-extra'}).html(zeroToEmpty(actress.debut)),
 							$("<label>", {'class': 'text info-actress-extra'}).html(actress.bodySize),
-							$("<label>", {'class': 'text info-actress-extra'}).html(actress.height),
+							$("<label>", {'class': 'text info-actress-extra'}).html(zeroToEmpty(actress.height)),
 							$("<label>", {'class': 'text info-actress-extra'}).html('v' + actress.videoCount)
 					)
 			);
@@ -660,3 +670,15 @@ function decorateRank(rank) {
 	$(".ranker-mark").html(rank);
 }
 
+var todayYear = new Date().getFullYear();
+function ageCalculateAge(birth) {
+	if (birth.length > 3) {
+		return todayYear - parseInt(birth.substring(0, 4)) + 1;
+	} else {
+		return '';
+	}
+}
+
+function zeroToEmpty(number) {
+	return number === 0 ? "" : number;
+}

@@ -6,8 +6,8 @@ import java.util.List;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import jk.kamoru.flayground.flay.domain.info.Actress;
-import jk.kamoru.flayground.flay.domain.info.Video;
+import jk.kamoru.flayground.info.domain.Actress;
+import jk.kamoru.flayground.info.domain.Video;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 

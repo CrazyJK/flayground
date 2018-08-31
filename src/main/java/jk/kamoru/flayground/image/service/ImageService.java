@@ -6,13 +6,13 @@ import jk.kamoru.flayground.image.domain.Image;
 
 public interface ImageService<T extends Image> {
 
-	List<T> getImageList();
+	List<T> list();
 	
-	T getImage(int idx);
+	T get(int idx);
 
-	T getImageByRandom();
+	T random();
 
-	int getImageSourceSize();
+	int size();
 
 	void delete(int idx);
 

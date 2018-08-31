@@ -21,22 +21,22 @@ public class ImageController {
 	
 	@GetMapping("/list")
 	public List<Image> list() {
-		return imageService.getImageList();
+		return imageService.list();
 	}
 
 	@GetMapping("/size")
 	public int size() {
-		return imageService.getImageSourceSize();
+		return imageService.size();
 	}
 
 	@GetMapping("/random")
 	public Image random() {
-		return imageService.getImageByRandom();
+		return imageService.random();
 	}
 
 	@GetMapping("/{idx}")
 	public Image get(@PathVariable int idx) {
-		return imageService.getImage(idx);
+		return imageService.get(idx);
 	}
 
 	@DeleteMapping("/{idx}")

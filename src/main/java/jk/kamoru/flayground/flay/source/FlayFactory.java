@@ -72,7 +72,7 @@ public class FlayFactory {
 	}
 
 	public void addFile(Flay flay, File file) {
-		String suffix = StringUtils.substringAfterLast(file.getName(), ".");
+		String suffix = StringUtils.substringAfterLast(file.getName(), ".").toLowerCase();
 		if (FlayConfig.SUFFIX_VIDEO.contains(suffix)) {
 			flay.addMovieFile(file);
 		} else if (FlayConfig.SUFFIX_SUBTITLES.contains(suffix)) {

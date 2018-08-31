@@ -40,7 +40,7 @@ function loadData() {
 $.fn.appendTag = function(tagList, tag) {
 	var createTag = tag => {
 		return $("<label>", {'class': 'input sm'}).append(
-				$("<input>", {type: 'checkbox', 'data-tag-id': tag.name}).data("tag", tag),
+				$("<input>", {type: 'checkbox', 'data-tag-name': tag.name}).data("tag", tag),
 				$("<span>", {title: tag.description}).html(tag.name)
 		);
 	};
@@ -69,20 +69,20 @@ var deploy = () => {
 function attachEventListener() {
 	
 	// header tag select event
-	$("#selectTags").on("change", "input[data-tag-id]", function() {
+	$("#selectTags").on("change", "input[data-tag-name]", function() {
 		if ($("#tagPopup").prop("checked")) {
 			var tagId = $(this).data("tag").id;
 			popup(PATH + '/video/tag/' + tagId, 'tag-' + tagId, 800, 600);
 			this.checked = !this.checked;
 		} else {
-			var checkedLength = $("#selectTags").find("input[data-tag-id]:checked").length;
+			var checkedLength = $("#selectTags").find("input[data-tag-name]:checked").length;
 			$("#tagCheck").prop('checked', checkedLength > 0);
 			$(document).trigger("collect");
 		}
 	});
 
 	// body tag event
-	$("#videoTags").on("change", "input[data-tag-id]", function() {
+	$("#videoTags").on("change", "input[data-tag-name]", function() {
 		var $this = $(this);
 		action.toggleTag(currentFlay.opus, $this.data("tag").id, function(checked) {
 			$this.prop('checked', checked);
@@ -97,7 +97,7 @@ function attachEventListener() {
 				currentFlay.tags.push(tag);
 				$("#selectTags > .tag-list").appendTag(null, tag);
 				$("#videoTags").appendTag(null, tag);
-				$("input[data-tag-id='" + tag.id + "']", "#videoTags").prop("checked", true);
+				$("input[data-tag-name='" + tag.name + "']", "#videoTags").prop("checked", true);
 				$("#newTagName, #newTagDesc").val('');
 			});
 		}
@@ -105,9 +105,9 @@ function attachEventListener() {
 
 	// uncheck select Tag
 	$("#tagCheck").on("change", function() {
-		var count = $("input[data-tag-id]:checked", "#selectTags").length;
+		var count = $("input[data-tag-name]:checked", "#selectTags").length;
 		if (count > 0) {
-			$("input[data-tag-id]:checked", "#selectTags").prop("checked", false);
+			$("input[data-tag-name]:checked", "#selectTags").prop("checked", false);
 			$(document).trigger("collect");
 		} else {
 			this.checked = false;
@@ -233,8 +233,8 @@ function collectList() {
 	var rank5 = $("#rank5").prop("checked") ? '5' : '';
 	var sort  = $("input[name='sort']:checked").val();
 	var selectedTags  = [];
-	$("input[data-tag-id]:checked", "#selectTags").each(function(idx, tagCheckbox) {
-		selectedTags.push($(tagCheckbox).data("tag").id);
+	$("input[data-tag-name]:checked", "#selectTags").each(function(idx, tagCheckbox) {
+		selectedTags.push($(tagCheckbox).data("tag").name);
 	});
 	
 	collectedList = [];
@@ -277,7 +277,7 @@ function collectList() {
 		if (selectedTags.length > 0) {
 			var found = false;
 			for (var x in flay.video.tags) {
-				if (selectedTags.includes(flay.video.tags[x].id)) {
+				if (selectedTags.includes(flay.video.tags[x].name)) {
 					found = found || true;
 				}
 			}
@@ -308,7 +308,7 @@ function collectList() {
 	});
 
 	// fill tag count info
-	$("input[data-tag-id]", "#selectTags").each(function(index, tagCheckbox) {
+	$("input[data-tag-name]", "#selectTags").each(function(index, tagCheckbox) {
 		var tag = $(tagCheckbox).data("tag");
 		tag.count = 0;
 		$(tagCheckbox).next().addClass("nonExist");
@@ -321,15 +321,15 @@ function collectList() {
 			var flay = collectedList[x];
 			for (var y in flay.video.tags) {
 				var videoTag = flay.video.tags[y];
-				var tag = $("input[data-tag-id='" + videoTag.name + "']", "#selectTags").data("tag");
+				var tag = $("input[data-tag-name='" + videoTag.name + "']", "#selectTags").data("tag");
 				if (tag) {
 					tag.count++;
 				} else {
-					throw "Notfound tag.id " + videoTag.id + " in [" + flay.video.opus + "]";
+					throw "Notfound tag.name " + videoTag.name + " in [" + flay.video.opus + "]";
 				}
 			}
 		}
-		$("input[data-tag-id]", "#selectTags").each(function(index, tagCheckbox) {
+		$("input[data-tag-name]", "#selectTags").each(function(index, tagCheckbox) {
 			var tag = $(tagCheckbox).data("tag");
 			if (tag.count > 0) {
 				$(tagCheckbox).next().removeClass("nonExist").html(tag.name + " " + tag.count);
@@ -610,7 +610,7 @@ function showVideo(direction) {
 		// tag
 		$("input:checked", "#videoTags.tag-list").prop('checked', false);
 		$.each(currentFlay.video.tags, function(i, tag) {
-			$("input[data-tag-id='" + tag.name + "']", "#videoTags").prop('checked', true);
+			$("input[data-tag-name='" + tag.name + "']", "#videoTags").prop('checked', true);
 		});
 		navigation.on();
 	}
@@ -618,9 +618,9 @@ function showVideo(direction) {
 	navigation.off();
 
 	var prevCoverURL = PATH, currCoverURL = PATH, nextCoverURL = PATH;
-	prevCoverURL    += (0 < currentIndex) ? "/cover/video/" + collectedList[currentIndex-1].opus : '/image/random?_t=' + new Date().getTime();
-	currCoverURL    += "/cover/video/" + currentFlay.opus;
-	nextCoverURL    += (currentIndex < collectedList.length-1) ? "/cover/video/" + collectedList[currentIndex+1].opus : '/image/random?_t=' + new Date().getTime();
+	prevCoverURL    += (0 < currentIndex) ? "/static/cover/" + collectedList[currentIndex-1].opus : '/static/image/random?_=' + new Date().getTime();
+	currCoverURL    += "/static/cover/" + currentFlay.opus;
+	nextCoverURL    += (currentIndex < collectedList.length-1) ? "/static/cover/" + collectedList[currentIndex+1].opus : '/static/image/random?_=' + new Date().getTime();
 
 	var image1 = new Image();
 	image1.onload = function() {

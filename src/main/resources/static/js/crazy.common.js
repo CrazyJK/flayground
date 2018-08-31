@@ -233,7 +233,7 @@ function Loading() {
 };
 Loading.prototype = {
 		on: function(body) {
-			$(this.body).append(body);
+			$(this.body).empty().append(body);
 			$(this.overlay).show();
 		},
 		off: function() {
@@ -308,7 +308,7 @@ var background = {
 					popup.imageByNo(imageIndex);
 				});
 			}
-			image.src = PATH + "/image/" + imageIndex;
+			image.src = PATH + "/static/image/" + imageIndex;
 			// overflow image remove
 			$imageWrap.children().each(function() {
 				var imageTop = $(this).position().top;

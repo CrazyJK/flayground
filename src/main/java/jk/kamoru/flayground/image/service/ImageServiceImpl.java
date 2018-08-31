@@ -15,22 +15,22 @@ public class ImageServiceImpl implements ImageService<Image> {
 	@Autowired ImageSource<Image> imageSource;
 	
 	@Override
-	public List<Image> getImageList() {
+	public List<Image> list() {
 		return imageSource.getList();
 	}
 
 	@Override
-	public Image getImage(int idx) {
+	public Image get(int idx) {
 		return imageSource.get(idx);
 	}
 
 	@Override
-	public Image getImageByRandom() {
-		return imageSource.get(RandomUtils.nextInt(0, getImageSourceSize()));
+	public Image random() {
+		return imageSource.get(RandomUtils.nextInt(0, size()));
 	}
 
 	@Override
-	public int getImageSourceSize() {
+	public int size() {
 		return imageSource.size();
 	}
 

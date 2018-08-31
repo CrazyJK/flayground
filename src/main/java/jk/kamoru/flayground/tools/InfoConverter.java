@@ -19,20 +19,20 @@ import lombok.NoArgsConstructor;
 
 public class InfoConverter {
 
-//	final String[] srcPaths = new String[] {"/home/kamoru/workspace/FlayOn/crazy"};
-//	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
+	final String[] srcPaths = new String[] {"/home/kamoru/workspace/FlayOn/crazy"};
+	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
 
-	final String[] srcPaths = new String[] {
-			"J:\\Crazy\\Info_v1",
-			"J:\\Crazy\\Archive",
-			"J:\\Crazy\\Cover",
-			"J:\\Crazy\\Stage",
-			"J:\\Crazy\\Storage",
-			"K:\\Crazy\\Cover",
-			"K:\\Crazy\\Stage",
-			"K:\\Crazy\\Storage"
-	};
-	final String destPath = "J:\\Crazy\\Info";
+//	final String[] srcPaths = new String[] {
+//			"J:\\Crazy\\Info_v1",
+//			"J:\\Crazy\\Archive",
+//			"J:\\Crazy\\Cover",
+//			"J:\\Crazy\\Stage",
+//			"J:\\Crazy\\Storage",
+//			"K:\\Crazy\\Cover",
+//			"K:\\Crazy\\Stage",
+//			"K:\\Crazy\\Storage"
+//	};
+//	final String destPath = "J:\\Crazy\\Info";
 
 	void start() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();

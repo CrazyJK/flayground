@@ -591,13 +591,17 @@ function showVideo(direction) {
 		// release
 		$(".info-release").html(currentFlay.release);
 		// modified
-		$(".info-modified").html(currentFlay.videoDate);
+		$(".info-modified").html(new Date(currentFlay.lastModified).format("yyyy-MM-dd"));
 		// video file
-		$(".info-video").html(currentFlay.movieFileList.length > 0 ? 'V ' + formatFilesize(currentFlay.length) : 'Video')
-				.toggleClass("nonExist", !currentFlay.movieFileList.length > 0);
+		var movieSize = currentFlay.movieFileList.length;
+		$(".info-video").html(
+				movieSize === 0 ? 'Video' : 
+					movieSize === 1 ? 'V ' + formatFilesize(currentFlay.length) :
+						movieSize + 'V ' + formatFilesize(currentFlay.length)
+		).toggleClass("nonExist", movieSize === 0);
 		// subtitles
 		$(".info-subtitles").html("Subtitles")
-				.toggleClass("nonExist", !currentFlay.subtitlesFileList.length > 0);
+				.toggleClass("nonExist", currentFlay.subtitlesFileList.length === 0);
 		// overview
 		$(".info-overview-input").val(currentFlay.video.comment).hide();
 		$(".info-overview").html(currentFlay.video.comment == '' ? 'Overview' : currentFlay.video.comment)
@@ -618,9 +622,9 @@ function showVideo(direction) {
 	navigation.off();
 
 	var prevCoverURL = PATH, currCoverURL = PATH, nextCoverURL = PATH;
-	prevCoverURL    += (0 < currentIndex) ? "/static/cover/" + collectedList[currentIndex-1].opus : '/static/image/random?_=' + new Date().getTime();
-	currCoverURL    += "/static/cover/" + currentFlay.opus;
-	nextCoverURL    += (currentIndex < collectedList.length-1) ? "/static/cover/" + collectedList[currentIndex+1].opus : '/static/image/random?_=' + new Date().getTime();
+	prevCoverURL += (0 < currentIndex) ? "/static/cover/" + collectedList[currentIndex-1].opus : '/static/image/random?_=' + new Date().getTime();
+	currCoverURL += "/static/cover/" + currentFlay.opus;
+	nextCoverURL += (currentIndex < collectedList.length-1) ? "/static/cover/" + collectedList[currentIndex+1].opus : '/static/image/random?_=' + new Date().getTime();
 
 	var image1 = new Image();
 	image1.onload = function() {

@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.flay;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,6 +22,11 @@ public class FlayController {
 	@GetMapping("/list")
 	public Collection<Flay> getList(@ModelAttribute Search search) {
 		return flayService.getFlayList(search);
+	}
+
+	@GetMapping("/opus")
+	public Collection<String> getOpusList(@ModelAttribute Search search) {
+		return flayService.getFlayList(search).stream().map(f -> f.getOpus()).collect(Collectors.toList());
 	}
 
 	@GetMapping("/{opus}")

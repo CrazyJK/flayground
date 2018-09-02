@@ -56,32 +56,35 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> implements Inf
 		try {
 			return get(key);
 		} catch(InfoNotfoundException e) {
-			return newInstance(key);
+			T newInstance = newInstance(key);
+			list.add(newInstance);
+			save();
+			return newInstance;
 		}
 	}
 
 	@Override
-	public void create(T createT) {
+	public void create(T create) {
 		try {
-			get(createT.getKey());
-			throw new IllegalStateException("duplicated key " + createT.getKey());
+			get(create.getKey());
+			throw new IllegalStateException("duplicated key " + create.getKey());
 		} catch(InfoNotfoundException e) {
-			list.add(createT);
+			list.add(create);
 			save();
 		}
 	}
 
 	@Override
-	public void update(T updateT) {
-		T t = get(updateT.getKey());
+	public void update(T update) {
+		T t = get(update.getKey());
 		list.remove(t);
-		list.add(t);
+		list.add(update);
 		save();
 	}
 
 	@Override
-	public void delete(T deleteT) {
-		T t = get(deleteT.getKey());
+	public void delete(T delete) {
+		T t = get(delete.getKey());
 		list.remove(t);
 		save();
 	}

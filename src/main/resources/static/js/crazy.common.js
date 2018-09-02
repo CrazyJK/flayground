@@ -189,14 +189,16 @@ var restCall = function(url, args, callback) {
 			method: "GET",
 			data: {},
 			mimeType: "application/json",
+			contentType: "application/json",
 			async: true,
-//			beforeSend: function(xhr) {
-//				xhr.setRequestHeader("Accept", "application/json");
-//			},
-			showLoading: true,
+			cache: false,
+			showLoading: false,
 			title: "Call request"
 	};
 	var settings = $.extend({}, DEFAULTS, args);
+	if (typeof settings.data === 'object') {
+		settings.data = JSON.stringify(settings.data);
+	}
 	
 	settings.showLoading && loading.on(settings.title);
 	
@@ -330,7 +332,7 @@ $(document).ready(function() {
 	loading.off();
 	
 	background.init();
-	background.start();
+//	background.start();
 	
 });
 

@@ -2,43 +2,91 @@
  * video common function
  */
 
-var view = {
+var View = {
+		flay: function(opus) {
+			popup.open(PATH + "/flay/" + opus, "flay-" + opus, 800, 640);
+		},
 		video: function(opus) {
-			popup.open(PATH + "/info/video/" + opus, "videoDetail-" + opus, 800, 640);
+			popup.open(PATH + "/info/video/" + opus, "video-" + opus, 800, 640);
 		},
 		actress: function(name) {
-			popup.open(PATH + "/info/actress/" + name, "actressDetail-" + name, 850, 600);
+			popup.open(PATH + "/info/actress/" + name, "actress-" + name, 850, 600);
 		}
 };
 
-var action = {
-		play: function(opus) {
-			restCall(PATH + '/rest/video/' + opus + '/exec/play', {method: "PUT", showLoading: false});
+var Update = {
+		video: function(video, callback) {
+			restCall(PATH + '/info/video', {data: video, method: "PATCH"}, callback);
 		},
-		subtitles: function(opus) {
-			restCall(PATH + '/rest/video/' + opus + '/exec/subtitles', {method: "PUT", showLoading: false});
+		actress: function(actress, callback) {
+			restCall(PATH + '/info/actress', {data: actress, method: "PATCH"}, callback);
+		}
+};
+
+var Create = {
+		tag: function(tag, callback) {
+			restCall(PATH + '/info/tag', {data: tag, method: "POST"}, callback);
+		}
+};
+
+var Action = {
+		play: function(flay) {
+			restCall(PATH + '/flay/' + flay.opus + '/play', {method: "PATCH"});
 		},
-		rank: function(opus, rank, callback) {
-			restCall(PATH + "/rest/video/" + opus + "/rank/" + rank, {method: "PUT", showLoading: false}, callback);
-		},
-		overview: function(opus, text, callback) {
-			restCall(PATH + '/rest/video/' + opus + '/overview', {method: "PUT", data: {overview: text}, showLoading: false }, callback);
-		},
-		favorite: function(name, val, callback) {
-			restCall(PATH + "/rest/actress/" + name + "/favorite/" + val, {method: "PUT", showLoading: false}, function(result) {
-				callback(result);
+		subtitles: function(flay) {
+			restCall(PATH + '/flay/' + flay.opus + '/edit', {method: "PATCH"});
+		}
+};
+
+var TagUtils = {
+		includes: function(tags, tag) {
+			var found = false;
+			$.each(tags, function(idx, tagElement) {
+				if (tagElement.name === tag.name) {
+					found = true;
+				}
 			});
+			return found;
 		},
-		toggleTag: function(opus, tagId, callback) {
-			restCall(PATH + "/rest/video/" + opus + "/tag?id=" + tagId, {method: "PUT"}, function(checked) {
-				callback(checked);
+		indexOf: function(tags, tag) {
+			var found = -1;
+			$.each(tags, function(idx, tagElement) {
+				if (tagElement.name === tag.name) {
+					found = idx;
+				}
 			});
+			return found;
 		},
-		createTag: function(opus, name, desc, callback) {
-			restCall(PATH + "/rest/tag", {method: "POST", data: {opus: opus, name: name, description: desc}, showLoading: false}, function(tag) {
-				callback(tag);
-			});
+		push: function(tags, tag) {
+			var idx = TagUtils.indexOf(tags, tag);
+			if (idx < 0) {
+				tags.push(tag);
+			}
 		},
+		remove: function(tags, tag) {
+			var idx = TagUtils.indexOf(tags, tag);
+			if (idx > -1) {
+				tags.splice(idx, 1);
+			}
+		}
+};
+
+var ActressUtils = {
+		getNames: function(actressList) {
+			var actressNames = "";
+			if (actressList != null && Array.isArray(actressList)) {
+				$.each(actressList, function(idx, actress) {
+					if (idx > 0)
+						actressNames += ", ";
+					actressNames += actress.name;
+				});
+			}
+			return actressNames;
+		}
+};
+
+
+var Action = {
 		openFolder: function(folder) {
 			restCall(PATH + '/flayon/openFolder', {method: "PUT", data: {folder: folder}, showLoading: false});
 		},
@@ -47,29 +95,16 @@ var action = {
 		}
 };
 
-var search = {
-		opus: function() {
-			var query = arguments.length == 0 ? $("#query").val() : arguments[0];
-			popup.open(urlSearchVideo + query, 'videoSearch', 1500, 1000);
+
+var Search = {
+		opus: function(keyword) {
+			popup.open(urlSearchVideo + keyword, 'videoSearch', 1500, 1000);
 		},
-		actress: function() {
-			var $query   = $("#query");
-			var $actress = $("#actress");
-			var query = "";
-			if (arguments.length === 0) {
-				if ($actress.length > 0 && $actress.val().length > 0) {
-					query = $actress.val();
-				} else if ($query.length > 0 &&  $query.val().length > 0) {
-					query = $query.val();
-				}
-			} else {
-				query = arguments[0];
-			}
-			popup.open(urlSearchActress + query, 'actressSearch', 1200, 950);
+		actress: function(keyword) {
+			popup.open(urlSearchActress + keyword, 'actressSearch', 1200, 950);
 		},
-		torrent: function() {
-			var query = arguments.length == 0 ? $("#query").val() : arguments[0];
-			popup.open(urlSearchTorrent + query + '+FHD+torrent', 'torrentSearch', 900, 950);
+		torrent: function(keyword) {
+			popup.open(urlSearchTorrent + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
 		},
 		translate: function(message) {
 			var translateURL = "https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/" + message;
@@ -77,6 +112,6 @@ var search = {
 		},
 		opusByRandom: function() {
 			var opus = random.getInteger(1, 999);
-			search.opus(opus);
+			Search.opus(opus);
 		}
 };

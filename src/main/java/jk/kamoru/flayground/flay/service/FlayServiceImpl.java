@@ -9,12 +9,16 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
+import jk.kamoru.flayground.info.domain.Video;
+import jk.kamoru.flayground.info.service.InfoService;
 
 @Service
 public class FlayServiceImpl implements FlayService {
 
 	@Autowired FlaySource flaySource;
-	
+	@Autowired InfoService<Video, String> videoInfoService;
+	@Autowired FlayActionHandler flayActionHandler;
+
 	@Override
 	public Flay get(String key) {
 		return flaySource.get(key);
@@ -68,6 +72,18 @@ public class FlayServiceImpl implements FlayService {
 		} else {
 			throw new IllegalStateException("unknown field");
 		}
+	}
+
+	@Override
+	public void play(String opus) {
+		Flay flay = flaySource.get(opus);
+		flayActionHandler.play(flay);
+		videoInfoService.update(flay.getVideo());
+	}
+
+	@Override
+	public void edit(String opus) {
+		flayActionHandler.edit(flaySource.get(opus));
 	}
 
 }

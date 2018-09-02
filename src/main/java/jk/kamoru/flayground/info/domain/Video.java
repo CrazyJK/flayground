@@ -1,7 +1,6 @@
 package jk.kamoru.flayground.info.domain;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotNull;
@@ -20,7 +19,7 @@ public class Video implements Info<String> {
 	int play;
 	int rank;
 	String comment;
-	Date lastAccess;
+	long lastAccess;
 	List<Tag> tags;
 
 	public Video(String key) {
@@ -28,7 +27,7 @@ public class Video implements Info<String> {
 		this.play = 0;
 		this.rank = 0;
 		this.comment = "";
-		this.lastAccess = new Date(0);
+		this.lastAccess = 0;
 		tags = new ArrayList<>();
 	}
 

@@ -196,7 +196,7 @@ var restCall = function(url, args, callback) {
 			title: "Call request"
 	};
 	var settings = $.extend({}, DEFAULTS, args);
-	if (typeof settings.data === 'object') {
+	if (settings.method != 'GET' && typeof settings.data === 'object') {
 		settings.data = JSON.stringify(settings.data);
 	}
 	
@@ -332,7 +332,7 @@ $(document).ready(function() {
 	loading.off();
 	
 	background.init();
-//	background.start();
+	background.start();
 	
 });
 

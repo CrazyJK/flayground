@@ -350,7 +350,7 @@ label.text.sm {
     z-index: 9998; /* Stay on top */
     top: 0; /* Stay at the top */
     left: 0;
-    background-color: #111; /* Black*/
+    background-color: rgba(17, 17, 17, 0.75); /* Black*/
     overflow: hidden; /* Disable horizontal scroll */
     transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
     padding-top: 50px;
@@ -366,6 +366,17 @@ label.text.sm {
     margin-left: .5rem;
     padding: 0;
     width: 50px;
+}
+.sidenav > .nav > .nav-item {
+	color: #007bff;
+	padding: 0.5rem;
+	min-height: 3rem;
+}
+.sidenav > .nav > .nav-item:hover {
+	color: #eee;
+}
+.sidenav > .nav > .nav-item > label[aria-include] {
+	cursor: pointer;
 }
 
 #wrap_background_image {

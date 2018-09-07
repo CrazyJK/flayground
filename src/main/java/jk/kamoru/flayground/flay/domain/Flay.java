@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.math.NumberUtils;
 
 import jk.kamoru.flayground.info.domain.Actress;
+import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.domain.Video;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,7 +17,7 @@ import lombok.NoArgsConstructor;
 public class Flay {
 
 	// key
-	String studio;
+	Studio studio;
 	String opus;
 	String title;
 	List<Actress> actressList;

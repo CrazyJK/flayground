@@ -1,0 +1,5 @@
+Flayground
+
+${AnsiColor.RED}
+  ${application.title} ${application.formatted-version} by Spring Boot ${spring-boot.formatted-version}
+${AnsiColor.WHITE}

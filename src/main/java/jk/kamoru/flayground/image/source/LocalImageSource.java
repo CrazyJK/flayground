@@ -34,7 +34,7 @@ public class LocalImageSource implements ImageSource<Image> {
 				}
 			}
 		}
-		log.info("{} images found", size());
+		log.info("[Image] {} loaded", size());
 	}
 
 	@Override

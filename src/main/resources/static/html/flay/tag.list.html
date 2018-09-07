@@ -1,0 +1,53 @@
+<style type="text/css">
+h1 {
+	color: white;
+	font-weight: 700;
+	text-align: center;
+}
+
+#tagList {
+	text-align: center;
+}
+.card {
+	display: inline-flex;
+    margin: 0.5rem;
+	width: 10rem;
+}
+</style>
+
+<h1> Tag List </h1>
+
+<div class="container" id="tagList"></div>
+
+<div class="container" id="tagDetail">
+	<input type="text" id="name" class="form-control">
+	<input type="text" id="description" class="form-control">
+
+</div>
+
+<script type="text/javascript">
+restCall(PATH + '/info/tag/list', {}, function(tagList) {
+	var $wrap = $("#tagList");
+	$wrap.empty();
+	
+	$.each(tagList, function(idx, tag) {
+		$("<div>", {'class': 'card'}).append(
+				$("<div>", {'class': 'card-body'}).append(
+						$("<h5>", {'class': 'card-title'}).html(tag.name).on("click", function() {
+							viewDetail(tag.name);
+						}),
+						$("<p>", {'class': 'card-text'}).html(tag.description)
+				)
+		).appendTo($wrap);
+	});
+});
+
+function viewDetail(name) {
+	restCall(PATH + '/info/tag/' + name, {}, function(tag) {
+		$("#name").val(tag.name);
+		$("#description").val(tag.description);
+		
+		
+	});
+}
+</script>

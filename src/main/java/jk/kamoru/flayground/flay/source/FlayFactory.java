@@ -11,14 +11,18 @@ import org.springframework.stereotype.Component;
 import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.info.domain.Actress;
+import jk.kamoru.flayground.info.domain.Studio;
+import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.ActressInfoService;
+import jk.kamoru.flayground.info.service.StudioInfoService;
 import jk.kamoru.flayground.info.service.VideoInfoService;
 import lombok.Data;
 
 @Component
 public class FlayFactory {
 
-	@Autowired VideoInfoService videoInfoService;
+	@Autowired  StudioInfoService  studioInfoService;
+	@Autowired   VideoInfoService   videoInfoService;
 	@Autowired ActressInfoService actressInfoService;
 	
 	public Result parse(File file) {
@@ -50,16 +54,24 @@ public class FlayFactory {
 
 	public Flay newFlay(Result result) {
 		Flay flay = new Flay();
-		flay.setStudio(result.studio);
+		flay.setStudio(getStudio(result.studio));
 		flay.setOpus(result.opus);
 		flay.setTitle(result.title);
-		flay.setActressList(newActressList(result.actress));
+		flay.setActressList(getActressList(result.actress));
 		flay.setRelease(result.release);
-		flay.setVideo(videoInfoService.getOrNew(result.opus));
+		flay.setVideo(getVideo(result.opus));
 		return flay;
 	}
 
-	private List<Actress> newActressList(String actress) {
+	private Studio getStudio(String name) {
+		return studioInfoService.getOrNew(name);
+	}
+
+	private Video getVideo(String opus) {
+		return videoInfoService.getOrNew(opus);
+	}
+
+	private List<Actress> getActressList(String actress) {
 		List<Actress> list = new ArrayList<>();
 		for (String name : StringUtils.split(actress, ",")) {
 			String onePerson = "";

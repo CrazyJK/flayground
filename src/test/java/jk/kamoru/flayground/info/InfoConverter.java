@@ -2,8 +2,11 @@ package jk.kamoru.flayground.info;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -18,14 +21,36 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import jk.kamoru.flayground.info.domain.Actress;
+import jk.kamoru.flayground.info.domain.Studio;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 public class InfoConverter {
 
-//	final String[] srcPaths = new String[] {"/home/kamoru/workspace/FlayOn/crazy"};
-//	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
+	public static final String FAVORITE  = "FAVORITE";
+	public static final String NAME      = "NAME";
+	public static final String NEWNAME   = "NEWNAME";
+	public static final String LOCALNAME = "LOCALNAME";
+	public static final String BIRTH     = "BIRTH";
+	public static final String BODYSIZE  = "BODYSIZE";
+	public static final String HEIGHT    = "HEIGHT";
+	public static final String DEBUT     = "DEBUT";
+	public static final String COMMENT   = "COMMENT";
+	public static final String HOMEPAGE  = "HOMEPAGE";
+	public static final String COMPANY   = "COMPANY";
 
+	final String[] srcPaths = new String[] {
+			"/home/kamoru/workspace/FlayOn/crazy/Archive",
+			"/home/kamoru/workspace/FlayOn/crazy/Candidate",
+			"/home/kamoru/workspace/FlayOn/crazy/Cover",
+			"/home/kamoru/workspace/FlayOn/crazy/Queue",
+			"/home/kamoru/workspace/FlayOn/crazy/Seeds",
+			"/home/kamoru/workspace/FlayOn/crazy/Stage",
+			"/home/kamoru/workspace/FlayOn/crazy/Storage"
+	};
+	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
+
+/*
 	final String[] srcPaths = new String[] {
 			"J:\\Crazy\\Archive",
 			"J:\\Crazy\\Cover",
@@ -36,15 +61,22 @@ public class InfoConverter {
 			"K:\\Crazy\\Storage"
 	};
 	final String destPath = "J:\\Crazy\\Info";
-
+*/
 	void start() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
-		List<Actress> actressList = new ArrayList<>();
-		List<FromVideo> fromVideoList = new ArrayList<>();
+		ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
+
+		Map<String, Studio>       studioMap = new HashMap<>();
+		Map<String, Actress>     actressMap = new HashMap<>();
+		Map<String, FromVideo> fromVideoMap = new HashMap<>();
+
 		List<Tag> tagList = new ArrayList<>();
 
 		for (String path : srcPaths) {
-			for (File file : FileUtils.listFiles(new File(path), new String[]{"info", "actress", "data"}, true)) {
+			Collection<File> listFiles = FileUtils.listFiles(new File(path), new String[]{"info", "actress", "studio", "data"}, true);
+			System.out.format("Found %4s in %s%n", listFiles.size(), path);
+			
+			for (File file : listFiles) {
 				if (FileUtils.readFileToByteArray(file).length == 0) {
 					continue;
 				}
@@ -53,10 +85,16 @@ public class InfoConverter {
 
 				try {
 					if ("actress".equals(suffix)) {
-						actressList.add(loadActress(file));
+						Actress actress = loadActress(file);
+						actressMap.put(actress.getName(), actress);
+					} 
+					else if ("studio".equals(suffix)) {
+						Studio studio = loadStudio(file);
+						studioMap.put(studio.getName(), studio);
 					} 
 					else if ("info".equals(suffix)) {
-						fromVideoList.add(mapper.readValue(file, FromVideo.class));
+						FromVideo fromVideo = mapper.readValue(file, FromVideo.class);
+						fromVideoMap.put(fromVideo.getOpus(), fromVideo);
 					} 
 					else if ("tag.data".equals(file.getName())) {
 						tagList = mapper.readValue(file, new TypeReference<List<Tag>>() {});
@@ -67,8 +105,13 @@ public class InfoConverter {
 			}
 		}
 		
+		System.out.format("Studio  %4s found%n", studioMap.size());
+		System.out.format("Actress %4s found%n", actressMap.size());
+		System.out.format("Video   %4s found%n", fromVideoMap.size());
+		System.out.format("Tag     %4s found%n", tagList.size());
+		
 		List<ToVideo> toVideoList = new ArrayList<>();
-		for (FromVideo from : fromVideoList) {
+		for (FromVideo from : fromVideoMap.values()) {
 			ToVideo to = new ToVideo();
 			to.setOpus(from.opus);
 			to.setPlay(from.playCount);
@@ -80,19 +123,15 @@ public class InfoConverter {
 		}
 		
 		
-		ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();
-		
-		writer.writeValue(new File(destPath, "actress.json"), actressList);
+		writer.writeValue(new File(destPath, "actress.json"), actressMap.values());
+		writer.writeValue(new File(destPath,  "studio.json"),  studioMap.values());
 		writer.writeValue(new File(destPath,   "video.json"), toVideoList);
 		writer.writeValue(new File(destPath,     "tag.json"),     tagList);
+	
+		System.out.println("Completed");
 	}
 
-	public static void main(String[] args) throws Exception {
-		InfoConverter converter = new InfoConverter();
-		converter.start();
-	}
-
-	Map<String, String> readFileToMap(File file) {
+	private Map<String, String> readFileToMap(File file) {
 		try {
 			Map<String, String> map = new HashMap<>();
 			for (String str : Files.readAllLines(file.toPath())) {
@@ -107,26 +146,33 @@ public class InfoConverter {
 		}
 	}
 	
-	String trimToDefault(String str, String def) {
+	private String trimToDefault(String str, String def) {
 		String trim = StringUtils.trimToNull(str);
 		return trim == null ? def : trim;
 	}
 
-	public static final String FAVORITE  = "FAVORITE";
-	public static final String NAME      = "NAME";
-	public static final String NEWNAME   = "NEWNAME";
-	public static final String LOCALNAME = "LOCALNAME";
-	public static final String BIRTH     = "BIRTH";
-	public static final String BODYSIZE  = "BODYSIZE";
-	public static final String HEIGHT    = "HEIGHT";
-	public static final String DEBUT     = "DEBUT";
-	public static final String COMMENT   = "COMMENT";
+	private Studio loadStudio(File file) {
+		Map<String, String> info = readFileToMap(file);
+		String filename = StringUtils.substringBeforeLast(file.getName(), ".");
+		String infoName = info.get(NAME);
+		if (StringUtils.isBlank(infoName) || !StringUtils.equals(filename, infoName))
+			System.err.format("studio name not equals [%s] in info file %s%n", infoName, file);
 
-	Actress loadActress(File file) {
+		String name 	= infoName;
+		String company  = trimToDefault(info.get(COMPANY), "");
+		URL    homepage = makeURL(info.get(HOMEPAGE));
+
+		Studio studio = new Studio(name);
+		studio.setCompany(company);
+		studio.setHomepage(homepage);
+		return studio;
+	}
+
+	private Actress loadActress(File file) {
 		Map<String, String>	info = readFileToMap(file);
 		String infoName = info.get(NAME);
 		if (StringUtils.isBlank(infoName) || !StringUtils.contains(file.getName(), infoName)) {
-			System.err.format("actress name not equals [%s] in info file [%s]", infoName, file);
+			System.err.format("actress name not equals [%s] in info file %s%n", infoName, file);
 		}
 		String localName = trimToDefault(info.get(LOCALNAME), "");
 		String birth     = trimToDefault(info.get(BIRTH),     "");
@@ -147,6 +193,29 @@ public class InfoConverter {
 
 		return actress;
 	}
+	
+	private URL makeURL(String string) {
+		String str = StringUtils.trimToEmpty(string);
+		if (StringUtils.isNotEmpty(str)) {
+			if (!str.startsWith("http"))
+				str = "http://" + str;
+		} else {
+			return null;
+		}
+			
+		try {
+			return new URL(str);
+		} catch (MalformedURLException e) {
+			System.err.format("Malformed URL [%s]: %s%n", str, e.getMessage());
+			return null;
+		}
+	}
+
+	public static void main(String[] args) throws Exception {
+		InfoConverter converter = new InfoConverter();
+		converter.start();
+	}
+
 }
 
 @Data

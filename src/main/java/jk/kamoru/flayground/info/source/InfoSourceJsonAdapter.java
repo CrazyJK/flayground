@@ -30,7 +30,7 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> implements Inf
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			list = mapper.readValue(infoFile, getTypeReference());
-			log.info("{} loaded in {}", list.size(), getInfoFile().getName());
+			log.info("[{}] {} loaded", getInfoFile().getName(), list.size());
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to load info file " + infoFile, e);
 		}	

@@ -32,15 +32,32 @@ public class FileBasedFlaySource implements FlaySource {
 	@PostConstruct
 	@Override
 	public synchronized void load() {
-		
+
 		flayMap = new HashMap<>();
 		
-		for (File file : listFiles()) {
+		Collection<File> listFiles = new ArrayList<>();
+		for (String path : paths) {
+			File dir = new File(path);
+			if (dir.isDirectory()) {
+				Collection<File> found = FileUtils.listFiles(dir, null, true);
+				log.info("{} list files in {}", found.size(), dir);
+				listFiles.addAll(found);
+			}
+			else {
+				log.warn("Invalid source path {}", dir);
+			}
+		}
+		
+		for (File file : listFiles) {
 			Result result = flayFactory.parse(file);
 			
 			if (!result.valid) {
 				String suffix = StringUtils.substringAfterLast(file.getName(), ".");
 				if ("actress studio".contains(suffix)) {
+					// v1 info file. pass!!
+				} else if ("jpg".contains(suffix)) {
+					// may be actress cover. pass!!
+				} else if ("history.log tag.data".contains(file.getName())) {
 					// v1 info file. pass!!
 				} else {
 					log.warn("invalid file {}", file);
@@ -58,21 +75,7 @@ public class FileBasedFlaySource implements FlaySource {
 			
 			flayFactory.addFile(flay, file);
 		}
-	}
-	
-	
-	private Collection<File> listFiles() {
-		Collection<File> found = new ArrayList<>();
-		for (String path : paths) {
-			File dir = new File(path);
-			if (dir.isDirectory()) {
-				found.addAll(FileUtils.listFiles(dir, null, true));
-			}
-			else {
-				log.warn("Invalid source path {}", dir);
-			}
-		}
-		return found;
+		log.info("[Flay] {} loaded", flayMap.size());
 	}
 
 	@Override

@@ -5,6 +5,10 @@ h1 {
 	text-align: center;
 }
 
+#tagDetail {
+	text-align: center;
+}
+
 #tagList {
 	text-align: center;
 }
@@ -12,18 +16,40 @@ h1 {
 	display: inline-flex;
     margin: 0.5rem;
 	width: 10rem;
+	transition: all .3s;
+}
+.card .card-flay {
+	display: none;
+}
+.card.detail {
+ 	background-color: rgba(255, 255, 255, 0.5);
+	width: 90%;
+	height: 90%;
+}
+.card.detail .card-flay {
+	display: block;
+}
+.card-flay dl {
+	display: inline-block;
+	background: #eee no-repeat center;
+	background-size: cover;
+ 	border: 1px solid #333;
+	border-radius: 0.5rem;
+	margin: 0.5rem;
+	width: 300px;
+	height: calc(300px * 0.6625);
+	text-align: left;
+}
+.card-flay .title {
+    max-width: calc(100% - 10px);
 }
 </style>
 
 <h1> Tag List </h1>
 
-<div class="container" id="tagList"></div>
+<div id="tagDetail"></div>
 
-<div class="container" id="tagDetail">
-	<input type="text" id="name" class="form-control">
-	<input type="text" id="description" class="form-control">
-
-</div>
+<div id="tagList"></div>
 
 <script type="text/javascript">
 restCall(PATH + '/info/tag/list', {}, function(tagList) {
@@ -33,21 +59,42 @@ restCall(PATH + '/info/tag/list', {}, function(tagList) {
 	$.each(tagList, function(idx, tag) {
 		$("<div>", {'class': 'card'}).append(
 				$("<div>", {'class': 'card-body'}).append(
-						$("<h5>", {'class': 'card-title'}).html(tag.name).on("click", function() {
-							viewDetail(tag.name);
-						}),
-						$("<p>", {'class': 'card-text'}).html(tag.description)
+						$("<h5>", {'class': 'card-title'}).html(tag.name),
+						$("<p>", {'class': 'card-text'}).html(tag.description),
+						$("<div>", {'class': 'card-flay'})
 				)
-		).appendTo($wrap);
+		).data("tag", tag).on("click", function() {
+			viewDetail(this);
+		}).appendTo($wrap);
 	});
 });
 
-function viewDetail(name) {
-	restCall(PATH + '/info/tag/' + name, {}, function(tag) {
-		$("#name").val(tag.name);
-		$("#description").val(tag.description);
+function viewDetail(card) {
+	var $card = $(card);
+	var tag = $card.data("tag");
+	
+	restCall(PATH + "/flay/find/tag/" + tag.name , {}, function(flayList) {
+		$cardFlay = $card.find(".card-flay");
+		$.each(flayList, function(idx, flay) {
+			$cardFlay.append(
+					$("<dl>").append(
+							$("<dt>").append(
+									$("<label>", {'class': 'text title nowrap'}).html(flay.title)
+							),
+							$("<dd>").append(
+									$("<label>", {'class': 'text sm'}).html(flay.opus)
+							),
+							$("<dd>").append(
+									$("<label>", {'class': 'text sm'}).html(flay.release)
+							)
+					).css({backgroundImage: 'url(' + PATH + '/static/cover/' + flay.opus + ')'})
+			)
+		});
 		
 		
+		$card.remove();
+		$card.appendTo($("#tagDetail")).addClass("detail", 500);
 	});
+	
 }
 </script>

@@ -39,18 +39,18 @@ public class InfoConverter {
 	public static final String HOMEPAGE  = "HOMEPAGE";
 	public static final String COMPANY   = "COMPANY";
 
-	final String[] srcPaths = new String[] {
-			"/home/kamoru/workspace/FlayOn/crazy/Archive",
-			"/home/kamoru/workspace/FlayOn/crazy/Candidate",
-			"/home/kamoru/workspace/FlayOn/crazy/Cover",
-			"/home/kamoru/workspace/FlayOn/crazy/Queue",
-			"/home/kamoru/workspace/FlayOn/crazy/Seeds",
-			"/home/kamoru/workspace/FlayOn/crazy/Stage",
-			"/home/kamoru/workspace/FlayOn/crazy/Storage"
-	};
-	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
+//	final String[] srcPaths = new String[] {
+//			"/home/kamoru/workspace/FlayOn/crazy/Archive",
+//			"/home/kamoru/workspace/FlayOn/crazy/Candidate",
+//			"/home/kamoru/workspace/FlayOn/crazy/Cover",
+//			"/home/kamoru/workspace/FlayOn/crazy/Queue",
+//			"/home/kamoru/workspace/FlayOn/crazy/Seeds",
+//			"/home/kamoru/workspace/FlayOn/crazy/Stage",
+//			"/home/kamoru/workspace/FlayOn/crazy/Storage"
+//	};
+//	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
 
-/*
+
 	final String[] srcPaths = new String[] {
 			"J:\\Crazy\\Archive",
 			"J:\\Crazy\\Cover",
@@ -61,7 +61,7 @@ public class InfoConverter {
 			"K:\\Crazy\\Storage"
 	};
 	final String destPath = "J:\\Crazy\\Info";
-*/
+
 	void start() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
 		ObjectWriter writer = mapper.writerWithDefaultPrettyPrinter();

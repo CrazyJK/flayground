@@ -221,7 +221,7 @@ public class InfoConverter {
 @Data
 @NoArgsConstructor
 class Tag {
-	@JsonIgnore int id;
+	int id;
 	String name;
 	String description = "";
 	@JsonIgnore int count;
@@ -257,7 +257,6 @@ class ToVideo {
 		this.opus = opus;
 	}
 	public void setPlay(Integer play) {
-		
 		this.play = play == null ? 0 : play;
 	}
 	public void setRank(Integer rank) {

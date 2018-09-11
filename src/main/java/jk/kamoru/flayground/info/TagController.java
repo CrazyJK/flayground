@@ -24,9 +24,9 @@ public class TagController {
 
 	@Autowired TagInfoService tagInfoService;
 	
-	@GetMapping("/{name}")
-	public Tag get(@PathVariable String name) {
-		return tagInfoService.get(name);
+	@GetMapping("/{id}")
+	public Tag get(@PathVariable Integer id) {
+		return tagInfoService.get(id);
 	}
 	
 	@GetMapping("/list")

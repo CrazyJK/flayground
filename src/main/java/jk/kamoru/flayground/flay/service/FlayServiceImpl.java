@@ -64,9 +64,10 @@ public class FlayServiceImpl implements FlayService {
 				return f.getVideo().getComment().contains(value);
 			}).collect(Collectors.toList());
 		} else if ("tag".equalsIgnoreCase(field)) {
+			Integer id = Integer.parseInt(value);
 			return flaySource.list().stream().filter(f -> {
 				return f.getVideo().getTags().stream().anyMatch(t -> {
-					return t.getName().contains(value) || t.getDescription().contains(value);
+					return t.getId() == id;
 				});
 			}).collect(Collectors.toList());
 		} else {

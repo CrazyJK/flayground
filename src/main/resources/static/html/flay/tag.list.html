@@ -1,100 +1,209 @@
 <style type="text/css">
 h1 {
 	color: white;
+	margin: 1rem;
 	font-weight: 700;
 	text-align: center;
 }
+.card.flay > .card-body {
+	padding: 0.125rem;
+}
+.card.flay > .card-body > .card-title {
+	margin-bottom: 0;
+}
+.card.flay > .card-body > .card-text {
+	margin: 0;
+}
+
+#tagInput .form-row {
+	margin: 0.5rem auto;
+	width: 800px;
+}
 
 #tagDetail {
+	display: none;
+    border-radius: 0.5rem;
+    background-color: rgba(255, 255, 255, 0.5);
+	margin: 1rem;
+    padding: 1rem;
+}
+#tagDetail .flay-list {
 	text-align: center;
+}
+#tagDetail .flay-list .flay {
+    display: inline-flex;
+    background: #00f center no-repeat;
+    background-size: cover;
+    border: 0;
+    border-radius: 0.25rem;
+    text-align: left;
+	margin: 0.5rem;
+    width: 300px;
+    height: calc(300px * 0.6625);
+}
+#tagDetail .flay-list .flay .title {
+	max-width: 290px;
 }
 
 #tagList {
 	text-align: center;
 }
-.card {
+#tagList .tag {
 	display: inline-flex;
-    margin: 0.5rem;
-	width: 10rem;
-	transition: all .3s;
-}
-.card .card-flay {
-	display: none;
-}
-.card.detail {
- 	background-color: rgba(255, 255, 255, 0.5);
-	width: 90%;
-	height: 90%;
-}
-.card.detail .card-flay {
-	display: block;
-}
-.card-flay dl {
-	display: inline-block;
-	background: #eee no-repeat center;
-	background-size: cover;
- 	border: 1px solid #333;
-	border-radius: 0.5rem;
 	margin: 0.5rem;
 	width: 300px;
-	height: calc(300px * 0.6625);
-	text-align: left;
 }
-.card-flay .title {
-    max-width: calc(100% - 10px);
+#tagList .active {
+	background-color: rgba(85, 136, 136, .75);
+	color: #eee;
 }
 </style>
 
 <h1> Tag List </h1>
 
-<div id="tagDetail"></div>
+<div id="tagInput">
+	<div class="form-row">
+		<div class="col-sm-1">
+			<input type="text" class="form-control" id="tagId" placeholder="Id">
+		</div>
+		<div class="col-sm-4">
+			<input type="text" class="form-control" id="tagName" placeholder="Name">
+		</div>
+		<div class="col">
+			<input type="text" class="form-control" id="tagDesc" placeholder="Desctiption">
+		</div>
+		<div class="col-auto">
+			<button class="btn tag-save">Save</button>
+		</div>
+		<div class="col-auto">
+			<button class="btn btn-danger tag-delete">Delete</button>
+		</div>
+	</div>
+</div>
 
-<div id="tagList"></div>
+<div id="tagList">
+	<div class="card tag">
+		<div class="card-body">
+			<span class="badge badge-pill badge-dark float-right video-count"></span>
+			<h5 class="card-title">Tag name</h5>
+			<p class="card-text">Tag description</p>
+		</div>
+	</div>
+</div>
+
+<div id="tagDetail">
+	<label class="float-right hover"><i class="fa fa-times"></i></label>
+	<div class="flay-list">
+		<div class="card flay">
+			<div class="card-body">
+				<h5 class="card-title"><label class="text title nowrap">Title</label></h5>
+				<p class="card-text actress nowrap"></p>
+				<p class="card-text"><label class="text opus">Opus</label></p>
+				<p class="card-text"><label class="text release">Release</label></p>
+				<p class="card-text"><label class="text movie">Movie</label></p>
+			</div>
+		</div>
+	</div>
+</div>
 
 <script type="text/javascript">
-restCall(PATH + '/info/tag/list', {}, function(tagList) {
-	var $wrap = $("#tagList");
-	$wrap.empty();
-	
-	$.each(tagList, function(idx, tag) {
-		$("<div>", {'class': 'card'}).append(
-				$("<div>", {'class': 'card-body'}).append(
-						$("<h5>", {'class': 'card-title'}).html(tag.name),
-						$("<p>", {'class': 'card-text'}).html(tag.description),
-						$("<div>", {'class': 'card-flay'})
-				)
-		).data("tag", tag).on("click", function() {
-			viewDetail(this);
-		}).appendTo($wrap);
-	});
+var $tagTemplete  = $(".tag");
+var $flayTemplete = $(".flay");
+
+$(".fa-times").on("click", function() {
+	$("#tagDetail").hide();
 });
 
-function viewDetail(card) {
-	var $card = $(card);
-	var tag = $card.data("tag");
-	
-	restCall(PATH + "/flay/find/tag/" + tag.name , {}, function(flayList) {
-		$cardFlay = $card.find(".card-flay");
-		$.each(flayList, function(idx, flay) {
-			$cardFlay.append(
-					$("<dl>").append(
-							$("<dt>").append(
-									$("<label>", {'class': 'text title nowrap'}).html(flay.title)
-							),
-							$("<dd>").append(
-									$("<label>", {'class': 'text sm'}).html(flay.opus)
-							),
-							$("<dd>").append(
-									$("<label>", {'class': 'text sm'}).html(flay.release)
-							)
-					).css({backgroundImage: 'url(' + PATH + '/static/cover/' + flay.opus + ')'})
-			)
+$(".tag-save").on("click", function() {
+	var id = $("#tagId").val(), name = $("#tagName").val(), desc = $("#tagDesc").val();
+	var tag = {id: id, name: name, description: desc};
+	if (id === '') {
+		Tag.create(tag, tagLoad);
+	} else {
+		Tag.update(tag, tagLoad);
+	}
+});
+
+$(".tag-delete").on("click", function() {
+	if (confirm('Delete this tag?')) {
+		var tag = $("#tagInput").data("tag");
+		Tag.delete(tag, function() {
+			tagLoad();
+			$("#tagId, #tagName, #tagDesc").val('');
+			$("#tagDetail").hide();
 		});
+	}
+});
+
+function tagLoad() {
+	restCall(PATH + '/info/tag/list', {}, function(tagList) {
+		var $wrap = $("#tagList");
+		$wrap.empty();
 		
+		$.each(tagList, function(idx, tag) {
+			var $tagCard = $tagTemplete.clone();
+			$tagCard.data("tag", tag);
+			$tagCard.find(".card-title").html(tag.name);
+			$tagCard.find(".card-text").html(tag.description);
+			$tagCard.on("click", function() {
+				tagDetail(this);
+			});
+
+			$wrap.append($tagCard);
+		});
+	});
+}
+
+function tagDetail(tagCard) {
+	$("#tagList .active").removeClass("active");
+	var $tagCard  = $(tagCard);
+	var tag       = $tagCard.addClass("active").data("tag");
+	var $flayList = $(".flay-list");
+	
+	$("#tagInput").data("tag", tag);
+	$("#tagId").val(tag.id);
+	$("#tagName").val(tag.name);
+	$("#tagDesc").val(tag.description);
+	$flayList.empty();
+	
+	restCall(PATH + "/flay/find/tag/" + tag.id , {}, function(flayList) {
+		$("#tagDetail").toggle(flayList.length > 0);
+		$tagCard.find(".video-count").html(flayList.length);
 		
-		$card.remove();
-		$card.appendTo($("#tagDetail")).addClass("detail", 500);
+		$.each(flayList, function(idx, flay) {
+			$flay = $flayTemplete.clone();
+			$flay.css({backgroundImage: 'url(' + PATH + '/static/cover/' + flay.opus + ')'});
+			$flay.find(".title").html(flay.title).on("click", function() {
+				View.flay(flay.opus);
+			});
+			$flay.find(".actress").append(
+					(function() {
+						var actressList = [];
+						$.each(flay.actressList, function(idx2, actress) {
+							var $actress = $("<label>", {'class': 'text'}).html(actress.name).on("click", function() {
+								View.actress(actress.name);
+							});
+							actressList.push($actress);
+						});
+						return actressList;
+					}())
+			);
+			$flay.find(".opus").html(flay.opus);
+			$flay.find(".release").html(flay.release);
+			$flay.find(".movie").html(
+					flay.movieFileList.length === 0 ? '' : 
+						flay.movieFileList.length === 1 ? 'V ' + formatFilesize(flay.length) :
+							flay.movieFileList.length + 'V ' + formatFilesize(flay.length)
+			).on("click", function() {
+				Flay.play(flay);
+			});
+			
+			$flayList.append($flay);
+		});
 	});
 	
 }
+
+tagLoad();
+
 </script>

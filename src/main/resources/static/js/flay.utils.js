@@ -14,28 +14,37 @@ var View = {
 		}
 };
 
-var Update = {
-		video: function(video, callback) {
-			restCall(PATH + '/info/video', {data: video, method: "PATCH"}, callback);
-		},
-		actress: function(actress, callback) {
-			restCall(PATH + '/info/actress', {data: actress, method: "PATCH"}, callback);
-		}
-};
-
-var Create = {
-		tag: function(tag, callback) {
-			restCall(PATH + '/info/tag', {data: tag, method: "POST"}, callback);
-		}
-};
-
-var Action = {
+var Flay = {
 		play: function(flay) {
 			restCall(PATH + '/flay/' + flay.opus + '/play', {method: "PATCH"});
 		},
 		subtitles: function(flay) {
 			restCall(PATH + '/flay/' + flay.opus + '/edit', {method: "PATCH"});
 		}
+};
+
+var Video = {
+		update: function(video, callback) {
+			restCall(PATH + '/info/video', {data: video, method: "PATCH"}, callback);
+		}
+};
+
+var Actress = {
+		update: function(actress, callback) {
+			restCall(PATH + '/info/actress', {data: actress, method: "PATCH"}, callback);
+		}
+};
+
+var Tag = {
+	create:	function(tag, callback) {
+		restCall(PATH + '/info/tag', {data: tag, method: "POST"}, callback);
+	},
+	update: function(tag, callback) {
+		restCall(PATH + '/info/tag', {data: tag, method: "PATCH"}, callback);
+	},
+	delete: function(tag, callback) {
+		restCall(PATH + '/info/tag', {data: tag, method: "DELETE"}, callback);
+	}
 };
 
 var TagUtils = {

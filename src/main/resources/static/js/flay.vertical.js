@@ -40,7 +40,7 @@ function loadData() {
 $.fn.appendTag = function(tagList, tag) {
 	var createTag = tag => {
 		return $("<label>", {'class': 'input sm'}).append(
-				$("<input>", {type: 'checkbox', 'data-tag-name': tag.name}).data("tag", tag),
+				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag),
 				$("<span>", {title: tag.description}).html(tag.name)
 		);
 	};
@@ -62,7 +62,7 @@ var deploy = () => {
 	
 	$(".tag-list").empty().appendTag(tagList);
 
-	$(document).trigger("collect");
+	$("#pageContent").trigger("collect");
 
 };
 
@@ -77,7 +77,7 @@ function attachEventListener() {
 		} else {
 			var checkedLength = $("#selectTags").find("input[data-tag-name]:checked").length;
 			$("#tagCheck").prop('checked', checkedLength > 0);
-			$(document).trigger("collect");
+			$("#pageContent").trigger("collect");
 		}
 	});
 
@@ -116,7 +116,7 @@ function attachEventListener() {
 		var count = $("input[data-tag-name]:checked", "#selectTags").length;
 		if (count > 0) {
 			$("input[data-tag-name]:checked", "#selectTags").prop("checked", false);
-			$(document).trigger("collect");
+			$("#pageContent").trigger("collect");
 		} else {
 			this.checked = false;
 		}
@@ -126,7 +126,7 @@ function attachEventListener() {
 	$("#search").on("keyup", function(e) {
 		e.stopPropagation();
 		if (e.keyCode == 13) {
-			$(document).trigger("collect");
+			$("#pageContent").trigger("collect");
 		}
 	});
 	
@@ -154,7 +154,7 @@ function attachEventListener() {
 	});
 	
 	// collect
-	$(document).on("collect", function() {
+	$("#pageContent").on("collect", function() {
 		!collecting && collectList();
 	});
 
@@ -337,11 +337,15 @@ function collectList() {
 			var flay = collectedList[x];
 			for (var y in flay.video.tags) {
 				var videoTag = flay.video.tags[y];
-				var tag = $("input[data-tag-name='" + videoTag.name + "']", "#selectTags").data("tag");
+				var tag = $("input[data-tag-id='" + videoTag.id + "']", "#selectTags").data("tag");
 				if (tag) {
 					tag.count++;
 				} else {
-					throw "Notfound tag.name " + videoTag.name + " in [" + flay.video.opus + "]";
+					console.log('flay.video.tags before', flay.video.tags, videoTag.id);
+					var deleted = flay.video.tags.splice(y, 1);
+					console.log('flay.video.tags  after', flay.video.tags, deleted);
+					Video.update(flay.video);
+//					throw "Notfound tag.id " + videoTag.id + " in [" + flay.video.opus + "]";
 				}
 			}
 		}
@@ -522,14 +526,14 @@ function addVideoEvent() {
 	// video file
 	$(".info-video").on("click", function() {
 		if (currentFlay.movieFileList.length > 0) 
-			Action.play(currentFlay);
+			Flay.play(currentFlay);
 		else
 			Search.torrent(currentFlay);
 	});
 	// subtitles
 	$(".info-subtitles").on("click", function() {
 		if (currentFlay.subtitlesFileList.length > 0)
-			Action.subtitles(currentFlay);
+			Flay.subtitles(currentFlay);
 	});
 	// overview
 	$(".info-overview").on("click", function() {
@@ -637,7 +641,7 @@ function showVideo(direction) {
 		// tag
 		$("input:checked", "#videoTags.tag-list").prop('checked', false);
 		$.each(currentFlay.video.tags, function(i, tag) {
-			$("input[data-tag-name='" + tag.name + "']", "#videoTags").prop('checked', true);
+			$("input[data-tag-id='" + tag.id + "']", "#videoTags").prop('checked', true);
 		});
 		navigation.on();
 	}

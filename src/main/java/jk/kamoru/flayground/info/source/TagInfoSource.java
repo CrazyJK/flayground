@@ -11,7 +11,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import jk.kamoru.flayground.info.domain.Tag;
 
 @Repository
-public class TagInfoSource extends InfoSourceJsonAdapter<Tag, String> {
+public class TagInfoSource extends InfoSourceJsonAdapter<Tag, Integer> {
 
 	private static final String FILE_NAME = "tag.json";
 	
@@ -28,7 +28,7 @@ public class TagInfoSource extends InfoSourceJsonAdapter<Tag, String> {
 	}
 
 	@Override
-	Tag newInstance(String key) {
+	Tag newInstance(Integer key) {
 		return new Tag(key);
 	}
 

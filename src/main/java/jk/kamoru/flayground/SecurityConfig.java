@@ -12,7 +12,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication()
 				.withUser("admin").password("{noop}6969").roles("ADMIN") // {noop} for plain text
-				.and()
+					.and()
 				.withUser("kamoru").password("{noop}3806").roles("USER");
 	}
 
@@ -21,11 +21,17 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http
 			.authorizeRequests()
-				.antMatchers("/html/login.html").anonymous()
+				.antMatchers("/html/login.html", "/webjars/**").permitAll()
 				.anyRequest().authenticated()
 				.and()
 			.formLogin()
-				.loginPage("/html/login.html")
+				.loginPage("/html/login.html").permitAll()
+				.and()
+			.rememberMe()
+//				.rememberMeParameter("")
+				.and()
+			.logout()
+				.permitAll()
 				.and()
 			.httpBasic();
 	}

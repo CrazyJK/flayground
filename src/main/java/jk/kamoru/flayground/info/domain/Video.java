@@ -20,7 +20,7 @@ public class Video implements Info<String> {
 	int rank;
 	String comment;
 	long lastAccess;
-	List<Tag> tags;
+	List<Integer> tags;
 
 	public Video(String key) {
 		setKey(key);

@@ -30,6 +30,9 @@ var Video = {
 };
 
 var Actress = {
+		get: function(name, callback) {
+			restCall(PATH + '/info/actress/' + name, {}, callback);
+		},
 		update: function(actress, callback) {
 			restCall(PATH + '/info/actress', {data: actress, method: "PATCH"}, callback);
 		}
@@ -50,8 +53,8 @@ var Tag = {
 var TagUtils = {
 		includes: function(tags, tag) {
 			var found = false;
-			$.each(tags, function(idx, tagElement) {
-				if (tagElement.name === tag.name) {
+			$.each(tags, function(idx, tagId) {
+				if (tagId === tag.id) {
 					found = true;
 				}
 			});
@@ -59,8 +62,8 @@ var TagUtils = {
 		},
 		indexOf: function(tags, tag) {
 			var found = -1;
-			$.each(tags, function(idx, tagElement) {
-				if (tagElement.name === tag.name) {
+			$.each(tags, function(idx, tagId) {
+				if (tagId === tag.id) {
 					found = idx;
 				}
 			});
@@ -69,7 +72,7 @@ var TagUtils = {
 		push: function(tags, tag) {
 			var idx = TagUtils.indexOf(tags, tag);
 			if (idx < 0) {
-				tags.push(tag);
+				tags.push(tag.id);
 			}
 		},
 		remove: function(tags, tag) {

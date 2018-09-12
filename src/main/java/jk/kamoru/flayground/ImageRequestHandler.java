@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayService;
 import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.image.service.ImageService;
@@ -31,7 +32,7 @@ public class ImageRequestHandler {
 	@GetMapping("/cover/{opus}")
 	@ResponseBody
 	public HttpEntity<byte[]> getCover(@PathVariable String opus) throws IOException {
-		return getImageEntity(flayService.get(opus).getCoverFile());
+		return getImageEntity(flayService.get(opus).getFiles().get(Flay.COVER).get(0));
 	}
 
 	@GetMapping("/image/{idx}")

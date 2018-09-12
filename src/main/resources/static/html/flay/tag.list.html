@@ -176,24 +176,20 @@ function tagDetail(tagCard) {
 			$flay.find(".title").html(flay.title).on("click", function() {
 				View.flay(flay.opus);
 			});
-			$flay.find(".actress").append(
-					(function() {
-						var actressList = [];
-						$.each(flay.actressList, function(idx2, actress) {
-							var $actress = $("<label>", {'class': 'text'}).html(actress.name).on("click", function() {
-								View.actress(actress.name);
-							});
-							actressList.push($actress);
-						});
-						return actressList;
-					}())
-			);
+			var $actressWrap = $flay.find(".actress");
+			$.each(flay.actressList, function(idx2, actressName) {
+				Actress.get(actressName, function(actress) {
+					$("<label>", {'class': 'text'}).html(actress.name).on("click", function() {
+						View.actress(actress.name);
+					}).appendTo($actressWrap);
+				});
+			});
 			$flay.find(".opus").html(flay.opus);
 			$flay.find(".release").html(flay.release);
 			$flay.find(".movie").html(
-					flay.movieFileList.length === 0 ? '' : 
-						flay.movieFileList.length === 1 ? 'V ' + formatFilesize(flay.length) :
-							flay.movieFileList.length + 'V ' + formatFilesize(flay.length)
+					flay.files.movie.length === 0 ? '' : 
+						flay.files.movie.length === 1 ? 'V ' + formatFilesize(flay.length) :
+							flay.files.movie.length + 'V ' + formatFilesize(flay.length)
 			).on("click", function() {
 				Flay.play(flay);
 			});

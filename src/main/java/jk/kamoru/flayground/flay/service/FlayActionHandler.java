@@ -21,14 +21,14 @@ public class FlayActionHandler {
 	@Autowired FlayConfig flayConfig;
 	
 	public void play(Flay flay) {
-		exec(flayConfig.getPlayer(), flay.getMovieFileList());
+		exec(flayConfig.getPlayer(), flay.getFiles().get(Flay.MOVIE));
 		
 		int play = flay.getVideo().getPlay();
 		flay.getVideo().setPlay(++play);
 	}
 
 	public void edit(Flay flay) {
-		exec(flayConfig.getEditer(), flay.getSubtitlesFileList());
+		exec(flayConfig.getEditer(), flay.getFiles().get(Flay.SUBTI));
 	}
 	
 	@Async

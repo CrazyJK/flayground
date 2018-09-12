@@ -26,12 +26,12 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
 	public void removeTag(Tag delete) {
 		List<Video> videoList = new ArrayList<>();
 		for (Video video : list()) {
-			if (video.getTags().contains(delete)) {
+			if (video.getTags().contains(delete.getId())) {
 				videoList.add(video);
 			}
 		}
 		for (Video video : videoList) {
-			video.getTags().remove(delete);
+			video.getTags().remove(delete.getId());
 			update(video);
 		}
 	}

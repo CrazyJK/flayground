@@ -10,8 +10,6 @@ import org.springframework.stereotype.Component;
 
 import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
-import jk.kamoru.flayground.info.domain.Actress;
-import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 import jk.kamoru.flayground.info.service.StudioInfoService;
@@ -54,7 +52,7 @@ public class FlayFactory {
 
 	public Flay newFlay(Result result) {
 		Flay flay = new Flay();
-		flay.setStudio(getStudio(result.studio));
+		flay.setStudio(result.studio);
 		flay.setOpus(result.opus);
 		flay.setTitle(result.title);
 		flay.setActressList(getActressList(result.actress));
@@ -63,22 +61,18 @@ public class FlayFactory {
 		return flay;
 	}
 
-	private Studio getStudio(String name) {
-		return studioInfoService.getOrNew(name);
-	}
-
 	private Video getVideo(String opus) {
 		return videoInfoService.getOrNew(opus);
 	}
 
-	private List<Actress> getActressList(String actress) {
-		List<Actress> list = new ArrayList<>();
+	private List<String> getActressList(String actress) {
+		List<String> list = new ArrayList<>();
 		for (String name : StringUtils.split(actress, ",")) {
 			String onePerson = "";
 			for (String str : StringUtils.split(name)) {
 				onePerson += str + " ";
 			}
-			list.add(actressInfoService.getOrNew(onePerson.trim()));
+			list.add(actressInfoService.getOrNew(onePerson.trim()).getName());
 		}
 		return list;
 	}
@@ -90,7 +84,7 @@ public class FlayFactory {
 		} else if (FlayConfig.SUFFIX_SUBTITLES.contains(suffix)) {
 			flay.addSubtitlesFile(file);
 		} else if (FlayConfig.SUFFIX_IMAGE.contains(suffix)) {
-			flay.setCoverFile(file);
+			flay.addCoverFile(file);
 		}
 	}
 	

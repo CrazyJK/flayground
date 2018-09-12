@@ -39,28 +39,28 @@ public class InfoConverter {
 	public static final String HOMEPAGE  = "HOMEPAGE";
 	public static final String COMPANY   = "COMPANY";
 
-//	final String[] srcPaths = new String[] {
-//			"/home/kamoru/workspace/FlayOn/crazy/Archive",
-//			"/home/kamoru/workspace/FlayOn/crazy/Candidate",
-//			"/home/kamoru/workspace/FlayOn/crazy/Cover",
-//			"/home/kamoru/workspace/FlayOn/crazy/Queue",
-//			"/home/kamoru/workspace/FlayOn/crazy/Seeds",
-//			"/home/kamoru/workspace/FlayOn/crazy/Stage",
-//			"/home/kamoru/workspace/FlayOn/crazy/Storage"
-//	};
-//	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
-
-
 	final String[] srcPaths = new String[] {
-			"J:\\Crazy\\Archive",
-			"J:\\Crazy\\Cover",
-			"J:\\Crazy\\Stage",
-			"J:\\Crazy\\Storage",
-			"K:\\Crazy\\Cover",
-			"K:\\Crazy\\Stage",
-			"K:\\Crazy\\Storage"
+			"/home/kamoru/workspace/FlayOn/crazy/Archive",
+			"/home/kamoru/workspace/FlayOn/crazy/Candidate",
+			"/home/kamoru/workspace/FlayOn/crazy/Cover",
+			"/home/kamoru/workspace/FlayOn/crazy/Queue",
+			"/home/kamoru/workspace/FlayOn/crazy/Seeds",
+			"/home/kamoru/workspace/FlayOn/crazy/Stage",
+			"/home/kamoru/workspace/FlayOn/crazy/Storage"
 	};
-	final String destPath = "J:\\Crazy\\Info";
+	final String destPath = "/home/kamoru/workspace/FlayOn/crazy/Info";
+
+
+//	final String[] srcPaths = new String[] {
+//			"J:\\Crazy\\Archive",
+//			"J:\\Crazy\\Cover",
+//			"J:\\Crazy\\Stage",
+//			"J:\\Crazy\\Storage",
+//			"K:\\Crazy\\Cover",
+//			"K:\\Crazy\\Stage",
+//			"K:\\Crazy\\Storage"
+//	};
+//	final String destPath = "J:\\Crazy\\Info";
 
 	void start() throws Exception {
 		ObjectMapper mapper = new ObjectMapper();
@@ -118,7 +118,13 @@ public class InfoConverter {
 			to.setRank(from.rank);
 			to.setComment(from.overview);
 			to.setLastAccess(from.lastAccess);
-			to.setTags(from.tags);
+			List<Integer> newTags = new ArrayList<>();
+			if (from.tags != null) {
+				for (Tag tag : from.tags) {
+					newTags.add(tag.getId());
+				}
+			}
+			to.setTags(newTags);
 			toVideoList.add(to);
 		}
 		
@@ -240,7 +246,6 @@ class FromVideo {
 	String overview = "";
 	Date lastAccess = new Date(0);
 	List<Tag> tags = new ArrayList<>();
-
 }
 
 @Data
@@ -251,7 +256,7 @@ class ToVideo {
 	int rank = 0;
 	String comment = "";
 	Date lastAccess = new Date(0);
-	List<Tag> tags = new ArrayList<>();
+	List<Integer> tags = new ArrayList<>();
 	
 	public void setOpus(String opus) {
 		this.opus = opus;
@@ -266,11 +271,9 @@ class ToVideo {
 		this.comment = comment == null ? "" : comment;
 	}
 	public void setLastAccess(Date lastAccess) {
-		this.lastAccess = lastAccess == null ? new Date(9) : lastAccess;
+		this.lastAccess = lastAccess == null ? new Date(0) : lastAccess;
 	}
-	public void setTags(List<Tag> tags) {
-		this.tags = tags == null ? new ArrayList<Tag>() : tags;
+	public void setTags(List<Integer> tags) {
+		this.tags = tags;
 	}
-	
-	
 }

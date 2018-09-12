@@ -44,7 +44,7 @@ public class FlayServiceImpl implements FlayService {
 		} else if ("actress".equalsIgnoreCase(field)) {
 			return flaySource.list().stream().filter(f -> {
 				return f.getActressList().stream().anyMatch(a -> {
-					return a.getName().equals(value);
+					return a.equals(value);
 				});
 			}).collect(Collectors.toList());
 		} else if ("release".equalsIgnoreCase(field)) {
@@ -67,7 +67,7 @@ public class FlayServiceImpl implements FlayService {
 			Integer id = Integer.parseInt(value);
 			return flaySource.list().stream().filter(f -> {
 				return f.getVideo().getTags().stream().anyMatch(t -> {
-					return t.getId() == id;
+					return t == id;
 				});
 			}).collect(Collectors.toList());
 		} else {

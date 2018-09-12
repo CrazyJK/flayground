@@ -7,4 +7,10 @@ import jk.kamoru.flayground.info.domain.Actress;
 @Service
 public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
+	@Override
+	public void update(Actress update) {
+		super.update(update);
+		
+	}
+
 }

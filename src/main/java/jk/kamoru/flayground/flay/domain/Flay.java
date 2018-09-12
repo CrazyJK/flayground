@@ -2,57 +2,68 @@ package jk.kamoru.flayground.flay.domain;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
-import jk.kamoru.flayground.info.domain.Actress;
-import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.domain.Video;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@NoArgsConstructor
 @Data
 public class Flay {
 
+	public static final String MOVIE = "movie";
+	public static final String SUBTI = "subtitles";
+	public static final String COVER = "cover";
+	public static final String CANDI = "candidate";
+
 	// key
-	Studio studio;
+	String studio;
 	String opus;
 	String title;
-	List<Actress> actressList;
+	List<String> actressList;
 	String release;
 	
 	// files
-	List<File> movieFileList = new ArrayList<>();
-	List<File> subtitlesFileList = new ArrayList<>();
-	File coverFile;
-	List<File> candidateFileList = new ArrayList<>();
+	Map<String, List<File>> files = new HashMap<>();
 
 	Video video;
 
+	public Flay() {
+		files.put(MOVIE, new ArrayList<File>());
+		files.put(SUBTI, new ArrayList<File>());
+		files.put(COVER, new ArrayList<File>());
+		files.put(CANDI, new ArrayList<File>());
+	}
+	
 	public void addMovieFile(File file) {
-		movieFileList.add(file);
+		files.get(MOVIE).add(file);
 	}
 
 	public void addSubtitlesFile(File file) {
-		subtitlesFileList.add(file);
+		files.get(SUBTI).add(file);
 	}
 
-	public void addCandidates(File file) {
-		candidateFileList.add(file);
+	public void addCoverFile(File file) {
+		files.get(COVER).add(file);
+	}
+
+	public void addCandidatesFile(File file) {
+		files.get(CANDI).add(file);
 	}
 
 	public long getLastModified() {
 		return NumberUtils.max(
-				getMovieFileList().size() > 0 ? getMovieFileList().stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1, 
-				getSubtitlesFileList().size() > 0 ? getSubtitlesFileList().stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1, 
-				coverFile.lastModified(), 
-				getCandidateFileList().size() > 0 ? getCandidateFileList().stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1
+				files.get(MOVIE).size() > 0 ? files.get(MOVIE).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1,
+				files.get(SUBTI).size() > 0 ? files.get(SUBTI).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1,
+				files.get(COVER).size() > 0 ? files.get(COVER).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1,
+				files.get(CANDI).size() > 0 ? files.get(CANDI).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1
 		);
 	}
 
 	public long getLength() {
-		return getMovieFileList().size() > 0 ? getMovieFileList().stream().mapToLong(f -> f.length()).sum() : -1;
+		return files.get(MOVIE) != null ? files.get(MOVIE).stream().mapToLong(f -> f.length()).sum() : -1;
 	}
 }

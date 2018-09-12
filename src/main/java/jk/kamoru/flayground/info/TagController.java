@@ -40,9 +40,8 @@ public class TagController {
 	}
 
 	@PostMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void create(@RequestBody Tag tag) {
-		tagInfoService.create(tag);
+	public Tag create(@RequestBody Tag tag) {
+		return tagInfoService.create(tag);
 	}
 	
 	@PatchMapping

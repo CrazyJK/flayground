@@ -80,6 +80,11 @@ var TagUtils = {
 			if (idx > -1) {
 				tags.splice(idx, 1);
 			}
+		},
+		sort: function(tags) {
+			tags.sort(function(t1, t2) {
+				return t1.name.localeCompare(t2.name);
+			});
 		}
 };
 

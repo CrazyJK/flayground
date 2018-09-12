@@ -64,13 +64,14 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> implements Inf
 	}
 
 	@Override
-	public void create(T create) {
+	public T create(T create) {
 		try {
 			get(create.getKey());
 			throw new IllegalStateException("duplicated key " + create.getKey());
 		} catch(InfoNotfoundException e) {
 			list.add(create);
 			save();
+			return create;
 		}
 	}
 

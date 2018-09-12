@@ -68,14 +68,19 @@ var background = {
 		stop: function() {
 			clearInterval(background.bgInterval);
 		},
-		func: function(count) {
+		func: function() {
 			// make image index array
 			if (background.imageIndexArray.length === 0) {
 				background.imageIndexArray = Array.apply(null, {length: background.count}).map(Number.call, Number);
+				console.log('image array reset', background.imageIndexArray.length);
 			}
 			// determine image index
 			var imageIndex = background.imageIndexArray.splice(random.getInteger(0, background.imageIndexArray.length), 1);
+			if ($.isEmptyObject(imageIndex)) {
+				console.log('imageIndex is empty', background.imageIndexArray.length, imageIndex);
+			}
 			var $imageWrap = $("#image_pane_" + random.getInteger(0, 3));
+			
 			var image = new Image();
 			image.onload = function() {
 				// calculate size
@@ -87,6 +92,7 @@ var background = {
 				});
 			}
 			image.src = PATH + "/static/image/" + imageIndex;
+			
 			// overflow image remove
 			$imageWrap.children().each(function() {
 				var imageTop = $(this).position().top;

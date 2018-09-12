@@ -26,6 +26,7 @@ function loadData() {
 	// load tag list
 	restCall(PATH + "/info/tag/list", {showLoading: false}, (list) => {
 		tagList = list;
+		TagUtils.sort(tagList);
 
 		// load video list
 		restCall(PATH + '/flay/list', {title: "Load video"}, (list) => {
@@ -99,12 +100,12 @@ function attachEventListener() {
 		var newTagName = $("#newTagName").val(), newTagDesc = $("#newTagDesc").val();
 		if (newTagName != '') {
 			var newTag = {name: newTagName, description: newTagDesc};
-			Create.tag(newTag, function() {
-				TagUtils.push(currentFlay.video.tags, newTag);
-				Update.video(currentFlay.video, function() {
-					$("#selectTags > .tag-list").appendTag(null, newTag);
-					$("#videoTags").appendTag(null, newTag);
-					$("input[data-tag-id='" + newTag.id + "']", "#videoTags").prop("checked", true);
+			Tag.create(newTag, function(createdTag) {
+				TagUtils.push(currentFlay.video.tags, createdTag);
+				Video.update(currentFlay.video, function() {
+					$("#selectTags > .tag-list").appendTag(null, createdTag);
+					$("#videoTags").appendTag(null, createdTag);
+					$("input[data-tag-id='" + createdTag.id + "']", "#videoTags").prop("checked", true);
 					$("#newTagName, #newTagDesc").val('');
 				});
 			});
@@ -336,16 +337,13 @@ function collectList() {
 		for (var x in collectedList) {
 			var flay = collectedList[x];
 			for (var y in flay.video.tags) {
-				var videoTag = flay.video.tags[y];
-				var tag = $("input[data-tag-id='" + videoTag.id + "']", "#selectTags").data("tag");
+				var tagId = flay.video.tags[y];
+				var tag = $("input[data-tag-id='" + tagId + "']", "#selectTags").data("tag");
 				if (tag) {
 					tag.count++;
 				} else {
-					console.log('flay.video.tags before', flay.video.tags, videoTag.id);
 					var deleted = flay.video.tags.splice(y, 1);
-					console.log('flay.video.tags  after', flay.video.tags, deleted);
 					Video.update(flay.video);
-//					throw "Notfound tag.id " + videoTag.id + " in [" + flay.video.opus + "]";
 				}
 			}
 		}
@@ -555,7 +553,6 @@ function addVideoEvent() {
 	// rank
 	$("#ranker, input[name='ranker']").on("change", function() {
 		currentFlay.video.rank = $(this).val();
-		console.log('currentFlay.video', currentFlay.video);
 		Video.update(currentFlay.video, function() {
 			decorateRank(currentFlay.video.rank);
 		});
@@ -639,9 +636,7 @@ function showVideo(direction) {
 		decorateRank(currentFlay.video.rank);
 		// tag
 		$("input:checked", "#videoTags.tag-list").prop('checked', false);
-		console.log(currentFlay.video.tags);
 		$.each(currentFlay.video.tags, function(i, tagId) {
-			console.log(currentFlay.video.opus, tagId);
 			$("input[data-tag-id='" + tagId + "']", "#videoTags").prop('checked', true);
 		});
 		navigation.on();

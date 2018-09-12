@@ -12,9 +12,9 @@ public class TagInfoService extends InfoServiceAdapter<Tag, Integer> {
 	@Autowired VideoInfoService videoInfoService;
 	
 	@Override
-	public void create(Tag create) {
+	public Tag create(Tag create) {
 		create.setId(getNextId());
-		super.create(create);
+		return super.create(create);
 	}
 
 	private Integer getNextId() {

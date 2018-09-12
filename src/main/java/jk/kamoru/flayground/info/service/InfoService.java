@@ -15,7 +15,7 @@ public interface InfoService<T extends Info<K>, K> {
 
 	List<T> find(Search search);
 
-	void create(T create);
+	T create(T create);
 	
 	void update(T update);
 	

@@ -68,9 +68,9 @@ var popup = {
 		imageByNo: function(no, name) {
 			var img = new Image();
 			img.onload = function() {
-				popup.open(PATH + '/html/image/image.html?p=' + PATH + '&no=' + no, name || 'image' + no, this.naturalWidth, this.naturalHeight);
+				popup.open(PATH + '/html/image.html?p=' + PATH + '&no=' + no, name || 'image' + no, this.naturalWidth, this.naturalHeight);
 			};
-			img.src = PATH + '/image/' + no;
+			img.src = PATH + '/static/image/' + no;
 		}
 };
 

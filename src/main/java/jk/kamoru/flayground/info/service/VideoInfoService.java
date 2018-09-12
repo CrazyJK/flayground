@@ -18,9 +18,9 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
 	
 	@Override
 	public void update(Video update) {
-		super.update(update);
 		Flay flay = flayService.get(update.getOpus());
 		flay.setVideo(update);
+		super.update(update);
 	}
 
 	public void removeTag(Tag delete) {

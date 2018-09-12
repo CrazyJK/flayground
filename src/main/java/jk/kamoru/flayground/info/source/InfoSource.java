@@ -12,7 +12,7 @@ public interface InfoSource<T extends Info<K>, K> {
 
 	T getOrNew(K key);
 
-	void create(T createT);
+	T create(T createT);
 	
 	void update(T updateT);
 

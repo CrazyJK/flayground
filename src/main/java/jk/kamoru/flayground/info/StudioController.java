@@ -41,9 +41,8 @@ public class StudioController {
 	}
 
 	@PostMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void create(@RequestBody Studio studio) {
-		studioInfoService.create(studio);
+	public Studio create(@RequestBody Studio studio) {
+		return studioInfoService.create(studio);
 	}
 	
 	@PatchMapping

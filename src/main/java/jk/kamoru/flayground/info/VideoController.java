@@ -40,9 +40,8 @@ public class VideoController {
 	}
 
 	@PostMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void create(@RequestBody Video video) {
-		videoInfoService.create(video);
+	public Video create(@RequestBody Video video) {
+		return videoInfoService.create(video);
 	}
 	
 	@PatchMapping

@@ -41,9 +41,8 @@ public class ActressController {
 	}
 
 	@PostMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void create(@RequestBody Actress actress) {
-		actressInfoService.create(actress);
+	public Actress create(@RequestBody Actress actress) {
+		return actressInfoService.create(actress);
 	}
 	
 	@PatchMapping

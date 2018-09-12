@@ -10,7 +10,6 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 	@Override
 	public void update(Actress update) {
 		super.update(update);
-		
 	}
 
 }

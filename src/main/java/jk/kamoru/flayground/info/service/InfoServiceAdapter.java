@@ -36,8 +36,8 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
 	}
 
 	@Override
-	public void create(T create) {
-		infoSource.create(create);
+	public T create(T create) {
+		return infoSource.create(create);
 	}
 	
 	@Override

@@ -7,6 +7,14 @@
 <link rel="stylesheet" href="/webjars/fontawesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/4.1.3/css/bootstrap.min.css">
 <link rel="stylesheet" href="/webjars/jquery-ui/1.12.1/themes/base/jquery-ui.min.css"/>
+<style type="text/css">
+caption {
+    caption-side: top;
+}
+th:nth-child(4), td:nth-child(4) {
+	text-align: right;
+}
+</style>
 <script type="text/javascript" src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/1.14.3/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/4.1.3/js/bootstrap.min.js"></script>
@@ -19,11 +27,13 @@ $.ajax({
 	var $wrap = $("tbody");
 	$.each(list, function(idx, mapping) {
 		$("<tr>").append(
+				$("<th>", {'scope': 'row'}).html(idx+1),
 				$("<td>").append(
 						$("<a>", {href: mapping.reqPattern, target: '_blank'}).html(mapping.reqPattern)
 				),
 				$("<td>").html(mapping.reqMethod),
-				$("<td>").html(mapping.beanType + "." + mapping.beanMethod)
+				$("<td>").html(mapping.beanType),
+				$("<td>").html(mapping.beanMethod)
 		).appendTo($wrap);
 	});
 });
@@ -32,12 +42,15 @@ $.ajax({
 <body>
 
 	<div class="container">
-		<table class="table table-sm">
-			<thead>
+		<table class="table table-sm table-hover">
+			<caption>List of Request Mapping</caption>
+			<thead class="thead-light">
 				<tr>
-					<th>Url pattern</th>
-					<th>Method</th>
-					<th>Class.method</th>
+					<th scope="col">#</th>
+					<th scope="col">URL pattern</th>
+					<th scope="col">Method</th>
+					<th scope="col">Class</th>
+					<th scope="col">method</th>
 				</tr>
 			</thead>
 			<tbody></tbody>

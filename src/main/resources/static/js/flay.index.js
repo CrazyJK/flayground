@@ -75,7 +75,7 @@ var background = {
 				console.log('image array reset', background.imageIndexArray.length);
 			}
 			// determine image index
-			var imageIndex = background.imageIndexArray.splice(random.getInteger(0, background.imageIndexArray.length), 1);
+			var imageIndex = background.imageIndexArray.splice(random.getInteger(0, background.imageIndexArray.length-1), 1);
 			if ($.isEmptyObject(imageIndex)) {
 				console.log('imageIndex is empty', background.imageIndexArray.length, imageIndex);
 			}

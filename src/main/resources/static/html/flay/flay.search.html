@@ -11,8 +11,8 @@ input {
 	border-left: 0;
 }
 
-#content_div {
-	background-color: transparent !important;
+.btn-batch-option {
+	min-width: 50px;
 }
 
 .ui-dialog-danger {
@@ -25,21 +25,21 @@ input {
 
 
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
-		<input type="search" id="query" class="form-control" placeHolder="Search..."/>
+		<input type="search" id="query" class="form-control form-control-sm" placeHolder="Search..."/>
 		<div class="divider"></div>
-		<div class="btn-group">
+		<div class="btn-group btn-group-sm">
 			<button class="btn btn-light btn-search-opus">Opus</button>
 			<button class="btn btn-light btn-search-actress">Actress</button>
 			<button class="btn btn-light btn-search-torrent">Torrent</button>
 		</div>
 		<div class="divider"></div>
-		<button class="btn btn-primary" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-success" data-toggle="collapse" data-target="#pageImageDownloader">Page Image Downloader <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader">Page Image Downloader <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-danger"  data-toggle="collapse" data-target="#batchGroup">Batch <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-danger btn-sm"  data-toggle="collapse" data-target="#batchGroup">Batch <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-info btn-reload">Reload</button>
+		<button class="btn btn-info btn-sm btn-reload">Reload</button>
 	</nav>
 
 
@@ -47,21 +47,21 @@ input {
 	
 		<div class="card border-primary mt-2 collapse" id="findMode">
 			<div class="card-body">
-				<div class="input-group flay-group mb-1">
+				<div class="input-group input-group-sm flay-group mb-1">
 					<input class="form-control border-primary" id="studio"  placeholder="Studio"  style="max-width: 150px;"/>
 					<input class="form-control border-primary" id="opus"    placeholder="Opus"    style="max-width: 100px;"/>
 					<input class="form-control border-primary" id="title"   placeholder="Title"/>
 					<input class="form-control border-primary" id="actress" placeholder="Actress" style="max-width: 200px;"/>
 					<input class="form-control border-primary" id="release" placeholder="Release" style="max-width: 100px;"/>
 					<div class="input-group-append">
-						<button class="btn btn-outline-primary btn-save-cover">Save cover</button>
+						<button class="btn btn-sm btn-outline-primary btn-save-cover">Save cover</button>
 					</div>
 				</div>
-				<input class="form-control border-primary mb-1" id="fullname" placeholder="Full name"/>
-				<div class="input-group mb-1">
+				<input class="form-control form-control-sm border-primary mb-1" id="fullname" placeholder="Full name"/>
+				<div class="input-group input-group-sm mb-1">
 					<input class="form-control border-primary" id="rowname" placeholder="Row name"/>
 					<div class="input-group-append">
-						<button class="btn btn-outline-primary btn-find-random-opus">Random Find</button>
+						<button class="btn btn-sm btn-outline-primary btn-find-random-opus">Random Find</button>
 					</div>
 				</div>
 			</div>
@@ -70,7 +70,7 @@ input {
 		<div class="card border-success mt-2 collapse" id="pageImageDownloader">
 			<div class="card-body">
 				<form id="downloadPageImageForm" onsubmit="return false;">
-					<div class="input-group mb-1">
+					<div class="input-group input-group-sm mb-1">
 						<input class="form-control border-success" name="pageUrl"     placeholder="Image page URL"/>
 						<input class="form-control border-success" name="downloadDir" placeholder="Download local path" id="downloadDir"/>
 					</div>
@@ -98,26 +98,26 @@ input {
 
 		<div class="card border-danger mt-2 collapse" id="batchGroup">
 			<div class="card-body">
-				<div class="btn-group mb-1">
+				<div class="btn-group btn-group-sm mb-1">
 					<button class="btn btn-outline-danger btn-batch-start"  data-type="W">Move Watched</button>
 					<button class="btn btn-outline-danger btn-batch-option" data-type="W">true</button>
 				</div>
-				<div class="btn-group mb-1">
+				<div class="btn-group btn-group-sm mb-1">
 					<button class="btn btn-outline-danger btn-batch-start"  data-type="R">Delete LowerRank</button>
 					<button class="btn btn-outline-danger btn-batch-option" data-type="R">true</button>
 				</div>
-				<div class="btn-group mb-1">
+				<div class="btn-group btn-group-sm mb-1">
 					<button class="btn btn-outline-danger btn-batch-start"  data-type="S">Delete LowerScore</button>
 					<button class="btn btn-outline-danger btn-batch-option" data-type="S">false</button>
 				</div>
-				<div class="btn-group mb-1">
+				<div class="btn-group btn-group-sm mb-1">
 					<button class="btn btn-outline-danger btn-batch-start" data-type="I">Instance Batch</button>
 					<button class="btn btn-outline-danger btn-batch-start" data-type="A">Archive Batch</button>
 				</div>
-				<div class="btn-group mb-1">
+				<div class="btn-group btn-group-sm mb-1">
 					<button class="btn btn-outline-danger btn-batch-start" data-type="B">Backup Batch</button>
 				</div>
-				<div class="btn-group mb-1">
+				<div class="btn-group btn-group-sm mb-1">
 					<button class="btn btn-outline-danger btn-batch-start" data-type="D">Delete Empty Folder</button>
 				</div>
 			</div>
@@ -179,32 +179,32 @@ input {
 			$.each(flayList, function(entryIndex, flay) {
 				$("<tr>").append(
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html(flay.studio)
+								$("<label>", {"class": "text sm nowrap"}).html(flay.studio)
 						),
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html(flay.opus)
+								$("<label>", {"class": "text sm nowrap"}).html(flay.opus)
 						),
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html("V" + flay.files.movie.length),
-								$("<label>", {"class": "text"}).html("S" + flay.files.subtitles.length),
-								$("<label>", {"class": "text"}).html(formatFilesize(flay.length))
-						),
+								$("<label>", {"class": "text sm"}).html("V" + flay.files.movie.length),
+								$("<label>", {"class": "text sm"}).html("S" + flay.files.subtitles.length),
+								$("<label>", {"class": "text sm"}).html(formatFilesize(flay.length))
+						).css({minWidth: 160}),
 						$("<td>").append(
 							function() {
 								var objs = [];
 								$.each(flay.actressList, function(idx, actress) {
 									objs.push(
-											$("<label>", {"class": "text"}).html(actress)
+											$("<label>", {"class": "text sm nowrap"}).html(actress)
 									);
 								});
 								return objs;
 							}
 						),
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html(flay.release)
+								$("<label>", {"class": "text sm"}).html(flay.release)
 						),
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html(flay.title)
+								$("<label>", {"class": "text sm nowrap"}).html(flay.title)
 						)
 				).appendTo($tbody);
 			});

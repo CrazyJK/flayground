@@ -16,8 +16,22 @@ h1 {
 }
 
 #tagInput .form-row {
-	margin: 0.5rem auto;
 	width: 800px;
+}
+
+#tagList {
+	text-align: center;
+	margin-top: 60px;
+}
+#tagList .tag {
+	cursor: pointer;
+	display: inline-flex;
+	margin: 0.5rem;
+	width: 200px;
+}
+#tagList .active {
+	background-color: rgba(85, 136, 136, .75);
+	color: #eee;
 }
 
 #tagDetail {
@@ -45,48 +59,36 @@ h1 {
 	max-width: 290px;
 }
 
-#tagList {
-	text-align: center;
-}
-#tagList .tag {
-	display: inline-flex;
-	margin: 0.5rem;
-	width: 300px;
-}
-#tagList .active {
-	background-color: rgba(85, 136, 136, .75);
-	color: #eee;
-}
 </style>
 
-<h1> Tag List </h1>
-
-<div id="tagInput">
-	<div class="form-row">
-		<div class="col-sm-1">
-			<input type="text" class="form-control" id="tagId" placeholder="Id">
-		</div>
-		<div class="col-sm-4">
-			<input type="text" class="form-control" id="tagName" placeholder="Name">
-		</div>
-		<div class="col">
-			<input type="text" class="form-control" id="tagDesc" placeholder="Desctiption">
-		</div>
-		<div class="col-auto">
-			<button class="btn tag-save">Save</button>
-		</div>
-		<div class="col-auto">
-			<button class="btn btn-danger tag-delete">Delete</button>
+<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
+	<div id="tagInput">
+		<div class="form-row">
+			<div class="col-sm-1">
+				<input type="text" class="form-control form-control-sm" id="tagId" placeholder="Id">
+			</div>
+			<div class="col-sm-4">
+				<input type="text" class="form-control form-control-sm" id="tagName" placeholder="Name">
+			</div>
+			<div class="col">
+				<input type="text" class="form-control form-control-sm" id="tagDesc" placeholder="Desctiption">
+			</div>
+			<div class="col-auto">
+				<button class="btn btn-sm tag-save">Save</button>
+			</div>
+			<div class="col-auto">
+				<button class="btn btn-sm btn-danger tag-delete">Delete</button>
+			</div>
 		</div>
 	</div>
-</div>
+</nav>
 
 <div id="tagList">
 	<div class="card tag">
 		<div class="card-body">
 			<span class="badge badge-pill badge-dark float-right video-count"></span>
-			<h5 class="card-title">Tag name</h5>
-			<p class="card-text">Tag description</p>
+			<h5 class="card-title font-weight-bold">Tag name</h5>
+			<p class="card-text text-primary">Tag description</p>
 		</div>
 	</div>
 </div>
@@ -96,11 +98,11 @@ h1 {
 	<div class="flay-list">
 		<div class="card flay">
 			<div class="card-body">
-				<h5 class="card-title"><label class="text title nowrap">Title</label></h5>
+				<h5 class="card-title"><label class="text sm title nowrap">Title</label></h5>
 				<p class="card-text actress nowrap"></p>
-				<p class="card-text"><label class="text opus">Opus</label></p>
-				<p class="card-text"><label class="text release">Release</label></p>
-				<p class="card-text"><label class="text movie">Movie</label></p>
+				<p class="card-text"><label class="text sm opus">Opus</label></p>
+				<p class="card-text"><label class="text sm release">Release</label></p>
+				<p class="card-text"><label class="text sm movie">Movie</label></p>
 			</div>
 		</div>
 	</div>
@@ -139,6 +141,7 @@ function tagLoad() {
 	restCall(PATH + '/info/tag/list', {}, function(tagList) {
 		var $wrap = $("#tagList");
 		$wrap.empty();
+		TagUtils.sort(tagList);
 		
 		$.each(tagList, function(idx, tag) {
 			var $tagCard = $tagTemplete.clone();
@@ -179,7 +182,7 @@ function tagDetail(tagCard) {
 			var $actressWrap = $flay.find(".actress");
 			$.each(flay.actressList, function(idx2, actressName) {
 				Actress.get(actressName, function(actress) {
-					$("<label>", {'class': 'text'}).html(actress.name).on("click", function() {
+					$("<label>", {'class': 'text sm'}).html(actress.name).on("click", function() {
 						View.actress(actress.name);
 					}).appendTo($actressWrap);
 				});

@@ -40,6 +40,11 @@ public class StudioController {
 		return studioInfoService.find(search);
 	}
 
+	@GetMapping("/findByOpus")
+	public Studio findByOpus(@ModelAttribute Search search) {
+		return studioInfoService.findOneByOpus(search);
+	}
+
 	@PostMapping
 	public Studio create(@RequestBody Studio studio) {
 		return studioInfoService.create(studio);

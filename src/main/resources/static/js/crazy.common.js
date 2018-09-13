@@ -22,7 +22,11 @@ var agent = navigator.userAgent.toLowerCase(),
 					/ipad/i.test(agent) ? IPAD :
 						/android/i.test(agent) ? ANDROID : 'Unknown',
 	DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1",
-	COVER_RATIO = 0.6625;
+	COVER_RATIO = 0.6625,
+	URL_SEARCH_VIDEO = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=',
+	URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=',
+	URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=',
+	URL_TRANSLATE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
 
 var popup = {
 		/**
@@ -192,20 +196,19 @@ var restCall = function(url, args, callback) {
 			contentType: "application/json",
 			async: true,
 			cache: false,
-			showLoading: false,
-			title: "Call request"
+			title: ""
 	};
 	var settings = $.extend({}, DEFAULTS, args);
 	if (settings.method != 'GET' && typeof settings.data === 'object') {
 		settings.data = JSON.stringify(settings.data);
 	}
-	
-	settings.showLoading && loading.on(settings.title);
+
+	settings.title != "" && loading.on(settings.title);
 	
 	$.ajax(url, settings).done(function(data) {
 		if (callback)
 			callback(data);
-		settings.showLoading && loading.off();
+		loading.off();
 	}).fail(function(jqXHR, textStatus, errorThrown) {
 		console.log("restCall fail", '\njqXHR=', jqXHR, '\ntextStatus=', textStatus, '\nerrorThrown=', errorThrown);
 		var errMsg = "";

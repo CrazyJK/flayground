@@ -95,7 +95,7 @@ var ActressUtils = {
 				$.each(actressList, function(idx, actress) {
 					if (idx > 0)
 						actressNames += ", ";
-					actressNames += actress.name;
+					actressNames += actress;
 				});
 			}
 			return actressNames;
@@ -105,27 +105,37 @@ var ActressUtils = {
 
 var Action = {
 		openFolder: function(folder) {
-			restCall(PATH + '/flayon/openFolder', {method: "PUT", data: {folder: folder}, showLoading: false});
-		},
-		reload: function() {
-			restCall(PATH + "/rest/video/reload", {method: "PUT", title: "Source reload"});
+			restCall(PATH + '/flayon/openFolder', {method: "PUT", data: {folder: folder}});
 		}
 };
 
+var Batch = {
+		start: function(type, title, callback) {
+			restCall(PATH + '/batch/start/' + type, {method: "PUT", title: title}, callback);
+		},
+		setOption: function(type, callback) {
+			restCall(PATH + '/batch/option/' + type, {method: "PUT"}, callback);
+		},
+		getOption: function(type, callback) {
+			restCall(PATH + '/batch/option/' + type, {}, callback);
+		},
+		reload: function(callback) {
+			restCall(PATH + "/batch/reload", {method: "PUT", title: "Source reload"}, callback);
+		}
+};
 
 var Search = {
 		opus: function(keyword) {
-			popup.open(urlSearchVideo + keyword, 'videoSearch', 1500, 1000);
+			popup.open(URL_SEARCH_VIDEO + keyword, 'videoSearch', 1500, 1000);
 		},
 		actress: function(keyword) {
-			popup.open(urlSearchActress + keyword, 'actressSearch', 1200, 950);
+			popup.open(URL_SEARCH_ACTRESS + keyword, 'actressSearch', 1200, 950);
 		},
 		torrent: function(keyword) {
-			popup.open(urlSearchTorrent + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
+			popup.open(URL_SEARCH_TORRENT + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
 		},
 		translate: function(message) {
-			var translateURL = "https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/" + message;
-			popup.open(translateURL, 'translate', 1000, 500);
+			popup.open(URL_TRANSLATE + message, 'translate', 1000, 500);
 		},
 		opusByRandom: function() {
 			var opus = random.getInteger(1, 999);

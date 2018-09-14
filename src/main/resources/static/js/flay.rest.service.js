@@ -111,7 +111,7 @@ var Rest = {
 				restCall('/image/size', {}, callback);
 			},
 			download: function(data, callback) {
-				restCall('/rest/image/pageImageDownload', {data: data, title: 'Download images'}, callback); 
+				restCall('/image/pageImageDownload', {data: data, title: 'Download images'}, callback);
 			}
 		},
 		Html: {

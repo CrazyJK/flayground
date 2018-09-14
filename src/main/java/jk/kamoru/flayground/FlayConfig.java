@@ -22,7 +22,7 @@ public class FlayConfig implements WebMvcConfigurer {
 	public static final String ENCODING = "UTF-8";
 	public static final String LINE = System.getProperty("line.separator");
 
-
+	@Value("${path.video.archive}") String archivePath;
 	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;
 	@Value("${path.info}") String infoPath;
 	@Value("${app.video-player}") String player;
@@ -31,6 +31,11 @@ public class FlayConfig implements WebMvcConfigurer {
 	@Bean("instanceFlaySource")
 	public FlaySource instanceFlaySource() {
 		return new FileBasedFlaySource(instancePaths);
+	}
+
+	@Bean("archiveFlaySource")
+	public FlaySource archiveFlaySource() {
+		return new FileBasedFlaySource(archivePath);
 	}
 
 	@Override

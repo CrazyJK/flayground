@@ -1,5 +1,7 @@
 package jk.kamoru.flayground;
 
+import java.text.SimpleDateFormat;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +23,11 @@ public class FlayConfig implements WebMvcConfigurer {
 	public static final String SUFFIX_SUBTITLES = "smi,srt,ass,smil";
 	public static final String ENCODING = "UTF-8";
 	public static final String LINE = System.getProperty("line.separator");
+	public static final String PATTERN_DATE = "yyyy-MM-dd";
+	public static final String PATTERN_TIME = "HH:mm:ss";
+	public static final SimpleDateFormat DateTimeFormat = new SimpleDateFormat(PATTERN_DATE + " " + PATTERN_TIME);
+	public static final SimpleDateFormat YYYY_MM_Format = new SimpleDateFormat("yyyy-MM");
+	
 
 	@Value("${path.video.archive}") String archivePath;
 	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;

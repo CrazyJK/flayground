@@ -3,7 +3,6 @@ package jk.kamoru.flayground.info.source;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,10 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Repository
 public class HistoryRepository implements InfoSource<History, Long> {
-
-	public static final String PATTERN_DATE = "yyyy-MM-dd";
-	public static final String PATTERN_TIME = "HH:mm:ss";
-	public static final SimpleDateFormat DateTimeFormat = new SimpleDateFormat(PATTERN_DATE + " " + PATTERN_TIME);
 
 	private static final String FILE_NAME = "history.log";
 
@@ -65,7 +60,7 @@ public class HistoryRepository implements InfoSource<History, Long> {
 
 	synchronized void save(History history) {
 		history.setId(id++);
-		history.setDate(DateTimeFormat.format(new Date()));
+		history.setDate(FlayConfig.DateTimeFormat.format(new Date()));
 		list.add(history);
 		try {
 			FileUtils.writeStringToFile(getInfoFile(), history.toFileSaveString(), FlayConfig.ENCODING, true);

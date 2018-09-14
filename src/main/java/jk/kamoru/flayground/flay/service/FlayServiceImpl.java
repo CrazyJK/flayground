@@ -17,31 +17,31 @@ import jk.kamoru.flayground.info.service.InfoService;
 @Service
 public class FlayServiceImpl implements FlayService {
 
-	@Autowired FlaySource flaySource;
+	@Autowired FlaySource instanceFlaySource;
 	@Autowired InfoService<Video, String> videoInfoService;
 	@Autowired FlayActionHandler flayActionHandler;
 	@Autowired HistoryService historyService;
 
 	@Override
 	public Flay get(String key) {
-		return flaySource.get(key);
+		return instanceFlaySource.get(key);
 	}
 
 	@Override
 	public Collection<Flay> list() {
-		return flaySource.list();
+		return instanceFlaySource.list();
 	}
 	
 	@Override
 	public Collection<Flay> find(Search search) {
-		return flaySource.list().stream().filter(f -> {
+		return instanceFlaySource.list().stream().filter(f -> {
 			return search.contains(f);
 		}).collect(Collectors.toList());
 	}
 
 	@Override
 	public Collection<Flay> find(String query) {
-		return flaySource.list().stream().filter(f -> {
+		return instanceFlaySource.list().stream().filter(f -> {
 			return f.getFullname().contains(query);
 		}).collect(Collectors.toList());
 	}
@@ -49,38 +49,38 @@ public class FlayServiceImpl implements FlayService {
 	@Override
 	public Collection<Flay> findByKeyValue(String field, String value) {
 		if ("studio".equalsIgnoreCase(field)) {
-			return flaySource.list().stream().filter(f -> {
+			return instanceFlaySource.list().stream().filter(f -> {
 				return f.getStudio().equals(value);
 			}).collect(Collectors.toList());
 		} else if ("title".equalsIgnoreCase(field)) {
-			return flaySource.list().stream().filter(f -> {
+			return instanceFlaySource.list().stream().filter(f -> {
 				return f.getTitle().contains(value);
 			}).collect(Collectors.toList());
 		} else if ("actress".equalsIgnoreCase(field)) {
-			return flaySource.list().stream().filter(f -> {
+			return instanceFlaySource.list().stream().filter(f -> {
 				return f.getActressList().stream().anyMatch(a -> {
 					return a.equals(value);
 				});
 			}).collect(Collectors.toList());
 		} else if ("release".equalsIgnoreCase(field)) {
-			return flaySource.list().stream().filter(f -> {
+			return instanceFlaySource.list().stream().filter(f -> {
 				return f.getRelease().startsWith(value);
 			}).collect(Collectors.toList());
 		} else if ("rank".equalsIgnoreCase(field)) {
-			return flaySource.list().stream().filter(f -> {
+			return instanceFlaySource.list().stream().filter(f -> {
 				return f.getVideo().getRank() == new Integer(value).intValue();
 			}).collect(Collectors.toList());
 		} else if ("play".equalsIgnoreCase(field)) {
-			return flaySource.list().stream().filter(f -> {
+			return instanceFlaySource.list().stream().filter(f -> {
 				return f.getVideo().getPlay() == new Integer(value).intValue();
 			}).collect(Collectors.toList());
 		} else if ("comment".equalsIgnoreCase(field)) {
-			return flaySource.list().stream().filter(f -> {
+			return instanceFlaySource.list().stream().filter(f -> {
 				return f.getVideo().getComment().contains(value);
 			}).collect(Collectors.toList());
 		} else if ("tag".equalsIgnoreCase(field)) {
 			Integer id = Integer.parseInt(value);
-			return flaySource.list().stream().filter(f -> {
+			return instanceFlaySource.list().stream().filter(f -> {
 				return f.getVideo().getTags().stream().anyMatch(t -> {
 					return t == id;
 				});
@@ -92,7 +92,7 @@ public class FlayServiceImpl implements FlayService {
 
 	@Override
 	public void play(String opus) {
-		Flay flay = flaySource.get(opus);
+		Flay flay = instanceFlaySource.get(opus);
 		flayActionHandler.play(flay);
 		videoInfoService.update(flay.getVideo());
 		historyService.save(History.Action.PLAY, flay);
@@ -100,7 +100,7 @@ public class FlayServiceImpl implements FlayService {
 
 	@Override
 	public void edit(String opus) {
-		flayActionHandler.edit(flaySource.get(opus));
+		flayActionHandler.edit(instanceFlaySource.get(opus));
 	}
 
 }

@@ -20,9 +20,9 @@ input {
     background: rgb(173, 103, 103);
     color: #fdfdfd;
 }
-
 </style>
 
+<div role="body">
 
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
 		<input type="search" id="query" class="form-control form-control-sm" placeHolder="Search..."/>
@@ -41,10 +41,7 @@ input {
 		<div class="divider"></div>
 		<button class="btn btn-info btn-sm btn-reload">Reload</button>
 	</nav>
-
-
 	<div class="container" style="margin-top: 60px;">
-	
 		<div class="card border-primary mt-2 collapse" id="findMode">
 			<div class="card-body">
 				<div class="input-group input-group-sm flay-group mb-1">
@@ -66,7 +63,6 @@ input {
 				</div>
 			</div>
 		</div>
-
 		<div class="card border-success mt-2 collapse" id="pageImageDownloader">
 			<div class="card-body">
 				<form id="downloadPageImageForm" onsubmit="return false;">
@@ -95,7 +91,6 @@ input {
 				</form>
 			</div>
 		</div>
-
 		<div class="card border-danger mt-2 collapse" id="batchGroup">
 			<div class="card-body">
 				<div class="btn-group btn-group-sm mb-1">
@@ -122,7 +117,6 @@ input {
 				</div>
 			</div>
 		</div>
-		
 		<div id="resultVideoDiv" class="card mt-2" style="overflow:auto">
 			<div class="card-body"> 
 				<h4 class="card-title">Video <span class="badge badge-light video-count"></span></h4>
@@ -141,7 +135,6 @@ input {
 				</table>
 			</div>
 		</div>
-
 		<div id="resultHistoryDiv" class="card mt-2" style="overflow:auto">
 			<div class="card-body">
 				<h4 class="card-title">History <span class="badge badge-light history-count"></span></h4>
@@ -158,8 +151,8 @@ input {
 				</table>
 			</div>
 		</div>
-
 	</div>
+</div>
 
 <script type="text/javascript">
 
@@ -172,7 +165,7 @@ input {
 	    var rexp = eval('/' + keyword + '/gi');
 
 		// find video
-		restCall(PATH + '/flay/list?query=' + keyword, {}, function(flayList) {
+		Rest.Flay.find(keyword, function(flayList) {
 			$(".video-count").html(flayList.length);
 			
 			var $tbody = $('#foundVideoList').empty();
@@ -220,22 +213,23 @@ input {
 		});
 		
 		// find history
-		restCall(PATH + '/info/history?query=' + keyword, {}, function(historyList) {
+		Rest.History.find(keyword, function(historyList) {
 			$(".history-count").html(historyList.length);
-			var $tbody = $('#foundHistoryList');
+
+			var $tbody = $('#foundHistoryList').empty();
 			$.each(historyList, function(entryIndex, history) {
 				$("<tr>").append(
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html(history.date)
+								$("<label>", {"class": "text sm"}).html(history.date)
 						),
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html(history.opus)
+								$("<label>", {"class": "text sm"}).html(history.opus)
 						),
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html(history.act)
+								$("<label>", {"class": "text sm"}).html(history.action)
 						),
 						$("<td>").append(
-								$("<label>", {"class": "text"}).html(history.desc)
+								$("<label>", {"class": "text sm"}).html(history.desc)
 						)
 				).appendTo($tbody);
 			});
@@ -251,7 +245,7 @@ input {
 		});
 
 		// find Studio name by opus
-		restCall(PATH + '/info/studio/findByOpus?query=' + keyword, {}, function(studio) {
+		Rest.Studio.findOneByOpus(keyword, function(studio) {
 			$("#studio").val(studio.name);
 		});
 
@@ -313,21 +307,20 @@ input {
 		Search.torrent(value);
 	});
 	$(".btn-reload").on("click", function() {
-		Batch.reload();
+		Rest.Batch.reload();
 	});
 	$(".btn-save-cover").on("click", function() {
 		var opus = $("#opus").val();
 		var title = $("#fullname").val();
-		restCall(PATH + '/rest/video/' + opus + '/saveCover', {method: "POST", data: {title: title}});
+		Cover.save(opus, title, function(result) {
+			// TODO
+		});
 	});
 	$(".btn-find-random-opus").on("click", function() {
 		Search.opusByRandom();
 	});
 	$(".btn-download-page-image").on("click", function() {
-		restCall(PATH + '/rest/image/pageImageDownload', {
-			data: $("#downloadPageImageForm").serialize(),
-			title: 'Download images'
-		}, function(result) {
+		Picture.download($("#downloadPageImageForm").serialize(), function(result) {
 		    $("#notice > p").empty().append(
 					$("<ul>", {'class': 'list-unstyled'}).append(
 							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
@@ -352,23 +345,23 @@ input {
 	$(".btn-batch-start").on("click", function() {
 		var type  = $(this).data("type");
 		var title = $(this).text();
-		Batch.start(type, title);
+		Rest.Batch.start(type, title);
 	});
 	$(".btn-batch-option").on("click", function() {
 		var $this = $(this);
 		var type  = $this.data("type");
-		Batch.setOption(type, function(result) {
+		Rest.Batch.setOption(type, function(result) {
 			$this.text(result);
 		});
 	});
 
-	Batch.getOption('W', function(val) {
+	Rest.Batch.getOption('W', function(val) {
 		$(".btn-batch-option[data-type='W']").html('' + val);
 	});
-	Batch.getOption('R', function(val) {
+	Rest.Batch.getOption('R', function(val) {
 		$(".btn-batch-option[data-type='R']").html('' + val);
 	});
-	Batch.getOption('S', function(val) {
+	Rest.Batch.getOption('S', function(val) {
 		$(".btn-batch-option[data-type='S']").html('' + val);
 	});
 	

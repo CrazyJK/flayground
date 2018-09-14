@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 
@@ -35,9 +33,9 @@ public class ActressController {
 		return actressInfoService.list();
 	}
 
-	@GetMapping("/find")
-	public Collection<Actress> find(@ModelAttribute Search search) {
-		return actressInfoService.find(search);
+	@GetMapping("/find/{query}")
+	public Collection<Actress> find(@PathVariable String query) {
+		return actressInfoService.find(query);
 	}
 
 	@PostMapping

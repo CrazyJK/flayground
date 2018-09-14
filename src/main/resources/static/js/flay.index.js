@@ -1,6 +1,7 @@
 /**
  * 
  */
+var COVER_RATIO = 0.6625;
 
 function Loading() {
 	this.overlay = "#overlay";
@@ -58,7 +59,7 @@ var background = {
 		bgInterval: null,
 		count: 0,
 		init: function() {
-			restCall(PATH + '/image/size', {}, function(count) {
+			Rest.Image.size(function(count) {
 				background.count = count;
 			});
 		},
@@ -112,7 +113,7 @@ var navi = {
 			});
 		},
 		go: function(destination) {
-			restCall(destination, {contentType: "text/html", mimeType: "text/html"}, function(html) {
+			Rest.Html.get(destination, function(html) {
 				$("#wrap_body").html(html);
 			});
 		}
@@ -135,3 +136,7 @@ $(document).ready(function() {
 
 });
 
+window.onerror = function(e) {
+    console.error('Error', e);
+    loading.on('Error: ' + e);
+};

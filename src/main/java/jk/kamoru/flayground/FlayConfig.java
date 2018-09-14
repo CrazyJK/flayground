@@ -19,6 +19,9 @@ public class FlayConfig implements WebMvcConfigurer {
 	public static final String SUFFIX_VIDEO 	= "avi,mpg,mkv,wmv,mp4,mov,rmvb";
 	public static final String SUFFIX_IMAGE 	= "jpg,jpeg,png,gif,jfif,webp";
 	public static final String SUFFIX_SUBTITLES = "smi,srt,ass,smil";
+	public static final String ENCODING = "UTF-8";
+	public static final String LINE = System.getProperty("line.separator");
+
 
 	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;
 	@Value("${path.info}") String infoPath;

@@ -66,4 +66,15 @@ public class Flay {
 	public long getLength() {
 		return files.get(MOVIE) != null ? files.get(MOVIE).stream().mapToLong(f -> f.length()).sum() : -1;
 	}
+	
+	public String getFullname() {
+		String actressNames = "";
+		for (int i=0; i<actressList.size(); i++) {
+			if (i > 0)
+				actressNames += ", ";
+			actressNames += actressList.get(i);
+		}
+		return String.format("[%s][%s][%s][%s][%s]", studio, opus, title, actressNames, release);
+	}
+
 }

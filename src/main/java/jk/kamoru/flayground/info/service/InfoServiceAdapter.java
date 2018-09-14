@@ -5,7 +5,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.info.domain.Info;
 import jk.kamoru.flayground.info.source.InfoSource;
 
@@ -29,9 +28,9 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
 	}
 
 	@Override
-	public List<T> find(Search search) {
+	public List<T> find(String query) {
 		return infoSource.list().stream().filter(t -> {
-			return search.contains(t);
+			return t.toString().contains(query);
 		}).collect(Collectors.toList());
 	}
 

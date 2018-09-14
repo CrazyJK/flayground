@@ -9,8 +9,12 @@ public interface FlayService {
 
 	Flay get(String opus);
 
-	Collection<Flay> find(Search search);
+	Collection<Flay> list(); 
 	
+	Collection<Flay> find(Search search);
+
+	Collection<Flay> find(String query);
+
 	Collection<Flay> findByKeyValue(String field, String value);
 
 	void play(String opus);

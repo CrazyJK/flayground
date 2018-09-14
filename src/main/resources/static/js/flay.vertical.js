@@ -24,12 +24,12 @@ $(document).ready(function() {
 
 function loadData() {
 	// load tag list
-	restCall(PATH + "/info/tag/list", {showLoading: false}, (list) => {
+	Rest.Tag.list(function(list) {
 		tagList = list;
-		TagUtils.sort(tagList);
+		Util.Tag.sort(tagList);
 
 		// load video list
-		restCall(PATH + '/flay/list', {title: "Load video"}, (list) => {
+		Rest.Flay.list(function(list) {
 			videoList = list;
 
 			deploy();
@@ -88,11 +88,11 @@ function attachEventListener() {
 		var isChecked = $this.prop("checked");
 		var toggledTag = $this.data("tag");
 		if (isChecked) {
-			TagUtils.push(currentFlay.video.tags, toggledTag);
+			Util.Tag.push(currentFlay.video.tags, toggledTag);
 		} else {
-			TagUtils.remove(currentFlay.video.tags, toggledTag);
+			Util.Tag.remove(currentFlay.video.tags, toggledTag);
 		}
-		Video.update(currentFlay.video);
+		Rest.Video.update(currentFlay.video);
 	});
 
 	// new tag save
@@ -100,9 +100,9 @@ function attachEventListener() {
 		var newTagName = $("#newTagName").val(), newTagDesc = $("#newTagDesc").val();
 		if (newTagName != '') {
 			var newTag = {name: newTagName, description: newTagDesc};
-			Tag.create(newTag, function(createdTag) {
-				TagUtils.push(currentFlay.video.tags, createdTag);
-				Video.update(currentFlay.video, function() {
+			Rest.Tag.create(newTag, function(createdTag) {
+				Util.Tag.push(currentFlay.video.tags, createdTag);
+				Rest.Video.update(currentFlay.video, function() {
 					$("#selectTags > .tag-list").appendTag(null, createdTag);
 					$("#videoTags").appendTag(null, createdTag);
 					$("input[data-tag-id='" + createdTag.id + "']", "#videoTags").prop("checked", true);
@@ -221,7 +221,7 @@ function collectList() {
 		} else if (typeof data1 === 'string') {
 			result = data1.toLowerCase().localeCompare(data2.toLowerCase());
 		} else if (typeof data1 === 'object') { // maybe actressList
-			result = ActressUtils.getNames(data1).localeCompare(ActressUtils.getNames(data2));
+			result = Util.Actress.getNames(data1).localeCompare(ActressUtils.getNames(data2));
 		} else {
 			result = data1 > data2 ? 1 : -1;
 		}
@@ -285,7 +285,7 @@ function collectList() {
 		}
 
 		if (query != '') {
-			var fullname = flay.studio + flay.opus + flay.title + ActressUtils.getNames(flay.actressList) + flay.release + flay.comment;
+			var fullname = flay.studio + flay.opus + flay.title + Util.Actress.getNames(flay.actressList) + flay.release + flay.comment;
 			if (fullname.indexOf(query) < 0) {
 				continue;
 			}
@@ -343,7 +343,7 @@ function collectList() {
 					tag.count++;
 				} else {
 					var deleted = flay.video.tags.splice(y, 1);
-					Video.update(flay.video);
+					Rest.Video.update(flay.video);
 				}
 			}
 		}
@@ -524,14 +524,14 @@ function addVideoEvent() {
 	// video file
 	$(".info-video").on("click", function() {
 		if (currentFlay.files.movie.length > 0) 
-			Flay.play(currentFlay);
+			Rest.Flay.play(currentFlay);
 		else
 			Search.torrent(currentFlay);
 	});
 	// subtitles
 	$(".info-subtitles").on("click", function() {
 		if (currentFlay.files.subtitles.length > 0)
-			Flay.subtitles(currentFlay);
+			Rest.Flay.subtitles(currentFlay);
 	});
 	// overview
 	$(".info-overview").on("click", function() {
@@ -544,7 +544,7 @@ function addVideoEvent() {
 		if (e.keyCode === 13) {
 			var $this = $(this);
 			currentFlay.video.comment = $(this).val();
-			Video.update(currentFlay.video, function() {
+			Rest.Video.update(currentFlay.video, function() {
 				$this.hide();
 				$(".info-overview").html(currentFlay.video.comment != '' ? currentFlay.video.comment : 'Overview').show();
 			});
@@ -553,7 +553,7 @@ function addVideoEvent() {
 	// rank
 	$("#ranker, input[name='ranker']").on("change", function() {
 		currentFlay.video.rank = $(this).val();
-		Video.update(currentFlay.video, function() {
+		Rest.Video.update(currentFlay.video, function() {
 			decorateRank(currentFlay.video.rank);
 		});
 	});
@@ -567,7 +567,7 @@ function addVideoEvent() {
 		var $self = $(this);
 		var actress = $(this).data("actress");
 		actress.favorite = !actress.favorite
-		Actress.update(actress, function() {
+		Rest.Actress.update(actress, function() {
 			if (actress.favorite) {
 				$self.switchClass('fa-star-o', 'fa-star favorite');
 			} else {
@@ -592,7 +592,7 @@ function showVideo(direction) {
 		// actress & event
 		$(".info-wrapper-actress").empty()
 		$.each(currentFlay.actressList, function(index, name) {
-			Actress.get(name, function(actress) {
+			Rest.Actress.get(name, function(actress) {
 				$("<div>").append(
 						// favorite
 						actress.name != 'Amateur' &&

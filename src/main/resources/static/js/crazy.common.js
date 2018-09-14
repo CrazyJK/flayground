@@ -21,12 +21,7 @@ var agent = navigator.userAgent.toLowerCase(),
 				/iphone/i.test(agent) ? IPHONE :
 					/ipad/i.test(agent) ? IPAD :
 						/android/i.test(agent) ? ANDROID : 'Unknown',
-	DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1",
-	COVER_RATIO = 0.6625,
-	URL_SEARCH_VIDEO = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=',
-	URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=',
-	URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=',
-	URL_TRANSLATE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
+	DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1";
 
 var popup = {
 		/**
@@ -186,45 +181,4 @@ var formatFilesize = function(length) {
 		return (length / GB).toFixed(2) + " GB";
 	else
 		return length;
-};
-
-var restCall = function(url, args, callback) {
-	var DEFAULTS = {
-			method: "GET",
-			data: {},
-			mimeType: "application/json",
-			contentType: "application/json",
-			async: true,
-			cache: false,
-			title: ""
-	};
-	var settings = $.extend({}, DEFAULTS, args);
-	if (settings.method != 'GET' && typeof settings.data === 'object') {
-		settings.data = JSON.stringify(settings.data);
-	}
-
-	settings.title != "" && loading.on(settings.title);
-	
-	$.ajax(url, settings).done(function(data) {
-		if (callback)
-			callback(data);
-		loading.off();
-	}).fail(function(jqXHR, textStatus, errorThrown) {
-		console.log("restCall fail", '\njqXHR=', jqXHR, '\ntextStatus=', textStatus, '\nerrorThrown=', errorThrown);
-		var errMsg = "";
-		if (jqXHR.getResponseHeader('error')) {
-			errMsg = 'Message: ' + jqXHR.getResponseHeader('error.message') + "<br>" + 'Cause: ' + jqXHR.getResponseHeader('error.cause');
-		} else if (jqXHR.responseJSON) {
-			errMsg = 'Error: '     + jqXHR.responseJSON.error + '<br>' + 
-					'Exception: ' + jqXHR.responseJSON.exception + '<br>' +
-					'Message: '   + jqXHR.responseJSON.message + '<br>' +
-					'Timestamp: ' + jqXHR.responseJSON.timestamp + '<br>' +
-					'Status: '    + jqXHR.responseJSON.status + '<br>' + 
-					'Path: '      + jqXHR.responseJSON.path;
-		} else {
-			errMsg = 'Error:<br>' + textStatus + "<br>" + errorThrown;
-		}
-		loading.on(errMsg);
-	}).always(function(data_jqXHR, textStatus, jqXHR_errorThrown) {
-	});
 };

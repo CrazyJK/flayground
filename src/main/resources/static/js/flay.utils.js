@@ -1,6 +1,60 @@
 /**
- * video common function
+ * flay utility
  */
+
+var Util = {
+		Tag: {
+			includes: function(tags, tag) {
+				var found = false;
+				$.each(tags, function(idx, tagId) {
+					if (tagId === tag.id) {
+						found = true;
+					}
+				});
+				return found;
+			},
+			indexOf: function(tags, tag) {
+				var found = -1;
+				$.each(tags, function(idx, tagId) {
+					if (tagId === tag.id) {
+						found = idx;
+					}
+				});
+				return found;
+			},
+			push: function(tags, tag) {
+				var idx = Util.Tag.indexOf(tags, tag);
+				if (idx < 0) {
+					tags.push(tag.id);
+				}
+			},
+			remove: function(tags, tag) {
+				var idx = Util.Tag.indexOf(tags, tag);
+				if (idx > -1) {
+					tags.splice(idx, 1);
+				}
+			},
+			sort: function(tags) {
+				tags.sort(function(t1, t2) {
+					return t1.name.localeCompare(t2.name);
+				});
+			}
+		},
+		Actress: {
+			getNames: function(actressList) {
+				var actressNames = "";
+				if (actressList != null && Array.isArray(actressList)) {
+					$.each(actressList, function(idx, actress) {
+						if (idx > 0)
+							actressNames += ", ";
+						actressNames += actress;
+					});
+				}
+				return actressNames;
+			}
+		}
+};
+
 
 var View = {
 		flay: function(opus) {
@@ -14,115 +68,10 @@ var View = {
 		}
 };
 
-var Flay = {
-		play: function(flay) {
-			restCall(PATH + '/flay/' + flay.opus + '/play', {method: "PATCH"});
-		},
-		subtitles: function(flay) {
-			restCall(PATH + '/flay/' + flay.opus + '/edit', {method: "PATCH"});
-		}
-};
-
-var Video = {
-		update: function(video, callback) {
-			restCall(PATH + '/info/video', {data: video, method: "PATCH"}, callback);
-		}
-};
-
-var Actress = {
-		get: function(name, callback) {
-			restCall(PATH + '/info/actress/' + name, {}, callback);
-		},
-		update: function(actress, callback) {
-			restCall(PATH + '/info/actress', {data: actress, method: "PATCH"}, callback);
-		}
-};
-
-var Tag = {
-	create:	function(tag, callback) {
-		restCall(PATH + '/info/tag', {data: tag, method: "POST"}, callback);
-	},
-	update: function(tag, callback) {
-		restCall(PATH + '/info/tag', {data: tag, method: "PATCH"}, callback);
-	},
-	delete: function(tag, callback) {
-		restCall(PATH + '/info/tag', {data: tag, method: "DELETE"}, callback);
-	}
-};
-
-var TagUtils = {
-		includes: function(tags, tag) {
-			var found = false;
-			$.each(tags, function(idx, tagId) {
-				if (tagId === tag.id) {
-					found = true;
-				}
-			});
-			return found;
-		},
-		indexOf: function(tags, tag) {
-			var found = -1;
-			$.each(tags, function(idx, tagId) {
-				if (tagId === tag.id) {
-					found = idx;
-				}
-			});
-			return found;
-		},
-		push: function(tags, tag) {
-			var idx = TagUtils.indexOf(tags, tag);
-			if (idx < 0) {
-				tags.push(tag.id);
-			}
-		},
-		remove: function(tags, tag) {
-			var idx = TagUtils.indexOf(tags, tag);
-			if (idx > -1) {
-				tags.splice(idx, 1);
-			}
-		},
-		sort: function(tags) {
-			tags.sort(function(t1, t2) {
-				return t1.name.localeCompare(t2.name);
-			});
-		}
-};
-
-var ActressUtils = {
-		getNames: function(actressList) {
-			var actressNames = "";
-			if (actressList != null && Array.isArray(actressList)) {
-				$.each(actressList, function(idx, actress) {
-					if (idx > 0)
-						actressNames += ", ";
-					actressNames += actress;
-				});
-			}
-			return actressNames;
-		}
-};
-
-
-var Action = {
-		openFolder: function(folder) {
-			restCall(PATH + '/flayon/openFolder', {method: "PUT", data: {folder: folder}});
-		}
-};
-
-var Batch = {
-		start: function(type, title, callback) {
-			restCall(PATH + '/batch/start/' + type, {method: "PUT", title: title}, callback);
-		},
-		setOption: function(type, callback) {
-			restCall(PATH + '/batch/option/' + type, {method: "PUT"}, callback);
-		},
-		getOption: function(type, callback) {
-			restCall(PATH + '/batch/option/' + type, {}, callback);
-		},
-		reload: function(callback) {
-			restCall(PATH + "/batch/reload", {method: "PUT", title: "Source reload"}, callback);
-		}
-};
+var URL_SEARCH_VIDEO = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=',
+	URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=',
+	URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=',
+	URL_TRANSLATE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
 
 var Search = {
 		opus: function(keyword) {

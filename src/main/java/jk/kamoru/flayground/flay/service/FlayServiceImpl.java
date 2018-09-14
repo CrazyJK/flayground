@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
+import jk.kamoru.flayground.info.domain.History;
 import jk.kamoru.flayground.info.domain.Video;
+import jk.kamoru.flayground.info.service.HistoryService;
 import jk.kamoru.flayground.info.service.InfoService;
 
 @Service
@@ -18,6 +20,7 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired FlaySource flaySource;
 	@Autowired InfoService<Video, String> videoInfoService;
 	@Autowired FlayActionHandler flayActionHandler;
+	@Autowired HistoryService historyService;
 
 	@Override
 	public Flay get(String key) {
@@ -25,9 +28,21 @@ public class FlayServiceImpl implements FlayService {
 	}
 
 	@Override
+	public Collection<Flay> list() {
+		return flaySource.list();
+	}
+	
+	@Override
 	public Collection<Flay> find(Search search) {
 		return flaySource.list().stream().filter(f -> {
 			return search.contains(f);
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public Collection<Flay> find(String query) {
+		return flaySource.list().stream().filter(f -> {
+			return f.getFullname().contains(query);
 		}).collect(Collectors.toList());
 	}
 
@@ -80,6 +95,7 @@ public class FlayServiceImpl implements FlayService {
 		Flay flay = flaySource.get(opus);
 		flayActionHandler.play(flay);
 		videoInfoService.update(flay.getVideo());
+		historyService.save(History.Action.PLAY, flay);
 	}
 
 	@Override

@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.service.StudioInfoService;
 
@@ -35,14 +33,14 @@ public class StudioController {
 		return studioInfoService.list();
 	}
 
-	@GetMapping("/find")
-	public Collection<Studio> find(@ModelAttribute Search search) {
-		return studioInfoService.find(search);
+	@GetMapping("/find/{query}")
+	public Collection<Studio> find(@PathVariable String query) {
+		return studioInfoService.find(query);
 	}
 
-	@GetMapping("/findByOpus")
-	public Studio findByOpus(@ModelAttribute Search search) {
-		return studioInfoService.findOneByOpus(search);
+	@GetMapping("/findOneByOpus/{opus}")
+	public Studio findOneByOpus(@PathVariable String opus) {
+		return studioInfoService.findOneByOpus(opus);
 	}
 
 	@PostMapping

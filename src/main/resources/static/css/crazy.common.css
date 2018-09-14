@@ -1,4 +1,7 @@
 @charset "UTF-8";
+:root {
+	--cover-ratio: 0.6625;
+}
 
 body {
 	background-color: #000;	

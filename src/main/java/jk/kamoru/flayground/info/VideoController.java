@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.VideoInfoService;
 
@@ -34,9 +33,9 @@ public class VideoController {
 		return videoInfoService.list();
 	}
 	
-	@GetMapping("/find")
-	public Collection<Video> find(Search search) {
-		return videoInfoService.find(search);
+	@GetMapping("/find/{query}")
+	public Collection<Video> find(@PathVariable String query) {
+		return videoInfoService.find(query);
 	}
 
 	@PostMapping

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.service.TagInfoService;
 
@@ -34,9 +33,9 @@ public class TagController {
 		return tagInfoService.list();
 	}
 	
-	@GetMapping("/find")
-	public Collection<Tag> find(Search search) {
-		return tagInfoService.find(search);
+	@GetMapping("/find/{query}")
+	public Collection<Tag> find(@PathVariable String query) {
+		return tagInfoService.find(query);
 	}
 
 	@PostMapping

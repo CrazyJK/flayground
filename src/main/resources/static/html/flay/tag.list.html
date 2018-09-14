@@ -53,7 +53,7 @@ h1 {
     text-align: left;
 	margin: 0.5rem;
     width: 300px;
-    height: calc(300px * 0.6625);
+    height: calc(300px * var(--cover-ratio));
 }
 #tagDetail .flay-list .flay .title {
 	max-width: 290px;
@@ -61,53 +61,56 @@ h1 {
 
 </style>
 
-<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
-	<div id="tagInput">
-		<div class="form-row">
-			<div class="col-sm-1">
-				<input type="text" class="form-control form-control-sm" id="tagId" placeholder="Id">
-			</div>
-			<div class="col-sm-4">
-				<input type="text" class="form-control form-control-sm" id="tagName" placeholder="Name">
-			</div>
-			<div class="col">
-				<input type="text" class="form-control form-control-sm" id="tagDesc" placeholder="Desctiption">
-			</div>
-			<div class="col-auto">
-				<button class="btn btn-sm tag-save">Save</button>
-			</div>
-			<div class="col-auto">
-				<button class="btn btn-sm btn-danger tag-delete">Delete</button>
+<div role="body">
+
+	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
+		<div id="tagInput">
+			<div class="form-row">
+				<div class="col-sm-1">
+					<input type="text" class="form-control form-control-sm" id="tagId" placeholder="Id">
+				</div>
+				<div class="col-sm-4">
+					<input type="text" class="form-control form-control-sm" id="tagName" placeholder="Name">
+				</div>
+				<div class="col">
+					<input type="text" class="form-control form-control-sm" id="tagDesc" placeholder="Desctiption">
+				</div>
+				<div class="col-auto">
+					<button class="btn btn-sm tag-save">Save</button>
+				</div>
+				<div class="col-auto">
+					<button class="btn btn-sm btn-danger tag-delete">Delete</button>
+				</div>
 			</div>
 		</div>
-	</div>
-</nav>
-
-<div id="tagList">
-	<div class="card tag">
-		<div class="card-body">
-			<span class="badge badge-pill badge-dark float-right video-count"></span>
-			<h5 class="card-title font-weight-bold">Tag name</h5>
-			<p class="card-text text-primary">Tag description</p>
-		</div>
-	</div>
-</div>
-
-<div id="tagDetail">
-	<label class="float-right hover"><i class="fa fa-times"></i></label>
-	<div class="flay-list">
-		<div class="card flay">
+	</nav>
+	
+	<div id="tagList">
+		<div class="card tag">
 			<div class="card-body">
-				<h5 class="card-title"><label class="text sm title nowrap">Title</label></h5>
-				<p class="card-text actress nowrap"></p>
-				<p class="card-text"><label class="text sm opus">Opus</label></p>
-				<p class="card-text"><label class="text sm release">Release</label></p>
-				<p class="card-text"><label class="text sm movie">Movie</label></p>
+				<span class="badge badge-pill badge-dark float-right video-count"></span>
+				<h5 class="card-title font-weight-bold">Tag name</h5>
+				<p class="card-text text-primary">Tag description</p>
 			</div>
 		</div>
 	</div>
-</div>
+	
+	<div id="tagDetail">
+		<label class="float-right hover"><i class="fa fa-times"></i></label>
+		<div class="flay-list">
+			<div class="card flay">
+				<div class="card-body">
+					<h5 class="card-title"><label class="text sm title nowrap">Title</label></h5>
+					<p class="card-text actress nowrap"></p>
+					<p class="card-text"><label class="text sm opus">Opus</label></p>
+					<p class="card-text"><label class="text sm release">Release</label></p>
+					<p class="card-text"><label class="text sm movie">Movie</label></p>
+				</div>
+			</div>
+		</div>
+	</div>
 
+</div>
 <script type="text/javascript">
 var $tagTemplete  = $(".tag");
 var $flayTemplete = $(".flay");
@@ -118,18 +121,21 @@ $(".fa-times").on("click", function() {
 
 $(".tag-save").on("click", function() {
 	var id = $("#tagId").val(), name = $("#tagName").val(), desc = $("#tagDesc").val();
+	if (name === '') {
+		return;
+	}
 	var tag = {id: id, name: name, description: desc};
 	if (id === '') {
-		Tag.create(tag, tagLoad);
+		Rest.Tag.create(tag, tagLoad);
 	} else {
-		Tag.update(tag, tagLoad);
+		Rest.Tag.update(tag, tagLoad);
 	}
 });
 
 $(".tag-delete").on("click", function() {
 	if (confirm('Delete this tag?')) {
 		var tag = $("#tagInput").data("tag");
-		Tag.delete(tag, function() {
+		Rest.Tag.delete(tag, function() {
 			tagLoad();
 			$("#tagId, #tagName, #tagDesc").val('');
 			$("#tagDetail").hide();
@@ -138,10 +144,9 @@ $(".tag-delete").on("click", function() {
 });
 
 function tagLoad() {
-	restCall(PATH + '/info/tag/list', {}, function(tagList) {
-		var $wrap = $("#tagList");
-		$wrap.empty();
-		TagUtils.sort(tagList);
+	Rest.Tag.list(function(tagList) {
+		Util.Tag.sort(tagList);
+		var $tagList = $("#tagList").empty();
 		
 		$.each(tagList, function(idx, tag) {
 			var $tagCard = $tagTemplete.clone();
@@ -152,7 +157,7 @@ function tagLoad() {
 				tagDetail(this);
 			});
 
-			$wrap.append($tagCard);
+			$tagList.append($tagCard);
 		});
 	});
 }
@@ -169,7 +174,7 @@ function tagDetail(tagCard) {
 	$("#tagDesc").val(tag.description);
 	$flayList.empty();
 	
-	restCall(PATH + "/flay/find/tag/" + tag.id , {}, function(flayList) {
+	Rest.Flay.findByTag(tag, function(flayList) {
 		$("#tagDetail").toggle(flayList.length > 0);
 		$tagCard.find(".video-count").html(flayList.length);
 		
@@ -181,7 +186,7 @@ function tagDetail(tagCard) {
 			});
 			var $actressWrap = $flay.find(".actress");
 			$.each(flay.actressList, function(idx2, actressName) {
-				Actress.get(actressName, function(actress) {
+				Rest.Actress.get(actressName, function(actress) {
 					$("<label>", {'class': 'text sm'}).html(actress.name).on("click", function() {
 						View.actress(actress.name);
 					}).appendTo($actressWrap);
@@ -194,13 +199,12 @@ function tagDetail(tagCard) {
 						flay.files.movie.length === 1 ? 'V ' + formatFilesize(flay.length) :
 							flay.files.movie.length + 'V ' + formatFilesize(flay.length)
 			).on("click", function() {
-				Flay.play(flay);
+				Rest.Flay.play(flay);
 			});
 			
 			$flayList.append($flay);
 		});
 	});
-	
 }
 
 tagLoad();

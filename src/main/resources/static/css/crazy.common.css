@@ -455,6 +455,10 @@ label.text.sm {
 	color: #fff;
 }
 
+.favorite {
+	color: red !important;
+}
+
 /* default color for bootstrap 4 */
 .page-item.active .page-link {
     background-color: midnightblue;

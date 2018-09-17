@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Actress Info</title>
+<link rel="stylesheet" href="/webjars/fontawesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/4.1.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/1.12.1/themes/base/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<style type="text/css">
+</style>
+<script type="text/javascript" src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/1.14.3/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
+</head>
+<body>
+
+	<div class="container">
+		<form onsubmit="return false;">
+			<div class="row mt-3">
+				<div class="col-2 text-right">
+					<label class="text hover"><i class="fa fa-star favorite" id="favorite"></i></label>
+				</div>
+				<div class="col">
+					<input class="form-control" name="name" id="name">
+				</div>
+				<div class="col">
+					<input class="form-control" name="localName" id="localName">
+				</div>
+				<div class="col-2">
+					<button class="btn btn-outline-light">Save</button>
+				</div>
+			</div>
+			<div class="row mt-3">
+				<div class="col-3">
+					<input class="form-control" name="birth" id="birth">
+				</div>
+				<div class="col-3">
+					<input class="form-control" name="body" id="body">
+				</div>
+				<div class="col-2">
+					<input class="form-control" name="height" id="height">
+				</div>
+				<div class="col-2">
+					<input class="form-control" name="debut" id="debut">
+				</div>
+				<div class="col-2">
+					<button class="btn btn-outline-light" id="search">Search</button>
+				</div>
+			</div>
+		</form>
+	</div>
+
+	<div class="container-fluid">
+	</div>
+
+<script type="text/javascript">
+var name = reqParam.name;
+
+$("#favorite").on("click", function() {
+	var actress = $("body").data("actress");
+	actress.favorite = !actress.favorite
+	var $self = $(this);
+	Rest.Actress.update(actress, function() {
+		if (actress.favorite) {
+			$self.switchClass('fa-star-o', 'fa-star favorite');
+		} else {
+			$self.switchClass('fa-star favorite', 'fa-star-o');
+		}
+	});
+});
+
+$("#search").on("click", function() {
+	var actress = $("body").data("actress");
+	var keyword = actress.localName != '' ? actress.localName : actress.name;
+	Search.actress(keyword);	
+});
+
+Rest.Actress.get(name, function(actress) {
+	$("body").data("actress", actress);
+	
+	$("#name").val(actress.name);
+	$("#localName").val(actress.localName);
+	$("#birth").val(actress.birth);
+	$("#body").val(actress.body);
+	$("#height").val(actress.height);
+	$("#debut").val(actress.debut);
+	if (!actress.favorite) {
+		$(".fa-star").removeClass("favorite fa-star").addClass("fa-star-o");		
+	}
+});
+</script>
+
+</body>
+</html>

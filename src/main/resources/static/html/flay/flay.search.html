@@ -180,7 +180,7 @@ input {
 						$("<td>").append(
 								$("<label>", {"class": "text sm"}).html("V" + flay.files.movie.length),
 								$("<label>", {"class": "text sm"}).html("S" + flay.files.subtitles.length),
-								$("<label>", {"class": "text sm"}).html(formatFilesize(flay.length))
+								$("<label>", {"class": "text sm"}).html(File.formatSize(flay.length))
 						).css({minWidth: 160}),
 						$("<td>").append(
 							function() {
@@ -339,7 +339,7 @@ input {
 				height: 200,
 				title: result.message,
 			});
-			localStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
+			LocalStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
 		});	
 	});
 	$(".btn-batch-start").on("click", function() {
@@ -365,6 +365,6 @@ input {
 		$(".btn-batch-option[data-type='S']").html('' + val);
 	});
 	
-	$("#downloadDir").val(localStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
+	$("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
 
 </script>

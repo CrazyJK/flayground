@@ -446,7 +446,7 @@ var navigation = {
 			navigation.go(currentIndex + 1);
 		},
 		random: function() {
-			navigation.go(random.getInteger(0, collectedList.length-1));
+			navigation.go(Random.getInteger(0, collectedList.length-1));
 		},
 		go: function(idx) {
 			if (idx < 0 || idx > collectedList.length - 1) {
@@ -592,10 +592,12 @@ function showVideo(direction) {
 		// actress & event
 		$(".info-wrapper-actress").empty()
 		$.each(currentFlay.actressList, function(index, name) {
+			if (name === 'Amateur') {
+				return;
+			}
 			Rest.Actress.get(name, function(actress) {
 				$("<div>").append(
 						// favorite
-						actress.name != 'Amateur' &&
 						$("<label>", {'class': 'text info-favorite'}).append(
 								$("<i>", {'class': "hover fa fa-star" + (actress.favorite ? " favorite" : "-o")}).data("actress", actress)
 						),
@@ -603,11 +605,11 @@ function showVideo(direction) {
 						$("<label>", {'class': 'text hover info-actress'}).data("actress", actress).html(actress.name),
 						$("<label>", {'class': 'text info-actress-extra'}).html(actress.localName),
 						$("<label>", {'class': 'text info-actress-extra'}).html(actress.birth),
-						$("<label>", {'class': 'text info-actress-extra'}).html(ageCalculateAge(actress.birth)),
-						$("<label>", {'class': 'text info-actress-extra'}).html(zeroToEmpty(actress.debut)),
+						$("<label>", {'class': 'text info-actress-extra'}).html(Util.Actress.getAge(actress)),
+						$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut.toBlank()),
 						$("<label>", {'class': 'text info-actress-extra'}).html(actress.bodySize),
-						$("<label>", {'class': 'text info-actress-extra'}).html(zeroToEmpty(actress.height)),
-						$("<label>", {'class': 'text info-actress-extra'}).html('v' + actress.videoCount)
+						$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank()),
+//						$("<label>", {'class': 'text info-actress-extra'}).html('v' + actress.videoCount)
 				).appendTo($(".info-wrapper-actress"));
 			});
 		});
@@ -619,8 +621,8 @@ function showVideo(direction) {
 		var movieSize = currentFlay.files.movie.length;
 		$(".info-video").html(
 				movieSize === 0 ? 'Video' : 
-					movieSize === 1 ? 'V ' + formatFilesize(currentFlay.length) :
-						movieSize + 'V ' + formatFilesize(currentFlay.length)
+					movieSize === 1 ? 'V ' + File.formatSize(currentFlay.length) :
+						movieSize + 'V ' + File.formatSize(currentFlay.length)
 		).toggleClass("nonExist", movieSize === 0);
 		// subtitles
 		$(".info-subtitles").html("Subtitles")
@@ -683,16 +685,4 @@ function decorateRank(rank) {
 	$(".ranker-mark").html(rank);
 }
 
-var todayYear = new Date().getFullYear();
-function ageCalculateAge(birth) {
-	if (birth.length > 3) {
-		return todayYear - parseInt(birth.substring(0, 4)) + 1;
-	} else {
-		return '';
-	}
-}
-
-function zeroToEmpty(number) {
-	return number === 0 ? "" : number;
-}
 

@@ -3,25 +3,6 @@
  */
 var COVER_RATIO = 0.6625;
 
-function Loading() {
-	this.overlay = "#overlay";
-	this.body = "#overlay > #overlay_body";
-	$("html").on("click", this.overlay, function() {
-		$(this).hide();
-	});
-};
-Loading.prototype = {
-		on: function(body) {
-			$(this.body).empty().append(body);
-			$(this.overlay).show();
-		},
-		off: function() {
-			$(this.body).empty();
-			$(this.overlay).hide();
-		}
-};
-var loading = new Loading();
-
 var event = {
 		resize: function() {
 			$(window).on("resize", function() {
@@ -76,11 +57,11 @@ var background = {
 				console.log('image array reset', background.imageIndexArray.length);
 			}
 			// determine image index
-			var imageIndex = background.imageIndexArray.splice(random.getInteger(0, background.imageIndexArray.length-1), 1);
+			var imageIndex = background.imageIndexArray.splice(Random.getInteger(0, background.imageIndexArray.length-1), 1);
 			if ($.isEmptyObject(imageIndex)) {
 				console.log('imageIndex is empty', background.imageIndexArray.length, imageIndex);
 			}
-			var $imageWrap = $("#image_pane_" + random.getInteger(0, 3));
+			var $imageWrap = $("#image_pane_" + Random.getInteger(0, 3));
 			
 			var image = new Image();
 			image.onload = function() {
@@ -89,7 +70,7 @@ var background = {
 				var calcImgHeight = parseInt(calcImgWidth * this.naturalHeight / this.naturalWidth);
 				// append new image
 				$(this).css({height: 0}).addClass("rounded").prependTo($imageWrap).css({height: calcImgHeight}).on("click", function() {
-					popup.imageByNo(imageIndex);
+					Popup.imageByNo(imageIndex);
 				});
 			}
 			image.src = PATH + "/static/image/" + imageIndex;

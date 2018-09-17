@@ -1,6 +1,7 @@
 /**
  * flay utility
  */
+var todayYear = new Date().getFullYear();
 
 var Util = {
 		Tag: {
@@ -51,6 +52,13 @@ var Util = {
 					});
 				}
 				return actressNames;
+			},
+			getAge: function(actress) {
+				if (actress.birth || actress.birth.length > 3) {
+					return todayYear - parseInt(actress.birth.substring(0, 4)) + 1;
+				} else {
+					return '';
+				}
 			}
 		}
 };
@@ -58,13 +66,13 @@ var Util = {
 
 var View = {
 		flay: function(opus) {
-			popup.open(PATH + "/flay/" + opus, "flay-" + opus, 800, 640);
+			Popup.open(PATH + "/flay/" + opus, "flay-" + opus, 800, 640);
 		},
 		video: function(opus) {
-			popup.open(PATH + "/info/video/" + opus, "video-" + opus, 800, 640);
+			Popup.open(PATH + "/info/video/" + opus, "video-" + opus, 800, 640);
 		},
 		actress: function(name) {
-			popup.open(PATH + "/info/actress/" + name, "actress-" + name, 850, 600);
+			Popup.open(PATH + "/html/flay/info.actress.html?name=" + name, "actress-" + name, 850, 600);
 		}
 };
 
@@ -75,19 +83,19 @@ var URL_SEARCH_VIDEO = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=',
 
 var Search = {
 		opus: function(keyword) {
-			popup.open(URL_SEARCH_VIDEO + keyword, 'videoSearch', 1500, 1000);
+			Popup.open(URL_SEARCH_VIDEO + keyword, 'videoSearch', 1500, 1000);
 		},
 		actress: function(keyword) {
-			popup.open(URL_SEARCH_ACTRESS + keyword, 'actressSearch', 1200, 950);
+			Popup.open(URL_SEARCH_ACTRESS + encodeURI(keyword), 'actressSearch', 1200, 950);
 		},
 		torrent: function(keyword) {
-			popup.open(URL_SEARCH_TORRENT + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
+			Popup.open(URL_SEARCH_TORRENT + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
 		},
 		translate: function(message) {
-			popup.open(URL_TRANSLATE + message, 'translate', 1000, 500);
+			Popup.open(URL_TRANSLATE + message, 'translate', 1000, 500);
 		},
 		opusByRandom: function() {
-			var opus = random.getInteger(1, 999);
+			var opus = Random.getInteger(1, 999);
 			Search.opus(opus);
 		}
 };

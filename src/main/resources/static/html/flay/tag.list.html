@@ -196,8 +196,8 @@ function tagDetail(tagCard) {
 			$flay.find(".release").html(flay.release);
 			$flay.find(".movie").html(
 					flay.files.movie.length === 0 ? '' : 
-						flay.files.movie.length === 1 ? 'V ' + formatFilesize(flay.length) :
-							flay.files.movie.length + 'V ' + formatFilesize(flay.length)
+						flay.files.movie.length === 1 ? 'V ' + File.formatSize(flay.length) :
+							flay.files.movie.length + 'V ' + File.formatSize(flay.length)
 			).on("click", function() {
 				Rest.Flay.play(flay);
 			});

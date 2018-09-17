@@ -23,7 +23,7 @@ var agent = navigator.userAgent.toLowerCase(),
 						/android/i.test(agent) ? ANDROID : 'Unknown',
 	DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1";
 
-var popup = {
+var Popup = {
 		/**
 		 * 팝업창을 띄운다. 
 		 * @param url
@@ -73,7 +73,7 @@ var popup = {
 		}
 };
 
-var random = {
+var Random = {
 		get: function(start, end) {
 			return Math.random() * (end - start) + start;
 		},
@@ -105,7 +105,7 @@ var random = {
 		}
 };
 
-var localStorageItem = {
+var LocalStorageItem = {
 		set: function(itemName, itemValue) {
 			typeof(Storage) !== "undefined" && localStorage.setItem(itemName, itemValue);
 		},
@@ -124,13 +124,6 @@ var localStorageItem = {
 		}
 };
 	
-var	reqParam = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
-	return paramPair.split(/=(.+)?/).slice(0, 2);
-}).reduce(function(obj, pairArray) {
-	obj[pairArray[0]] = pairArray[1];
-	return obj;
-}, {});
-
 Date.prototype.format = function(f) { // http://stove99.tistory.com/46
     if (!this.valueOf()) return " ";
     
@@ -168,17 +161,51 @@ String.prototype.string = function(len){var s = '', i = 0; while (i++ < len) { s
 String.prototype.zf = function(len){return "0".string(len - this.length) + this;};
 Number.prototype.zf = function(len){return this.toString().zf(len);};
 
-var formatFilesize = function(length) {
-	var KB = 1024, MB = KB * KB, GB = MB * KB, TB = GB * KB;
-
-	if (length < KB)
-		return length + " B";
-	else if (length < MB)
-		return (length / KB).toFixed(0) + " kB";
-	else if (length < GB)
-		return (length / MB).toFixed(1) + " MB";
-	else if (length < TB)
-		return (length / GB).toFixed(2) + " GB";
-	else
-		return length;
+Number.prototype.toBlank = function() {
+	return this == 0 ? "" : this;
 };
+
+
+var File = {
+		formatSize: function(length) {
+			var KB = 1024, MB = KB * KB, GB = MB * KB, TB = GB * KB;
+
+			if (length < KB)
+				return length + " B";
+			else if (length < MB)
+				return (length / KB).toFixed(0) + " kB";
+			else if (length < GB)
+				return (length / MB).toFixed(1) + " MB";
+			else if (length < TB)
+				return (length / GB).toFixed(2) + " GB";
+			else
+				return length;
+		}
+};
+
+var	reqParam = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
+	return paramPair.split(/=(.+)?/).slice(0, 2);
+}).reduce(function(obj, pairArray) {
+	obj[pairArray[0]] = pairArray[1];
+	return obj;
+}, {});
+
+
+function Loading() {
+	this.overlay = "#overlay";
+	this.body = "#overlay > #overlay_body";
+	$("html").on("click", this.overlay, function() {
+		$(this).hide();
+	});
+};
+Loading.prototype = {
+		on: function(body) {
+			$(this.body).empty().append(body);
+			$(this.overlay).show();
+		},
+		off: function() {
+			$(this.body).empty();
+			$(this.overlay).hide();
+		}
+};
+var loading = new Loading();

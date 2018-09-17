@@ -67,9 +67,6 @@ body {
 .tag-list .nonExist {
 	color: #c5bcbc !important;
 }
-.favorite {
-	color: red !important;
-}
 
 .cover-wrapper {
 	margin: 0 auto 10px;

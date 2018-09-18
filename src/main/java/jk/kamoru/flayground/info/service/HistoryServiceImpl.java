@@ -3,6 +3,7 @@ package jk.kamoru.flayground.info.service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,7 +24,11 @@ public class HistoryServiceImpl implements HistoryService {
 
 	@Override
 	public List<History> find(String query) {
-		return historyRepository.list().stream().filter(h -> h.toFileSaveString().contains(query)).collect(Collectors.toList());
+		return historyRepository.list()
+				.stream()
+				.filter(h -> h.toFileSaveString().contains(query))
+				.sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate()))
+				.collect(Collectors.toList());
 	}
 
 	@Override

@@ -22,20 +22,27 @@ $("#query, #opus").on("keyup", function(e) {
 							$("<label>", {"class": "text sm nowrap"}).html(flay.studio)
 					),
 					$("<td>").append(
-							$("<label>", {"class": "text sm nowrap"}).html(flay.opus)
+							$("<label>", {"class": "text sm nowrap hover"}).html(flay.opus).on("click", function() {
+								View.flay(flay.opus);
+							})
 					),
-					$("<td>").append(
+					$("<td>", {'class': 'nowrap'}).append(
 							$("<label>", {"class": "text sm"}).html("V" + flay.files.movie.length),
 							$("<label>", {"class": "text sm"}).html("S" + flay.files.subtitles.length),
+							$("<label>", {"class": "text sm"}).html("R" + flay.video.rank),
 							$("<label>", {"class": "text sm"}).html(File.formatSize(flay.length))
 					).css({minWidth: 160}),
 					$("<td>").append(
 						function() {
 							var objs = [];
 							$.each(flay.actressList, function(idx, actress) {
-								objs.push(
-										$("<label>", {"class": "text sm nowrap"}).html(actress)
-								);
+								if (actress != 'Amateur') {
+									objs.push(
+											$("<label>", {"class": "text sm nowrap hover"}).html(actress).on("click", function() {
+												View.actress(actress);
+											})
+									);
+								}
 							});
 							return objs;
 						}
@@ -43,8 +50,8 @@ $("#query, #opus").on("keyup", function(e) {
 					$("<td>").append(
 							$("<label>", {"class": "text sm"}).html(flay.release)
 					),
-					$("<td>").append(
-							$("<label>", {"class": "text sm nowrap"}).html(flay.title)
+					$("<td>", {'class': 'nowrap'}).append(
+							$("<label>", {"class": "text sm"}).html(flay.title)
 					)
 			).appendTo($tbody);
 		});
@@ -68,16 +75,16 @@ $("#query, #opus").on("keyup", function(e) {
 		$.each(historyList, function(entryIndex, history) {
 			$("<tr>").append(
 					$("<td>").append(
-							$("<label>", {"class": "text sm"}).html(history.date)
+							$("<label>", {"class": "text sm nowrap"}).html(history.date)
 					),
 					$("<td>").append(
-							$("<label>", {"class": "text sm"}).html(history.opus)
+							$("<label>", {"class": "text sm nowrap"}).html(history.opus)
 					),
 					$("<td>").append(
 							$("<label>", {"class": "text sm"}).html(history.action)
 					),
 					$("<td>").append(
-							$("<label>", {"class": "text sm"}).html(history.desc)
+							$("<label>", {"class": "text sm nowrap"}).html(history.desc)
 					)
 			).appendTo($tbody);
 		});

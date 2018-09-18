@@ -19,11 +19,15 @@ public class StudioInfoService extends InfoServiceAdapter<Studio, String> {
 
 	public Studio findOneByOpus(String opus) {
 		String query = StringUtils.substringBeforeLast(opus, "-");
-		List<Flay> list = flayService.list().stream()
+		if (StringUtils.isBlank(query)) {
+			return new Studio();
+		}
+		
+		List<Flay> list = flayService.list()
+				.stream()
 				.filter(f -> f.getOpus().contains(query))
-				.sorted((f1, f2) -> {
-					return NumberUtils.compare(f2.getLastModified(), f1.getLastModified());
-				}).collect(Collectors.toList());
+				.sorted((f1, f2) -> NumberUtils.compare(f2.getLastModified(), f1.getLastModified()))
+				.collect(Collectors.toList());
 		if (list.size() > 0) {
 			return super.getOrNew(list.get(0).getStudio());
 		} else {

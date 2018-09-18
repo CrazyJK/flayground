@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -43,9 +44,11 @@ public class FlayServiceImpl implements FlayService {
 
 	@Override
 	public Collection<Flay> find(String query) {
-		return instanceFlaySource.list().stream().filter(f -> {
-			return f.getFullname().contains(query);
-		}).collect(Collectors.toList());
+		return instanceFlaySource.list()
+				.stream()
+				.filter(f -> f.getFullname().contains(query))
+				.sorted((f1, f2) -> StringUtils.compare(f2.getRelease(), f1.getRelease()))
+				.collect(Collectors.toList());
 	}
 
 	@Override

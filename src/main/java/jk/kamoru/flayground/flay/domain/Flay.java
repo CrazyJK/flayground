@@ -8,6 +8,8 @@ import java.util.Map;
 
 import org.apache.commons.lang3.math.NumberUtils;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jk.kamoru.flayground.info.domain.Video;
 import lombok.Data;
 
@@ -68,13 +70,18 @@ public class Flay {
 	}
 	
 	public String getFullname() {
+		return String.format("[%s][%s][%s][%s][%s]", studio, opus, title, getActressName(), release);
+	}
+
+	@JsonIgnore
+	public String getActressName() {
 		String actressNames = "";
 		for (int i=0; i<actressList.size(); i++) {
 			if (i > 0)
 				actressNames += ", ";
 			actressNames += actressList.get(i);
 		}
-		return String.format("[%s][%s][%s][%s][%s]", studio, opus, title, actressNames, release);
+		return actressNames;
 	}
 
 }

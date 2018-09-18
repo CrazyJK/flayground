@@ -26,6 +26,7 @@ public class FlayConfig implements WebMvcConfigurer {
 	public static final String PATTERN_DATE = "yyyy-MM-dd";
 	public static final String PATTERN_TIME = "HH:mm:ss";
 	public static final SimpleDateFormat DateTimeFormat = new SimpleDateFormat(PATTERN_DATE + " " + PATTERN_TIME);
+	public static final SimpleDateFormat YYYY_MM_DD_Format = new SimpleDateFormat("yyyy-MM-dd");
 	public static final SimpleDateFormat YYYY_MM_Format = new SimpleDateFormat("yyyy-MM");
 	
 

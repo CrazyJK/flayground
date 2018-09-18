@@ -17,6 +17,10 @@ public interface FlayService {
 
 	Collection<Flay> findByKeyValue(String field, String value);
 
+	Collection<Flay> findCandidates();
+
+	boolean acceptCandidates(String opus);
+
 	void play(String opus);
 
 	void edit(String opus);

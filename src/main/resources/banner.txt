@@ -1,5 +1,30 @@
-Flayground
+${AnsiColor.YELLOW}
+                                                                                                                                                                                  dddddddd
+FFFFFFFFFFFFFFFFFFFFFFlllllll                                                                                                                                                     d::::::d
+F::::::::::::::::::::Fl:::::l                                                                                                                                                     d::::::d
+F::::::::::::::::::::Fl:::::l                                                                                                                                                     d::::::d
+FF::::::FFFFFFFFF::::Fl:::::l                                                                                                                                                     d:::::d 
+  F:::::F       FFFFFF l::::l   aaaaaaaaaaaaa   yyyyyyy           yyyyyyy   ggggggggg   gggggrrrrr   rrrrrrrrr      ooooooooooo   uuuuuu    uuuuuu  nnnn  nnnnnnnn        ddddddddd:::::d 
+  F:::::F              l::::l   a::::::::::::a   y:::::y         y:::::y   g:::::::::ggg::::gr::::rrr:::::::::r   oo:::::::::::oo u::::u    u::::u  n:::nn::::::::nn    dd::::::::::::::d 
+  F::::::FFFFFFFFFF    l::::l   aaaaaaaaa:::::a   y:::::y       y:::::y   g:::::::::::::::::gr:::::::::::::::::r o:::::::::::::::ou::::u    u::::u  n::::::::::::::nn  d::::::::::::::::d 
+  F:::::::::::::::F    l::::l            a::::a    y:::::y     y:::::y   g::::::ggggg::::::ggrr::::::rrrrr::::::ro:::::ooooo:::::ou::::u    u::::u  nn:::::::::::::::nd:::::::ddddd:::::d 
+  F:::::::::::::::F    l::::l     aaaaaaa:::::a     y:::::y   y:::::y    g:::::g     g:::::g  r:::::r     r:::::ro::::o     o::::ou::::u    u::::u    n:::::nnnn:::::nd::::::d    d:::::d 
+  F::::::FFFFFFFFFF    l::::l   aa::::::::::::a      y:::::y y:::::y     g:::::g     g:::::g  r:::::r     rrrrrrro::::o     o::::ou::::u    u::::u    n::::n    n::::nd:::::d     d:::::d 
+  F:::::F              l::::l  a::::aaaa::::::a       y:::::y:::::y      g:::::g     g:::::g  r:::::r            o::::o     o::::ou::::u    u::::u    n::::n    n::::nd:::::d     d:::::d 
+  F:::::F              l::::l a::::a    a:::::a        y:::::::::y       g::::::g    g:::::g  r:::::r            o::::o     o::::ou:::::uuuu:::::u    n::::n    n::::nd:::::d     d:::::d 
+FF:::::::FF           l::::::la::::a    a:::::a         y:::::::y        g:::::::ggggg:::::g  r:::::r            o:::::ooooo:::::ou:::::::::::::::uu  n::::n    n::::nd::::::ddddd::::::dd
+F::::::::FF           l::::::la:::::aaaa::::::a          y:::::y          g::::::::::::::::g  r:::::r            o:::::::::::::::o u:::::::::::::::u  n::::n    n::::n d:::::::::::::::::d
+F::::::::FF           l::::::l a::::::::::aa:::a        y:::::y            gg::::::::::::::g  r:::::r             oo:::::::::::oo   uu::::::::uu:::u  n::::n    n::::n  d:::::::::ddd::::d
+FFFFFFFFFFF           llllllll  aaaaaaaaaa  aaaa       y:::::y               gggggggg::::::g  rrrrrrr               ooooooooooo       uuuuuuuu  uuuu  nnnnnn    nnnnnn   ddddddddd   ddddd
+                                                      y:::::y                        g:::::g                                                                                              
+                                                     y:::::y             gggggg      g:::::g                                                                                              
+                                                    y:::::y              g:::::gg   gg:::::g                                                                                              
+                                                   y:::::y                g::::::ggg:::::::g                                                                                              
+                                                  yyyyyyy                  gg:::::::::::::g                                                                                               
+                                                                             ggg::::::ggg                                                                                                 
+                                                                                gggggg                                                                                                    
 
-${AnsiColor.RED}
+
+${AnsiColor.BLUE}
   ${application.title} ${application.formatted-version} by Spring Boot ${spring-boot.formatted-version}
 ${AnsiColor.WHITE}

@@ -57,6 +57,12 @@ var Rest = {
 			findByTag: function(tag, callback) {
 				restCall("/flay/find/tag/" + tag.id , {}, callback);
 			},
+			findCandidates: function(callback) {
+				restCall("/flay/candidates", {}, callback);
+			},
+			acceptCandidates: function(flay, callback) {
+				restCall('/flay/candidates/' + flay.opus, {method: "PATCH"}, callback);
+			},
 			play: function(flay) {
 				restCall('/flay/play/' + flay.opus, {method: "PATCH"});
 			},

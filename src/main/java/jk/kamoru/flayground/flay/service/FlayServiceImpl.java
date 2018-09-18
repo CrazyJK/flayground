@@ -1,5 +1,6 @@
 package jk.kamoru.flayground.flay.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -21,6 +22,7 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired InfoService<Video, String> videoInfoService;
 	@Autowired FlayActionHandler flayActionHandler;
 	@Autowired HistoryService historyService;
+	@Autowired CandidatesProvider candidatesProvider;
 
 	@Override
 	public Flay get(String key) {
@@ -90,6 +92,25 @@ public class FlayServiceImpl implements FlayService {
 		}
 	}
 
+	@Override
+	public Collection<Flay> findCandidates() {
+		Collection<Flay> candidates = new ArrayList<>();
+		candidatesProvider.initiate();
+		for (Flay flay : instanceFlaySource.list()) {
+			flay.getFiles().get(Flay.CANDI).clear();
+			if (candidatesProvider.findAndFill(flay)) {
+				candidates.add(flay);
+			}
+		}
+		return candidates;
+	}
+	
+	@Override
+	public boolean acceptCandidates(String opus) {
+		Flay flay = instanceFlaySource.get(opus);
+		return candidatesProvider.accept(flay);
+	}
+	
 	@Override
 	public void play(String opus) {
 		Flay flay = instanceFlaySource.get(opus);

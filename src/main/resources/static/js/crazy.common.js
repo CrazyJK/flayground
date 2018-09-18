@@ -60,14 +60,14 @@ var Popup = {
 		image: function(url, name) {
 			var img = new Image();
 			img.onload = function() {
-				popup.open(PATH + '/html/image/image.html?src=' + url, name || url, this.naturalWidth, this.naturalHeight);
+				Popup.open(PATH + '/html/image/image.html?src=' + url, name || url, this.naturalWidth, this.naturalHeight);
 			};
 			img.src = url;
 		},
 		imageByNo: function(no, name) {
 			var img = new Image();
 			img.onload = function() {
-				popup.open(PATH + '/html/image.html?p=' + PATH + '&no=' + no, name || 'image' + no, this.naturalWidth, this.naturalHeight);
+				Popup.open(PATH + '/html/image.html?p=' + PATH + '&no=' + no, name || 'image' + no, this.naturalWidth, this.naturalHeight);
 			};
 			img.src = PATH + '/static/image/' + no;
 		}

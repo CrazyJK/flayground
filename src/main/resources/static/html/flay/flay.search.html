@@ -35,12 +35,15 @@ input {
 		<div class="divider"></div>
 		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
+		<button class="btn btn-warning btn-sm" data-toggle="collapse" data-target="#candidates">Candidates <i class="fa fa-caret-down"></i></button>
+		<div class="divider"></div>
 		<button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader">Page Image Downloader <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
 		<button class="btn btn-danger btn-sm"  data-toggle="collapse" data-target="#batchGroup">Batch <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
 		<button class="btn btn-info btn-sm btn-reload">Reload</button>
 	</nav>
+
 	<div class="container" style="margin-top: 60px;">
 		<div class="card border-primary mt-2 collapse" id="findMode">
 			<div class="card-body">
@@ -61,6 +64,13 @@ input {
 						<button class="btn btn-sm btn-outline-primary btn-find-random-opus">Random Find</button>
 					</div>
 				</div>
+			</div>
+		</div>
+		<div class="card border-warning mt-2 collapse" id="candidates">
+			<div class="card-body">
+				<button class="btn btn-sm btn-outline-warning btn-get-candidates">Get Candidates</button>
+				<ul class="list-unstyled" id="candidatesList">
+				</ul>
 			</div>
 		</div>
 		<div class="card border-success mt-2 collapse" id="pageImageDownloader">
@@ -117,7 +127,7 @@ input {
 				</div>
 			</div>
 		</div>
-		<div id="resultVideoDiv" class="card mt-2" style="overflow:auto">
+		<div id="resultVideoDiv" class="card mt-2 collapse" style="overflow:auto">
 			<div class="card-body"> 
 				<h4 class="card-title">Video <span class="badge badge-light video-count"></span></h4>
 				<table class="table table-sm table-hover table-bordered">
@@ -135,7 +145,7 @@ input {
 				</table>
 			</div>
 		</div>
-		<div id="resultHistoryDiv" class="card mt-2" style="overflow:auto">
+		<div id="resultHistoryDiv" class="card mt-2 collapse" style="overflow:auto">
 			<div class="card-body">
 				<h4 class="card-title">History <span class="badge badge-light history-count"></span></h4>
 				<table class="table table-sm table-hover table-bordered">
@@ -154,217 +164,4 @@ input {
 	</div>
 </div>
 
-<script type="text/javascript">
-
-	$("#query, #opus").on("keyup", function(e) {
-		if (e.keyCode != 13) {
-			return;
-		}
-
-		var keyword = $(this).val();
-	    var rexp = eval('/' + keyword + '/gi');
-
-		// find video
-		Rest.Flay.find(keyword, function(flayList) {
-			$(".video-count").html(flayList.length);
-			
-			var $tbody = $('#foundVideoList').empty();
-			$.each(flayList, function(entryIndex, flay) {
-				$("<tr>").append(
-						$("<td>").append(
-								$("<label>", {"class": "text sm nowrap"}).html(flay.studio)
-						),
-						$("<td>").append(
-								$("<label>", {"class": "text sm nowrap"}).html(flay.opus)
-						),
-						$("<td>").append(
-								$("<label>", {"class": "text sm"}).html("V" + flay.files.movie.length),
-								$("<label>", {"class": "text sm"}).html("S" + flay.files.subtitles.length),
-								$("<label>", {"class": "text sm"}).html(File.formatSize(flay.length))
-						).css({minWidth: 160}),
-						$("<td>").append(
-							function() {
-								var objs = [];
-								$.each(flay.actressList, function(idx, actress) {
-									objs.push(
-											$("<label>", {"class": "text sm nowrap"}).html(actress)
-									);
-								});
-								return objs;
-							}
-						),
-						$("<td>").append(
-								$("<label>", {"class": "text sm"}).html(flay.release)
-						),
-						$("<td>").append(
-								$("<label>", {"class": "text sm nowrap"}).html(flay.title)
-						)
-				).appendTo($tbody);
-			});
-			if (flayList.length === 0) {
-				$("<tr>").append(
-						$("<td>", {'colspan': 6, 'class': 'text-danger'}).html('Not found')
-				).appendTo($tbody);
-			}
-			
- 		   	$tbody.find("label").each(function() {
- 				$(this).html($(this).text().replace(rexp, "<mark>" + keyword + "</mark>"));
- 			});
-		});
-		
-		// find history
-		Rest.History.find(keyword, function(historyList) {
-			$(".history-count").html(historyList.length);
-
-			var $tbody = $('#foundHistoryList').empty();
-			$.each(historyList, function(entryIndex, history) {
-				$("<tr>").append(
-						$("<td>").append(
-								$("<label>", {"class": "text sm"}).html(history.date)
-						),
-						$("<td>").append(
-								$("<label>", {"class": "text sm"}).html(history.opus)
-						),
-						$("<td>").append(
-								$("<label>", {"class": "text sm"}).html(history.action)
-						),
-						$("<td>").append(
-								$("<label>", {"class": "text sm"}).html(history.desc)
-						)
-				).appendTo($tbody);
-			});
-			if (historyList.length === 0) {
-				$("<tr>").append(
-						$("<td>", {'colspan': 4, 'class': 'text-danger'}).html('Not found')
-				).appendTo($tbody);
-			}
- 			
- 		   	$tbody.find("label").each(function() {
- 				$(this).html($(this).text().replace(rexp, "<mark>" + keyword + "</mark>"));
- 			});
-		});
-
-		// find Studio name by opus
-		Rest.Studio.findOneByOpus(keyword, function(studio) {
-			$("#studio").val(studio.name);
-		});
-
-	});
-
-	$(".flay-group > input").on("keyup", function() {
-		var fullname = "";
-		$(".flay-group > input").each(function() {
-			var value = $(this).val();
-			value = $.trim(value);
-			if ($(this).attr("id") === "opus") {
-				value = value.toUpperCase();
-				$("#query").val(value);
-			}
-			fullname += '[' + value + ']';
-		});
-		$("input#fullname").val(fullname);
-	});
-
-	// rowname parsing
-	$("#rowname").on("keyup", function(e) {
-		if (e.keyCode != 13)
-			return;
-		
-		var opus, title, name;
-		var rowname = $(this).val();
-		
-		var braceIndex = rowname.indexOf("]");
-		var secondPart = rowname.substring(braceIndex + 1);
-		var minusIndex = secondPart.lastIndexOf("-");
-		opus  = rowname.substring(0, braceIndex).trim();
-		if (minusIndex > 0) {
-			title = secondPart.substring(0, minusIndex).trim();
-			name  = secondPart.substring(minusIndex + 1).trim();
-		} else {
-			title = secondPart
-			name  = "";			
-		}
-		
-		$("#opus").val(opus).trigger("keyup");
-		Search.opus(opus);
-		Search.translate(title);
-		name != '' && Search.actress(name);
-		
-		console.log(opus, braceIndex, title, minusIndex, name);
-	});
-	
-	// btn event
-	$(".btn-search-opus").on("click", function() {
-		var value = $("#query").val();
-		Search.opus(value);
-	});
-	$(".btn-search-actress").on("click", function() {
-		var value = $("#query").val();
-		Search.actress(value);
-	});
-	$(".btn-search-torrent").on("click", function() {
-		var value = $("#query").val();
-		Search.torrent(value);
-	});
-	$(".btn-reload").on("click", function() {
-		Rest.Batch.reload();
-	});
-	$(".btn-save-cover").on("click", function() {
-		var opus = $("#opus").val();
-		var title = $("#fullname").val();
-		Cover.save(opus, title, function(result) {
-			// TODO
-		});
-	});
-	$(".btn-find-random-opus").on("click", function() {
-		Search.opusByRandom();
-	});
-	$(".btn-download-page-image").on("click", function() {
-		Picture.download($("#downloadPageImageForm").serialize(), function(result) {
-		    $("#notice > p").empty().append(
-					$("<ul>", {'class': 'list-unstyled'}).append(
-							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
-							$("<li>", {'class': 'text-primary'}).append(
-									$("<span>", {'class': 'btn-link pointer'}).on("click", function() {
-										Action.openFolder(result.localPath);
-									}).html(result.localPath)
-							)
-					)
-		    );
-			$("#notice").dialog({
-				classes: {
-				    "ui-dialog": (result.result ? "ui-widget-shadow" : "ui-dialog-danger")
-				},
-				width: 500,
-				height: 200,
-				title: result.message,
-			});
-			LocalStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
-		});	
-	});
-	$(".btn-batch-start").on("click", function() {
-		var type  = $(this).data("type");
-		var title = $(this).text();
-		Rest.Batch.start(type, title);
-	});
-	$(".btn-batch-option").on("click", function() {
-		var $this = $(this);
-		var type  = $this.data("type");
-		Rest.Batch.setOption(type, function(result) {
-			$this.text(result);
-		});
-	});
-
-	Rest.Batch.getOption('W', function(val) {
-		$(".btn-batch-option[data-type='W']").html('' + val);
-	});
-	Rest.Batch.getOption('R', function(val) {
-		$(".btn-batch-option[data-type='R']").html('' + val);
-	});
-	Rest.Batch.getOption('S', function(val) {
-		$(".btn-batch-option[data-type='S']").html('' + val);
-	});
-	
-	$("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
-
-</script>
+<script type="text/javascript" src="/js/flay.search.js"></script>

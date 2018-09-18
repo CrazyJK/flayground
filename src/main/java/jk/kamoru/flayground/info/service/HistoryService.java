@@ -8,6 +8,8 @@ import jk.kamoru.flayground.info.domain.History.Action;
 
 public interface HistoryService {
 
+	List<History> list();
+
 	List<History> find(String query);
 
 	void persist(History history);

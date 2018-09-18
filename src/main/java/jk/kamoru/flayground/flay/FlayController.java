@@ -36,6 +36,16 @@ public class FlayController {
 		return flayService.find(search);
 	}
 
+	@GetMapping("/candidates")
+	public Collection<Flay> findCandidates() {
+		return flayService.findCandidates();
+	}
+
+	@PatchMapping("/candidates/{opus}")
+	public boolean acceptCandidates(@PathVariable String opus) {
+		return flayService.acceptCandidates(opus);
+	}
+
 	@GetMapping("/find/{query}")
 	public Collection<Flay> findList(@PathVariable String query) {
 		return flayService.find(query);

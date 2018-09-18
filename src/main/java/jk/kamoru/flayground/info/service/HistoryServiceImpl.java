@@ -17,6 +17,11 @@ public class HistoryServiceImpl implements HistoryService {
 	@Autowired HistoryRepository historyRepository;
 	
 	@Override
+	public List<History> list() {
+		return historyRepository.list();
+	}
+
+	@Override
 	public List<History> find(String query) {
 		return historyRepository.list().stream().filter(h -> h.toFileSaveString().contains(query)).collect(Collectors.toList());
 	}

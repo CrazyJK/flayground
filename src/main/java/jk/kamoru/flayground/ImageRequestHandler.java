@@ -21,6 +21,7 @@ import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayService;
 import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.image.service.ImageService;
+import jk.kamoru.flayground.info.source.ActressInfoSource;
 
 @Controller
 @RequestMapping("/static")
@@ -28,6 +29,7 @@ public class ImageRequestHandler {
 
 	@Autowired FlayService flayService;
 	@Autowired ImageService<Image> imageService;
+	@Autowired ActressInfoSource actressInfoSource;
 
 	@GetMapping("/cover/{opus}")
 	@ResponseBody
@@ -45,6 +47,12 @@ public class ImageRequestHandler {
 	@ResponseBody
 	public HttpEntity<byte[]> getImageRandom() throws IOException {
 		return getImageEntity(imageService.random().getFile());
+	}
+	
+	@GetMapping("/actress/{name}")
+	@ResponseBody
+	public HttpEntity<byte[]> getActressCover(@PathVariable String name) throws IOException {
+		return getImageEntity(actressInfoSource.get(name).getCover());
 	}
 	
 	HttpEntity<byte[]> getImageEntity(File file) throws IOException {

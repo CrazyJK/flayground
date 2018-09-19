@@ -29,6 +29,14 @@ public class FlayConfig implements WebMvcConfigurer {
 	public static final SimpleDateFormat YYYY_MM_DD_Format = new SimpleDateFormat("yyyy-MM-dd");
 	public static final SimpleDateFormat YYYY_MM_Format = new SimpleDateFormat("yyyy-MM");
 	
+	public static final String HISTORY_FILE_NAME = "history.log";
+	public static final String ACTRESS_FILE_NAME = "actress.json";
+	public static final String  STUDIO_FILE_NAME = "studio.json";
+	public static final String   VIDEO_FILE_NAME = "video.json";
+	public static final String     TAG_FILE_NAME = "tag.json";
+	
+
+
 
 	@Value("${path.video.archive}") String archivePath;
 	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;

@@ -18,4 +18,6 @@ public interface InfoSource<T extends Info<K>, K> {
 
 	void delete(T deleteT);
 	
+	boolean contains(K key);
+
 }

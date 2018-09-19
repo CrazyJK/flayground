@@ -23,15 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
-	private static final String FILE_NAME = "actress.json";
-
 	@Value("${path.info}") String infoPath;
 
 	List<File> coverPool;
 	
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, FILE_NAME);
+		return new File(infoPath, FlayConfig.ACTRESS_FILE_NAME);
 	}
 
 	@Override

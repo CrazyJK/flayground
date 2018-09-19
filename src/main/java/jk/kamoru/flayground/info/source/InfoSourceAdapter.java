@@ -70,4 +70,14 @@ public abstract class InfoSourceAdapter<T extends Info<K>, K> implements InfoSou
 		save();
 	}
 
+	@Override
+	public boolean contains(K key) {
+		for (T t : list) {
+			if (t.getKey().equals(key)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 }

@@ -2,7 +2,6 @@
  * Rest Service
  */
 var restCall = function(url, args, callback) {
-	var PATH = "";
 	var DEFAULTS = {
 			method: "GET",
 			data: {},
@@ -57,6 +56,9 @@ var Rest = {
 			findByTag: function(tag, callback) {
 				restCall("/flay/find/tag/" + tag.id , {}, callback);
 			},
+			findByActress: function(actress, callback) {
+				restCall("/flay/find/actress/" + actress.name , {}, callback);
+			},
 			findCandidates: function(callback) {
 				restCall("/flay/candidates", {}, callback);
 			},
@@ -91,6 +93,9 @@ var Rest = {
 			},
 			update: function(actress, callback) {
 				restCall('/info/actress', {data: actress, method: "PATCH"}, callback);
+			},
+			rename: function(originalName, actress, callback) {
+				restCall('/info/actress/' + originalName, {data: actress, method: "PUT"}, callback);
 			}
 		},
 		Tag: {

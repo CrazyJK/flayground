@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -48,7 +49,13 @@ public class ActressController {
 	public void update(@RequestBody Actress actress) {
 		actressInfoService.update(actress);
 	}
-	
+
+	@PutMapping("/{name}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void rename(@PathVariable String name, @RequestBody Actress actress) {
+		actressInfoService.rename(actress, name);
+	}
+
 	@DeleteMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void delete(@RequestBody Actress actress) {

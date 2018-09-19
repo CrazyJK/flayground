@@ -8,18 +8,17 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.info.domain.Video;
 
 @Repository
 public class VideoInfoSource extends InfoSourceJsonAdapter<Video, String> {
 
-	private static final String FILE_NAME = "video.json";
-	
 	@Value("${path.info}") String infoPath;
 
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, FILE_NAME);
+		return new File(infoPath, FlayConfig.VIDEO_FILE_NAME);
 	}
 
 	@Override

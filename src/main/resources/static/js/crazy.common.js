@@ -21,7 +21,8 @@ var agent = navigator.userAgent.toLowerCase(),
 				/iphone/i.test(agent) ? IPHONE :
 					/ipad/i.test(agent) ? IPAD :
 						/android/i.test(agent) ? ANDROID : 'Unknown',
-	DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1";
+	DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1",
+	PATH = "";
 
 var Popup = {
 		/**

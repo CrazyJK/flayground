@@ -20,9 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Repository
-public class HistoryRepository implements InfoSource<History, Long> {
-
-	private static final String FILE_NAME = "history.log";
+public class HistoryRepository {
 
 	@Value("${path.info}") String infoPath;
 
@@ -30,7 +28,7 @@ public class HistoryRepository implements InfoSource<History, Long> {
 	long id = 0;
 	
 	File getInfoFile() {
-		return new File(infoPath, FILE_NAME);
+		return new File(infoPath, FlayConfig.HISTORY_FILE_NAME);
 	}
 
 	@PostConstruct
@@ -69,35 +67,17 @@ public class HistoryRepository implements InfoSource<History, Long> {
 		}
 	}
 
-	@Override
 	public List<History> list() {
 		return list;
 	}
 
-	@Override
 	public History get(Long id) {
 		return list.get(id.intValue());
 	}
 
-	@Override
 	public History create(History create) {
 		save(create);
 		return create;
-	}
-
-	@Override
-	public History getOrNew(Long key) {
-		throw new IllegalStateException("Not supported method");
-	}
-
-	@Override
-	public void update(History updateT) {
-		throw new IllegalStateException("Not supported method");
-	}
-
-	@Override
-	public void delete(History deleteT) {
-		throw new IllegalStateException("Not supported method");
 	}
 
 }

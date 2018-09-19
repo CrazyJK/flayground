@@ -8,18 +8,17 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.info.domain.Studio;
 
 @Repository
 public class StudioInfoSource extends InfoSourceJsonAdapter<Studio, String> {
 
-	private static final String FILE_NAME = "studio.json";
-
 	@Value("${path.info}") String infoPath;
 
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, FILE_NAME);
+		return new File(infoPath, FlayConfig.STUDIO_FILE_NAME);
 	}
 
 	@Override

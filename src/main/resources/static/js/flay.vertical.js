@@ -221,7 +221,7 @@ function collectList() {
 		} else if (typeof data1 === 'string') {
 			result = data1.toLowerCase().localeCompare(data2.toLowerCase());
 		} else if (typeof data1 === 'object') { // maybe actressList
-			result = Util.Actress.getNames(data1).localeCompare(ActressUtils.getNames(data2));
+			result = Util.Actress.getNames(data1).localeCompare(Util.Actress.getNames(data2));
 		} else {
 			result = data1 > data2 ? 1 : -1;
 		}

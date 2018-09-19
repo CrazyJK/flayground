@@ -44,6 +44,9 @@ var restCall = function(url, args, callback) {
 
 var Rest = {
 		Flay: {
+			get: function(opus, callback) {
+				restCall('/flay/' + opus, {}, callback);
+			},
 			list: function(callback) {
 				restCall('/flay/list', {}, callback);
 			},

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Flay Info</title>
+<link rel="stylesheet" href="/webjars/fontawesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/4.1.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/1.12.1/themes/base/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/css/base.scrollbar.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<style type="text/css">
+.container-flay {
+}
+.flay {
+    background: #00f center no-repeat;
+    background-size: cover;
+	margin: 0 auto;
+	width: 800px;
+	height: calc(800px * var(--cover-ratio));
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/1.14.3/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
+</head>
+<body>
+
+	<div class="container-flay">
+		<div class="card flay">
+			<div class="card-body">
+				<h5 class="card-title"><label class="text lg nowrap" id="title">Title</label></h5>
+				<p class="card-text">
+					<span class="ranker">
+						<label><input type="radio" name="ranker" value="-1"><i class="fa fa-thumbs-down r-1"></i></label>
+						<label><input type="radio" name="ranker" value="0"><i class="fa fa-circle r0"></i></label>
+						<label><input type="radio" name="ranker" value="1"><i class="fa fa-star r1"></i></label>
+						<label><input type="radio" name="ranker" value="2"><i class="fa fa-star r2"></i></label>
+						<label><input type="radio" name="ranker" value="3"><i class="fa fa-star r3"></i></label>
+						<label><input type="radio" name="ranker" value="4"><i class="fa fa-star r4"></i></label>
+						<label><input type="radio" name="ranker" value="5"><i class="fa fa-star r5"></i></label>
+					</span>
+				</p>
+				<p class="card-text"><label class="text" id="studio">Studio</label></p>
+				<p class="card-text"><label class="text" id="opus">Opus</label></p>
+				<p class="card-text actress nowrap"></p>
+				<p class="card-text"><label class="text" id="release">Release</label></p>
+				<p class="card-text"><label class="text hover" id="movie">Movie</label> <label class="text hover" id="subti">Subtitles</label></p>
+				<p class="card-text"><label class="text" id="comment">Comment</label><input id="comment-input" placeholder="Comment"/></p>
+			</div>
+		</div>
+	</div>
+	<div class="container-tag text-center">
+	</div>
+
+<script type="text/javascript">
+var opus = reqParam.opus;
+var flay;
+
+Rest.Flay.get(opus, function(_flay) {
+	flay = _flay;
+	console.log(flay);
+	
+	$flay = $(".flay");
+	$flay.css({backgroundImage: 'url(' + PATH + '/static/cover/' + flay.opus + ')'});
+	
+	$("#title").html(flay.title);
+	$("#studio").html(flay.studio);
+	var $actressWrap = $flay.find(".actress");
+	$.each(flay.actressList, function(idx2, actressName) {
+		Rest.Actress.get(actressName, function(actress) {
+			$("<label>", {'class': 'text hover'}).html(actress.name).on("click", function() {
+				actress.name != 'Amateur' && View.actress(actress.name);
+			}).appendTo($actressWrap);
+		});
+	});
+	$("#opus").html(flay.opus);
+	$("#release").html(flay.release);
+	$("#movie").html(
+			flay.files.movie.length == 0 ? '' : 
+				flay.files.movie.length == 1 ? 'V ' + File.formatSize(flay.length) :
+					flay.files.movie.length + 'V ' + File.formatSize(flay.length)
+	).on("click", function() {
+		Rest.Flay.play(flay);
+	});
+	$("#subti").html(
+			flay.files.subtitles.length == 0 ? '' : 'Sub'
+	).on("click", function() {
+		Rest.Flay.edit(flay);
+	});
+	$("#comment").html(flay.video.comment);
+	$("#comment-input").val(flay.video.comment);
+	$("input[name='ranker'][value='" + flay.video.rank + "']").prop("checked", true);
+
+});
+
+Rest.Tag.list(function(list) {
+	tagList = list;
+	Util.Tag.sort(tagList);
+	$.each(tagList, function(idx, tag) {
+		$("<label>", {'class': 'input sm'}).append(
+				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag),
+				$("<span>", {title: tag.description}).html(tag.name)
+		).appendTo($(".container-tag"));
+	});
+});
+
+</script>
+
+</body>
+</html>

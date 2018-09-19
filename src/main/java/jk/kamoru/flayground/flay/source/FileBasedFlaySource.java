@@ -40,7 +40,7 @@ public class FileBasedFlaySource implements FlaySource {
 			File dir = new File(path);
 			if (dir.isDirectory()) {
 				Collection<File> found = FileUtils.listFiles(dir, null, true);
-				log.info("{} list files in {}", found.size(), dir);
+				log.info(String.format("%5s file    - %s", found.size(), dir));
 				listFiles.addAll(found);
 			}
 			else {
@@ -60,7 +60,7 @@ public class FileBasedFlaySource implements FlaySource {
 				} else if ("history.log tag.data".contains(file.getName())) {
 					// v1 info file. pass!!
 				} else {
-					log.warn("invalid file {}", file);
+					log.warn(" invalid file - {}", file);
 				}
 				continue;
 			}
@@ -75,7 +75,7 @@ public class FileBasedFlaySource implements FlaySource {
 			
 			flayFactory.addFile(flay, file);
 		}
-		log.info("[Flay] {} loaded", flayMap.size());
+		log.info(String.format("%5s flay", flayMap.size()));
 	}
 
 	@Override

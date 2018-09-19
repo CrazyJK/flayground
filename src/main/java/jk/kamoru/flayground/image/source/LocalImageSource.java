@@ -2,6 +2,7 @@ package jk.kamoru.flayground.image.source;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import javax.annotation.PostConstruct;
@@ -28,13 +29,14 @@ public class LocalImageSource implements ImageSource<Image> {
 		for (String path : imagePaths) {
 			File dir = new File(path);
 			if (dir.isDirectory()) {
-				log.info("Image scanning ... {}", dir);
-				for (File file : FileUtils.listFiles(dir, null, true)) {
+				Collection<File> listFiles = FileUtils.listFiles(dir, null, true);
+				log.info(String.format("%5s file    - %s", listFiles.size(), dir));
+				for (File file : listFiles) {
 					imageList.add(new Image(file));
 				}
 			}
 		}
-		log.info("[Image] {} loaded", size());
+		log.info(String.format("%5s Image", size()));
 	}
 
 	@Override

@@ -51,7 +51,7 @@ public class BatchService {
 	
 	public static final String BACKUP_INSTANCE_FILENAME = "flay-instance.csv";
 	public static final String BACKUP_ARCHIVE_FILENAME = "flay-archive.csv";
-	public static final String BACKUP_FILENAME = "flayground.zip";
+	public static final String BACKUP_FILENAME = "flayground.jar";
 	
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired FlaySource  archiveFlaySource;
@@ -136,6 +136,8 @@ public class BatchService {
 			deleteLowerRank();
 		if (deleteLowerScore)
 			deleteLowerScore();
+		
+		assembleFlay();
 		deleteEmptyFolder();
 		reload();
 	}
@@ -147,6 +149,7 @@ public class BatchService {
 	}
 
 	private void moveWatched() {
+		log.info("[moveWatched]");
 		for (Flay flay : instanceFlaySource.list()) {
 			if (flay.getVideo().getRank() > 0 && flay.getVideo().getPlay() > 0) {
 				for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
@@ -163,6 +166,7 @@ public class BatchService {
 	}
 
 	private void deleteLowerRank() {
+		log.info("[deleteLowerRank]");
 		for (Flay flay : instanceFlaySource.list()) {
 			if (flay.getVideo().getRank() < 0) {
 				log.info("lower rank {}", flay.getOpus());
@@ -172,6 +176,7 @@ public class BatchService {
 	}
 
 	private void deleteLowerScore() {
+		log.info("[deleteLowerScore]");
 		long lengthSum = 0;
 		long storageSize = storageGbSize * FileUtils.ONE_GB;
 		List<Flay> sorted = instanceFlaySource.list().stream().sorted((f1, f2) -> NumberUtils.compare(ScoreCalculator.calc(f2), ScoreCalculator.calc(f1))).collect(Collectors.toList());
@@ -185,10 +190,56 @@ public class BatchService {
 	}
 
 	public void reload() {
+		log.info("[reload]");
 		instanceFlaySource.load();
 	}
 
+	private void assembleFlay() {
+		log.info("[assembleFlay]");
+		for (Flay flay : instanceFlaySource.list()) {
+			File delegatePath = getDelegatePath(flay);
+			log.debug("assemble {} : {}", flay.getOpus(), delegatePath);
+			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
+				// String key = entry.getKey();
+				List<File> value = entry.getValue();
+				for (File file : value) {
+					if (!delegatePath.equals(file.getParentFile())) {
+						log.info("move {} to {}", flay.getOpus(), file);
+						moveFileToDirectory(file, delegatePath);
+					}
+				}
+			}
+		}
+	}
+
+	private File getDelegatePath(Flay flay) {
+		int movieSize = flay.getFiles().get(Flay.MOVIE).size();
+		int coverSize = flay.getFiles().get(Flay.COVER).size();
+		
+		if (movieSize > 0) {
+			String path = flay.getFiles().get(Flay.MOVIE).get(0).getParent();
+			if (StringUtils.equalsAny(path, stagePaths)) { // stage 같은 경로에 있으면, 날자 sub폴더
+				return new File(path, flay.getRelease().substring(0, 4));
+			} else if (StringUtils.equals(path, storagePath)) { // storage 같은 경로에 있으면, studio sub폴더
+				return new File(path, flay.getStudio());
+			} else if (StringUtils.startsWithAny(path, stagePaths) || StringUtils.startsWith(path, storagePath)) { // 하위에 있으면 현폴더
+				return new File(path);
+			}
+		} else if (coverSize > 0) {
+			String path = flay.getFiles().get(Flay.COVER).get(0).getParent();
+			if (StringUtils.equalsAny(path, coverPaths)) { // cover 같은 경로에 있으면, 날자 sub폴더 
+				return new File(path, flay.getRelease().substring(0, 4));
+			} else if (StringUtils.startsWithAny(path, coverPaths)) { // 하위 경로에 있으면, 현폴더
+				return new File(path);
+			}
+		}
+		
+		log.info("Not determine delegate path, move to Queue. {}", flay.getOpus());
+		return new File(queuePath);
+	}
+
 	private void deleteEmptyFolder() {
+		log.info("deleteEmptyFolder");
 		List<Path> paths = new ArrayList<>();
 		for (String dir : emptyManagedPath) {
 			try {
@@ -197,8 +248,7 @@ public class BatchService {
 
 					@Override
 					public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-						if (!start.equals(dir) 
-								&& !Files.newDirectoryStream(dir).iterator().hasNext()) {
+						if (!start.equals(dir) && !Files.newDirectoryStream(dir).iterator().hasNext()) {
 							paths.add(dir);
 						}
 						return super.preVisitDirectory(dir, attrs);
@@ -224,16 +274,15 @@ public class BatchService {
 		}
 		log.info("Backup START [{}]", backupPath);
 
-		File backupFile = new File(backupPath, BACKUP_FILENAME);
+		final String CSV_HEADER = "Studio,Opus,Title,Actress,Released,Rank,Fullname";
+		final String CSV_FORMAT = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
+
+		File backupFile     = new File(backupPath, BACKUP_FILENAME);
 		File backupRootPath = new File(queuePath, "backup_" + FlayConfig.YYYY_MM_DD_Format.format(new Date()));
-		File backupInfoPath = new File(backupRootPath, "info");
 		File backupFilePath = new File(backupRootPath, "file");
 		createDirectory(backupRootPath);
-		createDirectory(backupInfoPath);
+		cleanDirectory(backupRootPath);
 		createDirectory(backupFilePath);
-		
-		final String csvHeader = "Studio, Opus, Title, Actress, Released, Rank, Fullname";
-		final String csvFormat = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
 
 		// video list backup to csv
 		Collection<Flay> instanceFlayList = instanceFlaySource.list();
@@ -244,20 +293,20 @@ public class BatchService {
 		List<String>     archiveList = new ArrayList<>();
 
 		// instance info
-		instanceList.add(csvHeader);
+		log.info("Backup Instance {}", BACKUP_INSTANCE_FILENAME);
+		instanceList.add(CSV_HEADER);
 		for (Flay flay : instanceFlayList) {
-			instanceList.add(
-					String.format(csvFormat, 
-							flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), flay.getVideo().getRank(), flay.getFullname()));
+			instanceList.add(String.format(CSV_FORMAT, 
+					flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), flay.getVideo().getRank(), flay.getFullname()));
 		}
 		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_FILENAME), instanceList); 
 		
 		// archive info
-		archiveList.add(csvHeader);
+		log.info("Backup Archive  {}", BACKUP_ARCHIVE_FILENAME);
+		archiveList.add(CSV_HEADER);
 		for (Flay flay : archiveFlayList) {
-			archiveList.add(
-					String.format(csvFormat, 
-							flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), "", flay.getFullname()));
+			archiveList.add(String.format(CSV_FORMAT, 
+					flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), "", flay.getFullname()));
 		}
 		for (History history : historyList) {
 			String opus = history.getOpus();
@@ -269,14 +318,16 @@ public class BatchService {
 				}
 			}
 			if (!foundInArchive)
-				archiveList.add(String.format(csvFormat, "", history.getOpus(), "", "", "", "", history.getDesc()));
+				archiveList.add(String.format(CSV_FORMAT, "", history.getOpus(), "", "", "", "", history.getDesc()));
 		}
 		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_FILENAME),  archiveList);
 
 		// Info folder copy
-		copyDirectoryToDirectory(new File(infoPath), backupInfoPath);
+		log.info("Backup Info     {}", infoPath);
+		copyDirectoryToDirectory(new File(infoPath), backupRootPath);
 		
 		// Cover, Subtitlea file copy
+		log.info("Backup File     {}", backupFilePath);
 		for (Flay flay : instanceFlayList) {
 			for (File file : flay.getFiles().get(Flay.COVER))
 				copyFileToDirectory(file, backupFilePath);
@@ -290,9 +341,8 @@ public class BatchService {
 				copyFileToDirectory(file, backupFilePath);
 		}
 		
+		log.info("Backup Compress {}", backupFile);
 		compress(backupRootPath, backupFile);
-		
-		deleteDirectory(backupRootPath);
 
 		log.info("Backup END");
 	}
@@ -305,7 +355,6 @@ public class BatchService {
 		}
 	}
 
-	@SuppressWarnings("unused")
 	private void cleanDirectory(File directory) {
 		try {
 			FileUtils.cleanDirectory(directory);
@@ -332,7 +381,7 @@ public class BatchService {
 
 	private void copyFileToDirectory(File srcFile, File destFile) {
 		try {
-			FileUtils.copyFile(srcFile, destFile);
+			FileUtils.copyFileToDirectory(srcFile, destFile);
 		} catch (IOException e) {
 			throw new IllegalStateException(e);
 		}
@@ -360,13 +409,19 @@ public class BatchService {
 	}
 
 	private void compress(File srcFile, File destinationFile) {
-		List<String> commands = Arrays.asList("jar", "cvf", destinationFile.getAbsolutePath(), srcFile.getAbsolutePath());
+		List<String> commands = Arrays.asList("jar", "cvfM", destinationFile.getAbsolutePath(), "-C", srcFile.getAbsolutePath(), ".");
+		File logFile = new File(srcFile.getParentFile(), srcFile.getName() + ".log");
 		ProcessBuilder builder = new ProcessBuilder(commands);
-		builder.redirectOutput(Redirect.INHERIT);
+		builder.redirectOutput(Redirect.to(logFile));
 		builder.redirectError(Redirect.INHERIT);
 		try {
-			builder.start();
-		} catch (IOException e) {
+			log.info("compress {}", commands);
+			Process process = builder.start();
+			process.waitFor();
+			log.info("compress completed");
+			deleteDirectory(srcFile);
+			log.info("compress src delete");
+		} catch (IOException | InterruptedException e) {
 			throw new IllegalStateException("Fail to jar", e);
 		}
 	}

@@ -55,7 +55,7 @@ public class HistoryRepository implements InfoSource<History, Long> {
 				history.setDesc(StringUtils.substringBetween(split[3], "\"", "\""));
 			list.add(history);
 		}
-		log.info("[{}] {} loaded", FILE_NAME, list.size());	
+		log.info(String.format("%5s history - %s", list.size(), getInfoFile()));
 	}
 
 	synchronized void save(History history) {

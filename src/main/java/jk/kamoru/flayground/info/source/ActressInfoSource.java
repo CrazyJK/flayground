@@ -81,7 +81,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 				}
 				return false;
 			}}));
-		log.info("[Actress cover] {} loaded", coverPool.size());
+		log.info(String.format("%5s actress cover", coverPool.size()));
 	}
 	
 }

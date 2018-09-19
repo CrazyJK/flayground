@@ -6,6 +6,8 @@ import java.util.List;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FilenameUtils;
+
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -23,7 +25,7 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> extends InfoSo
 		ObjectMapper mapper = new ObjectMapper();
 		try {
 			list = mapper.readValue(infoFile, getTypeReference());
-			log.info("[{}] {} loaded", getInfoFile().getName(), list.size());
+			log.info(String.format("%5s %-7s - %s", list.size(), FilenameUtils.getBaseName(infoFile.getName()), getInfoFile()));
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to load info file " + infoFile, e);
 		}	

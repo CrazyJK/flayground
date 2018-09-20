@@ -96,18 +96,8 @@ h1 {
 	</div>
 	
 	<div id="tagDetail">
-		<label class="float-right hover"><i class="fa fa-times"></i></label>
-		<div class="flay-list">
-			<div class="card flay">
-				<div class="card-body">
-					<h5 class="card-title"><label class="text sm title nowrap">Title</label></h5>
-					<p class="card-text actress nowrap"></p>
-					<p class="card-text"><label class="text sm opus">Opus</label></p>
-					<p class="card-text"><label class="text sm release">Release</label></p>
-					<p class="card-text"><label class="text sm movie">Movie</label></p>
-				</div>
-			</div>
-		</div>
+		<div class="text-right"><i class="fa fa-times hover"></i></div>
+		<div class="flay-list"></div>
 	</div>
 
 </div>
@@ -179,30 +169,11 @@ function tagDetail(tagCard) {
 		$tagCard.find(".video-count").html(flayList.length);
 		
 		$.each(flayList, function(idx, flay) {
-			$flay = $flayTemplete.clone();
-			$flay.css({backgroundImage: 'url(' + PATH + '/static/cover/' + flay.opus + ')'});
-			$flay.find(".title").html(flay.title).on("click", function() {
-				View.flay(flay.opus);
+			$flayList.appendFlayCard(flay, {
+				width: 300,
+				exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT],
+				fontSize: '80%'
 			});
-			var $actressWrap = $flay.find(".actress");
-			$.each(flay.actressList, function(idx2, actressName) {
-				Rest.Actress.get(actressName, function(actress) {
-					$("<label>", {'class': 'text sm'}).html(actress.name).on("click", function() {
-						View.actress(actress.name);
-					}).appendTo($actressWrap);
-				});
-			});
-			$flay.find(".opus").html(flay.opus);
-			$flay.find(".release").html(flay.release);
-			$flay.find(".movie").html(
-					flay.files.movie.length === 0 ? '' : 
-						flay.files.movie.length === 1 ? 'V ' + File.formatSize(flay.length) :
-							flay.files.movie.length + 'V ' + File.formatSize(flay.length)
-			).on("click", function() {
-				Rest.Flay.play(flay);
-			});
-			
-			$flayList.append($flay);
 		});
 	});
 }

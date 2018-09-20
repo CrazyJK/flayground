@@ -1,0 +1,34 @@
+@charset "UTF-8";
+
+.flay-list {
+	text-align: center;
+}
+.flay-list > .card.flay-card {
+    display: inline-flex;
+/* 	box-shadow: 0 0 0.5rem 0.25rem rgba(255, 255, 255, 0.5); */
+	margin: 0.5rem;
+    width: 300px;
+    height: calc(300px * var(--cover-ratio));
+}
+.flay-list > .card.flay-card > .card-body {
+    border-radius: 0.25rem;
+	padding: 0.125rem;
+}
+.flay-list > .card.flay-card > .card-body > .card-title {
+	margin-bottom: 0;
+}
+.flay-list > .card.flay-card > .card-body > .card-title > .flay-title {
+	max-width: 290px;
+}
+.flay-list > .card.flay-card > .card-body > .card-text {
+	margin: 0;
+}
+
+.card.flay-card {
+    border: 0;
+}
+.card.flay-card > .card-body {
+    background: #00f center no-repeat;
+    background-size: cover;
+    text-align: left;
+}

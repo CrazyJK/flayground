@@ -22,7 +22,8 @@ var agent = navigator.userAgent.toLowerCase(),
 					/ipad/i.test(agent) ? IPAD :
 						/android/i.test(agent) ? ANDROID : 'Unknown',
 	DEFAULT_SPECS = "toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1",
-	PATH = "";
+	PATH = "",
+	COVER_RATIO = 0.6625;
 
 var Popup = {
 		/**

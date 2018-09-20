@@ -8,37 +8,12 @@
 <link rel="stylesheet" href="/webjars/jquery-ui/1.12.1/themes/base/jquery-ui.min.css"/>
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css"/>
+<link rel="stylesheet" href="/css/flay.view.card.css"/>
 <style type="text/css">
 .flay-list {
-	text-align: center;
 	margin-top: 7rem;
 	margin-bottom: 1rem;
 }
-.flay-list .flay {
-    display: inline-flex;
-    background: #00f center no-repeat;
-    background-size: cover;
-    border: 0;
-    border-radius: 0.25rem;
-    box-shadow: 0 0 0.5rem 0.25rem rgba(255, 255, 255, 0.5);
-    text-align: left;
-	margin: 0.5rem;
-    width: 300px;
-    height: calc(300px * var(--cover-ratio));
-}
-.flay-list .flay .title {
-	max-width: 290px;
-}
-.card.flay > .card-body {
-	padding: 0.125rem;
-}
-.card.flay > .card-body > .card-title {
-	margin-bottom: 0;
-}
-.card.flay > .card-body > .card-text {
-	margin: 0;
-}
-
 </style>
 <script type="text/javascript" src="/webjars/jquery/3.3.1/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/1.14.3/umd/popper.js"></script>
@@ -48,6 +23,7 @@
 <script type="text/javascript" src="/js/crazy.jquery.js"></script>
 <script type="text/javascript" src="/js/flay.rest.service.js"></script>
 <script type="text/javascript" src="/js/flay.utils.js"></script>
+<script type="text/javascript" src="/js/flay.view.card.js"></script>
 </head>
 <body>
 
@@ -82,22 +58,13 @@
 				</div>
 				<div class="col-2">
 					<button class="btn btn-outline-light" id="search">Search</button>
+					<span class="badge badge-light video-count"></span>
 				</div>
 			</div>
 		</form>
 	</nav>
 
-	<div class="flay-list">
-		<div class="card flay">
-			<div class="card-body">
-				<h5 class="card-title"><label class="text sm title hover nowrap">Title</label></h5>
-				<p class="card-text actress nowrap"></p>
-				<p class="card-text"><label class="text sm opus">Opus</label></p>
-				<p class="card-text"><label class="text sm release">Release</label></p>
-				<p class="card-text"><label class="text sm movie hover">Movie</label></p>
-			</div>
-		</div>
-	</div>
+	<div class="flay-list"></div>
 
 <script type="text/javascript">
 var name = reqParam.name;
@@ -162,36 +129,18 @@ Rest.Actress.get(name, function(_actress) {
 	
 	var $flayTemplete = $(".flay");
 	Rest.Flay.findByActress(actress, function(flayList) {
+		$(".video-count").html(flayList.length);
+		
 		var $flayList = $(".flay-list").empty();
+		
 		$.each(flayList, function(idx, flay) {
-			$flay = $flayTemplete.clone();
-			$flay.css({backgroundImage: 'url(' + PATH + '/static/cover/' + flay.opus + ')'});
-			$flay.find(".title").html(flay.title).on("click", function() {
-				View.flay(flay.opus);
+			$flayList.appendFlayCard(flay, {
+				width: 300,
+				exclude: [ACTRESS, MODIFIED, RANK, COMMENT],
+				fontSize: '80%'
 			});
-			var $actressWrap = $flay.find(".actress");
-			$.each(flay.actressList, function(idx2, actressName) {
-				if (actressName === actress.name) {
-					return;
-				}
-				Rest.Actress.get(actressName, function(actress) {
-					$("<label>", {'class': 'text sm hover'}).html(actress.name).on("click", function() {
-						View.actress(actress.name);
-					}).appendTo($actressWrap);
-				});
-			});
-			$flay.find(".opus").html(flay.opus);
-			$flay.find(".release").html(flay.release);
-			$flay.find(".movie").html(
-					flay.files.movie.length === 0 ? '' : 
-						flay.files.movie.length === 1 ? 'V ' + File.formatSize(flay.length) :
-							flay.files.movie.length + 'V ' + File.formatSize(flay.length)
-			).on("click", function() {
-				Rest.Flay.play(flay);
-			});
-			
-			$flayList.append($flay);
 		});
+
 	});
 
 });

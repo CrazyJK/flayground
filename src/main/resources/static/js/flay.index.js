@@ -1,7 +1,6 @@
 /**
  * 
  */
-var COVER_RATIO = 0.6625;
 
 var event = {
 		resize: function() {

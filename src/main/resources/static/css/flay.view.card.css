@@ -26,6 +26,7 @@
 
 .card.flay-card {
     border: 0;
+    margin: auto;
 }
 .card.flay-card > .card-body {
     background: #00f center no-repeat;
@@ -40,4 +41,7 @@
 
 .flay-file-group {
 	font-family: 'D2Coding';
+}
+.flay-file {
+	font-size: .875rem;
 }

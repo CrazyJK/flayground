@@ -37,16 +37,6 @@ public class FlayController {
 		return flayService.find(search);
 	}
 
-	@GetMapping("/candidates")
-	public Collection<Flay> findCandidates() {
-		return flayService.findCandidates();
-	}
-
-	@PatchMapping("/candidates/{opus}")
-	public boolean acceptCandidates(@PathVariable String opus) {
-		return flayService.acceptCandidates(opus);
-	}
-
 	@GetMapping("/find/{query}")
 	public Collection<Flay> findList(@PathVariable String query) {
 		return flayService.find(query);
@@ -55,6 +45,17 @@ public class FlayController {
 	@GetMapping("/find/{field}/{value}")
 	public Collection<Flay> findByFieldValue(@PathVariable String field, @PathVariable String value) {
 		return flayService.findByKeyValue(field, value);
+	}
+
+	@GetMapping("/candidates")
+	public Collection<Flay> findCandidates() {
+		return flayService.findCandidates();
+	}
+
+	@PatchMapping("/candidates/{opus}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void acceptCandidates(@PathVariable String opus) {
+		flayService.acceptCandidates(opus);
 	}
 
 	@PatchMapping("/play/{opus}")
@@ -74,4 +75,11 @@ public class FlayController {
 	public void rename(@PathVariable String opus, @RequestBody Flay flay) {
 		flayService.rename(opus, flay);
 	}
+	
+	@PutMapping("/open/folder")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void openFolder(@RequestBody String folder) {
+		flayService.openFolder(folder);
+	}
+
 }

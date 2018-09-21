@@ -1,16 +1,18 @@
 package jk.kamoru.flayground.flay.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
-import jk.kamoru.flayground.flay.source.FlayFactory;
 import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
 import jk.kamoru.flayground.info.domain.Video;
@@ -27,8 +29,9 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired FlayActionHandler flayActionHandler;
 	@Autowired HistoryService historyService;
 	@Autowired CandidatesProvider candidatesProvider;
-	@Autowired FlayFactory flayFactory;
 
+	@Value("${path.video.stage}") String[] stagePaths;
+	
 	@Override
 	public Flay get(String key) {
 		return instanceFlaySource.get(key);
@@ -95,9 +98,17 @@ public class FlayServiceImpl implements FlayService {
 	}
 	
 	@Override
-	public boolean acceptCandidates(String opus) {
+	public void acceptCandidates(String opus) {
 		Flay flay = instanceFlaySource.get(opus);
-		return candidatesProvider.accept(flay);
+		List<File> candiList = flay.getFiles().get(Flay.CANDI);
+		List<File> movieList = flay.getFiles().get(Flay.MOVIE);
+		File stagePath = new File(stagePaths[0]);
+		for (File file : candiList) {
+			FlayFileHandler.moveFileToDirectory(file, stagePath);
+			movieList.add(new File(stagePath, file.getName()));
+		}
+		candiList.clear();
+		FlayFileHandler.rename(flay);
 	}
 	
 	@Override
@@ -121,6 +132,11 @@ public class FlayServiceImpl implements FlayService {
 		}
 		Flay flay = instanceFlaySource.get(opus);
 		FlayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
+	}
+
+	@Override
+	public void openFolder(String folder) {
+		flayActionHandler.openFolder(folder);
 	}
 
 }

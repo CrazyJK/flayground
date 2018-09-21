@@ -19,12 +19,14 @@ public interface FlayService {
 
 	Collection<Flay> findCandidates();
 
-	boolean acceptCandidates(String opus);
+	void acceptCandidates(String opus);
 
 	void play(String opus);
 
 	void edit(String opus);
 
 	void rename(String opus, Flay flay);
+
+	void openFolder(String folder);
 
 }

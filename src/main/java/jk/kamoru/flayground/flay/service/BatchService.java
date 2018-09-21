@@ -12,6 +12,7 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -23,7 +24,6 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -52,7 +52,9 @@ public class BatchService {
 	public static final String BACKUP_INSTANCE_FILENAME = "flay-instance.csv";
 	public static final String BACKUP_ARCHIVE_FILENAME = "flay-archive.csv";
 	public static final String BACKUP_FILENAME = "flayground.jar";
-	
+
+	NumberFormat numberFormat = NumberFormat.getNumberInstance();
+
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired FlaySource  archiveFlaySource;
 	@Autowired HistoryService historyService;
@@ -157,7 +159,7 @@ public class BatchService {
 						if (!file.getPath().startsWith(storagePath)) {
 							File destDir = new File(storagePath, flay.getStudio());
 							log.info("move {} to {}", file, destDir);
-							moveFileToDirectory(file, destDir);
+							FlayFileHandler.moveFileToDirectory(file, destDir);
 						}
 					}
 				}
@@ -179,11 +181,14 @@ public class BatchService {
 		log.info("[deleteLowerScore]");
 		long lengthSum = 0;
 		long storageSize = storageGbSize * FileUtils.ONE_GB;
-		List<Flay> sorted = instanceFlaySource.list().stream().sorted((f1, f2) -> NumberUtils.compare(ScoreCalculator.calc(f2), ScoreCalculator.calc(f1))).collect(Collectors.toList());
+		List<Flay> sorted = instanceFlaySource.list().stream()
+				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0 && f.getVideo().getRank() > 0 && f.getVideo().getPlay() > 0)
+				.sorted((f1, f2) -> ScoreCalculator.compare(f2, f1))
+				.collect(Collectors.toList());
 		for (Flay flay : sorted) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {
-				log.info("lower score {} {}", flay.getOpus(), ScoreCalculator.calc(flay));
+				log.info("lower score {} score={} over {}", flay.getOpus(), ScoreCalculator.calc(flay), prettyFileLength(lengthSum));
 				archiving(flay);
 			}
 		}
@@ -204,8 +209,8 @@ public class BatchService {
 				List<File> value = entry.getValue();
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
-						log.info("move {} to {}", flay.getOpus(), file);
-						moveFileToDirectory(file, delegatePath);
+						log.info("move [{}] {} to {}", flay.getOpus(), file, delegatePath);
+						FlayFileHandler.moveFileToDirectory(file, delegatePath);
 					}
 				}
 			}
@@ -239,7 +244,7 @@ public class BatchService {
 	}
 
 	private void deleteEmptyFolder() {
-		log.info("deleteEmptyFolder");
+		log.info("[deleteEmptyFolder]");
 		List<Path> paths = new ArrayList<>();
 		for (String dir : emptyManagedPath) {
 			try {
@@ -280,9 +285,9 @@ public class BatchService {
 		File backupFile     = new File(backupPath, BACKUP_FILENAME);
 		File backupRootPath = new File(queuePath, "backup_" + FlayConfig.YYYY_MM_DD_Format.format(new Date()));
 		File backupFilePath = new File(backupRootPath, "file");
-		createDirectory(backupRootPath);
-		cleanDirectory(backupRootPath);
-		createDirectory(backupFilePath);
+		FlayFileHandler.createDirectory(backupRootPath);
+		FlayFileHandler.cleanDirectory(backupRootPath);
+		FlayFileHandler.createDirectory(backupFilePath);
 
 		// video list backup to csv
 		Collection<Flay> instanceFlayList = instanceFlaySource.list();
@@ -324,75 +329,27 @@ public class BatchService {
 
 		// Info folder copy
 		log.info("Backup Info     {}", infoPath);
-		copyDirectoryToDirectory(new File(infoPath), backupRootPath);
+		FlayFileHandler.copyDirectoryToDirectory(new File(infoPath), backupRootPath);
 		
 		// Cover, Subtitlea file copy
 		log.info("Backup File     {}", backupFilePath);
 		for (Flay flay : instanceFlayList) {
 			for (File file : flay.getFiles().get(Flay.COVER))
-				copyFileToDirectory(file, backupFilePath);
+				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
 			for (File file : flay.getFiles().get(Flay.SUBTI))
-				copyFileToDirectory(file, backupFilePath);
+				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
 		}
 		for (Flay flay : archiveFlayList) {
 			for (File file : flay.getFiles().get(Flay.COVER))
-				copyFileToDirectory(file, backupFilePath);
+				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
 			for (File file : flay.getFiles().get(Flay.SUBTI))
-				copyFileToDirectory(file, backupFilePath);
+				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
 		}
 		
 		log.info("Backup Compress {}", backupFile);
 		compress(backupRootPath, backupFile);
 
 		log.info("Backup END");
-	}
-	
-	private void createDirectory(File directory) {
-		try {
-			Files.createDirectories(directory.toPath());
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	private void cleanDirectory(File directory) {
-		try {
-			FileUtils.cleanDirectory(directory);
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	private void deleteDirectory(File directory) {
-		try {
-			FileUtils.deleteDirectory(directory);
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	private void copyDirectoryToDirectory(File srcDir, File destDir) {
-		try {
-			FileUtils.copyDirectoryToDirectory(srcDir, destDir);
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	private void copyFileToDirectory(File srcFile, File destFile) {
-		try {
-			FileUtils.copyFileToDirectory(srcFile, destFile);
-		} catch (IOException e) {
-			throw new IllegalStateException(e);
-		}
-	}
-
-	private void moveFileToDirectory(File file, File dir) {
-		try {
-			FileUtils.moveFileToDirectory(file, dir, true);
-		} catch (IOException e) {
-			throw new IllegalStateException("fail to move file:" + file.getName(), e);
-		}
 	}
 	
 	private void writeFileWithUTF8BOM(File file, Collection<String> lines) {
@@ -419,7 +376,7 @@ public class BatchService {
 			Process process = builder.start();
 			process.waitFor();
 			log.info("compress completed");
-			deleteDirectory(srcFile);
+			FlayFileHandler.deleteDirectory(srcFile);
 			log.info("compress src delete");
 		} catch (IOException | InterruptedException e) {
 			throw new IllegalStateException("Fail to jar", e);
@@ -433,7 +390,7 @@ public class BatchService {
 				if (Flay.COVER.equals(key)) {
 					File destDir = new File(archivePath, yyyyMM);
 					log.info("move {} to {}", file, destDir);
-					moveFileToDirectory(file, destDir);
+					FlayFileHandler.moveFileToDirectory(file, destDir);
 				} else {
 					log.info("delete {}", file);
 					FileUtils.deleteQuietly(file);
@@ -442,4 +399,18 @@ public class BatchService {
 		}
 	}
 
+	String prettyFileLength(long length) {
+		if (length > FileUtils.ONE_GB) {
+			numberFormat.setMinimumFractionDigits(1);
+			return numberFormat.format(length / FileUtils.ONE_GB) + "GB";
+		} else if (length > FileUtils.ONE_MB) {
+			numberFormat.setMinimumFractionDigits(0);
+			return numberFormat.format(length / FileUtils.ONE_MB) + "MB";
+		} else if (length > FileUtils.ONE_KB) {
+			numberFormat.setMinimumFractionDigits(0);
+			return numberFormat.format(length / FileUtils.ONE_KB) + "KB";
+		} else {
+			return length + "bytes";
+		}
+	}
 }

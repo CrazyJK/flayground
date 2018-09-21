@@ -15,7 +15,9 @@ import jk.kamoru.flayground.info.service.ActressInfoService;
 import jk.kamoru.flayground.info.service.StudioInfoService;
 import jk.kamoru.flayground.info.service.VideoInfoService;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class FlayFactory {
 
@@ -85,6 +87,8 @@ public class FlayFactory {
 			flay.addSubtitlesFile(file);
 		} else if (FlayConfig.SUFFIX_IMAGE.contains(suffix)) {
 			flay.addCoverFile(file);
+		} else {
+			log.warn("unknown file {} -> {}", flay.getOpus(), file);
 		}
 	}
 	

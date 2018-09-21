@@ -222,15 +222,16 @@ $(".btn-get-candidates").on("click", function() {
 		$.each(flayList, function(idx, flay) {
 			$("<div>").append(
 					$("<label>", {'class': 'text'}).html(flay.studio),
-					$("<label>", {'class': 'text'}).html(flay.opus),
+					$("<label>", {'class': 'text'}).html(flay.opus).on("click", function() {
+						View.flay(flay.opus);
+					}),
 					$("<label>", {'class': 'text'}).html(flay.title),
 					$("<label>", {'class': 'text'}).html(flay.actressList.toString()),
 					$("<label>", {'class': 'text'}).html(flay.release),
 					$("<button>", {'class': 'btn btn-sm btn-block btn-warning nowrap'}).html('Acept: ' + flay.files.candidate.toString()).on("click", function() {
 						var $self = $(this);
-						Rest.Flay.acceptCandidates(flay, function(result) {
-							if (result)
-								$self.hide();
+						Rest.Flay.acceptCandidates(flay, function() {
+							$self.hide();
 						});
 					})
 			).appendTo($candidatesList);

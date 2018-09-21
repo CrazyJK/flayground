@@ -58,12 +58,6 @@
 					</div>
 				</div>
 				<div class="col-3">
-					<div class="input-group">
-						<input class="form-control" name="body" id="bust"  placeholder="Bust...">
-						<input class="form-control" name="body" id="cup"   placeholder="Cup...">
-						<input class="form-control" name="body" id="waist" placeholder="Waist...">
-						<input class="form-control" name="body" id="hip"   placeholder="Hip...">
-					</div>
 					<input class="form-control" name="body" id="body" placeholder="Body...">
 				</div>
 				<div class="col-2">
@@ -112,12 +106,11 @@ $("#birth").on("keyup", function() {
 	$(".actress-age").html(Util.Actress.getAge({birth: value}));
 });
 
-$("#bust, #cup, #waist, #hip").on("keyup", function() {
-	var bust  = $("#bust").val().trim();
-	var cup   = $("#cup").val().trim().toUpperCase();
-	var waist = $("#waist").val().trim();
-	var hip   = $("#hip").val().trim();
-	$("#body").val(bust + cup + ' - ' + waist + ' - ' + hip);
+$("#body").on("keyup", function() {
+	// B101(Jカップ) / W55 / H84
+	var value = $(this).val().trim();
+	var replace = value.replace('B', '').replace('(', '').replace('カップ)', '').replace('W', '').replace('H', '').replace(/\//gi, '-');
+	$(this).val(replace);	
 });
 
 $("#search").on("click", function() {
@@ -146,10 +139,6 @@ $("#save").on("click", function() {
 	
 });
 
-const isAlpha = ch => {
-	return ch.match(/^[a-z]+$/i) !== null;
-};
-
 Rest.Actress.get(name, function(_actress) {
 	actress = _actress;
 	
@@ -161,28 +150,8 @@ Rest.Actress.get(name, function(_actress) {
 	
 	$("#name").val(actress.name);
 	$("#localName").val(actress.localName);
-	$("#birth").val(actress.birth).trigger("keyup");
-	$("#body").val(actress.body);
-	
-	var bodyArray = actress.body.split('-');
-	console.log('bodyArray', actress.body, bodyArray);
-	if (bodyArray.length == 3) {
-		var bustCup = bodyArray[0].trim();
-		var waist   = bodyArray[1].trim();
-		var hip     = bodyArray[2].trim();
-		var cup = bustCup.charAt(bustCup.length-1);
-		
-		if (isAlpha(cup)) {
-			$("#bust").val(bustCup.substring(0, bustCup.length-1));
-			$("#cup").val(cup);
-		} else {
-			$("#bust").val(bustCup);
-		}
-		$("#waist").val(waist);
-		$("#hip").val(hip);
-		
-	}
-	
+	$("#birth").val(actress.birth).trigger('keyup');
+	$("#body").val(actress.body);	
 	$("#height").val(actress.height.toBlank());
 	$("#debut").val(actress.debut.toBlank());
 	if (!actress.favorite) {

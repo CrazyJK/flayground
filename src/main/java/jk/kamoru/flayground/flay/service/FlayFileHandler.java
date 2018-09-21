@@ -1,10 +1,13 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -14,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 public class FlayFileHandler {
 
 	public static void rename(Flay flay, List<String> actressList) {
-		rename(flay, flay.getStudio(), flay.getTitle(), actressList, flay.getRelease());
+		flay.setActressList(actressList);
+		rename(flay);
 	}
 	
 	public static void rename(Flay flay, String studio, String title, List<String> actressList, String release) {
@@ -22,7 +26,10 @@ public class FlayFileHandler {
 		flay.setTitle(title);
 		flay.setActressList(actressList);
 		flay.setRelease(release);
-		
+		rename(flay);
+	}
+
+	public static void rename(Flay flay) {
 		for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 			String key = entry.getKey();
 			List<File> fileList = entry.getValue();
@@ -46,6 +53,54 @@ public class FlayFileHandler {
 				}
 			}
 			flay.getFiles().put(key, newFiles);
+		}
+	}
+	
+	public static void createDirectory(File directory) {
+		try {
+			Files.createDirectories(directory.toPath());
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public static void cleanDirectory(File directory) {
+		try {
+			FileUtils.cleanDirectory(directory);
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public static void deleteDirectory(File directory) {
+		try {
+			FileUtils.deleteDirectory(directory);
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public static void copyDirectoryToDirectory(File srcDir, File destDir) {
+		try {
+			FileUtils.copyDirectoryToDirectory(srcDir, destDir);
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public static void copyFileToDirectory(File srcFile, File destFile) {
+		try {
+			FileUtils.copyFileToDirectory(srcFile, destFile);
+		} catch (IOException e) {
+			throw new IllegalStateException(e);
+		}
+	}
+
+	public static void moveFileToDirectory(File file, File dir) {
+		try {
+			FileUtils.moveFileToDirectory(file, dir, true);
+		} catch (IOException e) {
+			throw new IllegalStateException("fail to move file:" + file.getName(), e);
 		}
 	}
 

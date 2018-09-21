@@ -2,10 +2,8 @@ package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.List;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -40,47 +38,6 @@ public class CandidatesProvider {
 			}
 		}
 		return found;
-	}
-
-	public boolean accept(Flay flay) {
-		List<File> movieList = flay.getFiles().get(Flay.MOVIE);
-		List<File> candidateList = flay.getFiles().get(Flay.CANDI);
-		
-		if (candidateList.size() == 0) {
-			return false;
-		}
-
-		File parentFile = null;
-		if (movieList.size() > 0) {
-			parentFile = flay.getFiles().get(Flay.MOVIE).get(0).getParentFile();
-		} else {
-			parentFile = new File(stagePaths[0]);
-		}
-
-		String prefix = flay.getFullname();
-		if (movieList.size() + candidateList.size() > 1) {
-			int fileCount = 0;
-			for (File file : movieList) {
-				String suffix = FilenameUtils.getExtension(file.getName());
-				File desc = new File(parentFile, prefix + ++fileCount + "." + suffix);
-				log.info("{} renameTo {}", file, desc);
-				file.renameTo(desc);
-			}
-			for (File file : candidateList) {
-				String suffix = FilenameUtils.getExtension(file.getName());
-				File desc = new File(parentFile, prefix + ++fileCount + "." + suffix);
-				log.info("{} renameTo {}", file, desc);
-				file.renameTo(desc);
-			}
-		} else {
-			File file = candidateList.get(0);
-			String suffix = FilenameUtils.getExtension(file.getName());
-			File desc = new File(parentFile, prefix + "." + suffix);
-			log.info("{} renameTo {}", file, desc);
-			file.renameTo(desc);
-		}
-		
-		return true;
 	}
 
 }

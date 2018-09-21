@@ -9,7 +9,7 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import jk.kamoru.flayground.flay.FlayNotfoundException;
@@ -49,10 +49,14 @@ public class FileBasedFlaySource implements FlaySource {
 		}
 		
 		for (File file : listFiles) {
-			Result result = flayFactory.parse(file);
+			String suffix = FilenameUtils.getExtension(file.getName()).toLowerCase();
+			if ("info".contains(suffix)) {
+				// v1 info file. pass!!
+				continue;
+			}
 			
+			Result result = flayFactory.parse(file);
 			if (!result.valid) {
-				String suffix = StringUtils.substringAfterLast(file.getName(), ".");
 				if ("actress studio".contains(suffix)) {
 					// v1 info file. pass!!
 				} else if ("jpg".contains(suffix)) {
@@ -60,11 +64,11 @@ public class FileBasedFlaySource implements FlaySource {
 				} else if ("history.log tag.data".contains(file.getName())) {
 					// v1 info file. pass!!
 				} else {
-					log.warn(" invalid file - {}", file);
+					log.warn(" invalid file suffix {} - {}", suffix, file);
 				}
 				continue;
 			}
-			
+
 			Flay flay = null;
 			if (!flayMap.containsKey(result.getOpus())) {
 				flay = flayFactory.newFlay(result);

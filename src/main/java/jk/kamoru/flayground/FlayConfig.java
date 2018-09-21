@@ -2,6 +2,7 @@ package jk.kamoru.flayground;
 
 import java.text.SimpleDateFormat;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -34,15 +35,25 @@ public class FlayConfig implements WebMvcConfigurer {
 	public static final String  STUDIO_FILE_NAME = "studio.json";
 	public static final String   VIDEO_FILE_NAME = "video.json";
 	public static final String     TAG_FILE_NAME = "tag.json";
-	
-
-
 
 	@Value("${path.video.archive}") String archivePath;
 	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;
 	@Value("${path.info}") String infoPath;
 	@Value("${app.video-player}") String player;
 	@Value("${app.subtitles-editor}") String editer;
+	
+	public static final OS SYSTEM = OS.getOS();
+	
+	public static enum OS {
+		WINDOWS, LINUX, MAC, UNKNOWN;
+
+		static OS getOS() {
+			final String OSName = System.getProperty("os.name");
+			return StringUtils.containsIgnoreCase(OSName, WINDOWS.name()) ? WINDOWS
+					: StringUtils.containsIgnoreCase(OSName, LINUX.name()) ? LINUX
+							: StringUtils.containsIgnoreCase(OSName, MAC.name()) ? MAC : UNKNOWN;
+		}
+	}
 	
 	@Bean("instanceFlaySource")
 	public FlaySource instanceFlaySource() {

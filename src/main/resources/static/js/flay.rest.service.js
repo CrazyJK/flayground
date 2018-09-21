@@ -88,6 +88,10 @@ var Rest = {
 			rename: function(opus, flay, callback) {
 				console.log("Rest.Flay.rename", opus, flay);
 				restCall('/flay/rename/' + opus, {data: flay, method: "PUT"}, callback);
+			},
+			openFolder: function(folder) {
+				console.log("Rest.Flay.openFolder", folder);
+				restCall('/flay/open/folder', {method: "PUT", data: folder});
 			}
 		},
 		History: {
@@ -160,12 +164,6 @@ var Rest = {
 			get: function(url, callback) {
 				console.log("Rest.Html.get", url);
 				restCall(url, {contentType: "text/html", mimeType: "text/html"}, callback); 
-			}
-		},
-		Action: {
-			openFolder: function(folder) {
-				console.log("Rest.Action.openFolder", folder);
-				restCall('/flayon/openFolder', {method: "PUT", data: {folder: folder}});
 			}
 		},
 		Batch: {

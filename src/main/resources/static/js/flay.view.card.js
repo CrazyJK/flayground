@@ -33,7 +33,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			+			'</p>'
 			+			'<p class="card-text flay-comment-wrapper"><label class="text flay-comment hover">Comment</label><input class="flay-comment-input" placeholder="Comment"/></p>'
 			+			'<ul class="list-group flay-file-group collapse">'
-			+				'<li class="list-group-item border-dark">'
+			+				'<li class="list-group-item border-dark flay-file">'
 			+					'<div class="input-group input-group-sm">'
 			+						'<input class="form-control border-dark flay-new-studio"  style="max-width: 100px;"/>'
 			+						'<input class="form-control border-dark flay-new-opus" 	  style="max-width: 75px;" readonly="readonly"/>'
@@ -45,7 +45,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			+						'</div>'
 			+					'</div>'
 			+				'</li>'
-			+			'</ul>'
+			+			'</ul>' 
 			+		'</div>'
 			+	'</div>';
 		var templateActress = ''
@@ -110,15 +110,36 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			});
 			
 			var $flayFileGroup = $flayCard.find(".flay-file-group");
-			$.each(flay.files.cover, function(idx, file) {
-				$("<li>", {'class': 'list-group-item border-dark'}).html(file).prependTo($flayFileGroup);
-			});
-			$.each(flay.files.subtitles, function(idx, file) {
-				$("<li>", {'class': 'list-group-item border-dark'}).html(file).prependTo($flayFileGroup);
-			});
-			$.each(flay.files.movie, function(idx, file) {
-				$("<li>", {'class': 'list-group-item border-dark'}).html(file).prependTo($flayFileGroup);
-			});
+			if (flay.files.cover.length > 0) {
+				var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+				$.each(flay.files.cover, function(idx, file) {
+					$li.append(
+							$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+								Rest.Flay.openFolder(file);
+							})
+					);
+				});
+			}
+			if (flay.files.subtitles.length > 0) {
+				var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+				$.each(flay.files.subtitles, function(idx, file) {
+					$li.append(
+							$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+								Rest.Flay.openFolder(file);
+							})
+					);
+				});
+			}
+			if (flay.files.movie.length > 0) {
+				var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+				$.each(flay.files.movie, function(idx, file) {
+					$li.append(
+							$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+								Rest.Flay.openFolder(file);
+							})
+					);
+				});
+			}
 			
 			$flayCard.find(".flay-new-studio" ).val(flay.studio);
 			$flayCard.find(".flay-new-opus"   ).val(flay.opus);

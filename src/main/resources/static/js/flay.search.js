@@ -228,7 +228,11 @@ $(".btn-get-candidates").on("click", function() {
 					$("<label>", {'class': 'text'}).html(flay.title),
 					$("<label>", {'class': 'text'}).html(flay.actressList.toString()),
 					$("<label>", {'class': 'text'}).html(flay.release),
-					$("<button>", {'class': 'btn btn-sm btn-block btn-warning nowrap'}).html('Acept: ' + flay.files.candidate.toString()).on("click", function() {
+					$("<button>", {'class': 'btn btn-sm btn-block btn-warning nowrap'}).append(
+							'Acept ',
+							$("<span>", {'class': 'badge badge-light'}).html(flay.files.candidate.length),
+							' ' + flay.files.candidate.toString().replace(/,/gi, '<br>')
+					).on("click", function() {
 						var $self = $(this);
 						Rest.Flay.acceptCandidates(flay, function() {
 							$self.hide();

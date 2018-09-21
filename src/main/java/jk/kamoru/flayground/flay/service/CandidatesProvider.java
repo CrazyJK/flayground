@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
@@ -16,13 +17,17 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class CandidatesProvider {
 
-	@Value("${path.video.candidate}") String candidatePath;
-	@Value("${path.video.stage}")     String[]   stagePaths;
+	@Value("${path.video.candidate}") String[] candidatePaths;
+	@Value("${path.video.stage}")     String[]     stagePaths;
 	
 	Collection<File> listFiles;
 	
 	public void initiate() {
-		listFiles = FileUtils.listFiles(new File(candidatePath), FlayConfig.SUFFIX_VIDEO.split(","), true);
+		listFiles = new ArrayList<>();
+		for (String path : candidatePaths) {
+			Collection<File> list = FileUtils.listFiles(new File(path), FlayConfig.SUFFIX_VIDEO.split(","), true);
+			listFiles.addAll(list);
+		}
 		log.info("candidates {} found", listFiles.size());
 	}
 

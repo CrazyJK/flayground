@@ -54,11 +54,18 @@ var Util = {
 				return actressNames;
 			},
 			getAge: function(actress) {
-				if (actress.birth || actress.birth.length > 3) {
+				if (actress.birth && actress.birth.length > 3) {
 					return todayYear - parseInt(actress.birth.substring(0, 4)) + 1;
 				} else {
 					return '';
 				}
+			},
+			toArray: function(names) {
+				var split = names.split(",");
+				for (var i=0; i<split.length; i++) {
+					split[i] = split[i].trim();
+				}
+				return split;
 			}
 		}
 };

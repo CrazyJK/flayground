@@ -41,7 +41,7 @@ public class FlayFactory {
 	}
 
 	@Data
-	class Result {
+	public static class Result {
 		boolean valid;
 		String studio;
 		String opus;

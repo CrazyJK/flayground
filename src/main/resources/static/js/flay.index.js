@@ -106,8 +106,6 @@ $(document).ready(function() {
 	event.theme();
 	event.bgToggle();
 	
-	loading.off();
-	
 	background.init();
 	background.start();
 

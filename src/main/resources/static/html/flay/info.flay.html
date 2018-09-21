@@ -35,13 +35,13 @@
 <script type="text/javascript">
 var opus = reqParam.opus;
 var flay;
+var loadedFlay = false, loadedTag = false;
 
 Rest.Flay.get(opus, function(_flay) {
 	flay = _flay;
-	console.log(flay);
-	
 	$(".container-flay").appendFlayCard(flay);
-
+	loadedFlay = true;
+	matchTag();
 });
 
 Rest.Tag.list(function(list) {
@@ -49,17 +49,31 @@ Rest.Tag.list(function(list) {
 	Util.Tag.sort(tagList);
 	$.each(tagList, function(idx, tag) {
 		$("<label>", {'class': 'input sm'}).append(
-				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag),
+				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag).on("change", function() {
+					var checked = $(this).prop("checked");
+					var tag = $(this).data("tag");
+					console.log("tag toggle", checked, tag, flay);
+					if (checked) {
+						Util.Tag.push(flay.video.tags, tag);
+					} else {
+						Util.Tag.remove(flay.video.tags, tag);
+					}
+					Rest.Video.update(flay.video);
+				}),
 				$("<span>", {title: tag.description}).html(tag.name)
 		).appendTo($(".container-tag"));
 	});
-
-	$.each(flay.video.tags, function(idx, tagId) {
-		$(":checkbox[data-tag-id='" + tagId + "']").prop("checked", true);
-	});
-
+	loadedTag = true;
+	matchTag();
 });
 
+function matchTag() {
+	if (loadedFlay && loadedTag) {
+		$.each(flay.video.tags, function(idx, tagId) {
+			$(":checkbox[data-tag-id='" + tagId + "']").prop("checked", true);
+		});
+	}
+}
 </script>
 
 </body>

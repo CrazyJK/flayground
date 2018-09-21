@@ -2,7 +2,7 @@
  * Flay Card view
  */
 
-const ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified', COMMENT = 'comment', ACTION = 'action', RANK = 'rank';
+const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified', COMMENT = 'comment', ACTION = 'action', RANK = 'rank';
 
 (function($) {
 	
@@ -14,6 +14,7 @@ const ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified'
 		};
 		var settings = $.extend({}, DEFAULTS, args);
 		
+		console.log('$.fn.appendFlayCard', flay, settings);
 		
 		var templateFlay = ''
 			+	'<div class="card flay-card">'
@@ -25,13 +26,31 @@ const ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified'
 			+			'<p class="card-text flay-actress-wrapper nowrap"></p>'
 			+			'<p class="card-text"><label class="text flay-release">Release</label></p>'
 			+			'<p class="card-text"><label class="text flay-modified">LastModified</label></p>'
-			+			'<p class="card-text flay-action-wrapper"><label class="text hover flay-movie">Movie</label> <label class="text hover flay-subtitles">Subtitles</label></p>'
-			+			'<p class="card-text flay-comment-wrapper"><label class="text flay-comment">Comment</label><input class="flay-comment-input" placeholder="Comment"/></p>'
+			+			'<p class="card-text flay-action-wrapper">'
+			+				'<label class="text hover flay-movie">Movie</label> '
+			+				'<label class="text hover flay-subtitles">Subtitles</label> '
+			+				'<label class="text hover flay-file-info-btn" data-toggle="collapse" data-target=".flay-file-group"><i class="fa fa-folder-open"></i></label>'
+			+			'</p>'
+			+			'<p class="card-text flay-comment-wrapper"><label class="text flay-comment hover">Comment</label><input class="flay-comment-input" placeholder="Comment"/></p>'
+			+			'<ul class="list-group flay-file-group collapse">'
+			+				'<li class="list-group-item border-dark">'
+			+					'<div class="input-group input-group-sm">'
+			+						'<input class="form-control border-dark flay-new-studio"  style="max-width: 100px;"/>'
+			+						'<input class="form-control border-dark flay-new-opus" 	  style="max-width: 75px;" readonly="readonly"/>'
+			+						'<input class="form-control border-dark flay-new-title"/>'
+			+						'<input class="form-control border-dark flay-new-actress" style="max-width: 100px;"/>'
+			+						'<input class="form-control border-dark flay-new-release" style="max-width: 90px;"/>'
+			+						'<div class="input-group-append">'
+			+							'<button class="btn btn-outline-dark btn-flay-rename">Rename</button>'
+			+						'</div>'
+			+					'</div>'
+			+				'</li>'
+			+			'</ul>'
 			+		'</div>'
 			+	'</div>';
 		var templateActress = ''
 			+	'<div class="flay-actress">'
-			+		'<label class="text flay-actress-favorite hover"><i class="fa fa-star favorite"></i></label>'
+			+		'<label class="text flay-actress-favorite extra hover"><i class="fa fa-star favorite"></i></label>'
 			+		'<label class="text flay-actress-name hover">Asuka Kirara</label>'
 			+		'<label class="text flay-actress-local  extra">明日花キララ</label>'
 			+		'<label class="text flay-actress-birth  extra">1988年10月02日</label>'
@@ -72,10 +91,8 @@ const ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified'
 			$flayCard.find(".flay-modified").html(new Date(flay.lastModified).format("yyyy-MM-dd"));
 			
 			$flayCard.find(".flay-rank-wrapper").append(getRank(flay.opus)).on("change", "input", function() {
-				var flayData = $("#" + flay.opus).data("flay");
-				console.log($(this).val(), flay.opus);
-				flayData.video.rank = $(this).val();
-				Rest.Video.update(flayData.video, function() {
+				flay.video.rank = $(this).val();
+				Rest.Video.update(flay.video, function() {
 				});
 			});
 			$flayCard.find("input[name='flay-rank-" + flay.opus + "'][value='" + flay.video.rank + "']").prop("checked", true);
@@ -85,17 +102,70 @@ const ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified'
 						movieSize == 1 ? 'V ' + File.formatSize(flay.length) :
 							movieSize + 'V ' + File.formatSize(flay.length)
 			).on("click", function() {
-				
-				var flayData = $("#" + flay.opus).data("flay");
-				Rest.Flay.play(flayData);
+				console.log(flay);
+				Rest.Flay.play(flay);
 			});
-			$flayCard.find(".flay-subtitles").toggle(flay.files.subtitles.length > 0);
-			if (flay.video.comment != '') {
+			$flayCard.find(".flay-subtitles").toggle(flay.files.subtitles.length > 0).on("click", function() {
+				Rest.Flay.subtitles(flay);
+			});
+			
+			var $flayFileGroup = $flayCard.find(".flay-file-group");
+			$.each(flay.files.cover, function(idx, file) {
+				$("<li>", {'class': 'list-group-item border-dark'}).html(file).prependTo($flayFileGroup);
+			});
+			$.each(flay.files.subtitles, function(idx, file) {
+				$("<li>", {'class': 'list-group-item border-dark'}).html(file).prependTo($flayFileGroup);
+			});
+			$.each(flay.files.movie, function(idx, file) {
+				$("<li>", {'class': 'list-group-item border-dark'}).html(file).prependTo($flayFileGroup);
+			});
+			
+			$flayCard.find(".flay-new-studio" ).val(flay.studio);
+			$flayCard.find(".flay-new-opus"   ).val(flay.opus);
+			$flayCard.find(".flay-new-title"  ).val(flay.title);
+			$flayCard.find(".flay-new-actress").val(Util.Actress.getNames(flay.actressList));
+			$flayCard.find(".flay-new-release").val(flay.release);
+			
+			$flayCard.find(".btn-flay-rename").on("click", function() {
+				var newStudio  = $flayCard.find(".flay-new-studio").val();
+				var newOpus    = $flayCard.find(".flay-new-opus").val();
+				var newTitle   = $flayCard.find(".flay-new-title").val();
+				var newActress = $flayCard.find(".flay-new-actress").val();
+				var newRelease = $flayCard.find(".flay-new-release").val();
+				var newFlay = {
+						studio: newStudio,
+						opus: flay.opus,
+						title: newTitle,
+						actressList: Util.Actress.toArray(newActress),
+						release: newRelease
+				};
+				console.log("newFlay", newFlay);
+				Rest.Flay.rename(flay.opus, newFlay, function() {
+					location.reload();
+				});
+			});
+
+			
+			if (flay.video.comment != null && flay.video.comment != '') {
 				$flayCard.find(".flay-comment").html(flay.video.comment);
 				$flayCard.find(".flay-comment-input").val(flay.video.comment);
 			} else {
 				$flayCard.find(".flay-comment").addClass("nonExist");
 			}
+			$flayCard.find(".flay-comment").on("click", function() {
+				$(this).hide();
+				$flayCard.find(".flay-comment-input").show();
+			});
+			$flayCard.find(".flay-comment-input").on("keyup", function(e) {
+				if (e.keyCode == 13) {
+					var $self = $(this);
+					flay.video.comment = $self.val();
+					Rest.Video.update(flay.video, function() {
+						$self.hide();
+						$flayCard.find(".flay-comment").html(flay.video.comment).show();
+					});
+				}
+			});
 
 			// set css
 			$flayCard.css({
@@ -125,10 +195,19 @@ const ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified'
 		};
 
 		var constructActress = function($wrapper) {
+			var setFavorite = function($actress, actress) {
+				if (actress.favorite)
+					$actress.find(".flay-actress-favorite > i").addClass("fa-star favorite").removeClass("fa-star-o");
+				else 
+					$actress.find(".flay-actress-favorite > i").addClass("fa-star-o").removeClass("fa-star favorite");
+			};
+			
 			$.each(flay.actressList, function(idx, name) {
 				var $actress = $(templateActress);
 				$actress.attr("data-actress", name);
-				$actress.find(".flay-actress-name").html(name);
+				$actress.find(".flay-actress-name").html(name).on("click", function() {
+					View.actress(name);
+				});
 				$actress.appendTo($wrapper);
 				
 				if (settings.exclude.includes(ACTRESS_EXTRA)) {
@@ -137,10 +216,7 @@ const ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified'
 				}
 					
 				Rest.Actress.get(name, function(actress) {
-					if (actress.favorite)
-						$actress.find(".flay-actress-favorite > i").addClass("fa-star favorite").removeClass("fa-star-o");
-					else 
-						$actress.find(".flay-actress-favorite > i").addClass("fa-star-o").removeClass("fa-star favorite");
+					setFavorite($actress, actress);
 					$actress.find(".flay-actress-name"  ).html(actress.name);
 					$actress.find(".flay-actress-local" ).html(actress.localName);
 					$actress.find(".flay-actress-birth" ).html(actress.birth);
@@ -148,6 +224,14 @@ const ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified'
 					$actress.find(".flay-actress-debut" ).html(actress.debut.toBlank());
 					$actress.find(".flay-actress-body"  ).html(actress.body);
 					$actress.find(".flay-actress-height").html(actress.height.toBlank());
+					
+					$actress.find(".flay-actress-favorite > i").on("click", function() {
+						actress.favorite = !actress.favorite;
+						Rest.Actress.update(actress, function() {
+							setFavorite($actress, actress);
+						});
+					});
+
 				});
 
 			});

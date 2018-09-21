@@ -32,3 +32,12 @@
     background-size: cover;
     text-align: left;
 }
+
+.flay-comment-input {
+	display: none;
+	border-radius: 0.25rem;
+}
+
+.flay-file-group {
+	font-family: 'D2Coding';
+}

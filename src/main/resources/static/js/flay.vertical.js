@@ -607,7 +607,7 @@ function showVideo(direction) {
 						$("<label>", {'class': 'text info-actress-extra'}).html(actress.birth),
 						$("<label>", {'class': 'text info-actress-extra'}).html(Util.Actress.getAge(actress)),
 						$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut.toBlank()),
-						$("<label>", {'class': 'text info-actress-extra'}).html(actress.bodySize),
+						$("<label>", {'class': 'text info-actress-extra'}).html(actress.body),
 						$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank()),
 //						$("<label>", {'class': 'text info-actress-extra'}).html('v' + actress.videoCount)
 				).appendTo($(".info-wrapper-actress"));

@@ -192,22 +192,28 @@ var	reqParam = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
 	return obj;
 }, {});
 
-
 function Loading() {
-	this.overlay = "#overlay";
-	this.body = "#overlay > #overlay_body";
-	$("html").on("click", this.overlay, function() {
-		$(this).hide();
+	const OVERLAY = "overlay", OVERLAY_BODY = "overlay_body";
+	const templateOverlay = '<div id="wrap_overlay"><div id="' + OVERLAY + '"><div id="' + OVERLAY_BODY + '"></div></div></div>';
+
+	var $wrapOverlay = $(templateOverlay).appendTo($("html"));
+	this.$overlay     = $wrapOverlay.find("#" + OVERLAY);
+	this.$overlayBody = $wrapOverlay.find("#" + OVERLAY_BODY);
+
+	$("html").on("click", "#" + OVERLAY, function() {
+		loading.off();
 	});
 };
 Loading.prototype = {
 		on: function(body) {
-			$(this.body).empty().append(body);
-			$(this.overlay).show();
+			this.$overlay.show();
+			this.$overlayBody.empty().append(body);
+			console.log('Loading.on', body);
 		},
 		off: function() {
-			$(this.body).empty();
-			$(this.overlay).hide();
+			this.$overlay.hide();
+			this.$overlayBody.empty();
+			console.log('Loading.off');
 		}
 };
 var loading = new Loading();

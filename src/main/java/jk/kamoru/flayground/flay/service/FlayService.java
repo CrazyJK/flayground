@@ -25,4 +25,6 @@ public interface FlayService {
 
 	void edit(String opus);
 
+	void rename(String opus, Flay flay);
+
 }

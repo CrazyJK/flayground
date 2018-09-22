@@ -28,7 +28,7 @@ var event = {
 			});
 		},
 		bgToggle: function() {
-			$("#bgOn").on("change", function() {
+			$("#bgFlow").on("change", function() {
 				$(this).prop("checked") ? background.start() : background.stop();
 			});
 		}

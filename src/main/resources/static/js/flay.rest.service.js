@@ -27,18 +27,20 @@ var restCall = function(url, args, callback) {
 		console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 		var errMsg = "";
 		if (jqXHR.getResponseHeader('error')) {
-			errMsg = 'Message: ' + jqXHR.getResponseHeader('error.message') + "<br>" + 'Cause: ' + jqXHR.getResponseHeader('error.cause');
+			errMsg = 'Message: ' + jqXHR.getResponseHeader('error.message') + "<br>" 
+				   + 'Cause: '   + jqXHR.getResponseHeader('error.cause');
 		} else if (jqXHR.responseJSON) {
-			errMsg = 'Error: '    + jqXHR.responseJSON.error + '<br>' + 
-					'Exception: ' + jqXHR.responseJSON.exception + '<br>' +
-					'Message: '   + jqXHR.responseJSON.message + '<br>' +
-					'Timestamp: ' + jqXHR.responseJSON.timestamp + '<br>' +
-					'Status: '    + jqXHR.responseJSON.status + '<br>' + 
-					'Path: '      + jqXHR.responseJSON.path;
+			errMsg = 'Error: '     + jqXHR.responseJSON.error + '<br>'  
+//				   + 'Exception: ' + jqXHR.responseJSON.exception + '<br>'
+				   + 'Message: '   + jqXHR.responseJSON.message + '<br>'
+//				   + 'Timestamp: ' + jqXHR.responseJSON.timestamp + '<br>'
+				   + 'Status: '    + jqXHR.responseJSON.status + '<br>'
+				   + 'Path: '      + jqXHR.responseJSON.path;
 		} else {
 			errMsg = 'Error:<br>' + textStatus + "<br>" + errorThrown;
 		}
-		loading.on(errMsg);
+		var $errorBody = $("<div>", {'class': 'overlay-error-body'}).append(errMsg);
+		loading.on($errorBody);
 	}).always(function(data_jqXHR, textStatus, jqXHR_errorThrown) {
 	});
 };
@@ -127,6 +129,10 @@ var Rest = {
 			}
 		},
 		Tag: {
+			get: function(tagId, callback) {
+				console.log("Rest.Tag.get", tagId);
+				restCall('/info/tag/' + tagId, {}, callback);
+			},
 			list: function(callback) {
 				console.log("Rest.Tag.list");
 				restCall('/info/tag/list', {}, callback);
@@ -145,9 +151,9 @@ var Rest = {
 			}
 		},
 		Cover: {
-			save: function(opus, title, callback) {
+			save: function(opus, callback) {
 				console.log("Rest.Cover.save", opus, title);
-				restCall('/rest/video/' + opus + '/saveCover', {method: "POST", data: {title: title}}, callback);
+				restCall('/rest/video/' + opus + '/saveCover', {method: "POST", data: {title: 'Find ' + opus + ' cover'}}, callback);
 			}
 		},
 		Image: {

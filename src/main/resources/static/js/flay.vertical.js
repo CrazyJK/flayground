@@ -70,10 +70,10 @@ var deploy = () => {
 function attachEventListener() {
 	
 	// header tag select event
-	$("#selectTags").on("change", "input[data-tag-name]", function() {
+	$("#selectTags").on("change", "input[data-tag-id]", function() {
 		if ($("#tagPopup").prop("checked")) {
 			var tagId = $(this).data("tag").id;
-			popup(PATH + '/video/tag/' + tagId, 'tag-' + tagId, 800, 600);
+			View.tag(tagId);
 			this.checked = !this.checked;
 		} else {
 			var checkedLength = $("#selectTags").find("input[data-tag-id]:checked").length;
@@ -294,7 +294,7 @@ function collectList() {
 		if (selectedTags.length > 0) {
 			var found = false;
 			for (var x in flay.video.tags) {
-				if (selectedTags.includes(flay.video.tags[x].id)) {
+				if (selectedTags.includes(flay.video.tags[x])) {
 					found = found || true;
 				}
 			}

@@ -6,11 +6,14 @@ $("#query, #opus").on("keyup", function(e) {
 	if (e.keyCode != 13) {
 		return;
 	}
-
 	var keyword = $(this).val();
+	searchSource(keyword);
+});
+
+function searchSource(keyword) {
     var rexp = eval('/' + keyword + '/gi');
 
-	// find video
+	// find Flay
 	Rest.Flay.find(keyword, function(flayList) {
 		$("#resultVideoDiv").collapse('show');
 		
@@ -103,8 +106,7 @@ $("#query, #opus").on("keyup", function(e) {
 	Rest.Studio.findOneByOpus(keyword, function(studio) {
 		$("#studio").val(studio.name);
 	});
-
-});
+}
 
 $(".flay-group > input").on("keyup", function() {
 	var fullname = "";
@@ -140,12 +142,28 @@ $("#rowname").on("keyup", function(e) {
 		name  = "";			
 	}
 	
-	$("#opus").val(opus).trigger("keyup");
+	$("#opus").val(opus);
+	searchSource(opus);
 	Search.opus(opus);
 	Search.translate(title);
 	name != '' && Search.actress(name);
 	
 	console.log(opus, braceIndex, title, minusIndex, name);
+});
+
+$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
+	if (e.keyCode != 13)
+		return;
+	
+	var rowOpus    = $("#rowname_opus").val();
+	var rowTitle   = $("#rowname_title").val();
+	var rowActress = $("#rowname_actress").val();
+
+	$("#opus").val(rowOpus);
+	rowOpus != '' && searchSource(rowOpus);
+	rowOpus != '' && Search.opus(rowOpus);
+	rowTitle != '' && Search.translate(rowTitle);
+	rowActress != '' && Search.actress(rowActress);
 });
 
 // btn event
@@ -174,7 +192,7 @@ $(".btn-reload").on("click", function() {
 $(".btn-save-cover").on("click", function() {
 	var opus = $("#opus").val();
 	var title = $("#fullname").val();
-	Cover.save(opus, title, function(result) {
+	Rest.Cover.save(opus, title, function(result) {
 		// TODO
 	});
 });
@@ -222,7 +240,7 @@ $(".btn-get-candidates").on("click", function() {
 		$.each(flayList, function(idx, flay) {
 			$("<div>").append(
 					$("<label>", {'class': 'text'}).html(flay.studio),
-					$("<label>", {'class': 'text'}).html(flay.opus).on("click", function() {
+					$("<label>", {'class': 'text hover'}).html(flay.opus).on("click", function() {
 						View.flay(flay.opus);
 					}),
 					$("<label>", {'class': 'text'}).html(flay.title),
@@ -241,6 +259,12 @@ $(".btn-get-candidates").on("click", function() {
 			).appendTo($candidatesList);
 		});
 	});
+});
+$("#btn-video-close").on("click", function() {
+	$("#resultVideoDiv").collapse('hide');
+});
+$("#btn-history-close").on("click", function() {
+	$("#resultHistoryDiv").collapse('hide');
 });
 
 Rest.Batch.getOption('W', function(val) {

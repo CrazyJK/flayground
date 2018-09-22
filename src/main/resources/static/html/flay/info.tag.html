@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Tag Info</title>
+<link rel="icon" type="image/png" href="/img/favicon/flay_1.png"/>
+<link rel="stylesheet" href="/webjars/fontawesome/4.7.0/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/4.1.3/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/1.12.1/themes/base/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/css/base.scrollbar.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<link rel="stylesheet" href="/css/flay.view.card.css"/>
+<style type="text/css">
+.flay-list {
+	margin-top: 5rem;
+	margin-bottom: 1rem;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/3.3.1/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/1.14.3/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/4.1.3/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/1.12.1/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
+<script type="text/javascript" src="/js/flay.view.card.js"></script>
+</head>
+<body>
+
+	<nav class="navbar navbar-expand-sm fixed-top bg-dark navbar-light justify-content-center">
+		<div class="row mb-2">
+			<div class="col-4">
+				<div class="input-group">
+					<input class="form-control" name="name" id="name" placeholder="Name...">
+					<div class="input-group-append">
+						<span class="input-group-text video-count"></span>
+					</div>
+				</div>
+			</div>
+			<div class="col">
+				<input class="form-control" name="description" id="description" placeholder="Description...">
+			</div>
+			<div class="col-2">
+				<button class="btn btn-outline-light" id="save">Save</button>
+			</div>
+		</div>
+	</nav>
+
+	<div class="flay-list"></div>
+
+<script type="text/javascript">
+var id = reqParam.id;
+var tag;
+
+$("#save").on("click", function() {
+	tag.name = $("#name").val();
+	tag.description = $("#description").val();
+	
+	Rest.Tag.update(tag, function() {
+		loading.on('Updated');
+	});
+
+});
+
+Rest.Tag.get(id, function(_tag) {
+	tag = _tag;
+	document.title = tag.name + ' - ' + document.title;
+
+	$("#name").val(tag.name);
+	$("#description").val(tag.description);
+	
+	Rest.Flay.findByTag(tag, function(flayList) {
+		$(".video-count").html(flayList.length);
+		
+		var $flayList = $(".flay-list").empty();
+		
+		$.each(flayList, function(idx, flay) {
+			$flayList.appendFlayCard(flay, {
+				width: 300,
+				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+				fontSize: '80%'
+			});
+		});
+
+	});
+
+});
+
+</script>
+
+</body>
+</html>

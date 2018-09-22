@@ -2,7 +2,7 @@
  * Flay Card view
  */
 
-const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified', COMMENT = 'comment', ACTION = 'action', RANK = 'rank';
+const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MODIFIED = 'modified', COMMENT = 'comment', ACTION = 'action', RANK = 'rank', FILEINFO = 'fileinfo';
 
 (function($) {
 	
@@ -22,7 +22,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			+			'<p class="card-title"><label class="text lg nowrap flay-title hover">Title</label></p>'
 			+			'<p class="card-text flay-rank-wrapper"></p>'
 			+			'<p class="card-text"><label class="text flay-studio">Studio</label></p>'
-			+			'<p class="card-text"><label class="text flay-opus">Opus</label></p>'
+			+			'<p class="card-text"><label class="text flay-opus">Opus</label> <label class="text flay-opus-search hover"><i class="fa fa-image"></i></label></p>'
 			+			'<p class="card-text flay-actress-wrapper nowrap"></p>'
 			+			'<p class="card-text"><label class="text flay-release">Release</label></p>'
 			+			'<p class="card-text"><label class="text flay-modified">LastModified</label></p>'
@@ -83,6 +83,9 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			
 			$flayCard.find(".flay-studio").html(flay.studio);
 			$flayCard.find(".flay-opus").html(flay.opus);
+			$flayCard.find(".flay-opus-search").on("click", function() {
+				Search.opus(flay.opus);
+			});
 			$flayCard.find(".flay-title").html(flay.title).on("click", function() {
 				View.flay(flay.opus);
 			});
@@ -98,12 +101,14 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			$flayCard.find("input[name='flay-rank-" + flay.opus + "'][value='" + flay.video.rank + "']").prop("checked", true);
 			var movieSize = flay.files.movie.length;
 			$flayCard.find(".flay-movie").toggleClass("nonExist", movieSize == 0).html(
-					movieSize == 0 ? '' : 
+					movieSize == 0 ? 'Video' : 
 						movieSize == 1 ? 'V ' + File.formatSize(flay.length) :
 							movieSize + 'V ' + File.formatSize(flay.length)
 			).on("click", function() {
-				console.log(flay);
-				Rest.Flay.play(flay);
+				if (movieSize == 0)
+					Search.torrent(flay.opus)
+				else
+					Rest.Flay.play(flay);
 			});
 			$flayCard.find(".flay-subtitles").toggle(flay.files.subtitles.length > 0).on("click", function() {
 				Rest.Flay.subtitles(flay);
@@ -210,6 +215,8 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 					$flayCard.find(".flay-comment-wrapper").hide();
 				if (settings.exclude.includes(RANK))
 					$flayCard.find(".flay-rank-wrapper").hide();
+				if (settings.exclude.includes(FILEINFO))
+					$flayCard.find(".flay-file-info-btn").hide();
 			}
 
 			return $flayCard;

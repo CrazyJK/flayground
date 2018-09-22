@@ -45,13 +45,13 @@ public class BatchService {
 	
 	public static enum Operation {
 		/** moveWatchedVideo */ W, /** deleteLowerRankVideo */ R, /** deleteLowerScoreVideo */ S,
-		/** InstanceVideoSource */ I, /** ArchiveVideoSource */ A, 
-		/** Backup */ B, /** deleteEmptyFolder */ D;
+		/** InstanceVideoSource */ I, /** ArchiveVideoSource */ A, /** Backup */ B
 	}
 	
-	public static final String BACKUP_INSTANCE_FILENAME = "flay-instance.csv";
-	public static final String BACKUP_ARCHIVE_FILENAME = "flay-archive.csv";
-	public static final String BACKUP_FILENAME = "flayground.jar";
+	public static final String BACKUP_INSTANCE_JAR_FILENAME = "flayground-instance.jar";
+	public static final String BACKUP_ARCHIVE_JAR_FILENAME  = "flayground-archive.jar";
+	public static final String BACKUP_INSTANCE_CSV_FILENAME = "flay-instance.csv";
+	public static final String BACKUP_ARCHIVE_CSV_FILENAME  = "flay-archive.csv";
 
 	NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
@@ -121,9 +121,6 @@ public class BatchService {
 			break;
 		case B: 
 			backup();
-			break;
-		case D:
-			deleteEmptyFolder();
 			break;
 		default:
 			throw new IllegalArgumentException("unknown batch operation");
@@ -277,17 +274,18 @@ public class BatchService {
 			log.warn("Backup path not set");
 			return;
 		}
-		log.info("Backup START [{}]", backupPath);
+		log.info("[Backup] START {}", backupPath);
 
 		final String CSV_HEADER = "Studio,Opus,Title,Actress,Released,Rank,Fullname";
 		final String CSV_FORMAT = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
 
-		File backupFile     = new File(backupPath, BACKUP_FILENAME);
+		File backupInstanceJarFile = new File(backupPath, BACKUP_INSTANCE_JAR_FILENAME);
+		File backupArchiveJarFile  = new File(backupPath, BACKUP_ARCHIVE_JAR_FILENAME);
 		File backupRootPath = new File(queuePath, "backup_" + FlayConfig.YYYY_MM_DD_Format.format(new Date()));
-		File backupFilePath = new File(backupRootPath, "file");
+		File backupInstanceFilePath = new File(backupRootPath, "instance");
 		FlayFileHandler.createDirectory(backupRootPath);
 		FlayFileHandler.cleanDirectory(backupRootPath);
-		FlayFileHandler.createDirectory(backupFilePath);
+		FlayFileHandler.createDirectory(backupInstanceFilePath);
 
 		// video list backup to csv
 		Collection<Flay> instanceFlayList = instanceFlaySource.list();
@@ -298,16 +296,16 @@ public class BatchService {
 		List<String>     archiveList = new ArrayList<>();
 
 		// instance info
-		log.info("Backup Instance {}", BACKUP_INSTANCE_FILENAME);
+		log.info("[Backup] Write instance csv {}", BACKUP_INSTANCE_CSV_FILENAME);
 		instanceList.add(CSV_HEADER);
 		for (Flay flay : instanceFlayList) {
 			instanceList.add(String.format(CSV_FORMAT, 
 					flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), flay.getVideo().getRank(), flay.getFullname()));
 		}
-		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_FILENAME), instanceList); 
+		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceList); 
 		
 		// archive info
-		log.info("Backup Archive  {}", BACKUP_ARCHIVE_FILENAME);
+		log.info("[Backup] Write archive  csv {}", BACKUP_ARCHIVE_CSV_FILENAME);
 		archiveList.add(CSV_HEADER);
 		for (Flay flay : archiveFlayList) {
 			archiveList.add(String.format(CSV_FORMAT, 
@@ -325,31 +323,37 @@ public class BatchService {
 			if (!foundInArchive)
 				archiveList.add(String.format(CSV_FORMAT, "", history.getOpus(), "", "", "", "", history.getDesc()));
 		}
-		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_FILENAME),  archiveList);
+		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_CSV_FILENAME),  archiveList);
 
 		// Info folder copy
-		log.info("Backup Info     {}", infoPath);
+		log.info("[Backup] Copy Info folder   {}", infoPath);
 		FlayFileHandler.copyDirectoryToDirectory(new File(infoPath), backupRootPath);
 		
 		// Cover, Subtitlea file copy
-		log.info("Backup File     {}", backupFilePath);
+		log.info("[Backup] Copy Instance file {}", backupInstanceFilePath);
 		for (Flay flay : instanceFlayList) {
 			for (File file : flay.getFiles().get(Flay.COVER))
-				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
+				FlayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
 			for (File file : flay.getFiles().get(Flay.SUBTI))
-				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
+				FlayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
 		}
-		for (Flay flay : archiveFlayList) {
-			for (File file : flay.getFiles().get(Flay.COVER))
-				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
-			for (File file : flay.getFiles().get(Flay.SUBTI))
-				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
-		}
+//		for (Flay flay : archiveFlayList) {
+//			for (File file : flay.getFiles().get(Flay.COVER))
+//				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
+//			for (File file : flay.getFiles().get(Flay.SUBTI))
+//				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
+//		}
 		
-		log.info("Backup Compress {}", backupFile);
-		compress(backupRootPath, backupFile);
+		log.info("[Backup] Compress Instance folder {}", backupInstanceJarFile);
+		compress(backupRootPath, backupInstanceJarFile);
+		
+		log.info("[Backup] Compress Archive  folder {}", backupArchiveJarFile);
+		compress(new File(archivePath), backupArchiveJarFile);
 
-		log.info("Backup END");
+		log.info("[Backup] Delete Instance folder   {}", backupRootPath);
+		FlayFileHandler.deleteDirectory(backupRootPath);
+		
+		log.info("[Backup] END");
 	}
 	
 	private void writeFileWithUTF8BOM(File file, Collection<String> lines) {
@@ -365,9 +369,9 @@ public class BatchService {
 		}
 	}
 
-	private void compress(File srcFile, File destinationFile) {
-		List<String> commands = Arrays.asList("jar", "cvfM", destinationFile.getAbsolutePath(), "-C", srcFile.getAbsolutePath(), ".");
-		File logFile = new File(srcFile.getParentFile(), srcFile.getName() + ".log");
+	private void compress(File srcPath, File destinationFile) {
+		List<String> commands = Arrays.asList("jar", "cvfM", destinationFile.getAbsolutePath(), "-C", srcPath.getAbsolutePath(), ".");
+		File logFile = new File(srcPath.getParentFile(), srcPath.getName() + ".log");
 		ProcessBuilder builder = new ProcessBuilder(commands);
 		builder.redirectOutput(Redirect.to(logFile));
 		builder.redirectError(Redirect.INHERIT);
@@ -376,8 +380,6 @@ public class BatchService {
 			Process process = builder.start();
 			process.waitFor();
 			log.info("compress completed");
-			FlayFileHandler.deleteDirectory(srcFile);
-			log.info("compress src delete");
 		} catch (IOException | InterruptedException e) {
 			throw new IllegalStateException("Fail to jar", e);
 		}

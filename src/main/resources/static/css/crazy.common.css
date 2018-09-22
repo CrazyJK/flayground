@@ -321,6 +321,10 @@ label.text.sm {
 	color: white;
 	font-size: 3rem;
 }
+.overlay-error-body {
+	font-size: 2rem;
+	color: var(--danger);
+}
 
 /* side nav */
 #crazySidenav ul i.fa {
@@ -458,6 +462,10 @@ label.text.sm {
 .favorite {
 	color: red !important;
 }
+.nonExist {
+ 	color: #747474 !important;
+}
+
 
 /* default color for bootstrap 4 */
 .page-item.active .page-link {
@@ -489,4 +497,8 @@ body.bg-dark nav.navbar, body.bg-dark ul.pagination, body.bg-dark .bg-light {
 
 body.bg-dark .fa-plus:before, body.bg-dark .fa-ellipsis-v:before {
     text-shadow: 0 0 .25rem antiquewhite;
+}
+body.bg-dark .card, body.bg-dark label.text {
+	background-color: var(--dark);
+	color: var(--light);
 }

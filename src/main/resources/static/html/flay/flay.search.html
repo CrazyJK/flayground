@@ -59,7 +59,9 @@ input {
 				</div>
 				<input class="form-control form-control-sm border-primary mb-1" id="fullname" placeholder="Full name"/>
 				<div class="input-group input-group-sm mb-1">
-					<input class="form-control border-primary" id="rowname" placeholder="Row name"/>
+					<input class="form-control border-primary" id="rowname_opus"    style="max-width: 100px;" placeholder="Row opus"/>
+					<input class="form-control border-primary" id="rowname_title"   placeholder="Row title"/>
+					<input class="form-control border-primary" id="rowname_actress" style="max-width: 150px;" placeholder="Row actress"/>
 					<div class="input-group-append">
 						<button class="btn btn-sm btn-outline-primary btn-find-random-opus">Random Find</button>
 					</div>
@@ -108,11 +110,11 @@ input {
 					<button class="btn btn-outline-danger btn-batch-option" data-type="W">true</button>
 				</div>
 				<div class="btn-group btn-group-sm mb-1">
-					<button class="btn btn-outline-danger btn-batch-start"  data-type="R">Delete LowerRank</button>
+					<button class="btn btn-outline-danger btn-batch-start"  data-type="R">Delete Lower Rank</button>
 					<button class="btn btn-outline-danger btn-batch-option" data-type="R">true</button>
 				</div>
 				<div class="btn-group btn-group-sm mb-1">
-					<button class="btn btn-outline-danger btn-batch-start"  data-type="S">Delete LowerScore</button>
+					<button class="btn btn-outline-danger btn-batch-start"  data-type="S">Delete Lower Score</button>
 					<button class="btn btn-outline-danger btn-batch-option" data-type="S">false</button>
 				</div>
 				<div class="btn-group btn-group-sm mb-1">
@@ -120,16 +122,13 @@ input {
 					<button class="btn btn-outline-danger btn-batch-start" data-type="A">Archive Batch</button>
 				</div>
 				<div class="btn-group btn-group-sm mb-1">
-					<button class="btn btn-outline-danger btn-batch-start" data-type="B">Backup Batch</button>
-				</div>
-				<div class="btn-group btn-group-sm mb-1">
-					<button class="btn btn-outline-danger btn-batch-start" data-type="D">Delete Empty Folder</button>
+					<button class="btn btn-outline-danger btn-batch-start" data-type="B">Source Backup</button>
 				</div>
 			</div>
 		</div>
 		<div id="resultVideoDiv" class="card mt-2 collapse" style="overflow:auto">
-			<div class="card-body"> 
-				<h4 class="card-title">Video <span class="badge badge-light video-count"></span></h4>
+			<div class="card-body">
+				<h4 class="card-title">Video <span class="badge badge-light video-count"></span><i class="fa fa-times float-right hover small" id="btn-video-close"></i></h4>
 				<table class="table table-sm table-hover table-bordered">
 					<thead>
 						<tr>
@@ -147,7 +146,7 @@ input {
 		</div>
 		<div id="resultHistoryDiv" class="card mt-2 collapse" style="overflow:auto">
 			<div class="card-body">
-				<h4 class="card-title">History <span class="badge badge-light history-count"></span></h4>
+				<h4 class="card-title">History <span class="badge badge-light history-count"></span><i class="fa fa-times float-right hover small" id="btn-history-close"></i></h4>
 				<table class="table table-sm table-hover table-bordered">
 					<thead>
 						<tr>

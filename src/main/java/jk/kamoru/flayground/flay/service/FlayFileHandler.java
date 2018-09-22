@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
+import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
@@ -99,6 +100,16 @@ public class FlayFileHandler {
 	public static void moveFileToDirectory(File file, File dir) {
 		try {
 			FileUtils.moveFileToDirectory(file, dir, true);
+		} catch (FileExistsException e) {
+			File destFile = new File(dir, file.getName());
+			long srcSize = file.length();
+			long destSize = destFile.length();
+			if (srcSize == destSize || srcSize < destSize) {
+				FileUtils.deleteQuietly(file);
+			} else {
+				FileUtils.deleteQuietly(destFile);
+				moveFileToDirectory(file, dir);
+			}
 		} catch (IOException e) {
 			throw new IllegalStateException("fail to move file:" + file.getName(), e);
 		}

@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Flay Info</title>
+<link rel="icon" type="image/png" href="/img/favicon/flay_1.png"/>
 <link rel="stylesheet" href="/webjars/fontawesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/4.1.3/css/bootstrap.min.css">
 <link rel="stylesheet" href="/webjars/jquery-ui/1.12.1/themes/base/jquery-ui.min.css"/>
@@ -39,6 +40,9 @@ var loadedFlay = false, loadedTag = false;
 
 Rest.Flay.get(opus, function(_flay) {
 	flay = _flay;
+	document.title = flay.opus + ' - ' + document.title;
+
+	
 	$(".container-flay").appendFlayCard(flay);
 	loadedFlay = true;
 	matchTag();

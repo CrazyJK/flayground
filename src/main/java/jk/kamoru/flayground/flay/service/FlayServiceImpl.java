@@ -53,7 +53,7 @@ public class FlayServiceImpl implements FlayService {
 	public Collection<Flay> find(String query) {
 		return instanceFlaySource.list()
 				.stream()
-				.filter(f -> f.getFullname().contains(query))
+				.filter(f -> StringUtils.containsIgnoreCase(f.getFullname(), query))
 				.sorted((f1, f2) -> StringUtils.compare(f2.getRelease(), f1.getRelease()))
 				.collect(Collectors.toList());
 	}

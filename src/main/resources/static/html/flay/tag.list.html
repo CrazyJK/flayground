@@ -76,7 +76,7 @@ h1 {
 					<input type="text" class="form-control form-control-sm" id="tagDesc" placeholder="Desctiption">
 				</div>
 				<div class="col-auto">
-					<button class="btn btn-sm tag-save">Save</button>
+					<button class="btn btn-sm btn-success tag-save">Save</button>
 				</div>
 				<div class="col-auto">
 					<button class="btn btn-sm btn-danger tag-delete">Delete</button>
@@ -171,7 +171,7 @@ function tagDetail(tagCard) {
 		$.each(flayList, function(idx, flay) {
 			$flayList.appendFlayCard(flay, {
 				width: 300,
-				exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT],
+				exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
 				fontSize: '80%'
 			});
 		});

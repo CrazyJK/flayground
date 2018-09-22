@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Actress Info</title>
+<link rel="icon" type="image/png" href="/img/favicon/flay_1.png"/>
 <link rel="stylesheet" href="/webjars/fontawesome/4.7.0/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/4.1.3/css/bootstrap.min.css">
 <link rel="stylesheet" href="/webjars/jquery-ui/1.12.1/themes/base/jquery-ui.min.css"/>
@@ -141,7 +142,8 @@ $("#save").on("click", function() {
 
 Rest.Actress.get(name, function(_actress) {
 	actress = _actress;
-	
+	document.title = actress.name + ' - ' + document.title;
+
 	if (actress.cover != null) {
 		$("body").css({
 			backgroundImage: 'url("/static/actress/' + actress.name + '")'
@@ -167,7 +169,7 @@ Rest.Actress.get(name, function(_actress) {
 		$.each(flayList, function(idx, flay) {
 			$flayList.appendFlayCard(flay, {
 				width: 300,
-				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, ACTION],
+				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
 				fontSize: '80%'
 			});
 		});

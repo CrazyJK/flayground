@@ -61,9 +61,6 @@ body {
 	transition: all 0.3s;
 }
 
-.nonExist {
- 	color: #747474 !important;
-}
 .tag-list .nonExist {
 	color: #c5bcbc !important;
 }

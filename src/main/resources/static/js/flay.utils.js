@@ -80,6 +80,10 @@ var View = {
 		},
 		actress: function(name) {
 			Popup.open(PATH + "/html/flay/info.actress.html?name=" + name, "actress-" + name, 1000, 600);
+		},
+		tag: function(tagId) {
+//			Popup.open(PATH + "/info/tag/" + tagId, "Tag-" + tagId, 800, 650);
+			Popup.open(PATH + "/html/flay/info.tag.html?id=" + tagId, "Tag-" + tagId, 800, 650);
 		}
 };
 

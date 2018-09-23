@@ -12,7 +12,6 @@ var slideTimer;
 var keyInput = "";
 var keyLastInputTime = new Date().getTime();
 var collecting = false;
-var PATH = "";
 
 $(document).ready(function() {
 
@@ -35,7 +34,6 @@ function loadData() {
 			deploy();
 		});
 	});
-
 }
 
 $.fn.appendTag = function(tagList, tag) {
@@ -64,7 +62,6 @@ var deploy = () => {
 	$(".tag-list").empty().appendTag(tagList);
 
 	$("#pageContent").trigger("collect");
-
 };
 
 function attachEventListener() {
@@ -209,7 +206,6 @@ function attachEventListener() {
 				height: calcHeight
 			}).show();
 		}
-
 	}).trigger("resize");
 }
 
@@ -681,8 +677,5 @@ function decorateRank(rank) {
 	} else {
 		color = 'rgba(255, 0, 0, ' + rank*1.5/10 + ')';
 	}
-	$(".label-range").css({backgroundColor: color});
-	$(".ranker-mark").html(rank);
+	$(".ranker").css({backgroundColor: color});
 }
-
-

@@ -30,11 +30,11 @@ function searchSource(keyword) {
 							})
 					),
 					$("<td>", {'class': 'nowrap'}).append(
-							$("<label>", {"class": "text sm"}).html("V" + flay.files.movie.length),
-							$("<label>", {"class": "text sm"}).html("S" + flay.files.subtitles.length),
+							$("<label>", {"class": "text sm"}).html(flay.files.movie.length > 0 ? "V " + File.formatSize(flay.length) : "noV"),
+							$("<label>", {"class": "text sm"}).html(flay.files.subtitles.length > 0 ? "S" : ""),
 							$("<label>", {"class": "text sm"}).html("R" + flay.video.rank),
-							$("<label>", {"class": "text sm"}).html(File.formatSize(flay.length))
-					).css({minWidth: 160}),
+							$("<label>", {"class": "text sm"}).html()
+					).css({minWidth: 100}),
 					$("<td>").append(
 						function() {
 							var objs = [];

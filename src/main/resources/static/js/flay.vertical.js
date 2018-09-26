@@ -3,6 +3,7 @@
  */
 var videoList = [];
 var tagList = [];
+var actressList = [];
 var collectedList = [];
 
 var currentFlay = null;
@@ -22,18 +23,36 @@ $(document).ready(function() {
 });
 
 function loadData() {
+	var tagLoaded = false, flayLoaded = false, actressLoaded = false;
+	var deploy = () => {
+		if (tagLoaded && flayLoaded && actressLoaded) {
+			$(".tag-list").empty().appendTag(tagList);
+			$("#pageContent").trigger("collect");
+		}
+	};
+
 	// load tag list
 	Rest.Tag.list(function(list) {
 		tagList = list;
 		Util.Tag.sort(tagList);
-
-		// load video list
-		Rest.Flay.list(function(list) {
-			videoList = list;
-
-			deploy();
-		});
+		tagLoaded = true;
+		deploy();
 	});
+
+	// load video list
+	Rest.Flay.list(function(list) {
+		videoList = list;
+		flayLoaded = true;
+		deploy();
+	});
+
+	// load actress list
+	Rest.Actress.list(function(list) {
+		actressList = list;
+		actressLoaded = true;
+		deploy();
+	});
+
 }
 
 $.fn.appendTag = function(tagList, tag) {
@@ -55,13 +74,6 @@ $.fn.appendTag = function(tagList, tag) {
 			$this.append(createTag(tag));
 		}
 	});
-};
-
-var deploy = () => {
-	
-	$(".tag-list").empty().appendTag(tagList);
-
-	$("#pageContent").trigger("collect");
 };
 
 function attachEventListener() {
@@ -222,6 +234,33 @@ function collectList() {
 			result = data1 > data2 ? 1 : -1;
 		}
 		return result;
+	},
+	matchTag = function(tag, flay) {
+		if (flay.video.tags.includes(tag.id)) { // id
+			return true;
+		} else if (flay.fullname.indexOf(tag.name) > -1) { // name
+			return true;
+		} else { // description
+			var descArray = tag.description.split(",");
+			if (descArray.length > 0) {
+				for (var y in descArray) {
+					var desc = descArray[y].trim();
+					if (desc.length > 0) {
+						if (flay.fullname.indexOf(desc) > 0) {
+							return true;
+						}
+					}
+				}
+			}
+		}
+		return false;
+	},
+	getActress = function(name) {
+		for (var x in actressList) {
+			if (actressList[x].name === name) {
+				return actressList[x];
+			}
+		}
 	};
 	
 	collecting = true;
@@ -241,7 +280,14 @@ function collectList() {
 	var sort  = $("input[name='sort']:checked").val();
 	var selectedTags  = [];
 	$("input[data-tag-id]:checked", "#selectTags").each(function(idx, tagCheckbox) {
-		selectedTags.push($(tagCheckbox).data("tag").id);
+		selectedTags.push($(tagCheckbox).data("tag"));
+	});
+	
+	// clear tag count info
+	$("input[data-tag-id]", "#selectTags").each(function(index, tagCheckbox) {
+		var tag = $(tagCheckbox).data("tag");
+		tag.count = 0;
+		$(tagCheckbox).next().addClass("nonExist");
 	});
 	
 	collectedList = [];
@@ -270,11 +316,13 @@ function collectList() {
 		
 		if (fav) {
 			var found = false;
-			$.each(flay.actressList, function(idx, actress) {
-				if (actress.favorite) {
+			for (var x in flay.actressList) {
+				var actress = getActress(flay.actressList[x]);
+				if (actress && actress.favorite) {
 					found = true;
+					break;
 				}
-			});
+			}
 			if (!found) {
 				continue;
 			}
@@ -287,15 +335,33 @@ function collectList() {
 			}
 		}
 		
+		// tag check all. id, name, desc
 		if (selectedTags.length > 0) {
 			var found = false;
-			for (var x in flay.video.tags) {
-				if (selectedTags.includes(flay.video.tags[x])) {
-					found = found || true;
-				}
+			
+			for (var x in selectedTags) {
+				var tag = selectedTags[x];
+				
+				found = matchTag(tag, flay);
+				if (found) {
+					break;
+				}	
+				
 			}
+			
 			if (!found) {
 				continue;
+			}
+		}
+		
+		// tag count
+		for (var x in tagList) {
+			var tag = tagList[x];
+			if (matchTag(tag, flay)) {
+				var dataTag = $("input[data-tag-id='" + tag.id + "']", "#selectTags").data("tag");
+				if (dataTag) {
+					dataTag.count++;
+				}
 			}
 		}
 		
@@ -320,38 +386,17 @@ function collectList() {
 		}
 	});
 
-	// fill tag count info
+	// display flay count of tag
 	$("input[data-tag-id]", "#selectTags").each(function(index, tagCheckbox) {
 		var tag = $(tagCheckbox).data("tag");
-		tag.count = 0;
-		$(tagCheckbox).next().addClass("nonExist");
+		$(tagCheckbox).next().toggleClass("nonExist", tag.count == 0).empty().append(
+				tag.name,
+				$("<i>", {'class': 'badge tag-flay-count'}).html(tag.count)
+		);
 	});
-
+	
 	console.log('collectedList.length', collectedList.length);
 	if (collectedList.length > 0) {
-		
-		for (var x in collectedList) {
-			var flay = collectedList[x];
-			for (var y in flay.video.tags) {
-				var tagId = flay.video.tags[y];
-				var tag = $("input[data-tag-id='" + tagId + "']", "#selectTags").data("tag");
-				if (tag) {
-					tag.count++;
-				} else {
-					var deleted = flay.video.tags.splice(y, 1);
-					Rest.Video.update(flay.video);
-				}
-			}
-		}
-		$("input[data-tag-id]", "#selectTags").each(function(index, tagCheckbox) {
-			var tag = $(tagCheckbox).data("tag");
-			if (tag.count > 0) {
-				$(tagCheckbox).next().removeClass("nonExist").html(tag.name + " " + tag.count);
-			} else {
-				$(tagCheckbox).next().html(tag.name);
-			}
-		});
-		
 		navigation.random();
 		$(".video-wrapper").show();
 		loading.off();
@@ -363,6 +408,7 @@ function collectList() {
 		);
 		loading.on("Not found");
 	}
+	
 	collecting = false;
 }
 
@@ -647,6 +693,10 @@ function showVideo(direction) {
 	currCoverURL += "/static/cover/" + currentFlay.opus;
 	nextCoverURL += (currentIndex < collectedList.length-1) ? "/static/cover/" + collectedList[currentIndex+1].opus : '/static/image/random?_=' + new Date().getTime();
 
+	$(".cover-wrapper-inner.prev > .cover-box").css({backgroundImage: 'url(' + prevCoverURL + ')'});
+	$(".cover-wrapper-inner.curr > .cover-box").css({backgroundImage: 'url(' + currCoverURL + ')'});
+	$(".cover-wrapper-inner.next > .cover-box").css({backgroundImage: 'url(' + nextCoverURL + ')'});
+/*
 	var image1 = new Image();
 	image1.onload = function() {
 		$(".cover-wrapper-inner.prev > .cover-box").css({backgroundImage: 'url(' + prevCoverURL + ')'});
@@ -664,7 +714,7 @@ function showVideo(direction) {
 		$(".cover-wrapper-inner.next > .cover-box").css({backgroundImage: 'url(' + nextCoverURL + ')'});
 	};
 	image3.src = nextCoverURL;
-
+*/
 	showInfo();
 }
 
@@ -677,5 +727,8 @@ function decorateRank(rank) {
 	} else {
 		color = 'rgba(255, 0, 0, ' + rank*1.5/10 + ')';
 	}
-	$(".ranker").css({backgroundColor: color});
+	$(".ranker").css({
+		backgroundColor: color,
+		borderColor: color
+	});
 }

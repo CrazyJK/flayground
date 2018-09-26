@@ -6,16 +6,22 @@ body {
 
 #selectTags {
 	display: none;
-	position: fixed;
+/* 	position: fixed;
 	left: 50%;
 	top: 0;
-	transform: translate(-50%, 0%);
+	transform: translate(-50%, 0%); */
+	width: 90%;
+	margin: 55px auto -50px;
+	
 	text-align: center;
 	margin-top: 56px;
 	padding: 0.5rem;
 	box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.25);
 	border-radius: 1rem;
 	z-index: 69;
+}
+#selectTags > div.tag-list > label.input.sm > span > .tag-flay-count {
+	min-width: 20px;
 }
 
 #options {
@@ -48,6 +54,9 @@ body {
 
 .info-wrapper .info-title {
 	max-width: 800px;
+}
+.info-wrapper-actress {
+	min-height: 38px;
 }
 
 .info-overview-input {
@@ -82,7 +91,7 @@ body {
 	box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.25);
     border: 0;
 	border-radius: 0.5rem;
-	transition: background 0.3s ease-out;
+	transition: background 0.2s ease-out;
 }
 .cover-box.dark {
     border: 1px solid #e0e0e0;	

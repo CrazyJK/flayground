@@ -32,6 +32,7 @@ import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
+import jk.kamoru.flayground.info.domain.History.Action;
 import jk.kamoru.flayground.info.service.HistoryService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,18 +64,21 @@ public class BatchService {
 	@Value("${batch.rank.delete}")  Boolean deleteLowerRank;
 	@Value("${batch.score.delete}") Boolean deleteLowerScore;
 	
-	@Value("${path.video.archive}") String archivePath;
-    @Value("${path.video.storage}") String storagePath;
-    @Value("${path.video.stage}")   String[] stagePaths;
-    @Value("${path.video.cover}")   String[] coverPaths;
-    @Value("${path.video.queue}")   String   queuePath;
-	@Value("${path.info}")          String    infoPath;
-    @Value("${path.backup}")        String  backupPath;
-    @Value("${path.video.archive},${path.video.stage},${path.video.cover}") String[] emptyManagedPath;
+	@Value("${path.video.archive}") String   archivePath;
+    @Value("${path.video.storage}") String   storagePath;
+    @Value("${path.video.stage}")   String[]   stagePaths;
+    @Value("${path.video.cover}")   String[]   coverPaths;
+    @Value("${path.video.queue}")   String     queuePath;
+	@Value("${path.info}")          String      infoPath;
+    @Value("${path.backup}")        String    backupPath;
+    @Value("${path.video.stage},${path.video.cover}") String[] emptyManagedInstancePath;
     
     @Value("${size.storage}") int storageGbSize;
 	
-	String yyyyMM = FlayConfig.YYYY_MM_Format.format(new Date());
+	public void reload() {
+		log.info("[reload]");
+		instanceFlaySource.load();
+	}
 
 	public Boolean getOption(Option type) {
 		switch (type) {
@@ -137,14 +141,37 @@ public class BatchService {
 			deleteLowerScore();
 		
 		assembleFlay();
-		deleteEmptyFolder();
+		deleteEmptyFolder(emptyManagedInstancePath);
 		reload();
 	}
 
 	private void archiveSource() {
-		// TODO Auto-generated method stub
-		
+		relocateArchiveFile();
+		deleteEmptyFolder(archivePath);
 		archiveFlaySource.load();
+	}
+
+	private void relocateArchiveFile() {
+		log.info("[relocateArchiveFile]");
+		for (Flay flay : archiveFlaySource.list()) {
+			String yyyyMM = getArchiveFolder(flay);
+			File destDir = new File(archivePath, yyyyMM);
+			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
+				for (File file : entry.getValue()) {
+					String parentName = file.getParentFile().getName();
+					if (StringUtils.equals(parentName, yyyyMM)) {
+						// ok. normal position
+					} else {
+						log.info("move {} to {}", file, destDir);
+						FlayFileHandler.moveFileToDirectory(file, destDir);
+					}
+				}
+			}
+		}
+	}
+
+	private String getArchiveFolder(Flay flay) {
+		return StringUtils.substring(flay.getRelease(), 0, 4) + "-" + StringUtils.substring(flay.getRelease(), 5, 7);
 	}
 
 	private void moveWatched() {
@@ -191,11 +218,6 @@ public class BatchService {
 		}
 	}
 
-	public void reload() {
-		log.info("[reload]");
-		instanceFlaySource.load();
-	}
-
 	private void assembleFlay() {
 		log.info("[assembleFlay]");
 		for (Flay flay : instanceFlaySource.list()) {
@@ -240,7 +262,7 @@ public class BatchService {
 		return new File(queuePath);
 	}
 
-	private void deleteEmptyFolder() {
+	private void deleteEmptyFolder(String...emptyManagedPath) {
 		log.info("[deleteEmptyFolder]");
 		List<Path> paths = new ArrayList<>();
 		for (String dir : emptyManagedPath) {
@@ -260,15 +282,44 @@ public class BatchService {
 			}
 		}
 		for (Path dir : paths) {
-			try {
-				FileUtils.deleteDirectory(dir.toFile());
-				log.info("empty directory deleted {}", dir);
-			} catch (IOException e) {
-				throw new IllegalStateException("deleteEmptyFolder delete fail", e);
-			}
+			log.info("empty directory delete {}", dir);
+			FlayFileHandler.deleteDirectory(dir.toFile());
 		}
 	}
 
+	private void archiving(Flay flay) {
+		String yyyyMM = getArchiveFolder(flay);
+		File destDir = new File(archivePath, yyyyMM);
+		for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
+			String key = entry.getKey();
+			for (File file : entry.getValue()) {
+				if (Flay.COVER.equals(key) || Flay.SUBTI.equals(key)) {
+					log.info("move {} to {}", file, destDir);
+					FlayFileHandler.moveFileToDirectory(file, destDir);
+				} else {
+					log.info("delete {}", file);
+					FlayFileHandler.deleteFile(file);
+				}
+			}
+		}
+		historyService.save(Action.DELETE, flay);
+	}
+
+	private String prettyFileLength(long length) {
+		if (length > FileUtils.ONE_GB) {
+			numberFormat.setMinimumFractionDigits(1);
+			return numberFormat.format(length / FileUtils.ONE_GB) + "GB";
+		} else if (length > FileUtils.ONE_MB) {
+			numberFormat.setMinimumFractionDigits(0);
+			return numberFormat.format(length / FileUtils.ONE_MB) + "MB";
+		} else if (length > FileUtils.ONE_KB) {
+			numberFormat.setMinimumFractionDigits(0);
+			return numberFormat.format(length / FileUtils.ONE_KB) + "KB";
+		} else {
+			return length + "bytes";
+		}
+	}	
+	
 	public synchronized void backup() {
 		if (StringUtils.isBlank(backupPath)) {
 			log.warn("Backup path not set");
@@ -385,34 +436,4 @@ public class BatchService {
 		}
 	}
 
-	void archiving(Flay flay) {
-		for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
-			String key = entry.getKey();
-			for (File file : entry.getValue()) {
-				if (Flay.COVER.equals(key)) {
-					File destDir = new File(archivePath, yyyyMM);
-					log.info("move {} to {}", file, destDir);
-					FlayFileHandler.moveFileToDirectory(file, destDir);
-				} else {
-					log.info("delete {}", file);
-					FileUtils.deleteQuietly(file);
-				}
-			}
-		}
-	}
-
-	String prettyFileLength(long length) {
-		if (length > FileUtils.ONE_GB) {
-			numberFormat.setMinimumFractionDigits(1);
-			return numberFormat.format(length / FileUtils.ONE_GB) + "GB";
-		} else if (length > FileUtils.ONE_MB) {
-			numberFormat.setMinimumFractionDigits(0);
-			return numberFormat.format(length / FileUtils.ONE_MB) + "MB";
-		} else if (length > FileUtils.ONE_KB) {
-			numberFormat.setMinimumFractionDigits(0);
-			return numberFormat.format(length / FileUtils.ONE_KB) + "KB";
-		} else {
-			return length + "bytes";
-		}
-	}
 }

@@ -115,6 +115,9 @@ public class FlayServiceImpl implements FlayService {
 	public void play(String opus) {
 		Flay flay = instanceFlaySource.get(opus);
 		flayActionHandler.play(flay);
+		
+		flay.getVideo().increasePlayCount();
+
 		videoInfoService.update(flay.getVideo());
 		historyService.save(History.Action.PLAY, flay);
 	}

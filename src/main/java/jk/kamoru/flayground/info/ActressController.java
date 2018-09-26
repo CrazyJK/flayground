@@ -39,6 +39,11 @@ public class ActressController {
 		return actressInfoService.find(query);
 	}
 
+	@GetMapping("/find/byLocalname/{localname}")
+	public Collection<Actress> findByLocalname(@PathVariable String localname) {
+		return actressInfoService.findByLocalname(localname);
+	}
+	
 	@PostMapping
 	public Actress create(@RequestBody Actress actress) {
 		return actressInfoService.create(actress);

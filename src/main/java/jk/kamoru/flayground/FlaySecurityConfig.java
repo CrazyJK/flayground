@@ -21,7 +21,7 @@ public class FlaySecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http
 			.authorizeRequests()
-				.antMatchers("/index.html", "/html/login.html", "/webjars/**").permitAll()
+				.antMatchers("/index.html", "/html/login.html", "/webjars/**", "/img/favicon/**").permitAll()
 				.anyRequest().authenticated()
 				.and()
 			.formLogin()

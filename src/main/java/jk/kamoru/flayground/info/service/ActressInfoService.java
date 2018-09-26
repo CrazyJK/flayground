@@ -2,7 +2,9 @@ package jk.kamoru.flayground.info.service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -47,6 +49,10 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 				FlayFileHandler.rename(flay, actressList);
 			}
 		}
+	}
+
+	public Collection<Actress> findByLocalname(String localname) {
+		return super.infoSource.list().stream().filter(a -> StringUtils.equals(a.getLocalName(), localname)).collect(Collectors.toList());
 	}
 
 }

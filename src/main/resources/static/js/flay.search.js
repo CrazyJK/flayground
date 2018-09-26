@@ -155,15 +155,35 @@ $("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 	if (e.keyCode != 13)
 		return;
 	
-	var rowOpus    = $("#rowname_opus").val();
-	var rowTitle   = $("#rowname_title").val();
-	var rowActress = $("#rowname_actress").val();
+	var rowOpus    = $("#rowname_opus").val().trim();
+	var rowTitle   = $("#rowname_title").val().trim();
+	var rowActress = $("#rowname_actress").val().trim();
 
 	$("#opus").val(rowOpus);
 	rowOpus != '' && searchSource(rowOpus);
 	rowOpus != '' && Search.opus(rowOpus);
 	rowTitle != '' && Search.translate(rowTitle);
-	rowActress != '' && Search.actress(rowActress);
+	rowActress != '' && Rest.Actress.findByLocalname(rowActress, function(actressList) { 
+		if (actressList.length == 0) {
+			Search.actress(rowActress)
+		} else if (actressList.length == 1) {
+			$("#actress").html(actressList[0].name);
+		} else {
+			Search.actress(rowActress)
+			$.each(actressList, function(idx, actress) {
+				$("<li>").append(
+						$("<label>", {'class': 'text hover'}).html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut)
+				).on("click", function() {
+					console.log('actress choice', actress);
+					$("#actress").val(actress.name);
+					$("#actressChoice").dialog("close");
+				}).appendTo($("#actressChoice > ul"));
+			});
+			$("#actressChoice").dialog({
+				width: 600
+			});
+		}
+	});;
 });
 
 // btn event
@@ -188,13 +208,6 @@ $(".btn-search-torrent").on("click", function() {
 });
 $(".btn-reload").on("click", function() {
 	Rest.Batch.reload();
-});
-$(".btn-save-cover").on("click", function() {
-	var opus = $("#opus").val();
-	var title = $("#fullname").val();
-	Rest.Cover.save(opus, title, function(result) {
-		// TODO
-	});
 });
 $(".btn-find-random-opus").on("click", function() {
 	Search.opusByRandom();

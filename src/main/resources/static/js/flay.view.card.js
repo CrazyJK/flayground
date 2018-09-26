@@ -14,7 +14,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 		};
 		var settings = $.extend({}, DEFAULTS, args);
 		
-		console.log('$.fn.appendFlayCard', flay, settings);
+//		console.log('$.fn.appendFlayCard', flay, settings);
 		
 		var templateFlay = ''
 			+	'<div class="card flay-card">'
@@ -22,13 +22,17 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			+			'<p class="card-title"><label class="text lg nowrap flay-title hover">Title</label></p>'
 			+			'<p class="card-text flay-rank-wrapper"></p>'
 			+			'<p class="card-text"><label class="text flay-studio">Studio</label></p>'
-			+			'<p class="card-text"><label class="text flay-opus">Opus</label> <label class="text flay-opus-search hover"><i class="fa fa-image"></i></label></p>'
+			+			'<p class="card-text">'
+			+				'<label class="text flay-opus">Opus</label>'
+			+				'<label class="text flay-opus-search hover"><i class="fa fa-image"></i></label>'
+			+				'<label class="text flay-rank-sm">Rank</label>'
+			+			'</p>'
 			+			'<p class="card-text flay-actress-wrapper nowrap"></p>'
 			+			'<p class="card-text"><label class="text flay-release">Release</label></p>'
 			+			'<p class="card-text"><label class="text flay-modified">LastModified</label></p>'
 			+			'<p class="card-text flay-action-wrapper">'
 			+				'<label class="text hover flay-movie">Movie</label> '
-			+				'<label class="text hover flay-subtitles">Subtitles</label> '
+			+				'<label class="text hover flay-subtitles">sub</label> '
 			+				'<label class="text hover flay-file-info-btn" data-toggle="collapse" data-target=".flay-file-group"><i class="fa fa-folder-open"></i></label>'
 			+			'</p>'
 			+			'<p class="card-text flay-comment-wrapper"><label class="text flay-comment hover">Comment</label><input class="flay-comment-input" placeholder="Comment"/></p>'
@@ -70,6 +74,15 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				+		'<label><input type="radio" name="flay-rank-' + opus + '" value="4"><i class="fa fa-star r4"></i></label>'
 				+		'<label><input type="radio" name="flay-rank-' + opus + '" value="5"><i class="fa fa-star r5"></i></label>'
 				+	'</span>';
+		},
+		getRankColor = function(rank) {
+			if (rank < 0) {
+				return '#00f';
+			} else if (rank == 0) {
+				return '#000';
+			} else {
+				return 'rgba(255, 0, 0, ' + rank*2/10 + ')';
+			}
 		};
 		
 		var constructFlay = function() {
@@ -77,121 +90,162 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			
 			// set data and event
 			$flayCard.attr("id", flay.opus).data("flay", flay);
+			// cover
 			$flayCard.find(".card-body").css({
 				backgroundImage: 'url(/static/cover/' + flay.opus + ')'
 			});
-			
+			// studio
 			$flayCard.find(".flay-studio").html(flay.studio);
+			// opus
 			$flayCard.find(".flay-opus").html(flay.opus);
+			// opus search
 			$flayCard.find(".flay-opus-search").on("click", function() {
 				Search.opus(flay.opus);
 			});
+			// title
 			$flayCard.find(".flay-title").html(flay.title).on("click", function() {
 				View.flay(flay.opus);
 			});
-			constructActress($flayCard.find(".flay-actress-wrapper"));
-			$flayCard.find(".flay-release").html(flay.release);
-			$flayCard.find(".flay-modified").html(new Date(flay.lastModified).format("yyyy-MM-dd"));
-			
-			$flayCard.find(".flay-rank-wrapper").append(getRank(flay.opus)).on("change", "input", function() {
-				flay.video.rank = $(this).val();
-				Rest.Video.update(flay.video, function() {
-				});
-			});
-			$flayCard.find("input[name='flay-rank-" + flay.opus + "'][value='" + flay.video.rank + "']").prop("checked", true);
-			var movieSize = flay.files.movie.length;
-			$flayCard.find(".flay-movie").toggleClass("nonExist", movieSize == 0).html(
-					movieSize == 0 ? 'Video' : 
-						movieSize == 1 ? 'V ' + File.formatSize(flay.length) :
-							movieSize + 'V ' + File.formatSize(flay.length)
-			).on("click", function() {
-				if (movieSize == 0)
-					Search.torrent(flay.opus)
-				else
-					Rest.Flay.play(flay);
-			});
-			$flayCard.find(".flay-subtitles").toggle(flay.files.subtitles.length > 0).on("click", function() {
-				Rest.Flay.subtitles(flay);
-			});
-			
-			var $flayFileGroup = $flayCard.find(".flay-file-group");
-			if (flay.files.cover.length > 0) {
-				var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
-				$.each(flay.files.cover, function(idx, file) {
-					$li.append(
-							$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
-								Rest.Flay.openFolder(file);
-							})
-					);
-				});
-			}
-			if (flay.files.subtitles.length > 0) {
-				var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
-				$.each(flay.files.subtitles, function(idx, file) {
-					$li.append(
-							$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
-								Rest.Flay.openFolder(file);
-							})
-					);
-				});
-			}
-			if (flay.files.movie.length > 0) {
-				var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
-				$.each(flay.files.movie, function(idx, file) {
-					$li.append(
-							$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
-								Rest.Flay.openFolder(file);
-							})
-					);
-				});
-			}
-			
-			$flayCard.find(".flay-new-studio" ).val(flay.studio);
-			$flayCard.find(".flay-new-opus"   ).val(flay.opus);
-			$flayCard.find(".flay-new-title"  ).val(flay.title);
-			$flayCard.find(".flay-new-actress").val(Util.Actress.getNames(flay.actressList));
-			$flayCard.find(".flay-new-release").val(flay.release);
-			
-			$flayCard.find(".btn-flay-rename").on("click", function() {
-				var newStudio  = $flayCard.find(".flay-new-studio").val();
-				var newOpus    = $flayCard.find(".flay-new-opus").val();
-				var newTitle   = $flayCard.find(".flay-new-title").val();
-				var newActress = $flayCard.find(".flay-new-actress").val();
-				var newRelease = $flayCard.find(".flay-new-release").val();
-				var newFlay = {
-						studio: newStudio,
-						opus: flay.opus,
-						title: newTitle,
-						actressList: Util.Actress.toArray(newActress),
-						release: newRelease
-				};
-				console.log("newFlay", newFlay);
-				Rest.Flay.rename(flay.opus, newFlay, function() {
-					location.reload();
-				});
-			});
-
-			
-			if (flay.video.comment != null && flay.video.comment != '') {
-				$flayCard.find(".flay-comment").html(flay.video.comment);
-				$flayCard.find(".flay-comment-input").val(flay.video.comment);
+			// actress
+			if (settings.exclude.includes(ACTRESS)) {
+				$flayCard.find(".flay-actress-wrapper").remove();
 			} else {
-				$flayCard.find(".flay-comment").addClass("nonExist");
+				constructActress($flayCard.find(".flay-actress-wrapper"));
 			}
-			$flayCard.find(".flay-comment").on("click", function() {
-				$(this).hide();
-				$flayCard.find(".flay-comment-input").show();
-			});
-			$flayCard.find(".flay-comment-input").on("keyup", function(e) {
-				if (e.keyCode == 13) {
-					var $self = $(this);
-					flay.video.comment = $self.val();
+			// release
+			$flayCard.find(".flay-release").html(flay.release);
+			// modified
+			if (settings.exclude.includes(MODIFIED)) {
+				$flayCard.find(".flay-modified").remove();
+			} else {
+				$flayCard.find(".flay-modified").html(new Date(flay.lastModified).format("yyyy-MM-dd"));
+			}
+			// rank
+			if (settings.exclude.includes(RANK)) {
+				$flayCard.find(".flay-rank-wrapper").remove();
+				if (flay.video.rank > 0)
+					$flayCard.find(".flay-rank-sm").html(flay.video.rank).css({color: getRankColor(flay.video.rank)});
+				else 
+					$flayCard.find(".flay-rank-sm").remove();
+			} else {
+				$flayCard.find(".flay-rank-wrapper").append(getRank(flay.opus)).on("change", "input", function() {
+					flay.video.rank = $(this).val();
 					Rest.Video.update(flay.video, function() {
-						$self.hide();
-						$flayCard.find(".flay-comment").html(flay.video.comment).show();
+					});
+				});
+				$flayCard.find("input[name='flay-rank-" + flay.opus + "'][value='" + flay.video.rank + "']").prop("checked", true);
+				$flayCard.find(".flay-rank-sm").remove();
+			}
+			// action
+			if (settings.exclude.includes(ACTION)) {
+				$flayCard.find(".flay-action-wrapper").remove();
+			} else {
+				// movie
+				var movieSize = flay.files.movie.length;
+				$flayCard.find(".flay-movie").toggleClass("nonExist", movieSize == 0).html(
+						movieSize == 0 ? 'noV ' : 
+							movieSize == 1 ? 'V ' + File.formatSize(flay.length) :
+								movieSize + 'V ' + File.formatSize(flay.length)
+				).on("click", function() {
+					if (movieSize == 0)
+						Search.torrent(flay.opus)
+					else
+						Rest.Flay.play(flay);
+				});
+				// subtitles
+				$flayCard.find(".flay-subtitles").toggle(flay.files.subtitles.length > 0).on("click", function() {
+					Rest.Flay.subtitles(flay);
+				});
+			}
+			// files
+			if (settings.exclude.includes(FILEINFO)) {
+				$flayCard.find(".flay-file-info-btn").remove();
+				$flayCard.find(".flay-file-group").remove();
+			} else {
+				var $flayFileGroup = $flayCard.find(".flay-file-group");
+				// cover file
+				if (flay.files.cover.length > 0) {
+					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+					$.each(flay.files.cover, function(idx, file) {
+						$li.append(
+								$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+									Rest.Flay.openFolder(file);
+								})
+						);
 					});
 				}
-			});
+				// subtitles file
+				if (flay.files.subtitles.length > 0) {
+					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+					$.each(flay.files.subtitles, function(idx, file) {
+						$li.append(
+								$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+									Rest.Flay.openFolder(file);
+								})
+						);
+					});
+				}
+				// movie file
+				if (flay.files.movie.length > 0) {
+					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+					$.each(flay.files.movie, function(idx, file) {
+						$li.append(
+								$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+									Rest.Flay.openFolder(file);
+								})
+						);
+					});
+				}
+				// rename
+				$flayCard.find(".flay-new-studio" ).val(flay.studio);
+				$flayCard.find(".flay-new-opus"   ).val(flay.opus);
+				$flayCard.find(".flay-new-title"  ).val(flay.title);
+				$flayCard.find(".flay-new-actress").val(Util.Actress.getNames(flay.actressList));
+				$flayCard.find(".flay-new-release").val(flay.release);
+				$flayCard.find(".btn-flay-rename").on("click", function() {
+					var newStudio  = $flayCard.find(".flay-new-studio").val();
+					var newOpus    = $flayCard.find(".flay-new-opus").val();
+					var newTitle   = $flayCard.find(".flay-new-title").val();
+					var newActress = $flayCard.find(".flay-new-actress").val();
+					var newRelease = $flayCard.find(".flay-new-release").val();
+					var newFlay = {
+							studio: newStudio,
+							opus: flay.opus,
+							title: newTitle,
+							actressList: Util.Actress.toArray(newActress),
+							release: newRelease
+					};
+					console.log("newFlay", newFlay);
+					Rest.Flay.rename(flay.opus, newFlay, function() {
+						location.reload();
+					});
+				});
+			}
+			// comment
+			if (settings.exclude.includes(COMMENT)) {
+				$flayCard.find(".flay-comment-wrapper").remove();
+			} else {
+				if (flay.video.comment != null && flay.video.comment != '') {
+					$flayCard.find(".flay-comment").html(flay.video.comment);
+					$flayCard.find(".flay-comment-input").val(flay.video.comment);
+				} else {
+					$flayCard.find(".flay-comment").addClass("nonExist");
+				}
+				$flayCard.find(".flay-comment").on("click", function() {
+					$(this).hide();
+					$flayCard.find(".flay-comment-input").show();
+				});
+				$flayCard.find(".flay-comment-input").on("keyup", function(e) {
+					if (e.keyCode == 13) {
+						var $self = $(this);
+						flay.video.comment = $self.val();
+						Rest.Video.update(flay.video, function() {
+							$self.hide();
+							$flayCard.find(".flay-comment").html(flay.video.comment).show();
+						});
+					}
+				});
+			}
 
 			// set css
 			$flayCard.css({
@@ -205,18 +259,21 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			
 			// set exclude
 			if (settings.exclude.length > 0) {
-				if (settings.exclude.includes(ACTRESS))
-					$flayCard.find(".flay-actress-wrapper").hide();
-				if (settings.exclude.includes(MODIFIED))
-					$flayCard.find(".flay-modified").hide();
-				if (settings.exclude.includes(ACTION))
-					$flayCard.find(".flay-action-wrapper").hide();
-				if (settings.exclude.includes(COMMENT))
-					$flayCard.find(".flay-comment-wrapper").hide();
-				if (settings.exclude.includes(RANK))
-					$flayCard.find(".flay-rank-wrapper").hide();
-				if (settings.exclude.includes(FILEINFO))
-					$flayCard.find(".flay-file-info-btn").hide();
+//				if (settings.exclude.includes(ACTRESS))
+//					$flayCard.find(".flay-actress-wrapper").hide();
+//				if (settings.exclude.includes(MODIFIED))
+//					$flayCard.find(".flay-modified").hide();
+//				if (settings.exclude.includes(ACTION))
+//					$flayCard.find(".flay-action-wrapper").hide();
+//				if (settings.exclude.includes(COMMENT))
+//					$flayCard.find(".flay-comment-wrapper").hide();
+//				if (settings.exclude.includes(RANK)) {
+//					$flayCard.find(".flay-rank-wrapper").css({display: 'none'});
+// 				} else {
+//					$flayCard.find(".flay-rank-sm").css({display: 'none'});
+// 				}
+//				if (settings.exclude.includes(FILEINFO))
+//					$flayCard.find(".flay-file-info-btn").hide();
 			}
 
 			return $flayCard;

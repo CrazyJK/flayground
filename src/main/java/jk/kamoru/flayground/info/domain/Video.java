@@ -41,4 +41,8 @@ public class Video implements Info<String> {
 		this.opus = key;
 	}
 
+	public void increasePlayCount() {
+		++play;
+	}
+
 }

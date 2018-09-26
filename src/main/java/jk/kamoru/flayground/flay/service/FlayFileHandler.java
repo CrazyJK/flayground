@@ -61,7 +61,7 @@ public class FlayFileHandler {
 		try {
 			Files.createDirectories(directory.toPath());
 		} catch (IOException e) {
-			throw new IllegalStateException(e);
+			throw new IllegalStateException("fail to createDirectory " + directory, e);
 		}
 	}
 
@@ -69,7 +69,7 @@ public class FlayFileHandler {
 		try {
 			FileUtils.cleanDirectory(directory);
 		} catch (IOException e) {
-			throw new IllegalStateException(e);
+			throw new IllegalStateException("fail to cleanDirectory " + directory, e);
 		}
 	}
 
@@ -77,42 +77,52 @@ public class FlayFileHandler {
 		try {
 			FileUtils.deleteDirectory(directory);
 		} catch (IOException e) {
-			throw new IllegalStateException(e);
+			throw new IllegalStateException("fail to deleteDirectory " + directory, e);
 		}
 	}
 
-	public static void copyDirectoryToDirectory(File srcDir, File destDir) {
+	public static void copyDirectoryToDirectory(File fromDirectory, File toDirectory) {
 		try {
-			FileUtils.copyDirectoryToDirectory(srcDir, destDir);
+			FileUtils.copyDirectoryToDirectory(fromDirectory, toDirectory);
 		} catch (IOException e) {
-			throw new IllegalStateException(e);
+			throw new IllegalStateException("fail to copyDirectoryToDirectory " + fromDirectory + " to " + toDirectory, e);
 		}
 	}
 
-	public static void copyFileToDirectory(File srcFile, File destFile) {
+	public static void copyFileToDirectory(File file, File directoryr) {
 		try {
-			FileUtils.copyFileToDirectory(srcFile, destFile);
+			FileUtils.copyFileToDirectory(file, directoryr);
 		} catch (IOException e) {
-			throw new IllegalStateException(e);
+			throw new IllegalStateException("fail to copyFileToDirectory " + file + " to " + directoryr, e);
 		}
 	}
 
-	public static void moveFileToDirectory(File file, File dir) {
+	public static void moveFileToDirectory(File file, File directory) {
 		try {
-			FileUtils.moveFileToDirectory(file, dir, true);
+			FileUtils.moveFileToDirectory(file, directory, true);
 		} catch (FileExistsException e) {
-			File destFile = new File(dir, file.getName());
+			File destFile = new File(directory, file.getName());
 			long srcSize = file.length();
 			long destSize = destFile.length();
 			if (srcSize == destSize || srcSize < destSize) {
 				FileUtils.deleteQuietly(file);
 			} else {
 				FileUtils.deleteQuietly(destFile);
-				moveFileToDirectory(file, dir);
+				moveFileToDirectory(file, directory);
 			}
 		} catch (IOException e) {
-			throw new IllegalStateException("fail to move file:" + file.getName(), e);
+			throw new IllegalStateException("fail to moveFileToDirectory " + file + " to " + directory, e);
 		}
 	}
 
+	public static void deleteFile(File file) {
+		if (file.isDirectory()) {
+			throw new IllegalStateException("fail to deleteFile. it is directory: " + file);
+		}
+		boolean result = FileUtils.deleteQuietly(file);
+		if (!result) {
+			throw new IllegalStateException("fail to deleteFile " + file);
+		}
+	}
+	
 }

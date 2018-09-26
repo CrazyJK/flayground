@@ -9,24 +9,23 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.info.service.VideoInfoService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
+@Service
 public class FlayActionHandler {
 
 	@Autowired FlayConfig flayConfig;
+	@Autowired VideoInfoService videoInfoService;
 	
 	@Async
 	public void play(Flay flay) {
 		exec(composite(flayConfig.getPlayer(), flay.getFiles().get(Flay.MOVIE)));
-		
-		int play = flay.getVideo().getPlay();
-		flay.getVideo().setPlay(++play);
 	}
 
 	@Async

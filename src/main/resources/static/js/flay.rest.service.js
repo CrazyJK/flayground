@@ -119,6 +119,10 @@ var Rest = {
 				console.log("Rest.Actress.get", name);
 				restCall('/info/actress/' + name, {}, callback);
 			},
+			list: function(callback) {
+				console.log("Rest.Actress.list");
+				restCall('/info/actress/list', {}, callback);
+			},
 			update: function(actress, callback) {
 				console.log("Rest.Actress.update", actress);
 				restCall('/info/actress', {data: actress, method: "PATCH"}, callback);
@@ -126,6 +130,10 @@ var Rest = {
 			rename: function(originalName, actress, callback) {
 				console.log("Rest.Actress.rename", originalName, actress);
 				restCall('/info/actress/' + originalName, {data: actress, method: "PUT"}, callback);
+			},
+			findByLocalname: function(name, callback) {
+				console.log("Rest.Actress.findByLocalname", name);
+				restCall('/info/actress/find/byLocalname/' + name, {}, callback);
 			}
 		},
 		Tag: {
@@ -148,12 +156,6 @@ var Rest = {
 			delete: function(tag, callback) {
 				console.log("Rest.Tag.delete", tag);
 				restCall('/info/tag', {data: tag, method: "DELETE"}, callback);
-			}
-		},
-		Cover: {
-			save: function(opus, callback) {
-				console.log("Rest.Cover.save", opus, title);
-				restCall('/rest/video/' + opus + '/saveCover', {method: "POST", data: {title: 'Find ' + opus + ' cover'}}, callback);
 			}
 		},
 		Image: {

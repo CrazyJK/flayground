@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.info.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
 	@Override
 	public void update(Video update) {
 		Flay flay = flayService.get(update.getOpus());
+		update.setLastAccess(new Date().getTime());
 		flay.setVideo(update);
 		super.update(update);
 	}

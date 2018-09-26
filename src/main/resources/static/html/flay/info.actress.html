@@ -164,6 +164,10 @@ Rest.Actress.get(name, function(_actress) {
 	Rest.Flay.findByActress(actress, function(flayList) {
 		$(".video-count").html(flayList.length);
 		
+		flayList.sort(function(flay1, flay2) {
+			return flay2.release.toLowerCase().localeCompare(flay1.release);
+		});
+		
 		var $flayList = $(".flay-list").empty();
 		
 		$.each(flayList, function(idx, flay) {

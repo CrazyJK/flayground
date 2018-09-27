@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.info.service.VideoInfoService;
+import jk.kamoru.flayground.notice.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -22,15 +23,18 @@ public class FlayActionHandler {
 
 	@Autowired FlayConfig flayConfig;
 	@Autowired VideoInfoService videoInfoService;
-	
+	@Autowired NotificationService notificationService;
+
 	@Async
 	public void play(Flay flay) {
 		exec(composite(flayConfig.getPlayer(), flay.getFiles().get(Flay.MOVIE)));
+		notificationService.announce("Play " + flay.getOpus(), flay.getFullname());
 	}
 
 	@Async
 	public void edit(Flay flay) {
 		exec(composite(flayConfig.getEditer(), flay.getFiles().get(Flay.SUBTI)));
+		notificationService.announce("Edit " + flay.getOpus(), flay.getFullname());
 	}
 
 	@Async

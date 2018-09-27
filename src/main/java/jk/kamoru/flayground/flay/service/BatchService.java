@@ -34,6 +34,7 @@ import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
 import jk.kamoru.flayground.info.domain.History.Action;
 import jk.kamoru.flayground.info.service.HistoryService;
+import jk.kamoru.flayground.notice.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class BatchService {
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired FlaySource  archiveFlaySource;
 	@Autowired HistoryService historyService;
-		
+	@Autowired NotificationService notificationService;
+
 	@Value("${batch.watch.move}")   Boolean moveWatched;
 	@Value("${batch.rank.delete}")  Boolean deleteLowerRank;
 	@Value("${batch.score.delete}") Boolean deleteLowerScore;
@@ -78,6 +80,7 @@ public class BatchService {
 	public void reload() {
 		log.info("[reload]");
 		instanceFlaySource.load();
+		notificationService.announce("Reload", "Instance Source");
 	}
 
 	public Boolean getOption(Option type) {
@@ -118,10 +121,10 @@ public class BatchService {
 			deleteLowerScore();
 			break;
 		case I:
-			instanceSource();
+			instanceBatch();
 			break;
 		case A:
-			archiveSource();
+			archiveBatch();
 			break;
 		case B: 
 			backup();
@@ -132,7 +135,7 @@ public class BatchService {
 		
 	}
 
-	private void instanceSource() {
+	private void instanceBatch() {
 		if (moveWatched)
 			moveWatched();
 		if (deleteLowerRank)
@@ -142,13 +145,15 @@ public class BatchService {
 		
 		assembleFlay();
 		deleteEmptyFolder(emptyManagedInstancePath);
-		reload();
+		instanceFlaySource.load();
+		notificationService.announce("Batch", "Instance Source");
 	}
 
-	private void archiveSource() {
+	private void archiveBatch() {
 		relocateArchiveFile();
 		deleteEmptyFolder(archivePath);
 		archiveFlaySource.load();
+		notificationService.announce("Reload", "Archive Source");
 	}
 
 	private void relocateArchiveFile() {
@@ -404,6 +409,8 @@ public class BatchService {
 		log.info("[Backup] Delete Instance folder   {}", backupRootPath);
 		FlayFileHandler.deleteDirectory(backupRootPath);
 		
+		notificationService.announce("Backup", "Flay source");
+
 		log.info("[Backup] END");
 	}
 	

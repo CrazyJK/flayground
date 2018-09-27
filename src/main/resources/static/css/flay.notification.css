@@ -1,0 +1,30 @@
+@charset "UTF-8";
+
+#announceWrapper {
+	position: fixed;
+	bottom: 50px;
+	right: 0;
+	z-index: 69;
+}
+
+.announce-box {
+	width: 200px;
+	margin: 8px;
+	border: 1px solid #ddd;
+    padding: 8px;
+    background: #fff;
+    border-radius: 4px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, .125);
+}
+
+.item-time {
+	color: var(--info);
+}
+.item-content {
+	margin: 4px;
+	color: var(--primary);
+}
+.item-close {
+	cursor: pointer;
+	margin-left: 10px;
+}

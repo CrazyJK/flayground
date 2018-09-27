@@ -104,6 +104,7 @@ function showNotice(message) {
     						})
     				)
     		),
+			$("<p>", {'class': 'item-content'}).html(body.title),
 			$("<p>", {'class': 'item-content'}).html(body.content.replace(/\n/g, '<br>'))
 	).hide().prependTo($("#announceWrapper")).show("blind", {direction: 'right'});
     

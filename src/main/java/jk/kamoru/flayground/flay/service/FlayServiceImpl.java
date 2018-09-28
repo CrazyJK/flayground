@@ -18,6 +18,7 @@ import jk.kamoru.flayground.info.domain.History;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.HistoryService;
 import jk.kamoru.flayground.info.service.InfoService;
+import jk.kamoru.flayground.notice.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -29,6 +30,7 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired FlayActionHandler flayActionHandler;
 	@Autowired HistoryService historyService;
 	@Autowired CandidatesProvider candidatesProvider;
+	@Autowired NotificationService notificationService;
 
 	@Value("${path.video.stage}") String[] stagePaths;
 	
@@ -135,6 +137,7 @@ public class FlayServiceImpl implements FlayService {
 		}
 		Flay flay = instanceFlaySource.get(opus);
 		FlayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
+		notificationService.announce("Rename Flay", newFlay.getFullname());
 	}
 
 	@Override

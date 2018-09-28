@@ -7,10 +7,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import jk.kamoru.flayground.info.domain.Info;
 import jk.kamoru.flayground.info.source.InfoSource;
+import jk.kamoru.flayground.notice.service.NotificationService;
 
 public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoService<T, K> {
 
 	@Autowired InfoSource<T, K> infoSource;
+	@Autowired NotificationService notificationService;
 
 	@Override
 	public T get(K key) {
@@ -36,17 +38,21 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
 
 	@Override
 	public T create(T create) {
-		return infoSource.create(create);
+		T created = infoSource.create(create);
+		notificationService.announce("Created", created.toString());
+		return created;
 	}
 	
 	@Override
 	public void update(T update) {
 		infoSource.update(update);
+		notificationService.announce("Updated", update.toString());
 	}
 	
 	@Override
 	public void delete(T delete) {
 		infoSource.delete(delete);
+		notificationService.announce("Deleted", delete.toString());
 	}
 
 }

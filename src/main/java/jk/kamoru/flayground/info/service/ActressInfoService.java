@@ -12,6 +12,7 @@ import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.flay.service.FlayService;
 import jk.kamoru.flayground.info.domain.Actress;
+import jk.kamoru.flayground.notice.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
 	@Autowired FlayService flayService;
+	@Autowired NotificationService notificationService;
 
 	@Override
 	public void update(Actress update) {
@@ -48,6 +50,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
 				FlayFileHandler.rename(flay, actressList);
 			}
+			notificationService.announce("Rename Actress", oldName + " -> " + actress.getName());
 		}
 	}
 

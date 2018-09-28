@@ -196,7 +196,7 @@ function Loading() {
 	const OVERLAY = "overlay", OVERLAY_BODY = "overlay_body";
 	const templateOverlay = '<div id="wrap_overlay"><div id="' + OVERLAY + '"><div id="' + OVERLAY_BODY + '"></div></div></div>';
 
-	var $wrapOverlay = $(templateOverlay).appendTo($("html"));
+	var  $wrapOverlay = $(templateOverlay).appendTo($("body"));
 	this.$overlay     = $wrapOverlay.find("#" + OVERLAY);
 	this.$overlayBody = $wrapOverlay.find("#" + OVERLAY_BODY);
 
@@ -216,4 +216,9 @@ Loading.prototype = {
 			console.log('Loading.off');
 		}
 };
-var loading = new Loading();
+
+var loading;
+
+$(function () {
+	loading = new Loading();
+});

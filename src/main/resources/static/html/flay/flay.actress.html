@@ -1,0 +1,124 @@
+<style type="text/css">
+#actressList {
+	text-align: center;
+	margin-top: 60px;
+}
+.actress {
+	cursor: pointer;
+	display: inline-flex;
+	margin: 0.5rem;
+	/* width: 200px; */
+	font-size: 0.75rem;
+}
+.card-body {
+	background-size: cover;
+}
+
+</style>
+
+<div role="body">
+
+	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
+		<label class="text actress-count">0</label>
+		<div class="divider"></div>
+		<input class="search" type="search" id="search" placeholder="Search...">
+		<div class="divider"></div>
+		<label class="input"><input type="checkbox" id="favorite"  ><span>Favorite</span></label>
+		<label class="input"><input type="checkbox" id="noFavorite"><span>No favorite</span></label>
+		<div class="divider"></div>
+		<button class="btn btn-sm btn-link btn-reload"><i class="fa fa-refresh"></i> Reload</button>
+	</nav>
+	
+	<div id="actressList">
+		<div class="card actress">
+			<div class="card-body">
+				<span class="badge badge-pill badge-dark video-count"></span>
+				<h5 class="card-title font-weight-bold">name</h5>
+				<div class="card-text text-primary">description</div>
+			</div>
+		</div>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var $actressTemplete = $(".actress");
+var actressList;
+var $actressList = $("#actressList");
+
+$("form").on('submit', function (e) {
+    e.preventDefault();
+});
+
+$("#favorite, #noFavorite").on("change", displayActress);
+$("#search").on("keyup", function(e) {
+	e.stopPropagation();
+	displayActress();
+});
+$(".btn-reload").on("click", actressLoad);
+
+function actressLoad() {
+	Rest.Actress.list(function(list) {
+		actressList = list;
+		displayActress();
+	});
+}
+
+function displayActress() {
+	var collectedList = [];
+	var fav   = $("#favorite").prop("checked");
+	var noFav = $("#noFavorite").prop("checked");
+	var query = $("#search").val().toLowerCase();
+
+	$.each(actressList, function(idx, actress) {
+		var found = false;
+		
+		if (fav && actress.favorite)
+			found = true;
+		if (noFav && !actress.favorite)
+			found = true;
+		if (found && query != '') {
+			var infotext = actress.name.toLowerCase() + actress.localName + actress.birth + actress.debut + actress.body + actress.height;
+			found = infotext.indexOf(query) > -1; 
+		}
+		if (found)
+			collectedList.push(actress);
+	});
+	$(".actress-count").html(collectedList.length + " Actress");
+	
+	$actressList.empty();
+	$.each(collectedList, function(idx, actress) {
+		var $card = $actressTemplete.clone();
+		$card.data("actress", actress);
+		
+		if (actress.cover != null) {
+			$card.find(".card-body").css({
+				backgroundImage: "url('/static/actress/" + actress.name + "')"
+			});
+		}
+		
+		$card.find(".card-title").empty().append(
+				$("<label>", {'class': 'text'}).append(
+						$("<i>", {'class': "fa fa-star" + (actress.favorite ? " favorite" : "-o")})
+				),
+				$("<label>", {'class': 'text'}).html(actress.name)
+		);
+		$card.find(".card-text").empty().append(
+				$("<label>", {'class': 'text info-actress-extra'}).html(actress.localName),
+				$("<label>", {'class': 'text info-actress-extra'}).html(actress.birth),
+				$("<label>", {'class': 'text info-actress-extra'}).html(Util.Actress.getAge(actress)),
+				"<br>",
+				$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut.toBlank()),
+				$("<label>", {'class': 'text info-actress-extra'}).html(actress.body),
+				$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank()),
+		);
+		$card.on("click", function() {
+			View.actress(actress.name);
+		});
+		$card.appendTo($actressList);
+	});
+}
+
+actressLoad();
+
+</script>

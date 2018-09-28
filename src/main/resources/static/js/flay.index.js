@@ -94,6 +94,7 @@ var navi = {
 		},
 		go: function(destination) {
 			Rest.Html.get(destination, function(html) {
+				$(window).off();
 				$("#wrap_body").html(html);
 			});
 		}
@@ -110,7 +111,7 @@ $(document).ready(function() {
 	background.start();
 
 	navi.init();
-	navi.go('/html/flay/flay.vertical.html');
+	$("[aria-include]").first().click();
 
 });
 

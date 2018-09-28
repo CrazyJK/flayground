@@ -51,7 +51,7 @@
 			var self = $(this);
 			self.off();
 			self.data("active", true);
-			$(window).data("active", true);
+			$(window).off().data("active", true);
 			self.on("mousewheel DOMMouseScroll mouseup", function(e) {
 				$(this).data("active") && detectEvent(e, callback);
 			});

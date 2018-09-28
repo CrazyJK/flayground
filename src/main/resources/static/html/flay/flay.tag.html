@@ -1,20 +1,4 @@
 <style type="text/css">
-h1 {
-	color: white;
-	margin: 1rem;
-	font-weight: 700;
-	text-align: center;
-}
-.card.flay > .card-body {
-	padding: 0.125rem;
-}
-.card.flay > .card-body > .card-title {
-	margin-bottom: 0;
-}
-.card.flay > .card-body > .card-text {
-	margin: 0;
-}
-
 #tagInput .form-row {
 	width: 800px;
 }
@@ -30,6 +14,16 @@ h1 {
 	/* width: 200px; */
 	font-size: 0.75rem;
 }
+#tagList .card-title {
+	margin-right: 2rem;
+}
+#tagList .card-body {
+	padding: 1rem;
+}
+#tagList .video-count {
+	font-size: 0.75rem;
+	float: right;
+}
 #tagList .active {
 	background-color: rgba(85, 136, 136, .75);
 	color: #eee;
@@ -42,56 +36,44 @@ h1 {
 	margin: 1rem;
     padding: 1rem;
 }
-#tagDetail .flay-list {
-	text-align: center;
-}
-#tagDetail .flay-list .flay {
-    display: inline-flex;
-    background: #00f center no-repeat;
-    background-size: cover;
-    border: 0;
-    border-radius: 0.25rem;
-    text-align: left;
-	margin: 0.5rem;
-    width: 300px;
-    height: calc(300px * var(--cover-ratio));
-}
-#tagDetail .flay-list .flay .title {
-	max-width: 290px;
-}
-
 </style>
 
 <div role="body">
 
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
-		<div id="tagInput">
+		<form id="tagInput">
 			<div class="form-row">
 				<div class="col-sm-1">
-					<input type="text" class="form-control form-control-sm" id="tagId" placeholder="Id">
+					<input type="text" class="form-control form-control-sm" id="tagId"   name="id" placeholder="Id">
 				</div>
-				<div class="col-sm-4">
-					<input type="text" class="form-control form-control-sm" id="tagName" placeholder="Name">
+				<div class="col-sm-3">
+					<input type="text" class="form-control form-control-sm" id="tagName" name="name" placeholder="Name" required="required">
 				</div>
 				<div class="col">
-					<input type="text" class="form-control form-control-sm" id="tagDesc" placeholder="Desctiption">
+					<input type="text" class="form-control form-control-sm" id="tagDesc" name="description" placeholder="Desctiption">
 				</div>
 				<div class="col-auto">
-					<button class="btn btn-sm btn-success tag-save">Save</button>
+					<button class="btn btn-sm btn-success tag-save" type="submit">Save</button>
 				</div>
 				<div class="col-auto">
-					<button class="btn btn-sm btn-danger tag-delete">Delete</button>
+					<button class="btn btn-sm btn-danger tag-delete" type="submit">Delete</button>
+				</div>
+				<div class="col-auto">
+	  				<span class="input-group">
+						<label class="input"><input type="radio" name="openMethod" value="I" checked="checked"><span>In</span></label>
+						<label class="input"><input type="radio" name="openMethod" value="E"><span>Out</span></label>
+					</span>
 				</div>
 			</div>
-		</div>
+		</form>
 	</nav>
 	
 	<div id="tagList">
 		<div class="card tag">
 			<div class="card-body">
-				<span class="badge badge-pill badge-dark float-right video-count"></span>
+				<span class="badge badge-pill badge-dark video-count"></span>
 				<h5 class="card-title font-weight-bold">Tag name</h5>
-				<p class="card-text text-primary">Tag description</p>
+				<div class="card-text text-primary">Tag description</div>
 			</div>
 		</div>
 	</div>
@@ -102,21 +84,25 @@ h1 {
 	</div>
 
 </div>
+
 <script type="text/javascript">
-var $tagTemplete  = $(".tag");
-var $flayTemplete = $(".flay");
+var $tagTemplete = $(".tag");
+
+$("form").on('submit', function (e) {
+    e.preventDefault();
+});
 
 $(".fa-times").on("click", function() {
 	$("#tagDetail").hide();
 });
 
 $(".tag-save").on("click", function() {
-	var id = $("#tagId").val(), name = $("#tagName").val(), desc = $("#tagDesc").val();
-	if (name === '') {
-		return;
-	}
-	var tag = {id: id, name: name, description: desc};
-	if (id === '') {
+	var tag = {};
+	$.each($("#tagInput").serializeArray(), function() {
+		tag[this.name] = this.value;
+	});
+	
+	if (tag.id === '') {
 		Rest.Tag.create(tag, tagLoad);
 	} else {
 		Rest.Tag.update(tag, tagLoad);
@@ -124,8 +110,8 @@ $(".tag-save").on("click", function() {
 });
 
 $(".tag-delete").on("click", function() {
-	if (confirm('Delete this tag?')) {
-		var tag = $("#tagInput").data("tag");
+	var tag = $("#tagInput").data("tag");
+	if (tag && tag.id && confirm('Delete this tag?\n' + JSON.stringify(tag))) {
 		Rest.Tag.delete(tag, function() {
 			tagLoad();
 			$("#tagId, #tagName, #tagDesc").val('');
@@ -135,48 +121,62 @@ $(".tag-delete").on("click", function() {
 });
 
 function tagLoad() {
+	var $tagList = $("#tagList");
 	Rest.Tag.list(function(tagList) {
 		Util.Tag.sort(tagList);
-		var $tagList = $("#tagList").empty();
-		
+		$tagList.empty();
 		$.each(tagList, function(idx, tag) {
 			var $tagCard = $tagTemplete.clone();
 			$tagCard.data("tag", tag);
 			$tagCard.find(".card-title").html(tag.name);
 			$tagCard.find(".card-text").html(tag.description);
 			$tagCard.on("click", function() {
-				tagDetail(this);
+				if ($("input[name='openMethod']:checked").val() === 'I')
+					toggleTagDetail(this);
+				else
+					View.tag(tag.id);
 			});
-
-			$tagList.append($tagCard);
+			$tagCard.appendTo($tagList);
 		});
 	});
 }
 
-function tagDetail(tagCard) {
-	$("#tagList .active").removeClass("active");
-	var $tagCard  = $(tagCard);
-	var tag       = $tagCard.addClass("active").data("tag");
-	var $flayList = $(".flay-list");
-	
-	$("#tagInput").data("tag", tag);
-	$("#tagId").val(tag.id);
-	$("#tagName").val(tag.name);
-	$("#tagDesc").val(tag.description);
-	$flayList.empty();
-	
-	Rest.Flay.findByTag(tag, function(flayList) {
-		$("#tagDetail").toggle(flayList.length > 0);
-		$tagCard.find(".video-count").html(flayList.length);
+function toggleTagDetail(tagCard) {
+	var $tagCard   = $(tagCard);
+	var $tagDetail = $("#tagDetail");
+	if ($tagCard.hasClass("active")) { // hide
+		$tagCard.removeClass("active");
+		$tagDetail.hide();
+	} else { // show
+		$("#tagList .active").removeClass("active");
+		$tagCard.addClass("active");
+		var $flayList = $(".flay-list");
+		$flayList.empty();
+
+		var tag = $tagCard.data("tag");
+		$("#tagInput").data("tag", tag);
+		$("#tagId"  ).val(tag.id);
+		$("#tagName").val(tag.name);
+		$("#tagDesc").val(tag.description);
 		
-		$.each(flayList, function(idx, flay) {
-			$flayList.appendFlayCard(flay, {
-				width: 300,
-				exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
-				fontSize: '80%'
-			});
+		Rest.Flay.findByTag(tag, function(flayList) {
+			$tagCard.find(".video-count").html(flayList.length);
+			if (flayList.length == 0) {
+				$flayList.append(
+						$("<h4>", {'class': 'text-danger font-weight-bold'}).html("No Flay")
+				);
+			} else {
+				$.each(flayList, function(idx, flay) {
+					$flayList.appendFlayCard(flay, {
+						width: 300,
+						exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
+						fontSize: '80%'
+					});
+				});
+			}
+			$tagDetail.show();
 		});
-	});
+	}
 }
 
 tagLoad();

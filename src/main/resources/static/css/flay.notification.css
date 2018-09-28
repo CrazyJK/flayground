@@ -7,8 +7,8 @@
 	z-index: 69;
 }
 
-.announce-box {
-	width: 200px;
+.announce {
+	width: 250px;
 	margin: 8px;
 	border: 1px solid #ddd;
     padding: 8px;
@@ -17,14 +17,24 @@
     box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, .125);
 }
 
-.item-time {
-	color: var(--info);
+.announce-body {
+	margin-left: 1.5rem;
 }
-.item-content {
-	margin: 4px;
-	color: var(--primary);
-}
+
 .item-close {
 	cursor: pointer;
-	margin-left: 10px;
+}
+.item-time {
+	margin-right: 0.5rem;
+}
+.item-title {
+	font-weight: 700;
+	margin: 0;
+}
+.item-content {
+	font-size: 0.875rem;
+	margin-top: 0.5rem;
+}
+.item-content:empty {
+	display: none;
 }

@@ -1,5 +1,6 @@
 /**
  * flaygound notification
+ * ref. http://jmesnil.net/stomp-websocket/doc/
  */
  
 $(function () {
@@ -42,15 +43,22 @@ var notification = {
 		    		notification.notify(message);
 		        });
 
+		    }, function(frame) {
+		    	notification.notify("Error", frame);
 		    });
+		    
+		    notification.stompClient.debug = function(str) {
+		    	console.log("debugggg", str);
+		    };
 		},
 		disconnect: function disconnect() {
 		    if (notification.stompClient !== null) {
-		    	notification.stompClient.disconnect();
+		    	notification.stompClient.disconnect(function() {
+				    notification.notify("Disconnected");
+		    	});
 		    }
-		    notification.notify("Disconnected");
 		},
-		notify: function displayNotice(message, extraMessage) {
+		notify: function(message, extraMessage) {
 			var getSubscribeMessageBody = function(message) {
 				if (message.headers['content-type'].indexOf('application/json') > -1) {
 					return JSON.parse(message.body);
@@ -64,6 +72,8 @@ var notification = {
 			}, showBox = function($box) {
 				$box.show("blind", {direction: 'right'})
 			};
+			
+			console.log("message", message);
 			
 			var title, content = "", time = new Date();
 			if (typeof message === 'string') {
@@ -79,7 +89,7 @@ var notification = {
 			if (extraMessage) {
 				content = content != '' ? content + "<br>" + extraMessage : "" + extraMessage;
 			}
-			content = content.replace(/\n/g, '<br>');
+			content = content.trim().replace(/\n/g, '<br>');
 			
 			// if wrapper not exist, insert
 			if ($("#announceWrapper").length == 0) {
@@ -88,17 +98,16 @@ var notification = {
 				);
 			}
 			
-		    var $box = $("<div>", {'class': 'announce-box'}).append(
-		    		$("<div>", {'class': 'float-right'}).append(
-		    				$("<small>", {'class': 'item-time'}).html(time.format("hh:mm")),
-		    				$("<span>", {'class': 'item-close'}).append(
-		    						$("<i>", {'class': 'fa fa-times'}).on("click", function() {
-		    							hideBox($box);
-		    						})
-		    				)
-		    		),
-					$("<p>", {'class': 'item-title'}).html(title),
-					$("<p>", {'class': 'item-content'}).html(content)
+		    var $box = $("<div>", {'class': 'announce bg-dark text-light'}).append(
+					$("<i>", {'class': 'fa fa-bell float-left'}),
+					$("<i>", {'class': 'item-close fa fa-times float-right'}).on("click", function() {
+						hideBox($box);
+					}),
+					$("<small>", {'class': 'item-time float-right'}).html(time.format("hh:mm")),
+		    		$("<div>", {'class': 'announce-body'}).append(
+							$("<h6>", {'class': 'item-title'}).html(title),
+							$("<div>", {'class': 'item-content'}).html(content)
+		    		)
 			).hide().appendTo($("#announceWrapper"));
 		    showBox($box);
 		    

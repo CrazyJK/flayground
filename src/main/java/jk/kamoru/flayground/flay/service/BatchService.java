@@ -153,7 +153,7 @@ public class BatchService {
 		relocateArchiveFile();
 		deleteEmptyFolder(archivePath);
 		archiveFlaySource.load();
-		notificationService.announce("Reload", "Archive Source");
+		notificationService.announce("Batch", "Archive Source");
 	}
 
 	private void relocateArchiveFile() {

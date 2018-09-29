@@ -1,7 +1,7 @@
 <style type="text/css">
 #actressList {
 	text-align: center;
-	margin-top: 60px;
+	margin-top: 4rem;
 }
 .actress {
 	cursor: pointer;
@@ -15,6 +15,16 @@
 	border-radius: 0.25rem;
 }
 
+.active {
+	color: red;
+}
+.selected {
+	color: blue;
+}
+.same-localname {
+	font-weight: bold;
+	color: green;
+}
 </style>
 
 <div role="body">
@@ -26,6 +36,13 @@
 		<div class="divider"></div>
 		<label class="input"><input type="checkbox" id="favorite"  ><span>Favorite</span></label>
 		<label class="input"><input type="checkbox" id="noFavorite"><span>No favorite</span></label>
+		<div class="divider"></div>
+		<div class="input-group input-group-sm" style="max-width:160px !important;">
+			<input type="number" id="limit" name="limit" value="0.95" class="form-control border-primary" style="max-width:60px !important;"/>
+			<div class="input-group-append">
+				<button class="btn btn-primary" id="nameCheckBtn">Name check</button>
+			</div>
+		</div>
 		<div class="divider"></div>
 		<button class="btn btn-sm btn-link btn-reload"><i class="fa fa-refresh"></i> Reload</button>
 	</nav>
@@ -57,6 +74,11 @@ $("#search").on("keyup", function(e) {
 	displayActress();
 });
 $(".btn-reload").on("click", actressLoad);
+
+$("#nameCheckBtn").on("click", function() {
+	var limit = $("#limit").val();
+	Rest.Actress.nameCheck(limit, displayNameCheckResult);
+});
 
 function actressLoad() {
 	Rest.Actress.list(function(list) {
@@ -123,6 +145,63 @@ function displayActress() {
 		});
 		$card.appendTo($actressList);
 	});
+}
+
+function displayNameCheckResult(list) {
+	var scoreToFixed = function(num) {
+		return num.toFixed(3);	
+	},
+	renderActressName = function(actress, right) {
+		return 	$("<span>", {title: actress.name, "class": "hover"}).on("click", function() {
+					View.actress(actress.name);
+					$("[title='" + actress.name + "']").addClass("selected");
+				}).hover(
+					function() {
+						$("[title='" + actress.name + "']").addClass("active");
+					}, 
+					function() {
+						$("[title='" + actress.name + "']").removeClass("active");
+					}
+				).append(
+						right ? '' : actress.name, 
+						$("<label>").html(actress.localName),
+						right ? actress.name : ''
+				);
+	},
+	sameLocalName = function(actress1, actress2) {
+		return actress1.localName != '' && actress2.localName != '' && actress1.localName === actress2.localName ? "same-localname" : "normal";
+	};
+	
+    $("#notice > p").empty().append(
+	    	$("<table>", {"class": "table table-sm", id: "nameCheckResultTable"}).append(
+		    		$("<thead>").append(
+			    			$("<tr>").append(
+				       				$("<th>", {"class": "text-right"}).html("Name1"), $("<th>").html("Name2"), $("<th>").html("Score")
+			    			)		
+		    		),
+		   			(function () {
+			    		var tbody = $("<tbody>");
+		    			$.each(list, function(idx, record) {
+		    				$("<tr>", {"class": sameLocalName(record.actress1, record.actress2)}).data("record", record).append(
+			       					$("<td>", {"class": "text-right"}).append(renderActressName(record.actress1, true)),
+			       					$("<td>").append(renderActressName(record.actress2)),
+			       					$("<td>").html(record.score.toFixed(3)).on("click", function() {
+			       						var record = $(this).parent().data("record");
+			       						Popup.open('/html/info/info.actress.compare.html?actress1=' + record.actress1.name + '&actress2=' + record.actress2.name, 'actressComparison', 1700, 800);
+			       						$(this).addClass("selected");
+			       					}).addClass("hover")
+		    				).appendTo(tbody);
+		    			});
+		    			return tbody;
+		    		}())
+	    	)
+    );
+    
+    $("#notice").dialog({
+    	minWidth: 600,
+    	height: $(window).height() - 120
+    });
+    $(".ui-dialog-title").html("Name check result : " + list.length);
 }
 
 actressLoad();

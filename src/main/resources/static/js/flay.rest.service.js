@@ -134,6 +134,10 @@ var Rest = {
 			findByLocalname: function(name, callback) {
 				console.log("Rest.Actress.findByLocalname", name);
 				restCall('/info/actress/find/byLocalname/' + name, {}, callback);
+			},
+			nameCheck(limit, callback) {
+				console.log("Rest.Actress.nameCheck", limit);
+				restCall('/info/actress/func/nameCheck/' + limit, {title: 'Name checking...'}, callback);
 			}
 		},
 		Tag: {

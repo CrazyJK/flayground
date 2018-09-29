@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.info;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.ActressInfoService;
+import jk.kamoru.flayground.info.service.NameDistanceChecker.CheckResult;
 
 @RestController
 @RequestMapping("/info/actress")
@@ -43,7 +45,12 @@ public class ActressController {
 	public Collection<Actress> findByLocalname(@PathVariable String localname) {
 		return actressInfoService.findByLocalname(localname);
 	}
-	
+
+	@GetMapping("/func/nameCheck/{limit}")
+	public List<CheckResult> funcNameCheck(@PathVariable double limit) {
+		return actressInfoService.funcNameCheck(limit);
+	}
+
 	@PostMapping
 	public Actress create(@RequestBody Actress actress) {
 		return actressInfoService.create(actress);

@@ -73,17 +73,17 @@ var Util = {
 
 var View = {
 		flay: function(opus) {
-			Popup.open(PATH + "/html/flay/info.flay.html?opus=" + opus, "flay-" + opus, 820, 750);
+			Popup.open(PATH + "/html/info/info.flay.html?opus=" + opus, "flay-" + opus, 820, 750);
 		},
 		video: function(opus) {
 			Popup.open(PATH + "/info/video/" + opus, "video-" + opus, 800, 640);
 		},
 		actress: function(name) {
-			Popup.open(PATH + "/html/flay/info.actress.html?name=" + name, "actress-" + name, 1000, 600);
+			Popup.open(PATH + "/html/info/info.actress.html?name=" + name, "actress-" + name, 1000, 600);
 		},
 		tag: function(tagId) {
 //			Popup.open(PATH + "/info/tag/" + tagId, "Tag-" + tagId, 800, 650);
-			Popup.open(PATH + "/html/flay/info.tag.html?id=" + tagId, "Tag-" + tagId, 800, 650);
+			Popup.open(PATH + "/html/info/info.tag.html?id=" + tagId, "Tag-" + tagId, 800, 650);
 		}
 };
 

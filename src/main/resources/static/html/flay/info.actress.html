@@ -11,6 +11,9 @@
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
 <style type="text/css">
+body {
+    background-attachment: fixed;
+}
 .flay-list {
 	margin-top: 7rem;
 	margin-bottom: 1rem;
@@ -83,6 +86,8 @@
 			</div>
 		</form>
 	</nav>
+	
+	<div class="actress-cover-wrapper"></div>
 
 	<div class="flay-list"></div>
 
@@ -144,11 +149,7 @@ Rest.Actress.get(name, function(_actress) {
 	actress = _actress;
 	document.title = actress.name + ' - ' + document.title;
 
-	if (actress.cover != null) {
-		$("body").css({
-			backgroundImage: 'url("/static/actress/' + actress.name + '")'
-		});
-	}
+	displayPicture();
 	
 	$("#name").val(actress.name);
 	$("#localName").val(actress.localName);
@@ -180,8 +181,25 @@ Rest.Actress.get(name, function(_actress) {
 
 	});
 
+	$(window).on("resize", displayPicture);
+
 });
 
+function displayPicture() {
+	if (actress.cover != null) {
+		$(".actress-cover-wrapper").css({
+			backgroundImage: 'url("/static/actress/' + actress.name + '")',
+			backgroundAttachment: 'fixed',
+			backgroundPosition: 'center 7rem',
+			backgroundRepeat: 'no-repeat',
+			backgroundSize: 'contain',
+			height: $(window).height()
+		});
+		$(".flay-list ").css({
+			marginTop: '0.5rem'
+		});
+	}
+}
 </script>
 
 </body>

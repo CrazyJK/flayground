@@ -12,6 +12,7 @@
 }
 .card-body {
 	background-size: cover;
+	border-radius: 0.25rem;
 }
 
 </style>
@@ -60,6 +61,11 @@ $(".btn-reload").on("click", actressLoad);
 function actressLoad() {
 	Rest.Actress.list(function(list) {
 		actressList = list;
+		
+		actressList.sort(function(a1, a2) {
+			return a1.name.toLowerCase().localeCompare(a2.name);
+		});
+		
 		displayActress();
 	});
 }

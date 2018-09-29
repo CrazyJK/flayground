@@ -124,6 +124,9 @@ body {
 		font-size: 1.5rem;
 		margin-bottom: 1rem;
 	}
+	.info-wrapper-actress {
+		min-height: 50px;
+	}
 	.info-wrapper-actress > div {
 		margin: 0.5rem;
 	}

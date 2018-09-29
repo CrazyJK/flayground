@@ -244,14 +244,24 @@ $(".btn-batch-option").on("click", function() {
 	var $this = $(this);
 	var type  = $this.data("type");
 	Rest.Batch.setOption(type, function(result) {
-		$this.text(result);
+		$this.text(result).toggleClass("text-primary", result);
 	});
 });
 $(".btn-get-candidates").on("click", function() {
 	Rest.Flay.findCandidates(function(flayList) {
 		var $candidatesList = $("#candidatesList").empty();
 		$.each(flayList, function(idx, flay) {
-			$("<div>").append(
+			$("<div>", {'class': 'candidates list-group-item'}).append(
+					$("<button>", {'class': 'btn btn-sm btn-block btn-warning'}).append(
+							$("<strong>").html('Acept'),
+							$("<span>", {'class': 'badge badge-light mr-1 ml-1'}).html(flay.files.candidate.length),
+							' ' + flay.files.candidate.toString().replace(/,/gi, '<br>').replace(/\\/gi, '/').replace(/\//gi, '<b class="text-white"> / </b>')
+					).on("click", function() {
+						var $self = $(this);
+						Rest.Flay.acceptCandidates(flay, function() {
+							$self.hide();
+						});
+					}),
 					$("<label>", {'class': 'text'}).html(flay.studio),
 					$("<label>", {'class': 'text hover'}).html(flay.opus).on("click", function() {
 						View.flay(flay.opus);
@@ -259,16 +269,7 @@ $(".btn-get-candidates").on("click", function() {
 					$("<label>", {'class': 'text'}).html(flay.title),
 					$("<label>", {'class': 'text'}).html(flay.actressList.toString()),
 					$("<label>", {'class': 'text'}).html(flay.release),
-					$("<button>", {'class': 'btn btn-sm btn-block btn-warning nowrap'}).append(
-							'Acept ',
-							$("<span>", {'class': 'badge badge-light'}).html(flay.files.candidate.length),
-							' ' + flay.files.candidate.toString().replace(/,/gi, '<br>')
-					).on("click", function() {
-						var $self = $(this);
-						Rest.Flay.acceptCandidates(flay, function() {
-							$self.hide();
-						});
-					})
+					$("<img>", {'src': '/static/cover/' + flay.opus, 'class': 'img-thumbnail m-auto'}),
 			).appendTo($candidatesList);
 		});
 	});
@@ -281,13 +282,13 @@ $("#btn-history-close").on("click", function() {
 });
 
 Rest.Batch.getOption('W', function(val) {
-	$(".btn-batch-option[data-type='W']").html('' + val);
+	$(".btn-batch-option[data-type='W']").html('' + val).toggleClass("text-primary", val);
 });
 Rest.Batch.getOption('R', function(val) {
-	$(".btn-batch-option[data-type='R']").html('' + val);
+	$(".btn-batch-option[data-type='R']").html('' + val).toggleClass("text-primary", val);
 });
 Rest.Batch.getOption('S', function(val) {
-	$(".btn-batch-option[data-type='S']").html('' + val);
+	$(".btn-batch-option[data-type='S']").html('' + val).toggleClass("text-primary", val);
 });
 
 $("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));

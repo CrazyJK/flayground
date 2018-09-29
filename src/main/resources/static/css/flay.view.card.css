@@ -5,7 +5,9 @@
 }
 .flay-list > .card.flay-card {
     display: inline-flex;
-/* 	box-shadow: 0 0 0.5rem 0.25rem rgba(255, 255, 255, 0.5); */
+/* 	box-shadow: 0 0 0.5rem 0.25rem rgba(255, 255, 255, 0.5); 
+	background-color: #e6ff00;
+	padding: 1px; */
 	margin: 0.5rem;
     width: 300px;
     height: calc(300px * var(--cover-ratio));

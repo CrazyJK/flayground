@@ -20,6 +20,26 @@ input {
     background: rgb(173, 103, 103);
     color: #fdfdfd;
 }
+
+.candidates {
+	border: 1px solid var(--warning);
+	text-align: center;
+	transition: all 1s;
+}
+.candidates:hover {
+    background-color: antiquewhite;
+}
+.candidates img {
+	display: none;
+    background-color: var(--warning);
+}
+.candidates button:hover ~ img {
+	display: block;
+}
+
+.btn:focus {
+	box-shadow: none;
+}
 </style>
 
 <div role="body">
@@ -68,7 +88,7 @@ input {
 		<div class="card border-warning mt-2 collapse" id="candidates">
 			<div class="card-body">
 				<button class="btn btn-sm btn-outline-warning btn-get-candidates">Get Candidates</button>
-				<ul class="list-unstyled" id="candidatesList">
+				<ul class="list-group mt-2" id="candidatesList">
 				</ul>
 			</div>
 		</div>
@@ -79,7 +99,7 @@ input {
 						<input class="form-control border-success" name="pageUrl"     placeholder="Image page URL"/>
 						<input class="form-control border-success" name="downloadDir" placeholder="Download local path" id="downloadDir"/>
 					</div>
-					<div class="input-group mb-1">
+					<div class="input-group input-group-sm mb-1">
 						<input class="form-control border-success" name="folderName" placeholder="Folder name"/>
 						<div class="input-group-append">
 							<span class="input-group-text border-success text-success"> / </span>

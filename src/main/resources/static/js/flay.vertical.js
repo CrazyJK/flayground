@@ -650,8 +650,7 @@ function showVideo(direction) {
 						$("<label>", {'class': 'text info-actress-extra'}).html(Util.Actress.getAge(actress)),
 						$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut.toBlank()),
 						$("<label>", {'class': 'text info-actress-extra'}).html(actress.body),
-						$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank()),
-//						$("<label>", {'class': 'text info-actress-extra'}).html('v' + actress.videoCount)
+						$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank())
 				).appendTo($(".info-wrapper-actress"));
 			});
 		});

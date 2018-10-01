@@ -1,0 +1,157 @@
+<style type="text/css">
+.flay-list-wrapper {
+	display: none;
+    background-color: rgba(240, 248, 255, 0.5);
+    border-radius: 0.5rem;
+    margin: 1rem;
+    padding: 1rem;
+}
+</style>
+
+<div role="body">
+
+	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
+		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#groupByRelease">Group By Release</button>
+		<div class="divider"></div>
+		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#groupByPath">Group By Path</button>
+		<div class="divider"></div>
+	</nav>
+
+	<div style="height: 55px;"></div>
+
+	<div id="groupByRelease" class="collapse card mb-2 ml-2 mr-2">
+		<div class="card-header text-center"> Choose release pattern
+			<span class="input-group">
+				<label><input type="radio" name="releasePattern" value="YYYY"><span>YYYY</span></label>
+				<label><input type="radio" name="releasePattern" value="YYYYMM"><span>YYYY.MM</span></label>
+				<label><input type="radio" name="releasePattern" value="YYYYMMDD"><span>YYYY.MM.DD</span></label>
+			</span>
+		</div>
+		<div class="card-body">
+			<ul class="list-inline text-center" id="releasedList"></ul>
+		</div>
+	</div>
+
+	<div id="groupByPath" class="collapse card mb-2 ml-2 mr-2">
+		<div class="card-header text-center">
+			Parent path based
+		</div>
+		<div class="card-body">
+			<ul class="list-inline text-center" id="pathList"></ul>
+		</div>
+	</div>
+
+	<div class="flay-list-wrapper">
+		<h4 class="text-center mt-1"><label class="text" id="groupByKey"></label></h4>
+		<div class="text-center mt-2 flay-list" id="flayList"></div>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+var flayList = [];
+Rest.Flay.list(function(list) {
+	flayList = list;
+});
+
+$("#groupByRelease").on('show.bs.collapse', function() {
+	var val = $("input[name='releasePattern']:checked").val();
+	if (typeof val === 'undefined') {
+		$("input[name='releasePattern']").first().click();
+	}
+});
+
+$("input[name='releasePattern']").on('change', function() {
+	var releasePattern = $("input[name='releasePattern']:checked").val();
+	var dataMap = {};
+	var getReleaseKey = function(release) {
+		if ('YYYY' === releasePattern) {
+			return release.substring(0, 4);
+		} else if ('YYYYMM' === releasePattern) {
+			return release.substring(0, 7);
+		} else {
+			return release;
+		}
+	};
+	
+	$.each(flayList, function(idx, flay) {
+		var key = getReleaseKey(flay.release);
+		if (dataMap[key]) {
+			dataMap[key].push(flay);
+		} else {
+			dataMap[key] = [flay];
+		}
+	});
+	
+	var $releasedList = $("#releasedList").empty();
+	$.each(dataMap, function(key, val) {
+		$("<li>", {'class': 'list-inline-item mb-2'}).append(
+				$("<button>", {'class': 'btn btn-outline-primary'}).append(
+						key,
+						$("<span>", {'class': 'badge badge-dark ml-2'}).html(val.length)
+				).on("click", function() {
+					displayList(key, val);
+				})
+		).appendTo($releasedList);
+	});
+});
+
+$("#groupByPath").on('show.bs.collapse', function() {
+	var dataMap = {};
+	var getPathKey = function(files) {
+		var file;
+		if (files.movie.length > 0) {
+			file = files.movie[0];
+		} else {
+			file = files.cover[0];
+		}
+		var pathArray = file.replace(/\\/gi, '/').split('/');
+		pathArray.splice(-1, 1);
+		return pathArray.join('/');
+	};
+	
+	$.each(flayList, function(idx, flay) {
+		var key = getPathKey(flay.files);
+		if (dataMap[key]) {
+			dataMap[key].push(flay);
+		} else {
+			dataMap[key] = [flay];
+		}
+	});
+	console.log('path datamap', dataMap);
+
+	var $pathList = $("#pathList").empty();
+	$.each(dataMap, function(key, val) {
+		$("<li>", {'class': 'list-inline-item mb-2'}).append(
+				$("<button>", {'class': 'btn btn-outline-primary'}).append(
+						key,
+						$("<span>", {'class': 'badge badge-dark ml-2 mr-2'}).html(val.length),
+						(function() {
+							var length = 0;
+							for (var x in val) {
+								length += val[x].length;
+							}
+							return File.formatSize(length);
+						}())
+				).on("click", function() {
+					displayList(key, val);
+				})
+		).appendTo($pathList);
+	});
+});
+
+function displayList(key, list) {
+	$("#groupByKey").html(key);
+
+	var $flayList = $("#flayList").empty();
+	$.each(list, function(idx, flay) {
+		$flayList.appendFlayCard(flay, {
+			width: 300,
+			exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
+			fontSize: '80%'
+		});
+	});
+
+	$(".flay-list-wrapper").show();
+}
+</script>

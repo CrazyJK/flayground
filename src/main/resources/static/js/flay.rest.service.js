@@ -201,5 +201,11 @@ var Rest = {
 				console.log("Rest.Security.whoami");
 				restCall("/whoami", {async: false}, callback);
 			}
+		},
+		Summary: {
+			groupByRelease(pattern, callback) {
+				console.log("Rest.Summary.groupByRelease");
+				restCall("/summary/groupby/release/" + pattern, {}, callback);
+			}
 		}
 };

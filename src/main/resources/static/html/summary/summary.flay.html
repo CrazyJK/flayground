@@ -106,7 +106,8 @@ $("#groupByPath").on('show.bs.collapse', function() {
 			file = files.cover[0];
 		}
 		var pathArray = file.replace(/\\/gi, '/').split('/');
-		pathArray.splice(-1, 1);
+//		pathArray.splice(-1, 1);
+		pathArray.pop();
 		return pathArray.join('/');
 	};
 	

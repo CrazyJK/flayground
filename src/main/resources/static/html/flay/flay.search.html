@@ -55,13 +55,13 @@ input {
 		<div class="divider"></div>
 		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-warning btn-sm" data-toggle="collapse" data-target="#candidates">Candidates <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-warning btn-sm" data-toggle="collapse" data-target="#candidates" aria-role="ADMIN">Candidates <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader">Page Image Downloader <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader" aria-role="ADMIN">Page Image Downloader <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-danger btn-sm"  data-toggle="collapse" data-target="#batchGroup">Batch <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-danger btn-sm"  data-toggle="collapse" data-target="#batchGroup" aria-role="ADMIN">Batch <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-info btn-sm btn-reload">Reload</button>
+		<button class="btn btn-info btn-sm btn-reload" aria-role="ADMIN">Reload</button>
 	</nav>
 
 	<div class="container" style="margin-top: 60px;">
@@ -85,14 +85,14 @@ input {
 				</div>
 			</div>
 		</div>
-		<div class="card border-warning mt-2 collapse" id="candidates">
+		<div class="card border-warning mt-2 collapse" id="candidates" aria-role="ADMIN">
 			<div class="card-body">
 				<button class="btn btn-sm btn-outline-warning btn-get-candidates">Get Candidates</button>
 				<ul class="list-group mt-2" id="candidatesList">
 				</ul>
 			</div>
 		</div>
-		<div class="card border-success mt-2 collapse" id="pageImageDownloader">
+		<div class="card border-success mt-2 collapse" id="pageImageDownloader" aria-role="ADMIN">
 			<div class="card-body">
 				<form id="downloadPageImageForm" onsubmit="return false;">
 					<div class="input-group input-group-sm mb-1">
@@ -120,7 +120,7 @@ input {
 				</form>
 			</div>
 		</div>
-		<div class="card border-danger mt-2 collapse" id="batchGroup">
+		<div class="card border-danger mt-2 collapse" id="batchGroup" aria-role="ADMIN">
 			<div class="card-body">
 				<div class="btn-group btn-group-sm mb-1">
 					<button class="btn btn-outline-danger btn-batch-start"  data-type="W">Move Watched</button>

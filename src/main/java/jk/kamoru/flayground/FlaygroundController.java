@@ -9,6 +9,7 @@ import java.util.Map.Entry;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,7 +18,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
 @RestController
-public class FlayRequestMapping {
+public class FlaygroundController {
 
 	@Autowired ApplicationContext context;
 
@@ -36,4 +37,9 @@ public class FlayRequestMapping {
 		return mappingList;
 	}
 
+	@GetMapping("/whoami")
+	public Object getUser() {
+		return SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+	}
+	
 }

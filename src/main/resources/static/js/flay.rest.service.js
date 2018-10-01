@@ -195,5 +195,11 @@ var Rest = {
 				console.log("Rest.Batch.reload");
 				restCall("/batch/reload", {method: "PUT", title: "Source reload"}, callback);
 			}
+		},
+		Security: {
+			whoami: function(callback) {
+				console.log("Rest.Security.whoami");
+				restCall("/whoami", {async: false}, callback);
+			}
 		}
 };

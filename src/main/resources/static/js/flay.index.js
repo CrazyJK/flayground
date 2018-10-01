@@ -100,6 +100,23 @@ var navi = {
 		}
 };
 
+var Security = {
+		hasRole: function(role) {
+			holder = false;
+			Rest.Security.whoami(function(principal) {
+				for (var x in principal.authorities) {
+					if (principal.authorities[x].authority === "ROLE_" + role) {
+						holder = true;
+						break;
+					}
+				}
+			});
+			return holder;
+		}
+};
+
+var isAdmin = Security.hasRole("ADMIN");
+
 $(document).ready(function() {
 
 	event.resize();

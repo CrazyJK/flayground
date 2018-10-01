@@ -206,73 +206,8 @@ $(".btn-search-torrent").on("click", function() {
 	var value = $("#query").val();
 	Search.torrent(value);
 });
-$(".btn-reload").on("click", function() {
-	Rest.Batch.reload();
-});
 $(".btn-find-random-opus").on("click", function() {
 	Search.opusByRandom();
-});
-$(".btn-download-page-image").on("click", function() {
-	Picture.download($("#downloadPageImageForm").serialize(), function(result) {
-	    $("#notice > p").empty().append(
-				$("<ul>", {'class': 'list-unstyled'}).append(
-						$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
-						$("<li>", {'class': 'text-primary'}).append(
-								$("<span>", {'class': 'btn-link pointer'}).on("click", function() {
-									Action.openFolder(result.localPath);
-								}).html(result.localPath)
-						)
-				)
-	    );
-		$("#notice").dialog({
-			classes: {
-			    "ui-dialog": (result.result ? "ui-widget-shadow" : "ui-dialog-danger")
-			},
-			width: 500,
-			height: 200,
-			title: result.message,
-		});
-		LocalStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
-	});	
-});
-$(".btn-batch-start").on("click", function() {
-	var type  = $(this).data("type");
-	var title = $(this).text();
-	Rest.Batch.start(type, title);
-});
-$(".btn-batch-option").on("click", function() {
-	var $this = $(this);
-	var type  = $this.data("type");
-	Rest.Batch.setOption(type, function(result) {
-		$this.text(result).toggleClass("text-primary", result);
-	});
-});
-$(".btn-get-candidates").on("click", function() {
-	Rest.Flay.findCandidates(function(flayList) {
-		var $candidatesList = $("#candidatesList").empty();
-		$.each(flayList, function(idx, flay) {
-			$("<div>", {'class': 'candidates list-group-item'}).append(
-					$("<button>", {'class': 'btn btn-sm btn-block btn-warning'}).append(
-							$("<strong>").html('Acept'),
-							$("<span>", {'class': 'badge badge-light mr-1 ml-1'}).html(flay.files.candidate.length),
-							' ' + flay.files.candidate.toString().replace(/,/gi, '<br>').replace(/\\/gi, '/').replace(/\//gi, '<b class="text-white"> / </b>')
-					).on("click", function() {
-						var $self = $(this);
-						Rest.Flay.acceptCandidates(flay, function() {
-							$self.hide();
-						});
-					}),
-					$("<label>", {'class': 'text'}).html(flay.studio),
-					$("<label>", {'class': 'text hover'}).html(flay.opus).on("click", function() {
-						View.flay(flay.opus);
-					}),
-					$("<label>", {'class': 'text'}).html(flay.title),
-					$("<label>", {'class': 'text'}).html(flay.actressList.toString()),
-					$("<label>", {'class': 'text'}).html(flay.release),
-					$("<img>", {'src': '/static/cover/' + flay.opus, 'class': 'img-thumbnail m-auto'}),
-			).appendTo($candidatesList);
-		});
-	});
 });
 $("#btn-video-close").on("click", function() {
 	$("#resultVideoDiv").collapse('hide');
@@ -281,15 +216,85 @@ $("#btn-history-close").on("click", function() {
 	$("#resultHistoryDiv").collapse('hide');
 });
 
-Rest.Batch.getOption('W', function(val) {
-	$(".btn-batch-option[data-type='W']").html('' + val).toggleClass("text-primary", val);
-});
-Rest.Batch.getOption('R', function(val) {
-	$(".btn-batch-option[data-type='R']").html('' + val).toggleClass("text-primary", val);
-});
-Rest.Batch.getOption('S', function(val) {
-	$(".btn-batch-option[data-type='S']").html('' + val).toggleClass("text-primary", val);
-});
+if (isAdmin) {
+	$(".btn-reload").on("click", function() {
+		Rest.Batch.reload();
+	});
+	$(".btn-download-page-image").on("click", function() {
+		Picture.download($("#downloadPageImageForm").serialize(), function(result) {
+		    $("#notice > p").empty().append(
+					$("<ul>", {'class': 'list-unstyled'}).append(
+							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
+							$("<li>", {'class': 'text-primary'}).append(
+									$("<span>", {'class': 'btn-link pointer'}).on("click", function() {
+										Action.openFolder(result.localPath);
+									}).html(result.localPath)
+							)
+					)
+		    );
+			$("#notice").dialog({
+				classes: {
+				    "ui-dialog": (result.result ? "ui-widget-shadow" : "ui-dialog-danger")
+				},
+				width: 500,
+				height: 200,
+				title: result.message,
+			});
+			LocalStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
+		});	
+	});
+	$(".btn-batch-start").on("click", function() {
+		var type  = $(this).data("type");
+		var title = $(this).text();
+		Rest.Batch.start(type, title);
+	});
+	$(".btn-batch-option").on("click", function() {
+		var $this = $(this);
+		var type  = $this.data("type");
+		Rest.Batch.setOption(type, function(result) {
+			$this.text(result).toggleClass("text-primary", result);
+		});
+	});
+	$(".btn-get-candidates").on("click", function() {
+		Rest.Flay.findCandidates(function(flayList) {
+			var $candidatesList = $("#candidatesList").empty();
+			$.each(flayList, function(idx, flay) {
+				$("<div>", {'class': 'candidates list-group-item'}).append(
+						$("<button>", {'class': 'btn btn-sm btn-block btn-warning'}).append(
+								$("<strong>").html('Acept'),
+								$("<span>", {'class': 'badge badge-light mr-1 ml-1'}).html(flay.files.candidate.length),
+								' ' + flay.files.candidate.toString().replace(/,/gi, '<br>').replace(/\\/gi, '/').replace(/\//gi, '<b class="text-white"> / </b>')
+						).on("click", function() {
+							var $self = $(this);
+							Rest.Flay.acceptCandidates(flay, function() {
+								$self.hide();
+							});
+						}),
+						$("<label>", {'class': 'text'}).html(flay.studio),
+						$("<label>", {'class': 'text hover'}).html(flay.opus).on("click", function() {
+							View.flay(flay.opus);
+						}),
+						$("<label>", {'class': 'text'}).html(flay.title),
+						$("<label>", {'class': 'text'}).html(flay.actressList.toString()),
+						$("<label>", {'class': 'text'}).html(flay.release),
+						$("<img>", {'src': '/static/cover/' + flay.opus, 'class': 'img-thumbnail m-auto'}),
+				).appendTo($candidatesList);
+			});
+		});
+	});
 
-$("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
+	$("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
 
+	Rest.Batch.getOption('W', function(val) {
+		$(".btn-batch-option[data-type='W']").html('' + val).toggleClass("text-primary", val);
+	});
+	Rest.Batch.getOption('R', function(val) {
+		$(".btn-batch-option[data-type='R']").html('' + val).toggleClass("text-primary", val);
+	});
+	Rest.Batch.getOption('S', function(val) {
+		$(".btn-batch-option[data-type='S']").html('' + val).toggleClass("text-primary", val);
+	});
+
+} else {
+	$("[aria-role='ADMIN']").empty().hide();
+}

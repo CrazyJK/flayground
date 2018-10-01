@@ -18,10 +18,12 @@ public class FlaySecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
+		http.headers().frameOptions().sameOrigin();
 		http.csrf().disable();
 		http
 			.authorizeRequests()
 				.antMatchers("/index.html", "/html/login.html", "/webjars/**", "/img/favicon/**").permitAll()
+				.antMatchers("/batch/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
 			.formLogin()

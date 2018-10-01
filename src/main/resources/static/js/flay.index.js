@@ -2,7 +2,7 @@
  * 
  */
 
-var event = {
+var Event = {
 		resize: function() {
 			$(window).on("resize", function() {
 				$("#background_images img").css({height: ''});
@@ -29,36 +29,36 @@ var event = {
 		},
 		bgToggle: function() {
 			$("#bgFlow").on("change", function() {
-				$(this).prop("checked") ? background.start() : background.stop();
+				$(this).prop("checked") ? Background.start() : Background.stop();
 			});
 		}
 };
 
-var background = {
+var Background = {
 		imageIndexArray: [],
 		bgInterval: null,
 		count: 0,
 		init: function() {
 			Rest.Image.size(function(count) {
-				background.count = count;
+				Background.count = count;
 			});
 		},
 		start: function() {
-			background.bgInterval = setInterval(background.func, 3000);
+			Background.bgInterval = setInterval(Background.func, 3000);
 		},
 		stop: function() {
-			clearInterval(background.bgInterval);
+			clearInterval(Background.bgInterval);
 		},
 		func: function() {
 			// make image index array
-			if (background.imageIndexArray.length === 0) {
-				background.imageIndexArray = Array.apply(null, {length: background.count}).map(Number.call, Number);
-				console.log('image array reset', background.imageIndexArray.length);
+			if (Background.imageIndexArray.length === 0) {
+				Background.imageIndexArray = Array.apply(null, {length: Background.count}).map(Number.call, Number);
+				console.log('image array reset', Background.imageIndexArray.length);
 			}
 			// determine image index
-			var imageIndex = background.imageIndexArray.splice(Random.getInteger(0, background.imageIndexArray.length-1), 1);
+			var imageIndex = Background.imageIndexArray.splice(Random.getInteger(0, Background.imageIndexArray.length-1), 1);
 			if ($.isEmptyObject(imageIndex)) {
-				console.log('imageIndex is empty', background.imageIndexArray.length, imageIndex);
+				console.log('imageIndex is empty', Background.imageIndexArray.length, imageIndex);
 			}
 			var $imageWrap = $("#image_pane_" + Random.getInteger(0, 3));
 			
@@ -85,11 +85,11 @@ var background = {
 		}
 };
 
-var navi = {
+var Navi = {
 		init: function() {
 			$("[aria-include]").on("click", function() {
 				var dest = $(this).attr("aria-include");
-				navi.go(dest);
+				Navi.go(dest);
 			});
 		},
 		go: function(destination) {
@@ -101,34 +101,49 @@ var navi = {
 };
 
 var Security = {
-		hasRole: function(role) {
-			holder = false;
+		user: null,
+		getUser: function() {
 			Rest.Security.whoami(function(principal) {
-				for (var x in principal.authorities) {
-					if (principal.authorities[x].authority === "ROLE_" + role) {
-						holder = true;
-						break;
-					}
-				}
+				Security.user = principal;
 			});
-			return holder;
+		},
+		hasRole: function(role) {
+			if (Security.user == null) {
+				Security.getUser();
+			}
+			for (var x in Security.user.authorities) {
+				if (Security.user.authorities[x].authority === "ROLE_" + role) {
+					return true;
+				}
+			}
+			return false;
+		},
+		getName: function() {
+			if (Security.user == null) {
+				Security.getUser();
+			}
+			return Security.user.username;
 		}
 };
 
 var isAdmin = Security.hasRole("ADMIN");
+var username = Security.getName();
+console.log("isAdmin", isAdmin, username);
 
 $(document).ready(function() {
 
-	event.resize();
-	event.togglePage();
-	event.theme();
-	event.bgToggle();
+	Event.resize();
+	Event.togglePage();
+	Event.theme();
+	Event.bgToggle();
 	
-	background.init();
-	background.start();
+	Background.init();
+	Background.start();
 
-	navi.init();
+	Navi.init();
 	$("[aria-include]").first().click();
+
+	$("#username").html(username);
 
 });
 

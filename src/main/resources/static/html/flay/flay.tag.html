@@ -59,10 +59,7 @@
 					<button class="btn btn-sm btn-danger tag-delete" type="submit">Delete</button>
 				</div>
 				<div class="col-auto">
-	  				<span class="input-group">
-						<label class="input"><input type="radio" name="openMethod" value="I" checked="checked"><span>In</span></label>
-						<label class="input"><input type="radio" name="openMethod" value="E"><span>Out</span></label>
-					</span>
+					<label class="input"><input type="checkbox" id="openPopup"><span>Popup</span></label>
 				</div>
 			</div>
 		</form>
@@ -131,10 +128,10 @@ function tagLoad() {
 			$tagCard.find(".card-title").html(tag.name);
 			$tagCard.find(".card-text").html(tag.description);
 			$tagCard.on("click", function() {
-				if ($("input[name='openMethod']:checked").val() === 'I')
-					toggleTagDetail(this);
-				else
+				if ($("#openPopup").prop("checked"))
 					View.tag(tag.id);
+				else
+					toggleTagDetail(this);
 			});
 			$tagCard.appendTo($tagList);
 		});

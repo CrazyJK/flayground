@@ -41,4 +41,13 @@ public class HistoryServiceImpl implements HistoryService {
 		persist(new History(play, flay.getOpus(), flay.getFullname()));
 	}
 
+	@Override
+	public List<History> findAction(Action action) {
+		return historyRepository.list()
+				.stream()
+				.filter(h -> h.getAction() == action)
+				.sorted((h1, h2) -> StringUtils.compare(h1.getDate(), h2.getDate()))
+				.collect(Collectors.toList());
+	}
+
 }

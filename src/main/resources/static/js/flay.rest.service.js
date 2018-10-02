@@ -97,9 +97,17 @@ var Rest = {
 			}
 		},
 		History: {
+			list: function(callback) {
+				console.log("Rest.History.list");
+				restCall('/info/history/list', {}, callback);
+			},
 			find: function(query, callback) {
 				console.log("Rest.History.find", query);
 				restCall('/info/history/find/' + query, {}, callback);
+			},
+			findAction: function(action, callback) {
+				console.log("Rest.History.findAction", action);
+				restCall('/info/history/find/action/' + action, {}, callback);
 			}
 		},
 		Video: {

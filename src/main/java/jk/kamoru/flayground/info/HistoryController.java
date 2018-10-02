@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import jk.kamoru.flayground.info.domain.History;
+import jk.kamoru.flayground.info.domain.History.Action;
 import jk.kamoru.flayground.info.service.HistoryService;
 
 @RestController
@@ -22,4 +23,14 @@ public class HistoryController {
 		return historyService.find(query);
 	}
 
+	@GetMapping("/find/action/{action}")
+	public List<History> findAction(@PathVariable Action action) {
+		return historyService.findAction(action);
+	}
+
+	@GetMapping("/list")
+	public List<History> list() {
+		return historyService.list();
+	}
+	
 }

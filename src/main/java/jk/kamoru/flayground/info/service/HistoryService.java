@@ -16,4 +16,6 @@ public interface HistoryService {
 
 	void save(Action play, Flay flay);
 
+	List<History> findAction(Action action);
+
 }

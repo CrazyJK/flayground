@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Flaygound Image</title>
+<title>Flaygound Cover</title>
 <link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
@@ -32,22 +32,32 @@ input:focus, button:focus {
 <script type="text/javascript" src="/js/tag/jquery.tagcanvas.js"></script>
 <script type="text/javascript">
 var ImageControl = {
-		STORAGE_IMAGE_SIZE: 'image.cloud.image_size',
-		STORAGE_PLAY_TIME: 'image.cloud.play_time',
+		STORAGE_FLAY_RANK: 'cover.cloud.flay_rank',
+		STORAGE_IMAGE_SIZE: 'cover.cloud.image_size',
+		STORAGE_PLAY_TIME: 'cover.cloud.play_time',
 		imageIndexArray: [],
 		bgInterval: null,
-		count: 0,
+		flayList: [],
+		collectedList: [],
 		isStart: false,
 		intervalCount: 0,
 		init: function() {
-			Rest.Image.size(function(count) {
-				ImageControl.count = count;
+			Rest.Flay.list(function(list) {
+				ImageControl.flayList = list;
+				ImageControl.filter();
 				ImageControl.display();
 				ImageControl.bgInterval = setInterval(ImageControl.func, 1000);
-				// clearInterval(ImageControl.bgInterval);
 				ImageControl.ImageCanvas.start();
 				ImageControl.nav();
 			});
+		},
+		filter: function() {
+			ImageControl.collectedList = [];
+			$.each(ImageControl.flayList, function(idx, flay) {
+				if (flay.video.rank == inputFlayRank.value && flay.files.movie.length > 0)
+					ImageControl.collectedList.push(flay);
+			});
+			ImageControl.imageIndexArray = [];
 		},
 		nav: function() {
 			$("#canvasContainer").navEvent(function(signal, e) {
@@ -84,11 +94,13 @@ var ImageControl = {
 		display: function() {
 			// make image index array
 			if (ImageControl.imageIndexArray.length === 0) {
-				ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.count}).map(Number.call, Number);
+				ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.collectedList.length}).map(Number.call, Number);
 				console.log('image array reset', ImageControl.imageIndexArray.length);
 			}
 
 			var $imageWrap = $("#imagePane").empty();
+
+			$(".flay-info").html("Flay " + ImageControl.imageIndexArray.length);
 
 			for (var i=0; i<inputImageSize.value; i++) {
 				// determine image index
@@ -96,39 +108,47 @@ var ImageControl = {
 				if ($.isEmptyObject(imageIndex)) {
 					console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
 				} else {
+					var flay = ImageControl.collectedList[imageIndex];
+					var opus = flay.opus;
 					$("<a>").attr({
 						"id": "image" + i,
-						"data-idx": imageIndex
+						"data-opus": opus
 					}).append(
 							$("<img>").attr({
-								src: PATH + "/static/image/" + imageIndex
-							})
+								src: PATH + "/static/cover/" + opus
+							}),
+							flay.title.substring(0, 18)
 					).on("click", function(e) {
 						e.preventDefault();
-						Popup.imageByNo($(this).attr("data-idx"));
+						View.flay($(this).attr("data-opus"));
 					}).appendTo($imageWrap);
 				}
 			}
-			
-			$(".image-info").html("Remaining " + ImageControl.imageIndexArray.length);
 			
 			ImageControl.ImageCanvas.reload();
 		},
 		ImageCanvas: {
 			options: {
-				outlineMethod: 'none',
-				maxSpeed: 0.03,
-				minSpeed: 0.003,
-				minBrightness: 0.3,
-				depth: 0.92,
-				initial: [0.1,-0.1],
-				reverse: true,
-				hideTags: false,
+				bgColour: "#000",
+				bgOutline: "#000",
+				bgOutlineThickness: 1,
+				bgRadius: 8,
 				clickToFront: 300,
-				imageMode: 'image',
+				depth: 0.92,
+				fadeIn: 800,
+				imageMode: 'both',
+				imagePosition: "bottom",
+				imageRadius: 4,
 				imageScale: 0.3,
-				imageRadius: 16,
-				fadeIn: 500
+				initial: [0.1,-0.1],
+				hideTags: false,
+				maxSpeed: 0.03,
+				minBrightness: 0.3,
+				minSpeed: 0.003,
+				outlineMethod: 'none',
+				padding: 4,
+				reverse: true,
+				textColour: '#fff',
 			},
 			start: function() {
 				$('#imageCloud').tagcanvas(ImageControl.ImageCanvas.options, 'imagePane');
@@ -153,6 +173,7 @@ var ImageControl = {
 
 $(document).ready(function() {
 	
+	inputFlayRank.value  = LocalStorageItem.getInteger(ImageControl.STORAGE_FLAY_RANK, 0);
 	inputImageSize.value = LocalStorageItem.getInteger(ImageControl.STORAGE_IMAGE_SIZE, 20);
 	inputPlayTime.value  = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
 	
@@ -184,6 +205,11 @@ $(document).ready(function() {
 			$(this).data("status", "stop").html('<i class="fa fa-play"></i> Play');
 		}
 	});
+	$("#inputFlayRank").on("change", function() {
+		LocalStorageItem.set(ImageControl.STORAGE_FLAY_RANK, $(this).val());
+		ImageControl.filter();
+		ImageControl.display();
+	});
 	$("#inputImageSize").on("change", function() {
 		LocalStorageItem.set(ImageControl.STORAGE_IMAGE_SIZE, $(this).val());
 	});
@@ -210,7 +236,11 @@ $(document).ready(function() {
 <div id="controlBox">
 	<div class="input-group input-group-sm">
 		<div class="input-group-prepend">
-			<span class="input-group-text border-dark bg-dark text-light image-info">0</span>
+			<span class="input-group-text border-dark bg-dark text-light flay-rank">Rank</span>
+		</div>
+		<input class="form-control border-dark bg-dark text-light text-left" id="inputFlayRank" style="width: 30px;" value="0" title="Flay rank">
+		<div class="input-group-prepend">
+			<span class="input-group-text border-dark bg-dark text-light flay-info">0</span>
 			<button class="btn btn-dark" id="btnRotate"><i class="fa fa-random"></i> Rotate</button>
 			<button class="btn btn-dark" id="btnPause" data-status="resume"><i class="fa fa-pause"></i> Pause</button>
 		</div>

@@ -141,7 +141,7 @@ $(document).ready(function() {
 	Background.start();
 
 	Navi.init();
-	$("[aria-include]").first().click();
+//	$("[aria-include]").first().click();
 
 	$("#username").html(username);
 

@@ -14,7 +14,7 @@
 	display: inline-block;
 	border: 1px solid var(--primary);
 	border-radius: .25rem;
-	margin: .5rem;
+	margin: .25rem;
 	padding: .25rem;
 	transition: all .3s;
 }
@@ -29,16 +29,22 @@
 }
 .summary-item > .item-count {
 	margin: .25rem;
-	min-width: 30px;
+	min-width: 40px;
+	font-size: 90%;
 }
 .summary-item > .item-size {
 	margin: .25rem;
-	min-width: 70px;
+	min-width: 65px;
 	text-align: right;
 }
 
+.btn[aria-expanded="true"] {
+	color: #007bff;
+    background-color: #fff;
+}
+
 #pathList .item-key {
-	width: 200px;
+	width: 180px;
 }
 </style>
 
@@ -46,6 +52,8 @@
 
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
 		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#groupByStudio">Group By Studio</button>
+		<div class="divider"></div>
+		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#groupByActress">Group By Actress</button>
 		<div class="divider"></div>
 		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#groupByRelease">Group By Release</button>
 		<div class="divider"></div>
@@ -60,8 +68,20 @@
 		<div class="card-header text-center">
 			Grouped by Studio
 		</div>
-		<div class="card-body">
-			<div class="summary-list" id="studioList"></div>
+		<div class="card-body text-center">
+			<!-- <div class="summary-list" id="studioList"></div> -->
+	      	<canvas id="studioCanvas" width="800" height="800"></canvas>
+			<div id="studioList" style="display: none;"></div>
+		</div>
+	</div>
+
+	<div id="groupByActress" class="collapse card m-2">
+		<div class="card-header text-center">
+			Grouped by Actress over 5 video
+		</div>
+		<div class="card-body text-center">
+	      	<canvas id="actressCanvas" width="800" height="800"></canvas>
+			<div id="actressList" style="display: none;"></div>
 		</div>
 	</div>
 
@@ -106,148 +126,5 @@
 
 </div>
 
-<script type="text/javascript">
-var flayList = [];
-Rest.Flay.list(function(list) {
-	flayList = list;
-});
-
-$("#groupByRelease").on('show.bs.collapse', function() {
-	var val = $("input[name='releasePattern']:checked").val();
-	if (typeof val === 'undefined') {
-		$("input[name='releasePattern']").first().click();
-	}
-});
-
-$("input[name='releasePattern']").on('change', function() {
-	var releasePattern = $("input[name='releasePattern']:checked").val();
-	var getReleaseKey = function(release) {
-		if ('YYYY' === releasePattern) {
-			return release.substring(0, 4);
-		} else if ('YYYYMM' === releasePattern) {
-			return release.substring(0, 7);
-		} else {
-			return release;
-		}
-	};
-	var $list = $("#releasedList").empty();
-	
-	var dataMap = {};
-	$.each(flayList, function(idx, flay) {
-		var key = getReleaseKey(flay.release);
-		if (dataMap[key]) {
-			dataMap[key].push(flay);
-		} else {
-			dataMap[key] = [flay];
-		}
-	});
-	
-	displaySummaryItem(dataMap, $list);
-});
-
-$("#groupByPath").on('show.bs.collapse', function() {
-	var getPathKey = function(files) {
-		var file;
-		if (files.movie.length > 0) {
-			file = files.movie[0];
-		} else {
-			file = files.cover[0];
-		}
-		var pathArray = file.replace(/\\/gi, '/').split('/');
-		pathArray.pop();
-		return pathArray.join('/');
-	};
-	var $list = $("#pathList").empty();
-	
-	var dataMap = {};
-	$.each(flayList, function(idx, flay) {
-		var key = getPathKey(flay.files);
-		if (dataMap[key]) {
-			dataMap[key].push(flay);
-		} else {
-			dataMap[key] = [flay];
-		}
-	});
-	
-	displaySummaryItem(dataMap, $list);
-});
-
-$("#groupByRank").on('show.bs.collapse', function() {
-	var $list = $("#rankList").empty();
-	
-	var dataMap = {};
-	$.each(flayList, function(idx, flay) {
-		var key = 'Rank ' + flay.video.rank;
-		if (dataMap[key]) {
-			dataMap[key].push(flay);
-		} else {
-			dataMap[key] = [flay];
-		}
-	});
-	
-	displaySummaryItem(dataMap, $list);
-});
-
-$("#groupByStudio").on('show.bs.collapse', function() {
-	var $list = $("#studioList").empty();
-	
-	var dataMap = {};
-	$.each(flayList, function(idx, flay) {
-		var key = flay.studio;
-		if (dataMap[key]) {
-			dataMap[key].push(flay);
-		} else {
-			dataMap[key] = [flay];
-		}
-	});
-	
-	displaySummaryItem(dataMap, $list);
-});
-
-
-function displaySummaryItem(dataMap, $list) {
-	var dataArray = [];
-	$.each(dataMap, function(key, val) {
-		dataArray.push({
-			key: key,
-			list: val
-		});
-	});
-	dataArray.sort(function(d1, d2) {
-		return d1.key.localeCompare(d2.key);
-	});
-	
-	$.each(dataArray, function(idx, data) {
-		$("<div>", {'class': 'summary-item'}).append(
-				$("<label>", {'class': 'item-key nowrap'}).html(data.key.replace('/home/kamoru/workspace/FlayOn', '')),
-				$("<span>",  {'class': 'item-count badge badge-primary'}).html(data.list.length),
-				$("<label>", {'class': 'item-size'}).append(
-						(function() {
-							var length = 0;
-							for (var x in data.list) {
-								length += data.list[x].length;
-							}
-							return File.formatSize(length);
-						}())
-				)
-		).on("click", function() {
-			displayFlayList(data.key, data.list);
-		}).appendTo($list);
-	});	
-}
-
-function displayFlayList(key, list) {
-	$("#groupByKey").html(key);
-
-	var $flayList = $("#flayList").empty();
-	$.each(list, function(idx, flay) {
-		$flayList.appendFlayCard(flay, {
-			width: 300,
-			exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
-			fontSize: '80%'
-		});
-	});
-
-	$(".flay-list-wrapper").show();
-}
-</script>
+<script type="text/javascript" src="/js/tag/jquery.tagcanvas.min.js"></script>
+<script type="text/javascript" src="/js/flay.summary.js"></script>

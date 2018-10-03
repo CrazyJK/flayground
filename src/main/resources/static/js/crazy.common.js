@@ -177,11 +177,11 @@ var File = {
 			else if (length < MB)
 				return (length / KB).toFixed(0) + " kB";
 			else if (length < GB)
-				return (length / MB).toFixed(1) + " MB";
+				return (length / MB).toFixed(1) + " <span class='text-warning'>MB</span>";
 			else if (length < TB)
-				return (length / GB).toFixed(2) + " GB";
+				return (length / GB).toFixed(1) + " <span class='text-dark'>GB</span>";
 			else
-				return length;
+				return (length / TB).toFixed(2) + " <span class='text-danger'>TB</span>";
 		}
 };
 

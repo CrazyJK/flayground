@@ -4,6 +4,7 @@
 }
 
 #tagList {
+	display: none;
 	text-align: center;
 	margin-top: 60px;
 }
@@ -36,6 +37,16 @@
 	margin: 1rem;
     padding: 1rem;
 }
+
+#myCanvasContainer {
+	text-align: center;
+	margin-top: 60px;
+}
+#myCanvas {
+    background-color: white;
+    border-radius: 1rem;
+    padding: 1rem;
+}
 </style>
 
 <div role="body">
@@ -59,12 +70,19 @@
 					<button class="btn btn-sm btn-danger tag-delete" type="submit">Delete</button>
 				</div>
 				<div class="col-auto">
-					<label class="input"><input type="checkbox" id="openPopup"><span>Popup</span></label>
+					<label class="input"><input type="checkbox" id="openPopup" checked="checked"><span>Popup</span></label>
 				</div>
 			</div>
 		</form>
 	</nav>
 	
+	<div id="myCanvasContainer">
+      	<canvas id="myCanvas" width="800" height="800"></canvas>
+      	<div id="tags" style="display: none;">
+      		<ul></ul>
+      	</div>
+    </div>
+    	
 	<div id="tagList">
 		<div class="card tag">
 			<div class="card-body">
@@ -74,7 +92,7 @@
 			</div>
 		</div>
 	</div>
-	
+
 	<div id="tagDetail">
 		<div class="text-right"><i class="fa fa-times hover"></i></div>
 		<div class="flay-list"></div>
@@ -82,6 +100,7 @@
 
 </div>
 
+<script type="text/javascript" src="/js/tag/jquery.tagcanvas.min.js"></script>
 <script type="text/javascript">
 var $tagTemplete = $(".tag");
 
@@ -122,6 +141,7 @@ function tagLoad() {
 	Rest.Tag.list(function(tagList) {
 		Util.Tag.sort(tagList);
 		$tagList.empty();
+/*		
 		$.each(tagList, function(idx, tag) {
 			var $tagCard = $tagTemplete.clone();
 			$tagCard.data("tag", tag);
@@ -133,8 +153,89 @@ function tagLoad() {
 				else
 					toggleTagDetail(this);
 			});
+			$tagList.show();
 			$tagCard.appendTo($tagList);
 		});
+*/
+		var $tags = $("#tags > ul");
+		$.each(tagList, function(idx, tag) {
+			$("<li>").append(
+					$("<a>", {
+						'data-weight': Random.getInteger(10, 20)
+					}).append(
+							tag.name,
+							"<br>",
+							tag.description
+					).on("click", function(e) {
+						e.preventDefault();
+						if ($("#openPopup").prop("checked"))
+							View.tag(tag.id);
+						else
+							displayFlayList(tag);
+					})
+			).appendTo($tags);
+		});
+		
+		var options = {
+//				textFont: 'Impact,"Arial Black",sans-serif', 
+				maxSpeed: 0.05,  
+				minSpeed: 0.002,
+				textColour: '#369',
+				textHeight: 25, 
+				outlineMethod: 'block',
+				outlineThickness: 5, 
+				outlineColour: '#ff0',
+				outlineOffset: 5, 
+				outlineRadius: 4,
+				pulsateTo: 0.2,
+				pulsateTime: 0.75,
+		        padding: 4,
+				depth: 0.75,
+				minBrightness: 0.2, 
+				wheelZoom: false, 
+				reverse: true, 
+				shadowBlur: 2,
+				shadowOffset: [1,1], 
+				shuffleTags: false, 
+				initial: [0,0.01],
+				splitWidth: 180,
+				clickToFront: 300,
+				fadeIn: 500,
+				weight: true,
+				weightMode: 'colour',
+				weightFrom: 'data-weight'
+		};
+		
+		$('#myCanvas').tagcanvas(options, 'tags');
+
+	});
+}
+
+function displayFlayList(tag) {
+	var $tagDetail = $("#tagDetail");
+	var $flayList = $(".flay-list");
+	$flayList.empty();
+	
+	$("#tagInput").data("tag", tag);
+	$("#tagId"  ).val(tag.id);
+	$("#tagName").val(tag.name);
+	$("#tagDesc").val(tag.description);
+	
+	Rest.Flay.findByTag(tag, function(flayList) {
+		if (flayList.length == 0) {
+			$flayList.append(
+					$("<h4>", {'class': 'text-danger font-weight-bold'}).html("No Flay")
+			);
+		} else {
+			$.each(flayList, function(idx, flay) {
+				$flayList.appendFlayCard(flay, {
+					width: 300,
+					exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
+					fontSize: '80%'
+				});
+			});
+		}
+		$tagDetail.show();
 	});
 }
 

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="EUC-KR">
+<title>Flaygound Image</title>
+<link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/themes/base/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<link rel="stylesheet" href="/css/flay.notification.css"/>
+<style type="text/css">
+#controlBox {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	padding: .5rem;
+}
+input:focus, button:focus {
+	box-shadow: none !important;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
+<script type="text/javascript" src="/js/flay.notification.js"></script>
+<script type="text/javascript" src="/js/tag/jquery.tagcanvas.js"></script>
+<script type="text/javascript">
+var ImageControl = {
+		STORAGE_IMAGE_SIZE: 'image.cloud.image_size',
+		STORAGE_PLAY_TIME: 'image.cloud.play_time',
+		imageIndexArray: [],
+		bgInterval: null,
+		count: 0,
+		isStart: false,
+		intervalCount: 0,
+		init: function() {
+			Rest.Image.size(function(count) {
+				ImageControl.count = count;
+				ImageControl.display();
+				ImageControl.bgInterval = setInterval(ImageControl.func, 1000);
+				// clearInterval(ImageControl.bgInterval);
+				ImageControl.ImageCanvas.start();
+			});
+		},
+		start: function() {
+			ImageControl.intervalCount = 0;
+			ImageControl.isStart = true;
+		},
+		stop: function() {
+			$(".progress-bar").css({width: "100%"});
+			ImageControl.isStart = false;
+		},
+		func: function() {
+			if (ImageControl.isStart) {
+				ImageControl.intervalCount = ++ImageControl.intervalCount % parseInt(inputPlayTime.value);
+				$(".progress-bar").css({
+					width: (100 - Math.round(ImageControl.intervalCount / parseInt(inputPlayTime.value) * 100)) + "%"
+				});
+				
+				if (ImageControl.intervalCount == 0) {
+					ImageControl.display();
+				}
+			}
+		},
+		display: function() {
+			// make image index array
+			if (ImageControl.imageIndexArray.length === 0) {
+				ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.count}).map(Number.call, Number);
+				console.log('image array reset', ImageControl.imageIndexArray.length);
+			}
+
+			var $imageWrap = $("#imagePane").empty();
+
+			for (var i=0; i<inputImageSize.value; i++) {
+				// determine image index
+				var imageIndex = ImageControl.imageIndexArray.splice(Random.getInteger(0, ImageControl.imageIndexArray.length-1), 1);
+				if ($.isEmptyObject(imageIndex)) {
+					console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
+				} else {
+					$("<a>").attr({
+						"id": "image" + i,
+						"data-idx": imageIndex
+					}).append(
+							$("<img>").attr({
+								src: PATH + "/static/image/" + imageIndex
+							})
+					).on("click", function(e) {
+						e.preventDefault();
+						Popup.imageByNo($(this).attr("data-idx"));
+					}).appendTo($imageWrap);
+				}
+			}
+			
+			ImageControl.ImageCanvas.reload();
+		},
+		ImageCanvas: {
+			options: {
+				outlineMethod: 'none',
+				maxSpeed: 0.03,
+				minSpeed: 0.003,
+				minBrightness: 0.3,
+				depth: 0.92,
+				initial: [0.1,-0.1],
+				reverse: true,
+				hideTags: false,
+				clickToFront: 300,
+				imageMode: 'image',
+				imageScale: 0.5,
+				imageRadius: 16,
+				fadeIn: 500
+			},
+			start: function() {
+				$('#imageCloud').tagcanvas(ImageControl.ImageCanvas.options, 'imagePane');
+			},
+			update: function() {
+				$('#imageCloud').tagcanvas('update');
+			},
+			reload: function() {
+				$('#imageCloud').tagcanvas('reload');
+			},
+			rotate: function() {
+				$('#imageCloud').tagcanvas('rotatetag', {id: "image" + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0});
+			},
+			pause: function() {
+				$('#imageCloud').tagcanvas('pause');
+			},
+			resume: function() {
+				$('#imageCloud').tagcanvas('resume');
+			}
+		}
+};
+
+$(document).ready(function() {
+	
+	inputImageSize.value = LocalStorageItem.getInteger(ImageControl.STORAGE_IMAGE_SIZE, 20);
+	inputPlayTime.value  = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
+	
+	$(window).on("resize", function() {
+		$('canvas').attr({
+			width: $(window).width() - 32,
+			height: $(window).height() - 64
+		});
+	}).trigger("resize");
+	
+	$("#btnRotate").on("click", ImageControl.ImageCanvas.rotate);
+	$("#btnPause").on("click", function() {
+		console.log('$(this).data("status")', $(this).data("status"));
+		if ($(this).data("status") === 'resume') {
+			ImageControl.ImageCanvas.pause();
+			$(this).data("status", "pause").html('<i class="fa fa-play"></i> Resume');
+		} else {
+			ImageControl.ImageCanvas.resume();
+			$(this).data("status", "resume").html('<i class="fa fa-pause"></i> Pause');
+		}
+	});
+	$("#btnNext").on("click", ImageControl.display);
+	$("#btnPlay").on("click", function() {
+		if ($(this).data("status") === 'stop') {
+			ImageControl.start();
+			$(this).data("status", "start").html('<i class="fa fa-stop"></i> Stop');
+		} else {
+			ImageControl.stop();
+			$(this).data("status", "stop").html('<i class="fa fa-play"></i> Play');
+		}
+	});
+	$("#inputImageSize").on("change", function() {
+		LocalStorageItem.set(ImageControl.STORAGE_IMAGE_SIZE, $(this).val());
+	});
+	$("#inputPlayTime").on("change", function() {
+		LocalStorageItem.set(ImageControl.STORAGE_PLAY_TIME, $(this).val());
+	});
+	$("#goFlay").on("click", function() {
+		location.href = PATH + "/html/flay/flay.index.html";
+	});
+	
+	ImageControl.init();
+
+});
+
+</script>
+</head>
+<body>
+
+<div class="text-center p-3">
+	<canvas id="imageCloud" width="800" height="600"></canvas>
+	<div id="imagePane" style="display: none;"></div>
+</div>
+
+<div id="controlBox">
+	<div class="input-group input-group-sm">
+		<div class="input-group-prepend">
+			<button class="btn btn-dark" id="btnRotate"><i class="fa fa-random"></i> Rotate</button>
+			<button class="btn btn-dark" id="btnPause" data-status="resume"><i class="fa fa-pause"></i> Pause</button>
+		</div>
+		<input class="form-control border-dark bg-dark text-light text-right" id="inputImageSize" style="width: 40px;" value="10" title="Image size">
+		<div class="input-group-append">
+    		<button class="btn btn-dark" id="btnNext"><i class="fa fa-forward"></i> Next</button>
+  		</div>
+		<input class="form-control border-dark bg-dark text-light text-right" id="inputPlayTime" style="width: 40px;" value="60" title="Play seconds">
+		<div class="input-group-append">
+    		<button class="btn btn-dark" id="btnPlay" data-status="stop"><i class="fa fa-play"></i> Play</button>
+    		<button class="btn btn-dark" id="goFlay" title="go Flay"><i class="fa fa-file-video-o"></i></button>
+  		</div>
+	</div>
+	<div class="progress" style="height: 1px; margin: 0 3px;">
+  		<div class="progress-bar bg-dark" style="width:100%"></div>
+	</div>
+</div>
+
+</body>
+</html>

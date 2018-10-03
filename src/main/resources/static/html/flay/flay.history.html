@@ -105,12 +105,15 @@ function drawGraph(data) {
 	chart.addListener("rendered", zoomChart);
 
 	zoomChart();
-
+	
 	function zoomChart() {
 //	    chart.zoomToIndexes(chart.dataProvider.length - 10, chart.dataProvider.length - 1);
+
+		var width = $(window).width();
+
 	    var toDay = new Date();
 	    var fromDay = new Date();
-	    fromDay.setMonth(toDay.getMonth() - 3);
+	    fromDay.setMonth(toDay.getMonth() - Math.round(width/10/60));
 	    chart.zoomToDates(fromDay, toDay);
 	}
 

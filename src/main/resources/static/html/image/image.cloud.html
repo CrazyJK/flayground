@@ -116,19 +116,21 @@ var ImageControl = {
 		},
 		ImageCanvas: {
 			options: {
-				outlineMethod: 'none',
+				initial: [0.1,-0.1],
+				clickToFront: 300,
+				depth: 0.92,
+				fadeIn: 500,
+				hideTags: false,
 				maxSpeed: 0.03,
 				minSpeed: 0.003,
 				minBrightness: 0.3,
-				depth: 0.92,
-				initial: [0.1,-0.1],
+				outlineMethod: 'none',
 				reverse: true,
-				hideTags: false,
-				clickToFront: 300,
 				imageMode: 'image',
-				imageScale: 0.3,
 				imageRadius: 16,
-				fadeIn: 500
+				imageScale: 0.3,
+				imageWidth: 400,
+				imageHeight: 0,
 			},
 			start: function() {
 				$('#imageCloud').tagcanvas(ImageControl.ImageCanvas.options, 'imagePane');

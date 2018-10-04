@@ -85,7 +85,7 @@ var ImageControl = {
 				$(".progress-bar").css({
 					width: (100 - Math.round(ImageControl.intervalCount / parseInt(inputPlayTime.value) * 100)) + "%"
 				});
-				
+
 				if (ImageControl.intervalCount == 0) {
 					ImageControl.display();
 				}
@@ -95,7 +95,7 @@ var ImageControl = {
 			// make image index array
 			if (ImageControl.imageIndexArray.length === 0) {
 				ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.collectedList.length}).map(Number.call, Number);
-				console.log('image array reset', ImageControl.imageIndexArray.length);
+				// console.log('image array reset', ImageControl.imageIndexArray.length);
 			}
 
 			var $imageWrap = $("#imagePane").empty();
@@ -106,7 +106,7 @@ var ImageControl = {
 				// determine image index
 				var imageIndex = ImageControl.imageIndexArray.splice(Random.getInteger(0, ImageControl.imageIndexArray.length-1), 1);
 				if ($.isEmptyObject(imageIndex)) {
-					console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
+					// console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
 				} else {
 					var flay = ImageControl.collectedList[imageIndex];
 					var opus = flay.opus;
@@ -139,7 +139,9 @@ var ImageControl = {
 				imageMode: 'both',
 				imagePosition: "bottom",
 				imageRadius: 4,
-				imageScale: 0.3,
+				imageScale: 0,
+				imageWidth: 400, 
+				imageHeight: 0,
 				initial: [0.1,-0.1],
 				hideTags: false,
 				maxSpeed: 0.03,

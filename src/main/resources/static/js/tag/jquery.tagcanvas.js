@@ -610,6 +610,15 @@ function AddImage(i, o, t, tc) {
     i.width = o.width * s;
     i.height = o.height * s;
   }
+  // kamoru add. width or height fix
+  else if (tc.imageWidth && tc.imageWidth < o.width) {
+	  i.width  = tc.imageWidth;
+	  i.height = Math.round(tc.imageWidth * o.height / o.width);
+  } else if (tc.imageHeight && tc.imageHeight < o.height) {
+	  i.width  = Math.round(tc.imageHeight * o.width / o.height);
+	  i.height = tc.imageHeight;
+  }
+
   // the standard width of the image, with imageScale applied
   t.iw = i.width;
   t.ih = i.height;
@@ -2204,6 +2213,8 @@ shuffleTags: false,
 noSelect: false,
 noMouse: false,
 imageScale: 1,
+imageWidth: 0, // width fixed
+imageHeight: 0, // height fixed
 paused: false,
 dragControl: false,
 dragThreshold: 4,

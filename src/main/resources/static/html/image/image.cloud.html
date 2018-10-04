@@ -116,21 +116,21 @@ var ImageControl = {
 		},
 		ImageCanvas: {
 			options: {
-				initial: [0.1,-0.1],
 				clickToFront: 300,
-				depth: 0.92,
+				depth: 0.9,
 				fadeIn: 500,
-				hideTags: false,
-				maxSpeed: 0.03,
-				minSpeed: 0.003,
-				minBrightness: 0.3,
-				outlineMethod: 'none',
-				reverse: true,
+				hideTags: true,
 				imageMode: 'image',
-				imageRadius: 16,
+				imageRadius: 4,
 				imageScale: 0.3,
 				imageWidth: 400,
 				imageHeight: 0,
+				initial: [0.1, -0.1],
+				maxSpeed: 0.03,
+				minBrightness: 0.3,
+				minSpeed: 0.003,
+				outlineMethod: 'none',
+				reverse: true,
 			},
 			start: function() {
 				$('#imageCloud').tagcanvas(ImageControl.ImageCanvas.options, 'imagePane');
@@ -149,6 +149,12 @@ var ImageControl = {
 			},
 			resume: function() {
 				$('#imageCloud').tagcanvas('resume');
+			},
+			resize: function() {
+				$('canvas').attr({
+					width: $(window).width() - 32,
+					height: $(window).height() - 64
+				});
 			}
 		}
 };
@@ -158,12 +164,10 @@ $(document).ready(function() {
 	inputImageSize.value = LocalStorageItem.getInteger(ImageControl.STORAGE_IMAGE_SIZE, 20);
 	inputPlayTime.value  = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
 	
-	$(window).on("resize", function() {
-		$('canvas').attr({
-			width: $(window).width() - 32,
-			height: $(window).height() - 64
-		});
-	}).trigger("resize");
+	ImageControl.ImageCanvas.resize();
+	setTimeout(function() {
+		$(window).on("resize", ImageControl.ImageCanvas.resize);
+	}, 5000);
 	
 	$("#btnRotate").on("click", ImageControl.ImageCanvas.rotate);
 	$("#btnPause").on("click", function() {

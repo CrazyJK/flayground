@@ -1,5 +1,6 @@
 package jk.kamoru.flayground.info.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -60,7 +61,14 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 	}
 
 	public List<CheckResult> funcNameCheck(double limit) {
-		return NameDistanceChecker.check(super.list(), limit);
+		// filter having flay
+		List<String> actressList = new ArrayList<>();
+		for (Flay flay : flayService.list()) {
+			actressList.addAll(flay.getActressList());
+		}
+		List<Actress> distinctCollectedActressList = actressList.stream().distinct().map(a -> super.get(a)).collect(Collectors.toList());
+
+		return NameDistanceChecker.check(distinctCollectedActressList, limit);
 	}
 
 }

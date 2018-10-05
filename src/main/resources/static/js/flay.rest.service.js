@@ -178,6 +178,14 @@ var Rest = {
 			download: function(data, callback) {
 				console.log("Rest.Image.download", data);
 				restCall('/image/pageImageDownload', {data: data, title: 'Download images'}, callback);
+			},
+			get: function(idx, callback) {
+				console.log("Rest.Image.get", idx);
+				restCall('/image/' + idx, {}, callback);
+			},
+			'delete': function(idx, callback) {
+				console.log("Rest.Image.delete", idx);
+				restCall('/image/' + idx, {method: 'DELETE'}, callback);
 			}
 		},
 		Html: {

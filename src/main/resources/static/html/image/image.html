@@ -4,18 +4,15 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <title>Image view</title>
+<link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/themes/base/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<link rel="stylesheet" href="/css/crazy.common.range.css"/>
 <style type="text/css">
-html, body {
-	margin: 0;
-	padding: 0;
-	background-color: #000;
+body {
 	overflow: hidden;
-}
-img {
-	display: block;
-	margin: auto;
-	padding: 0;
 }
 img.img-responsive {
 	max-width: 100%;
@@ -25,7 +22,7 @@ img.img-responsive {
 	opacity:0;
 	transition: .5s ease;
 }
-.container .overlay:hover {
+.img-magnifier-container .overlay:hover {
   	opacity: 1;
 }
 
@@ -37,7 +34,6 @@ img.img-responsive {
 	text-align: right;
 	background-color: rgba(0, 0, 0, .5);
 	border-top-left-radius: 4px;
-	display: none;	
 }
 #info > span {
 	margin: 2px;
@@ -92,198 +88,101 @@ img.img-responsive {
 	display: block;
 } 
 </style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
 <script type="text/javascript">
-window.onload = function() {
+$(document).ready(function() {
 	app();
+});
+
+var getBrowserMargin = function() {
+	var margin = {width: 0, height: 0};
+	if (system === LINUX) {
+		if (browser === CHROME) {
+   			margin.width = 0;
+   			margin.height = 28;
+   		} else if (browser === FIREFOX) {
+   			margin.width = 0;
+   			margin.height = 37;
+   		}
+	} else if (system === WINDOWS) {
+   		if (browser === MSIE) {
+   			alert("Microsoft IE not support");
+   		} else if (browser === CHROME) {
+   			margin.width = 16;
+   			margin.height = 67;
+   		} else if (browser === FIREFOX) {
+   			margin.width = 16;
+   			margin.height = 76;
+   		} else if (browser === EDGE) {
+   			margin.width = 0;
+   			margin.height = 45;
+   		}
+	}
+	console.log(system, browser, margin, agent);
+	return margin;
 };
 
-var app = (function() {
-	var GET = 'GET', PUT = 'PUT', POST = 'POST';
-	var url = new URL(location);
-	var util = {
-			getParam: function(paramName, defaultValue) {
-				var val = url.searchParams.get(paramName);
-				return val != null ? val : typeof defaultValue === 'string' ? defaultValue : null;
-			},
-			ajax: function(method, url, params, callback) {
-	        	var req = new XMLHttpRequest();
-	        	req.open(method, url, true);
-	        	req.setRequestHeader('Accept', 'application/json');
-	        	req.setRequestHeader('Cache-Control', 'no-cache');
-	        	req.setRequestHeader('Content-Type', [POST, PUT].includes(method) ? 'application/x-www-form-urlencoded' : '');
-	        	req.onload = function(event) {
-	        		// console.log('ajax:onload', method, url, req.status, event.loaded + 'B');
-	        		switch(req.status) {
-	        		case 200:
-	        		case 204:
-	        	    	if (callback)
-	        		    	callback(req.responseText);
-	        	    	break;
-	        		case 400:
-	        		case 405:
-	        			if (req.getResponseHeader("error") === 'true') {
-	        				alert(req.status + ' ' + req.getResponseHeader("error.message") + " : " + req.getResponseHeader("error.cause"));
-	        			} else {
-		        			alert('response ' + req.status + "\n" + req.responseText);
-	        			}
-	        	    	break;
-	        	    default:
-	        	    	alert('Request failed.  Returned status of ' + req.status);
-	        		}
-	        	};
-	        	req.send(params);
-	        },
-	        fillContent: function(selector, html, attributes, events) {
-	        	Array.from(document.querySelectorAll(selector)).forEach(function(dom, index, array) { 
-					// innerHTML
-		        	if (html != null) 
-		        		dom.innerHTML = html;
-		        	// attribute
-		        	if (attributes)
-		        		if (attributes instanceof Array)
-		        			Array.from(attributes).forEach(attribute => {
-				        		dom.setAttribute(attribute.K, attribute.V);
-				        	});
-		        		else
-		        			dom.setAttribute(attributes.K, attributes.V);
-		        	// event
-		        	if (events)
-		        		if (events instanceof Array)
-		        			Array.from(events).forEach(event => {
-		        				dom.addEventListener(event.type, event.listener);
-		        			});
-		        		else
-		        			dom.addEventListener(events.type, events.listener);
-				});
-	        },
-	        formatFileSize: function(length) {
-	    		var KB = 1024, MB = KB * KB, GB = MB * KB;
-	    		if (length < KB)	    return length + " bytes";
-	    		else if (length < MB)	return (length / KB).toFixed(0) + " kB";
-	    		else if (length < GB)	return (length / MB).toFixed(1) + " MB";
-	    		else	    			return length;
-	    	},
-	    	formatDate: function(milliseconds) {
-	    		return new Date(milliseconds).toLocaleDateString();
-	    	},
-	    	getBrowserMargin: function() {
-	    		var agent = navigator.userAgent.toLowerCase(),
-	    		MSIE    = 'MSIE',
-	    		EDGE    = 'Edge',
-	    		CHROME  = 'Chrome',
-	    		FIREFOX = 'Firefox',
-	    		SAFARI  = 'Safari',
-	    		browser = /trident/.test(agent) || /msie/.test(agent) ? MSIE :
-	    			/edge/.test(agent) ? EDGE : 
-		    			/chrome/.test(agent) ? CHROME :
-		    				/firefox/.test(agent) ? FIREFOX :
-	    						/safari/.test(agent) ? SAFARI : 'Unknown',
-				WINDOWS = 'Windows',
-				LINUX   = 'Linux',
-				MAC     = 'Macintosh',
-				IPHONE  = 'iPhone',
-				IPAD    = 'iPad',
-				ANDROID = 'Android',
-				system = /windows/i.test(agent) ? WINDOWS :
-					/linux/.test(agent) ? LINUX :
-						/macintosh/.test(agent) ? MAC :
-							/iphone/.test(agent) ? IPHONE :
-								/ipad/.test(agent) ? IPAD :
-									/android/.test(agent) ? ANDROID : 'Unknown';
-	    		var margin = {width: 0, height: 0};
-	    		if (system === LINUX) {
-	    			if (browser === CHROME) {
-		    			margin.width = 0;
-		    			margin.height = 28;
-		    		} else if (browser === FIREFOX) {
-		    			margin.width = 0;
-		    			margin.height = 37;
-		    		}
-	    		} else if (system === WINDOWS) {
-		    		if (browser === MSIE) {
-		    			alert("Microsoft IE not support");
-		    		} else if (browser === CHROME) {
-		    			margin.width = 16;
-		    			margin.height = 67;
-		    		} else if (browser === FIREFOX) {
-		    			margin.width = 16;
-		    			margin.height = 76;
-		    		} else if (browser === EDGE) {
-		    			margin.width = 0;
-		    			margin.height = 45;
-		    		}
-	    		}
-	    		console.log(system, browser, margin, agent);
-	    		return margin;
-	    	}
-	};
 
-	return function() {
-		// parameter
-		var PATH = util.getParam("p", "");
-		var src  = util.getParam("src");
-		var no   = util.getParam("no");
-		var imgSrc = no ? PATH + '/static/image/' + no : src;
-		
-		// set image src, listener
-		util.fillContent("#image", null, [{K: 'src', V: imgSrc}], [{
-			type: "click", listener: function() { 
-				this.classList.toggle('img-responsive');
-			}
-		}]);
-
-		// get image size
-		var img = new Image();
-		img.onload = function() {
-			util.fillContent("#size", this.naturalWidth + ' x ' + this.naturalHeight);
-			// popup resize
-   	  		var browserMargin = util.getBrowserMargin();
-   	  		window.resizeTo(this.naturalWidth + browserMargin.width, this.naturalHeight + browserMargin.height);
-		};
-		img.src = imgSrc;
+var app = function() {
+	// parameter
+	var no  = reqParam.no;
+	var src = reqParam.src;
+	var imgSrc = no ? PATH + '/static/image/' + no : PATH + src;
+	
+	// get image
+	var img = new Image();
+	img.onload = function() {
+		$("#image").attr({
+			'src': this.src
+		}).on("click", function() { 
+			$(this).toggleClass('img-responsive');
+		});
+		$("#size").html(this.naturalWidth + ' x ' + this.naturalHeight);
 		
   		// magnifier glass
 		var magnifierOnOff = true;
-        util.fillContent("#magnifier", null, {K: 'title', V: 'Magnifier glass'}, {
-        	type: "click", listener: function() {
-       			magnify("image", 3, magnifierOnOff);
-       			magnifierOnOff = !magnifierOnOff;
-	        }
+  		$("#magnifier").on("click", function() {
+   			magnify("image", 3, magnifierOnOff);
+   			magnifierOnOff = !magnifierOnOff;
         });
-		
-		if (no == null) {
-			return;
-		}
 
+		// popup resize
+ 		var browserMargin = getBrowserMargin();
+  		window.resizeTo(this.naturalWidth + browserMargin.width, this.naturalHeight + browserMargin.height);
+	};
+	img.src = imgSrc;
+	
+	if (no != null) {
 		// set image infomation
-        util.ajax(GET, PATH + '/image/' + no, null, function(responseText) {
-	    	var imageInfo = JSON.parse(responseText);
-	        // #path: open folder
-	        util.fillContent("#path", imageInfo.path, {K: 'title', V: 'Open folder'}, {
-	        	type: "click", listener: function() {
-		        	util.ajax(PUT, PATH + '/flayon/openFolder', 'folder=' + imageInfo.path);
-		        }
-	        });
-			// #iname
-			util.fillContent("#iname", imageInfo.name);
+        Rest.Image.get(no, function(imageInfo) {
 			// title set
    	        document.title = imageInfo.name;
+	        // #path: open folder
+	        $("#path").html(imageInfo.path).on("click", function() {
+				Rest.Flay.openFolder(imageInfo.path);
+		    });
+			// #iname
+			$("#iname").html(imageInfo.name);
 			// #length
-			util.fillContent("#length", util.formatFileSize(imageInfo.length));
+			$("#length").html(File.formatSize(imageInfo.length));
 			// #lastModified
-			util.fillContent("#lastModified", util.formatDate(imageInfo.modified));
+			$("#lastModified").html(new Date(imageInfo.modified).format("yyyy-MM-dd"));
 			// #moveOut
-			util.fillContent("#moveOut", null, {K: 'title', V: 'move out'}, {
-				type: "click", listener: function() {
-		        	if (confirm('move this file to Root Directory?'))
-			        	util.ajax(PUT, PATH + '/rest/file/out', 'file=' + imageInfo.path + '/' + imageInfo.name);
-		        }
-			});
-			// info display
-			document.getElementById("info").style.display = 'block';
+			$("#moveOut").on("click", function() {
+	        	if (confirm('move this file to Root Directory?'))
+		        	Rest.Image.delete(no);
+	        });
         });
-	};
-}());
+	}
+};
+
 
 function magnify(imgID, zoom, onOff) {
 	var img, glass, w, h, bw;
@@ -353,7 +252,7 @@ function magnify(imgID, zoom, onOff) {
 </head>
 <body>
 
-	<div class="container img-magnifier-container">
+	<div class="img-magnifier-container">
 		<img id="image" class="img-responsive"/>
 		<div id="info" class="overlay">
 			<span id="magnifier"><i class="fa fa-search"></i></span>

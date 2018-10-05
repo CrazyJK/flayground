@@ -5,10 +5,15 @@
 <title>Request Mapping List</title>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/jquery-ui/themes/base/jquery-ui.min.css"/>
 <style type="text/css">
 caption {
     caption-side: top;
+}
+th:nth-child(1), td:nth-child(1) {
+	text-align: right;
+}
+th:nth-child(2), td:nth-child(2) {
+	text-align: center;
 }
 th:nth-child(4), td:nth-child(4) {
 	text-align: right;
@@ -17,20 +22,23 @@ th:nth-child(4), td:nth-child(4) {
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript">
 $.ajax({
 	url: '/requestMappingList',
 	cache: false
 }).done(function(list) {
+	list.sort(function(m1, m2) {
+		return m1.reqPattern > m2.reqPattern ? 1 : -1
+	});
+	
 	var $wrap = $("tbody");
 	$.each(list, function(idx, mapping) {
 		$("<tr>").append(
-				$("<th>", {'scope': 'row'}).html(idx+1),
+				$("<th>").html(idx+1),
+				$("<td>").html(mapping.reqMethod),
 				$("<td>").append(
 						$("<a>", {href: mapping.reqPattern, target: '_blank'}).html(mapping.reqPattern)
 				),
-				$("<td>").html(mapping.reqMethod),
 				$("<td>").html(mapping.beanType),
 				$("<td>").html(mapping.beanMethod)
 		).appendTo($wrap);
@@ -43,13 +51,13 @@ $.ajax({
 	<div class="container">
 		<table class="table table-sm table-hover">
 			<caption>List of Request Mapping</caption>
-			<thead class="thead-light">
+			<thead>
 				<tr>
-					<th scope="col">#</th>
-					<th scope="col">URL pattern</th>
-					<th scope="col">Method</th>
-					<th scope="col">Class</th>
-					<th scope="col">method</th>
+					<th>#</th>
+					<th>Method</th>
+					<th>URL pattern</th>
+					<th>Controller</th>
+					<th>method</th>
 				</tr>
 			</thead>
 			<tbody></tbody>

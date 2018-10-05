@@ -19,6 +19,9 @@
 input:focus, button:focus {
 	box-shadow: none !important;
 }
+.btn-dark:disabled {
+	color: gray;
+}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
@@ -92,6 +95,9 @@ var ImageControl = {
 			}
 		},
 		display: function() {
+			if (ImageControl.ImageCanvas.status === 'pause') {
+				return;
+			}
 			// make image index array
 			if (ImageControl.imageIndexArray.length === 0) {
 				ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.collectedList.length}).map(Number.call, Number);
@@ -152,6 +158,7 @@ var ImageControl = {
 				reverse: true,
 				textColour: '#fff',
 			},
+			status: '',
 			start: function() {
 				$('#imageCloud').tagcanvas(ImageControl.ImageCanvas.options, 'imagePane');
 			},
@@ -162,13 +169,17 @@ var ImageControl = {
 				$('#imageCloud').tagcanvas('reload');
 			},
 			rotate: function() {
-				$('#imageCloud').tagcanvas('rotatetag', {id: "image" + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0});
+				if (ImageControl.ImageCanvas.status != 'pause') {
+					$('#imageCloud').tagcanvas('rotatetag', {id: "image" + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0});
+				}
 			},
 			pause: function() {
 				$('#imageCloud').tagcanvas('pause');
+				ImageControl.ImageCanvas.status = 'pause';
 			},
 			resume: function() {
 				$('#imageCloud').tagcanvas('resume');
+				ImageControl.ImageCanvas.status = 'resume';
 			},
 			resize: function() {
 				$('canvas').attr({
@@ -196,9 +207,11 @@ $(document).ready(function() {
 		if ($(this).data("status") === 'resume') {
 			ImageControl.ImageCanvas.pause();
 			$(this).data("status", "pause").html('<i class="fa fa-play"></i> Resume');
+			$("#btnPlay, #btnNext, #btnRotate").prop('disabled', true);
 		} else {
 			ImageControl.ImageCanvas.resume();
 			$(this).data("status", "resume").html('<i class="fa fa-pause"></i> Pause');
+			$("#btnPlay, #btnNext, #btnRotate").prop('disabled', false);
 		}
 	});
 	$("#btnNext").on("click", ImageControl.display);
@@ -206,9 +219,11 @@ $(document).ready(function() {
 		if ($(this).data("status") === 'stop') {
 			ImageControl.start();
 			$(this).data("status", "start").html('<i class="fa fa-stop"></i> Stop');
+			$("#btnPause").prop('disabled', true);
 		} else {
 			ImageControl.stop();
 			$(this).data("status", "stop").html('<i class="fa fa-play"></i> Play');
+			$("#btnPause").prop('disabled', false);
 		}
 	});
 	$("#inputFlayRank").on("change", function() {

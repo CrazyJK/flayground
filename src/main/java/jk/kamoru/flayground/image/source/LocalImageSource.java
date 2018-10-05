@@ -11,6 +11,7 @@ import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
+import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.image.ImageNotfoundException;
 import jk.kamoru.flayground.image.domain.Image;
 import lombok.extern.slf4j.Slf4j;
@@ -64,7 +65,7 @@ public class LocalImageSource implements ImageSource<Image> {
 
 	private void delete(Image image) {
 		imageList.remove(image);
-		FileUtils.deleteQuietly(image.getFile());
+		FlayFileHandler.moveFileToRoot(image.getFile());
 	}
 
 }

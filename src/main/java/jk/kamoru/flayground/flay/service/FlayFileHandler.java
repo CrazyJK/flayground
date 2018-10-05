@@ -115,6 +115,12 @@ public class FlayFileHandler {
 		}
 	}
 
+	public static void moveFileToRoot(File file) {
+		File root = file.toPath().getRoot().toFile();
+		moveFileToDirectory(file, root);
+		log.info("moveFileToRoot {} -> {}", file, root);
+	}
+	
 	public static void deleteFile(File file) {
 		if (file.isDirectory()) {
 			throw new IllegalStateException("fail to deleteFile. it is directory: " + file);

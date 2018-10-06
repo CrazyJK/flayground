@@ -25,6 +25,11 @@
 	font-weight: bold;
 	color: green;
 }
+
+#nameCheckResultTable label {
+	margin: 0 8px;
+	color: #007bff;
+}
 </style>
 
 <div role="body">
@@ -163,9 +168,9 @@ function displayNameCheckResult(list) {
 						$("[title='" + actress.name + "']").removeClass("active");
 					}
 				).append(
-						right ? '' : actress.name, 
+						right ? '' : actress.name.replace(' ', '_'), 
 						$("<label>").html(actress.localName),
-						right ? actress.name : ''
+						right ? actress.name.replace(' ', '_') : ''
 				);
 	},
 	sameLocalName = function(actress1, actress2) {
@@ -173,7 +178,7 @@ function displayNameCheckResult(list) {
 	};
 	
     $("#notice > p").empty().append(
-	    	$("<table>", {"class": "table table-sm", id: "nameCheckResultTable"}).append(
+	    	$("<table>", {"class": "table table-sm table-hover", id: "nameCheckResultTable"}).append(
 		    		$("<thead>").append(
 			    			$("<tr>").append(
 				       				$("<th>", {"class": "text-right"}).html("Name1"), 

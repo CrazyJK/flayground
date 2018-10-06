@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Flaygound Image</title>
+<title>Flaygound Image path</title>
 <link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
@@ -15,6 +15,10 @@
 	bottom: 0;
 	right: 0;
 	padding: .5rem;
+	opacity: 0;
+}
+#controlBox:hover {
+	opacity: 1;
 }
 input:focus, button:focus {
 	box-shadow: none !important;
@@ -34,23 +38,62 @@ input:focus, button:focus {
 <script type="text/javascript" src="/js/flay.notification.js"></script>
 <script type="text/javascript" src="/js/tag/jquery.tagcanvas.js"></script>
 <script type="text/javascript">
+
 var ImageControl = {
 		STORAGE_IMAGE_SIZE: 'image.cloud.image_size',
 		STORAGE_PLAY_TIME: 'image.cloud.play_time',
 		imageIndexArray: [],
+		dataArray: [],
 		bgInterval: null,
 		count: 0,
+		sourceMode: 0,
 		isStart: false,
 		intervalCount: 0,
 		init: function() {
+			restCall('/image/group/path', {}, function(map) {
+				$.each(map, function(k, v) {
+					$("<li>", {'class': 'list-inline-item mb-2'}).append(
+							$("<button>", {'class': 'btn btn-outline-light btn-sm'}).append(
+									k.replace(/\\/gi, '/').split("/").pop(),
+									$("<span>", {'class': 'badge badge-fill badge-dark ml-2'}).html(v.length)
+							).on("click", function(e) {
+								e.preventDefault();
+								$(".btn-light", "#paths").switchClass("btn-light", "btn-outline-light");
+								$(this).switchClass("btn-outline-light", "btn-light");
+								ImageControl.setData(k, v);
+								ImageControl.display();
+							})
+					).appendTo($("#paths"));
+				});
+			});
+
 			Rest.Image.size(function(count) {
 				ImageControl.count = count;
 				ImageControl.display();
-				ImageControl.bgInterval = setInterval(ImageControl.func, 1000);
-				// clearInterval(ImageControl.bgInterval);
-				ImageControl.ImageCanvas.start();
-				ImageControl.nav();
 			});
+			
+			ImageControl.ImageCanvas.resize();
+			ImageControl.bgInterval = setInterval(ImageControl.func, 1000);
+			ImageControl.nav();
+			ImageControl.ImageCanvas.start();
+			
+		},
+		toggleSourceMode: function() {
+			if (++ImageControl.sourceMode % 2) { // path mode
+				$("#pathContainer").css({display: 'block'});
+			} else {
+				$("#pathContainer").css({display: 'none'});
+				ImageControl.imageIndexArray = [];
+				ImageControl.dataArray = [];
+				ImageControl.display();
+			}
+			ImageControl.ImageCanvas.resize();
+		},
+		setData: function(path, array) {
+			$("#selectedPath").html(path);
+			ImageControl.dataArray = array.slice();
+			ImageControl.imageIndexArray = array.slice();
+			ImageControl.ImageCanvas.resize();
 		},
 		nav: function() {
 			$("#canvasContainer").navEvent(function(signal, e) {
@@ -64,7 +107,7 @@ var ImageControl = {
 				}
 			});
 		},
-		start: function() {
+		play: function() {
 			ImageControl.intervalCount = 0;
 			ImageControl.isStart = true;
 		},
@@ -90,8 +133,12 @@ var ImageControl = {
 			}
 			// make image index array
 			if (ImageControl.imageIndexArray.length === 0) {
-				ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.count}).map(Number.call, Number);
-				console.log('image array reset', ImageControl.imageIndexArray.length);
+				if (ImageControl.dataArray.length > 0)
+					ImageControl.imageIndexArray = ImageControl.dataArray; 
+				else
+					ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.count}).map(Number.call, Number);
+
+				console.log('image array reset', ImageControl.imageIndexArray.length, ImageControl.dataArray.length);
 			}
 
 			var $imageWrap = $("#imagePane").empty();
@@ -100,7 +147,7 @@ var ImageControl = {
 				// determine image index
 				var imageIndex = ImageControl.imageIndexArray.splice(Random.getInteger(0, ImageControl.imageIndexArray.length-1), 1);
 				if ($.isEmptyObject(imageIndex)) {
-					console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
+					// console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
 				} else {
 					$("<a>").attr({
 						"id": "image" + i,
@@ -137,6 +184,7 @@ var ImageControl = {
 				minSpeed: 0.003,
 				outlineMethod: 'none',
 				reverse: true,
+				noTagsMessage: false
 			},
 			status: '',
 			start: function() {
@@ -162,10 +210,12 @@ var ImageControl = {
 				ImageControl.ImageCanvas.status = 'resume';
 			},
 			resize: function() {
-				$('canvas').attr({
+				var pathContainerHeight = $("#pathContainer").css("display") === 'none' ? 0 : $("#pathContainer").outerHeight(); 
+				$('#imageCloud').attr({
 					width: $(window).width() - 32,
-					height: $(window).height() - 64
+					height: $(window).height() - pathContainerHeight - 40
 				});
+				console.log("resize", $(window).height(), pathContainerHeight);
 			}
 		}
 };
@@ -175,7 +225,6 @@ $(document).ready(function() {
 	inputImageSize.value = LocalStorageItem.getInteger(ImageControl.STORAGE_IMAGE_SIZE, 20);
 	inputPlayTime.value  = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
 	
-	ImageControl.ImageCanvas.resize();
 	setTimeout(function() {
 		$(window).on("resize", ImageControl.ImageCanvas.resize);
 	}, 5000);
@@ -196,7 +245,7 @@ $(document).ready(function() {
 	$("#btnNext").on("click", ImageControl.display);
 	$("#btnPlay").on("click", function() {
 		if ($(this).data("status") === 'stop') {
-			ImageControl.start();
+			ImageControl.play();
 			$(this).data("status", "start").html('<i class="fa fa-stop"></i> Stop');
 			$("#btnPause").prop('disabled', true);
 		} else {
@@ -214,6 +263,10 @@ $(document).ready(function() {
 	$("#goFlay").on("click", function() {
 		location.href = PATH + "/html/flay/flay.index.html";
 	});
+	$("#selectedPath").on("click", function() {
+		Rest.Flay.openFolder($(this).html());
+	});
+	$("#btnByPath").on("click", ImageControl.toggleSourceMode);
 	
 	ImageControl.init();
 
@@ -223,6 +276,11 @@ $(document).ready(function() {
 </head>
 <body>
 
+<div class="text-center p-3" id="pathContainer" style="display: none;">
+	<ul id="paths" class="list-inline m-0"></ul>
+	<h3 id="selectedPath" class="text-light hover m-0"></h3>
+</div>
+
 <div class="text-center p-3" id="canvasContainer">
 	<canvas id="imageCloud" width="800" height="600"></canvas>
 	<div id="imagePane" style="display: none;"></div>
@@ -231,6 +289,7 @@ $(document).ready(function() {
 <div id="controlBox">
 	<div class="input-group input-group-sm">
 		<div class="input-group-prepend">
+			<button class="btn btn-dark" id="btnByPath"><i class="fa fa-bars"></i> By path</button>
 			<span class="input-group-text border-dark bg-dark text-light image-info">0</span>
 			<button class="btn btn-dark" id="btnRotate"><i class="fa fa-random"></i> Rotate</button>
 			<button class="btn btn-dark" id="btnPause" data-status="resume"><i class="fa fa-pause"></i> Pause</button>

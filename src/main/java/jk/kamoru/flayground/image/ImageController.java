@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.image;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,6 +43,11 @@ public class ImageController {
 	@DeleteMapping("/{idx}")
 	public void delete(@PathVariable int idx) {
 		imageService.delete(idx);
+	}
+
+	@GetMapping("/group/path")
+	public Map<String, List<Integer>> groupByPath() {
+		return imageService.groupByPath();
 	}
 	
 }

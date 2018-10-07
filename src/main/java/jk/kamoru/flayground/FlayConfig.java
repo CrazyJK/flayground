@@ -11,6 +11,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import jk.kamoru.flayground.flay.source.FileBasedFlaySource;
+import jk.kamoru.flayground.flay.source.FlayFactory;
 import jk.kamoru.flayground.flay.source.FlaySource;
 import lombok.Getter;
 
@@ -53,6 +54,11 @@ public class FlayConfig implements WebMvcConfigurer {
 					: StringUtils.containsIgnoreCase(OSName, LINUX.name()) ? LINUX
 							: StringUtils.containsIgnoreCase(OSName, MAC.name()) ? MAC : UNKNOWN;
 		}
+	}
+	
+	@Bean("flayFactory")
+	public FlayFactory flayFactory() {
+		return new FlayFactory();
 	}
 	
 	@Bean("instanceFlaySource")

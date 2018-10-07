@@ -121,7 +121,7 @@
 	</dependencies>
 
 	<build>
-		<finalName>flay</finalName>
+		<finalName>flayground</finalName>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>

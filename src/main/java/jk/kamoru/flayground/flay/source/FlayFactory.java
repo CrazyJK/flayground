@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -18,7 +17,6 @@ import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
 public class FlayFactory {
 
 	@Autowired  StudioInfoService  studioInfoService;

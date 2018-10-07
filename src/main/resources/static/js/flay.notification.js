@@ -18,16 +18,20 @@ var notification = {
 					'<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>'
 			);
 
-			$("input[name='notification']").on("change", function() {
-				var notiSwitch = $("input[name='notification']:checked").val() === 'T';
-				if (notiSwitch) {
-					notification.connect();
-				} else {
-					notification.disconnect();
-				}
-			});
-
-			$("input[name='notification'][value='T']").prop("checked", true).trigger("change");
+			if ($("input[name='notification']").length > 0) {
+				$("input[name='notification']").on("change", function() {
+					var notiSwitch = $("input[name='notification']:checked").val() === 'T';
+					if (notiSwitch) {
+						notification.connect();
+					} else {
+						notification.disconnect();
+					}
+				});
+			
+				$("input[name='notification'][value='T']").prop("checked", true).trigger("change");
+			} else {
+				notification.connect();
+			}
 		},
 		connect: function connect() {
 		    var socket = new SockJS(notification.STOMP_ENDPOINT);

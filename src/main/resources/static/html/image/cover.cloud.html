@@ -10,11 +10,14 @@
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/flay.notification.css"/>
 <style type="text/css">
+body {
+	overflow: hidden;
+}
 #controlBox {
 	position: fixed;
 	bottom: 0;
 	right: 0;
-	padding: .5rem;
+	padding: .25rem;
 	opacity: 0;
 }
 #controlBox:hover {
@@ -187,8 +190,8 @@ var ImageControl = {
 			},
 			resize: function() {
 				$('canvas').attr({
-					width: $(window).width() - 32,
-					height: $(window).height() - 64
+					width: $(window).width(),
+					height: $(window).height()
 				});
 			}
 		}
@@ -253,7 +256,7 @@ $(document).ready(function() {
 </head>
 <body>
 
-<div class="text-center p-3" id="canvasContainer">
+<div id="canvasContainer">
 	<canvas id="imageCloud" width="800" height="600"></canvas>
 	<div id="imagePane" style="display: none;"></div>
 </div>

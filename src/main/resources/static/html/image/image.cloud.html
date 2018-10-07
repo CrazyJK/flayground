@@ -10,11 +10,14 @@
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/flay.notification.css"/>
 <style type="text/css">
+body {
+	overflow: hidden;
+}
 #controlBox {
 	position: fixed;
 	bottom: 0;
 	right: 0;
-	padding: .5rem;
+	padding: .25rem;
 	opacity: 0;
 }
 #controlBox:hover {
@@ -25,6 +28,19 @@ input:focus, button:focus {
 }
 .btn-dark:disabled {
 	color: gray;
+}
+#pathContainer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	display: none;
+}
+#closePathContainer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 1rem;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -46,30 +62,28 @@ var ImageControl = {
 		dataArray: [],
 		bgInterval: null,
 		count: 0,
-		sourceMode: 0,
 		isStart: false,
 		intervalCount: 0,
 		init: function() {
 			restCall('/image/group/path', {}, function(map) {
+				map['ALL'] = [];
 				$.each(map, function(k, v) {
-					$("<li>", {'class': 'list-inline-item mb-2'}).append(
-							$("<button>", {'class': 'btn btn-outline-light btn-sm'}).append(
-									k.replace(/\\/gi, '/').split("/").pop(),
-									$("<span>", {'class': 'badge badge-fill badge-dark ml-2'}).html(v.length)
-							).on("click", function(e) {
-								e.preventDefault();
-								$(".btn-light", "#paths").switchClass("btn-light", "btn-outline-light");
-								$(this).switchClass("btn-outline-light", "btn-light");
+					var pathName = k.replace(/\\/gi, '/').split("/").pop();
+					$("<label>", {'class': 'input dark', id: 'path_' + pathName}).append(
+							$("<input>", {type: 'radio', name: 'path'}).on("change", function(e) {
 								ImageControl.setData(k, v);
-								ImageControl.display();
-							})
+							}),
+							$("<span>").append(
+									pathName,
+									$("<span>", {'class': 'badge badge-fill badge-secondary text-dark ml-2'}).html(v.length)
+							)
 					).appendTo($("#paths"));
 				});
-			});
-
-			Rest.Image.size(function(count) {
-				ImageControl.count = count;
-				ImageControl.display();
+				Rest.Image.size(function(count) {
+					ImageControl.count = count;
+					$("#path_ALL span.badge").html(count);
+					$("#path_ALL").click();
+				});
 			});
 			
 			ImageControl.ImageCanvas.resize();
@@ -78,22 +92,11 @@ var ImageControl = {
 			ImageControl.ImageCanvas.start();
 			
 		},
-		toggleSourceMode: function() {
-			if (++ImageControl.sourceMode % 2) { // path mode
-				$("#pathContainer").css({display: 'block'});
-			} else {
-				$("#pathContainer").css({display: 'none'});
-				ImageControl.imageIndexArray = [];
-				ImageControl.dataArray = [];
-				ImageControl.display();
-			}
-			ImageControl.ImageCanvas.resize();
-		},
 		setData: function(path, array) {
 			$("#selectedPath").html(path);
 			ImageControl.dataArray = array.slice();
 			ImageControl.imageIndexArray = array.slice();
-			ImageControl.ImageCanvas.resize();
+			ImageControl.display();
 		},
 		nav: function() {
 			$("#canvasContainer").navEvent(function(signal, e) {
@@ -210,12 +213,10 @@ var ImageControl = {
 				ImageControl.ImageCanvas.status = 'resume';
 			},
 			resize: function() {
-				var pathContainerHeight = $("#pathContainer").css("display") === 'none' ? 0 : $("#pathContainer").outerHeight(); 
 				$('#imageCloud').attr({
-					width: $(window).width() - 32,
-					height: $(window).height() - pathContainerHeight - 40
+					width: $(window).width(),
+					height: $(window).height()
 				});
-				console.log("resize", $(window).height(), pathContainerHeight);
 			}
 		}
 };
@@ -264,9 +265,16 @@ $(document).ready(function() {
 		location.href = PATH + "/html/flay/flay.index.html";
 	});
 	$("#selectedPath").on("click", function() {
-		Rest.Flay.openFolder($(this).html());
+		var path = $(this).html();
+		if (path != 'ALL')
+			Rest.Flay.openFolder(path);
 	});
-	$("#btnByPath").on("click", ImageControl.toggleSourceMode);
+	$("#btnByPath").on("click", function() {
+		$("#pathContainer").slideToggle();
+	});
+	$("#closePathContainer").on("click", function() {
+		$("#pathContainer").slideToggle();
+	});
 	
 	ImageControl.init();
 
@@ -276,12 +284,13 @@ $(document).ready(function() {
 </head>
 <body>
 
-<div class="text-center p-3" id="pathContainer" style="display: none;">
-	<ul id="paths" class="list-inline m-0"></ul>
-	<h3 id="selectedPath" class="text-light hover m-0"></h3>
+<div class="text-center p-3 bg-dark" id="pathContainer">
+	<div id="paths"></div>
+	<label id="selectedPath" class="text hover dark mt-1"></label>
+	<i class="fa fa-times hover" id="closePathContainer"></i>
 </div>
 
-<div class="text-center p-3" id="canvasContainer">
+<div id="canvasContainer">
 	<canvas id="imageCloud" width="800" height="600"></canvas>
 	<div id="imagePane" style="display: none;"></div>
 </div>

@@ -170,6 +170,7 @@ $("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 			$("#actress").html(actressList[0].name);
 		} else {
 			Search.actress(rowActress)
+			$("#actressChoice > ul").empty();
 			$.each(actressList, function(idx, actress) {
 				$("<li>").append(
 						$("<label>", {'class': 'text hover'}).html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut)

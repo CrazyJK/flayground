@@ -12,7 +12,6 @@ import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributes;
-import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -54,8 +53,6 @@ public class BatchService {
 	public static final String BACKUP_ARCHIVE_JAR_FILENAME  = "flayground-archive.jar";
 	public static final String BACKUP_INSTANCE_CSV_FILENAME = "flay-instance.csv";
 	public static final String BACKUP_ARCHIVE_CSV_FILENAME  = "flay-archive.csv";
-
-	NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired FlaySource  archiveFlaySource;
@@ -217,7 +214,7 @@ public class BatchService {
 		for (Flay flay : sorted) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {
-				log.info("lower score {} score={} over {}", flay.getOpus(), ScoreCalculator.calc(flay), prettyFileLength(lengthSum));
+				log.info("lower score {} score={} over {}", flay.getOpus(), ScoreCalculator.calc(flay), FlayFileHandler.prettyFileLength(lengthSum));
 				archiving(flay);
 			}
 		}
@@ -309,21 +306,6 @@ public class BatchService {
 		}
 		historyService.save(Action.DELETE, flay);
 	}
-
-	private String prettyFileLength(long length) {
-		if (length > FileUtils.ONE_GB) {
-			numberFormat.setMinimumFractionDigits(1);
-			return numberFormat.format(length / FileUtils.ONE_GB) + "GB";
-		} else if (length > FileUtils.ONE_MB) {
-			numberFormat.setMinimumFractionDigits(0);
-			return numberFormat.format(length / FileUtils.ONE_MB) + "MB";
-		} else if (length > FileUtils.ONE_KB) {
-			numberFormat.setMinimumFractionDigits(0);
-			return numberFormat.format(length / FileUtils.ONE_KB) + "KB";
-		} else {
-			return length + "bytes";
-		}
-	}	
 	
 	public synchronized void backup() {
 		if (StringUtils.isBlank(backupPath)) {
@@ -352,7 +334,7 @@ public class BatchService {
 		List<String>     archiveList = new ArrayList<>();
 
 		// instance info
-		log.info("[Backup] Write instance csv {}", BACKUP_INSTANCE_CSV_FILENAME);
+		log.info("[Backup] Write instance csv {} to {}", BACKUP_INSTANCE_CSV_FILENAME, backupRootPath);
 		instanceList.add(CSV_HEADER);
 		for (Flay flay : instanceFlayList) {
 			instanceList.add(String.format(CSV_FORMAT, 
@@ -361,7 +343,7 @@ public class BatchService {
 		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceList); 
 		
 		// archive info
-		log.info("[Backup] Write archive  csv {}", BACKUP_ARCHIVE_CSV_FILENAME);
+		log.info("[Backup] Write archive  csv {}  to {}", BACKUP_ARCHIVE_CSV_FILENAME, backupRootPath);
 		archiveList.add(CSV_HEADER);
 		for (Flay flay : archiveFlayList) {
 			archiveList.add(String.format(CSV_FORMAT, 
@@ -382,11 +364,11 @@ public class BatchService {
 		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_CSV_FILENAME),  archiveList);
 
 		// Info folder copy
-		log.info("[Backup] Copy Info folder   {}", infoPath);
+		log.info("[Backup] Copy Info folder {} to {}", infoPath, backupRootPath);
 		FlayFileHandler.copyDirectoryToDirectory(new File(infoPath), backupRootPath);
 		
 		// Cover, Subtitlea file copy
-		log.info("[Backup] Copy Instance file {}", backupInstanceFilePath);
+		log.info("[Backup] Copy Instance file to {}", backupInstanceFilePath);
 		for (Flay flay : instanceFlayList) {
 			for (File file : flay.getFiles().get(Flay.COVER))
 				FlayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
@@ -400,13 +382,13 @@ public class BatchService {
 //				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
 //		}
 		
-		log.info("[Backup] Compress Instance folder {}", backupInstanceJarFile);
+		log.info("[Backup] Compress Instance folder");
 		compress(backupRootPath, backupInstanceJarFile);
 		
-		log.info("[Backup] Compress Archive  folder {}", backupArchiveJarFile);
+		log.info("[Backup] Compress Archive folder");
 		compress(new File(archivePath), backupArchiveJarFile);
 
-		log.info("[Backup] Delete Instance folder   {}", backupRootPath);
+		log.info("[Backup] Delete Instance folder {}", backupRootPath);
 		FlayFileHandler.deleteDirectory(backupRootPath);
 		
 		notificationService.announce("Backup", "Flay source");
@@ -428,16 +410,16 @@ public class BatchService {
 	}
 
 	private void compress(File srcPath, File destinationFile) {
-		List<String> commands = Arrays.asList("jar", "cvfM", destinationFile.getAbsolutePath(), "-C", srcPath.getAbsolutePath(), ".");
+		List<String> commands = Arrays.asList("jar", "c0fM", destinationFile.getAbsolutePath(), "-C", srcPath.getAbsolutePath(), ".");
 		File logFile = new File(srcPath.getParentFile(), srcPath.getName() + ".log");
 		ProcessBuilder builder = new ProcessBuilder(commands);
 		builder.redirectOutput(Redirect.to(logFile));
 		builder.redirectError(Redirect.INHERIT);
 		try {
-			log.info("compress {}", commands);
+			log.info("         jar {}", commands);
 			Process process = builder.start();
 			process.waitFor();
-			log.info("compress completed");
+			log.info("         completed {}", FlayFileHandler.prettyFileLength(destinationFile.length()));
 		} catch (IOException | InterruptedException e) {
 			throw new IllegalStateException("Fail to jar", e);
 		}

@@ -3,6 +3,7 @@ package jk.kamoru.flayground.flay.service;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -16,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FlayFileHandler {
+
+	static NumberFormat numberFormat = NumberFormat.getNumberInstance();
 
 	public static void rename(Flay flay, List<String> actressList) {
 		flay.setActressList(actressList);
@@ -131,4 +134,20 @@ public class FlayFileHandler {
 		}
 	}
 	
+
+	public static String prettyFileLength(long length) {
+		if (length > FileUtils.ONE_GB) {
+			numberFormat.setMaximumFractionDigits(1);
+			return numberFormat.format((double)length / FileUtils.ONE_GB) + " GB";
+		} else if (length > FileUtils.ONE_MB) {
+			numberFormat.setMaximumFractionDigits(0);
+			return numberFormat.format((double)length / FileUtils.ONE_MB) + " MB";
+		} else if (length > FileUtils.ONE_KB) {
+			numberFormat.setMaximumFractionDigits(0);
+			return numberFormat.format((double)length / FileUtils.ONE_KB) + " KB";
+		} else {
+			return length + "bytes";
+		}
+	}
+
 }

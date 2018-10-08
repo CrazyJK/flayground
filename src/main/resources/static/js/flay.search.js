@@ -104,7 +104,7 @@ function searchSource(keyword) {
 
 	// find Studio name by opus
 	Rest.Studio.findOneByOpus(keyword, function(studio) {
-		$("#studio").val(studio.name);
+		$("#studio").val(studio.name).effect("highlight", {}, 1000);
 	});
 }
 
@@ -123,6 +123,7 @@ $(".flay-group > input").on("keyup", function() {
 });
 
 // rowname parsing
+/*
 $("#rowname").on("keyup", function(e) {
 	if (e.keyCode != 13)
 		return;
@@ -150,6 +151,7 @@ $("#rowname").on("keyup", function(e) {
 	
 	console.log(opus, braceIndex, title, minusIndex, name);
 });
+*/
 
 $("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 	if (e.keyCode != 13)
@@ -163,13 +165,21 @@ $("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 	rowOpus != '' && searchSource(rowOpus);
 	rowOpus != '' && Search.opus(rowOpus);
 	rowTitle != '' && Search.translate(rowTitle);
-	rowActress != '' && Rest.Actress.findByLocalname(rowActress, function(actressList) { 
+	rowActress != '' && Rest.Actress.findByLocalname(rowActress, function(actressList) {
+		console.log('findByLocalname', rowActress, actressList.length);
+		$("#newActressLocal").val(rowActress);
 		if (actressList.length == 0) {
-			Search.actress(rowActress)
+			Search.actress(rowActress);
 		} else if (actressList.length == 1) {
-			$("#actress").html(actressList[0].name);
+			$("#actress").val(actressList[0].name).effect("highlight", {}, 1000);
+			$("#newActressFavorite").prop("checked", actressList[0].favorite);
+			$("#newActressName"  ).val(actressList[0].name);
+			$("#newActressBirth" ).val(actressList[0].birth);
+			$("#newActressBody"  ).val(actressList[0].body);
+			$("#newActressHeight").val(actressList[0].height);
+			$("#newActressDebut" ).val(actressList[0].debut);
 		} else {
-			Search.actress(rowActress)
+			Search.actress(rowActress);
 			$("#actressChoice > ul").empty();
 			$.each(actressList, function(idx, actress) {
 				$("<li>").append(

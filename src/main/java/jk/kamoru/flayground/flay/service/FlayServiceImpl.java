@@ -6,11 +6,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -89,10 +91,10 @@ public class FlayServiceImpl implements FlayService {
 	@Override
 	public Collection<Flay> findCandidates() {
 		Collection<Flay> candidates = new ArrayList<>();
-		candidatesProvider.initiate();
+		candidatesProvider.find();
 		for (Flay flay : instanceFlaySource.list()) {
 			flay.getFiles().get(Flay.CANDI).clear();
-			if (candidatesProvider.findAndFill(flay)) {
+			if (candidatesProvider.matchAndFill(flay)) {
 				candidates.add(flay);
 			}
 		}
@@ -104,10 +106,20 @@ public class FlayServiceImpl implements FlayService {
 		Flay flay = instanceFlaySource.get(opus);
 		List<File> candiList = flay.getFiles().get(Flay.CANDI);
 		List<File> movieList = flay.getFiles().get(Flay.MOVIE);
+		List<File> subtiList = flay.getFiles().get(Flay.SUBTI);
 		File stagePath = new File(stagePaths[0]);
 		for (File file : candiList) {
+			String filename = file.getName();
+			String suffix = FilenameUtils.getExtension(filename);
 			FlayFileHandler.moveFileToDirectory(file, stagePath);
-			movieList.add(new File(stagePath, file.getName()));
+			
+			if (FlayConfig.SUFFIX_VIDEO.contains(suffix.toLowerCase())) {
+				movieList.add(new File(stagePath, filename));
+			} else if (FlayConfig.SUFFIX_SUBTITLES.contains(suffix.toLowerCase())) {
+				subtiList.add(new File(stagePath, filename));
+			} else {
+				throw new IllegalStateException("suffix is not known " + suffix);
+			}
 		}
 		candiList.clear();
 		FlayFileHandler.rename(flay);

@@ -17,21 +17,21 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class CandidatesProvider {
 
-	@Value("${path.video.candidate}") String[] candidatePaths;
-	@Value("${path.video.stage}")     String[]     stagePaths;
+	@Value("${path.video.candidate},${path.subtitles}") String[] candidatePaths;
 	
 	Collection<File> listFiles;
 	
-	public void initiate() {
+	public void find() {
 		listFiles = new ArrayList<>();
+		String suffix = FlayConfig.SUFFIX_VIDEO + "," + FlayConfig.SUFFIX_SUBTITLES;
 		for (String path : candidatePaths) {
-			Collection<File> list = FileUtils.listFiles(new File(path), FlayConfig.SUFFIX_VIDEO.split(","), true);
+			Collection<File> list = FileUtils.listFiles(new File(path), suffix.split(","), true);
 			listFiles.addAll(list);
 		}
 		log.info("candidates {} found", listFiles.size());
 	}
 
-	public boolean findAndFill(Flay flay) {
+	public boolean matchAndFill(Flay flay) {
 		String key1 = flay.getOpus();
 		String key2 = flay.getOpus().replace("-", "");
 		boolean found = false;

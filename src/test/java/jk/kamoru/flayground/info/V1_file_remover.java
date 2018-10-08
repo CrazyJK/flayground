@@ -1,4 +1,4 @@
-package jk.kamoru.flayground;
+package jk.kamoru.flayground.info;
 
 import java.io.File;
 import java.util.ArrayList;

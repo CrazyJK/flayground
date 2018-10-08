@@ -10,10 +10,12 @@ import java.util.Map.Entry;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 
+import jk.kamoru.flayground.flay.service.FlayFileHandler;
+
 public class V1_file_remover {
 
 	public static void main(String[] args) {
-		String[] paths = new String[] {"/home/kamoru/workspace/FlayOn/crazy"};
+		String[] paths = new String[] {"J:\\Crazy", "K:\\Crazy"};
 		
 		Map<String, List<File>> suffixMap = new HashMap<>();
 		for (String path : paths) {
@@ -33,11 +35,13 @@ public class V1_file_remover {
 			System.out.format("%8s = %s%n", entry.getKey(), entry.getValue().size());
 		}
 		
+		File dest = new File("J:\\v1file");
 		for (Entry<String, List<File>> entry : suffixMap.entrySet()) {
 			if ("info,actress,studio".contains(entry.getKey().toLowerCase())) {
 				System.out.format("%8s will be delete%n", entry.getKey());
 				for (File file : entry.getValue()) {
-					FileUtils.deleteQuietly(file);
+//					FileUtils.deleteQuietly(file);
+					FlayFileHandler.moveFileToDirectory(file, dest);
 				}
 			}
 		}

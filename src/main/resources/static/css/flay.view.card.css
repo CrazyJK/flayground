@@ -35,7 +35,9 @@
     background-size: cover;
     text-align: left;
 }
-
+.card.flay-card > .card-body > .card-text:empty {
+	display: none;
+}
 .flay-comment-input {
 	display: none;
 	border-radius: 0.25rem;

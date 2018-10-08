@@ -168,7 +168,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.cover, function(idx, file) {
 						$li.append(
-								$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+								$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
 									Rest.Flay.openFolder(file);
 								})
 						);
@@ -179,7 +179,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.subtitles, function(idx, file) {
 						$li.append(
-								$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+								$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
 									Rest.Flay.openFolder(file);
 								})
 						);
@@ -190,7 +190,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.movie, function(idx, file) {
 						$li.append(
-								$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
+								$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
 									Rest.Flay.openFolder(file);
 								})
 						);
@@ -256,25 +256,6 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			$flayCard.find(".flay-title").css({
 				maxWidth: settings.width - settings.width/20
 			});
-			
-			// set exclude
-			if (settings.exclude.length > 0) {
-//				if (settings.exclude.includes(ACTRESS))
-//					$flayCard.find(".flay-actress-wrapper").hide();
-//				if (settings.exclude.includes(MODIFIED))
-//					$flayCard.find(".flay-modified").hide();
-//				if (settings.exclude.includes(ACTION))
-//					$flayCard.find(".flay-action-wrapper").hide();
-//				if (settings.exclude.includes(COMMENT))
-//					$flayCard.find(".flay-comment-wrapper").hide();
-//				if (settings.exclude.includes(RANK)) {
-//					$flayCard.find(".flay-rank-wrapper").css({display: 'none'});
-// 				} else {
-//					$flayCard.find(".flay-rank-sm").css({display: 'none'});
-// 				}
-//				if (settings.exclude.includes(FILEINFO))
-//					$flayCard.find(".flay-file-info-btn").hide();
-			}
 
 			return $flayCard;
 		};
@@ -286,39 +267,40 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				else 
 					$actress.find(".flay-actress-favorite > i").addClass("fa-star-o").removeClass("fa-star favorite");
 			};
-			
+
 			$.each(flay.actressList, function(idx, name) {
-				var $actress = $(templateActress);
-				$actress.attr("data-actress", name);
-				$actress.find(".flay-actress-name").html(name).on("click", function() {
-					View.actress(name);
-				});
-				$actress.appendTo($wrapper);
-				
-				if (settings.exclude.includes(ACTRESS_EXTRA)) {
-					$wrapper.find(".flay-actress .extra").hide();
-					return;
-				}
-					
-				Rest.Actress.get(name, function(actress) {
-					setFavorite($actress, actress);
-					$actress.find(".flay-actress-name"  ).html(actress.name);
-					$actress.find(".flay-actress-local" ).html(actress.localName);
-					$actress.find(".flay-actress-birth" ).html(actress.birth);
-					$actress.find(".flay-actress-age"   ).html(Util.Actress.getAge(actress));
-					$actress.find(".flay-actress-debut" ).html(actress.debut.toBlank());
-					$actress.find(".flay-actress-body"  ).html(actress.body);
-					$actress.find(".flay-actress-height").html(actress.height.toBlank());
-					
-					$actress.find(".flay-actress-favorite > i").on("click", function() {
-						actress.favorite = !actress.favorite;
-						Rest.Actress.update(actress, function() {
-							setFavorite($actress, actress);
-						});
+				if (name != "") {
+					var $actress = $(templateActress);
+					$actress.attr("data-actress", name);
+					$actress.find(".flay-actress-name").html(name).on("click", function() {
+						View.actress(name);
 					});
+					$actress.appendTo($wrapper);
+					
+					if (settings.exclude.includes(ACTRESS_EXTRA)) {
+						$wrapper.find(".flay-actress .extra").hide();
+						return;
+					}
+						
+					Rest.Actress.get(name, function(actress) {
+						setFavorite($actress, actress);
+						$actress.find(".flay-actress-name"  ).html(actress.name);
+						$actress.find(".flay-actress-local" ).html(actress.localName);
+						$actress.find(".flay-actress-birth" ).html(actress.birth);
+						$actress.find(".flay-actress-age"   ).html(Util.Actress.getAge(actress));
+						$actress.find(".flay-actress-debut" ).html(actress.debut.toBlank());
+						$actress.find(".flay-actress-body"  ).html(actress.body);
+						$actress.find(".flay-actress-height").html(actress.height.toBlank());
+						
+						$actress.find(".flay-actress-favorite > i").on("click", function() {
+							actress.favorite = !actress.favorite;
+							Rest.Actress.update(actress, function() {
+								setFavorite($actress, actress);
+							});
+						});
 
-				});
-
+					});
+				}
 			});
 		};
 		

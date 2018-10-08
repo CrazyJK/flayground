@@ -124,8 +124,12 @@ var Rest = {
 		},
 		Actress: {
 			get: function(name, callback) {
-				console.log("Rest.Actress.get", name);
-				restCall('/info/actress/' + name, {}, callback);
+				if (name != "") {
+					console.log("Rest.Actress.get", name);
+					restCall('/info/actress/' + name, {}, callback);
+				} else {
+					console.log("Rest.Actress.get: no name!");
+				}
 			},
 			list: function(callback) {
 				console.log("Rest.Actress.list");

@@ -695,25 +695,7 @@ function showVideo(direction) {
 	$(".cover-wrapper-inner.prev > .cover-box").css({backgroundImage: 'url(' + prevCoverURL + ')'});
 	$(".cover-wrapper-inner.curr > .cover-box").css({backgroundImage: 'url(' + currCoverURL + ')'});
 	$(".cover-wrapper-inner.next > .cover-box").css({backgroundImage: 'url(' + nextCoverURL + ')'});
-/*
-	var image1 = new Image();
-	image1.onload = function() {
-		$(".cover-wrapper-inner.prev > .cover-box").css({backgroundImage: 'url(' + prevCoverURL + ')'});
-	};
-	image1.src = prevCoverURL;
-	
-	var image2 = new Image();
-	image2.onload = function() {
-		$(".cover-wrapper-inner.curr > .cover-box").css({backgroundImage: 'url(' + currCoverURL + ')'});
-	};
-	image2.src = currCoverURL;
-	
-	var image3 = new Image();
-	image3.onload = function() {
-		$(".cover-wrapper-inner.next > .cover-box").css({backgroundImage: 'url(' + nextCoverURL + ')'});
-	};
-	image3.src = nextCoverURL;
-*/
+
 	showInfo();
 }
 

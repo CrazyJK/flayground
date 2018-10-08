@@ -84,6 +84,12 @@ body {
 					<button class="btn btn-outline-light" id="search">Search</button>
 				</div>
 			</div>
+			<div class="input-group mt-2">
+    			<div class="input-group-prepend">
+      				<span class="input-group-text">Comment</span>
+    			</div>
+    			<input type="text" class="form-control" id="comment" placeholder="comment...">
+  			</div>
 		</form>
 	</nav>
 	
@@ -126,12 +132,13 @@ $("#search").on("click", function() {
 
 $("#save").on("click", function() {
 	var originalName = actress.name;
-	actress.localName = $("#localName").val();
-	actress.birth     = $("#birth").val();
-	actress.body      = $("#body").val();
-	actress.height    = $("#height").val();
-	actress.debut     = $("#debut").val();
-	actress.name      = $("#name").val();
+	actress.localName = $("#localName").val().trim();
+	actress.birth     = $("#birth").val().trim();
+	actress.body      = $("#body").val().trim();
+	actress.height    = $("#height").val().trim();
+	actress.debut     = $("#debut").val().trim();
+	actress.name      = $("#name").val().trim();
+	actress.comment   = $("#comment").val().trim();
 
 	if (originalName != actress.name) {
 		Rest.Actress.rename(originalName, actress, function() {
@@ -160,6 +167,7 @@ Rest.Actress.get(name, function(_actress) {
 	if (!actress.favorite) {
 		$(".fa-star").removeClass("favorite fa-star").addClass("fa-star-o");		
 	}
+	$("#comment").val(actress.comment);
 	
 	var $flayTemplete = $(".flay");
 	Rest.Flay.findByActress(actress, function(flayList) {

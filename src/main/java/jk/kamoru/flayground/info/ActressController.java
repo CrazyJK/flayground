@@ -62,6 +62,12 @@ public class ActressController {
 		actressInfoService.update(actress);
 	}
 
+	@PutMapping
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void persist(@RequestBody Actress actress) {
+		actressInfoService.persist(actress);
+	}
+	
 	@PutMapping("/{name}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void rename(@PathVariable String name, @RequestBody Actress actress) {

@@ -40,6 +40,18 @@ input {
 .btn:focus {
 	box-shadow: none;
 }
+
+.ui-effects-transfer { 
+	border-radius: 4px; 
+	border: 1px solid rgba(217, 237, 247, 1);
+	background-color: rgba(217, 237, 247, 0.5);
+}
+#findMode .form-control {
+	color: var(--primary);
+}
+#pageImageDownloader .form-control {
+	color: var(--success);
+}
 </style>
 
 <div role="body">
@@ -67,14 +79,6 @@ input {
 	<div class="container" style="margin-top: 60px;">
 		<div class="card border-primary mt-2 collapse" id="findMode">
 			<div class="card-body">
-				<div class="input-group input-group-sm flay-group mb-1">
-					<input class="form-control border-primary" id="studio"  placeholder="Studio"  style="max-width: 100px;"/>
-					<input class="form-control border-primary" id="opus"    placeholder="Opus"    style="max-width: 100px;"/>
-					<input class="form-control border-primary" id="title"   placeholder="Title"/>
-					<input class="form-control border-primary" id="actress" placeholder="Actress" style="max-width: 150px;"/>
-					<input class="form-control border-primary" id="release" placeholder="Release" style="max-width: 100px;"/>
-				</div>
-				<input class="form-control form-control-sm border-primary mb-1" id="fullname" placeholder="Full name"/>
 				<div class="input-group input-group-sm mb-1">
 					<input class="form-control border-primary" id="rowname_opus"    style="max-width: 100px;" placeholder="Row opus"/>
 					<input class="form-control border-primary" id="rowname_title"   placeholder="Row title"/>
@@ -83,10 +87,18 @@ input {
 						<button class="btn btn-sm btn-outline-primary btn-find-random-opus" style="max-width: 100px;">Random Find</button>
 					</div>
 				</div>
+				<div class="input-group input-group-sm flay-group mb-1">
+					<input class="form-control border-primary" id="studio"  placeholder="Studio"  style="max-width: 100px;"/>
+					<input class="form-control border-primary" id="opus"    placeholder="Opus"    style="max-width: 100px;"/>
+					<input class="form-control border-primary" id="title"   placeholder="Title"/>
+					<input class="form-control border-primary" id="actress" placeholder="Actress" style="max-width: 150px;"/>
+					<input class="form-control border-primary" id="release" placeholder="Release" style="max-width: 100px;"/>
+				</div>
+				<input class="form-control form-control-sm border-primary mb-1" id="fullname" placeholder="Full name"/>
 				<div class="input-group input-group-sm mb-1" id="newActress">
 					<div class="input-group-prepend">
-						<div class="input-group-text border-primary">
-							<label class="input"><input type="checkbox" id="newActressFavorite" name="favorite"><span>Fav</span></label>
+						<div class="input-group-text border-primary bg-white">
+							<label class="input sm"><input type="checkbox" id="newActressFavorite" name="favorite"><span>Fav</span></label>
 						</div>
 					</div>
 					<input class="form-control border-primary" id="newActressName"   name="name"      placeholder="Name"/>
@@ -96,7 +108,7 @@ input {
 					<input class="form-control border-primary" id="newActressHeight" name="height"    placeholder="Height"/>
 					<input class="form-control border-primary" id="newActressDebut"  name="debut"     placeholder="Debut"/>
 					<div class="input-group-append">
-    					<button class="btn btn-outline-primary">Regist</button> 
+    					<button class="btn btn-outline-primary" id="btnRegistActress">Regist</button> 
   					</div>
 				</div>
 			</div>

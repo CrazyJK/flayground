@@ -157,4 +157,10 @@ public class FlayServiceImpl implements FlayService {
 		flayActionHandler.openFolder(folder);
 	}
 
+	@Override
+	public void deleteFile(String file) {
+		FlayFileHandler.deleteFile(new File(file));
+		log.warn("delete file {}", file);
+	}
+
 }

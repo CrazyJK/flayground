@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.flay.service.FlayService;
+import jk.kamoru.flayground.info.InfoNotfoundException;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.NameDistanceChecker.CheckResult;
 import jk.kamoru.flayground.notice.service.NotificationService;
@@ -69,6 +70,15 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 		List<Actress> distinctCollectedActressList = actressList.stream().distinct().map(a -> super.get(a)).collect(Collectors.toList());
 
 		return NameDistanceChecker.check(distinctCollectedActressList, limit);
+	}
+
+	public void persist(Actress actress) {
+		try {
+			super.get(actress.getKey());
+			super.update(actress);
+		} catch(InfoNotfoundException e) {
+			super.create(actress);
+		}
 	}
 
 }

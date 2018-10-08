@@ -108,7 +108,9 @@ function searchSource(keyword) {
 	});
 }
 
-$(".flay-group > input").on("keyup", function() {
+$(".flay-group > input").on("keyup", function(e) {
+	if (e.keyCode === 17) return;
+
 	var fullname = "";
 	$(".flay-group > input").each(function() {
 		var value = $(this).val();
@@ -116,10 +118,12 @@ $(".flay-group > input").on("keyup", function() {
 		if ($(this).attr("id") === "opus") {
 			value = value.toUpperCase();
 			$("#query").val(value);
+		} else if ($(this).attr("id") === "actress") {
+			$("#newActressName").val(value);
 		}
 		fullname += '[' + value + ']';
 	});
-	$("input#fullname").val(fullname);
+	$("input#fullname").val(fullname).effect("highlight", {}, 200);
 });
 
 // rowname parsing
@@ -154,8 +158,7 @@ $("#rowname").on("keyup", function(e) {
 */
 
 $("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
-	if (e.keyCode != 13)
-		return;
+	if (e.keyCode != 13) return;
 	
 	var rowOpus    = $("#rowname_opus").val().trim();
 	var rowTitle   = $("#rowname_title").val().trim();
@@ -167,34 +170,91 @@ $("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 	rowTitle != '' && Search.translate(rowTitle);
 	rowActress != '' && Rest.Actress.findByLocalname(rowActress, function(actressList) {
 		console.log('findByLocalname', rowActress, actressList.length);
-		$("#newActressLocal").val(rowActress);
+
+		$("#newActressName"  ).val("");
+		$("#newActressLocal" ).val(rowActress);
+		$("#newActressBirth" ).val("");
+		$("#newActressBody"  ).val("");
+		$("#newActressHeight").val("");
+		$("#newActressDebut" ).val("");
+		
 		if (actressList.length == 0) {
 			Search.actress(rowActress);
 		} else if (actressList.length == 1) {
 			$("#actress").val(actressList[0].name).effect("highlight", {}, 1000);
-			$("#newActressFavorite").prop("checked", actressList[0].favorite);
-			$("#newActressName"  ).val(actressList[0].name);
-			$("#newActressBirth" ).val(actressList[0].birth);
-			$("#newActressBody"  ).val(actressList[0].body);
-			$("#newActressHeight").val(actressList[0].height);
-			$("#newActressDebut" ).val(actressList[0].debut);
+			transferActressInfo(actressList[0], "#rowname_actress");
 		} else {
 			Search.actress(rowActress);
 			$("#actressChoice > ul").empty();
 			$.each(actressList, function(idx, actress) {
 				$("<li>").append(
-						$("<label>", {'class': 'text hover'}).html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut)
-				).on("click", function() {
-					console.log('actress choice', actress);
-					$("#actress").val(actress.name);
-					$("#actressChoice").dialog("close");
-				}).appendTo($("#actressChoice > ul"));
+						$("<label>", {'class': 'text hover'}).append(
+								$("<i>", {'class': 'fa fa-female'})
+						).on("click", function() {
+							View.actress(actress.name);
+						}),
+						$("<label>", {'class': 'text hover'}).html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut).on("click", function() {
+							console.log('actress choice', actress);
+							$(this).effect("transfer", { to: "#actress", className: "ui-effects-transfer" }, 500, function() {
+								$("#actress").val(actress.name);
+								transferActressInfo(actress, this);
+								$("#actressChoice").dialog("close");
+							});
+						})
+				).appendTo($("#actressChoice > ul"));
 			});
 			$("#actressChoice").dialog({
 				width: 600
 			});
 		}
 	});;
+});
+
+function transferActressInfo(actress, from) {
+	$(from).effect("transfer", { to: "#newActress", className: "ui-effects-transfer" }, 500, function() {
+		$("#newActress").data("actress", actress);
+		$("#newActressFavorite").prop("checked", actress.favorite);
+		$("#newActressName"  ).val(actress.name);
+		$("#newActressBirth" ).val(actress.birth);
+		$("#newActressBody"  ).val(actress.body);
+		$("#newActressHeight").val(actress.height);
+		$("#newActressDebut" ).val(actress.debut);
+	});
+}
+
+$("#newActressBody").on("keyup", function(e) {
+	if (e.keyCode === 17) return;
+
+	var value = $(this).val().trim();
+	if (value[0] === 'B') {
+		value = value.substring(1, value.length);
+	}
+	var replace = value.replace('(', '').replace('カップ)', '').replace('W', '').replace('H', '').replace(/\//gi, '-');
+	$(this).val(replace);	
+});
+
+$("#btnRegistActress").on("click", function() {
+	var actress = $("#newActress").data("actress");
+	if (actress && actress.name === $("#newActressName").val().trim()) {
+		actress.favorite  = $("#newActressFavorite").prop("checked");
+		actress.localName = $("#newActressLocal").val().trim();
+		actress.birth     = $("#newActressBirth").val().trim();
+		actress.body      = $("#newActressBody").val().trim();
+		actress.height    = $("#newActressHeight").val().trim();
+		actress.debut     = $("#newActressDebut").val().trim();
+	} else {
+		actress = {};
+		actress.favorite  = $("#newActressFavorite").prop("checked");
+		actress.name      = $("#newActressName").val().trim();
+		actress.localName = $("#newActressLocal").val().trim();
+		actress.birth     = $("#newActressBirth").val().trim();
+		actress.body      = $("#newActressBody").val().trim();
+		actress.height    = $("#newActressHeight").val().trim();
+		actress.debut     = $("#newActressDebut").val().trim();
+		actress.comment   = "";
+		actress.cover     = null;
+	}
+	Rest.Actress.persist(actress);
 });
 
 // btn event
@@ -274,13 +334,38 @@ if (isAdmin) {
 						$("<button>", {'class': 'btn btn-sm btn-block btn-warning'}).append(
 								$("<strong>").html('Acept'),
 								$("<span>", {'class': 'badge badge-light mr-1 ml-1'}).html(flay.files.candidate.length),
-								' ' + flay.files.candidate.toString().replace(/,/gi, '<br>').replace(/\\/gi, '/').replace(/\//gi, '<b class="text-white"> / </b>')
+								flay.files.candidate.toString().replace(/,/gi, '<br>').replace(/\\/gi, '/').replace(/\//gi, '<b class="text-white"> / </b>')
 						).on("click", function() {
 							var $self = $(this);
 							Rest.Flay.acceptCandidates(flay, function() {
 								$self.hide();
 							});
 						}),
+						$("<div>").append(
+								(function() {
+									var files = [];
+									$.each(flay.files.candidate, function(idx, file) {
+										files.push(
+												$("<p>", {'class': 'm-1 border-bottom'}).append(
+														file,
+														$("<button>", {'class': 'btn btn-sm btn-link text-danger ml-2'}).html("Delete").on("click", function() {
+															$(this).hide();
+															$(this).next().show();
+														}),
+														$("<button>", {'class': 'btn btn-sm btn-link text-danger ml-2'}).css({display: 'none'}).html("Are U sure?").on("click", function() {
+															var $p = $(this).parent();
+															var $b = $(this).parent().parent().prev();
+															Rest.Flay.deleteFile(file, function() {
+																$p.hide();
+																$b.hide();
+															});
+														})
+												)
+										);
+									});
+									return files;
+								}())
+						),
 						$("<label>", {'class': 'text'}).html(flay.studio),
 						$("<label>", {'class': 'text hover'}).html(flay.opus).on("click", function() {
 							View.flay(flay.opus);
@@ -288,6 +373,9 @@ if (isAdmin) {
 						$("<label>", {'class': 'text'}).html(flay.title),
 						$("<label>", {'class': 'text'}).html(flay.actressList.toString()),
 						$("<label>", {'class': 'text'}).html(flay.release),
+						$("<label>", {'class': 'text'}).html('r ' + flay.video.rank),
+						$("<label>", {'class': 'text'}).html('v ' + flay.files.movie.length),
+						$("<label>", {'class': 'text'}).html('s ' + flay.files.subtitles.length),
 						$("<img>", {'src': '/static/cover/' + flay.opus, 'class': 'img-thumbnail m-auto'}),
 				).appendTo($candidatesList);
 			});

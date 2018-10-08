@@ -26,6 +26,7 @@ public class CandidatesProvider {
 		String suffix = FlayConfig.SUFFIX_VIDEO + "," + FlayConfig.SUFFIX_SUBTITLES;
 		for (String path : candidatePaths) {
 			Collection<File> list = FileUtils.listFiles(new File(path), suffix.split(","), true);
+			log.info("find {} = {}", path, list.size());
 			listFiles.addAll(list);
 		}
 		log.info("candidates {} found", listFiles.size());
@@ -39,7 +40,7 @@ public class CandidatesProvider {
 			if (StringUtils.containsAny(file.getName().toUpperCase(), key1, key2)) {
 				flay.addCandidatesFile(file);
 				found = true;
-				log.info("{} : {}", flay.getOpus(), file);
+//				log.info("{} : {}", flay.getOpus(), file);
 			}
 		}
 		return found;

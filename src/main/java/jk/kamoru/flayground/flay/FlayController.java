@@ -82,4 +82,10 @@ public class FlayController {
 		flayService.openFolder(folder);
 	}
 
+	@PutMapping("/delete/file")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteFile(@RequestBody String file) {
+		flayService.deleteFile(file);
+	}
+
 }

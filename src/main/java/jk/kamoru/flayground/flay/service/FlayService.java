@@ -29,4 +29,6 @@ public interface FlayService {
 
 	void openFolder(String folder);
 
+	void deleteFile(String file);
+
 }

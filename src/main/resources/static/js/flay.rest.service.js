@@ -94,6 +94,10 @@ var Rest = {
 			openFolder: function(folder) {
 				console.log("Rest.Flay.openFolder", folder);
 				restCall('/flay/open/folder', {method: "PUT", data: folder});
+			},
+			deleteFile: function(file, callback) {
+				console.log("Rest.Flay.deleteFile", file);
+				restCall('/flay/delete/file', {method: "PUT", data: file}, callback);
 			}
 		},
 		History: {
@@ -138,6 +142,10 @@ var Rest = {
 			update: function(actress, callback) {
 				console.log("Rest.Actress.update", actress);
 				restCall('/info/actress', {data: actress, method: "PATCH"}, callback);
+			},
+			persist: function(actress, callback) {
+				console.log("Rest.Actress.persist", actress);
+				restCall('/info/actress', {data: actress, method: "PUT"}, callback);
 			},
 			rename: function(originalName, actress, callback) {
 				console.log("Rest.Actress.rename", originalName, actress);
@@ -220,12 +228,6 @@ var Rest = {
 			whoami: function(callback) {
 				console.log("Rest.Security.whoami");
 				restCall("/whoami", {async: false}, callback);
-			}
-		},
-		Summary: {
-			groupByRelease(pattern, callback) {
-				console.log("Rest.Summary.groupByRelease");
-				restCall("/summary/groupby/release/" + pattern, {}, callback);
 			}
 		}
 };

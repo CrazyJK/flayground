@@ -187,6 +187,10 @@ var Rest = {
 				console.log("Rest.Image.size");
 				restCall('/image/size', {}, callback);
 			},
+			list: function(callback) {
+				console.log("Rest.Image.list");
+				restCall('/image/list', {}, callback);
+			},
 			download: function(data, callback) {
 				console.log("Rest.Image.download", data);
 				restCall('/image/pageImageDownload', {data: data, title: 'Download images'}, callback);

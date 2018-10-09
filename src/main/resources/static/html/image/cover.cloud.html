@@ -29,6 +29,24 @@ input:focus, button:focus {
 .btn-dark:disabled {
 	color: gray;
 }
+#keyContainer {
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	display: none;
+}
+#closeKeyContainer {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    margin: 1rem;
+    transition: .3s;
+}
+#closeKeyContainer:hover {
+	background-color: rgba(220, 53, 69, .75);
+	border-radius: 2px;
+}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
@@ -42,32 +60,57 @@ input:focus, button:focus {
 <script type="text/javascript" src="/js/tag/jquery.tagcanvas.js"></script>
 <script type="text/javascript">
 var ImageControl = {
-		STORAGE_FLAY_RANK: 'cover.cloud.flay_rank',
+		STORAGE_IMAGE_KEY: 'cover.cloud.flay_key',
 		STORAGE_IMAGE_SIZE: 'cover.cloud.image_size',
 		STORAGE_PLAY_TIME: 'cover.cloud.play_time',
 		imageIndexArray: [],
 		bgInterval: null,
-		flayList: [],
 		collectedList: [],
+		fullList: [],
 		isStart: false,
 		intervalCount: 0,
 		init: function() {
 			Rest.Flay.list(function(list) {
-				ImageControl.flayList = list;
-				ImageControl.filter();
-				ImageControl.display();
-				ImageControl.bgInterval = setInterval(ImageControl.func, 1000);
-				ImageControl.ImageCanvas.start();
-				ImageControl.nav();
+				ImageControl.fullList = list;
+				var map = {ALL: list, Rank0: [], Rank1: [], Rank2: [], Rank3: [], Rank4: [], Rank5: []};
+				$.each(list, function(idx, flay) {
+					var key = 'Rank' + flay.video.rank;
+					if (map[key]) {
+						map[key].push(flay);
+					} else {
+						map[key] = [flay];
+					}
+				});
+
+				var $keys = $("#keys");
+				$.each(map, function(k, v) {
+					$("<label>", {'class': 'input dark', id: 'key_' + k}).append(
+							$("<input>", {type: 'radio', name: 'key'}).on("change", function(e) {
+								ImageControl.setData(k, v);
+							}),
+							$("<span>").append(
+									k,
+									$("<span>", {'class': 'badge badge-fill badge-secondary text-dark ml-2'}).html(v.length)
+							)
+					).appendTo($keys);
+				});
+
+				var key = LocalStorageItem.get(ImageControl.STORAGE_IMAGE_KEY, 'ALL');
+				$("#key_" + key).click();
 			});
+
+			ImageControl.ImageCanvas.resize();
+			ImageControl.bgInterval = setInterval(ImageControl.func, 1000);
+			ImageControl.nav();
+			ImageControl.ImageCanvas.start();
 		},
-		filter: function() {
-			ImageControl.collectedList = [];
-			$.each(ImageControl.flayList, function(idx, flay) {
-				if (flay.video.rank == inputFlayRank.value && flay.files.movie.length > 0)
-					ImageControl.collectedList.push(flay);
-			});
+		setData: function(key, list) {
+			console.log("setData", key, list.length);
+			ImageControl.collectedList = list.slice();
 			ImageControl.imageIndexArray = [];
+			ImageControl.display();
+			LocalStorageItem.set(ImageControl.STORAGE_IMAGE_KEY, key);
+			$("#selectedKey").html(key);
 		},
 		nav: function() {
 			$("#canvasContainer").navEvent(function(signal, e) {
@@ -81,7 +124,7 @@ var ImageControl = {
 				}
 			});
 		},
-		start: function() {
+		play: function() {
 			ImageControl.intervalCount = 0;
 			ImageControl.isStart = true;
 		},
@@ -108,12 +151,10 @@ var ImageControl = {
 			// make image index array
 			if (ImageControl.imageIndexArray.length === 0) {
 				ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.collectedList.length}).map(Number.call, Number);
-				// console.log('image array reset', ImageControl.imageIndexArray.length);
+				console.log('image array reset', ImageControl.imageIndexArray.length);
 			}
 
 			var $imageWrap = $("#imagePane").empty();
-
-			$(".flay-info").html("Flay " + ImageControl.imageIndexArray.length);
 
 			for (var i=0; i<inputImageSize.value; i++) {
 				// determine image index
@@ -122,41 +163,42 @@ var ImageControl = {
 					// console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
 				} else {
 					var flay = ImageControl.collectedList[imageIndex];
-					var opus = flay.opus;
 					$("<a>").attr({
 						"id": "image" + i,
-						"data-opus": opus
+						"data-index": flay.opus
 					}).append(
 							$("<img>").attr({
-								src: PATH + "/static/cover/" + opus
+								src: PATH + "/static/cover/" + flay.opus
 							}),
 							flay.title.substring(0, 18)
 					).on("click", function(e) {
 						e.preventDefault();
-						View.flay($(this).attr("data-opus"));
+						View.flay($(this).attr("data-index"));
 					}).appendTo($imageWrap);
 				}
 			}
 			
+			$(".cloud-info").html("Remaining " + ImageControl.imageIndexArray.length);
+
 			ImageControl.ImageCanvas.reload();
 		},
 		ImageCanvas: {
 			options: {
 				bgColour: "#000",
-				bgOutline: "#fff",
-				bgOutlineThickness: 2,
+				bgOutline: null,
+				bgOutlineThickness: 0,
 				bgRadius: 4,
 				clickToFront: 300,
 				depth: 0.9,
 				fadeIn: 800,
+				hideTags: true,
 				imageMode: 'both',
 				imagePosition: "bottom",
 				imageRadius: 4,
 				imageScale: 0,
-				imageWidth: 300, 
+				imageWidth: 400,
 				imageHeight: 0,
 				initial: [0.1, -0.1],
-				hideTags: true,
 				maxSpeed: 0.03,
 				minBrightness: 0.3,
 				minSpeed: 0.003,
@@ -164,6 +206,7 @@ var ImageControl = {
 				padding: 2,
 				reverse: true,
 				textColour: '#fff',
+				noTagsMessage: false
 			},
 			status: '',
 			start: function() {
@@ -176,9 +219,7 @@ var ImageControl = {
 				$('#imageCloud').tagcanvas('reload');
 			},
 			rotate: function() {
-				if (ImageControl.ImageCanvas.status != 'pause') {
-					$('#imageCloud').tagcanvas('rotatetag', {id: "image" + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0});
-				}
+				$('#imageCloud').tagcanvas('rotatetag', {id: "image" + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0});
 			},
 			pause: function() {
 				$('#imageCloud').tagcanvas('pause');
@@ -189,7 +230,7 @@ var ImageControl = {
 				ImageControl.ImageCanvas.status = 'resume';
 			},
 			resize: function() {
-				$('canvas').attr({
+				$('#imageCloud').attr({
 					width: $(window).width(),
 					height: $(window).height()
 				});
@@ -199,18 +240,15 @@ var ImageControl = {
 
 $(document).ready(function() {
 	
-	inputFlayRank.value  = LocalStorageItem.getInteger(ImageControl.STORAGE_FLAY_RANK, 0);
 	inputImageSize.value = LocalStorageItem.getInteger(ImageControl.STORAGE_IMAGE_SIZE, 20);
 	inputPlayTime.value  = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
 	
-	ImageControl.ImageCanvas.resize();
 	setTimeout(function() {
 		$(window).on("resize", ImageControl.ImageCanvas.resize);
 	}, 5000);
 	
 	$("#btnRotate").on("click", ImageControl.ImageCanvas.rotate);
 	$("#btnPause").on("click", function() {
-		console.log('$(this).data("status")', $(this).data("status"));
 		if ($(this).data("status") === 'resume') {
 			ImageControl.ImageCanvas.pause();
 			$(this).data("status", "pause").html('<i class="fa fa-play"></i> Resume');
@@ -224,7 +262,7 @@ $(document).ready(function() {
 	$("#btnNext").on("click", ImageControl.display);
 	$("#btnPlay").on("click", function() {
 		if ($(this).data("status") === 'stop') {
-			ImageControl.start();
+			ImageControl.play();
 			$(this).data("status", "start").html('<i class="fa fa-stop"></i> Stop');
 			$("#btnPause").prop('disabled', true);
 		} else {
@@ -232,11 +270,6 @@ $(document).ready(function() {
 			$(this).data("status", "stop").html('<i class="fa fa-play"></i> Play');
 			$("#btnPause").prop('disabled', false);
 		}
-	});
-	$("#inputFlayRank").on("change", function() {
-		LocalStorageItem.set(ImageControl.STORAGE_FLAY_RANK, $(this).val());
-		ImageControl.filter();
-		ImageControl.display();
 	});
 	$("#inputImageSize").on("change", function() {
 		LocalStorageItem.set(ImageControl.STORAGE_IMAGE_SIZE, $(this).val());
@@ -247,7 +280,10 @@ $(document).ready(function() {
 	$("#goFlay").on("click", function() {
 		location.href = PATH + "/html/flay/flay.index.html";
 	});
-	
+	$("#btnByKey, #closeKeyContainer").on("click", function() {
+		$("#keyContainer").slideToggle();
+	});
+
 	ImageControl.init();
 
 });
@@ -255,6 +291,11 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
+
+<div class="text-center p-3 bg-dark" id="keyContainer">
+	<div id="keys"></div>
+	<i class="fa fa-times hover" id="closeKeyContainer"></i>
+</div>
 
 <div id="canvasContainer">
 	<canvas id="imageCloud" width="800" height="600"></canvas>
@@ -264,11 +305,8 @@ $(document).ready(function() {
 <div id="controlBox">
 	<div class="input-group input-group-sm">
 		<div class="input-group-prepend">
-			<span class="input-group-text border-dark bg-dark text-light flay-rank">Rank</span>
-		</div>
-		<input class="form-control border-dark bg-dark text-light text-left" id="inputFlayRank" style="width: 30px;" value="0" title="Flay rank">
-		<div class="input-group-prepend">
-			<span class="input-group-text border-dark bg-dark text-light flay-info">0</span>
+			<button class="btn btn-dark" id="btnByKey"><i class="fa fa-bars"></i> By <span id="selectedKey">key</span></button>
+			<span class="input-group-text border-dark bg-dark text-light cloud-info">0</span>
 			<button class="btn btn-dark" id="btnRotate"><i class="fa fa-random"></i> Rotate</button>
 			<button class="btn btn-dark" id="btnPause" data-status="resume"><i class="fa fa-pause"></i> Pause</button>
 		</div>

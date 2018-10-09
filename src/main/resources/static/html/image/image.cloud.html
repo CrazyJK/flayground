@@ -29,18 +29,23 @@ input:focus, button:focus {
 .btn-dark:disabled {
 	color: gray;
 }
-#pathContainer {
+#keyContainer {
 	position: fixed;
 	top: 0;
 	left: 0;
 	width: 100%;
 	display: none;
 }
-#closePathContainer {
+#closeKeyContainer {
     position: absolute;
     right: 0;
     bottom: 0;
     margin: 1rem;
+    transition: .3s;
+}
+#closeKeyContainer:hover {
+	background-color: rgba(220, 53, 69, .75);
+	border-radius: 2px;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -54,49 +59,58 @@ input:focus, button:focus {
 <script type="text/javascript" src="/js/flay.notification.js"></script>
 <script type="text/javascript" src="/js/tag/jquery.tagcanvas.js"></script>
 <script type="text/javascript">
-
 var ImageControl = {
+		STORAGE_IMAGE_KEY: 'image.cloud.image_key',
 		STORAGE_IMAGE_SIZE: 'image.cloud.image_size',
 		STORAGE_PLAY_TIME: 'image.cloud.play_time',
 		imageIndexArray: [],
-		dataArray: [],
 		bgInterval: null,
-		count: 0,
+		collectedList: [],
+		fullList: [],
 		isStart: false,
 		intervalCount: 0,
 		init: function() {
-			restCall('/image/group/path', {}, function(map) {
-				map['ALL'] = [];
+			Rest.Image.list(function(list) {
+				ImageControl.fullList = list;
+				var map = {ALL: list};
+				$.each(list, function(idx, image) {
+					var key = image.path.replace(/\\/gi, '/').split("/").pop();
+					if (map[key]) {
+						map[key].push(image);
+					} else {
+						map[key] = [image];
+					}
+				});
+
+				var $keys = $("#keys");
 				$.each(map, function(k, v) {
-					var pathName = k.replace(/\\/gi, '/').split("/").pop();
-					$("<label>", {'class': 'input dark', id: 'path_' + pathName}).append(
-							$("<input>", {type: 'radio', name: 'path'}).on("change", function(e) {
+					$("<label>", {'class': 'input dark', id: 'key_' + k}).append(
+							$("<input>", {type: 'radio', name: 'key'}).on("change", function(e) {
 								ImageControl.setData(k, v);
 							}),
 							$("<span>").append(
-									pathName,
+									k,
 									$("<span>", {'class': 'badge badge-fill badge-secondary text-dark ml-2'}).html(v.length)
 							)
-					).appendTo($("#paths"));
+					).appendTo($keys);
 				});
-				Rest.Image.size(function(count) {
-					ImageControl.count = count;
-					$("#path_ALL span.badge").html(count);
-					$("#path_ALL").click();
-				});
+
+				var key = LocalStorageItem.get(ImageControl.STORAGE_IMAGE_KEY, 'ALL');
+				$("#key_" + key).click();
 			});
-			
+
 			ImageControl.ImageCanvas.resize();
 			ImageControl.bgInterval = setInterval(ImageControl.func, 1000);
 			ImageControl.nav();
 			ImageControl.ImageCanvas.start();
-			
 		},
-		setData: function(path, array) {
-			$("#selectedPath").html(path);
-			ImageControl.dataArray = array.slice();
-			ImageControl.imageIndexArray = array.slice();
+		setData: function(key, list) {
+			console.log("setData", key, list.length);
+			ImageControl.collectedList = list.slice();
+			ImageControl.imageIndexArray = [];
 			ImageControl.display();
+			LocalStorageItem.set(ImageControl.STORAGE_IMAGE_KEY, key);
+			$("#selectedKey").html(key);
 		},
 		nav: function() {
 			$("#canvasContainer").navEvent(function(signal, e) {
@@ -124,7 +138,7 @@ var ImageControl = {
 				$(".progress-bar").css({
 					width: (100 - Math.round(ImageControl.intervalCount / parseInt(inputPlayTime.value) * 100)) + "%"
 				});
-				
+
 				if (ImageControl.intervalCount == 0) {
 					ImageControl.display();
 				}
@@ -136,12 +150,8 @@ var ImageControl = {
 			}
 			// make image index array
 			if (ImageControl.imageIndexArray.length === 0) {
-				if (ImageControl.dataArray.length > 0)
-					ImageControl.imageIndexArray = ImageControl.dataArray; 
-				else
-					ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.count}).map(Number.call, Number);
-
-				console.log('image array reset', ImageControl.imageIndexArray.length, ImageControl.dataArray.length);
+				ImageControl.imageIndexArray = Array.apply(null, {length: ImageControl.collectedList.length}).map(Number.call, Number);
+				console.log('image array reset', ImageControl.imageIndexArray.length);
 			}
 
 			var $imageWrap = $("#imagePane").empty();
@@ -152,31 +162,38 @@ var ImageControl = {
 				if ($.isEmptyObject(imageIndex)) {
 					// console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
 				} else {
+					var image = ImageControl.collectedList[imageIndex];
 					$("<a>").attr({
 						"id": "image" + i,
-						"data-idx": imageIndex
+						"data-index": image.idx
 					}).append(
 							$("<img>").attr({
-								src: PATH + "/static/image/" + imageIndex
-							})
+								src: PATH + "/static/image/" + image.idx
+							}),
+							image.name.substring(image.name.length - 18)
 					).on("click", function(e) {
 						e.preventDefault();
-						Popup.imageByNo($(this).attr("data-idx"));
+						Popup.imageByNo($(this).attr("data-index"));
 					}).appendTo($imageWrap);
 				}
 			}
 			
-			$(".image-info").html("Remaining " + ImageControl.imageIndexArray.length);
-			
+			$(".cloud-info").html("Remaining " + ImageControl.imageIndexArray.length);
+
 			ImageControl.ImageCanvas.reload();
 		},
 		ImageCanvas: {
 			options: {
+				bgColour: null,
+				bgOutline: null,
+				bgOutlineThickness: 0,
+				bgRadius: 0,
 				clickToFront: 300,
 				depth: 0.9,
-				fadeIn: 500,
+				fadeIn: 800,
 				hideTags: true,
 				imageMode: 'image',
+				imagePosition: "top",
 				imageRadius: 4,
 				imageScale: 0.3,
 				imageWidth: 400,
@@ -186,7 +203,9 @@ var ImageControl = {
 				minBrightness: 0.3,
 				minSpeed: 0.003,
 				outlineMethod: 'none',
+				padding: 2,
 				reverse: true,
+				textColour: '#fff',
 				noTagsMessage: false
 			},
 			status: '',
@@ -200,9 +219,7 @@ var ImageControl = {
 				$('#imageCloud').tagcanvas('reload');
 			},
 			rotate: function() {
-				if (ImageControl.ImageCanvas.status != 'pause') {
-					$('#imageCloud').tagcanvas('rotatetag', {id: "image" + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0});
-				}
+				$('#imageCloud').tagcanvas('rotatetag', {id: "image" + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0});
 			},
 			pause: function() {
 				$('#imageCloud').tagcanvas('pause');
@@ -232,7 +249,6 @@ $(document).ready(function() {
 	
 	$("#btnRotate").on("click", ImageControl.ImageCanvas.rotate);
 	$("#btnPause").on("click", function() {
-		console.log('$(this).data("status")', $(this).data("status"));
 		if ($(this).data("status") === 'resume') {
 			ImageControl.ImageCanvas.pause();
 			$(this).data("status", "pause").html('<i class="fa fa-play"></i> Resume');
@@ -264,18 +280,10 @@ $(document).ready(function() {
 	$("#goFlay").on("click", function() {
 		location.href = PATH + "/html/flay/flay.index.html";
 	});
-	$("#selectedPath").on("click", function() {
-		var path = $(this).html();
-		if (path != 'ALL')
-			Rest.Flay.openFolder(path);
+	$("#btnByKey, #closeKeyContainer").on("click", function() {
+		$("#keyContainer").slideToggle();
 	});
-	$("#btnByPath").on("click", function() {
-		$("#pathContainer").slideToggle();
-	});
-	$("#closePathContainer").on("click", function() {
-		$("#pathContainer").slideToggle();
-	});
-	
+
 	ImageControl.init();
 
 });
@@ -284,10 +292,9 @@ $(document).ready(function() {
 </head>
 <body>
 
-<div class="text-center p-3 bg-dark" id="pathContainer">
-	<div id="paths"></div>
-	<label id="selectedPath" class="text hover dark mt-1"></label>
-	<i class="fa fa-times hover" id="closePathContainer"></i>
+<div class="text-center p-3 bg-dark" id="keyContainer">
+	<div id="keys"></div>
+	<i class="fa fa-times hover" id="closeKeyContainer"></i>
 </div>
 
 <div id="canvasContainer">
@@ -298,8 +305,8 @@ $(document).ready(function() {
 <div id="controlBox">
 	<div class="input-group input-group-sm">
 		<div class="input-group-prepend">
-			<button class="btn btn-dark" id="btnByPath"><i class="fa fa-bars"></i> By path</button>
-			<span class="input-group-text border-dark bg-dark text-light image-info">0</span>
+			<button class="btn btn-dark" id="btnByKey"><i class="fa fa-bars"></i> By <span id="selectedKey">key</span></button>
+			<span class="input-group-text border-dark bg-dark text-light cloud-info">0</span>
 			<button class="btn btn-dark" id="btnRotate"><i class="fa fa-random"></i> Rotate</button>
 			<button class="btn btn-dark" id="btnPause" data-status="resume"><i class="fa fa-pause"></i> Pause</button>
 		</div>

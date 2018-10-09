@@ -76,7 +76,7 @@ var View = {
 			Popup.open(PATH + "/html/info/info.flay.html?opus=" + opus, "flay-" + opus, 820, 750);
 		},
 		video: function(opus) {
-			Popup.open(PATH + "/info/video/" + opus, "video-" + opus, 800, 640);
+			Popup.open(PATH + "/info/video/" + opus, "video-" + opus, 400, 300);
 		},
 		actress: function(name) {
 			Popup.open(PATH + "/html/info/info.actress.html?name=" + name, "actress-" + name, 1000, 600);

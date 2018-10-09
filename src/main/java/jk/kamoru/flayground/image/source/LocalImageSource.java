@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
 
@@ -27,13 +28,14 @@ public class LocalImageSource implements ImageSource<Image> {
 
 	@PostConstruct
 	private synchronized void load() {
+		AtomicInteger idx = new AtomicInteger(0);
 		for (String path : imagePaths) {
 			File dir = new File(path);
 			if (dir.isDirectory()) {
 				Collection<File> listFiles = FileUtils.listFiles(dir, null, true);
 				log.info(String.format("%5s file    - %s", listFiles.size(), dir));
 				for (File file : listFiles) {
-					imageList.add(new Image(file));
+					imageList.add(new Image(file, idx.getAndIncrement()));
 				}
 			}
 		}

@@ -8,14 +8,6 @@ var Event = {
 				$("#background_images img").css({height: ''});
 			});
 		},
-		togglePage: function() {
-			$("#pageShow").on("change", function() {
-				var isShow = $(this).prop("checked");
-				$("#wrap_body").toggle(isShow);
-				$("#background_images").css({backgroundColor: isShow ? 'rgba(0,0,0,.5)' : 'transparent'});
-				$("#background_images .col").css({zIndex: isShow ? -3 : 0});
-			});
-		},
 		theme: function() {
 			// background theme
 			$("input[name='bgTheme']").on("change", function() {
@@ -27,7 +19,15 @@ var Event = {
 				$("body").css({backgroundColor: $(this).val()});
 			});
 		},
-		bgToggle: function() {
+		togglePage: function() {
+			$("#pageShow").on("change", function() {
+				var isShow = $(this).prop("checked");
+				$("#wrap_body").toggle(isShow);
+				$("#background_images").css({backgroundColor: isShow ? 'rgba(0,0,0,.5)' : 'transparent'});
+				$("#background_images .col").css({zIndex: isShow ? -3 : 0});
+			});
+		},
+		toggleBackground: function() {
 			$("#bgFlow").on("change", function() {
 				$(this).prop("checked") ? Background.start() : Background.stop();
 			});
@@ -133,9 +133,9 @@ console.log("isAdmin", isAdmin, username);
 $(document).ready(function() {
 
 	Event.resize();
-	Event.togglePage();
 	Event.theme();
-	Event.bgToggle();
+	Event.togglePage();
+	Event.toggleBackground();
 	
 	Background.init();
 	Background.start();

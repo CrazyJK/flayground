@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.FlayConfig;
 import jk.kamoru.flayground.flay.domain.Flay;
-import jk.kamoru.flayground.info.service.VideoInfoService;
 import jk.kamoru.flayground.notice.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 public class FlayActionHandler {
 
 	@Autowired FlayConfig flayConfig;
-	@Autowired VideoInfoService videoInfoService;
 	@Autowired NotificationService notificationService;
 
 	@Async

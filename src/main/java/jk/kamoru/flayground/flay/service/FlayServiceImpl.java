@@ -123,6 +123,7 @@ public class FlayServiceImpl implements FlayService {
 		}
 		candiList.clear();
 		FlayFileHandler.rename(flay);
+		notificationService.announce("Accept candidates", flay.getFullname());
 	}
 	
 	@Override

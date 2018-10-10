@@ -95,6 +95,9 @@ var Navi = {
 		go: function(destination) {
 			Rest.Html.get(destination, function(html) {
 				$(window).off();
+				try {
+					$("#notice").dialog("close");
+				} catch(ignore) {}
 				$("#wrap_body").html(html);
 			});
 		}

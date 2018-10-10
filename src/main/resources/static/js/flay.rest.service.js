@@ -18,7 +18,7 @@ var restCall = function(url, args, callback) {
 
 	settings.title != "" && loading.on(settings.title);
 	
-	console.log('restCall', settings.method, url, settings.data);
+//	console.log('restCall', settings.method, url, settings.data);
 	$.ajax(PATH + url, settings).done(function(data) {
 		if (callback)
 			callback(data);

@@ -15,7 +15,7 @@ body {
     background-attachment: fixed;
 }
 .flay-list {
-	margin-top: 7rem;
+	margin-top: 9rem;
 	margin-bottom: 1rem;
 }
 </style>
@@ -37,36 +37,34 @@ body {
 				<div class="col-2 text-right">
 					<label class="text hover"><i class="fa fa-star favorite" id="favorite"></i></label>
 				</div>
-				<div class="col">
-					<div class="input-group">
-						<input class="form-control" name="name" id="name">
-						<div class="input-group-append">
-							<span class="input-group-text video-count"></span>
-						</div>
-					</div>
+				<div class="col-4">
+					<input class="form-control text-center" name="name" id="name">
 				</div>
-				<div class="col">
-					<input class="form-control" name="localName" id="localName" placeholder="LocalName...">
+				<div class="col-3">
+					<input class="form-control text-center" name="localName" id="localName" placeholder="LocalName...">
 				</div>
-				<div class="col-2">
+				<div class="col-1">
+					<button class="btn btn-outline-light" id="search">Search</button>
+				</div>
+				<div class="col-2 text-center">
 					<button class="btn btn-outline-light" id="save">Save</button>
 				</div>
 			</div>
-			<div class="row">
+			<div class="row mb-2">
 				<div class="col-3">
 					<div class="input-group">
-						<input class="form-control" name="birth" id="birth" placeholder="Birth...">
+						<input class="form-control text-center" name="birth" id="birth" placeholder="Birth...">
 						<div class="input-group-append">
 							<span class="input-group-text actress-age">0</span>
 						</div>
 					</div>
 				</div>
 				<div class="col-3">
-					<input class="form-control" name="body" id="body" placeholder="Body...">
+					<input class="form-control text-center" name="body" id="body" placeholder="Body...">
 				</div>
 				<div class="col-2">
 					<div class="input-group">
-						<input class="form-control" name="height" id="height" placeholder="Height...">
+						<input class="form-control text-right" name="height" id="height" placeholder="Height...">
 						<div class="input-group-append">
 							<span class="input-group-text">cm</span>
 						</div>
@@ -74,22 +72,26 @@ body {
 				</div>
 				<div class="col-2">
 					<div class="input-group">
-						<input class="form-control" name="debut" id="debut" placeholder="Debut...">
+						<input class="form-control text-right" name="debut" id="debut" placeholder="Debut...">
 						<div class="input-group-append">
-							<span class="input-group-text">Year</span>
+							<span class="input-group-text">year</span>
 						</div>
 					</div>
 				</div>
 				<div class="col-2">
-					<button class="btn btn-outline-light" id="search">Search</button>
+					<div class="input-group">
+						<input class="form-control text-right" name="video_count" id="videoCount" readonly="readonly">
+						<div class="input-group-append">
+							<span class="input-group-text">Video</span>
+						</div>
+					</div>
 				</div>
 			</div>
-			<div class="input-group mt-2">
-    			<div class="input-group-prepend">
-      				<span class="input-group-text">Comment</span>
-    			</div>
-    			<input type="text" class="form-control" id="comment" placeholder="comment...">
-  			</div>
+			<div class="row">
+				<div class="col">
+	    			<input type="text" class="form-control" id="comment" placeholder="comment...">
+		  		</div>
+		  	</div>
 		</form>
 	</nav>
 	
@@ -119,9 +121,11 @@ $("#birth").on("keyup", function() {
 });
 
 $("#body").on("keyup", function() {
-	// B101(Jカップ) / W55 / H84
 	var value = $(this).val().trim();
-	var replace = value.replace('B', '').replace('(', '').replace('カップ)', '').replace('W', '').replace('H', '').replace(/\//gi, '-');
+	if (value[0] === 'B') {
+		value = value.substring(1, value.length);
+	}
+	var replace = value.replace('(', '').replace('カップ)', '').replace('W', '').replace('H', '').replace(/\//gi, '-');
 	$(this).val(replace);	
 });
 
@@ -171,7 +175,7 @@ Rest.Actress.get(name, function(_actress) {
 	
 	var $flayTemplete = $(".flay");
 	Rest.Flay.findByActress(actress, function(flayList) {
-		$(".video-count").html(flayList.length);
+		$("#videoCount").val(flayList.length);
 		
 		flayList.sort(function(flay1, flay2) {
 			return flay2.release.toLowerCase().localeCompare(flay1.release);
@@ -198,7 +202,7 @@ function displayPicture() {
 		$(".actress-cover-wrapper").css({
 			backgroundImage: 'url("/static/actress/' + actress.name + '")',
 			backgroundAttachment: 'fixed',
-			backgroundPosition: 'center 7rem',
+			backgroundPosition: 'center 9rem',
 			backgroundRepeat: 'no-repeat',
 			backgroundSize: 'contain',
 			height: $(window).height()

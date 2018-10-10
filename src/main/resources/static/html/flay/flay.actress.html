@@ -4,7 +4,6 @@
 	margin-top: 4rem;
 }
 .actress {
-	cursor: pointer;
 	display: inline-flex;
 	margin: 0.5rem;
 	/* width: 200px; */
@@ -55,7 +54,6 @@
 	<div id="actressList">
 		<div class="card actress">
 			<div class="card-body">
-				<span class="badge badge-pill badge-dark video-count"></span>
 				<h5 class="card-title font-weight-bold">name</h5>
 				<div class="card-text text-primary">description</div>
 			</div>
@@ -134,7 +132,9 @@ function displayActress() {
 				$("<label>", {'class': 'text'}).append(
 						$("<i>", {'class': "fa fa-star" + (actress.favorite ? " favorite" : "-o")})
 				),
-				$("<label>", {'class': 'text'}).html(actress.name)
+				$("<label>", {'class': 'text hover'}).html(actress.name).on("click", function() {
+					View.actress(actress.name);
+				})
 		);
 		$card.find(".card-text").empty().append(
 				$("<label>", {'class': 'text info-actress-extra'}).html(actress.localName),
@@ -145,9 +145,6 @@ function displayActress() {
 				$("<label>", {'class': 'text info-actress-extra'}).html(actress.body),
 				$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank()),
 		);
-		$card.on("click", function() {
-			View.actress(actress.name);
-		});
 		$card.appendTo($actressList);
 	});
 }
@@ -205,10 +202,11 @@ function displayNameCheckResult(list) {
     );
     
     $("#notice").dialog({
+    	title: "Name check result : " + list.length,
     	minWidth: 600,
     	height: $(window).height() - 120
     });
-    $(".ui-dialog-title").html("Name check result : " + list.length);
+//    $(".ui-dialog-title").html("Name check result : " + list.length);
 }
 
 actressLoad();

@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.MDC;
+import org.springframework.data.annotation.Id;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -32,6 +33,12 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 	private static final String MDC_STARTTIME = "StartTime";
 	private static final String MDC_USERNAME  = "Username";
 	
+	AccessLogRepository accessLogRepository;
+	
+	public AccessLogInterceptor(AccessLogRepository accessLogRepository) {
+		this.accessLogRepository = accessLogRepository;
+	}
+
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		MDC.put(MDC_STARTTIME, Long.toString(System.currentTimeMillis()));
@@ -95,6 +102,9 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 				status);
 		
 		log.info(accessLog.toConsoleLogString());
+		
+		if (handlerInfo != null && accessLogRepository != null)
+			accessLogRepository.save(accessLog);
 	}
 
 	private User getUser(HttpServletRequest request) {
@@ -115,6 +125,7 @@ class AccessLog implements Serializable {
 
 	private static final long serialVersionUID = FlaygroundApplication.SERIAL_VERSION_UID;
 
+	@Id
     public String id;
     public Date accessDate;
     public String remoteAddr;
@@ -127,8 +138,7 @@ class AccessLog implements Serializable {
     public User user;
     public Integer status;
     
-	public AccessLog(Date accessDate, String remoteAddr, String method, String requestURI, String contentType, Long elapsedTime,
-			String handlerInfo, String exceptionInfo, User user, Integer status) {
+	public AccessLog(Date accessDate, String remoteAddr, String method, String requestURI, String contentType, Long elapsedTime, String handlerInfo, String exceptionInfo, User user, Integer status) {
 		this.accessDate = accessDate;
 		this.remoteAddr = remoteAddr;
 		this.method = method;
@@ -142,15 +152,7 @@ class AccessLog implements Serializable {
 	}
 
 	public String toConsoleLogString() {
-		return String.format(
-				"%s - %4sms - %-5s - %-30s [%s] [%s] %s",
-				status,
-				elapsedTime, 
-				method, 
-				requestURI,
-				contentType, 
-				handlerInfo, 
-				exceptionInfo);
+		return String.format("%s - %4sms - %-5s - %-30s [%s] [%s] %s", status, elapsedTime, method, requestURI, contentType, handlerInfo, exceptionInfo);
 	}
  
 }

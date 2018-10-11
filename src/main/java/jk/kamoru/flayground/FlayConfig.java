@@ -3,6 +3,7 @@ package jk.kamoru.flayground;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -43,6 +44,8 @@ public class FlayConfig implements WebMvcConfigurer {
 	@Value("${app.video-player}") String player;
 	@Value("${app.subtitles-editor}") String editer;
 	
+	@Autowired AccessLogRepository accessLogRepository;
+	
 	public static final OS SYSTEM = OS.getOS();
 	
 	public static enum OS {
@@ -73,7 +76,7 @@ public class FlayConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new AccessLogInterceptor());
+		registry.addInterceptor(new AccessLogInterceptor(accessLogRepository));
 	}
 
 }

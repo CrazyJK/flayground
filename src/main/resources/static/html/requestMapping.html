@@ -5,9 +5,16 @@
 <title>Request Mapping List</title>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/base.scrollbar.css"/>
 <style type="text/css">
+table {
+	font-size: 0.875rem;
+}
 caption {
     caption-side: top;
+}
+.table-sm td, .table-sm th {
+    padding: .2rem;
 }
 th:nth-child(1), td:nth-child(1) {
 	text-align: right;
@@ -37,7 +44,7 @@ $.ajax({
 				$("<th>").html(idx+1),
 				$("<td>").html(mapping.reqMethod),
 				$("<td>").append(
-						$("<a>", {href: mapping.reqPattern, target: '_blank'}).html(mapping.reqPattern)
+						$("<a>", {href: mapping.reqPattern, target: '_blank', 'class': 'text-warning'}).html(mapping.reqPattern)
 				),
 				$("<td>").html(mapping.beanType),
 				$("<td>").html(mapping.beanMethod)
@@ -46,12 +53,12 @@ $.ajax({
 });
 </script>
 </head>
-<body>
+<body class="bg-dark">
 
-	<div class="container">
-		<table class="table table-sm table-hover">
-			<caption>List of Request Mapping</caption>
-			<thead>
+	<div class="container-fluid">
+		<table class="table table-sm table-hover table-dark m-0">
+			<caption class="text-light py-1"><i class="fa fa-list mx-2"></i> List of Request Mapping</caption>
+			<thead class="text-success">
 				<tr>
 					<th>#</th>
 					<th>Method</th>

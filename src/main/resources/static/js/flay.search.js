@@ -194,8 +194,7 @@ $("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 							View.actress(actress.name);
 						}),
 						$("<label>", {'class': 'text hover'}).html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut).on("click", function() {
-							console.log('actress choice', actress);
-							$(this).effect("transfer", { to: "#actress", className: "ui-effects-transfer" }, 500, function() {
+							$(this).effect("transfer", {to: "#actress", className: "ui-effects-transfer"}, 500, function() {
 								$("#actress").val(actress.name);
 								transferActressInfo(actress, this);
 								$("#actressChoice").dialog("close");
@@ -211,7 +210,7 @@ $("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 });
 
 function transferActressInfo(actress, from) {
-	$(from).effect("transfer", { to: "#newActress", className: "ui-effects-transfer" }, 500, function() {
+	$(from).effect("transfer", {to: "#newActress", className: "ui-effects-transfer"}, 500, function() {
 		$("#newActress").data("actress", actress);
 		$("#newActressFavorite").prop("checked", actress.favorite);
 		$("#newActressName"  ).val(actress.name);
@@ -285,6 +284,11 @@ $("#btn-video-close").on("click", function() {
 });
 $("#btn-history-close").on("click", function() {
 	$("#resultHistoryDiv").collapse('hide');
+});
+$("#btnReset").on("click", function() {
+	$("#findMode input.form-control").val("");
+	$("#findMode input:checkbox").prop("checked", false);
+	$("#newActress").data("actress", null);
 });
 
 if (isAdmin) {

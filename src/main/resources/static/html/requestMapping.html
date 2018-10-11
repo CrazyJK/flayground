@@ -44,7 +44,8 @@ $.ajax({
 				$("<th>").html(idx+1),
 				$("<td>").html(mapping.reqMethod),
 				$("<td>").append(
-						$("<a>", {href: mapping.reqPattern, target: '_blank', 'class': 'text-warning'}).html(mapping.reqPattern)
+						$("<a>", {href: mapping.reqPattern, target: '_blank', 'class': 'text-warning'}).html(mapping.reqPattern),
+						$("<span>", {'class': 'badge badge-fill'}).html(mapping.callCount)
 				),
 				$("<td>").html(mapping.beanType),
 				$("<td>").html(mapping.beanMethod)

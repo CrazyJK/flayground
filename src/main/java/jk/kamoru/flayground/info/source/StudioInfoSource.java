@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.info.domain.Studio;
 
 @Repository
@@ -18,7 +18,7 @@ public class StudioInfoSource extends InfoSourceJsonAdapter<Studio, String> {
 
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, FlayConfig.STUDIO_FILE_NAME);
+		return new File(infoPath, Flayground.STUDIO_FILE_NAME);
 	}
 
 	@Override

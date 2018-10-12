@@ -15,7 +15,7 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.info.domain.Actress;
 import lombok.extern.slf4j.Slf4j;
 
@@ -29,7 +29,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 	
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, FlayConfig.ACTRESS_FILE_NAME);
+		return new File(infoPath, Flayground.ACTRESS_FILE_NAME);
 	}
 
 	@Override
@@ -72,7 +72,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 		coverPool = Arrays.asList(new File(infoPath).listFiles(new FilenameFilter() {
 			@Override
 			public boolean accept(File dir, String name) {
-				for (String suffix : FlayConfig.SUFFIX_IMAGE.split(",")) {
+				for (String suffix : Flayground.SUFFIX_IMAGE.split(",")) {
 					if (name.toLowerCase().endsWith(suffix)) {
 						return true;
 					}

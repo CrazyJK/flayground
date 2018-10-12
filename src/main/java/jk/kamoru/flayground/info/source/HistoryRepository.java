@@ -14,7 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.info.domain.History;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,13 +28,13 @@ public class HistoryRepository {
 	long id = 0;
 	
 	File getInfoFile() {
-		return new File(infoPath, FlayConfig.HISTORY_FILE_NAME);
+		return new File(infoPath, Flayground.HISTORY_FILE_NAME);
 	}
 
 	@PostConstruct
 	void load() throws IOException, ParseException {
 		list = new ArrayList<>();
-		List<String> lines = FileUtils.readLines(getInfoFile(), FlayConfig.ENCODING);
+		List<String> lines = FileUtils.readLines(getInfoFile(), Flayground.ENCODING);
 		for (String line : lines) {
 			if (line.trim().length() == 0) {
 				continue;
@@ -58,10 +58,10 @@ public class HistoryRepository {
 
 	synchronized void save(History history) {
 		history.setId(id++);
-		history.setDate(FlayConfig.DateTimeFormat.format(new Date()));
+		history.setDate(Flayground.DateTimeFormat.format(new Date()));
 		list.add(history);
 		try {
-			FileUtils.writeStringToFile(getInfoFile(), history.toFileSaveString(), FlayConfig.ENCODING, true);
+			FileUtils.writeStringToFile(getInfoFile(), history.toFileSaveString(), Flayground.ENCODING, true);
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to save history log");
 		}

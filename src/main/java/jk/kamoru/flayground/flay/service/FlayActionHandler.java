@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.notice.service.NotificationService;
 import lombok.extern.slf4j.Slf4j;
@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayActionHandler {
 
-	@Autowired FlayConfig flayConfig;
+	@Autowired Flayground flayConfig;
 	@Autowired NotificationService notificationService;
 
 	@Value("${app.video-player}") String player;
@@ -42,7 +42,7 @@ public class FlayActionHandler {
 	@Async
 	public void openFolder(String folder) {
 		String explorer = "";
-		switch(FlayConfig.SYSTEM) {
+		switch(Flayground.SYSTEM) {
 		case WINDOWS:
 			explorer = "explorer";
 			break;

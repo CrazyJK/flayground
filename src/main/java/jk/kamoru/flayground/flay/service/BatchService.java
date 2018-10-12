@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
@@ -319,7 +319,7 @@ public class BatchService {
 
 		File backupInstanceJarFile = new File(backupPath, BACKUP_INSTANCE_JAR_FILENAME);
 		File backupArchiveJarFile  = new File(backupPath, BACKUP_ARCHIVE_JAR_FILENAME);
-		File backupRootPath = new File(queuePath, "backup_" + FlayConfig.YYYY_MM_DD_Format.format(new Date()));
+		File backupRootPath = new File(queuePath, "backup_" + Flayground.YYYY_MM_DD_Format.format(new Date()));
 		File backupInstanceFilePath = new File(backupRootPath, "instance");
 		FlayFileHandler.createDirectory(backupRootPath);
 		FlayFileHandler.cleanDirectory(backupRootPath);

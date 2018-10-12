@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -113,9 +113,9 @@ public class FlayServiceImpl implements FlayService {
 			String suffix = FilenameUtils.getExtension(filename);
 			FlayFileHandler.moveFileToDirectory(file, stagePath);
 			
-			if (FlayConfig.SUFFIX_VIDEO.contains(suffix.toLowerCase())) {
+			if (Flayground.SUFFIX_VIDEO.contains(suffix.toLowerCase())) {
 				movieList.add(new File(stagePath, filename));
-			} else if (FlayConfig.SUFFIX_SUBTITLES.contains(suffix.toLowerCase())) {
+			} else if (Flayground.SUFFIX_SUBTITLES.contains(suffix.toLowerCase())) {
 				subtiList.add(new File(stagePath, filename));
 			} else {
 				throw new IllegalStateException("suffix is not known " + suffix);

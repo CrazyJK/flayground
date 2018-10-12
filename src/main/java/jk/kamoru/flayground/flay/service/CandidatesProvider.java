@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,7 +23,7 @@ public class CandidatesProvider {
 	
 	public void find() {
 		listFiles = new ArrayList<>();
-		String suffix = FlayConfig.SUFFIX_VIDEO + "," + FlayConfig.SUFFIX_SUBTITLES;
+		String suffix = Flayground.SUFFIX_VIDEO + "," + Flayground.SUFFIX_SUBTITLES;
 		for (String path : candidatePaths) {
 			Collection<File> list = FileUtils.listFiles(new File(path), suffix.split(","), true);
 			log.info("find {} = {}", path, list.size());

@@ -3,20 +3,8 @@ package jk.kamoru.flayground;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.annotation.EnableAsync;
 
-import jk.kamoru.flayground.flay.source.FileBasedFlaySource;
-import jk.kamoru.flayground.flay.source.FlayFactory;
-import jk.kamoru.flayground.flay.source.FlaySource;
-import lombok.Getter;
-
-@Configuration
-@EnableAsync
-@Getter
-public class FlayConfig {
+public class Flayground {
 
 	public static final String SUFFIX_VIDEO 	= "avi,mpg,mkv,wmv,mp4,mov,rmvb";
 	public static final String SUFFIX_IMAGE 	= "jpg,jpeg,png,gif,jfif,webp";
@@ -35,9 +23,6 @@ public class FlayConfig {
 	public static final String   VIDEO_FILE_NAME = "video.json";
 	public static final String     TAG_FILE_NAME = "tag.json";
 	public static final String  ACCESS_FILE_NAME = "access.json";
-
-	@Value("${path.video.archive}") String archivePath;
-	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;
 	
 	public static final OS SYSTEM = OS.getOS();
 	
@@ -50,21 +35,6 @@ public class FlayConfig {
 					: StringUtils.containsIgnoreCase(OSName, LINUX.name()) ? LINUX
 							: StringUtils.containsIgnoreCase(OSName, MAC.name()) ? MAC : UNKNOWN;
 		}
-	}
-	
-	@Bean("flayFactory")
-	public FlayFactory flayFactory() {
-		return new FlayFactory();
-	}
-	
-	@Bean("instanceFlaySource")
-	public FlaySource instanceFlaySource() {
-		return new FileBasedFlaySource(instancePaths);
-	}
-
-	@Bean("archiveFlaySource")
-	public FlaySource archiveFlaySource() {
-		return new FileBasedFlaySource(archivePath);
 	}
 
 }

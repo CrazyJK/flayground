@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -70,6 +70,6 @@ public class AccessLogService {
 	}
 
 	private File getInfoFile() {
-		return new File(infoPath, FlayConfig.ACCESS_FILE_NAME);
+		return new File(infoPath, Flayground.ACCESS_FILE_NAME);
 	}
 }

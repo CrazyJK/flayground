@@ -7,7 +7,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import jk.kamoru.flayground.FlayConfig;
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.ActressInfoService;
@@ -79,11 +79,11 @@ public class FlayFactory {
 
 	public void addFile(Flay flay, File file) {
 		String suffix = StringUtils.substringAfterLast(file.getName(), ".").toLowerCase();
-		if (FlayConfig.SUFFIX_VIDEO.contains(suffix)) {
+		if (Flayground.SUFFIX_VIDEO.contains(suffix)) {
 			flay.addMovieFile(file);
-		} else if (FlayConfig.SUFFIX_SUBTITLES.contains(suffix)) {
+		} else if (Flayground.SUFFIX_SUBTITLES.contains(suffix)) {
 			flay.addSubtitlesFile(file);
-		} else if (FlayConfig.SUFFIX_IMAGE.contains(suffix)) {
+		} else if (Flayground.SUFFIX_IMAGE.contains(suffix)) {
 			flay.addCoverFile(file);
 		} else {
 			log.warn("unknown file {} -> {}", flay.getOpus(), file);

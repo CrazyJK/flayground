@@ -296,13 +296,13 @@ if (isAdmin) {
 		Rest.Batch.reload();
 	});
 	$(".btn-download-page-image").on("click", function() {
-		Picture.download($("#downloadPageImageForm").serialize(), function(result) {
+		Rest.Image.download($("#downloadPageImageForm").serialize(), function(result) {
 		    $("#notice > p").empty().append(
 					$("<ul>", {'class': 'list-unstyled'}).append(
 							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
 							$("<li>", {'class': 'text-primary'}).append(
 									$("<span>", {'class': 'btn-link pointer'}).on("click", function() {
-										Action.openFolder(result.localPath);
+										Rest.Flay.openFolder(result.localPath);
 									}).html(result.localPath)
 							)
 					)

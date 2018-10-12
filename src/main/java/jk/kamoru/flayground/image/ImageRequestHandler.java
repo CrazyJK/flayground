@@ -1,4 +1,4 @@
-package jk.kamoru.flayground;
+package jk.kamoru.flayground.image;
 
 import java.io.File;
 import java.io.IOException;

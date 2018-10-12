@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.notice.domain;
+package jk.kamoru.flayground.web.notice.domain;
 
 import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;

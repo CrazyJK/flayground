@@ -1,11 +1,11 @@
-package jk.kamoru.flayground.notice.service;
+package jk.kamoru.flayground.web.notice.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.flayground.notice.WebSocketConfig;
-import jk.kamoru.flayground.notice.domain.Notice;
+import jk.kamoru.flayground.web.notice.WebSocketConfig;
+import jk.kamoru.flayground.web.notice.domain.Notice;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

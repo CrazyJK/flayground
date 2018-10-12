@@ -17,6 +17,8 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
+import jk.kamoru.flayground.web.access.service.AccessLogService;
+
 @RestController
 @RequestMapping("/accesslog")
 public class AccessLogController {

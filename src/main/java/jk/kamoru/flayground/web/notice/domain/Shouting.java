@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.notice.domain;
+package jk.kamoru.flayground.web.notice.domain;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

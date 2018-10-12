@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayActionHandler {
 
-	@Autowired Flayground flayConfig;
 	@Autowired NotificationService notificationService;
 
 	@Value("${app.video-player}") String player;

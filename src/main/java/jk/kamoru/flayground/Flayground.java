@@ -9,10 +9,13 @@ public class Flayground {
 	public static final String SUFFIX_VIDEO 	= "avi,mpg,mkv,wmv,mp4,mov,rmvb";
 	public static final String SUFFIX_IMAGE 	= "jpg,jpeg,png,gif,jfif,webp";
 	public static final String SUFFIX_SUBTITLES = "smi,srt,ass,smil";
+
 	public static final String ENCODING = "UTF-8";
 	public static final String LINE = System.getProperty("line.separator");
+
 	public static final String PATTERN_DATE = "yyyy-MM-dd";
 	public static final String PATTERN_TIME = "HH:mm:ss";
+
 	public static final SimpleDateFormat DateTimeFormat = new SimpleDateFormat(PATTERN_DATE + " " + PATTERN_TIME);
 	public static final SimpleDateFormat YYYY_MM_DD_Format = new SimpleDateFormat("yyyy-MM-dd");
 	public static final SimpleDateFormat YYYY_MM_Format = new SimpleDateFormat("yyyy-MM");

@@ -1,12 +1,15 @@
-package jk.kamoru.flayground.base.access;
+package jk.kamoru.flayground.web;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+import jk.kamoru.flayground.web.access.AccessLogInterceptor;
+import jk.kamoru.flayground.web.access.AccessLogService;
+
 @Configuration
-public class AccessLogConfig implements WebMvcConfigurer {
+public class WebConfig implements WebMvcConfigurer {
 
 	@Autowired AccessLogService accessLogService;
 	

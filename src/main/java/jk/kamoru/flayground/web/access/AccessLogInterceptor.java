@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.base.access;
+package jk.kamoru.flayground.web.access;
 
 import java.util.Date;
 

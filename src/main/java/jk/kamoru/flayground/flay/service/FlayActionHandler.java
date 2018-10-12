@@ -8,6 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -23,15 +24,18 @@ public class FlayActionHandler {
 	@Autowired FlayConfig flayConfig;
 	@Autowired NotificationService notificationService;
 
+	@Value("${app.video-player}") String player;
+	@Value("${app.subtitles-editor}") String editer;
+
 	@Async
 	public void play(Flay flay) {
-		exec(composite(flayConfig.getPlayer(), flay.getFiles().get(Flay.MOVIE)));
+		exec(composite(player, flay.getFiles().get(Flay.MOVIE)));
 		notificationService.announce("Play " + flay.getOpus(), flay.getFullname());
 	}
 
 	@Async
 	public void edit(Flay flay) {
-		exec(composite(flayConfig.getEditer(), flay.getFiles().get(Flay.SUBTI)));
+		exec(composite(editer, flay.getFiles().get(Flay.SUBTI)));
 		notificationService.announce("Edit " + flay.getOpus(), flay.getFullname());
 	}
 

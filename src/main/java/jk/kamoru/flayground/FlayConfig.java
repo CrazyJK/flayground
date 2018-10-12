@@ -3,13 +3,10 @@ package jk.kamoru.flayground;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.EnableAsync;
-import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import jk.kamoru.flayground.flay.source.FileBasedFlaySource;
 import jk.kamoru.flayground.flay.source.FlayFactory;
@@ -19,7 +16,7 @@ import lombok.Getter;
 @Configuration
 @EnableAsync
 @Getter
-public class FlayConfig implements WebMvcConfigurer {
+public class FlayConfig {
 
 	public static final String SUFFIX_VIDEO 	= "avi,mpg,mkv,wmv,mp4,mov,rmvb";
 	public static final String SUFFIX_IMAGE 	= "jpg,jpeg,png,gif,jfif,webp";
@@ -37,14 +34,10 @@ public class FlayConfig implements WebMvcConfigurer {
 	public static final String  STUDIO_FILE_NAME = "studio.json";
 	public static final String   VIDEO_FILE_NAME = "video.json";
 	public static final String     TAG_FILE_NAME = "tag.json";
+	public static final String  ACCESS_FILE_NAME = "access.json";
 
 	@Value("${path.video.archive}") String archivePath;
 	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;
-	@Value("${path.info}") String infoPath;
-	@Value("${app.video-player}") String player;
-	@Value("${app.subtitles-editor}") String editer;
-	
-	@Autowired AccessLogRepository accessLogRepository;
 	
 	public static final OS SYSTEM = OS.getOS();
 	
@@ -72,11 +65,6 @@ public class FlayConfig implements WebMvcConfigurer {
 	@Bean("archiveFlaySource")
 	public FlaySource archiveFlaySource() {
 		return new FileBasedFlaySource(archivePath);
-	}
-
-	@Override
-	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(new AccessLogInterceptor(accessLogRepository));
 	}
 
 }

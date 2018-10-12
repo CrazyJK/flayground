@@ -1,13 +1,11 @@
-package jk.kamoru.flayground;
+package jk.kamoru.flayground.base.access;
 
-import java.io.Serializable;
 import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.MDC;
-import org.springframework.data.annotation.Id;
 import org.springframework.security.core.context.SecurityContextImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.context.HttpSessionSecurityContextRepository;
@@ -15,14 +13,13 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 /**
  * handler 완료 시점에 accesslog형식으로 기록한다.
  * <pre>
  *  public void addInterceptors(InterceptorRegistry registry) {
- *      registry.addInterceptor(new HandlerAccessLogger());
+ *      registry.addInterceptor(new HandlerAccessLogger(accessLogService));
  *  }
  * </pre>
  * @author kamoru
@@ -33,10 +30,10 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 	private static final String MDC_STARTTIME = "StartTime";
 	private static final String MDC_USERNAME  = "Username";
 	
-	AccessLogRepository accessLogRepository;
+	AccessLogService accessLogService;
 	
-	public AccessLogInterceptor(AccessLogRepository accessLogRepository) {
-		this.accessLogRepository = accessLogRepository;
+	public AccessLogInterceptor(AccessLogService accessLogService) {
+		this.accessLogService = accessLogService;
 	}
 
 	@Override
@@ -89,22 +86,13 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 			return;
 		}
 		
-		AccessLog accessLog = new AccessLog(
-				logDate,
-				remoteAddr,
-				reqMethod, 
-				requestUri,
-				contentType,
-				elapsedtime,
-				handlerInfo,
-				exceptionInfo,
-				user,
-				status);
+		AccessLog accessLog = new AccessLog(logDate, remoteAddr, reqMethod, requestUri, contentType, elapsedtime, handlerInfo, exceptionInfo, user != null ? user.getUsername() : "", status);
 		
 		log.info(accessLog.toConsoleLogString());
 		
-		if (handlerInfo != null && accessLogRepository != null)
-			accessLogRepository.save(accessLog);
+		if (!StringUtils.isEmpty(accessLog.handlerInfo)) {
+			accessLogService.increaseCallCount(accessLog.handlerInfo);
+		}
 	}
 
 	private User getUser(HttpServletRequest request) {
@@ -119,41 +107,3 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 	}
 
 }
-
-@Data
-class AccessLog implements Serializable {
-
-	private static final long serialVersionUID = FlaygroundApplication.SERIAL_VERSION_UID;
-
-	@Id
-    public String id;
-    public Date accessDate;
-    public String remoteAddr;
-    public String method;
-    public String requestURI;
-    public String contentType;
-    public Long elapsedTime;
-    public String handlerInfo;
-    public String exceptionInfo;
-    public User user;
-    public Integer status;
-    
-	public AccessLog(Date accessDate, String remoteAddr, String method, String requestURI, String contentType, Long elapsedTime, String handlerInfo, String exceptionInfo, User user, Integer status) {
-		this.accessDate = accessDate;
-		this.remoteAddr = remoteAddr;
-		this.method = method;
-		this.requestURI = requestURI;
-		this.contentType = contentType;
-		this.elapsedTime = elapsedTime;
-		this.handlerInfo = handlerInfo;
-		this.exceptionInfo = exceptionInfo;
-		this.user = user;
-		this.status = status;
-	}
-
-	public String toConsoleLogString() {
-		return String.format("%s - %4sms - %-5s - %-30s [%s] [%s] %s", status, elapsedTime, method, requestURI, contentType, handlerInfo, exceptionInfo);
-	}
- 
-}
-

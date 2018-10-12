@@ -188,7 +188,7 @@ var Rest = {
 		},
 		Security: {
 			whoami: function(callback) {
-				restCall("/whoami", {async: false}, callback);
+				restCall("/security/whoami", {async: false}, callback);
 			}
 		}
 };

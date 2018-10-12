@@ -1,4 +1,4 @@
-package jk.kamoru.flayground;
+package jk.kamoru.flayground.base.security;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;

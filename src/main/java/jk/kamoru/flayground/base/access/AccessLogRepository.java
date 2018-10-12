@@ -1,9 +1,7 @@
-package jk.kamoru.flayground;
+package jk.kamoru.flayground.base.access;
 
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface AccessLogRepository extends MongoRepository<AccessLog, String> {
-
-	long countByHandlerInfo(String string);
+public interface AccessLogRepository extends JpaRepository<AccessLogStatistic, String> {
 
 }

@@ -7,6 +7,7 @@ import java.util.Optional;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+import javax.transaction.Transactional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,6 +40,7 @@ public class AccessLogService {
 		return 0;
 	}
 	
+	@Transactional
 	public void increaseCallCount(String handlerInfo) {
 		AccessLogStatistic accessLogStatistic = accessLogRepository.findById(handlerInfo).orElse(new AccessLogStatistic(handlerInfo));
 		accessLogStatistic.increaseCallCount();

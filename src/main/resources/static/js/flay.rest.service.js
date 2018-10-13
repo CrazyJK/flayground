@@ -64,7 +64,7 @@ var Rest = {
 				restCall("/flay/find/actress/" + actress.name , {}, callback);
 			},
 			findCandidates: function(callback) {
-				restCall("/flay/candidates", {}, callback);
+				restCall("/flay/candidates", {title: 'Find candidates'}, callback);
 			},
 			acceptCandidates: function(flay, callback) {
 				restCall('/flay/candidates/' + flay.opus, {method: "PATCH"}, callback);

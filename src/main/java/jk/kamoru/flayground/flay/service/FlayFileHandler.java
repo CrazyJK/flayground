@@ -5,12 +5,14 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.filefilter.IOFileFilter;
 
 import jk.kamoru.flayground.flay.domain.Flay;
 import lombok.extern.slf4j.Slf4j;
@@ -149,5 +151,14 @@ public class FlayFileHandler {
 			return length + "bytes";
 		}
 	}
-
+	
+	public static Collection<File> listDirectory(File path) {
+		return  FileUtils.listFilesAndDirs(path, new IOFileFilter() {
+			@Override public boolean accept(File file) { return false; }
+			@Override public boolean accept(File dir, String name) { return false; }
+		}, new IOFileFilter() {
+				@Override public boolean accept(File file) { return true; }
+				@Override public boolean accept(File dir, String name) { return true; }
+		});
+	}
 }

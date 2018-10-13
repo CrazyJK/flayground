@@ -30,11 +30,22 @@ input {
     background-color: antiquewhite;
 }
 .candidates img {
-	display: none;
     background-color: var(--warning);
+    display: none;
+    width: 800px;
+  	height: calc(800px - var(--cover-ratio));
 }
 .candidates button:hover ~ img {
-	display: block;
+    display: block;
+}
+#btnFileControl, .candidatesFileList, #candidatesCount {
+	display: none;
+}
+.flay-title {
+	max-width: 400px;
+}
+.flay-actress {
+	max-width: 200px;
 }
 
 .btn:focus {
@@ -120,7 +131,9 @@ input {
 		</div>
 		<div class="card border-warning mt-2 collapse" id="candidates" aria-role="ADMIN">
 			<div class="card-body">
-				<button class="btn btn-sm btn-outline-warning btn-get-candidates">Get Candidates</button>
+				<button class="btn btn-sm btn-outline-warning"  id="btnGetCandidates">Get Candidates</button>
+				<button class="btn btn-sm btn-warning disabled" id="candidatesCount"></button>
+				<button class="btn btn-sm btn-outline-warning"  id="btnFileControl">Show file control</button>
 				<ul class="list-group mt-2" id="candidatesList">
 				</ul>
 			</div>

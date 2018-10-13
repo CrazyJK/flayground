@@ -2,13 +2,290 @@
  * Flay Search
  */
 
-$("#query, #opus").on("keyup", function(e) {
-	if (e.keyCode != 13) {
-		return;
+function baseSearch() {
+	$("#query, #opus").on("keyup", function(e) {
+		if (e.keyCode != 13) {
+			return;
+		}
+		var keyword = $(this).val();
+		searchSource(keyword);
+	});
+	$(".btn-search-opus").on("click", function() {
+		var value = $("#query").val();
+		Search.opus(value);
+	});
+	$(".btn-search-actress").on("click", function() {
+		var isShow = $("#findMode").hasClass("show");
+		var query = $("#query").val();
+		var name = $("#actress").val();
+		var value = '';
+		if (isShow && name)
+			value = name;
+		else 
+			value = query;
+		Search.actress(value);
+	});
+	$(".btn-search-torrent").on("click", function() {
+		var value = $("#query").val();
+		Search.torrent(value);
+	});
+	$("#btn-video-close").on("click", function() {
+		$("#resultVideoDiv").collapse('hide');
+	});
+	$("#btn-history-close").on("click", function() {
+		$("#resultHistoryDiv").collapse('hide');
+	});
+}
+
+function findMode() {
+	$(".btn-find-random-opus").on("click", function() {
+		Search.opusByRandom();
+	});
+	$("#btnReset").on("click", function() {
+		$("#findMode input.form-control").val("");
+		$("#findMode input:checkbox").prop("checked", false);
+		$("#newActress").data("actress", null);
+	});
+	$(".flay-group > input").on("keyup", function(e) {
+		if (e.keyCode === 17) return;
+
+		var fullname = "";
+		$(".flay-group > input").each(function() {
+			var value = $(this).val();
+			value = $.trim(value);
+			if ($(this).attr("id") === "opus") {
+				value = value.toUpperCase();
+				$("#query").val(value);
+			} else if ($(this).attr("id") === "actress") {
+				$("#newActressName").val(value);
+			}
+			fullname += '[' + value + ']';
+		});
+		$("input#fullname").val(fullname).effect("highlight", {}, 200);
+	});
+	$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
+		if (e.keyCode != 13) return;
+		
+		var rowOpus    = $("#rowname_opus").val().trim();
+		var rowTitle   = $("#rowname_title").val().trim();
+		var rowActress = $("#rowname_actress").val().trim();
+
+		$("#opus").val(rowOpus);
+		rowOpus != '' && searchSource(rowOpus);
+		rowOpus != '' && Search.opus(rowOpus);
+		rowTitle != '' && Search.translate(rowTitle);
+		rowActress != '' && Rest.Actress.findByLocalname(rowActress, function(actressList) {
+			console.log('findByLocalname', rowActress, actressList.length);
+
+			$("#newActressName"  ).val("");
+			$("#newActressLocal" ).val(rowActress);
+			$("#newActressBirth" ).val("");
+			$("#newActressBody"  ).val("");
+			$("#newActressHeight").val("");
+			$("#newActressDebut" ).val("");
+			
+			if (actressList.length == 0) {
+				Search.actress(rowActress);
+			} else if (actressList.length == 1) {
+				$("#actress").val(actressList[0].name).effect("highlight", {}, 1000);
+				transferActressInfo(actressList[0], "#rowname_actress");
+			} else {
+				Search.actress(rowActress);
+				$("#actressChoice > ul").empty();
+				$.each(actressList, function(idx, actress) {
+					$("<li>").append(
+							$("<label>", {'class': 'text hover'}).append(
+									$("<i>", {'class': 'fa fa-female'})
+							).on("click", function() {
+								View.actress(actress.name);
+							}),
+							$("<label>", {'class': 'text hover'}).html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut).on("click", function() {
+								$(this).effect("transfer", {to: "#actress", className: "ui-effects-transfer"}, 500, function() {
+									$("#actress").val(actress.name);
+									transferActressInfo(actress, this);
+									$("#actressChoice").dialog("close");
+								});
+							})
+					).appendTo($("#actressChoice > ul"));
+				});
+				$("#actressChoice").dialog({
+					width: 600
+				});
+			}
+		});;
+	});
+	$("#newActressBody").on("keyup", function(e) {
+		if (e.keyCode === 17) return;
+
+		var value = $(this).val().trim();
+		if (value[0] === 'B') {
+			value = value.substring(1, value.length);
+		}
+		var replace = value.replace('(', '').replace('カップ)', '').replace('W', '').replace('H', '').replace(/\//gi, '-');
+		$(this).val(replace);	
+	});
+	$("#btnRegistActress").on("click", function() {
+		var actress = $("#newActress").data("actress");
+		if (actress && actress.name === $("#newActressName").val().trim()) {
+			actress.favorite  = $("#newActressFavorite").prop("checked");
+			actress.localName = $("#newActressLocal").val().trim();
+			actress.birth     = $("#newActressBirth").val().trim();
+			actress.body      = $("#newActressBody").val().trim();
+			actress.height    = $("#newActressHeight").val().trim();
+			actress.debut     = $("#newActressDebut").val().trim();
+		} else {
+			actress = {};
+			actress.favorite  = $("#newActressFavorite").prop("checked");
+			actress.name      = $("#newActressName").val().trim();
+			actress.localName = $("#newActressLocal").val().trim();
+			actress.birth     = $("#newActressBirth").val().trim();
+			actress.body      = $("#newActressBody").val().trim();
+			actress.height    = $("#newActressHeight").val().trim();
+			actress.debut     = $("#newActressDebut").val().trim();
+			actress.comment   = "";
+			actress.cover     = null;
+		}
+		Rest.Actress.persist(actress);
+	});
+
+	function transferActressInfo(actress, from) {
+		$(from).effect("transfer", {to: "#newActress", className: "ui-effects-transfer"}, 500, function() {
+			$("#newActress").data("actress", actress);
+			$("#newActressFavorite").prop("checked", actress.favorite);
+			$("#newActressName"  ).val(actress.name);
+			$("#newActressBirth" ).val(actress.birth);
+			$("#newActressBody"  ).val(actress.body);
+			$("#newActressHeight").val(actress.height);
+			$("#newActressDebut" ).val(actress.debut);
+		});
 	}
-	var keyword = $(this).val();
-	searchSource(keyword);
-});
+}
+
+function candidateMode() {
+	$("#btnGetCandidates").on("click", function() {
+		Rest.Flay.findCandidates(function(flayList) {
+			$("#candidatesCount").show().html(flayList.length);
+			$("#btnFileControl").show();
+			$("#candidates").css({
+				marginBottom: flayList.length > 0 ? 600 : 0
+			});
+			var $candidatesList = $("#candidatesList").empty();
+			$.each(flayList, function(idx, flay) {
+				$("<div>", {'class': 'candidates list-group-item'}).append(
+						$("<button>", {'class': 'btn btn-sm btn-block btn-warning'}).append(
+								$("<strong>").html('Acept'),
+								$("<span>", {'class': 'badge badge-light mr-1 ml-1'}).html(flay.files.candidate.length),
+								flay.files.candidate.toString().replace(/,/gi, '<br>').replace(/\\/gi, '/').replace(/\//gi, '<b class="text-white"> / </b>')
+						).on("click", function() {
+							var $self = $(this);
+							Rest.Flay.acceptCandidates(flay, function() {
+								$self.hide();
+							});
+						}),
+						$("<div>", {'class': 'candidatesFileList'}).append(
+								(function() {
+									var files = [];
+									$.each(flay.files.candidate, function(idx, file) {
+										files.push(
+												$("<p>", {'class': 'm-1 border-bottom'}).append(
+														file,
+														$("<button>", {'class': 'btn btn-sm btn-link text-danger ml-2'}).html("Delete").on("click", function() {
+															$(this).hide();
+															$(this).next().show();
+														}),
+														$("<button>", {'class': 'btn btn-sm btn-link text-danger ml-2'}).css({display: 'none'}).html("Are U sure?").on("click", function() {
+															var $p = $(this).parent();
+															var $b = $(this).parent().parent().prev();
+															Rest.Flay.deleteFile(file, function() {
+																$p.hide();
+																$b.hide();
+															});
+														})
+												)
+										);
+									});
+									return files;
+								}())
+						),
+						$("<div>").append(
+								$("<label>", {'class': 'text sm'}).html(flay.studio),
+								$("<label>", {'class': 'text sm hover'}).html(flay.opus).on("click", function() {
+									View.flay(flay.opus);
+								}),
+								$("<label>", {'class': 'text sm nowrap flay-title'}).html(flay.title),
+								$("<label>", {'class': 'text sm nowrap flay-actress'}).html(flay.actressList.toString()),
+								$("<label>", {'class': 'text sm'}).html(flay.release),
+								$("<label>", {'class': 'text sm'}).html('r ' + flay.video.rank).addClass(flay.video.rank > 0 ? "danger" : ""),
+								$("<label>", {'class': 'text sm'}).html('v ' + flay.files.movie.length).addClass(flay.files.movie.length > 0 ? "danger" : ""),
+								$("<label>", {'class': 'text sm'}).html('s ' + flay.files.subtitles.length).addClass(flay.files.subtitles.length > 0 ? "danger" : "")
+						),
+						$("<img>", {'src': '/static/cover/' + flay.opus, 'class': 'img-thumbnail m-auto', id: 'cover-' + flay.opus}),
+				).appendTo($candidatesList);
+			});
+		});
+	});
+	$("#btnFileControl").on("click", function() {
+		$(".candidatesFileList").slideToggle();
+	});
+}
+
+function imageDownloadMode() {
+	$(".btn-download-page-image").on("click", function() {
+		Rest.Image.download($("#downloadPageImageForm").serialize(), function(result) {
+		    $("#notice > p").empty().append(
+					$("<ul>", {'class': 'list-unstyled'}).append(
+							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
+							$("<li>", {'class': 'text-primary'}).append(
+									$("<span>", {'class': 'btn-link pointer'}).on("click", function() {
+										Rest.Flay.openFolder(result.localPath);
+									}).html(result.localPath)
+							)
+					)
+		    );
+			$("#notice").dialog({
+				classes: {
+				    "ui-dialog": (result.result ? "ui-widget-shadow" : "ui-dialog-danger")
+				},
+				width: 500,
+				height: 200,
+				title: result.message,
+			});
+			LocalStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
+		});	
+	});
+	$("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
+}
+
+function batchMode() {
+	Rest.Batch.getOption('W', function(val) {
+		$(".btn-batch-option[data-type='W']").html('' + val).toggleClass("text-primary", val);
+	});
+	Rest.Batch.getOption('R', function(val) {
+		$(".btn-batch-option[data-type='R']").html('' + val).toggleClass("text-primary", val);
+	});
+	Rest.Batch.getOption('S', function(val) {
+		$(".btn-batch-option[data-type='S']").html('' + val).toggleClass("text-primary", val);
+	});
+
+	$(".btn-batch-start").on("click", function() {
+		var type  = $(this).data("type");
+		var title = $(this).text();
+		Rest.Batch.start(type, title);
+	});
+	$(".btn-batch-option").on("click", function() {
+		var $this = $(this);
+		var type  = $this.data("type");
+		Rest.Batch.setOption(type, function(result) {
+			$this.text(result).toggleClass("text-primary", result);
+		});
+	});
+}
+
+function reloadMode() {
+	$(".btn-reload").on("click", function() {
+		Rest.Batch.reload();
+	});
+}
 
 function searchSource(keyword) {
     var rexp = eval('/' + keyword + '/gi');
@@ -108,296 +385,16 @@ function searchSource(keyword) {
 	});
 }
 
-$(".flay-group > input").on("keyup", function(e) {
-	if (e.keyCode === 17) return;
 
-	var fullname = "";
-	$(".flay-group > input").each(function() {
-		var value = $(this).val();
-		value = $.trim(value);
-		if ($(this).attr("id") === "opus") {
-			value = value.toUpperCase();
-			$("#query").val(value);
-		} else if ($(this).attr("id") === "actress") {
-			$("#newActressName").val(value);
-		}
-		fullname += '[' + value + ']';
-	});
-	$("input#fullname").val(fullname).effect("highlight", {}, 200);
-});
-
-// rowname parsing
-/*
-$("#rowname").on("keyup", function(e) {
-	if (e.keyCode != 13)
-		return;
-	
-	var opus, title, name;
-	var rowname = $(this).val();
-	
-	var braceIndex = rowname.indexOf("]");
-	var secondPart = rowname.substring(braceIndex + 1);
-	var minusIndex = secondPart.lastIndexOf("-");
-	opus  = rowname.substring(0, braceIndex).trim();
-	if (minusIndex > 0) {
-		title = secondPart.substring(0, minusIndex).trim();
-		name  = secondPart.substring(minusIndex + 1).trim();
-	} else {
-		title = secondPart
-		name  = "";			
-	}
-	
-	$("#opus").val(opus);
-	searchSource(opus);
-	Search.opus(opus);
-	Search.translate(title);
-	name != '' && Search.actress(name);
-	
-	console.log(opus, braceIndex, title, minusIndex, name);
-});
-*/
-
-$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
-	if (e.keyCode != 13) return;
-	
-	var rowOpus    = $("#rowname_opus").val().trim();
-	var rowTitle   = $("#rowname_title").val().trim();
-	var rowActress = $("#rowname_actress").val().trim();
-
-	$("#opus").val(rowOpus);
-	rowOpus != '' && searchSource(rowOpus);
-	rowOpus != '' && Search.opus(rowOpus);
-	rowTitle != '' && Search.translate(rowTitle);
-	rowActress != '' && Rest.Actress.findByLocalname(rowActress, function(actressList) {
-		console.log('findByLocalname', rowActress, actressList.length);
-
-		$("#newActressName"  ).val("");
-		$("#newActressLocal" ).val(rowActress);
-		$("#newActressBirth" ).val("");
-		$("#newActressBody"  ).val("");
-		$("#newActressHeight").val("");
-		$("#newActressDebut" ).val("");
-		
-		if (actressList.length == 0) {
-			Search.actress(rowActress);
-		} else if (actressList.length == 1) {
-			$("#actress").val(actressList[0].name).effect("highlight", {}, 1000);
-			transferActressInfo(actressList[0], "#rowname_actress");
-		} else {
-			Search.actress(rowActress);
-			$("#actressChoice > ul").empty();
-			$.each(actressList, function(idx, actress) {
-				$("<li>").append(
-						$("<label>", {'class': 'text hover'}).append(
-								$("<i>", {'class': 'fa fa-female'})
-						).on("click", function() {
-							View.actress(actress.name);
-						}),
-						$("<label>", {'class': 'text hover'}).html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut).on("click", function() {
-							$(this).effect("transfer", {to: "#actress", className: "ui-effects-transfer"}, 500, function() {
-								$("#actress").val(actress.name);
-								transferActressInfo(actress, this);
-								$("#actressChoice").dialog("close");
-							});
-						})
-				).appendTo($("#actressChoice > ul"));
-			});
-			$("#actressChoice").dialog({
-				width: 600
-			});
-		}
-	});;
-});
-
-function transferActressInfo(actress, from) {
-	$(from).effect("transfer", {to: "#newActress", className: "ui-effects-transfer"}, 500, function() {
-		$("#newActress").data("actress", actress);
-		$("#newActressFavorite").prop("checked", actress.favorite);
-		$("#newActressName"  ).val(actress.name);
-		$("#newActressBirth" ).val(actress.birth);
-		$("#newActressBody"  ).val(actress.body);
-		$("#newActressHeight").val(actress.height);
-		$("#newActressDebut" ).val(actress.debut);
-	});
-}
-
-$("#newActressBody").on("keyup", function(e) {
-	if (e.keyCode === 17) return;
-
-	var value = $(this).val().trim();
-	if (value[0] === 'B') {
-		value = value.substring(1, value.length);
-	}
-	var replace = value.replace('(', '').replace('カップ)', '').replace('W', '').replace('H', '').replace(/\//gi, '-');
-	$(this).val(replace);	
-});
-
-$("#btnRegistActress").on("click", function() {
-	var actress = $("#newActress").data("actress");
-	if (actress && actress.name === $("#newActressName").val().trim()) {
-		actress.favorite  = $("#newActressFavorite").prop("checked");
-		actress.localName = $("#newActressLocal").val().trim();
-		actress.birth     = $("#newActressBirth").val().trim();
-		actress.body      = $("#newActressBody").val().trim();
-		actress.height    = $("#newActressHeight").val().trim();
-		actress.debut     = $("#newActressDebut").val().trim();
-	} else {
-		actress = {};
-		actress.favorite  = $("#newActressFavorite").prop("checked");
-		actress.name      = $("#newActressName").val().trim();
-		actress.localName = $("#newActressLocal").val().trim();
-		actress.birth     = $("#newActressBirth").val().trim();
-		actress.body      = $("#newActressBody").val().trim();
-		actress.height    = $("#newActressHeight").val().trim();
-		actress.debut     = $("#newActressDebut").val().trim();
-		actress.comment   = "";
-		actress.cover     = null;
-	}
-	Rest.Actress.persist(actress);
-});
-
-// btn event
-$(".btn-search-opus").on("click", function() {
-	var value = $("#query").val();
-	Search.opus(value);
-});
-$(".btn-search-actress").on("click", function() {
-	var isShow = $("#findMode").hasClass("show");
-	var query = $("#query").val();
-	var name = $("#actress").val();
-	var value = '';
-	if (isShow && name)
-		value = name;
-	else 
-		value = query;
-	Search.actress(value);
-});
-$(".btn-search-torrent").on("click", function() {
-	var value = $("#query").val();
-	Search.torrent(value);
-});
-$(".btn-find-random-opus").on("click", function() {
-	Search.opusByRandom();
-});
-$("#btn-video-close").on("click", function() {
-	$("#resultVideoDiv").collapse('hide');
-});
-$("#btn-history-close").on("click", function() {
-	$("#resultHistoryDiv").collapse('hide');
-});
-$("#btnReset").on("click", function() {
-	$("#findMode input.form-control").val("");
-	$("#findMode input:checkbox").prop("checked", false);
-	$("#newActress").data("actress", null);
-});
+// activate
+baseSearch();
+findMode();
 
 if (isAdmin) {
-	$(".btn-reload").on("click", function() {
-		Rest.Batch.reload();
-	});
-	$(".btn-download-page-image").on("click", function() {
-		Rest.Image.download($("#downloadPageImageForm").serialize(), function(result) {
-		    $("#notice > p").empty().append(
-					$("<ul>", {'class': 'list-unstyled'}).append(
-							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
-							$("<li>", {'class': 'text-primary'}).append(
-									$("<span>", {'class': 'btn-link pointer'}).on("click", function() {
-										Rest.Flay.openFolder(result.localPath);
-									}).html(result.localPath)
-							)
-					)
-		    );
-			$("#notice").dialog({
-				classes: {
-				    "ui-dialog": (result.result ? "ui-widget-shadow" : "ui-dialog-danger")
-				},
-				width: 500,
-				height: 200,
-				title: result.message,
-			});
-			LocalStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
-		});	
-	});
-	$(".btn-batch-start").on("click", function() {
-		var type  = $(this).data("type");
-		var title = $(this).text();
-		Rest.Batch.start(type, title);
-	});
-	$(".btn-batch-option").on("click", function() {
-		var $this = $(this);
-		var type  = $this.data("type");
-		Rest.Batch.setOption(type, function(result) {
-			$this.text(result).toggleClass("text-primary", result);
-		});
-	});
-	$(".btn-get-candidates").on("click", function() {
-		Rest.Flay.findCandidates(function(flayList) {
-			var $candidatesList = $("#candidatesList").empty();
-			$.each(flayList, function(idx, flay) {
-				$("<div>", {'class': 'candidates list-group-item'}).append(
-						$("<button>", {'class': 'btn btn-sm btn-block btn-warning'}).append(
-								$("<strong>").html('Acept'),
-								$("<span>", {'class': 'badge badge-light mr-1 ml-1'}).html(flay.files.candidate.length),
-								flay.files.candidate.toString().replace(/,/gi, '<br>').replace(/\\/gi, '/').replace(/\//gi, '<b class="text-white"> / </b>')
-						).on("click", function() {
-							var $self = $(this);
-							Rest.Flay.acceptCandidates(flay, function() {
-								$self.hide();
-							});
-						}),
-						$("<div>").append(
-								(function() {
-									var files = [];
-									$.each(flay.files.candidate, function(idx, file) {
-										files.push(
-												$("<p>", {'class': 'm-1 border-bottom'}).append(
-														file,
-														$("<button>", {'class': 'btn btn-sm btn-link text-danger ml-2'}).html("Delete").on("click", function() {
-															$(this).hide();
-															$(this).next().show();
-														}),
-														$("<button>", {'class': 'btn btn-sm btn-link text-danger ml-2'}).css({display: 'none'}).html("Are U sure?").on("click", function() {
-															var $p = $(this).parent();
-															var $b = $(this).parent().parent().prev();
-															Rest.Flay.deleteFile(file, function() {
-																$p.hide();
-																$b.hide();
-															});
-														})
-												)
-										);
-									});
-									return files;
-								}())
-						),
-						$("<label>", {'class': 'text'}).html(flay.studio),
-						$("<label>", {'class': 'text hover'}).html(flay.opus).on("click", function() {
-							View.flay(flay.opus);
-						}),
-						$("<label>", {'class': 'text'}).html(flay.title),
-						$("<label>", {'class': 'text'}).html(flay.actressList.toString()),
-						$("<label>", {'class': 'text'}).html(flay.release),
-						$("<label>", {'class': 'text'}).html('r ' + flay.video.rank),
-						$("<label>", {'class': 'text'}).html('v ' + flay.files.movie.length),
-						$("<label>", {'class': 'text'}).html('s ' + flay.files.subtitles.length),
-						$("<img>", {'src': '/static/cover/' + flay.opus, 'class': 'img-thumbnail m-auto'}),
-				).appendTo($candidatesList);
-			});
-		});
-	});
-
-	$("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
-
-	Rest.Batch.getOption('W', function(val) {
-		$(".btn-batch-option[data-type='W']").html('' + val).toggleClass("text-primary", val);
-	});
-	Rest.Batch.getOption('R', function(val) {
-		$(".btn-batch-option[data-type='R']").html('' + val).toggleClass("text-primary", val);
-	});
-	Rest.Batch.getOption('S', function(val) {
-		$(".btn-batch-option[data-type='S']").html('' + val).toggleClass("text-primary", val);
-	});
-
+	candidateMode();
+	imageDownloadMode();
+	batchMode();
+	reloadMode();
 } else {
 	$("[aria-role='ADMIN']").empty().hide();
 }

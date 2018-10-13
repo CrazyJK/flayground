@@ -32,9 +32,9 @@ public class FileBasedFlaySource implements FlaySource {
 	@PostConstruct
 	@Override
 	public synchronized void load() {
+		log.info("[load]");
 
 		flayMap = new HashMap<>();
-		
 		Collection<File> listFiles = new ArrayList<>();
 		for (String path : paths) {
 			File dir = new File(path);
@@ -79,7 +79,7 @@ public class FileBasedFlaySource implements FlaySource {
 			
 			flayFactory.addFile(flay, file);
 		}
-		log.info(String.format("%5s flay", flayMap.size()));
+		log.info(String.format("%5s Flay", flayMap.size()));
 	}
 
 	@Override

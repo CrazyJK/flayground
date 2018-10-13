@@ -5,13 +5,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.Charset;
-import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.SimpleFileVisitor;
 import java.nio.file.StandardOpenOption;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -226,7 +221,10 @@ public class BatchService {
 			File delegatePath = getDelegatePath(flay);
 			log.debug("assemble {} : {}", flay.getOpus(), delegatePath);
 			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
-				// String key = entry.getKey();
+				String key = entry.getKey();
+				if (Flay.CANDI.equals(key)) {
+					continue;
+				}
 				List<File> value = entry.getValue();
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
@@ -266,26 +264,20 @@ public class BatchService {
 
 	private void deleteEmptyFolder(String...emptyManagedPath) {
 		log.info("[deleteEmptyFolder]");
-		List<Path> paths = new ArrayList<>();
-		for (String dir : emptyManagedPath) {
-			try {
-				Path start = Paths.get(dir);
-				Files.walkFileTree(start, new SimpleFileVisitor<Path>() {
-
-					@Override
-					public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attrs) throws IOException {
-						if (!start.equals(dir) && !Files.newDirectoryStream(dir).iterator().hasNext()) {
-							paths.add(dir);
-						}
-						return super.preVisitDirectory(dir, attrs);
-					}});
-			} catch (IOException e) {
-				throw new IllegalStateException("deleteEmptyFolder walk fail", e);
+		for (String path : emptyManagedPath) {
+			Collection<File> listDirs = FlayFileHandler.listDirectory(new File(path));
+			for (File dir : listDirs) {
+				if (dir.getAbsolutePath().equals(path)) {
+					continue;
+				}
+				int dirSize  = FlayFileHandler.listDirectory(dir).size();
+				int fileSize = FileUtils.listFiles(dir, null, false).size();
+				log.info("  {}, dir: {}, file: {}", dir, dirSize, fileSize);
+				if (dirSize == 1 && fileSize == 0) {
+					log.info("    empty directory delete {}", dir);
+					FlayFileHandler.deleteDirectory(dir);
+				}
 			}
-		}
-		for (Path dir : paths) {
-			log.info("empty directory delete {}", dir);
-			FlayFileHandler.deleteDirectory(dir.toFile());
 		}
 	}
 

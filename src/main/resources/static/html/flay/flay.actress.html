@@ -122,9 +122,9 @@ function displayActress() {
 		var $card = $actressTemplete.clone();
 		$card.data("actress", actress);
 		
-		if (actress.cover != null) {
+		if (actress.coverSize > 0) {
 			$card.find(".card-body").css({
-				backgroundImage: "url('/static/actress/" + actress.name + "')"
+				backgroundImage: "url('/static/actress/" + actress.name + "/" + Random.getInteger(0, actress.coverSize -1) + "')"
 			});
 		}
 		

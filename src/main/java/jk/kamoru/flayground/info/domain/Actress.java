@@ -1,8 +1,11 @@
 package jk.kamoru.flayground.info.domain;
 
 import java.io.File;
+import java.util.List;
 
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,7 +25,8 @@ public class Actress implements Info<String> {
 	int debut;
 	String comment;
 	boolean favorite;
-	File cover;
+	@JsonIgnore
+	List<File> covers;
 	
 	public Actress(String name) {
 		setKey(name);
@@ -35,6 +39,12 @@ public class Actress implements Info<String> {
 		this.favorite = false;
 	}
 
+	public int getCoverSize() {
+		return covers == null ? 0 : covers.size();
+	}
+	
+	public void setCoverSize(int coverSize) {}
+	
 	@Override
 	public String getKey() {
 		return name;

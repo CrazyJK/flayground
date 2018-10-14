@@ -102,8 +102,8 @@ function findMode() {
 							$("<label>", {'class': 'text hover'}).html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut).on("click", function() {
 								$(this).effect("transfer", {to: "#actress", className: "ui-effects-transfer"}, 500, function() {
 									$("#actress").val(actress.name);
-									transferActressInfo(actress, this);
 									$("#actressChoice").dialog("close");
+									transferActressInfo(actress, "#actress");
 								});
 							})
 					).appendTo($("#actressChoice > ul"));
@@ -143,7 +143,7 @@ function findMode() {
 			actress.height    = $("#newActressHeight").val().trim();
 			actress.debut     = $("#newActressDebut").val().trim();
 			actress.comment   = "";
-			actress.cover     = null;
+			actress.coverSize = 0;
 		}
 		Rest.Actress.persist(actress);
 	});

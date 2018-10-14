@@ -49,10 +49,10 @@ public class ImageRequestHandler {
 		return getImageEntity(imageService.random().getFile());
 	}
 	
-	@GetMapping("/actress/{name}")
+	@GetMapping("/actress/{name}/{index}")
 	@ResponseBody
-	public HttpEntity<byte[]> getActressCover(@PathVariable String name) throws IOException {
-		return getImageEntity(actressInfoSource.get(name).getCover());
+	public HttpEntity<byte[]> getActressCover(@PathVariable String name, @PathVariable int index) throws IOException {
+		return getImageEntity(actressInfoSource.get(name).getCovers().get(index));
 	}
 	
 	HttpEntity<byte[]> getImageEntity(File file) throws IOException {

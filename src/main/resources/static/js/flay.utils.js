@@ -79,7 +79,7 @@ var View = {
 			Popup.open(PATH + "/info/video/" + opus, "video-" + opus, 400, 300);
 		},
 		actress: function(name) {
-			Popup.open(PATH + "/html/info/info.actress.html?name=" + name, "actress-" + name, 1000, 600);
+			Popup.open(PATH + "/html/info/info.actress.html?name=" + name, "actress-" + name, 1000, 1100);
 		},
 		tag: function(tagId) {
 //			Popup.open(PATH + "/info/tag/" + tagId, "Tag-" + tagId, 800, 650);

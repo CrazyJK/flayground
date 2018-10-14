@@ -5,11 +5,11 @@ import java.io.FilenameFilter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -35,7 +35,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 	@Override
 	public Actress get(String name) {
 		Actress actress = super.get(name);
-		actress.setCover(findCoverFile(name));
+		actress.setCovers(findCoverFile(name));
 		return actress;
 	}
 	
@@ -49,7 +49,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 		return new Actress(key);
 	}
 
-	private File findCoverFile(String name) {
+	private List<File> findCoverFile(String name) {
 		if (coverPool.size() > 0) {
 			Supplier<Stream<File>> supplier = () -> coverPool.stream().filter(f -> {
 				return f.getName().startsWith(name);
@@ -57,10 +57,8 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 			long count = supplier.get().count();			
 			if (count == 0) {
 				return null;
-			} else if (count == 1) {
-				return supplier.get().findFirst().get(); 
 			} else {
-				return supplier.get().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get();
+				return supplier.get().collect(Collectors.toList()); 
 			}
 		} else { 
 			return null;

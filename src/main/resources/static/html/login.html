@@ -7,41 +7,20 @@
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="/webjars/jquery-ui/themes/base/jquery-ui.min.css" />
 <style type="text/css">
-body {
-	background: rgba(0, 0, 0, 0.75);
+#overlay {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: rgba(0, 0, 0, 1);
 }
-
-.card-signin {
-	border: 0;
-	border-radius: 1rem;
-	box-shadow: 0 0.5rem 1rem 0 rgba(0, 0, 0, 0.1);
-}
-.card-signin .card-title {
-	margin-bottom: 2rem;
-	font-weight: 300;
-	font-size: 1.5rem;
-}
-.card-signin .card-body {
-	padding: 2rem;
-}
-
-.form-signin {
-	width: 100%;
-}
-.form-signin .btn {
-	font-size: 80%;
-	border-radius: 5rem;
-	letter-spacing: .1rem;
-	font-weight: bold;
-	padding: 1rem;
-	transition: all 0.2s;
-}
-.form-label-group {
-	position: relative;
-	margin-bottom: 1rem;
-}
-.form-label-group input {
-	border-radius: 2rem;
+#overlay > #overlay_body {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	-ms-transform: translate(-50%, -50%);
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -51,27 +30,23 @@ body {
 </head>
 <body>
 
-	<div class="container">
-		<div class="row">
-			<div class="col-sm-9 col-md-7 col-lg-5 mx-auto">
-				<div class="card card-signin my-5">
-					<div class="card-body">
-						<h1 class="card-title">Login Flayground</h1>
-						<form class="form-signin" name="f" method="POST">
-							<div class="form-label-group">
-								<input type="text" name="username" class="form-control" placeholder="Name" required autofocus>
-							</div>
-							<div class="form-label-group">
-								<input type="password" name="password" class="form-control" placeholder="Password" required>
-							</div>
-							<div class="custom-control custom-checkbox mb-3">
-								<input type="checkbox" class="custom-control-input" id="customCheck1" name="remember-me" checked="checked">
-								<label class="custom-control-label" for="customCheck1">Remember me</label>
-							</div>
-							<button class="btn btn-lg btn-primary btn-block text-uppercase" type="submit">Sign in</button>
-						</form>
+	<div id="overlay">
+		<div id="overlay_body" class="card" style="width: 370px;">
+			<div class="card-body p-4">
+				<h3 class="card-title mb-3">Login Flayground</h3>
+				<form name="f" method="POST">
+					<div class="input-group mb-3">
+						<input type="text" name="username" class="form-control border-dark" placeholder="Name" required autofocus>
 					</div>
-				</div>
+					<div class="input-group mb-3">
+						<input type="password" name="password" class="form-control border-dark" placeholder="Password" required>
+					</div>
+					<div class="custom-control custom-checkbox mb-3">
+						<input type="checkbox" class="custom-control-input" id="customCheck1" name="remember-me" checked="checked">
+						<label class="custom-control-label" for="customCheck1">Remember me</label>
+					</div>
+					<button class="btn btn-outline-dark btn-block font-weight-bold p-3" type="submit">Sign in</button>
+				</form>
 			</div>
 		</div>
 	</div>

@@ -2,50 +2,94 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>login</title>
+<title>Signin Flayground</title>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/jquery-ui/themes/base/jquery-ui.min.css" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Tangerine&effect=static">
 <style type="text/css">
-#overlay {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: rgba(0, 0, 0, 1);
+a:hover {
+	text-decoration: none;	
 }
-#overlay > #overlay_body {
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	-ms-transform: translate(-50%, -50%);
+.background {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-image: url(/img/flay_signin_bg.jpg);
+    background-position: right center;
+    background-size: cover;
+}
+.display-middle {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%,-50%);
+    -ms-transform: translate(-50%,-50%);
+}
+.w3-animate-top {
+	position: relative;
+	animation: animatetop 0.4s
+}
+@keyframes animatetop {
+	from {
+		top: -300px;
+		opacity: 0;
+	} 
+	to {
+		top: 0;
+		opacity: 1;
+	}
+}
+.flay-font {
+	font-family: 'Tangerine', serif;
+}
+.signin-wrapper {
+	min-height: 70px;
+}
+#btnEnter {
+	cursor: pointer;
+}
+#signin {
+	display: none;
+	width: 400px;
+}
+#signin input, #signin button {
+	background: rgba(0, 0, 0, 0.5);
+	color: #f8f9fa;
+}
+#signin input:focus {
+	box-shadow: none;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#btnEnter").on("click", function() {
+		$(this).hide();
+		$("#signin").show(500);
+	});
+});
+</script>
 </head>
 <body>
 
-	<div id="overlay">
-		<div id="overlay_body" class="card" style="width: 370px;">
-			<div class="card-body p-4">
-				<h3 class="card-title mb-3">Login Flayground</h3>
-				<form name="f" method="POST">
-					<div class="input-group mb-3">
+	<div class="background">
+		<div class="display-middle">
+			<h1 class="text-center display-2 text-light text-uppercase font-effect-static w3-animate-top flay-font">Flayground</h1>
+			<div class="text-center signin-wrapper">
+				<span class="text-danger font-effect-static display-4 flay-font" id="btnEnter">Enter</span>
+				<form name="f" method="POST" class="mx-auto" id="signin">
+					<input type="checkbox" class="sr-only" name="remember-me" checked="checked">
+					<div class="input-group">
 						<input type="text" name="username" class="form-control border-dark" placeholder="Name" required autofocus>
-					</div>
-					<div class="input-group mb-3">
 						<input type="password" name="password" class="form-control border-dark" placeholder="Password" required>
+						<div class="input-group-append">
+							<button class="btn btn-dark" type="submit">Signin</button>
+						</div>
 					</div>
-					<div class="custom-control custom-checkbox mb-3">
-						<input type="checkbox" class="custom-control-input" id="customCheck1" name="remember-me" checked="checked">
-						<label class="custom-control-label" for="customCheck1">Remember me</label>
-					</div>
-					<button class="btn btn-outline-dark btn-block font-weight-bold p-3" type="submit">Sign in</button>
 				</form>
 			</div>
 		</div>

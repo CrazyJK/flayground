@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -23,9 +24,8 @@ public class CandidatesProvider {
 	
 	public void find() {
 		listFiles = new ArrayList<>();
-		String suffix = Flayground.SUFFIX_VIDEO + "," + Flayground.SUFFIX_SUBTITLES;
 		for (String path : candidatePaths) {
-			Collection<File> list = FileUtils.listFiles(new File(path), suffix.split(","), true);
+			Collection<File> list = FileUtils.listFiles(new File(path), ArrayUtils.addAll(Flayground.Suffix.Video.SUFFIXs, Flayground.Suffix.Subtitles.SUFFIXs), true);
 			log.info("find {} = {}", path, list.size());
 			listFiles.addAll(list);
 		}

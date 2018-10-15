@@ -18,7 +18,7 @@ public class StudioInfoSource extends InfoSourceJsonAdapter<Studio, String> {
 
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, Flayground.STUDIO_FILE_NAME);
+		return new File(infoPath, Flayground.InfoFilename.STUDIO);
 	}
 
 	@Override

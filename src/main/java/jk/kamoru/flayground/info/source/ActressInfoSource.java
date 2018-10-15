@@ -1,8 +1,7 @@
 package jk.kamoru.flayground.info.source;
 
 import java.io.File;
-import java.io.FilenameFilter;
-import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -10,6 +9,7 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
 
@@ -25,11 +25,11 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
 	@Value("${path.info}") String infoPath;
 
-	List<File> coverPool;
+	Collection<File> coverPool;
 	
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, Flayground.ACTRESS_FILE_NAME);
+		return new File(infoPath, Flayground.InfoFilename.ACTRESS);
 	}
 
 	@Override
@@ -67,16 +67,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
 	@PostConstruct
 	void loadCover() {
-		coverPool = Arrays.asList(new File(infoPath).listFiles(new FilenameFilter() {
-			@Override
-			public boolean accept(File dir, String name) {
-				for (String suffix : Flayground.SUFFIX_IMAGE.split(",")) {
-					if (name.toLowerCase().endsWith(suffix)) {
-						return true;
-					}
-				}
-				return false;
-			}}));
+		coverPool = FileUtils.listFiles(new File(infoPath), Flayground.Suffix.Image.SUFFIXs, true);
 		log.info(String.format("%5s actress cover", coverPool.size()));
 	}
 	

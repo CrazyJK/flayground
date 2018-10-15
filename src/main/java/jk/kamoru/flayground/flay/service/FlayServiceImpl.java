@@ -113,9 +113,9 @@ public class FlayServiceImpl implements FlayService {
 			String suffix = FilenameUtils.getExtension(filename);
 			FlayFileHandler.moveFileToDirectory(file, stagePath);
 			
-			if (Flayground.SUFFIX_VIDEO.contains(suffix.toLowerCase())) {
+			if (Flayground.Suffix.Video.contains(suffix)) {
 				movieList.add(new File(stagePath, filename));
-			} else if (Flayground.SUFFIX_SUBTITLES.contains(suffix.toLowerCase())) {
+			} else if (Flayground.Suffix.Subtitles.contains(suffix)) {
 				subtiList.add(new File(stagePath, filename));
 			} else {
 				throw new IllegalStateException("suffix is not known " + suffix);

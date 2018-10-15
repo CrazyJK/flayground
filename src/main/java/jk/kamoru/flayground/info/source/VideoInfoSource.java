@@ -18,7 +18,7 @@ public class VideoInfoSource extends InfoSourceJsonAdapter<Video, String> {
 
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, Flayground.VIDEO_FILE_NAME);
+		return new File(infoPath, Flayground.InfoFilename.VIDEO);
 	}
 
 	@Override

@@ -28,7 +28,7 @@ public class HistoryRepository {
 	long id = 0;
 	
 	File getInfoFile() {
-		return new File(infoPath, Flayground.HISTORY_FILE_NAME);
+		return new File(infoPath, Flayground.InfoFilename.HISTORY);
 	}
 
 	@PostConstruct
@@ -58,7 +58,7 @@ public class HistoryRepository {
 
 	synchronized void save(History history) {
 		history.setId(id++);
-		history.setDate(Flayground.DateTimeFormat.format(new Date()));
+		history.setDate(Flayground.Format.Date.DateTime.format(new Date()));
 		list.add(history);
 		try {
 			FileUtils.writeStringToFile(getInfoFile(), history.toFileSaveString(), Flayground.ENCODING, true);

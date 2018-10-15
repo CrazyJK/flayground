@@ -74,6 +74,6 @@ public class AccessLogService {
 	}
 
 	private File getInfoFile() {
-		return new File(infoPath, Flayground.ACCESS_FILE_NAME);
+		return new File(infoPath, Flayground.InfoFilename.ACCESS);
 	}
 }

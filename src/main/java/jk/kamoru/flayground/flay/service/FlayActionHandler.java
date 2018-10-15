@@ -41,7 +41,7 @@ public class FlayActionHandler {
 	@Async
 	public void openFolder(String folder) {
 		String explorer = "";
-		switch(Flayground.SYSTEM) {
+		switch(Flayground.OS.SYSTEM) {
 		case WINDOWS:
 			explorer = "explorer";
 			break;

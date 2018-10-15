@@ -18,7 +18,7 @@ public class TagInfoSource extends InfoSourceJsonAdapter<Tag, Integer> {
 
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, Flayground.TAG_FILE_NAME);
+		return new File(infoPath, Flayground.InfoFilename.TAG);
 	}
 
 	@Override

@@ -311,7 +311,7 @@ public class BatchService {
 
 		File backupInstanceJarFile = new File(backupPath, BACKUP_INSTANCE_JAR_FILENAME);
 		File backupArchiveJarFile  = new File(backupPath, BACKUP_ARCHIVE_JAR_FILENAME);
-		File backupRootPath = new File(queuePath, "backup_" + Flayground.YYYY_MM_DD_Format.format(new Date()));
+		File backupRootPath = new File(queuePath, "backup_" + Flayground.Format.Date.YYYY_MM_DD.format(new Date()));
 		File backupInstanceFilePath = new File(backupRootPath, "instance");
 		FlayFileHandler.createDirectory(backupRootPath);
 		FlayFileHandler.cleanDirectory(backupRootPath);

@@ -190,7 +190,7 @@ var ImageControl = {
 							$("<img>").attr({
 								src: PATH + "/static/cover/" + flay.opus
 							}),
-							flay.title.substring(0, 18)
+							flay.title.substring(0, 32)
 					).on("click", function(e) {
 						e.preventDefault();
 						View.flay($(this).attr("data-index"));

@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import jk.kamoru.flayground.FlaygroundApplication;
+import jk.kamoru.flayground.Flayground;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class AccessLogStatistic implements Serializable {
 
-	private static final long serialVersionUID = FlaygroundApplication.SERIAL_VERSION_UID;
+	private static final long serialVersionUID = Flayground.SERIAL_VERSION_UID;
 	
 	@Id
     public String handlerInfo;

@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http
 			.authorizeRequests()
-				.antMatchers("/index.html", "/html/login.html", "/webjars/**", "/img/favicon/**").permitAll()
+				.antMatchers("/", "/index.html", "/html/login.html", "/webjars/**", "/img/favicon/**").permitAll()
 				.antMatchers("/batch/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
@@ -30,9 +30,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.loginPage("/html/login.html").permitAll()
 				.and()
 			.rememberMe()
-//				.rememberMeParameter("")
+				.rememberMeParameter("remember-me")
 				.and()
 			.logout()
+				.logoutSuccessUrl("/")
 				.permitAll()
 				.and()
 			.httpBasic();

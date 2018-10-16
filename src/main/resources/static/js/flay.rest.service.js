@@ -83,6 +83,9 @@ var Rest = {
 			},
 			deleteFile: function(file, callback) {
 				restCall('/flay/delete/file', {method: "PUT", data: file}, callback);
+			},
+			archive: function(page, size, keyword, callback) {
+				restCall('/archive/page', {data: {page: page, size: size, keyword: keyword}}, callback);
 			}
 		},
 		History: {

@@ -1,31 +1,161 @@
 <style type="text/css">
+.studio {
+	max-width: 150px;
+}
+.opus {
+	max-width: 100px;
+}
+.title {
+}
+.actress {
+	max-width: 150px;
+}
+.release {
+	max-width: 100px;
+}
 </style>
 
-<table class="table bg-light">
-	<thead>
-		<tr>
-			<th>Studio</th>
-			<th>Opus</th>
-			<th>Title</th>
-			<th>Actress</th>
-			<th>Release</th>
-		</tr>
-	</thead>
-	<tbody>
-	</tbody>
-</table>
+<div class="fixed-top bg-light p-2">
+	<div class="container">
+		<div class="row">
+			<div class="col-4">
+				<div class="btn-group">
+		  			<button type="button" class="btn btn-light"><i class="fa fa-list"></i></button>
+		  			<button type="button" class="btn btn-light"><i class="fa fa-th"></i></button>
+				</div>		
+			</div>
+			<div class="col-4">
+	  			<ul class="pagination justify-content-center m-0">
+	    			<li class="page-item" id="page-first"><a class="page-link" href="javascript:go('first');"><i class="fa fa-fast-backward"></i></a></li>
+	    			<li class="page-item" id="page-prev"><a class="page-link" href="javascript:go('prev');"><i class="fa fa-backward"></i></a></li>
+	    			<li class="page-item" id="page-next"><a class="page-link" href="javascript:go('next');"><i class="fa fa-forward"></i></a></li>
+	    			<li class="page-item" id="page-last"><a class="page-link" href="javascript:go('last');"><i class="fa fa-fast-forward"></i></a></li>
+	  			</ul>
+			</div>
+			<div class="col-4">
+				<div class="input-group">
+					<select id="pageSize" class="custom-select" style="max-width: 70px;">
+			    		<option value="10">10</option>
+			    		<option value="15">15</option>
+			    		<option value="20">20</option>
+			    		<option value="30">30</option>
+			    		<option value="50">50</option>
+			  		</select>
+					<input type="text" class="form-control" id="keyword" placeholder="Keyword">
+					<div class="input-group-append">
+						<button class="btn btn-success" id="btnGo">Go</button> 
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 
+<div class="container" style="margin-top: 60px;">
+
+	<table class="table table-sm table-hover bg-light my-4">
+		<thead>
+			<tr>
+				<th>Studio</th>
+				<th>Opus</th>
+				<th>Title</th>
+				<th>Actress</th>
+				<th>Release</th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+	<div>
+		<ul class="pagination justify-content-center">
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_1">1</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_2">2</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_3">3</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_4">4</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_5">5</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_6">6</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_7">7</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_8">8</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_9">9</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_10">10</a></li>
+		</ul>
+	</div>
+</div>
+	
 <script type="text/javascript">
-var page = 0, size = 5;
-Rest.Flay.archive(0, 5, '', function(page) {
-	$.each(page.content, function(idx, flay) {
-		$("<tr>").append(
-				$("<td>").html(flay.studio),
-				$("<td>").html(flay.opus),
-				$("<td>").html(flay.title),
-				$("<td>").html(flay.actressList.toString()),
-				$("<td>").html(flay.release),
-		).appendTo($("tbody"));
-	});
+var pageNo = 1, size = 15, keyword, total = 0;
+
+$("#pageSize").val(size).prop("selected", true);
+$("#btnGo").on("click", function() {
+	go(0);
 });
+
+function go(p) {
+	if (typeof p === 'string') {
+		if (p === 'first')
+			pageNo = 0;
+		else if (p === 'prev')
+			--pageNo;
+		else if (p === 'next')
+			++pageNo;
+		else if (p === 'last')
+			pageNo = total - 1;
+	} else {
+		pageNo = p - 1;
+	}
+	
+	if (pageNo < 0)
+		pageNo = 0;
+	
+	size = $("#pageSize").val();
+	keyword = $("#keyword").val();
+	
+	var $tbody = $("tbody");
+	Rest.Flay.archive(pageNo, size, keyword, function(page) {
+		$tbody.empty();
+		
+		$.each(page.content, function(idx, flay) {
+			$("<tr>").append(
+					$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
+					$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
+					$("<td>", {'class': 'nowrap title'}).html(flay.title),
+					$("<td>", {'class': 'nowrap actress'}).html(flay.actressList.toString()),
+					$("<td>", {'class': 'nowrap release'}).html(flay.release),
+			).appendTo($tbody);
+		});
+		
+		pageNo = page.number;
+		total = page.totalPages;
+		var base = Math.floor(page.number / 10) * 10;
+		var start = base + 1, end = Math.min(base + 10, page.totalPages);
+		
+		for (var i = 1; i <= 10; ++i) {
+			$("#page_" + i).attr("href", "javascript:go(" + start + ")").html(start)
+				.parent().removeClass("active disabled");
+			if (start - 1 == pageNo) {
+				$("#page_" + i).parent().addClass("active");
+			}
+			if (start > total) {
+				$("#page_" + i).parent().addClass("disabled");
+			}
+			++start;
+		}
+		
+		if (page.first) {
+			$("#page-first, #page-prev").addClass("disabled");
+		} else {
+			$("#page-first, #page-prev").removeClass("disabled");
+		}
+
+		if (page.last) {
+			$("#page-next, #page-last").addClass("disabled");
+		} else {
+			$("#page-next, #page-last").removeClass("disabled");
+		}
+
+	});
+}
+
+go(pageNo);
+
 </script>

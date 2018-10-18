@@ -250,8 +250,10 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			// set css
 			$flayCard.css({
 				width: settings.width,
-				height: parseInt(settings.width * COVER_RATIO),
 				fontSize: settings.fontSize
+			});
+			$flayCard.find(".card-body").css({
+				height: parseInt(settings.width * COVER_RATIO),
 			});
 			$flayCard.find(".flay-title").css({
 				maxWidth: settings.width - settings.width/20

@@ -6,12 +6,41 @@
 	max-width: 100px;
 }
 .title {
+	max-width: 610px;
 }
 .actress {
 	max-width: 150px;
 }
 .release {
 	max-width: 100px;
+}
+@media (min-width: 992px) {
+	.title {
+		max-width: 430px;
+	}
+}
+@media (min-width: 768px) {
+	.studio {
+		max-width: 100px;
+	}
+	.title {
+	    max-width: 290px;
+	}
+	.actress {
+		max-width: 100px;
+	}
+	.release {
+		max-width: 100px;
+	}
+}
+
+.flay-info {
+	color: var(--light);
+	text-shadow: 1px 1px 4px var(--dark);
+}
+#detailView {
+	display: none;
+	background-color: rgba(0,0,0,.5);
 }
 </style>
 
@@ -20,8 +49,8 @@
 		<div class="row">
 			<div class="col-4">
 				<div class="btn-group">
-		  			<button type="button" class="btn btn-light"><i class="fa fa-list"></i></button>
-		  			<button type="button" class="btn btn-light"><i class="fa fa-th"></i></button>
+		  			<button type="button" class="btn btn-light btn-view-type" data-type="table"><i class="fa fa-list"></i></button>
+		  			<button type="button" class="btn btn-light btn-view-type" data-type="card" ><i class="fa fa-th"></i></button>
 				</div>		
 			</div>
 			<div class="col-4">
@@ -51,22 +80,36 @@
 	</div>
 </div>
 
-<div class="container" style="margin-top: 60px;">
+<div style="margin-top: calc(1rem * 4);">
 
-	<table class="table table-sm table-hover bg-light my-4">
-		<thead>
-			<tr>
-				<th>Studio</th>
-				<th>Opus</th>
-				<th>Title</th>
-				<th>Actress</th>
-				<th>Release</th>
-			</tr>
-		</thead>
-		<tbody>
-		</tbody>
-	</table>
-	<div>
+	<div class="container rounded p-2" id="detailView">
+		<div class="text-right">
+			<i class="fa fa-times text-danger mx-2 hover" id="btnCloseDetailView"></i>
+		</div>
+		<div class="mx-auto mb-3" id="detailViewInner">
+		</div>
+	</div>
+
+	<div class="container" id="tableView">
+		<table class="table table-sm table-hover bg-light my-4">
+			<thead>
+				<tr>
+					<th class="studio">Studio</th>
+					<th class="opus">Opus</th>
+					<th class="title">Title</th>
+					<th class="actress">Actress</th>
+					<th class="release">Release</th>
+				</tr>
+			</thead>
+			<tbody id="tableList">
+			</tbody>
+		</table>
+	</div>
+	<div class="container-fluid" id="cardView">
+		<div id="cardList" class="text-center my-4"></div>
+	</div>	
+	
+	<div class="container">
 		<ul class="pagination justify-content-center">
 			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_1">1</a></li>
 			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_2">2</a></li>
@@ -83,9 +126,27 @@
 </div>
 	
 <script type="text/javascript">
-var pageNo = 1, size = 15, keyword, total = 0;
+var pageNo = 1, size = 15, keyword, total = 0, viewType = 'table';
 
 $("#pageSize").val(size).prop("selected", true);
+
+$(".btn-view-type").on("click", function() {
+	viewType = $(this).data("type");
+	if (viewType === 'table') {
+		$("#tableView").show();
+		$("#cardView").hide();
+	} else if (viewType === 'card') {
+		$("#tableView").hide();
+		$("#cardView").show();
+	}
+	showDetail('off');
+	go(0);
+});
+
+$("#btnCloseDetailView").on("click", function() {
+	showDetail('off');
+});
+
 $("#btnGo").on("click", function() {
 	go(0);
 });
@@ -110,19 +171,42 @@ function go(p) {
 	size = $("#pageSize").val();
 	keyword = $("#keyword").val();
 	
-	var $tbody = $("tbody");
+	var $tableList = $("#tableList");
+	var $cardList = $("#cardList");
 	Rest.Flay.archive(pageNo, size, keyword, function(page) {
-		$tbody.empty();
 		
-		$.each(page.content, function(idx, flay) {
-			$("<tr>").append(
-					$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
-					$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
-					$("<td>", {'class': 'nowrap title'}).html(flay.title),
-					$("<td>", {'class': 'nowrap actress'}).html(flay.actressList.toString()),
-					$("<td>", {'class': 'nowrap release'}).html(flay.release),
-			).appendTo($tbody);
-		});
+		if (viewType === 'table') {
+			$tableList.empty();
+			$.each(page.content, function(idx, flay) {
+				$("<tr>").append(
+						$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
+						$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
+						$("<td>", {'class': 'nowrap title'}).html(flay.title).on("click", function() {
+							showDetail(flay);
+						}),
+						$("<td>", {'class': 'nowrap actress'}).html(flay.actressList.toString()),
+						$("<td>", {'class': 'nowrap release'}).html(flay.release),
+				).appendTo($tableList);
+			});
+		} else if (viewType === 'card') {
+			$cardList.empty();
+			$.each(page.content, function(idx, flay) {
+				$("<div>", {'class': 'card m-2'}).css({
+					display: 'inline-block'
+				}).append(
+						$("<img>", {'class': 'card-img-top', 'src': '/static/cover/' + flay.opus}).css({
+							width: 300,
+							height: Math.round(300 * COVER_RATIO),
+						}),
+						$("<div>", {'class': 'card-img-overlay'}).append(
+								$("<h4>", {'class': 'card-title flay-info nowrap'}).html(flay.title),
+								$("<p>", {'class': 'card-text flay-info nowrap'}).html(flay.actressList.toString())
+						)
+				).on("click", function() {
+					showDetail(flay);
+				}).appendTo($cardList);
+			});
+		}
 		
 		pageNo = page.number;
 		total = page.totalPages;
@@ -154,6 +238,15 @@ function go(p) {
 		}
 
 	});
+}
+
+function showDetail(flay) {
+	if (typeof flay === 'string' && flay === 'off') {
+		$("#detailView").slideUp();
+	} else {
+		$("#detailViewInner").empty().appendFlayCard(flay);
+		$("#detailView").slideDown();
+	}
 }
 
 go(pageNo);

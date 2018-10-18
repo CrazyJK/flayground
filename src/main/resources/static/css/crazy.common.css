@@ -502,3 +502,6 @@ body.bg-dark .card, body.bg-dark label.text {
 	background-color: var(--dark);
 	color: var(--light);
 }
+body.bg-dark th, body.bg-dark td {
+	color: var(--light);
+}

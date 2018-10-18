@@ -41,6 +41,7 @@
 #detailView {
 	display: none;
 	background-color: rgba(0,0,0,.5);
+	border: 1px solid rgba(255,255,255,.5);
 }
 </style>
 
@@ -63,16 +64,16 @@
 			</div>
 			<div class="col-4">
 				<div class="input-group">
-					<select id="pageSize" class="custom-select" style="max-width: 70px;">
+					<select id="pageSize" class="custom-select border-primary" style="max-width: 70px;">
 			    		<option value="10">10</option>
 			    		<option value="15">15</option>
 			    		<option value="20">20</option>
 			    		<option value="30">30</option>
 			    		<option value="50">50</option>
 			  		</select>
-					<input type="text" class="form-control" id="keyword" placeholder="Keyword">
+					<input type="text" class="form-control border-primary" id="keyword" placeholder="Keyword">
 					<div class="input-group-append">
-						<button class="btn btn-success" id="btnGo">Go</button> 
+						<button class="btn btn-outline-primary" id="btnGo">Go</button> 
 					</div>
 				</div>
 			</div>
@@ -80,37 +81,41 @@
 	</div>
 </div>
 
-<div style="margin-top: calc(1rem * 4);">
+<div id="contentWrapper">
 
 	<div class="container rounded p-2" id="detailView">
 		<div class="text-right">
 			<i class="fa fa-times text-danger mx-2 hover" id="btnCloseDetailView"></i>
 		</div>
-		<div class="mx-auto mb-3" id="detailViewInner">
+		<div class="mx-auto mb-4" id="detailViewInner">
 		</div>
 	</div>
 
 	<div class="container" id="tableView">
-		<table class="table table-sm table-hover bg-light my-4">
-			<thead>
-				<tr>
-					<th class="studio">Studio</th>
-					<th class="opus">Opus</th>
-					<th class="title">Title</th>
-					<th class="actress">Actress</th>
-					<th class="release">Release</th>
-				</tr>
-			</thead>
-			<tbody id="tableList">
-			</tbody>
-		</table>
+		<div class="rounded bg-light p-1">
+			<table class="table table-sm table-hover bg-light m-0">
+				<thead>
+					<tr>
+						<th class="border-top-0 studio">Studio</th>
+						<th class="border-top-0 opus">Opus</th>
+						<th class="border-top-0 title">Title</th>
+						<th class="border-top-0 actress">Actress</th>
+						<th class="border-top-0 release">Release</th>
+					</tr>
+				</thead>
+				<tbody id="tableList">
+				</tbody>
+			</table>
+		</div>
 	</div>
 	<div class="container-fluid" id="cardView">
-		<div id="cardList" class="text-center my-4"></div>
+		<div id="cardList" class="text-center"></div>
 	</div>	
+</div>
 	
+<div class="fixed-bottom bg-light p-2">
 	<div class="container">
-		<ul class="pagination justify-content-center">
+		<ul class="pagination justify-content-center m-0">
 			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_1">1</a></li>
 			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_2">2</a></li>
 			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_3">3</a></li>
@@ -126,9 +131,17 @@
 </div>
 	
 <script type="text/javascript">
-var pageNo = 1, size = 15, keyword, total = 0, viewType = 'table';
+var FLAY_ARCHIVE_VIEWTYPE = 'flay.archive.viewType';
+var FLAY_ARCHIVE_PAGESIZE = 'flay.archive.pageSize';
+var pageNo = 0, keyword, total = 0,
+	size = LocalStorageItem.getInteger(FLAY_ARCHIVE_PAGESIZE, 15), 
+	viewType = LocalStorageItem.get(FLAY_ARCHIVE_VIEWTYPE, 'table');
 
-$("#pageSize").val(size).prop("selected", true);
+$("#pageSize").val(size).prop("selected", true).on("change", function() {
+	LocalStorageItem.set(FLAY_ARCHIVE_PAGESIZE, $(this).val());
+	showDetail('off');
+	go('current');
+});
 
 $(".btn-view-type").on("click", function() {
 	viewType = $(this).data("type");
@@ -139,8 +152,9 @@ $(".btn-view-type").on("click", function() {
 		$("#tableView").hide();
 		$("#cardView").show();
 	}
+	LocalStorageItem.set(FLAY_ARCHIVE_VIEWTYPE, viewType);
 	showDetail('off');
-	go(0);
+	go('current');
 });
 
 $("#btnCloseDetailView").on("click", function() {
@@ -148,8 +162,16 @@ $("#btnCloseDetailView").on("click", function() {
 });
 
 $("#btnGo").on("click", function() {
-	go(0);
+	go(1);
 });
+
+$(window).on("resize", function() {
+	$("#contentWrapper").css({
+		height: $(window).height() - 16*6,
+		marginTop: $(".fixed-top").height() + 16,
+		overflow: 'scroll'
+	}).height();
+}).trigger("resize");
 
 function go(p) {
 	if (typeof p === 'string') {
@@ -174,14 +196,13 @@ function go(p) {
 	var $tableList = $("#tableList");
 	var $cardList = $("#cardList");
 	Rest.Flay.archive(pageNo, size, keyword, function(page) {
-		
 		if (viewType === 'table') {
 			$tableList.empty();
 			$.each(page.content, function(idx, flay) {
 				$("<tr>").append(
 						$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
 						$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
-						$("<td>", {'class': 'nowrap title'}).html(flay.title).on("click", function() {
+						$("<td>", {'class': 'nowrap title hover'}).html(flay.title).on("click", function() {
 							showDetail(flay);
 						}),
 						$("<td>", {'class': 'nowrap actress'}).html(flay.actressList.toString()),
@@ -191,16 +212,22 @@ function go(p) {
 		} else if (viewType === 'card') {
 			$cardList.empty();
 			$.each(page.content, function(idx, flay) {
-				$("<div>", {'class': 'card m-2'}).css({
-					display: 'inline-block'
+				$("<div>", {'class': 'card m-2 hover'}).css({
+					display: 'inline-block',
+					width: 300,
 				}).append(
 						$("<img>", {'class': 'card-img-top', 'src': '/static/cover/' + flay.opus}).css({
-							width: 300,
-							height: Math.round(300 * COVER_RATIO),
+							width: 298,
+							height: Math.round(298 * COVER_RATIO),
 						}),
-						$("<div>", {'class': 'card-img-overlay'}).append(
-								$("<h4>", {'class': 'card-title flay-info nowrap'}).html(flay.title),
-								$("<p>", {'class': 'card-text flay-info nowrap'}).html(flay.actressList.toString())
+						$("<div>", {'class': 'card-body bg-dark p-2'}).css({
+							borderBottomLeftRadius: 4,
+    						borderBottomRightRadius: 4
+						}).append(
+								$("<h5>", {'class': 'card-title flay-info nowrap m-0', title: flay.title}).html(flay.title),
+								$("<p>", {'class': 'card-text flay-info nowrap'}).css({
+									minHeight: 24
+								}).html(flay.actressList.toString())
 						)
 				).on("click", function() {
 					showDetail(flay);
@@ -249,6 +276,6 @@ function showDetail(flay) {
 	}
 }
 
-go(pageNo);
+$("button.btn-view-type[data-type='" + viewType + "']").click();
 
 </script>

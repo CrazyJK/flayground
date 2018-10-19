@@ -466,11 +466,18 @@ label.text.sm {
  	color: #747474 !important;
 }
 
+.btn:focus, .custom-select:focus, .form-control:focus {
+	box-shadow: none;
+}
+
 
 /* default color for bootstrap 4 */
 .page-item.active .page-link {
     background-color: midnightblue;
     border-color: midnightblue;
+}
+.page-link {
+	color: midnightblue;
 }
 .btn-link, .btn-link:hover {
     color: midnightblue;

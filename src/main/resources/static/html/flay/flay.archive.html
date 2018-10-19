@@ -39,43 +39,58 @@
 	text-shadow: 1px 1px 4px var(--dark);
 }
 #detailView {
+	position: relative;
 	display: none;
 	background-color: rgba(0,0,0,.5);
 	border: 1px solid rgba(255,255,255,.5);
+}
+
+.marker-direction {
+    position: absolute;
+    top: 150px;
+    font-size: 200px;
+    cursor: pointer;
+    transition: color .3s;
+}
+.marker-direction:hover {
+	color: rgba(248, 249, 250, .5);
+}
+.marker-previous {
+    left: 10px;
+}
+.marker-next {
+    right: 10px;
 }
 </style>
 
 <div class="fixed-top bg-light p-2">
 	<div class="container">
 		<div class="row">
-			<div class="col-4">
-				<div class="btn-group">
-		  			<button type="button" class="btn btn-light btn-view-type" data-type="table"><i class="fa fa-list"></i></button>
-		  			<button type="button" class="btn btn-light btn-view-type" data-type="card" ><i class="fa fa-th"></i></button>
-				</div>		
+			<div class="col-3">
+				<input type="text" class="form-control border-light bg-light" id="keyword" placeholder="Search">
 			</div>
-			<div class="col-4">
+			<div class="col-6">
 	  			<ul class="pagination justify-content-center m-0">
-	    			<li class="page-item" id="page-first"><a class="page-link" href="javascript:go('first');"><i class="fa fa-fast-backward"></i></a></li>
-	    			<li class="page-item" id="page-prev"><a class="page-link" href="javascript:go('prev');"><i class="fa fa-backward"></i></a></li>
-	    			<li class="page-item" id="page-next"><a class="page-link" href="javascript:go('next');"><i class="fa fa-forward"></i></a></li>
-	    			<li class="page-item" id="page-last"><a class="page-link" href="javascript:go('last');"><i class="fa fa-fast-forward"></i></a></li>
+	    			<li class="page-item" id="page-first"><a class="page-link" href="javascript:goPage('first');"><i class="fa fa-fast-backward"></i></a></li>
+	    			<li class="page-item" id="page-prev"><a class="page-link" href="javascript:goPage('prev');"><i class="fa fa-backward"></i></a></li>
+	    			<li class="page-item" id="page-next"><a class="page-link" href="javascript:goPage('next');"><i class="fa fa-forward"></i></a></li>
+	    			<li class="page-item" id="page-last"><a class="page-link" href="javascript:goPage('last');"><i class="fa fa-fast-forward"></i></a></li>
 	  			</ul>
 			</div>
-			<div class="col-4">
+			<div class="col-3">
 				<div class="input-group">
-					<select id="pageSize" class="custom-select border-primary" style="max-width: 70px;">
+					<select id="pageSize" class="custom-select border-light bg-light" style="max-width: 70px;">
 			    		<option value="10">10</option>
 			    		<option value="15">15</option>
 			    		<option value="20">20</option>
 			    		<option value="30">30</option>
 			    		<option value="50">50</option>
 			  		</select>
-					<input type="text" class="form-control border-primary" id="keyword" placeholder="Keyword">
 					<div class="input-group-append">
-						<button class="btn btn-outline-primary" id="btnGo">Go</button> 
-					</div>
-				</div>
+			  			<button type="button" class="btn btn-light btn-view-type" data-type="table"><i class="fa fa-list"></i></button>
+			  			<button type="button" class="btn btn-light btn-view-type" data-type="card" ><i class="fa fa-th"></i></button>
+					</div>		
+				</div>		
 			</div>
 		</div>
 	</div>
@@ -83,12 +98,13 @@
 
 <div id="contentWrapper">
 
-	<div class="container rounded p-2" id="detailView">
+	<div class="container rounded p-2 mb-4" id="detailView">
 		<div class="text-right">
 			<i class="fa fa-times text-danger mx-2 hover" id="btnCloseDetailView"></i>
 		</div>
-		<div class="mx-auto mb-4" id="detailViewInner">
-		</div>
+		<div class="marker-direction marker-previous"><i class="fa fa-angle-left"></i></div>
+		<div class="marker-direction marker-next"><i class="fa fa-angle-right"></i></div>
+		<div class="mx-auto mb-4" id="detailViewInner"></div>
 	</div>
 
 	<div class="container" id="tableView">
@@ -103,8 +119,7 @@
 						<th class="border-top-0 release">Release</th>
 					</tr>
 				</thead>
-				<tbody id="tableList">
-				</tbody>
+				<tbody id="tableList"></tbody>
 			</table>
 		</div>
 	</div>
@@ -116,16 +131,16 @@
 <div class="fixed-bottom bg-light p-2">
 	<div class="container">
 		<ul class="pagination justify-content-center m-0">
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_1">1</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_2">2</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_3">3</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_4">4</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_5">5</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_6">6</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_7">7</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_8">8</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_9">9</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:go()" id="page_10">10</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_1">1</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_2">2</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_3">3</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_4">4</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_5">5</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_6">6</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_7">7</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_8">8</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_9">9</a></li>
+			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_10">10</a></li>
 		</ul>
 	</div>
 </div>
@@ -136,44 +151,61 @@ var FLAY_ARCHIVE_PAGESIZE = 'flay.archive.pageSize';
 var pageNo = 0, keyword, total = 0,
 	size = LocalStorageItem.getInteger(FLAY_ARCHIVE_PAGESIZE, 15), 
 	viewType = LocalStorageItem.get(FLAY_ARCHIVE_VIEWTYPE, 'table');
+var flayList = [];
 
-$("#pageSize").val(size).prop("selected", true).on("change", function() {
-	LocalStorageItem.set(FLAY_ARCHIVE_PAGESIZE, $(this).val());
-	showDetail('off');
-	go('current');
-});
+function addEventListener() {
+	$("#pageSize").val(size).prop("selected", true).on("change", function() {
+		LocalStorageItem.set(FLAY_ARCHIVE_PAGESIZE, $(this).val());
+		showDetail('off');
+		goPage('current');
+	});
 
-$(".btn-view-type").on("click", function() {
-	viewType = $(this).data("type");
-	if (viewType === 'table') {
-		$("#tableView").show();
-		$("#cardView").hide();
-	} else if (viewType === 'card') {
-		$("#tableView").hide();
-		$("#cardView").show();
-	}
-	LocalStorageItem.set(FLAY_ARCHIVE_VIEWTYPE, viewType);
-	showDetail('off');
-	go('current');
-});
+	$(".btn-view-type").on("click", function() {
+		viewType = $(this).data("type");
+		if (viewType === 'table') {
+			$("#tableView").show();
+			$("#cardView").hide();
+		} else if (viewType === 'card') {
+			$("#tableView").hide();
+			$("#cardView").show();
+		}
+		LocalStorageItem.set(FLAY_ARCHIVE_VIEWTYPE, viewType);
+		showDetail('off');
+		goPage('current');
+	});
 
-$("#btnCloseDetailView").on("click", function() {
-	showDetail('off');
-});
+	$("#btnCloseDetailView").on("click", function() {
+		showDetail('off');
+	});
 
-$("#btnGo").on("click", function() {
-	go(1);
-});
+	$("#keyword").on("keyup", function(e) {
+		if (e.keyCode === 13)
+			goPage(1);
+	});
 
-$(window).on("resize", function() {
-	$("#contentWrapper").css({
-		height: $(window).height() - 16*6,
-		marginTop: $(".fixed-top").height() + 16,
-		overflow: 'scroll'
-	}).height();
-}).trigger("resize");
+	$(".marker-previous").on("click", function() {
+		var idx = $("#detailViewInner").data("idx");
+		showDetail(--idx);
+	});
+	$(".marker-next").on("click", function() {
+		var idx = $("#detailViewInner").data("idx");
+		showDetail(++idx);
+	});
 
-function go(p) {
+	$(window).on("resize", function() {
+		var windowHeight = $(window).height();
+		var    topHeight = $(".fixed-top").height() + 16 + 8;
+		var bottomHeight = $(".fixed-bottom").height() + 16 + 8;
+
+		$("#contentWrapper").css({
+			height: windowHeight - topHeight - bottomHeight,
+			marginTop: topHeight,
+			overflow: 'auto'
+		});
+	}).trigger('resize');	
+}
+
+function goPage(p) {
 	if (typeof p === 'string') {
 		if (p === 'first')
 			pageNo = 0;
@@ -187,61 +219,74 @@ function go(p) {
 		pageNo = p - 1;
 	}
 	
-	if (pageNo < 0)
-		pageNo = 0;
-	
+	pageNo = Math.max(pageNo, 0);
 	size = $("#pageSize").val();
 	keyword = $("#keyword").val();
-	
-	var $tableList = $("#tableList");
-	var $cardList = $("#cardList");
+
 	Rest.Flay.archive(pageNo, size, keyword, function(page) {
+		flayList = page.content;
+		
+		showDetail('off');
 		if (viewType === 'table') {
-			$tableList.empty();
-			$.each(page.content, function(idx, flay) {
-				$("<tr>").append(
-						$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
-						$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
-						$("<td>", {'class': 'nowrap title hover'}).html(flay.title).on("click", function() {
-							showDetail(flay);
-						}),
-						$("<td>", {'class': 'nowrap actress'}).html(flay.actressList.toString()),
-						$("<td>", {'class': 'nowrap release'}).html(flay.release),
-				).appendTo($tableList);
-			});
+			displayTable();
 		} else if (viewType === 'card') {
-			$cardList.empty();
-			$.each(page.content, function(idx, flay) {
-				$("<div>", {'class': 'card m-2 hover'}).css({
-					display: 'inline-block',
-					width: 300,
-				}).append(
-						$("<img>", {'class': 'card-img-top', 'src': '/static/cover/' + flay.opus}).css({
-							width: 298,
-							height: Math.round(298 * COVER_RATIO),
-						}),
-						$("<div>", {'class': 'card-body bg-dark p-2'}).css({
-							borderBottomLeftRadius: 4,
-    						borderBottomRightRadius: 4
-						}).append(
-								$("<h5>", {'class': 'card-title flay-info nowrap m-0', title: flay.title}).html(flay.title),
-								$("<p>", {'class': 'card-text flay-info nowrap'}).css({
-									minHeight: 24
-								}).html(flay.actressList.toString())
-						)
-				).on("click", function() {
-					showDetail(flay);
-				}).appendTo($cardList);
-			});
+			displayCard();
 		}
 		
+		pagination(page);
+	});
+	
+	function displayTable() {
+		var $tableList = $("#tableList");
+		$tableList.empty();
+		$.each(flayList, function(idx, flay) {
+			$("<tr>").append(
+					$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
+					$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
+					$("<td>", {'class': 'nowrap title hover'}).html(flay.title).on("click", function() {
+						showDetail(idx);
+					}),
+					$("<td>", {'class': 'nowrap actress'}).html(flay.actressList.toString()),
+					$("<td>", {'class': 'nowrap release'}).html(flay.release),
+			).appendTo($tableList);
+		});
+	}
+	
+	function displayCard() {
+		var $cardList = $("#cardList");
+		$cardList.empty();
+		$.each(flayList, function(idx, flay) {
+			$("<div>", {'class': 'card m-2 hover'}).css({
+				display: 'inline-block',
+				width: 300,
+			}).append(
+					$("<img>", {'class': 'card-img-top', 'src': '/static/cover/' + flay.opus}).css({
+						width: 298,
+						height: Math.round(298 * COVER_RATIO),
+					}),
+					$("<div>", {'class': 'card-body bg-dark p-2'}).css({
+						borderBottomLeftRadius: 4,
+						borderBottomRightRadius: 4
+					}).append(
+							$("<h5>", {'class': 'card-title flay-info nowrap m-0', title: flay.title}).html(flay.title),
+							$("<p>", {'class': 'card-text flay-info nowrap'}).css({
+								minHeight: 24
+							}).html(flay.actressList.toString())
+					)
+			).on("click", function() {
+				showDetail(idx);
+			}).appendTo($cardList);
+		});
+	}
+	
+	function pagination(page) {
 		pageNo = page.number;
 		total = page.totalPages;
 		var base = Math.floor(page.number / 10) * 10;
 		var start = base + 1, end = Math.min(base + 10, page.totalPages);
 		
 		for (var i = 1; i <= 10; ++i) {
-			$("#page_" + i).attr("href", "javascript:go(" + start + ")").html(start)
+			$("#page_" + i).attr("href", "javascript:goPage(" + start + ")").html(start)
 				.parent().removeClass("active disabled");
 			if (start - 1 == pageNo) {
 				$("#page_" + i).parent().addClass("active");
@@ -263,19 +308,22 @@ function go(p) {
 		} else {
 			$("#page-next, #page-last").removeClass("disabled");
 		}
-
-	});
-}
-
-function showDetail(flay) {
-	if (typeof flay === 'string' && flay === 'off') {
-		$("#detailView").slideUp();
-	} else {
-		$("#detailViewInner").empty().appendFlayCard(flay);
-		$("#detailView").slideDown();
 	}
 }
 
+function showDetail(idx) {
+	if (typeof idx === 'string' && idx === 'off') {
+		$("#detailView").slideUp();
+	} else if (typeof idx === 'number') {
+		var flay = flayList[idx];
+		if (flay) {
+			$("#detailViewInner").data("idx", idx).empty().appendFlayCard(flay);
+			$("#detailView").slideDown();
+		}
+	}
+}
+
+addEventListener();
 $("button.btn-view-type[data-type='" + viewType + "']").click();
 
 </script>

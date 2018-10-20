@@ -9,7 +9,7 @@ Rest.Flay.list(function(list) {
 
 $(window).on("resize", function() {
 	console.log("$(window).width()", $(window).width());
-	$('canvas').attr("width", $(window).width() - 64);
+//	$('canvas').attr("width", $(".card-body").width() - 64);
 }).trigger("resize");
 
 $("#groupByRelease").on('show.bs.collapse', function() {

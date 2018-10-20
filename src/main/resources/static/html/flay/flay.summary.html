@@ -38,6 +38,10 @@
 	text-align: right;
 }
 
+.card {
+	display: inline-flex;
+	width: 850px;
+}
 .card-body > .table {
 	font-family: D2Coding;
 }
@@ -46,12 +50,20 @@
 }
 
 .card-body table.table th:nth-child(1), .card-body table.table td:nth-child(1) {
+	text-align: left;
 }
 .card-body table.table th:nth-child(2), .card-body table.table td:nth-child(2) {
 	text-align: right;
 }
 .card-body table.table th:nth-child(3), .card-body table.table td:nth-child(3) {
 	text-align: right;
+}
+
+.card-body table.table thead th {
+	border-bottom: 1px solid rgba(238, 238, 238, .5);
+}
+.card-body table.table tfoot th {
+	border-top: 1px solid rgba(238, 238, 238, .5);
 }
 
 td.item-key {
@@ -92,87 +104,88 @@ td.item-progress > .progress {
 
 	<div style="height: 55px;"></div>
 
-	<div id="groupByStudio" class="collapse card m-2">
-		<div class="card-header text-center">
-			Grouped by Studio(<span class="studio-count"></span>)
+	<div class="container-fluid text-center">
+		<div id="groupByStudio" class="collapse card m-2">
+			<div class="card-header text-center">
+				Grouped by Studio(<span class="studio-count"></span>)
+			</div>
+			<div class="card-body text-center">
+				<!-- <div class="summary-list" id="studioList"></div> -->
+		      	<canvas id="studioCanvas" width="800" height="800"></canvas>
+				<div id="studioList" style="display: none;"></div>
+			</div>
 		</div>
-		<div class="card-body text-center">
-			<!-- <div class="summary-list" id="studioList"></div> -->
-	      	<canvas id="studioCanvas" width="800" height="800"></canvas>
-			<div id="studioList" style="display: none;"></div>
+	
+		<div id="groupByActress" class="collapse card m-2">
+			<div class="card-header text-center">
+				Grouped by Actress(<span class="actress-count"></span>) over <span class="filter-count"></span> video
+			</div>
+			<div class="card-body text-center">
+		      	<canvas id="actressCanvas" width="800" height="800"></canvas>
+				<div id="actressList" style="display: none;"></div>
+			</div>
 		</div>
-	</div>
-
-	<div id="groupByActress" class="collapse card m-2">
-		<div class="card-header text-center">
-			Grouped by Actress(<span class="actress-count"></span>) over <span class="filter-count"></span> video
+	
+		<div id="groupByRelease" class="collapse card m-2">
+			<div class="card-body bg-chalkboard">
+				<div class="text-center">
+					<span class="text-danger">Choose release pattern</span>
+					<label class="input sm"><input type="radio" name="releasePattern" value="YYYY"><span>YYYY</span></label>
+					<label class="input sm"><input type="radio" name="releasePattern" value="YYYYMM"><span>YYYY.MM</span></label>
+					<label class="input sm"><input type="radio" name="releasePattern" value="YYYYMMDD"><span>YYYY.MM.DD</span></label>
+				</div>
+				<table class="table table-sm table-borderless table-hover m-0">
+					<thead class="text-primary">
+						<tr>
+							<th>Release</th>
+							<th>Flay</th>
+							<th>Length</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="releasedList"></tbody>
+					<tfoot class="text-danger"></tfoot>
+				</table>
+			</div>
 		</div>
-		<div class="card-body text-center">
-	      	<canvas id="actressCanvas" width="800" height="800"></canvas>
-			<div id="actressList" style="display: none;"></div>
+	
+		<div id="groupByPath" class="collapse card m-2">
+			<div class="card-body bg-chalkboard">
+				<table class="table table-sm table-borderless table-hover m-0">
+					<thead class="text-primary">
+						<tr>
+							<th>Path</th>
+							<th>Flay</th>
+							<th>Length</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="pathList"></tbody>
+					<tfoot class="text-danger"></tfoot>
+				</table>
+			</div>
 		</div>
-	</div>
-
-	<div id="groupByRelease" class="collapse card m-2">
-		<div class="card-header text-center"> Choose release pattern
-			<span class="input-group">
-				<label><input type="radio" name="releasePattern" value="YYYY"><span>YYYY</span></label>
-				<label><input type="radio" name="releasePattern" value="YYYYMM"><span>YYYY.MM</span></label>
-				<label><input type="radio" name="releasePattern" value="YYYYMMDD"><span>YYYY.MM.DD</span></label>
-			</span>
-		</div>
-		<div class="card-body">
-			<table class="table table-sm table-borderless table-hover m-0">
-				<thead class="text-primary">
-					<tr>
-						<th>Release</th>
-						<th>Flay</th>
-						<th>Length</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody id="releasedList"></tbody>
-				<tfoot class="text-danger"></tfoot>
-			</table>
-		</div>
-	</div>
-
-	<div id="groupByPath" class="collapse card m-2">
-		<div class="card-body">
-			<table class="table table-sm table-borderless table-hover m-0">
-				<thead class="text-primary">
-					<tr>
-						<th>Path</th>
-						<th>Flay</th>
-						<th>Length</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody id="pathList"></tbody>
-				<tfoot class="text-danger"></tfoot>
-			</table>
-		</div>
-	</div>
-
-	<div id="groupByRank" class="collapse card m-2">
-		<div class="card-body">
-			<table class="table table-sm table-borderless table-hover m-0">
-				<thead class="text-primary">
-					<tr>
-						<th>Rank</th>
-						<th>Flay</th>
-						<th>Length</th>
-						<th></th>
-					</tr>
-				</thead>
-				<tbody id="rankList"></tbody>
-				<tfoot class="text-danger"></tfoot>
-			</table>
+	
+		<div id="groupByRank" class="collapse card m-2">
+			<div class="card-body bg-chalkboard">
+				<table class="table table-sm table-borderless table-hover m-0">
+					<thead class="text-primary">
+						<tr>
+							<th>Rank</th>
+							<th>Flay</th>
+							<th>Length</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="rankList"></tbody>
+					<tfoot class="text-danger"></tfoot>
+				</table>
+			</div>
 		</div>
 	</div>
 
 	<div class="flay-list-wrapper">
-		<i class="fa fa-times float-right" onclick="$(this).parent().hide()"></i>
+		<i class="fa fa-times float-right hover" onclick="$(this).parent().hide()"></i>
 		<h4 class="text-center mt-1">
 			<label class="text" id="groupByKey"></label> 
 		</h4>

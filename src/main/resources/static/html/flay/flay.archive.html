@@ -105,7 +105,7 @@
 
 	<div class="container rounded p-2 mb-4" id="detailView">
 		<div class="text-right">
-			<i class="fa fa-times text-danger mx-2 hover" id="btnCloseDetailView"></i>
+			<i class="fa fa-times text-dark mx-2 hover" id="btnCloseDetailView"></i>
 		</div>
 		<div class="marker-direction marker-previous"><i class="fa fa-angle-left"></i></div>
 		<div class="marker-direction marker-next"><i class="fa fa-angle-right"></i></div>
@@ -250,9 +250,9 @@ function goPage(p) {
 					$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
 					$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
 					$("<td>", {'class': 'nowrap title hover'}).append(
-							flay.files.movie.length > 0 ? $("<i>", {'class': 'fa fa-film mx-1'}) : "",
-							flay.files.cover.length > 0 ? $("<i>", {'class': 'fa fa-picture-o mx-1'}) : "",
-							flay.files.subtitles.length > 0 ? $("<i>", {'class': 'fa fa-text-o mx-1'}) : "",
+							$("<i>", {'class': 'fa fa-file-video-o mx-1'}).addClass(flay.files.movie.length > 0 ? "" : "text-light"),
+							$("<i>", {'class': 'fa fa-file-image-o mx-1'}).addClass(flay.files.cover.length > 0 ? "" : "text-light"),
+							$("<i>", {'class': 'fa fa-file-text-o mx-1'}).addClass(flay.files.subtitles.length > 0 ? "" : "text-light"),
 							flay.title
 					).on("click", function() {
 						showDetail(idx);

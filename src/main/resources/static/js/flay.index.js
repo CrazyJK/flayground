@@ -1,5 +1,5 @@
 /**
- * 
+ * flay.index.js
  */
 
 var Event = {
@@ -44,6 +44,9 @@ var Background = {
 			});
 		},
 		start: function() {
+			for (var i=0; i<20; i++) {
+				Background.func();
+			}
 			Background.bgInterval = setInterval(Background.func, 3000);
 		},
 		stop: function() {

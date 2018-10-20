@@ -49,7 +49,7 @@ public class AccessLogService {
 	
 	@PostConstruct
 	public void loadFromFile() {
-		log.info("PostConstruct AccessLogService.loadFromFile");
+		log.info("@PostConstruct AccessLogService.loadFromFile");
 		File infoFile = getInfoFile();
 		try {
 			List<AccessLogStatistic> list = mapper.readValue(infoFile, new TypeReference<List<AccessLogStatistic>>() {});
@@ -63,11 +63,11 @@ public class AccessLogService {
 	
 	@PreDestroy
 	public void saveToFile() {
-		log.info("PreDestroy AccessLogService.saveToFile");
+		log.info("@PreDestroy - AccessLogService.saveToFile");
 		try {
 			List<AccessLogStatistic> findAll = accessLogRepository.findAll();
 			mapper.writeValue(getInfoFile(), findAll);
-			log.info("save accesslog statistic file {}", findAll.size());
+			log.info("@PreDestroy - save accesslog statistic file {}", findAll.size());
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to save info file " + getInfoFile(), e);
 		}

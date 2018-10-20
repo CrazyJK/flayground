@@ -38,19 +38,31 @@ var opus = reqParam.opus;
 var flay;
 var loadedFlay = false, loadedTag = false;
 
-Rest.Flay.get(opus, function(_flay) {
-	flay = _flay;
+function setFlay(f) {
+	flay = f;
 	document.title = flay.opus + ' - ' + document.title;
 
-	
 	$(".container-flay").appendFlayCard(flay);
+
 	loadedFlay = true;
 	matchTag();
+}
+
+Rest.Flay.get(opus, function(f) {
+	setFlay(f);
+}, function() {
+	Rest.Archive.get(opus, function(f) {
+		setFlay(f);
+		$(".container-flay").css({
+			opacity: 0.8
+		});
+	});
 });
 
 Rest.Tag.list(function(list) {
 	tagList = list;
 	Util.Tag.sort(tagList);
+
 	$.each(tagList, function(idx, tag) {
 		$("<label>", {'class': 'input sm'}).append(
 				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag).on("change", function() {
@@ -67,13 +79,9 @@ Rest.Tag.list(function(list) {
 				$("<span>", {title: tag.description}).html(tag.name)
 		).appendTo($(".container-tag"));
 	});
+
 	loadedTag = true;
 	matchTag();
-	
-//	var containerTagHeight = $(".container-tag").height();
-//	var containerFlayHeight = $(".container-flay").height();
-//	window.resizeTo(800, containerTagHeight + containerFlayHeight + 120);
-//	console.log('containerFlayHeight', containerFlayHeight, 'containerTagHeight', containerTagHeight);
 });
 
 function matchTag() {

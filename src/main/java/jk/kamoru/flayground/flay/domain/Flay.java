@@ -66,7 +66,9 @@ public class Flay {
 	}
 
 	public long getLength() {
-		return files.get(MOVIE) != null ? files.get(MOVIE).stream().mapToLong(f -> f.length()).sum() : -1;
+		return (files.get(MOVIE) != null ? files.get(MOVIE).stream().mapToLong(f -> f.length()).sum() : -1)
+			+  (files.get(SUBTI) != null ? files.get(SUBTI).stream().mapToLong(f -> f.length()).sum() : -1)
+			+  (files.get(COVER) != null ? files.get(COVER).stream().mapToLong(f -> f.length()).sum() : -1);
 	}
 	
 	public String getFullname() {

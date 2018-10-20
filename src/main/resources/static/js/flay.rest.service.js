@@ -1,7 +1,7 @@
 /**
  * Rest Service
  */
-var restCall = function(url, args, callback) {
+var restCall = function(url, args, callback, failCallback) {
 	var DEFAULTS = {
 			method: "GET",
 			data: {},
@@ -25,28 +25,32 @@ var restCall = function(url, args, callback) {
 		settings.title != "" && loading.off();
 	}).fail(function(jqXHR, textStatus, errorThrown) {
 		console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
-		var errMsg = "";
-		if (jqXHR.getResponseHeader('error')) {
-			errMsg = 'Message: ' + jqXHR.getResponseHeader('error.message') + "<br>" 
-				   + 'Cause: '   + jqXHR.getResponseHeader('error.cause');
-		} else if (jqXHR.responseJSON) {
-			errMsg = 'Error: '     + jqXHR.responseJSON.error + '<br>'  
-				   + 'Message: '   + jqXHR.responseJSON.message + '<br>'
-				   + 'Status: '    + jqXHR.responseJSON.status + '<br>'
-				   + 'Path: '      + jqXHR.responseJSON.path;
+		if (failCallback) {
+			failCallback();
 		} else {
-			errMsg = 'Error:<br>' + textStatus + "<br>" + errorThrown;
+			var errMsg = "";
+			if (jqXHR.getResponseHeader('error')) {
+				errMsg = 'Message: ' + jqXHR.getResponseHeader('error.message') + "<br>" 
+					   + 'Cause: '   + jqXHR.getResponseHeader('error.cause');
+			} else if (jqXHR.responseJSON) {
+				errMsg = 'Error: '     + jqXHR.responseJSON.error + '<br>'  
+					   + 'Message: '   + jqXHR.responseJSON.message + '<br>'
+					   + 'Status: '    + jqXHR.responseJSON.status + '<br>'
+					   + 'Path: '      + jqXHR.responseJSON.path;
+			} else {
+				errMsg = 'Error:<br>' + textStatus + "<br>" + errorThrown;
+			}
+			var $errorBody = $("<div>", {'class': 'overlay-error-body'}).append(errMsg);
+			loading.on($errorBody);
 		}
-		var $errorBody = $("<div>", {'class': 'overlay-error-body'}).append(errMsg);
-		loading.on($errorBody);
 	}).always(function(data_jqXHR, textStatus, jqXHR_errorThrown) {
 	});
 };
 
 var Rest = {
 		Flay: {
-			get: function(opus, callback) {
-				restCall('/flay/' + opus, {}, callback);
+			get: function(opus, callback, failCallback) {
+				restCall('/flay/' + opus, {}, callback, failCallback);
 			},
 			list: function(callback) {
 				restCall('/flay/list', {}, callback);
@@ -83,8 +87,13 @@ var Rest = {
 			},
 			deleteFile: function(file, callback) {
 				restCall('/flay/delete/file', {method: "PUT", data: file}, callback);
+			}
+		},
+		Archive: {
+			get: function(opus, callback) {
+				restCall('/archive/' + opus, {}, callback);
 			},
-			archive: function(page, size, keyword, callback) {
+			page: function(page, size, keyword, callback) {
 				restCall('/archive/page', {data: {page: page, size: size, keyword: keyword}}, callback);
 			}
 		},
@@ -155,7 +164,7 @@ var Rest = {
 		},
 		Image: {
 			size: function(callback) {
-				restCall('/image/size', {}, callback);
+				restCall('/image/size', {async: false}, callback);
 			},
 			list: function(callback) {
 				restCall('/image/list', {}, callback);

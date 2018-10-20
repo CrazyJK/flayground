@@ -42,7 +42,7 @@ $("input[name='releasePattern']").on('change', function() {
 		}
 	});
 	
-	displaySummaryItem(dataMap, $list);
+	displaySummaryTableView(dataMap, $list);
 });
 
 $("#groupByPath").on('show.bs.collapse', function() {
@@ -60,7 +60,7 @@ $("#groupByPath").on('show.bs.collapse', function() {
 			pathArray.pop();
 			key = pathArray.join('/');
 		}
-		return key.replace('/home/kamoru/workspace/FlayOn', ''); //.replace('J:/Crazy/Storage/', './Storage/');
+		return key;
 	};
 	var $list = $("#pathList").empty();
 	
@@ -74,7 +74,7 @@ $("#groupByPath").on('show.bs.collapse', function() {
 		}
 	});
 	
-	displaySummaryItem(dataMap, $list);
+	displaySummaryTableView(dataMap, $list);
 });
 
 $("#groupByRank").on('show.bs.collapse', function() {
@@ -90,23 +90,25 @@ $("#groupByRank").on('show.bs.collapse', function() {
 		}
 	});
 	
-	displaySummaryItem(dataMap, $list);
+	displaySummaryTableView(dataMap, $list);
 });
 
 $("#groupByStudio").on('show.bs.collapse', function() {
 	var $list = $("#studioList").empty();
 	
-	var dataMap = {};
+	var dataMap = {}, studioCount = 0;
 	$.each(flayList, function(idx, flay) {
 		var key = flay.studio;
 		if (dataMap[key]) {
 			dataMap[key].push(flay);
 		} else {
 			dataMap[key] = [flay];
+			++studioCount;
 		}
 	});
-	
-//	displaySummaryItem(dataMap, $list);
+	$(".studio-count").html(studioCount);
+
+	//	displaySummaryItem(dataMap, $list);
 
 	var dataArray = [];
 	$.each(dataMap, function(key, val) {
@@ -168,7 +170,7 @@ $("#groupByStudio").on('show.bs.collapse', function() {
 $("#groupByActress").on('show.bs.collapse', function() {
 	var $list = $("#actressList").empty();
 	
-	var dataMap = {};
+	var dataMap = {}, actressCount = 0;
 	$.each(flayList, function(idx, flay) {
 		var keys = flay.actressList;
 		for (var x in keys) {
@@ -179,13 +181,14 @@ $("#groupByActress").on('show.bs.collapse', function() {
 				dataMap[keys[x]].push(flay);
 			} else {
 				dataMap[keys[x]] = [flay];
+				++actressCount;
 			}
 		}
 	});
 
-	var dataArray = [];
+	var dataArray = [], filterCount = 4;
 	$.each(dataMap, function(key, val) {
-		if (val.length > 5) {
+		if (val.length > filterCount) {
 			dataArray.push({
 				key: key,
 				list: val
@@ -210,6 +213,8 @@ $("#groupByActress").on('show.bs.collapse', function() {
 			View.actress(data.key);
 		}).appendTo($list);
 	});
+	$(".actress-count").html(dataArray.length + " / " + actressCount);
+	$(".filter-count").html(filterCount);
 
 	var wOpts = {
 			interval: 20,
@@ -243,6 +248,56 @@ $("#groupByActress").on('show.bs.collapse', function() {
 }).on("hide.bs.collapse", function() {
 	$('#actressCanvas').tagcanvas('delete');
 });
+
+function displaySummaryTableView(dataMap, $list) {
+	var dataArray = [];
+	var maxLength = 0;
+	$.each(dataMap, function(key, val) {
+		var length = (function() {
+			var length = 0;
+			for (var x in val) {
+				length += val[x].length;
+			}
+			return length;
+		}());
+		dataArray.push({
+			key: key,
+			list: val,
+			length: length 
+		});
+		maxLength = Math.max(maxLength, length);
+	});
+	
+	dataArray.sort(function(d1, d2) {
+		return d1.key.localeCompare(d2.key);
+	});
+	
+	var totalFlayCount = 0, totalFlayLength = 0;
+	$.each(dataArray, function(idx, data) {
+		totalFlayCount += data.list.length;
+		totalFlayLength += data.length;
+		$("<tr>").append(
+				$("<td>", {'class': 'item-key hover'}).html(data.key).on("click", function() {
+					displayFlayList(data.key, data.list);
+				}),
+				$("<td>", {'class': 'item-count'}).html(data.list.length),
+				$("<td>", {'class': 'item-length'}).html(File.formatSize(data.length)),
+				$("<td>", {'class': 'item-progress'}).append(
+						$("<div>", {'class': 'progress'}).append(
+								$("<div>", {'class': 'progress-bar'}).css({
+									width: Math.round(data.length / maxLength * 100) + "%"
+								})
+						)
+				)
+		).appendTo($list);
+	});	
+	$list.next().empty().append(
+			$("<th>"),
+			$("<th>").html(totalFlayCount),
+			$("<th>").html(File.formatSize(totalFlayLength)),
+			$("<th>")
+	);
+}
 
 function displaySummaryItem(dataMap, $list) {
 	var dataArray = [];

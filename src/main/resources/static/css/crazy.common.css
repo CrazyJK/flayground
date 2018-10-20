@@ -379,7 +379,7 @@ label.text.sm {
 	padding: 0.5rem;
 	min-height: 3rem;
 }
-.sidenav > .nav > .nav-item:hover {
+.sidenav > .nav > .nav-item > label:hover {
 	color: #eee;
 }
 .sidenav > .nav > .nav-item > label[aria-include] {
@@ -466,7 +466,7 @@ label.text.sm {
  	color: #747474 !important;
 }
 
-.btn:focus, .custom-select:focus, .form-control:focus {
+.btn:focus, .custom-select:focus, .form-control:focus, .page-link:focus {
 	box-shadow: none;
 }
 

@@ -67,7 +67,12 @@
 	<div class="container">
 		<div class="row">
 			<div class="col-3">
-				<input type="text" class="form-control border-light bg-light" id="keyword" placeholder="Search">
+				<div class="input-group">
+					<input type="text" class="form-control border-light bg-light" id="keyword" placeholder="Search">
+					<div class="input-group-append">
+						<span class="input-group-text bg-light border-light" id="totalFlayCount"></span>
+					</div>
+				</div>
 			</div>
 			<div class="col-6">
 	  			<ul class="pagination justify-content-center m-0">
@@ -223,7 +228,7 @@ function goPage(p) {
 	size = $("#pageSize").val();
 	keyword = $("#keyword").val();
 
-	Rest.Flay.archive(pageNo, size, keyword, function(page) {
+	Rest.Archive.page(pageNo, size, keyword, function(page) {
 		flayList = page.content;
 		
 		showDetail('off');
@@ -232,7 +237,8 @@ function goPage(p) {
 		} else if (viewType === 'card') {
 			displayCard();
 		}
-		
+
+		$("#totalFlayCount").html(page.totalElements);
 		pagination(page);
 	});
 	
@@ -243,7 +249,12 @@ function goPage(p) {
 			$("<tr>").append(
 					$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
 					$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
-					$("<td>", {'class': 'nowrap title hover'}).html(flay.title).on("click", function() {
+					$("<td>", {'class': 'nowrap title hover'}).append(
+							flay.files.movie.length > 0 ? $("<i>", {'class': 'fa fa-film mx-1'}) : "",
+							flay.files.cover.length > 0 ? $("<i>", {'class': 'fa fa-picture-o mx-1'}) : "",
+							flay.files.subtitles.length > 0 ? $("<i>", {'class': 'fa fa-text-o mx-1'}) : "",
+							flay.title
+					).on("click", function() {
 						showDetail(idx);
 					}),
 					$("<td>", {'class': 'nowrap actress'}).html(flay.actressList.toString()),

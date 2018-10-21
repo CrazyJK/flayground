@@ -68,12 +68,15 @@
 		opacity: 1;
 	}
 }
-#signin input, #signin button {
-	background: rgba(0, 0, 0, 0.5);
-	color: #f8f9fa;
-}
 #signin input:focus {
 	box-shadow: none;
+}
+.input-group-lg>.form-control, .input-group-lg>.input-group-append>.btn {
+	font-size: 2rem;
+}
+.input-group-lg>.input-group-append>.btn {
+	padding-top: 0;
+	padding-bottom: 0;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -97,11 +100,11 @@ $(document).ready(function() {
 				<span class="text-danger font-weight-bold display-4 w3-animate-bottom flay-font-effect-static flay-font" id="btnEnter">Enter</span>
 				<form name="f" method="POST" class="mx-auto" id="signin">
 					<input type="checkbox" class="sr-only" name="remember-me" checked="checked">
-					<div class="input-group">
-						<input type="text" name="username" class="form-control border-dark" placeholder="Name" required autofocus>
-						<input type="password" name="password" class="form-control border-dark" placeholder="Password" required>
+					<div class="input-group input-group-lg flay-font">
+						<input type="text" name="username" class="form-control border-0 bg-transparent flay-font-effect-static text-danger font-weight-bold" placeholder="Name" required autofocus>
+						<input type="password" name="password" class="form-control border-0 bg-transparent flay-font-effect-static text-danger font-weight-bold" placeholder="Password" required>
 						<div class="input-group-append">
-							<button class="btn btn-dark" type="submit">Signin</button>
+							<button class="btn btn-dark border-0 bg-transparent flay-font-effect-static text-danger font-weight-bold" type="submit">Signin</button>
 						</div>
 					</div>
 				</form>

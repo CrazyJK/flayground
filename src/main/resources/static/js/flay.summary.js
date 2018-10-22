@@ -277,9 +277,11 @@ function displaySummaryTableView(dataMap, $list) {
 		totalFlayCount += data.list.length;
 		totalFlayLength += data.length;
 		$("<tr>").append(
-				$("<td>", {'class': 'item-key hover'}).html(data.key).on("click", function() {
-					displayFlayList(data.key, data.list);
-				}),
+				$("<td>", {'class': 'item-key'}).append(
+						$("<span>", {'class': 'hover'}).html(data.key).on("click", function() {
+							displayFlayList(data.key, data.list);
+						})
+				),
 				$("<td>", {'class': 'item-count'}).html(data.list.length),
 				$("<td>", {'class': 'item-length'}).html(File.formatSize(data.length)),
 				$("<td>", {'class': 'item-progress'}).append(

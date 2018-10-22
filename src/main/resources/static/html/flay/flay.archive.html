@@ -245,14 +245,14 @@ function goPage(p) {
 			$("<tr>").append(
 					$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
 					$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
-					$("<td>", {'class': 'nowrap title hover'}).append(
+					$("<td>", {'class': 'nowrap title'}).append(
 							$("<i>", {'class': 'fa fa-file-video-o mx-1'}).addClass(flay.files.movie.length > 0 ? "" : "text-light"),
 							$("<i>", {'class': 'fa fa-file-image-o mx-1'}).addClass(flay.files.cover.length > 0 ? "" : "text-light"),
 							$("<i>", {'class': 'fa fa-file-text-o mx-1'}).addClass(flay.files.subtitles.length > 0 ? "" : "text-light"),
-							flay.title
-					).on("click", function() {
-						showDetail(idx);
-					}),
+							$("<span>", {'class': 'hover'}).html(flay.title).on("click", function() {
+								showDetail(idx);
+							})
+					),
 					$("<td>", {'class': 'nowrap actress'}).html(flay.actressList.toString()),
 					$("<td>", {'class': 'nowrap release'}).html(flay.release),
 			).appendTo($tableList);
@@ -263,7 +263,7 @@ function goPage(p) {
 		var $cardList = $("#cardList");
 		$cardList.empty();
 		$.each(flayList, function(idx, flay) {
-			$("<div>", {'class': 'card m-2 hover'}).css({
+			$("<div>", {'class': 'card m-2'}).css({
 				display: 'inline-block',
 				width: 300,
 			}).append(
@@ -275,14 +275,14 @@ function goPage(p) {
 						borderBottomLeftRadius: 4,
 						borderBottomRightRadius: 4
 					}).append(
-							$("<h5>", {'class': 'card-title flay-info nowrap m-0', title: flay.title}).html(flay.title),
+							$("<h5>", {'class': 'card-title flay-info nowrap hover m-0', title: flay.title}).html(flay.title).on("click", function() {
+								showDetail(idx);
+							}),
 							$("<p>", {'class': 'card-text flay-info nowrap'}).css({
 								minHeight: 24
 							}).html(flay.actressList.toString())
 					)
-			).on("click", function() {
-				showDetail(idx);
-			}).appendTo($cardList);
+			).appendTo($cardList);
 		});
 	}
 	

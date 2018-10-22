@@ -48,18 +48,22 @@
 		};
 
 		return this.each(function() {
-			var self = $(this);
-			self.off();
-			self.data("active", true);
-			$(window).off().data("active", true);
-			self.on("mousewheel DOMMouseScroll mouseup", function(e) {
-				$(this).data("active") && detectEvent(e, callback);
+			var $self = $(this), $document = $(document);
+			$self.data("active", true);
+			$document.data("active", true);
+			
+			$self.off("mousewheel mouseup");
+			$self.on("mousewheel mouseup", function(e) {
+				$self.data("active") && detectEvent(e, callback);
 			});
-			browser === FIREFOX && self.on("contextmenu", function(e) {
-				$(this).data("active") && detectEvent(e, callback);
+			
+			browser === FIREFOX && $self.on("contextmenu", function(e) {
+				$self.data("active") && detectEvent(e, callback);
 			});
-			$(window).on("keyup", function(e) {
-				$(this).data("active") && detectEvent(e, callback);
+			
+			$document.off("keyup");
+			$document.on("keyup", function(e) {
+				$document.data("active") && detectEvent(e, callback);
 			});
 		});
 	};
@@ -67,7 +71,7 @@
 	$.fn.navActive = function(active) {
 		return this.each(function() {
 			$(this).data("active", active);
-			$(window).data("active", active);
+			$(document).data("active", active);
 		});
 	};
 	

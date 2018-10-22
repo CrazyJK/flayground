@@ -97,7 +97,7 @@ var Navi = {
 		},
 		go: function(destination) {
 			Rest.Html.get(destination, function(html) {
-				$(window).off('mousewheel DOMMouseScroll mouseup keyup');
+				$(document).off('keyup');
 				try {
 					$("#notice").dialog("close");
 				} catch(ignore) {}

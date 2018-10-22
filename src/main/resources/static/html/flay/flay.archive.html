@@ -84,13 +84,7 @@
 			</div>
 			<div class="col-3">
 				<div class="input-group">
-					<select id="pageSize" class="custom-select border-light bg-light" style="max-width: 70px;">
-			    		<option value="10">10</option>
-			    		<option value="15">15</option>
-			    		<option value="20">20</option>
-			    		<option value="30">30</option>
-			    		<option value="50">50</option>
-			  		</select>
+					<input type="number" class="form-control border-light bg-light text-right" id="pageSize">
 					<div class="input-group-append">
 			  			<button type="button" class="btn btn-light btn-view-type" data-type="table"><i class="fa fa-list"></i></button>
 			  			<button type="button" class="btn btn-light btn-view-type" data-type="card" ><i class="fa fa-th"></i></button>
@@ -159,7 +153,9 @@ var pageNo = 0, keyword, total = 0,
 var flayList = [];
 
 function addEventListener() {
-	$("#pageSize").val(size).prop("selected", true).on("change", function() {
+	$("#pageSize").val(size).on("keyup", function(e) {
+		if (e.keyCode != 13)
+			return;
 		LocalStorageItem.set(FLAY_ARCHIVE_PAGESIZE, $(this).val());
 		showDetail('off');
 		goPage('current');

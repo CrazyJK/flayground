@@ -135,7 +135,7 @@ $("#groupByStudio").on('show.bs.collapse', function() {
 
 	var wOpts = {
 			interval: 20,
-//			textFont: 'Impact,"Arial Black",sans-serif',
+//			textFont: '"Ink Free", Impact,"Arial Black",sans-serif',
 			textColour: '#00f',
 			textHeight: 15,
 			outlineColour: '#f96',

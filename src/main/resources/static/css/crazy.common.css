@@ -457,23 +457,30 @@ label.text.sm {
 	border-radius: .25rem;
 }
 .bg-chalkboard * {
-	font-weight: 700;
 	color: #eee;
+	font-weight: 700;
+	font-family: 'Ink Free';
 }
 .bg-chalkboard .progress {
-	background-color: rgba(255, 255, 255, .25);
+	background-color: rgba(255, 255, 255, .125);
 }
 .bg-chalkboard .progress-bar {
-	background-color: rgba(255, 255, 255, .75);
+	background: #fff url(/img/pattern/pattern-static.png);
+	border-top-right-radius: 0.25rem;
+	border-bottom-right-radius: 0.25rem;
 }
 .bg-chalkboard .text-dark {
-	color: #b0b0ff!important;
+	color: #b0b0ff !important;
 }
 .bg-chalkboard thead th {
 	color: #d7e478;
 }
 .bg-chalkboard tfoot th {
 	color: #20b67a;
+}
+.bg-chalkboard .hover:hover {
+	-webkit-mask-image: url(/img/pattern/pattern-static.png);
+	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
 }
 
 #wrap_body {

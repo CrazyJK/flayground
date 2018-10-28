@@ -54,8 +54,8 @@
 	<div id="actressList">
 		<div class="card actress">
 			<div class="card-body">
-				<h5 class="card-title font-weight-bold">name</h5>
-				<div class="card-text text-primary">description</div>
+				<h6 class="card-title font-weight-bold m-0">name</h6>
+				<div class="card-text text-primary mt-2">description</div>
 			</div>
 		</div>
 	</div>
@@ -138,13 +138,18 @@ function displayActress() {
 		);
 		$card.find(".card-text").empty().append(
 				$("<label>", {'class': 'text info-actress-extra'}).html(actress.localName),
-				$("<label>", {'class': 'text info-actress-extra'}).html(actress.birth),
-				$("<label>", {'class': 'text info-actress-extra'}).html(Util.Actress.getAge(actress)),
 				"<br>",
-				$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut.toBlank()),
+				$("<label>", {'class': 'text info-actress-extra'}).html(actress.birth),
+				"<br>",
 				$("<label>", {'class': 'text info-actress-extra'}).html(actress.body),
+				"<br>",
+				$("<label>", {'class': 'text info-actress-extra'}).html(Util.Actress.getAge(actress)),
+				$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut.toBlank()),
 				$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank()),
 		);
+		if ($card.find(".card-text").text() == '') {
+			$card.find(".card-text").empty();
+		}
 		$card.appendTo($actressList);
 	});
 }
@@ -203,7 +208,7 @@ function displayNameCheckResult(list) {
     
     $("#notice").dialog({
     	title: "Name check result : " + list.length,
-    	minWidth: 600,
+    	minWidth: 700,
     	height: $(window).height() - 120
     });
 }

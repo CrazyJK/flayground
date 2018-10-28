@@ -141,8 +141,11 @@ var Rest = {
 			findByLocalname: function(name, callback) {
 				restCall('/info/actress/find/byLocalname/' + name, {}, callback);
 			},
-			nameCheck(limit, callback) {
+			nameCheck: function(limit, callback) {
 				restCall('/info/actress/func/nameCheck/' + limit, {title: 'Name checking...'}, callback);
+			},
+			delete: function(actress, callback) {
+				restCall('/info/actress', {data: actress, method: "DELETE"}, callback);
 			}
 		},
 		Tag: {

@@ -47,6 +47,7 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 		<form onsubmit="return false;" id="infoForm">
 			<div class="row mb-2">
 				<div class="col-2 text-right">
+					<button class="btn btn-outline-light float-left" id="delete">Del</button>
 					<label class="text hover"><i class="fa fa-star favorite" id="favorite"></i></label>
 				</div>
 				<div class="col-4">
@@ -167,7 +168,12 @@ $("#save").on("click", function() {
 			loading.on('Updated');
 		});
 	}
-	
+});
+
+$("#delete").on("click", function() {
+	Rest.Actress.delete(actress, function() {
+		self.close();
+	});
 });
 
 Rest.Actress.get(name, function(_actress) {

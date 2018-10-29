@@ -19,6 +19,8 @@ public interface FlayService {
 
 	Collection<Flay> findCandidates();
 
+	Collection<Flay> findByTagLike(Integer id);
+
 	void acceptCandidates(String opus);
 
 	void play(String opus);

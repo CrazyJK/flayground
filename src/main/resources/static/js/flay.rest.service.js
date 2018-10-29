@@ -64,6 +64,9 @@ var Rest = {
 			findByTag: function(tag, callback) {
 				restCall("/flay/find/tag/" + tag.id , {}, callback);
 			},
+			findByTagLike: function(tag, callback) {
+				restCall("/flay/find/tag/" + tag.id + "/like" , {}, callback);
+			},
 			findByActress: function(actress, callback) {
 				restCall("/flay/find/actress/" + actress.name , {}, callback);
 			},

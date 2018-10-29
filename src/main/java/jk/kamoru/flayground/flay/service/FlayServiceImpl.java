@@ -17,6 +17,7 @@ import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
+import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.HistoryService;
 import jk.kamoru.flayground.info.service.InfoService;
@@ -29,6 +30,7 @@ public class FlayServiceImpl implements FlayService {
 
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired InfoService<Video, String> videoInfoService;
+	@Autowired InfoService<Tag, Integer> tagInfoService;
 	@Autowired FlayActionHandler flayActionHandler;
 	@Autowired HistoryService historyService;
 	@Autowired CandidatesProvider candidatesProvider;
@@ -124,6 +126,15 @@ public class FlayServiceImpl implements FlayService {
 		candiList.clear();
 		FlayFileHandler.rename(flay);
 		notificationService.announce("Accept candidates", flay.getFullname());
+	}
+	
+	@Override
+	public Collection<Flay> findByTagLike(Integer id) {
+		Tag tag = tagInfoService.get(id);
+		return instanceFlaySource.list().stream().filter(f -> {
+			String full = tag.getName() + "," + tag.getDescription();
+			return f.getVideo().getTags().contains(id) || StringUtils.containsAny(f.getFullname(), full.split(","));
+		}).collect(Collectors.toList());
 	}
 	
 	@Override

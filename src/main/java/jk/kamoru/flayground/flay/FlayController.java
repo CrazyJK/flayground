@@ -47,6 +47,11 @@ public class FlayController {
 		return flayService.findByKeyValue(field, value);
 	}
 
+	@GetMapping("/find/tag/{id}/like")
+	public Collection<Flay> findByTagLike(@PathVariable Integer id) {
+		return flayService.findByTagLike(id);
+	}
+	
 	@GetMapping("/candidates")
 	public Collection<Flay> findCandidates() {
 		return flayService.findCandidates();

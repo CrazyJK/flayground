@@ -67,7 +67,7 @@ public class AccessLogService {
 		try {
 			List<AccessLogStatistic> findAll = accessLogRepository.findAll();
 			mapper.writeValue(getInfoFile(), findAll);
-			log.info("@PreDestroy - save accesslog statistic file {}", findAll.size());
+			log.info("@PreDestroy - save accesslog statistic to file {}", findAll.size());
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to save info file " + getInfoFile(), e);
 		}

@@ -17,6 +17,7 @@ import java.nio.file.WatchEvent.Kind;
 import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -59,11 +60,11 @@ public abstract class DirectoryWatcher implements Runnable {
 	public DirectoryWatcher(String taskName, String... paths) {
 		this.taskName = taskName;
 		this.paths = paths;
-		log.info("{} DirectoryWatcher init", taskName);
 	}
 
 	@Override
 	public void run() {
+		log.info("{} Directory Watcher start {}", taskName, Arrays.toString(paths));
 		try {
 			watcher = FileSystems.getDefault().newWatchService();
 			keys = new HashMap<>();
@@ -105,7 +106,7 @@ public abstract class DirectoryWatcher implements Runnable {
 	private void registerDirectory(Path dir) throws IOException {
 		WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
 		keys.put(key, dir);
-		log.info("{} watch : {}", taskName, dir);
+		log.debug("{} watch : {}", taskName, dir);
 	}
 
 	private void processEvents() throws InterruptedException, IOException {

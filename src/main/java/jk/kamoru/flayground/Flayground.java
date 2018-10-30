@@ -2,11 +2,31 @@ package jk.kamoru.flayground;
 
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.concurrent.Executor;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.scheduling.annotation.AsyncConfigurer;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-public class Flayground {
+@Configuration
+@EnableScheduling
+@EnableAsync
+public class Flayground implements AsyncConfigurer {
+
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(7);
+        executor.setMaxPoolSize(42);
+        executor.setQueueCapacity(11);
+        executor.setThreadNamePrefix("FlayExecutor-");
+        executor.initialize();
+        return executor;
+    }
 	
 	public static final long SERIAL_VERSION_UID = 0x02316CF8C;
 

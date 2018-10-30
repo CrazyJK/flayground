@@ -16,7 +16,7 @@ public class ImageServiceImpl implements ImageService<Image> {
 	
 	@Override
 	public List<Image> list() {
-		return imageSource.getList();
+		return imageSource.list();
 	}
 
 	@Override

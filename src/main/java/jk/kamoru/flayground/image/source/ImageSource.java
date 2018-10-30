@@ -6,12 +6,11 @@ import jk.kamoru.flayground.image.domain.Image;
 
 public interface ImageSource<T extends Image> {
 
-	List<T> getList();
+	List<T> list();
 
 	T get(int idx);
 
 	int size();
 
 	void delete(int idx);
-
 }

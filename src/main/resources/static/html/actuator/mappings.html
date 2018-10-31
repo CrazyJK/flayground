@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Actuator Mappings</title>
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/base.scrollbar.css"/>
+<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css"/>
+<style type="text/css">
+table {
+	font-size: 0.875rem;
+}
+caption {
+    caption-side: top;
+}
+.table-sm td, .table-sm th {
+    padding: .2rem;
+}
+th:nth-child(1), td:nth-child(1) {
+	text-align: right;
+}
+td:nth-child(1) {
+	padding-right: 20px;
+}
+th:nth-child(2), td:nth-child(2) {
+	text-align: center;
+}
+th:nth-child(3), td:nth-child(3) {
+	text-align: left;
+}
+th:nth-child(4), td:nth-child(4) {
+	text-align: right;
+}
+th:nth-child(5), td:nth-child(5) {
+	text-align: left;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="//cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+
+	$.ajax({
+		url: '/actuator/mappings',
+		mimeType: "application/json",
+		contentType: "application/json",
+		cache: false
+	}).done(function(json) {
+		var list = json.contexts['Flayground '].mappings.dispatcherServlets.dispatcherServlet;
+		
+		$("#count").html(list.length);
+		var $wrap = $("tbody");
+		$.each(list, function(idx, mapping) {
+			if (mapping.details) {
+				$("<tr>").append(
+						$("<td>").html(idx + 1),
+						$("<td>").html(mapping.details.requestMappingConditions.methods),
+						$("<td>").append(
+								$("<a>", {
+									href: mapping.details.requestMappingConditions.patterns, 
+									target: '_blank', 
+									'class': 'text-warning'
+								}).html(mapping.details.requestMappingConditions.patterns)
+						),
+						$("<td>", {
+							title: mapping.details.handlerMethod.className
+						}).html(mapping.details.handlerMethod.className.split('.').pop()),
+						$("<td>").html(mapping.details.handlerMethod.name)
+				).appendTo($wrap);
+			} else {
+				$("<tr>").append(
+						$("<td>").html(idx + 1),
+						$("<td>"),
+						$("<td>").html(mapping.predicate),
+						$("<td>").html(mapping.handler.split(' ')[0].split('.').pop()),
+						$("<td>"),
+				).appendTo($wrap);
+			}
+		});
+		$("table").DataTable({
+	    	scrollY: scrollBodyHeight() + 'px',
+//			order: [[ 2, 'asc' ]],
+	        paging:         false,
+	        searching:      false,
+	        info:           false
+		});
+	});
+
+	$(window).resize(function() {
+		$(".dataTables_scrollBody").css({"height": scrollBodyHeight()});
+	});
+
+});
+
+var scrollBodyHeight = function() {
+	return $(window).innerHeight() - 80;
+};
+</script>
+</head>
+<body class="bg-dark">
+
+	<div class="container-fluid">
+		<table class="table table-sm table-hover table-dark m-0">
+			<caption class="text-light py-1"><i class="fa fa-list mx-2"></i> List of Request Mapping (<span id="count">0</span>)</caption>
+			<thead class="text-success">
+				<tr>
+					<th>#</th>
+					<th>Method</th>
+					<th>URL pattern</th>
+					<th>Controller</th>
+					<th>method</th>
+				</tr>
+			</thead>
+			<tbody></tbody>
+		</table>
+	</div>
+
+</body>
+</html>

@@ -610,20 +610,29 @@ function AddImage(i, o, t, tc) {
   o.width = o.width;
   o.height = o.height;
 
-  if(s) {
+  if (s) {
     i.width = o.width * s;
     i.height = o.height * s;
   }
 
-  // kamoru add. width or height fix
-  if (tc.imageMaxWidth > 0 && tc.imageMaxWidth < i.width) {
-	i.width  = tc.imageMaxWidth;
-	i.height = Math.round(i.width * o.height / o.width);
-  }
-  if (tc.imageMaxHeight && tc.imageMaxHeight < i.height) {
-	i.height = tc.imageMaxHeight;
-	i.width  = Math.round(i.height * o.width / o.height);
-  }
+  	// kamoru add. width or height fix
+  	if (tc.imageMaxWidth && tc.imageMaxWidth < i.width) {
+  		i.width  = tc.imageMaxWidth;
+  		i.height = Math.round(i.width * o.height / o.width);
+  	}
+  	if (tc.imageMaxHeight && tc.imageMaxHeight < i.height) {
+  		i.height = tc.imageMaxHeight;
+  		i.width  = Math.round(i.height * o.width / o.height);
+  	}
+  	if (tc.imageMinWidth && i.width < tc.imageMinWidth) {
+		i.width  = tc.imageMinWidth;
+		i.height = Math.round(i.width * o.height / o.width);
+	}
+  	if (tc.imageMinHeight && i.height < tc.imageMaxHeight) {
+  		i.height = tc.imageMinHeight;
+  		i.width  = Math.round(i.height * o.width / o.height);
+  	}
+  	// console.log('image size', o.width + "x" + o.height, ' -> ', i.width + "x" + i.height)
 
   // the standard width of the image, with imageScale applied
   t.iw = i.width;
@@ -2221,6 +2230,8 @@ noMouse: false,
 imageScale: 1,
 imageMaxWidth: 0, // width max
 imageMaxHeight: 0, // height max
+imageMinWidth: 0, // width min
+imageMinHeight: 0, // height min
 paused: false,
 dragControl: false,
 dragThreshold: 4,

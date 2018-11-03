@@ -18,6 +18,10 @@
  * jQuery.tagcanvas 2.9
  * For more information, please contact <graham@goat1000.com>
  */
+/**
+ * jQuery.tagcanvas-flay 1.1
+ * @author kamoru
+ */
 (function($){
 "use strict";
 var i, j, abs = Math.abs, sin = Math.sin, cos = Math.cos, max = Math.max,
@@ -610,6 +614,7 @@ function AddImage(i, o, t, tc) {
     i.width = o.width * s;
     i.height = o.height * s;
   }
+
   // kamoru add. width or height fix
   if (tc.imageMaxWidth > 0 && tc.imageMaxWidth < i.width) {
 	i.width  = tc.imageMaxWidth;

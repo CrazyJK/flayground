@@ -392,6 +392,9 @@ label.text.sm {
 	cursor: pointer;
 	margin-bottom: 0;
 }
+.sidenav > .nav > .nav-item > label[aria-include].active {
+	color: #ee0;
+}
 .sidenav > .nav > .nav-item > label:hover {
 	color: #eee;
 }

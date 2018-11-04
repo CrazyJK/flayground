@@ -91,8 +91,8 @@ var Background = {
 var Navi = {
 		init: function() {
 			$("[aria-include]").on("click", function() {
-				var dest = $(this).attr("aria-include");
-				Navi.go(dest);
+				$("[aria-include]").removeClass("active");
+				Navi.go($(this).addClass("active").attr("aria-include"));
 			});
 		},
 		go: function(destination) {

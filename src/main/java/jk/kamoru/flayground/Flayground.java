@@ -63,14 +63,16 @@ public class Flayground implements AsyncConfigurer {
 	public static enum OS {
 		WINDOWS, LINUX, MAC, UNKNOWN;
 
-		public static OS SYSTEM;
+		public static OS SYSTEM = getOS();
 				
-		static {
+		static OS getOS() {
+			String osName = System.getProperty("os.name");
 			try {
-				SYSTEM = OS.valueOf(System.getProperty("os.name").toUpperCase());
+				log.info("This machine's OS is {}", osName);
+				return OS.valueOf(osName.toUpperCase());
 			} catch(IllegalArgumentException e) {
-				SYSTEM = UNKNOWN;
-				log.warn("This machine's OS is unknown. property 'os.name' is {}", System.getProperty("os.name"));
+				log.warn("This machine's OS is unknown. property 'os.name' is {}", osName);
+				return UNKNOWN;
 			}
 		}
 	}

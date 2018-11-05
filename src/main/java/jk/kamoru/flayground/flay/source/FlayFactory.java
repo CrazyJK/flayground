@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -79,12 +78,11 @@ public class FlayFactory {
 	}
 
 	public void addFile(Flay flay, File file) {
-		String suffix = FilenameUtils.getExtension(file.getName());
-		if (Flayground.Suffix.Video.contains(suffix)) {
+		if (Flayground.FILE.isVideo(file)) {
 			flay.addMovieFile(file);
-		} else if (Flayground.Suffix.Subtitles.contains(suffix)) {
+		} else if (Flayground.FILE.isSubtitles(file)) {
 			flay.addSubtitlesFile(file);
-		} else if (Flayground.Suffix.Image.contains(suffix)) {
+		} else if (Flayground.FILE.isImage(file)) {
 			flay.addCoverFile(file);
 		} else {
 			log.warn("unknown file {} -> {}", flay.getOpus(), file);

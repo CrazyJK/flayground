@@ -6,7 +6,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -112,15 +111,14 @@ public class FlayServiceImpl implements FlayService {
 		File stagePath = new File(stagePaths[0]);
 		for (File file : candiList) {
 			String filename = file.getName();
-			String suffix = FilenameUtils.getExtension(filename);
 			FlayFileHandler.moveFileToDirectory(file, stagePath);
 			
-			if (Flayground.Suffix.Video.contains(suffix)) {
+			if (Flayground.FILE.isVideo(file)) {
 				movieList.add(new File(stagePath, filename));
-			} else if (Flayground.Suffix.Subtitles.contains(suffix)) {
+			} else if (Flayground.FILE.isSubtitles(file)) {
 				subtiList.add(new File(stagePath, filename));
 			} else {
-				throw new IllegalStateException("suffix is not known " + suffix);
+				throw new IllegalStateException("file is not known suffix. " + file);
 			}
 		}
 		candiList.clear();

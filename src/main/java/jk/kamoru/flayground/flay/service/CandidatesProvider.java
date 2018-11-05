@@ -25,7 +25,7 @@ public class CandidatesProvider {
 	public void find() {
 		listFiles = new ArrayList<>();
 		for (String path : candidatePaths) {
-			Collection<File> list = FileUtils.listFiles(new File(path), ArrayUtils.addAll(Flayground.Suffix.Video.SUFFIXs, Flayground.Suffix.Subtitles.SUFFIXs), true);
+			Collection<File> list = FileUtils.listFiles(new File(path), ArrayUtils.addAll(Flayground.FILE.VIDEO_SUFFIXs, Flayground.FILE.SUBTITLES_SUFFIXs), true);
 			log.info("find {} = {}", path, list.size());
 			listFiles.addAll(list);
 		}

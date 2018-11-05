@@ -11,7 +11,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -46,7 +45,7 @@ public class LocalImageSource implements ImageSource<Image> {
 				Collection<File> listFiles = FileUtils.listFiles(dir, null, true);
 				log.info(String.format("%5s file    - %s", listFiles.size(), dir));
 				for (File file : listFiles) {
-					if (isImageFile(file)) {
+					if (Flayground.FILE.isImage(file)) {
 						imageList.add(indexCounter.get(), new Image(file, indexCounter.getAndIncrement()));
 					}
 				}
@@ -86,23 +85,19 @@ public class LocalImageSource implements ImageSource<Image> {
 		notificationService.announce("Image move to root", image.getFile().toString());
 	}
 
-	private boolean isImageFile(File file) {
-		return Flayground.Suffix.Image.contains(FilenameUtils.getExtension(file.getName()));
-	}
-
 	private void startWatcher() {
 		ExecutorService service = Executors.newSingleThreadExecutor();
 		Runnable watcher = new DirectoryWatcher(this.getClass().getSimpleName(), imagePaths) {
 
 			@Override
 			protected void createdFile(File file) {
-				if (isImageFile(file))
+				if (Flayground.FILE.isImage(file))
 					changed = true;
 			}
 
 			@Override
 			protected void deletedFile(File file) {
-				if (isImageFile(file))
+				if (Flayground.FILE.isImage(file))
 					changed = true;
 			}
 		};

@@ -1,33 +1,26 @@
 package jk.kamoru.flayground;
 
+import java.io.File;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.Executor;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
+import lombok.extern.slf4j.Slf4j;
+
 @Configuration
 @EnableScheduling
 @EnableAsync
+@Slf4j
 public class Flayground implements AsyncConfigurer {
 
-    @Override
-    public Executor getAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(7);
-        executor.setMaxPoolSize(42);
-        executor.setQueueCapacity(11);
-        executor.setThreadNamePrefix("FlayExecutor-");
-        executor.initialize();
-        return executor;
-    }
-	
 	public static final long SERIAL_VERSION_UID = 0x02316CF8C;
 
 	public static final String ENCODING = "UTF-8";
@@ -66,41 +59,49 @@ public class Flayground implements AsyncConfigurer {
 		public static final String     TAG =     "tag.json";
 		public static final String  ACCESS =  "access.json";
 	}
-	
+
 	public static enum OS {
 		WINDOWS, LINUX, MAC, UNKNOWN;
 
-		public static final OS SYSTEM = OS.getOS();
-
-		static OS getOS() {
-			final String OSName = System.getProperty("os.name");
-			return StringUtils.containsIgnoreCase(OSName, WINDOWS.name()) ? WINDOWS
-					: StringUtils.containsIgnoreCase(OSName, LINUX.name()) ? LINUX
-							: StringUtils.containsIgnoreCase(OSName, MAC.name()) ? MAC : UNKNOWN;
-		}
-	}
-
-	public static class Suffix {
-		public static class Video {
-			public static final String[] SUFFIXs = new String[] {"avi", "mpg", "mkv", "wmv", "mp4", "mov", "rmvb"};
-			public static boolean contains(String suffix) {
-				return ArrayUtils.contains(SUFFIXs, suffix.toLowerCase());
-			}
-		}
-		
-		public static class Image {
-			public static final String[] SUFFIXs = new String[] {"jpg", "jpeg", "png", "gif", "jfif", "webp"};
-			public static boolean contains(String suffix) {
-				return ArrayUtils.contains(SUFFIXs, suffix.toLowerCase());
-			}
-		}
-
-		public static class Subtitles {
-			public static final String[] SUFFIXs = new String[] {"smi", "srt", "ass", "smil"};
-			public static boolean contains(String suffix) {
-				return ArrayUtils.contains(SUFFIXs, suffix.toLowerCase());
+		public static OS SYSTEM;
+				
+		static {
+			try {
+				SYSTEM = OS.valueOf(System.getProperty("os.name").toUpperCase());
+			} catch(IllegalArgumentException e) {
+				SYSTEM = UNKNOWN;
+				log.warn("This machine's OS is unknown. property 'os.name' is {}", System.getProperty("os.name"));
 			}
 		}
 	}
+
+	public static class FILE {
+		public static final String[] VIDEO_SUFFIXs = new String[] {"avi", "mpg", "mkv", "wmv", "mp4", "mov", "rmvb"};
+		public static final String[] IMAGE_SUFFIXs = new String[] {"jpg", "jpeg", "png", "gif", "jfif", "webp"};
+		public static final String[] SUBTITLES_SUFFIXs = new String[] {"smi", "srt", "ass", "smil"};
+
+		public static boolean isVideo(File file) {
+			return ArrayUtils.contains(VIDEO_SUFFIXs, FilenameUtils.getExtension(file.getName()).toLowerCase());
+		}
+
+		public static boolean isImage(File file) {
+			return ArrayUtils.contains(IMAGE_SUFFIXs, FilenameUtils.getExtension(file.getName()).toLowerCase());
+		}
+
+		public static boolean isSubtitles(File file) {
+			return ArrayUtils.contains(SUBTITLES_SUFFIXs, FilenameUtils.getExtension(file.getName()).toLowerCase());
+		}
+	}
+
+    @Override
+    public Executor getAsyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+        executor.setCorePoolSize(7);
+        executor.setMaxPoolSize(42);
+        executor.setQueueCapacity(11);
+        executor.setThreadNamePrefix("FlayExecutor-");
+        executor.initialize();
+        return executor;
+    }
 
 }

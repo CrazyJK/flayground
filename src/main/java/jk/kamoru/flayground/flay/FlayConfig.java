@@ -11,8 +11,8 @@ import jk.kamoru.flayground.flay.source.FlaySource;
 @Configuration
 public class FlayConfig {
 
-	@Value("${path.video.archive}") String archivePath;
 	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;
+	@Value("${path.video.archive}") String archivePath;
 
 	@Bean("flayFactory")
 	public FlayFactory flayFactory() {

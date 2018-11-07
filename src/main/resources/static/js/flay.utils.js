@@ -60,6 +60,9 @@ var Util = {
 					return '';
 				}
 			},
+			getCup: function(actress) {
+				return actress.body.replace(/[-0-9\s]/g, "");
+			},
 			toArray: function(names) {
 				var split = names.split(",");
 				for (var i=0; i<split.length; i++) {

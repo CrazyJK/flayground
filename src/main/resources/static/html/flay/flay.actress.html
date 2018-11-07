@@ -1,7 +1,11 @@
 <style type="text/css">
-#actressList {
+#cardViewWrapper, #tableViewWrapper {
 	text-align: center;
 	margin-top: 4rem;
+}
+#tableViewWrapper > table {
+	background-image: url(/img/chalkboard.jpg);
+	font-family: 'Ink Free';
 }
 .actress {
 	display: inline-flex;
@@ -29,29 +33,68 @@
 	margin: 0 8px;
 	color: #007bff;
 }
+
+.input-group {
+	width: initial;
+}
+.sorted {
+	font-weight: 700;
+}
+.sorted.asc {
+}
+.sorted.desc {
+}
 </style>
 
 <div role="body">
 
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
-		<label class="text actress-count">0</label>
-		<div class="divider"></div>
-		<input class="search" type="search" id="search" placeholder="Search...">
-		<div class="divider"></div>
-		<label class="input"><input type="checkbox" id="favorite"  ><span>Favorite</span></label>
-		<label class="input"><input type="checkbox" id="noFavorite"><span>No favorite</span></label>
-		<div class="divider"></div>
-		<div class="input-group input-group-sm" style="max-width:160px !important;">
-			<input type="number" id="limit" name="limit" value="0.95" class="form-control border-primary" style="max-width:60px !important;"/>
-			<div class="input-group-append">
-				<button class="btn btn-primary" id="nameCheckBtn">Name check</button>
+		<div class="input-group input-group-sm mx-2" style="max-width:300px;">
+			<div class="input-group-prepend">
+				<span class="input-group-text bg-light border-light" id="totalCount"></span>
 			</div>
+			<input class="form-control border-light" type="search" id="search" placeholder="Search...">
 		</div>
-		<div class="divider"></div>
-		<button class="btn btn-sm btn-link btn-reload"><i class="fa fa-refresh"></i> Reload</button>
+		<span class="input-group mx-2">
+			<label><input type="checkbox" id="favorite"  ><span><i class="fa fa-star"></i></span></label>
+			<label><input type="checkbox" id="noFavorite"><span><i class="fa fa-star-o"></i></span></label>
+		</span>
+		<span class="input-group mx-2">
+			<label><input type="radio" id="viewTypeCard"  name="viewType" value="c" checked="checked"><span><i class="fa fa-th"></i></span></label>
+			<label><input type="radio" id="viewTypeTable" name="viewType" value="t"><span><i class="fa fa-list"></i></span></label>
+		</span>
+		<div class="input-group input-group-sm mx-2" style="max-width:160px;">
+			<div class="input-group-prepend">
+				<button class="btn btn-light" id="nameCheckBtn">Name check</button>
+			</div>
+			<input type="number" id="limit" name="limit" value="0.95" class="form-control border-light"/>
+		</div>
+		<button class="btn btn-sm btn-light btn-reload"><i class="fa fa-refresh"></i></button>
 	</nav>
 	
-	<div id="actressList">
+	<div id="cardViewWrapper" class="text-center">
+		<div class="actress-list">
+		</div>
+	</div>
+	<div id="tableViewWrapper" class="container">
+		<table class="table table-sm table-hover table-borderless text-light rounded">
+			<thead>
+				<tr>
+					<th class="hover" data-sort-key="fav">Favorite</th>
+					<th class="hover" data-sort-key="name">Name</th>
+					<th>LocalName</th>
+					<th class="hover" data-sort-key="birth">Birth</th>
+					<th class="hover" data-sort-key="age">Age</th>
+					<th class="hover" data-sort-key="body">Body</th>
+					<th class="hover" data-sort-key="height">Height</th>
+					<th class="hover" data-sort-key="debut">Debut</th>
+				</tr>
+			</thead>
+			<tbody class="actress-list"></tbody>
+		</table>
+	</div>
+
+	<div style="display: none;">
 		<div class="card actress">
 			<div class="card-body">
 				<h6 class="card-title font-weight-bold m-0">name</h6>
@@ -65,13 +108,14 @@
 <script type="text/javascript">
 var $actressTemplete = $(".actress");
 var actressList;
-var $actressList = $("#actressList");
+var $actressList = $(".actress-list");
+var sortKey = '', sortOrder = 1;
 
 $("form").on('submit', function (e) {
     e.preventDefault();
 });
 
-$("#favorite, #noFavorite").on("change", displayActress);
+$("#favorite, #noFavorite, input[name='viewType']").on("change", displayActress);
 $("#search").on("keyup", function(e) {
 	e.stopPropagation();
 	displayActress();
@@ -83,14 +127,25 @@ $("#nameCheckBtn").on("click", function() {
 	Rest.Actress.nameCheck(limit, displayNameCheckResult);
 });
 
+$("thead th.hover").on("click", function() {
+	var prevSortKey = $(this).data('sort-key');
+	if (prevSortKey) {
+		sortOrder = sortKey === prevSortKey ? sortOrder * -1 : 1;
+		sortKey = prevSortKey;
+		displayActress();
+		$("thead th.hover").removeClass("sorted asc desc");
+		$(this).addClass("sorted " + (sortOrder === 1 ? "asc" : "desc"));
+	}
+});
+
 function actressLoad() {
 	Rest.Actress.list(function(list) {
 		actressList = list;
-		
+
 		actressList.sort(function(a1, a2) {
 			return a1.name.toLowerCase().localeCompare(a2.name);
 		});
-		
+
 		displayActress();
 	});
 }
@@ -100,6 +155,32 @@ function displayActress() {
 	var fav   = $("#favorite").prop("checked");
 	var noFav = $("#noFavorite").prop("checked");
 	var query = $("#search").val().toLowerCase();
+	var viewType = $("input[name='viewType']:checked").val();
+	var compareActressInfo = function(data1, data2, order) {
+		if (typeof data1 === 'string') {
+			if (data1 === '' && data2 === '')
+				return 0;
+			else if (data1 === '' && data2 != '')
+				return 1;
+			else if (data1 != '' && data2 === '')
+				return -1;
+			else
+				return data1.toLowerCase().localeCompare(data2.toLowerCase()) * order;
+		} else if (typeof data1 === 'number') {
+			if (data1 === 0 && data2 === 0)
+				return 0;
+			else if (data1 === 0 && data2 > 0)
+				return 1;
+			else if (data1 > 0 && data2 === 0)
+				return -1;
+			else
+				return data1 === data2 ? 0 : (data1 > data2 ? 1 : -1) * order;
+		} else if (typeof data1 === 'boolean') {
+			return data1 && data2 ? 0 : (data1 && !data2 ? 1 : -1) * order;
+		} else {
+			return (data1 > data2 ? 1 : -1) * order;
+		}
+	};
 
 	$.each(actressList, function(idx, actress) {
 		var found = false;
@@ -115,43 +196,95 @@ function displayActress() {
 		if (found)
 			collectedList.push(actress);
 	});
-	$(".actress-count").html(collectedList.length + " Actress");
+	$("#totalCount").html("Actress " + collectedList.length);
+
+	collectedList.sort(function(a1, a2) {
+		switch (sortKey) {
+		case 'fav':
+			return compareActressInfo(a1.favorite, a2.favorite, sortOrder);
+		case 'name':
+			return compareActressInfo(a1.name, a2.name, sortOrder);
+		case 'local':
+			return compareActressInfo(a1.localName, a2.localName, sortOrder);
+		case 'birth':
+		case 'age':
+			return compareActressInfo(a1.birth, a2.birth, sortOrder);
+		case 'body':
+			return compareActressInfo(Util.Actress.getCup(a1), Util.Actress.getCup(a2), sortOrder);
+		case 'height':
+			return compareActressInfo(a1.height, a2.height, sortOrder);
+		case 'debut':
+			return compareActressInfo(a1.debut, a2.debut, sortOrder);
+		default:
+			return 1;
+		}
+	});	
 	
 	$actressList.empty();
-	$.each(collectedList, function(idx, actress) {
-		var $card = $actressTemplete.clone();
-		$card.data("actress", actress);
+	
+	if (viewType === 'c') {
+		$("#cardViewWrapper").show();
+		$("#tableViewWrapper").hide();
 		
-		if (actress.coverSize > 0) {
-			$card.find(".card-body").css({
-				backgroundImage: "url('/static/actress/" + actress.name + "/" + Random.getInteger(0, actress.coverSize -1) + "')"
-			});
-		}
-		
-		$card.find(".card-title").empty().append(
-				$("<label>", {'class': 'text'}).append(
-						$("<i>", {'class': "fa fa-star" + (actress.favorite ? " favorite" : "-o")})
-				),
-				$("<label>", {'class': 'text hover'}).html(actress.name).on("click", function() {
-					View.actress(actress.name);
-				})
-		);
-		$card.find(".card-text").empty().append(
-				$("<label>", {'class': 'text info-actress-extra'}).html(actress.localName),
-				"<br>",
-				$("<label>", {'class': 'text info-actress-extra'}).html(actress.birth),
-				"<br>",
-				$("<label>", {'class': 'text info-actress-extra'}).html(actress.body),
-				"<br>",
-				$("<label>", {'class': 'text info-actress-extra'}).html(Util.Actress.getAge(actress)),
-				$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut.toBlank()),
-				$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank()),
-		);
-		if ($card.find(".card-text").text() == '') {
-			$card.find(".card-text").empty();
-		}
-		$card.appendTo($actressList);
-	});
+		$.each(collectedList, function(idx, actress) {
+			var $card = $actressTemplete.clone();
+			$card.data("actress", actress);
+			
+			if (actress.coverSize > 0) {
+				$card.find(".card-body").css({
+					backgroundImage: "url('/static/actress/" + actress.name + "/" + Random.getInteger(0, actress.coverSize -1) + "')"
+				});
+			}
+			
+			$card.find(".card-title").empty().append(
+					$("<label>", {'class': 'text'}).append(
+							$("<i>", {'class': "fa fa-star" + (actress.favorite ? " favorite" : "-o")})
+					),
+					$("<label>", {'class': 'text hover'}).html(actress.name).on("click", function() {
+						View.actress(actress.name);
+					})
+			);
+			$card.find(".card-text").empty().append(
+					$("<label>", {'class': 'text info-actress-extra'}).html(actress.localName),
+					"<br>",
+					$("<label>", {'class': 'text info-actress-extra'}).html(actress.birth),
+					"<br>",
+					$("<label>", {'class': 'text info-actress-extra'}).html(actress.body),
+					"<br>",
+					$("<label>", {'class': 'text info-actress-extra'}).html(Util.Actress.getAge(actress)),
+					$("<label>", {'class': 'text info-actress-extra'}).html(actress.debut.toBlank()),
+					$("<label>", {'class': 'text info-actress-extra'}).html(actress.height.toBlank()),
+			);
+			if ($card.find(".card-text").text() == '') {
+				$card.find(".card-text").empty();
+			}
+			$card.appendTo($actressList);
+		});
+	} else if (viewType === 't') {
+		$("#cardViewWrapper").hide();
+		$("#tableViewWrapper").show();
+
+		$.each(collectedList, function(idx, actress) {
+			$("<tr>").append(
+					$("<td>").append(
+							$("<i>", {'class': "fa fa-star" + (actress.favorite ? "" : "-o")})		
+					),
+					$("<td>").append(
+							$("<span>", {'class': 'text hover'}).html(actress.name).on("click", function() {
+								View.actress(actress.name);
+							})
+					),
+					$("<td>").html(actress.localName),
+					$("<td>").html(actress.birth),
+					$("<td>").html(Util.Actress.getAge(actress)),
+					$("<td>").html(actress.body),
+					$("<td>").html(actress.height.toBlank()),
+					$("<td>").html(actress.debut.toBlank()),
+			).appendTo($actressList);
+		});
+	} else {
+		alert('unknown view type');
+	}
 }
 
 function displayNameCheckResult(list) {

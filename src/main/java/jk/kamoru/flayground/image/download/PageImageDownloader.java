@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -16,29 +16,22 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Async;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Web page image downloader
  * <pre>Usage
  *  PageImageDownloader pageDownloader = new PageImageDownloader(...);
- *  
  *  DownloadResult result = pageDownloader.download();
- * or
- *  ExecutorService service = Executors.newFixedThreadPool(1);
- *  Future&lt;DownloadResult&gt; resultFuture = pageDownloader.download(service);
- *  service.shutdown();
- *  DownloadResult result = resultFuture.get();
  * </pre>
  * @author kamoru
  */
+@Slf4j
 public class PageImageDownloader {
-
-	private static final Logger logger = LoggerFactory.getLogger(PageImageDownloader.class);
 
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 	private static final String ILLEGAL_EXP = "[:\\\\/%*?:|\"<>]";
@@ -67,28 +60,12 @@ public class PageImageDownloader {
 	}
 
 	/**
-	 * execute download by using {@link java.util.concurrent.ExecutorService ExecutorService}
-	 * @param executorService
-	 * @return Download result
-	 */
-	public Future<DownloadResult> download(final ExecutorService executorService) {
-		return executorService.submit(new Callable<DownloadResult>() {
-
-			@Override
-			public DownloadResult call() throws Exception {
-				logger.debug("task start");
-				return download();
-			}
-		});
-	}
-	
-	/**
 	 * execute download
 	 * @return Download result
 	 */
+	@Async
 	public DownloadResult download() {
-		logger.info("Start download - [{}]", imagePageUrl);
-		
+		log.info("Start download - [{}]", imagePageUrl);
 		try {			
 			// connect and get image page by jsoup HTML parser
 			Document document = getDocument(imagePageUrl);
@@ -106,7 +83,7 @@ public class PageImageDownloader {
 			else {
 				title = titlePrefix;
 			}
-			title = getValidFileName(title, "");
+			title = title.replaceAll(ILLEGAL_EXP, "");
 			if (StringUtils.isBlank(title))
 				throw new DownloadException(imagePageUrl, "title is blank");
 
@@ -115,7 +92,7 @@ public class PageImageDownloader {
 			if (imgTags.size() == 0)
 				throw new DownloadException(imagePageUrl, "no image exist");
 			else 
-				logger.info("found imgTags size {}", imgTags.size());
+				log.info("found imgTags size {}", imgTags.size());
 			
 			if (StringUtils.isBlank(localBaseDir))
 				localBaseDir = FileUtils.getTempDirectoryPath(); 
@@ -126,7 +103,7 @@ public class PageImageDownloader {
 			File path = new File(localBaseDir, folderName);
 			if (!path.isDirectory()) {
 				path.mkdirs();
-				logger.info("mkdirs {}", path);
+				log.info("mkdirs {}", path);
 			}
 
 			// prepare download
@@ -141,57 +118,46 @@ public class PageImageDownloader {
 
 			// execute download
 			int nThreads = tasks.size() < 10 ? 1 : tasks.size() / 10;			
-			logger.info("using {} threads", nThreads);
+			log.info("using {} threads", nThreads);
 			ExecutorService downloadService = Executors.newFixedThreadPool(nThreads);
-			List<Future<File>> files = downloadService.invokeAll(tasks);
+			List<Future<File>> files = downloadService.invokeAll(tasks, 5, TimeUnit.MINUTES);
 			downloadService.shutdown();
 
+			// check result
 			List<File> images = new ArrayList<>();
 			for (Future<File> fileFuture : files) {
 				File file = fileFuture.get();
 				if (file != null)
 					images.add(file);
 			}
-			logger.info("{} images downloaded", images.size());
+			log.info("{} images downloaded", images.size());
 			return new DownloadResult(imagePageUrl, path.getCanonicalPath(), "Success", true, images);
-		}
-		catch (DownloadException e) {
-			logger.error("Download error", e);
+		
+		} catch (DownloadException e) {
+			log.error("Download error", e);
 			return new DownloadResult(imagePageUrl, "", e.getMessage(), false, null);
-		}
-		catch (Exception e) {
-			logger.error("Error", e);
+		} catch (Exception e) {
+			log.error("Error", e);
 			return new DownloadResult(imagePageUrl, "", e.getMessage(), false, null);
 		}
 	}
 	
 	private Document getDocument(String url) {
 		try {
-			return Jsoup.connect(url).timeout(60*1000).userAgent(USER_AGENT).get();
-		} 
-		catch (IOException e) {
+			return Jsoup.connect(url).timeout(60 * 1000).userAgent(USER_AGENT).get();
+		} catch (IOException e) {
 			throw new DownloadException(url, "could not connect", e);
 		}
-	}
-
-	private String getValidFileName(String filename, String replaceStr) {
-		if (StringUtils.isBlank(filename))
-			return String.valueOf(System.currentTimeMillis());
-		if (StringUtils.isBlank(replaceStr))
-			replaceStr = "";
-		return filename.replaceAll(ILLEGAL_EXP, replaceStr);
 	}
 	
 	/**
 	 * result object of {@link PageImageDownloader}
-	 * @author kamoru
-	 *
 	 */
 	@AllArgsConstructor
 	@Data
 	public class DownloadResult {
 		String pageUrl;
-		String localPath; 
+		String localPath;
 		String message = "";
 		Boolean result;
 		List<File> images;

@@ -3,11 +3,6 @@
  */
 
 var Event = {
-		resize: function() {
-			$(window).on("resize", function() {
-				$("#background_images img").css({height: ''});
-			});
-		},
 		theme: function() {
 			// background theme
 			$("input[name='bgTheme']").on("change", function() {
@@ -42,11 +37,26 @@ var Background = {
 			Rest.Image.size(function(count) {
 				Background.count = count;
 			});
+			Background.event();
+		},
+		event: function() {
+			var paneResize = function() {
+				var paneLength = Math.round($(window).width() / 300) - $("#background_images").children().length;
+				if (paneLength > 0) {
+					for (var i=0; i<paneLength; i++) {
+						$("<div>", {'class': 'col'}).appendTo($("#background_images"));
+					}
+				} else {
+					for (; paneLength<0; paneLength++) {
+						$("#background_images div.col:last-child").remove();
+					}
+				}
+				$("#background_images img").css({height: ''});
+			};
+			paneResize();
+			$(window).on("resize", paneResize);
 		},
 		start: function() {
-			for (var i=0; i<20; i++) {
-				Background.func();
-			}
 			Background.bgInterval = setInterval(Background.func, 3000);
 		},
 		stop: function() {
@@ -63,7 +73,9 @@ var Background = {
 			if ($.isEmptyObject(imageIndex)) {
 				console.log('imageIndex is empty', Background.imageIndexArray.length, imageIndex);
 			}
-			var $imageWrap = $("#image_pane_" + Random.getInteger(0, 3));
+			// select image pane
+			var paneLength = $("#background_images").children().length;
+			var $imageWrap = $("#background_images div.col:nth-child(" + Random.getInteger(0, paneLength) + ")");
 			
 			var image = new Image();
 			image.onload = function() {
@@ -138,7 +150,6 @@ console.log("isAdmin", isAdmin, username);
 
 $(document).ready(function() {
 
-	Event.resize();
 	Event.theme();
 	Event.togglePage();
 	Event.toggleBackground();

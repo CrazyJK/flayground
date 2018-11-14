@@ -162,6 +162,10 @@ $(document).ready(function() {
 
 	$("#username").html(username);
 
+	$("#lifeTimerWrapper").lifeTimer({
+		progress: false,
+		pattern: 'day Days'
+	});
 });
 
 window.onerror = function(e) {

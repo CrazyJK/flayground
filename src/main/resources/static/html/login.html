@@ -13,7 +13,7 @@
     left: 0;
     right: 0;
     background-image: url(/img/signin/flay_signin_bg.jpg);
-    background-position: right center;
+    background-position: right top;
     background-size: cover;
 }
 .display-middle {
@@ -78,33 +78,53 @@
 	padding-top: 0;
 	padding-bottom: 0;
 }
+
+.display-top-left {
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.font-2rem {
+	font-size: 2rem;
+}
+.signin-border-bottom {
+	border: 0;
+	border-bottom: 2px solid #f00;
+}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/kamoru.life.timer.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	$("#btnEnter").on("click", function() {
 		$(this).hide();
-		$("#signin").addClass("w3-animate-bottom").show();
+		$("#signin").fadeIn(400);
+	});
+	
+	$("#lifeTimerWrapper").lifeTimer({
+		classes: 'flay-font-effect-static flay-font text-light text-center font-2rem',
 	});
 });
 </script>
+
 </head>
 <body>
 
 	<div class="background">
 		<div class="display-middle">
-			<h1 class="text-center display-2 text-light text-uppercase w3-animate-top flay-font-effect-static flay-font">Flayground</h1>
+			<h1 class="text-center display-2 text-light text-uppercase w3-animate-top flay-font-effect-static flay-font m-0">Flayground</h1>
+			<div id="lifeTimerWrapper" style="height: 58px;"></div>
 			<div class="text-center signin-wrapper">
 				<span class="text-danger font-weight-bold display-4 w3-animate-bottom flay-font-effect-static flay-font" id="btnEnter">Enter</span>
 				<form name="f" method="POST" class="mx-auto" id="signin">
 					<input type="checkbox" class="sr-only" name="remember-me" checked="checked">
 					<div class="input-group input-group-lg flay-font">
-						<input type="text" name="username" class="form-control border-0 bg-transparent flay-font-effect-static text-danger font-weight-bold" placeholder="Name" required autofocus>
-						<input type="password" name="password" class="form-control border-0 bg-transparent flay-font-effect-static text-danger font-weight-bold" placeholder="Password" required>
+						<input type="text" name="username" class="form-control signin-border-bottom bg-transparent flay-font-effect-static text-danger font-weight-bold" placeholder="Name" required autofocus>
+						<input type="password" name="password" class="form-control signin-border-bottom bg-transparent flay-font-effect-static text-danger font-weight-bold" placeholder="Password" required>
 						<div class="input-group-append">
-							<button class="btn btn-dark border-0 bg-transparent flay-font-effect-static text-danger font-weight-bold" type="submit">Signin</button>
+							<button class="btn btn-dark signin-border-bottom bg-transparent flay-font-effect-static text-danger font-weight-bold" type="submit">Signin</button>
 						</div>
 					</div>
 				</form>

@@ -7,105 +7,98 @@ body {
 	background-color: #000;	
 }
 
+.input-group {
+	display: inline-flex;
+	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .125);
+	margin: 4px;
+	width: initial;
+	vertical-align: middle;	
+}
+.input-group label+label {
+	margin: 0 0 0 -1px;
+}
+.input-group label:not(:first-child) span {
+	border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+.input-group label:not(:last-child) span {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
 /* Customize the label (the container) */
-label.input, span.input-group > label {
-	display: inline-block;
-	margin: .25rem;
+label.input, .input-group label {
 	cursor: pointer;
+	display: inline-block;
+	margin: 0;
+	vertical-align: middle;
 }
 /* Hide the browser's default checkbox */
-label.input > input, span.input-group > label > input {
+label.input input, .input-group input {
 	display: none;
 }
 /* Create a custom checkbox */
-label.input > span, span.input-group > label > span {
+label.input span, .input-group span {
 	background-color: #eee;
-	border: 1px solid #eee;
-	border-radius: 0.25rem;
+	border: 1px solid transparent;
+	border-radius: .2rem;
 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 	color: #212529;
+	font-soze: 1rem;
 	font-weight: 700;
-	padding: .125rem .5rem;
-	transition: all .3s;
+    padding: .375rem .75rem;
+   	transition: all .3s;
 }
-label.input.sm > span, span.input-group.sm > label > span {
-	font-size: 80%;
+.input-group > label > span {
+	box-shadow: none;
 }
-label.input.lg > span, span.input-group.lg > label > span {
-	font-size: 120%;
-}
-label.input.dark > span, span.input-group.dark > label > span {
-	background-color: var(--gray);
-	border-color: var(--gray);
+/* size */
+label.input.sm span, .input-group.sm span {
+	font-size: 0.875rem;
+	line-height: 1.5;
+	padding: .25rem .5rem;
 }
 /* Create a custom radio */
-label.input > input[type='radio'] ~ span, span.input-group > label > input[type='radio'] ~ span {
-	border-radius: 0.75rem;
+label.input > input[type='radio'] ~ span, .input-group > label > input[type='radio'] ~ span {
+	border-radius: 0.5rem;
 }
+
 /* On mouse-over, add a grey background color */
-label.input:hover input ~ span, span.input-group > label:hover input ~ span {
+label.input:hover input ~ span, .input-group > label:hover input ~ span {
 	background-color: #ccc;
 	border-color: #ccc;
 	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
 }
 /* When the checkbox is checked, add a blue background */
-label.input input:checked ~ span, span.input-group > label > input:checked ~ span {
+label.input input:checked ~ span, .input-group input:checked ~ span {
 	color: var(--light);
 	background-color: midnightblue;
-	border: 1px solid midnightblue;
+	border-color: midnightblue;
 	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
 }
-label.input.primary input:checked ~ span, span.input-group.primary > label > input:checked ~ span {
+/* color */
+label.input.primary input:checked ~ span, .input-group.primary input:checked ~ span {
 	background-color: var(--primary);
 	border-color: var(--primary);
 }
-label.input.success input:checked ~ span, span.input-group.success > label > input:checked ~ span {
+label.input.success input:checked ~ span, .input-group.success input:checked ~ span {
 	background-color: var(--success);
 	border-color: var(--success);
 }
-label.input.info input:checked ~ span, span.input-group.info > label > input:checked ~ span {
+label.input.info input:checked ~ span, .input-group.info input:checked ~ span {
 	background-color: var(--info);
 	border-color: var(--info);
 }
-label.input.warning input:checked ~ span, span.input-group.warning > label > input:checked ~ span {
+label.input.warning input:checked ~ span, .input-group.warning input:checked ~ span {
 	background-color: var(--warning);
 	border-color: var(--warning);
 }
-label.input.danger input:checked ~ span, span.input-group.danger > label > input:checked ~ span {
+label.input.danger input:checked ~ span, .input-group.danger input:checked ~ span {
 	background-color: var(--danger);
 	border-color: var(--danger);
 }
-label.input.dark input:checked ~ span, span.input-group.dark input:checked ~ span {
+label.input.dark input:checked ~ span, .input-group.dark input:checked ~ span {
 	background-color: var(--dark);
 	border-color: var(--dark);
-}
-
-span.input-group {
-	display: inline-flex;
-	background-color: #eee;
-	border-radius: .75rem;
-	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .125);
-	margin: 4px;
-	width: initial;
-}
-span.input-group.dark {
-	background-color: #655c5c;
-}
-span.input-group:hover {
-	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
-}
-span.input-group > label:first-child {
-	margin: 0 1px 0 0;
-}
-span.input-group > label {
-	margin: 0 1px;
-}
-span.input-group > label:last-child {
-	margin: 0 0 0 1px;
-}
-span.input-group > label > span {
-	border: 1px solid transparent;
-	box-shadow: none;
 }
 
 /* input search */
@@ -120,35 +113,33 @@ input.search {
 	height: 27px;
 	width: 150px;
 	transition: all .3s;
+	vertical-align: middle;
 }
-
 input.search.dark {
-	background-color : #ccc;
+	background-color: var(--dark);
+	border-color: var(--gray-dark);
+	color: var(--light);
 }
-
 input.search:focus, input.search:hover {
-	border: 1px solid #eee;
+	border-color: var(--gray-dark);
 	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
 	outline: none;
+}
+input.search:focus, input.search.dark:hover {
+	border-color: var(--light);
 }
 
 /* input range ranker */
 label.range {
 	display: inline-flex;
-	background-color: #fff;
-	border-radius: 12px;
-	border: 1px solid #eee;
+	background-color: var(--light);
+	border-radius: .5rem;
+	border: 1px solid transparent;
 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
-	padding: 0;
-	padding-left: 4px;
-	margin: 0 4px;
+	margin: 0;
+	padding: 0 0 0 .25rem;
 	transition: all .3s;
-}
-label.range.dark {
-	background-color: var(--gray);
-}
-label.range.dark:hover {
-	background-color : #ccc;
+	vertical-align: middle;
 }
 label.range > input[type='range'] {
 	/* display: inline-block; */
@@ -158,6 +149,13 @@ label.range input[type='range'] ~ span {
 	padding: 1px 6px;
 	display: table-cell;
 	font-weight: 700;
+}
+label.range.dark {
+	background-color: var(--dark);
+	border-color: var(--gray-dark);
+}
+label.range.dark input[type='range'] ~ span {
+	color: var(--light);
 }
 
 /* custom input range */
@@ -170,6 +168,7 @@ label.range input[type='range'] ~ span {
     margin: 4px;
     width: initial;
 	transition: all .3s;
+	vertical-align: middle;
 }
 .ranker:hover {
 	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
@@ -225,7 +224,7 @@ label.range input[type='range'] ~ span {
 /* label text */
 label.text {
 	background-color: #fafafa;
-	border: 1px solid #e0e0e0;
+	border: 1px solid transparent;
 	border-radius: .25rem;
 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 	color: #212529;
@@ -252,14 +251,11 @@ label.text.info {
 }
 label.text.warning {
 	background-color: var(--warning);
-	color: var(--light);
+	color: var(--dark);
 }
 label.text.danger {
 	background-color: var(--danger);
 	color: var(--light);
-}
-label.text.hover {
-	cursor: pointer;
 }
 label.text.hover:hover {
  	text-shadow: 1px 1px 2px #a9a3a3;
@@ -273,11 +269,9 @@ label.text.dark.hover:hover {
 label.text:empty {
 	display: none;
 }
-label.text.lg {
-	font-size: 120%;
-}
 label.text.sm {
-	font-size: 80%;
+	font-size: 0.875rem;
+	line-height: 1.5;
 }
 
 .nowrap {

@@ -5,11 +5,11 @@
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
 		<input class="search" type="search" id="search" placeholder="Search...">
 		<div class="divider"></div>
-		<label class="input"><input type="checkbox" id="favorite"><span>Fav</span></label>
-		<label class="input"><input type="checkbox" id="video" checked="checked"><span>V</span></label>
-		<label class="input"><input type="checkbox" id="subtitles"><span>S</span></label>
+		<label class="check"><input type="checkbox" id="favorite"><span>Fav</span></label>
+		<label class="check"><input type="checkbox" id="video" checked="checked"><span>V</span></label>
+		<label class="check"><input type="checkbox" id="subtitles"><span>S</span></label>
 		<div class="divider"></div>
-		<span class="input-group">
+		<span class="check-group">
 			<label><input type="checkbox" id="rank0" checked="checked"><span>0</span></label>
 			<label><input type="checkbox" id="rank1"><span>1</span></label>
 			<label><input type="checkbox" id="rank2"><span>2</span></label>
@@ -18,7 +18,7 @@
 			<label><input type="checkbox" id="rank5"><span>5</span></label>
 		</span>
 		<div class="divider"></div>
-		<span class="input-group">
+		<span class="check-group">
 			<label><input type="radio" name="sort" value="S"><span>S</span></label>
 			<label><input type="radio" name="sort" value="O"><span>O</span></label>
 			<label><input type="radio" name="sort" value="T"><span>T</span></label>
@@ -27,10 +27,10 @@
 			<label><input type="radio" name="sort" value="M" checked="checked"><span>M</span></label>
 		</span>
 		<div class="divider"></div>
-		<label class="input"><input type="checkbox" id="tags"><span>Tag</span></label>
+		<label class="check"><input type="checkbox" id="tags"><span>Tag</span></label>
 		<div class="divider"></div>
-		<label class="input"><input type="checkbox" id="autoSlide"><span>Slide</span></label>
-		<span class="input-group">
+		<label class="check"><input type="checkbox" id="autoSlide"><span>Slide</span></label>
+		<span class="check-group">
 			<label><input type="radio" name="autoSlideMode" value="F"><span>F</span></label>
 			<label><input type="radio" name="autoSlideMode" value="R" checked="checked"><span>R</span></label>
 		</span>
@@ -39,8 +39,8 @@
 	</nav>
 	
 	<div id="selectTags" class="bg-light">
-		<label class="input float-left"><input type="checkbox" id="tagPopup"><span>Pop</span></label>
-		<label class="input float-right"><input type="checkbox" id="tagCheck"><span><i class="fa fa-check"></i></span></label>
+		<label class="check float-left"><input type="checkbox" id="tagPopup"><span>Pop</span></label>
+		<label class="check float-right"><input type="checkbox" id="tagCheck"><span><i class="fa fa-check"></i></span></label>
 		<div class="tag-list"></div>
 	</div>
 		

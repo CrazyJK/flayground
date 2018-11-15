@@ -57,7 +57,7 @@ function loadData() {
 
 $.fn.appendTag = function(tagList, tag) {
 	var createTag = tag => {
-		return $("<label>", {'class': 'input sm'}).append(
+		return $("<label>", {'class': 'check sm'}).append(
 				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag),
 				$("<span>", {title: tag.description}).html(tag.name)
 		);

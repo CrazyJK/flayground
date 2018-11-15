@@ -11,10 +11,8 @@
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
 <style type="text/css">
-.container-flay {
-}
-.flay {
-
+.container-tag {
+    padding-top: .25rem;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -64,7 +62,7 @@ Rest.Tag.list(function(list) {
 	Util.Tag.sort(tagList);
 
 	$.each(tagList, function(idx, tag) {
-		$("<label>", {'class': 'input sm'}).append(
+		$("<label>", {'class': 'check sm m-1'}).append(
 				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag).on("change", function() {
 					var checked = $(this).prop("checked");
 					var tag = $(this).data("tag");

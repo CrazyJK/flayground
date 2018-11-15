@@ -76,7 +76,7 @@ var Util = {
 
 var View = {
 		flay: function(opus) {
-			Popup.open(PATH + "/html/info/info.flay.html?opus=" + opus, "flay-" + opus, 820, 750);
+			Popup.open(PATH + "/html/info/info.flay.html?opus=" + opus, "flay-" + opus, 820, 770);
 		},
 		video: function(opus) {
 			Popup.open(PATH + "/info/video/" + opus, "video-" + opus, 400, 300);

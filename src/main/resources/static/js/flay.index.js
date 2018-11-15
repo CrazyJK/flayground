@@ -8,7 +8,7 @@ var Event = {
 			$("input[name='bgTheme']").on("change", function() {
 				var isDark = $("input[name='bgTheme']:checked").val() === 'D';
 				$("body").toggleClass("bg-dark", isDark);
-				$("label.text, div.input-group, label.input, .ranker, input.search, .cover-box").toggleClass("dark", isDark);
+//				$("label.text, div.check-group, label.check, .ranker, input.search, .cover-box").toggleClass("bg-dark", isDark);
 			});
 			$("#bgColor").on("change", function() {
 				$("body").css({backgroundColor: $(this).val()});

@@ -292,9 +292,17 @@ label.text.dark.hover:hover {
 label.text:empty {
 	display: none;
 }
+label.text.xs {
+	font-size: 0.75rem;
+	line-height: 1.4;
+}
 label.text.sm {
 	font-size: 0.875rem;
 	line-height: 1.5;
+}
+label.text.lg {
+	font-size: 1.125rem;
+	line-height: 1.7;
 }
 
 .nowrap {
@@ -562,27 +570,27 @@ label.text.sm {
 }
 
 /* dark theme */
+body.bg-dark nav.navbar, body.bg-dark ul.pagination, body.bg-dark .bg-light {
+	background-color: #2d2d2d !important;
+	color: #fafafa !important;
+}
 body.bg-dark ul.pagination .page-item .page-link {
 	background-color: #212529;
 	color: #fafafa;
 }
 body.bg-dark ul.pagination .page-item.active .page-link {
-	border-color: #dee2e6;
 	background-color: #000;
+	border-color: #dee2e6;
 }
 body.bg-dark .btn-link {
 	color: #fafafa;
 }
-body.bg-dark nav.navbar, body.bg-dark ul.pagination, body.bg-dark .bg-light {
-	background-color: #2d2d2d !important;
-}
-
 body.bg-dark .fa-plus:before, body.bg-dark .fa-ellipsis-v:before {
     text-shadow: 0 0 .25rem antiquewhite;
 }
-body.bg-dark .card, body.bg-dark label.text {
-	background-color: var(--dark);
-	color: var(--light);
+body.bg-dark .card {
+	background-color: #2d2d2d;
+	color: #eee;
 }
 body.bg-dark th, body.bg-dark td {
 	color: var(--light);

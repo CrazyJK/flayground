@@ -44,7 +44,11 @@
 }
 
 .flay-file-group {
-	font-family: 'D2Coding';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    font-family: 'D2Coding';
 }
 .flay-file {
 	font-size: .875rem;

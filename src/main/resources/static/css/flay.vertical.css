@@ -20,8 +20,8 @@ body {
 	border-radius: 1rem;
 	z-index: 69;
 }
-#selectTags > div.tag-list > label.input.sm > span > .tag-flay-count {
-	min-width: 20px;
+#selectTags > div.tag-list > label.check.sm > span > .tag-flay-count {
+	min-width: 22px;
 }
 
 #options {

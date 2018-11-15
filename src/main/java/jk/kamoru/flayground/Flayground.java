@@ -7,6 +7,7 @@ import java.util.concurrent.Executor;
 
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -69,7 +70,7 @@ public class Flayground implements AsyncConfigurer {
 			String osName = System.getProperty("os.name");
 			try {
 				log.info("This machine's OS is {}", osName);
-				return OS.valueOf(osName.toUpperCase());
+				return OS.valueOf(StringUtils.split(osName)[0].toUpperCase());
 			} catch(IllegalArgumentException e) {
 				log.warn("This machine's OS is unknown. property 'os.name' is {}", osName);
 				return UNKNOWN;

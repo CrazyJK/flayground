@@ -16,10 +16,9 @@
 		var HTML = ''
 			+ '<div id="life-timer" style="display: none;">'
 			+   '<div class="progress" style="height: .25rem;">'
-			+     '<div class="progress-bar" style="width:0%; transition: width 6s ease;"></div>'
+			+     '<div class="progress-bar" style="width: 0%; transition: width 6s ease;"></div>'
 			+   '</div>'
-			+   '<div class="display-time" style="padding: 0 .5rem;">'
-			+   '</div>'
+			+   '<div class="display-time" style="padding: 0 .5rem;"></div>'
 			+ '</div>';
 
 		var STARTING = new Date(1976, 3, 28),

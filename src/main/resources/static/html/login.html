@@ -95,16 +95,11 @@
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/kamoru.life.timer.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	$("#btnEnter").on("click", function() {
 		$(this).hide();
 		$("#signin").fadeIn(400);
-	});
-	
-	$("#lifeTimerWrapper").lifeTimer({
-		classes: 'flay-font-effect-static flay-font text-light text-center font-2rem',
 	});
 });
 </script>
@@ -115,7 +110,6 @@ $(document).ready(function() {
 	<div class="background">
 		<div class="display-middle">
 			<h1 class="text-center display-2 text-light text-uppercase w3-animate-top flay-font-effect-static flay-font m-0">Flayground</h1>
-			<div id="lifeTimerWrapper" style="height: 58px;"></div>
 			<div class="text-center signin-wrapper">
 				<span class="text-danger font-weight-bold display-4 w3-animate-bottom flay-font-effect-static flay-font" id="btnEnter">Enter</span>
 				<form name="f" method="POST" class="mx-auto" id="signin">

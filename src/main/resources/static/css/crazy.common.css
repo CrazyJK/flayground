@@ -9,10 +9,9 @@ body {
 
 .check-group {
 	display: inline-flex;
-	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
-	margin: 2px;
+	margin: 4px 2px;
 	width: initial;
-	transition: all .2s;
+	transition: all .3s;
 	vertical-align: middle;	
 }
 /* label */
@@ -39,9 +38,8 @@ body {
 	margin: 0;
 }
 label.check {
-	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
-	margin: 2px;
-   	transition: all .2s;
+	margin: 4px 2px;
+   	transition: all .3s;
 }
 /* Hide the browser's default checkbox */
 .check-group input, label.check input {
@@ -49,14 +47,18 @@ label.check {
 }
 /* span */
 .check-group span, label.check span {
-	background-color: #eee;
+	background-color: var(--light);
 	border: 1px solid transparent;
 	border-radius: .25rem;
-	color: #212529;
+	color: var(--gray);
 	font-size: 1rem;
 	font-weight: 700;
     padding: .375rem .75rem;
    	transition: all .2s;
+}
+.check-group.flay span, label.check.flay span {
+	border-color: midnightblue;
+	color: midnightblue;
 }
 .check-group.primary span, label.check.primary span {
 	border-color: var(--primary);
@@ -79,39 +81,63 @@ label.check {
 	color: var(--danger);
 }
 .check-group.dark span, label.check.dark span {
-	border-color: var(--dark);
-	color: var(--dark);
+	border-color: #252729;
+	color: #252729;
 }
+
 /* On mouse-over, add a grey background color */
 .check-group:hover, label.check:hover {
 	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+	transition: all .5s;
 }
-.check-group label:hover span, label.check:hover span {
-	text-shadow: 0 1px 8px var(--light);
+.check-group.flay label:hover span, label.check.flay:hover span,
+.check-group.primary label:hover span, label.check.primary:hover span,
+.check-group.success label:hover span, label.check.success:hover span,
+.check-group.info label:hover span, label.check.info:hover span,
+.check-group.warning label:hover span, label.check.warning:hover span,
+.check-group.danger label:hover span, label.check.danger:hover span,
+.check-group.dark label:hover span, label.check.dark:hover span {
+ 	text-shadow: 1px 1px 2px #000;
 }
+
 /* When the checkbox is checked, add background color */
 .check-group input:checked ~ span, label.check input:checked ~ span {
-	color: var(--light) !important;
+	color: midnightblue;
+	background-color: var(--light);
+	text-shadow: 0 0 16px midnightblue;
+}
+.check-group.flay input:checked ~ span, label.check.flay input:checked ~ span {
 	background-color: midnightblue;
+	color: var(--light);
 }
 .check-group.primary input:checked ~ span, label.check.primary input:checked ~ span {
 	background-color: var(--primary);
+	color: var(--light);
 }
 .check-group.success input:checked ~ span, label.check.success input:checked ~ span {
 	background-color: var(--success);
+	color: var(--light);
 }
 .check-group.info input:checked ~ span, label.check.info input:checked ~ span {
 	background-color: var(--info);
+	color: var(--light);
 }
 .check-group.warning input:checked ~ span, label.check.warning input:checked ~ span {
 	background-color: var(--warning);
+	color: var(--light);
 }
 .check-group.danger input:checked ~ span, label.check.danger input:checked ~ span {
 	background-color: var(--danger);
+	color: var(--light);
 }
 .check-group.dark input:checked ~ span, label.check.dark input:checked ~ span {
-	background-color: var(--dark);
+	background-color: #252729;
+	color: var(--light);
 }
+.check-group label:hover input:checked ~ span, label.check:hover input:checked ~ span {
+ 	text-shadow: 1px 1px 0 #000 !important;
+}
+
 /* size */
 .check-group.sm span, label.check.sm span {
 	border-radius: .2rem;
@@ -129,56 +155,61 @@ input.search {
 	background-color : #fafafa;
 	border: 1px solid #eee;
 	border-radius: .25rem;
-	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 	color: #333; 
-	margin: 0 4px;
+	margin: 4px 2px;
 	padding: .125rem .5rem;
 	height: 27px;
 	width: 150px;
-	transition: all .3s;
+	transition: all .5s;
 	vertical-align: middle;
 }
 input.search.dark {
-	background-color: var(--dark);
+	background-color: #252729;
 	border-color: var(--gray-dark);
 	color: var(--light);
 }
 input.search:focus, input.search:hover {
 	border-color: var(--gray-dark);
-	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 	outline: none;
 }
 input.search.dark:focus, input.search.dark:hover {
-	border-color: var(--light);
+	background-color: #103356;
+	border-color: #252729;
 }
 
 /* input range ranker */
 label.range {
 	display: inline-flex;
 	background-color: var(--light);
-	border-radius: .5rem;
+	border-radius: .75rem;
 	border: 1px solid transparent;
-	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
-	margin: 0;
+	margin: 4px 2px;
 	padding: 0 0 0 .25rem;
 	transition: all .3s;
 	vertical-align: middle;
 }
 label.range > input[type='range'] {
-	/* display: inline-block; */
 	width: 150px;
 }
 label.range input[type='range'] ~ span {
+	color: #212529;
 	padding: 1px 6px;
 	display: table-cell;
 	font-weight: 700;
 }
 label.range.dark {
-	background-color: var(--dark);
+	background-color: #252729;
 	border-color: var(--gray-dark);
 }
 label.range.dark input[type='range'] ~ span {
 	color: var(--light);
+}
+label.range:hover {
+	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
+}
+label.range.dark:hover {
+	background-color: #103356;
 }
 
 /* custom input range */
@@ -187,14 +218,13 @@ label.range.dark input[type='range'] ~ span {
     background-color: #fafafa;
     border-radius: .75rem;
 	border: 1px solid #eee;
-    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
-    margin: 4px;
+    margin: 4px 2px;
     width: initial;
 	transition: all .3s;
 	vertical-align: middle;
 }
 .ranker:hover {
-	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 }
 .ranker.dark {
 	background-color: #212529;
@@ -246,19 +276,18 @@ label.range.dark input[type='range'] ~ span {
 
 /* label text */
 label.text {
-	background-color: #fafafa;
+	background-color: var(--light);
 	border: 1px solid transparent;
 	border-radius: .25rem;
-	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 	color: #212529;
 	font-weight: 700;
 	margin: 4px 2px;
 	padding: .125rem .5rem;
 	transition: all .3s;
 }
-label.text.dark {
-	background-color: #212529;
-	color: #fafafa;
+label.text.flay {
+	background-color: midnightblue;
+	color: var(--light);
 }
 label.text.primary {
 	background-color: var(--primary);
@@ -280,14 +309,17 @@ label.text.danger {
 	background-color: var(--danger);
 	color: var(--light);
 }
+label.text.dark {
+	background-color: #252729;
+	color: #fafafa;
+}
 label.text.hover:hover {
- 	text-shadow: 1px 1px 2px #a9a3a3;
-	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
+ 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
+	text-shadow: none;
 }
 label.text.dark.hover:hover {
-	text-shadow: 1px 1px 0 #000000;
-    box-shadow: 0 0.125rem 0.25rem rgba(255, 255, 255, .25);
-    background-color: #103356;	
+	background-color: #103356;
+    box-shadow: 0 .125rem .25rem rgba(255, 255, 255, .25);
 }
 label.text:empty {
 	display: none;

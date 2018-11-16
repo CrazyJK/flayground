@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Insert title here</title>
+<title>Flay component sample</title>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
@@ -12,6 +12,18 @@
 <link rel="stylesheet" href="/css/crazy.common.range.css"/>
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
 <link rel="stylesheet" href="/css/flay.notification.css"/>
+<style type="text/css">
+.col {
+	padding: 4px;
+}
+.card-body {
+	padding: 8px;
+}
+.card-title {
+	margin-bottom: .5rem;
+	font-family: 'Ink Free';
+}
+</style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -26,171 +38,215 @@
 </head>
 <body class="bg-light">
 
-	<div class="p-2 my-3">
+	<div class="mx-3 my-2">
 		<label class="check"><input type="radio" name="bgTheme" value="N" checked="checked"><span>Normal</span></label>
 		<label class="check dark"><input type="radio" name="bgTheme" value="D"><span>Dark</span></label>
+		<a class="btn btn-link float-right" href="/">Home</a>
 	</div>
 
-	<div class="p-2">
-		<span class="check-group">
-			<label><input type="radio" name="bgThemex" value="A" checked="checked"><span>A</span></label>
-			<label><input type="radio" name="bgThemex" value="B"><span>B</span></label>
-			<label><input type="radio" name="bgThemex" value="C"><span>C</span></label>
-			<label><input type="radio" name="bgThemex" value="D"><span>D</span></label>
-			<label><input type="radio" name="bgThemex" value="E"><span>E</span></label>
-			<label><input type="radio" name="bgThemex" value="F"><span>F</span></label>
-		</span>
-		<label class="check"><input type="radio" name="bgThemex" value="E"><span>G</span></label>
-		<label class="check"><input type="radio" name="bgThemex" value="F"><span>H</span></label>
-		<label class="check"><input type="radio" name="bgThemex" value="F"><span>I</span></label>
-	</div>
-	<div class="p-2">
-		<span class="check-group">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-			<label><input type="checkbox" id="rank2"><span>C</span></label>
-			<label><input type="checkbox" id="rank3"><span>D</span></label>
-			<label><input type="checkbox" id="rank4"><span>E</span></label>
-			<label><input type="checkbox" id="rank5"><span>F</span></label>
-		</span>
-		<label class="check"><input type="checkbox" id="rank3"><span>G</span></label>
-		<label class="check"><input type="checkbox" id="rank4"><span>H</span></label>
-		<label class="check"><input type="checkbox" id="rank5"><span>I</span></label>
-		<span class="check-group sm">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-			<label><input type="checkbox" id="rank2"><span>C</span></label>
-			<label><input type="checkbox" id="rank3"><span>D</span></label>
-			<label><input type="checkbox" id="rank4"><span>E</span></label>
-			<label><input type="checkbox" id="rank5"><span>F</span></label>
-		</span>
-		<label class="check sm"><input type="checkbox" id="rank3"><span>G</span></label>
-		<label class="check sm"><input type="checkbox" id="rank4"><span>H</span></label>
-		<label class="check sm"><input type="checkbox" id="rank5"><span>I</span></label>
-	</div>
-	<div class="p-2">
-		<span class="check-group">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-		</span>
-		<label class="check"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
-		<label class="check"><input type="checkbox" id="rank5"><span>I</span></label>
-		<span class="check-group primary">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-		</span>
-		<label class="check primary"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
-		<label class="check primary"><input type="checkbox" id="rank5"><span>I</span></label>
-		<span class="check-group success">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-		</span>
-		<label class="check success"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
-		<label class="check success"><input type="checkbox" id="rank5"><span>I</span></label>
-		<span class="check-group info">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-		</span>
-		<label class="check info"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
-		<label class="check info"><input type="checkbox" id="rank5"><span>I</span></label>
-		<span class="check-group warning">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-		</span>
-		<label class="check warning"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
-		<label class="check warning"><input type="checkbox" id="rank5"><span>I</span></label>
-		<span class="check-group danger">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-		</span>
-		<label class="check danger"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
-		<label class="check danger"><input type="checkbox" id="rank5"><span>I</span></label>
-		<span class="check-group dark">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-		</span>
-		<label class="check dark"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
-		<label class="check dark"><input type="checkbox" id="rank5"><span>I</span></label>
-	</div>
-	<div class="p-2">
-		<input class="search" value="ABC 가나다"/>
-		<input class="search dark" value="ABC 가나다"/>
-		<label class="range"><input type="range"><span>4</span></label>
-		<label class="range dark"><input type="range"><span>4</span></label>
-		<span class="ranker">
-			<label><input type="radio" name="ranker" value="-1"><i class="fa fa-thumbs-down r-1"></i></label>
-			<label><input type="radio" name="ranker" value="0"><i class="fa fa-circle r0"></i></label>
-			<label><input type="radio" name="ranker" value="1"><i class="fa fa-star r1"></i></label>
-			<label><input type="radio" name="ranker" value="2"><i class="fa fa-star r2"></i></label>
-			<label><input type="radio" name="ranker" value="3"><i class="fa fa-star r3"></i></label>
-			<label><input type="radio" name="ranker" value="4" checked="checked"><i class="fa fa-star r4"></i></label>
-			<label><input type="radio" name="ranker" value="5"><i class="fa fa-star r5"></i></label>
-		</span>		
-	</div>
-	<div class="p-2">
-		<label class="text xs">ABC 가나다</label>
-		<label class="text sm">ABC 가나다</label>
-		<label class="text">ABC 가나다</label>
-		<label class="text lg">ABC 가나다</label>
-		<label class="text hover">ABC 가나다</label>
-		<label class="text hover primary">ABC 가나다</label>
-		<label class="text hover success">ABC 가나다</label>
-		<label class="text hover info">ABC 가나다</label>
-		<label class="text hover warning">ABC 가나다</label>
-		<label class="text hover danger">ABC 가나다</label>
-		<label class="text hover dark">ABC 가나다</label>
-	</div>
-	<div class="p-2">
-		<div class="btn-group">
-	  		<button type="button" class="btn btn-outline-primary">A</button>
-	  		<button type="button" class="btn btn-outline-primary">B</button>
-	  		<button type="button" class="btn btn-outline-primary">C</button>
+	<div class="row m-2">
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Radio</h6>
+					<div class="card-text">
+						<span class="check-group">
+							<label><input type="radio" name="bgThemex" value="A" checked="checked"><span>A</span></label>
+							<label><input type="radio" name="bgThemex" value="B"><span>B</span></label>
+							<label><input type="radio" name="bgThemex" value="C"><span>C</span></label>
+						</span>
+						<label class="check"><input type="radio" name="bgThemex1" value="E"><span>G</span></label>
+						<label class="check"><input type="radio" name="bgThemex1" value="F" checked="checked"><span>H</span></label>
+						<label class="check"><input type="radio" name="bgThemex1" value="F"><span>I</span></label>
+						<span class="check-group sm ml-3">
+							<label><input type="radio" name="bgThemex2" value="D"><span>D</span></label>
+							<label><input type="radio" name="bgThemex2" value="E" checked="checked"><span>E</span></label>
+							<label><input type="radio" name="bgThemex2" value="F"><span>F</span></label>
+						</span>
+						<label class="check sm"><input type="radio" name="bgThemex3" value="E"><span>G</span></label>
+						<label class="check sm"><input type="radio" name="bgThemex3" value="F"><span>H</span></label>
+						<label class="check sm"><input type="radio" name="bgThemex3" value="F" checked="checked"><span>I</span></label>
+					</div>
+				</div>
+			</div>
 		</div>
-  		<button type="button" class="btn btn-light">J</button>
-  		<button type="button" class="btn btn-primary">D</button>
-  		<button type="button" class="btn btn-success">E</button>
-  		<button type="button" class="btn btn-info">F</button>
-  		<button type="button" class="btn btn-warning">G</button>
-  		<button type="button" class="btn btn-danger">H</button>
-  		<button type="button" class="btn btn-dark">I</button>
-		<div class="btn-group btn-group-sm">
-	  		<button type="button" class="btn btn-primary">A</button>
-	  		<button type="button" class="btn btn-primary">B</button>
-	  		<button type="button" class="btn btn-primary">C</button>
-	  		<button type="button" class="btn btn-primary">D</button>
-	  		<button type="button" class="btn btn-primary">E</button>
-	  		<button type="button" class="btn btn-primary">F</button>
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Checkbox</h6>
+					<div class="card-text">
+						<span class="check-group">
+							<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
+							<label><input type="checkbox" id="rank1"><span>B</span></label>
+							<label><input type="checkbox" id="rank2"><span>C</span></label>
+						</span>
+						<label class="check"><input type="checkbox" id="rank3"><span>G</span></label>
+						<label class="check"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
+						<label class="check"><input type="checkbox" id="rank5"><span>I</span></label>
+						<span class="check-group sm ml-3">
+							<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
+							<label><input type="checkbox" id="rank1"><span>B</span></label>
+							<label><input type="checkbox" id="rank2"><span>C</span></label>
+						</span>
+						<label class="check sm"><input type="checkbox" id="rank3"><span>G</span></label>
+						<label class="check sm"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
+						<label class="check sm"><input type="checkbox" id="rank5"><span>I</span></label>
+					</div>
+				</div>
+			</div>
 		</div>
-  		<button type="button" class="btn btn-sm btn-light">K</button>
-  		<button type="button" class="btn btn-sm btn-primary">G</button>
-  		<button type="button" class="btn btn-sm btn-success">H</button>
-  		<button type="button" class="btn btn-sm btn-info">I</button>
-  		<button type="button" class="btn btn-sm btn-warning">G</button>
-  		<button type="button" class="btn btn-sm btn-danger">H</button>
-  		<button type="button" class="btn btn-sm btn-dark">I</button>
+	</div>
+
+	<div class="row m-2">
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Style</h6>
+					<div class="card-text">
+						<span class="check-group primary">
+							<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
+							<label><input type="checkbox" id="rank1"><span>B</span></label>
+						</span>
+						<label class="check primary"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
+						<label class="check primary"><input type="checkbox" id="rank5"><span>I</span></label>
+						<span class="check-group success ml-2">
+							<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
+							<label><input type="checkbox" id="rank1"><span>B</span></label>
+						</span>
+						<label class="check success"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
+						<label class="check success"><input type="checkbox" id="rank5"><span>I</span></label>
+						<span class="check-group info ml-2">
+							<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
+							<label><input type="checkbox" id="rank1"><span>B</span></label>
+						</span>
+						<label class="check info"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
+						<label class="check info"><input type="checkbox" id="rank5"><span>I</span></label>
+						<span class="check-group warning ml-2">
+							<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
+							<label><input type="checkbox" id="rank1"><span>B</span></label>
+						</span>
+						<label class="check warning"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
+						<label class="check warning"><input type="checkbox" id="rank5"><span>I</span></label>
+						<span class="check-group danger ml-2">
+							<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
+							<label><input type="checkbox" id="rank1"><span>B</span></label>
+						</span>
+						<label class="check danger"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
+						<label class="check danger"><input type="checkbox" id="rank5"><span>I</span></label>
+						<span class="check-group dark ml-2">
+							<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
+							<label><input type="checkbox" id="rank1"><span>B</span></label>
+						</span>
+						<label class="check dark"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
+						<label class="check dark"><input type="checkbox" id="rank5"><span>I</span></label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row m-2">
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Input text</h6>
+					<div class="card-text">
+						<input class="search" value="AB 가나"/>
+						<input class="search dark" value="AB 가나"/>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Input range</h6>
+					<div class="card-text">
+						<label class="range"><input type="range"><span>4</span></label>
+						<label class="range dark"><input type="range"><span>4</span></label>
+						<span class="ranker">
+							<label><input type="radio" name="ranker" value="-1"><i class="fa fa-thumbs-down r-1"></i></label>
+							<label><input type="radio" name="ranker" value="0"><i class="fa fa-circle r0"></i></label>
+							<label><input type="radio" name="ranker" value="1"><i class="fa fa-star r1"></i></label>
+							<label><input type="radio" name="ranker" value="2"><i class="fa fa-star r2"></i></label>
+							<label><input type="radio" name="ranker" value="3"><i class="fa fa-star r3"></i></label>
+							<label><input type="radio" name="ranker" value="4" checked="checked"><i class="fa fa-star r4"></i></label>
+							<label><input type="radio" name="ranker" value="5"><i class="fa fa-star r5"></i></label>
+						</span>		
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row m-2">
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Label</h6>
+					<div class="card-text">
+						<label class="text xs">AB 가나</label>
+						<label class="text sm">AB 가나</label>
+						<label class="text">AB 가나</label>
+						<label class="text lg">AB 가나</label>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Label style</h6>
+					<div class="card-text">
+						<label class="text hover primary">ABC</label>
+						<label class="text hover success">ABC</label>
+						<label class="text hover info">ABC</label>
+						<label class="text hover warning">ABC</label>
+						<label class="text hover danger">ABC</label>
+						<label class="text hover dark">ABC</label>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 	
-	<div class="mt-3 p-2">
-  		<button type="button" class="btn">M</button>
-  		<button type="button" class="btn btn-light">K</button>
-		<span class="check-group">
-			<label><input type="checkbox" id="rank0" checked="checked"><span>A</span></label>
-			<label><input type="checkbox" id="rank1"><span>B</span></label>
-		</span>
-		<label class="check"><input type="checkbox" id="rank4" checked="checked"><span>H</span></label>
-		<label class="check"><input type="checkbox" id="rank5" checked="checked"><span>I</span></label>
-		<label class="text hover">ABC 가나다</label>
-		<input class="search" value="ABc 가나다"/>
-		<span class="ranker">
-			<label><input type="radio" name="ranker" value="-1"><i class="fa fa-thumbs-down r-1"></i></label>
-			<label><input type="radio" name="ranker" value="0"><i class="fa fa-circle r0"></i></label>
-			<label><input type="radio" name="ranker" value="1"><i class="fa fa-star r1"></i></label>
-			<label><input type="radio" name="ranker" value="2"><i class="fa fa-star r2"></i></label>
-			<label><input type="radio" name="ranker" value="3"><i class="fa fa-star r3"></i></label>
-			<label><input type="radio" name="ranker" value="4" checked="checked"><i class="fa fa-star r4"></i></label>
-			<label><input type="radio" name="ranker" value="5"><i class="fa fa-star r5"></i></label>
-		</span>		
-		<label class="range"><input type="range"><span>4</span></label>
+	<div class="row m-2">
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Bootstrap 4</h6>
+					<div class="card-text">
+						<div class="btn-group mr-2">
+					  		<button type="button" class="btn btn-outline-primary">A</button>
+					  		<button type="button" class="btn btn-outline-primary">B</button>
+					  		<button type="button" class="btn btn-outline-primary">C</button>
+						</div>
+				  		<button type="button" class="btn btn-light">J</button>
+				  		<button type="button" class="btn btn-primary">D</button>
+				  		<button type="button" class="btn btn-success">E</button>
+				  		<button type="button" class="btn btn-info">F</button>
+				  		<button type="button" class="btn btn-warning">G</button>
+				  		<button type="button" class="btn btn-danger">H</button>
+				  		<button type="button" class="btn btn-dark">I</button>
+						<div class="btn-group btn-group-sm mx-2">
+					  		<button type="button" class="btn btn-primary">A</button>
+					  		<button type="button" class="btn btn-primary">B</button>
+					  		<button type="button" class="btn btn-primary">C</button>
+					  		<button type="button" class="btn btn-primary">D</button>
+					  		<button type="button" class="btn btn-primary">E</button>
+					  		<button type="button" class="btn btn-primary">F</button>
+						</div>
+				  		<button type="button" class="btn btn-sm btn-light">K</button>
+				  		<button type="button" class="btn btn-sm btn-primary">G</button>
+				  		<button type="button" class="btn btn-sm btn-success">H</button>
+				  		<button type="button" class="btn btn-sm btn-info">I</button>
+				  		<button type="button" class="btn btn-sm btn-warning">G</button>
+				  		<button type="button" class="btn btn-sm btn-danger">H</button>
+				  		<button type="button" class="btn btn-sm btn-dark">I</button>
+					</div>
+				</div>
+			</div>
+		</div>
 	</div>
 
 </body>

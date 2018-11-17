@@ -5,153 +5,53 @@
 
 body {
 	background-color: #000;	
+	transition: background-color .5s;
 }
 
-.check-group {
-	display: inline-flex;
-	margin: 4px 2px;
-	width: initial;
-	transition: all .3s;
-	vertical-align: middle;	
-}
-/* label */
-.check-group label+label {
-	margin: 0 0 0 -1px;
-}
-.check-group label:not(:first-child) span {
-	border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-    border-left-color: transparent;
-}
-.check-group label:not(:last-child) span {
-    border-top-right-radius: 0;
-    border-bottom-right-radius: 0;
-    border-right-color: transparent;
-}
-/* Customize the label (the container) */
-.check-group label, label.check {
-	cursor: pointer;
-	display: inline-block;
-	vertical-align: middle;
-}
-.check-group label {
-	margin: 0;
-}
-label.check {
-	margin: 4px 2px;
-   	transition: all .3s;
-}
-/* Hide the browser's default checkbox */
-.check-group input, label.check input {
-	display: none;
-}
-/* span */
-.check-group span, label.check span {
-	background-color: var(--light);
-	border: 1px solid transparent;
-	border-radius: .25rem;
-	color: var(--gray);
-	font-size: 1rem;
-	font-weight: 700;
-    padding: .375rem .75rem;
-   	transition: all .2s;
-}
-.check-group.flay span, label.check.flay span {
-	border-color: midnightblue;
-	color: midnightblue;
-}
-.check-group.primary span, label.check.primary span {
-	border-color: var(--primary);
-	color: var(--primary);
-}
-.check-group.success span, label.check.success span {
-	border-color: var(--success);
-	color: var(--success);
-}
-.check-group.info span, label.check.info span {
-	border-color: var(--info);
-	color: var(--info);
-}
-.check-group.warning span, label.check.warning span {
-	border-color: var(--warning);
-	color: var(--warning);
-}
-.check-group.danger span, label.check.danger span {
-	border-color: var(--danger);
-	color: var(--danger);
-}
-.check-group.dark span, label.check.dark span {
-	border-color: #252729;
-	color: #252729;
-}
+.check-group 																						  {display: inline-flex; margin: 4px 2px; width: initial; transition: box-shadow .5s; vertical-align: middle;}
+.check-group 		 label+label 																	  {						 margin: 0 0 0 -1px;}
+.check-group 		 label 																			  {						 margin: 0;}
+													   label.check 									  {						 margin: 4px 2px; 				  transition: box-shadow .5s;}
+.check-group 		 label							 , label.check 									  {cursor: pointer; display: inline-block; vertical-align: middle;}
+.check-group 									 span, label.check 						  		 span {background-color: var(--light); border: 1px solid transparent;	border-radius: .25rem; color: var(--gray); font-size: 1rem;	    font-weight: 700; padding: .375rem .75rem; transition: text-shadow .3s;}
+.check-group.sm 								 span, label.check.sm 							 span {                            										border-radius: .2rem; 					   font-size: 0.875rem;                   padding: .25rem .5rem;   line-height: 1.5;}
+.check-group 		 label:not(:first-child) 	 span 												  {								   border-left-color: transparent;	border-top-left-radius: 0;  border-bottom-left-radius: 0;}
+.check-group 		 label:not(:last-child) 	 span 												  {								   border-right-color: transparent;	border-top-right-radius: 0; border-bottom-right-radius: 0;}
+.check-group 					 input				 , label.check 				 input 				  {display: none;}
+.check-group 					 input:checked ~ span, label.check 				 input:checked ~ span {background-color: var(--light);   color: var(--dark);  text-shadow: 0 0 1px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;}
+.check-group:hover									 , label.check:hover 						      {box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);}
+.check-group 		 label:hover input:checked ~ span, label.check:hover 		 input:checked ~ span {}
+.check-group         label input[type='radio'] ~ span, label.check         input[type='radio'] ~ span {}
 
-/* On mouse-over, add a grey background color */
-.check-group:hover, label.check:hover {
-	box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);
-	transition: all .5s;
-}
-.check-group.flay label:hover span, label.check.flay:hover span,
-.check-group.primary label:hover span, label.check.primary:hover span,
-.check-group.success label:hover span, label.check.success:hover span,
-.check-group.info label:hover span, label.check.info:hover span,
-.check-group.warning label:hover span, label.check.warning:hover span,
-.check-group.danger label:hover span, label.check.danger:hover span,
-.check-group.dark label:hover span, label.check.dark:hover span {
- 	text-shadow: 1px 1px 2px #000;
-}
+.check-group.primary 			 	 			 span, label.check.primary 		 		  		 span {border-color: var(--primary); 				color: var(--primary);} 
+.check-group.success 			 	 			 span, label.check.success 		 		  		 span {border-color: var(--success); 				color: var(--success);}
+.check-group.info    			 	 			 span, label.check.info    		 		  		 span {border-color: var(--info);	   				color: var(--info);}
+.check-group.warning 			 	 			 span, label.check.warning 		 		  		 span {border-color: var(--warning); 				color: var(--warning);}
+.check-group.danger  			 	 			 span, label.check.danger  		 		  		 span {border-color: var(--danger);  				color: var(--danger);}
+.check-group.primary 			 input:checked ~ span, label.check.primary 		 input:checked ~ span {background-color: var(--primary) !important; color: var(--light) !important; text-shadow: 0 0 16px midnightblue;}
+.check-group.success 			 input:checked ~ span, label.check.success 		 input:checked ~ span {background-color: var(--success) !important; color: var(--light) !important; text-shadow: 0 0 16px midnightblue;}
+.check-group.info    			 input:checked ~ span, label.check.info    		 input:checked ~ span {background-color: var(--info)    !important; color: var(--light) !important; text-shadow: 0 0 16px midnightblue;}
+.check-group.warning 			 input:checked ~ span, label.check.warning 		 input:checked ~ span {background-color: var(--warning) !important; color: var(--light) !important; text-shadow: 0 0 16px midnightblue;}
+.check-group.danger  			 input:checked ~ span, label.check.danger  		 input:checked ~ span {background-color: var(--danger)  !important; color: var(--light) !important; text-shadow: 0 0 16px midnightblue;}
+.check-group.primary label:hover 	 			 span, label.check.primary:hover 		   		 span {text-shadow: 1px 1px 0 #333;}
+.check-group.success label:hover 	 			 span, label.check.success:hover 		   		 span {text-shadow: 1px 1px 0 #333;}
+.check-group.info    label:hover 	 			 span, label.check.info:hover    		   		 span {text-shadow: 1px 1px 0 #333;}
+.check-group.warning label:hover 	 			 span, label.check.warning:hover 		   		 span {text-shadow: 1px 1px 0 #333;}
+.check-group.danger  label:hover 	 			 span, label.check.danger:hover  		   		 span {text-shadow: 1px 1px 0 #333;}
+.check-group.primary label:hover input:checked ~ span, label.check.primary:hover input:checked ~ span {text-shadow: 1px 1px 0 #333;} 
+.check-group.success label:hover input:checked ~ span, label.check.success:hover input:checked ~ span {text-shadow: 1px 1px 0 #333;}
+.check-group.info    label:hover input:checked ~ span, label.check.info:hover    input:checked ~ span {text-shadow: 1px 1px 0 #333;}
+.check-group.warning label:hover input:checked ~ span, label.check.warning:hover input:checked ~ span {text-shadow: 1px 1px 0 #333;}
+.check-group.danger  label:hover input:checked ~ span, label.check.danger:hover  input:checked ~ span {text-shadow: 1px 1px 0 #333;}
 
-/* When the checkbox is checked, add background color */
-.check-group input:checked ~ span, label.check input:checked ~ span {
-	color: midnightblue;
-	background-color: var(--light);
-	text-shadow: 0 0 16px midnightblue;
-}
-.check-group.flay input:checked ~ span, label.check.flay input:checked ~ span {
-	background-color: midnightblue;
-	color: var(--light);
-}
-.check-group.primary input:checked ~ span, label.check.primary input:checked ~ span {
-	background-color: var(--primary);
-	color: var(--light);
-}
-.check-group.success input:checked ~ span, label.check.success input:checked ~ span {
-	background-color: var(--success);
-	color: var(--light);
-}
-.check-group.info input:checked ~ span, label.check.info input:checked ~ span {
-	background-color: var(--info);
-	color: var(--light);
-}
-.check-group.warning input:checked ~ span, label.check.warning input:checked ~ span {
-	background-color: var(--warning);
-	color: var(--light);
-}
-.check-group.danger input:checked ~ span, label.check.danger input:checked ~ span {
-	background-color: var(--danger);
-	color: var(--light);
-}
-.check-group.dark input:checked ~ span, label.check.dark input:checked ~ span {
-	background-color: #252729;
-	color: var(--light);
-}
-.check-group label:hover input:checked ~ span, label.check:hover input:checked ~ span {
- 	text-shadow: 1px 1px 0 #000 !important;
-}
-
-/* size */
-.check-group.sm span, label.check.sm span {
-	border-radius: .2rem;
-	font-size: 0.875rem;
-	line-height: 1.5;
-	padding: .25rem .5rem;
-}
-/* Create a custom radio */
-.check-group > label > input[type='radio'] ~ span, label.check > input[type='radio'] ~ span {
-	/* border-radius: 0.5rem; */
-}
+body.bg-dark .check-group            		     span, body.bg-dark label.check 				 span {background-color: #2d2d2d; transition: background-color .3s, color .3s, text-shadow .3s;}
+body.bg-dark .check-group        input:checked ~ span, body.bg-dark label.check  input:checked ~ span {                           color: var(--light);}
+body.bg-dark .check-group:hover   		         span, body.bg-dark label.check:hover			 span {background-color: #103356; color: var(--light);}
+body.bg-dark .check-group:hover				         , body.bg-dark label.check:hover 				  {box-shadow: none;}
 
 /* input search */
 input.search {
+	display: inline-block;
 	background-color : #fafafa;
 	border: 1px solid #eee;
 	border-radius: .25rem;
@@ -163,7 +63,7 @@ input.search {
 	transition: all .5s;
 	vertical-align: middle;
 }
-input.search.dark {
+body.bg-dark input.search {
 	background-color: #252729;
 	border-color: var(--gray-dark);
 	color: var(--light);
@@ -173,7 +73,7 @@ input.search:focus, input.search:hover {
 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 	outline: none;
 }
-input.search.dark:focus, input.search.dark:hover {
+body.bg-dark input.search:focus, body.bg-dark input.search:hover {
 	background-color: #103356;
 	border-color: #252729;
 }
@@ -198,17 +98,17 @@ label.range input[type='range'] ~ span {
 	display: table-cell;
 	font-weight: 700;
 }
-label.range.dark {
+body.bg-dark label.range {
 	background-color: #252729;
 	border-color: var(--gray-dark);
 }
-label.range.dark input[type='range'] ~ span {
+body.bg-dark label.range input[type='range'] ~ span {
 	color: var(--light);
 }
 label.range:hover {
 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 }
-label.range.dark:hover {
+body.bg-dark label.range:hover {
 	background-color: #103356;
 }
 
@@ -226,9 +126,13 @@ label.range.dark:hover {
 .ranker:hover {
     box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 }
-.ranker.dark {
+body.bg-dark .ranker {
 	background-color: #212529;
 	color: #fafafa;
+	border-color: transparent;
+}
+body.bg-dark .ranker:hover {
+	background-color: #103356;
 }
 .ranker input {
 	display: none;
@@ -252,27 +156,13 @@ label.range.dark:hover {
 .ranker:hover input ~ i {
 	color: #ccc;
 }
-.ranker input:checked ~ i.r-1, .ranker input ~ i.r-1:hover {
-	color: rgba(0, 0, 255, .75);
-}
-.ranker input:checked ~ i.r0, .ranker input ~ i.r0:hover {
-	color: rgba(0, 255, 0, .3);
-}
-.ranker input:checked ~ i.r1, .ranker input ~ i.r1:hover {
-	color: rgba(255, 0, 0, .15);
-}
-.ranker input:checked ~ i.r2, .ranker input ~ i.r2:hover {
-	color: rgba(255, 0, 0, .3);
-}
-.ranker input:checked ~ i.r3, .ranker input ~ i.r3:hover {
-	color: rgba(255, 0, 0, .45);
-}
-.ranker input:checked ~ i.r4, .ranker input ~ i.r4:hover {
-	color: rgba(255, 0, 0, .6);
-}
-.ranker input:checked ~ i.r5, .ranker input ~ i.r5:hover {
-	color: rgba(255, 0, 0, .75);
-}
+.ranker input:checked ~ i.r-1, .ranker input ~ i.r-1:hover {color: rgba(0,     0, 255, .75);}
+.ranker input:checked ~ i.r0,  .ranker input ~ i.r0:hover  {color: rgba(0,   255,   0, .30);}
+.ranker input:checked ~ i.r1,  .ranker input ~ i.r1:hover  {color: rgba(255,   0,   0, .15);}
+.ranker input:checked ~ i.r2,  .ranker input ~ i.r2:hover  {color: rgba(255,   0,   0, .30);}
+.ranker input:checked ~ i.r3,  .ranker input ~ i.r3:hover  {color: rgba(255,   0,   0, .45);}
+.ranker input:checked ~ i.r4,  .ranker input ~ i.r4:hover  {color: rgba(255,   0,   0, .60);}
+.ranker input:checked ~ i.r5,  .ranker input ~ i.r5:hover  {color: rgba(255,   0,   0, .75);}
 
 /* label text */
 label.text {
@@ -285,57 +175,13 @@ label.text {
 	padding: .125rem .5rem;
 	transition: all .3s;
 }
-label.text.flay {
-	background-color: midnightblue;
-	color: var(--light);
-}
-label.text.primary {
-	background-color: var(--primary);
-	color: var(--light);
-}
-label.text.success {
-	background-color: var(--success);
-	color: var(--light);
-}
-label.text.info {
-	background-color: var(--info);
-	color: var(--light);
-}
-label.text.warning {
-	background-color: var(--warning);
-	color: var(--dark);
-}
-label.text.danger {
-	background-color: var(--danger);
-	color: var(--light);
-}
-label.text.dark {
-	background-color: #252729;
-	color: #fafafa;
-}
-label.text.hover:hover {
- 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
-	text-shadow: none;
-}
-label.text.dark.hover:hover {
-	background-color: #103356;
-    box-shadow: 0 .125rem .25rem rgba(255, 255, 255, .25);
-}
-label.text:empty {
-	display: none;
-}
-label.text.xs {
-	font-size: 0.75rem;
-	line-height: 1.4;
-}
-label.text.sm {
-	font-size: 0.875rem;
-	line-height: 1.5;
-}
-label.text.lg {
-	font-size: 1.125rem;
-	line-height: 1.7;
-}
+label.text.hover:hover 		{box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125); text-shadow: none;}
+label.text:empty 			{display: none;}
+label.text.xs 				{font-size: 0.75rem;	line-height: 1.4;}
+label.text.sm 				{font-size: 0.875rem;	line-height: 1.5;}
+label.text.lg 				{font-size: 1.125rem;	line-height: 1.7;}
+body.bg-dark label.text    		    {background-color: #252729;	color: #fafafa;}
+body.bg-dark label.text.hover:hover {background-color: #103356; box-shadow: none;}
 
 .nowrap {
 	width: inherit;
@@ -389,17 +235,15 @@ label.text.lg {
 
 /* side nav */
 .sidenav {
-    height: 100%; /* 100% Full-height */
-    width: 0; /* 0 width - change this with JavaScript */
-    position: fixed; /* Stay in place */
-    z-index: 9998; /* Stay on top */
-    top: 0; /* Stay at the top */
+    position: fixed;
+    height: 100%;
+    width: 0;
+    z-index: 9998;
+    top: 0;
     left: 0;
-    background-color: rgba(17, 17, 17, 0.75); /* Black*/
-    overflow: hidden; /* Disable horizontal scroll */
-    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
-    padding-top: 50px;
-    
+    background-color: rgba(17, 17, 17, 0.75);
+    overflow: hidden;
+    transition: 0.5s;
 }
 .sidenav:hover {
 	width: 200px;
@@ -415,63 +259,27 @@ label.text.lg {
 	cursor: pointer;
 	padding-left: 4px;
 }
-.sidenav > .sidenav-openbtn > i {
-	opacity: 0;
-	transition: all .5s;
-}
-.sidenav > .sidenav-openbtn:hover > i {
-	opacity: 1;
-}
-.sidenav > h4 {
-	text-align: center;
-}
-.sidenav > h4 > a:hover {
-	color: #ee0;
-	text-decoration: none;
-}
-.sidenav > .nav {
-	margin-top: 1rem;
-}
-.sidenav > .nav > .nav-item {
-	color: #007bff;
-	padding: 0.5rem;
-	min-height: 2.5rem;
-}
-.sidenav > .nav > .nav-item > i.fa {
-	width: 1rem;
-	text-align: center;
-	margin-right: .5rem;
-}
-.sidenav > .nav > .nav-item:hover > i.fa {
-	color: #ee0;
-}
-.sidenav > .nav > .nav-item > label[aria-include] {
-	cursor: pointer;
-	margin-bottom: 0;
-}
-.sidenav > .nav > .nav-item > label[aria-include].active {
-	color: #ee0;
-}
-.sidenav > .nav > .nav-item > label:hover {
-	color: #eee;
-}
-.sidenav > .nav > .nav-item > a {
-	color: inherit;
-}
-.sidenav > .nav > .nav-item > a:hover {
-	color: #eee;
-	text-decoration: none;
-}
+.sidenav > .sidenav-openbtn       > i 					 {opacity: 0; transition: all .5s;}
+.sidenav > .sidenav-openbtn:hover > i 					 {opacity: 1;}
+.sidenav > h4 											 {					text-align: center; padding-top: 50px;}
+.sidenav > h4 > a:hover 								 {color: #ee0;		text-decoration: none;}
+.sidenav > .nav 										 {					margin-top: 1rem;}
+.sidenav > .nav > .nav-item 							 {color: #007bff;	padding: 0.5rem;	min-height: 2.5rem;}
+.sidenav > .nav > .nav-item 	  > i.fa 				 {					width: 1rem; text-align: center; margin-right: .5rem;}
+.sidenav > .nav > .nav-item:hover > i.fa 				 {color: #ee0;}
+.sidenav > .nav > .nav-item > label[aria-include] 		 {					cursor: pointer; 	margin-bottom: 0;}
+.sidenav > .nav > .nav-item > label[aria-include].active {color: #ee0;}
+.sidenav > .nav > .nav-item > label:hover 				 {color: #eee;}
+.sidenav > .nav > .nav-item > a 						 {color: inherit;}
+.sidenav > .nav > .nav-item > a:hover 					 {color: #eee;		text-decoration: none;}
 .sidenav input[type="color"] {
 	background-color: transparent;
     border: 1px solid #fff;
     border-radius: .25rem;
+	cursor: pointer;
     margin-left: .5rem;
     padding: 0;
     width: 50px;
-}
-.sidenav input[type="color"]:hover {
-	cursor: pointer;
 }
 
 #wrap_background_image {

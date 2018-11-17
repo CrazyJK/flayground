@@ -6,9 +6,9 @@ var Event = {
 		theme: function() {
 			// background theme
 			$("input[name='bgTheme']").on("change", function() {
-				var isDark = $("input[name='bgTheme']:checked").val() === 'D';
-				$("body").toggleClass("bg-dark", isDark);
-//				$("label.text, div.check-group, label.check, .ranker, input.search, .cover-box").toggleClass("bg-dark", isDark);
+				var bgThemeValue = $("input[name='bgTheme']:checked").val();
+				$("body").toggleClass("bg-dark", bgThemeValue === 'D');
+				LocalStorageItem.set('flay.bgtheme', bgThemeValue);
 			});
 			$("#bgColor").on("change", function() {
 				$("body").css({backgroundColor: $(this).val()});
@@ -159,7 +159,10 @@ $(document).ready(function() {
 
 	Navi.init();
 //	$("[aria-include]").first().click();
-
+	
+	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
+	$('#bgTheme' + bgThemeValue).parent().click();
+	
 	$("#username").html(username);
 
 	$("#lifeTimerWrapper").lifeTimer({

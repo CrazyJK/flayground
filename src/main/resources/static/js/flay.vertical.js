@@ -708,8 +708,10 @@ function decorateRank(rank) {
 	} else {
 		color = 'rgba(255, 0, 0, ' + rank*1.5/10 + ')';
 	}
-	$(".ranker").css({
-		backgroundColor: color,
-		borderColor: color
-	});
+	if (rank != 0) {
+		$(".ranker").css({
+			backgroundColor: color,
+			borderColor: color
+		});
+	}
 }

@@ -18,7 +18,7 @@ body {
 .check-group 		 label:not(:first-child) 	 span 												  {								   border-left-color: transparent;	border-top-left-radius: 0;  border-bottom-left-radius: 0;}
 .check-group 		 label:not(:last-child) 	 span 												  {								   border-right-color: transparent;	border-top-right-radius: 0; border-bottom-right-radius: 0;}
 .check-group 					 input				 , label.check 				 input 				  {display: none;}
-.check-group 					 input:checked ~ span, label.check 				 input:checked ~ span {background-color: var(--light);   color: var(--dark);  text-shadow: 0 0 1px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;}
+.check-group 					 input:checked ~ span, label.check 				 input:checked ~ span {background-color: var(--light);   color: #eede1a;  text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;}
 .check-group:hover									 , label.check:hover 						      {box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);}
 .check-group 		 label:hover input:checked ~ span, label.check:hover 		 input:checked ~ span {}
 .check-group         label input[type='radio'] ~ span, label.check         input[type='radio'] ~ span {}
@@ -33,16 +33,16 @@ body {
 .check-group.info    			 input:checked ~ span, label.check.info    		 input:checked ~ span {background-color: var(--info)    !important; color: var(--light) !important; text-shadow: 0 0 16px midnightblue;}
 .check-group.warning 			 input:checked ~ span, label.check.warning 		 input:checked ~ span {background-color: var(--warning) !important; color: var(--light) !important; text-shadow: 0 0 16px midnightblue;}
 .check-group.danger  			 input:checked ~ span, label.check.danger  		 input:checked ~ span {background-color: var(--danger)  !important; color: var(--light) !important; text-shadow: 0 0 16px midnightblue;}
-.check-group.primary label:hover 	 			 span, label.check.primary:hover 		   		 span {text-shadow: 1px 1px 0 #333;}
-.check-group.success label:hover 	 			 span, label.check.success:hover 		   		 span {text-shadow: 1px 1px 0 #333;}
-.check-group.info    label:hover 	 			 span, label.check.info:hover    		   		 span {text-shadow: 1px 1px 0 #333;}
-.check-group.warning label:hover 	 			 span, label.check.warning:hover 		   		 span {text-shadow: 1px 1px 0 #333;}
-.check-group.danger  label:hover 	 			 span, label.check.danger:hover  		   		 span {text-shadow: 1px 1px 0 #333;}
-.check-group.primary label:hover input:checked ~ span, label.check.primary:hover input:checked ~ span {text-shadow: 1px 1px 0 #333;} 
-.check-group.success label:hover input:checked ~ span, label.check.success:hover input:checked ~ span {text-shadow: 1px 1px 0 #333;}
-.check-group.info    label:hover input:checked ~ span, label.check.info:hover    input:checked ~ span {text-shadow: 1px 1px 0 #333;}
-.check-group.warning label:hover input:checked ~ span, label.check.warning:hover input:checked ~ span {text-shadow: 1px 1px 0 #333;}
-.check-group.danger  label:hover input:checked ~ span, label.check.danger:hover  input:checked ~ span {text-shadow: 1px 1px 0 #333;}
+.check-group.primary label:hover 	 			 span, label.check.primary:hover 		   		 span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
+.check-group.success label:hover 	 			 span, label.check.success:hover 		   		 span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
+.check-group.info    label:hover 	 			 span, label.check.info:hover    		   		 span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
+.check-group.warning label:hover 	 			 span, label.check.warning:hover 		   		 span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
+.check-group.danger  label:hover 	 			 span, label.check.danger:hover  		   		 span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
+.check-group.primary label:hover input:checked ~ span, label.check.primary:hover input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;} 
+.check-group.success label:hover input:checked ~ span, label.check.success:hover input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
+.check-group.info    label:hover input:checked ~ span, label.check.info:hover    input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
+.check-group.warning label:hover input:checked ~ span, label.check.warning:hover input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
+.check-group.danger  label:hover input:checked ~ span, label.check.danger:hover  input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
 
 body.bg-dark .check-group            		     span, body.bg-dark label.check 				 span {background-color: #2d2d2d; transition: background-color .3s, color .3s, text-shadow .3s;}
 body.bg-dark .check-group        input:checked ~ span, body.bg-dark label.check  input:checked ~ span {                           color: var(--light);}

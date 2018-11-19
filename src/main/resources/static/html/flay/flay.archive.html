@@ -1,4 +1,7 @@
 <style type="text/css">
+#tableList {
+	font-size: 0.875rem;
+}
 .studio {
 	max-width: 150px;
 }
@@ -12,7 +15,7 @@
 	max-width: 150px;
 }
 .release {
-	max-width: 100px;
+	width: 100px;
 }
 @media (min-width: 992px) {
 	.title {
@@ -27,9 +30,6 @@
 	    max-width: 290px;
 	}
 	.actress {
-		max-width: 100px;
-	}
-	.release {
 		max-width: 100px;
 	}
 }
@@ -66,30 +66,24 @@
 <div class="fixed-top bg-light p-2">
 	<div class="container">
 		<div class="row">
-			<div class="col-3">
-				<div class="input-group">
-					<input type="text" class="form-control border-light bg-light" id="keyword" placeholder="Search">
-					<div class="input-group-append">
-						<span class="input-group-text bg-light border-light" id="totalFlayCount"></span>
-					</div>
-				</div>
+			<div class="col-4">
+				<input class="form-control input-flay search" id="keyword" placeholder="Search">
+				<label class="text sm" id="totalFlayCount"></label>
 			</div>
-			<div class="col-6">
-	  			<ul class="pagination justify-content-center m-0">
-	    			<li class="page-item" id="page-first"><a class="page-link" href="javascript:goPage('first');"><i class="fa fa-fast-backward"></i></a></li>
-	    			<li class="page-item" id="page-prev"><a class="page-link" href="javascript:goPage('prev');"><i class="fa fa-backward"></i></a></li>
-	    			<li class="page-item" id="page-next"><a class="page-link" href="javascript:goPage('next');"><i class="fa fa-forward"></i></a></li>
-	    			<li class="page-item" id="page-last"><a class="page-link" href="javascript:goPage('last');"><i class="fa fa-fast-forward"></i></a></li>
+			<div class="col-4">
+	  			<ul class="pagination pagination-sm justify-content-center m-0">
+	    			<li class="page-item" id="page-first"><a class="page-link border-0" href="javascript:goPage('first');"><i class="fa fa-fast-backward"></i></a></li>
+	    			<li class="page-item" id="page-prev"><a class="page-link border-0" href="javascript:goPage('prev');"><i class="fa fa-backward"></i></a></li>
+	    			<li class="page-item" id="page-next"><a class="page-link border-0" href="javascript:goPage('next');"><i class="fa fa-forward"></i></a></li>
+	    			<li class="page-item" id="page-last"><a class="page-link border-0" href="javascript:goPage('last');"><i class="fa fa-fast-forward"></i></a></li>
 	  			</ul>
 			</div>
-			<div class="col-3">
-				<div class="input-group">
-					<input type="number" class="form-control border-light bg-light text-right" id="pageSize">
-					<div class="input-group-append">
-			  			<button type="button" class="btn btn-flay border-light btn-view-type" data-type="table"><i class="fa fa-list"></i></button>
-			  			<button type="button" class="btn btn-flay border-light btn-view-type" data-type="card" ><i class="fa fa-th"></i></button>
-					</div>		
-				</div>		
+			<div class="col-4 text-right">
+				<input type="number" class="form-control input-flay width-50" id="pageSize">
+				<span class="check-group sm mx-2">
+					<label><input type="radio" id="viewTypeCard"  name="viewType" value="c"><span><i class="fa fa-th"></i></span></label>
+					<label><input type="radio" id="viewTypeTable" name="viewType" value="t"><span><i class="fa fa-list"></i></span></label>
+				</span>
 			</div>
 		</div>
 	</div>
@@ -113,7 +107,7 @@
 					<tr>
 						<th class="border-top-0 studio">Studio</th>
 						<th class="border-top-0 opus">Opus</th>
-						<th class="border-top-0 title">Title</th>
+						<th class="border-top-0 title" style="padding-left: 66px;">Title</th>
 						<th class="border-top-0 actress">Actress</th>
 						<th class="border-top-0 release">Release</th>
 					</tr>
@@ -149,7 +143,7 @@ var FLAY_ARCHIVE_VIEWTYPE = 'flay.archive.viewType';
 var FLAY_ARCHIVE_PAGESIZE = 'flay.archive.pageSize';
 var pageNo = 0, keyword, total = 0,
 	size = LocalStorageItem.getInteger(FLAY_ARCHIVE_PAGESIZE, 15), 
-	viewType = LocalStorageItem.get(FLAY_ARCHIVE_VIEWTYPE, 'table');
+	viewType = LocalStorageItem.get(FLAY_ARCHIVE_VIEWTYPE, 't');
 var flayList = [];
 
 function addEventListener() {
@@ -161,12 +155,12 @@ function addEventListener() {
 		goPage('current');
 	});
 
-	$(".btn-view-type").on("click", function() {
-		viewType = $(this).data("type");
-		if (viewType === 'table') {
+	$("input[name='viewType']").on("change", function() {
+		viewType = $("input[name='viewType']:checked").val();
+		if (viewType === 't') {
 			$("#tableView").show();
 			$("#cardView").hide();
-		} else if (viewType === 'card') {
+		} else if (viewType === 'c') {
 			$("#tableView").hide();
 			$("#cardView").show();
 		}
@@ -228,13 +222,13 @@ function goPage(p) {
 		flayList = page.content;
 		
 		showDetail('off');
-		if (viewType === 'table') {
+		if (viewType === 't') {
 			displayTable();
-		} else if (viewType === 'card') {
+		} else if (viewType === 'c') {
 			displayCard();
 		}
 
-		$("#totalFlayCount").html(page.totalElements);
+		$("#totalFlayCount").html(page.totalElements + " flay");
 		pagination(page);
 	});
 	
@@ -246,10 +240,10 @@ function goPage(p) {
 					$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
 					$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
 					$("<td>", {'class': 'nowrap title'}).append(
-							$("<i>", {'class': 'fa fa-file-video-o mx-1'}).addClass(flay.files.movie.length > 0 ? "" : "text-light"),
-							$("<i>", {'class': 'fa fa-file-image-o mx-1'}).addClass(flay.files.cover.length > 0 ? "" : "text-light"),
-							$("<i>", {'class': 'fa fa-file-text-o mx-1'}).addClass(flay.files.subtitles.length > 0 ? "" : "text-light"),
-							$("<span>", {'class': 'hover'}).html(flay.title).on("click", function() {
+							$("<i>", {'class': 'fa fa-file-video-o mx-1'}).addClass(flay.files.movie.length > 0 ? "" : "nonExist"),
+							$("<i>", {'class': 'fa fa-file-image-o mx-1'}).addClass(flay.files.cover.length > 0 ? "" : "nonExist"),
+							$("<i>", {'class': 'fa fa-file-text-o  mx-1'}).addClass(flay.files.subtitles.length > 0 ? "" : "nonExist"),
+							$("<span>", {'class': 'ml-1 hover'}).html(flay.title).on("click", function() {
 								showDetail(idx);
 							})
 					),
@@ -331,6 +325,7 @@ function showDetail(idx) {
 }
 
 addEventListener();
-$("button.btn-view-type[data-type='" + viewType + "']").click();
+
+$("#viewTypeTable").parent().click();
 
 </script>

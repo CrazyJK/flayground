@@ -8,18 +8,20 @@ body {
 	transition: background-color .5s;
 }
 
-.check-group 																						  {display: inline-flex; margin: 4px 2px; width: initial; transition: box-shadow .5s; vertical-align: middle;}
-.check-group 		 label+label 																	  {						 margin: 0 0 0 -1px;}
-.check-group 		 label 																			  {						 margin: 0;}
-													   label.check 									  {						 margin: 4px 2px; 				  transition: box-shadow .5s;}
+.check-group 																						  {display: inline-flex; width: initial; vertical-align: middle;}
+.check-group 		 label+label 																	  {margin: 0 0 0 -1px;}
+.check-group 		 label 																			  {margin: 0;}
+.check-group                                         , label.check                                    {margin: 4px 2px; transition: box-shadow .2s;}
+													   label.check 									  {						  				  }
 .check-group 		 label							 , label.check 									  {cursor: pointer; display: inline-block; vertical-align: middle;}
-.check-group 									 span, label.check 						  		 span {background-color: var(--light); border: 1px solid transparent;	border-radius: .25rem; color: var(--gray); font-size: 1rem;	    font-weight: 700; padding: .375rem .75rem; transition: text-shadow .3s;}
+.check-group 									 span, label.check 						  		 span {background-color: var(--light); border: 1px solid transparent;	border-radius: .25rem; color: var(--gray); font-size: 1rem;	    font-weight: 700; padding: .375rem .75rem; transition: all .3s;}
 .check-group.sm 								 span, label.check.sm 							 span {                            										border-radius: .2rem; 					   font-size: 0.875rem;                   padding: .25rem .5rem;   line-height: 1.5;}
 .check-group 		 label:not(:first-child) 	 span 												  {								   border-left-color: transparent;	border-top-left-radius: 0;  border-bottom-left-radius: 0;}
 .check-group 		 label:not(:last-child) 	 span 												  {								   border-right-color: transparent;	border-top-right-radius: 0; border-bottom-right-radius: 0;}
 .check-group 					 input				 , label.check 				 input 				  {display: none;}
-.check-group 					 input:checked ~ span, label.check 				 input:checked ~ span {background-color: var(--light);   color: #eede1a;  text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;}
-.check-group:hover									 , label.check:hover 						      {box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25);}
+.check-group 					 input:checked ~ span, label.check 				 input:checked ~ span {background-color: midnightblue;   color: #fff;}
+.check-group:hover									 , label.check:hover 						      {/* box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25); */}
+.check-group:hover								 span, label.check:hover 						 span {color: midnightblue;}
 .check-group 		 label:hover input:checked ~ span, label.check:hover 		 input:checked ~ span {}
 .check-group         label input[type='radio'] ~ span, label.check         input[type='radio'] ~ span {}
 
@@ -45,12 +47,12 @@ body {
 .check-group.danger  label:hover input:checked ~ span, label.check.danger:hover  input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
 
 body.bg-dark .check-group            		     span, body.bg-dark label.check 				 span {background-color: #2d2d2d; transition: background-color .3s, color .3s, text-shadow .3s;}
-body.bg-dark .check-group        input:checked ~ span, body.bg-dark label.check  input:checked ~ span {                           color: var(--light);}
+body.bg-dark .check-group        input:checked ~ span, body.bg-dark label.check  input:checked ~ span {                           color: var(--light); text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;}
 body.bg-dark .check-group:hover   		         span, body.bg-dark label.check:hover			 span {background-color: #103356; color: var(--light);}
 body.bg-dark .check-group:hover				         , body.bg-dark label.check:hover 				  {box-shadow: none;}
 
 /* input search */
-input.search {
+input.input-flay {
 	display: inline-block;
 	background-color : #fafafa;
 	border: 1px solid #eee;
@@ -59,21 +61,24 @@ input.search {
 	margin: 4px 2px;
 	padding: .125rem .5rem;
 	height: 27px;
-	width: 150px;
+	width: inherit;
 	transition: all .5s;
 	vertical-align: middle;
 }
-body.bg-dark input.search {
+input.search {
+	width: 150px;	
+}
+body.bg-dark input.input-flay {
 	background-color: #252729;
 	border-color: var(--gray-dark);
 	color: var(--light);
 }
-input.search:focus, input.search:hover {
+input.input-flay:focus, input.input-flay:hover {
 	border-color: var(--gray-dark);
 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 	outline: none;
 }
-body.bg-dark input.search:focus, body.bg-dark input.search:hover {
+body.bg-dark input.input-flay:focus, body.bg-dark input.input-flay:hover {
 	background-color: #103356;
 	border-color: #252729;
 }
@@ -179,23 +184,23 @@ label.text {
 	padding: .125rem .5rem;
 	transition: all .3s;
 }
-label.text.hover:hover 		{box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125); text-shadow: none;}
+label.text.hover:hover 		{text-shadow: 0 0 1px midnightblue;}
 label.text:empty 			{display: none;}
 label.text.xs 				{font-size: 0.75rem;	line-height: 1.4;}
 label.text.sm 				{font-size: 0.875rem;	line-height: 1.5;}
 label.text.lg 				{font-size: 1.125rem;	line-height: 1.7;}
 body.bg-dark label.text    		    {background-color: #252729;	color: #fafafa;}
-body.bg-dark label.text.hover:hover {background-color: #103356; box-shadow: none;}
+body.bg-dark label.text.hover:hover {background-color: #103356; color: #eede1a; box-shadow: none;}
 
 /* button */
 button.btn.btn-flay, button.btn.btn-outline-flay {
 	background-color: var(--light);
 	color: #111;
+	font-weight: 700;
 	transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out, text-shadow .3s;
 }
 button.btn.btn-flay:hover, button.btn.btn-outline-flay:hover {
-	color: #eee;
-	text-shadow: 0 0 4px #000, 0 0 3px midnightblue, 0 0 6px midnightblue, 0 0 9px midnightblue, 0 0 12px midnightblue, 0 0 15px #090942, 0 0 18px #090942;
+	text-shadow: 0 0 1px midnightblue;
 }
 button.btn.btn-flay:active:focus, button.btn.btn-outline-flay:active:focus {
 	box-shadow: 0 0 0 0.2rem rgba(25, 25, 112, .4);
@@ -234,8 +239,16 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 	transition: .2s;
 }
 .hover:hover {
-	text-shadow: 0 1px 2px var(--light);
+	text-shadow: 0 1px 2px orange;
 }
+
+.width-50  {width:  50px !important;}
+.width-100 {width: 100px !important;}
+.width-150 {width: 150px !important;}
+.width-200 {width: 200px !important;}
+.width-250 {width: 250px !important;}
+.width-300 {width: 300px !important;}
+
 
 /* layout */
 #overlay {
@@ -448,10 +461,15 @@ body.bg-dark nav.navbar, body.bg-dark ul.pagination, body.bg-dark .bg-light {
 }
 body.bg-dark ul.pagination .page-item .page-link {
 	background-color: #212529;
+}
+body.bg-dark ul.pagination .page-item:not(.disabled) .page-link {
 	color: #fafafa;
 }
+body.bg-dark ul.pagination .page-item.disabled .page-link {
+	color: var(--gray);
+}
 body.bg-dark ul.pagination .page-item.active .page-link {
-	background-color: #000;
+	background-color: #103356;
 	border-color: #dee2e6;
 }
 body.bg-dark .btn-link {

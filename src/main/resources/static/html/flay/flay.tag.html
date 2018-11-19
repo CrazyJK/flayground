@@ -53,26 +53,12 @@
 
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
 		<form id="tagInput">
-			<div class="form-row">
-				<div class="col-sm-1">
-					<input type="text" class="form-control form-control-sm" id="tagId"   name="id" placeholder="Id">
-				</div>
-				<div class="col-sm-3">
-					<input type="text" class="form-control form-control-sm" id="tagName" name="name" placeholder="Name" required="required">
-				</div>
-				<div class="col">
-					<input type="text" class="form-control form-control-sm" id="tagDesc" name="description" placeholder="Desctiption">
-				</div>
-				<div class="col-auto">
-					<button class="btn btn-sm btn-flay tag-save" type="submit">Save</button>
-				</div>
-				<div class="col-auto">
-					<button class="btn btn-sm btn-flay text-danger tag-delete" type="submit">Delete</button>
-				</div>
-				<div class="col-auto">
-					<label class="check sm"><input type="checkbox" id="openPopup"><span>Popup</span></label>
-				</div>
-			</div>
+			<input type="text" class="form-control input-flay width-50" id="tagId"   name="id" placeholder="Id">
+			<input type="text" class="form-control input-flay width-150" id="tagName" name="name" placeholder="Name" required="required">
+			<input type="text" class="form-control input-flay width-300" id="tagDesc" name="description" placeholder="Desctiption">
+			<button class="btn btn-sm btn-flay tag-save" type="submit">Save</button>
+			<button class="btn btn-sm btn-flay text-danger tag-delete" type="submit">Delete</button>
+			<label class="check sm"><input type="checkbox" id="openPopup"><span>Popup</span></label>
 		</form>
 	</nav>
 	

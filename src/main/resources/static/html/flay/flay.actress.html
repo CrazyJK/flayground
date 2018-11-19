@@ -49,27 +49,19 @@
 <div role="body">
 
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
-		<div class="input-group input-group-sm mx-2" style="max-width:300px;">
-			<div class="input-group-prepend">
-				<span class="input-group-text bg-light border-light" id="totalCount"></span>
-			</div>
-			<input class="form-control border-light" type="search" id="search" placeholder="Search...">
-		</div>
-		<span class="check-group danger sm mx-2">
+		<input class="form-control input-flay search" type="search" id="search" placeholder="Search...">
+		<label class="text sm" id="totalCount"></label>
+		<span class="check-group danger mx-2">
 			<label><input type="checkbox" id="favorite"  ><span><i class="fa fa-star"></i></span></label>
 			<label><input type="checkbox" id="noFavorite"><span><i class="fa fa-star-o"></i></span></label>
 		</span>
-		<span class="check-group primary sm mx-2">
+		<span class="check-group primary mx-2">
 			<label><input type="radio" id="viewTypeCard"  name="viewType" value="c" checked="checked"><span><i class="fa fa-th"></i></span></label>
 			<label><input type="radio" id="viewTypeTable" name="viewType" value="t"><span><i class="fa fa-list"></i></span></label>
 		</span>
-		<div class="input-group input-group-sm mx-2" style="max-width:160px;">
-			<div class="input-group-prepend">
-				<button class="btn btn-flay border-light" id="nameCheckBtn">Name check</button>
-			</div>
-			<input class="form-control border-light" type="number" id="limit" name="limit" value="0.95"/>
-		</div>
-		<button class="btn btn-sm btn-flay btn-reload"><i class="fa fa-refresh"></i></button>
+		<button class="btn btn-flay ml-2" id="nameCheckBtn">Name check</button>
+		<input class="form-control input-flay width-50" id="limit" name="limit" value="0.95"/>
+		<button class="btn btn-sm btn-flay btn-reload ml-2"><i class="fa fa-refresh"></i></button>
 	</nav>
 	
 	<div id="cardViewWrapper" class="text-center">

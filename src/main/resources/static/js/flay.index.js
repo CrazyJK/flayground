@@ -113,6 +113,9 @@ var Navi = {
 				try {
 					$("#notice").dialog("close");
 				} catch(ignore) {}
+				try {
+					destory();
+				} catch(ignore) {}
 				$("#wrap_body").html(html);
 			});
 		}

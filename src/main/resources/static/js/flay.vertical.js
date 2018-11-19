@@ -549,6 +549,7 @@ var navigation = {
 				}, 5000);
 			},
 			off: function() {
+				console.log('navigation.slide.off');
 				clearInterval(slideTimer);
 			}
 		}
@@ -714,4 +715,8 @@ function decorateRank(rank) {
 			borderColor: color
 		});
 	}
+}
+
+function destory() {
+	navigation.slide.off();
 }

@@ -77,6 +77,10 @@ body.bg-dark input.search:focus, body.bg-dark input.search:hover {
 	background-color: #103356;
 	border-color: #252729;
 }
+body.bg-dark input.form-control, body.bg-dark .input-group-text {
+	background-color: #252729;
+	color: var(--light);
+}
 
 /* input range ranker */
 label.range {
@@ -182,6 +186,34 @@ label.text.sm 				{font-size: 0.875rem;	line-height: 1.5;}
 label.text.lg 				{font-size: 1.125rem;	line-height: 1.7;}
 body.bg-dark label.text    		    {background-color: #252729;	color: #fafafa;}
 body.bg-dark label.text.hover:hover {background-color: #103356; box-shadow: none;}
+
+/* button */
+button.btn.btn-flay, button.btn.btn-outline-flay {
+	background-color: var(--light);
+	color: #111;
+	transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out, text-shadow .3s;
+}
+button.btn.btn-flay:hover, button.btn.btn-outline-flay:hover {
+	color: #eee;
+	text-shadow: 0 0 4px #000, 0 0 3px midnightblue, 0 0 6px midnightblue, 0 0 9px midnightblue, 0 0 12px midnightblue, 0 0 15px #090942, 0 0 18px #090942;
+}
+button.btn.btn-flay:active:focus, button.btn.btn-outline-flay:active:focus {
+	box-shadow: 0 0 0 0.2rem rgba(25, 25, 112, .4);
+}
+button.btn.btn-outline-flay {
+	border-color: midnightblue;	
+}
+body.bg-dark button.btn.btn-flay, body.bg-dark button.btn.btn-outline-flay {
+	background-color: #252729;
+	color: #fafafa;
+}
+body.bg-dark button.btn.btn-flay:hover, body.bg-dark button.btn.btn-outline-flay:hover {
+	background-color: #103356;
+	color: #eede1a;  
+}
+body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outline-flay:active:focus {
+	text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;
+}
 
 .nowrap {
 	width: inherit;

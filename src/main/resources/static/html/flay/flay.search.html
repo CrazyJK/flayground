@@ -10,7 +10,9 @@ input {
 .input-group-append + .form-control {
 	border-left: 0;
 }
-
+.input-group-text {
+	background-color: #fff;
+}
 .btn-batch-option {
 	min-width: 50px;
 }
@@ -71,20 +73,20 @@ input {
 		<input type="search" id="query" class="form-control form-control-sm" placeHolder="Search..."/>
 		<div class="divider"></div>
 		<div class="btn-group btn-group-sm">
-			<button class="btn btn-light btn-search-opus">Opus</button>
-			<button class="btn btn-light btn-search-actress">Actress</button>
-			<button class="btn btn-light btn-search-torrent">Torrent</button>
+			<button class="btn btn-flay btn-search-opus">Opus</button>
+			<button class="btn btn-flay btn-search-actress">Actress</button>
+			<button class="btn btn-flay btn-search-torrent">Torrent</button>
 		</div>
 		<div class="divider"></div>
-		<button class="btn btn-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-outline-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-warning btn-sm" data-toggle="collapse" data-target="#candidates" aria-role="ADMIN">Candidates <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-outline-warning btn-sm" data-toggle="collapse" data-target="#candidates" aria-role="ADMIN">Candidates <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader" aria-role="ADMIN">Page Image Downloader <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-outline-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader" aria-role="ADMIN">Page Image Downloader <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-danger btn-sm"  data-toggle="collapse" data-target="#batchGroup" aria-role="ADMIN">Batch <i class="fa fa-caret-down"></i></button>
+		<button class="btn btn-outline-danger btn-sm"  data-toggle="collapse" data-target="#batchGroup" aria-role="ADMIN">Batch <i class="fa fa-caret-down"></i></button>
 		<div class="divider"></div>
-		<button class="btn btn-info btn-sm btn-reload" aria-role="ADMIN">Reload</button>
+		<button class="btn btn-outline-info btn-sm btn-reload" aria-role="ADMIN">Reload</button>
 	</nav>
 
 	<div class="container" style="margin-top: 60px;">
@@ -113,7 +115,7 @@ input {
 				</div>
 				<div class="input-group input-group-sm mb-1" id="newActress">
 					<div class="input-group-prepend">
-						<div class="input-group-text border-primary bg-white">
+						<div class="input-group-text border-primary">
 							<label class="check danger sm"><input type="checkbox" id="newActressFavorite" name="favorite"><span>Fav</span></label>
 						</div>
 					</div>

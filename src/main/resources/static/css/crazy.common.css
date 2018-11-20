@@ -220,38 +220,6 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 	text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;
 }
 
-.nowrap {
-	width: inherit;
-	overflow-x: hidden;
-	overflow-y: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
-	vertical-align: bottom;
-}
-
-.divider {
-	width: 1rem;
-	display: inline-flex;
-}
-
-.hover {
-	cursor: pointer;
-	transition: .2s;
-}
-.hover:hover {
-	text-shadow: 0 1px 2px orange;
-}
-
-.width-50  {width:  50px !important;}
-.width-70  {width:  70px !important;}
-.width-80  {width:  80px !important;}
-.width-100 {width: 100px !important;}
-.width-150 {width: 150px !important;}
-.width-200 {width: 200px !important;}
-.width-250 {width: 250px !important;}
-.width-300 {width: 300px !important;}
-
-
 /* layout */
 #overlay {
 	position: fixed;
@@ -339,7 +307,6 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 	padding: 0;
 	z-index: -5;
 }
-
 #background_images {
 	background-color: rgba(0, 0, 0, .5);
 	height: 100%;
@@ -347,11 +314,9 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 	padding: 0 1rem;
 	z-index: -4;
 }
-
 #background_images.transparent {
 	background-color: transparent;
 }
-
 #background_images .col {
 	z-index: -3;
 }
@@ -402,32 +367,17 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 	z-index: 1;
 	transition: margin-left 0.5s;
 }
-
 #wrap_body > div {
 	z-index: 74;
 }
 
-
-#pageContent {
-	margin-top: 56px;
-	padding-top: .5rem;
-}
-
-.fixed-center {
-	position: absolute;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-}
-
-.content-box {
-	background-color: rgba(0, 0, 0, .75);
-	border-radius: .5rem;
-    border: 1px solid #fff;
-	margin: .5rem;	
-	padding: .5rem;
-	color: #fff;
-}
+.top-left     {position: absolute; top: 0;     left: 0;}
+.top-right    {position: absolute; top: 0;    right: 0;}
+.center-left  {position: absolute; top: 50%;   left: 0; transform: translate(0, -50%);}
+.center-right {position: absolute; top: 50%;  right: 0; transform: translate(0, -50%);}
+.bottom-left  {position: absolute; bottom: 0;  left: 0;}
+.bottom-right {position: absolute; bottom: 0; right: 0;}
+.fixed-center {position: absolute; top: 50%;   left: 50%; transform: translate(-50%, -50%);}
 
 .favorite {
 	color: red !important;
@@ -435,13 +385,35 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 .nonExist {
  	color: #747474 !important;
 }
-
-.btn:focus, .custom-select:focus, .form-control:focus, .page-link:focus {
-	box-shadow: none;
+.nowrap {
+	width: inherit;
+	overflow-x: hidden;
+	overflow-y: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	vertical-align: bottom;
 }
+.divider {
+	width: 1rem;
+	display: inline-flex;
+}
+.hover {
+	cursor: pointer;
+	transition: .2s;
+}
+.hover:hover {
+	text-shadow: 0 1px 2px orange;
+}
+.width-50  {width:  50px !important;}
+.width-70  {width:  70px !important;}
+.width-80  {width:  80px !important;}
+.width-100 {width: 100px !important;}
+.width-150 {width: 150px !important;}
+.width-200 {width: 200px !important;}
+.width-250 {width: 250px !important;}
+.width-300 {width: 300px !important;}
 
-
-/* default color for bootstrap 4 */
+/* modified bootstrap 4 */
 .page-item.active .page-link {
     background-color: midnightblue;
     border-color: midnightblue;
@@ -454,6 +426,9 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 }
 .img-thumbnail {
     background-color: transparent;
+}
+.btn:focus, .custom-select:focus, .form-control:focus, .page-link:focus {
+	box-shadow: none;
 }
 
 /* dark theme */

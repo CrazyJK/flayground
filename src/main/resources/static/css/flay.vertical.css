@@ -4,6 +4,11 @@ body {
 	overflow: hidden;
 }
 
+#pageContent {
+	margin-top: 56px;
+	padding-top: .5rem;
+}
+
 #selectTags {
 	display: none;
 /* 	position: fixed;

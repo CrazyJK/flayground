@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>kAmOrU life</title>
+<link rel="icon" type="image/png" href="/img/favicon/flay_2.png"/>
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<style type="text/css">
+#title {
+	color: var(--warning);
+	font-size: 3.5rem;
+	margin-bottom: -13px;
+}
+#fromTo {
+	font-size: 0.875rem;
+}
+#fromTo label {
+	color: var(--light);
+	margin: 0;
+	padding: 0 .25rem;
+	width: 50%;
+}
+#fromTo label ~ label {
+	text-align: right;
+}
+#lifeTimerWrapper {
+	font-size: 3rem;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/kamoru.life.timer.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+	$("#lifeTimerWrapper").lifeTimer({
+		classes: 'text-center',
+		mode: 'remain',
+		pattern: 'dayD hh:mm:ss',
+		progress: true
+	});
+	
+	$("#starting").html(STARTING.format('yyyy'));
+	$("#deadline").html(DEADLINE.format('yyyy'));
+	
+});
+</script>
+</head>
+<body>
+
+	<div class="fixed-center nowrap text-light">
+		<div id="title">Time remaining...</div>
+		<div id="fromTo">
+			<label id="starting"></label>
+			<label id="deadline"></label>
+		</div>
+		<div id="lifeTimerWrapper"></div>
+	</div>
+
+</body>
+</html>

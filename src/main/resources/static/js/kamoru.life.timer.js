@@ -2,6 +2,8 @@
  * life timer
  */
 ;
+var STARTING = new Date(1976, 3, 28), DEADLINE = new Date(2031, 3, 28);
+
 (function($) {
 
 	$.fn.lifeTimer = function(options) {
@@ -21,9 +23,7 @@
 			+   '<div class="display-time" style="padding: 0 .5rem;"></div>'
 			+ '</div>';
 
-		var STARTING = new Date(1976, 3, 28),
-			DEADLINE = new Date(2031, 3, 28),
-	    	SECOND = 1000,
+		var SECOND = 1000,
 	        MINUTE = SECOND * 60, // 1000 * 60
 	        HOUR   = MINUTE * 60, // 1000 * 60 * 60
 	        DAY    = HOUR   * 24, // 1000 * 60 * 60 * 24

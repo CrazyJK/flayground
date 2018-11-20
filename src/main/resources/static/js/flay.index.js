@@ -122,12 +122,12 @@ var Navi = {
 				$("#wrap_body").html(html);
 			});
 		},
-		popup: function(anker) {
+		popup: function(anker, w, h) {
 			var $this = $(anker).prev();
 			var url = $this.attr("aria-include");
 			var key = $this.attr("aria-key");
 			console.log('popup page', url, key);
-			Popup.open("/html/flay/flay.popup.html?target=" + url, key, 1080, 800);
+			Popup.open("/html/flay/flay.popup.html?target=" + url, key, w, h);
 		}
 };
 

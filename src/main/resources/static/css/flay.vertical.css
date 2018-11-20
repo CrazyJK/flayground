@@ -71,7 +71,10 @@ body {
 }
 
 .tag-list .nonExist {
-	color: #c5bcbc !important;
+	color: #c7bdbd !important;
+}
+body.bg-dark .tag-list .nonExist {
+	color: #4a4545 !important;
 }
 
 .cover-wrapper {

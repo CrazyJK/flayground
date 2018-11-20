@@ -46,7 +46,7 @@ body {
 .check-group.warning label:hover input:checked ~ span, label.check.warning:hover input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
 .check-group.danger  label:hover input:checked ~ span, label.check.danger:hover  input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
 
-body.bg-dark .check-group            		     span, body.bg-dark label.check 				 span {background-color: #2d2d2d; transition: background-color .3s, color .3s, text-shadow .3s;}
+body.bg-dark .check-group            		     span, body.bg-dark label.check 				 span {background-color: #2d2d2d; color: lightgray;    transition: background-color .3s, color .3s, text-shadow .3s;}
 body.bg-dark .check-group        input:checked ~ span, body.bg-dark label.check  input:checked ~ span {                           color: var(--light); text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;}
 body.bg-dark .check-group:hover   		         span, body.bg-dark label.check:hover			 span {background-color: #103356; color: var(--light);}
 body.bg-dark .check-group:hover				         , body.bg-dark label.check:hover 				  {box-shadow: none;}

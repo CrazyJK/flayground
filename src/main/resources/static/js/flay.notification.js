@@ -110,7 +110,7 @@ var notification = {
 					$("<i>", {'class': 'item-close fa fa-times float-right'}).on("click", function() {
 						hideBox($box);
 					}),
-					$("<small>", {'class': 'item-time float-right'}).html(time.format("hh:mm")),
+					$("<small>", {'class': 'item-time float-right'}).html(time.format("a/p hh:mm")),
 		    		$("<div>", {'class': 'announce-body'}).append(
 							$("<h6>", {'class': 'item-title'}).html(title),
 							$("<div>", {'class': 'item-content'}).html(content)

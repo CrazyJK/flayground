@@ -15,7 +15,10 @@ var Event = {
 
 			$("#bgColor").on("change", function() {
 				$("body").css({backgroundColor: $(this).val()});
+				LocalStorageItem.set('flay.bgcolor', $(this).val());
 			});
+			var bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
+			$("#bgColor").val(bgColor).trigger("change");
 		},
 		togglePage: function() {
 			$("#pageShow").on("change", function() {

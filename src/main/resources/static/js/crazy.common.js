@@ -153,7 +153,7 @@ Date.prototype.format = function(f) { // http://stove99.tistory.com/46
         case "ss":
         	return d.getSeconds().zf(2);
         case "a/p":
-        	return d.getHours() < 12 ? "오전" : "오후";
+        	return d.getHours() < 12 ? "am" : "pm";
         default:
         	return $1;
         }

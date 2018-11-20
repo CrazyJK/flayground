@@ -7,6 +7,10 @@ $(function () {
 	notification.start();
 });
 
+window.onunload = function() {
+	notification.disconnect();
+};
+
 var notification = {
 		stompClient: null,
 		STOMP_ENDPOINT: "/flayground-notification",

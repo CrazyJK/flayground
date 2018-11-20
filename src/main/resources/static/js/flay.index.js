@@ -104,12 +104,13 @@ var Navi = {
 		init: function() {
 			$("[aria-include]").on("click", function() {
 				$("[aria-include]").removeClass("active");
-				Navi.go($(this).addClass("active").attr("aria-include"));
+				var $this = $(this).addClass("active");
+				Navi.go($this.attr("aria-include"), $this.attr("aria-key"));
 			});
 		},
-		go: function(destination) {
+		go: function(destination, key) {
+			console.log('destination', destination, 'key', key);
 			Rest.Html.get(destination, function(html) {
-				$(document).off('keyup');
 				try {
 					$("#notice").dialog("close");
 				} catch(ignore) {}

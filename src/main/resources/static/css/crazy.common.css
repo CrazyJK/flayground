@@ -276,6 +276,7 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 .sidenav > .sidenav-openbtn       > i 					 {opacity: 0; transition: all .5s;}
 .sidenav > .sidenav-openbtn:hover > i 					 {opacity: 1;}
 .sidenav > h4 											 {						text-align: center; padding-top: 50px;}
+.sidenav > h4 > a                                        {vertical-align: middle;}
 .sidenav > h4 > a:hover 								 {color: var(--yellow);	text-decoration: none;}
 .sidenav > h4 > img                                      {height: 2rem; border-radius: 50%; vertical-align: middle; margin-right: .5rem;}
 .sidenav > .nav 										 {						margin-top: 1rem;}

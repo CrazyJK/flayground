@@ -10,6 +10,9 @@ var Event = {
 				$("body").toggleClass("bg-dark", bgThemeValue === 'D');
 				LocalStorageItem.set('flay.bgtheme', bgThemeValue);
 			});
+			var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
+			$('#bgTheme' + bgThemeValue).parent().click();
+
 			$("#bgColor").on("change", function() {
 				$("body").css({backgroundColor: $(this).val()});
 			});
@@ -22,11 +25,6 @@ var Event = {
 				$("#background_images .col").css({zIndex: isShow ? -3 : 0});
 			});
 		},
-		toggleBackground: function() {
-			$("#bgFlow").on("change", function() {
-				$(this).prop("checked") ? Background.start() : Background.stop();
-			});
-		}
 };
 
 var Background = {
@@ -55,6 +53,12 @@ var Background = {
 			};
 			paneResize();
 			$(window).on("resize", paneResize);
+			// switch
+			$("#bgFlow").on("change", function() {
+				$(this).prop("checked") ? Background.start() : Background.stop();
+			});
+			var backgroundImageShow = LocalStorageItem.getBoolean('flay.background-image', true);
+			backgroundImageShow && $("#bgFlow").parent().click();
 		},
 		start: function() {
 			Background.bgInterval = setInterval(Background.func, 3000);
@@ -135,24 +139,14 @@ var isAdmin = Security.hasRole("ADMIN");
 var username = Security.getName();
 console.log("isAdmin", isAdmin, username);
 
-var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
-var backgroundImageShow = LocalStorageItem.getBoolean('flay.background-image', true);
-
 $(document).ready(function() {
 
 	Event.theme();
 	Event.togglePage();
-	Event.toggleBackground();
 	
 	Background.init();
-	if (backgroundImageShow) {
-		$("#bgFlow").parent().click();
-	}
 
 	Navi.init();
-//	$("[aria-include]").first().click();
-	
-	$('#bgTheme' + bgThemeValue).parent().click();
 	
 	$("#username").html(username);
 

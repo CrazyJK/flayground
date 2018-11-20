@@ -13,7 +13,7 @@
 #title {
 	color: var(--warning);
 	font-size: 3.5rem;
-	margin-bottom: -13px;
+	margin-bottom: -16px;
 }
 #fromTo {
 	font-size: 0.875rem;
@@ -27,7 +27,7 @@
 #fromTo label ~ label {
 	text-align: right;
 }
-#lifeTimerWrapper {
+#lifeTimerWrap {
 	font-size: 3rem;
 }
 </style>
@@ -39,7 +39,7 @@
 <script type="text/javascript" src="/js/kamoru.life.timer.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	$("#lifeTimerWrapper").lifeTimer({
+	$("#lifeTimerWrap").lifeTimer({
 		classes: 'text-center',
 		mode: 'remain',
 		pattern: 'dayD hh:mm:ss',
@@ -60,7 +60,7 @@ $(document).ready(function() {
 			<label id="starting"></label>
 			<label id="deadline"></label>
 		</div>
-		<div id="lifeTimerWrapper"></div>
+		<div id="lifeTimerWrap"></div>
 	</div>
 
 </body>

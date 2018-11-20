@@ -30,7 +30,7 @@
 
 	<div id="crazySidenav" class="sidenav">
 		<div class="sidenav-openbtn"><i class="fa fa-angle-double-right"></i></div>
-  		<h4><a href="/">Flayground</a></h4>
+  		<h4><a href="/"><img src="/img/favicon/flay_1.png">Flayground</a></h4>
   		<ul class="nav flex-column">
 			<li class="nav-item"><i class="fa fa-file-video-o"></i> <label aria-include="/html/flay/flay.vertical.html" aria-key="vertical">Vertical</label></li>
 			<li class="nav-item"><i class="fa fa-list"        ></i> <label aria-include="/html/flay/flay.archive.html"  aria-key="archive" >Archive </label> <a href="javascript:void(0);" onclick="Navi.popup(this, 1080, 800)"><i class="fa fa-external-link ml-1 hover"></i></a></li>
@@ -57,7 +57,7 @@
   			</li>
 			<li class="nav-item">
 				<i class="fa fa-toggle-on"></i> Background
-				<label class="check sm"><input type="checkbox" id="bgFlow" value="T"><span>Flow</span></label>
+				<label class="check sm"><input type="checkbox" id="bgFlow"><span>Flow</span></label>
 			</li>
 			<li class="nav-item">
 				<i class="fa fa-paint-brush"></i> BG Color
@@ -65,14 +65,11 @@
 			</li>
 			<li class="nav-item">
 				<i class="fa fa-toggle-on"></i> Notification
-  				<span class="check-group sm">
-					<label><input type="radio" name="notification" value="T"><span>T</span></label>
-					<label><input type="radio" name="notification" value="F"><span>F</span></label>
-				</span>
+				<label class="check sm"><input type="checkbox" id="notification" checked="checked"><span>On</span></label>
 			</li>
 			<li class="nav-item">
 				<i class="fa fa-clock-o"></i> Expire
-				<label id="lifeTimerWrapper" class="hover" onclick="Popup.open('/html/flay/kamoru.life.timer.html', 'lifeTimer', 600, 200)"></label>
+				<label id="lifeTimerWrapper" onclick="Popup.open('/html/kamoru.life.timer.html', 'lifeTimer', 600, 200)"></label>
 			</li>
 		</ul>
 	</div>

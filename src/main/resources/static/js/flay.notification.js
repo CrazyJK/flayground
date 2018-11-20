@@ -22,17 +22,16 @@ var notification = {
 					'<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>'
 			);
 
-			if ($("input[name='notification']").length > 0) {
-				$("input[name='notification']").on("change", function() {
-					var notiSwitch = $("input[name='notification']:checked").val() === 'T';
-					if (notiSwitch) {
+			if ($("#notification").length > 0) {
+				$("#notification").on("change", function() {
+					if ($(this).prop("checked")) {
 						notification.connect();
 					} else {
 						notification.disconnect();
 					}
 				});
 			
-				$("input[name='notification'][value='T']").prop("checked", true).trigger("change");
+				$("#notification").prop("checked", true).trigger("change");
 			} else {
 				notification.connect();
 			}

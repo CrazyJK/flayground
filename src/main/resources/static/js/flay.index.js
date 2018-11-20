@@ -58,9 +58,11 @@ var Background = {
 		},
 		start: function() {
 			Background.bgInterval = setInterval(Background.func, 3000);
+			LocalStorageItem.set('flay.background-image', true);
 		},
 		stop: function() {
 			clearInterval(Background.bgInterval);
+			LocalStorageItem.set('flay.background-image', false);
 		},
 		func: function() {
 			// make image index array
@@ -133,6 +135,9 @@ var isAdmin = Security.hasRole("ADMIN");
 var username = Security.getName();
 console.log("isAdmin", isAdmin, username);
 
+var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
+var backgroundImageShow = LocalStorageItem.getBoolean('flay.background-image', true);
+
 $(document).ready(function() {
 
 	Event.theme();
@@ -140,12 +145,13 @@ $(document).ready(function() {
 	Event.toggleBackground();
 	
 	Background.init();
-	Background.start();
+	if (backgroundImageShow) {
+		$("#bgFlow").parent().click();
+	}
 
 	Navi.init();
 //	$("[aria-include]").first().click();
 	
-	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
 	$('#bgTheme' + bgThemeValue).parent().click();
 	
 	$("#username").html(username);

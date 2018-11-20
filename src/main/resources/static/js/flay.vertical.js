@@ -717,5 +717,6 @@ function decorateRank(rank) {
 }
 
 function destory() {
+	$(document).off('keyup');
 	navigation.slide.off();
 }

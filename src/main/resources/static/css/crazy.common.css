@@ -8,7 +8,7 @@ body {
 }
 
 .check-group 																						  {display: inline-flex; width: initial; vertical-align: middle;}
-.check-group 		 label+label 																	  {margin: 0 0 0 -1px;}
+.check-group 		 label+label 																	  {/* margin: 0 0 0 -1px; */}
 .check-group 		 label 																			  {margin: 0;}
 .check-group                                         , label.check                                    {margin: 4px 2px; transition: box-shadow .2s;}
 													   label.check 									  {						  				  }
@@ -22,7 +22,8 @@ body {
 .check-group:hover									 , label.check:hover 						      {/* box-shadow: 0 .25rem .5rem rgba(0, 0, 0, .25); */}
 .check-group:hover								 span, label.check:hover 						 span {color: midnightblue;}
 .check-group 		 label:hover input:checked ~ span, label.check:hover 		 input:checked ~ span {}
-.check-group         label input[type='radio'] ~ span, label.check         input[type='radio'] ~ span {}
+.check-group         label input[type='radio'] ~ span, label.check         input[type='radio'] ~ span {border-radius: .25rem;}
+.check-group.sm      label input[type='radio'] ~ span, label.check.sm      input[type='radio'] ~ span {border-radius: .2rem;}
 
 .check-group.primary 			 	 			 span, label.check.primary 		 		  		 span {border-color: var(--primary); 				color: var(--primary);} 
 .check-group.success 			 	 			 span, label.check.success 		 		  		 span {border-color: var(--success); 				color: var(--success);}

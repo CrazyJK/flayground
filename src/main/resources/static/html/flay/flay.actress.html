@@ -1,7 +1,5 @@
 <style type="text/css">
 #cardViewWrapper, #tableViewWrapper {
-	text-align: center;
-	margin-top: 4rem;
 }
 #tableViewWrapper > table {
 	background-image: url(/img/chalkboard.jpg);
@@ -10,8 +8,9 @@
 .actress {
 	display: inline-flex;
 	margin: 0.5rem;
-	/* width: 200px; */
 	font-size: 0.75rem;
+	min-width: 200px;
+	width: 240px;
 }
 .card-body {
 	background-size: cover;
@@ -64,15 +63,17 @@
 		<button class="btn btn-sm btn-flay btn-reload ml-2"><i class="fa fa-refresh"></i></button>
 	</nav>
 	
-	<div id="cardViewWrapper" class="text-center">
-		<div class="actress-list">
+	<div style="height: 4rem;"></div>
+	
+	<div id="cardViewWrapper">
+		<div class="actress-list text-center">
 		</div>
 	</div>
 	<div id="tableViewWrapper" class="container">
 		<table class="table table-sm table-hover table-borderless text-light rounded">
 			<thead>
 				<tr>
-					<th class="hover" data-sort-key="fav">Favorite</th>
+					<th class="hover" data-sort-key="fav">fav</th>
 					<th class="hover" data-sort-key="name">Name</th>
 					<th>LocalName</th>
 					<th class="hover" data-sort-key="birth">Birth</th>
@@ -258,7 +259,7 @@ function displayActress() {
 
 		$.each(collectedList, function(idx, actress) {
 			$("<tr>").append(
-					$("<td>").append(
+					$("<td>", {'class': 'text-center'}).append(
 							$("<i>", {'class': "fa fa-star" + (actress.favorite ? "" : "-o")})		
 					),
 					$("<td>").append(

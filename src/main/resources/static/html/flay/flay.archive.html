@@ -140,17 +140,17 @@
 	
 <script type="text/javascript">
 var FLAY_ARCHIVE_VIEWTYPE = 'flay.archive.viewType';
-var FLAY_ARCHIVE_PAGESIZE = 'flay.archive.pageSize';
+var FLAY_ARCHIVE_PAGESIZE = 'flay.archive.pageSize.';
 var pageNo = 0, keyword, total = 0,
-	size = LocalStorageItem.getInteger(FLAY_ARCHIVE_PAGESIZE, 15), 
-	viewType = LocalStorageItem.get(FLAY_ARCHIVE_VIEWTYPE, 't');
+	viewType = LocalStorageItem.get(FLAY_ARCHIVE_VIEWTYPE, 't'),
+	pageSize = LocalStorageItem.getInteger(FLAY_ARCHIVE_PAGESIZE + viewType, 15);
 var flayList = [];
 
 function addEventListener() {
-	$("#pageSize").val(size).on("keyup", function(e) {
+	$("#pageSize").val(pageSize).on("keyup", function(e) {
 		if (e.keyCode != 13)
 			return;
-		LocalStorageItem.set(FLAY_ARCHIVE_PAGESIZE, $(this).val());
+		LocalStorageItem.set(FLAY_ARCHIVE_PAGESIZE + viewType, $(this).val());
 		showDetail('off');
 		goPage('current');
 	});
@@ -215,10 +215,11 @@ function goPage(p) {
 	}
 	
 	pageNo = Math.max(pageNo, 0);
-	size = $("#pageSize").val();
+	pageSize = LocalStorageItem.getInteger(FLAY_ARCHIVE_PAGESIZE + viewType, 15);
+	$("#pageSize").val(pageSize);
 	keyword = $("#keyword").val();
 
-	Rest.Archive.page(pageNo, size, keyword, function(page) {
+	Rest.Archive.page(pageNo, pageSize, keyword, function(page) {
 		flayList = page.content;
 		
 		showDetail('off');
@@ -261,9 +262,11 @@ function goPage(p) {
 				display: 'inline-block',
 				width: 300,
 			}).append(
-					$("<img>", {'class': 'card-img-top', 'src': '/static/cover/' + flay.opus}).css({
+					$("<div>", {'class': 'card-img-top', 'src': '/static/cover/' + flay.opus}).css({
 						width: 298,
 						height: Math.round(298 * COVER_RATIO),
+						background: 'url(/static/cover/' + flay.opus + ') no-repeat right top',
+						backgroundSize: 'cover'
 					}),
 					$("<div>", {'class': 'card-body bg-dark p-2'}).css({
 						borderBottomLeftRadius: 4,

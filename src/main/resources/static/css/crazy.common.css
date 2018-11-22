@@ -1,6 +1,7 @@
 @charset "UTF-8";
 :root {
 	--cover-ratio: 0.6625;
+	--darker: #2d2d2d;
 	--rank-1: rgba(0, 0, 255, .5);
 	--rank0:  rgba(255, 255, 0, .5);
 	--rank1:  rgba(255, 0, 0, .5);
@@ -61,7 +62,7 @@ body.bg-dark .check-group:hover				         , body.bg-dark label.check:hover 			
 /* input search */
 input.input-flay {
 	display: inline-block;
-	background-color : #fafafa;
+	background-color : var(--light);
 	border: 1px solid #eee;
 	border-radius: .25rem;
 	color: #333; 
@@ -76,7 +77,7 @@ input.search {
 	width: 150px;	
 }
 body.bg-dark input.input-flay {
-	background-color: #252729;
+	background-color: var(--darker);
 	border-color: var(--gray-dark);
 	color: var(--light);
 }
@@ -87,10 +88,10 @@ input.input-flay:focus, input.input-flay:hover {
 }
 body.bg-dark input.input-flay:focus, body.bg-dark input.input-flay:hover {
 	background-color: #103356;
-	border-color: #252729;
+	border-color: var(--darker);
 }
 body.bg-dark input.form-control, body.bg-dark .input-group-text {
-	background-color: #252729;
+	background-color: var(--darker);
 	color: var(--light);
 }
 
@@ -115,7 +116,7 @@ label.range input[type='range'] ~ span {
 	font-weight: 700;
 }
 body.bg-dark label.range {
-	background-color: #252729;
+	background-color: var(--darker);
 	border-color: var(--gray-dark);
 }
 body.bg-dark label.range input[type='range'] ~ span {
@@ -131,7 +132,7 @@ body.bg-dark label.range:hover {
 /* custom input range */
 .ranker {
     display: inline-flex;
-    background-color: #fafafa;
+    background-color: var(--light);
     border-radius: .75rem;
 	border: 1px solid #eee;
     margin: 4px 2px;
@@ -195,7 +196,7 @@ label.text:empty 			{display: none;}
 label.text.xs 				{font-size: 0.75rem;	line-height: 1.4;}
 label.text.sm 				{font-size: 0.875rem;	line-height: 1.5;}
 label.text.lg 				{font-size: 1.125rem;	line-height: 1.7;}
-body.bg-dark label.text    		    {background-color: #252729;	color: #fafafa;}
+body.bg-dark label.text    		    {background-color: var(--darker);	color: var(--light);}
 body.bg-dark label.text.hover:hover {background-color: #103356; color: #eede1a; box-shadow: none;}
 
 /* button */
@@ -215,8 +216,8 @@ button.btn.btn-outline-flay {
 	border-color: midnightblue;	
 }
 body.bg-dark button.btn.btn-flay, body.bg-dark button.btn.btn-outline-flay {
-	background-color: #252729;
-	color: #fafafa;
+	background-color: var(--darker);
+	color: var(--light);
 }
 body.bg-dark button.btn.btn-flay:hover, body.bg-dark button.btn.btn-outline-flay:hover {
 	background-color: #103356;
@@ -444,32 +445,27 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 body.bg-dark {
 	background-color: #000 !important;
 }
-body.bg-dark nav.navbar, body.bg-dark ul.pagination, body.bg-dark .bg-light {
-	background-color: #2d2d2d !important;
-	color: #fafafa !important;
+body.bg-dark nav.navbar, 
+body.bg-dark .bg-light {
+	background-color: var(--darker) !important;
+	color: var(--light) !important;
 }
-body.bg-dark ul.pagination .page-item .page-link {
-	background-color: #212529;
-}
-body.bg-dark ul.pagination .page-item:not(.disabled) .page-link {
-	color: #fafafa;
-}
-body.bg-dark ul.pagination .page-item.disabled .page-link {
-	color: var(--gray);
-}
-body.bg-dark ul.pagination .page-item.active .page-link {
-	background-color: #103356;
-	border-color: #dee2e6;
-}
+
+body.bg-dark ul.pagination                                      {background-color: var(--darker) !important;} 
+body.bg-dark ul.pagination .page-item                .page-link {background-color: var(--darker);}
+body.bg-dark ul.pagination .page-item.active         .page-link {background-color: #103356;	border-color: #dee2e6;}
+body.bg-dark ul.pagination .page-item.disabled       .page-link {color: var(--gray);}
+body.bg-dark ul.pagination .page-item:not(.disabled) .page-link {color: var(--light);}
+
 body.bg-dark .btn-link {
-	color: #fafafa;
+	color: var(--light);
 }
 body.bg-dark .fa-plus:before, body.bg-dark .fa-ellipsis-v:before {
-    text-shadow: 0 0 .25rem antiquewhite;
+    text-shadow: 0 0 .25rem var(--light);
 }
 body.bg-dark .card {
-	background-color: #2d2d2d;
-	color: #eee;
+	background-color: var(--darker);
+	color: var(--light);
 }
 body.bg-dark th, body.bg-dark td {
 	color: var(--light);

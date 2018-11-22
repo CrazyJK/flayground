@@ -143,7 +143,7 @@ function tagLoad() {
 			$tagCard.appendTo($tagList);
 		});
 */
-		var $tags = $("#tags > ul");
+		var $tags = $("#tags > ul").empty();
 		$.each(tagList, function(idx, tag) {
 			$("<li>").append(
 					$("<a>", {

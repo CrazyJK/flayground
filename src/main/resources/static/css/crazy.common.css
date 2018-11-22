@@ -1,6 +1,13 @@
 @charset "UTF-8";
 :root {
 	--cover-ratio: 0.6625;
+	--rank-1: rgba(0, 0, 255, .5);
+	--rank0:  rgba(255, 255, 0, .5);
+	--rank1:  rgba(255, 0, 0, .5);
+	--rank2:  rgba(255, 0, 0, .6);
+	--rank3:  rgba(255, 0, 0, .7);
+	--rank4:  rgba(255, 0, 0, .8);
+	--rank5:  rgba(255, 0, 0, .9);
 }
 
 body {
@@ -137,7 +144,6 @@ body.bg-dark label.range:hover {
 }
 body.bg-dark .ranker {
 	background-color: #212529;
-	color: #fafafa;
 	border-color: transparent;
 }
 body.bg-dark .ranker:hover {
@@ -165,13 +171,13 @@ body.bg-dark .ranker:hover {
 .ranker:hover input ~ i {
 	color: #ccc;
 }
-.ranker input:checked ~ i.r-1, .ranker input ~ i.r-1:hover {color: rgba(0,     0, 255, .75);}
-.ranker input:checked ~ i.r0,  .ranker input ~ i.r0:hover  {color: rgba(0,   255,   0, .30);}
-.ranker input:checked ~ i.r1,  .ranker input ~ i.r1:hover  {color: rgba(255,   0,   0, .15);}
-.ranker input:checked ~ i.r2,  .ranker input ~ i.r2:hover  {color: rgba(255,   0,   0, .30);}
-.ranker input:checked ~ i.r3,  .ranker input ~ i.r3:hover  {color: rgba(255,   0,   0, .45);}
-.ranker input:checked ~ i.r4,  .ranker input ~ i.r4:hover  {color: rgba(255,   0,   0, .60);}
-.ranker input:checked ~ i.r5,  .ranker input ~ i.r5:hover  {color: rgba(255,   0,   0, .75);}
+.ranker input:checked ~ i.r-1, .ranker input ~ i.r-1:hover {color: var(--rank-1);}
+.ranker input:checked ~ i.r0,  .ranker input ~ i.r0:hover  {color: var(--rank0);}
+.ranker input:checked ~ i.r1,  .ranker input ~ i.r1:hover  {color: var(--rank1);}
+.ranker input:checked ~ i.r2,  .ranker input ~ i.r2:hover  {color: var(--rank2);}
+.ranker input:checked ~ i.r3,  .ranker input ~ i.r3:hover  {color: var(--rank3);}
+.ranker input:checked ~ i.r4,  .ranker input ~ i.r4:hover  {color: var(--rank4);}
+.ranker input:checked ~ i.r5,  .ranker input ~ i.r5:hover  {color: var(--rank5);}
 
 /* label text */
 label.text {

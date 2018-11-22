@@ -595,9 +595,7 @@ function addVideoEvent() {
 	// rank
 	$("#ranker, input[name='ranker']").on("change", function() {
 		currentFlay.video.rank = $(this).val();
-		Rest.Video.update(currentFlay.video, function() {
-			decorateRank(currentFlay.video.rank);
-		});
+		Rest.Video.update(currentFlay.video);
 	});
 	// actress name click
 	$(".info-wrapper-actress").on("click", ".info-actress", function() {
@@ -675,8 +673,6 @@ function showVideo(direction) {
 		// rank
 		$("#ranker").val(currentFlay.video.rank);
 		$("input[name='ranker'][value='" + currentFlay.video.rank + "']").prop("checked", true);
-		// rank decorate
-		decorateRank(currentFlay.video.rank);
 		// tag
 		$("input:checked", "#videoTags.tag-list").prop('checked', false);
 		$.each(currentFlay.video.tags, function(i, tagId) {
@@ -697,23 +693,6 @@ function showVideo(direction) {
 	$(".cover-wrapper-inner.next > .cover-box").css({backgroundImage: 'url(' + nextCoverURL + ')'});
 
 	showInfo();
-}
-
-function decorateRank(rank) {
-	var color = '';
-	if (rank < 0) {
-		color = 'rgba(0, 0, 255, 0.5)';
-	} else if (rank == 0) {
-		color = 'rgba(255, 255, 255, 0.5)';
-	} else {
-		color = 'rgba(255, 0, 0, ' + rank*1.5/10 + ')';
-	}
-	if (rank != 0) {
-		$(".ranker").css({
-			backgroundColor: color,
-			borderColor: color
-		});
-	}
 }
 
 function destory() {

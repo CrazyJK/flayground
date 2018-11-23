@@ -14,8 +14,10 @@
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
 <link rel="stylesheet" href="/css/flay.notification.css"/>
 <style type="text/css">
-body {
+:root {
+	--rainbow: linear-gradient(to right, red , orange, yellow, green, blue, indigo, violet);
 }
+
 .col {
 	padding: 4px;
 }
@@ -29,6 +31,20 @@ body {
 .check-group, label.check {
 	margin: .5rem auto;
 }
+
+.border-rainbow {
+	border: 0px solid transparent;
+	border-radius: 4px;
+	margin: .5px; 
+	padding: .5px; 
+}
+.border-rainbow.v {box-shadow: 0 0 8px violet, 0 0 8px violet inset; border-color: violet;}
+.border-rainbow.i {box-shadow: 0 0 8px indigo, 0 0 8px indigo inset; border-color: indigo;}
+.border-rainbow.b {box-shadow: 0 0 8px blue  , 0 0 8px blue   inset; border-color: blue  ;}
+.border-rainbow.g {box-shadow: 0 0 8px green , 0 0 8px green  inset; border-color: green ;}
+.border-rainbow.y {box-shadow: 0 0 8px yellow, 0 0 8px yellow inset; border-color: yellow;}
+.border-rainbow.o {box-shadow: 0 0 8px orange, 0 0 8px orange inset; border-color: orange;}
+.border-rainbow.r {box-shadow: 0 0 8px red   , 0 0 8px red    inset; border-color: red   ;}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
@@ -232,6 +248,46 @@ window.onload = function() {
 						<label class="text hover sm">AB 가나</label>
 						<label class="text hover">AB 가나</label>
 						<label class="text hover lg">AB 가나</label>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="row m-2">
+		<div class="col">
+			<div class="card">
+				<div class="card-body">
+					<h6 class="card-title">Rainbow</h6>
+					<div class="card-text">
+						<div class="row">
+							<div class="col p-2">
+								<div class="border-rainbow v mx-2">
+									<div class="border-rainbow i">
+										<div class="border-rainbow b">
+											<div class="border-rainbow g">
+												<div class="border-rainbow y">
+													<div class="border-rainbow o">
+														<div class="border-rainbow r p-2 text-center">
+															<span style="color: red   ;">red   </span>
+															<span style="color: orange;">orange</span>
+															<span style="color: yellow;">yellow</span>
+															<span style="color: green ;">green </span>
+															<span style="color: blue  ;">blue  </span>
+															<span style="color: indigo;">indigo</span>
+															<span style="color: violet;">violet</span>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+							<div class="col p-2">
+								<div class="m-2" style="height: 40px; background: var(--rainbow); border-radius: .5rem;"></div>
+							</div>
+						</div>
 					</div>
 				</div>
 			</div>

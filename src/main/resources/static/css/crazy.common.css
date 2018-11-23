@@ -423,6 +423,17 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 .width-250 {width: 250px !important;}
 .width-300 {width: 300px !important;}
 
+.text-flay {
+	color: midnightblue;
+}
+.font-flay {
+	font-family: 'Ink Free';
+}
+.font-effect-flay-static {
+	-webkit-mask-image: url(/img/pattern/pattern-static.png);
+	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+}
+
 /* modified bootstrap 4 */
 .page-item.active .page-link {
     background-color: midnightblue;

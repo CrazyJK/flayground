@@ -9,15 +9,12 @@
 <link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
 <link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css"/>
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
+<link rel="stylesheet" href="/css/base.rainbow.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/crazy.common.range.css"/>
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
 <link rel="stylesheet" href="/css/flay.notification.css"/>
 <style type="text/css">
-:root {
-	--rainbow: linear-gradient(to right, red , orange, yellow, green, blue, indigo, violet);
-}
-
 .col {
 	padding: 4px;
 }
@@ -31,20 +28,6 @@
 .check-group, label.check {
 	margin: .5rem auto;
 }
-
-.border-rainbow {
-	border: 0px solid transparent;
-	border-radius: 4px;
-	margin: .5px; 
-	padding: .5px; 
-}
-.border-rainbow.v {box-shadow: 0 0 8px violet, 0 0 8px violet inset; border-color: violet;}
-.border-rainbow.i {box-shadow: 0 0 8px indigo, 0 0 8px indigo inset; border-color: indigo;}
-.border-rainbow.b {box-shadow: 0 0 8px blue  , 0 0 8px blue   inset; border-color: blue  ;}
-.border-rainbow.g {box-shadow: 0 0 8px green , 0 0 8px green  inset; border-color: green ;}
-.border-rainbow.y {box-shadow: 0 0 8px yellow, 0 0 8px yellow inset; border-color: yellow;}
-.border-rainbow.o {box-shadow: 0 0 8px orange, 0 0 8px orange inset; border-color: orange;}
-.border-rainbow.r {box-shadow: 0 0 8px red   , 0 0 8px red    inset; border-color: red   ;}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
@@ -258,10 +241,10 @@ window.onload = function() {
 		<div class="col">
 			<div class="card">
 				<div class="card-body">
-					<h6 class="card-title">Rainbow</h6>
+					<h6 class="card-title">Rainbow <span style="color: red   ;">red   </span> <span style="color: orange;">orange</span> <span style="color: yellow;">yellow</span> <span style="color: green ;">green </span> <span style="color: blue  ;">blue  </span> <span style="color: indigo;">indigo</span> <span style="color: violet;">violet</span></h6>
 					<div class="card-text">
 						<div class="row">
-							<div class="col p-2">
+							<div class="col-3 p-2">
 								<div class="border-rainbow v mx-2">
 									<div class="border-rainbow i">
 										<div class="border-rainbow b">
@@ -269,13 +252,7 @@ window.onload = function() {
 												<div class="border-rainbow y">
 													<div class="border-rainbow o">
 														<div class="border-rainbow r p-2 text-center">
-															<span style="color: red   ;">red   </span>
-															<span style="color: orange;">orange</span>
-															<span style="color: yellow;">yellow</span>
-															<span style="color: green ;">green </span>
-															<span style="color: blue  ;">blue  </span>
-															<span style="color: indigo;">indigo</span>
-															<span style="color: violet;">violet</span>
+															&nbsp;
 														</div>
 													</div>
 												</div>
@@ -284,8 +261,27 @@ window.onload = function() {
 									</div>
 								</div>
 							</div>
-							<div class="col p-2">
-								<div class="m-2" style="height: 40px; background: var(--rainbow); border-radius: .5rem;"></div>
+							<div class="col-6 p-2 text-center">
+								<div class="m-1" style="height: 40px; border-radius: .25rem; background: var(--rainbow-gradient);"></div>
+								
+								<div class="m-1" style="display: inline-block; width: 50px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-h);">.5px</div>
+								<div class="m-1" style="display: inline-block; width: 50px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-h-n);">.5px</div>
+								<div class="m-2" style="display: inline-block; width: 50px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-1);">1px</div>
+								<div class="m-2" style="display: inline-block; width: 50px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-1-n);">1px</div>
+								<div class="m-3" style="display: inline-block; width: 50px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-2);">2px</div>
+								<div class="m-3" style="display: inline-block; width: 50px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-2-n);">2px</div>
+								<br>
+								<div class="m-1" style="display: inline-block; width: 60px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-h-inset); padding: .25rem;">.5px</div>
+								<div class="m-1" style="display: inline-block; width: 60px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-h-n-inset); padding: .25rem;">.5px</div>
+								<div class="m-1" style="display: inline-block; width: 60px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-1-inset); padding:  .5rem;">1px</div>
+								<div class="m-1" style="display: inline-block; width: 60px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-1-n-inset); padding:  .5rem;">1px</div>
+								<div class="m-1" style="display: inline-block; width: 60px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-2-inset); padding:   1rem;">2px</div>
+								<div class="m-1" style="display: inline-block; width: 60px; border-radius: .25rem; vertical-align: middle; box-shadow: var(--rainbow-shadow-box-2-n-inset); padding:   1rem;">2px</div>
+							</div>
+							<div class="col-3 p-2">
+								<span class="m-2" style="text-shadow: var(--rainbow-shadow-text-h); color: var(--light); font-size: 3rem;">Ra</span>
+								<span class="m-2" style="text-shadow: var(--rainbow-shadow-text-1); color: var(--light); font-size: 3rem;">in</span>
+								<span class="m-2" style="text-shadow: var(--rainbow-shadow-text-2); color: var(--light); font-size: 3rem;">bow</span>
 							</div>
 						</div>
 					</div>

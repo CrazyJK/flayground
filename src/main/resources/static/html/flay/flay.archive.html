@@ -35,8 +35,11 @@
 }
 
 .flay-info {
+	color: var(--darker);
+	font-weight: 700;
+}
+body.bg-dark .flay-info {
 	color: var(--light);
-	text-shadow: 1px 1px 4px var(--dark);
 }
 #detailView {
 	position: relative;
@@ -91,7 +94,7 @@
 
 <div id="contentWrapper">
 
-	<div class="container rounded p-2 mb-4" id="detailView">
+	<div class="container rounded p-2 mb-2" id="detailView">
 		<div class="text-right">
 			<i class="fa fa-times text-dark mx-2 hover" id="btnCloseDetailView"></i>
 		</div>
@@ -226,7 +229,7 @@ function goPage(p) {
 		if (viewType === 't') {
 			displayTable();
 		} else if (viewType === 'c') {
-			displayCard();
+			displayCard(500);
 		}
 
 		$("#totalFlayCount").html(page.totalElements + " flay");
@@ -254,21 +257,21 @@ function goPage(p) {
 		});
 	}
 	
-	function displayCard() {
+	function displayCard(width) {
 		var $cardList = $("#cardList");
+		var halfSize = Math.round(width * .46);
 		$cardList.empty();
 		$.each(flayList, function(idx, flay) {
 			$("<div>", {'class': 'card m-2'}).css({
 				display: 'inline-block',
-				width: 300,
+				width: halfSize,
 			}).append(
 					$("<div>", {'class': 'card-img-top', 'src': '/static/cover/' + flay.opus}).css({
-						width: 298,
-						height: Math.round(298 * COVER_RATIO),
-						background: 'url(/static/cover/' + flay.opus + ') no-repeat right top',
-						backgroundSize: 'cover'
+						width: halfSize - 2,
+						height: Math.round(width * COVER_RATIO),
+						background: 'url(/static/cover/' + flay.opus + ') right top / cover no-repeat'
 					}),
-					$("<div>", {'class': 'card-body bg-dark p-2'}).css({
+					$("<div>", {'class': 'card-body p-2'}).css({
 						borderBottomLeftRadius: 4,
 						borderBottomRightRadius: 4
 					}).append(
@@ -321,7 +324,9 @@ function showDetail(idx) {
 	} else if (typeof idx === 'number') {
 		var flay = flayList[idx];
 		if (flay) {
-			$("#detailViewInner").data("idx", idx).empty().appendFlayCard(flay);
+			$("#detailViewInner").data("idx", idx).empty().appendFlayCard(flay, {
+				exclude: [FILEINFO, ACTRESS_EXTRA, MODIFIED]
+			});
 			$("#detailView").slideDown();
 		}
 	}

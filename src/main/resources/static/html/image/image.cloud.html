@@ -91,13 +91,13 @@ var ImageControl = {
 
 				var $keys = $("#keys");
 				$.each(map, function(k, v) {
-					$("<label>", {'class': 'input dark', id: 'key_' + k}).append(
+					$("<label>", {'class': 'check sm', id: 'key_' + k}).append(
 							$("<input>", {type: 'radio', name: 'key'}).on("change", function(e) {
 								ImageControl.setData(k, v);
 							}),
 							$("<span>").append(
 									k,
-									$("<span>", {'class': 'badge badge-fill badge-secondary text-dark ml-2'}).html(v.length)
+									$("<i>", {'class': 'badge ml-2'}).html(v.length)
 							)
 					).appendTo($keys);
 				});
@@ -303,6 +303,9 @@ $(document).ready(function() {
 		$("#keyContainer").slideToggle();
 	});
 
+	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
+	$("body").toggleClass("bg-dark", bgThemeValue === 'D');
+	
 	ImageControl.init();
 
 });

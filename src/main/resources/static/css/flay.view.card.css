@@ -53,3 +53,12 @@
 .flay-file {
 	font-size: .875rem;
 }
+
+.card.flay-card label.text {
+	background-color: transparent;
+	text-shadow: 1px 1px 4px midnightblue;
+	color: #fff;
+}
+.card.flay-card label.text:hover {
+	background-color: rgba(25, 25, 112, .5);
+}

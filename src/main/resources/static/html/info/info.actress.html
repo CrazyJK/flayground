@@ -181,7 +181,7 @@ Rest.Actress.get(name, function(_actress) {
 	actress = _actress;
 	document.title = actress.name + ' - ' + document.title;
 
-	displayPicture();
+//	displayPicture();
 	
 	$("#name").val(actress.name);
 	$("#localName").val(actress.localName);
@@ -214,8 +214,15 @@ Rest.Actress.get(name, function(_actress) {
 
 	});
 
-	$(window).on("resize", displayPicture);
+//	$(window).on("resize", displayPicture);
 
+	$("nav.navbar").hover(function() {
+		console.log(1);
+		displayPicture();
+	}, function() {
+		console.log(2);
+	});
+	
 });
 
 function displayPicture() {

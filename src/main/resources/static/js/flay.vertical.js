@@ -430,7 +430,12 @@ var navigation = {
 					break;
 				case -1: // mousewheel: down
 				case 39: // key : right
-					navigation.next();
+					var mode  = $("input[name='autoSlideMode']:checked").val();
+					if (mode === 'R') {
+						navigation.random();
+					} else {
+						navigation.next();
+					}
 					break;
 				case 32: // key: space
 					navigation.random();
@@ -532,6 +537,9 @@ var navigation = {
 			if (end < collectedList.length) { // last navi
 				addPaginationBtn(collectedList.length - 1);
 			}
+			$("#paginationProgress .progress-bar").css({
+				width: Math.round((currentIndex + 1) / collectedList.length * 100) + "%"
+			});
 		},
 		slide: {
 			on: function() {
@@ -588,7 +596,8 @@ function addVideoEvent() {
 			currentFlay.video.comment = $(this).val();
 			Rest.Video.update(currentFlay.video, function() {
 				$this.hide();
-				$(".info-overview").html(currentFlay.video.comment != '' ? currentFlay.video.comment : 'Overview').show();
+				$(".info-overview").html(currentFlay.video.comment != '' ? currentFlay.video.comment : 'Overview')
+					.toggleClass('nonExist', currentFlay.video.comment === '').show();
 			});
 		}
 	});

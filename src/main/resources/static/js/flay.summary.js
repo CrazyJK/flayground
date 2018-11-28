@@ -277,7 +277,7 @@ function displaySummaryTableView(dataMap, $list) {
 		totalFlayCount += data.list.length;
 		totalFlayLength += data.length;
 		$("<tr>").append(
-				$("<td>", {'class': 'item-key'}).append(
+				$("<td>", {'class': 'item-key nowrap'}).append(
 						$("<span>", {'class': 'hover'}).html(data.key).on("click", function() {
 							displayFlayList(data.key, data.list);
 						})

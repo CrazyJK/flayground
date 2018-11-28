@@ -17,7 +17,7 @@
 			<label><input type="radio" name="dateType" value="y"><span>Year</span></label>
 		</div>
 	</nav>
-	<div style="height: 55px;"></div>
+	<div style="height: 54px;"></div>
 
 	<div id="historyOfPlay">
 		<div id="chartdiv"></div>
@@ -39,7 +39,7 @@ Rest.History.findAction('PLAY', function(list) {
 
 $(window).on("resize", function() {
 	$("#chartdiv").css({
-		height: $(window).height() - 60
+		height: $(window).height() - 55
 	});
 }).trigger('resize');
 
@@ -48,7 +48,6 @@ $("input[name='dateType']").on('change', function() {
 });
 
 function drawGraph(dateType) {
-
 	var minPeriod = "";
 	switch(dateType) {
 	case 'd':
@@ -64,7 +63,7 @@ function drawGraph(dateType) {
 		minPeriod = "YYYY";
 		break;
 	}
-	console.log('minPeriod', minPeriod);
+	// console.log('minPeriod', minPeriod);
 
 	var dataMap = {};
 	$.each(playList, function(idx, history) {
@@ -89,7 +88,7 @@ function drawGraph(dateType) {
 			dataMap[key] = [history];
 		}
 	});
-	console.log('dataMap', dataMap);
+	// console.log('dataMap', dataMap);
 	
 	var dataArray = [];
 	$.each(dataMap, function(key, val) {
@@ -112,11 +111,13 @@ function drawGraph(dateType) {
 			playCount: val.length
 		});
 	});
-	console.log('dataArray', dataArray);
+	// console.log('dataArray', dataArray);
 	
-//	dataArray.sort(function(d1, d2) {
-//		return d1.date.localeCompare(d2.date);
-//	});
+	dataArray.sort(function(d1, d2) {
+		if (d1.date > d2.date) return 1;
+		if (d1.date < d2.date) return -1;
+		return 0;
+	});
 
 	
 	var chart = AmCharts.makeChart("chartdiv", {
@@ -139,8 +140,7 @@ function drawGraph(dateType) {
 		    "balloonText": "<b>[[value]]</b>",
 		    "balloon": {
 	            "drop": true
-	        },
-		    "balloonDateFormat": "YYYY MM DD"
+	        }
 		}],
 		"chartScrollbar": {
 	        "graph": "playCount",
@@ -168,13 +168,16 @@ function drawGraph(dateType) {
 	zoomChart();
 	
 	function zoomChart() {
-	    chart.zoomToIndexes(chart.dataProvider.length - 10, chart.dataProvider.length - 1);
-/*
-	    var toDay = new Date();
-	    var fromDay = new Date();
-	    fromDay.setMonth(toDay.getMonth() - Math.round($(window).width() / 10 / 60));
-	    chart.zoomToDates(fromDay, toDay);
-*/	    
+		var offset = 0;
+		if (dateType === 'd')
+			offset = 31;
+		else if (dateType === 'w')
+			offset = 26;
+		else if (dateType === 'm')
+			offset = 12;
+		else  
+			offset = 8;
+	    chart.zoomToIndexes(chart.dataProvider.length - offset, chart.dataProvider.length - 1);
 	}
 
 }

@@ -297,6 +297,11 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 .sidenav > .nav > .nav-item > label:hover 				 {color: var(--yellow);}
 .sidenav > .nav > .nav-item > a 						 {color: inherit;}
 .sidenav > .nav > .nav-item > a:hover 					 {color: var(--white);	text-decoration: none;}
+.sidenav > .nav > .nav-item > label + a,
+.sidenav > .nav > .nav-item > a + a 					 {opacity: 0;}
+.sidenav > .nav > .nav-item:hover > label + a,
+.sidenav > .nav > .nav-item:hover > a + a 				 {opacity: 1;}
+
 .sidenav input[type="color"] {
 	background-color: transparent;
     border: 1px solid #fff;

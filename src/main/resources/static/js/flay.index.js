@@ -114,11 +114,11 @@ var Navi = {
 			$("[aria-include]").on("click", function() {
 				$("[aria-include]").removeClass("active");
 				var $this = $(this).addClass("active");
-				Navi.go($this.attr("aria-include"), $this.attr("aria-key"));
+				Navi.go($this.attr("aria-include"));
 			});
 		},
-		go: function(destination, key) {
-			console.log('destination', destination, 'key', key);
+		go: function(destination) {
+			console.log('destination', destination);
 			Rest.Html.get(destination, function(html) {
 				try {
 					$("#notice").dialog("close");
@@ -131,10 +131,13 @@ var Navi = {
 		},
 		popup: function(anker, w, h) {
 			var $this = $(anker).prev();
-			var url = $this.attr("aria-include");
-			var key = $this.attr("aria-key");
-			console.log('popup page', url, key);
-			Popup.open("/html/flay/flay.popup.html?target=" + url, key, w, h);
+			var url, key = $this.text();;
+			if ($this.attr("aria-include")) {
+				url = "/html/flay/flay.popup.html?target=" + $this.attr("aria-include");
+			} else if ($this.attr("href")) {
+				url = $this.attr("href");
+			}
+			Popup.open(url, key, w, h);
 		}
 };
 

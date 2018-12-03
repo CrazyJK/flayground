@@ -77,7 +77,7 @@ var SHOUT = 'SHOUT',
 			}, showBox = function($box) {
 				$box.show("blind", {direction: 'right'})
 			};
-//			console.log("notify", type, message);
+			console.log("notify", type, message);
 			
 			var command, title, content = "", time = new Date();
 			if (message.command === 'CONNECTED') {
@@ -91,7 +91,8 @@ var SHOUT = 'SHOUT',
 				content = body.content;
 				time.setTime(body.time);
 			} else {
-				alert('unknown command ' + type + "/n" + message);
+				title = ANNOUNCE;
+				content = message;
 			}
 			content = content.trim().replace(/\n/g, '<br>');
 			

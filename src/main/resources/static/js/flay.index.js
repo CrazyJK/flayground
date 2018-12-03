@@ -4,20 +4,21 @@
 
 var Event = {
 		theme: function() {
-			// background theme
-			$("input[name='bgTheme']").on("change", function() {
+			var setTheme = function() {
 				var bgThemeValue = $("input[name='bgTheme']:checked").val();
 				$("body").toggleClass("bg-dark", bgThemeValue === 'D');
 				LocalStorageItem.set('flay.bgtheme', bgThemeValue);
-			});
-			var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
-			$('#bgTheme' + bgThemeValue).parent().click();
+			},
+			bgTheme = LocalStorageItem.get('flay.bgtheme', 'D'),
+			bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
+			
+			$('#bgTheme' + bgTheme).parent().click();
+			$("input[name='bgTheme']").on("change", setTheme).trigger("change");
 
 			$("#bgColor").on("change", function() {
 				$("body").css({backgroundColor: $(this).val()});
 				LocalStorageItem.set('flay.bgcolor', $(this).val());
 			});
-			var bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
 			$("#bgColor").val(bgColor).trigger("change");
 		},
 		togglePage: function() {

@@ -11,11 +11,13 @@ window.onunload = function() {
 	notification.disconnect();
 };
 
-var notification = {
+var SHOUT = 'SHOUT',
+	ANNOUNCE = 'ANNOUNCE',
+	notification = {
 		stompClient: null,
 		STOMP_ENDPOINT: "/flayground-notification",
-		DESTINATION_SHOUT: "/shout/listen",
 		DESTINATION_ANNOUNCE: "/announce/listen",
+		DESTINATION_SHOUT: "/shout/listen",
 		start: function() {
 			$("head").append(
 					'<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>',
@@ -40,61 +42,56 @@ var notification = {
 		    var socket = new SockJS(notification.STOMP_ENDPOINT);
 		    notification.stompClient = Stomp.over(socket);
 		    notification.stompClient.connect({}, function (frame) {
-		    	notification.notify('Connected', frame);
-		      
+		    	notification.notify(ANNOUNCE, frame);
+
 		    	notification.stompClient.subscribe(notification.DESTINATION_ANNOUNCE, function (message) {
-		    		notification.notify(message);
+		    		notification.notify(ANNOUNCE, message);
 		        });
 
 		    	notification.stompClient.subscribe(notification.DESTINATION_SHOUT, function (message) {
-		    		notification.notify(message);
+		    		notification.notify(SHOUT, message);
 		        });
 
 		    }, function(frame) {
-		    	notification.notify("Error", frame);
+		    	notification.notify(ANNOUNCE, frame);
 		    });
 		    
 		    notification.stompClient.debug = function(str) {
-		    	console.log("debugggg", str);
+//		    	console.log("debugggg", str);
 		    };
 		},
 		disconnect: function disconnect() {
 		    if (notification.stompClient !== null) {
 		    	notification.stompClient.disconnect(function() {
-				    notification.notify("Disconnected");
+				    notification.notify(ANNOUNCE, {
+				    	command: "DISCONNECTED"
+				    });
 		    	});
 		    }
 		},
-		notify: function(message, extraMessage) {
-			var getSubscribeMessageBody = function(message) {
-				if (message.headers['content-type'].indexOf('application/json') > -1) {
-					return JSON.parse(message.body);
-				} else {
-					return {time: new Date(), title: JSON.stringify(message), content: ''};
-				}
-			}, hideBox = function($box) {
+		notify: function(type, message) {
+			var hideBox = function($box) {
 				$box.hide("slide", {direction: 'right'}, function() {
 		    		$(this).remove();
 		    	});
 			}, showBox = function($box) {
 				$box.show("blind", {direction: 'right'})
 			};
+//			console.log("notify", type, message);
 			
-			console.log("message", message);
-			
-			var title, content = "", time = new Date();
-			if (typeof message === 'string') {
-				title = message;
-			} else if (typeof message === 'object') {
-				var messageBody = getSubscribeMessageBody(message);
-				title   = messageBody.title;
-				content = messageBody.content;
-				time.setTime(messageBody.time);
+			var command, title, content = "", time = new Date();
+			if (message.command === 'CONNECTED') {
+				title   = 'Connected';
+				content = "signed in " + message.headers['user-name'];
+			} else if (message.command === 'DISCONNECTED') {
+				title   = 'Disconnected';
+			} else if (message.command === 'MESSAGE') {
+				var body = JSON.parse(message.body);
+				title   = body.title;
+				content = body.content;
+				time.setTime(body.time);
 			} else {
-				title = JSON.stringify(message);
-			}
-			if (extraMessage) {
-				content = content != '' ? content + "<br>" + extraMessage : "" + extraMessage;
+				alert('unknown command ' + type + "/n" + message);
 			}
 			content = content.trim().replace(/\n/g, '<br>');
 			
@@ -112,8 +109,11 @@ var notification = {
 					}),
 					$("<small>", {'class': 'item-time float-right'}).html(time.format("a/p hh:mm")),
 		    		$("<div>", {'class': 'announce-body'}).append(
-							$("<h6>", {'class': 'item-title'}).html(title),
-							$("<div>", {'class': 'item-content'}).html(content)
+							$("<h6>", {'class': 'item-title'}).append(
+									(type === SHOUT ? "<span class='text-primary'>From</span> " : ""), 
+									title
+							),
+							$("<div>", {'class': 'item-content'}).append(content)
 		    		)
 			).hide().appendTo($("#announceWrapper"));
 		    showBox($box);
@@ -121,5 +121,11 @@ var notification = {
 		    setTimeout(function() {
 		    	hideBox($box);
 		    }, 10*1000);
+		},
+		shout: function(message) {
+			notification.stompClient.send("/flay/shout", {}, JSON.stringify({
+		    	'name': username,
+		    	'content': message
+		    }));
 		}
 };

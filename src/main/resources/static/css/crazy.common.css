@@ -443,6 +443,9 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
     background-color: midnightblue;
     border-color: midnightblue;
 }
+.page-item.active .page-link:hover {
+	color: #fff;
+}
 .page-link {
 	color: midnightblue;
 }

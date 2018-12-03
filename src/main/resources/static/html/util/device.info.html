@@ -10,57 +10,57 @@
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-var agent = navigator.userAgent.toLowerCase(),
-	MSIE    = 'MSIE',
-	EDGE    = 'Edge',
-	CHROME  = 'Chrome',
-	FIREFOX = 'Firefox',
-	SAFARI  = 'Safari',
-	browser = /trident/i.test(agent) || /msie/i.test(agent) ? MSIE :
-		/edge/i.test(agent) ? EDGE : 
-			/chrome/i.test(agent) ? CHROME :
-				/firefox/i.test(agent) ? FIREFOX :
-					/safari/i.test(agent) ? SAFARI :'Unknown',
-	WINDOWS = 'Windows',
-	LINUX   = 'Linux',
-	MAC     = 'Macintosh',
-	IPHONE  = 'iPhone',
-	IPAD    = 'iPad',
-	ANDROID = 'Android',
-	system = /Windows/i.test(agent) ? WINDOWS :
-		/linux/i.test(agent) ? LINUX :
-			/macintosh/i.test(agent) ? MAC :
-				/iphone/i.test(agent) ? IPHONE :
-					/ipad/i.test(agent) ? IPAD :
-						/android/i.test(agent) ? ANDROID : 'Unknown';
+var displaySystemInfo = function() {
+	var agent = navigator.userAgent.toLowerCase(),
+		MSIE    = 'MSIE',
+		EDGE    = 'Edge',
+		CHROME  = 'Chrome',
+		FIREFOX = 'Firefox',
+		SAFARI  = 'Safari',
+		browser = /trident/i.test(agent) || /msie/i.test(agent) ? MSIE :
+			/edge/i.test(agent) ? EDGE : 
+				/chrome/i.test(agent) ? CHROME :
+					/firefox/i.test(agent) ? FIREFOX :
+						/safari/i.test(agent) ? SAFARI :'Unknown',
+		WINDOWS = 'Windows',
+		LINUX   = 'Linux',
+		MAC     = 'Macintosh',
+		IPHONE  = 'iPhone',
+		IPAD    = 'iPad',
+		ANDROID = 'Android',
+		system = /Windows/i.test(agent) ? WINDOWS :
+			/linux/i.test(agent) ? LINUX :
+				/macintosh/i.test(agent) ? MAC :
+					/iphone/i.test(agent) ? IPHONE :
+						/ipad/i.test(agent) ? IPAD :
+							/android/i.test(agent) ? ANDROID : 'Unknown';
 
-/* Navigator Object Properties
-	appCodeName 	Returns the code name of the browser
-	appName 		Returns the name of the browser
-	appVersion 		Returns the version information of the browser
-	cookieEnabled 	Determines whether cookies are enabled in the browser
-	geolocation 	Returns a Geolocation object that can be used to locate the user's position
-	language 		Returns the language of the browser
-	onLine 			Determines whether the browser is online
-	platform 		Returns for which platform the browser is compiled
-	product 		Returns the engine name of the browser
-	userAgent 		Returns the user-agent header sent by the browser to the server
-	javaEnabled() 	Specifies whether or not the browser has Java enabled
-	taintEnabled() 	Removed in JavaScript version 1.2. Specifies whether the browser has data tainting enabled
- */
-var navigatorProperties =  [["appCodeName", "Returns the code name of the browser"], 
-							["appName", "Returns the name of the browser"], 
-							["appVersion", "Returns the version information of the browser"], 
-							["cookieEnabled", "Determines whether cookies are enabled in the browser"], 
-							["geolocation", "Returns a Geolocation object that can be used to locate the user's position"], 
-							["language", "Returns the language of the browser"], 
-							["onLine", "Determines whether the browser is online"], 
-							["platform", "Returns for which platform the browser is compiled"], 
-							["product", "Returns the engine name of the browser"], 
-							["userAgent", "Returns the user-agent header sent by the browser to the server"],
-							["javaEnabled()", "Specifies whether or not the browser has Java enabled"]];
+	$('#thisBrowser').html(browser);
+	$('#thisSystem' ).html(system);
+};
 
-window.onload = function() {
+var displayResolutionInfo = function() {
+	$("#screenWidth" ).html(screen.width);
+	$("#screenHeight").html(screen.height);
+	$("#windowWidth" ).html(window.innerWidth);
+	$("#windowHeight").html(window.innerHeight);
+};
+
+var displayNavigatorInfo = function() {
+	/* Navigator Object Properties
+	 * https://www.w3schools.com/jsref/obj_navigator.asp */
+	var navigatorProperties =  [["appCodeName", "Returns the code name of the browser"], 
+								["appName", "Returns the name of the browser"], 
+								["appVersion", "Returns the version information of the browser"], 
+								["cookieEnabled", "Determines whether cookies are enabled in the browser"], 
+								["geolocation", "Returns a Geolocation object that can be used to locate the user's position"], 
+								["language", "Returns the language of the browser"], 
+								["onLine", "Determines whether the browser is online"], 
+								["platform", "Returns for which platform the browser is compiled"], 
+								["product", "Returns the engine name of the browser"], 
+								["userAgent", "Returns the user-agent header sent by the browser to the server"],
+								["javaEnabled()", "Specifies whether or not the browser has Java enabled"]];
+
 	for (var i=0; i<navigatorProperties.length; i++) {
 		var propertyName = navigatorProperties[i][0];
 		var propertyDesc = navigatorProperties[i][1];
@@ -72,16 +72,13 @@ window.onload = function() {
 					navigator.geolocation.getCurrentPosition(function(position) {
 						$('#geolocation').next().html('Latitude: ' + position.coords.latitude + ', Longitude: ' + position.coords.longitude);
 					});
-				} 
-				else {
+				} else {
 					propertyValue = '<span class="text-warning">is not supported by this browser.</span>';
 				}
-			} 
-			else {
+			} else {
 				propertyValue = eval('navigator.' + propertyName);
 			}
-		} 
-		catch (e) {
+		} catch (e) {
 			propertyValue = '<span class="text-danger">' + e + '</span>';
 		}
 
@@ -90,14 +87,15 @@ window.onload = function() {
 			$('<td>', {'class': 'text-success'}).html(propertyValue)
 		).appendTo($('.table > tbody'));
 	}
+};
 
-	$('#thisBrowser' ).html(browser);
-	$('#thisSystem'  ).html(system);
-	$("#screenWidth" ).html(screen.width);
-	$("#screenHeight").html(screen.height);
-	$("#windowWidth" ).html(window.innerWidth);
-	$("#windowHeight").html(window.innerHeight);
-}
+$(function() {
+	displaySystemInfo();
+	displayResolutionInfo();
+	displayNavigatorInfo();
+	
+	$(window).on("resize", displayResolutionInfo);
+});
 </script>
 </head>
 <body>

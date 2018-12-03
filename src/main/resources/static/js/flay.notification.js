@@ -77,7 +77,7 @@ var SHOUT = 'SHOUT',
 			}, showBox = function($box) {
 				$box.show("blind", {direction: 'right'})
 			};
-			console.log("notify", type, message);
+//			console.log("notify", type, message);
 			
 			var command, title, content = "", time = new Date();
 			if (message.command === 'CONNECTED') {
@@ -91,13 +91,13 @@ var SHOUT = 'SHOUT',
 				content = body.content;
 				time.setTime(body.time);
 			} else {
-				title = ANNOUNCE;
+				title = "<span class='text-danger'>" + ANNOUNCE + "</span>";
 				content = message;
 			}
 			content = content.trim().replace(/\n/g, '<br>');
 			
 			// if wrapper not exist, insert
-			if ($("#announceWrapper").length == 0) {
+			if ($("#announceWrapper").length === 0) {
 				$("body").append(
 						$("<div>", {'id': 'announceWrapper'})
 				);

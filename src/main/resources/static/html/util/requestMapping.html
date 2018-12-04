@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Request Mapping List</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Request Mapping List</title>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
@@ -86,7 +86,10 @@ var scrollBodyHeight = function() {
 
 	<div class="container-fluid">
 		<table class="table table-sm table-hover table-dark m-0">
-			<caption class="text-light py-1"><i class="fa fa-list mx-2"></i> List of Request Mapping (<span id="count">0</span>)</caption>
+			<caption class="text-light py-1"><i class="fa fa-list mx-2"></i> List of Request Mapping (<span id="count">0</span>) 
+				<a href="/html/actuator/mappings.html" class="mx-2">Detail</a>
+				<a href="/">Home</a>
+			</caption>
 			<thead class="text-success">
 				<tr>
 					<th>call</th>

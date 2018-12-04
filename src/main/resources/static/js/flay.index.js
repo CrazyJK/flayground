@@ -159,7 +159,8 @@ $(document).ready(function() {
 
 	$("#lifeTimerWrapper").lifeTimer({
 		progress: false,
-		pattern: 'day Days'
+		pattern: 'day Days',
+		onlyOnce: true
 	});
 });
 

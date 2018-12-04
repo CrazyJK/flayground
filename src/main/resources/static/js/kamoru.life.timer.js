@@ -12,7 +12,8 @@ var STARTING = new Date(1976, 3, 28), DEADLINE = new Date(2031, 3, 28);
 			classes: '',
 			mode: 'remain',
 			pattern: 'dayd hh:mm:ss',
-			progress: true
+			progress: true,
+			onlyOnce: false
 		}, options);
 		
 		var HTML = ''
@@ -42,8 +43,8 @@ var STARTING = new Date(1976, 3, 28), DEADLINE = new Date(2031, 3, 28);
 				$progress.insertAfter("#life-timer .display-time");
 
 		    // life remaining display timer
-			var first = true;
-			var timer = setInterval(function() {
+			var first = true, timer;
+			var fnTimer = function() {
 		        var pad = function(x) {
 		        	return x < 10 ? "0" + x : x;
 		        };
@@ -75,7 +76,10 @@ var STARTING = new Date(1976, 3, 28), DEADLINE = new Date(2031, 3, 28);
 					first = false;
 				}
 				
-				$progressbar.css("width", Math.round(timePast / timeEntire * 100) + '%');
+				$progressbar.css({
+					"width": Math.round(timePast / timeEntire * 100) + '%'
+				});
+
 				$displayTime.html(opts.pattern.replace(/(day|hh|mm|ss)/g, function($1) {
 					switch ($1) {
 					case 'day':
@@ -89,7 +93,11 @@ var STARTING = new Date(1976, 3, 28), DEADLINE = new Date(2031, 3, 28);
 					}
 				}));
 
-		    }, 1000);
+		    };
+		    if (opts.onlyOnce)
+		    	fnTimer();
+		    else
+		    	timer = setInterval(fnTimer, 1000);
 		};
 		
 		return this.each(function() {

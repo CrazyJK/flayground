@@ -288,7 +288,7 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 .sidenav > h4 > a:hover 								 {color: var(--yellow);	text-decoration: none;}
 .sidenav > h4 > img                                      {height: 2rem; border-radius: 50%; vertical-align: middle; margin-right: .5rem;}
 .sidenav > .nav 										 {						margin-top: 1rem;}
-.sidenav > .nav > .nav-item 							 {color: var(--blue); 	padding: 0.5rem;	min-height: 2.5rem;}
+.sidenav > .nav > .nav-item 							 {color: var(--blue); 	padding: .25rem .5rem;	min-height: 2.5rem; transition: all .5s;}
 .sidenav > .nav > .nav-item 	  > i.fa 				 {						width: 1rem; text-align: center; margin-right: .5rem;}
 .sidenav > .nav > .nav-item:hover > i.fa 				 {color: var(--yellow);}
 .sidenav > .nav > .nav-item > label[onclick] 		     {						cursor: pointer; 	margin-bottom: 0;}

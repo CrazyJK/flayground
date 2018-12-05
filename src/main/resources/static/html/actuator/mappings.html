@@ -12,9 +12,6 @@
 table {
 	font-size: 0.875rem;
 }
-caption {
-    caption-side: top;
-}
 .table-sm td, .table-sm th {
     padding: .2rem;
 }
@@ -105,11 +102,14 @@ var scrollBodyHeight = function() {
 <body class="bg-dark">
 
 	<div class="container-fluid">
+		<div class="d-flex my-2">
+			<div class="text-light mr-auto">
+				<i class="fa fa-list mx-2"></i> List of Request Mapping by Actuator (<span id="count">0</span>)
+			</div> 
+			<a href="/html/util/requestMapping.html" class="mx-2">Simple</a>
+			<a href="/" class="mx-2">Home</a>
+		</div>
 		<table class="table table-sm table-hover table-dark m-0">
-			<caption class="text-light py-1"><i class="fa fa-list mx-2"></i> List of Request Mapping (<span id="count">0</span>) 
-				<a href="/html/util/requestMapping.html" class="mx-2">Simple</a>
-				<a href="/">Home</a>
-			</caption>
 			<thead class="text-success">
 				<tr>
 					<th>#</th>

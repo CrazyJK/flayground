@@ -1,11 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Insert title here</title>
+<title>Actuator</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<style type="text/css">
+.card {
+	width: auto;
+}
+</style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -17,11 +22,14 @@ $(document).ready(function() {
 		cache: false
 	}).done(function(json) {
 		$.each(json._links, function(key, val) {
-			console.log(key, val);
-			$("<div>").append(
-					$("<h6>").html(key),
-					$("<p>").html(val.href)
-			).appendTo("body");
+			$("<div>", {'class': 'card m-2'}).append(
+					$("<div>", {'class': 'card-body'}).append(
+							$("<h5>", {'class': 'card-title'}).html(key),
+							$("<p>", {'class': 'card-text'}).append(
+									$("<a>", {'href': val.href, 'target': '_blank'}).html(val.href.replace('http://localhost:6974', ''))
+							)
+					)
+			).appendTo("#cardWrap");
 		});
 	});
 
@@ -30,6 +38,12 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-
+	<div class="container-fluid">
+		<div class="d-flex my-2">
+			<div class="mr-auto"><h4>Actuator</h4></div>
+			<a href="/">Home</a>
+		</div>
+		<div id="cardWrap" class="d-inline-flex flex-wrap"></div>
+	</div>
 </body>
 </html>

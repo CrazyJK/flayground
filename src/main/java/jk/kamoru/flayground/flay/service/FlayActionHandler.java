@@ -14,7 +14,7 @@ import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
-import jk.kamoru.flayground.web.notice.service.NotificationService;
+import jk.kamoru.flayground.web.socket.notice.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

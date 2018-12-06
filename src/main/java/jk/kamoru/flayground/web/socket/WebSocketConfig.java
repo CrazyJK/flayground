@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.notice;
+package jk.kamoru.flayground.web.socket;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;

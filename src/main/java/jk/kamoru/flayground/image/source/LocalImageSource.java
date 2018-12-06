@@ -21,7 +21,7 @@ import jk.kamoru.flayground.base.watch.DirectoryWatcher;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.image.ImageNotfoundException;
 import jk.kamoru.flayground.image.domain.Image;
-import jk.kamoru.flayground.web.notice.service.NotificationService;
+import jk.kamoru.flayground.web.socket.notice.NotificationService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

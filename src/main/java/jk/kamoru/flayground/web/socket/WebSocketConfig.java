@@ -10,7 +10,7 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-	private static final String STOMP_ENDPOINT = "/flayground-notification";
+	public  static final String STOMP_ENDPOINT = "/flayground-websocket";
 
 	private static final String APP_DEST_PREFIX_FLAY  = "/flay";
 

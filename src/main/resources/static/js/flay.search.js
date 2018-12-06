@@ -289,6 +289,7 @@ function reloadMode() {
 
 function searchSource(keyword) {
     var rexp = eval('/' + keyword + '/gi');
+    keyword = keyword.toUpperCase();
 
 	// find Flay
 	Rest.Flay.find(keyword, function(flayList) {

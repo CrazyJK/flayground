@@ -21,7 +21,7 @@ import jk.kamoru.flayground.base.watch.DirectoryWatcher;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.image.ImageNotfoundException;
 import jk.kamoru.flayground.image.domain.Image;
-import jk.kamoru.flayground.web.socket.notice.NotificationService;
+import jk.kamoru.flayground.web.socket.notice.AnnounceService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,7 +30,7 @@ public class LocalImageSource implements ImageSource<Image> {
 
 	@Value("${path.image.storage}") String[] imagePaths;
 
-	@Autowired NotificationService notificationService;
+	@Autowired AnnounceService notificationService;
 
 	private List<Image> imageList;
 	private boolean changed;

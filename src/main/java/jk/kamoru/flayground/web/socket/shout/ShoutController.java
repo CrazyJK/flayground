@@ -11,8 +11,8 @@ import jk.kamoru.flayground.web.socket.notice.Notice;
 @Controller
 public class ShoutController {
 
-    @MessageMapping(WebSocketConfig.DESTINATION_APP_SUFFIX_SHOUT)
-    @SendTo(WebSocketConfig.DESTINATION_SHOUT_LISTEN)
+    @MessageMapping("/shout")
+    @SendTo(WebSocketConfig.DESTINATION_SHOUTING_LISTEN)
     public Notice shout(Shouting message) {
         return new Notice(message.getName(), HtmlUtils.htmlEscape(message.getContent()));
     }

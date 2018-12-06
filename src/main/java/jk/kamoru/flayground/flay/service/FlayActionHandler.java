@@ -14,14 +14,14 @@ import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
-import jk.kamoru.flayground.web.socket.notice.NotificationService;
+import jk.kamoru.flayground.web.socket.notice.AnnounceService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 public class FlayActionHandler {
 
-	@Autowired NotificationService notificationService;
+	@Autowired AnnounceService notificationService;
 
 	@Value("${app.video-player}") String player;
 	@Value("${app.subtitles-editor}") String editer;

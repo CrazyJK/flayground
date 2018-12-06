@@ -1,6 +1,5 @@
 package jk.kamoru.flayground.web.socket.notice;
 
-import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import lombok.Getter;
@@ -19,7 +18,7 @@ public class Notice {
 	}
 
 	public Notice(String title, String content) {
-		this.time = new Date().getTime();
+		this.time = System.currentTimeMillis();
 		this.title = title;
 		this.content = content;
 	}

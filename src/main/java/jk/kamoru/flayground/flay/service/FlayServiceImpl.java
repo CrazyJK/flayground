@@ -20,7 +20,7 @@ import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.HistoryService;
 import jk.kamoru.flayground.info.service.InfoService;
-import jk.kamoru.flayground.web.socket.notice.NotificationService;
+import jk.kamoru.flayground.web.socket.notice.AnnounceService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,7 +33,7 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired FlayActionHandler flayActionHandler;
 	@Autowired HistoryService historyService;
 	@Autowired CandidatesProvider candidatesProvider;
-	@Autowired NotificationService notificationService;
+	@Autowired AnnounceService notificationService;
 
 	@Value("${path.video.stage}") String[] stagePaths;
 	

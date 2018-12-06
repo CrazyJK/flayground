@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class NoticePusher {
 
-	@Autowired NotificationService notificationService;
+	@Autowired AnnounceService notificationService;
 	
 	@GetMapping("/notice/push/{title}/{content}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)

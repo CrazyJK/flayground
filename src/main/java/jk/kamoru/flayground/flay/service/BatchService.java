@@ -28,7 +28,7 @@ import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
 import jk.kamoru.flayground.info.domain.History.Action;
 import jk.kamoru.flayground.info.service.HistoryService;
-import jk.kamoru.flayground.web.socket.notice.NotificationService;
+import jk.kamoru.flayground.web.socket.notice.AnnounceService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -52,7 +52,7 @@ public class BatchService {
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired FlaySource  archiveFlaySource;
 	@Autowired HistoryService historyService;
-	@Autowired NotificationService notificationService;
+	@Autowired AnnounceService notificationService;
 
 	@Value("${batch.watch.move}")   Boolean moveWatched;
 	@Value("${batch.rank.delete}")  Boolean deleteLowerRank;

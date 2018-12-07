@@ -7,7 +7,7 @@ function baseSearch() {
 		if (e.keyCode != 13) {
 			return;
 		}
-		var keyword = $(this).val().trim();
+		var keyword = $(this).val().trim().toUpperCase();
 		searchSource(keyword);
 	});
 	$(".btn-search-opus").on("click", function() {

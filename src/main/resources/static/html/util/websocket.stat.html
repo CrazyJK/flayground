@@ -7,6 +7,19 @@
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/crazy.common.css"/>
+<style type="text/css">
+#wrapper {
+	font-family: 'D2Coding';
+	font-size: 0.875rem;
+	overflow: hidden;
+}
+.title {
+	min-width: 120px;
+}
+.content {
+	color: var(--primary);
+}
+</style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -19,10 +32,15 @@ $(function() {
 			url: '/websocket/stats',
 			cache: false
 		}).done(function(stats) {
-			$("#wrapper").append(
-					$("<div>").append(
-							$("<span>", {'class': ''}).html(new Date().format('hh:mm')),
-							$("<span>").html(stats)
+			stats = stats.replace('stompBrokerRelay[null], ', '');
+			$("#wrapper").prepend(
+					$("<div>", {'class': 'border rounded p-2 m-2'}).append(
+							$("<p>", {'class': 'm-0'}).append(
+									'<label class="title text-info text-capitalize m-0">' +
+										stats.replace(/],/gi, ']<br><label class="title text-info text-capitalize m-0">').replace(/\[/gi, '</label><label class="content m-0">').replace(/\]/gi, '</label>')		
+											.replace('outboundChannel', 'outboundChannel</label><label class="content m-0">'),
+									$("<span>", {'class': 'text-warning float-right mx-2'}).html(' - ' + new Date().format('hh:mm:ss') + ' -'),
+							)
 					)
 			);
 		});
@@ -31,14 +49,23 @@ $(function() {
 	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
 	$("body").toggleClass("bg-dark text-light", bgThemeValue === 'D');
 
+	$(window).on("resize", function() {
+		$("#wrapper").height($(window).height() - 50);
+	}).trigger("resize");
+	
 });
 </script>
 </head>
 <body>
 
-	<button id="btnUpdate" class="btn btn-sm btn-info">Update</button>
+	<div class="container">
+		<div class="d-flex my-2">
+			<button id="btnUpdate" class="btn btn-sm btn-info mr-auto">Get WebSocket Stat</button>
+			<a href="/"  class="btn btn-sm btn-link">Home</a>
+		</div>
+	</div>
 	
-	<div id="wrapper" class="">
+	<div id="wrapper" class="container-fluid">
 
 	</div>
 

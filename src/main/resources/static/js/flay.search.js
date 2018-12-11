@@ -3,6 +3,7 @@
  */
 
 function baseSearch() {
+	console.log('baseSearch(');
 	$("#query, #opus").on("keyup", function(e) {
 		if (e.keyCode != 13) {
 			return;

@@ -23,7 +23,6 @@
 <script type="text/javascript" src="/js/flay.utils.js"></script>
 <script type="text/javascript" src="/js/flay.view.card.js"></script>
 <script type="text/javascript" src="/js/flay.websocket.js"></script>
-<script type="text/javascript" src="/js/flay.popup.js"></script>
 </head>
 <body>
 
@@ -32,6 +31,22 @@
 	<div id="notice" title="" style="display:none;">
 		<p></p>
 	</div>
+
+<script type="text/javascript">
+var isAdmin = Security.hasRole("ADMIN");
+
+var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
+$("body").toggleClass("bg-dark", bgThemeValue === 'D');
 	
+Rest.Html.get(reqParam.target, function(html) {
+	$("#wrap_body").html(html);
+});
+
+window.onerror = function(e) {
+    console.error('Error', e);
+    loading.on('Error: ' + e);
+};
+</script>
+
 </body>
 </html>

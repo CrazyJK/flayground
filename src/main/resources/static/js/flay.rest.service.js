@@ -187,7 +187,7 @@ var Rest = {
 		},
 		Html: {
 			get: function(url, callback) {
-				restCall(url, {contentType: "text/html", mimeType: "text/html"}, callback); 
+				restCall(url, {contentType: "text/plain", mimeType: "text/plain"}, callback); 
 			}
 		},
 		Batch: {

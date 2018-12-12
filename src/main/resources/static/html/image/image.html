@@ -1,61 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+<title>Image view</title>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Image view</title>
 <link rel="icon" type="image/png" href="/img/favicon/flay_2.png"/>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css"/>
-<link rel="stylesheet" href="/css/crazy.common.range.css"/>
 <style type="text/css">
 body {
+	background: #000;
 	overflow: hidden;
-}
-
-#info {
-	position: fixed;
-	right: 0;
-	bottom: 0;
-	padding: 2px;
-	text-align: right;
-	background-color: rgba(0, 0, 0, .5);
-	border-top-left-radius: 4px;
-}
-#info > span {
-	margin: 2px;
-	display: inline-block;
-	font-size: 14px;
-	color: #eee;
-	text-shadow: 1px 1px 2px #111;
-	transition: all .3s;
-}
-#info > span#magnifier, #info > span#path {
-    cursor: pointer;
-}
-#info > span#magnifier:hover, #info > span#path:hover {
-    color: OrangeRed;
-    text-shadow: 1px 1px 2px #2d2d2d;
-}
-#info > span#moveOut {
-	padding: 0 2px;
-    cursor: pointer;
-}
-#info > span#moveOut:hover {
-    /* color: #f00; */
-    font-weight: bold;
-    text-shadow: 1px 1px 2px #4c4c4c;
-	background-color: rgba(255, 0, 0, .5);
-    border-radius: 4px;    
-}
-#info > span#iname {
-	color: yellow;
-}
-#info > span#length, 
-#info > span#lastModified {
-	font-size: 80%;
+	margin: 0;
 }
 
 .img-magnifier-container {
@@ -67,53 +23,111 @@ body {
   	border: 0;
   	border-radius: 50%;
   	cursor: none;
-  	/*Set the size of the magnifier glass:*/
-  	width: 200px;
-  	height: 200px;
   	opacity: 0;
   	display: none;
   	left: 0;
   	bottom: 0;
+	box-shadow: 0 0 4px 2px rgba(255, 255, 255, .25), 0 0 16px 8px rgba(0, 0, 0, .75) inset;
 }
-/* display: block; */
 .img-magnifier-container:hover .img-magnifier-glass {
 	opacity: 1;
-	box-shadow: 0 0 1rem 0.5rem rgba(0,0,0,.75) inset;
-}
-
-.overlay {
-	opacity:0;
-	transition: .5s ease;
-}
-.img-magnifier-container .overlay:hover {
-  	opacity: 1;
 }
 
 img.img-responsive {
 	max-width: 100%;
 	max-height: 100%;
-} 
+}
+
+.overlay {
+	opacity: 0;
+	transition: .5s;
+}
+.overlay:hover {
+  	opacity: 1;
+}
+
+#info {
+	position: fixed;
+	bottom: 0;
+	right: 0;
+	margin: 0;
+	padding: 4px;
+	background-color: rgba(0, 0, 0, .5);
+	border-top-left-radius: 4px;
+	cursor: default;
+	text-align: right;
+}
+#info > label {
+	display: inline-block;
+	margin: 2px;
+	color: #eee;
+	font-size: 14px;
+	text-shadow: 1px 1px 2px #111;
+	transition: .3s;
+}
+#info > label:empty {
+	display: none;
+}
+#info > #magnifier:hover, #info > #path:hover {
+    cursor: pointer;
+    color: OrangeRed;
+    text-shadow: 1px 1px 2px #2d2d2d;
+}
+#info > #iname {
+	color: yellow;
+}
+#info > #size, #info > #length, #info > #lastModified {
+	font-size: 80%;
+}
+#info > #moveOut {
+	display: none;
+}
+#info > #moveOut:hover {
+    cursor: pointer;
+	color: #dc3545;
+    text-shadow: 1px 1px 2px #2d2d2d;
+}
+i.fa {
+	margin: 0 4px;
+}
+input[type='number'] {
+	background: transparent;
+	border: 0;
+	color: #eee;
+	margin: 0;
+	padding: 0;
+}
+#sIze {
+	width: 40px;
+}
+#zOOm {
+	width: 25px;
+}
+
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/js/crazy.common.js"></script>
-<script type="text/javascript" src="/js/crazy.jquery.js"></script>
 <script type="text/javascript" src="/js/flay.rest.service.js"></script>
 <script type="text/javascript" src="/js/flay.utils.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
 	app();
+
+	sIze.value = LocalStorageItem.get('image.magnifier.size', 200);
+	zOOm.value = LocalStorageItem.get('image.magnifier.zoom', 2);
+	
+	$("#sIze, #zOOm").on("change", function() {
+		LocalStorageItem.set('image.magnifier.size', sIze.value);
+		LocalStorageItem.set('image.magnifier.zoom', zOOm.value);
+	});
 });
 
 var app = function() {
 	// parameter
 	var no  = reqParam.no;
 	var src = reqParam.src;
-	var imgSrc = no ? PATH + '/static/image/' + no : PATH + src;
-
-	var $glass, glassHalfWidth, glassHalfHeight, glassHalfWidthDividedZoom, glassHalfHeightDividedZoom, zoom = 3, bw = 3;
+	var imgSrc = no ? PATH + '/static/image/' + no : src;
+	var $glass, bw = 3;
 	
 	// get image
 	var img = new Image();
@@ -128,15 +142,12 @@ var app = function() {
 			$(this).toggleClass('img-responsive');
 		});
   		
-		$("#size").html(this.naturalWidth + ' x ' + this.naturalHeight);
-		
 		$glass = $("#glass").css({
 			backgroundImage: "url('" + this.src + "')"
 		});
-		glassHalfWidth  = $glass.width() / 2;
-		glassHalfHeight = $glass.height() / 2;
-	    glassHalfWidthDividedZoom  = Math.round(glassHalfWidth / zoom);
-	    glassHalfHeightDividedZoom = Math.round(glassHalfHeight / zoom);
+
+  		// show default info
+		$("#size").html(this.naturalWidth + ' x ' + this.naturalHeight);
 		
   		// magnifier glass toggle
   		var onOff = 0;
@@ -145,47 +156,38 @@ var app = function() {
   				$("#image, #glass").on("mousemove", function(e) {
   					moveMagnifier(e);
   				});
-  				setGlassBGSize();
-	  			$("#glass").show();
+  				$glass.show();
   			} else {
   				$("#image, #glass").off("mousemove");
-	  			$("#glass").hide();
+  				$glass.hide();
   			}
         });
 	};
 	img.src = imgSrc;
-	
+
+	// show default info
+	var lastUrlName = imgSrc.split('/').pop();
+	document.title = lastUrlName;
+	$("#iname").html(lastUrlName);
+
+	// set additional image information
 	if (no != null) {
-		// set image infomation
         Rest.Image.get(no, function(imageInfo) {
-			// title set
-   	        document.title = imageInfo.name;
-	        // #path: open folder
-	        $("#path").html(imageInfo.path).on("click", function() {
+        	var parentFolder = imageInfo.path.replace(/\\/gi, '/').split('/').pop();
+			document.title = parentFolder + " : " + imageInfo.name;
+	        $("#path").html(parentFolder).on("click", function() {
 				Rest.Flay.openFolder(imageInfo.path);
 		    });
-			// #iname
 			$("#iname").html(imageInfo.name);
-			// #length
 			$("#length").html(File.formatSize(imageInfo.length));
-			// #lastModified
 			$("#lastModified").html(new Date(imageInfo.modified).format("yyyy-MM-dd"));
-			// #moveOut
-			$("#moveOut").on("click", function() {
+			$("#moveOut").show().on("click", function() {
 	        	if (confirm('move this file to Root Directory?'))
 		        	Rest.Image.delete(no);
 	        });
         });
 	}
-	
-	function setGlassBGSize() {
-		var imageWidth = $("#image").width();
-		var imageHeight = $("#image").height();
-		$glass = $("#glass").css({
-			backgroundSize: (imageWidth * zoom) + "px " + (imageHeight * zoom) + "px"
-		});
-	}
-	
+
 	function getBrowserMargin() {
 		var margin = {width: 0, height: 0};
 		if (system === LINUX) {
@@ -215,6 +217,7 @@ var app = function() {
 	}
 
 	function moveMagnifier(e) {
+	    e.preventDefault(); // prevent any other actions that may occur when moving over the image
 		function getCursorPos(e) {
 		    var a, x = 0, y = 0;
 		    e = e || window.event;
@@ -229,24 +232,34 @@ var app = function() {
 		    // console.log('getCursorPos', e.pageX, a.left, window.pageXOffset, x);
 		    return {x: x, y: y, l: a.left, t: a.top};
 		}
-	    /*prevent any other actions that may occur when moving over the image*/
-	    e.preventDefault();
+		
+		glassSize = parseInt(sIze.value);
+		zoom = parseInt(zOOm.value);
+		glassHalfWidth  = $glass.width() / 2;
+		glassHalfHeight = $glass.height() / 2;
+		glassHalfWidthDividedZoom  = Math.round(glassHalfWidth / zoom);
+		glassHalfHeightDividedZoom = Math.round(glassHalfHeight / zoom);
+
 	    /*get the cursor's x and y positions:*/
-	    var cursor = getCursorPos(e);
+	    cursor = getCursorPos(e);
 	    /*prevent the magnifier glass from being positioned outside the image:*/
 	    cursor.x = Math.min(cursor.x, img.width - glassHalfWidthDividedZoom);
 	    cursor.x = Math.max(cursor.x, glassHalfWidthDividedZoom);
 	    cursor.y = Math.min(cursor.y, img.height - glassHalfHeightDividedZoom);
 	    cursor.y = Math.max(cursor.y, glassHalfHeightDividedZoom);
+
 	    /* set the position of the magnifier glass: */
 	    /* display what the magnifier glass "sees": */
 	    $glass.css({
-	    	left: cursor.x - glassHalfWidth + cursor.l,
-	    	top: cursor.y - glassHalfHeight + cursor.t,
-	    	backgroundPosition: (glassHalfWidth - (cursor.x * zoom) - bw) + "px " + (glassHalfHeight - (cursor.y * zoom) - bw) + "px"
+			backgroundSize: ($("#image").width() * zoom) + "px " + ($("#image").height() * zoom) + "px",
+	    	backgroundPosition: (glassHalfWidth - (cursor.x * zoom) - bw) + "px " + (glassHalfHeight - (cursor.y * zoom) - bw) + "px",
+			width: glassSize,
+			height: glassSize,
+	    	left: cursor.x + cursor.l - glassHalfWidth,
+	    	top:  cursor.y + cursor.t - glassHalfHeight,
 	    });
 	}
-	
+
 };
 </script>
 </head>
@@ -256,13 +269,15 @@ var app = function() {
 		<div id="glass" class="img-magnifier-glass"></div>
 		<img id="image" class="img-responsive"/>
 		<div id="info" class="overlay">
-			<span id="magnifier"><i class="fa fa-search"></i></span>
-			<span id="path"></span>
-			<span id="iname"></span>
-			<span id="size"></span>
-			<span id="length"></span>
-			<span id="lastModified"></span>
-			<span id="moveOut"><i class="fa fa-times"></i></span>
+			<label id="magnifier"><i class="fa fa-search"></i></label>
+			<label>px<input type="number" id="sIze" step="100" min="200" max="900"/></label>
+			<label> x<input type="number" id="zOOm" step="1"   min="2"   max="9"/></label>
+			<label id="path"></label>
+			<label id="iname"></label>
+			<label id="size"></label>
+			<label id="length"></label>
+			<label id="lastModified"></label>
+			<label id="moveOut"><i class="fa fa-times"></i></label>
 		</div>
 	</div>
 	

@@ -32,19 +32,21 @@ $(function() {
 			url: '/websocket/stats',
 			cache: false
 		}).done(function(stats) {
-			stats = stats.replace('stompBrokerRelay[null], ', '');
-			$("#wrapper").prepend(
-					$("<div>", {'class': 'border rounded p-2 m-2'}).append(
-							$("<p>", {'class': 'm-0'}).append(
-									'<label class="title text-info text-capitalize m-0">' +
-										stats.replace(/],/gi, ']<br><label class="title text-info text-capitalize m-0">').replace(/\[/gi, '</label><label class="content m-0">').replace(/\]/gi, '</label>')		
-											.replace('outboundChannel', 'outboundChannel</label><label class="content m-0">'),
-									$("<span>", {'class': 'text-warning float-right mx-2'}).html(' - ' + new Date().format('hh:mm:ss') + ' -'),
-							)
+			var $stat = $("<div>", {'class': 'border rounded p-2 m-2'}).css({display: 'none'}).append(
+					$("<p>", {'class': 'm-0'}).append(
+							'<label class="title text-info text-capitalize m-0">'
+								+ stats.replace('stompBrokerRelay[null], ', '')
+									.replace(/],/gi, ']<br><label class="title text-info text-capitalize m-0">')
+									.replace(/\[/gi, '</label><label class="content m-0">')
+									.replace(/\]/gi, '</label>')
+									.replace('outboundChannel', 'outboundChannel</label><label class="content m-0">'),
+							$("<span>", {'class': 'text-warning float-right mx-2'}).html(' - ' + new Date().format('a/p hh:mm:ss') + ' -'),
 					)
 			);
+			$("#wrapper").prepend($stat);
+			$stat.slideDown(300);
 		});
-	});
+	}).trigger("click");
 	
 	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
 	$("body").toggleClass("bg-dark text-light", bgThemeValue === 'D');
@@ -65,9 +67,7 @@ $(function() {
 		</div>
 	</div>
 	
-	<div id="wrapper" class="container-fluid">
-
-	</div>
+	<div id="wrapper" class="container-fluid"></div>
 
 </body>
 </html>

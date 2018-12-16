@@ -43,7 +43,7 @@ function findMode() {
 		Search.opusByRandom();
 	});
 	$("#btnReset").on("click", function() {
-		$("#findMode input.form-control").val("");
+		$("#findMode input.form-control").val("").removeClass("input-empty input-invalid");
 		$("#findMode input:checkbox").prop("checked", false);
 		$("#newActress").data("actress", null);
 	});
@@ -52,17 +52,22 @@ function findMode() {
 
 		var fullname = "";
 		$(".flay-group > input").each(function() {
-			var value = $(this).val();
-			value = $.trim(value);
-			if ($(this).attr("id") === "opus") {
+			var id = $(this).attr("id");
+			var value = $(this).val().trim();
+			if (id === "opus") {
 				value = value.toUpperCase();
 				$("#query").val(value);
-			} else if ($(this).attr("id") === "actress") {
+			} else if (id === "actress") {
 				$("#newActressName").val(value);
 			}
 			fullname += '[' + value + ']';
+			$(this).toggleClass("input-empty", value === '');
 		});
 		$("input#fullname").val(fullname).effect("highlight", {}, 200);
+	});
+	$("#release").blur(function() {
+		var date_pattern = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/; 
+		$(this).toggleClass('input-invalid', !date_pattern.test($(this).val()));
 	});
 	$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 		if (e.keyCode != 13) return;
@@ -113,7 +118,7 @@ function findMode() {
 					width: 600
 				});
 			}
-		});;
+		});
 	});
 	$("#newActressBody").on("keyup", function(e) {
 		if (e.keyCode === 17) return;

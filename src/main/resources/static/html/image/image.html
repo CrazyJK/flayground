@@ -68,7 +68,7 @@ img.img-responsive {
 #info > label:empty {
 	display: none;
 }
-#info > #magnifier:hover, #info > #path:hover {
+#info > #magnifier:hover, #info > #path:hover, #info > #paint:hover {
     cursor: pointer;
     color: OrangeRed;
     text-shadow: 1px 1px 2px #2d2d2d;
@@ -79,7 +79,7 @@ img.img-responsive {
 #info > #size, #info > #length, #info > #lastModified {
 	font-size: 80%;
 }
-#info > #moveOut {
+#info > #moveOut, #info > #paint {
 	display: none;
 }
 #info > #moveOut:hover {
@@ -103,7 +103,6 @@ input[type='number'] {
 #zOOm {
 	width: 25px;
 }
-
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/js/crazy.common.js"></script>
@@ -175,6 +174,9 @@ var app = function() {
         Rest.Image.get(no, function(imageInfo) {
         	var parentFolder = imageInfo.path.replace(/\\/gi, '/').split('/').pop();
 			document.title = parentFolder + " : " + imageInfo.name;
+			$("#paint").show().on("click", function() {
+				Rest.Image.paint(no);
+			});
 	        $("#path").html(parentFolder).on("click", function() {
 				Rest.Flay.openFolder(imageInfo.path);
 		    });
@@ -272,6 +274,7 @@ var app = function() {
 			<label id="magnifier"><i class="fa fa-search"></i></label>
 			<label>px<input type="number" id="sIze" step="100" min="200" max="900"/></label>
 			<label> x<input type="number" id="zOOm" step="1"   min="2"   max="9"/></label>
+			<label id="paint"><i class="fa fa-paint-brush"></i></label>
 			<label id="path"></label>
 			<label id="iname"></label>
 			<label id="size"></label>

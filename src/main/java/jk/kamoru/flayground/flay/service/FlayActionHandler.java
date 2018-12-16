@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.web.socket.notice.AnnounceService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -25,6 +26,7 @@ public class FlayActionHandler {
 
 	@Value("${app.video-player}") String player;
 	@Value("${app.subtitles-editor}") String editer;
+	@Value("${app.picture-editor}") String painter;
 
 	@Async
 	public void play(Flay flay) {
@@ -36,6 +38,12 @@ public class FlayActionHandler {
 	public void edit(Flay flay) {
 		exec(composite(editer, flay.getFiles().get(Flay.SUBTI)));
 		notificationService.announce("Edit " + flay.getOpus(), flay.getFullname());
+	}
+
+	@Async
+	public void paint(Image image) {
+		exec(composite(painter, Arrays.asList(image.getFile())));
+		notificationService.announce("Paint " + image.getName(), image.getPath());
 	}
 
 	@Async

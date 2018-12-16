@@ -183,6 +183,9 @@ var Rest = {
 			},
 			'delete': function(idx, callback) {
 				restCall('/image/' + idx, {method: 'DELETE'}, callback);
+			},
+			paint: function(idx) {
+				restCall('/image/paint/' + idx, {method: "PATCH"});
 			}
 		},
 		Html: {

@@ -33,7 +33,7 @@ public class LocalImageSource implements ImageSource<Image> {
 	@Autowired AnnounceService notificationService;
 
 	private List<Image> imageList;
-	private boolean changed;
+	private boolean changed = false;
 
 	@PostConstruct
 	private synchronized void load() {
@@ -53,7 +53,8 @@ public class LocalImageSource implements ImageSource<Image> {
 		}
 		log.info(String.format("%5s Image", size()));
 		
-		startWatcher();
+		if (!changed)
+			startWatcher();
 	}
 	
 	@Override
@@ -91,15 +92,19 @@ public class LocalImageSource implements ImageSource<Image> {
 
 			@Override
 			protected void createdFile(File file) {
-				if (Flayground.FILE.isImage(file))
-					changed = true;
+				changed = Flayground.FILE.isImage(file);
 			}
 
 			@Override
 			protected void deletedFile(File file) {
-				if (Flayground.FILE.isImage(file))
-					changed = true;
+				changed = Flayground.FILE.isImage(file);
 			}
+			
+			@Override
+			protected void modifiedFile(File file) {
+				changed = Flayground.FILE.isImage(file);
+			}
+
 		};
 		service.execute(watcher);
 	}
@@ -112,5 +117,5 @@ public class LocalImageSource implements ImageSource<Image> {
 		}
 		changed = false;
 	}
-	
+
 }

@@ -112,6 +112,7 @@ public class LocalImageSource implements ImageSource<Image> {
 	@Scheduled(fixedRate = 1000 * 30)
 	protected void checkChangedAndReload() {
 		if (changed) {
+			log.info("Image was changed, Source will be reloaded");
 			load();
 			notificationService.announce("Image reload", size() + " images");
 		}

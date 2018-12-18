@@ -265,6 +265,7 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
     left: 0;
     background-color: rgba(17, 17, 17, 0.75);
     overflow: hidden;
+	text-shadow: 1px 1px 2px #000;
     transition: 0.5s;
 }
 .sidenav:hover {
@@ -312,6 +313,20 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
     width: 50px;
 }
 
+#specialView {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 100%;
+	background: url('/img/bg/Personal_BG_SH_2079.jpeg') center top / cover no-repeat;
+    z-index: 9997;
+    transition: width 1s;
+}
+#crazySidenav:hover ~ #specialView {
+	width: 100%;
+}
+
 #wrap_background_image {
 	position: fixed;
 	top: 0;
@@ -323,7 +338,7 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 	z-index: -5;
 }
 #background_images {
-	background-color: rgba(0, 0, 0, .5);
+	background: rgba(0, 0, 0, .5);
 	height: 100%;
 	margin: 0;
 	padding: 0 1rem;

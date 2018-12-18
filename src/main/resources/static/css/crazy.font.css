@@ -1,0 +1,8 @@
+@charset "UTF-8";
+
+@font-face {
+	font-family: 'Ink Free';
+	font-style: normal;
+	font-weight: normal;
+	src: local('Ink Free Regular'), url('font/Inkfree.woff') format('woff');
+}

@@ -15,21 +15,19 @@
 .actress-cover-wrapper {
 	position: fixed;
 	top: 9rem;
-	top: 0;
 	left: 0;
 	right: 0;
-	bottom: 0;
-	background-color: rgba(0,0,0,0.75);
-	display: none;
-	margin-top: 9rem;
+	height: 0;
+    background-attachment: fixed;
+	margin: .5rem;
 	z-index: 74;
+	transition: 1s;
+}
+nav.navbar:hover ~ .actress-cover-wrapper {
+	height: calc(100% - 9rem);
 }
 .flay-list {
 	margin-top: 9rem;
-	margin-bottom: 1rem;
-}
-nav.navbar:hover ~ .actress-cover-wrapper {
-	display: block;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -109,9 +107,7 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 		</form>
 	</nav>
 	
-	<div class="actress-cover-wrapper text-center p-3">
-		<img class="img-fluid rounded actress-cover">
-	</div>
+	<div class="actress-cover-wrapper"></div>
 
 	<div class="flay-list"></div>
 
@@ -182,8 +178,6 @@ Rest.Actress.get(name, function(_actress) {
 	actress = _actress;
 	document.title = actress.name + ' - ' + document.title;
 
-//	displayPicture();
-	
 	$("#name").val(actress.name);
 	$("#localName").val(actress.localName);
 	$("#birth").val(actress.birth).trigger('keyup');
@@ -215,51 +209,18 @@ Rest.Actress.get(name, function(_actress) {
 
 	});
 
-//	$(window).on("resize", displayPicture);
-
-	$("nav.navbar").hover(function() {
-		console.log(1);
-		displayPicture();
-	}, function() {
-		console.log(2);
-	});
-	
+	if (actress.coverSize > 0) {
+		$("nav.navbar").hover(function() {
+			$(".actress-cover-wrapper").css({
+				background: 'rgba(0,0,0,0.75) url("/static/actress/' + actress.name + '/' + Random.getInteger(0, actress.coverSize-1) + '") center top / contain no-repeat'
+			});
+		}, function() {
+		});
+	}
 });
 
-function displayPicture() {
-	if (actress.coverSize > 0) {
-//		$(".actress-cover-wrapper").addClass("text-center p-3").css({
-//			backgroundImage: 'url("/static/actress/' + actress.name + '/' + Random.getInteger(0, actress.coverSize-1) + '")',
-//			backgroundAttachment: 'fixed',
-//			backgroundPosition: 'center 9rem',
-//			backgroundRepeat: 'no-repeat',
-//			backgroundSize: 'contain',
-//			height: $(window).height() - $("nav.navbar").height()
-//		}).empty().append(
-//				$("<img>", {
-//					'src': '/static/actress/' + actress.name + '/' + Random.getInteger(0, actress.coverSize-1), 
-//					'class': 'img-fluid rounded'
-//				}).css({
-//					height: $(window).height() - $("nav.navbar").height() - 16 * 3
-//				})
-//		);
-		$(".actress-cover").attr({
-			'src': '/static/actress/' + actress.name + '/' + Random.getInteger(0, actress.coverSize-1),
-		}).css({
-			maxHeight: $(window).height() - $("nav.navbar").height() - 16 * 3
-		});
-//		$(".flay-list").css({
-//			marginTop: 0
-//		});
-	} else {
-		$(".actress-cover-wrapper").remove();
-	}
-}
-
-var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
-$("body").toggleClass("bg-dark", bgThemeValue === 'D');
+$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D');
 
 </script>
-
 </body>
 </html>

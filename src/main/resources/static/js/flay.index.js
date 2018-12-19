@@ -162,6 +162,9 @@ $(document).ready(function() {
 		pattern: 'day Days',
 		onlyOnce: true
 	});
+	
+	if (system != WINDOWS)
+		$("#specialView").hide();
 });
 
 window.onerror = function(e) {

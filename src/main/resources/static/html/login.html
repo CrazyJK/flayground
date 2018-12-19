@@ -23,7 +23,7 @@ form#signin {
 	width: 450px;
 	border: 0;
 	border-radius: .5rem;
-	box-shadow: inset 0 0 2rem 2rem #466965, 0 0 1rem .125rem #fff;
+	box-shadow: inset 0 0 2rem 2rem rgba(70, 105, 101, .9), 0 0 1rem 0.125rem rgba(255, 255, 255, .75);
 }
 form#signin input, form#signin button {
 	font-size: 2rem;
@@ -69,6 +69,11 @@ $(document).ready(function() {
 		$(this).hide();
 		$("#signin").fadeIn(400);
 	});
+	$("#title").on("click", function(e) {
+		e.preventDefault();
+		$("#signin").hide();
+		$("#btnEnter").fadeIn(400);
+	});
 });
 </script>
 </head>
@@ -76,7 +81,7 @@ $(document).ready(function() {
 
 	<div class="background">
 		<div class="display-middle">
-			<h1 class="display-2 text-center text-light text-uppercase w3-animate-top flay-font-effect-static flay-font m-0 mb-2">Flayground</h1>
+			<h1 class="display-2 text-center text-light text-uppercase w3-animate-top flay-font-effect-static flay-font font-weight-bold m-0 mb-2" id="title">Flayground</h1>
 			<div class="text-center signin-wrapper w3-animate-bottom">
 				<button class="display-4 text-danger font-weight-bold flay-font-effect-static flay-font bg-transparent border-0" id="btnEnter">Enter</button>
 				<form name="f" method="POST" class="mx-auto" id="signin" autocomplete="off">

@@ -319,9 +319,10 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
     top: 0;
     width: 0;
     height: 100%;
-	background: url('/img/bg/Personal_BG_SH_2079.jpeg') center top / cover no-repeat;
+	background: url('/img/bg/person_SH_2079.jpeg') center top;
+	background-attachment: fixed;
     z-index: 9997;
-    transition: width 1s;
+    transition: 1s;
 }
 #crazySidenav:hover ~ #specialView {
 	width: 100%;
@@ -359,7 +360,7 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 }
 
 .bg-chalkboard {
-	background: #000 url(/img/chalkboard.jpg) no-repeat top center; 
+	background: #000 url(/img/bg/chalkboard.jpg) no-repeat top center; 
 	background-size: cover; 
 	background-attachment: fixed;
 }

@@ -11,14 +11,6 @@
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
-<style type="text/css">
-.container-tag {
-	position: fixed;
-	bottom: 0;
-	padding: .25rem;
-	text-align: center;
-}
-</style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -31,23 +23,30 @@
 </head>
 <body>
 
-	<div class="container-flay"></div>
+	<div id="containerFlay"></div>
 	
-	<div class="container-tag"></div>
+	<div id="containerTag" class="fixed-bottom text-center p-2"></div>
 
 <script type="text/javascript">
 var opus = reqParam.opus;
 var flay;
 var loadedFlay = false, loadedTag = false;
 
-function setFlay(f) {
-	flay = f;
+function setFlay(_flay) {
+	flay = _flay;
 	document.title = flay.opus + ' - ' + document.title;
 
-	$(".container-flay").appendFlayCard(flay);
+	$("#containerFlay").appendFlayCard(flay);
 
 	loadedFlay = true;
 	matchTag();
+}
+function matchTag() {
+	if (loadedFlay && loadedTag) {
+		$.each(flay.video.tags, function(idx, tagId) {
+			$(":checkbox[data-tag-id='" + tagId + "']").prop("checked", true);
+		});
+	}
 }
 
 Rest.Flay.get(opus, function(f) {
@@ -55,7 +54,7 @@ Rest.Flay.get(opus, function(f) {
 }, function() {
 	Rest.Archive.get(opus, function(f) {
 		setFlay(f);
-		$(".container-flay").css({
+		$("#containerFlay").css({
 			opacity: 0.8
 		});
 	});
@@ -79,20 +78,12 @@ Rest.Tag.list(function(list) {
 					Rest.Video.update(flay.video);
 				}),
 				$("<span>", {title: tag.description}).html(tag.name)
-		).appendTo($(".container-tag"));
+		).appendTo($("#containerTag"));
 	});
 
 	loadedTag = true;
 	matchTag();
 });
-
-function matchTag() {
-	if (loadedFlay && loadedTag) {
-		$.each(flay.video.tags, function(idx, tagId) {
-			$(":checkbox[data-tag-id='" + tagId + "']").prop("checked", true);
-		});
-	}
-}
 
 $("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D');
 

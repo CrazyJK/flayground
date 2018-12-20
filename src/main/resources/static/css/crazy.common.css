@@ -409,6 +409,8 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 .bottom-left  {position: absolute; bottom: 0;  left: 0;}
 .bottom-right {position: absolute; bottom: 0; right: 0;}
 .fixed-center {position: absolute; top: 50%;   left: 50%; transform: translate(-50%, -50%);}
+.fixed-top    {position: fixed; top: 0;}
+.fixed-bottom {position: fixed; bottom: 0;}
 
 .favorite {
 	color: red !important;

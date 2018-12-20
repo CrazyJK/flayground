@@ -446,6 +446,8 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 .width-250 {width: 250px !important;}
 .width-300 {width: 300px !important;}
 
+.mt-5r {margin-top: 5rem;}
+
 .font-flay {
 	font-family: 'Ink Free';
 	font-weight: 700;

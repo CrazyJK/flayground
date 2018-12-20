@@ -11,12 +11,6 @@
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
-<style type="text/css">
-.flay-list {
-	margin-top: 5rem;
-	margin-bottom: 1rem;
-}
-</style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -48,7 +42,7 @@
 		</div>
 	</nav>
 
-	<div class="flay-list"></div>
+	<div class="flay-list mt-5r mb-3"></div>
 
 <script type="text/javascript">
 var id = reqParam.id;
@@ -87,14 +81,10 @@ Rest.Tag.get(id, function(_tag) {
 				fontSize: '80%'
 			});
 		});
-
 	});
-
 });
 
-var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
-$("body").toggleClass("bg-dark", bgThemeValue === 'D');
-
+$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D');
 </script>
 
 </body>

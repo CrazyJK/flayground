@@ -6,11 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<style type="text/css">
-.card {
-	width: auto;
-}
-</style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -22,7 +17,7 @@ $(document).ready(function() {
 		cache: false
 	}).done(function(json) {
 		$.each(json._links, function(key, val) {
-			$("<div>", {'class': 'card m-2'}).append(
+			$("<div>", {'class': 'card m-2'}).css({width: 'auto'}).append(
 					$("<div>", {'class': 'card-body'}).append(
 							$("<h5>", {'class': 'card-title'}).html(key),
 							$("<p>", {'class': 'card-text'}).append(
@@ -34,10 +29,10 @@ $(document).ready(function() {
 	});
 
 });
-
 </script>
 </head>
 <body>
+
 	<div class="container-fluid">
 		<div class="d-flex my-2">
 			<div class="mr-auto"><h4>Actuator</h4></div>
@@ -45,5 +40,6 @@ $(document).ready(function() {
 		</div>
 		<div id="cardWrap" class="d-inline-flex flex-wrap"></div>
 	</div>
+
 </body>
 </html>

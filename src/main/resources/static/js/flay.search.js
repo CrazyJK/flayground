@@ -65,7 +65,7 @@ function findMode() {
 		});
 		$("input#fullname").val(fullname).effect("highlight", {}, 200);
 	});
-	$("#release").blur(function() {
+	$("#release").on("keyup", function() {
 		var date_pattern = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/; 
 		$(this).toggleClass('input-invalid', !date_pattern.test($(this).val()));
 	});
@@ -128,7 +128,7 @@ function findMode() {
 			value = value.substring(1, value.length);
 		}
 		var replace = value.replace('(', '').replace('カップ)', '').replace('W', '').replace('H', '').replace(/\//gi, '-');
-		$(this).val(replace);	
+		$(this).val(replace);
 	});
 	$("#btnRegistActress").on("click", function() {
 		var actress = $("#newActress").data("actress");

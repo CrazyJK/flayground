@@ -49,15 +49,26 @@ img.img-responsive {
 #info {
 	position: fixed;
 	bottom: 0;
+	left: 0;
 	right: 0;
+	cursor: default;
+	display: flex!important;
+    justify-content: space-between!important;
+}
+#info div {
+	display: inline-block;
+	background-color: rgba(0, 0, 0, .5);
 	margin: 0;
 	padding: 4px;
-	background-color: rgba(0, 0, 0, .5);
+}
+#info div:first-child {
+	border-top-right-radius: 4px;
+}
+#info div:last-child {
 	border-top-left-radius: 4px;
-	cursor: default;
 	text-align: right;
 }
-#info > label {
+#info label {
 	display: inline-block;
 	margin: 2px;
 	color: #eee;
@@ -65,28 +76,50 @@ img.img-responsive {
 	text-shadow: 1px 1px 2px #111;
 	transition: .3s;
 }
-#info > label:empty {
+#info label:empty {
 	display: none;
 }
-#info > #magnifier:hover, #info > #path:hover, #info > #paint:hover {
+#magnifier:hover, #paint:hover, #path:hover {
     cursor: pointer;
-    color: OrangeRed;
+    color: OrangeRed !important;
     text-shadow: 1px 1px 2px #2d2d2d;
 }
-#info > #iname {
-	color: yellow;
+#glassSize:before {
+	content: 'px ';
 }
-#info > #size, #info > #length, #info > #lastModified {
-	font-size: 80%;
+#sIze {
+	width: 40px;
 }
-#info > #moveOut, #info > #paint {
+#glassZoom:before {
+	content: 'x ';
+}
+#zOOm {
+	width: 25px;
+}
+#goImageByNo {
 	display: none;
 }
-#info > #moveOut:hover {
+#goImageByNo:before {
+	content: 'go ';
+}
+#imageNo {
+	width: 48px;
+}
+#iname {
+	color: yellow !important;
+}
+#size, #length, #lastModified {
+	font-size: 80% !important;
+}
+#moveOut, #paint {
+	display: none;
+}
+#moveOut:hover {
     cursor: pointer;
 	color: #dc3545;
     text-shadow: 1px 1px 2px #2d2d2d;
 }
+
 i.fa {
 	margin: 0 4px;
 }
@@ -96,12 +129,6 @@ input[type='number'] {
 	color: #eee;
 	margin: 0;
 	padding: 0;
-}
-#sIze {
-	width: 40px;
-}
-#zOOm {
-	width: 25px;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -188,6 +215,12 @@ var app = function() {
 		        	Rest.Image.delete(no);
 	        });
         });
+
+  		$("#goImageByNo").show();
+  		$("#imageNo").val(no).on("keyup", function(e) {
+  			if (e.keyCode === 13)
+	  			location.href = "?no=" + $(this).val();
+  		});
 	}
 
 	function getBrowserMargin() {
@@ -271,16 +304,21 @@ var app = function() {
 		<div id="glass" class="img-magnifier-glass"></div>
 		<img id="image" class="img-responsive"/>
 		<div id="info" class="overlay">
-			<label id="magnifier"><i class="fa fa-search"></i></label>
-			<label>px<input type="number" id="sIze" step="100" min="200" max="900"/></label>
-			<label> x<input type="number" id="zOOm" step="1"   min="2"   max="9"/></label>
-			<label id="paint"><i class="fa fa-paint-brush"></i></label>
-			<label id="path"></label>
-			<label id="iname"></label>
-			<label id="size"></label>
-			<label id="length"></label>
-			<label id="lastModified"></label>
-			<label id="moveOut"><i class="fa fa-times"></i></label>
+			<div>
+				<label id="magnifier"><i class="fa fa-search"></i></label>
+				<label id="glassSize"><input type="number" id="sIze" step="100" min="200" max="900"/></label>
+				<label id="glassZoom"><input type="number" id="zOOm" step="1"   min="2"   max="9"/></label>
+				<label id="paint"><i class="fa fa-paint-brush"></i></label>
+				<label id="goImageByNo"><input type="number" id="imageNo" step="1" min="0"/></label>
+			</div>
+			<div>
+				<label id="path"></label>
+				<label id="iname"></label>
+				<label id="size"></label>
+				<label id="length"></label>
+				<label id="lastModified"></label>
+				<label id="moveOut"><i class="fa fa-trash"></i></label>
+			</div>
 		</div>
 	</div>
 	

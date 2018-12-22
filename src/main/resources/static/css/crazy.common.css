@@ -287,7 +287,7 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
 .sidenav > h4 											 {						text-align: center; padding-top: 50px;}
 .sidenav > h4 > a                                        {vertical-align: middle;}
 .sidenav > h4 > a:hover 								 {color: var(--yellow);	text-decoration: none;}
-.sidenav > h4 > img                                      {height: 2rem; border-radius: 50%; vertical-align: middle; margin-right: .5rem;}
+.sidenav > h4 > img                                      {height: 2rem; border-radius: 50%; vertical-align: middle; margin-right: .5rem; cursor: pointer;}
 .sidenav > .nav 										 {						margin-top: 1rem;}
 .sidenav > .nav > .nav-item 							 {color: var(--blue); 	padding: .25rem .5rem;	min-height: 2.5rem; transition: all .5s;}
 .sidenav > .nav > .nav-item 	  > i.fa 				 {						width: 1rem; text-align: center; margin-right: .5rem;}
@@ -319,8 +319,11 @@ body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outli
     top: 0;
     width: 0;
     height: 100%;
-	background: url('/img/bg/person_SH_2079.jpeg') center top;
 	background-attachment: fixed;
+	background-color: rgba(0, 0, 0, .75);
+	background-image: url('/img/bg/person_SH_2079.jpeg');
+	background-position: center;
+	background-repeat: no-repeat;
     z-index: 9997;
     transition: 1s;
 }

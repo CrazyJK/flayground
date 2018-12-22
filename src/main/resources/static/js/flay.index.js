@@ -2,7 +2,7 @@
  * flay.index.js
  */
 
-var Event = {
+var SlideBar = {
 		theme: function() {
 			var setTheme = function() {
 				var bgThemeValue = $("input[name='bgTheme']:checked").val();
@@ -29,6 +29,37 @@ var Event = {
 				$("#background_images .col").css({zIndex: isShow ? -3 : 0});
 			});
 		},
+		setUsername() {
+			$("#username").html(username);
+		},
+		startLifeTimer() {
+			$("#lifeTimerWrapper").lifeTimer({
+				progress: false,
+				pattern: 'day Days',
+				onlyOnce: true
+			});
+		},
+		specialView: function() {
+			if (system != WINDOWS) {
+				$("#specialView").hide();
+			} else {
+				var selectedBgIndex = -1;
+				$(".sidenav > .nav > .nav-item > i + label, .sidenav > .nav > .nav-item > i + a").hover(function() {
+					selectedBgIndex = Random.getInteger(0, Background.count);
+					$("#specialView").css({
+						backgroundImage: "url('/static/image/" + selectedBgIndex + "')"
+					});
+				}, function() {});
+				$(".sidenav > h4 > a").hover(function() {
+					$("#specialView").css({
+						backgroundImage: "url('/img/bg/person_SH_2079.jpeg')"
+					});
+				}, function() {});
+				$(".sidenav > h4 > img").on("click", function() {
+					Popup.imageByNo(selectedBgIndex);
+				});
+			}
+		}
 };
 
 var Background = {
@@ -147,24 +178,15 @@ var username = Security.getName();
 console.log("isAdmin", isAdmin, username);
 
 $(document).ready(function() {
-
-	Event.theme();
-	Event.togglePage();
-	
 	Background.init();
 
 	Navi.init();
-	
-	$("#username").html(username);
 
-	$("#lifeTimerWrapper").lifeTimer({
-		progress: false,
-		pattern: 'day Days',
-		onlyOnce: true
-	});
-	
-	if (system != WINDOWS)
-		$("#specialView").hide();
+	SlideBar.theme();
+	SlideBar.togglePage();
+	SlideBar.setUsername();
+	SlideBar.startLifeTimer();
+	SlideBar.specialView();
 });
 
 window.onerror = function(e) {

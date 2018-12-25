@@ -25,8 +25,8 @@ body {
   	cursor: none;
   	opacity: 0;
   	display: none;
-  	left: 0;
-  	bottom: 0;
+  	left: -100px;
+  	top: -100px;
 	box-shadow: 0 0 4px 2px rgba(255, 255, 255, .25), 0 0 16px 8px rgba(0, 0, 0, .75) inset;
 }
 .img-magnifier-container:hover .img-magnifier-glass {
@@ -47,15 +47,16 @@ img.img-responsive {
 }
 
 #info {
-	position: fixed;
+/* 	position: fixed;
 	bottom: 0;
 	left: 0;
 	right: 0;
 	cursor: default;
 	display: flex!important;
-    justify-content: space-between!important;
+    justify-content: space-between!important; */
 }
 #info div {
+	position: fixed;
 	display: inline-block;
 	background-color: rgba(0, 0, 0, .5);
 	margin: 0;
@@ -63,9 +64,13 @@ img.img-responsive {
 }
 #info div:first-child {
 	border-top-right-radius: 4px;
+	top: 0;
+	left: 0;
 }
 #info div:last-child {
 	border-top-left-radius: 4px;
+	bottom: 0;
+	right: 0;
 	text-align: right;
 }
 #info label {
@@ -217,9 +222,10 @@ var app = function() {
         });
 
   		$("#goImageByNo").show();
-  		$("#imageNo").val(no).on("keyup", function(e) {
-  			if (e.keyCode === 13)
-	  			location.href = "?no=" + $(this).val();
+  		$("#imageNo").val(no).on("keyup change", function(e) {
+  			console.log(e.type);
+  			if (e.type === 'change' || (e.type === 'keyup' && e.keyCode === 13))
+				location.href = "?no=" + $(this).val();
   		});
 	}
 

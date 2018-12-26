@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
 <link rel="icon" type="image/png" href="/img/favicon/flay_2.png"/>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="/css/crazy.common.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css">
 <style type="text/css">
 body {
 	background: #000;
@@ -14,10 +14,10 @@ body {
 	margin: 0;
 }
 
-.img-magnifier-container {
+.image-container {
   	position: relative;
 }
-.img-magnifier-glass {
+.image-container div#glass {
   	position: absolute;
 	background-repeat: no-repeat;
   	border: 0;
@@ -29,14 +29,14 @@ body {
   	top: -100px;
 	box-shadow: 0 0 4px 2px rgba(255, 255, 255, .25), 0 0 16px 8px rgba(0, 0, 0, .75) inset;
 }
-.img-magnifier-container:hover .img-magnifier-glass {
+.image-container:hover div#glass {
 	opacity: 1;
 }
-
-img.img-responsive {
+.image-container img#image.img-responsive {
 	max-width: 100%;
 	max-height: 100%;
 }
+
 
 .overlay {
 	opacity: 0;
@@ -46,34 +46,25 @@ img.img-responsive {
   	opacity: 1;
 }
 
-#info {
-/* 	position: fixed;
-	bottom: 0;
-	left: 0;
-	right: 0;
-	cursor: default;
-	display: flex!important;
-    justify-content: space-between!important; */
-}
-#info div {
+.info-container div {
 	position: fixed;
 	display: inline-block;
 	background-color: rgba(0, 0, 0, .5);
 	margin: 0;
 	padding: 4px;
 }
-#info div:first-child {
+.info-container div:first-child {
 	border-top-right-radius: 4px;
 	top: 0;
 	left: 0;
 }
-#info div:last-child {
+.info-container div:last-child {
 	border-top-left-radius: 4px;
 	bottom: 0;
 	right: 0;
 	text-align: right;
 }
-#info label {
+.info-container label {
 	display: inline-block;
 	margin: 2px;
 	color: #eee;
@@ -81,48 +72,59 @@ img.img-responsive {
 	text-shadow: 1px 1px 2px #111;
 	transition: .3s;
 }
-#info label:empty {
+.info-container label:empty {
 	display: none;
 }
-#magnifier:hover, #paint:hover, #path:hover {
+.info-container label:hover {
+	text-shadow: 1px 1px 2px #2d2d2d;
+}
+
+#glassToggle:hover, #paint:hover, #imagePath:hover, #imageUrl:hover {
     cursor: pointer;
     color: OrangeRed !important;
-    text-shadow: 1px 1px 2px #2d2d2d;
 }
 #glassSize:before {
 	content: 'px ';
 }
-#sIze {
+#glassSize > input {
 	width: 40px;
 }
 #glassZoom:before {
 	content: 'x ';
 }
-#zOOm {
+#glassZoom > input {
 	width: 25px;
 }
-#goImageByNo {
+#imageIndex, #imageMoveOut, #paint {
 	display: none;
 }
-#goImageByNo:before {
+#imageIndex:before {
 	content: 'go ';
 }
-#imageNo {
+#imageIndex > input {
 	width: 48px;
 }
-#iname {
+#imageName {
 	color: yellow !important;
 }
-#size, #length, #lastModified {
+#imageSize, #imageLength, #imageLastModified {
 	font-size: 80% !important;
 }
-#moveOut, #paint {
+#imageMoveOut:hover {
+    cursor: pointer;
+	color: #dc3545 !important;
+}
+#urlInput {
 	display: none;
 }
-#moveOut:hover {
-    cursor: pointer;
-	color: #dc3545;
-    text-shadow: 1px 1px 2px #2d2d2d;
+#urlInput > input {
+	background: rgba(255, 255, 255, 0.5);
+	border: 0;
+	border-radius: .25rem;
+	box-shadow: 0 0 2rem 1rem rgba(0, 0, 0, .5);
+	font-size: 1.5rem;
+	padding: .5rem;
+	margin: 1rem;
 }
 
 i.fa {
@@ -142,15 +144,16 @@ input[type='number'] {
 <script type="text/javascript" src="/js/flay.utils.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	app();
 
-	sIze.value = LocalStorageItem.get('image.magnifier.size', 200);
+	sIZe.value = LocalStorageItem.get('image.magnifier.size', 200);
 	zOOm.value = LocalStorageItem.get('image.magnifier.zoom', 2);
 	
-	$("#sIze, #zOOm").on("change", function() {
-		LocalStorageItem.set('image.magnifier.size', sIze.value);
+	$("#sIZe, #zOOm").on("change", function() {
+		LocalStorageItem.set('image.magnifier.size', sIZe.value);
 		LocalStorageItem.set('image.magnifier.zoom', zOOm.value);
 	});
+
+	app();
 });
 
 var app = function() {
@@ -178,11 +181,11 @@ var app = function() {
 		});
 
   		// show default info
-		$("#size").html(this.naturalWidth + ' x ' + this.naturalHeight);
+		$("#imageSize").html(this.naturalWidth + ' x ' + this.naturalHeight);
 		
   		// magnifier glass toggle
   		var onOff = 0;
-  		$("#magnifier").on("click", function() {
+  		$("#glassToggle").on("click", function() {
   			if (onOff++ % 2 === 0) {
   				$("#image, #glass").on("mousemove", function(e) {
   					moveMagnifier(e);
@@ -199,8 +202,17 @@ var app = function() {
 	// show default info
 	var lastUrlName = imgSrc.split('/').pop();
 	document.title = lastUrlName;
-	$("#iname").html(lastUrlName);
+	$("#imageName").html(lastUrlName);
 
+	$("#imageUrl").on("click", function() {
+		$("#urlInput").toggle();
+	});
+	$("#urlInput > input").on("keyup", function(e) {
+		if (e.keyCode === 13) {
+			location.href = "?src=" + $(this).val();
+		}
+	});
+	
 	// set additional image information
 	if (no != null) {
         Rest.Image.get(no, function(imageInfo) {
@@ -209,21 +221,19 @@ var app = function() {
 			$("#paint").show().on("click", function() {
 				Rest.Image.paint(no);
 			});
-	        $("#path").html(parentFolder).on("click", function() {
+	        $("#imagePath").html(parentFolder).on("click", function() {
 				Rest.Flay.openFolder(imageInfo.path);
 		    });
-			$("#iname").html(imageInfo.name);
-			$("#length").html(File.formatSize(imageInfo.length));
-			$("#lastModified").html(new Date(imageInfo.modified).format("yyyy-MM-dd"));
-			$("#moveOut").show().on("click", function() {
+			$("#imageName").html(imageInfo.name);
+			$("#imageLength").html(File.formatSize(imageInfo.length));
+			$("#imageLastModified").html(new Date(imageInfo.modified).format("yyyy-MM-dd"));
+			$("#imageMoveOut").show().on("click", function() {
 	        	if (confirm('move this file to Root Directory?'))
 		        	Rest.Image.delete(no);
 	        });
         });
 
-  		$("#goImageByNo").show();
-  		$("#imageNo").val(no).on("keyup change", function(e) {
-  			console.log(e.type);
+  		$("#imageIndex").show().children().val(no).on("keyup change", function(e) {
   			if (e.type === 'change' || (e.type === 'keyup' && e.keyCode === 13))
 				location.href = "?no=" + $(this).val();
   		});
@@ -233,7 +243,7 @@ var app = function() {
 		var margin = {width: 0, height: 0};
 		if (system === LINUX) {
 			if (browser === CHROME) {
-	   			margin.width = 0;
+	   			margin.width = 8;
 	   			margin.height = 28;
 	   		} else if (browser === FIREFOX) {
 	   			margin.width = 0;
@@ -253,51 +263,48 @@ var app = function() {
 	   			margin.height = 45;
 	   		}
 		}
-		// console.log(system, browser, margin, agent);
 		return margin;
 	}
 
 	function moveMagnifier(e) {
-	    e.preventDefault(); // prevent any other actions that may occur when moving over the image
 		function getCursorPos(e) {
 		    var a, x = 0, y = 0;
 		    e = e || window.event;
-		    /*get the x and y positions of the image:*/
+		    /* get the x and y positions of the image */
 		    a = img.getBoundingClientRect();
-		    /*calculate the cursor's x and y coordinates, relative to the image:*/
+		    /* calculate the cursor's x and y coordinates, relative to the image */
 		    x = e.pageX - a.left;
 		    y = e.pageY - a.top;
-		    /*consider any page scrolling:*/
+		    /* consider any page scrolling */
 		    x = x - window.pageXOffset;
 		    y = y - window.pageYOffset;
 		    // console.log('getCursorPos', e.pageX, a.left, window.pageXOffset, x);
 		    return {x: x, y: y, l: a.left, t: a.top};
 		}
-		
-		glassSize = parseInt(sIze.value);
-		zoom = parseInt(zOOm.value);
-		glassHalfWidth  = $glass.width() / 2;
-		glassHalfHeight = $glass.height() / 2;
-		glassHalfWidthDividedZoom  = Math.round(glassHalfWidth / zoom);
-		glassHalfHeightDividedZoom = Math.round(glassHalfHeight / zoom);
+		// prevent any other actions that may occur when moving over the image
+	    e.preventDefault(); 
+
+		_glassSize = parseInt(sIZe.value);
+		_glassZoom = parseInt(zOOm.value);
+		_glassRadius = _glassSize / 2;
+		_glassRadiusDividedZoom = Math.round(_glassRadius / _glassZoom);
 
 	    /*get the cursor's x and y positions:*/
 	    cursor = getCursorPos(e);
 	    /*prevent the magnifier glass from being positioned outside the image:*/
-	    cursor.x = Math.min(cursor.x, img.width - glassHalfWidthDividedZoom);
-	    cursor.x = Math.max(cursor.x, glassHalfWidthDividedZoom);
-	    cursor.y = Math.min(cursor.y, img.height - glassHalfHeightDividedZoom);
-	    cursor.y = Math.max(cursor.y, glassHalfHeightDividedZoom);
+	    cursor.x = Math.min(cursor.x, img.width - _glassRadiusDividedZoom);
+	    cursor.x = Math.max(cursor.x, _glassRadiusDividedZoom);
+	    cursor.y = Math.min(cursor.y, img.height - _glassRadiusDividedZoom);
+	    cursor.y = Math.max(cursor.y, _glassRadiusDividedZoom);
 
 	    /* set the position of the magnifier glass: */
-	    /* display what the magnifier glass "sees": */
 	    $glass.css({
-			backgroundSize: ($("#image").width() * zoom) + "px " + ($("#image").height() * zoom) + "px",
-	    	backgroundPosition: (glassHalfWidth - (cursor.x * zoom) - bw) + "px " + (glassHalfHeight - (cursor.y * zoom) - bw) + "px",
-			width: glassSize,
-			height: glassSize,
-	    	left: cursor.x + cursor.l - glassHalfWidth,
-	    	top:  cursor.y + cursor.t - glassHalfHeight,
+			backgroundSize: ($("#image").width() * _glassZoom) + "px " + ($("#image").height() * _glassZoom) + "px",
+	    	backgroundPosition: (_glassRadius - (cursor.x * _glassZoom) - bw) + "px " + (_glassRadius - (cursor.y * _glassZoom) - bw) + "px",
+	    	left: cursor.x + cursor.l - _glassRadius,
+	    	top:  cursor.y + cursor.t - _glassRadius,
+			width: _glassSize,
+			height: _glassSize,
 	    });
 	}
 
@@ -306,27 +313,33 @@ var app = function() {
 </head>
 <body>
 
-	<div class="img-magnifier-container">
-		<div id="glass" class="img-magnifier-glass"></div>
+	<div class="image-container">
+		<div id="glass"></div>
 		<img id="image" class="img-responsive"/>
-		<div id="info" class="overlay">
-			<div>
-				<label id="magnifier"><i class="fa fa-search"></i></label>
-				<label id="glassSize"><input type="number" id="sIze" step="100" min="200" max="900"/></label>
-				<label id="glassZoom"><input type="number" id="zOOm" step="1"   min="2"   max="9"/></label>
-				<label id="paint"><i class="fa fa-paint-brush"></i></label>
-				<label id="goImageByNo"><input type="number" id="imageNo" step="1" min="0"/></label>
-			</div>
-			<div>
-				<label id="path"></label>
-				<label id="iname"></label>
-				<label id="size"></label>
-				<label id="length"></label>
-				<label id="lastModified"></label>
-				<label id="moveOut"><i class="fa fa-trash"></i></label>
-			</div>
+	</div>
+
+	<div class="info-container overlay">
+		<div>
+			<label id="glassToggle"><i class="fa fa-search-plus"></i></label>
+			<label id="glassSize"><input type="number" id="sIZe" step="100" min="200" max="900"/></label>
+			<label id="glassZoom"><input type="number" id="zOOm" step="1"   min="2"   max="9"/></label>
+			<label id="paint"><i class="fa fa-paint-brush"></i></label>
+			<label id="imageIndex"><input type="number" step="1" min="0"/></label>
+			<label id="imageUrl"><i class="fa fa-location-arrow"></i></label>
+		</div>
+		<div>
+			<label id="imagePath"></label>
+			<label id="imageName"></label>
+			<label id="imageSize"></label>
+			<label id="imageLength"></label>
+			<label id="imageLastModified"></label>
+			<label id="imageMoveOut"><i class="fa fa-trash"></i></label>
 		</div>
 	</div>
-	
+
+	<div id="urlInput" class="fixed-center">
+		<input placeHolder="type image src">
+	</div>
+
 </body>
 </html>

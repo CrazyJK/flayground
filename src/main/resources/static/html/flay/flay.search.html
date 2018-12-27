@@ -107,7 +107,7 @@ input {
 					<input class="form-control border-primary" id="rowname_title"   placeholder="Row title"/>
 					<input class="form-control border-primary" id="rowname_actress" style="max-width: 150px;" placeholder="Row actress"/>
 					<div class="input-group-append">
-						<button class="btn btn-sm btn-outline-primary btn-find-random-opus" style="max-width: 100px;">Random Find</button>
+						<button class="btn btn-sm btn-outline-primary btn-find-random-opus" style="max-width: 100px;"><i class="fa fa-random fa-fw"></i></button>
 					</div>
 				</div>
 				<div class="input-group input-group-sm flay-group mb-1">
@@ -118,15 +118,19 @@ input {
 					<input class="form-control border-primary" id="release" placeholder="Release" style="max-width: 100px;"/>
 				</div>
 				<div class="input-group input-group-sm mb-1">
+					<div class="input-group-prepend">
+    					<button class="btn btn-outline-primary" id="btnCopy" data-clipboard-target="#fullname"><i class="fa fa-copy fa-fw"></i></button>
+    					<button class="btn btn-outline-primary" id="btnPaste"><i class="fa fa-paste fa-fw"></i></button>
+  					</div>
 					<input class="form-control form-control-sm border-primary" id="fullname" placeholder="Full name"/>
 					<div class="input-group-append">
-    					<button class="btn btn-outline-primary" id="btnReset" style="width: 60px;">Reset</button> 
+    					<button class="btn btn-outline-primary" id="btnReset"><i class="fa fa-eraser fa-fw"></i></button>
   					</div>
 				</div>
 				<div class="input-group input-group-sm mb-1" id="newActress">
 					<div class="input-group-prepend">
-						<div class="input-group-text border-primary">
-							<label class="check danger sm"><input type="checkbox" id="newActressFavorite" name="favorite"><span>Fav</span></label>
+						<div class="input-group-text border-primary px-0">
+							<label class="check danger sm"><input type="checkbox" id="newActressFavorite" name="favorite"><span style="border-color: transparent;"><i class="fa fa-star fa-fw"></i></span></label>
 						</div>
 					</div>
 					<input class="form-control border-primary" id="newActressName"   name="name"      placeholder="Name"/>
@@ -136,7 +140,7 @@ input {
 					<input class="form-control border-primary" id="newActressHeight" name="height"    placeholder="Height" type="number" min="140"  max="199"  step="1"/>
 					<input class="form-control border-primary" id="newActressDebut"  name="debut"     placeholder="Debut"  type="number" min="2000" max="2999" step="1"/>
 					<div class="input-group-append">
-    					<button class="btn btn-outline-primary" id="btnRegistActress" style="width: 60px;">Regist</button> 
+    					<button class="btn btn-outline-primary" id="btnRegistActress"><i class="fa fa-upload fa-fw"></i></button> 
   					</div>
 				</div>
 			</div>
@@ -172,7 +176,7 @@ input {
 							<span class="input-group-text border-success text-success"> kB </span>
 						</div>
 						<div class="input-group-append">
-							<button type="button" class="btn btn-outline-success btn-download-page-image">Download</button>
+							<button type="button" class="btn btn-outline-success btn-download-page-image"><i class="fa fa-download fa-fw"></i></button>
 						</div>
 					</div>
 				</form>
@@ -243,4 +247,26 @@ input {
 	
 </div>
 
+<script type="text/javascript" src="/webjars/clipboard/dist/clipboard.min.js"></script>
+<script type="text/javascript">
+<!--
+var clipboard = new ClipboardJS('#btnCopy');
+clipboard.on('success', function(e) {
+    console.info('Action:', e.action);
+    console.info('Text:', e.text);
+    console.info('Trigger:', e.trigger);
+
+    e.clearSelection();
+});
+clipboard.on('error', function(e) {
+    console.error('Action:', e.action);
+    console.error('Trigger:', e.trigger);
+});
+
+$("#btnPaste").on("click", function() {
+	$("#fullname").focus();
+	document.execCommand('paste');
+});
+//-->
+</script>
 <script type="text/javascript" src="/js/flay.search.js"></script>

@@ -118,11 +118,12 @@ body {
 	display: none;
 }
 #urlInput > input {
-	background: rgba(255, 255, 255, 0.5);
+	background: rgba(0, 0, 0, 0.75);
 	border: 0;
 	border-radius: .25rem;
-	box-shadow: 0 0 2rem 1rem rgba(0, 0, 0, .5);
-	font-size: 1.5rem;
+	box-shadow: 0 0 2rem 1rem rgba(255, 255, 255, .5);
+	color: #fff;
+	font-size: 1.25rem;
 	padding: .5rem;
 	margin: 1rem;
 }
@@ -205,10 +206,10 @@ var app = function() {
 	$("#imageName").html(lastUrlName);
 
 	$("#imageUrl").on("click", function() {
-		$("#urlInput").toggle();
+		$("#urlInput").toggle(100);
 	});
 	$("#urlInput > input").on("keyup", function(e) {
-		if (e.keyCode === 13) {
+		if (e.keyCode === 13 && $.trim($(this).val()).length > 0) {
 			location.href = "?src=" + $(this).val();
 		}
 	});

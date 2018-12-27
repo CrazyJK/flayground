@@ -293,7 +293,7 @@ $(document).ready(function() {
 	$("#inputPlayTime").on("change", function() {
 		LocalStorageItem.set(ImageControl.STORAGE_PLAY_TIME, $(this).val());
 	});
-	$("#goFlay").on("click", function() {
+	$("#goHome").on("click", function() {
 		location.href = PATH + "/html/flay/flay.index.html";
 	});
 	$("#btnByKey, #btnCloseKey").on("click", function() {
@@ -324,7 +324,7 @@ $(document).ready(function() {
 <div id="controlBox">
 	<div class="input-group input-group-sm">
 		<div class="input-group-prepend">
-			<button class="btn btn-dark" id="btnByKey"><i class="fa fa-bars"></i> By <span id="selectedKey">key</span></button>
+			<button class="btn btn-dark" id="btnByKey"><i class="fa fa-star"></i> By <span id="selectedKey">key</span></button>
 			<span class="input-group-text border-dark bg-dark text-light cloud-info">0</span>
 			<button class="btn btn-dark" id="btnRotate"><i class="fa fa-random"></i> Rotate</button>
 			<button class="btn btn-dark" id="btnPause" data-status="resume"><i class="fa fa-pause"></i> Pause</button>
@@ -336,7 +336,7 @@ $(document).ready(function() {
 		<input class="form-control border-dark bg-dark text-light text-right" id="inputPlayTime" style="width: 40px;" value="60" title="Play seconds">
 		<div class="input-group-append">
     		<button class="btn btn-dark" id="btnPlay" data-status="stop"><i class="fa fa-play"></i> Play</button>
-    		<button class="btn btn-dark" id="goFlay" title="go Flay"><i class="fa fa-file-video-o"></i></button>
+    		<button class="btn btn-dark" id="goHome" title="Home"><i class="fa fa-home"></i></button>
   		</div>
 	</div>
 </div>

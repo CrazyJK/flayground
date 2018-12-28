@@ -14,7 +14,7 @@ input {
 	background-color: #fff;
 }
 .btn-batch-option {
-	min-width: 50px;
+	min-width: 32px;
 }
 
 .ui-dialog-danger {
@@ -119,8 +119,7 @@ input {
 				</div>
 				<div class="input-group input-group-sm mb-1">
 					<div class="input-group-prepend">
-    					<button class="btn btn-outline-primary" id="btnCopy" data-clipboard-target="#fullname"><i class="fa fa-copy fa-fw"></i></button>
-    					<button class="btn btn-outline-primary" id="btnPaste"><i class="fa fa-paste fa-fw"></i></button>
+    					<button class="btn btn-outline-primary" id="btnCopy" data-clipboard-target="#fullname" style="width: 42px;"><i class="fa fa-copy fa-fw"></i></button>
   					</div>
 					<input class="form-control form-control-sm border-primary" id="fullname" placeholder="Full name"/>
 					<div class="input-group-append">
@@ -183,24 +182,24 @@ input {
 			</div>
 		</div>
 		<div class="card border-danger mt-2 collapse" id="batchGroup" aria-role="ADMIN">
-			<div class="card-body">
-				<div class="btn-group btn-group-sm mb-1">
+			<div class="card-body text-center">
+				<div class="btn-group btn-group-sm my-2">
 					<button class="btn btn-outline-danger btn-batch-start"  data-type="W">Move Watched</button>
-					<button class="btn btn-outline-danger btn-batch-option" data-type="W">true</button>
+					<button class="btn btn-outline-danger btn-batch-option" data-type="W"><i class="fa"></i></button>
 				</div>
-				<div class="btn-group btn-group-sm mb-1">
+				<div class="btn-group btn-group-sm my-2">
 					<button class="btn btn-outline-danger btn-batch-start"  data-type="R">Delete Lower Rank</button>
-					<button class="btn btn-outline-danger btn-batch-option" data-type="R">true</button>
+					<button class="btn btn-outline-danger btn-batch-option" data-type="R"><i class="fa fa-check"></i></button>
 				</div>
-				<div class="btn-group btn-group-sm mb-1">
+				<div class="btn-group btn-group-sm my-2">
 					<button class="btn btn-outline-danger btn-batch-start"  data-type="S">Delete Lower Score</button>
-					<button class="btn btn-outline-danger btn-batch-option" data-type="S">false</button>
+					<button class="btn btn-outline-danger btn-batch-option" data-type="S"><i class="fa fa-check"></i></button>
 				</div>
-				<div class="btn-group btn-group-sm mb-1">
+				<div class="btn-group btn-group-sm m-2">
 					<button class="btn btn-outline-danger btn-batch-start" data-type="I">Instance Batch</button>
 					<button class="btn btn-outline-danger btn-batch-start" data-type="A">Archive Batch</button>
 				</div>
-				<div class="btn-group btn-group-sm mb-1">
+				<div class="btn-group btn-group-sm my-2">
 					<button class="btn btn-outline-danger btn-batch-start" data-type="B">Source Backup</button>
 				</div>
 			</div>
@@ -252,20 +251,11 @@ input {
 <!--
 var clipboard = new ClipboardJS('#btnCopy');
 clipboard.on('success', function(e) {
-    console.info('Action:', e.action);
-    console.info('Text:', e.text);
-    console.info('Trigger:', e.trigger);
-
+    console.info('Action:', e.action, 'Text:', e.text, 'Trigger:', e.trigger);
     e.clearSelection();
 });
 clipboard.on('error', function(e) {
-    console.error('Action:', e.action);
-    console.error('Trigger:', e.trigger);
-});
-
-$("#btnPaste").on("click", function() {
-	$("#fullname").focus();
-	document.execCommand('paste');
+    alert('Action: ' + e.action + ' Trigger: ' + e.trigger);
 });
 //-->
 </script>

@@ -264,13 +264,13 @@ function imageDownloadMode() {
 
 function batchMode() {
 	Rest.Batch.getOption('W', function(val) {
-		$(".btn-batch-option[data-type='W']").html('' + val).toggleClass("text-primary", val);
+		$(".btn-batch-option[data-type='W']").children().toggleClass("fa-check", val);
 	});
 	Rest.Batch.getOption('R', function(val) {
-		$(".btn-batch-option[data-type='R']").html('' + val).toggleClass("text-primary", val);
+		$(".btn-batch-option[data-type='R']").children().toggleClass("fa-check", val);
 	});
 	Rest.Batch.getOption('S', function(val) {
-		$(".btn-batch-option[data-type='S']").html('' + val).toggleClass("text-primary", val);
+		$(".btn-batch-option[data-type='S']").children().toggleClass("fa-check", val);
 	});
 
 	$(".btn-batch-start").on("click", function() {
@@ -282,7 +282,7 @@ function batchMode() {
 		var $this = $(this);
 		var type  = $this.data("type");
 		Rest.Batch.setOption(type, function(result) {
-			$this.text(result).toggleClass("text-primary", result);
+			$this.children().toggleClass("fa-check", result);
 		});
 	});
 }
@@ -294,7 +294,12 @@ function reloadMode() {
 }
 
 function searchSource(keyword) {
-    var rexp = eval('/' + keyword + '/gi');
+	keyword = $.trim(keyword);
+	if (keyword.length === 0) {
+		return;
+	}
+
+	var rexp = eval('/' + keyword + '/gi');
     keyword = keyword.toUpperCase();
 
 	// find Flay

@@ -120,6 +120,10 @@ function findMode() {
 			}
 		});
 	});
+	$("#newActressBirth").on("keyup", function(e) {
+		var value = $(this).val().trim();
+		$(this).val(value);
+	});
 	$("#newActressBody").on("keyup", function(e) {
 		if (e.keyCode === 17) return;
 

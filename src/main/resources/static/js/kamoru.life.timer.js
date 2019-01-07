@@ -53,7 +53,7 @@ var STARTING = new Date(1976, 3, 28), DEADLINE = new Date(2031, 3, 28);
 		        	timePast      = now - startingTime,
 		        	timeRemaining = deadlineTime - now,
 		        	
-		        	entireDay = Math.floor(timeEntire / DAY),
+		        	entireDay  = Math.floor(timeEntire / DAY),
 		        	
 		        	pastDay    = Math.floor(timePast / DAY),
 		        	pastHour   = Math.floor(timePast % DAY / HOUR),

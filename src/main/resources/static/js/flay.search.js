@@ -66,8 +66,14 @@ function findMode() {
 		$("input#fullname").val(fullname).effect("highlight", {}, 200);
 	});
 	$("#release").on("keyup", function() {
-		var date_pattern = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/; 
-		$(this).toggleClass('input-invalid', !date_pattern.test($(this).val()));
+		var dateText = $(this).val().trim();
+		var date_pattern = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
+		var isValid = date_pattern.test(dateText);
+		$(this).toggleClass('input-invalid', !isValid);
+		if (isValid)
+			$(this).toggleClass('input-warning', dateText.indexOf('2019') < 0);
+		else
+			$(this).removeClass('input-warning');
 	});
 	$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 		if (e.keyCode != 13) return;

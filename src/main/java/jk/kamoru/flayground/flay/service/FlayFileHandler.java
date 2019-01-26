@@ -86,22 +86,26 @@ public class FlayFileHandler {
 
 	public static void copyDirectoryToDirectory(File fromDirectory, File toDirectory) {
 		try {
+			final long length = FileUtils.listFiles(toDirectory, null, true).stream().mapToLong(f -> f.length()).sum();
+			checkDiskSpace(fromDirectory, length);
 			FileUtils.copyDirectoryToDirectory(fromDirectory, toDirectory);
 		} catch (IOException e) {
 			throw new IllegalStateException("fail to copyDirectoryToDirectory " + fromDirectory + " to " + toDirectory, e);
 		}
 	}
 
-	public static void copyFileToDirectory(File file, File directoryr) {
+	public static void copyFileToDirectory(File file, File directory) {
 		try {
-			FileUtils.copyFileToDirectory(file, directoryr);
+			checkDiskSpace(directory, file.length());
+			FileUtils.copyFileToDirectory(file, directory);
 		} catch (IOException e) {
-			throw new IllegalStateException("fail to copyFileToDirectory " + file + " to " + directoryr, e);
+			throw new IllegalStateException("fail to copyFileToDirectory " + file + " to " + directory, e);
 		}
 	}
 
 	public static void moveFileToDirectory(File file, File directory) {
 		try {
+			checkDiskSpace(directory, file.length());
 			FileUtils.moveFileToDirectory(file, directory, true);
 		} catch (FileExistsException e) {
 			File destFile = new File(directory, file.getName());
@@ -118,6 +122,12 @@ public class FlayFileHandler {
 		}
 	}
 
+	public static void checkDiskSpace(File disk, long length) throws IOException {
+		if (disk.getFreeSpace() < length) {
+			throw new IOException("Disk free space is too small. disk: " + prettyFileLength(disk.getFreeSpace()) + " < " + prettyFileLength(length));
+		}
+	}
+	
 	public static void moveFileToRoot(File file) {
 		File root = file.toPath().getRoot().toFile();
 		moveFileToDirectory(file, root);

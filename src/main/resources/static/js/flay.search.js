@@ -252,7 +252,7 @@ function imageDownloadMode() {
 					$("<ul>", {'class': 'list-unstyled'}).append(
 							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
 							$("<li>", {'class': 'text-primary'}).append(
-									$("<span>", {'class': 'btn-link pointer'}).on("click", function() {
+									$("<span>", {'class': 'btn btn-link text-dark'}).on("click", function() {
 										Rest.Flay.openFolder(result.localPath);
 									}).html(result.localPath)
 							)

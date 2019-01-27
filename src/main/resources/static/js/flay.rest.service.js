@@ -76,9 +76,9 @@ var Rest = {
 			acceptCandidates: function(flay, callback) {
 				restCall('/flay/candidates/' + flay.opus, {method: "PATCH"}, callback);
 			},
-			play: function(flay) {
+			play: function(flay, callback) {
 				flay.video.play++;
-				restCall('/flay/play/' + flay.opus, {method: "PATCH"});
+				restCall('/flay/play/' + flay.opus, {method: "PATCH"}, callback);
 			},
 			subtitles: function(flay) {
 				restCall('/flay/edit/' + flay.opus, {method: "PATCH"});

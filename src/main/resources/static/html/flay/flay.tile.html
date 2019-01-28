@@ -12,14 +12,29 @@
 	width: 100%;
 	height: 100%;
 	text-align: center;
+	margin-top: 1rem;
 	padding: 1rem;
 }
 .tile {
 	cursor: pointer;
+	background: #000 url(/img/pattern/pattern-static.png);
 	display: inline-block;
-	width: var(--tile-width);
+	width:  calc(var(--tile-width) + 7px);
 	height: calc(var(--tile-width) * 2 * 0.6625);
-	margin: -4px 0;
+	margin: 0;
+	border: 1px solid #fff;
+	transition: all 0.3s ease-in-out;
+}
+.tile > div.title {
+	opacity: 0;
+	transition: all 0.3s ease-in-out;
+}
+.tile:hover > div.title {
+	opacity: 1;
+	background-color: rgba(16, 51, 86, .5);; 
+	box-shadow: 0 0 1px #103356;
+	color: #fff;
+	text-shadow: 1px 1px 1px #103356; 
 }
 -->
 </style>
@@ -61,13 +76,16 @@ function displayTile() {
 			continue;
 		}
 		
-		var $tile = $("<div>", {class: 'tile', title: flay.title}).css({
-			background: 'url(/static/cover/' + flay.opus + ') right top / cover no-repeat',
-		}).data('flay', flay).on('click', function() {
+		var $tile = $("<div>", {class: 'tile'}).data('flay', flay).on('click', function() {
 			var _flay = $(this).data('flay');
-			Rest.Flay.play(_flay)
-			View.flay(_flay.opus);
-		}).appendTo($tileWrap);
+			Rest.Flay.play(_flay, function() {
+				View.flay(_flay.opus);
+			});
+		}).append(
+				$("<div>", {class: 'title nowrap'}).html(flay.title)
+		);
+		
+		$tile.appendTo($tileWrap);
 		
 		var bottom = $tile.position().top + $tile.height();
 		if (tileWrapHeight < bottom) {
@@ -76,6 +94,11 @@ function displayTile() {
 			break;
 		}
 
+		$tile.css({
+			background: 'url(/static/cover/' + flay.opus + ') right top / cover no-repeat',
+		});
+
 	} while(true);
+	
 }
 </script>

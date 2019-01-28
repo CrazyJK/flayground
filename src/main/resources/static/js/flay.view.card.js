@@ -97,7 +97,9 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			// studio
 			$flayCard.find(".flay-studio").html(flay.studio);
 			// opus
-			$flayCard.find(".flay-opus").html(flay.opus);
+			$flayCard.find(".flay-opus").html(flay.opus).on("click", function() {
+				View.video(flay.opus);
+			});
 			// opus search
 			$flayCard.find(".flay-opus-search").on("click", function() {
 				Search.opus(flay.opus);

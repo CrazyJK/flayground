@@ -16,25 +16,37 @@
 	padding: 1rem;
 }
 .tile {
-	cursor: pointer;
 	background: #000 url(/img/pattern/pattern-static.png);
-	display: inline-block;
-	width:  calc(var(--tile-width) + 7px);
-	height: calc(var(--tile-width) * 2 * 0.6625);
-	margin: 0;
 	border: 1px solid #fff;
-	transition: all 0.3s ease-in-out;
+	cursor: pointer;
+	display: inline-table;
+	margin: 0;
+	width:  calc(var(--tile-width) + 7px);
+	height: calc(var(--tile-width) * 2 * var(--cover-ratio));
+	transition: all .5s ease-in-out;
 }
-.tile > div.title {
+.tile div {
+	background-color: rgba(16, 51, 86, .75); 
+	border-bottom: 1px solid #fff;
+	color: #fff;
 	opacity: 0;
-	transition: all 0.3s ease-in-out;
+	width: calc(var(--tile-width) + 5px);
+	text-shadow: 1px 1px 1px #103356; 
+}
+.tile:hover {
+	/* transform: scale(1.2, 1.2); */
 }
 .tile:hover > div.title {
 	opacity: 1;
-	background-color: rgba(16, 51, 86, .5);; 
-	box-shadow: 0 0 1px #103356;
-	color: #fff;
-	text-shadow: 1px 1px 1px #103356; 
+	transition: all 0.3s .5s;
+}
+.tile > div.title:hover {
+	overflow: unset;
+    white-space: normal;
+}
+.tile > div.title:hover ~ div {
+	opacity: 1;
+	transition: all 0.3s 1s;
 }
 -->
 </style>
@@ -49,23 +61,31 @@ var currIndex = 0;
 
 Rest.Flay.list(function(list) {
 	flayList = list;
-	currIndex = Random.getInteger(0, flayList.length);
-	displayTile();
+	displayTile(true);
 	
-	$("body").navEvent(function(signal) {
+	$("#tileWrap").navEvent(function(signal) {
 		switch(signal) {
-		case -1: // mousewheel: down
 		case 32: // key : space
-			displayTile();
+			displayTile(true);
+			break;
+		case -1: // mousewheel: down
+			displayTile(false);
 			break;
 		}
 	});
 });
 
-function displayTile() {
+function displayTile(isFirst) {
+	$("#tileWrap").navActive(false);
+	
+	if (isFirst) {
+		currIndex = Random.getInteger(0, flayList.length);
+	}
+	
 	var $tileWrap = $("#tileWrap").empty();
 	var tileWrapHeight = $tileWrap.height() + 32;
-	
+	var tileList = [];
+
 	do {
 		if (currIndex >= flayList.length) {
 			currIndex = 0;
@@ -76,13 +96,35 @@ function displayTile() {
 			continue;
 		}
 		
-		var $tile = $("<div>", {class: 'tile'}).data('flay', flay).on('click', function() {
+		var $tile = $("<div>", {class: 'tile'}).data('flay', flay).on('click', function(e) {
 			var _flay = $(this).data('flay');
 			Rest.Flay.play(_flay, function() {
 				View.flay(_flay.opus);
 			});
 		}).append(
-				$("<div>", {class: 'title nowrap'}).html(flay.title)
+				$("<div>", {class: 'title nowrap'}).html(flay.title).on('click', function(e) {
+					e.stopPropagation();
+					var _flay = $(this).parent().data('flay');
+					View.flay(_flay.opus);
+				}),
+				$("<div>", {class: 'studio nowrap'}).html(flay.studio).on('click', function(e) {e.stopPropagation();}),
+				$("<div>", {class: 'opus nowrap'}).html(flay.opus).on('click', function(e) {e.stopPropagation();}),
+				(function(actressList) {
+					var actressDivs = [];
+					$.each(actressList, function(idx, actress) {
+						actressDivs.push(
+								$("<div>", {class: 'actress nowrap'}).html(actress).on('click', function(e) {
+									e.stopPropagation();
+									if (actress != 'Amateur')
+										View.actress(actress);
+								})
+						);
+					});
+					return actressDivs;
+				}(flay.actressList)),
+				// $("<div>", {class: 'actress nowrap'}).html(Util.Actress.getNames(flay.actressList)),
+				$("<div>", {class: 'release nowrap'}).html(flay.release).on('click', function(e) {e.stopPropagation();}),
+				$("<div>", {class: 'file nowrap'}).html(File.formatSize(flay.length) + (flay.files.movie.length > 1 ? " " + flay.files.movie.length + "v" : "")).on('click', function(e) {e.stopPropagation();})
 		);
 		
 		$tile.appendTo($tileWrap);
@@ -94,11 +136,40 @@ function displayTile() {
 			break;
 		}
 
-		$tile.css({
-			background: 'url(/static/cover/' + flay.opus + ') right top / cover no-repeat',
-		});
+		tileList.push($tile);
 
-	} while(true);
-	
+	} while (true);
+
+	if (Random.getBoolean()) {
+		var indexArray = Array.apply(null, {length: tileList.length}).map(Number.call, Number);
+		var timer = setInterval(function() {
+			var tileIndex = indexArray.splice(Random.getInteger(0, indexArray.length - 1), 1);
+			if ($.isEmptyObject(tileIndex)) {
+				clearInterval(timer);
+				$("#tileWrap").navActive(true);
+			} else {
+				var $tile = tileList[tileIndex];
+				var flay = $tile.data('flay');
+				$tile.css({
+					background: 'url(/static/cover/' + flay.opus + ') right top / cover no-repeat',
+				});
+			}
+		}, Random.getInteger(10, 150));
+	} else {
+		var tileIndex = tileList.length;
+		var timer = setInterval(function() {
+			var $tile = tileList[--tileIndex];
+			if ($tile) {
+				var flay = $tile.data('flay');
+				$tile.css({
+					background: 'url(/static/cover/' + flay.opus + ') right top / cover no-repeat',
+				});
+			} else {
+				clearInterval(timer);
+				$("#tileWrap").navActive(true);
+			}
+		}, Random.getInteger(0, 150));
+	}
+
 }
 </script>

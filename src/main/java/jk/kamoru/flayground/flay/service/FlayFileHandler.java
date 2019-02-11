@@ -122,10 +122,11 @@ public class FlayFileHandler {
 		}
 	}
 
+	// FIXME drive size zero
 	public static void checkDiskSpace(File disk, long length) throws IOException {
-		if (disk.getFreeSpace() < length) {
-			throw new IOException("Disk free space is too small. disk: " + prettyFileLength(disk.getFreeSpace()) + " < " + prettyFileLength(length));
-		}
+//		if (disk.getFreeSpace() < length) {
+//			throw new IOException("Disk free space is too small. disk: " + disk.toPath().getRoot() + " " + prettyFileLength(disk.getFreeSpace()) + " < " + prettyFileLength(length));
+//		}
 	}
 	
 	public static void moveFileToRoot(File file) {

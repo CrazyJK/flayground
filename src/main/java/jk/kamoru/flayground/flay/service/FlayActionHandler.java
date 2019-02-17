@@ -70,7 +70,7 @@ public class FlayActionHandler {
 		}
 	}
 
-	private void exec(List<String> commands) {
+	public void exec(List<String> commands) {
 		log.info("exec {}", commands);
 		try {
 			ProcessBuilder builder = new ProcessBuilder(commands);

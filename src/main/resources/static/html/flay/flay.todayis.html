@@ -1,0 +1,108 @@
+<meta charset="UTF-8">
+<style>
+<!--
+:root {
+	--tile-width: 150px;
+}
+#background_images {
+    background: rgba(0, 0, 0, 0.9);
+}
+#tileWrap {
+	text-align: center;
+}
+.tile {
+	display: inline-table;
+	margin: 1rem .5rem 0;
+	width:  var(--tile-width);
+	transition: all .5s ease-in-out;
+}
+.tile.played div {
+	background-color: #878f98;
+	color: #103356;
+}
+.tile.deleted {
+	display: none;
+}
+.tile div {
+	background-color: rgba(16, 51, 86, .75); 
+	border: 1px solid #fff;
+	color: #fff;
+	text-shadow: 1px 1px 1px #103356;
+}
+.tile div.title {
+	cursor: pointer;
+	height: 5rem;
+	overflow: hidden;
+	padding: .25rem;
+	word-break: break-word;
+}
+.tile div.info {
+	border-top: 0;
+	height: 1.75rem;
+	opacity: 0;
+}
+.tile:hover > div.info {
+	opacity: 1;
+	transition: all 1s; 
+}
+.path {
+	display: none;
+}
+.length {
+	float: left;
+	padding: 0.125rem .25rem;
+}
+.delete {
+	cursor: pointer;
+	float: right;
+	padding: 0.125rem .25rem;
+}
+.delete:hover {
+	color: var(--danger);
+	transition: all .5s; 
+}
+-->
+</style>
+<div role="body">
+
+	<div id="tileWrap"></div>
+
+</div>
+<script type="text/javascript">
+var flayList;
+var currIndex = 0;
+
+Rest.Todayis.list(function(list) {
+	flayList = list;
+	displayTile();
+});
+
+function displayTile() {
+	var $tileWrap = $("#tileWrap").empty();
+	$.each(flayList, function(idx, todayis) {
+		$("<div>", {class: 'tile'}).data('todayis', todayis).append(
+				$("<div>", {class: 'title'}).html(todayis.name).on('click', function(e) {
+					e.stopPropagation();
+					var $tile = $(this).parent();
+					var _todayis = $tile.data('todayis');
+					Rest.Todayis.play(_todayis, function() {
+						$tile.addClass("played");
+						$tile.children(".info").css({opacity: 1});
+					});
+				}),
+				$("<div>", {class: 'info'}).append(
+						$("<span>", {class: 'path'}).html(todayis.path),
+						$("<span>", {class: 'length'}).html(File.formatSize(todayis.length)),
+						$("<span>", {class: 'delete'}).html("Delete").on('click', function(e) {
+							e.stopPropagation();
+							var $tile = $(this).parent().parent();
+							var _todayis = $tile.data('todayis');
+							Rest.Todayis.delete(_todayis, function() {
+								$tile.addClass("deleted");
+							});
+						})
+				)
+		).appendTo($tileWrap);
+	});
+}
+</script>

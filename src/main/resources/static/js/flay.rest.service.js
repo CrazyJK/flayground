@@ -212,5 +212,16 @@ var Rest = {
 			whoami: function(callback) {
 				restCall("/security/whoami", {async: false}, callback);
 			}
+		},
+		Todayis: {
+			list: function(callback) {
+				restCall('/todayis/list', {}, callback);
+			},
+			play: function(todayis, callback) {
+				restCall('/todayis/play', {data: todayis, method: "PATCH"}, callback);
+			},
+			delete: function(todayis, callback) {
+				restCall('/todayis', {data: todayis, method: "DELETE"}, callback);
+			}
 		}
 };

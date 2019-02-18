@@ -122,11 +122,11 @@ public class FlayFileHandler {
 		}
 	}
 
-	// FIXME drive size zero
 	public static void checkDiskSpace(File disk, long length) throws IOException {
-//		if (disk.getFreeSpace() < length) {
-//			throw new IOException("Disk free space is too small. disk: " + disk.toPath().getRoot() + " " + prettyFileLength(disk.getFreeSpace()) + " < " + prettyFileLength(length));
-//		}
+		long freeSpace = disk.getFreeSpace();
+		if (0 < freeSpace && freeSpace < length) {
+			throw new IOException("Disk free space is too small. " + disk + ": " + prettyFileLength(freeSpace) + " < " + prettyFileLength(length));
+		}
 	}
 	
 	public static void moveFileToRoot(File file) {
@@ -147,7 +147,9 @@ public class FlayFileHandler {
 	
 
 	public static String prettyFileLength(long length) {
-		if (length > FileUtils.ONE_GB) {
+		if (length > FileUtils.ONE_TB) {
+			return Flayground.Format.Number.TB_Format.format((double)length / FileUtils.ONE_TB) + " TB";
+		} else if (length > FileUtils.ONE_GB) {
 			return Flayground.Format.Number.GB_Format.format((double)length / FileUtils.ONE_GB) + " GB";
 		} else if (length > FileUtils.ONE_MB) {
 			return Flayground.Format.Number.MB_Format.format((double)length / FileUtils.ONE_MB) + " MB";

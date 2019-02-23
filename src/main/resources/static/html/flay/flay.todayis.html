@@ -1,9 +1,6 @@
 <meta charset="UTF-8">
 <style>
 <!--
-:root {
-	--tile-width: 150px;
-}
 #background_images {
     background: rgba(0, 0, 0, 0.9);
 }
@@ -12,8 +9,9 @@
 }
 .tile {
 	display: inline-table;
+	font-family: 'D2Coding';
 	margin: 1rem .5rem 0;
-	width:  var(--tile-width);
+	width:  10rem;
 	transition: all .5s ease-in-out;
 }
 .tile.played div {
@@ -29,37 +27,61 @@
 	color: #fff;
 	text-shadow: 1px 1px 1px #103356;
 }
-.tile div.title {
-	cursor: pointer;
-	height: 5rem;
+.tile div:first-child {
+	border-bottom: 0;
+	height: 7rem;
 	overflow: hidden;
 	padding: .25rem;
-	word-break: break-word;
 }
-.tile div.info {
+.tile > div:nth-child(2) {
 	border-top: 0;
-	height: 1.75rem;
-	opacity: 0;
+	height: 1.7rem;
 }
-.tile:hover > div.info {
+.tile > div:nth-child(3) {
+	border-top: 0;
+	height: 1.6rem; 
+	opacity: 0;
+	transition: all .5s; 
+}
+.tile:hover > div:nth-child(3) {
+	border-top: 0;
 	opacity: 1;
-	transition: all 1s; 
+}
+
+.title {
+	cursor: pointer;
+	overflow: hidden;
+	word-break: break-word;
+	transition: all .3s; 
+}
+.title:hover {
+	text-shadow: 0 0 4px #000;
 }
 .path {
-	display: none;
+	font-size: 80%;
 }
 .length {
-	float: left;
-	padding: 0.125rem .25rem;
+	font-size: 90%;
+	padding: 0.125rem .5rem;
 }
 .delete {
 	cursor: pointer;
-	float: right;
-	padding: 0.125rem .25rem;
+	font-size: 90%;
+	padding: 0.125rem .5rem;
+	transition: all .5s; 
 }
 .delete:hover {
 	color: var(--danger);
-	transition: all .5s; 
+}
+#statusBar {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #333333;
+	color: #ddd;
+	text-align: center;
+	padding: .25rem 0;
 }
 -->
 </style>
@@ -67,10 +89,15 @@
 
 	<div id="tileWrap"></div>
 
+	<div id="statusBar">
+		<span id="size">14</span> Video, <span id="length">2.5 GB</span>
+	</div>
+
 </div>
 <script type="text/javascript">
 var flayList;
 var currIndex = 0;
+var size = 0, length = 0;
 
 Rest.Todayis.list(function(list) {
 	flayList = list;
@@ -80,18 +107,24 @@ Rest.Todayis.list(function(list) {
 function displayTile() {
 	var $tileWrap = $("#tileWrap").empty();
 	$.each(flayList, function(idx, todayis) {
+		size++;
+		length += todayis.length;
 		$("<div>", {class: 'tile'}).data('todayis', todayis).append(
-				$("<div>", {class: 'title'}).html(todayis.name).on('click', function(e) {
-					e.stopPropagation();
-					var $tile = $(this).parent();
-					var _todayis = $tile.data('todayis');
-					Rest.Todayis.play(_todayis, function() {
-						$tile.addClass("played");
-						$tile.children(".info").css({opacity: 1});
-					});
-				}),
-				$("<div>", {class: 'info'}).append(
-						$("<span>", {class: 'path'}).html(todayis.path),
+				$("<div>").append(
+						$("<span>", {class: 'title'}).html(todayis.name).on('click', function(e) {
+							e.stopPropagation();
+							var $tile = $(this).parent().parent();
+							var _todayis = $tile.data('todayis');
+							Rest.Todayis.play(_todayis, function() {
+								$tile.addClass("played");
+								$tile.children("div:nth-child(3)").css({opacity: 1});
+							});
+						})
+				),
+				$("<div>", {class: 'nowrap'}).append(
+						$("<span>", {class: 'path'}).html(todayis.path)		
+				),
+				$("<div>", {class: 'd-flex justify-content-between'}).append(
 						$("<span>", {class: 'length'}).html(File.formatSize(todayis.length)),
 						$("<span>", {class: 'delete'}).html("Delete").on('click', function(e) {
 							e.stopPropagation();
@@ -104,5 +137,7 @@ function displayTile() {
 				)
 		).appendTo($tileWrap);
 	});
+	$("#size").html(size);
+	$("#length").html(File.formatSize((length)));
 }
 </script>

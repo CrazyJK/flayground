@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.service.FlayActionHandler;
 import jk.kamoru.flayground.todayis.domain.Todayis;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +33,9 @@ public class TodayisServiceImpl implements TodayisService {
 		for (String path : todayisPaths) {
 			Collection<File> listFiles = FileUtils.listFiles(new File(path), null, true);
 			for (File file : listFiles) {
-				list.add(new Todayis(file));
+				if (Flayground.FILE.isVideo(file)) {
+					list.add(new Todayis(file));
+				}
 			}
 		}
 		return list.stream().sorted((a, b) -> {

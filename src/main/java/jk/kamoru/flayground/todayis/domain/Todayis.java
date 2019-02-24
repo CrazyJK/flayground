@@ -16,11 +16,13 @@ public class Todayis {
 	String name;
 	String path;
 	long length;
+	@JsonIgnore long lastModified;
 	
 	public Todayis(File file) {
 		this.name = file.getName();
 		this.path = file.getParent();
 		this.length = file.length();
+		this.lastModified = file.lastModified();
 	}
 
 	@JsonIgnore

@@ -226,6 +226,9 @@ body.bg-dark button.btn.btn-flay:hover, body.bg-dark button.btn.btn-outline-flay
 body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outline-flay:active:focus {
 	text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;
 }
+body.bg-dark .ui-dialog {
+	background-color: var(--darker);
+}
 
 /* layout */
 #overlay {

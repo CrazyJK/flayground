@@ -238,6 +238,13 @@ var app = function() {
   			if (e.type === 'change' || (e.type === 'keyup' && e.keyCode === 13))
 				location.href = "?no=" + $(this).val();
   		});
+  		
+  		$(document).on("mousewheel", function(e) {
+  			console.log('mousewheel', e.originalEvent.wheelDelta / 120);
+  			var currentNo = parseInt($("#imageIndex").children().val());
+  			var nextIndex = e.originalEvent.wheelDelta / 120 < 0 ? currentNo +1 : currentNo -1;
+  			location.href = "?no=" + nextIndex;
+  		});
 	}
 
 	function getBrowserMargin() {

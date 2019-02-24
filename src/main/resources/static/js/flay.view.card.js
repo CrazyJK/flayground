@@ -254,7 +254,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				width: settings.width,
 				fontSize: settings.fontSize
 			});
-			$flayCard.find(".card-body").css({
+			$flayCard.find(".card-body").parent().css({
 				height: parseInt(settings.width * COVER_RATIO),
 			});
 			$flayCard.find(".flay-title").css({

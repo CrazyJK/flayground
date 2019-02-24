@@ -21,7 +21,7 @@
     background-attachment: fixed;
 	margin: .5rem;
 	z-index: 74;
-	transition: 1s;
+	transition: height 1s;
 }
 nav.navbar:hover ~ .actress-cover-wrapper {
 	height: calc(100% - 9rem);
@@ -198,7 +198,7 @@ Rest.Actress.get(name, function(_actress) {
 		
 		$.each(flayList, function(idx, flay) {
 			$flayList.appendFlayCard(flay, {
-				width: 300,
+				width: 400,
 				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
 				fontSize: '80%'
 			});

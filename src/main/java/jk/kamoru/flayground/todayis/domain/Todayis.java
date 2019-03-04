@@ -16,7 +16,7 @@ public class Todayis {
 	String name;
 	String path;
 	long length;
-	@JsonIgnore long lastModified;
+	long lastModified;
 	
 	public Todayis(File file) {
 		this.name = file.getName();

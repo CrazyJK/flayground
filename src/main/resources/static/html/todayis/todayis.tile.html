@@ -91,6 +91,11 @@
 
 	<div id="statusBar">
 		<span id="size">14</span> Video, <span id="length">2.5 GB</span>
+		<span class="check-group ml-2">
+			<label><input type="radio" name="sort" value="T"><span title="title">T</span></label>
+			<label><input type="radio" name="sort" value="L"><span title="length">L</span></label>
+			<label><input type="radio" name="sort" value="M" checked="checked"><span title="modified">M</span></label>
+		</span>
 	</div>
 
 </div>
@@ -102,14 +107,41 @@ var size = 0, length = 0;
 Rest.Todayis.list(function(list) {
 	flayList = list;
 	displayTile();
+	
+	$("input[name='sort']").on("change", displayTile);
+
 });
 
 function displayTile() {
+	var sort  = $("input[name='sort']:checked").val();
+	var compareTo = function(data1, data2) {
+		var result = 0;
+		if (typeof data1 === 'number') {
+			result = data1 - data2;
+		} else if (typeof data1 === 'string') {
+			result = data1.toLowerCase().localeCompare(data2.toLowerCase());
+		} else {
+			result = data1 > data2 ? 1 : -1;
+		}
+		return result;
+	};
+	// sorting
+	flayList.sort(function(todayis1, todayis2) {
+		switch(sort) {
+		case 'T':
+			return compareTo(todayis1.name, todayis2.name);
+		case 'L':
+			return compareTo(todayis1.length, todayis2.length);
+		case 'M':
+			return compareTo(todayis1.lastModified, todayis2.lastModified);
+		}
+	});
+
 	var $tileWrap = $("#tileWrap").empty();
 	$.each(flayList, function(idx, todayis) {
 		size++;
 		length += todayis.length;
-		$("<div>", {class: 'tile'}).data('todayis', todayis).append(
+		$("<div>", {class: 'tile', 'data-idx': idx}).data('todayis', todayis).append(
 				$("<div>").append(
 						$("<span>", {class: 'title'}).html(todayis.name).on('click', function(e) {
 							e.stopPropagation();
@@ -129,9 +161,12 @@ function displayTile() {
 						$("<span>", {class: 'delete'}).html("Delete").on('click', function(e) {
 							e.stopPropagation();
 							var $tile = $(this).parent().parent();
+							var idx = parseInt($tile.attr("data-idx"));
 							var _todayis = $tile.data('todayis');
 							Rest.Todayis.delete(_todayis, function() {
+								flayList.splice(idx, 1);
 								$tile.addClass("deleted");
+								console.log('delete', idx, _todayis, flayList);
 							});
 						})
 				)

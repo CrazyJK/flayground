@@ -40,9 +40,7 @@ var SlideBar = {
 			});
 		},
 		specialView: function() {
-			if (system != WINDOWS) {
-				$("#specialView").hide();
-			} else {
+			if (system === WINDOWS && location.hostname === 'localhost') {
 				var selectedBgIndex = -1;
 				$(".sidenav > .nav > .nav-item > i + label, .sidenav > .nav > .nav-item > i + a").hover(function() {
 					selectedBgIndex = Random.getInteger(0, Background.count);
@@ -58,6 +56,8 @@ var SlideBar = {
 				$(".sidenav > h4 > img").on("click", function() {
 					Popup.imageByNo(selectedBgIndex);
 				});
+			} else {
+				$("#specialView").hide();
 			}
 		}
 };

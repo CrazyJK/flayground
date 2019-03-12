@@ -42,6 +42,7 @@
 #myCanvasContainer {
 	text-align: center;
 	margin-top: 60px;
+	display: none;
 }
 #myCanvas {
     background-color: white;
@@ -128,7 +129,7 @@ function tagLoad() {
 	Rest.Tag.list(function(tagList) {
 		Util.Tag.sort(tagList);
 		$tagList.empty();
-/*		
+		
 		$.each(tagList, function(idx, tag) {
 			var $tagCard = $tagTemplete.clone();
 			$tagCard.data("tag", tag);
@@ -143,7 +144,7 @@ function tagLoad() {
 			$tagList.show();
 			$tagCard.appendTo($tagList);
 		});
-*/
+/*
 		var $tags = $("#tags > ul").empty();
 		$.each(tagList, function(idx, tag) {
 			$("<li>").append(
@@ -162,7 +163,6 @@ function tagLoad() {
 					})
 			).appendTo($tags);
 		});
-		
 		var options = {
 //				textFont: 'Impact,"Arial Black",sans-serif', 
 				maxSpeed: 0.05,  
@@ -192,9 +192,8 @@ function tagLoad() {
 				weightMode: 'colour',
 				weightFrom: 'data-weight'
 		};
-		
 		$('#myCanvas').tagcanvas(options, 'tags');
-
+*/
 	});
 }
 

@@ -14,9 +14,6 @@ body {
 	margin: 0;
 }
 
-.image-container {
-  	position: relative;
-}
 .image-container div#glass {
   	position: absolute;
 	background-repeat: no-repeat;
@@ -28,19 +25,20 @@ body {
   	left: -100px;
   	top: -100px;
 	box-shadow: 0 0 4px 2px rgba(255, 255, 255, .25), 0 0 16px 8px rgba(0, 0, 0, .75) inset;
+	z-index: 2;
 }
 .image-container:hover div#glass {
 	opacity: 1;
 }
-.image-container img#image.img-responsive {
-	max-width: 100%;
-	max-height: 100%;
+.image-container img#image {
+	z-index: 1;
 }
-
 
 .overlay {
 	opacity: 0;
 	transition: .5s;
+    position: absolute;
+	z-index: 3;
 }
 .overlay:hover {
   	opacity: 1;
@@ -52,6 +50,7 @@ body {
 	background-color: rgba(0, 0, 0, .5);
 	margin: 0;
 	padding: 4px;
+	box-shadow: 0 0 2px 0px rgba(255, 255, 255, .5);
 }
 .info-container div:first-child {
 	border-top-right-radius: 4px;
@@ -116,6 +115,7 @@ body {
 }
 #urlInput {
 	display: none;
+	z-index: 4;
 }
 #urlInput > input {
 	background: rgba(0, 0, 0, 0.75);
@@ -144,15 +144,40 @@ input[type='number'] {
 <script type="text/javascript" src="/js/flay.rest.service.js"></script>
 <script type="text/javascript" src="/js/flay.utils.js"></script>
 <script type="text/javascript">
+var $glass;
+var glass = {
+		size: 0,
+		zoom: 0,
+		radius: 0
+};
+var image = {
+		width: 0,
+		height: 0,
+		left: 0,
+		top: 0
+};
+
 $(document).ready(function() {
 
 	sIZe.value = LocalStorageItem.get('image.magnifier.size', 200);
 	zOOm.value = LocalStorageItem.get('image.magnifier.zoom', 2);
-	
+
 	$("#sIZe, #zOOm").on("change", function() {
 		LocalStorageItem.set('image.magnifier.size', sIZe.value);
 		LocalStorageItem.set('image.magnifier.zoom', zOOm.value);
-	});
+		
+		glass.size = parseInt(sIZe.value);
+		glass.zoom = parseInt(zOOm.value);
+		glass.radius = glass.size / 2;
+		
+		$glass = $("#glass").css({
+			backgroundSize: (image.width * glass.zoom) + "px " + (image.height * glass.zoom) + "px",
+			width:  glass.size,
+			height: glass.size,
+			left:  -glass.size,
+			top:   -glass.size
+		});
+	}).trigger("change");
 
 	app();
 });
@@ -162,32 +187,49 @@ var app = function() {
 	var no  = reqParam.no;
 	var src = reqParam.src;
 	var imgSrc = no ? PATH + '/static/image/' + no : src;
-	var $glass, bw = 3;
 	
 	// get image
 	var img = new Image();
 	img.onload = function() {
 		// popup resize
  		var browserMargin = getBrowserMargin();
-  		window.resizeTo(this.naturalWidth + browserMargin.width, this.naturalHeight + browserMargin.height);
+		var fullMode = screen.width === window.innerWidth;
+ 		
+ 	    if (!fullMode) {
+	  		window.resizeTo(this.naturalWidth + browserMargin.width, this.naturalHeight + browserMargin.height);
+ 	    }
+
+		if (fullMode && window.innerHeight < this.naturalHeight) {
+			image.width  = Math.round(this.naturalWidth * (window.innerHeight / this.naturalHeight));
+			image.height = window.innerHeight;
+		} else {
+			image.width  = this.naturalWidth;
+			image.height = this.naturalHeight;
+		}
 
   		$("#image").attr({
 			'src': this.src
-		}).on("click", function() { 
-			$(this).toggleClass('img-responsive');
-		});
-  		
+		}).css({
+			width: image.width,
+			height: image.height
+  		});
+
 		$glass = $("#glass").css({
-			backgroundImage: "url('" + this.src + "')"
+			backgroundImage: "url('" + this.src + "')",
+			backgroundSize: (image.width * glass.zoom) + "px " + (image.height * glass.zoom) + "px",
+			width: glass.size,
+			height: glass.size,
 		});
 
   		// show default info
-		$("#imageSize").html(this.naturalWidth + ' x ' + this.naturalHeight);
+		$("#imageSize").html(image.width + ' x ' + image.height);
 		
   		// magnifier glass toggle
   		var onOff = 0;
   		$("#glassToggle").on("click", function() {
   			if (onOff++ % 2 === 0) {
+  		  		image.left = $("#image").position().left;
+  		  		image.top  = $("#image").position().top;
   				$("#image, #glass").on("mousemove", function(e) {
   					moveMagnifier(e);
   				});
@@ -290,29 +332,21 @@ var app = function() {
 		    return {x: x, y: y, l: a.left, t: a.top};
 		}
 		// prevent any other actions that may occur when moving over the image
-	    e.preventDefault(); 
-
-		_glassSize = parseInt(sIZe.value);
-		_glassZoom = parseInt(zOOm.value);
-		_glassRadius = _glassSize / 2;
-		_glassRadiusDividedZoom = Math.round(_glassRadius / _glassZoom);
+	    e.preventDefault();
 
 	    /*get the cursor's x and y positions:*/
 	    cursor = getCursorPos(e);
 	    /*prevent the magnifier glass from being positioned outside the image:*/
-	    cursor.x = Math.min(cursor.x, img.width - _glassRadiusDividedZoom);
-	    cursor.x = Math.max(cursor.x, _glassRadiusDividedZoom);
-	    cursor.y = Math.min(cursor.y, img.height - _glassRadiusDividedZoom);
-	    cursor.y = Math.max(cursor.y, _glassRadiusDividedZoom);
+		cursor.x = Math.min(cursor.x, img.width + image.left);
+		cursor.x = Math.max(cursor.x, image.left);
+		cursor.y = Math.min(cursor.y, img.height + image.top);
+		cursor.y = Math.max(cursor.y, image.top);
 
 	    /* set the position of the magnifier glass: */
 	    $glass.css({
-			backgroundSize: ($("#image").width() * _glassZoom) + "px " + ($("#image").height() * _glassZoom) + "px",
-	    	backgroundPosition: (_glassRadius - (cursor.x * _glassZoom) - bw) + "px " + (_glassRadius - (cursor.y * _glassZoom) - bw) + "px",
-	    	left: cursor.x + cursor.l - _glassRadius,
-	    	top:  cursor.y + cursor.t - _glassRadius,
-			width: _glassSize,
-			height: _glassSize,
+	    	backgroundPosition: ((image.left - cursor.x) * glass.zoom + glass.radius) + "px " + ((image.top - cursor.y) * glass.zoom + glass.radius) + "px",
+	    	left: cursor.x + cursor.l - glass.radius,
+	    	top:  cursor.y + cursor.t - glass.radius,
 	    });
 	}
 
@@ -323,7 +357,7 @@ var app = function() {
 
 	<div class="image-container">
 		<div id="glass"></div>
-		<img id="image" class="img-responsive"/>
+		<img id="image" class="fixed-center"/>
 	</div>
 
 	<div class="info-container overlay">

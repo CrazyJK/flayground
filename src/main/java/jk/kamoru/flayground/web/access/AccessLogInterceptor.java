@@ -89,9 +89,11 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 		}
 		
 		AccessLog accessLog = new AccessLog(logDate, remoteAddr, reqMethod, requestUri, contentType, elapsedtime, handlerInfo, exceptionInfo, user != null ? user.getUsername() : "", status);
-		
-		log.info(accessLog.toConsoleLogString());
-		
+
+		if (log.isDebugEnabled()) {
+			log.debug(accessLog.toConsoleLogString());
+		}
+
 		if (!StringUtils.isEmpty(accessLog.handlerInfo)) {
 			accessLogService.increaseCallCount(accessLog.handlerInfo);
 		}

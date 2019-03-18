@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Full image slide</title>
+<title>Image slide</title>
 <link rel="icon" type="image/png" href="/img/favicon/flay_2.png"/>
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
@@ -22,9 +22,9 @@
     background-size: contain;
     transition: .3s;
 }
-
 #controlBox {
 	opacity: 0;
+	transition: .3s;
 }
 #controlBox:hover {
 	opacity: 1;
@@ -35,20 +35,25 @@
 
 	<div id="imageWrap"></div>
 
-	<div id="controlBox" class="bottom-right">
+	<div class="bottom-right" id="controlBox">
 		<div class="input-group input-group-sm">
 			<div class="input-group-prepend">
-				<span class="input-group-text border-dark bg-dark text-light" id="imgTitle"></span>
+				<span class="input-group-text border-dark bg-dark text-light btn" id="imgTitle"></span>
 			</div>
-			<input class="form-control border-dark bg-dark text-light text-right" id="currNo" style="width: 50px;" value="0" title="input Image Index" autocomplete="off">
+			<input class="form-control border-dark bg-dark text-light text-right px-1" id="bgIntervalTime" style="width: 35px;" value="9" title="enter new bgIntervalTime" autocomplete="off">
+			<input class="form-control border-dark bg-dark text-light text-right px-1" id="currNo" style="width: 50px;" value="0" title="enter new imageIndex" autocomplete="off">
 			<div class="input-group-append">
-				<span class="input-group-text border-dark bg-dark text-light pl-0">
-					/&nbsp;<sub id="totalNo"></sub>
-				</span>
+				<span class="input-group-text border-dark bg-dark text-light pl-0">/&nbsp;<sub id="totalNo">0</sub></span>
 				<a href="/" class="btn btn-dark"><i class="fa fa-home"></i></a>
 			</div>
 		</div>
 	</div>
+
+	<nav class="fixed-bottom">
+		<div class="progress" id="paginationProgress" style="height: 1px; border-radius: 0;">
+  			<div class="progress-bar bg-danger" style="width: 100%; height: 1px;"></div>
+		</div>
+	</nav>
 
 </body>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -64,15 +69,22 @@ var slide = {
 		totalCount: 0,
 		currIndex: 0,
 		bgInterval: null,
-		bgSize: ['contain', 'cover', 'auto'],
-		bgSizeIndex: 0,
+		bgIntervalTime: LocalStorageItem.getInteger("image.slide.bgIntervalTime", 10),
+		bgSizeProperties: ['contain', 'cover', 'auto'],
+		bgSizePropertiesIndex: 0,
 		$image: $("#imageWrap"),
+		$pageProgress: $("#paginationProgress .progress-bar"),
 		init: function() {
 			Rest.Image.size(function(count) {
 				slide.totalCount = count;
 				$("#totalNo").html(count);
 			});
-			// nav event
+			// event
+			slide.event();
+			// start
+			slide.random();
+		},
+		event: function() {
 			slide.$image.navEvent(function(signal, e) {
 				// console.log('e.keyCode', signal);
 				switch (signal) {
@@ -89,7 +101,7 @@ var slide = {
 					break;
 				case 1002:
 					slide.$image.css({
-						backgroundSize: slide.bgSize[++slide.bgSizeIndex % 3]
+						backgroundSize: slide.bgSizeProperties[++slide.bgSizePropertiesIndex % 3]
 					});
 					break;
 				}
@@ -100,42 +112,55 @@ var slide = {
 					slide.view();
 				}
 			});
-			$("#controlBox").hover(function() {
-				Rest.Image.get(slide.currIndex - 1, function(imgInfo) {
-					console.log(imgInfo);
-					$("#imgTitle").html(imgInfo.name);
-				});
-			}, function() {});
-			// start
-			slide.random();
+			$("#bgIntervalTime").val(slide.bgIntervalTime + "s").on("keyup", function(e) {
+				if (e.keyCode === 13) {
+					var value = $(this).val().replace('s', '');
+					slide.bgIntervalTime = parseInt(value);
+					LocalStorageItem.set("image.slide.bgIntervalTime", slide.bgIntervalTime);
+					slide.view();
+				}
+			});
+			$("#imgTitle").on("click", function() {
+				Popup.imageByNo(slide.currIndex);
+			});
 		},
 		random: function() {
 			slide.currIndex = Random.getInteger(0, slide.totalCount);
 			slide.view();
 		},
 		prev: function() {
-			slide.currIndex -= 2;
+			slide.currIndex--;
 			slide.view();
 		},
 		next: function() {
+			slide.currIndex++;
 			slide.view();
 		},
 		view: function() {
-			function setImage() {
-				if (slide.currIndex >= slide.totalCount) {
-					slide.currIndex = 0;
-				} else if (slide.currIndex < 0) {
-					slide.currIndex = slide.totalCount - 1;
-				}
-				// console.log("setImage", slide.currIndex);
-				$("#currNo").val(slide.currIndex);
-				slide.$image.css({
-					backgroundImage: 'url(' + PATH + "/static/image/" + slide.currIndex++ + ')'
-				});
+			clearInterval(slide.bgInterval);
+			slide.showImage();
+			slide.bgInterval = setInterval(function() {
+				slide.currIndex++;
+				slide.showImage();
+			}, 1000 * slide.bgIntervalTime);
+		},
+		showImage: function() {
+			if (slide.currIndex >= slide.totalCount) {
+				slide.currIndex = 0;
+			} else if (slide.currIndex < 0) {
+				slide.currIndex = slide.totalCount - 1;
 			}
-			clearInterval(slide.imageEngine);
-			setImage();
-			slide.imageEngine = setInterval(setImage, 10 * 1000);
+			// console.log('showImage', slide.currIndex);
+			$("#currNo").val(slide.currIndex);
+			slide.$pageProgress.css({
+				width: ((slide.currIndex + 1) / slide.totalCount * 100).toFixed(1) + "%"
+			});
+			slide.$image.css({
+				backgroundImage: 'url(' + PATH + "/static/image/" + slide.currIndex + ')'
+			});
+			Rest.Image.get(slide.currIndex, function(imgInfo) {
+				$("#imgTitle").html(imgInfo.name);
+			});
 		}
 };
 slide.init();

@@ -58,32 +58,6 @@
 	color: yellow;
 }
 </style>
-</head>
-<body>
-
-	<div id="imageWrap"></div>
-
-	<div class="bottom-right" id="controlBox">
-		<div>
-			<span id="imgPath"></span>
-			<span id="imgTitle"></span>
-			<span id="imgSize" class="small"></span>
-			<span id="imgLength" class="small"></span>
-			<span id="imgModified" class="small"></span>
-			<input id="bgIntervalTime" style="width: 35px;" value="9" title="enter new bgIntervalTime" autocomplete="off">
-			<input id="currNo" style="width: 50px;" value="0" title="enter new imageIndex" autocomplete="off">
-			<span>/&nbsp;<sub id="totalNo">0</sub></span>
-			<a href="/"><i class="fa fa-home"></i></a>
-		</div>
-	</div>
-
-	<nav class="fixed-bottom">
-		<div class="progress" id="paginationProgress" style="height: 1px; border-radius: 0;">
-  			<div class="progress-bar bg-danger" style="width: 100%; height: 1px;"></div>
-		</div>
-	</nav>
-
-</body>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -100,14 +74,17 @@ var slide = {
 		bgIntervalTime: LocalStorageItem.getInteger("image.slide.bgIntervalTime", 10),
 		bgSizeProperties: ['contain', 'cover', 'auto'],
 		bgSizePropertiesIndex: 0,
-		$image: $("#imageWrap"),
-		$pageProgress: $("#paginationProgress .progress-bar"),
+		$image: null,
+		$pageProgress: null,
 		imageInfo: {},
 		init: function() {
 			Rest.Image.size(function(count) {
 				slide.totalCount = count;
 				$("#totalNo").html(count);
 			});
+			
+			slide.$image = $("#imageWrap");
+			slide.$pageProgress = $("#paginationProgress .progress-bar");
 			// event
 			slide.event();
 			// start
@@ -206,6 +183,35 @@ var slide = {
 			img.src = PATH + "/static/image/" + slide.currIndex;
 		}
 };
-slide.init();
+
+$(function() {
+	slide.init();
+});
 </script>
+</head>
+<body>
+
+	<div id="imageWrap"></div>
+
+	<div class="bottom-right" id="controlBox">
+		<div>
+			<span id="imgPath"></span>
+			<span id="imgTitle"></span>
+			<span id="imgSize" class="small"></span>
+			<span id="imgLength" class="small"></span>
+			<span id="imgModified" class="small"></span>
+			<input id="bgIntervalTime" style="width: 35px;" value="9" title="enter new bgIntervalTime" autocomplete="off">
+			<input id="currNo" style="width: 50px;" value="0" title="enter new imageIndex" autocomplete="off">
+			<span>/&nbsp;<sub id="totalNo">0</sub></span>
+			<a href="/"><i class="fa fa-home"></i></a>
+		</div>
+	</div>
+
+	<nav class="fixed-bottom">
+		<div class="progress" id="paginationProgress" style="height: 1px; border-radius: 0;">
+  			<div class="progress-bar bg-danger" style="width: 100%; height: 1px;"></div>
+		</div>
+	</nav>
+
+</body>
 </html>

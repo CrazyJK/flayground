@@ -20,6 +20,7 @@
     background-position: center;
     background-color: #000;
     background-size: contain;
+	cursor: grab;
     transition: .3s;
 }
 #controlBox {
@@ -29,6 +30,33 @@
 #controlBox:hover {
 	opacity: 1;
 }
+#controlBox div {
+	border-top-left-radius: 4px;
+	background-color: rgba(0, 0, 0, .5);
+	margin: 0;
+	padding: 4px;
+	box-shadow: 0 0 2px 0px rgba(255, 255, 255, .5);
+	color: #eee;
+	font-size: 14px;
+	text-shadow: 1px 1px 2px #111;
+}
+#controlBox div input {
+	background: transparent;
+	border: 0;
+	color: #eee;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+}
+#controlBox div span {
+	margin: 0 4px;
+}
+#controlBox div a i.fa {
+	margin: 0 4px;
+}
+#imgTitle {
+	color: yellow;
+}
 </style>
 </head>
 <body>
@@ -36,16 +64,16 @@
 	<div id="imageWrap"></div>
 
 	<div class="bottom-right" id="controlBox">
-		<div class="input-group input-group-sm">
-			<div class="input-group-prepend">
-				<span class="input-group-text border-dark bg-dark text-light btn" id="imgTitle"></span>
-			</div>
-			<input class="form-control border-dark bg-dark text-light text-right px-1" id="bgIntervalTime" style="width: 35px;" value="9" title="enter new bgIntervalTime" autocomplete="off">
-			<input class="form-control border-dark bg-dark text-light text-right px-1" id="currNo" style="width: 50px;" value="0" title="enter new imageIndex" autocomplete="off">
-			<div class="input-group-append">
-				<span class="input-group-text border-dark bg-dark text-light pl-0">/&nbsp;<sub id="totalNo">0</sub></span>
-				<a href="/" class="btn btn-dark"><i class="fa fa-home"></i></a>
-			</div>
+		<div>
+			<span id="imgPath"></span>
+			<span id="imgTitle"></span>
+			<span id="imgSize" class="small"></span>
+			<span id="imgLength" class="small"></span>
+			<span id="imgModified" class="small"></span>
+			<input id="bgIntervalTime" style="width: 35px;" value="9" title="enter new bgIntervalTime" autocomplete="off">
+			<input id="currNo" style="width: 50px;" value="0" title="enter new imageIndex" autocomplete="off">
+			<span>/&nbsp;<sub id="totalNo">0</sub></span>
+			<a href="/"><i class="fa fa-home"></i></a>
 		</div>
 	</div>
 
@@ -74,6 +102,7 @@ var slide = {
 		bgSizePropertiesIndex: 0,
 		$image: $("#imageWrap"),
 		$pageProgress: $("#paginationProgress .progress-bar"),
+		imageInfo: {},
 		init: function() {
 			Rest.Image.size(function(count) {
 				slide.totalCount = count;
@@ -120,9 +149,13 @@ var slide = {
 					slide.view();
 				}
 			});
+			// image info event
+			$("#imgPath").on("click", function() {
+				Rest.Flay.openFolder(slide.imageInfo.path);
+			}).css("cursor", "pointer");
 			$("#imgTitle").on("click", function() {
 				Popup.imageByNo(slide.currIndex);
-			});
+			}).css("cursor", "pointer");
 		},
 		random: function() {
 			slide.currIndex = Random.getInteger(0, slide.totalCount);
@@ -155,12 +188,22 @@ var slide = {
 			slide.$pageProgress.css({
 				width: ((slide.currIndex + 1) / slide.totalCount * 100).toFixed(1) + "%"
 			});
-			slide.$image.css({
-				backgroundImage: 'url(' + PATH + "/static/image/" + slide.currIndex + ')'
-			});
-			Rest.Image.get(slide.currIndex, function(imgInfo) {
-				$("#imgTitle").html(imgInfo.name);
-			});
+			
+			var img = new Image();
+			img.onload = function() {
+				slide.$image.css({
+					backgroundImage: 'url(' + this.src + ')'
+				});
+				Rest.Image.get(slide.currIndex, function(imgInfo) {
+					slide.imageInfo = imgInfo;
+					$("#imgPath").html(imgInfo.path.replace(/\\/gi, '/').split('/').pop());
+					$("#imgTitle").html(imgInfo.name);
+					$("#imgLength").html(File.formatSize(imgInfo.length));
+					$("#imgModified").html(new Date(imgInfo.modified).format('yyyy-MM-dd'));
+				});
+				$("#imgSize").html(this.naturalWidth + ' x ' + this.naturalHeight);
+			};
+			img.src = PATH + "/static/image/" + slide.currIndex;
 		}
 };
 slide.init();

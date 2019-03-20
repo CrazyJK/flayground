@@ -57,7 +57,8 @@ public class FlayActionHandler {
 			explorer = "nemo";
 			break;
 		case MAC:
-			throw new IllegalStateException("Max not supported");
+			explorer = "open";
+			break;
 		default:
 			throw new IllegalStateException("no specified OS");
 		}

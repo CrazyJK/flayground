@@ -31,7 +31,7 @@ $(function() {
 			break;
 		case 1002: // mouse middle click
 			$(e.target).css({
-				backgroundSize: bgSizeProperties[++bgSizePropertiesIndex % 3]
+				backgroundSize: bgSizeProperties[++bgSizePropertiesIndex % bgSizeProperties.length]
 			});
 			$controlBox.trigger('bgMode', $(e.target).css("backgroundSize"));
 			break;

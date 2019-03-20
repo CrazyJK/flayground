@@ -2,46 +2,20 @@
  * image.slide.js
  */
 
-
 $(function() {
 	var totalCount = 0;
 	var currIndex  = 0;
-	var bgInterval;
 	var bgIntervalTime = LocalStorageItem.getInteger("image.slide.bgIntervalTime", 10);
+	var bgInterval;
 	var bgSizeProperties = ['contain', 'cover', 'auto'];
-	var bgSizePropertiesIndex = -1;
+	var bgSizePropertiesIndex = 0;
+	
 	var $image = $("#imageWrap");
-	var $pageProgress = $("#paginationProgress .progress-bar");
-	var $totalNo = $("#totalNo");
-	var $currNo = $("#currNo");
-	var $bgIntervalTime = $("#bgIntervalTime");
-	var $imgPath = $("#imgPath");
-	var $imgTitle = $("#imgTitle");
-	var $imgSize = $("#imgSize");
-	var $imgLength = $("#imgLength");
-	var $imgModified = $("#imgModified");
-	var $bgMode = $("#bgMode");
-	var $pause = $("#pause");
+	var $controlBox = $("#controlBox");
+	var $progress = $("#paginationProgress > .progress-bar");
+	
 	var pause = false;
-
-	// setTotalCount
-	Rest.Image.size(function(count) {
-		totalCount = count;
-		$totalNo.html(totalCount);
-
-		// set currIndex by random 
-		currIndex = Random.getInteger(0, totalCount);
-	});
-
-	function cssChangeBackgroundSize() {
-		$image.css({
-			backgroundSize: bgSizeProperties[++bgSizePropertiesIndex % 3]
-		});
-		$bgMode.html(bgSizeProperties[bgSizePropertiesIndex % 3]);
-	}
-	cssChangeBackgroundSize();
-
-	// navigate
+	
 	$image.navEvent(function(signal, e) {
 		console.log('e.keyCode', signal);
 		switch (signal) {
@@ -56,50 +30,69 @@ $(function() {
 		case -1: // mousewheel down
 			control.next();
 			break;
-		case 1002:
-			cssChangeBackgroundSize();
+		case 1002: // mouse middle click
+			$(e.target).css({
+				backgroundSize: bgSizeProperties[++bgSizePropertiesIndex % 3]
+			});
+			$controlBox.trigger('bgMode', $(e.target).css("backgroundSize"));
 			break;
 		}
 	});
 	
-	// new index
-	$currNo.on("keyup", function(e) {
-	    e.stopPropagation();
-		if (e.keyCode === 13) {
-			control.jump(parseInt($(this).val().replace(/[^0-9]/g, '')));
-		}
-	});
-	
-	// new interval time
-	$bgIntervalTime.on("keyup", function(e) {
-	    e.stopPropagation();
+	$controlBox.on('init', function() {
+		console.log('$controlBox init');
+		Rest.Image.size(function(count) {
+			totalCount = count;
+			$("#totalNo").html(totalCount);
+		});
+		$("#bgMode").html($image.css("backgroundSize"));
+		$("#bgIntervalTime").val(bgIntervalTime);
+	}).on('setInfo', function(e, image, imgInfo) {
+		$("#imgPath").html(imgInfo.path.replace(/\\/gi, '/').split('/').pop()).data("path", imgInfo.path);
+		$("#imgTitle").html(imgInfo.name);
+		$("#imgSize").html(image.naturalWidth + ' x ' + image.naturalHeight);
+		$("#imgLength").html(File.formatSize(imgInfo.length));
+		$("#imgModified").html(new Date(imgInfo.modified).format('yyyy-MM-dd'));
+		$("#currNo").val(currIndex);
+	}).on('notice', function(e, msg) {
+		var $notice = $("#notice");
+		$notice.html(msg);
+		setTimeout(function() {
+			$notice.html('');
+		}, 1500);
+	}).on('bgMode', function(e, val) {
+		$("#bgMode").html(val);
+	}).on('click', '#imgPath', function() {
+		Rest.Flay.openFolder($(this).data("path"));
+		$controlBox.trigger('notice', 'open folder: ' + $(this).data("path"));
+	}).on('click', '#imgTitle', function() {
+		Popup.imageByNo(currIndex);
+		$controlBox.trigger('notice', 'pupup image: ' + currIndex);
+	}).on('keyup', '#bgIntervalTime', function(e) {
+		e.stopPropagation();
 		if (e.keyCode === 13) {
 			bgIntervalTime = parseInt($(this).val().replace(/[^0-9]/g, ''));
 			LocalStorageItem.set("image.slide.bgIntervalTime", bgIntervalTime);
+			$controlBox.trigger('notice', 'set interval ' + bgIntervalTime + 's');
 			view();
-			$("#notice").html('set interval ' + bgIntervalTime + 's');
-			setTimeout(function() {
-				$("#notice").html('');
-			}, 1500);
 		}
-	}).val(bgIntervalTime + "s");
-	
-	// open explorer
-	$imgPath.on("click", function() {
-		Rest.Flay.openFolder($(this).data("path"));
-	}).css("cursor", "pointer");
-	
-	// popup image
-	$imgTitle.on("click", function() {
-		Popup.imageByNo(currIndex);
-	}).css("cursor", "pointer");
-
-	// slide pause
-	$pause.on("click", function() {
+	}).on('click', '#pause', function() {
 		pause = $(this).toggleClass("active").hasClass("active");
-		console.log('pause', pause);
+		$controlBox.trigger('notice', 'slide pause: ' + pause);
 		view();
-	}).css("cursor", "pointer");
+	}).on('keyup', '#currNo', function(e) {
+		e.stopPropagation();
+		if (e.keyCode === 13) {
+			control.jump(parseInt($(this).val().replace(/[^0-9]/g, '')));
+			$controlBox.trigger('notice', 'go slide: ' + currIndex);
+		}
+	});
+
+	$progress.on('progress', function() {
+		$(this).css({
+			width: ((currIndex + 1) / totalCount * 100).toFixed(1) + "%"
+		});
+	});
 	
 	var control = {
 			jump: function(idx) {
@@ -127,31 +120,25 @@ $(function() {
 			} else if (currIndex < 0) {
 				currIndex = totalCount - 1;
 			}
-			console.log('image.show', currIndex);
+//			console.log('image.show', currIndex);
 			 
-			var img = new Image();
-			img.onload = function() {
+			var image = new Image();
+			image.onload = function() {
+				var _self = this;
 				$image.css({
-					backgroundImage: 'url(' + this.src + ')'
+					backgroundImage: 'url(' + _self.src + ')'
 				});
-				$pageProgress.css({
-					width: ((currIndex + 1) / totalCount * 100).toFixed(1) + "%"
-				});
-				$currNo.val(currIndex);
-				$imgSize.html(this.naturalWidth + ' x ' + this.naturalHeight);
+				$progress.trigger('progress');
 
 				// get info
-				Rest.Image.get(currIndex, function(imgInfo) {
-					$imgPath.html(imgInfo.path.replace(/\\/gi, '/').split('/').pop()).data("path", imgInfo.path);
-					$imgTitle.html(imgInfo.name);
-					$imgLength.html(File.formatSize(imgInfo.length));
-					$imgModified.html(new Date(imgInfo.modified).format('yyyy-MM-dd'));
+				Rest.Image.get(currIndex, function(info) {
+					$controlBox.trigger('setInfo', [_self, info]);
 				});
 			};
-			img.src = PATH + "/static/image/" + currIndex;
-			console.log('img.src', PATH, "/static/image/", currIndex);
+			image.src = PATH + "/static/image/" + currIndex;
+//			console.log('image.src', PATH, "/static/image/", currIndex);
 		}
-		
+
 		clearInterval(bgInterval);
 		show();
 		if (!pause) {
@@ -159,10 +146,11 @@ $(function() {
 				currIndex++;
 				show();
 			}, 1000 * bgIntervalTime);
-			console.log('setInterval');
+			console.log('setInterval', bgIntervalTime);
 		}
 	};
 
-	view();
-
+	$controlBox.trigger('init');
+	control.random();
+	
 });

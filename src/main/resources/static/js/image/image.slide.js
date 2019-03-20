@@ -9,13 +9,12 @@ $(function() {
 	var bgInterval;
 	var bgSizeProperties = ['contain', 'cover', 'auto'];
 	var bgSizePropertiesIndex = 0;
-	
+	var pause = false;
+
 	var $image = $("#imageWrap");
 	var $controlBox = $("#controlBox");
 	var $progress = $("#paginationProgress > .progress-bar");
-	
-	var pause = false;
-	
+
 	$image.navEvent(function(signal, e) {
 		console.log('e.keyCode', signal);
 		switch (signal) {
@@ -38,7 +37,7 @@ $(function() {
 			break;
 		}
 	});
-	
+
 	$controlBox.on('init', function() {
 		console.log('$controlBox init');
 		Rest.Image.size(function(count) {
@@ -55,10 +54,11 @@ $(function() {
 		$("#imgModified").html(new Date(imgInfo.modified).format('yyyy-MM-dd'));
 		$("#currNo").val(currIndex);
 	}).on('notice', function(e, msg) {
-		var $notice = $("#notice");
-		$notice.html(msg);
+		var $span = $("<span>", {class: 'msgBox'}).html(msg).appendTo($("#notice"));
 		setTimeout(function() {
-			$notice.html('');
+			$span.hide('blind', {direction: 'right'}, 500, function() {
+				$(this).remove();
+			});
 		}, 1500);
 	}).on('bgMode', function(e, val) {
 		$("#bgMode").html(val);
@@ -93,7 +93,7 @@ $(function() {
 			width: ((currIndex + 1) / totalCount * 100).toFixed(1) + "%"
 		});
 	});
-	
+
 	var control = {
 			jump: function(idx) {
 				currIndex = idx;
@@ -112,7 +112,7 @@ $(function() {
 				view();
 			}
 	};
-	
+
 	var view = function() {
 		function show() {
 			if (currIndex >= totalCount) {
@@ -121,7 +121,7 @@ $(function() {
 				currIndex = totalCount - 1;
 			}
 //			console.log('image.show', currIndex);
-			 
+
 			var image = new Image();
 			image.onload = function() {
 				var _self = this;
@@ -152,5 +152,5 @@ $(function() {
 
 	$controlBox.trigger('init');
 	control.random();
-	
+
 });

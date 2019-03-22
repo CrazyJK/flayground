@@ -8,7 +8,7 @@ $(function() {
 	var bgIntervalTime = LocalStorageItem.getInteger("image.slide.bgIntervalTime", 10);
 	var bgInterval;
 	var bgSizeProperties = ['contain', 'cover', 'auto'];
-	var bgSizePropertiesIndex = 0;
+	var bgSizePropertiesIndex = LocalStorageItem.getInteger("image.slide.bgSizePropertiesIndex", 0);
 	var pause = false;
 
 	var $image = $("#imageWrap");
@@ -30,10 +30,7 @@ $(function() {
 			control.next();
 			break;
 		case 1002: // mouse middle click
-			$(e.target).css({
-				backgroundSize: bgSizeProperties[++bgSizePropertiesIndex % bgSizeProperties.length]
-			});
-			$controlBox.trigger('bgMode', $(e.target).css("backgroundSize"));
+			$controlBox.trigger('bgMode');
 			break;
 		}
 	});
@@ -44,7 +41,8 @@ $(function() {
 			totalCount = count;
 			$("#totalNo").html(totalCount);
 		});
-		$("#bgMode").html($image.css("backgroundSize"));
+		bgSizePropertiesIndex--;
+		$controlBox.trigger('bgMode');
 		$("#bgIntervalTime").val(bgIntervalTime);
 	}).on('setInfo', function(e, image, imgInfo) {
 		$("#imgPath").html(imgInfo.path.replace(/\\/gi, '/').split('/').pop()).data("path", imgInfo.path);
@@ -60,8 +58,11 @@ $(function() {
 				$(this).remove();
 			});
 		}, 1500);
-	}).on('bgMode', function(e, val) {
-		$("#bgMode").html(val);
+	}).on('bgMode', function() {
+		var bgSize = bgSizeProperties[++bgSizePropertiesIndex % bgSizeProperties.length];
+		$image.css("backgroundSize", bgSize);
+		$("#bgMode").html(bgSize);
+		LocalStorageItem.set("image.slide.bgSizePropertiesIndex", bgSizePropertiesIndex);
 	}).on('click', '#imgPath', function() {
 		Rest.Flay.openFolder($(this).data("path"));
 		$controlBox.trigger('notice', 'open folder: ' + $(this).data("path"));

@@ -9,27 +9,27 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import jk.kamoru.flayground.flay.service.BatchService;
+import jk.kamoru.flayground.flay.service.BatchExecutor;
 
 @RestController
 @RequestMapping("/batch")
 public class BatchController {
 
-	@Autowired BatchService batchService;
+	@Autowired BatchExecutor batchService;
 	
 	@GetMapping("/option/{option}")
-	public Boolean getOption(@PathVariable BatchService.Option option) {
+	public Boolean getOption(@PathVariable BatchExecutor.Option option) {
 		return batchService.getOption(option);
 	}
 
 	@PutMapping("/option/{option}")
-	public Boolean setOption(@PathVariable BatchService.Option option) {
+	public Boolean setOption(@PathVariable BatchExecutor.Option option) {
 		return batchService.toggleOption(option);
 	}
 
 	@PutMapping("/start/{operation}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void startBatch(@PathVariable BatchService.Operation operation) {
+	public void startBatch(@PathVariable BatchExecutor.Operation operation) {
 		batchService.startBatch(operation);
 	}
 	

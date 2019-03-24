@@ -65,9 +65,16 @@ body.bg-dark .flay-file {
 }
  
 .card.flay-card:hover label.text, .card.flay-card:hover .flay-rank {
-	background-color: var(--dark);
+	background-color: var(--dark) !important;
 	text-shadow: 1px 1px 2px midnightblue
 }
 .card.flay-card label.text:hover {
 	background-color: rgba(25, 25, 112, .5);
+}
+
+.flay-rank-sm {
+	border: 1px solid #f00;
+}
+.card.flay-card:hover .flay-rank-sm {
+	border-color: transparent;
 }

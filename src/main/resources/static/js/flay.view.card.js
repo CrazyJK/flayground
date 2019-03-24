@@ -126,7 +126,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			if (settings.exclude.includes(RANK)) {
 				$flayCard.find(".flay-rank-wrapper").remove();
 				if (flay.video.rank > 0)
-					$flayCard.find(".flay-rank-sm").html(flay.video.rank).css({color: getRankColor(flay.video.rank)});
+					$flayCard.find(".flay-rank-sm").html(flay.video.rank).css({backgroundColor: getRankColor(flay.video.rank)});
 				else 
 					$flayCard.find(".flay-rank-sm").remove();
 			} else {

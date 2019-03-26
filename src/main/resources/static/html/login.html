@@ -65,7 +65,12 @@ form#signin input, form#signin button {
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-	$("#btnEnter").css({cursor: 'pointer'}).on("click", function() {
+	$(window).on("keyup", function(e) {
+		if (e.keyCode === 13) {
+			$("#btnEnter").trigger("click");
+		}
+	});
+	$("#btnEnter").on("click", function() {
 		$(this).hide();
 		$("#signin").fadeIn(400);
 	});

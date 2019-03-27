@@ -361,6 +361,14 @@ function searchSource(keyword) {
 			$("<tr>").append(
 					$("<td>", {'colspan': 6, 'class': 'text-danger'}).html('Not found')
 			).appendTo($tbody);
+		} else {
+			$("div.container").animate({
+				backgroundColor: "rgba(255, 255, 0, .75)"
+			}, 1500, function() {
+				$(this).css({
+					backgroundColor: "rgba(255, 255, 0, 0)"
+				});
+			});
 		}
 		
 	   	$tbody.find("label").each(function() {

@@ -22,7 +22,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		http.csrf().disable();
 		http
 			.authorizeRequests()
-				.antMatchers("/", "/index.html", "/webjars/**", "/img/**").permitAll()
+				.antMatchers("/", "/index.html", "/webjars/**", "/img/**", "/css/**").permitAll()
 				.antMatchers("/batch/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
 				.and()
@@ -38,5 +38,5 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()
 			.httpBasic();
 	}
-	
+
 }

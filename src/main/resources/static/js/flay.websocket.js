@@ -102,19 +102,22 @@ var flayWebsocket = (function($) {
 
 		// if wrapper not exist, insert
 		var wrapper = "announceWrapper";
-		if ($("#" + wrapper).length === 0)
+		if ($("#" + wrapper).length === 0) {
+			var bottomHeight = $(".fixed-bottom").length === 0 ? 0 : $(".fixed-bottom").height() + 16;
 			$("body").append(
 					$("<div>", {id: wrapper}).css({
 						position: 'fixed',
-						bottom: 50,
+						bottom: bottomHeight,
 						right: 0,
 						zIndex: 69
 					})
 			);
+		}
 
 		var showBox = function(_box) {
 			_box.show("blind", {direction: 'right'})
-		}, hideBox = function(_box) {
+		};
+		var hideBox = function(_box) {
 			_box.hide("slide", {direction: 'right'}, function() {
 				$(this).remove();
 			});

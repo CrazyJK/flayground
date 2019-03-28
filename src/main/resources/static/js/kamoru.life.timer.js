@@ -83,7 +83,7 @@ var STARTING = new Date(1976, 3, 28), DEADLINE = new Date(2031, 3, 28);
 				$displayTime.html(opts.pattern.replace(/(day|hh|mm|ss)/g, function($1) {
 					switch ($1) {
 					case 'day':
-						return opts.mode === 'remain' ? remainDay : pastDay;
+						return opts.mode === 'remain' ? remainDay.withComma(): pastDay.withComma();
 					case 'hh':
 						return pad(opts.mode === 'remain' ? remainHour : pastHour);
 					case 'mm':

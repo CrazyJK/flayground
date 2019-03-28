@@ -166,7 +166,9 @@ Number.prototype.zf = function(len){return this.toString().zf(len);};
 Number.prototype.toBlank = function() {
 	return this == 0 ? "" : this;
 };
-
+Number.prototype.withComma = function() {
+	return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); 
+}
 
 var File = {
 		formatSize: function(length) {

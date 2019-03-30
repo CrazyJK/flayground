@@ -330,7 +330,7 @@ function collectList() {
 
 		if (query != '') {
 			var fullname = flay.studio + flay.opus + flay.title + Util.Actress.getNames(flay.actressList) + flay.release + flay.comment;
-			if (fullname.indexOf(query) < 0) {
+			if (fullname.toLowerCase().indexOf(query.toLowerCase()) < 0) {
 				continue;
 			}
 		}

@@ -254,13 +254,13 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				width: settings.width,
 				fontSize: settings.fontSize
 			});
-			$flayCard.find(".card-body").parent().css({
+			$flayCard.find(".card-body").css({
 				height: parseInt(settings.width * COVER_RATIO),
 			});
 			$flayCard.find(".flay-title").css({
 				maxWidth: settings.width - settings.width/20
 			});
-
+			
 			return $flayCard;
 		};
 
@@ -308,9 +308,19 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			});
 		};
 		
+		var postEvent = function() {
+			// event: .flay-file-group toggle
+			$(".flay-file-group").on('show.bs.collapse hidden.bs.collapse', function(e) {
+				var height = e.type === 'show' ? $(this).height() : -$(this).height();
+				console.log('.flay-file-group toggle', e.type, height);
+				window.resizeBy(0, height);
+			});
+		}; 
+		
 		return this.each(function() {
 			var $self = $(this);
 			$self.append(constructFlay());
+			postEvent();
 		});
 		
 	};

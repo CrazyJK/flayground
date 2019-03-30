@@ -260,10 +260,20 @@ function displaySummaryTableView(dataMap, $list) {
 			}
 			return length;
 		}());
+
+		var unRank = (function() {
+			var unRankCount = 0;
+			for (var x in val) {
+				unRankCount += val[x].video.rank === 0 ? 1 : 0;
+			}
+			return unRankCount;
+		}());
+
 		dataArray.push({
 			key: key,
 			list: val,
-			length: length 
+			length: length,
+			unRank: unRank
 		});
 		maxLength = Math.max(maxLength, length);
 	});
@@ -272,17 +282,20 @@ function displaySummaryTableView(dataMap, $list) {
 		return d1.key.localeCompare(d2.key);
 	});
 	
-	var totalFlayCount = 0, totalFlayLength = 0;
+	var isReleaseView = $list.attr("id") === 'releasedList';
+	
+	var totalFlayCount = 0, totalFlayLength = 0, totalUnRankCount = 0;
 	$.each(dataArray, function(idx, data) {
 		totalFlayCount += data.list.length;
 		totalFlayLength += data.length;
+		totalUnRankCount += data.unRank;
 		$("<tr>").append(
 				$("<td>", {'class': 'item-key nowrap'}).append(
 						$("<span>", {'class': 'hover'}).html(data.key).on("click", function() {
 							displayFlayList(data.key, data.list);
 						})
 				),
-				$("<td>", {'class': 'item-count'}).html(data.list.length),
+				$("<td>", {'class': 'item-count'}).html((isReleaseView ? data.unRank + " / " : "") + data.list.length).css("text-align", isReleaseView ? "center" : "right"),
 				$("<td>", {'class': 'item-length'}).html(File.formatSize(data.length)),
 				$("<td>", {'class': 'item-progress'}).append(
 						$("<div>", {'class': 'progress'}).append(
@@ -295,7 +308,7 @@ function displaySummaryTableView(dataMap, $list) {
 	});	
 	$list.next().empty().append(
 			$("<th>"),
-			$("<th>").html(totalFlayCount),
+			$("<th>").html((isReleaseView ? totalUnRankCount + " / " : "") + totalFlayCount).css("text-align", isReleaseView ? "center" : "right"),
 			$("<th>").html(File.formatSize(totalFlayLength)),
 			$("<th>")
 	);

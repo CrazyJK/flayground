@@ -28,19 +28,16 @@ public class FlayActionHandler {
 	@Value("${app.subtitles-editor}") String editer;
 	@Value("${app.picture-editor}") String painter;
 
-	@Async
 	public void play(Flay flay) {
 		exec(composite(player, flay.getFiles().get(Flay.MOVIE)));
 		notificationService.announce("Play " + flay.getOpus(), flay.getFullname());
 	}
 
-	@Async
 	public void edit(Flay flay) {
 		exec(composite(editer, flay.getFiles().get(Flay.SUBTI)));
 		notificationService.announce("Edit " + flay.getOpus(), flay.getFullname());
 	}
 
-	@Async
 	public void paint(Image image) {
 		exec(composite(painter, Arrays.asList(image.getFile())));
 		notificationService.announce("Paint " + image.getName(), image.getPath());
@@ -49,7 +46,7 @@ public class FlayActionHandler {
 	@Async
 	public void openFolder(String folder) {
 		String explorer = "";
-		switch(Flayground.OS.SYSTEM) {
+		switch (Flayground.OS.SYSTEM) {
 		case WINDOWS:
 			explorer = "explorer";
 			break;
@@ -71,6 +68,7 @@ public class FlayActionHandler {
 		}
 	}
 
+	@Async
 	public void exec(List<String> commands) {
 		log.info("exec {}", commands);
 		try {

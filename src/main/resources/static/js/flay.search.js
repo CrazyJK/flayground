@@ -364,10 +364,10 @@ function searchSource(keyword) {
 		} else {
 			$("div.container").animate({
 				backgroundColor: "rgba(255, 255, 0, .75)"
-			}, 1500, function() {
-				$(this).css({
+			}, 3000, function() {
+				$(this).animate({
 					backgroundColor: "rgba(255, 255, 0, 0)"
-				});
+				}, 3000);
 			});
 		}
 		

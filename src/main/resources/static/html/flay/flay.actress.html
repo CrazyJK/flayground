@@ -112,7 +112,8 @@ $("form").on('submit', function (e) {
 $("#favorite, #noFavorite, input[name='viewType']").on("change", displayActress);
 $("#search").on("keyup", function(e) {
 	e.stopPropagation();
-	displayActress();
+	if ($(this).val().length > 2)
+		displayActress();
 });
 $(".btn-reload").on("click", actressLoad);
 

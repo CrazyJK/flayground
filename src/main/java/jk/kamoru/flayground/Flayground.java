@@ -31,18 +31,18 @@ public class Flayground implements AsyncConfigurer {
 		public static class Date {
 			public static final String PATTERN_DATE = "yyyy-MM-dd";
 			public static final String PATTERN_TIME = "HH:mm:ss";
-			
+
 			public static final SimpleDateFormat DateTime = new SimpleDateFormat(PATTERN_DATE + " " + PATTERN_TIME);
 			public static final SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
 			public static final SimpleDateFormat YYYY_MM = new SimpleDateFormat("yyyy-MM");
 		}
-		
+
 		public static class Number {
 			public static final NumberFormat TB_Format = NumberFormat.getNumberInstance();
 			public static final NumberFormat GB_Format = NumberFormat.getNumberInstance();
 			public static final NumberFormat MB_Format = NumberFormat.getNumberInstance();
 			public static final NumberFormat KB_Format = NumberFormat.getNumberInstance();
-			
+
 			static {
 				TB_Format.setMaximumFractionDigits(2);
 				GB_Format.setMaximumFractionDigits(1);
@@ -51,7 +51,7 @@ public class Flayground implements AsyncConfigurer {
 			}
 		}
 	}
-	
+
 	public static class InfoFilename {
 		public static final String HISTORY = "history.log";
 		public static final String ACTRESS = "actress.json";
@@ -65,7 +65,7 @@ public class Flayground implements AsyncConfigurer {
 		WINDOWS, LINUX, MAC, UNKNOWN;
 
 		public static OS SYSTEM = getOS();
-				
+
 		static OS getOS() {
 			String osName = System.getProperty("os.name");
 			try {

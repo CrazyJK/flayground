@@ -19,16 +19,16 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FileBasedFlaySource implements FlaySource {
-	
+
 	@Autowired FlayFactory flayFactory;
-	
+
 	Map<String, Flay> flayMap;
 	private String[] paths;
-	
+
 	public FileBasedFlaySource(String...paths) {
 		this.paths = paths;
 	}
-	
+
 	@PostConstruct
 	@Override
 	public synchronized void load() {
@@ -47,25 +47,16 @@ public class FileBasedFlaySource implements FlaySource {
 				log.warn("Invalid source path {}", dir);
 			}
 		}
-		
+
 		for (File file : listFiles) {
 			String suffix = FilenameUtils.getExtension(file.getName()).toLowerCase();
-			if ("info".contains(suffix)) {
-				// v1 info file. pass!!
+			if ("ds_store".contains(suffix)) {
 				continue;
 			}
-			
+
 			Result result = flayFactory.parse(file);
 			if (!result.valid) {
-				if ("actress studio".contains(suffix)) {
-					// v1 info file. pass!!
-				} else if ("jpg".contains(suffix)) {
-					// may be actress cover. pass!!
-				} else if ("history.log tag.data".contains(file.getName())) {
-					// v1 info file. pass!!
-				} else {
-					log.warn(" invalid file suffix {} - {}", suffix, file);
-				}
+				log.warn(" invalid file - {}", file);
 				continue;
 			}
 
@@ -76,7 +67,7 @@ public class FileBasedFlaySource implements FlaySource {
 			} else {
 				flay = flayMap.get(result.getOpus());
 			}
-			
+
 			flayFactory.addFile(flay, file);
 		}
 		log.info(String.format("%5s Flay", flayMap.size()));

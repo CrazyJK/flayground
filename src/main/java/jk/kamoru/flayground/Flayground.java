@@ -25,6 +25,7 @@ public class Flayground implements AsyncConfigurer {
 	public static final long SERIAL_VERSION_UID = 0x02316CF8C;
 
 	public static final String ENCODING = "UTF-8";
+	public static final String UTF8_BOM = "\uFEFF";
 	public static final String LINE = System.getProperty("line.separator");
 
 	public static class Format {
@@ -53,7 +54,7 @@ public class Flayground implements AsyncConfigurer {
 	}
 
 	public static class InfoFilename {
-		public static final String HISTORY = "history.log";
+		public static final String HISTORY = "history.csv";
 		public static final String ACTRESS = "actress.json";
 		public static final String  STUDIO =  "studio.json";
 		public static final String   VIDEO =   "video.json";

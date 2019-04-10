@@ -9,7 +9,7 @@ import lombok.Data;
 public class History implements Info<Long> {
 
 	public static enum Action {
-		PLAY, DELETE, OVERVIEW, SUBTITLES, REMOVE;
+		PLAY, DELETE;
 	}
 	
 	Long id;
@@ -37,7 +37,7 @@ public class History implements Info<Long> {
 	}
 
 	public String toFileSaveString() {
-		return MessageFormat.format("{0}, {1}, {2}, \"{3}\"{4}", date, opus, action, desc, Flayground.LINE);
+		return MessageFormat.format("{0}, {1}, {2}, {3}{4}", date, opus, action, desc.replaceAll(",", ""), Flayground.LINE);
 	}
 
 }

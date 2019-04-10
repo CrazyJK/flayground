@@ -35,7 +35,11 @@ public class HistoryRepository {
 	void load() throws IOException, ParseException {
 		list = new ArrayList<>();
 		List<String> lines = FileUtils.readLines(getInfoFile(), Flayground.ENCODING);
+		boolean first = true;
 		for (String line : lines) {
+			if (first && line.startsWith(Flayground.UTF8_BOM)) {
+				line = line.substring(1);
+			}
 			if (line.trim().length() == 0) {
 				continue;
 			}

@@ -24,8 +24,7 @@ public class HistoryServiceImpl implements HistoryService {
 
 	@Override
 	public List<History> find(String query) {
-		return historyRepository.list()
-				.stream()
+		return historyRepository.list().stream()
 				.filter(h -> h.toFileSaveString().contains(query))
 				.sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate()))
 				.collect(Collectors.toList());
@@ -43,8 +42,7 @@ public class HistoryServiceImpl implements HistoryService {
 
 	@Override
 	public List<History> findAction(Action action) {
-		return historyRepository.list()
-				.stream()
+		return historyRepository.list().stream()
 				.filter(h -> h.getAction() == action)
 				.sorted((h1, h2) -> StringUtils.compare(h1.getDate(), h2.getDate()))
 				.collect(Collectors.toList());

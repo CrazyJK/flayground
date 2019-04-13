@@ -56,7 +56,7 @@ $("#groupByPath").on('show.bs.collapse', function() {
 		var pathArray = file.replace(/\\/gi, '/').split('/');
 		pathArray.pop();
 		var key = pathArray.join('/');
-		if (key.indexOf('J:/Crazy/Storage/') > -1) {
+		if (key.indexOf('/Storage/') > -1) {
 			pathArray.pop();
 			key = pathArray.join('/');
 		}

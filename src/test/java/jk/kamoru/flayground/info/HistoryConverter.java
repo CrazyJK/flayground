@@ -26,7 +26,7 @@ public class HistoryConverter {
 	}
 
 	private void process() throws IOException {
-		String infoPath = "/Users/namjk/Workspace/kamoru-ws/FlayOn/crazy/Info/history.log";
+		String infoPath = "K:\\Crazy\\Info\\history.log";
 		File infoFile = new File(infoPath);
 		for (String line : FileUtils.readLines(infoFile, "UTF-8")) {
 			String[] split = StringUtils.split(line, ",", 4);

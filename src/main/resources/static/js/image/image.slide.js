@@ -10,6 +10,7 @@ $(function() {
 	var bgSizeProperties = ['contain', 'cover', 'auto'];
 	var bgSizePropertiesIndex = LocalStorageItem.getInteger("image.slide.bgSizePropertiesIndex", 0);
 	var pause = false;
+	var random = false;
 
 	var $image = $("#imageWrap");
 	var $controlBox = $("#controlBox");
@@ -28,6 +29,11 @@ $(function() {
 		case 39: // right
 		case -1: // mousewheel down
 			control.next();
+			break;
+		case 1001: // mouse left click
+			if (random) {
+				$("#random").click();
+			}
 			break;
 		case 1002: // mouse middle click
 			$controlBox.trigger('bgMode');
@@ -81,6 +87,10 @@ $(function() {
 		pause = $(this).toggleClass("active").hasClass("active");
 		$controlBox.trigger('notice', 'slide pause: ' + pause);
 		view();
+	}).on('click', '#random', function() {
+		random = $(this).toggleClass("active").hasClass("active");
+		$controlBox.trigger('notice', 'slide random: ' + random);
+		view();
 	}).on('keyup', '#currNo', function(e) {
 		e.stopPropagation();
 		if (e.keyCode === 13) {
@@ -116,10 +126,14 @@ $(function() {
 
 	var view = function() {
 		function show() {
-			if (currIndex >= totalCount) {
-				currIndex = 0;
-			} else if (currIndex < 0) {
-				currIndex = totalCount - 1;
+			if (random) {
+				currIndex = Random.getInteger(0, totalCount);
+			} else {
+				if (currIndex >= totalCount) {
+					currIndex = 0;
+				} else if (currIndex < 0) {
+					currIndex = totalCount - 1;
+				}
 			}
 //			console.log('image.show', currIndex);
 

@@ -11,14 +11,10 @@ public class ScoreCalculator {
 
 	@Autowired FlayProperties flayProperties;
 
-	private final int RANK_POINT = flayProperties.getScore().getPlayPoint();
-	private final int PLAY_POINT = flayProperties.getScore().getPlayPoint();
-	private final int SUBTITLES_POINT = flayProperties.getScore().getSubtitlesPoint();
-
 	public int calc(Flay flay) {
-		return flay.getVideo().getRank() * RANK_POINT
-				+ flay.getVideo().getPlay() * PLAY_POINT
-				+ flay.getFiles().get(Flay.SUBTI).size() * SUBTITLES_POINT;
+		return flay.getVideo().getRank() * flayProperties.getScore().getPlayPoint()
+				+ flay.getVideo().getPlay() * flayProperties.getScore().getPlayPoint()
+				+ flay.getFiles().get(Flay.SUBTI).size() * flayProperties.getScore().getSubtitlesPoint();
 	}
 
 	public int compare(Flay flay1, Flay flay2) {

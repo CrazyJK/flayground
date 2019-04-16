@@ -2,15 +2,17 @@ package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.domain.Flay;
 import lombok.extern.slf4j.Slf4j;
 
@@ -18,13 +20,13 @@ import lombok.extern.slf4j.Slf4j;
 @Component
 public class CandidatesProvider {
 
-	@Value("${path.video.candidate},${path.subtitles}") String[] candidatePaths;
-	
+	@Autowired FlayProperties flayProperties;
+
 	Collection<File> listFiles;
-	
+
 	public void find() {
 		listFiles = new ArrayList<>();
-		for (String path : candidatePaths) {
+		for (String path : Arrays.asList(flayProperties.getCandidatePath(), flayProperties.getSubtitlesPath())) {
 			Collection<File> list = FileUtils.listFiles(new File(path), ArrayUtils.addAll(Flayground.FILE.VIDEO_SUFFIXs, Flayground.FILE.SUBTITLES_SUFFIXs), true);
 			log.info("find {} = {}", path, list.size());
 			listFiles.addAll(list);

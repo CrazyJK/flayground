@@ -1,9 +1,11 @@
 package jk.kamoru.flayground.flay;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.apache.commons.lang3.ArrayUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.source.FileBasedFlaySource;
 import jk.kamoru.flayground.flay.source.FlayFactory;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -11,22 +13,22 @@ import jk.kamoru.flayground.flay.source.FlaySource;
 @Configuration
 public class FlayConfig {
 
-	@Value("${path.video.storage},${path.video.stage},${path.video.cover}") String[] instancePaths;
-	@Value("${path.video.archive}") String archivePath;
+	@Autowired FlayProperties flayProperties;
 
 	@Bean("flayFactory")
 	public FlayFactory flayFactory() {
 		return new FlayFactory();
 	}
-	
+
 	@Bean("instanceFlaySource")
 	public FlaySource instanceFlaySource() {
-		return new FileBasedFlaySource(instancePaths);
+		String[] instancePaths = ArrayUtils.addAll(flayProperties.getStagePath(), flayProperties.getCoverPath(), flayProperties.getStoragePath());
+		return new FileBasedFlaySource(instancePaths );
 	}
 
 	@Bean("archiveFlaySource")
 	public FlaySource archiveFlaySource() {
-		return new FileBasedFlaySource(archivePath);
+		return new FileBasedFlaySource(flayProperties.getArchivePath());
 	}
 
 }

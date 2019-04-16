@@ -11,13 +11,13 @@ import javax.transaction.Transactional;
 
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.web.access.domain.AccessLogStatistic;
 import jk.kamoru.flayground.web.access.repository.AccessLogRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class AccessLogService {
 
-	@Value("${path.info}") String infoPath;
+	@Autowired FlayProperties flayProperties;
 
 	@Autowired AccessLogRepository accessLogRepository;
 
@@ -39,14 +39,14 @@ public class AccessLogService {
 		}
 		return 0;
 	}
-	
+
 	@Transactional
 	public void increaseCallCount(String handlerInfo) {
 		AccessLogStatistic accessLogStatistic = accessLogRepository.findById(handlerInfo).orElse(new AccessLogStatistic(handlerInfo));
 		accessLogStatistic.increaseCallCount();
 		accessLogRepository.save(accessLogStatistic);
 	}
-	
+
 	@PostConstruct
 	public void loadFromFile() {
 		log.info("@PostConstruct AccessLogService.loadFromFile");
@@ -57,10 +57,10 @@ public class AccessLogService {
 			log.info(String.format("%5s %-7s - %s", list.size(), FilenameUtils.getBaseName(infoFile.getName()), infoFile));
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to load info file " + infoFile, e);
-		}	
-		
+		}
+
 	}
-	
+
 	@PreDestroy
 	public void saveToFile() {
 		log.info("@PreDestroy - AccessLogService.saveToFile");
@@ -74,6 +74,6 @@ public class AccessLogService {
 	}
 
 	private File getInfoFile() {
-		return new File(infoPath, Flayground.InfoFilename.ACCESS);
+		return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.ACCESS);
 	}
 }

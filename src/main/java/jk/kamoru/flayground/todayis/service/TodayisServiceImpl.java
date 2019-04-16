@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.service.FlayActionHandler;
 import jk.kamoru.flayground.todayis.domain.Todayis;
 import lombok.extern.slf4j.Slf4j;
@@ -21,17 +21,16 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TodayisServiceImpl implements TodayisService {
 
-	@Value("${path.todayis}") String[] todayisPaths;
-	@Value("${app.video-player}") String player;
+	@Autowired FlayProperties flayProperties;
 
 	@Autowired FlayActionHandler flayActionHandler;
-	
+
 	List<Todayis> list;
-	
+
 	@Override
 	public Collection<Todayis> list() {
 		list = new ArrayList<>();
-		for (String path : todayisPaths) {
+		for (String path : flayProperties.getTodayisPath()) {
 			Collection<File> listFiles = FileUtils.listFiles(new File(path), null, true);
 			for (File file : listFiles) {
 				if (Flayground.FILE.isVideo(file)) {
@@ -53,7 +52,7 @@ public class TodayisServiceImpl implements TodayisService {
 	@Override
 	public void play(Todayis todayis) {
 		List<String> commands = new ArrayList<>();
-		commands.add(player);
+		commands.add(flayProperties.getPlayerApp());
 		commands.add(todayis.getFilePath());
 		flayActionHandler.exec(commands);
 	}

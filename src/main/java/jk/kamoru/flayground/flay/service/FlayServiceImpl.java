@@ -8,10 +8,10 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -27,6 +27,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayServiceImpl implements FlayService {
 
+	@Autowired FlayProperties flayProperties;
+
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired InfoService<Video, String> videoInfoService;
 	@Autowired InfoService<Tag, Integer> tagInfoService;
@@ -35,8 +37,6 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired CandidatesProvider candidatesProvider;
 	@Autowired AnnounceService notificationService;
 
-	@Value("${path.video.stage}") String[] stagePaths;
-	
 	@Override
 	public Flay get(String key) {
 		return instanceFlaySource.get(key);
@@ -46,7 +46,7 @@ public class FlayServiceImpl implements FlayService {
 	public Collection<Flay> list() {
 		return instanceFlaySource.list();
 	}
-	
+
 	@Override
 	public Collection<Flay> find(Search search) {
 		return instanceFlaySource.list().stream().filter(f -> {
@@ -101,18 +101,20 @@ public class FlayServiceImpl implements FlayService {
 		}
 		return candidates;
 	}
-	
+
 	@Override
 	public void acceptCandidates(String opus) {
 		Flay flay = instanceFlaySource.get(opus);
 		List<File> candiList = flay.getFiles().get(Flay.CANDI);
 		List<File> movieList = flay.getFiles().get(Flay.MOVIE);
 		List<File> subtiList = flay.getFiles().get(Flay.SUBTI);
-		File stagePath = new File(stagePaths[stagePaths.length-1]);
+
+		String[] stagePaths = flayProperties.getStagePath();
+		File stagePath = new File(stagePaths [stagePaths.length-1]);
 		for (File file : candiList) {
 			String filename = file.getName();
 			FlayFileHandler.moveFileToDirectory(file, stagePath);
-			
+
 			if (Flayground.FILE.isVideo(file)) {
 				movieList.add(new File(stagePath, filename));
 			} else if (Flayground.FILE.isSubtitles(file)) {
@@ -125,7 +127,7 @@ public class FlayServiceImpl implements FlayService {
 		FlayFileHandler.rename(flay);
 		notificationService.announce("Accept candidates", flay.getFullname());
 	}
-	
+
 	@Override
 	public Collection<Flay> findByTagLike(Integer id) {
 		Tag tag = tagInfoService.get(id);
@@ -134,12 +136,12 @@ public class FlayServiceImpl implements FlayService {
 			return f.getVideo().getTags().contains(id) || StringUtils.containsAny(f.getFullname(), full.split(","));
 		}).collect(Collectors.toList());
 	}
-	
+
 	@Override
 	public void play(String opus) {
 		Flay flay = instanceFlaySource.get(opus);
 		flayActionHandler.play(flay);
-		
+
 		flay.getVideo().increasePlayCount();
 
 		videoInfoService.update(flay.getVideo());

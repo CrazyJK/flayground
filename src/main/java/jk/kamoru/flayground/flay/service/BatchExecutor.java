@@ -16,13 +16,13 @@ import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.BooleanUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
@@ -38,37 +38,24 @@ public class BatchExecutor {
 	public static enum Option {
 		/** moveWatchedVideo */ W, /** deleteLowerRankVideo */ R, /** deleteLowerScoreVideo */ S;
 	}
-	
+
 	public static enum Operation {
 		/** moveWatchedVideo */ W, /** deleteLowerRankVideo */ R, /** deleteLowerScoreVideo */ S,
 		/** InstanceVideoSource */ I, /** ArchiveVideoSource */ A, /** Backup */ B
 	}
-	
+
 	public static final String BACKUP_INSTANCE_JAR_FILENAME = "flayground-instance.jar";
 	public static final String BACKUP_ARCHIVE_JAR_FILENAME  = "flayground-archive.jar";
 	public static final String BACKUP_INSTANCE_CSV_FILENAME = "flay-instance.csv";
 	public static final String BACKUP_ARCHIVE_CSV_FILENAME  = "flay-archive.csv";
+
+	@Autowired FlayProperties flayProperties;
 
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired FlaySource  archiveFlaySource;
 	@Autowired HistoryService historyService;
 	@Autowired AnnounceService notificationService;
 
-	@Value("${batch.watch.move}")   Boolean moveWatched;
-	@Value("${batch.rank.delete}")  Boolean deleteLowerRank;
-	@Value("${batch.score.delete}") Boolean deleteLowerScore;
-	
-	@Value("${path.video.archive}") String   archivePath;
-    @Value("${path.video.storage}") String   storagePath;
-    @Value("${path.video.stage}")   String[]   stagePaths;
-    @Value("${path.video.cover}")   String[]   coverPaths;
-    @Value("${path.video.queue}")   String     queuePath;
-	@Value("${path.info}")          String      infoPath;
-    @Value("${path.backup}")        String    backupPath;
-    @Value("${path.video.stage},${path.video.cover}") String[] emptyManagedInstancePath;
-    
-    @Value("${size.storage}") int storageGbSize;
-	
 	public void reload() {
 		log.info("[reload]");
 		instanceFlaySource.load();
@@ -78,11 +65,11 @@ public class BatchExecutor {
 	public Boolean getOption(Option type) {
 		switch (type) {
 		case W:
-			return moveWatched;
+			return flayProperties.isMoveWatched();
 		case R:
-			return deleteLowerRank;
+			return flayProperties.isDeleteLowerRank();
 		case S:
-			return deleteLowerScore;
+			return flayProperties.isDeleteLowerScore();
 		default:
 			throw new IllegalArgumentException("unknown batch option");
 		}
@@ -91,11 +78,11 @@ public class BatchExecutor {
 	public Boolean toggleOption(Option type) {
 		switch (type) {
 		case W:
-			return moveWatched = BooleanUtils.negate(moveWatched);
+			return flayProperties.negateMoveWatched();
 		case R:
-			return deleteLowerRank = BooleanUtils.negate(deleteLowerRank);
+			return flayProperties.negateDeleteLowerRank();
 		case S:
-			return deleteLowerScore = BooleanUtils.negate(deleteLowerScore);
+			return flayProperties.negateDeleteLowerScore();
 		default:
 			throw new IllegalArgumentException("unknown batch option");
 		}
@@ -118,32 +105,32 @@ public class BatchExecutor {
 		case A:
 			archiveBatch();
 			break;
-		case B: 
+		case B:
 			backup();
 			break;
 		default:
 			throw new IllegalArgumentException("unknown batch operation");
 		}
-		
+
 	}
 
 	private void instanceBatch() {
-		if (moveWatched)
+		if (flayProperties.isMoveWatched())
 			moveWatched();
-		if (deleteLowerRank)
+		if (flayProperties.isDeleteLowerRank())
 			deleteLowerRank();
-		if (deleteLowerScore)
+		if (flayProperties.isDeleteLowerScore())
 			deleteLowerScore();
-		
+
 		assembleFlay();
-		deleteEmptyFolder(emptyManagedInstancePath);
+		deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePath(), flayProperties.getCoverPath()));
 		instanceFlaySource.load();
 		notificationService.announce("Batch", "Instance Source");
 	}
 
 	private void archiveBatch() {
 		relocateArchiveFile();
-		deleteEmptyFolder(archivePath);
+		deleteEmptyFolder(flayProperties.getArchivePath());
 		archiveFlaySource.load();
 		notificationService.announce("Batch", "Archive Source");
 	}
@@ -152,7 +139,7 @@ public class BatchExecutor {
 		log.info("[relocateArchiveFile]");
 		for (Flay flay : archiveFlaySource.list()) {
 			String yyyyMM = getArchiveFolder(flay);
-			File destDir = new File(archivePath, yyyyMM);
+			File destDir = new File(flayProperties.getArchivePath(), yyyyMM);
 			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 				for (File file : entry.getValue()) {
 					String parentName = file.getParentFile().getName();
@@ -177,8 +164,8 @@ public class BatchExecutor {
 			if (flay.getVideo().getRank() > 0 && flay.getVideo().getPlay() > 0) {
 				for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 					for (File file : entry.getValue()) {
-						if (!file.getPath().startsWith(storagePath)) {
-							File destDir = new File(storagePath, flay.getStudio());
+						if (!file.getPath().startsWith(flayProperties.getStoragePath())) {
+							File destDir = new File(flayProperties.getStoragePath(), flay.getStudio());
 							log.info("move {} to {}", file, destDir);
 							FlayFileHandler.moveFileToDirectory(file, destDir);
 						}
@@ -201,7 +188,7 @@ public class BatchExecutor {
 	private void deleteLowerScore() {
 		log.info("[deleteLowerScore]");
 		long lengthSum = 0;
-		long storageSize = storageGbSize * FileUtils.ONE_GB;
+		long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
 		List<Flay> sorted = instanceFlaySource.list().stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0 && f.getVideo().getRank() > 0 && f.getVideo().getPlay() > 0)
 				.sorted((f1, f2) -> ScoreCalculator.compare(f2, f1))
@@ -239,27 +226,27 @@ public class BatchExecutor {
 	private File getDelegatePath(Flay flay) {
 		int movieSize = flay.getFiles().get(Flay.MOVIE).size();
 		int coverSize = flay.getFiles().get(Flay.COVER).size();
-		
+
 		if (movieSize > 0) {
 			String path = flay.getFiles().get(Flay.MOVIE).get(0).getParent();
-			if (StringUtils.equalsAny(path, stagePaths)) { // stage 같은 경로에 있으면, 날자 sub폴더
+			if (StringUtils.equalsAny(path, flayProperties.getStagePath())) { // stage 같은 경로에 있으면, 날자 sub폴더
 				return new File(path, flay.getRelease().substring(0, 4));
-			} else if (StringUtils.equals(path, storagePath)) { // storage 같은 경로에 있으면, studio sub폴더
+			} else if (StringUtils.equals(path, flayProperties.getStoragePath())) { // storage 같은 경로에 있으면, studio sub폴더
 				return new File(path, flay.getStudio());
-			} else if (StringUtils.startsWithAny(path, stagePaths) || StringUtils.startsWith(path, storagePath)) { // 하위에 있으면 현폴더
+			} else if (StringUtils.startsWithAny(path, flayProperties.getStagePath()) || StringUtils.startsWith(path, flayProperties.getStoragePath())) { // 하위에 있으면 현폴더
 				return new File(path);
 			}
 		} else if (coverSize > 0) {
 			String path = flay.getFiles().get(Flay.COVER).get(0).getParent();
-			if (StringUtils.equalsAny(path, coverPaths)) { // cover 같은 경로에 있으면, 날자 sub폴더 
+			if (StringUtils.equalsAny(path, flayProperties.getCoverPath())) { // cover 같은 경로에 있으면, 날자 sub폴더
 				return new File(path, flay.getRelease().substring(0, 4));
-			} else if (StringUtils.startsWithAny(path, coverPaths)) { // 하위 경로에 있으면, 현폴더
+			} else if (StringUtils.startsWithAny(path, flayProperties.getCoverPath())) { // 하위 경로에 있으면, 현폴더
 				return new File(path);
 			}
 		}
-		
+
 		log.info("Not determine delegate path, move to Queue. {}", flay.getOpus());
-		return new File(queuePath);
+		return new File(flayProperties.getQueuePath());
 	}
 
 	private void deleteEmptyFolder(String...emptyManagedPath) {
@@ -283,7 +270,7 @@ public class BatchExecutor {
 
 	private void archiving(Flay flay) {
 		String yyyyMM = getArchiveFolder(flay);
-		File destDir = new File(archivePath, yyyyMM);
+		File destDir = new File(flayProperties.getArchivePath(), yyyyMM);
 		for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 			String key = entry.getKey();
 			for (File file : entry.getValue()) {
@@ -298,20 +285,20 @@ public class BatchExecutor {
 		}
 		historyService.save(Action.DELETE, flay);
 	}
-	
+
 	public synchronized void backup() {
-		if (StringUtils.isBlank(backupPath)) {
+		if (StringUtils.isBlank(flayProperties.getBackupPath())) {
 			log.warn("Backup path not set");
 			return;
 		}
-		log.info("[Backup] START {}", backupPath);
+		log.info("[Backup] START {}", flayProperties.getBackupPath());
 
 		final String CSV_HEADER = "Studio,Opus,Title,Actress,Released,Rank,Fullname";
 		final String CSV_FORMAT = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
 
-		File backupInstanceJarFile = new File(backupPath, BACKUP_INSTANCE_JAR_FILENAME);
-		File backupArchiveJarFile  = new File(backupPath, BACKUP_ARCHIVE_JAR_FILENAME);
-		File backupRootPath = new File(queuePath, "backup_" + Flayground.Format.Date.YYYY_MM_DD.format(new Date()));
+		File backupInstanceJarFile = new File(flayProperties.getBackupPath(), BACKUP_INSTANCE_JAR_FILENAME);
+		File backupArchiveJarFile  = new File(flayProperties.getBackupPath(), BACKUP_ARCHIVE_JAR_FILENAME);
+		File backupRootPath = new File(flayProperties.getQueuePath(), "backup_" + Flayground.Format.Date.YYYY_MM_DD.format(new Date()));
 		File backupInstanceFilePath = new File(backupRootPath, "instance");
 		FlayFileHandler.createDirectory(backupRootPath);
 		FlayFileHandler.cleanDirectory(backupRootPath);
@@ -329,16 +316,16 @@ public class BatchExecutor {
 		log.info("[Backup] Write instance csv {} to {}", BACKUP_INSTANCE_CSV_FILENAME, backupRootPath);
 		instanceList.add(CSV_HEADER);
 		for (Flay flay : instanceFlayList) {
-			instanceList.add(String.format(CSV_FORMAT, 
+			instanceList.add(String.format(CSV_FORMAT,
 					flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), flay.getVideo().getRank(), flay.getFullname()));
 		}
-		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceList); 
-		
+		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceList);
+
 		// archive info
 		log.info("[Backup] Write archive  csv {}  to {}", BACKUP_ARCHIVE_CSV_FILENAME, backupRootPath);
 		archiveList.add(CSV_HEADER);
 		for (Flay flay : archiveFlayList) {
-			archiveList.add(String.format(CSV_FORMAT, 
+			archiveList.add(String.format(CSV_FORMAT,
 					flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), "", flay.getFullname()));
 		}
 		for (History history : historyList) {
@@ -356,9 +343,9 @@ public class BatchExecutor {
 		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_CSV_FILENAME),  archiveList);
 
 		// Info folder copy
-		log.info("[Backup] Copy Info folder {} to {}", infoPath, backupRootPath);
-		FlayFileHandler.copyDirectoryToDirectory(new File(infoPath), backupRootPath);
-		
+		log.info("[Backup] Copy Info folder {} to {}", flayProperties.getInfoPath(), backupRootPath);
+		FlayFileHandler.copyDirectoryToDirectory(new File(flayProperties.getInfoPath()), backupRootPath);
+
 		// Cover, Subtitlea file copy
 		log.info("[Backup] Copy Instance file to {}", backupInstanceFilePath);
 		for (Flay flay : instanceFlayList) {
@@ -373,21 +360,21 @@ public class BatchExecutor {
 //			for (File file : flay.getFiles().get(Flay.SUBTI))
 //				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
 //		}
-		
+
 		log.info("[Backup] Compress Instance folder");
 		compress(backupRootPath, backupInstanceJarFile);
-		
+
 		log.info("[Backup] Compress Archive folder");
-		compress(new File(archivePath), backupArchiveJarFile);
+		compress(new File(flayProperties.getArchivePath()), backupArchiveJarFile);
 
 		log.info("[Backup] Delete Instance folder {}", backupRootPath);
 		FlayFileHandler.deleteDirectory(backupRootPath);
-		
+
 		notificationService.announce("Backup", "Flay source");
 
 		log.info("[Backup] END");
 	}
-	
+
 	private void writeFileWithUTF8BOM(File file, Collection<String> lines) {
 		try (BufferedWriter bufferedWriter = Files.newBufferedWriter(file.toPath(), Charset.forName("UTF-8"), StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
 			bufferedWriter.write(65279); // UTF-8의 BOM인 "EF BB BF"를 UTF-16BE 로 변환

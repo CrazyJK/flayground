@@ -11,10 +11,11 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.info.domain.History;
 import lombok.extern.slf4j.Slf4j;
 
@@ -22,13 +23,13 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class HistoryRepository {
 
-	@Value("${path.info}") String infoPath;
+	@Autowired FlayProperties flayProperties;
 
 	List<History> list;
 	long id = 0;
-	
+
 	File getInfoFile() {
-		return new File(infoPath, Flayground.InfoFilename.HISTORY);
+		return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.HISTORY);
 	}
 
 	@PostConstruct
@@ -43,7 +44,7 @@ public class HistoryRepository {
 			if (line.trim().length() == 0) {
 				continue;
 			}
-			
+
 			String[] split = StringUtils.split(line, ",", 4);
 			History history = new History();
 			history.setId(id++);

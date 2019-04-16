@@ -10,12 +10,13 @@ import java.util.stream.Stream;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.info.domain.Actress;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,13 +24,13 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
-	@Value("${path.info}") String infoPath;
+	@Autowired FlayProperties flayProperties;
 
 	Collection<File> coverPool;
-	
+
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, Flayground.InfoFilename.ACTRESS);
+		return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.ACTRESS);
 	}
 
 	@Override
@@ -38,7 +39,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 		actress.setCovers(findCoverFile(name));
 		return actress;
 	}
-	
+
 	@Override
 	TypeReference<List<Actress>> getTypeReference() {
 		return new TypeReference<List<Actress>>() {};
@@ -54,21 +55,21 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 			Supplier<Stream<File>> supplier = () -> coverPool.stream().filter(f -> {
 				return f.getName().startsWith(name);
 			});
-			long count = supplier.get().count();			
+			long count = supplier.get().count();
 			if (count == 0) {
 				return null;
 			} else {
-				return supplier.get().collect(Collectors.toList()); 
+				return supplier.get().collect(Collectors.toList());
 			}
-		} else { 
+		} else {
 			return null;
 		}
 	}
 
 	@PostConstruct
 	void loadCover() {
-		coverPool = FileUtils.listFiles(new File(infoPath), Flayground.FILE.IMAGE_SUFFIXs, true);
+		coverPool = FileUtils.listFiles(new File(flayProperties.getInfoPath()), Flayground.FILE.IMAGE_SUFFIXs, true);
 		log.info(String.format("%5s actress cover", coverPool.size()));
 	}
-	
+
 }

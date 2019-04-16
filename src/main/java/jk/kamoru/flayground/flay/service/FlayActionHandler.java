@@ -8,11 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.web.socket.notice.AnnounceService;
@@ -22,24 +22,22 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayActionHandler {
 
+	@Autowired FlayProperties flayProperties;
+
 	@Autowired AnnounceService notificationService;
 
-	@Value("${app.video-player}") String player;
-	@Value("${app.subtitles-editor}") String editer;
-	@Value("${app.picture-editor}") String painter;
-
 	public void play(Flay flay) {
-		exec(composite(player, flay.getFiles().get(Flay.MOVIE)));
+		exec(composite(flayProperties.getPlayerApp(), flay.getFiles().get(Flay.MOVIE)));
 		notificationService.announce("Play " + flay.getOpus(), flay.getFullname());
 	}
 
 	public void edit(Flay flay) {
-		exec(composite(editer, flay.getFiles().get(Flay.SUBTI)));
+		exec(composite(flayProperties.getEditorApp(), flay.getFiles().get(Flay.SUBTI)));
 		notificationService.announce("Edit " + flay.getOpus(), flay.getFullname());
 	}
 
 	public void paint(Image image) {
-		exec(composite(painter, Arrays.asList(image.getFile())));
+		exec(composite(flayProperties.getPaintApp(), Arrays.asList(image.getFile())));
 		notificationService.announce("Paint " + image.getName(), image.getPath());
 	}
 

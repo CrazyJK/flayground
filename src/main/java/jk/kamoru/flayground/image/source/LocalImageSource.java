@@ -12,12 +12,12 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.watch.DirectoryWatcher;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.image.ImageNotfoundException;
 import jk.kamoru.flayground.image.domain.Image;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class LocalImageSource implements ImageSource<Image> {
 
-	@Value("${path.image.storage}") String[] imagePaths;
+	@Autowired FlayProperties flayProperties;
 
 	@Autowired AnnounceService notificationService;
 
@@ -39,7 +39,7 @@ public class LocalImageSource implements ImageSource<Image> {
 	private synchronized void load() {
 		AtomicInteger indexCounter = new AtomicInteger(0);
 		imageList = new ArrayList<>();
-		for (String path : imagePaths) {
+		for (String path : flayProperties.getImagePath()) {
 			File dir = new File(path);
 			if (dir.isDirectory()) {
 				Collection<File> listFiles = FileUtils.listFiles(dir, null, true);
@@ -52,11 +52,11 @@ public class LocalImageSource implements ImageSource<Image> {
 			}
 		}
 		log.info(String.format("%5s Image", size()));
-		
+
 		if (!changed)
 			startWatcher();
 	}
-	
+
 	@Override
 	public List<Image> list() {
 		return imageList;
@@ -66,7 +66,7 @@ public class LocalImageSource implements ImageSource<Image> {
 	public Image get(int idx) {
 		if (-1 < idx && idx < size())
 			return imageList.get(idx);
-		else 
+		else
 			throw new ImageNotfoundException(idx);
 	}
 
@@ -88,7 +88,7 @@ public class LocalImageSource implements ImageSource<Image> {
 
 	private void startWatcher() {
 		ExecutorService service = Executors.newSingleThreadExecutor();
-		Runnable watcher = new DirectoryWatcher(this.getClass().getSimpleName(), imagePaths) {
+		Runnable watcher = new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePath()) {
 
 			@Override
 			protected void createdFile(File file) {
@@ -99,7 +99,7 @@ public class LocalImageSource implements ImageSource<Image> {
 			protected void deletedFile(File file) {
 				changed = Flayground.FILE.isImage(file);
 			}
-			
+
 			@Override
 			protected void modifiedFile(File file) {
 				changed = Flayground.FILE.isImage(file);

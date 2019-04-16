@@ -3,22 +3,23 @@ package jk.kamoru.flayground.info.source;
 import java.io.File;
 import java.util.List;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.info.domain.Video;
 
 @Repository
 public class VideoInfoSource extends InfoSourceJsonAdapter<Video, String> {
 
-	@Value("${path.info}") String infoPath;
+	@Autowired FlayProperties flayProperties;
 
 	@Override
 	File getInfoFile() {
-		return new File(infoPath, Flayground.InfoFilename.VIDEO);
+		return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.VIDEO);
 	}
 
 	@Override

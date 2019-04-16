@@ -11,6 +11,9 @@ import lombok.Data;
 @ConfigurationProperties(prefix = "flay")
 public class FlayProperties {
 
+	private Backup backup = new Backup();
+	private Score score = new Score();
+
 	private boolean moveWatched = false;
 	private boolean deleteLowerRank = false;
 	private boolean deleteLowerScore = false;
@@ -46,4 +49,20 @@ public class FlayProperties {
 		deleteLowerScore = BooleanUtils.negate(deleteLowerScore);
 		return deleteLowerScore;
 	}
+
+	@Data
+	public static class Backup {
+		private String instanceJarFilename = "flayground-instance.jar";
+		private String archiveJarFilename  = "flayground-archive.jar";
+		private String instanceCsvFilename = "flay-instance.csv";
+		private String archiveCsvFilename  = "flay-archive.csv";
+	}
+
+	@Data
+	public static class Score {
+		private int rankPoint = 20;
+		private int playPoint = 1;
+		private int subtitlesPoint = 50;
+	}
+
 }

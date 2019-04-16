@@ -44,10 +44,10 @@ public class BatchExecutor {
 		/** InstanceVideoSource */ I, /** ArchiveVideoSource */ A, /** Backup */ B
 	}
 
-	public static final String BACKUP_INSTANCE_JAR_FILENAME = "flayground-instance.jar";
-	public static final String BACKUP_ARCHIVE_JAR_FILENAME  = "flayground-archive.jar";
-	public static final String BACKUP_INSTANCE_CSV_FILENAME = "flay-instance.csv";
-	public static final String BACKUP_ARCHIVE_CSV_FILENAME  = "flay-archive.csv";
+//	public static final String BACKUP_INSTANCE_JAR_FILENAME = "flayground-instance.jar";
+//	public static final String BACKUP_ARCHIVE_JAR_FILENAME  = "flayground-archive.jar";
+//	public static final String BACKUP_INSTANCE_CSV_FILENAME = "flay-instance.csv";
+//	public static final String BACKUP_ARCHIVE_CSV_FILENAME  = "flay-archive.csv";
 
 	@Autowired FlayProperties flayProperties;
 
@@ -55,6 +55,7 @@ public class BatchExecutor {
 	@Autowired FlaySource  archiveFlaySource;
 	@Autowired HistoryService historyService;
 	@Autowired AnnounceService notificationService;
+	@Autowired ScoreCalculator scoreCalculator;
 
 	public void reload() {
 		log.info("[reload]");
@@ -191,12 +192,12 @@ public class BatchExecutor {
 		long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
 		List<Flay> sorted = instanceFlaySource.list().stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0 && f.getVideo().getRank() > 0 && f.getVideo().getPlay() > 0)
-				.sorted((f1, f2) -> ScoreCalculator.compare(f2, f1))
+				.sorted((f1, f2) -> scoreCalculator.compare(f2, f1))
 				.collect(Collectors.toList());
 		for (Flay flay : sorted) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {
-				log.info("lower score {} score={} over {}", flay.getOpus(), ScoreCalculator.calc(flay), FlayFileHandler.prettyFileLength(lengthSum));
+				log.info("lower score {} score={} over {}", flay.getOpus(), scoreCalculator.calc(flay), FlayFileHandler.prettyFileLength(lengthSum));
 				archiving(flay);
 			}
 		}
@@ -295,6 +296,11 @@ public class BatchExecutor {
 
 		final String CSV_HEADER = "Studio,Opus,Title,Actress,Released,Rank,Fullname";
 		final String CSV_FORMAT = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
+
+		final String BACKUP_INSTANCE_JAR_FILENAME = flayProperties.getBackup().getInstanceJarFilename();
+		final String BACKUP_ARCHIVE_JAR_FILENAME  = flayProperties.getBackup().getArchiveCsvFilename();
+		final String BACKUP_INSTANCE_CSV_FILENAME = flayProperties.getBackup().getInstanceCsvFilename();
+		final String BACKUP_ARCHIVE_CSV_FILENAME  = flayProperties.getBackup().getArchiveCsvFilename();
 
 		File backupInstanceJarFile = new File(flayProperties.getBackupPath(), BACKUP_INSTANCE_JAR_FILENAME);
 		File backupArchiveJarFile  = new File(flayProperties.getBackupPath(), BACKUP_ARCHIVE_JAR_FILENAME);

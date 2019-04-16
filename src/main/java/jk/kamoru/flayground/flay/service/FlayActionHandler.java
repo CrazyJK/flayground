@@ -11,8 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.web.socket.notice.AnnounceService;

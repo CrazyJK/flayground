@@ -10,8 +10,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -109,7 +109,7 @@ public class FlayServiceImpl implements FlayService {
 		List<File> movieList = flay.getFiles().get(Flay.MOVIE);
 		List<File> subtiList = flay.getFiles().get(Flay.SUBTI);
 
-		String[] stagePaths = flayProperties.getStagePath();
+		String[] stagePaths = flayProperties.getStagePaths();
 		File stagePath = new File(stagePaths [stagePaths.length-1]);
 		for (File file : candiList) {
 			String filename = file.getName();

@@ -15,9 +15,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.watch.DirectoryWatcher;
-import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.image.ImageNotfoundException;
 import jk.kamoru.flayground.image.domain.Image;
@@ -39,7 +39,7 @@ public class LocalImageSource implements ImageSource<Image> {
 	private synchronized void load() {
 		AtomicInteger indexCounter = new AtomicInteger(0);
 		imageList = new ArrayList<>();
-		for (String path : flayProperties.getImagePath()) {
+		for (String path : flayProperties.getImagePaths()) {
 			File dir = new File(path);
 			if (dir.isDirectory()) {
 				Collection<File> listFiles = FileUtils.listFiles(dir, null, true);
@@ -88,7 +88,7 @@ public class LocalImageSource implements ImageSource<Image> {
 
 	private void startWatcher() {
 		ExecutorService service = Executors.newSingleThreadExecutor();
-		Runnable watcher = new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePath()) {
+		Runnable watcher = new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
 
 			@Override
 			protected void createdFile(File file) {

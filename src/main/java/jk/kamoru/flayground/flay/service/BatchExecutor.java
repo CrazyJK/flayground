@@ -21,8 +21,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
@@ -123,7 +123,7 @@ public class BatchExecutor {
 			deleteLowerScore();
 
 		assembleFlay();
-		deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePath(), flayProperties.getCoverPath()));
+		deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath()));
 		instanceFlaySource.load();
 		notificationService.announce("Batch", "Instance Source");
 	}
@@ -229,11 +229,11 @@ public class BatchExecutor {
 
 		if (movieSize > 0) {
 			String path = flay.getFiles().get(Flay.MOVIE).get(0).getParent();
-			if (StringUtils.equalsAny(path, flayProperties.getStagePath())) { // stage 같은 경로에 있으면, 날자 sub폴더
+			if (StringUtils.equalsAny(path, flayProperties.getStagePaths())) { // stage 같은 경로에 있으면, 날자 sub폴더
 				return new File(path, flay.getRelease().substring(0, 4));
 			} else if (StringUtils.equals(path, flayProperties.getStoragePath())) { // storage 같은 경로에 있으면, studio sub폴더
 				return new File(path, flay.getStudio());
-			} else if (StringUtils.startsWithAny(path, flayProperties.getStagePath()) || StringUtils.startsWith(path, flayProperties.getStoragePath())) { // 하위에 있으면 현폴더
+			} else if (StringUtils.startsWithAny(path, flayProperties.getStagePaths()) || StringUtils.startsWith(path, flayProperties.getStoragePath())) { // 하위에 있으면 현폴더
 				return new File(path);
 			}
 		} else if (coverSize > 0) {

@@ -16,8 +16,8 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.web.access.domain.AccessLogStatistic;
 import jk.kamoru.flayground.web.access.repository.AccessLogRepository;
 import lombok.extern.slf4j.Slf4j;

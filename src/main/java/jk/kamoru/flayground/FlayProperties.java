@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.configure;
+package jk.kamoru.flayground;
 
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -16,21 +16,21 @@ public class FlayProperties {
 	private boolean deleteLowerScore = false;
 	private int storageLimit = 7168;
 
-	private String archivePath;
-	private String storagePath;
-	private String[] stagePath;
-	private String coverPath;
-	private String queuePath;
+	private String   archivePath;
+	private String   storagePath;
+	private String[]   stagePaths;
+	private String     coverPath;
+	private String     queuePath;
 	private String candidatePath;
 	private String subtitlesPath;
-	private String infoPath;
-	private String[] todayisPath;
-	private String[] imagePath;
-	private String backupPath;
+	private String      infoPath;
+	private String[] todayisPaths;
+	private String[]   imagePaths;
+	private String    backupPath;
 
 	private String playerApp;
 	private String editorApp;
-	private String paintApp;
+	private String  paintApp;
 
 	public Boolean negateMoveWatched() {
 		moveWatched = BooleanUtils.negate(moveWatched);

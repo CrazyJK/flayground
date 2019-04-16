@@ -15,8 +15,8 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.info.domain.Actress;
 import lombok.extern.slf4j.Slf4j;
 

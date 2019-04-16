@@ -11,8 +11,8 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.configure.FlayProperties;
 import jk.kamoru.flayground.flay.service.FlayActionHandler;
 import jk.kamoru.flayground.todayis.domain.Todayis;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class TodayisServiceImpl implements TodayisService {
 	@Override
 	public Collection<Todayis> list() {
 		list = new ArrayList<>();
-		for (String path : flayProperties.getTodayisPath()) {
+		for (String path : flayProperties.getTodayisPaths()) {
 			Collection<File> listFiles = FileUtils.listFiles(new File(path), null, true);
 			for (File file : listFiles) {
 				if (Flayground.FILE.isVideo(file)) {

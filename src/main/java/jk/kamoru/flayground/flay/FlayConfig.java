@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import jk.kamoru.flayground.configure.FlayProperties;
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.flay.source.FileBasedFlaySource;
 import jk.kamoru.flayground.flay.source.FlayFactory;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -22,7 +22,7 @@ public class FlayConfig {
 
 	@Bean("instanceFlaySource")
 	public FlaySource instanceFlaySource() {
-		String[] instancePaths = ArrayUtils.addAll(flayProperties.getStagePath(), flayProperties.getCoverPath(), flayProperties.getStoragePath());
+		String[] instancePaths = ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(), flayProperties.getStoragePath());
 		return new FileBasedFlaySource(instancePaths );
 	}
 

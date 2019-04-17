@@ -55,7 +55,7 @@ public class HistoryRepository {
 			if (split.length > 2)
 				history.setAction(History.Action.valueOf(split[2].trim().toUpperCase()));
 			if (split.length > 3)
-				history.setDesc(StringUtils.substringBetween(split[3], "\"", "\""));
+				history.setDesc(split[3].trim());
 			list.add(history);
 		}
 		log.info(String.format("%5s history - %s", list.size(), getInfoFile()));

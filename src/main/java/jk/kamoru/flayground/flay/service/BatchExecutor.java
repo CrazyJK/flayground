@@ -402,7 +402,7 @@ public class BatchExecutor {
 		log.info("[Backup] Compress Archive folder");
 		compress(backupArchiveJarFile, flayProperties.getArchivePath());
 
-		log.info("[Backup] Delete Instance folder {}", backupRootPath);
+		log.info("[Backup] Delete Instance Backup Temp folder {}", backupRootPath);
 		FlayFileHandler.deleteDirectory(backupRootPath);
 
 		notificationService.announce("Backup", "Flay source");
@@ -433,7 +433,7 @@ public class BatchExecutor {
 		 * -M  항목에 대해 Manifest 파일을 생성하지 않습니다.
 		 */
 		List<String> commands = Arrays.asList("jar", "cvf0M", destJarFile.getAbsolutePath(), "-C", targetFolder.getAbsolutePath(), ".");
-		File logFile = new File(destJarFile.getParentFile(), destJarFile.getName() + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");
+		File logFile = new File(destJarFile.getParentFile(), destJarFile.getName() + "." + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");
 		ProcessBuilder builder = new ProcessBuilder(commands);
 		builder.redirectOutput(Redirect.to(logFile));
 		builder.redirectError(Redirect.INHERIT);

@@ -325,17 +325,19 @@ public class BatchExecutor {
 		final String CSV_FORMAT = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
 
 		final String BACKUP_INSTANCE_JAR_FILENAME = flayProperties.getBackup().getInstanceJarFilename();
-		final String BACKUP_ARCHIVE_JAR_FILENAME  = flayProperties.getBackup().getArchiveCsvFilename();
+		final String BACKUP_ARCHIVE_JAR_FILENAME  = flayProperties.getBackup().getArchiveJarFilename();
 		final String BACKUP_INSTANCE_CSV_FILENAME = flayProperties.getBackup().getInstanceCsvFilename();
 		final String BACKUP_ARCHIVE_CSV_FILENAME  = flayProperties.getBackup().getArchiveCsvFilename();
 
 		File backupInstanceJarFile = new File(flayProperties.getBackupPath(), BACKUP_INSTANCE_JAR_FILENAME);
 		File backupArchiveJarFile  = new File(flayProperties.getBackupPath(), BACKUP_ARCHIVE_JAR_FILENAME);
-		File backupRootPath = new File(flayProperties.getQueuePath(), "backup_" + Flayground.Format.Date.YYYY_MM_DD.format(new Date()));
-		File backupInstanceFilePath = new File(backupRootPath, "instance");
+		File backupRootPath = new File(flayProperties.getQueuePath(), "InstanceBackupTemp");
+		File backupInstanceFilePath = new File(backupRootPath, "instanceFiles");
+
 		FlayFileHandler.createDirectory(backupRootPath);
 		FlayFileHandler.cleanDirectory(backupRootPath);
 		FlayFileHandler.createDirectory(backupInstanceFilePath);
+		FlayFileHandler.cleanDirectory(flayProperties.getBackupPath());
 
 		// video list backup to csv
 		Collection<Flay> instanceFlayList = instanceFlaySource.list();
@@ -395,10 +397,10 @@ public class BatchExecutor {
 //		}
 
 		log.info("[Backup] Compress Instance folder");
-		compress(backupRootPath, backupInstanceJarFile);
+		compress(backupInstanceJarFile, backupRootPath);
 
 		log.info("[Backup] Compress Archive folder");
-		compress(flayProperties.getArchivePath(), backupArchiveJarFile);
+		compress(backupArchiveJarFile, flayProperties.getArchivePath());
 
 		log.info("[Backup] Delete Instance folder {}", backupRootPath);
 		FlayFileHandler.deleteDirectory(backupRootPath);
@@ -421,9 +423,17 @@ public class BatchExecutor {
 		}
 	}
 
-	private void compress(File srcPath, File destinationFile) {
-		List<String> commands = Arrays.asList("jar", "c0fM", destinationFile.getAbsolutePath(), "-C", srcPath.getAbsolutePath(), ".");
-		File logFile = new File(srcPath.getParentFile(), srcPath.getName() + ".log");
+	private void compress(File destJarFile, File targetFolder) {
+		/*
+		 * jar options
+		 * -c  새 아카이브를 생성합니다.
+		 * -v  표준 출력에 상세 정보 출력을 생성합니다.
+		 * -f  아카이브 파일 이름을 지정합니다.
+		 * -0  저장 전용: ZIP 압축을 사용하지 않습니다.
+		 * -M  항목에 대해 Manifest 파일을 생성하지 않습니다.
+		 */
+		List<String> commands = Arrays.asList("jar", "cvf0M", destJarFile.getAbsolutePath(), "-C", targetFolder.getAbsolutePath(), ".");
+		File logFile = new File(destJarFile.getParentFile(), destJarFile.getName() + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");
 		ProcessBuilder builder = new ProcessBuilder(commands);
 		builder.redirectOutput(Redirect.to(logFile));
 		builder.redirectError(Redirect.INHERIT);
@@ -431,7 +441,7 @@ public class BatchExecutor {
 			log.info("         jar {}", commands);
 			Process process = builder.start();
 			process.waitFor();
-			log.info("         completed {}", FlayFileHandler.prettyFileLength(destinationFile.length()));
+			log.info("         completed {}", FlayFileHandler.prettyFileLength(destJarFile.length()));
 		} catch (IOException | InterruptedException e) {
 			throw new IllegalStateException("Fail to jar", e);
 		}

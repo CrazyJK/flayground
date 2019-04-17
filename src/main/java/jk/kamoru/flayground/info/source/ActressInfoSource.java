@@ -68,7 +68,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
 	@PostConstruct
 	void loadCover() {
-		coverPool = FileUtils.listFiles(new File(flayProperties.getInfoPath()), Flayground.FILE.IMAGE_SUFFIXs, true);
+		coverPool = FileUtils.listFiles(flayProperties.getInfoPath(), Flayground.FILE.IMAGE_SUFFIXs, true);
 		log.info(String.format("%5s actress cover", coverPool.size()));
 	}
 

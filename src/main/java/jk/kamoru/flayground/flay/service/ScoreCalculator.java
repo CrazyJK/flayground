@@ -1,5 +1,6 @@
 package jk.kamoru.flayground.flay.service;
 
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -18,11 +19,6 @@ public class ScoreCalculator {
 	}
 
 	public int compare(Flay flay1, Flay flay2) {
-		int s1 = calc(flay1);
-		int s2 = calc(flay2);
-		if (s1 == s2) {
-            return 0;
-        }
-        return s1 < s2 ? -1 : 1;
+		return NumberUtils.compare(calc(flay1), calc(flay2));
 	}
 }

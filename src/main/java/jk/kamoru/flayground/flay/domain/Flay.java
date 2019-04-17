@@ -27,7 +27,7 @@ public class Flay {
 	String title;
 	List<String> actressList;
 	String release;
-	
+
 	// files
 	Map<String, List<File>> files = new HashMap<>();
 
@@ -39,7 +39,7 @@ public class Flay {
 		files.put(COVER, new ArrayList<File>());
 		files.put(CANDI, new ArrayList<File>());
 	}
-	
+
 	public void addMovieFile(File file) {
 		files.get(MOVIE).add(file);
 	}
@@ -70,7 +70,7 @@ public class Flay {
 			+  (files.get(SUBTI) != null ? files.get(SUBTI).stream().mapToLong(f -> f.length()).sum() : -1)
 			+  (files.get(COVER) != null ? files.get(COVER).stream().mapToLong(f -> f.length()).sum() : -1);
 	}
-	
+
 	public String getFullname() {
 		return String.format("[%s][%s][%s][%s][%s]", studio, opus, title, getActressName(), release);
 	}

@@ -23,9 +23,9 @@ public class FileBasedFlaySource implements FlaySource {
 	@Autowired FlayFactory flayFactory;
 
 	Map<String, Flay> flayMap;
-	private String[] paths;
+	private File[] paths;
 
-	public FileBasedFlaySource(String...paths) {
+	public FileBasedFlaySource(File...paths) {
 		this.paths = paths;
 	}
 
@@ -36,8 +36,7 @@ public class FileBasedFlaySource implements FlaySource {
 
 		flayMap = new HashMap<>();
 		Collection<File> listFiles = new ArrayList<>();
-		for (String path : paths) {
-			File dir = new File(path);
+		for (File dir : paths) {
 			if (dir.isDirectory()) {
 				Collection<File> found = FileUtils.listFiles(dir, null, true);
 				log.info(String.format("%5s file    - %s", found.size(), dir));

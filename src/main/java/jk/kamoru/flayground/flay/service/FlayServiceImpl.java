@@ -109,8 +109,7 @@ public class FlayServiceImpl implements FlayService {
 		List<File> movieList = flay.getFiles().get(Flay.MOVIE);
 		List<File> subtiList = flay.getFiles().get(Flay.SUBTI);
 
-		String[] stagePaths = flayProperties.getStagePaths();
-		File stagePath = new File(stagePaths [stagePaths.length-1]);
+		File stagePath = flayProperties.getStagePaths()[0];
 		for (File file : candiList) {
 			String filename = file.getName();
 			FlayFileHandler.moveFileToDirectory(file, stagePath);

@@ -10,7 +10,6 @@ import java.nio.file.FileSystems;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
 import java.nio.file.WatchEvent;
 import java.nio.file.WatchEvent.Kind;
@@ -29,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
  * <pre>
  * about Exception, user limit of inotify watches reached
  * Case Ubuntu
- * 1. Add the following line to a new file under /etc/sysctl.d/ directory: 
+ * 1. Add the following line to a new file under /etc/sysctl.d/ directory:
  *   fs.inotify.max_user_watches = 524288
  * 2. read README in /etc/sysctl.d/
  *   sudo service procps start
@@ -42,8 +41,8 @@ public abstract class DirectoryWatcher implements Runnable {
 	private WatchService watcher;
 	private Map<WatchKey, Path> keys;
 	private String taskName;
-	private String[] paths;
-	
+	private File[] paths;
+
 	// override
 	protected void  createdFile(File file) {}
 	protected void  deletedFile(File file) {}
@@ -57,7 +56,7 @@ public abstract class DirectoryWatcher implements Runnable {
 	 * @param taskName task name
 	 * @param paths directory to watched
 	 */
-	public DirectoryWatcher(String taskName, String... paths) {
+	public DirectoryWatcher(String taskName, File... paths) {
 		this.taskName = taskName;
 		this.paths = paths;
 	}
@@ -68,8 +67,8 @@ public abstract class DirectoryWatcher implements Runnable {
 		try {
 			watcher = FileSystems.getDefault().newWatchService();
 			keys = new HashMap<>();
-			for (String path : paths) {
-				walkAndRegisterDirectories(Paths.get(path));
+			for (File path : paths) {
+				walkAndRegisterDirectories(path.toPath());
 			}
 			processEvents();
 		} catch (IOException | InterruptedException e) {
@@ -85,7 +84,7 @@ public abstract class DirectoryWatcher implements Runnable {
 
 	/**
 	 * Register the given directory, and all its sub-directories, with the WatchService.
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void walkAndRegisterDirectories(final Path start) throws IOException {
 		// register directory and sub-directories
@@ -99,9 +98,9 @@ public abstract class DirectoryWatcher implements Runnable {
 	}
 
 	/**
-	 * Register the given directory with the WatchService; 
+	 * Register the given directory with the WatchService;
 	 * This function will be called by FileVisitor
-	 * @throws IOException 
+	 * @throws IOException
 	 */
 	private void registerDirectory(Path dir) throws IOException {
 		WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
@@ -123,7 +122,7 @@ public abstract class DirectoryWatcher implements Runnable {
 			for (WatchEvent<?> event : key.pollEvents()) {
 				@SuppressWarnings("unchecked")
 				WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
-				
+
 				Kind<Path> kind = pathEvent.kind();
 				Path file = pathEvent.context();
 				Path child = dir.resolve(file);

@@ -44,11 +44,6 @@ public class BatchExecutor {
 		/** InstanceVideoSource */ I, /** ArchiveVideoSource */ A, /** Backup */ B
 	}
 
-//	public static final String BACKUP_INSTANCE_JAR_FILENAME = "flayground-instance.jar";
-//	public static final String BACKUP_ARCHIVE_JAR_FILENAME  = "flayground-archive.jar";
-//	public static final String BACKUP_INSTANCE_CSV_FILENAME = "flay-instance.csv";
-//	public static final String BACKUP_ARCHIVE_CSV_FILENAME  = "flay-archive.csv";
-
 	@Autowired FlayProperties flayProperties;
 
 	@Autowired FlaySource instanceFlaySource;
@@ -165,10 +160,14 @@ public class BatchExecutor {
 			if (flay.getVideo().getRank() > 0 && flay.getVideo().getPlay() > 0) {
 				for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 					for (File file : entry.getValue()) {
-						if (!file.getPath().startsWith(flayProperties.getStoragePath())) {
-							File destDir = new File(flayProperties.getStoragePath(), flay.getStudio());
-							log.info("move {} to {}", file, destDir);
-							FlayFileHandler.moveFileToDirectory(file, destDir);
+						try {
+							if (!file.getCanonicalPath().startsWith(flayProperties.getStoragePath().getCanonicalPath())) {
+								File destDir = new File(flayProperties.getStoragePath(), flay.getStudio());
+								log.info("move {} to {}", file, destDir);
+								FlayFileHandler.moveFileToDirectory(file, destDir);
+							}
+						} catch (IOException e) {
+							throw new IllegalStateException("flay file CanonicalPath error", e);
 						}
 					}
 				}
@@ -188,13 +187,13 @@ public class BatchExecutor {
 
 	private void deleteLowerScore() {
 		log.info("[deleteLowerScore]");
+		final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
 		long lengthSum = 0;
-		long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
-		List<Flay> sorted = instanceFlaySource.list().stream()
+		List<Flay> scoreReverseSortedFlayList = instanceFlaySource.list().stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0 && f.getVideo().getRank() > 0 && f.getVideo().getPlay() > 0)
-				.sorted((f1, f2) -> scoreCalculator.compare(f2, f1))
+				.sorted((f1, f2) -> scoreCalculator.compare(f1, f2))
 				.collect(Collectors.toList());
-		for (Flay flay : sorted) {
+		for (Flay flay : scoreReverseSortedFlayList) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {
 				log.info("lower score {} score={} over {}", flay.getOpus(), scoreCalculator.calc(flay), FlayFileHandler.prettyFileLength(lengthSum));
@@ -205,9 +204,23 @@ public class BatchExecutor {
 
 	private void assembleFlay() {
 		log.info("[assembleFlay]");
+
+		final String storagePath;
+		final String[] stagePaths;
+		final String   coverPath;
+		try {
+			storagePath  = flayProperties.getStoragePath().getCanonicalPath();
+			stagePaths = new String[flayProperties.getStagePaths().length];
+			for (int i=0; i<flayProperties.getStagePaths().length; i++) {
+				stagePaths[i] = flayProperties.getStagePaths()[i].getCanonicalPath();
+			}
+			coverPath = flayProperties.getCoverPath().getCanonicalPath();
+		} catch (IOException e) {
+			throw new IllegalStateException("assembleFlay CanonicalPath error", e);
+		}
+
 		for (Flay flay : instanceFlaySource.list()) {
-			File delegatePath = getDelegatePath(flay);
-			log.debug("assemble {} : {}", flay.getOpus(), delegatePath);
+			File delegatePath = getDelegatePath(flay, storagePath, stagePaths, coverPath);
 			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 				String key = entry.getKey();
 				if (Flay.CANDI.equals(key)) {
@@ -224,38 +237,52 @@ public class BatchExecutor {
 		}
 	}
 
-	private File getDelegatePath(Flay flay) {
+	/**
+	 * flay 파일이 있어야될 위치
+	 * @param flay
+	 * @param storagePath
+	 * @param stagePaths
+	 * @param coverPath
+	 * @return
+	 * @throws IOException
+	 */
+	private File getDelegatePath(Flay flay, String storagePath, String[] stagePaths, String coverPath) {
 		int movieSize = flay.getFiles().get(Flay.MOVIE).size();
 		int coverSize = flay.getFiles().get(Flay.COVER).size();
 
-		if (movieSize > 0) {
-			String path = flay.getFiles().get(Flay.MOVIE).get(0).getParent();
-			if (StringUtils.equalsAny(path, flayProperties.getStagePaths())) { // stage 같은 경로에 있으면, 날자 sub폴더
-				return new File(path, flay.getRelease().substring(0, 4));
-			} else if (StringUtils.equals(path, flayProperties.getStoragePath())) { // storage 같은 경로에 있으면, studio sub폴더
-				return new File(path, flay.getStudio());
-			} else if (StringUtils.startsWithAny(path, flayProperties.getStagePaths()) || StringUtils.startsWith(path, flayProperties.getStoragePath())) { // 하위에 있으면 현폴더
-				return new File(path);
+		try {
+			if (movieSize > 0) {
+				String flayMovieFileFolder = flay.getFiles().get(Flay.MOVIE).get(0).getParentFile().getCanonicalPath();
+				if (StringUtils.equalsAny(flayMovieFileFolder, stagePaths)) { // stage 같은 경로에 있으면, 날자 sub폴더
+					return new File(flayMovieFileFolder, flay.getRelease().substring(0, 4));
+				} else if (StringUtils.equals(flayMovieFileFolder, storagePath)) { // storage 같은 경로에 있으면, studio sub폴더
+					return new File(flayMovieFileFolder, flay.getStudio());
+				} else if (StringUtils.startsWithAny(flayMovieFileFolder, stagePaths)
+						|| StringUtils.startsWith(flayMovieFileFolder, storagePath)) { // 하위에 있으면 현폴더
+					return new File(flayMovieFileFolder);
+				}
+			} else if (coverSize > 0) {
+				String flayCoverFileFolder = flay.getFiles().get(Flay.COVER).get(0).getParentFile().getCanonicalPath();
+				if (StringUtils.equals(flayCoverFileFolder, coverPath)) { // cover 같은 경로에 있으면, 날자 sub폴더
+					return new File(flayCoverFileFolder, flay.getRelease().substring(0, 4));
+				} else if (StringUtils.startsWith(flayCoverFileFolder, coverPath)) { // 하위 경로에 있으면, 현폴더
+					return new File(flayCoverFileFolder);
+				}
 			}
-		} else if (coverSize > 0) {
-			String path = flay.getFiles().get(Flay.COVER).get(0).getParent();
-			if (StringUtils.equalsAny(path, flayProperties.getCoverPath())) { // cover 같은 경로에 있으면, 날자 sub폴더
-				return new File(path, flay.getRelease().substring(0, 4));
-			} else if (StringUtils.startsWithAny(path, flayProperties.getCoverPath())) { // 하위 경로에 있으면, 현폴더
-				return new File(path);
-			}
+		} catch (IOException e) {
+			throw new IllegalStateException("getDelegatePath CanonicalPath error", e);
 		}
 
-		log.info("Not determine delegate path, move to Queue. {}", flay.getOpus());
-		return new File(flayProperties.getQueuePath());
+		log.info("Not determine delegate path, return to Queue path. {}", flay.getOpus());
+		return flayProperties.getQueuePath();
 	}
 
-	private void deleteEmptyFolder(String...emptyManagedPath) {
+	private void deleteEmptyFolder(File...emptyManagedPaths) {
 		log.info("[deleteEmptyFolder]");
-		for (String path : emptyManagedPath) {
-			Collection<File> listDirs = FlayFileHandler.listDirectory(new File(path));
+		for (File path : emptyManagedPaths) {
+			Collection<File> listDirs = FlayFileHandler.listDirectory(path);
 			for (File dir : listDirs) {
-				if (dir.getAbsolutePath().equals(path)) {
+				if (dir.equals(path)) {
 					continue;
 				}
 				int dirSize  = FlayFileHandler.listDirectory(dir).size();
@@ -288,8 +315,8 @@ public class BatchExecutor {
 	}
 
 	public synchronized void backup() {
-		if (StringUtils.isBlank(flayProperties.getBackupPath())) {
-			log.warn("Backup path not set");
+		if (!flayProperties.getBackupPath().exists()) {
+			log.warn("Backup path is wrong");
 			return;
 		}
 		log.info("[Backup] START {}", flayProperties.getBackupPath());
@@ -350,7 +377,7 @@ public class BatchExecutor {
 
 		// Info folder copy
 		log.info("[Backup] Copy Info folder {} to {}", flayProperties.getInfoPath(), backupRootPath);
-		FlayFileHandler.copyDirectoryToDirectory(new File(flayProperties.getInfoPath()), backupRootPath);
+		FlayFileHandler.copyDirectoryToDirectory(flayProperties.getInfoPath(), backupRootPath);
 
 		// Cover, Subtitlea file copy
 		log.info("[Backup] Copy Instance file to {}", backupInstanceFilePath);
@@ -371,7 +398,7 @@ public class BatchExecutor {
 		compress(backupRootPath, backupInstanceJarFile);
 
 		log.info("[Backup] Compress Archive folder");
-		compress(new File(flayProperties.getArchivePath()), backupArchiveJarFile);
+		compress(flayProperties.getArchivePath(), backupArchiveJarFile);
 
 		log.info("[Backup] Delete Instance folder {}", backupRootPath);
 		FlayFileHandler.deleteDirectory(backupRootPath);

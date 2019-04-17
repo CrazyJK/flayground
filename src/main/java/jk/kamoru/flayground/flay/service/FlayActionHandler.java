@@ -80,6 +80,10 @@ public class FlayActionHandler {
 		}
 	}
 
+	private List<String> composite(File command, List<File> files) {
+		return composite(command.getAbsolutePath(), files);
+	}
+
 	private List<String> composite(String command, List<File> files) {
 		List<String> commands = new ArrayList<>();
 		commands.add(command);

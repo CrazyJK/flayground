@@ -1,5 +1,7 @@
 package jk.kamoru.flayground.flay;
 
+import java.io.File;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -22,8 +24,8 @@ public class FlayConfig {
 
 	@Bean("instanceFlaySource")
 	public FlaySource instanceFlaySource() {
-		String[] instancePaths = ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(), flayProperties.getStoragePath());
-		return new FileBasedFlaySource(instancePaths );
+		File[] instancePaths = ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(), flayProperties.getStoragePath());
+		return new FileBasedFlaySource(instancePaths);
 	}
 
 	@Bean("archiveFlaySource")

@@ -30,8 +30,8 @@ public class TodayisServiceImpl implements TodayisService {
 	@Override
 	public Collection<Todayis> list() {
 		list = new ArrayList<>();
-		for (String path : flayProperties.getTodayisPaths()) {
-			Collection<File> listFiles = FileUtils.listFiles(new File(path), null, true);
+		for (File path : flayProperties.getTodayisPaths()) {
+			Collection<File> listFiles = FileUtils.listFiles(path, null, true);
 			for (File file : listFiles) {
 				if (Flayground.FILE.isVideo(file)) {
 					list.add(new Todayis(file));
@@ -52,7 +52,7 @@ public class TodayisServiceImpl implements TodayisService {
 	@Override
 	public void play(Todayis todayis) {
 		List<String> commands = new ArrayList<>();
-		commands.add(flayProperties.getPlayerApp());
+		commands.add(flayProperties.getPlayerApp().toString());
 		commands.add(todayis.getFilePath());
 		flayActionHandler.exec(commands);
 	}

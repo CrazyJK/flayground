@@ -39,8 +39,7 @@ public class LocalImageSource implements ImageSource<Image> {
 	private synchronized void load() {
 		AtomicInteger indexCounter = new AtomicInteger(0);
 		imageList = new ArrayList<>();
-		for (String path : flayProperties.getImagePaths()) {
-			File dir = new File(path);
+		for (File dir : flayProperties.getImagePaths()) {
 			if (dir.isDirectory()) {
 				Collection<File> listFiles = FileUtils.listFiles(dir, null, true);
 				log.info(String.format("%5s file    - %s", listFiles.size(), dir));

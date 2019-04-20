@@ -10,10 +10,22 @@ public abstract class InfoSourceAdapter<T extends Info<K>, K> implements InfoSou
 
 	List<T> list;
 
+	/**
+	 * json 정보 파일
+	 * @return
+	 */
 	abstract File getInfoFile();
-	
+
+	/**
+	 * 도메인 생성
+	 * @param key
+	 * @return
+	 */
 	abstract T newInstance(K key);
-	
+
+	/**
+	 * 도메인 저장
+	 */
 	abstract void save();
 
 	@Override

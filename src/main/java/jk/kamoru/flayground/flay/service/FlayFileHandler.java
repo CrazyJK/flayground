@@ -12,20 +12,26 @@ import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@Service
 public class FlayFileHandler {
 
-	public static void rename(Flay flay, List<String> actressList) {
+	@Autowired FlayProperties flayProperties;
+
+	public void rename(Flay flay, List<String> actressList) {
 		flay.setActressList(actressList);
 		rename(flay);
 	}
 	
-	public static void rename(Flay flay, String studio, String title, List<String> actressList, String release) {
+	public void rename(Flay flay, String studio, String title, List<String> actressList, String release) {
 		flay.setStudio(studio);
 		flay.setTitle(title);
 		flay.setActressList(actressList);
@@ -33,7 +39,7 @@ public class FlayFileHandler {
 		rename(flay);
 	}
 
-	public static void rename(Flay flay) {
+	public void rename(Flay flay) {
 		for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 			String key = entry.getKey();
 			List<File> fileList = entry.getValue();
@@ -60,7 +66,7 @@ public class FlayFileHandler {
 		}
 	}
 	
-	public static void createDirectory(File directory) {
+	public void createDirectory(File directory) {
 		try {
 			Files.createDirectories(directory.toPath());
 		} catch (IOException e) {
@@ -68,7 +74,7 @@ public class FlayFileHandler {
 		}
 	}
 
-	public static void cleanDirectory(File directory) {
+	public void cleanDirectory(File directory) {
 		try {
 			FileUtils.cleanDirectory(directory);
 		} catch (IOException e) {
@@ -76,15 +82,16 @@ public class FlayFileHandler {
 		}
 	}
 
-	public static void deleteDirectory(File directory) {
+	public void deleteDirectory(File directory) {
 		try {
 			FileUtils.deleteDirectory(directory);
+			log.warn("deleted Directory {}", directory);
 		} catch (IOException e) {
 			throw new IllegalStateException("fail to deleteDirectory " + directory, e);
 		}
 	}
 
-	public static void copyDirectoryToDirectory(File fromDirectory, File toDirectory) {
+	public void copyDirectoryToDirectory(File fromDirectory, File toDirectory) {
 		try {
 			final long length = FileUtils.listFiles(toDirectory, null, true).stream().mapToLong(f -> f.length()).sum();
 			checkDiskSpace(fromDirectory, length);
@@ -94,7 +101,7 @@ public class FlayFileHandler {
 		}
 	}
 
-	public static void copyFileToDirectory(File file, File directory) {
+	public void copyFileToDirectory(File file, File directory) {
 		try {
 			checkDiskSpace(directory, file.length());
 			FileUtils.copyFileToDirectory(file, directory);
@@ -103,7 +110,7 @@ public class FlayFileHandler {
 		}
 	}
 
-	public static void moveFileToDirectory(File file, File directory) {
+	public void moveFileToDirectory(File file, File directory) {
 		try {
 			checkDiskSpace(directory, file.length());
 			FileUtils.moveFileToDirectory(file, directory, true);
@@ -113,8 +120,10 @@ public class FlayFileHandler {
 			long destSize = destFile.length();
 			if (srcSize == destSize || srcSize < destSize) {
 				FileUtils.deleteQuietly(file);
+				log.warn("moveFileToDirectory destFile is exist {}. srcFile deleted {}", destFile, file);
 			} else {
 				FileUtils.deleteQuietly(destFile);
+				log.warn("moveFileToDirectory destFile is small {}. destFile deleted", destFile);
 				moveFileToDirectory(file, directory);
 			}
 		} catch (IOException e) {
@@ -122,31 +131,30 @@ public class FlayFileHandler {
 		}
 	}
 
-	public static void checkDiskSpace(File disk, long length) throws IOException {
+	public void checkDiskSpace(File disk, long length) throws IOException {
 		long freeSpace = disk.getFreeSpace();
 		if (0 < freeSpace && freeSpace < length) {
 			throw new IOException("Disk free space is too small. " + disk + ": " + prettyFileLength(freeSpace) + " < " + prettyFileLength(length));
 		}
 	}
 	
-	public static void moveFileToRoot(File file) {
-		File root = file.toPath().getRoot().toFile();
-		moveFileToDirectory(file, root);
-		log.info("moveFileToRoot {} -> {}", file, root);
-	}
-	
-	public static void deleteFile(File file) {
+	public void deleteFile(File file) {
 		if (file.isDirectory()) {
 			throw new IllegalStateException("fail to deleteFile. it is directory: " + file);
 		}
-		boolean result = FileUtils.deleteQuietly(file);
-		if (!result) {
-			throw new IllegalStateException("fail to deleteFile " + file);
+		if (flayProperties.isRecyclebinUse()) {
+			moveFileToDirectory(file, new File(file.toPath().getRoot().toFile(), flayProperties.getRecyclebin()));
+		} else {
+			boolean result = FileUtils.deleteQuietly(file);
+			log.warn("deleted File {}", file);
+			if (!result) {
+				throw new IllegalStateException("fail to deleteFile " + file);
+			}
 		}
 	}
 	
 
-	public static String prettyFileLength(long length) {
+	public String prettyFileLength(long length) {
 		if (length > FileUtils.ONE_TB) {
 			return Flayground.Format.Number.TB_Format.format((double)length / FileUtils.ONE_TB) + " TB";
 		} else if (length > FileUtils.ONE_GB) {
@@ -160,7 +168,7 @@ public class FlayFileHandler {
 		}
 	}
 	
-	public static Collection<File> listDirectory(File path) {
+	public Collection<File> listDirectory(File path) {
 		return  FileUtils.listFilesAndDirs(path, new IOFileFilter() {
 			@Override public boolean accept(File file) { return false; }
 			@Override public boolean accept(File dir, String name) { return false; }

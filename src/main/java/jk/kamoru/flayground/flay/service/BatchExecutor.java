@@ -51,6 +51,7 @@ public class BatchExecutor {
 	@Autowired HistoryService historyService;
 	@Autowired AnnounceService notificationService;
 	@Autowired ScoreCalculator scoreCalculator;
+	@Autowired FlayFileHandler flayFileHandler;
 
 	public void reload() {
 		log.info("[reload]");
@@ -143,7 +144,7 @@ public class BatchExecutor {
 						// ok. normal position
 					} else {
 						log.info("move {} to {}", file, destDir);
-						FlayFileHandler.moveFileToDirectory(file, destDir);
+						flayFileHandler.moveFileToDirectory(file, destDir);
 					}
 				}
 			}
@@ -164,7 +165,7 @@ public class BatchExecutor {
 							if (!file.getCanonicalPath().startsWith(flayProperties.getStoragePath().getCanonicalPath())) {
 								File destDir = new File(flayProperties.getStoragePath(), flay.getStudio());
 								log.info("move {} to {}", file, destDir);
-								FlayFileHandler.moveFileToDirectory(file, destDir);
+								flayFileHandler.moveFileToDirectory(file, destDir);
 							}
 						} catch (IOException e) {
 							throw new IllegalStateException("flay file CanonicalPath error", e);
@@ -186,8 +187,8 @@ public class BatchExecutor {
 	}
 
 	private void deleteLowerScore() {
-		log.info("[deleteLowerScore]");
 		final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
+		log.info("[deleteLowerScore] {}", flayProperties.getStorageLimit());
 		long lengthSum = 0;
 		List<Flay> scoreReverseSortedFlayList = instanceFlaySource.list().stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0 && f.getVideo().getRank() > 0 && f.getVideo().getPlay() > 0)
@@ -196,7 +197,7 @@ public class BatchExecutor {
 		for (Flay flay : scoreReverseSortedFlayList) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {
-				log.info("lower score {} score={} over {}", flay.getOpus(), scoreCalculator.calc(flay), FlayFileHandler.prettyFileLength(lengthSum));
+				log.info("lower score {} score={} over {}", flay.getOpus(), scoreCalculator.calc(flay), flayFileHandler.prettyFileLength(lengthSum));
 				archiving(flay);
 			}
 		}
@@ -230,7 +231,7 @@ public class BatchExecutor {
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
 						log.info("move [{}] {} to {}", flay.getOpus(), file, delegatePath);
-						FlayFileHandler.moveFileToDirectory(file, delegatePath);
+						flayFileHandler.moveFileToDirectory(file, delegatePath);
 					}
 				}
 			}
@@ -280,17 +281,17 @@ public class BatchExecutor {
 	private void deleteEmptyFolder(File...emptyManagedPaths) {
 		log.info("[deleteEmptyFolder]");
 		for (File path : emptyManagedPaths) {
-			Collection<File> listDirs = FlayFileHandler.listDirectory(path);
+			Collection<File> listDirs = flayFileHandler.listDirectory(path);
 			for (File dir : listDirs) {
 				if (dir.equals(path)) {
 					continue;
 				}
-				int dirSize  = FlayFileHandler.listDirectory(dir).size();
+				int dirSize  = flayFileHandler.listDirectory(dir).size();
 				int fileSize = FileUtils.listFiles(dir, null, false).size();
 				log.info("  {}, dir: {}, file: {}", dir, dirSize, fileSize);
 				if (dirSize == 1 && fileSize == 0) {
 					log.info("    empty directory delete {}", dir);
-					FlayFileHandler.deleteDirectory(dir);
+					flayFileHandler.deleteDirectory(dir);
 				}
 			}
 		}
@@ -304,10 +305,10 @@ public class BatchExecutor {
 			for (File file : entry.getValue()) {
 				if (Flay.COVER.equals(key) || Flay.SUBTI.equals(key)) {
 					log.info("move {} to {}", file, destDir);
-					FlayFileHandler.moveFileToDirectory(file, destDir);
+					flayFileHandler.moveFileToDirectory(file, destDir);
 				} else {
 					log.info("delete {}", file);
-					FlayFileHandler.deleteFile(file);
+					flayFileHandler.deleteFile(file);
 				}
 			}
 		}
@@ -334,10 +335,10 @@ public class BatchExecutor {
 		File backupRootPath = new File(flayProperties.getQueuePath(), "InstanceBackupTemp");
 		File backupInstanceFilePath = new File(backupRootPath, "instanceFiles");
 
-		FlayFileHandler.createDirectory(backupRootPath);
-		FlayFileHandler.cleanDirectory(backupRootPath);
-		FlayFileHandler.createDirectory(backupInstanceFilePath);
-		FlayFileHandler.cleanDirectory(flayProperties.getBackupPath());
+		flayFileHandler.createDirectory(backupRootPath);
+		flayFileHandler.cleanDirectory(backupRootPath);
+		flayFileHandler.createDirectory(backupInstanceFilePath);
+		flayFileHandler.cleanDirectory(flayProperties.getBackupPath());
 
 		// video list backup to csv
 		Collection<Flay> instanceFlayList = instanceFlaySource.list();
@@ -379,15 +380,15 @@ public class BatchExecutor {
 
 		// Info folder copy
 		log.info("[Backup] Copy Info folder {} to {}", flayProperties.getInfoPath(), backupRootPath);
-		FlayFileHandler.copyDirectoryToDirectory(flayProperties.getInfoPath(), backupRootPath);
+		flayFileHandler.copyDirectoryToDirectory(flayProperties.getInfoPath(), backupRootPath);
 
 		// Cover, Subtitlea file copy
 		log.info("[Backup] Copy Instance file to {}", backupInstanceFilePath);
 		for (Flay flay : instanceFlayList) {
 			for (File file : flay.getFiles().get(Flay.COVER))
-				FlayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
+				flayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
 			for (File file : flay.getFiles().get(Flay.SUBTI))
-				FlayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
+				flayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
 		}
 //		for (Flay flay : archiveFlayList) {
 //			for (File file : flay.getFiles().get(Flay.COVER))
@@ -403,7 +404,7 @@ public class BatchExecutor {
 		compress(backupArchiveJarFile, flayProperties.getArchivePath());
 
 		log.info("[Backup] Delete Instance Backup Temp folder {}", backupRootPath);
-		FlayFileHandler.deleteDirectory(backupRootPath);
+		flayFileHandler.deleteDirectory(backupRootPath);
 
 		notificationService.announce("Backup", "Flay source");
 
@@ -441,7 +442,7 @@ public class BatchExecutor {
 			log.info("         jar {}", commands);
 			Process process = builder.start();
 			process.waitFor();
-			log.info("         completed {}", FlayFileHandler.prettyFileLength(destJarFile.length()));
+			log.info("         completed {}", flayFileHandler.prettyFileLength(destJarFile.length()));
 		} catch (IOException | InterruptedException e) {
 			throw new IllegalStateException("Fail to jar", e);
 		}

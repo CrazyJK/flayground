@@ -24,6 +24,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
 	@Autowired FlayService flayService;
 	@Autowired AnnounceService notificationService;
+	@Autowired FlayFileHandler flayFileHandler;
 
 	@Override
 	public void update(Actress update) {
@@ -51,7 +52,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 				actressList.remove(oldName);
 				actressList.add(actress.getName());
 
-				FlayFileHandler.rename(flay, actressList);
+				flayFileHandler.rename(flay, actressList);
 			}
 			notificationService.announce("Rename Actress", oldName + " -> " + actress.getName());
 		}

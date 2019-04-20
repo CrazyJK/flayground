@@ -37,6 +37,9 @@ public class FlayProperties {
 	private File editorApp;
 	private File  paintApp;
 
+	private String recyclebin = "FLAY_RECYCLEBIN";
+	private boolean recyclebinUse = true;
+	
 	public Boolean negateMoveWatched() {
 		moveWatched = BooleanUtils.negate(moveWatched);
 		return moveWatched;

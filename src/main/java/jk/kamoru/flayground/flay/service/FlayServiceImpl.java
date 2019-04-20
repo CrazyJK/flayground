@@ -32,8 +32,9 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired InfoService<Video, String> videoInfoService;
 	@Autowired InfoService<Tag, Integer> tagInfoService;
-	@Autowired FlayActionHandler flayActionHandler;
 	@Autowired HistoryService historyService;
+	@Autowired FlayActionHandler flayActionHandler;
+	@Autowired FlayFileHandler flayFileHandler;
 	@Autowired CandidatesProvider candidatesProvider;
 	@Autowired AnnounceService notificationService;
 
@@ -112,7 +113,7 @@ public class FlayServiceImpl implements FlayService {
 		File stagePath = flayProperties.getStagePaths()[0];
 		for (File file : candiList) {
 			String filename = file.getName();
-			FlayFileHandler.moveFileToDirectory(file, stagePath);
+			flayFileHandler.moveFileToDirectory(file, stagePath);
 
 			if (Flayground.FILE.isVideo(file)) {
 				movieList.add(new File(stagePath, filename));
@@ -123,7 +124,7 @@ public class FlayServiceImpl implements FlayService {
 			}
 		}
 		candiList.clear();
-		FlayFileHandler.rename(flay);
+		flayFileHandler.rename(flay);
 		notificationService.announce("Accept candidates", flay.getFullname());
 	}
 
@@ -159,7 +160,7 @@ public class FlayServiceImpl implements FlayService {
 			throw new IllegalArgumentException("Not allowed to change opus");
 		}
 		Flay flay = instanceFlaySource.get(opus);
-		FlayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
+		flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
 		notificationService.announce("Rename Flay", newFlay.getFullname());
 	}
 
@@ -170,7 +171,7 @@ public class FlayServiceImpl implements FlayService {
 
 	@Override
 	public void deleteFile(String file) {
-		FlayFileHandler.deleteFile(new File(file));
+		flayFileHandler.deleteFile(new File(file));
 		log.warn("delete file {}", file);
 	}
 

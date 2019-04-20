@@ -31,6 +31,7 @@ public class LocalImageSource implements ImageSource<Image> {
 	@Autowired FlayProperties flayProperties;
 
 	@Autowired AnnounceService notificationService;
+	@Autowired FlayFileHandler flayFileHandler;
 
 	private List<Image> imageList;
 	private boolean changed = false;
@@ -81,7 +82,7 @@ public class LocalImageSource implements ImageSource<Image> {
 
 	private void delete(Image image) {
 		imageList.remove(image);
-		FlayFileHandler.moveFileToRoot(image.getFile());
+		flayFileHandler.deleteFile(image.getFile());
 		notificationService.announce("Image move to root", image.getFile().toString());
 	}
 

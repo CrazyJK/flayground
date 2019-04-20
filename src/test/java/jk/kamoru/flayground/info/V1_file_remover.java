@@ -35,13 +35,15 @@ public class V1_file_remover {
 			System.out.format("%8s = %s%n", entry.getKey(), entry.getValue().size());
 		}
 		
+		FlayFileHandler flayFileHandler = new FlayFileHandler();
+		
 		File dest = new File("J:\\v1file");
 		for (Entry<String, List<File>> entry : suffixMap.entrySet()) {
 			if ("info,actress,studio".contains(entry.getKey().toLowerCase())) {
 				System.out.format("%8s will be delete%n", entry.getKey());
 				for (File file : entry.getValue()) {
 //					FileUtils.deleteQuietly(file);
-					FlayFileHandler.moveFileToDirectory(file, dest);
+					flayFileHandler.moveFileToDirectory(file, dest);
 				}
 			}
 		}

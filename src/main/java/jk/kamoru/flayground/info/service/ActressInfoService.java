@@ -1,12 +1,9 @@
 package jk.kamoru.flayground.info.service;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +12,6 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.flay.service.FlayService;
-import jk.kamoru.flayground.image.domain.Image;
-import jk.kamoru.flayground.image.service.ImageService;
 import jk.kamoru.flayground.info.InfoNotfoundException;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.NameDistanceChecker.CheckResult;
@@ -30,15 +25,6 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 	@Autowired FlayService flayService;
 	@Autowired AnnounceService notificationService;
 	@Autowired FlayFileHandler flayFileHandler;
-	@Autowired ImageService imageService;
-
-	@Override
-	public Actress get(String key) {
-		Actress actress = infoSource.get(key);
-		if (actress.getCovers() == null)
-			actress.setCovers(findCoverFile(key));
-		return actress;
-	}
 
 	public void rename(Actress actress, String oldName) {
 		if (actress.getName().equals(oldName)) {
@@ -88,18 +74,6 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 			super.update(actress);
 		} catch(InfoNotfoundException e) {
 			super.create(actress);
-		}
-	}
-
-	private List<File> findCoverFile(String name) {
-		Supplier<Stream<Image>> supplier = () -> imageService.list().stream().filter(i -> {
-			return i.getName().startsWith(name);
-		});
-		long count = supplier.get().count();
-		if (count == 0) {
-			return null;
-		} else {
-			return supplier.get().map(Image::getFile).collect(Collectors.toList());
 		}
 	}
 

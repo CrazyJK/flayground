@@ -75,6 +75,7 @@
 			<thead>
 				<tr>
 					<th class="hover" data-sort-key="fav">fav</th>
+					<th class="hover" data-sort-key="pic">pic</th>
 					<th class="hover" data-sort-key="name">Name</th>
 					<th>LocalName</th>
 					<th class="hover" data-sort-key="birth">Birth</th>
@@ -197,6 +198,8 @@ function displayActress() {
 		switch (sortKey) {
 		case 'fav':
 			return compareActressInfo(a1.favorite, a2.favorite, sortOrder);
+		case 'pic':
+			return compareActressInfo(a1.coverSize, a2.coverSize, sortOrder);
 		case 'name':
 			return compareActressInfo(a1.name, a2.name, sortOrder);
 		case 'local':
@@ -264,6 +267,7 @@ function displayActress() {
 					$("<td>", {'class': 'text-center'}).append(
 							$("<i>", {'class': "fa fa-star" + (actress.favorite ? "" : "-o")})		
 					),
+					$("<td>").html(actress.coverSize),
 					$("<td>").append(
 							$("<span>", {'class': 'text hover'}).html(actress.name).on("click", function() {
 								View.actress(actress.name);

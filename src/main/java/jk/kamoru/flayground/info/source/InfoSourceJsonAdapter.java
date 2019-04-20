@@ -27,12 +27,15 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> extends InfoSo
 	 */
 	abstract TypeReference<List<T>> getTypeReference();
 
+	void extraInfoLoad() {}
+
 	@PostConstruct
 	void load() {
 		File infoFile = getInfoFile();
 		try {
 			list = jsonReader.readValue(infoFile, getTypeReference());
 			log.info(String.format("%5s %-7s - %s", list.size(), FilenameUtils.getBaseName(infoFile.getName()), getInfoFile()));
+			extraInfoLoad();
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to load info file " + infoFile, e);
 		}

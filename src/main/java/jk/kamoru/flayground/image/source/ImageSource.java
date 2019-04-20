@@ -4,11 +4,11 @@ import java.util.List;
 
 import jk.kamoru.flayground.image.domain.Image;
 
-public interface ImageSource<T extends Image> {
+public interface ImageSource {
 
-	List<T> list();
+	List<Image> list();
 
-	T get(int idx);
+	Image get(int idx);
 
 	int size();
 

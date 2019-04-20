@@ -21,7 +21,6 @@ import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayArchiveService;
 import jk.kamoru.flayground.flay.service.FlayService;
-import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.image.service.ImageService;
 import jk.kamoru.flayground.info.source.ActressInfoSource;
 
@@ -31,7 +30,7 @@ public class ImageRequestHandler {
 
 	@Autowired FlayService flayService;
 	@Autowired FlayArchiveService flayArchiveService;
-	@Autowired ImageService<Image> imageService;
+	@Autowired ImageService imageService;
 	@Autowired ActressInfoSource actressInfoSource;
 
 	@GetMapping("/cover/{opus}")
@@ -51,19 +50,19 @@ public class ImageRequestHandler {
 	public HttpEntity<byte[]> getImage(@PathVariable Integer idx) throws IOException {
 		return getImageEntity(imageService.get(idx).getFile());
 	}
-	
+
 	@GetMapping("/image/random")
 	@ResponseBody
 	public HttpEntity<byte[]> getImageRandom() throws IOException {
 		return getImageEntity(imageService.random().getFile());
 	}
-	
+
 	@GetMapping("/actress/{name}/{index}")
 	@ResponseBody
 	public HttpEntity<byte[]> getActressCover(@PathVariable String name, @PathVariable int index) throws IOException {
 		return getImageEntity(actressInfoSource.get(name).getCovers().get(index));
 	}
-	
+
 	HttpEntity<byte[]> getImageEntity(File file) throws IOException {
 		if (file == null) {
 			return null;
@@ -74,7 +73,7 @@ public class ImageRequestHandler {
 		headers.setContentType(probeMediaType(file));
 		return new HttpEntity<byte[]>(bytes, headers);
 	}
-	
+
 	MediaType probeMediaType(File file) {
  		try {
 			return MediaType.valueOf(Files.probeContentType(file.toPath()));

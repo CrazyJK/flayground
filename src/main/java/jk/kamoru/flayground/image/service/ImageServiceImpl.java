@@ -10,10 +10,10 @@ import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.image.source.ImageSource;
 
 @Service
-public class ImageServiceImpl implements ImageService<Image> {
+public class ImageServiceImpl implements ImageService {
 
-	@Autowired ImageSource<Image> imageSource;
-	
+	@Autowired ImageSource imageSource;
+
 	@Override
 	public List<Image> list() {
 		return imageSource.list();

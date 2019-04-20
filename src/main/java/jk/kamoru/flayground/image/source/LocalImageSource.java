@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Repository
-public class LocalImageSource implements ImageSource<Image> {
+public class LocalImageSource implements ImageSource {
 
 	@Autowired FlayProperties flayProperties;
 

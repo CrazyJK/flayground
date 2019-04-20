@@ -4,13 +4,13 @@ import java.util.List;
 
 import jk.kamoru.flayground.image.domain.Image;
 
-public interface ImageService<T extends Image> {
+public interface ImageService {
 
-	List<T> list();
-	
-	T get(int idx);
+	List<Image> list();
 
-	T random();
+	Image get(int idx);
+
+	Image random();
 
 	int size();
 

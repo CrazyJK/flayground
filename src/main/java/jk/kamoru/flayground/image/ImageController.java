@@ -20,9 +20,9 @@ import jk.kamoru.flayground.image.service.ImageService;
 @RequestMapping("/image")
 public class ImageController {
 
-	@Autowired ImageService<Image> imageService;
+	@Autowired ImageService imageService;
 	@Autowired FlayActionHandler flayActionHandler;
-	
+
 	@GetMapping("/list")
 	public List<Image> list() {
 		return imageService.list();

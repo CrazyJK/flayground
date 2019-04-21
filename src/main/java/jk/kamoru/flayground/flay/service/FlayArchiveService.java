@@ -1,5 +1,7 @@
 package jk.kamoru.flayground.flay.service;
 
+import java.util.Collection;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -10,5 +12,7 @@ public interface FlayArchiveService {
 	Flay get(String opus);
 
 	Page<Flay> page(Pageable pageable, String keyword);
+
+	Collection<Flay> list();
 
 }

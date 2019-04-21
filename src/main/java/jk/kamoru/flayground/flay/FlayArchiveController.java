@@ -1,5 +1,7 @@
 package jk.kamoru.flayground.flay;
 
+import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -32,4 +34,8 @@ public class FlayArchiveController {
 		return flayArchiveService.page(pageable, keyword);
 	}
 
+	@GetMapping("/list")
+	public Collection<Flay> list() {
+		return flayArchiveService.list();
+	}
 }

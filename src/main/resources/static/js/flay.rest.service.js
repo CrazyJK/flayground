@@ -99,6 +99,9 @@ var Rest = {
 			},
 			page: function(page, size, keyword, callback) {
 				restCall('/archive/page', {data: {page: page, size: size, keyword: keyword}}, callback);
+			},
+			list: function(callback) {
+				restCall('/archive/list', {}, callback);
 			}
 		},
 		History: {
@@ -115,6 +118,9 @@ var Rest = {
 		Video: {
 			update: function(video, callback) {
 				restCall('/info/video', {data: video, method: "PATCH"}, callback);
+			},
+			list: function(callback) {
+				restCall('/info/video/list', {}, callback);
 			}
 		},
 		Studio: {

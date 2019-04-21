@@ -37,13 +37,13 @@ public class FlayArchiveServiceImpl implements FlayArchiveService {
 	public Page<Flay> page(Pageable pageable, String keyword) {
 		Collection<Flay> instanceList = instanceFlaySource.list().stream().filter(f -> StringUtils.containsIgnoreCase(f.getFullname(), keyword)).collect(Collectors.toList());
 		Collection<Flay>  archiveList =  archiveFlaySource.list().stream().filter(f -> StringUtils.containsIgnoreCase(f.getFullname(), keyword)).collect(Collectors.toList());
-		
+
 		List<Flay> list = new ArrayList<>();
 		list.addAll(instanceList);
 		list.addAll(archiveList);
-		
+
 		log.info("[page] instance: {}, archive: {}, pageable {}", instanceList.size(), archiveList.size(), pageable);
-		
+
 		long total = list.size();
 		long skip = pageable.getPageNumber() * pageable.getPageSize();
 		long maxSize = pageable.getPageSize();
@@ -52,6 +52,11 @@ public class FlayArchiveServiceImpl implements FlayArchiveService {
 				pageable,
 				total
 		);
+	}
+
+	@Override
+	public Collection<Flay> list() {
+		return archiveFlaySource.list();
 	}
 
 }

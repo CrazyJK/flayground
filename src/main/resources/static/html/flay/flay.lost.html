@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Flayground</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css"/>
+<link rel="stylesheet" href="/css/base.scrollbar.css"/>
+<link rel="stylesheet" href="/css/crazy.font.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<link rel="stylesheet" href="/css/crazy.common.range.css"/>
+<link rel="stylesheet" href="/css/flay.view.card.css"/>
+<style type="text/css">
+body {
+	font-size: 12px;
+	font-family: 'D2Coding';
+}
+label {
+	margin: 0 0 4px 0;
+}
+label:empty {
+    display: none;
+}
+.flay-exist {
+	color: blue;
+}
+.flay-only {
+	color: green;
+}
+.archive-exist {
+	color: var(--warning);
+}
+.archive-only {
+	color: gray;
+}
+.flay-exist.archive-exist {
+	color: var(--danger);
+}
+
+.opus {
+	min-width: 70px;
+}
+.date {
+	min-width: 70px;
+}
+.release {
+	min-width: 70px;
+}
+.status {
+	min-width: 20px;
+}
+.title {
+	width: 200px;
+	padding: 0 4px;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
+<script type="text/javascript" src="/js/flay.view.card.js"></script>
+</head>
+<body>
+
+<div class="container text-center lead">
+	<label>Video: <span id="totalVideo">0</span></label>
+	<div class="form-check-inline p-2">
+		<label class="form-check-label">
+			<input type="checkbox" class="form-check-input" id="instance">Instance: <span id="totalInstance">0</span>
+		</label>
+	</div>
+	<div class="form-check-inline p-2">
+		<label class="form-check-label">
+			<input type="checkbox" class="form-check-input" id="archive">Archive: <span id="totalArchive">0</span>
+		</label>
+	</div>
+	<label>Overall: <span id="totalOverall">0</span></label>
+</div>
+<div class="container text-center lead">
+	<div class="form-check-inline p-2">
+		<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank_1">Rank -1</label>
+	</div>
+	<div class="form-check-inline p-2">
+		<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank0">Rank 0</label>
+	</div>
+	<div class="form-check-inline p-2">
+		<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank1" checked="checked">Rank 1</label>
+	</div>
+	<div class="form-check-inline p-2">
+		<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank2" checked="checked">Rank 2</label>
+	</div>
+	<div class="form-check-inline p-2">
+		<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank3" checked="checked">Rank 3</label>
+	</div>
+	<div class="form-check-inline p-2">
+		<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank4" checked="checked">Rank 4</label>
+	</div>
+	<div class="form-check-inline p-2">
+		<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank5" checked="checked">Rank 5</label>
+	</div>
+	
+</div>
+
+<div class="container-fluid" role="body">
+	<div class="row">
+		<div class="p-2 col" data-for="rank_1">
+			<h4>Rank -1 <span id="rankCount_1">0</span></h4>
+			<ol id="videoList_1"></ol>
+		</div>
+		<div class="p-2 col" data-for="rank0">
+			<h4>Rank 0 <span id="rankCount0">0</span></h4>
+			<ol id="videoList0"></ol>
+		</div>
+		<div class="p-2 col" data-for="rank1">
+			<h4>Rank 1 <span id="rankCount1">0</span></h4>
+			<ol id="videoList1"></ol>
+		</div>
+		<div class="p-2 col" data-for="rank2">
+			<h4>Rank 2 <span id="rankCount2">0</span></h4>
+			<ol id="videoList2"></ol>
+		</div>
+		<div class="p-2 col" data-for="rank3">
+			<h4>Rank 3 <span id="rankCount3">0</span></h4>
+			<ol id="videoList3"></ol>
+		</div>
+		<div class="p-2 col" data-for="rank4">
+			<h4>Rank 4 <span id="rankCount4">0</span></h4>
+			<ol id="videoList4"></ol>
+		</div>
+		<div class="p-2 col" data-for="rank5">
+			<h4>Rank 5 <span id="rankCount5">0</span></h4>
+			<ol id="videoList5"></ol>
+		</div>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+
+var total = 0, rankCount_1 = 0, rankCount0 = 0, rankCount1 = 0, rankCount2 = 0, rankCount3 = 0, rankCount4 = 0, rankCount5 = 0;
+	
+
+$(document).ready(function() {
+
+	var showInstance = $("#instance").is(":checked");
+	var showArchive  = $("#archive").is(":checked");
+	var showRank_1 = $("#rank_1").is(":checked");
+	var showRank0  = $("#rank0").is(":checked");
+	var showRank1  = $("#rank1").is(":checked");
+	var showRank2  = $("#rank2").is(":checked");
+	var showRank3  = $("#rank3").is(":checked");
+	var showRank4  = $("#rank4").is(":checked");
+	var showRank5  = $("#rank5").is(":checked");
+
+	loading.on("Loading data");
+
+	Rest.Video.list(function(videoList) {
+		$("#totalVideo").html(videoList.length);
+		$.each(videoList, function(idx, video) {
+
+//			if (video.rank < 1) return;
+
+			var rank = new String(video.rank).replace("-", "_");	
+			$("#videoList" + rank).append(
+					$("<li>", {id: video.opus}).append(
+							$("<label>", {class: "opus"}).html(video.opus),
+							$("<label>", {class: "date"}).html(new Date(video.lastAccess).format("yyyy-MM-dd")),
+							$("<label>", {class: "release"}).html(""),
+							$("<label>", {class: "status"}).html(""),
+							$("<label>", {class: "title nowrap"}).html(""),
+					)
+			);
+			countRank(video.rank)
+		});
+		
+		Rest.Flay.list(function(flayList) {
+			$("#totalInstance").html(flayList.length);
+			$.each(flayList, function(idx, flay) {
+
+//				if (flay.video.rank < 1) return;
+
+				var $flayOpus = $("li#" + flay.opus);
+				if ($flayOpus.length > 0) {
+					$flayOpus.addClass("flay-exist");
+					$flayOpus.find(".title").html(flay.title);
+					$flayOpus.find(".release").html(flay.release);
+					$flayOpus.find(".status").append("In");
+				} else {
+					$("#videoList" + flay.video.rank).append(
+							$("<li>", {id: flay.opus, class: "flay-only"}).append(
+									$("<label>", {class: "opus"}).html(flay.opus),
+									$("<label>", {class: "date"}).html(""),
+									$("<label>", {class: "release"}).html(flay.release),
+									$("<label>", {class: "status"}).html("Io"),
+									$("<label>", {class: "title nowrap"}).html(flay.title),
+							)
+					);
+					countRank(flay.video.rank)
+				}
+			});
+
+			Rest.Archive.list(function(flayList) {
+				$("#totalArchive").html(flayList.length);
+				$.each(flayList, function(idx, flay) {
+
+//					if (flay.video.rank < 1) return;
+					
+					var $flayOpus = $("li#" + flay.opus);
+					if ($flayOpus.length > 0) {
+						$flayOpus.addClass("archive-exist");
+						$flayOpus.find(".title").html(flay.title);
+						$flayOpus.find(".release").html(flay.release);
+						$flayOpus.find(".status").append("Ar");
+					} else {
+						$("#videoList" + flay.video.rank).append(
+								$("<li>", {id: flay.opus, class: "archive-only"}).append(
+										$("<label>", {class: "opus"}).html(flay.opus),
+										$("<label>", {class: "date"}).html(""),
+										$("<label>", {class: "release"}).html(flay.release),
+										$("<label>", {class: "status"}).html("Ao"),
+										$("<label>", {class: "title nowrap"}).html(flay.title),
+								)
+						);
+						countRank(flay.video.rank)
+					}
+				});
+				
+				$("#totalOverall").html(total);
+				$("#rankCount_1").html(rankCount_1)
+				$("#rankCount0").html(rankCount0)
+				$("#rankCount1").html(rankCount1)
+				$("#rankCount2").html(rankCount2)
+				$("#rankCount3").html(rankCount3)
+				$("#rankCount4").html(rankCount4)
+				$("#rankCount5").html(rankCount5)
+				
+				$(".flay-exist").toggle(showInstance);
+				$(".archive-exist").toggle(showArchive);
+				$("div[data-for='rank_1']").toggle(showRank_1);
+				$("div[data-for='rank0']").toggle(showRank0);
+				$("div[data-for='rank1']").toggle(showRank1);
+				$("div[data-for='rank2']").toggle(showRank2);
+				$("div[data-for='rank3']").toggle(showRank3);
+				$("div[data-for='rank4']").toggle(showRank4);
+				$("div[data-for='rank5']").toggle(showRank5);
+				
+				loading.off();
+
+			});
+
+		});
+
+	});
+
+	$("#instance").on("change", function() {
+		$(".flay-exist").toggle($(this).is(":checked"));
+	});
+	$("#archive").on("change", function() {
+		$(".archive-exist").toggle($(this).is(":checked"));
+	});
+
+	$("#rank_1, #rank0, #rank1, #rank2, #rank3, #rank4, #rank5").on("change", function() {
+		$("div[data-for='" + $(this).attr("id") + "']").toggle($(this).is(":checked"));
+	});
+	
+});
+
+function countRank(rank) {
+	++total;
+	switch (rank) {
+	case -1:
+		++rankCount_1;
+		break;
+	case 0:
+		++rankCount0;
+		break;
+	case 1:
+		++rankCount1;
+		break;
+	case 2:
+		++rankCount2;
+		break;
+	case 3:
+		++rankCount3;
+		break;
+	case 4:
+		++rankCount4;
+		break;
+	case 5:
+		++rankCount5;
+		break;
+	}
+}
+</script>
+</body>
+</html>

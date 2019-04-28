@@ -16,8 +16,6 @@ public class FlayProperties {
 	private Backup backup = new Backup();
 	private Score score = new Score();
 
-	private boolean moveWatched = false;
-	private boolean deleteLowerRank = false;
 	private boolean deleteLowerScore = false;
 	private int storageLimit = 7168;
 
@@ -39,16 +37,6 @@ public class FlayProperties {
 
 	private String recyclebin = "FLAY_RECYCLEBIN";
 	private boolean recyclebinUse = true;
-	
-	public Boolean negateMoveWatched() {
-		moveWatched = BooleanUtils.negate(moveWatched);
-		return moveWatched;
-	}
-
-	public Boolean negateDeleteLowerRank() {
-		deleteLowerRank = BooleanUtils.negate(deleteLowerRank);
-		return deleteLowerRank;
-	}
 
 	public Boolean negateDeleteLowerScore() {
 		deleteLowerScore = BooleanUtils.negate(deleteLowerScore);

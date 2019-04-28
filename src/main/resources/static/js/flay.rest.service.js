@@ -15,7 +15,7 @@ var restCall = function(url, args, callback, failCallback) {
 	if (settings.method != 'GET' && typeof settings.data === 'object') {
 		settings.data = JSON.stringify(settings.data);
 	}
-	console.log('restCall', settings.method, url, settings.data);
+//	console.log('restCall', settings.method, url, settings.data);
 
 	settings.title != "" && loading.on(settings.title);
 	

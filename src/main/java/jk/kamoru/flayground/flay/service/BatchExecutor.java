@@ -36,11 +36,10 @@ import lombok.extern.slf4j.Slf4j;
 public class BatchExecutor {
 
 	public static enum Option {
-		/** moveWatchedVideo */ W, /** deleteLowerRankVideo */ R, /** deleteLowerScoreVideo */ S;
+		/** deleteLowerScoreVideo */ S;
 	}
 
 	public static enum Operation {
-		/** moveWatchedVideo */ W, /** deleteLowerRankVideo */ R, /** deleteLowerScoreVideo */ S,
 		/** InstanceVideoSource */ I, /** ArchiveVideoSource */ A, /** Backup */ B
 	}
 
@@ -61,10 +60,6 @@ public class BatchExecutor {
 
 	public Boolean getOption(Option type) {
 		switch (type) {
-		case W:
-			return flayProperties.isMoveWatched();
-		case R:
-			return flayProperties.isDeleteLowerRank();
 		case S:
 			return flayProperties.isDeleteLowerScore();
 		default:
@@ -74,10 +69,6 @@ public class BatchExecutor {
 
 	public Boolean toggleOption(Option type) {
 		switch (type) {
-		case W:
-			return flayProperties.negateMoveWatched();
-		case R:
-			return flayProperties.negateDeleteLowerRank();
 		case S:
 			return flayProperties.negateDeleteLowerScore();
 		default:
@@ -87,15 +78,6 @@ public class BatchExecutor {
 
 	public void startBatch(Operation oper) {
 		switch (oper) {
-		case W:
-			moveWatched();
-			break;
-		case R:
-			deleteLowerRank();
-			break;
-		case S:
-			deleteLowerScore();
-			break;
 		case I:
 			instanceBatch();
 			break;
@@ -108,34 +90,27 @@ public class BatchExecutor {
 		default:
 			throw new IllegalArgumentException("unknown batch operation");
 		}
-
 	}
 
-	private void instanceBatch() {
-		if (flayProperties.isMoveWatched())
-			moveWatched();
-		if (flayProperties.isDeleteLowerRank())
-			deleteLowerRank();
+	protected void instanceBatch() {
+		deleteLowerRank();
+
 		if (flayProperties.isDeleteLowerScore())
 			deleteLowerScore();
 
 		assembleFlay();
+
 		deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath()));
+
 		instanceFlaySource.load();
+
 		notificationService.announce("Batch", "Instance Source");
 	}
 
-	private void archiveBatch() {
-		relocateArchiveFile();
-		deleteEmptyFolder(flayProperties.getArchivePath());
-		archiveFlaySource.load();
-		notificationService.announce("Batch", "Archive Source");
-	}
-
-	private void relocateArchiveFile() {
+	protected void archiveBatch() {
 		log.info("[relocateArchiveFile]");
 		for (Flay flay : archiveFlaySource.list()) {
-			String yyyyMM = getArchiveFolder(flay);
+			String yyyyMM = getArchiveFolderName(flay);
 			File destDir = new File(flayProperties.getArchivePath(), yyyyMM);
 			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 				for (File file : entry.getValue()) {
@@ -149,34 +124,15 @@ public class BatchExecutor {
 				}
 			}
 		}
+
+		deleteEmptyFolder(flayProperties.getArchivePath());
+
+		archiveFlaySource.load();
+
+		notificationService.announce("Batch", "Archive Source");
 	}
 
-	private String getArchiveFolder(Flay flay) {
-		return StringUtils.substring(flay.getRelease(), 0, 4) + "-" + StringUtils.substring(flay.getRelease(), 5, 7);
-	}
-
-	private void moveWatched() {
-		log.info("[moveWatched]");
-		for (Flay flay : instanceFlaySource.list()) {
-			if (flay.getVideo().getRank() > 0 && flay.getVideo().getPlay() > 0) {
-				for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
-					for (File file : entry.getValue()) {
-						try {
-							if (!file.getCanonicalPath().startsWith(flayProperties.getStoragePath().getCanonicalPath())) {
-								File destDir = new File(flayProperties.getStoragePath(), flay.getStudio());
-								log.info("move {} to {}", file, destDir);
-								flayFileHandler.moveFileToDirectory(file, destDir);
-							}
-						} catch (IOException e) {
-							throw new IllegalStateException("flay file CanonicalPath error", e);
-						}
-					}
-				}
-			}
-		}
-	}
-
-	private void deleteLowerRank() {
+	void deleteLowerRank() {
 		log.info("[deleteLowerRank]");
 		for (Flay flay : instanceFlaySource.list()) {
 			if (flay.getVideo().getRank() < 0) {
@@ -186,9 +142,10 @@ public class BatchExecutor {
 		}
 	}
 
-	private void deleteLowerScore() {
+	void deleteLowerScore() {
+		log.info("[deleteLowerScore] {} GB", flayProperties.getStorageLimit());
 		final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
-		log.info("[deleteLowerScore] {}", flayProperties.getStorageLimit());
+
 		long lengthSum = 0;
 		List<Flay> scoreReverseSortedFlayList = instanceFlaySource.list().stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0 && f.getVideo().getRank() > 0 && f.getVideo().getPlay() > 0)
@@ -203,7 +160,7 @@ public class BatchExecutor {
 		}
 	}
 
-	private void assembleFlay() {
+	void assembleFlay() {
 		log.info("[assembleFlay]");
 
 		final String storagePath;
@@ -221,6 +178,9 @@ public class BatchExecutor {
 		}
 
 		for (Flay flay : instanceFlaySource.list()) {
+			if (flay.isArchive()) {
+				continue;
+			}
 			File delegatePath = getDelegatePath(flay, storagePath, stagePaths, coverPath);
 			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 				String key = entry.getKey();
@@ -233,6 +193,29 @@ public class BatchExecutor {
 						log.info("move [{}] {} to {}", flay.getOpus(), file, delegatePath);
 						flayFileHandler.moveFileToDirectory(file, delegatePath);
 					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * 하위 폴더 전체에서 파일이 없는 폴더 삭제
+	 * @param emptyManagedPaths
+	 */
+	void deleteEmptyFolder(File...emptyManagedPaths) {
+		log.info("[deleteEmptyFolder]");
+		for (File path : emptyManagedPaths) {
+			Collection<File> listDirs = flayFileHandler.listDirectory(path);
+			for (File dir : listDirs) {
+				if (dir.equals(path)) {
+					continue;
+				}
+				int dirSize  = flayFileHandler.listDirectory(dir).size();
+				int fileSize = FileUtils.listFiles(dir, null, false).size();
+				log.debug("  {}, dir: {}, file: {}", dir, dirSize, fileSize);
+				if (dirSize == 1 && fileSize == 0) {
+					log.info("    empty directory delete {}", dir);
+					flayFileHandler.deleteDirectory(dir);
 				}
 			}
 		}
@@ -254,21 +237,28 @@ public class BatchExecutor {
 		try {
 			if (movieSize > 0) {
 				String flayMovieFileFolder = flay.getFiles().get(Flay.MOVIE).get(0).getParentFile().getCanonicalPath();
-				if (StringUtils.equalsAny(flayMovieFileFolder, stagePaths)) { // stage 같은 경로에 있으면, 날자 sub폴더
-					return new File(flayMovieFileFolder, flay.getRelease().substring(0, 4));
-				} else if (StringUtils.equals(flayMovieFileFolder, storagePath)) { // storage 같은 경로에 있으면, studio sub폴더
-					return new File(flayMovieFileFolder, flay.getStudio());
-				} else if (StringUtils.startsWithAny(flayMovieFileFolder, stagePaths)
-						|| StringUtils.startsWith(flayMovieFileFolder, storagePath)) { // 하위에 있으면 현폴더
-					return new File(flayMovieFileFolder);
+				int rank = flay.getVideo().getRank();
+				if (rank > 0) { // storage에 [studio]로 있어야 한다
+					return new File(storagePath, flay.getStudio());
+				} else if (rank == 0) { // stage에 있어야 한다
+					// 같은 디스크의 stage 찾아
+					String root = flayMovieFileFolder.substring(0, 1);
+					String stagePath = null;
+					for (String path : stagePaths) {
+						if (path.startsWith(root)) {
+							stagePath = path;
+							break;
+						}
+					}
+					// stage/[연도]
+					if (stagePath != null) {
+						return new File(stagePath, flay.getRelease().substring(0, 4));
+					}
+				} else { // rank < 0 있으면 안되지
+
 				}
-			} else if (coverSize > 0) {
-				String flayCoverFileFolder = flay.getFiles().get(Flay.COVER).get(0).getParentFile().getCanonicalPath();
-				if (StringUtils.equals(flayCoverFileFolder, coverPath)) { // cover 같은 경로에 있으면, 날자 sub폴더
-					return new File(flayCoverFileFolder, flay.getRelease().substring(0, 4));
-				} else if (StringUtils.startsWith(flayCoverFileFolder, coverPath)) { // 하위 경로에 있으면, 현폴더
-					return new File(flayCoverFileFolder);
-				}
+			} else if (coverSize > 0) { // 비디오 없는 파일은 cover 로
+				return new File(coverPath, flay.getRelease().substring(0, 4));
 			}
 		} catch (IOException e) {
 			throw new IllegalStateException("getDelegatePath CanonicalPath error", e);
@@ -278,40 +268,37 @@ public class BatchExecutor {
 		return flayProperties.getQueuePath();
 	}
 
-	private void deleteEmptyFolder(File...emptyManagedPaths) {
-		log.info("[deleteEmptyFolder]");
-		for (File path : emptyManagedPaths) {
-			Collection<File> listDirs = flayFileHandler.listDirectory(path);
-			for (File dir : listDirs) {
-				if (dir.equals(path)) {
-					continue;
-				}
-				int dirSize  = flayFileHandler.listDirectory(dir).size();
-				int fileSize = FileUtils.listFiles(dir, null, false).size();
-				log.info("  {}, dir: {}, file: {}", dir, dirSize, fileSize);
-				if (dirSize == 1 && fileSize == 0) {
-					log.info("    empty directory delete {}", dir);
-					flayFileHandler.deleteDirectory(dir);
-				}
-			}
-		}
+	/**
+	 * archive 폴더명
+	 * yyyy-MM 형식
+	 * @param flay
+	 * @return
+	 */
+	private String getArchiveFolderName(Flay flay) {
+		return StringUtils.substring(flay.getRelease(), 0, 4) + "-" + StringUtils.substring(flay.getRelease(), 5, 7);
 	}
 
+	/**
+	 * 커버, 자막은 아카이브 폴더로 이동<br>
+	 * 그외 파일은 제거.(삭제 또는 휴지통)
+	 * @param flay
+	 */
 	private void archiving(Flay flay) {
-		String yyyyMM = getArchiveFolder(flay);
-		File destDir = new File(flayProperties.getArchivePath(), yyyyMM);
+		String yyyyMM = getArchiveFolderName(flay);
+		File archiveDir = new File(flayProperties.getArchivePath(), yyyyMM);
 		for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 			String key = entry.getKey();
 			for (File file : entry.getValue()) {
 				if (Flay.COVER.equals(key) || Flay.SUBTI.equals(key)) {
-					log.info("move {} to {}", file, destDir);
-					flayFileHandler.moveFileToDirectory(file, destDir);
+					log.info("move {} to {}", file, archiveDir);
+					flayFileHandler.moveFileToDirectory(file, archiveDir);
 				} else {
 					log.info("delete {}", file);
 					flayFileHandler.deleteFile(file);
 				}
 			}
 		}
+		flay.setArchive(true);
 		historyService.save(Action.DELETE, flay);
 	}
 

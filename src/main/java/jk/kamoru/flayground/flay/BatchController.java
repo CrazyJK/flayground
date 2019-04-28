@@ -16,7 +16,7 @@ import jk.kamoru.flayground.flay.service.BatchExecutor;
 public class BatchController {
 
 	@Autowired BatchExecutor batchService;
-	
+
 	@GetMapping("/option/{option}")
 	public Boolean getOption(@PathVariable BatchExecutor.Option option) {
 		return batchService.getOption(option);
@@ -32,11 +32,11 @@ public class BatchController {
 	public void startBatch(@PathVariable BatchExecutor.Operation operation) {
 		batchService.startBatch(operation);
 	}
-	
+
 	@PutMapping("/reload")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void reload() {
 		batchService.reload();
 	}
-	
+
 }

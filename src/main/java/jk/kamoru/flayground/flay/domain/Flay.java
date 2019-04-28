@@ -27,6 +27,7 @@ public class Flay {
 	String title;
 	List<String> actressList;
 	String release;
+	boolean archive = false;
 
 	// files
 	Map<String, List<File>> files = new HashMap<>();

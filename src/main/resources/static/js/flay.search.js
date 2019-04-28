@@ -273,12 +273,6 @@ function imageDownloadMode() {
 }
 
 function batchMode() {
-	Rest.Batch.getOption('W', function(val) {
-		$(".btn-batch-option[data-type='W']").children().toggleClass("fa-check", val);
-	});
-	Rest.Batch.getOption('R', function(val) {
-		$(".btn-batch-option[data-type='R']").children().toggleClass("fa-check", val);
-	});
 	Rest.Batch.getOption('S', function(val) {
 		$(".btn-batch-option[data-type='S']").children().toggleClass("fa-check", val);
 	});

@@ -124,6 +124,9 @@ public class FlayServiceImpl implements FlayService {
 			}
 		}
 		candiList.clear();
+		if (flay.getVideo().getRank() < 0) {
+			flay.getVideo().setRank(0);
+		}
 		flayFileHandler.rename(flay);
 		notificationService.announce("Accept candidates", flay.getFullname());
 	}

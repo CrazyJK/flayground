@@ -42,7 +42,7 @@ public class CandidatesProvider {
 			if (StringUtils.containsAny(file.getName().toUpperCase(), key1, key2)) {
 				flay.addCandidatesFile(file);
 				found = true;
-//				log.info("{} : {}", flay.getOpus(), file);
+				log.debug("add candidate {} : {}", flay.getOpus(), file);
 			}
 		}
 		return found;

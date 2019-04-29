@@ -203,7 +203,7 @@ function candidateMode() {
 									var files = [];
 									$.each(flay.files.candidate, function(idx, file) {
 										files.push(
-												$("<p>", {'class': 'm-1 border-bottom'}).append(
+												$("<p>", {'class': 'm-1 border-bottom text-danger'}).append(
 														file,
 														$("<button>", {'class': 'btn btn-sm btn-link text-danger ml-2'}).html("Delete").on("click", function() {
 															$(this).hide();

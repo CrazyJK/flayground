@@ -53,17 +53,14 @@ label:empty {
 .instance-exist {
 	color: blue;
 }
-.instance-only {
-	color: green;
-}
 .archive-exist {
 	color: var(--warning);
 }
-.archive-only {
-	color: gray;
-}
 .instance-exist.archive-exist {
 	color: red;
+}
+.no-movie {
+	background-color: rgba(0, 0, 0, .5);
 }
 
 .opus {
@@ -221,9 +218,7 @@ $(document).ready(function() {
 					$("<li>", {id: video.opus, class: "flay-lost"}).append(
 							$("<dl>").append(
 									$("<dt>").append(
-											$("<label>", {class: "opus"}).html(video.opus).on("click", function() {
-												View.flay(video.opus);
-											}),
+											$("<label>", {class: "opus"}).html(video.opus),
 											$("<label>", {class: "date"}).html(new Date(video.lastAccess).format("yyyy-MM-dd")),
 											$("<label>", {class: "release"}).html(""),
 											$("<label>", {class: "status"}).html(""),
@@ -246,35 +241,25 @@ $(document).ready(function() {
 			$("#totalInstance").html(flayList.length);
 			$.each(flayList, function(idx, flay) {
 
-				var $flayOpus = $("li#" + flay.opus);
+				var opus = flay.opus;
+				var existVideo = flay.files.movie.length > 0;
+				var $flayOpus = $("li#" + opus);
 				if ($flayOpus.length > 0) {
-					$flayOpus.addClass("instance-exist").removeClass("flay-lost");
+					$flayOpus.addClass("instance-exist" + (existVideo ? "" : " no-movie")).removeClass("flay-lost");
+					$flayOpus.find(".opus").on("click", function() {
+						$("#btn-" + opus).click();
+						View.flay(opus);
+						if (!existVideo) {
+							Search.opus(opus);
+							Search.torrent(opus);
+							Popup.open("https://ddochi.net/bbs/search.php?url=https%3A%2F%2Fddochi.net%2Fbbs%2Fsearch.php&sop=or&stx=" + opus, 'torrentSearch1mun', 900, 950);
+						}
+					});
 					$flayOpus.find(".release").html(flay.release);
-					$flayOpus.find(".status").append("In");
-					$flayOpus.find(".title").val(flay.title);
+					$flayOpus.find(".status").append("Ins");
+					$flayOpus.find(".title").val(flay.fullname);
 				} else {
-					var rank = new String(flay.video.rank).replace("-", "_");
-					$("#videoList" + rank).append(
-							$("<li>", {id: flay.opus, class: "instance-only"}).append(
-									$("<dl>").append(
-											$("<dt>").append(
-													$("<label>", {class: "opus"}).html(flay.opus).on("click", function() {
-														View.flay(flay.opus);
-													}),
-													$("<label>", {class: "date"}).html(""),
-													$("<label>", {class: "release"}).html(flay.release),
-													$("<label>", {class: "status"}).html("Io"),
-													$("<label>", {class: "btn-copy", "data-clipboard-target": "#val-" + flay.video.opus, id: "btn-" + flay.video.opus}).append(
-															$("<i>", {class: "fa fa-copy fa-fw"})
-													),
-											),
-											$("<dd>").append(
-													$("<input>", {id: "val-" + video.opus, class: "title"}).val(flay.title)
-											),
-									)
-							)
-					);
-					countRank(flay.video.rank)
+					console.log("Notfound instance", opus);
 				}
 			});
 			console.log("loaded instance");
@@ -287,32 +272,14 @@ $(document).ready(function() {
 					var $flayOpus = $("li#" + flay.opus);
 					if ($flayOpus.length > 0) {
 						$flayOpus.addClass("archive-exist").removeClass("flay-lost");
+						$flayOpus.find(".opus").on("click", function() {
+							View.flay(opus);
+						});
 						$flayOpus.find(".release").html(flay.release);
-						$flayOpus.find(".status").append("Ar");
-						$flayOpus.find(".title").val(flay.title);
+						$flayOpus.find(".status").append("Arch");
+						$flayOpus.find(".title").val(flay.fullname);
 					} else {
-						var rank = new String(flay.video.rank).replace("-", "_");
-						$("#videoList" + rank).append(
-								$("<li>", {id: flay.opus, class: "archive-only"}).append(
-										$("<dl>").append(
-												$("<dt>").append(
-														$("<label>", {class: "opus"}).html(flay.opus).on("click", function() {
-															View.flay(flay.opus);
-														}),
-														$("<label>", {class: "date"}).html(""),
-														$("<label>", {class: "release"}).html(flay.release),
-														$("<label>", {class: "status"}).html("Ao"),
-														$("<label>", {class: "btn-copy", "data-clipboard-target": "#val-" + flay.video.opus, id: "btn-" + flay.video.opus}).append(
-																$("<i>", {class: "fa fa-copy fa-fw"})
-														),
-												),
-												$("<dd>").append(
-														$("<input>", {id: "val-" + video.opus, class: "title"}).val(flay.title)
-												),
-										)
-								)
-						);
-						countRank(flay.video.rank)
+						console.log("Notfound archive", opus);
 					}
 				});
 				console.log("loaded archive");
@@ -328,7 +295,7 @@ $(document).ready(function() {
 							var history = historyList[i];
 							if (opus === history.opus) {
 								$this.find(".title").val(history.desc);
-								$this.find(".opus").off().on("click", function() {
+								$this.find(".opus").on("click", function() {
 									$("#btn-" + opus).click();
 									Search.opus(opus);
 									Search.torrent(opus);

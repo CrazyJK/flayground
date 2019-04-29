@@ -37,9 +37,10 @@ public class CandidatesProvider {
 	public boolean matchAndFill(Flay flay) {
 		String key1 = flay.getOpus();
 		String key2 = flay.getOpus().replace("-", "");
+		String key3 = flay.getOpus().replace("-", "00");
 		boolean found = false;
 		for (File file : listFiles) {
-			if (StringUtils.containsAny(file.getName().toUpperCase(), key1, key2)) {
+			if (StringUtils.containsAny(file.getName().toUpperCase(), key1, key2, key3)) {
 				flay.addCandidatesFile(file);
 				found = true;
 				log.debug("add candidate {} : {}", flay.getOpus(), file);

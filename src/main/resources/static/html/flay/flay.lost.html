@@ -60,7 +60,7 @@ label:empty {
 	color: red;
 }
 .no-movie {
-	background-color: rgba(0, 0, 0, .5);
+	border-color: rgba(0, 0, 0, 1);
 }
 
 .opus {
@@ -253,6 +253,7 @@ $(document).ready(function() {
 							Search.opus(opus);
 							Search.torrent(opus);
 							Popup.open("https://ddochi.net/bbs/search.php?url=https%3A%2F%2Fddochi.net%2Fbbs%2Fsearch.php&sop=or&stx=" + opus, 'torrentSearch1mun', 900, 950);
+							Popup.open("https://kr.torrentkitty.tv/search/" + opus, 'torrentkitty.tv', 900, 950);
 						}
 					});
 					$flayOpus.find(".release").html(flay.release);

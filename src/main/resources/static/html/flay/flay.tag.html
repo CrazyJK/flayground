@@ -12,19 +12,21 @@
 #tagList .tag {
 	cursor: pointer;
 	display: inline-flex;
-	margin: 0.5rem;
-	/* width: 200px; */
-	font-size: 0.75rem;
-}
-#tagList .card-title {
-	margin-right: 2rem;
+	margin: 0.25rem;
+	border: 4px solid #000;
 }
 #tagList .card-body {
 	padding: 1rem;
 }
+#tagList .card-title {
+	margin-right: 2rem;
+}
 #tagList .video-count {
 	font-size: 0.75rem;
 	float: right;
+}
+#tagList .card-text {
+	color: #fdff00;
 }
 #tagList .active {
 	background-color: rgba(85, 136, 136, .75);
@@ -76,7 +78,7 @@
 			<div class="card-body">
 				<span class="badge badge-pill badge-dark video-count"></span>
 				<h5 class="card-title font-weight-bold">Tag name</h5>
-				<div class="card-text text-primary">Tag description</div>
+				<div class="card-text">Tag description</div>
 			</div>
 		</div>
 	</div>
@@ -143,6 +145,14 @@ function tagLoad() {
 			});
 			$tagList.show();
 			$tagCard.appendTo($tagList);
+			
+			Rest.Flay.findByTag(tag, function(flayList) {
+				$tagCard.data("flayList", flayList);
+				$tagCard.find(".video-count").html(flayList.length);
+				$tagCard.find(".card-title").css({
+					fontSize: (flayList.length * 0.5) + 16
+				});
+			});
 		});
 /*
 		var $tags = $("#tags > ul").empty();
@@ -252,7 +262,7 @@ function toggleTagDetail(tagCard) {
 			} else {
 				$.each(flayList, function(idx, flay) {
 					$flayList.appendFlayCard(flay, {
-						width: 300,
+						width: 320,
 						exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
 						fontSize: '80%'
 					});

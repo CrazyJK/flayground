@@ -9,8 +9,8 @@
 	background-color: #e6ff00;
 	padding: 1px; */
 	margin: 0.5rem;
-    width: 300px;
-    height: calc(300px * var(--cover-ratio));
+/* 	width: 300px;
+    height: calc(300px * var(--cover-ratio)); */
 }
 .flay-list > .card.flay-card > .card-body {
     border-radius: 0.25rem;

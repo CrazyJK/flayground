@@ -143,7 +143,7 @@ function displayTile() {
 		length += todayis.length;
 		$("<div>", {class: 'tile', 'data-idx': idx}).data('todayis', todayis).append(
 				$("<div>").append(
-						$("<span>", {class: 'title'}).html(todayis.name).on('click', function(e) {
+						$("<span>", {class: 'title'}).on('click', function(e) {
 							e.stopPropagation();
 							var $tile = $(this).parent().parent();
 							var _todayis = $tile.data('todayis');
@@ -151,7 +151,7 @@ function displayTile() {
 								$tile.addClass("played");
 								$tile.children("div:nth-child(3)").css({opacity: 1});
 							});
-						})
+						}).html(todayis.name.slice(0, -4).replace(/\-|[.]/gi, ' '))
 				),
 				$("<div>", {class: 'nowrap'}).append(
 						$("<span>", {class: 'path'}).html(todayis.path)		

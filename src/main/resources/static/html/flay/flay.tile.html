@@ -49,16 +49,38 @@
 	opacity: 1;
 	transition: all 0.3s 1s;
 }
+#statusBar {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #333333;
+    color: #ddd;
+    text-align: center;
+    padding: .25rem 0;
+}
 -->
 </style>
 <div role="body">
 
 	<div id="tileWrap"></div>
 
+	<div id="statusBar" class="fixed-bottom">
+		<span class="check-group sm ml-2">
+			<label><span id="size">14</span></label>
+			<label><input type="checkbox" id="rank0" value="0" checked="checked"><span>0</span></label>
+			<label><input type="checkbox" id="rank1" value="1"><span>1</span></label>
+			<label><input type="checkbox" id="rank2" value="2"><span>2</span></label>
+			<label><input type="checkbox" id="rank3" value="3"><span>3</span></label>
+			<label><input type="checkbox" id="rank4" value="4"><span>4</span></label>
+			<label><input type="checkbox" id="rank5" value="5"><span>5</span></label>
+		</span>
+	</div>
+
 </div>
 <script type="text/javascript">
 var flayList;
-var currIndex = 0;
+var currIndex = 0, displayCount = 0;
 
 Rest.Flay.list(function(list) {
 	flayList = list;
@@ -86,14 +108,28 @@ function displayTile(isFirst) {
 	var $tileWrap = $("#tileWrap").empty();
 	var tileWrapHeight = $tileWrap.height() + 32;
 	var tileList = [];
-
+	
+	var rank0 = $("#rank0").prop("checked");
+	var rank1 = $("#rank1").prop("checked");
+	var rank2 = $("#rank2").prop("checked");
+	var rank3 = $("#rank3").prop("checked");
+	var rank4 = $("#rank4").prop("checked");
+	var rank5 = $("#rank5").prop("checked");
+	
+	console.log(rank0, rank1, rank2, rank3, rank4, rank5);
+	
 	do {
 		if (currIndex >= flayList.length) {
 			currIndex = 0;
 		}
 		
 		var flay = flayList[currIndex++];
-		if (flay.video.rank > 0) {
+		if ((!rank0 && flay.video.rank === 0) 
+				|| (!rank1 && flay.video.rank === 1)
+				|| (!rank2 && flay.video.rank === 2)
+				|| (!rank3 && flay.video.rank === 3)
+				|| (!rank4 && flay.video.rank === 4)
+				|| (!rank5 && flay.video.rank === 5)) {
 			continue;
 		}
 		
@@ -110,6 +146,7 @@ function displayTile(isFirst) {
 				}),
 				$("<div>", {class: 'studio nowrap'}).html(flay.studio).on('click', function(e) {e.stopPropagation();}),
 				$("<div>", {class: 'opus nowrap'}).html(flay.opus).on('click', function(e) {e.stopPropagation();}),
+				$("<div>", {class: 'rank nowrap'}).html('Rank ' + flay.video.rank).on('click', function(e) {e.stopPropagation();}),
 				(function(actressList) {
 					var actressDivs = [];
 					$.each(actressList, function(idx, actress) {
@@ -139,8 +176,10 @@ function displayTile(isFirst) {
 
 		tileList.push($tile);
 
-	} while (true);
+		$("#size").html('Tile ' + ++displayCount + ' / ' + flayList.length + ' Flay ');
 
+	} while (true);
+	
 	if (Random.getBoolean()) {
 		var indexArray = Array.apply(null, {length: tileList.length}).map(Number.call, Number);
 		var timer = setInterval(function() {

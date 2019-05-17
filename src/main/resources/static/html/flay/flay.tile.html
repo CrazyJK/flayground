@@ -34,6 +34,12 @@
 	width: calc(var(--tile-width) + 5px);
 	text-shadow: 1px 1px 1px #103356; 
 }
+.tile.wide {
+	width:  calc(var(--tile-width) * 2 + 7px);
+}
+.tile.wide div {
+	width:  calc(var(--tile-width) * 2 + 5px);
+}
 .tile:hover {
 	/* transform: scale(1.2, 1.2); */
 }
@@ -68,6 +74,8 @@
 	<div id="statusBar" class="fixed-bottom">
 		<span class="check-group sm ml-2">
 			<label><span id="size">14</span></label>
+		</span>
+		<span class="check-group sm ml-4">
 			<label><input type="checkbox" id="rank0" value="0" checked="checked"><span>0</span></label>
 			<label><input type="checkbox" id="rank1" value="1"><span>1</span></label>
 			<label><input type="checkbox" id="rank2" value="2"><span>2</span></label>
@@ -75,12 +83,23 @@
 			<label><input type="checkbox" id="rank4" value="4"><span>4</span></label>
 			<label><input type="checkbox" id="rank5" value="5"><span>5</span></label>
 		</span>
+		<span class="check-group sm ml-4">
+			<label><input type="checkbox" id="wideTile"><span>Wide</span></label>
+		</span>
 	</div>
 
 </div>
 <script type="text/javascript">
 var flayList;
 var currIndex = 0, displayCount = 0;
+
+$("#rank0").prop("checked", LocalStorageItem.getBoolean('flay.tile.rank0', true));
+$("#rank1").prop("checked", LocalStorageItem.getBoolean('flay.tile.rank1', false));
+$("#rank2").prop("checked", LocalStorageItem.getBoolean('flay.tile.rank2', false));
+$("#rank3").prop("checked", LocalStorageItem.getBoolean('flay.tile.rank3', true));
+$("#rank4").prop("checked", LocalStorageItem.getBoolean('flay.tile.rank4', false));
+$("#rank5").prop("checked", LocalStorageItem.getBoolean('flay.tile.rank5', false));
+$("#wideTile").prop("checked", LocalStorageItem.getBoolean('flay.tile.wideTile', true));
 
 Rest.Flay.list(function(list) {
 	flayList = list;
@@ -95,6 +114,10 @@ Rest.Flay.list(function(list) {
 			displayTile(false);
 			break;
 		}
+	});
+	
+	$("input:checkbox").on("change", function() {
+		LocalStorageItem.set('flay.tile.' + $(this).attr("id"), $(this).prop("checked"));
 	});
 });
 
@@ -116,7 +139,9 @@ function displayTile(isFirst) {
 	var rank4 = $("#rank4").prop("checked");
 	var rank5 = $("#rank5").prop("checked");
 	
-	console.log(rank0, rank1, rank2, rank3, rank4, rank5);
+	var wide  = $("#wideTile").prop("checked");
+	
+//	console.log(rank0, rank1, rank2, rank3, rank4, rank5, wide);
 	
 	do {
 		if (currIndex >= flayList.length) {
@@ -133,7 +158,7 @@ function displayTile(isFirst) {
 			continue;
 		}
 		
-		var $tile = $("<div>", {class: 'tile'}).data('flay', flay).on('click', function(e) {
+		var $tile = $("<div>", {class: 'tile' + (wide ? ' wide' : '')}).data('flay', flay).on('click', function(e) {
 			var _flay = $(this).data('flay');
 			Rest.Flay.play(_flay, function() {
 				View.flay(_flay.opus);

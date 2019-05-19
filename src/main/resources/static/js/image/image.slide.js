@@ -7,17 +7,19 @@ $(function() {
 	var currIndex  = 0;
 	var bgIntervalTime = LocalStorageItem.getInteger("image.slide.bgIntervalTime", 10);
 	var bgInterval;
+	var bgSize;
 	var bgSizeProperties = ['contain', 'cover', 'auto'];
 	var bgSizePropertiesIndex = LocalStorageItem.getInteger("image.slide.bgSizePropertiesIndex", 0);
 	var pause = false;
-	var random = false;
+	var random = LocalStorageItem.getBoolean("image.slide.random", false);
+	var autofit = LocalStorageItem.getBoolean("image.slide.autofit", false);
 
 	var $image = $("#imageWrap");
 	var $controlBox = $("#controlBox");
 	var $progress = $("#paginationProgress > .progress-bar");
 
 	$image.navEvent(function(signal, e) {
-		console.log('e.keyCode', signal);
+//		console.log('e.keyCode', signal);
 		switch (signal) {
 		case 32: // key space
 			control.random();
@@ -42,7 +44,7 @@ $(function() {
 	});
 
 	$controlBox.on('init', function() {
-		console.log('$controlBox init');
+//		console.log('$controlBox init');
 		Rest.Image.size(function(count) {
 			totalCount = count;
 			$("#totalNo").html(totalCount);
@@ -50,6 +52,10 @@ $(function() {
 		bgSizePropertiesIndex--;
 		$controlBox.trigger('bgMode');
 		$("#bgIntervalTime").val(bgIntervalTime);
+
+		$('#random').toggleClass("active", random);
+		$('#autofit').toggleClass("active", autofit);
+
 	}).on('setInfo', function(e, image, imgInfo) {
 		$("#imgPath").html(imgInfo.path.replace(/\\/gi, '/').split('/').pop()).data("path", imgInfo.path);
 		$("#imgTitle").html(imgInfo.name);
@@ -65,7 +71,7 @@ $(function() {
 			});
 		}, 1500);
 	}).on('bgMode', function() {
-		var bgSize = bgSizeProperties[++bgSizePropertiesIndex % bgSizeProperties.length];
+		bgSize = bgSizeProperties[++bgSizePropertiesIndex % bgSizeProperties.length];
 		$image.css("backgroundSize", bgSize);
 		$("#bgMode").html(bgSize);
 		LocalStorageItem.set("image.slide.bgSizePropertiesIndex", bgSizePropertiesIndex);
@@ -89,7 +95,12 @@ $(function() {
 		view();
 	}).on('click', '#random', function() {
 		random = $(this).toggleClass("active").hasClass("active");
+		LocalStorageItem.set("image.slide.random", random);
 		$controlBox.trigger('notice', 'slide random: ' + random);
+	}).on('click', '#autofit', function() {
+		autofit = $(this).toggleClass("active").hasClass("active");
+		LocalStorageItem.set("image.slide.autofit", autofit);
+		$controlBox.trigger('notice', 'auto fit: ' + autofit);
 		view();
 	}).on('keyup', '#currNo', function(e) {
 		e.stopPropagation();
@@ -135,7 +146,6 @@ $(function() {
 					currIndex = totalCount - 1;
 				}
 			}
-//			console.log('image.show', currIndex);
 
 			var image = new Image();
 			image.onload = function() {
@@ -145,13 +155,28 @@ $(function() {
 				});
 				$progress.trigger('progress');
 
+				// rotate
+				var factor = 1.0, degree = 0; 
+				if (autofit && bgSize === 'contain') {
+					var isVerticalWindow = window.innerWidth < window.innerHeight;
+					var isVerticalImage  = _self.naturalWidth < _self.naturalHeight;
+					var imageVerticalRatio = _self.naturalHeight / _self.naturalWidth;
+					if (isVerticalWindow != isVerticalImage && (imageVerticalRatio < 0.8 || 1.2 < imageVerticalRatio)) {
+						factor = isVerticalImage ? imageVerticalRatio : 1 / imageVerticalRatio;
+						degree = 90;
+					}
+				}
+				$image.css({
+					transform: 'scale(' + factor.toFixed(2) + ') rotate(' + degree + 'deg)'
+				});
+				console.log('currIndex', currIndex, 'isVerticalWindow', isVerticalWindow, 'isVerticalImage', isVerticalImage, 'imageVerticalRatio', imageVerticalRatio, 'factor', factor);
+				
 				// get info
 				Rest.Image.get(currIndex, function(info) {
 					$controlBox.trigger('setInfo', [_self, info]);
 				});
 			};
 			image.src = PATH + "/static/image/" + currIndex;
-//			console.log('image.src', PATH, "/static/image/", currIndex);
 		}
 
 		clearInterval(bgInterval);
@@ -161,11 +186,12 @@ $(function() {
 				currIndex++;
 				show();
 			}, 1000 * bgIntervalTime);
-			console.log('setInterval', bgIntervalTime);
+//			console.log('setInterval', bgIntervalTime);
 		}
 	};
 
 	$controlBox.trigger('init');
+
 	control.random();
 
 });

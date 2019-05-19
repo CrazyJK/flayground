@@ -10,6 +10,10 @@
 <link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css">
 <style type="text/css">
+body {
+	background-color: #000;
+	overflow: hidden;
+}
 #imageWrap {
 	position: absolute;
 	top: 0;
@@ -71,7 +75,7 @@
 #imgTitle {
 	color: yellow;
 }
-#pause.active, #random.active {
+#pause.active, #random.active, #autofit.active {
 	color: #0056b3;
 	text-shadow: 0 0 1px #0056b3, 0 0 8px #fff;
 }
@@ -108,10 +112,11 @@
 			<span id="imgSize" class="small"></span>
 			<span id="imgLength" class="small"></span>
 			<span id="imgModified" class="small"></span>
+			<span id="autofit" class="small hover" title="image auto fit"><i class="fa fa-rotate-right"></i></span>
 			<span id="bgMode" class="small"></span>
-			<span id="random" class="small hover"><i class="fa fa-random"></i></span>
+			<span id="random" class="small hover" title="image random select"><i class="fa fa-random"></i></span>
 			<input id="bgIntervalTime" value="9" title="enter new bgIntervalTime" autocomplete="off">
-			<span id="pause" class="small hover"><i class="fa fa-pause"></i></span>
+			<span id="pause" class="small hover" title="slide pause"><i class="fa fa-pause"></i></span>
 			<input id="currNo" value="0" title="enter new imageIndex" autocomplete="off">
 			<span>/&nbsp;<sub id="totalNo">0</sub></span>
 			<a href="/"><i class="fa fa-home"></i></a>

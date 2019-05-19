@@ -1,13 +1,74 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="UTF-8">
 <title>Flayground</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=0.5">
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/crazy.font.css">
+<style type="text/css">
+body {
+	background: #000;
+	text-align: center;
+}
+h1 {
+	color: #333;
+}
+h2 {
+}
+a {
+	transition: .3s;
+}
+a:hover {
+	text-decoration: none;
+	text-shadow: 1px 1px 2px #e9e9e9;
+}
+.flay-font-effect-static {
+	font-family: 'Ink Free';
+	-webkit-mask-image: url(/img/pattern/pattern-static.png);
+	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-location.href = "/html/flay/flay.index.html";
+function go(menu, method) {
+	var url = "";
+	if (menu === 'home') {
+		url = "/html/flay/flay.index.html";
+	} else if (menu === 'slide') {
+		url = "/html/image/image.slide.html";
+	}
+	
+	if (method === 'href') {
+		location.href = url;
+	} else if (method === 'popup') {
+		var popupWindow = window.open(url, "flayground" + (new Date()).getTime(), "width=1000,height=1200,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1");
+		if (popupWindow) {
+			popupWindow.focus();
+		}
+	}
+}
 </script>
 </head>
 <body>
-	<h1>Flayground</h1>
+
+<div class="container">
+	<div class="jumbotron bg-dark">
+		<h1 class="flay-font-effect-static display-1 pb-4">Flayground</h1>
+	</div>
+	
+	<h2 class="flay-font-effect-static display-2">
+		<a href="javascript:go('home', 'href')">Home</a> 
+		<a href="javascript:go('home', 'popup')">↗</a>
+	</h2>
+	<h2 class="flay-font-effect-static display-2">
+		<a href="javascript:go('slide', 'href')">Slide</a> 
+		<a href="javascript:go('slide', 'popup')">↗</a>
+	</h2>
+</div>
+
 </body>
 </html>

@@ -199,6 +199,10 @@ label.text.lg 				{font-size: 1.125rem;	line-height: 1.7;}
 body.bg-dark label.text    		    {background-color: var(--darker);	color: var(--light);}
 body.bg-dark label.text.hover:hover {background-color: #103356; color: #eede1a; box-shadow: none;}
 
+.text.danger {
+	background-color: var(--danger)!important;
+}
+
 /* button */
 button.btn.btn-flay, button.btn.btn-outline-flay {
 	background-color: var(--light);

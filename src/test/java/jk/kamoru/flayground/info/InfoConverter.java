@@ -191,11 +191,11 @@ public class InfoConverter {
 		Actress actress = new Actress(infoName);
 		actress.setLocalName(localName);
 		actress.setBirth(birth);
-		actress.setHeight(new Integer(height));
+		actress.setHeight(Integer.valueOf(height));
 		actress.setBody(body);
-		actress.setDebut(new Integer(debut));
+		actress.setDebut(Integer.valueOf(debut));
 		actress.setComment(comment);
-		actress.setFavorite(new Boolean(favorite));
+		actress.setFavorite(Boolean.valueOf(favorite));
 
 		return actress;
 	}

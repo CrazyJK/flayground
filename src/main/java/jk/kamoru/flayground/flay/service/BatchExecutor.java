@@ -325,7 +325,6 @@ public class BatchExecutor {
 		flayFileHandler.createDirectory(backupRootPath);
 		flayFileHandler.cleanDirectory(backupRootPath);
 		flayFileHandler.createDirectory(backupInstanceFilePath);
-		flayFileHandler.cleanDirectory(flayProperties.getBackupPath());
 
 		// video list backup to csv
 		Collection<Flay> instanceFlayList = instanceFlaySource.list();
@@ -421,7 +420,7 @@ public class BatchExecutor {
 		 * -M  항목에 대해 Manifest 파일을 생성하지 않습니다.
 		 */
 		List<String> commands = Arrays.asList("jar", "cvf0M", destJarFile.getAbsolutePath(), "-C", targetFolder.getAbsolutePath(), ".");
-		File logFile = new File(destJarFile.getParentFile(), destJarFile.getName() + "." + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");
+		File logFile = new File(flayProperties.getQueuePath(), destJarFile.getName() + "." + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");
 		ProcessBuilder builder = new ProcessBuilder(commands);
 		builder.redirectOutput(Redirect.to(logFile));
 		builder.redirectError(Redirect.INHERIT);

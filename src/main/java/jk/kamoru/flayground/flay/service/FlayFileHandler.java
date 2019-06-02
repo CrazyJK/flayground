@@ -30,7 +30,7 @@ public class FlayFileHandler {
 		flay.setActressList(actressList);
 		rename(flay);
 	}
-	
+
 	public void rename(Flay flay, String studio, String title, List<String> actressList, String release) {
 		flay.setStudio(studio);
 		flay.setTitle(title);
@@ -48,14 +48,14 @@ public class FlayFileHandler {
 
 			List<File> newFiles = new ArrayList<>();
 			for (File file : fileList) {
-				
+
 				String tail   = increaseCount ? "" + ++fileCount : "";
 				String suffix = FilenameUtils.getExtension(file.getName());
-				
+
 				File newFile = new File(file.getParentFile(), flay.getFullname() + tail + "." + suffix);
 				boolean renameTo = file.renameTo(newFile);
 				log.info("renameTo {}: {} - {}", renameTo, file, newFile);
-				
+
 				if (renameTo) {
 					newFiles.add(newFile);
 				} else {
@@ -65,7 +65,7 @@ public class FlayFileHandler {
 			flay.getFiles().put(key, newFiles);
 		}
 	}
-	
+
 	public void createDirectory(File directory) {
 		try {
 			Files.createDirectories(directory.toPath());
@@ -137,7 +137,7 @@ public class FlayFileHandler {
 			throw new IOException("Disk free space is too small. " + disk + ": " + prettyFileLength(freeSpace) + " < " + prettyFileLength(length));
 		}
 	}
-	
+
 	public void deleteFile(File file) {
 		if (file.isDirectory()) {
 			throw new IllegalStateException("fail to deleteFile. it is directory: " + file);
@@ -152,7 +152,7 @@ public class FlayFileHandler {
 			}
 		}
 	}
-	
+
 
 	public String prettyFileLength(long length) {
 		if (length > FileUtils.ONE_TB) {
@@ -167,7 +167,7 @@ public class FlayFileHandler {
 			return length + "bytes";
 		}
 	}
-	
+
 	public Collection<File> listDirectory(File path) {
 		return  FileUtils.listFilesAndDirs(path, new IOFileFilter() {
 			@Override public boolean accept(File file) { return false; }

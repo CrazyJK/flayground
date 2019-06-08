@@ -358,20 +358,22 @@ body.bg-dark .ui-dialog {
 	background: rgba(0, 0, 0, .5);
 	height: 100%;
 	margin: 0;
-	padding: 0 1rem;
+	padding: 1rem;
 	z-index: -4;
 }
 #background_images.transparent {
 	background-color: transparent;
 }
 #background_images .col {
+	padding: 1rem;
 	z-index: -3;
 }
 #background_images img {
+	border-radius: .25rem;
 	cursor: pointer;
-	margin-top: 2rem;
+	margin-bottom: 2rem;
 	width: inherit;
-	transition: height 1s;
+	transition: all .5s;
 	z-index: -2;
 }
 

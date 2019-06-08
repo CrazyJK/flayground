@@ -124,10 +124,16 @@ var Background = {
 				var calcImgWidth  = parseInt($imageWrap.width());
 				var calcImgHeight = parseInt(calcImgWidth * this.naturalHeight / this.naturalWidth);
 				// append new image
-				$(this).css({height: 0}).addClass("rounded").prependTo($imageWrap).css({height: calcImgHeight}).on("click", function() {
+				var $thisImage = $(this).css({height: 0}).prependTo($imageWrap).on("click", function() {
 					Popup.imageByNo(imageIndex);
 				});
-			}
+				// showing
+				setTimeout(function() {
+					$thisImage.css({
+						height: calcImgHeight
+					});
+				}, 100);
+			};
 			image.src = PATH + "/static/image/" + imageIndex;
 			
 			// overflow image remove

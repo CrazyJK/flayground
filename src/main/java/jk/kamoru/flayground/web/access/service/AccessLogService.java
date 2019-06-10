@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.transaction.Transactional;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -50,7 +51,7 @@ public class AccessLogService {
 	@PostConstruct
 	public void loadFromFile() {
 		log.info("@PostConstruct AccessLogService.loadFromFile");
-		File infoFile = getInfoFile();
+		File infoFile = getAccessFile();
 		try {
 			List<AccessLogStatistic> list = mapper.readValue(infoFile, new TypeReference<List<AccessLogStatistic>>() {});
 			accessLogRepository.saveAll(list);
@@ -58,22 +59,26 @@ public class AccessLogService {
 		} catch (IOException e) {
 			throw new IllegalStateException("Fail to load info file " + infoFile, e);
 		}
-
 	}
 
 	@PreDestroy
 	public void saveToFile() {
 		log.info("@PreDestroy - AccessLogService.saveToFile");
 		try {
+			// backup src file
+			File srcFile = getAccessFile();
+			File destFile = new File(srcFile.getParentFile(), srcFile.getName() + ".bak");
+			FileUtils.copyFile(srcFile, destFile);
+			// sava access file
 			List<AccessLogStatistic> findAll = accessLogRepository.findAll();
-			mapper.writeValue(getInfoFile(), findAll);
+			mapper.writeValue(getAccessFile(), findAll);
 			log.info("@PreDestroy - save accesslog statistic to file {}", findAll.size());
 		} catch (IOException e) {
-			throw new IllegalStateException("Fail to save info file " + getInfoFile(), e);
+			throw new IllegalStateException("Fail to save info file " + getAccessFile(), e);
 		}
 	}
 
-	private File getInfoFile() {
+	private File getAccessFile() {
 		return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.ACCESS);
 	}
 }

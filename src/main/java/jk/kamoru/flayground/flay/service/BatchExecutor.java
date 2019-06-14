@@ -190,7 +190,7 @@ public class BatchExecutor {
 				List<File> value = entry.getValue();
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
-						log.info("move [{}] {} to {}", flay.getOpus(), file, delegatePath);
+						log.info("move [{} {}GB] {} to {}", flay.getOpus(), flayFileHandler.prettyFileLength(flay.getLength()), file, delegatePath);
 						flayFileHandler.moveFileToDirectory(file, delegatePath);
 					}
 				}

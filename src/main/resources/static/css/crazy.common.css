@@ -512,7 +512,7 @@ body.bg-dark ul.pagination                                      {background-colo
 body.bg-dark ul.pagination .page-item                .page-link {background-color: var(--darker);}
 body.bg-dark ul.pagination .page-item.active         .page-link {background-color: #103356;	border-color: #dee2e6;}
 body.bg-dark ul.pagination .page-item.disabled       .page-link {color: var(--gray);}
-body.bg-dark ul.pagination .page-item:not(.disabled) .page-link {color: var(--light);}
+body.bg-dark ul.pagination .page-item:not(.disabled) .page-link {color: var(--light); cursor: pointer;}
 
 body.bg-dark .btn-link {
 	color: var(--light);

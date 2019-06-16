@@ -143,7 +143,7 @@ public class BatchExecutor {
 	}
 
 	void deleteLowerScore() {
-		log.info("[deleteLowerScore] {} GB", flayProperties.getStorageLimit());
+		log.info("[deleteLowerScore] limit {} GB", flayProperties.getStorageLimit());
 		final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
 
 		long lengthSum = 0;
@@ -190,7 +190,7 @@ public class BatchExecutor {
 				List<File> value = entry.getValue();
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
-						log.info("move [{} {}GB] {} to {}", flay.getOpus(), flayFileHandler.prettyFileLength(file.length()), file, delegatePath);
+						log.info("move [{} {}] {} to {}", flay.getOpus(), flayFileHandler.prettyFileLength(file.length()), file, delegatePath);
 						flayFileHandler.moveFileToDirectory(file, delegatePath);
 					}
 				}

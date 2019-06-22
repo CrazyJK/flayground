@@ -210,17 +210,13 @@ Loading.prototype = {
 		on: function(body) {
 			this.$overlay.show();
 			this.$overlayBody.empty().append(body);
-			console.log('Loading.on', body);
+//			console.log('Loading.on', body);
 		},
 		off: function() {
 			this.$overlay.hide();
 			this.$overlayBody.empty();
-			console.log('Loading.off');
+//			console.log('Loading.off');
 		}
 };
 
-var loading;
-
-$(function () {
-	loading = new Loading();
-});
+var loading = new Loading();

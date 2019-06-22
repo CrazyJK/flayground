@@ -9,7 +9,7 @@ var restCall = function(url, args, callback, failCallback) {
 			contentType: "application/json",
 			async: true,
 			cache: false,
-			title: ""
+			title: "Call: " + url
 	};	
 	var settings = $.extend({}, DEFAULTS, args);
 	if (settings.method != 'GET' && typeof settings.data === 'object') {
@@ -17,12 +17,18 @@ var restCall = function(url, args, callback, failCallback) {
 	}
 //	console.log('restCall', settings.method, url, settings.data);
 
-	settings.title != "" && loading.on(settings.title);
-	
+//	settings.title != "" && loading.on(settings.title);
+	var timeout = setTimeout(function() {
+		loading.on(settings.title);
+	}, 300);
+
 	$.ajax(PATH + url, settings).done(function(data) {
 		if (callback)
 			callback(data);
-		settings.title != "" && loading.off();
+//		settings.title != "" && loading.off();
+		clearTimeout(timeout);
+		loading.off();
+		
 	}).fail(function(jqXHR, textStatus, errorThrown) {
 		console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 		if (failCallback) {

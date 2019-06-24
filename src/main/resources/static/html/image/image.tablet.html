@@ -109,13 +109,19 @@ body {
 }
 .image-card.full > div {
     transition: .3s;
+    background-color: rgba(0, 0, 0, .5);
+    color: #fff;
+    opacity: 0;
+}
+.image-card.full:hover > div {
+    opacity: 1;
 }
 .image-card.full > div > label {
 	cursor: pointer;
-	font-size: 1.5rem;
+	font-size: 1.25rem;
 }
 .image-card.full > div > label.hover:hover {
-	text-shadow: 0 0 2px orange;
+	text-shadow: 0 0 2px #000;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>

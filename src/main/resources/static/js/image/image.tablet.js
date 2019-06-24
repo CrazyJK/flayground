@@ -158,7 +158,8 @@ $(function() {
 					var $ret = $(this).toggleClass("full");
 					if ($ret.hasClass("full")) {
 						$ret.append(
-								$("<div>", {class: "text-primary"}).append(
+								$("<div>").append(
+										$("<label>", {class: "m-2"}).html(imageInfo.idx),
 										$("<label>", {class: "hover m-2"}).html(imageInfo.path.replace(/\\/gi, '/').split('/').pop()).on("click", function(e) {
 											e.preventDefault();
 											e.stopPropagation();

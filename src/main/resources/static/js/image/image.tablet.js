@@ -174,9 +174,18 @@ $(function() {
 										$("<label>", {class: "m-2"}).html(File.formatSize(imageInfo.length)),
 										$("<label>", {class: "m-2"}).html(new Date(imageInfo.modified).format('yyyy-MM-dd')),
 								)
-						);
+						).on("mousewheel", function(e) {
+							e.preventDefault();
+							e.stopPropagation();
+							$(this).click();
+							if (e.originalEvent.wheelDelta > 0) { // wheel up
+								$(this).prev().click();
+							} else { // wheel down
+								$(this).next().click();
+							}
+						});
 					} else {
-						$ret.children().remove();
+						$ret.off("mousewheel").children().remove();
 					}
 				});
 				$image.prependTo($imageWrap);

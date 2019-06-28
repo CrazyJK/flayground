@@ -179,11 +179,14 @@ var Navi = {
 		}
 };
 
-var isAdmin = Security.hasRole("ADMIN");
-var username = Security.getName();
-console.log("isAdmin", isAdmin, username);
+var isAdmin;
+var username;
 
 $(document).ready(function() {
+	isAdmin = Security.hasRole("ADMIN");
+	username = Security.getName();
+	console.log("isAdmin", isAdmin, username);
+	
 	Background.init();
 
 	Navi.init();

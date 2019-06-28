@@ -25,10 +25,11 @@ var restCall = function(url, args, callback, failCallback) {
 	$.ajax(PATH + url, settings).done(function(data) {
 		if (callback)
 			callback(data);
+
 //		settings.title != "" && loading.off();
 		clearTimeout(timeout);
 		loading.off();
-		
+
 	}).fail(function(jqXHR, textStatus, errorThrown) {
 		console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 		if (failCallback) {

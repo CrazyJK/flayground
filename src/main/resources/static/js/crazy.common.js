@@ -205,6 +205,7 @@ function Loading() {
 	$("html").on("click", "#" + OVERLAY, function() {
 		loading.off();
 	});
+	console.log('Loading.init');
 };
 Loading.prototype = {
 		on: function(body) {
@@ -219,4 +220,7 @@ Loading.prototype = {
 		}
 };
 
-var loading = new Loading();
+var loading;
+$(function() {
+	loading = new Loading();
+});

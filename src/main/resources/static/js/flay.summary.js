@@ -1,5 +1,5 @@
 /**
- * 
+ * flay summary js
  */
 
 var flayList = [];
@@ -7,10 +7,12 @@ Rest.Flay.list(function(list) {
 	flayList = list;
 });
 
+/*
 $(window).on("resize", function() {
 	console.log("$(window).width()", $(window).width());
 //	$('canvas').attr("width", $(".card-body").width() - 64);
 }).trigger("resize");
+*/
 
 $("#groupByRelease").on('show.bs.collapse', function() {
 	var val = $("input[name='releasePattern']:checked").val();

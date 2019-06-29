@@ -17,12 +17,29 @@ $(document).ready(function() {
 		cache: false
 	}).done(function(json) {
 		$.each(json._links, function(key, val) {
+			var url = val.href.replace('http://localhost:6974', '');
 			$("<div>", {'class': 'card m-2'}).css({width: 'auto'}).append(
 					$("<div>", {'class': 'card-body'}).append(
 							$("<h5>", {'class': 'card-title'}).html(key),
-							$("<p>", {'class': 'card-text'}).append(
-									$("<a>", {'href': val.href, 'target': '_blank'}).html(val.href.replace('http://localhost:6974', ''))
-							)
+							(function() {
+								return val.templated ?
+										$("<div>", {class: "input-group input-group-sm"}).append(
+												$("<input>", {class: 'form-control form-control-sm border-primary'}).val(url).on("keyup", function(e) {
+													if (e.keyCode === 13)
+														$(this).next().children().get(0).click();
+												}),
+												$("<div>", {class: 'input-group-append'}).append(
+														$("<button>", {class: 'btn btn-outline-primary'}).append(
+																$("<i>", {class: "fa fa-external-link"})
+														).on("click", function() {
+															window.open($(this).parent().prev().val(), key, 'width=800, height=600');
+														})
+												)
+										) :  
+										$("<p>", {'class': 'card-text'}).append(
+												$("<a>", {'href': "javascript: window.open('" + val.href + "', '" + key + "', 'width=800, height=600');"}).html(url)
+										);
+							}())
 					)
 			).appendTo("#cardWrap");
 		});

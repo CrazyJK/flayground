@@ -66,6 +66,8 @@ var Background = {
 		imageIndexArray: [],
 		bgInterval: null,
 		count: 0,
+		paneWidth: 400,
+		intervalTime: 3000,
 		init: function() {
 			Rest.Image.size(function(count) {
 				Background.count = count;
@@ -74,7 +76,7 @@ var Background = {
 		},
 		event: function() {
 			var paneResize = function() {
-				var paneLength = Math.round($(window).width() / 300) - $("#background_images").children().length;
+				var paneLength = Math.round($(window).width() / Background.paneWidth) - $("#background_images").children().length;
 				if (paneLength > 0) {
 					for (var i=0; i<paneLength; i++) {
 						$("<div>", {'class': 'col'}).appendTo($("#background_images"));
@@ -96,7 +98,7 @@ var Background = {
 			backgroundImageShow && $("#bgFlow").parent().click();
 		},
 		start: function() {
-			Background.bgInterval = setInterval(Background.func, 3000);
+			Background.bgInterval = setInterval(Background.func, Background.intervalTime);
 			LocalStorageItem.set('flay.background-image', true);
 		},
 		stop: function() {

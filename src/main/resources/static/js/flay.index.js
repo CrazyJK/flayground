@@ -119,7 +119,7 @@ var Background = {
 			// select image pane
 			var paneLength = $("#background_images").children().length;
 			var $imageWrap = $("#background_images div.col:nth-child(" + Random.getInteger(0, paneLength) + ")");
-			
+
 			var image = new Image();
 			image.onload = function() {
 				// calculate size

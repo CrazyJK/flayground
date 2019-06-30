@@ -66,7 +66,7 @@ var Background = {
 		imageIndexArray: [],
 		bgInterval: null,
 		count: 0,
-		paneWidth: 400,
+		paneWidth: LocalStorageItem.getInteger('flay.background-image.paneWidth', 400),
 		intervalTime: 3000,
 		init: function() {
 			Rest.Image.size(function(count) {
@@ -90,6 +90,12 @@ var Background = {
 			};
 			paneResize();
 			$(window).on("resize", paneResize);
+			// paneWidth
+			$("#paneWidth").on("change", function() {
+				Background.paneWidth = $(this).val();
+				paneResize();
+				LocalStorageItem.set('flay.background-image.paneWidth', Background.paneWidth);
+			}).val(Background.paneWidth);
 			// switch
 			$("#bgFlow").on("change", function() {
 				$(this).prop("checked") ? Background.start() : Background.stop();

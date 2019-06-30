@@ -320,6 +320,17 @@ body.bg-dark .ui-dialog {
     width: 50px;
 }
 
+.sidenav input[type="number"] {
+	background-color: transparent;
+    border: 0px solid #000;
+    border-radius: .25rem;
+	cursor: pointer;
+	color: var(--blue);
+    margin-left: .5rem;
+    padding: 0 4px;
+    width: 60px;
+}
+
 @media (max-height: 1000px) {
 	.sidenav > .nav > .nav-item {
 		min-height: 2rem;

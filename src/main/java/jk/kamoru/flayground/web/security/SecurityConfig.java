@@ -12,7 +12,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
 		auth.inMemoryAuthentication()
 				.withUser("admin").password("{noop}6969").roles("ADMIN") // {noop} for plain text
-					.and()
+				.and()
 				.withUser("kamoru").password("{noop}3806").roles("USER");
 	}
 
@@ -20,8 +20,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(HttpSecurity http) throws Exception {
 		http.headers().frameOptions().sameOrigin();
 		http.csrf().disable();
-		http
-			.authorizeRequests()
+		http.authorizeRequests()
 				.antMatchers("/", "/index.html", "/webjars/**", "/img/**", "/css/**").permitAll()
 				.antMatchers("/batch/**").hasRole("ADMIN")
 				.anyRequest().authenticated()
@@ -33,8 +32,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.rememberMeParameter("remember-me")
 				.and()
 			.logout()
-				.logoutSuccessUrl("/")
-				.permitAll()
+				.logoutSuccessUrl("/").permitAll()
 				.and()
 			.httpBasic();
 	}

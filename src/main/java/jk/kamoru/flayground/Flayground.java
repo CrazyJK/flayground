@@ -1,6 +1,7 @@
 package jk.kamoru.flayground;
 
 import java.io.File;
+import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.concurrent.Executor;
@@ -43,6 +44,7 @@ public class Flayground implements AsyncConfigurer {
 			public static final NumberFormat GB_Format = NumberFormat.getNumberInstance();
 			public static final NumberFormat MB_Format = NumberFormat.getNumberInstance();
 			public static final NumberFormat KB_Format = NumberFormat.getNumberInstance();
+			public static final DecimalFormat Comma_Format = new DecimalFormat("###,###");
 
 			static {
 				TB_Format.setMaximumFractionDigits(2);

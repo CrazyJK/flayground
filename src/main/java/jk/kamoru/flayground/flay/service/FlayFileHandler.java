@@ -2,7 +2,9 @@ package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -12,6 +14,7 @@ import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.IOFileFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -98,6 +101,54 @@ public class FlayFileHandler {
 			FileUtils.copyDirectoryToDirectory(fromDirectory, toDirectory);
 		} catch (IOException e) {
 			throw new IllegalStateException("fail to copyDirectoryToDirectory " + fromDirectory + " to " + toDirectory, e);
+		}
+	}
+
+	public synchronized void cloneFolder(File srcFolder, File destFolder) {
+		try {
+			Collection<File> listFiles = FileUtils.listFiles(srcFolder, null, true);
+			long totalSize = listFiles.size();
+			String canonicalSrcFolderPath = srcFolder.getCanonicalPath();
+			String canonicalDestFolderPath = destFolder.getCanonicalPath();
+			log.info("Folder clone START " + canonicalSrcFolderPath + " (" + totalSize + " files) to " + canonicalDestFolderPath);
+
+			int loopCount = 0;
+			for (File srcFile : listFiles) {
+				++loopCount;
+				String childPath = StringUtils.replace(srcFile.getCanonicalPath(), canonicalSrcFolderPath, "");
+				File destFile = new File(canonicalDestFolderPath + childPath);
+				File destParentFolder = destFile.getParentFile();
+
+				// check folder to exist
+				if (!destParentFolder.exists()) {
+					Files.createDirectories(destParentFolder.toPath());
+					log.debug("create Directory {}", destParentFolder);
+				}
+
+				// check destination file to exist
+				boolean willCopy = false;
+				long srcFileLength = srcFile.length();
+				if (destFile.exists()) {
+					long destFileLength = destFile.length();
+					if (srcFileLength != destFileLength) {
+						willCopy = true;
+					}
+				} else {
+					willCopy = true;
+				}
+
+				log.info(String.format("%4s/%-4s %5s %14s bytes %s", loopCount, totalSize, willCopy ? "Copy!" : "Pass~", Flayground.Format.Number.Comma_Format.format(srcFileLength), childPath));
+				if (willCopy) {
+					try {
+						Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+					} catch (FileSystemException e) {
+						log.error("fail to copy {} to {} : {}", srcFolder, destFolder, e);
+					}
+				}
+			}
+			log.info("Folder clone END");
+		} catch (IOException e) {
+			throw new IllegalStateException("fail to cloneFolder " + srcFolder + " to " + destFolder, e);
 		}
 	}
 

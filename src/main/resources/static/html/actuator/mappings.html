@@ -95,7 +95,7 @@ $(document).ready(function() {
 });
 
 var scrollBodyHeight = function() {
-	return $(window).innerHeight() - 80;
+	return $(window).innerHeight() - 90;
 };
 </script>
 </head>
@@ -104,10 +104,13 @@ var scrollBodyHeight = function() {
 	<div class="container-fluid">
 		<div class="d-flex my-2">
 			<div class="text-light mr-auto">
-				<i class="fa fa-list mx-2"></i> List of Request Mapping by Actuator (<span id="count">0</span>)
+				<h4>
+					<i class="fa fa-list mx-2"></i>
+					<a href="/html/actuator/index.html" class="text-decoration-none text-light">Actuator</a> > Mappings <small>(<span id="count">0</span>)</small>
+				</h4>
 			</div> 
-			<a href="/html/util/requestMapping.html" class="mx-2">Simple</a>
-			<a href="/" class="mx-2">Home</a>
+			<a href="/html/util/requestMapping.html" class="text-light mx-2">Access</a>
+			<a href="/" class="text-light mx-2">Home</a>
 		</div>
 		<table class="table table-sm table-hover table-dark m-0">
 			<thead class="text-success">

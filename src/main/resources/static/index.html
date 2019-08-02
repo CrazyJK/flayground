@@ -9,7 +9,7 @@
 <link rel="stylesheet" href="/css/crazy.font.css">
 <style type="text/css">
 body {
-	background: #000 url(/img/bg/chalkboard.jpg) center repeat;
+	background: #000 url(/img/bg/chalkboard.jpg);
 }
 h1, h2, a {
 	color: #333;
@@ -41,6 +41,8 @@ function go(menu, method) {
 		url = "/html/image/image.slide.html";
 	} else if (menu === 'tablet') {
 		url = "/html/image/image.tablet.html";
+	} else if (menu === 'actuator') {
+		url = "/html/actuator/index.html";
 	}
 	if (method === 'href') {
 		location.href = url;
@@ -67,6 +69,10 @@ function go(menu, method) {
 		<h2 class="display-2">
 			<a href="javascript:go('tablet', 'href')">Tablet</a>
 			<a href="javascript:go('tablet', 'popup')">↗</a>
+		</h2>
+		<h2 class="display-2">
+			<a href="javascript:go('actuator', 'href')">Actuator</a>
+			<a href="javascript:go('actuator', 'popup')">↗</a>
 		</h2>
 	</div>
 </body>

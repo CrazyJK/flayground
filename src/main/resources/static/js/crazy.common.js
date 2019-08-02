@@ -194,6 +194,11 @@ var	reqParam = location.search.split(/[?&]/).slice(1).map(function(paramPair) {
 	return obj;
 }, {});
 
+$.urlParam = function(name){
+    var results = new RegExp('[\?&amp;]' + name + '=([^&amp;#]*)').exec(window.location.href);
+    return results ? results[1] || "" : "";
+}
+
 function Loading() {
 	const OVERLAY = "overlay", OVERLAY_BODY = "overlay_body";
 	const templateOverlay = '<div id="wrap_overlay"><div id="' + OVERLAY + '"><div id="' + OVERLAY_BODY + '"></div></div></div>';

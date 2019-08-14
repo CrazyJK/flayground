@@ -4,10 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -38,15 +36,7 @@ public class TodayisServiceImpl implements TodayisService {
 				}
 			}
 		}
-		return list.stream().sorted((a, b) -> {
-			int compareTo = b.getPath().compareToIgnoreCase(a.getPath());
-			if (compareTo == 0) {
-//				return a.getName().compareToIgnoreCase(b.getName());
-				return NumberUtils.compare(a.getLastModified(), b.getLastModified());
-			} else {
-				return compareTo;
-			}
-		}).collect(Collectors.toList());
+		return list;
 	}
 
 	@Override

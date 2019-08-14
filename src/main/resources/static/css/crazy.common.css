@@ -441,6 +441,7 @@ body.bg-dark .ui-dialog {
 .fixed-center {position: absolute; top: 50%;   left: 50%; transform: translate(-50%, -50%);}
 .fixed-top    {position: fixed; top: 0;}
 .fixed-bottom {position: fixed; bottom: 0;}
+.full-screen  {position: absolute; top: 0; left: 0; right: 0; bottom: 0;}
 
 .favorite {
 	color: red !important;

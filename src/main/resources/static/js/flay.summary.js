@@ -353,11 +353,13 @@ function displayFlayList(key, list) {
 	var $flayList = $("#flayList").empty();
 	$.each(list, function(idx, flay) {
 		$flayList.appendFlayCard(flay, {
-			width: 300,
-			exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
+			width: 310,
+			exclude: [STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
 			fontSize: '80%'
 		});
 	});
 
 	$(".flay-list-wrapper").show();
 }
+
+$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});

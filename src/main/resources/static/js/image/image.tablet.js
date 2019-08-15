@@ -233,4 +233,5 @@ $(function() {
 
 	control.random();
 
+	$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
 });

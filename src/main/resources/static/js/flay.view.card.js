@@ -95,7 +95,11 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				backgroundImage: 'url(/static/cover/' + flay.opus + ')'
 			});
 			// studio
-			$flayCard.find(".flay-studio").html(flay.studio);
+			if (settings.exclude.includes(STUDIO)) {
+				$flayCard.find(".flay-studio").remove();
+			} else {
+				$flayCard.find(".flay-studio").html(flay.studio);
+			}
 			// opus
 			$flayCard.find(".flay-opus").html(flay.opus).on("click", function() {
 				View.video(flay.opus);

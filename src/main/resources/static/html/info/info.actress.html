@@ -198,7 +198,7 @@ Rest.Actress.get(name, function(_actress) {
 		
 		$.each(flayList, function(idx, flay) {
 			$flayList.appendFlayCard(flay, {
-				width: 400,
+				width: 330,
 				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
 				fontSize: '80%'
 			});
@@ -216,7 +216,7 @@ Rest.Actress.get(name, function(_actress) {
 	}
 });
 
-$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D');
+$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
 
 </script>
 </body>

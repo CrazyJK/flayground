@@ -162,7 +162,15 @@ function attachEventListener() {
 	$("#tags").on("change", function() {
 		$("#selectTags").slideToggle(this.checked);
 	});
-	
+	// statistics studio
+	$("#toggleStatisticsStudio").on("change", function() {
+		$("#statisticsStudio").slideToggle(this.checked);
+	});
+	// statistics actress
+	$("#toggleStatisticsActress").on("change", function() {
+		$("#statisticsActress").slideToggle(this.checked);
+	});
+
 	// collect
 	$("#pageContent").on("collect", function() {
 		!collecting && collectList();
@@ -410,6 +418,64 @@ function collectList() {
 	}
 	
 	collecting = false;
+	
+	// statistics
+	var studioMap = new Map();
+	var actressMap = new Map();
+	var count = 1;
+	for (var i = 0; i < collectedList.length; i++) {
+		var flay = collectedList[i];
+
+		// flay.studio
+		if (studioMap.has(flay.studio)) {
+			count = studioMap.get(flay.studio);
+			count++;
+		} else {
+			count = 1;
+		}
+		studioMap.set(flay.studio, count);
+
+		// flay.actressList
+		for (var j = 0; j < flay.actressList.length; j++) {
+			var actressName = flay.actressList[j];
+			if (actressMap.has(actressName)) {
+				count = actressMap.get(actressName);
+				count++;
+			} else {
+				count = 1;
+			}
+			actressMap.set(actressName, count);
+		}
+	}
+	console.log(studioMap, actressMap);
+	
+	$("#statisticsStudio").empty();
+	for (var [k, v] of studioMap) {
+		$("#statisticsStudio").append(
+				$("<label>", {class: 'text hover'}).append(
+						$("<span>").css({
+							fontSize: 15 + v
+						}).html(k),
+						$("<span>", {class: 'badge'}).html(v)
+				).data('k', k).on("click", function() {
+					$("#search").val($(this).data('k'));
+				})
+		);
+	}
+	$("#statisticsActress").empty();
+	for (var [k, v] of actressMap) {
+		$("#statisticsActress").append(
+				$("<label>", {class: 'text hover'}).append(
+						$("<span>").css({
+							fontSize: 15 + v
+						}).html(k),
+						$("<span>", {class: 'badge'}).html(v)
+				).data('k', k).on("click", function() {
+					$("#search").val($(this).data('k'));
+				})
+		);
+	}
+
 }
 
 function notice(msg) {

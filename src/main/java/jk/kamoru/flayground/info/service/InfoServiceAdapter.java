@@ -39,20 +39,20 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
 	@Override
 	public T create(T create) {
 		T created = infoSource.create(create);
-		notificationService.announce("Created", created.toString());
+		notificationService.announceTo("Created", created.toString());
 		return created;
 	}
-	
+
 	@Override
 	public void update(T update) {
 		infoSource.update(update);
-		notificationService.announce("Updated", update.toString());
+		notificationService.announceTo("Updated", update.toString());
 	}
-	
+
 	@Override
 	public void delete(T delete) {
 		infoSource.delete(delete);
-		notificationService.announce("Deleted", delete.toString());
+		notificationService.announceTo("Deleted", delete.toString());
 	}
 
 }

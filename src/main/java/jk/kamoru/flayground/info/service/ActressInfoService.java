@@ -49,7 +49,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
 				flayFileHandler.rename(flay, actressList);
 			}
-			notificationService.announce("Rename Actress", oldName + " -> " + actress.getName());
+			notificationService.announceTo("Rename Actress", oldName + " -> " + actress.getName());
 		}
 	}
 

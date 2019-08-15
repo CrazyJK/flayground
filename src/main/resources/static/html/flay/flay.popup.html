@@ -34,9 +34,10 @@
 	</div>
 
 <script type="text/javascript">
-var isAdmin;
+var isAdmin, username;
 $(function() {
 	isAdmin = Security.hasRole("ADMIN");
+	username = Security.getName();
 	
 	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
 	$("body").toggleClass("bg-dark", bgThemeValue === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});

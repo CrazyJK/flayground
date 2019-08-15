@@ -128,7 +128,7 @@ public class FlayServiceImpl implements FlayService {
 			flay.getVideo().setRank(0);
 		}
 		flayFileHandler.rename(flay);
-		notificationService.announce("Accept candidates", flay.getFullname());
+		notificationService.announceTo("Accept candidates", flay.getFullname());
 	}
 
 	@Override
@@ -164,7 +164,7 @@ public class FlayServiceImpl implements FlayService {
 		}
 		Flay flay = instanceFlaySource.get(opus);
 		flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
-		notificationService.announce("Rename Flay", newFlay.getFullname());
+		notificationService.announceTo("Rename Flay", newFlay.getFullname());
 	}
 
 	@Override

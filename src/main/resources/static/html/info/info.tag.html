@@ -23,7 +23,7 @@
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-sm fixed-top bg-dark navbar-light justify-content-center">
+	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
 		<div class="row">
 			<div class="col-4">
 				<div class="input-group">
@@ -76,7 +76,7 @@ Rest.Tag.get(id, function(_tag) {
 		
 		$.each(flayList, function(idx, flay) {
 			$flayList.appendFlayCard(flay, {
-				width: 300,
+				width: 330,
 				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
 				fontSize: '80%'
 			});
@@ -84,7 +84,7 @@ Rest.Tag.get(id, function(_tag) {
 	});
 });
 
-$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D');
+$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
 </script>
 
 </body>

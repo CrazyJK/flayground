@@ -4,14 +4,20 @@
  */
 
 var flayWebsocket = (function($) {
-	var STOMP_ENDPOINT = "/flayground-websocket",
-		DESTINATION_ANNOUNCE = "/announce/listen",
-		DESTINATION_SHOUTING = "/shouting/listen",
-		stompClient = null;
+	var STOMP_ENDPOINT = "/flayground-websocket";
+	
+	var TOPIC = "/topic", QUEUE = "/queue";
+	
+	var	TOPIC_ANNOUNCE = TOPIC + "/announce";
+	var TOPIC_SAY      = TOPIC + "/say";
+	var	QUEUE_INFO     = QUEUE + "/info";
 
-	var SHOUTING = 'SHOUTING', ANNOUNCE = 'ANNOUNCE';
+	var ANNOUNCE = 'ANNOUNCE', ANNOUNCE_TO = 'ANNOUNCE_TO', SAY = 'SAY', SAY_TO = 'SAY_TO', INFO = 'INFO';
+	
+	var	stompClient = null;
+	
 	var switchSelector = '#notification';
-
+	
 	$("head").append(
 			'<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>',
 			'<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>'
@@ -38,26 +44,36 @@ var flayWebsocket = (function($) {
 	    var socket = new SockJS(STOMP_ENDPOINT);
 	    stompClient = Stomp.over(socket);
 	    stompClient.connect({}, function(frame) {
-			console.log('flayWebsocket', 'connected');
+			console.log('flayWebsocket', 'connected', username);
 
 			showMessage(ANNOUNCE, frame);
 
-	    	// announce subscribe
-	    	stompClient.subscribe(DESTINATION_ANNOUNCE, function (message) {
+	    	stompClient.subscribe(TOPIC_ANNOUNCE, function (message) {
 	    		showMessage(ANNOUNCE, message);
 	        });
 
-	    	// shout subscribe
-	    	stompClient.subscribe(DESTINATION_SHOUTING, function (message) {
-	    		showMessage(SHOUTING, message);
+	    	stompClient.subscribe('/user' + TOPIC_ANNOUNCE, function (message) {
+	    		showMessage(ANNOUNCE_TO, message);
+	        });
+	    	
+	    	stompClient.subscribe(TOPIC_SAY, function (message) {
+	    		showMessage(SAY, message);
+	        });
+	    	
+	    	stompClient.subscribe('/user' + TOPIC_SAY, function (message) {
+	    		showMessage(SAY_TO, message);
 	        });
 
+	    	stompClient.subscribe('/user' + QUEUE_INFO, function (message) {
+	    		showMessage(INFO, message);
+	        });
+	    	
 	    }, function(frame) {
 	    	showMessage(ANNOUNCE, frame);
 	    });
 	    
 	    stompClient.debug = function(str) {
-	    	//console.log("stomp debug", str);
+	    	console.log("stomp debug", str);
 	    };
 	};
 
@@ -70,17 +86,32 @@ var flayWebsocket = (function($) {
 	    }
 	};
 
-	var shout = function(message) {
+	var say = function(message, to) {
 		if (!username) {
 			alert('User info is not exist!!!');
+			return;
 		}
-		stompClient.send("/flay/shout", {}, JSON.stringify({
+		var dest = "/flayground/say";
+		if (to) {
+			dest = dest + "To"; // + "/user/" + to;
+		}
+		stompClient.send(dest, {
+			to: to
+		}, JSON.stringify({
 	    	'name': username,
 	    	'content': message
 	    }));
 	};
 	
+	var info = function(payLoad) {
+		stompClient.send('/flayground/info', {}, JSON.stringify({
+	    	'name': username,
+	    	'content': payLoad
+	    }));
+	}
+
 	var showMessage = function(type, message) {
+		console.log(message);
 		var title, content, time = new Date();
 		if (message.command === 'CONNECTED') {
 			title   = 'Connected';
@@ -137,7 +168,7 @@ var flayWebsocket = (function($) {
 				}),
 				$("<small>", {'class': 'float-right mr-2'}).html(time.format("a/p hh:mm")),
 				$("<div>", {'class': 'ml-4'}).append(
-						$("<h6>", {'class': 'font-weight-bold m-0'}).append((type === SHOUTING ? "<span class='text-primary'>From</span> " : ""), title),
+						$("<h6>", {'class': 'font-weight-bold m-0'}).append((type === SAY || type === SAY_TO ? "<span class='text-primary'>From</span> " : ""), title),
 						$("<div>", {'class': 'mt-2'}).css({
 							fontSize: '.875rem'
 						}).append(content)
@@ -151,7 +182,8 @@ var flayWebsocket = (function($) {
 	};
 
 	return {
-		shout: shout,
+		say: say,
+		info: info,
 		stop: disconnect
 	};
 

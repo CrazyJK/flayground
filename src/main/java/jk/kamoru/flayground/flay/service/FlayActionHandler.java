@@ -28,17 +28,17 @@ public class FlayActionHandler {
 
 	public void play(Flay flay) {
 		exec(composite(flayProperties.getPlayerApp(), flay.getFiles().get(Flay.MOVIE)));
-		notificationService.announce("Play " + flay.getOpus(), flay.getFullname());
+		notificationService.announceTo("Play " + flay.getOpus(), flay.getFullname());
 	}
 
 	public void edit(Flay flay) {
 		exec(composite(flayProperties.getEditorApp(), flay.getFiles().get(Flay.SUBTI)));
-		notificationService.announce("Edit " + flay.getOpus(), flay.getFullname());
+		notificationService.announceTo("Edit " + flay.getOpus(), flay.getFullname());
 	}
 
 	public void paint(Image image) {
 		exec(composite(flayProperties.getPaintApp(), Arrays.asList(image.getFile())));
-		notificationService.announce("Paint " + image.getName(), image.getPath());
+		notificationService.announceTo("Paint " + image.getName(), image.getPath());
 	}
 
 	@Async

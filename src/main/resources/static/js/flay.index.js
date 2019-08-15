@@ -8,6 +8,10 @@ var SlideBar = {
 				var bgThemeValue = $("input[name='bgTheme']:checked").val();
 				$("body").toggleClass("bg-dark", bgThemeValue === 'D');
 				LocalStorageItem.set('flay.bgtheme', bgThemeValue);
+				// broadcasting
+				try {
+					flayWebsocket.shout('flay.bgtheme=' + bgThemeValue);
+				} catch (e) {}
 			},
 			bgTheme = LocalStorageItem.get('flay.bgtheme', 'D'),
 			bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');

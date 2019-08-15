@@ -368,7 +368,7 @@ public class BatchExecutor {
 		log.info("[Backup] Copy Info folder {} to {}", flayProperties.getInfoPath(), backupRootPath);
 		flayFileHandler.copyDirectoryToDirectory(flayProperties.getInfoPath(), backupRootPath);
 
-		// Cover, Subtitlea file copy
+		// Cover, Subtitles file copy
 		log.info("[Backup] Copy Instance file to {}", backupInstanceFilePath);
 		for (Flay flay : instanceFlayList) {
 			for (File file : flay.getFiles().get(Flay.COVER))

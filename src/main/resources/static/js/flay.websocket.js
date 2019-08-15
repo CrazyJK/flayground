@@ -65,7 +65,7 @@ var flayWebsocket = (function($) {
 	        });
 
 	    	stompClient.subscribe('/user' + QUEUE_INFO, function (message) {
-	    		showMessage(INFO, message);
+	    		infoCallback(message);
 	        });
 	    	
 	    }, function(frame) {
@@ -181,6 +181,20 @@ var flayWebsocket = (function($) {
 		}, 10 * 1000);
 	};
 
+	var infoCallback = function(message) {
+		var body = JSON.parse(message.body);
+		console.log('infoCallback', body);
+		if (body.content === 'bgtheme') {
+			var bgTheme = LocalStorageItem.get('flay.bgtheme', 'D');
+			$("body").toggleClass("bg-dark", bgTheme === 'D');
+		} else if (body.content === 'bgcolor') {
+			var bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
+			$("body").css({backgroundColor: bgColor});
+		} else {
+			console.log('unknown code');
+		}
+	};
+	
 	return {
 		say: say,
 		info: info,

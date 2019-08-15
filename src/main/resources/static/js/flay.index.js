@@ -10,7 +10,7 @@ var SlideBar = {
 				LocalStorageItem.set('flay.bgtheme', bgThemeValue);
 				// broadcasting
 				try {
-					flayWebsocket.shout('flay.bgtheme=' + bgThemeValue);
+					flayWebsocket.info('bgtheme');
 				} catch (e) {}
 			},
 			bgTheme = LocalStorageItem.get('flay.bgtheme', 'D'),
@@ -22,6 +22,10 @@ var SlideBar = {
 			$("#bgColor").on("change", function() {
 				$("body").css({backgroundColor: $(this).val()});
 				LocalStorageItem.set('flay.bgcolor', $(this).val());
+				// broadcasting
+				try {
+					flayWebsocket.info('bgcolor');
+				} catch (e) {}
 			});
 			$("#bgColor").val(bgColor).trigger("change");
 		},

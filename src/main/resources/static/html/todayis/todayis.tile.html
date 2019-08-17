@@ -99,9 +99,9 @@
 	<div id="statusBar" class="fixed-bottom bg-light">
 		<label class="text"><span id="size">14</span> Video, <span id="length">2.5 GB</span></label>
 		<span class="check-group ml-2">
-			<label><input type="radio" name="sort" value="T"><span title="title">T</span></label>
+			<label><input type="radio" name="sort" value="T" checked="checked"><span title="title">T</span></label>
 			<label><input type="radio" name="sort" value="L"><span title="length">L</span></label>
-			<label><input type="radio" name="sort" value="M" checked="checked"><span title="modified">M</span></label>
+			<label><input type="radio" name="sort" value="M"><span title="modified">M</span></label>
 		</span>
 	</div>
 
@@ -134,7 +134,7 @@ function displayTile() {
 	};
 	// sorting
 	flayList.sort(function(todayis1, todayis2) {
-		var c1 = compareTo(todayis2.path, todayis1.path);
+		var c1 = compareTo(todayis1.path, todayis2.path);
 		switch(sort) {
 		case 'T':
 			return c1 === 0 ? compareTo(todayis1.name, todayis2.name) : c1;

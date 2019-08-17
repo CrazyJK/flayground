@@ -12,6 +12,7 @@
 		<label class="text">History of Play</label>
 		<div class="divider"></div>
 		<div class="check-group">
+			<label><input type="radio" name="dateType" value="t"><span>Time</span></label>
 			<label><input type="radio" name="dateType" value="d"><span>Day</span></label>
 			<label><input type="radio" name="dateType" value="w"><span>Week</span></label>
 			<label><input type="radio" name="dateType" value="m"><span>Month</span></label>
@@ -82,6 +83,10 @@ function drawGraph(dateType) {
 		case 'y':
 			key = history.date.substring(0, 4);
 			break;
+		case 't':
+			key = history.date.substring(11, 13);
+			key = key === '00' ? '24' : key;
+			break;
 		}
 		if (dataMap[key]) {
 			dataMap[key].push(history);
@@ -112,7 +117,7 @@ function drawGraph(dateType) {
 			playCount: val.length
 		});
 	});
-	// console.log('dataArray', dataArray);
+	console.log('dataArray', dataArray);
 	
 	dataArray.sort(function(d1, d2) {
 		if (d1.date > d2.date) return 1;
@@ -153,7 +158,7 @@ function drawGraph(dateType) {
 		},
 		"categoryField": "date",
 		"categoryAxis": {
-	        "parseDates": true,
+	        "parseDates": dateType != 't',
 	        "minPeriod": minPeriod,
 	        "dateFormats": [
 	        	{period:'DD',format:'D'},
@@ -171,11 +176,13 @@ function drawGraph(dateType) {
 	function zoomChart() {
 		var offset = 0;
 		if (dateType === 'd')
-			offset = 31;
+			offset = 100;
 		else if (dateType === 'w')
-			offset = 26;
+			offset = 54;
 		else if (dateType === 'm')
 			offset = 12;
+		else if (dateType === 't')
+			offset = 24;
 		else  
 			offset = 8;
 	    chart.zoomToIndexes(chart.dataProvider.length - offset, chart.dataProvider.length - 1);

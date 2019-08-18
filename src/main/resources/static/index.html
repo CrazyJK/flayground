@@ -15,6 +15,10 @@ a {
 a:hover {
 	text-decoration: none;
 }
+a.disabled:hover {
+	color: #eee !important;
+	cursor: default;
+}
 h1 {
 	text-align: center;
 	margin-bottom: 2rem;
@@ -76,7 +80,7 @@ function go(menu, method) {
 <body>
 	<div class="full-screen bg-chalkboard">
 		<h1 class="display-1">
-			<a href="#">Flayground</a>
+			<a href="#" class="disabled">Flayground</a>
 		</h1>
 		<h2 class="display-2">
 			<a href="javascript:go('home', 'popup')">↖</a>
@@ -84,7 +88,7 @@ function go(menu, method) {
 		</h2>
 		<h2 class="display-2">
 			<a href="javascript:go('search', 'popup')">↖</a>
-			<a href="javascript:void();">Search</a> 
+			<a href="javascript:void();" class="disabled">Search</a> 
 		</h2>
 		<h2 class="display-2">
 			<a href="javascript:go('slide', 'popup')">↖</a>

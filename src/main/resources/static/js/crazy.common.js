@@ -168,7 +168,10 @@ Number.prototype.toBlank = function() {
 };
 Number.prototype.withComma = function() {
 	return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ','); 
-}
+};
+Number.prototype.toDate = function(pattern) {
+	return new Date(this).format(pattern);
+};
 
 var File = {
 		formatSize: function(length) {

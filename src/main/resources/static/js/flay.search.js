@@ -30,6 +30,9 @@ function baseSearch() {
 		var value = $("#query").val();
 		Search.torrent(value);
 	});
+	$("#btn-flay-close").on("click", function() {
+		$("#resultFlayDiv").collapse('hide');
+	});
 	$("#btn-video-close").on("click", function() {
 		$("#resultVideoDiv").collapse('hide');
 	});
@@ -308,10 +311,10 @@ function searchSource(keyword) {
 
 	// find Flay
 	Rest.Flay.find(keyword, function(flayList) {
-		$("#resultVideoDiv").collapse('show');
+		$("#resultFlayDiv").collapse('show');
 		
-		$(".video-count").html(flayList.length);
-		var $tbody = $('#foundVideoList').empty();
+		$(".flay-count").html(flayList.length);
+		var $tbody = $('#foundFlayList').empty();
 		$.each(flayList, function(entryIndex, flay) {
 			$("<tr>").append(
 					$("<td>").append(
@@ -355,7 +358,40 @@ function searchSource(keyword) {
 			$("<tr>").append(
 					$("<td>", {'colspan': 6, 'class': 'text-danger'}).html('Not found')
 			).appendTo($tbody);
+			
+			// find video info
+			Rest.Video.find(keyword, function(list) {
+				var videoList = list;
+				var $videoTbody = $('#foundVideoList').empty();
+				$("#resultVideoDiv").collapse('show');
+				$(".video-count").html(videoList.length);
+				if (videoList.length > 0) {
+					$.each(videoList, function(entryIndex, video) {
+						$("<tr>").append(
+								$("<td>").append(
+										$("<label>", {"class": "text sm nowrap hover"}).html(video.opus).on("click", function() {
+											View.flay(flay.opus);
+										})
+								),
+								$("<td>").append(
+										$("<label>", {"class": "text sm"}).html("Rank " + video.rank),
+								),
+								$("<td>").append(
+										$("<label>", {"class": "text sm"}).html("Play " + video.play)
+								),
+								$("<td>").append(
+										$("<label>", {"class": "text sm"}).html(video.lastAccess.toDate('yyyy-MM-dd hh:mm:ss'))
+								)
+						).appendTo($videoTbody);
+					});
+				} else {
+					$("<tr>").append(
+							$("<td>", {'colspan': 4, 'class': 'text-danger'}).html('Not found')
+					).appendTo($videoTbody);
+				}
+			});
 		} else {
+			$("#resultVideoDiv").collapse('hide');
 			$("div.container").animate({
 				backgroundColor: "rgba(255, 255, 0, .75)"
 			}, 3000, function() {

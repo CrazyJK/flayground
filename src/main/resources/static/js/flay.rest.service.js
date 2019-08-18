@@ -128,6 +128,12 @@ var Rest = {
 			},
 			list: function(callback) {
 				restCall('/info/video/list', {}, callback);
+			},
+			get: function(opus, callback) {
+				restCall('/info/video/' + opus, {}, callback);
+			},
+			find: function(keyword, callback) {
+				restCall('/info/video/find/' + keyword, {}, callback);
 			}
 		},
 		Studio: {

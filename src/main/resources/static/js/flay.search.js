@@ -418,7 +418,9 @@ function searchSource(keyword) {
 							$("<label>", {"class": "text sm nowrap"}).html(history.date)
 					),
 					$("<td>").append(
-							$("<label>", {"class": "text sm nowrap"}).html(history.opus)
+							$("<label>", {"class": "text sm nowrap"}).html(history.opus).on("click", function() {
+								View.flay(history.opus);
+							})
 					),
 					$("<td>").append(
 							$("<label>", {"class": "text sm"}).html(history.action)

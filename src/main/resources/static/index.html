@@ -54,6 +54,7 @@ h2:hover > a:first-child {
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
 <script type="text/javascript">
 function go(menu, method) {
 	var url = "";
@@ -75,6 +76,19 @@ function go(menu, method) {
 				"width=1000,height=1000,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1").focus();
 	}
 }
+
+$(document).ready(function() {
+	$("input, button", ".popup-open-group").on("click keyup", function(e) {
+		var targetType = $(e.target).attr("type");
+		var url = $(".popup-open-group > input").val();
+		$(".popup-open-group button").toggleClass("text-secondary", url === '');
+		if (url !== '') {
+			if ((targetType === 'button' && e.type === 'click') || (targetType === 'search' && e.keyCode === 13)) {
+				Popup.open(url, url, 540, 960);
+			}
+		}
+	});
+});
 </script>
 </head>
 <body>
@@ -102,6 +116,12 @@ function go(menu, method) {
 			<a href="javascript:go('actuator', 'popup')">↖</a>
 			<a href="javascript:go('actuator', 'href')">Actuator</a>
 		</h2>
+		<div class="input-group input-group-lg width-400 mx-auto mt-4 popup-open-group">
+			<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL">
+			<div class="input-group-append">
+				<button class="btn btn-outline-secondary text-secondary" type="button">Popup</button>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

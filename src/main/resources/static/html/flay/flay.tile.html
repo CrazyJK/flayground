@@ -35,10 +35,11 @@
 	text-shadow: 1px 1px 1px #103356; 
 }
 .tile.wide {
-	width:  calc(var(--tile-width) * 2 + 7px);
+	width:  calc(var(--tile-width) * 0.85 * 2 + 7px);
+	height: calc(var(--tile-width) * 0.85 * 2 * var(--cover-ratio));
 }
 .tile.wide div {
-	width:  calc(var(--tile-width) * 2 + 5px);
+	width:  calc(var(--tile-width) * 0.85 * 2 + 5px);
 }
 .tile:hover {
 	/* transform: scale(1.2, 1.2); */
@@ -55,23 +56,13 @@
 	opacity: 1;
 	transition: all 0.3s 1s;
 }
-#statusBar {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: #333333;
-    color: #ddd;
-    text-align: center;
-    padding: .25rem 0;
-}
 -->
 </style>
 <div role="body">
 
 	<div id="tileWrap"></div>
 
-	<div id="statusBar" class="fixed-bottom">
+	<div id="statusBar" class="fixed-bottom bg-light py-1 text-center">
 		<span class="check-group sm ml-2">
 			<label><span id="size">14</span></label>
 		</span>
@@ -172,7 +163,7 @@ function displayTile(isFirst) {
 				$("<div>", {class: 'studio nowrap'}).html(flay.studio).on('click', function(e) {e.stopPropagation();}),
 				$("<div>", {class: 'opus nowrap'}).html(flay.opus).on('click', function(e) {e.stopPropagation();}),
 				$("<div>", {class: 'rank nowrap'}).html('Rank ' + flay.video.rank).on('click', function(e) {e.stopPropagation();}),
-				(function(actressList) {
+/*				(function(actressList) {
 					var actressDivs = [];
 					$.each(actressList, function(idx, actress) {
 						actressDivs.push(
@@ -185,7 +176,7 @@ function displayTile(isFirst) {
 					});
 					return actressDivs;
 				}(flay.actressList)),
-				// $("<div>", {class: 'actress nowrap'}).html(Util.Actress.getNames(flay.actressList)),
+*/				$("<div>", {class: 'actress nowrap'}).html(Util.Actress.getNames(flay.actressList)),
 				$("<div>", {class: 'release nowrap'}).html(flay.release).on('click', function(e) {e.stopPropagation();}),
 				$("<div>", {class: 'file nowrap'}).html(File.formatSize(flay.length) + (flay.files.movie.length > 1 ? " " + flay.files.movie.length + "v" : "")).on('click', function(e) {e.stopPropagation();})
 		);

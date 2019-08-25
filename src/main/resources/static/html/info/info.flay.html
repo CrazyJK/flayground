@@ -11,6 +11,11 @@
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
+<style type="text/css">
+.flay-title.archive::before {
+	content: '[Archive] ';
+}
+</style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -31,13 +36,17 @@
 var opus = reqParam.opus;
 var flay;
 var loadedFlay = false, loadedTag = false;
+var isArchive = false;
 
 function setFlay(_flay) {
 	flay = _flay;
 	document.title = flay.opus + ' - ' + document.title;
 
 	$("#containerFlay").appendFlayCard(flay);
-
+	if (isArchive) {
+		document.title = flay.opus + ' - Archive Info';
+		$(".flay-title").addClass("archive");
+	}
 	loadedFlay = true;
 	matchTag();
 }
@@ -51,44 +60,43 @@ function matchTag() {
 	}
 }
 
-Rest.Flay.get(opus, function(f) {
-	setFlay(f);
-}, function() {
-	Rest.Archive.get(opus, function(f) {
+window.onload = function() {
+	Rest.Flay.get(opus, function(f) {
 		setFlay(f);
-		$("#containerFlay").css({
-			opacity: 0.8
+	}, function() {
+		Rest.Archive.get(opus, function(f) {
+			isArchive= true;
+			setFlay(f);
 		});
 	});
-});
 
-Rest.Tag.list(function(list) {
-	tagList = list;
-	Util.Tag.sort(tagList);
+	Rest.Tag.list(function(list) {
+		tagList = list;
+		Util.Tag.sort(tagList);
 
-	$.each(tagList, function(idx, tag) {
-		$("<label>", {'class': 'check sm m-1'}).append(
-				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag).on("change", function() {
-					var checked = $(this).prop("checked");
-					var tag = $(this).data("tag");
-					console.log("tag toggle", checked, tag, flay);
-					if (checked) {
-						Util.Tag.push(flay.video.tags, tag);
-					} else {
-						Util.Tag.remove(flay.video.tags, tag);
-					}
-					Rest.Video.update(flay.video);
-				}),
-				$("<span>", {title: tag.description}).html(tag.name)
-		).appendTo($("#containerTag"));
+		$.each(tagList, function(idx, tag) {
+			$("<label>", {'class': 'check sm m-1'}).append(
+					$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag).on("change", function() {
+						var checked = $(this).prop("checked");
+						var tag = $(this).data("tag");
+						console.log("tag toggle", checked, tag, flay);
+						if (checked) {
+							Util.Tag.push(flay.video.tags, tag);
+						} else {
+							Util.Tag.remove(flay.video.tags, tag);
+						}
+						Rest.Video.update(flay.video);
+					}),
+					$("<span>", {title: tag.description}).html(tag.name)
+			).appendTo($("#containerTag"));
+		});
+		
+		loadedTag = true;
+		matchTag();
 	});
-	
-	loadedTag = true;
-	matchTag();
-});
+};
 
 $("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
-
 </script>
 
 </body>

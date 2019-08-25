@@ -34,6 +34,8 @@ var restCall = function(url, args, callback, failCallback) {
 		console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 		if (failCallback) {
 			failCallback();
+			clearTimeout(timeout);
+			loading.off();
 		} else {
 			var errMsg = "";
 			if (jqXHR.getResponseHeader('error')) {

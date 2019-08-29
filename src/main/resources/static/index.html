@@ -81,9 +81,10 @@ $(document).ready(function() {
 		var targetType = $(e.target).attr("type");
 		var url = $(".popup-open-group > input").val();
 		$(".popup-open-group button").toggleClass("text-secondary", url === '');
+		$(".popup-size-group.collapse").toggleClass("show", url !== '');
 		if (url !== '') {
 			if ((targetType === 'button' && e.type === 'click') || (targetType === 'search' && e.keyCode === 13)) {
-				window.open(url, new Date().getTime(), "width=540,height=920,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
+				window.open(url, new Date().getTime(), "width=" + popupWidth.value + ",height=" + popupHeight.value + ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
 			}
 		}
 	});
@@ -92,7 +93,7 @@ $(document).ready(function() {
 </head>
 <body>
 	<div class="full-screen bg-chalkboard">
-		<h1 class="display-1">
+		<h1 class="display-1 mt-3">
 			<a href="#" class="disabled">Flayground</a>
 		</h1>
 		<h2 class="display-2">
@@ -120,6 +121,11 @@ $(document).ready(function() {
 			<div class="input-group-append">
 				<button class="btn btn-outline-secondary text-secondary" type="button">Popup</button>
 			</div>
+		</div>
+		<div class="text-center popup-size-group collapse mt-2">
+			<input type="number" id="popupWidth"  value="540" class="bg-transparent border-0 width-70 text-right">
+			&nbsp;x&nbsp;
+			<input type="number" id="popupHeight" value="997" class="bg-transparent border-0 width-70 ml-2">
 		</div>
 	</div>
 </body>

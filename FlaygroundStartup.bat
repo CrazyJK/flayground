@@ -11,4 +11,4 @@ echo Using FLAYGROUND_HOME:  %FLAYGROUND_HOME%
 echo Using       JAVA_HOME:  %JAVA_HOME%
 echo Using       JAVA_OPTS:  %JAVA_OPTS%
 
-"%JAVA_HOME%"\bin\java.exe %JAVA_OPTS% -jar "%FLAYGROUND_HOME%\target\flayground.jar"
+"%JAVA_HOME%"\bin\java.exe %JAVA_OPTS% -jar "%FLAYGROUND_HOME%\target\Flayground.jar"

@@ -1,3 +1,4 @@
+
                                                                                                                                                                                    dddddddd
  FFFFFFFFFFFFFFFFFFFFFFlllllll                                                                                                                                                     d::::::d
  F::::::::::::::::::::Fl:::::l                                                                                                                                                     d::::::d
@@ -23,4 +24,4 @@
                                                                               ggg::::::ggg                                                                                                 
                                                                                  gggggg                                                                                                    
 
-  ${application.title} ${application.formatted-version} by Spring Boot ${spring-boot.formatted-version}
+  ${application.title} ${application.version} by Spring Boot ${spring-boot.version}

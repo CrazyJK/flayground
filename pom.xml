@@ -9,8 +9,8 @@
 	<version>6.9.7.4-05</version>
 	<packaging>jar</packaging>
 
-	<name>flayground</name>
-	<description>serve flayground</description>
+	<name>Flayground</name>
+	<description>serve flay</description>
 
 	<parent>
 		<groupId>org.springframework.boot</groupId>
@@ -155,4 +155,5 @@
 		</plugins>
 	</build>
 
+	<url>localhost:6974</url>
 </project>

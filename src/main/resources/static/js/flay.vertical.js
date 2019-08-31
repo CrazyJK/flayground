@@ -688,6 +688,10 @@ function addVideoEvent() {
 			} else {
 				$self.switchClass('fa-star favorite', 'fa-star-o');
 			}
+			// update actress list
+			Rest.Actress.list(function(list) {
+				actressList = list;
+			});
 		});
 	});
 	// new tag input key event 		e.stopPropagation();

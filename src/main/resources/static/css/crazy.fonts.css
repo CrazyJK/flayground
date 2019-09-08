@@ -2,7 +2,19 @@
 
 @font-face {
 	font-family: 'Ink Free';
-	font-style: normal;
 	font-weight: normal;
-	src: local('Ink Free Regular'), url('font/Inkfree.woff') format('woff');
+	font-style: normal;
+	src: local('Ink Free Regular'), url('/font/Inkfree/Inkfree.woff') format('woff');
+}
+
+@font-face {
+	font-family: 'clip';
+	font-weight: normal;
+	font-style: normal
+	src: url('/font/clip/clip-webfont.eot');
+	src: url('/font/clip/clip-webfont.eot?#iefix') format('embedded-opentype'), 
+		 url('/font/clip/clip-webfont.woff2') format('woff2'), 
+		 url('/font/clip/clip-webfont.woff') format('woff'),
+		 url('/font/clip/clip-webfont.ttf') format('truetype'),
+		 url('/font/clip/clip-webfont.svg#clipregular') format('svg');
 }

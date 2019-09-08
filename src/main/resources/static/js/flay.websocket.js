@@ -23,7 +23,13 @@ var flayWebsocket = (function($) {
 			'<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>'
 	);
 
+	var isAdmin, username;
+
 	$(document).ready(function() {
+		
+		isAdmin = Security.hasRole("ADMIN");
+		username = Security.getName();
+
 		var $websocketSwitch = $(switchSelector);
 		if ($websocketSwitch.length > 0) {
 			$websocketSwitch.on("change", function() {

@@ -9,9 +9,12 @@
 <link rel="stylesheet" href="/css/crazy.fonts.css">
 <link rel="stylesheet" href="/css/crazy.neon.css">
 <style type="text/css">
+body {
+	background: url('/img/bg/neon-bg.png') repeat;
+	background-size: cover;
+}
 a {
-	-webkit-mask-image: url(/img/pattern/pattern-static.png);
-	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+	color: #eee;
 }
 a:hover {
 	text-decoration: none;
@@ -95,44 +98,44 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<div class="full-screen bg-chalkboard">
-		<h1 class="display-1 mt-3">
+	<div class="full-screen">
+		<h1 class="display-1 mt-3 blink-1">
 			<a href="#" class="disabled">Flayground</a>
 		</h1>
-		<h2 class="display-2">
+		<h2 class="display-2 blink-2">
 			<a href="javascript:go('home', 'popup')">↖</a>
 			<a href="javascript:go('home', 'href')">Home</a> 
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-2 blink-3">
 			<a href="javascript:go('search', 'popup')">↖</a>
 			<a href="javascript:void();" class="disabled">Search</a> 
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-2 blink-4">
 			<a href="javascript:go('slide', 'popup')">↖</a>
 			<a href="javascript:go('slide', 'href')">Slide</a> 
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-2 blink-5">
 			<a href="javascript:go('tablet', 'popup')">↖</a>
 			<a href="javascript:go('tablet', 'href')">Tablet</a>
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-2 blink-6">
 			<a href="javascript:go('board', 'popup')">↖</a>
 			<a href="javascript:go('board', 'href')">Board</a>
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-2 blink-7">
 			<a href="javascript:go('actuator', 'popup')">↖</a>
 			<a href="javascript:go('actuator', 'href')">Actuator</a>
 		</h2>
 		<div class="input-group input-group-lg width-400 mx-auto mt-4 popup-open-group">
-			<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL">
+			<input type="search" class="bg-transparent border-light form-control text-light blink-8" placeholder="URL">
 			<div class="input-group-append">
-				<button class="btn btn-outline-secondary text-secondary" type="button">Popup</button>
+				<button class="btn btn-outline-light text-light blink-9" type="button">Popup</button>
 			</div>
 		</div>
-		<div class="text-center popup-size-group collapse mt-2">
-			<input type="number" id="popupWidth"  value="540" class="bg-transparent border-0 width-70 text-right">
+		<div class="text-center popup-size-group collapse mt-2 text-light blink-10">
+			<input type="number" id="popupWidth"  value="540" class="bg-transparent border-0 width-70 text-right text-light blink-10">
 			&nbsp;x&nbsp;
-			<input type="number" id="popupHeight" value="997" class="bg-transparent border-0 width-70 ml-2">
+			<input type="number" id="popupHeight" value="997" class="bg-transparent border-0 width-70 ml-2 text-light blink-10">
 		</div>
 	</div>
 </body>

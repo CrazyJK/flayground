@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Image board</title>
+<link rel="icon" type="image/png" href="/img/favicon/flay_2.png"/>
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css">
+<style type="text/css">
+body {
+	background-color: #000;
+	overflow: hidden;
+}
+#imageWrap {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	box-shadow: inset 0 0 2rem 1rem #000;
+}
+img.board-image {
+	border-radius: .25rem;
+    box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    margin-bottom: 1rem;
+    transition: all .5s;
+}
+img.board-image.active {
+	box-shadow: 0 0 8px 4px #fff, 0 0 4px 2px #fff inset;
+	padding: 4px;
+}
+#controlBox {
+	opacity: 0;
+	transition: .3s;
+}
+#controlBox:hover, #imageWrap:hover ~ #controlBox {
+	opacity: 1;
+}
+#controlBox div {
+	border-top-left-radius: 4px;
+	background-color: rgba(0, 0, 0, .5);
+	margin: 0;
+	padding: 4px 8px;
+	box-shadow: 0 0 2px 0px rgba(255, 255, 255, .5);
+	color: #eee;
+	font-size: 14px;
+	text-shadow: 1px 1px 2px #111;
+}
+#controlBox div:empty {
+	display: none;
+}
+#controlBox div#notice {
+	background-color: transparent;
+	box-shadow: none;
+}
+#controlBox div input {
+	background: transparent;
+	border: 0;
+	color: #eee;
+	font-size: 12px;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+}
+#controlBox div input#bgIntervalTime {
+	width: 20px;
+}
+#controlBox div input#currNo {
+	width: 30px;
+}
+#controlBox div span {
+	margin: 0 2px;
+}
+#controlBox div a i.fa {
+	margin: 0 4px;
+}
+#imgTitle {
+	color: yellow;
+}
+#pause.active, #random.active, #rotate.active {
+	color: #0056b3;
+	text-shadow: 0 0 1px #0056b3, 0 0 8px #fff;
+}
+.msgBox {
+	background-color: rgba(0, 0, 0, .75);
+	border-radius: 4px;
+	color: #eee;
+	display: block;
+	font-size: 14px;
+	margin-bottom: 2px !important;
+	padding: 4px 8px;
+	text-shadow: 1px 1px 2px #111;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
+<script type="text/javascript" src="/js/flay.websocket.js"></script>
+<script type="text/javascript" src="/js/image/image.board.js"></script>
+</head>
+<body>
+
+	<div id="imageWrap"></div>
+
+	<div class="bottom-right" id="controlBox">
+		<div class="text-right" id="notice"></div>
+		<div>
+			<span id="imgPath" class="hover"></span>
+			<span id="imgTitle" class="hover"></span>
+			<span id="imgSize" class="small"></span>
+			<span id="imgLength" class="small"></span>
+			<span id="imgModified" class="small"></span>
+			<span id="rotate" class="small hover" title="image rotate"><i class="fa fa-rotate-right"></i></span>
+			<span id="random" class="small hover" title="image random select"><i class="fa fa-random"></i></span>
+			<input id="bgIntervalTime" value="9" title="enter new bgIntervalTime" autocomplete="off">
+			<span id="pause" class="small hover" title="slide pause"><i class="fa fa-pause"></i></span>
+			<input id="currNo" value="0" title="enter new imageIndex" autocomplete="off">
+			<span>/&nbsp;<sub id="totalNo">0</sub></span>
+			<a href="/"><i class="fa fa-home"></i></a>
+		</div>
+	</div>
+
+	<nav class="fixed-bottom">
+		<div class="progress bg-dark" id="paginationProgress" style="height: 1px; border-radius: 0;">
+  			<div class="progress-bar bg-danger" style="width: 100%; height: 1px;"></div>
+		</div>
+	</nav>
+
+</body>
+</html>

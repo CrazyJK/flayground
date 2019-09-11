@@ -9,10 +9,6 @@
 <link rel="stylesheet" href="/css/crazy.fonts.css">
 <link rel="stylesheet" href="/css/crazy.neon.css">
 <style type="text/css">
-a {
-	-webkit-mask-image: url(/img/pattern/pattern-static.png);
-	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
-}
 a:hover {
 	text-decoration: none;
 }
@@ -51,10 +47,22 @@ h2:hover > a:first-child {
 	opacity: 1;
 	transition: .5s .3s ;
 }
+body.bg-chalkboard a.chalk {
+	-webkit-mask-image: url(/img/pattern/pattern-static.png);
+	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+}
+body.neon {
+	background: url('/img/bg/neon-bg.png') repeat;
+	background-size: cover;
+}
+body.neon a {
+	color: #eee;
+}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript">
 function go(menu, method) {
 	var url = "";
@@ -80,6 +88,28 @@ function go(menu, method) {
 }
 
 $(document).ready(function() {
+
+	switch (Math.round(Math.random())) {
+	case 0: // chalk
+		$("body").addClass("bg-chalkboard");
+		$("a").addClass("chalk");
+		break;
+	case 1: // neon
+		$("body").addClass("neon");
+		$(".display-1, .display-2, input, button, .popup-size-group").each(function(idx) {
+			$(this).addClass("blink-" + (idx % 10 + 1));
+		});
+		$(".border-secondary").switchClass("border-secondary", "border-light");
+		$(".btn-outline-secondary").switchClass("btn-outline-secondary", "btn-outline-light");
+		$(".text-secondary").switchClass("text-secondary", "text-light");
+		$(".popup-size-group").addClass("text-light");
+		$("#popupWidth, #popupHeight").addClass("text-light");
+		break;
+	default:
+		alert("impossible case");
+	}
+
+	
 	$("input, button", ".popup-open-group").on("click keyup", function(e) {
 		var targetType = $(e.target).attr("type");
 		var url = $(".popup-open-group > input").val();
@@ -95,7 +125,7 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<div class="full-screen bg-chalkboard">
+	<div class="full-screen">
 		<h1 class="display-1 mt-3">
 			<a href="#" class="disabled">Flayground</a>
 		</h1>

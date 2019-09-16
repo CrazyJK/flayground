@@ -24,22 +24,22 @@ import org.slf4j.LoggerFactory;
 /**
  * Web image downloader
  * <pre>Usage
- * 
+ *
  *   ImageDownloader downloader = new ImageDownloader("url string", "dest string");
  *   File file = downloader.download();
- *   
+ *
  * or using ExecutorService
- * 
+ *
  *   ExecutorService service = Executors.newFixedThreadPool(1);
  *   Future<File> fileFuture = service.submit(downloader);
  *   service.shutdown();
  *   File file = fileFuture.get();
  * </pre>
- * 
+ *
  * @author kamoru
  */
 public class ImageDownloader implements Callable<File> {
-	
+
 	private static final Logger logger = LoggerFactory.getLogger(ImageDownloader.class);
 
 	/** default image suffix */
@@ -47,7 +47,7 @@ public class ImageDownloader implements Callable<File> {
 
 	/** image suffix list. "png", "jpg", "jpeg", "gif", "webp", "bmp" */
 	private static final List<String> IMAGE_SUFFIX_LIST = Arrays.asList("png", "jpg", "jpeg", "gif", "webp", "bmp");
-	
+
 	private String imgSrc;
 	private String destDir;
 	private String title;
@@ -56,7 +56,7 @@ public class ImageDownloader implements Callable<File> {
 	/**
 	 * Constructs a new <code>ImageDownloader</code> using image source<br>
 	 * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
-	 * 
+	 *
 	 * @param imageSrc image source url
 	 */
 	public ImageDownloader(String imageSrc) {
@@ -67,7 +67,7 @@ public class ImageDownloader implements Callable<File> {
 	/**
 	 * Constructs a new <code>ImageDownloader</code> using image source, destination directory<br>
 	 * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
-	 *  
+	 *
 	 * @param imageSrc image source url
 	 * @param destDir destination directory
 	 */
@@ -78,7 +78,7 @@ public class ImageDownloader implements Callable<File> {
 	/**
 	 * Constructs a new <code>ImageDownloader</code> using image source, destination directory, title<br>
 	 * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
-	 *  
+	 *
 	 * @param imageSrc image source url
 	 * @param destDir destination directory
 	 * @param title image title
@@ -90,7 +90,7 @@ public class ImageDownloader implements Callable<File> {
 	/**
 	 * Constructs a new <code>ImageDownloader</code> using image source, destination directory, title<br>
 	 * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
-	 * 
+	 *
 	 * @param imgSrc image source url
 	 * @param destDir destination directory
 	 * @param title image title
@@ -111,7 +111,7 @@ public class ImageDownloader implements Callable<File> {
 	public void setMinimumSize(int minimumSize) {
 		this.minimumSize = minimumSize;
 	}
-	
+
 	@Override
 	public File call() throws Exception {
 		return download();
@@ -119,27 +119,27 @@ public class ImageDownloader implements Callable<File> {
 
 	/**
 	 * execute download
-	 * @return image file. if error, <code>null</code> 
+	 * @return image file. if error, <code>null</code>
 	 */
 	public File download() {
-		
+
 		logger.debug("Start downloading - [{}]", imgSrc);
-		
+
 		File imageFile = null;
-		
+
 		try {
 			CloseableHttpClient httpClient = HttpClients.createDefault();
-			
+
 			// Execute a request of image
 			HttpGet httpGet = new HttpGet(imgSrc);
 			HttpResponse httpResponse = httpClient.execute(httpGet);
-		
+
 			/* Test Code : All Header info
 			Header[] headers = httpResponse.getAllHeaders();
 			for (Header header : headers) {
 				logger.debug("Header info : {}={}", header.getName(), header.getValue());
 			}*/
-		
+
 			HttpEntity entity = httpResponse.getEntity();
 			if (entity == null)
 				throw new DownloadException(imgSrc, "Entity is null");
@@ -153,9 +153,11 @@ public class ImageDownloader implements Callable<File> {
 			String contentType = contentTypeHeader.getValue();
 			if (contentType == null)
 				throw new DownloadException(imgSrc, "contentType is null");
-			if (!contentType.startsWith("image"))
+			else if ("audio/unknown".equals(contentType)) // maybe webp
+				contentType = "image/webp";
+			else if (!contentType.startsWith("image"))
 				throw new DownloadException(imgSrc, "it is not a image. " + contentType);
-			
+
 			// make title
 			if (title == null) {
 				title = StringUtils.substringAfterLast(imgSrc, "/");
@@ -169,7 +171,7 @@ public class ImageDownloader implements Callable<File> {
 				else
 					title += "." + suffix;
 			}
-			
+
 			// destination path
 			File destPath = null;
 			if (destDir == null)
@@ -181,7 +183,7 @@ public class ImageDownloader implements Callable<File> {
 
 			// save image file
 			imageFile = new File(destPath, title);
-			
+
 			InputStream inputStream = null;
 			OutputStream outputStream = null;
 			try {
@@ -193,11 +195,11 @@ public class ImageDownloader implements Callable<File> {
 					outputStream.write(buffer, 0, length);
 				}
 				logger.debug("save as {} - [{}]", imageFile.getAbsolutePath(), imgSrc);
-			} 
+			}
 			catch (IOException e) {
 				FileUtils.deleteQuietly(imageFile);
 				throw e;
-			} 
+			}
 			finally {
 				if (outputStream != null)
 					try {
@@ -212,19 +214,19 @@ public class ImageDownloader implements Callable<File> {
 						logger.error("inputStream close error", e);
 					}
 			}
-		} 
+		}
 		catch (ClientProtocolException e) { // httpClient.execute(httpGet);
 			logger.error("connect fail " + imgSrc, e);
-		} 
+		}
 		catch (IOException e) { // httpClient.execute(httpGet); outputstream error
 			logger.error("download fail {} : {}",e.getMessage(), imgSrc);
-		} 
+		}
 		catch (DownloadException e) {
 			logger.error("illegal download state : {}", e.getMessage());
-		} 
+		}
 		catch (Exception e) {
 			logger.error("fail " + imgSrc, e);
-		}			
+		}
 		return imageFile;
 	}
 

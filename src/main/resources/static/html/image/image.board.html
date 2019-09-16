@@ -22,16 +22,31 @@ body {
 	bottom: 0;
 }
 img.board-image {
+	position: fixed;
 	border-radius: .25rem;
     box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
     cursor: pointer;
-    margin-bottom: 1rem;
+    margin: 0;
+    padding: 0;
     transition: all .5s;
 }
 img.board-image.active {
-/* 	box-shadow: 0 0 8px 4px #fff, 0 0 4px 2px #fff inset; 
-	padding: 4px; */
-	box-shadow: 0 0 5px #e2d313, 0 0 10px #e2d313, 0 0 20px #e2d313, 0 0 30px #e2d313, 0 0 40px #eee, 0 0 55px #fff;
+	padding: 4px;
+	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5), 0 0 16px #e2d313 inset;
+	transform: scale(1.2);  
+}
+/* .draggable */
+img.ui-draggable-handle.ui-draggable-dragging {
+	transition: none;
+	transform: rotate(0deg) !important;
+}
+img.board-image.tile {
+/* 	position: initial !important; */
+/* 	width: calc(100%/4) !important; */
+/* 	height: calc(100%/5) !important; */
+/* 	transition: width 0s, height 0s; */
+/* 	width: initial !important; */
+	margin: .5rem;
 }
 #controlBox {
 	opacity: 0;
@@ -81,7 +96,7 @@ img.board-image.active {
 #imgTitle {
 	color: yellow;
 }
-#pause.active, #random.active, #rotate.active {
+#pause.active, #random.active, #rotate.active, #tile.active {
 	color: #0056b3;
 	text-shadow: 0 0 1px #0056b3, 0 0 8px #fff;
 }
@@ -119,6 +134,7 @@ img.board-image.active {
 			<span id="imgSize" class="small"></span>
 			<span id="imgLength" class="small"></span>
 			<span id="imgModified" class="small"></span>
+			<span id="tile" class="small hover" title="tile mode"><i class="fa fa-th"></i></span>
 			<span id="rotate" class="small hover" title="image rotate"><i class="fa fa-rotate-right"></i></span>
 			<span id="random" class="small hover" title="image random select"><i class="fa fa-random"></i></span>
 			<input id="bgIntervalTime" value="9" title="enter new bgIntervalTime" autocomplete="off">

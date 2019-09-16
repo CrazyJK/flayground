@@ -178,11 +178,13 @@ $(function() {
 						width: 'initial',
 						height: window.innerHeight / DISPLAY_HEIGHT_COUNT - 16,
 						maxWidth: window.innerWidth / DISPLAY_WIDTH_COUNT - 16,
+						maxHeight: 'initial'
 					});
 				} else {
 					$(this).css({
 						width: window.innerWidth / DISPLAY_WIDTH_COUNT - 16,
 						height: 'initial',
+						maxWidth: 'initial',
 						maxHeight: window.innerHeight / DISPLAY_HEIGHT_COUNT - 16
 					});
 				}

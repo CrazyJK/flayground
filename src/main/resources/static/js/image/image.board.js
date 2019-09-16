@@ -172,9 +172,6 @@ $(function() {
 				$(this).addClass("tile").css({
 					top: Math.floor(displaySeq / DISPLAY_WIDTH_COUNT) * (window.innerHeight / DISPLAY_HEIGHT_COUNT),
 					left: (displaySeq % DISPLAY_WIDTH_COUNT) * (window.innerWidth / DISPLAY_WIDTH_COUNT),
-//					width: 'initial',
-//					height: window.innerHeight / DISPLAY_HEIGHT_COUNT - 16,
-//					maxWidth: window.innerWidth / DISPLAY_WIDTH_COUNT - 16,
 				});
 				if (data.self.naturalHeight > data.self.naturalWidth) {
 					$(this).css({
@@ -194,7 +191,9 @@ $(function() {
 					top: data.top,
 					left: data.left,
 					width: data.width,
-					height: data.height
+					height: data.height,
+					maxWidth: 'initial',
+					maxHeight: 'initial'
 				});
 			}
 		});
@@ -209,19 +208,6 @@ $(function() {
 		});
 	};
 
-	var imageAppearance = function($img) {
-		var _data = $img.data("data");
-		$img.css({
-			top: data.top,
-			left: data.left,
-			width: data.width,
-			height: data.height,
-			maxWidth: data.maxWidth,
-			maxHeight: data.maxHeight,
-			transform: 'rotate(' + data.rotate + 'deg)'
-		});
-	};
-	
 	var view = function() {
 		function show() {
 			if (pause) {
@@ -279,7 +265,6 @@ $(function() {
 						height: imgHeight,
 						opacity: 0
 					}).data("data", {
-						degree: degree,
 						index: currIndex,
 						self: _self,
 						info: info,

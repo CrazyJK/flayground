@@ -1,0 +1,101 @@
+@charset "EUC-KR";
+
+body {
+	background-color: #000;
+	overflow: hidden;
+}
+#imageWrap {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+img.board-image {
+	position: fixed;
+	border-radius: .25rem;
+    box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+    cursor: pointer;
+    margin: 0;
+    padding: 0;
+    transition: all .5s;
+}
+img.board-image.active {
+	padding: 4px;
+	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5), 0 0 16px #e2d313 inset;
+}
+/* .draggable */
+img.ui-draggable-handle.ui-draggable-dragging {
+	transition: none;
+	transform: rotate(0deg) !important;
+}
+img.board-image.tile {
+	margin: .5rem;
+}
+.bg-dark img.board-image {
+	box-shadow: 0 0 4px 2px #000, 2px 2px 2px 1px rgba(255, 255, 255, .75);
+}
+.bg-dark img.board-image.active {
+	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5), 0 0 16px #e2d313 inset;
+}
+#controlBox {
+	opacity: 0;
+	transition: .3s;
+}
+#controlBox:hover, #imageWrap:hover ~ #controlBox {
+	opacity: 1;
+}
+#controlBox div {
+	border-top-left-radius: 4px;
+	background-color: rgba(0, 0, 0, .5);
+	margin: 0;
+	padding: 4px 8px;
+	box-shadow: 0 0 2px 0px rgba(255, 255, 255, .5);
+	color: #eee;
+	font-size: 14px;
+	text-shadow: 1px 1px 2px #111;
+}
+#controlBox div:empty {
+	display: none;
+}
+#controlBox div#notice {
+	background-color: transparent;
+	box-shadow: none;
+	padding-right: 0;
+}
+#controlBox div#notice .msgBox {
+	background-color: rgba(0, 0, 0, .75);
+	border-radius: 4px;
+	color: #eee;
+	margin-bottom: 2px !important;
+	padding: 4px 8px;
+	text-shadow: 1px 1px 2px #111;
+}
+#controlBox div input {
+	background: transparent;
+	border: 0;
+	color: #eee;
+	font-size: 12px;
+	margin: 0;
+	padding: 0;
+	text-align: right;
+}
+#controlBox div input#bgIntervalTime {
+	width: 20px;
+}
+#controlBox div input#currNo {
+	width: 30px;
+}
+#controlBox div span {
+	margin: 0 2px;
+}
+#controlBox div a i.fa {
+	margin: 0 4px;
+}
+#imgTitle {
+	color: yellow;
+}
+#pause.active, #random.active, #rotate.active, #tile.active {
+	color: #0056b3;
+	text-shadow: 0 0 1px #0056b3, 0 0 8px #fff;
+}

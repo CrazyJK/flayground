@@ -4,6 +4,7 @@
 
 $(function() {
 	var totalCount = 0;
+	var lastIndex = 0;
 	var bgIntervalTime = LocalStorageItem.getInteger("image.board.bgIntervalTime", 10);
 	var bgInterval;
 	var pause  = false;
@@ -11,8 +12,18 @@ $(function() {
 	var random = LocalStorageItem.getBoolean("image.board.random", false);
 	var rotate = LocalStorageItem.getBoolean("image.board.rotate", false);
 	var x = 5, y = 4;
-	var TILE_ROW_COUNT = 0;
-	var TILE_COL_COUNT = 0;
+	var TILE = {
+			col: x,
+			row: y,
+			margin: 8,
+			width: 0,
+			height: 0,
+			inner: {
+				width: 0,
+				height: 0
+			},
+			ratio: 0
+	};
 	var POSITION_MARGIN = 100;
 	var ROTATE_LIMIT = 10;
 	var displaySequence = 0;
@@ -44,8 +55,8 @@ $(function() {
 	});
 
 	$(window).on("resize", function() {
-		TILE_ROW_COUNT = window.innerWidth > window.innerHeight ? x : y;
-		TILE_COL_COUNT = window.innerWidth > window.innerHeight ? y : x;
+		TILE.col = window.innerWidth > window.innerHeight ? x : y;
+		TILE.row = window.innerWidth > window.innerHeight ? y : x;
 	}).trigger("resize");
 	
 	$controlBox.on('init', function() {
@@ -122,7 +133,7 @@ $(function() {
 
 	var control = {
 			jump: function(idx) {
-				view(idx);
+				view(idx, true);
 			},
 			random: function() {
 				view(Random.getInteger(0, totalCount));
@@ -152,20 +163,27 @@ $(function() {
 	};
 
 	var toggleTile = function() {
-		var gridWidth  = Math.round(window.innerWidth  / TILE_ROW_COUNT);
-		var gridHeight = Math.round(window.innerHeight / TILE_COL_COUNT);
-		var gridRatio  = gridWidth / gridHeight;
-		// console.log("toggleTile", gridWidth, gridHeight, gridRatio);
+		TILE.width  = Math.round(window.innerWidth  / TILE.col);
+		TILE.height = Math.round(window.innerHeight / TILE.row);
+		TILE.inner.width  = TILE.width  - TILE.margin * 2;
+		TILE.inner.height = TILE.height - TILE.margin * 2;
+		TILE.ratio = TILE.inner.width / TILE.inner.height;
+		// console.log("TILE", TILE);
+		
 		$imageWrap.children().each(function(idx) {
 			var data = $(this).data("data");
 			if (tile) {
-				var displaySeq = data.displaySeq % (TILE_ROW_COUNT * TILE_COL_COUNT);
+				var displaySeq = data.displaySeq % (TILE.col * TILE.row);
 				var imageRatio = data.image.naturalWidth / data.image.naturalHeight;
+				var isHorizontal = imageRatio >= TILE.ratio;
+				// console.log("image", displaySeq, imageRatio);
 				$(this).addClass("tile").css({
-					top: Math.floor(displaySeq / TILE_ROW_COUNT) * gridHeight,
-					left: (displaySeq % TILE_ROW_COUNT) * gridWidth,
-					width: imageRatio > gridRatio ? gridWidth - 16 : 'initial',
-					height: imageRatio > gridRatio ? 'initial' : gridHeight - 16
+					top: Math.floor(displaySeq / TILE.col) * TILE.height,
+					left:          (displaySeq % TILE.col) * TILE.width,
+					width:      isHorizontal ? TILE.inner.width : 'initial',
+					height:     isHorizontal ? 'initial' : TILE.inner.height,
+					marginTop:  isHorizontal ? (TILE.height - TILE.inner.width / imageRatio) / 2 : TILE.margin,
+					marginLeft: isHorizontal ? TILE.margin : (TILE.width - TILE.inner.height * imageRatio) / 2
 				});
 			} else {
 				$(this).removeClass("tile").css(data.css);
@@ -181,6 +199,11 @@ $(function() {
 		});
 	};
 
+	var setPreviousImage = function() {
+		$imageWrap.children().removeClass("active").addClass("prev");
+		toggleTile();
+	}
+	
 	var getImageExteriorCss = function(image) {
 		var factor = 1.0; // determine size factor
 		if (window.innerHeight < image.naturalHeight || window.innerWidth < image.naturalWidth) {
@@ -204,7 +227,7 @@ $(function() {
 		};
 	};
 	
-	var view = function(currIndex) {
+	var view = function(reqIndex, fixed) {
 		function show() {
 			if (pause) {
 				return;
@@ -214,37 +237,41 @@ $(function() {
 
 			// decision current index
 			if (random) {
-				currIndex = Random.getInteger(0, totalCount);
+				reqIndex = Random.getInteger(0, totalCount);
 			} else {
-				if (currIndex >= totalCount) {
-					currIndex = 0;
-				} else if (currIndex < 0) {
-					currIndex = totalCount - 1;
+				if (!fixed && reqIndex <= lastIndex) {
+					reqIndex = lastIndex + 1;
+				}
+				if (reqIndex >= totalCount) {
+					reqIndex = 0;
+				} else if (reqIndex < 0) {
+					reqIndex = totalCount - 1;
 				}
 			}
+			lastIndex = reqIndex;
 
-			LocalStorageItem.set("image.board.index", currIndex);
-			
 			// old picture remove
-			if ($imageWrap.children().length >= TILE_ROW_COUNT * TILE_COL_COUNT + 1) {
+			if ($imageWrap.children().length >= TILE.row * TILE.col + 1) {
 				$imageWrap.children(":first-child").remove();
 			}
 
-			$imageWrap.children().removeClass("active").draggable("disable");
-			toggleTile();
+			setPreviousImage();
 
 			// get info
-			Rest.Image.get(currIndex, function(info) {
+			Rest.Image.get(reqIndex, function(info) {
 				// load Image
 				var image = new Image();
 				image.onload = function() {
 					var _self = this;
-					
+					// console.log(_self, info);
+
+					// decide css
 					var decisionCss = getImageExteriorCss(_self);
-					var initialCss = Object.assign({}, decisionCss);
-					initialCss.opacity = 0;
-					initialCss.transform = 'none';
-					
+					var initialCss = $.extend({}, decisionCss, {
+						opacity: 0,
+						transform: 'scale(1.1) rotate(0deg)'
+					});
+
 					var $img = $("<img>", {src: _self.src, class: 'board-image active'}).css(initialCss).data("data", {
 						displaySeq: displaySequence++,
 						image: _self,
@@ -258,24 +285,25 @@ $(function() {
 						$imageWrap.navActive(true);
 					}).on("click", function() {
 						// console.log("click", $(this).next().length);
-						if ($(this).next().length > 0) {
-							$imageWrap.children().removeClass("active").draggable("disable");
-							toggleTile();
-
-							var data = $(this).data("data");
-							$(this).appendTo($imageWrap).animate({
-								opacity: 1
-							}, 100, function() {
-								$(this).removeClass("tile").addClass("active").css(data.css).draggable("enable");
-							});
-							
-							$controlBox.trigger('setInfo', [data.image, data.info]);
+						if ($(this).next().length > 0) { // 중간에서 선택
+							setPreviousImage();
 						}
+						
+						var data = $(this).data("data");
+						$(this).appendTo($imageWrap).animate({
+							opacity: 1
+						}, 100, function() {
+							$(this).removeClass("tile prev").addClass("active").css(data.css);
+						});
+						
+						$controlBox.trigger('setInfo', [data.image, data.info]);
+
 					}).dblclick(function() {
 						// console.log("dblclick");
 						var data = $(this).data("data");
 						Popup.imageByNo(data.info.idx);
 					}).draggable({
+						cancel: ".prev",
 						stop: function(event, ui) {
 							// console.log(event, ui);
 							var data = $(event.target).data("data");
@@ -283,10 +311,12 @@ $(function() {
 							data.css.left = ui.position.left;
 						}
 					});
-					
+
+					// set info
+					LocalStorageItem.set("image.board.index", reqIndex);
 					$controlBox.trigger('setInfo', [_self, info]);
 				};
-				image.src = PATH + "/static/image/" + currIndex;
+				image.src = PATH + "/static/image/" + reqIndex;
 			});
 		}
 

@@ -16,6 +16,7 @@
 <script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/js/crazy.common.js"></script>
 <script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/crazy.effect.neon.js"></script>
 <script type="text/javascript" src="/js/flay.rest.service.js"></script>
 <script type="text/javascript" src="/js/flay.utils.js"></script>
 <script type="text/javascript" src="/js/flay.websocket.js"></script>
@@ -25,6 +26,8 @@
 
 	<div id="imageWrap"></div>
 
+	<table id="tileGrid" class="table table-bordered table-dark bg-transparent m-0"></table>
+
 	<div class="bottom-right" id="controlBox">
 		<div class="text-right" id="notice"></div>
 		<div>
@@ -33,6 +36,7 @@
 			<span id="imgSize" class="small"></span>
 			<span id="imgLength" class="small"></span>
 			<span id="imgModified" class="small"></span>
+			<span id="neon" class="hover" title="neon switch"><i class="fa fa-lightbulb-o"></i></span>
 			<span id="tile" class="small hover" title="tile mode"><i class="fa fa-th"></i></span>
 			<span id="rotate" class="small hover" title="image rotate"><i class="fa fa-rotate-right"></i></span>
 			<span id="random" class="small hover" title="image random select"><i class="fa fa-random"></i></span>

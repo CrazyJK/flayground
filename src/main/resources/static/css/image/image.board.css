@@ -4,6 +4,9 @@ body {
 	background-color: #000;
 	overflow: hidden;
 }
+body.neon {
+	background: #fff url('/img/bg/brick.png') repeat center / 1200px 431px !important;
+}
 #imageWrap {
 	position: absolute;
 	top: 0;
@@ -32,10 +35,10 @@ img.ui-draggable-handle.ui-draggable-dragging {
 img.board-image.tile {
 	margin: .5rem;
 }
-.bg-dark img.board-image {
+.bg-dark:not(.neon) img.board-image {
 	box-shadow: 0 0 4px 2px #000, 2px 2px 2px 1px rgba(255, 255, 255, .75);
 }
-.bg-dark img.board-image.active {
+.bg-dark:not(.neon) img.board-image.active {
 	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5), 0 0 16px #e2d313 inset;
 }
 #controlBox {
@@ -95,7 +98,7 @@ img.board-image.tile {
 #imgTitle {
 	color: yellow;
 }
-#pause.active, #random.active, #rotate.active, #tile.active {
+.hover.active {
 	color: #0056b3;
-	text-shadow: 0 0 1px #0056b3, 0 0 8px #fff;
+	text-shadow: 0 0 1px #0056b3, 0 0 4px #fff;
 }

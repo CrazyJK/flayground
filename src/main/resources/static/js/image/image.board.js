@@ -35,31 +35,50 @@ $(function() {
 
 	var control = {
 			jump: function(idx) {
+				lastIndex = -1;
 				view(idx, true);
 			},
 			random: function() {
-				view(Random.getInteger(0, totalCount));
+				view(Random.getInteger(0, totalCount - 1), true);
 			},
 			next: function() {
 				view(parseInt($("#currNo").val()) + 1);
 			},
-			prev: function() { // delete last image
-				$imageWrap.children(":last-child").remove();
-				if ($imageWrap.children(":last-child").length > 0) {
-					var lastImgData = $imageWrap.children(":last-child").addClass("active").data("data");
-					$controlBox.trigger('setInfo', [lastImgData.image, lastImgData.info]);
-				}
+			prev: function() {
+				$imageWrap.children().last().remove(); // delete last image
 			},
-			shuffle: function() {
-				if (tile) {
-					toggleTile();
-				} else {
-					$imageWrap.children().each(function(idx) {
-						var imgData = $(this).data("data");
-						imgData.css = getImageExteriorCss(imgData.image);
-						$(this).css(imgData.css);
-					});
-					$imageWrap.children(':nth-child(' + Random.getInteger(0, $imageWrap.children().length) + ')').click();
+			effect: {
+				shuffle: function() {
+					if (tile) {
+						control.effect.tile();
+					} else {
+						$imageWrap.children().shuffle();
+						$imageWrap.children(':nth-child(' + Random.getInteger(1, $imageWrap.children().length) + ')').click();
+					}
+				},
+				neon: function() {
+					displayGrid();
+					$("#neon").neon(neon);
+					$("body").toggleClass("neon", neon);
+					$imageWrap.children().neonBorder(false).last().neonBorder(neon);
+				},
+				tile: function() {
+					displayGrid();
+					if (tile) {
+						TILE.col = window.innerWidth > window.innerHeight ? x : y;
+						TILE.row = window.innerWidth > window.innerHeight ? y : x;
+						TILE.width  = Math.round(window.innerWidth  / TILE.col);
+						TILE.height = Math.round(window.innerHeight / TILE.row);
+						TILE.inner.width  = TILE.width  - TILE.margin * 2;
+						TILE.inner.height = TILE.height - TILE.margin * 2;
+						TILE.ratio = TILE.inner.width / TILE.inner.height;
+						$imageWrap.children().tile();
+					} else {
+						$imageWrap.children().unTile();
+					}
+				},
+				rotate: function() {
+					$imageWrap.children().rotate();
 				}
 			}
 	};
@@ -68,64 +87,86 @@ $(function() {
 		if (tile && !neon) {
 			$("#tileGrid").empty().append(
 					(function() {
+						var tabIndex = 1;
 						var $tbody = $("<tbody>");
 						for (var i=0; i < TILE.row; i++) {
 							var $tr = $("<tr>").height(window.innerHeight / TILE.row).appendTo($tbody);
 							for (var j=0; j < TILE.col; j++) {
-								$td = $("<td>").appendTo($tr);
+								$td = $("<td>", {tabIndex: tabIndex++}).appendTo($tr);
 							}
 						}
 						return $tbody;
-					}())	
+					}())
 			);
 		} else {
 			$("#tileGrid").empty();
 		}
 	};
 
-	var toggleTile = function() {
-		TILE.width  = Math.round(window.innerWidth  / TILE.col);
-		TILE.height = Math.round(window.innerHeight / TILE.row);
-		TILE.inner.width  = TILE.width  - TILE.margin * 2;
-		TILE.inner.height = TILE.height - TILE.margin * 2;
-		TILE.ratio = TILE.inner.width / TILE.inner.height;
-		// console.log("TILE", TILE);
-		displayGrid();
-		
-		$imageWrap.children().each(function(idx) {
-			var data = $(this).data("data");
-			if (tile) {
-				var displaySeq = data.displaySeq % (TILE.col * TILE.row);
-				var imageRatio = data.image.naturalWidth / data.image.naturalHeight;
-				var isHorizontal = imageRatio >= TILE.ratio;
-				// console.log("image", displaySeq, imageRatio);
-				$(this).addClass("tile").css({
-					top: Math.floor(displaySeq / TILE.col) * TILE.height,
-					left:          (displaySeq % TILE.col) * TILE.width,
-					width:      isHorizontal ? TILE.inner.width : 'initial',
-					height:     isHorizontal ? 'initial' : TILE.inner.height,
-					marginTop:  isHorizontal ? (TILE.height - TILE.inner.width / imageRatio) / 2 : TILE.margin,
-					marginLeft: isHorizontal ? TILE.margin : (TILE.width - TILE.inner.height * imageRatio) / 2
-				});
-			} else {
-				$(this).removeClass("tile").css(data.css);
+	var view = function(reqIndex, fixed) {
+		function show() {
+			var setPreviousImage = function() {
+				$imageWrap.children().removeClass("active").addClass("prev").neonBorder(false);
+				control.effect.tile();
 			}
-		});
-	};
-	
-	var toggleRotate = function() {
-		$imageWrap.children().each(function(idx) {
-			$(this).css({
-				transform: 'rotate(' + (rotate ? Random.getInteger(ROTATE_LIMIT * -1, ROTATE_LIMIT) : 0) + 'deg)'
+
+			// decision current index
+			if (random) {
+				reqIndex = Random.getInteger(0, totalCount - 1);
+			} else {
+				if (!fixed && reqIndex <= lastIndex) {
+					reqIndex = lastIndex + 1;
+				}
+				if (reqIndex >= totalCount) {
+					reqIndex = 0;
+				} else if (reqIndex < 0) {
+					reqIndex = totalCount - 1;
+				}
+			}
+			lastIndex = reqIndex;
+
+			// old picture remove
+			if ($imageWrap.children().length >= TILE.row * TILE.col + 1) {
+				$imageWrap.children(":first-child").remove();
+			}
+			setPreviousImage();
+
+			// get info
+			Rest.Image.get(reqIndex, function(info) {
+				// load Image
+				var image = new Image();
+				image.onload = function() {
+					$("<img>").load(this, info).appendTo($imageWrap).front().on("click", function() {
+						if ($(this).next().length > 0) { // 중간에서 선택
+							setPreviousImage();
+							$(this).appendTo($imageWrap).front();
+						}
+					}).dblclick(function() {
+						var data = $(this).data("data");
+						Popup.imageByNo(data.info.idx);
+					}).draggable({
+						cancel: ".prev",
+						stop: function(event, ui) {
+							var data = $(event.target).data("data");
+							data.css.top  = ui.position.top;
+							data.css.left = ui.position.left;
+						}
+					});
+					LocalStorageItem.set("image.board.index", reqIndex);
+				};
+				image.src = PATH + "/static/image/" + reqIndex;
 			});
-		});
+		}
+
+		clearInterval(bgInterval);
+		if (!pause) {
+			show();
+			bgInterval = setInterval(function() {
+				control.next();
+			}, 1000 * bgIntervalTime);
+		}
 	};
 
-	var setPreviousImage = function() {
-		$imageWrap.children().removeClass("active").addClass("prev").neonBorder(false);
-		toggleTile();
-	}
-	
 	var getImageExteriorCss = function(image) {
 		var factor = 1.0; // determine size factor
 		if (window.innerHeight < image.naturalHeight || window.innerWidth < image.naturalWidth) {
@@ -148,111 +189,91 @@ $(function() {
 			transform: 'rotate(' + degree + 'deg)'
 		};
 	};
-		
-	var view = function(reqIndex, fixed) {
-		function show() {
-			if (pause) {
-				return;
-			}
-			// Stop nav event
-			$imageWrap.navActive(false);
 
-			// decision current index
-			if (random) {
-				reqIndex = Random.getInteger(0, totalCount - 1);
-			} else {
-				if (!fixed && reqIndex <= lastIndex) {
-					reqIndex = lastIndex + 1;
-				}
-				if (reqIndex >= totalCount) {
-					reqIndex = 0;
-				} else if (reqIndex < 0) {
-					reqIndex = totalCount - 1;
-				}
-			}
-			lastIndex = reqIndex;
-
-			// old picture remove
-			if ($imageWrap.children().length >= TILE.row * TILE.col + 1) {
-				$imageWrap.children(":first-child").remove();
-			}
-
-			setPreviousImage();
-
-			// get info
-			Rest.Image.get(reqIndex, function(info) {
-				// load Image
-				var image = new Image();
-				image.onload = function() {
-					var _self = this;
-					// console.log(_self, info);
-
-					// decide css
-					var decisionCss = getImageExteriorCss(_self);
-					var initialCss = $.extend({}, decisionCss, {
-						opacity: 0,
-						transform: 'scale(1.1) rotate(0deg)'
-					});
-
-					var $img = $("<img>", {src: _self.src, class: 'board-image active'}).neonBorder(neon).css(initialCss).data("data", {
-						displaySeq: displaySequence++,
-						image: _self,
-						info: info,
-						css: decisionCss
-					}).appendTo($imageWrap).animate({
-						opacity: 1
-					}, 300, function() {
-						$(this).css(decisionCss);
-						// Start nav event
-						$imageWrap.navActive(true);
-					}).on("click", function() {
-						// console.log("click", $(this).next().length);
-						if ($(this).next().length > 0) { // 중간에서 선택
-							setPreviousImage();
-						}
-						
-						var data = $(this).data("data");
-						$(this).appendTo($imageWrap).animate({
-							opacity: 1
-						}, 100, function() {
-							$(this).removeClass("tile prev").addClass("active").neonBorder(neon).css(data.css);
-						});
-						
-						$controlBox.trigger('setInfo', [data.image, data.info]);
-
-					}).dblclick(function() {
-						// console.log("dblclick");
-						var data = $(this).data("data");
-						Popup.imageByNo(data.info.idx);
-					}).draggable({
-						cancel: ".prev",
-						stop: function(event, ui) {
-							// console.log(event, ui);
-							var data = $(event.target).data("data");
-							data.css.top  = ui.position.top;
-							data.css.left = ui.position.left;
-						}
-					});
-
-					// set info
-					LocalStorageItem.set("image.board.index", reqIndex);
-					$controlBox.trigger('setInfo', [_self, info]);
-				};
-				image.src = PATH + "/static/image/" + reqIndex;
+//	(function($) {
+	$.fn.load = function(image, info) {
+		var decisionCss = getImageExteriorCss(image);
+		var initialCss = $.extend({}, decisionCss, {
+			opacity: 0,
+			transform: 'scale(1.1) rotate(0deg)'
+		});
+		return this.each(function() {
+			var $self = $(this);
+			$self.attr({
+				src: image.src,
+				class: "board-image active"
+			}).css(initialCss).data("data", {
+				displaySeq: displaySequence++,
+				image: image,
+				info: info,
+				css: decisionCss
 			});
-		}
-
-		clearInterval(bgInterval);
-		show();
-		if (!pause) {
-			bgInterval = setInterval(function() {
-				control.next();
-			}, 1000 * bgIntervalTime);
-		}
+		});
 	};
+	$.fn.front = function() {
+		return this.each(function() {
+			var $self = $(this);
+			var data = $self.data("data");
+			$imageWrap.navActive(false); // Stop nav event
+			$self.animate({
+				opacity: 1
+			}, 300, function() {
+				$(this).removeClass("tile prev").addClass("active").neonBorder(neon).css(data.css);
+				$imageWrap.navActive(true); // Start nav event
+			});
+			$controlBox.trigger('setInfo', [data.image, data.info]); // set info
+		});
+	};
+	$.fn.tile = function() {
+		return this.each(function() {
+			var $self = $(this);
+			var data = $self.data("data");
+			var displaySeq = data.displaySeq % (TILE.col * TILE.row);
+			var imageRatio = data.image.naturalWidth / data.image.naturalHeight;
+			var isHorizontal = imageRatio >= TILE.ratio;
+			$(this).addClass("tile").css({
+				top: Math.floor(displaySeq / TILE.col) * TILE.height,
+				left:          (displaySeq % TILE.col) * TILE.width,
+				width:      isHorizontal ? TILE.inner.width : 'initial',
+				height:     isHorizontal ? 'initial' : TILE.inner.height,
+				marginTop:  isHorizontal ? (TILE.height - TILE.inner.width / imageRatio) / 2 : TILE.margin,
+				marginLeft: isHorizontal ? TILE.margin : (TILE.width - TILE.inner.height * imageRatio) / 2
+			});
+		});
+	};
+	$.fn.unTile = function() {
+		return this.each(function() {
+			var $self = $(this);
+			var data = $self.data("data");
+			$self.css(data.css);
+		});
+	};
+	$.fn.rotate = function() {
+		return this.each(function() {
+			var $self = $(this);
+			var data = $self.data("data");
+			data.css.transform = 'rotate(' + (rotate ? Random.getInteger(ROTATE_LIMIT * -1, ROTATE_LIMIT) : 0) + 'deg)';
+			$self.css({
+				transform: data.css.transform
+			});
+		});
+	};
+	$.fn.shuffle = function() {
+		return this.each(function() {
+			var $self = $(this);
+			var data = $self.data("data");
+			data.css = getImageExteriorCss(data.image);
+			$self.css(data.css);
+		});
+	};
+//	}(jQuery));
+
+	$(window).on("resize", function() {
+		control.effect.tile();
+	}).trigger("resize");
 
 	$imageWrap.navEvent(function(signal, e) {
-		// console.log('e.keyCode', signal);
+//		console.log('e.keyCode', signal, e.key, e.type);
 		switch (signal) {
 		case 32: // key space
 			control.random();
@@ -268,30 +289,34 @@ $(function() {
 		case 1001: // mouse left click
 			break;
 		case 1002: // mouse middle click
-			control.shuffle();
+		case 83: // s
+			control.effect.shuffle();
+			break;
+		case 78: // n
+			$("#neon").trigger("click");
+			break;
+		case 84: // t
+			$("#tile").trigger("click");
+			break;
+		case 82: // r
+			$("#rotate").trigger("click");
+			break;
+		case 80: // p
+			$("#pause").trigger("click");
 			break;
 		}
 	});
 
-	$(window).on("resize", function() {
-		TILE.col = window.innerWidth > window.innerHeight ? x : y;
-		TILE.row = window.innerWidth > window.innerHeight ? y : x;
-		toggleTile();
-	}).trigger("resize");
-	
 	$controlBox.on('init', function() {
-		// console.log('$controlBox init');
 		Rest.Image.size(function(count) {
 			totalCount = count;
 			$("#totalNo").html(totalCount);
 		});
 		$("#bgIntervalTime").val(bgIntervalTime);
-
 		$('#tile').toggleClass("active", tile);
 		$('#random').toggleClass("active", random);
 		$('#rotate').toggleClass("active", rotate);
 		$('#neon').toggleClass("active", !neon).trigger("click");
-		
 	}).on('setInfo', function(e, image, imgInfo) {
 		$("#imgPath").html(imgInfo.path.replace(/\\/gi, '/').split('/').pop()).data("path", imgInfo.path);
 		$("#imgTitle").html(imgInfo.name).data("idx", imgInfo.idx);
@@ -337,20 +362,17 @@ $(function() {
 		rotate = $(this).toggleClass("active").hasClass("active");
 		LocalStorageItem.set("image.board.rotate", rotate);
 		$controlBox.trigger('notice', 'rotate: ' + rotate);
-		toggleRotate();
+		control.effect.rotate();
 	}).on('click', '#tile', function() {
 		tile = $(this).toggleClass("active").hasClass("active");
 		LocalStorageItem.set("image.board.tile", tile);
 		$controlBox.trigger('notice', 'tile mode: ' + tile);
-		toggleTile();
+		control.effect.tile();
 	}).on('click', '#neon', function() {
 		neon = $(this).toggleClass("active").hasClass("active");
-		console.log("neon", neon);
 		LocalStorageItem.set("image.board.neon", neon);
 		$controlBox.trigger('notice', 'neon mode: ' + neon);
-		$(this).neon(neon);
-		$("body").toggleClass("neon", neon);
-		displayGrid();
+		control.effect.neon();
 	}).on('keyup', '#currNo', function(e) {
 		e.stopPropagation();
 		if (e.keyCode === 13) {

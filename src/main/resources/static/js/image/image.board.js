@@ -105,11 +105,6 @@ $(function() {
 
 	var view = function(reqIndex, fixed) {
 		function show() {
-			var setPreviousImage = function() {
-				$imageWrap.children().removeClass("active").addClass("prev").neonBorder(false);
-				control.effect.tile();
-			}
-
 			// decision current index
 			if (random) {
 				reqIndex = Random.getInteger(0, totalCount - 1);
@@ -129,16 +124,14 @@ $(function() {
 			if ($imageWrap.children().length >= TILE.row * TILE.col + 1) {
 				$imageWrap.children(":first-child").remove();
 			}
-			setPreviousImage();
 
 			// get info
 			Rest.Image.get(reqIndex, function(info) {
 				// load Image
 				var image = new Image();
 				image.onload = function() {
-					$("<img>").load(this, info).appendTo($imageWrap).front().on("click", function() {
+					$("<img>").load(this, info).appendTo($imageWrap).front(true).on("click", function() {
 						if ($(this).next().length > 0) { // 중간에서 선택
-							setPreviousImage();
 							$(this).appendTo($imageWrap).front();
 						}
 					}).dblclick(function() {
@@ -211,13 +204,18 @@ $(function() {
 		});
 	};
 	$.fn.front = function() {
-		return this.each(function() {
+		var setPreviousImage = function() {
+			$imageWrap.children().removeClass("active").addClass("prev").neonBorder(false);
+			control.effect.tile();
+		};
+		return this.each(function(firstShow) {
 			var $self = $(this);
 			var data = $self.data("data");
 			$imageWrap.navActive(false); // Stop nav event
 			$self.animate({
 				opacity: 1
-			}, 300, function() {
+			}, firstShow ? 300 : 100, function() {
+				setPreviousImage();
 				$(this).removeClass("tile prev").addClass("active").neonBorder(neon).css(data.css);
 				$imageWrap.navActive(true); // Start nav event
 			});

@@ -4,6 +4,8 @@
  */
 
 var flayWebsocket = (function($) {
+	var debug = false;
+
 	var STOMP_ENDPOINT = "/flayground-websocket";
 	
 	var TOPIC = "/topic", QUEUE = "/queue";
@@ -39,7 +41,8 @@ var flayWebsocket = (function($) {
 			if ($websocketSwitch.prop("checked"))
 				connect();
 		} else {
-			console.log('flayWebsocket', 'switch is not exist. will be connected automatically');
+			if (debug)
+				console.log('flayWebsocket', 'switch is not exist. will be connected automatically');
 			connect();
 		}
 	});
@@ -50,7 +53,8 @@ var flayWebsocket = (function($) {
 	    var socket = new SockJS(STOMP_ENDPOINT);
 	    stompClient = Stomp.over(socket);
 	    stompClient.connect({}, function(frame) {
-			console.log('flayWebsocket', 'connected', username);
+	    	if (debug)
+				console.log('flayWebsocket', 'connected', username);
 
 			showMessage(ANNOUNCE, frame);
 
@@ -79,14 +83,16 @@ var flayWebsocket = (function($) {
 	    });
 	    
 	    stompClient.debug = function(str) {
-	    	console.log("stomp debug", str);
+	    	if (debug)
+				console.log("stomp debug", str);
 	    };
 	};
 
 	var disconnect = function() {
 	    if (stompClient !== null) {
 	    	stompClient.disconnect(function() {
-	    		console.log('flayWebsocket', 'disconnected');
+	    		if (debug)
+					console.log('flayWebsocket', 'disconnected');
 	    		showMessage(ANNOUNCE, {command: "DISCONNECTED"});
 	    	});
 	    }
@@ -117,7 +123,8 @@ var flayWebsocket = (function($) {
 	}
 
 	var showMessage = function(type, message) {
-		console.log(message);
+		if (debug)
+			console.log(message);
 		var title, content, time = new Date();
 		if (message.command === 'CONNECTED') {
 			title   = 'Connected';
@@ -135,7 +142,8 @@ var flayWebsocket = (function($) {
 			content = message;
 		}
 		content = content.trim().replace(/\n/g, '<br>');
-		console.log('websocket', type, title, content);
+		if (debug)
+			console.log('websocket', type, title, content);
 
 		// if wrapper not exist, insert
 		var wrapper = "announceWrapper";
@@ -189,7 +197,8 @@ var flayWebsocket = (function($) {
 
 	var infoCallback = function(message) {
 		var body = JSON.parse(message.body);
-		console.log('infoCallback', body);
+		if (debug)
+			console.log('infoCallback', body);
 		if (body.content === 'bgtheme') {
 			var bgTheme = LocalStorageItem.get('flay.bgtheme', 'D');
 			$("body").toggleClass("bg-dark", bgTheme === 'D');
@@ -197,7 +206,8 @@ var flayWebsocket = (function($) {
 			var bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
 			$("body").css({backgroundColor: bgColor});
 		} else {
-			console.log('unknown code');
+			if (debug)
+				console.log('unknown code');
 		}
 	};
 	

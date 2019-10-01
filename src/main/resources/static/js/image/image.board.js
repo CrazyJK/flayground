@@ -72,10 +72,8 @@ $(function() {
 						TILE.inner.width  = TILE.width  - TILE.margin * 2;
 						TILE.inner.height = TILE.height - TILE.margin * 2;
 						TILE.ratio = TILE.inner.width / TILE.inner.height;
-						$imageWrap.children().tile();
-					} else {
-						$imageWrap.children().unTile();
 					}
+					$imageWrap.children().tile();
 				},
 				rotate: function() {
 					$imageWrap.children().rotate();
@@ -203,12 +201,12 @@ $(function() {
 			});
 		});
 	};
-	$.fn.front = function() {
+	$.fn.front = function(firstShow) {
 		var setPreviousImage = function() {
 			$imageWrap.children().removeClass("active").addClass("prev").neonBorder(false);
 			control.effect.tile();
 		};
-		return this.each(function(firstShow) {
+		return this.each(function() {
 			var $self = $(this);
 			var data = $self.data("data");
 			$imageWrap.navActive(false); // Stop nav event
@@ -226,24 +224,21 @@ $(function() {
 		return this.each(function() {
 			var $self = $(this);
 			var data = $self.data("data");
-			var displaySeq = data.displaySeq % (TILE.col * TILE.row);
-			var imageRatio = data.image.naturalWidth / data.image.naturalHeight;
-			var isHorizontal = imageRatio >= TILE.ratio;
-			$(this).addClass("tile").css({
-				top: Math.floor(displaySeq / TILE.col) * TILE.height,
-				left:          (displaySeq % TILE.col) * TILE.width,
-				width:      isHorizontal ? TILE.inner.width : 'initial',
-				height:     isHorizontal ? 'initial' : TILE.inner.height,
-				marginTop:  isHorizontal ? (TILE.height - TILE.inner.width / imageRatio) / 2 : TILE.margin,
-				marginLeft: isHorizontal ? TILE.margin : (TILE.width - TILE.inner.height * imageRatio) / 2
-			});
-		});
-	};
-	$.fn.unTile = function() {
-		return this.each(function() {
-			var $self = $(this);
-			var data = $self.data("data");
-			$self.css(data.css);
+			if (tile) {
+				var displaySeq = data.displaySeq % (TILE.col * TILE.row);
+				var imageRatio = data.image.naturalWidth / data.image.naturalHeight;
+				var isHorizontal = imageRatio >= TILE.ratio;
+				$self.addClass("tile").css({
+					top: Math.floor(displaySeq / TILE.col) * TILE.height,
+					left:          (displaySeq % TILE.col) * TILE.width,
+					width:      isHorizontal ? TILE.inner.width : 'initial',
+					height:     isHorizontal ? 'initial' : TILE.inner.height,
+					marginTop:  isHorizontal ? (TILE.height - TILE.inner.width / imageRatio) / 2 : TILE.margin,
+					marginLeft: isHorizontal ? TILE.margin : (TILE.width - TILE.inner.height * imageRatio) / 2
+				});
+			} else {
+				$self.css(data.css);
+			}
 		});
 	};
 	$.fn.rotate = function() {

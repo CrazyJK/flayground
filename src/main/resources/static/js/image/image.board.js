@@ -62,20 +62,16 @@ $(function() {
 					$("body").toggleClass("neon", neon);
 					$imageWrap.children().neonBorder(false).last().neonBorder(neon);
 				},
-				tile: function() {
+				tile: function(firstShow) {
 					displayGrid();
 					if (tile) {
-						TILE.col = window.innerWidth > window.innerHeight ? x : y;
-						TILE.row = window.innerWidth > window.innerHeight ? y : x;
-						TILE.width  = Math.round(window.innerWidth  / TILE.col);
-						TILE.height = Math.round(window.innerHeight / TILE.row);
-						TILE.inner.width  = TILE.width  - TILE.margin * 2;
-						TILE.inner.height = TILE.height - TILE.margin * 2;
-						TILE.ratio = TILE.inner.width / TILE.inner.height;
+						$imageWrap.children(firstShow ? ":not(:last-child)" : "").tile();
+					} else {
+						$imageWrap.children().unTile();
 					}
-					$imageWrap.children().tile();
 				},
 				rotate: function() {
+					displayGrid();
 					$imageWrap.children().rotate();
 				}
 			}
@@ -83,21 +79,28 @@ $(function() {
 
 	var displayGrid = function() {
 		if (tile && !neon) {
-			$("#tileGrid").empty().append(
+			TILE.col = window.innerWidth > window.innerHeight ? x : y;
+			TILE.row = window.innerWidth > window.innerHeight ? y : x;
+			TILE.width  = Math.round(window.innerWidth  / TILE.col);
+			TILE.height = Math.round(window.innerHeight / TILE.row);
+			TILE.inner.width  = TILE.width  - TILE.margin * 2;
+			TILE.inner.height = TILE.height - TILE.margin * 2;
+			TILE.ratio = TILE.inner.width / TILE.inner.height;
+			$("#tileGrid").empty().toggleClass("grid-tile", !rotate).append(
 					(function() {
 						var tabIndex = 1;
 						var $tbody = $("<tbody>");
 						for (var i=0; i < TILE.row; i++) {
 							var $tr = $("<tr>").height(window.innerHeight / TILE.row).appendTo($tbody);
 							for (var j=0; j < TILE.col; j++) {
-								$td = $("<td>", {tabIndex: tabIndex++}).appendTo($tr);
+								$td = $("<td>", {tabIndex: tabIndex++, class: rotate ? "" : "grid-tile"}).appendTo($tr);
 							}
 						}
 						return $tbody;
 					}())
 			);
 		} else {
-			$("#tileGrid").empty();
+			$("#tileGrid").empty().removeClass("grid-tile");
 		}
 	};
 
@@ -128,7 +131,10 @@ $(function() {
 				// load Image
 				var image = new Image();
 				image.onload = function() {
-					$("<img>").load(this, info).appendTo($imageWrap).front(true).on("click", function() {
+					// append image
+					var $img = $("<img>").load(this, info).appendTo($imageWrap).front(true);
+					// add event
+					$img.on("click", function() {
 						if ($(this).next().length > 0) { // 중간에서 선택
 							$(this).appendTo($imageWrap).front();
 						}
@@ -161,10 +167,7 @@ $(function() {
 	var getImageExteriorCss = function(image) {
 		var factor = 1.0; // determine size factor
 		if (window.innerHeight < image.naturalHeight || window.innerWidth < image.naturalWidth) {
-			factor = Math.min(window.innerHeight / image.naturalHeight, window.innerWidth / image.naturalWidth).toFixed(2);
-			if (factor > 0.1) {
-				factor -= 0.1;
-			}
+			factor = Math.min(window.innerHeight / image.naturalHeight, window.innerWidth / image.naturalWidth).toFixed(2) * 0.9;
 		}
 		var imgHeight = image.naturalHeight * factor;
 		var imgWidth  = image.naturalWidth  * factor;
@@ -193,29 +196,29 @@ $(function() {
 			$self.attr({
 				src: image.src,
 				class: "board-image active"
-			}).css(initialCss).data("data", {
+			}).data("data", {
 				displaySeq: displaySequence++,
 				image: image,
 				info: info,
 				css: decisionCss
-			});
+			}).css(initialCss);
 		});
 	};
 	$.fn.front = function(firstShow) {
 		var setPreviousImage = function() {
 			$imageWrap.children().removeClass("active").addClass("prev").neonBorder(false);
-			control.effect.tile();
+			control.effect.tile(firstShow);
 		};
 		return this.each(function() {
 			var $self = $(this);
 			var data = $self.data("data");
-			$imageWrap.navActive(false); // Stop nav event
+			$imageWrap.navActive(false); // pause nav event
+			setPreviousImage();
 			$self.animate({
 				opacity: 1
 			}, firstShow ? 300 : 100, function() {
-				setPreviousImage();
 				$(this).removeClass("tile prev").addClass("active").neonBorder(neon).css(data.css);
-				$imageWrap.navActive(true); // Start nav event
+				$imageWrap.navActive(true); // resume nav event
 			});
 			$controlBox.trigger('setInfo', [data.image, data.info]); // set info
 		});
@@ -224,21 +227,24 @@ $(function() {
 		return this.each(function() {
 			var $self = $(this);
 			var data = $self.data("data");
-			if (tile) {
-				var displaySeq = data.displaySeq % (TILE.col * TILE.row);
-				var imageRatio = data.image.naturalWidth / data.image.naturalHeight;
-				var isHorizontal = imageRatio >= TILE.ratio;
-				$self.addClass("tile").css({
-					top: Math.floor(displaySeq / TILE.col) * TILE.height,
-					left:          (displaySeq % TILE.col) * TILE.width,
-					width:      isHorizontal ? TILE.inner.width : 'initial',
-					height:     isHorizontal ? 'initial' : TILE.inner.height,
-					marginTop:  isHorizontal ? (TILE.height - TILE.inner.width / imageRatio) / 2 : TILE.margin,
-					marginLeft: isHorizontal ? TILE.margin : (TILE.width - TILE.inner.height * imageRatio) / 2
-				});
-			} else {
-				$self.css(data.css);
-			}
+			var displaySeq = data.displaySeq % (TILE.col * TILE.row);
+			var imageRatio = data.image.naturalWidth / data.image.naturalHeight;
+			var isHorizontal = imageRatio >= TILE.ratio;
+			$self.addClass("tile").css({
+				top: Math.floor(displaySeq / TILE.col) * TILE.height,
+				left:          (displaySeq % TILE.col) * TILE.width,
+				width:      isHorizontal ? TILE.inner.width : 'initial',
+				height:     isHorizontal ? 'initial' : TILE.inner.height,
+				marginTop:  isHorizontal ? (TILE.height - TILE.inner.width / imageRatio) / 2 : TILE.margin,
+				marginLeft: isHorizontal ? TILE.margin : (TILE.width - TILE.inner.height * imageRatio) / 2
+			});
+		});
+	};
+	$.fn.unTile = function() {
+		return this.each(function() {
+			var $self = $(this);
+			var data = $self.data("data");
+			$self.css(data.css);
 		});
 	};
 	$.fn.rotate = function() {
@@ -262,11 +268,11 @@ $(function() {
 //	}(jQuery));
 
 	$(window).on("resize", function() {
-		control.effect.tile();
+		control.effect.tile(true);
 	}).trigger("resize");
 
 	$imageWrap.navEvent(function(signal, e) {
-//		console.log('e.keyCode', signal, e.key, e.type);
+		// console.log('e.keyCode', signal, e.key, e.type);
 		switch (signal) {
 		case 32: // key space
 			control.random();
@@ -313,6 +319,7 @@ $(function() {
 	}).on('setInfo', function(e, image, imgInfo) {
 		$("#imgPath").html(imgInfo.path.replace(/\\/gi, '/').split('/').pop()).data("path", imgInfo.path);
 		$("#imgTitle").html(imgInfo.name).data("idx", imgInfo.idx);
+		$("#paint").data("idx", imgInfo.idx);
 		$("#imgSize").html(image.naturalWidth + ' x ' + image.naturalHeight);
 		$("#imgLength").html(File.formatSize(imgInfo.length));
 		$("#imgModified").html(new Date(imgInfo.modified).format('yyyy-MM-dd'));
@@ -335,6 +342,10 @@ $(function() {
 		var clickedImageIndex = parseInt($(this).data("idx"));
 		Popup.imageByNo(clickedImageIndex);
 		$controlBox.trigger('notice', 'pupup image: ' + clickedImageIndex);
+	}).on('click', '#paint', function() {
+		var clickedImageIndex = parseInt($(this).data("idx"));
+		Rest.Image.paint(clickedImageIndex);
+		$controlBox.trigger('notice', 'paint image: ' + clickedImageIndex);
 	}).on('keyup', '#bgIntervalTime', function(e) {
 		e.stopPropagation();
 		if (e.keyCode === 13) {

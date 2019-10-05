@@ -53,14 +53,15 @@ body {
 .fa {
 	display: block;
 	color: #ccc;
-	margin: .5rem .25rem;
+	margin: .5rem;
+	box-shadow: inset 0 0 8px 2px #111, 0 0 4px 2px #111;
 	transition: all .3s;
 }
 .fa.disabled {
 	opacity: .3;
 }
 .fa.rotate {
-	transform: rotate(90deg);
+	transform: rotate(270deg);
 }
 .fa:hover:not(.disabled) {
 	color: orange;
@@ -90,23 +91,11 @@ iframe {
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript">
-var defaultUrl = "https://www.popkontv.com/live/favorite.asp";
-var GRID_1R_3C = "1r3c", GRID_2R_1C = "2r1c", GRID_2R_2C = "2r2c", GRID_3R_1C = "3r1c";
-var gridMode = GRID_1R_3C;
+var favoriteUrl = "https://www.popkontv.com/live/favorite.asp?tabmenu=3";
+var liveUrl = "https://www.popkontv.com/live/";
+var gridMode = "1r3c";
+var colHtml = "";
 
-/*
-	<div class="row">
-		<div class="col">
-			<div class="control-btn">
-				<i class="fa fa-home"></i>
-				<i class="fa fa-expand"></i>
-				<i class="fa fa-compress disabled"></i>
-				<i class="fa fa-external-link"></i>
-			</div>
-			<iframe></iframe>
-		</div>
-	</div>
- */
 function setGridLayout() {
 	var row = parseInt(gridMode.charAt(0));
 	var col = parseInt(gridMode.charAt(2));
@@ -114,46 +103,67 @@ function setGridLayout() {
 	for (var r = 0; r < row; r++) {
 		var $row = $("<div>", {class: "row"}).appendTo($popkonWrapper);
 		for (var c = 0; c < col; c++) {
-			var $col = $("<div>", {class: "col"}).appendTo($row);
-			$("<div>", {class: "control-btn"}).append(
-					$("<i>", {class: "fa fa-home"}),
-					$("<i>", {class: "fa fa-expand"}),
-					$("<i>", {class: "fa fa-compress disabled"}),
-					$("<i>", {class: "fa fa-external-link"}),
-			).appendTo($col);
-			$("<iframe>").appendTo($col);
+			$row.append(colHtml);
 		}
 	}
-	// add Control Event
-	$(".control-btn > .fa.fa-home").on("click", function() {
-		$(this).parent().next().attr("src", defaultUrl);
-	});
-	$(".control-btn > .fa.fa-expand").on("click", function() {
-		$(this).addClass("disabled").parent().parent().addClass("full-screen");
-		$(this).next().removeClass("disabled");
-	});
-	$(".control-btn > .fa.fa-compress").on("click", function() {
-		$(this).addClass("disabled").parent().parent().removeClass("full-screen");
-		$(this).prev().removeClass("disabled");
-	});
-	$(".control-btn > .fa.fa-external-link").on("click", function() {
-		var srcUrl = $(this).parent().next().attr("src");
-		window.open(srcUrl, new Date().getTime(), "width=" + 540 + ",height=" + 997 + ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
-	});
 	setHeight();
-	$("iframe").attr("src", defaultUrl);
+	$("iframe").attr("src", favoriteUrl);
 }
 
 function setHeight() {
 	$("iframe").css({
-		height: window.innerHeight / parseInt(gridMode.charAt(0))
+		height: window.innerHeight / $(".row:not(:empty)").length
+	});
+}
+
+function addControlEvent() {
+	$("#popkonWrapper").on("click", ".control-btn > .fa.fa-heart", function() { // go favorite
+		$(this).parent().next().attr("src", favoriteUrl);
+	}).on("click", ".control-btn > .fa.fa-users", function() { // live
+		$(this).parent().next().attr("src", liveUrl);
+	}).on("click", ".control-btn > .fa.fa-expand", function() { // max
+		$(this).addClass("disabled").parent().parent().addClass("full-screen");
+		$(this).parent().next().css({
+			height: window.innerHeight
+		});
+		$(this).next().removeClass("disabled");
+	}).on("click", ".control-btn > .fa.fa-compress", function() { // min
+		$(this).addClass("disabled").parent().parent().removeClass("full-screen");
+		setHeight();
+		$(this).prev().removeClass("disabled");
+	}).on("click", ".control-btn > .fa.fa-clone", function() { // popup
+		var srcUrl = $(this).parent().next().attr("src");
+		window.open(srcUrl, new Date().getTime(), "width=" + 540 + ",height=" + 997 + ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
+	}).on("click", ".control-btn > .fa.fa-pause:not(.rotate)", function() { // add col
+		var $row = $(this).parent().parent().parent();
+		var $col = $(this).parent().parent();
+		$col.clone().appendTo($row);
+		setHeight();
+	}).on("click", ".control-btn > .fa.fa-pause.rotate", function() { // add row
+		var $wrp = $(this).parent().parent().parent().parent();
+		var $row = $(this).parent().parent().parent();
+		$row.clone().appendTo($wrp);
+		setHeight();
+	}).on("click", ".control-btn > .fa.fa-trash-o", function() { // remove
+		var $row = $(this).parent().parent().parent();
+		if ($row.children().length > 1) {
+			$(this).parent().parent().remove();
+		} else {
+			$row.remove();
+		}
+		setHeight();
 	});
 }
 
 $(window).on("resize", setHeight);
 
 $(document).ready(function() {
-	setGridLayout();
+	colHtml = $(".row").html();
+	console.log("col", colHtml);
+
+	setHeight();
+	addControlEvent();
+	$("iframe").attr("src", favoriteUrl);
 
 	$("#gridModeWrap > .fa").on("click", function() {
 		gridMode = $(this).attr("data-grid");
@@ -163,8 +173,25 @@ $(document).ready(function() {
 </script>
 </head>
 <body>
-	<div id="popkonWrapper"></div>
+	<div id="popkonWrapper">
+		<div class="row">
+			<div class="col">
+				<div class="control-btn">
+					<i class="fa fa-heart"></i>
+					<i class="fa fa-users"></i>
+					<i class="fa fa-expand"></i>
+					<i class="fa fa-compress disabled"></i>
+					<i class="fa fa-clone"></i>
+					<i class="fa fa-pause"></i>
+					<i class="fa fa-pause rotate"></i>
+					<i class="fa fa-trash-o"></i>
+				</div>
+				<iframe></iframe>
+			</div>
+		</div>
+	</div>
 	<div id="gridModeWrap">
+		<i class="fa fa-square"         data-grid="1r1c"></i>
 		<i class="fa fa-navicon rotate" data-grid="1r3c"></i>
 		<i class="fa fa-pause rotate"   data-grid="2r1c"></i>
 		<i class="fa fa-th-large"       data-grid="2r2c"></i>

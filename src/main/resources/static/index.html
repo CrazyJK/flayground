@@ -53,6 +53,7 @@ body.bg-chalkboard a.chalk {
 }
 body.neon {
 	background: url('/img/bg/brick.png') repeat center;
+	background-attachment: fixed;
 }
 body.neon a {
 	color: #eee;
@@ -75,9 +76,9 @@ function go(menu, method) {
 		url = "/html/image/image.tablet.html";
 	} else if (menu === 'board') {
 		url = "/html/image/image.board.html";
-	} else if (menu === 'actuator') {
-		url = "/html/actuator/index.html";
-	}
+	} else if (menu === 'popkon') {
+		url = "/html/popkon/popkon.favorite.html";
+		}
 	if (method === 'href') {
 		location.href = url;
 	} else if (method === 'popup') {
@@ -107,7 +108,6 @@ $(document).ready(function() {
 	default:
 		alert("impossible case");
 	}
-
 	
 	$("input, button", ".popup-open-group").on("click keyup", function(e) {
 		var targetType = $(e.target).attr("type");
@@ -149,8 +149,8 @@ $(document).ready(function() {
 			<a href="javascript:go('board', 'href')">Board</a>
 		</h2>
 		<h2 class="display-2">
-			<a href="javascript:go('actuator', 'popup')">↖</a>
-			<a href="javascript:go('actuator', 'href')">Actuator</a>
+			<a href="javascript:go('popkon', 'popup')">↖</a>
+			<a href="javascript:go('popkon', 'href')">Popkon</a> 
 		</h2>
 		<div class="input-group input-group-lg width-400 mx-auto mt-4 popup-open-group">
 			<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL">

@@ -88,12 +88,11 @@ $(function() {
 			TILE.ratio = TILE.inner.width / TILE.inner.height;
 			$("#tileGrid").empty().toggleClass("grid-tile", !rotate).append(
 					(function() {
-						var tabIndex = 1;
 						var $tbody = $("<tbody>");
 						for (var i=0; i < TILE.row; i++) {
 							var $tr = $("<tr>").height(window.innerHeight / TILE.row).appendTo($tbody);
 							for (var j=0; j < TILE.col; j++) {
-								$td = $("<td>", {tabIndex: tabIndex++, class: rotate ? "" : "grid-tile"}).appendTo($tr);
+								$td = $("<td>", {class: rotate ? "" : "grid-tile"}).appendTo($tr);
 							}
 						}
 						return $tbody;

@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>POPKONTV</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<style type="text/css">
+body {
+	background-color: #000;
+	overflow: hidden;
+}
+.row {
+	margin: 0;
+	padding: 0;
+}
+.row:not(:first-child) {
+	margin-top: -8px; 
+}
+.col {
+	border-left: .5px solid #333;
+    border-right: .5px solid #333;
+	margin: 0;
+	padding: 0;
+	transition: all .3s;
+}
+.col.full-screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 0;
+	z-index: 69;	
+}
+.control-btn {
+	position: absolute;
+	top: 0;
+	left: 0;
+	transition: all .3s;
+	z-index: 3;
+    background-color: #333;
+    padding: 0 .25rem;
+    border-bottom-left-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+    opacity: 0;
+}
+.control-btn:hover {
+    opacity: 1;
+}
+.fa {
+	display: block;
+	color: #ccc;
+	margin: .5rem .25rem;
+	transition: all .3s;
+}
+.fa.disabled {
+	opacity: .3;
+}
+.fa.rotate {
+	transform: rotate(90deg);
+}
+.fa:hover:not(.disabled) {
+	color: orange;
+	cursor: pointer;
+}
+iframe {
+	background-color: #000;
+	border: 0;
+	width: 100%;
+}
+#gridModeWrap {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+	transition: all .3s;
+    z-index: 74;
+    background-color: #333;
+    padding: 0 .25rem;
+    border-top-left-radius: .5rem;
+    opacity: 0;
+}
+#gridModeWrap:hover {
+    opacity: 1;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript">
+var defaultUrl = "https://www.popkontv.com/live/favorite.asp";
+var GRID_1R_3C = "1r3c", GRID_2R_1C = "2r1c", GRID_2R_2C = "2r2c", GRID_3R_1C = "3r1c";
+var gridMode = GRID_1R_3C;
+
+/*
+	<div class="row">
+		<div class="col">
+			<div class="control-btn">
+				<i class="fa fa-home"></i>
+				<i class="fa fa-expand"></i>
+				<i class="fa fa-compress disabled"></i>
+				<i class="fa fa-external-link"></i>
+			</div>
+			<iframe></iframe>
+		</div>
+	</div>
+ */
+function setGridLayout() {
+	var row = parseInt(gridMode.charAt(0));
+	var col = parseInt(gridMode.charAt(2));
+	var $popkonWrapper = $("#popkonWrapper").empty();
+	for (var r = 0; r < row; r++) {
+		var $row = $("<div>", {class: "row"}).appendTo($popkonWrapper);
+		for (var c = 0; c < col; c++) {
+			var $col = $("<div>", {class: "col"}).appendTo($row);
+			$("<div>", {class: "control-btn"}).append(
+					$("<i>", {class: "fa fa-home"}),
+					$("<i>", {class: "fa fa-expand"}),
+					$("<i>", {class: "fa fa-compress disabled"}),
+					$("<i>", {class: "fa fa-external-link"}),
+			).appendTo($col);
+			$("<iframe>").appendTo($col);
+		}
+	}
+	// add Control Event
+	$(".control-btn > .fa.fa-home").on("click", function() {
+		$(this).parent().next().attr("src", defaultUrl);
+	});
+	$(".control-btn > .fa.fa-expand").on("click", function() {
+		$(this).addClass("disabled").parent().parent().addClass("full-screen");
+		$(this).next().removeClass("disabled");
+	});
+	$(".control-btn > .fa.fa-compress").on("click", function() {
+		$(this).addClass("disabled").parent().parent().removeClass("full-screen");
+		$(this).prev().removeClass("disabled");
+	});
+	$(".control-btn > .fa.fa-external-link").on("click", function() {
+		var srcUrl = $(this).parent().next().attr("src");
+		window.open(srcUrl, new Date().getTime(), "width=" + 540 + ",height=" + 997 + ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
+	});
+	setHeight();
+	$("iframe").attr("src", defaultUrl);
+}
+
+function setHeight() {
+	$("iframe").css({
+		height: window.innerHeight / parseInt(gridMode.charAt(0))
+	});
+}
+
+$(window).on("resize", setHeight);
+
+$(document).ready(function() {
+	setGridLayout();
+
+	$("#gridModeWrap > .fa").on("click", function() {
+		gridMode = $(this).attr("data-grid");
+		setGridLayout();
+	});
+});
+</script>
+</head>
+<body>
+	<div id="popkonWrapper"></div>
+	<div id="gridModeWrap">
+		<i class="fa fa-navicon rotate" data-grid="1r3c"></i>
+		<i class="fa fa-pause rotate"   data-grid="2r1c"></i>
+		<i class="fa fa-th-large"       data-grid="2r2c"></i>
+		<i class="fa fa-navicon"        data-grid="3r1c"></i>
+	</div>
+</body>
+</html>

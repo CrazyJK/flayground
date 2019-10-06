@@ -128,10 +128,11 @@ $(function() {
 			// get info
 			Rest.Image.get(reqIndex, function(info) {
 				// load Image
-				var image = new Image();
-				image.onload = function() {
+				const image = new Image();
+				image.src = PATH + "/static/image/" + reqIndex;
+				image.decode().then(() => {
 					// append image
-					var $img = $("<img>").load(this, info).appendTo($imageWrap).front(true);
+					var $img = $(image).load(info).appendTo($imageWrap).front(true);
 					// add event
 					$img.on("click", function() {
 						if ($(this).next().length > 0) { // 중간에서 선택
@@ -149,8 +150,9 @@ $(function() {
 						}
 					});
 					LocalStorageItem.set("image.board.index", reqIndex);
-				};
-				image.src = PATH + "/static/image/" + reqIndex;
+				}).catch(() => {
+				    document.body.appendChild(new Text("Could not load the image :( " + image.src));
+				});
 			});
 		}
 
@@ -184,20 +186,18 @@ $(function() {
 	};
 
 //	(function($) {
-	$.fn.load = function(image, info) {
-		var decisionCss = getImageExteriorCss(image);
-		var initialCss = $.extend({}, decisionCss, {
-			opacity: 0,
-			transform: 'scale(1.1) rotate(0deg)'
-		});
+	$.fn.load = function(info) {
 		return this.each(function() {
-			var $self = $(this);
-			$self.attr({
-				src: image.src,
+			var decisionCss = getImageExteriorCss(this);
+			var initialCss = $.extend({}, decisionCss, {
+				opacity: 0,
+				transform: 'scale(1.1) rotate(0deg)'
+			});
+			$(this).attr({
 				class: "board-image active"
 			}).data("data", {
 				displaySeq: displaySequence++,
-				image: image,
+				image: this,
 				info: info,
 				css: decisionCss
 			}).css(initialCss);

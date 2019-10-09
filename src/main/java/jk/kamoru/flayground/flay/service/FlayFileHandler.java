@@ -228,4 +228,13 @@ public class FlayFileHandler {
 				@Override public boolean accept(File dir, String name) { return true; }
 		});
 	}
+
+	public void moveCoverDirectory(Flay flay) {
+		for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
+			List<File> fileList = entry.getValue();
+			for (File file : fileList) {
+				moveFileToDirectory(file, flayProperties.getCoverPath());
+			}
+		}
+	}
 }

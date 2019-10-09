@@ -111,6 +111,9 @@ var Rest = {
 			},
 			list: function(callback) {
 				restCall('/archive/list', {}, callback);
+			},
+			toInstance: function(opus, callback) {
+				restCall('/archive/toInstance/' + opus, {method: "PATCH"}, callback);
 			}
 		},
 		History: {

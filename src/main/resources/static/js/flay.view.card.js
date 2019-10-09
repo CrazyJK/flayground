@@ -10,7 +10,8 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 		var DEFAULTS = {
 				width: 800,
 				exclude: [],
-				fontSize: '100%'
+				fontSize: '100%',
+				archive: false
 		};
 		var settings = $.extend({}, DEFAULTS, args);
 		
@@ -109,9 +110,9 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				Search.opus(flay.opus);
 			});
 			// title
-			$flayCard.find(".flay-title").html(flay.title).on("click", function() {
+			$flayCard.find(".flay-title").html((settings.archive ? "[Archive] " : "") + flay.title).on("click", function() {
 				View.flay(flay.opus);
-			});
+			}).addClass(settings.archive ? "archive" : "");
 			// actress
 			if (settings.exclude.includes(ACTRESS)) {
 				$flayCard.find(".flay-actress-wrapper").remove();
@@ -134,13 +135,28 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				else 
 					$flayCard.find(".flay-rank-sm").remove();
 			} else {
-				$flayCard.find(".flay-rank-wrapper").append(getRank(flay.opus)).on("change", "input", function() {
-					flay.video.rank = $(this).val();
-					Rest.Video.update(flay.video, function() {
+				if (settings.archive) {
+					$flayCard.find(".flay-rank-wrapper").append(
+							$("<label>", {class: "text text-danger hover"}).html("To Instance").on("click", function() {
+								Rest.Archive.toInstance(flay.opus, function() {
+									Rest.Batch.reload(function() {
+										Rest.Video.get(flay.opus, function(video) {
+											video.rank = 0;
+											Rest.Video.update(video, function() {});
+										});
+									});
+								});
+							})
+					);
+				} else {
+					$flayCard.find(".flay-rank-wrapper").append(getRank(flay.opus)).on("change", "input", function() {
+						flay.video.rank = $(this).val();
+						Rest.Video.update(flay.video, function() {
+						});
 					});
-				});
-				$flayCard.find("input[name='flay-rank-" + flay.opus + "'][value='" + flay.video.rank + "']").prop("checked", true);
-				$flayCard.find(".flay-rank-sm").remove();
+					$flayCard.find("input[name='flay-rank-" + flay.opus + "'][value='" + flay.video.rank + "']").prop("checked", true);
+					$flayCard.find(".flay-rank-sm").remove();
+				}
 			}
 			// action
 			if (settings.exclude.includes(ACTION)) {

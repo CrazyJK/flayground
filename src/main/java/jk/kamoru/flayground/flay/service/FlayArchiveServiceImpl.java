@@ -23,6 +23,7 @@ public class FlayArchiveServiceImpl implements FlayArchiveService {
 
 	@Autowired FlaySource instanceFlaySource;
 	@Autowired FlaySource archiveFlaySource;
+	@Autowired FlayFileHandler flayFileHandler;
 
 	@Override
 	public Flay get(String opus) {
@@ -57,6 +58,13 @@ public class FlayArchiveServiceImpl implements FlayArchiveService {
 	@Override
 	public Collection<Flay> list() {
 		return archiveFlaySource.list();
+	}
+
+	@Override
+	public void toInstance(String opus) {
+		Flay flay = archiveFlaySource.get(opus);
+		flayFileHandler.moveCoverDirectory(flay);
+		archiveFlaySource.list().remove(flay);
 	}
 
 }

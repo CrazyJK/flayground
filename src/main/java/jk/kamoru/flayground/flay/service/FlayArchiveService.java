@@ -15,4 +15,6 @@ public interface FlayArchiveService {
 
 	Collection<Flay> list();
 
+	void toInstance(String opus);
+
 }

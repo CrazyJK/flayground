@@ -16,7 +16,7 @@ import jk.kamoru.flayground.info.domain.Video;
 public class VideoInfoService extends InfoServiceAdapter<Video, String> {
 
 	@Autowired FlayService flayService;
-	
+
 	@Override
 	public void update(Video update) {
 		Flay flay = flayService.get(update.getOpus());

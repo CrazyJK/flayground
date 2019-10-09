@@ -111,8 +111,13 @@ function setGridLayout() {
 }
 
 function setHeight() {
-	$("iframe").css({
-		height: window.innerHeight / $(".row:not(:empty)").length
+	var rowCount = $(".row:not(:empty)").length;
+	$("div.row").each(function(idx) {
+		var $row = $(this);
+		var y = parseInt($row.attr("data-y"));
+		$row.find("iframe").css({
+			height: window.innerHeight / rowCount + y
+		});
 	});
 }
 
@@ -152,6 +157,24 @@ function addControlEvent() {
 			$row.remove();
 		}
 		setHeight();
+	}).on("click", ".control-btn > .fa.fa-arrow-up", function() { // iframe smaller
+		var rowCount = $("#popkonWrapper > div.row").length;
+		var $this = $(this).parent().parent().parent();
+		if (rowCount === 0) {
+			$this.attr("data-y", 0);
+		} else {
+			$this.attr("data-y", parseInt($this.attr("data-y")) - 50);
+		}
+		setHeight();
+	}).on("click", ".control-btn > .fa.fa-arrow-down", function() { // iframe enlarge
+		var rowCount = $("#popkonWrapper > div.row").length;
+		var $this = $(this).parent().parent().parent();
+		if (rowCount === 0) {
+			$this.attr("data-y", 0);
+		} else {
+			$this.attr("data-y", parseInt($this.attr("data-y")) + 50);
+		}
+		setHeight();
 	});
 }
 
@@ -174,13 +197,15 @@ $(document).ready(function() {
 </head>
 <body>
 	<div id="popkonWrapper">
-		<div class="row">
+		<div class="row" data-y="0">
 			<div class="col">
 				<div class="control-btn">
 					<i class="fa fa-heart"></i>
 					<i class="fa fa-users"></i>
 					<i class="fa fa-expand"></i>
 					<i class="fa fa-compress disabled"></i>
+					<i class="fa fa-arrow-up"></i>
+					<i class="fa fa-arrow-down"></i>
 					<i class="fa fa-clone"></i>
 					<i class="fa fa-pause"></i>
 					<i class="fa fa-pause rotate"></i>

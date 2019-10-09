@@ -45,7 +45,7 @@ function findMode() {
 	$(".btn-find-random-opus").on("click", function() {
 		Search.opusByRandom();
 	});
-	$("#btnReset").on("click", function() {
+	$("#btnReset").dblclick(function() {
 		$("#findMode input.form-control").val("").removeClass("input-empty input-invalid");
 		$("#findMode input:checkbox").prop("checked", false);
 		$("#newActress").data("actress", null);

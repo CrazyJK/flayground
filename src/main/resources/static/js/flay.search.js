@@ -46,7 +46,7 @@ function findMode() {
 		Search.opusByRandom();
 	});
 	$("#btnReset").dblclick(function() {
-		$("#findMode input.form-control").val("").removeClass("input-empty input-invalid");
+		$("#findMode input.form-control").val("").removeClass("input-empty input-invalid input-warning");
 		$("#findMode input:checkbox").prop("checked", false);
 		$("#newActress").data("actress", null);
 	});

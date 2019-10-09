@@ -105,8 +105,13 @@ function goPage(p) {
 		$.each(flayList, function(idx, flay) {
 			$("<tr>").append(
 					$("<td>", {'class': 'nowrap studio'}).html(flay.studio),
-					$("<td>", {'class': 'nowrap opus'}).html(flay.opus),
+					$("<td>", {'class': 'nowrap opus'}).append(
+							$("<span>", {'class': 'hover'}).html(flay.opus).on("click", function() {
+								View.flay(flay.opus);
+							})
+					),
 					$("<td>", {'class': 'nowrap title'}).append(
+							$("<label>", {class: "rank"}).html(flay.video.rank),
 							$("<i>", {'class': 'fa fa-file-video-o mx-1'}).addClass(flay.files.movie.length > 0 ? "" : "nonExist"),
 							$("<i>", {'class': 'fa fa-file-image-o mx-1'}).addClass(flay.files.cover.length > 0 ? "" : "nonExist"),
 							$("<i>", {'class': 'fa fa-file-text-o  mx-1'}).addClass(flay.files.subtitles.length > 0 ? "" : "nonExist"),

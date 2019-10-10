@@ -226,17 +226,19 @@ function candidateMode() {
 									return files;
 								}())
 						),
-						$("<div>").append(
+						$("<div>", {class: "d-flex justify-content-between"}).append(
 								$("<label>", {'class': 'text sm'}).html(flay.studio),
 								$("<label>", {'class': 'text sm hover'}).html(flay.opus).on("click", function() {
 									View.flay(flay.opus);
 								}),
 								$("<label>", {'class': 'text sm nowrap flay-title'}).html(flay.title),
 								$("<label>", {'class': 'text sm nowrap flay-actress'}).html(flay.actressList.toString()),
-								$("<label>", {'class': 'text sm'}).html(flay.release),
-								$("<label>", {'class': 'text sm'}).html('r ' + flay.video.rank).addClass(flay.video.rank > 0 ? "danger" : ""),
-								$("<label>", {'class': 'text sm'}).html('v ' + flay.files.movie.length).addClass(flay.files.movie.length > 0 ? "danger" : ""),
-								$("<label>", {'class': 'text sm'}).html('s ' + flay.files.subtitles.length).addClass(flay.files.subtitles.length > 0 ? "danger" : "")
+								$("<label>", {'class': 'text sm ml-auto'}).html(flay.release),
+								$("<label>", {'class': 'text sm'}).append(
+										$("<span>", {'class': 'mx-1'}).html('r ' + flay.video.rank).addClass(flay.video.rank !== 0 ? "text-danger" : ""),
+										$("<span>", {'class': 'mx-1'}).html('v ' + flay.files.movie.length).addClass(flay.files.movie.length !== 0 ? "text-danger" : ""),
+										$("<span>", {'class': 'mx-1'}).html('s ' + flay.files.subtitles.length).addClass(flay.files.subtitles.length !== 0 ? "text-danger" : "")
+								),
 						),
 						$("<img>", {'src': '/static/cover/' + flay.opus, 'class': 'img-thumbnail m-auto', id: 'cover-' + flay.opus}),
 				).appendTo($candidatesList);

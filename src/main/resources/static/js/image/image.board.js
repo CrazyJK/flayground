@@ -67,7 +67,7 @@ $(function() {
 					if (tile) {
 						$imageWrap.children(firstShow ? ":not(:last-child)" : "").tile();
 					} else {
-						$imageWrap.children().unTile();
+						$imageWrap.children(firstShow ? ":not(:last-child)" : "").unTile();
 					}
 				},
 				rotate: function() {

@@ -149,7 +149,7 @@ function displayTile() {
 	var _prevPath = "";
 	$.each(flayList, function(idx, todayis) {
 		if ("" != _prevPath && todayis.path !== _prevPath) {
-			$tileWrap.append($("<br>"));
+			$tileWrap.append($("<hr>", {class: "border-dark"}));
 		}
 		size++;
 		length += todayis.length;

@@ -137,10 +137,7 @@ function findMode() {
 		if (e.keyCode === 17) return;
 
 		var value = $(this).val().trim();
-		if (value[0] === 'B') {
-			value = value.substring(1, value.length);
-		}
-		var replace = value.replace('(', '').replace('カップ)', '').replace('W', '').replace('H', '').replace(/\//gi, '-');
+		var replace = value.replace(/^[A-Z]|\(|カップ\)/gi, '').replace(/\/ [A-Z]/gi, '- ');
 		$(this).val(replace);
 	});
 	$("#btnRegistActress").on("click", function() {

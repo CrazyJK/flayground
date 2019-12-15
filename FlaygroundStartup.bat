@@ -4,6 +4,8 @@ setlocal
 
 set "CURRENT_DIR=%cd%"
 set "FLAYGROUND_HOME=%CURRENT_DIR%"
+set "JAVA_OPTS=%JAVA_OPTS% -javaagent:%SCOUTER_AGENT_DIR%/scouter.agent.jar"
+set "JAVA_OPTS=%JAVA_OPTS% -Dscouter.config=%SCOUTER_AGENT_DIR%/conf/scouter.conf"
 set "JAVA_OPTS=%JAVA_OPTS% -Dspring.profiles.active=flay-home"
 set "JAVA_OPTS=%JAVA_OPTS% -Dfile.encoding=UTF-8"
 

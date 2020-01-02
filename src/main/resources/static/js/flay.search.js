@@ -72,9 +72,10 @@ function findMode() {
 		var dateText = $(this).val().trim();
 		var date_pattern = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
 		var isValid = date_pattern.test(dateText);
+		var thisYear = new Date().format('yyyy');
 		$(this).toggleClass('input-invalid', !isValid);
 		if (isValid)
-			$(this).toggleClass('input-warning', dateText.indexOf('2019') < 0);
+			$(this).toggleClass('input-warning', dateText.indexOf(thisYear) < 0);
 		else
 			$(this).removeClass('input-warning');
 	});

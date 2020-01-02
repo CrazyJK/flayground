@@ -78,8 +78,6 @@ function go(menu, method) {
 		url = "/html/image/image.board.html";
 	} else if (menu === 'popkon') {
 		url = "/html/popkon/popkon.favorite.html";
-	} else if (menu === 'paper') {
-		url = "http://localhost:6180/extweb/";
 	}
 	if (method === 'href') {
 		location.href = url;
@@ -153,10 +151,6 @@ $(document).ready(function() {
 		<h2 class="display-2">
 			<a href="javascript:go('popkon', 'popup')">↖</a>
 			<a href="javascript:go('popkon', 'href')">Popkon</a> 
-		</h2>
-		<h2 class="display-2">
-			<a href="javascript:go('paper', 'popup')">↖</a>
-			<a href="javascript:go('paper', 'href')">Paper</a> 
 		</h2>
 		<div class="input-group input-group-lg width-400 mx-auto mt-4 popup-open-group">
 			<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL">

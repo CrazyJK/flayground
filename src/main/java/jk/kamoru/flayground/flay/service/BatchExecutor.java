@@ -329,25 +329,24 @@ public class BatchExecutor {
 		// video list backup to csv
 		Collection<Flay> instanceFlayList = instanceFlaySource.list();
 		Collection<Flay>  archiveFlayList =  archiveFlaySource.list();
-		List<History>    historyList = historyService.list();
-
-		List<String>    instanceList = new ArrayList<>();
-		List<String>     archiveList = new ArrayList<>();
+		List<History>         historyList = historyService.list();
+		List<String>  instanceCsvDataList = new ArrayList<>();
+		List<String>   archiveCsvDataList = new ArrayList<>();
 
 		// instance info
 		log.info("[Backup] Write instance csv {} to {}", BACKUP_INSTANCE_CSV_FILENAME, backupRootPath);
-		instanceList.add(CSV_HEADER);
+		instanceCsvDataList.add(CSV_HEADER);
 		for (Flay flay : instanceFlayList) {
-			instanceList.add(String.format(CSV_FORMAT,
+			instanceCsvDataList.add(String.format(CSV_FORMAT,
 					flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), flay.getVideo().getRank(), flay.getFullname()));
 		}
-		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceList);
+		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceCsvDataList);
 
 		// archive info
 		log.info("[Backup] Write archive  csv {}  to {}", BACKUP_ARCHIVE_CSV_FILENAME, backupRootPath);
-		archiveList.add(CSV_HEADER);
+		archiveCsvDataList.add(CSV_HEADER);
 		for (Flay flay : archiveFlayList) {
-			archiveList.add(String.format(CSV_FORMAT,
+			archiveCsvDataList.add(String.format(CSV_FORMAT,
 					flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), "", flay.getFullname()));
 		}
 		for (History history : historyList) {
@@ -360,15 +359,15 @@ public class BatchExecutor {
 				}
 			}
 			if (!foundInArchive)
-				archiveList.add(String.format(CSV_FORMAT, "", history.getOpus(), "", "", "", "", history.getDesc()));
+				archiveCsvDataList.add(String.format(CSV_FORMAT, "", history.getOpus(), "", "", "", "", history.getDesc()));
 		}
-		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_CSV_FILENAME),  archiveList);
+		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_CSV_FILENAME),  archiveCsvDataList);
 
 		// Info folder copy
 		log.info("[Backup] Copy Info folder {} to {}", flayProperties.getInfoPath(), backupRootPath);
 		flayFileHandler.copyDirectoryToDirectory(flayProperties.getInfoPath(), backupRootPath);
 
-		// Cover, Subtitles file copy
+		// Instance - Cover, Subtitles file copy
 		log.info("[Backup] Copy Instance file to {}", backupInstanceFilePath);
 		for (Flay flay : instanceFlayList) {
 			for (File file : flay.getFiles().get(Flay.COVER))
@@ -376,12 +375,6 @@ public class BatchExecutor {
 			for (File file : flay.getFiles().get(Flay.SUBTI))
 				flayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
 		}
-//		for (Flay flay : archiveFlayList) {
-//			for (File file : flay.getFiles().get(Flay.COVER))
-//				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
-//			for (File file : flay.getFiles().get(Flay.SUBTI))
-//				FlayFileHandler.copyFileToDirectory(file, backupFilePath);
-//		}
 
 		log.info("[Backup] Compress Instance folder");
 		compress(backupInstanceJarFile, backupRootPath);

@@ -174,7 +174,7 @@ public class FlayFileHandler {
 				log.warn("moveFileToDirectory destFile is exist {}. srcFile deleted {}", destFile, file);
 			} else {
 				FileUtils.deleteQuietly(destFile);
-				log.warn("moveFileToDirectory destFile is small {}. destFile deleted", destFile);
+				log.warn("moveFileToDirectory destFile is small {}. destFile deleted and will retry this", destFile);
 				moveFileToDirectory(file, directory);
 			}
 		} catch (IOException e) {
@@ -191,10 +191,12 @@ public class FlayFileHandler {
 
 	public void deleteFile(File file) {
 		if (file.isDirectory()) {
-			throw new IllegalStateException("fail to deleteFile. it is directory: " + file);
+			throw new IllegalStateException("fail to delete file. it is directory: " + file);
 		}
 		if (flayProperties.isRecyclebinUse()) {
-			moveFileToDirectory(file, new File(file.toPath().getRoot().toFile(), flayProperties.getRecyclebin()));
+			File recyclebin = new File(file.toPath().getRoot().toFile(), flayProperties.getRecyclebin());
+			moveFileToDirectory(file, recyclebin);
+			log.warn("deleted File, but actually moved to recycle bin. {} -> {}", file, recyclebin);
 		} else {
 			boolean result = FileUtils.deleteQuietly(file);
 			log.warn("deleted File {}", file);

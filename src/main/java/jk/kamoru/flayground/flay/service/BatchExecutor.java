@@ -143,9 +143,9 @@ public class BatchExecutor {
 	}
 
 	void deleteLowerScore() {
-		log.info("[deleteLowerScore] limit {} GB", flayProperties.getStorageLimit());
+		log.info(String.format("[deleteLowerScore] limit   %4s GB", flayProperties.getStorageLimit()));
+		log.info(String.format("[deleteLowerScore] total   %4s GB", instanceFlaySource.list().stream().mapToLong(f -> f.getLength()).sum() / FileUtils.ONE_GB));
 		final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
-
 		long lengthSum = 0;
 		List<Flay> scoreReverseSortedFlayList = instanceFlaySource.list().stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0 && f.getVideo().getRank() > 0 && f.getVideo().getPlay() > 0)
@@ -158,6 +158,7 @@ public class BatchExecutor {
 				archiving(flay);
 			}
 		}
+		log.info(String.format("[deleteLowerScore] checked %4s GB", lengthSum / FileUtils.ONE_GB));
 	}
 
 	void assembleFlay() {
@@ -190,7 +191,8 @@ public class BatchExecutor {
 				List<File> value = entry.getValue();
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
-						log.info("move [{} {}] {} to {}", flay.getOpus(), flayFileHandler.prettyFileLength(file.length()), file, delegatePath);
+//						"move [{} {}] {} to {}", flay.getOpus(), flayFileHandler.prettyFileLength(file.length()), file, delegatePath
+						log.info(String.format("move [%-10s %6s] %-20s => %-20s : %s", flay.getOpus(), flayFileHandler.prettyFileLength(file.length()), file.getParent(), delegatePath, file.getName()));
 						flayFileHandler.moveFileToDirectory(file, delegatePath);
 					}
 				}
@@ -290,10 +292,10 @@ public class BatchExecutor {
 			String key = entry.getKey();
 			for (File file : entry.getValue()) {
 				if (Flay.COVER.equals(key) || Flay.SUBTI.equals(key)) {
-					log.info("move {} to {}", file, archiveDir);
+					log.info("will be move {} to {}", file, archiveDir);
 					flayFileHandler.moveFileToDirectory(file, archiveDir);
 				} else {
-					log.info("delete {}", file);
+					log.info("will be delete {}", file);
 					flayFileHandler.deleteFile(file);
 				}
 			}

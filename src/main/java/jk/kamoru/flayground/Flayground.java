@@ -62,6 +62,7 @@ public class Flayground implements AsyncConfigurer {
 		public static final String   VIDEO =   "video.json";
 		public static final String     TAG =     "tag.json";
 		public static final String  ACCESS =  "access.json";
+		public static final String    NOTE =    "note.json";
 	}
 
 	public static enum OS {

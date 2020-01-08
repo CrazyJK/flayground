@@ -1,0 +1,68 @@
+@charset "UTF-8";
+
+.note-btn {
+	cursor: pointer;
+}
+.note {
+    position: fixed;
+    display: -ms-flexbox;
+    display: flex;
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: .25rem;
+    margin: .5rem;
+    overflow: hidden;
+    transition: .4s;
+	width: 16rem; 
+	height: 10rem;
+	box-shadow: 1px 0px 4px 2px rgba(128, 128, 128, .5);
+}
+.note.note-minimize {
+	width: 8rem!important; 
+	height: 2rem!important;
+}
+.note.ui-draggable-dragging {
+	transition: none;
+}
+.note.ui-resizable-resizing {
+	transition: none;
+}
+.note-control {
+	position: absolute; 
+	top: 0; 
+	right: 0; 
+	margin: 0 .25rem;
+	padding-top: .25rem; 
+}
+.note-minimize-btn {
+	color: #343a40;
+}
+.note-restore-btn {
+	color: #343a40;
+	display: none;
+}
+.note-delete-btn {
+	color: #343a40;
+}
+.note-title {
+	margin-bottom: .5rem;
+	border-bottom: 1px solid #dee2e6;
+	border-color: #343a40;
+	cursor: move;
+}
+.note-body {
+	padding: .25rem;
+	flex: 1 1 auto;
+}
+textarea.note-pad  {
+	width: 100%; 
+	height: calc(100% - 2.5rem);
+	background-color: transparent; 
+	border: 0; 
+	font: bold 18px HYPMokGak;
+}

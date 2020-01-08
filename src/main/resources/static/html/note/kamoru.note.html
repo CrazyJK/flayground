@@ -1,0 +1,55 @@
+<meta charset="UTF-8">
+<title>Note list</title>
+<div>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Title</th>
+				<th>Content</th>
+				<th>Status</th>
+				<th>mini.</th>
+				<th>Position</th>
+				<th>Size</th>
+				<th>Action</th>
+			</tr>
+		</thead>
+		<tbody id="noteList">
+		</tbody>
+	</table>
+</div>
+<script type="text/javascript">
+restCall('/info/note/list', {}, function(list) {
+	list.forEach(function(note) {
+		$("#noteList").append(
+				$("<tr>").append(
+						$("<td>").html(note.id),
+						$("<td>").html(note.title),
+						$("<td>").html(note.content),
+						$("<td>").append( // note.status
+								$("<div>", {class: 'custom-control custom-switch'}).append(
+										$("<input>", {type: 'checkbox', class: 'custom-control-input', id: 'mini'+note.id, checked: (note.status == 'N')}).on("change", function() {
+											console.log('custom checkox', $(this).is(":checked"));
+											var status = $(this).is(":checked") ? 'N' : 'D';
+											note.status = status;
+											$(this).next().html(status);
+											restCall('/info/note', {data: note, method: "PUT"});
+										}),
+										$("<label>", {class: 'custom-control-label', for: 'mini'+note.id}).html(note.status)
+								)
+						),
+						$("<td>").html(note.windowMinimized), 
+						$("<td>").html("Left " + note.position.left + ", Top " + note.position.top),
+						$("<td>").html("Width " + note.size.width + ", Height " + note.size.height),
+						$("<td>").append(
+								$("<button>", {class: 'btn btn-sm btn-outline-danger'}).html('Delete').on("click", function() {
+									restCall('/info/note', {data, note, method: "DELETE"}, function() {
+										$(this).parent().parent().remove();
+									});
+								}),
+						)
+				)
+		);
+	});
+});
+</script>

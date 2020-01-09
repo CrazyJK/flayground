@@ -1,6 +1,8 @@
 package jk.kamoru.flayground.note.service;
 
 import java.util.Collection;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -24,7 +26,7 @@ public class NoteServiceImpl implements NoteService {
 
 	@Override
 	public Collection<Note> list() {
-		return noteSource.list();
+		return noteSource.list().stream().sorted(Comparator.comparing(Note::getId).reversed()).collect(Collectors.toList());
 	}
 
 	@Override
@@ -46,6 +48,21 @@ public class NoteServiceImpl implements NoteService {
 
 	@Override
 	public void persist(Note note) {
+		if (note.getCreated() == null) {
+			note.setCreated(new Date());
+		}
+		note.setModified(new Date());
+		if (note.getStatus() == null) {
+			note.setStatus(Note.Status.N);
+		} else if (note.getStatus() == Note.Status.D) {
+			if (note.getClosed() == null)
+				note.setClosed(new Date());
+		} else if (note.getStatus() == Note.Status.N) {
+			if (note.getClosed() != null)
+				note.setClosed(null);
+		} else {
+			throw new IllegalStateException("note status illegal stataus " + note);
+		}
 		noteSource.save(note);
 	}
 

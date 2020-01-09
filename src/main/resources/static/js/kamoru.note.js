@@ -9,7 +9,7 @@ $(document).ready(function() {
 	// get note list
 	restCall('/info/note/list', {}, function(list) {
 		list.forEach(function(note) {
-//			if (note.status === 'N')
+			if (note.status === 'N')
 				new Note(note).show();
 		});
 	});
@@ -29,6 +29,9 @@ function Note(data) {
 				width: '16rem',
 				height: '10rem'
 			},
+			created: new Date(),
+			modified: null,
+			closed: null,
 			windowMinimized: false,
 			status: 'N'
 	};
@@ -72,7 +75,11 @@ function Note(data) {
 		});
 	});
 	this.$note.find(".note-pad").on("blur", function() {
-		self.data.content = $(this).val();
+		var content = $(this).val();
+		var title = content.substring(0, 8);
+		self.$note.find(".note-title").html(title);
+		self.data.title = title;
+		self.data.content = content;
 		self.saveNote();
 	});
 

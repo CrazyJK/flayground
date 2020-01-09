@@ -1,5 +1,7 @@
 package jk.kamoru.flayground.note.domain;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -16,6 +18,9 @@ public class Note {
 	Size size;
 	boolean windowMinimized;
 	Status status;
+	Date created;
+	Date modified;
+	Date closed;
 	
 	@Data
 	public static class Position {
@@ -32,4 +37,5 @@ public class Note {
 	public static enum Status {
 		N, D;
 	}
+
 }

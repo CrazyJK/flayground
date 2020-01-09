@@ -2,6 +2,8 @@
  * note
  */
 
+var totalCount = 0;
+
 $(document).ready(function() {
 	$(".note-btn").on("click", function() {
 		new Note().show();
@@ -13,9 +15,15 @@ $(document).ready(function() {
 				new Note(note).show();
 		});
 	});
+
+	Rest.Image.size(function(count) {
+		totalCount = count;
+	});
+
 });
 
 function Note(data) {
+	var self = this;
 	
 	var DEFAULTS = {
 			id: new Date().getTime(),
@@ -33,12 +41,14 @@ function Note(data) {
 			modified: null,
 			closed: null,
 			windowMinimized: false,
-			status: 'N'
+			status: 'N',
+			picidx: Random.getInteger(0, totalCount),
+			color: Random.getBoolean() ? "yellow" : "red"
 	};
 	this.data = $.extend({}, DEFAULTS, data);
 
 	this.$note = 
-			$('<div class="note bg-warning">'
+			$('<div class="note">'
 			+ '  <div class="note-control">'
 			+ '    <a href="#" class="note-minimize-btn"><i class="fa fa-window-minimize"></i></a>'
 			+ '    <a href="#" class="note-restore-btn"><i class="fa fa-window-restore"></i></a>'
@@ -51,16 +61,15 @@ function Note(data) {
 			+ '    <textarea class="note-pad" placeholder="Memo content">' + this.data.content + '</textarea>'
 			+ '  </div>'
 			+ '  <div class="note-tail">'
-			+ '    <label class="note-time">' + DateUtils.format("yy/MM/dd HH:mm", this.data.modified) + '</label>'
+			+ '    <label class="note-time">' + DateUtils.format("yyyy/MM/dd HH:mm", this.data.modified) + '</label>'
 			+ '  </div>'
 			+ '</div>').css({
 				left: Math.min(this.data.position.left, $(window).width() - 16 * 16),
 				top: Math.min(this.data.position.top, $(window).height() - 10 * 16),
 				width: this.data.size.width,
-				height: this.data.size.height
-			});
-
-	var self = this;
+				height: this.data.size.height,
+				backgroundImage: "url(" + PATH + "/static/image/" + this.data.picidx + ")"
+			}).addClass(this.data.color);
 
 	this.$note.find(".note-minimize-btn").on("click", function() {
 		$(this).parent().children().toggle();
@@ -89,6 +98,8 @@ function Note(data) {
 			self.data.modified = new Date().getTime();
 			self.saveNote();
 		}
+	}).on("keyup", function(e) {
+		e.stopPropagation();
 	});
 
 	this.minimizeCallback = function(val) {

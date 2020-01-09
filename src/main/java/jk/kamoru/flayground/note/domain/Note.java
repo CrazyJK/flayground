@@ -22,19 +22,21 @@ public class Note {
 	Date created;
 	Date modified;
 	Date closed;
-	
+	int picidx;
+	String color;
+
 	@Data
 	public static class Position {
 		int left;
 		int top;
 	}
-	
+
 	@Data
 	public static class Size {
 		String width;
 		String height;
 	}
-	
+
 	public static enum Status {
 		N, D;
 	}

@@ -11,17 +11,22 @@
     flex-direction: column;
     min-width: 0;
     word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 1px solid rgba(0,0,0,.125);
+    border: 0;
     border-radius: .25rem;
     margin: .5rem;
     overflow: hidden;
     transition: .4s;
 	width: 16rem; 
 	height: 10rem;
-	box-shadow: 1px 0px 4px 2px rgba(128, 128, 128, .5);
+	/* box-shadow: 2px 2px 4px 2px rgba(128, 128, 128, .5); */
+	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, .5);
 	font: bold 18px HYPMokGak;
+    background-clip: border-box;
+    background-color: #fff;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    z-index: 6974;
 }
 .note.note-minimize {
 	width: 8rem!important; 
@@ -39,8 +44,6 @@
 	right: 0; 
 	margin: 0 .25rem;
 	padding-top: .25rem;
-	background-color: var(--warning);
-    box-shadow: 0 0 8px 4px var(--warning);
 }
 .note-minimize-btn {
 	color: #343a40;
@@ -54,6 +57,7 @@
 }
 .note-header {
 	padding: .25rem;	
+	text-shadow: 1px 1px 4px #fff;
 }
 .note-title {
 	margin: 0;
@@ -65,18 +69,62 @@
 	padding: .25rem;
 	flex: 1 1 auto;
 }
-textarea.note-pad  {
+textarea.note-pad {
 	width: 100%; 
 	height: 100%;
-	background-color: transparent; 
 	border: 0; 
+	background: transparent;
+}
+textarea.note-pad:focus {
+	outline:none;
 }
 .note-tail {
 	padding: .25rem;
+	text-shadow: 1px 1px 4px #fff;
 }
 .note-time {
 	font-size: 80%;
     font-weight: 400;
     float: right;
     margin: 0 .5rem;
+}
+
+.note.yellow {
+	background-color: rgba(255, 193, 7, 1);
+}
+.note.yellow .note-control {
+	background-color: rgba(255, 193, 7, .5);
+    box-shadow: 0 0 8px 4px rgba(255, 193, 7, .5);
+}
+.note.yellow .note-header {
+	background-color: rgba(255, 193, 7, .25);
+}
+.note.yellow .note-body {
+	background-color: rgba(255, 193, 7, .25);
+}
+.note.yellow .note-pad {
+	background-color: rgba(255, 193, 7, .0125);
+}
+.note.yellow .note-tail {
+	background-color: rgba(255, 193, 7, .25); 
+}
+
+.note.red {
+	background-color: rgba(220, 53, 69, 1);
+}
+.note.red .note-control {
+	background-color: rgba(220, 53, 69, .5);
+    box-shadow: 0 0 8px 4px rgba(220, 53, 69, .5);
+}
+.note.red .note-header {
+	background-color: rgba(220, 53, 69, .25);
+}
+.note.red .note-body {
+	background-color: rgba(220, 53, 69, .25);
+}
+.note.red .note-pad {
+	background-color: rgba(220, 53, 69, .0125);
+}
+.note.red .note-tail {
+	background-color: rgba(220, 53, 69, .25); 
 }

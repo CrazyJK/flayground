@@ -1,8 +1,13 @@
 <meta charset="UTF-8">
 <style>
 <!--
-@media screen and (max-width: 1440px) {
+@media screen and (max-width: 1680px) {
 	th:nth-child(2), th:nth-child(8), th:nth-child(9), td:nth-child(2), td:nth-child(8), td:nth-child(9) {
+		display: none;
+	}
+}
+@media screen and (max-width: 1440px) {
+	th:nth-child(10), th:nth-child(11), td:nth-child(10), td:nth-child(11) {
 		display: none;
 	}
 }
@@ -12,12 +17,17 @@
 	}
 }
 @media screen and (max-width: 800px) {
-	th:nth-child(10), th:nth-child(11), td:nth-child(10), td:nth-child(11) {
+	th:nth-child(12), th:nth-child(13), td:nth-child(12), td:nth-child(13) {
 		display: none;
 	}
 }
-@media screen and (max-width: 400px) {
+@media screen and (max-width: 500px) {
 	th:nth-child(1), th:nth-child(3), td:nth-child(1), td:nth-child(3) {
+		display: none;
+	}
+}
+@media screen and (max-width: 350px) {
+	th:nth-child(14), td:nth-child(14) {
 		display: none;
 	}
 }
@@ -28,7 +38,7 @@
 	<input type="search" class="form-control form-control-sm w-auto search-input" placeholder="Search">
 </nav>
 <div class="container-fluid mt-5 py-4">
-	<table class="table table-hover">
+	<table class="table table-hover bg-light">
 		<thead>
 			<tr>
 				<th>No</th>
@@ -45,6 +55,8 @@
 				<th>Closed</th>
 				<th>Position</th>
 				<th>Size</th>
+				<th>PicIdx</th>
+				<th>Color</th>
 				<th>Minimized</th>
 				<th>Status</th>
 				<th>Action</th>
@@ -71,6 +83,8 @@ function showList(list) {
 						$("<td>").html(new Date(note.closed).format('yy/MM/dd HH:mm')),
 						$("<td>").html("L: " + note.position.left + " T: " + note.position.top),
 						$("<td>").html("W: " + note.size.width + " H: " + note.size.height),
+						$("<td>").html(note.picidx),
+						$("<td>").html(note.color),
 						$("<td>").append(
 								$("<div>", {class: 'custom-control custom-switch'}).append(
 										$("<input>", {type: 'checkbox', class: 'custom-control-input', id: 'note-' + note.id + '-mini', checked: note.windowMinimized}).on("change", function() {

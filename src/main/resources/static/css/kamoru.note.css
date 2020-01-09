@@ -21,6 +21,7 @@
 	width: 16rem; 
 	height: 10rem;
 	box-shadow: 1px 0px 4px 2px rgba(128, 128, 128, .5);
+	font: bold 18px HYPMokGak;
 }
 .note.note-minimize {
 	width: 8rem!important; 
@@ -51,8 +52,11 @@
 .note-delete-btn {
 	color: #343a40;
 }
+.note-header {
+	padding: .25rem;	
+}
 .note-title {
-	margin-bottom: .5rem;
+	margin: 0;
 	border-bottom: 1px solid #dee2e6;
 	border-color: #343a40;
 	cursor: move;
@@ -63,8 +67,16 @@
 }
 textarea.note-pad  {
 	width: 100%; 
-	height: calc(100% - 2.5rem);
+	height: 100%;
 	background-color: transparent; 
 	border: 0; 
-	font: bold 18px HYPMokGak;
+}
+.note-tail {
+	padding: .25rem;
+}
+.note-time {
+	font-size: 80%;
+    font-weight: 400;
+    float: right;
+    margin: 0 .5rem;
 }

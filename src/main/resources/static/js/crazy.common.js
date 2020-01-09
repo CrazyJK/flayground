@@ -125,7 +125,7 @@ var LocalStorageItem = {
 			}
 		}
 };
-	
+
 Date.prototype.format = function(f) { // http://stove99.tistory.com/46
     if (!this.valueOf()) return " ";
     
@@ -172,6 +172,20 @@ Number.prototype.withComma = function() {
 Number.prototype.toDate = function(pattern) {
 	return new Date(this).format(pattern);
 };
+
+class DateUtils {
+	static format(pattern, date) {
+		// console.log('DateUtils.format', pattern, date, typeof date);
+		if (date) {
+			if (typeof date === 'string' || typeof date === 'number') {
+				date = new Date(date);
+			}
+		} else {
+			date = new Date();
+		}
+		return date.format(pattern);
+	}
+}
 
 var File = {
 		formatSize: function(length) {

@@ -12,6 +12,12 @@ public interface NoteService {
 	 * 전체 노트
 	 * @return
 	 */
+	Collection<Note> all();
+
+	/**
+	 * 현재 사용자의 노트
+	 * @return
+	 */
 	Collection<Note> list();
 
 	/**

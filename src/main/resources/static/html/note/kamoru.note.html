@@ -1,20 +1,52 @@
 <meta charset="UTF-8">
-<title>Note list</title>
-<div>
+<style>
+<!--
+@media screen and (max-width: 1440px) {
+	th:nth-child(2), th:nth-child(8), th:nth-child(9), td:nth-child(2), td:nth-child(8), td:nth-child(9) {
+		display: none;
+	}
+}
+@media screen and (max-width: 1080px) {
+	th:nth-child(5), th:nth-child(6), th:nth-child(7), td:nth-child(5), td:nth-child(6), td:nth-child(7) {
+		display: none;
+	}
+}
+@media screen and (max-width: 800px) {
+	th:nth-child(10), th:nth-child(11), td:nth-child(10), td:nth-child(11) {
+		display: none;
+	}
+}
+@media screen and (max-width: 400px) {
+	th:nth-child(1), th:nth-child(3), td:nth-child(1), td:nth-child(3) {
+		display: none;
+	}
+}
+-->
+</style>
+<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light">
+	<a class="navbar-brand">Note list</a>
+	<input type="search" class="form-control form-control-sm w-auto search-input" placeholder="Search">
+</nav>
+<div class="container-fluid mt-5 py-4">
 	<table class="table table-hover">
 		<thead>
 			<tr>
 				<th>No</th>
 				<th>Id</th>
 				<th>Title</th>
-				<th>Content</th>
+				<th>Content
+					<div class="custom-control custom-switch custom-control-inline ml-3">
+    					<input type="checkbox" class="custom-control-input" id="switchTitleInline">
+    					<label class="custom-control-label text-secondary" for="switchTitleInline">nowrap</label>
+  					</div>
+				</th>
 				<th>Created</th>
 				<th>Modified</th>
 				<th>Closed</th>
 				<th>Position</th>
 				<th>Size</th>
-				<th>Status</th>
 				<th>Minimized</th>
+				<th>Status</th>
 				<th>Action</th>
 			</tr>
 		</thead>
@@ -23,7 +55,10 @@
 	</table>
 </div>
 <script type="text/javascript">
-restCall('/info/note/list', {}, function(list) {
+function showList(list) {
+	console.log('list', list.length);
+
+	$("#noteList").empty();
 	list.forEach(function(note, idx) {
 		$("#noteList").append(
 				$("<tr>").append(
@@ -31,14 +66,27 @@ restCall('/info/note/list', {}, function(list) {
 						$("<td>").html(note.id),
 						$("<td>").html(note.title),
 						$("<td>").html(note.content.replace(/(\n|\r\n)/g, '<br>')),
-						$("<td>").html(new Date(note.created).format('yy/MM/dd hh:mm')),
-						$("<td>").html(new Date(note.modified).format('yy/MM/dd hh:mm')),
-						$("<td>").html(new Date(note.closed).format('yy/MM/dd hh:mm')),
+						$("<td>").html(new Date(note.created).format('yy/MM/dd HH:mm')),
+						$("<td>").html(new Date(note.modified).format('yy/MM/dd HH:mm')),
+						$("<td>").html(new Date(note.closed).format('yy/MM/dd HH:mm')),
 						$("<td>").html("L: " + note.position.left + " T: " + note.position.top),
 						$("<td>").html("W: " + note.size.width + " H: " + note.size.height),
 						$("<td>").append(
 								$("<div>", {class: 'custom-control custom-switch'}).append(
-										$("<input>", {type: 'checkbox', class: 'custom-control-input', id: 'status'+note.id, checked: (note.status == 'N')}).on("change", function() {
+										$("<input>", {type: 'checkbox', class: 'custom-control-input', id: 'note-' + note.id + '-mini', checked: note.windowMinimized}).on("change", function() {
+											var val = $(this).is(":checked");
+											note.windowMinimized = val;
+											$(this).next().html(val ? 'mini' : 'max');
+											restCall('/info/note', {data: note, method: "PUT"}, function() {
+												console.log('update note windowMinimized');
+											});
+										}),
+										$("<label>", {class: 'custom-control-label', for: 'note-' + note.id + '-mini'}).html(note.windowMinimized ? 'mini' : 'max')
+								)
+						),
+						$("<td>").append(
+								$("<div>", {class: 'custom-control custom-switch'}).append(
+										$("<input>", {type: 'checkbox', class: 'custom-control-input', id: 'note-' + note.id + '-status', checked: (note.status == 'N')}).on("change", function() {
 											var val = $(this).is(":checked") ? 'N' : 'D';
 											note.status = val;
 											$(this).next().html(val);
@@ -46,33 +94,53 @@ restCall('/info/note/list', {}, function(list) {
 												console.log('update note status');
 											});
 										}),
-										$("<label>", {class: 'custom-control-label', for: 'status'+note.id}).html(note.status)
+										$("<label>", {class: 'custom-control-label', for: 'note-' + note.id + '-status'}).html(note.status)
 								)
 						),
 						$("<td>").append(
-								$("<div>", {class: 'custom-control custom-switch'}).append(
-										$("<input>", {type: 'checkbox', class: 'custom-control-input', id: 'mini'+note.id, checked: note.windowMinimized}).on("change", function() {
-											var val = $(this).is(":checked");
-											note.windowMinimized = val;
-											$(this).next().html(val);
-											restCall('/info/note', {data: note, method: "PUT"}, function() {
-												console.log('update note windowMinimized');
-											});
-										}),
-										$("<label>", {class: 'custom-control-label', for: 'mini'+note.id}).html(note.windowMinimized)
-								)
-						),
-						$("<td>").append(
-								$("<button>", {class: 'btn btn-sm btn-outline-danger'}).html('Delete').on("click", function() {
-									var $thisNote = $(this).parent().parent();
-									restCall('/info/note', {data: note, method: "DELETE"}, function() {
-										console.log('delete note', $thisNote);
-										$thisNote.remove();
-									});
-								}),
+								$("<button>", {class: 'btn btn-sm text-danger'}).on("click", function() {
+									if (confirm('sure?')) {
+										var $thisNote = $(this).parent().parent();
+										restCall('/info/note', {data: note, method: "DELETE"}, function() {
+											console.log('delete note', $thisNote);
+											$thisNote.remove();
+										});
+									}
+								}).append(
+										$("<i>", {class: "fa fa-trash-o mr-1"})
+								),
 						)
 				)
 		);
 	});
+}
+
+$("#switchTitleInline").on("change", function() {
+	var checked = $(this).is(":checked")
+	$("tbody > tr > td:nth-child(4)").each(function() {
+		if (checked) {
+			$(this).html($(this).html().replace(/<br>/g, '\n'));
+		} else {
+			$(this).html($(this).html().replace(/\n/g, '<br>'));
+		}
+	});
 });
+
+$(".search-input").on("keyup", function(e, init) {
+	if (init) {
+		restCall('/info/note/list', {}, showList);
+	} else if (e.keyCode === 13) {
+		var keyword = $(this).val();
+		console.log('search keyword', keyword);
+		if (keyword !== '') {
+			var note = {
+					title: keyword,
+					content: keyword
+			};
+			restCall('/info/note/find', {data: note, method: "PATCH"}, showList);
+		} else {
+			restCall('/info/note/list', {}, showList);
+		}
+	}
+}).trigger("keyup", [true]);
 </script>

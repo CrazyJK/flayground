@@ -19,7 +19,7 @@ function Note(data) {
 	
 	var DEFAULTS = {
 			id: new Date().getTime(),
-			title: new Date().format("yy/MM/dd hh:mm"),
+			title: DateUtils.format("yy/MM/dd HH:mm"),
 			content: '',
 			position: {
 				left: Random.getInteger(100, $(window).width() - 100),
@@ -44,13 +44,18 @@ function Note(data) {
 			+ '    <a href="#" class="note-restore-btn"><i class="fa fa-window-restore"></i></a>'
 			+ '    <a href="#" class="note-delete-btn"><i class="fa fa-window-close"></i></a>'
 			+ '  </div>'
-			+ '  <div class="note-body">'
+			+ '  <div class="note-header">'
 			+ '    <h5 class="note-title">' + this.data.title + '</h5>'
+			+ '  </div>'
+			+ '  <div class="note-body">'
 			+ '    <textarea class="note-pad" placeholder="Memo content">' + this.data.content + '</textarea>'
 			+ '  </div>'
+			+ '  <div class="note-tail">'
+			+ '    <label class="note-time">' + DateUtils.format("yy/MM/dd HH:mm", this.data.modified) + '</label>'
+			+ '  </div>'
 			+ '</div>').css({
-				left: Math.min(this.data.position.left, $(window).width() - 100),
-				top: Math.min(this.data.position.top, $(window).height() - 100),
+				left: Math.min(this.data.position.left, $(window).width() - 16 * 16),
+				top: Math.min(this.data.position.top, $(window).height() - 10 * 16),
 				width: this.data.size.width,
 				height: this.data.size.height
 			});
@@ -76,11 +81,14 @@ function Note(data) {
 	});
 	this.$note.find(".note-pad").on("blur", function() {
 		var content = $(this).val();
-		var title = content.substring(0, 8);
-		self.$note.find(".note-title").html(title);
-		self.data.title = title;
-		self.data.content = content;
-		self.saveNote();
+		if (content !== '' && content !== self.data.content) {
+			var title = content.substring(0, 8);
+			self.$note.find(".note-title").html(title);
+			self.data.title = title;
+			self.data.content = content;
+			self.data.modified = new Date().getTime();
+			self.saveNote();
+		}
 	});
 
 	this.minimizeCallback = function(val) {

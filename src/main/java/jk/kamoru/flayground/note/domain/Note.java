@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class Note {
 
 	long id;
+	String author;
 	String title;
 	String content;
 	Position position;

@@ -2,7 +2,9 @@ package jk.kamoru.flayground.note.source;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -73,7 +75,7 @@ public class NoteFileSource implements NoteSource {
 
 	@Override
 	public List<Note> list() {
-		return list;
+		return list.stream().sorted(Comparator.comparing(Note::getId).reversed()).collect(Collectors.toList());
 	}
 
 	@Override

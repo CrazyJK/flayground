@@ -100,6 +100,7 @@ function Note(data) {
 		}
 	}).on("keyup", function(e) {
 		e.stopPropagation();
+		console.log("note-pad height", $(this).height());
 	});
 
 	this.minimizeCallback = function(val) {

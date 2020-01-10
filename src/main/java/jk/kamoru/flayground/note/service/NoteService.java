@@ -9,23 +9,19 @@ public interface NoteService {
 	Note get(long id);
 
 	/**
-	 * 전체 노트
-	 * @return
-	 */
-	Collection<Note> all();
-
-	/**
 	 * 현재 사용자의 노트
+	 * @param admin
 	 * @return
 	 */
-	Collection<Note> list();
+	Collection<Note> list(boolean admin);
 
 	/**
 	 * 조건 맞는 노트
 	 * @param note
+	 * @param admin
 	 * @return
 	 */
-	Collection<Note> find(Note note);
+	Collection<Note> find(Note note, boolean admin);
 
 	/**
 	 * 새 노트 저장

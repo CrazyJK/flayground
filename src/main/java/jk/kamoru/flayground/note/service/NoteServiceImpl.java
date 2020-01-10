@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class NoteServiceImpl implements NoteService {
 
 	@Autowired NoteSource noteSource;
-	
+
 	@Override
 	public Note get(long id) {
 		Note note = new Note();
@@ -28,21 +28,20 @@ public class NoteServiceImpl implements NoteService {
 	}
 
 	@Override
-	public Collection<Note> all() {
-		return noteSource.list();
-	}
-	
-	@Override
-	public Collection<Note> list() {
-		return noteSource.list().stream().filter(n -> {
-			return StringUtils.equals(n.getAuthor(), getUsername());
-		}).collect(Collectors.toList());
+	public Collection<Note> list(boolean admin) {
+		if (admin) {
+			return noteSource.list();
+		} else {
+			return noteSource.list().stream().filter(n -> {
+				return StringUtils.equals(n.getAuthor(), getUsername());
+			}).collect(Collectors.toList());
+		}
 	}
 
 	@Override
-	public Collection<Note> find(Note note) {
-		log.info("find by {}", note);
-		return list().stream().filter(n -> {
+	public Collection<Note> find(Note note, boolean admin) {
+		log.info("find by id:{} title:{}, content:{}, admin:{}", note.getId(), note.getTitle(), note.getContent(), admin);
+		return list(admin).stream().filter(n -> {
 			boolean result = false;
 			if (note.getId() > 0)
 				result = result | note.getId() == n.getId();
@@ -52,7 +51,7 @@ public class NoteServiceImpl implements NoteService {
 				result = result | StringUtils.containsIgnoreCase(n.getContent(), note.getContent());
 			if (note.getStatus() != null)
 				result = result & n.getStatus() == note.getStatus();
-				
+
 			return result;
 		}).collect(Collectors.toList());
 	}
@@ -67,7 +66,7 @@ public class NoteServiceImpl implements NoteService {
 		}
 		if (note.getStatus() == null) {
 			note.setStatus(Note.Status.N);
-		} 
+		}
 		if (note.getStatus() == Note.Status.D) {
 			if (note.getClosed() == null)
 				note.setClosed(new Date());
@@ -89,5 +88,5 @@ public class NoteServiceImpl implements NoteService {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		return authentication.getName();
 	}
-	
+
 }

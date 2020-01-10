@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,19 +29,14 @@ public class NoteController {
 		return noteService.get(id);
 	}
 
-	@GetMapping("/all")
-	public Collection<Note> all() {
-		return noteService.all();
-	}
-
 	@GetMapping("/list")
-	public Collection<Note> list() {
-		return noteService.list();
+	public Collection<Note> list(@RequestHeader(name = "admin", required = false, defaultValue = "false") boolean admin) {
+		return noteService.list(admin);
 	}
 
 	@PatchMapping("/find")
-	public Collection<Note> find(@RequestBody Note note) {
-		return noteService.find(note);
+	public Collection<Note> find(@RequestBody Note note, @RequestHeader(name = "admin", required = false, defaultValue = "false") boolean admin) {
+		return noteService.find(note, admin);
 	}
 
 	@PutMapping

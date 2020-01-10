@@ -2,32 +2,37 @@
 <style>
 <!--
 @media screen and (max-width: 1680px) {
-	th:nth-child(2), th:nth-child(8), th:nth-child(9), td:nth-child(2), td:nth-child(8), td:nth-child(9) {
+	th:nth-child(2), th:nth-child(9), th:nth-child(10), td:nth-child(2), td:nth-child(9), td:nth-child(10) {
 		display: none;
 	}
 }
 @media screen and (max-width: 1440px) {
-	th:nth-child(10), th:nth-child(11), td:nth-child(10), td:nth-child(11) {
+	th:nth-child(11), th:nth-child(12), td:nth-child(11), td:nth-child(12) {
 		display: none;
 	}
 }
-@media screen and (max-width: 1080px) {
-	th:nth-child(5), th:nth-child(6), th:nth-child(7), td:nth-child(5), td:nth-child(6), td:nth-child(7) {
+@media screen and (max-width: 1200px) {
+	th:nth-child(6), th:nth-child(7), th:nth-child(8), td:nth-child(6), td:nth-child(7), td:nth-child(8) {
 		display: none;
 	}
 }
 @media screen and (max-width: 800px) {
-	th:nth-child(12), th:nth-child(13), td:nth-child(12), td:nth-child(13) {
+	th:nth-child(13), th:nth-child(14), td:nth-child(13), td:nth-child(14) {
 		display: none;
 	}
 }
 @media screen and (max-width: 500px) {
-	th:nth-child(1), th:nth-child(3), td:nth-child(1), td:nth-child(3) {
+	th:nth-child(1), th:nth-child(4), td:nth-child(1), td:nth-child(4) {
+		display: none;
+	}
+}
+@media screen and (max-width: 400px) {
+	th:nth-child(3), td:nth-child(3) {
 		display: none;
 	}
 }
 @media screen and (max-width: 350px) {
-	th:nth-child(14), td:nth-child(14) {
+	th:nth-child(15), td:nth-child(15) {
 		display: none;
 	}
 }
@@ -36,17 +41,22 @@
 <nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light">
 	<a class="navbar-brand">Note list</a>
 	<input type="search" class="form-control form-control-sm w-auto search-input" placeholder="Search">
+	<div class="custom-control custom-checkbox mx-3">
+    	<input type="checkbox" class="custom-control-input" id="listAll" checked="checked">
+    	<label class="custom-control-label" for="listAll">List all</label>
+  </div>
 </nav>
 <div class="container-fluid mt-5 py-4">
-	<table class="table table-hover bg-light">
+	<table class="table table-hover table-sm table-bordered bg-light">
 		<thead>
 			<tr>
 				<th>No</th>
 				<th>Id</th>
+				<th>Author</th>
 				<th>Title</th>
 				<th>Content
-					<div class="custom-control custom-switch custom-control-inline ml-3">
-    					<input type="checkbox" class="custom-control-input" id="switchTitleInline">
+					<div class="custom-control custom-switch custom-control-inline ml-3 float-right">
+    					<input type="checkbox" class="custom-control-input" id="switchTitleInline" checked="checked">
     					<label class="custom-control-label text-secondary" for="switchTitleInline">nowrap</label>
   					</div>
 				</th>
@@ -67,6 +77,8 @@
 	</table>
 </div>
 <script type="text/javascript">
+var noteColors = ['yellow', 'red'], isListAll = false;
+
 function showList(list) {
 	console.log('list', list.length);
 
@@ -76,19 +88,43 @@ function showList(list) {
 				$("<tr>").append(
 						$("<td>").html(idx+1),
 						$("<td>").html(note.id),
+						$("<td>").html(note.author),
 						$("<td>").html(note.title),
-						$("<td>").html(note.content.replace(/(\n|\r\n)/g, '<br>')),
-						$("<td>").html(new Date(note.created).format('yy/MM/dd HH:mm')),
-						$("<td>").html(new Date(note.modified).format('yy/MM/dd HH:mm')),
-						$("<td>").html(new Date(note.closed).format('yy/MM/dd HH:mm')),
+						$("<td>").html(note.content),
+						$("<td>").html(new Date(note.created).format('MM/dd HH:mm')),
+						$("<td>").html(new Date(note.modified).format('MM/dd HH:mm')),
+						$("<td>").html(new Date(note.closed).format('MM/dd HH:mm')),
 						$("<td>").html("L: " + note.position.left + " T: " + note.position.top),
 						$("<td>").html("W: " + note.size.width + " H: " + note.size.height),
-						$("<td>").html(note.picidx),
-						$("<td>").html(note.color),
+						$("<td>").append(
+								$("<input>", {class: "form-control form-control-sm width-70 border-0 bg-transparent", type: "number"}).val(note.picidx).on("change", function() {
+									note.picidx = $(this).val();
+									restCall('/info/note', {data: note, method: "PUT"}, function() {
+										console.log('update note picidx');
+									});
+								})
+						),
+						$("<td>").append(
+								$("<select>", {class: "form-control form-control-sm w-auto border-0 bg-light bg-transparent"}).append(
+										$("<option>", {value: "unset"}).text("unset"),
+										(function() {
+											var options = [];
+											noteColors.forEach(function(color) {
+												options.push($("<option>", {selected: color === note.color, value: color}).text(color));
+											});
+											return options;
+										}())
+								).on("change", function() {
+									note.color = $(this).val();
+									restCall('/info/note', {data: note, method: "PUT"}, function() {
+										console.log('update note color');
+									});
+								})
+						),
 						$("<td>").append(
 								$("<div>", {class: 'custom-control custom-switch'}).append(
 										$("<input>", {type: 'checkbox', class: 'custom-control-input', id: 'note-' + note.id + '-mini', checked: note.windowMinimized}).on("change", function() {
-											var val = $(this).is(":checked");
+											var val = $(this).prop("checked");
 											note.windowMinimized = val;
 											$(this).next().html(val ? 'mini' : 'max');
 											restCall('/info/note', {data: note, method: "PUT"}, function() {
@@ -101,7 +137,7 @@ function showList(list) {
 						$("<td>").append(
 								$("<div>", {class: 'custom-control custom-switch'}).append(
 										$("<input>", {type: 'checkbox', class: 'custom-control-input', id: 'note-' + note.id + '-status', checked: (note.status == 'N')}).on("change", function() {
-											var val = $(this).is(":checked") ? 'N' : 'D';
+											var val = $(this).prop("checked") ? 'N' : 'D';
 											note.status = val;
 											$(this).next().html(val);
 											restCall('/info/note', {data: note, method: "PUT"}, function() {
@@ -130,8 +166,8 @@ function showList(list) {
 }
 
 $("#switchTitleInline").on("change", function() {
-	var checked = $(this).is(":checked")
-	$("tbody > tr > td:nth-child(4)").each(function() {
+	var checked = $(this).prop("checked")
+	$("tbody > tr > td:nth-child(5)").each(function() {
 		if (checked) {
 			$(this).html($(this).html().replace(/<br>/g, '\n'));
 		} else {
@@ -142,19 +178,24 @@ $("#switchTitleInline").on("change", function() {
 
 $(".search-input").on("keyup", function(e, init) {
 	if (init) {
-		restCall('/info/note/list', {}, showList);
+		restCall('/info/note/list', {headers: {"admin": isListAll}}, showList);
 	} else if (e.keyCode === 13) {
 		var keyword = $(this).val();
-		console.log('search keyword', keyword);
 		if (keyword !== '') {
+			console.log('search keyword', keyword);
 			var note = {
 					title: keyword,
 					content: keyword
 			};
-			restCall('/info/note/find', {data: note, method: "PATCH"}, showList);
+			restCall('/info/note/find', {data: note, method: "PATCH", headers: {"admin": isListAll}}, showList);
 		} else {
-			restCall('/info/note/list', {}, showList);
+			restCall('/info/note/list', {headers: {"admin": isListAll}}, showList);
 		}
 	}
 }).trigger("keyup", [true]);
+
+$("#listAll").on("change", function() {
+	isListAll = $("#listAll").prop("checked");
+	console.log("#listAll checked", isListAll);
+});
 </script>

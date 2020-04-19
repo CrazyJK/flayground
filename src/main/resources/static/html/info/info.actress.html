@@ -215,6 +215,10 @@ Rest.Actress.get(name, function(_actress) {
 
 $("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
 
+$(window).on("resize", function() {
+	$(".flay-list").height($(window).height() - $("nav").outerHeight(true));
+}).trigger("resize");
+
 </script>
 </body>
 </html>

@@ -86,10 +86,10 @@ body.bg-dark .flay-file {
     height: 100%;
     font-size: 8rem;
     text-align: center;
-    transition: background-color 0s, font-size .3s; 
+    transition: background-color 0s, font-size .3s, transform .3s; 
     background-color: transparent!important;
 } 
 .card.flay-card:hover .flay-rank-sm {
 	border-color: transparent;
-	opacity: .5;
+	transform: scale(.25);
 }

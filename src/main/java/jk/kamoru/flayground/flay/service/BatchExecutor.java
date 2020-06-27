@@ -191,8 +191,13 @@ public class BatchExecutor {
 				List<File> value = entry.getValue();
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
-//						"move [{} {}] {} to {}", flay.getOpus(), flayFileHandler.prettyFileLength(file.length()), file, delegatePath
-						log.info(String.format("move [%-10s %6s] %-20s => %-20s : %s", flay.getOpus(), flayFileHandler.prettyFileLength(file.length()), file.getParent(), delegatePath, file.getName()));
+						log.info(String.format("move [%-10s %s %6s] %-20s => %-20s : %s",
+								flay.getOpus(),
+								flay.getVideo().getRank(),
+								flayFileHandler.prettyFileLength(file.length()),
+								file.getParent(),
+								delegatePath,
+								file.getName()));
 						flayFileHandler.moveFileToDirectory(file, delegatePath);
 					}
 				}

@@ -18,19 +18,24 @@ var restCall = function(url, args, callback, failCallback) {
 //	console.log('restCall', settings.method, url, settings.data);
 
 //	settings.title != "" && loading.on(settings.title);
+	var isCompleted = false;
 	var timeout = setTimeout(function() {
-		loading.on(settings.title);
+		!isCompleted && loading.on(settings.title);
 	}, 300);
 
 	$.ajax(PATH + url, settings).done(function(data) {
+		isCompleted = true;
 		if (callback)
 			callback(data);
 
 //		settings.title != "" && loading.off();
 		clearTimeout(timeout);
-		loading.off();
+		try {
+			loading.off();
+		} catch (ignore) {}
 
 	}).fail(function(jqXHR, textStatus, errorThrown) {
+		isCompleted = true;
 		console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 		if (failCallback) {
 			failCallback();
@@ -49,6 +54,7 @@ var restCall = function(url, args, callback, failCallback) {
 			} else {
 				errMsg = 'Error:<br>' + textStatus + "<br>" + errorThrown;
 			}
+			console.log("errMsg", errMsg);
 			var $errorBody = $("<div>", {'class': 'overlay-error-body'}).append(errMsg);
 			loading.on($errorBody);
 		}

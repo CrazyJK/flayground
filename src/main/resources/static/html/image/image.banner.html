@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Image Banner</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="icon" type="image/png" href="/img/favicon/flay_2.png" />
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css">
+<link rel="stylesheet" href="/css/base.scrollbar.css"/>
+<style type="text/css">
+pre {
+	font-family: D2Coding;
+	line-height: 1;
+	overflow: hidden;
+}
+#controlBox {
+	position: fixed;
+    bottom: 0;
+    right: 0;
+    width: 160px;
+    text-align: center;
+    border: 1px solid #333;
+    border-top-left-radius: 0.25rem;
+    color: #f8f9fa;
+    background-color: #111;
+    margin: .125rem;
+}
+ul#controlBox {
+	list-style: none;
+    padding-left: 0;
+}
+#controlBox > li {
+	margin: .5rem .25rem;
+	font-size: 80%;
+	font-weight: 400;
+}
+#controlBox > li > .number-group {
+	border: 1px solid #333;
+	display: flex;
+    flex-wrap: wrap;
+}
+#controlBox > li > .number-group > label {
+	margin: 0;
+	padding: 0 4px;
+	color: #546678;
+	font-weight: 500;
+}
+#controlBox > li > .number-group > input {
+	background-color: transparent;
+	border: 0;
+	color: #ccc;
+	text-align: right;
+	flex: 1 1 auto;
+}
+#controlBox > li > .number-group > input:focus {
+	border: 0;
+	outline: 0;
+}
+#controlBox > li > div.custom-control {
+	margin: 0 .25rem;
+}
+#imagePanel {
+}
+#imagePanel > img {
+	width: 100%;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
+<script type="text/javascript">
+var totalCount = 0;
+Rest.Image.size(function(count) {
+	totalCount = count;
+});
+
+var imageIndex = LocalStorageItem.get('image.banner.index', Random.getInteger(0, totalCount));
+var imageWidth = LocalStorageItem.get('image.banner.width', 150);
+var invertVal  = LocalStorageItem.getBoolean('image.banner.invert', false);
+var bitDepthVal = LocalStorageItem.get('image.banner.bitDepth', 'FOUR');
+var pixelModeVal = LocalStorageItem.get('image.banner.pixelMode', 'TEXT');
+var showImageVal  = LocalStorageItem.getBoolean('image.banner.showImageSwitch', false);
+
+$(document).ready(function() {
+
+	$("#totalImageCount").html(totalCount);
+	$("#index").val(imageIndex).attr("max", totalCount - 1);
+	$("#width").val(imageWidth);
+	$("input[name='invert']").prop('checked', invertVal);
+	$("input:radio[name='bitDepth']:radio[value='" + bitDepthVal + "']").prop('checked', true);
+	$("input:radio[name='pixelMode']:radio[value='" + pixelModeVal + "']").prop('checked', true);
+	$("#showImageSwitch").prop('checked', showImageVal);
+	$("#imagePanel").toggle(showImageVal);
+	
+	$("#invert, input[name='bitDepth'], input[name='pixelMode']").on("click", function(e) {
+		show();
+	});
+	$("#index, #width").on("keyup", function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		if (e.keyCode === 13) {
+			show();
+		}
+	});
+	$("#prevBtn").on("click", function(e) {
+		if (--imageIndex < 0) {
+			imageIndex = totalCount - 1;
+		}
+		$("#index").val(imageIndex);
+		show();
+	});
+	$("#nextBtn").on("click", function(e) {
+		if (++imageIndex === totalCount) {
+			imageIndex = 0;
+		}
+		$("#index").val(imageIndex);
+		show();
+	});
+	$("#randomBtn").on("click", function(e) {
+		imageIndex = Random.getInteger(0, totalCount)
+		$("#index").val(imageIndex);
+		show();
+	});
+	$("#showImageSwitch").on("change", function(e) {
+		$("#imagePanel").toggle($(this).is(':checked'));
+		LocalStorageItem.set('image.banner.showImageSwitch', $(this).is(':checked'));
+	});
+	$("body").navEvent(function(signal, e) {
+		switch (signal) {
+		case 82: // 'R'
+			$("#randomBtn").click();
+			break;
+		case 37: // key left
+			$("#prevBtn").click();
+			break;
+		case 39: // right
+			$("#nextBtn").click();
+			break;
+		}
+	});
+
+	show();
+});
+
+function show() {
+	imageIndex = $("#index").val();
+	imageWidth = $("#width").val();
+	console.log('show', imageIndex);
+	
+	Rest.Image.get(imageIndex, function(info) {
+		// info set
+		$("#imageTitle").html(info.name);
+		// load Image
+		const image = new Image();
+		image.src = PATH + "/static/image/" + imageIndex;
+		image.decode().then(() => {
+			// append image
+			$("#imagePanel").children().first().remove();
+			var $img = $(image).prependTo($("#imagePanel"));
+			// add event
+			$img.on("click", function() {
+				Popup.imageByNo(imageIndex);
+			});
+		}).catch(() => {
+		    document.body.appendChild(new Text("Could not load the image :( " + image.src));
+		});
+	});
+
+	restCall(PATH + '/banner/' + imageIndex + '/' + imageWidth, {
+		mimeType : "text/plain",
+		data: $("form").serialize()
+	}, function(text) {
+		$("#banner").html(text);
+	});
+	
+	LocalStorageItem.set('image.banner.index', imageIndex);
+	LocalStorageItem.set('image.banner.width', imageWidth);
+	LocalStorageItem.set('image.banner.invert', $("input[name='invert']").is(":checked"));
+	LocalStorageItem.set('image.banner.bitDepth', $("input:radio[name='bitDepth']:checked").val());
+	LocalStorageItem.set('image.banner.pixelMode', $("input:radio[name='pixelMode']:checked").val());
+}
+</script>
+</head>
+<body class="bg-dark">
+
+	<div class="container-fluid">
+		<pre id="banner" class="text-light"></pre>
+	</div>
+
+	<form action="#" onsubmit="return false;">
+		<ul id="controlBox">
+			<li>
+				<div class="border border-dark collapse rounded" id="imagePanel">
+					<img id="image">
+					<div id="imageTitle"></div>
+				</div>
+			</li>
+			<li>
+				<div class="custom-control custom-switch">
+					<input type="checkbox" class="custom-control-input" id="showImageSwitch" name="showImageSwitch">
+					<label class="custom-control-label" for="showImageSwitch">show Image</label>
+				</div>
+			</li>
+			<li>
+				<div class="number-group">
+					<label>Index</label>
+					<label id="totalImageCount"></label>
+					<input type="number" id="index" title="image index" min="0">
+				</div>
+			</li>
+			<li>
+				<div class="number-group">
+					<label>Width</label>
+					<input type="number" id="width" title="banner width" min="50" max="360">
+				</div>
+			</li>
+			<li>
+				<div class="custom-control custom-switch">
+					<input type="checkbox" class="custom-control-input" id="invert" name="invert" checked="checked">
+					<label class="custom-control-label" for="invert">invert</label>
+				</div>
+			</li>
+			<li>
+				<div class="custom-control custom-radio custom-control-inline" title="bitDepth 4">
+					<input type="radio" class="custom-control-input" id="bitDepth1" name="bitDepth" value="FOUR" checked="checked">
+					<label class="custom-control-label" for="bitDepth1">FOUR</label>
+				</div>
+				<div class="custom-control custom-radio custom-control-inline" title="bitDepth 8">
+					<input type="radio" class="custom-control-input" id="bitDepth2" name="bitDepth" value="EIGHT">
+					<label class="custom-control-label" for="bitDepth2">EIGHT</label>
+				</div>
+			</li>
+			<li>
+				<div class="custom-control custom-radio custom-control-inline" title="pixelMode text">
+					<input type="radio" class="custom-control-input" id="pixelMode1" name="pixelMode" value="TEXT" checked="checked">
+					<label class="custom-control-label" for="pixelMode1">TEXT</label>
+				</div>
+				<div class="custom-control custom-radio custom-control-inline" title="pixelMode block">
+					<input type="radio" class="custom-control-input" id="pixelMode2" name="pixelMode" value="BLOCK">
+					<label class="custom-control-label" for="pixelMode2">BLOCK</label>
+				</div>
+			</li>
+			<li>
+				<div class="btn-group btn-group-sm btn-block">
+					<button class="btn btn-flay" id="prevBtn" type="button">PREV</button>
+					<button class="btn btn-flay" id="nextBtn" type="button">NEXT</button>
+				</div>
+			</li>
+			<li>
+				<button class="btn btn-block btn-flay btn-sm" id="randomBtn" type="button">RANDOM</button>
+			</li>
+		</ul>
+	</form>
+
+</body>
+</html>

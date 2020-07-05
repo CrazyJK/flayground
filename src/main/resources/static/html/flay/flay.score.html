@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Flay List Order by Score DESC :: Flayground</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css"/>
+<link rel="stylesheet" href="/css/base.scrollbar.css"/>
+<link rel="stylesheet" href="/css/crazy.fonts.css"/>
+<link rel="stylesheet" href="/css/crazy.common.css"/>
+<link rel="stylesheet" href="/css/crazy.common.range.css"/>
+<link rel="stylesheet" href="/css/flay.view.card.css"/>
+<style type="text/css">
+body {
+	font-size: 14px;
+	font-family: 'D2Coding';
+}
+th, td {
+	text-align: right;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+th:nth-child(2), td:nth-child(2),
+th:nth-child(3), td:nth-child(3) {
+	text-align: left;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/js/crazy.common.js"></script>
+<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+<script type="text/javascript" src="/js/flay.utils.js"></script>
+<script type="text/javascript" src="/js/flay.view.card.js"></script>
+<script type="text/javascript" src="/webjars/clipboard/dist/clipboard.min.js"></script>
+</head>
+<body>
+
+<div class="top-right">
+	<a href="/"><i class="fa fa-home lead p-2"></i></a>
+</div>
+
+<div class="container-fluid" role="body">
+	<div class="m-2">
+		<span class="lead font-weight-bolder">Flay list Order by Score DESC</span>
+		<label class="check sm mx-3"><input type="checkbox" id="unPlay"><span>unPlay</span></label>
+	</div>
+	<table class="table table-sm table-hover">
+		<thead>
+			<tr>
+				<th>no.</th>
+				<th>Opus</th>
+				<th>Title</th>
+				<th>Actress</th>
+				<th>Release</th>
+				<th>Modified</th>
+				<th>Rank</th>
+				<th>Play</th>
+				<th>Movie</th>
+				<th>Subti</th>
+				<th>Score</th>
+				<th>Length</th>
+				<th>Cumulative</th>
+			</tr>
+		</thead>
+		<tbody id="flayList"></tbody>
+	</table>
+</div>
+
+<script type="text/javascript">
+var rankPoint = 0, playPoint = 0, subtitlesPoint = 0, storageLimit = 0;
+restCall('/config', {}, function(config) {
+	rankPoint = config.score.rankPoint;
+	playPoint = config.score.playPoint;
+	subtitlesPoint = config.score.subtitlesPoint;
+	storageLimit = config.storageLimit * GB;
+});
+
+$("#unPlay").on("change", function() {
+	var checked = this.checked;
+	$("#flayList tr td:nth-child(8)").each(function(idx, td) {
+		var $td = $(td);
+		if (checked) {
+			if ($td.text() !== '0') {
+				$td.parent().hide();
+			}
+		} else {
+			$td.parent().show();
+		}
+	});
+});
+
+$(document).ready(function() {
+	loading.on("Loading data");
+	restCall('/flay/list/orderbyScoreDesc', {}, function(flayList) {
+		var $flayList = $("#flayList");
+		var lengthSum = 0;
+		$.each(flayList, function(idx, flay) {
+			lengthSum += flay.length;
+			$("<tr>", {id: flay.opus, class: (lengthSum > storageLimit ? 'table-secondary' : '')}).append(
+					$("<td>").append((idx + 1).toString(16)),
+					$("<td>").append(
+							$("<a>", {href: '#'}).on("click", function() {
+								View.flay(flay.opus);
+							}).html(flay.opus)
+					),
+					$("<td>").append(flay.title),
+					$("<td>").append(flay.actressList),
+					$("<td>").append(flay.release),
+					$("<td>").append(DateUtils.format("yy/MM/dd", flay.lastModified)),
+					$("<td>").append(flay.video.rank),
+					$("<td>", {class: flay.video.play === 0 ? 'text-danger' : ''}).append(flay.video.play),
+					$("<td>").append(flay.files.movie.length),
+					$("<td>").append(flay.files.subtitles.length),
+					$("<td>").append(
+							flay.video.rank * rankPoint + 
+							flay.video.play * playPoint +
+							(flay.files.subtitles.length > 0 ? 1 : 0) * subtitlesPoint
+					),
+					$("<td>").append(File.formatSize(flay.length)),
+					$("<td>").append(File.formatSize(lengthSum, 'GB'))
+			).appendTo($flayList);
+		});
+		loading.off();
+	});
+});
+</script>
+</body>
+</html>

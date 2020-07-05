@@ -37,6 +37,7 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired FlayFileHandler flayFileHandler;
 	@Autowired CandidatesProvider candidatesProvider;
 	@Autowired AnnounceService notificationService;
+	@Autowired ScoreCalculator scoreCalculator;
 
 	@Override
 	public Flay get(String key) {
@@ -176,6 +177,11 @@ public class FlayServiceImpl implements FlayService {
 	public void deleteFile(String file) {
 		flayFileHandler.deleteFile(new File(file));
 		log.warn("delete file {}", file);
+	}
+
+	@Override
+	public Collection<Flay> getListOrderbyScoreDesc() {
+		return scoreCalculator.orderbyScoreDesc(instanceFlaySource.list());
 	}
 
 }

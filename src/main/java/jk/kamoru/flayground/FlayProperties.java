@@ -6,6 +6,8 @@ import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 
 @Data
@@ -38,6 +40,7 @@ public class FlayProperties {
 	private String recyclebin = "FLAY_RECYCLEBIN";
 	private boolean recyclebinUse = true;
 
+	@JsonIgnore
 	public Boolean negateDeleteLowerScore() {
 		deleteLowerScore = BooleanUtils.negate(deleteLowerScore);
 		return deleteLowerScore;

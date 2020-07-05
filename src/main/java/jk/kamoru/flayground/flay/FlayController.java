@@ -21,7 +21,7 @@ import jk.kamoru.flayground.flay.service.FlayService;
 public class FlayController {
 
 	@Autowired FlayService flayService;
-	
+
 	@GetMapping("/{opus}")
 	public Flay get(@PathVariable String opus) {
 		return flayService.get(opus);
@@ -30,6 +30,11 @@ public class FlayController {
 	@GetMapping("/list")
 	public Collection<Flay> getList() {
 		return flayService.list();
+	}
+
+	@GetMapping("/list/orderbyScoreDesc")
+	public Collection<Flay> getListOrderbyScoreDesc() {
+		return flayService.getListOrderbyScoreDesc();
 	}
 
 	@GetMapping("/find")
@@ -51,7 +56,7 @@ public class FlayController {
 	public Collection<Flay> findByTagLike(@PathVariable Integer id) {
 		return flayService.findByTagLike(id);
 	}
-	
+
 	@GetMapping("/candidates")
 	public Collection<Flay> findCandidates() {
 		return flayService.findCandidates();
@@ -80,7 +85,7 @@ public class FlayController {
 	public void rename(@PathVariable String opus, @RequestBody Flay flay) {
 		flayService.rename(opus, flay);
 	}
-	
+
 	@PutMapping("/open/folder")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void openFolder(@RequestBody String folder) {

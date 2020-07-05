@@ -15,4 +15,5 @@ public interface ImageService {
 	int size();
 
 	void delete(int idx);
+
 }

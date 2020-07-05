@@ -6,6 +6,7 @@ import org.apache.commons.lang3.RandomUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.image.banner.ImageBannerPrinter;
 import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.image.source.ImageSource;
 
@@ -13,6 +14,7 @@ import jk.kamoru.flayground.image.source.ImageSource;
 public class ImageServiceImpl implements ImageService {
 
 	@Autowired ImageSource imageSource;
+	@Autowired ImageBannerPrinter imageBannerPrinter;
 
 	@Override
 	public List<Image> list() {

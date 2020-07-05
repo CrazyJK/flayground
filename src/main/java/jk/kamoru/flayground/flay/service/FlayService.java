@@ -9,8 +9,8 @@ public interface FlayService {
 
 	Flay get(String opus);
 
-	Collection<Flay> list(); 
-	
+	Collection<Flay> list();
+
 	Collection<Flay> find(Search search);
 
 	Collection<Flay> find(String query);
@@ -32,5 +32,7 @@ public interface FlayService {
 	void openFolder(String folder);
 
 	void deleteFile(String file);
+
+	Collection<Flay> getListOrderbyScoreDesc();
 
 }

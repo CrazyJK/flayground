@@ -187,20 +187,30 @@ class DateUtils {
 	}
 }
 
+var KB = 1024, MB = KB * KB, GB = MB * KB, TB = GB * KB;
 var File = {
-		formatSize: function(length) {
-			var KB = 1024, MB = KB * KB, GB = MB * KB, TB = GB * KB;
+		formatSize: function(length, unit) {
 
-			if (length < KB)
-				return length + " B";
-			else if (length < MB)
-				return (length / KB).toFixed(0) + " kB";
-			else if (length < GB)
-				return (length / MB).toFixed(1) + " <span class='text-warning'>MB</span>";
-			else if (length < TB)
-				return (length / GB).toFixed(1) + " <span>GB</span>";
-			else
-				return (length / TB).toFixed(2) + " <span class='text-danger'>TB</span>";
+			if (unit) {
+				if (unit === 'MB') {
+					return (length / MB).toFixed(1) + " MB";
+				} else if (unit === 'GB') {
+					return (length / GB).toFixed(1) + " GB";
+				} else if (unit === 'TB') {
+					return (length / TB).toFixed(2) + " TB";
+				}
+			} else {
+				if (length < KB)
+					return length + " B";
+				else if (length < MB)
+					return (length / KB).toFixed(0) + " kB";
+				else if (length < GB)
+					return (length / MB).toFixed(1) + " <span class='text-warning'>MB</span>";
+				else if (length < TB)
+					return (length / GB).toFixed(1) + " <span>GB</span>";
+				else
+					return (length / TB).toFixed(2) + " <span class='text-danger'>TB</span>";
+			}
 		}
 };
 

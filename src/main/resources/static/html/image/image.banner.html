@@ -11,8 +11,11 @@
 <link rel="stylesheet" href="/css/crazy.common.css">
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
 <style type="text/css">
-pre {
+body {
 	font-family: D2Coding;
+}
+pre {
+    cursor: crosshair;
 	line-height: 1;
 	overflow: hidden;
 }
@@ -26,7 +29,7 @@ pre {
     border-top-left-radius: 0.25rem;
     color: #f8f9fa;
     background-color: #111;
-    margin: .125rem;
+    margin: 0;
 }
 ul#controlBox {
 	list-style: none;
@@ -36,6 +39,9 @@ ul#controlBox {
 	margin: .5rem .25rem;
 	font-size: 80%;
 	font-weight: 400;
+}
+#controlBox > li:last-child {
+	margin: .25rem;
 }
 #controlBox > li > .number-group {
 	border: 1px solid #333;
@@ -66,6 +72,18 @@ ul#controlBox {
 }
 #imagePanel > img {
 	width: 100%;
+}
+.custom-control > * {
+	cursor: pointer;
+}
+#controlToggleBtn {
+	cursor: pointer;
+	transition: all .4s;
+	border-radius: .25rem;
+	height: 16px;
+}
+#controlToggleBtn:hover {
+	background-color: #444;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -143,6 +161,9 @@ $(document).ready(function() {
 			break;
 		}
 	});
+	$("#controlToggleBtn").on("click", function() {
+		$("#controlBox > li:not(:last-child)").toggle();
+	});
 
 	show();
 });
@@ -197,7 +218,7 @@ function show() {
 			<li>
 				<div class="border border-dark collapse rounded" id="imagePanel">
 					<img id="image">
-					<div id="imageTitle"></div>
+					<div id="imageTitle" class="nowrap"></div>
 				</div>
 			</li>
 			<li>
@@ -218,6 +239,15 @@ function show() {
 					<label>Width</label>
 					<input type="number" id="width" title="banner width" min="50" max="360">
 				</div>
+			</li>
+			<li>
+				<div class="btn-group btn-group-sm btn-block">
+					<button class="btn btn-flay" id="prevBtn" type="button">PREV</button>
+					<button class="btn btn-flay" id="nextBtn" type="button">NEXT</button>
+				</div>
+			</li>
+			<li>
+				<button class="btn btn-block btn-flay btn-sm" id="randomBtn" type="button">RANDOM</button>
 			</li>
 			<li>
 				<div class="custom-control custom-switch">
@@ -246,13 +276,10 @@ function show() {
 				</div>
 			</li>
 			<li>
-				<div class="btn-group btn-group-sm btn-block">
-					<button class="btn btn-flay" id="prevBtn" type="button">PREV</button>
-					<button class="btn btn-flay" id="nextBtn" type="button">NEXT</button>
+				<div id="controlToggleBtn">
+					<i class="fa fa-caret-up" aria-hidden="true"></i>
+					<i class="fa fa-caret-down" aria-hidden="true"></i>
 				</div>
-			</li>
-			<li>
-				<button class="btn btn-block btn-flay btn-sm" id="randomBtn" type="button">RANDOM</button>
 			</li>
 		</ul>
 	</form>

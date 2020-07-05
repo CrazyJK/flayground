@@ -6,10 +6,11 @@
 
 	<groupId>jk.kamoru</groupId>
 	<artifactId>flayground</artifactId>
-	<version>6.9.7.4-05</version>
+	<version>6.9.7.4-06</version>
 	<packaging>jar</packaging>
 
 	<name>Flayground</name>
+	<url>localhost:6974</url>
 	<description>serve flay</description>
 
 	<parent>
@@ -155,5 +156,4 @@
 		</plugins>
 	</build>
 
-	<url>localhost:6974</url>
 </project>

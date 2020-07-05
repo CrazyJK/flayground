@@ -13,7 +13,6 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -23,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
 import jk.kamoru.flayground.info.domain.History;
@@ -147,10 +147,7 @@ public class BatchExecutor {
 		log.info(String.format("[deleteLowerScore] total   %4s GB", instanceFlaySource.list().stream().mapToLong(f -> f.getLength()).sum() / FileUtils.ONE_GB));
 		final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
 		long lengthSum = 0;
-		List<Flay> scoreReverseSortedFlayList = instanceFlaySource.list().stream()
-				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0 && f.getVideo().getRank() > 0 && f.getVideo().getPlay() > 0)
-				.sorted((f1, f2) -> scoreCalculator.compare(f1, f2))
-				.collect(Collectors.toList());
+		Collection<Flay> scoreReverseSortedFlayList = scoreCalculator.orderbyScoreDesc(instanceFlaySource.list());
 		for (Flay flay : scoreReverseSortedFlayList) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {
@@ -182,11 +179,35 @@ public class BatchExecutor {
 			if (flay.isArchive()) {
 				continue;
 			}
+
+			// 커버 파일 없으면, 아카이브에서 커버 자막 파일 다시 매핑. 휴지통 복원일 경우
+
+
 			File delegatePath = getDelegatePath(flay, storagePath, stagePaths, coverPath);
 			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 				String key = entry.getKey();
 				if (Flay.CANDI.equals(key)) {
 					continue;
+				}
+				// if missing Cover, find in archive
+				if (Flay.COVER.equals(key) && (entry.getValue() == null || entry.getValue().isEmpty())) {
+					try {
+						Flay archiveFlay = archiveFlaySource.get(flay.getOpus());
+						List<File> coverFiles = archiveFlay.getFiles().get(Flay.COVER);
+						if (coverFiles != null && coverFiles.size() > 0) {
+							flay.getFiles().get(Flay.COVER).add(coverFiles.get(0));
+						}
+					} catch (FlayNotfoundException ignore) {}
+				}
+				// if subtitles not exists, find in archive or subtitles folder
+				if (Flay.SUBTI.equals(key) && (entry.getValue() == null || entry.getValue().isEmpty())) {
+					try {
+						Flay archiveFlay = archiveFlaySource.get(flay.getOpus());
+						List<File> subtitlesFiles = archiveFlay.getFiles().get(Flay.SUBTI);
+						if (subtitlesFiles != null && subtitlesFiles.size() > 0) {
+							flay.getFiles().get(Flay.SUBTI).addAll(subtitlesFiles);
+						}
+					} catch (FlayNotfoundException ignore) {}
 				}
 				List<File> value = entry.getValue();
 				for (File file : value) {

@@ -215,7 +215,7 @@ $(function() {
 			setPreviousImage();
 			$self.animate({
 				opacity: 1
-			}, firstShow ? 300 : 100, function() {
+			}, firstShow ? 700 : 100, function() {
 				$(this).removeClass("tile prev").addClass("active").neonBorder(neon).css(data.css);
 				$imageWrap.navActive(true); // resume nav event
 			});

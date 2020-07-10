@@ -31,4 +31,11 @@ public class ScoreCalculator {
 				.sorted((f1, f2) -> compare(f2, f1)) // reverse order
 				.collect(Collectors.toList());
 	}
+
+	public Object toScoreString(Flay flay) {
+		return String.format("Score %s = R%s * %s + P%s * %s + s%s * %s", calc(flay),
+				flay.getVideo().getRank(), flayProperties.getScore().getRankPoint(),
+				flay.getVideo().getPlay(), flayProperties.getScore().getPlayPoint(),
+				(flay.getFiles().get(Flay.SUBTI).size() > 0 ? 1 : 0), flayProperties.getScore().getSubtitlesPoint());
+	}
 }

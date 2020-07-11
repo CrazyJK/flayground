@@ -189,15 +189,17 @@ class DateUtils {
 
 var KB = 1024, MB = KB * KB, GB = MB * KB, TB = GB * KB;
 var File = {
-		formatSize: function(length, unit) {
+		formatSize: function(length, unit, digits) {
 
 			if (unit) {
+				if (typeof digits === 'undefined')
+					digits = 1;
 				if (unit === 'MB') {
-					return (length / MB).toFixed(1) + " MB";
+					return (length / MB).toFixed(digits) + " MB";
 				} else if (unit === 'GB') {
-					return (length / GB).toFixed(1) + " GB";
+					return (length / GB).toFixed(digits) + " GB";
 				} else if (unit === 'TB') {
-					return (length / TB).toFixed(2) + " TB";
+					return (length / TB).toFixed(digits) + " TB";
 				}
 			} else {
 				if (length < KB)

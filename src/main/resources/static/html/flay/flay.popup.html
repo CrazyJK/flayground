@@ -40,7 +40,7 @@ $(function() {
 	username = Security.getName();
 	
 	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
-	$("body").toggleClass("bg-dark", bgThemeValue === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
+	$("body").toggleClass("bg-dark", bgThemeValue === 'D').css({backgroundColor: bgThemeValue === 'D' ? LocalStorageItem.get('flay.bgcolor') : ""});
 		
 	Rest.Html.get(reqParam.target, function(html) {
 		$("#wrap_body").html(html);

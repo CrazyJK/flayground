@@ -19,11 +19,36 @@ body {
 	font-size: 14px;
 	font-family: 'D2Coding';
 }
-th, td {
-	overflow: hidden;
-	white-space: nowrap;
-	text-overflow: ellipsis;
+.f-head {
+    text-transform: capitalize;
 }
+.f-head > .d-flex, 
+.f-body > .d-flex {
+	border-bottom: 1px solid #ccc;
+}
+.f-head > .d-flex > div,
+.f-body > .d-flex > div {
+	padding: .25rem;
+}
+.f-body > .d-flex:hover {
+	background-color: rgba(0, 0, 0, .025);
+}
+.f-body > .d-flex.active {
+	background-color: rgba(255, 255, 0, .125);
+}
+.index    {min-width: 30px; width: 30px; max-width: 30px; text-align: right;}
+.opus     {min-width: 80px; width: 80px; max-width: 80px;}
+.title    {}
+.actress  {text-align: right;}
+.release  {min-width: 80px; width: 80px; max-width: 80px;}
+.modified {min-width: 66px; width: 66px; max-width: 66px;}
+.rank     {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
+.play     {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
+.movie    {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
+.subti    {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
+.score    {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
+.length   {min-width: 60px; width: 60px; max-width: 60px; text-align: right;}
+.total    {min-width: 65px; width: 65px; max-width: 65px; text-align: right;}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
@@ -36,6 +61,8 @@ th, td {
 <script type="text/javascript" src="/js/flay.view.card.js"></script>
 <script type="text/javascript">
 var rankPoint = 0, playPoint = 0, subtitlesPoint = 0, storageLimit = 0;
+var actressInfo = {};
+
 restCall('/config', {}, function(config) {
 	rankPoint = config.score.rankPoint;
 	playPoint = config.score.playPoint;
@@ -44,101 +71,186 @@ restCall('/config', {}, function(config) {
 });
 
 $(document).ready(function() {
+	
+	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
+	$("body").toggleClass("bg-dark", bgThemeValue === 'D').css({backgroundColor: bgThemeValue === 'D' ? LocalStorageItem.get('flay.bgcolor') : ""});
+
 	loading.on("Loading data");
 	restCall('/flay/list/orderbyScoreDesc', {}, function(flayList) {
-		var $flayList = $("#flayList");
+		var $flayList = $(".f-body");
 		var lengthSum = 0;
 		$.each(flayList, function(idx, flay) {
 			lengthSum += flay.length;
-			$("<tr>", {id: flay.opus, class: (lengthSum > storageLimit ? 'table-secondary' : '')}).append(
-					$("<td>").append((idx + 1)),
-					$("<td>").append(
-							$("<a>", {href: '#'}).on("click", function() {
+			$("<div>", {id: flay.opus, class: 'd-flex' + (lengthSum > storageLimit ? 'bg-secondary' : '')}).append(
+					$("<div>", {class: 'index'}).append((idx + 1)),
+					$("<div>", {class: 'opus'}).append(
+							$("<a>", {class: 'hover'}).on("click", function() {
 								View.flay(flay.opus);
 							}).html(flay.opus)
 					),
-					$("<td>").append(
-							$("<div>", {class: 'nowrap'}).html(flay.title)
+					$("<div>", {class: 'title nowrap flex-grow-1'}).append(
+							$("<span>", {class: 'hover'}).html(flay.title).click(function(e) {
+								$("#coverWrap > img").attr("src", "/static/cover/" + flay.opus);
+								$("#coverWrap").show();
+							})
 					),
-					$("<td>").append(
-							$("<div>", {class: 'nowrap text-right'}).html(Util.Actress.getNames(flay.actressList)) // .css({width: 120})
-					),
-					$("<td>").append(flay.release),
-					$("<td>").append(DateUtils.format("yy/MM/dd", flay.lastModified)),
-					$("<td>", {class: 'text-right'}).append(flay.video.rank),
-					$("<td>", {class: 'text-right' + (flay.video.play === 0 ? ' text-danger' : '')}).append(flay.video.play),
-					$("<td>", {class: 'text-right'}).append(flay.files.movie.length),
-					$("<td>", {class: 'text-right'}).append(flay.files.subtitles.length),
-					$("<td>", {class: 'text-right'}).append(
+					$("<div>", {class: 'actress nowrap flex-grow-1'}).append(Util.Actress.get(flay.actressList, 'mx-1 hover')),
+					$("<div>", {class: 'release'}).append(flay.release),
+					$("<div>", {class: 'modified'}).append(DateUtils.format("yy/MM/dd", flay.lastModified)),
+					$("<div>", {class: 'rank'}).append(flay.video.rank),
+					$("<div>", {class: 'play' + (flay.video.play === 0 ? ' text-danger' : '')}).append(flay.video.play),
+					$("<div>", {class: 'movie'}).append(flay.files.movie.length),
+					$("<div>", {class: 'subti'}).append(flay.files.subtitles.length),
+					$("<div>", {class: 'score'}).append(
 							flay.video.rank * rankPoint + 
 							flay.video.play * playPoint +
 							(flay.files.subtitles.length > 0 ? 1 : 0) * subtitlesPoint
 					),
-					$("<td>", {class: 'text-right'}).append(File.formatSize(flay.length)),
-					$("<td>", {class: 'text-right'}).append(File.formatSize(lengthSum, 'GB', 0))
-			).appendTo($flayList);
+					$("<div>", {class: 'length'}).append(File.formatSize(flay.length, 'GB')),
+					$("<div>", {class: 'total'}).append(File.formatSize(lengthSum, 'GB', 0))
+			).on("click", function() {
+				$(this).parent().children().removeClass("active");
+				$(this).addClass("active")
+			}).appendTo($flayList);
+
+			$.each(flay.actressList, function(i, actress) {
+				if (!actressInfo[actress]) {
+					actressInfo[actress] = [];
+				}
+				actressInfo[actress].push(flay);
+			});
 		});
 		
-		$(window).trigger("resize");
+		var CARD_WIDTH = 330;
+		var actressCount = 0;
+		$.each(actressInfo, function(key, val) {
+			actressCount++;
+			$("#actressGroup").append(
+					$("<div>", {class: 'm-1 px-2 py-1 border rounded align-self-baseline shadow'}).append(
+							$("<div>").append(
+									$("<button>", {'data-toggle': 'collapse', 'data-target': '.' + key.replace(/ /gi, ""), class: 'bg-transparent border-0'}).html(key).append(
+											$("<span>", {class: 'badge badge-fill'}).html(val.length)
+									),
+									$("<i>", {class: 'fa fa-female ml-1 hover'}).on("click", function() {
+										View.actress(key);
+									})
+							).animate({
+								fontSize: 14 + val.length * 1
+							}),
+							$("<div>", {class: "collapse " + key.replace(/ /gi, "")}).append(
+									(function(list) {
+										var ret = [];
+										$.each(list, function(idx, flay) {
+											var $flayCard = $("<div>", {class: 'hover m-1 rounded border card flay-card'}).css({
+												width: CARD_WIDTH,
+												height: CARD_WIDTH * 0.6625,
+												display: 'inline-block',
+												backgroundImage: 'url(/static/cover/' + flay.opus + ')',
+												backgroundSize: 'cover'
+											}).on("click", function() {
+												View.flay(flay.opus);
+											}).append(
+													$("<label>", {class: 'nowrap text lg'}).html(flay.title).css({
+														width: 'calc(100% - 8px)'
+													})
+											);
+											ret.push($flayCard);
+										});
+										return ret;
+									})(val)
+							)
+					)
+			);
+		});
+		$("#actressCount").html(actressCount);
+		$("#flayCount").html(flayList.length);
+		
+		$("input[name='viewType']").on("change", function() {
+			viewType = $("input[name='viewType']:checked").val();
+			if (viewType === 't') {
+				$("#tableView").show();
+				$("#cardView").hide();
+			} else if (viewType === 'c') {
+				$("#tableView").hide();
+				$("#cardView").show();
+			}
+		});
+
+		$("input[name='viewType'][value='t']").parent().click();
 		
 		loading.off();
 	});
 	
 	$("#unPlay").on("change", function() {
 		var checked = this.checked;
-		$("#flayList tr td:nth-child(8)").each(function(idx, td) {
-			var $td = $(td);
+		$(".f-body .play").each(function(idx, dom) {
+			var $dom = $(dom);
 			if (checked) {
-				if ($td.text() !== '0') {
-					$td.parent().hide();
+				if ($dom.text() !== '0') {					
+					$dom.parent().removeClass("d-flex").hide();
 				}
 			} else {
-				$td.parent().show();
+				$dom.parent().show().addClass("d-flex");
 			}
 		});
-	});
-
-	$(window).resize(function() {
-		var newTitleWidth = $("table td:nth-child(3)").width() + $("table td:nth-child(4)").width() - ($("table").width() - $(window).width()) - 30;
-		$("table td:nth-child(3) div").width(newTitleWidth * 2/3);
-		$("table td:nth-child(4) div").width(newTitleWidth * 1/3);
 	});
 
 });
 </script>
 </head>
 <body>
-
-<div class="top-right">
-	<a href="/"><i class="fa fa-home lead p-2"></i></a>
-</div>
-
-<div class="container-fluid" role="body">
-	<div class="m-2">
-		<span class="lead font-weight-bolder">Flay list Order by Score DESC</span>
-		<label class="check sm mx-3"><input type="checkbox" id="unPlay"><span>unPlay</span></label>
+	
+	<div class="container-fluid">
+		<div class="d-flex justify-content-between pt-2">
+			<div>
+				<span class="lead font-weight-bolder">Flay list Order by Score DESC</span>
+			</div>
+			<div>
+				<span class="check-group sm">
+					<label><input type="radio" id="viewTypeTable" name="viewType" value="t"><span><strong id="flayCount">0</strong> Flay</span></label>
+					<label><input type="radio" id="viewTypeCard"  name="viewType" value="c"><span><strong id="actressCount">0</strong> Actress</span></label>
+				</span>
+			</div>
+			<div>
+				<a href="/html/indx.html"><i class="fa fa-home lead p-2"></i></a>
+			</div>
+		</div>
 	</div>
-	<table class="table table-sm table-hover w-auto m-0">
-		<thead>
-			<tr>
-				<th>#</th>
-				<th>Opus</th>
-				<th>Title</th> 
-				<th class="text-right">Actress</th>
-				<th>Release</th>
-				<th>Modified</th>
-				<th class="text-right">Rank</th>
-				<th class="text-right">Play</th>
-				<th class="text-right">Mov</th>
-				<th class="text-right">Sub</th>
-				<th class="text-right">Score</th>
-				<th class="text-right">Length</th>
-				<th class="text-right">Total</th>
-			</tr>
-		</thead>
-		<tbody id="flayList"></tbody>
-	</table>
-</div>
+	
+	<div style="display: none;" id="tableView">
+		<div class="container-fluid sticky-top">
+			<div class="f-head bg-light">
+			  	<div class="d-flex">
+			    	<div class="index">#</div>
+			    	<div class="opus">opus</div>
+			    	<div class="title flex-grow-1">title
+		    			<label class="check xs my-0 float-right"><input type="checkbox" id="unPlay"><span>unPlay</span></label>
+			    	</div>
+			    	<div class="actress flex-grow-1">actress</div>
+			    	<div class="release">release</div>
+			    	<div class="modified">modified</div>
+			    	<div class="rank">rank</div>
+			    	<div class="play">play</div>
+			    	<div class="movie">movie</div>
+			    	<div class="subti">subti</div>
+			    	<div class="score">score</div>
+			    	<div class="length">length</div>
+			    	<div class="total">total</div>
+			  	</div>
+			</div>
+		</div>
+		<div class="container-fluid">
+			<div class="f-body"></div>
+		</div>
+		<div class="collapse fixed-center rounded bg-warning shadow" id="coverWrap" style="width: 800px;">
+			<span class="text-danger hover" style="position: absolute; right: 0; margin: 5px; font-size: 3rem; line-height: .5;" onclick="$(this).parent().hide();">&times;</span>
+			<img class="img-thumbnail">
+		</div>
+	</div>
+
+	<div id="cardView" class="container-fluid">
+		<div id="actressGroup" class="d-flex flex-wrap"></div>
+	</div>
 
 </body>
 </html>

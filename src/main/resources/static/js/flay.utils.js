@@ -53,6 +53,23 @@ var Util = {
 				}
 				return actressNames;
 			},
+			get: function(actressList, className) {
+				var list = [];
+				if (actressList != null && Array.isArray(actressList)) {
+					if (!className) {
+						className = 'actress';
+					}
+					$.each(actressList, function(idx, actress) {
+						var $actress = $("<span>", {class: className}).html(actress).on("click", function() {
+							View.actress(actress);
+						}).css({
+							cursor: 'pointer'
+						});
+						list.push($actress);
+					});
+				}
+				return list;
+			},
 			getAge: function(actress) {
 				if (actress.birth && actress.birth.length > 3) {
 					return todayYear - parseInt(actress.birth.substring(0, 4)) + 1;

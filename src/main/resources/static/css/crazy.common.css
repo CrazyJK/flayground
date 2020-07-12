@@ -23,6 +23,7 @@ body {
 .check-group 		 label							 , label.check 									  {cursor: pointer; display: inline-block; vertical-align: middle;}
 .check-group 									 span, label.check 						  		 span {background-color: var(--light); border: 1px solid transparent;	border-radius: .25rem; color: var(--gray); font-size: 1rem;	    font-weight: 700; padding: .375rem .75rem; transition: all .3s;}
 .check-group.sm 								 span, label.check.sm 							 span {                            										border-radius: .2rem; 					   font-size: 0.875rem;                   padding: .25rem .5rem;   line-height: 1.5;}
+.check-group.xs 								 span, label.check.xs 							 span {                            										border-radius: .2rem; 					   font-size: 0.675rem;                   padding: .125rem .25rem; line-height: 1.1;}
 .check-group 		 label:not(:first-child) 	 span 												  {								   border-left-color: transparent;	border-top-left-radius: 0;  border-bottom-left-radius: 0;}
 .check-group 		 label:not(:last-child) 	 span 												  {								   border-right-color: transparent;	border-top-right-radius: 0; border-bottom-right-radius: 0;}
 .check-group 					 input				 , label.check 				 input 				  {display: none;}
@@ -438,7 +439,7 @@ body.bg-dark .ui-dialog {
 .center-right {position: absolute; top: 50%;  right: 0; transform: translate(0, -50%);}
 .bottom-left  {position: absolute; bottom: 0;  left: 0;}
 .bottom-right {position: absolute; bottom: 0; right: 0;}
-.fixed-center {position: absolute; top: 50%;   left: 50%; transform: translate(-50%, -50%);}
+.fixed-center {position: fixed; top: 50%;   left: 50%; transform: translate(-50%, -50%);}
 .fixed-top    {position: fixed; top: 0;}
 .fixed-bottom {position: fixed; bottom: 0;}
 .full-screen  {position: absolute; top: 0; left: 0; right: 0; bottom: 0;}
@@ -520,6 +521,7 @@ body.bg-dark .ui-dialog {
 /* dark theme */
 body.bg-dark {
 	background-color: #000 !important;
+	color: #ccc;
 }
 body.bg-dark nav.navbar, 
 body.bg-dark .bg-light {
@@ -545,4 +547,11 @@ body.bg-dark .card {
 }
 body.bg-dark th, body.bg-dark td {
 	color: var(--light);
+}
+body.bg-dark .border {
+	border-color: #3a3e42!important;
+}
+body.bg-dark button {
+	color: var(--light);
+	outline: none;
 }

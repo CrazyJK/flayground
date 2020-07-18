@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.flay;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -48,4 +49,9 @@ public class FlayArchiveController {
 		flayArchiveService.toInstance(opus);
 	}
 
+	@GetMapping("/find/{key}/{value}")
+	public List<Flay> findActress(@PathVariable String key, @PathVariable String value) {
+		return flayArchiveService.find(key, value);
+	}
+	
 }

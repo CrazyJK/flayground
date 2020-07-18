@@ -90,7 +90,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			var $flayCard = $(templateFlay);
 			
 			// set data and event
-			$flayCard.attr("id", flay.opus).data("flay", flay);
+			$flayCard.attr("id", flay.opus).data("flay", flay).addClass(settings.archive ? "archive" : "");
 			// cover
 			$flayCard.find(".card-body").css({
 				backgroundImage: 'url(/static/cover/' + flay.opus + ')'
@@ -110,9 +110,9 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				Search.opus(flay.opus);
 			});
 			// title
-			$flayCard.find(".flay-title").html((settings.archive ? "[Archive] " : "") + flay.title).on("click", function() {
+			$flayCard.find(".flay-title").html(flay.title).on("click", function() {
 				View.flay(flay.opus);
-			}).addClass(settings.archive ? "archive" : "");
+			});
 			// actress
 			if (settings.exclude.includes(ACTRESS)) {
 				$flayCard.find(".flay-actress-wrapper").remove();

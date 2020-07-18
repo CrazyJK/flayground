@@ -85,6 +85,9 @@ var Rest = {
 			findByActress: function(actress, callback) {
 				restCall("/flay/find/actress/" + actress.name , {}, callback);
 			},
+			findByActressInArchive: function(actress, callback) {
+				restCall("/archive/find/actress/" + actress.name , {}, callback);
+			},
 			findCandidates: function(callback) {
 				restCall("/flay/candidates", {title: 'Find candidates'}, callback);
 			},

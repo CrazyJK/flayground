@@ -67,4 +67,13 @@ public class FlayArchiveServiceImpl implements FlayArchiveService {
 		archiveFlaySource.list().remove(flay);
 	}
 
+	@Override
+	public List<Flay> find(String key, String value) {
+		if ("actress".equalsIgnoreCase(key)) {
+			return archiveFlaySource.list().stream().filter(f -> f.getActressList().stream().anyMatch(a -> a.equals(value))).collect(Collectors.toList());
+		} else {
+			throw new IllegalStateException("unknown field");
+		}
+	}
+
 }

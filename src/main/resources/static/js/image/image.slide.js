@@ -169,7 +169,7 @@ $(function() {
 				$image.css({
 					transform: 'scale(' + factor.toFixed(2) + ') rotate(' + degree + 'deg)'
 				});
-				console.log('currIndex', currIndex, 'isVerticalWindow', isVerticalWindow, 'isVerticalImage', isVerticalImage, 'imageVerticalRatio', imageVerticalRatio, 'factor', factor);
+				// console.log('currIndex', currIndex, 'isVerticalWindow', isVerticalWindow, 'isVerticalImage', isVerticalImage, 'imageVerticalRatio', imageVerticalRatio, 'factor', factor);
 				
 				// get info
 				Rest.Image.get(currIndex, function(info) {

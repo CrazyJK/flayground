@@ -9,7 +9,8 @@ var restCall = function(url, args, callback, failCallback) {
 			contentType: "application/json",
 			async: true,
 			cache: false,
-			title: "Call: " + url
+			title: "Call: " + url,
+			loadingDelay: 300
 	};	
 	var settings = $.extend({}, DEFAULTS, args);
 	if (settings.method != 'GET' && typeof settings.data === 'object') {
@@ -21,7 +22,7 @@ var restCall = function(url, args, callback, failCallback) {
 	var isCompleted = false;
 	var timeout = setTimeout(function() {
 		!isCompleted && loading.on(settings.title);
-	}, 300);
+	}, settings.loadingDelay);
 
 	$.ajax(PATH + url, settings).done(function(data) {
 		isCompleted = true;
@@ -38,7 +39,7 @@ var restCall = function(url, args, callback, failCallback) {
 		isCompleted = true;
 		console.log("restCall fail", url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 		if (failCallback) {
-			failCallback();
+			failCallback(jqXHR, textStatus, errorThrown);
 			clearTimeout(timeout);
 			loading.off();
 		} else {

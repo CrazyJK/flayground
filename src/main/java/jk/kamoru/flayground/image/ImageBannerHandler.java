@@ -20,13 +20,13 @@ public class ImageBannerHandler {
 	@Autowired ImageService imageService;
 	@Autowired ImageBannerPrinter imageBannerPrinter;
 
-	@GetMapping("/{idx}/{width}")
-	public String getBannerImage(@PathVariable int idx, @PathVariable int width,
+	@GetMapping("/{idx}/{width}/{height}")
+	public String getBannerImage(@PathVariable int idx, @PathVariable int width, @PathVariable int height,
 			@RequestParam(required = false, defaultValue = "false") boolean invert,
 			@RequestParam(required = false, defaultValue = "FOUR") BitDepth bitDepth,
 			@RequestParam(required = false, defaultValue = "TEXT") PixelMode pixelMode) {
 		Image image = imageService.get(idx);
-		return imageBannerPrinter.get(image.getFile(), width, 0, 0, invert, bitDepth, pixelMode);
+		return imageBannerPrinter.get(image.getFile(), width, height, 0, invert, bitDepth, pixelMode);
 	}
 
 }

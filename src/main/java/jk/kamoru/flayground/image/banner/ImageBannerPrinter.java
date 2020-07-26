@@ -21,7 +21,7 @@ public class ImageBannerPrinter {
 
 	public String get(File imageFile, int width, int height, int margin, boolean invert, BitDepth bitDepth, PixelMode pixelMode) {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
-			BufferedImage read = resizeImage(ImageIO.read(imageFile), width, 0);
+			BufferedImage read = resizeImage(ImageIO.read(imageFile), width, height);
 			printBanner(read, margin, invert, bitDepth, pixelMode, new PrintStream(baos));
 			return baos.toString(Flayground.ENCODING);
 		} catch (Exception e) {
@@ -32,8 +32,10 @@ public class ImageBannerPrinter {
 	private BufferedImage resizeImage(BufferedImage image, int width, int height) {
 		if (width < 1) {
 			width = 1;
+			double aspectRatio = (double) height / image.getHeight() * 2;
+			width = (int) Math.ceil(image.getWidth() * aspectRatio);
 		}
-		if (height <= 0) {
+		if (height < 1) {
 			double aspectRatio = (double) width / image.getWidth() * 0.5;
 			height = (int) Math.ceil(image.getHeight() * aspectRatio);
 		}
@@ -47,8 +49,8 @@ public class ImageBannerPrinter {
 		AnsiElement background = invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT;
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(background));
-		out.println();
-		out.println();
+//		out.println();
+//		out.println();
 		AnsiElement lastColor = AnsiColor.DEFAULT;
 		AnsiColors colors = new AnsiColors(bitDepth);
 		for (int y = 0; y < image.getHeight(); y++) {
@@ -64,11 +66,13 @@ public class ImageBannerPrinter {
 				}
 				out.print(getAsciiPixel(color, invert, pixelMode));
 			}
-			out.println();
+			if (y < image.getHeight() - 1) {
+				out.println();
+			}
 		}
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(AnsiBackground.DEFAULT));
-		out.println();
+//		out.println();
 	}
 
 	private char getAsciiPixel(Color color, boolean dark, PixelMode pixelMode) {

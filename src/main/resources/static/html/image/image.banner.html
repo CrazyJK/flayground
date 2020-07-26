@@ -13,12 +13,21 @@
 <style type="text/css">
 body {
 	font-family: D2Coding;
+	background-color: #000 !important;
+	color: #ccc;
 }
 pre {
-    cursor: crosshair;
-	line-height: 1;
-	overflow: hidden;
+	background-size: contain;
+    /* background-position-y: 22px; */
+    background-repeat: no-repeat;
+	cursor: crosshair;
+	font-family: Consolas;
 	font-size: 10px;
+	line-height: 11px;
+	overflow: hidden;
+}
+pre.hide-bg {
+	background: none!important;
 }
 #controlBox {
 	position: fixed;
@@ -69,9 +78,9 @@ ul#controlBox {
 #controlBox > li > div.custom-control {
 	margin: 0 .25rem;
 }
-#imagePanel {
+#imageThumbPanel {
 }
-#imagePanel > img {
+#imageThumbPanel > img {
 	width: 100%;
 }
 .custom-control > * {
@@ -98,12 +107,16 @@ Rest.Image.size(function(count) {
 	totalCount = count;
 });
 
+//1 x 1 pixel transparent
+const blackDataUrl = "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAAC0lEQVQYV2NgAAIAAAUAAarVyFEAAAAASUVORK5CYII=";
+
 var imageIndex = LocalStorageItem.get('image.banner.index', Random.getInteger(0, totalCount));
 var imageWidth = LocalStorageItem.get('image.banner.width', 150);
 var invertVal  = LocalStorageItem.getBoolean('image.banner.invert', false);
 var bitDepthVal = LocalStorageItem.get('image.banner.bitDepth', 'FOUR');
 var pixelModeVal = LocalStorageItem.get('image.banner.pixelMode', 'TEXT');
-var showImageVal  = LocalStorageItem.getBoolean('image.banner.showImageSwitch', false);
+var showThumbnailVal = LocalStorageItem.getBoolean('image.banner.showThumbnailSwitch', false);
+var overlapImageVal  = LocalStorageItem.getBoolean('image.banner.overlapImageSwitch', false);
 
 $(document).ready(function() {
 
@@ -113,8 +126,9 @@ $(document).ready(function() {
 	$("input[name='invert']").prop('checked', invertVal);
 	$("input:radio[name='bitDepth']:radio[value='" + bitDepthVal + "']").prop('checked', true);
 	$("input:radio[name='pixelMode']:radio[value='" + pixelModeVal + "']").prop('checked', true);
-	$("#showImageSwitch").prop('checked', showImageVal);
-	$("#imagePanel").toggle(showImageVal);
+	$("#showThumbnailSwitch").prop('checked', showThumbnailVal);
+	$("#overlapImageSwitch").prop('checked', overlapImageVal);
+	$("#imageThumbPanel").toggle(showThumbnailVal);
 	
 	$("#invert, input[name='bitDepth'], input[name='pixelMode']").on("click", function(e) {
 		show();
@@ -145,10 +159,16 @@ $(document).ready(function() {
 		$("#index").val(imageIndex);
 		show();
 	});
-	$("#showImageSwitch").on("change", function(e) {
-		$("#imagePanel").toggle($(this).is(':checked'));
-		LocalStorageItem.set('image.banner.showImageSwitch', $(this).is(':checked'));
+	$("#showThumbnailSwitch").on("change", function(e) {
+		showThumbnailVal = $(this).is(':checked');
+		$("#imageThumbPanel").toggle(showThumbnailVal);
+		LocalStorageItem.set('image.banner.showThumbnailSwitch', showThumbnailVal);
 	});
+	$("#overlapImageSwitch").on("change", function(e) {
+		overlapImageVal = $(this).is(':checked');
+		$("pre#banner").toggleClass('hide-bg', !overlapImageVal);
+		LocalStorageItem.set('image.banner.overlapImageSwitch', overlapImageVal);
+	}).trigger("change");
 	$("body").navEvent(function(signal, e) {
 		switch (signal) {
 		case 82: // 'R'
@@ -165,6 +185,13 @@ $(document).ready(function() {
 	$("#controlToggleBtn").on("click", function() {
 		$("#controlBox > li:not(:last-child)").toggle();
 	});
+	$("img#image").on("click", function() {
+		Popup.imageByNo(imageIndex);
+	});
+	$(".monitor-size").on("click", function() {
+		$("#width").val($(this).text());
+		show();
+	});
 
 	show();
 });
@@ -172,60 +199,89 @@ $(document).ready(function() {
 function show() {
 	imageIndex = $("#index").val();
 	imageWidth = $("#width").val();
-	console.log('show', imageIndex);
+	// console.log('show', imageIndex);
 	
-	Rest.Image.get(imageIndex, function(info) {
-		// info set
-		$("#imageTitle").html(info.name);
-		// load Image
-		const image = new Image();
-		image.src = PATH + "/static/image/" + imageIndex;
-		image.decode().then(() => {
-			// append image
-			$("#imagePanel").children().first().remove();
-			var $img = $(image).prependTo($("#imagePanel"));
-			// add event
-			$img.on("click", function() {
-				Popup.imageByNo(imageIndex);
-			});
-		}).catch(() => {
-		    document.body.appendChild(new Text("Could not load the image :( " + image.src));
-		});
-	});
+	// reset banner
+	$("pre#banner").css({
+		backgroundImage: 'url(' + blackDataUrl + ')',
+		width: 'calc(' + imageWidth + ' * 5.5px)'
+	}).empty();
 
-	restCall(PATH + '/banner/' + imageIndex + '/' + imageWidth, {
+	// load banner
+	restCall(PATH + '/banner/' + imageIndex + '/' + imageWidth + '/0', {
 		mimeType : "text/plain",
+		loadingDelay: 2000,
 		data: $("form").serialize()
 	}, function(text) {
-		$("#banner").html(text);
+		$("pre#banner").text(text);
+		
+		LocalStorageItem.set('image.banner.index', imageIndex);
+		LocalStorageItem.set('image.banner.width', imageWidth);
+		LocalStorageItem.set('image.banner.invert', $("input[name='invert']").is(":checked"));
+		LocalStorageItem.set('image.banner.bitDepth', $("input:radio[name='bitDepth']:checked").val());
+		LocalStorageItem.set('image.banner.pixelMode', $("input:radio[name='pixelMode']:checked").val());
+	}, function(jqXHR, textStatus, errorThrown) {
+		loading.on(new Text("Could not load the banner :( " + image.src + " - " + textStatus + " - " + errorThrown));
 	});
-	
-	LocalStorageItem.set('image.banner.index', imageIndex);
-	LocalStorageItem.set('image.banner.width', imageWidth);
-	LocalStorageItem.set('image.banner.invert', $("input[name='invert']").is(":checked"));
-	LocalStorageItem.set('image.banner.bitDepth', $("input:radio[name='bitDepth']:checked").val());
-	LocalStorageItem.set('image.banner.pixelMode', $("input:radio[name='pixelMode']:checked").val());
+
+	// load Image
+	let image = new Image();
+	image.src = PATH + "/static/image/" + imageIndex;
+	image.decode().then(() => {
+
+		// get image dataurl
+		let canvas = document.createElement('canvas');
+	   	canvas.width = image.naturalWidth;
+	   	canvas.height = image.naturalHeight;
+	   	canvas.getContext('2d').drawImage(image, 0, 0);
+
+	   	let imageDataUrl = canvas.toDataURL('image/png');
+	   	// console.log(imageUri);
+		
+		// append image data
+		$("img#image").attr("src", imageDataUrl);
+
+		// overlap background
+		setTimeout(function() {
+			$("pre#banner").css({
+				backgroundImage: 'url(' + imageDataUrl + ')'
+			});
+		}, 1000);
+
+		// load image info
+		Rest.Image.get(imageIndex, function(info) {
+			// info set
+			$("#imageTitle").html(info.name);
+		});
+
+	}).catch((e) => {
+		loading.on(new Text("Could not load the image :( " + image.src + " - " + e));
+	});
 }
 </script>
 </head>
 <body class="bg-dark">
 
-	<div class="container-fluid">
-		<pre id="banner" class="text-light"></pre>
+	<div class="container-fluid mt-4">
+		<pre id="banner" class="text-light rounded"></pre>
 	</div>
 
 	<form action="#" onsubmit="return false;">
 		<ul id="controlBox">
 			<li>
-				<div class="border border-dark collapse rounded" id="imagePanel">
+				<div class="border border-dark collapse rounded" id="imageThumbPanel">
 					<img id="image">
 					<div id="imageTitle" class="nowrap"></div>
 				</div>
 			</li>
-			<li>
+			<li class="text-left">
 				<div class="custom-control custom-switch">
-					<input type="checkbox" class="custom-control-input" id="showImageSwitch" name="showImageSwitch">
-					<label class="custom-control-label" for="showImageSwitch">show Image</label>
+					<input type="checkbox" class="custom-control-input" id="showThumbnailSwitch" name="showThumbnailSwitch">
+					<label class="custom-control-label" for="showThumbnailSwitch">show Thumbnail</label>
+				</div>
+				<div class="custom-control custom-switch">
+					<input type="checkbox" class="custom-control-input" id="overlapImageSwitch" name="overlapImageSwitch">
+					<label class="custom-control-label" for="overlapImageSwitch">overlap Image</label>
 				</div>
 			</li>
 			<li>
@@ -239,6 +295,11 @@ function show() {
 				<div class="number-group">
 					<label>Width</label>
 					<input type="number" id="width" title="banner width" min="50" max="360">
+				</div>
+				<div>
+					<span class="hover mx-2 monitor-size">190</span>
+					<span class="hover mx-2 monitor-size">460</span>
+					<span class="hover mx-2 monitor-size">342</span>
 				</div>
 			</li>
 			<li>

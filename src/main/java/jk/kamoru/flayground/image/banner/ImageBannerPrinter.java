@@ -13,7 +13,9 @@ import org.springframework.stereotype.Component;
 import jk.kamoru.flayground.FlayException;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.image.banner.AnsiColors.BitDepth;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class ImageBannerPrinter {
 
@@ -24,6 +26,11 @@ public class ImageBannerPrinter {
 			BufferedImage read = resizeImage(ImageIO.read(imageFile), width, height);
 			printBanner(read, margin, invert, bitDepth, pixelMode, new PrintStream(baos));
 			return baos.toString(Flayground.ENCODING);
+		} catch (NullPointerException e) {
+			if (imageFile != null) {
+				log.warn("Fail to get image: " + imageFile);
+			}
+			return "Fail to get image: " + imageFile;
 		} catch (Exception e) {
 			throw new FlayException("fail to make banner", e);
 		}

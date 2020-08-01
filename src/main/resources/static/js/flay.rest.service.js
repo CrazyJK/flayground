@@ -205,7 +205,15 @@ var Rest = {
 		},
 		Image: {
 			size: function(callback) {
-				restCall('/image/size', {async: false}, callback);
+				if (callback) {
+					restCall('/image/size', {async: false}, callback);
+				} else {
+					var total = 0;
+					restCall('/image/size', {async: false}, function(max) {
+						total = max;
+					});
+					return total;
+				}
 			},
 			list: function(callback) {
 				restCall('/image/list', {}, callback);

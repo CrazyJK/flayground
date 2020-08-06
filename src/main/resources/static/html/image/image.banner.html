@@ -15,6 +15,7 @@ body {
 	font-family: D2Coding;
 	background-color: #000 !important;
 	color: #ccc;
+	overflow: hidden;
 }
 pre {
 	position: absolute;
@@ -71,6 +72,7 @@ ul#controlBox {
 	color: #ccc;
 	text-align: right;
 	flex: 1 1 auto;
+	width: 0;
 }
 #controlBox > li > .number-group > input:focus {
 	border: 0;
@@ -113,11 +115,13 @@ var bitDepthVal      = LocalStorageItem.get('image.banner.bitDepth', 'FOUR');
 var pixelModeVal     = LocalStorageItem.get('image.banner.pixelMode', 'TEXT');
 var invertVal 		 = LocalStorageItem.getBoolean('image.banner.invert', false);
 var randomVal  		 = LocalStorageItem.getBoolean('image.banner.random', false);
+var autofitVal 		 = LocalStorageItem.getBoolean('image.banner.autofit', false);
 var showThumbnailVal = LocalStorageItem.getBoolean('image.banner.showThumbnailSwitch', false);
 var overlapImageVal  = LocalStorageItem.getBoolean('image.banner.overlapImageSwitch', false);
 var overlapBannerVal = LocalStorageItem.getBoolean('image.banner.overlapBannerSwitch', false);
 var playIntervalVal  = LocalStorageItem.getInteger('image.banner.play.interval', 5);
 var playIntervalID;
+var isPlay = false;
 var bannerText = "", bannerBlank = "";
 
 $(document).ready(function() {
@@ -125,8 +129,9 @@ $(document).ready(function() {
 	$("#totalImageCount").html(imageTotal);
 	$("#index").val(imageIndex);
 	$("#width").val(panelWidth);
-	$("input[name='invert']").prop('checked', invertVal);
-	$("input[name='random']").prop('checked', randomVal);
+	$("#invert").prop('checked', invertVal);
+	$("#random").prop('checked', randomVal);
+	$("#autofit").prop('checked', autofitVal);
 	$("#playInterval").val(playIntervalVal);
 	$("input:radio[name='bitDepth']:radio[value='" + bitDepthVal + "']").prop('checked', true);
 	$("input:radio[name='pixelMode']:radio[value='" + pixelModeVal + "']").prop('checked', true);
@@ -166,24 +171,29 @@ $(document).ready(function() {
 		show();
 	});
 	$("#playBtn").on("click", function() {
-		var state = !$(this).data("state");
-//		Progress.play.init(0.2, playIntervalVal);
-		if (state) {
+		isPlay = !$(this).data("isPlay");
+		Progress.play.init(0.2, playIntervalVal);
+		if (isPlay) {
 			playIntervalID = setInterval(function() {
 				$("#nextBtn").click();
-//				Progress.play.run();
+				Progress.play.run();
 			}, 1000 * playIntervalVal);
-//			Progress.play.run();
+			Progress.play.run();
 		} else {
 			clearInterval(playIntervalID);
-//			Progress.play.stop();
+			Progress.play.stop();
 		}
-		$(this).data("state", state).html(state ? 'STOP' : 'PLAY');
+		$(this).data("isPlay", isPlay).html(isPlay ? 'STOP' : 'PLAY');
 	}).data("state", false);
 	$("#random").on("change", function(e) {
-		randomVal = $("input[name='random']").is(":checked");
-		LocalStorageItem.set('image.banner.random', $("input[name='random']").is(":checked"));
+		randomVal = $("#random").is(":checked");
+		LocalStorageItem.set('image.banner.random', randomVal);
 	});
+	$("#autofit").on("change", function(e) {
+		autofitVal = $("#autofit").is(":checked");
+		$("#width").prop('readonly', autofitVal);
+		LocalStorageItem.set('image.banner.autofit', autofitVal);
+	}).trigger("change");
 	$("#playInterval").on("change", function() {
 		playIntervalVal = parseInt($(this).val());
 		LocalStorageItem.set('image.banner.play.interval', playIntervalVal);
@@ -206,11 +216,26 @@ $(document).ready(function() {
 	$("body").navEvent(function(signal, e) {
 		// console.log('navEvent', signal);
 		switch (signal) {
+		case 84: // 'T'
+			$("#showThumbnailSwitch").click();
+			break;
+		case 66: // 'B'
+			$("#overlapBannerSwitch").click();
+			break;
+		case 73: // 'I'
+			$("#overlapImageSwitch").click();
+			break;
+		case 77: // 'M'
+			$("#controlToggleBtn").click();
+			break;
 		case 80: // 'P'
 			$("#playBtn").click();
 			break;
 		case 82: // 'R'
 			$("#random").click();
+			break;
+		case 65: // 'A'
+			$("#autofit").click();
 			break;
 		case 37: // key left
 			$("#prevBtn").click();
@@ -219,7 +244,7 @@ $(document).ready(function() {
 			$("#nextBtn").click();
 			break;
 		case 1001: // left mouse click
-			if ($("#playBtn").data("state")) { // stop play
+			if ($("#playBtn").data("isPlay")) { // stop play
 				$("#playBtn").click();
 			}
 			break;
@@ -241,83 +266,79 @@ $(document).ready(function() {
 
 function show() {
 	imageIndex = parseInt($("#index").val());
-	panelWidth = $("#width").val();
+	if (autofitVal) {
+		panelWidth = Math.round(window.innerWidth / 5.5);
+		$("#width").val(panelWidth);
+	} else {
+		panelWidth = $("#width").val();
+	}
 	// console.log('show', imageIndex);
 	
+	// load banner
+	loadBanner();
+
+	// load Image
+	loadImage();
+}
+
+function loadBanner() {
 	// reset banner
 	$("pre#banner").css({
 		backgroundImage: 'url(' + blackDataUrl + ')',
 		width: 'calc(' + panelWidth + ' * 5.5px)'
 	}).empty();
-	
-	// load Image
-	let image = new Image();
-	image.src = PATH + "/static/image/" + imageIndex;
-	image.decode().then(() => {
 
-		$("#imageWidth").html(image.naturalWidth);
-		$("#imageHeight").html(image.naturalHeight);
-		
-		// get image dataurl
-//		let canvas = document.createElement('canvas');
-//	   	canvas.width = image.naturalWidth;
-//	   	canvas.height = image.naturalHeight;
-//	   	canvas.getContext('2d').drawImage(image, 0, 0);
-//	   	let imageDataUrl = canvas.toDataURL('image/png');
-	   	// console.log(imageUri);
-		
-		// append image data
-//		$("img#image").attr("src", imageDataUrl);
-		$("img#image").attr("src", image.src);
-
-		// overlap background
-		setTimeout(function() {
-			$("pre#banner").css({
-//				backgroundImage: 'url(' + imageDataUrl + ')'
-				backgroundImage: 'url(' + image.src + ')'
-			});
-		}, 1000 * (overlapBannerVal ? 1 : 0));
-
-		// load image info
-		Rest.Image.get(imageIndex, function(info) {
-			// info set
-			$("#imageTitle").html(info.name);
-		});
-
-		// load banner
-		loadBanner(panelWidth);
-		
-	}).catch((e) => {
-		loading.on(new Text("Could not load the image :( " + image.src + " - " + e));
-	});
-}
-
-function loadBanner(imageWidth) {
-	restCall(PATH + '/banner/' + imageIndex + '/' + imageWidth + '/0', {
+	restCall(PATH + '/banner/' + imageIndex + '/' + panelWidth + '/0', {
 		mimeType : "text/plain",
 		loadingDelay: 2000,
 		data: $("form").serialize()
 	}, function(text) {
 		bannerText = text;
-		bannerBlank = text.replace(/./g, '');
+		bannerBlank = text.replace(/./g, '') + '\n';
 		$("pre#banner").text(overlapBannerVal ? bannerText : bannerBlank);
-		
-		/*
-		var bannerWidth  = $("pre#banner").width();
-		var bannerHeight = $("pre#banner").height();
-		var bannerVertical = bannerHeight > bannerWidth;
-		var windowHeight = $(window).height();
-		var scale = bannerVertical ? windowHeight / bannerHeight : bannerWidth / bannerHeight;
-		var topOffset = (bannerVertical ? bannerHeight : windowHeight) * (scale - 1) / 2;
+
+		// overflow-y scale fix
+		var scale = 1;
+		var degree = 0;
+		var topOffset = 0;
+		if (autofitVal) {
+			var bannerWidth  = $("pre#banner").width();
+			var bannerHeight = $("pre#banner").height();
+			var bannerVerticalRatio = bannerHeight / bannerWidth;
+			var isBannerVertical = bannerWidth < bannerHeight;
+			var isWindowVertical = window.innerWidth < window.innerHeight;
+			if (isBannerVertical !== isWindowVertical && (bannerVerticalRatio < 0.8 || 1.2 < bannerVerticalRatio)) {
+				degree = 90;
+				scale = window.innerHeight / bannerWidth;
+				topOffset = bannerWidth * scale / 2 - bannerHeight / 2;
+			} else {
+				scale = window.innerHeight / bannerHeight;
+				topOffset = bannerHeight * (scale - 1) / 2;
+			}
+		}
 		$("pre#banner").css({
-			transform: "scale(" + scale.toFixed(2) + ")" + (bannerVertical ? "" : " rotate(-90deg)"),
+			transform: "scale(" + scale.toFixed(2) + ")" + " rotate(" + degree + "deg)",
 			top: topOffset.toFixed(0) + "px"
 		});
-		console.log(bannerWidth + " x " + bannerHeight, bannerVertical, windowHeight, scale.toFixed(2), topOffset.toFixed(0));
-		*/		
+		console.log({
+			bannerSize: bannerWidth + " x " + bannerHeight, 
+			isBannerVertical: isBannerVertical, 
+			bannerVerticalRatio: bannerVerticalRatio, 
+			windowSize: window.innerWidth + " x " + window.innerHeight,
+			isWindowVertical:  isWindowVertical, 
+			scale: scale.toFixed(2), 
+			degree: degree, 
+			topOffset: topOffset.toFixed(0)
+		});
 		
 		// page progress
 		Progress.page(imageIndex + 1, imageTotal);
+		
+		if (isPlay) {
+			setTimeout(function() {
+				$("pre#banner").text(bannerBlank);
+			}, 1000 * (playIntervalVal * 2/3));
+		}
 		
 		LocalStorageItem.set('image.banner.index', imageIndex);
 		LocalStorageItem.set('image.banner.width', panelWidth);
@@ -326,6 +347,39 @@ function loadBanner(imageWidth) {
 		LocalStorageItem.set('image.banner.pixelMode', $("input:radio[name='pixelMode']:checked").val());
 	}, function(jqXHR, textStatus, errorThrown) {
 		loading.on(new Text("Could not load the banner :( " + image.src + " - " + textStatus + " - " + errorThrown));
+	});
+}
+
+function loadImage() {
+	let image = new Image();
+	image.src = PATH + "/static/image/" + imageIndex;
+	image.decode().then(() => {
+		// $("#imageSize").html(image.naturalWidth + ' x ' + image.naturalHeight);
+		
+		// get image dataurl
+		let canvas = document.createElement('canvas');
+	   	canvas.width = image.naturalWidth;
+	   	canvas.height = image.naturalHeight;
+	   	canvas.getContext('2d').drawImage(image, 0, 0);
+	   	let imageDataUrl = canvas.toDataURL('image/png');
+	   	// console.log(imageUri);
+		
+		// append image data
+		$("img#image").attr("src", imageDataUrl);
+
+		// overlap background
+		setTimeout(function() {
+			$("pre#banner").css({
+				backgroundImage: 'url(' + imageDataUrl + ')'
+			});
+		}, 1000 * (overlapBannerVal ? playIntervalVal * 1/3 : 0));
+
+		// load image info
+		Rest.Image.get(imageIndex, function(info) {
+			$("#imageTitle").html(info.name);
+		});
+	}).catch((e) => {
+		loading.on(new Text("Could not load the image :( " + image.src + " - " + e));
 	});
 }
 
@@ -382,34 +436,33 @@ Progress.play = {
 				<div class="border border-dark collapse rounded" id="imageThumbPanel">
 					<img id="image">
 					<div id="imageTitle" class="nowrap"></div>
-					<div><span id="imageWidth"></span> x <span id="imageHeight"></span></div>
+					<div id="imageSize"></div>
 				</div>
 			</li>
 			<li class="text-left">
 				<div class="custom-control custom-switch">
-					<input type="checkbox" class="custom-control-input" id="showThumbnailSwitch" name="showThumbnailSwitch">
+					<input type="checkbox" class="custom-control-input" id="showThumbnailSwitch">
 					<label class="custom-control-label" for="showThumbnailSwitch">show Thumbnail</label>
 				</div>
 				<div class="custom-control custom-switch">
-					<input type="checkbox" class="custom-control-input" id="overlapImageSwitch" name="overlapImageSwitch">
+					<input type="checkbox" class="custom-control-input" id="overlapImageSwitch">
 					<label class="custom-control-label" for="overlapImageSwitch">overlap Image</label>
 				</div>
 				<div class="custom-control custom-switch">
-					<input type="checkbox" class="custom-control-input" id="overlapBannerSwitch" name="overlapBannerSwitch">
+					<input type="checkbox" class="custom-control-input" id="overlapBannerSwitch">
 					<label class="custom-control-label" for="overlapBannerSwitch">overlap Banner</label>
 				</div>
 			</li>
 			<li>
 				<div class="number-group">
-					<label>Index</label>
-					<label id="totalImageCount"></label>
+					<label>Index <span id="totalImageCount"></span></label>
 					<input type="number" id="index" title="image index" min="0">
 				</div>
 			</li>
 			<li>
 				<div class="number-group">
-					<label>Width</label>
-					<input type="number" id="width" title="banner width" min="50" max="360">
+					<label>Banner width</label>
+					<input type="number" id="width" title="banner width" min="100" max="800">
 					<div class="d-flex w-100">					
 						<span class="hover mx-2 flex-fill monitor-size">190</span>
 						<span class="hover mx-2 flex-fill monitor-size">460</span>
@@ -433,13 +486,17 @@ Progress.play = {
 					<button class="btn btn-flay" id="nextBtn" type="button">NEXT</button>
 				</div>
 			</li>
-			<li>
+			<li class="text-left pl-4">
 				<div class="custom-control custom-switch">
-					<input type="checkbox" class="custom-control-input" id="random" name="random" checked="checked">
+					<input type="checkbox" class="custom-control-input" id="random">
 					<label class="custom-control-label" for="random">Random</label>
 				</div>
 				<div class="custom-control custom-switch">
-					<input type="checkbox" class="custom-control-input" id="invert" name="invert" checked="checked">
+					<input type="checkbox" class="custom-control-input" id="autofit">
+					<label class="custom-control-label" for="autofit">Autofit</label>
+				</div>
+				<div class="custom-control custom-switch">
+					<input type="checkbox" class="custom-control-input" id="invert" name="invert">
 					<label class="custom-control-label" for="invert">Invert</label>
 				</div>
 			</li>

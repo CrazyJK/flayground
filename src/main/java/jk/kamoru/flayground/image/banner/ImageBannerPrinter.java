@@ -8,7 +8,8 @@ import java.io.PrintStream;
 
 import javax.imageio.ImageIO;
 
-import org.springframework.stereotype.Component;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.FlayException;
 import jk.kamoru.flayground.Flayground;
@@ -16,17 +17,18 @@ import jk.kamoru.flayground.image.banner.AnsiColors.BitDepth;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@Component
+@Service
 public class ImageBannerPrinter {
 
 	private static final double[] RGB_WEIGHT = { 0.2126d, 0.7152d, 0.0722d };
 
+	@Cacheable("bannerCache")
 	public String get(File imageFile, int width, int height, int margin, boolean invert, BitDepth bitDepth, PixelMode pixelMode) {
 		try (ByteArrayOutputStream baos = new ByteArrayOutputStream();) {
 			BufferedImage read = resizeImage(ImageIO.read(imageFile), width, height);
 			printBanner(read, margin, invert, bitDepth, pixelMode, new PrintStream(baos));
 			return baos.toString(Flayground.ENCODING);
-		} catch (NullPointerException e) {
+		} catch (NullPointerException | ArrayIndexOutOfBoundsException e) {
 			if (imageFile != null) {
 				log.warn("Fail to get image: " + imageFile);
 			}

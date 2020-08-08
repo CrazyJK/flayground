@@ -8,28 +8,35 @@
 <link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css">
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
 <style type="text/css">
 body {
 	font-family: D2Coding;
-	background-color: #000 !important;
+	background-color: #000;
 	color: #ccc;
-	overflow: hidden;
+	overflow-x: hidden;
 }
 pre {
 	position: absolute;
 	background-size: contain;
     background-repeat: no-repeat;
+	background-color: #ccc;
+	color: #000;
 	cursor: crosshair;
 	font-family: Consolas;
 	font-size: 10px;
 	line-height: 11px;
 	overflow: hidden;
-	transition: all 0.4s ease 0s;
+	transition: transform 0.4s, background-image 2s;
 }
 pre.hide-bg {
-	background: none!important;
+	background-image: none!important;
+}
+pre.bg-invert {
+	background-color: #000!important;
+	color: #ccc!important;
 }
 #controlBox {
 	position: fixed;
@@ -89,17 +96,24 @@ ul#controlBox {
 .custom-control > * {
 	cursor: pointer;
 }
-#controlToggleBtn {
+#controlBoxToggleBtn {
 	cursor: pointer;
 	transition: all .4s;
 	border-radius: .25rem;
 	height: 16px;
 }
-#controlToggleBtn:hover {
+#controlBoxToggleBtn:hover {
 	background-color: #444;
+}
+i:not(.fa) {
+	font-style:  normal;
+	color: var(--warning);
+    font-weight: 700;
 }
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript" src="/js/crazy.common.js"></script>
 <script type="text/javascript" src="/js/crazy.jquery.js"></script>
 <script type="text/javascript" src="/js/flay.rest.service.js"></script>
@@ -113,16 +127,24 @@ var imageIndex		 = LocalStorageItem.get('image.banner.index', Random.getInteger(
 var panelWidth		 = LocalStorageItem.get('image.banner.width', 150);
 var bitDepthVal      = LocalStorageItem.get('image.banner.bitDepth', 'FOUR');
 var pixelModeVal     = LocalStorageItem.get('image.banner.pixelMode', 'TEXT');
-var invertVal 		 = LocalStorageItem.getBoolean('image.banner.invert', false);
+var playEffectVal	 = LocalStorageItem.getInteger('image.banner.playEffect', '1');
 var randomVal  		 = LocalStorageItem.getBoolean('image.banner.random', false);
 var autofitVal 		 = LocalStorageItem.getBoolean('image.banner.autofit', false);
+var autoRotateVal	 = LocalStorageItem.getBoolean('image.banner.autoRotate', false);
+var autoMaxVal 		 = LocalStorageItem.getBoolean('image.banner.autoMax', false);
+var invertVal 		 = LocalStorageItem.getBoolean('image.banner.invert', false);
 var showThumbnailVal = LocalStorageItem.getBoolean('image.banner.showThumbnailSwitch', false);
 var overlapImageVal  = LocalStorageItem.getBoolean('image.banner.overlapImageSwitch', false);
 var overlapBannerVal = LocalStorageItem.getBoolean('image.banner.overlapBannerSwitch', false);
 var playIntervalVal  = LocalStorageItem.getInteger('image.banner.play.interval', 5);
-var playIntervalID;
+var imageAlphaVal	 = LocalStorageItem.get('image.banner.imageAlpha', '0.9');
 var isPlay = false;
-var bannerText = "", bannerBlank = "";
+var bannerText = "";
+var bannerBlank = "";
+var playIntervalID = -1;
+var bannerRemovalID = -1;
+var overlapImageTimeoutID  = -1;
+var overlapBannerTimeoutID = -1;
 
 $(document).ready(function() {
 	// initiate
@@ -132,7 +154,11 @@ $(document).ready(function() {
 	$("#invert").prop('checked', invertVal);
 	$("#random").prop('checked', randomVal);
 	$("#autofit").prop('checked', autofitVal);
+	$("#autoMax").prop('checked', autoMaxVal);
+	$("#autoRotate").prop('checked', autoRotateVal);
+	$("#playEffect").val(playEffectVal);
 	$("#playInterval").val(playIntervalVal);
+	$("#imageAlpha").val(imageAlphaVal);
 	$("input:radio[name='bitDepth']:radio[value='" + bitDepthVal + "']").prop('checked', true);
 	$("input:radio[name='pixelMode']:radio[value='" + pixelModeVal + "']").prop('checked', true);
 	$("#showThumbnailSwitch").prop('checked', showThumbnailVal);
@@ -150,6 +176,10 @@ $(document).ready(function() {
 		if (e.keyCode === 13) {
 			show();
 		}
+	});
+	$(".monitor-size").on("click", function() {
+		$("#width").val($(this).text()).trigger($.Event('keyup', {keyCode: 13}));
+		// show();
 	});
 	$("#prevBtn").on("click", function(e) {
 		if (--imageIndex < 0) {
@@ -174,29 +204,60 @@ $(document).ready(function() {
 		isPlay = !$(this).data("isPlay");
 		Progress.play.init(0.2, playIntervalVal);
 		if (isPlay) {
-			playIntervalID = setInterval(function() {
-				$("#nextBtn").click();
-				Progress.play.run();
-			}, 1000 * playIntervalVal);
 			Progress.play.run();
+			playEffect();
+			playIntervalID = setInterval(function() {
+				Progress.play.run();
+				$("#nextBtn").click();
+			}, 1000 * playIntervalVal);
 		} else {
-			clearInterval(playIntervalID);
 			Progress.play.stop();
+			clearInterval(playIntervalID);
+			clearInterval(bannerRemovalID);
+			clearTimeout(overlapImageTimeoutID);
+			clearTimeout(overlapBannerTimeoutID);
 		}
-		$(this).data("isPlay", isPlay).html(isPlay ? 'STOP' : 'PLAY');
-	}).data("state", false);
+		$(this).data("isPlay", isPlay).html(isPlay ? 'STO<i>P</i>' : '<i>P</i>LAY');
+	});
+	$("#playEffect").on("change", function(e) {
+		playEffectVal = parseInt($(this).val());
+		LocalStorageItem.set('image.banner.playEffect', playEffectVal);
+	});
 	$("#random").on("change", function(e) {
-		randomVal = $("#random").is(":checked");
+		randomVal = $(this).is(":checked");
 		LocalStorageItem.set('image.banner.random', randomVal);
 	});
 	$("#autofit").on("change", function(e) {
-		autofitVal = $("#autofit").is(":checked");
+		autofitVal = $(this).is(":checked");
 		$("#width").prop('readonly', autofitVal);
+		$("body").css("overflowY", autofitVal ? "hidden" : "auto");
+		$("#autoRotate").prop("disabled", !autofitVal);
+		$("#autoMax").prop("disabled", !autofitVal);
 		LocalStorageItem.set('image.banner.autofit', autofitVal);
+		show();
+	}).trigger("change");
+	$("#autoRotate").on("change", function(e) {
+		autoRotateVal = $(this).is(":checked");
+		LocalStorageItem.set('image.banner.autoRotate', autoRotateVal);
+		show();
+	});
+	$("#autoMax").on("change", function(e) {
+		autoMaxVal = $(this).is(":checked");
+		LocalStorageItem.set('image.banner.autoMax', autoMaxVal);
+		show();
+	});
+	$("#invert").on("change", function() {
+		invertVal = $(this).is(":checked");
+		$("pre#banner").toggleClass("bg-invert", invertVal);
+		LocalStorageItem.set('image.banner.invert', invertVal);
 	}).trigger("change");
 	$("#playInterval").on("change", function() {
 		playIntervalVal = parseInt($(this).val());
 		LocalStorageItem.set('image.banner.play.interval', playIntervalVal);
+	});
+	$("#imageAlpha").on("change", function() {
+		imageAlphaVal = $(this).val();
+		LocalStorageItem.set('image.banner.imageAlpha', imageAlphaVal);
 	});
 	$("#showThumbnailSwitch").on("change", function(e) {
 		showThumbnailVal = $(this).is(':checked');
@@ -213,8 +274,14 @@ $(document).ready(function() {
 		$("pre#banner").text(overlapBannerVal ? bannerText : bannerBlank);
 		LocalStorageItem.set('image.banner.overlapBannerSwitch', overlapBannerVal);
 	}).trigger("change");
+	$("#controlBoxToggleBtn").on("click", function() {
+		$("#controlBox > li:not(:last-child)").toggle();
+	});
+	$("img#image").on("click", function() {
+		Popup.imageByNo(imageIndex);
+	});
 	$("body").navEvent(function(signal, e) {
-		// console.log('navEvent', signal);
+		console.log('navEvent', signal, e.key, e.target);
 		switch (signal) {
 		case 84: // 'T'
 			$("#showThumbnailSwitch").click();
@@ -222,17 +289,35 @@ $(document).ready(function() {
 		case 66: // 'B'
 			$("#overlapBannerSwitch").click();
 			break;
+		case 69: // 'E'
+			var curr = parseInt($("#playEffect").val());
+			var max  = parseInt($("#playEffect").attr("max"));
+			curr++;
+			if (curr > max) {
+				curr = 0;
+			}
+			$("#playEffect").val(curr).trigger("change");
+			break;
 		case 73: // 'I'
 			$("#overlapImageSwitch").click();
 			break;
 		case 77: // 'M'
-			$("#controlToggleBtn").click();
+			$("#controlBoxToggleBtn").click();
 			break;
 		case 80: // 'P'
 			$("#playBtn").click();
 			break;
 		case 82: // 'R'
 			$("#random").click();
+			break;
+		case 86: // 'V'
+			$("#invert").click();
+			break;
+		case 88: // 'X'
+			$("#autoMax").click();
+			break;
+		case 79: // 'o'
+			$("#autoRotate").click();
 			break;
 		case 65: // 'A'
 			$("#autofit").click();
@@ -245,26 +330,31 @@ $(document).ready(function() {
 			break;
 		case 1001: // left mouse click
 			if ($("#playBtn").data("isPlay")) { // stop play
-				$("#playBtn").click();
+				if ($(e.target).closest("#controlBox").length === 0) {
+					$("#playBtn").click();
+				}
+			}
+			break;
+		case -1: // mouse wheel down
+			if (autofitVal) {
+				$("#nextBtn").click();
+			}
+			break;
+		case 1: // mouse wheel up
+			if (autofitVal) {
+				$("#prevBtn").click();
 			}
 			break;
 		}
-	});
-	$("#controlToggleBtn").on("click", function() {
-		$("#controlBox > li:not(:last-child)").toggle();
-	});
-	$("img#image").on("click", function() {
-		Popup.imageByNo(imageIndex);
-	});
-	$(".monitor-size").on("click", function() {
-		$("#width").val($(this).text());
-		show();
+		$("i:containsIgnorecase(" + e.key + ")", e.target).effect("highlight");
 	});
 
 	show();
 });
 
 function show() {
+	$("body").navActive(false);
+
 	imageIndex = parseInt($("#index").val());
 	if (autofitVal) {
 		panelWidth = Math.round(window.innerWidth / 5.5);
@@ -273,7 +363,11 @@ function show() {
 		panelWidth = $("#width").val();
 	}
 	// console.log('show', imageIndex);
-	
+
+	clearTimeout(overlapImageTimeoutID);
+	clearTimeout(overlapBannerTimeoutID);
+	clearInterval(bannerRemovalID);
+
 	// load banner
 	loadBanner();
 
@@ -301,17 +395,17 @@ function loadBanner() {
 		var scale = 1;
 		var degree = 0;
 		var topOffset = 0;
+		var bannerWidth  = $("pre#banner").width();
+		var bannerHeight = $("pre#banner").height();
 		if (autofitVal) {
-			var bannerWidth  = $("pre#banner").width();
-			var bannerHeight = $("pre#banner").height();
 			var bannerVerticalRatio = bannerHeight / bannerWidth;
 			var isBannerVertical = bannerWidth < bannerHeight;
 			var isWindowVertical = window.innerWidth < window.innerHeight;
-			if (isBannerVertical !== isWindowVertical && (bannerVerticalRatio < 0.8 || 1.2 < bannerVerticalRatio)) {
+			if (autoRotateVal && isBannerVertical !== isWindowVertical && (bannerVerticalRatio < 0.8 || 1.2 < bannerVerticalRatio)) {
 				degree = 90;
 				scale = window.innerHeight / bannerWidth;
 				topOffset = bannerWidth * scale / 2 - bannerHeight / 2;
-			} else {
+			} else if (autoMaxVal || (window.innerHeight < bannerHeight)) {
 				scale = window.innerHeight / bannerHeight;
 				topOffset = bannerHeight * (scale - 1) / 2;
 			}
@@ -320,7 +414,7 @@ function loadBanner() {
 			transform: "scale(" + scale.toFixed(2) + ")" + " rotate(" + degree + "deg)",
 			top: topOffset.toFixed(0) + "px"
 		});
-		console.log({
+		/* console.log({
 			bannerSize: bannerWidth + " x " + bannerHeight, 
 			isBannerVertical: isBannerVertical, 
 			bannerVerticalRatio: bannerVerticalRatio, 
@@ -329,25 +423,97 @@ function loadBanner() {
 			scale: scale.toFixed(2), 
 			degree: degree, 
 			topOffset: topOffset.toFixed(0)
-		});
+		}); */
 		
 		// page progress
 		Progress.page(imageIndex + 1, imageTotal);
-		
-		if (isPlay) {
-			setTimeout(function() {
-				$("pre#banner").text(bannerBlank);
-			}, 1000 * (playIntervalVal * 2/3));
-		}
+
+		isPlay && playEffect();
 		
 		LocalStorageItem.set('image.banner.index', imageIndex);
 		LocalStorageItem.set('image.banner.width', panelWidth);
 		LocalStorageItem.set('image.banner.invert', $("input[name='invert']").is(":checked"));
 		LocalStorageItem.set('image.banner.bitDepth', $("input:radio[name='bitDepth']:checked").val());
 		LocalStorageItem.set('image.banner.pixelMode', $("input:radio[name='pixelMode']:checked").val());
+		
+		$("body").navActive(true);
 	}, function(jqXHR, textStatus, errorThrown) {
 		loading.on(new Text("Could not load the banner :( " + image.src + " - " + textStatus + " - " + errorThrown));
 	});
+}
+
+function playEffect() {
+	
+	function removeBanner(time) {
+		$("#overlapBannerSwitch").prop("checked", false).trigger("change");
+		var bannerArray = bannerText.split('\n');
+		var bannerLineTotal = bannerArray.length;
+		var bannerLineIndex = Math.floor(bannerLineTotal/2);
+		var up1 = 0, dn1 = 0, up2 = 0, dn2 = 0;
+		var randomBoolean = Random.getBoolean();
+		var indexArray = Array.from(Array(bannerLineTotal-1).keys());
+
+		//console.log('bannerLineTotal', bannerLineTotal, 'time', time, 'interval', time / bannerLineTotal * 4);
+		
+		$("pre#banner").text(bannerText);
+		bannerRemovalID = setInterval(function() {
+			if (randomBoolean) {
+				up1 = bannerLineIndex;
+				dn1 = bannerLineTotal - up1 - 1;
+				up2 = up1 - 1;
+				dn2 = dn1 + 1;
+			} else {
+				up1 = indexArray.splice(Random.getInteger(1, indexArray.length -1), 1)[0];
+				dn1 = indexArray.splice(Random.getInteger(1, indexArray.length -1), 1)[0];
+				up2 = indexArray.splice(Random.getInteger(1, indexArray.length -1), 1)[0];
+				dn2 = indexArray.splice(Random.getInteger(1, indexArray.length -1), 1)[0];
+			}
+			
+			bannerArray[up1] = '';
+			bannerArray[dn1] = '';
+			if (up2 < bannerLineTotal - 1) {
+				bannerArray[up2] = '';
+			}
+			if (dn2 < bannerLineTotal - 1) {
+				bannerArray[dn2] = '';
+			}
+			$("pre#banner").text(bannerArray.join('\n'));
+			if (dn2 >= bannerLineTotal - 1 || indexArray.length === 0) {
+				clearInterval(bannerRemovalID);
+			}
+			//console.log(up1, up2, dn1, dn2, bannerLineIndex, bannerLineTotal, $("pre#banner").text().split('\n').length);
+			--bannerLineIndex;
+			--bannerLineIndex;
+		}, time / bannerLineTotal * 4);
+	}
+	
+	clearTimeout(overlapImageTimeoutID);
+	clearTimeout(overlapBannerTimeoutID);
+	clearInterval(bannerRemovalID);
+
+	if (playEffectVal === 0) {
+	} 
+	else if (playEffectVal === 1) {
+		$("#overlapImageSwitch").prop("checked", false).trigger("change");
+		$("#overlapBannerSwitch").prop("checked", true).trigger("change");
+		
+		overlapBannerTimeoutID = setTimeout(function() {
+			$("#overlapImageSwitch").prop("checked", true).trigger("change");
+			removeBanner(1000 * playIntervalVal - 4000);
+		}, 2000);
+	} 
+	else if (playEffectVal === 2) {
+		$("#overlapImageSwitch").prop("checked", false).trigger("change");
+		$("#overlapBannerSwitch").prop("checked", true).trigger("change");
+
+		overlapImageTimeoutID = setTimeout(function() {
+			$("#overlapImageSwitch").prop("checked", true).trigger("change");
+		}, 1000 * (playIntervalVal * 1/3));
+
+		overlapBannerTimeoutID = setTimeout(function() {
+			removeBanner(1000 * (playIntervalVal * 1/3) - 1000);
+		}, 1000 * (playIntervalVal * 2/3));
+	}
 }
 
 function loadImage() {
@@ -360,7 +526,9 @@ function loadImage() {
 		let canvas = document.createElement('canvas');
 	   	canvas.width = image.naturalWidth;
 	   	canvas.height = image.naturalHeight;
-	   	canvas.getContext('2d').drawImage(image, 0, 0);
+	   	var context = canvas.getContext('2d')
+	   	context.globalAlpha = imageAlphaVal;
+	   	context.drawImage(image, 0, 0);
 	   	let imageDataUrl = canvas.toDataURL('image/png');
 	   	// console.log(imageUri);
 		
@@ -368,12 +536,10 @@ function loadImage() {
 		$("img#image").attr("src", imageDataUrl);
 
 		// overlap background
-		setTimeout(function() {
-			$("pre#banner").css({
-				backgroundImage: 'url(' + imageDataUrl + ')'
-			});
-		}, 1000 * (overlapBannerVal ? playIntervalVal * 1/3 : 0));
-
+		$("pre#banner").css({
+			backgroundImage: 'url(' + imageDataUrl + ')'
+		});
+		
 		// load image info
 		Rest.Image.get(imageIndex, function(info) {
 			$("#imageTitle").html(info.name);
@@ -424,14 +590,14 @@ Progress.play = {
 };
 </script>
 </head>
-<body class="bg-dark">
+<body>
 
-	<div class="container-fluid mt-4">
-		<pre id="banner" class="text-light rounded"></pre>
+	<div class="container-fluid mt-4 p-0">
+		<pre id="banner" class="rounded m-0"></pre>
 	</div>
 
 	<form action="#" onsubmit="return false;">
-		<ul id="controlBox">
+		<ul id="controlBox" class="bg-dark">
 			<li>
 				<div class="border border-dark collapse rounded" id="imageThumbPanel">
 					<img id="image">
@@ -442,15 +608,15 @@ Progress.play = {
 			<li class="text-left">
 				<div class="custom-control custom-switch">
 					<input type="checkbox" class="custom-control-input" id="showThumbnailSwitch">
-					<label class="custom-control-label" for="showThumbnailSwitch">show Thumbnail</label>
+					<label class="custom-control-label" for="showThumbnailSwitch">show <i>T</i>humbnail</label>
 				</div>
 				<div class="custom-control custom-switch">
 					<input type="checkbox" class="custom-control-input" id="overlapImageSwitch">
-					<label class="custom-control-label" for="overlapImageSwitch">overlap Image</label>
+					<label class="custom-control-label" for="overlapImageSwitch">overlap <i>I</i>mage</label>
 				</div>
 				<div class="custom-control custom-switch">
 					<input type="checkbox" class="custom-control-input" id="overlapBannerSwitch">
-					<label class="custom-control-label" for="overlapBannerSwitch">overlap Banner</label>
+					<label class="custom-control-label" for="overlapBannerSwitch">overlap <i>B</i>anner</label>
 				</div>
 			</li>
 			<li>
@@ -477,27 +643,51 @@ Progress.play = {
 				</div>
 			</li>
 			<li>
+				<div class="number-group">
+					<label>Alpha</label>
+					<input type="range" class="m-1" id="imageAlpha" name="imageAlpha" min="0.1" max="1.0" step="0.1">
+				</div>
+			</li>
+			<li>
 				<div class="progress bg-dark" id="playProgress" style="height: 1px; border-radius: 0;">
 		  			<div class="progress-bar bg-primary" style="width: 0; height: 1px;"></div>
 				</div>
 				<div class="btn-group btn-group-sm btn-block">
 					<button class="btn btn-flay" id="prevBtn" type="button">PREV</button>
-					<button class="btn btn-flay" id="playBtn" type="button">PLAY</button>
+					<button class="btn btn-flay" id="playBtn" type="button"><i>P</i>LAY</button>
 					<button class="btn btn-flay" id="nextBtn" type="button">NEXT</button>
 				</div>
 			</li>
-			<li class="text-left pl-4">
+			<li>
+				<div class="number-group">
+					<label><i>E</i>ffect</label>
+					<input type="range" class="custom-range mx-1" id="playEffect" name="playEffect" min="0" max="2" step="1">
+				</div>
+			</li>
+			<li>
 				<div class="custom-control custom-switch">
 					<input type="checkbox" class="custom-control-input" id="random">
-					<label class="custom-control-label" for="random">Random</label>
+					<label class="custom-control-label" for="random"><i>R</i>andom</label>
 				</div>
+			</li>
+			<li class="text-left">
 				<div class="custom-control custom-switch">
 					<input type="checkbox" class="custom-control-input" id="autofit">
-					<label class="custom-control-label" for="autofit">Autofit</label>
+					<label class="custom-control-label" for="autofit"><i>A</i>utofit</label>
 				</div>
+				<div class="custom-control custom-switch" style="margin-left: 16px">
+					<input type="checkbox" class="custom-control-input" id="autoRotate">
+					<label class="custom-control-label" for="autoRotate">AutoR<i>o</i>tate</label>
+				</div>
+				<div class="custom-control custom-switch" style="margin-left: 28px">
+					<input type="checkbox" class="custom-control-input" id="autoMax">
+					<label class="custom-control-label" for="autoMax">AutoMa<i>x</i></label>
+				</div>
+			</li>
+			<li>
 				<div class="custom-control custom-switch">
 					<input type="checkbox" class="custom-control-input" id="invert" name="invert">
-					<label class="custom-control-label" for="invert">Invert</label>
+					<label class="custom-control-label" for="invert">In<i>v</i>ert</label>
 				</div>
 			</li>
 			<li>
@@ -521,7 +711,7 @@ Progress.play = {
 				</div>
 			</li>
 			<li>
-				<div id="controlToggleBtn">
+				<div id="controlBoxToggleBtn">
 					<i class="fa fa-caret-up" aria-hidden="true"></i>
 					<i class="fa fa-caret-down" aria-hidden="true"></i>
 				</div>

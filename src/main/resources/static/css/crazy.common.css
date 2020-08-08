@@ -55,10 +55,10 @@ body {
 .check-group.warning label:hover input:checked ~ span, label.check.warning:hover input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
 .check-group.danger  label:hover input:checked ~ span, label.check.danger:hover  input:checked ~ span {box-shadow: none; text-shadow: 1px 1px 0 #333;}
 
-body.bg-dark .check-group            		     span, body.bg-dark label.check 				 span {background-color: #2d2d2d; color: lightgray;    transition: background-color .3s, color .3s, text-shadow .3s;}
-body.bg-dark .check-group        input:checked ~ span, body.bg-dark label.check  input:checked ~ span {                           color: var(--light); text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;}
-body.bg-dark .check-group:hover   		         span, body.bg-dark label.check:hover			 span {background-color: #103356; color: var(--light);}
-body.bg-dark .check-group:hover				         , body.bg-dark label.check:hover 				  {box-shadow: none;}
+.bg-dark .check-group            		     span, .bg-dark label.check 				 span {background-color: #2d2d2d; color: lightgray;    transition: background-color .3s, color .3s, text-shadow .3s;}
+.bg-dark .check-group        input:checked ~ span, .bg-dark label.check  input:checked ~ span {                           color: var(--light); text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;}
+.bg-dark .check-group:hover   		         span, .bg-dark label.check:hover			 span {background-color: #103356; color: var(--light);}
+.bg-dark .check-group:hover				         , .bg-dark label.check:hover 				  {box-shadow: none;}
 
 /* input search */
 input.input-flay {
@@ -77,7 +77,7 @@ input.input-flay {
 input.search {
 	width: 150px;	
 }
-body.bg-dark input.input-flay {
+.bg-dark input.input-flay {
 	background-color: var(--darker);
 	border-color: var(--gray-dark);
 	color: var(--light);
@@ -87,11 +87,11 @@ input.input-flay:focus, input.input-flay:hover {
 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 	outline: none;
 }
-body.bg-dark input.input-flay:focus, body.bg-dark input.input-flay:hover {
+.bg-dark input.input-flay:focus, .bg-dark input.input-flay:hover {
 	background-color: #103356;
 	border-color: var(--darker);
 }
-body.bg-dark input.form-control, body.bg-dark .input-group-text {
+.bg-dark input.form-control, .bg-dark .input-group-text {
 	background-color: var(--darker);
 	color: var(--light);
 }
@@ -116,17 +116,17 @@ label.range input[type='range'] ~ span {
 	display: table-cell;
 	font-weight: 700;
 }
-body.bg-dark label.range {
+.bg-dark label.range {
 	background-color: var(--darker);
 	border-color: var(--gray-dark);
 }
-body.bg-dark label.range input[type='range'] ~ span {
+.bg-dark label.range input[type='range'] ~ span {
 	color: var(--light);
 }
 label.range:hover {
 	box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 }
-body.bg-dark label.range:hover {
+.bg-dark label.range:hover {
 	background-color: #103356;
 }
 
@@ -144,11 +144,11 @@ body.bg-dark label.range:hover {
 .ranker:hover {
     box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .125);
 }
-body.bg-dark .ranker {
+.bg-dark .ranker {
 	background-color: #212529;
 	border-color: transparent;
 }
-body.bg-dark .ranker:hover {
+.bg-dark .ranker:hover {
 	background-color: #103356;
 }
 .ranker input {
@@ -197,8 +197,8 @@ label.text:empty 			{display: none;}
 label.text.xs 				{font-size: 0.75rem;	line-height: 1.4;}
 label.text.sm 				{font-size: 0.875rem;	line-height: 1.5;}
 label.text.lg 				{font-size: 1.125rem;	line-height: 1.7;}
-body.bg-dark label.text    		    {background-color: var(--darker);	color: var(--light);}
-body.bg-dark label.text.hover:hover {background-color: #103356; color: #eede1a; box-shadow: none;}
+.bg-dark label.text    		    {background-color: var(--darker);	color: var(--light);}
+.bg-dark label.text.hover:hover {background-color: #103356; color: #eede1a; box-shadow: none;}
 
 .text.danger {
 	background-color: var(--danger)!important;
@@ -220,18 +220,18 @@ button.btn.btn-flay:active:focus, button.btn.btn-outline-flay:active:focus {
 button.btn.btn-outline-flay {
 	border-color: midnightblue;	
 }
-body.bg-dark button.btn.btn-flay, body.bg-dark button.btn.btn-outline-flay {
+.bg-dark button.btn.btn-flay, .bg-dark button.btn.btn-outline-flay {
 	background-color: var(--darker);
 	color: var(--light);
 }
-body.bg-dark button.btn.btn-flay:hover, body.bg-dark button.btn.btn-outline-flay:hover {
+.bg-dark button.btn.btn-flay:hover, .bg-dark button.btn.btn-outline-flay:hover {
 	background-color: #103356;
 	color: #eede1a;  
 }
-body.bg-dark button.btn.btn-flay:active:focus, body.bg-dark button.btn.btn-outline-flay:active:focus {
+.bg-dark button.btn.btn-flay:active:focus, .bg-dark button.btn.btn-outline-flay:active:focus {
 	text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;
 }
-body.bg-dark .ui-dialog {
+.bg-dark .ui-dialog {
 	background-color: var(--darker);
 }
 
@@ -519,39 +519,39 @@ body.bg-dark .ui-dialog {
 }
 
 /* dark theme */
-body.bg-dark {
+.bg-dark {
 	background-color: #000 !important;
 	color: #ccc;
 }
-body.bg-dark nav.navbar, 
-body.bg-dark .bg-light {
+.bg-dark nav.navbar, 
+.bg-dark .bg-light {
 	background-color: var(--darker) !important;
 	color: var(--light) !important;
 }
 
-body.bg-dark ul.pagination                                      {background-color: var(--darker) !important;} 
-body.bg-dark ul.pagination .page-item                .page-link {background-color: var(--darker);}
-body.bg-dark ul.pagination .page-item.active         .page-link {background-color: #103356;	border-color: #dee2e6;}
-body.bg-dark ul.pagination .page-item.disabled       .page-link {color: var(--gray);}
-body.bg-dark ul.pagination .page-item:not(.disabled) .page-link {color: var(--light);}
+.bg-dark ul.pagination                                      {background-color: var(--darker) !important;} 
+.bg-dark ul.pagination .page-item                .page-link {background-color: var(--darker);}
+.bg-dark ul.pagination .page-item.active         .page-link {background-color: #103356;	border-color: #dee2e6;}
+.bg-dark ul.pagination .page-item.disabled       .page-link {color: var(--gray);}
+.bg-dark ul.pagination .page-item:not(.disabled) .page-link {color: var(--light);}
 
-body.bg-dark .btn-link {
+.bg-dark .btn-link {
 	color: var(--light);
 }
-body.bg-dark .fa-plus:before, body.bg-dark .fa-ellipsis-v:before {
+.bg-dark .fa-plus:before, .bg-dark .fa-ellipsis-v:before {
     text-shadow: 0 0 .25rem var(--light);
 }
-body.bg-dark .card {
+.bg-dark .card {
 	background-color: var(--darker);
 	color: var(--light);
 }
-body.bg-dark th, body.bg-dark td {
+.bg-dark th, .bg-dark td {
 	color: var(--light);
 }
-body.bg-dark .border {
+.bg-dark .border {
 	border-color: #3a3e42!important;
 }
-body.bg-dark button {
+.bg-dark button {
 	color: var(--light);
 	outline: none;
 }

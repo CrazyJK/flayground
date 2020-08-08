@@ -9,6 +9,7 @@ import java.util.concurrent.Executor;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
@@ -20,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Configuration
 @EnableScheduling
 @EnableAsync
+@EnableCaching
 @Slf4j
 public class Flayground implements AsyncConfigurer {
 

@@ -12,6 +12,7 @@ import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Repository;
 
@@ -37,6 +38,7 @@ public class LocalImageSource implements ImageSource {
 	private boolean changed = false;
 
 	@PostConstruct
+	@CacheEvict(cacheNames = {"bannerCache"}, allEntries = true)
 	private synchronized void load() {
 		AtomicInteger indexCounter = new AtomicInteger(0);
 		imageList = new ArrayList<>();

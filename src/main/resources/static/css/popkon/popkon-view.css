@@ -1,0 +1,113 @@
+@charset "UTF-8";
+
+/* Stylish css */
+body {
+	overflow: hidden !important;
+	background-color: #000 !important;
+}
+/* 필요없는 화면 가리기 */
+.popkon_vod, #reFooter, #reHeader, #sideNav, .vod_title, .partners, .vlive_area.adult:after {
+	display: none !important;
+}
+/* 플에이어 위치 조정 */
+.mv_player, .vlive_area {
+	position: fixed !important;
+	top: 0 !important;
+	left: 0 !important;
+	right: 0 !important;
+	bottom: 0 !important;
+	width: inherit !important;
+	height: inherit !important;
+}
+/* 플레이어 크기 화면 가득하게 */
+#LivePlayer, #videoContainer.vlive_wrap {
+	height: 100% !important;
+	width: 100% !important;
+}
+
+.vlive_wrap.vertical-live:fullscreen .vlive_area {
+	max-width: unset !important;
+}
+/* BJ 다른 정보 숨기기 */
+.mv_player_info {
+	border: 0 !important;
+}
+
+.js-info-pfilename, .js-info-ptitle, .js-info-mcsignid, .mv_info_txt>ul>li:nth-child(3) {
+	display: none !important;
+}
+
+.mc_nick_group {
+	color: transparent;
+}
+/* BJ이름 위치 조정해서 보이기 */
+.mc_nick {
+	position: fixed !important;
+	left: 250px;
+	bottom: 8px !important;
+	display: inline-block !important;
+	font-weight: 700;
+	text-shadow: 1px 1px 1px #000;
+}
+
+.mc_control_box {
+	display: none !important;
+}
+/* 채팅창 필요없는 영역 가리기 */
+.cbox_wrap {
+	background: transparent;
+	border: 0;
+}
+
+.cbox_head {
+	background: transparent;
+	color: transparent;
+}
+
+.cbox_title, .cbox_content_wrap, .cbox_write_wrap {
+	display: none;
+}
+/* 시청자수 위치 조정해서 보이기 */
+.cbox_count {
+	position: fixed;
+	bottom: 6px;
+	left: 220px;
+	font-weight: 700;
+	font-size: 14px;
+	color: #fff;
+}
+/* 채팅장 위치, 크기 조정 */
+div.cbox_content_wrap {
+	background-color: rgba(255, 255, 255, .5);
+	position: fixed;
+	right: -1px;
+	width: 150px !important;
+	bottom: 40px;
+}
+/* 채팅창 스크롤바 가리기 */
+div.cbox_content_wrap ul {
+	overflow: hidden;
+}
+/* 추천 채팅 가리기 */
+li.cbox_noti {
+	display: none;
+}
+/* 컨트롤러 위치 */
+#video-controls {
+	z-index: 9999;
+	position: fixed;
+	left: 0;
+	bottom: 0;
+}
+
+#video-controls #videoPlay {
+	background: transparent !important;
+}
+/* 클린 캠페인 무력화 */
+.clean_campaign {
+	background: transparent !important;
+}
+/* 워터마크 무력화 */
+.watermark_wrap {
+	display: none;
+}

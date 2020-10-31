@@ -1,0 +1,11 @@
+@charset "UTF-8";
+
+@media screen and (max-width:1350px) {
+	.content, .lay_inner {
+		margin: 0 0 0 225px;
+		width: 850px;
+	}
+	#popkonWrap {
+		min-width: initial;
+	}
+}

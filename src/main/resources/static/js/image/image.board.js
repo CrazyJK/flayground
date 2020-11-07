@@ -121,7 +121,7 @@ $(function() {
 			lastIndex = reqIndex;
 
 			// old picture remove
-			if ($imageWrap.children().length >= TILE.row * TILE.col + 1) {
+			while ($imageWrap.children().length >= TILE.row * TILE.col + 1) {
 				$imageWrap.children(":first-child").remove();
 			}
 

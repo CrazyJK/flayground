@@ -68,12 +68,12 @@ public class FlayActionHandler {
 
 	@Async
 	public void exec(List<String> commands) {
-		log.info("exec {}", commands);
 		try {
 			ProcessBuilder builder = new ProcessBuilder(commands);
 			builder.redirectOutput(Redirect.INHERIT);
 			builder.redirectError(Redirect.INHERIT);
 			builder.start();
+			log.info("exec {}", commands);
 		} catch (IOException e) {
 			log.error("exec error", e);
 			throw new IllegalStateException("exec error", e);

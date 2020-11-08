@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.socket.notice;
+package jk.kamoru.flayground.base.web.socket.notice;
 
 import java.util.concurrent.atomic.AtomicInteger;
 

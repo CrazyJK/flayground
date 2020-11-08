@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.access.domain;
+package jk.kamoru.flayground.base.web.access.domain;
 
 import java.io.Serializable;
 

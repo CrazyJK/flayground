@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.socket.notice;
+package jk.kamoru.flayground.base.web.socket.notice;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

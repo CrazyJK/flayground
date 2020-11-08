@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.security;
+package jk.kamoru.flayground.base.web.security;
 
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;

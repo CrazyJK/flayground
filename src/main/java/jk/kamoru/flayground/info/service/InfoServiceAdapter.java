@@ -5,9 +5,9 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
 import jk.kamoru.flayground.info.domain.Info;
 import jk.kamoru.flayground.info.source.InfoSource;
-import jk.kamoru.flayground.web.socket.notice.AnnounceService;
 
 public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoService<T, K> {
 

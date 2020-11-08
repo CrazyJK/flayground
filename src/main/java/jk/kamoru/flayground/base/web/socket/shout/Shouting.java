@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.socket.shout;
+package jk.kamoru.flayground.base.web.socket.shout;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

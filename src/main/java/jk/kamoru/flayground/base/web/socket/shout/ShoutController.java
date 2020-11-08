@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.socket.shout;
+package jk.kamoru.flayground.base.web.socket.shout;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.Header;
@@ -9,8 +9,8 @@ import org.springframework.messaging.simp.annotation.SendToUser;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.util.HtmlUtils;
 
-import jk.kamoru.flayground.web.socket.WebSocketConfig;
-import jk.kamoru.flayground.web.socket.notice.Notice;
+import jk.kamoru.flayground.base.web.socket.WebSocketConfig;
+import jk.kamoru.flayground.base.web.socket.notice.Notice;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

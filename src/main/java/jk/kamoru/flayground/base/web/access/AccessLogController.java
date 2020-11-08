@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.access;
+package jk.kamoru.flayground.base.web.access;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -17,7 +17,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.mvc.method.RequestMappingInfo;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 
-import jk.kamoru.flayground.web.access.service.AccessLogService;
+import jk.kamoru.flayground.base.web.access.service.AccessLogService;
 
 @RestController
 @RequestMapping("/accesslog")

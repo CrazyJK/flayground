@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.web.socket;
+package jk.kamoru.flayground.base.web.socket;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

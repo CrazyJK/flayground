@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -20,7 +21,6 @@ import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.HistoryService;
 import jk.kamoru.flayground.info.service.InfoService;
-import jk.kamoru.flayground.web.socket.notice.AnnounceService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

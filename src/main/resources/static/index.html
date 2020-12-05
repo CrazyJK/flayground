@@ -78,7 +78,10 @@ function go(menu, method) {
 		url = "/html/image/image.board.html";
 	} else if (menu === 'popkon') {
 		url = "/html/popkon/popkon.favorite.html";
+	} else if (menu === 'imgUp') {
+		url = "/imageUpload.html";
 	}
+	
 	if (method === 'href') {
 		location.href = url;
 	} else if (method === 'popup') {
@@ -96,7 +99,7 @@ $(document).ready(function() {
 		break;
 	case 1: // neon
 		$("body").addClass("neon");
-		$(".display-1, .display-2, input, button, .popup-size-group").each(function(idx) {
+		$(".display-3, .display-4, input, button, .popup-size-group").each(function(idx) {
 			$(this).addClass("blink-" + (idx % 10 + 1));
 		});
 		$(".border-secondary").switchClass("border-secondary", "border-light");
@@ -125,40 +128,44 @@ $(document).ready(function() {
 </head>
 <body>
 	<div class="full-screen">
-		<h1 class="display-1 mt-3">
+		<h1 class="display-3 mt-3">
 			<a href="#" class="disabled">Flayground</a>
 		</h1>
-		<h2 class="display-2">
+		<h2 class="display-4">
 			<a href="javascript:go('home', 'popup')">↖</a>
 			<a href="javascript:go('home', 'href')">Home</a> 
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-4">
 			<a href="javascript:go('search', 'popup')">↖</a>
 			<a href="javascript:void();" class="disabled">Search</a> 
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-4">
 			<a href="javascript:go('slide', 'popup')">↖</a>
 			<a href="javascript:go('slide', 'href')">Slide</a> 
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-4">
 			<a href="javascript:go('tablet', 'popup')">↖</a>
 			<a href="javascript:go('tablet', 'href')">Tablet</a>
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-4">
 			<a href="javascript:go('board', 'popup')">↖</a>
 			<a href="javascript:go('board', 'href')">Board</a>
 		</h2>
-		<h2 class="display-2">
+		<h2 class="display-4">
+			<a href="javascript:go('imgUp', 'popup')">↖</a>
+			<a href="javascript:go('imgUp', 'href')">Image Upload</a> 
+		</h2>
+		<h2 class="display-4">
 			<a href="javascript:go('popkon', 'popup')">↖</a>
 			<a href="javascript:go('popkon', 'href')">Popkon</a> 
 		</h2>
-		<div class="input-group input-group-lg width-400 mx-auto mt-4 popup-open-group">
+		<div class="input-group input-group-lg width-400 mx-auto mt-4 mb-3 popup-open-group">
 			<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL">
 			<div class="input-group-append">
 				<button class="btn btn-outline-secondary text-secondary" type="button">Popup</button>
 			</div>
 		</div>
-		<div class="text-center popup-size-group collapse mt-2">
+		<div class="text-center popup-size-group collapse my-2">
 			<input type="number" id="popupWidth"  value="540" class="bg-transparent border-0 width-70 text-right">
 			&nbsp;x&nbsp;
 			<input type="number" id="popupHeight" value="997" class="bg-transparent border-0 width-70 ml-2">

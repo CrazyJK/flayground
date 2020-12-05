@@ -5,10 +5,12 @@ import java.io.File;
 import org.apache.commons.io.FilenameUtils;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Getter
+@NoArgsConstructor
 public class Image {
-	
+
 	Integer idx;
 	String name;
 	String path;

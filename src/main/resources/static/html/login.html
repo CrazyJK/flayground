@@ -23,47 +23,60 @@
     transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
 }
+.text-login {
+	font-family: 'Ink Free';
+	font-weight: 700;
+	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+}
+.btn-login {
+	background-color: transparent;
+	border: 0;
+	color: #dc3545;
+	display: block;
+	font-size: 2rem;
+	margin: 0 auto;
+}
+.btn-login:focus {
+	outline: none;
+}
+.form-login {
+	background-color: transparent;
+	border: 0;
+	color: #dc3545;
+	display: block;
+	font-size: 2rem;
+	margin: 0 auto;
+    padding: 0;
+    text-align: center;
+    width: auto;
+}
+.form-login:focus {
+	background-color: transparent;
+	box-shadow: none;
+	color: #dc3545;
+	outline: none;
+}
 #title {
 	cursor: default;
-}
-#signinWrap {
-	min-height: 70px;
-}
-#btnEnter {
-	cursor: pointer;
+	text-transform: uppercase;
 }
 form#signin {
 	display: none;
-	width: 450px;
 }
-form#signin .input-group {
-	border: 0;
-	border-radius: .5rem;
-	box-shadow: inset 0 0 2rem 2rem rgba(70, 105, 101, .9), 4px 4px 8px 4px rgba(0, 0, 0, .5);
-}
-form#signin input, form#signin button {
-	font-size: 2rem;
-}
-.flay-font {
-	font-family: 'Ink Free';
-}
-.flay-font-effect-static {
-	-webkit-mask-image: url(/img/pattern/pattern-static.png);
-	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
-}
+
 .w3-animate-top {
 	position: relative;
-	animation: animatetop 0.9s;
+	animation: animateTop 0.9s;
 }
-.w3-animate-bottom {
-	position: relative;
-	animation: animatebottom 0.9s;
-}
-@keyframes animatetop {
+@keyframes animateTop {
 	from {top: -500px;	opacity: 0;}
 	to   {top: 0;		opacity: 1;}
 }
-@keyframes animatebottom {
+.w3-animate-bottom {
+	position: relative;
+	animation: animateBottom 0.9s;
+}
+@keyframes animateBottom {
 	from {top: 500px;	opacity: 0;}
 	to   {top: 0;		opacity: 1;}
 }
@@ -72,8 +85,8 @@ form#signin input, form#signin button {
 	border-radius: 1rem;
 }
 @keyframes loginError {
-	0%   {background-color: transparent;}
-	50%  {background-color: rgba(255, 0, 0, .25);}
+	  0% {background-color: transparent;}
+	 50% {background-color: rgba(255, 0, 0, .25);}
 	100% {background-color: transparent;}
 }
 </style>
@@ -88,11 +101,13 @@ $(document).ready(function() {
 	}
 
 	$(window).on("keyup", function(e) {
-		if (e.keyCode === 13) { // Enter
+		switch (e.keyCode) {
+		case 13: // Enter
 			$("#btnEnter").trigger("click");
-		}
-		if (e.keyCode === 27) { // Esc
+			break;
+		case 27: // Esc
 			$("#title").trigger("click");
+			break;
 		}
 	});
 	$("#btnEnter").on("click", function() {
@@ -110,19 +125,15 @@ $(document).ready(function() {
 <body>
 
 	<div class="background">
-		<div class="display-middle flay-font">
-			<h1 class="display-2 text-uppercase flay-font-effect-static text-light font-weight-bold m-0 mb-2 w3-animate-top" id="title">Flayground</h1>
-			<div class="text-center w3-animate-bottom" id="signinWrap">
-				<button class="display-4 bg-transparent flay-font-effect-static text-danger font-weight-bold border-0" id="btnEnter">Enter</button>
-				<form name="f" method="POST" class="mx-auto" id="signin" autocomplete="off">
-					<input type="checkbox" class="sr-only" name="remember-me" checked="checked">
-					<div class="input-group input-group-lg">
-						<input type="text"     name="username" class="form-control bg-transparent flay-font-effect-static text-danger font-weight-bold border-0" placeholder="Name" required autofocus>
-						<input type="password" name="password" class="form-control bg-transparent flay-font-effect-static text-danger font-weight-bold border-0" placeholder="Password" required>
-						<div class="input-group-append">
-							<button type="submit" class="btn bg-transparent flay-font-effect-static text-danger font-weight-bold border-0 pt-0">Signin</button>
-						</div>
-					</div>
+		<div class="display-middle">
+			<div class="w3-animate-top display-4 text-login" id="title">Flayground</div>
+			<div class="w3-animate-bottom">
+				<button class="btn-login text-login" id="btnEnter">Enter</button>
+				<form name="f" method="POST" id="signin" autocomplete="off">
+					<input type="checkbox" name="remember-me" class="sr-only" checked="checked">
+					<input type="text"     name="username" class="form-login text-login" placeholder="Name" required autofocus>
+					<input type="password" name="password" class="form-login text-login" placeholder="Password" required>
+					<button type="submit" class="btn-login text-login">Signin</button>
 				</form>
 			</div>
 		</div>

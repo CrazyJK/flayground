@@ -1,6 +1,6 @@
 package jk.kamoru.flayground.info.domain;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Tag implements Info<Integer> {
 
-	@NotNull
+	@NotBlank
 	Integer id;
 	String name;
 	String description;
@@ -56,5 +56,5 @@ public class Tag implements Info<Integer> {
 		result = prime * result + ((id == null) ? 0 : id.hashCode());
 		return result;
 	}
-	
+
 }

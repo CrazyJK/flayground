@@ -9,9 +9,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.InvalidMediaTypeException;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -84,6 +87,15 @@ public class ImageRequestHandler {
 			}
 			return MediaType.IMAGE_JPEG;
 		}
+	}
+
+	@ExceptionHandler(ImageNotfoundException.class)
+	@ResponseBody
+	public ResponseEntity<byte[]> imageNotfound(ImageNotfoundException e) throws IOException {
+		byte[] byteArray = FileUtils.readFileToByteArray(imageService.random().getFile());
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.IMAGE_JPEG);
+		return new ResponseEntity<byte[]>(byteArray, headers, HttpStatus.BAD_REQUEST);
 	}
 
 }

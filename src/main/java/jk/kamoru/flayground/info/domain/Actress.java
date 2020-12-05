@@ -3,7 +3,7 @@ package jk.kamoru.flayground.info.domain;
 import java.io.File;
 import java.util.List;
 
-import javax.validation.constraints.NotNull;
+import javax.validation.constraints.NotBlank;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Actress implements Info<String> {
 
-	@NotNull
+	@NotBlank
 	String name;
 	String localName;
 	String birth;
@@ -27,7 +27,7 @@ public class Actress implements Info<String> {
 	boolean favorite;
 	@JsonIgnore
 	List<File> covers;
-	
+
 	public Actress(String name) {
 		setKey(name);
 		this.localName = "";
@@ -42,9 +42,9 @@ public class Actress implements Info<String> {
 	public int getCoverSize() {
 		return covers == null ? 0 : covers.size();
 	}
-	
+
 	public void setCoverSize(int coverSize) {}
-	
+
 	@Override
 	public String getKey() {
 		return name;
@@ -79,5 +79,5 @@ public class Actress implements Info<String> {
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
-	
+
 }

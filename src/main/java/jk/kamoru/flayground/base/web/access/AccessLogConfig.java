@@ -11,7 +11,7 @@ import jk.kamoru.flayground.base.web.access.service.AccessLogService;
 public class AccessLogConfig implements WebMvcConfigurer {
 
 	@Autowired AccessLogService accessLogService;
-	
+
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
 		registry.addInterceptor(new AccessLogInterceptor(accessLogService));

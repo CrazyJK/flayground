@@ -24,28 +24,22 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LocalAuthenticationFilter extends OncePerRequestFilter {
 
+	private final static String LOCAL_IP = "localhost 0:0:0:0:0:0:0:1";
+	private final static String LOCAL_NAME = "admin";
+	private final static String LOCAL_PASS = "local";
+	private final static Collection<? extends GrantedAuthority> LOCAL_AUTHORITIES = Arrays.stream(new String[] { "ROLE_ADMIN", "ROLE_USER" }).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-		String remoteAddr = request.getRemoteAddr();
-
 		if (SecurityContextHolder.getContext().getAuthentication() == null) {
-			if (StringUtils.contains("localhost 0:0:0:0:0:0:0:1", remoteAddr)) {
-				String[] roles = new String[] { "ROLE_ADMIN", "ROLE_USER" };
-				Collection<? extends GrantedAuthority> authorities = Arrays.stream(roles).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-
-				String username = "admin";
-				String password = "";
-				User principal = new User(username, password, authorities);
-
-				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(principal, password, authorities);
+			if (StringUtils.contains(LOCAL_IP, request.getRemoteAddr())) {
+				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new User(LOCAL_NAME, LOCAL_PASS, LOCAL_AUTHORITIES), LOCAL_PASS, LOCAL_AUTHORITIES);
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+				log.info("authentication {}", authentication);
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
-
-				log.info("authentication {}", authentication);
 			}
 		}
-
 		chain.doFilter(request, response);
 	}
 

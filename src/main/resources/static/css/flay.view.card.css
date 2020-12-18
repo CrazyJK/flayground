@@ -32,7 +32,7 @@
     margin: auto;
 }
 .card.flay-card.archive {
-	padding: 1rem;
+	border: .5rem solid;
 }
 .card.flay-card > .card-body {
     background: #000 center no-repeat;

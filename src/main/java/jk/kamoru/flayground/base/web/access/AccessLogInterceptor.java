@@ -9,7 +9,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -41,10 +40,7 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
 		MDC.put(MDC_STARTTIME, Long.toString(System.currentTimeMillis()));
-		User user = getUser(request);
-		if (user != null) {
-			MDC.put(MDC_USERNAME, user.getUsername());
-		}
+		MDC.put(MDC_USERNAME, getUsername());
 		return true;
 	}
 
@@ -59,7 +55,7 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 		long   elapsedtime = System.currentTimeMillis() - Long.parseLong(startTime);
 		String handlerInfo = "";
 		String exceptionInfo = ex == null ? "" : ex.getMessage();
-		User   user        = getUser(request);
+		String username    = getUsername();
 		int    status      = response.getStatus();
 
 		// for handlerInfo
@@ -82,7 +78,7 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 			return;
 		}
 
-		AccessLog accessLog = new AccessLog(logDate, remoteAddr, reqMethod, requestUri, contentType, elapsedtime, handlerInfo, exceptionInfo, user != null ? user.getUsername() : "", status);
+		AccessLog accessLog = new AccessLog(logDate, remoteAddr, reqMethod, requestUri, contentType, elapsedtime, handlerInfo, exceptionInfo, username, status);
 
 		if (log.isDebugEnabled()) {
 			log.debug(accessLog.toConsoleLogString());
@@ -95,11 +91,11 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 		MDC.clear();
 	}
 
-	private User getUser(HttpServletRequest request) {
+	private String getUsername() {
 		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		if (authentication != null)
-			return (User) authentication.getPrincipal();
-		return null;
+			return authentication.getName();
+		return "";
 	}
 
 }

@@ -1,5 +1,10 @@
 package jk.kamoru.flayground.code.buildpattern;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.junit.Test;
+
 import jk.kamoru.flayground.code.buildpattern.FlayParameter.ImageBuilder;
 import jk.kamoru.flayground.code.buildpattern.FlayParameter.VideoBuilder;
 
@@ -9,7 +14,8 @@ public class FlayBuilderTest {
 	private static final String ID = "id";
 	private static final String PWD = "pwd";
 
-	public static void main(String[] args) {
+	@Test
+	public void test() {
 
 		FlayHandler handler = FlayHandler.get(SERVER, ID, PWD);
 
@@ -26,6 +32,7 @@ public class FlayBuilderTest {
 			System.out.println(id);
 		}
 
+		List<FlayParameter> parameterList = new ArrayList<>();
 		for (int i = 0; i < 2; i++) {
 			FlayParameter parameter = new FlayParameter.ImageBuilder()
 					.title("iamge " + System.currentTimeMillis())
@@ -35,9 +42,11 @@ public class FlayBuilderTest {
 					.image("image")
 					.build();
 
-			String id = handler.execute(parameter);
-			System.out.println(id);
+			parameterList.add(parameter);
 		}
+
+		List<String> idList = handler.execute(parameterList);
+		System.out.println(idList);
 
 	}
 

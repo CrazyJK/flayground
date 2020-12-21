@@ -1,5 +1,8 @@
 package jk.kamoru.flayground.code.buildpattern;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class FlayHandler {
 
 	static String httpClient;
@@ -26,6 +29,14 @@ public class FlayHandler {
 
 	public String execute(FlayParameter parameter) {
 		return httpClient + " " + server + " " + id + " " + pwd + " " + parameter;
+	}
+
+	public List<String> execute(List<FlayParameter> parameterList) {
+		List<String> list = new ArrayList<>();
+		for (FlayParameter parameter : parameterList) {
+			list.add(httpClient + " " + server + " " + id + " " + pwd + " " + parameter);
+		}
+		return list;
 	}
 
 }

@@ -50,6 +50,20 @@ body {
 .control-btn:hover {
     opacity: 1;
 }
+.address-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	transition: all .3s;
+	z-index: 3;
+    background-color: #333;
+    padding: 0 .25rem;
+    opacity: 0;
+}
+.address-bar:hover {
+    opacity: 1;
+}
 .fa {
 	display: block;
 	color: #ccc;
@@ -180,6 +194,12 @@ function addPopkonControlEventListener() {
 			$row.remove();
 		}
 		setHeight();
+	}).on("keyup", "#inputAddress", function(e) {
+		if (e.keyCode === 13) {
+			var $this = $(this);
+			var url = $this.val();
+			$this.parent().parent().find("iframe").attr("src", url);
+		}
 	});
 	// grid mode event
 	$("#gridModeWrap > .fa").on("click", function() {
@@ -203,6 +223,9 @@ function addPopkonControlEventListener() {
 	<div id="popkonWrapper">
 		<div class="row" data-y="0">
 			<div class="col">
+				<div class="address-bar p-1">
+					<input class="form-control form-control-sm" id="inputAddress">
+				</div>
 				<div class="control-btn">
 					<i class="fa fa-heart active"></i>
 					<i class="fa fa-users"></i>

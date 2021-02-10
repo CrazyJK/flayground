@@ -1,6 +1,8 @@
 package jk.kamoru.flayground;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -24,6 +26,12 @@ import lombok.extern.slf4j.Slf4j;
 @EnableCaching
 @Slf4j
 public class Flayground implements AsyncConfigurer {
+
+	static {
+		try {
+			log.info("Server IP {}", InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException ignore) {}
+	}
 
 	public static final long SERIAL_VERSION_UID = 0x02316CF8C;
 

@@ -1,0 +1,175 @@
+<meta charset="UTF-8">
+<style type="text/css">
+input.search {
+	width: 500px;
+}
+li.active {
+	text-shadow: 1px 1px yellow;
+}
+li:hover {
+	background-color: rgb(255 165 0 / 50%);
+}
+li label {
+	margin: 4px 0;
+}
+.listNo {
+	width: 30px;
+	text-align: right;
+}
+.favorite {
+	width: 30px;
+	text-align: center;
+}
+.name {
+	width: 170px;
+}
+.localName {
+	width: 100px;
+}
+.flayCount {
+	width: 40px;
+	text-align: right;
+	padding: 0 10px;
+}
+.lastRelease {
+	width: 80px;
+}
+.check-group input ~ span, .check-group input:checked ~ span {
+    border-radius: 50%;
+    margin: 0 4px;
+}
+</style>
+
+<div role="body">
+
+	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
+		<span class="check-group">
+			<label><input type="checkbox" id="fav" checked="checked"><span>Fav</span></label>
+			<label><input type="checkbox" id="noF" checked="checked"><span>noF</span></label>
+		</span>
+		<div class="divider"></div>
+		<span class="check-group">
+			<label><input type="checkbox" id="rank0"><span>0</span></label>
+			<label><input type="checkbox" id="rank1"><span>1</span></label>
+			<label><input type="checkbox" id="rank2"><span>2</span></label>
+			<label><input type="checkbox" id="rank3"><span>3</span></label>
+			<label><input type="checkbox" id="rank4"><span>4</span></label>
+			<label><input type="checkbox" id="rank5" checked="checked"><span>5</span></label>
+		</span>
+	</nav>
+
+	<div class="container py-1 bg-light" style="margin-top: 50px;">
+		<div>
+			<input type="search" id="query" class="form-control input-flay search" value="https://avnori6.com/bbs/search.php?search_flag=search&stx="/>
+			<label class="px-2">https://javpicker.com/video/ipx-600</label>
+			<label class="px-2">https://nextjav.com/torrent/detail/IPX-602</label>
+		</div>
+		<ul id="goodActressList" class="list-inline">
+		</ul>
+	</div>
+	
+</div>
+
+<script type="text/javascript">
+var flayList = [];
+var actressList = [];
+
+$(document).ready(function() {
+	$(".check-group input").on("change", showList);
+
+	// load video list
+	Rest.Flay.list(function(list) {
+		flayList = list;
+		
+		// load actress list
+		Rest.Actress.list(function(list) {
+			actressList = list;
+			
+			showList();
+		});
+	});
+});
+
+function showList() {
+	var getActress = function(name) {
+		for (var x in actressList) {
+			if (actressList[x].name === name) {
+				return actressList[x];
+			}
+		}
+	};
+	
+	var fav = $("#fav").prop("checked");
+	var noF = $("#noF").prop("checked");
+
+	var rank0 = $("#rank0").prop("checked") ? '0' : '';
+	var rank1 = $("#rank1").prop("checked") ? '1' : '';
+	var rank2 = $("#rank2").prop("checked") ? '2' : '';
+	var rank3 = $("#rank3").prop("checked") ? '3' : '';
+	var rank4 = $("#rank4").prop("checked") ? '4' : '';
+	var rank5 = $("#rank5").prop("checked") ? '5' : '';
+	
+	// filtering
+	var collectedList = [];
+	var rank = rank0 + rank1 + rank2 + rank3 + rank4 + rank5;
+	for (var flay of flayList) {
+		if (rank.indexOf(flay.video.rank) < 0) {
+			continue;
+		} 
+		collectedList.push(flay);
+	}	
+
+	// sorting. descending release
+	collectedList.sort(function(flay1, flay2) {
+		return flay2.release.toLowerCase().localeCompare(flay1.release.toLowerCase());
+	});
+	
+	// make actress map
+	var actressMap = new Map();
+	for (var flay of collectedList) {
+		for (var actressName of flay.actressList) {
+			var info = actressMap.get(actressName);
+			var actress = getActress(actressName);
+			if (!info) {
+				info = {
+						flayCount: 0,
+						lastRelease: flay.release,
+						favorite: actress.favorite,
+						localName: actress.localName
+				};
+				actressMap.set(actressName, info);
+			}
+			var count = info['flayCount'];
+			info['flayCount'] = ++count;
+		}
+	}
+
+	// show list
+	var listNo = 1;
+	var $goodActressList = $("#goodActressList").empty();
+	for (let [key, value] of actressMap) {
+		if ((!fav && !noF)
+				|| (!fav &&  noF &&  value.favorite)
+				|| ( fav && !noF && !value.favorite)) {
+			continue;
+		}
+		
+		$goodActressList.append(
+				$("<li>", {class: 'list-inline-item'}).append(
+						$("<label>", {class: 'listNo'}).append(listNo++, "."),
+						$("<label>", {class: 'favorite'}).append(value.favorite ? '★' : ' '),
+						$("<label>", {class: 'name hover'}).append(key).on("click", function() {
+							window.open(PATH + "/html/info/info.actress.html?name=" + key, "actress-info", 'width=1072,height=1800,' + DEFAULT_SPECS);
+							Popup.open($("#query").val() + value.localName, "actress-info", 1072, 1100);
+						}),
+						$("<label>", {class: 'flayCount'}).append(value.flayCount),
+						$("<label>", {class: 'localName'}).append(value.localName),
+						$("<label>", {class: 'lastRelease'}).append(value.lastRelease)
+				).on("click", function() {
+					$(this).addClass("active");
+				})
+		);
+	}
+	
+}
+</script>

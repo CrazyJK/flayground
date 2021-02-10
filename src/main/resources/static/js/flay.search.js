@@ -164,6 +164,13 @@ function findMode() {
 		}
 		Rest.Actress.persist(actress);
 	});
+	$("#btnShowActress").on("click", function() {
+		var newActressName = $("#newActressName").val().trim();
+		if (newActressName !== '') {
+			View.actress(newActressName);
+		}
+	});
+
 
 	function transferActressInfo(actress, from) {
 		$(from).effect("transfer", {to: "#newActress", className: "ui-effects-transfer"}, 500, function() {

@@ -136,7 +136,7 @@ public class BatchExecutor {
 		log.info("[deleteLowerRank]");
 		for (Flay flay : instanceFlaySource.list()) {
 			if (flay.getVideo().getRank() < 0) {
-				log.info("lower rank {}", flay.getOpus());
+				log.info("lower rank {} - rank: {}, ", flay.getOpus(), flay.getVideo().getRank());
 				archiving(flay);
 			}
 		}

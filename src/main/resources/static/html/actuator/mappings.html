@@ -48,7 +48,7 @@ $(document).ready(function() {
 		contentType: "application/json",
 		cache: false
 	}).done(function(json) {
-		var list = json.contexts['Flayground '].mappings.dispatcherServlets.dispatcherServlet;
+		var list = json.contexts['Flayground'].mappings.dispatcherServlets.dispatcherServlet;
 		
 		$("#count").html(list.length);
 		var $wrap = $("tbody");

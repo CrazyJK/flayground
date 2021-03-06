@@ -27,9 +27,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class Flayground implements AsyncConfigurer {
 
+	public static String SERVER_IP;
+
 	static {
 		try {
-			log.info("Server IP {}", InetAddress.getLocalHost().getHostAddress());
+			SERVER_IP = InetAddress.getLocalHost().getHostAddress();
+			log.info("Server IP {}", SERVER_IP);
 		} catch (UnknownHostException ignore) {}
 	}
 

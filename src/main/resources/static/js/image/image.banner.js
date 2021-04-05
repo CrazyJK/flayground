@@ -217,7 +217,7 @@ $("#overlapBannerSwitch").on("change", function(e) {
 	LocalStorageItem.set('image.banner.overlapBannerSwitch', overlapBannerVal);
 }).trigger("change");
 $("#controlBoxToggleBtn").on("click", function() {
-	$("#controlBox > li:not(:last-child)").toggle();
+	$("#controlBox > li:not(:last-child)").toggle('slow');
 });
 $("img#image").on("click", function() {
 	Popup.imageByNo(imageIndex);

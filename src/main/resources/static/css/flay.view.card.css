@@ -31,8 +31,14 @@
     border: 0;
     margin: auto;
 }
-.card.flay-card.archive {
+/*.card.flay-card.archive {
 	border: .5rem solid;
+}*/
+.flay-list .card.flay-card.archive .text {
+	color: gray;
+}
+.flay-list .card.flay-card.archive {
+	opacity: .75;
 }
 .card.flay-card > .card-body {
     background: #000 center no-repeat;

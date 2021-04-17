@@ -30,7 +30,7 @@ public class FlayConfig {
 
 	@Bean("archiveFlaySource")
 	public FlaySource archiveFlaySource() {
-		return new FileBasedFlaySource(flayProperties.getArchivePath());
+		return new FileBasedFlaySource(true, flayProperties.getArchivePath());
 	}
 
 }

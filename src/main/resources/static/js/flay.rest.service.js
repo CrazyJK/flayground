@@ -10,7 +10,12 @@ var restCall = function(url, args, callback, failCallback) {
 			async: true,
 			cache: false,
 			title: "Call: " + url,
-			loadingDelay: 300
+			loadingDelay: 300,
+			beforeSend: function(xhr) {
+				if (!loading) {
+					loading = new Loading();
+				}
+			}
 	};	
 	var settings = $.extend({}, DEFAULTS, args);
 	if (settings.method != 'GET' && typeof settings.data === 'object') {
@@ -154,6 +159,12 @@ var Rest = {
 		Studio: {
 			findOneByOpus: function(opus, callback) {
 				restCall('/info/studio/findOneByOpus/' + opus, {}, callback);
+			},
+			get: function(name, callback, failCallback) {
+				restCall('/info/studio/' + name, {}, callback, failCallback);
+			},
+			update: function(studio, callback) {
+				restCall('/info/studio', {data: studio, method: "PATCH"}, callback);
 			}
 		},
 		Actress: {

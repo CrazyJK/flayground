@@ -22,10 +22,17 @@ public class FileBasedFlaySource implements FlaySource {
 
 	@Autowired FlayFactory flayFactory;
 
+	boolean isArchive;
+
 	Map<String, Flay> flayMap;
 	private File[] paths;
 
 	public FileBasedFlaySource(File...paths) {
+		this(false, paths);
+	}
+
+	public FileBasedFlaySource(boolean isArchive, File...paths) {
+		this.isArchive = isArchive;
 		this.paths = paths;
 	}
 
@@ -62,6 +69,7 @@ public class FileBasedFlaySource implements FlaySource {
 			Flay flay = null;
 			if (!flayMap.containsKey(result.getOpus())) {
 				flay = flayFactory.newFlay(result);
+				flay.setArchive(isArchive);
 				flayMap.put(flay.getOpus(), flay);
 			} else {
 				flay = flayMap.get(result.getOpus());

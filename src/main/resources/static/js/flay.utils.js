@@ -104,13 +104,18 @@ var View = {
 		tag: function(tagId) {
 //			Popup.open(PATH + "/info/tag/" + tagId, "Tag-" + tagId, 800, 650);
 			Popup.open(PATH + "/html/info/info.tag.html?id=" + tagId, "Tag-" + tagId, 1072, 650);
+		},
+		studio: function(name) {
+			Popup.open(PATH + "/html/info/info.studio.html?s=" + name, "Studio-" + name, 1072, 1900);
 		}
 };
 
-var URL_SEARCH_VIDEO = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=',
-	URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=',
-	URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=',
-	URL_TRANSLATE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
+//const URL_SEARCH_VIDEO = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
+const URL_SEARCH_VIDEO 	 = 'https://nextjav.com/torrent/detail/';
+const URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
+const URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=';
+const URL_TRANSLATE		 = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
+const URL_FIND_ACTRESS	 = 'http://javtorrent.re/tag/';
 
 var Search = {
 		opus: function(keyword) {
@@ -128,6 +133,9 @@ var Search = {
 		opusByRandom: function() {
 			var opus = Random.getInteger(1, 999);
 			Search.opus(opus);
+		},
+		find: function(keyword) {
+			Popup.open(URL_FIND_ACTRESS + encodeURI(keyword), 'findSearch', 1200, 950);
 		}
 };
 

@@ -49,7 +49,7 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 					<button class="btn btn-outline-danger float-left" id="delete">Del</button>
 					<label class="text hover"><i class="fa fa-star favorite" id="favorite"></i></label>
 				</div>
-				<div class="col-4">
+				<div class="col-3">
 					<input class="form-control text-center" name="name" id="name">
 				</div>
 				<div class="col-3">
@@ -57,6 +57,9 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 				</div>
 				<div class="col-1">
 					<button class="btn btn-outline-light" id="search">Search</button>
+				</div>
+				<div class="col-1">
+					<button class="btn btn-outline-light" id="find">Find</button>
 				</div>
 				<div class="col-2 text-center">
 					<button class="btn btn-outline-light" id="save">Save</button>
@@ -147,6 +150,11 @@ $("#search").on("click", function() {
 	Search.actress(keyword);	
 });
 
+$("#find").on("click", function() {
+	var keyword = actress.localName != '' ? actress.localName : actress.name;
+	Search.find(keyword);	
+});
+
 $("#save").on("click", function() {
 	var originalName = actress.name;
 	actress.localName = $("#localName").val().trim();
@@ -189,7 +197,37 @@ Rest.Actress.get(name, function(_actress) {
 		$(".fa-star").removeClass("favorite fa-star").addClass("fa-star-o");		
 	}
 	$("#comment").val(actress.comment);
+
+	var $flayList = $("#instanceList").empty();
+	var flayAllList = [];	
+	Rest.Flay.findByActress(actress, function(flayList) {
+		$("#videoCount").val(flayList.length);
+
+		Rest.Flay.findByActressInArchive(actress, function(flayArchiveList) {
+			$("#videoCount").val(flayList.length + " / " + (flayList.length + flayArchiveList.length));
+
+			flayAllList = flayList.concat(flayArchiveList);
+
+			flayAllList.sort(function(flay1, flay2) {
+				var release1 = $.trim(flay1.release);
+				var release2 = $.trim(flay2.release);
+				return release2.toLowerCase().localeCompare(release1);
+			});
+
+			$.each(flayAllList, function(idx, flay) {
+				$flayList.appendFlayCard(flay, {
+					width: 330,
+					exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+					fontSize: '80%',
+					archive: flay.archive
+				});
+			});
 	
+		});	
+
+	});	
+
+/*	
 	var $flayTemplete = $(".flay");
 	Rest.Flay.findByActress(actress, function(flayList) {
 		$("#videoCount").val(flayList.length);
@@ -229,6 +267,7 @@ Rest.Actress.get(name, function(_actress) {
 		});
 
 	});
+*/
 	
 	if (actress.coverSize > 0) {
 		$("nav.navbar").hover(function() {

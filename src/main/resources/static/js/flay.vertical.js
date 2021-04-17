@@ -629,6 +629,10 @@ var navigation = {
 };
 
 function addVideoEvent() {
+	// studio
+	$(".info-studio").on("click", function() {
+		View.studio(currentFlay.studio);
+	}).addClass("hover");
 	// opus
 	$(".info-opus").on("click", function() {
 		View.video(currentFlay.opus);

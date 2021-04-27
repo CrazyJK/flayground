@@ -110,7 +110,7 @@ var View = {
 		}
 };
 
-//const URL_SEARCH_VIDEO = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
+const URL_SEARCH_VIDEO_4_FIREFOX = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
 const URL_SEARCH_VIDEO 	 = 'https://nextjav.com/torrent/detail/';
 const URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
 const URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=';
@@ -119,7 +119,8 @@ const URL_FIND_ACTRESS	 = 'http://javtorrent.re/tag/';
 
 var Search = {
 		opus: function(keyword) {
-			Popup.open(URL_SEARCH_VIDEO + keyword, 'videoSearch', 1500, 1000);
+			var url = FIREFOX === browser ? URL_SEARCH_VIDEO_4_FIREFOX : URL_SEARCH_VIDEO;
+			Popup.open(url + keyword, 'videoSearch', 1500, 1000);
 		},
 		actress: function(keyword) {
 			Popup.open(URL_SEARCH_ACTRESS + encodeURI(keyword), 'actressSearch', 1200, 950);

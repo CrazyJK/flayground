@@ -1,11 +1,14 @@
 package jk.kamoru.flayground.base.web.security;
 
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+
+import com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -43,6 +46,16 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public LocalAuthenticationFilter localAuthenticationFilter() {
 		return new LocalAuthenticationFilter();
+	}
+
+	@Bean
+	public FilterRegistrationBean<XssEscapeServletFilter> getXssFilterRegistrationBean() {
+		FilterRegistrationBean<XssEscapeServletFilter> registrationBean = new FilterRegistrationBean<XssEscapeServletFilter>();
+		registrationBean.setFilter(new XssEscapeServletFilter());
+		registrationBean.setOrder(1);
+		registrationBean.addUrlPatterns("/*");
+
+		return registrationBean;
 	}
 
 }

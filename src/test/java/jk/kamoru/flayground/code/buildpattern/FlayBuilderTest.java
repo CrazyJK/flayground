@@ -3,7 +3,7 @@ package jk.kamoru.flayground.code.buildpattern;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import jk.kamoru.flayground.code.buildpattern.FlayParameter.ImageBuilder;
 import jk.kamoru.flayground.code.buildpattern.FlayParameter.VideoBuilder;

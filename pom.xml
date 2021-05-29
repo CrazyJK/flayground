@@ -13,7 +13,7 @@
 
 	<groupId>jk.kamoru</groupId>
 	<artifactId>flayground</artifactId>
-	<version>6.9.7.4-07</version>
+	<version>6.9.7.4-08</version>
 	<packaging>jar</packaging>
 
 	<name>Flayground</name>
@@ -22,7 +22,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.8</java.version>
+		<java.version>12</java.version>
 	</properties>
 
 	<dependencies>

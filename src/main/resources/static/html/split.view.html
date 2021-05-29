@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Split View - Flayground</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
+<style type="text/css">
+body {
+	background-color: #000;
+	overflow: hidden;
+}
+.row {
+	margin: 0;
+	padding: 0;
+}
+.row:not(:last-child) {
+	border-bottom: 1px solid #333;
+}
+.row .site:not(:last-child) {
+    border-right: 1px solid #333;
+}
+.site {
+	margin: 0;
+	padding: 0;
+	transition: all .3s;
+}
+.site.full-screen {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	padding: 0;
+	z-index: 69;	
+}
+.address-bar {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 200px;
+    background-color: rgb(51 51 51 / 75%);
+    border-right: 1px solid #5e5454;
+    border-bottom: 1px solid #5e5454;
+    border-bottom-right-radius: .5rem;
+    opacity: 0;
+    padding: .25rem;
+	transition: all .3s;
+	z-index: 3;
+}
+.address-bar:hover {
+    opacity: 1;
+}
+.address-bar .input-group-prepend img {
+    border-radius: 50%;
+	cursor: pointer;
+	height: 24px;
+	margin: 3px 4px;
+	box-shadow: inset 0 0 8px 2px #111, 0 0 4px 2px #111;
+}
+.address-bar .input-group-prepend img:hover {
+	box-shadow: inset 0 0 8px 2px rgb(255, 255, 128), 0 0 4px 2px rgb(255, 255, 128);
+}
+.address-bar .input-group-prepend img.active {
+	box-shadow: inset 0 0 8px 2px rgb(255, 0, 255), 0 0 4px 2px rgb(255, 0, 255);
+}
+.address-bar .input-address {
+    background-color: transparent;
+    border-color: transparent;
+    color: #eee;
+}
+.address-bar .input-address:focus {
+	box-shadow: none;
+}
+.control-btn {
+	position: absolute;
+	top: 40px;
+	left: 0;
+    background-color: rgb(51 51 51 / 75%);
+    border-top: 1px solid #5e5454;
+    border-right: 1px solid #5e5454;
+    border-bottom: 1px solid #5e5454;
+    border-top-right-radius: .5rem;
+    border-bottom-right-radius: .5rem;
+    opacity: 0;
+    padding: .25rem;
+	transition: all .3s;
+	z-index: 3;
+}
+.control-btn:hover {
+    opacity: 1;
+}
+.control-btn.ui-draggable-handle[style] {
+    border-left: 1px solid #5e5454;
+    border-top-left-radius: .5rem;
+    border-bottom-left-radius: .5rem;
+}
+.control-btn.ui-draggable-dragging {
+	transition: none;
+}
+.control-btn.ui-draggable-dragging[style] {
+	box-shadow: 0 0 8px 4px rgb(255, 0, 255);
+}
+.fa {
+	display: block;
+	color: #ccc;
+	margin: .25rem;
+    border-radius: 50%;
+	transition: all .3s;
+}
+.fa.disabled {
+	opacity: .3;
+}
+.fa.rotate {
+	transform: rotate(270deg);
+}
+.fa:hover:not(.disabled) {
+	box-shadow: inset 0 0 8px 2px #111, 0 0 4px 2px #111;
+	color: orange;
+	cursor: pointer;
+}
+.video-wrap {
+	overflow: hidden;
+}
+iframe {
+	background-color: #000;
+	border: 0;
+	width: 100%;
+	height: 100%;
+}
+#gridModeWrap {
+    position: fixed;
+    right: 0;
+    bottom: 40px;
+    background-color: #333;
+    border-top: 1px solid #5e5454;
+    border-left: 1px solid #5e5454;
+    border-bottom: 1px solid #5e5454;
+    border-top-left-radius: .5rem;
+    border-bottom-left-radius: .5rem;
+    opacity: 0;
+    padding: 0 .25rem;
+	transition: all .3s;
+    z-index: 74;
+}
+#gridModeWrap:hover {
+    opacity: 1;
+}
+.hide {
+	display: none!important;
+}
+</style>
+<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript">
+var URL_POPKON = "https://www.popkontv.com/live/favorite.asp?tabmenu=3";
+var URL_PANDA  = "https://www.pandalive.co.kr/live/bookmark";
+var colHtml = "";
+var colCount = 0;
+
+$(window).on("resize", setHeight);
+
+$(document).ready(function() {
+	colHtml = $(".row").html();
+	setHeight();
+	addSplitControlEventListener();
+
+//	$("iframe").attr("src", URL_POPKON);
+});
+
+function setHeight() {
+	var rowCount = $(".row:not(:empty)").length;
+	$("div.row").each(function(idx) {
+		var $row = $(this);
+		var y = parseInt($row.attr("data-y"));
+		$row.find(".video-wrap").css({
+			height: window.innerHeight / rowCount + y
+		});
+	});
+}
+
+function addSplitControlEventListener() {
+	function getColHtml() {
+		return colHtml.replace(/ifrm/g, "ifrm" + ++colCount);
+	}
+	// set draggable
+	$("#splitWrapper").find(".control-btn").draggable();
+	
+	// control event
+	$("#splitWrapper").on("click", ".control-btn .fa.fa-expand", function() { 				// max site
+		var $site = $(this).parents(".site");
+		$site.addClass("full-screen").find(".video-wrap").css({
+			height: window.innerHeight
+		});
+		$site.find(".fa-compress").removeClass("hide");
+		$(this).addClass("hide");
+	}).on("click", ".control-btn .fa.fa-compress", function() { 							// normal site
+		var $site = $(this).parents(".site");
+		$site.removeClass("full-screen").find(".fa-expand").removeClass("hide");
+		setHeight();
+		$(this).addClass("hide");
+	}).on("click", ".control-btn .fa.fa-arrow-up", function() { 							// size y smaller
+		var rowCount = $("#splitWrapper > div.row").length;
+		var $row = $(this).parents(".row");
+		if (rowCount === 0) {
+			$row.attr("data-y", 0);
+		} else {
+			$row.attr("data-y", parseInt($row.attr("data-y")) - 50);
+		}
+		setHeight();
+	}).on("click", ".control-btn .fa.fa-arrow-down", function() { 							// size y enlarge
+		var rowCount = $("#splitWrapper > div.row").length;
+		var $row = $(this).parents(".row");
+		if (rowCount === 0) {
+			$row.attr("data-y", 0);
+		} else {
+			$row.attr("data-y", parseInt($row.attr("data-y")) + 50);
+		}
+		setHeight();
+	}).on("click", ".control-btn .fa.fa-arrow-left", function() { 							// size x samller
+		var $colWrap = $(this).parents(".row"); 
+		var colCount = $colWrap.children().length;
+		console.log('colCount', colCount);
+		if (colCount === 1) {
+			return;
+		}
+		var $site = $(this).parents(".site");
+		var colClass = $site.attr("class").replace(/site/g, "").trim();
+		console.log("colClass", colClass);
+		var _part = colClass.split("-");
+		if (_part.length > 1) {
+			var newColClass = _part[0] + "-" + (parseInt(_part[1]) - 1);
+			console.log("newColClass", newColClass);
+			$site.removeClass(colClass).addClass(newColClass);
+		} else {
+			console.log("first left click");
+			$site.removeClass("col").addClass("col-" + (12 / colCount - 1));
+		}
+	}).on("click", ".control-btn .fa.fa-arrow-right", function() { 							// size x enlarge
+		var $colWrap = $(this).parents(".row"); 
+		var colCount = $colWrap.children().length;
+		if (colCount === 1) {
+			return;
+		}
+		var $site = $(this).parents(".site");
+		var colClass = $site.attr("class").replace(/site/g, "").trim();
+		var _part = colClass.split("-");
+		if (_part.length > 1) {
+			var newColClass = _part[0] + "-" + (parseInt(_part[1]) + 1);
+			$site.removeClass(colClass).addClass(newColClass);
+		} else {
+			$site.removeClass("col").addClass("col-" + (12 / colCount + 1));
+		}
+	}).on("click", ".control-btn .fa-circle", function() {									// size original
+		var $site = $(this).parents(".site");
+		var colClass = $site.attr("class").replace(/site/g, "").trim();
+		$site.removeClass(colClass).addClass("col");
+	}).on("click", ".control-btn .fa.fa-plus", function() { 								// scale up
+		var $site = $(this).parents(".site");
+		var scaleArgs = parseInt($site.attr("data-scale"));
+		if (scaleArgs < 9) {
+			++scaleArgs;
+			$site.attr("data-scale", scaleArgs).find("iframe").css({
+				transform: "scale(1." + scaleArgs + ")"
+			});
+			$(this).attr("title", scaleArgs);
+		}
+	}).on("click", ".control-btn .fa.fa-minus", function() { 								// scale down
+		var $site = $(this).parents(".site");
+		var scaleArgs = parseInt($site.attr("data-scale"));
+		if (scaleArgs > 0) {
+			--scaleArgs;
+			$site.attr("data-scale", scaleArgs).find("iframe").css({
+				transform: "scale(1." + scaleArgs + ")"
+			});
+			$(this).attr("title", scaleArgs);
+		}
+	}).on("click", ".control-btn .fa-angle-double-up", function() {							// scaled site move up
+		translateSite(this, 'up');
+	}).on("click", ".control-btn .fa-angle-double-right", function() {						// scaled site move right
+		translateSite(this, 'right');
+	}).on("click", ".control-btn .fa-angle-double-down", function() {						// scaled site move down
+		translateSite(this, 'down');
+	}).on("click", ".control-btn .fa-angle-double-left", function() {						// scaled site move left
+		translateSite(this, 'left');
+	}).on("click", ".control-btn .fa-circle-o", function() {								// scaled site move center
+		translateSite(this, 'center');
+	}).on("click", ".control-btn .fa.fa-clone", function() { 								// site popup
+		var $site = $(this).parents(".site");
+		var srcUrl = $site.find("iframe").attr("src");
+		window.open(srcUrl, new Date().getTime(), "width=" + 540 + ",height=" + 997 
+				+ ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
+	}).on("click", ".control-btn .fa.fa-download.rotate", function() { 						// add site
+		var $row = $(this).parents(".row");
+		var $newSite = $(getColHtml());
+		$row.append($newSite);
+		$newSite.find(".control-btn").draggable();
+		setHeight();
+	}).on("click", ".control-btn .fa.fa-download:not(.rotate)", function() { 				// add row
+		var $wrp = $("#splitWrapper");
+		var $row = $(this).parents(".row");
+		var $newRow = $row.clone().empty();
+		var $newSite = $(getColHtml());
+		$wrp.append(
+			$newRow.append(
+				$newSite
+			)
+		);
+		$newSite.find(".control-btn").draggable();
+		setHeight();
+	}).on("click", ".control-btn .fa.fa-undo", function(e) {								// restore position
+		$(this).parents(".control-btn").removeAttr("style");
+	}).on("click", ".control-btn .fa.fa-trash-o", function() { 								// remove site
+		var $row = $(this).parents(".row");
+		var $site = $(this).parents(".site");
+		if ($row.children().length > 1) {
+			$site.remove();
+		} else {
+			$row.remove();
+		}
+		setHeight();
+	}).on("click", ".address-bar .ico-popkon", function() { 								// go popkontv.com
+		var $site = $(this).parents(".site");
+		$site.find(".ico-site").removeClass("active");
+		$(this).addClass("active").parents(".site").find("iframe").attr("src", URL_POPKON);
+	}).on("click", ".address-bar .ico-panda", function() { 									// go pandalive.co.kr
+		var $site = $(this).parents(".site");
+		$site.find(".ico-site").removeClass("active");
+		$(this).addClass("active").parents(".site").find("iframe").attr("src", URL_PANDA);
+	}).on("keyup", ".input-address", function(e) {											// input url
+		if (e.keyCode === 13) {
+			var $site = $(this).parents(".site");
+			$site.find(".ico-site").removeClass("active");
+			$site.find("iframe").attr("src", $(this).val());
+		}
+	});
+
+	// grid mode event
+	$("#gridModeWrap > .fa").on("click", function() {
+		gridMode = $(this).attr("data-grid");
+		var row = parseInt(gridMode.charAt(0));
+		var col = parseInt(gridMode.charAt(2));
+		var $splitWrapper = $("#splitWrapper").empty();
+		for (var r = 0; r < row; r++) {
+			var $row = $("<div>", {class: "row", "data-y": "0"}).appendTo($splitWrapper);
+			for (var c = 0; c < col; c++) {
+				$row.append($(getColHtml()));
+			}
+		}
+		setHeight();
+	});
+}
+
+function translateSite(obj, direction) {
+	var $site = $(obj).parents(".site");
+	var scaleArgs = parseInt($site.attr("data-scale"));
+	var transArgs = $site.attr("data-trans");
+	if (scaleArgs > 0) {
+		var transArgsArr = transArgs.split(",");
+		var transArgsX = parseInt(transArgsArr[0]) + (
+			direction === 'left' ? -5 : direction === 'right' ? 5 : 0
+		);
+		var transArgsY = parseInt(transArgsArr[1]) + (
+			direction === 'up' ? -5 : direction === 'down' ? 5 : 0
+		);
+		if (direction === 'center') {
+			transArgsX = 0;
+			transArgsY = 0;
+		}
+		$site.attr("data-trans", transArgsX + "," + transArgsY).find("iframe").css({
+			transform: "scale(1." + scaleArgs + ") translate(" + String(transArgsX) + "%, " + String(transArgsY) + "%)"
+		});
+	}
+}
+</script>
+</head>
+<body>
+	<div id="splitWrapper" class="text-center">
+		<div class="row" data-y="0">
+			<div class="site col" data-scale="0" data-trans="0,0">
+				<div class="address-bar">
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<img class="ico-site ico-popkon" src="https://pic.popkontv.com/images/www/images/common/icon.ico">
+						</div>
+						<div class="input-group-prepend">
+							<img class="ico-site ico-panda" src="https://icache.pandalive.co.kr/code:pandatv/favicon.ico">
+						</div>
+						<input class="form-control form-control-sm input-address">
+					</div>
+				</div>
+				<div class="control-btn">
+					<table>
+						<tr>
+							<td><i class="fa fa-undo"></i></td>
+							<td></td>
+							<td><i class="fa fa-expand"></i><i class="fa fa-compress hide"></i></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><i class="fa fa-arrow-up"></i></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><i class="fa fa-arrow-left"></i></td>
+							<td><i class="fa fa-circle"></i></td>
+							<td><i class="fa fa-arrow-right"></i></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><i class="fa fa-arrow-down"></i></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><i class="fa fa-plus"></i></td>
+							<td></td>
+							<td><i class="fa fa-minus"></i></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><i class="fa fa-angle-double-up"></i></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><i class="fa fa-angle-double-left"></i></td>
+							<td><i class="fa fa-circle-o"></i></td>
+							<td><i class="fa fa-angle-double-right"></i></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><i class="fa fa-angle-double-down"></i></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td><i class="fa fa-download rotate"></i></td>
+						</tr>
+						<tr>
+							<td></td>
+							<td><i class="fa fa-download"></i></td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><i class="fa fa-trash-o"></i></td>
+							<td></td>
+							<td><i class="fa fa-clone"></i></td>
+						</tr>
+					</table>
+				</div>
+				<div class="video-wrap">
+					<iframe name="ifrm" src=""></iframe>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div id="gridModeWrap">
+		<i class="fa fa-square"         data-grid="1r1c"></i>
+		<i class="fa fa-navicon rotate" data-grid="1r3c"></i>
+		<i class="fa fa-pause rotate"   data-grid="2r1c"></i>
+		<i class="fa fa-th-large"       data-grid="2r2c"></i>
+		<i class="fa fa-navicon"        data-grid="3r1c"></i>
+	</div>
+</body>
+</html>

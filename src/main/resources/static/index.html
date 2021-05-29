@@ -48,6 +48,7 @@ h2:hover > a:first-child {
 	transition: .5s .3s ;
 }
 body.bg-chalkboard a.chalk {
+	mask-image: url(/img/pattern/pattern-static.png);
 	-webkit-mask-image: url(/img/pattern/pattern-static.png);
 	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
 }
@@ -76,8 +77,8 @@ function go(menu, method) {
 		url = "/html/image/image.tablet.html";
 	} else if (menu === 'board') {
 		url = "/html/image/image.board.html";
-	} else if (menu === 'popkon') {
-		url = "/html/popkon/popkon.favorite.html";
+	} else if (menu === 'splitView') {
+		url = "/html/split.view.html";
 	} else if (menu === 'imgUp') {
 		url = "/imageUpload.html";
 	}
@@ -156,8 +157,8 @@ $(document).ready(function() {
 			<a href="javascript:go('imgUp', 'href')">Image Upload</a> 
 		</h2>
 		<h2 class="display-4">
-			<a href="javascript:go('popkon', 'popup')">↖</a>
-			<a href="javascript:go('popkon', 'href')">Popkon</a> 
+			<a href="javascript:go('splitView', 'popup')">↖</a>
+			<a href="javascript:go('splitView', 'href')">Split View</a>
 		</h2>
 		<div class="input-group input-group-lg width-400 mx-auto mt-4 mb-3 popup-open-group">
 			<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL">

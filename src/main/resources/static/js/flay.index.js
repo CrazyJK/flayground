@@ -50,16 +50,15 @@ var SlideBar = {
 		specialView: function() {
 			if (system === WINDOWS && location.hostname === 'localhost') {
 				var selectedBgIndex = -1;
-				$(".sidenav > .nav > .nav-item > i + label, .sidenav > .nav > .nav-item > i + a").hover(function() {
+				$(".sidenav > .nav-wrap > .nav > .nav-item > i + label, " 
+				+ ".sidenav > .nav-wrap > .nav > .nav-item > i + a").hover(function() {
 					selectedBgIndex = Random.getInteger(0, Background.count);
 					$("#specialView").css({
 						backgroundImage: "url('/static/image/" + selectedBgIndex + "')"
 					});
 				}, function() {});
 				$(".sidenav > h4 > a").hover(function() {
-					$("#specialView").css({
-						backgroundImage: "url('/img/bg/person_SH_2079.jpeg')"
-					});
+					$("#specialView").css("backgroundImage", "");
 				}, function() {});
 				$(".sidenav > h4 > img").on("click", function() {
 					Popup.imageByNo(selectedBgIndex);

@@ -7,6 +7,13 @@ Rest.Flay.list(function(list) {
 	flayList = list;
 });
 
+var actressList = [];
+Rest.Actress.list(function(list) {
+	actressList = list;
+});
+
+const filterCount = 5
+
 /*
 $(window).on("resize", function() {
 	console.log("$(window).width()", $(window).width());
@@ -110,14 +117,14 @@ $("#groupByStudio").on('show.bs.collapse', function() {
 	});
 	$(".studio-count").html(studioCount);
 
-	//	displaySummaryItem(dataMap, $list);
-
 	var dataArray = [];
 	$.each(dataMap, function(key, val) {
-		dataArray.push({
-			key: key,
-			list: val
-		});
+		if (val.length > filterCount) {
+			dataArray.push({
+				key: key,
+				list: val
+			});
+		}
 	});
 	$.each(dataArray, function(idx, data) {
 		var tagWeight = data.list.length > 100 
@@ -129,11 +136,14 @@ $("#groupByStudio").on('show.bs.collapse', function() {
 		$("<a>", {
 			'data-weight': Math.round(tagWeight)
 		}).append(
-				data.key
+				data.key + ' (' + data.list.length + ')'
 		).on("click", function(e) {
 			e.preventDefault();
+			View.studio(data.key);
 		}).appendTo($list);
 	});
+	$(".studio-count").html(dataArray.length + " / " + studioCount);
+	$(".filter-count").html(filterCount);
 
 	var wOpts = {
 			interval: 20,
@@ -169,6 +179,89 @@ $("#groupByStudio").on('show.bs.collapse', function() {
 	$('#studioCanvas').tagcanvas('delete');
 });
 
+$("#StudioTable").on('show.bs.collapse', function() {
+	var dataMap = {}, studioCount = 0;
+	$.each(flayList, function(idx, flay) {
+		var key = flay.studio;
+		if (dataMap[key]) {
+			dataMap[key].push(flay);
+		} else {
+			dataMap[key] = [flay];
+			++studioCount;
+		}
+	});
+
+	var dataArray = [];
+	$.each(dataMap, function(key, val) {
+		if (val.length > filterCount) {
+			dataArray.push({
+				key: key,
+				list: val
+			});
+		}
+	});
+	dataArray.sort(function(d1, d2) {
+//		return d1.key.localeCompare(d2.key);
+		return d2.list.length - d1.list.length;
+	});
+
+	$(".studio-count").html(dataArray.length + " / " + studioCount);
+	$(".filter-count").html(filterCount);
+	
+	var $tbody = $("#studioTableWrap tbody").empty();
+	$.each(dataArray, function(idx, data) {
+		
+		var flayLength = data.list.length;
+		var flayFileSize = 0;
+		var flayRankSum = 0; 
+		var flayRankLength = 0;
+		var flayRankAvg = 0.0;
+		var	favLength = 0;
+		var favFileSize = 0;
+		var favRankSum = 0; 
+		var favRankLength = 0;
+		var favRankAvg = 0.0;
+		var favRatio = 0.0;
+		
+		for (let flay of data.list) {
+			flayFileSize += flay.length;
+			if (flay.video.rank > 0) {
+				flayRankSum += flay.video.rank;
+				flayRankLength++;
+			}
+			if (isFavoriteActress(flay.actressList)) {
+				favLength++;
+				favFileSize += flay.length;
+				if (flay.video.rank > 0) {
+					favRankSum += flay.video.rank;
+					favRankLength++;
+				}
+			}
+		}
+		
+		flayRankAvg = flayRankSum / flayRankLength;
+		favRankAvg = favRankSum / favRankLength;
+		favRatio = Math.round(favLength / flayLength * 100) + "%";
+		
+		$("<tr>").append(
+				$("<td>").html(data.key),
+				$("<td>").html(flayLength),
+				$("<td>").html(File.formatSize(flayFileSize)),
+				$("<td>").html(flayRankAvg > 0 ? flayRankAvg.toFixed(1) : ''),
+
+				$("<td>").html(favLength),
+				$("<td>").html(File.formatSize(favFileSize)),
+				$("<td>").html(favRankAvg > 0 ? favRankAvg.toFixed(1) : ''),
+				$("<td>").html(favRatio)
+		).on("click", function() {
+			displayFlayList(data.key, data.list);
+		}).appendTo($tbody);
+	});
+	
+}).on("hide.bs.collapse", function() {
+	$('#studioCanvas').tagcanvas('delete');
+});
+
 $("#groupByActress").on('show.bs.collapse', function() {
 	var $list = $("#actressList").empty();
 	
@@ -188,7 +281,7 @@ $("#groupByActress").on('show.bs.collapse', function() {
 		}
 	});
 
-	var dataArray = [], filterCount = 4;
+	var dataArray = [];
 	$.each(dataMap, function(key, val) {
 		if (val.length > filterCount) {
 			dataArray.push({
@@ -207,9 +300,7 @@ $("#groupByActress").on('show.bs.collapse', function() {
 		$("<a>", {
 			'data-weight': Math.round(tagWeight)
 		}).append(
-				data.key,
-//				"<br>",
-//				data.list.length + "v"
+				data.key + ' (' + data.list.length + ')'
 		).on("click", function(e) {
 			e.preventDefault();
 			View.actress(data.key);
@@ -249,6 +340,80 @@ $("#groupByActress").on('show.bs.collapse', function() {
 	
 }).on("hide.bs.collapse", function() {
 	$('#actressCanvas').tagcanvas('delete');
+});
+
+$("#ActressTable").on('show.bs.collapse', function() {
+	var dataMap = {}, actressCount = 0;
+	$.each(flayList, function(idx, flay) {
+		var keys = flay.actressList;
+		for (var x in keys) {
+			if (keys[x] === 'Amateur') {
+				continue;
+			}
+			if (dataMap[keys[x]]) {
+				dataMap[keys[x]].push(flay);
+			} else {
+				dataMap[keys[x]] = [flay];
+				++actressCount;
+			}
+		}
+	});
+
+	var dataArray = [];
+	$.each(dataMap, function(key, val) {
+		if (val.length > filterCount) {
+			dataArray.push({
+				key: key,
+				list: val
+			});
+		}
+	});
+	dataArray.sort(function(d1, d2) {
+//		return d1.key.localeCompare(d2.key);
+		return d2.list.length - d1.list.length;
+	});
+
+	$(".actress-count").html(dataArray.length + " / " + actressCount);
+	$(".filter-count").html(filterCount);
+	
+	var $tbody = $("#actressTableWrap tbody").empty();
+	$.each(dataArray, function(idx, data) {
+		
+		var flayLength = data.list.length;
+		var flayFileSize = 0;
+		var filteredLength = 0;
+		var filteredFileSize = 0;
+		var filteredRankSum = 0; 
+		var filteredRankLength = 0;
+		var filteredRankAvg = 0.0;
+		
+		for (let flay of data.list) {
+			flayFileSize += flay.length;
+			if (flay.video.rank > 0) {
+				filteredLength++;
+				filteredFileSize += flay.length;
+				filteredRankSum += flay.video.rank;
+				filteredRankLength++;
+			}
+		}
+		
+		filteredRankAvg = filteredRankSum / filteredRankLength;
+		
+		$("<tr>").append(
+				$("<td>").html(data.key),
+				$("<td>").html(flayLength),
+				$("<td>").html(File.formatSize(flayFileSize)),
+				$("<td>").html(filteredLength),
+				$("<td>").html(File.formatSize(filteredFileSize)),
+				$("<td>").html(filteredRankAvg > 0 ? filteredRankAvg.toFixed(1) : ''),
+
+		).on("click", function() {
+			displayFlayList(data.key, data.list);
+		}).appendTo($tbody);
+	});
+	
+}).on("hide.bs.collapse", function() {
+	$('#studioCanvas').tagcanvas('delete');
 });
 
 function displaySummaryTableView(dataMap, $list) {
@@ -316,35 +481,15 @@ function displaySummaryTableView(dataMap, $list) {
 	);
 }
 
-function displaySummaryItem(dataMap, $list) {
-	var dataArray = [];
-	$.each(dataMap, function(key, val) {
-		dataArray.push({
-			key: key,
-			list: val
-		});
-	});
-	dataArray.sort(function(d1, d2) {
-		return d1.key.localeCompare(d2.key);
-	});
-	
-	$.each(dataArray, function(idx, data) {
-		$("<div>", {'class': 'summary-item'}).append(
-				$("<label>", {'class': 'item-key nowrap'}).html(data.key),
-				$("<span>",  {'class': 'item-count badge badge-primary'}).html(data.list.length),
-				$("<label>", {'class': 'item-size'}).append(
-						(function() {
-							var length = 0;
-							for (var x in data.list) {
-								length += data.list[x].length;
-							}
-							return File.formatSize(length);
-						}())
-				)
-		).on("click", function() {
-			displayFlayList(data.key, data.list);
-		}).appendTo($list);
-	});	
+function isFavoriteActress(nameArray) {
+	for (let actress of actressList) {
+		for (let name of nameArray) {
+			if (actress.name === name) {
+				return actress.favorite;
+			}
+		}
+	}
+	return false;
 }
 
 function displayFlayList(key, list) {

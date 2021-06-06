@@ -80,7 +80,16 @@ function findMode() {
 			$(this).removeClass('input-warning');
 	});
 	$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
-		if (e.keyCode != 13) return;
+		if (this.id === 'rowname_opus') {
+			var titlePart = $(this).val().replace(/\[|]/gi, ' ').split(' ');
+			if (titlePart.length > 1) {
+				$("#rowname_opus").val(titlePart[0]);
+				$("#rowname_title").val(titlePart.slice(1).join(' '));
+				$("#rowname_actress").val(titlePart[titlePart.length - 1]);
+			}
+		} else if (e.keyCode != 13) {
+			return;
+		}
 		
 		var rowOpus    = $("#rowname_opus").val().trim();
 		var rowTitle   = $("#rowname_title").val().trim();
@@ -130,7 +139,7 @@ function findMode() {
 			}
 		});
 	});
-	$("#newActressBirth").on("keyup", function(e) {
+	$("#newActressBirth").on("keyup", function() {
 		var value = $(this).val().trim();
 		$(this).val(value);
 	});

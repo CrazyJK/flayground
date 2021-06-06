@@ -53,7 +53,7 @@ public class AccessLogService {
 	@Transactional
 	@PostConstruct
 	public void loadFromFile() {
-		log.info("@PostConstruct AccessLogService.loadFromFile");
+		log.debug("@PostConstruct AccessLogService.loadFromFile");
 		File infoFile = getAccessFile();
 		try {
 			List<AccessLogStatistic> list = jsonReader.readValue(infoFile, new TypeReference<List<AccessLogStatistic>>() {});
@@ -66,7 +66,7 @@ public class AccessLogService {
 
 	@PreDestroy
 	public void saveToFile() {
-		log.info("@PreDestroy - AccessLogService.saveToFile");
+		log.debug("@PreDestroy - AccessLogService.saveToFile");
 		try {
 			// backup src file
 			File srcFile = getAccessFile();

@@ -29,40 +29,51 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class LocalAuthenticationFilter extends OncePerRequestFilter {
 
-	public static List<String> serverIPs = new ArrayList<>();
+	private final static String LOCAL_NAME = "admin";
+	private final static String LOCAL_PASS = "local";
+	private final static Collection<? extends GrantedAuthority> LOCAL_AUTHORITIES = Arrays.stream(new String[] { "ROLE_ADMIN", "ROLE_USER" }).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+
+	private static List<String> serverIPs = new ArrayList<>();
 
 	static {
 		serverIPs.add("localhost");
-		serverIPs.add("127.0.0.1");
-		serverIPs.add("0:0:0:0:0:0:0:1");
 		try {
 			Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
 			while (networkInterfaces.hasMoreElements()) {
 				NetworkInterface networkInterface = networkInterfaces.nextElement();
-				log.debug("NetworkInterface {}", networkInterface);
+				log.debug(String.format("NetworkInterface: %-5s %-4s %-8s %-7s %-50s",
+						networkInterface.getName(),
+						networkInterface.isUp() ? "up" : "down",
+						networkInterface.isLoopback() ? "loopback" : "",
+						networkInterface.isVirtual() ? "virtual" : "",
+						networkInterface.getDisplayName()));
 
-				Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
-				while (inetAddresses.hasMoreElements()) {
-					InetAddress inetAddress = inetAddresses.nextElement();
+				if (networkInterface.isUp()) {
+					System.out.println();
+					System.out.format("\t NetworkInterface: %-5s [%s]%n", networkInterface.getName(), networkInterface.getDisplayName());
 
-					String networkInterfaceInfo = String.format("NetworkInterface: %5s %-50s up=%-5s loopback=%-5s virtual=%-5s  InetAddress: %-9s %-12s %s",
-						networkInterface.getName(), networkInterface.getDisplayName(), networkInterface.isUp(), networkInterface.isLoopback(), networkInterface.isVirtual(),
-						(inetAddress.isLoopbackAddress() ? "Loopback" : inetAddress.isLinkLocalAddress() ? "LinkLocal" : inetAddress.isSiteLocalAddress() ? "SiteLocal" : "unknown"), inetAddress.getHostName(), inetAddress.getHostAddress());
-					log.debug(networkInterfaceInfo);
+					Enumeration<InetAddress> inetAddresses = networkInterface.getInetAddresses();
+					while (inetAddresses.hasMoreElements()) {
+						InetAddress inetAddress = inetAddresses.nextElement();
 
-					// interface is up and not loopback, inetaddress is SiteLocal
-					if (networkInterface.isUp() && !networkInterface.isLoopback() && inetAddress.isSiteLocalAddress()) {
-						serverIPs.add(inetAddress.getHostAddress());
+						// interface is up and not loopback, inetaddress is SiteLocal
+						if (networkInterface.isUp() && (networkInterface.isLoopback() || inetAddress.isSiteLocalAddress())) {
+							serverIPs.add(inetAddress.getHostAddress());
+						}
+
+						System.out.format("\t    └ InetAddress: %-9s %-15s %s%n",
+								inetAddress.isLoopbackAddress() ? "Loopback" : inetAddress.isLinkLocalAddress() ? "LinkLocal" : inetAddress.isSiteLocalAddress() ? "SiteLocal" : "unknown",
+								inetAddress.getHostName(),
+								inetAddress.getHostAddress());
 					}
 				}
 			}
-			log.info("Server IPs {}", serverIPs);
-		} catch (SocketException ignore) {}
+			System.out.println();
+		} catch (SocketException e) {
+			log.error("Fail to obtain System Ip", e);
+		}
+		log.info("Server IP is {}", serverIPs);
 	}
-
-	private final static String LOCAL_NAME = "admin";
-	private final static String LOCAL_PASS = "local";
-	private final static Collection<? extends GrantedAuthority> LOCAL_AUTHORITIES = Arrays.stream(new String[] { "ROLE_ADMIN", "ROLE_USER" }).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -74,9 +85,9 @@ public class LocalAuthenticationFilter extends OncePerRequestFilter {
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new User(LOCAL_NAME, LOCAL_PASS, LOCAL_AUTHORITIES), LOCAL_PASS, LOCAL_AUTHORITIES);
 				authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
 				log.debug("authentication {}", authentication);
-				log.info("{} is logged in {}", remoteAddr, LOCAL_NAME);
 
 				SecurityContextHolder.getContext().setAuthentication(authentication);
+				log.info("{} is logged in {}", remoteAddr, LOCAL_NAME);
 			}
 		}
 		chain.doFilter(request, response);

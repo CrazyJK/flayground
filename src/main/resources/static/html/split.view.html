@@ -377,6 +377,14 @@ function translateSite(obj, direction) {
 		});
 	}
 }
+
+function injectJS(obj) {
+//	$.getScript("http://localhost:6974/js/override-alert.js");
+	$(obj).parents(".site").find("iframe").contents().find("body").append(
+		$("<script>", {id: "injectedJK", type: "text/javascript", src: "/js/override-alert.js"})
+	);
+	$(obj).remove();
+}
 </script>
 </head>
 <body>
@@ -392,6 +400,9 @@ function translateSite(obj, direction) {
 							<img class="ico-site ico-panda" src="https://icache.pandalive.co.kr/code:pandatv/favicon.ico">
 						</div>
 						<input class="form-control form-control-sm input-address">
+						<div class="input-group-append">
+							<button class="btn btn-sm btn-outline-warning border-0" onclick="injectJS(this)">inject JS</button>
+						</div>
 					</div>
 				</div>
 				<div class="control-btn">

@@ -1,6 +1,6 @@
 package jk.kamoru.flayground.base.web.security;
 
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -8,10 +8,12 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter;
+import jk.kamoru.flayground.FlayProperties;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+	@Autowired FlayProperties flayProperties;
 
 	@Override
 	public void configure(AuthenticationManagerBuilder auth) throws Exception {
@@ -37,25 +39,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.rememberMeParameter("remember-me")
 				.and()
 			.logout()
-				.logoutSuccessUrl("/").permitAll()
+				.logoutSuccessUrl("/")
 				.and()
-			.addFilterBefore(localAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+			.addFilterBefore(automaticallyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
 			.httpBasic();
 	}
 
 	@Bean
-	public LocalAuthenticationFilter localAuthenticationFilter() {
-		return new LocalAuthenticationFilter();
-	}
-
-	@Bean
-	public FilterRegistrationBean<XssEscapeServletFilter> getXssFilterRegistrationBean() {
-		FilterRegistrationBean<XssEscapeServletFilter> registrationBean = new FilterRegistrationBean<XssEscapeServletFilter>();
-		registrationBean.setFilter(new XssEscapeServletFilter());
-		registrationBean.setOrder(1);
-		registrationBean.addUrlPatterns("/*");
-
-		return registrationBean;
+	public AutomaticallyAuthenticationFilter automaticallyAuthenticationFilter() {
+		return new AutomaticallyAuthenticationFilter(flayProperties.getAutomaticallyCertificatedIp());
 	}
 
 }

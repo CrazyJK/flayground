@@ -163,5 +163,8 @@ var Security = {
 				Security.getUser();
 			}
 			return Security.user.username;
+		},
+		isAutomaticallyCertificated: function() {
+			return Rest.Security.isAutomaticallyCertificated();
 		}
 };

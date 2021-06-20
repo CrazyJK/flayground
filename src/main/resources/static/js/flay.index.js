@@ -48,7 +48,7 @@ var SlideBar = {
 			});
 		},
 		specialView: function() {
-			if (system === WINDOWS && location.hostname === 'localhost') {
+			if ((system === WINDOWS && location.hostname === 'localhost') || Security.isAutomaticallyCertificated()) {
 				var selectedBgIndex = -1;
 				$(".sidenav > .nav-wrap > .nav > .nav-item > i + label, " 
 				+ ".sidenav > .nav-wrap > .nav > .nav-item > i + a").hover(function() {
@@ -199,7 +199,7 @@ var username;
 
 $(document).ready(function() {
 	isAdmin = Security.hasRole("ADMIN");
-	username = Security.getName();
+	username = Security.getName();	
 	console.log("isAdmin", isAdmin, username);
 	
 	Background.init();

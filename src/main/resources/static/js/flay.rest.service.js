@@ -264,6 +264,13 @@ var Rest = {
 		Security: {
 			whoami: function(callback) {
 				restCall("/security/whoami", {async: false}, callback);
+			},
+			isAutomaticallyCertificated: function() {
+				var result;
+				restCall("/security/isAutomaticallyCertificated", {async: false}, function(isAuto) {
+					result = Boolean(isAuto);
+				});
+				return result;
 			}
 		},
 		Todayis: {

@@ -573,7 +573,6 @@ var navigation = {
 			}
 			currentFlay = collectedList[currentIndex];
 			
-			// direction = 1: next, -1: previous, over: random
 			showVideo(currentIndex - prevIndex);
 			navigation.paging();
 		},
@@ -702,9 +701,13 @@ function addVideoEvent() {
 	$("#newTagName, #newTagDesc").on("keyup", function(e) {
 		e.stopPropagation();
 	});
+	// add-basket-btn
+	$(".add-basket-btn").on("click", function() {
+		flayWebsocket.info('{"mode":"grap", "opus":"' + currentFlay.opus + '"}');
+	});
 }
 
-function showVideo(direction) {
+function showVideo() {
 	function showInfo() {
 		// studio
 		$(".info-studio").html(currentFlay.studio);

@@ -50,9 +50,14 @@
 
 	<div id="options" class="bg-light">
 		<ul class="list-unstyled mb-0">
-			<li><button class="btn btn-sm btn-link btn-reload"><i class="fa fa-refresh"></i> reload Data</button></li>
-			<li><label class="check sm"><input type="checkbox" id="toggleStatisticsStudio"><span><i class="fa fa-map"></i> statistics studio</span></label></li>
-			<li><label class="check sm"><input type="checkbox" id="toggleStatisticsActress"><span><i class="fa fa-map"></i> statistics actress</span></label></li>
+			<li><i class="fa fa-refresh"></i>
+				<label class="check sm"><span class="btn-reload">reload Data</span></label></li>
+			<li><i class="fa fa-map"></i>
+				<label class="check sm"><input type="checkbox" id="toggleStatisticsStudio"><span>statistics Studio</span></label></li>
+			<li><i class="fa fa-map"></i>
+				<label class="check sm"><input type="checkbox" id="toggleStatisticsActress"><span>statistics Actress</span></label></li>
+			<li><i class="fa fa-shopping-basket"></i>
+				<label class="check sm"><span class="flay-basket-open">open Basket</span></label></li>
 		</ul>
 	</div>
 	
@@ -77,6 +82,9 @@
 							<label><input type="radio" name="ranker" value="4"><i class="fa fa-star r4"></i></label>
 							<label><input type="radio" name="ranker" value="5"><i class="fa fa-star r5"></i></label>
 						</span>
+						<span class="ranker">
+							<label class="add-basket-btn"><i class="fa fa-shopping-basket"></i></label>
+						</span>
 					</dt>
 					<dt><label class="text hover lg info-title nowrap">Title</label></dt>
 				</dl>
@@ -89,7 +97,7 @@
 			<div class="info-wrapper">
 				<dl><dd class="info-wrapper-actress"><label class="text hover info-actress">Actress</label></dd></dl>
 			</div>
-			<div class="tag-wrapper container">
+			<div class="tag-wrapper container-lg">
 				<div id="videoTags" class="tag-list"></div>
 				<button type="button" class="btn btn-sm btn-link text-dark" data-toggle="collapse" data-target="#newTagForm"><i class="fa fa-plus"></i></button>
 				<div id="newTagForm" class="collapse input-group input-group-sm">
@@ -105,7 +113,7 @@
 		
 	<nav class="fixed-bottom">
 		<div class="notice-bar"></div>
-		<ul class="pagination pagination-sm justify-content-center bg-light">
+		<ul class="pagination pagination-sm justify-content-center">
 			<li class="page-item"><a class="page-link" href="#">1</a></li>
 			<li class="page-item active"><a class="page-link" href="#">2</a></li>
 			<li class="page-item"><a class="page-link" href="#">3</a></li>
@@ -113,7 +121,7 @@
 			<li class="page-item"><a class="page-link" href="#">5</a></li>
 		</ul>
 		<div class="progress" id="paginationProgress" style="height: 1px;">
-  			<div class="progress-bar" style="width:70%"></div>
+			<div class="progress-bar" style="width:70%"></div>
 		</div>
 	</nav>
 

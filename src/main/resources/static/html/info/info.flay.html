@@ -11,6 +11,26 @@
 <link rel="stylesheet" href="/css/base.scrollbar.css"/>
 <link rel="stylesheet" href="/css/crazy.common.css"/>
 <link rel="stylesheet" href="/css/flay.view.card.css"/>
+<style type="text/css">
+.toggle-tag {
+    position: fixed;
+    right: 0px;
+    width: 1.75rem;
+    height: 1.75rem;
+    border: 2px solid var(--light);
+    border-radius: 50%;
+    color: var(--light);
+    text-align: center;
+    vertical-align: middle;
+    font-weight: bold;
+    font-size: 1.25rem;
+    margin: 0 .25rem;
+    background-color: rgba(0,0,0,.5);
+}
+.toggle-tag .fa {
+	font-size: 1.5rem;
+}
+</style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -20,12 +40,17 @@
 <script type="text/javascript" src="/js/flay.rest.service.js"></script>
 <script type="text/javascript" src="/js/flay.utils.js"></script>
 <script type="text/javascript" src="/js/flay.view.card.js"></script>
+<script type="text/javascript" src="/js/flay.websocket.js"></script>
 </head>
 <body>
 
 	<div id="containerFlay"></div>
 	
 	<div id="containerTag" class="fixed-bottom text-center p-2"></div>
+
+	<label class="toggle-tag shadow hover">
+		<i class="fa fa-angle-double-down"></i>
+	</label>
 
 <script type="text/javascript">
 var opus = reqParam.opus;
@@ -50,7 +75,20 @@ function matchTag() {
 			$(":checkbox[data-tag-id='" + tagId + "']").prop("checked", true);
 		});
 
-		window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + $("#containerTag").height() + 100);
+		$("#containerTag").hide();
+		
+		$(".toggle-tag").css({
+			top: $(".flay-card").height() - 30,
+		}).on("click", function() {
+			$("#containerTag").toggle();
+			if ($("#containerTag").css("display") === 'none') {
+				window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + 68);
+			} else {
+				window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + $("#containerTag").height() + 100);
+			}
+		});
+		
+		window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + 68);
 	}
 }
 
@@ -59,7 +97,7 @@ window.onload = function() {
 		setFlay(f);
 	}, function() {
 		Rest.Archive.get(opus, function(f) {
-			isArchive= true;
+			isArchive = true;
 			setFlay(f);
 		});
 	});

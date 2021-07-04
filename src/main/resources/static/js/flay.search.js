@@ -42,6 +42,8 @@ function baseSearch() {
 }
 
 function findMode() {
+	const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
+
 	$(".btn-find-random-opus").on("click", function() {
 		Search.opusByRandom();
 	});
@@ -62,26 +64,25 @@ function findMode() {
 				$("#query").val(value);
 			} else if (id === "actress") {
 				$("#newActressName").val(value);
+			} else if (id === "release") {
+				value = value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
+				$(this).val(value);
+		
+				var isValid = DATE_PATTERN.test(value);
+				$(this).toggleClass('input-invalid', !isValid);
+				if (isValid)
+					$(this).toggleClass('input-warning', value.indexOf(new Date().format('yyyy')) < 0);
+				else
+					$(this).removeClass('input-warning');
 			}
 			fullname += '[' + value + ']';
 			$(this).toggleClass("input-empty", value === '');
 		});
 		$("input#fullname").val(fullname).effect("highlight", {}, 200);
 	});
-	$("#release").on("keyup", function() {
-		var dateText = $(this).val().trim();
-		var date_pattern = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
-		var isValid = date_pattern.test(dateText);
-		var thisYear = new Date().format('yyyy');
-		$(this).toggleClass('input-invalid', !isValid);
-		if (isValid)
-			$(this).toggleClass('input-warning', dateText.indexOf(thisYear) < 0);
-		else
-			$(this).removeClass('input-warning');
-	});
 	$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function(e) {
 		if (this.id === 'rowname_opus') {
-			var titlePart = $(this).val().replace(/\[|]/gi, ' ').split(' ');
+			var titlePart = $.trim($(this).val().replace(/\[|]/gi, ' ')).split(' ');
 			if (titlePart.length > 1) {
 				$("#rowname_opus").val(titlePart[0]);
 				$("#rowname_title").val(titlePart.slice(1).join(' '));

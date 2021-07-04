@@ -33,6 +33,7 @@
 
 	<div id="crazySidenav" class="sidenav">
 		<div class="sidenav-openbtn"><i class="fa fa-angle-double-right"></i></div>
+		<a href="#" class="flay-basket-open float-right p-2 mt-2 text-secondary"><i class="fa fa-shopping-basket"></i></a>
   		<h4><img src="../img/favicon/flay_1.png"><a href="../html/index.html">Flayground</a></h4>
 		<div class="nav-wrap">
 			<ul class="nav flex-column">
@@ -89,6 +90,12 @@
 	<div id="wrap_body"></div>
 	
 	<div id="notice" title="" style="display:none;"><p></p></div>
+
+<script type="text/javascript">
+$("body").on("click", ".flay-basket-open", function() {
+	Popup.open("/html/flay/flay.basket.html", 'flay.basket', 1000, 1500);
+});
+</script>
 	
 </body>
 </html>

@@ -286,7 +286,6 @@ button.btn.btn-outline-flay {
 	position: fixed;
 	top: 0;
 	left: 0;
-	bottom: 0;
 	cursor: pointer;
 	font-size: 2rem;
 	padding-left: 4px;
@@ -541,7 +540,7 @@ button.btn.btn-outline-flay {
 	color: var(--light) !important;
 }
 
-.bg-dark ul.pagination                                      {background-color: var(--darker) !important;} 
+/*.bg-dark ul.pagination                                      {background-color: var(--darker) !important;}*/ 
 .bg-dark ul.pagination .page-item                .page-link {background-color: var(--darker);}
 .bg-dark ul.pagination .page-item.active         .page-link {background-color: #103356;	border-color: #dee2e6;}
 .bg-dark ul.pagination .page-item.disabled       .page-link {color: var(--gray);}

@@ -43,10 +43,14 @@
 }
 .card.flay-card > .card-body {
     background: center no-repeat;
-    background-size: contain;
+    background-size: cover;
     text-align: left;
 	box-shadow: 0.25rem 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
 	border: 1px solid #000;
+	transition: background-image .5s;
+}
+.card.flay-card.card-border-0 > .card-body {
+	border: 0;
 }
 .card.flay-card > .card-body > .card-text:empty {
 	display: none;

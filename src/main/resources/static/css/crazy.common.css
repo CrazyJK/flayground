@@ -449,10 +449,17 @@ button.btn.btn-outline-flay {
 .center-right {position: absolute; top: 50%;  right: 0; transform: translate(0, -50%);}
 .bottom-left  {position: absolute; bottom: 0;  left: 0;}
 .bottom-right {position: absolute; bottom: 0; right: 0;}
+
 .fixed-center {position: fixed; top: 50%;   left: 50%; transform: translate(-50%, -50%);}
-.fixed-top    {position: fixed; top: 0;}
-.fixed-bottom {position: fixed; bottom: 0;}
-.full-screen  {position: absolute; top: 0; left: 0; right: 0; bottom: 0;}
+.fixed-top    	 {position: fixed; top: 0;}
+.fixed-top-left  {position: fixed; top: 0;	left: 0;}
+.fixed-top-right {position: fixed; top: 0;	right: 0;}
+.fixed-bottom 		 {position: fixed; bottom: 0;}
+.fixed-bottom-left 	 {position: fixed; bottom: 0; left: 0;}
+.fixed-bottom-right  {position: fixed; bottom: 0; right: 0;}
+.fixed-bottom-middle {position: fixed; bottom: 0; right: 50%; transform: translate(50%, 0);}
+
+.full-screen  {position: fixed; top: 0; left: 0; right: 0; bottom: 0;}
 
 .favorite {
 	color: red !important;
@@ -479,6 +486,10 @@ button.btn.btn-outline-flay {
 .hover:hover {
 	text-shadow: 0 1px 2px orange;
 }
+.hover-warning:hover {
+    color: var(--warning);
+}
+
 .width-50  {width:  50px !important;}
 .width-60  {width:  60px !important;}
 .width-70  {width:  70px !important;}
@@ -565,4 +576,14 @@ button.btn.btn-outline-flay {
 .bg-dark button {
 	color: var(--light);
 	outline: none;
+}
+
+.font-size-1r {
+    font-size: 1rem;
+}
+.font-size-2r {
+    font-size: 2rem;
+}
+.font-size-3r {
+    font-size: 3rem;
 }

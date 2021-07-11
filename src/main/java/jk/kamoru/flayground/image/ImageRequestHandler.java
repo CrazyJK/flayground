@@ -3,6 +3,7 @@ package jk.kamoru.flayground.image;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.Base64;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -31,10 +32,14 @@ import jk.kamoru.flayground.info.source.ActressInfoSource;
 @RequestMapping("/static")
 public class ImageRequestHandler {
 
-	@Autowired FlayService flayService;
-	@Autowired FlayArchiveService flayArchiveService;
-	@Autowired ImageService imageService;
-	@Autowired ActressInfoSource actressInfoSource;
+	@Autowired
+	FlayService flayService;
+	@Autowired
+	FlayArchiveService flayArchiveService;
+	@Autowired
+	ImageService imageService;
+	@Autowired
+	ActressInfoSource actressInfoSource;
 
 	@GetMapping("/cover/{opus}")
 	@ResponseBody
@@ -46,6 +51,24 @@ public class ImageRequestHandler {
 			flay = flayArchiveService.get(opus);
 		}
 		return getImageEntity(flay.getFiles().get(Flay.COVER).get(0));
+	}
+
+	@GetMapping("/cover/{opus}/base64")
+	@ResponseBody
+	public String getBase64Cover(@PathVariable String opus) throws IOException {
+		Flay flay = null;
+		try {
+			flay = flayService.get(opus);
+		} catch (FlayNotfoundException e) {
+			flay = flayArchiveService.get(opus);
+		}
+		if (flay == null) {
+			return "";
+		}
+		File cover = flay.getCover();
+		MediaType mediaType = probeMediaType(cover);
+
+		return "data:" + mediaType + ";base64," + Base64.getEncoder().encodeToString(FileUtils.readFileToByteArray(cover));
 	}
 
 	@GetMapping("/image/{idx}")
@@ -78,7 +101,7 @@ public class ImageRequestHandler {
 	}
 
 	MediaType probeMediaType(File file) {
- 		try {
+		try {
 			return MediaType.valueOf(Files.probeContentType(file.toPath()));
 		} catch (InvalidMediaTypeException | IOException e) {
 			String suffix = StringUtils.substringAfterLast(file.getName(), ".");

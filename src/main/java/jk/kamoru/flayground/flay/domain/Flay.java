@@ -57,6 +57,10 @@ public class Flay {
 		files.get(CANDI).add(file);
 	}
 
+	public File getCover() {
+		return files.get(COVER).get(0);
+	}
+
 	public long getLastModified() {
 		return NumberUtils.max(
 				files.get(MOVIE).size() > 0 ? files.get(MOVIE).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1,

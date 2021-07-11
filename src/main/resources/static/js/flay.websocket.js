@@ -4,7 +4,7 @@
  */
 
 var flayWebsocket = (function ($) {
-    var debug = true;
+    var debug = false;
 
     var STOMP_ENDPOINT = "/flayground-websocket";
 
@@ -25,10 +25,13 @@ var flayWebsocket = (function ($) {
 
     var switchSelector = "#notification";
 
-    $("head").append(
+    /*$("head").append(
         '<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>',
         '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>'
-    );
+    );*/
+    
+    $.getScript("/webjars/sockjs-client/sockjs.min.js");
+    $.getScript("/webjars/stomp-websocket/stomp.min.js");
 
     var isAdmin, username;
 
@@ -166,7 +169,7 @@ var flayWebsocket = (function ($) {
                 })
             );
         }
-        var bottomHeight = $(".fixed-bottom").length === 0 ? 0 : $(".fixed-bottom").height() + 16;
+        var bottomHeight = $(".fixed-bottom").length === 0 || $(".fixed-bottom").css("display") === "none" ? 0 : $(".fixed-bottom").height() + 16;
         $("#" + wrapper).css({
             bottom: bottomHeight,
         });
@@ -210,7 +213,7 @@ var flayWebsocket = (function ($) {
 
         setTimeout(function () {
             hideBox($box);
-        }, 10 * 1000);
+        }, 5 * 1000);
     };
 
     var infoCallback = function (message) {

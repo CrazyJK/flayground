@@ -1,5 +1,8 @@
 package jk.kamoru.flayground.base.web;
 
+import java.util.Arrays;
+import java.util.Map;
+
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.stereotype.Controller;
@@ -13,15 +16,15 @@ public class XssFilterTestController {
 	@RequestMapping("/test")
 	@ResponseBody
 	public String test(HttpServletRequest request) {
-		String response = "";
+		StringBuilder response = new StringBuilder("<ol>");
 
-		String parameter = request.getParameter("test");
+		for (Map.Entry<String, String[]> entry : request.getParameterMap().entrySet()) {
+			response.append("<li>").append(entry.getKey()).append(" : ").append(Arrays.toString(entry.getValue())).append("</li>");
+		}
 
-		response += "test=" + parameter;
+		response.append("<ol>");
 
-		System.out.println("response: " + response);
-
-		return response;
+		return response.toString();
 	}
 
 }

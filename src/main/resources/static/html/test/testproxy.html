@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>proxy test</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/proxy/webjars/bootstrap/css/bootstrap.min.css">
+<script type="text/javascript" src="/proxy/webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="/proxy/webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="/proxy/webjars/bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+	<hi>/proxy test</hi>
+	
+	<h3>URL <span id="url"></span></h3>
+	
+	<h4>get</h4>
+	<div> 
+		<form method="GET" action="/proxy/xss/test">
+			<input type="text" name="test1" value="test value 1">
+			<input type="text" name="test2" value="test value 2">
+			<input type="text" name="test3" value="test value 3">
+			<input type="text" name="test4" value="test value 4">
+			<input type="text" name="test5" value="test value 5">
+			<input type="text" name="test" value="test value 6-1">
+			<input type="text" name="test" value="test value 6-2">
+			<button type="submit">submit</button>
+		</form> 
+	</div>
+
+	<h4>post</h4>
+	<div> 
+		<form method="POST" action="/proxy/xss/test">
+			<input type="text" name="test1" value="test value 1">
+			<input type="text" name="test2" value="test value 2">
+			<input type="text" name="test3" value="test value 3">
+			<input type="text" name="test4" value="test value 4">
+			<input type="text" name="test5" value="test value 5">
+			<input type="text" name="test" value="test value 6-1">
+			<input type="text" name="test" value="test value 6-2">
+			<button type="submit">submit</button>
+		</form> 
+	</div>
+
+	<img src="/proxy/static/image/6079">
+
+<script type="text/javascript">
+document.getElementById("url").innerHTML = location.href;
+</script>
+
+</body>
+</html>

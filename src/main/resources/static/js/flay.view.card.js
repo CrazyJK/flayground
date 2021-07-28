@@ -353,7 +353,6 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 								setFavorite($actress, actress);
 							});
 						});
-
 					});
 				}
 			});

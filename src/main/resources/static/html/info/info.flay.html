@@ -14,11 +14,12 @@
 <style type="text/css">
 .toggle-tag {
     position: fixed;
-    right: 0px;
+    right: 50%;
+	transform: translate(50%, 0);
     width: 1.75rem;
     height: 1.75rem;
     border: 2px solid var(--light);
-    border-radius: 50%;
+    border-radius: 25%;
     color: var(--light);
     text-align: center;
     vertical-align: middle;
@@ -26,6 +27,7 @@
     font-size: 1.25rem;
     margin: 0 .25rem;
     background-color: rgba(0,0,0,.5);
+	line-height: 1;
 }
 .toggle-tag .fa {
 	font-size: 1.5rem;
@@ -83,8 +85,10 @@ function matchTag() {
 			$("#containerTag").toggle();
 			if ($("#containerTag").css("display") === 'none') {
 				window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + 68);
+				$(this).children(".fa").switchClass("fa-angle-double-up", "fa-angle-double-down");
 			} else {
 				window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + $("#containerTag").height() + 100);
+				$(this).children(".fa").switchClass("fa-angle-double-down", "fa-angle-double-up");
 			}
 		});
 		

@@ -137,6 +137,9 @@ var flayWebsocket = (function ($) {
 
     var showMessage = function (type, message) {
         if (debug) console.log(message);
+        if (opener) {
+            return;
+        }
         var title,
             content,
             time = new Date();

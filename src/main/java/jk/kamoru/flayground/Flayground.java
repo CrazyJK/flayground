@@ -60,11 +60,11 @@ public class Flayground implements AsyncConfigurer {
 	public static class InfoFilename {
 		public static final String HISTORY = "history.csv";
 		public static final String ACTRESS = "actress.json";
-		public static final String  STUDIO =  "studio.json";
-		public static final String   VIDEO =   "video.json";
-		public static final String     TAG =     "tag.json";
-		public static final String  ACCESS =  "access.json";
-		public static final String    NOTE =    "note.json";
+		public static final String STUDIO = "studio.json";
+		public static final String VIDEO = "video.json";
+		public static final String TAG = "tag.json";
+		public static final String ACCESS = "access.json";
+		public static final String NOTE = "note.json";
 	}
 
 	public static enum OS {
@@ -77,7 +77,7 @@ public class Flayground implements AsyncConfigurer {
 			try {
 				log.info("This machine's OS is {}", osName);
 				return OS.valueOf(StringUtils.split(osName)[0].toUpperCase());
-			} catch(IllegalArgumentException e) {
+			} catch (IllegalArgumentException e) {
 				log.warn("This machine's OS is unknown. property 'os.name' is {}", osName);
 				return UNKNOWN;
 			}
@@ -102,15 +102,15 @@ public class Flayground implements AsyncConfigurer {
 		}
 	}
 
-    @Override
-    public Executor getAsyncExecutor() {
-        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(7);
-        executor.setMaxPoolSize(42);
-        executor.setQueueCapacity(11);
-        executor.setThreadNamePrefix("FlayExecutor-");
-        executor.initialize();
-        return executor;
-    }
+	@Override
+	public Executor getAsyncExecutor() {
+		ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+		executor.setCorePoolSize(7);
+		executor.setMaxPoolSize(42);
+		executor.setQueueCapacity(11);
+		executor.setThreadNamePrefix("FlayExecutor-");
+		executor.initialize();
+		return executor;
+	}
 
 }

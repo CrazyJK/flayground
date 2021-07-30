@@ -15,7 +15,8 @@ import jk.kamoru.flayground.flay.source.FlaySource;
 @Configuration
 public class FlayConfig {
 
-	@Autowired FlayProperties flayProperties;
+	@Autowired
+	FlayProperties flayProperties;
 
 	@Bean("flayFactory")
 	public FlayFactory flayFactory() {

@@ -20,7 +20,8 @@ import jk.kamoru.flayground.flay.service.FlayService;
 @RequestMapping("/flay")
 public class FlayController {
 
-	@Autowired FlayService flayService;
+	@Autowired
+	FlayService flayService;
 
 	@GetMapping("/{opus}")
 	public Flay get(@PathVariable String opus) {

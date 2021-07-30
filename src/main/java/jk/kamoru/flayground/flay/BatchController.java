@@ -15,7 +15,8 @@ import jk.kamoru.flayground.flay.service.BatchExecutor;
 @RequestMapping("/batch")
 public class BatchController {
 
-	@Autowired BatchExecutor batchService;
+	@Autowired
+	BatchExecutor batchService;
 
 	@GetMapping("/option/{option}")
 	public Boolean getOption(@PathVariable BatchExecutor.Option option) {

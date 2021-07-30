@@ -30,12 +30,12 @@ public class FlayFactory {
 		if (parts == null || parts.length < 5) {
 			result.valid = false;
 		} else {
-			result.valid = true;
-			result.studio  = StringUtils.replace(parts[0], "[", "");
-			result.opus    = StringUtils.replace(parts[1], "[", "");
-			result.title   = StringUtils.replace(parts[2], "[", "");
-			result.actress = StringUtils.replace(parts[3], "[", "");
-			result.release = StringUtils.replace(parts[4], "[", "");
+			result.valid 	= true;
+			result.studio	= StringUtils.replace(parts[0], "[", "");
+			result.opus  	= StringUtils.replace(parts[1], "[", "");
+			result.title 	= StringUtils.replace(parts[2], "[", "");
+			result.actress 	= StringUtils.replace(parts[3], "[", "");
+			result.release 	= StringUtils.replace(parts[4], "[", "");
 		}
 		return result;
 	}

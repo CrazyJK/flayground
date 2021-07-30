@@ -13,5 +13,5 @@ public class FlayNotfoundException extends RuntimeException {
 	public FlayNotfoundException(String opus) {
 		super("Notfound flay " + opus);
 	}
-	
+
 }

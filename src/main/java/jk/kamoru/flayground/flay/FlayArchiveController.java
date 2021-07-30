@@ -53,5 +53,5 @@ public class FlayArchiveController {
 	public List<Flay> findActress(@PathVariable String key, @PathVariable String value) {
 		return flayArchiveService.find(key, value);
 	}
-	
+
 }

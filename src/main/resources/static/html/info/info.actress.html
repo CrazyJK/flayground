@@ -64,6 +64,7 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 				</div>
 				<div class="col-2 text-center">
 					<button class="btn btn-outline-light" id="save">Save</button>
+					<button class="btn btn-outline-light" id="unseen">Unseen</button>
 				</div>
 			</div>
 			<div class="row mb-2">
@@ -105,9 +106,9 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 			</div>
 			<div class="row">
 				<div class="col">
-	    			<input type="text" class="form-control" id="comment" placeholder="comment...">
-		  		</div>
-		  	</div>
+					<input type="text" class="form-control" id="comment" placeholder="comment...">
+				</div>
+			</div>
 		</form>
 	</nav>
 	
@@ -175,6 +176,21 @@ $("#save").on("click", function() {
 			loading.on('Updated');
 		});
 	}
+});
+
+$("#unseen").on("click", function() {
+	let active = $(this).data("active") !== true;
+	let $flayList = $("#instanceList");
+	$flayList.children().each(function(idx, flay) {
+		let $flay = $(flay);
+		let flayData = $flay.data("flay");
+		if (active) {
+			$flay.toggle(flayData.video.rank === 0 && !flayData.archive);
+		} else {
+			$flay.show();
+		}
+	});
+	$(this).html(active ? 'Seen' : 'Unseen').data("active", active);
 });
 
 $("#delete").on("click", function() {

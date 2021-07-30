@@ -9,7 +9,7 @@ public class Search {
 
 	String query;
 	Boolean favorite;
-	
+
 	public <T> boolean contains(T domain) {
 		if (StringUtils.isBlank(query) && favorite == null) {
 			return true;
@@ -20,7 +20,7 @@ public class Search {
 		} else if (!StringUtils.isBlank(query) && favorite != null) {
 			return StringUtils.containsIgnoreCase(domain.toString(), query)
 					&& StringUtils.containsIgnoreCase(domain.toString(), "favorite=" + favorite);
-		} 
+		}
 		return false;
 	}
 }

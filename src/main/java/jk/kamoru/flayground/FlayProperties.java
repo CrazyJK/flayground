@@ -29,21 +29,21 @@ public class FlayProperties {
 	private boolean deleteLowerScore = false;
 	private int storageLimit = 7168;
 
-	private File   archivePath;
-	private File   storagePath;
-	private File[]   stagePaths;
-	private File     coverPath;
-	private File     queuePath;
+	private File archivePath;
+	private File storagePath;
+	private File[] stagePaths;
+	private File coverPath;
+	private File queuePath;
 	private File candidatePath;
 	private File subtitlesPath;
-	private File      infoPath;
+	private File infoPath;
 	private File[] todayisPaths;
-	private File[]   imagePaths;
-	private File    backupPath;
+	private File[] imagePaths;
+	private File backupPath;
 
 	private File playerApp;
 	private File editorApp;
-	private File  paintApp;
+	private File paintApp;
 
 	private String recyclebin = "FLAY_RECYCLEBIN";
 	private boolean recyclebinUse = true;
@@ -59,9 +59,9 @@ public class FlayProperties {
 	@Data
 	public static class Backup {
 		private String instanceJarFilename = "flayground-instance.jar";
-		private String archiveJarFilename  = "flayground-archive.jar";
+		private String archiveJarFilename = "flayground-archive.jar";
 		private String instanceCsvFilename = "flay-instance.csv";
-		private String archiveCsvFilename  = "flay-archive.csv";
+		private String archiveCsvFilename = "flay-archive.csv";
 	}
 
 	@Data

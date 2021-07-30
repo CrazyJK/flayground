@@ -20,18 +20,19 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileBasedFlaySource implements FlaySource {
 
-	@Autowired FlayFactory flayFactory;
+	@Autowired
+	FlayFactory flayFactory;
 
 	boolean isArchive;
 
 	Map<String, Flay> flayMap;
 	private File[] paths;
 
-	public FileBasedFlaySource(File...paths) {
+	public FileBasedFlaySource(File... paths) {
 		this(false, paths);
 	}
 
-	public FileBasedFlaySource(boolean isArchive, File...paths) {
+	public FileBasedFlaySource(boolean isArchive, File... paths) {
 		this.isArchive = isArchive;
 		this.paths = paths;
 	}
@@ -48,8 +49,7 @@ public class FileBasedFlaySource implements FlaySource {
 				Collection<File> found = FileUtils.listFiles(dir, null, true);
 				log.info(String.format("%5s file    - %s", found.size(), dir));
 				listFiles.addAll(found);
-			}
-			else {
+			} else {
 				log.warn("Invalid source path {}", dir);
 			}
 		}

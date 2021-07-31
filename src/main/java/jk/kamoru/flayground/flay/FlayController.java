@@ -20,8 +20,7 @@ import jk.kamoru.flayground.flay.service.FlayService;
 @RequestMapping("/flay")
 public class FlayController {
 
-	@Autowired
-	FlayService flayService;
+	@Autowired FlayService flayService;
 
 	@GetMapping("/{opus}")
 	public Flay get(@PathVariable String opus) {
@@ -97,6 +96,12 @@ public class FlayController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void deleteFile(@RequestBody String file) {
 		flayService.deleteFile(file);
+	}
+
+	@PutMapping("/delete/file/{opus}")
+	@ResponseStatus(HttpStatus.NO_CONTENT)
+	public void deleteFileOnFlay(@PathVariable String opus, @RequestBody String file) {
+		flayService.deleteFileOnFlay(opus, file);
 	}
 
 }

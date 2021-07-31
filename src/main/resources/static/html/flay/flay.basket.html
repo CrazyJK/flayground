@@ -15,19 +15,20 @@
 <link rel="stylesheet" href="/css/crazy.common.range.css" />
 <link rel="stylesheet" href="/css/flay.view.card.css" />
 <style type="text/css">
-#rankSelect, #emptyFlay {
-    display: none;
-    vertical-align: text-bottom;
-}
-.fixed-bottom-left:hover {
-    background-color: #dc3545;
-    border-color: #ffc107;
+#controlWrap {
     border-radius: .25rem;
     transition: .5s;
 }
-.fixed-bottom-left:hover #rankSelect, 
-.fixed-bottom-left:hover #emptyFlay {
-    display: inline;
+#controlWrap:hover {
+    background-color: #dc3545;
+    border-color: #ffc107;
+}
+#controlWrap:hover > * {
+    display: inline-block;
+}
+#rankSelect, #emptyFlay {
+    display: none;
+    vertical-align: text-bottom;
 }
 select:focus-visible {
     outline: none;
@@ -51,17 +52,17 @@ select > option {
 
     <div class="flay-list mt-1"></div>
 
-    <div class="fixed-bottom-left">
+    <div class="fixed-bottom-left" id="controlWrap">
         <label class="m-1" id="pickFlay">
             <i class="fa fa-gratipay hover hover-warning font-size-2r"></i>
         </label>
-        <select id="rankSelect" class="bg-transparent border-0 text-white form-control-sm mx-2">
-            <option value="0">r 0</option>
-            <option value="1">r 1</option>
-            <option value="2">r 2</option>
-            <option value="3">r 3</option>
-            <option value="4">r 4</option>
-            <option value="5">r 5</option>
+        <select class="bg-transparent border-0 text-white form-control-sm mx-2" id="rankSelect">
+            <option value="0">R 0</option>
+            <option value="1">R 1</option>
+            <option value="2">R 2</option>
+            <option value="3">R 3</option>
+            <option value="4">R 4</option>
+            <option value="5">R 5</option>
         </select>
         <label class="m-1 mr-2" id="emptyFlay">
             <i class="fa fa-trash hover lead"></i>

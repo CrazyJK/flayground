@@ -36,17 +36,23 @@ import lombok.extern.slf4j.Slf4j;
 public class BatchExecutor {
 
 	public static enum Option {
-		/** deleteLowerScoreVideo */ S;
+		/** deleteLowerScoreVideo */
+		S;
 	}
 
 	public static enum Operation {
-		/** InstanceVideoSource */ I, /** ArchiveVideoSource */ A, /** Backup */ B
+		/** InstanceVideoSource */
+		I,
+		/** ArchiveVideoSource */
+		A,
+		/** Backup */
+		B
 	}
 
 	@Autowired FlayProperties flayProperties;
 
 	@Autowired FlaySource instanceFlaySource;
-	@Autowired FlaySource  archiveFlaySource;
+	@Autowired FlaySource archiveFlaySource;
 	@Autowired HistoryService historyService;
 	@Autowired AnnounceService notificationService;
 	@Autowired ScoreCalculator scoreCalculator;
@@ -60,35 +66,35 @@ public class BatchExecutor {
 
 	public Boolean getOption(Option type) {
 		switch (type) {
-		case S:
-			return flayProperties.isDeleteLowerScore();
-		default:
-			throw new IllegalArgumentException("unknown batch option");
+			case S:
+				return flayProperties.isDeleteLowerScore();
+			default:
+				throw new IllegalArgumentException("unknown batch option");
 		}
 	}
 
 	public Boolean toggleOption(Option type) {
 		switch (type) {
-		case S:
-			return flayProperties.negateDeleteLowerScore();
-		default:
-			throw new IllegalArgumentException("unknown batch option");
+			case S:
+				return flayProperties.negateDeleteLowerScore();
+			default:
+				throw new IllegalArgumentException("unknown batch option");
 		}
 	}
 
 	public void startBatch(Operation oper) {
 		switch (oper) {
-		case I:
-			instanceBatch();
-			break;
-		case A:
-			archiveBatch();
-			break;
-		case B:
-			backup();
-			break;
-		default:
-			throw new IllegalArgumentException("unknown batch operation");
+			case I:
+				instanceBatch();
+				break;
+			case A:
+				archiveBatch();
+				break;
+			case B:
+				backup();
+				break;
+			default:
+				throw new IllegalArgumentException("unknown batch operation");
 		}
 	}
 
@@ -163,11 +169,11 @@ public class BatchExecutor {
 
 		final String storagePath;
 		final String[] stagePaths;
-		final String   coverPath;
+		final String coverPath;
 		try {
-			storagePath  = flayProperties.getStoragePath().getCanonicalPath();
+			storagePath = flayProperties.getStoragePath().getCanonicalPath();
 			stagePaths = new String[flayProperties.getStagePaths().length];
-			for (int i=0; i<flayProperties.getStagePaths().length; i++) {
+			for (int i = 0; i < flayProperties.getStagePaths().length; i++) {
 				stagePaths[i] = flayProperties.getStagePaths()[i].getCanonicalPath();
 			}
 			coverPath = flayProperties.getCoverPath().getCanonicalPath();
@@ -197,7 +203,8 @@ public class BatchExecutor {
 						if (coverFiles != null && coverFiles.size() > 0) {
 							flay.getFiles().get(Flay.COVER).add(coverFiles.get(0));
 						}
-					} catch (FlayNotfoundException ignore) {}
+					} catch (FlayNotfoundException ignore) {
+					}
 				}
 				// if subtitles not exists, find in archive or subtitles folder
 				if (Flay.SUBTI.equals(key) && (entry.getValue() == null || entry.getValue().isEmpty())) {
@@ -207,7 +214,8 @@ public class BatchExecutor {
 						if (subtitlesFiles != null && subtitlesFiles.size() > 0) {
 							flay.getFiles().get(Flay.SUBTI).addAll(subtitlesFiles);
 						}
-					} catch (FlayNotfoundException ignore) {}
+					} catch (FlayNotfoundException ignore) {
+					}
 				}
 				List<File> value = entry.getValue();
 				for (File file : value) {
@@ -228,17 +236,19 @@ public class BatchExecutor {
 
 	/**
 	 * 하위 폴더 전체에서 파일이 없는 폴더 삭제
+	 * 
 	 * @param emptyManagedPaths
 	 */
-	void deleteEmptyFolder(File...emptyManagedPaths) {
+	void deleteEmptyFolder(File... emptyManagedPaths) {
 		log.info("[deleteEmptyFolder]");
 		for (File path : emptyManagedPaths) {
 			Collection<File> listDirs = flayFileHandler.listDirectory(path);
 			for (File dir : listDirs) {
+				log.info("  scanning... {}", dir);
 				if (dir.equals(path)) {
 					continue;
 				}
-				int dirSize  = flayFileHandler.listDirectory(dir).size();
+				int dirSize = flayFileHandler.listDirectory(dir).size();
 				int fileSize = FileUtils.listFiles(dir, null, false).size();
 				log.debug("  {}, dir: {}, file: {}", dir, dirSize, fileSize);
 				if (dirSize == 1 && fileSize == 0) {
@@ -251,6 +261,7 @@ public class BatchExecutor {
 
 	/**
 	 * flay 파일이 있어야될 위치
+	 * 
 	 * @param flay
 	 * @param storagePath
 	 * @param stagePaths
@@ -297,8 +308,8 @@ public class BatchExecutor {
 	}
 
 	/**
-	 * archive 폴더명
-	 * yyyy-MM 형식
+	 * archive 폴더명 yyyy-MM 형식
+	 * 
 	 * @param flay
 	 * @return
 	 */
@@ -309,6 +320,7 @@ public class BatchExecutor {
 	/**
 	 * 커버, 자막은 아카이브 폴더로 이동<br>
 	 * 그외 파일은 제거.(삭제 또는 휴지통)
+	 * 
 	 * @param flay
 	 */
 	private void archiving(Flay flay) {
@@ -341,12 +353,12 @@ public class BatchExecutor {
 		final String CSV_FORMAT = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
 
 		final String BACKUP_INSTANCE_JAR_FILENAME = flayProperties.getBackup().getInstanceJarFilename();
-		final String BACKUP_ARCHIVE_JAR_FILENAME  = flayProperties.getBackup().getArchiveJarFilename();
+		final String BACKUP_ARCHIVE_JAR_FILENAME = flayProperties.getBackup().getArchiveJarFilename();
 		final String BACKUP_INSTANCE_CSV_FILENAME = flayProperties.getBackup().getInstanceCsvFilename();
-		final String BACKUP_ARCHIVE_CSV_FILENAME  = flayProperties.getBackup().getArchiveCsvFilename();
+		final String BACKUP_ARCHIVE_CSV_FILENAME = flayProperties.getBackup().getArchiveCsvFilename();
 
 		File backupInstanceJarFile = new File(flayProperties.getBackupPath(), BACKUP_INSTANCE_JAR_FILENAME);
-		File backupArchiveJarFile  = new File(flayProperties.getBackupPath(), BACKUP_ARCHIVE_JAR_FILENAME);
+		File backupArchiveJarFile = new File(flayProperties.getBackupPath(), BACKUP_ARCHIVE_JAR_FILENAME);
 		File backupRootPath = new File(flayProperties.getQueuePath(), "InstanceBackupTemp");
 		File backupInstanceFilePath = new File(backupRootPath, "instanceFiles");
 
@@ -356,10 +368,10 @@ public class BatchExecutor {
 
 		// video list backup to csv
 		Collection<Flay> instanceFlayList = instanceFlaySource.list();
-		Collection<Flay>  archiveFlayList =  archiveFlaySource.list();
-		List<History>         historyList = historyService.list();
-		List<String>  instanceCsvDataList = new ArrayList<>();
-		List<String>   archiveCsvDataList = new ArrayList<>();
+		Collection<Flay> archiveFlayList = archiveFlaySource.list();
+		List<History> historyList = historyService.list();
+		List<String> instanceCsvDataList = new ArrayList<>();
+		List<String> archiveCsvDataList = new ArrayList<>();
 
 		// instance info
 		log.info("[Backup] Write instance csv {} to {}", BACKUP_INSTANCE_CSV_FILENAME, backupRootPath);
@@ -389,7 +401,7 @@ public class BatchExecutor {
 			if (!foundInArchive)
 				archiveCsvDataList.add(String.format(CSV_FORMAT, "", history.getOpus(), "", "", "", "", history.getDesc()));
 		}
-		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_CSV_FILENAME),  archiveCsvDataList);
+		writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_CSV_FILENAME), archiveCsvDataList);
 
 		// Info folder copy
 		log.info("[Backup] Copy Info folder {} to {}", flayProperties.getInfoPath(), backupRootPath);
@@ -433,12 +445,8 @@ public class BatchExecutor {
 
 	private void compress(File destJarFile, File targetFolder) {
 		/*
-		 * jar options
-		 * -c  새 아카이브를 생성합니다.
-		 * -v  표준 출력에 상세 정보 출력을 생성합니다.
-		 * -f  아카이브 파일 이름을 지정합니다.
-		 * -0  저장 전용: ZIP 압축을 사용하지 않습니다.
-		 * -M  항목에 대해 Manifest 파일을 생성하지 않습니다.
+		 * jar options -c 새 아카이브를 생성합니다. -v 표준 출력에 상세 정보 출력을 생성합니다. -f 아카이브 파일 이름을 지정합니다. -0 저장 전용: ZIP 압축을
+		 * 사용하지 않습니다. -M 항목에 대해 Manifest 파일을 생성하지 않습니다.
 		 */
 		List<String> commands = Arrays.asList("jar", "cvf0M", destJarFile.getAbsolutePath(), "-C", targetFolder.getAbsolutePath(), ".");
 		File logFile = new File(flayProperties.getQueuePath(), destJarFile.getName() + "." + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");

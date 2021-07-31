@@ -36,15 +36,23 @@ var Popup = {
 		 * @param specs if null, default is DEFAULT_SPECS
 		 */
 		open: function(url, name, width, height, positionMethod, specs, event) {
-			//console.log("[popup] Call popup : ", url, name, width, height, positionMethod, specs, event);
+			// console.log("[popup] Call popup : ", url, name, width, height, positionMethod, specs, event);
 			var windowScreenWidth  = window.screen.width,
 				windowScreenHeight = window.screen.height;
 			var	left, top;
 
 			name = name.replace(/-/gi, '');
-			width = width || windowScreenWidth / 2;
-			height = height || windowScreenHeight / 2;
-			
+			if (width === '100%') {
+				width = windowScreenWidth;
+			} else {
+				width = width || windowScreenWidth / 2;
+			}
+			if (height === '100%') {
+				height = windowScreenHeight;
+			} else {
+				height = height || windowScreenHeight / 2;
+			}
+
 			if (positionMethod && positionMethod === 'Mouse') {
 				left = event.screenX; 
 				top  = event.screenY;
@@ -53,6 +61,7 @@ var Popup = {
 				top  = (windowScreenHeight - height) / 2;
 			}
 			specs = "width=" + width + ",height=" + height + ",left=" + left + ",top=" + top + "," + (specs || DEFAULT_SPECS);
+			// console.log("[popup] window.open : ", url, name, specs);
 
 			var popupWindow = window.open(url, name, specs);
 			if (popupWindow) {

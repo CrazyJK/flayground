@@ -649,8 +649,11 @@ function addVideoEvent() {
 	});
 	// subtitles
 	$(".info-subtitles").on("click", function() {
-		if (currentFlay.files.subtitles.length > 0)
+		if (currentFlay.files.subtitles.length > 0) {
 			Rest.Flay.subtitles(currentFlay);
+		} else {
+			Search.subtitles(currentFlay.opus);
+		}
 	});
 	// overview
 	$(".info-overview").on("click", function() {

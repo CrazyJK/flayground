@@ -93,7 +93,7 @@ var Util = {
 
 var View = {
 		flay: function(opus) {
-			Popup.open(PATH + "/html/info/info.flay.html?opus=" + opus, "flay-" + opus, 820, 770);
+			Popup.open(PATH + "/html/info/info.flay.html?opus=" + opus, "flay-" + opus, 800, 770);
 		},
 		video: function(opus) {
 			Popup.open(PATH + "/info/video/" + opus, "video-" + opus, 400, 300);
@@ -116,6 +116,7 @@ const URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_
 const URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=';
 const URL_TRANSLATE		 = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
 const URL_FIND_ACTRESS	 = 'http://javtorrent.re/tag/';
+const URL_SEARCH_SUBTITLES = 'https://www.subtitlecat.com/index.php?search=';
 
 var Search = {
 		opus: function(keyword) {
@@ -137,6 +138,9 @@ var Search = {
 		},
 		find: function(keyword) {
 			Popup.open(URL_FIND_ACTRESS + encodeURI(keyword), 'findSearch', 1200, 950);
+		},
+		subtitles: function(keyword) {
+			Popup.open(URL_SEARCH_SUBTITLES + keyword, 'subtitlesSearch', 900, 950);
 		}
 };
 

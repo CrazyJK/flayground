@@ -121,6 +121,9 @@ var Rest = {
 			},
 			deleteFile: function(file, callback) {
 				restCall('/flay/delete/file', {method: "PUT", data: file}, callback);
+			},
+			deleteFileOnFlay: function(opus, file, callback) {
+				restCall('/flay/delete/file/' + opus, {method: "PUT", data: file}, callback);
 			}
 		},
 		Cover: {

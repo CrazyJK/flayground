@@ -52,12 +52,12 @@ public class FlayFileHandler {
 			List<File> newFiles = new ArrayList<>();
 			for (File file : fileList) {
 
-				String tail   = increaseCount ? "" + ++fileCount : "";
+				String tail = increaseCount ? "" + ++fileCount : "";
 				String suffix = FilenameUtils.getExtension(file.getName());
 
 				File newFile = new File(file.getParentFile(), flay.getFullname() + tail + "." + suffix);
 				boolean renameTo = file.renameTo(newFile);
-				log.info("renameTo {}: {} - {}", renameTo, file, newFile);
+				log.info("renameTo {}: {} <- {}", renameTo, newFile, file);
 
 				if (renameTo) {
 					newFiles.add(newFile);
@@ -209,25 +209,39 @@ public class FlayFileHandler {
 
 	public String prettyFileLength(long length) {
 		if (length > FileUtils.ONE_TB) {
-			return Flayground.Format.Number.TB_Format.format((double)length / FileUtils.ONE_TB) + " TB";
+			return Flayground.Format.Number.TB_Format.format((double) length / FileUtils.ONE_TB) + " TB";
 		} else if (length > FileUtils.ONE_GB) {
-			return Flayground.Format.Number.GB_Format.format((double)length / FileUtils.ONE_GB) + " GB";
+			return Flayground.Format.Number.GB_Format.format((double) length / FileUtils.ONE_GB) + " GB";
 		} else if (length > FileUtils.ONE_MB) {
-			return Flayground.Format.Number.MB_Format.format((double)length / FileUtils.ONE_MB) + " MB";
+			return Flayground.Format.Number.MB_Format.format((double) length / FileUtils.ONE_MB) + " MB";
 		} else if (length > FileUtils.ONE_KB) {
-			return Flayground.Format.Number.KB_Format.format((double)length / FileUtils.ONE_KB) + " KB";
+			return Flayground.Format.Number.KB_Format.format((double) length / FileUtils.ONE_KB) + " KB";
 		} else {
 			return length + "bytes";
 		}
 	}
 
 	public Collection<File> listDirectory(File path) {
-		return  FileUtils.listFilesAndDirs(path, new IOFileFilter() {
-			@Override public boolean accept(File file) { return false; }
-			@Override public boolean accept(File dir, String name) { return false; }
+		return FileUtils.listFilesAndDirs(path, new IOFileFilter() {
+			@Override
+			public boolean accept(File file) {
+				return false;
+			}
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return false;
+			}
 		}, new IOFileFilter() {
-				@Override public boolean accept(File file) { return true; }
-				@Override public boolean accept(File dir, String name) { return true; }
+			@Override
+			public boolean accept(File file) {
+				return true;
+			}
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return true;
+			}
 		});
 	}
 

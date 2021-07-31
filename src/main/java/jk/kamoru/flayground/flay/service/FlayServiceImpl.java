@@ -4,6 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -114,20 +117,25 @@ public class FlayServiceImpl implements FlayService {
 		File stagePath = flayProperties.getStagePaths()[0];
 		for (File file : candiList) {
 			String filename = file.getName();
-			flayFileHandler.moveFileToDirectory(file, stagePath);
-
+			// 파일 종류에 따라 이동 위치 조정
 			if (Flayground.FILE.isVideo(file)) {
+				flayFileHandler.moveFileToDirectory(file, stagePath);
 				movieList.add(new File(stagePath, filename));
 			} else if (Flayground.FILE.isSubtitles(file)) {
-				subtiList.add(new File(stagePath, filename));
+				// 비디오 파일이 있으면, 그 위치로 이동
+				File baseFolder = movieList.size() > 0 ? movieList.get(0).getParentFile() : stagePath;
+				flayFileHandler.moveFileToDirectory(file, baseFolder);
+				subtiList.add(new File(baseFolder, filename));
 			} else {
 				throw new IllegalStateException("file is not known suffix. " + file);
 			}
 		}
 		candiList.clear();
+		// Rank 조정
 		if (flay.getVideo().getRank() < 0) {
 			flay.getVideo().setRank(0);
 		}
+		// 전체 파일명 조정
 		flayFileHandler.rename(flay);
 		notificationService.announceTo("Accept candidates", flay.getFullname());
 	}
@@ -182,6 +190,24 @@ public class FlayServiceImpl implements FlayService {
 	@Override
 	public Collection<Flay> getListOrderbyScoreDesc() {
 		return scoreCalculator.orderbyScoreDesc(instanceFlaySource.list());
+	}
+
+	@Override
+	public void deleteFileOnFlay(String opus, String file) {
+		// remove in Flay
+		File deletedFile = new File(file);
+		Flay flay = instanceFlaySource.get(opus);
+		Set<Entry<String, List<File>>> entrySet = flay.getFiles().entrySet();
+		for (Entry<String, List<File>> entry : entrySet) {
+			List<File> fileList = entry.getValue();
+			if (fileList.contains(deletedFile)) {
+				fileList.remove(deletedFile);
+			}
+		}
+		// delete
+		deleteFile(file);
+		// rename for assemble
+		flayFileHandler.rename(flay);
 	}
 
 }

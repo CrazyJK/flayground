@@ -35,4 +35,6 @@ public interface FlayService {
 
 	Collection<Flay> getListOrderbyScoreDesc();
 
+	void deleteFileOnFlay(String opus, String file);
+
 }

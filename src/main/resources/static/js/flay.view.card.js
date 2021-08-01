@@ -227,45 +227,49 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				}
 				// subtitles file
 				if (flay.files.subtitles.length > 0) {
-					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file d-flex'}).prependTo($flayFileGroup);
+					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.subtitles, function(idx, file) {
 						$li.append(
-								$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
-									Rest.Flay.openFolder(file);
-								}),
-								$("<div>", {class: 'ml-2', title: 'Delete this subtitles'}).append(
-										$("<i>", {class: 'fa fa-times text-danger hover'})
-								).on("click", function() {
-									if (confirm('Will be delete ' + flay.opus + ' subtitles\n' + file)) {
-										Rest.Flay.deleteFileOnFlay(flay.opus, file, function() {
-											if (location.pathname === "/html/info/info.flay.html") {
-												location.reload();
+								$("<div>", {class: 'd-flex'}).append(
+										$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
+											Rest.Flay.openFolder(file);
+										}),
+										$("<div>", {class: 'ml-2', title: 'Delete this subtitles'}).append(
+												$("<i>", {class: 'fa fa-times text-danger hover'})
+										).on("click", function() {
+											if (confirm('Will be delete ' + flay.opus + ' subtitles\n' + file)) {
+												Rest.Flay.deleteFileOnFlay(flay.opus, file, function() {
+													if (location.pathname === "/html/info/info.flay.html") {
+														location.reload();
+													}
+												});
 											}
-										});
-									}
-								})
+										})
+								)
 						);
 					});
 				}
 				// movie file
 				if (flay.files.movie.length > 0) {
-					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file d-flex'}).prependTo($flayFileGroup);
+					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.movie, function(idx, file) {
 						$li.append(
-								$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
-									Rest.Flay.openFolder(file);
-								}),
-								$("<div>", {class: 'ml-2', title: 'Detete this movie'}).append(
-										$("<i>", {class: 'fa fa-times text-danger hover'})
-								).on("click", function() {
-									if (confirm('Will be delete ' + flay.opus + ' movie\n' + file)) {
-										Rest.Flay.deleteFileOnFlay(flay.opus, file, function() {
-											if (location.pathname === "/html/info/info.flay.html") {
-												location.reload();
+								$("<div>", {class: 'd-flex'}).append(
+										$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
+											Rest.Flay.openFolder(file);
+										}),
+										$("<div>", {class: 'ml-2', title: 'Detete this movie'}).append(
+												$("<i>", {class: 'fa fa-times text-danger hover'})
+										).on("click", function() {
+											if (confirm('Will be delete ' + flay.opus + ' movie\n' + file)) {
+												Rest.Flay.deleteFileOnFlay(flay.opus, file, function() {
+													if (location.pathname === "/html/info/info.flay.html") {
+														location.reload();
+													}
+												});
 											}
-										});
-									}
-								})
+										})
+								)
 						);
 					});
 				}

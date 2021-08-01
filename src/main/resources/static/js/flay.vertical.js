@@ -380,15 +380,18 @@ function collectList() {
 	collectedList.sort(function(flay1, flay2) {
 		switch(sort) {
 		case 'S':
-			return compareTo(flay1.studio, flay2.studio);
+			let sVal = compareTo(flay1.studio, flay2.studio);
+			return sVal === 0 ? compareTo(flay1.opus, flay2.opus) : sVal;
 		case 'O':
 			return compareTo(flay1.opus, flay2.opus);
 		case 'T':
 			return compareTo(flay1.title, flay2.title);
 		case 'A':
-			return compareTo(flay1.actressList, flay2.actressList);
+			let aVal = compareTo(flay1.actressList, flay2.actressList);
+			return aVal === 0 ? compareTo(flay1.opus, flay2.opus) : aVal;
 		case 'R':
-			return compareTo(flay1.release, flay2.release);
+			let rVal = compareTo(flay1.release, flay2.release);
+			return rVal === 0 ? compareTo(flay1.opus, flay2.opus) : rVal;
 		case 'M':
 			return compareTo(flay1.lastModified, flay2.lastModified);
 		}

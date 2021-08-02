@@ -4,16 +4,17 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystemException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
-
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -221,28 +222,31 @@ public class FlayFileHandler {
 		}
 	}
 
-	public Collection<File> listDirectory(File path) {
-		return FileUtils.listFilesAndDirs(path, new IOFileFilter() {
-			@Override
-			public boolean accept(File file) {
-				return false;
-			}
+	public boolean isEmptyDirectory(File file) {
+		return isEmptyDirectory(file.toPath());
+	}
 
-			@Override
-			public boolean accept(File dir, String name) {
-				return false;
+	public boolean isEmptyDirectory(Path path) {
+		if (Files.isDirectory(path)) {
+			try (Stream<Path> entries = Files.list(path)) {
+				return !entries.findFirst().isPresent();
+			} catch (IOException e) {
+				log.error("fail to Files.list " + path, e);
 			}
-		}, new IOFileFilter() {
-			@Override
-			public boolean accept(File file) {
-				return true;
-			}
+		}
+		return false;
+	}
 
-			@Override
-			public boolean accept(File dir, String name) {
-				return true;
-			}
-		});
+	/**
+	 * path의 하위 폴더 목록
+	 */
+	public Collection<Path> listDirectory(Path path) {
+		try {
+			return Files.list(path).filter(Files::isDirectory).collect(Collectors.toList());
+		} catch (IOException e) {
+			log.error("fail to Files.walk " + path, e);
+			return null;
+		}
 	}
 
 	public void moveCoverDirectory(Flay flay) {

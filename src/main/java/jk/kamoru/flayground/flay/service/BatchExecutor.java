@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.ProcessBuilder.Redirect;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -241,19 +242,18 @@ public class BatchExecutor {
 	 */
 	void deleteEmptyFolder(File... emptyManagedPaths) {
 		log.info("[deleteEmptyFolder]");
-		for (File path : emptyManagedPaths) {
-			Collection<File> listDirs = flayFileHandler.listDirectory(path);
-			for (File dir : listDirs) {
-				log.info("  scanning... {}", dir);
+		for (File managedPath : emptyManagedPaths) {
+			log.info("  scanning... {}", managedPath);
+			Path path = managedPath.toPath();
+			Collection<Path> listDirs = flayFileHandler.listDirectory(path);
+			for (Path dir : listDirs) {
 				if (dir.equals(path)) {
 					continue;
 				}
-				int dirSize = flayFileHandler.listDirectory(dir).size();
-				int fileSize = FileUtils.listFiles(dir, null, false).size();
-				log.debug("  {}, dir: {}, file: {}", dir, dirSize, fileSize);
-				if (dirSize == 1 && fileSize == 0) {
+
+				if (flayFileHandler.isEmptyDirectory(dir)) {
 					log.info("    empty directory delete {}", dir);
-					flayFileHandler.deleteDirectory(dir);
+					flayFileHandler.deleteDirectory(dir.toFile());
 				}
 			}
 		}

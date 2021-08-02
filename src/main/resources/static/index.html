@@ -92,8 +92,8 @@ function go(menu, method) {
 }
 
 $(document).ready(function() {
-
-	switch (Math.round(Math.random())) {
+	let themeIndex = Math.round(Math.random());
+	switch (themeIndex) {
 	case 0: // chalk
 		$("body").addClass("bg-chalkboard");
 		$("a").addClass("chalk");
@@ -151,10 +151,6 @@ $(document).ready(function() {
 		<h2 class="display-4">
 			<a href="javascript:go('board', 'popup')">↖</a>
 			<a href="javascript:go('board', 'href')">Board</a>
-		</h2>
-		<h2 class="display-4">
-			<a href="javascript:go('imgUp', 'popup')">↖</a>
-			<a href="javascript:go('imgUp', 'href')">Image Upload</a> 
 		</h2>
 		<h2 class="display-4">
 			<a href="javascript:go('splitView', 'popup')">↖</a>

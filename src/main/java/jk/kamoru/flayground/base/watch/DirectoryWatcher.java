@@ -26,14 +26,16 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Directory watcher<br>
  * need to override {@link #action(Kind, Path)}
- *
+ * 
+ * <pre>
  * about Exception, user limit of inotify watches reached
  * Case Ubuntu
  * 1. Add the following line to a new file under /etc/sysctl.d/ directory:
  *   fs.inotify.max_user_watches = 524288
  * 2. read README in /etc/sysctl.d/
  *   sudo service procps start
- *
+ * </pre>
+ * 
  * @author kamoru
  */
 @Slf4j
@@ -45,28 +47,32 @@ public abstract class DirectoryWatcher implements Runnable {
 	private File[] directories;
 
 	// override
-	protected void  createdFile(File file) {}
-	protected void  deletedFile(File file) {}
+	protected void createdFile(File file) {}
+
+	protected void deletedFile(File file) {}
+
 	protected void modifiedFile(File file) {}
 
-	protected void  createdDirectory(File dir) {}
-	protected void  deletedDirectory(File dir) {}
+	protected void createdDirectory(File dir) {}
+
+	protected void deletedDirectory(File dir) {}
+
 	protected void modifiedDirectory(File dir) {}
 
 	/**
 	 * @param taskName task name
 	 * @param dirs directories to watched
 	 */
-    public DirectoryWatcher(String taskName, File... dirs) {
-        this.taskName = taskName;
-        this.directories = dirs;
-    }
+	public DirectoryWatcher(String taskName, File... dirs) {
+		this.taskName = taskName;
+		this.directories = dirs;
+	}
 
 	public DirectoryWatcher(String taskName, List<File> dirList) {
-	    this(taskName, dirList.toArray(new File[dirList.size()]));
-    }
+		this(taskName, dirList.toArray(new File[dirList.size()]));
+	}
 
-    @Override
+	@Override
 	public void run() {
 		log.info("Directory Watcher start for {} {}", taskName, Arrays.toString(directories));
 		try {
@@ -89,6 +95,7 @@ public abstract class DirectoryWatcher implements Runnable {
 
 	/**
 	 * Register the given directory, and all its sub-directories, with the WatchService.
+	 * 
 	 * @throws IOException
 	 */
 	private void walkAndRegisterDirectories(final Path start) throws IOException {
@@ -103,8 +110,9 @@ public abstract class DirectoryWatcher implements Runnable {
 	}
 
 	/**
-	 * Register the given directory with the WatchService;
+	 * Register the given directory with the WatchService;<br>
 	 * This function will be called by FileVisitor
+	 * 
 	 * @throws IOException
 	 */
 	private void registerDirectory(Path dir) throws IOException {
@@ -144,14 +152,12 @@ public abstract class DirectoryWatcher implements Runnable {
 					} else {
 						createdFile(child.toFile());
 					}
-				}
-				else if (kind == ENTRY_DELETE) {
+				} else if (kind == ENTRY_DELETE) {
 					if (directory)
 						deletedDirectory(child.toFile());
 					else
 						deletedFile(child.toFile());
-				}
-				else if (kind == ENTRY_MODIFY) {
+				} else if (kind == ENTRY_MODIFY) {
 					if (directory)
 						modifiedDirectory(child.toFile());
 					else

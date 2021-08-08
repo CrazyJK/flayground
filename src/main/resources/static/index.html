@@ -65,66 +65,66 @@ body.neon a {
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 <script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
 <script type="text/javascript">
-function go(menu, method) {
-	var url = "";
-	if (menu === 'home') {
-		url = "/html/index.html";
-	} else if (menu === 'slide') {
-		url = "/html/image/image.slide.html";
-	} else if (menu === 'search') {
-		url = "/html/flay/flay.popup.html?target=/html/flay/flay.search.html";
-	} else if (menu === 'tablet') {
-		url = "/html/image/image.tablet.html";
-	} else if (menu === 'board') {
-		url = "/html/image/image.board.html";
-	} else if (menu === 'splitView') {
-		url = "/html/split.view.html";
-	} else if (menu === 'imgUp') {
-		url = "/imageUpload.html";
-	}
-	
-	if (method === 'href') {
-		location.href = url;
-	} else if (method === 'popup') {
-		window.open(url, "flayground" + (new Date()).getTime(),
-				"width=1000,height=1000,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1").focus();
-	}
-}
-
-$(document).ready(function() {
-	let themeIndex = Math.round(Math.random());
-	switch (themeIndex) {
-	case 0: // chalk
-		$("body").addClass("bg-chalkboard");
-		$("a").addClass("chalk");
-		break;
-	case 1: // neon
-		$("body").addClass("neon");
-		$(".display-3, .display-4, input, button, .popup-size-group").each(function(idx) {
-			$(this).addClass("blink-" + (idx % 10 + 1));
-		});
-		$(".border-secondary").switchClass("border-secondary", "border-light");
-		$(".btn-outline-secondary").switchClass("btn-outline-secondary", "btn-outline-light");
-		$(".text-secondary").switchClass("text-secondary", "text-light");
-		$(".popup-size-group").addClass("text-light");
-		$("#popupWidth, #popupHeight").addClass("text-light");
-		break;
-	default:
-		alert("impossible case");
-	}
-	
-	$("input, button", ".popup-open-group").on("click keyup", function(e) {
-		var targetType = $(e.target).attr("type");
-		var url = $(".popup-open-group > input").val();
-		$(".popup-open-group button").toggleClass("text-secondary", url === '');
-		$(".popup-size-group.collapse").toggleClass("show", url !== '');
-		if (url !== '') {
-			if ((targetType === 'button' && e.type === 'click') || (targetType === 'search' && e.keyCode === 13)) {
-				window.open(url, new Date().getTime(), "width=" + popupWidth.value + ",height=" + popupHeight.value + ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
-			}
+	function go(menu, method) {
+		var url = "";
+		if (menu === 'home') {
+			url = "/html/index.html";
+		} else if (menu === 'slide') {
+			url = "/html/image/image.slide.html";
+		} else if (menu === 'search') {
+			url = "/html/flay/flay.popup.html?target=/html/flay/flay.search.html";
+		} else if (menu === 'tablet') {
+			url = "/html/image/image.tablet.html";
+		} else if (menu === 'board') {
+			url = "/html/image/image.board.html";
+		} else if (menu === 'splitView') {
+			url = "/html/split.view.html";
+		} else if (menu === 'imgUp') {
+			url = "/imageUpload.html";
 		}
+
+		if (method === 'href') {
+			location.href = url;
+		} else if (method === 'popup') {
+			window.open(url, "flayground" + (new Date()).getTime(),
+				"width=1000,height=1000,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1").focus();
+		}
+	}
+
+	$(document).ready(function () {
+		let themeIndex = Math.round(Math.random());
+		switch (themeIndex) {
+			case 0: // chalk
+				$("body").addClass("bg-chalkboard");
+				$("a").addClass("chalk");
+				break;
+			case 1: // neon
+				$("body").addClass("neon");
+				$(".display-3, .display-4, input, button, .popup-size-group").each(function (idx) {
+					$(this).addClass("blink-" + (idx % 10 + 1));
+				});
+				$(".border-secondary").switchClass("border-secondary", "border-light");
+				$(".btn-outline-secondary").switchClass("btn-outline-secondary", "btn-outline-light");
+				$(".text-secondary").switchClass("text-secondary", "text-light");
+				$(".popup-size-group").addClass("text-light");
+				$("#popupWidth, #popupHeight").addClass("text-light");
+				break;
+			default:
+				alert("impossible case");
+		}
+
+		$("input, button", ".popup-open-group").on("click keyup", function (e) {
+			var targetType = $(e.target).attr("type");
+			var url = $(".popup-open-group > input").val();
+			$(".popup-open-group button").toggleClass("text-secondary", url === '');
+			$(".popup-size-group.collapse").toggleClass("show", url !== '');
+			if (url !== '') {
+				if ((targetType === 'button' && e.type === 'click') || (targetType === 'search' && e.keyCode === 13)) {
+					window.open(url, new Date().getTime(), "width=" + popupWidth.value + ",height=" + popupHeight.value + ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
+				}
+			}
+		});
 	});
-});
 </script>
 </head>
 <body>

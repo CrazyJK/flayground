@@ -221,7 +221,7 @@ public class BatchExecutor {
 				List<File> value = entry.getValue();
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
-						log.info(String.format("move [%-10s %s %6s] %-20s => %-20s : %s",
+						log.info(String.format("move [%-10s %s %7s] %-20s => %-20s : %s",
 								flay.getOpus(),
 								flay.getVideo().getRank(),
 								flayFileHandler.prettyFileLength(file.length()),
@@ -237,7 +237,7 @@ public class BatchExecutor {
 
 	/**
 	 * 하위 폴더 전체에서 파일이 없는 폴더 삭제
-	 * 
+	 *
 	 * @param emptyManagedPaths
 	 */
 	void deleteEmptyFolder(File... emptyManagedPaths) {
@@ -261,7 +261,7 @@ public class BatchExecutor {
 
 	/**
 	 * flay 파일이 있어야될 위치
-	 * 
+	 *
 	 * @param flay
 	 * @param storagePath
 	 * @param stagePaths
@@ -309,7 +309,7 @@ public class BatchExecutor {
 
 	/**
 	 * archive 폴더명 yyyy-MM 형식
-	 * 
+	 *
 	 * @param flay
 	 * @return
 	 */
@@ -320,7 +320,7 @@ public class BatchExecutor {
 	/**
 	 * 커버, 자막은 아카이브 폴더로 이동<br>
 	 * 그외 파일은 제거.(삭제 또는 휴지통)
-	 * 
+	 *
 	 * @param flay
 	 */
 	private void archiving(Flay flay) {

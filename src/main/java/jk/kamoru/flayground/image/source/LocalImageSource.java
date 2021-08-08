@@ -4,8 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.annotation.PostConstruct;
@@ -38,6 +36,32 @@ public class LocalImageSource implements ImageSource {
 	private boolean changed = false;
 
 	@PostConstruct
+	public void postConstruct() {
+		load();
+		registWatcher();
+	}
+
+	private void registWatcher() {
+		Flayground.finalTasks.add(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
+
+            @Override
+            protected void createdFile(File file) {
+                changed = Flayground.FILE.isImage(file);
+            }
+
+            @Override
+            protected void deletedFile(File file) {
+                changed = Flayground.FILE.isImage(file);
+            }
+
+            @Override
+            protected void modifiedFile(File file) {
+                changed = Flayground.FILE.isImage(file);
+            }
+
+        });
+	}
+
 	@CacheEvict(cacheNames = {"bannerCache"}, allEntries = true)
 	private synchronized void load() {
 		AtomicInteger indexCounter = new AtomicInteger(0);
@@ -54,14 +78,26 @@ public class LocalImageSource implements ImageSource {
 			}
 		}
 		log.info(String.format("%5s Image", size()));
+	}
 
-		if (!changed)
-			startWatcher();
+	@Scheduled(fixedRate = 1000 * 30)
+	protected void checkChangedAndReload() {
+		if (changed) {
+			log.info("Image was changed, Source will be reloaded");
+			load();
+			notificationService.announce("Image reload", size() + " images");
+		}
+		changed = false;
 	}
 
 	@Override
 	public List<Image> list() {
 		return imageList;
+	}
+
+	@Override
+	public int size() {
+		return imageList.size();
 	}
 
 	@Override
@@ -73,52 +109,11 @@ public class LocalImageSource implements ImageSource {
 	}
 
 	@Override
-	public int size() {
-		return imageList.size();
-	}
-
-	@Override
 	public void delete(int idx) {
-		delete(get(idx));
-	}
-
-	private void delete(Image image) {
+		Image image = get(idx);
 		imageList.remove(image);
 		flayFileHandler.deleteFile(image.getFile());
-		notificationService.announce("Image move to root", image.getFile().toString());
-	}
-
-	private void startWatcher() {
-		ExecutorService service = Executors.newSingleThreadExecutor();
-		Runnable watcher = new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
-
-			@Override
-			protected void createdFile(File file) {
-				changed = Flayground.FILE.isImage(file);
-			}
-
-			@Override
-			protected void deletedFile(File file) {
-				changed = Flayground.FILE.isImage(file);
-			}
-
-			@Override
-			protected void modifiedFile(File file) {
-				changed = Flayground.FILE.isImage(file);
-			}
-
-		};
-		service.execute(watcher);
-	}
-
-	@Scheduled(fixedRate = 1000 * 30)
-	protected void checkChangedAndReload() {
-		if (changed) {
-			log.info("Image was changed, Source will be reloaded");
-			load();
-			notificationService.announce("Image reload", size() + " images");
-		}
-		changed = false;
+		notificationService.announce("Image removed", image.getFile().toString());
 	}
 
 }

@@ -17,7 +17,8 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -25,23 +26,23 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Directory watcher<br>
  * need to override {@link #action(Kind, Path)}
- * <pre>
+ *
  * about Exception, user limit of inotify watches reached
  * Case Ubuntu
  * 1. Add the following line to a new file under /etc/sysctl.d/ directory:
  *   fs.inotify.max_user_watches = 524288
  * 2. read README in /etc/sysctl.d/
  *   sudo service procps start
- * @author kamoru
  *
+ * @author kamoru
  */
 @Slf4j
 public abstract class DirectoryWatcher implements Runnable {
 
-	private WatchService watcher;
-	private Map<WatchKey, Path> keys;
+	private WatchService watcherService;
+	private Map<WatchKey, Path> watchKeyMap;
 	private String taskName;
-	private File[] paths;
+	private File[] directories;
 
 	// override
 	protected void  createdFile(File file) {}
@@ -54,28 +55,32 @@ public abstract class DirectoryWatcher implements Runnable {
 
 	/**
 	 * @param taskName task name
-	 * @param paths directory to watched
+	 * @param dirs directories to watched
 	 */
-	public DirectoryWatcher(String taskName, File... paths) {
-		this.taskName = taskName;
-		this.paths = paths;
-	}
+    public DirectoryWatcher(String taskName, File... dirs) {
+        this.taskName = taskName;
+        this.directories = dirs;
+    }
 
-	@Override
+	public DirectoryWatcher(String taskName, List<File> dirList) {
+	    this(taskName, dirList.toArray(new File[dirList.size()]));
+    }
+
+    @Override
 	public void run() {
-		log.info("{} Directory Watcher start {}", taskName, Arrays.toString(paths));
+		log.info("Directory Watcher start for {} {}", taskName, Arrays.toString(directories));
 		try {
-			watcher = FileSystems.getDefault().newWatchService();
-			keys = new HashMap<>();
-			for (File path : paths) {
-				walkAndRegisterDirectories(path.toPath());
+			watcherService = FileSystems.getDefault().newWatchService();
+			watchKeyMap = new LinkedHashMap<>();
+			for (File dir : directories) {
+				walkAndRegisterDirectories(dir.toPath());
 			}
 			processEvents();
 		} catch (IOException | InterruptedException e) {
 			log.error("Fail to watcher run", e);
 		} finally {
 			try {
-				watcher.close();
+				watcherService.close();
 			} catch (IOException e) {
 				log.error("fail to watcher close", e);
 			}
@@ -103,23 +108,23 @@ public abstract class DirectoryWatcher implements Runnable {
 	 * @throws IOException
 	 */
 	private void registerDirectory(Path dir) throws IOException {
-		WatchKey key = dir.register(watcher, ENTRY_CREATE, ENTRY_DELETE);
-		keys.put(key, dir);
+		WatchKey watchKey = dir.register(watcherService, ENTRY_CREATE, ENTRY_DELETE);
+		watchKeyMap.put(watchKey, dir);
 		log.debug("{} watch : {}", taskName, dir);
 	}
 
 	private void processEvents() throws InterruptedException, IOException {
 		for (;;) {
 			// wait for key to be signalled
-			WatchKey key = watcher.take();
+			WatchKey watchKey = watcherService.take();
 
-			Path dir = keys.get(key);
+			Path dir = watchKeyMap.get(watchKey);
 			if (dir == null) {
 				log.error("WatchKey not recognized!!");
 				continue;
 			}
 
-			for (WatchEvent<?> event : key.pollEvents()) {
+			for (WatchEvent<?> event : watchKey.pollEvents()) {
 				@SuppressWarnings("unchecked")
 				WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
 
@@ -155,13 +160,13 @@ public abstract class DirectoryWatcher implements Runnable {
 			}
 
 			// reset key and remove from set if directory no longer accessible
-			boolean valid = key.reset();
+			boolean valid = watchKey.reset();
 			if (!valid) {
-				Path removed = keys.remove(key);
-				log.warn("{} watchkey reset fail. remove this {}:{}. watching {} dir", taskName, key, removed, keys.size());
+				Path removed = watchKeyMap.remove(watchKey);
+				log.warn("{} watchkey reset fail. remove this {}:{}. watching {} dir", taskName, watchKey, removed, watchKeyMap.size());
 
 				// all directories are inaccessible
-				if (keys.isEmpty()) {
+				if (watchKeyMap.isEmpty()) {
 					log.warn("{} all directories are inaccessible", taskName);
 					break;
 				}

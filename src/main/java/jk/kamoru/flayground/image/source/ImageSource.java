@@ -8,9 +8,9 @@ public interface ImageSource {
 
 	List<Image> list();
 
-	Image get(int idx);
-
 	int size();
+
+	Image get(int idx);
 
 	void delete(int idx);
 }

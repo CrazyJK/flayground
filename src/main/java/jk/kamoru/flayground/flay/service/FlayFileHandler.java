@@ -208,7 +208,6 @@ public class FlayFileHandler {
 		}
 	}
 
-
 	public String prettyFileLength(long length) {
 		if (length > FileUtils.ONE_TB) {
 			return Flayground.Format.Number.TB_Format.format((double) length / FileUtils.ONE_TB) + " TB";
@@ -240,6 +239,7 @@ public class FlayFileHandler {
 
 	/**
 	 * path의 하위 폴더 목록
+	 * 
 	 * @param path
 	 * @return
 	 */

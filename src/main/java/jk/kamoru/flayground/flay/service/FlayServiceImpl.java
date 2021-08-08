@@ -96,7 +96,7 @@ public class FlayServiceImpl implements FlayService {
 	@Override
 	public Collection<Flay> findCandidates() {
 		Collection<Flay> candidates = new ArrayList<>();
-		candidatesProvider.find();
+		// candidatesProvider.find();
 		for (Flay flay : instanceFlaySource.list()) {
 			flay.getFiles().get(Flay.CANDI).clear();
 			if (candidatesProvider.matchAndFill(flay)) {

@@ -22,7 +22,6 @@ body {
 }
 .index    {min-width: 30px; width: 30px; max-width: 30px; text-align: right;}
 .opus     {min-width: 80px; width: 80px; max-width: 80px;}
-.title    {}
 .actress  {text-align: right;}
 .release  {min-width: 80px; width: 80px; max-width: 80px;}
 .modified {min-width: 66px; width: 66px; max-width: 66px;}

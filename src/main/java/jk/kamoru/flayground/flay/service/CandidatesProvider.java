@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import javax.annotation.PostConstruct;
 
@@ -27,52 +26,53 @@ public class CandidatesProvider {
 
     final String[] candidatesFileSuffix = ArrayUtils.addAll(Flayground.FILE.VIDEO_SUFFIXs, Flayground.FILE.SUBTITLES_SUFFIXs);
 
-	@Autowired FlayProperties flayProperties;
+    @Autowired FlayProperties flayProperties;
 
-	Collection<File> listFiles;
+    private Collection<File> candidatesFiles;
 
-	List<File> candidatesDir;
+    private Collection<File> candidatesDir;
 
 
-	@PostConstruct
-	public void postConstruct() {
-	    load();
+    @PostConstruct
+    public void postConstruct() {
+        load();
         registWatcher();
-	}
+    }
 
-	private void registWatcher() {
-		Flayground.finalTasks.add(new DirectoryWatcher(this.getClass().getSimpleName(), candidatesDir) {
+    private void registWatcher() {
+        Flayground.finalTasks.add(new DirectoryWatcher(this.getClass().getSimpleName(), candidatesDir) {
 
             @Override
             protected void createdFile(File file) {
                 if (ArrayUtils.contains(candidatesFileSuffix, FilenameUtils.getExtension(file.getName()).toLowerCase())) {
-                    listFiles.add(file);
+                    candidatesFiles.add(file);
                 }
             }
 
             @Override
             protected void deletedFile(File file) {
-                if (listFiles.contains(file)) {
-                    listFiles.remove(file);
+                if (candidatesFiles.contains(file)) {
+                    candidatesFiles.remove(file);
                 }
             }
 
         });
-	}
+    }
 
-	private void load() {
+    public void load() {
         candidatesDir = Arrays.asList(flayProperties.getCandidatePath(), flayProperties.getSubtitlesPath());
-        listFiles = new ArrayList<>();
+        candidatesFiles = new ArrayList<>();
         for (File dir : candidatesDir) {
             Collection<File> list = FileUtils.listFiles(dir, candidatesFileSuffix, true);
-            listFiles.addAll(list);
+            candidatesFiles.addAll(list);
             log.info(String.format("%5s file    - %s", list.size(), dir));
         }
-        log.info(String.format("%5s candidates", listFiles.size()));
-	}
+        log.info(String.format("%5s candidates", candidatesFiles.size()));
+    }
 
     /**
      * add cadidates Movie, Subtitles to flay
+     *
      * @param flay
      * @return
      */
@@ -81,7 +81,7 @@ public class CandidatesProvider {
         final String key2 = key1.replace("-", "");
         final String key3 = key1.replace("-", "00");
         boolean found = false;
-        for (File file : listFiles) {
+        for (File file : candidatesFiles) {
             if (StringUtils.containsAny(file.getName().toUpperCase(), key1, key2, key3)) {
                 flay.addCandidatesFile(file);
                 found = true;
@@ -92,7 +92,7 @@ public class CandidatesProvider {
     }
 
     public Collection<File> listFiles() {
-        return listFiles;
+        return candidatesFiles;
     }
 
 }

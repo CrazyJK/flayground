@@ -6,8 +6,11 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import jk.kamoru.flayground.flay.service.CandidatesProvider;
@@ -25,6 +28,12 @@ public class CandidatesController {
     @GetMapping("/candidates/{keyword}")
     public Collection<File> find(@PathVariable String keyword) {
         return candidatesProvider.listFiles().stream().filter(f -> StringUtils.containsIgnoreCase(f.getName(), keyword)).collect(Collectors.toList());
+    }
+
+    @PostMapping("/candidates/load")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void load() {
+        candidatesProvider.load();
     }
 
 }

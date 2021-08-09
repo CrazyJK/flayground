@@ -16,7 +16,7 @@ var restCall = function(url, args, callback, failCallback) {
 					loading = new Loading();
 				}
 			}
-	};	
+	};
 	var settings = $.extend({}, DEFAULTS, args);
 	if (settings.method != 'GET' && typeof settings.data === 'object') {
 		settings.data = JSON.stringify(settings.data);
@@ -50,10 +50,10 @@ var restCall = function(url, args, callback, failCallback) {
 		} else {
 			var errMsg = "";
 			if (jqXHR.getResponseHeader('error')) {
-				errMsg = 'Message: ' + jqXHR.getResponseHeader('error.message') + "<br>" 
+				errMsg = 'Message: ' + jqXHR.getResponseHeader('error.message') + "<br>"
 						+ 'Cause: '   + jqXHR.getResponseHeader('error.cause');
 			} else if (jqXHR.responseJSON) {
-				errMsg = 'Error: '     + jqXHR.responseJSON.error + '<br>'  
+				errMsg = 'Error: '     + jqXHR.responseJSON.error + '<br>'
 						+ 'Message: '   + jqXHR.responseJSON.message + '<br>'
 						+ 'Status: '    + jqXHR.responseJSON.status + '<br>'
 						+ 'Path: '      + jqXHR.responseJSON.path;
@@ -105,6 +105,9 @@ var Rest = {
 			},
 			acceptCandidates: function(flay, callback) {
 				restCall('/flay/candidates/' + flay.opus, {method: "PATCH"}, callback);
+			},
+			loadCandidates: function(callback) {
+				restCall('/candidates/load', {method: 'POST'}, callback);
 			},
 			play: function(flay, callback) {
 				flay.video.play++;
@@ -261,7 +264,7 @@ var Rest = {
 		},
 		Html: {
 			get: function(url, callback) {
-				restCall(url, {contentType: "text/plain", mimeType: "text/plain"}, callback); 
+				restCall(url, {contentType: "text/plain", mimeType: "text/plain"}, callback);
 			}
 		},
 		Batch: {

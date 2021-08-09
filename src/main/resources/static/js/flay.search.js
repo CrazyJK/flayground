@@ -22,7 +22,7 @@ function baseSearch() {
 		var value = '';
 		if (isShow && name)
 			value = name;
-		else 
+		else
 			value = query;
 		Search.actress(value);
 	});
@@ -67,7 +67,7 @@ function findMode() {
 			} else if (id === "release") {
 				value = value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
 				$(this).val(value);
-		
+
 				var isValid = DATE_PATTERN.test(value);
 				$(this).toggleClass('input-invalid', !isValid);
 				if (isValid)
@@ -91,7 +91,7 @@ function findMode() {
 		} else if (e.keyCode != 13) {
 			return;
 		}
-		
+
 		var rowOpus    = $("#rowname_opus").val().trim();
 		var rowTitle   = $("#rowname_title").val().trim();
 		var rowActress = $("#rowname_actress").val().trim();
@@ -109,7 +109,7 @@ function findMode() {
 			$("#newActressBody"  ).val("");
 			$("#newActressHeight").val("");
 			$("#newActressDebut" ).val("");
-			
+
 			if (actressList.length == 0) {
 				Search.actress(rowActress);
 			} else if (actressList.length == 1) {
@@ -260,34 +260,39 @@ function candidateMode() {
 			});
 		});
 	});
+
 	$("#btnFileControl").on("click", function() {
 		$(".candidatesFileList").slideToggle();
+	});
+
+	$("#btnCandidatesLoad").on("click", function() {
+		Rest.Flay.loadCandidates();
 	});
 }
 
 function imageDownloadMode() {
 	$(".btn-download-page-image").on("click", function() {
 		Rest.Image.download($("#downloadPageImageForm").serialize(), function(result) {
-		    $("#notice > p").empty().append(
+			$("#notice > p").empty().append(
 					$("<ul>", {'class': 'list-unstyled'}).append(
-							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),		
+							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),
 							$("<li>", {'class': 'text-primary'}).append(
 									$("<span>", {'class': 'btn btn-link text-dark'}).on("click", function() {
 										Rest.Flay.openFolder(result.localPath);
 									}).html(result.localPath)
 							)
 					)
-		    );
+			);
 			$("#notice").dialog({
 				classes: {
-				    "ui-dialog": (result.result ? "ui-widget-shadow" : "ui-dialog-danger")
+					"ui-dialog": (result.result ? "ui-widget-shadow" : "ui-dialog-danger")
 				},
 				width: 500,
 				height: 200,
 				title: result.message,
 			});
 			LocalStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
-		});	
+		});
 	});
 	$("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
 }
@@ -329,7 +334,7 @@ function searchSource(keyword) {
 	// find Flay
 	Rest.Flay.find(keyword, function(flayList) {
 		$("#resultFlayDiv").collapse('show');
-		
+
 		$(".flay-count").html(flayList.length);
 		var $tbody = $('#foundFlayList').empty();
 		$.each(flayList, function(entryIndex, flay) {
@@ -375,7 +380,7 @@ function searchSource(keyword) {
 			$("<tr>").append(
 					$("<td>", {'colspan': 6, 'class': 'text-danger'}).html('Not found')
 			).appendTo($tbody);
-			
+
 			// find video info
 			Rest.Video.find(keyword, function(list) {
 				var videoList = list;
@@ -417,16 +422,16 @@ function searchSource(keyword) {
 				}, 3000);
 			});
 		}
-		
-	   	$tbody.find("label").each(function() {
+
+		$tbody.find("label").each(function() {
 			$(this).html($(this).text().replace(rexp, "<mark>" + keyword + "</mark>"));
 		});
 	});
-	
+
 	// find history
 	Rest.History.find(keyword, function(historyList) {
 		$("#resultHistoryDiv").collapse('show');
-		
+
 		$(".history-count").html(historyList.length);
 		var $tbody = $('#foundHistoryList').empty();
 		$.each(historyList, function(entryIndex, history) {
@@ -452,8 +457,8 @@ function searchSource(keyword) {
 					$("<td>", {'colspan': 4, 'class': 'text-danger'}).html('Not found')
 			).appendTo($tbody);
 		}
-		
-	   	$tbody.find("label").each(function() {
+
+		$tbody.find("label").each(function() {
 			$(this).html($(this).text().replace(rexp, "<mark>" + keyword + "</mark>"));
 		});
 	});

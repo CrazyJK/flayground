@@ -6,7 +6,7 @@
 }
 .flay-list > .card.flay-card {
     display: inline-flex;
-/* 	box-shadow: 0 0 0.5rem 0.25rem rgba(255, 255, 255, 0.5); 
+/* 	box-shadow: 0 0 0.5rem 0.25rem rgba(255, 255, 255, 0.5);
 	background-color: #e6ff00;
 	padding: 1px; */
 	margin: 0.25rem;
@@ -69,6 +69,7 @@
 }
 .flay-file {
 	font-size: .875rem;
+	padding: .5rem 1rem;
 }
 body.bg-dark .flay-file {
 	background-color: var(--darker);
@@ -80,7 +81,7 @@ body.bg-dark .flay-file {
 	text-shadow: 0 0 2px midnightblue, 0 0 4px #000, 0 0 8px #000, 0 0 12px midnightblue, 0 0 16px #000;
 	color: #fff;
 }
- 
+
 .card.flay-card:hover label.text:not(.flay-rank-sm), .card.flay-card:hover .flay-rank {
 	background-color: var(--dark) !important;
 	text-shadow: 1px 1px 2px midnightblue
@@ -100,9 +101,9 @@ body.bg-dark .flay-file {
     height: 100%;
     font-size: 8rem;
     text-align: center;
-    transition: background-color 0s, font-size .3s, transform .3s; 
+    transition: background-color 0s, font-size .3s, transform .3s;
     background-color: transparent!important;
-} 
+}
 .card.flay-card:hover .flay-rank-sm {
 	border-color: transparent;
 	transform: scale(.25) translate(50%, -50px);

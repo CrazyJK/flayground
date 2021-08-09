@@ -53,7 +53,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			+					'</div>'
 			+				'</div>'
 			+			'</li>'
-			+		'</ul>' 
+			+		'</ul>'
 			+	'</div>';
 
 		var templateActress = ''
@@ -67,7 +67,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			+		'<label class="text flay-actress-body   extra"></label>'
 			+		'<label class="text flay-actress-height extra">165</label>'
 			+	'</div>';
-		
+
 		var getRank = function(opus) {
 			return 	'<span class="ranker flay-rank">'
 				+		'<label><input type="radio" name="flay-rank-' + opus + '" value="-1"><i class="fa fa-thumbs-down r-1"></i></label>'
@@ -89,10 +89,10 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				return 'rgba(255, 0, 0, ' + rank*2/10 + ')';
 			}
 		};
-		
+
 		var constructFlay = function() {
 			var $flayCard = $(templateFlay);
-			
+
 			// set data and event
 			$flayCard.attr("id", flay.opus).data("flay", flay).addClass(settings.archive ? "archive" : "");
 			// cover
@@ -153,7 +153,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				$flayCard.find(".flay-rank-wrapper").remove();
 				if (flay.video.rank > 0)
 					$flayCard.find(".flay-rank-sm").html(flay.video.rank).css({backgroundColor: getRankColor(flay.video.rank)});
-				else 
+				else
 					$flayCard.find(".flay-rank-sm").remove();
 			} else {
 				if (settings.archive) {
@@ -186,7 +186,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				// movie
 				var movieSize = flay.files.movie.length;
 				$flayCard.find(".flay-movie").toggleClass("nonExist", movieSize == 0).html(
-						movieSize == 0 ? 'noV ' : 
+						movieSize == 0 ? 'noV ' :
 							movieSize == 1 ? 'V ' + File.formatSize(flay.length) :
 								movieSize + 'V ' + File.formatSize(flay.length)
 				).on("click", function() {
@@ -342,7 +342,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
             if (Object.keys(settings.css).length > 0) {
                 $flayCard.css(settings.css);
             }
-			
+
 			return $flayCard;
 		};
 
@@ -350,7 +350,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			var setFavorite = function($actress, actress) {
 				if (actress.favorite)
 					$actress.find(".flay-actress-favorite > i").addClass("fa-star favorite").removeClass("fa-star-o");
-				else 
+				else
 					$actress.find(".flay-actress-favorite > i").addClass("fa-star-o").removeClass("fa-star favorite");
 			};
 
@@ -362,12 +362,12 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 						View.actress(name);
 					});
 					$actress.appendTo($wrapper);
-					
+
 					if (settings.exclude.includes(ACTRESS_EXTRA)) {
 						$wrapper.find(".flay-actress .extra").hide();
 						return;
 					}
-						
+
 					Rest.Actress.get(name, function(actress) {
 						setFavorite($actress, actress);
 						$actress.find(".flay-actress-name"  ).html(actress.name);
@@ -377,7 +377,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 						$actress.find(".flay-actress-debut" ).html(actress.debut.toBlank());
 						$actress.find(".flay-actress-body"  ).html(actress.body);
 						$actress.find(".flay-actress-height").html(actress.height.toBlank());
-						
+
 						$actress.find(".flay-actress-favorite > i").on("click", function() {
 							actress.favorite = !actress.favorite;
 							Rest.Actress.update(actress, function() {
@@ -388,11 +388,11 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				}
 			});
 		};
-		
+
 		return this.each(function() {
 			$(this).append(constructFlay());
 		});
-		
+
 	};
 
 }(jQuery));

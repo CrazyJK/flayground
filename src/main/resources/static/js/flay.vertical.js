@@ -1,6 +1,7 @@
 /**
  * Video Vertical View Javascript
  */
+
 var videoList = [];
 var tagList = [];
 var actressList = [];
@@ -10,7 +11,7 @@ var currentFlay = null;
 var currentIndex = -1;
 
 var slideTimer;
-var keyInput = "";
+var keyInputQueue = '';
 var keyLastInputTime = new Date().getTime();
 var collecting = false;
 
@@ -26,7 +27,11 @@ function loadData() {
 	var tagLoaded = false, flayLoaded = false, actressLoaded = false;
 	var deploy = () => {
 		if (tagLoaded && flayLoaded && actressLoaded) {
-			$(".tag-list").empty().appendTag(tagList);
+			let tagArray = [];
+			$.each(tagList, (i, tag) => {
+				tagArray.push(createTag(tag));
+			});
+			$(".tag-list").prepend(tagArray);
 			$("#pageContent").trigger("collect");
 		}
 	};
@@ -55,14 +60,14 @@ function loadData() {
 
 }
 
-$.fn.appendTag = function(tagList, tag) {
-	var createTag = tag => {
-		return $("<label>", {'class': 'check sm m-1'}).append(
+var createTag = tag => {
+	return 	$("<label>", {'class': 'check sm m-1'}).append(
 				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag),
 				$("<span>", {title: tag.description}).html(tag.name)
-		);
-	};
-	
+			);
+};
+
+$.fn.appendTag = function(tagList, tag) {
 	return this.each(function() {
 		var $this = $(this);
 		if (tagList) {
@@ -77,7 +82,7 @@ $.fn.appendTag = function(tagList, tag) {
 };
 
 function attachEventListener() {
-	
+
 	// header tag select event
 	$("#selectTags").on("change", "input[data-tag-id]", function() {
 		if ($("#tagPopup").prop("checked")) {
@@ -139,16 +144,16 @@ function attachEventListener() {
 			$("#pageContent").trigger("collect");
 		}
 	});
-	
+
 	// filter, rank & sort condition
 	$("#favorite, #video, #subtitles, #rank0, #rank1, #rank2, #rank3, #rank4, #rank5, input[name='sort']").on("change", collectList);
-	
+
 	// video label event
 	addVideoEvent();
-	
+
 	// navigation event
 	navigation.event();
-	
+
 	// auto slide
 	$("#autoSlide").on("change", function() {
 		if (this.checked) {
@@ -157,7 +162,7 @@ function attachEventListener() {
 			navigation.slide.off();
 		}
 	});
-	
+
 	// toggle tags
 	$("#tags").on("change", function() {
 		$("#selectTags").slideToggle(this.checked);
@@ -180,7 +185,7 @@ function attachEventListener() {
 	$(".btn-reload").on("click", function() {
 		loadData();
 	});
-	
+
 	// toggle option
 	$(".toggle-option").on("click", function(e) {
 		var width = $("#options").width();
@@ -195,21 +200,21 @@ function attachEventListener() {
 		var coverWrapperWidth  = $(".cover-wrapper").width();
 		var currCoverBoxWidth  = $(".cover-wrapper-inner.curr > .cover-box").width();
 		var currCoverBoxHeight = $(".cover-wrapper-inner.curr > .cover-box").height();
-		
+
 		$("#pageContent").css({
 			height: windowHeight - navHeight
 		});
 		$("#pageContent, #selectTags, #options").css({
 			marginTop: navHeight + 8
 		});
-		
+
 		var calcX = (windowWidth - coverWrapperWidth) / 2;
 		if (calcX < 0) {
 			$(".cover-wrapper").css({
 				transform: 'translate(' + calcX + 'px, 0)'
 			});
 		}
-		
+
 		var calcWidth = (windowWidth - currCoverBoxWidth - 20) / 2;
 		var calcHeight = calcWidth * COVER_RATIO;
 		var $sideCover = $(".cover-wrapper-inner.prev > .cover-box, .cover-wrapper-inner.next > .cover-box");
@@ -270,11 +275,11 @@ function collectList() {
 			}
 		}
 	};
-	
+
 	collecting = true;
 	loading.on('Collect list');
 	$(".video-wrapper").hide();
-	
+
 	var query = $("#search").val();
 	var fav   = $("#favorite" ).prop("checked");
 	var vid   = $("#video"    ).prop("checked");
@@ -290,21 +295,21 @@ function collectList() {
 	$("input[data-tag-id]:checked", "#selectTags").each(function(idx, tagCheckbox) {
 		selectedTags.push($(tagCheckbox).data("tag"));
 	});
-	
+
 	// clear tag count info
 	$("input[data-tag-id]", "#selectTags").each(function(index, tagCheckbox) {
 		var tag = $(tagCheckbox).data("tag");
 		tag.count = 0;
 		$(tagCheckbox).next().addClass("nonExist");
 	});
-	
+
 	collectedList = [];
 	// filtering
 	for (var i=0; i<videoList.length; i++) {
 		var flay = videoList[i];
 
 		if (vid && sub) { // 비디오와 자막 모두 있는
-			if (flay.files.movie.length === 0 || flay.files.subtitles.length === 0) 
+			if (flay.files.movie.length === 0 || flay.files.subtitles.length === 0)
 				continue;
 		} else if (vid && !sub) { // 비디오가 있으면
 			if (flay.files.movie.length === 0)
@@ -316,12 +321,12 @@ function collectList() {
 			if (flay.files.movie.length > 0 || flay.files.subtitles.length > 0) // 비디오가 있고
 				continue;
 		}
-		
+
 		var rank = rank0 + rank1 + rank2 + rank3 + rank4 + rank5;
 		if (rank.indexOf(flay.video.rank) < 0) {
 			continue;
-		} 
-		
+		}
+
 		if (fav) {
 			var found = false;
 			for (var x in flay.actressList) {
@@ -342,26 +347,26 @@ function collectList() {
 				continue;
 			}
 		}
-		
+
 		// tag check all. id, name, desc
 		if (selectedTags.length > 0) {
 			var found = false;
-			
+
 			for (var x in selectedTags) {
 				var tag = selectedTags[x];
-				
+
 				found = matchTag(tag, flay);
 				if (found) {
 					break;
-				}	
-				
+				}
+
 			}
-			
+
 			if (!found) {
 				continue;
 			}
 		}
-		
+
 		// tag count
 		for (var x in tagList) {
 			var tag = tagList[x];
@@ -372,10 +377,10 @@ function collectList() {
 				}
 			}
 		}
-		
+
 		collectedList.push(flay);
 	}
-	
+
 	// sorting
 	collectedList.sort(function(flay1, flay2) {
 		switch(sort) {
@@ -405,7 +410,7 @@ function collectList() {
 				$("<i>", {'class': 'badge tag-flay-count'}).html(tag.count)
 		);
 	});
-	
+
 	console.log('collectedList.length', collectedList.length);
 	if (collectedList.length > 0) {
 		navigation.random();
@@ -419,9 +424,9 @@ function collectList() {
 		);
 		loading.on("Not found");
 	}
-	
+
 	collecting = false;
-	
+
 	// statistics
 	var studioMap = new Map();
 	var actressMap = new Map();
@@ -450,8 +455,8 @@ function collectList() {
 			actressMap.set(actressName, count);
 		}
 	}
-	console.log(studioMap, actressMap);
-	
+	// console.log(studioMap, actressMap);
+
 	$("#statisticsStudio").empty();
 	for (var [k, v] of studioMap) {
 		$("#statisticsStudio").append(
@@ -493,59 +498,62 @@ var navigation = {
 		event: function() {
 			$("#pageContent").navEvent(function(signal, e) {
 				switch(signal) {
-				case 1: // mousewheel: up
-				case 37: // key : left
-					navigation.previous();
-					break;
-				case -1: // mousewheel: down
-				case 39: // key : right
-					var mode  = $("input[name='autoSlideMode']:checked").val();
-					if (mode === 'R') {
+					case 1:  // wheel: up
+					case 37: // key  : left
+						navigation.previous();
+						break;
+					case -1: // wheel: down
+					case 39: // key  : right
+						let mode  = $("input[name='autoSlideMode']:checked").val();
+						if (mode === 'R') {
+							navigation.random();
+						} else {
+							navigation.next();
+						}
+						break;
+					case 32: // keyup: space
 						navigation.random();
-					} else {
-						navigation.next();
+						break;
+					case 1002: // mouseup  : middle click
+						navigation.random();
+						$(".info-video").trigger("click"); // video play
+						break;
+					case 1001: // mouseup  : left click. auto slide off
+						$("#autoSlide").prop("checked", false).trigger("change");
+						break;
+					case 36: // keyup: home
+						navigation.go(0);
+						break;
+					case 35: // keyup: end
+						navigation.go(collectedList.length -1);
+						break;
+					case 33: // keyup: pageUp
+						navigation.go(currentIndex - 9);
+						break;
+					case 34: // keyup: pageDown
+						navigation.go(currentIndex + 9);
+						break;
+				}
+
+				if (e.type === 'keyup') {
+					const currentTime = new Date().getTime();
+					if (currentTime - keyLastInputTime > 5000) { // 5s over, key reset
+						keyInputQueue = '';
 					}
-					break;
-				case 32: // key: space
-					navigation.random();
-					break;
-				case 1002: // mousedown  : middle click
-					navigation.random();
-					$(".info-video").trigger("click"); // video play
-					break;
-				case 1001: // mousedown  : left click. auto slide off
-					$("#autoSlide").prop("checked", false).trigger("change");
-					break;
-				case 36: // key: home
-					navigation.go(0);
-					break;
-				case 35: // key: end
-					navigation.go(collectedList.length -1);
-					break;
-				case 33: // key: pageUp
-					navigation.go(currentIndex - 9);
-					break;
-				case 34: // key: pageDown 	
-					navigation.go(currentIndex + 9);
-					break;
-				}
-				var currentTime = new Date().getTime();
-				if (currentTime - keyLastInputTime > 5000) { // 5s over, key reset
-					keyInput = "";
-				}
-				keyLastInputTime = currentTime;
-				// navigation.go of input number
-				if (signal === 13 && keyInput != '') { // enter
-					var idx = parseInt(keyInput) - 1;
-					keyInput = "";
-					notice('');
-					navigation.go(idx);
-				} else if (/^\d+$/.test(e.key)) { // key is number
-					keyInput += e.key;
-					notice(keyInput);
-				} else if (signal === 8) { // backspace
-					keyInput = keyInput.slice(0, -1);
-					notice(keyInput);
+					keyLastInputTime = currentTime;
+
+					// navigation.go of input number
+					if (signal === 13 && keyInputQueue !== '') { // enter
+						navigation.go(parseInt(keyInputQueue) - 1);
+						keyInputQueue = '';
+						notice(keyInputQueue);
+					} else if (/^\d+$/.test(e.key)) { // key is number
+						keyInputQueue += e.key;
+						notice(keyInputQueue);
+					} else if (signal === 8) { // backspace
+						keyInputQueue = keyInputQueue.slice(0, -1);
+						notice(keyInputQueue);
+					}
 				}
 			});
 		},
@@ -566,7 +574,7 @@ var navigation = {
 		},
 		go: function(idx) {
 			if (idx < 0 || idx > collectedList.length - 1) {
-				console.log('navigation.go wrong index', idx);
+				console.warn(`navigation.go wrong index ${idx}`);
 				return;
 			}
 			var prevIndex = currentIndex;
@@ -575,7 +583,7 @@ var navigation = {
 				return;
 			}
 			currentFlay = collectedList[currentIndex];
-			
+
 			showVideo(currentIndex - prevIndex);
 			navigation.paging();
 		},
@@ -589,13 +597,13 @@ var navigation = {
 						})
 				).appendTo($(".pagination"));
 			};
-			
+
 			$(".pagination").empty();
 			var start = currentIndex - 4;
 			start = start < 0 ? 0 : start;
 			var end = currentIndex + 5;
 			end = end > collectedList.length ? collectedList.length : end;
-			
+
 			if (start > 0) { // first navi
 				addPaginationBtn(0);
 			}
@@ -645,7 +653,7 @@ function addVideoEvent() {
 	});
 	// video file
 	$(".info-video").on("click", function() {
-		if (currentFlay.files.movie.length > 0) 
+		if (currentFlay.files.movie.length > 0)
 			Rest.Flay.play(currentFlay);
 		else
 			Search.torrent(currentFlay);
@@ -750,11 +758,11 @@ function showVideo() {
 		$(".info-modified").html(new Date(currentFlay.lastModified).format("yyyy-MM-dd"));
 		// video file
 		var movieSize = currentFlay.files.movie.length;
-		$(".info-video").html(
-				movieSize === 0 ? 'Video' : 
-					movieSize === 1 ? 'V ' + File.formatSize(currentFlay.length) :
-						movieSize + 'V ' + File.formatSize(currentFlay.length)
-		).toggleClass("nonExist", movieSize === 0);
+		$(".info-video").html(movieSize === 0 ? 'Video' : (movieSize > 1 ? movieSize : '') + 'V ' + File.formatSize(currentFlay.length))
+				.toggleClass("nonExist", movieSize === 0);
+		// video play
+		$(".info-play").html(currentFlay.video.play + 'P')
+				.toggle(currentFlay.video.play > 0);
 		// subtitles
 		$(".info-subtitles").html("Subtitles")
 				.toggleClass("nonExist", currentFlay.files.subtitles.length === 0);
@@ -772,7 +780,7 @@ function showVideo() {
 		});
 		navigation.on();
 	}
-	
+
 	navigation.off();
 
 	var prevCoverURL = PATH, currCoverURL = PATH, nextCoverURL = PATH;

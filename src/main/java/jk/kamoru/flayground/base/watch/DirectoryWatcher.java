@@ -17,8 +17,8 @@ import java.nio.file.WatchKey;
 import java.nio.file.WatchService;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Directory watcher<br>
  * need to override {@link #action(Kind, Path)}
- * 
+ *
  * <pre>
  * about Exception, user limit of inotify watches reached
  * Case Ubuntu
@@ -35,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
  * 2. read README in /etc/sysctl.d/
  *   sudo service procps start
  * </pre>
- * 
+ *
  * @author kamoru
  */
 @Slf4j
@@ -68,7 +68,7 @@ public abstract class DirectoryWatcher implements Runnable {
 		this.directories = dirs;
 	}
 
-	public DirectoryWatcher(String taskName, List<File> dirList) {
+	public DirectoryWatcher(String taskName, Collection<File> dirList) {
 		this(taskName, dirList.toArray(new File[dirList.size()]));
 	}
 
@@ -95,7 +95,7 @@ public abstract class DirectoryWatcher implements Runnable {
 
 	/**
 	 * Register the given directory, and all its sub-directories, with the WatchService.
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void walkAndRegisterDirectories(final Path start) throws IOException {
@@ -112,7 +112,7 @@ public abstract class DirectoryWatcher implements Runnable {
 	/**
 	 * Register the given directory with the WatchService;<br>
 	 * This function will be called by FileVisitor
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	private void registerDirectory(Path dir) throws IOException {

@@ -25,13 +25,13 @@ var flayWebsocket = (function ($) {
 
     var switchSelector = "#notification";
 
-    /*$("head").append(
+    $("head").append(
         '<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>',
         '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>'
-    );*/
+    );
     
-    $.getScript("/webjars/sockjs-client/sockjs.min.js");
-    $.getScript("/webjars/stomp-websocket/stomp.min.js");
+    // $.getScript("/webjars/sockjs-client/sockjs.min.js");
+    // $.getScript("/webjars/stomp-websocket/stomp.min.js");
 
     var isAdmin, username;
 

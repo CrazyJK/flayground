@@ -219,7 +219,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.cover, function(idx, file) {
 						$li.append(
-								$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
+								$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
 									Rest.Flay.openFolder(file);
 								})
 						);
@@ -230,8 +230,8 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.subtitles, function(idx, file) {
 						$li.append(
-								$("<div>", {class: 'd-flex'}).append(
-										$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
+								$("<div>", {class: 'd-flex justify-content-between'}).append(
+										$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
 											Rest.Flay.openFolder(file);
 										}),
 										$("<div>", {class: 'ml-2', title: 'Delete this subtitles'}).append(
@@ -254,8 +254,8 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.movie, function(idx, file) {
 						$li.append(
-								$("<div>", {class: 'd-flex'}).append(
-										$("<div>", {'class': 'nowrap hover', 'title': file}).html(file).on("click", function() {
+								$("<div>", {class: 'd-flex justify-content-between'}).append(
+										$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
 											Rest.Flay.openFolder(file);
 										}),
 										$("<div>", {class: 'ml-2', title: 'Detete this movie'}).append(

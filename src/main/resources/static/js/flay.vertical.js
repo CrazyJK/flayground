@@ -31,6 +31,7 @@ function loadData() {
 			$.each(tagList, (i, tag) => {
 				tagArray.push(createTag(tag));
 			});
+			$(".tag-list > label:not(.label-add-tag)").remove();
 			$(".tag-list").prepend(tagArray);
 			$("#pageContent").trigger("collect");
 		}

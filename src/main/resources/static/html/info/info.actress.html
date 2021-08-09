@@ -57,14 +57,14 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 					<input class="form-control text-center" name="localName" id="localName" placeholder="LocalName...">
 				</div>
 				<div class="col-1">
-					<button class="btn btn-outline-light" id="search">Search</button>
+					<button class="btn btn-outline-secondary" id="search">Search</button>
 				</div>
 				<div class="col-1">
-					<button class="btn btn-outline-light" id="find">Find</button>
+					<button class="btn btn-outline-secondary" id="find">Find</button>
 				</div>
 				<div class="col-2 text-center">
-					<button class="btn btn-outline-light" id="save">Save</button>
-					<button class="btn btn-outline-light" id="unseen">Unseen</button>
+					<button class="btn btn-outline-secondary" id="save">Save</button>
+					<button class="btn btn-outline-secondary" id="unseen">Unseen</button>
 				</div>
 			</div>
 			<div class="row mb-2">
@@ -111,7 +111,7 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 			</div>
 		</form>
 	</nav>
-	
+
 	<div class="actress-cover-wrapper"></div>
 
 	<div class="flay-list-wrap mt-9r">
@@ -121,186 +121,186 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 	</div>
 
 <script type="text/javascript">
-var name = reqParam.name;
-var actress;
+	var name = reqParam.name;
+	var actress;
 
-$("#favorite").on("click", function() {
-	actress.favorite = !actress.favorite
-	var $self = $(this);
-	Rest.Actress.update(actress, function() {
-		if (actress.favorite) {
-			$self.switchClass('fa-star-o', 'fa-star favorite');
+	$("#favorite").on("click", function () {
+		actress.favorite = !actress.favorite
+		var $self = $(this);
+		Rest.Actress.update(actress, function () {
+			if (actress.favorite) {
+				$self.switchClass('fa-star-o', 'fa-star favorite');
+			} else {
+				$self.switchClass('fa-star favorite', 'fa-star-o');
+			}
+		});
+	});
+
+	$("#birth").on("keyup", function () {
+		var value = $(this).val();
+		$(".actress-age").html(Util.Actress.getAge({ birth: value }));
+	});
+
+	$("#body").on("keyup", function () {
+		var value = $(this).val().trim();
+		var replace = value.replace(/^[A-Z]|\(|カップ\)/gi, '').replace(/\/ [A-Z]/gi, '- ');
+		$(this).val(replace);
+	});
+
+	$("#search").on("click", function () {
+		var keyword = actress.localName != '' ? actress.localName : actress.name;
+		Search.actress(keyword);
+	});
+
+	$("#find").on("click", function () {
+		var keyword = actress.localName != '' ? actress.localName : actress.name;
+		Search.find(keyword);
+	});
+
+	$("#save").on("click", function () {
+		var originalName = actress.name;
+		actress.localName = $("#localName").val().trim();
+		actress.birth = $("#birth").val().trim();
+		actress.body = $("#body").val().trim();
+		actress.height = $("#height").val().trim();
+		actress.debut = $("#debut").val().trim();
+		actress.name = $("#name").val().trim();
+		actress.comment = $("#comment").val().trim();
+
+		if (originalName != actress.name) {
+			Rest.Actress.rename(originalName, actress, function () {
+				location.href = "?name=" + actress.name;
+			});
 		} else {
-			$self.switchClass('fa-star favorite', 'fa-star-o');
+			Rest.Actress.update(actress, function () {
+				loading.on('Updated');
+			});
 		}
 	});
-});
 
-$("#birth").on("keyup", function() {
-	var value = $(this).val();
-	$(".actress-age").html(Util.Actress.getAge({birth: value}));
-});
-
-$("#body").on("keyup", function() {
-	var value = $(this).val().trim();
-	var replace = value.replace(/^[A-Z]|\(|カップ\)/gi, '').replace(/\/ [A-Z]/gi, '- ');
-	$(this).val(replace);	
-});
-
-$("#search").on("click", function() {
-	var keyword = actress.localName != '' ? actress.localName : actress.name;
-	Search.actress(keyword);	
-});
-
-$("#find").on("click", function() {
-	var keyword = actress.localName != '' ? actress.localName : actress.name;
-	Search.find(keyword);	
-});
-
-$("#save").on("click", function() {
-	var originalName = actress.name;
-	actress.localName = $("#localName").val().trim();
-	actress.birth     = $("#birth").val().trim();
-	actress.body      = $("#body").val().trim();
-	actress.height    = $("#height").val().trim();
-	actress.debut     = $("#debut").val().trim();
-	actress.name      = $("#name").val().trim();
-	actress.comment   = $("#comment").val().trim();
-
-	if (originalName != actress.name) {
-		Rest.Actress.rename(originalName, actress, function() {
-			location.href = "?name=" + actress.name;
+	$("#unseen").on("click", function () {
+		let active = $(this).data("active") !== true;
+		let $flayList = $("#instanceList");
+		$flayList.children().each(function (idx, flay) {
+			let $flay = $(flay);
+			let flayData = $flay.data("flay");
+			if (active) {
+				$flay.toggle(flayData.video.rank === 0 && !flayData.archive);
+			} else {
+				$flay.show();
+			}
 		});
-	} else {
-		Rest.Actress.update(actress, function() {
-			loading.on('Updated');
-		});
-	}
-});
+		$(this).html(active ? 'All' : 'Unseen').data("active", active);
+	});
 
-$("#unseen").on("click", function() {
-	let active = $(this).data("active") !== true;
-	let $flayList = $("#instanceList");
-	$flayList.children().each(function(idx, flay) {
-		let $flay = $(flay);
-		let flayData = $flay.data("flay");
-		if (active) {
-			$flay.toggle(flayData.video.rank === 0 && !flayData.archive);
-		} else {
-			$flay.show();
+	$("#delete").on("click", function () {
+		confirm('confirm your order. delete this?') &&
+			Rest.Actress.delete(actress, function () {
+				self.close();
+			});
+	});
+
+	Rest.Actress.get(name, function (_actress) {
+		actress = _actress;
+		document.title = actress.name + ' - ' + document.title;
+
+		$("#name").val(actress.name);
+		$("#localName").val(actress.localName);
+		$("#birth").val(actress.birth).trigger('keyup');
+		$("#body").val(actress.body);
+		$("#height").val(actress.height.toBlank());
+		$("#debut").val(actress.debut.toBlank());
+		if (!actress.favorite) {
+			$(".fa-star").removeClass("favorite fa-star").addClass("fa-star-o");
 		}
-	});
-	$(this).html(active ? 'Seen' : 'Unseen').data("active", active);
-});
+		$("#comment").val(actress.comment);
 
-$("#delete").on("click", function() {
-	confirm('confirm your order. delete this?') && 
-	Rest.Actress.delete(actress, function() {
-		self.close();
-	});
-});
-
-Rest.Actress.get(name, function(_actress) {
-	actress = _actress;
-	document.title = actress.name + ' - ' + document.title;
-
-	$("#name").val(actress.name);
-	$("#localName").val(actress.localName);
-	$("#birth").val(actress.birth).trigger('keyup');
-	$("#body").val(actress.body);	
-	$("#height").val(actress.height.toBlank());
-	$("#debut").val(actress.debut.toBlank());
-	if (!actress.favorite) {
-		$(".fa-star").removeClass("favorite fa-star").addClass("fa-star-o");		
-	}
-	$("#comment").val(actress.comment);
-
-	var $flayList = $("#instanceList").empty();
-	var flayAllList = [];	
-	Rest.Flay.findByActress(actress, function(flayList) {
-		$("#videoCount").val(flayList.length);
-
-		Rest.Flay.findByActressInArchive(actress, function(flayArchiveList) {
-			$("#videoCount").val(flayList.length + " / " + (flayList.length + flayArchiveList.length));
-
-			flayAllList = flayList.concat(flayArchiveList);
-
-			flayAllList.sort(function(flay1, flay2) {
-				var release1 = $.trim(flay1.release);
-				var release2 = $.trim(flay2.release);
-				return release2.toLowerCase().localeCompare(release1);
-			});
-
-			$.each(flayAllList, function(idx, flay) {
-				$flayList.appendFlayCard(flay, {
-					width: 330,
-					exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-					fontSize: '80%',
-					archive: flay.archive
-				});
-			});
-	
-		});	
-
-	});	
-
-/*	
-	var $flayTemplete = $(".flay");
-	Rest.Flay.findByActress(actress, function(flayList) {
-		$("#videoCount").val(flayList.length);
-		
-		flayList.sort(function(flay1, flay2) {
-			return flay2.release.toLowerCase().localeCompare(flay1.release);
-		});
-		
 		var $flayList = $("#instanceList").empty();
-		
-		$.each(flayList, function(idx, flay) {
-			$flayList.appendFlayCard(flay, {
-				width: 330,
-				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-				fontSize: '80%'
+		var flayAllList = [];
+		Rest.Flay.findByActress(actress, function (flayList) {
+			$("#videoCount").val(flayList.length);
+
+			Rest.Flay.findByActressInArchive(actress, function (flayArchiveList) {
+				$("#videoCount").val(flayList.length + " / " + (flayList.length + flayArchiveList.length));
+
+				flayAllList = flayList.concat(flayArchiveList);
+
+				flayAllList.sort(function (flay1, flay2) {
+					var release1 = $.trim(flay1.release);
+					var release2 = $.trim(flay2.release);
+					return release2.toLowerCase().localeCompare(release1);
+				});
+
+				$.each(flayAllList, function (idx, flay) {
+					$flayList.appendFlayCard(flay, {
+						width: 330,
+						exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+						fontSize: '80%',
+						archive: flay.archive
+					});
+				});
+
 			});
+
 		});
 
+		/*
+			var $flayTemplete = $(".flay");
+			Rest.Flay.findByActress(actress, function(flayList) {
+				$("#videoCount").val(flayList.length);
+
+				flayList.sort(function(flay1, flay2) {
+					return flay2.release.toLowerCase().localeCompare(flay1.release);
+				});
+
+				var $flayList = $("#instanceList").empty();
+
+				$.each(flayList, function(idx, flay) {
+					$flayList.appendFlayCard(flay, {
+						width: 330,
+						exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+						fontSize: '80%'
+					});
+				});
+
+			});
+
+			Rest.Flay.findByActressInArchive(actress, function(flayList) {
+				// $("#videoCount").val(flayList.length);
+
+				flayList.sort(function(flay1, flay2) {
+					return flay2.release.toLowerCase().localeCompare(flay1.release);
+				});
+
+				var $flayList = $("#archiveList").empty();
+
+				$.each(flayList, function(idx, flay) {
+					$flayList.appendFlayCard(flay, {
+						width: 330,
+						exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+						fontSize: '80%',
+						archive: true
+					});
+				});
+
+			});
+		*/
+
+		if (actress.coverSize > 0) {
+			$("nav.navbar").hover(function () {
+				$(".actress-cover-wrapper").css({
+					background: 'rgba(0,0,0,0.75) url("/static/actress/' + actress.name + '/' + Random.getInteger(0, actress.coverSize - 1) + '") center top / contain no-repeat'
+				});
+			}, function () {
+			});
+		}
 	});
 
-	Rest.Flay.findByActressInArchive(actress, function(flayList) {
-		// $("#videoCount").val(flayList.length);
-		
-		flayList.sort(function(flay1, flay2) {
-			return flay2.release.toLowerCase().localeCompare(flay1.release);
-		});
-		
-		var $flayList = $("#archiveList").empty();
-		
-		$.each(flayList, function(idx, flay) {
-			$flayList.appendFlayCard(flay, {
-				width: 330,
-				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-				fontSize: '80%',
-				archive: true
-			});
-		});
+	$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({ backgroundColor: LocalStorageItem.get('flay.bgcolor') });
 
-	});
-*/
-	
-	if (actress.coverSize > 0) {
-		$("nav.navbar").hover(function() {
-			$(".actress-cover-wrapper").css({
-				background: 'rgba(0,0,0,0.75) url("/static/actress/' + actress.name + '/' + Random.getInteger(0, actress.coverSize-1) + '") center top / contain no-repeat'
-			});
-		}, function() {
-		});
-	}
-});
-
-$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
-
-$(window).on("resize", function() {
-	$(".flay-list-wrap").height($(window).height() - $("nav").outerHeight(true));
-}).trigger("resize");
+	$(window).on("resize", function () {
+		$(".flay-list-wrap").height($(window).height() - $("nav").outerHeight(true));
+	}).trigger("resize");
 
 </script>
 </body>

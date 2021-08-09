@@ -646,7 +646,7 @@ button.btn.btn-outline-flay {
 #crazySidenav:hover ~ #specialView {
 	padding-left: 200px;
 	width: 100%;
-	transition: width 1s 0.25s, background 0.5s;
+	transition: width 1s 0.25s, background-image 0.5s;
 }
 
 #wrap_background_image {
@@ -968,9 +968,21 @@ button.btn.btn-outline-flay {
 	border-color: #3a3e42 !important;
 }
 .bg-dark button {
-	color: var(--darker);
+	/* color: var(--darker); */
 	background-color: var(--darker);
 	outline: none;
+}
+.bg-dark button.btn-outline-secondary {
+	color: var(--light);
+}
+.bg-dark button.btn-outline-danger {
+	color: #dc3545;
+}
+.bg-dark button.btn-outline-light {
+	color: #f8f9fa;
+}
+.bg-dark button.btn-outline-light:hover {
+	color: var(--darker);
 }
 
 .font-size-1r {

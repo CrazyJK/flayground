@@ -1,281 +1,164 @@
 <meta charset="UTF-8">
 <style type="text/css">
-#tagInput .form-row {
-	width: 800px;
-}
+	#tagInput .form-row {
+		width: 800px;
+	}
 
-#tagList {
-	display: none;
-	text-align: center;
-	margin-top: 60px;
-}
-#tagList .tag {
-	cursor: pointer;
-	display: inline-flex;
-	margin: 0.25rem;
-	border: 4px solid #000;
-	max-width: 369px;
-	min-width: 169px;
-}
-#tagList .card-body {
-	padding: 1rem;
-}
-#tagList .card-title {
-	margin-right: 2rem;
-}
-#tagList .video-count {
-	font-size: 0.75rem;
-	float: right;
-}
-#tagList .card-text {
-	color: #0d8f00;
-	word-break: keep-all;
-}
-#tagList .active {
-	background-color: rgba(85, 136, 136, .75);
-	color: #eee;
-}
+	#tagList {
+		display: none;
+		text-align: center;
+		margin-top: 60px;
+	}
 
-#tagDetail {
-	display: none;
-    border-radius: 0.5rem;
-    background-color: rgba(255, 255, 255, 0.5);
-	margin: 1rem;
-    padding: 1rem;
-}
+	#tagList .tag {
+		display: inline-flex;
+		margin: 0.25rem;
+		max-width: 369px;
+		min-width: 169px;
+		transition: .4s;
+	}
 
-#myCanvasContainer {
-	text-align: center;
-	margin-top: 60px;
-	display: none;
-}
-#myCanvas {
-    background-color: white;
-    border-radius: 1rem;
-    padding: 1rem;
-}
+	#tagList .tag:hover {
+		box-shadow: 0 .5rem 1rem rgba(0, 0, 0, .15);
+	}
+
+	#tagList .card-body {
+		padding: 1rem;
+	}
+
+	#tagList .card-title {
+		margin-right: 2rem;
+	}
+
+	#tagList .flay-count {
+		font-size: 0.75rem;
+	}
+
+	#tagList .flay-count.flay-count-no {
+		background-color: var(--danger);
+	}
+
+	#tagList .card-text {
+		color: #0d8f00;
+		word-break: keep-all;
+	}
+
+	#tagList .active {
+		background-color: rgba(85, 136, 136, .75);
+		color: #eee;
+	}
 </style>
 
 <div role="body">
 
 	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
 		<form id="tagInput">
-			<input type="text" class="form-control input-flay width-50" id="tagId"   name="id" placeholder="Id">
+			<input type="text" class="form-control input-flay width-50" id="tagId" name="id" placeholder="Id">
 			<input type="text" class="form-control input-flay width-150" id="tagName" name="name" placeholder="Name" required="required">
 			<input type="text" class="form-control input-flay width-300" id="tagDesc" name="description" placeholder="Desctiption">
 			<button class="btn btn-sm btn-flay tag-save" type="submit">Save</button>
 			<button class="btn btn-sm btn-flay text-danger tag-delete" type="submit">Delete</button>
-			<label class="check sm"><input type="checkbox" id="openPopup"><span>Popup</span></label>
+			<label class="check sm"><input type="checkbox" id="likeSearch"><span><i id="likeSearchText">marked</i> <i id="summary"></i></span></label>
 		</form>
 	</nav>
-	
-	<div id="myCanvasContainer">
-      	<canvas id="myCanvas" width="800" height="800" class="bg-light"></canvas>
-      	<div id="tags" style="display: none;">
-      		<ul></ul>
-      	</div>
-    </div>
-    	
+
 	<div id="tagList">
 		<div class="card tag">
 			<div class="card-body">
-				<span class="badge badge-pill badge-dark video-count"></span>
-				<h5 class="card-title font-weight-bold">Tag name</h5>
+				<span class="badge badge-pill badge-dark float-right flay-count"></span>
+				<h5 class="card-title font-weight-bold hover">Tag name</h5>
+				<span class="badge badge-pill badge-dark float-right tag-open hover"><i class="fa fa-external-link"></i></span>
 				<div class="card-text">Tag description</div>
 			</div>
 		</div>
 	</div>
 
-	<div id="tagDetail">
-		<div class="text-right"><i class="fa fa-times hover"></i></div>
-		<div class="flay-list"></div>
-	</div>
-
 </div>
 
-<script type="text/javascript" src="/js/tag/jquery.tagcanvas-flay.js"></script>
 <script type="text/javascript">
-var $tagTemplete = $(".tag");
+	var $tagTemplete = $(".tag");
+	var isLikeSearchChecked = false;
 
-$("form").on('submit', function (e) {
-    e.preventDefault();
-});
-
-$(".fa-times").on("click", function() {
-	$("#tagDetail").hide();
-});
-
-$(".tag-save").on("click", function() {
-	var tag = {};
-	$.each($("#tagInput").serializeArray(), function() {
-		tag[this.name] = this.value;
+	$("form").on('submit', function (e) {
+		e.preventDefault();
 	});
-	
-	if (tag.id === '') {
-		Rest.Tag.create(tag, tagLoad);
-	} else {
-		Rest.Tag.update(tag, tagLoad);
-	}
-});
 
-$(".tag-delete").on("click", function() {
-	var tag = $("#tagInput").data("tag");
-	if (tag && tag.id && confirm('Delete this tag?\n' + JSON.stringify(tag))) {
-		Rest.Tag.delete(tag, function() {
-			tagLoad();
-			$("#tagId, #tagName, #tagDesc").val('');
-			$("#tagDetail").hide();
+	$(".tag-save").on("click", function () {
+		var tag = {};
+		$.each($("#tagInput").serializeArray(), function () {
+			tag[this.name] = this.value;
 		});
-	}
-});
 
-function tagLoad() {
-	var $tagList = $("#tagList");
-	Rest.Tag.list(function(tagList) {
-		Util.Tag.sort(tagList);
-		$tagList.empty();
-		
-		$.each(tagList, function(idx, tag) {
-			var $tagCard = $tagTemplete.clone();
-			$tagCard.data("tag", tag);
-			$tagCard.find(".card-title").html(tag.name);
-			$tagCard.find(".card-text").html(tag.description);
-			$tagCard.on("click", function() {
-				if ($("#openPopup").prop("checked"))
-					View.tag(tag.id);
-				else
-					toggleTagDetail(this);
-			});
-			$tagList.show();
-			$tagCard.appendTo($tagList);
-			
-			Rest.Flay.findByTag(tag, function(flayList) {
-				$tagCard.data("flayList", flayList);
-				$tagCard.find(".video-count").html(flayList.length);
-				$tagCard.find(".card-title").css({
-					fontSize: (flayList.length * 0.5) + 16
-				});
-			});
-		});
-/*
-		var $tags = $("#tags > ul").empty();
-		$.each(tagList, function(idx, tag) {
-			$("<li>").append(
-					$("<a>", {
-						'data-weight': Random.getInteger(10, 20)
-					}).append(
-							tag.name,
-							"<br>",
-							tag.description
-					).on("click", function(e) {
-						e.preventDefault();
-						if ($("#openPopup").prop("checked"))
-							View.tag(tag.id);
-						else
-							displayFlayList(tag);
-					})
-			).appendTo($tags);
-		});
-		var options = {
-//				textFont: 'Impact,"Arial Black",sans-serif', 
-				maxSpeed: 0.05,  
-				minSpeed: 0.002,
-				textColour: '#369',
-				textHeight: 25, 
-				outlineMethod: 'block',
-				outlineThickness: 5, 
-				outlineColour: '#ff0',
-				outlineOffset: 5, 
-				outlineRadius: 4,
-				pulsateTo: 0.2,
-				pulsateTime: 0.75,
-		        padding: 4,
-				depth: 0.75,
-				minBrightness: 0.2, 
-				wheelZoom: false, 
-				reverse: true, 
-				shadowBlur: 2,
-				shadowOffset: [1,1], 
-				shuffleTags: false, 
-				initial: [0,0.01],
-				splitWidth: 180,
-				clickToFront: 300,
-				fadeIn: 500,
-				weight: true,
-				weightMode: 'colour',
-				weightFrom: 'data-weight'
-		};
-		$('#myCanvas').tagcanvas(options, 'tags');
-*/
-	});
-}
-
-function displayFlayList(tag) {
-	var $tagDetail = $("#tagDetail");
-	var $flayList = $(".flay-list");
-	$flayList.empty();
-	
-	$("#tagInput").data("tag", tag);
-	$("#tagId"  ).val(tag.id);
-	$("#tagName").val(tag.name);
-	$("#tagDesc").val(tag.description);
-	
-	Rest.Flay.findByTag(tag, function(flayList) {
-		if (flayList.length == 0) {
-			$flayList.append(
-					$("<h4>", {'class': 'text-danger font-weight-bold'}).html("No Flay")
-			);
+		if (tag.id === '') {
+			Rest.Tag.create(tag, tagLoad);
 		} else {
-			$.each(flayList, function(idx, flay) {
-				$flayList.appendFlayCard(flay, {
-					width: 300,
-					exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
-					fontSize: '80%'
-				});
+			Rest.Tag.update(tag, tagLoad);
+		}
+	});
+
+	$(".tag-delete").on("click", function () {
+		var tag = $("#tagInput").data("tag");
+		if (tag && tag.id && confirm('Delete this tag?\n' + JSON.stringify(tag))) {
+			Rest.Tag.delete(tag, function () {
+				tagLoad();
+				$("#tagId, #tagName, #tagDesc").val('');
 			});
 		}
-		$tagDetail.show();
 	});
-}
 
-function toggleTagDetail(tagCard) {
-	var $tagCard   = $(tagCard);
-	var $tagDetail = $("#tagDetail");
-	if ($tagCard.hasClass("active")) { // hide
-		$tagCard.removeClass("active");
-		$tagDetail.hide();
-	} else { // show
-		$("#tagList .active").removeClass("active");
-		$tagCard.addClass("active");
-		var $flayList = $(".flay-list");
-		$flayList.empty();
+	$("#likeSearch").on("click", function () {
+		isLikeSearchChecked = $(this).prop("checked");
+		$("#likeSearchText").html(isLikeSearchChecked ? 'Like' : 'marked');
+		tagLoad();
+	});
 
-		var tag = $tagCard.data("tag");
-		$("#tagInput").data("tag", tag);
-		$("#tagId"  ).val(tag.id);
-		$("#tagName").val(tag.name);
-		$("#tagDesc").val(tag.description);
-		
-		Rest.Flay.findByTag(tag, function(flayList) {
-			$tagCard.find(".video-count").html(flayList.length);
-			if (flayList.length == 0) {
-				$flayList.append(
-						$("<h4>", {'class': 'text-danger font-weight-bold'}).html("No Flay")
-				);
-			} else {
-				$.each(flayList, function(idx, flay) {
-					$flayList.appendFlayCard(flay, {
-						width: 320,
-						exclude: [ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
-						fontSize: '80%'
-					});
+	function tagLoad() {
+		var $tagList = $("#tagList");
+		let tagTotal = 0;
+		let flayTotal = 0;
+
+		Rest.Tag.list(function (tagList) {
+			tagTotal = tagList.length;
+			Util.Tag.sort(tagList);
+			$tagList.empty();
+
+			$.each(tagList, function (idx, tag) {
+				var $tagCard = $tagTemplete.clone();
+				$tagCard.data("tag", tag);
+				$tagCard.find(".card-title").html(tag.name).on("click", function () {
+					$("#tagInput").data("tag", tag);
+					$("#tagId").val(tag.id);
+					$("#tagName").val(tag.name);
+					$("#tagDesc").val(tag.description);
 				});
-			}
-			$tagDetail.show();
+				$tagCard.find(".card-text").html(tag.description);
+				$tagCard.find(".tag-open").on("click", function () {
+					View.tag(tag.id);
+				});
+				$tagList.show();
+				$tagCard.appendTo($tagList);
+
+				var findByTagCallback = function (flayList) {
+					flayTotal += flayList.length;
+					$("#summary").html(tagTotal + ' Tag, ' + flayTotal + ' Flay');
+
+					$tagCard.data("flayList", flayList);
+					$tagCard.find(".flay-count").html(flayList.length).addClass(flayList.length > 0 ? '' : 'flay-count-no');
+					$tagCard.find(".card-title").css({
+						fontSize: (flayList.length * 0.25) + 16
+					});
+				};
+
+				if (isLikeSearchChecked) {
+					Rest.Flay.findByTagLike(tag, findByTagCallback);
+				} else {
+					Rest.Flay.findByTag(tag, findByTagCallback);
+				}
+			});
 		});
 	}
-}
 
-tagLoad();
+	tagLoad();
 
+	$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({ backgroundColor: LocalStorageItem.get('flay.bgcolor') });
 </script>

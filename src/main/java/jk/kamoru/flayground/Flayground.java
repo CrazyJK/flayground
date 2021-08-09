@@ -114,26 +114,26 @@ public class Flayground implements AsyncConfigurer {
 		executor.setCorePoolSize(7);
 		executor.setMaxPoolSize(42);
 		executor.setQueueCapacity(11);
-		executor.setThreadNamePrefix("flay-async-");
+		executor.setThreadNamePrefix("FlayAsync-");
 		executor.initialize();
 		return executor;
 	}
 
 	public static BlockingQueue<Runnable> finalTasks = new LinkedBlockingQueue<>();
 
-    public static void runFinalTasks() {
-        log.info("start final {} Tasks", finalTasks.size());
-        ExecutorService finalExecutor = Executors.newFixedThreadPool(finalTasks.size(), new ThreadFactory() {
-            private final AtomicInteger threadNumber = new AtomicInteger(1);
+	public static void runFinalTasks() {
+		log.info("start final {} Tasks", finalTasks.size());
+		ExecutorService finalExecutor = Executors.newFixedThreadPool(finalTasks.size(), new ThreadFactory() {
+			private final AtomicInteger threadNumber = new AtomicInteger(1);
 
-            @Override
-            public Thread newThread(Runnable r) {
-                return new Thread(r, "FinalTask-" + threadNumber.getAndIncrement());
-            }
-        });
-        for (Runnable task : finalTasks) {
-            finalExecutor.execute(task);
-        }
-    }
+			@Override
+			public Thread newThread(Runnable r) {
+				return new Thread(r, "FinalTask-" + threadNumber.getAndIncrement());
+			}
+		});
+		for (Runnable task : finalTasks) {
+			finalExecutor.execute(task);
+		}
+	}
 
 }

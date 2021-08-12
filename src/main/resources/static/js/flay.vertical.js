@@ -412,7 +412,7 @@ function collectList() {
 		);
 	});
 
-	console.log('collectedList.length', collectedList.length);
+	// console.log('collectedList.length', collectedList.length);
 	if (collectedList.length > 0) {
 		navigation.random();
 		$(".video-wrapper").show();
@@ -460,10 +460,11 @@ function collectList() {
 
 	$("#statisticsStudio").empty();
 	for (var [k, v] of studioMap) {
+		if (v < 5) continue;
 		$("#statisticsStudio").append(
 				$("<label>", {class: 'text hover'}).append(
 						$("<span>").css({
-							fontSize: 15 + v
+							fontSize: 16 + v * 0.25
 						}).html(k),
 						$("<span>", {class: 'badge'}).html(v)
 				).data('k', k).on("click", function() {
@@ -473,10 +474,11 @@ function collectList() {
 	}
 	$("#statisticsActress").empty();
 	for (var [k, v] of actressMap) {
+		if (v < 5) continue;
 		$("#statisticsActress").append(
 				$("<label>", {class: 'text hover'}).append(
 						$("<span>").css({
-							fontSize: 15 + v
+							fontSize: 16 + v * 0.25
 						}).html(k),
 						$("<span>", {class: 'badge'}).html(v)
 				).data('k', k).on("click", function() {
@@ -585,7 +587,7 @@ var navigation = {
 			}
 			currentFlay = collectedList[currentIndex];
 
-			showVideo(currentIndex - prevIndex);
+			showVideo(); // currentIndex - prevIndex
 			navigation.paging();
 		},
 		paging: function() {

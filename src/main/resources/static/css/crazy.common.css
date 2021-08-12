@@ -635,17 +635,17 @@ button.btn.btn-outline-flay {
 	left: 0;
 	bottom: 0;
 	width: 0;
-	background-color: rgba(17, 17, 17, 0.5);
+	background-color: rgba(17, 17, 17, 0.75);
 	background-image: url("/img/bg/flayground_facade.jpg");
 	background-position: center;
 	background-repeat: no-repeat;
 	/* background-size: contain; */
-	z-index: 9997;
+	margin-left: 200px;
 	transition: 0.5s;
+	z-index: 9997;
 }
-#crazySidenav:hover ~ #specialView {
-	padding-left: 200px;
-	width: 100%;
+.sidenav:hover ~ #specialView {
+	width: calc(100% - 200px);
 	transition: width 1s 0.25s, background-image 0.5s;
 }
 
@@ -934,13 +934,13 @@ button.btn.btn-outline-flay {
 	color: var(--light) !important;
 }
 
-/*.bg-dark ul.pagination																			{background-color: var(--darker) !important;}*/
 .bg-dark ul.pagination .page-item .page-link {
 	background-color: var(--darker);
+	border-color: #000;
 }
 .bg-dark ul.pagination .page-item.active .page-link {
 	background-color: #103356;
-	border-color: #dee2e6;
+	border-color: #000;
 }
 .bg-dark ul.pagination .page-item.disabled .page-link {
 	color: var(--gray);

@@ -93,6 +93,7 @@ body.neon a {
 
 	$(document).ready(function () {
 		let themeIndex = Math.round(Math.random());
+		themeIndex = 0;
 		switch (themeIndex) {
 			case 0: // chalk
 				$("body").addClass("bg-chalkboard");
@@ -134,15 +135,15 @@ body.neon a {
 		</h1>
 		<h2 class="display-4">
 			<a href="javascript:go('home', 'popup')">↖</a>
-			<a href="javascript:go('home', 'href')">Home</a> 
+			<a href="javascript:go('home', 'href')">Home</a>
 		</h2>
 		<h2 class="display-4">
 			<a href="javascript:go('search', 'popup')">↖</a>
-			<a href="javascript:void();" class="disabled">Search</a> 
+			<a href="javascript:void();" class="disabled">Search</a>
 		</h2>
 		<h2 class="display-4">
 			<a href="javascript:go('slide', 'popup')">↖</a>
-			<a href="javascript:go('slide', 'href')">Slide</a> 
+			<a href="javascript:go('slide', 'href')">Slide</a>
 		</h2>
 		<h2 class="display-4">
 			<a href="javascript:go('tablet', 'popup')">↖</a>

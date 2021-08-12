@@ -23,7 +23,7 @@
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center">
+	<nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center sticky-top">
 		<div class="container-xl row">
 			<div class="col-3">
 				<div class="input-group">
@@ -45,7 +45,7 @@
 		</div>
 	</nav>
 
-	<div class="flay-list mb-3"></div>
+	<div class="flay-list" style="overflow: auto;"></div>
 
 <script type="text/javascript">
 const studioName = reqParam.s;
@@ -82,13 +82,13 @@ Rest.Studio.get(studioName, function(studio) {
 
 Rest.Flay.find("studio/" + studioName, function(flayList) {
 	$(".video-count").html(flayList.length);
-	
+
 	flayList.sort(function(flay1, flay2) {
 		return flay2.release.toLowerCase().localeCompare(flay1.release);
 	});
-	
+
 	$flayList.empty();
-	
+
 	$.each(flayList, function(idx, flay) {
 		$flayList.appendFlayCard(flay, {
 			width: 330,
@@ -97,12 +97,10 @@ Rest.Flay.find("studio/" + studioName, function(flayList) {
 		});
 	});
 
-	$(window).trigger("resize");		
-	
+	$(window).trigger("resize");
 });
 
 $("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
 </script>
-
 </body>
 </html>

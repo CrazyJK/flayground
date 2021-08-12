@@ -29,7 +29,7 @@ var flayWebsocket = (function ($) {
         '<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>',
         '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>'
     );
-    
+
     // $.getScript("/webjars/sockjs-client/sockjs.min.js");
     // $.getScript("/webjars/stomp-websocket/stomp.min.js");
 
@@ -164,7 +164,7 @@ var flayWebsocket = (function ($) {
         // if wrapper not exist, insert
         var wrapper = "announceWrapper";
         if ($("#" + wrapper).length === 0) {
-            $("body").append(
+            $("body > footer").append(
                 $("<div>", { id: wrapper }).css({
                     position: "fixed",
                     right: 0,

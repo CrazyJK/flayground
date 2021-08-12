@@ -19,27 +19,27 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 		//console.log('$.fn.appendFlayCard', flay, settings);
 
 		var templateFlay = ''
-			+	'<div class="card flay-card">'
-			+		'<div class="card-body">'
-			+			'<p class="card-title"><label class="text lg nowrap flay-title hover">Title</label></p>'
-			+			'<p class="card-text flay-rank-wrapper"></p>'
-			+			'<p class="card-text"><label class="text flay-studio">Studio</label></p>'
-			+			'<p class="card-text">'
+			+	'<div class="flay-card">'
+			+		'<dl class="flay-card-body">'
+			+			'<dt class="flay-card-title"><label class="text lg nowrap flay-title hover">Title</label></dt>'
+			+			'<dd class="flay-card-text flay-rank-wrapper"></dd>'
+			+			'<dd class="flay-card-text"><label class="text flay-studio">Studio</label></dd>'
+			+			'<dd class="flay-card-text">'
 			+				'<label class="text flay-opus">Opus</label>'
 			+				'<label class="text flay-opus-search hover"><i class="fa fa-image"></i></label>'
             +				'<label class="text add-basket-btn hover"><i class="fa fa-shopping-basket"></i></label>'
 			+				'<label class="text flay-rank-sm">Rank</label>'
-			+			'</p>'
-			+			'<p class="card-text flay-actress-wrapper nowrap"></p>'
-			+			'<p class="card-text"><label class="text flay-release">Release</label></p>'
-			+			'<p class="card-text"><label class="text flay-modified">LastModified</label></p>'
-			+			'<p class="card-text flay-action-wrapper">'
+			+			'</dd>'
+			+			'<dd class="flay-card-text flay-actress-wrapper nowrap"></dd>'
+			+			'<dd class="flay-card-text"><label class="text flay-release">Release</label></dd>'
+			+			'<dd class="flay-card-text"><label class="text flay-modified">LastModified</label></dd>'
+			+			'<dd class="flay-card-text flay-action-wrapper">'
 			+				'<label class="text hover flay-movie">Movie</label> '
 			+				'<label class="text hover flay-subtitles">sub</label> '
 			+				'<label class="text hover flay-file-info-btn" data-toggle="collapse" data-target=".flay-file-group"><i class="fa fa-folder-open"></i></label>'
-			+			'</p>'
-			+			'<p class="card-text flay-comment-wrapper"><label class="text flay-comment hover">Comment</label><input class="flay-comment-input" placeholder="Comment"/></p>'
-			+		'</div>'
+			+			'</dd>'
+			+			'<dd class="flay-card-text flay-comment-wrapper"><label class="text flay-comment hover">Comment</label><input class="flay-comment-input" placeholder="Comment"/></dd>'
+			+		'</dl>'
 			+		'<ul class="list-group flay-file-group collapse">'
 			+			'<li class="list-group-item border-dark flay-file">'
 			+				'<div class="input-group input-group-sm">'
@@ -97,11 +97,11 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			$flayCard.attr("id", flay.opus).data("flay", flay).addClass(settings.archive ? "archive" : "");
 			// cover
 			/*Rest.Cover.base64(flay.opus, function(resp) {
-				$flayCard.find(".card-body").css({
+				$flayCard.find(".flay-card-body").css({
 					backgroundImage: 'url(' + resp + ')'
 				});
 			});*/
-			$flayCard.find(".card-body").css({
+			$flayCard.find(".flay-card-body").css({
 				backgroundImage: 'url(/static/cover/' + flay.opus + ')'
 			});
 			// studio
@@ -326,15 +326,9 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 
 			// set css
 			$flayCard.css({
-				fontSize: settings.fontSize
-			});
-			$flayCard.find(".card-body").css({
+				fontSize: settings.fontSize,
 				width: settings.width,
-				height: parseInt(settings.width * COVER_RATIO),
-				margin: '0 auto'
-			});
-			$flayCard.find(".flay-title").css({
-				maxWidth: settings.width - settings.width/20
+				aspectRatio: COVER_ASPECT_RATIO
 			});
             if (settings.class != '') {
                 $flayCard.addClass(settings.class);

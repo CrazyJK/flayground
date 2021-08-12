@@ -15,7 +15,7 @@ var SlideBar = {
 			},
 			bgTheme = LocalStorageItem.get('flay.bgtheme', 'D'),
 			bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
-			
+
 			$('#bgTheme' + bgTheme).parent().click();
 			$("input[name='bgTheme']").on("change", setTheme).trigger("change");
 
@@ -48,9 +48,9 @@ var SlideBar = {
 			});
 		},
 		specialView: function() {
-			if ((system === WINDOWS && location.hostname === 'localhost') || Security.isAutomaticallyCertificated()) {
+			if (Security.isAutomaticallyCertificated()) {
 				var selectedBgIndex = -1;
-				$(".sidenav > .nav-wrap > .nav > .nav-item > i + label, " 
+				$(".sidenav > .nav-wrap > .nav > .nav-item > i + label, "
 				+ ".sidenav > .nav-wrap > .nav > .nav-item > i + a").hover(function() {
 					selectedBgIndex = Random.getInteger(0, Background.count);
 					$("#specialView").css({
@@ -150,7 +150,7 @@ var Background = {
 				}, 100);
 			};
 			image.src = PATH + "/static/image/" + imageIndex;
-			
+
 			// overflow image remove
 			$imageWrap.children().each(function() {
 				var imageTop = $(this).position().top;
@@ -199,9 +199,9 @@ var username;
 
 $(document).ready(function() {
 	isAdmin = Security.hasRole("ADMIN");
-	username = Security.getName();	
+	username = Security.getName();
 	console.log("isAdmin", isAdmin, username);
-	
+
 	Background.init();
 
 	Navi.init();

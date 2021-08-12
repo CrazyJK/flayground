@@ -36,6 +36,16 @@ select:focus-visible {
 select > option {
     background-color: #dc3545;
 }
+.flay-list {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+.flay-card {
+    flex-basis: 500px;
+}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
@@ -75,94 +85,94 @@ select > option {
 </body>
 
 <script type="text/javascript">
-const FLAY_WIDTH = 500;
-const card_margin = 4;
-var $flayList = $(".flay-list");
-var flayList = [];
-var currDisplayCount = 0;
-var maxDisplayCount = 0;
+    const FLAY_WIDTH = 500;
+    const card_margin = 4;
+    var $flayList = $(".flay-list");
+    var flayList = [];
+    var currDisplayCount = 0;
+    var maxDisplayCount = 0;
 
-function grapFlay(opus, flay, styleClass) {
-    if ($("#" + opus).length > 0) {
-        $("#" + opus).hide("fade", {}, 500, function() {
-            $(this).remove();
-        });
-    } else {
-        if (!flay) {
-            Rest.Flay.getSync(opus, function(found) {
-                flay = found;
+    function grapFlay(opus, flay, styleClass) {
+        if ($("#" + opus).length > 0) {
+            $("#" + opus).hide("fade", {}, 500, function () {
+                $(this).remove();
+            });
+        } else {
+            if (!flay) {
+                Rest.Flay.getSync(opus, function (found) {
+                    flay = found;
+                });
+            }
+            $flayList.appendFlayCard(flay, {
+                width: FLAY_WIDTH,
+                exclude: [MODIFIED, FILEINFO, ACTRESS_EXTRA],
+                fontSize: "80%",
+                class: styleClass
             });
         }
-        $flayList.appendFlayCard(flay, {
-            width: FLAY_WIDTH,
-            exclude: [MODIFIED, FILEINFO, ACTRESS_EXTRA],
-            fontSize: "80%",
-            class: styleClass
+    }
+
+    function fnPickupFlay() {
+        var timerID;
+        var _pickFlay = function () {
+            if (flayList.length === 0) {
+                Rest.Flay.findSync('rank/' + $("#rankSelect").val(), function (list) {
+                    flayList = list;
+                });
+            }
+
+            var pickIndex = Random.getInteger(0, flayList.length - 1);
+            var pickedFlay = flayList.splice(pickIndex, 1)[0];
+            currDisplayCount++;
+            $("#message").html('pick up flay ' + currDisplayCount + ' / ' + maxDisplayCount + ' in ' + flayList.length);
+            grapFlay(pickedFlay.opus, pickedFlay, 'bg-warning card-border-0');
+
+            if (currDisplayCount >= maxDisplayCount) {
+                clearInterval(timerID);
+                $("#message").removeClass('show');
+            }
+        };
+
+        currDisplayCount = $flayList.children().length;
+        maxDisplayCount = fnCalcRowCount() * fnCalcColCount();
+        if (currDisplayCount < maxDisplayCount) {
+            $("#message").html('pick up ' + maxDisplayCount + ' flay').addClass('show');
+            timerID = setInterval(_pickFlay, 500);
+        }
+    }
+
+    function fnCalcRowCount() {
+        return parseInt(window.innerHeight / (FLAY_WIDTH * COVER_RATIO + card_margin * 2));
+    }
+
+    function fnCalcColCount() {
+        return parseInt(window.innerWidth / (FLAY_WIDTH + card_margin * 2));
+    }
+
+    function fnEmptyFlay() {
+        $flayList.hide("fade", {}, 300, function () {
+            $(this).empty().show();
         });
     }
-}
 
-function fnPickupFlay() {
-    var timerID;
-    var _pickFlay = function() {
-        if (flayList.length === 0) {
-            Rest.Flay.findSync('rank/' + $("#rankSelect").val(), function(list) {
-                flayList = list;
-            });
-        }
-
-        var pickIndex = Random.getInteger(0, flayList.length - 1);
-        var pickedFlay = flayList.splice(pickIndex, 1)[0];
-        currDisplayCount++;
-        $("#message").html('pick up flay ' + currDisplayCount + ' / ' + maxDisplayCount + ' in ' + flayList.length);
-        grapFlay(pickedFlay.opus, pickedFlay, 'bg-warning card-border-0');
-
-        if (currDisplayCount >= maxDisplayCount) {
-            clearInterval(timerID);
-            $("#message").removeClass('show');
-        }
-    };
-
-    currDisplayCount = $flayList.children().length;
-    maxDisplayCount = fnCalcRowCount() * fnCalcColCount();
-    if (currDisplayCount < maxDisplayCount) {
-        $("#message").html('pick up ' + maxDisplayCount + ' flay').addClass('show');
-        timerID = setInterval(_pickFlay, 500);
+    function fnRestList() {
+        flayList = [];
     }
-}
 
-function fnCalcRowCount() {
-	return parseInt(window.innerHeight / (FLAY_WIDTH * COVER_RATIO + card_margin * 2));
-}
+    function fnCalcMaxWidth() {
+        $flayList.css({
+            width: (FLAY_WIDTH + card_margin * 2) * fnCalcColCount(),
+            textAlign: 'left',
+            margin: card_margin + "px auto 0"
+        });
+    }
 
-function fnCalcColCount() {
-	return parseInt(window.innerWidth / (FLAY_WIDTH + card_margin * 2));
-}
+    $("#pickFlay").on("click", fnPickupFlay);
+    $("#emptyFlay").on("click", fnEmptyFlay);
+    $("#rank").on("change", fnRestList);
+//    $(window).on("resize", fnCalcMaxWidth);
 
-function fnEmptyFlay() {
-    $flayList.hide("fade", {}, 300, function() {
-        $(this).empty().show();
-    });
-}
-
-function fnRestList() {
-    flayList = [];
-}
-
-function fnCalcMaxWidth() {
-	$flayList.css({
-		width: (FLAY_WIDTH + card_margin * 2) * fnCalcColCount(),
-		textAlign: 'left',
-		margin: card_margin + "px auto 0"
-	});
-}
-
-$("#pickFlay").on("click", fnPickupFlay);
-$("#emptyFlay").on("click", fnEmptyFlay);
-$("#rank").on("change", fnRestList);
-$(window).on("resize", fnCalcMaxWidth);
-
-fnCalcMaxWidth();
+//    fnCalcMaxWidth();
 
 </script>
 </html>

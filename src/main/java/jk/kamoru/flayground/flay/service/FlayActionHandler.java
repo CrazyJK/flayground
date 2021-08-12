@@ -45,17 +45,17 @@ public class FlayActionHandler {
 	public void openFolder(String folder) {
 		String explorer = "";
 		switch (Flayground.OS.SYSTEM) {
-		case WINDOWS:
-			explorer = "explorer";
-			break;
-		case LINUX:
-			explorer = "nemo";
-			break;
-		case MAC:
-			explorer = "open";
-			break;
-		default:
-			throw new IllegalStateException("no specified OS");
+			case WINDOWS:
+				explorer = "explorer";
+				break;
+			case LINUX:
+				explorer = "nemo";
+				break;
+			case MAC:
+				explorer = "open";
+				break;
+			default:
+				throw new IllegalStateException("no specified OS");
 		}
 
 		File file = new File(folder);
@@ -69,10 +69,11 @@ public class FlayActionHandler {
 	@Async
 	public void exec(List<String> commands) {
 		try {
-			ProcessBuilder builder = new ProcessBuilder(commands);
-			builder.redirectOutput(Redirect.INHERIT);
-			builder.redirectError(Redirect.INHERIT);
-			builder.start();
+			Process process = new ProcessBuilder(commands)
+					.redirectOutput(Redirect.INHERIT)
+					.redirectError(Redirect.INHERIT)
+					.start();
+			log.debug("process {}", process.info());
 			log.info("exec {}", commands);
 		} catch (IOException e) {
 			log.error("exec error", e);

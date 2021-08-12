@@ -8,30 +8,56 @@
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/crazy.fonts.css">
 <style type="text/css">
+.chalk {
+	color: #eee;
+	mask-image: url(/img/pattern/pattern-static.png);
+	-webkit-mask-image: url(/img/pattern/pattern-static.png);
+	font-family: 'Ink Free';
+	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+}
+.chalk-pink {
+	color: #FFC0CB;
+	mask-image: url(/img/pattern/pattern-static.png);
+	-webkit-mask-image: url(/img/pattern/pattern-static.png);
+	font-family: 'Ink Free';
+	text-shadow: 0 0 2px #FFC0CB, 0 0 4px #FFC0CB, 0 0 6px #FFC0CB, 0 0 8px #999999, 0 0 10px #000000;
+}
 .background {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: #000 url(/img/bg/classroom.jpg) right top / cover;
+	background-color: rgb(28, 28, 28);
 }
 .display-middle {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    -ms-transform: translate(-50%, -50%);
+	aspect-ratio: 4 / 3;
 }
-.text-login {
-	font-family: 'Ink Free';
+.text-title {
+	font-size: 3.5rem;
 	font-weight: 700;
-	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+	text-align: center;
+	width: 100%;
+}
+.btn-enter {
+	background-color: transparent;
+	border: 0;
+	display: block;
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin: 0 auto;
+}
+.btn-enter:focus {
+	outline: none;
 }
 .btn-login {
 	background-color: transparent;
 	border: 0;
-	color: #dc3545;
+	/* color: #dc3545; */
 	display: block;
 	font-size: 2rem;
 	margin: 0 auto;
@@ -39,10 +65,9 @@
 .btn-login:focus {
 	outline: none;
 }
-.form-login {
+.form-control-login {
 	background-color: transparent;
 	border: 0;
-	color: #dc3545;
 	display: block;
 	font-size: 2rem;
 	margin: 0 auto;
@@ -50,18 +75,14 @@
     text-align: center;
     width: auto;
 }
-.form-login:focus {
+.form-control-login:focus {
 	background-color: transparent;
 	box-shadow: none;
-	color: #dc3545;
 	outline: none;
-}
-#title {
-	cursor: default;
-	text-transform: uppercase;
 }
 form#signin {
 	display: none;
+	transition: .4s;
 }
 
 .w3-animate-top {
@@ -93,51 +114,54 @@ form#signin {
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript">
-$(document).ready(function() {
-
-	if (window.location.search.indexOf('error') > 0) {
-		$(".display-middle").addClass("login-error");
-	}
-
-	$(window).on("keyup", function(e) {
-		switch (e.keyCode) {
-		case 13: // Enter
-			$("#btnEnter").trigger("click");
-			break;
-		case 27: // Esc
-			$("#title").trigger("click");
-			break;
-		}
-	});
-	$("#btnEnter").on("click", function() {
-		$(this).hide();
-		$("#signin").fadeIn(400);
-		$("input[name='username']").focus();
-	});
-	$("#title").on("click", function() {
-		$("#signin").hide();
-		$("#btnEnter").fadeIn(400);
-	});
-});
-</script>
 </head>
 <body>
 
 	<div class="background">
 		<div class="display-middle">
-			<div class="w3-animate-top display-4 text-login" id="title">Flayground</div>
+			<div class="w3-animate-top">
+				<label class="text-title chalk" id="title">FLAYGROUND</label>
+			</div>
 			<div class="w3-animate-bottom">
-				<button class="btn-login text-login" id="btnEnter">Enter</button>
-				<form name="f" method="POST" id="signin" autocomplete="off">
+				<form name="f" method="POST" autocomplete="off" id="signin">
 					<input type="checkbox" name="remember-me" class="sr-only" checked="checked">
-					<input type="text"     name="username" class="form-login text-login" placeholder="Name" required autofocus>
-					<input type="password" name="password" class="form-login text-login" placeholder="Password" required>
-					<button type="submit" class="btn-login text-login">Signin</button>
+					<input type="text" name="username" class="form-control-login chalk" placeholder="Name" required autofocus>
+					<input type="password" name="password" class="form-control-login chalk" placeholder="Password" required>
+					<button type="submit" class="btn-login chalk">Signin</button>
 				</form>
+				<button class="btn-enter chalk-pink" id="btnEnter">Enter</button>
 			</div>
 		</div>
 	</div>
+
+<script type="text/javascript">
+	$(window).on("keyup", function (e) {
+		switch (e.keyCode) {
+			case 13: // Enter
+				$("#btnEnter").trigger("click");
+				break;
+			case 27: // Esc
+				$("#title").trigger("click");
+				break;
+		}
+	});
+
+	$("#btnEnter").on("click", function () {
+		$(this).hide();
+		$("#signin").fadeIn(400);
+		$("input[name='username']").focus();
+	});
+
+	$("#title").on("click", function () {
+		$("#signin").hide();
+		$("#btnEnter").fadeIn(400);
+	});
+
+	if (window.location.search.indexOf('error') > 0) {
+		$(".display-middle").addClass("login-error");
+		$("#btnEnter").trigger("click");
+	}
+</script>
 
 </body>
 </html>

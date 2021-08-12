@@ -26,12 +26,12 @@ function connect() {
         	console.log(DESTINATION_SHOUT, message);
         	showShout(message);
         });
-        
+
         stompClient.subscribe(DESTINATION_ANNOUNCE, function (message) {
         	console.log(DESTINATION_ANNOUNCE, message);
         	showNotice(message);
         });
-        
+
     });
 }
 
@@ -88,13 +88,13 @@ function showNotice(message) {
 		}
 	}
 	var body = getSubscribeMessageBody(message);
-	
+
 	if ($("#announceWrapper").length == 0) {
-		$("body").append(
+		$("body > footer").append(
 				$("<div>", {'id': 'announceWrapper'})
 		);
 	}
-		
+
     var $box = $("<div>", {'class': 'announce-box'}).append(
     		$("<div>", {'class': 'float-right'}).append(
     				$("<small>", {'class': 'item-time'}).html(getSimpleTimeString(new Date(body.time))),
@@ -107,7 +107,7 @@ function showNotice(message) {
 			$("<p>", {'class': 'item-content'}).html(body.title),
 			$("<p>", {'class': 'item-content'}).html(body.content.replace(/\n/g, '<br>'))
 	).hide().prependTo($("#announceWrapper")).show("blind", {direction: 'right'});
-    
+
     setTimeout(function() {
     	$box.hide("slide", {direction: 'right'}, function() {
     		$(this).remove();
@@ -116,16 +116,16 @@ function showNotice(message) {
 }
 
 function getDateString(date) {
-	return date.getFullYear() + "." 
-			+ ('0' + (date.getMonth() + 1)).slice(-2) + "." 
-			+ ('0' + date.getDate()).slice(-2) + " "	
-			+ ('0' + date.getHours()).slice(-2) + ":" 
-			+ ('0' + date.getMinutes()).slice(-2) + ":" 
+	return date.getFullYear() + "."
+			+ ('0' + (date.getMonth() + 1)).slice(-2) + "."
+			+ ('0' + date.getDate()).slice(-2) + " "
+			+ ('0' + date.getHours()).slice(-2) + ":"
+			+ ('0' + date.getMinutes()).slice(-2) + ":"
 			+ ('0' + date.getSeconds()).slice(-2);
 }
 
 function getSimpleTimeString(date) {
-	return ('0' + date.getHours()).slice(-2) + ":" 
+	return ('0' + date.getHours()).slice(-2) + ":"
 			+ ('0' + date.getMinutes()).slice(-2);
 }
 
@@ -137,13 +137,13 @@ $(function () {
     $("form").on('submit', function (e) {
         e.preventDefault();
     });
-    $("#connect").click(function() { 
+    $("#connect").click(function() {
     	connect();
     }).trigger("click");
-    $("#disconnect").click(function() { 
+    $("#disconnect").click(function() {
     	disconnect();
     });
-    $("#send").click(function() { 
+    $("#send").click(function() {
     	shout();
     });
     $("#push").click(function() {

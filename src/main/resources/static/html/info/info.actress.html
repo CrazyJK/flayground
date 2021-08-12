@@ -26,9 +26,6 @@
 nav.navbar:hover ~ .actress-cover-wrapper {
 	height: calc(100% - 9rem);
 }
-.flay-list {
-	overflow: hidden;
-}
 </style>
 <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
@@ -43,28 +40,30 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 </head>
 <body>
 
-	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
+	<nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center sticky-top">
 		<form onsubmit="return false;" id="infoForm">
 			<div class="row mb-2">
-				<div class="col-2 text-right">
+				<div class="col-1">
 					<button class="btn btn-outline-danger float-left" id="delete">Del</button>
-					<label class="text hover"><i class="fa fa-star favorite" id="favorite"></i></label>
 				</div>
-				<div class="col-3">
-					<input class="form-control text-center" name="name" id="name">
+				<div class="col-4">
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text hover"><em class="fa fa-star favorite" id="favorite"></em></span>
+						</div>
+						<input class="form-control text-center" name="name" id="name">
+					</div>
 				</div>
 				<div class="col-3">
 					<input class="form-control text-center" name="localName" id="localName" placeholder="LocalName...">
 				</div>
-				<div class="col-1">
+				<div class="col-3">
 					<button class="btn btn-outline-secondary" id="search">Search</button>
+					<button class="btn btn-outline-secondary" id="find">Find</button>
+					<button class="btn btn-outline-secondary" id="unseen">Unseen</button>
 				</div>
 				<div class="col-1">
-					<button class="btn btn-outline-secondary" id="find">Find</button>
-				</div>
-				<div class="col-2 text-center">
-					<button class="btn btn-outline-secondary" id="save">Save</button>
-					<button class="btn btn-outline-secondary" id="unseen">Unseen</button>
+					<button class="btn btn-outline-primary" id="save">Save</button>
 				</div>
 			</div>
 			<div class="row mb-2">
@@ -114,15 +113,19 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 
 	<div class="actress-cover-wrapper"></div>
 
-	<div class="flay-list-wrap mt-9r">
-		<div class="flay-list" id="instanceList"></div>
-		<hr>
-		<div class="flay-list" id="archiveList"></div>
-	</div>
+	<div class="flay-list" style="overflow: auto;"></div>
 
 <script type="text/javascript">
 	var name = reqParam.name;
 	var actress;
+
+	var $flayList = $(".flay-list");
+
+	$(window).on("resize", function() {
+		$flayList.css({
+			height: window.innerHeight - $(".navbar").outerHeight() - 16
+		});
+	});
 
 	$("#favorite").on("click", function () {
 		actress.favorite = !actress.favorite
@@ -180,7 +183,7 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 
 	$("#unseen").on("click", function () {
 		let active = $(this).data("active") !== true;
-		let $flayList = $("#instanceList");
+		let $flayList = $(".flay-list");
 		$flayList.children().each(function (idx, flay) {
 			let $flay = $(flay);
 			let flayData = $flay.data("flay");
@@ -204,18 +207,18 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 		actress = _actress;
 		document.title = actress.name + ' - ' + document.title;
 
-		$("#name").val(actress.name);
+		$("#name"     ).val(actress.name);
 		$("#localName").val(actress.localName);
-		$("#birth").val(actress.birth).trigger('keyup');
-		$("#body").val(actress.body);
-		$("#height").val(actress.height.toBlank());
-		$("#debut").val(actress.debut.toBlank());
+		$("#birth"    ).val(actress.birth).trigger('keyup');
+		$("#body"     ).val(actress.body);
+		$("#height"   ).val(actress.height.toBlank());
+		$("#debut"    ).val(actress.debut.toBlank());
+		$("#comment"  ).val(actress.comment);
 		if (!actress.favorite) {
 			$(".fa-star").removeClass("favorite fa-star").addClass("fa-star-o");
 		}
-		$("#comment").val(actress.comment);
 
-		var $flayList = $("#instanceList").empty();
+		var $flayList = $(".flay-list").empty();
 		var flayAllList = [];
 		Rest.Flay.findByActress(actress, function (flayList) {
 			$("#videoCount").val(flayList.length);
@@ -239,52 +242,8 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 						archive: flay.archive
 					});
 				});
-
 			});
-
 		});
-
-		/*
-			var $flayTemplete = $(".flay");
-			Rest.Flay.findByActress(actress, function(flayList) {
-				$("#videoCount").val(flayList.length);
-
-				flayList.sort(function(flay1, flay2) {
-					return flay2.release.toLowerCase().localeCompare(flay1.release);
-				});
-
-				var $flayList = $("#instanceList").empty();
-
-				$.each(flayList, function(idx, flay) {
-					$flayList.appendFlayCard(flay, {
-						width: 330,
-						exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-						fontSize: '80%'
-					});
-				});
-
-			});
-
-			Rest.Flay.findByActressInArchive(actress, function(flayList) {
-				// $("#videoCount").val(flayList.length);
-
-				flayList.sort(function(flay1, flay2) {
-					return flay2.release.toLowerCase().localeCompare(flay1.release);
-				});
-
-				var $flayList = $("#archiveList").empty();
-
-				$.each(flayList, function(idx, flay) {
-					$flayList.appendFlayCard(flay, {
-						width: 330,
-						exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-						fontSize: '80%',
-						archive: true
-					});
-				});
-
-			});
-		*/
 
 		if (actress.coverSize > 0) {
 			$("nav.navbar").hover(function () {
@@ -294,13 +253,11 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 			}, function () {
 			});
 		}
+
+		$(window).trigger("resize");
 	});
 
 	$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({ backgroundColor: LocalStorageItem.get('flay.bgcolor') });
-
-	$(window).on("resize", function () {
-		$(".flay-list-wrap").height($(window).height() - $("nav").outerHeight(true));
-	}).trigger("resize");
 
 </script>
 </body>

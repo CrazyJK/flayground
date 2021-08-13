@@ -291,6 +291,25 @@ var Rest = {
 					result = Boolean(isAuto);
 				});
 				return result;
+			},
+			login: function(username, password, callback, failCallback) {
+				$.ajax({
+					url: "/html/login.html",
+					method: "POST",
+					dataType: "json",
+					data: {
+						username: username,
+						password: password,
+					},
+					success: function (response) {
+						console.log(response);
+						if (response.result) {
+							if (callback) callback(response);
+						} else {
+							if (failCallback) failCallback(response);
+						}
+					}
+				});
 			}
 		},
 		Todayis: {

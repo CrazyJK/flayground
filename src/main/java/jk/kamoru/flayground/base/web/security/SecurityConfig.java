@@ -6,9 +6,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.AuthenticationFailureHandler;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import jk.kamoru.flayground.FlayProperties;
+import jk.kamoru.flayground.base.web.security.authentication.FlayAuthenticationFailureHandler;
+import jk.kamoru.flayground.base.web.security.authentication.FlayAuthenticationSuccessHandler;
+import jk.kamoru.flayground.base.web.security.filter.AutomaticallyAuthenticationFilter;
 
 @Configuration
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
@@ -34,6 +39,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 				.and()
 			.formLogin()
 				.loginPage("/html/login.html").permitAll()
+				.successHandler(getFlayAuthenticationSuccessHandler())
+				.failureHandler(getFlayAuthenticationFailureHandler())
 				.and()
 			.rememberMe()
 				.rememberMeParameter("remember-me")
@@ -50,4 +57,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		return new AutomaticallyAuthenticationFilter(flayProperties.getAutomaticallyCertificatedIp());
 	}
 
+    @Bean
+	public AuthenticationSuccessHandler getFlayAuthenticationSuccessHandler() {
+	    return new FlayAuthenticationSuccessHandler();
+	}
+
+    @Bean
+	public AuthenticationFailureHandler getFlayAuthenticationFailureHandler() {
+	    return new FlayAuthenticationFailureHandler();
+	}
 }

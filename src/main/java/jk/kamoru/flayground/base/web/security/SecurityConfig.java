@@ -59,11 +59,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
 	public AuthenticationSuccessHandler getFlayAuthenticationSuccessHandler() {
-	    return new FlayAuthenticationSuccessHandler();
+		return new FlayAuthenticationSuccessHandler();
 	}
 
     @Bean
 	public AuthenticationFailureHandler getFlayAuthenticationFailureHandler() {
-	    return new FlayAuthenticationFailureHandler();
+		return new FlayAuthenticationFailureHandler();
 	}
 }

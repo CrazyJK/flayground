@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.base.web.security;
+package jk.kamoru.flayground.base.web.security.filter;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -24,9 +24,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class AutomaticallyAuthenticationFilter extends OncePerRequestFilter {
 
-	private final static String LOCAL_NAME = "admin";
+	private final static String LOCAL_NAME = "local";
 	private final static String LOCAL_PASS = "local";
 	private final static Collection<? extends GrantedAuthority> LOCAL_AUTHORITIES = Arrays.stream(new String[] { "ROLE_ADMIN", "ROLE_USER" }).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+	private final static List<String> REQUIRES_AUTHENTION_SUFFIX = Arrays.asList("html");
 
 	private List<String> automaticallyCertificatedIp;
 
@@ -36,9 +37,9 @@ public class AutomaticallyAuthenticationFilter extends OncePerRequestFilter {
 
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
-		if (SecurityContextHolder.getContext().getAuthentication() == null) {
+		String requestURI = request.getRequestURI();
+		if (requiresAuthentication(requestURI) && SecurityContextHolder.getContext().getAuthentication() == null) {
 			String remoteAddr = request.getRemoteAddr();
-			log.info("New IP is Connected. {}", remoteAddr);
 
 			if (automaticallyCertificatedIp.contains(remoteAddr)) {
 				UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(new User(LOCAL_NAME, LOCAL_PASS, LOCAL_AUTHORITIES), LOCAL_PASS, LOCAL_AUTHORITIES);
@@ -48,8 +49,23 @@ public class AutomaticallyAuthenticationFilter extends OncePerRequestFilter {
 				SecurityContextHolder.getContext().setAuthentication(authentication);
 				log.info("{} is logged in {}", remoteAddr, LOCAL_NAME);
 			}
+
+			log.info("New IP is Connected. {} - {}", remoteAddr, requestURI);
 		}
+
 		chain.doFilter(request, response);
+	}
+
+	private boolean requiresAuthentication(String requestURI) {
+		int lastPathIndex = requestURI.lastIndexOf("/");
+		String lastPath = requestURI.substring(lastPathIndex + 1);
+
+		int lastCommaIndex = lastPath.lastIndexOf(".");
+		if (lastCommaIndex < 0) {
+			return true;
+		}
+		String suffix = lastPath.substring(lastCommaIndex + 1);
+		return REQUIRES_AUTHENTION_SUFFIX.contains(suffix);
 	}
 
 }

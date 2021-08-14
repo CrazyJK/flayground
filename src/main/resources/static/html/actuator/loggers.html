@@ -105,7 +105,7 @@ $(document).ready(function() {
 		$("#effectiveFilterWrap").append(
 				$select.clone().attr("id", "effectiveFilter").on("change", tableFilter).val($.urlParam('effectiveFilter'))
 		);
-		
+
 		// make body
 		var count = 0;
 		$.each(json.loggers, function(key, val) {
@@ -146,7 +146,7 @@ $(document).ready(function() {
 					} else {
 						$(this).addClass("onlyConfigured-hide");
 					}
-				});	
+				});
 			} else {
 				$loggerListWrap.children().removeClass("onlyConfigured-hide");
 			}
@@ -155,7 +155,7 @@ $(document).ready(function() {
 
 		tableFilter();
 	});
-	
+
 });
 
 function tableFilter() {
@@ -171,9 +171,9 @@ function tableFilter() {
 	var configuredFilterVal = $("#configuredFilter").val();
 	var  effectiveFilterVal =  $("#effectiveFilter").val();
 	var $loggerListWrap = $("#loggerListWrap");
-	
+
 	console.log("loggerFilterVal=" + loggerFilterVal, "configuredFilterVal=" + configuredFilterVal, "effectiveFilterVal=" + effectiveFilterVal);
-	
+
 	if (loggerFilterVal === "" && configuredFilterVal === "" && effectiveFilterVal === "") {
 		$loggerListWrap.children().show();
 	} else {
@@ -211,7 +211,7 @@ function countDisplayLogger() {
 					<a href="/html/actuator/index.html" class="text-decoration-none text-light">Actuator</a> > loggers
 				</h4>
 			</div>
-			<a href="/html/index.html" class="text-light mx-2">Home</a>
+			<a href="/html/main.html" class="text-light mx-2">Home</a>
 		</div>
 		<div>
 			<table class="table table-sm table-bordered table-hover table-dark">

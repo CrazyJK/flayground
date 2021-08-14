@@ -20,7 +20,7 @@ var displaySystemInfo = function() {
 		FIREFOX = 'Firefox',
 		SAFARI  = 'Safari',
 		browser = /trident/i.test(agent) || /msie/i.test(agent) ? MSIE :
-			/edge/i.test(agent) ? EDGE : 
+			/edge/i.test(agent) ? EDGE :
 				/chrome/i.test(agent) ? CHROME :
 					/firefox/i.test(agent) ? FIREFOX :
 						/safari/i.test(agent) ? SAFARI :'Unknown',
@@ -51,15 +51,15 @@ var displayResolutionInfo = function() {
 var displayNavigatorInfo = function() {
 	/* Navigator Object Properties
 	 * https://www.w3schools.com/jsref/obj_navigator.asp */
-	var navigatorProperties =  [["appCodeName", "Returns the code name of the browser"], 
-								["appName", "Returns the name of the browser"], 
-								["appVersion", "Returns the version information of the browser"], 
-								["cookieEnabled", "Determines whether cookies are enabled in the browser"], 
-								["geolocation", "Returns a Geolocation object that can be used to locate the user's position"], 
-								["language", "Returns the language of the browser"], 
-								["onLine", "Determines whether the browser is online"], 
-								["platform", "Returns for which platform the browser is compiled"], 
-								["product", "Returns the engine name of the browser"], 
+	var navigatorProperties =  [["appCodeName", "Returns the code name of the browser"],
+								["appName", "Returns the name of the browser"],
+								["appVersion", "Returns the version information of the browser"],
+								["cookieEnabled", "Determines whether cookies are enabled in the browser"],
+								["geolocation", "Returns a Geolocation object that can be used to locate the user's position"],
+								["language", "Returns the language of the browser"],
+								["onLine", "Determines whether the browser is online"],
+								["platform", "Returns for which platform the browser is compiled"],
+								["product", "Returns the engine name of the browser"],
 								["userAgent", "Returns the user-agent header sent by the browser to the server"],
 								["javaEnabled()", "Specifies whether or not the browser has Java enabled"]];
 
@@ -95,7 +95,7 @@ $(function() {
 	displaySystemInfo();
 	displayResolutionInfo();
 	displayNavigatorInfo();
-	
+
 	$(window).on("resize", displayResolutionInfo);
 
 	$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D');
@@ -109,7 +109,7 @@ $(function() {
 		<div class="alert alert-info mt-2">
 			System  : <strong id="thisSystem"   class="text-danger mr-2"></strong>
 			Browser : <strong id="thisBrowser"  class="text-danger mr-2"></strong>
-			Screen  : <strong id="screenWidth"  class="text-danger"></strong> * <strong id="screenHeight" class="text-danger"></strong> 
+			Screen  : <strong id="screenWidth"  class="text-danger"></strong> * <strong id="screenHeight" class="text-danger"></strong>
 			Window  : <strong id="windowWidth"  class="text-danger"></strong> * <strong id="windowHeight" class="text-danger"></strong>
 		</div>
 
@@ -123,9 +123,9 @@ $(function() {
 			</thead>
 			<tbody></tbody>
 		</table>
-	
+
 		<div class="d-flex flex-row-reverse">
-			<a href="/html/index.html" class="mx-2">Home</a>
+			<a href="/html/main.html" class="mx-2">Home</a>
 		</div>
 
 	</div>

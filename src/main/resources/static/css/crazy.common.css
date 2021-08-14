@@ -557,48 +557,53 @@ button.btn.btn-outline-flay {
 }
 
 .sidenav > .nav-wrap > .nav {
-	margin-top: .5rem;
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	margin: .5rem 0 0;
+	padding: 0;
 }
 .sidenav > .nav-wrap > .nav > .nav-item {
+	display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+	align-items: center;
 	padding: 0.125rem 0.5rem;
-	min-height: 2rem;
+	min-height: 2.25rem;
 	transition: all 0.5s;
 }
-.sidenav > .nav-wrap > .nav > .nav-item > i.fa {
+.sidenav > .nav-wrap > .nav > .nav-item > i {
+	flex: 1 1 0;
 	width: 1rem;
 	text-align: center;
 	margin-right: 0.5rem;
 }
-.sidenav > .nav-wrap > .nav > .nav-item:hover > i.fa {
-	color: var(--yellow);
+.sidenav > .nav-wrap > .nav > .nav-item > div {
+	flex: 8 1 0;
+	display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+	align-items: baseline;
+	justify-content: space-between;
 }
-.sidenav > .nav-wrap > .nav > .nav-item > label[onclick] {
-	cursor: pointer;
-	margin-bottom: 0;
-}
-.sidenav > .nav-wrap > .nav > .nav-item > label[aria-include] {
-	cursor: pointer;
-	margin-bottom: 0;
-}
-.sidenav > .nav-wrap > .nav > .nav-item > label[aria-include].active {
-	color: var(--yellow);
-}
-.sidenav > .nav-wrap > .nav > .nav-item > label:hover {
-	color: var(--yellow);
-}
-.sidenav > .nav-wrap > .nav > .nav-item > a {
+.sidenav > .nav-wrap > .nav > .nav-item > div > a {
 	color: inherit;
 }
-.sidenav > .nav-wrap > .nav > .nav-item > a:hover {
-	color: var(--white);
+.sidenav > .nav-wrap > .nav > .nav-item > div > a.active {
+	color: var(--yellow);
+}
+.sidenav > .nav-wrap > .nav > .nav-item > div > a:hover {
+	color: var(--yellow);
+	cursor: pointer;
 	text-decoration: none;
 }
-.sidenav > .nav-wrap > .nav > .nav-item > label + a,
-.sidenav > .nav-wrap > .nav > .nav-item > a + a {
+.sidenav > .nav-wrap > .nav > .nav-item > div > a + a {
 	opacity: 0;
 }
-.sidenav > .nav-wrap > .nav > .nav-item:hover > label + a,
-.sidenav > .nav-wrap > .nav > .nav-item:hover > a + a {
+.sidenav > .nav-wrap > .nav > .nav-item:hover > i {
+	color: var(--yellow);
+}
+.sidenav > .nav-wrap > .nav > .nav-item:hover > div > a + a {
 	opacity: 1;
 }
 
@@ -611,7 +616,6 @@ button.btn.btn-outline-flay {
 	padding: 0;
 	width: 50px;
 }
-
 .sidenav input[type="number"] {
 	background-color: transparent;
 	border: 0px solid #000;
@@ -626,6 +630,10 @@ button.btn.btn-outline-flay {
 @media (max-height: 1000px) {
 	.sidenav > .nav-wrap > .nav > .nav-item {
 		min-height: 2rem;
+	}
+	.sidenav > .nav-wrap > .nav > .nav-item > div > label {
+		margin-top: 2px;
+		margin-bottom: 2px;
 	}
 }
 

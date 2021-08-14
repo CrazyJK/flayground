@@ -1,8 +1,67 @@
 /**
  * flay.index.js
  */
+"use strict";
 
-var SlideBar = {
+var SlideMenu = {
+		init: function() {
+			$.ajax({
+				url: "/data/main.menu.json",
+				success: function (menuItems) {
+					SlideMenu.setMenu(menuItems);
+					SlideMenu.theme();
+					SlideMenu.togglePage();
+					SlideMenu.setUsername();
+					SlideMenu.startLifeTimer();
+					SlideMenu.specialView();
+				},
+			});
+		},
+		setMenu: function (menuItems) {
+			let $wrap = $("#mainMenuWrap");
+			menuItems.forEach(function (menu) {
+				let $li = $("<li>", { class: "nav-item" });
+				let $icon = $("<i>", { class: menu.icon });
+				let $menu = $("<div>");
+				let $name = $("<a>").html(menu.name).on("click", function() {
+					if (menu.mode === "include") {
+						Rest.Html.get(menu.uri, function (html) {
+							try {
+								$("#notice").dialog("close");
+							} catch (ignore) {}
+							try {
+								destory();
+							} catch (ignore) {}
+							$("#wrap_body").html(html);
+						});
+					} else if (menu.mode === "href") {
+						location.href = menu.uri;
+					} else {
+						console.error("Notfound mode", menu);
+					}
+					$(".nav-wrap .active").removeClass("active");
+					$(this).addClass("active");
+				});
+				let $popup =
+					menu.popup.w === 0 || menu.popup.h === 0
+						? $("<a>")
+						: $("<a>")
+								.on("click", function () {
+									let url = null;
+									if (menu.mode === "include") {
+										url = "/html/flay/flay.popup.html?target=" + menu.uri;
+									} else if (menu.mode === "href") {
+										url = menu.uri;
+									} else {
+										console.error("Notfound mode", menu);
+									}
+									Popup.open(url, menu.name, menu.popup.w, menu.popup.h);
+								})
+								.append($("<i>", { class: "fa fa-external-link ml-1 hover" }));
+
+				$li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
+			});
+		},
 		theme: function() {
 			var setTheme = function() {
 				var bgThemeValue = $("input[name='bgTheme']:checked").val();
@@ -162,38 +221,6 @@ var Background = {
 		}
 };
 
-var Navi = {
-		init: function() {
-			$("[aria-include]").on("click", function() {
-				$("[aria-include]").removeClass("active");
-				var $this = $(this).addClass("active");
-				Navi.go($this.attr("aria-include"));
-			});
-		},
-		go: function(destination) {
-			console.log('destination', destination);
-			Rest.Html.get(destination, function(html) {
-				try {
-					$("#notice").dialog("close");
-				} catch(ignore) {}
-				try {
-					destory();
-				} catch(ignore) {}
-				$("#wrap_body").html(html);
-			});
-		},
-		popup: function(anker, w, h) {
-			var $this = $(anker).prev();
-			var url, key = $this.text();;
-			if ($this.attr("aria-include")) {
-				url = "/html/flay/flay.popup.html?target=" + $this.attr("aria-include");
-			} else if ($this.attr("href")) {
-				url = $this.attr("href");
-			}
-			Popup.open(url, key, w, h);
-		}
-};
-
 var isAdmin;
 var username;
 
@@ -204,13 +231,7 @@ $(document).ready(function() {
 
 	Background.init();
 
-	Navi.init();
-
-	SlideBar.theme();
-	SlideBar.togglePage();
-	SlideBar.setUsername();
-	SlideBar.startLifeTimer();
-	SlideBar.specialView();
+	SlideMenu.init();
 });
 
 window.onerror = function(e) {

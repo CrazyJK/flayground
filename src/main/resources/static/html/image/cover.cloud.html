@@ -124,7 +124,7 @@ var ImageControl = {
 				case 32: // key: space
 					ImageControl.ImageCanvas.rotate();
 					break;
-				case 34: // key: pageDown 	
+				case 34: // key: pageDown
 					ImageControl.display();
 					break;
 				}
@@ -148,7 +148,7 @@ var ImageControl = {
 				} else if (ImageControl.intervalCount === 1) {
 					$(".progress-bar").css({transition: 'width 1s linear'});
 				}
-				
+
 				$(".progress-bar").css({
 					width: (100 - Math.round(ImageControl.intervalCount / playTime * 100)) + "%"
 				});
@@ -193,7 +193,7 @@ var ImageControl = {
 					}).appendTo($imageWrap);
 				}
 			}
-			
+
 			$(".cloud-info").html("Remaining " + ImageControl.imageIndexArray.length);
 
 			ImageControl.ImageCanvas.reload();
@@ -255,14 +255,14 @@ var ImageControl = {
 };
 
 $(document).ready(function() {
-	
+
 	inputImageSize.value = LocalStorageItem.getInteger(ImageControl.STORAGE_IMAGE_SIZE, 20);
 	inputPlayTime.value  = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
-	
+
 	setTimeout(function() {
 		$(window).on("resize", ImageControl.ImageCanvas.resize);
 	}, 5000);
-	
+
 	$("#btnRotate").on("click", ImageControl.ImageCanvas.rotate);
 	$("#btnPause").on("click", function() {
 		if ($(this).data("status") === 'resume') {
@@ -294,7 +294,7 @@ $(document).ready(function() {
 		LocalStorageItem.set(ImageControl.STORAGE_PLAY_TIME, $(this).val());
 	});
 	$("#goHome").on("click", function() {
-		location.href = PATH + "/html/index.html";
+		location.href = PATH + "/html/main.html";
 	});
 	$("#btnByKey, #btnCloseKey").on("click", function() {
 		$("#keyContainer").slideToggle();

@@ -1,0 +1,214 @@
+:root {
+	--sidenav-width: 200px;
+}
+
+/* side nav */
+.sidenav {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	/* height: 100%; */
+	width: 0;
+	background-color: rgba(17, 17, 17, 0.75);
+	color: #607d8b;
+	overflow: hidden;
+	text-shadow: 1px 1px 2px #000;
+	transition: 0.25s 0.5s;
+	z-index: 9998;
+}
+.sidenav:hover {
+	width: var(--sidenav-width)!important;
+	transition: 0.25s;
+}
+.sidenav > .sidenav-pin {
+	float: right;
+	cursor: pointer;
+	margin: .5rem;
+	padding: 0 .5rem;
+	transform: rotate(45deg);
+	transition: .2s;
+}
+.sidenav > .sidenav-pin:hover {
+	color: var(--yellow);
+}
+.sidenav > .sidenav-pin.active {
+	color: var(--red);
+	transform: rotate(0);
+}
+.sidenav > .sidenav-openbtn {
+	position: fixed;
+	top: 0;
+	left: 0;
+	cursor: pointer;
+	font-size: 2rem;
+	padding-left: 4px;
+	z-index: 9999;
+}
+.sidenav > .sidenav-openbtn > i {
+	opacity: 0;
+	transition: all 0.5s;
+}
+.sidenav > .sidenav-openbtn:hover > i {
+	opacity: 1;
+}
+.sidenav > h4 {
+	text-align: center;
+	padding-top: 50px;
+}
+.sidenav > h4 > a {
+	color: inherit;
+	vertical-align: middle;
+}
+.sidenav > h4 > a:hover {
+	color: var(--yellow);
+	text-decoration: none;
+}
+.sidenav > h4 > img {
+	height: 2rem;
+	border-radius: 50%;
+	vertical-align: middle;
+	margin-right: 0.5rem;
+	cursor: pointer;
+}
+
+.sidenav > .nav-wrap {
+	height: calc(100% - 84px);
+	overflow: overlay;
+	padding-bottom: 1rem;
+}
+
+.sidenav > .nav-wrap > .nav {
+	display: flex;
+	flex-direction: column;
+	flex-wrap: nowrap;
+	margin: .5rem 0 0;
+	padding: 0;
+}
+.sidenav > .nav-wrap > .nav > .nav-item {
+	display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+	align-items: center;
+	padding: 0.125rem 0.5rem;
+	min-height: 2.25rem;
+	transition: all 0.5s;
+}
+.sidenav > .nav-wrap > .nav > .nav-item > i {
+	flex: 1 1 0;
+	width: 1rem;
+	text-align: center;
+	margin-right: 0.5rem;
+}
+.sidenav > .nav-wrap > .nav > .nav-item > div {
+	flex: 8 1 0;
+	display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+	align-items: baseline;
+	justify-content: space-between;
+}
+.sidenav > .nav-wrap > .nav > .nav-item > div > a {
+	color: inherit;
+}
+.sidenav > .nav-wrap > .nav > .nav-item > div > a.active {
+	color: var(--yellow);
+}
+.sidenav > .nav-wrap > .nav > .nav-item > div > a:hover {
+	color: var(--yellow);
+	cursor: pointer;
+	text-decoration: none;
+}
+.sidenav > .nav-wrap > .nav > .nav-item > div > a + a {
+	opacity: 0;
+}
+.sidenav > .nav-wrap > .nav > .nav-item:hover > i {
+	color: var(--yellow);
+}
+.sidenav > .nav-wrap > .nav > .nav-item:hover > div > a + a {
+	opacity: 1;
+}
+
+.sidenav input[type="color"] {
+	background-color: transparent;
+	border: 1px solid #fff;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	margin-left: 0.5rem;
+	padding: 0;
+	width: 50px;
+}
+.sidenav input[type="number"] {
+	background-color: transparent;
+	border: 0px solid #000;
+	border-radius: 0.25rem;
+	cursor: pointer;
+	color: var(--blue);
+	margin-left: 0.5rem;
+	padding: 0 4px;
+	width: 60px;
+}
+
+@media (max-height: 1000px) {
+	.sidenav > .nav-wrap > .nav > .nav-item {
+		min-height: 2rem;
+	}
+	.sidenav > .nav-wrap > .nav > .nav-item > div > label {
+		margin-top: 2px;
+		margin-bottom: 2px;
+	}
+}
+
+#specialView {
+	position: fixed;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 0;
+	background-color: rgba(17, 17, 17, 0.75);
+	background-image: url("/img/bg/flayground_facade.jpg");
+	background-position: center;
+	background-repeat: no-repeat;
+	/* background-size: contain; */
+	margin-left: var(--sidenav-width);
+	transition: 0.5s;
+	z-index: 9997;
+}
+.sidenav:hover ~ #specialView {
+	width: calc(100% - var(--sidenav-width));
+	transition: width 1s 0.25s, background-image 0.5s;
+}
+
+#wrap_background_image {
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	margin: 0;
+	padding: 0;
+	z-index: -5;
+}
+#background_images {
+	background: rgba(0, 0, 0, 0.5);
+	height: 100%;
+	margin: 0;
+	padding: 0.5rem;
+	z-index: -4;
+}
+#background_images.transparent {
+	background-color: transparent;
+}
+#background_images .col {
+	padding: 0.5rem;
+	z-index: -3;
+}
+#background_images img {
+	border-radius: 0.25rem;
+	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+	cursor: pointer;
+	margin-bottom: 1rem;
+	width: inherit;
+	transition: all 0.5s;
+	z-index: -2;
+}

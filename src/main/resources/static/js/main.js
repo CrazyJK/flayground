@@ -1,29 +1,31 @@
 /**
- * flay.index.js
+ * flay.main.js
  */
 "use strict";
 
 var SlideMenu = {
-		init: function() {
-			$.ajax({
-				url: "/data/main.menu.json",
-				success: function (menuItems) {
-					SlideMenu.setMenu(menuItems);
-					SlideMenu.theme();
-					SlideMenu.togglePage();
-					SlideMenu.setUsername();
-					SlideMenu.startLifeTimer();
-					SlideMenu.specialView();
-				},
-			});
-		},
-		setMenu: function (menuItems) {
-			let $wrap = $("#mainMenuWrap");
-			menuItems.forEach(function (menu) {
-				let $li = $("<li>", { class: "nav-item" });
-				let $icon = $("<i>", { class: menu.icon });
-				let $menu = $("<div>");
-				let $name = $("<a>").html(menu.name).on("click", function() {
+	init: function () {
+		$.ajax({
+			url: "/data/main.menu.json",
+			success: function (menuItems) {
+				SlideMenu.setMenu(menuItems);
+				SlideMenu.pin();
+				SlideMenu.toggleContent();
+				SlideMenu.theme();
+				SlideMenu.startLifeTimer();
+				SlideMenu.specialView();
+			},
+		});
+	},
+	setMenu: function (menuItems) {
+		let $wrap = $("#mainMenuWrap");
+		menuItems.forEach(function (menu) {
+			let $li = $("<li>", { class: "nav-item" });
+			let $icon = $("<i>", { class: menu.icon });
+			let $menu = $("<div>");
+			let $name = $("<a>")
+				.html(menu.name)
+				.on("click", function () {
 					if (menu.mode === "include") {
 						Rest.Html.get(menu.uri, function (html) {
 							try {
@@ -42,90 +44,106 @@ var SlideMenu = {
 					$(".nav-wrap .active").removeClass("active");
 					$(this).addClass("active");
 				});
-				let $popup =
-					menu.popup.w === 0 || menu.popup.h === 0
-						? $("<a>")
-						: $("<a>")
-								.on("click", function () {
-									let url = null;
-									if (menu.mode === "include") {
-										url = "/html/flay/flay.popup.html?target=" + menu.uri;
-									} else if (menu.mode === "href") {
-										url = menu.uri;
-									} else {
-										console.error("Notfound mode", menu);
-									}
-									Popup.open(url, menu.name, menu.popup.w, menu.popup.h);
-								})
-								.append($("<i>", { class: "fa fa-external-link ml-1 hover" }));
+			let $popup =
+				menu.popup.w === 0 || menu.popup.h === 0
+					? $("<a>")
+					: $("<a>")
+							.on("click", function () {
+								let url = null;
+								if (menu.mode === "include") {
+									url = "/html/flay/flay.popup.html?target=" + menu.uri;
+								} else if (menu.mode === "href") {
+									url = menu.uri;
+								} else {
+									console.error("Notfound mode", menu);
+								}
+								Popup.open(url, menu.name, menu.popup.w, menu.popup.h);
+							})
+							.append($("<i>", { class: "fa fa-external-link ml-1 hover" }));
 
-				$li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
+			$li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
+		});
+		$("#username").html(username);
+	},
+	pin: function() {
+		$(".sidenav-pin").data("pin", false).on("click", function() {
+			var status = $(this).data("pin");
+			$(".sidenav").css({
+				width: status ? "0" : "var(--sidenav-width)",
 			});
-		},
-		theme: function() {
-			var setTheme = function() {
+			$(this).data("pin", !status).toggleClass("active", !status);
+		});
+	},
+	toggleContent: function () {
+		$("#pageShow").on("change", function () {
+			var isShow = $(this).prop("checked");
+			$("#wrap_body").toggle(isShow);
+			$("#background_images").css({ backgroundColor: isShow ? "rgba(0,0,0,.5)" : "transparent" });
+			$("#background_images .col").css({ zIndex: isShow ? -3 : 0 });
+		});
+	},
+	theme: function () {
+		var setTheme = () => {
 				var bgThemeValue = $("input[name='bgTheme']:checked").val();
-				$("body").toggleClass("bg-dark", bgThemeValue === 'D');
-				LocalStorageItem.set('flay.bgtheme', bgThemeValue);
+				$("body").toggleClass("bg-dark", bgThemeValue === "D");
+				LocalStorageItem.set("flay.bgtheme", bgThemeValue);
 				// broadcasting
 				try {
-					flayWebsocket.info('bgtheme');
+					flayWebsocket.info("bgtheme");
 				} catch (e) {}
-			},
-			bgTheme = LocalStorageItem.get('flay.bgtheme', 'D'),
-			bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
+			};
+		let bgTheme = LocalStorageItem.get("flay.bgtheme", "D");
+		let bgColor = LocalStorageItem.get("flay.bgcolor", "#000000");
 
-			$('#bgTheme' + bgTheme).parent().click();
-			$("input[name='bgTheme']").on("change", setTheme).trigger("change");
+		// Theme
+		$("#bgTheme" + bgTheme).parent().click();
+		$("input[name='bgTheme']").on("change", setTheme).trigger("change");
 
-			$("#bgColor").on("change", function() {
-				$("body").css({backgroundColor: $(this).val()});
-				LocalStorageItem.set('flay.bgcolor', $(this).val());
-				// broadcasting
+		// BG Color
+		$("#bgColor")
+			.val(bgColor)
+			.on("change", function () {
+				$("body").css({ backgroundColor: $(this).val() });
 				try {
-					flayWebsocket.info('bgcolor');
+					// broadcasting
+					flayWebsocket.info("bgcolor");
 				} catch (e) {}
-			});
-			$("#bgColor").val(bgColor).trigger("change");
-		},
-		togglePage: function() {
-			$("#pageShow").on("change", function() {
-				var isShow = $(this).prop("checked");
-				$("#wrap_body").toggle(isShow);
-				$("#background_images").css({backgroundColor: isShow ? 'rgba(0,0,0,.5)' : 'transparent'});
-				$("#background_images .col").css({zIndex: isShow ? -3 : 0});
-			});
-		},
-		setUsername() {
-			$("#username").html(username);
-		},
-		startLifeTimer() {
-			$("#lifeTimerWrapper").lifeTimer({
-				progress: false,
-				pattern: 'day Days',
-				onlyOnce: true
-			});
-		},
-		specialView: function() {
-			if (Security.isAutomaticallyCertificated()) {
-				var selectedBgIndex = -1;
-				$(".sidenav > .nav-wrap > .nav > .nav-item > i + label, "
-				+ ".sidenav > .nav-wrap > .nav > .nav-item > i + a").hover(function() {
+				LocalStorageItem.set("flay.bgcolor", $(this).val());
+			})
+			.trigger("change");
+	},
+	startLifeTimer() {
+		$("#lifeTimerWrapper").lifeTimer({
+			progress: false,
+			pattern: "day Days",
+			onlyOnce: true,
+		});
+	},
+	specialView: function () {
+		if (Security.isAutomaticallyCertificated()) {
+			var selectedBgIndex = -1;
+			$("#mainMenuWrap > li > div > a:nth-child(1)").hover(
+				function () {
 					selectedBgIndex = Random.getInteger(0, Background.count);
 					$("#specialView").css({
-						backgroundImage: "url('/static/image/" + selectedBgIndex + "')"
+						backgroundImage: "url('/static/image/" + selectedBgIndex + "')",
 					});
-				}, function() {});
-				$(".sidenav > h4 > a").hover(function() {
+				},
+				function () {}
+			);
+			$(".sidenav > h4 > a").hover(
+				function () {
 					$("#specialView").css("backgroundImage", "");
-				}, function() {});
-				$(".sidenav > h4 > img").on("click", function() {
-					Popup.imageByNo(selectedBgIndex);
-				});
-			} else {
-				$("#specialView").hide();
-			}
+				},
+				function () {}
+			);
+			$(".sidenav > h4 > img").on("click", function () {
+				Popup.imageByNo(selectedBgIndex);
+			});
+		} else {
+			$("#specialView").hide();
 		}
+	},
 };
 
 var Background = {
@@ -162,7 +180,7 @@ var Background = {
 				paneResize();
 				LocalStorageItem.set('flay.background-image.paneWidth', Background.paneWidth);
 			}).val(Background.paneWidth);
-			// switch
+			// Picture switch
 			$("#bgFlow").on("change", function() {
 				$(this).prop("checked") ? Background.start() : Background.stop();
 			});

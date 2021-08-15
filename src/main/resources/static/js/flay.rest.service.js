@@ -95,10 +95,12 @@ var Rest = {
 				restCall("/flay/find/tag/" + tag.id + "/like" , {}, callback);
 			},
 			findByActress: function(actress, callback) {
-				restCall("/flay/find/actress/" + actress.name , {}, callback);
+				let keyword = typeof actress === 'object' ? actress.name : actress;
+				restCall("/flay/find/actress/" + keyword, {}, callback);
 			},
 			findByActressInArchive: function(actress, callback) {
-				restCall("/archive/find/actress/" + actress.name , {}, callback);
+				let keyword = typeof actress === "object" ? actress.name : actress;
+				restCall("/archive/find/actress/" + keyword, {}, callback);
 			},
 			findCandidates: function(callback) {
 				restCall("/flay/candidates", {title: 'Find candidates'}, callback);

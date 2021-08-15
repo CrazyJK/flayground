@@ -60,19 +60,20 @@ var SlideMenu = {
 								Popup.open(url, menu.name, menu.popup.w, menu.popup.h);
 							})
 							.append($("<i>", { class: "fa fa-external-link ml-1 hover" }));
-
 			$li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
 		});
 		$("#username").html(username);
 	},
-	pin: function() {
-		$(".sidenav-pin").data("pin", false).on("click", function() {
-			var status = $(this).data("pin");
-			$(".sidenav").css({
-				width: status ? "0" : "var(--sidenav-width)",
+	pin: function () {
+		$(".sidenav-pin")
+			.data("pin", false)
+			.on("click", function () {
+				var status = $(this).data("pin");
+				$(".sidenav").css({
+					width: status ? "0" : "var(--sidenav-width)",
+				});
+				$(this).data("pin", !status).toggleClass("active", !status);
 			});
-			$(this).data("pin", !status).toggleClass("active", !status);
-		});
 	},
 	toggleContent: function () {
 		$("#pageShow").on("change", function () {
@@ -84,21 +85,21 @@ var SlideMenu = {
 	},
 	theme: function () {
 		var setTheme = () => {
-				var bgThemeValue = $("input[name='bgTheme']:checked").val();
-				$("body").toggleClass("bg-dark", bgThemeValue === "D");
-				LocalStorageItem.set("flay.bgtheme", bgThemeValue);
-				// broadcasting
-				try {
-					flayWebsocket.info("bgtheme");
-				} catch (e) {}
-			};
+			var bgThemeValue = $("input[name='bgTheme']:checked").val();
+			$("body").toggleClass("bg-dark", bgThemeValue === "D");
+			LocalStorageItem.set("flay.bgtheme", bgThemeValue);
+			// broadcasting
+			try {
+				flayWebsocket.info("bgtheme");
+			} catch (e) {}
+		};
 		let bgTheme = LocalStorageItem.get("flay.bgtheme", "D");
 		let bgColor = LocalStorageItem.get("flay.bgcolor", "#000000");
-
 		// Theme
-		$("#bgTheme" + bgTheme).parent().click();
+		$("#bgTheme" + bgTheme)
+			.parent()
+			.click();
 		$("input[name='bgTheme']").on("change", setTheme).trigger("change");
-
 		// BG Color
 		$("#bgColor")
 			.val(bgColor)
@@ -147,102 +148,106 @@ var SlideMenu = {
 };
 
 var Background = {
-		imageIndexArray: [],
-		bgInterval: null,
-		count: 0,
-		paneWidth: LocalStorageItem.getInteger('flay.background-image.paneWidth', 400),
-		intervalTime: 3000,
-		init: function() {
-			Rest.Image.size(function(count) {
-				Background.count = count;
-			});
-			Background.event();
-		},
-		event: function() {
-			var paneResize = function() {
-				var paneLength = Math.round($(window).width() / Background.paneWidth) - $("#background_images").children().length;
-				if (paneLength > 0) {
-					for (var i=0; i<paneLength; i++) {
-						$("<div>", {'class': 'col'}).appendTo($("#background_images"));
-					}
-				} else {
-					for (; paneLength<0; paneLength++) {
-						$("#background_images div.col:last-child").remove();
-					}
+	imageIndexArray: [],
+	bgInterval: null,
+	count: 0,
+	paneWidth: LocalStorageItem.getInteger("flay.background-image.paneWidth", 400),
+	intervalTime: 3000,
+	init: function () {
+		Rest.Image.size(function (count) {
+			Background.count = count;
+		});
+		Background.event();
+	},
+	event: function () {
+		var paneResize = function () {
+			let addedPaneLength = Math.round($(window).width() / Background.paneWidth) - $("#background_images div.col").length;
+			if (addedPaneLength > 0) {
+				for (var i = 0; i < addedPaneLength; i++) {
+					$("<div>", { class: "col" }).appendTo($("#background_images"));
 				}
-				$("#background_images img").css({height: ''});
-			};
-			paneResize();
-			$(window).on("resize", paneResize);
-			// paneWidth
-			$("#paneWidth").on("change", function() {
+			} else {
+				for (; addedPaneLength < 0; addedPaneLength++) {
+					$("#background_images div.col:last-child").remove();
+				}
+			}
+			$("#background_images img").css({ height: "" });
+		};
+		paneResize();
+		$(window).on("resize", paneResize);
+		// paneWidth
+		$("#paneWidth")
+			.on("change", function () {
 				Background.paneWidth = $(this).val();
 				paneResize();
-				LocalStorageItem.set('flay.background-image.paneWidth', Background.paneWidth);
-			}).val(Background.paneWidth);
-			// Picture switch
-			$("#bgFlow").on("change", function() {
-				$(this).prop("checked") ? Background.start() : Background.stop();
-			});
-			var backgroundImageShow = LocalStorageItem.getBoolean('flay.background-image', true);
-			backgroundImageShow && $("#bgFlow").parent().click();
-		},
-		start: function() {
-			Background.bgInterval = setInterval(Background.func, Background.intervalTime);
-			LocalStorageItem.set('flay.background-image', true);
-		},
-		stop: function() {
-			clearInterval(Background.bgInterval);
-			LocalStorageItem.set('flay.background-image', false);
-		},
-		func: function() {
-			// make image index array
-			if (Background.imageIndexArray.length === 0) {
-				Background.imageIndexArray = Array.apply(null, {length: Background.count}).map(Number.call, Number);
-				console.log('image array reset', Background.imageIndexArray.length);
-			}
-			// determine image index
-			var imageIndex = Background.imageIndexArray.splice(Random.getInteger(0, Background.imageIndexArray.length-1), 1);
-			if ($.isEmptyObject(imageIndex)) {
-				console.log('imageIndex is empty', Background.imageIndexArray.length, imageIndex);
-			}
-			// select image pane
-			var paneLength = $("#background_images").children().length;
-			var $imageWrap = $("#background_images div.col:nth-child(" + Random.getInteger(0, paneLength) + ")");
-
-			var image = new Image();
-			image.onload = function() {
-				// calculate size
-				var calcImgWidth  = parseInt($imageWrap.width());
-				var calcImgHeight = parseInt(calcImgWidth * this.naturalHeight / this.naturalWidth);
-				// append new image
-				var $thisImage = $(this).css({height: 0}).prependTo($imageWrap).on("click", function() {
-					Popup.imageByNo(imageIndex);
-				});
-				// showing
-				setTimeout(function() {
-					$thisImage.css({
-						height: calcImgHeight
-					});
-				}, 100);
-			};
-			image.src = PATH + "/static/image/" + imageIndex;
-
-			// overflow image remove
-			$imageWrap.children().each(function() {
-				var imageTop = $(this).position().top;
-				var bgHeight = $("#background_images").height();
-				if (imageTop > bgHeight) {
-					$(this).remove();
-				}
-			});
+				LocalStorageItem.set("flay.background-image.paneWidth", Background.paneWidth);
+			})
+			.val(Background.paneWidth);
+		// Picture switch
+		$("#bgFlow").on("change", function () {
+			$(this).prop("checked") ? Background.start() : Background.stop();
+		});
+		var backgroundImageShow = LocalStorageItem.getBoolean("flay.background-image", true);
+		backgroundImageShow && $("#bgFlow").parent().click();
+	},
+	start: function () {
+		Background.bgInterval = setInterval(Background.func, Background.intervalTime);
+		LocalStorageItem.set("flay.background-image", true);
+	},
+	stop: function () {
+		clearInterval(Background.bgInterval);
+		LocalStorageItem.set("flay.background-image", false);
+	},
+	func: function () {
+		// make image index array
+		if (Background.imageIndexArray.length === 0) {
+			Background.imageIndexArray = Array.apply(null, { length: Background.count }).map(Number.call, Number);
+			console.info("image array reset", Background.imageIndexArray.length);
 		}
+		// determine image index
+		var imageIndex = Background.imageIndexArray.splice(Random.getInteger(0, Background.imageIndexArray.length - 1), 1);
+		if ($.isEmptyObject(imageIndex)) {
+			console.info("imageIndex is empty", Background.imageIndexArray.length, imageIndex);
+		}
+		// select image pane
+		var paneLength = $("#background_images div.col").length;
+		var $imageWrap = $("#background_images div.col:nth-child(" + Random.getInteger(1, paneLength) + ")");
+		// load image
+		var image = new Image();
+		image.onload = function () {
+			// calculate size
+			var calcImgWidth = parseInt($imageWrap.width());
+			var calcImgHeight = parseInt((calcImgWidth * this.naturalHeight) / this.naturalWidth);
+			// append new image
+			var $thisImage = $(this)
+				.css({ height: 0 })
+				.on("click", function () {
+					Popup.imageByNo(imageIndex);
+				})
+				.prependTo($imageWrap);
+			// showing
+			setTimeout(function () {
+				$thisImage.css({
+					height: calcImgHeight,
+				});
+			}, 100);
+		};
+		image.src = PATH + "/static/image/" + imageIndex;
+		// overflow image remove
+		$imageWrap.children().each(function () {
+			var imageTop = $(this).position().top;
+			var bgHeight = $("#background_images").height();
+			if (imageTop > bgHeight) {
+				$(this).remove();
+			}
+		});
+	},
 };
 
 var isAdmin;
 var username;
 
-$(document).ready(function() {
+$(document).ready(function () {
 	isAdmin = Security.hasRole("ADMIN");
 	username = Security.getName();
 	console.log("isAdmin", isAdmin, username);
@@ -252,7 +257,7 @@ $(document).ready(function() {
 	SlideMenu.init();
 });
 
-window.onerror = function(e) {
-    console.error('Error', e);
-    loading.on('Error: ' + e);
+window.onerror = function (e) {
+	console.error("Error", e);
+	loading.on("Error: " + e);
 };

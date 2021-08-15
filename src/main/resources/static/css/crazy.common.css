@@ -796,6 +796,12 @@ button.btn.btn-outline-flay {
 .bg-dark button.btn-outline-light:hover {
 	color: var(--darker);
 }
+.bg-dark button.btn-warning {
+	color: var(--warning);
+}
+.bg-dark button.btn-warning:hover {
+	color: #212529;
+}
 
 .font-size-1r {
 	font-size: 1rem;

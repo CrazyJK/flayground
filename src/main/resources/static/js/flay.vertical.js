@@ -780,7 +780,7 @@ var Flaying = {
 			if (e.type !== "wheel" && e.target.tagName === "VIDEO") {
 				return;
 			}
-			_video.currentTime += seekTime;
+			_video.currentTime += Flaying.seekTime;
 		}
 	},
 	backward: function (e) {
@@ -791,7 +791,7 @@ var Flaying = {
 			if (e.type !== "wheel" && e.target.tagName === "VIDEO") {
 				return;
 			}
-			_video.currentTime -= seekTime;
+			_video.currentTime -= Flaying.seekTime;
 		}
 	},
 };

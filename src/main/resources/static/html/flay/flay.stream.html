@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Flay Info</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" type="image/png" href="../../img/favicon/flay_1.png"/>
+<link rel="stylesheet" href="../../webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="../../webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="../../webjars/jquery-ui/jquery-ui.min.css"/>
+<style type="text/css">
+body {
+	background-color: rgb(28, 28, 28);
+	color: #eee;
+	overflow: hidden;
+}
+header h1 {
+	font-size: 1.5rem;
+	text-align: center;
+	margin: 1rem auto;
+}
+main article {
+	display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+}
+main article section {
+	font-size: 1.5rem;
+	text-align: center;
+}
+main article section video {
+	width: 800px;
+	height: 530px;
+}
+main article section div {
+	min-height: 2rem;
+}
+</style>
+<script type="text/javascript" src="../../webjars/jquery/jquery.min.js"></script>
+<script type="text/javascript" src="../../webjars/popper.js/umd/popper.js"></script>
+<script type="text/javascript" src="../../webjars/bootstrap/js/bootstrap.min.js"></script>
+<script type="text/javascript" src="../../webjars/jquery-ui/jquery-ui.min.js"></script>
+<script type="text/javascript" src="../../js/crazy.common.js"></script>
+<script type="text/javascript" src="../../js/crazy.jquery.js"></script>
+<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
+</head>
+<body>
+
+	<header>
+		<h1 id="flayTitle"></h1>
+	</header>
+
+	<main>
+		<article id="flayArticle">
+			<section id="flayVideoWrap">
+				<video id="flayVideo" controls>
+					<track kind="subtitles" srclang="ko" label="Flay Subtitles">
+				</video>
+			</section>
+			<section id="flayVideoInfo">
+				<div id="flayOverview"></div>
+				<div id="flayStudio"></div>
+				<div id="flayOpus"></div>
+				<div id="flayActress"></div>
+				<div id="flayRelease"></div>
+				<div id="flayRank"></div>
+				<div id="flayPlay"></div>
+				<div id="flayModified"></div>
+			</section>
+		</article>
+	</main>
+
+	<footer>
+	</footer>
+
+
+<script type="text/javascript">
+const opus = reqParam.opus;
+
+if (typeof opus !== "undefined") {
+	Rest.Flay.get(opus, function (flay) {
+		console.log(flay);
+
+		$("#flayTitle").html(flay.title);
+		$("#flayOpus").html(flay.opus);
+		$("#flayRank").html(flay.video.rank);
+		$("#flayPlay").html(flay.video.play + "P");
+		$("#flayStudio").html(flay.studio);
+		$("#flayActress").html(flay.actressList);
+		$("#flayRelease").html(flay.release);
+		$("#flayModified").html(new Date(flay.lastModified).format("yyyy-MM-dd"));
+		$("#flayOverview").html(flay.video.comment);
+
+		let flayVideo = document.querySelector("video#flayVideo");
+		flayVideo.src = "/stream/flay/movie/" + opus + "/0";
+		flayVideo.poster = "/static/cover/" + opus;
+		flayVideo.load();
+		// flayVideo.play();
+		if (flay.files.subtitles && flay.files.subtitles.length > 0) {
+			let flaySubtitles = document.querySelector("video#flayVideo track");
+			flaySubtitles.src = "/stream/flay/subtitles/" + opus + "/0";
+		}
+	});
+}
+</script>
+
+</body>
+</html>

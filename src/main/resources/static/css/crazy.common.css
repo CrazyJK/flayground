@@ -790,6 +790,9 @@ button.btn.btn-outline-flay {
 .bg-dark button.btn-outline-danger {
 	color: #dc3545;
 }
+.bg-dark button.btn-outline-danger:hover {
+	color: var(--darker);
+}
 .bg-dark button.btn-outline-light {
 	color: #f8f9fa;
 }

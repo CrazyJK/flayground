@@ -85,7 +85,9 @@ body.bg-dark .tag-list .nonExist {
 
 .cover-wrapper {
 	margin: 0 auto .5rem;
-	width: 3100px;
+	display: flex;
+    align-items: center;
+    justify-content: space-evenly;
 }
 
 .cover-wrapper-inner {
@@ -93,6 +95,7 @@ body.bg-dark .tag-list .nonExist {
 }
 
 .cover-box {
+	position: relative;
 	background: #fff no-repeat center;
 	background-size: contain;
 	box-shadow: 0 0 0.25rem 0.5rem #fff inset;
@@ -107,6 +110,24 @@ body.bg-dark .tag-list .nonExist {
 body.bg-dark .cover-box {
     background-color: #000;
     box-shadow: 0 0 0.25rem 0.5rem #000 inset;
+}
+.cover-box #btnVideoClose {
+	position: absolute;
+	top: -22px;
+	right: -16px;
+    font-size: 2rem;
+    color: var(--danger);
+    cursor: pointer;
+    margin: .25rem;
+	display: none;
+}
+.cover-box video {
+	width: 100%;
+	height: 100%;
+	padding: .5rem;
+	border: 0;
+    outline: 0;
+	display: none;
 }
 /* #newTagForm {
 	width: 400px;

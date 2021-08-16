@@ -198,7 +198,6 @@ function attachEventListener() {
 		var windowWidth  = $(window).width();
 		var windowHeight = $(window).height();
 		var navHeight = $("nav.navbar").outerHeight();
-		var coverWrapperWidth  = $(".cover-wrapper").width();
 		var currCoverBoxWidth  = $(".cover-wrapper-inner.curr > .cover-box").width();
 		var currCoverBoxHeight = $(".cover-wrapper-inner.curr > .cover-box").height();
 
@@ -208,13 +207,6 @@ function attachEventListener() {
 		$("#pageContent, #selectTags, #options").css({
 			marginTop: navHeight + 8
 		});
-
-		var calcX = (windowWidth - coverWrapperWidth) / 2;
-		if (calcX < 0) {
-			$(".cover-wrapper").css({
-				transform: 'translate(' + calcX + 'px, 0)'
-			});
-		}
 
 		var calcWidth = (windowWidth - currCoverBoxWidth - 20) / 2;
 		var calcHeight = calcWidth * COVER_RATIO;
@@ -500,10 +492,11 @@ function notice(msg) {
 var navigation = {
 		event: function() {
 			$("#pageContent").navEvent(function(signal, e) {
+				// console.log(`navEvent target=${e.target.tagName} signal=${signal} type=${e.type} ctrl=${e.ctrlKey} alt=${e.altKey} shift=${e.shiftKey} key=${e.key}`);
 				switch(signal) {
 					case 1:  // wheel: up
 					case 37: // key  : left
-						navigation.previous();
+						navigation.previous(e);
 						break;
 					case -1: // wheel: down
 					case 39: // key  : right
@@ -511,7 +504,7 @@ var navigation = {
 						if (mode === 'R') {
 							navigation.random();
 						} else {
-							navigation.next();
+							navigation.next(e);
 						}
 						break;
 					case 32: // keyup: space
@@ -566,14 +559,24 @@ var navigation = {
 		off: function() {
 			$("#pageContent").navActive(false);
 		},
-		previous: function() {
-			navigation.go(currentIndex - 1);
+		previous: function(e) {
+			if (Flaying.isPlay) {
+				Flaying.backward(e);
+			} else {
+				navigation.go(currentIndex - 1);
+			}
 		},
-		next: function () {
-			navigation.go(currentIndex + 1);
+		next: function (e) {
+			if (Flaying.isPlay) {
+				Flaying.forward(e);
+			} else {
+				navigation.go(currentIndex + 1);
+			}
 		},
-		random: function() {
-			navigation.go(Random.getInteger(0, collectedList.length-1));
+		random: function(e) {
+			if (!Flaying.isPlay) {
+				navigation.go(Random.getInteger(0, collectedList.length-1));
+			}
 		},
 		go: function(idx) {
 			if (idx < 0 || idx > collectedList.length - 1) {
@@ -722,7 +725,76 @@ function addVideoEvent() {
 	$(".add-basket-btn").on("click", function() {
 		flayWebsocket.info('{"mode":"grap", "opus":"' + currentFlay.opus + '"}');
 	});
+	// control video stream
+	$(".cover-wrapper-inner.curr > .cover-box").on("click", Flaying.start);
+	$(".cover-wrapper-inner.curr > .cover-box > #btnVideoClose").on("click", Flaying.stop);
 }
+
+var Flaying = {
+	isPlay: false,
+	seekTime: 10,
+	start: function (e) {
+		e.stopPropagation();
+		if (!Flaying.isPlay) {
+			let $video = $("video");
+			let _video = $video.get(0);
+			const videoOpus = $video.data("opus");
+			if (videoOpus !== currentFlay.opus) {
+				$video
+					.attr({
+						poster: "/static/cover/" + currentFlay.opus,
+						src: "/stream/flay/movie/" + currentFlay.opus + "/0",
+					})
+					.data("opus", currentFlay.opus);
+			}
+			$video
+				.show()
+				.off("wheel")
+				.on("wheel", function (e) {
+					e.stopPropagation();
+					if (e.originalEvent.wheelDelta < 0) {
+						Flaying.forward(e);
+					} else {
+						Flaying.backward(e);
+					}
+				});
+			_video.play();
+			$("#btnVideoClose").show();
+			Flaying.isPlay = true;
+		}
+	},
+	stop: function (e) {
+		e.stopPropagation();
+		let $video = $("video");
+		let _video = $video.get(0);
+		$video.hide().off("wheel");
+		_video.pause();
+		$("#btnVideoClose").hide();
+		Flaying.isPlay = false;
+	},
+	forward: function (e) {
+		let $video = $("video");
+		let _video = $video.get(0);
+		if (Flaying.isPlay) {
+			// if built-in video seek, do nothing
+			if (e.type !== "wheel" && e.target.tagName === "VIDEO") {
+				return;
+			}
+			_video.currentTime += seekTime;
+		}
+	},
+	backward: function (e) {
+		let $video = $("video");
+		let _video = $video.get(0);
+		if (Flaying.isPlay) {
+			// if built-in video seek, do nothing
+			if (e.type !== "wheel" && e.target.tagName === "VIDEO") {
+				return;
+			}
+			_video.currentTime -= seekTime;
+		}
+	},
+};
 
 function showVideo() {
 	function showInfo() {

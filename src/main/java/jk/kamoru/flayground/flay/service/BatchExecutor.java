@@ -243,7 +243,7 @@ public class BatchExecutor {
 	void deleteEmptyFolder(File... emptyManagedPaths) {
 		log.info("[deleteEmptyFolder]");
 		for (File managedPath : emptyManagedPaths) {
-			log.info("  scanning... {}", managedPath);
+			log.info("  scanning...   {}", managedPath);
 			Path path = managedPath.toPath();
 			Collection<Path> listDirs = flayFileHandler.listDirectory(path);
 			for (Path dir : listDirs) {

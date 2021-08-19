@@ -11,6 +11,15 @@ body {
 	overflow: hidden;
 }
 
+.flay-bar {
+	display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: space-evenly;
+    align-items: baseline;
+}
+
 #pageContent {
 	margin-top: 56px;
 	padding-top: .5rem;
@@ -19,13 +28,18 @@ body {
 #selectTags, #statisticsStudio, #statisticsActress {
 	border-radius: 1rem;
 	box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.25);
-	display: none;
-	margin: 55px auto -50px;
+	margin: 0.5rem auto 0;
 	padding: 0.5rem;
 	text-align: center;
 	width: 90%;
 	z-index: 69;
+	display: none;
 }
+#statisticsStudio .studioTag.hide, #statisticsActress .actressTag.hide {
+	display: none;
+	color: var(--secondary);
+}
+
 #selectTags > div.tag-list > label.check.sm > span > .tag-flay-count {
 	min-width: 22px;
 }

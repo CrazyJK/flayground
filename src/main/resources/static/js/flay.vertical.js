@@ -196,15 +196,15 @@ function attachEventListener() {
 	// window resize
 	$(window).on("resize", function() {
 		var windowWidth  = $(window).width();
-		var windowHeight = $(window).height();
+		// var windowHeight = $(window).height();
 		var navHeight = $("nav.navbar").outerHeight();
 		var currCoverBoxWidth  = $(".cover-wrapper-inner.curr > .cover-box").width();
 		var currCoverBoxHeight = $(".cover-wrapper-inner.curr > .cover-box").height();
 
-		$("#pageContent").css({
-			height: windowHeight - navHeight
-		});
-		$("#pageContent, #selectTags, #options").css({
+		// $("#pageContent").css({
+		// 	height: windowHeight - navHeight
+		// });
+		$("#options").css({
 			marginTop: navHeight + 8
 		});
 
@@ -449,32 +449,47 @@ function collectList() {
 		}
 	}
 	// console.log(studioMap, actressMap);
-
-	$("#statisticsStudio").empty();
+	const minCount = 5;
+	$("#statisticsStudio").empty().append(
+			$("<label>", {class: "text hover text-info float-left"}).append(
+					$("<span>").html("Show All").on("click", function () {
+							$("#statisticsStudio .studioTag.hide").toggle();
+							$(this).html($("#statisticsStudio .studioTag.hide:visible").length > 0 ? minCount + " over" : "Show All");
+					})
+			)
+	);
 	for (var [k, v] of studioMap) {
-		if (v < 5) continue;
 		$("#statisticsStudio").append(
-				$("<label>", {class: 'text hover'}).append(
+				$("<label>", {class: "text hover studioTag" + (v < minCount ? " hide" : "")}).append(
 						$("<span>").css({
 							fontSize: 16 + v * 0.25
 						}).html(k),
 						$("<span>", {class: 'badge'}).html(v)
 				).data('k', k).on("click", function() {
-					$("#search").val($(this).data('k'));
+					$("#search").val($(this).data("k"));
+					$("#pageContent").trigger("collect");
 				})
 		);
 	}
-	$("#statisticsActress").empty();
+
+	$("#statisticsActress").empty().append(
+			$("<label>", {class: "text hover text-info float-left"}).append(
+					$("<span>").html("Show All").on("click", function () {
+							$("#statisticsActress .actressTag.hide").toggle();
+							$(this).html($("#statisticsActress .actressTag.hide:visible").length > 0 ? minCount + " over" : "Show All");
+					})
+			)
+	);
 	for (var [k, v] of actressMap) {
-		if (v < 5) continue;
 		$("#statisticsActress").append(
-				$("<label>", {class: 'text hover'}).append(
+				$("<label>", {class: "text hover actressTag" + (v < minCount ? " hide" : "")}).append(
 						$("<span>").css({
 							fontSize: 16 + v * 0.25
 						}).html(k),
 						$("<span>", {class: 'badge'}).html(v)
 				).data('k', k).on("click", function() {
 					$("#search").val($(this).data('k'));
+					$("#pageContent").trigger("collect");
 				})
 		);
 	}

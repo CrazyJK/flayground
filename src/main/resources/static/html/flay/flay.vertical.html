@@ -1,10 +1,10 @@
 <meta charset="UTF-8">
-<link rel="stylesheet" href="/css/flay.vertical.css" />
+<link rel="stylesheet" href="../../css/flay.vertical.css" />
 
 <div role="body">
 
-	<nav class="navbar navbar-expand-sm fixed-top navbar-light justify-content-center p-0" style="background-color: transparent!important;">
-		<div class="bg-light rounded-bottom p-1">
+	<nav class="navbar navbar-expand-sm fixed-top navbar-light justify-content-center p-0" style="background-color: transparent!important; flex-direction: column;">
+		<div class="bg-light rounded-bottom p-1 flay-bar">
 			<input class="form-control input-flay search" type="search" id="search" placeholder="Search...">
 			<div class="divider"></div>
 			<span class="check-group check-group-rounded">
@@ -41,29 +41,28 @@
 			<div class="divider"></div>
 			<button class="btn btn-sm btn-link toggle-option text-dark"><i class="fa fa-ellipsis-v"></i></button>
 		</div>
+
+		<div id="selectTags" class="bg-light" style="display: none;">
+			<label class="check float-left"><input type="checkbox" id="tagPopup"><span>Pop</span></label>
+			<label class="check float-right"><input type="checkbox" id="tagCheck"><span><i class="fa fa-check"></i></span></label>
+			<div class="tag-list"></div>
+		</div>
+		<div id="statisticsStudio" class="bg-light" style="display: none;"></div>
+		<div id="statisticsActress" class="bg-light" style="display: none;"></div>
+
+		<div id="options" class="bg-light">
+			<ul class="list-unstyled mb-0">
+				<li class="flay-bar">
+					<i class="fa fa-map"></i>
+					<label class="check sm"><input type="checkbox" id="autoSlide"><span>Slide</span></label>
+					<span class="check-group sm check-group-rounded">
+						<label><input type="radio" name="autoSlideMode" value="F" checked="checked"><span>F</span></label>
+						<label><input type="radio" name="autoSlideMode" value="R"><span>R</span></label>
+					</span>
+				</li>
+			</ul>
+		</div>
 	</nav>
-
-	<div id="selectTags" class="bg-light">
-		<label class="check float-left"><input type="checkbox" id="tagPopup"><span>Pop</span></label>
-		<label class="check float-right"><input type="checkbox" id="tagCheck"><span><i class="fa fa-check"></i></span></label>
-		<div class="tag-list"></div>
-	</div>
-
-	<div id="statisticsStudio" class="bg-light"></div>
-	<div id="statisticsActress" class="bg-light"></div>
-
-	<div id="options" class="bg-light">
-		<ul class="list-unstyled mb-0">
-			<li>
-				<i class="fa fa-map"></i>
-				<label class="check sm"><input type="checkbox" id="autoSlide"><span>Slide</span></label>
-				<span class="check-group sm check-group-rounded">
-					<label><input type="radio" name="autoSlideMode" value="F" checked="checked"><span>F</span></label>
-					<label><input type="radio" name="autoSlideMode" value="R"><span>R</span></label>
-				</span>
-			</li>
-		</ul>
-	</div>
 
 	<div id="pageContent">
 		<div class="video-wrapper">
@@ -147,4 +146,5 @@
 	</nav>
 
 </div>
-<script type="text/javascript" src="/js/flay.vertical.js"></script>
+
+<script type="text/javascript" src="../../js/flay.vertical.js"></script>

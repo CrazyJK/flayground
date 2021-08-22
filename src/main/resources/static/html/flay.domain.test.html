@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>flay Domain Test</title>
+<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
+<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
+<link rel="stylesheet" href="../css/domain/flay.css">
+<style>
+body {
+	background-color: #eee;
+}
+.container-flay {
+	display: flex;
+	align-content: center;
+    justify-content: center;
+	flex-wrap: wrap;
+    gap: .5rem;
+	padding: 2rem;
+}
+.flay {
+	width: 800px;
+}
+</style>
+</head>
+<body>
+
+	<article class="container-flay" id="flayWrapper"></article>
+
+	<script src="/webjars/jquery/jquery.min.js"></script>
+	<script src="/webjars/popper.js/umd/popper.js"></script>
+	<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+	<script src="../js/domain/flay.js"></script>
+	<script src="../js/crazy.jquery.js"></script>
+	<script>
+		"use strict";
+
+		const flayList = [];
+
+		$.ajax({
+			url: "/flay/list",
+			success: (list) => {
+				// console.log(list);
+
+				list.forEach((item) => {
+					// flayList.push(Flay.from(item));
+					flayList.push(new Flay(item));
+				});
+
+				flayControl.currentIndex = Math.round(Math.random() * flayList.length, 10);
+				flayControl.next();
+			},
+		});
+
+		/*
+			case    1 : // wheel : up
+			case   -1 : // wheel : down
+		*/
+		$(".container-flay").navEvent(function (signal) {
+			switch (signal) {
+				case 1:
+					flayControl.prev();
+					break;
+				case -1:
+					flayControl.next();
+			}
+		});
+
+		var flayControl = {
+			currentIndex: 0,
+			prev: function () {
+				$("#flayWrapper").empty().append(flayList[--this.currentIndex].$());
+			},
+			next: function () {
+				$("#flayWrapper").empty().append(flayList[++this.currentIndex].$());
+			},
+		};
+
+	</script>
+</body>
+</html>

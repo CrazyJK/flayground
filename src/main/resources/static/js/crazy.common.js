@@ -249,7 +249,7 @@ function Loading() {
 	$("html").on("click", "#" + OVERLAY, function() {
 		loading.off();
 	});
-	console.log('Loading.init');
+	console.info('Loading.init');
 };
 Loading.prototype = {
 		on: function(body) {

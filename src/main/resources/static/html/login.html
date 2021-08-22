@@ -121,6 +121,7 @@ form#signin {
 				<input type="checkbox" name="remember-me" class="sr-only" checked="checked">
 				<input type="text" name="username" class="form-control-login chalk" placeholder="Name" required autofocus>
 				<input type="password" name="password" class="form-control-login chalk" placeholder="Password" required>
+				<input type="hidden" name="_csrf">
 				<button type="submit" class="btn-login chalk">Signin</button>
 			</form>
 			<button class="btn-enter chalk-pink" id="btnEnter">Enter</button>
@@ -154,6 +155,14 @@ if (window.location.search.indexOf('error') > 0) {
 	$(".display-middle").addClass("login-error");
 	$("#btnEnter").trigger("click");
 }
+
+// set csrf
+document.cookie.split(';').forEach((cookie) => {
+	if ("XSRF-TOKEN" === cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '')) {
+		document.querySelector("input[name='_csrf']").value = unescape(cookie.substr(cookie.indexOf('=') + 1));
+		return false;
+	}
+});
 </script>
 
 </body>

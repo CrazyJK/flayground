@@ -17,6 +17,28 @@ var SlideMenu = {
 			},
 		});
 	},
+	logout: function(logoutUri) {
+		var logoutForm = document.createElement("form");
+		logoutForm.setAttribute("method", "POST");
+		logoutForm.setAttribute("action", logoutUri);
+
+		var csrfField = document.createElement("input");
+		csrfField.setAttribute("type", "hidden");
+		csrfField.setAttribute("name", "_csrf");
+		// csrfField.setAttribute("value", csrfValue);
+		logoutForm.appendChild(csrfField);
+
+		document.body.appendChild(logoutForm);
+
+		document.cookie.split(';').forEach((cookie) => {
+			if ("XSRF-TOKEN" === cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '')) {
+				document.querySelector("input[name='_csrf']").value = unescape(cookie.substr(cookie.indexOf('=') + 1));
+				return false;
+			}
+		});
+
+		logoutForm.submit();
+	},
 	setMenu: function (menuItems) {
 		let $wrap = $("#mainMenuWrap");
 		menuItems.forEach(function (menu) {
@@ -38,6 +60,8 @@ var SlideMenu = {
 						});
 					} else if (menu.mode === "href") {
 						location.href = menu.uri;
+					} else if (menu.mode === "post") {
+						SlideMenu.logout(menu.uri);
 					} else {
 						console.error("Notfound mode", menu);
 					}
@@ -244,13 +268,13 @@ var Background = {
 	},
 };
 
-var isAdmin;
-var username;
+let isAdmin;
+let username;
 
 $(document).ready(function () {
 	isAdmin = Security.hasRole("ADMIN");
 	username = Security.getName();
-	console.log("isAdmin", isAdmin, username);
+	console.info(`User is ${username} ${isAdmin ? "has ADMIN Role" : ""}`);
 
 	Background.init();
 

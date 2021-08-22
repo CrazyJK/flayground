@@ -55,17 +55,50 @@ class Flay {
 		}
 	}
 
+	static popup(url, name, width, height) {
+		const windowFeatures = "menubar=no,location=no,resizable=yes,scrollbars=yes,status=no,centerscreen=yes,innerWidth=" + width + ",innerHeight=" + height;
+		const windowName = name.replace(/ /g, "");
+		const windowObjectReference = window.open(url, windowName, windowFeatures);
+		console.debug(url, windowName, windowFeatures, windowObjectReference);
+	}
+
+	static AJAX_SETTINGS = {
+		beforeSend: (jqXHR, settings) => {
+			if (settings.method !== "GET") {
+				for (const cookie of document.cookie.split(';')) {
+					if ("XSRF-TOKEN" === cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '')) {
+						jqXHR.setRequestHeader("X-XSRF-TOKEN", unescape(cookie.substr(cookie.indexOf('=') + 1)));
+						break;
+					}
+				}
+			}
+		},
+		error: (jqXHR, textStatus, errorThrown) => {
+			console.error(jqXHR, textStatus, errorThrown, jqXHR.status, jqXHR.responseJSON);
+			alert("ajax:"
+				+ "\nerror " + jqXHR.responseJSON.error
+				+ "\nmessage " + jqXHR.responseJSON.message
+				+ "\nstatus " + jqXHR.responseJSON.status
+				+ "\npath " + jqXHR.responseJSON.path);
+		},
+	};
+
+	static ajax(args) {
+		const settings = $.extend({}, Flay.AJAX_SETTINGS, args);
+		$.ajax(settings);
+	}
+
 	constructor(json) {
 		return Object.assign(this, json);
 	}
 
 	getTagList() {
 		if ($.isEmptyObject(tagList)) {
-			$.ajax({
+			Flay.ajax({
 				url: "/info/tag/list",
 				async: false,
 				success: (list) => {
-					console.log("/info/tag/list", list);
+					console.debug("/info/tag/list", list);
 					list.sort(function(t1, t2) {
 						return t1.name.localeCompare(t2.name);
 					});
@@ -86,8 +119,11 @@ class Flay {
 	}
 
 	$() {
-		console.log(this);
-		return $("<section>", {class: "flay " + (this.archive ? "flay-archive" : "flay-instance")}).append(
+		if (this.jqueryElement) {
+			return this.jqueryElement;
+		}
+		console.info(this);
+		this.jqueryElement = $("<section>", {class: "flay " + (this.archive ? "flay-archive" : "flay-instance")}).append(
 			$("<div>", {class: "flay-cover"}).css({
 				background: "#222 url(/static/cover/"  + this.opus + ") no-repeat center / contain"
 			}),
@@ -97,7 +133,9 @@ class Flay {
 					$("<div>").append(this.fullname)
 				),
 				$("<dt>", {class: "flay-title"}).append(
-					$("<div>").append(this.title)
+					$("<div>").append(this.title).on("click", this, (e) => {
+						Flay.popup("/html/info/info.flay.html?opus=" + e.data.opus, e.data.opus, 800, 530);
+					})
 				),
 				$("<dd>", {class: "flay-tags"}).append(
 					$("<div>").append(
@@ -107,7 +145,7 @@ class Flay {
 								ret.push($("<span>").html(this.getTag(t).name));
 							});
 							ret.push(
-								$("<span>", {class: "extra"}).append(
+								$("<span>", {class: "extra tag-show"}).append(
 									$("<i>", {class: "fa fa-tags"}).on("click", function () {
 										$(".flay-taglist").toggle();
 									})
@@ -127,18 +165,32 @@ class Flay {
 					(() => {
 						let ret = [];
 						this.actressList.forEach((name) => {
-							const $actress = $("<div>", {id: name.replace(/ /g, "")}).append(
-								$("<span>").html(name)
+							ret.push(
+								$("<div>", {id: name.replace(/ /g, "")}).append(
+									$("<span>", {class: "actress-name"}).html(name).on("click", function () {
+										Flay.popup("/html/info/info.actress.html?name=" + name, name, 1076, 800);
+									})
+								)
 							);
-							ret.push($actress);
-							$.ajax({
+							Flay.ajax({
 								url: "/info/actress/" + name,
 								success: (a) => {
-									console.log("actress", a);
+									console.debug("actress", a);
 									$("#" + a.name.replace(/ /g, "")).append(
 										$("<span>", {class: "actress-favorite" + (a.favorite ? " active" : "")}).append(
 											$("<i>", {class: "fa fa-star"})
-										),
+										).on("click", function () {
+											const $actressFavorite = $(this);
+											a.favorite = !a.favorite
+											Flay.ajax({
+												url: "/info/actress",
+												methid: "PATCH",
+												data: a,
+												success: () => {
+													$actressFavorite.toggleClass("active", a.favorite);
+												}
+											});
+										}),
 										$("<small>", {class: "extra"}).append(a.localName),
 										$("<small>", {class: "extra"}).append(a.birth),
 										$("<small>", {class: "extra"}).append(Flay.getActressAge(a)),
@@ -170,7 +222,7 @@ class Flay {
 							return ret;
 						})()
 					).on("change", "input", this, function (e) {
-						console.log("rank change", e.target.value, e.data.opus);
+						console.debug("rank change", e.target.value, e.data.opus);
 					}),
 				),
 				$("<dd>", {class: "flay-info"}).append(
@@ -184,10 +236,14 @@ class Flay {
 						$("<span>").html(
 							this.files.subtitles.length + " <small>sub</small>"
 						),
-						$("<span>", {class: "extra"}).html(this.video.play + " <small>play</small>").on("click", this, function (e) {
-							console.log("play click", e.data.opus);
+						$("<span>", {class: "extra flay-play"}).html(this.video.play + " <small>play</small>").on("click", this, function (e) {
+							console.info("play click", e.data.opus);
+							Flay.ajax({
+								url: "/flay/play/" + e.data.opus,
+								method: "PATCH"
+							})
 						}),
-						$("<span>", {class: "extra"}).append(
+						$("<span>", {class: "extra files-show"}).append(
 							$("<i>", {class: "fa fa-folder-open"}).on("click", function () {
 								$(".flay-files").toggle();
 							})
@@ -196,12 +252,20 @@ class Flay {
 				),
 				$("<dd>", {class: "flay-comment"}).append(
 					$("<div>").append(
-						$("<span>", {class: "extra"}).append(
-							$("<i>", {class: "fa fa-comment"})
-						),
-						$("<span>").append(
-							this.video.comment
-						),
+						$("<input>", {class: "extra comment-edit"}).on("keyup", this, function (e) {
+							if (e.keyCode === 13) {
+								e.data.video.comment = e.target.value;
+								Flay.ajax({
+									url: "/info/video",
+									method: "PATCH",
+									contentType: "application/json",
+									data: JSON.stringify(e.data.video),
+									success: () => {
+
+									}
+								});
+							}
+						}).val(this.video.comment),
 					),
 				),
 				$("<dd>", {class: "flay-modified"}).append(
@@ -271,9 +335,11 @@ class Flay {
 					$("<i>", {class: "fa fa-arrow-circle-down"})
 				).on("click", () => {
 					$(".flay-body").toggleClass("flay-body-separate");
+					$(".flay-body-toggle i").toggleClass("fa fa-arrow-circle-down").toggleClass("fa fa-arrow-circle-up");
 				}),
 			),
 		);
+		return this.jqueryElement;
 	}
 }
 

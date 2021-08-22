@@ -14,7 +14,8 @@
 	flex-direction: column;
 	background-color: #333;
     background-clip: border-box;
-	border: 0;
+	border: 4px solid midnightblue;
+	border-radius: 4px;
 	font-size: 1rem;
 	text-shadow: 0 0 2px midnightblue, 0 0 4px #000, 0 0 8px #000, 0 0 12px midnightblue, 0 0 16px #000, 0 0 24px #000;
 	transition: .4s;
@@ -85,6 +86,9 @@
 	font-size: 120%;
 	font-weight: 700;
 }
+.flay-body .flay-title div {
+	cursor: pointer;
+}
 .flay-body .flay-modified, .flay-body .flay-access {
 	font-size: 90%;
 }
@@ -115,9 +119,34 @@
 .flay-body .flay-rank div label input:checked ~ i.r5 {
     color: var(--rank5);
 }
+.flay-body .flay-actresslist .actress-favorite {
+	cursor: pointer;
+}
 .flay-body .flay-actresslist .actress-favorite.active {
 	color: rgba(255, 0, 0, 0.9);
 }
+.flay-body .flay-actresslist .actress-name {
+	cursor: pointer;
+}
+.flay-body .flay-tags .tag-show {
+	cursor: pointer;
+}
+.flay-body .flay-info .flay-play {
+	cursor: pointer;
+}
+.flay-body .flay-info .files-show {
+	cursor: pointer;
+}
+.flay-body .flay-comment .comment-edit {
+	cursor: pointer;
+    background-color: transparent;
+    border: 0;
+    color: #eee;
+    font-weight: 700;
+	width: 100%;
+}
+
+/* --- .flay-body-separate --- */
 
 .flay-body.flay-body-separate {
 	position: initial;
@@ -185,6 +214,7 @@
 	bottom: 0;
 }
 .flay-body-toggle {
+	cursor: pointer;
     padding: .25rem;
     font-size: 120%;
     color: #eee;

@@ -12,12 +12,17 @@ import java.util.concurrent.TimeUnit;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.client.HttpClient;
+import org.apache.http.config.SocketConfig;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.scheduling.annotation.Async;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -35,6 +40,8 @@ public class PageImageDownloader {
 
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 	private static final String ILLEGAL_EXP = "[:\\\\/%*?:|\"<>]";
+	private static final int DOCUMENT_TOTAL_REQUEST_TIMEOUT = 60 * 1000;
+	private static final int IMAGE_DOWNLOAD_TIMEOUT = 60 * 1000;
 
 	static NumberFormat nf = NumberFormat.getNumberInstance();
 
@@ -66,7 +73,7 @@ public class PageImageDownloader {
 	@Async
 	public DownloadResult download() {
 		log.info("Start download - [{}]", imagePageUrl);
-		try {			
+		try {
 			// connect and get image page by jsoup HTML parser
 			Document document = getDocument(imagePageUrl);
 
@@ -75,30 +82,31 @@ public class PageImageDownloader {
 			if (StringUtils.isBlank(titlePrefix)) {
 				if (StringUtils.isBlank(titleCssQuery)) {
 					title = document.title();
-				}
-				else {
+				} else {
 					title = document.select(titleCssQuery).first().text();
 				}
-			}
-			else {
+			} else {
 				title = titlePrefix;
 			}
 			title = title.replaceAll(ILLEGAL_EXP, "");
-			if (StringUtils.isBlank(title))
+			if (StringUtils.isBlank(title)) {
 				throw new DownloadException(imagePageUrl, "title is blank");
+			}
 
 			// find img tag
 			Elements imgTags = document.getElementsByTag("img");
-			if (imgTags.size() == 0)
+			if (imgTags.size() == 0) {
 				throw new DownloadException(imagePageUrl, "no image exist");
-			else 
-				log.info("found imgTags size {}", imgTags.size());
-			
-			if (StringUtils.isBlank(localBaseDir))
-				localBaseDir = FileUtils.getTempDirectoryPath(); 
-			
-			if (StringUtils.isBlank(folderName))
-				folderName = String.valueOf(System.currentTimeMillis()); 
+			}
+			log.info("found imgTags size {}", imgTags.size());
+
+			if (StringUtils.isBlank(localBaseDir)) {
+				localBaseDir = FileUtils.getTempDirectoryPath();
+			}
+
+			if (StringUtils.isBlank(folderName)) {
+				folderName = String.valueOf(System.currentTimeMillis());
+			}
 
 			File path = new File(localBaseDir, folderName);
 			if (!path.isDirectory()) {
@@ -106,19 +114,23 @@ public class PageImageDownloader {
 				log.info("mkdirs {}", path);
 			}
 
+			// httpclient
+			HttpClient httpClient = createHttpClient(IMAGE_DOWNLOAD_TIMEOUT, imgTags.size(), imgTags.size() / 10);
+
 			// prepare download
 			List<ImageDownloader> tasks = new ArrayList<>();
 			int count = 0;
 			for (Element imgTag : imgTags) {
 				String imgSrc = imgTag.attr("src");
-				if (StringUtils.isEmpty(imgSrc)) 
+				if (StringUtils.isEmpty(imgSrc))
 					continue;
-				tasks.add(new ImageDownloader(imgSrc, path.getPath(), title + "-" + nf.format(++count), minimumSize));
+				tasks.add(new ImageDownloader(imgSrc, path.getPath(), title + "-" + nf.format(++count), minimumSize, httpClient));
 			}
 
 			// execute download
-			int nThreads = tasks.size() < 10 ? 1 : tasks.size() / 10;			
+			int nThreads = tasks.size() / 10 + 1;
 			log.info("using {} threads", nThreads);
+
 			ExecutorService downloadService = Executors.newFixedThreadPool(nThreads);
 			List<Future<File>> files = downloadService.invokeAll(tasks, 5, TimeUnit.MINUTES);
 			downloadService.shutdown();
@@ -131,36 +143,69 @@ public class PageImageDownloader {
 					images.add(file);
 			}
 			log.info("{} images downloaded", images.size());
-			return new DownloadResult(imagePageUrl, path.getCanonicalPath(), "Success", true, images);
-		
+
+			return DownloadResult.success(imagePageUrl, path.getCanonicalPath(), images);
 		} catch (DownloadException e) {
 			log.error("Download error", e);
-			return new DownloadResult(imagePageUrl, "", e.getMessage(), false, null);
+			return DownloadResult.fail(imagePageUrl, e);
 		} catch (Exception e) {
 			log.error("Error", e);
-			return new DownloadResult(imagePageUrl, "", e.getMessage(), false, null);
+			return DownloadResult.fail(imagePageUrl, e);
 		}
 	}
-	
+
 	private Document getDocument(String url) {
 		try {
-			return Jsoup.connect(url).timeout(60 * 1000).userAgent(USER_AGENT).get();
+			return Jsoup.connect(url).timeout(DOCUMENT_TOTAL_REQUEST_TIMEOUT).userAgent(USER_AGENT).get();
 		} catch (IOException e) {
 			throw new DownloadException(url, "could not connect", e);
 		}
 	}
-	
+
+	/**
+	 * create HttpClient
+	 * @param maxTotal
+	 * @param maxPerRoute
+	 * @return
+	 */
+	private HttpClient createHttpClient(int soTimeout, int maxTotal, int maxPerRoute) {
+		// pool setting
+		PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+		cm.setMaxTotal(maxTotal);
+		cm.setDefaultMaxPerRoute(maxPerRoute);
+		// socket setting
+		SocketConfig sc = SocketConfig.custom()
+			.setSoTimeout(soTimeout)
+			.setSoKeepAlive(true)
+			.setTcpNoDelay(true)
+			.setSoReuseAddress(true)
+			.build();
+
+		return HttpClients.custom().setConnectionManager(cm).setDefaultSocketConfig(sc).build();
+	}
+
+
 	/**
 	 * result object of {@link PageImageDownloader}
 	 */
-	@AllArgsConstructor
+	@AllArgsConstructor(access = AccessLevel.PRIVATE)
 	@Data
-	public class DownloadResult {
+	public static class DownloadResult {
+
 		String pageUrl;
 		String localPath;
 		String message = "";
 		Boolean result;
 		List<File> images;
+
+		public static DownloadResult success(String url, String downloadeddPath, List<File> images) {
+			return new DownloadResult(url, downloadeddPath, "", true, images);
+		}
+
+		public static DownloadResult fail(String url, Exception error) {
+			return new DownloadResult(url, "", error.getMessage(), false, null);
+		}
+
 	}
 
 }

@@ -11,7 +11,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
@@ -123,7 +122,7 @@ public class ImageDownloader implements Callable<File> {
 	 * @return image file. if error, <code>null</code>
 	 */
 	public File download() {
-		log.debug("Start downloading - [{}]", imgSrc);
+		log.info("downloading... {}", imgSrc);
 
 		File imageFile = null;
 
@@ -142,24 +141,30 @@ public class ImageDownloader implements Callable<File> {
 				logger.debug("Header info : {}={}", header.getName(), header.getValue());
 			}*/
 
+			// check status code
+			int statusCode = httpResponse.getStatusLine().getStatusCode();
+			if (statusCode != 200) {
+				throw new DownloadException(imgSrc, "response status code is " + statusCode);
+			}
+
+			// check response entity and size of entiry
 			HttpEntity entity = httpResponse.getEntity();
 			if (entity == null) {
 				throw new DownloadException(imgSrc, "Entity is null");
 			}
-			if (entity.getContentLength() < minimumSize) {
-				log.debug("Entity is small < " + minimumSize);
-				return null;
+			if (0 < minimumSize && entity.getContentLength() < minimumSize) {
+				throw new DownloadException(imgSrc, "content bytes is small. " + entity.getContentLength() + " < " + minimumSize);
 			}
 
-			// is image file
+			// is image file, find content-type
 			Header contentTypeHeader = httpResponse.getLastHeader("Content-Type");
 			String contentType = contentTypeHeader.getValue();
 			if (contentType == null) {
-				throw new DownloadException(imgSrc, "contentType is null");
+				throw new DownloadException(imgSrc, "Content-Type is null");
 			} else if ("audio/unknown".equals(contentType)) { // maybe webp
 				contentType = "image/webp";
 			} else if (!contentType.startsWith("image")) {
-				throw new DownloadException(imgSrc, "it is not a image. " + contentType);
+				throw new DownloadException(imgSrc, "Content-Type is not a image type. " + contentType);
 			}
 
 			// make title
@@ -187,19 +192,11 @@ public class ImageDownloader implements Callable<File> {
 			imageFile = new File(destPath, title);
 
 			FileUtils.copyInputStreamToFile(entity.getContent(), imageFile);
-			log.debug("save as {} - [{}]", imageFile.getAbsolutePath(), imgSrc);
-		}
-		catch (ClientProtocolException e) { // httpClient.execute(httpGet);
-			log.error("connect fail " + imgSrc, e);
-		}
-		catch (IOException e) { // httpClient.execute(httpGet); outputstream error
-			log.error("download fail {} : {}",e.getMessage(), imgSrc);
-		}
-		catch (DownloadException e) {
-			log.error("illegal download state : {}", e.getMessage());
-		}
-		catch (Exception e) {
-			log.error("fail " + imgSrc, e);
+			log.info("downloaded. save as {} from {}", imageFile.getAbsolutePath(), imgSrc);
+		} catch (IOException e) { // httpClient.execute(httpGet); outputstream error
+			log.error("download fail: {} - {}", e.getMessage(), imgSrc);
+		} catch (DownloadException e) {
+			log.error("download fail: {}", e.getMessage());
 		}
 		return imageFile;
 	}

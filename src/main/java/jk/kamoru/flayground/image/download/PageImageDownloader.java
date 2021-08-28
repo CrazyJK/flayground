@@ -1,10 +1,11 @@
 package jk.kamoru.flayground.image.download;
 
 import java.io.File;
-import java.io.IOException;
+import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CancellationException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
@@ -13,14 +14,12 @@ import java.util.concurrent.TimeUnit;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
-import org.apache.http.config.SocketConfig;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.scheduling.annotation.Async;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -40,8 +39,9 @@ public class PageImageDownloader {
 
 	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 	private static final String ILLEGAL_EXP = "[:\\\\/%*?:|\"<>]";
-	private static final int DOCUMENT_TOTAL_REQUEST_TIMEOUT = 60 * 1000;
-	private static final int IMAGE_DOWNLOAD_TIMEOUT = 60 * 1000;
+	private static final int DOCUMENT_TIMEOUT = 1000 * 60;
+	private static final long THREAD_POOL_TIMEOUT = 1000 * 60 * 1;
+	private static final int IMAGE_TIMEOUT_SECOND = 60;
 
 	static NumberFormat nf = NumberFormat.getNumberInstance();
 
@@ -70,52 +70,41 @@ public class PageImageDownloader {
 	 * execute download
 	 * @return Download result
 	 */
-	@Async
 	public DownloadResult download() {
-		log.info("Start download - [{}]", imagePageUrl);
+		log.info("Image download start - [{}]", imagePageUrl);
 		try {
-			// connect and get image page by jsoup HTML parser
-			Document document = getDocument(imagePageUrl);
+			final URL url = new URL(imagePageUrl);
+			final String domain = String.format("%s://%s%s", url.getProtocol(), url.getHost(), (url.getPort() > 0 ? ":" + url.getPort() : ""));
 
-			// decide title
-			String title = "";
-			if (StringUtils.isBlank(titlePrefix)) {
-				if (StringUtils.isBlank(titleCssQuery)) {
-					title = document.title();
-				} else {
-					title = document.select(titleCssQuery).first().text();
-				}
-			} else {
-				title = titlePrefix;
-			}
-			title = title.replaceAll(ILLEGAL_EXP, "");
-			if (StringUtils.isBlank(title)) {
-				throw new DownloadException(imagePageUrl, "title is blank");
-			}
+			// connect and get image page by jsoup HTML parser
+			Document document = Jsoup.connect(imagePageUrl).timeout(DOCUMENT_TIMEOUT).userAgent(USER_AGENT).get();
 
 			// find img tag
 			Elements imgTags = document.getElementsByTag("img");
-			if (imgTags.size() == 0) {
+			int imgTagSize = imgTags.size();
+			if (imgTagSize == 0) {
 				throw new DownloadException(imagePageUrl, "no image exist");
 			}
-			log.info("found imgTags size {}", imgTags.size());
+			log.info("found {} img tags", imgTagSize);
 
-			if (StringUtils.isBlank(localBaseDir)) {
-				localBaseDir = FileUtils.getTempDirectoryPath();
-			}
+			// decide title
+			titlePrefix = StringUtils.defaultIfBlank(titlePrefix, StringUtils.isBlank(titleCssQuery) ? document.title() : document.select(titleCssQuery).first().text());
+			titlePrefix = StringUtils.defaultIfBlank(titlePrefix, imagePageUrl);
+			titlePrefix = titlePrefix.replaceAll(ILLEGAL_EXP, "");
+			titlePrefix = StringUtils.join(StringUtils.split(titlePrefix), "_");
+			log.info("decide title prefix [{}]", titlePrefix);
 
-			if (StringUtils.isBlank(folderName)) {
-				folderName = String.valueOf(System.currentTimeMillis());
-			}
+			localBaseDir = StringUtils.defaultIfBlank(localBaseDir, FileUtils.getTempDirectoryPath());
+			folderName = StringUtils.defaultIfBlank(folderName, String.valueOf(System.currentTimeMillis()));
 
 			File path = new File(localBaseDir, folderName);
-			if (!path.isDirectory()) {
+			if (!path.exists() || !path.isDirectory()) {
 				path.mkdirs();
-				log.info("mkdirs {}", path);
 			}
+			log.info("storage path is {}", path);
 
-			// httpclient
-			HttpClient httpClient = createHttpClient(IMAGE_DOWNLOAD_TIMEOUT, imgTags.size(), imgTags.size() / 10);
+			// get httpclient
+			HttpClient httpClient = createHttpClient(IMAGE_TIMEOUT_SECOND, imgTagSize);
 
 			// prepare download
 			List<ImageDownloader> tasks = new ArrayList<>();
@@ -124,27 +113,34 @@ public class PageImageDownloader {
 				String imgSrc = imgTag.attr("src");
 				if (StringUtils.isEmpty(imgSrc))
 					continue;
-				tasks.add(new ImageDownloader(imgSrc, path.getPath(), title + "-" + nf.format(++count), minimumSize, httpClient));
+				if (imgSrc.startsWith("/")) {
+					imgSrc = domain + imgSrc;
+				}
+				tasks.add(new ImageDownloader(imgSrc, path.getPath(), titlePrefix + "-" + nf.format(++count), minimumSize, httpClient));
 			}
 
 			// execute download
-			int nThreads = tasks.size() / 10 + 1;
-			log.info("using {} threads", nThreads);
+			int nThreads = tasks.size(); // / 10 + 1;
+			log.info("using {} threads for {} image url", nThreads, tasks.size());
 
 			ExecutorService downloadService = Executors.newFixedThreadPool(nThreads);
-			List<Future<File>> files = downloadService.invokeAll(tasks, 5, TimeUnit.MINUTES);
+			List<Future<File>> files = downloadService.invokeAll(tasks, THREAD_POOL_TIMEOUT, TimeUnit.MILLISECONDS);
 			downloadService.shutdown();
 
 			// check result
 			List<File> images = new ArrayList<>();
 			for (Future<File> fileFuture : files) {
 				File file = fileFuture.get();
-				if (file != null)
+				if (file != null) {
 					images.add(file);
+				}
 			}
-			log.info("{} images downloaded", images.size());
+			log.info("Image download end. {} downloaded. {} fail", images.size(), files.size() - images.size());
 
 			return DownloadResult.success(imagePageUrl, path.getCanonicalPath(), images);
+		} catch (CancellationException e) {
+			log.error("Download timeout " + e.getMessage());
+			return DownloadResult.fail(imagePageUrl, e);
 		} catch (DownloadException e) {
 			log.error("Download error", e);
 			return DownloadResult.fail(imagePageUrl, e);
@@ -154,36 +150,19 @@ public class PageImageDownloader {
 		}
 	}
 
-	private Document getDocument(String url) {
-		try {
-			return Jsoup.connect(url).timeout(DOCUMENT_TOTAL_REQUEST_TIMEOUT).userAgent(USER_AGENT).get();
-		} catch (IOException e) {
-			throw new DownloadException(url, "could not connect", e);
-		}
-	}
-
 	/**
 	 * create HttpClient
+	 * @param soTimeout
 	 * @param maxTotal
-	 * @param maxPerRoute
-	 * @return
+	 * @return CloseableHttpClient
 	 */
-	private HttpClient createHttpClient(int soTimeout, int maxTotal, int maxPerRoute) {
+	private HttpClient createHttpClient(int soTimeout, int maxTotal) {
 		// pool setting
 		PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
 		cm.setMaxTotal(maxTotal);
-		cm.setDefaultMaxPerRoute(maxPerRoute);
-		// socket setting
-		SocketConfig sc = SocketConfig.custom()
-			.setSoTimeout(soTimeout)
-			.setSoKeepAlive(true)
-			.setTcpNoDelay(true)
-			.setSoReuseAddress(true)
-			.build();
-
-		return HttpClients.custom().setConnectionManager(cm).setDefaultSocketConfig(sc).build();
+		cm.setDefaultMaxPerRoute(maxTotal);
+		return HttpClients.createMinimal(cm);
 	}
-
 
 	/**
 	 * result object of {@link PageImageDownloader}
@@ -194,7 +173,7 @@ public class PageImageDownloader {
 
 		String pageUrl;
 		String localPath;
-		String message = "";
+		String message;
 		Boolean result;
 		List<File> images;
 

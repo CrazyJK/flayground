@@ -275,7 +275,7 @@ function imageDownloadMode() {
 		Rest.Image.download($("#downloadPageImageForm").serialize(), function(result) {
 			$("#notice > p").empty().append(
 					$("<ul>", {'class': 'list-unstyled'}).append(
-							$("<li>", {'class': 'text-info'}).html(result.images.length + " images"),
+							$("<li>", {'class': 'text-info'}).html((result.images ? result.images.length : 0) + " images"),
 							$("<li>", {'class': 'text-primary'}).append(
 									$("<span>", {'class': 'btn btn-link text-dark'}).on("click", function() {
 										Rest.Flay.openFolder(result.localPath);

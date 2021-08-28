@@ -1,7 +1,6 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
@@ -95,15 +94,7 @@ public class FlayServiceImpl implements FlayService {
 
 	@Override
 	public Collection<Flay> findCandidates() {
-		Collection<Flay> candidates = new ArrayList<>();
-		// candidatesProvider.find();
-		for (Flay flay : instanceFlaySource.list()) {
-			flay.getFiles().get(Flay.CANDI).clear();
-			if (candidatesProvider.matchAndFill(flay)) {
-				candidates.add(flay);
-			}
-		}
-		return candidates;
+		return candidatesProvider.collect(instanceFlaySource.list());
 	}
 
 	@Override

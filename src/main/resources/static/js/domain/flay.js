@@ -1,15 +1,12 @@
 /**
  * flay domain object
  */
+
 "use strict";
 
 var tagList;
 
 class Flay {
-
-	static from(json) {
-		return Object.assign(new Flay(), json);
-	}
 
 	static DATE_FORMAT_OPTIONS = {
 		year: "numeric",	// numeric, 2-digit
@@ -98,11 +95,11 @@ class Flay {
 				url: "/info/tag/list",
 				async: false,
 				success: (list) => {
-					console.debug("/info/tag/list", list);
 					list.sort(function(t1, t2) {
 						return t1.name.localeCompare(t2.name);
 					});
 					tagList = list;
+					console.info(`Tag ${tagList.length} loaded`);
 				}
 			});
 		}
@@ -122,7 +119,7 @@ class Flay {
 		if (this.jqueryElement) {
 			return this.jqueryElement;
 		}
-		console.info(this);
+
 		this.jqueryElement = $("<section>", {class: "flay " + (this.archive ? "flay-archive" : "flay-instance")}).append(
 			$("<div>", {class: "flay-cover"}).css({
 				background: "#222 url(/static/cover/"  + this.opus + ") no-repeat center / contain"
@@ -175,7 +172,7 @@ class Flay {
 							Flay.ajax({
 								url: "/info/actress/" + name,
 								success: (a) => {
-									console.debug("actress", a);
+									console.debug("actress loaded", a);
 									$("#" + a.name.replace(/ /g, "")).append(
 										$("<span>", {class: "actress-favorite" + (a.favorite ? " active" : "")}).append(
 											$("<i>", {class: "fa fa-star"})
@@ -270,8 +267,8 @@ class Flay {
 				),
 				$("<dd>", {class: "flay-modified"}).append(
 					$("<div>").append(
-						$("<span>").append(Flay.date(this.lastModified)),
-						$("<small>", {class: "extra"}).append(Flay.time(this.lastModified)),
+						$("<span>", {title: "last modified"}).append(Flay.date(this.lastModified)),
+						$("<small>", {class: "extra", title: "last modified"}).append(Flay.time(this.lastModified)),
 					),
 				),
 				$("<dd>", {class: "flay-access"}).append(
@@ -279,10 +276,10 @@ class Flay {
 						(() => {
 							let ret = [];
 							if (this.video.lastAccess === 0) {
-								ret.push($("<small>", {class: "extra"}).append("never accessed"));
+								ret.push($("<small>", {class: "extra", title: "last access"}).append("never accessed"));
 							} else {
 								ret.push($("<span>").append(Flay.date(this.video.lastAccess)));
-								ret.push($("<small>", {class: "extra"}).append(Flay.time(this.video.lastAccess)));
+								ret.push($("<small>", {class: "extra", title: "last access"}).append(Flay.time(this.video.lastAccess)));
 							}
 							return ret;
 						})()
@@ -339,6 +336,7 @@ class Flay {
 				}),
 			),
 		);
+		console.info(`Flay jquery element created`, this);
 		return this.jqueryElement;
 	}
 }

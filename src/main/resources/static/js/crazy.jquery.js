@@ -36,7 +36,6 @@
 	$.fn.navEvent = function(callback) {
 
 		var detectEvent = function(e, callbackFunction) {
-			e.preventDefault();
 			e.stopPropagation();
 			callbackFunction(obtainSignal(e), e);
 		};

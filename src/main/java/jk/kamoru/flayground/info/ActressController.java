@@ -2,7 +2,9 @@ package jk.kamoru.flayground.info;
 
 import java.util.Collection;
 import java.util.List;
-
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,15 +27,20 @@ import jk.kamoru.flayground.info.service.NameDistanceChecker.CheckResult;
 public class ActressController {
 
 	@Autowired ActressInfoService actressInfoService;
-	
+
 	@GetMapping("/{name}")
 	public Actress get(@PathVariable String name) {
 		return actressInfoService.get(name);
 	}
-	
+
 	@GetMapping("/list")
 	public Collection<Actress> list() {
 		return actressInfoService.list();
+	}
+
+	@GetMapping("/map")
+	public Map<String, Actress> map() {
+		return actressInfoService.list().stream().collect(Collectors.toMap(Actress::getName, Function.identity()));
 	}
 
 	@GetMapping("/find/{query}")
@@ -55,7 +62,7 @@ public class ActressController {
 	public Actress create(@RequestBody Actress actress) {
 		return actressInfoService.create(actress);
 	}
-	
+
 	@PatchMapping
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void update(@RequestBody Actress actress) {
@@ -67,7 +74,7 @@ public class ActressController {
 	public void persist(@RequestBody Actress actress) {
 		actressInfoService.persist(actress);
 	}
-	
+
 	@PutMapping("/{name}")
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void rename(@PathVariable String name, @RequestBody Actress actress) {

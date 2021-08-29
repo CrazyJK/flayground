@@ -1,83 +1,227 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>flay Domain Test</title>
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="../css/domain/flay.css">
-<style>
-body {
-	background-color: #eee;
-}
-.container-flay {
-	display: flex;
-	align-content: center;
-    justify-content: center;
-	flex-wrap: wrap;
-    gap: .5rem;
-	padding: 2rem;
-	background-color: azure;
-}
-.flay {
-	width: 800px;
-}
-</style>
-</head>
-<body>
-
-	<article class="container-flay" id="flayWrapper"></article>
-
-	<script src="/webjars/jquery/jquery.min.js"></script>
-	<script src="/webjars/popper.js/umd/popper.js"></script>
-	<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-	<script src="../js/domain/flay.js"></script>
-	<script src="../js/crazy.jquery.js"></script>
-	<script>
-		"use strict";
-
-		const flayList = [];
-
-		$.ajax({
-			url: "/flay/list",
-			success: (list) => {
-				// console.log(list);
-
-				list.forEach((item) => {
-					// flayList.push(Flay.from(item));
-					flayList.push(new Flay(item));
-				});
-
-				flayControl.currentIndex = Math.round(Math.random() * flayList.length, 10);
-				flayControl.next();
-			},
-		});
-
-		/*
-			case    1 : // wheel : up
-			case   -1 : // wheel : down
-		*/
-		$(".container-flay").navEvent(function (signal) {
-			switch (signal) {
-				case 1:
-					flayControl.prev();
-					break;
-				case -1:
-					flayControl.next();
+	<head>
+		<title>flay Domain Test</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../css/domain/flay.css" />
+		<style>
+			body {
+				background-color: #000;
+				color: #c8c8c8;
 			}
-		});
+			header {
+				position: sticky;
+				display: flex;
+				justify-content: center;
+				align-items: baseline;
+			}
+			header nav form {
+				display: flex;
+				align-items: center;
+				justify-content: space-around;
+				gap: 1rem;
+				padding: .5rem 1rem;
+				background-color: #181818;
+				border-bottom-right-radius: 0.25rem;
+				border-bottom-left-radius: 0.25rem;
+				box-shadow: 0 0 2px 0 #333;
+				transition: .4s;
+			}
+			header nav:hover form {
+				box-shadow: 0 0 2px 0 #777;
+			}
+			input[type="search"] {
+				border: 0;
+				background-color: transparent;
+				color: #c8c8c8;
+				outline: none;
+			}
+			div > label {
+				margin: 0;
+				padding: 0;
+			}
+			div > label > input {
+				position: absolute;
+				width: 1px;
+				height: 1px;
+				padding: 0;
+				margin: -1px;
+				overflow: hidden;
+				clip: rect(0, 0, 0, 0);
+				border: 0;
+			}
+			div > label > input + span {
+				background-color: #212529;
+				color: #fff;
+				padding: 2px 6px;
+				border-radius: 4px;
+				font-weight: 700;
+			}
+			div > label > input + span > i {
+				padding: auto 2px;
+			}
+			div > label:hover > input + span {
+				cursor: pointer;
+				color: #17a2b8;
+			}
+			div > label > input:checked + span {
+				color: #ffc107!important;
+			}
+			.container-flay {
+				display: flex;
+				align-content: center;
+				justify-content: center;
+				flex-wrap: wrap;
+				gap: 0.5rem;
+				padding: 2rem;
+			}
+			.flay {
+				width: 800px;
+			}
+			footer {
+				position: fixed;
+				bottom: 0;
+				width: 100%
+			}
+			footer > ul {
+				list-style: none;
+				display: flex;
+				justify-content: center;
+				margin: .5rem;
+				padding: 0;
+			}
+			footer > ul > li {
+				flex: 0 1 3rem;
+				text-align: center;
+				background-color: #181818;
+				border: 1px solid #333;
+				border-right: 0;
+				padding: 4px 2px;
+			}
+			footer > ul > li:first-child {
+				border-top-left-radius: 4px;
+				border-bottom-left-radius: 4px;
+			}
+			footer > ul > li:last-child {
+				border-right: 1px solid #333;
+				border-top-right-radius: 4px;
+				border-bottom-right-radius: 4px;
+			}
+			footer > ul > li:hover {
+				color: #17a2b8;
+				cursor: pointer;
+			}
+			footer > ul > li.active {
+				color: #ffc107;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<nav>
+				<form onsubmit="return false;">
+					<div class="filter-condition">
+						<input type="search" name="keyword" id="keyword" placeholder="Search" autocomplete="false" />
+					</div>
+					<div class="filter-condition">
+						<label for="fav"><input type="checkbox" name="favorite" id="fav" /><span>Fav</span></label>
+					</div>
+					<div class="filter-condition">
+						<label for="mov"><input type="checkbox" name="movie" id="mov" /><span>Mov</span></label>
+						<label for="sub"><input type="checkbox" name="subtitles" id="sub" /><span>Sub</span></label>
+					</div>
+					<div class="filter-condition">
+						<label for="rank0"><input type="checkbox" name="rank" id="rank0" value="0"><span><i class="fa fa-circle"></i></span></label>
+						<label for="rank1"><input type="checkbox" name="rank" id="rank1" value="1"><span><i class="fa fa-star"></i></span></label>
+						<label for="rank2"><input type="checkbox" name="rank" id="rank2" value="2"><span><i class="fa fa-star"></i></span></label>
+						<label for="rank3"><input type="checkbox" name="rank" id="rank3" value="3"><span><i class="fa fa-star"></i></span></label>
+						<label for="rank4"><input type="checkbox" name="rank" id="rank4" value="4"><span><i class="fa fa-star"></i></span></label>
+						<label for="rank5"><input type="checkbox" name="rank" id="rank5" value="5"><span><i class="fa fa-star"></i></span></label>
+					</div>
+					<div class="sort-condition">
+						<label for="sort_s"><input type="radio" name="sort" id="sort_s" value="s"><span>S</span></label>
+						<label for="sort_o"><input type="radio" name="sort" id="sort_o" value="o"><span>O</span></label>
+						<label for="sort_t"><input type="radio" name="sort" id="sort_t" value="t"><span>T</span></label>
+						<label for="sort_a"><input type="radio" name="sort" id="sort_a" value="a"><span>A</span></label>
+						<label for="sort_r"><input type="radio" name="sort" id="sort_r" value="r"><span>R</span></label>
+						<label for="sort_m"><input type="radio" name="sort" id="sort_m" value="m"><span>M</span></label>
+					</div>
+				</form>
+			</nav>
+		</header>
+		<main>
+			<article class="container-flay" id="flayWrapper"></article>
+		</main>
+		<footer>
+			<ul>Navigation</ul>
+		</footer>
 
-		var flayControl = {
-			currentIndex: 0,
-			prev: function () {
-				$("#flayWrapper").empty().append(flayList[--this.currentIndex].$());
-			},
-			next: function () {
-				$("#flayWrapper").empty().append(flayList[++this.currentIndex].$());
-			},
-		};
+		<script src="/webjars/jquery/jquery.min.js"></script>
+		<script src="/webjars/popper.js/umd/popper.js"></script>
+		<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script src="../js/crazy.jquery.js"></script>
+		<script src="../js/domain/flay.js"></script>
+		<script src="../js/domain/flay.control.js"></script>
+		<script>
+			jQuery.fn.serializeCondition = function() {
+				var obj = {
+					rank: []
+				};
+				try {
+					if (this[0].tagName && this[0].tagName.toUpperCase() == "FORM") {
+						var arr = this.serializeArray();
+						if (arr) {
+							jQuery.each(arr, function() {
+								if (this.name === 'keyword') {
+									obj[this.name] = this.value;
+								} else if (this.name === 'rank') {
+									obj[this.name].push(Number(this.value));
+								} else if (this.name === 'favorite') {
+									obj[this.name] = this.value === "on";
+								} else if (this.name === 'movie') {
+									obj[this.name] = this.value === "on";
+								} else if (this.name === 'subtitles') {
+									obj[this.name] = this.value === "on";
+								}
+							});
+						}
+					}
+				} catch (e) {
+					alert(e.message);
+				} finally {
+				}
 
-	</script>
-</body>
+				return obj;
+			};
+
+			const control = new FlayControl({
+				eventWrap: "body",
+				flayWrap: "main > article",
+				pagination: "footer > ul"
+			});
+
+			$("form .filter-condition").on("keyup change", function (e) {
+				e.stopPropagation();
+				console.log('filter', e.type, e.keyCode, e.target.id);
+				if (e && e.type === 'keyup' && e.keyCode !== 13) {
+					return false;
+				}
+				control.filter($("form").serializeCondition());
+				control.random();
+			});
+			$("input#rank0 + span").click();
+
+			$("form .sort-condition").on("change", function (e) {
+				e.stopPropagation();
+				console.log("sort", e.target.value);
+				control.sort(e.target.value);
+				control.random();
+			});
+			$("input#sort_m + span").click();
+
+		</script>
+	</body>
 </html>

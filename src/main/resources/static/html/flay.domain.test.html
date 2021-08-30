@@ -223,7 +223,6 @@
 				control.filter($("form").serializeCondition());
 				control.random();
 			});
-			$("input#rank0 + span").click();
 
 			$("form .sort-condition").on("change", function (e) {
 				e.stopPropagation();
@@ -231,8 +230,8 @@
 				control.sort(e.target.value);
 				control.random();
 			});
-			$("input#sort_m + span").click();
 
+			control.random();
 		</script>
 	</body>
 </html>

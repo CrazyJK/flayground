@@ -35,7 +35,7 @@ body {
 	right: 0;
 	bottom: 0;
 	padding: 0;
-	z-index: 69;	
+	z-index: 69;
 }
 .address-bar {
 	position: absolute;
@@ -46,10 +46,10 @@ body {
     border-right: 1px solid #5e5454;
     border-bottom: 1px solid #5e5454;
     border-bottom-right-radius: .5rem;
-    opacity: 0;
     padding: .25rem;
 	transition: all .3s;
 	z-index: 3;
+    opacity: 0;
 }
 .address-bar:hover {
     opacity: 1;
@@ -78,13 +78,13 @@ body {
 .control-btn {
 	position: absolute;
 	top: 40px;
-	left: 0;
+	right: 0;
     background-color: rgb(51 51 51 / 75%);
     border-top: 1px solid #5e5454;
     border-right: 1px solid #5e5454;
     border-bottom: 1px solid #5e5454;
-    border-top-right-radius: .5rem;
-    border-bottom-right-radius: .5rem;
+    border-top-left-radius: .5rem;
+    border-bottom-left-radius: .5rem;
     opacity: 0;
     padding: .25rem;
 	transition: all .3s;
@@ -190,7 +190,7 @@ function addSplitControlEventListener() {
 	}
 	// set draggable
 	$("#splitWrapper").find(".control-btn").draggable();
-	
+
 	// control event
 	$("#splitWrapper").on("click", ".control-btn .fa.fa-expand", function() { 				// max site
 		var $site = $(this).parents(".site");
@@ -223,7 +223,7 @@ function addSplitControlEventListener() {
 		}
 		setHeight();
 	}).on("click", ".control-btn .fa.fa-arrow-left", function() { 							// size x samller
-		var $colWrap = $(this).parents(".row"); 
+		var $colWrap = $(this).parents(".row");
 		var colCount = $colWrap.children().length;
 		console.log('colCount', colCount);
 		if (colCount === 1) {
@@ -242,7 +242,7 @@ function addSplitControlEventListener() {
 			$site.removeClass("col").addClass("col-" + (12 / colCount - 1));
 		}
 	}).on("click", ".control-btn .fa.fa-arrow-right", function() { 							// size x enlarge
-		var $colWrap = $(this).parents(".row"); 
+		var $colWrap = $(this).parents(".row");
 		var colCount = $colWrap.children().length;
 		if (colCount === 1) {
 			return;
@@ -293,7 +293,7 @@ function addSplitControlEventListener() {
 	}).on("click", ".control-btn .fa.fa-clone", function() { 								// site popup
 		var $site = $(this).parents(".site");
 		var srcUrl = $site.find("iframe").attr("src");
-		window.open(srcUrl, new Date().getTime(), "width=" + 540 + ",height=" + 997 
+		window.open(srcUrl, new Date().getTime(), "width=" + 540 + ",height=" + 997
 				+ ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1");
 	}).on("click", ".control-btn .fa.fa-download.rotate", function() { 						// add site
 		var $row = $(this).parents(".row");

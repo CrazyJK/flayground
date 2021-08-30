@@ -7,3 +7,26 @@
 #contents {
 	width: initial;
 }
+
+@media screen and (max-width: 540px) {
+	#aside {
+		width: 50px;
+	}
+	#aside > div.wrap > div.menu {
+		width: 50px;
+	}
+    #aside > div.wrap > div.menu > ul.menulist {
+		width: 50px;
+	}
+	#aside > div.wrap > div.menu > ul.menulist > li > a {
+		white-space: nowrap;
+		overflow: hidden;
+		padding-left: 12px;
+	}
+	#contents {
+		padding-left: 50px;
+	}
+	#CastList > li {
+		margin: 4px;
+	}
+}

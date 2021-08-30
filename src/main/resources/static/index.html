@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
 <link rel="stylesheet" href="/css/crazy.fonts.css">
-<link rel="stylesheet" href="/css/crazy.neon.css">
 <style type="text/css">
 body {
 	background: #1c1c1c;
@@ -89,6 +88,7 @@ $.ajax({
 	url: '/data/index.menu.json',
 	success: function (menuItems) {
 		menuItems.forEach(function(menu) {
+			console.log('menu', menu);
 			var $popupAnker = $("<a>").html("↖");
 			var $hrefAnker  = $("<a>").html(menu.name);
 
@@ -98,9 +98,7 @@ $.ajax({
 				});
 			}
 			if (menu.method === "both" || menu.method === "href") {
-				$hrefAnker.attr({href: "#"}).on("click", function() {
-					location.href = menu.url;
-				});
+				$hrefAnker.attr({href: menu.url});
 			}
 
 			$("#menuItemWrap").append(
@@ -112,7 +110,6 @@ $.ajax({
 		});
 
 		$("a").addClass("chalk");
-
 	}
 });
 

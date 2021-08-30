@@ -70,13 +70,24 @@
 			div > label > input:checked + span {
 				color: #ffc107!important;
 			}
+			main {
+				position: fixed;
+				top: 3rem;
+				left: 0;
+				right: 0;
+				bottom: 3rem;
+				display: flex;
+				align-content: center;
+				justify-content: center;
+			}
 			.container-flay {
 				display: flex;
 				align-content: center;
 				justify-content: center;
 				flex-wrap: wrap;
 				gap: 0.5rem;
-				padding: 2rem;
+				margin: 0;
+				padding: 0;
 			}
 			.flay {
 				width: 800px;
@@ -198,7 +209,7 @@
 			};
 
 			const control = new FlayControl({
-				eventWrap: "body",
+				eventWrap: "main",
 				flayWrap: "main > article",
 				pagination: "footer > ul"
 			});

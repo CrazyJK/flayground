@@ -116,11 +116,8 @@ class Flay {
 	}
 
 	$() {
-		if (this.jqueryElement) {
-			return this.jqueryElement;
-		}
-
-		this.jqueryElement = $("<section>", {class: "flay " + (this.archive ? "flay-archive" : "flay-instance")}).append(
+		console.info(`Flay jquery element created`, this);
+		return $("<section>", {class: "flay " + (this.archive ? "flay-archive" : "flay-instance")}).append(
 			$("<div>", {class: "flay-cover"}).css({
 				background: "#222 url(/static/cover/"  + this.opus + ") no-repeat center / contain"
 			}),
@@ -336,8 +333,6 @@ class Flay {
 				}),
 			),
 		);
-		console.info(`Flay jquery element created`, this);
-		return this.jqueryElement;
 	}
 }
 

@@ -1,0 +1,18 @@
+@charset "UTF-8";
+
+/*
+	URLs starting with: https://nextjav.com/
+ */
+
+.portfolio_item:hover img {
+    -webkit-transform: none;
+    -ms-transform: none;
+    -o-transform: none;
+    transform: none;
+}
+.portfolio_item .ql_border_hover {
+    background-color: transparent;
+}
+.portfolio_item .ql_hover h2 {
+	text-shadow: 1px 1px 4px black;
+}

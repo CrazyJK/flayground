@@ -4,8 +4,6 @@
 
 "use strict";
 
-var tagList;
-
 class Flay {
 
 	static DATE_FORMAT_OPTIONS = {
@@ -85,34 +83,59 @@ class Flay {
 		$.ajax(settings);
 	}
 
-	constructor(json) {
-		return Object.assign(this, json);
-	}
+	static tagList = (function () {
+		let _list = [];
+		Flay.ajax({
+			url: "/info/tag/list",
+			async: false,
+			success: (list) => {
+				list.sort(function(t1, t2) {
+					return t1.name.localeCompare(t2.name);
+				});
+				_list = list;
+				console.info(`Tag ${list.length} loaded`);
+			}
+		});
+		return _list;
+	}());
 
-	getTagList() {
-		if ($.isEmptyObject(tagList)) {
-			Flay.ajax({
-				url: "/info/tag/list",
-				async: false,
-				success: (list) => {
-					list.sort(function(t1, t2) {
-						return t1.name.localeCompare(t2.name);
-					});
-					tagList = list;
-					console.info(`Tag ${tagList.length} loaded`);
-				}
-			});
-		}
-		return tagList;
-	}
-
-	getTag(id) {
-		for (let tag of this.getTagList()) {
+	static getTag(id) {
+		for (const tag of Flay.tagList) {
 			if (tag.id === id) {
 				return tag;
 			}
 		}
 		return null;
+	}
+
+	static actressList = (function () {
+		let _list = [];
+		Flay.ajax({
+			url: "/info/actress/list",
+			async: false,
+			success: (list) => {
+				_list = list;
+				console.info(`Actress ${list.length} loaded`);
+			}
+		});
+		return _list;
+	}());
+
+	static getActress(name) {
+		for (const actress of Flay.actressList) {
+			if (actress.name === name) {
+				return actress;
+			}
+		}
+		return null;
+	}
+
+	constructor(json) {
+		return Object.assign(this, json);
+	}
+
+	update(json) {
+		return Object.assign(this, json);
 	}
 
 	$() {
@@ -136,7 +159,7 @@ class Flay {
 						(() => {
 							let ret = [];
 							this.video.tags.forEach((t) => {
-								ret.push($("<span>").html(this.getTag(t).name));
+								ret.push($("<span>").html(Flay.getTag(t).name));
 							});
 							ret.push(
 								$("<span>", {class: "extra tag-show"}).append(
@@ -159,41 +182,36 @@ class Flay {
 					(() => {
 						let ret = [];
 						this.actressList.forEach((name) => {
+							const actress = Flay.getActress(name);
 							ret.push(
-								$("<div>", {id: name.replace(/ /g, "")}).append(
-									$("<span>", {class: "actress-name"}).html(name).on("click", function () {
-										Flay.popup("/html/info/info.actress.html?name=" + name, name, 1076, 800);
-									})
+								$("<div>", {id: actress.name.replace(/ /g, "")}).append(
+									$("<span>", {class: "actress-name"}).html(actress.name).on("click", actress, function (e) {
+										Flay.popup("/html/info/info.actress.html?name=" + e.data.name, e.data.name, 1076, 800);
+									}),
+									$("<span>", {class: "actress-favorite" + (actress.favorite ? " active" : "")}).append(
+										$("<i>", {class: "fa fa-star"})
+									).on("click", actress, function (e) {
+										const $actressFavorite = $(this);
+										e.data.favorite = !e.data.favorite
+										Flay.ajax({
+											url: "/info/actress",
+											method: "PATCH",
+											contentType: "application/json",
+											data: JSON.stringify(e.data),
+											success: () => {
+												$actressFavorite.toggleClass("active", e.data.favorite);
+												console.info(`${e.data.name} favorite ${e.data.favorite}`);
+											}
+										});
+									}),
+									$("<small>", {class: "extra"}).append(actress.localName),
+									$("<small>", {class: "extra"}).append(actress.birth),
+									$("<small>", {class: "extra"}).append(Flay.getActressAge(actress)),
+									$("<small>", {class: "extra"}).append(actress.debut > 0 ? actress.debut : ""),
+									$("<small>", {class: "extra"}).append(actress.body),
+									$("<small>", {class: "extra"}).append(actress.height > 0 ? actress.height : ""),
 								)
 							);
-							Flay.ajax({
-								url: "/info/actress/" + name,
-								success: (a) => {
-									console.debug("actress loaded", a);
-									$("#" + a.name.replace(/ /g, "")).append(
-										$("<span>", {class: "actress-favorite" + (a.favorite ? " active" : "")}).append(
-											$("<i>", {class: "fa fa-star"})
-										).on("click", function () {
-											const $actressFavorite = $(this);
-											a.favorite = !a.favorite
-											Flay.ajax({
-												url: "/info/actress",
-												methid: "PATCH",
-												data: a,
-												success: () => {
-													$actressFavorite.toggleClass("active", a.favorite);
-												}
-											});
-										}),
-										$("<small>", {class: "extra"}).append(a.localName),
-										$("<small>", {class: "extra"}).append(a.birth),
-										$("<small>", {class: "extra"}).append(Flay.getActressAge(a)),
-										$("<small>", {class: "extra"}).append(a.debut > 0 ? a.debut : ""),
-										$("<small>", {class: "extra"}).append(a.body),
-										$("<small>", {class: "extra"}).append(a.height > 0 ? a.height : ""),
-									);
-								}
-							});
 						});
 						return ret;
 					})(),
@@ -231,10 +249,12 @@ class Flay {
 							this.files.subtitles.length + " <small>sub</small>"
 						),
 						$("<span>", {class: "extra flay-play"}).html(this.video.play + " <small>play</small>").on("click", this, function (e) {
-							console.info("play click", e.data.opus);
 							Flay.ajax({
 								url: "/flay/play/" + e.data.opus,
-								method: "PATCH"
+								method: "PATCH",
+								success: () => {
+									console.info(`${e.data.opus} played`);
+								}
 							})
 						}),
 						$("<span>", {class: "extra files-show"}).append(
@@ -247,6 +267,7 @@ class Flay {
 				$("<dd>", {class: "flay-comment"}).append(
 					$("<div>").append(
 						$("<input>", {class: "extra comment-edit"}).on("keyup", this, function (e) {
+							e.stopPropagation();
 							if (e.keyCode === 13) {
 								e.data.video.comment = e.target.value;
 								Flay.ajax({
@@ -255,7 +276,7 @@ class Flay {
 									contentType: "application/json",
 									data: JSON.stringify(e.data.video),
 									success: () => {
-
+										console.info(`${e.data.video.opus} comment ${e.data.video.comment}`);
 									}
 								});
 							}
@@ -288,7 +309,7 @@ class Flay {
 					$("<div>").append(
 						(() => {
 							let ret = [];
-							this.getTagList().forEach((t) => {
+							Flay.tagList.forEach((t) => {
 								ret.push(
 									$("<span>", {class: "tag-item" + (this.video.tags.indexOf(t.id) > -1 ? " active" : ""), title: t.description, id: "tag" + t.id}).html(t.name)
 								);

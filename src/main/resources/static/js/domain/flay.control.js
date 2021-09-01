@@ -39,19 +39,11 @@ class FlayControl {
 		this.currentIndex = 0;
 		this.totalFlayList = [];
 		this.filteredFlayList = [];
-		this.filterCondition = {
-			keyword: "",
-			rank: [],
-			favorite: false,
-			movie: false,
-			subtitles: false,
-		};
 
 		this.init();
 		this.event();
-
-		// this.filter();
-		this.filteredFlayList = this.totalFlayList;
+		this.filter();
+		this.sort();
 	}
 
 	init() {
@@ -74,7 +66,7 @@ class FlayControl {
 		*	case    1 : // wheel : up
 		*	case   -1 : // wheel : down
 		*/
-		$(this.selectors.eventWrap).navEvent(function (signal, e) {
+		$(this.selectors.event).navEvent(function (signal, e) {
 			console.debug("nav signal", signal, e.key);
 			switch (signal) {
 			case 1:
@@ -90,11 +82,77 @@ class FlayControl {
 				break;
 			}
 		});
+
+		// filter condition change event
+		$(this.selectors.filter.keyword).on("keyup", this, function (e) {
+			e.stopPropagation();
+			if (e.keyCode === 13) {
+				e.data.filter();
+			}
+		});
+		$(this.selectors.filter.rank
+				+ ", " + this.selectors.filter.favorite
+				+ ", " + this.selectors.filter.movie
+				+ ", " + this.selectors.filter.subtitles).on("change", this, function (e) {
+			e.stopPropagation();
+			e.data.filter();
+			e.data.random();
+		});
+		// sort condition change event
+		$(this.selectors.sort).on("change", this, function (e) {
+			e.stopPropagation();
+			e.data.sort();
+			e.data.go(0);
+		});
 	}
 
-	sort(sort) {
+	filter() {
+		const filterCondition = {
+			keyword: $(this.selectors.filter.keyword).val(),
+			rank: (function(rankSelector) {
+				let checkedRank = [];
+				$(rankSelector).each(function (idx, rank) {
+					if ($(rank).prop("checked")) {
+						checkedRank.push(Number(rank.value));
+					}
+				});
+				return checkedRank;
+			}(this.selectors.filter.rank)),
+			favorite: $(this.selectors.filter.favorite).prop("checked"),
+			movie: $(this.selectors.filter.movie).prop("checked"),
+			subtitles: $(this.selectors.filter.subtitles).prop("checked"),
+		};
+		console.log('filterCondition', filterCondition);
+
+		this.filteredFlayList = this.totalFlayList.filter((flay) => {
+			if (filterCondition.keyword !== "" && !flay.fullname.includes(filterCondition.keyword)) {
+				return false;
+			}
+			if (filterCondition.rank.length > 0 && !filterCondition.rank.includes(flay.video.rank)) {
+				return false;
+			}
+			if (filterCondition.favorite || filterCondition.movie || filterCondition.subtitles) {
+				if (filterCondition.favorite && !FlayControl.isFavorite(flay.actressList)) {
+					return false;
+				}
+				if (filterCondition.movie && flay.files.movie.length === 0) {
+					return false;
+				}
+				if (filterCondition.subtitles && flay.files.subtitles.length === 0) {
+					return false;
+				}
+			}
+			return true;
+		});
+		console.info(`Flay ${this.filteredFlayList.length} filtered`);
+		return filterCondition;
+	}
+
+	sort() {
+		const sortKey = $(this.selectors.sort + ":checked").val();
+		console.log('sort method', sortKey);
 		this.filteredFlayList.sort(function(flay1, flay2) {
-			switch(sort) {
+			switch(sortKey) {
 			case 's':
 				const sVal = FlayControl.compareTo(flay1.studio, flay2.studio);
 				return sVal === 0 ? FlayControl.compareTo(flay1.opus, flay2.opus) : sVal;
@@ -112,33 +170,7 @@ class FlayControl {
 				return FlayControl.compareTo(flay1.lastModified, flay2.lastModified);
 			}
 		});
-	}
-
-	filter(condition) {
-		this.filterCondition = $.extend({}, this.filterCondition, condition);
-		console.log('filter condition merge', this.filterCondition);
-
-		this.filteredFlayList = this.totalFlayList.filter((f) => {
-			if (this.filterCondition.keyword !== "" && !f.fullname.includes(this.filterCondition.keyword)) {
-				return false;
-			}
-			if (this.filterCondition.rank.length > 0 && !this.filterCondition.rank.includes(f.video.rank)) {
-				return false;
-			}
-			if (this.filterCondition.favorite || this.filterCondition.movie || this.filterCondition.subtitles) {
-				if (this.filterCondition.favorite && !FlayControl.isFavorite(f.actressList)) {
-					return false;
-				}
-				if (this.filterCondition.movie && f.files.movie.length === 0) {
-					return false;
-				}
-				if (this.filterCondition.subtitles && f.files.subtitles.length === 0) {
-					return false;
-				}
-			}
-			return true;
-		});
-		console.log('filtered', this.filteredFlayList);
+		return sortKey;
 	}
 
 	prev() {
@@ -162,10 +194,21 @@ class FlayControl {
 		this.show();
 	}
 
+	go(to) {
+		to = Math.max(to, 0);
+		to = Math.min(to, this.filteredFlayList.length - 1);
+		this.currentIndex = to;
+		this.show();
+	}
+
 	show() {
-		$(this.selectors.flayWrap).empty().append(this.filteredFlayList[this.currentIndex].$());
-		console.log(`show index ${this.currentIndex}`);
+		console.log(`Flay will be shown using by index ${this.currentIndex}`);
+		$(this.selectors.container).empty().append(this.filteredFlayList[this.currentIndex].$());
 		this.pagination();
+	}
+
+	getFlay() {
+		return this.filteredFlayList[this.currentIndex];
 	}
 
 	pagination() {

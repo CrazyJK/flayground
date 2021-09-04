@@ -40,7 +40,7 @@ $("input[name='releasePattern']").on('change', function() {
 		}
 	};
 	var $list = $("#releasedList").empty();
-	
+
 	var dataMap = {};
 	$.each(flayList, function(idx, flay) {
 		var key = getReleaseKey(flay.release);
@@ -50,7 +50,7 @@ $("input[name='releasePattern']").on('change', function() {
 			dataMap[key] = [flay];
 		}
 	});
-	
+
 	displaySummaryTableView(dataMap, $list);
 });
 
@@ -72,7 +72,7 @@ $("#groupByPath").on('show.bs.collapse', function() {
 		return key;
 	};
 	var $list = $("#pathList").empty();
-	
+
 	var dataMap = {};
 	$.each(flayList, function(idx, flay) {
 		var key = getPathKey(flay.files);
@@ -82,13 +82,13 @@ $("#groupByPath").on('show.bs.collapse', function() {
 			dataMap[key] = [flay];
 		}
 	});
-	
+
 	displaySummaryTableView(dataMap, $list);
 });
 
-$("#groupByRank").on('show.bs.collapse', function() {
+$("#groupByRank").on('show.bs.collapse', function(e) {
 	var $list = $("#rankList").empty();
-	
+
 	var dataMap = {};
 	$.each(flayList, function(idx, flay) {
 		var key = 'Rank ' + flay.video.rank;
@@ -98,13 +98,13 @@ $("#groupByRank").on('show.bs.collapse', function() {
 			dataMap[key] = [flay];
 		}
 	});
-	
+
 	displaySummaryTableView(dataMap, $list);
 });
 
 $("#groupByStudio").on('show.bs.collapse', function() {
 	var $list = $("#studioList").empty();
-	
+
 	var dataMap = {}, studioCount = 0;
 	$.each(flayList, function(idx, flay) {
 		var key = flay.studio;
@@ -127,9 +127,9 @@ $("#groupByStudio").on('show.bs.collapse', function() {
 		}
 	});
 	$.each(dataArray, function(idx, data) {
-		var tagWeight = data.list.length > 100 
-				? 60 
-				: data.list.length < 20 
+		var tagWeight = data.list.length > 100
+				? 60
+				: data.list.length < 20
 						? 10
 						: data.list.length/2;
 
@@ -165,8 +165,8 @@ $("#groupByStudio").on('show.bs.collapse', function() {
 			hideTags: false,
 			shadow: '#ccf',
 			shadowBlur: 3,
-			shuffleTags: true, 
-			wheelZoom: true, 
+			shuffleTags: true,
+			wheelZoom: true,
 			clickToFront: 300,
 			weight: true,
 			weightMode: 'both',
@@ -174,7 +174,7 @@ $("#groupByStudio").on('show.bs.collapse', function() {
 	};
 	// http://www.goat1000.com/tagcanvas-weighted.php
 	$('#studioCanvas').tagcanvas(wOpts, 'studioList');
-	
+
 }).on("hide.bs.collapse", function() {
 	$('#studioCanvas').tagcanvas('delete');
 });
@@ -207,22 +207,22 @@ $("#StudioTable").on('show.bs.collapse', function() {
 
 	$(".studio-count").html(dataArray.length + " / " + studioCount);
 	$(".filter-count").html(filterCount);
-	
+
 	var $tbody = $("#studioTableWrap tbody").empty();
 	$.each(dataArray, function(idx, data) {
-		
+
 		var flayLength = data.list.length;
 		var flayFileSize = 0;
-		var flayRankSum = 0; 
+		var flayRankSum = 0;
 		var flayRankLength = 0;
 		var flayRankAvg = 0.0;
 		var	favLength = 0;
 		var favFileSize = 0;
-		var favRankSum = 0; 
+		var favRankSum = 0;
 		var favRankLength = 0;
 		var favRankAvg = 0.0;
 		var favRatio = 0.0;
-		
+
 		for (let flay of data.list) {
 			flayFileSize += flay.length;
 			if (flay.video.rank > 0) {
@@ -238,11 +238,11 @@ $("#StudioTable").on('show.bs.collapse', function() {
 				}
 			}
 		}
-		
+
 		flayRankAvg = flayRankSum / flayRankLength;
 		favRankAvg = favRankSum / favRankLength;
 		favRatio = Math.round(favLength / flayLength * 100) + "%";
-		
+
 		$("<tr>").append(
 				$("<td>").html(data.key),
 				$("<td>").html(flayLength),
@@ -257,14 +257,14 @@ $("#StudioTable").on('show.bs.collapse', function() {
 			displayFlayList(data.key, data.list);
 		}).appendTo($tbody);
 	});
-	
+
 }).on("hide.bs.collapse", function() {
 	$('#studioCanvas').tagcanvas('delete');
 });
 
 $("#groupByActress").on('show.bs.collapse', function() {
 	var $list = $("#actressList").empty();
-	
+
 	var dataMap = {}, actressCount = 0;
 	$.each(flayList, function(idx, flay) {
 		var keys = flay.actressList;
@@ -291,9 +291,9 @@ $("#groupByActress").on('show.bs.collapse', function() {
 		}
 	});
 	$.each(dataArray, function(idx, data) {
-		var tagWeight = data.list.length > 60 
-				? 60 
-				: data.list.length < 10 
+		var tagWeight = data.list.length > 60
+				? 60
+				: data.list.length < 10
 						? 9
 						: data.list.length;
 
@@ -328,8 +328,8 @@ $("#groupByActress").on('show.bs.collapse', function() {
 			hideTags: false,
 			shadow: '#ccf',
 			shadowBlur: 3,
-			shuffleTags: true, 
-			wheelZoom: true, 
+			shuffleTags: true,
+			wheelZoom: true,
 			clickToFront: 300,
 			weight: true,
 			weightMode: 'both',
@@ -337,7 +337,7 @@ $("#groupByActress").on('show.bs.collapse', function() {
 	};
 
 	$('#actressCanvas').tagcanvas(wOpts, 'actressList');
-	
+
 }).on("hide.bs.collapse", function() {
 	$('#actressCanvas').tagcanvas('delete');
 });
@@ -375,18 +375,18 @@ $("#ActressTable").on('show.bs.collapse', function() {
 
 	$(".actress-count").html(dataArray.length + " / " + actressCount);
 	$(".filter-count").html(filterCount);
-	
+
 	var $tbody = $("#actressTableWrap tbody").empty();
 	$.each(dataArray, function(idx, data) {
-		
+
 		var flayLength = data.list.length;
 		var flayFileSize = 0;
 		var filteredLength = 0;
 		var filteredFileSize = 0;
-		var filteredRankSum = 0; 
+		var filteredRankSum = 0;
 		var filteredRankLength = 0;
 		var filteredRankAvg = 0.0;
-		
+
 		for (let flay of data.list) {
 			flayFileSize += flay.length;
 			if (flay.video.rank > 0) {
@@ -396,9 +396,9 @@ $("#ActressTable").on('show.bs.collapse', function() {
 				filteredRankLength++;
 			}
 		}
-		
+
 		filteredRankAvg = filteredRankSum / filteredRankLength;
-		
+
 		$("<tr>").append(
 				$("<td>").html(data.key),
 				$("<td>").html(flayLength),
@@ -411,51 +411,57 @@ $("#ActressTable").on('show.bs.collapse', function() {
 			displayFlayList(data.key, data.list);
 		}).appendTo($tbody);
 	});
-	
+
 }).on("hide.bs.collapse", function() {
 	$('#studioCanvas').tagcanvas('delete');
 });
 
 function displaySummaryTableView(dataMap, $list) {
-	var dataArray = [];
-	var maxLength = 0;
+	const dataArray = [];
+	const isReleaseView = $list.attr("id") === 'releasedList';
+	let maxFlayCount = 0;
+	let totalFlayCount = 0;
+	let totalFlayLength = 0;
+	let totalUnRankCount = 0;
+
 	$.each(dataMap, function(key, val) {
-		var length = (function() {
+		var fileLength = (function(flayList) {
 			var length = 0;
-			for (var x in val) {
-				length += val[x].length;
+			for (const flay of flayList) {
+				length += flay.length;
 			}
 			return length;
-		}());
+		}(val));
 
-		var unRank = (function() {
+		var unRank = (function(flayList) {
 			var unRankCount = 0;
-			for (var x in val) {
-				unRankCount += val[x].video.rank === 0 ? 1 : 0;
+			for (const flay of flayList) {
+				unRankCount += flay.video.rank === 0 ? 1 : 0;
 			}
 			return unRankCount;
-		}());
+		}(val));
 
 		dataArray.push({
 			key: key,
 			list: val,
-			length: length,
+			length: fileLength,
 			unRank: unRank
 		});
-		maxLength = Math.max(maxLength, length);
+
+		maxFlayCount = Math.max(maxFlayCount, val.length);
+		totalFlayCount += val.length;
+		totalFlayLength += fileLength;
+		totalUnRankCount += unRank;
 	});
-	
+
 	dataArray.sort(function(d1, d2) {
-		return d1.key.localeCompare(d2.key);
+		return d2.key.localeCompare(d1.key);
 	});
-	
-	var isReleaseView = $list.attr("id") === 'releasedList';
-	
-	var totalFlayCount = 0, totalFlayLength = 0, totalUnRankCount = 0;
+
+	console.table(dataArray);
+
 	$.each(dataArray, function(idx, data) {
-		totalFlayCount += data.list.length;
-		totalFlayLength += data.length;
-		totalUnRankCount += data.unRank;
+		const percent = data.list.length / totalFlayCount * 100;
 		$("<tr>").append(
 				$("<td>", {'class': 'item-key nowrap'}).append(
 						$("<span>", {'class': 'hover'}).html(data.key).on("click", function() {
@@ -465,14 +471,14 @@ function displaySummaryTableView(dataMap, $list) {
 				$("<td>", {'class': 'item-count'}).html((isReleaseView ? data.unRank + " / " : "") + data.list.length).css("text-align", isReleaseView ? "center" : "right"),
 				$("<td>", {'class': 'item-length'}).html(File.formatSize(data.length)),
 				$("<td>", {'class': 'item-progress'}).append(
-						$("<div>", {'class': 'progress'}).append(
+						$("<div>", {'class': 'progress', title: (percent.toFixed(1) + "%")}).append(
 								$("<div>", {'class': 'progress-bar'}).css({
-									width: Math.round(data.length / maxLength * 100) + "%"
-								})
-						)
-				)
+									width: Math.max(percent, 1) + "%"
+								}),
+						),
+				),
 		).appendTo($list);
-	});	
+	});
 	$list.next().empty().append(
 			$("<th>"),
 			$("<th>").html((isReleaseView ? totalUnRankCount + " / " : "") + totalFlayCount).css("text-align", isReleaseView ? "center" : "right"),

@@ -68,31 +68,31 @@ td.item-progress {
 	min-width: 200px;
 }
 td.item-progress > .progress {
+	border-radius: .5rem;
 	height: 24px;
+	justify-content: center;
+}
+td.item-progress > .progress > .progress-bar {
+	border-radius: .5rem;
 }
 
 .btn[aria-expanded="true"] {
 	color: #007bff;
     background-color: #fff;
+	text-shadow: 1px 1px #ff073c
 }
 </style>
 
 <div role="body">
 
-	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" data-target="#groupByStudio">Studio Canvas</button>
-		<div class="divider"></div>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" data-target="#StudioTable">Studio Table</button>
-		<div class="divider"></div>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" data-target="#groupByActress">Actress Canvas</button>
-		<div class="divider"></div>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" data-target="#ActressTable">Actress Table</button>
-		<div class="divider"></div>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" data-target="#groupByRelease">Group By Release</button>
-		<div class="divider"></div>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" data-target="#groupByPath">Group By Path</button>
-		<div class="divider"></div>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" data-target="#groupByRank">Group By Rank</button>
+	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center" style="gap: .5rem;">
+		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByStudio">Studio Canvas</button>
+		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#StudioTable">Studio Table</button>
+		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByActress">Actress Canvas</button>
+		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#ActressTable">Actress Table</button>
+		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRelease">Group By Release</button>
+		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByPath">Group By Path</button>
+		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRank">Group By Rank</button>
 	</nav>
 
 	<div style="height: 55px;"></div>
@@ -103,7 +103,7 @@ td.item-progress > .progress {
 				Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video
 			</div>
 			<div class="card-body text-center">
-		      	<canvas id="studioCanvas" width="800" height="800"></canvas>
+				<canvas id="studioCanvas" width="800" height="800"></canvas>
 				<div id="studioList" style="display: none;"></div>
 			</div>
 		</div>
@@ -137,17 +137,17 @@ td.item-progress > .progress {
 				</div>
 			</div>
 		</div>
-	
+
 		<div id="groupByActress" class="collapse card m-2 bg-chalkboard">
 			<div class="card-header text-center">
 				Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video
 			</div>
 			<div class="card-body text-center">
-		      	<canvas id="actressCanvas" width="800" height="800"></canvas>
+				<canvas id="actressCanvas" width="800" height="800"></canvas>
 				<div id="actressList" style="display: none;"></div>
 			</div>
 		</div>
-	
+
 		<div id="ActressTable" class="collapse card m-2 bg-chalkboard">
 			<div class="card-header text-center">
 				Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video
@@ -175,7 +175,7 @@ td.item-progress > .progress {
 				</div>
 			</div>
 		</div>
-	
+
 		<div id="groupByRelease" class="collapse card m-2">
 			<div class="card-body bg-chalkboard">
 				<div class="text-center">
@@ -198,7 +198,7 @@ td.item-progress > .progress {
 				</table>
 			</div>
 		</div>
-	
+
 		<div id="groupByPath" class="collapse card m-2">
 			<div class="card-body bg-chalkboard">
 				<table class="table table-sm table-borderless table-hover m-0">
@@ -215,7 +215,7 @@ td.item-progress > .progress {
 				</table>
 			</div>
 		</div>
-	
+
 		<div id="groupByRank" class="collapse card m-2">
 			<div class="card-body bg-chalkboard">
 				<table class="table table-sm table-borderless table-hover m-0">
@@ -237,12 +237,12 @@ td.item-progress > .progress {
 	<div class="flay-list-wrapper">
 		<i class="fa fa-times float-right hover" onclick="$(this).parent().hide()"></i>
 		<h4 class="text-center mt-1">
-			<label class="text" id="groupByKey"></label> 
+			<label class="text" id="groupByKey"></label>
 		</h4>
 		<div class="text-center mt-2 flay-list" id="flayList"></div>
 	</div>
 
 </div>
 
-<script type="text/javascript" src="/js/tag/jquery.tagcanvas-flay.js"></script>
-<script type="text/javascript" src="/js/flay.summary.js"></script>
+<script type="text/javascript" src="../../js/tag/jquery.tagcanvas-flay.js"></script>
+<script type="text/javascript" src="../../js/flay.summary.js"></script>

@@ -1,5 +1,6 @@
 [
 	{ "name": "Home", 		"method": "both", 	"url": "/html/main.html" },
+	{ "name": "Home v2",	"method": "both", 	"url": "/html/flay/flay.domain.view.html" },
 	{ "name": "Search", 	"method": "popup", 	"url": "/html/flay/flay.popup.html?target=/html/flay/flay.search.html" },
 	{ "name": "Slide", 		"method": "both", 	"url": "/html/image/image.slide.html" },
 	{ "name": "Split View", "method": "both", 	"url": "/html/split.view.html" }

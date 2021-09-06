@@ -27,7 +27,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			+			'<dd class="flay-card-text">'
 			+				'<label class="text flay-opus">Opus</label>'
 			+				'<label class="text flay-opus-search hover"><i class="fa fa-image"></i></label>'
-            +				'<label class="text add-basket-btn hover"><i class="fa fa-shopping-basket"></i></label>'
+            +				'<label class="text add-basket-btn hover"><i class="fa fa-shopping-cart"></i></label>'
 			+				'<label class="text flay-rank-sm">Rank</label>'
 			+			'</dd>'
 			+			'<dd class="flay-card-text flay-actress-wrapper nowrap"></dd>'

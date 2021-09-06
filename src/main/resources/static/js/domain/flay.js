@@ -130,12 +130,18 @@ class Flay {
 		return null;
 	}
 
+	static separateMode = false;
+
 	constructor(json) {
 		return Object.assign(this, json);
 	}
 
 	update(json) {
 		return Object.assign(this, json);
+	}
+
+	remove() {
+		Flaying.isPlay = false;
 	}
 
 	$() {
@@ -145,12 +151,12 @@ class Flay {
 				background: "#222 url(/static/cover/"  + this.opus + ") no-repeat center / contain"
 			}),
 			// $("<img>", {class: "flay-cover", src: "/static/cover/" + this.opus}),
-			$("<dl>", {class: "flay-body"}).append(
-				$("<dt>", {class: "flay-fullname"}).append(
-					$("<div>").append(this.fullname)
-				),
+			$("<dl>", {class: "flay-body " + (Flay.separateMode ? "flay-body-separate" : "")}).append(
+				// $("<dt>", {class: "flay-fullname"}).append(
+				// 	$("<div>").append(this.fullname)
+				// ),
 				$("<dt>", {class: "flay-title"}).append(
-					$("<div>").append(this.title).on("click", this, (e) => {
+					$("<div>", {class: "hover"}).append(this.title).on("click", this, (e) => {
 						Flay.popup("/html/info/info.flay.html?opus=" + e.data.opus, e.data.opus, 800, 530);
 					})
 				),
@@ -162,9 +168,9 @@ class Flay {
 								ret.push($("<span>").html(Flay.getTag(t).name));
 							});
 							ret.push(
-								$("<span>", {class: "extra tag-show"}).append(
-									$("<i>", {class: "fa fa-tags"}).on("click", function () {
-										$(".flay-taglist").toggle();
+								$("<span>", {class: "extra tag-show hover"}).append(
+									$("<i>", {class: "fa fa-tags"}).on("click", this, function (e) {
+										$(e.target).closest(".flay").find(".flay-taglist").toggle();
 									})
 								)
 							);
@@ -185,10 +191,10 @@ class Flay {
 							const actress = Flay.getActress(name);
 							ret.push(
 								$("<div>", {id: actress.name.replace(/ /g, "")}).append(
-									$("<span>", {class: "actress-name"}).html(actress.name).on("click", actress, function (e) {
+									$("<span>", {class: "actress-name hover"}).html(actress.name).on("click", actress, function (e) {
 										Flay.popup("/html/info/info.actress.html?name=" + e.data.name, e.data.name, 1076, 800);
 									}),
-									$("<span>", {class: "actress-favorite" + (actress.favorite ? " active" : "")}).append(
+									$("<span>", {class: "actress-favorite hover" + (actress.favorite ? " active" : "")}).append(
 										$("<i>", {class: "fa fa-star"})
 									).on("click", actress, function (e) {
 										const $actressFavorite = $(this);
@@ -227,28 +233,31 @@ class Flay {
 								ret.push(
 									$("<label>").append(
 										$("<input>", {type: "radio", name: "rank", value: r, checked: (r === this.video.rank)}),
-										$("<i>", {class: "fa fa-" + (r === -1 ? "thumbs-down" : r === 0 ? "circle" : "star") + " r" + r})
+										$("<i>", {class: "hover fa fa-" + (r === -1 ? "thumbs-down" : r === 0 ? "circle" : "star") + " r" + r})
 									)
 								);
 							});
 							return ret;
 						})()
 					).on("change", "input", this, function (e) {
-						console.debug("rank change", e.target.value, e.data.opus);
+						e.data.video.rank = e.target.value;
+						Flay.ajax({
+							url: "/info/video",
+							method: "PATCH",
+							contentType: "application/json",
+							data: JSON.stringify(e.data.video),
+							success: () => {
+								console.debug("rank changed", e.target.value, e.data.opus);
+							}
+						});
 					}),
 				),
 				$("<dd>", {class: "flay-info"}).append(
 					$("<div>").append(
-						$("<span>").html(
-							Flay.fileLength(this.length)
-						),
-						$("<span>", {class: "extra"}).html(
-							this.files.movie.length + " <small>V</small>"
-						),
-						$("<span>").html(
-							this.files.subtitles.length + " <small>sub</small>"
-						),
-						$("<span>", {class: "extra flay-play"}).html(this.video.play + " <small>play</small>").on("click", this, function (e) {
+						$("<span>").html(Flay.fileLength(this.length)),
+						$("<span>", {class: "extra"}).html(this.files.movie.length + " <small>V</small>"),
+						$("<span>").html(this.files.subtitles.length + " <small>sub</small>"),
+						$("<span>", {class: "extra flay-play hover"}).html(this.video.play + " <small>play</small>").on("click", this, function (e) {
 							Flay.ajax({
 								url: "/flay/play/" + e.data.opus,
 								method: "PATCH",
@@ -257,16 +266,17 @@ class Flay {
 								}
 							})
 						}),
-						$("<span>", {class: "extra files-show"}).append(
-							$("<i>", {class: "fa fa-folder-open"}).on("click", function () {
-								$(".flay-files").toggle();
+						$("<span>", {class: "extra flay-view hover"}).html(this.files.movie.length > 0 ? "<small>View</small>" : "").on("click", this, Flaying.start),
+						$("<span>", {class: "extra files-show hover"}).append(
+							$("<i>", {class: "fa fa-folder-open"}).on("click", this, function (e) {
+								$(e.target).closest(".flay").find(".flay-files").toggle();
 							})
 						),
 					),
 				),
 				$("<dd>", {class: "flay-comment"}).append(
 					$("<div>").append(
-						$("<input>", {class: "extra comment-edit"}).on("keyup", this, function (e) {
+						$("<input>", {class: "extra comment-edit hover"}).on("keyup", this, function (e) {
 							e.stopPropagation();
 							if (e.keyCode === 13) {
 								e.data.video.comment = e.target.value;
@@ -346,14 +356,90 @@ class Flay {
 				),
 			),
 			$("<div>", {class: "right-bottom"}).append(
-				$("<span>", {class: "flay-body-toggle"}).append(
-					$("<i>", {class: "fa fa-arrow-circle-down"})
+				$("<span>", {class: "flay-body-toggle hover"}).append(
+					$("<i>", {class: "fa " + (Flay.separateMode ? "fa-arrow-circle-up" : "fa-arrow-circle-down")})
 				).on("click", () => {
 					$(".flay-body").toggleClass("flay-body-separate");
 					$(".flay-body-toggle i").toggleClass("fa fa-arrow-circle-down").toggleClass("fa fa-arrow-circle-up");
+					Flay.separateMode = $(".flay-body").hasClass("flay-body-separate");
 				}),
+			),
+			$("<div>", {class: "flay-video"}).append(
+				$("<video>"),
+				$("<div>").append(
+					$("<i>", {class: "hover fa fa-window-restore"}).on("click", this, Flaying.window.restore),
+					$("<i>", {class: "hover fa fa-window-maximize"}).on("click", this, Flaying.window.maximize),
+					$("<i>", {class: "hover fa fa-window-close"}).on("click", this, Flaying.stop),
+				),
 			),
 		);
 	}
 }
 
+var Flaying = {
+	isPlay: false,
+	seekTime: 10,
+	start: function (e) {
+		e.stopPropagation();
+		if (!Flaying.isPlay) {
+			const $flayVideo = $(this).closest(".flay").find(".flay-video").show();
+			const $video = $flayVideo.find("video");
+			if (typeof $video.attr("src") === 'undefined') {
+				$video.attr({
+					controls: "true",
+					poster: "/static/cover/" + e.data.opus,
+					src: "/stream/flay/movie/" + e.data.opus + "/0",
+				});
+			}
+			$video
+				.off("wheel")
+				.on("wheel", e.data, function (e) {
+					e.stopPropagation();
+					if (e.originalEvent.wheelDelta < 0) {
+						Flaying.forward(e);
+					} else {
+						Flaying.backward(e);
+					}
+				});
+			$video.get(0).play();
+			Flaying.isPlay = true;
+		}
+	},
+	stop: function (e) {
+		e.stopPropagation();
+		$(this).closest(".flay").find(".flay-video").hide().find("video").off("wheel").get(0).pause();
+		Flaying.isPlay = false;
+	},
+	forward: function (e) {
+		e.stopPropagation();
+		if (Flaying.isPlay) {
+			// if built-in video seek, do nothing
+			if (e.type !== "wheel" && e.target.tagName === "VIDEO") {
+				return;
+			}
+			$(e.target).closest(".flay").find("video").get(0).currentTime += Flaying.seekTime;
+		}
+	},
+	backward: function (e) {
+		e.stopPropagation();
+		if (Flaying.isPlay) {
+			// if built-in video seek, do nothing
+			if (e.type !== "wheel" && e.target.tagName === "VIDEO") {
+				return;
+			}
+			$(e.target).closest(".flay").find("video").get(0).currentTime -= Flaying.seekTime;
+		}
+	},
+	window : {
+		restore: function (e) {
+			e.stopPropagation();
+			$(this).closest(".flay").find(".flay-video").removeClass("window-maximize");
+			$(this).hide().next().show();
+		},
+		maximize: function (e) {
+			e.stopPropagation();
+			$(this).closest(".flay").find(".flay-video").addClass("window-maximize");
+			$(this).hide().prev().show();
+		}
+	}
+};

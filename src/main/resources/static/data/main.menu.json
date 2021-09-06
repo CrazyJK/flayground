@@ -112,7 +112,7 @@
 	{
 		"name": "Basket",
 		"uri": "/html/flay/flay.basket.html",
-		"icon": "fa fa-shopping-basket",
+		"icon": "fa fa-shopping-cart",
 		"mode": "href",
 		"popup": {
 			"w": "100%",

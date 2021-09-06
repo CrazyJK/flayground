@@ -104,6 +104,53 @@ class FlayControl {
 			e.data.sort();
 			e.data.go(0);
 		});
+		// size condition change event
+		$(this.selectors.size).on("click", this, this.sizeControl);
+		// window resize
+		$(window).on("resize", this, this.sizeControl).trigger("resize");
+	}
+
+	sizeControl(e) {
+		function sideControl($container, containerWidth) {
+			if (containerWidth >= 400) {
+				const offset = parseInt(containerWidth / 400);
+				$container.css({
+					fontSize: Math.max(containerWidth / 8, 80).toFixed(1) + "%",
+				});
+				$container.find(".flay-body > :is(dt, dd)").css({
+					marginTop: offset,
+					marginBottom: offset,
+					paddingTop: offset,
+					paddingBottom: offset,
+					minHeight: containerWidth < 600 ? 'auto' : '',
+				});
+			} else {
+				$container.empty();
+			}
+		}
+		e.stopPropagation();
+		console.log('size click', e.target, e.target.value);
+
+		const $prevContainer = $(e.data.selectors.prevContainer);
+		const $mainContainer = $(e.data.selectors.mainContainer);
+		const $nextContainer = $(e.data.selectors.nextContainer);
+
+		const mainContainerWidth = $mainContainer.width() + Number(e.target.value);
+		$mainContainer.css({
+			width: Math.max(mainContainerWidth, 400),
+			// fontSize: Math.max(mainContainerWidth / 8, 80).toFixed(1) + "%",
+		});
+
+		const prevWidth = $prevContainer.width();
+		const mainWidth = $mainContainer.width();
+		const nextWidth = $nextContainer.width();
+		console.log("container size", prevWidth, mainWidth, nextWidth);
+
+		sideControl($prevContainer, prevWidth);
+		sideControl($mainContainer, mainWidth);
+		sideControl($nextContainer, nextWidth);
+
+		$(e.data.selectors.size).closest("div").attr("title", mainContainerWidth + " px");
 	}
 
 	filter() {
@@ -203,7 +250,29 @@ class FlayControl {
 
 	show() {
 		console.log(`Flay will be shown using by index ${this.currentIndex}`);
-		$(this.selectors.container).empty().append(this.filteredFlayList[this.currentIndex].$());
+		this.filteredFlayList[this.currentIndex].remove();
+
+		const $prevContainer = $(this.selectors.prevContainer).empty();
+		const $mainContainer = $(this.selectors.mainContainer).empty();
+		const $nextContainer = $(this.selectors.nextContainer).empty();
+
+		const prevWidth = $prevContainer.width();
+		const nextWidth = $nextContainer.width();
+
+		console.log('container width', prevWidth, $mainContainer.width(), nextWidth);
+
+		const prevFlay = this.filteredFlayList[this.currentIndex - 1];
+		const mainFlay = this.filteredFlayList[this.currentIndex];
+		const nextFlay = this.filteredFlayList[this.currentIndex + 1];
+
+		if (prevWidth > 400 && prevFlay) {
+			$prevContainer.append(prevFlay.$());
+		}
+		$mainContainer.append(mainFlay.$());
+		if (nextWidth > 400 && nextFlay) {
+			$nextContainer.append(nextFlay.$());
+		}
+
 		this.pagination();
 	}
 

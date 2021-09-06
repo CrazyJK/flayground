@@ -2,6 +2,7 @@ package jk.kamoru.flayground.base.web.access.service;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,10 +44,15 @@ public class AccessLogService {
 		return 0;
 	}
 
+	public Optional<AccessLogStatistic> find(String handlerInfo) {
+		return accessLogRepository.findById(handlerInfo);
+	}
+
 	@Transactional
 	public void increaseCallCount(String handlerInfo) {
 		AccessLogStatistic accessLogStatistic = accessLogRepository.findById(handlerInfo).orElse(new AccessLogStatistic(handlerInfo));
 		accessLogStatistic.increaseCallCount();
+		accessLogStatistic.setLastAccess(new Date());
 		accessLogRepository.save(accessLogStatistic);
 	}
 

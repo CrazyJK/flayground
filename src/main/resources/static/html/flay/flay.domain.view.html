@@ -1,9 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 	<head>
-		<title>flay Domain Test</title>
+		<title>Flay Domain</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="icon" type="image/png" href="../../img/favicon/flay_0.png"/>
 		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
 		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
 		<link rel="stylesheet" href="../../css/domain/flay.css" />
@@ -17,6 +18,7 @@
 				display: flex;
 				justify-content: center;
 				align-items: baseline;
+				z-index: 1;
 			}
 			header nav {
 				display: flex;
@@ -78,19 +80,24 @@
 				bottom: 3rem;
 				display: flex;
 				align-content: center;
-				justify-content: center;
+				justify-content: space-evenly;
+				z-index: 2;
 			}
 			.container-flay {
 				display: flex;
 				align-content: center;
 				justify-content: center;
 				flex-wrap: wrap;
-				gap: 0.5rem;
 				margin: 0;
-				padding: 0;
+				padding: .5rem;
+				width: calc((100% - 800px) / 2);
+				width: -webkit-fill-available;
+				max-width: 800px;
 			}
-			.flay {
+			#flayWrapper.container-flay {
+				padding: 0;
 				width: 800px;
+				max-width: unset;
 			}
 			footer {
 				position: fixed;
@@ -108,8 +115,8 @@
 				flex: 0 1 3rem;
 				text-align: center;
 				background-color: #181818;
-				border: 1px solid #333;
-				border-right: 0;
+				border: 1px solid #282828;
+				border-right-width: 0;
 				padding: 4px 2px;
 			}
 			footer > ul > li:first-child {
@@ -117,7 +124,7 @@
 				border-bottom-left-radius: 4px;
 			}
 			footer > ul > li:last-child {
-				border-right: 1px solid #333;
+				border-right-width: 1px;
 				border-top-right-radius: 4px;
 				border-bottom-right-radius: 4px;
 			}
@@ -134,7 +141,7 @@
 		<header>
 			<nav>
 				<div class="filter-condition">
-					<input type="search" name="keyword" id="keyword" placeholder="Search" autocomplete="false" />
+					<input type="search" name="keyword" id="keyword" placeholder="Search" autocomplete="off" />
 				</div>
 				<div class="filter-condition">
 					<label for="fav"><input type="checkbox" name="favorite" id="fav" /><span>Fav</span></label>
@@ -159,10 +166,16 @@
 					<label for="sort_r"><input type="radio" name="sort" id="sort_r" value="r"><span>R</span></label>
 					<label for="sort_m"><input type="radio" name="sort" id="sort_m" value="m" checked="checked"><span>M</span></label>
 				</div>
+				<div class="size-condition">
+					<label for="size_m"><input type="radio" name="size" id="size_m" value="-100"><span><i class="fa fa-minus"></i></span></label>
+					<label for="size_p"><input type="radio" name="size" id="size_p" value="100"><span><i class="fa fa-plus"></i></span></label>
+				</div>
 			</nav>
 		</header>
 		<main>
+			<article class="container-flay"></article>
 			<article class="container-flay" id="flayWrapper"></article>
+			<article class="container-flay"></article>
 		</main>
 		<footer>
 			<ul>Navigation</ul>
@@ -177,7 +190,9 @@
 		<script>
 			const control = new FlayControl({
 				event: "main",
-				container: "main > article",
+				prevContainer: "main > article:nth-child(1)",
+				mainContainer: "main > article#flayWrapper",
+				nextContainer: "main > article:nth-child(3)",
 				pagination: "footer > ul",
 				filter: {
 					keyword: 	".filter-condition #keyword",
@@ -189,6 +204,7 @@
 					actress: 	".filter-condition input[name='actress']",
 				},
 				sort: ".sort-condition input[name='sort']",
+				size: ".size-condition input[name='size']",
 			});
 			control.random();
 		</script>

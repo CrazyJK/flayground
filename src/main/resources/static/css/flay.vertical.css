@@ -18,6 +18,11 @@ body {
     align-content: center;
     justify-content: space-evenly;
     align-items: baseline;
+	gap: 8px;
+}
+
+.flay-bar input[type="search"] {
+	border-color: transparent;
 }
 
 #pageContent {
@@ -89,7 +94,12 @@ body {
 	padding: 0.125rem;
 	transition: all 0.3s;
 }
-
+#videoTags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2px;
+    justify-content: center;
+}
 .tag-list .nonExist {
 	color: #c7bdbd !important;
 }

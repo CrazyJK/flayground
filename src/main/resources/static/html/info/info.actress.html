@@ -49,7 +49,7 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 				<div class="col-4">
 					<div class="input-group">
 						<div class="input-group-prepend">
-							<span class="input-group-text hover"><em class="fa fa-star favorite" id="favorite"></em></span>
+							<span class="input-group-text hover"><em class="fa fa-heart favorite" id="favorite"></em></span>
 						</div>
 						<input class="form-control text-center" name="name" id="name">
 					</div>
@@ -132,9 +132,9 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 		var $self = $(this);
 		Rest.Actress.update(actress, function () {
 			if (actress.favorite) {
-				$self.switchClass('fa-star-o', 'fa-star favorite');
+				$self.switchClass('fa-heart-o', 'fa-heart favorite');
 			} else {
-				$self.switchClass('fa-star favorite', 'fa-star-o');
+				$self.switchClass('fa-heart favorite', 'fa-heart-o');
 			}
 		});
 	});
@@ -215,7 +215,7 @@ nav.navbar:hover ~ .actress-cover-wrapper {
 		$("#debut"    ).val(actress.debut.toBlank());
 		$("#comment"  ).val(actress.comment);
 		if (!actress.favorite) {
-			$(".fa-star").removeClass("favorite fa-star").addClass("fa-star-o");
+			$(".fa-heart").removeClass("favorite fa-heart").addClass("fa-heart-o");
 		}
 
 		var $flayList = $(".flay-list").empty();

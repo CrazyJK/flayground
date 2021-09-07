@@ -186,6 +186,7 @@ function findMode() {
 		$(from).effect("transfer", {to: "#newActress", className: "ui-effects-transfer"}, 500, function() {
 			$("#newActress").data("actress", actress);
 			$("#newActressFavorite").prop("checked", actress.favorite);
+			$("#newActressFavorite ~ span > i").toggleClass("fa-heart", actress.favorite).toggleClass("fa-heart-o", !actress.favorite);
 			$("#newActressName"  ).val(actress.name);
 			$("#newActressBirth" ).val(actress.birth);
 			$("#newActressBody"  ).val(actress.body);

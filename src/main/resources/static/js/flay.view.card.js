@@ -58,7 +58,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 
 		var templateActress = ''
 			+	'<div class="flay-actress">'
-			+		'<label class="text flay-actress-favorite extra hover"><i class="fa fa-star favorite"></i></label>'
+			+		'<label class="text flay-actress-favorite extra hover"><i class="fa fa-heart favorite"></i></label>'
 			+		'<label class="text flay-actress-name hover">Asuka Kirara</label>'
 			+		'<label class="text flay-actress-local  extra">明日花キララ</label>'
 			+		'<label class="text flay-actress-birth  extra">1988年10月02日</label>'
@@ -343,9 +343,9 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 		var constructActress = function($wrapper) {
 			var setFavorite = function($actress, actress) {
 				if (actress.favorite)
-					$actress.find(".flay-actress-favorite > i").addClass("fa-star favorite").removeClass("fa-star-o");
+					$actress.find(".flay-actress-favorite > i").addClass("fa-heart favorite").removeClass("fa-heart-o");
 				else
-					$actress.find(".flay-actress-favorite > i").addClass("fa-star-o").removeClass("fa-star favorite");
+					$actress.find(".flay-actress-favorite > i").addClass("fa-heart-o").removeClass("fa-heart favorite");
 			};
 
 			$.each(flay.actressList, function(idx, name) {

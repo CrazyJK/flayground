@@ -46,8 +46,8 @@
 		<input class="form-control input-flay search" type="search" id="search" placeholder="Search...">
 		<label class="text sm" id="totalCount"></label>
 		<span class="check-group danger mx-2">
-			<label><input type="checkbox" id="favorite"  ><span><i class="fa fa-star"></i></span></label>
-			<label><input type="checkbox" id="noFavorite"><span><i class="fa fa-star-o"></i></span></label>
+			<label><input type="checkbox" id="favorite"  ><span><i class="fa fa-heart"></i></span></label>
+			<label><input type="checkbox" id="noFavorite"><span><i class="fa fa-heart-o"></i></span></label>
 		</span>
 		<span class="check-group primary mx-2">
 			<label><input type="radio" id="viewTypeCard"  name="viewType" value="c" checked="checked"><span><i class="fa fa-th"></i></span></label>
@@ -57,9 +57,9 @@
 		<input class="form-control input-flay width-50" id="limit" name="limit" value="0.95"/>
 		<button class="btn btn-sm btn-flay btn-reload ml-2"><i class="fa fa-refresh"></i></button>
 	</nav>
-	
+
 	<div style="height: 4rem;"></div>
-	
+
 	<div id="cardViewWrapper">
 		<div class="actress-list text-center">
 		</div>
@@ -174,14 +174,14 @@ function displayActress() {
 
 	$.each(actressList, function(idx, actress) {
 		var found = false;
-		
+
 		if (fav && actress.favorite)
 			found = true;
 		if (noFav && !actress.favorite)
 			found = true;
 		if (found && query != '') {
 			var infotext = actress.name.toLowerCase() + actress.localName + actress.birth + actress.debut + actress.body + actress.height;
-			found = infotext.indexOf(query) > -1; 
+			found = infotext.indexOf(query) > -1;
 		}
 		if (found)
 			collectedList.push(actress);
@@ -210,27 +210,27 @@ function displayActress() {
 		default:
 			return 1;
 		}
-	});	
-	
+	});
+
 	$actressList.empty();
-	
+
 	if (viewType === 'c') {
 		$("#cardViewWrapper").show();
 		$("#tableViewWrapper").hide();
-		
+
 		$.each(collectedList, function(idx, actress) {
 			var $card = $actressTemplete.clone();
 			$card.data("actress", actress);
-			
+
 			if (actress.coverSize > 0) {
 				$card.find(".card-body").css({
 					backgroundImage: "url('/static/actress/" + actress.name + "/" + Random.getInteger(0, actress.coverSize -1) + "')"
 				});
 			}
-			
+
 			$card.find(".card-title").empty().append(
 					$("<label>", {'class': 'text'}).append(
-							$("<i>", {'class': "fa fa-star" + (actress.favorite ? " favorite" : "-o")})
+							$("<i>", {'class': "fa fa-heart" + (actress.favorite ? " favorite" : "-o")})
 					),
 					$("<label>", {'class': 'text hover'}).html(actress.name).on("click", function() {
 						View.actress(actress.name);
@@ -259,7 +259,7 @@ function displayActress() {
 		$.each(collectedList, function(idx, actress) {
 			$("<tr>").append(
 					$("<td>", {'class': 'text-center'}).append(
-							$("<i>", {'class': "fa fa-star" + (actress.favorite ? "" : "-o")})		
+							$("<i>", {'class': "fa fa-heart" + (actress.favorite ? "" : "-o")})
 					),
 					$("<td>").html(actress.coverSize),
 					$("<td>").append(
@@ -282,7 +282,7 @@ function displayActress() {
 
 function displayNameCheckResult(list) {
 	var scoreToFixed = function(num) {
-		return num.toFixed(3);	
+		return num.toFixed(3);
 	},
 	renderActressName = function(actress, right) {
 		return 	$("<span>", {title: actress.name, "class": "hover"}).on("click", function() {
@@ -291,12 +291,12 @@ function displayNameCheckResult(list) {
 				}).hover(
 					function() {
 						$("[title='" + actress.name + "']").addClass("active");
-					}, 
+					},
 					function() {
 						$("[title='" + actress.name + "']").removeClass("active");
 					}
 				).append(
-						right ? '' : actress.name.replace('혻', '_'), 
+						right ? '' : actress.name.replace('혻', '_'),
 						$("<label>").html(actress.localName),
 						right ? actress.name.replace('혻', '_') : ''
 				);
@@ -304,15 +304,15 @@ function displayNameCheckResult(list) {
 	sameLocalName = function(actress1, actress2) {
 		return actress1.localName != '' && actress2.localName != '' && actress1.localName === actress2.localName ? "same-localname" : "normal";
 	};
-	
+
     $("#notice > p").empty().append(
 	    	$("<table>", {"class": "table table-sm table-hover", id: "nameCheckResultTable"}).append(
 		    		$("<thead>").append(
 			    			$("<tr>").append(
-				       				$("<th>", {"class": "text-right"}).html("Name1"), 
+				       				$("<th>", {"class": "text-right"}).html("Name1"),
 				       				$("<th>", {"class": "text-center"}).html("Score"),
 				       				$("<th>").html("Name2")
-			    			)		
+			    			)
 		    		),
 		   			(function () {
 			    		var tbody = $("<tbody>");
@@ -331,7 +331,7 @@ function displayNameCheckResult(list) {
 		    		}())
 	    	)
     );
-    
+
     $("#notice").dialog({
     	title: "Name check result : " + list.length,
     	minWidth: 700,

@@ -62,7 +62,7 @@ function loadData() {
 }
 
 var createTag = tag => {
-	return 	$("<label>", {'class': 'check sm m-1'}).append(
+	return 	$("<label>", {'class': 'check sm'}).append(
 				$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag),
 				$("<span>", {title: tag.description}).html(tag.name)
 			);
@@ -722,9 +722,9 @@ function addVideoEvent() {
 		actress.favorite = !actress.favorite
 		Rest.Actress.update(actress, function() {
 			if (actress.favorite) {
-				$self.switchClass('fa-star-o', 'fa-star favorite');
+				$self.switchClass('fa-heart-o', 'fa-heart favorite');
 			} else {
-				$self.switchClass('fa-star favorite', 'fa-star-o');
+				$self.switchClass('fa-heart favorite', 'fa-heart-o');
 			}
 			// update actress list
 			Rest.Actress.list(function(list) {
@@ -829,7 +829,7 @@ function showVideo() {
 				$("<div>").append(
 						// favorite
 						$("<label>", {'class': 'text info-favorite'}).append(
-								$("<i>", {'class': "hover fa fa-star" + (actress.favorite ? " favorite" : "-o")}).data("actress", actress)
+								$("<i>", {'class': "hover fa fa-heart" + (actress.favorite ? " favorite" : "-o")}).data("actress", actress)
 						),
 						// actress
 						$("<label>", {'class': 'text hover info-actress'}).data("actress", actress).html(actress.name),

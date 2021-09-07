@@ -6,22 +6,19 @@
 	<nav class="navbar navbar-expand-sm fixed-top navbar-light justify-content-center p-0" style="background-color: transparent!important; flex-direction: column;">
 		<div class="bg-light rounded-bottom p-1 flay-bar">
 			<input class="form-control input-flay search" type="search" id="search" placeholder="Search...">
-			<div class="divider"></div>
 			<span class="check-group check-group-rounded">
-				<label><input type="checkbox" id="favorite"><span>F</span></label>
-				<label><input type="checkbox" id="video" checked="checked"><span>V</span></label>
-				<label><input type="checkbox" id="subtitles"><span>S</span></label>
+				<label><input type="checkbox" id="favorite"><span><i class="fa fa-heart"></i></span></label>
+				<label><input type="checkbox" id="video" checked="checked"><span><i class="fa fa-film"></i></span></label>
+				<label><input type="checkbox" id="subtitles"><span><i class="fa fa-file-text"></i></span></label>
 			</span>
-			<div class="divider"></div>
 			<span class="check-group check-group-rounded">
-				<label><input type="checkbox" id="rank0" checked="checked"><span>0</span></label>
-				<label><input type="checkbox" id="rank1"><span>1</span></label>
-				<label><input type="checkbox" id="rank2"><span>2</span></label>
-				<label><input type="checkbox" id="rank3"><span>3</span></label>
-				<label><input type="checkbox" id="rank4"><span>4</span></label>
-				<label><input type="checkbox" id="rank5"><span>5</span></label>
+				<label><input type="checkbox" id="rank0" checked="checked"><span><i class="fa fa-circle"></i></span></label>
+				<label><input type="checkbox" id="rank1"><span><i class="fa fa-star"></i></span></label>
+				<label><input type="checkbox" id="rank2"><span><i class="fa fa-star"></i></span></label>
+				<label><input type="checkbox" id="rank3"><span><i class="fa fa-star"></i></span></label>
+				<label><input type="checkbox" id="rank4"><span><i class="fa fa-star"></i></span></label>
+				<label><input type="checkbox" id="rank5"><span><i class="fa fa-star"></i></span></label>
 			</span>
-			<div class="divider"></div>
 			<span class="check-group check-group-rounded">
 				<label><input type="radio" name="sort" value="S"><span>S</span></label>
 				<label><input type="radio" name="sort" value="O"><span>O</span></label>
@@ -30,15 +27,12 @@
 				<label><input type="radio" name="sort" value="R"><span>R</span></label>
 				<label><input type="radio" name="sort" value="M" checked="checked"><span>M</span></label>
 			</span>
-			<div class="divider"></div>
 			<span class="check-group check-group-rounded">
-				<label><input type="checkbox" id="tags"><span title="Tag">T</span></label>
-				<label><input type="checkbox" id="toggleStatisticsStudio"><span title="Studio over 5">S</span></label>
-				<label><input type="checkbox" id="toggleStatisticsActress"><span title="Actress over 5">A</span></label>
+				<label><input type="checkbox" id="tags"><span title="Tag"><i class="fa fa-tags"></i></span></label>
+				<label><input type="checkbox" id="toggleStatisticsStudio"><span title="Studio over 5"><i class="fa fa-building"></i></span></label>
+				<label><input type="checkbox" id="toggleStatisticsActress"><span title="Actress over 5"><i class="fa fa-female"></i></span></label>
 			</span>
-			<div class="divider"></div>
 			<label class="check"><span class="btn-reload" title="reload Data"><i class="fa fa-refresh"></i></span></label>
-			<div class="divider"></div>
 			<button class="btn btn-sm btn-link toggle-option text-dark"><i class="fa fa-ellipsis-v"></i></button>
 		</div>
 		<div class="bg-light" style="display: none;" id="selectTags">
@@ -112,11 +106,11 @@
 			</div>
 			<div class="tag-wrapper container-lg">
 				<div id="videoTags" class="tag-list">
-					<label class="check sm m-1 label-add-tag">
-						<button type="button" class="btn btn-light btn-sm border-0 mx-1" onclick="$('#newTagForm').toggleClass('show');"><i class="fa fa-plus"></i></button>
+					<label class="check sm label-add-tag">
+						<span onclick="$('#newTagForm').toggleClass('show');"><i class="fa fa-plus"></i></span>
 					</label>
 				</div>
-				<div class="d-inline-flex justify-content-center">
+				<div class="d-inline-flex justify-content-center mt-2">
 					<div id="newTagForm" class="collapse input-group input-group-sm" style="width: 300px;">
 						<input id="newTagName" class="form-control border-0" placeholder="Name" />
 						<input id="newTagDesc" class="form-control border-0" placeholder="Description" />

@@ -4,10 +4,17 @@
 	URLs starting with: https://www.pandalive.co.kr/live/play
  */
 
-#header_wide, .worldMsgTopTab, .fullboard, #watermark {
-	display: none!important;
+#header_wide,
+.worldMsgTopTab,
+.fullboard,
+#watermark,
+#castView .fullboard_info {
+	height: 0 !important;
+	border: 0 !important;
 }
-
+#castView .tabPlayer #player #watermark {
+	display: none !important;
+}
 .plyr {
 	position: fixed;
 	top: 0;
@@ -17,28 +24,29 @@
 	border: 0;
 }
 #castView .tabPlayer .playMenu {
-	position: fixed!important;
+	position: fixed !important;
+	top: 0;
 	left: 0;
 	right: 0;
-	top: 0;
-	border: 0!important;
+	border: 0 !important;
 	padding-bottom: 20px;
 }
 #castView .tabPlayer .playMenu .subtitle {
 	display: inline;
+	text-shadow: 1px 1px 1px black;
 }
 
-#castView .tabPlayer .playMenu #muteLayer, .tabList {
-	display: none!important;
+#castView .tabPlayer .playMenu #muteLayer,
+.tabList {
+	display: none !important;
 }
 #castView .tabPlayer .playMenu .viewTimeText {
 	opacity: 0;
 }
-
 #castView .tabPlayer .playMenu ul li.store,
 #castView .tabPlayer .playMenu ul li.heart,
 #castView .tabPlayer .playMenu ul li.screen {
-	display: none!important;
+	display: none !important;
 }
 #castView > .tabChat {
 	padding-top: 50px;
@@ -53,18 +61,103 @@
 	border: 0;
 	text-align: right;
 	margin-right: 30px;
+	color: #fff;
+	text-shadow: 1px 1px 1px black;
+}
+#castView > .tabChat > div > h2 > strong {
+	color: #fff;
+	text-shadow: 1px 1px 1px black;
 }
 #castView > .tabChat > div > a,
 #castView > .tabChat > div > ul,
-#castView > .tabChat > div > div
-{
-	display: none!important;
+#castView > .tabChat > div > div {
+	opacity: 0;
 }
-
-#spinner img, #adult_icon {
-	display: none!important;
+#castView > .tabChat > div > div:hover {
+	opacity: 1;
 }
-
+#castView .chatbox #ChatList.chat_area {
+	background-color: rgba(0, 0, 0, 0.5);
+	position: fixed;
+	top: unset !important;
+	left: unset !important;
+	right: 0 !important;
+	bottom: 50px !important;
+	width: 250px !important;
+	height: 500px !important;
+}
+#castView .chatbox .chat_area .notice {
+	display: none;
+}
+#castView .chatbox .chat_area .chat {
+	color: transparent;
+}
+#castView .chatbox .chat_area .chat .ic_sex,
+#castView .chatbox .chat_area .chat .level,
+#castView .chatbox .chat_area .chat .nickname,
+#castView .chatbox .chat_area .chat .message {
+	color: #fff;
+}
+#castView .chatbox .write_box {
+	display: none !important;
+}
+#spinner img,
+#adult_icon {
+	display: none !important;
+}
 #video_blind {
-	opacity: 0!important;
+	opacity: 0 !important;
+}
+#roomUserid {
+	position: fixed;
+	top: 32px;
+	left: 16px;
+}
+#roomUserid a {
+	color: #fff;
+	text-shadow: 1px 1px 1px black;
+}
+#header_wide h1,
+#header_wide .c_search_box,
+#header_wide .top_menu,
+#castView .fullboard_info .report_icon,
+#castView .fullboard_info .user_pic,
+#castView .fullboard_info dd #roomUserNick,
+#castView .fullboard_info dt,
+#castView .fullboard_info dd:nth-child(3) {
+	display: none !important;
+}
+#castView .tabPlayer .playMenu ul li a span .name {
+	width: 1px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+
+::-webkit-scrollbar {
+	width: 8px;
+	height: 8px;
+	border: 0px solid #fff;
+	background-color: rgba(255,255,255,0);
+}
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+	display: block;
+	height: 10px;
+	background-color: rgba(255,255,255,0);
+}
+::-webkit-scrollbar-track {
+	background-color: rgba(255,255,255,0);
+	-webkit-border-radius: 10px;
+	border-radius:10px;
+	-webkit-box-shadow: inset 0 0 4px rgba(0,0,0,0);
+	box-shadow: inset 0 0 4px rgba(0,0,0,0);
+}
+::-webkit-scrollbar-thumb {
+	height: 50px;
+	width: 50px;
+	background-color: rgba(218, 218, 218, .75);
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6);
 }

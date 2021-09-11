@@ -41,29 +41,23 @@
 </style>
 
 <div role="body">
-	<nav id="topMenu" class="navbar navbar-expand-sm bg-light navbar-light justify-content-center">
-		<input class="form-control input-flay search" type="search" id="search" placeholder="Search..." />
-		<label class="text sm" id="totalCount"></label>
-		<span class="check-group danger mx-2">
-			<label>
-				<input type="checkbox" id="favorite" /><span><i class="fa fa-heart"></i></span>
-			</label>
-			<label>
-				<input type="checkbox" id="noFavorite" /><span><i class="fa fa-heart-o"></i></span>
-			</label>
-		</span>
-		<span class="check-group primary mx-2">
-			<label>
-				<input type="radio" id="viewTypeCard" name="viewType" value="c" checked="checked" /><span><i class="fa fa-th"></i></span>
-			</label>
-			<label>
-				<input type="radio" id="viewTypeTable" name="viewType" value="t" /><span><i class="fa fa-list"></i></span>
-			</label>
-		</span>
-		<button class="btn btn-flay ml-2" id="nameCheckBtn">Name check</button>
-		<input class="form-control input-flay width-50" id="limit" name="limit" value="0.95" />
-		<button class="btn btn-sm btn-flay btn-reload ml-2"><i class="fa fa-refresh"></i></button>
-	</nav>
+	<div id="topMenu">
+		<nav class="bg-light rounded-bottom">
+			<input class="form-control input-flay search" type="search" id="search" placeholder="Search..." />
+			<label class="text sm" id="totalCount"></label>
+			<span class="check-group">
+				<label><input type="checkbox" id="favorite" /><span class="fa fa-heart"></span></label>
+				<label><input type="checkbox" id="noFavorite" /><span class="fa fa-heart-o"></span></label>
+			</span>
+			<span class="check-group">
+				<label><input type="radio" id="viewTypeCard" name="viewType" value="c" checked="checked" /><span class="fa fa-th"></span></label>
+				<label><input type="radio" id="viewTypeTable" name="viewType" value="t" /><span class="fa fa-list"></span></label>
+			</span>
+			<button class="btn btn-flay" id="nameCheckBtn">Name check</button>
+			<input class="form-control input-flay width-50" id="limit" name="limit" value="0.95" />
+			<button class="btn btn-sm btn-flay btn-reload"><i class="fa fa-refresh"></i></button>
+		</nav>
+	</div>
 
 	<div id="cardViewWrapper">
 		<div class="actress-list text-center"></div>

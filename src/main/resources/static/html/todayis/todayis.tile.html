@@ -91,19 +91,6 @@
 		color: #dc3545;
 		transition: color 0.4s;
 	}
-	.control-bar {
-		display: flex;
-		justify-content: center;
-	}
-	.control-bar > .control {
-		display: flex;
-		align-items: baseline;
-		gap: 1rem;
-		background-color: #181818;
-		border-radius: 0 0 8px 8px;
-		color: #ddd;
-		padding: 0.5rem 0.75rem 0.5rem 0.75rem;
-	}
 	label.radio {
 		margin: 0 0.25rem;
 	}
@@ -122,8 +109,8 @@
 	}
 </style>
 <div role="body">
-	<div id="topMenu" class="control-bar">
-		<div class="control">
+	<div id="topMenu">
+		<nav class="bg-light rounded-bottom">
 			<span id="size">14</span>
 			<span id="length">2.5 GB</span>
 			<span id="sorting">
@@ -131,7 +118,7 @@
 				<label class="radio"><input type="radio" name="sort" value="L" /><span>Length</span></label>
 				<label class="radio"><input type="radio" name="sort" value="M" /><span>Modified</span></label>
 			</span>
-		</div>
+		</nav>
 	</div>
 
 	<div id="folderWrapper"></div>

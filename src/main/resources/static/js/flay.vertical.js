@@ -12,53 +12,8 @@ var currentIndex = -1;
 
 var slideTimer;
 var keyInputQueue = "";
-var keyLastInputTime = new Date().getTime();
+var keyLastInputTime = Date.now();
 var collecting = false;
-
-$(document).ready(function () {
-	attachEventListener();
-
-	loadData();
-});
-
-function loadData() {
-	var tagLoaded = false,
-		flayLoaded = false,
-		actressLoaded = false;
-	var deploy = () => {
-		if (tagLoaded && flayLoaded && actressLoaded) {
-			let tagArray = [];
-			$.each(tagList, (i, tag) => {
-				tagArray.push(createTag(tag));
-			});
-			$(".tag-list > label:not(.label-add-tag)").remove();
-			$(".tag-list").prepend(tagArray);
-			$("#pageContent").trigger("collect");
-		}
-	};
-
-	// load tag list
-	Rest.Tag.list(function (list) {
-		tagList = list;
-		Util.Tag.sort(tagList);
-		tagLoaded = true;
-		deploy();
-	});
-
-	// load video list
-	Rest.Flay.list(function (list) {
-		videoList = list;
-		flayLoaded = true;
-		deploy();
-	});
-
-	// load actress list
-	Rest.Actress.list(function (list) {
-		actressList = list;
-		actressLoaded = true;
-		deploy();
-	});
-}
 
 var createTag = (tag) => {
 	return $("<label>", { class: "check sm" }).append($("<input>", { type: "checkbox", "data-tag-id": tag.id }).data("tag", tag), $("<span>", { title: tag.description }).html(tag.name));
@@ -68,7 +23,7 @@ $.fn.appendTag = function (tagList, tag) {
 	return this.each(function () {
 		var $this = $(this);
 		if (tagList) {
-			$.each(tagList, (i, tag) => {
+			tagList.forEach((tag) => {
 				$this.append(createTag(tag));
 			});
 		}
@@ -79,6 +34,94 @@ $.fn.appendTag = function (tagList, tag) {
 };
 
 function attachEventListener() {
+	function addVideoEvent() {
+		// studio
+		$(".info-studio")
+			.on("click", function () {
+				View.studio(currentFlay.studio);
+			})
+			.addClass("hover");
+		// opus
+		$(".info-opus").on("click", function () {
+			View.video(currentFlay.opus);
+		});
+		// title
+		$(".info-title").on("click", function () {
+			View.flay(currentFlay.opus);
+		});
+		// video file
+		$(".info-video").on("click", function () {
+			if (currentFlay.files.movie.length > 0) Rest.Flay.play(currentFlay);
+			else Search.torrent(currentFlay);
+		});
+		// subtitles
+		$(".info-subtitles").on("click", function () {
+			if (currentFlay.files.subtitles.length > 0) {
+				Rest.Flay.subtitles(currentFlay);
+			} else {
+				Search.subtitles(currentFlay.opus);
+			}
+		});
+		// overview
+		$(".info-overview").on("click", function () {
+			$(this).hide();
+			$(".info-overview-input").show().focus();
+		});
+		// overview input
+		$(".info-overview-input").on("keyup", function (e) {
+			e.stopPropagation();
+			if (e.keyCode === 13) {
+				var $this = $(this);
+				currentFlay.video.comment = $(this).val();
+				Rest.Video.update(currentFlay.video, function () {
+					$this.hide();
+					$(".info-overview")
+						.html(currentFlay.video.comment != "" ? currentFlay.video.comment : "Overview")
+						.toggleClass("nonExist", currentFlay.video.comment === "")
+						.show();
+				});
+			}
+		});
+		// rank
+		$("#ranker, input[name='ranker']").on("change", function () {
+			currentFlay.video.rank = $(this).val();
+			Rest.Video.update(currentFlay.video);
+		});
+		// actress name click
+		$(".info-wrapper-actress").on("click", ".info-actress", function () {
+			var actress = $(this).data("actress");
+			actress.name != "Amateur" && View.actress(actress.name);
+		});
+		// actress favorite click
+		$(".info-wrapper-actress").on("click", ".fa", function () {
+			var $self = $(this);
+			var actress = $(this).data("actress");
+			actress.favorite = !actress.favorite;
+			Rest.Actress.update(actress, function () {
+				if (actress.favorite) {
+					$self.switchClass("fa-heart-o", "fa-heart favorite");
+				} else {
+					$self.switchClass("fa-heart favorite", "fa-heart-o");
+				}
+				// update actress list
+				Rest.Actress.list(function (list) {
+					actressList = list;
+				});
+			});
+		});
+		// new tag input key event 		e.stopPropagation();
+		$("#newTagName, #newTagDesc").on("keyup", function (e) {
+			e.stopPropagation();
+		});
+		// add-basket-btn
+		$(".add-basket-btn").on("click", function () {
+			flayWebsocket.info('{"mode":"grap", "opus":"' + currentFlay.opus + '"}');
+		});
+		// control video stream
+		$(".cover-wrapper-inner.curr > .cover-box").on("click", Flaying.start);
+		$(".cover-wrapper-inner.curr > .cover-box > #btnVideoClose").on("click", Flaying.stop);
+	}
+
 	// header tag select event
 	$("#selectTags").on("change", "input[data-tag-id]", function () {
 		if ($("#tagPopup").prop("checked")) {
@@ -223,6 +266,45 @@ function attachEventListener() {
 			}
 		})
 		.trigger("resize");
+}
+
+function loadData() {
+	let tagLoaded = false;
+	let flayLoaded = false;
+	let actressLoaded = false;
+	const deploy = () => {
+		if (tagLoaded && flayLoaded && actressLoaded) {
+			let tagArray = [];
+			tagList.forEach((tag) => {
+				tagArray.push(createTag(tag));
+			});
+			$(".tag-list > label:not(.label-add-tag)").remove();
+			$(".tag-list").prepend(tagArray);
+			$("#pageContent").trigger("collect");
+		}
+	};
+
+	// load tag list
+	Rest.Tag.list(function (list) {
+		tagList = list;
+		Util.Tag.sort(tagList);
+		tagLoaded = true;
+		deploy();
+	});
+
+	// load video list
+	Rest.Flay.list(function (list) {
+		videoList = list;
+		flayLoaded = true;
+		deploy();
+	});
+
+	// load actress list
+	Rest.Actress.list(function (list) {
+		actressList = list;
+		actressLoaded = true;
+		deploy();
+	});
 }
 
 function collectList() {
@@ -622,7 +704,7 @@ var navigation = {
 	},
 	go: function (idx) {
 		if (idx < 0 || idx > collectedList.length - 1) {
-			console.warn(`navigation.go wrong index ${idx}`);
+			console.error(`navigation.go wrong index ${idx}`);
 			return;
 		}
 		var prevIndex = currentIndex;
@@ -632,41 +714,36 @@ var navigation = {
 		}
 		currentFlay = collectedList[currentIndex];
 
-		showVideo(); // currentIndex - prevIndex
+		showVideo();
 		navigation.paging();
 	},
 	paging: function () {
-		var addPaginationBtn = function (idx) {
-			$("<li>", {
-				class: "page-item " + (idx === 0 ? "first " : "") + (idx === collectedList.length - 1 ? "last " : "") + (idx === currentIndex ? "active" : ""),
-			})
+		var addPaginationBtn = (idx) => {
+			$("<li>", { class: "page-item" + (idx === currentIndex ? " active" : "") })
 				.append(
 					$("<a>", { class: "page-link" })
-						.html(idx + 1)
 						.on("click", function () {
 							navigation.go(idx);
 						})
+						.html(idx + 1)
 				)
 				.appendTo($(".pagination"));
 		};
 
 		$(".pagination").empty();
-		var start = currentIndex - 4;
-		start = start < 0 ? 0 : start;
-		var end = currentIndex + 5;
-		end = end > collectedList.length ? collectedList.length : end;
+		var start = Math.max(currentIndex - 4, 0);
+		var end = Math.min(currentIndex + 5, collectedList.length);
 
 		if (start > 0) {
-			// first navi
-			addPaginationBtn(0);
+			addPaginationBtn(0); // first page
 		}
 		for (var i = start; i < end; i++) {
 			addPaginationBtn(i);
 		}
 		if (end < collectedList.length) {
-			// last navi
-			addPaginationBtn(collectedList.length - 1);
+			addPaginationBtn(collectedList.length - 1); // last page
 		}
+
 		$("#paginationProgress .progress-bar").css({
 			width: Math.round(((currentIndex + 1) / collectedList.length) * 100) + "%",
 		});
@@ -691,94 +768,6 @@ var navigation = {
 		},
 	},
 };
-
-function addVideoEvent() {
-	// studio
-	$(".info-studio")
-		.on("click", function () {
-			View.studio(currentFlay.studio);
-		})
-		.addClass("hover");
-	// opus
-	$(".info-opus").on("click", function () {
-		View.video(currentFlay.opus);
-	});
-	// title
-	$(".info-title").on("click", function () {
-		View.flay(currentFlay.opus);
-	});
-	// video file
-	$(".info-video").on("click", function () {
-		if (currentFlay.files.movie.length > 0) Rest.Flay.play(currentFlay);
-		else Search.torrent(currentFlay);
-	});
-	// subtitles
-	$(".info-subtitles").on("click", function () {
-		if (currentFlay.files.subtitles.length > 0) {
-			Rest.Flay.subtitles(currentFlay);
-		} else {
-			Search.subtitles(currentFlay.opus);
-		}
-	});
-	// overview
-	$(".info-overview").on("click", function () {
-		$(this).hide();
-		$(".info-overview-input").show().focus();
-	});
-	// overview input
-	$(".info-overview-input").on("keyup", function (e) {
-		e.stopPropagation();
-		if (e.keyCode === 13) {
-			var $this = $(this);
-			currentFlay.video.comment = $(this).val();
-			Rest.Video.update(currentFlay.video, function () {
-				$this.hide();
-				$(".info-overview")
-					.html(currentFlay.video.comment != "" ? currentFlay.video.comment : "Overview")
-					.toggleClass("nonExist", currentFlay.video.comment === "")
-					.show();
-			});
-		}
-	});
-	// rank
-	$("#ranker, input[name='ranker']").on("change", function () {
-		currentFlay.video.rank = $(this).val();
-		Rest.Video.update(currentFlay.video);
-	});
-	// actress name click
-	$(".info-wrapper-actress").on("click", ".info-actress", function () {
-		var actress = $(this).data("actress");
-		actress.name != "Amateur" && View.actress(actress.name);
-	});
-	// actress favorite click
-	$(".info-wrapper-actress").on("click", ".fa", function () {
-		var $self = $(this);
-		var actress = $(this).data("actress");
-		actress.favorite = !actress.favorite;
-		Rest.Actress.update(actress, function () {
-			if (actress.favorite) {
-				$self.switchClass("fa-heart-o", "fa-heart favorite");
-			} else {
-				$self.switchClass("fa-heart favorite", "fa-heart-o");
-			}
-			// update actress list
-			Rest.Actress.list(function (list) {
-				actressList = list;
-			});
-		});
-	});
-	// new tag input key event 		e.stopPropagation();
-	$("#newTagName, #newTagDesc").on("keyup", function (e) {
-		e.stopPropagation();
-	});
-	// add-basket-btn
-	$(".add-basket-btn").on("click", function () {
-		flayWebsocket.info('{"mode":"grap", "opus":"' + currentFlay.opus + '"}');
-	});
-	// control video stream
-	$(".cover-wrapper-inner.curr > .cover-box").on("click", Flaying.start);
-	$(".cover-wrapper-inner.curr > .cover-box > #btnVideoClose").on("click", Flaying.stop);
-}
 
 var Flaying = {
 	isPlay: false,
@@ -856,19 +845,17 @@ function showVideo() {
 		$(".info-title").html(currentFlay.title);
 		// actress & event
 		$(".info-wrapper-actress").empty();
-		$.each(currentFlay.actressList, function (index, name) {
+		currentFlay.actressList.forEach((name) => {
 			if (name === "Amateur") {
 				return;
 			}
-			Rest.Actress.get(name, function (actress) {
+			Rest.Actress.get(name, (actress) => {
 				$("<div>")
 					.append(
-						// favorite
-						$("<label>", { class: "text info-favorite" }).append($("<i>", { class: "hover fa fa-heart" + (actress.favorite ? " favorite" : "-o") }).data("actress", actress)),
-						// actress
-						$("<label>", { class: "text hover info-actress" }).data("actress", actress).html(actress.name),
+						$("<label>", { class: "text info-favorite" }).append($("<i>", { class: "hover fa fa-heart" + (actress.favorite ? " favorite" : "-o") }).data("actress", actress)), // favorite
+						$("<label>", { class: "text info-actress hover" }).html(actress.name).data("actress", actress),
 						$("<label>", { class: "text info-actress-extra" }).html(actress.localName),
-						$("<label>", { class: "text info-actress-extra" }).html(actress.birth),
+						$("<label>", { class: "text info-actress-extra" }).html(actress.birth.replace("年", "<small>年</small>").replace("月", "<small>月</small>").replace("日", "<small>日</small>")),
 						$("<label>", { class: "text info-actress-extra" }).html(Util.Actress.getAge(actress)),
 						$("<label>", { class: "text info-actress-extra" }).html(actress.debut.toBlank()),
 						$("<label>", { class: "text info-actress-extra" }).html(actress.body),
@@ -882,13 +869,13 @@ function showVideo() {
 		// modified
 		$(".info-modified").html(new Date(currentFlay.lastModified).format("yyyy-MM-dd"));
 		// video file
-		var movieSize = currentFlay.files.movie.length;
+		const movieSize = currentFlay.files.movie.length;
 		$(".info-video")
-			.html(movieSize === 0 ? "Video" : (movieSize > 1 ? movieSize : "") + "V " + File.formatSize(currentFlay.length))
+			.html(movieSize === 0 ? "Video" : (movieSize > 1 ? movieSize + "V " : "") + File.formatSize(currentFlay.length))
 			.toggleClass("nonExist", movieSize === 0);
 		// video play
 		$(".info-play")
-			.html(currentFlay.video.play + "P")
+			.html(currentFlay.video.play + "<small>P</small>")
 			.toggle(currentFlay.video.play > 0);
 		// subtitles
 		$(".info-subtitles")
@@ -905,7 +892,7 @@ function showVideo() {
 		$("input[name='ranker'][value='" + currentFlay.video.rank + "']").prop("checked", true);
 		// tag
 		$("input:checked", "#videoTags.tag-list").prop("checked", false);
-		$.each(currentFlay.video.tags, function (i, tagId) {
+		currentFlay.video.tags.forEach((tagId) => {
 			$("input[data-tag-id='" + tagId + "']", "#videoTags").prop("checked", true);
 		});
 		navigation.on();
@@ -913,12 +900,9 @@ function showVideo() {
 
 	navigation.off();
 
-	var prevCoverURL = PATH,
-		currCoverURL = PATH,
-		nextCoverURL = PATH;
-	prevCoverURL += 0 < currentIndex ? "/static/cover/" + collectedList[currentIndex - 1].opus : "/static/image/random?_=" + new Date().getTime();
-	currCoverURL += "/static/cover/" + currentFlay.opus;
-	nextCoverURL += currentIndex < collectedList.length - 1 ? "/static/cover/" + collectedList[currentIndex + 1].opus : "/static/image/random?_=" + new Date().getTime();
+	const prevCoverURL = PATH + (0 < currentIndex ? "/static/cover/" + collectedList[currentIndex - 1].opus : "/static/image/random?_=" + Date.now());
+	const currCoverURL = PATH + ("/static/cover/" + currentFlay.opus);
+	const nextCoverURL = PATH + (currentIndex < collectedList.length - 1 ? "/static/cover/" + collectedList[currentIndex + 1].opus : "/static/image/random?_=" + Date.now());
 
 	$(".cover-wrapper-inner.prev > .cover-box").css({ backgroundImage: "url(" + prevCoverURL + ")" });
 	$(".cover-wrapper-inner.curr > .cover-box").css({ backgroundImage: "url(" + currCoverURL + ")" });
@@ -931,3 +915,7 @@ function destory() {
 	$(document).off("keyup");
 	navigation.slide.off();
 }
+
+attachEventListener();
+
+loadData();

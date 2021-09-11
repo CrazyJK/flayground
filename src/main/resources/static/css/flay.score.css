@@ -1,34 +1,98 @@
 @charset "UTF-8";
 body {
 	font-size: 14px;
-	font-family: 'D2Coding';
+	font-family: "D2Coding";
 }
 .f-head {
-    text-transform: capitalize;
+	text-transform: capitalize;
 }
-.f-head > .d-flex, 
+.f-head > .d-flex,
 .f-body > .d-flex {
 	border-bottom: 1px solid #ccc;
 }
 .f-head > .d-flex > div,
 .f-body > .d-flex > div {
-	padding: .25rem;
+	padding: 0.25rem;
 }
 .f-body > .d-flex:hover {
-	background-color: rgba(0, 0, 0, .025);
+	background-color: rgba(0, 0, 0, 0.025);
 }
 .f-body > .d-flex.active {
-	background-color: rgba(255, 255, 0, .125);
+	background-color: rgba(255, 255, 0, 0.125);
 }
-.index    {min-width: 30px; width: 30px; max-width: 30px; text-align: right;}
-.opus     {min-width: 80px; width: 80px; max-width: 80px;}
-.actress  {text-align: right;}
-.release  {min-width: 80px; width: 80px; max-width: 80px;}
-.modified {min-width: 66px; width: 66px; max-width: 66px;}
-.rank     {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
-.play     {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
-.movie    {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
-.subti    {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
-.score    {min-width: 40px; width: 40px; max-width: 40px; text-align: right;}
-.length   {min-width: 60px; width: 60px; max-width: 60px; text-align: right;}
-.total    {min-width: 65px; width: 65px; max-width: 65px; text-align: right;}
+.index {
+	min-width: 30px;
+	width: 30px;
+	max-width: 30px;
+	text-align: right;
+}
+.opus {
+	min-width: 80px;
+	width: 80px;
+	max-width: 80px;
+}
+.actress {
+	text-align: right;
+}
+.release {
+	min-width: 80px;
+	width: 80px;
+	max-width: 80px;
+}
+.modified {
+	min-width: 66px;
+	width: 66px;
+	max-width: 66px;
+}
+.rank {
+	min-width: 40px;
+	width: 40px;
+	max-width: 40px;
+	text-align: right;
+}
+.play {
+	min-width: 40px;
+	width: 40px;
+	max-width: 40px;
+	text-align: right;
+}
+.movie {
+	min-width: 40px;
+	width: 40px;
+	max-width: 40px;
+	text-align: right;
+}
+.subti {
+	min-width: 40px;
+	width: 40px;
+	max-width: 40px;
+	text-align: right;
+}
+.score {
+	min-width: 40px;
+	width: 40px;
+	max-width: 40px;
+	text-align: right;
+}
+.length {
+	min-width: 60px;
+	width: 60px;
+	max-width: 60px;
+	text-align: right;
+}
+.total {
+	min-width: 65px;
+	width: 65px;
+	max-width: 65px;
+	text-align: right;
+}
+#actressGroup {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-around;
+	align-items: baseline;
+	gap: 0.5rem;
+}
+#actressGroup button {
+	color: #eee;
+}

@@ -76,89 +76,83 @@
 	}
 </style>
 
-<div id="topMenu" class="bg-light p-2">
-	<div class="container">
-		<div class="row">
-			<div class="col-4">
-				<input class="form-control input-flay search" id="keyword" placeholder="Search" />
-				<label class="text sm" id="totalFlayCount"></label>
-			</div>
-			<div class="col-4">
-				<ul class="pagination pagination-sm justify-content-center m-0">
-					<li class="page-item" id="page-first">
-						<a class="page-link border-0" href="javascript:goPage('first');"><i class="fa fa-fast-backward"></i></a>
-					</li>
-					<li class="page-item" id="page-prev">
-						<a class="page-link border-0" href="javascript:goPage('prev');"><i class="fa fa-backward"></i></a>
-					</li>
-					<li class="page-item" id="page-next">
-						<a class="page-link border-0" href="javascript:goPage('next');"><i class="fa fa-forward"></i></a>
-					</li>
-					<li class="page-item" id="page-last">
-						<a class="page-link border-0" href="javascript:goPage('last');"><i class="fa fa-fast-forward"></i></a>
-					</li>
-				</ul>
-			</div>
-			<div class="col-4 text-right">
-				<input type="number" class="form-control input-flay width-50" id="pageSize" title="enter to change" />
-				<span class="check-group sm mx-2">
-					<label
-						><input type="radio" id="viewTypeCard" name="viewType" value="c" /><span><i class="fa fa-th"></i></span
-					></label>
-					<label
-						><input type="radio" id="viewTypeTable" name="viewType" value="t" /><span><i class="fa fa-list"></i></span
-					></label>
-				</span>
-			</div>
-		</div>
-	</div>
-</div>
-
-<div id="contentWrapper">
-	<div class="container rounded p-2 mb-2" id="detailView">
-		<div class="text-right">
-			<i class="fa fa-times text-dark mx-2 hover" id="btnCloseDetailView"></i>
-		</div>
-		<div class="marker-direction marker-previous"><i class="fa fa-angle-left"></i></div>
-		<div class="marker-direction marker-next"><i class="fa fa-angle-right"></i></div>
-		<div class="mx-auto mb-4" id="detailViewInner"></div>
+<div role="body">
+	<div id="topMenu">
+		<nav class="bg-light rounded-bottom">
+			<input class="form-control input-flay search" id="keyword" placeholder="Search" />
+			<label class="text sm" id="totalFlayCount"></label>
+			<ul class="pagination pagination-sm justify-content-center m-0">
+				<li class="page-item" id="page-first">
+					<a class="page-link border-0" href="javascript:goPage('first');"><i class="fa fa-fast-backward"></i></a>
+				</li>
+				<li class="page-item" id="page-prev">
+					<a class="page-link border-0" href="javascript:goPage('prev');"><i class="fa fa-backward"></i></a>
+				</li>
+				<li class="page-item" id="page-next">
+					<a class="page-link border-0" href="javascript:goPage('next');"><i class="fa fa-forward"></i></a>
+				</li>
+				<li class="page-item" id="page-last">
+					<a class="page-link border-0" href="javascript:goPage('last');"><i class="fa fa-fast-forward"></i></a>
+				</li>
+			</ul>
+			<input type="number" class="form-control input-flay width-50" id="pageSize" title="enter to change" />
+			<span class="check-group sm mx-2">
+				<label
+					><input type="radio" id="viewTypeCard" name="viewType" value="c" /><span><i class="fa fa-th"></i></span
+				></label>
+				<label
+					><input type="radio" id="viewTypeTable" name="viewType" value="t" /><span><i class="fa fa-list"></i></span
+				></label>
+			</span>
+		</nav>
 	</div>
 
-	<div class="container" id="tableView">
-		<div class="rounded bg-light p-1">
-			<table class="table table-sm table-hover bg-light m-0">
-				<thead>
-					<tr>
-						<th class="border-top-0 studio">Studio</th>
-						<th class="border-top-0 opus">Opus</th>
-						<th class="border-top-0 title" style="padding-left: 90px">Title</th>
-						<th class="border-top-0 actress">Actress</th>
-						<th class="border-top-0 release">Release</th>
-					</tr>
-				</thead>
-				<tbody id="tableList"></tbody>
-			</table>
+	<div id="contentWrapper">
+		<div class="container rounded p-2 mb-2" id="detailView">
+			<div class="text-right">
+				<i class="fa fa-times text-dark mx-2 hover" id="btnCloseDetailView"></i>
+			</div>
+			<div class="marker-direction marker-previous"><i class="fa fa-angle-left"></i></div>
+			<div class="marker-direction marker-next"><i class="fa fa-angle-right"></i></div>
+			<div class="mx-auto mb-4" id="detailViewInner"></div>
+		</div>
+
+		<div class="container" id="tableView">
+			<div class="rounded bg-light p-1">
+				<table class="table table-sm table-hover bg-light m-0">
+					<thead>
+						<tr>
+							<th class="border-top-0 studio">Studio</th>
+							<th class="border-top-0 opus">Opus</th>
+							<th class="border-top-0 title" style="padding-left: 90px">Title</th>
+							<th class="border-top-0 actress">Actress</th>
+							<th class="border-top-0 release">Release</th>
+						</tr>
+					</thead>
+					<tbody id="tableList"></tbody>
+				</table>
+			</div>
+		</div>
+		<div class="container-fluid" id="cardView">
+			<div id="cardList" class="text-center"></div>
 		</div>
 	</div>
-	<div class="container-fluid" id="cardView">
-		<div id="cardList" class="text-center"></div>
-	</div>
-</div>
 
-<div id="bottomMenu" class="bg-light p-2">
-	<div class="container">
-		<ul class="pagination justify-content-center m-0">
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_1">1</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_2">2</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_3">3</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_4">4</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_5">5</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_6">6</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_7">7</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_8">8</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_9">9</a></li>
-			<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_10">10</a></li>
-		</ul>
+	<div id="bottomMenu" class="bg-light p-2">
+		<div class="container">
+			<ul class="pagination justify-content-center m-0">
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_1">1</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_2">2</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_3">3</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_4">4</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_5">5</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_6">6</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_7">7</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_8">8</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_9">9</a></li>
+				<li class="page-item"><a class="page-link" href="javascript:goPage()" id="page_10">10</a></li>
+			</ul>
+		</div>
 	</div>
 </div>
 

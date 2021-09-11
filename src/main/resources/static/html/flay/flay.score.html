@@ -1,84 +1,80 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Flay List Order by Score DESC :: Flayground</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/png" href="/img/favicon/flay_0.png"/>
-<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css"/>
-<link rel="stylesheet" href="/css/base.scrollbar.css"/>
-<link rel="stylesheet" href="/css/crazy.fonts.css"/>
-<link rel="stylesheet" href="/css/crazy.common.css"/>
-<link rel="stylesheet" href="/css/crazy.common.range.css"/>
-<link rel="stylesheet" href="/css/flay.view.card.css"/>
-<link rel="stylesheet" href="/css/flay.score.css"/>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-<script type="text/javascript" src="/js/crazy.common.js"></script>
-<script type="text/javascript" src="/js/crazy.jquery.js"></script>
-<script type="text/javascript" src="/js/flay.rest.service.js"></script>
-<script type="text/javascript" src="/js/flay.utils.js"></script>
-<script type="text/javascript" src="/js/flay.view.card.js"></script>
-<script type="text/javascript" src="/js/flay.score.js"></script>
-</head>
-<body>
-
-	<div class="container-fluid">
-		<div class="d-flex justify-content-between pt-2">
-			<div>
-				<span class="lead font-weight-bolder">Flay list Order by Score DESC</span>
-			</div>
-			<div>
-				<span class="check-group sm">
-					<label><input type="radio" id="viewTypeTable" name="viewType" value="t"><span><strong id="flayCount">0</strong> Flay</span></label>
-					<label><input type="radio" id="viewTypeCard"  name="viewType" value="c"><span><strong id="actressCount">0</strong> Actress</span></label>
-				</span>
-			</div>
-			<div>
-				<a href="/html/main.html"><i class="fa fa-home lead p-2"></i></a>
-			</div>
-		</div>
-	</div>
-
-	<div style="display: none;" id="tableView">
-		<div class="container-fluid sticky-top">
-			<div class="f-head bg-light">
-			  	<div class="d-flex">
-			    	<div class="index">#</div>
-			    	<div class="opus">opus</div>
-			    	<div class="title flex-grow-1">title
-		    			<label class="check xs my-0 float-right"><input type="checkbox" id="unPlay"><span>unPlay</span></label>
-			    	</div>
-			    	<div class="actress flex-grow-1">actress</div>
-			    	<div class="release">release</div>
-			    	<div class="modified">modified</div>
-			    	<div class="rank">rank</div>
-			    	<div class="play">play</div>
-			    	<div class="movie">movie</div>
-			    	<div class="subti">subti</div>
-			    	<div class="score">score</div>
-			    	<div class="length">length</div>
-			    	<div class="total">total</div>
-			  	</div>
-			</div>
-		</div>
+	<head>
+		<title>Flay List Order by Score DESC :: Flayground</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" href="/img/favicon/flay_0.png" />
+		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css" />
+		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css" />
+		<link rel="stylesheet" href="/css/base.scrollbar.css" />
+		<link rel="stylesheet" href="/css/crazy.fonts.css" />
+		<link rel="stylesheet" href="/css/crazy.common.css" />
+		<link rel="stylesheet" href="/css/crazy.common.range.css" />
+		<link rel="stylesheet" href="/css/flay.view.card.css" />
+		<link rel="stylesheet" href="../../css/flay.score.css" />
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/js/crazy.common.js"></script>
+		<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+		<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="/js/flay.utils.js"></script>
+		<script type="text/javascript" src="/js/flay.view.card.js"></script>
+		<script type="text/javascript" src="../../js/flay.score.js"></script>
+	</head>
+	<body>
 		<div class="container-fluid">
-			<div class="f-body"></div>
+			<div class="d-flex justify-content-between pt-2">
+				<div>
+					<span class="lead font-weight-bolder">Flay list Order by Score DESC</span>
+				</div>
+				<div>
+					<span class="check-group sm">
+						<label>
+							<input type="radio" id="viewTypeTable" name="viewType" value="t" /><span><strong id="flayCount">0</strong> Flay</span>
+						</label>
+					</span>
+				</div>
+				<div>
+					<a href="/html/main.html"><i class="fa fa-home lead p-2"></i></a>
+				</div>
+			</div>
 		</div>
-		<div class="collapse fixed-center rounded bg-warning shadow" id="coverWrap" style="width: 800px;">
-			<span class="text-danger hover" style="position: absolute; right: 0; margin: 5px; font-size: 3rem; line-height: .5;" onclick="$(this).parent().hide();">&times;</span>
-			<img class="img-thumbnail">
+
+		<div style="display: none" id="tableView">
+			<div class="container-fluid sticky-top">
+				<div class="f-head bg-light">
+					<div class="d-flex">
+						<div class="index">#</div>
+						<div class="opus">opus</div>
+						<div class="title flex-grow-1">
+							title
+							<label class="check xs my-0 float-right"><input type="checkbox" id="unPlay" /><span>unPlay</span></label>
+						</div>
+						<div class="actress flex-grow-1">actress</div>
+						<div class="release">release</div>
+						<div class="modified">modified</div>
+						<div class="rank">rank</div>
+						<div class="play">play</div>
+						<div class="movie">movie</div>
+						<div class="subti">subti</div>
+						<div class="score">score</div>
+						<div class="length">length</div>
+						<div class="total">total</div>
+					</div>
+				</div>
+			</div>
+			<div class="container-fluid">
+				<div class="f-body"></div>
+			</div>
+			<div class="collapse fixed-center rounded bg-warning shadow" id="coverWrap" style="width: 800px">
+				<span class="text-danger hover" style="position: absolute; right: 0; margin: 5px; font-size: 3rem; line-height: 0.5" onclick="$(this).parent().hide();">&times;</span>
+				<img class="img-thumbnail" />
+			</div>
 		</div>
-	</div>
-
-	<div id="cardView" class="container-fluid">
-		<div id="actressGroup" class="d-flex flex-wrap"></div>
-	</div>
-
-</body>
+	</body>
 </html>

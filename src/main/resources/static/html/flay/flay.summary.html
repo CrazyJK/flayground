@@ -84,16 +84,17 @@ td.item-progress > .progress > .progress-bar {
 </style>
 
 <div role="body">
-
-	<nav id="topMenu" class="navbar navbar-expand-sm bg-light navbar-light justify-content-center" style="gap: .5rem;">
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByStudio">Studio Canvas</button>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#StudioTable">Studio Table</button>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByActress">Actress Canvas</button>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#ActressTable">Actress Table</button>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRelease">Group By Release</button>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByPath">Group By Path</button>
-		<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRank">Group By Rank</button>
-	</nav>
+	<div id="topMenu">
+		<nav class="bg-light rounded-bottom">
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByStudio">Studio Canvas</button>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#StudioTable">Studio Table</button>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByActress">Actress Canvas</button>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#ActressTable">Actress Table</button>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRelease">Group By Release</button>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByPath">Group By Path</button>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRank">Group By Rank</button>
+		</nav>
+	</div>
 
 	<div class="container-fluid text-center">
 		<div id="groupByStudio" class="collapse card m-2 bg-chalkboard">

@@ -25,10 +25,6 @@ body {
 	border-color: transparent;
 }
 
-#pageContent {
-	padding-top: 0.5rem;
-}
-
 #selectTags,
 #statisticsStudio,
 #statisticsActress {
@@ -76,7 +72,7 @@ body {
 }
 
 .info-wrapper > dl > dt:last-child {
-	padding: 0.25rem 0 1rem;
+	padding: 0.25rem 0;
 }
 
 .info-wrapper .info-title {
@@ -123,12 +119,10 @@ body.bg-dark .tag-list .nonExist {
 .cover-box {
 	position: relative;
 	background: #fff no-repeat center;
-	background-size: contain;
+	background-size: cover;
 	box-shadow: 0 0 0.25rem 0.5rem #fff inset;
 	border: 0;
 	border-radius: 0.25rem;
-	/* 	width: 800px;
-	height: calc(800px * var(--cover-ratio)); */
 	width: var(--cover-width);
 	height: var(--cover-height);
 	transition: background 0.2s ease-out;

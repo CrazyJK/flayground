@@ -13,12 +13,12 @@ body {
 
 .flay-bar {
 	display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-content: center;
-    justify-content: space-evenly;
-    align-items: baseline;
-	gap: 8px;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-content: center;
+	justify-content: space-evenly;
+	align-items: baseline;
+	gap: 0.25rem;
 }
 
 .flay-bar input[type="search"] {
@@ -26,11 +26,12 @@ body {
 }
 
 #pageContent {
-	margin-top: 56px;
-	padding-top: .5rem;
+	padding-top: 0.5rem;
 }
 
-#selectTags, #statisticsStudio, #statisticsActress {
+#selectTags,
+#statisticsStudio,
+#statisticsActress {
 	border-radius: 1rem;
 	box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.25);
 	margin: 0.5rem auto 0;
@@ -40,7 +41,8 @@ body {
 	z-index: 69;
 	display: none;
 }
-#statisticsStudio .studioTag.hide, #statisticsActress .actressTag.hide {
+#statisticsStudio .studioTag.hide,
+#statisticsActress .actressTag.hide {
 	display: none;
 	color: var(--secondary);
 }
@@ -95,10 +97,10 @@ body {
 	transition: all 0.3s;
 }
 #videoTags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 2px;
-    justify-content: center;
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	justify-content: center;
 }
 .tag-list .nonExist {
 	color: #c7bdbd !important;
@@ -108,10 +110,10 @@ body.bg-dark .tag-list .nonExist {
 }
 
 .cover-wrapper {
-	margin: 0 auto .5rem;
+	margin: 0 auto 0.5rem;
 	display: flex;
-    align-items: center;
-    justify-content: space-evenly;
+	align-items: center;
+	justify-content: space-evenly;
 }
 
 .cover-wrapper-inner {
@@ -123,34 +125,34 @@ body.bg-dark .tag-list .nonExist {
 	background: #fff no-repeat center;
 	background-size: contain;
 	box-shadow: 0 0 0.25rem 0.5rem #fff inset;
-    border: 0;
+	border: 0;
 	border-radius: 0.25rem;
-/* 	width: 800px;
+	/* 	width: 800px;
 	height: calc(800px * var(--cover-ratio)); */
 	width: var(--cover-width);
 	height: var(--cover-height);
 	transition: background 0.2s ease-out;
 }
 body.bg-dark .cover-box {
-    background-color: #000;
-    box-shadow: 0 0 0.25rem 0.5rem #000 inset;
+	background-color: #000;
+	box-shadow: 0 0 0.25rem 0.5rem #000 inset;
 }
 .cover-box #btnVideoClose {
 	position: absolute;
 	top: -22px;
 	right: -16px;
-    font-size: 2rem;
-    color: var(--danger);
-    cursor: pointer;
-    margin: .25rem;
+	font-size: 2rem;
+	color: var(--danger);
+	cursor: pointer;
+	margin: 0.25rem;
 	display: none;
 }
 .cover-box video {
 	width: 100%;
 	height: 100%;
-	padding: .5rem;
+	padding: 0.5rem;
 	border: 0;
-    outline: 0;
+	outline: 0;
 	display: none;
 }
 /* #newTagForm {
@@ -182,7 +184,8 @@ body.bg-dark #newTagForm button {
 }
 
 @media screen and (min-height: 1650px) {
-	.info-wrapper > dl > dt:last-child, .info-wrapper > dl > dd {
+	.info-wrapper > dl > dt:last-child,
+	.info-wrapper > dl > dd {
 		font-size: 1.5rem;
 		margin-bottom: 1rem;
 	}
@@ -196,7 +199,7 @@ body.bg-dark #newTagForm button {
 		margin: 0.5rem;
 	}
 	.cover-box {
-		width:  var(--cover-width-lg);
+		width: var(--cover-width-lg);
 		height: var(--cover-height-lg);
 	}
 }
@@ -207,11 +210,10 @@ body.bg-dark #newTagForm button {
 }
 @media screen and (max-height: 1000px) {
 	.cover-box {
-		width:  var(--cover-width-sm);
+		width: var(--cover-width-sm);
 		height: var(--cover-height-sm);
 	}
 	.info-wrapper .info-title {
 		max-width: var(--cover-width-sm);
 	}
 }
-

@@ -1,193 +1,227 @@
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <style>
-<!--
-#background_images {
-    background: rgba(0, 0, 0, 0.9);
-}
-#tileWrap {
-	text-align: center;
-	margin-bottom: 3rem;
-}
-.tile {
-	display: inline-table;
-	font-family: 'D2Coding';
-	margin: 1rem .5rem 0;
-	width:  10rem;
-	transition: all .5s ease-in-out;
-}
-.tile.played div {
-	background-color: #878f98;
-	color: #103356;
-}
-.tile.deleted {
-	display: none;
-}
-.tile div {
-	background-color: rgba(16, 51, 86, .75); 
-	border: 1px solid #fff;
-	color: #fff;
-	text-shadow: 1px 1px 1px #103356;
-}
-.tile div:first-child {
-	border-bottom: 0;
-	height: 3.5rem;
-	overflow: hidden;
-	padding: .25rem;
-}
-.tile > div:nth-child(2), .tile > div:nth-child(3) {
-	border-top: 0;
-	height: 1.7rem;
-}
-.tile > div:nth-child(4) {
-	border-top: 0;
-	height: 1.6rem; 
-	opacity: 0;
-	transition: all .5s; 
-}
-.tile:hover > div:nth-child(4) {
-	border-top: 0;
-	opacity: 1;
-}
-.tile.played > div:nth-child(4) {
-	opacity: 1;
-}
-
-.title {
-	cursor: pointer;
-	overflow: hidden;
-	word-break: break-word;
-	transition: all .3s; 
-}
-.title:hover {
-	text-shadow: 0 0 4px #000;
-}
-.path {
-	font-size: 80%;
-}
-.modified {
-	font-size: 80%;
-}
-.length {
-	font-size: 90%;
-	padding: 0.125rem .5rem;
-}
-.delete {
-	cursor: pointer;
-	font-size: 90%;
-	padding: 0.125rem .5rem;
-	transition: all .5s; 
-}
-.delete:hover {
-	color: var(--danger);
-}
-#statusBar {
-	position: fixed;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	background-color: #333333;
-	color: #ddd;
-	text-align: center;
-	padding: .25rem 0;
-}
--->
+	:root {
+		--item-border: #423d3d;
+	}
+	#background_images {
+		background: rgba(0, 0, 0, 0.9);
+	}
+	#folderWrapper {
+		padding: 0.5rem;
+	}
+	.folder {
+		margin-bottom: 1rem;
+	}
+	.folder-info {
+		display: flex;
+		justify-content: center;
+		color: #ddd;
+		font-weight: 700;
+		padding: 1rem;
+	}
+	.folder-info > span:hover {
+		color: orange;
+		cursor: pointer;
+	}
+	.folder-items {
+		display: flex;
+		flex-wrap: wrap;
+		flex-direction: row;
+		justify-content: center;
+	}
+	.item {
+		display: flex;
+		flex-direction: column;
+		color: #eee;
+		text-shadow: 1px 1px 1px #000;
+		margin: 0.5rem;
+		text-align: center;
+		width: 10rem;
+		transition: all 0.5s ease-in-out;
+	}
+	.item.played {
+		background-color: #a72b78;
+	}
+	.item.deleted {
+		display: none;
+	}
+	.item > div {
+		background-color: rgba(16, 51, 86, 0.75);
+		padding: 0.25rem;
+	}
+	.item > div.item-title {
+		border: 1px solid var(--item-border);
+		border-bottom: 0;
+		height: 3.5rem;
+		overflow: hidden;
+	}
+	.item > div.item-modified {
+		border: 1px solid var(--item-border);
+		border-top: 0;
+		font-size: 90%;
+	}
+	.item > div.item-info {
+		display: flex;
+		justify-content: space-between;
+		border: 1px solid var(--item-border);
+		border-top: 0;
+		font-size: 90%;
+		padding: 0.25rem 0.5rem;
+		opacity: 0;
+	}
+	.item:hover > div.item-info {
+		opacity: 1;
+		transition: opacity 0.4s;
+	}
+	.item.played > div.item-info {
+		opacity: 1;
+	}
+	.text-title {
+		cursor: pointer;
+		word-break: break-word;
+		transition: all 0.3s;
+	}
+	.text-title:hover {
+		color: orange;
+	}
+	.text-delete {
+		cursor: pointer;
+	}
+	.text-delete:hover {
+		color: #dc3545;
+		transition: color 0.4s;
+	}
+	.control-bar {
+		display: flex;
+		justify-content: center;
+	}
+	.control-bar > .control {
+		display: flex;
+		align-items: baseline;
+		gap: 1rem;
+		background-color: #181818;
+		border-radius: 0 0 8px 8px;
+		color: #ddd;
+		padding: 0.5rem 0.75rem 0.5rem 0.75rem;
+	}
+	label.radio {
+		margin: 0 0.25rem;
+	}
+	label.radio > input {
+		width: 1px;
+		height: 1px;
+	}
+	label.radio > input + span {
+		cursor: pointer;
+	}
+	label.radio > input + span:hover {
+		color: lightgreen;
+	}
+	label.radio > input:checked + span {
+		color: orange;
+	}
 </style>
 <div role="body">
-
-	<div id="tileWrap"></div>
-
-	<div id="statusBar" class="fixed-bottom bg-light">
-		<label class="text"><span id="size">14</span> Video, <span id="length">2.5 GB</span></label>
-		<span class="check-group ml-2">
-			<label><input type="radio" name="sort" value="T" checked="checked"><span title="title">T</span></label>
-			<label><input type="radio" name="sort" value="L"><span title="length">L</span></label>
-			<label><input type="radio" name="sort" value="M"><span title="modified">M</span></label>
-		</span>
+	<div id="topMenu" class="control-bar">
+		<div class="control">
+			<span id="size">14</span>
+			<span id="length">2.5 GB</span>
+			<span id="sorting">
+				<label class="radio"><input type="radio" name="sort" value="T" /><span>Title</span></label>
+				<label class="radio"><input type="radio" name="sort" value="L" /><span>Length</span></label>
+				<label class="radio"><input type="radio" name="sort" value="M" /><span>Modified</span></label>
+			</span>
+		</div>
 	</div>
 
+	<div id="folderWrapper"></div>
 </div>
 <script type="text/javascript">
-var flayList;
-var currIndex = 0;
-var size = 0, length = 0;
+	var todayisList;
 
-Rest.Todayis.list(function(list) {
-	flayList = list;
-	displayTile();
-	
-	$("input[name='sort']").on("change", displayTile);
-
-});
-
-function displayTile() {
-	var sort  = $("input[name='sort']:checked").val();
-	var compareTo = function(data1, data2) {
-		var result = 0;
-		if (typeof data1 === 'number') {
-			result = data1 - data2;
-		} else if (typeof data1 === 'string') {
-			result = data1.toLowerCase().localeCompare(data2.toLowerCase());
-		} else {
-			result = data1 > data2 ? 1 : -1;
-		}
-		return result;
-	};
-	// sorting
-	flayList.sort(function(todayis1, todayis2) {
-		var c1 = compareTo(todayis1.path, todayis2.path);
-		switch(sort) {
-		case 'T':
-			return c1 === 0 ? compareTo(todayis1.name, todayis2.name) : c1;
-		case 'L':
-			return c1 === 0 ? compareTo(todayis1.length, todayis2.length) : c1;
-		case 'M':
-			return c1 === 0 ? compareTo(todayis1.lastModified, todayis2.lastModified) : c1;
-		}
+	Rest.Todayis.list((list) => {
+		todayisList = list;
+		$("#sorting > label:nth-child(3)").click();
 	});
 
-	var $tileWrap = $("#tileWrap").empty();
-	var _prevPath = "";
-	$.each(flayList, function(idx, todayis) {
-		if ("" != _prevPath && todayis.path !== _prevPath) {
-			$tileWrap.append($("<hr>", {class: "border-dark"}));
-		}
-		size++;
-		length += todayis.length;
-		$("<div>", {class: 'tile', 'data-idx': idx}).data('todayis', todayis).append(
-				$("<div>").append(
-						$("<span>", {class: 'title'}).on('click', function(e) {
-							e.stopPropagation();
-							var $tile = $(this).parent().parent();
-							var _todayis = $tile.data('todayis');
-							Rest.Todayis.play(_todayis, function() {
-								$tile.addClass("played");
-							});
-						}).html(todayis.name.slice(0, -4).replace(/\-|[.]/gi, ' '))
-				),
-				$("<div>", {class: 'nowrap'}).append(
-						$("<span>", {class: 'modified'}).html(new Date(todayis.lastModified).format('yyyy-MM-dd'))		
-				),
-				$("<div>", {class: 'nowrap'}).append(
-						$("<span>", {class: 'path'}).html(todayis.path)		
-				),
-				$("<div>", {class: 'd-flex justify-content-between'}).append(
-						$("<span>", {class: 'length'}).html(File.formatSize(todayis.length)),
-						$("<span>", {class: 'delete'}).html("Delete").on('click', function(e) {
-							e.stopPropagation();
-							var $tile = $(this).parent().parent();
-							var idx = parseInt($tile.attr("data-idx"));
-							var _todayis = $tile.data('todayis');
-							Rest.Todayis.delete(_todayis, function() {
-								flayList.splice(idx, 1);
-								$tile.addClass("deleted");
-								console.log('delete', idx, _todayis, flayList);
-							});
-						})
+	$("input[name='sort']").on("change", () => {
+		var compareTo = function (d1, d2) {
+			if (typeof d1 === "number") {
+				return d1 - d2;
+			} else if (typeof d1 === "string") {
+				return d1.toLowerCase().localeCompare(d2.toLowerCase());
+			} else {
+				return d1 > d2 ? 1 : -1;
+			}
+		};
+
+		// sorting
+		const sort = $("input[name='sort']:checked").val();
+		todayisList.sort(function (t1, t2) {
+			var c1 = compareTo(t1.path, t2.path);
+			switch (sort) {
+				case "T":
+					return c1 === 0 ? compareTo(t1.name, t2.name) : c1;
+				case "L":
+					return c1 === 0 ? compareTo(t1.length, t2.length) : c1;
+				case "M":
+					return c1 === 0 ? compareTo(t1.lastModified, t2.lastModified) : c1;
+			}
+		});
+
+		const $folderWrapper = $("#folderWrapper").empty();
+		let previousPath = "";
+		let size = 0;
+		let length = 0;
+		let currendFolderIndex = -1;
+
+		$.each(todayisList, (idx, todayis) => {
+			if (todayis.path !== previousPath) {
+				$("<div>", { class: "folder", id: "fidx" + ++currendFolderIndex })
+					.append(
+						$("<div>", { class: "folder-info" }).append(
+							$("<span>")
+								.on("click", todayis, (e) => {
+									Rest.Todayis.openFolder(e.data.path);
+								})
+								.html(todayis.path)
+						),
+						$("<div>", { class: "folder-items" })
+					)
+					.appendTo($folderWrapper);
+			}
+			previousPath = todayis.path;
+			size++;
+			length += todayis.length;
+
+			$("<div>", { class: "item", "data-idx": idx })
+				.append(
+					$("<div>", { class: "item-title" }).append(
+						$("<span>", { class: "text-title" })
+							.on("click", todayis, function (e) {
+								Rest.Todayis.play(e.data, () => {
+									$(e.target).closest(".item").addClass("played");
+								});
+							})
+							.html(todayis.name.slice(0, -4).replace(/\-|[.]/gi, " "))
+					),
+					$("<div>", { class: "item-modified" }).append($("<span>", { class: "text-modified" }).html(new Date(todayis.lastModified).format("yyyy-MM-dd"))),
+					$("<div>", { class: "item-info" }).append(
+						$("<span>", { class: "text-length" }).html(File.formatSize(todayis.length)),
+						$("<span>", { class: "text-delete" })
+							.on("click", todayis, function (e) {
+								Rest.Todayis.delete(e.data, () => {
+									const idx = $(e.target).closest(".item").addClass("deleted").attr("data-idx");
+									todayisList.splice(parseInt(idx), 1);
+								});
+							})
+							.html("Delete")
+					)
 				)
-		).appendTo($tileWrap);
-		_prevPath = todayis.path;
+				.appendTo($("#fidx" + currendFolderIndex + " > div:nth-child(2)"));
+		});
+
+		$("#size").html(size + " Movie");
+		$("#length").html(File.formatSize(length));
 	});
-	$("#size").html(size);
-	$("#length").html(File.formatSize((length)));
-}
 </script>

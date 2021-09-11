@@ -193,6 +193,15 @@
 	transition: width 1s 0.25s, background-image 0.5s;
 }
 
+main {
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	transition: left 0.4s ease 0s;
+}
+
 #wrap_background_image {
 	position: fixed;
 	top: 0;
@@ -225,4 +234,23 @@
 	width: inherit;
 	transition: all 0.5s;
 	z-index: -2;
+}
+
+#topMenu {
+	position: sticky;
+	top: 0;
+	display: flex;
+	justify-content: center;
+	background-color: transparent !important;
+	margin-bottom: 0.5rem;
+}
+#topMenu > nav {
+	gap: 0.5rem;
+	padding: 0.25rem 0.5rem;
+}
+#bottomMenu {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
 }

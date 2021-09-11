@@ -1,58 +1,59 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Flayground</title>
-<link rel="icon" type="image/png" href="/img/favicon/flay_1.png"/>
-<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css"/>
-<link rel="stylesheet" href="/css/base.scrollbar.css"/>
-<link rel="stylesheet" href="/css/crazy.fonts.css"/>
-<link rel="stylesheet" href="/css/crazy.common.css"/>
-<link rel="stylesheet" href="/css/crazy.common.range.css"/>
-<link rel="stylesheet" href="/css/flay.view.card.css"/>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-<script type="text/javascript" src="/js/crazy.common.js"></script>
-<script type="text/javascript" src="/js/crazy.jquery.js"></script>
-<script type="text/javascript" src="/js/flay.rest.service.js"></script>
-<script type="text/javascript" src="/js/flay.utils.js"></script>
-<script type="text/javascript" src="/js/flay.view.card.js"></script>
-<script type="text/javascript" src="/js/flay.websocket.js"></script>
-</head>
-<body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Flayground</title>
+		<link rel="icon" type="image/png" href="/img/favicon/flay_1.png" />
+		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css" />
+		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css" />
+		<link rel="stylesheet" href="/css/base.scrollbar.css" />
+		<link rel="stylesheet" href="/css/crazy.fonts.css" />
+		<link rel="stylesheet" href="/css/crazy.common.css" />
+		<link rel="stylesheet" href="/css/crazy.common.range.css" />
+		<link rel="stylesheet" href="/css/flay.view.card.css" />
+		<link rel="stylesheet" href="../../css/main.css" />
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/js/crazy.common.js"></script>
+		<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+		<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="/js/flay.utils.js"></script>
+		<script type="text/javascript" src="/js/flay.view.card.js"></script>
+		<script type="text/javascript" src="/js/flay.websocket.js"></script>
+	</head>
+	<body>
+		<main>
+			<div id="wrap_body"></div>
+		</main>
 
-<main>
-	<div id="wrap_body"></div>
-</main>
+		<footer>
+			<div id="notice" title="" style="display: none"><p></p></div>
+		</footer>
 
-<footer>
-	<div id="notice" title="" style="display:none;"><p></p></div>
-</footer>
+		<script type="text/javascript">
+			var isAdmin, username;
+			$(function () {
+				isAdmin = Security.hasRole("ADMIN");
+				username = Security.getName();
 
-<script type="text/javascript">
-var isAdmin, username;
-$(function() {
-	isAdmin = Security.hasRole("ADMIN");
-	username = Security.getName();
+				var bgThemeValue = LocalStorageItem.get("flay.bgtheme", "D");
+				$("body")
+					.toggleClass("bg-dark", bgThemeValue === "D")
+					.css({ backgroundColor: bgThemeValue === "D" ? LocalStorageItem.get("flay.bgcolor") : "" });
 
-	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
-	$("body").toggleClass("bg-dark", bgThemeValue === 'D').css({backgroundColor: bgThemeValue === 'D' ? LocalStorageItem.get('flay.bgcolor') : ""});
-
-	Rest.Html.get(reqParam.target, function(html) {
-		$("#wrap_body").html(html);
-	});
-});
-window.onerror = function(e) {
-    console.error('Error', e);
-    loading.on('Error: ' + e);
-};
-</script>
-
-</body>
+				Rest.Html.get(reqParam.target, function (html) {
+					$("#wrap_body").html(html);
+				});
+			});
+			window.onerror = function (e) {
+				console.error("Error", e);
+				loading.on("Error: " + e);
+			};
+		</script>
+	</body>
 </html>

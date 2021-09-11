@@ -32,7 +32,7 @@ public class TodayisServiceImpl implements TodayisService {
 			Collection<File> listFiles = FileUtils.listFiles(path, null, true);
 			for (File file : listFiles) {
 				if (Flayground.FILE.isVideo(file)) {
-					list.add(new Todayis(file));
+					list.add(Todayis.toInstance(file));
 				}
 			}
 		}

@@ -1,4 +1,4 @@
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <style type="text/css">
 	#query {
 		max-width: 200px;
@@ -8,7 +8,7 @@
 		font-family: D2Coding;
 	}
 
-	.input-group-append+.form-control {
+	.input-group-append + .form-control {
 		border-left: 0;
 	}
 
@@ -43,7 +43,7 @@
 		height: calc(800px - var(--cover-ratio));
 	}
 
-	.candidates button:hover~img {
+	.candidates button:hover ~ img {
 		display: block;
 	}
 
@@ -99,52 +99,47 @@
 </style>
 
 <div role="body">
+	<div id="topMenu">
+		<nav class="navbar navbar-expand-sm navbar-light bg-light rounded-bottom p-1 flay-bar">
+			<input type="search" id="query" class="form-control input-flay search" placeholder="Search..." />
+			<div class="btn-group btn-group-sm">
+				<button class="btn btn-flay btn-search-opus">Opus</button>
+				<button class="btn btn-flay btn-search-actress">Actress</button>
+				<button class="btn btn-flay btn-search-torrent">Torrent</button>
+			</div>
+			<button class="btn btn-outline-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-warning btn-sm" data-toggle="collapse" data-target="#candidates" aria-role="ADMIN">Candidates <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader" aria-role="ADMIN">Page Image Downloader <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-danger btn-sm" data-toggle="collapse" data-target="#batchGroup" aria-role="ADMIN">Batch <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-info btn-sm btn-reload" aria-role="ADMIN">Reload</button>
+		</nav>
+	</div>
 
-	<nav class="navbar navbar-expand-sm fixed-top bg-light navbar-light justify-content-center">
-		<input type="search" id="query" class="form-control input-flay search" placeHolder="Search..." />
-		<div class="divider"></div>
-		<div class="btn-group btn-group-sm">
-			<button class="btn btn-flay btn-search-opus">Opus</button>
-			<button class="btn btn-flay btn-search-actress">Actress</button>
-			<button class="btn btn-flay btn-search-torrent">Torrent</button>
-		</div>
-		<div class="divider"></div>
-		<button class="btn btn-outline-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
-		<div class="divider"></div>
-		<button class="btn btn-outline-warning btn-sm" data-toggle="collapse" data-target="#candidates" aria-role="ADMIN">Candidates <i class="fa fa-caret-down"></i></button>
-		<div class="divider"></div>
-		<button class="btn btn-outline-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader" aria-role="ADMIN">Page Image Downloader <i class="fa fa-caret-down"></i></button>
-		<div class="divider"></div>
-		<button class="btn btn-outline-danger btn-sm" data-toggle="collapse" data-target="#batchGroup" aria-role="ADMIN">Batch <i class="fa fa-caret-down"></i></button>
-		<div class="divider"></div>
-		<button class="btn btn-outline-info btn-sm btn-reload" aria-role="ADMIN">Reload</button>
-	</nav>
-
-	<div class="container-xl py-1" style="margin-top: 50px;">
+	<div class="container-xl py-1">
 		<div class="card border-primary mt-2 collapse" id="findMode">
 			<div class="card-body">
 				<div class="input-group input-group-sm mb-1">
-					<input class="form-control border-primary" id="rowname_opus" style="max-width: 100px;" placeholder="Row opus" />
+					<input class="form-control border-primary" id="rowname_opus" style="max-width: 100px" placeholder="Row opus" />
 					<input class="form-control border-primary" id="rowname_title" placeholder="Row title" />
-					<input class="form-control border-primary" id="rowname_actress" style="max-width: 150px;" placeholder="Row actress" />
+					<input class="form-control border-primary" id="rowname_actress" style="max-width: 150px" placeholder="Row actress" />
 					<div class="input-group-append">
-						<button class="btn btn-sm btn-outline-primary btn-find-random-opus" style="max-width: 100px;"><i class="fa fa-random fa-fw"></i></button>
+						<button class="btn btn-sm btn-outline-primary btn-find-random-opus" style="max-width: 100px"><i class="fa fa-random fa-fw"></i></button>
 					</div>
 				</div>
 				<div class="input-group input-group-sm flay-group mb-1">
-					<input class="form-control border-primary" id="studio" placeholder="Studio" style="max-width: 100px;" />
-					<input class="form-control border-primary" id="opus" placeholder="Opus" style="max-width: 100px;" />
+					<input class="form-control border-primary" id="studio" placeholder="Studio" style="max-width: 100px" />
+					<input class="form-control border-primary" id="opus" placeholder="Opus" style="max-width: 100px" />
 					<input class="form-control border-primary" id="title" placeholder="Title" />
-					<input class="form-control border-primary" id="actress" placeholder="Actress" style="max-width: 150px;" />
-					<input class="form-control border-primary" id="release" placeholder="Release" style="max-width: 100px;" />
+					<input class="form-control border-primary" id="actress" placeholder="Actress" style="max-width: 150px" />
+					<input class="form-control border-primary" id="release" placeholder="Release" style="max-width: 100px" />
 				</div>
-				<div class="tooltip fade bs-tooltip-right" role="tooltip" id="btnCopyTooltip" style="position: absolute; transform: translate3d(51px, 91px, 0px); top: 0px; left: 0px; will-change: transform;" x-placement="right">
-					<div class="arrow" style="top: 8px;"></div>
+				<div class="tooltip fade bs-tooltip-right" role="tooltip" id="btnCopyTooltip" style="position: absolute; transform: translate3d(51px, 91px, 0px); top: 0px; left: 0px; will-change: transform" x-placement="right">
+					<div class="arrow" style="top: 8px"></div>
 					<div class="tooltip-inner">Copy!</div>
 				</div>
 				<div class="input-group input-group-sm mb-1">
 					<div class="input-group-prepend">
-						<button class="btn btn-outline-primary" id="btnCopy" data-toggle="tooltip" data-clipboard-target="#fullname" style="width: 42px;"><i class="fa fa-copy fa-fw"></i></button>
+						<button class="btn btn-outline-primary" id="btnCopy" data-toggle="tooltip" data-clipboard-target="#fullname" style="width: 42px"><i class="fa fa-copy fa-fw"></i></button>
 					</div>
 					<input class="form-control form-control-sm border-primary" id="fullname" placeholder="Full name" />
 					<div class="input-group-append">
@@ -154,7 +149,9 @@
 				<div class="input-group input-group-sm mb-1" id="newActress">
 					<div class="input-group-prepend">
 						<div class="input-group-text border-primary p-0">
-							<label class="check danger sm"><input type="checkbox" id="newActressFavorite" name="favorite"><span class="mx-2 p-0" style="border-color: transparent;"><i class="fa fa-heart-o"></i></span></label>
+							<label class="check danger sm"
+								><input type="checkbox" id="newActressFavorite" name="favorite" /><span class="mx-2 p-0" style="border-color: transparent"><i class="fa fa-heart-o"></i></span
+							></label>
 						</div>
 					</div>
 					<input class="form-control border-primary" id="newActressName" name="name" placeholder="Name" />
@@ -179,8 +176,7 @@
 				<button class="btn btn-sm btn-warning disabled" id="candidatesCount"></button>
 				<button class="btn btn-sm btn-outline-warning" id="btnFileControl">Show file control</button>
 				<button class="btn btn-sm btn-outline-warning" id="btnCandidatesLoad"><i class="fa fa-refresh"></i></button>
-				<ul class="list-group mt-2" id="candidatesList">
-				</ul>
+				<ul class="list-group mt-2" id="candidatesList"></ul>
 			</div>
 		</div>
 		<div class="card border-success mt-2 collapse" id="pageImageDownloader" aria-role="ADMIN">
@@ -200,7 +196,7 @@
 							<span class="input-group-text border-success text-success"> or </span>
 						</div>
 						<input class="form-control border-success" name="titleCssQuery" placeholder="Title css selector" />
-						<input class="form-control border-success text-right" name="minimumKbSize" style="max-width: 80px;" placeholder="KB" value="30" type="number" />
+						<input class="form-control border-success text-right" name="minimumKbSize" style="max-width: 80px" placeholder="KB" value="30" type="number" />
 						<div class="input-group-append">
 							<span class="input-group-text border-success text-success"> kB </span>
 						</div>
@@ -238,7 +234,7 @@
 				</div>
 			</div>
 		</div>
-		<div id="resultFlayDiv" class="card mt-2 collapse" style="overflow:auto">
+		<div id="resultFlayDiv" class="card mt-2 collapse" style="overflow: auto">
 			<div class="card-body">
 				<h4 class="card-title">Flay <span class="badge badge-light flay-count"></span><i class="fa fa-times float-right hover small" id="btn-flay-close"></i></h4>
 				<table class="table table-sm table-hover table-bordered">
@@ -255,7 +251,7 @@
 					<tbody id="foundFlayList"></tbody>
 				</table>
 			</div>
-			<div id="resultVideoDiv" class="card-body pt-0 collapse" style="overflow:auto">
+			<div id="resultVideoDiv" class="card-body pt-0 collapse" style="overflow: auto">
 				<h4 class="card-title">Video <span class="badge badge-light video-count"></span><i class="fa fa-times float-right hover small" id="btn-video-close"></i></h4>
 				<table class="table table-sm table-hover table-bordered">
 					<thead>
@@ -270,7 +266,7 @@
 				</table>
 			</div>
 		</div>
-		<div id="resultHistoryDiv" class="card mt-2 collapse" style="overflow:auto">
+		<div id="resultHistoryDiv" class="card mt-2 collapse" style="overflow: auto">
 			<div class="card-body">
 				<h4 class="card-title">History <span class="badge badge-light history-count"></span><i class="fa fa-times float-right hover small" id="btn-history-close"></i></h4>
 				<table class="table table-sm table-hover table-bordered">
@@ -291,22 +287,23 @@
 	<div id="actressChoice" title="Actress choice">
 		<ul class="list-unstyled"></ul>
 	</div>
-
 </div>
 
 <script type="text/javascript" src="/webjars/clipboard/dist/clipboard.min.js"></script>
 <script type="text/javascript">
-	var clipboard = new ClipboardJS('#btnCopy');
-	clipboard.on('success', function (e) {
-		e.clearSelection();
-		console.info('Action:', e.action, 'Text:', e.text, 'Trigger:', e.trigger);
-		$($(e.trigger).attr("data-clipboard-target")).effect("highlight", {}, 1000);
-		$("#btnCopyTooltip").addClass("show");
-		setTimeout(function () {
-			$("#btnCopyTooltip").removeClass("show");
-		}, 1000);
-	}).on('error', function (e) {
-		alert('Action: ' + e.action + ' Trigger: ' + e.trigger);
-	});
+	var clipboard = new ClipboardJS("#btnCopy");
+	clipboard
+		.on("success", function (e) {
+			e.clearSelection();
+			console.info("Action:", e.action, "Text:", e.text, "Trigger:", e.trigger);
+			$($(e.trigger).attr("data-clipboard-target")).effect("highlight", {}, 1000);
+			$("#btnCopyTooltip").addClass("show");
+			setTimeout(function () {
+				$("#btnCopyTooltip").removeClass("show");
+			}, 1000);
+		})
+		.on("error", function (e) {
+			alert("Action: " + e.action + " Trigger: " + e.trigger);
+		});
 </script>
 <script type="text/javascript" src="../../js/flay.search.js"></script>

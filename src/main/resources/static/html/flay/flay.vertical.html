@@ -1,60 +1,66 @@
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <link rel="stylesheet" href="../../css/flay.vertical.css" />
 
 <div role="body">
-
-	<nav class="navbar navbar-expand-sm fixed-top navbar-light justify-content-center p-0" style="background-color: transparent!important; flex-direction: column;">
-		<div class="bg-light rounded-bottom p-1 flay-bar">
-			<input class="form-control input-flay search" type="search" id="search" placeholder="Search...">
+	<div id="topMenu">
+		<nav class="navbar navbar-expand-sm rounded-bottom bg-light">
+			<input class="form-control input-flay search" type="search" id="search" placeholder="Search..." />
 			<span class="check-group check-group-rounded">
-				<label><input type="checkbox" id="favorite"><span><i class="fa fa-heart"></i></span></label>
-				<label><input type="checkbox" id="video" checked="checked"><span><i class="fa fa-film"></i></span></label>
-				<label><input type="checkbox" id="subtitles"><span><i class="fa fa-file-text"></i></span></label>
+				<label><input type="checkbox" id="video" checked="checked" /><span class="fa fa-film"></span></label>
+				<label><input type="checkbox" id="subtitles" /><span class="fa fa-file-text"></span></label>
 			</span>
 			<span class="check-group check-group-rounded">
-				<label><input type="checkbox" id="rank0" checked="checked"><span><i class="fa fa-circle"></i></span></label>
-				<label><input type="checkbox" id="rank1"><span><i class="fa fa-star"></i></span></label>
-				<label><input type="checkbox" id="rank2"><span><i class="fa fa-star"></i></span></label>
-				<label><input type="checkbox" id="rank3"><span><i class="fa fa-star"></i></span></label>
-				<label><input type="checkbox" id="rank4"><span><i class="fa fa-star"></i></span></label>
-				<label><input type="checkbox" id="rank5"><span><i class="fa fa-star"></i></span></label>
+				<label><input type="checkbox" id="favorite" /><span class="fa fa-heart"></span></label>
 			</span>
 			<span class="check-group check-group-rounded">
-				<label><input type="radio" name="sort" value="S"><span>S</span></label>
-				<label><input type="radio" name="sort" value="O"><span>O</span></label>
-				<label><input type="radio" name="sort" value="T"><span>T</span></label>
-				<label><input type="radio" name="sort" value="A"><span>A</span></label>
-				<label><input type="radio" name="sort" value="R"><span>R</span></label>
-				<label><input type="radio" name="sort" value="M" checked="checked"><span>M</span></label>
+				<label><input type="checkbox" id="rank0" checked="checked" /><span class="fa fa-circle"></span></label>
+				<label><input type="checkbox" id="rank1" /><span class="fa fa-star"></span></label>
+				<label><input type="checkbox" id="rank2" /><span class="fa fa-star"></span></label>
+				<label><input type="checkbox" id="rank3" /><span class="fa fa-star"></span></label>
+				<label><input type="checkbox" id="rank4" /><span class="fa fa-star"></span></label>
+				<label><input type="checkbox" id="rank5" /><span class="fa fa-star"></span></label>
 			</span>
 			<span class="check-group check-group-rounded">
-				<label><input type="checkbox" id="tags"><span title="Tag"><i class="fa fa-tags"></i></span></label>
-				<label><input type="checkbox" id="toggleStatisticsStudio"><span title="Studio over 5"><i class="fa fa-building"></i></span></label>
-				<label><input type="checkbox" id="toggleStatisticsActress"><span title="Actress over 5"><i class="fa fa-female"></i></span></label>
+				<label><input type="radio" name="sort" value="S" /><span>S</span></label>
+				<label><input type="radio" name="sort" value="O" /><span>O</span></label>
+				<label><input type="radio" name="sort" value="T" /><span>T</span></label>
+				<label><input type="radio" name="sort" value="A" /><span>A</span></label>
+				<label><input type="radio" name="sort" value="R" /><span>R</span></label>
+				<label><input type="radio" name="sort" value="M" checked="checked" /><span>M</span></label>
 			</span>
-			<label class="check"><span class="btn-reload" title="reload Data"><i class="fa fa-refresh"></i></span></label>
+			<span class="check-group check-group-rounded">
+				<label><input type="checkbox" id="tags" /><span title="Tag" class="fa fa-tags"></span></label>
+				<label><input type="checkbox" id="toggleStatisticsStudio" /><span title="Studio over 5" class="fa fa-building"></span></label>
+				<label><input type="checkbox" id="toggleStatisticsActress" /><span title="Actress over 5" class="fa fa-female"></span></label>
+			</span>
+			<label class="check">
+				<span class="btn-reload" title="reload Data"><i class="fa fa-refresh"></i></span>
+			</label>
 			<button class="btn btn-sm btn-link toggle-option text-dark"><i class="fa fa-ellipsis-v"></i></button>
-		</div>
-		<div class="bg-light" style="display: none;" id="selectTags">
-			<label class="check float-left"><input type="checkbox" id="tagPopup"><span>Pop</span></label>
-			<label class="check float-right"><input type="checkbox" id="tagCheck"><span><i class="fa fa-check"></i></span></label>
+			<div class="bg-light rounded" id="options">
+				<ul class="list-unstyled mb-0">
+					<li class="flay-bar">
+						<span><i class="fa fa-map"></i></span>
+						<label class="check sm"><input type="checkbox" id="autoSlide" /><span>Slide</span></label>
+						<span class="check-group sm">
+							<label><input type="radio" name="autoSlideMode" value="F" checked="checked" /><span>F</span></label>
+							<label><input type="radio" name="autoSlideMode" value="R" /><span>R</span></label>
+						</span>
+					</li>
+				</ul>
+			</div>
+		</nav>
+	</div>
+
+	<div style="position: absolute; z-index: 4">
+		<div class="bg-light" style="display: none" id="selectTags">
+			<label class="check float-left"><input type="checkbox" id="tagPopup" /><span>Pop</span></label>
+			<label class="check float-right"><input type="checkbox" id="tagCheck" /><span class="fa fa-check"></span></label>
 			<div class="tag-list"></div>
 		</div>
-		<div class="bg-light" style="display: none;" id="statisticsStudio"></div>
-		<div class="bg-light" style="display: none;" id="statisticsActress"></div>
-		<div class="bg-light" id="options">
-			<ul class="list-unstyled mb-0">
-				<li class="flay-bar">
-					<i class="fa fa-map"></i>
-					<label class="check sm"><input type="checkbox" id="autoSlide"><span>Slide</span></label>
-					<span class="check-group sm check-group-rounded">
-						<label><input type="radio" name="autoSlideMode" value="F" checked="checked"><span>F</span></label>
-						<label><input type="radio" name="autoSlideMode" value="R"><span>R</span></label>
-					</span>
-				</li>
-			</ul>
-		</div>
-	</nav>
+		<div class="bg-light" style="display: none" id="statisticsStudio"></div>
+		<div class="bg-light" style="display: none" id="statisticsActress"></div>
+	</div>
 
 	<div id="pageContent">
 		<div class="video-wrapper">
@@ -64,22 +70,25 @@
 					<dd><label class="text info-opus">Opus</label></dd>
 					<dd><label class="text info-release">Release</label></dd>
 					<dd><label class="text info-modified">Modified</label></dd>
-					<dd><label class="text hover info-video">Video</label>
+					<dd>
+						<label class="text hover info-video">Video</label>
 						<label class="text info-play">Play</label>
 						<label class="text hover add-basket-btn"><i class="fa fa-shopping-cart"></i></label>
 					</dd>
 					<dd><label class="text hover info-subtitles">Subtitles</label></dd>
-					<dd><label class="text hover info-overview">Overview</label>
+					<dd>
+						<label class="text hover info-overview">Overview</label>
 						<input class="form-control input-flay info-overview-input" placeholder="Overview" />
 					</dd>
-					<dt><span class="ranker">
-							<label><input type="radio" name="ranker" value="-1"><i class="fa fa-thumbs-down r-1"></i></label>
-							<label><input type="radio" name="ranker" value="0"><i class="fa fa-circle r0"></i></label>
-							<label><input type="radio" name="ranker" value="1"><i class="fa fa-star r1"></i></label>
-							<label><input type="radio" name="ranker" value="2"><i class="fa fa-star r2"></i></label>
-							<label><input type="radio" name="ranker" value="3"><i class="fa fa-star r3"></i></label>
-							<label><input type="radio" name="ranker" value="4"><i class="fa fa-star r4"></i></label>
-							<label><input type="radio" name="ranker" value="5"><i class="fa fa-star r5"></i></label>
+					<dt>
+						<span class="ranker">
+							<label><input type="radio" name="ranker" value="-1" /><i class="fa fa-thumbs-down r-1"></i></label>
+							<label><input type="radio" name="ranker" value="0" /><i class="fa fa-circle r0"></i></label>
+							<label><input type="radio" name="ranker" value="1" /><i class="fa fa-star r1"></i></label>
+							<label><input type="radio" name="ranker" value="2" /><i class="fa fa-star r2"></i></label>
+							<label><input type="radio" name="ranker" value="3" /><i class="fa fa-star r3"></i></label>
+							<label><input type="radio" name="ranker" value="4" /><i class="fa fa-star r4"></i></label>
+							<label><input type="radio" name="ranker" value="5" /><i class="fa fa-star r5"></i></label>
 						</span>
 					</dt>
 					<dt><label class="text hover lg info-title nowrap">Title</label></dt>
@@ -111,7 +120,7 @@
 					</label>
 				</div>
 				<div class="d-inline-flex justify-content-center mt-2">
-					<div id="newTagForm" class="collapse input-group input-group-sm" style="width: 300px;">
+					<div id="newTagForm" class="collapse input-group input-group-sm" style="width: 300px">
 						<input id="newTagName" class="form-control border-0" placeholder="Name" />
 						<input id="newTagDesc" class="form-control border-0" placeholder="Description" />
 						<div class="input-group-append">
@@ -123,7 +132,7 @@
 		</div>
 	</div>
 
-	<nav class="fixed-bottom">
+	<nav id="bottomMenu">
 		<div class="notice-bar"></div>
 		<ul class="pagination pagination-sm justify-content-center">
 			<li class="page-item"><a class="page-link" href="#">1</a></li>
@@ -132,11 +141,10 @@
 			<li class="page-item"><a class="page-link" href="#">4</a></li>
 			<li class="page-item"><a class="page-link" href="#">5</a></li>
 		</ul>
-		<div class="progress" id="paginationProgress" style="height: 1px;">
-			<div class="progress-bar" style="width:70%"></div>
+		<div class="progress" id="paginationProgress" style="height: 1px">
+			<div class="progress-bar" style="width: 70%"></div>
 		</div>
 	</nav>
-
 </div>
 
 <script type="text/javascript" src="../../js/flay.vertical.js"></script>

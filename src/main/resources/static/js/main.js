@@ -17,7 +17,7 @@ var SlideMenu = {
 			},
 		});
 	},
-	logout: function(logoutUri) {
+	logout: function (logoutUri) {
 		var logoutForm = document.createElement("form");
 		logoutForm.setAttribute("method", "POST");
 		logoutForm.setAttribute("action", logoutUri);
@@ -30,9 +30,9 @@ var SlideMenu = {
 
 		document.body.appendChild(logoutForm);
 
-		document.cookie.split(';').forEach((cookie) => {
-			if ("XSRF-TOKEN" === cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '')) {
-				document.querySelector("input[name='_csrf']").value = unescape(cookie.substr(cookie.indexOf('=') + 1));
+		document.cookie.split(";").forEach((cookie) => {
+			if ("XSRF-TOKEN" === cookie.substr(0, cookie.indexOf("=")).replace(/^\s+|\s+$/g, "")) {
+				document.querySelector("input[name='_csrf']").value = unescape(cookie.substr(cookie.indexOf("=") + 1));
 				return false;
 			}
 		});
@@ -95,6 +95,9 @@ var SlideMenu = {
 				var status = $(this).data("pin");
 				$(".sidenav").css({
 					width: status ? "0" : "var(--sidenav-width)",
+				});
+				$("main").css({
+					left: status ? "0" : "var(--sidenav-width)",
 				});
 				$(this).data("pin", !status).toggleClass("active", !status);
 			});

@@ -3,12 +3,12 @@ package jk.kamoru.flayground.todayis.domain;
 import java.io.File;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@AllArgsConstructor
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @Data
 public class Todayis {
@@ -17,16 +17,14 @@ public class Todayis {
 	String path;
 	long length;
 	long lastModified;
-	
-	public Todayis(File file) {
-		this.name = file.getName();
-		this.path = file.getParent();
-		this.length = file.length();
-		this.lastModified = file.lastModified();
+
+	public static Todayis toInstance(File file) {
+		return new Todayis(file.getName(), file.getParent(), file.length(), file.lastModified());
 	}
 
 	@JsonIgnore
 	public String getFilePath() {
 		return path + File.separator + name;
 	}
+
 }

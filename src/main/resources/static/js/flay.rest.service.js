@@ -23,9 +23,9 @@ const restCall = function (url, args, callback, failCallback) {
 				loading = new Loading();
 			}
 			if (this.method !== "GET") {
-				for (const cookie of document.cookie.split(';')) {
-					if (cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '') === CSRF_COOKIE_NAME) {
-						csrfHeaderValue = unescape(cookie.substr(cookie.indexOf('=') + 1));
+				for (const cookie of document.cookie.split(";")) {
+					if (cookie.substr(0, cookie.indexOf("=")).replace(/^\s+|\s+$/g, "") === CSRF_COOKIE_NAME) {
+						csrfHeaderValue = unescape(cookie.substr(cookie.indexOf("=") + 1));
 						break;
 					}
 				}
@@ -40,7 +40,7 @@ const restCall = function (url, args, callback, failCallback) {
 	if (settings.method !== "GET" && typeof settings.data === "object") {
 		settings.data = JSON.stringify(settings.data);
 	}
-	console.debug('restCall', url, settings);
+	console.debug("restCall", url, settings);
 
 	$.ajax(PATH + url, settings)
 		.done(function (data) {
@@ -64,16 +64,11 @@ const restCall = function (url, args, callback, failCallback) {
 			} else {
 				let errMsg = "";
 				if (jqXHR.getResponseHeader("error")) {
-					errMsg = "Message: " + jqXHR.getResponseHeader("error.message") +
-					"<br>" + "Cause: " + jqXHR.getResponseHeader("error.cause");
+					errMsg = "Message: " + jqXHR.getResponseHeader("error.message") + "<br>" + "Cause: " + jqXHR.getResponseHeader("error.cause");
 				} else if (jqXHR.responseJSON) {
-					errMsg = "Error: " + jqXHR.responseJSON.error +
-					"<br>" + "Message: " + jqXHR.responseJSON.message +
-					"<br>" + "Status: " + jqXHR.responseJSON.status +
-					"<br>" + "Path: " + jqXHR.responseJSON.path;
+					errMsg = "Error: " + jqXHR.responseJSON.error + "<br>" + "Message: " + jqXHR.responseJSON.message + "<br>" + "Status: " + jqXHR.responseJSON.status + "<br>" + "Path: " + jqXHR.responseJSON.path;
 				} else {
-					errMsg = "Error: " + textStatus +
-					"<br>" + errorThrown;
+					errMsg = "Error: " + textStatus + "<br>" + errorThrown;
 				}
 				console.error("errMsg", errMsg);
 				loading.on($("<div>", { class: "overlay-error-body" }).append(errMsg));
@@ -336,6 +331,9 @@ const Rest = {
 		},
 		delete: function (todayis, callback) {
 			restCall("/todayis", { data: todayis, method: "DELETE" }, callback);
+		},
+		openFolder: function (folder) {
+			restCall("/flay/open/folder", { method: "PUT", data: folder });
 		},
 	},
 };

@@ -1,7 +1,6 @@
 @charset "UTF-8";
 :root {
 	--cover-ratio: 0.6625;
-	--darker: #2d2d2d;
 	--rank-1: rgba(0, 0, 255, 0.5);
 	--rank0: rgba(255, 255, 0, 0.5);
 	--rank1: rgba(255, 0, 0, 0.5);
@@ -9,6 +8,7 @@
 	--rank3: rgba(255, 0, 0, 0.7);
 	--rank4: rgba(255, 0, 0, 0.8);
 	--rank5: rgba(255, 0, 0, 0.9);
+	--dark-color: #111;
 }
 
 body {
@@ -78,7 +78,7 @@ label.check input {
 .check-group input:checked ~ span,
 label.check input:checked ~ span {
 	color: var(--orange);
-    text-shadow: 0 0 1px black;
+	text-shadow: 0 0 1px black;
 }
 .check-group:hover span,
 label.check:hover span {
@@ -208,7 +208,7 @@ label.check.danger:hover input:checked ~ span {
 
 .bg-dark .check-group span,
 .bg-dark label.check span {
-	background-color: #2d2d2d!important;
+	background-color: var(--dark-color) !important;
 	color: lightgray;
 	transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
 }
@@ -246,7 +246,7 @@ input.search {
 	width: 150px;
 }
 .bg-dark input.input-flay {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 	border-color: var(--gray-dark);
 	color: var(--light);
 }
@@ -259,12 +259,13 @@ input.input-flay:hover {
 .bg-dark input.input-flay:focus,
 .bg-dark input.input-flay:hover {
 	background-color: #103356;
-	border-color: var(--darker);
+	border-color: var(--dark-color);
 }
 .bg-dark input.form-control,
 .bg-dark .input-group-text {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 	color: var(--light);
+	border: 0;
 }
 
 /* input range ranker */
@@ -288,7 +289,7 @@ label.range input[type="range"] ~ span {
 	font-weight: 700;
 }
 .bg-dark label.range {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 	border-color: var(--gray-dark);
 }
 .bg-dark label.range input[type="range"] ~ span {
@@ -308,6 +309,7 @@ label.range:hover {
 	border-radius: 0.75rem;
 	border: 1px solid #eee;
 	margin: 4px 2px;
+	padding: 0 4px;
 	width: initial;
 	transition: all 0.3s;
 	vertical-align: middle;
@@ -316,7 +318,7 @@ label.range:hover {
 	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
 }
 .bg-dark .ranker {
-	background-color: #212529;
+	background-color: var(--dark-color);
 	border-color: transparent;
 }
 .bg-dark .ranker:hover {
@@ -403,7 +405,7 @@ label.text.lg {
 	line-height: 1.7;
 }
 .bg-dark label.text {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 	color: var(--light);
 }
 .bg-dark label.text.hover:hover {
@@ -437,7 +439,7 @@ button.btn.btn-outline-flay {
 }
 .bg-dark button.btn.btn-flay,
 .bg-dark button.btn.btn-outline-flay {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 	color: var(--light);
 }
 .bg-dark button.btn.btn-flay:hover,
@@ -450,7 +452,7 @@ button.btn.btn-outline-flay {
 	text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;
 }
 .bg-dark .ui-dialog {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 }
 
 /* layout */
@@ -627,7 +629,7 @@ button.btn.btn-outline-flay {
 }
 @media screen and (max-width: 1080px) {
 	.divider {
-		width: .5rem;
+		width: 0.5rem;
 	}
 }
 .hover {
@@ -728,12 +730,12 @@ button.btn.btn-outline-flay {
 }
 .bg-dark nav.navbar,
 .bg-dark .bg-light {
-	background-color: var(--darker) !important;
+	background-color: var(--dark-color) !important;
 	color: var(--light) !important;
 }
 
 .bg-dark ul.pagination .page-item .page-link {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 	border-color: #000;
 }
 .bg-dark ul.pagination .page-item.active .page-link {
@@ -755,7 +757,7 @@ button.btn.btn-outline-flay {
 	text-shadow: 0 0 0.25rem var(--light);
 }
 .bg-dark .card {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 	color: var(--light);
 }
 .bg-dark th,
@@ -766,8 +768,8 @@ button.btn.btn-outline-flay {
 	border-color: #3a3e42 !important;
 }
 .bg-dark button {
-	/* color: var(--darker); */
-	background-color: var(--darker);
+	/* color: var(--dark-color); */
+	background-color: var(--dark-color);
 	outline: none;
 }
 .bg-dark button.btn-outline-secondary {
@@ -777,13 +779,13 @@ button.btn.btn-outline-flay {
 	color: #dc3545;
 }
 .bg-dark button.btn-outline-danger:hover {
-	color: var(--darker);
+	color: var(--dark-color);
 }
 .bg-dark button.btn-outline-light {
 	color: #f8f9fa;
 }
 .bg-dark button.btn-outline-light:hover {
-	color: var(--darker);
+	color: var(--dark-color);
 }
 .bg-dark button.btn-warning {
 	color: var(--warning);

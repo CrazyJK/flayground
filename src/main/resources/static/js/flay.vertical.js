@@ -233,6 +233,12 @@ function attachEventListener() {
 			.slideToggle(150);
 	});
 
+	// paginationProgress
+	$("#paginationProgress").on("click", (e) => {
+		console.log(e.clientX, $(this).width(), e.clientX / $(this).width(), collectedList.length * (e.clientX / $(this).width()));
+		navigation.go(parseInt(collectedList.length * (e.clientX / $(this).width())));
+	});
+
 	// window resize
 	$(window)
 		.on("resize", function () {

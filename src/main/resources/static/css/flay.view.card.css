@@ -1,23 +1,23 @@
 @charset "UTF-8";
 
 .flay-list {
-    display: flex;
-    flex-wrap: wrap;
-    align-content: flex-start;
-    justify-content: center;
-    gap: 4px;
-    overflow: hidden;
+	display: flex;
+	flex-wrap: wrap;
+	align-content: flex-start;
+	justify-content: center;
+	gap: 4px;
+	overflow: hidden;
 }
 .flay-list > .flay-card {
-    border-radius: 0.25rem;
+	border-radius: 0.25rem;
 	margin: 0.25rem;
 	padding: 0.25rem;
 	/* flex-basis: 500px; */
-    flex-grow: 0;
-    flex-shrink: 1;
+	flex-grow: 0;
+	flex-shrink: 1;
 }
 .flay-list > .flay-card > .flay-card-body {
-    border-radius: 0.25rem;
+	border-radius: 0.25rem;
 	padding: 0.125rem;
 }
 .flay-list > .flay-card > .flay-card-body > .flay-card-title {
@@ -31,24 +31,24 @@
 }
 
 .flay-card {
-    border: 0;
-    margin: auto;
+	border: 0;
+	margin: auto;
 }
 .flay-list .flay-card.archive .text {
 	color: gray;
 }
 .flay-list .flay-card.archive {
-	opacity: .75;
+	opacity: 0.75;
 }
 .flay-card > .flay-card-body {
-    background: center no-repeat;
-    background-size: cover;
+	background: center no-repeat;
+	background-size: cover;
 	border: 1px solid #000;
 	box-shadow: 0.25rem 0.25rem 0.5rem rgba(0, 0, 0, 0.5);
 	height: 100%;
 	margin: 0;
-    text-align: left;
-	transition: background-image .5s;
+	text-align: left;
+	transition: background-image 0.5s;
 }
 .flay-card.flay-card-border-0 > .flay-card-body {
 	border: 0;
@@ -62,14 +62,14 @@
 }
 
 .flay-file-group {
-    font-family: 'D2Coding';
+	font-family: "D2Coding";
 }
 .flay-file {
-	font-size: .875rem;
-	padding: .5rem 1rem;
+	font-size: 0.875rem;
+	padding: 0.5rem 1rem;
 }
 body.bg-dark .flay-file {
-	background-color: var(--darker);
+	background-color: var(--dark-color);
 }
 
 .flay-card label.text,
@@ -82,8 +82,8 @@ body.bg-dark .flay-file {
 .flay-card:hover label.text:not(.flay-rank-sm),
 .flay-card:hover .flay-rank {
 	background-color: var(--dark) !important;
-	text-shadow: 1px 1px 2px midnightblue
+	text-shadow: 1px 1px 2px midnightblue;
 }
 .flay-card label.text:hover {
-	background-color: rgba(25, 25, 112, .5);
+	background-color: rgba(25, 25, 112, 0.5);
 }

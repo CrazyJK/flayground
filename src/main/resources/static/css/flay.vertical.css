@@ -52,7 +52,7 @@ body {
 	position: fixed;
 	top: 0;
 	margin-top: 56px;
-	padding: 0.5rem;
+	padding: 0.25rem;
 	box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.5);
 	border-radius: 1rem;
 	z-index: 74;
@@ -166,12 +166,22 @@ body.bg-dark #newTagForm button {
 
 .pagination {
 	border-radius: 0;
-	padding: 0.5rem;
 	margin: 0;
+	padding: 0.5rem;
 	text-align: center;
 }
 .pagination-sm .page-link {
 	min-width: 50px;
+}
+#paginationProgress {
+	cursor: pointer;
+	height: 1px;
+}
+#bottomMenu:hover .pagination {
+	padding-bottom: 3px;
+}
+#bottomMenu:hover #paginationProgress {
+	height: 6px;
 }
 .pagination ~ .progress .progress-bar {
 	background-color: #000;

@@ -240,38 +240,38 @@ function attachEventListener() {
 	});
 
 	// window resize
-	$(window)
-		.on("resize", function () {
-			var windowWidth = $(window).width();
-			// var windowHeight = $(window).height();
-			var navHeight = $("nav.navbar").outerHeight();
-			var currCoverBoxWidth = $(".cover-wrapper-inner.curr > .cover-box").width();
-			var currCoverBoxHeight = $(".cover-wrapper-inner.curr > .cover-box").height();
+	$(window).on("resize", function () {
+		var windowWidth = $(window).width();
+		// var windowHeight = $(window).height();
+		// var navHeight = $("nav.navbar").outerHeight();
+		const $currCoverBox = $(".cover-wrapper-inner.curr > .cover-box");
+		const currCoverBoxWidth = $currCoverBox.width();
+		const currCoverBoxHeight = $currCoverBox.height();
+		const calcWidth = (windowWidth - currCoverBoxWidth - 20) / 2;
+		const calcHeight = calcWidth * COVER_RATIO;
+		const $sideCover = $(".cover-wrapper-inner.prev > .cover-box, .cover-wrapper-inner.next > .cover-box");
+		// console.log(`window resize currCoverBoxWidth: ${currCoverBoxWidth} calcWidth: ${calcWidth} currCoverBox.bg: ${$currCoverBox.css("background-image")}`);
 
-			var calcWidth = (windowWidth - currCoverBoxWidth - 20) / 2;
-			var calcHeight = calcWidth * COVER_RATIO;
-			var $sideCover = $(".cover-wrapper-inner.prev > .cover-box, .cover-wrapper-inner.next > .cover-box");
-			if (currCoverBoxWidth / 2 > calcWidth) {
-				// too small, hide
-				$sideCover.hide();
-			} else if (currCoverBoxWidth < calcWidth) {
-				// too large, set default
-				$sideCover
-					.css({
-						width: currCoverBoxWidth,
-						height: currCoverBoxHeight,
-					})
-					.show();
-			} else {
-				$sideCover
-					.css({
-						width: calcWidth,
-						height: calcHeight,
-					})
-					.show();
-			}
-		})
-		.trigger("resize");
+		if (currCoverBoxWidth / 2 > calcWidth) {
+			// too small, hide
+			$sideCover.hide();
+		} else if (currCoverBoxWidth < calcWidth) {
+			// too large, set default
+			$sideCover
+				.css({
+					width: currCoverBoxWidth,
+					height: currCoverBoxHeight,
+				})
+				.show();
+		} else {
+			$sideCover
+				.css({
+					width: calcWidth,
+					height: calcHeight,
+				})
+				.show();
+		}
+	});
 }
 
 function loadData() {
@@ -287,6 +287,7 @@ function loadData() {
 			$(".tag-list > label:not(.label-add-tag)").remove();
 			$(".tag-list").prepend(tagArray);
 			$("#pageContent").trigger("collect");
+			$(window).trigger("resize");
 		}
 	};
 
@@ -549,8 +550,8 @@ function collectList() {
 					.on("click", function () {
 						$("#statisticsStudio .studioTag.hide").toggle();
 						$(this).html($("#statisticsStudio .studioTag.hide:visible").length > 0 ? minCount + " over" : "Show All");
-					})
-			)
+					}),
+			),
 		);
 	for (var [k, v] of studioMap) {
 		$("#statisticsStudio").append(
@@ -561,13 +562,13 @@ function collectList() {
 							fontSize: 16 + v * 0.25,
 						})
 						.html(k),
-					$("<span>", { class: "badge" }).html(v)
+					$("<span>", { class: "badge" }).html(v),
 				)
 				.data("k", k)
 				.on("click", function () {
 					$("#search").val($(this).data("k"));
 					$("#pageContent").trigger("collect");
-				})
+				}),
 		);
 	}
 
@@ -580,8 +581,8 @@ function collectList() {
 					.on("click", function () {
 						$("#statisticsActress .actressTag.hide").toggle();
 						$(this).html($("#statisticsActress .actressTag.hide:visible").length > 0 ? minCount + " over" : "Show All");
-					})
-			)
+					}),
+			),
 		);
 	for (var [k, v] of actressMap) {
 		$("#statisticsActress").append(
@@ -592,13 +593,13 @@ function collectList() {
 							fontSize: 16 + v * 0.25,
 						})
 						.html(k),
-					$("<span>", { class: "badge" }).html(v)
+					$("<span>", { class: "badge" }).html(v),
 				)
 				.data("k", k)
 				.on("click", function () {
 					$("#search").val($(this).data("k"));
 					$("#pageContent").trigger("collect");
-				})
+				}),
 		);
 	}
 }
@@ -611,7 +612,7 @@ function notice(msg) {
 				.html(msg)
 				.fadeOut(5000, function () {
 					$(this).remove();
-				})
+				}),
 		);
 }
 
@@ -731,7 +732,7 @@ var navigation = {
 						.on("click", function () {
 							navigation.go(idx);
 						})
-						.html(idx + 1)
+						.html(idx + 1),
 				)
 				.appendTo($(".pagination"));
 		};
@@ -865,7 +866,7 @@ function showVideo() {
 						$("<label>", { class: "text info-actress-extra" }).html(Util.Actress.getAge(actress)),
 						$("<label>", { class: "text info-actress-extra" }).html(actress.debut.toBlank()),
 						$("<label>", { class: "text info-actress-extra" }).html(actress.body),
-						$("<label>", { class: "text info-actress-extra" }).html(actress.height.toBlank())
+						$("<label>", { class: "text info-actress-extra" }).html(actress.height.toBlank()),
 					)
 					.appendTo($(".info-wrapper-actress"));
 			});

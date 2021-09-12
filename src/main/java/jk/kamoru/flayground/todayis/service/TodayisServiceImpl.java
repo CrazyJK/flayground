@@ -6,6 +6,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,21 +25,17 @@ public class TodayisServiceImpl implements TodayisService {
 
 	@Autowired FlayActionHandler flayActionHandler;
 
-	// private List<Todayis> list;
-
 	private Map<String, Todayis> map;
 
 	@Override
 	public Collection<Todayis> list() {
 		map = new HashMap<>();
-		// list = new ArrayList<>();
 		for (File path : flayProperties.getTodayisPaths()) {
 			Collection<File> listFiles = FileUtils.listFiles(path, null, true);
 			for (File file : listFiles) {
 				if (Flayground.FILE.isVideo(file)) {
 					Todayis instance = Todayis.toInstance(file);
 					map.put(instance.getUuid(), instance);
-					// list.add(Todayis.toInstance(file));
 				}
 			}
 		}

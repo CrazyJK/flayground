@@ -37,6 +37,3 @@ bin/
 
 /target/
 /.factorypath
-
-# vscode
-.vscode

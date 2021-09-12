@@ -3,8 +3,9 @@ package jk.kamoru.flayground.todayis.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
-
+import java.util.Map;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -23,20 +24,33 @@ public class TodayisServiceImpl implements TodayisService {
 
 	@Autowired FlayActionHandler flayActionHandler;
 
-	List<Todayis> list;
+	// private List<Todayis> list;
+
+	private Map<String, Todayis> map;
 
 	@Override
 	public Collection<Todayis> list() {
-		list = new ArrayList<>();
+		map = new HashMap<>();
+		// list = new ArrayList<>();
 		for (File path : flayProperties.getTodayisPaths()) {
 			Collection<File> listFiles = FileUtils.listFiles(path, null, true);
 			for (File file : listFiles) {
 				if (Flayground.FILE.isVideo(file)) {
-					list.add(Todayis.toInstance(file));
+					Todayis instance = Todayis.toInstance(file);
+					map.put(instance.getUuid(), instance);
+					// list.add(Todayis.toInstance(file));
 				}
 			}
 		}
-		return list;
+		return map.values();
+	}
+
+	@Override
+	public Todayis get(String uuid) {
+		if (map == null || map.isEmpty()) {
+			throw new IllegalStateException("data is null or empty");
+		}
+		return map.get(uuid);
 	}
 
 	@Override

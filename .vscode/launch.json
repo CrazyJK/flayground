@@ -1,0 +1,28 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch PageImageDownloader",
+      "request": "launch",
+      "mainClass": "jk.kamoru.flayground.image.download.PageImageDownloader",
+      "projectName": "flayground"
+    },
+    {
+      "type": "java",
+      "name": "Launch ImageDownloader",
+      "request": "launch",
+      "mainClass": "jk.kamoru.flayground.image.download.ImageDownloader",
+      "projectName": "flayground"
+    },
+    {
+      "type": "java",
+      "name": "Spring Boot-FlaygroundApplication<flayground>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "console": "internalConsole",
+      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
+      "projectName": "flayground",
+      "vmArgs": "-Dspring.profiles.active=flay-home"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 package jk.kamoru.flayground.todayis.domain;
 
 import java.io.File;
-
+import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -17,9 +17,10 @@ public class Todayis {
 	String path;
 	long length;
 	long lastModified;
+	String uuid;
 
 	public static Todayis toInstance(File file) {
-		return new Todayis(file.getName(), file.getParent(), file.length(), file.lastModified());
+		return new Todayis(file.getName(), file.getParent(), file.length(), file.lastModified(), UUID.randomUUID().toString());
 	}
 
 	@JsonIgnore

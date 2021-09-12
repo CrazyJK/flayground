@@ -285,6 +285,10 @@ $(document).ready(function () {
 });
 
 window.onerror = function (e) {
-	console.error("Error", e);
-	loading.on("Error: " + e);
+	if (e.toString() === "ResizeObserver loop limit exceeded") {
+		return;
+	} else {
+		loading.on("Error: " + e);
+	}
+	console.error("Error name[" + e.name + "] message[" + e.message + "] toString[" + e.toString() + "]", e);
 };

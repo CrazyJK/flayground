@@ -56,7 +56,7 @@ var SlideMenu = {
 							try {
 								destory();
 							} catch (ignore) {}
-							$("#wrap_body").html(html);
+							$("#wrap_body").empty().html(html);
 						});
 					} else if (menu.mode === "href") {
 						location.href = menu.uri;
@@ -92,14 +92,16 @@ var SlideMenu = {
 		$(".sidenav-pin")
 			.data("pin", false)
 			.on("click", function () {
-				var status = $(this).data("pin");
+				var isPin = !$(this).data("pin");
 				$(".sidenav").css({
-					width: status ? "0" : "var(--sidenav-width)",
+					width: isPin ? "var(--sidenav-width)" : "0",
 				});
 				$("main").css({
-					left: status ? "0" : "var(--sidenav-width)",
+					left: isPin ? "var(--sidenav-width)" : "0",
 				});
-				$(this).data("pin", !status).toggleClass("active", !status);
+				$(this).data("pin", isPin).toggleClass("active", isPin);
+				SlideMenu.specialViewPause = isPin;
+				$("#specialView").toggleClass("pause", isPin);
 			});
 	},
 	toggleContent: function () {
@@ -147,23 +149,30 @@ var SlideMenu = {
 			onlyOnce: true,
 		});
 	},
+	specialViewPause: false,
 	specialView: function () {
 		if (Security.isAutomaticallyCertificated()) {
 			var selectedBgIndex = -1;
 			$("#mainMenuWrap > li > div > a:nth-child(1)").hover(
 				function () {
+					if (SlideMenu.specialViewPause) {
+						return;
+					}
 					selectedBgIndex = Random.getInteger(0, Background.count);
 					$("#specialView").css({
 						backgroundImage: "url('/static/image/" + selectedBgIndex + "')",
 					});
 				},
-				function () {}
+				function () {},
 			);
 			$(".sidenav > h4 > a").hover(
 				function () {
+					if (SlideMenu.specialViewPause) {
+						return;
+					}
 					$("#specialView").css("backgroundImage", "");
 				},
-				function () {}
+				function () {},
 			);
 			$(".sidenav > h4 > img").on("click", function () {
 				Popup.imageByNo(selectedBgIndex);

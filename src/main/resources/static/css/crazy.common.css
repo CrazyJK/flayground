@@ -208,7 +208,7 @@ label.check.danger:hover input:checked ~ span {
 
 .bg-dark .check-group span,
 .bg-dark label.check span {
-	background-color: var(--dark-color) !important;
+	background-color: var(--dark-color);
 	color: lightgray;
 	transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
 }
@@ -265,7 +265,6 @@ input.input-flay:hover {
 .bg-dark .input-group-text {
 	background-color: var(--dark-color);
 	color: var(--light);
-	border: 0;
 }
 
 /* input range ranker */

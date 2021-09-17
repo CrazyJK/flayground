@@ -192,7 +192,9 @@
 	width: calc(100% - var(--sidenav-width));
 	transition: width 1s 0.25s, background-image 0.5s;
 }
-
+.sidenav:hover ~ #specialView.pause {
+	width: 0 !important;
+}
 main {
 	position: fixed;
 	top: 0;

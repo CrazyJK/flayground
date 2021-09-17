@@ -57,11 +57,6 @@ body {
 	border-radius: 1rem;
 	z-index: 74;
 }
-#options i.fa {
-	width: 1rem;
-	text-align: center;
-	margin-right: 0.5rem;
-}
 
 .video-wrapper {
 	text-align: center;
@@ -179,9 +174,11 @@ body.bg-dark #newTagForm button {
 }
 #bottomMenu:hover .pagination {
 	padding-bottom: 3px;
+	transition: padding-bottom 0.4s;
 }
 #bottomMenu:hover #paginationProgress {
 	height: 6px;
+	transition: height 0.4s;
 }
 .pagination ~ .progress .progress-bar {
 	background-color: #000;
@@ -220,4 +217,53 @@ body.bg-dark #newTagForm button {
 	.info-wrapper .info-title {
 		max-width: var(--cover-width-sm);
 	}
+}
+
+.bg-dark #topMenu nav {
+	background-color: transparent !important;
+	text-shadow: 0 0 4px #000;
+	box-shadow: 0 0.125rem 1rem rgb(0 0 0 / 50%);
+}
+.bg-dark #topMenu input.form-control {
+	background-color: transparent !important;
+	text-shadow: 0 0 4px #000;
+	border: 0;
+}
+.bg-dark #topMenu button.btn {
+	background-color: transparent !important;
+}
+.bg-dark #topMenu .bg-light {
+	background-color: transparent !important;
+	text-shadow: 0 0 4px #000;
+}
+
+.bg-dark #bottomMenu .pagination .page-link {
+	box-shadow: 0 0.125rem 1rem rgb(0 0 0 / 50%);
+	border: 0;
+	background-color: transparent;
+	text-shadow: 0 0 4px #000;
+}
+.bg-dark #bottomMenu .pagination .page-item .page-link {
+	color: var(--light);
+}
+.bg-dark #bottomMenu .pagination .page-item.active .page-link {
+	border: 0;
+	background-color: transparent;
+	text-shadow: 0 0 4px #000;
+	color: var(--warning);
+}
+
+.bg-dark .check-group span,
+.bg-dark label.check span {
+	background-color: transparent;
+	text-shadow: 0 0 4px #000;
+	color: #fff;
+}
+.bg-dark .ranker {
+	background-color: transparent;
+	text-shadow: 0 0 4px #000;
+}
+.bg-dark label.text {
+	background-color: transparent;
+	text-shadow: 0 0 4px black;
 }

@@ -75,15 +75,19 @@ body.bg-dark .flay-file {
 .flay-card label.text,
 .flay-card .flay-rank {
 	background-color: transparent;
-	text-shadow: 0 0 2px midnightblue, 0 0 4px #000, 0 0 8px #000, 0 0 12px midnightblue, 0 0 16px #000;
+	text-shadow: 0 0 2px #000, 0 0 4px midnightblue, 0 0 8px #000, 0 0 12px midnightblue, 0 0 16px #000;
 	color: #fff;
 }
 
 .flay-card:hover label.text:not(.flay-rank-sm),
 .flay-card:hover .flay-rank {
-	background-color: var(--dark) !important;
-	text-shadow: 1px 1px 2px midnightblue;
+	background-color: rgb(0 0 0 / 0.75);
+	text-shadow: 1px 1px 2px #000;
 }
 .flay-card label.text:hover {
 	background-color: rgba(25, 25, 112, 0.5);
+}
+
+.flay-card .extra {
+	font-size: 80%;
 }

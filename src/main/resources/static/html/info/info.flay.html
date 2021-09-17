@@ -1,139 +1,151 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Flay Info</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="icon" type="image/png" href="/img/favicon/flay_1.png"/>
-<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
-<link rel="stylesheet" href="/css/base.scrollbar.css"/>
-<link rel="stylesheet" href="/css/crazy.common.css"/>
-<link rel="stylesheet" href="/css/flay.view.card.css"/>
-<style type="text/css">
-.toggle-tag {
-    position: fixed;
-    right: 50%;
-	transform: translate(50%, 0);
-    width: 1.75rem;
-    height: 1.75rem;
-    border: 2px solid var(--light);
-    border-radius: 25%;
-    color: var(--light);
-    text-align: center;
-    vertical-align: middle;
-    font-weight: bold;
-    font-size: 1.25rem;
-    margin: 0 .25rem;
-    background-color: rgba(0,0,0,.5);
-	line-height: 1;
-}
-.toggle-tag .fa {
-	font-size: 1.5rem;
-}
-</style>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-<script type="text/javascript" src="/js/crazy.common.js"></script>
-<script type="text/javascript" src="/js/crazy.jquery.js"></script>
-<script type="text/javascript" src="/js/flay.rest.service.js"></script>
-<script type="text/javascript" src="/js/flay.utils.js"></script>
-<script type="text/javascript" src="/js/flay.view.card.js"></script>
-<script type="text/javascript" src="/js/flay.websocket.js"></script>
-</head>
-<body class="overflow-hidden">
-
-	<div id="containerFlay"></div>
-	
-	<div id="containerTag" class="fixed-bottom text-center p-2"></div>
-
-	<label class="toggle-tag shadow hover">
-		<i class="fa fa-angle-double-down"></i>
-	</label>
-
-<script type="text/javascript">
-var opus = reqParam.opus;
-var flay;
-var loadedFlay = false, loadedTag = false;
-var isArchive = false;
-
-function setFlay(_flay) {
-	flay = _flay;
-	document.title = flay.opus + ' - ' + document.title;
-
-	$("#containerFlay").appendFlayCard(flay, {archive: isArchive});
-	if (isArchive) {
-		document.title = flay.opus + ' - Archive Info';
-	}
-	loadedFlay = true;
-	matchTag();
-}
-function matchTag() {
-	if (loadedFlay && loadedTag) {
-		$.each(flay.video.tags, function(idx, tagId) {
-			$(":checkbox[data-tag-id='" + tagId + "']").prop("checked", true);
-		});
-
-		$("#containerTag").hide();
-		
-		$(".toggle-tag").css({
-			top: $(".flay-card").height() - 30,
-		}).on("click", function() {
-			$("#containerTag").toggle();
-			if ($("#containerTag").css("display") === 'none') {
-				window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + 68);
-				$(this).children(".fa").switchClass("fa-angle-double-up", "fa-angle-double-down");
-			} else {
-				window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + $("#containerTag").height() + 100);
-				$(this).children(".fa").switchClass("fa-angle-double-down", "fa-angle-double-up");
+	<head>
+		<title>Flay Info</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" href="/img/favicon/flay_1.png" />
+		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css" />
+		<link rel="stylesheet" href="/css/base.scrollbar.css" />
+		<link rel="stylesheet" href="/css/crazy.common.css" />
+		<link rel="stylesheet" href="/css/flay.view.card.css" />
+		<style type="text/css">
+			.toggle-tag {
+				position: fixed;
+				right: 50%;
+				transform: translate(50%, 0);
+				width: 1.75rem;
+				height: 1.75rem;
+				border: 2px solid var(--light);
+				border-radius: 25%;
+				color: var(--light);
+				text-align: center;
+				vertical-align: middle;
+				font-weight: bold;
+				font-size: 1.25rem;
+				margin: 0 0.25rem;
+				background-color: rgba(0, 0, 0, 0.5);
+				line-height: 1;
 			}
-		});
-		
-		window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + 68);
-	}
-}
+			.toggle-tag .fa {
+				font-size: 1.5rem;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/js/crazy.common.js"></script>
+		<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+		<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="/js/flay.utils.js"></script>
+		<script type="text/javascript" src="/js/flay.view.card.js"></script>
+		<script type="text/javascript" src="/js/flay.websocket.js"></script>
+	</head>
+	<body class="overflow-hidden">
+		<div id="containerFlay"></div>
 
-window.onload = function() {
-	Rest.Flay.get(opus, function(f) {
-		setFlay(f);
-	}, function() {
-		Rest.Archive.get(opus, function(f) {
-			isArchive = true;
-			setFlay(f);
-		});
-	});
+		<div id="containerTag" class="fixed-bottom text-center p-2"></div>
 
-	Rest.Tag.list(function(list) {
-		tagList = list;
-		Util.Tag.sort(tagList);
+		<label class="toggle-tag shadow hover">
+			<i class="fa fa-angle-double-down"></i>
+		</label>
 
-		$.each(tagList, function(idx, tag) {
-			$("<label>", {'class': 'check sm m-1'}).append(
-					$("<input>", {type: 'checkbox', 'data-tag-id': tag.id}).data("tag", tag).on("change", function() {
-						var checked = $(this).prop("checked");
-						var tag = $(this).data("tag");
-						console.log("tag toggle", checked, tag, flay);
-						if (checked) {
-							Util.Tag.push(flay.video.tags, tag);
-						} else {
-							Util.Tag.remove(flay.video.tags, tag);
-						}
-						Rest.Video.update(flay.video);
-					}),
-					$("<span>", {title: tag.description}).html(tag.name)
-			).appendTo($("#containerTag"));
-		});
-		
-		loadedTag = true;
-		matchTag();
-	});
-};
+		<script type="text/javascript">
+			var opus = reqParam.opus;
+			var flay;
+			var loadedFlay = false,
+				loadedTag = false;
+			var isArchive = false;
 
-$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
-</script>
+			function setFlay(_flay) {
+				flay = _flay;
+				document.title = flay.opus + " - " + document.title;
 
-</body>
+				$("#containerFlay").appendFlayCard(flay, { archive: isArchive });
+				if (isArchive) {
+					document.title = flay.opus + " - Archive Info";
+				}
+				loadedFlay = true;
+				matchTag();
+			}
+
+			function matchTag() {
+				if (loadedFlay && loadedTag) {
+					$.each(flay.video.tags, function (idx, tagId) {
+						$(":checkbox[data-tag-id='" + tagId + "']").prop("checked", true);
+					});
+
+					$("#containerTag").hide();
+
+					$(".toggle-tag")
+						.css({
+							top: $(".flay-card").height() - 30,
+						})
+						.on("click", function () {
+							$("#containerTag").toggle();
+							if ($("#containerTag").css("display") === "none") {
+								window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + 68);
+								$(this).children(".fa").switchClass("fa-angle-double-up", "fa-angle-double-down");
+							} else {
+								window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + $("#containerTag").height() + 100);
+								$(this).children(".fa").switchClass("fa-angle-double-down", "fa-angle-double-up");
+							}
+						});
+
+					window.resizeTo($(".flay-card").width() + 16, $(".flay-card").height() + 68);
+				}
+			}
+
+			window.onload = function () {
+				Rest.Flay.get(
+					opus,
+					function (f) {
+						setFlay(f);
+					},
+					function () {
+						Rest.Archive.get(opus, function (f) {
+							isArchive = true;
+							setFlay(f);
+						});
+					},
+				);
+
+				Rest.Tag.list(function (list) {
+					tagList = list;
+					Util.Tag.sort(tagList);
+
+					$.each(tagList, function (idx, tag) {
+						$("<label>", { class: "check sm m-1" })
+							.append(
+								$("<input>", { type: "checkbox", "data-tag-id": tag.id })
+									.data("tag", tag)
+									.on("change", function () {
+										var checked = $(this).prop("checked");
+										var tag = $(this).data("tag");
+										console.log("tag toggle", checked, tag, flay);
+										if (checked) {
+											Util.Tag.push(flay.video.tags, tag);
+										} else {
+											Util.Tag.remove(flay.video.tags, tag);
+										}
+										Rest.Video.update(flay.video);
+									}),
+								$("<span>", { title: tag.description }).html(tag.name),
+							)
+							.appendTo($("#containerTag"));
+					});
+
+					loadedTag = true;
+					matchTag();
+				});
+			};
+
+			$("body")
+				.toggleClass("bg-dark", LocalStorageItem.get("flay.bgtheme", "D") === "D")
+				.css({ backgroundColor: LocalStorageItem.get("flay.bgcolor") });
+		</script>
+	</body>
 </html>

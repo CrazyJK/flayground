@@ -14,6 +14,9 @@
 	padding: 0.5rem;
 	overflow: auto;
 }
+.folder {
+	margin-bottom: 1rem;
+}
 .folder-info {
 	display: flex;
 	justify-content: center;
@@ -130,8 +133,15 @@ label.radio {
 	margin: 0 0.25rem;
 }
 label.radio > input {
+	position: absolute;
 	width: 1px;
 	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border: 0;
 }
 label.radio > input + span {
 	cursor: pointer;
@@ -163,7 +173,6 @@ label.radio > input:checked + span {
 	padding: 0.25rem 0.5rem;
 }
 #videoWrapper span:hover {
-	background-color: orange;
-	color: #000;
-	border-radius: 0.5rem;
+	background-color: transparent;
+	color: orange;
 }

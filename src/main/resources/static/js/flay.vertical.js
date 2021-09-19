@@ -241,13 +241,13 @@ function attachEventListener() {
 
 	// window resize
 	$(window).on("resize", function () {
-		var windowWidth = $(window).width();
+		var coverWrapperWidth = $(".cover-wrapper").width();
 		// var windowHeight = $(window).height();
 		// var navHeight = $("nav.navbar").outerHeight();
 		const $currCoverBox = $(".cover-wrapper-inner.curr > .cover-box");
 		const currCoverBoxWidth = $currCoverBox.width();
 		const currCoverBoxHeight = $currCoverBox.height();
-		const calcWidth = (windowWidth - currCoverBoxWidth - 20) / 2;
+		const calcWidth = (coverWrapperWidth - currCoverBoxWidth - 20) / 2;
 		const calcHeight = calcWidth * COVER_RATIO;
 		const $sideCover = $(".cover-wrapper-inner.prev > .cover-box, .cover-wrapper-inner.next > .cover-box");
 		// console.log(`window resize currCoverBoxWidth: ${currCoverBoxWidth} calcWidth: ${calcWidth} currCoverBox.bg: ${$currCoverBox.css("background-image")}`);
@@ -738,8 +738,9 @@ var navigation = {
 		};
 
 		$(".pagination").empty();
-		var start = Math.max(currentIndex - 4, 0);
-		var end = Math.min(currentIndex + 5, collectedList.length);
+		const pageLength = 12;
+		var start = Math.max(currentIndex - (pageLength / 2 - 1), 0);
+		var end = Math.min(currentIndex + pageLength / 2, collectedList.length);
 
 		if (start > 0) {
 			addPaginationBtn(0); // first page
@@ -859,7 +860,7 @@ function showVideo() {
 			Rest.Actress.get(name, (actress) => {
 				$("<div>")
 					.append(
-						$("<label>", { class: "text info-favorite" }).append($("<i>", { class: "hover fa fa-heart" + (actress.favorite ? " favorite" : "-o") }).data("actress", actress)), // favorite
+						$("<label>", { class: "text info-favorite hover" }).append($("<i>", { class: "hover fa fa-heart" + (actress.favorite ? " favorite" : "-o") }).data("actress", actress)), // favorite
 						$("<label>", { class: "text info-actress hover" }).html(actress.name).data("actress", actress),
 						$("<label>", { class: "text info-actress-extra" }).html(actress.localName),
 						$("<label>", { class: "text info-actress-extra" }).html(actress.birth.replace("年", "<small>年</small>").replace("月", "<small>月</small>").replace("日", "<small>日</small>")),

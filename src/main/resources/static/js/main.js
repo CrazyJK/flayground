@@ -102,6 +102,10 @@ var SlideMenu = {
 				$(this).data("pin", isPin).toggleClass("active", isPin);
 				SlideMenu.specialViewPause = isPin;
 				$("#specialView").toggleClass("pause", isPin);
+
+				setTimeout(() => {
+					$(window).trigger("resize");
+				}, 500);
 			});
 	},
 	toggleContent: function () {
@@ -225,6 +229,12 @@ var Background = {
 		});
 		var backgroundImageShow = LocalStorageItem.getBoolean("flay.background-image", true);
 		backgroundImageShow && $("#bgFlow").parent().click();
+		// Picture fall down
+		$("#pictureFalldown").on("click", () => {
+			for (let i = 0; i < 20; i++) {
+				Background.func();
+			}
+		});
 	},
 	start: function () {
 		Background.bgInterval = setInterval(Background.func, Background.intervalTime);

@@ -166,6 +166,7 @@ body.bg-dark #newTagForm button {
 	text-align: center;
 }
 .pagination-sm .page-link {
+	border: 0;
 	min-width: 50px;
 }
 #paginationProgress {
@@ -219,34 +220,34 @@ body.bg-dark #newTagForm button {
 	}
 }
 
-.bg-dark #topMenu nav {
+.bg-dark #topMenu nav:not(:hover) {
 	background-color: transparent !important;
 	text-shadow: 0 0 4px #000;
 	box-shadow: 0 0.125rem 1rem rgb(0 0 0 / 50%);
+	transition: all 0.4s;
 }
-.bg-dark #topMenu input.form-control {
+.bg-dark #topMenu nav input.form-control {
 	background-color: transparent !important;
 	text-shadow: 0 0 4px #000;
 	border: 0;
 }
-.bg-dark #topMenu button.btn {
+.bg-dark #topMenu nav button.btn {
 	background-color: transparent !important;
 }
-.bg-dark #topMenu .bg-light {
+.bg-dark #topMenu nav .bg-light {
 	background-color: transparent !important;
 	text-shadow: 0 0 4px #000;
 }
 
-.bg-dark #bottomMenu .pagination .page-link {
-	box-shadow: 0 0.125rem 1rem rgb(0 0 0 / 50%);
-	border: 0;
+.bg-dark #bottomMenu .pagination:not(:hover) .page-item .page-link {
 	background-color: transparent;
-	text-shadow: 0 0 4px #000;
-}
-.bg-dark #bottomMenu .pagination .page-item .page-link {
+	border: 0;
+	box-shadow: 0 0.125rem 1rem rgb(0 0 0 / 50%);
 	color: var(--light);
+	text-shadow: 0 0 4px #000;
+	transition: all 0.4s;
 }
-.bg-dark #bottomMenu .pagination .page-item.active .page-link {
+.bg-dark #bottomMenu .pagination:not(:hover) .page-item.active .page-link {
 	border: 0;
 	background-color: transparent;
 	text-shadow: 0 0 4px #000;
@@ -254,16 +255,20 @@ body.bg-dark #newTagForm button {
 }
 
 .bg-dark .check-group span,
-.bg-dark label.check span {
+.bg-dark label.check span,
+.bg-dark .ranker,
+.bg-dark label.text {
 	background-color: transparent;
 	text-shadow: 0 0 4px #000;
 	color: #fff;
+	/* background-color: rgb(0 0 0 / 0.5); */
+	/* box-shadow: 0 0 8px 8px rgb(0 0 0 / 50%); */
+	/* border-radius: 16px; */
 }
-.bg-dark .ranker {
-	background-color: transparent;
-	text-shadow: 0 0 4px #000;
-}
-.bg-dark label.text {
-	background-color: transparent;
-	text-shadow: 0 0 4px black;
+
+.bg-dark .check-group:hover span,
+.bg-dark label.check:hover span,
+.bg-dark .ranker:hover,
+.bg-dark label.text.hover:hover {
+	background-color: #000;
 }

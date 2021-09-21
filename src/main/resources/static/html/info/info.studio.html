@@ -1,106 +1,115 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Studio Info</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<link rel="icon" type="image/png" href="/img/favicon/flay_1.png"/>
-<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css"/>
-<link rel="stylesheet" href="/css/base.scrollbar.css"/>
-<link rel="stylesheet" href="/css/crazy.common.css"/>
-<link rel="stylesheet" href="/css/flay.view.card.css"/>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-<script type="text/javascript" src="/js/crazy.common.js"></script>
-<script type="text/javascript" src="/js/crazy.jquery.js"></script>
-<script type="text/javascript" src="/js/flay.rest.service.js"></script>
-<script type="text/javascript" src="/js/flay.utils.js"></script>
-<script type="text/javascript" src="/js/flay.view.card.js"></script>
-</head>
-<body>
-
-	<nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center sticky-top">
-		<div class="container-xl row">
-			<div class="col-3">
-				<div class="input-group">
-					<input class="form-control" name="name" id="name" placeholder="Name...">
-					<div class="input-group-append">
-						<span class="input-group-text video-count"></span>
+	<head>
+		<title>Studio Info</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<link rel="icon" type="image/png" href="/img/favicon/flay_1.png" />
+		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css" />
+		<link rel="stylesheet" href="/css/base.scrollbar.css" />
+		<link rel="stylesheet" href="/css/crazy.common.css" />
+		<link rel="stylesheet" href="/css/flay.view.card.css" />
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/js/crazy.common.js"></script>
+		<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+		<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="/js/flay.utils.js"></script>
+		<script type="text/javascript" src="/js/flay.view.card.js"></script>
+	</head>
+	<body>
+		<nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center sticky-top">
+			<div class="container-xl row">
+				<div class="col-3">
+					<div class="input-group">
+						<input class="form-control" name="name" id="name" placeholder="Name..." />
+						<div class="input-group-append">
+							<span class="input-group-text video-count"></span>
+						</div>
 					</div>
 				</div>
+				<div class="col-3">
+					<input class="form-control" name="company" id="company" placeholder="company..." />
+				</div>
+				<div class="col-5">
+					<input class="form-control" name="homepage" id="homepage" placeholder="homepage..." />
+				</div>
+				<div class="col-1">
+					<button class="btn btn-outline-light" id="save">Save</button>
+				</div>
 			</div>
-			<div class="col-3">
-				<input class="form-control" name="company" id="company" placeholder="company...">
-			</div>
-			<div class="col-5">
-				<input class="form-control" name="homepage" id="homepage" placeholder="homepage...">
-			</div>
-			<div class="col-1">
-				<button class="btn btn-outline-light" id="save">Save</button>
-			</div>
-		</div>
-	</nav>
+		</nav>
 
-	<div class="flay-list" style="overflow: auto;"></div>
+		<div class="flay-list" style="overflow: auto"></div>
 
-<script type="text/javascript">
-const studioName = reqParam.s;
+		<script type="text/javascript">
+			const studioName = reqParam.s;
 
-var $flayList = $(".flay-list");
+			var $flayList = $(".flay-list");
 
-$(window).on("resize", function() {
-	$flayList.css({
-		height: window.innerHeight - $(".navbar").outerHeight() - 16
-	});
-});
+			$(window).on("resize", function () {
+				$flayList.css({
+					height: window.innerHeight - $(".navbar").outerHeight() - 16,
+				});
+			});
 
-$("#save").on("click", function() {
-	Rest.Studio.update({
-		name: $("#name").val(),
-		company: $("#company").val(),
-		homepage: $("#homepage").val()
-	}, function() {
-		$("#save").html('Updated');
-		setTimeout(function() {
-		$("#save").html('Save');
-		}, 1000);
-	});
-});
+			$("#save").on("click", function () {
+				Rest.Studio.update(
+					{
+						name: $("#name").val(),
+						company: $("#company").val(),
+						homepage: $("#homepage").val(),
+					},
+					function () {
+						$("#save").html("Updated");
+						setTimeout(function () {
+							$("#save").html("Save");
+						}, 1000);
+					},
+				);
+			});
 
-Rest.Studio.get(studioName, function(studio) {
-	document.title = studio.name + ' - ' + document.title;
-	$("#name").val(studio.name);
-	$("#company").val(studio.company);
-	$("#homepage").val(studio.homepage);
-}, function() {
-	$("#name").val(studioName);
-});
+			Rest.Studio.get(
+				studioName,
+				function (studio) {
+					document.title = studio.name + " - " + document.title;
+					$("#name").val(studio.name);
+					$("#company").val(studio.company);
+					$("#homepage").val(studio.homepage);
+				},
+				function () {
+					$("#name").val(studioName);
+				},
+			);
 
-Rest.Flay.find("studio/" + studioName, function(flayList) {
-	$(".video-count").html(flayList.length);
+			Rest.Flay.find("studio/" + studioName, function (flayList) {
+				$(".video-count").html(flayList.length);
 
-	flayList.sort(function(flay1, flay2) {
-		return flay2.release.toLowerCase().localeCompare(flay1.release);
-	});
+				flayList.sort(function (flay1, flay2) {
+					const c = flay2.release.toLowerCase().localeCompare(flay1.release);
+					return c === 0 ? flay2.opus.toLowerCase().localeCompare(flay1.opus) : c;
+				});
 
-	$flayList.empty();
+				$flayList.empty();
 
-	$.each(flayList, function(idx, flay) {
-		$flayList.appendFlayCard(flay, {
-			width: 330,
-			exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-			fontSize: '80%'
-		});
-	});
+				$.each(flayList, function (idx, flay) {
+					$flayList.appendFlayCard(flay, {
+						width: 330,
+						exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+						fontSize: "80%",
+					});
+				});
 
-	$(window).trigger("resize");
-});
+				$(window).trigger("resize");
+			});
 
-$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D').css({backgroundColor: LocalStorageItem.get('flay.bgcolor')});
-</script>
-</body>
+			$("body")
+				.toggleClass("bg-dark", LocalStorageItem.get("flay.bgtheme", "D") === "D")
+				.css({ backgroundColor: LocalStorageItem.get("flay.bgcolor") });
+		</script>
+	</body>
 </html>

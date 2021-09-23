@@ -24,7 +24,7 @@
 	margin-bottom: 0;
 }
 .flay-list > .flay-card > .flay-card-body > .flay-card-title > .flay-title {
-	max-width: 100%;
+	max-width: calc(100% - 4px);
 }
 .flay-list > .flay-card > .flay-card-body > .flay-card-text {
 	margin: 0;

@@ -28,10 +28,13 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Web page image downloader
- * <pre>Usage
+ * 
+ * <pre>
+ * Usage
  *  PageImageDownloader pageDownloader = new PageImageDownloader(...);
  *  DownloadResult result = pageDownloader.download();
  * </pre>
+ * 
  * @author kamoru
  */
 @Slf4j
@@ -58,16 +61,17 @@ public class PageImageDownloader {
 	long minimumSize;
 
 	public PageImageDownloader(String pageUrl, String downloadDir, String folderName, String titlePrefix, String titleCssQuery, int minimumKbSize) {
-		this.imagePageUrl  = pageUrl;
-		this.localBaseDir  = downloadDir;
-		this.folderName    = folderName;
-		this.titlePrefix   = titlePrefix;
+		this.imagePageUrl = pageUrl;
+		this.localBaseDir = downloadDir;
+		this.folderName = folderName;
+		this.titlePrefix = titlePrefix;
 		this.titleCssQuery = titleCssQuery;
-		this.minimumSize   = minimumKbSize * FileUtils.ONE_KB;
+		this.minimumSize = minimumKbSize * FileUtils.ONE_KB;
 	}
 
 	/**
 	 * execute download
+	 * 
 	 * @return Download result
 	 */
 	public DownloadResult download() {
@@ -110,7 +114,7 @@ public class PageImageDownloader {
 			List<ImageDownloader> tasks = new ArrayList<>();
 			int count = 0;
 			for (Element imgTag : imgTags) {
-				String imgSrc = imgTag.attr("src");
+				String imgSrc = imgTag.attr("abs:src");
 				if (StringUtils.isEmpty(imgSrc))
 					continue;
 				if (imgSrc.startsWith("/")) {
@@ -152,6 +156,7 @@ public class PageImageDownloader {
 
 	/**
 	 * create HttpClient
+	 * 
 	 * @param soTimeout
 	 * @param maxTotal
 	 * @return CloseableHttpClient

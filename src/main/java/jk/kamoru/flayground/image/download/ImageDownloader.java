@@ -3,7 +3,9 @@ package jk.kamoru.flayground.image.download;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import org.apache.commons.io.FileUtils;
@@ -19,7 +21,9 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Web image downloader
- * <pre>Usage
+ *
+ * <pre>
+ * Usage
  *
  *   ImageDownloader downloader = new ImageDownloader("url string", "dest string");
  *   File file = downloader.download();
@@ -46,8 +50,10 @@ public class ImageDownloader implements Callable<File> {
 	private String imgSrc;
 	private String destDir;
 	private String title;
-	private long   minimumSize;
+	private long minimumSize;
 	private HttpClient httpClient;
+
+	private Map<String, String> headers = new HashMap<>();
 
 	/**
 	 * Constructs a new <code>ImageDownloader</code> using image source<br>
@@ -72,7 +78,8 @@ public class ImageDownloader implements Callable<File> {
 	}
 
 	/**
-	 * Constructs a new <code>ImageDownloader</code> using image source, destination directory, title<br>
+	 * Constructs a new <code>ImageDownloader</code> using image source, destination directory,
+	 * title<br>
 	 * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
 	 *
 	 * @param imgSrc image source url
@@ -84,7 +91,8 @@ public class ImageDownloader implements Callable<File> {
 	}
 
 	/**
-	 * Constructs a new <code>ImageDownloader</code> using image source, destination directory, title<br>
+	 * Constructs a new <code>ImageDownloader</code> using image source, destination directory,
+	 * title<br>
 	 * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
 	 *
 	 * @param imgSrc image source url
@@ -97,19 +105,32 @@ public class ImageDownloader implements Callable<File> {
 	}
 
 	public ImageDownloader(String imgSrc, String destDir, String title, long minimunSize, HttpClient httpClient) {
-		this.imgSrc 	 = imgSrc;
-		this.destDir 	 = destDir;
-		this.title 		 = title;
+		this.imgSrc = imgSrc;
+		this.destDir = destDir;
+		this.title = title;
 		this.minimumSize = minimunSize;
-		this.httpClient  = httpClient;
+		this.httpClient = httpClient;
 	}
 
 	/**
 	 * if image size is smaller than minimumSize, do not download
+	 *
 	 * @param minimumSize bytes
 	 */
 	public void setMinimumSize(int minimumSize) {
 		this.minimumSize = minimumSize;
+	}
+
+	public void setHttpClient(HttpClient httpClient) {
+		this.httpClient = httpClient;
+	}
+
+	public void setHeaders(Map<String, String> headerMap) {
+		this.headers = headerMap;
+	}
+
+	public void addHeader(String key, String value) {
+		this.headers.put(key, value);
 	}
 
 	@Override
@@ -119,6 +140,7 @@ public class ImageDownloader implements Callable<File> {
 
 	/**
 	 * execute download
+	 *
 	 * @return image file. if error, <code>null</code>
 	 */
 	public File download() {
@@ -133,13 +155,20 @@ public class ImageDownloader implements Callable<File> {
 
 			// Execute a request of image
 			HttpGet httpGet = new HttpGet(imgSrc);
+
+			if (headers.size() > 0) {
+				headers.forEach((name, value) -> {
+					httpGet.setHeader(name, value);
+				});
+			}
+
 			HttpResponse httpResponse = httpClient.execute(httpGet);
 
-			/* Test Code : All Header info
+			/* Test Code : All Header info */
 			Header[] headers = httpResponse.getAllHeaders();
 			for (Header header : headers) {
-				logger.debug("Header info : {}={}", header.getName(), header.getValue());
-			}*/
+				log.debug("Header info : {}={}", header.getName(), header.getValue());
+			}
 
 			// check status code
 			int statusCode = httpResponse.getStatusLine().getStatusCode();

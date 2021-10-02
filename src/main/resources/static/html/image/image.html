@@ -1,387 +1,439 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Image view</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<link rel="icon" type="image/png" href="/img/favicon/flay_2.png"/>
-<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="/css/crazy.common.css">
-<style type="text/css">
-body {
-	background: #000;
-	overflow: hidden;
-	margin: 0;
-}
+	<head>
+		<title>Image view</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" href="../../img/favicon/flay_2.png" />
+		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="../../css/crazy.common.css" />
+		<style type="text/css">
+			body {
+				background: #000;
+				overflow: hidden;
+				margin: 0;
+			}
 
-.image-container div#glass {
-  	position: absolute;
-	background-repeat: no-repeat;
-  	border: 0;
-  	border-radius: 50%;
-  	cursor: none;
-  	opacity: 0;
-  	display: none;
-  	left: -100px;
-  	top: -100px;
-	box-shadow: 0 0 4px 2px rgba(255, 255, 255, .25), 0 0 16px 8px rgba(0, 0, 0, .75) inset;
-	z-index: 2;
-}
-.image-container:hover div#glass {
-	opacity: 1;
-}
-.image-container img#image {
-	z-index: 1;
-}
+			.image-container div#glass {
+				position: absolute;
+				background-repeat: no-repeat;
+				border: 0;
+				border-radius: 50%;
+				cursor: none;
+				opacity: 0;
+				display: none;
+				left: -100px;
+				top: -100px;
+				box-shadow: 0 0 4px 2px rgba(255, 255, 255, 0.25), 0 0 16px 8px rgba(0, 0, 0, 0.75) inset;
+				z-index: 2;
+			}
+			.image-container:hover div#glass {
+				opacity: 1;
+			}
+			.image-container img#image {
+				z-index: 1;
+			}
 
-.overlay {
-	opacity: 0;
-	transition: .5s;
-    position: absolute;
-	z-index: 3;
-}
-.overlay:hover {
-  	opacity: 1;
-}
+			.overlay {
+				opacity: 0;
+				transition: 0.5s;
+				position: absolute;
+				z-index: 3;
+			}
+			.overlay:hover {
+				opacity: 1;
+			}
 
-.info-container div {
-	position: fixed;
-	display: inline-block;
-	background-color: rgba(0, 0, 0, .5);
-	margin: 0;
-	padding: 4px;
-	box-shadow: 0 0 2px 0px rgba(255, 255, 255, .5);
-}
-.info-container div:first-child {
-	border-bottom-right-radius: 4px;
-	top: 0;
-	left: 0;
-}
-.info-container div:last-child {
-	border-top-left-radius: 4px;
-	bottom: 0;
-	right: 0;
-	text-align: right;
-}
-.info-container label {
-	display: inline-block;
-	margin: 2px;
-	color: #eee;
-	font-size: 14px;
-	text-shadow: 1px 1px 2px #111;
-	transition: .3s;
-}
-.info-container label:empty {
-	display: none;
-}
-.info-container label:hover {
-	text-shadow: 1px 1px 2px #2d2d2d;
-}
+			.info-container div {
+				position: fixed;
+				display: inline-block;
+				background-color: rgba(0, 0, 0, 0.5);
+				margin: 0;
+				padding: 4px;
+				box-shadow: 0 0 2px 0px rgba(255, 255, 255, 0.5);
+			}
+			.info-container div:first-child {
+				border-bottom-right-radius: 4px;
+				top: 0;
+				left: 0;
+			}
+			.info-container div:last-child {
+				border-top-left-radius: 4px;
+				bottom: 0;
+				right: 0;
+				text-align: right;
+			}
+			.info-container label {
+				display: inline-block;
+				margin: 2px;
+				color: #eee;
+				font-size: 14px;
+				text-shadow: 1px 1px 2px #111;
+				transition: 0.3s;
+			}
+			.info-container label:empty {
+				display: none;
+			}
+			.info-container label:hover {
+				text-shadow: 1px 1px 2px #2d2d2d;
+			}
 
-#glassToggle:hover, #paint:hover, #imagePath:hover, #imageUrl:hover {
-    cursor: pointer;
-    color: OrangeRed !important;
-}
-#glassSize:before {
-	content: 'px ';
-}
-#glassSize > input {
-	width: 40px;
-}
-#glassZoom:before {
-	content: 'x ';
-}
-#glassZoom > input {
-	width: 25px;
-}
-#imageIndex, #imageMoveOut, #paint {
-	display: none;
-}
-#imageIndex:before {
-	content: 'go ';
-}
-#imageIndex > input {
-	width: 48px;
-}
-#imageName {
-	color: yellow !important;
-}
-#imageSize, #imageLength, #imageLastModified {
-	font-size: 80% !important;
-}
-#imageMoveOut:hover {
-    cursor: pointer;
-	color: #dc3545 !important;
-}
-#urlInput {
-	display: none;
-	z-index: 4;
-}
-#urlInput > input {
-	background: rgba(0, 0, 0, 0.75);
-	border: 0;
-	border-radius: .25rem;
-	box-shadow: 0 0 2rem 1rem rgba(255, 255, 255, .5);
-	color: #fff;
-	font-size: 1.25rem;
-	padding: .5rem;
-	margin: 1rem;
-}
+			#glassToggle:hover,
+			#paint:hover,
+			#imagePath:hover,
+			#imageUrl:hover {
+				cursor: pointer;
+				color: OrangeRed !important;
+			}
+			#glassSize:before {
+				content: "px ";
+			}
+			#glassSize > input {
+				width: 40px;
+			}
+			#glassZoom:before {
+				content: "x ";
+			}
+			#glassZoom > input {
+				width: 25px;
+			}
+			#imageIndex,
+			#imageMoveOut,
+			#paint {
+				display: none;
+			}
+			#imageIndex:before {
+				content: "go ";
+			}
+			#imageIndex > input {
+				width: 48px;
+			}
+			#imageName {
+				color: yellow !important;
+			}
+			#imageSize,
+			#imageLength,
+			#imageLastModified {
+				font-size: 80% !important;
+			}
+			#imageMoveOut:hover {
+				cursor: pointer;
+				color: #dc3545 !important;
+			}
+			#urlInput {
+				display: none;
+				z-index: 4;
+			}
+			#urlInput > input {
+				background: rgba(0, 0, 0, 0.75);
+				border: 0;
+				border-radius: 0.25rem;
+				box-shadow: 0 0 2rem 1rem rgba(255, 255, 255, 0.5);
+				color: #fff;
+				font-size: 1.25rem;
+				padding: 0.5rem;
+				margin: 1rem;
+			}
 
-i.fa {
-	margin: 0 4px;
-}
-input[type='number'] {
-	background: transparent;
-	border: 0;
-	color: #eee;
-	margin: 0;
-	padding: 0;
-}
-</style>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/js/crazy.common.js"></script>
-<script type="text/javascript" src="/js/flay.rest.service.js"></script>
-<script type="text/javascript" src="/js/flay.utils.js"></script>
-<script type="text/javascript">
-var $glass;
-var glass = {
-		size: 0,
-		zoom: 0,
-		radius: 0
-};
-var image = {
-		width: 0,
-		height: 0,
-		left: 0,
-		top: 0
-};
+			i.fa {
+				margin: 0 4px;
+			}
+			input[type="number"] {
+				background: transparent;
+				border: 0;
+				color: #eee;
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="../../js/crazy.common.js"></script>
+		<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="../../js/flay.utils.js"></script>
+		<script type="text/javascript">
+			"use strict";
 
-$(document).ready(function() {
+			let $glass;
+			const glass = {
+				size: 0,
+				zoom: 0,
+				radius: 0,
+			};
+			const image = {
+				width: 0,
+				height: 0,
+				left: 0,
+				top: 0,
+			};
 
-	sIZe.value = LocalStorageItem.get('image.magnifier.size', 200);
-	zOOm.value = LocalStorageItem.get('image.magnifier.zoom', 2);
+			$(document).ready(function () {
+				sIZe.value = LocalStorageItem.get("image.magnifier.size", 200);
+				zOOm.value = LocalStorageItem.get("image.magnifier.zoom", 2);
 
-	$("#sIZe, #zOOm").on("change", function() {
-		LocalStorageItem.set('image.magnifier.size', sIZe.value);
-		LocalStorageItem.set('image.magnifier.zoom', zOOm.value);
-		
-		glass.size = parseInt(sIZe.value);
-		glass.zoom = parseInt(zOOm.value);
-		glass.radius = glass.size / 2;
-		
-		$glass = $("#glass").css({
-			backgroundSize: (image.width * glass.zoom) + "px " + (image.height * glass.zoom) + "px",
-			width:  glass.size,
-			height: glass.size,
-			left:  -glass.size,
-			top:   -glass.size
-		});
-	}).trigger("change");
+				$("#sIZe, #zOOm")
+					.on("change", function () {
+						LocalStorageItem.set("image.magnifier.size", sIZe.value);
+						LocalStorageItem.set("image.magnifier.zoom", zOOm.value);
 
-	app();
-});
+						glass.size = parseInt(sIZe.value);
+						glass.zoom = parseInt(zOOm.value);
+						glass.radius = glass.size / 2;
 
-var app = function() {
-	// parameter
-	var no  = reqParam.no;
-	var src = reqParam.src;
-	var imgSrc = no ? PATH + '/static/image/' + no : src;
-	
-	// get image
-	var img = new Image();
-	img.onload = function() {
-		// popup resize
- 		var browserMargin = getBrowserMargin();
-		var fullMode = screen.width === window.innerWidth;
- 		
- 	    if (!fullMode) {
-	  		window.resizeTo(this.naturalWidth + browserMargin.width, this.naturalHeight + browserMargin.height);
- 	    }
+						$glass = $("#glass").css({
+							backgroundSize: image.width * glass.zoom + "px " + image.height * glass.zoom + "px",
+							width: glass.size,
+							height: glass.size,
+							left: -glass.size,
+							top: -glass.size,
+						});
+					})
+					.trigger("change");
 
-		if (fullMode && window.innerHeight < this.naturalHeight) {
-			image.width  = Math.round(this.naturalWidth * (window.innerHeight / this.naturalHeight));
-			image.height = window.innerHeight;
-		} else {
-			image.width  = this.naturalWidth;
-			image.height = this.naturalHeight;
-		}
-
-  		$("#image").attr({
-			'src': this.src
-		}).css({
-			width: image.width,
-			height: image.height
-  		});
-
-		$glass = $("#glass").css({
-			backgroundImage: "url('" + this.src + "')",
-			backgroundSize: (image.width * glass.zoom) + "px " + (image.height * glass.zoom) + "px",
-			width: glass.size,
-			height: glass.size,
-		});
-
-  		// show default info
-		$("#imageSize").html(this.naturalWidth + ' x ' + this.naturalHeight);
-		
-  		// magnifier glass toggle
-  		var onOff = 0;
-  		$("#glassToggle").on("click", function() {
-  			if (onOff++ % 2 === 0) {
-  		  		image.left = $("#image").position().left;
-  		  		image.top  = $("#image").position().top;
-  				$("#image, #glass").on("mousemove", function(e) {
-  					moveMagnifier(e);
-  				});
-  				$glass.show();
-  			} else {
-  				$("#image, #glass").off("mousemove");
-  				$glass.hide();
-  			}
-        });
-	};
-	img.src = imgSrc;
-
-	// show default info
-	var lastUrlName = imgSrc.split('/').pop();
-	document.title = lastUrlName;
-	$("#imageName").html(lastUrlName);
-
-	$("#imageUrl").on("click", function() {
-		$("#urlInput").toggle(100);
-	});
-	$("#urlInput > input").on("keyup", function(e) {
-		if (e.keyCode === 13 && $.trim($(this).val()).length > 0) {
-			location.href = "?src=" + $(this).val();
-		}
-	});
-	
-	// set additional image information
-	if (no != null) {
-        Rest.Image.get(no, function(imageInfo) {
-        	var parentFolder = imageInfo.path.replace(/\\/gi, '/').split('/').pop();
-			document.title = parentFolder + " : " + imageInfo.name;
-			$("#paint").show().on("click", function() {
-				Rest.Image.paint(no);
+				app();
 			});
-	        $("#imagePath").html(parentFolder).on("click", function() {
-				Rest.Flay.openFolder(imageInfo.path);
-		    });
-			$("#imageName").html(imageInfo.name);
-			$("#imageLength").html(File.formatSize(imageInfo.length));
-			$("#imageLastModified").html(new Date(imageInfo.modified).format("yyyy-MM-dd"));
-			$("#imageMoveOut").show().on("click", function() {
-	        	if (confirm('move this file to Root Directory?'))
-		        	Rest.Image.delete(no);
-	        });
-        });
 
-  		$("#imageIndex").show().children().val(no).on("keyup change", function(e) {
-  			if (e.type === 'change' || (e.type === 'keyup' && e.keyCode === 13))
-				location.href = "?no=" + $(this).val();
-  		});
-  		
-  		$(document).on("mousewheel", function(e) {
-  			console.log('mousewheel', e.originalEvent.wheelDelta / 120);
-  			var currentNo = parseInt($("#imageIndex").children().val());
-  			var nextIndex = e.originalEvent.wheelDelta / 120 < 0 ? currentNo +1 : currentNo -1;
-  			location.href = "?no=" + nextIndex;
-  		});
-	}
+			function app() {
+				// parameter
+				const paramNo = reqParam.no;
+				const paramSrc = reqParam.src;
+				const imgSrc = paramNo ? PATH + "/static/image/" + paramNo : paramSrc;
 
-	function getBrowserMargin() {
-		var margin = {width: 0, height: 0};
-		if (system === LINUX) {
-			if (browser === CHROME) {
-	   			margin.width = 8;
-	   			margin.height = 28;
-	   		} else if (browser === FIREFOX) {
-	   			margin.width = 0;
-	   			margin.height = 37;
-	   		}
-		} else if (system === WINDOWS) {
-	   		if (browser === MSIE) {
-	   			alert("Microsoft IE not support");
-	   		} else if (browser === CHROME) {
-	   			margin.width = 16;
-	   			margin.height = 67;
-	   		} else if (browser === FIREFOX) {
-	   			margin.width = 16;
-	   			margin.height = 76;
-	   		} else if (browser === EDGE) {
-	   			margin.width = 0;
-	   			margin.height = 45;
-	   		}
-		}
-		return margin;
-	}
+				// get image
+				const img = new Image();
+				img.onload = function () {
+					// popup resize
+					const browserMargin = getBrowserMargin();
+					const fullMode = screen.width === window.innerWidth;
 
-	function moveMagnifier(e) {
-		function getCursorPos(e) {
-		    var a, x = 0, y = 0;
-		    e = e || window.event;
-		    /* get the x and y positions of the image */
-		    a = img.getBoundingClientRect();
-		    /* calculate the cursor's x and y coordinates, relative to the image */
-		    x = e.pageX - a.left;
-		    y = e.pageY - a.top;
-		    /* consider any page scrolling */
-		    x = x - window.pageXOffset;
-		    y = y - window.pageYOffset;
-		    // console.log('getCursorPos', e.pageX, a.left, window.pageXOffset, x);
-		    return {x: x, y: y, l: a.left, t: a.top};
-		}
-		// prevent any other actions that may occur when moving over the image
-	    e.preventDefault();
+					if (!fullMode) {
+						window.resizeTo(this.naturalWidth + browserMargin.width, this.naturalHeight + browserMargin.height);
+					}
 
-	    /*get the cursor's x and y positions:*/
-	    cursor = getCursorPos(e);
-	    /*prevent the magnifier glass from being positioned outside the image:*/
-		cursor.x = Math.min(cursor.x, img.width + image.left);
-		cursor.x = Math.max(cursor.x, image.left);
-		cursor.y = Math.min(cursor.y, img.height + image.top);
-		cursor.y = Math.max(cursor.y, image.top);
+					if (fullMode) {
+						image.width = Math.round(this.naturalWidth * (window.innerHeight / this.naturalHeight));
+						image.height = window.innerHeight;
 
-	    /* set the position of the magnifier glass: */
-	    $glass.css({
-	    	backgroundPosition: ((image.left - cursor.x) * glass.zoom + glass.radius) + "px " + ((image.top - cursor.y) * glass.zoom + glass.radius) + "px",
-	    	left: cursor.x + cursor.l - glass.radius,
-	    	top:  cursor.y + cursor.t - glass.radius,
-	    });
-	}
+						if (image.width > window.innerWidth) {
+							image.width = window.innerWidth;
+							image.height = this.naturalHeight * (window.innerWidth / this.naturalWidth);
+						}
+					} else {
+						image.width = this.naturalWidth;
+						image.height = this.naturalHeight;
+					}
 
-};
-</script>
-</head>
-<body>
+					$("#image")
+						.attr({
+							src: this.src,
+						})
+						.css({
+							width: image.width,
+							height: image.height,
+						});
 
-	<div class="image-container">
-		<div id="glass"></div>
-		<img id="image" class="fixed-center"/>
-	</div>
+					$glass = $("#glass").css({
+						backgroundImage: "url('" + this.src + "')",
+						backgroundSize: image.width * glass.zoom + "px " + image.height * glass.zoom + "px",
+						width: glass.size,
+						height: glass.size,
+					});
 
-	<div class="info-container overlay">
-		<div>
-			<label id="glassToggle"><i class="fa fa-search-plus"></i></label>
-			<label id="glassSize"><input type="number" id="sIZe" step="100" min="200" max="900"/></label>
-			<label id="glassZoom"><input type="number" id="zOOm" step="1"   min="2"   max="9"/></label>
-			<label id="paint"><i class="fa fa-paint-brush"></i></label>
-			<label id="imageIndex"><input type="number" step="1" min="0"/></label>
-			<label id="imageUrl"><i class="fa fa-location-arrow"></i></label>
+					// show default info
+					$("#imageSize").html(this.naturalWidth + " x " + this.naturalHeight);
+
+					// magnifier glass toggle
+					let onOff = 0;
+					$("#glassToggle").on("click", function () {
+						if (onOff++ % 2 === 0) {
+							image.left = $("#image").position().left;
+							image.top = $("#image").position().top;
+							image.width = $("#image").width();
+							image.height = $("#image").height();
+
+							$("#image, #glass").on("mousemove", function (e) {
+								moveMagnifier(e);
+							});
+							$glass.show();
+						} else {
+							$("#image, #glass").off("mousemove");
+							$glass.hide();
+						}
+					});
+				};
+				img.src = imgSrc;
+
+				// show default info
+				const lastUrlName = imgSrc.split("/").pop();
+				document.title = lastUrlName;
+				$("#imageName").html(lastUrlName);
+
+				$("#imageUrl").on("click", function () {
+					$("#urlInput").toggle(100);
+				});
+				$("#urlInput > input").on("keyup", function (e) {
+					if (e.keyCode === 13 && $.trim($(this).val()).length > 0) {
+						location.href = "?src=" + $(this).val();
+					}
+				});
+
+				// set additional image information
+				if (paramNo && paramNo >= 0) {
+					Rest.Image.get(paramNo, function (imageInfo) {
+						const parentFolder = imageInfo.path.replace(/\\/gi, "/").split("/").pop();
+						document.title = parentFolder + " : " + imageInfo.name;
+
+						$("#paint")
+							.show()
+							.on("click", function () {
+								Rest.Image.paint(paramNo);
+							});
+						$("#imagePath")
+							.html(parentFolder)
+							.on("click", function () {
+								Rest.Flay.openFolder(imageInfo.path);
+							});
+						$("#imageName").html(imageInfo.name);
+						$("#imageLength").html(File.formatSize(imageInfo.length));
+						$("#imageLastModified").html(new Date(imageInfo.modified).format("yyyy-MM-dd"));
+						$("#imageMoveOut")
+							.show()
+							.on("click", function () {
+								if (confirm("move this file to Root Directory?")) Rest.Image.delete(paramNo);
+							});
+					});
+
+					$("#imageIndex")
+						.show()
+						.children()
+						.val(paramNo)
+						.on("keyup change", function (e) {
+							e.stopPropagation();
+							if (e.type === "change" || (e.type === "keyup" && e.keyCode === 13)) {
+								location.href = "?no=" + $(this).val();
+							}
+						});
+
+					const imageLastIndex = Rest.Image.size() - 1;
+
+					$(document).on("wheel keyup", function (e) {
+						e.stopPropagation();
+						let nextImageIndex = -1;
+						const eventCode = e.keyCode || e.originalEvent.wheelDelta;
+						switch (eventCode) {
+							case 32: // space -> random
+								nextImageIndex = Random.getInteger(0, imageLastIndex);
+								break;
+							case 37: // left key -> previous
+							case 120: // wheel up
+								nextImageIndex = Math.max(parseInt(paramNo) - 1, 0);
+								break;
+							case 39: // right key -> next
+							case -120: // wheel down
+								nextImageIndex = Math.min(parseInt(paramNo) + 1, imageLastIndex);
+								break;
+							default:
+								break;
+						}
+						if (nextImageIndex > -1) {
+							location.href = "?no=" + nextImageIndex;
+						}
+					});
+				}
+
+				function getBrowserMargin() {
+					const margin = { width: 0, height: 0 };
+					if (system === LINUX) {
+						if (browser === CHROME) {
+							margin.width = 8;
+							margin.height = 28;
+						} else if (browser === FIREFOX) {
+							margin.width = 0;
+							margin.height = 37;
+						}
+					} else if (system === WINDOWS) {
+						if (browser === MSIE) {
+							alert("Microsoft IE not support");
+						} else if (browser === CHROME) {
+							margin.width = 16;
+							margin.height = 67;
+						} else if (browser === FIREFOX) {
+							margin.width = 16;
+							margin.height = 76;
+						} else if (browser === EDGE) {
+							margin.width = 0;
+							margin.height = 45;
+						}
+					}
+					return margin;
+				}
+
+				function moveMagnifier(e) {
+					function getCursorPos(e) {
+						let rect,
+							x = 0,
+							y = 0;
+						e = e || window.event;
+						/* get the x and y positions of the image */
+						rect = img.getBoundingClientRect();
+						/* calculate the cursor's x and y coordinates, relative to the image */
+						x = e.pageX - rect.left;
+						y = e.pageY - rect.top;
+						/* consider any page scrolling */
+						x = x - window.pageXOffset;
+						y = y - window.pageYOffset;
+						// console.log('getCursorPos', e.pageX, a.left, window.pageXOffset, x);
+						return { x: x, y: y, l: rect.left, t: rect.top };
+					}
+
+					// prevent any other actions that may occur when moving over the image
+					e.preventDefault();
+
+					/*get the cursor's x and y positions:*/
+					const cursor = getCursorPos(e);
+
+					// prevent the magnifier glass from being positioned outside the image
+					cursor.x = Math.min(cursor.x, image.width + image.left);
+					cursor.x = Math.max(cursor.x, image.left);
+					cursor.y = Math.min(cursor.y, image.height + image.top);
+					cursor.y = Math.max(cursor.y, image.top);
+
+					/* set the position of the magnifier glass: */
+					$glass.css({
+						backgroundPosition: (image.left - cursor.x) * glass.zoom + glass.radius + "px " + ((image.top - cursor.y) * glass.zoom + glass.radius) + "px",
+						left: cursor.x + cursor.l - glass.radius,
+						top: cursor.y + cursor.t - glass.radius,
+					});
+				}
+			}
+		</script>
+	</head>
+	<body>
+		<div class="image-container">
+			<div id="glass"></div>
+			<img id="image" class="fixed-center" />
 		</div>
-		<div>
-			<label id="imagePath"></label>
-			<label id="imageName"></label>
-			<label id="imageSize"></label>
-			<label id="imageLength"></label>
-			<label id="imageLastModified"></label>
-			<label id="imageMoveOut"><i class="fa fa-trash"></i></label>
+
+		<div class="info-container overlay">
+			<div>
+				<label id="glassToggle"><i class="fa fa-search-plus"></i></label>
+				<label id="glassSize" title="glass size"><input type="number" id="sIZe" step="100" min="200" max="900" /></label>
+				<label id="glassZoom" title="zoom size"><input type="number" id="zOOm" step="1" min="2" max="9" /></label>
+				<label id="paint" title="call paint app"><i class="fa fa-paint-brush"></i></label>
+				<label id="imageIndex" title="type image no"><input type="number" step="1" min="0" /></label>
+				<label id="imageUrl" title="type image url"><i class="fa fa-location-arrow"></i></label>
+			</div>
+			<div>
+				<label id="imagePath"></label>
+				<label id="imageName"></label>
+				<label id="imageSize"></label>
+				<label id="imageLength"></label>
+				<label id="imageLastModified"></label>
+				<label id="imageMoveOut"><i class="fa fa-trash"></i></label>
+			</div>
 		</div>
-	</div>
 
-	<div id="urlInput" class="fixed-center">
-		<input placeHolder="type image src">
-	</div>
-
-</body>
+		<div id="urlInput" class="fixed-center">
+			<input placeholder="type image src" />
+		</div>
+	</body>
 </html>

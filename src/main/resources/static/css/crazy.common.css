@@ -427,6 +427,10 @@ button.btn.btn-outline-flay {
 	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
 }
 
+.bg-black {
+	background-color: #000 !important;
+}
+
 #wrap_body {
 	z-index: 1;
 	transition: margin-left 0.5s;

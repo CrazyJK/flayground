@@ -40,6 +40,32 @@
 				text-align: left;
 			}
 		</style>
+	</head>
+	<body class="bg-dark">
+		<div class="container-fluid">
+			<div class="d-flex my-2">
+				<div class="text-light mr-auto">
+					<h4>
+						<i class="fa fa-list mx-2"></i>
+						<a href="/html/actuator/index.html" class="text-decoration-none text-light">Actuator</a> > Mappings <small>(<span id="count">0</span>)</small>
+					</h4>
+				</div>
+				<a href="/html/util/requestMapping.html" class="text-light mx-2">Access</a>
+				<a href="/html/main.html" class="text-light mx-2">Home</a>
+			</div>
+			<table class="table table-sm table-hover table-dark m-0">
+				<thead class="text-success">
+					<tr>
+						<th>#</th>
+						<th>Method</th>
+						<th>URL pattern</th>
+						<th>Controller</th>
+						<th>method</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
 		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -100,31 +126,5 @@
 				return $(window).innerHeight() - 90;
 			};
 		</script>
-	</head>
-	<body>
-		<div class="container-fluid">
-			<div class="d-flex my-2">
-				<div class="text-light mr-auto">
-					<h4>
-						<i class="fa fa-list mx-2"></i>
-						<a href="/html/actuator/index.html" class="text-decoration-none text-light">Actuator</a> > Mappings <small>(<span id="count">0</span>)</small>
-					</h4>
-				</div>
-				<a href="/html/util/requestMapping.html" class="text-light mx-2">Access</a>
-				<a href="/html/main.html" class="text-light mx-2">Home</a>
-			</div>
-			<table class="table table-sm table-hover table-dark m-0">
-				<thead class="text-success">
-					<tr>
-						<th>#</th>
-						<th>Method</th>
-						<th>URL pattern</th>
-						<th>Controller</th>
-						<th>method</th>
-					</tr>
-				</thead>
-				<tbody></tbody>
-			</table>
-		</div>
 	</body>
 </html>

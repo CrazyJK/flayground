@@ -119,8 +119,20 @@ var SlideMenu = {
 	theme: function () {
 		var setTheme = () => {
 			var bgThemeValue = $("input[name='bgTheme']:checked").val();
-			$("body").toggleClass("bg-dark", bgThemeValue === "D");
 			LocalStorageItem.set("flay.bgtheme", bgThemeValue);
+
+			var link = document.querySelector("#themeLink");
+			if (link) {
+				document.head.removeChild(link);
+			}
+			if (bgThemeValue === "D") {
+				var link = document.createElement("link");
+				link.setAttribute("id", "themeLink");
+				link.setAttribute("rel", "stylesheet");
+				link.setAttribute("href", "/css/theme/flay.dark-theme.css");
+				document.head.appendChild(link);
+			}
+
 			// broadcasting
 			try {
 				flayWebsocket.info("bgtheme");

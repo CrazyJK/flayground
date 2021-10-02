@@ -1,0 +1,241 @@
+body {
+	background-color: #000 !important;
+	color: #ccc;
+}
+
+.check-group span,
+label.check span {
+	background-color: var(--dark-color);
+	color: lightgray;
+	transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
+}
+.check-group input:checked ~ span,
+label.check input:checked ~ span {
+	color: var(--warning);
+	/* text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b; */
+	background-color: transparent;
+}
+.check-group:hover span,
+label.check:hover span {
+	background-color: #103356;
+	color: var(--light);
+}
+.check-group:hover,
+label.check:hover {
+	box-shadow: none;
+}
+
+input.input-flay {
+	background-color: var(--dark-color);
+	border-color: var(--gray-dark);
+	color: var(--light);
+}
+input.input-flay:focus,
+input.input-flay:hover {
+	border-color: var(--gray-dark);
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
+	outline: none;
+}
+input.input-flay:focus,
+input.input-flay:hover {
+	background-color: #103356;
+	border-color: var(--dark-color);
+}
+input.form-control,
+.input-group-text {
+	background-color: var(--dark-color);
+	color: var(--light);
+}
+
+label.range {
+	background-color: var(--dark-color);
+	border-color: var(--gray-dark);
+}
+label.range input[type="range"] ~ span {
+	color: var(--light);
+}
+label.range:hover {
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
+}
+label.range:hover {
+	background-color: #103356;
+}
+
+.ranker {
+	background-color: var(--dark-color);
+	border-color: transparent;
+}
+.ranker:hover {
+	background-color: #103356;
+}
+
+label.text {
+	background-color: var(--dark-color);
+	color: var(--light);
+}
+label.text.hover:hover {
+	background-color: #103356;
+	color: #eede1a;
+	box-shadow: none;
+}
+
+button.btn.btn-flay,
+button.btn.btn-outline-flay {
+	background-color: var(--dark-color);
+	color: var(--light);
+}
+button.btn.btn-flay:hover,
+button.btn.btn-outline-flay:hover {
+	background-color: #103356;
+	color: #eede1a;
+}
+button.btn.btn-flay:active:focus,
+button.btn.btn-outline-flay:active:focus {
+	text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;
+}
+.ui-dialog {
+	background-color: var(--dark-color);
+}
+
+nav.navbar,
+.bg-light {
+	background-color: var(--dark-color) !important;
+	color: var(--light) !important;
+}
+
+ul.pagination .page-item .page-link {
+	background-color: var(--dark-color);
+	border-color: #000;
+}
+ul.pagination .page-item.active .page-link {
+	background-color: #103356;
+	border-color: #000;
+}
+ul.pagination .page-item.disabled .page-link {
+	color: var(--gray);
+}
+ul.pagination .page-item:not(.disabled) .page-link {
+	color: var(--light);
+}
+
+.btn-link {
+	color: var(--light);
+}
+.fa-plus:before,
+.fa-ellipsis-v:before {
+	text-shadow: 0 0 0.25rem var(--light);
+}
+.card {
+	background-color: var(--dark-color);
+	color: var(--light);
+}
+th,
+td {
+	color: var(--light);
+}
+.border {
+	border-color: #3a3e42 !important;
+}
+button {
+	/* color: var(--dark-color); */
+	background-color: var(--dark-color);
+	outline: none;
+}
+button.btn-outline-secondary {
+	color: var(--light);
+}
+button.btn-outline-danger {
+	color: #dc3545;
+}
+button.btn-outline-danger:hover {
+	color: var(--dark-color);
+}
+button.btn-outline-light {
+	color: #f8f9fa;
+}
+button.btn-outline-light:hover {
+	color: var(--dark-color);
+}
+button.btn-warning {
+	color: var(--warning);
+}
+button.btn-warning:hover {
+	color: #212529;
+}
+
+body.tag-list .nonExist {
+	color: #4a4545 !important;
+}
+
+body.cover-box {
+	background-color: #000;
+	box-shadow: 0 0 0.25rem 0.5rem #000 inset;
+}
+
+#topMenu nav:not(:hover) {
+	background-color: transparent !important;
+	text-shadow: 0 0 4px #000;
+	box-shadow: 0 0.125rem 1rem rgb(0 0 0 / 50%);
+	transition: all 0.4s;
+}
+#topMenu nav input.form-control {
+	background-color: transparent !important;
+	text-shadow: 0 0 4px #000;
+	border: 0;
+}
+#topMenu nav button.btn {
+	background-color: transparent !important;
+}
+#topMenu nav .bg-light {
+	background-color: transparent !important;
+	text-shadow: 0 0 4px #000;
+}
+
+#bottomMenu .pagination:not(:hover) .page-item .page-link {
+	background-color: transparent;
+	border: 0;
+	box-shadow: 0 0.125rem 1rem rgb(0 0 0 / 50%);
+	color: var(--light);
+	text-shadow: 0 0 4px #000;
+	transition: all 0.4s;
+}
+#bottomMenu .pagination:not(:hover) .page-item.active .page-link {
+	border: 0;
+	background-color: transparent;
+	text-shadow: 0 0 4px #000;
+	color: var(--warning);
+}
+
+.check-group span,
+label.check span,
+.ranker,
+label.text {
+	background-color: transparent;
+	text-shadow: 0 0 4px #000;
+	color: #fff;
+	/* background-color: rgb(0 0 0 / 0.5); */
+	/* box-shadow: 0 0 8px 8px rgb(0 0 0 / 50%); */
+	/* border-radius: 16px; */
+}
+
+.check-group:hover span,
+label.check:hover span,
+.ranker:hover,
+label.text.hover:hover {
+	background-color: #000;
+}
+
+img.board-image {
+	box-shadow: 0 0 4px 2px #000, 2px 2px 2px 1px rgba(255, 255, 255, 0.75);
+}
+img.board-image.active {
+	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5), 0 0 16px #e2d313 inset;
+}
+
+body.flay-file {
+	background-color: var(--dark-color);
+}
+
+body.flay-info {
+	color: var(--light);
+}

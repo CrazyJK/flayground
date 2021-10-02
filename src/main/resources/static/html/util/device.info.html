@@ -1,134 +1,120 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Device Infomation</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css">
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/css/crazy.common.css"/>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/crazy.common.js"></script>
-<script type="text/javascript">
-var displaySystemInfo = function() {
-	var agent = navigator.userAgent.toLowerCase(),
-		MSIE    = 'MSIE',
-		EDGE    = 'Edge',
-		CHROME  = 'Chrome',
-		FIREFOX = 'Firefox',
-		SAFARI  = 'Safari',
-		browser = /trident/i.test(agent) || /msie/i.test(agent) ? MSIE :
-			/edge/i.test(agent) ? EDGE :
-				/chrome/i.test(agent) ? CHROME :
-					/firefox/i.test(agent) ? FIREFOX :
-						/safari/i.test(agent) ? SAFARI :'Unknown',
-		WINDOWS = 'Windows',
-		LINUX   = 'Linux',
-		MAC     = 'Macintosh',
-		IPHONE  = 'iPhone',
-		IPAD    = 'iPad',
-		ANDROID = 'Android',
-		system = /Windows/i.test(agent) ? WINDOWS :
-			/linux/i.test(agent) ? LINUX :
-				/macintosh/i.test(agent) ? MAC :
-					/iphone/i.test(agent) ? IPHONE :
-						/ipad/i.test(agent) ? IPAD :
-							/android/i.test(agent) ? ANDROID : 'Unknown';
+	<head>
+		<title>Device Infomation</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/css/crazy.common.css" />
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/js/crazy.common.js"></script>
+		<script type="text/javascript">
+			var displaySystemInfo = function () {
+				var agent = navigator.userAgent.toLowerCase(),
+					MSIE = "MSIE",
+					EDGE = "Edge",
+					CHROME = "Chrome",
+					FIREFOX = "Firefox",
+					SAFARI = "Safari",
+					browser = /trident/i.test(agent) || /msie/i.test(agent) ? MSIE : /edge/i.test(agent) ? EDGE : /chrome/i.test(agent) ? CHROME : /firefox/i.test(agent) ? FIREFOX : /safari/i.test(agent) ? SAFARI : "Unknown",
+					WINDOWS = "Windows",
+					LINUX = "Linux",
+					MAC = "Macintosh",
+					IPHONE = "iPhone",
+					IPAD = "iPad",
+					ANDROID = "Android",
+					system = /Windows/i.test(agent) ? WINDOWS : /linux/i.test(agent) ? LINUX : /macintosh/i.test(agent) ? MAC : /iphone/i.test(agent) ? IPHONE : /ipad/i.test(agent) ? IPAD : /android/i.test(agent) ? ANDROID : "Unknown";
 
-	$('#thisBrowser').html(browser);
-	$('#thisSystem' ).html(system);
-};
+				$("#thisBrowser").html(browser);
+				$("#thisSystem").html(system);
+			};
 
-var displayResolutionInfo = function() {
-	$("#screenWidth" ).html(screen.width);
-	$("#screenHeight").html(screen.height);
-	$("#windowWidth" ).html(window.innerWidth);
-	$("#windowHeight").html(window.innerHeight);
-};
+			var displayResolutionInfo = function () {
+				$("#screenWidth").html(screen.width);
+				$("#screenHeight").html(screen.height);
+				$("#windowWidth").html(window.innerWidth);
+				$("#windowHeight").html(window.innerHeight);
+			};
 
-var displayNavigatorInfo = function() {
-	/* Navigator Object Properties
-	 * https://www.w3schools.com/jsref/obj_navigator.asp */
-	var navigatorProperties =  [["appCodeName", "Returns the code name of the browser"],
-								["appName", "Returns the name of the browser"],
-								["appVersion", "Returns the version information of the browser"],
-								["cookieEnabled", "Determines whether cookies are enabled in the browser"],
-								["geolocation", "Returns a Geolocation object that can be used to locate the user's position"],
-								["language", "Returns the language of the browser"],
-								["onLine", "Determines whether the browser is online"],
-								["platform", "Returns for which platform the browser is compiled"],
-								["product", "Returns the engine name of the browser"],
-								["userAgent", "Returns the user-agent header sent by the browser to the server"],
-								["javaEnabled()", "Specifies whether or not the browser has Java enabled"]];
+			var displayNavigatorInfo = function () {
+				/* Navigator Object Properties
+				 * https://www.w3schools.com/jsref/obj_navigator.asp */
+				var navigatorProperties = [
+					["appCodeName", "Returns the code name of the browser"],
+					["appName", "Returns the name of the browser"],
+					["appVersion", "Returns the version information of the browser"],
+					["cookieEnabled", "Determines whether cookies are enabled in the browser"],
+					["geolocation", "Returns a Geolocation object that can be used to locate the user's position"],
+					["language", "Returns the language of the browser"],
+					["onLine", "Determines whether the browser is online"],
+					["platform", "Returns for which platform the browser is compiled"],
+					["product", "Returns the engine name of the browser"],
+					["userAgent", "Returns the user-agent header sent by the browser to the server"],
+					["javaEnabled()", "Specifies whether or not the browser has Java enabled"],
+				];
 
-	for (var i=0; i<navigatorProperties.length; i++) {
-		var propertyName = navigatorProperties[i][0];
-		var propertyDesc = navigatorProperties[i][1];
-		var propertyValue = new Object();
-		try {
-			if (propertyName === 'geolocation') {
-				propertyValue = '<span class="text-warning">Not available</span>';
-				if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition(function(position) {
-						$('#geolocation').next().html('Latitude: ' + position.coords.latitude + ', Longitude: ' + position.coords.longitude);
-					});
-				} else {
-					propertyValue = '<span class="text-warning">is not supported by this browser.</span>';
+				for (var i = 0; i < navigatorProperties.length; i++) {
+					var propertyName = navigatorProperties[i][0];
+					var propertyDesc = navigatorProperties[i][1];
+					var propertyValue = new Object();
+					try {
+						if (propertyName === "geolocation") {
+							propertyValue = '<span class="text-warning">Not available</span>';
+							if (navigator.geolocation) {
+								navigator.geolocation.getCurrentPosition(function (position) {
+									$("#geolocation")
+										.next()
+										.html("Latitude: " + position.coords.latitude + ", Longitude: " + position.coords.longitude);
+								});
+							} else {
+								propertyValue = '<span class="text-warning">is not supported by this browser.</span>';
+							}
+						} else {
+							propertyValue = eval("navigator." + propertyName);
+						}
+					} catch (e) {
+						propertyValue = '<span class="text-danger">' + e + "</span>";
+					}
+
+					$("<tr>")
+						.append($("<td>", { id: propertyName, title: propertyDesc, class: "text-primary" }).html(propertyName), $("<td>", { class: "text-success" }).html(propertyValue))
+						.appendTo($(".table > tbody"));
 				}
-			} else {
-				propertyValue = eval('navigator.' + propertyName);
-			}
-		} catch (e) {
-			propertyValue = '<span class="text-danger">' + e + '</span>';
-		}
+			};
 
-		$('<tr>').append(
-			$('<td>', {id: propertyName, title: propertyDesc, 'class': 'text-primary'}).html(propertyName),
-			$('<td>', {'class': 'text-success'}).html(propertyValue)
-		).appendTo($('.table > tbody'));
-	}
-};
+			$(function () {
+				displaySystemInfo();
+				displayResolutionInfo();
+				displayNavigatorInfo();
 
-$(function() {
-	displaySystemInfo();
-	displayResolutionInfo();
-	displayNavigatorInfo();
+				$(window).on("resize", displayResolutionInfo);
+			});
+		</script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="alert alert-info mt-2">System : <strong id="thisSystem" class="text-danger mr-2"></strong> Browser : <strong id="thisBrowser" class="text-danger mr-2"></strong> Screen : <strong id="screenWidth" class="text-danger"></strong> * <strong id="screenHeight" class="text-danger"></strong> Window : <strong id="windowWidth" class="text-danger"></strong> * <strong id="windowHeight" class="text-danger"></strong></div>
 
-	$(window).on("resize", displayResolutionInfo);
+			<table class="table table-sm table-bordered">
+				<caption class="py-1" style="caption-side: top">
+					<i class="fa fa-list mx-2"></i>
+					Navigator Object Properties
+				</caption>
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Value</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
 
-	$("body").toggleClass("bg-dark", LocalStorageItem.get('flay.bgtheme', 'D') === 'D');
-});
-</script>
-</head>
-<body>
-
-	<div class="container">
-
-		<div class="alert alert-info mt-2">
-			System  : <strong id="thisSystem"   class="text-danger mr-2"></strong>
-			Browser : <strong id="thisBrowser"  class="text-danger mr-2"></strong>
-			Screen  : <strong id="screenWidth"  class="text-danger"></strong> * <strong id="screenHeight" class="text-danger"></strong>
-			Window  : <strong id="windowWidth"  class="text-danger"></strong> * <strong id="windowHeight" class="text-danger"></strong>
+			<div class="d-flex flex-row-reverse">
+				<a href="/html/main.html" class="mx-2">Home</a>
+			</div>
 		</div>
-
-		<table class="table table-sm table-bordered">
-			<caption class="py-1" style="caption-side: top;"><i class="fa fa-list mx-2"></i> Navigator Object Properties</caption>
-			<thead>
-				<tr>
-					<th>Name</th>
-					<th>Value</th>
-				</tr>
-			</thead>
-			<tbody></tbody>
-		</table>
-
-		<div class="d-flex flex-row-reverse">
-			<a href="/html/main.html" class="mx-2">Home</a>
-		</div>
-
-	</div>
-
-</body>
+	</body>
 </html>

@@ -5,7 +5,7 @@ body {
 	overflow: hidden;
 }
 body.neon {
-	background: #fff url('/img/bg/brick.png') repeat center / 1200px 431px !important;
+	background: #fff url("/img/bg/brick.png") repeat center / 1200px 431px !important;
 }
 #imageWrap {
 	position: absolute;
@@ -16,12 +16,12 @@ body.neon {
 }
 img.board-image {
 	position: fixed;
-	border-radius: .25rem;
-    box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
-    cursor: pointer;
-    margin: 0;
-    padding: 0;
-    transition: all .5s;
+	border-radius: 0.25rem;
+	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+	cursor: pointer;
+	margin: 0;
+	padding: 0;
+	transition: all 0.5s;
 }
 img.board-image.active {
 	padding: 4px;
@@ -33,27 +33,23 @@ img.ui-draggable-handle.ui-draggable-dragging {
 	transform: rotate(0deg) !important;
 }
 img.board-image.tile {
-	margin: .5rem;
+	margin: 0.5rem;
 }
-.bg-dark:not(.neon) img.board-image {
-	box-shadow: 0 0 4px 2px #000, 2px 2px 2px 1px rgba(255, 255, 255, .75);
-}
-.bg-dark:not(.neon) img.board-image.active {
-	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5), 0 0 16px #e2d313 inset;
-}
+
 #controlBox {
 	opacity: 0;
-	transition: .3s;
+	transition: 0.3s;
 }
-#controlBox:hover, #imageWrap:hover ~ #controlBox {
+#controlBox:hover,
+#imageWrap:hover ~ #controlBox {
 	opacity: 1;
 }
 #controlBox div {
 	border-top-left-radius: 4px;
-	background-color: rgba(0, 0, 0, .5);
+	background-color: rgba(0, 0, 0, 0.5);
 	margin: 0;
 	padding: 4px 8px;
-	box-shadow: 0 0 2px 0px rgba(255, 255, 255, .5);
+	box-shadow: 0 0 2px 0px rgba(255, 255, 255, 0.5);
 	color: #eee;
 	font-size: 14px;
 	text-shadow: 1px 1px 2px #111;
@@ -67,7 +63,7 @@ img.board-image.tile {
 	padding-right: 0;
 }
 #controlBox div#notice .msgBox {
-	background-color: rgba(0, 0, 0, .75);
+	background-color: rgba(0, 0, 0, 0.75);
 	border-radius: 4px;
 	color: #eee;
 	margin-bottom: 2px !important;

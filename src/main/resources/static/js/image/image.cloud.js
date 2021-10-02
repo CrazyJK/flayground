@@ -238,12 +238,5 @@ $(document).ready(function () {
 		$("#keyContainer").slideToggle();
 	});
 
-	var bgThemeValue = LocalStorageItem.get("flay.bgtheme", "D");
-	$("body").toggleClass("bg-dark", bgThemeValue === "D");
-
 	ImageControl.init();
-
-	$("body")
-		.toggleClass("bg-dark", LocalStorageItem.get("flay.bgtheme", "D") === "D")
-		.css({ backgroundColor: LocalStorageItem.get("flay.bgcolor") });
 });

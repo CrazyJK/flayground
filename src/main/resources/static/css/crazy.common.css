@@ -206,28 +206,6 @@ label.check.danger:hover input:checked ~ span {
 	text-shadow: 1px 1px 0 #333;
 }
 
-.bg-dark .check-group span,
-.bg-dark label.check span {
-	background-color: var(--dark-color);
-	color: lightgray;
-	transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
-}
-.bg-dark .check-group input:checked ~ span,
-.bg-dark label.check input:checked ~ span {
-	color: var(--warning);
-	/* text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b; */
-	background-color: transparent;
-}
-.bg-dark .check-group:hover span,
-.bg-dark label.check:hover span {
-	background-color: #103356;
-	color: var(--light);
-}
-.bg-dark .check-group:hover,
-.bg-dark label.check:hover {
-	box-shadow: none;
-}
-
 /* input search */
 input.input-flay {
 	display: inline-block;
@@ -245,28 +223,6 @@ input.input-flay {
 input.search {
 	width: 150px;
 }
-.bg-dark input.input-flay {
-	background-color: var(--dark-color);
-	border-color: var(--gray-dark);
-	color: var(--light);
-}
-input.input-flay:focus,
-input.input-flay:hover {
-	border-color: var(--gray-dark);
-	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
-	outline: none;
-}
-.bg-dark input.input-flay:focus,
-.bg-dark input.input-flay:hover {
-	background-color: #103356;
-	border-color: var(--dark-color);
-}
-.bg-dark input.form-control,
-.bg-dark .input-group-text {
-	background-color: var(--dark-color);
-	color: var(--light);
-}
-
 /* input range ranker */
 label.range {
 	display: inline-flex;
@@ -287,20 +243,6 @@ label.range input[type="range"] ~ span {
 	display: table-cell;
 	font-weight: 700;
 }
-.bg-dark label.range {
-	background-color: var(--dark-color);
-	border-color: var(--gray-dark);
-}
-.bg-dark label.range input[type="range"] ~ span {
-	color: var(--light);
-}
-label.range:hover {
-	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
-}
-.bg-dark label.range:hover {
-	background-color: #103356;
-}
-
 /* custom input range */
 .ranker {
 	display: inline-flex;
@@ -315,13 +257,6 @@ label.range:hover {
 }
 .ranker:hover {
 	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
-}
-.bg-dark .ranker {
-	background-color: var(--dark-color);
-	border-color: transparent;
-}
-.bg-dark .ranker:hover {
-	background-color: #103356;
 }
 .ranker input {
 	display: none;
@@ -403,15 +338,6 @@ label.text.lg {
 	font-size: 1.125rem;
 	line-height: 1.7;
 }
-.bg-dark label.text {
-	background-color: var(--dark-color);
-	color: var(--light);
-}
-.bg-dark label.text.hover:hover {
-	background-color: #103356;
-	color: #eede1a;
-	box-shadow: none;
-}
 
 .text.danger {
 	background-color: var(--danger) !important;
@@ -436,24 +362,6 @@ button.btn.btn-outline-flay:active:focus {
 button.btn.btn-outline-flay {
 	border-color: midnightblue;
 }
-.bg-dark button.btn.btn-flay,
-.bg-dark button.btn.btn-outline-flay {
-	background-color: var(--dark-color);
-	color: var(--light);
-}
-.bg-dark button.btn.btn-flay:hover,
-.bg-dark button.btn.btn-outline-flay:hover {
-	background-color: #103356;
-	color: #eede1a;
-}
-.bg-dark button.btn.btn-flay:active:focus,
-.bg-dark button.btn.btn-outline-flay:active:focus {
-	text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;
-}
-.bg-dark .ui-dialog {
-	background-color: var(--dark-color);
-}
-
 /* layout */
 #overlay {
 	position: fixed;
@@ -720,77 +628,6 @@ button.btn.btn-outline-flay {
 .form-control:focus,
 .page-link:focus {
 	box-shadow: none;
-}
-
-/* dark theme */
-.bg-dark {
-	background-color: #000 !important;
-	color: #ccc;
-}
-.bg-dark nav.navbar,
-.bg-dark .bg-light {
-	background-color: var(--dark-color) !important;
-	color: var(--light) !important;
-}
-
-.bg-dark ul.pagination .page-item .page-link {
-	background-color: var(--dark-color);
-	border-color: #000;
-}
-.bg-dark ul.pagination .page-item.active .page-link {
-	background-color: #103356;
-	border-color: #000;
-}
-.bg-dark ul.pagination .page-item.disabled .page-link {
-	color: var(--gray);
-}
-.bg-dark ul.pagination .page-item:not(.disabled) .page-link {
-	color: var(--light);
-}
-
-.bg-dark .btn-link {
-	color: var(--light);
-}
-.bg-dark .fa-plus:before,
-.bg-dark .fa-ellipsis-v:before {
-	text-shadow: 0 0 0.25rem var(--light);
-}
-.bg-dark .card {
-	background-color: var(--dark-color);
-	color: var(--light);
-}
-.bg-dark th,
-.bg-dark td {
-	color: var(--light);
-}
-.bg-dark .border {
-	border-color: #3a3e42 !important;
-}
-.bg-dark button {
-	/* color: var(--dark-color); */
-	background-color: var(--dark-color);
-	outline: none;
-}
-.bg-dark button.btn-outline-secondary {
-	color: var(--light);
-}
-.bg-dark button.btn-outline-danger {
-	color: #dc3545;
-}
-.bg-dark button.btn-outline-danger:hover {
-	color: var(--dark-color);
-}
-.bg-dark button.btn-outline-light {
-	color: #f8f9fa;
-}
-.bg-dark button.btn-outline-light:hover {
-	color: var(--dark-color);
-}
-.bg-dark button.btn-warning {
-	color: var(--warning);
-}
-.bg-dark button.btn-warning:hover {
-	color: #212529;
 }
 
 .font-size-1r {

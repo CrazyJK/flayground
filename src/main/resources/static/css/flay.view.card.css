@@ -68,9 +68,6 @@
 	font-size: 0.875rem;
 	padding: 0.5rem 1rem;
 }
-body.bg-dark .flay-file {
-	background-color: var(--dark-color);
-}
 
 .flay-card label.text,
 .flay-card .flay-rank {

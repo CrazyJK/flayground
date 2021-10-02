@@ -16,9 +16,6 @@ restCall("/config", {}, function (config) {
 
 $(document).ready(function () {
 	var bgThemeValue = LocalStorageItem.get("flay.bgtheme", "D");
-	$("body")
-		.toggleClass("bg-dark", bgThemeValue === "D")
-		.css({ backgroundColor: bgThemeValue === "D" ? LocalStorageItem.get("flay.bgcolor") : "" });
 
 	loading.on("Loading data");
 	restCall("/flay/list/orderbyScoreDesc", {}, function (flayList) {
@@ -34,7 +31,7 @@ $(document).ready(function () {
 							.on("click", function () {
 								View.flay(flay.opus);
 							})
-							.html(flay.opus)
+							.html(flay.opus),
 					),
 					$("<div>", { class: "title nowrap flex-grow-1" }).append(
 						$("<span>", { class: "hover" })
@@ -42,7 +39,7 @@ $(document).ready(function () {
 							.click(function (e) {
 								$("#coverWrap > img").attr("src", "/static/cover/" + flay.opus);
 								$("#coverWrap").show();
-							})
+							}),
 					),
 					$("<div>", { class: "actress nowrap flex-grow-1" }).append(Util.Actress.get(flay.actressList, "mx-1 hover")),
 					$("<div>", { class: "release" }).append(flay.release),
@@ -53,7 +50,7 @@ $(document).ready(function () {
 					$("<div>", { class: "subti" }).append(flay.files.subtitles.length),
 					$("<div>", { class: "score" }).append(flay.video.rank * rankPoint + flay.video.play * playPoint + (flay.files.subtitles.length > 0 ? 1 : 0) * subtitlesPoint),
 					$("<div>", { class: "length" }).append(File.formatSize(flay.length, "GB")),
-					$("<div>", { class: "total" }).append(File.formatSize(lengthSum, "GB", 0))
+					$("<div>", { class: "total" }).append(File.formatSize(lengthSum, "GB", 0)),
 				)
 				.on("click", function () {
 					$(this).parent().children().removeClass("active");

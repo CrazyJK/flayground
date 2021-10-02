@@ -1,178 +1,179 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Basket - Flayground</title>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<link rel="icon" type="image/png" href="/img/favicon/flay_0.png" />
-<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css" />
-<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css" />
-<link rel="stylesheet" href="/css/base.scrollbar.css" />
-<link rel="stylesheet" href="/css/crazy.fonts.css" />
-<link rel="stylesheet" href="/css/crazy.common.css" />
-<link rel="stylesheet" href="/css/crazy.common.range.css" />
-<link rel="stylesheet" href="/css/flay.view.card.css" />
-<style type="text/css">
-#controlWrap {
-    border-radius: .25rem;
-    transition: .5s;
-}
-#controlWrap:hover {
-    background-color: #dc3545;
-    border-color: #ffc107;
-}
-#controlWrap:hover > * {
-    display: inline-block;
-}
-#rankSelect, #emptyFlay {
-    display: none;
-    vertical-align: text-bottom;
-}
-select:focus-visible {
-    outline: none;
-}
-select > option {
-    background-color: #dc3545;
-}
-.flay-list {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-}
-.flay-card {
-    flex-basis: 500px;
-}
-</style>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/js/crazy.common.js"></script>
-<script type="text/javascript" src="/js/crazy.jquery.js"></script>
-<script type="text/javascript" src="/js/flay.websocket.js"></script>
-<script type="text/javascript" src="/js/flay.utils.js"></script>
-<script type="text/javascript" src="/js/flay.rest.service.js"></script>
-<script type="text/javascript" src="/js/flay.view.card.js"></script>
-</head>
-<body class="bg-dark">
+	<head>
+		<title>Basket - Flayground</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" href="/img/favicon/flay_0.png" />
+		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css" />
+		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css" />
+		<link rel="stylesheet" href="/css/base.scrollbar.css" />
+		<link rel="stylesheet" href="/css/crazy.fonts.css" />
+		<link rel="stylesheet" href="/css/crazy.common.css" />
+		<link rel="stylesheet" href="/css/crazy.common.range.css" />
+		<link rel="stylesheet" href="/css/flay.view.card.css" />
+		<style type="text/css">
+			#controlWrap {
+				border-radius: 0.25rem;
+				transition: 0.5s;
+			}
+			#controlWrap:hover {
+				background-color: #dc3545;
+				border-color: #ffc107;
+			}
+			#controlWrap:hover > * {
+				display: inline-block;
+			}
+			#rankSelect,
+			#emptyFlay {
+				display: none;
+				vertical-align: text-bottom;
+			}
+			select:focus-visible {
+				outline: none;
+			}
+			select > option {
+				background-color: #dc3545;
+			}
+			.flay-list {
+				position: fixed;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+			}
+			.flay-card {
+				flex-basis: 500px;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/js/crazy.common.js"></script>
+		<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+		<script type="text/javascript" src="/js/flay.websocket.js"></script>
+		<script type="text/javascript" src="/js/flay.utils.js"></script>
+		<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="/js/flay.view.card.js"></script>
+	</head>
+	<body>
+		<div class="flay-list mt-1"></div>
 
-    <div class="flay-list mt-1"></div>
+		<div class="fixed-bottom-left" id="controlWrap">
+			<label class="m-1" id="pickFlay">
+				<i class="fa fa-gratipay hover hover-warning font-size-2r"></i>
+			</label>
+			<select class="bg-transparent border-0 text-white form-control-sm mx-2" id="rankSelect">
+				<option value="0">R 0</option>
+				<option value="1">R 1</option>
+				<option value="2">R 2</option>
+				<option value="3">R 3</option>
+				<option value="4">R 4</option>
+				<option value="5">R 5</option>
+			</select>
+			<label class="m-1 mr-2" id="emptyFlay">
+				<i class="fa fa-trash hover lead"></i>
+			</label>
+		</div>
 
-    <div class="fixed-bottom-left" id="controlWrap">
-        <label class="m-1" id="pickFlay">
-            <i class="fa fa-gratipay hover hover-warning font-size-2r"></i>
-        </label>
-        <select class="bg-transparent border-0 text-white form-control-sm mx-2" id="rankSelect">
-            <option value="0">R 0</option>
-            <option value="1">R 1</option>
-            <option value="2">R 2</option>
-            <option value="3">R 3</option>
-            <option value="4">R 4</option>
-            <option value="5">R 5</option>
-        </select>
-        <label class="m-1 mr-2" id="emptyFlay">
-            <i class="fa fa-trash hover lead"></i>
-        </label>
-    </div>
+		<div class="fixed-bottom-middle">
+			<span class="font-weight-bold lead shadow p-3 rounded text-warning collapse" id="message"></span>
+		</div>
+	</body>
 
-    <div class="fixed-bottom-middle">
-        <span class="font-weight-bold lead bg-dark shadow p-3 rounded text-warning collapse" id="message"></span>
-    </div>
-</body>
+	<script type="text/javascript">
+		const FLAY_WIDTH = 500;
+		const card_margin = 4;
+		var $flayList = $(".flay-list");
+		var flayList = [];
+		var currDisplayCount = 0;
+		var maxDisplayCount = 0;
 
-<script type="text/javascript">
-    const FLAY_WIDTH = 500;
-    const card_margin = 4;
-    var $flayList = $(".flay-list");
-    var flayList = [];
-    var currDisplayCount = 0;
-    var maxDisplayCount = 0;
+		function grapFlay(opus, flay, styleClass) {
+			if ($("#" + opus).length > 0) {
+				$("#" + opus).hide("fade", {}, 500, function () {
+					$(this).remove();
+				});
+			} else {
+				if (!flay) {
+					Rest.Flay.getSync(opus, function (found) {
+						flay = found;
+					});
+				}
+				$flayList.appendFlayCard(flay, {
+					width: FLAY_WIDTH,
+					exclude: [MODIFIED, FILEINFO, ACTRESS_EXTRA],
+					fontSize: "80%",
+					class: styleClass,
+				});
+			}
+		}
 
-    function grapFlay(opus, flay, styleClass) {
-        if ($("#" + opus).length > 0) {
-            $("#" + opus).hide("fade", {}, 500, function () {
-                $(this).remove();
-            });
-        } else {
-            if (!flay) {
-                Rest.Flay.getSync(opus, function (found) {
-                    flay = found;
-                });
-            }
-            $flayList.appendFlayCard(flay, {
-                width: FLAY_WIDTH,
-                exclude: [MODIFIED, FILEINFO, ACTRESS_EXTRA],
-                fontSize: "80%",
-                class: styleClass
-            });
-        }
-    }
+		function fnPickupFlay() {
+			var timerID;
+			var _pickFlay = function () {
+				if (flayList.length === 0) {
+					Rest.Flay.findSync("rank/" + $("#rankSelect").val(), function (list) {
+						flayList = list;
+					});
+				}
 
-    function fnPickupFlay() {
-        var timerID;
-        var _pickFlay = function () {
-            if (flayList.length === 0) {
-                Rest.Flay.findSync('rank/' + $("#rankSelect").val(), function (list) {
-                    flayList = list;
-                });
-            }
+				var pickIndex = Random.getInteger(0, flayList.length - 1);
+				var pickedFlay = flayList.splice(pickIndex, 1)[0];
+				currDisplayCount++;
+				$("#message").html("pick up flay " + currDisplayCount + " / " + maxDisplayCount + " in " + flayList.length);
+				grapFlay(pickedFlay.opus, pickedFlay, "bg-warning card-border-0");
 
-            var pickIndex = Random.getInteger(0, flayList.length - 1);
-            var pickedFlay = flayList.splice(pickIndex, 1)[0];
-            currDisplayCount++;
-            $("#message").html('pick up flay ' + currDisplayCount + ' / ' + maxDisplayCount + ' in ' + flayList.length);
-            grapFlay(pickedFlay.opus, pickedFlay, 'bg-warning card-border-0');
+				if (currDisplayCount >= maxDisplayCount) {
+					clearInterval(timerID);
+					$("#message").removeClass("show");
+				}
+			};
 
-            if (currDisplayCount >= maxDisplayCount) {
-                clearInterval(timerID);
-                $("#message").removeClass('show');
-            }
-        };
+			currDisplayCount = $flayList.children().length;
+			maxDisplayCount = fnCalcRowCount() * fnCalcColCount();
+			if (currDisplayCount < maxDisplayCount) {
+				$("#message")
+					.html("pick up " + maxDisplayCount + " flay")
+					.addClass("show");
+				timerID = setInterval(_pickFlay, 500);
+			}
+		}
 
-        currDisplayCount = $flayList.children().length;
-        maxDisplayCount = fnCalcRowCount() * fnCalcColCount();
-        if (currDisplayCount < maxDisplayCount) {
-            $("#message").html('pick up ' + maxDisplayCount + ' flay').addClass('show');
-            timerID = setInterval(_pickFlay, 500);
-        }
-    }
+		function fnCalcRowCount() {
+			return parseInt(window.innerHeight / (FLAY_WIDTH * COVER_RATIO + card_margin * 2));
+		}
 
-    function fnCalcRowCount() {
-        return parseInt(window.innerHeight / (FLAY_WIDTH * COVER_RATIO + card_margin * 2));
-    }
+		function fnCalcColCount() {
+			return parseInt(window.innerWidth / (FLAY_WIDTH + card_margin * 2));
+		}
 
-    function fnCalcColCount() {
-        return parseInt(window.innerWidth / (FLAY_WIDTH + card_margin * 2));
-    }
+		function fnEmptyFlay() {
+			$flayList.hide("fade", {}, 300, function () {
+				$(this).empty().show();
+			});
+		}
 
-    function fnEmptyFlay() {
-        $flayList.hide("fade", {}, 300, function () {
-            $(this).empty().show();
-        });
-    }
+		function fnRestList() {
+			flayList = [];
+		}
 
-    function fnRestList() {
-        flayList = [];
-    }
+		function fnCalcMaxWidth() {
+			$flayList.css({
+				width: (FLAY_WIDTH + card_margin * 2) * fnCalcColCount(),
+				textAlign: "left",
+				margin: card_margin + "px auto 0",
+			});
+		}
 
-    function fnCalcMaxWidth() {
-        $flayList.css({
-            width: (FLAY_WIDTH + card_margin * 2) * fnCalcColCount(),
-            textAlign: 'left',
-            margin: card_margin + "px auto 0"
-        });
-    }
+		$("#pickFlay").on("click", fnPickupFlay);
+		$("#emptyFlay").on("click", fnEmptyFlay);
+		$("#rank").on("change", fnRestList);
+		//    $(window).on("resize", fnCalcMaxWidth);
 
-    $("#pickFlay").on("click", fnPickupFlay);
-    $("#emptyFlay").on("click", fnEmptyFlay);
-    $("#rank").on("change", fnRestList);
-//    $(window).on("resize", fnCalcMaxWidth);
-
-//    fnCalcMaxWidth();
-
-</script>
+		//    fnCalcMaxWidth();
+	</script>
 </html>

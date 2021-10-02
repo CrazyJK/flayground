@@ -41,9 +41,10 @@ label.check span {
 	background-color: var(--light);
 	border: 1px solid transparent;
 	border-radius: 0.25rem;
-	color: var(--gray);
+	color: #333;
 	font-size: 1rem;
 	font-weight: 700;
+	text-shadow: none;
 	padding: 0.125rem 0.25rem;
 	transition: all 0.3s;
 }
@@ -374,7 +375,7 @@ button.btn.btn-outline-flay {
 	bottom: 0;
 	background-color: rgba(0, 0, 0, 0.5);
 	z-index: 9999;
-	cursor: pointer;
+	cursor: wait;
 }
 #overlay > #overlay_body {
 	position: absolute;

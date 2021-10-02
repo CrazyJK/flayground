@@ -72,8 +72,9 @@
 .flay-card label.text,
 .flay-card .flay-rank {
 	background-color: transparent;
-	text-shadow: 0 0 2px #000, 0 0 4px midnightblue, 0 0 8px #000, 0 0 12px midnightblue, 0 0 16px #000;
+	border: 0;
 	color: #fff;
+	text-shadow: 0 0 2px #000, 0 0 4px midnightblue, 0 0 8px #000, 0 0 12px midnightblue, 0 0 16px #000;
 }
 
 .flay-card:hover label.text:not(.flay-rank-sm),
@@ -87,4 +88,23 @@
 
 .flay-card .extra {
 	font-size: 80%;
+}
+
+#containerTag {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	justify-content: center;
+}
+#containerTag label.check {
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
+	margin: 4px;
+	padding: 0;
+}
+#containerTag label.check.sm input ~ span {
+	background-color: #f3f8fd;
+}
+#containerTag label.check.sm input:not(:checked) ~ span {
+	color: #333;
+	text-shadow: none;
 }

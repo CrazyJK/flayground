@@ -60,12 +60,11 @@ function addEventListenerForArchive() {
 	$(window)
 		.on("resize", function () {
 			var windowHeight = $(window).height();
-			var topHeight = $(".fixed-top").height() + 16 + 8;
-			var bottomHeight = $(".fixed-bottom").height() + 16 + 8;
+			var topHeight = $("#topMenu").height() + 16 + 8;
+			var bottomHeight = $("#bottomMenu").height() + 16 + 8;
 
 			$("#contentWrapper").css({
 				height: windowHeight - topHeight - bottomHeight,
-				marginTop: topHeight,
 				overflow: "auto",
 			});
 		})
@@ -113,7 +112,7 @@ function goPage(p) {
 							.html(flay.opus)
 							.on("click", function () {
 								View.flay(flay.opus);
-							})
+							}),
 					),
 					$("<td>", { class: "nowrap title" }).append(
 						$("<label>", { class: "rank" }).html(flay.video.rank),
@@ -124,10 +123,10 @@ function goPage(p) {
 							.html(flay.title)
 							.on("click", function () {
 								showDetail(idx);
-							})
+							}),
 					),
 					$("<td>", { class: "nowrap actress" }).html(flay.actressList.toString()),
-					$("<td>", { class: "nowrap release" }).html(flay.release)
+					$("<td>", { class: "nowrap release" }).html(flay.release),
 				)
 				.appendTo($tableList);
 		});
@@ -164,8 +163,8 @@ function goPage(p) {
 								.css({
 									minHeight: 24,
 								})
-								.html(flay.actressList.toString())
-						)
+								.html(flay.actressList.toString()),
+						),
 				)
 				.appendTo($cardList);
 		});

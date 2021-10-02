@@ -118,7 +118,7 @@
 					Util.Tag.sort(tagList);
 
 					$.each(tagList, function (idx, tag) {
-						$("<label>", { class: "check sm m-1" })
+						$("<label>", { class: "check sm" })
 							.append(
 								$("<input>", { type: "checkbox", "data-tag-id": tag.id })
 									.data("tag", tag)

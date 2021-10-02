@@ -139,9 +139,10 @@
 
 .sidenav input[type="color"] {
 	background-color: transparent;
-	border: 1px solid #fff;
+	border: 0;
 	border-radius: 0.25rem;
 	cursor: pointer;
+	height: 24px;
 	margin-left: 0.5rem;
 	padding: 0;
 	width: 50px;
@@ -156,6 +157,14 @@
 	padding: 0 4px;
 	width: 60px;
 }
+
+.sidenav label.check span {
+	background-color: transparent;
+	color: #ccc;
+	font-family: D2Coding;
+	text-shadow: 1px 1px 1px #000;
+}
+
 /*
 	1080 x 1920
 	2560 x 1440
@@ -268,4 +277,10 @@ main {
 	left: 0;
 	right: 0;
 	bottom: 0;
+}
+
+.scroll-wrapper {
+	position: relative;
+	height: calc(100vh - 50px);
+	overflow: auto;
 }

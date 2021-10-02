@@ -59,10 +59,10 @@
 		</nav>
 	</div>
 
-	<div id="cardViewWrapper">
+	<div id="cardViewWrapper" class="scroll-wrapper">
 		<div class="actress-list text-center"></div>
 	</div>
-	<div id="tableViewWrapper" class="container">
+	<div id="tableViewWrapper" class="container scroll-wrapper">
 		<table class="table table-sm table-hover table-borderless text-light rounded">
 			<thead>
 				<tr>
@@ -208,7 +208,7 @@
 				var $card = $actressTemplete.clone();
 				$card.data("actress", actress);
 
-				if (actress.coverSize > 0) {
+				if (actress.coverSize > 0 && actress.name.length > 0) {
 					$card.find(".card-body").css({
 						backgroundImage: "url('/static/actress/" + actress.name + "/" + Random.getInteger(0, actress.coverSize - 1) + "')",
 					});
@@ -223,12 +223,22 @@
 							.html(actress.name)
 							.on("click", function () {
 								View.actress(actress.name);
-							})
+							}),
 					);
 				$card
 					.find(".card-text")
 					.empty()
-					.append($("<label>", { class: "text info-actress-extra" }).html(actress.localName), "<br>", $("<label>", { class: "text info-actress-extra" }).html(actress.birth), "<br>", $("<label>", { class: "text info-actress-extra" }).html(actress.body), "<br>", $("<label>", { class: "text info-actress-extra" }).html(Util.Actress.getAge(actress)), $("<label>", { class: "text info-actress-extra" }).html(actress.debut.toBlank()), $("<label>", { class: "text info-actress-extra" }).html(actress.height.toBlank()));
+					.append(
+						$("<label>", { class: "text info-actress-extra" }).html(actress.localName),
+						"<br>",
+						$("<label>", { class: "text info-actress-extra" }).html(actress.birth),
+						"<br>",
+						$("<label>", { class: "text info-actress-extra" }).html(actress.body),
+						"<br>",
+						$("<label>", { class: "text info-actress-extra" }).html(Util.Actress.getAge(actress)),
+						$("<label>", { class: "text info-actress-extra" }).html(actress.debut.toBlank()),
+						$("<label>", { class: "text info-actress-extra" }).html(actress.height.toBlank()),
+					);
 				if ($card.find(".card-text").text() == "") {
 					$card.find(".card-text").empty();
 				}
@@ -248,14 +258,14 @@
 								.html(actress.name)
 								.on("click", function () {
 									View.actress(actress.name);
-								})
+								}),
 						),
 						$("<td>").html(actress.localName),
 						$("<td>").html(actress.birth),
 						$("<td>").html(Util.Actress.getAge(actress)),
 						$("<td>").html(actress.body),
 						$("<td>").html(actress.height.toBlank()),
-						$("<td>").html(actress.debut.toBlank())
+						$("<td>").html(actress.debut.toBlank()),
 					)
 					.appendTo($actressList);
 			});
@@ -280,7 +290,7 @@
 						},
 						function () {
 							$("[title='" + actress.name + "']").removeClass("active");
-						}
+						},
 					)
 					.append(right ? "" : actress.name.replace("혻", "_"), $("<label>").html(actress.localName), right ? actress.name.replace("혻", "_") : "");
 			},
@@ -308,13 +318,13 @@
 											$(this).addClass("selected");
 										})
 										.addClass("hover"),
-									$("<td>").append(renderActressName(record.actress2))
+									$("<td>").append(renderActressName(record.actress2)),
 								)
 								.appendTo(tbody);
 						});
 						return tbody;
-					})()
-				)
+					})(),
+				),
 			);
 
 		$("#notice").dialog({

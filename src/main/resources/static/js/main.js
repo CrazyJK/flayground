@@ -129,7 +129,7 @@ var SlideMenu = {
 				var link = document.createElement("link");
 				link.setAttribute("id", "themeLink");
 				link.setAttribute("rel", "stylesheet");
-				link.setAttribute("href", "/css/theme/flay.dark-theme.css");
+				link.setAttribute("href", "/css/theme/flay.theme.dark.css");
 				document.head.appendChild(link);
 			}
 

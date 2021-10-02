@@ -12,7 +12,6 @@ label.check span {
 .check-group input:checked ~ span,
 label.check input:checked ~ span {
 	color: var(--warning);
-	/* text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b; */
 	background-color: transparent;
 }
 .check-group:hover span,
@@ -136,8 +135,8 @@ td {
 .border {
 	border-color: #3a3e42 !important;
 }
+
 button {
-	/* color: var(--dark-color); */
 	background-color: var(--dark-color);
 	outline: none;
 }
@@ -147,14 +146,16 @@ button.btn-outline-secondary {
 button.btn-outline-danger {
 	color: #dc3545;
 }
-button.btn-outline-danger:hover {
-	color: var(--dark-color);
-}
 button.btn-outline-light {
 	color: #f8f9fa;
 }
 button.btn-outline-light:hover {
 	color: var(--dark-color);
+}
+button.btn-outline-danger:hover,
+button.btn-outline-warning:hover {
+	background-color: var(--dark-color);
+	color: #f8f9fa;
 }
 button.btn-warning {
 	color: var(--warning);
@@ -162,18 +163,20 @@ button.btn-warning {
 button.btn-warning:hover {
 	color: #212529;
 }
+.input-group .input-group-text {
+	background-color: var(--dark-color);
+}
 
-body.tag-list .nonExist {
+.tag-list .nonExist {
 	color: #4a4545 !important;
 }
 
-body.cover-box {
-	background-color: #000;
-	box-shadow: 0 0 0.25rem 0.5rem #000 inset;
+.cover-box {
+	background-color: #000 !important;
+	box-shadow: 0 0 0.25rem 0.5rem #000000e6 inset !important;
 }
 
 #topMenu nav:not(:hover) {
-	background-color: transparent !important;
 	text-shadow: 0 0 4px #000;
 	box-shadow: 0 0.125rem 1rem rgb(0 0 0 / 50%);
 	transition: all 0.4s;
@@ -189,6 +192,9 @@ body.cover-box {
 #topMenu nav .bg-light {
 	background-color: transparent !important;
 	text-shadow: 0 0 4px #000;
+}
+#topMenu nav#flayVerticalNav {
+	background-color: transparent !important;
 }
 
 #bottomMenu .pagination:not(:hover) .page-item .page-link {
@@ -213,9 +219,6 @@ label.text {
 	background-color: transparent;
 	text-shadow: 0 0 4px #000;
 	color: #fff;
-	/* background-color: rgb(0 0 0 / 0.5); */
-	/* box-shadow: 0 0 8px 8px rgb(0 0 0 / 50%); */
-	/* border-radius: 16px; */
 }
 
 .check-group:hover span,
@@ -232,10 +235,10 @@ img.board-image.active {
 	box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5), 0 0 16px #e2d313 inset;
 }
 
-body.flay-file {
+.flay-file {
 	background-color: var(--dark-color);
 }
 
-body.flay-info {
+.flay-info {
 	color: var(--light);
 }

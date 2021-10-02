@@ -11,20 +11,6 @@ body {
 	overflow: hidden;
 }
 
-.flay-bar {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: nowrap;
-	align-content: center;
-	justify-content: space-evenly;
-	align-items: baseline;
-	gap: 0.25rem;
-}
-
-.flay-bar input[type="search"] {
-	border-color: transparent;
-}
-
 #selectTags,
 #statisticsStudio,
 #statisticsActress {
@@ -55,7 +41,16 @@ body {
 	padding: 0.25rem;
 	box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.5);
 	border-radius: 1rem;
-	z-index: 74;
+	z-index: -1;
+}
+.option-list {
+	display: flex;
+	flex-direction: row;
+	flex-wrap: nowrap;
+	align-content: center;
+	justify-content: space-evenly;
+	align-items: baseline;
+	gap: 0.25rem;
 }
 
 .video-wrapper {
@@ -87,14 +82,15 @@ body {
 	padding: 0.125rem;
 	transition: all 0.3s;
 }
+
+.tag-list .nonExist {
+	color: #c7bdbd !important;
+}
 #videoTags {
 	display: flex;
 	flex-wrap: wrap;
 	gap: 2px;
 	justify-content: center;
-}
-.tag-list .nonExist {
-	color: #c7bdbd !important;
 }
 
 .cover-wrapper {

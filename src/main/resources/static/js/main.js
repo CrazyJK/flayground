@@ -75,7 +75,7 @@ var SlideMenu = {
 							.on("click", function () {
 								let url = null;
 								if (menu.mode === "include") {
-									url = "/html/flay/flay.popup.html?target=" + menu.uri;
+									url = "/html/main.popup.html?target=" + menu.uri;
 								} else if (menu.mode === "href") {
 									url = menu.uri;
 								} else {
@@ -121,16 +121,9 @@ var SlideMenu = {
 			var bgThemeValue = $("input[name='bgTheme']:checked").val();
 			LocalStorageItem.set("flay.bgtheme", bgThemeValue);
 
-			var link = document.querySelector("#themeLink");
-			if (link) {
-				document.head.removeChild(link);
-			}
-			if (bgThemeValue === "D") {
-				var link = document.createElement("link");
-				link.setAttribute("id", "themeLink");
-				link.setAttribute("rel", "stylesheet");
-				link.setAttribute("href", "/css/theme/flay.theme.dark.css");
-				document.head.appendChild(link);
+			// adjust theme
+			if (adjustTheme) {
+				adjustTheme();
 			}
 
 			// broadcasting

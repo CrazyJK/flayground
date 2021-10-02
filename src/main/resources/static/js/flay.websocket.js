@@ -214,28 +214,18 @@ var flayWebsocket = (function ($) {
 	};
 
 	var infoCallback = function (message) {
-		var body = JSON.parse(message.body);
-		if (debug) console.log("infoCallback", body.content);
-		if (body.content === "bgtheme") {
+		var messageBody = JSON.parse(message.body);
+		if (debug) console.log("infoCallback", messageBody.content);
+		if (messageBody.content === "bgtheme") {
 			// adjust theme
-			var bgThemeValue = LocalStorageItem.get("flay.bgtheme", "D");
-
-			var link = document.querySelector("#themeLink");
-			if (link) {
-				document.head.removeChild(link);
+			if (adjustTheme) {
+				adjustTheme();
 			}
-			if (bgThemeValue === "D") {
-				var link = document.createElement("link");
-				link.setAttribute("id", "themeLink");
-				link.setAttribute("rel", "stylesheet");
-				link.setAttribute("href", "/css/theme/flay.theme.dark.css");
-				document.head.appendChild(link);
-			}
-		} else if (body.content === "bgcolor") {
+		} else if (messageBody.content === "bgcolor") {
 			var bgColor = LocalStorageItem.get("flay.bgcolor", "#000000");
 			$("body").css({ backgroundColor: bgColor });
 		} else {
-			var content = JSON.parse(body.content.replace(/&quot;/g, '"'));
+			var content = JSON.parse(messageBody.content.replace(/&quot;/g, '"'));
 			console.log("content", content);
 			if (content.mode === "grap") {
 				if (typeof grapFlay !== "undefined") {

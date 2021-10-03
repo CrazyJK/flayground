@@ -183,7 +183,7 @@ var flayWebsocket = (function ($) {
 			});
 		};
 
-		var $box = $("<div>", { class: "text-light rounded m-2 p-2" })
+		var $box = $("<div>", { class: "text-light bg-black rounded m-2 p-2" })
 			.css({
 				border: "1px solid #ddd",
 				boxShadow: "0 0.125rem 0.25rem rgba(0, 0, 0, .125)",
@@ -218,9 +218,9 @@ var flayWebsocket = (function ($) {
 		if (debug) console.log("infoCallback", messageBody.content);
 		if (messageBody.content === "bgtheme") {
 			// adjust theme
-			if (adjustTheme) {
+			try {
 				adjustTheme();
-			}
+			} catch (ignored) {}
 		} else if (messageBody.content === "bgcolor") {
 			var bgColor = LocalStorageItem.get("flay.bgcolor", "#000000");
 			$("body").css({ backgroundColor: bgColor });

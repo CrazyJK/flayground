@@ -43,6 +43,7 @@ input.input-flay:hover {
 input.form-control,
 .input-group-text {
 	background-color: var(--dark-color);
+	border: 1px solid #454748;
 	color: var(--light);
 }
 
@@ -240,5 +241,14 @@ img.board-image.active {
 }
 
 .flay-info {
+	color: var(--light);
+}
+
+.form-control[readonly] {
+	background-color: var(--dark-color);
+}
+.form-control:focus {
+	background-color: var(--dark-color);
+	border-color: inherit;
 	color: var(--light);
 }

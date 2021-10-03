@@ -1,47 +1,42 @@
 <meta charset="UTF-8" />
 <style type="text/css">
-	#tagInput .form-row {
-		width: 800px;
-	}
-
 	#tagList {
-		display: none;
-		text-align: center;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		justify-content: center;
+		align-content: flex-start;
 	}
-
 	#tagList .tag {
 		display: inline-flex;
 		margin: 0.25rem;
-		max-width: 369px;
-		min-width: 169px;
+		max-width: 20rem;
+		min-width: 10rem;
 		transition: 0.4s;
 	}
-
 	#tagList .tag:hover {
 		box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
 	}
-
 	#tagList .card-body {
 		padding: 1rem;
 	}
-
-	#tagList .card-title {
-		margin-right: 2rem;
-	}
-
 	#tagList .flay-count {
 		font-size: 0.75rem;
 	}
-
 	#tagList .flay-count.flay-count-no {
 		background-color: var(--danger);
 	}
-
-	#tagList .card-text {
+	#tagList .tag-title {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 8px;
+	}
+	#tagList .tag-dest {
 		color: #0d8f00;
+		text-align: center;
 		word-break: keep-all;
 	}
-
 	#tagList .active {
 		background-color: rgba(85, 136, 136, 0.75);
 		color: #eee;
@@ -67,10 +62,12 @@
 	<div id="tagList" class="scroll-wrapper">
 		<div class="card tag">
 			<div class="card-body">
-				<span class="badge badge-pill badge-dark float-right flay-count"></span>
-				<h5 class="card-title font-weight-bold hover">Tag name</h5>
-				<span class="badge badge-pill badge-dark float-right tag-open hover"><i class="fa fa-external-link"></i></span>
-				<div class="card-text">Tag description</div>
+				<div class="tag-title">
+					<span class="badge badge-pill badge-info tag-open hover"><i class="fa fa-external-link"></i></span>
+					<h5 class="font-weight-bold hover tag-name">Tag name</h5>
+					<span class="badge badge-pill badge-secondary flay-count"></span>
+				</div>
+				<div class="card-text tag-dest">Tag description</div>
 			</div>
 		</div>
 	</div>
@@ -127,7 +124,7 @@
 				var $tagCard = $tagTemplete.clone();
 				$tagCard.data("tag", tag);
 				$tagCard
-					.find(".card-title")
+					.find(".tag-name")
 					.html(tag.name)
 					.on("click", function () {
 						$("#tagInput").data("tag", tag);
@@ -139,7 +136,6 @@
 				$tagCard.find(".tag-open").on("click", function () {
 					View.tag(tag.id);
 				});
-				$tagList.show();
 				$tagCard.appendTo($tagList);
 
 				var findByTagCallback = function (flayList) {
@@ -151,7 +147,7 @@
 						.find(".flay-count")
 						.html(flayList.length)
 						.addClass(flayList.length > 0 ? "" : "flay-count-no");
-					$tagCard.find(".card-title").css({
+					$tagCard.find(".tag-name").css({
 						fontSize: flayList.length * 0.25 + 16,
 					});
 				};

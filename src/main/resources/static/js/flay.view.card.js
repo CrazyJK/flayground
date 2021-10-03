@@ -41,7 +41,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 			+			'<dd class="flay-card-text flay-comment-wrapper"><label class="text flay-comment hover">Comment</label><input class="flay-comment-input" placeholder="Comment"/></dd>'
 			+		'</dl>'
 			+		'<ul class="list-group flay-file-group collapse">'
-			+			'<li class="list-group-item border-dark flay-file">'
+			+			'<li class="list-group-item flay-file">'
 			+				'<div class="input-group input-group-sm">'
 			+					'<input class="form-control border-dark flay-new-studio"  style="max-width: 100px;"/>'
 			+					'<input class="form-control border-dark flay-new-opus" 	  style="max-width: 75px;" readonly="readonly"/>'
@@ -216,7 +216,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				});
 				// cover file
 				if (flay.files.cover.length > 0) {
-					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+					var $li = $("<li>", {'class': 'list-group-item flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.cover, function(idx, file) {
 						$li.append(
 								$("<div>", {'class': 'nowrap hover'}).html(file).on("click", function() {
@@ -227,7 +227,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				}
 				// subtitles file
 				if (flay.files.subtitles.length > 0) {
-					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+					var $li = $("<li>", {'class': 'list-group-item flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.subtitles, function(idx, file) {
 						$li.append(
 								$("<div>", {class: 'd-flex justify-content-between'}).append(
@@ -251,7 +251,7 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 				}
 				// movie file
 				if (flay.files.movie.length > 0) {
-					var $li = $("<li>", {'class': 'list-group-item border-dark flay-file'}).prependTo($flayFileGroup);
+					var $li = $("<li>", {'class': 'list-group-item flay-file'}).prependTo($flayFileGroup);
 					$.each(flay.files.movie, function(idx, file) {
 						$li.append(
 								$("<div>", {class: 'd-flex justify-content-between'}).append(

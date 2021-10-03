@@ -63,10 +63,20 @@
 
 .flay-file-group {
 	font-family: "D2Coding";
+	border: 1px solid #000;
+	border-top-width: 0;
 }
 .flay-file {
+	border-bottom: 1px solid #000;
 	font-size: 0.875rem;
 	padding: 0.5rem 1rem;
+}
+.flay-file:first-child {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}
+.flay-file:last-child {
+	border-bottom: 0;
 }
 
 .flay-card label.text,

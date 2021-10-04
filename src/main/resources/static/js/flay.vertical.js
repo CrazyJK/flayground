@@ -51,8 +51,14 @@ function attachEventListener() {
 		});
 		// video file
 		$(".info-video").on("click", function () {
-			if (currentFlay.files.movie.length > 0) Rest.Flay.play(currentFlay);
-			else Search.torrent(currentFlay);
+			if (currentFlay.files.movie.length > 0) {
+				Rest.Flay.play(currentFlay, function () {
+					let playCount = parseInt($("#playCount").text());
+					$("#playCount").html(++playCount);
+				});
+			} else {
+				Search.torrent(currentFlay);
+			}
 		});
 		// subtitles
 		$(".info-subtitles").on("click", function () {

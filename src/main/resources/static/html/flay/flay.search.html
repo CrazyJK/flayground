@@ -33,7 +33,7 @@
 	}
 
 	.candidates:hover {
-		background-color: antiquewhite;
+		background-color: var(--dark-color);
 	}
 
 	.candidates img {
@@ -53,12 +53,38 @@
 		display: none;
 	}
 
-	.flay-title {
-		max-width: 400px;
+	.candidate-info {
+		display: flex;
+		justify-content: space-between;
 	}
-
-	.flay-actress {
-		max-width: 200px;
+	.candidate-info > label {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.candidate-info-studio {
+		flex: 0 0 100px;
+		text-align: left;
+	}
+	.candidate-info-opus {
+		flex: 0 0 100px;
+		text-align: left;
+	}
+	.candidate-info-title {
+		flex: 1 1 auto;
+		text-align: left;
+	}
+	.candidate-info-actress {
+		flex: 0 1 150px;
+		text-align: right;
+	}
+	.candidate-info-release {
+		flex: 0 0 90px;
+		text-align: left;
+	}
+	.candidate-info-ext {
+		flex: 0 0 100px;
+		text-align: left;
 	}
 
 	.btn:focus {
@@ -109,7 +135,7 @@
 			</div>
 			<button class="btn btn-outline-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
 			<button class="btn btn-outline-warning btn-sm" data-toggle="collapse" data-target="#candidates" aria-role="ADMIN">Candidates <i class="fa fa-caret-down"></i></button>
-			<button class="btn btn-outline-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader" aria-role="ADMIN">Page Image Downloader <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader" aria-role="ADMIN">Image Download <i class="fa fa-caret-down"></i></button>
 			<button class="btn btn-outline-danger btn-sm" data-toggle="collapse" data-target="#batchGroup" aria-role="ADMIN">Batch <i class="fa fa-caret-down"></i></button>
 			<button class="btn btn-outline-info btn-sm btn-reload" aria-role="ADMIN">Reload</button>
 		</nav>
@@ -175,7 +201,6 @@
 				<button class="btn btn-sm btn-outline-warning" id="btnGetCandidates">Get Candidates</button>
 				<button class="btn btn-sm btn-warning disabled" id="candidatesCount"></button>
 				<button class="btn btn-sm btn-outline-warning" id="btnFileControl">Show file control</button>
-				<button class="btn btn-sm btn-outline-warning" id="btnCandidatesLoad"><i class="fa fa-refresh"></i></button>
 				<ul class="list-group mt-2" id="candidatesList"></ul>
 			</div>
 		</div>
@@ -211,10 +236,12 @@
 						$("#imageScript").on("change", function () {
 							LocalStorageItem.set("imageScript", $(this).val());
 						});
-						const scriptCode = LocalStorageItem.get("imageScript", "");
-						if (scriptCode !== "") {
-							$("#imageScript").val(scriptCode);
-						}
+						(() => {
+							const scriptCode = LocalStorageItem.get("imageScript", "");
+							if (scriptCode !== "") {
+								$("#imageScript").val(scriptCode);
+							}
+						})();
 					</script>
 				</div>
 			</div>

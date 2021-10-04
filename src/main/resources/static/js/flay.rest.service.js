@@ -119,9 +119,6 @@ const Rest = {
 		acceptCandidates: function (flay, callback) {
 			restCall("/flay/candidates/" + flay.opus, { method: "PATCH" }, callback);
 		},
-		loadCandidates: function (callback) {
-			restCall("/candidates/load", { method: "POST" }, callback);
-		},
 		play: function (flay, callback) {
 			flay.video.play++;
 			restCall("/flay/play/" + flay.opus, { method: "PATCH" }, callback);

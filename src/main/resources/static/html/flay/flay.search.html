@@ -105,7 +105,7 @@
 		color: var(--success);
 	}
 
-	#resultVideoDiv table td,
+	#resultFlayDiv table td,
 	#resultHistoryDiv table td {
 		padding: 0;
 	}
@@ -113,14 +113,18 @@
 	.input-empty {
 		background: rgba(255, 255, 0, 0.5) !important;
 	}
-
 	.input-invalid {
 		background: rgba(255, 0, 0, 0.5) !important;
 	}
-
 	.input-warning {
 		background: rgba(0, 0, 255, 0.5) !important;
 		color: var(--light) !important;
+	}
+
+	mark {
+		background-color: transparent;
+		color: #f00;
+		padding: 0;
 	}
 </style>
 
@@ -246,6 +250,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div class="card border-danger mt-2 collapse" id="batchGroup" aria-role="ADMIN">
 			<div class="card-body text-center">
 				<div class="btn-group btn-group-sm my-2">
@@ -261,6 +266,7 @@
 				</div>
 			</div>
 		</div>
+
 		<div id="resultFlayDiv" class="card mt-2 collapse" style="overflow: auto">
 			<div class="card-body">
 				<h4 class="card-title">Flay <span class="badge badge-light flay-count"></span><i class="fa fa-times float-right hover small" id="btn-flay-close"></i></h4>
@@ -278,8 +284,8 @@
 					<tbody id="foundFlayList"></tbody>
 				</table>
 			</div>
-			<div id="resultVideoDiv" class="card-body pt-0 collapse" style="overflow: auto">
-				<h4 class="card-title">Video <span class="badge badge-light video-count"></span><i class="fa fa-times float-right hover small" id="btn-video-close"></i></h4>
+			<div class="card-body pt-0" style="overflow: auto">
+				<h4 class="card-title">Video <span class="badge badge-light video-count"></span></h4>
 				<table class="table table-sm table-hover table-bordered">
 					<thead>
 						<tr>
@@ -293,6 +299,7 @@
 				</table>
 			</div>
 		</div>
+
 		<div id="resultHistoryDiv" class="card mt-2 collapse" style="overflow: auto">
 			<div class="card-body">
 				<h4 class="card-title">History <span class="badge badge-light history-count"></span><i class="fa fa-times float-right hover small" id="btn-history-close"></i></h4>

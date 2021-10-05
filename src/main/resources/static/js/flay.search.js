@@ -30,9 +30,6 @@ function baseSearch() {
 	$("#btn-flay-close").on("click", function () {
 		$("#resultFlayDiv").collapse("hide");
 	});
-	$("#btn-video-close").on("click", function () {
-		$("#resultVideoDiv").collapse("hide");
-	});
 	$("#btn-history-close").on("click", function () {
 		$("#resultHistoryDiv").collapse("hide");
 	});
@@ -350,76 +347,42 @@ function searchSource(keyword) {
 
 		$(".flay-count").html(flayList.length);
 		var $tbody = $("#foundFlayList").empty();
-		$.each(flayList, function (entryIndex, flay) {
-			$("<tr>")
-				.append(
-					$("<td>").append($("<label>", { class: "text sm nowrap" }).html(flay.studio)),
-					$("<td>").append(
-						$("<label>", { class: "text sm nowrap hover" })
-							.html(flay.opus)
-							.on("click", function () {
-								View.flay(flay.opus);
-							}),
-					),
-					$("<td>", { class: "nowrap" })
-						.append($("<label>", { class: "text sm" }).html(flay.files.movie.length > 0 ? "V " + File.formatSize(flay.length) : "noV"), $("<label>", { class: "text sm" }).html(flay.files.subtitles.length > 0 ? "S" : ""), $("<label>", { class: "text sm" }).html("R" + flay.video.rank), $("<label>", { class: "text sm" }).html())
-						.css({ minWidth: 100 }),
-					$("<td>").append(function () {
-						var objs = [];
-						$.each(flay.actressList, function (idx, actress) {
-							if (actress != "Amateur") {
-								objs.push(
-									$("<label>", { class: "text sm nowrap hover" })
-										.html(actress)
-										.on("click", function () {
-											View.actress(actress);
-										}),
-								);
-							}
-						});
-						return objs;
-					}),
-					$("<td>").append($("<label>", { class: "text sm" }).html(flay.release)),
-					$("<td>", { class: "nowrap" }).append($("<label>", { class: "text sm" }).html(flay.title)),
-				)
-				.appendTo($tbody);
-		});
-		if (flayList.length === 0) {
-			$("<tr>")
-				.append($("<td>", { colspan: 6, class: "text-danger" }).html("Not found"))
-				.appendTo($tbody);
-
-			// find video info
-			Rest.Video.find(keyword, function (list) {
-				var videoList = list;
-				var $videoTbody = $("#foundVideoList").empty();
-				$("#resultVideoDiv").collapse("show");
-				$(".video-count").html(videoList.length);
-				if (videoList.length > 0) {
-					$.each(videoList, function (entryIndex, video) {
-						$("<tr>")
-							.append(
-								$("<td>").append(
-									$("<label>", { class: "text sm nowrap hover" })
-										.html(video.opus)
-										.on("click", function () {
-											View.flay(flay.opus);
-										}),
-								),
-								$("<td>").append($("<label>", { class: "text sm" }).html("Rank " + video.rank)),
-								$("<td>").append($("<label>", { class: "text sm" }).html("Play " + video.play)),
-								$("<td>").append($("<label>", { class: "text sm" }).html(video.lastAccess.toDate("yyyy-MM-dd hh:mm:ss"))),
-							)
-							.appendTo($videoTbody);
-					});
-				} else {
-					$("<tr>")
-						.append($("<td>", { colspan: 4, class: "text-danger" }).html("Not found"))
-						.appendTo($videoTbody);
-				}
+		if (flayList.length > 0) {
+			$.each(flayList, function (entryIndex, flay) {
+				$("<tr>")
+					.append(
+						$("<td>").append($("<label>", { class: "text sm nowrap" }).html(flay.studio)),
+						$("<td>").append(
+							$("<label>", { class: "text sm nowrap hover" })
+								.html(flay.opus)
+								.on("click", function () {
+									View.flay(flay.opus);
+								}),
+						),
+						$("<td>", { class: "nowrap" })
+							.append($("<label>", { class: "text sm" }).html(flay.files.movie.length > 0 ? "V " + File.formatSize(flay.length) : "noV"), $("<label>", { class: "text sm" }).html(flay.files.subtitles.length > 0 ? "S" : ""), $("<label>", { class: "text sm" }).html("R" + flay.video.rank), $("<label>", { class: "text sm" }).html())
+							.css({ minWidth: 100 }),
+						$("<td>").append(function () {
+							var objs = [];
+							$.each(flay.actressList, function (idx, actress) {
+								if (actress != "Amateur") {
+									objs.push(
+										$("<label>", { class: "text sm nowrap hover" })
+											.html(actress)
+											.on("click", function () {
+												View.actress(actress);
+											}),
+									);
+								}
+							});
+							return objs;
+						}),
+						$("<td>").append($("<label>", { class: "text sm" }).html(flay.release)),
+						$("<td>", { class: "nowrap" }).append($("<label>", { class: "text sm" }).html(flay.title)),
+					)
+					.appendTo($tbody);
 			});
-		} else {
-			$("#resultVideoDiv").collapse("hide");
+			// animate
 			$("div.container").animate(
 				{
 					backgroundColor: "rgba(255, 255, 0, .75)",
@@ -434,15 +397,56 @@ function searchSource(keyword) {
 					);
 				},
 			);
+			// highlight
+			$tbody.find("label").each(function () {
+				$(this).html(
+					$(this)
+						.text()
+						.replace(rexp, "<mark>" + keyword + "</mark>"),
+				);
+			});
+		} else {
+			$("<tr>")
+				.append($("<td>", { colspan: 6, class: "text-danger" }).html("Not found"))
+				.appendTo($tbody);
 		}
+	});
 
-		$tbody.find("label").each(function () {
-			$(this).html(
-				$(this)
-					.text()
-					.replace(rexp, "<mark>" + keyword + "</mark>"),
-			);
-		});
+	// find video info
+	Rest.Video.find(keyword, function (list) {
+		var videoList = list;
+		var $tbody = $("#foundVideoList").empty();
+		$(".video-count").html(videoList.length);
+		if (videoList.length > 0) {
+			$.each(videoList, function (entryIndex, video) {
+				$("<tr>")
+					.append(
+						$("<td>").append(
+							$("<label>", { class: "text sm nowrap hover" })
+								.html(video.opus)
+								.on("click", function () {
+									View.flay(video.opus);
+								}),
+						),
+						$("<td>").append($("<label>", { class: "text sm" }).html("Rank " + video.rank)),
+						$("<td>").append($("<label>", { class: "text sm" }).html("Play " + video.play)),
+						$("<td>").append($("<label>", { class: "text sm" }).html(video.lastAccess.toDate("yyyy-MM-dd hh:mm:ss"))),
+					)
+					.appendTo($tbody);
+			});
+			// highlight
+			$tbody.find("label").each(function () {
+				$(this).html(
+					$(this)
+						.text()
+						.replace(rexp, "<mark>" + keyword + "</mark>"),
+				);
+			});
+		} else {
+			$("<tr>")
+				.append($("<td>", { colspan: 4, class: "text-danger" }).html("Not found"))
+				.appendTo($tbody);
+		}
 	});
 
 	// find history

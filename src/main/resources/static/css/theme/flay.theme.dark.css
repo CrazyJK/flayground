@@ -197,6 +197,10 @@ button.btn-warning:hover {
 #topMenu nav#flayVerticalNav {
 	background-color: transparent !important;
 }
+#topMenu nav#flayVerticalNav:hover,
+#topMenu nav#flayVerticalNav:hover #options {
+	background-color: var(--dark-color) !important;
+}
 
 #bottomMenu .pagination:not(:hover) .page-item .page-link {
 	background-color: transparent;

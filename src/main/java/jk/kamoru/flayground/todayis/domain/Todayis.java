@@ -2,7 +2,9 @@ package jk.kamoru.flayground.todayis.domain;
 
 import java.io.File;
 import java.util.UUID;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

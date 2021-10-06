@@ -188,8 +188,6 @@ public class BatchExecutor {
 			}
 
 			// 커버 파일 없으면, 아카이브에서 커버 자막 파일 다시 매핑. 휴지통 복원일 경우
-
-
 			File delegatePath = getDelegatePath(flay, storagePath, stagePaths, coverPath);
 			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 				String key = entry.getKey();
@@ -203,6 +201,7 @@ public class BatchExecutor {
 						List<File> coverFiles = archiveFlay.getFiles().get(Flay.COVER);
 						if (coverFiles != null && coverFiles.size() > 0) {
 							flay.getFiles().get(Flay.COVER).add(coverFiles.get(0));
+							log.info("add Cover {}", coverFiles.get(0));
 						}
 					} catch (FlayNotfoundException ignore) {
 					}
@@ -214,14 +213,19 @@ public class BatchExecutor {
 						List<File> subtitlesFiles = archiveFlay.getFiles().get(Flay.SUBTI);
 						if (subtitlesFiles != null && subtitlesFiles.size() > 0) {
 							flay.getFiles().get(Flay.SUBTI).addAll(subtitlesFiles);
+							log.info("add subtiles {}", subtitlesFiles);
 						}
 					} catch (FlayNotfoundException ignore) {
 					}
 				}
+			}
+
+			// assemble
+			for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
 				List<File> value = entry.getValue();
 				for (File file : value) {
 					if (!delegatePath.equals(file.getParentFile())) {
-						log.info(String.format("move [%-10s %s %7s] %-20s => %-20s : %s",
+						log.info(String.format("move [%-10s r%s %7s] %-20s => %s / %s",
 								flay.getOpus(),
 								flay.getVideo().getRank(),
 								flayFileHandler.prettyFileLength(file.length()),

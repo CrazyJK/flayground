@@ -300,18 +300,17 @@
 					$tile.appendTo($tileWrap);
 				}
 
+				++totalDisplayCount;
+
 				let bottom = $tile.position().top + $tile.height();
 				if (tileWrapHeight < bottom) {
 					$tile.remove();
 					--currFlayIndex;
+					--totalDisplayCount;
 					break;
 				}
 
 				tileList.push($tile);
-
-				++totalDisplayCount;
-
-				$("#countFlayByDisplay").html(totalDisplayCount);
 			} while (true);
 
 			// one more check overflow flay tile
@@ -321,7 +320,10 @@
 				let $popped = tileList.pop();
 				$popped.remove();
 				--currFlayIndex;
+				--totalDisplayCount;
 			}
+
+			$("#countFlayByDisplay").html(totalDisplayCount);
 
 			if (Random.getBoolean()) {
 				let indexArray = Array.apply(null, { length: tileList.length }).map(Number.call, Number);

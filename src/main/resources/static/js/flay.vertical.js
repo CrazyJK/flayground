@@ -325,7 +325,7 @@ function attachEventListener() {
 			actress.name != "Amateur" && View.actress(actress.name);
 		});
 		// actress favorite click
-		$(".info-wrapper-actress").on("click", "info-actress-favorite i.fa", function () {
+		$(".info-wrapper-actress").on("click", ".info-actress-favorite i.fa", function () {
 			var actress = $(this).closest(".info-actress").data("actress");
 			var $self = $(this);
 			actress.favorite = !actress.favorite;
@@ -870,25 +870,30 @@ function showVideo() {
 			return;
 		}
 		Rest.Actress.get(name, (actress) => {
+			const $flayCountByActress = $("<label>", { class: "text info-actress-flaycount extra" }).html("&nbsp;");
+			Rest.Flay.findByActress(actress, (foundFlayList) => {
+				$flayCountByActress.html(foundFlayList.length + "<small>F</small>");
+			});
 			$("<div>", { class: "info-actress" })
 				.data("actress", actress)
 				.append(
 					$("<label>", { class: "text info-actress-favorite hover" }).append($("<i>", { class: "fa fa-heart" + (actress.favorite ? " favorite" : "-o") })),
 					$("<label>", { class: "text info-actress-name hover" }).html(actress.name),
-					$("<label>", { class: "text info-actress-local extra" }).html(actress.localName),
-					$("<label>", { class: "text info-actress-age extra" }).html(Util.Actress.getAge(actress).ifNotZero("<small>y</small>")),
-					$("<label>", { class: "text info-actress-birth extra" }).html(
+					$flayCountByActress,
+					$("<label>", { class: "text info-actress-local" }).html(actress.localName),
+					$("<label>", { class: "text info-actress-age" }).html(Util.Actress.getAge(actress).ifNotZero("<small>y</small>")),
+					$("<label>", { class: "text info-actress-birth" }).html(
 						actress.birth.replace(/年|月|日/g, function (match, offset, string) {
 							return "<small>" + match + "</small>";
 						}),
 					),
-					$("<label>", { class: "text info-actress-body extra" }).html(
+					$("<label>", { class: "text info-actress-body" }).html(
 						actress.body.replace(/ - /g, function (match) {
 							return "<small>" + match.trim() + "</small>";
 						}),
 					),
-					$("<label>", { class: "text info-actress-height extra" }).html(actress.height.ifNotZero("<small>cm</small>")),
-					$("<label>", { class: "text info-actress-debut extra" }).html(actress.debut.ifNotZero("<small>d</small>")),
+					$("<label>", { class: "text info-actress-height" }).html(actress.height.ifNotZero("<small>cm</small>")),
+					$("<label>", { class: "text info-actress-debut" }).html(actress.debut.ifNotZero("<small>d</small>")),
 				)
 				.appendTo($(".info-wrapper-actress"));
 		});

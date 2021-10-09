@@ -71,6 +71,42 @@ body {
 .info-wrapper-actress {
 	min-height: 38px;
 }
+.info-actress {
+	display: flex;
+	margin: 0 auto;
+	max-width: 800px;
+}
+.info-actress .info-actress-favorite {
+	flex: 0 0 2rem;
+}
+.info-actress .info-actress-name {
+	flex: 1 0 auto;
+}
+.info-actress .info-actress-flaycount {
+	flex: 0 0 auto;
+}
+.info-actress .info-actress-local {
+	flex: 0 0 auto;
+}
+.info-actress .info-actress-age {
+	flex: 0 0 3rem;
+}
+.info-actress .info-actress-birth {
+	flex: 0 0 9rem;
+}
+.info-actress .info-actress-body {
+	flex: 0 0 100px;
+}
+.info-actress .info-actress-height {
+	flex: 0 0 4rem;
+}
+.info-actress .info-actress-debut {
+	flex: 0 0 4rem;
+}
+label.text:empty {
+	display: inherit;
+	background-color: transparent;
+}
 
 .info-overview-input {
 	display: none;
@@ -89,7 +125,7 @@ body {
 #videoTags {
 	display: flex;
 	flex-wrap: wrap;
-	gap: 2px;
+	gap: 2px 0;
 	justify-content: center;
 }
 

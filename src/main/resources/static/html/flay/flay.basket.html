@@ -29,7 +29,6 @@
 			#rankSelect,
 			#emptyFlay {
 				display: none;
-				vertical-align: text-bottom;
 			}
 			select:focus-visible {
 				outline: none;
@@ -65,9 +64,9 @@
 
 		<div class="fixed-bottom-left" id="controlWrap">
 			<label class="m-1" id="pickFlay">
-				<i class="fa fa-gratipay hover hover-warning font-size-2r"></i>
+				<i class="fa fa-gratipay font-size-2r hover hover-warning"></i>
 			</label>
-			<select class="bg-transparent border-0 text-white form-control-sm mx-2" id="rankSelect">
+			<select class="bg-transparent border-0 text-white lead mx-2" id="rankSelect">
 				<option value="0">R 0</option>
 				<option value="1">R 1</option>
 				<option value="2">R 2</option>
@@ -76,12 +75,12 @@
 				<option value="5">R 5</option>
 			</select>
 			<label class="m-1 mr-2" id="emptyFlay">
-				<i class="fa fa-trash hover lead"></i>
+				<i class="fa fa-trash font-size-2r hover"></i>
 			</label>
 		</div>
 
 		<div class="fixed-bottom-middle">
-			<span class="font-weight-bold lead shadow p-3 rounded text-warning collapse" id="message"></span>
+			<span class="font-weight-bold lead shadow px-3 py-1 rounded text-warning collapse" id="message"></span>
 		</div>
 	</body>
 

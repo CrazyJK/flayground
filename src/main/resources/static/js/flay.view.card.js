@@ -368,9 +368,9 @@ const STUDIO = 'studio', ACTRESS = 'actress', ACTRESS_EXTRA = 'actressExtra', MO
 						$actress.find(".flay-actress-local" ).html(actress.localName);
 						$actress.find(".flay-actress-birth" ).html(actress.birth);
 						$actress.find(".flay-actress-age"   ).html(Util.Actress.getAge(actress));
-						$actress.find(".flay-actress-debut" ).html(actress.debut.toBlank());
+						$actress.find(".flay-actress-debut" ).html(actress.debut.ifNotZero());
 						$actress.find(".flay-actress-body"  ).html(actress.body);
-						$actress.find(".flay-actress-height").html(actress.height.toBlank());
+						$actress.find(".flay-actress-height").html(actress.height.ifNotZero());
 
 						$actress.find(".flay-actress-favorite > i").on("click", function() {
 							actress.favorite = !actress.favorite;

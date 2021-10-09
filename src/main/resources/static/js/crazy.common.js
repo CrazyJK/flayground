@@ -173,8 +173,8 @@ String.prototype.string = function(len){var s = '', i = 0; while (i++ < len) { s
 String.prototype.zf = function(len){return "0".string(len - this.length) + this;};
 Number.prototype.zf = function(len){return this.toString().zf(len);};
 
-Number.prototype.toBlank = function() {
-	return this == 0 ? "" : this;
+Number.prototype.ifNotZero = function(suffix) {
+	return this == 0 ? "" : this + (suffix ? suffix : "");
 };
 Number.prototype.withComma = function() {
 	return this.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');

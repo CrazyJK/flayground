@@ -320,14 +320,14 @@ function attachEventListener() {
 			Rest.Video.update(currentFlay.video);
 		});
 		// actress name click
-		$(".info-wrapper-actress").on("click", ".info-actress", function () {
-			var actress = $(this).data("actress");
+		$(".info-wrapper-actress").on("click", ".info-actress-name", function () {
+			var actress = $(this).closest(".info-actress").data("actress");
 			actress.name != "Amateur" && View.actress(actress.name);
 		});
 		// actress favorite click
-		$(".info-wrapper-actress").on("click", ".fa", function () {
+		$(".info-wrapper-actress").on("click", "info-actress-favorite i.fa", function () {
+			var actress = $(this).closest(".info-actress").data("actress");
 			var $self = $(this);
-			var actress = $(this).data("actress");
 			actress.favorite = !actress.favorite;
 			Rest.Actress.update(actress, function () {
 				if (actress.favorite) {
@@ -870,16 +870,25 @@ function showVideo() {
 			return;
 		}
 		Rest.Actress.get(name, (actress) => {
-			$("<div>")
+			$("<div>", { class: "info-actress" })
+				.data("actress", actress)
 				.append(
-					$("<label>", { class: "text info-favorite hover" }).append($("<i>", { class: "hover fa fa-heart" + (actress.favorite ? " favorite" : "-o") }).data("actress", actress)), // favorite
-					$("<label>", { class: "text info-actress hover" }).html(actress.name).data("actress", actress),
-					$("<label>", { class: "text info-actress-extra" }).html(actress.localName),
-					$("<label>", { class: "text info-actress-extra" }).html(actress.birth.replace("年", "<small>年</small>").replace("月", "<small>月</small>").replace("日", "<small>日</small>")),
-					$("<label>", { class: "text info-actress-extra" }).html(Util.Actress.getAge(actress)),
-					$("<label>", { class: "text info-actress-extra" }).html(actress.debut.toBlank()),
-					$("<label>", { class: "text info-actress-extra" }).html(actress.body),
-					$("<label>", { class: "text info-actress-extra" }).html(actress.height.toBlank()),
+					$("<label>", { class: "text info-actress-favorite hover" }).append($("<i>", { class: "fa fa-heart" + (actress.favorite ? " favorite" : "-o") })),
+					$("<label>", { class: "text info-actress-name hover" }).html(actress.name),
+					$("<label>", { class: "text info-actress-local extra" }).html(actress.localName),
+					$("<label>", { class: "text info-actress-age extra" }).html(Util.Actress.getAge(actress).ifNotZero("<small>y</small>")),
+					$("<label>", { class: "text info-actress-birth extra" }).html(
+						actress.birth.replace(/年|月|日/g, function (match, offset, string) {
+							return "<small>" + match + "</small>";
+						}),
+					),
+					$("<label>", { class: "text info-actress-body extra" }).html(
+						actress.body.replace(/ - /g, function (match) {
+							return "<small>" + match.trim() + "</small>";
+						}),
+					),
+					$("<label>", { class: "text info-actress-height extra" }).html(actress.height.ifNotZero("<small>cm</small>")),
+					$("<label>", { class: "text info-actress-debut extra" }).html(actress.debut.ifNotZero("<small>d</small>")),
 				)
 				.appendTo($(".info-wrapper-actress"));
 		});

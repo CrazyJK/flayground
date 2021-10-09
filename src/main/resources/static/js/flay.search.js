@@ -73,15 +73,15 @@ function findMode() {
 		$("input#fullname").val(fullname).effect("highlight", {}, 200);
 	});
 	$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function (e) {
-		if (this.id === "rowname_opus") {
-			var titlePart = $.trim($(this).val().replace(/\[|]/gi, " ")).split(" ");
-			if (titlePart.length > 1) {
-				$("#rowname_opus").val(titlePart[0]);
-				$("#rowname_title").val(titlePart.slice(1).join(" "));
-				$("#rowname_actress").val(titlePart[titlePart.length - 1]);
-			}
-		} else if (e.keyCode != 13) {
+		if (e.keyCode !== 13) {
 			return;
+		}
+
+		var titlePart = $.trim($(this).val().replace(/\[|]/gi, " ")).split(" ");
+		if (titlePart.length > 1) {
+			$("#rowname_opus").val(titlePart[0]);
+			$("#rowname_title").val(titlePart.slice(1).join(" "));
+			$("#rowname_actress").val(titlePart[titlePart.length - 1]);
 		}
 
 		var rowOpus = $("#rowname_opus").val().trim();
@@ -177,6 +177,30 @@ function findMode() {
 			View.actress(newActressName);
 		}
 	});
+	$("#newActressRowdata").on("keyup", function (e) {
+		if (e.keyCode === 17) {
+			// Control key ignored
+			return;
+		}
+		$(this)
+			.val()
+			.split("\n")
+			.forEach((line) => {
+				// console.log(line);
+				if (/[0-9]年/.test(line)) {
+					// 1987年09月07日 （現在 34歳）おとめ座
+					const birth = line.split(" ")[0];
+					$("#newActressBirth").val(birth).trigger("keyup");
+				} else if (line.indexOf("T") > -1) {
+					// T161 / B83(Eカップ) / W58 / H82 / S
+					const splitText = line.split(" / ");
+					const height = splitText[0].substring(1);
+					const body = splitText[1] + " / " + splitText[2] + " / " + splitText[3];
+					$("#newActressBody").val(body).trigger("keyup");
+					$("#newActressHeight").val(height);
+				}
+			});
+	});
 
 	function transferActressInfo(actress, from) {
 		$(from).effect("transfer", { to: "#newActress", className: "ui-effects-transfer" }, 500, function () {
@@ -195,29 +219,30 @@ function findMode() {
 function candidateMode() {
 	$("#btnGetCandidates").on("click", function () {
 		Rest.Flay.findCandidates(function (flayList) {
-			$("#candidatesCount").show().html(flayList.length);
-			$("#btnFileControl").show();
-			$("#candidates").css({
-				marginBottom: flayList.length > 0 ? 600 : 0,
-			});
-			var $candidatesList = $("#candidatesList").empty();
+			$("#candidatesCount").html(flayList.length).show();
+			$("#btnFileControl, #toggleCandidatesCover").toggle(flayList.length > 0);
+			if (flayList.length === 0) {
+				return;
+			}
+			const $candidatesList = $("#candidatesList").empty();
 			$.each(flayList, function (idx, flay) {
 				$("<div>", { class: "candidates list-group-item" })
 					.append(
 						$("<button>", { class: "btn btn-sm btn-block btn-outline-warning" })
-							.append($("<strong>").html("Acept"), $("<span>", { class: "badge badge-light mr-1 ml-1" }).html(flay.files.candidate.length), flay.files.candidate.toString().replace(/,/gi, "<br>").replace(/\\/gi, "/").replace(/\//gi, '<b class="text-white"> / </b>'))
+							.append($("<strong>").html("Acept"), $("<span>", { class: "badge badge-light mx-2" }).html(flay.files.candidate.length), flay.files.candidate.toString().replace(/,/gi, "<br>").replace(/\\/gi, "/").replace(/\//gi, '<b class="text-white"> / </b>'))
 							.on("click", function () {
 								var $self = $(this);
 								Rest.Flay.acceptCandidates(flay, function () {
-									$self.hide();
+									$self.hide().closest(".candidates").addClass("accepted").appendTo($candidatesList).find(".candidates-files, .candidates-cover").remove();
+									$("#candidatesCount").html(parseInt($("#candidatesCount").text()) - 1);
 								});
 							}),
-						$("<div>", { class: "candidatesFileList" }).append(
+						$("<div>", { class: "candidates-files" }).append(
 							(function () {
 								var files = [];
 								$.each(flay.files.candidate, function (idx, file) {
 									files.push(
-										$("<p>", { class: "m-1 border-bottom text-danger" }).append(
+										$("<p>", { class: "m-1 text-danger" }).append(
 											file,
 											$("<button>", { class: "btn btn-sm btn-link text-danger ml-2" })
 												.html("Delete")
@@ -242,17 +267,17 @@ function candidateMode() {
 								return files;
 							})(),
 						),
-						$("<div>", { class: "candidate-info" }).append(
-							$("<label>", { class: "text sm candidate-info-studio" }).html(flay.studio),
-							$("<label>", { class: "text sm candidate-info-opus hover" })
+						$("<div>", { class: "candidates-info" }).append(
+							$("<label>", { class: "text sm candidates-info-studio" }).html(flay.studio),
+							$("<label>", { class: "text sm candidates-info-opus hover" })
 								.html(flay.opus)
 								.on("click", function () {
 									View.flay(flay.opus);
 								}),
-							$("<label>", { class: "text sm candidate-info-title" }).html(flay.title),
-							$("<label>", { class: "text sm candidate-info-actress" }).html(flay.actressList.toString()),
-							$("<label>", { class: "text sm candidate-info-release" }).html(flay.release),
-							$("<label>", { class: "text sm candidate-info-ext" }).append(
+							$("<label>", { class: "text sm candidates-info-title" }).html(flay.title),
+							$("<label>", { class: "text sm candidates-info-actress" }).html(flay.actressList.toString()),
+							$("<label>", { class: "text sm candidates-info-release" }).html(flay.release),
+							$("<label>", { class: "text sm candidates-info-ext" }).append(
 								$("<span>", { class: "mx-1" })
 									.html("r " + flay.video.rank)
 									.addClass(flay.video.rank !== 0 ? "text-danger" : ""),
@@ -264,7 +289,7 @@ function candidateMode() {
 									.addClass(flay.files.subtitles.length !== 0 ? "text-danger" : ""),
 							),
 						),
-						$("<img>", { src: "/static/cover/" + flay.opus, class: "img-thumbnail m-auto", id: "cover-" + flay.opus }),
+						$("<div>", { class: "candidates-cover" }).append($("<img>", { src: "/static/cover/" + flay.opus, class: "img-thumbnail m-auto", id: "cover-" + flay.opus })),
 					)
 					.appendTo($candidatesList);
 			});
@@ -272,7 +297,10 @@ function candidateMode() {
 	});
 
 	$("#btnFileControl").on("click", function () {
-		$(".candidatesFileList").slideToggle();
+		$(".candidates-files").slideToggle();
+	});
+	$("#toggleCandidatesCover").on("click", () => {
+		$(".candidates-cover").slideToggle();
 	});
 }
 

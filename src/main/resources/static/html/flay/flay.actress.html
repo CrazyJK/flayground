@@ -236,8 +236,8 @@
 						$("<label>", { class: "text info-actress-extra" }).html(actress.body),
 						"<br>",
 						$("<label>", { class: "text info-actress-extra" }).html(Util.Actress.getAge(actress)),
-						$("<label>", { class: "text info-actress-extra" }).html(actress.debut.toBlank()),
-						$("<label>", { class: "text info-actress-extra" }).html(actress.height.toBlank()),
+						$("<label>", { class: "text info-actress-extra" }).html(actress.debut.ifNotZero()),
+						$("<label>", { class: "text info-actress-extra" }).html(actress.height.ifNotZero()),
 					);
 				if ($card.find(".card-text").text() == "") {
 					$card.find(".card-text").empty();
@@ -264,8 +264,8 @@
 						$("<td>").html(actress.birth),
 						$("<td>").html(Util.Actress.getAge(actress)),
 						$("<td>").html(actress.body),
-						$("<td>").html(actress.height.toBlank()),
-						$("<td>").html(actress.debut.toBlank()),
+						$("<td>").html(actress.height.ifNotZero()),
+						$("<td>").html(actress.debut.ifNotZero()),
 					)
 					.appendTo($actressList);
 			});

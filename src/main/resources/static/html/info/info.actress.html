@@ -212,8 +212,8 @@
 				$("#localName").val(actress.localName);
 				$("#birth").val(actress.birth).trigger("keyup");
 				$("#body").val(actress.body);
-				$("#height").val(actress.height.toBlank());
-				$("#debut").val(actress.debut.toBlank());
+				$("#height").val(actress.height.ifNotZero());
+				$("#debut").val(actress.debut.ifNotZero());
 				$("#comment").val(actress.comment);
 				if (!actress.favorite) {
 					$(".fa-heart").removeClass("favorite fa-heart").addClass("fa-heart-o");

@@ -46,6 +46,11 @@ input.form-control,
 	border: 1px solid #454748;
 	color: var(--light);
 }
+textarea.form-control {
+	background-color: var(--dark-color);
+	border: 1px solid #454748;
+	color: var(--light);
+}
 
 label.range {
 	background-color: var(--dark-color);

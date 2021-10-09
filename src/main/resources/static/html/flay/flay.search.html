@@ -3,7 +3,6 @@
 	#query {
 		max-width: 200px;
 	}
-
 	input {
 		font-family: D2Coding;
 	}
@@ -11,80 +10,75 @@
 	.input-group-append + .form-control {
 		border-left: 0;
 	}
-
 	.input-group-text {
 		background-color: #fff;
 	}
-
 	.btn-batch-option {
 		min-width: 32px;
 	}
-
 	.ui-dialog-danger {
 		border: 1px solid #ddd;
 		background: rgb(173, 103, 103);
 		color: #fdfdfd;
 	}
 
+	/* candidates */
+	#toggleCandidatesCover,
+	#btnFileControl,
+	#candidatesCount,
+	.candidates-files {
+		display: none;
+	}
 	.candidates {
 		border: 1px solid var(--warning);
 		text-align: center;
-		transition: all 1s;
+		transition: all 0.4s;
 	}
-
 	.candidates:hover {
 		background-color: var(--dark-color);
 	}
-
-	.candidates img {
-		background-color: var(--warning);
-		display: none;
-		width: 800px;
-		height: calc(800px - var(--cover-ratio));
-	}
-
-	.candidates button:hover ~ img {
-		display: block;
-	}
-
-	#btnFileControl,
-	.candidatesFileList,
-	#candidatesCount {
-		display: none;
-	}
-
-	.candidate-info {
+	.candidates-info {
 		display: flex;
 		justify-content: space-between;
 	}
-	.candidate-info > label {
+	.candidates-info > label {
 		overflow: hidden;
 		white-space: nowrap;
 		text-overflow: ellipsis;
 	}
-	.candidate-info-studio {
+	.candidates-info-studio {
 		flex: 0 0 100px;
 		text-align: left;
 	}
-	.candidate-info-opus {
+	.candidates-info-opus {
 		flex: 0 0 100px;
 		text-align: left;
 	}
-	.candidate-info-title {
+	.candidates-info-title {
 		flex: 1 1 auto;
 		text-align: left;
 	}
-	.candidate-info-actress {
+	.candidates-info-actress {
 		flex: 0 1 150px;
 		text-align: right;
 	}
-	.candidate-info-release {
+	.candidates-info-release {
 		flex: 0 0 90px;
 		text-align: left;
 	}
-	.candidate-info-ext {
+	.candidates-info-ext {
 		flex: 0 0 100px;
 		text-align: left;
+	}
+	.candidates-cover {
+		display: none;
+	}
+	.candidates-cover img {
+		background-color: var(--warning);
+		width: 800px;
+	}
+	.candidates.accepted {
+		border-color: black;
 	}
 
 	.btn:focus {
@@ -198,16 +192,22 @@
 				<div class="input-group input-group-sm mb-1">
 					<input class="form-control border-primary" placeholder="temp" />
 				</div>
+				<div class="input-group input-group-sm mb-1">
+					<textarea class="form-control border-primary" placeholder="new actress" id="newActressRowdata"></textarea>
+				</div>
 			</div>
 		</div>
+
 		<div class="card border-warning mt-2 collapse" id="candidates" aria-role="ADMIN">
 			<div class="card-body">
 				<button class="btn btn-sm btn-outline-warning" id="btnGetCandidates">Get Candidates</button>
 				<button class="btn btn-sm btn-warning disabled" id="candidatesCount"></button>
-				<button class="btn btn-sm btn-outline-warning" id="btnFileControl">Show file control</button>
+				<button class="btn btn-sm btn-outline-warning" id="btnFileControl">Toggle file control</button>
+				<button class="btn btn-sm btn-outline-warning" id="toggleCandidatesCover">Toggle Cover</button>
 				<ul class="list-group mt-2" id="candidatesList"></ul>
 			</div>
 		</div>
+
 		<div class="card border-success mt-2 collapse" id="pageImageDownloader" aria-role="ADMIN">
 			<div class="card-body">
 				<form id="downloadPageImageForm" onsubmit="return false;">

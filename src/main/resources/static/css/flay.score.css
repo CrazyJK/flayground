@@ -3,19 +3,41 @@ body {
 	font-size: 14px;
 	font-family: "D2Coding";
 }
+#topMenu.sticky-top {
+	background-color: black !important;
+	gap: 20rem;
+	align-items: center;
+	padding-bottom: 0.5rem;
+	margin-bottom: 0;
+}
+
+#flayView > .sticky-top {
+	top: 44px;
+}
+#flayView > #flayViewHead,
+#flayView > #flayViewBody {
+	width: 1000px;
+	margin: auto;
+}
 .f-head {
 	text-transform: capitalize;
 }
 .f-head > .d-flex,
 .f-body > .d-flex {
-	border-bottom: 1px solid #ccc;
+	color: var(--secondary);
+	font-weight: 700;
 }
 .f-head > .d-flex > div,
 .f-body > .d-flex > div {
-	padding: 0.25rem;
+	border-radius: 4px;
+	margin: 2px;
 }
 .f-body > .d-flex:hover {
 	background-color: rgba(0, 0, 0, 0.025);
+	color: var(--light) !important;
+}
+.f-body > .d-flex:hover > div {
+	background-color: var(--dark-color) !important;
 }
 .f-body > .d-flex.active {
 	background-color: rgba(255, 255, 0, 0.125);
@@ -95,4 +117,73 @@ body {
 }
 #actressGroup button {
 	color: #eee;
+}
+
+#actressView {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: space-evenly;
+}
+#actressView > div {
+	display: inline-flex;
+	width: 1000px;
+}
+#actressView .actress-no {
+	flex: 0 0 40px;
+	text-align: right;
+}
+#actressView .actress-name {
+	flex: 1 0 120px;
+}
+#actressView .actress-local {
+	flex: 1 0 120px;
+}
+#actressView .actress-birth {
+	flex: 0 0 110px;
+}
+#actressView .actress-age {
+	flex: 0 0 38px;
+}
+#actressView .actress-body {
+	flex: 0 0 80px;
+}
+#actressView .actress-height {
+	flex: 0 0 52px;
+}
+#actressView .actress-debut {
+	flex: 0 0 50px;
+}
+#actressView .actress-favorite {
+	flex: 0 0 36px;
+	text-align: center;
+}
+#actressView .actress-flaycount {
+	flex: 0 0 45px;
+	text-align: right;
+}
+#actressView .actress-scoreTotal {
+	flex: 0 0 70px;
+	text-align: right;
+}
+#actressView .actress-scoreAvg {
+	flex: 0 0 65px;
+	text-align: right;
+}
+
+#actressView label.text:empty {
+	display: inherit;
+}
+
+.hover:hover {
+	color: inherit;
+}
+label.text {
+	background-color: var(--dark-color) !important;
+	color: var(--secondary) !important;
+}
+#actressView > div:hover {
+	background-color: rgba(255, 255, 255, 0.125);
+}
+#actressView > div:hover > label.text {
+	color: var(--light) !important;
 }

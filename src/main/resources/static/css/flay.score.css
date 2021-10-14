@@ -10,180 +10,125 @@ body {
 	padding-bottom: 0.5rem;
 	margin-bottom: 0;
 }
-
-#flayView > .sticky-top {
+.sticky-top.f-head {
 	top: 44px;
-}
-#flayView > #flayViewHead,
-#flayView > #flayViewBody {
-	width: 1000px;
-	margin: auto;
-}
-.f-head {
+	background-color: black !important;
+	border-bottom: 1px solid #7a7878;
+	margin-bottom: 8px;
+	padding-bottom: 4px;
 	text-transform: capitalize;
 }
-.f-head > .d-flex,
-.f-body > .d-flex {
-	color: var(--secondary);
-	font-weight: 700;
-}
-.f-head > .d-flex > div,
-.f-body > .d-flex > div {
-	border-radius: 4px;
-	margin: 2px;
-}
-.f-body > .d-flex:hover {
-	background-color: rgba(0, 0, 0, 0.025);
-	color: var(--light) !important;
-}
-.f-body > .d-flex:hover > div {
-	background-color: var(--dark-color) !important;
-}
-.f-body > .d-flex.active {
-	background-color: rgba(255, 255, 0, 0.125);
-}
-.index {
-	min-width: 30px;
-	width: 30px;
-	max-width: 30px;
-	text-align: right;
-}
-.opus {
-	min-width: 80px;
-	width: 80px;
-	max-width: 80px;
-}
-.actress {
-	text-align: right;
-}
-.release {
-	min-width: 80px;
-	width: 80px;
-	max-width: 80px;
-}
-.modified {
-	min-width: 66px;
-	width: 66px;
-	max-width: 66px;
-}
-.rank {
-	min-width: 40px;
-	width: 40px;
-	max-width: 40px;
-	text-align: right;
-}
-.play {
-	min-width: 40px;
-	width: 40px;
-	max-width: 40px;
-	text-align: right;
-}
-.movie {
-	min-width: 40px;
-	width: 40px;
-	max-width: 40px;
-	text-align: right;
-}
-.subti {
-	min-width: 40px;
-	width: 40px;
-	max-width: 40px;
-	text-align: right;
-}
-.score {
-	min-width: 40px;
-	width: 40px;
-	max-width: 40px;
-	text-align: right;
-}
-.length {
-	min-width: 60px;
-	width: 60px;
-	max-width: 60px;
-	text-align: right;
-}
-.total {
-	min-width: 65px;
-	width: 65px;
-	max-width: 65px;
-	text-align: right;
-}
-#actressGroup {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-around;
-	align-items: baseline;
-	gap: 0.5rem;
-}
-#actressGroup button {
-	color: #eee;
-}
-
-#actressView {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: space-evenly;
-}
-#actressView > div {
-	display: inline-flex;
+.f-head,
+.f-body {
+	background-color: #111;
+	margin: auto;
 	width: 1000px;
 }
-#actressView .actress-no {
+.f-head > div,
+.f-body > div {
+	display: flex;
+	gap: 4px;
+}
+.f-head > div > label,
+.f-body > div > label {
+	color: var(--secondary);
+	margin: 2px;
+}
+.f-body > div:hover > label {
+	background-color: var(--dark-color);
+	color: orange;
+}
+
+.flay-index {
+	flex: 0 0 30px;
+	text-align: right;
+}
+.flay-opus {
+	flex: 0 0 80px;
+}
+.flay-title {
+	flex: 1 1 auto;
+}
+.flay-actress {
+	flex: 1 1 auto;
+	text-align: right;
+}
+.flay-release {
+	flex: 0 0 80px;
+}
+.flay-modified {
+	flex: 0 0 66px;
+}
+.flay-rank {
+	flex: 0 0 36px;
+	text-align: right;
+}
+.flay-play {
+	flex: 0 0 36px;
+	text-align: right;
+}
+.flay-play.no-play {
+	color: #dc3545;
+}
+.flay-movie {
+	flex: 0 0 36px;
+	text-align: right;
+}
+.flay-subti {
+	flex: 0 0 36px;
+	text-align: right;
+}
+.flay-score {
 	flex: 0 0 40px;
 	text-align: right;
 }
-#actressView .actress-name {
-	flex: 1 0 120px;
-}
-#actressView .actress-local {
-	flex: 1 0 120px;
-}
-#actressView .actress-birth {
-	flex: 0 0 110px;
-}
-#actressView .actress-age {
-	flex: 0 0 38px;
-}
-#actressView .actress-body {
-	flex: 0 0 80px;
-}
-#actressView .actress-height {
-	flex: 0 0 52px;
-}
-#actressView .actress-debut {
+.flay-length {
 	flex: 0 0 50px;
+	text-align: right;
 }
-#actressView .actress-favorite {
-	flex: 0 0 36px;
+.flay-total {
+	flex: 0 0 55px;
+	text-align: right;
+}
+
+.actress-no {
+	flex: 0 0 30px;
+	text-align: right;
+}
+.actress-scoreTotal {
+	flex: 0 0 40px;
+	text-align: right;
+}
+.actress-flaycount {
+	flex: 0 0 30px;
+	text-align: right;
+}
+.actress-scoreAvg {
+	flex: 0 0 30px;
+	text-align: right;
+}
+.actress-favorite {
+	flex: 0 0 32px;
 	text-align: center;
 }
-#actressView .actress-flaycount {
-	flex: 0 0 45px;
-	text-align: right;
+.actress-name {
+	flex: 1 0 200px;
 }
-#actressView .actress-scoreTotal {
-	flex: 0 0 70px;
-	text-align: right;
+.actress-local {
+	flex: 1 0 100px;
 }
-#actressView .actress-scoreAvg {
-	flex: 0 0 65px;
-	text-align: right;
+.actress-age {
+	flex: 0 0 38px;
 }
-
-#actressView label.text:empty {
-	display: inherit;
+.actress-birth {
+	flex: 0 0 100px;
 }
-
-.hover:hover {
-	color: inherit;
+.actress-body {
+	flex: 0 0 80px;
 }
-label.text {
-	background-color: var(--dark-color) !important;
-	color: var(--secondary) !important;
+.actress-height {
+	flex: 0 0 50px;
 }
-#actressView > div:hover {
-	background-color: rgba(255, 255, 255, 0.125);
-}
-#actressView > div:hover > label.text {
-	color: var(--light) !important;
+.actress-debut {
+	flex: 0 0 50px;
 }

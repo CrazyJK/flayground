@@ -8,10 +8,12 @@ import java.nio.file.Paths;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.apache.commons.lang3.time.StopWatch;
+import org.junit.jupiter.api.Test;
 
 public class ListDirectory {
 
-	public static void main(String[] args) throws IOException {
+	@Test
+	void test() throws IOException {
 		Path dir = Paths.get("K:\\Crazy\\Archive");
 		StopWatch sw = new StopWatch();
 

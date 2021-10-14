@@ -10,7 +10,7 @@ import java.util.List;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.output.FileWriterWithEncoding;
 import org.apache.commons.lang3.StringUtils;
-
+import org.junit.jupiter.api.Test;
 import jk.kamoru.flayground.Flayground;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -20,13 +20,14 @@ public class HistoryConverter {
 
 	List<History> historyList = new ArrayList<>();
 
-	public static void main(String[] args) throws IOException {
+	@Test
+	void main() throws IOException {
 		HistoryConverter converter = new HistoryConverter();
 		converter.process();
 	}
 
 	private void process() throws IOException {
-		String infoPath = "K:\\Crazy\\Info\\history.log";
+		String infoPath = "K:\\Crazy\\Info\\history.logX";
 		File infoFile = new File(infoPath);
 		for (String line : FileUtils.readLines(infoFile, "UTF-8")) {
 			String[] split = StringUtils.split(line, ",", 4);
@@ -43,11 +44,11 @@ public class HistoryConverter {
 			historyList.add(history);
 		}
 		log.info("history total     count: {}", historyList.size());
-		log.info("history PLAY      count: {}",	historyList.stream().filter(h -> h.getAction() == History.Action.PLAY).count());
-		log.info("history OVERVIEW  count: {}",	historyList.stream().filter(h -> h.getAction() == History.Action.OVERVIEW).count());
-		log.info("history SUBTITLES count: {}",	historyList.stream().filter(h -> h.getAction() == History.Action.SUBTITLES).count());
-		log.info("history DELETE    count: {}",	historyList.stream().filter(h -> h.getAction() == History.Action.DELETE).count());
-		log.info("history REMOVE    count: {}",	historyList.stream().filter(h -> h.getAction() == History.Action.REMOVE).count());
+		log.info("history PLAY      count: {}", historyList.stream().filter(h -> h.getAction() == History.Action.PLAY).count());
+		log.info("history OVERVIEW  count: {}", historyList.stream().filter(h -> h.getAction() == History.Action.OVERVIEW).count());
+		log.info("history SUBTITLES count: {}", historyList.stream().filter(h -> h.getAction() == History.Action.SUBTITLES).count());
+		log.info("history DELETE    count: {}", historyList.stream().filter(h -> h.getAction() == History.Action.DELETE).count());
+		log.info("history REMOVE    count: {}", historyList.stream().filter(h -> h.getAction() == History.Action.REMOVE).count());
 
 		File newInfoFile = new File(infoFile.getParentFile(), "history.csv");
 		try (BufferedWriter writer = new BufferedWriter(new FileWriterWithEncoding(newInfoFile, Flayground.ENCODING))) {
@@ -86,6 +87,7 @@ public class HistoryConverter {
 	}
 
 }
+
 
 @Data
 class History {

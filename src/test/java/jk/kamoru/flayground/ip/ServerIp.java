@@ -2,10 +2,12 @@ package jk.kamoru.flayground.ip;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import org.junit.jupiter.api.Test;
 
 public class ServerIp {
 
-	public static void main(String[] args) throws UnknownHostException {
+	@Test
+	void testIp() throws UnknownHostException {
 		InetAddress localHost = InetAddress.getLocalHost();
 		String hostname = localHost.getHostName();
 		String hostAddress = localHost.getHostAddress();

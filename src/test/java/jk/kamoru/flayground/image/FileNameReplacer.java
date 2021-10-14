@@ -11,6 +11,7 @@ import org.apache.commons.io.filefilter.FalseFileFilter;
 import org.apache.commons.io.filefilter.IOFileFilter;
 import org.apache.commons.io.filefilter.TrueFileFilter;
 import org.apache.commons.lang3.StringUtils;
+import org.junit.jupiter.api.Test;
 
 public class FileNameReplacer {
 
@@ -41,10 +42,10 @@ public class FileNameReplacer {
 	}
 
 	static void imageNameReplace() {
-		String basePath = "D:\\kAmOrU\\Pictures\\Girls\\actress";
+		String basePath = "D:\\kAmOrU\\Pictures\\Girls\\actressX";
 		File directory = new File(basePath);
 		IOFileFilter fileFilter = FalseFileFilter.FALSE;
-		IOFileFilter dirFilter  = TrueFileFilter.TRUE;
+		IOFileFilter dirFilter = TrueFileFilter.TRUE;
 		Collection<File> listDirs = FileUtils.listFilesAndDirs(directory, fileFilter, dirFilter);
 		for (File dir : listDirs) {
 			String dirName = dir.getName();
@@ -67,7 +68,8 @@ public class FileNameReplacer {
 		}
 	}
 
-	public static void main(String[] args) {
+	@Test
+	void test() {
 		FileNameReplacer.imageNameReplace();
 	}
 

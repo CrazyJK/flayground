@@ -286,6 +286,44 @@ function attachEventListener() {
 				Search.torrent(currentFlay);
 			}
 		});
+		$(".info-play").on("click", () => {
+			Rest.History.find(currentFlay.opus, (histories) => {
+				let html = `
+				<style>
+				body {margin: 0;}
+				.history-item {display: flex; margin: 8px;}
+				.history-item > label:nth-child(1) {flex: 1 1 40px;}
+				.history-item > label:nth-child(2) {flex: 1 1 100px;}
+				.history-item > label:nth-child(3) {flex: 2 1 200px;}
+				</style>
+				<div>
+				`;
+				let total = histories.length;
+				let height = total * 29 + 68 + 16;
+				histories.forEach((history, index) => {
+					html += `
+					<div class="history-item">
+						<label>${total--}</label>
+						<label>${history.action}</label>
+						<label>${history.date}</label>
+					</div>
+					`;
+				});
+				html += `</div>
+					<script>
+					document.addEventListener("DOMContentLoaded", function() {
+						window.resizeTo(300, document.body.querySelector("body > div").scrollHeight + 68 + 16)
+					});
+					</script>
+				`;
+				console.log("history", histories, html);
+				const historyPopup = window.open("", "historyPopup", "width=300,height=" + height + "," + DEFAULT_SPECS);
+				historyPopup.document.open();
+				historyPopup.document.write(html);
+				historyPopup.document.title = currentFlay.opus;
+				historyPopup.document.close();
+			});
+		});
 		// subtitles
 		$(".info-subtitles").on("click", function () {
 			if (currentFlay.files.subtitles.length > 0) {

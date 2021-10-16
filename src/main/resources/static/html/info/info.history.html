@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Play History Chart</title>
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<style type="text/css">
+			body {
+				background-color: #000;
+			}
+			#chartdiv {
+				width: 100%;
+				height: 100vh;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div id="chartdiv"></div>
+		</div>
+
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/amcharts/amcharts.js"></script>
+		<script type="text/javascript" src="/webjars/amcharts/serial.js"></script>
+		<script type="text/javascript" src="/webjars/amcharts/themes/black.js"></script>
+		<script type="text/javascript" src="../../js/crazy.common.js"></script>
+		<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
+		<script type="text/javascript">
+			const opus = reqParam.opus;
+
+			Rest.History.find(opus, (histories) => {
+				document.title = opus + " " + document.title;
+				drawGraph(histories);
+			});
+
+			function drawGraph(historyList) {
+				let dataMap = {};
+				dataMap[DateUtils.format("yyyy-MM-dd HH:mm:ss")] = [];
+				$.each(historyList, function (idx, history) {
+					if (history.action === "PLAY") {
+						const key = history.date.substring(0, 10);
+						if (dataMap[key]) {
+							dataMap[key].push(history);
+						} else {
+							dataMap[key] = [history];
+						}
+						console.log(history);
+					}
+				});
+				console.log("dataMap", dataMap);
+
+				let dataArray = [];
+				$.each(dataMap, function (key, val) {
+					dataArray.push({
+						date: AmCharts.stringToDate(key, "YYYY-MM-DD"),
+						playCount: val.length,
+					});
+				});
+				dataArray.sort(function (d1, d2) {
+					return d1.date > d2.date ? 1 : -1;
+				});
+
+				AmCharts.makeChart("chartdiv", {
+					type: "serial",
+					theme: "black",
+					dataProvider: dataArray,
+					graphs: [
+						{
+							id: "playCount",
+							type: "column",
+							valueField: "playCount",
+							fillColors: "#FFFF00",
+							fillAlphas: 0.8,
+							lineAlpha: 0,
+							balloonText: "<b>[[value]]</b> <small>play</small>",
+							balloon: {
+								drop: true,
+							},
+						},
+					],
+					chartCursor: {
+						limitToGraph: "playCount",
+					},
+					valueAxes: [
+						{
+							gridAlpha: 0.2,
+							dashLength: 1,
+						},
+					],
+					categoryField: "date",
+					categoryAxis: {
+						parseDates: true,
+					},
+				});
+			}
+		</script>
+	</body>
+</html>

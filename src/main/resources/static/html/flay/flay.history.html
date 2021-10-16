@@ -29,12 +29,9 @@
 <script type="text/javascript" src="/webjars/amcharts/serial.js"></script>
 <script type="text/javascript" src="/webjars/amcharts/themes/black.js"></script>
 <script type="text/javascript">
-	loading.on("Loading history");
-
-	var playList;
-	Rest.History.findAction("PLAY", function (list) {
-		playList = list;
-		loading.off();
+	let playHistoryList;
+	Rest.History.findAction("PLAY", (list) => {
+		playHistoryList = list;
 	});
 
 	$(window)
@@ -46,11 +43,13 @@
 		.trigger("resize");
 
 	$("input[name='dateType']").on("change", function () {
+		loading.on("Loading...");
 		drawGraph($(this).val());
+		loading.off();
 	});
 
 	function drawGraph(dateType) {
-		var minPeriod = "";
+		let minPeriod = "";
 		switch (dateType) {
 			case "d":
 				minPeriod = "DD";
@@ -68,7 +67,7 @@
 		// console.log('minPeriod', minPeriod);
 
 		var dataMap = {};
-		$.each(playList, function (idx, history) {
+		$.each(playHistoryList, function (idx, history) {
 			var key = history.date.substring(0, 10);
 			switch (dateType) {
 				case "d":
@@ -116,7 +115,7 @@
 				playCount: val.length,
 			});
 		});
-		console.log("dataArray", dataArray);
+		// console.log("dataArray", dataArray);
 
 		dataArray.sort(function (d1, d2) {
 			if (d1.date > d2.date) return 1;
@@ -160,7 +159,7 @@
 			},
 			categoryField: "date",
 			categoryAxis: {
-				parseDates: dateType != "t",
+				parseDates: dateType !== "t",
 				minPeriod: minPeriod,
 				dateFormats: [
 					{ period: "DD", format: "D" },
@@ -171,7 +170,10 @@
 			},
 		});
 
-		chart.addListener("rendered", zoomChart);
+		chart.addListener("rendered", (e) => {
+			console.log("event rendered", e);
+			zoomChart();
+		});
 
 		zoomChart();
 

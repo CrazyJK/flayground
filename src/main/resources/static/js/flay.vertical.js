@@ -288,39 +288,51 @@ function attachEventListener() {
 		});
 		$(".info-play").on("click", () => {
 			Rest.History.find(currentFlay.opus, (histories) => {
-				let html = `
-				<style>
-				body {margin: 0;}
-				.history-item {display: flex; margin: 8px;}
-				.history-item > label:nth-child(1) {flex: 1 1 40px;}
-				.history-item > label:nth-child(2) {flex: 1 1 100px;}
-				.history-item > label:nth-child(3) {flex: 2 1 200px;}
-				</style>
-				<div>
-				`;
 				let total = histories.length;
 				let height = total * 29 + 68 + 16;
+				let html = `<!DOCTYPE html>
+				<html>
+					<head>
+						<title>${currentFlay.opus} - history</title>
+						<style>
+						body {margin: 0; background-color: #000; color: #fff;}
+						main {display: flex;flex-wrap: wrap;}
+						iframe {width: 100%; height: 300px; border: 0;}
+						.history-item {display: flex; margin: 8px; width: 300px; gap: 8px;}
+						.history-item > label:nth-child(1) {flex: 1 1 40px; text-align: right;}
+						.history-item > label:nth-child(2) {flex: 1 1 100px;}
+						.history-item > label:nth-child(3) {flex: 2 1 200px;}
+						</style>
+					</head>
+					<body>
+						<aside>
+							<iframe src="/html/info/info.history.html?opus=${currentFlay.opus}"></iframe>
+						</aside>
+						<main>`;
 				histories.forEach((history, index) => {
-					html += `
-					<div class="history-item">
-						<label>${total--}</label>
-						<label>${history.action}</label>
-						<label>${history.date}</label>
-					</div>
-					`;
+					html += `<div class="history-item">
+								<label>${total--}</label>
+								<label>${history.action}</label>
+								<label>${history.date}</label>
+							</div>`;
 				});
-				html += `</div>
-					<script>
-					document.addEventListener("DOMContentLoaded", function() {
-						window.resizeTo(300, document.body.querySelector("body > div").scrollHeight + 68 + 16)
-					});
-					</script>
+				html += `
+						</main>
+						<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							setTimeout(() => {
+								window.resizeTo(400, document.body.querySelector("body > main").scrollHeight + 68 + 16 + 300);
+							}, 500);
+						});
+						</script>
+					</body>
+				</html>
 				`;
 				console.log("history", histories, html);
-				const historyPopup = window.open("", "historyPopup", "width=300,height=" + height + "," + DEFAULT_SPECS);
+				const historyPopup = window.open("", "historyPopup", "width=400,height=" + height + "," + DEFAULT_SPECS);
 				historyPopup.document.open();
 				historyPopup.document.write(html);
-				historyPopup.document.title = currentFlay.opus;
+				// historyPopup.document.title = currentFlay.opus;
 				historyPopup.document.close();
 			});
 		});
@@ -967,6 +979,18 @@ function showVideo() {
 	currentFlay.video.tags.forEach((tagId) => {
 		$("input[data-tag-id='" + tagId + "']", "#videoTags").prop("checked", true);
 	});
+	// history chart
+	if (currentFlay.video.play > 0) {
+		$(".history-wrapper").show();
+		$("#chartdiv").css({
+			height: Math.min(window.innerHeight - $("#chartdiv").position().top - $("#bottomMenu").height(), 200),
+		});
+		Rest.History.find(currentFlay.opus, (histories) => {
+			drawGraph(histories);
+		});
+	} else {
+		$(".history-wrapper").hide();
+	}
 
 	navigation.on();
 }
@@ -991,3 +1015,64 @@ function notice(msg) {
 attachEventListener();
 
 loadData();
+
+function drawGraph(historyList) {
+	let dataMap = {};
+	dataMap[DateUtils.format("yyyy-MM-dd HH:mm:ss")] = [];
+	$.each(historyList, function (idx, history) {
+		if (history.action === "PLAY") {
+			const key = history.date.substring(0, 10);
+			if (dataMap[key]) {
+				dataMap[key].push(history);
+			} else {
+				dataMap[key] = [history];
+			}
+			// console.log(history);
+		}
+	});
+	// console.log("dataMap", dataMap);
+
+	let dataArray = [];
+	$.each(dataMap, function (key, val) {
+		dataArray.push({
+			date: AmCharts.stringToDate(key, "YYYY-MM-DD"),
+			playCount: val.length,
+		});
+	});
+	dataArray.sort(function (d1, d2) {
+		return d1.date > d2.date ? 1 : -1;
+	});
+
+	AmCharts.makeChart("chartdiv", {
+		type: "serial",
+		theme: "black",
+		dataProvider: dataArray,
+		graphs: [
+			{
+				id: "playCount",
+				type: "column",
+				valueField: "playCount",
+				fillColors: "#FFFF00",
+				fillAlphas: 0.8,
+				lineAlpha: 0,
+				balloonText: "<b>[[value]]</b>",
+				balloon: {
+					drop: true,
+				},
+			},
+		],
+		chartCursor: {
+			limitToGraph: "playCount",
+		},
+		valueAxes: [
+			{
+				gridAlpha: 0.2,
+				dashLength: 1,
+			},
+		],
+		categoryField: "date",
+		categoryAxis: {
+			parseDates: true,
+		},
+	});
+}

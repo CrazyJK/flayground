@@ -42,17 +42,18 @@ function findMode() {
 		Search.opusByRandom();
 	});
 	$("#btnReset").dblclick(function () {
-		$("#findMode input.form-control").val("").removeClass("input-empty input-invalid input-warning");
+		$("#findMode .form-control").val("").removeClass("input-empty input-invalid input-warning");
 		$("#findMode input:checkbox").prop("checked", false);
 		$("#newActress").data("actress", null);
 	});
+	// 각 파트 내용을 수정하면
 	$(".flay-group > input").on("keyup", function (e) {
 		if (e.keyCode === 17) return;
 
-		var fullname = "";
+		let fullname = "";
 		$(".flay-group > input").each(function () {
-			var id = $(this).attr("id");
-			var value = $(this).val().trim();
+			const id = $(this).attr("id");
+			let value = $(this).val().trim();
 			if (id === "opus") {
 				value = value.toUpperCase();
 				$("#query").val(value);
@@ -72,8 +73,13 @@ function findMode() {
 		});
 		$("input#fullname").val(fullname).effect("highlight", {}, 200);
 	});
+	// 첫줄 입력시
 	$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function (e) {
 		if (e.keyCode !== 13) {
+			return;
+		}
+
+		if (this.id === "rowname_title") {
 			return;
 		}
 

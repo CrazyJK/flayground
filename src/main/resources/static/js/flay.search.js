@@ -227,10 +227,10 @@ function candidateMode() {
 		Rest.Flay.findCandidates(function (flayList) {
 			$("#candidatesCount").html(flayList.length).show();
 			$("#btnFileControl, #toggleCandidatesCover").toggle(flayList.length > 0);
+			const $candidatesList = $("#candidatesList").empty();
 			if (flayList.length === 0) {
 				return;
 			}
-			const $candidatesList = $("#candidatesList").empty();
 			$.each(flayList, function (idx, flay) {
 				$("<div>", { class: "candidates list-group-item" })
 					.append(

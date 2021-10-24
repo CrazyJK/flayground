@@ -272,6 +272,9 @@ main {
 	gap: 0.5rem;
 	padding: 0.25rem 0.5rem;
 }
+#topMenu > nav > button {
+	border: 0;
+}
 #bottomMenu {
 	position: absolute;
 	left: 0;

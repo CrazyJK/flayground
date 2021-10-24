@@ -1,0 +1,59 @@
+#topMenu > nav {
+	background-color: #000 !important;
+	border-bottom-left-radius: 0.5rem;
+	border-bottom-right-radius: 0.5rem;
+	font-size: 120%;
+}
+#topMenu > nav > button {
+	border-radius: 4px;
+}
+
+.flay-item {
+	display: flex;
+	gap: 8px;
+	font-size: 80%;
+	padding: 0 1rem;
+}
+.flay-item.found-subtitles {
+	color: green;
+	text-shadow: 0 0 1px #9f9292;
+}
+.flay-item.found-subtitles.active-subtitles {
+	color: var(--warning);
+}
+.flay-item:hover {
+	color: orange;
+}
+.flay-count {
+	flex: 0 0 50px;
+}
+.flay-studio {
+	flex: 0 0 100px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.flay-opus {
+	flex: 0 0 100px;
+}
+.flay-title {
+	flex: 1 0 300px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.flay-actressList {
+	flex: 0 0 150px;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+.flay-release {
+	flex: 0 0 100px;
+}
+.flay-rank {
+	flex: 0 0 50px;
+}
+.flay-subtitles {
+	flex: 1 0 100px;
+}

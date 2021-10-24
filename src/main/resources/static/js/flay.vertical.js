@@ -968,6 +968,16 @@
 		$(".info-subtitles")
 			.html("Subtitles")
 			.toggleClass("nonExist", currentFlay.files.subtitles.length === 0);
+		if (currentFlay.files.subtitles.length === 0) {
+			Search.subtitlesUrlIfFound(currentFlay.opus, function (foundUrlList) {
+				if (foundUrlList && foundUrlList.length > 0) {
+					$(".info-subtitles").html(`<span class="text-danger">Subtitles ${foundUrlList.length} found!!!</span>`);
+					for (const url of foundUrlList) {
+						Popup.open(url, "", 900, 950);
+					}
+				}
+			});
+		}
 		// overview
 		$(".info-overview-input").val(currentFlay.video.comment).hide();
 		$(".info-overview")

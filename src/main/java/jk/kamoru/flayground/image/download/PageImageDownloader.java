@@ -20,7 +20,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-
+import jk.kamoru.flayground.Flayground;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,19 +28,18 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Web page image downloader
- * 
+ *
  * <pre>
  * Usage
  *  PageImageDownloader pageDownloader = new PageImageDownloader(...);
  *  DownloadResult result = pageDownloader.download();
  * </pre>
- * 
+ *
  * @author kamoru
  */
 @Slf4j
 public class PageImageDownloader {
 
-	private static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 	private static final String ILLEGAL_EXP = "[:\\\\/%*?:|\"<>]";
 	private static final int DOCUMENT_TIMEOUT = 1000 * 60;
 	private static final long THREAD_POOL_TIMEOUT = 1000 * 60 * 1;
@@ -71,7 +70,7 @@ public class PageImageDownloader {
 
 	/**
 	 * execute download
-	 * 
+	 *
 	 * @return Download result
 	 */
 	public DownloadResult download() {
@@ -81,7 +80,7 @@ public class PageImageDownloader {
 			final String domain = String.format("%s://%s%s", url.getProtocol(), url.getHost(), (url.getPort() > 0 ? ":" + url.getPort() : ""));
 
 			// connect and get image page by jsoup HTML parser
-			Document document = Jsoup.connect(imagePageUrl).timeout(DOCUMENT_TIMEOUT).userAgent(USER_AGENT).get();
+			Document document = Jsoup.connect(imagePageUrl).timeout(DOCUMENT_TIMEOUT).userAgent(Flayground.USER_AGENT).get();
 
 			// find img tag
 			Elements imgTags = document.getElementsByTag("img");
@@ -156,7 +155,7 @@ public class PageImageDownloader {
 
 	/**
 	 * create HttpClient
-	 * 
+	 *
 	 * @param soTimeout
 	 * @param maxTotal
 	 * @return CloseableHttpClient

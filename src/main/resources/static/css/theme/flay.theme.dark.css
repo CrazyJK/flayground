@@ -144,6 +144,7 @@ td {
 
 button {
 	background-color: var(--dark-color);
+	color: #ccc;
 	outline: none;
 }
 button.btn-outline-secondary {

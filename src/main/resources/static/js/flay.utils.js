@@ -140,8 +140,18 @@ var Search = {
 	find: function (keyword) {
 		Popup.open(URL_FIND_ACTRESS + encodeURI(keyword), "findSearch", 1200, 950);
 	},
-	subtitles: function (keyword) {
-		Popup.open(URL_SEARCH_SUBTITLES + keyword, "subtitlesSearch", 900, 950);
+	subtitles: function (keyword, w, h) {
+		Popup.open(URL_SEARCH_SUBTITLES + keyword, "subtitlesSearch", w || 900, h || 950);
+	},
+	subtitlesUrlIfFound: function (opus, callback) {
+		$.ajax({
+			url: "/file/find/exists/subtitles?opus=" + opus,
+			success: function (foundUrlList) {
+				if (callback) {
+					callback(foundUrlList);
+				}
+			},
+		});
 	},
 };
 

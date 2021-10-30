@@ -38,7 +38,7 @@
 	color: gray;
 }
 .flay-list .flay-card.archive {
-	opacity: 0.75;
+	opacity: 0.5;
 }
 .flay-card > .flay-card-body {
 	background: center no-repeat;

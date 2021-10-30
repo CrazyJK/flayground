@@ -968,12 +968,13 @@
 		$(".info-subtitles")
 			.html("Subtitles")
 			.toggleClass("nonExist", currentFlay.files.subtitles.length === 0);
+		$(".info-subtitles").parent().find(".link-subtitles").remove();
 		if (currentFlay.files.subtitles.length === 0) {
 			Search.subtitlesUrlIfFound(currentFlay.opus, function (foundUrlList) {
 				if (foundUrlList && foundUrlList.length > 0) {
-					$(".info-subtitles").html(`<span class="text-danger">Subtitles ${foundUrlList.length} found!!!</span>`);
+					$(".info-subtitles").html(`<span class="text-info">Subtitles ${foundUrlList.length} found!!!</span>`);
 					for (const url of foundUrlList) {
-						Popup.open(url, "", 900, 950);
+						$(".info-subtitles").parent().append(`<a href="${url}" class="link-subtitles"><i class="fa fa-external-link mx-1"></i></a>`);
 					}
 				}
 			});
@@ -1011,6 +1012,7 @@
 			});
 		} else {
 			$(".history-wrapper").hide();
+			$("#chartdiv").empty();
 		}
 
 		navigation.on();
@@ -1036,6 +1038,11 @@
 	attachEventListener();
 
 	loadData();
+
+	AmCharts.dayNames = AmCharts.translations.ko.dayNames;
+	AmCharts.shortDayNames = AmCharts.translations.ko.shortDayNames;
+	AmCharts.monthNames = AmCharts.translations.ko.monthNames;
+	AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
 
 	function drawGraph(historyList) {
 		let dataMap = {};

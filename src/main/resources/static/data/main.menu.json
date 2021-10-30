@@ -70,6 +70,16 @@
 		}
 	},
 	{
+		"name": "Subtitles",
+		"uri": "/html/flay/flay.subtitles.html",
+		"icon": "fa fa-file-text-o",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1050
+		}
+	},
+	{
 		"name": "Summary",
 		"uri": "/html/flay/flay.summary.html",
 		"icon": "fa fa-list",

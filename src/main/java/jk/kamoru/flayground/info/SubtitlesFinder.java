@@ -21,7 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SubtitlesFinder {
 
-	final String siteUrl = "https://www.subtitlecat.com/";
+	final String siteUrl = "https://www.subtitlecat.com";
 
 	@RequestMapping("/file/find/exists/subtitles")
 	@ResponseBody
@@ -29,7 +29,7 @@ public class SubtitlesFinder {
 		List<URL> foundUrlList = new ArrayList<>();
 
 		try {
-			Document document = Jsoup.connect(siteUrl + "index.php?search=" + opus).userAgent(Flayground.USER_AGENT).get();
+			Document document = Jsoup.connect(siteUrl + "/index.php?search=" + opus).userAgent(Flayground.USER_AGENT).get();
 			Elements trList = document.select("table.table.sub-table > tbody > tr");
 			log.debug("[{}] page list size {}", opus, trList.size());
 			for (Element tr : trList) {
@@ -38,9 +38,17 @@ public class SubtitlesFinder {
 				if (StringUtils.containsIgnoreCase(text, opus)) {
 					log.debug("   same opus : {}", text);
 					if (StringUtils.containsIgnoreCase(text, "Korean")) {
-						String href = tr.select("a").attr("href");
-						log.debug("        found kor : {}", href);
-						foundUrlList.add(new URL(siteUrl + href));
+						String href = "/" + tr.select("a").attr("href");
+						log.debug("        found kor page : {}", href);
+
+						// file download link
+						URL pageUrl = new URL(siteUrl + href);
+						Document pageDocument = Jsoup.connect(pageUrl.toString()).userAgent(Flayground.USER_AGENT).get();
+						Element anker = pageDocument.selectFirst("#download_ko");
+						String downloadLink = anker.attr("href");
+						log.debug("              download link : {}", downloadLink);
+
+						foundUrlList.add(new URL(siteUrl + downloadLink));
 					}
 				}
 			}

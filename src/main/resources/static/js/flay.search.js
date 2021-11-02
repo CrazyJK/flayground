@@ -481,11 +481,13 @@ function searchSource(keyword) {
 
 	// find history
 	Rest.History.find(keyword, function (historyList) {
-		$("#resultHistoryDiv").collapse("show");
+		const sortedHisoryList = historyList.filter((h) => h.action !== "UPDATE");
 
-		$(".history-count").html(historyList.length);
+		$("#resultHistoryDiv").collapse("show");
+		$(".history-count").html(sortedHisoryList.length);
+
 		var $tbody = $("#foundHistoryList").empty();
-		$.each(historyList, function (entryIndex, history) {
+		$.each(sortedHisoryList, function (entryIndex, history) {
 			$("<tr>")
 				.append(
 					$("<td>").append($("<label>", { class: "text sm nowrap" }).html(history.date)),
@@ -501,7 +503,7 @@ function searchSource(keyword) {
 				)
 				.appendTo($tbody);
 		});
-		if (historyList.length === 0) {
+		if (sortedHisoryList.length === 0) {
 			$("<tr>")
 				.append($("<td>", { colspan: 4, class: "text-danger" }).html("Not found"))
 				.appendTo($tbody);

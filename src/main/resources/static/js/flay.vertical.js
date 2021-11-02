@@ -328,7 +328,7 @@
 						</body>
 					</html>
 					`;
-					console.log("history", histories, html);
+					console.debug("history", histories, html);
 					const historyPopup = window.open("", "historyPopup", "width=400,height=" + height + "," + DEFAULT_SPECS);
 					historyPopup.document.open();
 					historyPopup.document.write(html);
@@ -656,19 +656,19 @@
 		loading.on("Collect list");
 		$(".video-wrapper").hide();
 
-		var query = $("#search").val();
-		var fav = $("#favorite").prop("checked");
-		var nof = $("#noFavorite").prop("checked");
-		var vid = $("#video").prop("checked");
-		var sub = $("#subtitles").prop("checked");
-		var rank0 = $("#rank0").prop("checked") ? "0" : "";
-		var rank1 = $("#rank1").prop("checked") ? "1" : "";
-		var rank2 = $("#rank2").prop("checked") ? "2" : "";
-		var rank3 = $("#rank3").prop("checked") ? "3" : "";
-		var rank4 = $("#rank4").prop("checked") ? "4" : "";
-		var rank5 = $("#rank5").prop("checked") ? "5" : "";
-		var sort = $("input[name='sort']:checked").val();
-		var selectedTags = [];
+		const query = $("#search").val();
+		const fav = $("#favorite").prop("checked");
+		const nof = $("#noFavorite").prop("checked");
+		const vid = $("#video").prop("checked");
+		const sub = $("#subtitles").prop("checked");
+		const rank0 = $("#rank0").prop("checked") ? "0" : "";
+		const rank1 = $("#rank1").prop("checked") ? "1" : "";
+		const rank2 = $("#rank2").prop("checked") ? "2" : "";
+		const rank3 = $("#rank3").prop("checked") ? "3" : "";
+		const rank4 = $("#rank4").prop("checked") ? "4" : "";
+		const rank5 = $("#rank5").prop("checked") ? "5" : "";
+		const sort = $("input[name='sort']:checked").val();
+		let selectedTags = [];
 		$("input[data-tag-id]:checked", "#selectTags").each(function (idx, tagCheckbox) {
 			selectedTags.push($(tagCheckbox).data("tag"));
 		});
@@ -680,25 +680,28 @@
 			$(tagCheckbox).next().addClass("nonExist");
 		});
 
-		collectedList = [];
 		// filtering
+		collectedList = [];
 		for (const flay of flayList) {
+			// video, subtitles check
+			let matched = false;
 			if (vid && sub) {
 				// 비디오와 자막 모두 있는
-				if (flay.files.movie.length === 0 || flay.files.subtitles.length === 0) continue;
+				matched = flay.files.movie.length > 0 && flay.files.subtitles.length > 0;
 			} else if (vid && !sub) {
-				// 비디오가 있으면
-				if (flay.files.movie.length === 0) continue;
+				// 비디오만 있는
+				matched = flay.files.movie.length > 0 && flay.files.subtitles.length === 0;
 			} else if (!vid && sub) {
-				// 비디오 없는 자막
-				if (flay.files.movie.length > 0 || flay.files.subtitles.length === 0) continue;
+				// 비디오 없이 자막만 있는
+				matched = flay.files.movie.length === 0 && flay.files.subtitles.length > 0;
 			} else {
-				// 비디오와 자막 모두 없는
-				if (flay.files.movie.length > 0 || flay.files.subtitles.length > 0)
-					// 비디오가 있고
-					continue;
+				matched = flay.files.movie.length > 0 || flay.files.subtitles.length > 0;
+			}
+			if (!matched) {
+				continue;
 			}
 
+			// rank check
 			var rank = rank0 + rank1 + rank2 + rank3 + rank4 + rank5;
 			if (rank.indexOf(flay.video.rank) < 0) {
 				continue;
@@ -720,36 +723,30 @@
 				continue;
 			}
 
-			if (query != "") {
-				var fullname = flay.studio + flay.opus + flay.title + Util.Actress.getNames(flay.actressList) + flay.release + flay.comment;
-				if (fullname.toLowerCase().indexOf(query.toLowerCase()) < 0) {
+			if (query !== "") {
+				if ((flay.fullname + flay.comment).toLowerCase().indexOf(query.toLowerCase()) < 0) {
 					continue;
 				}
 			}
 
 			// tag check all. id, name, desc
 			if (selectedTags.length > 0) {
-				var found = false;
-
-				for (var x in selectedTags) {
-					var tag = selectedTags[x];
-
+				let found = false;
+				for (const tag of selectedTags) {
 					found = matchTag(tag, flay);
 					if (found) {
 						break;
 					}
 				}
-
 				if (!found) {
 					continue;
 				}
 			}
 
 			// tag count
-			for (var x in tagList) {
-				var tag = tagList[x];
+			for (const tag of tagList) {
 				if (matchTag(tag, flay)) {
-					var dataTag = $("input[data-tag-id='" + tag.id + "']", "#selectTags").data("tag");
+					const dataTag = $("input[data-tag-id='" + tag.id + "']", "#selectTags").data("tag");
 					if (dataTag) {
 						dataTag.count++;
 					}
@@ -763,17 +760,17 @@
 		collectedList.sort(function (flay1, flay2) {
 			switch (sort) {
 				case "S":
-					let sVal = compareTo(flay1.studio, flay2.studio);
+					const sVal = compareTo(flay1.studio, flay2.studio);
 					return sVal === 0 ? compareTo(flay1.opus, flay2.opus) : sVal;
 				case "O":
 					return compareTo(flay1.opus, flay2.opus);
 				case "T":
 					return compareTo(flay1.title, flay2.title);
 				case "A":
-					let aVal = compareTo(flay1.actressList, flay2.actressList);
+					const aVal = compareTo(flay1.actressList, flay2.actressList);
 					return aVal === 0 ? compareTo(flay1.opus, flay2.opus) : aVal;
 				case "R":
-					let rVal = compareTo(flay1.release, flay2.release);
+					const rVal = compareTo(flay1.release, flay2.release);
 					return rVal === 0 ? compareTo(flay1.opus, flay2.opus) : rVal;
 				case "M":
 					return compareTo(flay1.lastModified, flay2.lastModified);
@@ -781,16 +778,6 @@
 					const pVal = compareTo(flay1.video.play, flay2.video.play);
 					return pVal === 0 ? compareTo(flay1.release, flay2.release) : pVal;
 			}
-		});
-
-		// display flay count of tag
-		$("input[data-tag-id]", "#selectTags").each(function (index, tagCheckbox) {
-			var tag = $(tagCheckbox).data("tag");
-			$(tagCheckbox)
-				.next()
-				.toggleClass("nonExist", tag.count == 0)
-				.empty()
-				.append(tag.name, $("<i>", { class: "badge tag-flay-count" }).html(tag.count));
 		});
 
 		// collectedList show
@@ -803,13 +790,21 @@
 			loading.on("Not found");
 		}
 
-		// statistics
-		var studioMap = new Map();
-		var actressMap = new Map();
-		var count = 1;
-		for (var i = 0; i < collectedList.length; i++) {
-			var flay = collectedList[i];
+		// display flay count of tag
+		$("input[data-tag-id]", "#selectTags").each(function (index, tagCheckbox) {
+			const tag = $(tagCheckbox).data("tag");
+			$(tagCheckbox)
+				.next()
+				.toggleClass("nonExist", tag.count == 0)
+				.empty()
+				.append(tag.name, $("<i>", { class: "badge tag-flay-count" }).html(tag.count));
+		});
 
+		// make statistics map
+		const studioMap = new Map();
+		const actressMap = new Map();
+		let count = 1;
+		for (const flay of collectedList) {
 			// flay.studio
 			if (studioMap.has(flay.studio)) {
 				count = studioMap.get(flay.studio);
@@ -820,8 +815,7 @@
 			studioMap.set(flay.studio, count);
 
 			// flay.actressList
-			for (var j = 0; j < flay.actressList.length; j++) {
-				var actressName = flay.actressList[j];
+			for (const actressName of flay.actressList) {
 				if (actressMap.has(actressName)) {
 					count = actressMap.get(actressName);
 					count++;
@@ -832,7 +826,19 @@
 			}
 		}
 
-		// console.log(studioMap, actressMap);
+		// sort statistics map
+		const studioMapAsc = new Map(
+			[...studioMap.entries()].sort((a, b) => {
+				return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+			}),
+		);
+
+		const actressMapAsc = new Map(
+			[...actressMap.entries()].sort((a, b) => {
+				return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
+			}),
+		);
+
 		const minCount = 5;
 		$("#statisticsStudio")
 			.empty()
@@ -846,7 +852,7 @@
 						}),
 				),
 			);
-		for (var [k, v] of studioMap) {
+		for (const [k, v] of studioMapAsc) {
 			$("#statisticsStudio").append(
 				$("<label>", { class: "text hover studioTag" + (v < minCount ? " hide" : "") })
 					.append(
@@ -877,7 +883,7 @@
 						}),
 				),
 			);
-		for (var [k, v] of actressMap) {
+		for (const [k, v] of actressMapAsc) {
 			$("#statisticsActress").append(
 				$("<label>", { class: "text hover actressTag" + (v < minCount ? " hide" : "") })
 					.append(
@@ -923,17 +929,14 @@
 				return;
 			}
 			Rest.Actress.get(name, (actress) => {
-				const $flayCountByActress = $("<label>", { class: "text info-actress-flaycount" }).html("&nbsp;");
-				Rest.Flay.findByActress(actress, (foundFlayList) => {
-					$flayCountByActress.html(foundFlayList.length + "<small>F</small>");
-				});
+				const $flayCountOfActress = $("<label>", { class: "text info-actress-flaycount" }).html("&nbsp;");
 				$("<div>", { class: "info-actress" })
 					.data("actress", actress)
 					.append(
 						$("<label>", { class: "text info-actress-favorite hover" }).append($("<i>", { class: "fa fa-heart" + (actress.favorite ? " favorite" : "-o") })),
 						$("<label>", { class: "text info-actress-name hover" }).html(actress.name),
 						$("<label>", { class: "text info-actress-local" }).html(actress.localName),
-						$flayCountByActress,
+						$flayCountOfActress,
 						$("<label>", { class: "text info-actress-age" }).html(Util.Actress.getAge(actress).ifNotZero("<small>y</small>")),
 						$("<label>", { class: "text info-actress-birth" }).html(
 							actress.birth.replace(/年|月|日/g, function (match, offset, string) {
@@ -949,6 +952,9 @@
 						$("<label>", { class: "text info-actress-debut" }).html(actress.debut.ifNotZero("<small>d</small>")),
 					)
 					.appendTo($(".info-wrapper-actress"));
+				Rest.Flay.findByActress(actress, (foundFlayList) => {
+					$flayCountOfActress.html(foundFlayList.length + "<small>F</small>");
+				});
 			});
 		});
 		// release
@@ -970,14 +976,22 @@
 			.toggleClass("nonExist", currentFlay.files.subtitles.length === 0);
 		$(".info-subtitles").parent().find(".link-subtitles").remove();
 		if (currentFlay.files.subtitles.length === 0) {
-			Search.subtitlesUrlIfFound(currentFlay.opus, function (foundUrlList) {
-				if (foundUrlList && foundUrlList.length > 0) {
-					$(".info-subtitles").html(`<span class="text-info">Subtitles ${foundUrlList.length} found!!!</span>`);
-					for (const url of foundUrlList) {
-						$(".info-subtitles").parent().append(`<a href="${url}" class="link-subtitles"><i class="fa fa-external-link mx-1"></i></a>`);
+			if (!currentFlay.hasOwnProperty("checkedSubtitles") || currentFlay.checkedSubtitles === false) {
+				currentFlay["checkedSubtitles"] = true;
+				Search.subtitlesUrlIfFound(currentFlay.opus, function (foundUrlList, opus) {
+					if (foundUrlList && foundUrlList.length > 0) {
+						if (opus === currentFlay.opus) {
+							$(".info-subtitles").html(`<span class="text-info">Subtitles ${foundUrlList.length} found!!!</span>`);
+							for (const url of foundUrlList) {
+								$(".info-subtitles").parent().append(`<a href="${url}" class="link-subtitles"><i class="fa fa-external-link mx-1"></i></a>`);
+							}
+						} else {
+							currentFlay.checkedSubtitles = false;
+							notice(`${opus} subtitle found ${foundUrlList.length}. but flay passed!`);
+						}
 					}
-				}
-			});
+				});
+			}
 		}
 		// overview
 		$(".info-overview-input").val(currentFlay.video.comment).hide();
@@ -996,10 +1010,7 @@
 		// history chart
 		if (currentFlay.video.play > 0) {
 			$(".history-wrapper").show();
-			$("#chartdiv").css({
-				// height: Math.min(window.innerHeight - $("#chartdiv").position().top - $("#bottomMenu").height(), 200),
-				height: 100,
-			});
+			// $("#chartdiv").css({height: Math.min(window.innerHeight - $("#chartdiv").position().top - $("#bottomMenu").height(), 200)});
 			Rest.History.find(currentFlay.opus, (histories) => {
 				const playHistories = histories.filter((history) => history.action === "PLAY");
 				if (currentFlay.video.play !== playHistories.length) {
@@ -1012,7 +1023,6 @@
 			});
 		} else {
 			$(".history-wrapper").hide();
-			$("#chartdiv").empty();
 		}
 
 		navigation.on();
@@ -1044,9 +1054,13 @@
 	AmCharts.monthNames = AmCharts.translations.ko.monthNames;
 	AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
 
+	let historyChart = null;
+	const firstDayOfThisYear = AmCharts.stringToDate(DateUtils.format("yyyy-01-01"), "YYYY-MM-DD");
+
 	function drawGraph(historyList) {
-		let dataMap = {};
-		dataMap[DateUtils.format("yyyy-MM-dd HH:mm:ss")] = [];
+		const dataMap = {};
+		dataMap[DateUtils.format("yyyy-MM-dd HH:mm:ss")] = []; // today
+
 		$.each(historyList, function (idx, history) {
 			if (history.action === "PLAY") {
 				const key = history.date.substring(0, 10);
@@ -1055,53 +1069,78 @@
 				} else {
 					dataMap[key] = [history];
 				}
-				// console.log(history);
 			}
 		});
 		// console.log("dataMap", dataMap);
 
-		let dataArray = [];
+		// convert map to array
+		const dataArray = [];
 		$.each(dataMap, function (key, val) {
 			dataArray.push({
 				date: AmCharts.stringToDate(key, "YYYY-MM-DD"),
 				playCount: val.length,
 			});
 		});
+		// sort ascending by date
 		dataArray.sort(function (d1, d2) {
 			return d1.date > d2.date ? 1 : -1;
 		});
+		// add firstDayOfThisYear, if necessary
+		if (dataArray[0].date.getTime() > firstDayOfThisYear.getTime()) {
+			dataArray.unshift({
+				date: firstDayOfThisYear,
+				playCount: 0,
+			});
+		}
 
-		AmCharts.makeChart("chartdiv", {
-			type: "serial",
-			theme: "black",
-			dataProvider: dataArray,
-			graphs: [
-				{
-					id: "playCount",
-					type: "column",
-					valueField: "playCount",
-					fillColors: "#FFFF00",
-					fillAlphas: 0.8,
-					lineAlpha: 0,
-					balloonText: "<b>[[value]]</b>",
-					balloon: {
-						drop: true,
+		if (historyChart === null) {
+			// https://docs.amcharts.com/3/javascriptcharts/AmSerialChart
+			historyChart = AmCharts.makeChart("chartdiv", {
+				type: "serial",
+				theme: "black",
+				// dataProvider: dataArray,
+				graphs: [
+					{
+						id: "playCount",
+						type: "column",
+						valueField: "playCount",
+						fillColors: "#FFFF00",
+						fillAlphas: 0.8,
+						lineAlpha: 0,
+						// balloonText: "<b>[[value]]</b>",
+						// https://docs.amcharts.com/3/javascriptcharts/AmBalloon
+						balloon: {
+							enabled: false,
+							// drop: true,
+						},
 					},
+				],
+				// https://docs.amcharts.com/3/javascriptcharts/ChartCursor
+				chartCursor: {
+					limitToGraph: "playCount",
+					categoryBalloonDateFormat: "YYYY-MM-DD",
 				},
-			],
-			chartCursor: {
-				limitToGraph: "playCount",
-			},
-			valueAxes: [
-				{
-					gridAlpha: 0.2,
-					dashLength: 1,
+				// https://docs.amcharts.com/3/javascriptcharts/ValueAxis
+				valueAxes: [
+					{
+						baseValue: 0,
+						gridAlpha: 0.2,
+						dashLength: 1,
+						maximum: 1,
+						minimum: 0,
+					},
+				],
+				// https://docs.amcharts.com/3/javascriptcharts/AmSerialChart#categoryField
+				categoryField: "date",
+				// https://docs.amcharts.com/3/javascriptcharts/CategoryAxis
+				categoryAxis: {
+					parseDates: true,
 				},
-			],
-			categoryField: "date",
-			categoryAxis: {
-				parseDates: true,
-			},
-		});
+			});
+			console.debug("make historyChart", historyChart);
+		}
+
+		historyChart.dataProvider = dataArray;
+		historyChart.validateData();
 	}
 })();

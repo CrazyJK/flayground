@@ -11,7 +11,7 @@ import lombok.Data;
 public class History implements Info<Long> {
 
 	public static enum Action {
-		PLAY, DELETE;
+		PLAY, DELETE, UPDATE;
 	}
 
 	Long id;
@@ -39,7 +39,7 @@ public class History implements Info<Long> {
 	}
 
 	public String toFileSaveString() {
-		return MessageFormat.format("{0}, {1}, {2}, {3}{4}", date, opus, action, StringUtils.trimToEmpty(desc).replaceAll(",", " "), Flayground.LINE);
+		return MessageFormat.format("{0}, {1}, {2}, {3}{4}", date, opus, action, StringUtils.trimToEmpty(desc), Flayground.LINE);
 	}
 
 }

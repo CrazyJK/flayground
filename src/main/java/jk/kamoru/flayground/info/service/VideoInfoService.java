@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayService;
+import jk.kamoru.flayground.info.domain.History;
 import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
 
@@ -16,6 +17,7 @@ import jk.kamoru.flayground.info.domain.Video;
 public class VideoInfoService extends InfoServiceAdapter<Video, String> {
 
 	@Autowired FlayService flayService;
+	@Autowired HistoryService historyService;
 
 	@Override
 	public void update(Video updateVideo) {
@@ -23,6 +25,7 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
 		try {
 			Flay flay = flayService.get(updateVideo.getOpus());
 			flay.setVideo(updateVideo);
+			historyService.save(History.Action.UPDATE, flay);
 		} catch (FlayNotfoundException ignore) {
 		}
 		super.update(updateVideo);

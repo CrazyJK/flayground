@@ -148,7 +148,7 @@ var Search = {
 			url: "/file/find/exists/subtitles?opus=" + opus,
 			success: function (foundUrlList) {
 				if (callback) {
-					callback(foundUrlList);
+					callback(foundUrlList, opus);
 				}
 			},
 		});

@@ -4,7 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Play History Chart</title>
+		<title>Flay History Chart</title>
 		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
 		<style type="text/css">
 			body {
@@ -27,10 +27,13 @@
 		<script type="text/javascript" src="/webjars/amcharts/amcharts.js"></script>
 		<script type="text/javascript" src="/webjars/amcharts/serial.js"></script>
 		<script type="text/javascript" src="/webjars/amcharts/themes/black.js"></script>
+		<script type="text/javascript" src="/webjars/amcharts/lang/ko.js"></script>
 		<script type="text/javascript" src="../../js/crazy.common.js"></script>
 		<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
 		<script type="text/javascript">
 			const opus = reqParam.opus;
+			const firstDayOfThisYear = AmCharts.stringToDate(DateUtils.format("yyyy-01-01"), "YYYY-MM-DD");
+			// const firstDayOfThisYear = AmCharts.stringToDate("2013-01-01", "YYYY-MM-DD");
 
 			Rest.History.find(opus, (histories) => {
 				document.title = opus + " " + document.title;
@@ -38,39 +41,63 @@
 			});
 
 			function drawGraph(historyList) {
-				let dataMap = {};
-				dataMap[DateUtils.format("yyyy-MM-dd HH:mm:ss")] = [];
+				let playMap = {};
+				let deleteMap = {};
+				playMap[DateUtils.format("yyyy-MM-dd HH:mm:ss")] = [];
 				$.each(historyList, function (idx, history) {
+					const key = history.date.substring(0, 10);
 					if (history.action === "PLAY") {
-						const key = history.date.substring(0, 10);
-						if (dataMap[key]) {
-							dataMap[key].push(history);
+						if (playMap[key]) {
+							playMap[key].push(history);
 						} else {
-							dataMap[key] = [history];
+							playMap[key] = [history];
 						}
-						console.log(history);
+					} else if (history.action === "DELETE") {
+						if (deleteMap[key]) {
+							deleteMap[key].push(history);
+						} else {
+							deleteMap[key] = [history];
+						}
 					}
+					console.log(`${history.id} : ${history.date} - ${history.action}`);
 				});
-				console.log("dataMap", dataMap);
+				// console.log("Map", playMap, deleteMap);
 
-				let dataArray = [];
-				$.each(dataMap, function (key, val) {
-					dataArray.push({
+				let playArray = [];
+				$.each(playMap, function (key, val) {
+					playArray.push({
 						date: AmCharts.stringToDate(key, "YYYY-MM-DD"),
 						playCount: val.length,
 					});
 				});
+
+				let deleteArray = [];
+				$.each(deleteMap, function (key, val) {
+					deleteArray.push({
+						date: AmCharts.stringToDate(key, "YYYY-MM-DD"),
+						deleteCount: val.length,
+					});
+				});
+
+				const dataArray = [...playArray, ...deleteArray];
 				dataArray.sort(function (d1, d2) {
 					return d1.date > d2.date ? 1 : -1;
 				});
+				if (dataArray[0].date.getTime() > firstDayOfThisYear.getTime()) {
+					dataArray.unshift({
+						date: firstDayOfThisYear,
+						playCount: 0,
+					});
+				}
 
 				AmCharts.makeChart("chartdiv", {
 					type: "serial",
 					theme: "black",
 					dataProvider: dataArray,
+					language: "ko",
 					graphs: [
 						{
-							id: "playCount",
+							id: "playGraph",
 							type: "column",
 							valueField: "playCount",
 							fillColors: "#FFFF00",
@@ -81,9 +108,22 @@
 								drop: true,
 							},
 						},
+						{
+							id: "deleteGraph",
+							type: "column",
+							valueField: "deleteCount",
+							fillColors: "#FF0000",
+							fillAlphas: 0.8,
+							lineAlpha: 0,
+							balloonText: "<b>delete</b>",
+							balloon: {
+								drop: true,
+							},
+						},
 					],
 					chartCursor: {
-						limitToGraph: "playCount",
+						// limitToGraph: "playCount",
+						categoryBalloonDateFormat: "YYYY-MM-DD",
 					},
 					valueAxes: [
 						{

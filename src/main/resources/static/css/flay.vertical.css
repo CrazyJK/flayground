@@ -153,6 +153,7 @@ label.text:empty {
 	border-radius: 0.25rem;
 	width: var(--cover-width);
 	height: var(--cover-height);
+	/* aspect-ratio: 400 / 269; */
 	transition: background 0.2s ease-out;
 }
 .cover-box #btnVideoClose {

@@ -43,7 +43,7 @@ function findMode() {
 	});
 	$("#btnReset").dblclick(function () {
 		$("#findMode .form-control").val("").removeClass("input-empty input-invalid input-warning");
-		$("#findMode input:checkbox").prop("checked", false);
+		$("#findMode input:checkbox").prop("checked", false).find("fa").removeClass("fa-heart-o").addClass("fa-heart");
 		$("#newActress").data("actress", null);
 	});
 	// 각 파트 내용을 수정하면
@@ -74,12 +74,8 @@ function findMode() {
 		$("input#fullname").val(fullname).effect("highlight", {}, 200);
 	});
 	// 첫줄 입력시
-	$("#rowname_opus, #rowname_title, #rowname_actress").on("keyup", function (e) {
+	$("#rowname_opus, #rowname_actress").on("keyup", function (e) {
 		if (e.keyCode !== 13) {
-			return;
-		}
-
-		if (this.id === "rowname_title") {
 			return;
 		}
 
@@ -485,11 +481,13 @@ function searchSource(keyword) {
 
 	// find history
 	Rest.History.find(keyword, function (historyList) {
-		$("#resultHistoryDiv").collapse("show");
+		const sortedHisoryList = historyList.filter((h) => h.action !== "UPDATE");
 
-		$(".history-count").html(historyList.length);
+		$("#resultHistoryDiv").collapse("show");
+		$(".history-count").html(sortedHisoryList.length);
+
 		var $tbody = $("#foundHistoryList").empty();
-		$.each(historyList, function (entryIndex, history) {
+		$.each(sortedHisoryList, function (entryIndex, history) {
 			$("<tr>")
 				.append(
 					$("<td>").append($("<label>", { class: "text sm nowrap" }).html(history.date)),
@@ -505,7 +503,7 @@ function searchSource(keyword) {
 				)
 				.appendTo($tbody);
 		});
-		if (historyList.length === 0) {
+		if (sortedHisoryList.length === 0) {
 			$("<tr>")
 				.append($("<td>", { colspan: 4, class: "text-danger" }).html("Not found"))
 				.appendTo($tbody);

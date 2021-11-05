@@ -180,7 +180,8 @@ button.btn-warning:hover {
 
 .cover-box {
 	background-color: #000 !important;
-	box-shadow: 0 0 0.25rem 0.5rem #000000e6 inset !important;
+	border-radius: 0 !important;
+	box-shadow: 0 0 1rem 0.5rem #000000e6 inset !important;
 }
 
 #topMenu nav:not(:hover) {

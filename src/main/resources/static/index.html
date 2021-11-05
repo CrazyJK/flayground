@@ -1,130 +1,148 @@
 <!DOCTYPE html>
 <html>
-<head>
-<title>Flayground</title>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css">
-<link rel="stylesheet" href="/css/crazy.fonts.css">
-<style type="text/css">
-body {
-	background: #1c1c1c;
-}
+	<head>
+		<title>Flayground</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/css/crazy.fonts.css" />
+		<style type="text/css">
+			body {
+				background: #1c1c1c;
+			}
 
-.d-flex-col {
-    display: flex;
-    justify-content: flex-start;
-    align-items: center;
-    flex-wrap: wrap;
-    flex-direction: column;
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding-top: 2rem;
-}
-.d-flex-col > * {
-    flex-basis: 0;
-    flex-grow: 0;
-    flex-shrink: 1;
-    width: 350px;
-}
+			.d-flex-col {
+				display: flex;
+				justify-content: flex-start;
+				align-items: center;
+				flex-wrap: wrap;
+				flex-direction: column;
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				padding-top: 2rem;
+			}
+			.d-flex-col > * {
+				flex-basis: 0;
+				flex-grow: 0;
+				flex-shrink: 1;
+				width: 350px;
+			}
 
-.hover-show 	  { opacity: 0; transition: .5s; }
-.hover-show:hover { opacity: 1; }
+			.hover-show {
+				opacity: 0;
+				transition: 0.5s;
+			}
+			.hover-show:hover {
+				opacity: 1;
+			}
 
-.popup-size-group > input {
-	width: 70px;
-}
+			.popup-size-group > input {
+				width: 70px;
+			}
 
-a 			  { color: #eee; }
-a:not([href]) { color: #eee!important; }
-a:hover 	  { text-decoration: none; }
-a.chalk {
-	font-family: "Ink Free";
-	mask-image: url(/img/pattern/pattern-static.png);
-	-webkit-mask-image: url(/img/pattern/pattern-static.png);
-	text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
-}
+			a {
+				color: #eee;
+			}
+			a:not([href]) {
+				color: #eee !important;
+			}
+			a:hover {
+				text-decoration: none;
+			}
+			a.chalk {
+				font-family: "Ink Free";
+				mask-image: url(/img/pattern/pattern-static.png);
+				-webkit-mask-image: url(/img/pattern/pattern-static.png);
+				text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+			}
 
-h2       > a:first-child 		{ opacity: 0;	font-weight: 900; }
-h2:hover > a:first-child 		{ opacity: 1;		transition: .5s .3s; }
-h2       > a:first-child:hover 	{ color: red;	  transition: .5s; }
-h2 		 > a:nth-child(2) 		{ font-weight: 400;	transition: .5s; }
-h2		 > a:nth-child(2):hover { color: orange; }
+			h2 > a:first-child {
+				opacity: 0;
+				font-weight: 900;
+			}
+			h2:hover > a:first-child {
+				opacity: 1;
+				transition: 0.5s 0.3s;
+			}
+			h2 > a:first-child:hover {
+				color: red;
+				transition: 0.5s;
+			}
+			h2 > a:nth-child(2) {
+				font-weight: 400;
+				transition: 0.5s;
+			}
+			h2 > a:nth-child(2):hover {
+				color: orange;
+			}
 
-button:hover {
-	background-color: transparent!important;
-}
-</style>
-<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-</head>
-<body>
-
-	<div class="d-flex-col">
-		<h1 class="display-3"><a>Flayground</a></h1>
-		<div id="menuItemWrap"></div>
-		<div class="pt-4 hover-show">
-			<div class="input-group input-group-lg popup-open-group">
-				<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL">
-				<div class="input-group-append">
-					<button class="btn btn-outline-secondary text-secondary" type="button">Popup</button>
+			button:hover {
+				background-color: transparent !important;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+	</head>
+	<body>
+		<div class="d-flex-col">
+			<h1 class="display-3"><a>Flayground</a></h1>
+			<div id="menuItemWrap"></div>
+			<div class="pt-4 hover-show">
+				<div class="input-group input-group-lg popup-open-group">
+					<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL" />
+					<div class="input-group-append">
+						<button class="btn btn-outline-secondary text-secondary" type="button">Popup</button>
+					</div>
+				</div>
+				<div class="text-center collapse mt-3 popup-size-group">
+					<input type="number" id="popupWidth" value="540" class="bg-transparent border-0 text-light text-right" />
+					<span class="text-light">&nbsp;&times;&nbsp;</span>
+					<input type="number" id="popupHeight" value="997" class="bg-transparent border-0 text-light ml-2" />
 				</div>
 			</div>
-			<div class="text-center collapse mt-3 popup-size-group">
-				<input type="number" id="popupWidth"  value="540" class="bg-transparent border-0 text-light text-right">
-				<span class="text-light">&nbsp;&times;&nbsp;</span>
-				<input type="number" id="popupHeight" value="997" class="bg-transparent border-0 text-light ml-2">
-			</div>
 		</div>
-	</div>
 
-<script type="text/javascript">
-$.ajax({
-	url: '/data/index.menu.json',
-	success: function (menuItems) {
-		menuItems.forEach(function(menu) {
-			console.log('menu', menu);
-			var $popupAnker = $("<a>").html("↖");
-			var $hrefAnker  = $("<a>").html(menu.name);
+		<script type="text/javascript">
+			$.ajax({
+				url: "/data/index.menu.json",
+				success: function (menuItems) {
+					menuItems.forEach(function (menu) {
+						// console.log('menu', menu);
+						var $popupAnker = $("<a>").html("↖");
+						var $hrefAnker = $("<a>").html(menu.name);
 
-			if (menu.method === "both" || menu.method === "popup") {
-				$popupAnker.attr({href: "#"}).on("click", function() {
-					window.open(menu.url, "flayground" + Date.now(), "width=1000,height=1000,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1").focus();
-				});
-			}
-			if (menu.method === "both" || menu.method === "href") {
-				$hrefAnker.attr({href: menu.url});
-			}
+						if (menu.method === "both" || menu.method === "popup") {
+							$popupAnker.attr({ href: "#" }).on("click", function () {
+								window.open(menu.url, "flayground" + Date.now(), "width=1000,height=1000,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1").focus();
+							});
+						}
+						if (menu.method === "both" || menu.method === "href") {
+							$hrefAnker.attr({ href: menu.url });
+						}
 
-			$("#menuItemWrap").append(
-				$("<h2>", {class: "display-4"}).append(
-					$popupAnker,
-					$hrefAnker
-				)
-			);
-		});
+						$("#menuItemWrap").append($("<h2>", { class: "display-4" }).append($popupAnker, $hrefAnker));
+					});
 
-		$("a").addClass("chalk");
-	}
-});
+					$("a").addClass("chalk");
+				},
+			});
 
-$("input, button", ".popup-open-group").on("click keyup", function (e) {
-	var url = $(".popup-open-group > input").val();
-	$(".popup-open-group button").toggleClass("text-secondary", url === '');
-	$(".popup-size-group.collapse").toggleClass("show", url !== '');
-	if (url !== '') {
-		var targetType = $(e.target).attr("type");
-		if ((targetType === 'button' && e.type === 'click') || (targetType === 'search' && e.keyCode === 13)) {
-			window.open(url, Date.now(), "width=" + popupWidth.value + ",height=" + popupHeight.value + ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1").focus();
-		}
-	}
-});
-</script>
-
-</body>
+			$("input, button", ".popup-open-group").on("click keyup", function (e) {
+				var url = $(".popup-open-group > input").val();
+				$(".popup-open-group button").toggleClass("text-secondary", url === "");
+				$(".popup-size-group.collapse").toggleClass("show", url !== "");
+				if (url !== "") {
+					var targetType = $(e.target).attr("type");
+					if ((targetType === "button" && e.type === "click") || (targetType === "search" && e.keyCode === 13)) {
+						window.open(url, Date.now(), "width=" + popupWidth.value + ",height=" + popupHeight.value + ",toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1").focus();
+					}
+				}
+			});
+		</script>
+	</body>
 </html>

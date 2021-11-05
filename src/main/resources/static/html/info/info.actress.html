@@ -87,7 +87,7 @@
 						<div class="input-group">
 							<input class="form-control text-right" name="video_count" id="videoCount" readonly="readonly" />
 							<div class="input-group-append">
-								<span class="input-group-text">Video</span>
+								<span class="input-group-text" id="toggleArchive">Video</span>
 							</div>
 						</div>
 					</div>
@@ -202,6 +202,10 @@
 					Rest.Actress.delete(actress, function () {
 						self.close();
 					});
+			});
+
+			$("#toggleArchive").on("click", () => {
+				$(".archive").toggle();
 			});
 
 			Rest.Actress.get(name, function (_actress) {

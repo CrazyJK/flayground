@@ -6,7 +6,7 @@ import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
+import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PostConstruct;
 
 import org.apache.commons.io.FileUtils;
@@ -26,7 +26,8 @@ public class HistoryRepository {
 	@Autowired FlayProperties flayProperties;
 
 	List<History> list;
-	long id = 0;
+
+	AtomicLong id = new AtomicLong(0);
 
 	File getInfoFile() {
 		return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.HISTORY);
@@ -40,6 +41,7 @@ public class HistoryRepository {
 		for (String line : lines) {
 			if (first && line.startsWith(Flayground.UTF8_BOM)) {
 				line = line.substring(1);
+				first = false;
 			}
 			if (line.trim().length() == 0) {
 				continue;
@@ -47,7 +49,7 @@ public class HistoryRepository {
 
 			String[] split = StringUtils.split(line, ",", 4);
 			History history = new History();
-			history.setId(id++);
+			history.setId(id.getAndIncrement());
 			if (split.length > 0)
 				history.setDate(split[0].trim());
 			if (split.length > 1)
@@ -62,7 +64,7 @@ public class HistoryRepository {
 	}
 
 	synchronized void save(History history) {
-		history.setId(id++);
+		history.setId(id.getAndIncrement());
 		history.setDate(Flayground.Format.Date.DateTime.format(new Date()));
 		list.add(history);
 		try {

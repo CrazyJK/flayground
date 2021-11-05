@@ -889,7 +889,7 @@
 					.append(
 						$("<span>")
 							.css({
-								fontSize: 16 + v * 0.25,
+								fontSize: 16 + v * 1,
 							})
 							.html(k),
 						$("<span>", { class: "badge" }).html(v),

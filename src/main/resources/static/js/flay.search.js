@@ -141,15 +141,19 @@ function findMode() {
 	});
 	$("#newActressBirth").on("keyup", function () {
 		var value = $(this).val().trim();
-		$(this).val(value);
+		$(this).val(value).toggleClass("input-invalid", !birthRegExp.test(value));
 	});
 	$("#newActressBody").on("keyup", function (e) {
 		if (e.keyCode === 17) return;
 
-		var value = $(this).val().trim();
-		var replace = value.replace(/^[A-Z]|\(|カップ\)/gi, "").replace(/\/ [A-Z]/gi, "- ");
-		$(this).val(replace);
+		var value = $(this)
+			.val()
+			.trim()
+			.replace(/^[A-Z]|\(|カップ\)/gi, "")
+			.replace(/\/ [A-Z]/gi, "- ");
+		$(this).val(value).toggleClass("input-invalid", !bodyRegExp.test(value));
 	});
+	$("#newActressDebut").attr("max", new Date().getFullYear());
 	$("#btnRegistActress").on("click", function () {
 		var actress = $("#newActress").data("actress");
 		if (actress && actress.name === $("#newActressName").val().trim()) {
@@ -390,7 +394,12 @@ function searchSource(keyword) {
 								}),
 						),
 						$("<td>", { class: "nowrap" })
-							.append($("<label>", { class: "text sm" }).html(flay.files.movie.length > 0 ? "V " + File.formatSize(flay.length) : "noV"), $("<label>", { class: "text sm" }).html(flay.files.subtitles.length > 0 ? "S" : ""), $("<label>", { class: "text sm" }).html("R" + flay.video.rank), $("<label>", { class: "text sm" }).html())
+							.append(
+								$("<label>", { class: "text sm" }).html(flay.files.movie.length > 0 ? "V " + File.formatSize(flay.length) : "noV"),
+								$("<label>", { class: "text sm" }).html(flay.files.subtitles.length > 0 ? "S" : ""),
+								$("<label>", { class: "text sm" }).html("R" + flay.video.rank),
+								$("<label>", { class: "text sm" }).html(),
+							)
 							.css({ minWidth: 100 }),
 						$("<td>").append(function () {
 							var objs = [];

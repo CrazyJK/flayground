@@ -26,6 +26,9 @@
 			nav.navbar:hover ~ .actress-cover-wrapper {
 				height: calc(100% - 9rem);
 			}
+			input.form-control.input-invalid {
+				color: red;
+			}
 		</style>
 	</head>
 	<body>
@@ -140,14 +143,28 @@
 			});
 
 			$("#birth").on("keyup", function () {
-				var value = $(this).val();
+				var value = $(this).val().trim();
 				$(".actress-age").html(Util.Actress.getAge({ birth: value }));
+				$(this).val(value).toggleClass("input-invalid", !birthRegExp.test(value));
 			});
 
 			$("#body").on("keyup", function () {
+				var value = $(this)
+					.val()
+					.trim()
+					.replace(/^[A-Z]|\(|カップ\)/gi, "")
+					.replace(/\/ [A-Z]/gi, "- ");
+				$(this).val(value).toggleClass("input-invalid", !bodyRegExp.test(value));
+			});
+
+			$("#height").on("keyup", function () {
 				var value = $(this).val().trim();
-				var replace = value.replace(/^[A-Z]|\(|カップ\)/gi, "").replace(/\/ [A-Z]/gi, "- ");
-				$(this).val(replace);
+				$(this).val(value).toggleClass("input-invalid", !heightRegExp.test(value));
+			});
+
+			$("#debut").on("keyup", function () {
+				var value = $(this).val().trim();
+				$(this).val(value).toggleClass("input-invalid", !debutRegExp.test(value));
 			});
 
 			$("#search").on("click", function () {

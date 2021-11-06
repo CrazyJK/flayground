@@ -5,10 +5,11 @@ body {
 }
 #topMenu.sticky-top {
 	background-color: black !important;
-	gap: 20rem;
+	justify-content: space-between;
 	align-items: center;
 	padding-bottom: 0.5rem;
 	margin-bottom: 0;
+	width: 1000px;
 }
 .sticky-top.f-head {
 	top: 44px;
@@ -21,13 +22,13 @@ body {
 .f-head,
 .f-body {
 	background-color: #111;
-	margin: auto;
+	margin: 0 auto 1rem;
 	width: 1000px;
 }
 .f-head > div,
 .f-body > div {
 	display: flex;
-	gap: 4px;
+	gap: 2px;
 }
 .f-head > div > label,
 .f-body > div > label {
@@ -37,6 +38,15 @@ body {
 .f-body > div:hover > label {
 	background-color: var(--dark-color);
 	color: orange;
+}
+.f-body > div.lower-score {
+	text-shadow: 0 0 1px red;
+}
+.f-body > div.active {
+	background-color: #44423f;
+}
+.f-body > div.active > label {
+	color: #eee;
 }
 
 .flay-index {
@@ -60,26 +70,23 @@ body {
 	flex: 0 0 66px;
 }
 .flay-rank {
-	flex: 0 0 36px;
+	flex: 0 0 32px;
 	text-align: right;
 }
 .flay-play {
-	flex: 0 0 36px;
+	flex: 0 0 32px;
 	text-align: right;
 }
-.flay-play.no-play {
-	color: #dc3545;
-}
 .flay-movie {
-	flex: 0 0 36px;
+	flex: 0 0 32px;
 	text-align: right;
 }
 .flay-subti {
-	flex: 0 0 36px;
+	flex: 0 0 32px;
 	text-align: right;
 }
 .flay-score {
-	flex: 0 0 40px;
+	flex: 0 0 36px;
 	text-align: right;
 }
 .flay-length {
@@ -99,7 +106,7 @@ body {
 	flex: 0 0 40px;
 	text-align: right;
 }
-.actress-flaycount {
+.actress-flayCount {
 	flex: 0 0 30px;
 	text-align: right;
 }
@@ -131,4 +138,10 @@ body {
 }
 .actress-debut {
 	flex: 0 0 50px;
+}
+.f-body > div > label.actress-scoreAvg {
+	color: #ccc;
+}
+.f-body > div > label.invalid {
+	color: red;
 }

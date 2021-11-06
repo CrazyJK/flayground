@@ -5,11 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.lang3.math.NumberUtils;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
-
+import org.apache.commons.lang3.math.NumberUtils;
 import jk.kamoru.flayground.info.domain.Video;
 import lombok.Data;
 
@@ -63,17 +60,15 @@ public class Flay {
 
 	public long getLastModified() {
 		return NumberUtils.max(
-				files.get(MOVIE).size() > 0 ? files.get(MOVIE).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1,
-				files.get(SUBTI).size() > 0 ? files.get(SUBTI).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1,
-				files.get(COVER).size() > 0 ? files.get(COVER).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1,
-				files.get(CANDI).size() > 0 ? files.get(CANDI).stream().max((f1, f2) -> NumberUtils.compare(f1.lastModified(), f2.lastModified())).get().lastModified() : -1
-		);
+				files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1),
+				files.get(SUBTI).stream().mapToLong(File::lastModified).max().orElse(-1),
+				files.get(COVER).stream().mapToLong(File::lastModified).max().orElse(-1));
 	}
 
 	public long getLength() {
-		return (files.get(MOVIE) != null ? files.get(MOVIE).stream().mapToLong(f -> f.length()).sum() : -1)
-			+  (files.get(SUBTI) != null ? files.get(SUBTI).stream().mapToLong(f -> f.length()).sum() : -1)
-			+  (files.get(COVER) != null ? files.get(COVER).stream().mapToLong(f -> f.length()).sum() : -1);
+		return files.get(MOVIE).stream().mapToLong(File::length).sum()
+				+ files.get(SUBTI).stream().mapToLong(File::length).sum()
+				+ files.get(COVER).stream().mapToLong(File::length).sum();
 	}
 
 	public String getFullname() {
@@ -82,13 +77,7 @@ public class Flay {
 
 	@JsonIgnore
 	public String getActressName() {
-		String actressNames = "";
-		for (int i=0; i<actressList.size(); i++) {
-			if (i > 0)
-				actressNames += ", ";
-			actressNames += actressList.get(i);
-		}
-		return actressNames;
+		return String.join(", ", actressList);
 	}
 
 }

@@ -154,7 +154,7 @@ public class BatchExecutor {
 		log.info(String.format("[deleteLowerScore] total   %4s GB", instanceFlaySource.list().stream().mapToLong(f -> f.getLength()).sum() / FileUtils.ONE_GB));
 		final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
 		long lengthSum = 0;
-		Collection<Flay> scoreReverseSortedFlayList = scoreCalculator.orderbyScoreDesc(instanceFlaySource.list());
+		Collection<Flay> scoreReverseSortedFlayList = scoreCalculator.listOrderByScoreDesc(instanceFlaySource.list());
 		for (Flay flay : scoreReverseSortedFlayList) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {

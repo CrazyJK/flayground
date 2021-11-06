@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayService;
+import jk.kamoru.flayground.flay.service.ScoreCalculator;
 
 @RestController
 @RequestMapping("/flay")
@@ -22,14 +23,26 @@ public class FlayController {
 
 	@Autowired FlayService flayService;
 
+	@Autowired ScoreCalculator scoreCalculator;
+
 	@GetMapping("/{opus}")
 	public Flay get(@PathVariable String opus) {
 		return flayService.get(opus);
 	}
 
+	@GetMapping("/{opus}/score")
+	public int getScore(@PathVariable String opus) {
+		return scoreCalculator.calcScore(flayService.get(opus));
+	}
+
 	@GetMapping("/list")
 	public Collection<Flay> getList() {
 		return flayService.list();
+	}
+
+	@GetMapping("/list/lowScore")
+	public Collection<Flay> getListOfLowScore() {
+		return flayService.getListOfLowScore();
 	}
 
 	@GetMapping("/list/orderbyScoreDesc")

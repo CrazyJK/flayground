@@ -268,3 +268,8 @@ var loading;
 $(function() {
 	loading = new Loading();
 });
+
+const birthRegExp = /^(19[0-9][0-9]|20\d{2})年(0[0-9]|1[0-2])月(0[1-9]|[1-2][0-9]|3[0-1])日$/;
+const bodyRegExp = /^(7[0-9]|8[0-9]|9[0-9]|1\d{2})[A-J]? - (5[0-9]|6[0-9]) - (7[0-9]|8[0-9]|9[0-9]|1\d{2})$/;
+const heightRegExp = /^(1[4-7][0-9])$/;
+const debutRegExp = /^(199[0-9]|20[0-2][0-9])$/;

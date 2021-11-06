@@ -37,4 +37,6 @@ public interface FlayService {
 
 	void deleteFileOnFlay(String opus, String file);
 
+	Collection<Flay> getListOfLowScore();
+
 }

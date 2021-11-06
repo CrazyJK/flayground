@@ -488,6 +488,22 @@
 			}
 		});
 
+		// source
+		$("input[name='source']").on("change", (e) => {
+			const source = $("input[name='source']:checked").val();
+			if (source === "All") {
+				Rest.Flay.list(function (list) {
+					flayList = list;
+					$("#pageContent").trigger("collect");
+				});
+			} else if (source === "Low") {
+				Rest.Flay.listOfLowScore(function (list) {
+					flayList = list;
+					$("#pageContent").trigger("collect");
+				});
+			}
+		});
+
 		// toggle tags
 		$("#tags").on("change", function () {
 			$("#selectTags").slideToggle(this.checked);
@@ -970,9 +986,15 @@
 		$(".info-play")
 			.html(currentFlay.video.play + "<small>P</small>")
 			.toggle(currentFlay.video.play > 0);
+		// score
+		Rest.Flay.getScore(currentFlay.opus, (score) => {
+			$(".info-score")
+				.html(`${score}<small>S</small>`)
+				.toggle(score > 0);
+		});
 		// subtitles
 		$(".info-subtitles")
-			.html("Subtitles")
+			.html("Sub")
 			.toggleClass("nonExist", currentFlay.files.subtitles.length === 0);
 		$(".info-subtitles").parent().find(".link-subtitles").remove();
 		if (currentFlay.files.subtitles.length === 0) {

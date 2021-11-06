@@ -87,8 +87,17 @@ const Rest = {
 		getSync: function (opus, callback, failCallback) {
 			restCall("/flay/" + opus, { async: false }, callback, failCallback);
 		},
+		getScore: function (opus, callback) {
+			restCall("/flay/" + opus + "/score", {}, callback);
+		},
 		list: function (callback) {
 			restCall("/flay/list", {}, callback);
+		},
+		listOrderbyScoreDesc: function (callback) {
+			restCall("/flay/list/orderbyScoreDesc", {}, callback);
+		},
+		listOfLowScore: function (callback) {
+			restCall("/flay/list/lowScore", {}, callback);
 		},
 		search: function (search, callback) {
 			restCall("/flay/find", { data: search }, callback);

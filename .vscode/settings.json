@@ -1,4 +1,5 @@
 {
-    "prettier.printWidth": 500,
-    "java.configuration.updateBuildConfiguration": "interactive"
+    "java.configuration.updateBuildConfiguration": "interactive",
+    "prettier.printWidth": 300,
+    "java.format.comments.enabled": false
 }

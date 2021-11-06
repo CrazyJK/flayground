@@ -1,12 +1,13 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
-
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -179,7 +180,7 @@ public class FlayServiceImpl implements FlayService {
 
 	@Override
 	public Collection<Flay> getListOrderbyScoreDesc() {
-		return scoreCalculator.orderbyScoreDesc(instanceFlaySource.list());
+		return scoreCalculator.listOrderByScoreDesc(instanceFlaySource.list());
 	}
 
 	@Override
@@ -198,6 +199,20 @@ public class FlayServiceImpl implements FlayService {
 		deleteFile(file);
 		// rename for assemble
 		flayFileHandler.rename(flay);
+	}
+
+	@Override
+	public Collection<Flay> getListOfLowScore() {
+		final long storageLimit = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
+		List<Flay> lowScoreList = new ArrayList<>();
+		long lengthSum = 0;
+		for (Flay flay : scoreCalculator.listOrderByScoreDesc(instanceFlaySource.list())) {
+			lengthSum += flay.getLength();
+			if (lengthSum > storageLimit) {
+				lowScoreList.add(flay);
+			}
+		}
+		return lowScoreList;
 	}
 
 }

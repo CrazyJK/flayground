@@ -45,14 +45,15 @@ const restCall = function (url, args, callback, failCallback) {
 	$.ajax(PATH + url, settings)
 		.done(function (data) {
 			isCompleted = true;
-			if (callback) {
-				callback(data);
-			}
+			// if (callback) {
+			// 	callback(data);
+			// }
+			callback?.(data);
 
 			clearTimeout(loadingTimeout);
-			try {
-				loading.off();
-			} catch (ignore) {}
+			// try {
+				loading?.off();
+			// } catch (ignore) {}
 		})
 		.fail(function (jqXHR, textStatus, errorThrown) {
 			isCompleted = true;

@@ -43,10 +43,10 @@ var Util = {
 	},
 	Actress: {
 		getNames: function (actressList) {
-			var actressNames = "";
+			var actressNames = '';
 			if (actressList != null && Array.isArray(actressList)) {
 				$.each(actressList, function (idx, actress) {
-					if (idx > 0) actressNames += ", ";
+					if (idx > 0) actressNames += ', ';
 					actressNames += actress;
 				});
 			}
@@ -56,16 +56,16 @@ var Util = {
 			var list = [];
 			if (actressList != null && Array.isArray(actressList)) {
 				if (!className) {
-					className = "actress";
+					className = 'actress';
 				}
 				$.each(actressList, function (idx, actress) {
-					var $actress = $("<span>", { class: className })
+					var $actress = $('<span>', { class: className })
 						.html(actress)
-						.on("click", function () {
+						.on('click', function () {
 							View.actress(actress);
 						})
 						.css({
-							cursor: "pointer",
+							cursor: 'pointer',
 						});
 					list.push($actress);
 				});
@@ -80,10 +80,10 @@ var Util = {
 			}
 		},
 		getCup: function (actress) {
-			return actress.body.replace(/[-0-9\s]/g, "");
+			return actress.body.replace(/[-0-9\s]/g, '');
 		},
 		toArray: function (names) {
-			var split = names.split(",");
+			var split = names.split(',');
 			for (var i = 0; i < split.length; i++) {
 				split[i] = split[i].trim();
 			}
@@ -94,58 +94,58 @@ var Util = {
 
 var View = {
 	flay: function (opus) {
-		Popup.open(PATH + "/html/info/info.flay.html?opus=" + opus, "flay-" + opus, 800, 770);
+		Popup.open(PATH + '/html/info/info.flay.html?opus=' + opus, 'flay-' + opus, 800, 770);
 	},
 	video: function (opus) {
-		Popup.open(PATH + "/info/video/" + opus, "video-" + opus, 400, 300);
+		Popup.open(PATH + '/info/video/' + opus, 'video-' + opus, 400, 300);
 	},
 	actress: function (name) {
-		Popup.open(PATH + "/html/info/info.actress.html?name=" + name, "actress-" + name, 1072, 1100);
+		Popup.open(PATH + '/html/info/info.actress.html?name=' + name, 'actress-' + name, 1072, 1100);
 	},
 	tag: function (tagId) {
 		//			Popup.open(PATH + "/info/tag/" + tagId, "Tag-" + tagId, 800, 650);
-		Popup.open(PATH + "/html/info/info.tag.html?id=" + tagId, "Tag-" + tagId, 1072, 650);
+		Popup.open(PATH + '/html/info/info.tag.html?id=' + tagId, 'Tag-' + tagId, 1072, 650);
 	},
 	studio: function (name) {
-		Popup.open(PATH + "/html/info/info.studio.html?s=" + name, "Studio-" + name, 1072, 1900);
+		Popup.open(PATH + '/html/info/info.studio.html?s=' + name, 'Studio-' + name, 1072, 1900);
 	},
 };
 
-const URL_SEARCH_VIDEO_4_FIREFOX = "https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=";
-const URL_SEARCH_VIDEO = "https://nextjav.com/torrent/detail/";
-const URL_SEARCH_ACTRESS = "https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=";
-const URL_SEARCH_TORRENT = "https://www.google.co.kr/search?q=";
-const URL_TRANSLATE = "https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/";
-const URL_FIND_ACTRESS = "http://javtorrent.re/tag/";
-const URL_SEARCH_SUBTITLES = "https://www.subtitlecat.com/index.php?search=";
+const URL_SEARCH_VIDEO_4_FIREFOX = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
+const URL_SEARCH_VIDEO = 'https://nextjav.com/torrent/detail/';
+const URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
+const URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=';
+const URL_TRANSLATE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
+const URL_FIND_ACTRESS = 'http://javtorrent.re/tag/';
+const URL_SEARCH_SUBTITLES = 'https://www.subtitlecat.com/index.php?search=';
 
 var Search = {
 	opus: function (keyword) {
 		var url = FIREFOX === browser ? URL_SEARCH_VIDEO_4_FIREFOX : URL_SEARCH_VIDEO;
-		Popup.open(url + keyword, "videoSearch", 1500, 1000);
+		Popup.open(url + keyword, 'videoSearch', 1500, 1000);
 	},
 	actress: function (keyword) {
-		Popup.open(URL_SEARCH_ACTRESS + encodeURI(keyword), "actressSearch", 1200, 950);
+		Popup.open(URL_SEARCH_ACTRESS + encodeURI(keyword), 'actressSearch', 1200, 950);
 	},
 	torrent: function (keyword) {
-		Popup.open(URL_SEARCH_TORRENT + keyword + "+FHD+torrent", "torrentSearch", 900, 950);
+		Popup.open(URL_SEARCH_TORRENT + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
 	},
 	translate: function (message) {
-		Popup.open(URL_TRANSLATE + message, "translate", 1000, 500);
+		Popup.open(URL_TRANSLATE + message, 'translate', 1000, 500);
 	},
 	opusByRandom: function () {
 		var opus = Random.getInteger(1, 999);
 		Search.opus(opus);
 	},
 	find: function (keyword) {
-		Popup.open(URL_FIND_ACTRESS + encodeURI(keyword), "findSearch", 1200, 950);
+		Popup.open(URL_FIND_ACTRESS + encodeURI(keyword), 'findSearch', 1200, 950);
 	},
 	subtitles: function (keyword, w, h) {
-		Popup.open(URL_SEARCH_SUBTITLES + keyword, "subtitlesSearch", w || 900, h || 950);
+		Popup.open(URL_SEARCH_SUBTITLES + keyword, 'subtitlesSearch', w || 900, h || 950);
 	},
 	subtitlesUrlIfFound: function (opus, callback) {
 		$.ajax({
-			url: "/file/find/exists/subtitles?opus=" + opus,
+			url: '/file/find/exists/subtitles?opus=' + opus,
 			success: function (foundUrlList) {
 				if (callback) {
 					callback(foundUrlList, opus);
@@ -167,7 +167,7 @@ var Security = {
 			Security.getUser();
 		}
 		for (var x in Security.user.authorities) {
-			if (Security.user.authorities[x].authority === "ROLE_" + role) {
+			if (Security.user.authorities[x].authority === 'ROLE_' + role) {
 				return true;
 			}
 		}
@@ -182,4 +182,23 @@ var Security = {
 	isAutomaticallyCertificated: function () {
 		return Rest.Security.isAutomaticallyCertificated();
 	},
+};
+
+const getBlobImageUrl = (url) => {
+	return new Promise((resolve, reject) => {
+		var xhr = new XMLHttpRequest();
+		xhr.open('GET', url);
+		xhr.responseType = 'blob';
+		xhr.onload = () => {
+			if (xhr.status === 200) {
+				resolve(window.URL.createObjectURL(xhr.response));
+			} else {
+				reject(Error("Image didn't load successfully; error code:" + xhr.statusText));
+			}
+		};
+		xhr.onerror = () => {
+			reject(Error('There was a network error.'));
+		};
+		xhr.send();
+	});
 };

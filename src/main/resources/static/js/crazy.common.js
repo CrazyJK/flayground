@@ -133,6 +133,31 @@ var LocalStorageItem = {
 			} else {
 				return this.get(itemName) === 'true';
 			}
+		},
+		has: (itemName) => {
+			return localStorage.hasOwnProperty(itemName);
+		}
+};
+
+var SessionStorageItem = {
+		set: function(itemName, itemValue) {
+			typeof(Storage) !== "undefined" && sessionStorage.setItem(itemName, itemValue);
+		},
+		get: function(itemName, notfoundDefault) {
+			return typeof(Storage) !== "undefined" && (sessionStorage.getItem(itemName) || notfoundDefault);
+		},
+		getInteger: function(itemName, notfoundDefault) {
+			return parseInt(this.get(itemName, notfoundDefault));
+		},
+		getBoolean: function(itemName, notfoundDefault) {
+			if (notfoundDefault) {
+				return this.get(itemName, notfoundDefault.toString()) === 'true';
+			} else {
+				return this.get(itemName) === 'true';
+			}
+		},
+		has: (itemName) => {
+			return sessionStorage.hasOwnProperty(itemName);
 		}
 };
 

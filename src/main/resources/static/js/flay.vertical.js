@@ -944,8 +944,8 @@
 		}
 	}
 
+	/*
 	const coverMap = new Map();
-
 	function setBackgroundCover(selector, opus) {
 		if (opus) {
 			if (coverMap.has(opus)) {
@@ -960,9 +960,53 @@
 			$(selector).css({ backgroundImage: 'url(' + PATH + '/static/image/random?_=' + Date.now() + ')' });
 		}
 	}
+	*/
+
+	function setBackgroundCover(selector, opus) {
+		if (opus) {
+			if (SessionStorageItem.has(opus)) {
+				$(selector).css({ backgroundImage: 'url(' + SessionStorageItem.get(opus) + ')' });
+			} else {
+				getBlobImageUrl(PATH + '/static/cover/' + opus).then((url) => {
+					SessionStorageItem.set(opus, url);
+					$(selector).css({ backgroundImage: 'url(' + url + ')' });
+				});
+			}
+		} else {
+			$(selector).css({ backgroundImage: 'url(' + PATH + '/static/image/random?_=' + Date.now() + ')' });
+		}
+	}
 
 	function showVideo() {
 		navigation.off();
+
+		Promise.all([
+			new Promise((resolve, reject) => {
+				// prev cover
+			}),
+			new Promise((resolve, reject) => {
+				// curr cover
+			}),
+			new Promise((resolve, reject) => {
+				// next cover
+			}),
+			new Promise((resolve, reject) => {
+				// actress info
+			}),
+			new Promise((resolve, reject) => {
+				// score
+			}),
+			new Promise((resolve, reject) => {
+				// subtitles
+			}),
+			new Promise((resolve, reject) => {
+				// history
+			}),
+		]).then(values => {
+			console.log('then', values);
+			// show info
+			// navigation.on();
+		});
 
 		// show cover
 		setBackgroundCover('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
@@ -1043,21 +1087,22 @@
 		// subtitles
 		$('.info-subtitles')
 			.html('Sub')
-			.toggleClass('nonExist', currentFlay.files.subtitles.length === 0);
-		$('.info-subtitles').parent().find('.link-subtitles').remove();
+			.toggleClass('nonExist', currentFlay.files.subtitles.length === 0)
+			.parent()
+			.find('.link-subtitles')
+			.remove();
 		if (currentFlay.files.subtitles.length === 0) {
-			if (!currentFlay.hasOwnProperty('checkedSubtitles') || currentFlay.checkedSubtitles === false) {
+			if (!currentFlay.hasOwnProperty('checkedSubtitles')) { // once checked, pass
 				currentFlay['checkedSubtitles'] = true;
-				Search.subtitlesUrlIfFound(currentFlay.opus, function (foundUrlList, opus) {
-					if (foundUrlList && foundUrlList.length > 0) {
+				Search.subtitlesUrlIfFound(currentFlay.opus, function (foundSubtitlesUrlList, opus) {
+					if (foundSubtitlesUrlList && foundSubtitlesUrlList.length > 0) {
 						if (opus === currentFlay.opus) {
-							$('.info-subtitles').html(`<span class="text-info">Subtitles ${foundUrlList.length} found!!!</span>`);
-							for (const url of foundUrlList) {
+							$('.info-subtitles').html(`<span class="text-info">Subtitles ${foundSubtitlesUrlList.length} found!!!</span>`);
+							for (const url of foundSubtitlesUrlList) {
 								$('.info-subtitles').parent().append(`<a href="${url}" class="link-subtitles"><i class="fa fa-external-link mx-1"></i></a>`);
 							}
 						} else {
-							currentFlay.checkedSubtitles = false;
-							notice(`${opus} subtitle found ${foundUrlList.length}. but flay passed!`);
+							notice(`${opus} subtitle found ${foundSubtitlesUrlList.length}. but flay passed!`);
 						}
 					}
 				});

@@ -54,6 +54,10 @@ var flayWebsocket = (function ($) {
 	var connect = function () {
 		var socket = new SockJS(STOMP_ENDPOINT);
 		stompClient = Stomp.over(socket);
+
+		// or
+		// stompClient = Stomp.client(STOMP_ENDPOINT);
+
 		stompClient.connect(
 			{},
 			function (frame) {

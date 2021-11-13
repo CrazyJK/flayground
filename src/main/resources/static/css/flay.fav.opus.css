@@ -2,6 +2,13 @@
 body {
 	font-size: 14px;
 	font-family: 'D2Coding';
+	padding: 0 1rem;
+}
+#topMenu.sticky-top,
+.f-head,
+.f-body {
+	width: 100%;
+	padding: 0 1rem;
 }
 #topMenu.sticky-top {
 	background-color: black !important;
@@ -9,7 +16,6 @@ body {
 	align-items: center;
 	padding-bottom: 0.5rem;
 	margin-bottom: 0;
-	width: 1000px;
 }
 .f-head.sticky-top {
 	top: 44px;
@@ -24,7 +30,6 @@ body {
 	background-color: #111;
 	margin: 0 auto 1rem;
 	padding: 0.5rem;
-	width: 1000px;
 }
 .f-head > div,
 .f-body > div {
@@ -70,6 +75,9 @@ body {
 .flay-actress {
 	flex: 1 1 auto;
 	text-align: right;
+}
+.flay-actress > span.same-name {
+	color: orangered !important;
 }
 .flay-release {
 	flex: 0 0 80px;

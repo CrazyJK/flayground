@@ -260,6 +260,12 @@ var File = {
 				else
 					return (length / TB).toFixed(2) + " <span>TB</span>";
 			}
+		},
+		validName: (name) => {
+			// \ / : * ? " < > |
+			return name.replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：')
+						.replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂')
+						.replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
 		}
 };
 

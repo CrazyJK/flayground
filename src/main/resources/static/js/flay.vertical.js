@@ -8,6 +8,7 @@
 	let flayList = [];
 	let actressList = [];
 	let collectedList = [];
+	let seenList = [];
 
 	let currentFlay = null;
 	let currentIndex = -1;
@@ -103,7 +104,7 @@
 	const navigation = {
 		event: function () {
 			$('#pageContent').navEvent(function (signal, e) {
-				// console.log(`navEvent target=${e.target.tagName} signal=${signal} type=${e.type} ctrl=${e.ctrlKey} alt=${e.altKey} shift=${e.shiftKey} key=${e.key}`);
+				console.debug(`navEvent target=${e.target.tagName} signal=${signal} type=${e.type} ctrl=${e.ctrlKey} alt=${e.altKey} shift=${e.shiftKey} key=${e.key}`);
 				switch (signal) {
 					case 1: // wheel: up
 					case 37: // key  : left
@@ -190,7 +191,16 @@
 		},
 		random: function (e) {
 			if (!Flaying.isPlay) {
-				navigation.go(Random.getInteger(0, collectedList.length - 1));
+				let randomIndex = -1;
+				do {
+					randomIndex = Random.getInteger(0, collectedList.length - 1);
+					console.debug(`random ${randomIndex} seen ${seenList.length} collect ${collectedList.length}`);
+					if (!seenList.includes(randomIndex)) {
+						break;
+					}
+				} while (seenList.length < collectedList.length);
+
+				navigation.go(randomIndex);
 			}
 		},
 		go: function (idx) {
@@ -204,6 +214,15 @@
 				return;
 			}
 			currentFlay = collectedList[currentIndex];
+
+			if (!seenList.includes(currentIndex)) {
+				seenList.push(currentIndex);
+				console.debug('showingHistory', seenList);
+			}
+			if (seenList.length === collectedList.length) {
+				seenList = [];
+				notice(`<span class="text-danger">Saw every flay</span>`);
+			}
 
 			showVideo();
 			navigation.paging();
@@ -247,6 +266,9 @@
 					if (mode === 'R') {
 						navigation.random();
 					} else {
+						if (currentIndex + 1 === collectedList.length) {
+							currentIndex = -1;
+						}
 						navigation.next();
 					}
 				};
@@ -520,7 +542,7 @@
 
 		// paginationProgress
 		$('#paginationProgress').on('click', (e) => {
-			console.log(e.clientX, $(this).width(), e.clientX / $(this).width(), collectedList.length * (e.clientX / $(this).width()));
+			console.debug(e.clientX, $(this).width(), e.clientX / $(this).width(), collectedList.length * (e.clientX / $(this).width()));
 			navigation.go(parseInt(collectedList.length * (e.clientX / $(this).width())));
 		});
 
@@ -535,7 +557,7 @@
 			const calcWidth = (coverWrapperWidth - currCoverBoxWidth - 20) / 2;
 			const calcHeight = calcWidth * COVER_RATIO;
 			const $sideCover = $('.cover-wrapper-inner.prev > .cover-box, .cover-wrapper-inner.next > .cover-box');
-			// console.log(`window resize currCoverBoxWidth: ${currCoverBoxWidth} calcWidth: ${calcWidth} currCoverBox.bg: ${$currCoverBox.css("background-image")}`);
+			console.debug(`window resize currCoverBoxWidth: ${currCoverBoxWidth} calcWidth: ${calcWidth} currCoverBox.bg: ${$currCoverBox.css('background-image')}`);
 
 			if (currCoverBoxWidth / 2 > calcWidth) {
 				// too small, hide
@@ -724,6 +746,7 @@
 		});
 
 		// filtering
+		seenList = [];
 		collectedList = [];
 		for (const flay of flayList) {
 			// video, subtitles check

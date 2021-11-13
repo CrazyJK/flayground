@@ -71,7 +71,7 @@ function findMode() {
 			fullname += '[' + value + ']';
 			$(this).toggleClass('input-empty', value === '');
 		});
-		$('input#fullname').val(fullname).effect('highlight', {}, 200);
+		$('input#fullname').val(File.validName(fullname)).effect('highlight', {}, 200);
 	});
 	// 첫줄 입력시
 	$('#rowname_opus, #rowname_actress').on('keyup', function (e) {

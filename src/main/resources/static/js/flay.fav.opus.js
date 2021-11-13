@@ -81,13 +81,25 @@
 			}
 			$('#flayView .f-body').append(getFlayRecordObject(flay));
 		}
+
+		$('.flay-actress > span').hover(
+			function (e) {
+				const currName = $(this).text();
+				$('.flay-actress > span').each(function () {
+					$(this).toggleClass('same-name', $(this).text() === currName);
+				});
+			},
+			function (e) {
+				$('.flay-actress > span').removeClass('same-name');
+			},
+		);
 	});
 
 	function getFlayRecordObject(flay) {
 		const calcScore = (flay) => {
 			return flay.video?.rank * rankPoint + flay.video?.play * playPoint + (flay.files?.subtitles.length > 0 ? 1 : 0) * subtitlesPoint;
 		};
-		var actressObjectArray = Util.Actress.get(flay.actressList, 'mx-1 hover').map(($actress) => {
+		var actressObjectArray = Util.Actress.get(flay.actressList, 'mx-1').map(($actress) => {
 			var name = $actress.text();
 			var actress = actressMap.get(name);
 			if (actress.favorite) {

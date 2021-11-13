@@ -86,11 +86,12 @@ body {
 	flex: 1 0 auto;
 	text-align: left;
 }
-.info-actress .info-actress-flaycount {
-	flex: 0 0 auto;
-}
 .info-actress .info-actress-local {
 	flex: 0 0 auto;
+}
+.info-actress .info-actress-flaycount {
+	flex: 0 0 3 rem;
+	text-align: right;
 }
 .info-actress .info-actress-age {
 	flex: 0 0 3rem;

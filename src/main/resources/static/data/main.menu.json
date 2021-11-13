@@ -140,6 +140,16 @@
 		}
 	},
 	{
+		"name": "Fav. Opus",
+		"uri": "/html/flay/flay.fav.opus.html",
+		"icon": "fa fa-list",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
 		"name": "Lost flay",
 		"uri": "/html/flay/flay.lost.html",
 		"icon": "fa fa-list",

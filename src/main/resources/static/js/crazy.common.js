@@ -136,7 +136,13 @@ var LocalStorageItem = {
 		},
 		has: (itemName) => {
 			return localStorage.hasOwnProperty(itemName);
-		}
+		},
+		remove: (itemName) => {
+			localStorage.removeItem(itemName);
+		},
+		clear: () => {
+			localStorage.clear();
+		},
 };
 
 var SessionStorageItem = {
@@ -158,7 +164,13 @@ var SessionStorageItem = {
 		},
 		has: (itemName) => {
 			return sessionStorage.hasOwnProperty(itemName);
-		}
+		},
+		remove: (itemName) => {
+			sessionStorage.removeItem(itemName);
+		},
+		clear: () => {
+			sessionStorage.clear();
+		},
 };
 
 Date.prototype.format = function(f) { // http://stove99.tistory.com/46

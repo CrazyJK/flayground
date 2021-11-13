@@ -55,7 +55,11 @@ public class Flay {
 	}
 
 	public File getCover() {
-		return files.get(COVER).get(0);
+		if (archive) {
+			return files.get(COVER).size() > 0 ? files.get(COVER).get(0) : null;
+		} else {
+			return files.get(COVER).get(0);
+		}
 	}
 
 	public long getLastModified() {

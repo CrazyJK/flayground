@@ -1,9 +1,9 @@
 /**
  * flay utility
  */
-var todayYear = new Date().getFullYear();
+const todayYear = new Date().getFullYear();
 
-var Util = {
+const Util = {
 	Tag: {
 		includes: function (tags, tag) {
 			var found = false;
@@ -55,11 +55,8 @@ var Util = {
 		get: function (actressList, className) {
 			var list = [];
 			if (actressList != null && Array.isArray(actressList)) {
-				if (!className) {
-					className = 'actress';
-				}
 				$.each(actressList, function (idx, actress) {
-					var $actress = $('<span>', { class: className })
+					var $actress = $('<span>', { class: className ?? 'actress' })
 						.html(actress)
 						.on('click', function () {
 							View.actress(actress);
@@ -92,7 +89,7 @@ var Util = {
 	},
 };
 
-var View = {
+const View = {
 	flay: function (opus) {
 		Popup.open(PATH + '/html/info/info.flay.html?opus=' + opus, 'flay-' + opus, 800, 770);
 	},
@@ -103,7 +100,7 @@ var View = {
 		Popup.open(PATH + '/html/info/info.actress.html?name=' + name, 'actress-' + name, 1072, 1100);
 	},
 	tag: function (tagId) {
-		//			Popup.open(PATH + "/info/tag/" + tagId, "Tag-" + tagId, 800, 650);
+		// Popup.open(PATH + '/info/tag/' + tagId, 'Tag-' + tagId, 800, 650);
 		Popup.open(PATH + '/html/info/info.tag.html?id=' + tagId, 'Tag-' + tagId, 1072, 650);
 	},
 	studio: function (name) {
@@ -111,51 +108,65 @@ var View = {
 	},
 };
 
-const URL_SEARCH_VIDEO_4_FIREFOX = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
-const URL_SEARCH_VIDEO = 'https://nextjav.com/torrent/detail/';
+const URL_SEARCH_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
+const URL_SEARCH_AVNORI = 'https://avnori6.com/bbs/search.php?search_flag=search&stx=';
+const URL_SEARCH_NEXTJAV = 'https://nextjav.com/torrent/detail/';
+const URL_SEARCH_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
 const URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
-const URL_SEARCH_TORRENT = 'https://www.google.co.kr/search?q=';
+const URL_SEARCH_GOOGLE = 'https://www.google.co.kr/search?q=';
 const URL_TRANSLATE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
 const URL_FIND_ACTRESS = 'http://javtorrent.re/tag/';
 const URL_SEARCH_SUBTITLES = 'https://www.subtitlecat.com/index.php?search=';
 
-var Search = {
-	opus: function (keyword) {
-		var url = FIREFOX === browser ? URL_SEARCH_VIDEO_4_FIREFOX : URL_SEARCH_VIDEO;
-		Popup.open(url + keyword, 'videoSearch', 1500, 1000);
+const Search = {
+	opus: (keyword) => {
+		var url = FIREFOX === browser ? URL_SEARCH_ARZON : URL_SEARCH_AVNORI;
+		Popup.open(url + keyword, 'opusSearch', 1500, 1000);
 	},
-	actress: function (keyword) {
+	arzon: (keyword) => {
+		Popup.open(URL_SEARCH_ARZON + keyword, 'arzonSearch', 800, 1000);
+	},
+	avnori: (keyword) => {
+		Popup.open(URL_SEARCH_AVNORI + keyword, 'avnoriSearch', 800, 1000);
+	},
+	avdbs: (keyword) => {
+		Popup.open(URL_SEARCH_AVDBS + keyword, 'avdbsSearch', 800, 1000);
+	},
+	nextjav: (keyword) => {
+		Popup.open(URL_SEARCH_NEXTJAV + keyword, 'nextjavSearch', 800, 1000);
+	},
+	actress: (keyword) => {
 		Popup.open(URL_SEARCH_ACTRESS + encodeURI(keyword), 'actressSearch', 1200, 950);
 	},
-	torrent: function (keyword) {
-		Popup.open(URL_SEARCH_TORRENT + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
+	torrent: (keyword) => {
+		Popup.open(URL_SEARCH_GOOGLE + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
 	},
-	translate: function (message) {
+	google: (keyword) => {
+		Popup.open(URL_SEARCH_GOOGLE + keyword, 'googleSearch', 800, 1000);
+	},
+	translate: (message) => {
 		Popup.open(URL_TRANSLATE + message, 'translate', 1000, 500);
 	},
-	opusByRandom: function () {
-		var opus = Random.getInteger(1, 999);
-		Search.opus(opus);
+	opusByRandom: () => {
+		Search.opus(Random.getInteger(1, 999));
 	},
-	find: function (keyword) {
+	find: (keyword) => {
 		Popup.open(URL_FIND_ACTRESS + encodeURI(keyword), 'findSearch', 1200, 950);
 	},
-	subtitles: function (keyword, w, h) {
+	subtitles: (keyword, w, h) => {
 		Popup.open(URL_SEARCH_SUBTITLES + keyword, 'subtitlesSearch', w || 900, h || 950);
 	},
-	subtitlesUrlIfFound: function (opus, callback) {
+	subtitlesUrlIfFound: (opus, callback) => {
 		$.ajax({
 			url: '/file/find/exists/subtitles?opus=' + opus,
-			success: function (foundUrlList) {
-				if (callback) {
-					callback(foundUrlList, opus);
-				}
+			success: (foundUrlList) => {
+				callback?.(foundUrlList, opus);
 			},
 		});
 	},
 };
 
-var Security = {
+const Security = {
 	user: null,
 	getUser: function () {
 		Rest.Security.whoami(function (principal) {
@@ -182,23 +193,4 @@ var Security = {
 	isAutomaticallyCertificated: function () {
 		return Rest.Security.isAutomaticallyCertificated();
 	},
-};
-
-const getBlobImageUrl = (url) => {
-	return new Promise((resolve, reject) => {
-		var xhr = new XMLHttpRequest();
-		xhr.open('GET', url);
-		xhr.responseType = 'blob';
-		xhr.onload = () => {
-			if (xhr.status === 200) {
-				resolve(window.URL.createObjectURL(xhr.response));
-			} else {
-				reject(Error("Image didn't load successfully; error code:" + xhr.statusText));
-			}
-		};
-		xhr.onerror = () => {
-			reject(Error('There was a network error.'));
-		};
-		xhr.send();
-	});
 };

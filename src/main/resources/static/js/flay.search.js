@@ -3,263 +3,271 @@
  */
 
 function baseSearch() {
-	$("#query, #opus").on("keyup", function (e) {
+	$('#query, #opus').on('keyup', function (e) {
 		if (e.keyCode != 13) {
 			return;
 		}
 		var keyword = $(this).val().trim().toUpperCase();
 		searchSource(keyword);
 	});
-	$(".btn-search-opus").on("click", function () {
-		var value = $("#query").val();
+	$('.btn-search-opus').on('click', function () {
+		var value = $('#query').val();
 		Search.opus(value);
 	});
-	$(".btn-search-actress").on("click", function () {
-		var isShow = $("#findMode").hasClass("show");
-		var query = $("#query").val();
-		var name = $("#actress").val();
-		var value = "";
+	$('.btn-search-actress').on('click', function () {
+		var isShow = $('#findMode').hasClass('show');
+		var query = $('#query').val();
+		var name = $('#actress').val();
+		var value = '';
 		if (isShow && name) value = name;
 		else value = query;
 		Search.actress(value);
 	});
-	$(".btn-search-torrent").on("click", function () {
-		var value = $("#query").val();
+	$('.btn-search-torrent').on('click', function () {
+		var value = $('#query').val();
 		Search.torrent(value);
 	});
-	$("#btn-flay-close").on("click", function () {
-		$("#resultFlayDiv").collapse("hide");
+	$('#btn-flay-close').on('click', function () {
+		$('#resultFlayDiv').collapse('hide');
 	});
-	$("#btn-history-close").on("click", function () {
-		$("#resultHistoryDiv").collapse("hide");
+	$('#btn-history-close').on('click', function () {
+		$('#resultHistoryDiv').collapse('hide');
 	});
 }
 
 function findMode() {
 	const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
 
-	$(".btn-find-random-opus").on("click", function () {
+	$('.btn-find-random-opus').on('click', function () {
 		Search.opusByRandom();
 	});
-	$("#btnReset").dblclick(function () {
-		$("#findMode .form-control").val("").removeClass("input-empty input-invalid input-warning");
-		$("#findMode input:checkbox").prop("checked", false).find("fa").removeClass("fa-heart-o").addClass("fa-heart");
-		$("#newActress").data("actress", null);
+	$('#btnReset').dblclick(function () {
+		$('#findMode .form-control').val('').removeClass('input-empty input-invalid input-warning');
+		$('#findMode input:checkbox').prop('checked', false).next().find('i.fa').removeClass('fa-heart').addClass('fa-heart-o');
+		$('#newActress').data('actress', null);
 	});
 	// 각 파트 내용을 수정하면
-	$(".flay-group > input").on("keyup", function (e) {
+	$('.flay-group > input').on('keyup', function (e) {
 		if (e.keyCode === 17) return;
 
-		let fullname = "";
-		$(".flay-group > input").each(function () {
-			const id = $(this).attr("id");
+		let fullname = '';
+		$('.flay-group > input').each(function () {
+			const id = $(this).attr('id');
 			let value = $(this).val().trim();
-			if (id === "opus") {
+			if (id === 'opus') {
 				value = value.toUpperCase();
-				$("#query").val(value);
-			} else if (id === "actress") {
-				$("#newActressName").val(value);
-			} else if (id === "release") {
-				value = value.replace(/(\d{4})(\d{2})(\d{2})/g, "$1.$2.$3");
+				$('#query').val(value);
+			} else if (id === 'actress') {
+				$('#newActressName').val(value);
+			} else if (id === 'release') {
+				value = value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
 				$(this).val(value);
 
 				var isValid = DATE_PATTERN.test(value);
-				$(this).toggleClass("input-invalid", !isValid);
-				if (isValid) $(this).toggleClass("input-warning", value.indexOf(new Date().format("yyyy")) < 0);
-				else $(this).removeClass("input-warning");
+				$(this).toggleClass('input-invalid', !isValid);
+				if (isValid) $(this).toggleClass('input-warning', value.indexOf(new Date().format('yyyy')) < 0);
+				else $(this).removeClass('input-warning');
 			}
-			fullname += "[" + value + "]";
-			$(this).toggleClass("input-empty", value === "");
+			fullname += '[' + value + ']';
+			$(this).toggleClass('input-empty', value === '');
 		});
-		$("input#fullname").val(fullname).effect("highlight", {}, 200);
+		$('input#fullname').val(fullname).effect('highlight', {}, 200);
 	});
 	// 첫줄 입력시
-	$("#rowname_opus, #rowname_actress").on("keyup", function (e) {
+	$('#rowname_opus, #rowname_actress').on('keyup', function (e) {
 		if (e.keyCode !== 13) {
 			return;
 		}
 
-		var titlePart = $.trim($(this).val().replace(/\[|]/gi, " ")).split(" ");
+		var titlePart = $.trim($(this).val().replace(/\[|]/gi, ' ')).split(' ');
 		if (titlePart.length > 1) {
-			$("#rowname_opus").val(titlePart[0]);
-			$("#rowname_title").val(titlePart.slice(1).join(" "));
-			$("#rowname_actress").val(titlePart[titlePart.length - 1]);
+			$('#rowname_opus').val(titlePart[0]);
+			$('#rowname_title').val(titlePart.slice(1).join(' '));
+			$('#rowname_actress').val(titlePart[titlePart.length - 1]);
 		}
 
-		var rowOpus = $("#rowname_opus").val().trim();
-		var rowTitle = $("#rowname_title").val().trim();
-		var rowActress = $("#rowname_actress").val().trim();
+		var rowOpus = $('#rowname_opus').val().trim();
+		var rowTitle = $('#rowname_title').val().trim();
+		var rowActress = $('#rowname_actress').val().trim();
 
-		$("#opus").val(rowOpus);
-		rowOpus != "" && searchSource(rowOpus);
-		rowOpus != "" && Search.opus(rowOpus);
-		rowTitle != "" && Search.translate(rowTitle);
-		rowActress != "" &&
+		$('#opus').val(rowOpus);
+		rowOpus != '' && searchSource(rowOpus);
+		rowOpus != '' && Search.opus(rowOpus);
+		rowTitle != '' && Search.translate(rowTitle);
+		rowActress != '' &&
 			Rest.Actress.findByLocalname(rowActress, function (actressList) {
-				console.log("findByLocalname", rowActress, actressList.length);
+				console.log('findByLocalname', rowActress, actressList.length);
 
-				$("#newActressName").val("");
-				$("#newActressLocal").val(rowActress);
-				$("#newActressBirth").val("");
-				$("#newActressBody").val("");
-				$("#newActressHeight").val("");
-				$("#newActressDebut").val("");
+				$('#newActressName').val('');
+				$('#newActressLocal').val(rowActress);
+				$('#newActressBirth').val('');
+				$('#newActressBody').val('');
+				$('#newActressHeight').val('');
+				$('#newActressDebut').val('');
 
 				if (actressList.length == 0) {
 					Search.actress(rowActress);
 				} else if (actressList.length == 1) {
-					$("#actress").val(actressList[0].name).effect("highlight", {}, 1000);
-					transferActressInfo(actressList[0], "#rowname_actress");
+					$('#actress').val(actressList[0].name).effect('highlight', {}, 1000);
+					transferActressInfo(actressList[0], '#rowname_actress');
 				} else {
 					Search.actress(rowActress);
-					$("#actressChoice > ul").empty();
+					$('#actressChoice > ul').empty();
 					$.each(actressList, function (idx, actress) {
-						$("<li>")
+						$('<li>')
 							.append(
-								$("<label>", { class: "text hover" })
-									.append($("<i>", { class: "fa fa-female" }))
-									.on("click", function () {
+								$('<label>', { class: 'text hover' })
+									.append($('<i>', { class: 'fa fa-female' }))
+									.on('click', function () {
 										View.actress(actress.name);
 									}),
-								$("<label>", { class: "text hover" })
-									.html(actress.name + " " + actress.localName + " " + actress.birth + " " + actress.body + " " + actress.height + " " + actress.debut)
-									.on("click", function () {
-										$(this).effect("transfer", { to: "#actress", className: "ui-effects-transfer" }, 500, function () {
-											$("#actress").val(actress.name);
-											$("#actressChoice").dialog("close");
-											transferActressInfo(actress, "#actress");
+								$('<label>', { class: 'text hover' })
+									.html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut)
+									.on('click', function () {
+										$(this).effect('transfer', { to: '#actress', className: 'ui-effects-transfer' }, 500, function () {
+											$('#actress').val(actress.name);
+											$('#actressChoice').dialog('close');
+											transferActressInfo(actress, '#actress');
 										});
 									}),
 							)
-							.appendTo($("#actressChoice > ul"));
+							.appendTo($('#actressChoice > ul'));
 					});
-					$("#actressChoice").dialog({
+					$('#actressChoice').dialog({
 						width: 600,
 					});
 				}
 			});
 	});
-	$("#newActressBirth").on("keyup", function () {
+	$('#newActressBirth').on('keyup', function () {
 		var value = $(this).val().trim();
-		$(this).val(value).toggleClass("input-invalid", !birthRegExp.test(value));
+		$(this).val(value).toggleClass('input-invalid', !birthRegExp.test(value));
 	});
-	$("#newActressBody").on("keyup", function (e) {
+	$('#newActressBody').on('keyup', function (e) {
 		if (e.keyCode === 17) return;
 
 		var value = $(this)
 			.val()
 			.trim()
-			.replace(/^[A-Z]|\(|カップ\)/gi, "")
-			.replace(/\/ [A-Z]/gi, "- ");
-		$(this).val(value).toggleClass("input-invalid", !bodyRegExp.test(value));
+			.replace(/^[A-Z]|\(|カップ\)/gi, '')
+			.replace(/\/ [A-Z]/gi, '- ');
+		$(this).val(value).toggleClass('input-invalid', !bodyRegExp.test(value));
 	});
-	$("#newActressDebut").attr("max", new Date().getFullYear());
-	$("#btnRegistActress").on("click", function () {
-		var actress = $("#newActress").data("actress");
-		if (actress && actress.name === $("#newActressName").val().trim()) {
-			actress.favorite = $("#newActressFavorite").prop("checked");
-			actress.localName = $("#newActressLocal").val().trim();
-			actress.birth = $("#newActressBirth").val().trim();
-			actress.body = $("#newActressBody").val().trim();
-			actress.height = $("#newActressHeight").val().trim();
-			actress.debut = $("#newActressDebut").val().trim();
+	$('#newActressDebut').attr('max', new Date().getFullYear());
+	$('#btnRegistActress').on('click', function () {
+		var actress = $('#newActress').data('actress');
+		if (actress && actress.name === $('#newActressName').val().trim()) {
+			actress.favorite = $('#newActressFavorite').prop('checked');
+			actress.localName = $('#newActressLocal').val().trim();
+			actress.birth = $('#newActressBirth').val().trim();
+			actress.body = $('#newActressBody').val().trim();
+			actress.height = $('#newActressHeight').val().trim();
+			actress.debut = $('#newActressDebut').val().trim();
 		} else {
 			actress = {};
-			actress.favorite = $("#newActressFavorite").prop("checked");
-			actress.name = $("#newActressName").val().trim();
-			actress.localName = $("#newActressLocal").val().trim();
-			actress.birth = $("#newActressBirth").val().trim();
-			actress.body = $("#newActressBody").val().trim();
-			actress.height = $("#newActressHeight").val().trim();
-			actress.debut = $("#newActressDebut").val().trim();
-			actress.comment = "";
+			actress.favorite = $('#newActressFavorite').prop('checked');
+			actress.name = $('#newActressName').val().trim();
+			actress.localName = $('#newActressLocal').val().trim();
+			actress.birth = $('#newActressBirth').val().trim();
+			actress.body = $('#newActressBody').val().trim();
+			actress.height = $('#newActressHeight').val().trim();
+			actress.debut = $('#newActressDebut').val().trim();
+			actress.comment = '';
 			actress.coverSize = 0;
 		}
 		Rest.Actress.persist(actress);
 	});
-	$("#btnShowActress").on("click", function () {
-		var newActressName = $("#newActressName").val().trim();
-		if (newActressName !== "") {
+	$('#btnShowActress').on('click', function () {
+		var newActressName = $('#newActressName').val().trim();
+		if (newActressName !== '') {
 			View.actress(newActressName);
 		}
 	});
-	$("#newActressRowdata").on("keyup", function (e) {
-		if (e.keyCode === 17) {
-			// Control key ignored
-			return;
-		}
-		$(this)
-			.val()
-			.split("\n")
-			.forEach((line) => {
-				// console.log(line);
-				if (/[0-9]年/.test(line)) {
-					// 1987年09月07日 （現在 34歳）おとめ座
-					const birth = line.split(" ")[0];
-					$("#newActressBirth").val(birth).trigger("keyup");
-				} else if (line.indexOf("T") > -1) {
-					// T161 / B83(Eカップ) / W58 / H82 / S
-					const splitText = line.split(" / ");
-					const height = splitText[0].substring(1);
-					const body = splitText[1] + " / " + splitText[2] + " / " + splitText[3];
-					$("#newActressBody").val(body).trigger("keyup");
-					$("#newActressHeight").val(height);
-				}
-			});
-	});
+	$('#newActressRowdata')
+		.on('keyup', function (e) {
+			if (e.keyCode === 17) {
+				// Control key ignored
+				return;
+			}
+			$(this)
+				.val()
+				.split('\n')
+				.forEach((line) => {
+					// console.log(line);
+					if (/[0-9]年/.test(line)) {
+						// 1987年09月07日 （現在 34歳）おとめ座
+						const birth = line.split(' ')[0];
+						$('#newActressBirth').val(birth).trigger('keyup');
+					} else if (line.indexOf('T') > -1) {
+						// T161 / B83(Eカップ) / W58 / H82 / S
+						const splitText = line.split(' / ');
+						const height = splitText[0].substring(1);
+						const body = splitText[1] + ' / ' + splitText[2] + ' / ' + splitText[3];
+						$('#newActressBody').val(body).trigger('keyup');
+						$('#newActressHeight').val(height);
+					}
+				});
+		})
+		.attr({
+			placeholder: `input: 1999年12月01日 （現在 21歳）いて座
+サイズ
+
+T163 / B92(Hカップ) / W62 / H89`,
+		})
+		.css({ height: 100 });
 
 	function transferActressInfo(actress, from) {
-		$(from).effect("transfer", { to: "#newActress", className: "ui-effects-transfer" }, 500, function () {
-			$("#newActress").data("actress", actress);
-			$("#newActressFavorite").prop("checked", actress.favorite);
-			$("#newActressFavorite ~ span > i").toggleClass("fa-heart", actress.favorite).toggleClass("fa-heart-o", !actress.favorite);
-			$("#newActressName").val(actress.name);
-			$("#newActressBirth").val(actress.birth);
-			$("#newActressBody").val(actress.body);
-			$("#newActressHeight").val(actress.height);
-			$("#newActressDebut").val(actress.debut);
+		$(from).effect('transfer', { to: '#newActress', className: 'ui-effects-transfer' }, 500, function () {
+			$('#newActress').data('actress', actress);
+			$('#newActressFavorite').prop('checked', actress.favorite);
+			$('#newActressFavorite ~ span > i').toggleClass('fa-heart', actress.favorite).toggleClass('fa-heart-o', !actress.favorite);
+			$('#newActressName').val(actress.name);
+			$('#newActressBirth').val(actress.birth);
+			$('#newActressBody').val(actress.body);
+			$('#newActressHeight').val(actress.height);
+			$('#newActressDebut').val(actress.debut);
 		});
 	}
 }
 
 function candidateMode() {
-	$("#btnGetCandidates").on("click", function () {
+	$('#btnGetCandidates').on('click', function () {
 		Rest.Flay.findCandidates(function (flayList) {
-			$("#candidatesCount").html(flayList.length).show();
-			$("#btnFileControl, #toggleCandidatesCover").toggle(flayList.length > 0);
-			const $candidatesList = $("#candidatesList").empty();
+			$('#candidatesCount').html(flayList.length).show();
+			$('#btnFileControl, #toggleCandidatesCover').toggle(flayList.length > 0);
+			const $candidatesList = $('#candidatesList').empty();
 			if (flayList.length === 0) {
 				return;
 			}
 			$.each(flayList, function (idx, flay) {
-				$("<div>", { class: "candidates list-group-item" })
+				$('<div>', { class: 'candidates list-group-item' })
 					.append(
-						$("<button>", { class: "btn btn-sm btn-block btn-outline-warning" })
-							.append($("<strong>").html("Acept"), $("<span>", { class: "badge badge-light mx-2" }).html(flay.files.candidate.length), flay.files.candidate.toString().replace(/,/gi, "<br>").replace(/\\/gi, "/").replace(/\//gi, '<b class="text-white"> / </b>'))
-							.on("click", function () {
+						$('<button>', { class: 'btn btn-sm btn-block btn-outline-warning' })
+							.append($('<strong>').html('Acept'), $('<span>', { class: 'badge badge-light mx-2' }).html(flay.files.candidate.length), flay.files.candidate.toString().replace(/,/gi, '<br>').replace(/\\/gi, '/').replace(/\//gi, '<b class="text-white"> / </b>'))
+							.on('click', function () {
 								var $self = $(this);
 								Rest.Flay.acceptCandidates(flay, function () {
-									$self.hide().closest(".candidates").addClass("accepted").appendTo($candidatesList).find(".candidates-files, .candidates-cover").remove();
-									$("#candidatesCount").html(parseInt($("#candidatesCount").text()) - 1);
+									$self.hide().closest('.candidates').addClass('accepted').appendTo($candidatesList).find('.candidates-files, .candidates-cover').remove();
+									$('#candidatesCount').html(parseInt($('#candidatesCount').text()) - 1);
 								});
 							}),
-						$("<div>", { class: "candidates-files" }).append(
+						$('<div>', { class: 'candidates-files' }).append(
 							(function () {
 								var files = [];
 								$.each(flay.files.candidate, function (idx, file) {
 									files.push(
-										$("<p>", { class: "m-1 text-danger" }).append(
+										$('<p>', { class: 'm-1 text-danger' }).append(
 											file,
-											$("<button>", { class: "btn btn-sm btn-link text-danger ml-2" })
-												.html("Delete")
-												.on("click", function () {
+											$('<button>', { class: 'btn btn-sm btn-link text-danger ml-2' })
+												.html('Delete')
+												.on('click', function () {
 													$(this).hide();
 													$(this).next().show();
 												}),
-											$("<button>", { class: "btn btn-sm btn-link text-danger ml-2" })
-												.css({ display: "none" })
-												.html("Are U sure?")
-												.on("click", function () {
+											$('<button>', { class: 'btn btn-sm btn-link text-danger ml-2' })
+												.css({ display: 'none' })
+												.html('Are U sure?')
+												.on('click', function () {
 													var $p = $(this).parent();
 													var $b = $(this).parent().parent().prev();
 													Rest.Flay.deleteFile(file, function () {
@@ -273,95 +281,95 @@ function candidateMode() {
 								return files;
 							})(),
 						),
-						$("<div>", { class: "candidates-info" }).append(
-							$("<label>", { class: "text sm candidates-info-studio" }).html(flay.studio),
-							$("<label>", { class: "text sm candidates-info-opus hover" })
+						$('<div>', { class: 'candidates-info' }).append(
+							$('<label>', { class: 'text sm candidates-info-studio' }).html(flay.studio),
+							$('<label>', { class: 'text sm candidates-info-opus hover' })
 								.html(flay.opus)
-								.on("click", function () {
+								.on('click', function () {
 									View.flay(flay.opus);
 								}),
-							$("<label>", { class: "text sm candidates-info-title" }).html(flay.title),
-							$("<label>", { class: "text sm candidates-info-actress" }).html(flay.actressList.toString()),
-							$("<label>", { class: "text sm candidates-info-release" }).html(flay.release),
-							$("<label>", { class: "text sm candidates-info-ext" }).append(
-								$("<span>", { class: "mx-1" })
-									.html("r " + flay.video.rank)
-									.addClass(flay.video.rank !== 0 ? "text-danger" : ""),
-								$("<span>", { class: "mx-1" })
-									.html("v " + flay.files.movie.length)
-									.addClass(flay.files.movie.length !== 0 ? "text-danger" : ""),
-								$("<span>", { class: "mx-1" })
-									.html("s " + flay.files.subtitles.length)
-									.addClass(flay.files.subtitles.length !== 0 ? "text-danger" : ""),
+							$('<label>', { class: 'text sm candidates-info-title' }).html(flay.title),
+							$('<label>', { class: 'text sm candidates-info-actress' }).html(flay.actressList.toString()),
+							$('<label>', { class: 'text sm candidates-info-release' }).html(flay.release),
+							$('<label>', { class: 'text sm candidates-info-ext' }).append(
+								$('<span>', { class: 'mx-1' })
+									.html('r ' + flay.video.rank)
+									.addClass(flay.video.rank !== 0 ? 'text-danger' : ''),
+								$('<span>', { class: 'mx-1' })
+									.html('v ' + flay.files.movie.length)
+									.addClass(flay.files.movie.length !== 0 ? 'text-danger' : ''),
+								$('<span>', { class: 'mx-1' })
+									.html('s ' + flay.files.subtitles.length)
+									.addClass(flay.files.subtitles.length !== 0 ? 'text-danger' : ''),
 							),
 						),
-						$("<div>", { class: "candidates-cover" }).append($("<img>", { src: "/static/cover/" + flay.opus, class: "img-thumbnail m-auto", id: "cover-" + flay.opus })),
+						$('<div>', { class: 'candidates-cover' }).append($('<img>', { src: '/static/cover/' + flay.opus, class: 'img-thumbnail m-auto', id: 'cover-' + flay.opus })),
 					)
 					.appendTo($candidatesList);
 			});
 		});
 	});
 
-	$("#btnFileControl").on("click", function () {
-		$(".candidates-files").slideToggle();
+	$('#btnFileControl').on('click', function () {
+		$('.candidates-files').slideToggle();
 	});
-	$("#toggleCandidatesCover").on("click", () => {
-		$(".candidates-cover").slideToggle();
+	$('#toggleCandidatesCover').on('click', () => {
+		$('.candidates-cover').slideToggle();
 	});
 }
 
 function imageDownloadMode() {
-	$(".btn-download-page-image").on("click", function () {
-		Rest.Image.download($("#downloadPageImageForm").serialize(), function (result) {
-			$("#notice > p")
+	$('.btn-download-page-image').on('click', function () {
+		Rest.Image.download($('#downloadPageImageForm').serialize(), function (result) {
+			$('#notice > p')
 				.empty()
 				.append(
-					$("<ul>", { class: "list-unstyled" }).append(
-						$("<li>", { class: "text-info" }).html((result.images ? result.images.length : 0) + " images"),
-						$("<li>", { class: "text-primary" }).append(
-							$("<span>", { class: "btn btn-link text-dark" })
-								.on("click", function () {
+					$('<ul>', { class: 'list-unstyled' }).append(
+						$('<li>', { class: 'text-info' }).html((result.images ? result.images.length : 0) + ' images'),
+						$('<li>', { class: 'text-primary' }).append(
+							$('<span>', { class: 'btn btn-link text-dark' })
+								.on('click', function () {
 									Rest.Flay.openFolder(result.localPath);
 								})
 								.html(result.localPath),
 						),
 					),
 				);
-			$("#notice").dialog({
+			$('#notice').dialog({
 				classes: {
-					"ui-dialog": result.result ? "ui-widget-shadow" : "ui-dialog-danger",
+					'ui-dialog': result.result ? 'ui-widget-shadow' : 'ui-dialog-danger',
 				},
 				width: 500,
 				height: 200,
 				title: result.message,
 			});
-			LocalStorageItem.set("DOWNLOAD_LOCAL_PATH", $("#downloadDir").val());
+			LocalStorageItem.set('DOWNLOAD_LOCAL_PATH', $('#downloadDir').val());
 		});
 	});
-	$("#downloadDir").val(LocalStorageItem.get("DOWNLOAD_LOCAL_PATH", ""));
+	$('#downloadDir').val(LocalStorageItem.get('DOWNLOAD_LOCAL_PATH', ''));
 }
 
 function batchMode() {
-	Rest.Batch.getOption("S", function (val) {
-		$(".btn-batch-option[data-type='S']").children().toggleClass("fa-check", val);
+	Rest.Batch.getOption('S', function (val) {
+		$(".btn-batch-option[data-type='S']").children().toggleClass('fa-check', val);
 	});
 
-	$(".btn-batch-start").on("click", function () {
-		var type = $(this).data("type");
+	$('.btn-batch-start').on('click', function () {
+		var type = $(this).data('type');
 		var title = $(this).text();
 		Rest.Batch.start(type, title);
 	});
-	$(".btn-batch-option").on("click", function () {
+	$('.btn-batch-option').on('click', function () {
 		var $this = $(this);
-		var type = $this.data("type");
+		var type = $this.data('type');
 		Rest.Batch.setOption(type, function (result) {
-			$this.children().toggleClass("fa-check", result);
+			$this.children().toggleClass('fa-check', result);
 		});
 	});
 }
 
 function reloadMode() {
-	$(".btn-reload").on("click", function () {
+	$('.btn-reload').on('click', function () {
 		Rest.Batch.reload();
 	});
 }
@@ -372,43 +380,43 @@ function searchSource(keyword) {
 		return;
 	}
 
-	var rexp = eval("/" + keyword + "/gi");
+	var rexp = eval('/' + keyword + '/gi');
 	keyword = keyword.toUpperCase();
 
 	// find Flay
 	Rest.Flay.find(keyword, function (flayList) {
-		$("#resultFlayDiv").collapse("show");
+		$('#resultFlayDiv').collapse('show');
 
-		$(".flay-count").html(flayList.length);
-		var $tbody = $("#foundFlayList").empty();
+		$('.flay-count').html(flayList.length);
+		var $tbody = $('#foundFlayList').empty();
 		if (flayList.length > 0) {
 			$.each(flayList, function (entryIndex, flay) {
-				$("<tr>")
+				$('<tr>')
 					.append(
-						$("<td>").append($("<label>", { class: "text sm nowrap" }).html(flay.studio)),
-						$("<td>").append(
-							$("<label>", { class: "text sm nowrap hover" })
+						$('<td>').append($('<label>', { class: 'text sm nowrap' }).html(flay.studio)),
+						$('<td>').append(
+							$('<label>', { class: 'text sm nowrap hover' })
 								.html(flay.opus)
-								.on("click", function () {
+								.on('click', function () {
 									View.flay(flay.opus);
 								}),
 						),
-						$("<td>", { class: "nowrap" })
+						$('<td>', { class: 'nowrap' })
 							.append(
-								$("<label>", { class: "text sm" }).html(flay.files.movie.length > 0 ? "V " + File.formatSize(flay.length) : "noV"),
-								$("<label>", { class: "text sm" }).html(flay.files.subtitles.length > 0 ? "S" : ""),
-								$("<label>", { class: "text sm" }).html("R" + flay.video.rank),
-								$("<label>", { class: "text sm" }).html(),
+								$('<label>', { class: 'text sm' }).html(flay.files.movie.length > 0 ? 'V ' + File.formatSize(flay.length) : 'noV'),
+								$('<label>', { class: 'text sm' }).html(flay.files.subtitles.length > 0 ? 'S' : ''),
+								$('<label>', { class: 'text sm' }).html('R' + flay.video.rank),
+								$('<label>', { class: 'text sm' }).html(),
 							)
 							.css({ minWidth: 100 }),
-						$("<td>").append(function () {
+						$('<td>').append(function () {
 							var objs = [];
 							$.each(flay.actressList, function (idx, actress) {
-								if (actress != "Amateur") {
+								if (actress != 'Amateur') {
 									objs.push(
-										$("<label>", { class: "text sm nowrap hover" })
+										$('<label>', { class: 'text sm nowrap hover' })
 											.html(actress)
-											.on("click", function () {
+											.on('click', function () {
 												View.actress(actress);
 											}),
 									);
@@ -416,37 +424,37 @@ function searchSource(keyword) {
 							});
 							return objs;
 						}),
-						$("<td>").append($("<label>", { class: "text sm" }).html(flay.release)),
-						$("<td>", { class: "nowrap" }).append($("<label>", { class: "text sm" }).html(flay.title)),
+						$('<td>').append($('<label>', { class: 'text sm' }).html(flay.release)),
+						$('<td>', { class: 'nowrap' }).append($('<label>', { class: 'text sm' }).html(flay.title)),
 					)
 					.appendTo($tbody);
 			});
 			// animate
-			$("div.container").animate(
+			$('div.container').animate(
 				{
-					backgroundColor: "rgba(255, 255, 0, .75)",
+					backgroundColor: 'rgba(255, 255, 0, .75)',
 				},
 				3000,
 				function () {
 					$(this).animate(
 						{
-							backgroundColor: "rgba(255, 255, 0, 0)",
+							backgroundColor: 'rgba(255, 255, 0, 0)',
 						},
 						3000,
 					);
 				},
 			);
 			// highlight
-			$tbody.find("label").each(function () {
+			$tbody.find('label').each(function () {
 				$(this).html(
 					$(this)
 						.text()
-						.replace(rexp, "<mark>" + keyword + "</mark>"),
+						.replace(rexp, '<mark>' + keyword + '</mark>'),
 				);
 			});
 		} else {
-			$("<tr>")
-				.append($("<td>", { colspan: 6, class: "text-danger" }).html("Not found"))
+			$('<tr>')
+				.append($('<td>', { colspan: 6, class: 'text-danger' }).html('Not found'))
 				.appendTo($tbody);
 		}
 	});
@@ -454,82 +462,82 @@ function searchSource(keyword) {
 	// find video info
 	Rest.Video.find(keyword, function (list) {
 		var videoList = list;
-		var $tbody = $("#foundVideoList").empty();
-		$(".video-count").html(videoList.length);
+		var $tbody = $('#foundVideoList').empty();
+		$('.video-count').html(videoList.length);
 		if (videoList.length > 0) {
 			$.each(videoList, function (entryIndex, video) {
-				$("<tr>")
+				$('<tr>')
 					.append(
-						$("<td>").append(
-							$("<label>", { class: "text sm nowrap hover" })
+						$('<td>').append(
+							$('<label>', { class: 'text sm nowrap hover' })
 								.html(video.opus)
-								.on("click", function () {
+								.on('click', function () {
 									View.flay(video.opus);
 								}),
 						),
-						$("<td>").append($("<label>", { class: "text sm" }).html("Rank " + video.rank)),
-						$("<td>").append($("<label>", { class: "text sm" }).html("Play " + video.play)),
-						$("<td>").append($("<label>", { class: "text sm" }).html(video.lastAccess.toDate("yyyy-MM-dd hh:mm:ss"))),
+						$('<td>').append($('<label>', { class: 'text sm' }).html('Rank ' + video.rank)),
+						$('<td>').append($('<label>', { class: 'text sm' }).html('Play ' + video.play)),
+						$('<td>').append($('<label>', { class: 'text sm' }).html(video.lastAccess.toDate('yyyy-MM-dd hh:mm:ss'))),
 					)
 					.appendTo($tbody);
 			});
 			// highlight
-			$tbody.find("label").each(function () {
+			$tbody.find('label').each(function () {
 				$(this).html(
 					$(this)
 						.text()
-						.replace(rexp, "<mark>" + keyword + "</mark>"),
+						.replace(rexp, '<mark>' + keyword + '</mark>'),
 				);
 			});
 		} else {
-			$("<tr>")
-				.append($("<td>", { colspan: 4, class: "text-danger" }).html("Not found"))
+			$('<tr>')
+				.append($('<td>', { colspan: 4, class: 'text-danger' }).html('Not found'))
 				.appendTo($tbody);
 		}
 	});
 
 	// find history
 	Rest.History.find(keyword, function (historyList) {
-		const sortedHisoryList = historyList.filter((h) => h.action !== "UPDATE");
+		const sortedHisoryList = historyList.filter((h) => h.action !== 'UPDATE');
 
-		$("#resultHistoryDiv").collapse("show");
-		$(".history-count").html(sortedHisoryList.length);
+		$('#resultHistoryDiv').collapse('show');
+		$('.history-count').html(sortedHisoryList.length);
 
-		var $tbody = $("#foundHistoryList").empty();
+		var $tbody = $('#foundHistoryList').empty();
 		$.each(sortedHisoryList, function (entryIndex, history) {
-			$("<tr>")
+			$('<tr>')
 				.append(
-					$("<td>").append($("<label>", { class: "text sm nowrap" }).html(history.date)),
-					$("<td>").append(
-						$("<label>", { class: "text sm nowrap" })
+					$('<td>').append($('<label>', { class: 'text sm nowrap' }).html(history.date)),
+					$('<td>').append(
+						$('<label>', { class: 'text sm nowrap' })
 							.html(history.opus)
-							.on("click", function () {
+							.on('click', function () {
 								View.flay(history.opus);
 							}),
 					),
-					$("<td>").append($("<label>", { class: "text sm" }).html(history.action)),
-					$("<td>").append($("<label>", { class: "text sm nowrap" }).html(history.desc)),
+					$('<td>').append($('<label>', { class: 'text sm' }).html(history.action)),
+					$('<td>').append($('<label>', { class: 'text sm nowrap' }).html(history.desc)),
 				)
 				.appendTo($tbody);
 		});
 		if (sortedHisoryList.length === 0) {
-			$("<tr>")
-				.append($("<td>", { colspan: 4, class: "text-danger" }).html("Not found"))
+			$('<tr>')
+				.append($('<td>', { colspan: 4, class: 'text-danger' }).html('Not found'))
 				.appendTo($tbody);
 		}
 
-		$tbody.find("label").each(function () {
+		$tbody.find('label').each(function () {
 			$(this).html(
 				$(this)
 					.text()
-					.replace(rexp, "<mark>" + keyword + "</mark>"),
+					.replace(rexp, '<mark>' + keyword + '</mark>'),
 			);
 		});
 	});
 
 	// find Studio name by opus
 	Rest.Studio.findOneByOpus(keyword, function (studio) {
-		$("#studio").val(studio.name).effect("highlight", {}, 1000);
+		$('#studio').val(studio.name).effect('highlight', {}, 1000);
 	});
 }
 

@@ -1,42 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Promise.all.then</title>
+		<script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+		<script>
+			console.log('promise start');
+			Promise.all([
+				new Promise((resolve, reject) => {
+					$.ajax({
+						url: '../data/index.menu.json',
+						success: function (json) {
+							console.log('promise1 ajax get', json);
+							resolve(true);
+						},
+					});
+				}),
+				new Promise((resolve, reject) => {
+					$.ajax({
+						url: '../data/main.menu.json',
+						success: function (json) {
+							console.log('promise2 ajax get', json);
+							resolve(true);
+						},
+					});
+				}),
+				new Promise((resolve, reject) => {
+					resolve(true);
+				}),
+			]).then((values) => {
+				console.log('then values', values);
+			});
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Promise.all.then</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
-    <script>
-        console.log('promise start');
-        Promise.all([
-            new Promise((resolve, reject) => {
-                $.ajax({
-                    url: '../data/index.menu.json', success: function (json) {
-                        console.log('promise1 ajax get', json);
-                        resolve(true);
-                    }
-                });
-            }),
-            new Promise((resolve, reject) => {
-                $.ajax({
-                    url: '../data/main.menu.json', success: function (json) {
-                        console.log('promise2 ajax get', json);
-                        resolve(true);
-                    }
-                });
-            }),
-            new Promise((resolve, reject) => {
-                resolve(true);
-            })
-        ]).then(values => {
-            console.log('then values', values);
-        });
-    </script>
-</head>
+			/*
+            Promise.all([
+                new Promise((resolve, reject) => {
+                    // prev cover
+                }),
+                new Promise((resolve, reject) => {
+                    // curr cover
+                }),
+                new Promise((resolve, reject) => {
+                    // next cover
+                }),
+                new Promise((resolve, reject) => {
+                    // actress info
+                }),
+                new Promise((resolve, reject) => {
+                    // score
+                }),
+                new Promise((resolve, reject) => {
+                    // subtitles
+                }),
+                new Promise((resolve, reject) => {
+                    // history
+                }),
+            ]).then(values => {
+                console.log('then', values);
+                // show info
+                // navigation.on();
+            });
+            */
+		</script>
+	</head>
 
-<body>
-
-</body>
-
+	<body></body>
 </html>

@@ -588,6 +588,8 @@
 			$(window).trigger('resize');
 		});
 
+		SessionStorageItem.clear();
+
 		/*
 		let tagLoaded = false;
 		let flayLoaded = false;
@@ -944,84 +946,28 @@
 		}
 	}
 
-	/*
-	const coverMap = new Map();
-	function setBackgroundCover(selector, opus) {
-		if (opus) {
-			if (coverMap.has(opus)) {
-				$(selector).css({ backgroundImage: 'url(' + coverMap.get(opus) + ')' });
-			} else {
-				getBlobImageUrl(PATH + '/static/cover/' + opus).then((url) => {
-					coverMap.set(opus, url);
-					$(selector).css({ backgroundImage: 'url(' + url + ')' });
-				});
-			}
-		} else {
-			$(selector).css({ backgroundImage: 'url(' + PATH + '/static/image/random?_=' + Date.now() + ')' });
-		}
-	}
-	*/
-
-	function setBackgroundCover(selector, opus) {
-		if (opus) {
-			if (SessionStorageItem.has(opus)) {
-				$(selector).css({ backgroundImage: 'url(' + SessionStorageItem.get(opus) + ')' });
-			} else {
-				getBlobImageUrl(PATH + '/static/cover/' + opus).then((url) => {
-					SessionStorageItem.set(opus, url);
-					$(selector).css({ backgroundImage: 'url(' + url + ')' });
-				});
-			}
-		} else {
-			$(selector).css({ backgroundImage: 'url(' + PATH + '/static/image/random?_=' + Date.now() + ')' });
-		}
-	}
-
 	function showVideo() {
-		navigation.off();
+		const setBackgroundCover = (selector, opus) => {
+			if (opus) {
+				if (SessionStorageItem.has(opus)) {
+					$(selector).css({ backgroundImage: `url('${SessionStorageItem.get(opus)}')` });
+				} else {
+					Rest.Image.blobUrl(`${PATH}/static/cover/${opus}`, (blobUrl) => {
+						SessionStorageItem.set(opus, blobUrl);
+						$(selector).css({ backgroundImage: `url('${blobUrl}')` });
+					});
+				}
+			} else {
+				$(selector).css({ backgroundImage: `url('${PATH}/static/image/random?_=${Date.now()}')` });
+			}
+		};
 
-		Promise.all([
-			new Promise((resolve, reject) => {
-				// prev cover
-			}),
-			new Promise((resolve, reject) => {
-				// curr cover
-			}),
-			new Promise((resolve, reject) => {
-				// next cover
-			}),
-			new Promise((resolve, reject) => {
-				// actress info
-			}),
-			new Promise((resolve, reject) => {
-				// score
-			}),
-			new Promise((resolve, reject) => {
-				// subtitles
-			}),
-			new Promise((resolve, reject) => {
-				// history
-			}),
-		]).then(values => {
-			console.log('then', values);
-			// show info
-			// navigation.on();
-		});
+		navigation.off();
 
 		// show cover
 		setBackgroundCover('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
 		setBackgroundCover('.cover-wrapper-inner.curr > .cover-box', collectedList[currentIndex]?.opus);
 		setBackgroundCover('.cover-wrapper-inner.next > .cover-box', collectedList[currentIndex + 1]?.opus);
-
-		/*
-		const prevCoverURL = PATH + (0 < currentIndex ? '/static/cover/' + collectedList[currentIndex - 1].opus : '/static/image/random?_=' + Date.now());
-		const currCoverURL = PATH + '/static/cover/' + currentFlay.opus;
-		const nextCoverURL = PATH + (currentIndex < collectedList.length - 1 ? '/static/cover/' + collectedList[currentIndex + 1].opus : '/static/image/random?_=' + Date.now());
-
-		$('.cover-wrapper-inner.prev > .cover-box').css({ backgroundImage: 'url(' + prevCoverURL + ')' });
-		$('.cover-wrapper-inner.curr > .cover-box').css({ backgroundImage: 'url(' + currCoverURL + ')' });
-		$('.cover-wrapper-inner.next > .cover-box').css({ backgroundImage: 'url(' + nextCoverURL + ')' });
-		*/
 
 		// show Infomation
 		// studio
@@ -1036,33 +982,43 @@
 			if (name === 'Amateur') {
 				return;
 			}
+
+			const $actress = $('<div>', { class: 'info-actress' })
+				.append(
+					$('<label>', { class: 'text info-actress-favorite hover' }).append($('<i>', { class: 'fa' }).css('min-width', 16)),
+					$('<label>', { class: 'text info-actress-name hover' }).html(name).neonLoading(true),
+					$('<label>', { class: 'text info-actress-local' }).html('&nbsp;'),
+					$('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
+					$('<label>', { class: 'text info-actress-age' }).html('&nbsp;'),
+					$('<label>', { class: 'text info-actress-birth' }).html('&nbsp;'),
+					$('<label>', { class: 'text info-actress-body' }).html('&nbsp;'),
+					$('<label>', { class: 'text info-actress-height' }).html('&nbsp;'),
+					$('<label>', { class: 'text info-actress-debut' }).html('&nbsp;'),
+				)
+				.appendTo($('.info-wrapper-actress'));
+
 			Rest.Actress.get(name, (actress) => {
-				const $flayCountOfActress = $('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;');
-				$('<div>', { class: 'info-actress' })
-					.data('actress', actress)
-					.append(
-						$('<label>', { class: 'text info-actress-favorite hover' }).append($('<i>', { class: 'fa fa-heart' + (actress.favorite ? ' favorite' : '-o') })),
-						$('<label>', { class: 'text info-actress-name hover' }).html(actress.name),
-						$('<label>', { class: 'text info-actress-local' }).html(actress.localName),
-						$flayCountOfActress,
-						$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
-						$('<label>', { class: 'text info-actress-birth' }).html(
-							actress.birth.replace(/年|月|日/g, function (match, offset, string) {
-								return '<small>' + match + '</small>';
-							}),
-						),
-						$('<label>', { class: 'text info-actress-body' }).html(
-							actress.body.replace(/ - /g, function (match) {
-								return '<small>' + match.trim() + '</small>';
-							}),
-						),
-						$('<label>', { class: 'text info-actress-height' }).html(actress.height.ifNotZero('<small>cm</small>')),
-						$('<label>', { class: 'text info-actress-debut' }).html(actress.debut.ifNotZero('<small>d</small>')),
-					)
-					.appendTo($('.info-wrapper-actress'));
-				Rest.Flay.findByActress(actress, (foundFlayList) => {
-					$flayCountOfActress.html(foundFlayList.length + '<small>F</small>');
-				});
+				$actress.data('actress', actress);
+				$actress.find('.info-actress-favorite > i').addClass(actress.favorite ? 'favorite fa-heart' : 'fa-heart-o');
+				$actress.find('.info-actress-local').html(actress.localName);
+				$actress.find('.info-actress-age').html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>'));
+				$actress.find('.info-actress-birth').html(
+					actress.birth.replace(/年|月|日/g, function (match, offset, string) {
+						return '<small>' + match + '</small>';
+					}),
+				);
+				$actress.find('.info-actress-body').html(
+					actress.body.replace(/ - /g, function (match) {
+						return '<small>' + match.trim() + '</small>';
+					}),
+				);
+				$actress.find('.info-actress-height').html(actress.height.ifNotZero('<small>cm</small>'));
+				$actress.find('.info-actress-debut').html(actress.debut.ifNotZero('<small>d</small>'));
+				$actress.find('.info-actress-name').neonLoading(false);
+			});
+
+			Rest.Flay.findByActress(name, (foundFlayList) => {
+				$actress.find('.info-actress-flaycount').html(`${foundFlayList.length}<small>F</small>`).neonLoading(false);
 			});
 		});
 		// release
@@ -1076,13 +1032,15 @@
 			.toggleClass('nonExist', movieSize === 0);
 		// video play
 		$('.info-play')
-			.html(currentFlay.video.play + '<small>P</small>')
+			.html(`${currentFlay.video.play}<small>P</small>`)
 			.toggle(currentFlay.video.play > 0);
 		// score
+		$('.info-score').neonLoading(true);
 		Rest.Flay.getScore(currentFlay.opus, (score) => {
 			$('.info-score')
 				.html(`${score}<small>S</small>`)
-				.toggle(score > 0);
+				.toggle(score > 0)
+				.neonLoading(false);
 		});
 		// subtitles
 		$('.info-subtitles')
@@ -1092,8 +1050,10 @@
 			.find('.link-subtitles')
 			.remove();
 		if (currentFlay.files.subtitles.length === 0) {
-			if (!currentFlay.hasOwnProperty('checkedSubtitles')) { // once checked, pass
+			// once checked, pass
+			if (!currentFlay.hasOwnProperty('checkedSubtitles')) {
 				currentFlay['checkedSubtitles'] = true;
+				$('.info-subtitles').neonLoading(true);
 				Search.subtitlesUrlIfFound(currentFlay.opus, function (foundSubtitlesUrlList, opus) {
 					if (foundSubtitlesUrlList && foundSubtitlesUrlList.length > 0) {
 						if (opus === currentFlay.opus) {
@@ -1105,6 +1065,7 @@
 							notice(`${opus} subtitle found ${foundSubtitlesUrlList.length}. but flay passed!`);
 						}
 					}
+					$('.info-subtitles').neonLoading(false);
 				});
 			}
 		}
@@ -1131,7 +1092,7 @@
 				if (currentFlay.video.play !== playHistories.length) {
 					currentFlay.video.play = playHistories.length;
 					Rest.Video.update(currentFlay.video, () => {
-						$('.info-play').html(currentFlay.video.play + '<small>P</small>');
+						$('.info-play').html(`${currentFlay.video.play}<small>P</small>`);
 					});
 				}
 				drawGraph(histories);
@@ -1173,33 +1134,37 @@
 	const firstDayOfThisYear = AmCharts.stringToDate(DateUtils.format('yyyy-01-01'), 'YYYY-MM-DD');
 
 	function drawGraph(historyList) {
-		const dataMap = {};
-		dataMap[DateUtils.format('yyyy-MM-dd HH:mm:ss')] = []; // today
+		// init variables
+		const dataMap = new Map();
+		const dataArray = [
+			{
+				date: AmCharts.stringToDate(DateUtils.format('yyyy-MM-dd'), 'YYYY-MM-DD'),
+				playCount: 0,
+			},
+		];
 
-		$.each(historyList, function (idx, history) {
+		historyList.forEach((history) => {
 			if (history.action === 'PLAY') {
 				const key = history.date.substring(0, 10);
-				if (dataMap[key]) {
-					dataMap[key].push(history);
+				if (dataMap.has(key)) {
+					dataMap.get(key).push(history);
 				} else {
-					dataMap[key] = [history];
+					dataMap.set(key, [history]);
 				}
 			}
 		});
-		// console.log("dataMap", dataMap);
 
 		// convert map to array
-		const dataArray = [];
-		$.each(dataMap, function (key, val) {
+		dataMap.forEach((val, key) => {
 			dataArray.push({
 				date: AmCharts.stringToDate(key, 'YYYY-MM-DD'),
 				playCount: val.length,
 			});
 		});
+
 		// sort ascending by date
-		dataArray.sort(function (d1, d2) {
-			return d1.date > d2.date ? 1 : -1;
-		});
+		dataArray.sort((d1, d2) => (d1.date > d2.date ? 1 : -1));
+
 		// add firstDayOfThisYear, if necessary
 		if (dataArray[0].date.getTime() > firstDayOfThisYear.getTime()) {
 			dataArray.unshift({

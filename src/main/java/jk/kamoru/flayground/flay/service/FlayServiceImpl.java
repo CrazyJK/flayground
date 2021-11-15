@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.base.advise.TrackExecutionTime;
 import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -67,6 +68,7 @@ public class FlayServiceImpl implements FlayService {
 				.collect(Collectors.toList());
 	}
 
+	@TrackExecutionTime
 	@Override
 	public Collection<Flay> findByKeyValue(String field, String value) {
 		if ("studio".equalsIgnoreCase(field)) {

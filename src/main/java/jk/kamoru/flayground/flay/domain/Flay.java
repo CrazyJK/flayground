@@ -31,6 +31,8 @@ public class Flay {
 
 	Video video;
 
+	int score;
+
 	public Flay() {
 		files.put(MOVIE, new ArrayList<File>());
 		files.put(SUBTI, new ArrayList<File>());

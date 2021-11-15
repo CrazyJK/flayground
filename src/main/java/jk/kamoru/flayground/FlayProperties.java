@@ -68,7 +68,8 @@ public class FlayProperties {
 	public static class Score {
 		private int rankPoint = 20;
 		private int playPoint = 1;
-		private int subtitlesPoint = 50;
+		private int subtitlesPoint = 30;
+		private int favoritePoint = 30;
 	}
 
 	protected static List<String> getSiteLocalAddresses() {

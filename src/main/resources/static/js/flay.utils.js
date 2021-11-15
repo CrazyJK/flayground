@@ -93,6 +93,16 @@ const View = {
 	flay: function (opus) {
 		Popup.open(PATH + '/html/info/info.flay.html?opus=' + opus, 'flay-' + opus, 800, 770);
 	},
+	flayInPage: (flay) => {
+		if ($('#flayInPage').length === 0) {
+			$(`	<div id="flayInPage" class="collapse fixed-center rounded shadow" style="width: 800px">
+					<span class="text-light hover" style="position: absolute; right: 0; bottom: 0; margin: 5px; font-size: 3rem; line-height: 0.5; text-shadow: 0px 0px 4px #000;" onclick="$(this).parent().hide();">&times;</span>
+					<div style="font-size: initial; font-family: initial; box-shadow: 0 0 0.125rem 0.125rem orange, 0 0 1rem 1rem #000;"></div>
+				</div>`).appendTo($('body'));
+		}
+		$('#flayInPage > div').empty().appendFlayCard(flay);
+		$('#flayInPage').show();
+	},
 	video: function (opus) {
 		Popup.open(PATH + '/info/video/' + opus, 'video-' + opus, 400, 300);
 	},

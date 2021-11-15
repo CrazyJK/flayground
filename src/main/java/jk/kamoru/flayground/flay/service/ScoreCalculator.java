@@ -2,12 +2,16 @@ package jk.kamoru.flayground.flay.service;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import jk.kamoru.flayground.FlayProperties;
+import jk.kamoru.flayground.base.advise.TrackExecutionTime;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 
@@ -18,37 +22,56 @@ public class ScoreCalculator {
 
 	@Autowired ActressInfoService actressInfoService;
 
-	Comparator<Flay> scoreComparator = (f1, f2) -> NumberUtils.compare(calcScore(f1), calcScore(f2));
-	Comparator<Flay> favoriteComparator = (f1, f2) -> NumberUtils.compare(calcFavorite(f1), calcFavorite(f2));
-	Comparator<Flay> releaseComparator = Comparator.comparing(Flay::getRelease);
-	Comparator<Flay> modifiedComparator = Comparator.comparing(Flay::getLastModified);
+	Collection<Flay> flayList;
 
+	Comparator<Flay> scoreComparator = Comparator.comparing(Flay::getScore).reversed();
+	Comparator<Flay> flaycountComparator = (f1, f2) -> NumberUtils.compare(countFlayByActress(f2), countFlayByActress(f1));
+	Comparator<Flay> releaseComparator = Comparator.comparing(Flay::getRelease).reversed();
+	Comparator<Flay> modifiedComparator = Comparator.comparing(Flay::getLastModified).reversed();
+
+	@TrackExecutionTime(message = "flay list order by score desc")
 	public Collection<Flay> listOrderByScoreDesc(Collection<Flay> flayList) {
+		flayList.forEach(f -> calcScore(f));
+		this.flayList = flayList;
 		return flayList.stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0)
-				.sorted(scoreComparator.reversed()
-						.thenComparing(favoriteComparator.reversed()
-								.thenComparing(releaseComparator.reversed()
-										.thenComparing(modifiedComparator.reversed()))))
+				.sorted(scoreComparator.thenComparing(flaycountComparator.thenComparing(modifiedComparator.thenComparing(releaseComparator))))
 				.collect(Collectors.toList());
 	}
 
-	public String toScoreString(Flay flay) {
-		return String.format("Score %s = R%s * %s + P%s * %s + s%s * %s; F%s R%s M%s", calcScore(flay),
-				flay.getVideo().getRank(), flayProperties.getScore().getRankPoint(),
-				flay.getVideo().getPlay(), flayProperties.getScore().getPlayPoint(),
-				(flay.getFiles().get(Flay.SUBTI).size() > 0 ? 1 : 0), flayProperties.getScore().getSubtitlesPoint(),
-				calcFavorite(flay), flay.getRelease(), flay.getLastModified());
-	}
-
 	public int calcScore(Flay flay) {
-		return flay.getVideo().getRank() * flayProperties.getScore().getRankPoint()
+		int score = resolveRank(flay) * flayProperties.getScore().getRankPoint()
 				+ flay.getVideo().getPlay() * flayProperties.getScore().getPlayPoint()
-				+ (flay.getFiles().get(Flay.SUBTI).size() > 0 ? 1 : 0) * flayProperties.getScore().getSubtitlesPoint();
+				+ (flay.getFiles().get(Flay.SUBTI).size() > 0 ? 1 : 0) * flayProperties.getScore().getSubtitlesPoint()
+				+ countFavoriteActress(flay) * flayProperties.getScore().getFavoritePoint();
+		flay.setScore(score);
+		return score;
 	}
 
-	private int calcFavorite(Flay flay) {
+	private int countFavoriteActress(Flay flay) {
 		return flay.getActressList().stream().mapToInt(a -> StringUtils.isNotBlank(a) && actressInfoService.get(a).isFavorite() ? 1 : 0).sum();
+	}
+
+	private int resolveRank(Flay flay) {
+		if (flay.getVideo().getRank() != 0) {
+			return flay.getVideo().getRank();
+		} else {
+			// {1: 50, 2: 63, 3: 64, 4: 65, 5: 66}
+			List<Integer> tags = flay.getVideo().getTags();
+			return tags.contains(66) ? 5 : tags.contains(65) ? 4 : tags.contains(64) ? 3 : tags.contains(63) ? 2 : tags.contains(50) ? 1 : 0;
+		}
+	}
+
+	private int countFlayByActress(Flay flay) {
+		int count = 0;
+		for (String name : flay.getActressList()) {
+			for (Flay f : flayList) {
+				if (f.getActressList().contains(name)) {
+					count++;
+				}
+			}
+		}
+		return count;
 	}
 
 }

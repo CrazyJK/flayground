@@ -54,54 +54,54 @@ body {
 	color: #eee;
 }
 
-.flay-index {
+#flayView .flay-index {
 	flex: 0 0 30px;
 	text-align: right;
 }
-.flay-opus {
+#flayView .flay-opus {
 	flex: 0 0 80px;
 }
-.flay-title {
+#flayView .flay-title {
 	flex: 1 1 auto;
 }
-.flay-actress {
+#flayView .flay-actress {
 	flex: 1 1 auto;
 	text-align: right;
 }
-.flay-actress > span.same-name {
+#flayView .flay-actress > span.same-name {
 	color: orangered !important;
 }
-.flay-release {
+#flayView .flay-release {
 	flex: 0 0 80px;
 }
-.flay-modified {
+#flayView .flay-modified {
 	flex: 0 0 66px;
 }
-.flay-rank {
+#flayView .flay-rank {
 	flex: 0 0 32px;
 	text-align: right;
 }
-.flay-play {
+#flayView .flay-play {
 	flex: 0 0 32px;
 	text-align: right;
 }
-.flay-movie {
+#flayView .flay-movie {
 	flex: 0 0 32px;
 	text-align: right;
 }
-.flay-subti {
+#flayView .flay-subti {
 	flex: 0 0 32px;
 	text-align: right;
 }
-.flay-score {
+#flayView .flay-score {
 	flex: 0 0 36px;
 	text-align: right;
 }
-.flay-length {
+#flayView .flay-length {
 	flex: 0 0 50px;
 	text-align: right;
 }
-.flay-total {
+#flayView .flay-total {
 	flex: 0 0 55px;
 	text-align: right;
 }

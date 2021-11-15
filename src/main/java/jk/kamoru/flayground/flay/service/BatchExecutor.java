@@ -158,7 +158,7 @@ public class BatchExecutor {
 		for (Flay flay : scoreReverseSortedFlayList) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {
-				log.info("lower score {} {} => {}", flay.getOpus(), flayFileHandler.prettyFileLength(lengthSum), scoreCalculator.toScoreString(flay));
+				log.info("lower score {} {} {}", flay.getOpus(), flay.getScore(), flayFileHandler.prettyFileLength(lengthSum));
 				archiving(flay);
 			}
 		}

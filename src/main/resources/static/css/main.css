@@ -137,7 +137,7 @@
 	padding: 0;
 }
 
-.sidenav input[type="color"] {
+.sidenav input[type='color'] {
 	background-color: transparent;
 	border: 0;
 	border-radius: 0.25rem;
@@ -147,7 +147,7 @@
 	padding: 0;
 	width: 50px;
 }
-.sidenav input[type="number"] {
+.sidenav input[type='number'] {
 	background-color: transparent;
 	border: 0px solid #000;
 	border-radius: 0.25rem;
@@ -197,7 +197,7 @@
 	bottom: 0;
 	width: 0;
 	background-color: rgba(17, 17, 17, 0.75);
-	background-image: url("/img/bg/flayground_facade.jpg");
+	background-image: url('/img/bg/flayground_facade.jpg');
 	background-position: center;
 	background-repeat: no-repeat;
 	margin-left: var(--sidenav-width);

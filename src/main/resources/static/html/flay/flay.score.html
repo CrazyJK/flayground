@@ -17,16 +17,27 @@
 		<link rel="stylesheet" href="../../css/main.css" />
 		<link rel="stylesheet" href="../../css/flay.score.css" />
 		<link rel="stylesheet" href="../../css/theme/flay.theme.dark.css" />
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="../../js/crazy.common.js"></script>
+		<script type="text/javascript" src="../../js/crazy.jquery.js"></script>
+		<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="../../js/flay.utils.js"></script>
+		<script type="text/javascript" src="../../js/flay.websocket.js"></script>
+		<script type="text/javascript" src="../../js/flay.view.card.js"></script>
+		<script type="text/javascript" src="../../js/flay.score.js"></script>
 	</head>
 	<body>
 		<div class="container-fluid sticky-top bg-white" id="topMenu">
 			<span class="lead font-weight-bolder">Score List</span>
 			<span class="check-group sm">
 				<label>
-					<input type="radio" id="viewTypeTable" name="viewType" value="f" /><span><strong id="flayCount">0</strong> Flay</span>
+					<input type="radio" name="viewType" value="f" /><span><strong id="flayCount"></strong> Flay</span>
 				</label>
 				<label>
-					<input type="radio" id="viewTypeTable" name="viewType" value="a" /><span><strong id="actressCount">0</strong> Actress</span>
+					<input type="radio" name="viewType" value="a" /><span><strong id="actressCount"></strong> Actress</span>
 				</label>
 			</span>
 			<span class="font-weight-bolder">Storage Limit <span id="storageLimit"></span> GB</span>
@@ -40,34 +51,37 @@
 					<label class="flay-opus">opus</label>
 					<label class="flay-title">
 						title
-						<label class="check xs my-0 float-right"><input type="checkbox" id="lowerScore" /><span>lowerScore</span></label>
+						<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="lowerScore" /><span>lowerScore</span></label>
+						<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="clickNplay" /><span>click & play</span></label>
 					</label>
 					<label class="flay-actress">actress</label>
 					<label class="flay-release">release</label>
 					<label class="flay-modified">modified</label>
 					<label class="flay-rank">rank</label>
 					<label class="flay-play">play</label>
-					<label class="flay-movie">movie</label>
-					<label class="flay-subti">subti</label>
-					<label class="flay-score">score</label>
+					<label class="flay-movie">mov</label>
+					<label class="flay-subti">sub</label>
+					<label class="flay-score">sco</label>
 					<label class="flay-length">length</label>
 					<label class="flay-total">total</label>
 				</div>
 			</div>
 			<div class="f-body"></div>
-			<div class="collapse fixed-center rounded bg-warning shadow" id="coverWrap" style="width: 800px">
-				<span class="text-danger hover" style="position: absolute; right: 0; margin: 5px; font-size: 3rem; line-height: 0.5" onclick="$(this).parent().hide();">&times;</span>
-				<img class="img-thumbnail" />
-			</div>
 		</div>
 
 		<div style="display: none" id="actressView">
 			<div class="sticky-top f-head">
 				<div>
 					<label class="actress-no">#</label>
-					<label class="actress-scoreTotal">tot</label>
-					<label class="actress-flayCount">flay</label>
-					<label class="actress-scoreAvg">Avg</label>
+					<label class="actress-scoreTotal">
+						<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="t" /><span>tot</span></label>
+					</label>
+					<label class="actress-flayCount">
+						<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="f" /><span>flay</span></label>
+					</label>
+					<label class="actress-scoreAvg">
+						<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="a" /><span>Avg</span></label>
+					</label>
 					<label class="actress-favorite hover">fav</label>
 					<label class="actress-name">name</label>
 					<label class="actress-local">local</label>
@@ -81,19 +95,6 @@
 			<div class="f-body"></div>
 		</div>
 
-		<div id="wrap_overlay">
-			<div id="overlay" style="display: none"><div id="overlay_body">Loading data</div></div>
-		</div>
-
-		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-		<script type="text/javascript" src="../../js/crazy.common.js"></script>
-		<script type="text/javascript" src="../../js/crazy.jquery.js"></script>
-		<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
-		<script type="text/javascript" src="../../js/flay.utils.js"></script>
-		<script type="text/javascript" src="../../js/flay.view.card.js"></script>
-		<script type="text/javascript" src="../../js/flay.score.js"></script>
+		<footer></footer>
 	</body>
 </html>

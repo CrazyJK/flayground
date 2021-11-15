@@ -4,15 +4,11 @@
 (() => {
 	'use strict';
 
-	let rankPoint = 0,
-		playPoint = 0,
-		subtitlesPoint = 0,
-		storageLimit = 0;
-
+	let flayProperties;
+	let flayList = [];
 	let actressList = [];
-	const actressMap = new Map();
 
-	$('#overlay').toggle(true);
+	const actressMap = new Map();
 
 	Promise.all([
 		new Promise((resolve, reject) => {
@@ -25,38 +21,43 @@
 			restCall('/flay/list/orderbyScoreDesc', {}, resolve, reject);
 		}),
 	]).then(([config, retActressList, retFlayList]) => {
-		rankPoint = config.score.rankPoint;
-		playPoint = config.score.playPoint;
-		subtitlesPoint = config.score.subtitlesPoint;
-		storageLimit = config.storageLimit * GB;
-		$('#storageLimit').html(config.storageLimit);
-
+		flayProperties = config;
 		actressList = retActressList;
+		flayList = retFlayList;
 
-		displayView(retFlayList);
-	});
+		actressList.forEach((actress) => {
+			actressMap.set(actress.name, actress);
+		});
 
-	// event listener
-	// only lower score view
-	$('#lowerScore').on('change', function () {
-		var checked = this.checked;
-		console.log('lowerScore', checked);
-		$('#flayView > .f-body > div:not(.lower-score)').toggle(!checked);
-		$('#flayCount').html($('#flayView > .f-body > div:visible').length);
-	});
-	// only favorite actress view
-	$('#actressView > .f-head > div > .actress-favorite').on('click', () => {
-		$("#actressView > .f-body > div[data-favorite='false']").toggle();
-		$('#actressCount').html($('#actressView > .f-body > div:visible').length);
+		$('#storageLimit').html(flayProperties.storageLimit);
+
+		displayFlay();
+		displayActress();
+
+		// view type
+		$('input[name="viewType"]').on('change', function () {
+			const viewType = $(this).val();
+			if (viewType === 'f') {
+				$('#flayView').show();
+				$('#actressView').hide();
+			} else if (viewType === 'a') {
+				$('#flayView').hide();
+				$('#actressView').show();
+			}
+		});
+		$('input[name="viewType"][value="f"]').click();
 	});
 
 	$(window).on('keyup', (e) => {
-		// console.log("key", e.keyCode);
+		console.log('key', e.keyCode, e.key);
 		// arrow up(38), down(40)
 		if (e.keyCode === 40 || e.keyCode === 38) {
+			e.preventDefault();
+			e.stopPropagation();
+			e.stopImmediatePropagation();
 			const $active = $('.f-body > div.active');
 			if ($active.length > 0) {
-				if ($('#coverWrap').is(':visible')) {
+				if ($('#flayInPage').is(':visible')) {
 					if (e.keyCode === 38) {
 						$active.prev().find('.flay-title > span').click();
 					} else if (e.keyCode === 40) {
@@ -69,43 +70,146 @@
 						$active.next().click();
 					}
 				}
+				const position = $('.f-body > div.active').position();
+				// console.log('this top', position.top, 'window height', window.innerHeight);
+				if (e.keyCode === 38) {
+					window.scroll(0, position.top - window.innerHeight + 100);
+				} else if (e.keyCode === 40) {
+					window.scroll(0, position.top - 100);
+				}
 			}
+		} else if (96 <= e.keyCode && e.keyCode <= 110) {
+			let rank;
+			switch (e.keyCode) {
+				case 96: // 0
+					rank = '0';
+					break;
+				case 97: // 1
+					rank = '1';
+					break;
+				case 98: // 2
+					rank = '2';
+					break;
+				case 99: // 3
+					rank = '3';
+					break;
+				case 100: // 4
+					rank = '4';
+					break;
+				case 101: // 5
+					rank = '5';
+					break;
+				case 109: // -
+					rank = '-1';
+					break;
+				default:
+					break;
+			}
+			$(`input[name^="flay-rank-"][value="${rank}"]`).click();
 		}
 	});
 
-	function calcScore(flay) {
-		return flay.video.rank * rankPoint + flay.video.play * playPoint + (flay.files.subtitles.length > 0 ? 1 : 0) * subtitlesPoint;
-	}
-
-	function getScoreOfAll(flayList) {
-		let score = { total: 0, avg: 0 };
-		$.each(flayList, function (idx, flay) {
-			score.total += calcScore(flay);
+	function displayFlay() {
+		const storageLimitGB = flayProperties.storageLimit * GB;
+		let lengthSum = 0;
+		flayList.forEach((flay, idx) => {
+			lengthSum += flay.length;
+			$('#flayView .f-body').append(getFlayRecordObject(idx, flay, lengthSum, storageLimitGB));
 		});
-		score.avg = parseInt(score.total / flayList.length);
-		return score;
+		$('#flayCount').html(flayList.length);
+
+		$('.flay-actress > span').hover(
+			function (e) {
+				const currName = $(this).text();
+				$('.flay-actress > span').each(function () {
+					$(this).toggleClass('same-name', $(this).text() === currName);
+				});
+			},
+			function (e) {
+				$('.flay-actress > span').removeClass('same-name');
+			},
+		);
+
+		// only lower score view
+		$('#lowerScore').on('change', function () {
+			var checked = this.checked;
+			console.debug('lowerScore', checked);
+			$('#flayView > .f-body > div:not(.lower-score)').toggle(!checked);
+			$('#flayCount').html($('#flayView > .f-body > div:visible').length);
+		});
 	}
 
-	function getActressInfo(name) {
-		for (let actress of actressList) {
-			if (actress.name === name) {
-				return actress;
-			}
+	function displayActress() {
+		const getScoreOfAll = (flayArray) => {
+			let score = { total: 0, avg: 0 };
+			flayArray.forEach((flay) => {
+				score.total += flay.score;
+			});
+			score.avg = parseInt(score.total / flayArray.length);
+			return score;
+		};
+
+		const actressFlayMap = new Map();
+		flayList.forEach((flay) => {
+			flay.actressList.forEach((name) => {
+				if (!actressFlayMap.has(name)) {
+					actressFlayMap.set(name, new Array());
+				}
+				actressFlayMap.get(name).push(flay);
+			});
+		});
+		$('#actressCount').html(actressFlayMap.size);
+
+		let actressByScore = [];
+		for (var [name, flayArray] of actressFlayMap) {
+			let actress = actressMap.get(name);
+			let score = getScoreOfAll(flayArray);
+			actress['scoreTotal'] = score.total;
+			actress['flayCount'] = flayArray.length;
+			actress['scoreAvg'] = score.avg;
+			actressByScore.push(actress);
 		}
-		return {};
+
+		// only favorite actress view
+		$('#actressView > .f-head > div > .actress-favorite').on('click', () => {
+			$("#actressView > .f-body > div[data-favorite='false']").toggle();
+			$('#actressCount').html($('#actressView > .f-body > div:visible').length);
+		});
+		// sort
+		$('input[name="actressSort"]').on('change', function () {
+			const sortMethod = $(this).val();
+			actressByScore.sort(function (a1, a2) {
+				switch (sortMethod) {
+					case 't':
+						return a2.scoreTotal - a1.scoreTotal;
+					case 'f':
+						return a2.flayCount - a1.flayCount;
+					case 'a':
+						return a2.scoreAvg - a1.scoreAvg;
+					default:
+						return a2.scoreTotal - a1.scoreTotal;
+				}
+			});
+
+			$('#actressView .f-body').empty();
+			actressByScore.forEach((actress, idx) => {
+				$('#actressView .f-body').append(getActressRecordObject(idx, actress));
+			});
+		});
+		$('input[name="actressSort"][value="t"]').click();
 	}
 
-	function getFlayRecordObject(idx, flay, lengthSum) {
+	function getFlayRecordObject(idx, flay, lengthSum, storageLimitGB) {
 		var actressObjectArray = Util.Actress.get(flay.actressList, 'mx-1').map(($actress) => {
 			var name = $actress.text();
-			var actress = getActressInfo(name);
+			var actress = actressMap.get(name);
 			if (actress.favorite) {
 				$actress.prepend(`<i class="fa fa-heart mr-1"><i>`);
 			}
 			return $actress;
 		});
 
-		return $('<div>', { id: flay.opus, class: lengthSum > storageLimit ? 'lower-score' : '' })
+		return $('<div>', { id: flay.opus, class: lengthSum > storageLimitGB ? 'lower-score' : '' })
 			.append(
 				$('<label>', { class: 'flay-index' }).append(idx + 1),
 				$('<label>', { class: 'flay-opus' }).append(
@@ -118,9 +222,11 @@
 				$('<label>', { class: 'flay-title nowrap' }).append(
 					$('<span>', { class: 'hover' })
 						.html(flay.title)
-						.click(function (e) {
-							$('#coverWrap > img').attr('src', '/static/cover/' + flay.opus);
-							$('#coverWrap').show();
+						.click(function () {
+							View.flayInPage(flay);
+							if ($('#clickNplay').prop('checked')) {
+								Rest.Flay.play(flay);
+							}
 						}),
 				),
 				$('<label>', { class: 'flay-actress nowrap' }).append(actressObjectArray),
@@ -130,7 +236,7 @@
 				$('<label>', { class: 'flay-play' }).append(flay.video.play),
 				$('<label>', { class: 'flay-movie' }).append(flay.files.movie.length),
 				$('<label>', { class: 'flay-subti' }).append(flay.files.subtitles.length),
-				$('<label>', { class: 'flay-score' }).append(calcScore(flay)),
+				$('<label>', { class: 'flay-score' }).append(flay.score),
 				$('<label>', { class: 'flay-length' }).append(File.formatSize(flay.length, 'GB')),
 				$('<label>', { class: 'flay-total' }).append(File.formatSize(lengthSum, 'GB', 0)),
 			)
@@ -174,67 +280,5 @@
 				$(this).parent().children().removeClass('active');
 				$(this).addClass('active');
 			});
-	}
-
-	function displayView(flayList) {
-		let lengthSum = 0;
-		$.each(flayList, (idx, flay) => {
-			lengthSum += flay.length;
-			$('#flayView .f-body').append(getFlayRecordObject(idx, flay, lengthSum));
-
-			// collect actress map
-			$.each(flay.actressList, function (i, actress) {
-				if (!actressMap.has(actress)) {
-					actressMap.set(actress, new Array());
-				}
-				actressMap.get(actress).push(flay);
-			});
-		});
-
-		$('#flayCount').html(flayList.length);
-		$('#actressCount').html(actressMap.size);
-
-		// draw actress map
-		let actressByScore = [];
-		for (var [name, flayArray] of actressMap) {
-			let actress = getActressInfo(name);
-			let score = getScoreOfAll(flayArray);
-			actress['flayCount'] = flayArray.length;
-			actress['scoreTotal'] = score.total;
-			actress['scoreAvg'] = score.avg;
-			actressByScore.push(actress);
-		}
-		actressByScore.sort(function (a1, a2) {
-			return a2.scoreAvg - a1.scoreAvg;
-		});
-		$.each(actressByScore, (idx, actress) => {
-			$('#actressView .f-body').append(getActressRecordObject(idx, actress));
-		});
-
-		$("input[name='viewType']").on('change', function () {
-			const viewType = $(this).val();
-			if (viewType === 'f') {
-				$('#flayView').show();
-				$('#actressView').hide();
-			} else if (viewType === 'a') {
-				$('#flayView').hide();
-				$('#actressView').show();
-			}
-		});
-		$("input[name='viewType'][value='f']").parent().click();
-
-		$('#overlay').toggle(false);
-
-		$('.flay-actress > span').hover(
-			function (e) {
-				const currName = $(this).text();
-				$('.flay-actress > span').each(function () {
-					$(this).toggleClass('same-name', $(this).text() === currName);
-				});
-			},
-			function (e) {
-				$('.flay-actress > span').removeClass('same-name');
-			},
-		);
 	}
 })();

@@ -32,14 +32,10 @@ import jk.kamoru.flayground.info.source.ActressInfoSource;
 @RequestMapping("/static")
 public class ImageRequestHandler {
 
-	@Autowired
-	FlayService flayService;
-	@Autowired
-	FlayArchiveService flayArchiveService;
-	@Autowired
-	ImageService imageService;
-	@Autowired
-	ActressInfoSource actressInfoSource;
+	@Autowired FlayService flayService;
+	@Autowired FlayArchiveService flayArchiveService;
+	@Autowired ImageService imageService;
+	@Autowired ActressInfoSource actressInfoSource;
 
 	@GetMapping("/cover/{opus}")
 	@ResponseBody
@@ -50,7 +46,7 @@ public class ImageRequestHandler {
 		} catch (FlayNotfoundException e) {
 			flay = flayArchiveService.get(opus);
 		}
-		return getImageEntity(flay.getFiles().get(Flay.COVER).get(0));
+		return getImageEntity(flay.getCover());
 	}
 
 	@GetMapping("/cover/{opus}/base64")

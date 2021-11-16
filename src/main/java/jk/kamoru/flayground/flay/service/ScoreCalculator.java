@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import jk.kamoru.flayground.FlayProperties;
-import jk.kamoru.flayground.base.advise.TrackExecutionTime;
+import jk.kamoru.flayground.base.advice.TrackExecutionTime;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 
@@ -29,7 +29,7 @@ public class ScoreCalculator {
 	Comparator<Flay> releaseComparator = Comparator.comparing(Flay::getRelease).reversed();
 	Comparator<Flay> modifiedComparator = Comparator.comparing(Flay::getLastModified).reversed();
 
-	@TrackExecutionTime(message = "flay list order by score desc")
+	@TrackExecutionTime(message = "flay list order by score desc", level = TrackExecutionTime.LEVEL.INFO)
 	public Collection<Flay> listOrderByScoreDesc(Collection<Flay> flayList) {
 		flayList.forEach(f -> calcScore(f));
 		this.flayList = flayList;

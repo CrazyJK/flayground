@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.base.advise;
+package jk.kamoru.flayground.base.advice;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -9,6 +9,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TrackExecutionTime {
 
+	static enum LEVEL {
+		DEBUG, INFO, WARN, ERROR;
+	}
+
 	String message() default "";
+
+	LEVEL level() default LEVEL.DEBUG;
 
 }

@@ -4,14 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.advice.TrackExecutionTime;
@@ -89,7 +88,7 @@ public class FlayServiceImpl implements FlayService {
 			return instanceFlaySource.list().stream().filter(f -> f.getVideo().getComment().contains(value)).collect(Collectors.toList());
 		} else if ("tag".equalsIgnoreCase(field)) {
 			int id = Integer.parseInt(value);
-			return instanceFlaySource.list().stream().filter(f -> f.getVideo().getTags().stream().anyMatch(t -> t.intValue() == id)).collect(Collectors.toList());
+			return instanceFlaySource.list().stream().filter(f -> f.getVideo().getTags().stream().anyMatch(t -> t.getId().intValue() == id)).collect(Collectors.toList());
 		} else {
 			throw new IllegalStateException("unknown field");
 		}
@@ -138,7 +137,7 @@ public class FlayServiceImpl implements FlayService {
 		Tag tag = tagInfoService.get(id);
 		return instanceFlaySource.list().stream().filter(f -> {
 			String full = tag.getName() + "," + tag.getDescription();
-			return f.getVideo().getTags().contains(id) || StringUtils.containsAny(f.getFullname(), full.split(","));
+			return f.getVideo().getTags().stream().map(Tag::getId).toList().contains(id) || StringUtils.containsAny(f.getFullname(), full.split(","));
 		}).collect(Collectors.toList());
 	}
 

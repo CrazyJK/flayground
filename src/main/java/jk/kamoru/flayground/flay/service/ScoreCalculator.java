@@ -13,6 +13,7 @@ import org.springframework.stereotype.Component;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.base.advice.TrackExecutionTime;
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 
 @Component
@@ -57,7 +58,7 @@ public class ScoreCalculator {
 			return flay.getVideo().getRank();
 		} else {
 			// {1: 50, 2: 63, 3: 64, 4: 65, 5: 66}
-			List<Integer> tags = flay.getVideo().getTags();
+			List<Integer> tags = flay.getVideo().getTags().stream().map(Tag::getId).toList();
 			return tags.contains(66) ? 5 : tags.contains(65) ? 4 : tags.contains(64) ? 3 : tags.contains(63) ? 2 : tags.contains(50) ? 1 : 0;
 		}
 	}

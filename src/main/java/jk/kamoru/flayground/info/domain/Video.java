@@ -14,13 +14,12 @@ import lombok.NoArgsConstructor;
 @Data
 public class Video implements Info<String> {
 
-	@NotBlank
-	String opus;
+	@NotBlank String opus;
 	int play;
 	int rank;
 	String comment;
 	long lastAccess;
-	List<Integer> tags;
+	List<Tag> tags;
 
 	public Video(String key) {
 		setKey(key);

@@ -1103,8 +1103,8 @@
 		$("input[name='ranker'][value='" + currentFlay.video.rank + "']").prop('checked', true);
 		// tag
 		$('input:checked', '#videoTags.tag-list').prop('checked', false);
-		currentFlay.video.tags.forEach((tagId) => {
-			$("input[data-tag-id='" + tagId + "']", '#videoTags').prop('checked', true);
+		currentFlay.video.tags.forEach((tag) => {
+			$("input[data-tag-id='" + tag.id + "']", '#videoTags').prop('checked', true);
 		});
 		// history chart
 		if (currentFlay.video.play > 0) {

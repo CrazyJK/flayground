@@ -5,19 +5,19 @@ const todayYear = new Date().getFullYear();
 
 const Util = {
 	Tag: {
-		includes: function (tags, tag) {
+		includes: function (tags, _tag) {
 			var found = false;
-			$.each(tags, function (idx, tagId) {
-				if (tagId === tag.id) {
+			$.each(tags, function (idx, tag) {
+				if (tag.id === _tag.id) {
 					found = true;
 				}
 			});
 			return found;
 		},
-		indexOf: function (tags, tag) {
+		indexOf: function (tags, _tag) {
 			var found = -1;
-			$.each(tags, function (idx, tagId) {
-				if (tagId === tag.id) {
+			$.each(tags, function (idx, tag) {
+				if (tag.id === _tag.id) {
 					found = idx;
 				}
 			});
@@ -26,7 +26,7 @@ const Util = {
 		push: function (tags, tag) {
 			var idx = Util.Tag.indexOf(tags, tag);
 			if (idx < 0) {
-				tags.push(tag.id);
+				tags.push(tag);
 			}
 		},
 		remove: function (tags, tag) {

@@ -59,47 +59,47 @@
 			var id = reqParam.id;
 			var tag;
 
-			$("#save").on("click", function () {
-				tag.name = $("#name").val();
-				tag.description = $("#description").val();
+			$('#save').on('click', function () {
+				tag.name = $('#name').val();
+				tag.description = $('#description').val();
 				Rest.Tag.update(tag, function () {
-					loading.on("Updated");
+					loading.on('Updated');
 				});
 			});
 
-			$("#marked").on("click", function () {
-				var isChecked = $(this).prop("checked");
-				$(".tag-unmark").toggle(!isChecked);
+			$('#marked').on('click', function () {
+				var isChecked = $(this).prop('checked');
+				$('.tag-unmark').toggle(!isChecked);
 			});
 
 			Rest.Tag.get(id, function (_tag) {
 				tag = _tag;
-				document.title = tag.name + " - " + document.title;
+				document.title = tag.name + ' - ' + document.title;
 
-				$("#name").val(tag.name);
-				$("#description").val(tag.description);
+				$('#name').val(tag.name);
+				$('#description').val(tag.description);
 
 				Rest.Flay.findByTagLike(tag, function (flayList) {
 					flayList.sort(function (flay1, flay2) {
 						return flay2.release.toLowerCase().localeCompare(flay1.release);
 					});
 
-					var $flayList = $(".flay-list").empty();
+					var $flayList = $('.flay-list').empty();
 					var tagMarkedCount = 0;
 
 					$.each(flayList, function (idx, flay) {
-						var isTagMarked = flay.video.tags.includes(tag.id);
+						var isTagMarked = Utils.Tag.includes(flay.video.tags, tag);
 						if (isTagMarked) tagMarkedCount++;
 
 						$flayList.appendFlayCard(flay, {
 							width: 330,
 							exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-							fontSize: "80%",
-							class: isTagMarked ? "tag-mark" : "tag-unmark",
+							fontSize: '80%',
+							class: isTagMarked ? 'tag-mark' : 'tag-unmark',
 						});
 					});
 
-					$(".video-count").html(tagMarkedCount + " / " + flayList.length);
+					$('.video-count').html(tagMarkedCount + ' / ' + flayList.length);
 				});
 			});
 		</script>

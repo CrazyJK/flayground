@@ -373,9 +373,9 @@ const STUDIO = 'studio',
 			} else {
 				$flayCard.find('.flay-tag-wrapper').empty();
 				if (settings.width >= 800) {
-					flay.video.tags.forEach((tagid) => {
-						const tag = tagMapForCard.get(tagid);
-						$flayCard.find('.flay-tag-wrapper').append(`<label class="text flay-tag extra" title="${tag.description}">${tag.name}</label>`);
+					flay.video.tags.forEach((tag) => {
+						const sourceTag = tagMapForCard.get(tag.id);
+						$flayCard.find('.flay-tag-wrapper').append(`<label class="text flay-tag extra" title="${sourceTag.description}">${sourceTag.name}</label>`);
 					});
 				}
 			}

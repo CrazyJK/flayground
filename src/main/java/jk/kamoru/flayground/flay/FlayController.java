@@ -32,7 +32,9 @@ public class FlayController {
 
 	@GetMapping("/{opus}/score")
 	public int getScore(@PathVariable String opus) {
-		return scoreCalculator.calcScore(flayService.get(opus));
+		Flay flay = flayService.get(opus);
+		scoreCalculator.calcScore(flay);
+		return flay.getScore();
 	}
 
 	@GetMapping("/list")

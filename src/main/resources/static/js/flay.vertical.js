@@ -678,7 +678,7 @@
 			if (flay.video.tags.includes(tag.id)) {
 				// id
 				return true;
-			} else if (flay.fullname.indexOf(tag.name) > -1) {
+			} else if (flay.title.indexOf(tag.name) > -1) {
 				// name
 				return true;
 			} else {
@@ -688,7 +688,7 @@
 					for (var y in descArray) {
 						var desc = descArray[y].trim();
 						if (desc.length > 0) {
-							if (flay.fullname.indexOf(desc) > 0) {
+							if (flay.title.indexOf(desc) > 0) {
 								return true;
 							}
 						}
@@ -790,7 +790,7 @@
 			}
 
 			if (query !== '') {
-				if ((flay.fullname + flay.comment).toLowerCase().indexOf(query.toLowerCase()) < 0) {
+				if ((flay.studio + flay.opus + flay.title + flay.actress + flay.release + flay.comment).toLowerCase().indexOf(query.toLowerCase()) < 0) {
 					continue;
 				}
 			}

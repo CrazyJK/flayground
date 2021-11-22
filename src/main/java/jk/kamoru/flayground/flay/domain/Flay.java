@@ -32,6 +32,7 @@ public class Flay {
 	Video video;
 
 	int score;
+	int totalFlayByActress;
 
 	public Flay() {
 		files.put(MOVIE, new ArrayList<File>());
@@ -56,14 +57,6 @@ public class Flay {
 		files.get(CANDI).add(file);
 	}
 
-	public File getCover() {
-		if (archive) {
-			return files.get(COVER).size() > 0 ? files.get(COVER).get(0) : null;
-		} else {
-			return files.get(COVER).get(0);
-		}
-	}
-
 	public long getLastModified() {
 		return NumberUtils.max(
 				files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1),
@@ -77,6 +70,16 @@ public class Flay {
 				+ files.get(COVER).stream().mapToLong(File::length).sum();
 	}
 
+	@JsonIgnore
+	public File getCover() {
+		if (archive) {
+			return files.get(COVER).size() > 0 ? files.get(COVER).get(0) : null;
+		} else {
+			return files.get(COVER).get(0);
+		}
+	}
+
+	@JsonIgnore
 	public String getFullname() {
 		return String.format("[%s][%s][%s][%s][%s]", studio, opus, title, getActressName(), release);
 	}

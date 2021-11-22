@@ -1,16 +1,14 @@
-
 class FlayControl {
-
 	static totalActressMap = {};
 	static isFavorite(actressNames) {
 		if ($.isEmptyObject(FlayControl.totalActressMap)) {
 			$.ajax({
-				url: "/info/actress/map",
+				url: '/info/actress/map',
 				async: false,
 				success: (map) => {
 					FlayControl.totalActressMap = map;
-				}
-			})
+				},
+			});
 		}
 		for (name of actressNames) {
 			if (FlayControl.totalActressMap[name].favorite) {
@@ -25,7 +23,8 @@ class FlayControl {
 			result = data1 - data2;
 		} else if (typeof data1 === 'string') {
 			result = data1.toLowerCase().localeCompare(data2.toLowerCase());
-		} else if (typeof data1 === 'object') { // maybe actressList
+		} else if (typeof data1 === 'object') {
+			// maybe actressList
 			result = data1.toString().toLowerCase().localeCompare(data2.toString().toLowerCase());
 		} else {
 			result = data1 > data2 ? 1 : -1;
@@ -48,7 +47,7 @@ class FlayControl {
 
 	init() {
 		$.ajax({
-			url: "/flay/list",
+			url: '/flay/list',
 			async: false,
 			success: (list) => {
 				list.forEach((item) => {
@@ -62,52 +61,49 @@ class FlayControl {
 	event() {
 		const control = this;
 		/*
-		*	add FlayControl event listener
-		*	case    1 : // wheel : up
-		*	case   -1 : // wheel : down
-		*/
+		 *	add FlayControl event listener
+		 *	case    1 : // wheel : up
+		 *	case   -1 : // wheel : down
+		 */
 		$(this.selectors.event).navEvent(function (signal, e) {
-			console.debug("nav signal", signal, e.key);
+			console.debug('nav signal', signal, e.key);
 			switch (signal) {
-			case 1:
-			case 37:
-				control.prev();
-				break;
-			case -1:
-			case 39:
-				control.next();
-				break;
-			case 32:
-				control.random();
-				break;
+				case 1:
+				case 37:
+					control.prev();
+					break;
+				case -1:
+				case 39:
+					control.next();
+					break;
+				case 32:
+					control.random();
+					break;
 			}
 		});
 
 		// filter condition change event
-		$(this.selectors.filter.keyword).on("keyup", this, function (e) {
+		$(this.selectors.filter.keyword).on('keyup', this, function (e) {
 			e.stopPropagation();
 			if (e.keyCode === 13) {
 				e.data.filter();
 			}
 		});
-		$(this.selectors.filter.rank
-				+ ", " + this.selectors.filter.favorite
-				+ ", " + this.selectors.filter.movie
-				+ ", " + this.selectors.filter.subtitles).on("change", this, function (e) {
+		$(this.selectors.filter.rank + ', ' + this.selectors.filter.favorite + ', ' + this.selectors.filter.movie + ', ' + this.selectors.filter.subtitles).on('change', this, function (e) {
 			e.stopPropagation();
 			e.data.filter();
 			e.data.random();
 		});
 		// sort condition change event
-		$(this.selectors.sort).on("change", this, function (e) {
+		$(this.selectors.sort).on('change', this, function (e) {
 			e.stopPropagation();
 			e.data.sort();
 			e.data.go(0);
 		});
 		// size condition change event
-		$(this.selectors.size).on("click", this, this.sizeControl);
+		$(this.selectors.size).on('click', this, this.sizeControl);
 		// window resize
-		$(window).on("resize", this, this.sizeControl).trigger("resize");
+		$(window).on('resize', this, this.sizeControl).trigger('resize');
 	}
 
 	sizeControl(e) {
@@ -115,9 +111,9 @@ class FlayControl {
 			if (containerWidth >= 400) {
 				const offset = parseInt(containerWidth / 400);
 				$container.css({
-					fontSize: Math.max(containerWidth / 8, 80).toFixed(1) + "%",
+					fontSize: Math.max(containerWidth / 8, 80).toFixed(1) + '%',
 				});
-				$container.find(".flay-body > :is(dt, dd)").css({
+				$container.find('.flay-body > :is(dt, dd)').css({
 					marginTop: offset,
 					marginBottom: offset,
 					paddingTop: offset,
@@ -144,35 +140,38 @@ class FlayControl {
 		const prevWidth = $prevContainer.width();
 		const mainWidth = $mainContainer.width();
 		const nextWidth = $nextContainer.width();
-		console.log("container size", prevWidth, mainWidth, nextWidth);
+		console.log('container size', prevWidth, mainWidth, nextWidth);
 
 		sideControl($prevContainer, prevWidth);
 		sideControl($mainContainer, mainWidth);
 		sideControl($nextContainer, nextWidth);
 
-		$(e.data.selectors.size).closest("div").attr("title", mainContainerWidth + " px");
+		$(e.data.selectors.size)
+			.closest('div')
+			.attr('title', mainContainerWidth + ' px');
 	}
 
 	filter() {
 		const filterCondition = {
 			keyword: $(this.selectors.filter.keyword).val(),
-			rank: (function(rankSelector) {
+			rank: (function (rankSelector) {
 				let checkedRank = [];
 				$(rankSelector).each(function (idx, rank) {
-					if ($(rank).prop("checked")) {
+					if ($(rank).prop('checked')) {
 						checkedRank.push(Number(rank.value));
 					}
 				});
 				return checkedRank;
-			}(this.selectors.filter.rank)),
-			favorite: $(this.selectors.filter.favorite).prop("checked"),
-			movie: $(this.selectors.filter.movie).prop("checked"),
-			subtitles: $(this.selectors.filter.subtitles).prop("checked"),
+			})(this.selectors.filter.rank),
+			favorite: $(this.selectors.filter.favorite).prop('checked'),
+			movie: $(this.selectors.filter.movie).prop('checked'),
+			subtitles: $(this.selectors.filter.subtitles).prop('checked'),
 		};
 		console.log('filterCondition', filterCondition);
 
 		this.filteredFlayList = this.totalFlayList.filter((flay) => {
-			if (filterCondition.keyword !== "" && !flay.fullname.includes(filterCondition.keyword)) {
+			const fullname = flay.studio + flay.opus + flay.title + flay.actress + flay.release + flay.comment;
+			if (filterCondition.keyword !== '' && !fullname.includes(filterCondition.keyword)) {
 				return false;
 			}
 			if (filterCondition.rank.length > 0 && !filterCondition.rank.includes(flay.video.rank)) {
@@ -196,25 +195,25 @@ class FlayControl {
 	}
 
 	sort() {
-		const sortKey = $(this.selectors.sort + ":checked").val();
+		const sortKey = $(this.selectors.sort + ':checked').val();
 		console.log('sort method', sortKey);
-		this.filteredFlayList.sort(function(flay1, flay2) {
-			switch(sortKey) {
-			case 's':
-				const sVal = FlayControl.compareTo(flay1.studio, flay2.studio);
-				return sVal === 0 ? FlayControl.compareTo(flay1.opus, flay2.opus) : sVal;
-			case 'o':
-				return FlayControl.compareTo(flay1.opus, flay2.opus);
-			case 't':
-				return FlayControl.compareTo(flay1.title, flay2.title);
-			case 'a':
-				const aVal = FlayControl.compareTo(flay1.actressList, flay2.actressList);
-				return aVal === 0 ? FlayControl.compareTo(flay1.opus, flay2.opus) : aVal;
-			case 'r':
-				const rVal = FlayControl.compareTo(flay1.release, flay2.release);
-				return rVal === 0 ? FlayControl.compareTo(flay1.opus, flay2.opus) : rVal;
-			case 'm':
-				return FlayControl.compareTo(flay1.lastModified, flay2.lastModified);
+		this.filteredFlayList.sort(function (flay1, flay2) {
+			switch (sortKey) {
+				case 's':
+					const sVal = FlayControl.compareTo(flay1.studio, flay2.studio);
+					return sVal === 0 ? FlayControl.compareTo(flay1.opus, flay2.opus) : sVal;
+				case 'o':
+					return FlayControl.compareTo(flay1.opus, flay2.opus);
+				case 't':
+					return FlayControl.compareTo(flay1.title, flay2.title);
+				case 'a':
+					const aVal = FlayControl.compareTo(flay1.actressList, flay2.actressList);
+					return aVal === 0 ? FlayControl.compareTo(flay1.opus, flay2.opus) : aVal;
+				case 'r':
+					const rVal = FlayControl.compareTo(flay1.release, flay2.release);
+					return rVal === 0 ? FlayControl.compareTo(flay1.opus, flay2.opus) : rVal;
+				case 'm':
+					return FlayControl.compareTo(flay1.lastModified, flay2.lastModified);
 			}
 		});
 		return sortKey;
@@ -282,12 +281,12 @@ class FlayControl {
 
 	pagination() {
 		function getPagingItem(idx, control) {
-			return $("<li>", {class: (idx === control.currentIndex ? "active" : "")})
-					.html(idx + 1)
-					.on("click", idx, function (e) {
-						control.currentIndex = e.data;
-						control.show();
-					})
+			return $('<li>', { class: idx === control.currentIndex ? 'active' : '' })
+				.html(idx + 1)
+				.on('click', idx, function (e) {
+					control.currentIndex = e.data;
+					control.show();
+				});
 		}
 
 		const $paging = $(this.selectors.pagination).empty();
@@ -313,5 +312,4 @@ class FlayControl {
 			getPagingItem(lastIdx, this).appendTo($paging);
 		}
 	}
-
 }

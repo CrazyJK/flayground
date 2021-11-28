@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 (() => {
 	let noSubtitlesOpusList = new Array();
@@ -11,10 +11,24 @@
 		flayList = list;
 	});
 
+	restCall('/file/find/exists/subtitles/config', { method: 'patch' }, (config) => {
+		console.log('get config', config);
+		$('#useTorProxy').prop('checked', config.useTorProxy);
+		$('#jsoupTimeout').val(config.jsoupTimeout);
+	});
+	$('#useTorProxy, #jsoupTimeout').on('change', () => {
+		const param = `useTorProxy=${$('#useTorProxy').prop('checked')}&jsoupTimeout=${$('#jsoupTimeout').val()}`;
+		restCall('/file/find/exists/subtitles/config?' + param, { method: 'patch' }, (config) => {
+			console.log('set config', config);
+			$('#useTorProxy').prop('checked', config.useTorProxy);
+			$('#jsoupTimeout').val(config.jsoupTimeout);
+		});
+	});
+
 	const processStart = () => {
 		const findSubtitles = () => {
 			const opus = noSubtitlesOpusList[currentFindingIndex++];
-			const $sub = $("#" + opus + " > .flay-subtitles").html("finding..."); // mark current active
+			const $sub = $('#' + opus + ' > .flay-subtitles').html('finding...'); // mark current active
 			Search.subtitlesUrlIfFound(opus, (list) => {
 				// console.log("found result", opus, list.length);
 
@@ -22,8 +36,8 @@
 					// found subtitles
 					foundSubtitlesCount++;
 
-					$sub.empty().closest(".flay-item").addClass("found-subtitles");
-					$("#foundSubtitlesCount").html(foundSubtitlesCount); // mark found count
+					$sub.empty().closest('.flay-item').addClass('found-subtitles');
+					$('#foundSubtitlesCount').html(foundSubtitlesCount); // mark found count
 
 					// add found link
 					for (const url of list) {
@@ -40,14 +54,14 @@
 			// scroll move
 			if (currentFindingIndex % 30 === 1) {
 				// location.href = "#" + opus;
-				$("html, body").animate({ scrollTop: $("#" + opus).position().top }, 500);
+				$('html, body').animate({ scrollTop: $('#' + opus).position().top }, 500);
 			}
 		};
 
 		// initiate
-		$("#btnStopFinding").show();
-		$("#btnFindSubtitles, #btnFilterFound").hide();
-		$("#foundSubtitlesCount").html("0");
+		$('#btnStopFinding').show();
+		$('#btnFindSubtitles, #btnFilterFound').hide();
+		$('#foundSubtitlesCount').html('0');
 		intervalFindSubtitles = -1;
 		foundSubtitlesCount = 0;
 
@@ -66,12 +80,12 @@
 	const processStop = () => {
 		clearInterval(intervalFindSubtitles);
 		if (noSubtitlesOpusList.length === currentFindingIndex) {
-			$("#btnFindSubtitles, #btnStopFinding").hide();
+			$('#btnFindSubtitles, #btnStopFinding').hide();
 		} else {
-			$("#btnFindSubtitles").html("Resume");
+			$('#btnFindSubtitles').html('Resume');
 		}
-		$("#btnStopFinding").hide();
-		$("#btnFindSubtitles, #btnFilterFound").show();
+		$('#btnStopFinding').hide();
+		$('#btnFindSubtitles, #btnFilterFound').show();
 	};
 
 	const displayList = (e) => {
@@ -82,10 +96,10 @@
 		});
 
 		// initiate
-		$("#btnFindSubtitles").show().html("Find");
-		$("#btnStopFinding").hide();
-		$("#btnFilterFound").hide();
-		$("#flayList").empty();
+		$('#btnFindSubtitles').show().html('Find');
+		$('#btnStopFinding').hide();
+		$('#btnFilterFound').hide();
+		$('#flayList').empty();
 		noSubtitlesOpusList = new Array();
 		currentFindingIndex = 0;
 
@@ -108,33 +122,33 @@
 								<label class="flay-title hover" onclick="View.flay('${flay.opus}')">${flay.title}</label>
 								<label class="flay-actressList">${flay.actressList}</label>
 								<label class="flay-release">${flay.release}</label>
-								<label class="flay-rank">${flay.video.rank > 0 ? flay.video.rank : ""}</label>
+								<label class="flay-rank">${flay.video.rank > 0 ? flay.video.rank : ''}</label>
 								<label class="flay-subtitles"></label>
 							</div>`;
 
-				$("#flayList").append(html);
+				$('#flayList').append(html);
 			});
 
-		$("#flayCount").html(noSubtitlesOpusList.length); // mark total count
+		$('#flayCount').html(noSubtitlesOpusList.length); // mark total count
 	};
 
 	// start find
-	$("#btnFindSubtitles").on("click", processStart);
+	$('#btnFindSubtitles').on('click', processStart);
 
 	// stop find
-	$("#btnStopFinding").on("click", processStop);
+	$('#btnStopFinding').on('click', processStop);
 
 	// filter found subtitles
-	$("#btnFilterFound").on("click", () => {
-		$(".flay-item:not(.found-subtitles)").toggle();
+	$('#btnFilterFound').on('click', () => {
+		$('.flay-item:not(.found-subtitles)').toggle();
 	});
 
 	// click subtiles link
-	$("#flayList").on("click", ".flay-subtitles > a", (e) => {
-		$(e.target).closest(".flay-item").addClass("active-subtitles");
+	$('#flayList').on('click', '.flay-subtitles > a', (e) => {
+		$(e.target).closest('.flay-item').addClass('active-subtitles');
 	});
 
-	$("input:checkbox[name='rank']").on("change", displayList).trigger("change");
+	$("input:checkbox[name='rank']").on('change', displayList).trigger('change');
 })();
 
 function removeThis(that) {

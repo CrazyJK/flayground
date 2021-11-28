@@ -50,6 +50,9 @@ public class FlayProperties {
 
 	private List<String> automaticallyCertificatedIp;
 
+	private boolean useTorProxy = false;
+	private int jsoupTimeout = 60;
+
 	@JsonIgnore
 	public Boolean negateDeleteLowerScore() {
 		deleteLowerScore = BooleanUtils.negate(deleteLowerScore);

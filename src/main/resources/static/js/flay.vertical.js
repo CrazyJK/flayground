@@ -1072,7 +1072,7 @@
 			.parent()
 			.find('.link-subtitles')
 			.remove();
-		if (currentFlay.files.subtitles.length === 0) {
+		/* if (currentFlay.files.subtitles.length === 0) {
 			// once checked, pass
 			if (!currentFlay.hasOwnProperty('checkedSubtitles')) {
 				currentFlay['checkedSubtitles'] = true;
@@ -1091,7 +1091,7 @@
 					$('.info-subtitles').neonLoading(false);
 				});
 			}
-		}
+		} */
 		// overview
 		$('.info-overview-input').val(currentFlay.video.comment).hide();
 		$('.info-overview')

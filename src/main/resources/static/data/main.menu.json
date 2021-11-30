@@ -273,7 +273,7 @@
 		"name": "Logout (<span id=\"username\"></span>)",
 		"uri": "/logout",
 		"icon": "fa fa-sign-out",
-		"mode": "post",
+		"mode": "logout",
 		"popup": {
 			"w": 0,
 			"h": 0

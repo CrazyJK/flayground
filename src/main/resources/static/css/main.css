@@ -113,6 +113,15 @@
 	color: inherit;
 	white-space: nowrap;
 }
+.sidenav > .nav-wrap > .nav > .nav-item:hover > div > a.include::after {
+	content: '';
+}
+.sidenav > .nav-wrap > .nav > .nav-item:hover > div > a.href::after {
+	content: ' ▣';
+}
+.sidenav > .nav-wrap > .nav > .nav-item:hover > div > a.logout::after {
+	content: '';
+}
 .sidenav > .nav-wrap > .nav > .nav-item > div > a.active {
 	color: var(--yellow);
 }

@@ -30,38 +30,38 @@
 <script type="text/javascript" src="/webjars/amcharts/themes/black.js"></script>
 <script type="text/javascript">
 	let playHistoryList;
-	Rest.History.findAction("PLAY", (list) => {
+	Rest.History.findAction('PLAY', (list) => {
 		playHistoryList = list;
 	});
 
 	$(window)
-		.on("resize", function () {
-			$("#chartdiv").css({
+		.on('resize', function () {
+			$('#chartdiv').css({
 				height: $(window).height() - 64,
 			});
 		})
-		.trigger("resize");
+		.trigger('resize');
 
-	$("input[name='dateType']").on("change", function () {
-		loading.on("Loading...");
+	$("input[name='dateType']").on('change', function () {
+		loading.on('Loading...');
 		drawGraph($(this).val());
 		loading.off();
 	});
 
 	function drawGraph(dateType) {
-		let minPeriod = "";
+		let minPeriod = '';
 		switch (dateType) {
-			case "d":
-				minPeriod = "DD";
+			case 'd':
+				minPeriod = 'DD';
 				break;
-			case "w":
-				minPeriod = "WW";
+			case 'w':
+				minPeriod = 'WW';
 				break;
-			case "m":
-				minPeriod = "MM";
+			case 'm':
+				minPeriod = 'MM';
 				break;
-			case "y":
-				minPeriod = "YYYY";
+			case 'y':
+				minPeriod = 'YYYY';
 				break;
 		}
 		// console.log('minPeriod', minPeriod);
@@ -70,21 +70,21 @@
 		$.each(playHistoryList, function (idx, history) {
 			var key = history.date.substring(0, 10);
 			switch (dateType) {
-				case "d":
+				case 'd':
 					key = history.date.substring(0, 10);
 					break;
-				case "w":
-					key = getFirstDayOfWeek(history.date.substring(0, 10)).format("yyyy-MM-dd");
+				case 'w':
+					key = getFirstDayOfWeek(history.date.substring(0, 10)).format('yyyy-MM-dd');
 					break;
-				case "m":
+				case 'm':
 					key = history.date.substring(0, 7);
 					break;
-				case "y":
+				case 'y':
 					key = history.date.substring(0, 4);
 					break;
-				case "t":
+				case 't':
 					key = history.date.substring(11, 13);
-					key = key === "00" ? "24" : key;
+					key = key === '00' ? '24' : key;
 					break;
 			}
 			if (dataMap[key]) {
@@ -98,15 +98,15 @@
 		var dataArray = [];
 		$.each(dataMap, function (key, val) {
 			switch (dateType) {
-				case "d":
-				case "w":
-					key = AmCharts.stringToDate(key, "YYYY-MM-DD");
+				case 'd':
+				case 'w':
+					key = AmCharts.stringToDate(key, 'YYYY-MM-DD');
 					break;
-				case "m":
-					key = AmCharts.stringToDate(key, "YYYY-MM");
+				case 'm':
+					key = AmCharts.stringToDate(key, 'YYYY-MM');
 					break;
-				case "y":
-					key = AmCharts.stringToDate(key, "YYYY");
+				case 'y':
+					key = AmCharts.stringToDate(key, 'YYYY');
 					break;
 			}
 
@@ -123,9 +123,9 @@
 			return 0;
 		});
 
-		var chart = AmCharts.makeChart("chartdiv", {
-			type: "serial",
-			theme: "black",
+		var chart = AmCharts.makeChart('chartdiv', {
+			type: 'serial',
+			theme: 'black',
 			dataProvider: dataArray,
 			mouseWheelZoomEnabled: true,
 			startDuration: 0,
@@ -137,41 +137,41 @@
 			],
 			graphs: [
 				{
-					id: "playCount",
-					type: "column",
-					valueField: "playCount",
-					fillColors: "#FFFF00",
+					id: 'playCount',
+					type: 'column',
+					valueField: 'playCount',
+					fillColors: '#FFFF00',
 					fillAlphas: 0.8,
 					lineAlpha: 0,
-					balloonText: "<b>[[value]]</b>",
+					balloonText: '<b>[[value]]</b>',
 					balloon: {
 						drop: true,
 					},
 				},
 			],
 			chartScrollbar: {
-				graph: "playCount",
+				graph: 'playCount',
 				autoGridCount: true,
 				scrollbarHeight: 40,
 			},
 			chartCursor: {
-				limitToGraph: "playCount",
+				limitToGraph: 'playCount',
 			},
-			categoryField: "date",
+			categoryField: 'date',
 			categoryAxis: {
-				parseDates: dateType !== "t",
+				parseDates: dateType !== 't',
 				minPeriod: minPeriod,
 				dateFormats: [
-					{ period: "DD", format: "D" },
-					{ period: "WW", format: "MMM DD" },
-					{ period: "MM", format: "YYYY-MM" },
-					{ period: "YYYY", format: "YYYY" },
+					{ period: 'DD', format: 'D' },
+					{ period: 'WW', format: 'MMM DD' },
+					{ period: 'MM', format: 'YYYY-MM' },
+					{ period: 'YYYY', format: 'YYYY' },
 				],
 			},
 		});
 
-		chart.addListener("rendered", (e) => {
-			console.log("event rendered", e);
+		chart.addListener('rendered', (e) => {
+			console.log('event rendered', e);
 			zoomChart();
 		});
 
@@ -179,21 +179,21 @@
 
 		function zoomChart() {
 			var offset = 0;
-			if (dateType === "d") offset = 100;
-			else if (dateType === "w") offset = 54;
-			else if (dateType === "m") offset = 12;
-			else if (dateType === "t") offset = 24;
+			if (dateType === 'd') offset = 100;
+			else if (dateType === 'w') offset = 54;
+			else if (dateType === 'm') offset = 12;
+			else if (dateType === 't') offset = 24;
 			else offset = 8;
 			chart.zoomToIndexes(chart.dataProvider.length - offset, chart.dataProvider.length - 1);
 		}
 	}
 
 	function getFirstDayOfWeek(dateStr) {
-		var dateVal = AmCharts.stringToDate(dateStr.substring(0, 10), "YYYY-MM-DD");
+		var dateVal = AmCharts.stringToDate(dateStr.substring(0, 10), 'YYYY-MM-DD');
 		var dayNo = dateVal.getDay();
 		var year = dateStr.substring(0, 4);
 		var month = dateStr.substring(5, 7);
 		var day = parseInt(dateStr.substring(8, 10) - dayNo + 1);
-		return AmCharts.stringToDate(year + "-" + month + "-" + day, "YYYY-MM-DD");
+		return AmCharts.stringToDate(year + '-' + month + '-' + day, 'YYYY-MM-DD');
 	}
 </script>

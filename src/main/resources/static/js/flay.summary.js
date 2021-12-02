@@ -2,12 +2,15 @@
  * flay summary js
  */
 (() => {
-	var flayList = [];
+	let flayList = [];
 	Rest.Flay.list(function (list) {
 		flayList = list;
 	});
 
-	var actressList = [];
+	let archiveList = [];
+	Rest.Archive.list((list) => (archiveList = list));
+
+	let actressList = [];
 	Rest.Actress.list(function (list) {
 		actressList = list;
 	});
@@ -21,25 +24,25 @@
 	}).trigger("resize");
 	*/
 
-	$("#groupByRelease").on("show.bs.collapse", function () {
+	$('#groupByRelease').on('show.bs.collapse', function () {
 		var val = $("input[name='releasePattern']:checked").val();
-		if (typeof val === "undefined") {
+		if (typeof val === 'undefined') {
 			$("input[name='releasePattern']").first().click();
 		}
 	});
 
-	$("input[name='releasePattern']").on("change", function () {
+	$("input[name='releasePattern']").on('change', function () {
 		var releasePattern = $("input[name='releasePattern']:checked").val();
 		var getReleaseKey = function (release) {
-			if ("YYYY" === releasePattern) {
+			if ('YYYY' === releasePattern) {
 				return release.substring(0, 4);
-			} else if ("YYYYMM" === releasePattern) {
+			} else if ('YYYYMM' === releasePattern) {
 				return release.substring(0, 7);
 			} else {
 				return release;
 			}
 		};
-		var $list = $("#releasedList").empty();
+		var $list = $('#releasedList').empty();
 
 		var dataMap = {};
 		$.each(flayList, function (idx, flay) {
@@ -54,7 +57,7 @@
 		displaySummaryTableView(dataMap, $list);
 	});
 
-	$("#groupByPath").on("show.bs.collapse", function () {
+	$('#groupByPath').on('show.bs.collapse', function () {
 		var getPathKey = function (files) {
 			var file;
 			if (files.movie.length > 0) {
@@ -62,16 +65,16 @@
 			} else {
 				file = files.cover[0];
 			}
-			var pathArray = file.replace(/\\/gi, "/").split("/");
+			var pathArray = file.replace(/\\/gi, '/').split('/');
 			pathArray.pop();
-			var key = pathArray.join("/");
-			if (key.indexOf("/Storage/") > -1) {
+			var key = pathArray.join('/');
+			if (key.indexOf('/Storage/') > -1) {
 				pathArray.pop();
-				key = pathArray.join("/");
+				key = pathArray.join('/');
 			}
 			return key;
 		};
-		var $list = $("#pathList").empty();
+		var $list = $('#pathList').empty();
 
 		var dataMap = {};
 		$.each(flayList, function (idx, flay) {
@@ -86,12 +89,12 @@
 		displaySummaryTableView(dataMap, $list);
 	});
 
-	$("#groupByRank").on("show.bs.collapse", function (e) {
-		var $list = $("#rankList").empty();
+	$('#groupByRank').on('show.bs.collapse', function (e) {
+		var $list = $('#rankList').empty();
 
 		var dataMap = {};
 		$.each(flayList, function (idx, flay) {
-			var key = "Rank " + flay.video.rank;
+			var key = 'Rank ' + flay.video.rank;
 			if (dataMap[key]) {
 				dataMap[key].push(flay);
 			} else {
@@ -102,9 +105,9 @@
 		displaySummaryTableView(dataMap, $list);
 	});
 
-	$("#groupByStudio")
-		.on("show.bs.collapse", function () {
-			var $list = $("#studioList").empty();
+	$('#groupByStudio')
+		.on('show.bs.collapse', function () {
+			var $list = $('#studioList').empty();
 
 			var dataMap = {},
 				studioCount = 0;
@@ -117,7 +120,7 @@
 					++studioCount;
 				}
 			});
-			$(".studio-count").html(studioCount);
+			$('.studio-count').html(studioCount);
 
 			var dataArray = [];
 			$.each(dataMap, function (key, val) {
@@ -131,25 +134,25 @@
 			$.each(dataArray, function (idx, data) {
 				var tagWeight = data.list.length > 100 ? 60 : data.list.length < 20 ? 10 : data.list.length / 2;
 
-				$("<a>", {
-					"data-weight": Math.round(tagWeight),
+				$('<a>', {
+					'data-weight': Math.round(tagWeight),
 				})
-					.append(data.key + " (" + data.list.length + ")")
-					.on("click", function (e) {
+					.append(data.key + ' (' + data.list.length + ')')
+					.on('click', function (e) {
 						e.preventDefault();
 						View.studio(data.key);
 					})
 					.appendTo($list);
 			});
-			$(".studio-count").html(dataArray.length + " / " + studioCount);
-			$(".filter-count").html(filterCount);
+			$('.studio-count').html(dataArray.length + ' / ' + studioCount);
+			$('.filter-count').html(filterCount);
 
 			var wOpts = {
 				interval: 20,
 				//			textFont: '"Ink Free", Impact,"Arial Black",sans-serif',
-				textColour: "#00f",
+				textColour: '#00f',
 				textHeight: 15,
-				outlineColour: "#f96",
+				outlineColour: '#f96',
 				outlineThickness: 5,
 				outlineRadius: 4,
 				maxSpeed: 0.03,
@@ -162,24 +165,24 @@
 				decel: 0.98,
 				reverse: true,
 				hideTags: false,
-				shadow: "#ccf",
+				shadow: '#ccf',
 				shadowBlur: 3,
 				shuffleTags: true,
 				wheelZoom: true,
 				clickToFront: 300,
 				weight: true,
-				weightMode: "both",
-				weightFrom: "data-weight",
+				weightMode: 'both',
+				weightFrom: 'data-weight',
 			};
 			// http://www.goat1000.com/tagcanvas-weighted.php
-			$("#studioCanvas").tagcanvas(wOpts, "studioList");
+			$('#studioCanvas').tagcanvas(wOpts, 'studioList');
 		})
-		.on("hide.bs.collapse", function () {
-			$("#studioCanvas").tagcanvas("delete");
+		.on('hide.bs.collapse', function () {
+			$('#studioCanvas').tagcanvas('delete');
 		});
 
-	$("#StudioTable")
-		.on("show.bs.collapse", function () {
+	$('#StudioTable')
+		.on('show.bs.collapse', function () {
 			var dataMap = {},
 				studioCount = 0;
 			$.each(flayList, function (idx, flay) {
@@ -206,10 +209,10 @@
 				return d2.list.length - d1.list.length;
 			});
 
-			$(".studio-count").html(dataArray.length + " / " + studioCount);
-			$(".filter-count").html(filterCount);
+			$('.studio-count').html(dataArray.length + ' / ' + studioCount);
+			$('.filter-count').html(filterCount);
 
-			var $tbody = $("#studioTableWrap tbody").empty();
+			var $tbody = $('#studioTableWrap tbody').empty();
 			$.each(dataArray, function (idx, data) {
 				var flayLength = data.list.length;
 				var flayFileSize = 0;
@@ -241,40 +244,40 @@
 
 				flayRankAvg = flayRankSum / flayRankLength;
 				favRankAvg = favRankSum / favRankLength;
-				favRatio = Math.round((favLength / flayLength) * 100) + "%";
+				favRatio = Math.round((favLength / flayLength) * 100) + '%';
 
-				$("<tr>")
+				$('<tr>')
 					.append(
-						$("<td>").html(data.key),
-						$("<td>").html(flayLength),
-						$("<td>").html(File.formatSize(flayFileSize)),
-						$("<td>").html(flayRankAvg > 0 ? flayRankAvg.toFixed(1) : ""),
+						$('<td>').html(data.key),
+						$('<td>').html(flayLength),
+						$('<td>').html(File.formatSize(flayFileSize)),
+						$('<td>').html(flayRankAvg > 0 ? flayRankAvg.toFixed(1) : ''),
 
-						$("<td>").html(favLength),
-						$("<td>").html(File.formatSize(favFileSize)),
-						$("<td>").html(favRankAvg > 0 ? favRankAvg.toFixed(1) : ""),
-						$("<td>").html(favRatio),
+						$('<td>').html(favLength),
+						$('<td>').html(File.formatSize(favFileSize)),
+						$('<td>').html(favRankAvg > 0 ? favRankAvg.toFixed(1) : ''),
+						$('<td>').html(favRatio),
 					)
-					.on("click", function () {
+					.on('click', function () {
 						displayFlayList(data.key, data.list);
 					})
 					.appendTo($tbody);
 			});
 		})
-		.on("hide.bs.collapse", function () {
-			$("#studioCanvas").tagcanvas("delete");
+		.on('hide.bs.collapse', function () {
+			$('#studioCanvas').tagcanvas('delete');
 		});
 
-	$("#groupByActress")
-		.on("show.bs.collapse", function () {
-			var $list = $("#actressList").empty();
+	$('#groupByActress')
+		.on('show.bs.collapse', function () {
+			var $list = $('#actressList').empty();
 
 			var dataMap = {},
 				actressCount = 0;
 			$.each(flayList, function (idx, flay) {
 				var keys = flay.actressList;
 				for (var x in keys) {
-					if (keys[x] === "Amateur") {
+					if (keys[x] === 'Amateur') {
 						continue;
 					}
 					if (dataMap[keys[x]]) {
@@ -298,24 +301,24 @@
 			$.each(dataArray, function (idx, data) {
 				var tagWeight = data.list.length > 60 ? 60 : data.list.length < 10 ? 9 : data.list.length;
 
-				$("<a>", {
-					"data-weight": Math.round(tagWeight),
+				$('<a>', {
+					'data-weight': Math.round(tagWeight),
 				})
-					.append(data.key + " (" + data.list.length + ")")
-					.on("click", function (e) {
+					.append(data.key + ' (' + data.list.length + ')')
+					.on('click', function (e) {
 						e.preventDefault();
 						View.actress(data.key);
 					})
 					.appendTo($list);
 			});
-			$(".actress-count").html(dataArray.length + " / " + actressCount);
-			$(".filter-count").html(filterCount);
+			$('.actress-count').html(dataArray.length + ' / ' + actressCount);
+			$('.filter-count').html(filterCount);
 
 			var wOpts = {
 				interval: 20,
-				textColour: "#00f",
+				textColour: '#00f',
 				textHeight: 15,
-				outlineColour: "#f96",
+				outlineColour: '#f96',
 				outlineThickness: 5,
 				outlineRadius: 4,
 				maxSpeed: 0.03,
@@ -328,30 +331,30 @@
 				decel: 0.98,
 				reverse: true,
 				hideTags: false,
-				shadow: "#ccf",
+				shadow: '#ccf',
 				shadowBlur: 3,
 				shuffleTags: true,
 				wheelZoom: true,
 				clickToFront: 300,
 				weight: true,
-				weightMode: "both",
-				weightFrom: "data-weight",
+				weightMode: 'both',
+				weightFrom: 'data-weight',
 			};
 
-			$("#actressCanvas").tagcanvas(wOpts, "actressList");
+			$('#actressCanvas').tagcanvas(wOpts, 'actressList');
 		})
-		.on("hide.bs.collapse", function () {
-			$("#actressCanvas").tagcanvas("delete");
+		.on('hide.bs.collapse', function () {
+			$('#actressCanvas').tagcanvas('delete');
 		});
 
-	$("#ActressTable")
-		.on("show.bs.collapse", function () {
+	$('#ActressTable')
+		.on('show.bs.collapse', function () {
 			var dataMap = {},
 				actressCount = 0;
 			$.each(flayList, function (idx, flay) {
 				var keys = flay.actressList;
 				for (var x in keys) {
-					if (keys[x] === "Amateur") {
+					if (keys[x] === 'Amateur') {
 						continue;
 					}
 					if (dataMap[keys[x]]) {
@@ -377,10 +380,10 @@
 				return d2.list.length - d1.list.length;
 			});
 
-			$(".actress-count").html(dataArray.length + " / " + actressCount);
-			$(".filter-count").html(filterCount);
+			$('.actress-count').html(dataArray.length + ' / ' + actressCount);
+			$('.filter-count').html(filterCount);
 
-			var $tbody = $("#actressTableWrap tbody").empty();
+			var $tbody = $('#actressTableWrap tbody').empty();
 			$.each(dataArray, function (idx, data) {
 				var flayLength = data.list.length;
 				var flayFileSize = 0;
@@ -402,21 +405,21 @@
 
 				filteredRankAvg = filteredRankSum / filteredRankLength;
 
-				$("<tr>")
-					.append($("<td>").html(data.key), $("<td>").html(flayLength), $("<td>").html(File.formatSize(flayFileSize)), $("<td>").html(filteredLength), $("<td>").html(File.formatSize(filteredFileSize)), $("<td>").html(filteredRankAvg > 0 ? filteredRankAvg.toFixed(1) : ""))
-					.on("click", function () {
+				$('<tr>')
+					.append($('<td>').html(data.key), $('<td>').html(flayLength), $('<td>').html(File.formatSize(flayFileSize)), $('<td>').html(filteredLength), $('<td>').html(File.formatSize(filteredFileSize)), $('<td>').html(filteredRankAvg > 0 ? filteredRankAvg.toFixed(1) : ''))
+					.on('click', function () {
 						displayFlayList(data.key, data.list);
 					})
 					.appendTo($tbody);
 			});
 		})
-		.on("hide.bs.collapse", function () {
-			$("#studioCanvas").tagcanvas("delete");
+		.on('hide.bs.collapse', function () {
+			$('#studioCanvas').tagcanvas('delete');
 		});
 
 	function displaySummaryTableView(dataMap, $list) {
 		const dataArray = [];
-		const isReleaseView = $list.attr("id") === "releasedList";
+		const isReleaseView = $list.attr('id') === 'releasedList';
 		let maxFlayCount = 0;
 		let totalFlayCount = 0;
 		let totalFlayLength = 0;
@@ -460,23 +463,23 @@
 
 		$.each(dataArray, function (idx, data) {
 			const percent = (data.list.length / totalFlayCount) * 100;
-			$("<tr>")
+			$('<tr>')
 				.append(
-					$("<td>", { class: "item-key nowrap" }).append(
-						$("<span>", { class: "hover" })
+					$('<td>', { class: 'item-key nowrap' }).append(
+						$('<span>', { class: 'hover' })
 							.html(data.key)
-							.on("click", function () {
+							.on('click', function () {
 								displayFlayList(data.key, data.list);
 							}),
 					),
-					$("<td>", { class: "item-count" })
-						.html((isReleaseView ? data.unRank + " / " : "") + data.list.length)
-						.css("text-align", isReleaseView ? "center" : "right"),
-					$("<td>", { class: "item-length" }).html(File.formatSize(data.length)),
-					$("<td>", { class: "item-progress" }).append(
-						$("<div>", { class: "progress", title: percent.toFixed(1) + "%" }).append(
-							$("<div>", { class: "progress-bar" }).css({
-								width: Math.max(percent, 1) + "%",
+					$('<td>', { class: 'item-count' })
+						.html((isReleaseView ? data.unRank + ' / ' : '') + data.list.length)
+						.css('text-align', isReleaseView ? 'center' : 'right'),
+					$('<td>', { class: 'item-length' }).html(File.formatSize(data.length)),
+					$('<td>', { class: 'item-progress' }).append(
+						$('<div>', { class: 'progress', title: percent.toFixed(1) + '%' }).append(
+							$('<div>', { class: 'progress-bar' }).css({
+								width: Math.max(percent, 1) + '%',
 							}),
 						),
 					),
@@ -487,12 +490,12 @@
 			.next()
 			.empty()
 			.append(
-				$("<th>"),
-				$("<th>")
-					.html((isReleaseView ? totalUnRankCount + " / " : "") + totalFlayCount)
-					.css("text-align", isReleaseView ? "center" : "right"),
-				$("<th>").html(File.formatSize(totalFlayLength)),
-				$("<th>"),
+				$('<th>'),
+				$('<th>')
+					.html((isReleaseView ? totalUnRankCount + ' / ' : '') + totalFlayCount)
+					.css('text-align', isReleaseView ? 'center' : 'right'),
+				$('<th>').html(File.formatSize(totalFlayLength)),
+				$('<th>'),
 			);
 	}
 
@@ -508,17 +511,169 @@
 	}
 
 	function displayFlayList(key, list) {
-		$("#groupByKey").html(key);
+		$('#groupByKey').html(key);
 
-		var $flayList = $("#flayList").empty();
+		var $flayList = $('#flayList').empty();
 		$.each(list, function (idx, flay) {
 			$flayList.appendFlayCard(flay, {
 				width: 310,
 				exclude: [STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
-				fontSize: "80%",
+				fontSize: '80%',
 			});
 		});
 
-		$(".flay-list-wrapper").show();
+		$('.flay-list-wrapper').show();
 	}
+
+	let chartArray = [null, null];
+	const releaseDateOption = [
+		{ size: 4, releaseFormat: 'YYYY', dateFormat: 'YYYY', axisPeriod: 'YYYY', zoomOffsetDate: 5 * 365 },
+		{ size: 7, releaseFormat: 'YYYY.MM', dateFormat: 'YYYY-MM', axisPeriod: 'MM', zoomOffsetDate: 3 * 365 },
+		{ size: 10, releaseFormat: 'YYYY.MM.DD', dateFormat: 'YYYY-MM-DD', axisPeriod: 'DD', zoomOffsetDate: 1 * 365 },
+	];
+	let selectedRank = [];
+	let selectedDateType;
+
+	$('#releaseChartDiv').on('show.bs.collapse', displayReleaseChart);
+
+	$('input[name="rank"], input[name="releaseDate"]').on('change', displayReleaseChart);
+
+	$('#releaseDateRange')
+		.val(releaseDateOption[$('input[name="releaseDate"]:checked').val()].zoomOffsetDate)
+		.on('change', (e) => {
+			console.log('releaseDateRange', e.target.value);
+
+			const today = new Date();
+			const startDate = new Date(today);
+			const endDate = new Date(today);
+
+			startDate.setDate(today.getDate() - e.target.value);
+
+			chartArray[0].zoomToDates(startDate, endDate);
+			chartArray[1].zoomToDates(startDate, endDate);
+		});
+
+	function displayReleaseChart() {
+		$('input[name="rank"]:checked').each((index, rank) => {
+			selectedRank.push(Number(rank.value));
+		});
+		console.log('selected Rank', selectedRank);
+
+		selectedDateType = $('input[name="releaseDate"]:checked').val();
+		console.log('selected DateType', selectedDateType, releaseDateOption[selectedDateType]);
+
+		displayInstanceReleaseChart();
+		displayArchiveReleaseChart();
+
+		$('#releaseDateRange').val(releaseDateOption[selectedDateType].zoomOffsetDate).trigger('change');
+	}
+
+	function displayInstanceReleaseChart() {
+		const dataMap = new Map();
+		flayList.forEach((flay, index) => {
+			if (!selectedRank.includes(flay.video.rank)) {
+				return;
+			}
+			const key = flay.release.substring(0, releaseDateOption[selectedDateType].size);
+			if (dataMap.has(key)) {
+				dataMap.get(key).push(flay);
+			} else {
+				dataMap.set(key, [flay]);
+			}
+		});
+		let dataArray = [];
+		dataMap.forEach((val, key) => {
+			dataArray.push({
+				date: AmCharts.stringToDate(key, releaseDateOption[selectedDateType].releaseFormat),
+				flayCount: val.length,
+			});
+		});
+		dataArray.sort((d1, d2) => d1.date - d2.date);
+		console.log('instance dataArray', dataArray);
+
+		renderChart(0, dataArray, 'releaseInstanceChart');
+	}
+
+	function displayArchiveReleaseChart() {
+		const dataMap = new Map();
+		archiveList.forEach((flay) => {
+			const key = flay.release.substring(0, releaseDateOption[selectedDateType].size);
+			if (dataMap.has(key)) {
+				dataMap.get(key).push(flay);
+			} else {
+				dataMap.set(key, [flay]);
+			}
+		});
+		let dataArray = [];
+		dataMap.forEach((val, key) => {
+			dataArray.push({
+				date: AmCharts.stringToDate(key, releaseDateOption[selectedDateType].releaseFormat),
+				flayCount: val.length,
+			});
+		});
+		dataArray.sort((d1, d2) => d1.date - d2.date);
+		console.log('archive dataArray', dataArray);
+
+		renderChart(1, dataArray, 'releaseArchiveChart');
+	}
+
+	function renderChart(chartIndex, dataArray, chartId) {
+		chartArray[chartIndex] = AmCharts.makeChart(chartId, {
+			type: 'serial',
+			theme: 'black',
+			dataProvider: dataArray,
+			chartScrollbar: {
+				graph: 'flayCount',
+				autoGridCount: true,
+				scrollbarHeight: 40,
+			},
+			graphs: [
+				{
+					id: 'release',
+					type: 'column',
+					valueField: 'flayCount',
+					fillColors: '#FFFF00',
+					fillAlphas: 0.8,
+					lineAlpha: 0,
+					balloonText: '<b>[[value]]</b>',
+					// https://docs.amcharts.com/3/javascriptcharts/AmBalloon
+					balloon: {
+						enabled: true,
+						drop: true,
+					},
+				},
+			],
+			// https://docs.amcharts.com/3/javascriptcharts/ChartCursor
+			chartCursor: {
+				// limitToGraph: 'flayCount',
+				categoryBalloonDateFormat: releaseDateOption[selectedDateType].dateFormat,
+			},
+			// https://docs.amcharts.com/3/javascriptcharts/ValueAxis
+			valueAxes: [
+				{
+					baseValue: 0,
+					gridAlpha: 0.2,
+					dashLength: 1,
+					minimum: 0,
+				},
+			],
+			// https://docs.amcharts.com/3/javascriptcharts/AmSerialChart#categoryField
+			categoryField: 'date',
+			// https://docs.amcharts.com/3/javascriptcharts/CategoryAxis
+			categoryAxis: {
+				parseDates: true,
+				minPeriod: releaseDateOption[selectedDateType].axisPeriod,
+				dateFormats: [
+					{ period: 'DD', format: 'D' },
+					{ period: 'MM', format: 'YYYY-MM' },
+					{ period: 'YYYY', format: 'YYYY' },
+				],
+			},
+		});
+	}
+
+	AmCharts.dayNames = AmCharts.translations.ko.dayNames;
+	AmCharts.shortDayNames = AmCharts.translations.ko.shortDayNames;
+	AmCharts.monthNames = AmCharts.translations.ko.monthNames;
+	AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
 })();

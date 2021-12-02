@@ -1,86 +1,94 @@
-<meta charset="UTF-8">
+<meta charset="UTF-8" />
 <style type="text/css">
-.flay-list-wrapper {
-	display: none;
-    background-color: rgba(240, 248, 255, 0.5);
-    border-radius: 0.5rem;
-    margin: 1rem;
-    padding: 1rem;
-}
+	.flay-list-wrapper {
+		display: none;
+		background-color: rgba(240, 248, 255, 0.5);
+		border-radius: 0.5rem;
+		margin: 1rem;
+		padding: 1rem;
+	}
 
-.summary-list table thead tr th {
-	text-align: center!important;
-}
+	.summary-list table thead tr th {
+		text-align: center !important;
+	}
 
-.summary-item > .item-key {
-	margin: .25rem;
-	text-align: left;
-}
-.summary-item > .item-count {
-	margin: .25rem;
-	min-width: 40px;
-	font-size: 90%;
-}
-.summary-item > .item-size {
-	margin: .25rem;
-	min-width: 65px;
-	text-align: right;
-}
+	.summary-item > .item-key {
+		margin: 0.25rem;
+		text-align: left;
+	}
+	.summary-item > .item-count {
+		margin: 0.25rem;
+		min-width: 40px;
+		font-size: 90%;
+	}
+	.summary-item > .item-size {
+		margin: 0.25rem;
+		min-width: 65px;
+		text-align: right;
+	}
 
-.card {
-	display: inline-flex;
-	width: 850px;
-}
-.card-body > .table {
-	font-family: D2Coding;
-}
-.card-body .table-hover tbody tr:hover {
-    background-color: rgba(0, 123, 255, 0.1);
-}
+	.card {
+		display: inline-flex;
+		width: 850px;
+	}
+	.card-body > .table {
+		font-family: D2Coding;
+	}
+	.card-body .table-hover tbody tr:hover {
+		background-color: rgba(0, 123, 255, 0.1);
+	}
 
-.card-body table.table th:nth-child(1), .card-body table.table td:nth-child(1) {
-	text-align: left;
-}
-.card-body table.table th:nth-child(2), .card-body table.table td:nth-child(2) {
-	text-align: right;
-}
-.card-body table.table th:nth-child(3), .card-body table.table td:nth-child(3) {
-	text-align: right;
-}
+	.card-body table.table th:nth-child(1),
+	.card-body table.table td:nth-child(1) {
+		text-align: left;
+	}
+	.card-body table.table th:nth-child(2),
+	.card-body table.table td:nth-child(2) {
+		text-align: right;
+	}
+	.card-body table.table th:nth-child(3),
+	.card-body table.table td:nth-child(3) {
+		text-align: right;
+	}
 
-.card-body table.table thead th {
-	border-bottom: 1px solid rgba(238, 238, 238, .5);
-}
-.card-body table.table tfoot th {
-	border-top: 1px solid rgba(238, 238, 238, .5);
-}
+	.card-body table.table thead th {
+		border-bottom: 1px solid rgba(238, 238, 238, 0.5);
+	}
+	.card-body table.table tfoot th {
+		border-top: 1px solid rgba(238, 238, 238, 0.5);
+	}
 
-td.item-key {
-	width: 200px;
-}
-td.item-count {
-	width: 100px;
-}
-td.item-length {
-	width: 100px;
-}
-td.item-progress {
-	min-width: 200px;
-}
-td.item-progress > .progress {
-	border-radius: .5rem;
-	height: 24px;
-	justify-content: center;
-}
-td.item-progress > .progress > .progress-bar {
-	border-radius: .5rem;
-}
+	td.item-key {
+		width: 200px;
+	}
+	td.item-count {
+		width: 100px;
+	}
+	td.item-length {
+		width: 100px;
+	}
+	td.item-progress {
+		min-width: 200px;
+	}
+	td.item-progress > .progress {
+		border-radius: 0.5rem;
+		height: 24px;
+		justify-content: center;
+	}
+	td.item-progress > .progress > .progress-bar {
+		border-radius: 0.5rem;
+	}
 
-.btn[aria-expanded="true"] {
-	color: #007bff;
-    background-color: #fff;
-	text-shadow: 1px 1px #ff073c
-}
+	.btn[aria-expanded='true'] {
+		color: #007bff;
+		background-color: #fff;
+		text-shadow: 1px 1px #ff073c;
+	}
+
+	.release-header {
+		display: flex;
+		justify-content: center;
+	}
 </style>
 
 <div role="body">
@@ -93,24 +101,21 @@ td.item-progress > .progress > .progress-bar {
 			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRelease">Group By Release</button>
 			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByPath">Group By Path</button>
 			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRank">Group By Rank</button>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#releaseChartDiv">Release Chart</button>
 		</nav>
 	</div>
 
 	<div class="container-fluid text-center">
 		<div id="groupByStudio" class="collapse card m-2 bg-chalkboard">
-			<div class="card-header text-center">
-				Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video
-			</div>
+			<div class="card-header text-center">Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video</div>
 			<div class="card-body text-center">
 				<canvas id="studioCanvas" width="800" height="800"></canvas>
-				<div id="studioList" style="display: none;"></div>
+				<div id="studioList" style="display: none"></div>
 			</div>
 		</div>
 
 		<div id="StudioTable" class="collapse card m-2 bg-chalkboard">
-			<div class="card-header text-center">
-				Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video
-			</div>
+			<div class="card-header text-center">Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video</div>
 			<div class="card-body text-center pt-0">
 				<div class="summary-list" id="studioTableWrap">
 					<table class="table table-sm table-hover">
@@ -130,27 +135,22 @@ td.item-progress > .progress > .progress-bar {
 								<th>avg rank</th>
 							</tr>
 						</thead>
-						<tbody>
-						</table>
+						<tbody></tbody>
 					</table>
 				</div>
 			</div>
 		</div>
 
 		<div id="groupByActress" class="collapse card m-2 bg-chalkboard">
-			<div class="card-header text-center">
-				Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video
-			</div>
+			<div class="card-header text-center">Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video</div>
 			<div class="card-body text-center">
 				<canvas id="actressCanvas" width="800" height="800"></canvas>
-				<div id="actressList" style="display: none;"></div>
+				<div id="actressList" style="display: none"></div>
 			</div>
 		</div>
 
 		<div id="ActressTable" class="collapse card m-2 bg-chalkboard">
-			<div class="card-header text-center">
-				Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video
-			</div>
+			<div class="card-header text-center">Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video</div>
 			<div class="card-body text-center pt-0">
 				<div class="summary-list" id="actressTableWrap">
 					<table class="table table-sm table-hover">
@@ -168,8 +168,7 @@ td.item-progress > .progress > .progress-bar {
 								<th>rank</th>
 							</tr>
 						</thead>
-						<tbody>
-						</table>
+						<tbody></tbody>
 					</table>
 				</div>
 			</div>
@@ -179,9 +178,9 @@ td.item-progress > .progress > .progress-bar {
 			<div class="card-body bg-chalkboard">
 				<div class="text-center">
 					<span class="text-danger">Choose release pattern</span>
-					<label class="check sm"><input type="radio" name="releasePattern" value="YYYY"><span>YYYY</span></label>
-					<label class="check sm"><input type="radio" name="releasePattern" value="YYYYMM"><span>YYYY.MM</span></label>
-					<label class="check sm"><input type="radio" name="releasePattern" value="YYYYMMDD"><span>YYYY.MM.DD</span></label>
+					<label class="check sm"><input type="radio" name="releasePattern" value="YYYY" /><span>YYYY</span></label>
+					<label class="check sm"><input type="radio" name="releasePattern" value="YYYYMM" /><span>YYYY.MM</span></label>
+					<label class="check sm"><input type="radio" name="releasePattern" value="YYYYMMDD" /><span>YYYY.MM.DD</span></label>
 				</div>
 				<table class="table table-sm table-borderless table-hover m-0">
 					<thead class="text-primary">
@@ -231,6 +230,31 @@ td.item-progress > .progress > .progress-bar {
 				</table>
 			</div>
 		</div>
+
+		<div id="releaseChartDiv" class="collapse m-2">
+			<div class="release-header">
+				<span class="check-group check-group-rounded">
+					<label><input type="checkbox" name="rank" id="rank0" value="0" checked="checked" /><span class="fa fa-circle"></span></label>
+					<label><input type="checkbox" name="rank" id="rank1" value="1" checked="checked" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" name="rank" id="rank2" value="2" checked="checked" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" name="rank" id="rank3" value="3" checked="checked" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" name="rank" id="rank4" value="4" checked="checked" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" name="rank" id="rank5" value="5" checked="checked" /><span class="fa fa-star"></span></label>
+				</span>
+				<span class="check-group check-group-rounded">
+					<label><input type="radio" name="releaseDate" value="0" /><span>YYYY</span></label>
+					<label><input type="radio" name="releaseDate" value="1" checked="checked" /><span>YYYY.MM</span></label>
+					<label><input type="radio" name="releaseDate" value="2" /><span>YYYY.MM.DD</span></label>
+				</span>
+			</div>
+			<div class="release-header mt-2">
+				<input type="range" id="releaseDateRange" min="30" max="1825" value="100" style="width: 500px" />
+			</div>
+			<div class="lead font-weight-bold text-warning mt-3">Instance</div>
+			<div id="releaseInstanceChart" style="height: 500px"></div>
+			<div class="lead font-weight-bold text-warning mt-3">Archive</div>
+			<div id="releaseArchiveChart" style="height: 500px"></div>
+		</div>
 	</div>
 
 	<div class="flay-list-wrapper">
@@ -240,8 +264,11 @@ td.item-progress > .progress > .progress-bar {
 		</h4>
 		<div class="text-center mt-2 flay-list" id="flayList"></div>
 	</div>
-
 </div>
 
+<script type="text/javascript" src="/webjars/amcharts/amcharts.js"></script>
+<script type="text/javascript" src="/webjars/amcharts/lang/ko.js"></script>
+<script type="text/javascript" src="/webjars/amcharts/serial.js"></script>
+<script type="text/javascript" src="/webjars/amcharts/themes/black.js"></script>
 <script type="text/javascript" src="../../js/tag/jquery.tagcanvas-flay.js"></script>
 <script type="text/javascript" src="../../js/flay.summary.js"></script>

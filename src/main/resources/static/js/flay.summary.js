@@ -525,33 +525,52 @@
 		$('.flay-list-wrapper').show();
 	}
 
-	let chartArray = [null, null];
+	/*
+		Flay Release List
+	*/
+	class ReleaseDateRange {
+		constructor(selector, max) {
+			this.max = max;
+			this.$obj = $(selector).attr('max', this.max);
+		}
+		set(value) {
+			this.$obj.val(this.max - value);
+			return this;
+		}
+		get() {
+			return this.max - this.$obj.val();
+		}
+		trigger() {
+			this.$obj.trigger('change');
+		}
+		eventOnChange(chartArray) {
+			this.$obj.on('change', (e) => {
+				let offset = this.max - e.target.value;
+				const today = new Date();
+				const startDate = new Date(today);
+				const endDate = new Date(today);
+				startDate.setDate(today.getDate() - offset);
+				for (const chart of chartArray) {
+					chart.zoomToDates(startDate, endDate);
+				}
+			});
+		}
+	}
+
+	let selectedRank = [];
+	let selectedDateType;
+	const chartArray = [null, null];
 	const releaseDateOption = [
 		{ size: 4, releaseFormat: 'YYYY', dateFormat: 'YYYY', axisPeriod: 'YYYY', zoomOffsetDate: 5 * 365 },
 		{ size: 7, releaseFormat: 'YYYY.MM', dateFormat: 'YYYY-MM', axisPeriod: 'MM', zoomOffsetDate: 3 * 365 },
 		{ size: 10, releaseFormat: 'YYYY.MM.DD', dateFormat: 'YYYY-MM-DD', axisPeriod: 'DD', zoomOffsetDate: 1 * 365 },
 	];
-	let selectedRank = [];
-	let selectedDateType;
+	const releaseDateRange = new ReleaseDateRange('#releaseDateRange', 5 * 365);
+
+	releaseDateRange.set(releaseDateOption[$('input[name="releaseDate"]:checked').val()].zoomOffsetDate).eventOnChange(chartArray);
 
 	$('#releaseChartDiv').on('show.bs.collapse', displayReleaseChart);
-
 	$('input[name="rank"], input[name="releaseDate"]').on('change', displayReleaseChart);
-
-	$('#releaseDateRange')
-		.val(releaseDateOption[$('input[name="releaseDate"]:checked').val()].zoomOffsetDate)
-		.on('change', (e) => {
-			console.log('releaseDateRange', e.target.value);
-
-			const today = new Date();
-			const startDate = new Date(today);
-			const endDate = new Date(today);
-
-			startDate.setDate(today.getDate() - e.target.value);
-
-			chartArray[0].zoomToDates(startDate, endDate);
-			chartArray[1].zoomToDates(startDate, endDate);
-		});
 
 	function displayReleaseChart() {
 		$('input[name="rank"]:checked').each((index, rank) => {
@@ -565,7 +584,7 @@
 		displayInstanceReleaseChart();
 		displayArchiveReleaseChart();
 
-		$('#releaseDateRange').val(releaseDateOption[selectedDateType].zoomOffsetDate).trigger('change');
+		releaseDateRange.set(releaseDateOption[selectedDateType].zoomOffsetDate).trigger();
 	}
 
 	function displayInstanceReleaseChart() {

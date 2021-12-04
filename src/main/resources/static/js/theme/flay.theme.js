@@ -1,7 +1,7 @@
 function adjustTheme() {
 	var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
 
-	document.getElementsByTagName('html')[0].setAttribute('data-theme', 'dark');
+	document.getElementsByTagName('html')[0].setAttribute('data-theme', bgThemeValue);
 
 	// var link = document.querySelector("#themeLink");
 	// if (link) {

@@ -12,7 +12,14 @@
 }
 
 body {
+	background-color: var(--color-bg);
+	color: var(--color-text);
 	transition: background-color 0.5s;
+}
+
+button.btn {
+	background-color: var(--color-bg-button);
+	color: var(--color-text);
 }
 
 .check-group {
@@ -38,15 +45,15 @@ label.check {
 }
 .check-group span,
 label.check span {
-	background-color: var(--light);
+	background-color: var(--color-bg-check);
 	border: 1px solid transparent;
 	border-radius: 0.25rem;
-	color: #333;
+	color: var(--color-text);
 	font-size: 1rem;
 	font-weight: 700;
 	text-shadow: none;
 	padding: 0.125rem 0.25rem;
-	transition: all 0.3s;
+	transition: background-color 0.3s, color 0.3s, text-shadow 0.3s;
 }
 .check-group.sm span,
 label.check.sm span {
@@ -83,7 +90,7 @@ label.check input:checked ~ span {
 }
 .check-group:hover span,
 label.check:hover span {
-	color: midnightblue;
+	color: var(--color-text-active);
 }
 .check-group label input[type='radio'] ~ span,
 label.check input[type='radio'] ~ span {
@@ -210,10 +217,10 @@ label.check.danger:hover input:checked ~ span {
 /* input search */
 input.input-flay {
 	display: inline-block;
-	background-color: var(--light);
-	border: 1px solid #eee;
+	background-color: transparent;
+	border: 1px solid transparent;
 	border-radius: 0.25rem;
-	color: #333;
+	color: var(--color-text);
 	margin: 4px 2px;
 	padding: 0.125rem 0.5rem;
 	height: 27px;
@@ -221,13 +228,19 @@ input.input-flay {
 	transition: all 0.5s;
 	vertical-align: middle;
 }
+input.input-flay:focus {
+	background-color: var(--color-bg-input-hover);
+	color: var(--color-text);
+	border: 1px solid transparent;
+}
+
 input.search {
 	width: 150px;
 }
 /* input range ranker */
 label.range {
 	display: inline-flex;
-	background-color: var(--light);
+	background-color: var(--color-bg-range);
 	border-radius: 0.75rem;
 	border: 1px solid transparent;
 	margin: 4px 2px;
@@ -235,11 +248,15 @@ label.range {
 	transition: all 0.3s;
 	vertical-align: middle;
 }
+label.range:hover {
+	box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.125);
+	background-color: #103356;
+}
 label.range > input[type='range'] {
 	width: 150px;
 }
 label.range input[type='range'] ~ span {
-	color: #212529;
+	color: var(--color-text);
 	padding: 1px 6px;
 	display: table-cell;
 	font-weight: 700;
@@ -247,9 +264,9 @@ label.range input[type='range'] ~ span {
 /* custom input range */
 .ranker {
 	display: inline-flex;
-	background-color: var(--light);
+	background-color: var(--color-bg-ranker);
 	border-radius: 0.75rem;
-	border: 1px solid #eee;
+	border: 1px solid transparent;
 	margin: 4px 2px;
 	padding: 0 4px;
 	width: initial;
@@ -312,16 +329,18 @@ label.range input[type='range'] ~ span {
 
 /* label text */
 label.text {
-	background-color: var(--light);
+	background-color: var(--color-bg-label);
 	border: 1px solid transparent;
 	border-radius: 0.25rem;
-	color: #212529;
+	color: var(--color-text);
 	font-weight: 700;
 	margin: 4px 2px;
 	padding: 0.125rem 0.5rem;
 	transition: all 0.3s;
 }
 label.text.hover:hover {
+	background-color: var(--color-bg-label-hover);
+	color: var(--color-text);
 	text-shadow: 0 0 1px midnightblue;
 }
 label.text:empty {
@@ -347,18 +366,20 @@ label.text.lg {
 /* button */
 button.btn.btn-flay,
 button.btn.btn-outline-flay {
-	background-color: var(--light);
-	color: #111;
+	background-color: var(--color-bg-button);
+	color: var(--color-text);
 	font-weight: 700;
 	transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out, text-shadow 0.3s;
 }
 button.btn.btn-flay:hover,
 button.btn.btn-outline-flay:hover {
 	text-shadow: 0 0 1px midnightblue;
+	color: #eede1a;
 }
 button.btn.btn-flay:active:focus,
 button.btn.btn-outline-flay:active:focus {
 	box-shadow: 0 0 0 0.2rem rgba(25, 25, 112, 0.4);
+	text-shadow: 0 0 4px #000, 0 0 3px #e2d313, 0 0 6px #e2d313, 0 0 9px #e2d313, 0 0 12px #e2d313, 0 0 15px #847b0b, 0 0 18px #847b0b;
 }
 button.btn.btn-outline-flay {
 	border-color: midnightblue;
@@ -582,18 +603,26 @@ button.btn.btn-outline-flay {
 
 /* modified bootstrap 4 */
 .page-item.active .page-link {
-	background-color: midnightblue;
+	background-color: var(--color-bg-page);
 	border-color: midnightblue;
+	color: var(--color-text-active);
 }
 .page-item.active .page-link:hover {
-	color: #fff;
+	color: var(--color-text-active);
 }
 .page-item:not(.disabled) .page-link {
 	cursor: pointer;
 }
 .page-link {
-	color: midnightblue;
+	background-color: var(--color-bg-page);
+	color: var(--color-text);
+	font-weight: 700;
 }
+.page-link:hover {
+	background-color: var(--color-bg-page);
+	color: var(--color-text-active);
+}
+
 .btn-link,
 .btn-link:hover {
 	color: midnightblue;
@@ -616,4 +645,17 @@ button.btn.btn-outline-flay {
 }
 .font-size-3r {
 	font-size: 3rem;
+}
+
+.card {
+	background-color: var(--color-bg-card);
+	border: 1px solid var(--color-border-card);
+}
+.input-group-text,
+.form-control,
+.form-control[readonly],
+.form-control:focus {
+	background-color: var(--color-bg-form);
+	border: 1px solid var(--color-border-form);
+	color: var(--color-text-form);
 }

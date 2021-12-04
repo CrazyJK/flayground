@@ -20,7 +20,13 @@ class Loading {
 		this.loadingBodySelector = `${PARENT_SELECTOR} > #${ID_LOADING_WRAPPER} > #${ID_LOADING} > #${ID_LOADING_BODY}`;
 
 		if (document.querySelector(this.loadingWrapperSelector) === null) {
-			document.querySelector(this.parentSelector).innerHTML += HTML_LOADING;
+			const parentElement = document.querySelector(this.parentSelector);
+			if (parentElement) {
+				parentElement.innerHTML += HTML_LOADING;
+			} else {
+				alert('loading parent element not found. ' + this.parentSelector);
+				return;
+			}
 		}
 
 		this.loadingIndex = 0;

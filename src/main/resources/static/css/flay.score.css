@@ -1,5 +1,6 @@
 @charset "UTF-8";
 body {
+	background-color: black !important;
 	font-size: 14px;
 	font-family: 'D2Coding';
 	padding: 0 1rem;
@@ -12,6 +13,7 @@ body {
 }
 #topMenu.sticky-top {
 	background-color: black !important;
+	color: #fff;
 	justify-content: space-between;
 	align-items: center;
 	padding-bottom: 0.5rem;

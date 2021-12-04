@@ -15,7 +15,7 @@
 		transition: 0.4s;
 	}
 	#tagList .tag:hover {
-		box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+		box-shadow: 0 0.5rem 1rem var(--color-box-shadow);
 	}
 	#tagList .card-body {
 		padding: 1rem;
@@ -37,9 +37,8 @@
 		text-align: center;
 		word-break: keep-all;
 	}
-	#tagList .active {
-		background-color: rgba(85, 136, 136, 0.75);
-		color: #eee;
+	#tagList .tag.active {
+		background-color: var(--color-bg-card-active);
 	}
 </style>
 
@@ -74,44 +73,44 @@
 </div>
 
 <script type="text/javascript">
-	var $tagTemplete = $(".tag");
+	var $tagTemplete = $('.tag');
 	var isLikeSearchChecked = false;
 
-	$("form").on("submit", function (e) {
+	$('form').on('submit', function (e) {
 		e.preventDefault();
 	});
 
-	$(".tag-save").on("click", function () {
+	$('.tag-save').on('click', function () {
 		var tag = {};
-		$.each($("#tagInput").serializeArray(), function () {
+		$.each($('#tagInput').serializeArray(), function () {
 			tag[this.name] = this.value;
 		});
 
-		if (tag.id === "") {
+		if (tag.id === '') {
 			Rest.Tag.create(tag, tagLoad);
 		} else {
 			Rest.Tag.update(tag, tagLoad);
 		}
 	});
 
-	$(".tag-delete").on("click", function () {
-		var tag = $("#tagInput").data("tag");
-		if (tag && tag.id && confirm("Delete this tag?\n" + JSON.stringify(tag))) {
+	$('.tag-delete').on('click', function () {
+		var tag = $('#tagInput').data('tag');
+		if (tag && tag.id && confirm('Delete this tag?\n' + JSON.stringify(tag))) {
 			Rest.Tag.delete(tag, function () {
 				tagLoad();
-				$("#tagId, #tagName, #tagDesc").val("");
+				$('#tagId, #tagName, #tagDesc').val('');
 			});
 		}
 	});
 
-	$("#likeSearch").on("click", function () {
-		isLikeSearchChecked = $(this).prop("checked");
-		$("#likeSearchText").html(isLikeSearchChecked ? "Like" : "marked");
+	$('#likeSearch').on('click', function () {
+		isLikeSearchChecked = $(this).prop('checked');
+		$('#likeSearchText').html(isLikeSearchChecked ? 'Like' : 'marked');
 		tagLoad();
 	});
 
 	function tagLoad() {
-		var $tagList = $("#tagList");
+		var $tagList = $('#tagList');
 		let tagTotal = 0;
 		let flayTotal = 0;
 
@@ -122,32 +121,35 @@
 
 			$.each(tagList, function (idx, tag) {
 				var $tagCard = $tagTemplete.clone();
-				$tagCard.data("tag", tag);
+				$tagCard.data('tag', tag);
 				$tagCard
-					.find(".tag-name")
+					.find('.tag-name')
 					.html(tag.name)
-					.on("click", function () {
-						$("#tagInput").data("tag", tag);
-						$("#tagId").val(tag.id);
-						$("#tagName").val(tag.name);
-						$("#tagDesc").val(tag.description);
+					.on('click', function () {
+						$('#tagInput').data('tag', tag);
+						$('#tagId').val(tag.id);
+						$('#tagName').val(tag.name);
+						$('#tagDesc').val(tag.description);
+
+						$('#tagList > .tag').removeClass('active');
+						$(this).closest('.tag').addClass('active');
 					});
-				$tagCard.find(".card-text").html(tag.description);
-				$tagCard.find(".tag-open").on("click", function () {
+				$tagCard.find('.card-text').html(tag.description);
+				$tagCard.find('.tag-open').on('click', function () {
 					View.tag(tag.id);
 				});
 				$tagCard.appendTo($tagList);
 
 				var findByTagCallback = function (flayList) {
 					flayTotal += flayList.length;
-					$("#summary").html(tagTotal + " Tag, " + flayTotal + " Flay");
+					$('#summary').html(tagTotal + ' Tag, ' + flayTotal + ' Flay');
 
-					$tagCard.data("flayList", flayList);
+					$tagCard.data('flayList', flayList);
 					$tagCard
-						.find(".flay-count")
+						.find('.flay-count')
 						.html(flayList.length)
-						.addClass(flayList.length > 0 ? "" : "flay-count-no");
-					$tagCard.find(".tag-name").css({
+						.addClass(flayList.length > 0 ? '' : 'flay-count-no');
+					$tagCard.find('.tag-name').css({
 						fontSize: flayList.length * 0.25 + 16,
 					});
 				};

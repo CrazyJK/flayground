@@ -280,6 +280,12 @@ main {
 	justify-content: center;
 	gap: 0.5rem;
 	padding: 0.25rem 0.5rem;
+	transition: background-color 0.3s;
+}
+#topMenu > nav:hover {
+	background-color: var(--color-bg-nav-hover) !important;
+	box-shadow: 0 0.5rem 1rem var(--color-box-shadow);
+	transition: box-shadow 0.4s;
 }
 #topMenu > nav > button {
 	border: 0;

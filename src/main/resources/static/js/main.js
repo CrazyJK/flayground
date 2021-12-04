@@ -131,10 +131,10 @@ var SlideMenu = {
 				flayWebsocket.info('bgtheme');
 			} catch (e) {}
 		};
-		let bgTheme = LocalStorageItem.get('flay.bgtheme', 'D');
+		let bgTheme = LocalStorageItem.get('flay.bgtheme', 'dark');
 		let bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
 		// Theme
-		$('#bgTheme' + bgTheme)
+		$('input[name="bgTheme"][value="' + bgTheme + '"]')
 			.parent()
 			.click();
 		$("input[name='bgTheme']").on('change', setTheme).trigger('change');

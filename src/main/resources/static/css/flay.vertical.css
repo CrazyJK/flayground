@@ -210,6 +210,7 @@ label.text:empty {
 	background-color: #eee;
 	border-radius: 4px;
 	color: #000;
+	font-size: 0.875rem;
 }
 .file-wrapper .file-wrapper-rename #rename-studio {
 	flex: 0 0 100px;

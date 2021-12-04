@@ -125,6 +125,7 @@ const URL_SEARCH_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
 const URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
 const URL_SEARCH_GOOGLE = 'https://www.google.co.kr/search?q=';
 const URL_TRANSLATE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
+const URL_TRANSLATE_PAPAGO = 'https://papago.naver.com/?sk=auto&tk=ko&st=';
 const URL_FIND_ACTRESS = 'http://javtorrent.re/tag/';
 const URL_SEARCH_SUBTITLES = 'https://www.subtitlecat.com/index.php?search=';
 
@@ -155,7 +156,7 @@ const Search = {
 		Popup.open(URL_SEARCH_GOOGLE + keyword, 'googleSearch', 800, 1000);
 	},
 	translate: (message) => {
-		Popup.open(URL_TRANSLATE + message, 'translate', 1000, 500);
+		Popup.open(URL_TRANSLATE_PAPAGO + message, 'translate', 1000, 500);
 	},
 	opusByRandom: () => {
 		Search.opus(Random.getInteger(1, 999));

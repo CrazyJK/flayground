@@ -426,6 +426,25 @@
 			// control video stream
 			$('.cover-wrapper-inner.curr > .cover-box').on('click', Flaying.start);
 			$('.cover-wrapper-inner.curr > .cover-box > #btnVideoClose').on('click', Flaying.stop);
+			// rename flay
+			$('.file-wrapper .file-wrapper-rename input').on('keyup', (e) => {
+				e.stopPropagation();
+			});
+			$('#rename-btn').on('click', () => {
+				const newStudio = $('#rename-studio').val();
+				const newOpus = $('#rename-opus').val();
+				const newTitle = $('#rename-title').val();
+				const newActress = $('#rename-actress').val();
+				const newRelease = $('#rename-release').val();
+				const newFlay = {
+					studio: newStudio,
+					opus: newOpus,
+					title: newTitle,
+					actressList: Util.Actress.toArray(newActress),
+					release: newRelease,
+				};
+				Rest.Flay.rename(currentFlay.opus, newFlay, reloadCurrentFlay);
+			});
 		}
 
 		// header tag select event
@@ -542,8 +561,7 @@
 
 		// paginationProgress
 		$('#paginationProgress').on('click', (e) => {
-			console.debug(e.clientX, $(this).width(), e.clientX / $(this).width(), collectedList.length * (e.clientX / $(this).width()));
-			navigation.go(parseInt(collectedList.length * (e.clientX / $(this).width())));
+			navigation.go(parseInt(collectedList.length * (e.clientX / $(e.target).width())));
 		});
 
 		// window resize
@@ -1106,10 +1124,49 @@
 		currentFlay.video.tags.forEach((tag) => {
 			$("input[data-tag-id='" + tag.id + "']", '#videoTags').prop('checked', true);
 		});
+		// files
+		$('.file-wrapper > div:not(.file-wrapper-rename)').empty();
+		currentFlay.files.cover.forEach((file) => {
+			$('.file-wrapper-cover').append($('<label>', { class: 'text sm' }).html(file));
+		});
+		currentFlay.files.movie.forEach((file) => {
+			$('.file-wrapper-movie').append(
+				$('<label>', { class: 'text sm' }).append(
+					file,
+					$('<span>', { class: 'hover text-danger' })
+						.html('<i class="fa fa-times"></i>')
+						.on('click', () => {
+							console.log(file);
+							if (confirm('Will be delete ' + currentFlay.opus + ' movie\n' + file)) {
+								Rest.Flay.deleteFileOnFlay(currentFlay.opus, file, reloadCurrentFlay);
+							}
+						}),
+				),
+			);
+		});
+		currentFlay.files.subtitles.forEach((file) => {
+			$('.file-wrapper-subtitles').append(
+				$('<label>', { class: 'text sm' }).append(
+					file,
+					$('<span>', { class: 'hover text-danger' })
+						.html('<i class="fa fa-times"></i>')
+						.on('click', () => {
+							console.log(file);
+							if (confirm('Will be delete ' + currentFlay.opus + ' subtitles\n' + file)) {
+								Rest.Flay.deleteFileOnFlay(currentFlay.opus, file, reloadCurrentFlay);
+							}
+						}),
+				),
+			);
+		});
+		$('#rename-studio').val(currentFlay.studio);
+		$('#rename-opus').val(currentFlay.opus);
+		$('#rename-title').val(currentFlay.title);
+		$('#rename-actress').val(currentFlay.actressList.join(', '));
+		$('#rename-release').val(currentFlay.release);
 		// history chart
 		if (currentFlay.video.play > 0) {
 			$('.history-wrapper').show();
-			// $("#chartdiv").css({height: Math.min(window.innerHeight - $("#chartdiv").position().top - $("#bottomMenu").height(), 200)});
 			Rest.History.find(currentFlay.opus, (histories) => {
 				const playHistories = histories.filter((history) => history.action === 'PLAY');
 				if (currentFlay.video.play !== playHistories.length) {
@@ -1142,6 +1199,19 @@
 						$(this).remove();
 					}),
 			);
+	}
+
+	function reloadCurrentFlay() {
+		console.log('reloadCurrentFlay', currentFlay.opus);
+		Rest.Flay.get(currentFlay.opus, (newFlay) => {
+			for (let flay of flayList) {
+				if (flay.opus === newFlay.opus) {
+					currentFlay = flay = newFlay;
+					break;
+				}
+			}
+			showVideo();
+		});
 	}
 
 	attachEventListener();

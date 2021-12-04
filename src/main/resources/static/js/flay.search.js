@@ -154,7 +154,13 @@ function findMode() {
 		$(this).val(value).toggleClass('input-invalid', !bodyRegExp.test(value));
 	});
 	$('#newActressDebut').attr('max', new Date().getFullYear());
-	$('#btnRegistActress').on('click', function () {
+	$('#newActressDebut').on('keyup', (e) => {
+		if (e.keyCode === 13) {
+			resistActress();
+		}
+	});
+	$('#btnRegistActress').on('click', resistActress);
+	function resistActress() {
 		var actress = $('#newActress').data('actress');
 		if (actress && actress.name === $('#newActressName').val().trim()) {
 			actress.favorite = $('#newActressFavorite').prop('checked');
@@ -176,7 +182,7 @@ function findMode() {
 			actress.coverSize = 0;
 		}
 		Rest.Actress.persist(actress);
-	});
+	}
 	$('#btnShowActress').on('click', function () {
 		var newActressName = $('#newActressName').val().trim();
 		if (newActressName !== '') {

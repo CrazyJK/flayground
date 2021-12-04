@@ -88,7 +88,7 @@
 					var tagMarkedCount = 0;
 
 					$.each(flayList, function (idx, flay) {
-						var isTagMarked = Utils.Tag.includes(flay.video.tags, tag);
+						var isTagMarked = Util.Tag.includes(flay.video.tags, tag);
 						if (isTagMarked) tagMarkedCount++;
 
 						$flayList.appendFlayCard(flay, {

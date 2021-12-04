@@ -187,6 +187,54 @@ label.text:empty {
 	height: 100px;
 }
 
+.file-wrapper {
+	font-family: D2Coding;
+}
+.file-wrapper > div > label {
+	position: relative;
+	padding-right: 20px;
+}
+.file-wrapper > div > label > span {
+	position: absolute;
+	right: 0;
+	margin: 0 4px;
+}
+.file-wrapper .file-wrapper-rename {
+	display: flex;
+	justify-content: center;
+	gap: 4px;
+}
+.file-wrapper .file-wrapper-rename button,
+.file-wrapper .file-wrapper-rename input {
+	border: 0;
+	background-color: #eee;
+	border-radius: 4px;
+	color: #000;
+}
+.file-wrapper .file-wrapper-rename #rename-studio {
+	flex: 0 0 100px;
+	min-width: 100px;
+}
+.file-wrapper .file-wrapper-rename #rename-opus {
+	flex: 0 0 75px;
+	min-width: 75px;
+}
+.file-wrapper .file-wrapper-rename #rename-title {
+	flex: 1 1 400px;
+	min-width: 400px;
+}
+.file-wrapper .file-wrapper-rename #rename-actress {
+	flex: 0 0 150px;
+	min-width: 150px;
+}
+.file-wrapper .file-wrapper-rename #rename-release {
+	flex: 0 0 90px;
+	min-width: 90px;
+}
+.file-wrapper .file-wrapper-rename #rename-btn {
+	flex: 0 0 auto;
+}
+
 .notice-bar {
 	margin: 0.25rem;
 	text-align: center;

@@ -39,34 +39,34 @@
 		<script type="text/javascript">
 			var isAdmin, username;
 			$(function () {
-				isAdmin = Security.hasRole("ADMIN");
+				isAdmin = Security.hasRole('ADMIN');
 				username = Security.getName();
 
 				// theme
-				var bgThemeValue = LocalStorageItem.get("flay.bgtheme", "D");
-				var link = document.querySelector("#themeLink");
+				var bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'D');
+				var link = document.querySelector('#themeLink');
 				if (link) {
 					document.head.removeChild(link);
 				}
-				if (bgThemeValue === "D") {
-					var link = document.createElement("link");
-					link.setAttribute("id", "themeLink");
-					link.setAttribute("rel", "stylesheet");
-					link.setAttribute("href", "/css/theme/flay.theme.dark.css");
+				if (bgThemeValue === 'D') {
+					var link = document.createElement('link');
+					link.setAttribute('id', 'themeLink');
+					link.setAttribute('rel', 'stylesheet');
+					link.setAttribute('href', '/css/theme/flay.theme.dark.css');
 					document.head.appendChild(link);
 				}
 
 				Rest.Html.get(reqParam.target, function (html) {
-					$("#wrap_body").html(html);
+					$('#wrap_body').html(html);
 				});
 			});
 			window.onerror = function (e) {
-				if (e.toString() === "ResizeObserver loop limit exceeded") {
+				if (e.toString() === 'ResizeObserver loop limit exceeded') {
 					return;
 				} else {
-					loading.on("Error: " + e);
+					loading.error('Error: ' + e);
 				}
-				console.error("Error name[" + e.name + "] message[" + e.message + "] toString[" + e.toString() + "]", e);
+				console.error('Error name[' + e.name + '] message[' + e.message + '] toString[' + e.toString() + ']', e);
 			};
 		</script>
 	</body>

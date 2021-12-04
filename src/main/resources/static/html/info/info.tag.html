@@ -63,7 +63,10 @@
 				tag.name = $('#name').val();
 				tag.description = $('#description').val();
 				Rest.Tag.update(tag, function () {
-					loading.on('Updated');
+					const loadingIndex = loading.on('Updated');
+					setTimeout(() => {
+						loading.off(loadingIndex);
+					}, 3 * 1000);
 				});
 			});
 

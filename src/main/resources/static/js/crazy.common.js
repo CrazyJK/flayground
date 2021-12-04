@@ -281,37 +281,6 @@ $.urlParam = function(name){
     return results ? results[1] || "" : "";
 }
 
-function Loading() {
-	const OVERLAY = "overlay", OVERLAY_BODY = "overlay_body";
-	const templateOverlay = '<div id="wrap_overlay"><div id="' + OVERLAY + '"><div id="' + OVERLAY_BODY + '"></div></div></div>';
-
-	var  $wrapOverlay = $(templateOverlay).appendTo($("body > footer"));
-	this.$overlay     = $wrapOverlay.find("#" + OVERLAY);
-	this.$overlayBody = $wrapOverlay.find("#" + OVERLAY_BODY);
-
-	$("html").on("click", "#" + OVERLAY, function() {
-		loading.off();
-	});
-	console.info('Loading.init');
-};
-Loading.prototype = {
-		on: function(body) {
-			this.$overlay.show();
-			this.$overlayBody.empty().append(body);
-//			console.log('Loading.on', body);
-		},
-		off: function() {
-			this.$overlay.hide();
-			this.$overlayBody.empty();
-//			console.log('Loading.off');
-		}
-};
-
-var loading;
-$(function() {
-	loading = new Loading();
-});
-
 const birthRegExp = /^(19[0-9][0-9]|20\d{2})年(0[0-9]|1[0-2])月(0[1-9]|[1-2][0-9]|3[0-1])日$/;
 const bodyRegExp = /^(7[0-9]|8[0-9]|9[0-9]|1\d{2})[A-J]? - (5[0-9]|6[0-9]) - (7[0-9]|8[0-9]|9[0-9]|1\d{2})$/;
 const heightRegExp = /^(1[4-7][0-9])$/;

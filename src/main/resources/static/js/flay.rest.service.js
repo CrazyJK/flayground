@@ -6,7 +6,7 @@
 const restCall = function (url, args, callback, failCallback) {
 	let isCompleted = false;
 	let loadingTimeout = -1;
-	let csrfHeaderValue = null;
+	let loadingIndex = 0;
 	const CSRF_COOKIE_NAME = 'XSRF-TOKEN';
 	const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
 	const DEFAULTS = {
@@ -16,13 +16,14 @@ const restCall = function (url, args, callback, failCallback) {
 		contentType: 'application/json',
 		async: true,
 		cache: false,
-		title: 'Call: ' + url,
+		title: '',
 		loadingDelay: 300,
 		beforeSend: function (xhr, settings) {
-			if (!loading) {
+			if (loading === null) {
 				loading = new Loading();
 			}
 			if (this.method !== 'GET') {
+				let csrfHeaderValue = null;
 				for (const cookie of document.cookie.split(';')) {
 					if (cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '') === CSRF_COOKIE_NAME) {
 						csrfHeaderValue = unescape(cookie.substr(cookie.indexOf('=') + 1));
@@ -32,7 +33,9 @@ const restCall = function (url, args, callback, failCallback) {
 				xhr.setRequestHeader(CSRF_HEADER_NAME, csrfHeaderValue);
 			}
 			loadingTimeout = setTimeout(function () {
-				!isCompleted && loading.on(settings.title);
+				if (!isCompleted) {
+					loadingIndex = loading.on(`[${settings.method.toUpperCase()}] ${url} ${settings.title}`);
+				}
 			}, settings.loadingDelay);
 		},
 	};
@@ -45,20 +48,20 @@ const restCall = function (url, args, callback, failCallback) {
 	$.ajax(PATH + url, settings)
 		.done(function (data) {
 			isCompleted = true;
-			callback?.(data);
-
 			clearTimeout(loadingTimeout);
-			loading.off();
+			loading.off(loadingIndex);
+
+			callback?.(data);
 		})
 		.fail(function (jqXHR, textStatus, errorThrown) {
 			isCompleted = true;
-			console.error('restCall fail', url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 
 			if (failCallback) {
-				failCallback(jqXHR, textStatus, errorThrown);
-
+				console.error('restCall fail', url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 				clearTimeout(loadingTimeout);
-				loading.off();
+				loading.off(loadingIndex);
+
+				failCallback(jqXHR, textStatus, errorThrown);
 			} else {
 				let errMsg = '';
 				if (jqXHR.getResponseHeader('error')) {
@@ -73,8 +76,8 @@ const restCall = function (url, args, callback, failCallback) {
 					errMsg = `Error: ${textStatus}
 							<br>${errorThrown}`;
 				}
-				console.error('errMsg', errMsg);
-				loading.on($('<div>', { class: 'overlay-error-body' }).append(errMsg));
+				console.error(errMsg);
+				loading.error(errMsg);
 			}
 		})
 		.always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {

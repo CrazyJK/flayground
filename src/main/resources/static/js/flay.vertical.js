@@ -736,7 +736,7 @@
 			return false;
 		};
 
-		loading.on('Collect list');
+		const loadingIndex = loading.on('Collect list');
 		$('.video-wrapper').hide();
 
 		const query = $('#search').val();
@@ -868,10 +868,10 @@
 		if (collectedList.length > 0) {
 			navigation.random();
 			$('.video-wrapper').show();
-			loading.off();
+			loading.off(loadingIndex);
 		} else {
 			$('.pagination').empty();
-			loading.on('Not found');
+			loading.error('Not found');
 		}
 
 		// display flay count of tag

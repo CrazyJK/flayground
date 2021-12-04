@@ -312,7 +312,7 @@ window.onerror = function (e) {
 	if (e.toString() === 'ResizeObserver loop limit exceeded') {
 		return;
 	} else {
-		loading.on('Error: ' + e);
+		loading.error('Error: ' + e);
 	}
 	console.error('Error name[' + e.name + '] message[' + e.message + '] toString[' + e.toString() + ']', e);
 };

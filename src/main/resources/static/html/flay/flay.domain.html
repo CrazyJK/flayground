@@ -4,9 +4,8 @@
 		<title>Flay Domain</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="icon" type="image/png" href="../../img/favicon/flay_0.png"/>
-		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
+		<link rel="icon" type="image/png" href="../../img/favicon/flay_0.png" />
+		<link rel="stylesheet" href="../../css/common.css" />
 		<link rel="stylesheet" href="../../css/domain/flay.css" />
 		<style>
 			body {
@@ -25,17 +24,17 @@
 				align-items: center;
 				justify-content: space-around;
 				gap: 1rem;
-				padding: .5rem 1rem;
+				padding: 0.5rem 1rem;
 				background-color: #181818;
 				border-bottom-right-radius: 0.25rem;
 				border-bottom-left-radius: 0.25rem;
 				box-shadow: 0 0 2px 0 #333;
-				transition: .4s;
+				transition: 0.4s;
 			}
 			header nav:hover {
 				box-shadow: 0 0 2px 0 #777;
 			}
-			input[type="search"] {
+			input[type='search'] {
 				border: 0;
 				background-color: transparent;
 				color: #c8c8c8;
@@ -70,7 +69,7 @@
 				color: #17a2b8;
 			}
 			div > label > input:checked + span {
-				color: #ffc107!important;
+				color: #ffc107 !important;
 			}
 			main {
 				position: fixed;
@@ -89,7 +88,7 @@
 				justify-content: center;
 				flex-wrap: wrap;
 				margin: 0;
-				padding: .5rem;
+				padding: 0.5rem;
 				width: calc((100% - 800px) / 2);
 				width: -webkit-fill-available;
 				max-width: 800px;
@@ -102,13 +101,13 @@
 			footer {
 				position: fixed;
 				bottom: 0;
-				width: 100%
+				width: 100%;
 			}
 			footer > ul {
 				list-style: none;
 				display: flex;
 				justify-content: center;
-				margin: .5rem;
+				margin: 0.5rem;
 				padding: 0;
 			}
 			footer > ul > li {
@@ -151,24 +150,40 @@
 					<label for="sub"><input type="checkbox" name="subtitles" id="sub" /><span>Sub</span></label>
 				</div>
 				<div class="filter-condition">
-					<label for="rank0"><input type="checkbox" name="rank" id="rank0" value="0" checked="checked"><span><i class="fa fa-circle"></i></span></label>
-					<label for="rank1"><input type="checkbox" name="rank" id="rank1" value="1"><span><i class="fa fa-star"></i></span></label>
-					<label for="rank2"><input type="checkbox" name="rank" id="rank2" value="2"><span><i class="fa fa-star"></i></span></label>
-					<label for="rank3"><input type="checkbox" name="rank" id="rank3" value="3"><span><i class="fa fa-star"></i></span></label>
-					<label for="rank4"><input type="checkbox" name="rank" id="rank4" value="4"><span><i class="fa fa-star"></i></span></label>
-					<label for="rank5"><input type="checkbox" name="rank" id="rank5" value="5"><span><i class="fa fa-star"></i></span></label>
+					<label for="rank0"
+						><input type="checkbox" name="rank" id="rank0" value="0" checked="checked" /><span><i class="fa fa-circle"></i></span
+					></label>
+					<label for="rank1"
+						><input type="checkbox" name="rank" id="rank1" value="1" /><span><i class="fa fa-star"></i></span
+					></label>
+					<label for="rank2"
+						><input type="checkbox" name="rank" id="rank2" value="2" /><span><i class="fa fa-star"></i></span
+					></label>
+					<label for="rank3"
+						><input type="checkbox" name="rank" id="rank3" value="3" /><span><i class="fa fa-star"></i></span
+					></label>
+					<label for="rank4"
+						><input type="checkbox" name="rank" id="rank4" value="4" /><span><i class="fa fa-star"></i></span
+					></label>
+					<label for="rank5"
+						><input type="checkbox" name="rank" id="rank5" value="5" /><span><i class="fa fa-star"></i></span
+					></label>
 				</div>
 				<div class="sort-condition">
-					<label for="sort_s"><input type="radio" name="sort" id="sort_s" value="s"><span>S</span></label>
-					<label for="sort_o"><input type="radio" name="sort" id="sort_o" value="o"><span>O</span></label>
-					<label for="sort_t"><input type="radio" name="sort" id="sort_t" value="t"><span>T</span></label>
-					<label for="sort_a"><input type="radio" name="sort" id="sort_a" value="a"><span>A</span></label>
-					<label for="sort_r"><input type="radio" name="sort" id="sort_r" value="r"><span>R</span></label>
-					<label for="sort_m"><input type="radio" name="sort" id="sort_m" value="m" checked="checked"><span>M</span></label>
+					<label for="sort_s"><input type="radio" name="sort" id="sort_s" value="s" /><span>S</span></label>
+					<label for="sort_o"><input type="radio" name="sort" id="sort_o" value="o" /><span>O</span></label>
+					<label for="sort_t"><input type="radio" name="sort" id="sort_t" value="t" /><span>T</span></label>
+					<label for="sort_a"><input type="radio" name="sort" id="sort_a" value="a" /><span>A</span></label>
+					<label for="sort_r"><input type="radio" name="sort" id="sort_r" value="r" /><span>R</span></label>
+					<label for="sort_m"><input type="radio" name="sort" id="sort_m" value="m" checked="checked" /><span>M</span></label>
 				</div>
 				<div class="size-condition">
-					<label for="size_m"><input type="radio" name="size" id="size_m" value="-100"><span><i class="fa fa-minus"></i></span></label>
-					<label for="size_p"><input type="radio" name="size" id="size_p" value="100"><span><i class="fa fa-plus"></i></span></label>
+					<label for="size_m"
+						><input type="radio" name="size" id="size_m" value="-100" /><span><i class="fa fa-minus"></i></span
+					></label>
+					<label for="size_p"
+						><input type="radio" name="size" id="size_p" value="100" /><span><i class="fa fa-plus"></i></span
+					></label>
 				</div>
 			</nav>
 		</header>
@@ -178,7 +193,9 @@
 			<article class="container-flay"></article>
 		</main>
 		<footer>
-			<ul>Navigation</ul>
+			<ul>
+				Navigation
+			</ul>
 		</footer>
 
 		<script src="/webjars/jquery/jquery.min.js"></script>
@@ -189,19 +206,19 @@
 		<script src="../../js/domain/flay.control.js"></script>
 		<script>
 			const control = new FlayControl({
-				event: "main",
-				prevContainer: "main > article:nth-child(1)",
-				mainContainer: "main > article#flayWrapper",
-				nextContainer: "main > article:nth-child(3)",
-				pagination: "footer > ul",
+				event: 'main',
+				prevContainer: 'main > article:nth-child(1)',
+				mainContainer: 'main > article#flayWrapper',
+				nextContainer: 'main > article:nth-child(3)',
+				pagination: 'footer > ul',
 				filter: {
-					keyword: 	".filter-condition #keyword",
-					favorite: 	".filter-condition #fav",
-					movie: 		".filter-condition #mov",
-					subtitles: 	".filter-condition #sub",
-					rank: 		".filter-condition input[name='rank']",
-					tag: 		".filter-condition input[name='tag']",
-					actress: 	".filter-condition input[name='actress']",
+					keyword: '.filter-condition #keyword',
+					favorite: '.filter-condition #fav',
+					movie: '.filter-condition #mov',
+					subtitles: '.filter-condition #sub',
+					rank: ".filter-condition input[name='rank']",
+					tag: ".filter-condition input[name='tag']",
+					actress: ".filter-condition input[name='actress']",
 				},
 				sort: ".sort-condition input[name='sort']",
 				size: ".size-condition input[name='size']",

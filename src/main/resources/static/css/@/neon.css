@@ -1,0 +1,238 @@
+@charset "UTF-8";
+
+@-webkit-keyframes blink-1 {
+	0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #922596, 0 0 10px #922596, 0 0 20px #922596, 0 0 30px #922596, 0 0 40px #421144, 0 0 55px #421144;
+	}
+	20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+@keyframes blink-1 {
+	0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #922596, 0 0 10px #922596, 0 0 20px #922596, 0 0 30px #922596, 0 0 40px #421144, 0 0 55px #421144;
+	}
+	20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+@-webkit-keyframes blink-2 {
+	0%, 12%, 18.999%, 23%, 31.999%, 37%, 44.999%, 46%, 49.999%, 51%, 58.999%, 61%, 68.999%, 71%, 85.999%, 96%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #e2d313, 0 0 10px #e2d313, 0 0 20px #e2d313, 0 0 30px #e2d313, 0 0 40px #847b0b, 0 0 55px #847b0b;
+	}
+	19%, 22.99%, 32%, 36.999%, 45%, 45.999%, 50%, 50.99%, 59%, 60.999%, 69%, 70.999%, 86%, 95.999% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+@keyframes blink-2 {
+	0%, 12%, 18.999%, 23%, 31.999%, 37%, 44.999%, 46%, 49.999%, 51%, 58.999%, 61%, 68.999%, 71%, 85.999%, 96%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #e2d313, 0 0 10px #e2d313, 0 0 20px #e2d313, 0 0 30px #e2d313, 0 0 40px #847b0b, 0 0 55px #847b0b;
+	}
+	19%, 22.99%, 32%, 36.999%, 45%, 45.999%, 50%, 50.99%, 59%, 60.999%, 69%, 70.999%, 86%, 95.999% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+@-webkit-keyframes blink-3 {
+	0%, 12%, 18.999%, 23%, 31.999%, 37%, 44.999%, 46%, 49.999%, 51%, 58.999%, 61%, 68.999%, 71%, 85.999%, 96%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #2175c0, 0 0 10px #2175c0, 0 0 20px #2175c0, 0 0 30px #2175c0, 0 0 40px #124069, 0 0 55px #124069;
+	}
+	19%, 22.99%, 32%, 36.999%, 45%, 45.999%, 50%, 50.99%, 59%, 60.999%, 69%, 70.999%, 86%, 95.999% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+@keyframes blink-3 {
+	0%, 12%, 18.999%, 23%, 31.999%, 37%, 44.999%, 46%, 49.999%, 51%, 58.999%, 61%, 68.999%, 71%, 85.999%, 96%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #2175c0, 0 0 10px #2175c0, 0 0 20px #2175c0, 0 0 30px #2175c0, 0 0 40px #124069, 0 0 55px #124069;
+	}
+	19%, 22.99%, 32%, 36.999%, 45%, 45.999%, 50%, 50.99%, 59%, 60.999%, 69%, 70.999%, 86%, 95.999% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+@-webkit-keyframes blink-4 {
+	0%, 14%, 16%, 24%, 42%, 58%, 69%, 71%, 88%, 98%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #1fc139, 0 0 10px #1fc139, 0 0 20px #1fc139, 0 0 30px #1fc139, 0 0 40px #11691f, 0 0 55px #11691f;
+	}
+	15%, 22%, 40%, 55%, 63%, 70%, 82%, 99% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+@keyframes blink-4 {
+	0%, 14%, 16%, 24%, 42%, 58%, 69%, 71%, 88%, 98%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #1fc139, 0 0 10px #1fc139, 0 0 20px #1fc139, 0 0 30px #1fc139, 0 0 40px #11691f, 0 0 55px #11691f;
+	}
+	15%, 22%, 40%, 55%, 63%, 70%, 82%, 99% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+
+@-webkit-keyframes blink-5 {
+	0%, 16%, 20%, 58%, 69%, 88%, 98%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #fefcc9, 0 0 10px #feec85, 0 0 20px #ffae34, 0 0 30px #ec760c, 0 0 40px #cd4606, 0 0 55px #973716;
+	}
+	15%, 61%, 70%, 82%, 99% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+@keyframes blink-5 {
+	0%, 16%, 20%, 58%, 69%, 88%, 98%, 100% {
+		opacity: 1;
+		text-shadow: 0 0 5px #fefcc9, 0 0 10px #feec85, 0 0 20px #ffae34, 0 0 30px #ec760c, 0 0 40px #cd4606, 0 0 55px #973716;
+	}
+	15%, 61%, 70%, 82%, 99% {
+		opacity: .5;
+		text-shadow: none;
+	}
+}
+
+.blink {
+	font-family: 'clipregular'!important;
+	color: #eee !important;
+	font-weight: bold !important;
+}
+.blink-1 {
+	-webkit-animation: blink-1 20s linear infinite;
+	animation: blink-1 20s linear infinite;
+}
+.blink-2 {
+	-webkit-animation: blink-2 25s linear infinite;
+	animation: blink-2 25s linear infinite;
+}
+.blink-3 {
+	-webkit-animation: blink-3 30s linear infinite;
+	animation: blink-3 30s linear infinite;
+}
+.blink-4 {
+	-webkit-animation: blink-4 25s linear infinite;
+	animation: blink-4 25s linear infinite;
+}
+.blink-5 {
+	-webkit-animation: blink-5 35s linear infinite;
+	animation: blink-5 35s linear infinite;
+}
+.blink-6 {
+	-webkit-animation: blink-1 15s linear infinite;
+	animation: blink-1 15s linear infinite;
+}
+.blink-7 {
+	-webkit-animation: blink-2 20s linear infinite;
+	animation: blink-2 20s linear infinite;
+}
+.blink-8 {
+	-webkit-animation: blink-3 20s linear infinite;
+	animation: blink-3 20s linear infinite;
+}
+.blink-9 {
+	-webkit-animation: blink-4 35s linear infinite;
+	animation: blink-4 35s linear infinite;
+}
+.blink-10 {
+	-webkit-animation: blink-5 20s linear infinite;
+	animation: blink-5 20s linear infinite;
+}
+
+@font-face {
+	font-family: 'clipregular';
+	font-weight: normal;
+	font-style: normal;
+	src: url('/font/clip/clip-webfont.eot');
+	src: url('/font/clip/clip-webfont.eot?#iefix') format('embedded-opentype'),
+		 url('/font/clip/clip-webfont.woff2') format('woff2'),
+		 url('/font/clip/clip-webfont.woff') format('woff'),
+		 url('/font/clip/clip-webfont.ttf') format('truetype'),
+		 url('/font/clip/clip-webfont.svg#clipregular') format('svg');
+}
+
+@keyframes blink-border-1 {
+	0%, 19.999%, 22%, 62.999%, 64%, 64.999%, 70%, 100% {
+		box-shadow: 0 0 2px #922596, 0 0 4px #922596, 0 0 6px #922596, 0 0 8px #922596, 0 0 16px #421144, 0 0 24px #421144,
+			inset 0 0 2px #922596, inset 0 0 4px #922596, inset 0 0 6px #922596, inset 0 0 8px #922596, inset 0 0 16px #421144, inset 0 0 24px #421144;
+	}
+	20%, 21.999%, 63%, 63.999%, 65%, 69.999% {
+		box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+	}
+}
+@keyframes blink-border-2 {
+	0%, 12%, 18.999%, 23%, 31.999%, 37%, 44.999%, 46%, 49.999%, 51%, 58.999%, 61%, 68.999%, 71%, 85.999%, 96%, 100% {
+		box-shadow: 0 0 2px #e2d313, 0 0 4px #e2d313, 0 0 6px #e2d313, 0 0 8px #e2d313, 0 0 16px #847b0b, 0 0 24px #847b0b,
+			inset 0 0 2px #e2d313, inset 0 0 4px #e2d313, inset 0 0 6px #e2d313, inset 0 0 8px #e2d313, inset 0 0 16px #847b0b, inset 0 0 24px #847b0b;
+	}
+	19%, 22.99%, 32%, 36.999%, 45%, 45.999%, 50%, 50.99%, 59%, 60.999%, 69%, 70.999%, 86%, 95.999% {
+		box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+	}
+}
+@keyframes blink-border-3 {
+	0%, 12%, 18.999%, 23%, 31.999%, 37%, 44.999%, 46%, 49.999%, 51%, 58.999%, 61%, 68.999%, 71%, 85.999%, 96%, 100% {
+		box-shadow: 0 0 2px #2175c0, 0 0 4px #2175c0, 0 0 6px #2175c0, 0 0 8px #2175c0, 0 0 16px #124069, 0 0 24px #124069,
+			inset 0 0 2px #2175c0, inset 0 0 4px #2175c0, inset 0 0 6px #2175c0, inset 0 0 8px #2175c0, inset 0 0 16px #124069, inset 0 0 24px #124069;
+	}
+	19%, 22.99%, 32%, 36.999%, 45%, 45.999%, 50%, 50.99%, 59%, 60.999%, 69%, 70.999%, 86%, 95.999% {
+		box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+	}
+}
+@keyframes blink-border-4 {
+	0%, 14%, 16%, 24%, 42%, 58%, 69%, 71%, 88%, 98%, 100% {
+		box-shadow: 0 0 2px #1fc139, 0 0 4px #1fc139, 0 0 6px #1fc139, 0 0 8px #1fc139, 0 0 16px #11691f, 0 0 24px #11691f,
+			inset 0 0 2px #1fc139, inset 0 0 4px #1fc139, inset 0 0 6px #1fc139, inset 0 0 8px #1fc139, inset 0 0 16px #11691f, inset 0 0 24px #11691f;
+	}
+	15%, 22%, 40%, 55%, 63%, 70%, 82%, 99% {
+		box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+	}
+}
+@keyframes blink-border-5 {
+	0%, 16%, 20%, 58%, 69%, 88%, 98%, 100% {
+		box-shadow: 0 0 2px #fefcc9, 0 0 4px #feec85, 0 0 6px #ffae34, 0 0 8px #ec760c, 0 0 16px #cd4606, 0 0 24px #973716,
+			inset 0 0 2px #fefcc9, inset 0 0 4px #feec85, inset 0 0 6px #ffae34, inset 0 0 8px #ec760c, inset 0 0 16px #cd4606, inset 0 0 24px #973716;
+	}
+	15%, 61%, 70%, 82%, 99% {
+		box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+	}
+}
+.blink-border-1 {
+	animation: blink-border-1 10s linear infinite;
+}
+.blink-border-2 {
+	animation: blink-border-2 10s linear infinite;
+}
+.blink-border-3 {
+	animation: blink-border-3 10s linear infinite;
+}
+.blink-border-4 {
+	animation: blink-border-4 10s linear infinite;
+}
+.blink-border-5 {
+	animation: blink-border-5 10s linear infinite;
+}
+
+.blink-loading-1 {
+	animation: blink-1 5s linear infinite;
+}
+.blink-loading-2 {
+	animation: blink-2 5s linear infinite;
+}
+.blink-loading-3 {
+	animation: blink-3 5s linear infinite;
+}
+.blink-loading-4 {
+	animation: blink-4 5s linear infinite;
+}
+.blink-loading-5 {
+	animation: blink-5 5s linear infinite;
+}

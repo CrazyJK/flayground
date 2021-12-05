@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 	<head>
 		<title>Actuator Mappings</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
-		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="/css/base.scrollbar.css" />
+		<link rel="stylesheet" href="../../css/common.css" />
 		<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
 		<style type="text/css">
 			table {
@@ -74,42 +72,42 @@
 		<script type="text/javascript">
 			$(document).ready(function () {
 				$.ajax({
-					url: "/actuator/mappings",
-					mimeType: "application/json",
-					contentType: "application/json",
+					url: '/actuator/mappings',
+					mimeType: 'application/json',
+					contentType: 'application/json',
 					cache: false,
 				}).done(function (json) {
-					var list = json.contexts["Flayground"].mappings.dispatcherServlets.dispatcherServlet;
+					var list = json.contexts['Flayground'].mappings.dispatcherServlets.dispatcherServlet;
 
-					$("#count").html(list.length);
-					var $wrap = $("tbody");
+					$('#count').html(list.length);
+					var $wrap = $('tbody');
 					$.each(list, function (idx, mapping) {
 						if (mapping.details) {
-							$("<tr>")
+							$('<tr>')
 								.append(
-									$("<td>").html(idx + 1),
-									$("<td>").html(mapping.details.requestMappingConditions.methods),
-									$("<td>").append(
-										$("<a>", {
+									$('<td>').html(idx + 1),
+									$('<td>').html(mapping.details.requestMappingConditions.methods),
+									$('<td>').append(
+										$('<a>', {
 											href: mapping.details.requestMappingConditions.patterns,
-											target: "_blank",
-											class: "text-warning",
+											target: '_blank',
+											class: 'text-warning',
 										}).html(mapping.details.requestMappingConditions.patterns),
 									),
-									$("<td>", {
+									$('<td>', {
 										title: mapping.details.handlerMethod.className,
-									}).html(mapping.details.handlerMethod.className.split(".").pop()),
-									$("<td>").html(mapping.details.handlerMethod.name),
+									}).html(mapping.details.handlerMethod.className.split('.').pop()),
+									$('<td>').html(mapping.details.handlerMethod.name),
 								)
 								.appendTo($wrap);
 						} else {
-							$("<tr>")
-								.append($("<td>").html(idx + 1), $("<td>"), $("<td>").html(mapping.predicate), $("<td>").html(mapping.handler.split(" ")[0].split(".").pop()), $("<td>"))
+							$('<tr>')
+								.append($('<td>').html(idx + 1), $('<td>'), $('<td>').html(mapping.predicate), $('<td>').html(mapping.handler.split(' ')[0].split('.').pop()), $('<td>'))
 								.appendTo($wrap);
 						}
 					});
-					$("table").DataTable({
-						scrollY: scrollBodyHeight() + "px",
+					$('table').DataTable({
+						scrollY: scrollBodyHeight() + 'px',
 						//			order: [[ 2, 'asc' ]],
 						paging: false,
 						searching: false,
@@ -118,7 +116,7 @@
 				});
 
 				$(window).resize(function () {
-					$(".dataTables_scrollBody").css({ height: scrollBodyHeight() });
+					$('.dataTables_scrollBody').css({ height: scrollBodyHeight() });
 				});
 			});
 

@@ -1,12 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 	<head>
 		<title>Image view</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/png" href="../../img/favicon/flay_2.png" />
-		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
-		<link rel="stylesheet" href="../../css/crazy.common.css" />
+		<link rel="stylesheet" href="../../css/common.css" />
 		<style type="text/css">
 			body {
 				background: #000;
@@ -86,13 +85,13 @@
 				color: OrangeRed !important;
 			}
 			#glassSize:before {
-				content: "px ";
+				content: 'px ';
 			}
 			#glassSize > input {
 				width: 40px;
 			}
 			#glassZoom:before {
-				content: "x ";
+				content: 'x ';
 			}
 			#glassZoom > input {
 				width: 25px;
@@ -103,7 +102,7 @@
 				display: none;
 			}
 			#imageIndex:before {
-				content: "go ";
+				content: 'go ';
 			}
 			#imageIndex > input {
 				width: 48px;
@@ -138,7 +137,7 @@
 			i.fa {
 				margin: 0 4px;
 			}
-			input[type="number"] {
+			input[type='number'] {
 				background: transparent;
 				border: 0;
 				color: #eee;
@@ -147,11 +146,12 @@
 			}
 		</style>
 		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-		<script type="text/javascript" src="../../js/crazy.common.js"></script>
-		<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
-		<script type="text/javascript" src="../../js/flay.utils.js"></script>
-		<script type="text/javascript">
-			"use strict";
+		<script defer type="text/javascript" src="../../js/flay.loading.js"></script>
+		<script defer type="text/javascript" src="../../js/crazy.common.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.rest.service.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.utils.js"></script>
+		<script defer type="text/javascript">
+			'use strict';
 
 			let $glass;
 			const glass = {
@@ -167,27 +167,27 @@
 			};
 
 			$(document).ready(function () {
-				sIZe.value = LocalStorageItem.get("image.magnifier.size", 200);
-				zOOm.value = LocalStorageItem.get("image.magnifier.zoom", 2);
+				sIZe.value = LocalStorageItem.get('image.magnifier.size', 200);
+				zOOm.value = LocalStorageItem.get('image.magnifier.zoom', 2);
 
-				$("#sIZe, #zOOm")
-					.on("change", function () {
-						LocalStorageItem.set("image.magnifier.size", sIZe.value);
-						LocalStorageItem.set("image.magnifier.zoom", zOOm.value);
+				$('#sIZe, #zOOm')
+					.on('change', function () {
+						LocalStorageItem.set('image.magnifier.size', sIZe.value);
+						LocalStorageItem.set('image.magnifier.zoom', zOOm.value);
 
 						glass.size = parseInt(sIZe.value);
 						glass.zoom = parseInt(zOOm.value);
 						glass.radius = glass.size / 2;
 
-						$glass = $("#glass").css({
-							backgroundSize: image.width * glass.zoom + "px " + image.height * glass.zoom + "px",
+						$glass = $('#glass').css({
+							backgroundSize: image.width * glass.zoom + 'px ' + image.height * glass.zoom + 'px',
 							width: glass.size,
 							height: glass.size,
 							left: -glass.size,
 							top: -glass.size,
 						});
 					})
-					.trigger("change");
+					.trigger('change');
 
 				app();
 			});
@@ -196,7 +196,7 @@
 				// parameter
 				const paramNo = reqParam.no;
 				const paramSrc = reqParam.src;
-				const imgSrc = paramNo ? PATH + "/static/image/" + paramNo : paramSrc;
+				const imgSrc = paramNo ? PATH + '/static/image/' + paramNo : paramSrc;
 
 				// get image
 				const img = new Image();
@@ -222,7 +222,7 @@
 						image.height = this.naturalHeight;
 					}
 
-					$("#image")
+					$('#image')
 						.attr({
 							src: this.src,
 						})
@@ -231,31 +231,31 @@
 							height: image.height,
 						});
 
-					$glass = $("#glass").css({
+					$glass = $('#glass').css({
 						backgroundImage: "url('" + this.src + "')",
-						backgroundSize: image.width * glass.zoom + "px " + image.height * glass.zoom + "px",
+						backgroundSize: image.width * glass.zoom + 'px ' + image.height * glass.zoom + 'px',
 						width: glass.size,
 						height: glass.size,
 					});
 
 					// show default info
-					$("#imageSize").html(this.naturalWidth + " x " + this.naturalHeight);
+					$('#imageSize').html(this.naturalWidth + ' x ' + this.naturalHeight);
 
 					// magnifier glass toggle
 					let onOff = 0;
-					$("#glassToggle").on("click", function () {
+					$('#glassToggle').on('click', function () {
 						if (onOff++ % 2 === 0) {
-							image.left = $("#image").position().left;
-							image.top = $("#image").position().top;
-							image.width = $("#image").width();
-							image.height = $("#image").height();
+							image.left = $('#image').position().left;
+							image.top = $('#image').position().top;
+							image.width = $('#image').width();
+							image.height = $('#image').height();
 
-							$("#image, #glass").on("mousemove", function (e) {
+							$('#image, #glass').on('mousemove', function (e) {
 								moveMagnifier(e);
 							});
 							$glass.show();
 						} else {
-							$("#image, #glass").off("mousemove");
+							$('#image, #glass').off('mousemove');
 							$glass.hide();
 						}
 					});
@@ -263,59 +263,59 @@
 				img.src = imgSrc;
 
 				// show default info
-				const lastUrlName = imgSrc.split("/").pop();
+				const lastUrlName = imgSrc.split('/').pop();
 				document.title = lastUrlName;
-				$("#imageName").html(lastUrlName);
+				$('#imageName').html(lastUrlName);
 
-				$("#imageUrl").on("click", function () {
-					$("#urlInput").toggle(100);
+				$('#imageUrl').on('click', function () {
+					$('#urlInput').toggle(100);
 				});
-				$("#urlInput > input").on("keyup", function (e) {
+				$('#urlInput > input').on('keyup', function (e) {
 					if (e.keyCode === 13 && $.trim($(this).val()).length > 0) {
-						location.href = "?src=" + $(this).val();
+						location.href = '?src=' + $(this).val();
 					}
 				});
 
 				// set additional image information
 				if (paramNo && paramNo >= 0) {
 					Rest.Image.get(paramNo, function (imageInfo) {
-						const parentFolder = imageInfo.path.replace(/\\/gi, "/").split("/").pop();
-						document.title = parentFolder + " : " + imageInfo.name;
+						const parentFolder = imageInfo.path.replace(/\\/gi, '/').split('/').pop();
+						document.title = parentFolder + ' : ' + imageInfo.name;
 
-						$("#paint")
+						$('#paint')
 							.show()
-							.on("click", function () {
+							.on('click', function () {
 								Rest.Image.paint(paramNo);
 							});
-						$("#imagePath")
+						$('#imagePath')
 							.html(parentFolder)
-							.on("click", function () {
+							.on('click', function () {
 								Rest.Flay.openFolder(imageInfo.path);
 							});
-						$("#imageName").html(imageInfo.name);
-						$("#imageLength").html(File.formatSize(imageInfo.length));
-						$("#imageLastModified").html(new Date(imageInfo.modified).format("yyyy-MM-dd"));
-						$("#imageMoveOut")
+						$('#imageName').html(imageInfo.name);
+						$('#imageLength').html(File.formatSize(imageInfo.length));
+						$('#imageLastModified').html(new Date(imageInfo.modified).format('yyyy-MM-dd'));
+						$('#imageMoveOut')
 							.show()
-							.on("click", function () {
-								if (confirm("move this file to Root Directory?")) Rest.Image.delete(paramNo);
+							.on('click', function () {
+								if (confirm('move this file to Root Directory?')) Rest.Image.delete(paramNo);
 							});
 					});
 
-					$("#imageIndex")
+					$('#imageIndex')
 						.show()
 						.children()
 						.val(paramNo)
-						.on("keyup change", function (e) {
+						.on('keyup change', function (e) {
 							e.stopPropagation();
-							if (e.type === "change" || (e.type === "keyup" && e.keyCode === 13)) {
-								location.href = "?no=" + $(this).val();
+							if (e.type === 'change' || (e.type === 'keyup' && e.keyCode === 13)) {
+								location.href = '?no=' + $(this).val();
 							}
 						});
 
 					const imageLastIndex = Rest.Image.size() - 1;
 
-					$(document).on("wheel keyup", function (e) {
+					$(document).on('wheel keyup', function (e) {
 						e.stopPropagation();
 						let nextImageIndex = -1;
 						const eventCode = e.keyCode || e.originalEvent.wheelDelta;
@@ -335,7 +335,7 @@
 								break;
 						}
 						if (nextImageIndex > -1) {
-							location.href = "?no=" + nextImageIndex;
+							location.href = '?no=' + nextImageIndex;
 						}
 					});
 				}
@@ -352,7 +352,7 @@
 						}
 					} else if (system === WINDOWS) {
 						if (browser === MSIE) {
-							alert("Microsoft IE not support");
+							alert('Microsoft IE not support');
 						} else if (browser === CHROME) {
 							margin.width = 16;
 							margin.height = 67;
@@ -399,7 +399,7 @@
 
 					/* set the position of the magnifier glass: */
 					$glass.css({
-						backgroundPosition: (image.left - cursor.x) * glass.zoom + glass.radius + "px " + ((image.top - cursor.y) * glass.zoom + glass.radius) + "px",
+						backgroundPosition: (image.left - cursor.x) * glass.zoom + glass.radius + 'px ' + ((image.top - cursor.y) * glass.zoom + glass.radius) + 'px',
 						left: cursor.x + cursor.l - glass.radius,
 						top: cursor.y + cursor.t - glass.radius,
 					});
@@ -435,5 +435,7 @@
 		<div id="urlInput" class="fixed-center">
 			<input placeholder="type image src" />
 		</div>
+
+		<footer></footer>
 	</body>
 </html>

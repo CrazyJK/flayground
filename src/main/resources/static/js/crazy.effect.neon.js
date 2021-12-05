@@ -3,8 +3,6 @@
  */
 
 (function ($) {
-	$('head').append('<link rel="stylesheet" href="/css/crazy.neon.css">');
-
 	$.fn.neonBorder = function (onOff, no) {
 		return this.each(function () {
 			var $self = $(this);

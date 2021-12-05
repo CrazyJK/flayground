@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 	<head>
 		<title>Actuator</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
-		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="/css/base.scrollbar.css" />
+		<link rel="stylesheet" href="../../css/common.css" />
 		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
 		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
@@ -24,50 +22,50 @@
 
 		<script type="text/javascript">
 			var extraLinkMap = new Map();
-			extraLinkMap.set("loggers", "loggers.html");
-			extraLinkMap.set("mappings", "mappings.html");
+			extraLinkMap.set('loggers', 'loggers.html');
+			extraLinkMap.set('mappings', 'mappings.html');
 
 			$.ajax({
-				url: "/actuator",
+				url: '/actuator',
 				cache: false,
 			}).done(function (json) {
 				$.each(json._links, function (key, val) {
-					var url = val.href.replace("http://localhost:6974", "");
-					$("<div>", { class: "card text-white bg-dark m-2" })
-						.css({ width: "auto", boxShadow: "2px 2px 4px 2px rgba(0, 0, 0, 0.5)" })
+					var url = val.href.replace('http://localhost:6974', '');
+					$('<div>', { class: 'card text-white bg-dark m-2' })
+						.css({ width: 'auto', boxShadow: '2px 2px 4px 2px rgba(0, 0, 0, 0.5)' })
 						.append(
-							$("<div>", { class: "card-body" }).append(
+							$('<div>', { class: 'card-body' }).append(
 								(function () {
 									var extraLink = extraLinkMap.get(key);
-									return extraLink ? $("<a>", { class: "text-info float-right", href: extraLink }).append($("<i>", { class: "fa fa-external-link small" })) : "";
+									return extraLink ? $('<a>', { class: 'text-info float-right', href: extraLink }).append($('<i>', { class: 'fa fa-external-link small' })) : '';
 								})(),
-								$("<h5>", { class: "card-title" }).append($("<i>", { class: "fa fa-info-circle small mr-2" }), key),
+								$('<h5>', { class: 'card-title' }).append($('<i>', { class: 'fa fa-info-circle small mr-2' }), key),
 								(function () {
 									return val.templated
-										? $("<div>", { class: "input-group input-group-sm" }).append(
-												$("<input>", { class: "form-control form-control-sm border-secondary text-light bg-dark" })
+										? $('<div>', { class: 'input-group input-group-sm' }).append(
+												$('<input>', { class: 'form-control form-control-sm border-secondary text-light bg-dark' })
 													.val(url)
-													.on("keyup", function (e) {
+													.on('keyup', function (e) {
 														if (e.keyCode === 13) $(this).next().children().get(0).click();
 													}),
-												$("<div>", { class: "input-group-append" }).append(
-													$("<button>", { class: "btn btn-outline-secondary" })
-														.append($("<i>", { class: "fa fa-external-link" }))
-														.on("click", function () {
-															window.open($(this).parent().prev().val(), key, "width=800, height=600");
+												$('<div>', { class: 'input-group-append' }).append(
+													$('<button>', { class: 'btn btn-outline-secondary' })
+														.append($('<i>', { class: 'fa fa-external-link' }))
+														.on('click', function () {
+															window.open($(this).parent().prev().val(), key, 'width=800, height=600');
 														}),
 												),
 										  )
-										: $("<p>", { class: "card-text" }).append(
-												$("<a>", {
+										: $('<p>', { class: 'card-text' }).append(
+												$('<a>', {
 													href: "javascript: window.open('" + val.href + "', '" + key + "', 'width=800, height=600');",
-													class: "text-light",
+													class: 'text-light',
 												}).html(url),
 										  );
 								})(),
 							),
 						)
-						.appendTo("#cardWrap");
+						.appendTo('#cardWrap');
 				});
 			});
 		</script>

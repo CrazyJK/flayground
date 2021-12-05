@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en" data-theme="dark">
 	<head>
 		<title>Request Mapping List</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="stylesheet" href="/webjars/fontawesome/css/font-awesome.min.css" />
-		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="/css/base.scrollbar.css" />
+		<link rel="stylesheet" href="../../css/common.css" />
 		<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
 		<style type="text/css">
 			table {
@@ -48,26 +46,26 @@
 		<script type="text/javascript">
 			$(document).ready(function () {
 				$.ajax({
-					url: "/accesslog/requestMappingList",
+					url: '/accesslog/requestMappingList',
 					cache: false,
 				}).done(function (list) {
-					$("#count").html(list.length);
-					var $wrap = $("tbody");
+					$('#count').html(list.length);
+					var $wrap = $('tbody');
 					$.each(list, function (idx, mapping) {
-						$("<tr>")
+						$('<tr>')
 							.append(
-								$("<td>").html(mapping.callCount),
-								$("<td>").html(mapping.lastAccess === "0" ? "" : new Date(Number(mapping.lastAccess)).toLocaleDateString("ko-KR", { year: "numeric", month: "2-digit", day: "2-digit", hour12: false, hour: "2-digit", minute: "2-digit" })),
-								$("<td>").html(mapping.reqMethod),
-								$("<td>").append($("<a>", { href: mapping.reqPattern, target: "_blank", class: "text-warning" }).html(mapping.reqPattern)),
-								$("<td>").html(mapping.beanType),
-								$("<td>").html(mapping.beanMethod),
+								$('<td>').html(mapping.callCount),
+								$('<td>').html(mapping.lastAccess === '0' ? '' : new Date(Number(mapping.lastAccess)).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour12: false, hour: '2-digit', minute: '2-digit' })),
+								$('<td>').html(mapping.reqMethod),
+								$('<td>').append($('<a>', { href: mapping.reqPattern, target: '_blank', class: 'text-warning' }).html(mapping.reqPattern)),
+								$('<td>').html(mapping.beanType),
+								$('<td>').html(mapping.beanMethod),
 							)
 							.appendTo($wrap);
 					});
-					$("table").DataTable({
-						scrollY: scrollBodyHeight() + "px",
-						order: [[2, "asc"]],
+					$('table').DataTable({
+						scrollY: scrollBodyHeight() + 'px',
+						order: [[2, 'asc']],
 						paging: false,
 						searching: false,
 						info: false,
@@ -75,7 +73,7 @@
 				});
 
 				$(window).resize(function () {
-					$(".dataTables_scrollBody").css({ height: scrollBodyHeight() });
+					$('.dataTables_scrollBody').css({ height: scrollBodyHeight() });
 				});
 			});
 

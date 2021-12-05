@@ -4,62 +4,65 @@
 class Loading {
 	constructor() {
 		const PARENT_SELECTOR = 'body > footer';
-		const ID_LOADING_WRAPPER = 'loading-wrapper';
-		const ID_LOADING = 'loading';
-		const ID_LOADING_BODY = 'loading_body';
+		const ID_LOADING_WRAPPER = 'loading-wrap';
+		const ID_LOADING_MAIN = 'loading-main';
+		const ID_LOADING_BODY = 'loading-body';
+		const ID_LOADING_MESSAGE_PREFIX = 'loading-message';
 		const HTML_LOADING = `
 			<div id="${ID_LOADING_WRAPPER}">
-				<div id="${ID_LOADING}" style="position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); cursor: wait; display: none; z-index: 9999; flex-direction: column; align-content: center; justify-content: center; align-items: center;">
-					<ol id="${ID_LOADING_BODY}" style="position: inherit; display: flex; flex-direction: column; color: white; font-size: 2rem; margin: 0;"></ol>
+				<div id="${ID_LOADING_MAIN}" style="position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.5); cursor: wait; z-index: 9999; display: none; flex-direction: column; align-content: center; justify-content: center; align-items: center;">
+					<ol id="${ID_LOADING_BODY}" style="position: inherit; display: flex; flex-direction: column; color: white; font-size: 2rem; margin: 0; text-shadow: 1px 1px 2px #000;"></ol>
 				</div>
 			</div>`;
 
-		this.parentSelector = PARENT_SELECTOR;
-		this.loadingWrapperSelector = `${PARENT_SELECTOR} > #${ID_LOADING_WRAPPER}`;
-		this.loadingSelector = `${PARENT_SELECTOR} > #${ID_LOADING_WRAPPER} > #${ID_LOADING}`;
-		this.loadingBodySelector = `${PARENT_SELECTOR} > #${ID_LOADING_WRAPPER} > #${ID_LOADING} > #${ID_LOADING_BODY}`;
+		this.loadingMessageId = 0;
+		this.loadingMessageIdPrefix = ID_LOADING_MESSAGE_PREFIX;
+		this.loadingMainSelector = `${PARENT_SELECTOR} > #${ID_LOADING_WRAPPER} > #${ID_LOADING_MAIN}`;
+		this.loadingBodySelector = `${this.loadingMainSelector} > #${ID_LOADING_BODY}`;
 
-		if (document.querySelector(this.loadingWrapperSelector) === null) {
-			const parentElement = document.querySelector(this.parentSelector);
+		window.onload = () => {
+			const parentElement = document.querySelector(PARENT_SELECTOR);
 			if (parentElement) {
 				parentElement.innerHTML += HTML_LOADING;
 			} else {
-				alert('loading parent element not found. ' + this.parentSelector);
+				alert('parent element of loading not found. ' + PARENT_SELECTOR);
 				return;
 			}
-		}
 
-		this.loadingIndex = 0;
-		this.loading = document.querySelector(this.loadingSelector);
-		this.loadingBody = document.querySelector(this.loadingBodySelector);
+			this.loadingMain = document.querySelector(this.loadingMainSelector);
+			this.loadingBody = document.querySelector(this.loadingBodySelector);
 
-		// click event for close
-		this.loading.addEventListener('click', () => {
-			this.loading.style.display = 'none';
-		});
+			// click event for close
+			this.loadingMain.addEventListener('click', () => {
+				this.loadingMain.style.display = 'none';
+			});
+		};
 	}
 
 	on(message) {
-		return this.show(`<li id="loadingMessage${++this.loadingIndex}">${message}</li>`);
+		return this.show(`<li id="${this.loadingMessageIdPrefix}${++this.loadingMessageId}">${message}</li>`);
 	}
 
 	error(message) {
-		return this.show(`<li id="loadingMessage${++this.loadingIndex}" style="color: #f00;">${message}</li>`);
+		return this.show(`<li id="${this.loadingMessageIdPrefix}${++this.loadingMessageId}" style="color: #f00;">${message}</li>`);
 	}
 
 	show(messageHtml) {
-		this.loading.style.display = 'flex';
-		this.loadingBody.innerHTML += messageHtml;
-		return this.loadingIndex;
+		if (this.loadingMain) {
+			this.loadingMain.style.display = 'flex';
+			this.loadingBody.innerHTML += messageHtml;
+			return this.loadingMessageId;
+		}
+		return -1;
 	}
 
 	off(index) {
-		const loadingMessage = document.querySelector(`${this.loadingBodySelector} > li#loadingMessage${index}`);
-		if (loadingMessage !== null) {
-			loadingMessage.remove();
-		}
-		if (document.querySelectorAll(`${this.loadingBodySelector} > li`).length == 0) {
-			this.loading.style.display = 'none';
+		if (index > 0) {
+			document.querySelector(`${this.loadingBodySelector} > li#${this.loadingMessageIdPrefix}${index}`)?.remove();
+
+			if (!this.loadingBody.hasChildNodes()) {
+				this.loadingMain.style.display = 'none';
+			}
 		}
 	}
 }

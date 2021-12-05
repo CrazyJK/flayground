@@ -263,40 +263,6 @@ main {
 	z-index: -2;
 }
 
-#topMenu {
-	position: sticky;
-	top: 0;
-	display: flex;
-	justify-content: center;
-	background-color: transparent !important;
-	margin-bottom: 0.5rem;
-}
-#topMenu > nav {
-	display: flex;
-	flex-direction: row;
-	flex-wrap: wrap;
-	align-items: baseline;
-	align-content: center;
-	justify-content: center;
-	gap: 0.5rem;
-	padding: 0.25rem 0.5rem;
-	transition: background-color 0.3s;
-}
-#topMenu > nav:hover {
-	background-color: var(--color-bg-nav-hover) !important;
-	box-shadow: 0 0.5rem 1rem var(--color-box-shadow);
-	transition: box-shadow 0.4s;
-}
-#topMenu > nav > button {
-	border: 0;
-}
-#bottomMenu {
-	position: absolute;
-	left: 0;
-	right: 0;
-	bottom: 0;
-}
-
 .scroll-wrapper {
 	position: relative;
 	height: calc(100vh - 50px);

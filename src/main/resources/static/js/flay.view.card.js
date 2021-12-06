@@ -160,7 +160,7 @@ const STUDIO = 'studio',
 				.find('.flay-title')
 				.html(flay.title)
 				.css({
-					width: settings.width - 4,
+					maxWidth: settings.width - 4,
 				})
 				.on('click', () => {
 					View.flay(flay.opus);
@@ -257,7 +257,7 @@ const STUDIO = 'studio',
 					const $li = $('<li>', { class: 'list-group-item flay-file' }).prependTo($flayFileGroup);
 					$.each(flay.files.cover, function (idx, file) {
 						$li.append(
-							$('<div>', { class: 'nowrap hover' })
+							$('<div>', { class: 'nowrap hover', title: file })
 								.html(file)
 								.on('click', function () {
 									Rest.Flay.openFolder(file);
@@ -270,7 +270,7 @@ const STUDIO = 'studio',
 					const $li = $('<li>', { class: 'list-group-item flay-file' }).prependTo($flayFileGroup);
 					$.each(flay.files.subtitles, function (idx, file) {
 						$li.append(
-							$('<div>', { class: 'd-flex justify-content-between' }).append(
+							$('<div>', { class: 'd-flex justify-content-between', title: file }).append(
 								$('<div>', { class: 'nowrap hover' })
 									.html(file)
 									.on('click', function () {
@@ -296,7 +296,7 @@ const STUDIO = 'studio',
 					const $li = $('<li>', { class: 'list-group-item flay-file' }).prependTo($flayFileGroup);
 					$.each(flay.files.movie, function (idx, file) {
 						$li.append(
-							$('<div>', { class: 'd-flex justify-content-between' }).append(
+							$('<div>', { class: 'd-flex justify-content-between', title: file }).append(
 								$('<div>', { class: 'nowrap hover' })
 									.html(file)
 									.on('click', function () {

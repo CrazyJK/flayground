@@ -65,7 +65,10 @@
 					});
 					$('table').DataTable({
 						scrollY: scrollBodyHeight() + 'px',
-						order: [[2, 'asc']],
+						order: [
+							[1, 'desc'],
+							[0, 'desc'],
+						],
 						paging: false,
 						searching: false,
 						info: false,

@@ -34,7 +34,7 @@ function matchTag() {
 					window.resizeTo($('.flay-card').width() + 16, $('.flay-card').height() + 68);
 					$(this).children('.fa').switchClass('fa-angle-double-up', 'fa-angle-double-down');
 				} else {
-					window.resizeTo($('.flay-card').width() + 16, $('.flay-card').height() + $('#containerTag').height() + 100);
+					window.resizeTo($('.flay-card').width() + 16, $('.flay-card').height() + $('#containerTag').height() + 88);
 					$(this).children('.fa').switchClass('fa-angle-double-down', 'fa-angle-double-up');
 				}
 			});

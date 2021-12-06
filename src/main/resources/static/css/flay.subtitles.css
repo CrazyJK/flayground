@@ -1,11 +1,5 @@
-#topMenu > nav {
-	background-color: var(--dark-color);
-	border-bottom-left-radius: 0.5rem;
-	border-bottom-right-radius: 0.5rem;
-	border: 2px solid #333;
-	border-top: 0;
-	font-size: 120%;
-}
+@charset "utf-8";
+
 #topMenu > nav > button {
 	border-radius: 4px;
 }

@@ -1,12 +1,10 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 	<head>
 		<title>Flayground</title>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
-		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.min.css" />
-		<link rel="stylesheet" href="/webjars/jquery-ui/jquery-ui.theme.min.css" />
 		<style type="text/css">
 			body {
 				background: #1c1c1c;
@@ -19,17 +17,11 @@
 				flex-wrap: wrap;
 				flex-direction: column;
 				position: absolute;
-				top: 0;
-				left: 0;
-				right: 0;
-				bottom: 0;
+				inset: 0;
 				padding-top: 2rem;
 			}
 			.d-flex-col > * {
-				flex-basis: 0;
-				flex-grow: 0;
-				flex-shrink: 1;
-				width: 350px;
+				flex: 0 0 auto;
 			}
 
 			.hover-show {
@@ -59,7 +51,9 @@
 				-webkit-mask-image: url(/img/pattern/pattern-static.png);
 				text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
 			}
-
+			h2 > a > i {
+				min-width: 42px;
+			}
 			h2 > a:first-child {
 				opacity: 0;
 				font-weight: 900;
@@ -69,7 +63,8 @@
 				transition: 0.5s 0.3s;
 			}
 			h2 > a:first-child:hover {
-				color: red;
+				color: #f00;
+				text-shadow: 0 0 2px #f00, 0 0 4px #f00, 0 0 6px #f00, 0 0 8px #999999, 0 0 10px #000000;
 				transition: 0.5s;
 			}
 			h2 > a:nth-child(2) {
@@ -84,11 +79,10 @@
 				background-color: transparent !important;
 			}
 		</style>
-		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-		<script defer type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-		<script defer type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-		<script defer type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-		<script defer src="https://kit.fontawesome.com/673bdd6a2d.js" crossorigin="anonymous"></script>
+		<script src="https://kit.fontawesome.com/673bdd6a2d.js" crossorigin="anonymous"></script>
+		<script src="/webjars/jquery/jquery.min.js"></script>
+		<script src="/webjars/popper.js/umd/popper.js"></script>
+		<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 	</head>
 	<body>
 		<div class="d-flex-col">
@@ -109,14 +103,13 @@
 			</div>
 		</div>
 
-		<script type="text/javascript">
+		<script>
 			$.ajax({
 				url: '/data/index.menu.json',
 				success: function (menuItems) {
-					menuItems.forEach(function (menu) {
-						// console.log('menu', menu);
-						var $popupAnker = $('<a>').html('↖');
-						var $hrefAnker = $('<a>').html(menu.name);
+					menuItems.forEach((menu) => {
+						const $popupAnker = $('<a>').append('<i class="fas fa-location-arrow fa-flip-horizontal fa-xs mr-2"></i>');
+						const $hrefAnker = $('<a>').html(menu.name);
 
 						if (menu.method === 'both' || menu.method === 'popup') {
 							$popupAnker.attr({ href: '#' }).on('click', function () {
@@ -135,11 +128,11 @@
 			});
 
 			$('input, button', '.popup-open-group').on('click keyup', function (e) {
-				var url = $('.popup-open-group > input').val();
+				const url = $('.popup-open-group > input').val();
 				$('.popup-open-group button').toggleClass('text-secondary', url === '');
 				$('.popup-size-group.collapse').toggleClass('show', url !== '');
 				if (url !== '') {
-					var targetType = $(e.target).attr('type');
+					const targetType = $(e.target).attr('type');
 					if ((targetType === 'button' && e.type === 'click') || (targetType === 'search' && e.keyCode === 13)) {
 						window.open(url, Date.now(), 'width=' + popupWidth.value + ',height=' + popupHeight.value + ',toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1').focus();
 					}

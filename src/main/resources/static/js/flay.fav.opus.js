@@ -7,7 +7,7 @@
 	const flayMap = new Map();
 	const actressMap = new Map();
 
-	$('#overlay').toggle(true);
+	const idx = loading.on('Loading...');
 
 	Promise.all([
 		new Promise((resolve, reject) => {
@@ -38,11 +38,11 @@
 			actressMap.set(actress.name, actress);
 		});
 
-		$('#overlay').toggle(false);
+		loading.off(idx);
 	});
 
 	// show list by selected opus
-	$("input[name='favoriteOpus']").on('change', function () {
+	$("input[name='favoriteOpus']").on('change', function (e) {
 		if ($(this).attr('id') === 'favoriteOpusInput') {
 			$(this).addClass('active');
 			$("input[name='favoriteOpus']:checked").prop('checked', false);
@@ -58,11 +58,9 @@
 			.filter((opus) => opus.startsWith(favoriteOpus))
 			.sort((o1, o2) => o2.localeCompare(o1))
 			.map((opus) => opus.replace(favoriteOpus + '-', ''));
-		// console.log('filteredOpusNumberList', filteredOpusNumberList);
 
 		const maxNumber = filteredOpusNumberList[0];
 		const minNumber = filteredOpusNumberList[filteredOpusNumberList.length - 1];
-		// console.log(`min: ${minNumber}, max: ${maxNumber}`);
 
 		const max = parseInt(maxNumber) + 5;
 		const min = parseInt(minNumber);

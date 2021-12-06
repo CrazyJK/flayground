@@ -13,18 +13,23 @@
 	--color-bg-button: transparent;
 	--color-bg-nav-hover: rgba(0, 0, 0, 0.75);
 	--color-bg-range: transparent;
-	--color-bg-card: transparent;
+	--color-bg-card: rgba(0, 0, 0, 0.75);
 	--color-bg-card-active: rgba(43, 39, 39, 0.75);
 	--color-bg-form: transparent;
 
 	--color-text: #eee;
+	--color-text-reverse: #000;
 	--color-text-active: orange;
 	--color-text-form: #eee;
+	--color-text-hover: #17a2b8;
 
+	--color-text-shadow: #000;
 	--color-box-shadow: rgb(255 255 255 / 15%);
 
 	--color-border-card: rgba(255, 255, 255, 0.125);
 	--color-border-form: #2d2d30;
+
+	--color-input-checked: orange;
 }
 
 [data-theme='light'] {
@@ -45,15 +50,27 @@
 	--color-bg-form: #fff;
 
 	--color-text: #000;
+	--color-text-reverse: #eee;
 	--color-text-active: orange;
 	--color-text-form: #000;
+	--color-text-hover: #17a2b8;
 
+	--color-text-shadow: transparent;
 	--color-box-shadow: rgb(0 0 0 / 15%);
 
 	--color-border-card: rgba(0, 0, 0, 0.125);
 	--color-border-form: #ced4da;
+
+	--color-input-checked: orange;
 }
 
+/* bootstrap direct override */
 .bg-light {
 	background-color: var(--color-bg-light) !important;
+}
+.table {
+	color: var(--color-text);
+}
+.table-hover tbody tr:hover {
+	color: var(--color-text);
 }

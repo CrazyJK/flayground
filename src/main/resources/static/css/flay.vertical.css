@@ -14,6 +14,7 @@ body {
 #selectTags,
 #statisticsStudio,
 #statisticsActress {
+	background-color: var(--color-bg);
 	border-radius: 1rem;
 	box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.25);
 	margin: 0.5rem auto 0;
@@ -39,7 +40,8 @@ body {
 	top: 0;
 	margin-top: 56px;
 	padding: 0.25rem;
-	box-shadow: 0 0.125rem 1rem rgba(0, 0, 0, 0.5);
+	background-color: var(--color-bg);
+	box-shadow: 0 0.125rem 1rem var(--color-box-shadow);
 	border-radius: 1rem;
 	z-index: -1;
 }
@@ -149,12 +151,11 @@ label.text:empty {
 	position: relative;
 	background: #fff no-repeat center;
 	background-size: contain;
-	box-shadow: 0 0 0.25rem 0.5rem var(--color-bg) inset;
+	box-shadow: 0 0 1rem 0.5rem var(--color-bg) inset;
 	border: 0;
 	border-radius: 0.25rem;
 	width: var(--cover-width);
 	height: var(--cover-height);
-	/* aspect-ratio: 400 / 269; */
 	transition: background 0.2s ease-out;
 }
 .cover-box #btnVideoClose {
@@ -239,21 +240,6 @@ label.text:empty {
 .notice-bar {
 	margin: 0.25rem;
 	text-align: center;
-}
-
-.pagination {
-	border-radius: 0;
-	margin: 0;
-	padding: 0.5rem;
-	text-align: center;
-	transition: background-color 0.4s;
-}
-.pagination-sm .page-link {
-	border: 0;
-	min-width: 50px;
-}
-.pagination:hover > .page-item > .page-link {
-	background-color: var(--color-bg-page-hover);
 }
 
 #paginationProgress {

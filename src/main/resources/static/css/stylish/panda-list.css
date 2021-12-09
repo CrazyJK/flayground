@@ -6,8 +6,35 @@
 		https://www.pandalive.co.kr/live#user
  */
 
+body {
+	background-color: #000;
+	overflow-x: hidden;
+}
+#wrapper {
+	padding: 0;
+	min-width: unset;
+	width: initial;
+	height: initial;
+}
+#header,
+#sideArea,
+#footer {
+	display: none;
+}
 #container {
-	width: calc(100% - 228px);
-	margin-left: 0;
-	margin-right: 0;
+	margin: 0;
+}
+#container #content {
+	padding: 0;
+}
+/* 방송 목록 너비 */
+.liveList ul li,
+.pickList ul li {
+	min-width: 180px;
+	max-width: 300px;
+}
+/* 방송제목 */
+.liveList ul li .con .tit {
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
 }

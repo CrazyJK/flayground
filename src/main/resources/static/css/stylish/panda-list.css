@@ -1,89 +1,13 @@
 @charset "UTF-8";
 
 /*
-	URLs starting with: https://www.pandalive.co.kr/live/bookmark
+	URL:
+		https://www.pandalive.co.kr/pick#bookmark
+		https://www.pandalive.co.kr/live#user
  */
 
-@media screen and (min-width: 450px) {
-	#aside {
-		width: 50px;
-	}
-	#aside > div.wrap > div.menu {
-		width: 50px;
-	}
-    #aside > div.wrap > div.menu > ul.menulist {
-		width: 50px;
-	}
-	#aside > div.wrap > div.menu > ul.menulist > li > a {
-		white-space: nowrap;
-		overflow: hidden;
-		padding-left: 12px;
-	}
-
-	#contents {
-		width: initial!important;
-		padding-left: 50px;
-	}
-	#container > div.subcon {
-		width: initial;
-		padding-left: 4px!important;
-	}
-	#c_broad_list1 > div.listview {
-		overflow: visible!important;
-	}
-	#CastList > li {
-		margin: 2px;
-	}
-}
-
-@media screen and (min-width: 880px) {
-	#aside {
-		width: 100px;
-	}
-	#aside > div.wrap > div.menu {
-		width: 100px;
-	}
-	#aside > div.wrap > div.menu > ul.menulist {
-		width: 100px;
-	}
-	#aside > div.wrap > div.menu > ul.menulist > li > a {
-		white-space: nowrap;
-		overflow: hidden;
-		padding-left: 12px;
-	}
-
-	#contents {
-		width: initial!important;
-		padding-left: 100px;
-	}
-	#container > div.subcon {
-		width: initial;
-		padding-left: 8px!important;
-	}
-	#c_broad_list1 > div.listview {
-		overflow: visible!important;
-	}
-	#CastList > li {
-		margin: 4px;
-	}
-}
-
-#aside {
-    position: fixed;
-    top: 120px;
-    left: 0;
-    height: 100%;
-    width: 176px;
-    z-index: 1;
-}
-#aside .wrap {
+#container {
+	width: calc(100% - 228px);
+	margin-left: 0;
 	margin-right: 0;
-}
-#aside .wrap .menu .menulist {
-	position: absolute;
-    left: 0;
-}
-
-#c_broad_list1 > div.listview {
-	overflow: visible!important;
 }

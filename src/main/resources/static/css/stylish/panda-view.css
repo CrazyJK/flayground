@@ -4,163 +4,109 @@
 	URLs starting with: https://www.pandalive.co.kr/live/play
  */
 
-#header_wide,
-.worldMsgTopTab,
-.fullboard,
-#watermark,
-#castView .fullboard_info {
-	height: 0 !important;
-	border: 0 !important;
-}
-#castView .tabPlayer #player #watermark {
-	display: none !important;
-}
-.plyr {
-	position: fixed;
-	top: 0;
-	left: 0;
-	right: 0;
-	bottom: 0;
-	border: 0;
-}
-#castView .tabPlayer .playMenu {
-	position: fixed !important;
-	top: 0;
-	left: 0;
-	right: 0;
-	border: 0 !important;
-	padding-bottom: 20px;
-}
-#castView .tabPlayer .playMenu .subtitle {
-	display: inline;
-	text-shadow: 1px 1px 1px black;
-}
-
-#castView .tabPlayer .playMenu #muteLayer,
-.tabList {
-	display: none !important;
-}
-#castView .tabPlayer .playMenu .viewTimeText {
-	opacity: 0;
-}
-#castView .tabPlayer .playMenu ul li.store,
-#castView .tabPlayer .playMenu ul li.heart,
-#castView .tabPlayer .playMenu ul li.screen {
-	display: none !important;
-}
-#castView > .tabChat {
-	padding-top: 50px;
-}
-#castView > .tabChat > div {
-	background: transparent;
-	border: 0;
-	height: calc(100% - 100px) !important;
-}
-#castView > .tabChat > div > h2 {
-	background: transparent;
-	border: 0;
-	text-align: right;
-	margin-right: 30px;
-	color: #fff;
-	text-shadow: 1px 1px 1px black;
-}
-#castView > .tabChat > div > h2 > strong {
-	color: #fff;
-	text-shadow: 1px 1px 1px black;
-}
-#castView > .tabChat > div > a,
-#castView > .tabChat > div > ul,
-#castView > .tabChat > div > div {
-	opacity: 0;
-}
-#castView > .tabChat > div > div:hover {
-	opacity: 1;
-}
-#castView .chatbox #ChatList.chat_area {
-	background-color: rgba(0, 0, 0, 0.5);
-	position: fixed;
-	top: unset !important;
-	left: unset !important;
-	right: 0 !important;
-	bottom: 50px !important;
-	width: 250px !important;
-	height: 500px !important;
-	border: 2px solid #000;
-	border-top-left-radius: 4px;
-	border-bottom-left-radius: 4px;
-	color: #fff;
-}
-#castView .chatbox .chat_area .notice {
-	display: none;
-}
-#castView .chatbox .chat_area .chat {
-	color: transparent;
-}
-#castView .chatbox .chat_area .chat .ic_sex,
-#castView .chatbox .chat_area .chat .level,
-#castView .chatbox .chat_area .chat .nickname,
-#castView .chatbox .chat_area .chat .message {
-	color: #fff !important;
-}
-#castView .chatbox .write_box {
-	display: none !important;
-}
-#spinner img,
-#adult_icon {
-	display: none !important;
-}
-#video_blind {
-	opacity: 0 !important;
-}
-#roomUserid {
-	position: fixed;
-	top: 32px;
-	left: 16px;
-}
-#roomUserid a {
-	color: #fff;
-	text-shadow: 1px 1px 1px black;
-}
-#header_wide h1,
-#header_wide .c_search_box,
-#header_wide .top_menu,
-#castView .fullboard_info .report_icon,
-#castView .fullboard_info .user_pic,
-#castView .fullboard_info dd #roomUserNick,
-#castView .fullboard_info dt,
-#castView .fullboard_info dd:nth-child(3) {
-	display: none !important;
-}
-#castView .tabPlayer .playMenu ul li a span .name {
-	width: 1px;
-	white-space: nowrap;
+body {
 	overflow: hidden;
 }
 
-::-webkit-scrollbar {
-	width: 8px;
-	height: 8px;
-	border: 0px solid #fff;
-	background-color: rgba(255, 255, 255, 0);
+/*
+	비디오 위치 조정
+ */
+.player-box .player-wrap {
+	position: fixed;
 }
-::-webkit-scrollbar-button:start:decrement,
-::-webkit-scrollbar-button:end:increment {
-	display: block;
-	height: 10px;
-	background-color: rgba(255, 255, 255, 0);
+
+/*
+	화면에 보이는 잡티 제거
+ */
+.xrat,
+.live_logo,
+.btnSound,
+#watermark {
+	display: none;
 }
-::-webkit-scrollbar-track {
-	background-color: rgba(255, 255, 255, 0);
-	-webkit-border-radius: 10px;
-	border-radius: 10px;
-	-webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0);
-	box-shadow: inset 0 0 4px rgba(0, 0, 0, 0);
+
+/*
+	위, 좌, 우 가리기
+ */
+#header,
+#sideArea,
+.live_right_area {
+	display: none;
 }
-::-webkit-scrollbar-thumb {
-	height: 50px;
-	width: 50px;
-	background-color: rgba(218, 218, 218, 0.75);
-	-webkit-border-radius: 8px;
-	border-radius: 8px;
-	box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(102, 175, 233, 0.6);
+
+/* 방송 정보 안볼거 치우기 */
+.live_left_area .bjZone {
+	position: fixed;
+	top: -200px;
+}
+
+/* 타 방송 목록 가리기 */
+.live_left_area div.player_infor_area + div {
+	display: none;
+}
+
+/* 방송명 */
+.bj_infor .tit {
+	position: fixed;
+	top: 0;
+	left: 30px;
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+	z-index: 9999;
+}
+/* BJ 이름 */
+.bj_infor .nick {
+	position: fixed;
+	top: 30px;
+	left: 30px;
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+	z-index: 9999;
+}
+/* 시청자수 */
+.bj_infor .infor .ic1 {
+	position: fixed;
+	top: 60px;
+	left: 30px;
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+	z-index: 9999;
+}
+/* 시청자수 글자 제거 */
+.live_left_area .bjZone .bj_infor .infor li span {
+	display: none;
+}
+/* 북마크 */
+.live_left_area .bjZone .player_item_list .item li .btnBookmk {
+	position: fixed;
+	top: 0;
+	right: 0;
+	z-index: 9999;
+}
+/* 추천 */
+.live_left_area .bjZone .player_item_list .item li .btnUp {
+	position: fixed;
+	top: 0;
+	right: 30px;
+	background-color: rgba(255, 255, 255, 0.125);
+	border-radius: 50%;
+	z-index: 9999;
+}
+.live_left_area .bjZone .player_item_list .item li .btnUp .over {
+	width: 0;
+	height: 0;
+}
+/* 해상도 */
+.live_left_area .bjZone .player_item_list .hd {
+	position: fixed;
+	top: 0;
+	right: 60px;
+	z-index: 9999;
+}
+.live_left_area .bjZone .player_item_list .hd button {
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+}
+.live_left_area .bjZone .player_item_list .hd button.on {
+	color: #f008;
 }

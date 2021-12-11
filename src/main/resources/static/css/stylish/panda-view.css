@@ -46,30 +46,40 @@ body {
 }
 
 /* 방송명 */
-.bj_infor .tit {
+.live_left_area .bjZone .bj_infor .tit {
 	position: fixed;
-	top: 0;
-	left: 30px;
+	top: 8px;
+	left: 8px;
 	color: #fff;
-	text-shadow: 1px 1px 1px #000;
+	font-size: 18px;
+	font-weight: 700;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
+	padding: 0;
 	z-index: 9999;
 }
 /* BJ 이름 */
-.bj_infor .nick {
+.live_left_area .bjZone .bj_infor .nick {
 	position: fixed;
-	top: 30px;
-	left: 30px;
+	top: 38px;
+	left: 8px;
 	color: #fff;
-	text-shadow: 1px 1px 1px #000;
+	font-size: 18px;
+	font-weight: 700;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
 	z-index: 9999;
 }
 /* 시청자수 */
-.bj_infor .infor .ic1 {
+.live_left_area .bjZone .bj_infor .infor .ic1 {
 	position: fixed;
-	top: 60px;
-	left: 30px;
+	top: 68px;
+	left: 8px;
 	color: #fff;
-	text-shadow: 1px 1px 1px #000;
+	font-size: 18px;
+	font-weight: 700;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
 	z-index: 9999;
 }
 /* 시청자수 글자 제거 */
@@ -79,17 +89,21 @@ body {
 /* 북마크 */
 .live_left_area .bjZone .player_item_list .item li .btnBookmk {
 	position: fixed;
-	top: 0;
+	top: 8px;
 	right: 0;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
 	z-index: 9999;
 }
 /* 추천 */
 .live_left_area .bjZone .player_item_list .item li .btnUp {
 	position: fixed;
-	top: 0;
+	top: 8px;
 	right: 30px;
 	background-color: rgba(255, 255, 255, 0.125);
 	border-radius: 50%;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
 	z-index: 9999;
 }
 .live_left_area .bjZone .player_item_list .item li .btnUp .over {
@@ -99,9 +113,11 @@ body {
 /* 해상도 */
 .live_left_area .bjZone .player_item_list .hd {
 	position: fixed;
-	top: 0;
+	top: 8px;
 	right: 60px;
 	height: 100px;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
 	z-index: 9999;
 }
 .live_left_area .bjZone .player_item_list .hd button {

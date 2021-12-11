@@ -2,11 +2,11 @@
 
 [data-theme='dark'] {
 	--color-bg: #000;
-	--color-bg-label: transparent;
+	--color-bg-label: rgba(0, 0, 0, 0.125);
 	--color-bg-label-hover: rgba(0, 0, 0, 0.75);
 	--color-bg-page: transparent;
 	--color-bg-page-hover: rgba(0, 0, 0, 0.75);
-	--color-bg-check: transparent;
+	--color-bg-check: rgba(0, 0, 0, 0.125);
 	--color-bg-ranker: transparent;
 	--color-bg-light: transparent;
 	--color-bg-input-hover: rgba(0, 0, 0, 0.75);
@@ -16,7 +16,7 @@
 	--color-bg-card: rgba(0, 0, 0, 0.75);
 	--color-bg-card-active: rgba(43, 39, 39, 0.75);
 	--color-bg-form: transparent;
-	--color-bg-chart: #0008;
+	--color-bg-chart: transparent;
 
 	--color-text: #eee;
 	--color-text-reverse: #000;
@@ -25,7 +25,7 @@
 	--color-text-hover: #17a2b8;
 
 	--color-text-shadow: #000;
-	--color-box-shadow: rgb(255 255 255 / 15%);
+	--color-box-shadow: rgb(255 255 255 / 12.5%);
 
 	--color-border-card: rgba(255, 255, 255, 0.125);
 	--color-border-form: #2d2d30;

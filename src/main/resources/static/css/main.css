@@ -244,6 +244,7 @@ main {
 	height: 100%;
 	margin: 0;
 	padding: 0.5rem;
+	padding-top: 0;
 	z-index: -4;
 }
 #background_images.transparent {
@@ -251,7 +252,12 @@ main {
 }
 #background_images .col {
 	padding: 0.5rem;
+	padding-top: 0;
 	z-index: -3;
+}
+#background_images .col img:first-child {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
 }
 #background_images img {
 	border-radius: 0.25rem;

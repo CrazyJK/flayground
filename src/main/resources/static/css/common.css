@@ -734,9 +734,17 @@ button.btn.btn-outline-flay {
 	position: relative;
 	height: calc(100vh - 50px);
 	overflow: auto;
-	background-color: var(--color-bg-card);
 }
 
 .d2code {
 	font-family: D2Coding;
+}
+
+.ui-widget-content {
+	background-color: var(--color-bg);
+}
+
+.list-group-item {
+	background-color: var(--color-bg);
+	color: var(--color-text);
 }

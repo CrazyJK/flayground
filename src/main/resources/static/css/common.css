@@ -736,3 +736,7 @@ button.btn.btn-outline-flay {
 	overflow: auto;
 	background-color: var(--color-bg-card);
 }
+
+.d2code {
+	font-family: D2Coding;
+}

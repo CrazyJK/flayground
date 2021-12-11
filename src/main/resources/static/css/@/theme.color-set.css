@@ -16,6 +16,7 @@
 	--color-bg-card: rgba(0, 0, 0, 0.75);
 	--color-bg-card-active: rgba(43, 39, 39, 0.75);
 	--color-bg-form: transparent;
+	--color-bg-chart: #0008;
 
 	--color-text: #eee;
 	--color-text-reverse: #000;
@@ -48,6 +49,7 @@
 	--color-bg-card: #fff;
 	--color-bg-card-active: rgba(216, 197, 197, 0.75);
 	--color-bg-form: #fff;
+	--color-bg-chart: transparent;
 
 	--color-text: #000;
 	--color-text-reverse: #eee;

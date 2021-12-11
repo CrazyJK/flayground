@@ -149,7 +149,7 @@ label.text:empty {
 
 .cover-box {
 	position: relative;
-	background: #fff no-repeat center;
+	background: var(--color-bg) no-repeat center;
 	background-size: contain;
 	box-shadow: 0 0 1rem 0.5rem var(--color-bg) inset;
 	border: 0;
@@ -256,6 +256,10 @@ label.text:empty {
 }
 .pagination ~ .progress .progress-bar {
 	background-color: #000;
+}
+
+#chartdiv {
+	background-color: var(--color-bg-chart);
 }
 
 @media screen and (min-height: 1650px) {

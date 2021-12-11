@@ -32,9 +32,7 @@ public class NoteServiceImpl implements NoteService {
 		if (admin) {
 			return noteSource.list();
 		} else {
-			return noteSource.list().stream().filter(n -> {
-				return StringUtils.equals(n.getAuthor(), getUsername());
-			}).collect(Collectors.toList());
+			return noteSource.list().stream().filter(n -> getUsername().equals(n.getAuthor())).toList();
 		}
 	}
 

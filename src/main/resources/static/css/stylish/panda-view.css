@@ -101,6 +101,7 @@ body {
 	position: fixed;
 	top: 0;
 	right: 60px;
+	height: 100px;
 	z-index: 9999;
 }
 .live_left_area .bjZone .player_item_list .hd button {
@@ -109,4 +110,11 @@ body {
 }
 .live_left_area .bjZone .player_item_list .hd button.on {
 	color: #f008;
+}
+/* 포스터 */
+.plyr__poster {
+	/* display: none !important; */
+	/* opacity: 0 !important; */
+	width: 200px !important;
+	height: 200px !important;
 }

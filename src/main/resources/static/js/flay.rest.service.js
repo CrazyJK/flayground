@@ -34,7 +34,7 @@ const restCall = function (url, args, callback, failCallback) {
 			}
 			loadingTimeout = setTimeout(function () {
 				if (!isCompleted) {
-					loadingIndex = loading.on(`[${settings.method.toUpperCase()}] ${url} ${settings.title}`);
+					loadingIndex = loading.on(`<span class="d2code">[${settings.method.toUpperCase()}] ${url}</span> ${settings.title}`);
 				}
 			}, settings.loadingDelay);
 		},

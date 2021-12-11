@@ -122,9 +122,11 @@ var SlideMenu = {
 			LocalStorageItem.set('flay.bgtheme', bgThemeValue);
 
 			// adjust theme
-			if (adjustTheme) {
-				adjustTheme();
-			}
+			$(document).ready(() => {
+				if (adjustTheme) {
+					adjustTheme();
+				}
+			});
 
 			// broadcasting
 			try {

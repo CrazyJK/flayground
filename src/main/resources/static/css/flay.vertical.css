@@ -255,7 +255,7 @@ label.text:empty {
 	transition: height 0.4s;
 }
 .pagination ~ .progress .progress-bar {
-	background-color: #000;
+	background: var(--rainbow-gradient);
 }
 
 #chartdiv {

@@ -808,7 +808,7 @@
 			}
 
 			if (query !== '') {
-				if ((flay.studio + flay.opus + flay.title + flay.actress + flay.release + flay.comment).toLowerCase().indexOf(query.toLowerCase()) < 0) {
+				if ((flay.studio + flay.opus + flay.title + flay.actressList.join(' ') + flay.release + flay.comment).toLowerCase().indexOf(query.toLowerCase()) < 0) {
 					continue;
 				}
 			}
@@ -968,6 +968,7 @@
 				),
 			);
 		for (const [k, v] of actressMapAsc) {
+			const a = getActress(k);
 			$('#statisticsActress').append(
 				$('<label>', { class: 'text hover actressTag' + (v < minCount ? ' hide' : '') })
 					.append(
@@ -975,7 +976,7 @@
 							.css({
 								fontSize: 16 + v * 1,
 							})
-							.html(k),
+							.append(`<i class="fa ${a.favorite ? 'fa-heart' : ''}"></i>`, k),
 						$('<span>', { class: 'badge' }).html(v),
 					)
 					.data('k', k)
@@ -1024,39 +1025,33 @@
 				return;
 			}
 
+			const actress = getActress(name);
+			if (actress === null) {
+				throw 'not found ' + name;
+			}
+
 			const $actress = $('<div>', { class: 'info-actress' })
+				.data('actress', actress)
 				.append(
-					$('<label>', { class: 'text info-actress-favorite hover' }).append($('<i>', { class: 'fa' }).css('min-width', 16)),
-					$('<label>', { class: 'text info-actress-name hover' }).html(name).neonLoading(true),
-					$('<label>', { class: 'text info-actress-local' }).html('&nbsp;'),
+					$('<label>', { class: 'text info-actress-favorite hover' }).append($('<i>', { class: 'fa ' + (actress.favorite ? 'favorite fa-heart' : 'fa-heart-o') }).css('min-width', 16)),
+					$('<label>', { class: 'text info-actress-name hover' }).html(name),
+					$('<label>', { class: 'text info-actress-local' }).html(actress.localName),
 					$('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
-					$('<label>', { class: 'text info-actress-age' }).html('&nbsp;'),
-					$('<label>', { class: 'text info-actress-birth' }).html('&nbsp;'),
-					$('<label>', { class: 'text info-actress-body' }).html('&nbsp;'),
-					$('<label>', { class: 'text info-actress-height' }).html('&nbsp;'),
-					$('<label>', { class: 'text info-actress-debut' }).html('&nbsp;'),
+					$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
+					$('<label>', { class: 'text info-actress-birth' }).html(
+						actress.birth.replace(/年|月|日/g, function (match, offset, string) {
+							return '<small>' + match + '</small>';
+						}),
+					),
+					$('<label>', { class: 'text info-actress-body' }).html(
+						actress.body.replace(/ - /g, function (match) {
+							return '<small>' + match.trim() + '</small>';
+						}),
+					),
+					$('<label>', { class: 'text info-actress-height' }).html(actress.height.ifNotZero('<small>cm</small>')),
+					$('<label>', { class: 'text info-actress-debut' }).html(actress.debut.ifNotZero('<small>d</small>')),
 				)
 				.appendTo($('.info-wrapper-actress'));
-
-			Rest.Actress.get(name, (actress) => {
-				$actress.data('actress', actress);
-				$actress.find('.info-actress-favorite > i').addClass(actress.favorite ? 'favorite fa-heart' : 'fa-heart-o');
-				$actress.find('.info-actress-local').html(actress.localName);
-				$actress.find('.info-actress-age').html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>'));
-				$actress.find('.info-actress-birth').html(
-					actress.birth.replace(/年|月|日/g, function (match, offset, string) {
-						return '<small>' + match + '</small>';
-					}),
-				);
-				$actress.find('.info-actress-body').html(
-					actress.body.replace(/ - /g, function (match) {
-						return '<small>' + match.trim() + '</small>';
-					}),
-				);
-				$actress.find('.info-actress-height').html(actress.height.ifNotZero('<small>cm</small>'));
-				$actress.find('.info-actress-debut').html(actress.debut.ifNotZero('<small>d</small>'));
-				$actress.find('.info-actress-name').neonLoading(false);
-			});
 
 			Rest.Flay.findByActress(name, (foundFlayList) => {
 				$actress.find('.info-actress-flaycount').html(`${foundFlayList.length}<small>F</small>`).neonLoading(false);
@@ -1212,6 +1207,15 @@
 			}
 			showVideo();
 		});
+	}
+
+	function getActress(name) {
+		for (const actress of actressList) {
+			if (actress.name === name) {
+				return actress;
+			}
+		}
+		return null;
 	}
 
 	attachEventListener();

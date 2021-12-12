@@ -65,19 +65,14 @@ const restCall = function (url, args, callback, failCallback) {
 			} else {
 				let errMsg = '';
 				if (jqXHR.getResponseHeader('error')) {
-					errMsg = `Message: ${jqXHR.getResponseHeader('error.message')}
-							<br>Cause: ${jqXHR.getResponseHeader('error.cause')}`;
+					errMsg = `Error: Message: ${jqXHR.getResponseHeader('error.message')} <br>Cause: ${jqXHR.getResponseHeader('error.cause')}`;
 				} else if (jqXHR.responseJSON) {
-					errMsg = `Error: ${jqXHR.responseJSON.error}
-							<br>Message: ${jqXHR.responseJSON.message}
-							<br>Status: ${jqXHR.responseJSON.status}
-							<br>Path: ${jqXHR.responseJSON.path}`;
+					errMsg = `Error: ${jqXHR.responseJSON.error} <br>Message: ${jqXHR.responseJSON.message} <br>Status: ${jqXHR.responseJSON.status} <br>Path: ${jqXHR.responseJSON.path}`;
 				} else {
-					errMsg = `Error: ${textStatus}
-							<br>${errorThrown}`;
+					errMsg = `Error: ${textStatus} <br>${errorThrown}`;
 				}
-				console.error(errMsg);
-				loading.error(errMsg);
+				console.error(errMsg.replace(/<br>/gi, '\n'));
+				loading.append(loadingIndex, errMsg);
 			}
 		})
 		.always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {

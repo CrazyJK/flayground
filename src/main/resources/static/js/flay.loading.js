@@ -43,6 +43,10 @@ class Loading {
 		return this.show(`<li id="${this.loadingMessageIdPrefix}${++this.loadingMessageId}">${message}</li>`);
 	}
 
+	append(index, message) {
+		document.querySelector(`${this.loadingBodySelector} > li#${this.loadingMessageIdPrefix}${index}`)?.append(message);
+	}
+
 	error(message) {
 		return this.show(`<li id="${this.loadingMessageIdPrefix}${++this.loadingMessageId}" style="color: #f00;">${message}</li>`);
 	}

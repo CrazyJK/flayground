@@ -22,7 +22,7 @@ class Loading {
 
 		window.onload = () => {
 			const parentElement = document.querySelector(PARENT_SELECTOR);
-			if (parentElement) {
+			if (parentElement !== null) {
 				parentElement.innerHTML += HTML_LOADING;
 			} else {
 				alert('parent element of loading not found. ' + PARENT_SELECTOR);
@@ -34,6 +34,7 @@ class Loading {
 
 			// click event for close
 			this.loadingMain.addEventListener('click', () => {
+				document.querySelector(`${this.loadingBodySelector} > li`).forEach((node) => node.remove());
 				this.loadingMain.style.display = 'none';
 			});
 		};
@@ -44,7 +45,7 @@ class Loading {
 	}
 
 	append(index, message) {
-		document.querySelector(`${this.loadingBodySelector} > li#${this.loadingMessageIdPrefix}${index}`)?.append(message);
+		document.querySelector(`${this.loadingBodySelector} > li#${this.loadingMessageIdPrefix}${index}`).innerHTML += message;
 	}
 
 	error(message) {

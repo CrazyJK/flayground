@@ -6,18 +6,19 @@
 		<title>Flay Popup</title>
 		<link rel="icon" type="image/png" href="/img/favicon/flay_1.png" />
 		<link rel="stylesheet" href="../css/common.css" />
-		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-		<script type="text/javascript" src="../js/crazy.common.js"></script>
-		<script type="text/javascript" src="../js/crazy.jquery.js"></script>
-		<script type="text/javascript" src="../js/flay.loading.js"></script>
-		<script type="text/javascript" src="../js/flay.rest.service.js"></script>
-		<script type="text/javascript" src="../js/flay.utils.js"></script>
-		<script type="text/javascript" src="../js/flay.view.card.js"></script>
-		<script type="text/javascript" src="../js/flay.websocket.js"></script>
-		<script type="text/javascript" src="../js/theme/flay.theme.js"></script>
+		<script defer type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script defer type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script defer type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script defer type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script defer type="text/javascript" src="../js/crazy.common.js"></script>
+		<script defer type="text/javascript" src="../js/crazy.jquery.js"></script>
+		<script defer type="text/javascript" src="../js/flay.loading.js"></script>
+		<script defer type="text/javascript" src="../js/flay.rest.service.js"></script>
+		<script defer type="text/javascript" src="../js/flay.utils.js"></script>
+		<script defer type="text/javascript" src="../js/flay.view.card.js"></script>
+		<script defer type="text/javascript" src="../js/flay.websocket.js"></script>
+		<script defer type="text/javascript" src="../js/main.popup.js"></script>
+		<script defer type="text/javascript" src="../js/theme/flay.theme.js"></script>
 	</head>
 	<body>
 		<main>
@@ -27,25 +28,5 @@
 		<footer>
 			<div id="notice" title="" style="display: none"><p></p></div>
 		</footer>
-
-		<script type="text/javascript">
-			var isAdmin, username;
-			window.onload = () => {
-				isAdmin = Security.hasRole('ADMIN');
-				username = Security.getName();
-
-				Rest.Html.get(reqParam.target, function (html) {
-					$('#wrap_body').html(html);
-				});
-			};
-			window.onerror = function (e) {
-				if (e.toString() === 'ResizeObserver loop limit exceeded') {
-					return;
-				} else {
-					loading.error('Error: ' + e);
-				}
-				console.error('Error name[' + e.name + '] message[' + e.message + '] toString[' + e.toString() + ']', e);
-			};
-		</script>
 	</body>
 </html>

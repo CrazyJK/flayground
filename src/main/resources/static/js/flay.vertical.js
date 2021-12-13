@@ -561,7 +561,7 @@
 
 		// paginationProgress
 		$('#paginationProgress').on('click', (e) => {
-			navigation.go(parseInt(collectedList.length * (e.clientX / $(e.target).width())));
+			navigation.go(parseInt(collectedList.length * (e.clientX / $('#paginationProgress').width())));
 		});
 
 		// window resize

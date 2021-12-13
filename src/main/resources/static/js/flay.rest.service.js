@@ -54,25 +54,23 @@ const restCall = function (url, args, callback, failCallback) {
 			callback?.(data);
 		})
 		.fail(function (jqXHR, textStatus, errorThrown) {
+			console.error('restCall fail', url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 			isCompleted = true;
 
 			if (failCallback) {
-				console.error('restCall fail', url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
 				clearTimeout(loadingTimeout);
 				loading.off(loadingIndex);
-
 				failCallback(jqXHR, textStatus, errorThrown);
 			} else {
 				let errMsg = '';
 				if (jqXHR.getResponseHeader('error')) {
-					errMsg = `Error: Message: ${jqXHR.getResponseHeader('error.message')} <br>Cause: ${jqXHR.getResponseHeader('error.cause')}`;
+					errMsg = `fail: Message: ${jqXHR.getResponseHeader('error.message')} <br>Cause: ${jqXHR.getResponseHeader('error.cause')}`;
 				} else if (jqXHR.responseJSON) {
-					errMsg = `Error: ${jqXHR.responseJSON.error} <br>Message: ${jqXHR.responseJSON.message} <br>Status: ${jqXHR.responseJSON.status} <br>Path: ${jqXHR.responseJSON.path}`;
+					errMsg = `fail: ${jqXHR.responseJSON.error} <br>Message: ${jqXHR.responseJSON.message} <br>Status: ${jqXHR.responseJSON.status} <br>Path: ${jqXHR.responseJSON.path}`;
 				} else {
-					errMsg = `Error: ${textStatus} <br>${errorThrown}`;
+					errMsg = `fail: ${textStatus} <br>${errorThrown}`;
 				}
-				console.error(errMsg.replace(/<br>/gi, '\n'));
-				loading.append(loadingIndex, errMsg);
+				loading.append(loadingIndex, `<span style="color: #f00;">${errMsg}</span>`);
 			}
 		})
 		.always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {

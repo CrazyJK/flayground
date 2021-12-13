@@ -243,6 +243,7 @@ label.text:empty {
 }
 
 #paginationProgress {
+	/* background-color: transparent; */
 	cursor: pointer;
 	height: 1px;
 }
@@ -256,6 +257,7 @@ label.text:empty {
 }
 .pagination ~ .progress .progress-bar {
 	background: var(--rainbow-gradient);
+	border-radius: 0.25rem;
 }
 
 #chartdiv {

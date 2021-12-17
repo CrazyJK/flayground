@@ -6,26 +6,26 @@
 var flayWebsocket = (function ($) {
 	var debug = false;
 
-	var STOMP_ENDPOINT = "/flayground-websocket";
+	var STOMP_ENDPOINT = '/flayground-websocket';
 
-	var TOPIC = "/topic",
-		QUEUE = "/queue";
+	var TOPIC = '/topic',
+		QUEUE = '/queue';
 
-	var TOPIC_ANNOUNCE = TOPIC + "/announce";
-	var TOPIC_SAY = TOPIC + "/say";
-	var QUEUE_INFO = QUEUE + "/info";
+	var TOPIC_ANNOUNCE = TOPIC + '/announce';
+	var TOPIC_SAY = TOPIC + '/say';
+	var QUEUE_INFO = QUEUE + '/info';
 
-	var ANNOUNCE = "ANNOUNCE",
-		ANNOUNCE_TO = "ANNOUNCE_TO",
-		SAY = "SAY",
-		SAY_TO = "SAY_TO",
-		INFO = "INFO";
+	var ANNOUNCE = 'ANNOUNCE',
+		ANNOUNCE_TO = 'ANNOUNCE_TO',
+		SAY = 'SAY',
+		SAY_TO = 'SAY_TO',
+		INFO = 'INFO';
 
 	var stompClient = null;
 
-	var switchSelector = "#notification";
+	var switchSelector = '#notification';
 
-	$("head").append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>', '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
+	$('head').append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>', '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
 
 	// $.getScript("/webjars/sockjs-client/sockjs.min.js");
 	// $.getScript("/webjars/stomp-websocket/stomp.min.js");
@@ -33,18 +33,18 @@ var flayWebsocket = (function ($) {
 	var isAdmin, username;
 
 	$(document).ready(function () {
-		isAdmin = Security.hasRole("ADMIN");
+		isAdmin = Security.hasRole('ADMIN');
 		username = Security.getName();
 
 		var $websocketSwitch = $(switchSelector);
 		if ($websocketSwitch.length > 0) {
-			$websocketSwitch.on("change", function () {
-				$(this).prop("checked") ? connect() : disconnect();
+			$websocketSwitch.on('change', function () {
+				$(this).prop('checked') ? connect() : disconnect();
 			});
 
-			if ($websocketSwitch.prop("checked")) connect();
+			if ($websocketSwitch.prop('checked')) connect();
 		} else {
-			if (debug) console.log("flayWebsocket", "switch is not exist. will be connected automatically");
+			if (debug) console.log('flayWebsocket', 'switch is not exist. will be connected automatically');
 			connect();
 		}
 	});
@@ -61,7 +61,7 @@ var flayWebsocket = (function ($) {
 		stompClient.connect(
 			{},
 			function (frame) {
-				if (debug) console.log("flayWebsocket", "connected", username);
+				if (debug) console.log('flayWebsocket', 'connected', username);
 
 				showMessage(ANNOUNCE, frame);
 
@@ -69,7 +69,7 @@ var flayWebsocket = (function ($) {
 					showMessage(ANNOUNCE, message);
 				});
 
-				stompClient.subscribe("/user" + TOPIC_ANNOUNCE, function (message) {
+				stompClient.subscribe('/user' + TOPIC_ANNOUNCE, function (message) {
 					showMessage(ANNOUNCE_TO, message);
 				});
 
@@ -77,11 +77,11 @@ var flayWebsocket = (function ($) {
 					showMessage(SAY, message);
 				});
 
-				stompClient.subscribe("/user" + TOPIC_SAY, function (message) {
+				stompClient.subscribe('/user' + TOPIC_SAY, function (message) {
 					showMessage(SAY_TO, message);
 				});
 
-				stompClient.subscribe("/user" + QUEUE_INFO, function (message) {
+				stompClient.subscribe('/user' + QUEUE_INFO, function (message) {
 					infoCallback(message);
 				});
 			},
@@ -91,27 +91,29 @@ var flayWebsocket = (function ($) {
 		);
 
 		stompClient.debug = function (str) {
-			if (debug) console.log("stomp debug", str);
+			if (debug) console.log('stomp debug', str);
 		};
 	};
 
 	var disconnect = function () {
 		if (stompClient !== null) {
 			stompClient.disconnect(function () {
-				if (debug) console.log("flayWebsocket", "disconnected");
-				showMessage(ANNOUNCE, { command: "DISCONNECTED" });
+				if (debug) console.log('flayWebsocket', 'disconnected');
+				showMessage(ANNOUNCE, { command: 'DISCONNECTED' });
+				// re-connect
+				connect();
 			});
 		}
 	};
 
 	var say = function (message, to) {
 		if (!username) {
-			alert("User info is not exist!!!");
+			alert('User info is not exist!!!');
 			return;
 		}
-		var dest = "/flayground/say";
+		var dest = '/flayground/say';
 		if (to) {
-			dest = dest + "To"; // + "/user/" + to;
+			dest = dest + 'To'; // + "/user/" + to;
 		}
 		stompClient.send(
 			dest,
@@ -127,7 +129,7 @@ var flayWebsocket = (function ($) {
 
 	var info = function (payLoad) {
 		stompClient.send(
-			"/flayground/info",
+			'/flayground/info',
 			{},
 			JSON.stringify({
 				name: username,
@@ -144,72 +146,72 @@ var flayWebsocket = (function ($) {
 		var title,
 			content,
 			time = new Date();
-		if (message.command === "CONNECTED") {
-			title = "Connected";
-			content = "signed in " + message.headers["user-name"];
-		} else if (message.command === "DISCONNECTED") {
-			title = "Disconnected";
-			content = "";
-		} else if (message.command === "MESSAGE") {
+		if (message.command === 'CONNECTED') {
+			title = 'Connected';
+			content = 'signed in ' + message.headers['user-name'];
+		} else if (message.command === 'DISCONNECTED') {
+			title = 'Disconnected';
+			content = '';
+		} else if (message.command === 'MESSAGE') {
 			var body = JSON.parse(message.body);
 			title = body.title;
 			content = body.content;
 			time.setTime(body.time);
 		} else {
-			title = "<span class='text-danger'>" + ANNOUNCE + "</span>";
+			title = "<span class='text-danger'>" + ANNOUNCE + '</span>';
 			content = message;
 		}
-		content = content.trim().replace(/\n/g, "<br>");
-		if (debug) console.log("websocket", type, title, content);
+		content = content.trim().replace(/\n/g, '<br>');
+		if (debug) console.log('websocket', type, title, content);
 
 		// if wrapper not exist, insert
-		var wrapper = "announceWrapper";
-		if ($("#" + wrapper).length === 0) {
-			$("body > footer").append(
-				$("<div>", { id: wrapper }).css({
-					position: "fixed",
+		var wrapper = 'announceWrapper';
+		if ($('#' + wrapper).length === 0) {
+			$('body > footer').append(
+				$('<div>', { id: wrapper }).css({
+					position: 'fixed',
 					right: 0,
 					zIndex: 69,
 				}),
 			);
 		}
-		var bottomHeight = $(".fixed-bottom").length === 0 || $(".fixed-bottom").css("display") === "none" ? 0 : $(".fixed-bottom").height() + 16;
-		$("#" + wrapper).css({
+		var bottomHeight = $('.fixed-bottom').length === 0 || $('.fixed-bottom').css('display') === 'none' ? 0 : $('.fixed-bottom').height() + 16;
+		$('#' + wrapper).css({
 			bottom: bottomHeight,
 		});
 
 		var showBox = function (_box) {
-			_box.show("blind", { direction: "right" });
+			_box.show('blind', { direction: 'right' });
 		};
 		var hideBox = function (_box) {
-			_box.hide("slide", { direction: "right" }, function () {
+			_box.hide('slide', { direction: 'right' }, function () {
 				$(this).remove();
 			});
 		};
 
-		var $box = $("<div>", { class: "text-light bg-black rounded m-2 p-2" })
+		var $box = $('<div>', { class: 'text-light bg-black rounded m-2 p-2' })
 			.css({
-				border: "1px solid #ddd",
-				boxShadow: "0 0.125rem 0.25rem rgba(0, 0, 0, .125)",
-				display: "none",
+				border: '1px solid #ddd',
+				boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, .125)',
+				display: 'none',
 				width: 250,
 			})
 			.append(
-				$("<i>", { class: "fa fa-bell float-left" }),
-				$("<i>", { class: "fa fa-times float-right hover" }).on("click", function () {
+				$('<i>', { class: 'fa fa-bell float-left' }),
+				$('<i>', { class: 'fa fa-times float-right hover' }).on('click', function () {
 					hideBox($(this).parent());
 				}),
-				$("<small>", { class: "float-right mr-2" }).html(time.format("a/p hh:mm")),
-				$("<div>", { class: "ml-4" }).append(
-					$("<h6>", { class: "font-weight-bold m-0" }).append(type === SAY || type === SAY_TO ? "<span class='text-primary'>From</span> " : "", title),
-					$("<div>", { class: "mt-2" })
+				$('<small>', { class: 'float-right mr-2' }).html(time.format('a/p hh:mm')),
+				$('<div>', { class: 'ml-4' }).append(
+					$('<h6>', { class: 'font-weight-bold m-0' }).append(type === SAY || type === SAY_TO ? "<span class='text-primary'>From</span> " : '', title),
+					$('<div>', { class: 'mt-2' })
 						.css({
-							fontSize: ".875rem",
+							fontSize: '.875rem',
 						})
 						.append(content),
 				),
 			)
-			.appendTo($("#" + wrapper));
+			.appendTo($('#' + wrapper));
 		showBox($box);
 
 		setTimeout(function () {
@@ -219,24 +221,24 @@ var flayWebsocket = (function ($) {
 
 	var infoCallback = function (message) {
 		var messageBody = JSON.parse(message.body);
-		if (debug) console.log("infoCallback", messageBody.content);
-		if (messageBody.content === "bgtheme") {
+		if (debug) console.log('infoCallback', messageBody.content);
+		if (messageBody.content === 'bgtheme') {
 			// adjust theme
 			try {
 				adjustTheme();
 			} catch (ignored) {}
-		} else if (messageBody.content === "bgcolor") {
-			var bgColor = LocalStorageItem.get("flay.bgcolor", "#000000");
-			$("body").css({ backgroundColor: bgColor });
+		} else if (messageBody.content === 'bgcolor') {
+			var bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
+			$('body').css({ backgroundColor: bgColor });
 		} else {
 			var content = JSON.parse(messageBody.content.replace(/&quot;/g, '"'));
-			console.log("content", content);
-			if (content.mode === "grap") {
-				if (typeof grapFlay !== "undefined") {
+			console.log('content', content);
+			if (content.mode === 'grap') {
+				if (typeof grapFlay !== 'undefined') {
 					grapFlay(content.opus);
 				}
 			} else {
-				console.log("unknown code");
+				console.log('unknown code');
 			}
 		}
 	};

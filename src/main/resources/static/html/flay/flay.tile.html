@@ -13,11 +13,11 @@
 		flex-wrap: wrap;
 		justify-content: center;
 		align-content: flex-start;
-		gap: 0.5rem;
+		gap: 1rem;
 	}
 	.tile {
 		background: transparent;
-		border: 1px solid #fff;
+		border: 1px solid var(--color-border-card);
 		cursor: pointer;
 		margin: 0;
 		width: calc(var(--tile-width) + 7px);
@@ -29,8 +29,8 @@
 		height: calc(var(--tile-width) * 0.85 * 2 * var(--cover-ratio));
 	}
 	.tile:hover {
-		box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 15%);
 		border-color: #000;
+		box-shadow: 0 0.125rem 0.5rem 0.25rem var(--color-box-shadow);
 	}
 	.tile.played {
 		outline: 2px solid #f00;
@@ -80,6 +80,9 @@
 		align-content: center;
 		z-index: 69;
 	}
+	#countLabel {
+		text-shadow: 1px 1px 1px var(--color-text-shadow);
+	}
 </style>
 
 <div role="body">
@@ -93,12 +96,12 @@
 				<label><input type="checkbox" id="rank4" value="4" /><span>4</span></label>
 				<label><input type="checkbox" id="rank5" value="5" /><span>5</span></label>
 			</span>
-			<span class="check-group sm mx-2">
-				<em id="countFlayByDisplay"></em>
+			<span class="check-group sm mx-2" id="countLabel">
+				<em id="countFlayByDisplay" title="count Flay By Display"></em>
 				<i class="mx-1">/</i>
-				<em id="countFlayByCheckedRank"></em>
+				<em id="countFlayByCheckedRank" title="count Flay By Checked Rank"></em>
 				<i class="mx-1">/</i>
-				<em id="countFlayByTotal"></em>
+				<em id="countFlayByTotal" title="count Flay By Total"></em>
 				<i class="mx-1">Flay</i>
 			</span>
 			<span class="check-group sm mx-2">
@@ -134,29 +137,29 @@
 		let wide = false;
 
 		// get initial values
-		$("#rank0").prop("checked", LocalStorageItem.getBoolean("flay.tile.rank0", true));
-		$("#rank1").prop("checked", LocalStorageItem.getBoolean("flay.tile.rank1", false));
-		$("#rank2").prop("checked", LocalStorageItem.getBoolean("flay.tile.rank2", false));
-		$("#rank3").prop("checked", LocalStorageItem.getBoolean("flay.tile.rank3", false));
-		$("#rank4").prop("checked", LocalStorageItem.getBoolean("flay.tile.rank4", false));
-		$("#rank5").prop("checked", LocalStorageItem.getBoolean("flay.tile.rank5", false));
-		$("#wideTile")
-			.prop("checked", LocalStorageItem.getBoolean("flay.tile.wideTile", true))
-			.on("change", function () {
+		$('#rank0').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank0', true));
+		$('#rank1').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank1', false));
+		$('#rank2').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank2', false));
+		$('#rank3').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank3', false));
+		$('#rank4').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank4', false));
+		$('#rank5').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank5', false));
+		$('#wideTile')
+			.prop('checked', LocalStorageItem.getBoolean('flay.tile.wideTile', true))
+			.on('change', function () {
 				console.log(this.checked);
-				$("#wideTile ~ span").html(this.checked ? "Wide" : "Slim");
-				$("#tileWrap > .tile").toggleClass("wide", this.checked);
+				$('#wideTile ~ span').html(this.checked ? 'Wide' : 'Slim');
+				$('#tileWrap > .tile').toggleClass('wide', this.checked);
 			})
-			.trigger("change");
+			.trigger('change');
 
 		// add event listener for checkbox
-		$("input:checkbox").on("change", function () {
-			LocalStorageItem.set("flay.tile." + $(this).attr("id"), $(this).prop("checked"));
+		$('input:checkbox').on('change', function () {
+			LocalStorageItem.set('flay.tile.' + $(this).attr('id'), $(this).prop('checked'));
 			displayCountByCheckedRank();
 		});
 
 		// add evebt listener for navigation
-		$("#tileWrap")
+		$('#tileWrap')
 			.navEvent(function (signal) {
 				switch (signal) {
 					case 32: // keyup : space
@@ -170,26 +173,26 @@
 			.navActive(false);
 
 		// add event listener for playing info close
-		$("#playingClose").on("click", function () {
-			$("#playingWrap").hide();
+		$('#playingClose').on('click', function () {
+			$('#playingWrap').hide();
 		});
 
 		// load flay and display
 		Rest.Flay.list(function (list) {
-			$("#countFlayByTotal").html(list.length);
+			$('#countFlayByTotal').html(list.length);
 			flayList = list;
 			displayCountByCheckedRank();
 			displayTile(true);
 		});
 
 		function obtainCheckedValue() {
-			rank0 = $("#rank0").prop("checked");
-			rank1 = $("#rank1").prop("checked");
-			rank2 = $("#rank2").prop("checked");
-			rank3 = $("#rank3").prop("checked");
-			rank4 = $("#rank4").prop("checked");
-			rank5 = $("#rank5").prop("checked");
-			wide = $("#wideTile").prop("checked");
+			rank0 = $('#rank0').prop('checked');
+			rank1 = $('#rank1').prop('checked');
+			rank2 = $('#rank2').prop('checked');
+			rank3 = $('#rank3').prop('checked');
+			rank4 = $('#rank4').prop('checked');
+			rank5 = $('#rank5').prop('checked');
+			wide = $('#wideTile').prop('checked');
 			// console.log(rank0, rank1, rank2, rank3, rank4, rank5, wide);
 		}
 
@@ -202,7 +205,7 @@
 				}
 			}
 			// console.log('countFlayByCheckedRank', countFlayByCheckedRank);
-			$("#countFlayByCheckedRank").html(countFlayByCheckedRank);
+			$('#countFlayByCheckedRank').html(countFlayByCheckedRank);
 		}
 
 		function isCheckedRank(flay) {
@@ -210,13 +213,13 @@
 		}
 
 		function displayTile(isFirst) {
-			$("#tileWrap").navActive(false);
+			$('#tileWrap').navActive(false);
 
 			if (isFirst) {
 				currFlayIndex = Random.getInteger(0, flayList.length - 1);
 			}
 
-			let $tileWrap = $("#tileWrap").empty();
+			let $tileWrap = $('#tileWrap').empty();
 			let tileWrapHeight = $tileWrap.height() + 32;
 			let tileList = [];
 
@@ -237,59 +240,59 @@
 					continue;
 				}
 
-				let $tile = $("<dl>", {
-					class: "tile" + (wide ? " wide" : ""),
+				let $tile = $('<dl>', {
+					class: 'tile' + (wide ? ' wide' : ''),
 					flayIndex: currFlayIndex,
 				})
-					.data("flay", flay)
-					.on("click", function (e) {
+					.data('flay', flay)
+					.on('click', function (e) {
 						let $this = $(this);
-						let _flay = $this.data("flay");
+						let _flay = $this.data('flay');
 						Rest.Flay.play(_flay, function () {
-							$this.addClass("played");
-							$("#playing .flay-card").remove();
-							$("#playing").appendFlayCard(flay, {
+							$this.addClass('played');
+							$('#playing .flay-card').remove();
+							$('#playing').appendFlayCard(flay, {
 								width: 800,
 								exclude: [FILEINFO],
 								css: {
 									margin: 0,
 								},
 							});
-							$("#playingWrap").show();
+							$('#playingWrap').show();
 						});
 					})
 					.append(
-						$("<dt>", { class: "title nowrap" })
+						$('<dt>', { class: 'title nowrap' })
 							.html(flay.title)
-							.on("click", function (e) {
+							.on('click', function (e) {
 								e.stopPropagation();
-								let _flay = $(this).parent().data("flay");
+								let _flay = $(this).parent().data('flay');
 								View.flay(_flay.opus);
 							}),
-						$("<dd>", { class: "studio nowrap" })
+						$('<dd>', { class: 'studio nowrap' })
 							.html(flay.studio)
-							.on("click", function (e) {
+							.on('click', function (e) {
 								e.stopPropagation();
 							}),
-						$("<dd>", { class: "opus nowrap" })
+						$('<dd>', { class: 'opus nowrap' })
 							.html(flay.opus)
-							.on("click", function (e) {
+							.on('click', function (e) {
 								e.stopPropagation();
 							}),
-						$("<dd>", { class: "rank nowrap" })
-							.html("Rank " + flay.video.rank)
-							.on("click", function (e) {
+						$('<dd>', { class: 'rank nowrap' })
+							.html('Rank ' + flay.video.rank)
+							.on('click', function (e) {
 								e.stopPropagation();
 							}),
-						$("<dd>", { class: "actress nowrap" }).html(Util.Actress.getNames(flay.actressList)),
-						$("<dd>", { class: "release nowrap" })
+						$('<dd>', { class: 'actress nowrap' }).html(Util.Actress.getNames(flay.actressList)),
+						$('<dd>', { class: 'release nowrap' })
 							.html(flay.release)
-							.on("click", function (e) {
+							.on('click', function (e) {
 								e.stopPropagation();
 							}),
-						$("<dd>", { class: "file nowrap" })
-							.html(File.formatSize(flay.length) + (flay.files.movie.length > 1 ? " " + flay.files.movie.length + "v" : ""))
-							.on("click", function (e) {
+						$('<dd>', { class: 'file nowrap' })
+							.html(File.formatSize(flay.length) + (flay.files.movie.length > 1 ? ' ' + flay.files.movie.length + 'v' : ''))
+							.on('click', function (e) {
 								e.stopPropagation();
 							}),
 					);
@@ -314,7 +317,7 @@
 			} while (true);
 
 			// one more check overflow flay tile
-			let $lastTile = $("#tileWrap .tile:last-child");
+			let $lastTile = $('#tileWrap .tile:last-child');
 			let bottom = $lastTile.position().top + $lastTile.height();
 			if (tileWrapHeight < bottom) {
 				let $popped = tileList.pop();
@@ -323,7 +326,7 @@
 				--totalDisplayCount;
 			}
 
-			$("#countFlayByDisplay").html(totalDisplayCount);
+			$('#countFlayByDisplay').html(totalDisplayCount);
 
 			if (Random.getBoolean()) {
 				let indexArray = Array.apply(null, { length: tileList.length }).map(Number.call, Number);
@@ -331,12 +334,12 @@
 					let tileIndex = indexArray.splice(Random.getInteger(0, indexArray.length - 1), 1);
 					if ($.isEmptyObject(tileIndex)) {
 						clearInterval(timer);
-						$("#tileWrap").navActive(true);
+						$('#tileWrap').navActive(true);
 					} else {
 						let $tile = tileList[tileIndex];
-						let flay = $tile.data("flay");
+						let flay = $tile.data('flay');
 						$tile.css({
-							background: "url(/static/cover/" + flay.opus + ") right top / cover no-repeat",
+							background: 'url(/static/cover/' + flay.opus + ') right top / cover no-repeat',
 						});
 					}
 				}, Random.getInteger(10, 150));
@@ -346,13 +349,13 @@
 				let timer = setInterval(function () {
 					let $tile = tileList[flowDirection ? tileIndex++ : --tileIndex];
 					if ($tile) {
-						let flay = $tile.data("flay");
+						let flay = $tile.data('flay');
 						$tile.css({
-							background: "url(/static/cover/" + flay.opus + ") right top / cover no-repeat",
+							background: 'url(/static/cover/' + flay.opus + ') right top / cover no-repeat',
 						});
 					} else {
 						clearInterval(timer);
-						$("#tileWrap").navActive(true);
+						$('#tileWrap').navActive(true);
 					}
 				}, Random.getInteger(0, 150));
 			}

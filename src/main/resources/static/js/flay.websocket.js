@@ -4,146 +4,96 @@
  */
 
 var flayWebsocket = (function ($) {
-	var debug = false;
+	const STOMP_ENDPOINT = '/flayground-websocket';
+	const TOPIC = '/topic';
+	const QUEUE = '/queue';
 
-	var STOMP_ENDPOINT = '/flayground-websocket';
+	const TOPIC_ANNOUNCE = TOPIC + '/announce';
+	const TOPIC_SAY = TOPIC + '/say';
+	const QUEUE_INFO = QUEUE + '/info';
 
-	var TOPIC = '/topic',
-		QUEUE = '/queue';
+	const ANNOUNCE = 'ANNOUNCE';
+	const ANNOUNCE_TO = 'ANNOUNCE_TO';
+	const SAY = 'SAY';
+	const SAY_TO = 'SAY_TO';
+	const INFO = 'INFO';
 
-	var TOPIC_ANNOUNCE = TOPIC + '/announce';
-	var TOPIC_SAY = TOPIC + '/say';
-	var QUEUE_INFO = QUEUE + '/info';
+	const switchSelector = '#notification';
+	const wrapper = 'announceWrapper';
 
-	var ANNOUNCE = 'ANNOUNCE',
-		ANNOUNCE_TO = 'ANNOUNCE_TO',
-		SAY = 'SAY',
-		SAY_TO = 'SAY_TO',
-		INFO = 'INFO';
-
-	var stompClient = null;
-
-	var switchSelector = '#notification';
+	let stompClient = null;
+	let debugEnabled = false;
+	let stompDebugEnabled = false;
 
 	$('head').append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>', '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
 
-	// $.getScript("/webjars/sockjs-client/sockjs.min.js");
-	// $.getScript("/webjars/stomp-websocket/stomp.min.js");
-
-	var isAdmin, username;
-
-	$(document).ready(function () {
-		isAdmin = Security.hasRole('ADMIN');
-		username = Security.getName();
-
-		var $websocketSwitch = $(switchSelector);
-		if ($websocketSwitch.length > 0) {
-			$websocketSwitch.on('change', function () {
-				$(this).prop('checked') ? connect() : disconnect();
-			});
-
-			if ($websocketSwitch.prop('checked')) connect();
-		} else {
-			if (debug) console.log('flayWebsocket', 'switch is not exist. will be connected automatically');
-			connect();
-		}
-	});
-
-	window.onunload = disconnect;
-
-	var connect = function () {
-		var socket = new SockJS(STOMP_ENDPOINT);
+	const connect = () => {
+		const socket = new SockJS(STOMP_ENDPOINT);
 		stompClient = Stomp.over(socket);
-
 		// or
 		// stompClient = Stomp.client(STOMP_ENDPOINT);
 
 		stompClient.connect(
 			{},
-			function (frame) {
-				if (debug) console.log('flayWebsocket', 'connected', username);
+			(frame) => {
+				if (debugEnabled) {
+					console.log('flayWebsocket', 'connected', username);
+				}
 
-				showMessage(ANNOUNCE, frame);
+				showMessage(ANNOUNCE, frame, '1st');
 
-				stompClient.subscribe(TOPIC_ANNOUNCE, function (message) {
+				stompClient.subscribe(TOPIC_ANNOUNCE, (message) => {
 					showMessage(ANNOUNCE, message);
 				});
 
-				stompClient.subscribe('/user' + TOPIC_ANNOUNCE, function (message) {
+				stompClient.subscribe('/user' + TOPIC_ANNOUNCE, (message) => {
 					showMessage(ANNOUNCE_TO, message);
 				});
 
-				stompClient.subscribe(TOPIC_SAY, function (message) {
+				stompClient.subscribe(TOPIC_SAY, (message) => {
 					showMessage(SAY, message);
 				});
 
-				stompClient.subscribe('/user' + TOPIC_SAY, function (message) {
+				stompClient.subscribe('/user' + TOPIC_SAY, (message) => {
 					showMessage(SAY_TO, message);
 				});
 
-				stompClient.subscribe('/user' + QUEUE_INFO, function (message) {
+				stompClient.subscribe('/user' + QUEUE_INFO, (message) => {
 					infoCallback(message);
 				});
 			},
-			function (frame) {
-				showMessage(ANNOUNCE, frame);
+			(frame) => {
+				showMessage(ANNOUNCE, frame, '2nd');
 			},
 		);
 
-		stompClient.debug = function (str) {
-			if (debug) console.log('stomp debug', str);
+		stompClient.debug = (str) => {
+			if (stompDebugEnabled) {
+				console.log('stomp debug', str);
+			}
 		};
 	};
 
-	var disconnect = function () {
+	const disconnect = () => {
 		if (stompClient !== null) {
-			stompClient.disconnect(function () {
-				if (debug) console.log('flayWebsocket', 'disconnected');
+			stompClient.disconnect(() => {
+				if (debugEnabled) {
+					console.log('flayWebsocket', 'disconnected');
+				}
 				showMessage(ANNOUNCE, { command: 'DISCONNECTED' });
-				// re-connect
-				connect();
 			});
 		}
 	};
 
-	var say = function (message, to) {
-		if (!username) {
-			alert('User info is not exist!!!');
-			return;
+	const showMessage = (type, message, from) => {
+		if (debugEnabled) {
+			console.log('showMessage input - ', type, message, from);
 		}
-		var dest = '/flayground/say';
-		if (to) {
-			dest = dest + 'To'; // + "/user/" + to;
-		}
-		stompClient.send(
-			dest,
-			{
-				to: to,
-			},
-			JSON.stringify({
-				name: username,
-				content: message,
-			}),
-		);
-	};
-
-	var info = function (payLoad) {
-		stompClient.send(
-			'/flayground/info',
-			{},
-			JSON.stringify({
-				name: username,
-				content: payLoad,
-			}),
-		);
-	};
-
-	var showMessage = function (type, message) {
-		if (debug) console.log(message);
 		if (opener) {
 			return;
 		}
-		var title,
+
+		let title,
 			content,
 			time = new Date();
 		if (message.command === 'CONNECTED') {
@@ -153,7 +103,7 @@ var flayWebsocket = (function ($) {
 			title = 'Disconnected';
 			content = '';
 		} else if (message.command === 'MESSAGE') {
-			var body = JSON.parse(message.body);
+			const body = JSON.parse(message.body);
 			title = body.title;
 			content = body.content;
 			time.setTime(body.time);
@@ -162,34 +112,21 @@ var flayWebsocket = (function ($) {
 			content = message;
 		}
 		content = content.trim().replace(/\n/g, '<br>');
-		if (debug) console.log('websocket', type, title, content);
 
-		// if wrapper not exist, insert
-		var wrapper = 'announceWrapper';
-		if ($('#' + wrapper).length === 0) {
-			$('body > footer').append(
-				$('<div>', { id: wrapper }).css({
-					position: 'fixed',
-					right: 0,
-					zIndex: 69,
-				}),
-			);
+		if (debugEnabled) {
+			console.log(`showMessage parse - ${type} - ${title} - ${content}`);
 		}
-		var bottomHeight = $('.fixed-bottom').length === 0 || $('.fixed-bottom').css('display') === 'none' ? 0 : $('.fixed-bottom').height() + 16;
-		$('#' + wrapper).css({
-			bottom: bottomHeight,
-		});
 
-		var showBox = function (_box) {
+		const showBox = (_box) => {
 			_box.show('blind', { direction: 'right' });
 		};
-		var hideBox = function (_box) {
+		const hideBox = (_box) => {
 			_box.hide('slide', { direction: 'right' }, function () {
 				$(this).remove();
 			});
 		};
 
-		var $box = $('<div>', { class: 'text-light bg-black rounded m-2 p-2' })
+		const $box = $('<div>', { class: 'text-light bg-black rounded m-2 p-2' })
 			.css({
 				border: '1px solid #ddd',
 				boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, .125)',
@@ -212,40 +149,113 @@ var flayWebsocket = (function ($) {
 				),
 			)
 			.appendTo($('#' + wrapper));
-		showBox($box);
 
-		setTimeout(function () {
+		showBox($box);
+		setTimeout(() => {
 			hideBox($box);
 		}, 5 * 1000);
 	};
 
-	var infoCallback = function (message) {
-		var messageBody = JSON.parse(message.body);
-		if (debug) console.log('infoCallback', messageBody.content);
+	const infoCallback = function (message) {
+		const messageBody = JSON.parse(message.body);
+		if (debugEnabled) {
+			console.log('infoCallback', messageBody.content);
+		}
+
 		if (messageBody.content === 'bgtheme') {
-			// adjust theme
 			try {
 				adjustTheme();
 			} catch (ignored) {}
 		} else if (messageBody.content === 'bgcolor') {
-			var bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
+			const bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
 			$('body').css({ backgroundColor: bgColor });
 		} else {
-			var content = JSON.parse(messageBody.content.replace(/&quot;/g, '"'));
+			const content = JSON.parse(messageBody.content.replace(/&quot;/g, '"'));
 			console.log('content', content);
 			if (content.mode === 'grap') {
 				if (typeof grapFlay !== 'undefined') {
 					grapFlay(content.opus);
 				}
 			} else {
-				console.log('unknown code');
+				console.log('unknown mode');
+				alert('unknown info mode');
 			}
 		}
 	};
 
+	// add eventListener and connect
+	let isAdmin, username;
+	$(document).ready(function () {
+		isAdmin = Security.hasRole('ADMIN');
+		username = Security.getName();
+
+		const $websocketSwitch = $(switchSelector);
+
+		if ($websocketSwitch.length > 0) {
+			// event
+			$websocketSwitch.on('change', function () {
+				if ($(this).prop('checked')) {
+					connect();
+				} else {
+					disconnect();
+				}
+			});
+			if ($websocketSwitch.prop('checked')) {
+				connect();
+			}
+		} else {
+			if (debugEnabled) {
+				console.log('flayWebsocket', 'switch is not exist. will be connected automatically');
+			}
+			connect();
+		}
+
+		// if wrapper not exist, insert
+		if ($('#' + wrapper).length === 0) {
+			$('body > footer').append(
+				$('<div>', { id: wrapper }).css({
+					position: 'fixed',
+					right: 0,
+					zIndex: 69,
+				}),
+			);
+		}
+		const bottomHeight = $('.fixed-bottom').length === 0 || $('.fixed-bottom').css('display') === 'none' ? 0 : $('.fixed-bottom').height() + 16;
+		$('#' + wrapper).css({
+			bottom: bottomHeight,
+		});
+	});
+
 	return {
-		say: say,
-		info: info,
+		say: (message, to) => {
+			if (!username) {
+				alert('User info is not exist!!!');
+				return;
+			}
+			stompClient.send(
+				'/flayground/say' + (to ? 'To' : ''),
+				{
+					to: to,
+				},
+				JSON.stringify({
+					name: username,
+					content: message,
+				}),
+			);
+		},
+		info: (payLoad) => {
+			stompClient.send(
+				'/flayground/info',
+				{},
+				JSON.stringify({
+					name: username,
+					content: payLoad,
+				}),
+			);
+		},
 		stop: disconnect,
+		debug: (onOff) => {
+			debugEnabled = onOff;
+		},
 	};
 })(jQuery);

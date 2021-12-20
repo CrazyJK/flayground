@@ -63,7 +63,7 @@ body {
 	margin-bottom: 0;
 }
 .info-wrapper > dl > dd {
-	margin-bottom: 0.25rem;
+	margin-bottom: 0;
 }
 
 .info-wrapper > dl > dt:last-child {
@@ -264,6 +264,10 @@ label.text:empty {
 
 #chartdiv {
 	background-color: var(--color-bg-chart);
+}
+
+#videoTags label.check span {
+	background-color: var(--color-bg-check-tag);
 }
 
 @media screen and (min-height: 1650px) {

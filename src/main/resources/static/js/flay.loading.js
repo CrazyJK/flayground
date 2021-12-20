@@ -10,8 +10,25 @@ class Loading {
 		const ID_LOADING_MESSAGE_PREFIX = 'loading-message';
 		const HTML_LOADING = `
 			<div id="${ID_LOADING_WRAPPER}">
-				<div id="${ID_LOADING_MAIN}" style="position: fixed; inset: 0px; background: rgba(0, 0, 0, 0.5); cursor: wait; z-index: 9999; display: none; flex-direction: column; align-content: center; justify-content: center; align-items: center;">
-					<ol id="${ID_LOADING_BODY}" style="position: inherit; display: flex; flex-direction: column; color: white; font-size: 2rem; margin: 0; text-shadow: 1px 1px 2px #000;"></ol>
+				<div id="${ID_LOADING_MAIN}" style="
+						position: fixed;
+						inset: 0px;
+						background: rgba(0, 0, 0, 0.5);
+						cursor: wait;
+						z-index: 9999;
+						display: none;
+						flex-direction: column;
+						align-content: center;
+						justify-content: center;
+						align-items: center;">
+					<ol id="${ID_LOADING_BODY}" style="
+							position: inherit;
+							display: flex;
+							flex-direction: column;
+							color: white;
+							font-size: 2rem;
+							margin: 0;
+							text-shadow: 1px 1px 2px #000;"></ol>
 				</div>
 			</div>`;
 
@@ -34,7 +51,7 @@ class Loading {
 
 			// click event for close
 			this.loadingMain.addEventListener('click', () => {
-				document.querySelector(`${this.loadingBodySelector} > li`).forEach((node) => node.remove());
+				document.querySelectorAll(`${this.loadingBodySelector} > li`).forEach((node) => node.remove());
 				this.loadingMain.style.display = 'none';
 			});
 		};

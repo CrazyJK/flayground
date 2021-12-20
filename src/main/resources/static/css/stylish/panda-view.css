@@ -134,3 +134,14 @@ body {
 	width: 200px !important;
 	height: 200px !important;
 }
+/* 블라인드 제거 */
+.blind {
+	background: transparent !important;
+}
+.blind .box {
+	background: transparent;
+	top: 0;
+}
+.blind .box .txt1 {
+	display: block;
+}

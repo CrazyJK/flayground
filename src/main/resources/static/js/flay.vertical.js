@@ -537,14 +537,23 @@
 		// toggle tags
 		$('#tags').on('change', function () {
 			$('#selectTags').slideToggle(this.checked);
+			if (this.checked) {
+				markStatisticsTag();
+			}
 		});
 		// statistics studio
 		$('#toggleStatisticsStudio').on('change', function () {
 			$('#statisticsStudio').slideToggle(this.checked);
+			if (this.checked) {
+				markStatisticsStudio();
+			}
 		});
 		// statistics actress
 		$('#toggleStatisticsActress').on('change', function () {
 			$('#statisticsActress').slideToggle(this.checked);
+			if (this.checked) {
+				markStatisticsActress();
+			}
 		});
 
 		// data reload
@@ -693,10 +702,12 @@
 			return result;
 		};
 		const matchTag = (tag, flay) => {
-			if (flay.video.tags.includes(tag.id)) {
-				// id
-				return true;
-			} else if (flay.title.indexOf(tag.name) > -1) {
+			for (const flayTag of flay.video.tags) {
+				if (flayTag.id === tag.id) {
+					return true;
+				}
+			}
+			if (flay.title.indexOf(tag.name) > -1) {
 				// name
 				return true;
 			} else {
@@ -923,7 +934,7 @@
 			}),
 		);
 
-		const minCount = 5;
+		const minCount = $("input[name='source']:checked").val() === 'Low' ? 1 : 5;
 		$('#statisticsStudio')
 			.empty()
 			.append(
@@ -1176,6 +1187,16 @@
 			$('.history-wrapper').hide();
 		}
 
+		if ($('#selectTags').is(':visible')) {
+			markStatisticsTag();
+		}
+		if ($('#statisticsStudio').is(':visible')) {
+			markStatisticsStudio();
+		}
+		if ($('#statisticsActress').is(':visible')) {
+			markStatisticsActress();
+		}
+
 		navigation.on();
 	}
 
@@ -1216,6 +1237,42 @@
 			}
 		}
 		return null;
+	}
+
+	function markStatisticsTag() {
+		$('#selectTags > .tag-list > label')
+			.removeClass('bg-danger')
+			.each(function () {
+				const $this = $(this);
+				const name = $this.find('span').text();
+				currentFlay.video.tags.forEach((tag) => {
+					if (name.indexOf(tag.name) > -1) {
+						$this.addClass('bg-danger');
+					}
+				});
+			});
+	}
+
+	function markStatisticsStudio() {
+		$('#statisticsStudio > .studioTag')
+			.removeClass('text-danger')
+			.each(function () {
+				const name = $(this).find('span:first-child').text();
+				if (currentFlay.studio === name) {
+					$(this).addClass('text-danger');
+				}
+			});
+	}
+
+	function markStatisticsActress() {
+		$('#statisticsActress > .actressTag')
+			.removeClass('text-danger')
+			.each(function () {
+				const name = $(this).find('span:first-child').text();
+				if (currentFlay.actressList.indexOf(name) > -1) {
+					$(this).addClass('text-danger');
+				}
+			});
 	}
 
 	attachEventListener();

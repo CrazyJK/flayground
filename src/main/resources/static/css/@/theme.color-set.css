@@ -7,7 +7,8 @@
 	--color-bg-page: transparent;
 	--color-bg-page-hover: rgba(0, 0, 0, 0.75);
 	--color-bg-check: rgba(0, 0, 0, 0.125);
-	--color-bg-ranker: transparent;
+	--color-bg-check-tag: rgba(0, 0, 0, 0.5);
+	--color-bg-ranker: rgba(0, 0, 0, 0.125);
 	--color-bg-light: transparent;
 	--color-bg-input-hover: rgba(0, 0, 0, 0.75);
 	--color-bg-button: transparent;
@@ -40,6 +41,7 @@
 	--color-bg-page: #fff;
 	--color-bg-page-hover: #fff;
 	--color-bg-check: #fff;
+	--color-bg-check-tag: #fff;
 	--color-bg-ranker: #fff;
 	--color-bg-light: #fff;
 	--color-bg-input: rgba(255, 255, 255, 0.75);

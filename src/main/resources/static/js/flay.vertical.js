@@ -965,6 +965,7 @@
 					}),
 			);
 		}
+		$('#statisticsStudio > label:first-child').toggle(minCount > 1);
 
 		$('#statisticsActress')
 			.empty()
@@ -997,6 +998,7 @@
 					}),
 			);
 		}
+		$('#statisticsActress > label:first-child').toggle(minCount > 1);
 	}
 
 	function showVideo() {

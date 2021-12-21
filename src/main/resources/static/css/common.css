@@ -686,6 +686,7 @@ button.btn.btn-outline-flay {
 	margin-bottom: 0.5rem;
 }
 #topMenu > nav {
+	position: relative;
 	display: flex;
 	flex-direction: row;
 	flex-wrap: wrap;
@@ -693,6 +694,7 @@ button.btn.btn-outline-flay {
 	align-content: center;
 	justify-content: center;
 	gap: 0.5rem;
+	background-color: var(--color-bg-nav);
 	padding: 0.25rem 0.5rem;
 	transition: background-color 0.3s;
 }

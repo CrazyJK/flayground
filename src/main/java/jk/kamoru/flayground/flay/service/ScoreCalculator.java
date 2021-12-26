@@ -2,7 +2,10 @@ package jk.kamoru.flayground.flay.service;
 
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,30 +26,43 @@ public class ScoreCalculator {
 	@Autowired ActressInfoService actressInfoService;
 
 	Comparator<Flay> scoreComparator = Comparator.comparing(Flay::getScore);
-	Comparator<Flay> flaycountComparator = Comparator.comparing(Flay::getTotalFlayByActress);
+	Comparator<Flay> studioPointComparator = Comparator.comparing(Flay::getStudioPoint);
+	Comparator<Flay> actressPointComparator = Comparator.comparing(Flay::getActressPoint);
 	Comparator<Flay> modifiedComparator = Comparator.comparing(Flay::getLastModified);
 	Comparator<Flay> releaseComparator = Comparator.comparing(Flay::getRelease);
+
+	Map<String, AtomicInteger> studioCountMap = new HashMap<>();
 
 	@TrackExecutionTime(message = "flay list order by score desc", level = TrackExecutionTime.LEVEL.INFO)
 	public Collection<Flay> listOrderByScoreDesc(Collection<Flay> flayList) {
 		flayList.forEach(f -> {
+			if (studioCountMap.containsKey(f.getStudio())) {
+				studioCountMap.get(f.getStudio()).incrementAndGet();
+			} else {
+				studioCountMap.put(f.getStudio(), new AtomicInteger(1));
+			}
+		});
+
+		flayList.forEach(f -> {
 			calcScore(f);
-			setTotalFlayByActress(f, flayList);
+			setActressPoint(f, flayList);
+			f.setStudioPoint(studioCountMap.get(f.getStudio()).intValue());
 		});
 
 		return flayList.stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0)
 				.sorted(
 						scoreComparator.reversed().thenComparing(
-								flaycountComparator.reversed().thenComparing(
-										modifiedComparator.reversed().thenComparing(
-												releaseComparator.reversed()))))
+								studioPointComparator.reversed().thenComparing(
+										actressPointComparator.reversed().thenComparing(
+												modifiedComparator.reversed().thenComparing(
+														releaseComparator.reversed())))))
 				.collect(Collectors.toList());
 	}
 
 	public void calcScore(Flay flay) {
 		flay.setScore(resolveRank(flay) * flayProperties.getScore().getRankPoint()
-				+ flay.getVideo().getPlay() * flayProperties.getScore().getPlayPoint()
+				// + flay.getVideo().getPlay() * flayProperties.getScore().getPlayPoint()
 				+ (flay.getFiles().get(Flay.SUBTI).size() > 0 ? 1 : 0) * flayProperties.getScore().getSubtitlesPoint()
 				+ countFavoriteActress(flay) * flayProperties.getScore().getFavoritePoint());
 	}
@@ -66,7 +82,7 @@ public class ScoreCalculator {
 	}
 
 	// 출연배우의 작품 함계
-	private void setTotalFlayByActress(Flay flay, Collection<Flay> flayList) {
+	private void setActressPoint(Flay flay, Collection<Flay> flayList) {
 		int count = 0;
 		for (String name : flay.getActressList()) {
 			for (Flay f : flayList) {
@@ -75,7 +91,7 @@ public class ScoreCalculator {
 				}
 			}
 		}
-		flay.setTotalFlayByActress(count);
+		flay.setActressPoint(count);
 	}
 
 }

@@ -32,7 +32,8 @@ public class Flay {
 	Video video;
 
 	int score;
-	int totalFlayByActress;
+	int actressPoint;
+	int studioPoint;
 
 	public Flay() {
 		files.put(MOVIE, new ArrayList<File>());

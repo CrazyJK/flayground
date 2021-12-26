@@ -99,6 +99,14 @@ body {
 	flex: 0 0 36px;
 	text-align: right;
 }
+#flayView .flay-studioPoint {
+	flex: 0 0 36px;
+	text-align: right;
+}
+#flayView .flay-actressPoint {
+	flex: 0 0 36px;
+	text-align: right;
+}
 #flayView .flay-length {
 	flex: 0 0 50px;
 	text-align: right;

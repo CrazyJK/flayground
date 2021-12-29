@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50">
+  <style>
+		.flayground {
+			fill: rgb(15 15 15);
+			font: italic bold 32px "Ink Free";
+		}
+  </style>
+  <text x="3" y="33" fill="151515" class="flayground">Flayground</text>
+</svg>

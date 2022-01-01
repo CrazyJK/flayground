@@ -72,14 +72,9 @@
 						.append(
 							$('<div>', { class: 'folder-info' }).append(
 								$('<span>')
-									.on('click', todayis, (e) => {
-										Rest.Todayis.openFolder(e.data.path);
-									})
-									.html(todayis.path),
-								$('<span>', { class: 'ml-3 toggle-folder' }).append(
-									$('<i>', { class: 'fa fa-toggle-down' }).on('click', currendFolderIndex, (e) => {
+									.html(todayis.path)
+									.on('click', currendFolderIndex, (e) => {
 										$(e.target).closest('.folder').find('.folder-items').toggle();
-										$(e.target).toggleClass('fa-toggle-down fa-toggle-up');
 
 										if (Todayis.toggledFolderIndex.includes(e.data)) {
 											Todayis.toggledFolderIndex.splice(Todayis.toggledFolderIndex.indexOf(e.data), 1);
@@ -87,6 +82,12 @@
 											Todayis.toggledFolderIndex.push(e.data);
 										}
 										console.log(`folder toggle index=${e.data}`, e.target, Todayis.toggledFolderIndex);
+									}),
+								$('<span>', { class: 'ml-3 toggle-folder' }).append(
+									$('<i>', { class: 'fa fa-folder-open' }).on('click', todayis, (e) => {
+										if (system === WINDOWS) {
+											Rest.Todayis.openFolder(e.data.path);
+										}
 									}),
 								),
 							),
@@ -104,13 +105,6 @@
 
 			$('#size').html(size + ' Movie');
 			$('#length').html(File.formatSize(length));
-
-			$('.folder-info > span:nth-child(1)').each((index, folder) => {
-				console.log('folder', index, $(folder).text());
-				if ($(folder).text().indexOf('Enter') > -1) {
-					$(folder).closest('.folder').find('.toggle-folder i.fa').click();
-				}
-			});
 		},
 		renderTodayis: () => {
 			$('.folder-items').empty();
@@ -120,9 +114,11 @@
 						$('<div>', { class: 'item-title' }).append(
 							$('<span>', { class: 'text-title' })
 								.on('click', todayis, function (e) {
-									Rest.Todayis.play(e.data, () => {
-										$(e.target).closest('.item').addClass('played');
-									});
+									if (system === WINDOWS) {
+										Rest.Todayis.play(e.data, () => {
+											$(e.target).closest('.item').addClass('played');
+										});
+									}
 								})
 								.html(todayis.name.slice(0, -4).replace(/\-|[.]/gi, ' ')),
 						),

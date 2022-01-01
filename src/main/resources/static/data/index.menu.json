@@ -18,5 +18,15 @@
 		"name": "Split View",
 		"method": "both",
 		"url": "/html/split.view.html"
+	},
+	{
+		"name": "Mobile",
+		"method": "both",
+		"url": "/html/flay/flay.mobile.html"
+	},
+	{
+		"name": "Today's",
+		"method": "both",
+		"url": "/html/main.popup.html?target=/html/todayis/todayis.html"
 	}
 ]

@@ -47,10 +47,13 @@
 	text-overflow: ellipsis;
 }
 .flay-release {
-	flex: 0 0 100px;
+	flex: 0 0 80px;
 }
 .flay-rank {
 	flex: 0 0 50px;
+}
+.flay-tag {
+	flex: 0 0 70px;
 }
 .flay-subtitles {
 	flex: 1 0 100px;

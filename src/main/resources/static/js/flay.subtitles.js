@@ -123,6 +123,7 @@
 								<label class="flay-actressList">${flay.actressList}</label>
 								<label class="flay-release">${flay.release}</label>
 								<label class="flay-rank">${flay.video.rank > 0 ? flay.video.rank : ''}</label>
+								<label class="flay-tag">${ifTag(flay, 90)}</label>
 								<label class="flay-subtitles"></label>
 							</div>`;
 
@@ -130,6 +131,17 @@
 			});
 
 		$('#flayCount').html(noSubtitlesOpusList.length); // mark total count
+	};
+
+	const ifTag = (flay, tagId) => {
+		if (flay.video.tags.length > 0) {
+			for (const tag of flay.video.tags) {
+				if (tag.id === tagId) {
+					return tag.name;
+				}
+			}
+		}
+		return '';
 	};
 
 	// start find

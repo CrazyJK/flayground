@@ -1287,7 +1287,10 @@
 	AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
 
 	let historyChart = null;
-	const firstDayOfThisYear = AmCharts.stringToDate(DateUtils.format('yyyy-01-01'), 'YYYY-MM-DD');
+	const now = new Date();
+	const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
+	console.log('oneYearAgo', oneYearAgo);
+	// const oneYearAgo = AmCharts.stringToDate(DateUtils.format('yyyy-01-01'), 'YYYY-MM-DD');
 
 	function drawGraph(historyList) {
 		// init variables
@@ -1321,10 +1324,10 @@
 		// sort ascending by date
 		dataArray.sort((d1, d2) => (d1.date > d2.date ? 1 : -1));
 
-		// add firstDayOfThisYear, if necessary
-		if (dataArray[0].date.getTime() > firstDayOfThisYear.getTime()) {
+		// add oneYearAgo, if necessary
+		if (dataArray[0].date.getTime() > oneYearAgo.getTime()) {
 			dataArray.unshift({
-				date: firstDayOfThisYear,
+				date: oneYearAgo,
 				playCount: 0,
 			});
 		}

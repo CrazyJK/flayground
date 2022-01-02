@@ -30,6 +30,9 @@ header > nav > .check-group > label > span {
 	font-size: 1.25rem;
 }
 
+main {
+	background: #000 url(/img/svg/flayground.svg) no-repeat top / contain;
+}
 main > div#flayWrap {
 	margin: 0 auto 4rem;
 }

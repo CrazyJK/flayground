@@ -137,7 +137,7 @@
 									$(e.target).closest('.item').addClass('played');
 								})
 								.html('Play'),
-							$('<span>', { class: ' text-suffix' }).html(todayis.name.slice(todayis.name.length - 3, todayis.name.length)),
+							$('<a>', { class: ' text-suffix text-light', href: '/todayis/stream/' + todayis.uuid }).html(todayis.name.slice(todayis.name.length - 3, todayis.name.length)),
 							$('<span>', { class: 'text-delete' })
 								.on('click', todayis, function (e) {
 									if (confirm('is delete this movie?\n' + e.data.name)) {

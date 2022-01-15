@@ -74,70 +74,82 @@ function findMode() {
 		$('input#fullname').val(File.validName(fullname)).effect('highlight', {}, 200);
 	});
 	// 첫줄 입력시
-	$('#rowname_opus, #rowname_actress').on('keyup', function (e) {
+	$('#rowname_opus, #rowname_title, #rowname_actress').on('keyup', function (e) {
 		if (e.keyCode !== 13) {
 			return;
 		}
 
-		var titlePart = $.trim($(this).val().replace(/\[|]/gi, ' ')).split(' ');
-		if (titlePart.length > 1) {
-			$('#rowname_opus').val(titlePart[0]);
-			$('#rowname_title').val(titlePart.slice(1).join(' '));
-			$('#rowname_actress').val(titlePart[titlePart.length - 1]);
-		}
+		// var titlePart = $.trim($(this).val().replace(/\[|]/gi, ' ')).split(' ');
+		// if (titlePart.length > 1) {
+		// 	$('#rowname_opus').val(titlePart[0]);
+		// 	$('#rowname_title').val(titlePart.slice(1).join(' '));
+		// 	$('#rowname_actress').val(titlePart[titlePart.length - 1]);
+		// }
 
 		var rowOpus = $('#rowname_opus').val().trim();
 		var rowTitle = $('#rowname_title').val().trim();
-		var rowActress = $('#rowname_actress').val().trim();
+		var rowName = $('#rowname_actress').val().trim();
 
 		$('#opus').val(rowOpus);
 		rowOpus != '' && searchSource(rowOpus);
 		rowOpus != '' && Search.opus(rowOpus);
 		rowTitle != '' && Search.translate(rowTitle);
-		rowActress != '' &&
-			Rest.Actress.findByLocalname(rowActress, function (actressList) {
-				console.log('findByLocalname', rowActress, actressList.length);
-
-				$('#newActressName').val('');
-				$('#newActressLocal').val(rowActress);
-				$('#newActressBirth').val('');
-				$('#newActressBody').val('');
-				$('#newActressHeight').val('');
-				$('#newActressDebut').val('');
-
-				if (actressList.length == 0) {
-					Search.actress(rowActress);
-				} else if (actressList.length == 1) {
-					$('#actress').val(actressList[0].name).effect('highlight', {}, 1000);
-					transferActressInfo(actressList[0], '#rowname_actress');
-				} else {
-					Search.actress(rowActress);
-					$('#actressChoice > ul').empty();
-					$.each(actressList, function (idx, actress) {
-						$('<li>')
-							.append(
-								$('<label>', { class: 'text hover' })
-									.append($('<i>', { class: 'fa fa-female' }))
-									.on('click', function () {
-										View.actress(actress.name);
-									}),
-								$('<label>', { class: 'text hover' })
-									.html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut)
-									.on('click', function () {
-										$(this).effect('transfer', { to: '#actress', className: 'ui-effects-transfer' }, 500, function () {
-											$('#actress').val(actress.name);
-											$('#actressChoice').dialog('close');
-											transferActressInfo(actress, '#actress');
-										});
-									}),
-							)
-							.appendTo($('#actressChoice > ul'));
-					});
-					$('#actressChoice').dialog({
-						width: 600,
-					});
+		if (rowName !== '') {
+			rowName.split(' ').forEach((name) => {
+				if (name.trim().length === 0) {
+					return;
 				}
+				Rest.Actress.findByLocalname(name, function (actressList) {
+					console.log('findByLocalname', name, actressList.length);
+
+					$('#newActressName').val('');
+					$('#newActressLocal').val(name);
+					$('#newActressBirth').val('');
+					$('#newActressBody').val('');
+					$('#newActressHeight').val('');
+					$('#newActressDebut').val('');
+
+					if (actressList.length == 0) {
+						Search.actress(name);
+					} else if (actressList.length == 1) {
+						const actressVal = $('#actress').val();
+						if (actressVal !== '') {
+							$('#actress').val(actressVal + ', ' + actressList[0].name);
+						} else {
+							$('#actress').val(actressList[0].name);
+						}
+						$('#actress').effect('highlight', {}, 1000);
+						transferActressInfo(actressList[0], '#rowname_actress');
+					} else {
+						Search.actress(name);
+						$('#actressChoice > ul').empty();
+						$.each(actressList, function (idx, actress) {
+							$('<li>')
+								.append(
+									$('<label>', { class: 'text hover' })
+										.append($('<i>', { class: 'fa fa-female' }))
+										.on('click', function () {
+											View.actress(actress.name);
+										}),
+									$('<label>', { class: 'text hover' })
+										.html(actress.name + ' ' + actress.localName + ' ' + actress.birth + ' ' + actress.body + ' ' + actress.height + ' ' + actress.debut)
+										.on('click', function () {
+											$(this).effect('transfer', { to: '#actress', className: 'ui-effects-transfer' }, 500, function () {
+												$('#actress').val(actress.name);
+												$('#actressChoice').dialog('close');
+												transferActressInfo(actress, '#actress');
+											});
+										}),
+								)
+								.appendTo($('#actressChoice > ul'));
+						});
+						$('#actressChoice').dialog({
+							width: 600,
+						});
+					}
+				});
 			});
+		}
 	});
 	$('#newActressBirth').on('keyup', function () {
 		var value = $(this).val().trim();
@@ -380,6 +392,14 @@ function reloadMode() {
 	});
 }
 
+/**
+ * find Flay
+ * find video info
+ * find history
+ * find Studio name by opus
+ * @param {*} keyword
+ * @returns
+ */
 function searchSource(keyword) {
 	keyword = $.trim(keyword);
 	if (keyword.length === 0) {
@@ -408,12 +428,7 @@ function searchSource(keyword) {
 								}),
 						),
 						$('<td>', { class: 'nowrap' })
-							.append(
-								$('<label>', { class: 'text sm' }).html(flay.files.movie.length > 0 ? 'V ' + File.formatSize(flay.length) : 'noV'),
-								$('<label>', { class: 'text sm' }).html(flay.files.subtitles.length > 0 ? 'S' : ''),
-								$('<label>', { class: 'text sm' }).html('R' + flay.video.rank),
-								$('<label>', { class: 'text sm' }).html(),
-							)
+							.append($('<label>', { class: 'text sm' }).html(flay.files.movie.length > 0 ? 'V ' + File.formatSize(flay.length) : 'noV'), $('<label>', { class: 'text sm' }).html(flay.files.subtitles.length > 0 ? 'S' : ''), $('<label>', { class: 'text sm' }).html('R' + flay.video.rank), $('<label>', { class: 'text sm' }).html())
 							.css({ minWidth: 100 }),
 						$('<td>').append(function () {
 							var objs = [];

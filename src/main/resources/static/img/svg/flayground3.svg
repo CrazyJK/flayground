@@ -9,8 +9,8 @@
     <style>
       @font-face {
         font-family: Santana-Black;
-        src: url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/santana-black.woff2) format('woff2'),
-          url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/santana-black.woff) format('woff');
+        src:url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/santana-black.woff2) format('woff2'),
+            url(https://s3-us-west-2.amazonaws.com/s.cdpn.io/4273/santana-black.woff) format('woff');
       }
       body {
         text-align: center;
@@ -27,15 +27,15 @@
       .coffee {
           letter-spacing: 6px;
       }
-    </style>
+</style>
   </defs>
   <circle cx="100" cy="100" r="100" fill="#067655" id="background" />
+  <circle cx="100" cy="100" r="93.8" fill="none" stroke="#FFF" stroke-width="3" id="rim" />
   <circle cx="100" cy="100" r="57" fill="#fff" id="fill" />
-  <circle fill="none" stroke="#FFF" cx="100" cy="100" r="93.8" stroke-width="3" id="rim" />
-  <text class="starbucks">
+  <text dx="6" class="starbucks">
     <textPath xlink:href="#starbuckscircle">Flayground</textPath>
   </text>
-  <text dx="55" textLength="160" class="coffee">
+  <text dx="53" textLength="160" class="coffee">
     <textPath xlink:href="#coffeecircle">Crazy</textPath>
   </text>
   <path id="inner_artwork" fill="#010101" d="M99.5,65.5c1.9,1.1,3.9,2.5,5.4,4l-0.6,0.6c-3-0.3-6.2,0.1-9,0.1c-0.3-0.3-1-0.8-0.4-1.2 L99.5,65.5z M152.6,102.7c0,1.4,0.2,2.5-0.4,3.9c-5.5,1.6-9.1-4.2-14.4-3.4l0.6,3c4.9,0.2,8,4.9,13.1,4.7c-0.7,1.4,0.3,5.2-2.9,3.7

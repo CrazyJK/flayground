@@ -85,7 +85,7 @@ class Flaymobile {
 		$(window)
 			.on('resize', () => {
 				console.log('resize', window.innerWidth, window.innerHeight);
-				this.debug('resize w=' + window.innerWidth + ' h=' + window.innerHeight);
+				// this.debug('resize w=' + window.innerWidth + ' h=' + window.innerHeight);
 				$('body')
 					.removeClass('horizontal vertical')
 					.addClass(window.innerWidth > window.innerHeight ? 'horizontal' : 'vertical');

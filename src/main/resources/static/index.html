@@ -85,7 +85,7 @@
 		<script src="/webjars/bootstrap/js/bootstrap.min.js"></script>
 	</head>
 	<body>
-		<div class="d-flex-col">
+		<div class="d-flex-col" style="display: none">
 			<h1 class="display-3"><a>Flayground</a></h1>
 			<div id="menuItemWrap"></div>
 			<div class="pt-4 hover-show">
@@ -124,6 +124,8 @@
 					});
 
 					$('a').addClass('chalk');
+
+					$('body > div').show();
 				},
 			});
 

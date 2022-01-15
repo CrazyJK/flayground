@@ -25,7 +25,7 @@ const restCall = function (url, args, callback, failCallback) {
 			if (this.method !== 'GET') {
 				let csrfHeaderValue = null;
 				for (const cookie of document.cookie.split(';')) {
-					if (cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '') === CSRF_COOKIE_NAME) {
+					if (cookie.substring(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '') === CSRF_COOKIE_NAME) {
 						csrfHeaderValue = unescape(cookie.substr(cookie.indexOf('=') + 1));
 						break;
 					}

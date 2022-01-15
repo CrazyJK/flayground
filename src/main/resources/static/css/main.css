@@ -235,7 +235,7 @@ main {
 	margin: 0;
 	padding: 0;
 	z-index: -5;
-	background: transparent url(/img/svg/flayground.svg) no-repeat center / 600px;
+	background: transparent url(/img/svg/flayground1.svg) no-repeat center / 600px;
 }
 #background_images {
 	background-color: rgba(0, 0, 0, 0.5);

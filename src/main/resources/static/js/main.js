@@ -123,8 +123,10 @@ var SlideMenu = {
 
 			// adjust theme
 			$(document).ready(() => {
-				if (adjustTheme) {
+				try {
 					adjustTheme();
+				} catch (error) {
+					console.error('adjustTheme', error);
 				}
 			});
 
@@ -316,5 +318,5 @@ window.onerror = function (e) {
 	} else {
 		loading.error('Error: ' + e);
 	}
-	console.error('Error name[' + e.name + '] message[' + e.message + '] toString[' + e.toString() + ']', e);
+	console.error('Error name[' + e.name + '] message[' + e.message + '] toString[' + e?.toString() + ']', e);
 };

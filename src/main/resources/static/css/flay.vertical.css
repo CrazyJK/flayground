@@ -92,7 +92,7 @@ body {
 	flex: 0 0 auto;
 }
 .info-actress .info-actress-flaycount {
-	flex: 0 0 3 rem;
+	flex: 0 0 3rem;
 	text-align: right;
 }
 .info-actress .info-actress-age {
@@ -102,7 +102,7 @@ body {
 	flex: 0 0 9rem;
 }
 .info-actress .info-actress-body {
-	flex: 0 0 100px;
+	flex: 0 0 7rem;
 }
 .info-actress .info-actress-height {
 	flex: 0 0 4rem;

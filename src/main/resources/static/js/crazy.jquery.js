@@ -1,6 +1,4 @@
-;
-(function($) {
-
+(function ($) {
 	/**
 	 * navigation event listener
 	 *
@@ -33,14 +31,13 @@
 		case  104 : // keyup : keypad 8
 		case  105 : // keyup : keypad 9
 	 */
-	$.fn.navEvent = function(callback) {
-
-		var detectEvent = function(e, callbackFunction) {
+	$.fn.navEvent = function (callback) {
+		var detectEvent = function (e, callbackFunction) {
 			e.stopPropagation();
 			callbackFunction(obtainSignal(e), e);
 		};
 
-		var obtainSignal = function(e) {
+		var obtainSignal = function (e) {
 			let signal;
 			switch (e.type) {
 				case 'wheel':
@@ -58,21 +55,21 @@
 			return signal;
 		};
 
-		return this.each(function() {
+		return this.each(function () {
 			let $self = $(this);
 			let $document = $(document);
 
-			$self.data("active", true);
-			$document.data("active", true);
+			$self.data('active', true);
+			$document.data('active', true);
 
-			$self.off("wheel mouseup");
-			$self.on("wheel mouseup", function(e) {
-				$self.data("active") && detectEvent(e, callback);
+			$self.off('wheel mouseup');
+			$self.on('wheel mouseup', function (e) {
+				$self.data('active') && detectEvent(e, callback);
 			});
 
-			$document.off("keyup");
-			$document.on("keyup", function(e) {
-				$document.data("active") && detectEvent(e, callback);
+			$document.off('keyup');
+			$document.on('keyup', function (e) {
+				$document.data('active') && detectEvent(e, callback);
 			});
 		});
 	};
@@ -83,20 +80,19 @@
 	 * @param {boolean} active
 	 * @returns
 	 */
-	$.fn.navActive = function(active) {
-		return this.each(function() {
-			$(this).data("active", active);
-			$(document).data("active", active);
+	$.fn.navActive = function (active) {
+		return this.each(function () {
+			$(this).data('active', active);
+			$(document).data('active', active);
 		});
 	};
 
 	/**
 	 * function containsIgnorecase
 	 */
-	$.extend($.expr[":"], {
-		"containsIgnorecase": function(elem, i, match, array) {
-			return (elem.textContent || elem.innerText || "").toLowerCase().indexOf((match[3] || "").toLowerCase()) >= 0;
-		}
+	$.extend($.expr[':'], {
+		containsIgnorecase: function (elem, i, match, array) {
+			return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || '').toLowerCase()) >= 0;
+		},
 	});
-
-}(jQuery));
+})(jQuery);

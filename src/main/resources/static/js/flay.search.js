@@ -93,7 +93,10 @@ function findMode() {
 		$('#opus').val(rowOpus);
 		rowOpus != '' && searchSource(rowOpus);
 		rowOpus != '' && Search.opus(rowOpus);
-		rowTitle != '' && Search.translate(rowTitle);
+		if (rowTitle != '') {
+			Search.translateByGoogle(rowTitle);
+			Search.translateByPapago(rowTitle);
+		}
 		if (rowName !== '') {
 			rowName.split(' ').forEach((name) => {
 				if (name.trim().length === 0) {

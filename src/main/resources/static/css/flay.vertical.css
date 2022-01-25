@@ -240,8 +240,10 @@ label.text:empty {
 }
 
 .notice-bar {
+	display: flex;
+	justify-content: center;
+	align-items: baseline;
 	margin: 0.25rem;
-	text-align: center;
 }
 
 #paginationProgress {

@@ -12,7 +12,10 @@ class Loading {
 			<div id="${ID_LOADING_WRAPPER}">
 				<div id="${ID_LOADING_MAIN}" style="
 						position: fixed;
-						inset: 0px;
+						top: 0;
+						left: 0;
+						right: 0;
+						bottom: 0;
 						background: rgba(0, 0, 0, 0.5);
 						cursor: wait;
 						z-index: 9999;

@@ -22,8 +22,8 @@ var flayWebsocket = (function ($) {
 	const wrapper = 'announceWrapper';
 
 	let stompClient = null;
-	let debugEnabled = false;
-	let stompDebugEnabled = false;
+	let debugEnabled = true;
+	let stompDebugEnabled = true;
 
 	$('head').append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>', '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
 
@@ -110,6 +110,12 @@ var flayWebsocket = (function ($) {
 		} else {
 			title = "<span class='text-danger'>" + ANNOUNCE + '</span>';
 			content = message;
+			if (message.indexOf('Lost connection') > -1) {
+				content = 'Lost connection! will be re-connected';
+				setTimeout(() => {
+					connect();
+				}, 1000);
+			}
 		}
 		content = content.trim().replace(/\n/g, '<br>');
 
@@ -122,7 +128,7 @@ var flayWebsocket = (function ($) {
 		};
 		const hideBox = (_box) => {
 			_box.hide('slide', { direction: 'right' }, function () {
-				$(this).remove();
+				// $(this).remove();
 			});
 		};
 

@@ -52,9 +52,10 @@
 				}
 			});
 			// scroll move
-			if (currentFindingIndex % 30 === 1) {
+			const itemPerPage = Math.round($(window).height() / 28);
+			if (currentFindingIndex > itemPerPage && currentFindingIndex % itemPerPage === 1) {
 				// location.href = "#" + opus;
-				$('html, body').animate({ scrollTop: $('#' + opus).position().top }, 500);
+				$('html, body').animate({ scrollTop: $('#' + opus).position().top - 60 }, 500);
 			}
 		};
 

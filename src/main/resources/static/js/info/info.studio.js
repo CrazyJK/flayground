@@ -50,7 +50,7 @@ Rest.Flay.find('studio/' + studioName, function (flayList) {
 	$.each(flayList, function (idx, flay) {
 		$flayList.appendFlayCard(flay, {
 			width: 330,
-			exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+			exclude: [STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
 			fontSize: '80%',
 		});
 	});

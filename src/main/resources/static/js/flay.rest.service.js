@@ -181,11 +181,14 @@ const Rest = {
 		update: function (video, callback) {
 			restCall('/info/video', { data: video, method: 'PATCH' }, callback);
 		},
+		save: function (video, callback) {
+			restCall('/info/video', { data: video, method: 'POST' }, callback);
+		},
 		list: function (callback) {
 			restCall('/info/video/list', {}, callback);
 		},
-		get: function (opus, callback) {
-			restCall('/info/video/' + opus, {}, callback);
+		get: function (opus, callback, failCallback) {
+			restCall('/info/video/' + opus, {}, callback, failCallback);
 		},
 		find: function (keyword, callback) {
 			restCall('/info/video/find/' + keyword, {}, callback);

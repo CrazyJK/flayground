@@ -18,12 +18,15 @@ const STUDIO = 'studio',
 	RANK = 'rank',
 	FILEINFO = 'fileinfo',
 	BASKET = 'basket',
-	TAG = 'tag';
+	TAG = 'tag',
+	ROW_TITLE = 'rowTitle',
+	ROW_DESC = 'rowDesc';
 
 (function ($) {
 	$.fn.appendFlayCard = function (flay, args) {
 		const DEFAULTS = {
 			width: 800,
+			include: [],
 			exclude: [],
 			fontSize: '100%',
 			archive: flay.archive,
@@ -55,6 +58,8 @@ const STUDIO = 'studio',
 						</dd>
 						<dd class="flay-card-text flay-comment-wrapper"><label class="text flay-comment hover">Comment</label><input class="flay-comment-input" placeholder="Comment"/></dd>
 						<dd class="flay-card-text flay-tag-wrapper"><label class="text flay-tag">Tag</label></dd>
+						<dd class="flay-card-text"><label class="text flay-row-title"></label></dd>
+						<dd class="flay-card-text"><label class="text flay-row-desc"></label></dd>
 					</dl>
 					<ul class="list-group flay-file-group collapse">
 						<li class="list-group-item flay-file">
@@ -378,6 +383,15 @@ const STUDIO = 'studio',
 						$flayCard.find('.flay-tag-wrapper').append(`<label class="text flay-tag extra" title="${sourceTag.description}">${sourceTag.name}</label>`);
 					});
 				}
+			}
+			// row title
+			if (settings.include.includes(ROW_TITLE)) {
+				$flayCard.find('.flay-row-title').html(flay.video.title);
+			}
+
+			// row desc
+			if (settings.include.includes(ROW_DESC)) {
+				$flayCard.find('.flay-row-desc').html(flay.video.desc);
 			}
 
 			// set css

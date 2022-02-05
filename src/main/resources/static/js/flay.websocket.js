@@ -22,8 +22,8 @@ var flayWebsocket = (function ($) {
 	const wrapper = 'announceWrapper';
 
 	let stompClient = null;
-	let debugEnabled = true;
-	let stompDebugEnabled = true;
+	let debugEnabled = false;
+	let stompDebugEnabled = false;
 
 	$('head').append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>', '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
 

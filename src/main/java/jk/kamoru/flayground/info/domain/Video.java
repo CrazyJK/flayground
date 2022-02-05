@@ -20,6 +20,8 @@ public class Video implements Info<String> {
 	String comment;
 	long lastAccess;
 	List<Tag> tags;
+	String title;
+	String desc;
 
 	public Video(String key) {
 		setKey(key);
@@ -27,7 +29,9 @@ public class Video implements Info<String> {
 		this.rank = 0;
 		this.comment = "";
 		this.lastAccess = 0;
-		tags = new ArrayList<>();
+		this.tags = new ArrayList<>();
+		this.title = "";
+		this.desc = "";
 	}
 
 	@Override

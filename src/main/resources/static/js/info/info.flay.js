@@ -8,7 +8,7 @@ function setFlay(_flay) {
 	flay = _flay;
 	document.title = flay.opus + ' - ' + document.title;
 
-	$('#containerFlay').appendFlayCard(flay, { archive: isArchive });
+	$('#containerFlay').appendFlayCard(flay, { archive: isArchive, include: [ROW_TITLE, ROW_DESC] });
 	if (isArchive) {
 		document.title = flay.opus + ' - Archive Info';
 	}

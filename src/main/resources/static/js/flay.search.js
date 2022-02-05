@@ -46,6 +46,34 @@ function findMode() {
 		$('#findMode input:checkbox').prop('checked', false).next().find('i.fa').removeClass('fa-heart').addClass('fa-heart-o');
 		$('#newActress').data('actress', null);
 	});
+	$('#btnCopy').on('click', () => {
+		const rowOpus = $('#rowname_opus').val().trim();
+		const rowTitle = $('#rowname_title').val().trim();
+		const rowDesc = $('#videoDescription').val().trim();
+		console.log('btnCopy click', rowOpus, rowTitle, rowDesc);
+
+		Rest.Video.get(
+			rowOpus,
+			(video) => {
+				// success
+				video['title'] = rowTitle;
+				video['desc'] = rowDesc;
+				console.log('video', video);
+
+				Rest.Video.update(video);
+			},
+			() => {
+				// fail
+				const video = new Object();
+				video['opus'] = rowOpus;
+				video['title'] = rowTitle;
+				video['desc'] = rowDesc;
+				console.log('video', video);
+
+				Rest.Video.save(video);
+			},
+		);
+	});
 	// 각 파트 내용을 수정하면
 	$('.flay-group > input').on('keyup', function (e) {
 		if (e.keyCode === 17) return;
@@ -86,16 +114,19 @@ function findMode() {
 		// 	$('#rowname_actress').val(titlePart[titlePart.length - 1]);
 		// }
 
-		var rowOpus = $('#rowname_opus').val().trim();
-		var rowTitle = $('#rowname_title').val().trim();
-		var rowName = $('#rowname_actress').val().trim();
+		const rowOpus = $('#rowname_opus').val().trim();
+		const rowTitle = $('#rowname_title').val().trim();
+		const rowName = $('#rowname_actress').val().trim();
+		const rowDesc = $('#videoDescription').val().trim();
 
 		$('#opus').val(rowOpus);
-		rowOpus != '' && searchSource(rowOpus);
-		rowOpus != '' && Search.opus(rowOpus);
-		if (rowTitle != '') {
-			Search.translateByGoogle(rowTitle);
-			Search.translateByPapago(rowTitle);
+		if (rowOpus !== '') {
+			searchSource(rowOpus);
+			Search.opus(rowOpus);
+		}
+		if (rowTitle !== '') {
+			// Search.translateByGoogle(rowTitle);
+			Search.translateByPapago(encodeURI(rowTitle + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + rowDesc));
 		}
 		if (rowName !== '') {
 			rowName.split(' ').forEach((name) => {

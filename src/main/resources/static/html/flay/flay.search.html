@@ -87,6 +87,7 @@
 
 	#findMode .form-control {
 		color: var(--primary);
+		font-family: '맑은 고딕';
 	}
 
 	#pageImageDownloader .form-control {
@@ -141,8 +142,15 @@
 					<input class="form-control border-primary" id="rowname_title" placeholder="Row title" />
 					<input class="form-control border-primary" id="rowname_actress" style="max-width: 150px" placeholder="Row actress" />
 					<div class="input-group-append">
-						<button class="btn btn-sm btn-outline-primary btn-find-random-opus" style="max-width: 100px"><i class="fa fa-random fa-fw"></i></button>
+						<!-- <button class="btn btn-sm btn-outline-primary btn-find-random-opus" style="max-width: 100px"><i class="fa fa-random fa-fw"></i></button> -->
+						<button class="btn btn-outline-primary" id="btnReset"><i class="fa fa-eraser fa-fw"></i></button>
 					</div>
+				</div>
+				<div class="input-group input-group-sm mb-1">
+					<textarea class="form-control border-primary" placeholder="video description" id="videoDescription"></textarea>
+				</div>
+				<div class="input-group input-group-sm mb-1">
+					<input class="form-control border-primary" placeholder="temp" />
 				</div>
 				<div class="input-group input-group-sm flay-group mb-1">
 					<input class="form-control border-primary" id="studio" placeholder="Studio" style="max-width: 100px" />
@@ -151,7 +159,7 @@
 					<input class="form-control border-primary" id="actress" placeholder="Actress" style="max-width: 150px" />
 					<input class="form-control border-primary" id="release" placeholder="Release" style="max-width: 100px" />
 				</div>
-				<div class="tooltip fade bs-tooltip-right" role="tooltip" id="btnCopyTooltip" style="position: absolute; transform: translate3d(51px, 91px, 0px); top: 0px; left: 0px; will-change: transform" x-placement="right">
+				<div class="tooltip fade bs-tooltip-right" role="tooltip" id="btnCopyTooltip" style="position: absolute; transform: translate3d(51px, 199px, 100px); top: 0px; left: 0px; will-change: transform" x-placement="right">
 					<div class="arrow" style="top: 8px"></div>
 					<div class="tooltip-inner">Copy!</div>
 				</div>
@@ -160,9 +168,6 @@
 						<button class="btn btn-outline-primary" id="btnCopy" data-toggle="tooltip" data-clipboard-target="#fullname" style="width: 42px"><i class="fa fa-copy fa-fw"></i></button>
 					</div>
 					<input class="form-control form-control-sm border-primary" id="fullname" placeholder="Full name" />
-					<div class="input-group-append">
-						<button class="btn btn-outline-primary" id="btnReset"><i class="fa fa-eraser fa-fw"></i></button>
-					</div>
 				</div>
 				<div class="input-group input-group-sm mb-1" id="newActress">
 					<div class="input-group-prepend">
@@ -182,9 +187,6 @@
 						<button class="btn btn-outline-primary" id="btnShowActress"><i class="fa fa-female fa-fw"></i></button>
 						<button class="btn btn-outline-primary" id="btnRegistActress"><i class="fa fa-upload fa-fw"></i></button>
 					</div>
-				</div>
-				<div class="input-group input-group-sm mb-1">
-					<input class="form-control border-primary" placeholder="temp" />
 				</div>
 				<div class="input-group input-group-sm mb-1">
 					<textarea class="form-control border-primary" placeholder="new actress" id="newActressRowdata"></textarea>

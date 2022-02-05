@@ -302,170 +302,7 @@
 		},
 	};
 
-	function attachEventListener() {
-		function addVideoEvent() {
-			// studio
-			$('.info-studio')
-				.on('click', function () {
-					View.studio(currentFlay.studio);
-				})
-				.addClass('hover');
-			// opus
-			$('.info-opus').on('click', function () {
-				View.video(currentFlay.opus);
-			});
-			// title
-			$('.info-title').on('click', function () {
-				View.flay(currentFlay.opus);
-			});
-			// video file
-			$('.info-video').on('click', function () {
-				if (currentFlay.files.movie.length > 0) {
-					Rest.Flay.play(currentFlay, function () {
-						let playCount = parseInt($('#playCount').text());
-						$('#playCount').html(++playCount);
-					});
-				} else {
-					Search.torrent(currentFlay);
-				}
-			});
-			$('.info-play').on('click', () => {
-				Rest.History.find(currentFlay.opus, (histories) => {
-					let total = histories.length;
-					let height = total * 29 + 68 + 16;
-					let html = `<!DOCTYPE html>
-					<html>
-						<head>
-							<title>${currentFlay.opus} - history</title>
-							<style>
-							body {margin: 0; background-color: #000; color: #fff;}
-							main {display: flex;flex-wrap: wrap;}
-							iframe {width: 100%; height: 300px; border: 0;}
-							.history-item {display: flex; margin: 8px; width: 300px; gap: 8px;}
-							.history-item > label:nth-child(1) {flex: 1 1 40px; text-align: right;}
-							.history-item > label:nth-child(2) {flex: 1 1 100px;}
-							.history-item > label:nth-child(3) {flex: 2 1 200px;}
-							</style>
-						</head>
-						<body>
-							<aside>
-								<iframe src="/html/info/info.history.html?opus=${currentFlay.opus}"></iframe>
-							</aside>
-							<main>`;
-					histories.forEach((history, index) => {
-						html += `<div class="history-item">
-									<label>${total--}</label>
-									<label>${history.action}</label>
-									<label>${history.date}</label>
-								</div>`;
-					});
-					html += `
-							</main>
-							<script>
-							document.addEventListener("DOMContentLoaded", function() {
-								setTimeout(() => {
-									window.resizeTo(400, document.body.querySelector("body > main").scrollHeight + 68 + 16 + 300);
-								}, 500);
-							});
-							</script>
-						</body>
-					</html>
-					`;
-					console.debug('history', histories, html);
-					const historyPopup = window.open('', 'historyPopup', 'width=400,height=' + height + ',' + DEFAULT_SPECS);
-					historyPopup.document.open();
-					historyPopup.document.write(html);
-					// historyPopup.document.title = currentFlay.opus;
-					historyPopup.document.close();
-				});
-			});
-			// subtitles
-			$('.info-subtitles').on('click', function () {
-				if (currentFlay.files.subtitles.length > 0) {
-					Rest.Flay.subtitles(currentFlay);
-				} else {
-					Search.subtitles(currentFlay.opus);
-				}
-			});
-			// overview
-			$('.info-overview').on('click', function () {
-				$(this).hide();
-				$('.info-overview-input').show().focus();
-			});
-			// overview input
-			$('.info-overview-input').on('keyup', function (e) {
-				e.stopPropagation();
-				if (e.keyCode === 13) {
-					var $this = $(this);
-					currentFlay.video.comment = $(this).val();
-					Rest.Video.update(currentFlay.video, function () {
-						$this.hide();
-						$('.info-overview')
-							.html(currentFlay.video.comment != '' ? currentFlay.video.comment : 'Overview')
-							.toggleClass('nonExist', currentFlay.video.comment === '')
-							.show();
-					});
-				}
-			});
-			// rank
-			$("#ranker, input[name='ranker']").on('change', function () {
-				currentFlay.video.rank = $(this).val();
-				Rest.Video.update(currentFlay.video);
-			});
-			// actress name click
-			$('.info-wrapper-actress').on('click', '.info-actress-name', function () {
-				var actress = $(this).closest('.info-actress').data('actress');
-				actress.name != 'Amateur' && View.actress(actress.name);
-			});
-			// actress favorite click
-			$('.info-wrapper-actress').on('click', '.info-actress-favorite i.fa', function () {
-				var actress = $(this).closest('.info-actress').data('actress');
-				var $self = $(this);
-				actress.favorite = !actress.favorite;
-				Rest.Actress.update(actress, function () {
-					if (actress.favorite) {
-						$self.switchClass('fa-heart-o', 'fa-heart favorite');
-					} else {
-						$self.switchClass('fa-heart favorite', 'fa-heart-o');
-					}
-					// update actress list
-					Rest.Actress.list(function (list) {
-						actressList = list;
-					});
-				});
-			});
-			// new tag input key event 		e.stopPropagation();
-			$('#newTagName, #newTagDesc').on('keyup', function (e) {
-				e.stopPropagation();
-			});
-			// add-basket-btn
-			$('.add-basket-btn').on('click', function () {
-				flayWebsocket.info('{"mode":"grap", "opus":"' + currentFlay.opus + '"}');
-			});
-			// control video stream
-			$('.cover-wrapper-inner.curr > .cover-box').on('click', Flaying.start);
-			$('.cover-wrapper-inner.curr > .cover-box > #btnVideoClose').on('click', Flaying.stop);
-			// rename flay
-			$('.file-wrapper .file-wrapper-rename input').on('keyup', (e) => {
-				e.stopPropagation();
-			});
-			$('#rename-btn').on('click', () => {
-				const newStudio = $('#rename-studio').val();
-				const newOpus = $('#rename-opus').val();
-				const newTitle = $('#rename-title').val();
-				const newActress = $('#rename-actress').val();
-				const newRelease = $('#rename-release').val();
-				const newFlay = {
-					studio: newStudio,
-					opus: newOpus,
-					title: newTitle,
-					actressList: Util.Actress.toArray(newActress),
-					release: newRelease,
-				};
-				Rest.Flay.rename(currentFlay.opus, newFlay, reloadCurrentFlay);
-			});
-		}
-
+	function attachPageEventListener() {
 		// header tag select event
 		$('#selectTags').on('change', 'input[data-tag-id]', function () {
 			if ($('#tagPopup').prop('checked')) {
@@ -529,14 +366,11 @@
 			}
 		});
 
-		// collect
-		$('#pageContent').on('collect', collectList);
-
 		// filter, rank & sort condition change
 		$("#favorite, #noFavorite, #video, #subtitles, #rank0, #rank1, #rank2, #rank3, #rank4, #rank5, input[name='sort']").on('change', collectList);
 
-		// video label event
-		addVideoEvent();
+		// collect
+		$('#pageContent').on('collect', collectList);
 
 		// navigation event
 		navigation.event();
@@ -627,6 +461,191 @@
 		});
 	}
 
+	function attachFlayEventListener() {
+		// studio
+		$('.info-studio')
+			.on('click', function () {
+				View.studio(currentFlay.studio);
+			})
+			.addClass('hover');
+		// opus
+		$('.info-opus').on('click', function () {
+			View.video(currentFlay.opus);
+		});
+		// title
+		$('.info-title').on('click', function () {
+			View.flay(currentFlay.opus);
+		});
+		// video file
+		$('.info-video').on('click', function () {
+			if (currentFlay.files.movie.length > 0) {
+				Rest.Flay.play(currentFlay, function () {
+					let playCount = parseInt($('#playCount').text());
+					$('#playCount').html(++playCount);
+				});
+			} else {
+				Search.torrent(currentFlay);
+			}
+		});
+		$('.info-play').on('click', () => {
+			Rest.History.find(currentFlay.opus, (histories) => {
+				let total = histories.length;
+				let height = total * 29 + 68 + 16;
+				let html = `<!DOCTYPE html>
+				<html>
+					<head>
+						<title>${currentFlay.opus} - history</title>
+						<style>
+						body {margin: 0; background-color: #000; color: #fff;}
+						main {display: flex;flex-wrap: wrap;}
+						iframe {width: 100%; height: 300px; border: 0;}
+						.history-item {display: flex; margin: 8px; width: 300px; gap: 8px;}
+						.history-item > label:nth-child(1) {flex: 1 1 40px; text-align: right;}
+						.history-item > label:nth-child(2) {flex: 1 1 100px;}
+						.history-item > label:nth-child(3) {flex: 2 1 200px;}
+						</style>
+					</head>
+					<body>
+						<aside>
+							<iframe src="/html/info/info.history.html?opus=${currentFlay.opus}"></iframe>
+						</aside>
+						<main>`;
+				histories.forEach((history, index) => {
+					html += `<div class="history-item">
+								<label>${total--}</label>
+								<label>${history.action}</label>
+								<label>${history.date}</label>
+							</div>`;
+				});
+				html += `
+						</main>
+						<script>
+						document.addEventListener("DOMContentLoaded", function() {
+							setTimeout(() => {
+								window.resizeTo(400, document.body.querySelector("body > main").scrollHeight + 68 + 16 + 300);
+							}, 500);
+						});
+						</script>
+					</body>
+				</html>
+				`;
+				console.debug('history', histories, html);
+				const historyPopup = window.open('', 'historyPopup', 'width=400,height=' + height + ',' + DEFAULT_SPECS);
+				historyPopup.document.open();
+				historyPopup.document.write(html);
+				// historyPopup.document.title = currentFlay.opus;
+				historyPopup.document.close();
+			});
+		});
+		// subtitles
+		$('.info-subtitles').on('click', function () {
+			if (currentFlay.files.subtitles.length > 0) {
+				Rest.Flay.subtitles(currentFlay);
+			} else {
+				Search.subtitles(currentFlay.opus);
+			}
+		});
+		// overview
+		$('.info-overview').on('click', function () {
+			$(this).hide();
+			$('.info-overview-input').show().focus();
+		});
+		// overview input
+		$('.info-overview-input').on('keyup', function (e) {
+			e.stopPropagation();
+			if (e.keyCode === 13) {
+				var $this = $(this);
+				currentFlay.video.comment = $(this).val();
+				Rest.Video.update(currentFlay.video, function () {
+					$this.hide();
+					$('.info-overview')
+						.html(currentFlay.video.comment != '' ? currentFlay.video.comment : 'Overview')
+						.toggleClass('nonExist', currentFlay.video.comment === '')
+						.show();
+				});
+			}
+		});
+		// rank
+		$("#ranker, input[name='ranker']").on('change', function () {
+			currentFlay.video.rank = $(this).val();
+			Rest.Video.update(currentFlay.video);
+		});
+		// actress name click
+		$('.info-wrapper-actress').on('click', '.info-actress-name', function () {
+			var actress = $(this).closest('.info-actress').data('actress');
+			actress.name != 'Amateur' && View.actress(actress.name);
+		});
+		// actress favorite click
+		$('.info-wrapper-actress').on('click', '.info-actress-favorite i.fa', function () {
+			var actress = $(this).closest('.info-actress').data('actress');
+			var $self = $(this);
+			actress.favorite = !actress.favorite;
+			Rest.Actress.update(actress, function () {
+				if (actress.favorite) {
+					$self.switchClass('fa-heart-o', 'fa-heart favorite');
+				} else {
+					$self.switchClass('fa-heart favorite', 'fa-heart-o');
+				}
+				// update actress list
+				Rest.Actress.list(function (list) {
+					actressList = list;
+				});
+			});
+		});
+		// new tag input key event 		e.stopPropagation();
+		$('#newTagName, #newTagDesc').on('keyup', function (e) {
+			e.stopPropagation();
+		});
+		// add-basket-btn
+		$('.add-basket-btn').on('click', function () {
+			flayWebsocket.info('{"mode":"grap", "opus":"' + currentFlay.opus + '"}');
+		});
+		// control video stream
+		$('.cover-wrapper-inner.curr > .cover-box').on('click', Flaying.start);
+		$('.cover-wrapper-inner.curr > .cover-box > #btnVideoClose').on('click', Flaying.stop);
+		// rename flay
+		$('.file-wrapper .file-wrapper-rename input').on('keyup', (e) => {
+			e.stopPropagation();
+		});
+		$('#rename-btn').on('click', () => {
+			const newStudio = $('#rename-studio').val();
+			const newOpus = $('#rename-opus').val();
+			const newTitle = $('#rename-title').val();
+			const newActress = $('#rename-actress').val();
+			const newRelease = $('#rename-release').val();
+			const newFlay = {
+				studio: newStudio,
+				opus: newOpus,
+				title: newTitle,
+				actressList: Util.Actress.toArray(newActress),
+				release: newRelease,
+			};
+			Rest.Flay.rename(currentFlay.opus, newFlay, reloadCurrentFlay);
+		});
+	}
+
+	function initCondition() {
+		const fav = LocalStorageItem.getBoolean('flay.vertical.favorite', true);
+		const nof = LocalStorageItem.getBoolean('flay.vertical.noFavorite', true);
+		const vid = LocalStorageItem.getBoolean('flay.vertical.video', false);
+		const sub = LocalStorageItem.getBoolean('flay.vertical.subtitles', false);
+		const ranks = LocalStorageItem.split('flay.vertical.ranks', '1,0,0,0,0,0', ',');
+		const sort = LocalStorageItem.get('flay.vertical.sort', 'M');
+		const source = LocalStorageItem.get('flay.vertical.source', 'All');
+		const autoSlide = LocalStorageItem.get('flay.vertical.autoSlideMode', 'F');
+
+		$('#favorite').prop('checked', fav);
+		$('#noFavorite').prop('checked', nof);
+		$('#video').prop('checked', vid);
+		$('#subtitles').prop('checked', sub);
+		for (let x in ranks) {
+			$('#rank' + x).prop('checked', ranks[x] === '1');
+		}
+		$('input[name="sort"][value="' + sort + '"]').prop('checked', true);
+		$('input[name="source"][value="' + source + '"]').prop('checked', true);
+		$('input[name="autoSlideMode"][value="' + autoSlide + '"]').prop('checked', true);
+	}
+
 	function loadData() {
 		Promise.all([
 			new Promise((resolve, reject) => {
@@ -657,52 +676,6 @@
 		});
 
 		SessionStorageItem.clear();
-
-		/*
-		let tagLoaded = false;
-		let flayLoaded = false;
-		let actressLoaded = false;
-		const deploy = () => {
-			if (tagLoaded && flayLoaded && actressLoaded) {
-				let tagArray = [];
-				tagList.forEach((tag) => {
-					tagArray.push(createTag(tag));
-				});
-				$(".tag-list > label:not(.label-add-tag)").remove();
-				$(".tag-list").prepend(tagArray);
-				$("#pageContent").trigger("collect");
-				$(window).trigger("resize");
-			}
-		};
-		// load tag list
-		Rest.Tag.list(function (list) {
-			tagList = list;
-			Util.Tag.sort(tagList);
-			tagLoaded = true;
-			deploy();
-		});
-		// load video list
-		const source = $("input[name='source']:checked").val();
-		if (source === "All") {
-			Rest.Flay.list(function (list) {
-				flayList = list;
-				flayLoaded = true;
-				deploy();
-			});
-		} else if (source === "Low") {
-			Rest.Flay.listOfLowScore(function (list) {
-				flayList = list;
-				flayLoaded = true;
-				deploy();
-			});
-		}
-		// load actress list
-		Rest.Actress.list(function (list) {
-			actressList = list;
-			actressLoaded = true;
-			deploy();
-		});
-		*/
 	}
 
 	function collectList() {
@@ -781,6 +754,27 @@
 		const rank4 = $('#rank4').prop('checked') ? '4' : '';
 		const rank5 = $('#rank5').prop('checked') ? '5' : '';
 		const sort = $("input[name='sort']:checked").val();
+		const source = $("input[name='source']:checked").val();
+		const autoSlide = $("input[name='autoSlideMode']:checked").val();
+
+		// save condition
+		LocalStorageItem.set('flay.vertical.favorite', fav);
+		LocalStorageItem.set('flay.vertical.noFavorite', nof);
+		LocalStorageItem.set('flay.vertical.video', vid);
+		LocalStorageItem.set('flay.vertical.subtitles', sub);
+		LocalStorageItem.set(
+			'flay.vertical.ranks',
+			(function (r0, r1, r2, r3, r4, r5) {
+				function parseBin(r) {
+					return r !== '' ? 1 : 0;
+				}
+				return `${parseBin(r0)},${parseBin(r1)},${parseBin(r2)},${parseBin(r3)},${parseBin(r4)},${parseBin(r5)}`;
+			})(rank0, rank1, rank2, rank3, rank4, rank5),
+		);
+		LocalStorageItem.set('flay.vertical.sort', sort);
+		LocalStorageItem.set('flay.vertical.source', source);
+		LocalStorageItem.set('flay.vertical.autoSlideMode', autoSlide);
+
 		let selectedTags = [];
 		$('input[data-tag-id]:checked', '#selectTags').each(function (idx, tagCheckbox) {
 			selectedTags.push($(tagCheckbox).data('tag'));
@@ -1296,10 +1290,6 @@
 			});
 	}
 
-	attachEventListener();
-
-	loadData();
-
 	AmCharts.dayNames = AmCharts.translations.ko.dayNames;
 	AmCharts.shortDayNames = AmCharts.translations.ko.shortDayNames;
 	AmCharts.monthNames = AmCharts.translations.ko.monthNames;
@@ -1401,4 +1391,9 @@
 		historyChart.dataProvider = dataArray;
 		historyChart.validateData();
 	}
+
+	attachPageEventListener();
+	attachFlayEventListener();
+	initCondition();
+	loadData();
 })();

@@ -134,6 +134,9 @@ var LocalStorageItem = {
 				return this.get(itemName) === 'true';
 			}
 		},
+		split: function(itemName, notfoundDefault, delimiter) {
+			return this.get(itemName, notfoundDefault).split(delimiter);
+		},
 		has: (itemName) => {
 			return localStorage.hasOwnProperty(itemName);
 		},

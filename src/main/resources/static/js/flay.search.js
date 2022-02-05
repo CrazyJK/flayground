@@ -68,6 +68,7 @@ function findMode() {
 				video['opus'] = rowOpus;
 				video['title'] = rowTitle;
 				video['desc'] = rowDesc;
+				video['tags'] = [];
 				console.log('video', video);
 
 				Rest.Video.save(video);

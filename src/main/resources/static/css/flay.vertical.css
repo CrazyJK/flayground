@@ -295,6 +295,9 @@ label.text:empty {
 		width: var(--cover-width-lg);
 		height: var(--cover-height-lg);
 	}
+	.info-wrapper .info-title {
+		max-width: var(--cover-width-lg);
+	}
 }
 @media screen and (max-height: 1250px) {
 	.info-wrapper > dl > dd:not(:last-child) {

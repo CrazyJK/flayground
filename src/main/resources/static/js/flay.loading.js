@@ -74,6 +74,16 @@ class Loading {
 		}
 	}
 
+	update(index, message) {
+		const selector = `${this.loadingBodySelector} > li#${this.loadingMessageIdPrefix}${index}`;
+		const element = document.querySelector(selector);
+		if (element !== null) {
+			element.innerHTML = message;
+		} else {
+			this.on(message);
+		}
+	}
+
 	error(message) {
 		return this.show(`<li id="${this.loadingMessageIdPrefix}${++this.loadingMessageId}" style="color: #f00;">${message}</li>`);
 	}

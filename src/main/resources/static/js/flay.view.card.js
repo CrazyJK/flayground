@@ -9,6 +9,14 @@ Rest.Tag.list((list) => {
 	});
 });
 
+let actressMapForCard = new Map();
+Rest.Actress.list((list) => {
+	console.debug(list);
+	list.forEach((actress) => {
+		actressMapForCard.set(actress.name, actress);
+	});
+});
+
 const STUDIO = 'studio',
 	ACTRESS = 'actress',
 	ACTRESS_EXTRA = 'actressExtra',
@@ -38,7 +46,7 @@ const STUDIO = 'studio',
 
 		const templateFlay = `
 				<div class="flay-card">
-					<dl class="flay-card-body">
+					<dl class="flay-card-body bg-black">
 						<dt class="flay-card-title"><label class="text lg nowrap flay-title hover">Title</label></dt>
 						<dd class="flay-card-text flay-rank-wrapper"></dd>
 						<dd class="flay-card-text"><label class="text flay-studio">Studio</label></dd>
@@ -79,7 +87,7 @@ const STUDIO = 'studio',
 
 		const templateActress = `
 				<div class="flay-actress">
-					<label class="text flay-actress-favorite extra hover"><i class="fa fa-heart favorite"></i></label>
+					<label class="text flay-actress-favorite hover"><i class="fa fa-heart favorite"></i></label>
 					<label class="text flay-actress-name hover">Asuka Kirara</label>
 					<label class="text flay-actress-local  extra">明日花キララ</label>
 					<label class="text flay-actress-birth  extra">1988年10月02日</label>
@@ -165,7 +173,7 @@ const STUDIO = 'studio',
 				.find('.flay-title')
 				.html(flay.title)
 				.css({
-					maxWidth: settings.width - 4,
+					maxWidth: settings.width - (4 + 1 + 2 + 2) * 2,
 				})
 				.on('click', () => {
 					View.flay(flay.opus);
@@ -417,24 +425,22 @@ const STUDIO = 'studio',
 			};
 
 			$.each(flay.actressList, function (idx, name) {
-				if (name != '') {
+				if (name !== '') {
+					const actress = actressMapForCard.get(name);
 					const $actress = $(templateActress);
+					$actress.appendTo($wrapper);
 					$actress.attr('data-actress', name);
 					$actress
 						.find('.flay-actress-name')
 						.html(name)
-						.on('click', function () {
+						.on('click', () => {
 							View.actress(name);
 						});
-					$actress.appendTo($wrapper);
+					setFavorite($actress, actress);
 
 					if (settings.exclude.includes(ACTRESS_EXTRA)) {
 						$wrapper.find('.flay-actress .extra').hide();
-						return;
-					}
-
-					Rest.Actress.get(name, function (actress) {
-						setFavorite($actress, actress);
+					} else {
 						$actress.find('.flay-actress-name').html(actress.name);
 						$actress.find('.flay-actress-local').html(actress.localName);
 						$actress.find('.flay-actress-birth').html(actress.birth);
@@ -442,14 +448,13 @@ const STUDIO = 'studio',
 						$actress.find('.flay-actress-debut').html(actress.debut.ifNotZero());
 						$actress.find('.flay-actress-body').html(actress.body);
 						$actress.find('.flay-actress-height').html(actress.height.ifNotZero());
-
 						$actress.find('.flay-actress-favorite > i').on('click', function () {
 							actress.favorite = !actress.favorite;
 							Rest.Actress.update(actress, function () {
 								setFavorite($actress, actress);
 							});
 						});
-					});
+					}
 				}
 			});
 		};

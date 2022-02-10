@@ -216,6 +216,9 @@ const Rest = {
 		list: function (callback, failCallback) {
 			restCall('/info/actress/list', {}, callback, failCallback);
 		},
+		listSync: function (callback, failCallback) {
+			restCall('/info/actress/list', { async: false }, callback, failCallback);
+		},
 		update: function (actress, callback) {
 			restCall('/info/actress', { data: actress, method: 'PATCH' }, callback);
 		},

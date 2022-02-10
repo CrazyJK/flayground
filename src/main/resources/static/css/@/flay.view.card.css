@@ -48,7 +48,7 @@
 	height: 100%;
 	margin: 0;
 	text-align: left;
-	transition: background-image 0.5s;
+	transition: background-image 0.4s;
 }
 .flay-card.flay-card-border-0 > .flay-card-body {
 	border: 0;

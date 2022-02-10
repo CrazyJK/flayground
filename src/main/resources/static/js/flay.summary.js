@@ -570,9 +570,10 @@
 	releaseDateRange.set(releaseDateOption[$('input[name="releaseDate"]:checked').val()].zoomOffsetDate).eventOnChange(chartArray);
 
 	$('#releaseChartDiv').on('show.bs.collapse', displayReleaseChart);
-	$('input[name="rank"], input[name="releaseDate"]').on('change', displayReleaseChart);
+	$('#releaseChartDiv input[name="rank"], #releaseChartDiv input[name="releaseDate"]').on('change', displayReleaseChart);
 
 	function displayReleaseChart() {
+		selectedRank = [];
 		$('input[name="rank"]:checked').each((index, rank) => {
 			selectedRank.push(Number(rank.value));
 		});

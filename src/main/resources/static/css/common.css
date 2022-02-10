@@ -561,6 +561,9 @@ button.btn.btn-outline-flay {
 .hover-warning:hover {
 	color: var(--warning);
 }
+.hover-danger:hover {
+	color: var(--danger);
+}
 
 .width-50 {
 	width: 50px !important;
@@ -656,6 +659,9 @@ button.btn.btn-outline-flay {
 
 .font-size-1r {
 	font-size: 1rem;
+}
+.font-size-15r {
+	font-size: 1.5rem;
 }
 .font-size-2r {
 	font-size: 2rem;

@@ -17,6 +17,11 @@ Rest.Actress.list((list) => {
 	});
 });
 
+let previewImageBlob = '';
+Rest.Image.blobUrl(`${PATH}/img/bg/flayground_facade.jpg`, (blobUrl) => {
+	previewImageBlob = blobUrl;
+});
+
 const STUDIO = 'studio',
 	ACTRESS = 'actress',
 	ACTRESS_EXTRA = 'actressExtra',
@@ -46,7 +51,7 @@ const STUDIO = 'studio',
 
 		const templateFlay = `
 				<div class="flay-card">
-					<dl class="flay-card-body bg-black">
+					<dl class="flay-card-body bg-black" style="background-image: url('${previewImageBlob}')">
 						<dt class="flay-card-title"><label class="text lg nowrap flay-title hover">Title</label></dt>
 						<dd class="flay-card-text flay-rank-wrapper"></dd>
 						<dd class="flay-card-text"><label class="text flay-studio">Studio</label></dd>
@@ -88,16 +93,16 @@ const STUDIO = 'studio',
 		const templateActress = `
 				<div class="flay-actress">
 					<label class="text flay-actress-favorite hover"><i class="fa fa-heart favorite"></i></label>
-					<label class="text flay-actress-name hover">Asuka Kirara</label>
-					<label class="text flay-actress-local  extra">明日花キララ</label>
-					<label class="text flay-actress-birth  extra">1988年10月02日</label>
-					<label class="text flay-actress-age    extra">31</label>
-					<label class="text flay-actress-debut  extra">2007</label>
-					<label class="text flay-actress-body   extra"></label>
-					<label class="text flay-actress-height extra">165</label>
+					<label class="text flay-actress-name     hover">Asuka Kirara</label>
+					<label class="text flay-actress-local    extra">明日花キララ</label>
+					<label class="text flay-actress-birth    extra">1988年10月02日</label>
+					<label class="text flay-actress-age      extra">31</label>
+					<label class="text flay-actress-debut    extra">2007</label>
+					<label class="text flay-actress-body     extra"></label>
+					<label class="text flay-actress-height   extra">165</label>
 				</div>`;
 
-		const getRank = function (opus) {
+		const getRankComponent = function (opus) {
 			return `<span class="ranker flay-rank">
 						<label><input type="radio" name="flay-rank-${opus}" value="-1"><i class="fa fa-thumbs-down r-1"></i></label>
 						<label><input type="radio" name="flay-rank-${opus}" value="0"><i class="fa fa-circle r0"></i></label>
@@ -128,11 +133,11 @@ const STUDIO = 'studio',
 				.data('flay', flay)
 				.addClass(settings.archive ? 'archive' : '');
 			// cover
-			/* Rest.Cover.base64(flay.opus, function (resp) {
-				$flayCard.find('.flay-card-body').css({
-					backgroundImage: 'url(' + resp + ')',
-				});
-			}); */
+			// Rest.Cover.base64(flay.opus, function (resp) {
+			// 	$flayCard.find('.flay-card-body').css({
+			// 		backgroundImage: 'url(' + resp + ')',
+			// 	});
+			// });
 			$flayCard.find('.flay-card-body').css({
 				backgroundImage: 'url(/static/cover/' + flay.opus + ')',
 			});
@@ -220,7 +225,7 @@ const STUDIO = 'studio',
 				} else {
 					$flayCard
 						.find('.flay-rank-wrapper')
-						.append(getRank(flay.opus))
+						.append(getRankComponent(flay.opus))
 						.on('change', 'input', function () {
 							flay.video.rank = $(this).val();
 							Rest.Video.update(flay.video, function () {});
@@ -385,7 +390,7 @@ const STUDIO = 'studio',
 				$flayCard.find('.flay-tag-wrapper').remove();
 			} else {
 				$flayCard.find('.flay-tag-wrapper').empty();
-				if (settings.width >= 800) {
+				if (settings.width >= 500) {
 					flay.video.tags.forEach((tag) => {
 						const sourceTag = tagMapForCard.get(tag.id);
 						$flayCard.find('.flay-tag-wrapper').append(`<label class="text flay-tag extra" title="${sourceTag.description}">${sourceTag.name}</label>`);

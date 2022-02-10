@@ -9,17 +9,19 @@
 		<style type="text/css">
 			#controlWrap {
 				display: flex;
+				align-items: center;
 				border-radius: 0 0.25rem 0 0;
 				transition: 0.5s;
 			}
 			#controlWrap:hover {
-				background-color: #dc3545;
+				background-color: rgb(220 53 69 / 50%);
 				border-color: #ffc107;
 			}
 			#controlWrap:hover > * {
-				display: inline-block;
+				display: inline-flex;
 			}
 			#rankSelect,
+			#favSelect,
 			#emptyFlay {
 				display: none;
 			}
@@ -66,17 +68,22 @@
 				<label class="m-1" id="pickFlay">
 					<i class="fa fa-gratipay font-size-2r hover hover-warning"></i>
 				</label>
-				<select class="bg-transparent border-0 text-white lead mx-2" id="rankSelect">
-					<option value="0">R 0</option>
-					<option value="1">R 1</option>
-					<option value="2">R 2</option>
-					<option value="3">R 3</option>
-					<option value="4">R 4</option>
-					<option value="5">R 5</option>
-				</select>
-				<label class="m-1 mr-2" id="emptyFlay">
-					<i class="fa fa-trash font-size-2r hover"></i>
+				<span class="check-group check-group-rounded mx-1" id="rankSelect">
+					<label><input type="radio" id="rank0" name="rank" value="0" checked /><span class="fa fa-circle"></span></label>
+					<label><input type="radio" id="rank1" name="rank" value="1" /><span class="fa fa-star"></span></label>
+					<label><input type="radio" id="rank2" name="rank" value="2" /><span class="fa fa-star"></span></label>
+					<label><input type="radio" id="rank3" name="rank" value="3" /><span class="fa fa-star"></span></label>
+					<label><input type="radio" id="rank4" name="rank" value="4" /><span class="fa fa-star"></span></label>
+					<label><input type="radio" id="rank5" name="rank" value="5" /><span class="fa fa-star"></span></label>
+				</span>
+				<span class="check-group check-group-rounded mx-1" id="favSelect">
+					<label><input type="checkbox" id="favorite" checked /><span class="fa fa-heart"></span></label>
+					<label><input type="checkbox" id="noFavorite" checked /><span class="fa fa-heart-o"></span></label>
+				</span>
+				<label class="m-1 mx-2" id="emptyFlay">
+					<i class="fa fa-trash font-size-15r hover"></i>
 				</label>
+				<label class="m-1 mx-2 mr-3" id="flayListInfo"></label>
 			</div>
 		</aside>
 		<footer>

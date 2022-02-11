@@ -108,6 +108,9 @@ const basket = {
 		LocalStorageItem.set('flay.basket.noFavorite', $('#noFavorite').prop('checked'));
 	},
 	setWidthOfList: () => {
+		if (window.innerWidth < basket.FLAY_WIDTH) {
+			basket.FLAY_WIDTH = window.innerWidth - basket.CARD_MARGIN * 4;
+		}
 		basket.$flayList.css({
 			width: Math.min((basket.FLAY_WIDTH + basket.CARD_MARGIN * 4) * basket.getCalculatedColCount(), window.innerWidth),
 		});

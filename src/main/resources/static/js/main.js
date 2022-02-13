@@ -87,6 +87,12 @@ var SlideMenu = {
 			$li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
 		});
 		$('#username').html(username);
+		$('#mainHome')
+			.on('click', () => {
+				$('#wrap_body').empty();
+				$('.nav-wrap .active').removeClass('active');
+			})
+			.attr('href', '#');
 	},
 	pin: function () {
 		$('.sidenav-pin')

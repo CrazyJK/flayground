@@ -103,8 +103,7 @@
 
 	--rainbow-text-shadow-h-n-r: 0 0 .5px violet, 0 0 1px indigo, 0 0 1.5px blue, 0 0 2px green, 0 0 2.5px yellow, 0 0  3px orange, 0 0 3.5px red;
 	--rainbow-text-shadow-1-n-r: 0 0  1px violet, 0 0 2px indigo, 0 0   3px blue, 0 0 4px green, 0 0   5px yellow, 0 0  6px orange, 0 0   7px red;
- 	--rainbow-text-shadow-2-n-r: 0 0  2px violet, 0 0 4px indigo, 0 0   6px blue, 0 0 8px green, 0 0  10px yellow, 0 0 12px orange, 0 0  14px red;
-
+	--rainbow-text-shadow-2-n-r: 0 0  2px violet, 0 0 4px indigo, 0 0   6px blue, 0 0 8px green, 0 0  10px yellow, 0 0 12px orange, 0 0  14px red;
 }
 
 

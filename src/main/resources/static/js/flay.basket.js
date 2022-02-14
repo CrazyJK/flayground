@@ -1,5 +1,7 @@
 /**
  * basket
+ *
+ * @need flay.view.card.js
  */
 const basket = {
 	FLAY_WIDTH: 500,
@@ -90,10 +92,10 @@ const basket = {
 		}
 	},
 	getCalculatedRowCount: () => {
-		return parseInt(window.innerHeight / (basket.FLAY_WIDTH * COVER_RATIO + basket.CARD_MARGIN * 2), 10);
+		return Math.floor(window.innerHeight / (basket.FLAY_WIDTH * COVER_RATIO + basket.CARD_MARGIN * 2));
 	},
 	getCalculatedColCount: () => {
-		return parseInt(window.innerWidth / (basket.FLAY_WIDTH + basket.CARD_MARGIN * 2), 10);
+		return Math.floor(window.innerWidth / (basket.FLAY_WIDTH + basket.CARD_MARGIN * 2));
 	},
 	emptyFlay: () => {
 		basket.$flayList.hide('fade', {}, 300, () => {
@@ -109,11 +111,19 @@ const basket = {
 	},
 	setWidthOfList: () => {
 		if (window.innerWidth < basket.FLAY_WIDTH) {
-			basket.FLAY_WIDTH = window.innerWidth - basket.CARD_MARGIN * 4;
+			basket.FLAY_WIDTH = Math.floor(window.innerWidth - basket.CARD_MARGIN * 4);
+		} else if (1080 < window.innerWidth && window.innerWidth <= 1920) {
+			basket.FLAY_WIDTH = Math.floor(window.innerWidth / 4 - basket.CARD_MARGIN * 4);
 		}
-		basket.$flayList.css({
-			width: Math.min((basket.FLAY_WIDTH + basket.CARD_MARGIN * 4) * basket.getCalculatedColCount(), window.innerWidth),
-		});
+
+		basket.$flayList
+			.css({
+				width: Math.min(Math.floor((basket.FLAY_WIDTH + basket.CARD_MARGIN * 4) * basket.getCalculatedColCount()), window.innerWidth),
+			})
+			.find('.flay-card')
+			.css({
+				flexBasis: basket.FLAY_WIDTH,
+			});
 	},
 	containsFavoriteActress: (actressNameList) => {
 		if ($.isEmptyObject(actressNameList)) {

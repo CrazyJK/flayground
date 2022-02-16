@@ -3,7 +3,7 @@
 /**
  * Rest Service
  */
-const restCall = function (url, args, callback, failCallback) {
+const restCall = function (url, args, callback, failCallback, callbackData) {
 	let isCompleted = false;
 	let loadingTimeout = -1;
 	let loadingIndex = 0;
@@ -51,7 +51,7 @@ const restCall = function (url, args, callback, failCallback) {
 			clearTimeout(loadingTimeout);
 			loading.off(loadingIndex);
 
-			callback?.(data);
+			callback?.(data, callbackData);
 		})
 		.fail(function (jqXHR, textStatus, errorThrown) {
 			console.error('restCall fail', url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
@@ -127,9 +127,9 @@ const Rest = {
 		acceptCandidates: function (flay, callback) {
 			restCall('/flay/candidates/' + flay.opus, { method: 'PATCH' }, callback);
 		},
-		play: function (flay, callback) {
+		play: function (flay, callback, callbackData) {
 			flay.video.play++;
-			restCall('/flay/play/' + flay.opus, { method: 'PATCH' }, callback);
+			restCall('/flay/play/' + flay.opus, { method: 'PATCH' }, callback, null, callbackData);
 		},
 		subtitles: function (flay) {
 			restCall('/flay/edit/' + flay.opus, { method: 'PATCH' });

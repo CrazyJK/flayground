@@ -45,6 +45,7 @@ const STUDIO = 'studio',
 			archive: flay.archive,
 			class: '',
 			css: {},
+			playCallback: null,
 		};
 		const settings = $.extend({}, DEFAULTS, args);
 		// console.log('$.fn.appendFlayCard', flay, settings);
@@ -245,8 +246,11 @@ const STUDIO = 'studio',
 					.toggleClass('nonExist', movieSize == 0)
 					.html(movieSize == 0 ? 'noV ' : movieSize == 1 ? 'V ' + File.formatSize(flay.length) : movieSize + 'V ' + File.formatSize(flay.length))
 					.on('click', function () {
-						if (movieSize == 0) Search.torrent(flay.opus);
-						else Rest.Flay.play(flay);
+						if (movieSize == 0) {
+							Search.torrent(flay.opus);
+						} else {
+							Rest.Flay.play(flay, settings.playCallback, flay);
+						}
 					});
 				// subtitles
 				$flayCard

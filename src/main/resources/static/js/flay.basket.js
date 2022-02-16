@@ -29,6 +29,12 @@ const basket = {
 				fontSize: '80%',
 				class: styleClass,
 				css: styleCss,
+				playCallback: (responseData, flay) => {
+					$('#' + flay.opus).css({
+						boxShadow: 'none',
+						background: 'var(--rainbow-gradient)',
+					});
+				},
 			});
 		}
 	},

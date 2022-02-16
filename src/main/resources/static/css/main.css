@@ -208,6 +208,7 @@
 	background-color: rgba(17, 17, 17, 0.75);
 	background-image: url('/img/bg/flayground_facade.jpg');
 	background-position: center;
+	background-attachment: fixed;
 	background-repeat: no-repeat;
 	margin-left: var(--sidenav-width);
 	transition: 0.5s;

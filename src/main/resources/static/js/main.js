@@ -290,6 +290,8 @@ var Background = {
 			setTimeout(function () {
 				$thisImage.css({
 					height: calcImgHeight,
+					// borderRadius: '50% 50% 45% 45%',
+					// transform: `rotate(${Random.getInteger(-45, 45)}deg) scale(${Random.getInteger(100, 125) / 100})`,
 				});
 			}, 100);
 		};

@@ -376,15 +376,20 @@ const STUDIO = 'studio',
 				}
 				$flayCard.find('.flay-comment').on('click', function () {
 					$(this).hide();
-					$flayCard.find('.flay-comment-input').show();
+					$flayCard.find('.flay-comment-input').show().focus();
 				});
 				$flayCard.find('.flay-comment-input').on('keyup', function (e) {
 					if (e.keyCode == 13) {
 						const $self = $(this);
-						flay.video.comment = $self.val();
+						flay.video.comment = $self.val().trim();
 						Rest.Video.update(flay.video, function () {
 							$self.hide();
-							$flayCard.find('.flay-comment').html(flay.video.comment).show();
+							const emptyComment = flay.video.comment === '';
+							$flayCard
+								.find('.flay-comment')
+								.html(emptyComment ? 'Comment' : flay.video.comment)
+								.toggleClass('nonExist', emptyComment)
+								.show();
 						});
 					}
 				});

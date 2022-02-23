@@ -742,7 +742,7 @@
 		const loadingIndex = loading.on('Collect list');
 		$('.video-wrapper').hide();
 
-		const query = $('#search').val();
+		const query = $('#search').val().trim();
 		const fav = $('#favorite').prop('checked');
 		const nof = $('#noFavorite').prop('checked');
 		const vid = $('#video').prop('checked');
@@ -827,8 +827,7 @@
 					continue;
 				}
 			} else {
-				// all hide
-				continue;
+				// all show
 			}
 
 			if (query !== '') {

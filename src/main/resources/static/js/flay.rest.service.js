@@ -178,8 +178,8 @@ const Rest = {
 		},
 	},
 	Video: {
-		update: function (video, callback) {
-			restCall('/info/video', { data: video, method: 'PATCH' }, callback);
+		update: function (video, callback, callbackData) {
+			restCall('/info/video', { data: video, method: 'PATCH' }, callback, null, callbackData);
 		},
 		save: function (video, callback) {
 			restCall('/info/video', { data: video, method: 'POST' }, callback);

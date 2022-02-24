@@ -46,6 +46,7 @@ const STUDIO = 'studio',
 			class: '',
 			css: {},
 			playCallback: null,
+			rankCallback: null,
 		};
 		const settings = $.extend({}, DEFAULTS, args);
 		// console.log('$.fn.appendFlayCard', flay, settings);
@@ -229,7 +230,7 @@ const STUDIO = 'studio',
 						.append(getRankComponent(flay.opus))
 						.on('change', 'input', function () {
 							flay.video.rank = $(this).val();
-							Rest.Video.update(flay.video, function () {});
+							Rest.Video.update(flay.video, settings.rankCallback, flay);
 						});
 					$flayCard.find("input[name='flay-rank-" + flay.opus + "'][value='" + flay.video.rank + "']").prop('checked', true);
 					$flayCard.find('.flay-rank-sm').remove();

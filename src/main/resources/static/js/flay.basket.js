@@ -34,9 +34,13 @@ const basket = {
 				playCallback: (responseData, flay) => {
 					$('#' + flay.opus).css({
 						boxShadow: 'none',
-						// background: 'var(--rainbow-gradient)',
-						backgroundColor: 'white',
-						boxShadow: '0 0 8px 4px white',
+						background: 'var(--rainbow-gradient)',
+					});
+				},
+				rankCallback: (responseData, flay) => {
+					$('#' + flay.opus).css({
+						boxShadow: 'none',
+						background: 'transparent',
 					});
 				},
 			});

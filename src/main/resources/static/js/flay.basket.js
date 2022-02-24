@@ -4,14 +4,15 @@
  * @need flay.view.card.js
  */
 const basket = {
-	FLAY_WIDTH: 500,
 	CARD_MARGIN: 4,
+	flayCardWidth: 500,
 	$flayList: null,
 	flayList: [],
 	actressList: [],
 	RAINBOW_COLOR: ['violet', 'indigo', 'blue', 'green', 'yellow', 'orange', 'red'],
 	rainbowIndex: 0,
 	totalDisplayCount: 0,
+	cardExcludeArray: [MODIFIED, FILEINFO, ACTRESS_EXTRA, COMMENT],
 	toggleFlay: (opus, flay, styleClass, styleCss) => {
 		if ($('#' + opus).length > 0) {
 			$('#' + opus).hide('fade', {}, 500, function () {
@@ -23,16 +24,19 @@ const basket = {
 					flay = found;
 				});
 			}
+
 			basket.$flayList.appendFlayCard(flay, {
-				width: basket.FLAY_WIDTH,
-				exclude: [MODIFIED, FILEINFO, ACTRESS_EXTRA, COMMENT],
+				width: basket.flayCardWidth,
+				exclude: basket.cardExcludeArray,
 				fontSize: '80%',
 				class: styleClass,
 				css: styleCss,
 				playCallback: (responseData, flay) => {
 					$('#' + flay.opus).css({
 						boxShadow: 'none',
-						background: 'var(--rainbow-gradient)',
+						// background: 'var(--rainbow-gradient)',
+						backgroundColor: 'white',
+						boxShadow: '0 0 8px 4px white',
 					});
 				},
 			});
@@ -98,10 +102,10 @@ const basket = {
 		}
 	},
 	getCalculatedRowCount: () => {
-		return Math.floor(window.innerHeight / (basket.FLAY_WIDTH * COVER_RATIO + basket.CARD_MARGIN * 2));
+		return Math.floor(window.innerHeight / (basket.flayCardWidth * COVER_RATIO + basket.CARD_MARGIN * 2));
 	},
 	getCalculatedColCount: () => {
-		return Math.floor(window.innerWidth / (basket.FLAY_WIDTH + basket.CARD_MARGIN * 2));
+		return Math.floor(window.innerWidth / (basket.flayCardWidth + basket.CARD_MARGIN * 2));
 	},
 	emptyFlay: () => {
 		basket.$flayList.hide('fade', {}, 300, () => {
@@ -116,19 +120,23 @@ const basket = {
 		LocalStorageItem.set('flay.basket.noFavorite', $('#noFavorite').prop('checked'));
 	},
 	setWidthOfList: () => {
-		if (window.innerWidth < basket.FLAY_WIDTH) {
-			basket.FLAY_WIDTH = Math.floor(window.innerWidth - basket.CARD_MARGIN * 4);
+		if (window.innerWidth < basket.flayCardWidth) {
+			basket.flayCardWidth = Math.floor(window.innerWidth - basket.CARD_MARGIN * 4);
 		} else if (1080 < window.innerWidth && window.innerWidth <= 1920) {
-			basket.FLAY_WIDTH = Math.floor(window.innerWidth / 4 - basket.CARD_MARGIN * 4);
+			basket.flayCardWidth = Math.floor(window.innerWidth / 4 - basket.CARD_MARGIN * 4);
+		}
+
+		if (basket.flayCardWidth < 360) {
+			basket.cardExcludeArray.push(STUDIO);
 		}
 
 		basket.$flayList
 			.css({
-				width: Math.min(Math.floor((basket.FLAY_WIDTH + basket.CARD_MARGIN * 4) * basket.getCalculatedColCount()), window.innerWidth),
+				width: Math.min(Math.floor((basket.flayCardWidth + basket.CARD_MARGIN * 4) * basket.getCalculatedColCount()), window.innerWidth),
 			})
 			.find('.flay-card')
 			.css({
-				flexBasis: basket.FLAY_WIDTH,
+				flexBasis: basket.flayCardWidth,
 			});
 	},
 	containsFavoriteActress: (actressNameList) => {

@@ -428,6 +428,13 @@ const STUDIO = 'studio',
 			if (Object.keys(settings.css).length > 0) {
 				$flayCard.css(settings.css);
 			}
+			if (settings.width < 360) {
+				$flayCard.find('label.text').css({
+					margin: 2,
+					paddingTop: 1,
+					paddingBottom: 1,
+				});
+			}
 
 			return $flayCard;
 		};

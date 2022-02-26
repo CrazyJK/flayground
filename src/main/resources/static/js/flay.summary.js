@@ -527,18 +527,15 @@
 			return;
 		}
 
+		$('#groupByKey').html(key + ' - ' + list.length);
+		const $flayList = $('#flayList');
 		const ONE_PAGE = 21;
 		if (!start) {
 			start = 0;
+			$flayList.empty();
 		}
 		const end = Math.min(start + ONE_PAGE, list.length);
 		console.log('displayFlayList', key, list.length, start, end);
-
-		$('#groupByKey').html(key + ' - ' + list.length);
-		var $flayList = $('#flayList');
-		if (start === 0) {
-			$flayList.empty();
-		}
 
 		for (let i = start; i < end; i++) {
 			$flayList.appendFlayCard(list[i], {
@@ -550,12 +547,14 @@
 
 		$('#moreFlayList')
 			.toggle(end < list.length)
+			.html('Mode ' + (list.length - end) + 'flay')
 			.off('click')
 			.on('click', function () {
 				displayFlayList(key, list, end);
 			});
 
-		$('.flay-list-wrapper').show();
+		// $('.flay-list-wrapper').show();
+		$('.flay-list-modal').modal();
 	}
 
 	/*
@@ -811,7 +810,11 @@
 			for (let r = 5; r >= -1; r--) {
 				totalCount += tableMap.get('r' + r + this.id).length;
 			}
-			$(this).html($(this).html() + '<br><span class="small my-1">' + totalCount + '</span>');
+			$(this)
+				.html($(this).html() + '<br><span class="small my-1">' + totalCount + '</span>')
+				.on('click', function () {
+					location.href = '#tr-' + this.id + '.12';
+				});
 		});
 	}
 
@@ -866,7 +869,7 @@
 			const r5 = tableMap.has('r5d' + yyyyMM) ? tableMap.get('r5d' + yyyyMM).length : '';
 			const rt = Number(r_1) + Number(r0) + Number(r1) + Number(r2) + Number(r3) + Number(r4) + Number(r5);
 			$flayAllTableBody.append(`
-				<tr>
+				<tr id="tr-y${yyyyMM}">
 					<td>${yyyyMM}</td>
 					<td><span id="r-1d${yyyyMM}" class="flay-all-td rank-1">${r_1}</span></td>
 					<td><span id="r0d${yyyyMM}" class="flay-all-td rank0">${r0}</span></td>

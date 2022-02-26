@@ -757,3 +757,18 @@ button.btn.btn-outline-flay {
 	background-color: var(--color-bg);
 	color: var(--color-text);
 }
+
+/* bootstrap 4 modal */
+.modal-dialog.modal-fluid {
+	max-width: 100%;
+}
+.modal-content {
+	background-color: var(--color-bg-modal);
+	border: 1px solid var(--color-border-modal);
+}
+.modal-header {
+	border-bottom: 1px solid var(--color-border-modal);
+}
+.modal-footer {
+	border-top: 1px solid var(--color-border-modal);
+}

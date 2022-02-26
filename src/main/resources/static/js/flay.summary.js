@@ -2,20 +2,32 @@
  * flay summary js
  */
 (() => {
-	let flayList = [];
-	Rest.Flay.list(function (list) {
-		flayList = list;
-	});
-
-	let archiveList = [];
-	Rest.Archive.list((list) => (archiveList = list));
-
-	let actressList = [];
-	Rest.Actress.list(function (list) {
-		actressList = list;
-	});
+	document.title = 'Summary ' + document.title;
 
 	const filterCount = 5;
+
+	let instanceList = [];
+	let archiveList = [];
+	let actressList = [];
+
+	Promise.all([
+		new Promise((resolve, reject) => {
+			Rest.Flay.list(resolve);
+		}),
+		new Promise((resolve, reject) => {
+			Rest.Archive.list(resolve);
+		}),
+		new Promise((resolve, reject) => {
+			Rest.Actress.list(resolve);
+		}),
+	]).then(([instanceValues, archiveValues, actressValues]) => {
+		instanceList = instanceValues;
+		archiveList = archiveValues;
+		actressList = actressValues;
+		console.log('Rest.Flay.list', instanceList.length);
+		console.log('Rest.Archive.list', archiveList.length);
+		console.log('Rest.Actress.list', archiveList.length);
+	});
 
 	/*
 	$(window).on("resize", function() {
@@ -45,7 +57,7 @@
 		var $list = $('#releasedList').empty();
 
 		var dataMap = {};
-		$.each(flayList, function (idx, flay) {
+		$.each(instanceList, function (idx, flay) {
 			var key = getReleaseKey(flay.release);
 			if (dataMap[key]) {
 				dataMap[key].push(flay);
@@ -77,7 +89,7 @@
 		var $list = $('#pathList').empty();
 
 		var dataMap = {};
-		$.each(flayList, function (idx, flay) {
+		$.each(instanceList, function (idx, flay) {
 			var key = getPathKey(flay.files);
 			if (dataMap[key]) {
 				dataMap[key].push(flay);
@@ -93,7 +105,7 @@
 		var $list = $('#rankList').empty();
 
 		var dataMap = {};
-		$.each(flayList, function (idx, flay) {
+		$.each(instanceList, function (idx, flay) {
 			var key = 'Rank ' + flay.video.rank;
 			if (dataMap[key]) {
 				dataMap[key].push(flay);
@@ -111,7 +123,7 @@
 
 			var dataMap = {},
 				studioCount = 0;
-			$.each(flayList, function (idx, flay) {
+			$.each(instanceList, function (idx, flay) {
 				var key = flay.studio;
 				if (dataMap[key]) {
 					dataMap[key].push(flay);
@@ -185,7 +197,7 @@
 		.on('show.bs.collapse', function () {
 			var dataMap = {},
 				studioCount = 0;
-			$.each(flayList, function (idx, flay) {
+			$.each(instanceList, function (idx, flay) {
 				var key = flay.studio;
 				if (dataMap[key]) {
 					dataMap[key].push(flay);
@@ -274,7 +286,7 @@
 
 			var dataMap = {},
 				actressCount = 0;
-			$.each(flayList, function (idx, flay) {
+			$.each(instanceList, function (idx, flay) {
 				var keys = flay.actressList;
 				for (var x in keys) {
 					if (keys[x] === 'Amateur') {
@@ -351,7 +363,7 @@
 		.on('show.bs.collapse', function () {
 			var dataMap = {},
 				actressCount = 0;
-			$.each(flayList, function (idx, flay) {
+			$.each(instanceList, function (idx, flay) {
 				var keys = flay.actressList;
 				for (var x in keys) {
 					if (keys[x] === 'Amateur') {
@@ -510,17 +522,38 @@
 		return false;
 	}
 
-	function displayFlayList(key, list) {
-		$('#groupByKey').html(key);
+	function displayFlayList(key, list, start) {
+		if (!list || list.length === 0) {
+			return;
+		}
 
-		var $flayList = $('#flayList').empty();
-		$.each(list, function (idx, flay) {
-			$flayList.appendFlayCard(flay, {
+		const ONE_PAGE = 21;
+		if (!start) {
+			start = 0;
+		}
+		const end = Math.min(start + ONE_PAGE, list.length);
+		console.log('displayFlayList', key, list.length, start, end);
+
+		$('#groupByKey').html(key + ' - ' + list.length);
+		var $flayList = $('#flayList');
+		if (start === 0) {
+			$flayList.empty();
+		}
+
+		for (let i = start; i < end; i++) {
+			$flayList.appendFlayCard(list[i], {
 				width: 310,
 				exclude: [STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
 				fontSize: '80%',
 			});
-		});
+		}
+
+		$('#moreFlayList')
+			.toggle(end < list.length)
+			.off('click')
+			.on('click', function () {
+				displayFlayList(key, list, end);
+			});
 
 		$('.flay-list-wrapper').show();
 	}
@@ -590,7 +623,7 @@
 
 	function displayInstanceReleaseChart() {
 		const dataMap = new Map();
-		flayList.forEach((flay, index) => {
+		instanceList.forEach((flay, index) => {
 			if (!selectedRank.includes(flay.video.rank)) {
 				return;
 			}
@@ -696,4 +729,161 @@
 	AmCharts.shortDayNames = AmCharts.translations.ko.shortDayNames;
 	AmCharts.monthNames = AmCharts.translations.ko.monthNames;
 	AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
+
+	// ---- flay all dislay
+	$('#flayAllDiv').on('show.bs.collapse', () => {
+		displayFlayAllTable();
+		displayFlayAllMetrix();
+	});
+
+	function displayFlayAllMetrix() {
+		const $flayAllWrapper = $('#flayAllWrapper').empty();
+		const $flayAllAxisWrapper = $('#flayAllAxisWrapper').empty();
+		const $progressBar = $('#displayProgress > .progress-bar').css({ style: '0%' });
+
+		const tableMap = new Map();
+		const flayAllList = archiveList.concat(...instanceList);
+		const flayAllListCount = flayAllList.length;
+		console.log('displayFlayAll', 'flayAllList', flayAllListCount);
+
+		let minYear = 9999;
+		let maxYear = 0;
+		flayAllList.forEach((flay) => {
+			const releaseYear = Number(flay.release.substring(0, 4));
+			minYear = Math.min(minYear, releaseYear);
+			maxYear = Math.max(maxYear, releaseYear);
+			if (flay.archive) {
+				flay.video.rank = -1;
+			}
+			flay['cellId'] = 'r' + flay.video.rank + 'y' + releaseYear;
+
+			if (!tableMap.has(flay.cellId)) {
+				tableMap.set(flay.cellId, []);
+			}
+			tableMap.get(flay.cellId).push(flay);
+		});
+
+		const cellColumnCount = maxYear - minYear + 1;
+		console.log('displayFlayAll', 'minYear', minYear, 'maxTear', maxYear, 'cellColumnCount', cellColumnCount, 'tableMap', tableMap);
+
+		for (let r = 5; r >= -2; r--) {
+			for (let y = minYear; y <= maxYear; y++) {
+				if (r === -2) {
+					$flayAllAxisWrapper.append(`<div class="flay-all-cell-year-axis" id="y${y}" style="width: calc(100% / ${cellColumnCount});">${y}</div>`);
+				} else {
+					$flayAllWrapper.append(`<div class="flay-all-cell rank${r}" style="width: calc(100% / ${cellColumnCount});" id="r${r}y${y}" title="${y}: r${r}"></div>`);
+					if (!tableMap.has(`r${r}y${y}`)) {
+						tableMap.set(`r${r}y${y}`, []);
+					}
+				}
+			}
+		}
+
+		const displayTimerId = setInterval(() => {
+			for (let i = 0; i < 10; i++) {
+				const pickIndex = Random.getInteger(0, flayAllList.length - 1);
+				const flay = flayAllList.splice(pickIndex, 1)[0];
+
+				const $cell = $('#' + flay.cellId);
+				const count = Number($cell.text()) + 1;
+				$cell.html(count);
+
+				if (flayAllList.length % 100 === 0 || flayAllList.length === 0) {
+					$progressBar.css({
+						width: ((flayAllListCount - flayAllList.length) / flayAllListCount) * 100 + '%',
+					});
+				}
+
+				if (flayAllList.length === 0) {
+					clearInterval(displayTimerId);
+					break;
+				}
+			}
+		});
+
+		$('.flay-all-cell').on('click', (e) => {
+			console.log('displayFlayAll', 'cell click', e.target.id, tableMap.get(e.target.id).length);
+			displayFlayList(e.target.id, tableMap.get(e.target.id));
+		});
+
+		$('.flay-all-cell-year-axis').each(function () {
+			let totalCount = 0;
+			for (let r = 5; r >= -1; r--) {
+				totalCount += tableMap.get('r' + r + this.id).length;
+			}
+			$(this).html($(this).html() + '<br><span class="small my-1">' + totalCount + '</span>');
+		});
+	}
+
+	function displayFlayAllTable() {
+		const getPreviousMonthKey = (yyyyMM) => {
+			const previousVal = yyyyMM - 0.01;
+			const roundVal = Math.round(previousVal);
+			if (previousVal === roundVal) {
+				return roundVal - 1 + 0.12;
+			} else {
+				return previousVal;
+			}
+		};
+		const $flayAllTableBody = $('#flayAllTableBody').empty();
+
+		const tableMap = new Map();
+		const flayAllList = archiveList.concat(...instanceList);
+		const flayAllListCount = flayAllList.length;
+		console.log('displayFlayAllTable', 'flayAllList', flayAllListCount);
+
+		let minRelease = 9999.12;
+		let maxRelease = 0.0;
+		flayAllList.forEach((flay, index) => {
+			const releaseKey = Number(flay.release.substring(0, 7).replace(/-/g, '.').replace(/,/g, '.'));
+			minRelease = Math.min(minRelease, releaseKey);
+			maxRelease = Math.max(maxRelease, releaseKey);
+			if (!minRelease) {
+				console.log(releaseKey, minRelease, maxRelease, flay);
+			}
+			if (flay.archive) {
+				flay.video.rank = -1;
+			}
+			flay['cellId'] = 'r' + flay.video.rank + 'd' + releaseKey.toFixed(2);
+
+			if (!tableMap.has(flay.cellId)) {
+				tableMap.set(flay.cellId, new Array());
+			}
+			tableMap.get(flay.cellId).push(flay);
+		});
+		console.log('displayFlayAllTable', 'minRelease', minRelease, 'maxRelease', maxRelease, 'tableMap', tableMap);
+
+		let curRelease = maxRelease;
+		do {
+			// console.log('displayFlayAllTable', 'curRelease', curRelease);
+			const yyyyMM = curRelease.toFixed(2);
+			const r_1 = tableMap.has('r-1d' + yyyyMM) ? tableMap.get('r-1d' + yyyyMM).length : '';
+			const r0 = tableMap.has('r0d' + yyyyMM) ? tableMap.get('r0d' + yyyyMM).length : '';
+			const r1 = tableMap.has('r1d' + yyyyMM) ? tableMap.get('r1d' + yyyyMM).length : '';
+			const r2 = tableMap.has('r2d' + yyyyMM) ? tableMap.get('r2d' + yyyyMM).length : '';
+			const r3 = tableMap.has('r3d' + yyyyMM) ? tableMap.get('r3d' + yyyyMM).length : '';
+			const r4 = tableMap.has('r4d' + yyyyMM) ? tableMap.get('r4d' + yyyyMM).length : '';
+			const r5 = tableMap.has('r5d' + yyyyMM) ? tableMap.get('r5d' + yyyyMM).length : '';
+			const rt = Number(r_1) + Number(r0) + Number(r1) + Number(r2) + Number(r3) + Number(r4) + Number(r5);
+			$flayAllTableBody.append(`
+				<tr>
+					<td>${yyyyMM}</td>
+					<td><span id="r-1d${yyyyMM}" class="flay-all-td rank-1">${r_1}</span></td>
+					<td><span id="r0d${yyyyMM}" class="flay-all-td rank0">${r0}</span></td>
+					<td><span id="r1d${yyyyMM}" class="flay-all-td rank1">${r1}</span></td>
+					<td><span id="r2d${yyyyMM}" class="flay-all-td rank2">${r2}</span></td>
+					<td><span id="r3d${yyyyMM}" class="flay-all-td rank3">${r3}</span></td>
+					<td><span id="r4d${yyyyMM}" class="flay-all-td rank4">${r4}</span></td>
+					<td><span id="r5d${yyyyMM}" class="flay-all-td rank5">${r5}</span></td>
+					<td><span id="d${yyyyMM}">${rt}</span></td>
+				</tr>
+			`);
+			curRelease = getPreviousMonthKey(curRelease);
+		} while (curRelease >= minRelease);
+
+		$('.flay-all-td').on('click', (e) => {
+			console.log('displayFlayAllTable', 'td click', e.target.id);
+			displayFlayList(e.target.id, tableMap.get(e.target.id));
+		});
+	}
 })();

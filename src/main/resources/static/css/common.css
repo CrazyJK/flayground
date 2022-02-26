@@ -372,6 +372,11 @@ label.text.lg {
 	line-height: 1.7;
 }
 
+label.text.title {
+	background-color: var(--color-bg-label-title);
+	font-size: 1.25rem;
+}
+
 .text.danger {
 	background-color: var(--danger) !important;
 }
@@ -688,7 +693,7 @@ button.btn.btn-outline-flay {
 	top: 0;
 	display: flex;
 	justify-content: center;
-	background-color: transparent !important;
+	background-color: transparent;
 	margin-bottom: 0.5rem;
 }
 #topMenu > nav {

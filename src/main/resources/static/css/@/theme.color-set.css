@@ -4,6 +4,7 @@
 	--color-bg: #000;
 	--color-bg-label: rgba(0, 0, 0, 0.125);
 	--color-bg-label-hover: rgba(0, 0, 0, 0.75);
+	--color-bg-label-title: rgba(0, 0, 0, 1);
 	--color-bg-page: transparent;
 	--color-bg-page-hover: rgba(0, 0, 0, 0.75);
 	--color-bg-check: rgba(0, 0, 0, 0.125);
@@ -39,6 +40,7 @@
 	--color-bg: #fff;
 	--color-bg-label: #fff;
 	--color-bg-label-hover: #fff;
+	--color-bg-label-title: #fff;
 	--color-bg-page: #fff;
 	--color-bg-page-hover: #fff;
 	--color-bg-check: #fff;

@@ -22,7 +22,7 @@ import jk.kamoru.flayground.info.domain.History;
 import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.HistoryService;
-import jk.kamoru.flayground.info.service.InfoService;
+import jk.kamoru.flayground.info.source.InfoSource;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -32,8 +32,9 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired FlayProperties flayProperties;
 
 	@Autowired FlaySource instanceFlaySource;
-	@Autowired InfoService<Video, String> videoInfoService;
-	@Autowired InfoService<Tag, Integer> tagInfoService;
+	@Autowired InfoSource<Video, String> videoInfoSource;
+	@Autowired InfoSource<Tag, Integer> tagInfoSource;
+
 	@Autowired HistoryService historyService;
 	@Autowired FlayActionHandler flayActionHandler;
 	@Autowired FlayFileHandler flayFileHandler;
@@ -134,7 +135,7 @@ public class FlayServiceImpl implements FlayService {
 
 	@Override
 	public Collection<Flay> findByTagLike(Integer id) {
-		Tag tag = tagInfoService.get(id);
+		Tag tag = tagInfoSource.get(id);
 		return instanceFlaySource.list().stream().filter(f -> {
 			String full = tag.getName() + "," + tag.getDescription();
 			return f.getVideo().getTags().stream().map(Tag::getId).toList().contains(id) || StringUtils.containsAny(f.getFullname(), full.split(","));
@@ -148,7 +149,7 @@ public class FlayServiceImpl implements FlayService {
 
 		flay.getVideo().increasePlayCount();
 
-		videoInfoService.update(flay.getVideo());
+		videoInfoSource.update(flay.getVideo());
 		historyService.save(History.Action.PLAY, flay);
 	}
 

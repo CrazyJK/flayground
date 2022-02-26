@@ -72,7 +72,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 		try {
 			super.get(actress.getKey());
 			super.update(actress);
-		} catch(InfoNotfoundException e) {
+		} catch (InfoNotfoundException e) {
 			super.create(actress);
 		}
 	}

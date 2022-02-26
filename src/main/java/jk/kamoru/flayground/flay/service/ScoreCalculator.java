@@ -7,23 +7,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.base.advice.TrackExecutionTime;
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.domain.Tag;
-import jk.kamoru.flayground.info.service.ActressInfoService;
+import jk.kamoru.flayground.info.source.InfoSource;
 
 @Component
 public class ScoreCalculator {
 
 	@Autowired FlayProperties flayProperties;
 
-	@Autowired ActressInfoService actressInfoService;
+	@Autowired InfoSource<Actress, String> actressInfoSource;
 
 	Comparator<Flay> scoreComparator = Comparator.comparing(Flay::getScore);
 	Comparator<Flay> studioPointComparator = Comparator.comparing(Flay::getStudioPoint);
@@ -78,7 +77,7 @@ public class ScoreCalculator {
 	}
 
 	private int countFavoriteActress(Flay flay) {
-		return flay.getActressList().stream().mapToInt(a -> StringUtils.isNotBlank(a) && actressInfoService.get(a).isFavorite() ? 1 : 0).sum();
+		return flay.getActressList().stream().mapToInt(a -> StringUtils.isNotBlank(a) && actressInfoSource.get(a).isFavorite() ? 1 : 0).sum();
 	}
 
 	// 출연배우의 작품 함계

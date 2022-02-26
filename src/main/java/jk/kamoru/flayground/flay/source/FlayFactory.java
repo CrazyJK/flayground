@@ -3,26 +3,24 @@ package jk.kamoru.flayground.flay.source;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.info.domain.Actress;
+import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.domain.Video;
-import jk.kamoru.flayground.info.service.ActressInfoService;
-import jk.kamoru.flayground.info.service.StudioInfoService;
-import jk.kamoru.flayground.info.service.VideoInfoService;
+import jk.kamoru.flayground.info.source.InfoSource;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 public class FlayFactory {
 
-	@Autowired  StudioInfoService  studioInfoService;
-	@Autowired   VideoInfoService   videoInfoService;
-	@Autowired ActressInfoService actressInfoService;
-	
+	@Autowired InfoSource<Studio, String> studioInfoSource;
+	@Autowired InfoSource<Video, String> videoInfoSource;
+	@Autowired InfoSource<Actress, String> actressInfoSource;
+
 	public Result parse(File file) {
 		Result result = new Result();
 		String rowData = file.getName();
@@ -30,12 +28,12 @@ public class FlayFactory {
 		if (parts == null || parts.length < 5) {
 			result.valid = false;
 		} else {
-			result.valid 	= true;
-			result.studio	= StringUtils.replace(parts[0], "[", "");
-			result.opus  	= StringUtils.replace(parts[1], "[", "");
-			result.title 	= StringUtils.replace(parts[2], "[", "");
-			result.actress 	= StringUtils.replace(parts[3], "[", "");
-			result.release 	= StringUtils.replace(parts[4], "[", "");
+			result.valid = true;
+			result.studio = StringUtils.replace(parts[0], "[", "");
+			result.opus = StringUtils.replace(parts[1], "[", "");
+			result.title = StringUtils.replace(parts[2], "[", "");
+			result.actress = StringUtils.replace(parts[3], "[", "");
+			result.release = StringUtils.replace(parts[4], "[", "");
 		}
 		return result;
 	}
@@ -62,7 +60,7 @@ public class FlayFactory {
 	}
 
 	private Video getVideo(String opus) {
-		return videoInfoService.getOrNew(opus);
+		return videoInfoSource.getOrNew(opus);
 	}
 
 	private List<String> getActressList(String actress) {
@@ -72,7 +70,7 @@ public class FlayFactory {
 			for (String str : StringUtils.split(name)) {
 				onePerson += str + " ";
 			}
-			list.add(actressInfoService.getOrNew(onePerson.trim()).getName());
+			list.add(actressInfoSource.getOrNew(onePerson.trim()).getName());
 		}
 		return list;
 	}
@@ -88,5 +86,5 @@ public class FlayFactory {
 			log.warn("unknown file {} -> {}", flay.getOpus(), file);
 		}
 	}
-	
+
 }

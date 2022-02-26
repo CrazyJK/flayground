@@ -22,7 +22,7 @@ public class StudioInfoService extends InfoServiceAdapter<Studio, String> {
 		if (StringUtils.isBlank(query)) {
 			return new Studio();
 		}
-		
+
 		List<Flay> list = flayService.list()
 				.stream()
 				.filter(f -> f.getOpus().contains(query))

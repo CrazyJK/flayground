@@ -8,6 +8,7 @@
 		<style type="text/css">
 			body {
 				background: #1c1c1c;
+				overflow: hidden;
 			}
 
 			.d-flex-col {
@@ -104,6 +105,9 @@
 					<input type="number" id="popupHeight" value="997" class="bg-transparent border-0 text-light ml-2" />
 				</div>
 			</div>
+			<div class="container mt-3 hover-show">
+				<textarea class="bg-transparent border-secondary form-control" id="memo" rows="10"></textarea>
+			</div>
 		</div>
 
 		<script>
@@ -143,6 +147,13 @@
 					}
 				}
 			});
+
+			const memoText = localStorage.getItem('index.memo');
+			$('#memo')
+				.on('change', (e) => {
+					localStorage.setItem('index.memo', $(e.target).val());
+				})
+				.text(memoText);
 		</script>
 	</body>
 </html>

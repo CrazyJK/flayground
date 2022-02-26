@@ -27,9 +27,9 @@ import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
-import jk.kamoru.flayground.info.domain.History;
-import jk.kamoru.flayground.info.domain.History.Action;
-import jk.kamoru.flayground.info.service.HistoryService;
+import jk.kamoru.flayground.history.domain.History;
+import jk.kamoru.flayground.history.domain.History.Action;
+import jk.kamoru.flayground.history.service.HistoryService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -35,7 +35,7 @@ public class NameDistanceChecker {
 	public static List<CheckResult> check(List<Actress> actressList) {
 		return check(actressList, LIMIT);
 	}
-	
+
 	/**
 	 * limit을 넘는 유사도의 이름을 반환
 	 * @param actressList
@@ -50,27 +50,27 @@ public class NameDistanceChecker {
 		stopWatch.start();
 		for (int i = 0; i < actressList.size(); i++) {
 			Actress actress1 = actressList.get(i);
-			for (int j = i+1; j < actressList.size(); j++) {
+			for (int j = i + 1; j < actressList.size(); j++) {
 				Actress actress2 = actressList.get(j);
-			
+
 				count++;
 				double score = equalsBySort(actress1.getName(), actress2.getName())
 						? 1.0
 						: jaroWinklerDistance.apply(actress1.getName(), actress2.getName());
-				
+
 				if (score > limit) {
 					result.add(new CheckResult(actress1, actress2, score));
 				}
 			}
 		}
 		stopWatch.stop();
-		
+
 		log.info("names {}. limit {}. checking {} times. {} result. Elapsed {} ms", actressList.size(), limit, count, result.size(), stopWatch.getTotalTimeMillis());
 		return result.stream()
 				.sorted((r1, r2) -> Double.compare(r2.getScore(), r1.getScore()))
 				.collect(Collectors.toList());
 	}
-	
+
 	private static boolean equalsBySort(String name1, String name2) {
 		String[] split1 = StringUtils.split(name1);
 		Arrays.sort(split1);
@@ -89,5 +89,5 @@ public class NameDistanceChecker {
 		Actress actress2;
 		double score;
 	}
-	
+
 }

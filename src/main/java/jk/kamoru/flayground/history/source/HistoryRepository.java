@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.info.source;
+package jk.kamoru.flayground.history.source;
 
 import java.io.File;
 import java.io.IOException;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Repository;
 
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.info.domain.History;
+import jk.kamoru.flayground.history.domain.History;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j

@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.info.service;
+package jk.kamoru.flayground.history.service;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -10,10 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayException;
 import jk.kamoru.flayground.flay.domain.Flay;
-import jk.kamoru.flayground.info.domain.History;
-import jk.kamoru.flayground.info.domain.History.Action;
+import jk.kamoru.flayground.history.domain.History;
+import jk.kamoru.flayground.history.domain.History.Action;
+import jk.kamoru.flayground.history.source.HistoryRepository;
 import jk.kamoru.flayground.info.domain.Video;
-import jk.kamoru.flayground.info.source.HistoryRepository;
 
 @Service
 public class HistoryServiceImpl implements HistoryService {

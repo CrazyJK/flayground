@@ -40,7 +40,7 @@ class Loading {
 		this.loadingMainSelector = `${PARENT_SELECTOR} > #${ID_LOADING_WRAPPER} > #${ID_LOADING_MAIN}`;
 		this.loadingBodySelector = `${this.loadingMainSelector} > #${ID_LOADING_BODY}`;
 
-		window.onload = () => {
+		window.addEventListener('DOMContentLoaded', () => {
 			const parentElement = document.querySelector(PARENT_SELECTOR);
 			if (parentElement !== null) {
 				parentElement.innerHTML += HTML_LOADING;
@@ -57,7 +57,7 @@ class Loading {
 				document.querySelectorAll(`${this.loadingBodySelector} > li`).forEach((node) => node.remove());
 				this.loadingMain.style.display = 'none';
 			});
-		};
+		});
 	}
 
 	on(message) {

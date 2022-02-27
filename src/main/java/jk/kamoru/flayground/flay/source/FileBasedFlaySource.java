@@ -20,8 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileBasedFlaySource implements FlaySource {
 
-	@Autowired
-	FlayFactory flayFactory;
+	@Autowired FlayFactory flayFactory;
 
 	boolean isArchive;
 
@@ -75,7 +74,7 @@ public class FileBasedFlaySource implements FlaySource {
 				flay = flayMap.get(result.getOpus());
 			}
 
-			flayFactory.addFile(flay, file);
+			flayFactory.addFile(flay, result.file);
 		}
 		log.info(String.format("%5s Flay", flayMap.size()));
 	}

@@ -15,6 +15,7 @@ import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.advice.TrackExecutionTime;
 import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
+import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -32,6 +33,7 @@ public class FlayServiceImpl implements FlayService {
 	@Autowired FlayProperties flayProperties;
 
 	@Autowired FlaySource instanceFlaySource;
+	@Autowired FlaySource archiveFlaySource;
 	@Autowired InfoSource<Video, String> videoInfoSource;
 	@Autowired InfoSource<Tag, Integer> tagInfoSource;
 
@@ -164,7 +166,12 @@ public class FlayServiceImpl implements FlayService {
 		if (!opus.equals(newFlay.getOpus())) {
 			throw new IllegalArgumentException("Not allowed to change opus");
 		}
-		Flay flay = instanceFlaySource.get(opus);
+		Flay flay = null;
+		try {
+			flay = instanceFlaySource.get(opus);
+		} catch (FlayNotfoundException e) {
+			flay = archiveFlaySource.get(opus);
+		}
 		flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
 		notificationService.announceTo("Rename Flay", newFlay.getFullname());
 	}

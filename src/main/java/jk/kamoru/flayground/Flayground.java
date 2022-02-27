@@ -11,7 +11,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
-
+import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -49,6 +49,8 @@ public class Flayground implements AsyncConfigurer {
 			public static final SimpleDateFormat DateTime = new SimpleDateFormat(PATTERN_DATE + " " + PATTERN_TIME);
 			public static final SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
 			public static final SimpleDateFormat YYYY_MM = new SimpleDateFormat("yyyy-MM");
+
+			public static final Pattern RELEASE_DATE_PATTERN = Pattern.compile("^((2000|2400|2800|(19|2[0-9](0[48]|[2468][048]|[13579][26]))).02.29)$" + "|^(((19|2[0-9])[0-9]{2}).02.(0[1-9]|1[0-9]|2[0-8]))$" + "|^(((19|2[0-9])[0-9]{2}).(0[13578]|10|12).(0[1-9]|[12][0-9]|3[01]))$" + "|^(((19|2[0-9])[0-9]{2}).(0[469]|11).(0[1-9]|[12][0-9]|30))$");
 		}
 
 		public static class Number {

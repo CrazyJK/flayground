@@ -6,7 +6,7 @@
 const restCall = function (url, args, callback, failCallback, callbackData) {
 	let isCompleted = false;
 	let loadingTimeout = -1;
-	let loadingIndex = 0;
+	let loadingIndex = -1;
 	const CSRF_COOKIE_NAME = 'XSRF-TOKEN';
 	const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
 	const DEFAULTS = {
@@ -70,7 +70,12 @@ const restCall = function (url, args, callback, failCallback, callbackData) {
 				} else {
 					errMsg = `fail: ${textStatus} <br>${errorThrown}`;
 				}
-				loading.append(loadingIndex, `<span style="color: #f00;">${errMsg}</span>`);
+				console.log('rest', 'loadingIndex', loadingIndex);
+				if (loadingIndex > 0) {
+					loading.append(loadingIndex, `<span style="color: #f00;">${errMsg}</span>`);
+				} else {
+					loading.on(`<span style="color: #f00;">${errMsg}</span>`);
+				}
 			}
 		})
 		.always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {

@@ -554,7 +554,9 @@
 			});
 
 		// $('.flay-list-wrapper').show();
-		$('.flay-list-modal').modal();
+		$('.flay-list-modal').modal({
+			backdrop: false,
+		});
 	}
 
 	/*

@@ -1092,7 +1092,7 @@
 									rankAvg.sum += flay.video.rank;
 									rankAvg.cnt++;
 								});
-							return (rankAvg.sum / rankAvg.cnt).toFixed(1) + '<small>R</small>';
+							return (rankAvg.cnt > 0 ? (rankAvg.sum / rankAvg.cnt).toFixed(1) : 0) + '<small>R/' + rankAvg.cnt + '</small>';
 						})(flayListOfActress),
 					)
 					.neonLoading(false);

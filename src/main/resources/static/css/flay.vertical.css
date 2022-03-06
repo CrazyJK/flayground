@@ -95,6 +95,9 @@ body {
 	flex: 0 0 3rem;
 	text-align: right;
 }
+.info-actress .info-actress-avgrank {
+	flex: 0 0 3rem;
+}
 .info-actress .info-actress-age {
 	flex: 0 0 3rem;
 }

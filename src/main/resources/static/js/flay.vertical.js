@@ -1062,6 +1062,7 @@
 					$('<label>', { class: 'text info-actress-name hover', title: actress.comment }).html(name),
 					$('<label>', { class: 'text info-actress-local' }).html(actress.localName),
 					$('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
+					$('<label>', { class: 'text info-actress-avgrank' }).html('&nbsp;').neonLoading(true),
 					$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
 					$('<label>', { class: 'text info-actress-birth' }).html(
 						actress.birth.replace(/年|月|日/g, function (match, offset, string) {
@@ -1078,8 +1079,23 @@
 				)
 				.appendTo($('.info-wrapper-actress'));
 
-			Rest.Flay.findByActress(name, (foundFlayList) => {
-				$actress.find('.info-actress-flaycount').html(`${foundFlayList.length}<small>F</small>`).neonLoading(false);
+			Rest.Flay.findByActress(name, (flayListOfActress) => {
+				$actress.find('.info-actress-flaycount').html(`${flayListOfActress.length}<small>F</small>`).neonLoading(false);
+				$actress
+					.find('.info-actress-avgrank')
+					.html(
+						((flayList) => {
+							let rankAvg = { sum: 0, cnt: 0 };
+							flayList
+								.filter((flay) => flay.video.rank > 0)
+								.forEach((flay) => {
+									rankAvg.sum += flay.video.rank;
+									rankAvg.cnt++;
+								});
+							return (rankAvg.sum / rankAvg.cnt).toFixed(1) + '<small>R</small>';
+						})(flayListOfActress),
+					)
+					.neonLoading(false);
 			});
 		});
 		// release

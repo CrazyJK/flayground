@@ -127,6 +127,19 @@ Rest.Actress.get(name, function (_actress) {
 	Rest.Flay.findByActress(actress, function (flayList) {
 		$('#videoCount').val(flayList.length);
 
+		$('#avgRank').html(
+			((flayList) => {
+				let rankAvg = { sum: 0, cnt: 0 };
+				flayList
+					.filter((flay) => flay.video.rank > 0)
+					.forEach((flay) => {
+						rankAvg.sum += flay.video.rank;
+						rankAvg.cnt++;
+					});
+				return (rankAvg.sum / rankAvg.cnt).toFixed(1);
+			})(flayList),
+		);
+
 		Rest.Flay.findByActressInArchive(actress, function (flayArchiveList) {
 			$('#videoCount').val(flayList.length + ' / ' + (flayList.length + flayArchiveList.length));
 

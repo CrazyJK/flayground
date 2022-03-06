@@ -41,7 +41,7 @@
 	</head>
 	<body>
 		<nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center sticky-top">
-			<form onsubmit="return false;" id="infoForm">
+			<form onsubmit="() => { return false; }" id="infoForm">
 				<div class="row mb-2">
 					<div class="col-1">
 						<button class="btn btn-outline-danger float-left" id="delete">Del</button>
@@ -50,6 +50,9 @@
 						<div class="input-group">
 							<div class="input-group-prepend">
 								<span class="input-group-text hover"><em class="fa fa-heart favorite" id="favorite"></em></span>
+							</div>
+							<div class="input-group-prepend">
+								<span class="input-group-text" id="avgRank">0.0</span>
 							</div>
 							<input class="form-control text-center" name="name" id="name" />
 						</div>

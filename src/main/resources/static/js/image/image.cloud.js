@@ -1,7 +1,7 @@
 var ImageControl = {
-	STORAGE_IMAGE_KEY: "image.cloud.image_key",
-	STORAGE_IMAGE_SIZE: "image.cloud.image_size",
-	STORAGE_PLAY_TIME: "image.cloud.play_time",
+	STORAGE_IMAGE_KEY: 'image.cloud.image_key',
+	STORAGE_IMAGE_SIZE: 'image.cloud.image_size',
+	STORAGE_PLAY_TIME: 'image.cloud.play_time',
 	imageIndexArray: [],
 	bgInterval: null,
 	collectedList: [],
@@ -13,7 +13,7 @@ var ImageControl = {
 			ImageControl.fullList = list;
 			var map = { ALL: list };
 			$.each(list, function (idx, image) {
-				var key = image.path.replace(/\\/gi, "/").split("/").pop();
+				var key = image.path.replace(/\\/gi, '/').split('/').pop();
 				if (map[key]) {
 					map[key].push(image);
 				} else {
@@ -21,20 +21,20 @@ var ImageControl = {
 				}
 			});
 
-			var $keys = $("#keys");
+			var $keys = $('#keys');
 			$.each(map, function (k, v) {
-				$("<label>", { class: "check sm", id: "key_" + k })
+				$('<label>', { class: 'check sm', id: 'key_' + k })
 					.append(
-						$("<input>", { type: "radio", name: "key" }).on("change", function (e) {
+						$('<input>', { type: 'radio', name: 'key' }).on('change', function (e) {
 							ImageControl.setData(k, v);
 						}),
-						$("<span>").append(k, $("<i>", { class: "badge ml-2" }).html(v.length)),
+						$('<span>').append(k, $('<i>', { class: 'badge ml-2' }).html(v.length)),
 					)
 					.appendTo($keys);
 			});
 
-			var key = LocalStorageItem.get(ImageControl.STORAGE_IMAGE_KEY, "ALL");
-			$("#key_" + key).click();
+			var key = LocalStorageItem.get(ImageControl.STORAGE_IMAGE_KEY, 'ALL');
+			$('#key_' + key).click();
 		});
 
 		ImageControl.ImageCanvas.resize();
@@ -43,15 +43,15 @@ var ImageControl = {
 		ImageControl.ImageCanvas.start();
 	},
 	setData: function (key, list) {
-		console.log("setData", key, list.length);
+		console.log('setData', key, list.length);
 		ImageControl.collectedList = list.slice();
 		ImageControl.imageIndexArray = [];
 		ImageControl.display();
 		LocalStorageItem.set(ImageControl.STORAGE_IMAGE_KEY, key);
-		$("#selectedKey").html(key);
+		$('#selectedKey').html(key);
 	},
 	nav: function () {
-		$("#canvasContainer").navEvent(function (signal, e) {
+		$('#canvasContainer').navEvent(function (signal, e) {
 			switch (signal) {
 				case 32: // key: space
 					ImageControl.ImageCanvas.rotate();
@@ -67,7 +67,7 @@ var ImageControl = {
 		ImageControl.isStart = true;
 	},
 	stop: function () {
-		$(".progress-bar").css({ width: "100%", transition: "none" });
+		$('.progress-bar').css({ width: '100%', transition: 'none' });
 		ImageControl.isStart = false;
 	},
 	func: function () {
@@ -76,13 +76,13 @@ var ImageControl = {
 			++ImageControl.intervalCount;
 
 			if (ImageControl.intervalCount === 0) {
-				$(".progress-bar").css({ transition: "none" });
+				$('.progress-bar').css({ transition: 'none' });
 			} else if (ImageControl.intervalCount === 1) {
-				$(".progress-bar").css({ transition: "width 1s linear" });
+				$('.progress-bar').css({ transition: 'width 1s linear' });
 			}
 
-			$(".progress-bar").css({
-				width: 100 - Math.round((ImageControl.intervalCount / playTime) * 100) + "%",
+			$('.progress-bar').css({
+				width: 100 - Math.round((ImageControl.intervalCount / playTime) * 100) + '%',
 			});
 
 			if (ImageControl.intervalCount == 0) {
@@ -93,16 +93,16 @@ var ImageControl = {
 		}
 	},
 	display: function () {
-		if (ImageControl.ImageCanvas.status === "pause") {
+		if (ImageControl.ImageCanvas.status === 'pause') {
 			return;
 		}
 		// make image index array
 		if (ImageControl.imageIndexArray.length === 0) {
 			ImageControl.imageIndexArray = Array.apply(null, { length: ImageControl.collectedList.length }).map(Number.call, Number);
-			console.log("image array reset", ImageControl.imageIndexArray.length);
+			console.log('image array reset', ImageControl.imageIndexArray.length);
 		}
 
-		var $imageWrap = $("#imagePane").empty();
+		var $imageWrap = $('#imagePane').empty();
 
 		for (var i = 0; i < inputImageSize.value; i++) {
 			// determine image index
@@ -111,26 +111,26 @@ var ImageControl = {
 				// console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
 			} else {
 				var image = ImageControl.collectedList[imageIndex];
-				$("<a>")
+				$('<a>')
 					.attr({
-						id: "image" + i,
-						"data-index": image.idx,
+						id: 'image' + i,
+						'data-index': image.idx,
 					})
 					.append(
-						$("<img>").attr({
-							src: PATH + "/static/image/" + image.idx,
+						$('<img>').attr({
+							src: PATH + '/static/image/' + image.idx,
 						}),
 						image.name.substring(image.name.length - 18),
 					)
-					.on("click", function (e) {
+					.on('click', function (e) {
 						e.preventDefault();
-						Popup.imageByNo($(this).attr("data-index"));
+						Popup.imageByNo($(this).attr('data-index'));
 					})
 					.appendTo($imageWrap);
 			}
 		}
 
-		$(".cloud-info").html("Remaining " + ImageControl.imageIndexArray.length);
+		$('.cloud-info').html('Remaining ' + ImageControl.imageIndexArray.length);
 
 		// ImageControl.ImageCanvas.reload();
 		ImageControl.ImageCanvas.update();
@@ -145,9 +145,9 @@ var ImageControl = {
 			depth: 0.9,
 			fadeIn: 800,
 			hideTags: true,
-			imageMode: "image",
-			imagePosition: "top",
-			imageRadius: 4,
+			imageMode: 'image',
+			imagePosition: 'top',
+			imageRadius: '50%',
 			imageScale: 0.3,
 			imageMaxWidth: 500,
 			imageMaxHeight: 0,
@@ -157,35 +157,35 @@ var ImageControl = {
 			maxSpeed: 0.03,
 			minBrightness: 0.3,
 			minSpeed: 0.003,
-			outlineMethod: "none",
+			outlineMethod: 'none',
 			padding: 2,
 			reverse: true,
-			textColour: "#fff",
+			textColour: '#fff',
 			noTagsMessage: false,
 		},
-		status: "",
+		status: '',
 		start: function () {
-			$("#imageCloud").tagcanvas(ImageControl.ImageCanvas.options, "imagePane");
+			$('#imageCloud').tagcanvas(ImageControl.ImageCanvas.options, 'imagePane');
 		},
 		update: function () {
-			$("#imageCloud").tagcanvas("update");
+			$('#imageCloud').tagcanvas('update');
 		},
 		reload: function () {
-			$("#imageCloud").tagcanvas("reload");
+			$('#imageCloud').tagcanvas('reload');
 		},
 		rotate: function () {
-			$("#imageCloud").tagcanvas("rotatetag", { id: "image" + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0 });
+			$('#imageCloud').tagcanvas('rotatetag', { id: 'image' + Random.getInteger(0, inputImageSize.value - 1), lat: 0, lng: 0 });
 		},
 		pause: function () {
-			$("#imageCloud").tagcanvas("pause");
-			ImageControl.ImageCanvas.status = "pause";
+			$('#imageCloud').tagcanvas('pause');
+			ImageControl.ImageCanvas.status = 'pause';
 		},
 		resume: function () {
-			$("#imageCloud").tagcanvas("resume");
-			ImageControl.ImageCanvas.status = "resume";
+			$('#imageCloud').tagcanvas('resume');
+			ImageControl.ImageCanvas.status = 'resume';
 		},
 		resize: function () {
-			$("#imageCloud").attr({
+			$('#imageCloud').attr({
 				width: $(window).width(),
 				height: $(window).height(),
 			});
@@ -198,44 +198,44 @@ $(document).ready(function () {
 	inputPlayTime.value = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
 
 	setTimeout(function () {
-		$(window).on("resize", ImageControl.ImageCanvas.resize);
+		$(window).on('resize', ImageControl.ImageCanvas.resize);
 	}, 5000);
 
-	$("#btnRotate").on("click", ImageControl.ImageCanvas.rotate);
-	$("#btnPause").on("click", function () {
-		if ($(this).data("status") === "resume") {
+	$('#btnRotate').on('click', ImageControl.ImageCanvas.rotate);
+	$('#btnPause').on('click', function () {
+		if ($(this).data('status') === 'resume') {
 			ImageControl.ImageCanvas.pause();
-			$(this).data("status", "pause").html('<i class="fa fa-play"></i> Resume');
-			$("#btnPlay, #btnNext, #btnRotate").prop("disabled", true);
+			$(this).data('status', 'pause').html('<i class="fa fa-play"></i> Resume');
+			$('#btnPlay, #btnNext, #btnRotate').prop('disabled', true);
 		} else {
 			ImageControl.ImageCanvas.resume();
-			$(this).data("status", "resume").html('<i class="fa fa-pause"></i> Pause');
-			$("#btnPlay, #btnNext, #btnRotate").prop("disabled", false);
+			$(this).data('status', 'resume').html('<i class="fa fa-pause"></i> Pause');
+			$('#btnPlay, #btnNext, #btnRotate').prop('disabled', false);
 		}
 	});
-	$("#btnNext").on("click", ImageControl.display);
-	$("#btnPlay").on("click", function () {
-		if ($(this).data("status") === "stop") {
+	$('#btnNext').on('click', ImageControl.display);
+	$('#btnPlay').on('click', function () {
+		if ($(this).data('status') === 'stop') {
 			ImageControl.play();
-			$(this).data("status", "start").html('<i class="fa fa-stop"></i> Stop');
-			$("#btnPause").prop("disabled", true);
+			$(this).data('status', 'start').html('<i class="fa fa-stop"></i> Stop');
+			$('#btnPause').prop('disabled', true);
 		} else {
 			ImageControl.stop();
-			$(this).data("status", "stop").html('<i class="fa fa-play"></i> Play');
-			$("#btnPause").prop("disabled", false);
+			$(this).data('status', 'stop').html('<i class="fa fa-play"></i> Play');
+			$('#btnPause').prop('disabled', false);
 		}
 	});
-	$("#inputImageSize").on("change", function () {
+	$('#inputImageSize').on('change', function () {
 		LocalStorageItem.set(ImageControl.STORAGE_IMAGE_SIZE, $(this).val());
 	});
-	$("#inputPlayTime").on("change", function () {
+	$('#inputPlayTime').on('change', function () {
 		LocalStorageItem.set(ImageControl.STORAGE_PLAY_TIME, $(this).val());
 	});
-	$("#goHome").on("click", function () {
-		location.href = PATH + "/html/main.html";
+	$('#goHome').on('click', function () {
+		location.href = PATH + '/html/main.html';
 	});
-	$("#btnByKey, #btnCloseKey").on("click", function () {
-		$("#keyContainer").slideToggle();
+	$('#btnByKey, #btnCloseKey').on('click', function () {
+		$('#keyContainer').slideToggle();
 	});
 
 	ImageControl.init();

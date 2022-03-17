@@ -615,24 +615,24 @@ function AddImage(i, o, t, tc) {
     i.height = o.height * s;
   }
 
-  	// kamoru add. width or height fix
-  	if (tc.imageMaxWidth && tc.imageMaxWidth < i.width) {
-  		i.width  = tc.imageMaxWidth;
-  		i.height = Math.round(i.width * o.height / o.width);
-  	}
-  	if (tc.imageMaxHeight && tc.imageMaxHeight < i.height) {
-  		i.height = tc.imageMaxHeight;
-  		i.width  = Math.round(i.height * o.width / o.height);
-  	}
-  	if (tc.imageMinWidth && i.width < tc.imageMinWidth) {
+  // kamoru add. width or height fix
+  if (tc.imageMaxWidth && tc.imageMaxWidth < i.width) {
+    i.width  = tc.imageMaxWidth;
+  	i.height = Math.round(i.width * o.height / o.width);
+  }
+  if (tc.imageMaxHeight && tc.imageMaxHeight < i.height) {
+    i.height = tc.imageMaxHeight;
+  	i.width  = Math.round(i.height * o.width / o.height);
+  }
+  if (tc.imageMinWidth && i.width < tc.imageMinWidth) {
 		i.width  = tc.imageMinWidth;
 		i.height = Math.round(i.width * o.height / o.width);
 	}
-  	if (tc.imageMinHeight && i.height < tc.imageMaxHeight) {
-  		i.height = tc.imageMinHeight;
-  		i.width  = Math.round(i.height * o.width / o.height);
-  	}
-  	// console.log('image size', o.width + "x" + o.height, ' -> ', i.width + "x" + i.height)
+  if (tc.imageMinHeight && i.height < tc.imageMaxHeight) {
+    i.height = tc.imageMinHeight;
+  	i.width  = Math.round(i.height * o.width / o.height);
+  }
+  // console.log('image size', o.width + "x" + o.height, ' -> ', i.width + "x" + i.height)
 
   // the standard width of the image, with imageScale applied
   t.iw = i.width;
@@ -745,10 +745,10 @@ function EventXY(e, c) {
 }
 function MouseOut(e) {
   var cv = e.target || e.fromElement.parentNode, tc = TagCanvas.tc[cv.id];
-  if(tc) {
-   tc.mx = tc.my = -1;
-   tc.UnFreeze();
-   tc.EndDrag();
+  if (tc) {
+    tc.mx = tc.my = -1;
+    tc.UnFreeze();
+    tc.EndDrag();
   }
 }
 function MouseMove(e) {

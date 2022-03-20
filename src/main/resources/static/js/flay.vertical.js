@@ -1061,7 +1061,7 @@
 
 			const actress = getActress(name);
 			if (actress === null) {
-				throw 'not found ' + name;
+				throw 'not found actress: ' + name;
 			}
 
 			const $actress = $('<div>', { class: 'info-actress' })
@@ -1070,17 +1070,17 @@
 					$('<label>', { class: 'text info-actress-favorite hover' }).append($('<i>', { class: 'fa ' + (actress.favorite ? 'favorite fa-heart' : 'fa-heart-o') }).css('min-width', 16)),
 					$('<label>', { class: 'text info-actress-name hover', title: actress.comment }).html(name),
 					$('<label>', { class: 'text info-actress-local' }).html(actress.localName),
-					$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress, currentFlay.release.substring(0, 4)).ifNotZero('<small>y</small>')),
 					$('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
 					$('<label>', { class: 'text info-actress-avgrank' }).html('&nbsp;').neonLoading(true),
+					// $('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress, currentFlay.release.substring(0, 4)).ifNotZero('<small>y</small>')),
 					$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
 					$('<label>', { class: 'text info-actress-birth' }).html(
-						actress.birth.replace(/年|月|日/g, function (match, offset, string) {
+						actress.birth.replace(/年|月|日/g, (match, offset, string) => {
 							return '<small>' + match + '</small>';
 						}),
 					),
 					$('<label>', { class: 'text info-actress-body' }).html(
-						actress.body.replace(/ - /g, function (match) {
+						actress.body.replace(/ - /g, (match) => {
 							return '<small>' + match.trim() + '</small>';
 						}),
 					),

@@ -69,9 +69,9 @@ const Util = {
 			}
 			return list;
 		},
-		getAge: function (actress) {
+		getAge: function (actress, baseYear) {
 			if (actress.birth && actress.birth.length > 3) {
-				return todayYear - parseInt(actress.birth.substring(0, 4)) + 1;
+				return Number(baseYear || todayYear) - parseInt(actress.birth.substring(0, 4)) + 1;
 			} else {
 				return 0;
 			}
@@ -123,11 +123,14 @@ const URL_SEARCH_AVNORI = 'https://avnori6.com/bbs/search.php?search_flag=search
 const URL_SEARCH_NEXTJAV = 'https://nextjav.com/torrent/detail/';
 const URL_SEARCH_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
 const URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
+
 const URL_SEARCH_GOOGLE = 'https://www.google.co.kr/search?q=';
 const URL_TRANSLATE_GOOGLE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
 const URL_TRANSLATE_PAPAGO = 'https://papago.naver.com/?sk=auto&tk=ko&st=';
-const URL_FIND_ACTRESS = 'http://javtorrent.re/tag/';
+
 const URL_SEARCH_SUBTITLES = 'https://www.subtitlecat.com/index.php?search=';
+
+const URL_FIND_ACTRESS = 'http://javtorrent.re/tag/';
 
 const Search = {
 	opus: (keyword) => {

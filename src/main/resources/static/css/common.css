@@ -28,6 +28,7 @@
 body {
 	background-color: var(--color-bg);
 	color: var(--color-text);
+	min-height: 100vh;
 	transition: background-color 0.5s;
 }
 
@@ -686,6 +687,11 @@ button.btn.btn-outline-flay {
 	background-color: var(--color-bg-form);
 	border: 1px solid var(--color-border-form);
 	color: var(--color-text-form);
+}
+
+.btn-group > .btn,
+.input-group-append > .btn {
+	border: 1px solid var(--color-border-form);
 }
 
 #topMenu {

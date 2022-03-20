@@ -65,6 +65,7 @@ var SlideMenu = {
 					} else {
 						console.error('Notfound mode', menu);
 					}
+					document.title = menu.name + ' Flayground';
 					$('.nav-wrap .active').removeClass('active');
 					$(this).addClass('active');
 				});
@@ -89,6 +90,7 @@ var SlideMenu = {
 		$('#username').html(username);
 		$('#mainHome')
 			.on('click', () => {
+				document.title = 'Flayground';
 				$('#wrap_body').empty();
 				$('.nav-wrap .active').removeClass('active');
 			})

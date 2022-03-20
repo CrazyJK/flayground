@@ -51,9 +51,22 @@ $('#search').on('click', function () {
 	Search.actress(keyword);
 });
 
-$('#find').on('click', function () {
-	var keyword = actress.localName != '' ? actress.localName : actress.name;
-	Search.find(keyword);
+$('input:radio[name="filter"]').on('change', (e) => {
+	console.log('filter', $(e.target).val());
+	const filterVal = $(e.target).val();
+	switch (filterVal) {
+		case 'u':
+			$('.flay-list > .flay-card').hide();
+			$('.flay-list > .flay-card.unrank').show();
+			break;
+		case 'i':
+			$('.flay-list > .flay-card').hide();
+			$('.flay-list > .flay-card.instance').show();
+			break;
+		case 'a':
+			$('.flay-list > .flay-card').show();
+			break;
+	}
 });
 
 $('#save').on('click', function () {
@@ -80,22 +93,6 @@ $('#save').on('click', function () {
 	}
 });
 
-$('#unseen').on('click', function () {
-	let active = $(this).data('active') !== true;
-	$flayList.children().each(function (idx, flay) {
-		let $flay = $(flay);
-		let flayData = $flay.data('flay');
-		if (active) {
-			$flay.toggle(flayData.video.rank === 0 && !flayData.archive);
-		} else {
-			$flay.show();
-		}
-	});
-	$(this)
-		.html(active ? 'All' : 'Unseen')
-		.data('active', active);
-});
-
 $('#delete').on('click', function () {
 	confirm('confirm your order. delete this?') &&
 		Rest.Actress.delete(actress, function () {
@@ -103,12 +100,8 @@ $('#delete').on('click', function () {
 		});
 });
 
-$('#toggleArchive').on('click', () => {
-	$('.archive').toggle();
-});
-
-Rest.Actress.get(name, function (_actress) {
-	actress = _actress;
+Rest.Actress.get(name, (_actress_) => {
+	actress = _actress_;
 	document.title = actress.name + ' - ' + document.title;
 
 	$('#name').val(actress.name);
@@ -122,11 +115,14 @@ Rest.Actress.get(name, function (_actress) {
 		$('.fa-heart').removeClass('favorite fa-heart').addClass('fa-heart-o');
 	}
 
-	$flayList.empty();
-	var flayAllList = [];
-	Rest.Flay.findByActress(actress, function (flayList) {
-		$('#videoCount').val(flayList.length);
-
+	Promise.all([
+		new Promise((resolve) => {
+			Rest.Flay.findByActress(actress, resolve);
+		}),
+		new Promise((resolve) => {
+			Rest.Flay.findByActressInArchive(actress, resolve);
+		}),
+	]).then(([instanceList, archiveList]) => {
 		$('#avgRank').html(
 			((flayList) => {
 				let rankAvg = { sum: 0, cnt: 0 };
@@ -137,29 +133,30 @@ Rest.Actress.get(name, function (_actress) {
 						rankAvg.cnt++;
 					});
 				return (rankAvg.sum / rankAvg.cnt).toFixed(1);
-			})(flayList),
+			})(instanceList),
 		);
 
-		Rest.Flay.findByActressInArchive(actress, function (flayArchiveList) {
-			$('#videoCount').val(flayList.length + ' / ' + (flayList.length + flayArchiveList.length));
+		const flayAllList = [...instanceList, ...archiveList];
+		flayAllList.sort((flay1, flay2) => {
+			return $.trim(flay2.release).toLowerCase().localeCompare($.trim(flay1.release));
+		});
 
-			flayAllList = flayList.concat(flayArchiveList);
-
-			flayAllList.sort(function (flay1, flay2) {
-				var release1 = $.trim(flay1.release);
-				var release2 = $.trim(flay2.release);
-				return release2.toLowerCase().localeCompare(release1);
-			});
-
-			$.each(flayAllList, function (idx, flay) {
-				$flayList.appendFlayCard(flay, {
-					width: 330,
-					exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-					fontSize: '80%',
-					archive: flay.archive,
-				});
+		let unrankCount = 0;
+		$flayList.empty();
+		flayAllList.forEach((flay) => {
+			unrankCount += !flay.archive && flay.video.rank === 0 ? 1 : 0;
+			$flayList.appendFlayCard(flay, {
+				width: 330,
+				exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+				fontSize: '80%',
+				archive: flay.archive,
+				class: flay.archive ? 'archive' : 'instance' + (flay.video.rank === 0 ? ' unrank' : ''),
 			});
 		});
+
+		$('.filter-cnt-unrank').html(unrankCount);
+		$('.filter-cnt-instance').html(instanceList.length);
+		$('.filter-cnt-all-flay').html(flayAllList.length);
 	});
 
 	if (actress.coverSize > 0) {

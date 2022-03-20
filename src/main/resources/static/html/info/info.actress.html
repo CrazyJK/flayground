@@ -41,10 +41,10 @@
 	</head>
 	<body>
 		<nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center sticky-top">
-			<form onsubmit="() => { return false; }" id="infoForm">
+			<div id="infoForm">
 				<div class="row mb-2">
 					<div class="col-1">
-						<button class="btn btn-outline-danger float-left" id="delete">Del</button>
+						<button class="btn btn-outline-danger float-left border-secondary" id="delete">Del</button>
 					</div>
 					<div class="col-4">
 						<div class="input-group">
@@ -52,21 +52,22 @@
 								<span class="input-group-text hover"><em class="fa fa-heart favorite" id="favorite"></em></span>
 							</div>
 							<div class="input-group-prepend">
-								<span class="input-group-text" id="avgRank">0.0</span>
+								<span class="input-group-text" id="avgRank" title="Avg Rank">0.0</span>
 							</div>
 							<input class="form-control text-center" name="name" id="name" />
 						</div>
 					</div>
-					<div class="col-3">
-						<input class="form-control text-center" name="localName" id="localName" placeholder="LocalName..." />
+					<div class="col-4">
+						<div class="input-group">
+							<input class="form-control text-center" name="localName" id="localName" placeholder="LocalName..." />
+							<div class="input-group-append">
+								<button class="btn btn-outline-secondary" id="search">Search</button>
+							</div>
+						</div>
 					</div>
-					<div class="col-3">
-						<button class="btn btn-outline-secondary" id="search">Search</button>
-						<button class="btn btn-outline-secondary" id="find">Find</button>
-						<button class="btn btn-outline-secondary" id="unseen">Unseen</button>
-					</div>
+					<div class="col-2"></div>
 					<div class="col-1">
-						<button class="btn btn-outline-primary" id="save">Save</button>
+						<button class="btn btn-outline-primary border-secondary" id="save">Save</button>
 					</div>
 				</div>
 				<div class="row mb-2">
@@ -78,7 +79,7 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-3">
+					<div class="col-2">
 						<input class="form-control text-center" name="body" id="body" placeholder="Body..." />
 					</div>
 					<div class="col-2">
@@ -97,13 +98,18 @@
 							</div>
 						</div>
 					</div>
-					<div class="col-2">
-						<div class="input-group">
-							<input class="form-control text-right" name="video_count" id="videoCount" readonly="readonly" />
-							<div class="input-group-append">
-								<span class="input-group-text" id="toggleArchive">Video</span>
-							</div>
-						</div>
+					<div class="col-3">
+						<span class="check-group mt-1">
+							<label>
+								<input type="radio" name="filter" value="u" /><span>unRank<i class="badge filter-cnt-unrank"></i></span>
+							</label>
+							<label>
+								<input type="radio" name="filter" value="i" /><span>Inst<i class="badge filter-cnt-instance"></i></span>
+							</label>
+							<label>
+								<input type="radio" name="filter" value="a" checked /><span>All<i class="badge filter-cnt-all-flay"></i></span>
+							</label>
+						</span>
 					</div>
 				</div>
 				<div class="row">
@@ -111,7 +117,7 @@
 						<textarea type="text" class="form-control" id="comment" placeholder="comment..."></textarea>
 					</div>
 				</div>
-			</form>
+			</div>
 		</nav>
 
 		<div class="actress-cover-wrapper"></div>

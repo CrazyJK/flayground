@@ -6,6 +6,8 @@
 	--cover-height-lg: calc(var(--cover-width-lg) * var(--cover-ratio));
 	--cover-width-sm: 600px;
 	--cover-height-sm: calc(var(--cover-width-sm) * var(--cover-ratio));
+	--actress-width: 800px;
+	--actress-width-lg: 960px;
 }
 body {
 	overflow: hidden;
@@ -79,7 +81,7 @@ body {
 .info-actress {
 	display: flex;
 	margin: 0 auto;
-	max-width: 800px;
+	max-width: var(--actress-width);
 }
 .info-actress .info-actress-favorite {
 	flex: 0 0 2rem;
@@ -96,7 +98,7 @@ body {
 	text-align: right;
 }
 .info-actress .info-actress-avgrank {
-	flex: 0 0 4rem;
+	flex: 0 0 4.25rem;
 }
 .info-actress .info-actress-age {
 	flex: 0 0 3rem;
@@ -293,6 +295,7 @@ label.text:empty {
 	}
 	.info-wrapper-actress > div {
 		margin: 0.5rem auto;
+		max-width: var(--actress-width-lg);
 	}
 	.cover-box {
 		width: var(--cover-width-lg);

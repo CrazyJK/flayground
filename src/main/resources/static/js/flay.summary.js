@@ -2,8 +2,6 @@
  * flay summary js
  */
 (() => {
-	document.title = 'Summary ' + document.title;
-
 	const filterCount = 5;
 
 	let instanceList = [];

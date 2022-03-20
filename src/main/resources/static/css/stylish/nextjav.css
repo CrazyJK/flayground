@@ -5,14 +5,30 @@
  */
 
 .portfolio_item:hover img {
-    -webkit-transform: none;
-    -ms-transform: none;
-    -o-transform: none;
-    transform: none;
+	-webkit-transform: none;
+	-ms-transform: none;
+	-o-transform: none;
+	transform: none;
 }
 .portfolio_item .ql_border_hover {
-    background-color: transparent;
+	background-color: transparent;
 }
 .portfolio_item .ql_hover h2 {
 	text-shadow: 1px 1px 4px black;
+}
+
+#container,
+.portfolio_item a {
+	opacity: 1 !important;
+}
+.portfolio_item:hover img {
+	transform: unset !important;
+}
+.portfolio_item .ql_hover,
+.portfolio_item:hover .ql_hover {
+	transform: translate(0, -10px) !important;
+	background-color: rgba(0, 0, 0, 0.5) !important;
+}
+.portfolio_item:hover .ql_border_hover {
+	display: none !important;
 }

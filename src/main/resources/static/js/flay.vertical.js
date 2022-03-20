@@ -144,47 +144,56 @@
 				}
 
 				if (e.type === 'keyup') {
-					const currentTime = new Date().getTime();
-					// 5s over, key reset
-					if (currentTime - keyLastInputTime > 5000) {
-						keyInputQueue = '';
-					}
-					keyLastInputTime = currentTime;
-
-					// navigation.go of input number
-					if (signal === 13 && keyInputQueue !== '') {
-						// enter
-						if ($.isNumeric(keyInputQueue)) {
-							// if number, go index
-							navigation.go(parseInt(keyInputQueue) - 1);
-						} else {
-							// else, go opus
-							if (collectedList.length > 0) {
-								let foundIndex = -1;
-								collectedList.forEach((flay, index) => {
-									if (flay.opus === keyInputQueue.toUpperCase()) {
-										foundIndex = index;
-										return false;
-									}
-								});
-								if (foundIndex > -1) {
-									navigation.go(foundIndex);
-								} else {
-									loading.on('Notfound ' + keyInputQueue);
-								}
-							}
+					// filter key
+					// [a-z]: 65 ~ 90
+					// [0-9]: 48 ~ 57, 96 ~ 105 (numpad)
+					// -: 189, 109 (numpad)
+					// enter: 13
+					// backspace: 8
+					if ((65 <= signal && signal <= 96) || (48 <= signal && signal <= 57) || (96 <= signal && signal <= 105) || 189 === signal || 109 === signal || 13 === signal || 8 === signal) {
+						const currentTime = new Date().getTime();
+						// 5s over, key reset
+						if (currentTime - keyLastInputTime > 5000) {
+							keyInputQueue = '';
 						}
-						keyInputQueue = '';
-					} else if (signal === 8) {
-						// backspace
-						keyInputQueue = keyInputQueue.slice(0, -1);
-					} else if (signal === 16 || signal === 17 || signal === 18) {
-						// shift, alt, control PASS!
-					} else {
-						// add key queue
-						keyInputQueue += e.key;
+						keyLastInputTime = currentTime;
+
+						switch (signal) {
+							case 13: // enter
+								// navigation.go of input text
+								if (keyInputQueue !== '') {
+									if ($.isNumeric(keyInputQueue)) {
+										// if number, go index
+										navigation.go(parseInt(keyInputQueue) - 1);
+									} else {
+										// else, go opus
+										if (collectedList.length > 0) {
+											let foundIndex = -1;
+											collectedList.forEach((flay, index) => {
+												if (flay.opus === keyInputQueue.toUpperCase()) {
+													foundIndex = index;
+													return false;
+												}
+											});
+											if (foundIndex > -1) {
+												navigation.go(foundIndex);
+											} else {
+												loading.on('Notfound ' + keyInputQueue);
+											}
+										}
+									}
+									keyInputQueue = '';
+								}
+								break;
+							case 8: // backspace
+								keyInputQueue = keyInputQueue.slice(0, -1);
+								break;
+							default:
+								keyInputQueue += e.key;
+								break;
+						}
+						notice(keyInputQueue);
 					}
-					notice(keyInputQueue);
 				}
 			});
 		},
@@ -1061,6 +1070,7 @@
 					$('<label>', { class: 'text info-actress-favorite hover' }).append($('<i>', { class: 'fa ' + (actress.favorite ? 'favorite fa-heart' : 'fa-heart-o') }).css('min-width', 16)),
 					$('<label>', { class: 'text info-actress-name hover', title: actress.comment }).html(name),
 					$('<label>', { class: 'text info-actress-local' }).html(actress.localName),
+					$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress, currentFlay.release.substring(0, 4)).ifNotZero('<small>y</small>')),
 					$('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
 					$('<label>', { class: 'text info-actress-avgrank' }).html('&nbsp;').neonLoading(true),
 					$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
@@ -1313,7 +1323,7 @@
 	let historyChart = null;
 	const now = new Date();
 	const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
-	console.log('oneYearAgo', oneYearAgo);
+	console.debug('oneYearAgo', oneYearAgo);
 	// const oneYearAgo = AmCharts.stringToDate(DateUtils.format('yyyy-01-01'), 'YYYY-MM-DD');
 
 	function drawGraph(historyList) {

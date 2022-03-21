@@ -238,7 +238,7 @@
 			}
 			var prevIndex = currentIndex;
 			currentIndex = idx;
-			if (prevIndex === currentIndex) {
+			if (collectedList.length > 1 && prevIndex === currentIndex) {
 				return;
 			}
 			currentFlay = collectedList[currentIndex];
@@ -272,6 +272,7 @@
 			const pageLength = 12;
 			var start = Math.max(currentIndex - (pageLength / 2 - 1), 0);
 			var end = Math.min(currentIndex + pageLength / 2, collectedList.length);
+			console.debug(`[paging] start=${start} end=${end}`);
 
 			if (start > 0) {
 				addPaginationBtn(0); // first page

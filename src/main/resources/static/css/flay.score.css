@@ -115,6 +115,9 @@ body {
 	flex: 0 0 55px;
 	text-align: right;
 }
+#flayView .active {
+	color: var(--color-text);
+}
 
 .actress-no {
 	flex: 0 0 30px;

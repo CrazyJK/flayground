@@ -49,7 +49,7 @@ public class ScoreCalculator {
 		});
 
 		return flayList.stream()
-				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0)
+				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0) // 비디오가 없는 것 제외
 				.sorted(
 						scoreComparator.reversed().thenComparing(
 								studioPointComparator.reversed().thenComparing(
@@ -62,10 +62,15 @@ public class ScoreCalculator {
 	public void calcScore(Flay flay) {
 		flay.setScore(resolveRank(flay) * flayProperties.getScore().getRankPoint()
 				// + flay.getVideo().getPlay() * flayProperties.getScore().getPlayPoint()
-				+ (flay.getFiles().get(Flay.SUBTI).size() > 0 ? 1 : 0) * flayProperties.getScore().getSubtitlesPoint()
+				+ existingCountOfSubtitle(flay) * flayProperties.getScore().getSubtitlesPoint()
 				+ countFavoriteActress(flay) * flayProperties.getScore().getFavoritePoint());
 	}
 
+	/**
+	 * flay의 rank. rank == 0 이면, tag에서 찾는다
+	 * @param flay
+	 * @return
+	 */
 	private int resolveRank(Flay flay) {
 		if (flay.getVideo().getRank() != 0) {
 			return flay.getVideo().getRank();
@@ -76,6 +81,20 @@ public class ScoreCalculator {
 		}
 	}
 
+	/**
+	 * 자막이 있으면 1, 없으면 0
+	 * @param flay
+	 * @return
+	 */
+	private int existingCountOfSubtitle(Flay flay) {
+		return flay.getFiles().get(Flay.SUBTI).size() > 0 ? 1 : 0;
+	}
+
+	/**
+	 * flay의 배우들의 favorite 갯수
+	 * @param flay
+	 * @return
+	 */
 	private int countFavoriteActress(Flay flay) {
 		return flay.getActressList().stream().mapToInt(a -> StringUtils.isNotBlank(a) && actressInfoSource.get(a).isFavorite() ? 1 : 0).sum();
 	}

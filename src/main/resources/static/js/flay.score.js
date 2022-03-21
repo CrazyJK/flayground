@@ -38,10 +38,10 @@
 		$('input[name="viewType"]').on('change', function () {
 			const viewType = $(this).val();
 			if (viewType === 'f') {
-				$('#flayView').show();
+				$('#flayView, #flayListOptions').show();
 				$('#actressView').hide();
 			} else if (viewType === 'a') {
-				$('#flayView').hide();
+				$('#flayView, #flayListOptions').hide();
 				$('#actressView').show();
 			}
 		});
@@ -131,11 +131,27 @@
 		);
 
 		// only lower score view
-		$('#lowerScore').on('change', function () {
+		$('#lowerScore').on('change', function (e) {
+			e.stopPropagation();
 			var checked = this.checked;
-			console.debug('lowerScore', checked);
 			$('#flayView > .f-body > div:not(.lower-score)').toggle(!checked);
 			$('#flayCount').html($('#flayView > .f-body > div:visible').length);
+			console.debug('lowerScore changed', checked);
+		});
+
+		$('#clickNplay').on('change', (e) => {
+			e.stopPropagation();
+			console.debug('clickNplay changed', e.target.checked);
+		});
+
+		// toggle column
+		$('#flayView > .f-head > div > label').on('click', (e) => {
+			e.stopPropagation();
+			if ('LABEL' === e.target.tagName) {
+				const className = $(e.target).attr('class');
+				$('.' + className.replace(/ /g, '.')).toggleClass('active');
+				console.debug('head column click', e.target.tagName);
+			}
 		});
 	}
 

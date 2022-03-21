@@ -31,6 +31,10 @@
 					<input type="radio" name="viewType" value="a" /><span><strong id="actressCount"></strong> Actress</span>
 				</label>
 			</span>
+			<span id="flayListOptions">
+				<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="lowerScore" /><span>lowerScore</span></label>
+				<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="clickNplay" /><span>click & play</span></label>
+			</span>
 			<span class="font-weight-bolder">Storage Limit <span id="storageLimit"></span> GB</span>
 			<a href="../../html/main.html"><i class="fa fa-home lead p-2"></i></a>
 		</div>
@@ -40,23 +44,19 @@
 				<div>
 					<label class="flay-index">#</label>
 					<label class="flay-opus">opus</label>
-					<label class="flay-title">
-						title
-						<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="lowerScore" /><span>lowerScore</span></label>
-						<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="clickNplay" /><span>click & play</span></label>
-					</label>
+					<label class="flay-title"> title </label>
 					<label class="flay-actress">actress</label>
 					<label class="flay-release">release</label>
 					<label class="flay-modified">modified</label>
 					<label class="flay-movie">mov</label>
-					<label class="flay-subti">sub</label>
+					<label class="flay-subti" title="subtitles">sub</label>
 					<label class="flay-play">play</label>
 					<label class="flay-rank">rank</label>
-					<label class="flay-score">sco</label>
-					<label class="flay-studioPoint">sp</label>
-					<label class="flay-actressPoint">ap</label>
+					<label class="flay-score" title="score">sco</label>
+					<label class="flay-studioPoint" title="studio Point">sp</label>
+					<label class="flay-actressPoint" title="actress Point">ap</label>
 					<label class="flay-length">length</label>
-					<label class="flay-total">total</label>
+					<label class="flay-total" title="cumulative size">total</label>
 				</div>
 			</div>
 			<div class="f-body"></div>

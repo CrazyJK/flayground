@@ -107,7 +107,7 @@ public class BatchExecutor {
 
 		assembleFlay();
 
-		deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath()));
+		deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(), flayProperties.getStoragePath()));
 
 		instanceFlaySource.load();
 

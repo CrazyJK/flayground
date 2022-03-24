@@ -123,8 +123,10 @@
 						navigation.random();
 						break;
 					case 1002: // mouseup  : middle click
-						navigation.random();
-						$('.info-video').trigger('click'); // video play
+						navigation.random({
+							play: true,
+						});
+						// $('.info-video').trigger('click'); // video play
 						break;
 					case 1001: // mouseup  : left click. auto slide off
 						$('#autoSlide').prop('checked', false).trigger('change');
@@ -217,7 +219,7 @@
 				navigation.go(currentIndex + 1);
 			}
 		},
-		random: function (e) {
+		random: function (args) {
 			if (!Flaying.isPlay) {
 				let randomIndex = -1;
 				do {
@@ -228,10 +230,10 @@
 					}
 				} while (seenList.length < collectedList.length);
 
-				navigation.go(randomIndex);
+				navigation.go(randomIndex, args);
 			}
 		},
-		go: function (idx) {
+		go: function (idx, args) {
 			if (idx < 0 || idx > collectedList.length - 1) {
 				console.error(`navigation.go wrong index ${idx}`);
 				return;
@@ -252,7 +254,7 @@
 				notice(`<span class="text-danger">Saw every flay</span>`);
 			}
 
-			showVideo();
+			showVideo(args);
 			navigation.paging();
 		},
 		paging: function () {
@@ -1023,7 +1025,7 @@
 		$('#statisticsActress > label:first-child').toggle(minCount > 1);
 	}
 
-	function showVideo() {
+	function showVideo(args) {
 		const setBackgroundCover = (selector, opus) => {
 			if (opus) {
 				if (SessionStorageItem.has(opus)) {
@@ -1041,6 +1043,108 @@
 
 		navigation.off();
 
+		Promise.all([
+			new Promise((resolve, reject) => {
+				// actress
+				$('.info-wrapper-actress').empty();
+				currentFlay.actressList.forEach((name) => {
+					if (name === 'Amateur') {
+						return;
+					}
+
+					const actress = getActress(name);
+					if (actress === null) {
+						throw 'not found actress: ' + name;
+					}
+
+					const $actress = $('<div>', { class: 'info-actress' })
+						.data('actress', actress)
+						.append(
+							$('<label>', { class: 'text info-actress-favorite hover' }).append($('<i>', { class: 'fa ' + (actress.favorite ? 'favorite fa-heart' : 'fa-heart-o') }).css('min-width', 16)),
+							$('<label>', { class: 'text info-actress-name hover', title: actress.comment }).html(name),
+							$('<label>', { class: 'text info-actress-local' }).html(actress.localName),
+							$('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
+							$('<label>', { class: 'text info-actress-avgrank' }).html('&nbsp;').neonLoading(true),
+							// $('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress, currentFlay.release.substring(0, 4)).ifNotZero('<small>y</small>')),
+							$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
+							$('<label>', { class: 'text info-actress-birth' }).html(
+								actress.birth.replace(/年|月|日/g, (match, offset, string) => {
+									return '<small>' + match + '</small>';
+								}),
+							),
+							$('<label>', { class: 'text info-actress-body' }).html(
+								actress.body.replace(/ - /g, (match) => {
+									return '<small>' + match.trim() + '</small>';
+								}),
+							),
+							$('<label>', { class: 'text info-actress-height' }).html(actress.height.ifNotZero('<small>cm</small>')),
+							$('<label>', { class: 'text info-actress-debut' }).html(actress.debut.ifNotZero('<small>d</small>')),
+						)
+						.appendTo($('.info-wrapper-actress'));
+
+					Rest.Flay.findByActress(name, (flayListOfActress) => {
+						$actress.find('.info-actress-flaycount').html(`${flayListOfActress.length}<small>F</small>`).neonLoading(false);
+						$actress
+							.find('.info-actress-avgrank')
+							.html(
+								((flayList) => {
+									let rankAvg = { sum: 0, cnt: 0 };
+									flayList
+										.filter((flay) => flay.video.rank > 0)
+										.forEach((flay) => {
+											rankAvg.sum += flay.video.rank;
+											rankAvg.cnt++;
+										});
+									return (rankAvg.cnt > 0 ? (rankAvg.sum / rankAvg.cnt).toFixed(1) : 0) + '<small>R/' + rankAvg.cnt + '</small>';
+								})(flayListOfActress),
+							)
+							.neonLoading(false);
+					});
+				});
+				resolve(true);
+			}),
+			new Promise((resolve, reject) => {
+				// history chart
+				if (currentFlay.video.play > 0) {
+					$('.history-wrapper').show();
+					Rest.History.find(currentFlay.opus, (histories) => {
+						drawGraph(histories);
+						const playHistories = histories.filter((history) => history.action === 'PLAY');
+						if (currentFlay.video.play !== playHistories.length) {
+							currentFlay.video.play = playHistories.length;
+							Rest.Video.update(currentFlay.video, () => {
+								$('.info-play').html(`${currentFlay.video.play}<small>P</small>`);
+								resolve(true);
+							});
+						} else {
+							resolve(true);
+						}
+					});
+				} else {
+					$('.history-wrapper').hide();
+					resolve(true);
+				}
+			}),
+			new Promise((resolve, reject) => {
+				// score
+				$('.info-score').neonLoading(true);
+				Rest.Flay.getScore(currentFlay.opus, (score) => {
+					$('.info-score')
+						.html(`${score}<small>S</small>`)
+						.toggle(score > 0)
+						.neonLoading(false);
+					resolve(true);
+				});
+			}),
+		]).then(([r1, r2, r3]) => {
+			if (args) {
+				if (args.play) {
+					$('.info-video').trigger('click');
+				}
+			}
+			navigation.on();
+		});
+
 		// show cover
 		setBackgroundCover('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
 		setBackgroundCover('.cover-wrapper-inner.curr > .cover-box', collectedList[currentIndex]?.opus);
@@ -1053,62 +1157,6 @@
 		$('.info-opus').html(currentFlay.opus);
 		// title
 		$('.info-title').html(currentFlay.title);
-		// actress
-		$('.info-wrapper-actress').empty();
-		currentFlay.actressList.forEach((name) => {
-			if (name === 'Amateur') {
-				return;
-			}
-
-			const actress = getActress(name);
-			if (actress === null) {
-				throw 'not found actress: ' + name;
-			}
-
-			const $actress = $('<div>', { class: 'info-actress' })
-				.data('actress', actress)
-				.append(
-					$('<label>', { class: 'text info-actress-favorite hover' }).append($('<i>', { class: 'fa ' + (actress.favorite ? 'favorite fa-heart' : 'fa-heart-o') }).css('min-width', 16)),
-					$('<label>', { class: 'text info-actress-name hover', title: actress.comment }).html(name),
-					$('<label>', { class: 'text info-actress-local' }).html(actress.localName),
-					$('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
-					$('<label>', { class: 'text info-actress-avgrank' }).html('&nbsp;').neonLoading(true),
-					// $('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress, currentFlay.release.substring(0, 4)).ifNotZero('<small>y</small>')),
-					$('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
-					$('<label>', { class: 'text info-actress-birth' }).html(
-						actress.birth.replace(/年|月|日/g, (match, offset, string) => {
-							return '<small>' + match + '</small>';
-						}),
-					),
-					$('<label>', { class: 'text info-actress-body' }).html(
-						actress.body.replace(/ - /g, (match) => {
-							return '<small>' + match.trim() + '</small>';
-						}),
-					),
-					$('<label>', { class: 'text info-actress-height' }).html(actress.height.ifNotZero('<small>cm</small>')),
-					$('<label>', { class: 'text info-actress-debut' }).html(actress.debut.ifNotZero('<small>d</small>')),
-				)
-				.appendTo($('.info-wrapper-actress'));
-
-			Rest.Flay.findByActress(name, (flayListOfActress) => {
-				$actress.find('.info-actress-flaycount').html(`${flayListOfActress.length}<small>F</small>`).neonLoading(false);
-				$actress
-					.find('.info-actress-avgrank')
-					.html(
-						((flayList) => {
-							let rankAvg = { sum: 0, cnt: 0 };
-							flayList
-								.filter((flay) => flay.video.rank > 0)
-								.forEach((flay) => {
-									rankAvg.sum += flay.video.rank;
-									rankAvg.cnt++;
-								});
-							return (rankAvg.cnt > 0 ? (rankAvg.sum / rankAvg.cnt).toFixed(1) : 0) + '<small>R/' + rankAvg.cnt + '</small>';
-						})(flayListOfActress),
-					)
-					.neonLoading(false);
-			});
-		});
 		// release
 		$('.info-release').html(currentFlay.release);
 		// modified
@@ -1122,14 +1170,6 @@
 		$('.info-play')
 			.html(`${currentFlay.video.play}<small>P</small>`)
 			.toggle(currentFlay.video.play > 0);
-		// score
-		$('.info-score').neonLoading(true);
-		Rest.Flay.getScore(currentFlay.opus, (score) => {
-			$('.info-score')
-				.html(`${score}<small>S</small>`)
-				.toggle(score > 0)
-				.neonLoading(false);
-		});
 		// subtitles
 		$('.info-subtitles')
 			.html('Sub')
@@ -1206,27 +1246,12 @@
 				),
 			);
 		});
+		// set rename input
 		$('#rename-studio').val(currentFlay.studio);
 		$('#rename-opus').val(currentFlay.opus);
 		$('#rename-title').val(currentFlay.title);
 		$('#rename-actress').val(currentFlay.actressList.join(', '));
 		$('#rename-release').val(currentFlay.release);
-		// history chart
-		if (currentFlay.video.play > 0) {
-			$('.history-wrapper').show();
-			Rest.History.find(currentFlay.opus, (histories) => {
-				const playHistories = histories.filter((history) => history.action === 'PLAY');
-				if (currentFlay.video.play !== playHistories.length) {
-					currentFlay.video.play = playHistories.length;
-					Rest.Video.update(currentFlay.video, () => {
-						$('.info-play').html(`${currentFlay.video.play}<small>P</small>`);
-					});
-				}
-				drawGraph(histories);
-			});
-		} else {
-			$('.history-wrapper').hide();
-		}
 
 		if ($('#selectTags').is(':visible')) {
 			markStatisticsTag();
@@ -1237,8 +1262,6 @@
 		if ($('#statisticsActress').is(':visible')) {
 			markStatisticsActress();
 		}
-
-		navigation.on();
 	}
 
 	function destory() {

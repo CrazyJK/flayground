@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Flay All</title>
+		<link rel="stylesheet" href="../../css/common.css" />
+		<style>
+			#flayAllContainer {
+				display: flex;
+				flex-wrap: wrap;
+				justify-content: flex-start;
+				gap: 1px;
+			}
+			.flay-item {
+				aspect-ratio: 380 / 538;
+				width: 42px;
+				box-shadow: inset 0 0 4px 2px var(--color-box-shadow);
+				background-position: right top;
+				background-size: cover;
+				background-repeat: no-repeat;
+				transition: 0.4s;
+			}
+		</style>
+		<script defer type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script defer type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script defer type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script defer type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script defer type="text/javascript" src="../../js/crazy.common.js"></script>
+		<script defer type="text/javascript" src="../../js/theme/flay.theme.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.loading.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.rest.service.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.all.js"></script>
+	</head>
+	<body>
+		<main id="flayAllContainer"></main>
+		<footer></footer>
+	</body>
+</html>

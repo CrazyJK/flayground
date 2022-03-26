@@ -1,7 +1,6 @@
 /**
  * flay.main.js
  */
-'use strict';
 
 var SlideMenu = {
 	init: function () {
@@ -69,22 +68,22 @@ var SlideMenu = {
 					$('.nav-wrap .active').removeClass('active');
 					$(this).addClass('active');
 				});
-			let $popup =
-				menu.popup.w === 0 || menu.popup.h === 0
-					? $('<a>')
-					: $('<a>')
-							.on('click', function () {
-								let url = null;
-								if (menu.mode === 'include') {
-									url = '/html/main.popup.html?target=' + menu.uri;
-								} else if (menu.mode === 'href') {
-									url = menu.uri;
-								} else {
-									console.error('Notfound mode', menu);
-								}
-								Popup.open(url, menu.name, menu.popup.w, menu.popup.h);
-							})
-							.append($('<i>', { class: 'fa fa-external-link ml-1 hover' }));
+			let $popup = $('<a>');
+			if (menu.popup.w !== 0 && menu.popup.h !== 0) {
+				$popup
+					.on('click', function () {
+						let url = null;
+						if (menu.mode === 'include') {
+							url = '/html/main.popup.html?target=' + menu.uri;
+						} else if (menu.mode === 'href') {
+							url = menu.uri;
+						} else {
+							console.error('Notfound mode', menu);
+						}
+						Popup.open(url, menu.name, menu.popup.w, menu.popup.h);
+					})
+					.append($('<i>', { class: 'fa fa-external-link ml-1 hover' }));
+			}
 			$li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
 		});
 		$('#username').html(username);
@@ -242,10 +241,14 @@ var Background = {
 			.val(Background.paneWidth);
 		// Picture switch
 		$('#bgFlow').on('change', function () {
-			$(this).prop('checked') ? Background.start() : Background.stop();
+			if ($(this).prop('checked')) {
+				Background.start();
+			} else {
+				Background.stop();
+			}
 		});
 		var backgroundImageShow = LocalStorageItem.getBoolean('flay.background-image', true);
-		backgroundImageShow && $('#bgFlow').parent().click();
+		if (backgroundImageShow) $('#bgFlow').parent().click();
 		// Picture fall down
 		$('#pictureFalldown').on('click', () => {
 			for (let i = 0; i < 20; i++) {

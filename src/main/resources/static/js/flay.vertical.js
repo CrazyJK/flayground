@@ -1,7 +1,6 @@
 /**
  * Video Vertical View Javascript
  */
-'use strict';
 
 (() => {
 	let tagList = [];
@@ -585,7 +584,7 @@
 		// actress name click
 		$('.info-wrapper-actress').on('click', '.info-actress-name', function () {
 			var actress = $(this).closest('.info-actress').data('actress');
-			actress.name != 'Amateur' && View.actress(actress.name);
+			if (actress.name != 'Amateur') View.actress(actress.name);
 		});
 		// actress favorite click
 		$('.info-wrapper-actress').on('click', '.info-actress-favorite i.fa', function () {
@@ -973,22 +972,16 @@
 			);
 		for (const [k, v] of studioMapAsc) {
 			$('#statisticsStudio').append(
-				$('<label>', { class: 'text hover studioTag' + (v < minCount ? ' hide' : '') })
-					.append(
-						$('<span>')
-							.css({
-								fontSize: 16 + v * 0.25,
-							})
-							.html(k),
-						$('<span>', { class: 'badge' }).html(v),
-					)
-					.data('k', k)
-					.on('click', function () {
-						$('#search').val($(this).data('k'));
-						$('#pageContent').trigger('collect');
-					}),
+				$(`<label class="text hover studioTag ${v < minCount ? 'hide' : ''}">
+					<span style="font-size: ${16 + v * 0.25}">${k}</span>
+					<span class="badge">${v}</span>
+				</label>`).data('k', k),
 			);
 		}
+		$('#statisticsStudio .studioTag').on('click', (e) => {
+			$('#search').val($(e.target).data('k'));
+			$('#pageContent').trigger('collect');
+		});
 		$('#statisticsStudio > label:first-child').toggle(minCount > 1);
 
 		$('#statisticsActress')
@@ -1006,22 +999,19 @@
 		for (const [k, v] of actressMapAsc) {
 			const a = getActress(k);
 			$('#statisticsActress').append(
-				$('<label>', { class: 'text hover actressTag' + (v < minCount ? ' hide' : '') })
-					.append(
-						$('<span>')
-							.css({
-								fontSize: 16 + v * 1,
-							})
-							.append(`<i class="fa ${a.favorite ? 'fa-heart' : ''}"></i>`, k),
-						$('<span>', { class: 'badge' }).html(v),
-					)
-					.data('k', k)
-					.on('click', function () {
-						$('#search').val($(this).data('k'));
-						$('#pageContent').trigger('collect');
-					}),
+				$(`<label class="text hover actressTag ${v < minCount ? 'hide' : ''}">
+					<span style="font-size: ${16 + v * 1}">
+						<i class="fa ${a.favorite ? 'fa-heart' : ''}"></i>
+						${k}
+					</span>
+					<span class="badge">${v}</span>
+				</label>`).data('k', k),
 			);
 		}
+		$('#statisticsActress .actressTag').on('click', (e) => {
+			$('#search').val($(e.target).data('k'));
+			$('#pageContent').trigger('collect');
+		});
 		$('#statisticsActress > label:first-child').toggle(minCount > 1);
 	}
 

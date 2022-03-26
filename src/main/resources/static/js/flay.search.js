@@ -56,19 +56,20 @@ function findMode() {
 			rowOpus,
 			(video) => {
 				// success
-				video['title'] = rowTitle;
-				video['desc'] = rowDesc;
+				video.title = rowTitle;
+				video.desc = rowDesc;
 				console.log('video', video);
 
 				Rest.Video.update(video);
 			},
 			() => {
 				// fail
-				const video = new Object();
-				video['opus'] = rowOpus;
-				video['title'] = rowTitle;
-				video['desc'] = rowDesc;
-				video['tags'] = [];
+				const video = {
+					opus: rowOpus,
+					title: rowTitle,
+					desc: rowDesc,
+					tags: [],
+				};
 				console.log('video', video);
 
 				Rest.Video.save(video);
@@ -441,7 +442,7 @@ function searchSource(keyword) {
 		return;
 	}
 
-	var rexp = eval('/' + keyword + '/gi');
+	var rexp = new RegExp(keyword, 'gi');
 	keyword = keyword.toUpperCase();
 
 	// find Flay

@@ -64,12 +64,12 @@
 
 			$self.off('wheel mouseup');
 			$self.on('wheel mouseup', function (e) {
-				$self.data('active') && detectEvent(e, callback);
+				if ($self.data('active')) detectEvent(e, callback);
 			});
 
 			$document.off('keyup');
 			$document.on('keyup', function (e) {
-				$document.data('active') && detectEvent(e, callback);
+				if ($document.data('active')) detectEvent(e, callback);
 			});
 		});
 	};

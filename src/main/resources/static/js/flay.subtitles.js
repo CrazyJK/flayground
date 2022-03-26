@@ -1,7 +1,9 @@
-'use strict';
+/**
+ * subtitles js
+ */
 
 (() => {
-	let noSubtitlesOpusList = new Array();
+	let noSubtitlesOpusList = [];
 	let intervalFindSubtitles = -1;
 	let foundSubtitlesCount = 0;
 	let currentFindingIndex = 0;
@@ -101,7 +103,7 @@
 		$('#btnStopFinding').hide();
 		$('#btnFilterFound').hide();
 		$('#flayList').empty();
-		noSubtitlesOpusList = new Array();
+		noSubtitlesOpusList = [];
 		currentFindingIndex = 0;
 
 		// sorting by release

@@ -392,7 +392,7 @@ function loadBanner() {
 			// Progress.page(imageIndex + 1, imageTotal);
 			pageBar.setValue(imageIndex + 1, imageTotal);
 
-			isPlay && playEffect();
+			if (isPlay) playEffect();
 
 			LocalStorageItem.set('image.banner.index', imageIndex);
 			LocalStorageItem.set('image.banner.width', panelWidth);

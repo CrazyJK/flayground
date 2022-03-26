@@ -122,13 +122,13 @@ var ImageControl = {
 						}),
 						image.name.substring(image.name.length - 18),
 					)
-					.on('click', function (e) {
-						e.preventDefault();
-						Popup.imageByNo($(this).attr('data-index'));
-					})
 					.appendTo($imageWrap);
 			}
 		}
+		$('#imagePane > a').on('click', (e) => {
+			e.preventDefault();
+			Popup.imageByNo($(e.target).attr('data-index'));
+		});
 
 		$('.cloud-info').html('Remaining ' + ImageControl.imageIndexArray.length);
 

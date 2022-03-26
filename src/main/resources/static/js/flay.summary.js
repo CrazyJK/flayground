@@ -754,7 +754,7 @@
 			if (flay.archive) {
 				flay.video.rank = -1;
 			}
-			flay['cellId'] = 'r' + flay.video.rank + 'y' + releaseYear;
+			flay.cellId = 'r' + flay.video.rank + 'y' + releaseYear;
 
 			if (!tableMap.has(flay.cellId)) {
 				tableMap.set(flay.cellId, []);
@@ -847,10 +847,10 @@
 			if (flay.archive) {
 				flay.video.rank = -1;
 			}
-			flay['cellId'] = 'r' + flay.video.rank + 'd' + releaseKey.toFixed(2);
+			flay.cellId = 'r' + flay.video.rank + 'd' + releaseKey.toFixed(2);
 
 			if (!tableMap.has(flay.cellId)) {
-				tableMap.set(flay.cellId, new Array());
+				tableMap.set(flay.cellId, []);
 			}
 			tableMap.get(flay.cellId).push(flay);
 		});

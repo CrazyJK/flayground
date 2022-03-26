@@ -94,10 +94,11 @@ $('#save').on('click', function () {
 });
 
 $('#delete').on('click', function () {
-	confirm('confirm your order. delete this?') &&
+	if (confirm('confirm your order. delete this?')) {
 		Rest.Actress.delete(actress, function () {
 			self.close();
 		});
+	}
 });
 
 Rest.Actress.get(name, (_actress_) => {

@@ -2,61 +2,154 @@
  * flay.all.js
  */
 
-const $flayAllContainer = $('#flayAllContainer');
-
-let showIntervalId = -1;
-let count = 0;
-
-function renderSequential(flayList) {
-	showIntervalId = setInterval(() => {
-		++count;
-
-		const selectedFlay = flayList.splice(Random.getInteger(0, flayList.length - 1), 1)[0];
-
-		$('.flay-item:nth-child(' + count + ')')
-			.attr('title', selectedFlay.opus)
-			.css({
-				backgroundImage: 'url(/static/cover/' + selectedFlay.opus + ')',
-			});
-
-		if (flayList.length === 0) {
-			clearInterval(showIntervalId);
+async function fetchAndDecode(url) {
+	try {
+		let response = await fetch(url);
+		let content;
+		if (!response.ok) {
+			throw new Error(`HTTP error! status: ${response.status}`);
+		} else {
+			var contentType = response.headers.get('content-type');
+			console.log('fetchAndDecode', url, contentType);
+			if (contentType) {
+				if (contentType.includes('application/json')) {
+					return response.json();
+				} else if (contentType.includes('image')) {
+					content = await response.blob();
+				} else if (contentType.includes('text')) {
+					content = await response.text();
+				} else {
+					throw new TypeError("Oops, we haven't got JSON!");
+				}
+			}
 		}
-	}, 100);
-}
-
-function render(flayList) {
-	$('.flay-item').each((index, item) => {
-		const selectedFlay = flayList.splice(Random.getInteger(0, flayList.length - 1), 1)[0];
-		$(item)
-			.attr('data-opus', selectedFlay.opus)
-			.on('click', (e) => {
-				const opus = $(e.target).attr('data-opus');
-				$(e.target).css({
-					backgroundImage: 'url(/static/cover/' + opus + ')',
-				});
-			});
-	});
-}
-
-function resizeContainer() {
-	const itemWidth = $('.flay-item').width() + 1;
-	const columnCount = Math.floor(window.innerWidth / itemWidth);
-	const marginSize = window.innerWidth - columnCount * itemWidth;
-
-	$flayAllContainer.css({
-		marginLeft: marginSize / 2,
-		marginRight: marginSize / 2,
-	});
-}
-
-$(window).on('resize', resizeContainer);
-
-Rest.Flay.list((list) => {
-	for (let i = 0; i < list.length; i++) {
-		$flayAllContainer.append(`<div class="flay-item"></div>`);
+		return content;
+	} catch (e) {
+		console.log(e);
 	}
+}
 
-	resizeContainer();
-	render(list);
-});
+function showCover() {
+	const itemLength = $('.flay-item').length;
+	const itemIndexArray = [...Array(itemLength).keys()];
+	const intervalId = setInterval(() => {
+		const selectItemIndexArray = itemIndexArray.splice(Random.getInteger(0, itemIndexArray.length - 1), 10);
+		console.log('showCover', selectItemIndexArray);
+		if (selectItemIndexArray) {
+			for (const index of selectItemIndexArray) {
+				const $flayItem = $('.flay-item:nth-child(' + (index + 1) + ')');
+				const flay = $flayItem.data('flay');
+				$flayItem
+					.css({
+						backgroundImage: 'url(/static/cover/' + flay.opus + ')',
+					})
+					.addClass(['opened']);
+			}
+		}
+
+		if (itemIndexArray.length === 0) {
+			clearInterval(intervalId);
+		}
+	}, 200);
+
+	/*
+	const funcArray = [];
+	for (let i = 0; i < itemLength; i++) {
+		funcArray.push(
+			new Promise((resolve) => {
+				console.log('func', i);
+				const $flayItem = $('.flay-item:nth-child(' + (i + 1) + ')');
+				const flay = $flayItem.data('flay');
+				fetchAndDecode('/static/cover/' + flay.opus)
+					.then((imageBlob) => {
+						let objectURL = URL.createObjectURL(imageBlob);
+						$flayItem
+							.css({
+								backgroundImage: `url(${objectURL})`,
+							})
+							.addClass(['opened']);
+						resolve(true);
+					})
+					.catch((e) => console.error);
+
+				// $flayItem
+				// 	.css({
+				// 		backgroundImage: 'url(/static/cover/' + flay.opus + ')',
+				// 	})
+				// 	.addClass(['opened']);
+				// resolve(true);
+			}),
+		);
+	}
+	Promise.all(funcArray).then(([]) => {
+		console.log('func finished');
+	});
+	*/
+}
+
+fetchAndDecode('/flay/list')
+	.then((flayList) => {
+		const list = [...flayList];
+		const listLength = list.length;
+		const $flayAllContainer = $('#flayAllContainer');
+		for (let i = 0; i < listLength; i++) {
+			const flay = list.splice(Random.getInteger(0, list.length - 1), 1)[0];
+			$flayAllContainer.append($('<div class="flay-item">').data('flay', flay));
+		}
+
+		// show cover
+		// showCover();
+
+		// event
+		$flayAllContainer.on('mousedown', '.flay-item', (e) => {
+			const $flayItem = $(e.target);
+			const flay = $flayItem.data('flay');
+			const isOpened = $flayItem.hasClass('opened');
+			if (e.which === 1) {
+				if (isOpened) {
+					View.flay(flay.opus);
+				} else {
+					$flayItem
+						.css({
+							backgroundImage: 'url(/static/cover/' + flay.opus + ')',
+						})
+						.addClass(['opened']);
+				}
+			} else if (e.which === 2) {
+				if (isOpened) {
+					Rest.Flay.play(
+						flay,
+						(data, target) => {
+							console.log('play callback', data, target);
+							$('.played').removeClass('played');
+							$(target).addClass('played');
+						},
+						e.target,
+					);
+				}
+			}
+		});
+
+		// window resize
+		$(window)
+			.on('resize', () => {
+				const itemWidth = $('.flay-item').width() + 1;
+				const columnCount = Math.floor(window.innerWidth / itemWidth);
+				const offsetSize = (window.innerWidth - columnCount * itemWidth) / 2;
+
+				$flayAllContainer.css({
+					padding: `4px ${offsetSize}px`,
+				});
+			})
+			.trigger('resize');
+	})
+	.catch((e) => console.error);
+
+fetchAndDecode('/img/svg/flayground1.svg')
+	.then((imageBlob) => {
+		let objectURL = URL.createObjectURL(imageBlob);
+		$('body').css({
+			backgroundImage: `url(${objectURL})`,
+		});
+	})
+	.catch((e) => console.error);

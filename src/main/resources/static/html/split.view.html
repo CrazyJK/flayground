@@ -430,6 +430,14 @@
 					.append($('<script>', { id: 'injectedJK', type: 'text/javascript', src: '/js/override-alert.js' }));
 				$(obj).remove();
 			}
+
+			function reloadSite(obj) {
+				const $site = $(obj).closest('.site');
+				const url = $site.find('.input-address').val();
+				if (url !== '') {
+					$site.find('iframe').attr('src', url);
+				}
+			}
 		</script>
 	</head>
 	<body>
@@ -445,6 +453,9 @@
 								<img class="ico-site ico-panda" src="https://icache.pandalive.co.kr/code:pandatv/favicon.ico" />
 							</div>
 							<input class="form-control form-control-sm input-address" />
+							<div class="input-group-append">
+								<button class="btn btn-sm btn-outline-warning border-0" onclick="reloadSite(this)"><i class="fa fa-refresh"></i></button>
+							</div>
 							<!-- <div class="input-group-append">
 								<button class="btn btn-sm btn-outline-warning border-0" onclick="injectJS(this)">inject JS</button>
 							</div> -->

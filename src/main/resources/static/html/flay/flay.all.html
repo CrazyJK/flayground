@@ -6,20 +6,36 @@
 		<title>Flay All</title>
 		<link rel="stylesheet" href="../../css/common.css" />
 		<style>
+			body {
+				background-repeat: no-repeat;
+				background-size: 800px;
+				background-position: center;
+				background-attachment: fixed;
+			}
 			#flayAllContainer {
 				display: flex;
 				flex-wrap: wrap;
 				justify-content: flex-start;
 				gap: 1px;
+				margin: 0;
+				padding: 0;
 			}
 			.flay-item {
 				aspect-ratio: 380 / 538;
 				width: 42px;
-				box-shadow: inset 0 0 4px 2px var(--color-box-shadow);
+				box-shadow: 0 0 2px 1px var(--color-box-shadow-light);
 				background-position: right top;
 				background-size: cover;
 				background-repeat: no-repeat;
+				border: 0;
 				transition: 0.4s;
+			}
+			.flay-item.opened:hover {
+				transform: scale(5);
+				transition: transform 0.4s 0.3s;
+			}
+			.flay-item.played {
+				box-shadow: 0 0 4px 2px var(--color-text-active), inset 0 0 4px 2px var(--color-text-active);
 			}
 		</style>
 		<script defer type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
@@ -30,6 +46,7 @@
 		<script defer type="text/javascript" src="../../js/theme/flay.theme.js"></script>
 		<script defer type="text/javascript" src="../../js/flay.loading.js"></script>
 		<script defer type="text/javascript" src="../../js/flay.rest.service.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.utils.js"></script>
 		<script defer type="text/javascript" src="../../js/flay.all.js"></script>
 	</head>
 	<body>

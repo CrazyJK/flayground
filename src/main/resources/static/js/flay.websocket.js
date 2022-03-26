@@ -3,170 +3,211 @@
  * ref. http://jmesnil.net/stomp-websocket/doc/
  */
 
-var flayWebsocket = (function ($) {
-	const STOMP_ENDPOINT = '/flayground-websocket';
-	const TOPIC = '/topic';
-	const QUEUE = '/queue';
+class FlayWebsocket {
+	constructor() {
+		this.STOMP_ENDPOINT = '/flayground-websocket';
 
-	const TOPIC_ANNOUNCE = TOPIC + '/announce';
-	const TOPIC_SAY = TOPIC + '/say';
-	const QUEUE_INFO = QUEUE + '/info';
+		this.TOPIC_ANNOUNCE = '/topic/announce';
+		this.TOPIC_ANNOUNCE_TO = '/user/topic/announce';
+		this.TOPIC_SAY = '/topic/say';
+		this.TOPIC_SAY_TO = '/user/topic/say';
+		this.QUEUE_INFO = '/user/queue/info';
 
-	const ANNOUNCE = 'ANNOUNCE';
-	const ANNOUNCE_TO = 'ANNOUNCE_TO';
-	const SAY = 'SAY';
-	const SAY_TO = 'SAY_TO';
-	const INFO = 'INFO';
+		this.ANNOUNCE_WRAPPER = 'announceWrapper';
 
-	const switchSelector = '#notification';
-	const wrapper = 'announceWrapper';
+		this.MAX_RETRY_COUNT = 5;
+		this.retryCount = 0;
 
-	let stompClient = null;
-	let debugEnabled = false;
-	let stompDebugEnabled = false;
+		$('head').append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>');
+		$('head').append('<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
+	}
 
-	$('head').append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>', '<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
+	initiate() {
+		// add event for switch
+		const $websocketSwitch = $('#notification');
+		if ($websocketSwitch.length > 0) {
+			$websocketSwitch
+				.on('change', (e) => {
+					if ($(e.target).prop('checked')) {
+						this.connect();
+					} else {
+						this.disconnect();
+					}
+				})
+				.trigger('change');
+		} else {
+			console.log('flayWebsocket', 'switch is not exist. will be connected automatically');
+			this.connect();
+		}
 
-	const connect = () => {
-		const socket = new SockJS(STOMP_ENDPOINT);
-		stompClient = Stomp.over(socket);
-		// or
-		// stompClient = Stomp.client(STOMP_ENDPOINT);
+		// if wrapper not exist, insert
+		if ($('#' + this.ANNOUNCE_WRAPPER).length === 0) {
+			$('body > footer').append(`<div id="${this.ANNOUNCE_WRAPPER}" style="position: fixed; right: 0; bottom: 0; z-index: 69;"></div>`);
+		}
+	}
 
-		stompClient.connect(
+	connect() {
+		this.stompClient = Stomp.over(new SockJS(this.STOMP_ENDPOINT));
+
+		// client.connect(headers, connectCallback, errorCallback);
+		this.stompClient.connect(
 			{},
-			(frame) => {
-				if (debugEnabled) {
-					console.log('flayWebsocket', 'connected', username);
-				}
-
-				showMessage(ANNOUNCE, frame, '1st');
-
-				stompClient.subscribe(TOPIC_ANNOUNCE, (message) => {
-					showMessage(ANNOUNCE, message);
-				});
-
-				stompClient.subscribe('/user' + TOPIC_ANNOUNCE, (message) => {
-					showMessage(ANNOUNCE_TO, message);
-				});
-
-				stompClient.subscribe(TOPIC_SAY, (message) => {
-					showMessage(SAY, message);
-				});
-
-				stompClient.subscribe('/user' + TOPIC_SAY, (message) => {
-					showMessage(SAY_TO, message);
-				});
-
-				stompClient.subscribe('/user' + QUEUE_INFO, (message) => {
-					infoCallback(message);
-				});
+			(connect) => {
+				console.log('[FlayWebsocket] connected', connect);
+				this.retryCount = 0;
+				this.username = connect.headers['user-name'];
+				this.showMessage(connect);
+				this.subscribe();
 			},
-			(frame) => {
-				showMessage(ANNOUNCE, frame, '2nd');
+			(error) => {
+				console.error('[FlayWebsocket] error', error);
+				this.showMessage({
+					command: 'ERROR',
+					content: error,
+				});
+
+				if (this.retryCount < this.MAX_RETRY_COUNT) {
+					setTimeout(() => {
+						this.retryCount++;
+						this.connect();
+					}, 1000 * 5);
+				}
 			},
 		);
 
-		stompClient.debug = (str) => {
-			if (stompDebugEnabled) {
-				console.log('stomp debug', str);
-			}
+		this.stompClient.debug = (str) => {
+			console.debug('stomp debug', str);
 		};
-	};
+	}
 
-	const disconnect = () => {
-		if (stompClient !== null) {
-			stompClient.disconnect(() => {
-				if (debugEnabled) {
-					console.log('flayWebsocket', 'disconnected');
-				}
-				showMessage(ANNOUNCE, { command: 'DISCONNECTED' });
+	disconnect() {
+		if (this.stompClient !== null) {
+			this.stompClient.disconnect(() => {
+				console.log('[FlayWebsocket] disconnected');
+				this.showMessage({
+					command: 'DISCONNECTED',
+				});
 			});
 		}
-	};
+	}
 
-	const showMessage = (type, message, from) => {
-		if (debugEnabled) {
-			console.log('showMessage input - ', type, message, from);
-		}
-		if (opener) {
-			return;
-		}
+	subscribe() {
+		const announceSubscription = this.stompClient.subscribe(this.TOPIC_ANNOUNCE, (message) => {
+			console.debug('[FlayWebsocket] announce', message);
+			message.ack();
+			this.showMessage(message, 'ANNOUNCE');
+		});
+		console.debug('[FlayWebsocket] subscription announce', announceSubscription);
 
-		let title,
-			content,
-			time = new Date();
-		if (message.command === 'CONNECTED') {
-			title = 'Connected';
-			content = 'signed in ' + message.headers['user-name'];
-		} else if (message.command === 'DISCONNECTED') {
-			title = 'Disconnected';
-			content = '';
-		} else if (message.command === 'MESSAGE') {
-			const body = JSON.parse(message.body);
-			title = body.title;
-			content = body.content;
-			time.setTime(body.time);
-		} else {
-			title = "<span class='text-danger'>" + ANNOUNCE + '</span>';
-			content = message;
-			if (message.indexOf('Lost connection') > -1) {
-				content = 'Lost connection! will be re-connected';
-				setTimeout(() => {
-					connect();
-				}, 1000);
-			}
-		}
-		content = content.trim().replace(/\n/g, '<br>');
+		const announceToSubscription = this.stompClient.subscribe(this.TOPIC_ANNOUNCE_TO, (message) => {
+			console.debug('[FlayWebsocket] announce to', message);
+			message.ack();
+			this.showMessage(message, 'ANNOUNCE');
+		});
+		console.debug('[FlayWebsocket] subscription announce to', announceToSubscription);
 
-		if (debugEnabled) {
-			console.log(`showMessage parse - ${type} - ${title} - ${content}`);
-		}
+		const saySubscription = this.stompClient.subscribe(this.TOPIC_SAY, (message) => {
+			console.debug('[FlayWebsocket] say', message);
+			message.ack();
+			this.showMessage(message, 'SAY');
+		});
+		console.debug('[FlayWebsocket] subscription say', saySubscription);
 
-		const showBox = (_box) => {
-			_box.show('blind', { direction: 'right' });
+		const sayToSubscription = this.stompClient.subscribe(this.TOPIC_SAY_TO, (message) => {
+			console.debug('[FlayWebsocket] say to', message);
+			message.ack();
+			this.showMessage(message, 'SAY');
+		});
+		console.debug('[FlayWebsocket] subscription say to', sayToSubscription);
+
+		const queueInfoSubscription = this.stompClient.subscribe(this.QUEUE_INFO, (message) => {
+			console.debug('[FlayWebsocket] queue', message);
+			message.ack();
+			this.infoCallback(message);
+		});
+		console.debug('[FlayWebsocket] subscription queueInfo', queueInfoSubscription);
+	}
+
+	say(message, to) {
+		this.stompClient.send(
+			'/flayground/say' + (to ? 'To' : ''),
+			{
+				to: to,
+			},
+			JSON.stringify({
+				name: this.username,
+				content: message,
+			}),
+		);
+	}
+
+	info(payLoad) {
+		this.stompClient.send(
+			'/flayground/info',
+			{},
+			JSON.stringify({
+				name: this.username,
+				content: payLoad,
+			}),
+		);
+	}
+
+	showMessage(message, type) {
+		const notification = {
+			id: '',
+			title: '',
+			content: '',
+			time: new Date(),
 		};
-		const hideBox = (_box) => {
-			_box.hide('slide', { direction: 'right' }, function () {
-				// $(this).remove();
-			});
-		};
 
-		const $box = $('<div>', { class: 'text-light bg-black rounded m-2 p-2' })
-			.css({
-				border: '1px solid #ddd',
-				boxShadow: '0 0.125rem 0.25rem rgba(0, 0, 0, .125)',
-				display: 'none',
-				width: 250,
-			})
-			.append(
-				$('<i>', { class: 'fa fa-bell float-left' }),
-				$('<i>', { class: 'fa fa-times float-right hover' }).on('click', function () {
-					hideBox($(this).parent());
-				}),
-				$('<small>', { class: 'float-right mr-2' }).html(time.format('a/p hh:mm')),
-				$('<div>', { class: 'ml-4' }).append(
-					$('<h6>', { class: 'font-weight-bold m-0' }).append(type === SAY || type === SAY_TO ? "<span class='text-primary'>From</span> " : '', title),
-					$('<div>', { class: 'mt-2' })
-						.css({
-							fontSize: '.875rem',
-						})
-						.append(content),
-				),
-			)
-			.appendTo($('#' + wrapper));
+		switch (message.command) {
+			case 'CONNECTED':
+				notification.title = 'Connected';
+				notification.content = 'signed in ' + this.username;
+				break;
+			case 'DISCONNECTED':
+				notification.title = 'Disconnected';
+				break;
+			case 'ERROR':
+				notification.title = '<span style="color: #dc3545">Error</span>';
+				notification.content = message.content;
+				break;
+			case 'MESSAGE':
+				const body = JSON.parse(message.body);
+				notification.id = message.headers['message-id'];
+				notification.title = body.title;
+				notification.content = body.content;
+				notification.time.setTime(body.time);
+				break;
+			default:
+				throw new TypeError('unknown message command');
+		}
 
-		showBox($box);
+		const $noti = $(`
+			<div id="${notification.id}" style="border-radius: 0.25rem; border: 1px solid #333; box-shadow: 0 2px 4px rgba(0, 0, 0, .25); width: 250px; color: var(--color-text); background: var(--color-bg); margin: 0.5rem; padding: 0.5rem; display: none;">
+				<i class="fa fa-bell" style="float: left; color: #ffc107; text-shadow: 1px 1px 2px var(--color-text);"></i>
+				<i class="fa fa-times hover" style="float: right; color: #6c757d" onclick="$(this).parent().remove()"></i>
+				<small style="float: right; margin-right: 0.5rem;">${notification.time.format('a/p hh:mm')}</small>
+				<div style="margin-left: 1.5rem">
+					<h6 style="font-weight: 700; margin: 0">
+						${type === 'SAY' ? '<span style="color: #17a2b8">From</span>' : ''}
+						${notification.title}
+					</h6>
+					<div style="margin-top: 0.5rem; font-size: 0.875rem;">${notification.content}</div>
+				</div>
+			</div>`)
+			.appendTo($('#' + this.ANNOUNCE_WRAPPER))
+			.show('blind', { direction: 'right' });
+
 		setTimeout(() => {
-			hideBox($box);
-		}, 5 * 1000);
-	};
+			$noti.hide('slide', { direction: 'right' }, 400, () => {
+				$noti.remove();
+			});
+		}, 1000 * 5);
+	}
 
-	const infoCallback = function (message) {
+	infoCallback(message) {
 		const messageBody = JSON.parse(message.body);
-		if (debugEnabled) {
-			console.log('infoCallback', messageBody.content);
-		}
 
 		if (messageBody.content === 'bgtheme') {
 			try {
@@ -178,90 +219,17 @@ var flayWebsocket = (function ($) {
 		} else {
 			const content = JSON.parse(messageBody.content.replace(/&quot;/g, '"'));
 			console.log('content', content);
+
 			if (content.mode === 'grap') {
-				if (typeof grapFlay !== 'undefined') {
+				if (typeof grapFlay === 'function') {
 					grapFlay(content.opus);
 				}
 			} else {
-				console.log('unknown mode');
-				alert('unknown info mode');
+				alert('unknown content mode');
 			}
 		}
-	};
+	}
+}
 
-	// add eventListener and connect
-	let isAdmin, username;
-	$(document).ready(function () {
-		isAdmin = Security.hasRole('ADMIN');
-		username = Security.getName();
-
-		const $websocketSwitch = $(switchSelector);
-
-		if ($websocketSwitch.length > 0) {
-			// event
-			$websocketSwitch.on('change', function () {
-				if ($(this).prop('checked')) {
-					connect();
-				} else {
-					disconnect();
-				}
-			});
-			if ($websocketSwitch.prop('checked')) {
-				connect();
-			}
-		} else {
-			if (debugEnabled) {
-				console.log('flayWebsocket', 'switch is not exist. will be connected automatically');
-			}
-			connect();
-		}
-
-		// if wrapper not exist, insert
-		if ($('#' + wrapper).length === 0) {
-			$('body > footer').append(
-				$('<div>', { id: wrapper }).css({
-					position: 'fixed',
-					right: 0,
-					zIndex: 69,
-				}),
-			);
-		}
-		const bottomHeight = $('.fixed-bottom').length === 0 || $('.fixed-bottom').css('display') === 'none' ? 0 : $('.fixed-bottom').height() + 16;
-		$('#' + wrapper).css({
-			bottom: bottomHeight,
-		});
-	});
-
-	return {
-		say: (message, to) => {
-			if (!username) {
-				alert('User info is not exist!!!');
-				return;
-			}
-			stompClient.send(
-				'/flayground/say' + (to ? 'To' : ''),
-				{
-					to: to,
-				},
-				JSON.stringify({
-					name: username,
-					content: message,
-				}),
-			);
-		},
-		info: (payLoad) => {
-			stompClient.send(
-				'/flayground/info',
-				{},
-				JSON.stringify({
-					name: username,
-					content: payLoad,
-				}),
-			);
-		},
-		stop: disconnect,
-		debug: (onOff) => {
-			debugEnabled = onOff;
-		},
-	};
-})(jQuery);
+const flayWebsocket = new FlayWebsocket();
+flayWebsocket.initiate();

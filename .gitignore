@@ -5,6 +5,9 @@
 *.log
 *.log.*.gz
 
+# log folder
+logs/
+
 # BlueJ files
 *.ctxt
 
@@ -29,12 +32,7 @@ target/
 .classpath
 .project
 .springBeans
+.factorypath
 
 # mac
 .DS_Store
-
-# build folder
-bin/
-
-/target/
-/.factorypath

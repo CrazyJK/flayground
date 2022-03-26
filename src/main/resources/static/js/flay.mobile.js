@@ -1,23 +1,24 @@
 /**
  * Video Vertical View Javascript
  */
-'use strict';
 
 (() => {
+	'use strict';
+
 	let flaymobile = null;
 
 	Promise.all([
-		new Promise((resolve, reject) => {
-			Rest.Tag.list(resolve);
-		}),
 		new Promise((resolve, reject) => {
 			Rest.Flay.list(resolve);
 		}),
 		new Promise((resolve, reject) => {
 			Rest.Actress.list(resolve);
 		}),
-	]).then(([tagValue, flayValue, actressValue]) => {
-		flaymobile = new Flaymobile(tagValue, flayValue, actressValue);
+		new Promise((resolve, reject) => {
+			Rest.Tag.list(resolve);
+		}),
+	]).then(([flayValue, actressValue, tagValue]) => {
+		flaymobile = new Flaymobile(flayValue, actressValue, tagValue);
 		flaymobile.init();
 		flaymobile.list();
 	});
@@ -29,10 +30,10 @@
  * iphone 13 pro max: 428 * 746 = 26.75rem * 46.625rem
  */
 class Flaymobile {
-	constructor(tagList, flayList, actressList) {
-		this.tagList = tagList;
+	constructor(flayList, actressList, tagList) {
 		this.flayList = flayList;
 		this.actressList = actressList;
+		this.tagList = tagList;
 
 		this.filteredFlay = [];
 
@@ -55,11 +56,11 @@ class Flaymobile {
 			}
 		});
 		// flay play
-		$('#flayCover > img', '#flayCard').on('click', () => {
+		$('#flayCover > img').on('click', () => {
 			this.play();
 		});
 		// flay rank
-		$('.ranker input', '#flayCard').on('change', (e) => {
+		$('.ranker input').on('change', (e) => {
 			console.log('ranker', e.target.value);
 			this.debug('change ranker ' + e.target.value);
 			this.flay.video.rank = e.target.value;
@@ -125,10 +126,6 @@ class Flaymobile {
 	}
 
 	list() {
-		$('#flayCard').css({
-			opacity: 0,
-		});
-
 		// obtain Selected Rank
 		const search = $('#search').val().trim();
 		let checkedRank = [];
@@ -245,32 +242,32 @@ class Flaymobile {
 	}
 
 	show() {
-		$('#flayCard').css({
-			opacity: 0,
-		});
-
 		// hide video
 		$('#flayVideo').hide().get(0).pause();
 
 		if (this.filteredFlay.length === 0) {
+			$('#flayCard').css('opacity', 0);
 			return;
 		}
-
-		$('footer #paginationProgress .progress-bar').css({
-			width: ((this.currentFlayIndex / this.filteredFlay.length) * 100).toFixed(2) + '%',
-		});
 
 		this.flay = this.filteredFlay[this.currentFlayIndex];
 		console.log('show flay', this.currentFlayIndex, this.flay);
 		this.debug('show flay index=' + this.currentFlayIndex);
 
+		fetch('/static/cover/' + this.flay.opus).then(res => res.blob()).then(coverBlob => {
+			$('#flayCover > img').attr('src', URL.createObjectURL(coverBlob));
+			this.showInfo();
+		});
+	}
+
+	showInfo() {
 		const movieSize = this.flay.files.movie.length;
 		const subtitleSize = this.flay.files.subtitles.length;
 
-		$('#flayCover > img', '#flayCard').attr('src', '/static/cover/' + this.flay.opus);
-		$('#flayTitle', '#flayCard').html(this.flay.title);
-		$('#flayRank #ranker' + this.flay.video.rank, '#flayCard').prop('checked', true);
-		$('#flayActress', '#flayCard')
+		$('#flayCard').css('opacity', 1);
+		$('#flayTitle').html(this.flay.title);
+		$('#flayRank #ranker' + this.flay.video.rank).prop('checked', true);
+		$('#flayActress')
 			.empty()
 			.append(
 				(() => {
@@ -307,19 +304,19 @@ class Flaymobile {
 						actressHtmls.push($actress);
 					});
 					return actressHtmls;
-				})(),
+				})()
 			);
-		$('#flayStudio', '#flayCard').html(this.flay.studio);
-		$('#flayOpus', '#flayCard').html(this.flay.opus);
-		$('#flayRelease', '#flayCard').html(this.flay.release);
-		$('#flayMovie', '#flayCard').html(movieSize === 0 ? 'noVideo' : (movieSize > 1 ? movieSize + 'V ' : '') + File.formatSize(this.flay.length));
-		$('#flaySubtitles', '#flayCard').html(subtitleSize === 0 ? '' : 'Sub');
+		$('#flayStudio').html(this.flay.studio);
+		$('#flayOpus').html(this.flay.opus);
+		$('#flayRelease').html(this.flay.release);
+		$('#flayMovie').html(movieSize === 0 ? 'noVideo' : (movieSize > 1 ? movieSize + 'V ' : '') + File.formatSize(this.flay.length));
+		$('#flaySubtitles').html(subtitleSize === 0 ? '' : 'Sub');
 		Rest.Flay.getScore(this.flay.opus, (score) => {
-			$('#flayScore', '#flayCard').html(score.ifNotZero('<small>S</small>'));
+			$('#flayScore').html(score.ifNotZero('<small>S</small>'));
 		});
-		$('#flayPlay', '#flayCard').html(this.flay.video.play.ifNotZero('<small>p</small>'));
-		$('#flayOverview', '#flayCard').html(this.flay.video.comment);
-		$('#flayTag', '#flayCard')
+		$('#flayPlay').html(this.flay.video.play.ifNotZero('<small>p</small>'));
+		$('#flayOverview').html(this.flay.video.comment);
+		$('#flayTag')
 			.empty()
 			.append(
 				(() => {
@@ -328,15 +325,12 @@ class Flaymobile {
 						tagHtmls.push(`<span class="tag mr-1">${t.name}</span>`);
 					});
 					return tagHtmls;
-				})(),
+				})()
 			);
 
-		$('#flayCard').animate(
-			{
-				opacity: 1,
-			},
-			500,
-		);
+		$('footer #paginationProgress .progress-bar').css({
+			width: ((this.currentFlayIndex / this.filteredFlay.length) * 100).toFixed(2) + '%',
+		});
 	}
 
 	play() {

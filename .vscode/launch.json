@@ -2,7 +2,7 @@
 	"configurations": [
 		{
 			"type": "java",
-			"name": "Spring Boot-FlaygroundApplication<flayground>",
+			"name": "flayground",
 			"request": "launch",
 			"cwd": "${workspaceFolder}",
 			"console": "internalConsole",
@@ -12,7 +12,7 @@
 		},
 		{
 			"type": "java",
-			"name": "Spring Boot-FlaygroundApplication<flayground> SSL",
+			"name": "flayground SSL",
 			"request": "launch",
 			"cwd": "${workspaceFolder}",
 			"console": "internalConsole",

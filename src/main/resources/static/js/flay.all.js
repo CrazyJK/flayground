@@ -124,7 +124,7 @@ fetchAndDecode('/flay/list')
 							$('.played').removeClass('played');
 							$(target).addClass('played');
 						},
-						e.target,
+						e.target
 					);
 				}
 			}

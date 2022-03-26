@@ -3,8 +3,6 @@
  */
 
 (() => {
-	'use strict';
-
 	let flaymobile = null;
 
 	Promise.all([
@@ -254,10 +252,12 @@ class Flaymobile {
 		console.log('show flay', this.currentFlayIndex, this.flay);
 		this.debug('show flay index=' + this.currentFlayIndex);
 
-		fetch('/static/cover/' + this.flay.opus).then(res => res.blob()).then(coverBlob => {
-			$('#flayCover > img').attr('src', URL.createObjectURL(coverBlob));
-			this.showInfo();
-		});
+		fetch('/static/cover/' + this.flay.opus)
+			.then((res) => res.blob())
+			.then((coverBlob) => {
+				$('#flayCover > img').attr('src', URL.createObjectURL(coverBlob));
+				this.showInfo();
+			});
 	}
 
 	showInfo() {
@@ -304,7 +304,7 @@ class Flaymobile {
 						actressHtmls.push($actress);
 					});
 					return actressHtmls;
-				})()
+				})(),
 			);
 		$('#flayStudio').html(this.flay.studio);
 		$('#flayOpus').html(this.flay.opus);
@@ -325,7 +325,7 @@ class Flaymobile {
 						tagHtmls.push(`<span class="tag mr-1">${t.name}</span>`);
 					});
 					return tagHtmls;
-				})()
+				})(),
 			);
 
 		$('footer #paginationProgress .progress-bar').css({

@@ -193,7 +193,7 @@ class FlayWebsocket {
 						${type === 'SAY' ? '<span style="color: #17a2b8">From</span>' : ''}
 						${notification.title}
 					</h6>
-					<div style="margin-top: 0.5rem; font-size: 0.875rem;">${notification.content}</div>
+					<div style="margin-top: 0.5rem; font-size: 0.875rem;">${notification.content.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}</div>
 				</div>
 			</div>`)
 			.appendTo($('#' + this.ANNOUNCE_WRAPPER))

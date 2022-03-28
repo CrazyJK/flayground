@@ -1095,11 +1095,11 @@
 			}),
 			new Promise((resolve, reject) => {
 				// history chart
-				if (currentFlay.video.play > 0) {
-					$('.history-wrapper').show();
-					Rest.History.find(currentFlay.opus, (histories) => {
+				Rest.History.find(currentFlay.opus, (histories) => {
+					const playHistories = histories.filter((history) => history.action === 'PLAY');
+					if (playHistories.length > 0) {
 						drawGraph(histories);
-						const playHistories = histories.filter((history) => history.action === 'PLAY');
+						$('.history-wrapper').show();
 						if (currentFlay.video.play !== playHistories.length) {
 							currentFlay.video.play = playHistories.length;
 							Rest.Video.update(currentFlay.video, () => {
@@ -1109,11 +1109,11 @@
 						} else {
 							resolve(true);
 						}
-					});
-				} else {
-					$('.history-wrapper').hide();
-					resolve(true);
-				}
+					} else {
+						$('.history-wrapper').hide();
+						resolve(true);
+					}
+				});
 			}),
 			new Promise((resolve, reject) => {
 				// score
@@ -1149,8 +1149,10 @@
 		$('.info-title').html(currentFlay.title);
 		// release
 		$('.info-release').html(currentFlay.release);
-		// modified
-		$('.info-modified').html(new Date(currentFlay.lastModified).format('yyyy-MM-dd'));
+		// modified, last access
+		const mDate = new Date(currentFlay.lastModified);
+		const aDate = new Date(currentFlay.video.lastAccess);
+		$('.info-modified').html(`<small>${mDate.format('yy/MM/dd')} <i class="fa fa-arrow-${mDate > aDate ? 'left' : 'right'} mx-1"></i> ${aDate.format('yy/MM/dd')}</small>`);
 		// video file
 		const movieSize = currentFlay.files.movie.length;
 		$('.info-video')

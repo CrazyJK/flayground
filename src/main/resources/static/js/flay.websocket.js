@@ -18,6 +18,7 @@ class FlayWebsocket {
 		this.MAX_RETRY_COUNT = 5;
 		this.retryCount = 0;
 
+		$('head').append('<link rel="stylesheet" href="/css/flay.websocket.css" />');
 		$('head').append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>');
 		$('head').append('<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
 	}
@@ -42,7 +43,7 @@ class FlayWebsocket {
 
 		// if wrapper not exist, insert
 		if ($('#' + this.ANNOUNCE_WRAPPER).length === 0) {
-			$('body > footer').append(`<div id="${this.ANNOUNCE_WRAPPER}" style="position: fixed; right: 0; bottom: 0; z-index: 69;"></div>`);
+			$('body > footer').append(`<div id="${this.ANNOUNCE_WRAPPER}" class="announce-container"></div>`);
 		}
 	}
 
@@ -184,16 +185,16 @@ class FlayWebsocket {
 		}
 
 		const $noti = $(`
-			<div id="${notification.id}" style="border-radius: 0.25rem; border: 1px solid #333; box-shadow: 0 2px 4px rgba(0, 0, 0, .25); width: 250px; color: var(--color-text); background: var(--color-bg); margin: 0.5rem; padding: 0.5rem; display: none;">
-				<i class="fa fa-bell" style="float: left; color: #ffc107; text-shadow: 1px 1px 2px var(--color-text);"></i>
-				<i class="fa fa-times hover" style="float: right; color: #6c757d" onclick="$(this).parent().remove()"></i>
-				<small style="float: right; margin-right: 0.5rem;">${notification.time.format('a/p hh:mm')}</small>
-				<div style="margin-left: 1.5rem">
-					<h6 style="font-weight: 700; margin: 0">
-						${type === 'SAY' ? '<span style="color: #17a2b8">From</span>' : ''}
+			<div id="${notification.id}" class="announce">
+				<i class="fa fa-bell bell"></i>
+				<i class="fa fa-times hover remove" onclick="$(this).parent().remove()"></i>
+				<small class="time">${notification.time.format('a/p hh:mm')}</small>
+				<div class="announce-body">
+					<h6 class="announce-title">
+						${type === 'SAY' ? '<span class="announce-from">From</span>' : ''}
 						${notification.title}
 					</h6>
-					<div style="margin-top: 0.5rem; font-size: 0.875rem;">${notification.content.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}</div>
+					<div class="announce-desc">${notification.content.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}</div>
 				</div>
 			</div>`)
 			.appendTo($('#' + this.ANNOUNCE_WRAPPER))
@@ -201,7 +202,8 @@ class FlayWebsocket {
 
 		setTimeout(() => {
 			$noti.hide('slide', { direction: 'right' }, 400, () => {
-				$noti.remove();
+				// nothing
+				// $noti.remove();
 			});
 		}, 1000 * 5);
 	}

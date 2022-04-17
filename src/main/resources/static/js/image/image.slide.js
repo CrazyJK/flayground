@@ -192,6 +192,16 @@ $(function () {
 				});
 				// console.log('currIndex', currIndex, 'isVerticalWindow', isVerticalWindow, 'isVerticalImage', isVerticalImage, 'imageVerticalRatio', imageVerticalRatio, 'factor', factor);
 
+				getDominatedColors(_self.src, { scale: 0.1, offset: 16, ignore: [] }).then((dominatedColors) => {
+					$image.css({
+						boxShadow: `inset 0 0 4rem 2rem rgba(${dominatedColors[0].rgba.join(',')})`,
+						backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
+					});
+					$('body').css({
+						backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
+					});
+				});
+
 				// get info
 				Rest.Image.get(currIndex, function (info) {
 					$controlBox.trigger('setInfo', [_self, info]);

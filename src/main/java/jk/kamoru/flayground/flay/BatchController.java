@@ -1,5 +1,7 @@
 package jk.kamoru.flayground.flay;
 
+import java.util.List;
+import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,7 +10,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
+import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.BatchExecutor;
 
 @RestController
@@ -31,6 +33,11 @@ public class BatchController {
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	public void startBatch(@PathVariable BatchExecutor.Operation operation) {
 		batchService.startBatch(operation);
+	}
+
+	@GetMapping("/check/{operation}")
+	public Map<String, List<Flay>> checkBatch(@PathVariable BatchExecutor.Operation operation) {
+		return batchService.checkBatch(operation);
 	}
 
 	@PutMapping("/reload")

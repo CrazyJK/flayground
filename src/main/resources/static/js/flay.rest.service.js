@@ -313,6 +313,9 @@ const Rest = {
 		start: function (type, title, callback) {
 			restCall('/batch/start/' + type, { method: 'PUT', title: title }, callback);
 		},
+		check: function (type, title, callback) {
+			restCall('/batch/check/' + type, { title: title }, callback);
+		},
 		setOption: function (type, callback) {
 			restCall('/batch/option/' + type, { method: 'PUT' }, callback);
 		},

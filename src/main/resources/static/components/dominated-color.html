@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			body {
+				color: #000;
+				font-family: D2Coding;
+				margin: 0;
+				padding: 0;
+				text-shadow: 1px 1px 0 #fff;
+			}
+			body > header {
+				position: sticky;
+				top: 0;
+				background-color: #fff;
+				padding: 0.75rem;
+				height: 1.5rem;
+				font-size: 1rem;
+				text-align: center;
+				display: flex;
+				justify-content: center;
+				align-items: baseline;
+				gap: 1rem;
+			}
+			body > main {
+				display: flex;
+			}
+			input {
+				font-size: 1rem;
+				border: 0;
+			}
+			#source-wrap {
+				position: sticky;
+				top: 3rem;
+				padding: 5rem;
+				text-align: center;
+				flex: 1 1 auto;
+				overflow: hidden;
+				height: calc(100vh - 13rem);
+			}
+			#source-wrap canvas {
+				max-width: 100%;
+			}
+			#source-wrap img {
+				display: block;
+				max-width: 100%;
+				margin: 1rem auto;
+			}
+			#colors {
+				flex: 0 0 13rem;
+				height: calc(100vh - 3rem);
+			}
+			#colors > div {
+				cursor: pointer;
+				width: 100%;
+			}
+			#colors > div:hover {
+				outline: 1px solid red;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript">
+			const getContext = (width, height) => {
+				// const canvas = document.createElement('canvas');
+				const canvas = document.getElementsByTagName('canvas')[0];
+				canvas.setAttribute('width', width);
+				canvas.setAttribute('height', height);
+				return canvas.getContext('2d');
+			};
+			const getImageData = async (src, scale) => {
+				const img = new Image();
+
+				if (scale > 1 || scale <= 0) {
+					throw new Error(`You set scale to ${scale}, which isn't between 0-1. This is either pointless (> 1) or a no-op (≤ 0)`);
+				}
+				// Can't set cross origin to be anonymous for data url's
+				// https://github.com/mrdoob/three.js/issues/1305
+				if (!src.startsWith('data')) img.crossOrigin = 'Anonymous';
+
+				return await new Promise((resolve, reject) => {
+					img.onload = function () {
+						const width = img.width * scale;
+						const height = img.height * scale;
+						const context = getContext(width, height);
+						context.drawImage(img, 0, 0, width, height);
+
+						$('#imageX').html(img.naturalWidth);
+						$('#imageY').html(img.naturalHeight);
+						$('#imageXY').html(img.naturalWidth * img.naturalHeight);
+						// $('#source-wrap').empty().append(img);
+						$('img').attr('src', img.src);
+
+						const { data } = context.getImageData(0, 0, width, height);
+						$('#imageData').html(data.length / 4);
+
+						resolve(data);
+					};
+
+					const errorHandler = () => reject(new Error('An error occurred attempting to load image'));
+
+					img.onerror = errorHandler;
+					img.onabort = errorHandler;
+					img.src = src;
+				});
+			};
+			const getCounts = (data, ignore, offset) => {
+				const countMap = {};
+
+				const IGNORE_RGB_ARRAY = [];
+				for (const item of ignore) {
+					IGNORE_RGB_ARRAY.push(item.join(','));
+				}
+
+				for (let i = 0; i < data.length; i += 4 /* 4 gives us r, g, b, and a */) {
+					let alpha = data[i + 3];
+					// skip FULLY transparent pixels
+					if (alpha === 0) continue;
+
+					let rgbComponents = Array.from(data.subarray(i, i + 3));
+
+					// skip undefined data
+					if (rgbComponents.indexOf(undefined) !== -1) continue;
+
+					if (offset > 1) rgbComponents = rgbComponents.map((x) => Math.round(Math.floor(x / offset) * offset));
+
+					// skip colors in the ignore list
+					if (IGNORE_RGB_ARRAY.indexOf(rgbComponents.join(',')) !== -1) continue;
+
+					// let color = alpha && alpha !== 255 ? `rgba(${[...rgbComponents, alpha].join(',')})` : `rgb(${rgbComponents.join(',')})`;
+					let rgba = [...rgbComponents, Number((alpha / 255).toFixed(3))];
+
+					if (countMap[rgba]) {
+						countMap[rgba].count++;
+					} else {
+						countMap[rgba] = { rgba, count: 1 };
+					}
+				}
+
+				const counts = Object.values(countMap);
+				return counts.sort((a, b) => b.count - a.count);
+			};
+		</script>
+		<script type="text/javascript">
+			const func = async (src) => {
+				// for example, to ignore white and black: array [ [0,0,0], [255,255,255] ]
+				const ignore = [];
+				for (let c = 0; c < 256; c++) {
+					ignore.push([c, c, c]);
+				}
+
+				// scale: 0 = best performance, lowest fidelity, 1 = best fidelity, worst performance
+				const scale = Number($('#scale').val());
+				const offset = Number($('#offset').val());
+
+				console.time('elapsed');
+				const data = await getImageData(src, scale);
+				const countsR = getCounts(data, ignore, offset);
+				console.timeEnd('elapsed');
+
+				// filter
+				const counts = countsR.filter((c) => c.count > 9);
+				$('#imageCount').html(counts.length);
+
+				// colors
+				let totalCount = 0;
+				counts.forEach((i) => {
+					totalCount += i.count;
+					i.hsl = rgbToHsl(i.rgba[0], i.rgba[1], i.rgba[2]);
+				});
+
+				/*
+				counts.sort((a, b) => {
+					const [h0, s0, l0] = a.hsl;
+					const [h1, s1, l1] = b.hsl;
+
+					// 0 1 2
+					// 0 2 1
+					// 1 0 2
+					// 1 2 0 <-
+					// 2 0 1
+					// 2 1 0 <=
+					const c2 = h0 - h1;
+					const c1 = s0 - s1;
+					const c0 = l0 - l1;
+					return c0 !== 0 ? c0 : c1 !== 0 ? c1 : c2;
+
+					// const c2 = h0 - h1;
+					// const c1 = s0 + l0 - (s1 + l1);
+					// return c1 !== 0 ? c1 : c2;
+
+					// const [r0, g0, b0] = a.rgba;
+					// const [r1, g1, b1] = b.rgba;
+					// c0 = r0 + g0 + b0;
+					// c1 = r1 + g1 + b1;
+					// return c0 - c1;
+				});
+				*/
+
+				$('#colors').empty();
+				for (const item of counts) {
+					const percent = ((item.count / totalCount) * 100).toFixed(4);
+					$(`<div style="background-color: rgba(${item.rgba.join(',')}); height: ${percent}%" title=${JSON.stringify(item)}></div>`)
+						.on('click', () => {
+							$('#source-wrap').css({
+								backgroundColor: `rgba(${item.rgba.join(',')})`,
+							});
+						})
+						.appendTo($('#colors'));
+				}
+				$('#colors > div:first-child').click();
+			};
+
+			var imageSize = 0;
+
+			$(document).ready(() => {
+				$('#imageUrl').on('change', (e) => {
+					func('/static/image/' + e.target.value);
+				});
+				$('#randomView').on('click', () => {
+					$('#imageUrl')
+						.attr('max', imageSize - 1)
+						.val(Math.floor(Math.random() * imageSize))
+						.trigger('change');
+				});
+
+				$.ajax({
+					url: '/image/size',
+					success: (count) => {
+						imageSize = count;
+						$('#randomView').trigger('click');
+					},
+				});
+			});
+
+			// 색상(Hue), 채도(Saturation), 명도(Intensity)
+			function rgbToHsl($r, $g, $b) {
+				// For the calculation, rgb needs to be in the range from 0 to 1. To convert, divide by 255 (ff).
+				$r /= 255;
+				$g /= 255;
+				$b /= 255;
+
+				let $myMax = Math.max($r, $g, $b);
+				let $myMin = Math.min($r, $g, $b);
+
+				let $maxAdd = $myMax + $myMin;
+				let $maxSub = $myMax - $myMin;
+
+				// luminence is (max + min)/2
+				let $h = 0;
+				let $s = 0;
+				let $l = $maxAdd / 2.0;
+
+				// if all the numbers are equal, there is no saturation (greyscale).
+				if ($myMin != $myMax) {
+					if ($l < 0.5) {
+						$s = $maxSub / $maxAdd;
+					} else {
+						$s = 2.0 - $myMax - $myMin; // note order of opperations - can't use $maxSub here
+						$s = $maxSub / $s;
+					}
+
+					// find hue
+					switch ($myMax) {
+						case $r:
+							$h = $g - $b;
+							$h = $h / $maxSub;
+							break;
+						case $g:
+							$h = $b - $r;
+							$h = $h / $maxSub;
+							$h = $h + 2.0;
+							break;
+						case $b:
+							$h = $r - $g;
+							$h = $h / $maxSub;
+							$h = $h + 4.0;
+							break;
+					}
+				}
+
+				// hsl To Deg, Perc, Perc
+				$h *= 60;
+				if ($h < 0) {
+					$h += 360;
+				}
+
+				//convert s and l to percentage
+				$s *= 100;
+				$l *= 100;
+
+				$h = Math.round($h);
+				$s = Math.round($s);
+				$l = Math.round($l);
+
+				return [$h, $s, $l];
+			}
+		</script>
+	</head>
+	<body>
+		<header>
+			<div><span id="randomView">/static/image/</span><input type="number" id="imageUrl" placeholder="image number" value="999" min="0" style="width: 4rem" /></div>
+			<label> <b>Image</b> x: <span id="imageX"></span> * y: <span id="imageY"></span> = <span id="imageXY"></span> </label>
+			<label> <b>Scale</b> <input type="number" min="0.1" max="1.0" step="0.1" value="0.2" style="width: 3rem" id="scale" /> Offset <input type="number" min="16" max="128" step="16" value="16" style="width: 2rem" id="offset" /></label>
+			<label> <b>Canvas</b> color: <span id="imageData"></span> merged: <span id="imageCount"></span> </label>
+		</header>
+		<main>
+			<div id="source-wrap">
+				<canvas></canvas>
+				<img />
+			</div>
+			<div id="colors"></div>
+		</main>
+	</body>
+</html>

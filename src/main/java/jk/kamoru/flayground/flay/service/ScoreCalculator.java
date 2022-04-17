@@ -34,7 +34,10 @@ public class ScoreCalculator {
 
 	@TrackExecutionTime(message = "flay list order by score desc", level = TrackExecutionTime.LEVEL.INFO)
 	public Collection<Flay> listOrderByScoreDesc(Collection<Flay> flayList) {
-		flayList.forEach(f -> {
+		// rank = 제외
+		List<Flay> filteredList = flayList.stream().filter(flay -> flay.getVideo().getRank() != 0).toList();
+
+		filteredList.forEach(f -> {
 			if (studioCountMap.containsKey(f.getStudio())) {
 				studioCountMap.get(f.getStudio()).incrementAndGet();
 			} else {
@@ -42,13 +45,13 @@ public class ScoreCalculator {
 			}
 		});
 
-		flayList.forEach(f -> {
+		filteredList.forEach(f -> {
 			calcScore(f);
-			setActressPoint(f, flayList);
+			setActressPoint(f, filteredList);
 			f.setStudioPoint(studioCountMap.get(f.getStudio()).intValue());
 		});
 
-		return flayList.stream()
+		return filteredList.stream()
 				.filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0) // 비디오가 없는 것 제외
 				.sorted(
 						scoreComparator.reversed().thenComparing(

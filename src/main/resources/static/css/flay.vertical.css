@@ -151,7 +151,7 @@ label.text:empty {
 .cover-wrapper-inner {
 	display: inline-block;
 	background-color: var(--color-bg);
-	border-radius: 0.25rem;
+	border-radius: 0;
 }
 
 .cover-box {
@@ -160,7 +160,7 @@ label.text:empty {
 	background-size: contain;
 	box-shadow: 0 0 1rem 0.5rem var(--color-bg) inset;
 	border: 0;
-	border-radius: 0.5rem;
+	border-radius: 0;
 	width: var(--cover-width);
 	height: var(--cover-height);
 	transition: background 0.2s ease-out;

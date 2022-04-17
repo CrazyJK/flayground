@@ -12,7 +12,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.io.FileUtils;
@@ -83,8 +85,8 @@ public class BatchExecutor {
 		}
 	}
 
-	public void startBatch(Operation oper) {
-		switch (oper) {
+	public void startBatch(Operation operation) {
+		switch (operation) {
 			case I:
 				instanceBatch();
 				break;
@@ -94,6 +96,15 @@ public class BatchExecutor {
 			case B:
 				backup();
 				break;
+			default:
+				throw new IllegalArgumentException("unknown batch operation");
+		}
+	}
+
+	public Map<String, List<Flay>> checkBatch(Operation operation) {
+		switch (operation) {
+			case I:
+				return instanceCheck();
 			default:
 				throw new IllegalArgumentException("unknown batch operation");
 		}
@@ -112,6 +123,15 @@ public class BatchExecutor {
 		instanceFlaySource.load();
 
 		notificationService.announce("Batch", "Instance Source");
+	}
+
+	protected Map<String, List<Flay>> instanceCheck() {
+		Map<String, List<Flay>> map = new HashMap<>();
+		// check delete lower rank
+		map.put("rank", listLowerRank());
+		// check delete lower score
+		map.put("score", listLowerScore());
+		return map;
 	}
 
 	protected void archiveBatch() {
@@ -141,28 +161,39 @@ public class BatchExecutor {
 
 	void deleteLowerRank() {
 		log.info("[deleteLowerRank]");
-		for (Flay flay : instanceFlaySource.list()) {
-			if (flay.getVideo().getRank() < 0) {
-				log.info("lower rank {} - rank: {}, ", flay.getOpus(), flay.getVideo().getRank());
-				archiving(flay);
-			}
-		}
+		listLowerRank().forEach((flay) -> archiving(flay));
 	}
 
 	void deleteLowerScore() {
-		log.info(String.format("[deleteLowerScore] limit   %4s GB", flayProperties.getStorageLimit()));
-		log.info(String.format("[deleteLowerScore] total   %4s GB", instanceFlaySource.list().stream().mapToLong(f -> f.getLength()).sum() / FileUtils.ONE_GB));
+		log.info("[deleteLowerScore]");
+		listLowerScore().forEach((flay) -> archiving(flay));
+	}
+
+	private List<Flay> listLowerRank() {
+		List<Flay> lowerRankList = new ArrayList<>();
+		for (Flay flay : instanceFlaySource.list()) {
+			if (flay.getVideo().getRank() < 0) {
+				lowerRankList.add(flay);
+			}
+		}
+		return lowerRankList;
+	}
+
+	private List<Flay> listLowerScore() {
+		log.info(String.format("[listLowerScore] limit   %4s GB", flayProperties.getStorageLimit()));
+		log.info(String.format("[listLowerScore] total   %4s GB", instanceFlaySource.list().stream().mapToLong(f -> f.getLength()).sum() / FileUtils.ONE_GB));
+		List<Flay> lowerScoreList = new ArrayList<>();
 		final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
 		long lengthSum = 0;
 		Collection<Flay> scoreReverseSortedFlayList = scoreCalculator.listOrderByScoreDesc(instanceFlaySource.list());
 		for (Flay flay : scoreReverseSortedFlayList) {
 			lengthSum += flay.getLength();
 			if (lengthSum > storageSize) {
-				log.info("lower score {} {} {}", flay.getOpus(), flay.getScore(), flayFileHandler.prettyFileLength(lengthSum));
-				archiving(flay);
+				lowerScoreList.add(flay);
 			}
 		}
-		log.info(String.format("[deleteLowerScore] checked %4s GB", lengthSum / FileUtils.ONE_GB));
+		log.info(String.format("[listLowerScore] checked %4s GB", lengthSum / FileUtils.ONE_GB));
+		return lowerScoreList;
 	}
 
 	void assembleFlay() {

@@ -3,11 +3,12 @@
  */
 
 (() => {
-	let tagList = [];
 	let flayList = [];
-	let actressList = [];
 	let collectedList = [];
 	let seenList = [];
+	let actressList = [];
+	let actressMap = {};
+	let tagList = [];
 
 	let currentFlay = null;
 	let currentIndex = -1;
@@ -15,6 +16,15 @@
 	let slideTimer;
 	let keyInputQueue = '';
 	let keyLastInputTime = Date.now();
+
+	let historyChart = null;
+	const now = new Date();
+	const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
+
+	AmCharts.dayNames = AmCharts.translations.ko.dayNames;
+	AmCharts.shortDayNames = AmCharts.translations.ko.shortDayNames;
+	AmCharts.monthNames = AmCharts.translations.ko.monthNames;
+	AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
 
 	const createTag = (tag) => {
 		return $('<label>', { class: 'check sm' }).append($('<input>', { type: 'checkbox', 'data-tag-id': tag.id }).data('tag', tag), $('<span>', { title: tag.description }).html(tag.name));
@@ -673,20 +683,28 @@
 			new Promise((resolve, reject) => {
 				Rest.Actress.list(resolve);
 			}),
-		]).then(([tagValue, flayValue, actressValue]) => {
-			tagList = tagValue;
-			flayList = flayValue;
-			actressList = actressValue;
+		]).then((results) => {
+			[tagList, flayList, actressList] = results;
 
-			$('.tag-list > label:not(.label-add-tag)').remove();
-			$('.tag-list').prepend(tagList.sort((t1, t2) => t1.name.localeCompare(t2.name)).map((tag) => createTag(tag)));
-
+			initTag();
+			initActress();
 			$('#pageContent').trigger('collect');
-
 			$(window).trigger('resize');
 		});
 
 		SessionStorageItem.clear();
+	}
+
+	function initTag() {
+		$('.tag-list > label:not(.label-add-tag)').remove();
+		$('.tag-list').prepend(tagList.sort((t1, t2) => t1.name.localeCompare(t2.name)).map((tag) => createTag(tag)));
+	}
+
+	function initActress() {
+		actressMap = actressList.reduce((map, actress) => {
+			map.set(actress.name, actress);
+			return map;
+		}, new Map());
 	}
 
 	function collectList() {
@@ -729,20 +747,12 @@
 			}
 			return false;
 		};
-		const getActress = (name) => {
-			for (const actress of actressList) {
-				if (actress.name === name) {
-					return actress;
-				}
-			}
-			return null;
-		};
 		const containsFavoriteActress = (actressList) => {
 			if ($.isEmptyObject(actressList)) {
 				return false;
 			}
 			for (const actressName of actressList) {
-				const actress = getActress(actressName);
+				const actress = actressMap.get(actressName);
 				if (actress.favorite) {
 					return true;
 				}
@@ -997,7 +1007,7 @@
 				),
 			);
 		for (const [k, v] of actressMapAsc) {
-			const a = getActress(k);
+			const a = actressMap.get(k);
 			$('#statisticsActress').append(
 				$(`<label class="text hover actressTag ${v < minCount ? 'hide' : ''}">
 					<span style="font-size: ${16 + v * 1}">
@@ -1016,14 +1026,16 @@
 	}
 
 	function showVideo(args) {
-		const setBackgroundCover = (selector, opus) => {
+		const setBackgroundCover = (selector, opus, callback) => {
 			if (opus) {
 				if (SessionStorageItem.has(opus)) {
 					$(selector).css({ backgroundImage: `url('${SessionStorageItem.get(opus)}')` });
+					if (callback) callback(SessionStorageItem.get(opus));
 				} else {
 					Rest.Image.blobUrl(`${PATH}/static/cover/${opus}`, (blobUrl) => {
 						SessionStorageItem.set(opus, blobUrl);
 						$(selector).css({ backgroundImage: `url('${blobUrl}')` });
+						if (callback) callback(SessionStorageItem.get(opus));
 					});
 				}
 			} else {
@@ -1042,7 +1054,7 @@
 						return;
 					}
 
-					const actress = getActress(name);
+					const actress = actressMap.get(name);
 					if (actress === null) {
 						throw 'not found actress: ' + name;
 					}
@@ -1137,7 +1149,23 @@
 
 		// show cover
 		setBackgroundCover('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
-		setBackgroundCover('.cover-wrapper-inner.curr > .cover-box', collectedList[currentIndex]?.opus);
+		setBackgroundCover('.cover-wrapper-inner.curr > .cover-box', collectedList[currentIndex]?.opus, (blobUrl) => {
+			if (SessionStorageItem.has(blobUrl)) {
+				const rgba = SessionStorageItem.get(blobUrl)?.split(',');
+				$('.cover-wrapper-inner.curr > .cover-box').css({
+					boxShadow: `inset 0 0 1rem 0.5rem rgba(${rgba.join(',')})`,
+					backgroundColor: `rgba(${rgba[0]},${rgba[1]},${rgba[2]},0.5)`,
+				});
+			} else {
+				getDominatedColors(blobUrl, { scale: 0.2, offset: 16 }).then((dominatedColors) => {
+					SessionStorageItem.set(blobUrl, dominatedColors[0].rgba.join(','));
+					$('.cover-wrapper-inner.curr > .cover-box').css({
+						boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[0].rgba.join(',')})`,
+						backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
+					});
+				});
+			}
+		});
 		setBackgroundCover('.cover-wrapper-inner.next > .cover-box', collectedList[currentIndex + 1]?.opus);
 
 		// show Infomation
@@ -1256,11 +1284,6 @@
 		}
 	}
 
-	function destory() {
-		$(document).off('keyup');
-		navigation.slide.off();
-	}
-
 	function notice(msg) {
 		$('.notice-bar')
 			.empty()
@@ -1284,15 +1307,6 @@
 			}
 			showVideo();
 		});
-	}
-
-	function getActress(name) {
-		for (const actress of actressList) {
-			if (actress.name === name) {
-				return actress;
-			}
-		}
-		return null;
 	}
 
 	function markStatisticsTag() {
@@ -1330,17 +1344,6 @@
 				}
 			});
 	}
-
-	AmCharts.dayNames = AmCharts.translations.ko.dayNames;
-	AmCharts.shortDayNames = AmCharts.translations.ko.shortDayNames;
-	AmCharts.monthNames = AmCharts.translations.ko.monthNames;
-	AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
-
-	let historyChart = null;
-	const now = new Date();
-	const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
-	console.debug('oneYearAgo', oneYearAgo);
-	// const oneYearAgo = AmCharts.stringToDate(DateUtils.format('yyyy-01-01'), 'YYYY-MM-DD');
 
 	function drawGraph(historyList) {
 		// init variables
@@ -1438,3 +1441,8 @@
 	initCondition();
 	loadData();
 })();
+
+function destory() {
+	$(document).off('keyup');
+	navigation.slide.off();
+}

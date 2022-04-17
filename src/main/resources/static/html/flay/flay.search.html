@@ -115,6 +115,19 @@
 		color: #f00;
 		padding: 0;
 	}
+
+	fieldset {
+		border: 1px solid var(--color-text);
+		margin: 0.25rem;
+		padding: 0.25rem;
+	}
+	fieldset > legend {
+		font-size: 1rem;
+		margin-left: 1rem;
+		margin-right: auto;
+		padding: 0 0.5rem;
+		width: auto;
+	}
 </style>
 
 <div role="body">
@@ -206,7 +219,7 @@
 
 		<div class="card border-success mt-2 collapse" id="pageImageDownloader" aria-role="ADMIN">
 			<div class="card-body">
-				<form id="downloadPageImageForm" onsubmit="return false;">
+				<form id="downloadPageImageForm" onsubmit="returnFalse();">
 					<div class="input-group input-group-sm mb-1">
 						<input class="form-control border-success" name="pageUrl" placeholder="Image page URL" />
 						<input class="form-control border-success" name="downloadDir" placeholder="Download local path" id="downloadDir" />
@@ -253,6 +266,9 @@
 					<button class="btn btn-outline-danger">Delete Lower Score</button>
 					<button class="btn btn-outline-danger btn-batch-option" data-type="S"><i class="fa fa-check"></i></button>
 				</div>
+				<!-- <div class="btn-group btn-group-sm m-2">
+					<button class="btn btn-outline-danger btn-batch-check" data-type="I">Instance Check</button>
+				</div> -->
 				<div class="btn-group btn-group-sm m-2">
 					<button class="btn btn-outline-danger btn-batch-start" data-type="I">Instance Batch</button>
 					<button class="btn btn-outline-danger btn-batch-start" data-type="A">Archive Batch</button>
@@ -260,6 +276,19 @@
 				<div class="btn-group btn-group-sm my-2">
 					<button class="btn btn-outline-danger btn-batch-start" data-type="B">Source Backup</button>
 				</div>
+				<details id="batchCheck">
+					<summary><button class="bg-transparent border-0 btn-batch-check text-warning" data-type="I">Instance Check</button></summary>
+					<div>
+						<fieldset>
+							<legend>lower Rank</legend>
+							<div class="flay-list text-center" id="lowerRank"></div>
+						</fieldset>
+						<fieldset>
+							<legend>lower Score</legend>
+							<div class="flay-list text-center" id="lowerScore"></div>
+						</fieldset>
+					</div>
+				</details>
 			</div>
 		</div>
 

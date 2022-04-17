@@ -413,6 +413,11 @@ function batchMode() {
 		var title = $(this).text();
 		Rest.Batch.start(type, title);
 	});
+	$('.btn-batch-check').on('click', function () {
+		var type = $(this).data('type');
+		var title = $(this).text();
+		Rest.Batch.check(type, title, displayBatchCheck);
+	});
 	$('.btn-batch-option').on('click', function () {
 		var $this = $(this);
 		var type = $this.data('type');
@@ -421,6 +426,25 @@ function batchMode() {
 		});
 	});
 }
+
+const displayBatchCheck = (map) => {
+	$('#batchCheck').attr('open', '');
+	$('#lowerRank, #lowerScore').empty();
+	map.rank.forEach((flay) => {
+		$('#lowerRank').appendFlayCard(flay, {
+			width: 310,
+			exclude: [STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
+			fontSize: '80%',
+		});
+	});
+	map.score.forEach((flay) => {
+		$('#lowerScore').appendFlayCard(flay, {
+			width: 310,
+			exclude: [STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
+			fontSize: '80%',
+		});
+	});
+};
 
 function reloadMode() {
 	$('.btn-reload').on('click', function () {

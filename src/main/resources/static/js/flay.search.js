@@ -412,6 +412,8 @@ function batchMode() {
 		var type = $(this).data('type');
 		var title = $(this).text();
 		Rest.Batch.start(type, title);
+		$('#batchCheck').removeAttr('open');
+		$('#lowerRank, #lowerScore').empty();
 	});
 	$('.btn-batch-check').on('click', function () {
 		var type = $(this).data('type');

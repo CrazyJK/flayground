@@ -35,7 +35,7 @@ public class ScoreCalculator {
 	@TrackExecutionTime(message = "flay list order by score desc", level = TrackExecutionTime.LEVEL.INFO)
 	public Collection<Flay> listOrderByScoreDesc(Collection<Flay> flayList) {
 		// rank = 제외
-		List<Flay> filteredList = flayList.stream().filter(flay -> flay.getVideo().getRank() != 0).toList();
+		List<Flay> filteredList = flayList.stream().filter(flay -> flay.getVideo().getRank() > 0).toList();
 
 		filteredList.forEach(f -> {
 			if (studioCountMap.containsKey(f.getStudio())) {

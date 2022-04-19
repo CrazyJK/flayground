@@ -176,8 +176,8 @@ const Search = {
 	subtitlesUrlIfFound: (opus, callback) => {
 		$.ajax({
 			url: '/file/find/exists/subtitles?opus=' + opus,
-			success: (foundUrlList) => {
-				callback?.(foundUrlList, opus);
+			success: (result) => {
+				callback?.(result, opus);
 			},
 		});
 	},

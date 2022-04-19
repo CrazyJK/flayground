@@ -60,9 +60,9 @@
 		}
 	},
 	{
-		"name": "Actress 2",
+		"name": "Actress Rank",
 		"uri": "/html/flay/flay.actress.2.html",
-		"icon": "fa fa-search",
+		"icon": "fa fa-female",
 		"mode": "include",
 		"popup": {
 			"w": 1078,

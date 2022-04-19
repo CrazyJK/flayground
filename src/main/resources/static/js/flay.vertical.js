@@ -1197,26 +1197,6 @@
 			.parent()
 			.find('.link-subtitles')
 			.remove();
-		/* if (currentFlay.files.subtitles.length === 0) {
-			// once checked, pass
-			if (!currentFlay.hasOwnProperty('checkedSubtitles')) {
-				currentFlay['checkedSubtitles'] = true;
-				$('.info-subtitles').neonLoading(true);
-				Search.subtitlesUrlIfFound(currentFlay.opus, function (foundSubtitlesUrlList, opus) {
-					if (foundSubtitlesUrlList && foundSubtitlesUrlList.length > 0) {
-						if (opus === currentFlay.opus) {
-							$('.info-subtitles').html(`<span class="text-info">Subtitles ${foundSubtitlesUrlList.length} found!!!</span>`);
-							for (const url of foundSubtitlesUrlList) {
-								$('.info-subtitles').parent().append(`<a href="${url}" class="link-subtitles"><i class="fa fa-external-link mx-1"></i></a>`);
-							}
-						} else {
-							notice(`${opus} subtitle found ${foundSubtitlesUrlList.length}. but flay passed!`);
-						}
-					}
-					$('.info-subtitles').neonLoading(false);
-				});
-			}
-		} */
 		// overview
 		$('.info-overview-input').val(currentFlay.video.comment).hide();
 		$('.info-overview')

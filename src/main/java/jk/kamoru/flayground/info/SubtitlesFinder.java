@@ -2,7 +2,6 @@ package jk.kamoru.flayground.info;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.MalformedURLException;
 import java.net.Proxy;
 import java.net.URL;
 import java.util.ArrayList;
@@ -37,10 +36,11 @@ public class SubtitlesFinder {
 
 	@RequestMapping("/file/find/exists/subtitles")
 	@ResponseBody
-	public List<URL> findSubtitls(@RequestParam("opus") String opus) throws MalformedURLException {
-		List<URL> foundUrlList = new ArrayList<>();
+	public Map<String, Object> findSubtitls(@RequestParam("opus") String opus) {
+		Map<String, Object> result = new HashMap<>();
 
 		try {
+			List<URL> foundUrlList = new ArrayList<>();
 			Document document = getDocument(siteUrl + "/index.php?search=" + opus);
 			Elements trList = document.select("table.table.sub-table > tbody > tr");
 			log.debug("[{}] page list size {}", opus, trList.size());
@@ -64,11 +64,14 @@ public class SubtitlesFinder {
 					}
 				}
 			}
+			result.put("error", "");
+			result.put("url", foundUrlList);
 		} catch (IOException e) {
 			log.warn("fail to {} : {}", opus, e.getMessage());
+			result.put("error", e.getMessage());
 		}
 
-		return foundUrlList;
+		return result;
 	}
 
 	@PatchMapping("/file/find/exists/subtitles/config")

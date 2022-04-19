@@ -55,11 +55,6 @@
 	</div>
 
 	<div class="container py-1 scroll-wrapper rounded">
-		<div>
-			<input type="search" id="query" class="form-control input-flay search" value="https://avnori6.com/bbs/search.php?search_flag=search&stx=" />
-			<label class="px-2">https://javpicker.com/video/ipx-600</label>
-			<label class="px-2">https://nextjav.com/torrent/detail/IPX-602</label>
-		</div>
 		<ul id="goodActressList" class="list-inline"></ul>
 	</div>
 </div>
@@ -72,16 +67,9 @@
 		$(document).ready(function () {
 			$('.check-group input').on('change', showList);
 
-			// load video list
-			Rest.Flay.list(function (list) {
-				flayList = list;
-
-				// load actress list
-				Rest.Actress.list(function (list) {
-					actressList = list;
-
-					showList();
-				});
+			Promise.all([new Promise((resolve) => Rest.Flay.list(resolve)), new Promise((resolve) => Rest.Actress.list(resolve))]).then((results) => {
+				[flayList, actressList] = results;
+				showList();
 			});
 		});
 
@@ -154,9 +142,8 @@
 							$('<label>', { class: 'favorite' }).append(value.favorite ? "<i class='fa fa-heart'>" : ' '),
 							$('<label>', { class: 'name hover' })
 								.append(key)
-								.on('click', function () {
+								.on('click', () => {
 									window.open(PATH + '/html/info/info.actress.html?name=' + key, 'actress-info', 'width=1072,height=1800,' + DEFAULT_SPECS);
-									Popup.open($('#query').val() + value.localName, 'actress-info', 1072, 1100);
 								}),
 							$('<label>', { class: 'flayCount' }).append(value.flayCount),
 							$('<label>', { class: 'localName' }).append(value.localName),

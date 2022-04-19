@@ -31,26 +31,25 @@
 		const findSubtitles = () => {
 			const opus = noSubtitlesOpusList[currentFindingIndex++];
 			const $sub = $('#' + opus + ' > .flay-subtitles').html('finding...'); // mark current active
-			Search.subtitlesUrlIfFound(opus, (list) => {
-				// console.log("found result", opus, list.length);
+			Search.subtitlesUrlIfFound(opus, (result) => {
+				if (result.error === '') {
+					if (result.url.length > 0) {
+						// counting found subtitles
+						foundSubtitlesCount++;
+						$('#foundSubtitlesCount').html(foundSubtitlesCount); // mark found count
 
-				if (list.length > 0) {
-					// found subtitles
-					foundSubtitlesCount++;
-
-					$sub.empty().closest('.flay-item').addClass('found-subtitles');
-					$('#foundSubtitlesCount').html(foundSubtitlesCount); // mark found count
-
-					// add found link
-					for (const url of list) {
-						$sub.append(`
-							<a href="${url}" onclick="removeThis(this);">
-								<i class="fa fa-external-link mx-1"></i>
-							</a>`);
+						$sub.empty().closest('.flay-item').addClass('found-subtitles');
+						// add found link
+						for (const url of result.url) {
+							$sub.append(`<a href="${url}" onclick="removeThis(this);"><i class="fa fa-external-link mx-1"></i></a>`);
+						}
+					} else {
+						// not found
+						$sub.html(`<span class="text-secondary">not found</span>`);
 					}
 				} else {
-					// not found
-					$sub.html(`<span class="text-secondary">not found</span>`);
+					// error
+					$sub.html(`<span class="text-danger">${result.error}</span>`);
 				}
 			});
 			// scroll move

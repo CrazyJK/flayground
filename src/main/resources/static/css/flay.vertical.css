@@ -254,7 +254,7 @@ label.text:empty {
 }
 
 #paginationProgress {
-	/* background-color: transparent; */
+	background-color: var(--color-bg);
 	cursor: pointer;
 	height: 1px;
 }

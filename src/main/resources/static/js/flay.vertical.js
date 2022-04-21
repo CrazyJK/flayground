@@ -244,7 +244,7 @@
 		},
 		go: function (idx, args) {
 			if (idx < 0 || idx > collectedList.length - 1) {
-				console.error(`navigation.go wrong index ${idx}`);
+				console.warn(`navigation.go wrong index ${idx}`);
 				return;
 			}
 			var prevIndex = currentIndex;
@@ -1110,8 +1110,12 @@
 				Rest.History.find(currentFlay.opus, (histories) => {
 					const playHistories = histories.filter((history) => history.action === 'PLAY');
 					if (playHistories.length > 0) {
-						drawGraph(histories);
-						$('.history-wrapper').show();
+						// 화면 밖으로 밀려나갈거 같으면 가리기
+						const canVisible = window.innerHeight > $('.tag-wrapper').position().top + $('.tag-wrapper').height() + 100;
+						if (canVisible) {
+							drawGraph(histories);
+						}
+						$('.history-wrapper').toggle(canVisible);
 						if (currentFlay.video.play !== playHistories.length) {
 							currentFlay.video.play = playHistories.length;
 							Rest.Video.update(currentFlay.video, () => {
@@ -1148,25 +1152,27 @@
 		});
 
 		// show cover
-		setBackgroundCover('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
 		setBackgroundCover('.cover-wrapper-inner.curr > .cover-box', collectedList[currentIndex]?.opus, (blobUrl) => {
 			if (SessionStorageItem.has(blobUrl)) {
-				const rgba = SessionStorageItem.get(blobUrl)?.split(',');
-				$('.cover-wrapper-inner.curr > .cover-box').css({
-					boxShadow: `inset 0 0 1rem 0.5rem rgba(${rgba.join(',')})`,
-					backgroundColor: `rgba(${rgba[0]},${rgba[1]},${rgba[2]},0.5)`,
-				});
+				const dominatedColors = JSON.parse(SessionStorageItem.get(blobUrl));
+				applyDominatedColor(dominatedColors);
 			} else {
-				getDominatedColors(blobUrl, { scale: 0.2, offset: 16 }).then((dominatedColors) => {
-					SessionStorageItem.set(blobUrl, dominatedColors[0].rgba.join(','));
-					$('.cover-wrapper-inner.curr > .cover-box').css({
-						boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[0].rgba.join(',')})`,
-						backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
-					});
+				getDominatedColors(blobUrl, { scale: 0.2, offset: 16, limit: 3 }).then((dominatedColors) => {
+					SessionStorageItem.set(blobUrl, JSON.stringify(dominatedColors));
+					applyDominatedColor(dominatedColors);
 				});
 			}
 		});
+		setBackgroundCover('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
 		setBackgroundCover('.cover-wrapper-inner.next > .cover-box', collectedList[currentIndex + 1]?.opus);
+
+		// dominatedColor
+		function applyDominatedColor(dominatedColors) {
+			$('.cover-wrapper-inner.curr > .cover-box').css({
+				boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[0].rgba.join(',')})`,
+				backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
+			});
+		}
 
 		// show Infomation
 		// studio
@@ -1414,6 +1420,8 @@
 
 		historyChart.dataProvider = dataArray;
 		historyChart.validateData();
+
+		$('#chartdiv > div > div > a').hide();
 	}
 
 	attachPageEventListener();

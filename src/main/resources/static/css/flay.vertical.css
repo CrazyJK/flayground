@@ -9,7 +9,9 @@
 	--actress-width: 800px;
 	--actress-width-lg: 960px;
 }
-body {
+
+div[role='body'] {
+	min-width: 900px;
 	overflow: hidden;
 }
 

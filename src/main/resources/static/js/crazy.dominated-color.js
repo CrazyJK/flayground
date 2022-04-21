@@ -5,13 +5,14 @@ async function getDominatedColors(src, opts) {
 		throw new Error('src musr be specified');
 	}
 
-	const { scale, ignore, offset } = {
+	const { scale, ignore, offset, limit } = {
 		scale: 0.5,
 		offset: 10,
+		limit: 10,
 		ignore: GREY_RGB_ARRAY,
 		...opts,
 	};
-	console.debug('getDominatedColors', 'scale', scale, 'offset', offset, 'ignore', ignore.length);
+	console.debug('getDominatedColors', 'scale', scale, 'offset', offset, 'limit', limit, 'ignore', ignore.length);
 
 	if (scale > 1 || scale <= 0) {
 		throw new Error(`You set scale to ${scale}, which isn't between 0-1. This is either pointless (> 1) or a no-op (≤ 0)`);
@@ -22,7 +23,7 @@ async function getDominatedColors(src, opts) {
 	const rgbas = getRGBAs(imageData, ignore, offset);
 	// console.timeEnd(src);
 
-	return rgbas;
+	return rgbas.slice(0, limit);
 
 	async function getImageData(src, scale) {
 		const img = new Image();

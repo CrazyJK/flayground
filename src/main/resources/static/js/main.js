@@ -98,15 +98,15 @@ const SlideMenu = {
 	pin: () => {
 		$('.sidenav-pin')
 			.data('pin', false)
-			.on('click', (e) => {
-				const isPin = !$(e.target).data('pin');
+			.on('click', () => {
+				const isPin = !$('.sidenav-pin').data('pin');
 				$('.sidenav').css({
 					width: isPin ? 'var(--sidenav-width)' : '0',
 				});
 				$('main').css({
 					left: isPin ? 'var(--sidenav-width)' : '0',
 				});
-				$(e.target).data('pin', isPin).toggleClass('active', isPin);
+				$('.sidenav-pin').data('pin', isPin).toggleClass('active', isPin);
 				SlideMenu.specialViewPause = isPin;
 				$('#specialView').toggleClass('pause', isPin);
 

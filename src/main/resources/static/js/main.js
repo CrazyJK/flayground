@@ -2,11 +2,11 @@
  * flay.main.js
  */
 
-var SlideMenu = {
-	init: function () {
+const SlideMenu = {
+	init: () => {
 		$.ajax({
 			url: '/data/main.menu.json',
-			success: function (menuItems) {
+			success: (menuItems) => {
 				SlideMenu.setMenu(menuItems);
 				SlideMenu.pin();
 				SlideMenu.toggleContent();
@@ -16,17 +16,17 @@ var SlideMenu = {
 			},
 		});
 	},
-	logout: function (logoutUri) {
-		var logoutForm = document.createElement('form');
+	logout: (logoutUri) => {
+		const logoutForm = document.createElement('form');
 		logoutForm.setAttribute('method', 'POST');
 		logoutForm.setAttribute('action', logoutUri);
 
-		var csrfField = document.createElement('input');
+		const csrfField = document.createElement('input');
 		csrfField.setAttribute('type', 'hidden');
 		csrfField.setAttribute('name', '_csrf');
 		// csrfField.setAttribute("value", csrfValue);
-		logoutForm.appendChild(csrfField);
 
+		logoutForm.appendChild(csrfField);
 		document.body.appendChild(logoutForm);
 
 		document.cookie.split(';').forEach((cookie) => {
@@ -38,17 +38,17 @@ var SlideMenu = {
 
 		logoutForm.submit();
 	},
-	setMenu: function (menuItems) {
+	setMenu: (menuItems) => {
 		const $wrap = $('#mainMenuWrap');
-		menuItems.forEach(function (menu) {
+		menuItems.forEach((menu) => {
 			let $li = $('<li>', { class: 'nav-item' });
 			let $icon = $('<i>', { class: menu.icon });
 			let $menu = $('<div>');
 			let $name = $('<a>', { class: menu.mode })
 				.html(menu.name)
-				.on('click', function () {
+				.on('click', (e) => {
 					if (menu.mode === 'include') {
-						Rest.Html.get(menu.uri, function (html) {
+						Rest.Html.get(menu.uri, (html) => {
 							try {
 								$('#notice').dialog('close');
 							} catch (ignore) {}
@@ -66,12 +66,12 @@ var SlideMenu = {
 					}
 					document.title = menu.name + ' Flayground';
 					$('.nav-wrap .active').removeClass('active');
-					$(this).addClass('active');
+					$(e.target).addClass('active');
 				});
 			let $popup = $('<a>');
 			if (menu.popup.w !== 0 && menu.popup.h !== 0) {
 				$popup
-					.on('click', function () {
+					.on('click', () => {
 						let url = null;
 						if (menu.mode === 'include') {
 							url = '/html/main.popup.html?target=' + menu.uri;
@@ -95,18 +95,18 @@ var SlideMenu = {
 			})
 			.attr('href', '#');
 	},
-	pin: function () {
+	pin: () => {
 		$('.sidenav-pin')
 			.data('pin', false)
-			.on('click', function () {
-				var isPin = !$(this).data('pin');
+			.on('click', (e) => {
+				const isPin = !$(e.target).data('pin');
 				$('.sidenav').css({
 					width: isPin ? 'var(--sidenav-width)' : '0',
 				});
 				$('main').css({
 					left: isPin ? 'var(--sidenav-width)' : '0',
 				});
-				$(this).data('pin', isPin).toggleClass('active', isPin);
+				$(e.target).data('pin', isPin).toggleClass('active', isPin);
 				SlideMenu.specialViewPause = isPin;
 				$('#specialView').toggleClass('pause', isPin);
 
@@ -115,17 +115,17 @@ var SlideMenu = {
 				}, 500);
 			});
 	},
-	toggleContent: function () {
-		$('#pageShow').on('change', function () {
-			var isShow = $(this).prop('checked');
+	toggleContent: () => {
+		$('#pageShow').on('change', (e) => {
+			const isShow = $(e.target).prop('checked');
 			$('#wrap_body').toggle(isShow);
 			$('#background_images').css({ backgroundColor: isShow ? 'rgba(0,0,0,.5)' : 'transparent' });
 			$('#background_images .col').css({ zIndex: isShow ? -3 : 0 });
 		});
 	},
-	theme: function () {
-		var setTheme = () => {
-			var bgThemeValue = $("input[name='bgTheme']:checked").val();
+	theme: () => {
+		const setTheme = () => {
+			const bgThemeValue = $("input[name='bgTheme']:checked").val();
 			LocalStorageItem.set('flay.bgtheme', bgThemeValue);
 
 			// adjust theme
@@ -152,13 +152,13 @@ var SlideMenu = {
 		// BG Color
 		$('#bgColor')
 			.val(bgColor)
-			.on('change', function () {
-				$('body').css({ backgroundColor: $(this).val() });
+			.on('change', (e) => {
+				$('body').css({ backgroundColor: $(e.target).val() });
 				try {
 					// broadcasting
 					flayWebsocket.info('bgcolor');
 				} catch (e) {}
-				LocalStorageItem.set('flay.bgcolor', $(this).val());
+				LocalStorageItem.set('flay.bgcolor', $(e.target).val());
 			})
 			.trigger('change');
 	},
@@ -170,11 +170,11 @@ var SlideMenu = {
 		});
 	},
 	specialViewPause: false,
-	specialView: function () {
+	specialView: () => {
 		if (Security.isAutomaticallyCertificated()) {
-			var selectedBgIndex = -1;
+			let selectedBgIndex = -1;
 			$('#mainMenuWrap > li > div > a:nth-child(1)').hover(
-				function () {
+				() => {
 					if (SlideMenu.specialViewPause) {
 						return;
 					}
@@ -183,18 +183,18 @@ var SlideMenu = {
 						backgroundImage: "url('/static/image/" + selectedBgIndex + "')",
 					});
 				},
-				function () {},
+				() => {},
 			);
 			$('.sidenav > h4 > a').hover(
-				function () {
+				() => {
 					if (SlideMenu.specialViewPause) {
 						return;
 					}
 					$('#specialView').css('backgroundImage', '');
 				},
-				function () {},
+				() => {},
 			);
-			$('.sidenav > h4 > img').on('click', function () {
+			$('.sidenav > h4 > img').on('click', () => {
 				Popup.imageByNo(selectedBgIndex);
 			});
 		} else {
@@ -203,23 +203,23 @@ var SlideMenu = {
 	},
 };
 
-var Background = {
+const Background = {
 	imageIndexArray: [],
 	bgInterval: null,
 	count: 0,
 	paneWidth: LocalStorageItem.getInteger('flay.background-image.paneWidth', 400),
 	intervalTime: 3000,
-	init: function () {
-		Rest.Image.size(function (count) {
+	init: () => {
+		Rest.Image.size((count) => {
 			Background.count = count;
 		});
 		Background.event();
 	},
-	event: function () {
-		var paneResize = function () {
+	event: () => {
+		const paneResize = () => {
 			let addedPaneLength = Math.round($(window).width() / Background.paneWidth) - $('#background_images div.col').length;
 			if (addedPaneLength > 0) {
-				for (var i = 0; i < addedPaneLength; i++) {
+				for (let i = 0; i < addedPaneLength; i++) {
 					$('<div>', { class: 'col' }).appendTo($('#background_images'));
 				}
 			} else {
@@ -233,21 +233,21 @@ var Background = {
 		$(window).on('resize', paneResize);
 		// paneWidth
 		$('#paneWidth')
-			.on('change', function () {
-				Background.paneWidth = $(this).val();
+			.on('change', (e) => {
+				Background.paneWidth = parseInt($(e.target).val(), 10);
 				paneResize();
 				LocalStorageItem.set('flay.background-image.paneWidth', Background.paneWidth);
 			})
 			.val(Background.paneWidth);
 		// Picture switch
-		$('#bgFlow').on('change', function () {
-			if ($(this).prop('checked')) {
+		$('#bgFlow').on('change', (e) => {
+			if ($(e.target).prop('checked')) {
 				Background.start();
 			} else {
 				Background.stop();
 			}
 		});
-		var backgroundImageShow = LocalStorageItem.getBoolean('flay.background-image', true);
+		const backgroundImageShow = LocalStorageItem.getBoolean('flay.background-image', true);
 		if (backgroundImageShow) $('#bgFlow').parent().click();
 		// Picture fall down
 		$('#pictureFalldown').on('click', () => {
@@ -256,76 +256,73 @@ var Background = {
 			}
 		});
 	},
-	start: function () {
+	start: () => {
 		Background.bgInterval = setInterval(Background.func, Background.intervalTime);
 		LocalStorageItem.set('flay.background-image', true);
 	},
-	stop: function () {
+	stop: () => {
 		clearInterval(Background.bgInterval);
 		LocalStorageItem.set('flay.background-image', false);
 	},
-	func: function () {
+	func: () => {
 		// make image index array
 		if (Background.imageIndexArray.length === 0) {
 			Background.imageIndexArray = Array.apply(null, { length: Background.count }).map(Number.call, Number);
 			console.info('image array reset', Background.imageIndexArray.length);
 		}
 		// determine image index
-		var imageIndex = Background.imageIndexArray.splice(Random.getInteger(0, Background.imageIndexArray.length - 1), 1);
+		const imageIndex = Background.imageIndexArray.splice(Random.getInteger(0, Background.imageIndexArray.length - 1), 1);
 		if ($.isEmptyObject(imageIndex)) {
-			console.info('imageIndex is empty', Background.imageIndexArray.length, imageIndex);
+			console.warn('imageIndex is empty', Background.imageIndexArray.length, imageIndex);
+			return;
 		}
 		// select image pane
-		var paneLength = $('#background_images div.col').length;
-		var $imageWrap = $('#background_images div.col:nth-child(' + Random.getInteger(1, paneLength) + ')');
+		const paneLength = $('#background_images div.col').length;
+		const $imageWrap = $('#background_images div.col:nth-child(' + Random.getInteger(1, paneLength) + ')');
 		// load image
-		var image = new Image();
-		image.onload = function () {
+		const image = new Image();
+		image.onload = () => {
 			// calculate size
-			var calcImgWidth = parseInt($imageWrap.width());
-			var calcImgHeight = parseInt((calcImgWidth * this.naturalHeight) / this.naturalWidth);
-			// append new image
-			var $thisImage = $(this)
+			const calcImgWidth = parseInt($imageWrap.width(), 10);
+			const calcImgHeight = parseInt((calcImgWidth * image.naturalHeight) / image.naturalWidth, 10);
+			// create and append jquery image
+			const $thisImage = $(image)
 				.css({ height: 0 })
-				.on('click', function () {
+				.on('click', () => {
 					Popup.imageByNo(imageIndex);
 				})
 				.prependTo($imageWrap);
 			// showing
-			setTimeout(function () {
+			setTimeout(() => {
 				$thisImage.css({
 					height: calcImgHeight,
-					// borderRadius: '50% 50% 45% 45%',
-					// transform: `rotate(${Random.getInteger(-45, 45)}deg) scale(${Random.getInteger(100, 125) / 100})`,
 				});
 			}, 100);
 		};
 		image.src = PATH + '/static/image/' + imageIndex;
 		// overflow image remove
-		$imageWrap.children().each(function () {
-			var imageTop = $(this).position().top;
-			var bgHeight = $('#background_images').height();
+		$imageWrap.children().each((index, image) => {
+			const imageTop = $(image).position().top;
+			const bgHeight = $('#background_images').height();
 			if (imageTop > bgHeight) {
-				$(this).remove();
+				$(image).remove();
 			}
 		});
 	},
 };
 
-let isAdmin;
-let username;
+let isAdmin, username;
 
-$(document).ready(function () {
+$(document).ready(() => {
 	isAdmin = Security.hasRole('ADMIN');
 	username = Security.getName();
 	console.info(`User is ${username} ${isAdmin ? 'has ADMIN Role' : ''}`);
 
 	Background.init();
-
 	SlideMenu.init();
 });
 
-window.onerror = function (e) {
+window.onerror = (e) => {
 	if (e.toString() === 'ResizeObserver loop limit exceeded') {
 		return;
 	} else {

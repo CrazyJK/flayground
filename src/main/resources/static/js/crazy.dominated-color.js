@@ -19,11 +19,27 @@ async function getDominatedColors(src, opts) {
 	}
 
 	// console.time(src);
-	const imageData = await getImageData(src, scale);
+	let imageData;
+	if (typeof src === 'string') {
+		imageData = await getImageData(src, scale);
+	} else if (typeof src === 'object' && src instanceof Image) {
+		imageData = getContextImageData(src, scale);
+	} else {
+		throw new Error(`unrecognized src ${src}`);
+	}
 	const rgbas = getRGBAs(imageData, ignore, offset);
 	// console.timeEnd(src);
 
 	return rgbas.slice(0, limit);
+
+	function getContextImageData(img, scale) {
+		const width = Math.round(img.width * scale);
+		const height = Math.round(img.height * scale);
+		const context = getContext(width, height);
+		context.drawImage(img, 0, 0, width, height);
+		const { data } = context.getImageData(0, 0, width, height);
+		return data;
+	}
 
 	async function getImageData(src, scale) {
 		const img = new Image();
@@ -34,14 +50,7 @@ async function getDominatedColors(src, opts) {
 
 		return await new Promise((resolve, reject) => {
 			img.onload = function () {
-				const width = Math.round(img.width * scale);
-				const height = Math.round(img.height * scale);
-				const context = getContext(width, height);
-				context.drawImage(img, 0, 0, width, height);
-
-				const { data } = context.getImageData(0, 0, width, height);
-
-				resolve(data);
+				resolve(getContextImageData(img, scale));
 			};
 
 			const errorHandler = () => reject(new Error('An error occurred attempting to load image'));

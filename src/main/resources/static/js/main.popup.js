@@ -4,7 +4,7 @@ $(document).ready(() => {
 	username = Security.getName();
 
 	const targetUrl = reqParam.target;
-	Rest.Html.get(reqParam.target, function (html) {
+	Rest.Html.get(reqParam.target, (html) => {
 		// load page
 		$('#wrap_body').html(html);
 		// set title
@@ -12,7 +12,7 @@ $(document).ready(() => {
 	});
 });
 
-window.onerror = function (e) {
+window.onerror = (e) => {
 	if (e.toString() === 'ResizeObserver loop limit exceeded') {
 		return;
 	} else {

@@ -184,30 +184,30 @@ const Search = {
 };
 
 const Security = {
-	user: null,
-	getUser: function () {
-		Rest.Security.whoami(function (principal) {
-			Security.user = principal;
+	principal: null,
+	getUser: () => {
+		Rest.Security.whoami((principal) => {
+			Security.principal = principal;
 		});
 	},
-	hasRole: function (role) {
-		if (Security.user == null) {
+	hasRole: (role) => {
+		if (Security.principal == null) {
 			Security.getUser();
 		}
-		for (var x in Security.user.authorities) {
-			if (Security.user.authorities[x].authority === 'ROLE_' + role) {
+		for (let authority of Security.principal.authorities) {
+			if (authority === 'ROLE_' + role) {
 				return true;
 			}
 		}
 		return false;
 	},
-	getName: function () {
-		if (Security.user == null) {
+	getName: () => {
+		if (Security.principal == null) {
 			Security.getUser();
 		}
-		return Security.user.username;
+		return Security.principal.username;
 	},
-	isAutomaticallyCertificated: function () {
+	isAutomaticallyCertificated: () => {
 		return Rest.Security.isAutomaticallyCertificated();
 	},
 };

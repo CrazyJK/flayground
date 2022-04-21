@@ -2,6 +2,7 @@ let isAdmin, username;
 $(document).ready(() => {
 	isAdmin = Security.hasRole('ADMIN');
 	username = Security.getName();
+	console.info(`User is ${username} ${isAdmin ? 'has ADMIN Role' : ''}`);
 
 	const targetUrl = reqParam.target;
 	Rest.Html.get(reqParam.target, (html) => {

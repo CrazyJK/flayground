@@ -194,7 +194,7 @@ const Security = {
 		if (Security.principal == null) {
 			Security.getUser();
 		}
-		for (let authority of Security.principal.authorities) {
+		for (let { authority } of Security.principal.authorities) {
 			if (authority === 'ROLE_' + role) {
 				return true;
 			}

@@ -40,6 +40,8 @@ target/
 
 # node.js
 node_modules
+# yarn
+yarn.lock
 
 # webpack dist
 www/dist

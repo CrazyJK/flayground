@@ -40,3 +40,6 @@ target/
 
 # node.js
 node_modules
+
+# webpack dist
+www/dist

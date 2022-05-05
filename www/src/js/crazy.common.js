@@ -17,7 +17,7 @@ export var agent = navigator.userAgent.toLowerCase(),
   COVER_RATIO = 0.6625,
   COVER_ASPECT_RATIO = '80 / 53';
 
-var Popup = {
+export var Popup = {
   /**
    * 팝업창을 띄운다.
    * @param url
@@ -76,7 +76,7 @@ var Popup = {
   },
 };
 
-var Random = {
+export var Random = {
   get: function (start, end) {
     return Math.random() * (end - start) + start;
   },
@@ -363,7 +363,7 @@ var Random = {
   },
 };
 
-var LocalStorageItem = {
+export var LocalStorageItem = {
   set: function (itemName, itemValue) {
     if (typeof Storage !== 'undefined') localStorage.setItem(itemName, itemValue);
   },
@@ -395,7 +395,7 @@ var LocalStorageItem = {
   },
 };
 
-var SessionStorageItem = {
+export var SessionStorageItem = {
   set: function (itemName, itemValue) {
     if (typeof Storage !== 'undefined') sessionStorage.setItem(itemName, itemValue);
   },
@@ -483,7 +483,7 @@ Number.prototype.toDate = function (pattern) {
   return new Date(this).format(pattern);
 };
 
-class DateUtils {
+export class DateUtils {
   static format(pattern, date) {
     // console.log('DateUtils.format', pattern, date, typeof date);
     if (date) {
@@ -497,11 +497,11 @@ class DateUtils {
   }
 }
 
-var KB = 1024,
+export var KB = 1024,
   MB = KB * KB,
   GB = MB * KB,
   TB = GB * KB;
-var File = {
+export var File = {
   formatSize: function (length, unit, digits) {
     if (unit) {
       if (typeof digits === 'undefined') digits = 1;
@@ -526,7 +526,7 @@ var File = {
   },
 };
 
-var reqParam = location.search
+export var reqParam = location.search
   .split(/[?&]/)
   .slice(1)
   .map(function (paramPair) {
@@ -537,10 +537,10 @@ var reqParam = location.search
     return obj;
   }, {});
 
-const birthRegExp = /^(19[0-9][0-9]|20\d{2})年(0[0-9]|1[0-2])月(0[1-9]|[1-2][0-9]|3[0-1])日$/;
-const bodyRegExp = /^(7[0-9]|8[0-9]|9[0-9]|1\d{2})[A-J]? - (5[0-9]|6[0-9]) - (7[0-9]|8[0-9]|9[0-9]|1\d{2})$/;
-const heightRegExp = /^(1[4-7][0-9])$/;
-const debutRegExp = /^(199[0-9]|20[0-2][0-9])$/;
+export const birthRegExp = /^(19[0-9][0-9]|20\d{2})年(0[0-9]|1[0-2])月(0[1-9]|[1-2][0-9]|3[0-1])日$/;
+export const bodyRegExp = /^(7[0-9]|8[0-9]|9[0-9]|1\d{2})[A-J]? - (5[0-9]|6[0-9]) - (7[0-9]|8[0-9]|9[0-9]|1\d{2})$/;
+export const heightRegExp = /^(1[4-7][0-9])$/;
+export const debutRegExp = /^(199[0-9]|20[0-2][0-9])$/;
 
 function returnFalse() {
   return false;

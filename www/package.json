@@ -11,10 +11,14 @@
     "webpack:w": "webpack -w"
   },
   "dependencies": {
+    "amcharts3": "^3.21.15",
     "axios": "^0.27.1",
     "jquery": "^3.6.0",
     "lodash": "^4.17.21",
-    "socket.io-client": "^4.5.0"
+    "net": "^1.0.2",
+    "socket.io-client": "^4.5.0",
+    "sockjs-client": "^1.6.0",
+    "stompjs": "^2.3.3"
   },
   "devDependencies": {
     "css-loader": "^6.7.1",

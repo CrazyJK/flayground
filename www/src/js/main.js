@@ -4,6 +4,10 @@
 
 import $ from 'jquery';
 import { Rest } from './flay.rest.service.js';
+import { LocalStorageItem, PATH, Popup, Random } from './crazy.common.js';
+import flayWebsocket from './flay.websocket.js';
+import { Security } from './flay.utils.js';
+import { loading } from './flay.loading.js';
 
 const SlideMenu = {
   init: () => {
@@ -141,6 +145,7 @@ const SlideMenu = {
       // adjust theme
       $(document).ready(() => {
         try {
+          // eslint-disable-next-line no-undef
           adjustTheme();
         } catch (error) {
           console.error('adjustTheme', error);
@@ -150,7 +155,9 @@ const SlideMenu = {
       // broadcasting
       try {
         flayWebsocket.info('bgtheme');
-      } catch (e) {}
+      } catch (e) {
+        // no nothing
+      }
     };
     let bgTheme = LocalStorageItem.get('flay.bgtheme', 'dark');
     let bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
@@ -167,7 +174,9 @@ const SlideMenu = {
         try {
           // broadcasting
           flayWebsocket.info('bgcolor');
-        } catch (e) {}
+        } catch (e) {
+          // no nothing
+        }
         LocalStorageItem.set('flay.bgcolor', $(e.target).val());
       })
       .trigger('change');
@@ -321,7 +330,7 @@ const Background = {
   },
 };
 
-let isAdmin, username;
+export let isAdmin, username;
 
 $(document).ready(() => {
   isAdmin = Security.hasRole('ADMIN');

@@ -6,7 +6,7 @@ import $ from 'jquery';
 import { loading } from './flay.loading.js';
 import { PATH } from './crazy.common.js';
 
-const restCall = function (url, args, callback, failCallback, callbackData) {
+export const restCall = function (url, args, callback, failCallback, callbackData) {
   let isCompleted = false;
   let loadingTimeout = -1;
   let loadingIndex = -1;

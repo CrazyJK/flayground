@@ -1,0 +1,144 @@
+@charset "UTF-8";
+
+:root {
+	--border-color: #3e3e3e;
+}
+
+body {
+	background: #000 url(/img/svg/flayground1.svg) no-repeat center / contain;
+}
+body.horizontal > main > div#flayWrap {
+	width: 530px;
+}
+
+header {
+	position: sticky;
+	top: 0;
+	background: #000;
+	padding-top: 0.5rem;
+	z-index: 69;
+}
+
+header > nav {
+	display: flex;
+	justify-content: center;
+	flex-wrap: wrap;
+	align-items: baseline;
+	gap: 0.25rem 1rem;
+	margin: 0;
+	border-bottom: 1px solid var(--border-color);
+}
+header > nav > input#search,
+header > nav > .check-group > label > span {
+	font-size: 1.25rem;
+}
+
+main > div#flayWrap {
+	margin: 0 auto 4rem;
+}
+
+dl#flayCard {
+	padding: 0.5rem;
+}
+dl#flayCard dt {
+	margin-bottom: 0.5rem;
+}
+dl#flayCard dd {
+	max-width: 26rem;
+	margin: 0 auto 0.5rem;
+}
+
+#flayCover {
+	position: relative;
+}
+#flayCover > img,
+#flayCover > video {
+	width: 100%;
+}
+#flayCover > video {
+	display: none;
+	position: absolute;
+	z-index: 16;
+	left: 0;
+	bottom: 0;
+}
+#flayTitle {
+	font-size: 120%;
+	text-align: center;
+}
+#flayRank {
+	text-align: center;
+}
+#flayRank .ranker input ~ i {
+	font-size: 1.5rem;
+}
+#flayActress > div.actress {
+	display: flex;
+	gap: 0.25rem;
+}
+#flayActress > div.actress > span.favorite {
+	flex: 0 0 1.5rem;
+}
+#flayActress > div.actress > span.name {
+	flex: 1 0 auto;
+	text-align: left;
+}
+#flayActress > div.actress > span.localName {
+	flex: 0 0 auto;
+}
+#flayActress > div.actress > span.birth {
+	flex: 0 0 6rem;
+}
+#flayActress > div.actress > span.body {
+	flex: 0 0 4rem;
+}
+#flayActress > div.actress > span.height {
+	flex: 0 0 2rem;
+}
+#flayActress > div.actress > span.debut {
+	flex: 0 0 2rem;
+}
+
+#flayInfo {
+	display: flex;
+	justify-content: space-between;
+}
+
+#flayTag {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	gap: 0.25rem;
+}
+
+footer {
+	position: fixed;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+footer .paging {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	background-color: #000;
+	font-size: 1.5rem;
+	padding: 0 1rem;
+}
+footer .paging label {
+	margin: 0;
+	padding: 0 0.5rem;
+}
+footer #paginationProgress {
+	background-color: #333;
+	height: 0.25rem;
+}
+footer #paginationProgress .progress-bar {
+	background-color: #111;
+}
+
+footer #debug {
+	width: 100%;
+	max-height: 120px;
+	overflow: auto;
+}

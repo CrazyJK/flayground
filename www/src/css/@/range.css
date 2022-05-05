@@ -1,0 +1,108 @@
+@charset "UTF-8";
+
+input[type="range"] {
+	-webkit-appearance: none;
+	width: 100%;
+	margin: 0;
+	border: 0 !important;
+	background-color: transparent !important;
+	box-shadow: none !important;
+}
+input[type="range"]:focus {
+	outline: none;
+}
+
+input[type="range"]::-webkit-slider-runnable-track {
+	width: 100%;
+	height: 20px;
+	cursor: pointer;
+	box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.06), 0px 0px 0px rgba(13, 13, 13, 0.06);
+	/* background: linear-gradient(to right, blue, white, #ffc1c1, #f99090, #ff5e5e, #ff2828, #ff0000); */
+	background: rgba(255, 255, 255, 0);
+	border-radius: 10px;
+	border: 1px solid #eeeeee;
+	transition: background 0.3s, border 0.3s;
+}
+input[type="range"]:focus::-webkit-slider-runnable-track,
+input[type="range"]:hover::-webkit-slider-runnable-track {
+	background: rgba(255, 255, 255, 0);
+	border: 1px solid #abc;
+}
+input[type="range"]::-webkit-slider-thumb {
+	box-shadow: 0.9px 0.9px 1px rgba(0, 0, 0, 0), 0px 0px 0.9px rgba(13, 13, 13, 0);
+	border: 0px solid rgba(0, 0, 0, 0);
+	height: 20px;
+	width: 20px;
+	border-radius: 10px;
+	background: rgba(51, 122, 183, 0.5);
+	cursor: pointer;
+	-webkit-appearance: none;
+	margin-top: -1px;
+}
+
+input[type="range"]::-moz-range-track {
+	width: 100%;
+	height: 20px;
+	cursor: pointer;
+	box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.06), 0px 0px 0px rgba(13, 13, 13, 0.06);
+	background: rgba(255, 255, 255, 0);
+	border-radius: 10px;
+	border: 1px solid #eeeeee;
+	transition: background 0.3s, border 0.3s;
+}
+input[type="range"]:hover::-moz-range-track {
+	border: 1px solid #abc;
+}
+input[type="range"]::-moz-range-thumb {
+	box-shadow: 0.9px 0.9px 1px rgba(0, 0, 0, 0), 0px 0px 0.9px rgba(13, 13, 13, 0);
+	border: 0px solid rgba(0, 0, 0, 0);
+	height: 20px;
+	width: 20px;
+	border-radius: 10px;
+	background: rgba(51, 122, 183, 0.5);
+	cursor: pointer;
+}
+
+input[type="range"]::-ms-track {
+	width: 129px;
+	height: 20px;
+	cursor: pointer;
+	background: transparent;
+	border-color: transparent;
+	color: transparent;
+}
+input[type="range"]::-ms-fill-lower {
+	background: rgba(209, 209, 209, 0);
+	border: 1px solid #eeeeee;
+	border-radius: 20px;
+	box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.06), 0px 0px 0px rgba(13, 13, 13, 0.06);
+	transition: background 0.3s, border 0.3s;
+}
+input[type="range"]::-ms-fill-upper {
+	background: rgba(255, 255, 255, 0);
+	border: 1px solid #eeeeee;
+	border-radius: 20px;
+	box-shadow: 0px 0px 0px rgba(0, 0, 0, 0.06), 0px 0px 0px rgba(13, 13, 13, 0.06);
+	transition: background 0.3s, border 0.3s;
+}
+input[type="range"]::-ms-thumb {
+	box-shadow: 0.9px 0.9px 1px rgba(0, 0, 0, 0), 0px 0px 0.9px rgba(13, 13, 13, 0);
+	border: 0px solid rgba(0, 0, 0, 0);
+	width: 20px;
+	border-radius: 10px;
+	background: rgba(51, 122, 183, 0.5);
+	cursor: pointer;
+	height: 20px;
+}
+input[type="range"]:focus::-ms-fill-lower {
+	background: rgba(255, 255, 255, 0);
+}
+input[type="range"]:focus::-ms-fill-upper {
+	background: rgba(255, 255, 255, 0);
+}
+input[type="range"]:hover::-ms-fill-lower {
+	border: 1px solid #abc;
+}
+input[type="range"]:hover::-ms-fill-upper {
+	border: 1px solid #abc;
+}

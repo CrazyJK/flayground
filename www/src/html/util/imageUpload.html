@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Image Upload</title>
+		<link rel="stylesheet" href="../../css/common.css" />
+		<style type="text/css">
+			.one-line {
+				overflow: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/js/crazy.common.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="display-4 my-3">Image Upload</div>
+
+			<form action="/image/upload" method="post" enctype="multipart/form-data" id="imageform">
+				<div class="custom-file">
+					<input type="file" name="file" class="custom-file-input" id="customFile" accept="image/*" multiple="multiple" />
+					<label class="custom-file-label one-line" id="customFileLabel" for="customFile">Choose Image</label>
+				</div>
+				<div id="fileDetail">
+					<ol class="list-group" id="fileList"></ol>
+				</div>
+				<div class="row">
+					<button type="submit" class="btn btn-block btn-primary m-3 col">Submit Upload</button>
+					<button type="button" class="btn btn-block btn-primary m-3 col" id="btnAjaxUpload">Ajax Upload</button>
+				</div>
+			</form>
+
+			<div class="toast hide" data-autohide="false" style="max-width: initial">
+				<div class="toast-header">
+					<strong class="mr-auto text-primary" id="responseTitle">Toast Header</strong>
+					<small class="text-muted" id="responseTime">5 mins ago</small>
+					<button type="button" class="ml-2 mb-1 close" data-dismiss="toast">&times;</button>
+				</div>
+				<div class="toast-body" id="responseBody">Some text inside the toast body</div>
+			</div>
+
+			<div class="card-columns" id="imagePreview"></div>
+		</div>
+
+		<script>
+			$('#customFile').on('change', function () {
+				var fileLength = $(this).get(0).files.length;
+				var fileTotalSize = 0;
+				if (fileLength > 0) {
+					$('#imagePreview').empty();
+					$('#fileList').empty();
+					$('.toast').toast('hide');
+
+					for (var file of $(this).get(0).files) {
+						fileTotalSize += file.size;
+
+						$('#fileList').append($('<li>', { class: 'list-group-item one-line' }).html(File.formatSize(file.size) + ' - ' + file.name));
+
+						var reader = new FileReader();
+						reader.onload = (function (theFile) {
+							return function (event) {
+								$('<div>', { class: 'card' })
+									.css({
+										width: 300,
+									})
+									.append(
+										$('<img>', { src: event.target.result, class: 'card-img-top' }),
+										$('<div>', { class: 'card-body' }).append(
+											$('<h4>', { class: 'card-title' }).html(theFile.name),
+											$('<p>', { class: 'card-text' }).html(DateUtils.format('yyyy-MM-dd HH:mm:ss', theFile.lastModified)),
+											$('<p>', { class: 'card-text' }).html(File.formatSize(theFile.size)),
+										),
+									)
+									.appendTo($('#imagePreview'));
+							};
+						})(file);
+						reader.readAsDataURL(file);
+					}
+
+					$('#customFileLabel').html(fileLength + ' selected: ' + File.formatSize(fileTotalSize));
+				}
+			});
+
+			$('#btnAjaxUpload').on('click', function () {
+				if (customFile.files.length == 0) {
+					return;
+				}
+
+				var $this = $(this);
+				var btnText = $(this).text();
+				var formData = new FormData($('#imageform')[0]);
+
+				$.ajax({
+					url: '/image/upload',
+					type: 'POST',
+					processData: false,
+					contentType: false,
+					data: formData,
+					beforeSend: function (jqXHR, settings) {
+						console.log('beforeSend', jqXHR, settings);
+						$this.prop('disabled', true).prepend('<span class="spinner-border spinner-border-sm"></span>');
+					},
+				})
+					.done(function (data) {
+						console.log('response', data);
+						$('#responseBody').empty();
+						for (var i = 0; i < data.length; i++) {
+							if (i == 0) {
+								$('#responseTitle').html('Upload Success').switchClass('text-danger', 'text-primary');
+								$('#responseTime').html(DateUtils.format('yyyy-MM-dd HH:mm:ss', data[i].modified));
+							}
+							$('#responseBody').append($('<p>', { class: 'mb-1' }).html(data[i].idx + '. ' + data[i].file + ' - ' + File.formatSize(data[i].length)));
+						}
+						$('.toast').toast('show');
+					})
+					.fail(function (jqXHR, textStatus, errorThrown) {
+						console.log('errMsg', jqXHR, textStatus, errorThrown);
+						var errResp = jqXHR.responseJSON;
+						if (errResp) {
+							$('#responseTitle').html(errResp.error).switchClass('text-primary', 'text-danger');
+							$('#responseTime').html(DateUtils.format('yyyy-MM-dd HH:mm:ss', errResp.timestamp));
+							$('#responseBody').html(errResp.message);
+						} else {
+							$('#responseTitle').html('Upload fail').switchClass('text-primary', 'text-danger');
+							$('#responseTime').html(DateUtils.format('yyyy-MM-dd HH:mm:ss', new Date()));
+							$('#responseBody').html(textStatus);
+						}
+						$('.toast').toast('show');
+					})
+					.always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {
+						$this.html(btnText).prop('disabled', false);
+					});
+			});
+		</script>
+	</body>
+</html>

@@ -1,0 +1,282 @@
+[
+	{
+		"name": "Vertical",
+		"uri": "/html/flay/flay.vertical.html",
+		"icon": "fa fa-film",
+		"mode": "include",
+		"popup": {
+			"w": 0,
+			"h": 0
+		}
+	},
+	{
+		"name": "Archive",
+		"uri": "/html/flay/flay.archive.html",
+		"icon": "fa fa-th",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Tile",
+		"uri": "/html/flay/flay.tile.html",
+		"icon": "fa fa-th",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Search",
+		"uri": "/html/flay/flay.search.html",
+		"icon": "fa fa-search",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Tag",
+		"uri": "/html/flay/flay.tag.html",
+		"icon": "fa fa-tags",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Actress",
+		"uri": "/html/flay/flay.actress.html",
+		"icon": "fa fa-female",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Actress Rank",
+		"uri": "/html/flay/flay.actress.2.html",
+		"icon": "fa fa-female",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Subtitles",
+		"uri": "/html/flay/flay.subtitles.html",
+		"icon": "fa fa-file-text-o",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1050
+		}
+	},
+	{
+		"name": "Summary",
+		"uri": "/html/flay/flay.summary.html",
+		"icon": "fa fa-list",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 1050
+		}
+	},
+	{
+		"name": "History",
+		"uri": "/html/flay/flay.history.html",
+		"icon": "fa fa-bar-chart",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Today`s",
+		"uri": "/html/todayis/todayis.html",
+		"icon": "fa fa-th",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Notes",
+		"uri": "/html/note/kamoru.note.html",
+		"icon": "fa fa-sticky-note note-btn",
+		"mode": "include",
+		"popup": {
+			"w": 1078,
+			"h": 800
+		}
+	},
+	{
+		"name": "Basket",
+		"uri": "/html/flay/flay.basket.html",
+		"icon": "fa fa-shopping-cart",
+		"mode": "href",
+		"popup": {
+			"w": "100%",
+			"h": "100%"
+		}
+	},
+	{
+		"name": "Score",
+		"uri": "/html/flay/flay.score.html",
+		"icon": "fa fa-list",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Fav. Opus",
+		"uri": "/html/flay/flay.fav.opus.html",
+		"icon": "fa fa-list",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Lost flay",
+		"uri": "/html/flay/flay.lost.html",
+		"icon": "fa fa-list",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Cover Cloud",
+		"uri": "/html/image/cover.cloud.html",
+		"icon": "fa fa-picture-o",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Image Cloud",
+		"uri": "/html/image/image.cloud.html",
+		"icon": "fa fa-picture-o",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Image Slide",
+		"uri": "/html/image/image.slide.html",
+		"icon": "fa fa-picture-o",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Image Tablet",
+		"uri": "/html/image/image.tablet.html",
+		"icon": "fa fa-picture-o",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Image Board",
+		"uri": "/html/image/image.board.html",
+		"icon": "fa fa-picture-o",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Image Banner",
+		"uri": "/html/image/image.banner.html",
+		"icon": "fa fa-picture-o",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "RequestMap",
+		"uri": "/html/util/requestMapping.html",
+		"icon": "fa fa-info",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Component",
+		"uri": "/html/util/flay.component.html",
+		"icon": "fa fa-info",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Device Info",
+		"uri": "/html/util/device.info.html",
+		"icon": "fa fa-info",
+		"mode": "href",
+		"popup": {
+			"w": 1000,
+			"h": 660
+		}
+	},
+	{
+		"name": "Actuator",
+		"uri": "/html/actuator/index.html",
+		"icon": "fa fa-info",
+		"mode": "href",
+		"popup": {
+			"w": 1000,
+			"h": 830
+		}
+	},
+	{
+		"name": "Websocket",
+		"uri": "/html/util/websocket.stat.html",
+		"icon": "fa fa-info",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 830
+		}
+	},
+	{
+		"name": "Logout (<span id=\"username\"></span>)",
+		"uri": "/logout",
+		"icon": "fa fa-sign-out",
+		"mode": "logout",
+		"popup": {
+			"w": 0,
+			"h": 0
+		}
+	}
+]

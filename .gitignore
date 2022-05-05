@@ -37,3 +37,6 @@ target/
 # mac
 .DS_Store
 .vscode/settings.json
+
+# node.js
+node_modules

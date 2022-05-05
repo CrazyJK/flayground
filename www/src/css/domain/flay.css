@@ -1,0 +1,252 @@
+:root {
+    --rank-1: rgba(0, 0, 255, 0.5);
+    --rank0: rgba(255, 255, 0, 0.5);
+    --rank1: rgba(255, 0, 0, 0.5);
+    --rank2: rgba(255, 0, 0, 0.6);
+    --rank3: rgba(255, 0, 0, 0.7);
+    --rank4: rgba(255, 0, 0, 0.8);
+    --rank5: rgba(255, 0, 0, 0.9);
+}
+
+/* --- .flay --- */
+
+.flay {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	background-color: #181818;
+    background-clip: border-box;
+	border: 4px solid #282828;
+	border-radius: 4px;
+	text-shadow: 0 0 2px midnightblue, 0 0 4px #000, 0 0 8px #000, 0 0 12px midnightblue, 0 0 16px #000, 0 0 24px #000;
+	transition: .4s;
+	width: inherit;
+}
+.flay:hover {
+	box-shadow: 0 0.5rem 1rem rgb(0 0 0 / 50%);
+}
+
+/* --- .flay-cover --- */
+
+.flay-cover {
+	aspect-ratio: 800 / 538;
+	max-width: 100%;
+    height: auto;
+}
+
+/* --- .flay-body --- */
+
+.flay-body {
+	position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+	aspect-ratio: 800 / 538;
+	margin: 0;
+    padding: 0;
+	background-color: transparent;
+	color: #eee;
+	overflow: hidden;
+	transition: background-color .4s;
+}
+.flay-body:hover {
+	background-color: rgba(0,0,0,.5);
+}
+.flay-body .extra {
+	opacity: 0;
+	transition: opacity .7s;
+}
+.flay-body:hover .extra {
+	opacity: 1;
+	transition: opacity .4s .4s;
+}
+.flay-body > :is(dt, dd) {
+	font-weight: 700;
+	margin: .25rem .25rem;
+	padding: .25rem .5rem;
+	min-height: 2rem;
+}
+.flay-body > :is(dt, dd) > div {
+	display: flex;
+    flex-wrap: wrap;
+	align-items: baseline;
+    gap: .25rem .75rem;
+	overflow: hidden;
+    text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.flay-body .flay-fullname {
+	display: none;
+}
+.flay-body .flay-title {
+	font-size: 120%;
+	font-weight: 700;
+}
+.flay-body .flay-modified, .flay-body .flay-access {
+	font-size: 90%;
+}
+.flay-body .flay-rank div {
+    gap: .25rem .5rem;
+}
+.flay-body .flay-rank div label input {
+	display: none;
+}
+.flay-body .flay-rank div label input:checked ~ i.r-1 {
+    color: var(--rank-1);
+}
+.flay-body .flay-rank div label input:checked ~ i.r0 {
+    color: var(--rank0);
+}
+.flay-body .flay-rank div label input:checked ~ i.r1 {
+    color: var(--rank1);
+}
+.flay-body .flay-rank div label input:checked ~ i.r2 {
+    color: var(--rank2);
+}
+.flay-body .flay-rank div label input:checked ~ i.r3 {
+    color: var(--rank3);
+}
+.flay-body .flay-rank div label input:checked ~ i.r4 {
+    color: var(--rank4);
+}
+.flay-body .flay-rank div label input:checked ~ i.r5 {
+    color: var(--rank5);
+}
+.flay-body .flay-actresslist .actress-favorite.active {
+	color: rgba(255, 0, 0, 0.9);
+}
+.flay-body .flay-comment .comment-edit {
+    background-color: transparent;
+    border: 0;
+    color: #eee;
+    font-weight: 700;
+	width: 100%;
+}
+
+/* --- .flay-body-separate --- */
+
+.flay-body.flay-body-separate {
+	position: initial;
+	aspect-ratio: unset;
+}
+.flay-body.flay-body-separate:hover {
+	background-color: transparent;
+}
+.flay-body.flay-body-separate > :is(dt, dd) > div {
+	justify-content: center;
+}
+.flay-body.flay-body-separate .extra {
+	opacity: 1;
+	transition: 0s;
+}
+.flay-body.flay-body-separate > :is(dt, dd) {
+	margin-top: 0;
+	margin-bottom: 0;
+}
+
+/* --- .flay-ext --- */
+
+.flay-ext {
+	margin: 0;
+    padding: 0;
+    color: #eee;
+}
+.flay-ext > dd {
+	margin: 0;
+    border-top: 1px solid #222;
+	padding: .5rem;
+}
+.flay-ext .flay-files {
+	display: none;
+	font-size: 80%;
+}
+.flay-ext .flay-files div {
+	margin: .25rem;
+}
+.flay-ext .flay-taglist {
+	display: none;
+}
+.flay-ext .flay-taglist div {
+	display: flex;
+	flex-wrap: wrap;
+    justify-content: center;
+    gap: .25rem .75rem;
+}
+.flay-ext .flay-taglist div .tag-item {
+	cursor: pointer;
+	font-size: 90%;
+	font-weight: 700;
+}
+.flay-ext .flay-taglist div .tag-item.active {
+	color: orange;
+}
+.flay-ext .flay-taglist div .tag-item:hover {
+	color: orange;
+}
+
+.right-bottom {
+	position: absolute;
+	right: 0;
+	bottom: 0;
+}
+.flay-body-toggle {
+    padding: .25rem;
+    font-size: 120%;
+    color: #eee;
+}
+
+/* --- .flay-video --- */
+
+.flay > .flay-video {
+	display: none;
+	position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    aspect-ratio: 800 / 538;
+}
+.flay > .flay-video.window-maximize {
+	position: fixed;
+	bottom: 0;
+    aspect-ratio: unset;
+	z-index: 1818;
+}
+.flay > .flay-video > div {
+	position: absolute;
+    top: 0;
+    right: 0;
+    margin: 0;
+	padding: .25rem;
+}
+.flay > .flay-video > div > i.fa {
+    color: #6c757d;
+    font-size: 1rem;
+	margin: .25rem;
+	transition: color .3s;
+}
+.flay > .flay-video > div > i.fa:hover {
+    color: #f8f9fa;
+}
+.flay > .flay-video > div > i.fa.fa-window-restore {
+	display: none;
+}
+.flay > .flay-video > video {
+	width: 100%;
+    height: 100%;
+}
+
+/* --- .flay common --- */
+
+.flay label {
+	margin: 0;
+	padding: 0;
+}
+.flay .hover {
+    cursor: pointer;
+	transition: text-shadow .4s, color .3s;
+}
+.flay .hover:hover {
+	color: #ffc107;
+	text-shadow: 0 0 2px red;
+	transition: text-shadow .4s, color .3s;
+}

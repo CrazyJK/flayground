@@ -1,0 +1,90 @@
+@charset "utf-8";
+
+[data-theme='dark'] {
+	--color-bg: #000;
+	--color-bg-label: rgba(0, 0, 0, 0.125);
+	--color-bg-label-hover: rgba(0, 0, 0, 0.75);
+	--color-bg-label-title: rgba(0, 0, 0, 1);
+	--color-bg-page: transparent;
+	--color-bg-page-hover: rgba(0, 0, 0, 0.75);
+	--color-bg-check: rgba(0, 0, 0, 0.125);
+	--color-bg-check-tag: rgba(0, 0, 0, 0.5);
+	--color-bg-ranker: rgba(0, 0, 0, 0.125);
+	--color-bg-light: transparent;
+	--color-bg-input-hover: rgba(0, 0, 0, 0.75);
+	--color-bg-button: transparent;
+	--color-bg-nav-hover: rgba(0, 0, 0, 0.75);
+	--color-bg-range: transparent;
+	--color-bg-card: rgba(0, 0, 0, 0.75);
+	--color-bg-card-active: rgba(43, 39, 39, 0.75);
+	--color-bg-form: transparent;
+	--color-bg-chart: transparent;
+	--color-bg-nav: rgba(0, 0, 0, 0.25);
+	--color-bg-modal: rgba(0, 0, 0, 0.75);
+
+	--color-text: #eee;
+	--color-text-reverse: #000;
+	--color-text-active: orange;
+	--color-text-form: #eee;
+	--color-text-hover: #17a2b8;
+
+	--color-text-shadow: #000;
+	--color-box-shadow: rgb(255 255 255 / 25%);
+	--color-box-shadow-light: rgb(255 255 255 / 12.5%);
+
+	--color-border-card: rgba(255, 255, 255, 0.125);
+	--color-border-form: #2d2d30;
+	--color-border-modal: rgba(0, 0, 0, 0.5);
+
+	--color-input-checked: orange;
+}
+
+[data-theme='light'] {
+	--color-bg: #fff;
+	--color-bg-label: #fff;
+	--color-bg-label-hover: #fff;
+	--color-bg-label-title: #fff;
+	--color-bg-page: #fff;
+	--color-bg-page-hover: #fff;
+	--color-bg-check: #fff;
+	--color-bg-check-tag: #fff;
+	--color-bg-ranker: #fff;
+	--color-bg-light: #fff;
+	--color-bg-input: rgba(255, 255, 255, 0.75);
+	--color-bg-button: #fff;
+	--color-bg-nav-hover: #fff;
+	--color-bg-range: #fff;
+	--color-bg-card: #fff;
+	--color-bg-card-active: rgba(216, 197, 197, 0.75);
+	--color-bg-form: #fff;
+	--color-bg-chart: transparent;
+	--color-bg-nav: rgba(255, 255, 255, 1);
+	--color-bg-modal: rgba(255, 255, 255, 0.75);
+
+	--color-text: #000;
+	--color-text-reverse: #eee;
+	--color-text-active: orange;
+	--color-text-form: #000;
+	--color-text-hover: #17a2b8;
+
+	--color-text-shadow: transparent;
+	--color-box-shadow: rgb(0 0 0 / 25%);
+	--color-box-shadow-light: rgb(0 0 0 / 12.5%);
+
+	--color-border-card: rgba(0, 0, 0, 0.125);
+	--color-border-form: #ced4da;
+	--color-border-modal: #dee2e6;
+
+	--color-input-checked: orange;
+}
+
+/* bootstrap direct override */
+.bg-light {
+	background-color: var(--color-bg-light) !important;
+}
+.table {
+	color: var(--color-text);
+}
+.table-hover tbody tr:hover {
+	color: var(--color-text);
+}

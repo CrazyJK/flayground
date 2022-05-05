@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Mobile flayground</title>
+		<link rel="icon" href="../../img/favicon/flay_0.png" type="image/png" />
+		<link rel="stylesheet" href="../../css/common.css" />
+		<link rel="stylesheet" href="../../css/mobile.css" />
+		<script defer type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script defer type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script defer type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script defer type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.loading.js"></script>
+		<script defer type="text/javascript" src="../../js/crazy.common.js"></script>
+		<script defer type="text/javascript" src="../../js/crazy.jquery.js"></script>
+		<script defer type="text/javascript" src="../../js/crazy.effect.neon.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.rest.service.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.utils.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.view.card.js"></script>
+		<script defer type="text/javascript" src="../../js/flay.websocket.js"></script>
+		<!-- <script defer type="text/javascript" src="../../js/theme/flay.theme.js"></script> -->
+		<script defer type="text/javascript" src="../../js/flay.mobile.js"></script>
+	</head>
+	<body class="horizontal" style="background-color: #000">
+		<header>
+			<nav>
+				<input class="form-control input-flay search" type="search" id="search" placeholder="Search..." autocomplete="off" />
+				<span class="check-group check-group-rounded">
+					<label><input type="checkbox" id="rank0" name="rank" value="0" checked="checked" /><span class="fa fa-circle"></span></label>
+					<label><input type="checkbox" id="rank1" name="rank" value="1" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" id="rank2" name="rank" value="2" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" id="rank3" name="rank" value="3" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" id="rank4" name="rank" value="4" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" id="rank5" name="rank" value="5" /><span class="fa fa-star"></span></label>
+				</span>
+				<span class="check-group check-group-rounded">
+					<label><input type="checkbox" id="filter-video" /><span class="fa fa-film"></span></label>
+					<label><input type="checkbox" id="filter-subtitles" /><span class="fa fa-file-text"></span></label>
+				</span>
+				<span class="check-group check-group-rounded">
+					<label><input type="checkbox" id="filter-favorite" checked="checked" /><span class="fa fa-heart"></span></label>
+					<label><input type="checkbox" id="filter-notFavorite" checked="checked" /><span class="fa fa-heart-o"></span></label>
+				</span>
+				<span class="check-group check-group-rounded">
+					<label><input type="radio" name="sort" value="S" /><span>S</span></label>
+					<label><input type="radio" name="sort" value="O" /><span>O</span></label>
+					<label><input type="radio" name="sort" value="T" /><span>T</span></label>
+					<label><input type="radio" name="sort" value="A" /><span>A</span></label>
+					<label><input type="radio" name="sort" value="R" /><span>R</span></label>
+					<label><input type="radio" name="sort" value="M" checked="checked" /><span>M</span></label>
+					<label><input type="radio" name="sort" value="P" /><span>P</span></label>
+				</span>
+			</nav>
+		</header>
+		<main>
+			<div id="flayWrap">
+				<dl id="flayCard" style="opacity: 0">
+					<dt id="flayCover">
+						<img />
+						<video id="flayVideo" controls></video>
+					</dt>
+					<dt id="flayTitle" class="nowrap"></dt>
+					<dd id="flayRank">
+						<span class="ranker">
+							<label><input type="radio" id="ranker-1" name="ranker" value="-1" /><i class="fa fa-thumbs-down r-1"></i></label>
+							<label><input type="radio" id="ranker0" name="ranker" value="0" /><i class="fa fa-circle r0"></i></label>
+							<label><input type="radio" id="ranker1" name="ranker" value="1" /><i class="fa fa-star r1"></i></label>
+							<label><input type="radio" id="ranker2" name="ranker" value="2" /><i class="fa fa-star r2"></i></label>
+							<label><input type="radio" id="ranker3" name="ranker" value="3" /><i class="fa fa-star r3"></i></label>
+							<label><input type="radio" id="ranker4" name="ranker" value="4" /><i class="fa fa-star r4"></i></label>
+							<label><input type="radio" id="ranker5" name="ranker" value="5" /><i class="fa fa-star r5"></i></label>
+						</span>
+					</dd>
+					<dd id="flayActress"></dd>
+					<dd id="flayInfo">
+						<span id="flayStudio"></span>
+						<span id="flayOpus"></span>
+						<span id="flayRelease"></span>
+						<span id="flayMovie"></span>
+						<span id="flaySubtitles"></span>
+						<span id="flayScore"></span>
+						<span id="flayPlay"></span>
+					</dd>
+					<dd id="flayOverview"></dd>
+					<dd id="flayTag"></dd>
+				</dl>
+			</div>
+		</main>
+		<footer>
+			<ol id="debug"></ol>
+			<div class="paging">
+				<label id="paging-first"><i class="fa fa-step-backward"></i></label>
+				<label id="paging-prev"><i class="fa fa-backward"></i></label>
+				<label id="paging-random"><i class="fa fa-random"></i></label>
+				<label id="paging-next"><i class="fa fa-forward"></i></label>
+				<label id="paging-last"><i class="fa fa-step-forward"></i></label>
+			</div>
+			<div class="progress" id="paginationProgress">
+				<div class="progress-bar" style="width: 0%"></div>
+			</div>
+		</footer>
+	</body>
+</html>

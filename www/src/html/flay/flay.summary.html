@@ -1,0 +1,383 @@
+<meta charset="UTF-8" />
+<style type="text/css">
+	.flay-list-wrapper {
+		display: none;
+		background-color: var(--color-bg-card);
+		border-radius: 0.5rem;
+		margin: 0;
+		padding: 1rem;
+		position: fixed;
+		top: 2rem;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+	.summary-list table thead tr th {
+		text-align: center !important;
+	}
+
+	.summary-item > .item-key {
+		margin: 0.25rem;
+		text-align: left;
+	}
+	.summary-item > .item-count {
+		margin: 0.25rem;
+		min-width: 40px;
+		font-size: 90%;
+	}
+	.summary-item > .item-size {
+		margin: 0.25rem;
+		min-width: 65px;
+		text-align: right;
+	}
+
+	.card {
+		display: inline-flex;
+		width: 850px;
+	}
+	.card-body > .table {
+		font-family: D2Coding;
+	}
+	.card-body .table-hover tbody tr:hover {
+		background-color: rgba(0, 123, 255, 0.1);
+	}
+
+	.card-body table.table th:nth-child(1),
+	.card-body table.table td:nth-child(1) {
+		text-align: left;
+	}
+	.card-body table.table th:nth-child(2),
+	.card-body table.table td:nth-child(2) {
+		text-align: right;
+	}
+	.card-body table.table th:nth-child(3),
+	.card-body table.table td:nth-child(3) {
+		text-align: right;
+	}
+
+	.card-body table.table thead th {
+		border-bottom: 1px solid rgba(238, 238, 238, 0.5);
+	}
+	.card-body table.table tfoot th {
+		border-top: 1px solid rgba(238, 238, 238, 0.5);
+	}
+
+	td.item-key {
+		width: 200px;
+	}
+	td.item-count {
+		width: 100px;
+	}
+	td.item-length {
+		width: 100px;
+	}
+	td.item-progress {
+		min-width: 200px;
+	}
+	td.item-progress > .progress {
+		border-radius: 0.5rem;
+		height: 24px;
+		justify-content: center;
+	}
+	td.item-progress > .progress > .progress-bar {
+		border-radius: 0.5rem;
+	}
+
+	.btn[aria-expanded='true'] {
+		color: #007bff;
+		background-color: #fff;
+		text-shadow: 1px 1px #ff073c;
+	}
+
+	.release-header {
+		display: flex;
+		justify-content: center;
+	}
+
+	.flay-all-cell {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		border: 2px solid var(--color-border-card);
+		cursor: pointer;
+		min-height: 3rem;
+	}
+	.rank5 {
+		text-shadow: 1px 1px 2px var(--rank5);
+	}
+	.rank4 {
+		text-shadow: 1px 1px 2px var(--rank4);
+	}
+	.rank3 {
+		text-shadow: 1px 1px 2px var(--rank3);
+	}
+	.rank2 {
+		text-shadow: 1px 1px 2px var(--rank2);
+	}
+	.rank1 {
+		text-shadow: 1px 1px 2px var(--rank1);
+	}
+	.rank0 {
+		text-shadow: 1px 1px 2px var(--rank0);
+	}
+	.rank-1 {
+		text-shadow: 1px 1px 2px var(--rank-1);
+	}
+	.flay-all-cell-year-axis {
+		border: 2px solid var(--color-border-card);
+		padding: 0.25rem 0;
+	}
+
+	.flay-all-td {
+		cursor: pointer;
+	}
+</style>
+
+<div role="body">
+	<div id="topMenu" style="background-color: var(--color-bg)">
+		<nav class="rounded-bottom">
+			<div class="btn-group" role="group" aria-label="Studio">
+				<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByStudio">Studio Canvas</button>
+				<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#StudioTable">Studio Table</button>
+			</div>
+			<div class="btn-group" role="group" aria-label="Actress">
+				<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByActress">Actress Canvas</button>
+				<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#ActressTable">Actress Table</button>
+			</div>
+			<div class="btn-group" role="group" aria-label="Group">
+				<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRelease">Release</button>
+				<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByPath">Path</button>
+				<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#groupByRank">Rank</button>
+			</div>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#releaseChartDiv">Release Chart</button>
+			<button class="btn btn-flay btn-sm" data-toggle="collapse" aria-expanded="false" data-target="#flayAllDiv">FlayAll</button>
+		</nav>
+	</div>
+
+	<div class="container-fluid text-center">
+		<div id="groupByStudio" class="collapse card m-2 bg-chalkboard">
+			<div class="card-header text-center">Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video</div>
+			<div class="card-body text-center">
+				<canvas id="studioCanvas" width="800" height="800"></canvas>
+				<div id="studioList" style="display: none"></div>
+			</div>
+		</div>
+
+		<div id="StudioTable" class="collapse card m-2 bg-chalkboard">
+			<div class="card-header text-center">Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video</div>
+			<div class="card-body text-center pt-0">
+				<div class="summary-list" id="studioTableWrap">
+					<table class="table table-sm table-hover">
+						<thead>
+							<tr>
+								<th rowspan="2">Name</th>
+								<th colspan="3">Total</th>
+								<th colspan="3">Favorite</th>
+								<th rowspan="2">Fav. ratio</th>
+							</tr>
+							<tr>
+								<th>length</th>
+								<th>size</th>
+								<th>avg rank</th>
+								<th>length</th>
+								<th>size</th>
+								<th>avg rank</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div id="groupByActress" class="collapse card m-2 bg-chalkboard">
+			<div class="card-header text-center">Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video</div>
+			<div class="card-body text-center">
+				<canvas id="actressCanvas" width="800" height="800"></canvas>
+				<div id="actressList" style="display: none"></div>
+			</div>
+		</div>
+
+		<div id="ActressTable" class="collapse card m-2 bg-chalkboard">
+			<div class="card-header text-center">Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video</div>
+			<div class="card-body text-center pt-0">
+				<div class="summary-list" id="actressTableWrap">
+					<table class="table table-sm table-hover">
+						<thead>
+							<tr>
+								<th rowspan="2">Name</th>
+								<th colspan="2">Total</th>
+								<th colspan="3">Ranked</th>
+							</tr>
+							<tr>
+								<th>length</th>
+								<th>size</th>
+								<th>length</th>
+								<th>size</th>
+								<th>rank</th>
+							</tr>
+						</thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+
+		<div id="groupByRelease" class="collapse card m-2">
+			<div class="card-body bg-chalkboard">
+				<div class="text-center">
+					<span class="text-danger">Choose release pattern</span>
+					<label class="check sm"><input type="radio" name="releasePattern" value="YYYY" /><span>YYYY</span></label>
+					<label class="check sm"><input type="radio" name="releasePattern" value="YYYYMM" /><span>YYYY.MM</span></label>
+					<label class="check sm"><input type="radio" name="releasePattern" value="YYYYMMDD" /><span>YYYY.MM.DD</span></label>
+				</div>
+				<table class="table table-sm table-borderless table-hover m-0">
+					<thead class="text-primary">
+						<tr>
+							<th>Release</th>
+							<th>Flay</th>
+							<th>Length</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="releasedList"></tbody>
+					<tfoot class="text-danger"></tfoot>
+				</table>
+			</div>
+		</div>
+
+		<div id="groupByPath" class="collapse card m-2">
+			<div class="card-body bg-chalkboard">
+				<table class="table table-sm table-borderless table-hover m-0">
+					<thead class="text-primary">
+						<tr>
+							<th>Path</th>
+							<th>Flay</th>
+							<th>Length</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="pathList"></tbody>
+					<tfoot class="text-danger"></tfoot>
+				</table>
+			</div>
+		</div>
+
+		<div id="groupByRank" class="collapse card m-2">
+			<div class="card-body bg-chalkboard">
+				<table class="table table-sm table-borderless table-hover m-0">
+					<thead class="text-primary">
+						<tr>
+							<th>Rank</th>
+							<th>Flay</th>
+							<th>Length</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody id="rankList"></tbody>
+					<tfoot class="text-danger"></tfoot>
+				</table>
+			</div>
+		</div>
+
+		<div id="releaseChartDiv" class="collapse m-2">
+			<div class="release-header">
+				<span class="check-group check-group-rounded">
+					<label><input type="checkbox" name="rank" id="rank0" value="0" checked="checked" /><span class="fa fa-circle"></span></label>
+					<label><input type="checkbox" name="rank" id="rank1" value="1" checked="checked" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" name="rank" id="rank2" value="2" checked="checked" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" name="rank" id="rank3" value="3" checked="checked" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" name="rank" id="rank4" value="4" checked="checked" /><span class="fa fa-star"></span></label>
+					<label><input type="checkbox" name="rank" id="rank5" value="5" checked="checked" /><span class="fa fa-star"></span></label>
+				</span>
+				<span class="check-group check-group-rounded">
+					<label><input type="radio" name="releaseDate" value="0" /><span>YYYY</span></label>
+					<label><input type="radio" name="releaseDate" value="1" checked="checked" /><span>YYYY.MM</span></label>
+					<label><input type="radio" name="releaseDate" value="2" /><span>YYYY.MM.DD</span></label>
+				</span>
+			</div>
+			<div class="release-header mt-2">
+				<input type="range" id="releaseDateRange" min="30" max="365" value="100" style="width: 500px" />
+			</div>
+			<div class="lead font-weight-bold text-warning mt-3">Instance</div>
+			<div id="releaseInstanceChart" style="height: 500px"></div>
+			<div class="lead font-weight-bold text-warning mt-3">Archive</div>
+			<div id="releaseArchiveChart" style="height: 500px"></div>
+		</div>
+
+		<div id="flayAllDiv" class="collapse m-2">
+			<div class="container bg-chalkboard rounded p-2">
+				<div id="flayAllWrapper" style="display: flex; flex-direction: row; flex-wrap: wrap"></div>
+				<div class="progress border-0" id="displayProgress" style="height: 0.25rem">
+					<div class="progress-bar border-0" style="width: 0%; transition: width 0.1s linear"></div>
+				</div>
+				<div id="flayAllAxisWrapper" style="display: flex; flex-direction: row; flex-wrap: wrap"></div>
+			</div>
+			<div class="container bg-chalkboard rounded p-2 mt-2" style="height: 800px; overflow: auto">
+				<table class="table table-sm table-hover">
+					<colgroup>
+						<col width="100px" />
+						<col width="10%" />
+						<col width="10%" />
+						<col width="10%" />
+						<col width="10%" />
+						<col width="10%" />
+						<col width="10%" />
+						<col width="10%" />
+						<col width="100px" />
+					</colgroup>
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Rank -1</th>
+							<th>Rank 0</th>
+							<th>Rank 1</th>
+							<th>Rank 2</th>
+							<th>Rank 3</th>
+							<th>Rank 4</th>
+							<th>Rank 5</th>
+							<th>Total</th>
+						</tr>
+					</thead>
+					<tbody id="flayAllTableBody"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade flay-list-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+		<div class="modal-dialog modal-fluid mt-5 mx-3">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title w-100 text-center" id="groupByKey">New message</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="text-center mt-2 flay-list" id="flayList"></div>
+				</div>
+				<div class="modal-footer">
+					<button class="btn btn-block btn-outline-secondary mt-2" id="moreFlayList" style="display: none">More</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- <div class="flay-list-wrapper">
+		<i class="fa fa-times float-right hover" onclick="$(this).parent().hide()"></i>
+		<h4 class="text-center mt-1">
+			<label class="text title" id="groupByKey"></label>
+		</h4>
+		<div class="text-center mt-2 flay-list" id="flayList"></div>
+		<button class="btn btn-block btn-outline-secondary mt-2" id="moreFlayList" style="display: none">More</button>
+	</div> -->
+</div>
+
+<script type="text/javascript" src="/webjars/amcharts/amcharts.js"></script>
+<script type="text/javascript" src="/webjars/amcharts/lang/ko.js"></script>
+<script type="text/javascript" src="/webjars/amcharts/serial.js"></script>
+<script type="text/javascript" src="/webjars/amcharts/themes/black.js"></script>
+<script type="text/javascript" src="../../js/tag/jquery.tagcanvas-flay.js"></script>
+<script type="text/javascript" src="../../js/flay.summary.js"></script>

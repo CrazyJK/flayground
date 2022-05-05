@@ -45,3 +45,4 @@ yarn.lock
 
 # webpack dist
 www/dist
+src/main/resources/static/dist

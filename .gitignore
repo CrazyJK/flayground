@@ -37,3 +37,13 @@ target/
 # mac
 .DS_Store
 .vscode/settings.json
+
+# webpack dist
+www
+src/main/resources/static/dist
+
+# node.js
+node_modules
+
+# yarn
+yarn.lock

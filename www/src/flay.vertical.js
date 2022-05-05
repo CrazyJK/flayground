@@ -1,5 +1,5 @@
 /**
- * Video Vertical View Javascript
+ * Flay Vertical View Javascript
  */
 
 import $ from 'jquery';

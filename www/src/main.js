@@ -8,13 +8,12 @@ import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import flayWebsocket from './lib/flay.websocket.js';
 import { Security } from './lib/flay.utils.js';
 import { adjustTheme } from './lib/theme.js';
-import menuItems from './data/main.menu.json';
+import menuItems from './main.menu.json';
 import './lib/kamoru.life.timer.js';
 
 const isAdmin = Security.hasRole('ADMIN');
 const username = Security.getName();
 console.log(`User is ${username} ${isAdmin ? 'has ADMIN Role' : ''}`);
-console.log('menuItems', menuItems);
 
 const SlideMenu = {
   init: () => {

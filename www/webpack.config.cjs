@@ -5,6 +5,7 @@ module.exports = {
   /* mode: development, production, none */
   mode: 'development',
   entry: {
+    index: './src/index.js',
     main: './src/main.js',
     popup: './src/main.popup.js',
     vertical: './src/flay.vertical.js',

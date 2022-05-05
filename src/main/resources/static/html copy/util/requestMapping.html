@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<title>Request Mapping List</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="../../css/common.css" />
+		<link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/dataTables.bootstrap4.min.css" />
+		<style type="text/css">
+			table {
+				font-size: 0.875rem;
+			}
+			.table-sm td,
+			.table-sm th {
+				padding: 0.2rem;
+			}
+			th:nth-child(1),
+			td:nth-child(1) {
+				text-align: right;
+			}
+			td:nth-child(1) {
+				padding-right: 20px;
+			}
+			th:nth-child(2),
+			td:nth-child(2) {
+				text-align: center;
+			}
+			th:nth-child(3),
+			td:nth-child(3) {
+				text-align: left;
+			}
+			th:nth-child(4),
+			td:nth-child(4) {
+				text-align: left;
+			}
+			th:nth-child(5),
+			td:nth-child(5) {
+				text-align: right;
+			}
+			th:nth-child(6),
+			td:nth-child(6) {
+				text-align: left;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="//cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="//cdn.datatables.net/1.10.19/js/dataTables.bootstrap4.min.js"></script>
+		<script type="text/javascript">
+			$(document).ready(function () {
+				$.ajax({
+					url: '/accesslog/requestMappingList',
+					cache: false,
+				}).done(function (list) {
+					$('#count').html(list.length);
+					var $wrap = $('tbody');
+					$.each(list, function (idx, mapping) {
+						$('<tr>')
+							.append(
+								$('<td>').html(mapping.callCount),
+								$('<td>').html(mapping.lastAccess === '0' ? '' : new Date(Number(mapping.lastAccess)).toLocaleDateString('ko-KR', { year: 'numeric', month: '2-digit', day: '2-digit', hour12: false, hour: '2-digit', minute: '2-digit' })),
+								$('<td>').html(mapping.reqMethod),
+								$('<td>').append($('<a>', { href: mapping.reqPattern, target: '_blank', class: 'text-warning' }).html(mapping.reqPattern)),
+								$('<td>').html(mapping.beanType),
+								$('<td>').html(mapping.beanMethod),
+							)
+							.appendTo($wrap);
+					});
+					$('table').DataTable({
+						scrollY: scrollBodyHeight() + 'px',
+						order: [
+							[1, 'desc'],
+							[0, 'desc'],
+						],
+						paging: false,
+						searching: false,
+						info: false,
+					});
+				});
+
+				$(window).resize(function () {
+					$('.dataTables_scrollBody').css({ height: scrollBodyHeight() });
+				});
+			});
+
+			var scrollBodyHeight = function () {
+				return $(window).innerHeight() - 80;
+			};
+		</script>
+	</head>
+	<body class="bg-dark">
+		<div class="container-fluid">
+			<div class="d-flex my-2">
+				<div class="text-light mr-auto"><i class="fa fa-list mx-2"></i> List of Request Mapping (<span id="count">0</span>)</div>
+				<a href="/html/actuator/mappings.html" class="text-light mx-2">Actuator</a>
+				<a href="/html/main.html" class="text-light mx-2">Home</a>
+			</div>
+			<table class="table table-sm table-hover table-dark m-0">
+				<thead class="text-success">
+					<tr>
+						<th>call</th>
+						<th>LastAccess</th>
+						<th>Method</th>
+						<th>URL pattern</th>
+						<th>Controller</th>
+						<th>method</th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</body>
+</html>

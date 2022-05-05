@@ -1,0 +1,167 @@
+<meta charset="UTF-8" />
+<style type="text/css">
+	#tagList {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: flex-start;
+		justify-content: center;
+		align-content: flex-start;
+	}
+	#tagList .tag {
+		display: inline-flex;
+		margin: 0.25rem;
+		max-width: 20rem;
+		min-width: 10rem;
+		transition: 0.4s;
+	}
+	#tagList .tag:hover {
+		box-shadow: 0 0.5rem 1rem var(--color-box-shadow);
+	}
+	#tagList .card-body {
+		padding: 1rem;
+	}
+	#tagList .flay-count {
+		font-size: 0.75rem;
+	}
+	#tagList .flay-count.flay-count-no {
+		background-color: var(--danger);
+	}
+	#tagList .tag-title {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 8px;
+	}
+	#tagList .tag-dest {
+		color: #0d8f00;
+		text-align: center;
+		word-break: keep-all;
+	}
+	#tagList .tag.active {
+		background-color: var(--color-bg-card-active);
+	}
+</style>
+
+<div role="body">
+	<div id="topMenu">
+		<nav class="bg-light rounded-bottom">
+			<form id="tagInput">
+				<input type="text" class="form-control input-flay width-50" id="tagId" name="id" placeholder="Id" />
+				<input type="text" class="form-control input-flay width-150" id="tagName" name="name" placeholder="Name" required="required" />
+				<input type="text" class="form-control input-flay width-300" id="tagDesc" name="description" placeholder="Desctiption" />
+				<button class="btn btn-sm btn-flay tag-save" type="submit">Save</button>
+				<button class="btn btn-sm btn-flay text-danger tag-delete" type="submit">Delete</button>
+				<label class="check sm">
+					<input type="checkbox" id="likeSearch" /><span><i id="likeSearchText">marked</i> <i id="summary"></i></span>
+				</label>
+			</form>
+		</nav>
+	</div>
+
+	<div id="tagList" class="scroll-wrapper">
+		<div class="card tag">
+			<div class="card-body">
+				<div class="tag-title">
+					<span class="badge badge-pill badge-info tag-open hover"><i class="fa fa-external-link"></i></span>
+					<h5 class="font-weight-bold hover tag-name">Tag name</h5>
+					<span class="badge badge-pill badge-secondary flay-count"></span>
+				</div>
+				<div class="card-text tag-dest">Tag description</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+	var $tagTemplete = $('.tag');
+	var isLikeSearchChecked = false;
+
+	$('form').on('submit', function (e) {
+		e.preventDefault();
+	});
+
+	$('.tag-save').on('click', function () {
+		var tag = {};
+		$.each($('#tagInput').serializeArray(), function () {
+			tag[this.name] = this.value;
+		});
+
+		if (tag.id === '') {
+			Rest.Tag.create(tag, tagLoad);
+		} else {
+			Rest.Tag.update(tag, tagLoad);
+		}
+	});
+
+	$('.tag-delete').on('click', function () {
+		var tag = $('#tagInput').data('tag');
+		if (tag && tag.id && confirm('Delete this tag?\n' + JSON.stringify(tag))) {
+			Rest.Tag.delete(tag, function () {
+				tagLoad();
+				$('#tagId, #tagName, #tagDesc').val('');
+			});
+		}
+	});
+
+	$('#likeSearch').on('click', function () {
+		isLikeSearchChecked = $(this).prop('checked');
+		$('#likeSearchText').html(isLikeSearchChecked ? 'Like' : 'marked');
+		tagLoad();
+	});
+
+	function tagLoad() {
+		var $tagList = $('#tagList');
+		let tagTotal = 0;
+		let flayTotal = 0;
+
+		Rest.Tag.list(function (tagList) {
+			tagTotal = tagList.length;
+			Util.Tag.sort(tagList);
+			$tagList.empty();
+
+			$.each(tagList, function (idx, tag) {
+				var $tagCard = $tagTemplete.clone();
+				$tagCard.data('tag', tag);
+				$tagCard
+					.find('.tag-name')
+					.html(tag.name)
+					.on('click', function () {
+						$('#tagInput').data('tag', tag);
+						$('#tagId').val(tag.id);
+						$('#tagName').val(tag.name);
+						$('#tagDesc').val(tag.description);
+
+						$('#tagList > .tag').removeClass('active');
+						$(this).closest('.tag').addClass('active');
+					});
+				$tagCard.find('.card-text').html(tag.description);
+				$tagCard.find('.tag-open').on('click', function () {
+					View.tag(tag.id);
+				});
+				$tagCard.appendTo($tagList);
+
+				var findByTagCallback = function (flayList) {
+					flayTotal += flayList.length;
+					$('#summary').html(tagTotal + ' Tag, ' + flayTotal + ' Flay');
+
+					$tagCard.data('flayList', flayList);
+					$tagCard
+						.find('.flay-count')
+						.html(flayList.length)
+						.addClass(flayList.length > 0 ? '' : 'flay-count-no');
+					$tagCard.find('.tag-name').css({
+						fontSize: flayList.length * 0.25 + 16,
+					});
+				};
+
+				if (isLikeSearchChecked) {
+					Rest.Flay.findByTagLike(tag, findByTagCallback);
+				} else {
+					Rest.Flay.findByTag(tag, findByTagCallback);
+				}
+			});
+		});
+	}
+
+	tagLoad();
+</script>

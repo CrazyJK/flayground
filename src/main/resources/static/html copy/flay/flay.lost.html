@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<title>Flayground</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="icon" type="image/png" href="/img/favicon/flay_0.png" />
+		<link rel="stylesheet" href="../../css/common.css" />
+		<style type="text/css">
+			body {
+				font-size: 12px;
+				font-family: 'D2Coding';
+			}
+			#rankCheck {
+				font-size: 1rem;
+			}
+			dl {
+				margin: 0;
+				border: 1px solid transparent;
+				transition: 0.4s;
+			}
+			dl:hover {
+				border: 1px solid rgba(255, 255, 0, 0.5);
+				background-color: rgba(255, 255, 0, 0.25);
+			}
+			dt,
+			dd {
+				margin: 0;
+				padding: 2px;
+			}
+			label {
+				margin: 0;
+			}
+			label:empty {
+				display: none;
+			}
+			.form-check-label:hover {
+				text-shadow: 0 0 1rem #ff0;
+			}
+
+			.col {
+				width: calc(100% / 7);
+			}
+			.instance-exist {
+				color: blue;
+			}
+			.archive-exist {
+				color: var(--warning);
+			}
+			.instance-exist.archive-exist {
+				color: red;
+			}
+			.no-movie {
+				border-color: rgba(0, 0, 0, 1);
+			}
+
+			.opus {
+				cursor: pointer;
+				min-width: 70px;
+			}
+			.opus:hover {
+				text-shadow: 1px 1px 1px#ff0;
+			}
+			.date {
+				min-width: 70px;
+			}
+			.release {
+				min-width: 70px;
+			}
+			.status {
+				min-width: 20px;
+			}
+			.btn-copy {
+				cursor: pointer;
+			}
+			.copyed {
+				background-color: rgba(0, 0, 255, 0.5);
+			}
+			.title {
+				width: 100%;
+				border: 0;
+				margin: 0;
+				padding: 0;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/js/crazy.common.js"></script>
+		<script type="text/javascript" src="/js/crazy.jquery.js"></script>
+		<script type="text/javascript" src="/js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="/js/flay.utils.js"></script>
+		<script type="text/javascript" src="/js/flay.view.card.js"></script>
+		<script type="text/javascript" src="/webjars/clipboard/dist/clipboard.min.js"></script>
+	</head>
+	<body>
+		<div class="top-right">
+			<a href="/"><i class="fa fa-home lead p-2"></i></a>
+		</div>
+
+		<div class="container-fluid" role="body">
+			<div class="text-center lead">
+				<label>Video: <span id="totalVideo">0</span></label>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"> <input type="checkbox" class="form-check-input" id="instance" />Instance: <span id="totalInstance">0</span> </label>
+				</div>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"> <input type="checkbox" class="form-check-input" id="archive" />Archive: <span id="totalArchive">0</span> </label>
+				</div>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"> <input type="checkbox" class="form-check-input" id="lost" checked="checked" />Lost: <span id="totalLost">0</span> </label>
+				</div>
+				<label>Overall: <span id="totalOverall">0</span></label>
+			</div>
+
+			<div class="text-center" id="rankCheck">
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank_1" />Rank -1 <span id="rankCount_1">0</span></label>
+				</div>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank0" />Rank 0 <span id="rankCount0">0</span></label>
+				</div>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank1" />Rank 1 <span id="rankCount1">0</span></label>
+				</div>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank2" />Rank 2 <span id="rankCount2">0</span></label>
+				</div>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank3" />Rank 3 <span id="rankCount3">0</span></label>
+				</div>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank4" />Rank 4 <span id="rankCount4">0</span></label>
+				</div>
+				<div class="form-check-inline p-2">
+					<label class="form-check-label"><input type="checkbox" class="form-check-input" id="rank5" checked="checked" />Rank 5 <span id="rankCount5">0</span></label>
+				</div>
+			</div>
+
+			<div class="row">
+				<div class="col" data-for="rank_1">
+					<h4>Rank -1</h4>
+					<ol id="videoList_1"></ol>
+				</div>
+				<div class="col" data-for="rank0">
+					<h4>Rank 0</h4>
+					<ol id="videoList0"></ol>
+				</div>
+				<div class="col" data-for="rank1">
+					<h4>Rank 1</h4>
+					<ol id="videoList1"></ol>
+				</div>
+				<div class="col" data-for="rank2">
+					<h4>Rank 2</h4>
+					<ol id="videoList2"></ol>
+				</div>
+				<div class="col" data-for="rank3">
+					<h4>Rank 3</h4>
+					<ol id="videoList3"></ol>
+				</div>
+				<div class="col" data-for="rank4">
+					<h4>Rank 4</h4>
+					<ol id="videoList4"></ol>
+				</div>
+				<div class="col" data-for="rank5">
+					<h4>Rank 5</h4>
+					<ol id="videoList5"></ol>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			var total = 0,
+				rankCount_1 = 0,
+				rankCount0 = 0,
+				rankCount1 = 0,
+				rankCount2 = 0,
+				rankCount3 = 0,
+				rankCount4 = 0,
+				rankCount5 = 0,
+				lostCount = 0;
+
+			$(document).ready(function () {
+				loading.on('Loading data');
+
+				var showInstance = $('#instance').is(':checked');
+				var showArchive = $('#archive').is(':checked');
+				var showLost = $('#lost').is(':checked');
+				var showRank_1 = $('#rank_1').is(':checked');
+				var showRank0 = $('#rank0').is(':checked');
+				var showRank1 = $('#rank1').is(':checked');
+				var showRank2 = $('#rank2').is(':checked');
+				var showRank3 = $('#rank3').is(':checked');
+				var showRank4 = $('#rank4').is(':checked');
+				var showRank5 = $('#rank5').is(':checked');
+
+				loading.on('Loading video');
+				Rest.Video.list(function (videoList) {
+					$('#totalVideo').html(videoList.length);
+
+					videoList.sort(function (v1, v2) {
+						return v1.lastAccess - v2.lastAccess;
+					});
+
+					$.each(videoList, function (idx, video) {
+						var rank = new String(video.rank).replace('-', '_');
+						$('#videoList' + rank).append(
+							$('<li>', { id: video.opus, class: 'flay-lost' }).append(
+								$('<dl>').append(
+									$('<dt>').append(
+										$('<label>', { class: 'opus' }).html(video.opus),
+										$('<label>', { class: 'date' }).html(new Date(video.lastAccess).format('yyyy-MM-dd')),
+										$('<label>', { class: 'release' }).html(''),
+										$('<label>', { class: 'status' }).html(''),
+										$('<label>', { class: 'btn-copy', 'data-clipboard-target': '#val-' + video.opus, id: 'btn-' + video.opus }).append($('<i>', { class: 'fa fa-copy fa-fw' })),
+									),
+									$('<dd>').append($('<input>', { id: 'val-' + video.opus, class: 'title' })),
+								),
+							),
+						);
+						countRank(video.rank);
+					});
+					console.log('loaded video');
+
+					loading.on('Loading instance');
+					Rest.Flay.list(function (flayList) {
+						$('#totalInstance').html(flayList.length);
+						$.each(flayList, function (idx, flay) {
+							var opus = flay.opus;
+							var existVideo = flay.files.movie.length > 0;
+							var $flayOpus = $('li#' + opus);
+							if ($flayOpus.length > 0) {
+								$flayOpus.addClass('instance-exist' + (existVideo ? '' : ' no-movie')).removeClass('flay-lost');
+								$flayOpus.find('.opus').on('click', function () {
+									$('#btn-' + opus).click();
+									View.flay(opus);
+									if (!existVideo) {
+										Search.opus(opus);
+										Search.torrent(opus);
+										Popup.open('https://ddochi.net/bbs/search.php?url=https%3A%2F%2Fddochi.net%2Fbbs%2Fsearch.php&sop=or&stx=' + opus, 'torrentSearch1mun', 900, 950);
+										Popup.open('https://kr.torrentkitty.tv/search/' + opus, 'torrentkitty.tv', 900, 950);
+									}
+								});
+								$flayOpus.find('.release').html(flay.release);
+								$flayOpus.find('.status').append('Ins');
+								$flayOpus.find('.title').val([flay.studio, flay.opus, flay.title, flay.actress, flay.release].join(' - '));
+							} else {
+								console.log('Notfound instance', opus);
+							}
+						});
+						console.log('loaded instance');
+
+						loading.on('Loading archive');
+						Rest.Archive.list(function (flayList) {
+							$('#totalArchive').html(flayList.length);
+							$.each(flayList, function (idx, flay) {
+								var $flayOpus = $('li#' + flay.opus);
+								if ($flayOpus.length > 0) {
+									$flayOpus.addClass('archive-exist').removeClass('flay-lost');
+									$flayOpus.find('.opus').on('click', function () {
+										View.flay(opus);
+									});
+									$flayOpus.find('.release').html(flay.release);
+									$flayOpus.find('.status').append('Arch');
+									$flayOpus.find('.title').val([flay.studio, flay.opus, flay.title, flay.actress, flay.release].join(' - '));
+								} else {
+									console.log('Notfound archive', opus);
+								}
+							});
+							console.log('loaded archive');
+
+							loading.on('Loading history');
+							Rest.History.list(function (historyList) {
+								historyList.reverse();
+
+								$('.flay-lost').each(function () {
+									var $this = $(this);
+									var opus = $this.attr('id');
+									for (var i = 0; i < historyList.length; i++) {
+										var history = historyList[i];
+										if (opus === history.opus) {
+											$this.find('.title').val(history.desc);
+											$this.find('.opus').on('click', function () {
+												$('#btn-' + opus).click();
+												Search.opus(opus);
+												Search.torrent(opus);
+												Popup.open('https://ddochi.net/bbs/search.php?url=https%3A%2F%2Fddochi.net%2Fbbs%2Fsearch.php&sop=or&stx=' + opus, 'torrentSearch1mun', 900, 950);
+											});
+											break;
+										}
+									}
+								});
+								console.log('loaded history');
+
+								$('.btn-copy').each(function () {
+									var id = $(this).attr('id');
+									new ClipboardJS('#' + id).on('success', function (e) {
+										$('#' + id.replace('btn-', '')).addClass('copyed');
+										console.info('ClipboardJS', e.action, e.text, id);
+										e.clearSelection();
+									});
+								});
+								console.log('set ClipboardJS');
+
+								$('#totalLost').html($('.flay-lost').length);
+								$('#totalOverall').html(total);
+								$('#rankCount_1').html(rankCount_1);
+								$('#rankCount0').html(rankCount0);
+								$('#rankCount1').html(rankCount1);
+								$('#rankCount2').html(rankCount2);
+								$('#rankCount3').html(rankCount3);
+								$('#rankCount4').html(rankCount4);
+								$('#rankCount5').html(rankCount5);
+
+								$('.instance-exist, .instance-only').toggle(showInstance);
+								$('.archive-exist, .archive-only').toggle(showArchive);
+								$('.flay-lost').toggle(showLost);
+
+								$("div[data-for='rank_1']").toggle(showRank_1);
+								$("div[data-for='rank0']").toggle(showRank0);
+								$("div[data-for='rank1']").toggle(showRank1);
+								$("div[data-for='rank2']").toggle(showRank2);
+								$("div[data-for='rank3']").toggle(showRank3);
+								$("div[data-for='rank4']").toggle(showRank4);
+								$("div[data-for='rank5']").toggle(showRank5);
+
+								loading.off();
+							});
+						});
+					});
+				});
+
+				$('#instance').on('change', function () {
+					$('.instance-exist').toggle($(this).is(':checked'));
+				});
+				$('#archive').on('change', function () {
+					$('.archive-exist').toggle($(this).is(':checked'));
+				});
+				$('#lost').on('change', function () {
+					$('.flay-lost').toggle($(this).is(':checked'));
+				});
+
+				$('#rank_1, #rank0, #rank1, #rank2, #rank3, #rank4, #rank5').on('change', function () {
+					$("[data-for='" + $(this).attr('id') + "']").toggle($(this).is(':checked'));
+				});
+			});
+
+			function countRank(rank) {
+				++total;
+				switch (rank) {
+					case -1:
+						++rankCount_1;
+						break;
+					case 0:
+						++rankCount0;
+						break;
+					case 1:
+						++rankCount1;
+						break;
+					case 2:
+						++rankCount2;
+						break;
+					case 3:
+						++rankCount3;
+						break;
+					case 4:
+						++rankCount4;
+						break;
+					case 5:
+						++rankCount5;
+						break;
+				}
+			}
+
+			window.onerror = function (e) {
+				console.error('Error', e);
+				loading.error('Error: ' + e);
+			};
+		</script>
+	</body>
+</html>

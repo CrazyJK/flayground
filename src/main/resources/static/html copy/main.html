@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<title>Flayground</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+		<link rel="icon" href="../img/favicon/flay_0.png" type="image/png" />
+		<link rel="stylesheet" href="../css/common.css" />
+		<link rel="stylesheet" href="../css/kamoru.note.css" />
+		<link rel="stylesheet" href="../css/main.css" />
+		<script defer type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script defer type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script defer type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script defer type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script defer type="text/javascript" src="../js/flay.loading.js"></script>
+		<script defer type="text/javascript" src="../js/crazy.common.js"></script>
+		<script defer type="text/javascript" src="../js/crazy.jquery.js"></script>
+		<script defer type="text/javascript" src="../js/crazy.effect.neon.js"></script>
+		<script defer type="text/javascript" src="../js/flay.rest.service.js"></script>
+		<script defer type="text/javascript" src="../js/flay.utils.js"></script>
+		<script defer type="text/javascript" src="../js/flay.view.card.js"></script>
+		<script defer type="text/javascript" src="../js/flay.websocket.js"></script>
+		<script defer type="text/javascript" src="../js/kamoru.life.timer.js"></script>
+		<script defer type="text/javascript" src="../js/kamoru.note.js"></script>
+		<script defer type="text/javascript" src="../js/main.js"></script>
+		<script defer type="text/javascript" src="../js/theme/flay.theme.js"></script>
+		<script defer type="text/javascript" src="../js/crazy.dominated-color.js"></script>
+	</head>
+	<body>
+		<header>
+			<nav class="sidenav">
+				<div class="sidenav-pin"><i class="fa fa-thumb-tack"></i></div>
+				<div class="sidenav-openbtn"><i class="fa fa-angle-double-right"></i></div>
+				<h4><img src="../img/favicon/flay_1.png" /><a href="main.html" id="mainHome">Flayground</a></h4>
+				<div class="nav-wrap">
+					<ul class="nav" id="mainMenuWrap"></ul>
+					<ul class="nav" id="subMenuWrap">
+						<li class="nav-item">
+							<i class="fa fa-toggle-on"></i>
+							<div>
+								<span>Content</span>
+								<label class="check sm"><input type="checkbox" id="pageShow" checked="checked" /><span>show</span></label>
+							</div>
+						</li>
+						<li class="nav-item">
+							<i class="fa fa-toggle-on"></i>
+							<div>
+								<a id="pictureFalldown">Picture</a>
+								<label class="check sm"><input type="checkbox" id="bgFlow" /><span>Flow</span></label>
+							</div>
+						</li>
+						<li class="nav-item">
+							<i class="fa fa-toggle-on"></i>
+							<div>
+								<span>Pane Width</span>
+								<input type="number" id="paneWidth" value="400" step="100" />
+							</div>
+						</li>
+						<li class="nav-item">
+							<i class="fa fa-toggle-on"></i>
+							<div>
+								<span>Theme</span>
+								<label class="check sm"><input type="radio" name="bgTheme" id="bgThemeL" value="light" /><span>Light</span></label>
+								<label class="check sm"><input type="radio" name="bgTheme" id="bgThemeD" value="dark" /><span>Dark</span></label>
+							</div>
+						</li>
+						<li class="nav-item">
+							<i class="fa fa-paint-brush"></i>
+							<div>
+								<span>BG Color</span>
+								<input type="color" id="bgColor" value="#ffffff" />
+							</div>
+						</li>
+						<li class="nav-item">
+							<i class="fa fa-toggle-on"></i>
+							<div>
+								<span>Notification</span>
+								<label class="check sm"><input type="checkbox" id="notification" checked="checked" /><span>On</span></label>
+							</div>
+						</li>
+						<li class="nav-item">
+							<i class="fa fa-clock-o"></i>
+							<div>
+								<span>Remain</span>
+								<label id="lifeTimerWrapper" class="m-0" onclick="Popup.open('../html/kamoru/kamoru.life.timer.html', 'lifeTimer', 600, 250)"></label>
+							</div>
+						</li>
+					</ul>
+				</div>
+			</nav>
+			<div id="specialView"></div>
+		</header>
+
+		<main>
+			<article id="wrap_body"></article>
+			<aside id="wrap_background_image">
+				<div class="row" id="background_images">
+					<div class="col"></div>
+					<div class="col"></div>
+					<div class="col"></div>
+					<div class="col"></div>
+				</div>
+			</aside>
+		</main>
+
+		<footer>
+			<div id="notice" title="" style="display: none"><p></p></div>
+		</footer>
+	</body>
+</html>

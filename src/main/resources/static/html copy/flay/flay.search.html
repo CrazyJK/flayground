@@ -1,0 +1,368 @@
+<meta charset="UTF-8" />
+<style type="text/css">
+	#query {
+		max-width: 200px;
+	}
+	input {
+		font-family: D2Coding;
+	}
+
+	.input-group-append + .form-control {
+		border-left: 0;
+	}
+	.btn-batch-option {
+		min-width: 32px;
+	}
+	.ui-dialog-danger {
+		border: 1px solid #ddd;
+		background: rgb(173, 103, 103);
+		color: #fdfdfd;
+	}
+
+	/* candidates */
+	#toggleCandidatesCover,
+	#btnFileControl,
+	#candidatesCount,
+	.candidates-files {
+		display: none;
+	}
+	.candidates {
+		border: 1px solid var(--warning);
+		text-align: center;
+		transition: all 0.4s;
+	}
+	.candidates-info {
+		display: flex;
+		justify-content: space-between;
+	}
+	.candidates-info > label {
+		overflow: hidden;
+		white-space: nowrap;
+		text-overflow: ellipsis;
+	}
+	.candidates-info-studio {
+		flex: 0 0 100px;
+		text-align: left;
+	}
+	.candidates-info-opus {
+		flex: 0 0 100px;
+		text-align: left;
+	}
+	.candidates-info-title {
+		flex: 1 1 auto;
+		text-align: left;
+	}
+	.candidates-info-actress {
+		flex: 0 1 150px;
+		text-align: right;
+	}
+	.candidates-info-release {
+		flex: 0 0 90px;
+		text-align: left;
+	}
+	.candidates-info-ext {
+		flex: 0 0 100px;
+		text-align: left;
+	}
+	.candidates-cover {
+		display: none;
+	}
+	.candidates-cover img {
+		background-color: var(--warning);
+		width: 800px;
+	}
+	.candidates.accepted {
+		border-color: black;
+	}
+
+	.btn:focus {
+		box-shadow: none;
+	}
+
+	.ui-effects-transfer {
+		border-radius: 4px;
+		border: 1px solid rgba(217, 237, 247, 1);
+		background-color: rgba(217, 237, 247, 0.5);
+	}
+
+	#findMode .form-control {
+		color: var(--primary);
+		font-family: '맑은 고딕';
+	}
+
+	#pageImageDownloader .form-control {
+		color: var(--success);
+	}
+
+	#resultFlayDiv table td,
+	#resultHistoryDiv table td {
+		padding: 0;
+	}
+
+	.input-empty {
+		background: rgba(255, 255, 0, 0.5) !important;
+	}
+	.input-invalid {
+		background: rgba(255, 0, 0, 0.5) !important;
+	}
+	.input-warning {
+		background: rgba(0, 0, 255, 0.5) !important;
+		color: var(--light) !important;
+	}
+
+	mark {
+		background-color: transparent;
+		color: #f00;
+		padding: 0;
+	}
+
+	fieldset {
+		border: 1px solid var(--color-text);
+		margin: 0.25rem;
+		padding: 0.25rem;
+	}
+	fieldset > legend {
+		font-size: 1rem;
+		margin-left: 1rem;
+		margin-right: auto;
+		padding: 0 0.5rem;
+		width: auto;
+	}
+</style>
+
+<div role="body">
+	<div id="topMenu">
+		<nav class="bg-light rounded-bottom">
+			<input type="search" id="query" class="form-control input-flay search" placeholder="Search..." />
+			<div class="btn-group btn-group-sm">
+				<button class="btn btn-flay btn-search-opus">Opus</button>
+				<button class="btn btn-flay btn-search-actress">Actress</button>
+				<button class="btn btn-flay btn-search-torrent">Torrent</button>
+			</div>
+			<button class="btn btn-outline-primary btn-sm" data-toggle="collapse" data-target="#findMode">Find mode <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-warning btn-sm" data-toggle="collapse" data-target="#candidates" aria-role="ADMIN">Candidates <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-success btn-sm" data-toggle="collapse" data-target="#pageImageDownloader" aria-role="ADMIN">Image Download <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-danger btn-sm" data-toggle="collapse" data-target="#batchGroup" aria-role="ADMIN">Batch <i class="fa fa-caret-down"></i></button>
+			<button class="btn btn-outline-info btn-sm btn-reload" aria-role="ADMIN">Reload</button>
+		</nav>
+	</div>
+
+	<div class="container-xl">
+		<div class="card border-primary mt-2 collapse" id="findMode">
+			<div class="card-body">
+				<div class="input-group input-group-sm mb-1">
+					<input class="form-control border-primary" id="rowname_opus" style="max-width: 100px" placeholder="Row opus" />
+					<input class="form-control border-primary" id="rowname_title" placeholder="Row title" />
+					<input class="form-control border-primary" id="rowname_actress" style="max-width: 150px" placeholder="Row actress" />
+					<div class="input-group-append">
+						<!-- <button class="btn btn-sm btn-outline-primary btn-find-random-opus" style="max-width: 100px"><i class="fa fa-random fa-fw"></i></button> -->
+						<button class="btn btn-outline-primary" id="btnReset"><i class="fa fa-eraser fa-fw"></i></button>
+					</div>
+				</div>
+				<div class="input-group input-group-sm mb-1">
+					<textarea class="form-control border-primary" placeholder="video description" id="videoDescription"></textarea>
+				</div>
+				<div class="input-group input-group-sm mb-1">
+					<input class="form-control border-primary" placeholder="temp" />
+				</div>
+				<div class="input-group input-group-sm flay-group mb-1">
+					<input class="form-control border-primary" id="studio" placeholder="Studio" style="max-width: 100px" />
+					<input class="form-control border-primary" id="opus" placeholder="Opus" style="max-width: 100px" />
+					<input class="form-control border-primary" id="title" placeholder="Title" />
+					<input class="form-control border-primary" id="actress" placeholder="Actress" style="max-width: 150px" />
+					<input class="form-control border-primary" id="release" placeholder="Release" style="max-width: 100px" />
+				</div>
+				<div class="tooltip fade bs-tooltip-right" role="tooltip" id="btnCopyTooltip" style="position: absolute; transform: translate3d(51px, 199px, 100px); top: 0px; left: 0px; will-change: transform" x-placement="right">
+					<div class="arrow" style="top: 8px"></div>
+					<div class="tooltip-inner">Copy!</div>
+				</div>
+				<div class="input-group input-group-sm mb-1">
+					<div class="input-group-prepend">
+						<button class="btn btn-outline-primary" id="btnCopy" data-toggle="tooltip" data-clipboard-target="#fullname" style="width: 42px"><i class="fa fa-copy fa-fw"></i></button>
+					</div>
+					<input class="form-control form-control-sm border-primary" id="fullname" placeholder="Full name" />
+				</div>
+				<div class="input-group input-group-sm mb-1" id="newActress">
+					<div class="input-group-prepend">
+						<div class="input-group-text border-primary p-0">
+							<label class="check danger sm">
+								<input type="checkbox" id="newActressFavorite" name="favorite" /><span class="mx-2 p-0" style="border-color: transparent"><i class="fa fa-heart-o"></i></span>
+							</label>
+						</div>
+					</div>
+					<input class="form-control border-primary" id="newActressName" name="name" placeholder="Name" />
+					<input class="form-control border-primary" id="newActressLocal" name="localName" placeholder="Localname" />
+					<input class="form-control border-primary" id="newActressBirth" name="birth" placeholder="Birth" />
+					<input class="form-control border-primary" id="newActressBody" name="body" placeholder="Body" />
+					<input class="form-control border-primary" id="newActressHeight" name="height" placeholder="Height" type="number" min="140" max="180" step="1" />
+					<input class="form-control border-primary" id="newActressDebut" name="debut" placeholder="Debut" type="number" min="2000" max="2020" step="1" />
+					<div class="input-group-append">
+						<button class="btn btn-outline-primary" id="btnShowActress"><i class="fa fa-female fa-fw"></i></button>
+						<button class="btn btn-outline-primary" id="btnRegistActress"><i class="fa fa-upload fa-fw"></i></button>
+					</div>
+				</div>
+				<div class="input-group input-group-sm mb-1">
+					<textarea class="form-control border-primary" placeholder="new actress" id="newActressRowdata"></textarea>
+				</div>
+			</div>
+		</div>
+
+		<div class="card border-warning mt-2 collapse" id="candidates" aria-role="ADMIN">
+			<div class="card-body">
+				<button class="btn btn-sm btn-outline-warning" id="btnGetCandidates">Get Candidates</button>
+				<button class="btn btn-sm btn-warning disabled" id="candidatesCount"></button>
+				<button class="btn btn-sm btn-outline-warning" id="btnFileControl">Toggle file control</button>
+				<button class="btn btn-sm btn-outline-warning" id="toggleCandidatesCover">Toggle Cover</button>
+				<ul class="list-group mt-2 scroll-wrapper" id="candidatesList" style="height: auto; max-height: calc(100vh - 160px)"></ul>
+			</div>
+		</div>
+
+		<div class="card border-success mt-2 collapse" id="pageImageDownloader" aria-role="ADMIN">
+			<div class="card-body">
+				<form id="downloadPageImageForm" onsubmit="returnFalse();">
+					<div class="input-group input-group-sm mb-1">
+						<input class="form-control border-success" name="pageUrl" placeholder="Image page URL" />
+						<input class="form-control border-success" name="downloadDir" placeholder="Download local path" id="downloadDir" />
+					</div>
+					<div class="input-group input-group-sm mb-1">
+						<input class="form-control border-success" name="folderName" placeholder="Folder name" />
+						<div class="input-group-append">
+							<span class="input-group-text border-success text-success"> / </span>
+						</div>
+						<input class="form-control border-success" name="titlePrefix" placeholder="Title prefix" />
+						<div class="input-group-append">
+							<span class="input-group-text border-success text-success"> or </span>
+						</div>
+						<input class="form-control border-success" name="titleCssQuery" placeholder="Title css selector" />
+						<input class="form-control border-success text-right" name="minimumKbSize" style="max-width: 80px" placeholder="KB" value="30" type="number" />
+						<div class="input-group-append">
+							<span class="input-group-text border-success text-success"> kB </span>
+						</div>
+						<div class="input-group-append">
+							<button type="button" class="btn btn-outline-success btn-download-page-image"><i class="fa fa-download fa-fw"></i></button>
+						</div>
+					</div>
+				</form>
+				<div class="alert alert-success">
+					<textarea id="imageScript" class="bg-transparent border-0 font-italic transparent w-100">$(".board-view-con.view-content img").each(function() {$(this).attr("src", $(this).attr("src").replace("avnori.com", "avnori1.com"))})</textarea>
+					<script type="text/javascript">
+						$('#imageScript').on('change', function () {
+							LocalStorageItem.set('imageScript', $(this).val());
+						});
+						(() => {
+							const scriptCode = LocalStorageItem.get('imageScript', '');
+							if (scriptCode !== '') {
+								$('#imageScript').val(scriptCode);
+							}
+						})();
+					</script>
+				</div>
+			</div>
+		</div>
+
+		<div class="card border-danger mt-2 collapse" id="batchGroup" aria-role="ADMIN">
+			<div class="card-body text-center">
+				<div class="btn-group btn-group-sm my-2">
+					<button class="btn btn-outline-danger">Delete Lower Score</button>
+					<button class="btn btn-outline-danger btn-batch-option" data-type="S"><i class="fa fa-check"></i></button>
+				</div>
+				<!-- <div class="btn-group btn-group-sm m-2">
+					<button class="btn btn-outline-danger btn-batch-check" data-type="I">Instance Check</button>
+				</div> -->
+				<div class="btn-group btn-group-sm m-2">
+					<button class="btn btn-outline-danger btn-batch-start" data-type="I">Instance Batch</button>
+					<button class="btn btn-outline-danger btn-batch-start" data-type="A">Archive Batch</button>
+				</div>
+				<div class="btn-group btn-group-sm my-2">
+					<button class="btn btn-outline-danger btn-batch-start" data-type="B">Source Backup</button>
+				</div>
+				<details id="batchCheck">
+					<summary><button class="bg-transparent border-0 btn-batch-check text-warning" data-type="I">Instance Check</button></summary>
+					<div>
+						<fieldset>
+							<legend>lower Rank</legend>
+							<div class="flay-list text-center" id="lowerRank"></div>
+						</fieldset>
+						<fieldset>
+							<legend>lower Score</legend>
+							<div class="flay-list text-center" id="lowerScore"></div>
+						</fieldset>
+					</div>
+				</details>
+			</div>
+		</div>
+
+		<div id="resultFlayDiv" class="card mt-2 collapse" style="overflow: auto">
+			<div class="card-body">
+				<h4 class="card-title">Flay <span class="badge badge-light flay-count"></span><i class="fa fa-times float-right hover small" id="btn-flay-close"></i></h4>
+				<table class="table table-sm table-hover table-bordered">
+					<thead>
+						<tr>
+							<th>Studio</th>
+							<th>Opus</th>
+							<th>Info</th>
+							<th>Actress</th>
+							<th>Release</th>
+							<th>Title</th>
+						</tr>
+					</thead>
+					<tbody id="foundFlayList"></tbody>
+				</table>
+			</div>
+			<div class="card-body pt-0" style="overflow: auto">
+				<h4 class="card-title">Video <span class="badge badge-light video-count"></span></h4>
+				<table class="table table-sm table-hover table-bordered">
+					<thead>
+						<tr>
+							<th>Opus</th>
+							<th>Rank</th>
+							<th>Play</th>
+							<th>Last Access</th>
+						</tr>
+					</thead>
+					<tbody id="foundVideoList"></tbody>
+				</table>
+			</div>
+		</div>
+
+		<div id="resultHistoryDiv" class="card mt-2 collapse" style="overflow: auto">
+			<div class="card-body">
+				<h4 class="card-title">History <span class="badge badge-light history-count"></span><i class="fa fa-times float-right hover small" id="btn-history-close"></i></h4>
+				<table class="table table-sm table-hover table-bordered">
+					<thead>
+						<tr>
+							<th>Date</th>
+							<th>Opus</th>
+							<th>Action</th>
+							<th>Desc</th>
+						</tr>
+					</thead>
+					<tbody id="foundHistoryList"></tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+
+	<div id="actressChoice" title="Actress choice">
+		<ul class="list-unstyled"></ul>
+	</div>
+</div>
+
+<script type="text/javascript" src="/webjars/clipboard/dist/clipboard.min.js"></script>
+<script type="text/javascript">
+	var clipboard = new ClipboardJS('#btnCopy');
+	clipboard
+		.on('success', function (e) {
+			e.clearSelection();
+			console.info('Action:', e.action, 'Text:', e.text, 'Trigger:', e.trigger);
+			$($(e.trigger).attr('data-clipboard-target')).effect('highlight', {}, 1000);
+			$('#btnCopyTooltip').addClass('show');
+			setTimeout(function () {
+				$('#btnCopyTooltip').removeClass('show');
+			}, 1000);
+		})
+		.on('error', function (e) {
+			alert('Action: ' + e.action + ' Trigger: ' + e.trigger);
+		});
+</script>
+<script type="text/javascript" src="../../js/flay.search.js"></script>

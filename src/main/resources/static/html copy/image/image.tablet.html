@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>Image Tablet</title>
+		<link rel="icon" type="image/png" href="/img/favicon/flay_2.png" />
+		<link rel="stylesheet" href="../../css/common.css" />
+		<style type="text/css">
+			body {
+				background-color: #000;
+				overflow: hidden;
+			}
+			#imageWrap {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				margin: 0;
+				transition: 0.3s;
+				text-align: center;
+			}
+			#controlBox {
+				opacity: 0;
+				transition: 0.3s;
+			}
+			#controlBox:hover,
+			#imageWrap:hover ~ #controlBox {
+				opacity: 1;
+			}
+			#controlBox div {
+				border-top-left-radius: 4px;
+				background-color: rgba(0, 0, 0, 0.5);
+				margin: 0;
+				padding: 4px 8px;
+				box-shadow: 0 0 2px 0px rgba(255, 255, 255, 0.5);
+				color: #eee;
+				font-size: 14px;
+				text-shadow: 1px 1px 2px #111;
+			}
+			#controlBox div:empty {
+				display: none;
+			}
+			#controlBox div#notice {
+				background-color: transparent;
+				box-shadow: none;
+			}
+			#controlBox div input {
+				background: transparent;
+				border: 0;
+				color: #eee;
+				font-size: 12px;
+				margin: 0;
+				padding: 0;
+				text-align: right;
+			}
+			#controlBox div input#bgIntervalTime {
+				width: 20px;
+			}
+			#controlBox div input#currNo {
+				width: 30px;
+			}
+			#controlBox div input#iWidth,
+			#controlBox div input#iHeight {
+				width: 40px;
+			}
+			#controlBox div span {
+				margin: 0 2px;
+			}
+			#controlBox div a i.fa {
+				margin: 0 4px;
+			}
+			#pause.active,
+			#random.active,
+			#autofit.active {
+				color: #0056b3;
+				text-shadow: 0 0 1px #0056b3, 0 0 8px #fff;
+			}
+			.msgBox {
+				background-color: rgba(0, 0, 0, 0.75);
+				border-radius: 4px;
+				color: #eee;
+				display: block;
+				font-size: 14px;
+				margin-bottom: 2px !important;
+				padding: 4px 8px;
+				text-shadow: 1px 1px 2px #111;
+			}
+
+			.image-card {
+				width: 250px;
+				height: 300px;
+				border-radius: 0.25rem;
+				box-shadow: inset 0 0 8px 4px rgba(250, 250, 250, 1), 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+				margin: 0.5rem;
+				cursor: grab;
+				display: inline-block;
+				background: #181818 center no-repeat / contain;
+				transition: background-size 0.3s;
+			}
+			.image-card.full {
+				position: absolute;
+				top: 0;
+				left: 0;
+				right: 0;
+				bottom: 0;
+				width: 100% !important;
+				height: 100% !important;
+				margin: 0;
+			}
+			.image-card.full > div {
+				background-color: rgba(0, 0, 0, 0.5);
+				color: #fff;
+				cursor: auto;
+				opacity: 0;
+				transition: 0.3s;
+			}
+			.image-card.full:hover > div {
+				opacity: 1;
+			}
+			.image-card.full > div > label {
+				font-size: 1rem;
+			}
+			.image-card.full > div > label.hover {
+				font-size: 1.25rem;
+			}
+			.image-card.full > div > label.hover:hover {
+				cursor: pointer;
+				text-shadow: 0 0 2px #000;
+			}
+		</style>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="../../js/crazy.common.js"></script>
+		<script type="text/javascript" src="../../js/crazy.jquery.js"></script>
+		<script type="text/javascript" src="../../js/flay.loading.js"></script>
+		<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
+		<script type="text/javascript" src="../../js/flay.utils.js"></script>
+		<script type="text/javascript" src="../../js/image/image.tablet.js"></script>
+	</head>
+	<body>
+		<div id="imageWrap"></div>
+
+		<div class="bottom-right" id="controlBox">
+			<div class="text-right" id="notice"></div>
+			<div>
+				<span id="bgMode" class="small"></span>
+				<input type="number" id="iWidth" value="250" title="enter new image width" autocomplete="off" step="20" min="100" />
+				<input type="number" id="iHeight" value="200" title="enter new image height" autocomplete="off" step="20" min="100" />
+				<span id="random" class="small hover" title="image random select"><i class="fa fa-random"></i></span>
+				<input id="bgIntervalTime" value="9" title="enter new bgIntervalTime" autocomplete="off" />
+				<span id="pause" class="small hover" title="slide pause"><i class="fa fa-pause"></i></span>
+				<input id="currNo" value="0" title="enter new imageIndex" autocomplete="off" />
+				<span>/&nbsp;<sub id="totalNo">0</sub></span>
+				<a href="/html/main.html"><i class="fa fa-home"></i></a>
+			</div>
+		</div>
+
+		<nav class="fixed-bottom">
+			<div class="progress" id="paginationProgress" style="height: 1px; border-radius: 0">
+				<div class="progress-bar bg-danger" style="width: 100%; height: 1px"></div>
+			</div>
+		</nav>
+
+		<footer></footer>
+	</body>
+</html>

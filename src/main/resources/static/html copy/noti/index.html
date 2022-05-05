@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<title>Hello WebSocket</title>
+		<link rel="stylesheet" href="../../css/common.css" />
+		<link rel="stylesheet" href="main.css" />
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>
+		<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>
+		<script type="text/javascript" src="app.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row mb-2 mt-2">
+				<div class="col-md-6">
+					<form>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text bg-info border-info text-light">WebSocket connection</span>
+							</div>
+							<div class="btn-group">
+								<button id="connect" class="btn btn-info" type="submit">Connect</button>
+								<button id="disconnect" class="btn btn-info" type="submit" disabled="disabled">Disconnect</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="col-md-6">
+					<form>
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text bg-info border-info text-light">What is your name?</span>
+							</div>
+							<input type="text" id="name" class="form-control border-info" placeholder="Your name here..." />
+						</div>
+					</form>
+				</div>
+			</div>
+			<div class="mb-2">
+				<form>
+					<div class="input-group">
+						<textarea class="form-control border-success" id="content" rows="2" placeholder="Shouting message"></textarea>
+						<div class="input-group-append">
+							<button class="btn btn-outline-success" type="submit" id="send">Shout</button>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="row mb-2">
+				<div class="col-md-12">
+					<h4 class="text-primary">Shoutings</h4>
+					<div class="subscribe-area border-primary" id="shoutingArea">
+						<div class="subscribe-items" id="shoutings"></div>
+					</div>
+				</div>
+			</div>
+			<div class="mb-2">
+				<form>
+					<h4 class="text-warning">Message push</h4>
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text border-warning bg-warning">http://localhost/notice/push/</span>
+						</div>
+						<input id="clientMessageTitle" type="text" class="form-control border-warning" placeholder="Title..." required="required" />
+						<input id="clientMessageContent" type="text" class="form-control border-warning" placeholder="Content..." required="required" />
+						<div class="input-group-append">
+							<button class="btn btn-warning" type="submit" id="push">Push</button>
+						</div>
+					</div>
+				</form>
+				<iframe id="ifrm" style="display: none"></iframe>
+			</div>
+		</div>
+	</body>
+</html>

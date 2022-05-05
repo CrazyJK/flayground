@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+	<head>
+		<title>Actuator loggers</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="../../css/common.css" />
+		<style type="text/css">
+			* {
+				font-family: D2Coding;
+			}
+			table > thead > tr:nth-child(1) > th {
+				border-bottom-width: 0px;
+				padding-bottom: 0;
+			}
+			table > thead > tr:nth-child(2) > th {
+				border-top-width: 0px;
+				color: var(--primary);
+				padding-top: 0;
+			}
+			th:nth-child(1),
+			td:nth-child(1) {
+				width: 45px;
+				padding-right: 8px;
+				text-align: right;
+			}
+			th:nth-child(2),
+			td:nth-child(2) {
+				max-width: 600px;
+				width: inherit;
+				overflow-x: hidden;
+				overflow-y: hidden;
+				white-space: nowrap;
+				text-overflow: ellipsis;
+				vertical-align: bottom;
+			}
+			th:nth-child(3),
+			td:nth-child(3) {
+				width: 90px;
+				text-align: center;
+			}
+			th:nth-child(4),
+			td:nth-child(4) {
+				width: 90px;
+				text-align: center;
+			}
+			.form-control.form-control-sm {
+				height: 1.5rem;
+				padding: 0;
+				background-color: #343a40;
+				color: #f8f9fa;
+				border-color: var(--secondary);
+			}
+			#loggerFilter,
+			#configuredFilter,
+			#effectiveFilter {
+				color: var(--primary);
+			}
+			#onlyConfigured {
+				cursor: pointer;
+			}
+			#onlyConfigured.active {
+				color: var(--primary);
+			}
+			.onlyConfigured-hide {
+				display: none !important;
+			}
+			.OFF {
+				color: var(--gray) !important;
+			}
+			.ERROR {
+				color: var(--danger) !important;
+			}
+			.WARN {
+				color: var(--warning) !important;
+			}
+			.INFO {
+				color: var(--info) !important;
+			}
+			.DEBUG {
+				color: var(--success) !important;
+			}
+			.TRACE {
+				color: var(--indigo) !important;
+			}
+		</style>
+	</head>
+	<body class="bg-dark">
+		<div class="container-fluid">
+			<div class="d-flex my-2 text-light">
+				<div class="mr-auto">
+					<h4>
+						<i class="fa fa-list mx-2"></i>
+						<a href="/html/actuator/index.html" class="text-decoration-none text-light">Actuator</a> > loggers
+					</h4>
+				</div>
+				<a href="/html/main.html" class="text-light mx-2">Home</a>
+			</div>
+			<div>
+				<table class="table table-sm table-bordered table-hover table-dark">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th>Logger</th>
+							<th id="onlyConfigured" title="Only Configured Level">Configured</th>
+							<th>Effective</th>
+						</tr>
+						<tr>
+							<th id="filteredCount"></th>
+							<th id="loggerFilterWrap"></th>
+							<th id="configuredFilterWrap"></th>
+							<th id="effectiveFilterWrap"></th>
+						</tr>
+					</thead>
+					<tbody id="loggerListWrap"></tbody>
+				</table>
+			</div>
+		</div>
+		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+		<script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+		<script type="text/javascript">
+			$.urlParam = function (name) {
+				var results = new RegExp(`[\?&]${name}=([^&#]*)`).exec(window.location.href);
+				return results ? results[1] || '' : '';
+			};
+
+			const CSRF_COOKIE_NAME = 'XSRF-TOKEN';
+			const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
+
+			$(document).ready(function () {
+				$.ajax({
+					url: '/actuator/loggers',
+					cache: false,
+				}).done(function (json) {
+					// make select level
+					var $select = $('<select>', { class: 'form-control form-control-sm' }).append(
+						$('<option>', { value: '' }).html(''),
+						(function () {
+							var options = [];
+							$.each(json.levels, function (idx, val) {
+								options.push($('<option>', { value: val }).html(val));
+							});
+							return options;
+						})(),
+					);
+
+					// make head
+					$('#loggerFilterWrap').append($('<input>', { class: 'form-control form-control-sm', id: 'loggerFilter', placeHolder: 'type logger' }).on('keyup', tableFilter).val($.urlParam('loggerFilter')));
+					$('#configuredFilterWrap').append($select.clone().attr('id', 'configuredFilter').on('change', tableFilter).val($.urlParam('configuredFilter')));
+					$('#effectiveFilterWrap').append($select.clone().attr('id', 'effectiveFilter').on('change', tableFilter).val($.urlParam('effectiveFilter')));
+
+					// make body
+					var count = 0;
+					$.each(json.loggers, function (key, val) {
+						$('<tr>')
+							.data('logger', key)
+							.data('level', val)
+							.append(
+								$('<td>').html(++count),
+								$('<td>').html(key),
+								$('<td>').append(
+									$select
+										.clone()
+										.val(val.configuredLevel)
+										.addClass(val.configuredLevel)
+										.on('change', function () {
+											var level = $(this).val();
+											var jsonData = {
+												configuredLevel: level,
+											};
+											$.ajax('/actuator/loggers/' + key, {
+												method: 'POST',
+												contentType: 'application/vnd.spring-boot.actuator.v2+json;charset=UTF-8',
+												data: JSON.stringify(jsonData),
+												beforeSend: function (xhr, settings) {
+													for (const cookie of document.cookie.split(';')) {
+														if (cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '') === CSRF_COOKIE_NAME) {
+															csrfHeaderValue = unescape(cookie.substr(cookie.indexOf('=') + 1));
+															break;
+														}
+													}
+													xhr.setRequestHeader(CSRF_HEADER_NAME, csrfHeaderValue);
+												},
+											}).done(function (response) {
+												// console.log("logger change", response);
+												location.href = '?loggerFilter=' + loggerFilter.value + '&configuredFilter=' + configuredFilter.value + '&effectiveFilter=' + effectiveFilter.value;
+											});
+										}),
+								),
+								$('<td>').append($('<span>', { class: val.effectiveLevel }).html(val.effectiveLevel)),
+							)
+							.appendTo($('#loggerListWrap'));
+					});
+
+					$('#onlyConfigured')
+						.on('click', function () {
+							var active = $(this).toggleClass('active').hasClass('active');
+							console.log(active);
+							var $loggerListWrap = $('#loggerListWrap');
+							if (active) {
+								$loggerListWrap.children().each(function () {
+									var configuredLevel = $(this).data('level').configuredLevel;
+									if (configuredLevel != null) {
+										$(this).removeClass('onlyConfigured-hide');
+									} else {
+										$(this).addClass('onlyConfigured-hide');
+									}
+								});
+							} else {
+								$loggerListWrap.children().removeClass('onlyConfigured-hide');
+							}
+							countDisplayLogger();
+						})
+						.trigger('click');
+
+					tableFilter();
+				});
+			});
+
+			function tableFilter() {
+				function equalsLevel(filterVal, thisVal) {
+					if (filterVal === '') return true;
+					else if (filterVal === thisVal) return true;
+					else return false;
+				}
+				var loggerFilterVal = $('#loggerFilter').val();
+				var configuredFilterVal = $('#configuredFilter').val();
+				var effectiveFilterVal = $('#effectiveFilter').val();
+				var $loggerListWrap = $('#loggerListWrap');
+
+				console.log('loggerFilterVal=' + loggerFilterVal, 'configuredFilterVal=' + configuredFilterVal, 'effectiveFilterVal=' + effectiveFilterVal);
+
+				if (loggerFilterVal === '' && configuredFilterVal === '' && effectiveFilterVal === '') {
+					$loggerListWrap.children().show();
+				} else {
+					$loggerListWrap.children().each(function () {
+						var logger = $(this).data('logger');
+						var configuredLevel = $(this).data('level').configuredLevel;
+						var effectiveLevel = $(this).data('level').effectiveLevel;
+						if (logger.indexOf(loggerFilterVal) > -1 && equalsLevel(configuredFilterVal, configuredLevel) && equalsLevel(effectiveFilterVal, effectiveLevel)) {
+							$(this).show();
+						} else {
+							$(this).hide();
+						}
+					});
+				}
+				countDisplayLogger();
+			}
+			function countDisplayLogger() {
+				var filteredCount = 0;
+				$('#loggerListWrap')
+					.children()
+					.each(function () {
+						if ($(this).css('display') != 'none') {
+							filteredCount++;
+						}
+					});
+				$('#filteredCount').html(filteredCount);
+			}
+		</script>
+	</body>
+</html>

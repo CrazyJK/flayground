@@ -429,7 +429,7 @@ function batchMode() {
 	});
 }
 
-const displayBatchCheck = (map) => {
+function displayBatchCheck(map) {
 	$('#batchCheck').attr('open', '');
 	$('#lowerRank, #lowerScore').empty();
 	map.rank.forEach((flay) => {
@@ -446,7 +446,7 @@ const displayBatchCheck = (map) => {
 			fontSize: '80%',
 		});
 	});
-};
+}
 
 function reloadMode() {
 	$('.btn-reload').on('click', function () {

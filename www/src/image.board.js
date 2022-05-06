@@ -3,8 +3,12 @@
  */
 
 import $ from 'jquery';
-import { LocalStorageItem, Random, PATH, Popup } from './lib/crazy.common.js';
+import 'jquery-ui';
+import { LocalStorageItem, Random, PATH, Popup, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
+import './lib/crazy.jquery';
+import './lib/crazy.effect.neon';
+import './image.board.scss';
 
 var totalCount = 0;
 var lastIndex = 0;
@@ -166,8 +170,9 @@ var view = function (reqIndex, fixed) {
             });
           LocalStorageItem.set('image.board.index', reqIndex);
         })
-        .catch(() => {
-          document.body.appendChild(new Text('Could not load the image :( ' + image.src));
+        .catch((e) => {
+          console.error('decode', e);
+          document.body.appendChild(new Text('Could not load the image :( ' + e.toString()));
         });
     });
   }
@@ -358,9 +363,10 @@ $controlBox
   .on('notice', function (e, msg) {
     var $span = $('<span>', { class: 'msgBox' }).html(msg).appendTo($('#notice'));
     setTimeout(function () {
-      $span.hide('blind', { direction: 'down' }, 300, function () {
-        $(this).remove();
-      });
+      // $span.hide('blind', { direction: 'down' }, 300, function () {
+      //   $(this).remove();
+      // });
+      $span.remove();
     }, 1500);
   })
   .on('click', '#imgPath', function () {

@@ -2,7 +2,7 @@ import $ from 'jquery';
 import { loading } from './lib/flay.loading.js';
 import { Rest, restCall } from './lib/flay.rest.service.js';
 import { Util, Search, View } from './lib/flay.utils.js';
-import { DateUtils } from './lib/crazy.common.js';
+import { DateUtils, File } from './lib/crazy.common.js';
 
 let rankPoint = 0,
   playPoint = 0,

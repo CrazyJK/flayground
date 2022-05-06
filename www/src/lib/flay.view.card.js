@@ -4,7 +4,7 @@
 
 import jQuery from 'jquery';
 import { Rest } from './flay.rest.service.js';
-import { COVER_ASPECT_RATIO, PATH } from './crazy.common.js';
+import { COVER_ASPECT_RATIO, PATH, File } from './crazy.common.js';
 import { Search, Util, View } from './flay.utils.js';
 import flayWebsocket from './flay.websocket.js';
 

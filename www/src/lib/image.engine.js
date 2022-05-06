@@ -4,7 +4,7 @@
 
 import $ from 'jquery';
 import { Rest } from './flay.rest.service.js';
-import { LocalStorageItem, Popup, Random, PATH, DateUtils } from './crazy.common.js';
+import { LocalStorageItem, Popup, Random, PATH, DateUtils, File } from './crazy.common.js';
 
 function ProgressBar(selector, args) {
   var DEFAULTS = {

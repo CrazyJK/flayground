@@ -6,22 +6,20 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="icon" type="image/png" href="/img/favicon/flay_2.png" />
 		<link rel="stylesheet" href="../../css/common.css" />
-		<link rel="stylesheet" href="../../css/image/image.banner.css" />
+		<link rel="stylesheet" href="../../dist/imageBanner.css" />
 		<script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
 		<script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-		<script type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-		<script type="text/javascript" src="../../js/crazy.common.js"></script>
-		<script type="text/javascript" src="../../js/crazy.jquery.js"></script>
-		<script type="text/javascript" src="../../js/flay.loading.js"></script>
-		<script type="text/javascript" src="../../js/flay.rest.service.js"></script>
-		<script type="text/javascript" src="../../js/flay.utils.js"></script>
+		<script defer type="text/javascript" src="../../dist/vendors.js"></script>
+		<script defer type="text/javascript" src="../../dist/runtime.js"></script>
+		<script defer type="text/javascript" src="../../dist/commons.js"></script>
+		<script defer type="text/javascript" src="../../dist/imageBanner.js"></script>
 	</head>
 	<body>
 		<div class="container-fluid mt-4 p-0">
 			<pre id="banner" class="rounded m-0"></pre>
 		</div>
 
-		<form action="#" onsubmit="return false;">
+		<form action="#" onsubmit="returnFalse();">
 			<ul id="controlBox">
 				<li>
 					<div class="border border-dark collapse rounded" id="imageThumbPanel">
@@ -147,7 +145,5 @@
 		</nav>
 
 		<footer></footer>
-
-		<script type="text/javascript" src="/js/image/image.banner.js"></script>
 	</body>
 </html>

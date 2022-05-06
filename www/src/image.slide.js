@@ -3,9 +3,11 @@
  */
 
 import $ from 'jquery';
-import { LocalStorageItem, Popup, Random, PATH } from './lib/crazy.common.js';
+import { LocalStorageItem, Popup, Random, PATH, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
+import './lib/crazy.jquery';
+import './image.slide.scss';
 
 var totalCount = 0;
 var currIndex = 0;

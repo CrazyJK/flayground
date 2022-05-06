@@ -1,0 +1,41 @@
+#tableViewWrapper > table {
+  background-image: url(./img/bg/chalkboard.jpg);
+  font-family: 'Ink Free';
+}
+.actress {
+  display: inline-flex;
+  margin: 0.5rem;
+  font-size: 0.75rem;
+  min-width: 200px;
+  width: 240px;
+}
+.card-body {
+  background-size: cover;
+  border-radius: 0.25rem;
+}
+
+.active {
+  color: red;
+}
+.selected {
+  color: blue;
+}
+.same-localname {
+  font-weight: bold;
+  color: green;
+}
+
+#nameCheckResultTable label {
+  margin: 0 8px;
+  color: #007bff;
+}
+
+.input-group {
+  width: initial;
+}
+.sorted {
+  font-weight: 700;
+}
+.table-hover tbody tr:hover {
+  color: inherit;
+}

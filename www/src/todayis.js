@@ -1,5 +1,5 @@
 import $ from 'jquery';
-import { system, WINDOWS } from './lib/crazy.common.js';
+import { system, WINDOWS, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 
 let Todayis = {

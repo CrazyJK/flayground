@@ -4,8 +4,9 @@
 
 import $ from 'jquery';
 import { Rest, restCall } from './lib/flay.rest.service.js';
-import { DateUtils, GB, birthRegExp, bodyRegExp, heightRegExp, debutRegExp } from './lib/crazy.common.js';
+import { DateUtils, File, GB, birthRegExp, bodyRegExp, heightRegExp, debutRegExp } from './lib/crazy.common.js';
 import { Util, View } from './lib/flay.utils.js';
+import './flay.score.scss';
 
 let flayProperties;
 let flayList = [];

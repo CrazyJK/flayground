@@ -1,134 +1,5 @@
 <meta charset="UTF-8" />
-<style type="text/css">
-	#query {
-		max-width: 200px;
-	}
-	input {
-		font-family: D2Coding;
-	}
-
-	.input-group-append + .form-control {
-		border-left: 0;
-	}
-	.btn-batch-option {
-		min-width: 32px;
-	}
-	.ui-dialog-danger {
-		border: 1px solid #ddd;
-		background: rgb(173, 103, 103);
-		color: #fdfdfd;
-	}
-
-	/* candidates */
-	#toggleCandidatesCover,
-	#btnFileControl,
-	#candidatesCount,
-	.candidates-files {
-		display: none;
-	}
-	.candidates {
-		border: 1px solid var(--warning);
-		text-align: center;
-		transition: all 0.4s;
-	}
-	.candidates-info {
-		display: flex;
-		justify-content: space-between;
-	}
-	.candidates-info > label {
-		overflow: hidden;
-		white-space: nowrap;
-		text-overflow: ellipsis;
-	}
-	.candidates-info-studio {
-		flex: 0 0 100px;
-		text-align: left;
-	}
-	.candidates-info-opus {
-		flex: 0 0 100px;
-		text-align: left;
-	}
-	.candidates-info-title {
-		flex: 1 1 auto;
-		text-align: left;
-	}
-	.candidates-info-actress {
-		flex: 0 1 150px;
-		text-align: right;
-	}
-	.candidates-info-release {
-		flex: 0 0 90px;
-		text-align: left;
-	}
-	.candidates-info-ext {
-		flex: 0 0 100px;
-		text-align: left;
-	}
-	.candidates-cover {
-		display: none;
-	}
-	.candidates-cover img {
-		background-color: var(--warning);
-		width: 800px;
-	}
-	.candidates.accepted {
-		border-color: black;
-	}
-
-	.btn:focus {
-		box-shadow: none;
-	}
-
-	.ui-effects-transfer {
-		border-radius: 4px;
-		border: 1px solid rgba(217, 237, 247, 1);
-		background-color: rgba(217, 237, 247, 0.5);
-	}
-
-	#findMode .form-control {
-		color: var(--primary);
-		font-family: '맑은 고딕';
-	}
-
-	#pageImageDownloader .form-control {
-		color: var(--success);
-	}
-
-	#resultFlayDiv table td,
-	#resultHistoryDiv table td {
-		padding: 0;
-	}
-
-	.input-empty {
-		background: rgba(255, 255, 0, 0.5) !important;
-	}
-	.input-invalid {
-		background: rgba(255, 0, 0, 0.5) !important;
-	}
-	.input-warning {
-		background: rgba(0, 0, 255, 0.5) !important;
-		color: var(--light) !important;
-	}
-
-	mark {
-		background-color: transparent;
-		color: #f00;
-		padding: 0;
-	}
-
-	fieldset {
-		border: 1px solid var(--color-text);
-		margin: 0.25rem;
-		padding: 0.25rem;
-	}
-	fieldset > legend {
-		font-size: 1rem;
-		margin-left: 1rem;
-		margin-right: auto;
-		padding: 0 0.5rem;
-		width: auto;
-	}
-</style>
+<link rel="stylesheet" href="../../dist/search.css" />
 
 <div role="body">
 	<div id="topMenu">
@@ -245,17 +116,6 @@
 				</form>
 				<div class="alert alert-success">
 					<textarea id="imageScript" class="bg-transparent border-0 font-italic transparent w-100">$(".board-view-con.view-content img").each(function() {$(this).attr("src", $(this).attr("src").replace("avnori.com", "avnori1.com"))})</textarea>
-					<script type="text/javascript">
-						$('#imageScript').on('change', function () {
-							LocalStorageItem.set('imageScript', $(this).val());
-						});
-						(() => {
-							const scriptCode = LocalStorageItem.get('imageScript', '');
-							if (scriptCode !== '') {
-								$('#imageScript').val(scriptCode);
-							}
-						})();
-					</script>
 				</div>
 			</div>
 		</div>
@@ -365,4 +225,4 @@
 			alert('Action: ' + e.action + ' Trigger: ' + e.trigger);
 		});
 </script>
-<script type="text/javascript" src="../../js/flay.search.js"></script>
+<script type="text/javascript" src="../../dist/search.js"></script>

@@ -6,6 +6,8 @@ import $ from 'jquery';
 import { Rest, restCall } from './lib/flay.rest.service.js';
 import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
+import './lib/crazy.jquery';
+import './image.banner.scss';
 
 function ProgressBar(selector, args) {
   var DEFAULTS = {
@@ -246,7 +248,7 @@ $('img#image').on('click', function () {
   Popup.imageByNo(imageIndex);
 });
 $('body').navEvent(function (signal, e) {
-  console.log('navEvent', signal, e.key, e.target);
+  console.log('navEvent', signal, e.key, e.target.id);
   switch (signal) {
     case 84: // 'T'
       $('#showThumbnailSwitch').click();
@@ -312,7 +314,7 @@ $('body').navEvent(function (signal, e) {
       }
       break;
   }
-  $('i:containsIgnorecase(' + e.key + ')', e.target).effect('highlight');
+  // $('i:containsIgnorecase(' + e.key + ')', e.target).effect('highlight');
 });
 
 function show() {
@@ -553,6 +555,8 @@ var PlayProgress = {
   },
 };
 
-$(function () {
-  show();
-});
+show();
+
+window.returnFalse = function () {
+  return false;
+};

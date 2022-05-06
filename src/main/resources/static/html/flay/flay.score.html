@@ -1,93 +1,69 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-	<head>
-		<title>Score List :: Flayground</title>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/png" href="../../img/favicon/flay_0.png" />
-		<link rel="stylesheet" href="../../css/common.css" />
-		<link rel="stylesheet" href="../../css/flay.score.css" />
-		<script defer type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-		<script defer type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-		<script defer type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-		<script defer type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-		<script defer type="text/javascript" src="../../js/crazy.common.js"></script>
-		<script defer type="text/javascript" src="../../js/crazy.jquery.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.loading.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.rest.service.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.websocket.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.utils.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.view.card.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.score.js"></script>
-	</head>
-	<body>
-		<div class="container-fluid sticky-top" id="topMenu">
-			<span class="lead font-weight-bolder">Score List</span>
-			<span class="check-group sm">
-				<label>
-					<input type="radio" name="viewType" value="f" /><span><strong id="flayCount"></strong> Flay</span>
-				</label>
-				<label>
-					<input type="radio" name="viewType" value="a" /><span><strong id="actressCount"></strong> Actress</span>
-				</label>
-			</span>
-			<span id="flayListOptions">
-				<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="lowerScore" /><span>lowerScore</span></label>
-				<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="clickNplay" /><span>click & play</span></label>
-			</span>
-			<span class="font-weight-bolder">Storage Limit <span id="storageLimit"></span> GB</span>
-			<a href="../../html/main.html"><i class="fa fa-home lead p-2"></i></a>
-		</div>
+<link rel="stylesheet" href="../../dist/score.css" />
 
-		<div style="display: none" id="flayView">
-			<div class="sticky-top f-head">
-				<div>
-					<label class="flay-index">#</label>
-					<label class="flay-opus">opus</label>
-					<label class="flay-title"> title </label>
-					<label class="flay-actress">actress</label>
-					<label class="flay-release">release</label>
-					<label class="flay-modified">modified</label>
-					<label class="flay-movie">mov</label>
-					<label class="flay-subti" title="subtitles">sub</label>
-					<label class="flay-play">play</label>
-					<label class="flay-rank">rank</label>
-					<label class="flay-score" title="score">sco</label>
-					<label class="flay-studioPoint" title="studio Point">sp</label>
-					<label class="flay-actressPoint" title="actress Point">ap</label>
-					<label class="flay-length">length</label>
-					<label class="flay-total" title="cumulative size">total</label>
-				</div>
-			</div>
-			<div class="f-body"></div>
-		</div>
+<div class="container-fluid sticky-top" id="topMenu">
+	<span class="lead font-weight-bolder">Score List</span>
+	<span class="check-group sm">
+		<label>
+			<input type="radio" name="viewType" value="f" /><span><strong id="flayCount"></strong> Flay</span>
+		</label>
+		<label>
+			<input type="radio" name="viewType" value="a" /><span><strong id="actressCount"></strong> Actress</span>
+		</label>
+	</span>
+	<span id="flayListOptions">
+		<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="lowerScore" /><span>lowerScore</span></label>
+		<label class="check xs my-0 float-right" style="padding: 0 2px"><input type="checkbox" id="clickNplay" /><span>click & play</span></label>
+	</span>
+	<span class="font-weight-bolder">Storage Limit <span id="storageLimit"></span> GB</span>
+</div>
 
-		<div style="display: none" id="actressView">
-			<div class="sticky-top f-head">
-				<div>
-					<label class="actress-no">#</label>
-					<label class="actress-scoreTotal">
-						<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="t" /><span>tot</span></label>
-					</label>
-					<label class="actress-flayCount">
-						<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="f" /><span>flay</span></label>
-					</label>
-					<label class="actress-scoreAvg">
-						<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="a" /><span>Avg</span></label>
-					</label>
-					<label class="actress-favorite hover">fav</label>
-					<label class="actress-name">name</label>
-					<label class="actress-local">local</label>
-					<label class="actress-age">age</label>
-					<label class="actress-birth">birth</label>
-					<label class="actress-body">body</label>
-					<label class="actress-height">height</label>
-					<label class="actress-debut">debut</label>
-				</div>
-			</div>
-			<div class="f-body"></div>
+<div style="display: none" id="flayView">
+	<div class="sticky-top f-head">
+		<div>
+			<label class="flay-index">#</label>
+			<label class="flay-opus">opus</label>
+			<label class="flay-title"> title </label>
+			<label class="flay-actress">actress</label>
+			<label class="flay-release">release</label>
+			<label class="flay-modified">modified</label>
+			<label class="flay-movie">mov</label>
+			<label class="flay-subti" title="subtitles">sub</label>
+			<label class="flay-play">play</label>
+			<label class="flay-rank">rank</label>
+			<label class="flay-score" title="score">sco</label>
+			<label class="flay-studioPoint" title="studio Point">sp</label>
+			<label class="flay-actressPoint" title="actress Point">ap</label>
+			<label class="flay-length">length</label>
+			<label class="flay-total" title="cumulative size">total</label>
 		</div>
+	</div>
+	<div class="f-body"></div>
+</div>
 
-		<footer></footer>
-	</body>
-</html>
+<div style="display: none" id="actressView">
+	<div class="sticky-top f-head">
+		<div>
+			<label class="actress-no">#</label>
+			<label class="actress-scoreTotal">
+				<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="t" /><span>tot</span></label>
+			</label>
+			<label class="actress-flayCount">
+				<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="f" /><span>flay</span></label>
+			</label>
+			<label class="actress-scoreAvg">
+				<label class="check xs m-0 p-0"><input type="radio" name="actressSort" value="a" /><span>Avg</span></label>
+			</label>
+			<label class="actress-favorite hover">fav</label>
+			<label class="actress-name">name</label>
+			<label class="actress-local">local</label>
+			<label class="actress-age">age</label>
+			<label class="actress-birth">birth</label>
+			<label class="actress-body">body</label>
+			<label class="actress-height">height</label>
+			<label class="actress-debut">debut</label>
+		</div>
+	</div>
+	<div class="f-body"></div>
+</div>
+
+<script type="text/javascript" src="../../dist/score.js"></script>

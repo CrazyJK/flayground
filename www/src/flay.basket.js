@@ -9,6 +9,7 @@ import { Rest } from './lib/flay.rest.service.js';
 import { MODIFIED, FILEINFO, ACTRESS_EXTRA, COMMENT, STUDIO, actressMapForCard } from './lib/flay.view.card.js';
 import { loading } from './lib/flay.loading.js';
 import { COVER_RATIO, LocalStorageItem, Random } from './lib/crazy.common.js';
+import './flay.basket.scss';
 
 const basket = {
   CARD_MARGIN: 4,

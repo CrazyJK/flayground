@@ -1,17 +1,18 @@
 import $ from 'jquery';
-import { Rest } from './lib/flay.rest.service.js';
-import { LocalStorageItem, Random, PATH, Popup } from './lib/crazy.common.js';
+import { LocalStorageItem, Random, PATH } from './lib/crazy.common';
+import { Rest } from './lib/flay.rest.service';
+import { View } from './lib/flay.utils';
 import './lib/crazy.jquery.js';
 import './lib/jquery.tagcanvas-flay.js';
-import './image.cloud.scss';
+import './cover.cloud.scss';
 
 const inputImageSize = document.getElementById('inputImageSize');
 const inputPlayTime = document.getElementById('inputPlayTime');
 
 var ImageControl = {
-  STORAGE_IMAGE_KEY: 'image.cloud.image_key',
-  STORAGE_IMAGE_SIZE: 'image.cloud.image_size',
-  STORAGE_PLAY_TIME: 'image.cloud.play_time',
+  STORAGE_IMAGE_KEY: 'cover.cloud.flay_key',
+  STORAGE_IMAGE_SIZE: 'cover.cloud.image_size',
+  STORAGE_PLAY_TIME: 'cover.cloud.play_time',
   imageIndexArray: [],
   bgInterval: null,
   collectedList: [],
@@ -19,15 +20,15 @@ var ImageControl = {
   isStart: false,
   intervalCount: 0,
   init: function () {
-    Rest.Image.list(function (list) {
+    Rest.Flay.list(function (list) {
       ImageControl.fullList = list;
-      var map = { ALL: list };
-      $.each(list, function (idx, image) {
-        var key = image.path.replace(/\\/gi, '/').split('/').pop();
+      var map = { ALL: list, Rank0: [], Rank1: [], Rank2: [], Rank3: [], Rank4: [], Rank5: [] };
+      $.each(list, function (idx, flay) {
+        var key = 'Rank' + flay.video.rank;
         if (map[key]) {
-          map[key].push(image);
+          map[key].push(flay);
         } else {
-          map[key] = [image];
+          map[key] = [flay];
         }
       });
 
@@ -120,49 +121,46 @@ var ImageControl = {
       if ($.isEmptyObject(imageIndex)) {
         // console.log('imageIndex is empty', ImageControl.imageIndexArray.length, imageIndex);
       } else {
-        var image = ImageControl.collectedList[imageIndex];
+        var flay = ImageControl.collectedList[imageIndex];
         $('<a>')
           .attr({
             id: 'image' + i,
-            'data-index': image.idx,
+            'data-index': flay.opus,
           })
           .append(
             $('<img>').attr({
-              src: PATH + '/static/image/' + image.idx,
+              src: PATH + '/static/cover/' + flay.opus,
             }),
-            image.name.substring(image.name.length - 18)
+            flay.title.substring(0, 32)
           )
+          .on('click', function (e) {
+            e.preventDefault();
+            View.flay($(this).attr('data-index'));
+          })
           .appendTo($imageWrap);
       }
     }
-    $('#imagePane > a').on('click', (e) => {
-      e.preventDefault();
-      Popup.imageByNo($(e.target).attr('data-index'));
-    });
 
     $('.cloud-info').html('Remaining ' + ImageControl.imageIndexArray.length);
 
-    // ImageControl.ImageCanvas.reload();
-    ImageControl.ImageCanvas.update();
+    ImageControl.ImageCanvas.reload();
   },
   ImageCanvas: {
     options: {
-      bgColour: null,
+      bgColour: '#000',
       bgOutline: null,
       bgOutlineThickness: 0,
-      bgRadius: 0,
+      bgRadius: 4,
       clickToFront: 300,
       depth: 0.9,
       fadeIn: 800,
       hideTags: true,
-      imageMode: 'image',
-      imagePosition: 'top',
-      imageRadius: '50%',
-      imageScale: 0.3,
-      imageMaxWidth: 500,
+      imageMode: 'both',
+      imagePosition: 'bottom',
+      imageRadius: 4,
+      imageScale: 0,
+      imageMaxWidth: 400,
       imageMaxHeight: 0,
-      imageMinWidth: 200,
-      imageMinHeight: 0,
       initial: [0.1, -0.1],
       maxSpeed: 0.03,
       minBrightness: 0.3,
@@ -203,50 +201,48 @@ var ImageControl = {
   },
 };
 
-$(document).ready(function () {
-  inputImageSize.value = LocalStorageItem.getInteger(ImageControl.STORAGE_IMAGE_SIZE, 20);
-  inputPlayTime.value = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
+inputImageSize.value = LocalStorageItem.getInteger(ImageControl.STORAGE_IMAGE_SIZE, 20);
+inputPlayTime.value = LocalStorageItem.getInteger(ImageControl.STORAGE_PLAY_TIME, 30);
 
-  setTimeout(function () {
-    $(window).on('resize', ImageControl.ImageCanvas.resize);
-  }, 5000);
+setTimeout(function () {
+  $(window).on('resize', ImageControl.ImageCanvas.resize);
+}, 5000);
 
-  $('#btnRotate').on('click', ImageControl.ImageCanvas.rotate);
-  $('#btnPause').on('click', function () {
-    if ($(this).data('status') === 'resume') {
-      ImageControl.ImageCanvas.pause();
-      $(this).data('status', 'pause').html('<i class="fa fa-play"></i> Resume');
-      $('#btnPlay, #btnNext, #btnRotate').prop('disabled', true);
-    } else {
-      ImageControl.ImageCanvas.resume();
-      $(this).data('status', 'resume').html('<i class="fa fa-pause"></i> Pause');
-      $('#btnPlay, #btnNext, #btnRotate').prop('disabled', false);
-    }
-  });
-  $('#btnNext').on('click', ImageControl.display);
-  $('#btnPlay').on('click', function () {
-    if ($(this).data('status') === 'stop') {
-      ImageControl.play();
-      $(this).data('status', 'start').html('<i class="fa fa-stop"></i> Stop');
-      $('#btnPause').prop('disabled', true);
-    } else {
-      ImageControl.stop();
-      $(this).data('status', 'stop').html('<i class="fa fa-play"></i> Play');
-      $('#btnPause').prop('disabled', false);
-    }
-  });
-  $('#inputImageSize').on('change', function () {
-    LocalStorageItem.set(ImageControl.STORAGE_IMAGE_SIZE, $(this).val());
-  });
-  $('#inputPlayTime').on('change', function () {
-    LocalStorageItem.set(ImageControl.STORAGE_PLAY_TIME, $(this).val());
-  });
-  $('#goHome').on('click', function () {
-    location.href = PATH + '/html/main.html';
-  });
-  $('#btnByKey, #btnCloseKey').on('click', function () {
-    $('#keyContainer').slideToggle();
-  });
-
-  ImageControl.init();
+$('#btnRotate').on('click', ImageControl.ImageCanvas.rotate);
+$('#btnPause').on('click', function () {
+  if ($(this).data('status') === 'resume') {
+    ImageControl.ImageCanvas.pause();
+    $(this).data('status', 'pause').html('<i class="fa fa-play"></i> Resume');
+    $('#btnPlay, #btnNext, #btnRotate').prop('disabled', true);
+  } else {
+    ImageControl.ImageCanvas.resume();
+    $(this).data('status', 'resume').html('<i class="fa fa-pause"></i> Pause');
+    $('#btnPlay, #btnNext, #btnRotate').prop('disabled', false);
+  }
 });
+$('#btnNext').on('click', ImageControl.display);
+$('#btnPlay').on('click', function () {
+  if ($(this).data('status') === 'stop') {
+    ImageControl.play();
+    $(this).data('status', 'start').html('<i class="fa fa-stop"></i> Stop');
+    $('#btnPause').prop('disabled', true);
+  } else {
+    ImageControl.stop();
+    $(this).data('status', 'stop').html('<i class="fa fa-play"></i> Play');
+    $('#btnPause').prop('disabled', false);
+  }
+});
+$('#inputImageSize').on('change', function () {
+  LocalStorageItem.set(ImageControl.STORAGE_IMAGE_SIZE, $(this).val());
+});
+$('#inputPlayTime').on('change', function () {
+  LocalStorageItem.set(ImageControl.STORAGE_PLAY_TIME, $(this).val());
+});
+$('#goHome').on('click', function () {
+  location.href = PATH + '/html/main.html';
+});
+$('#btnByKey, #btnCloseKey').on('click', function () {
+  $('#keyContainer').slideToggle();
+});
+
+ImageControl.init();

@@ -1,0 +1,40 @@
+#tagList {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: center;
+  align-content: flex-start;
+}
+#tagList .tag {
+  display: inline-flex;
+  margin: 0.25rem;
+  max-width: 20rem;
+  min-width: 10rem;
+  transition: 0.4s;
+}
+#tagList .tag:hover {
+  box-shadow: 0 0.5rem 1rem var(--color-box-shadow);
+}
+#tagList .card-body {
+  padding: 1rem;
+}
+#tagList .flay-count {
+  font-size: 0.75rem;
+}
+#tagList .flay-count.flay-count-no {
+  background-color: var(--danger);
+}
+#tagList .tag-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+#tagList .tag-dest {
+  color: #0d8f00;
+  text-align: center;
+  word-break: keep-all;
+}
+#tagList .tag.active {
+  background-color: var(--color-bg-card-active);
+}

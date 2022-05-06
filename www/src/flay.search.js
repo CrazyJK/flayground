@@ -5,8 +5,9 @@
 import $ from 'jquery';
 import { Search, Security, View } from './lib/flay.utils.js';
 import { Rest } from './lib/flay.rest.service.js';
-import { birthRegExp, bodyRegExp, LocalStorageItem } from './lib/crazy.common.js';
+import { birthRegExp, bodyRegExp, LocalStorageItem, File } from './lib/crazy.common.js';
 import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
+import './flay.search.scss';
 
 function baseSearch() {
   $('#query, #opus').on('keyup', function (e) {
@@ -642,3 +643,16 @@ if (Security.hasRole('ADMIN')) {
 } else {
   $("[aria-role='ADMIN']").empty().hide();
 }
+
+$('#imageScript').on('change', function () {
+  LocalStorageItem.set('imageScript', $(this).val());
+});
+
+const scriptCode = LocalStorageItem.get('imageScript', '');
+if (scriptCode !== '') {
+  $('#imageScript').val(scriptCode);
+}
+
+window.returnFalse = function () {
+  return false;
+};

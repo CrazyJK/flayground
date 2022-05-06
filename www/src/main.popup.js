@@ -4,13 +4,13 @@ import { reqParam } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { loading } from './lib/flay.loading.js';
 
-let isAdmin, username;
-
-isAdmin = Security.hasRole('ADMIN');
-username = Security.getName();
+const isAdmin = Security.hasRole('ADMIN');
+const username = Security.getName();
 console.info(`User is ${username} ${isAdmin ? 'has ADMIN Role' : ''}`);
 
 const targetUrl = reqParam.target;
+console.log('targetUrl', targetUrl);
+
 Rest.Html.get(reqParam.target, (html) => {
   // load page
   $('#wrap_body').html(html);

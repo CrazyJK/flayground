@@ -5,7 +5,7 @@
 import $ from 'jquery';
 import { Rest } from './lib/flay.rest.service.js';
 import { Util } from './lib/flay.utils.js';
-import { Random } from './lib/crazy.common.js';
+import { Random, File } from './lib/crazy.common.js';
 
 let flaymobile = null;
 

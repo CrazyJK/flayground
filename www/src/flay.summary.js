@@ -4,9 +4,11 @@
 
 import $ from 'jquery';
 import { Rest } from './lib/flay.rest.service.js';
-import { Random } from './lib/crazy.common.js';
+import { Random, File } from './lib/crazy.common.js';
 import { View } from './lib/flay.utils.js';
 import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
+import './lib/jquery.tagcanvas-flay';
+import './flay.summary.scss';
 
 const filterCount = 5;
 

@@ -5,6 +5,7 @@
 import $ from 'jquery';
 import { Rest, restCall } from './lib/flay.rest.service.js';
 import { Search } from './lib/flay.utils.js';
+import './flay.subtitles.scss';
 
 let noSubtitlesOpusList = [];
 let intervalFindSubtitles = -1;
@@ -44,7 +45,13 @@ const processStart = () => {
           $sub.empty().closest('.flay-item').addClass('found-subtitles');
           // add found link
           for (const url of result.url) {
-            $sub.append(`<a href="${url}" onclick="removeThis(this);"><i class="fa fa-external-link mx-1"></i></a>`);
+            $sub.append(
+              $(`<a href="${url}"></a>`)
+                .on('click', (e) => {
+                  $(e.target).remove();
+                })
+                .append('<i class="fa fa-external-link mx-1"></i>')
+            );
           }
         } else {
           // not found
@@ -166,7 +173,3 @@ $('#flayList').on('click', '.flay-subtitles > a', (e) => {
 });
 
 $("input:checkbox[name='rank']").on('change', displayList).trigger('change');
-
-function removeThis(that) {
-  $(that).remove();
-}

@@ -1,133 +1,102 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
-	<head>
-		<title>Actress Info</title>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<link rel="icon" type="image/png" href="/img/favicon/flay_1.png" />
-		<link rel="stylesheet" href="../../css/common.css" />
-		<style type="text/css">
-			.actress-cover-wrapper {
-				position: fixed;
-				top: 9rem;
-				left: 0;
-				right: 0;
-				height: 0;
-				background-attachment: fixed;
-				margin: 0.5rem;
-				z-index: 74;
-				transition: height 1s;
-			}
-			nav.navbar:hover ~ .actress-cover-wrapper {
-				height: calc(100% - 9rem);
-			}
-			input.form-control.input-invalid {
-				color: red;
-			}
-			.btn-group > .btn,
-			.input-group-append > .btn {
-				border: 1px solid var(--color-border-form);
-			}
-		</style>
-		<script defer type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
-		<script defer type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
-		<script defer type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
-		<script defer type="text/javascript" src="/webjars/jquery-ui/jquery-ui.min.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.loading.js"></script>
-		<script defer type="text/javascript" src="../../js/crazy.common.js"></script>
-		<script defer type="text/javascript" src="../../js/crazy.jquery.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.websocket.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.rest.service.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.utils.js"></script>
-		<script defer type="text/javascript" src="../../js/flay.view.card.js"></script>
-		<script defer type="text/javascript" src="../../js/info/info.actress.js"></script>
-		<script defer type="text/javascript" src="../../js/theme/flay.theme.js"></script>
-	</head>
-	<body>
-		<nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center sticky-top">
-			<div id="infoForm">
-				<div class="row mb-2">
-					<div class="col-1">
-						<button class="btn btn-outline-danger float-left border-secondary" id="delete">Del</button>
-					</div>
-					<div class="col-4">
-						<div class="input-group">
-							<div class="input-group-prepend">
-								<span class="input-group-text hover"><em class="fa fa-heart favorite" id="favorite"></em></span>
-							</div>
-							<div class="input-group-prepend">
-								<span class="input-group-text" id="avgRank" title="Avg Rank">0.0</span>
-							</div>
-							<input class="form-control text-center" name="name" id="name" />
-						</div>
-					</div>
-					<div class="col-4">
-						<div class="input-group">
-							<input class="form-control text-center" name="localName" id="localName" placeholder="LocalName..." />
-							<div class="input-group-append">
-								<button class="btn btn-outline-secondary" id="search">Search</button>
-							</div>
-						</div>
-					</div>
-					<div class="col-2"></div>
-					<div class="col-1">
-						<button class="btn btn-outline-primary border-secondary" id="save">Save</button>
-					</div>
-				</div>
-				<div class="row mb-2">
-					<div class="col-3">
-						<div class="input-group">
-							<input class="form-control text-center" name="birth" id="birth" placeholder="Birth..." />
-							<div class="input-group-append">
-								<span class="input-group-text actress-age">0</span>
-							</div>
-						</div>
-					</div>
-					<div class="col-2">
-						<input class="form-control text-center" name="body" id="body" placeholder="Body..." />
-					</div>
-					<div class="col-2">
-						<div class="input-group">
-							<input class="form-control text-right" name="height" id="height" placeholder="Height..." />
-							<div class="input-group-append">
-								<span class="input-group-text">cm</span>
-							</div>
-						</div>
-					</div>
-					<div class="col-2">
-						<div class="input-group">
-							<input class="form-control text-right" name="debut" id="debut" placeholder="Debut..." />
-							<div class="input-group-append">
-								<span class="input-group-text">year</span>
-							</div>
-						</div>
-					</div>
-					<div class="col-3">
-						<span class="check-group mt-1">
-							<label>
-								<input type="radio" name="filter" value="u" /><span>unRank<i class="badge filter-cnt-unrank"></i></span>
-							</label>
-							<label>
-								<input type="radio" name="filter" value="i" /><span>Inst<i class="badge filter-cnt-instance"></i></span>
-							</label>
-							<label>
-								<input type="radio" name="filter" value="a" checked /><span>All<i class="badge filter-cnt-all-flay"></i></span>
-							</label>
-						</span>
-					</div>
-				</div>
-				<div class="row">
-					<div class="col">
-						<textarea type="text" class="form-control" id="comment" placeholder="comment..."></textarea>
-					</div>
-				</div>
-			</div>
-		</nav>
+  <head>
+    <title>Actress Info</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="./img/favicon/flay_1.png" />
+    <link rel="stylesheet" href="./css/vendors.css" />
+    <link rel="stylesheet" href="./info.actress.css" />
+    <script defer type="text/javascript" src="./_vendors.js"></script>
+    <script defer type="text/javascript" src="./_runtime.js"></script>
+    <script defer type="text/javascript" src="./_commons.js"></script>
+    <script defer type="text/javascript" src="./info.actress.js"></script>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-sm bg-light navbar-light justify-content-center sticky-top">
+      <div id="infoForm">
+        <div class="row mb-2">
+          <div class="col-1">
+            <button class="btn btn-outline-danger float-left border-secondary" id="delete">Del</button>
+          </div>
+          <div class="col-4">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <span class="input-group-text hover"><em class="fa fa-heart favorite" id="favorite"></em></span>
+              </div>
+              <div class="input-group-prepend">
+                <span class="input-group-text" id="avgRank" title="Avg Rank">0.0</span>
+              </div>
+              <input class="form-control text-center" name="name" id="name" />
+            </div>
+          </div>
+          <div class="col-4">
+            <div class="input-group">
+              <input class="form-control text-center" name="localName" id="localName" placeholder="LocalName..." />
+              <div class="input-group-append">
+                <button class="btn btn-outline-secondary" id="search">Search</button>
+              </div>
+            </div>
+          </div>
+          <div class="col-2"></div>
+          <div class="col-1">
+            <button class="btn btn-outline-primary border-secondary" id="save">Save</button>
+          </div>
+        </div>
+        <div class="row mb-2">
+          <div class="col-3">
+            <div class="input-group">
+              <input class="form-control text-center" name="birth" id="birth" placeholder="Birth..." />
+              <div class="input-group-append">
+                <span class="input-group-text actress-age">0</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-2">
+            <input class="form-control text-center" name="body" id="body" placeholder="Body..." />
+          </div>
+          <div class="col-2">
+            <div class="input-group">
+              <input class="form-control text-right" name="height" id="height" placeholder="Height..." />
+              <div class="input-group-append">
+                <span class="input-group-text">cm</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-2">
+            <div class="input-group">
+              <input class="form-control text-right" name="debut" id="debut" placeholder="Debut..." />
+              <div class="input-group-append">
+                <span class="input-group-text">year</span>
+              </div>
+            </div>
+          </div>
+          <div class="col-3">
+            <span class="check-group mt-1">
+              <label>
+                <input type="radio" name="filter" value="u" /><span>unRank<i class="badge filter-cnt-unrank"></i></span>
+              </label>
+              <label>
+                <input type="radio" name="filter" value="i" /><span>Inst<i class="badge filter-cnt-instance"></i></span>
+              </label>
+              <label>
+                <input type="radio" name="filter" value="a" checked /><span>All<i class="badge filter-cnt-all-flay"></i></span>
+              </label>
+            </span>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col">
+            <textarea type="text" class="form-control" id="comment" placeholder="comment..."></textarea>
+          </div>
+        </div>
+      </div>
+    </nav>
 
-		<div class="actress-cover-wrapper"></div>
+    <div class="actress-cover-wrapper"></div>
 
-		<div class="flay-list" style="overflow: auto"></div>
+    <div class="flay-list" style="overflow: auto"></div>
 
-		<footer></footer>
-	</body>
+    <footer></footer>
+  </body>
 </html>

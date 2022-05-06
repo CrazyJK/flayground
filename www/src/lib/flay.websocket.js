@@ -4,10 +4,11 @@
  */
 
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
 import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
 import { LocalStorageItem } from './crazy.common.js';
-import '../css/flay.websocket.scss';
+import './flay.websocket.scss';
 
 class FlayWebsocket {
   constructor() {
@@ -205,10 +206,13 @@ class FlayWebsocket {
 				</div>
 			</div>`)
       .appendTo($('#' + this.ANNOUNCE_WRAPPER))
-      .show('slow');
+      .show('blind', { direction: 'right' });
 
     setTimeout(() => {
-      $noti.hide('slow');
+      $noti.hide('slide', { direction: 'right' }, 400, () => {
+        // nothing
+        // $noti.remove();
+      });
     }, 1000 * 5);
   }
 

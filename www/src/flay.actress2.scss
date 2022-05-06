@@ -1,34 +1,34 @@
-input.search {
-  width: 500px;
-}
-#goodActressList li.active {
-  text-shadow: 1px 1px yellow;
-}
-#goodActressList li:hover {
-  background-color: rgb(255 165 0 / 50%);
-}
-#goodActressList li label {
-  margin: 4px 0;
-}
-#goodActressList .listNo {
-  width: 30px;
-  text-align: right;
-}
-#goodActressList .favorite {
-  width: 30px;
-  text-align: center;
-}
-#goodActressList .name {
-  width: 170px;
-}
-#goodActressList .flayCount {
-  width: 40px;
-  text-align: right;
-  padding: 0 10px;
-}
-#goodActressList .localName {
-  width: 100px;
-}
-#goodActressList .lastRelease {
-  width: 80px;
+#goodActressList li {
+  &.active {
+    text-shadow: 1px 1px yellow;
+  }
+  &:hover {
+    background-color: rgb(255 165 0 / 50%);
+  }
+
+  label {
+    margin: 4px 0;
+  }
+  .listNo {
+    width: 30px;
+    text-align: right;
+  }
+  .favorite {
+    width: 30px;
+    text-align: center;
+  }
+  .name {
+    width: 170px;
+  }
+  .flayCount {
+    width: 40px;
+    text-align: right;
+    padding: 0 10px;
+  }
+  .localName {
+    width: 100px;
+  }
+  .lastRelease {
+    width: 80px;
+  }
 }

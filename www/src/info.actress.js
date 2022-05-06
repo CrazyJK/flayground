@@ -4,6 +4,8 @@ import { Rest } from './lib/flay.rest.service.js';
 import { Util, Search } from './lib/flay.utils.js';
 import { loading } from './lib/flay.loading.js';
 import { ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
+import './css/common.scss';
+import './info.actress.scss';
 
 const name = reqParam.name;
 let actress;

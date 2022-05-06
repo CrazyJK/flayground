@@ -4,7 +4,7 @@
 
 import $ from 'jquery';
 import { Rest, restCall } from './lib/flay.rest.service.js';
-import { Search } from './lib/flay.utils.js';
+import { Search, View } from './lib/flay.utils.js';
 import './flay.subtitles.scss';
 
 let noSubtitlesOpusList = [];
@@ -22,6 +22,7 @@ restCall('/file/find/exists/subtitles/config', { method: 'patch' }, (config) => 
   $('#useTorProxy').prop('checked', config.useTorProxy);
   $('#jsoupTimeout').val(config.jsoupTimeout);
 });
+
 $('#useTorProxy, #jsoupTimeout').on('change', () => {
   const param = `useTorProxy=${$('#useTorProxy').prop('checked')}&jsoupTimeout=${$('#jsoupTimeout').val()}`;
   restCall('/file/find/exists/subtitles/config?' + param, { method: 'patch' }, (config) => {
@@ -33,7 +34,8 @@ $('#useTorProxy, #jsoupTimeout').on('change', () => {
 
 const processStart = () => {
   const findSubtitles = () => {
-    const opus = noSubtitlesOpusList[currentFindingIndex++];
+    ++currentFindingIndex;
+    const opus = noSubtitlesOpusList.shift();
     const $sub = $('#' + opus + ' > .flay-subtitles').html('finding...'); // mark current active
     Search.subtitlesUrlIfFound(opus, (result) => {
       if (result.error === '') {
@@ -65,8 +67,7 @@ const processStart = () => {
     // scroll move
     const itemPerPage = Math.round($(window).height() / 28);
     if (currentFindingIndex > itemPerPage && currentFindingIndex % itemPerPage === 1) {
-      // location.href = "#" + opus;
-      $('html, body').animate({ scrollTop: $('#' + opus).position().top - 60 }, 500);
+      $('#flayList').animate({ scrollTop: $('#' + opus).position().top - 60 }, 500);
     }
   };
 
@@ -78,12 +79,12 @@ const processStart = () => {
   foundSubtitlesCount = 0;
 
   // first call
-  findSubtitles();
+  // findSubtitles();
 
   // interval call
   intervalFindSubtitles = setInterval(() => {
     findSubtitles();
-    if (noSubtitlesOpusList.length === currentFindingIndex) {
+    if (noSubtitlesOpusList.length === 0) {
       processStop();
     }
   }, 500);
@@ -91,7 +92,7 @@ const processStart = () => {
 
 const processStop = () => {
   clearInterval(intervalFindSubtitles);
-  if (noSubtitlesOpusList.length === currentFindingIndex) {
+  if (noSubtitlesOpusList.length === 0) {
     $('#btnFindSubtitles, #btnStopFinding').hide();
   } else {
     $('#btnFindSubtitles').html('Resume');
@@ -127,20 +128,25 @@ const displayList = (e) => {
     .forEach((flay, count) => {
       noSubtitlesOpusList.push(flay.opus);
 
-      const html = `<div class="flay-item" id="${flay.opus}" rank="${flay.video.rank}">
-								<label class="flay-count">${++count}</label>
-								<label class="flay-studio">${flay.studio}</label>
-								<label class="flay-opus">${flay.opus}</label>
-								<label class="flay-title hover" onclick="View.flay('${flay.opus}')">${flay.title}</label>
-								<label class="flay-actressList">${flay.actressList}</label>
-								<label class="flay-release">${flay.release}</label>
-								<label class="flay-rank">${flay.video.rank > 0 ? flay.video.rank : ''}</label>
-								<label class="flay-tag">${ifTag(flay, 90)}</label>
-								<label class="flay-subtitles"></label>
-							</div>`;
-
-      $('#flayList').append(html);
+      $('#flayList').append(
+        `<div class="flay-item" id="${flay.opus}" rank="${flay.video.rank}">
+          <label class="flay-count">${++count}</label>
+          <label class="flay-studio">${flay.studio}</label>
+          <label class="flay-opus">${flay.opus}</label>
+          <label class="flay-title hover"">${flay.title}</label>
+          <label class="flay-actressList">${flay.actressList}</label>
+          <label class="flay-release">${flay.release}</label>
+          <label class="flay-rank">${flay.video.rank > 0 ? flay.video.rank : ''}</label>
+          <label class="flay-tag">${ifTag(flay, 90)}</label>
+          <label class="flay-subtitles"></label>
+        </div>`
+      );
     });
+
+  $('.flay-title').on('click', (e) => {
+    const opus = $(e.target).closest('.flay-item').attr('id');
+    View.flay(opus);
+  });
 
   $('#flayCount').html(noSubtitlesOpusList.length); // mark total count
 };

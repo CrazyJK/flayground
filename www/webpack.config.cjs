@@ -22,7 +22,7 @@ module.exports = {
     'flay.score': './src/flay.score.js',
     'flay.subtitles': './src/flay.subtitles.js',
     'flay.summary': './src/flay.summary.js',
-    'flay.note': './src/kamoru.note.js',
+    'flay.note': './src/flay.note.js',
     'flay.all': './src/flay.all.js',
     'flay.fav.opus': './src/flay.fav.opus.js',
     'info.actress': './src/info.actress.js',

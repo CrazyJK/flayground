@@ -9,7 +9,9 @@ import flayWebsocket from './lib/flay.websocket.js';
 import { Security } from './lib/flay.utils.js';
 import { adjustTheme } from './lib/theme.js';
 import menuItems from './main.json';
+import 'bootstrap/dist/js/bootstrap';
 import './lib/kamoru.life.timer.js';
+import './css/common.scss';
 import './main.scss';
 
 const isAdmin = Security.hasRole('ADMIN');
@@ -90,7 +92,7 @@ const SlideMenu = {
           .on('click', () => {
             let url = null;
             if (menu.mode === 'include') {
-              url = '/html/main.popup.html?target=' + menu.uri;
+              url = './main.popup.html?target=' + menu.uri;
             } else if (menu.mode === 'href') {
               url = menu.uri;
             } else {

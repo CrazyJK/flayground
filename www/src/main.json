@@ -61,7 +61,7 @@
 	},
 	{
 		"name": "Actress Rank",
-		"uri": "./flay.actress.2.html",
+		"uri": "./flay.actress2.html",
 		"icon": "fa fa-female",
 		"mode": "include",
 		"popup": {
@@ -111,7 +111,7 @@
 	},
 	{
 		"name": "Notes",
-		"uri": "./kamoru.note.html",
+		"uri": "./flay.note.html",
 		"icon": "fa fa-sticky-note note-btn",
 		"mode": "include",
 		"popup": {

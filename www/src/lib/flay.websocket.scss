@@ -1,0 +1,58 @@
+.announce-container {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  padding: 0.5rem;
+  z-index: 6974;
+
+  &:hover .announce {
+    display: block !important;
+  }
+
+  .announce {
+    background: var(--color-bg);
+    border: 1px solid rgb(51, 51, 51);
+    border-radius: 0.25rem;
+    box-shadow: rgb(0 0 0 / 25%) 0px 2px 4px;
+    color: var(--color-text);
+    display: none;
+    margin: 0px;
+    padding: 0.5rem;
+    width: 250px;
+
+    .bell {
+      float: left;
+      color: #ffc107;
+      text-shadow: 1px 1px 2px var(--color-text);
+    }
+
+    .remove {
+      float: right;
+      color: #6c757d;
+    }
+
+    .time {
+      float: right;
+      margin-right: 0.5rem;
+    }
+
+    .announce-body {
+      margin-left: 1.5rem;
+    }
+
+    .announce-title {
+      font-weight: 700;
+      margin: 0;
+    }
+
+    .announce-from {
+      color: #17a2b8;
+    }
+
+    .announce-desc {
+      font-size: 0.875rem;
+      margin-top: 0.5rem;
+      overflow-wrap: anywhere;
+    }
+  }
+}

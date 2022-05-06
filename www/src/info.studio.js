@@ -2,6 +2,7 @@ import $ from 'jquery';
 import { reqParam } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
+import './css/common.scss';
 
 const studioName = reqParam.s;
 

@@ -83,7 +83,7 @@ function showList() {
           $('<label>', { class: 'name hover' })
             .append(key)
             .on('click', () => {
-              window.open(PATH + '/html/info/info.actress.html?name=' + key, 'actress-info', 'width=1072,height=1800,' + DEFAULT_SPECS);
+              window.open(PATH + './info.actress.html?name=' + key, 'actress-info', 'width=1072,height=1800,' + DEFAULT_SPECS);
             }),
           $('<label>', { class: 'flayCount' }).append(value.flayCount),
           $('<label>', { class: 'localName' }).append(value.localName),

@@ -1,12 +1,13 @@
 import $ from 'jquery';
-import { LocalStorageItem, Random } from './lib/crazy.common.js';
+import { LocalStorageItem, Random, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
-import { View, Util } from './lib/flay.utils.js';
+import { View } from './lib/flay.utils.js';
 import { FILEINFO } from './lib/flay.view.card.js';
 import './lib/crazy.jquery.js';
 import './flay.tile.scss';
 
-let flayList;
+let flayList = [];
+let filteredList = [];
 let currFlayIndex = 0;
 let totalDisplayCount = 0;
 let rank0 = false,
@@ -23,7 +24,7 @@ $('#rank1').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank1', false
 $('#rank2').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank2', false));
 $('#rank3').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank3', false));
 $('#rank4').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank4', false));
-$('#rank5').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank5', false));
+$('#rank5').prop('checked', LocalStorageItem.getBoolean('flay.tile.rank5', true));
 $('#wideTile')
   .prop('checked', LocalStorageItem.getBoolean('flay.tile.wideTile', true))
   .on('change', function () {
@@ -74,19 +75,12 @@ function obtainCheckedValue() {
   rank4 = $('#rank4').prop('checked');
   rank5 = $('#rank5').prop('checked');
   wide = $('#wideTile').prop('checked');
-  // console.log(rank0, rank1, rank2, rank3, rank4, rank5, wide);
 }
 
 function displayCountByCheckedRank() {
   obtainCheckedValue();
-  let countFlayByCheckedRank = 0;
-  for (let flay of flayList) {
-    if (isCheckedRank(flay)) {
-      ++countFlayByCheckedRank;
-    }
-  }
-  // console.log('countFlayByCheckedRank', countFlayByCheckedRank);
-  $('#countFlayByCheckedRank').html(countFlayByCheckedRank);
+  filteredList = flayList.filter((flay) => isCheckedRank(flay));
+  $('#countFlayByCheckedRank').html(filteredList.length);
 }
 
 function isCheckedRank(flay) {
@@ -97,7 +91,7 @@ function displayTile(isFirst) {
   $('#tileWrap').navActive(false);
 
   if (isFirst) {
-    currFlayIndex = Random.getInteger(0, flayList.length - 1);
+    currFlayIndex = Random.getInteger(0, filteredList.length - 1);
   }
 
   let $tileWrap = $('#tileWrap').empty();
@@ -107,24 +101,33 @@ function displayTile(isFirst) {
   obtainCheckedValue();
 
   if (!rank0 && !rank1 && !rank2 && !rank3 && !rank4 && !rank5) {
+    $('#tileWrap').navActive(true);
+    return;
+  }
+
+  if (filteredList.length === 0) {
+    $('#tileWrap').navActive(true);
     return;
   }
 
   let roopIndex = 0;
   do {
-    if (currFlayIndex >= flayList.length) {
+    if (currFlayIndex >= filteredList.length) {
       currFlayIndex = 0;
     }
 
-    let flay = flayList[currFlayIndex++];
-    if (!isCheckedRank(flay)) {
-      continue;
-    }
+    let flay = filteredList[currFlayIndex++];
 
-    let $tile = $('<dl>', {
-      class: 'tile' + (wide ? ' wide' : ''),
-      flayIndex: currFlayIndex,
-    })
+    let $tile = $(`<dl class="tile ${wide ? ' wide' : ''}" flayIndex="${currFlayIndex}">`)
+      .append(
+        `<dt class="nowrap title">${flay.title}</dt>`,
+        `<dd class="nowrap studio">${flay.studio}</dd>`,
+        `<dd class="nowrap opus">${flay.opus}</dd>`,
+        `<dd class="nowrap rank">Rank ${flay.video.rank}</dd>`,
+        `<dd class="nowrap actress">${flay.actressList.join(', ')}</dd>`,
+        `<dd class="nowrap release">${flay.release}</dd>`,
+        `<dd class="nowrap file">${File.formatSize(flay.length) + (flay.files.movie.length > 1 ? ' ' + flay.files.movie.length + 'v' : '')}</dd>`
+      )
       .data('flay', flay)
       .on('click', function (e) {
         let $this = $(this);
@@ -141,42 +144,7 @@ function displayTile(isFirst) {
           });
           $('#playingWrap').show();
         });
-      })
-      .append(
-        $('<dt>', { class: 'title nowrap' })
-          .html(flay.title)
-          .on('click', function (e) {
-            e.stopPropagation();
-            let _flay = $(this).parent().data('flay');
-            View.flay(_flay.opus);
-          }),
-        $('<dd>', { class: 'studio nowrap' })
-          .html(flay.studio)
-          .on('click', function (e) {
-            e.stopPropagation();
-          }),
-        $('<dd>', { class: 'opus nowrap' })
-          .html(flay.opus)
-          .on('click', function (e) {
-            e.stopPropagation();
-          }),
-        $('<dd>', { class: 'rank nowrap' })
-          .html('Rank ' + flay.video.rank)
-          .on('click', function (e) {
-            e.stopPropagation();
-          }),
-        $('<dd>', { class: 'actress nowrap' }).html(Util.Actress.getNames(flay.actressList)),
-        $('<dd>', { class: 'release nowrap' })
-          .html(flay.release)
-          .on('click', function (e) {
-            e.stopPropagation();
-          }),
-        $('<dd>', { class: 'file nowrap' })
-          .html(File.formatSize(flay.length) + (flay.files.movie.length > 1 ? ' ' + flay.files.movie.length + 'v' : ''))
-          .on('click', function (e) {
-            e.stopPropagation();
-          })
-      );
+      });
 
     if (roopIndex++ % 2 === 0) {
       $tile.prependTo($tileWrap);
@@ -197,6 +165,12 @@ function displayTile(isFirst) {
     tileList.push($tile);
     // eslint-disable-next-line no-constant-condition
   } while (true);
+
+  $tileWrap.on('click', '.title', (e) => {
+    e.stopPropagation();
+    const flay = $(e.target).parent().data('flay');
+    View.flay(flay.opus);
+  });
 
   // one more check overflow flay tile
   let $lastTile = $('#tileWrap .tile:last-child');

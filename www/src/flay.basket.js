@@ -165,23 +165,21 @@ const basket = {
   },
 };
 
-function grapFlay(opus) {
+window.grapFlay = function (opus) {
   basket.toggleFlay(opus);
-}
+};
 
-$(document).ready(() => {
-  Rest.Actress.listSync((list) => {
-    basket.actressList = list;
-  });
-  basket.$flayList = $('.flay-list');
-
-  $('#rank' + LocalStorageItem.getInteger('flay.basket.rank', 0)).prop('checked', true);
-  $('#favorite').prop('checked', LocalStorageItem.getBoolean('flay.basket.favorite', false));
-  $('#noFavorite').prop('checked', LocalStorageItem.getBoolean('flay.basket.noFavorite', true));
-
-  $('#pickFlay').on('click', basket.pickupFlay);
-  $('#emptyFlay').on('click', basket.emptyFlay);
-  $('input').on('change', basket.resetList);
-
-  $(window).on('resize', basket.setWidthOfList).trigger('resize');
+Rest.Actress.listSync((list) => {
+  basket.actressList = list;
 });
+basket.$flayList = $('.flay-list');
+
+$('#rank' + LocalStorageItem.getInteger('flay.basket.rank', 0)).prop('checked', true);
+$('#favorite').prop('checked', LocalStorageItem.getBoolean('flay.basket.favorite', false));
+$('#noFavorite').prop('checked', LocalStorageItem.getBoolean('flay.basket.noFavorite', true));
+
+$('#pickFlay').on('click', basket.pickupFlay);
+$('#emptyFlay').on('click', basket.emptyFlay);
+$('input').on('change', basket.resetList);
+
+$(window).on('resize', basket.setWidthOfList).trigger('resize');

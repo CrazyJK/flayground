@@ -1,42 +1,40 @@
 <meta charset="UTF-8" />
-<link rel="stylesheet" href="../../dist/tile.css" />
+<link rel="stylesheet" href="./flay.tile.css" />
 
-<div role="body">
-	<div id="topMenu">
-		<nav class="bg-light rounded-bottom">
-			<span class="check-group sm mx-2">
-				<label><input type="checkbox" id="rank0" value="0" checked="checked" /><span>0</span></label>
-				<label><input type="checkbox" id="rank1" value="1" /><span>1</span></label>
-				<label><input type="checkbox" id="rank2" value="2" /><span>2</span></label>
-				<label><input type="checkbox" id="rank3" value="3" /><span>3</span></label>
-				<label><input type="checkbox" id="rank4" value="4" /><span>4</span></label>
-				<label><input type="checkbox" id="rank5" value="5" /><span>5</span></label>
-			</span>
-			<span class="check-group sm mx-2" id="countLabel">
-				<em id="countFlayByDisplay" title="count Flay By Display"></em>
-				<i class="mx-1">/</i>
-				<em id="countFlayByCheckedRank" title="count Flay By Checked Rank"></em>
-				<i class="mx-1">/</i>
-				<em id="countFlayByTotal" title="count Flay By Total"></em>
-				<i class="mx-1">Flay</i>
-			</span>
-			<span class="check-group sm mx-2">
-				<label><input type="checkbox" id="wideTile" /><span>Wide</span></label>
-			</span>
-		</nav>
-	</div>
-
-	<div id="tileWrap"></div>
-
-	<div id="playingWrap">
-		<div id="playing">
-			<div class="text-right">
-				<button class="bg-transparent border-0" id="playingClose">
-					<i class="display-4 fa fa-times text-warning"></i>
-				</button>
-			</div>
-		</div>
-	</div>
+<div id="topMenu">
+  <nav class="bg-light rounded-bottom">
+    <span class="check-group sm mx-2">
+      <label><input type="checkbox" id="rank0" value="0" /><span>0</span></label>
+      <label><input type="checkbox" id="rank1" value="1" /><span>1</span></label>
+      <label><input type="checkbox" id="rank2" value="2" /><span>2</span></label>
+      <label><input type="checkbox" id="rank3" value="3" /><span>3</span></label>
+      <label><input type="checkbox" id="rank4" value="4" /><span>4</span></label>
+      <label><input type="checkbox" id="rank5" value="5" /><span>5</span></label>
+    </span>
+    <span class="check-group sm mx-2" id="countLabel">
+      <em id="countFlayByDisplay" title="count Flay By Display"></em>
+      <i class="mx-1">/</i>
+      <em id="countFlayByCheckedRank" title="count Flay By Checked Rank"></em>
+      <i class="mx-1">/</i>
+      <em id="countFlayByTotal" title="count Flay By Total"></em>
+      <i class="mx-1">Flay</i>
+    </span>
+    <span class="check-group sm mx-2">
+      <label><input type="checkbox" id="wideTile" /><span>Wide</span></label>
+    </span>
+  </nav>
 </div>
 
-<script defer="defer" type="text/javascript" src="../../dist/tile.js"></script>
+<div id="tileWrap"></div>
+
+<div id="playingWrap">
+  <div id="playing">
+    <div class="text-right">
+      <button class="bg-transparent border-0" id="playingClose">
+        <i class="display-4 fa fa-times text-warning"></i>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script defer="defer" type="text/javascript" src="./flay.tile.js"></script>

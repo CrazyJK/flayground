@@ -96,7 +96,7 @@ export const Util = {
 
 export const View = {
   flay: function (opus) {
-    Popup.open(PATH + '/html/info/info.flay.html?opus=' + opus, 'flay-' + opus, 800, 770);
+    Popup.open(PATH + './info.flay.html?opus=' + opus, 'flay-' + opus, 800, 770);
   },
   flayInPage: (flay) => {
     if ($('#flayInPage').length === 0) {
@@ -112,14 +112,14 @@ export const View = {
     Popup.open(PATH + '/info/video/' + opus, 'video-' + opus, 400, 300);
   },
   actress: function (name) {
-    Popup.open(PATH + '/html/info/info.actress.html?name=' + name, 'actress-' + name, 1072, 1100);
+    Popup.open(PATH + './info.actress.html?name=' + name, 'actress-' + name, 1072, 1100);
   },
   tag: function (tagId) {
     // Popup.open(PATH + '/info/tag/' + tagId, 'Tag-' + tagId, 800, 650);
-    Popup.open(PATH + '/html/info/info.tag.html?id=' + tagId, 'Tag-' + tagId, 1072, 650);
+    Popup.open(PATH + './info.tag.html?id=' + tagId, 'Tag-' + tagId, 1072, 650);
   },
   studio: function (name) {
-    Popup.open(PATH + '/html/info/info.studio.html?s=' + name, 'Studio-' + name, 1072, 1900);
+    Popup.open(PATH + './info.studio.html?s=' + name, 'Studio-' + name, 1072, 1900);
   },
 };
 

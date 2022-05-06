@@ -1,0 +1,21 @@
+.actress-cover-wrapper {
+  position: fixed;
+  top: 9rem;
+  left: 0;
+  right: 0;
+  height: 0;
+  background-attachment: fixed;
+  margin: 0.5rem;
+  z-index: 74;
+  transition: height 1s;
+}
+nav.navbar:hover ~ .actress-cover-wrapper {
+  height: calc(100% - 9rem);
+}
+input.form-control.input-invalid {
+  color: red;
+}
+.btn-group > .btn,
+.input-group-append > .btn {
+  border: 1px solid var(--color-border-form);
+}

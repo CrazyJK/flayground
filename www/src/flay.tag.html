@@ -1,34 +1,34 @@
 <meta charset="UTF-8" />
-<link rel="stylesheet" href="../../dist/tag.css" />
+<link rel="stylesheet" href="./flay.tag.css" />
 
 <div role="body">
-	<div id="topMenu">
-		<nav class="bg-light rounded-bottom">
-			<form id="tagInput">
-				<input type="text" class="form-control input-flay width-50" id="tagId" name="id" placeholder="Id" />
-				<input type="text" class="form-control input-flay width-150" id="tagName" name="name" placeholder="Name" required="required" />
-				<input type="text" class="form-control input-flay width-300" id="tagDesc" name="description" placeholder="Desctiption" />
-				<button class="btn btn-sm btn-flay tag-save" type="submit">Save</button>
-				<button class="btn btn-sm btn-flay text-danger tag-delete" type="submit">Delete</button>
-				<label class="check sm">
-					<input type="checkbox" id="likeSearch" /><span><i id="likeSearchText">marked</i> <i id="summary"></i></span>
-				</label>
-			</form>
-		</nav>
-	</div>
+  <div id="topMenu">
+    <nav class="bg-light rounded-bottom">
+      <form id="tagInput">
+        <input type="text" class="form-control input-flay width-50" id="tagId" name="id" placeholder="Id" />
+        <input type="text" class="form-control input-flay width-150" id="tagName" name="name" placeholder="Name" required="required" />
+        <input type="text" class="form-control input-flay width-300" id="tagDesc" name="description" placeholder="Desctiption" />
+        <button class="btn btn-sm btn-flay tag-save" type="submit">Save</button>
+        <button class="btn btn-sm btn-flay text-danger tag-delete" type="submit">Delete</button>
+        <label class="check sm">
+          <input type="checkbox" id="likeSearch" /><span><i id="likeSearchText">marked</i> <i id="summary"></i></span>
+        </label>
+      </form>
+    </nav>
+  </div>
 
-	<div id="tagList" class="scroll-wrapper">
-		<div class="card tag">
-			<div class="card-body">
-				<div class="tag-title">
-					<span class="badge badge-pill badge-info tag-open hover"><i class="fa fa-external-link"></i></span>
-					<h5 class="font-weight-bold hover tag-name">Tag name</h5>
-					<span class="badge badge-pill badge-secondary flay-count"></span>
-				</div>
-				<div class="card-text tag-dest">Tag description</div>
-			</div>
-		</div>
-	</div>
+  <div id="tagList" class="scroll-wrapper">
+    <div class="card tag">
+      <div class="card-body">
+        <div class="tag-title">
+          <span class="badge badge-pill badge-info tag-open hover"><i class="fa fa-external-link"></i></span>
+          <h5 class="font-weight-bold hover tag-name">Tag name</h5>
+          <span class="badge badge-pill badge-secondary flay-count"></span>
+        </div>
+        <div class="card-text tag-dest">Tag description</div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<script type="text/javascript" src="../../dist/tag.js"></script>
+<script type="text/javascript" src="./flay.tag.js"></script>

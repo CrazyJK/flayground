@@ -2,6 +2,7 @@ body {
   background-color: #000;
   overflow: hidden;
 }
+
 #imageWrap {
   position: absolute;
   top: 0;
@@ -16,52 +17,64 @@ body {
   cursor: grab;
   transition: 0.3s;
 }
-#controlBox {
-  opacity: 0;
-  transition: 0.3s;
-}
+
 #controlBox:hover,
 #imageWrap:hover ~ #controlBox {
   opacity: 1;
 }
-#controlBox div {
-  border-top-left-radius: 4px;
-  background-color: rgba(0, 0, 0, 0.5);
-  margin: 0;
-  padding: 4px 8px;
-  box-shadow: 0 0 2px 0px rgba(255, 255, 255, 0.5);
-  color: #eee;
-  font-size: 14px;
-  text-shadow: 1px 1px 2px #111;
+
+#controlBox {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  opacity: 0;
+  transition: 0.3s;
+
+  div {
+    border-top-left-radius: 4px;
+    background-color: rgba(0, 0, 0, 0.5);
+    margin: 0;
+    padding: 4px 8px;
+    box-shadow: 0 0 2px 0px rgba(255, 255, 255, 0.5);
+    color: #eee;
+    font-size: 14px;
+    text-shadow: 1px 1px 2px #111;
+
+    &:empty {
+      display: none;
+    }
+    &#notice {
+      background-color: transparent;
+      box-shadow: none;
+    }
+
+    input {
+      background: transparent;
+      border: 0;
+      color: #eee;
+      font-size: 12px;
+      margin: 0;
+      padding: 0;
+      text-align: right;
+
+      &#bgIntervalTime {
+        width: 20px;
+      }
+      &#currNo {
+        width: 30px;
+      }
+    }
+
+    span {
+      margin: 0 2px;
+    }
+
+    a i.fa {
+      margin: 0 4px;
+    }
+  }
 }
-#controlBox div:empty {
-  display: none;
-}
-#controlBox div#notice {
-  background-color: transparent;
-  box-shadow: none;
-}
-#controlBox div input {
-  background: transparent;
-  border: 0;
-  color: #eee;
-  font-size: 12px;
-  margin: 0;
-  padding: 0;
-  text-align: right;
-}
-#controlBox div input#bgIntervalTime {
-  width: 20px;
-}
-#controlBox div input#currNo {
-  width: 30px;
-}
-#controlBox div span {
-  margin: 0 2px;
-}
-#controlBox div a i.fa {
-  margin: 0 4px;
-}
+
 #imgTitle {
   color: yellow;
 }

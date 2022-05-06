@@ -257,6 +257,7 @@ main {
   right: 0;
   bottom: 0;
   transition: left 0.4s ease 0s;
+  overflow-y: auto;
 
   aside#wrap_background_image {
     position: fixed;

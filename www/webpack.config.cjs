@@ -1,47 +1,73 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = {
   /* mode: development, production, none */
   mode: 'development',
   entry: {
     index: './src/index.js',
+    'split.view': '/src/split.view.js',
     main: './src/main.js',
-    popup: './src/main.popup.js',
-    vertical: './src/flay.vertical.js',
-    search: './src/flay.search.js',
-    tag: './src/flay.tag.js',
-    actress: './src/flay.actress.js',
-    actress2: './src/flay.actress2.js',
-    archive: './src/flay.archive.js',
-    tile: './src/flay.tile.js',
-    basket: './src/flay.basket.js',
-    mobile: './src/flay.mobile.js',
-    score: './src/flay.score.js',
-    subtitles: './src/flay.subtitles.js',
-    summary: './src/flay.summary.js',
-    note: './src/kamoru.note.js',
+    'main.popup': './src/main.popup.js',
+    'flay.vertical': './src/flay.vertical.js',
+    'flay.search': './src/flay.search.js',
+    'flay.tag': './src/flay.tag.js',
+    'flay.actress': './src/flay.actress.js',
+    'flay.actress2': './src/flay.actress2.js',
+    'flay.archive': './src/flay.archive.js',
+    'flay.tile': './src/flay.tile.js',
+    'flay.basket': './src/flay.basket.js',
+    'flay.mobile': './src/flay.mobile.js',
+    'flay.score': './src/flay.score.js',
+    'flay.subtitles': './src/flay.subtitles.js',
+    'flay.summary': './src/flay.summary.js',
+    'flay.note': './src/kamoru.note.js',
+    'flay.all': './src/flay.all.js',
+    'flay.fav.opus': './src/flay.fav.opus.js',
+    'info.actress': './src/info.actress.js',
+    'info.flay': './src/info.flay.js',
+    'info.studio': './src/info.studio.js',
     todayis: './src/todayis.js',
-    coverCloud: './src/cover.cloud.js',
-    imageBanner: './src/image.banner.js',
-    imageBoard: './src/image.board.js',
-    imageCloud: './src/image.cloud.js',
-    imageSlide: './src/image.slide.js',
-    imageTablet: './src/image.tablet.js',
-    infoActress: './src/info.actress.js',
-    infoFlay: './src/info.flay.js',
-    infoStudio: './src/info.studio.js',
-    flayall: './src/flay.all.js',
-    favopus: './src/flay.fav.opus.js',
+    'cover.cloud': './src/cover.cloud.js',
+    'image.banner': './src/image.banner.js',
+    'image.board': './src/image.board.js',
+    'image.cloud': './src/image.cloud.js',
+    'image.slide': './src/image.slide.js',
+    'image.tablet': './src/image.tablet.js',
   },
   devtool: 'source-map',
+  devServer: {
+    static: './dist',
+    allowedHosts: ['flay.kamoru.jk'],
+  },
   output: {
     // filename: '[name].[contenthash].js',
     filename: '[name].js',
     path: path.resolve(__dirname, '../src/main/resources/static/dist'),
     clean: true,
   },
-  plugins: [new MiniCssExtractPlugin()],
+  plugins: [
+    new MiniCssExtractPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: 'src/*.html',
+          to({ context, absoluteFilename }) {
+            return '[name][ext]';
+          },
+        },
+        {
+          from: 'src/css',
+          to: 'css',
+        },
+        {
+          from: 'src/img',
+          to: 'img',
+        },
+      ],
+    }),
+  ],
   module: {
     rules: [
       {
@@ -83,17 +109,20 @@ module.exports = {
   },
   optimization: {
     moduleIds: 'deterministic',
-    runtimeChunk: 'single',
+    // runtimeChunk: 'single',
+    runtimeChunk: {
+      name: '_runtime',
+    },
     splitChunks: {
       cacheGroups: {
         vendor: {
           test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
+          name: '_vendors',
           chunks: 'all',
         },
         commons: {
           test: /[\\/]lib[\\/]/,
-          name: 'commons',
+          name: '_commons',
           chunks: 'all',
         },
       },

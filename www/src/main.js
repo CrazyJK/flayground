@@ -8,8 +8,9 @@ import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import flayWebsocket from './lib/flay.websocket.js';
 import { Security } from './lib/flay.utils.js';
 import { adjustTheme } from './lib/theme.js';
-import menuItems from './main.menu.json';
+import menuItems from './main.json';
 import './lib/kamoru.life.timer.js';
+import './main.scss';
 
 const isAdmin = Security.hasRole('ADMIN');
 const username = Security.getName();

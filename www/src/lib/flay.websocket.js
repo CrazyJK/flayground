@@ -11,7 +11,7 @@ import '../css/flay.websocket.scss';
 
 class FlayWebsocket {
   constructor() {
-    this.STOMP_ENDPOINT = '/flayground-websocket';
+    this.STOMP_ENDPOINT = 'https://flay.kamoru.jk/flayground-websocket';
 
     this.TOPIC_ANNOUNCE = '/topic/announce';
     this.TOPIC_ANNOUNCE_TO = '/user/topic/announce';

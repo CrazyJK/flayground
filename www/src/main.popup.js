@@ -3,6 +3,7 @@ import { Security } from './lib/flay.utils.js';
 import { reqParam } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { loading } from './lib/flay.loading.js';
+import 'bootstrap/dist/js/bootstrap';
 
 const isAdmin = Security.hasRole('ADMIN');
 const username = Security.getName();

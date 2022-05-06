@@ -1,7 +1,7 @@
 [
 	{
 		"name": "Vertical",
-		"uri": "/html/flay/flay.vertical.html",
+		"uri": "./flay.vertical.html",
 		"icon": "fa fa-film",
 		"mode": "include",
 		"popup": {
@@ -11,7 +11,7 @@
 	},
 	{
 		"name": "Archive",
-		"uri": "/html/flay/flay.archive.html",
+		"uri": "./flay.archive.html",
 		"icon": "fa fa-th",
 		"mode": "include",
 		"popup": {
@@ -21,7 +21,7 @@
 	},
 	{
 		"name": "Tile",
-		"uri": "/html/flay/flay.tile.html",
+		"uri": "./flay.tile.html",
 		"icon": "fa fa-th",
 		"mode": "include",
 		"popup": {
@@ -31,7 +31,7 @@
 	},
 	{
 		"name": "Search",
-		"uri": "/html/flay/flay.search.html",
+		"uri": "./flay.search.html",
 		"icon": "fa fa-search",
 		"mode": "include",
 		"popup": {
@@ -41,7 +41,7 @@
 	},
 	{
 		"name": "Tag",
-		"uri": "/html/flay/flay.tag.html",
+		"uri": "./flay.tag.html",
 		"icon": "fa fa-tags",
 		"mode": "include",
 		"popup": {
@@ -51,7 +51,7 @@
 	},
 	{
 		"name": "Actress",
-		"uri": "/html/flay/flay.actress.html",
+		"uri": "./flay.actress.html",
 		"icon": "fa fa-female",
 		"mode": "include",
 		"popup": {
@@ -61,7 +61,7 @@
 	},
 	{
 		"name": "Actress Rank",
-		"uri": "/html/flay/flay.actress.2.html",
+		"uri": "./flay.actress.2.html",
 		"icon": "fa fa-female",
 		"mode": "include",
 		"popup": {
@@ -71,7 +71,7 @@
 	},
 	{
 		"name": "Subtitles",
-		"uri": "/html/flay/flay.subtitles.html",
+		"uri": "./flay.subtitles.html",
 		"icon": "fa fa-file-text-o",
 		"mode": "include",
 		"popup": {
@@ -81,7 +81,7 @@
 	},
 	{
 		"name": "Summary",
-		"uri": "/html/flay/flay.summary.html",
+		"uri": "./flay.summary.html",
 		"icon": "fa fa-list",
 		"mode": "include",
 		"popup": {
@@ -91,7 +91,7 @@
 	},
 	{
 		"name": "History",
-		"uri": "/html/flay/flay.history.html",
+		"uri": "./flay.history.html",
 		"icon": "fa fa-bar-chart",
 		"mode": "include",
 		"popup": {
@@ -101,7 +101,7 @@
 	},
 	{
 		"name": "Today`s",
-		"uri": "/html/todayis/todayis.html",
+		"uri": "./todayis.html",
 		"icon": "fa fa-th",
 		"mode": "include",
 		"popup": {
@@ -111,7 +111,7 @@
 	},
 	{
 		"name": "Notes",
-		"uri": "/html/note/kamoru.note.html",
+		"uri": "./kamoru.note.html",
 		"icon": "fa fa-sticky-note note-btn",
 		"mode": "include",
 		"popup": {
@@ -121,7 +121,7 @@
 	},
 	{
 		"name": "Basket",
-		"uri": "/html/flay/flay.basket.html",
+		"uri": "./flay.basket.html",
 		"icon": "fa fa-shopping-cart",
 		"mode": "include",
 		"popup": {
@@ -131,7 +131,7 @@
 	},
 	{
 		"name": "Score",
-		"uri": "/html/flay/flay.score.html",
+		"uri": "./flay.score.html",
 		"icon": "fa fa-list",
 		"mode": "include",
 		"popup": {
@@ -141,7 +141,7 @@
 	},
 	{
 		"name": "Fav. Opus",
-		"uri": "/html/flay/flay.fav.opus.html",
+		"uri": "./flay.fav.opus.html",
 		"icon": "fa fa-list",
 		"mode": "href",
 		"popup": {
@@ -151,7 +151,7 @@
 	},
 	{
 		"name": "Lost flay",
-		"uri": "/html/flay/flay.lost.html",
+		"uri": "./flay.lost.html",
 		"icon": "fa fa-list",
 		"mode": "href",
 		"popup": {
@@ -161,7 +161,7 @@
 	},
 	{
 		"name": "Cover Cloud",
-		"uri": "/html/image/cover.cloud.html",
+		"uri": "./cover.cloud.html",
 		"icon": "fa fa-picture-o",
 		"mode": "href",
 		"popup": {
@@ -171,7 +171,7 @@
 	},
 	{
 		"name": "Image Cloud",
-		"uri": "/html/image/image.cloud.html",
+		"uri": "./image.cloud.html",
 		"icon": "fa fa-picture-o",
 		"mode": "href",
 		"popup": {
@@ -181,7 +181,7 @@
 	},
 	{
 		"name": "Image Slide",
-		"uri": "/html/image/image.slide.html",
+		"uri": "./image.slide.html",
 		"icon": "fa fa-picture-o",
 		"mode": "href",
 		"popup": {
@@ -191,7 +191,7 @@
 	},
 	{
 		"name": "Image Tablet",
-		"uri": "/html/image/image.tablet.html",
+		"uri": "./image.tablet.html",
 		"icon": "fa fa-picture-o",
 		"mode": "href",
 		"popup": {
@@ -201,7 +201,7 @@
 	},
 	{
 		"name": "Image Board",
-		"uri": "/html/image/image.board.html",
+		"uri": "./image.board.html",
 		"icon": "fa fa-picture-o",
 		"mode": "href",
 		"popup": {
@@ -211,7 +211,7 @@
 	},
 	{
 		"name": "Image Banner",
-		"uri": "/html/image/image.banner.html",
+		"uri": "./image.banner.html",
 		"icon": "fa fa-picture-o",
 		"mode": "href",
 		"popup": {

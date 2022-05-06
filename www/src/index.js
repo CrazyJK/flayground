@@ -1,6 +1,6 @@
 import $ from 'jquery';
+import menuItems from './index.json';
 import './index.scss';
-import menuItems from './index.menu.json';
 
 const popupWidth = document.getElementById('popupWidth');
 const popupHeight = document.getElementById('popupHeight');

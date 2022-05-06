@@ -2,31 +2,31 @@
 	{
 		"name": "Home",
 		"method": "both",
-		"url": "/html/main.html"
+		"url": "./main.html"
 	},
 	{
 		"name": "Search",
 		"method": "popup",
-		"url": "/html/main.popup.html?target=/html/flay/flay.search.html"
+		"url": "./main.popup.html?target=flay.search.html"
 	},
 	{
 		"name": "Slide",
 		"method": "both",
-		"url": "/html/image/image.slide.html"
+		"url": "./image.slide.html"
 	},
 	{
 		"name": "Split View",
 		"method": "both",
-		"url": "/html/split.view.html"
+		"url": "./split.view.html"
 	},
 	{
 		"name": "Mobile",
 		"method": "both",
-		"url": "/html/flay/flay.mobile.html"
+		"url": "./flay.mobile.html"
 	},
 	{
 		"name": "Today's",
 		"method": "both",
-		"url": "/html/main.popup.html?target=/html/todayis/todayis.html"
+		"url": "./main.popup.html?target=todayis.html"
 	}
 ]

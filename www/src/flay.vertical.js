@@ -11,6 +11,7 @@ import { Search, Util, View } from './lib/flay.utils.js';
 import { Rest } from './lib/flay.rest.service.js';
 import flayWebsocket from './lib/flay.websocket.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
+import './flay.vertical.scss';
 
 let flayList = [];
 let collectedList = [];
@@ -377,6 +378,11 @@ function attachPageEventListener() {
         });
       });
     }
+  });
+
+  // btnToggleNewTag
+  $('#btnToggleNewTag').on('click', () => {
+    $('#newTagForm').toggleClass('show');
   });
 
   // uncheck select Tag
@@ -1179,6 +1185,9 @@ function showVideo(args) {
 
   // dominatedColor
   function applyDominatedColor(dominatedColors) {
+    $('.cover-wrapper-inner.curr').css({
+      boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[1].rgba.join(',')})`,
+    });
     $('.cover-wrapper-inner.curr > .cover-box').css({
       boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[0].rgba.join(',')})`,
       backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,

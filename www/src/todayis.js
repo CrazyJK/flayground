@@ -1,6 +1,7 @@
 import $ from 'jquery';
 import { system, WINDOWS, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
+import './todayis.scss';
 
 let Todayis = {
   list: [],

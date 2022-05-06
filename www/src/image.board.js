@@ -3,11 +3,12 @@
  */
 
 import $ from 'jquery';
-import 'jquery-ui';
+import 'jquery-ui-dist/jquery-ui';
 import { LocalStorageItem, Random, PATH, Popup, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import './lib/crazy.jquery';
 import './lib/crazy.effect.neon';
+import './css/common.scss';
 import './image.board.scss';
 
 var totalCount = 0;

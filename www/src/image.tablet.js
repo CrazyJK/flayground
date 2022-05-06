@@ -6,6 +6,7 @@ import $ from 'jquery';
 import { LocalStorageItem, Popup, Random, PATH, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import './lib/crazy.jquery';
+import './css/common.scss';
 import './image.tablet.scss';
 
 var totalCount = 0;

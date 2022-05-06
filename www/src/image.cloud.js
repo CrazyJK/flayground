@@ -3,6 +3,7 @@ import { Rest } from './lib/flay.rest.service.js';
 import { LocalStorageItem, Random, PATH, Popup } from './lib/crazy.common.js';
 import './lib/crazy.jquery.js';
 import './lib/jquery.tagcanvas-flay.js';
+import './css/common.scss';
 import './image.cloud.scss';
 
 const inputImageSize = document.getElementById('inputImageSize');

@@ -4,6 +4,7 @@ import { Rest } from './lib/flay.rest.service';
 import { View } from './lib/flay.utils';
 import './lib/crazy.jquery.js';
 import './lib/jquery.tagcanvas-flay.js';
+import './css/common.scss';
 import './cover.cloud.scss';
 
 const inputImageSize = document.getElementById('inputImageSize');

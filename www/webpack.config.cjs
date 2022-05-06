@@ -35,6 +35,7 @@ module.exports = {
     'image.cloud': './src/image.cloud.js',
     'image.slide': './src/image.slide.js',
     'image.tablet': './src/image.tablet.js',
+    'kamoru.life.timer': './src/kamoru.life.timer.js',
   },
   devtool: 'source-map',
   devServer: {

@@ -2,6 +2,8 @@
  * flay summary js
  */
 
+import * as am5 from '@amcharts/amcharts5';
+import * as am5xy from '@amcharts/amcharts5/xy';
 import $ from 'jquery';
 import { Rest } from './lib/flay.rest.service.js';
 import { Random, File } from './lib/crazy.common.js';
@@ -565,175 +567,93 @@ function displayFlayList(key, list, start) {
   });
 }
 
-/*
-		Flay Release List
-	*/
-class ReleaseDateRange {
-  constructor(selector, max) {
-    this.max = max;
-    this.$obj = $(selector).attr('max', this.max);
-  }
-  set(value) {
-    this.$obj.val(this.max - value);
-    return this;
-  }
-  get() {
-    return this.max - this.$obj.val();
-  }
-  trigger() {
-    this.$obj.trigger('change');
-  }
-  eventOnChange(chartArray) {
-    this.$obj.on('change', (e) => {
-      let offset = this.max - e.target.value;
-      const today = new Date();
-      const startDate = new Date(today);
-      const endDate = new Date(today);
-      startDate.setDate(today.getDate() - offset);
-      for (const chart of chartArray) {
-        chart.zoomToDates(startDate, endDate);
+let root = am5.Root.new('releaseChart');
+
+// ---- flay release chart
+$('#releaseChartDiv').on('show.bs.collapse', () => {
+  const instanceDataMap = new Map();
+  instanceList.forEach((flay) => {
+    const key = flay.release;
+    if (key) {
+      if (instanceDataMap.has(key)) {
+        instanceDataMap.get(key).push(flay);
+      } else {
+        instanceDataMap.set(key, [flay]);
       }
-    });
-  }
-}
-
-let selectedRank = [];
-let selectedDateType;
-const chartArray = [null, null];
-const releaseDateOption = [
-  { size: 4, releaseFormat: 'YYYY', dateFormat: 'YYYY', axisPeriod: 'YYYY', zoomOffsetDate: 5 * 365 },
-  { size: 7, releaseFormat: 'YYYY.MM', dateFormat: 'YYYY-MM', axisPeriod: 'MM', zoomOffsetDate: 3 * 365 },
-  { size: 10, releaseFormat: 'YYYY.MM.DD', dateFormat: 'YYYY-MM-DD', axisPeriod: 'DD', zoomOffsetDate: 1 * 365 },
-];
-const releaseDateRange = new ReleaseDateRange('#releaseDateRange', 5 * 365);
-
-releaseDateRange.set(releaseDateOption[$('input[name="releaseDate"]:checked').val()].zoomOffsetDate).eventOnChange(chartArray);
-
-$('#releaseChartDiv').on('show.bs.collapse', displayReleaseChart);
-$('#releaseChartDiv input[name="rank"], #releaseChartDiv input[name="releaseDate"]').on('change', displayReleaseChart);
-
-function displayReleaseChart() {
-  selectedRank = [];
-  $('input[name="rank"]:checked').each((index, rank) => {
-    selectedRank.push(Number(rank.value));
+    } else {
+      console.warn('release in null', flay);
+    }
   });
-  console.log('selected Rank', selectedRank);
 
-  selectedDateType = $('input[name="releaseDate"]:checked').val();
-  console.log('selected DateType', selectedDateType, releaseDateOption[selectedDateType]);
+  const instanceData = [];
+  instanceDataMap.forEach((val, key) => {
+    instanceData.push({
+      date: new Date(key).getTime(),
+      value: val.length,
+    });
+  });
+  instanceData.sort((d1, d2) => (d1.date > d2.date ? 1 : -1));
 
-  displayInstanceReleaseChart();
-  displayArchiveReleaseChart();
+  root.container.children.clear();
+  let chart = root.container.children.push(
+    am5xy.XYChart.new(root, {
+      panX: false,
+      panY: false,
+      wheelX: 'panX',
+      wheelY: 'zoomX',
+    })
+  );
 
-  releaseDateRange.set(releaseDateOption[selectedDateType].zoomOffsetDate).trigger();
-}
+  let cursor = chart.set(
+    'cursor',
+    am5xy.XYCursor.new(root, {
+      behavior: 'zoomX',
+    })
+  );
+  cursor.lineY.set('visible', false);
 
-function displayInstanceReleaseChart() {
-  // const dataMap = new Map();
-  // instanceList.forEach((flay, index) => {
-  //   if (!selectedRank.includes(flay.video.rank)) {
-  //     return;
-  //   }
-  //   const key = flay.release.substring(0, releaseDateOption[selectedDateType].size);
-  //   if (dataMap.has(key)) {
-  //     dataMap.get(key).push(flay);
-  //   } else {
-  //     dataMap.set(key, [flay]);
-  //   }
-  // });
-  // let dataArray = [];
-  // dataMap.forEach((val, key) => {
-  //   dataArray.push({
-  //     date: AmCharts.stringToDate(key, releaseDateOption[selectedDateType].releaseFormat),
-  //     flayCount: val.length,
-  //   });
-  // });
-  // dataArray.sort((d1, d2) => d1.date - d2.date);
-  // console.log('instance dataArray', dataArray);
-  // renderChart(0, dataArray, 'releaseInstanceChart');
-}
+  let xAxis = chart.xAxes.push(
+    am5xy.DateAxis.new(root, {
+      maxDeviation: 0,
+      baseInterval: {
+        timeUnit: 'day',
+        count: 1,
+      },
+      renderer: am5xy.AxisRendererX.new(root, {}),
+      tooltip: am5.Tooltip.new(root, {}),
+    })
+  );
 
-function displayArchiveReleaseChart() {
-  // const dataMap = new Map();
-  // archiveList.forEach((flay) => {
-  //   const key = flay.release.substring(0, releaseDateOption[selectedDateType].size);
-  //   if (dataMap.has(key)) {
-  //     dataMap.get(key).push(flay);
-  //   } else {
-  //     dataMap.set(key, [flay]);
-  //   }
-  // });
-  // let dataArray = [];
-  // dataMap.forEach((val, key) => {
-  //   dataArray.push({
-  //     date: AmCharts.stringToDate(key, releaseDateOption[selectedDateType].releaseFormat),
-  //     flayCount: val.length,
-  //   });
-  // });
-  // dataArray.sort((d1, d2) => d1.date - d2.date);
-  // console.log('archive dataArray', dataArray);
-  // renderChart(1, dataArray, 'releaseArchiveChart');
-}
+  let yAxis = chart.yAxes.push(
+    am5xy.ValueAxis.new(root, {
+      renderer: am5xy.AxisRendererY.new(root, {}),
+    })
+  );
 
-function renderChart(chartIndex, dataArray, chartId) {
-  // chartArray[chartIndex] = AmCharts.makeChart(chartId, {
-  //   type: 'serial',
-  //   theme: 'black',
-  //   dataProvider: dataArray,
-  //   chartScrollbar: {
-  //     graph: 'flayCount',
-  //     autoGridCount: true,
-  //     scrollbarHeight: 40,
-  //   },
-  //   graphs: [
-  //     {
-  //       id: 'release',
-  //       type: 'column',
-  //       valueField: 'flayCount',
-  //       fillColors: '#FFFF00',
-  //       fillAlphas: 0.8,
-  //       lineAlpha: 0,
-  //       balloonText: '<b>[[value]]</b>',
-  //       // https://docs.amcharts.com/3/javascriptcharts/AmBalloon
-  //       balloon: {
-  //         enabled: true,
-  //         drop: true,
-  //       },
-  //     },
-  //   ],
-  //   // https://docs.amcharts.com/3/javascriptcharts/ChartCursor
-  //   chartCursor: {
-  //     // limitToGraph: 'flayCount',
-  //     categoryBalloonDateFormat: releaseDateOption[selectedDateType].dateFormat,
-  //   },
-  //   // https://docs.amcharts.com/3/javascriptcharts/ValueAxis
-  //   valueAxes: [
-  //     {
-  //       baseValue: 0,
-  //       gridAlpha: 0.2,
-  //       dashLength: 1,
-  //       minimum: 0,
-  //     },
-  //   ],
-  //   // https://docs.amcharts.com/3/javascriptcharts/AmSerialChart#categoryField
-  //   categoryField: 'date',
-  //   // https://docs.amcharts.com/3/javascriptcharts/CategoryAxis
-  //   categoryAxis: {
-  //     parseDates: true,
-  //     minPeriod: releaseDateOption[selectedDateType].axisPeriod,
-  //     dateFormats: [
-  //       { period: 'DD', format: 'D' },
-  //       { period: 'MM', format: 'YYYY-MM' },
-  //       { period: 'YYYY', format: 'YYYY' },
-  //     ],
-  //   },
-  // });
-}
+  let instanceSeries = chart.series.push(
+    am5xy.ColumnSeries.new(root, {
+      name: 'Instance',
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: 'value',
+      valueXField: 'date',
+      tooltip: am5.Tooltip.new(root, {
+        labelText: '{valueY}',
+      }),
+    })
+  );
 
-// AmCharts.dayNames = AmCharts.translations.ko.dayNames;
-// AmCharts.shortDayNames = AmCharts.translations.ko.shortDayNames;
-// AmCharts.monthNames = AmCharts.translations.ko.monthNames;
-// AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
+  chart.set(
+    'scrollbarX',
+    am5.Scrollbar.new(root, {
+      orientation: 'horizontal',
+    })
+  );
+
+  instanceSeries.data.setAll(instanceData);
+  instanceSeries.appear(1000);
+  chart.appear(1000, 100);
+});
 
 // ---- flay all dislay
 $('#flayAllDiv').on('show.bs.collapse', () => {

@@ -25,7 +25,7 @@ Rest.Actress.list((list) => {
 });
 
 let previewImageBlob = '';
-Rest.Image.blobUrl(`${PATH}/img/bg/flayground_facade.jpg`, (blobUrl) => {
+Rest.Image.blobUrl(`${PATH}./img/bg/flayground_facade.jpg`, (blobUrl) => {
   previewImageBlob = blobUrl;
 });
 

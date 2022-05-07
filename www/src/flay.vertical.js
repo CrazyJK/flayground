@@ -2,10 +2,12 @@
  * Flay Vertical View Javascript
  */
 
+import * as am5 from '@amcharts/amcharts5';
+import * as am5xy from '@amcharts/amcharts5/xy';
 import $ from 'jquery';
 import './lib/crazy.jquery.js';
 import './lib/crazy.effect.neon.js';
-import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File } from './lib/crazy.common.js';
+import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File, DateUtils } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
 import { Search, Util, View } from './lib/flay.utils.js';
 import { Rest } from './lib/flay.rest.service.js';
@@ -27,7 +29,8 @@ let slideTimer;
 let keyInputQueue = '';
 let keyLastInputTime = Date.now();
 
-let historyChart = null;
+const am5Root = am5.Root.new('chartdiv');
+
 const now = new Date();
 const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
 
@@ -1131,7 +1134,11 @@ function showVideo(args) {
       Rest.History.find(currentFlay.opus, (histories) => {
         const playHistories = histories.filter((history) => history.action === 'PLAY');
         if (playHistories.length > 0) {
-          let canVisible = false;
+          // 화면 밖으로 밀려나갈거 같으면 가리기
+          const canVisible = window.innerHeight > $('.tag-wrapper').position().top + $('.tag-wrapper').height() + 100;
+          if (canVisible) {
+            drawGraph(histories);
+          }
           $('.history-wrapper').toggle(canVisible);
           if (currentFlay.video.play !== playHistories.length) {
             currentFlay.video.play = playHistories.length;
@@ -1355,3 +1362,95 @@ attachPageEventListener();
 attachFlayEventListener();
 initCondition();
 loadData();
+
+function drawGraph(historyList) {
+  // init variables
+  const dataMap = new Map();
+
+  historyList.forEach((history) => {
+    if (history.action === 'PLAY') {
+      const key = history.date.substring(0, 10);
+      if (dataMap.has(key)) {
+        dataMap.get(key).push(history);
+      } else {
+        dataMap.set(key, [history]);
+      }
+    }
+  });
+
+  const dataArray = [
+    {
+      date: Date.now(),
+      playCount: 0,
+    },
+  ];
+  // convert map to array
+  dataMap.forEach((val, key) => {
+    dataArray.push({
+      date: new Date(key).getTime(),
+      playCount: val.length,
+    });
+  });
+  // sort ascending by date
+  dataArray.sort((d1, d2) => (d1.date > d2.date ? 1 : -1));
+  // add oneYearAgo, if necessary
+  if (dataArray[0].date > oneYearAgo.getTime()) {
+    dataArray.unshift({
+      date: oneYearAgo.getTime(),
+      playCount: 0,
+    });
+  }
+
+  am5Root.container.children.clear();
+  let chart = am5Root.container.children.push(am5xy.XYChart.new(am5Root, {}));
+
+  let cursor = chart.set(
+    'cursor',
+    am5xy.XYCursor.new(am5Root, {
+      behavior: 'none',
+    })
+  );
+  cursor.lineY.set('visible', false);
+
+  let xAxis = chart.xAxes.push(
+    am5xy.DateAxis.new(am5Root, {
+      maxDeviation: 0,
+      baseInterval: {
+        timeUnit: 'day',
+        count: 1,
+      },
+      renderer: am5xy.AxisRendererX.new(am5Root, { inside: true }),
+      tooltip: am5.Tooltip.new(am5Root, {}),
+    })
+  );
+
+  let xRenderer = xAxis.get('renderer');
+  xRenderer.labels.template.setAll({
+    fill: am5.color(0xffffff),
+    fontSize: '14px',
+  });
+
+  let yAxis = chart.yAxes.push(
+    am5xy.ValueAxis.new(am5Root, {
+      min: 0,
+      max: 1,
+      maxPrecision: 0,
+      renderer: am5xy.AxisRendererY.new(am5Root, { inside: true }),
+    })
+  );
+
+  let series = chart.series.push(
+    am5xy.ColumnSeries.new(am5Root, {
+      name: 'Series',
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: 'playCount',
+      valueXField: 'date',
+    })
+  );
+
+  series.data.setAll(dataArray);
+
+  series.appear(1000);
+  chart.appear(1000, 100);
+}

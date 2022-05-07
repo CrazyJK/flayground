@@ -90,16 +90,6 @@
 		}
 	},
 	{
-		"name": "History",
-		"uri": "./flay.history.html",
-		"icon": "fa fa-bar-chart",
-		"mode": "include",
-		"popup": {
-			"w": 1078,
-			"h": 800
-		}
-	},
-	{
 		"name": "Today`s",
 		"uri": "./todayis.html",
 		"icon": "fa fa-th",

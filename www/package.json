@@ -12,11 +12,10 @@
     "serve": "webpack serve --open"
   },
   "dependencies": {
-    "amcharts3": "^3.21.15",
+    "@amcharts/amcharts5": "^5.2.2",
     "axios": "^0.27.1",
     "bootstrap": "4.6.0",
     "jquery": "^3.6.0",
-    "jquery-ui": "^1.13.1",
     "jquery-ui-dist": "^1.13.1",
     "lodash": "^4.17.21",
     "net": "^1.0.2",

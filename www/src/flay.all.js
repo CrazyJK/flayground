@@ -6,6 +6,8 @@ import $ from 'jquery';
 import { Random } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { View } from './lib/flay.utils.js';
+import './css/common.scss';
+import './flay.all.scss';
 
 async function fetchAndDecode(url) {
   try {
@@ -150,7 +152,7 @@ fetchAndDecode('/flay/list')
   })
   .catch((e) => console.error);
 
-fetchAndDecode('/img/svg/flayground1.svg')
+fetchAndDecode('./img/svg/flayground1.svg')
   .then((imageBlob) => {
     let objectURL = URL.createObjectURL(imageBlob);
     $('body').css({

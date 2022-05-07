@@ -150,6 +150,16 @@
 		}
 	},
 	{
+		"name": "Flay All",
+		"uri": "./flay.all.html",
+		"icon": "fa fa-th",
+		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
 		"name": "Cover Cloud",
 		"uri": "./cover.cloud.html",
 		"icon": "fa fa-picture-o",

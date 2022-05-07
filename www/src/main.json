@@ -221,17 +221,7 @@
 	},
 	{
 		"name": "RequestMap",
-		"uri": "/html/util/requestMapping.html",
-		"icon": "fa fa-info",
-		"mode": "href",
-		"popup": {
-			"w": 1078,
-			"h": 1100
-		}
-	},
-	{
-		"name": "Component",
-		"uri": "/html/util/flay.component.html",
+		"uri": "./util.request.mappings.html",
 		"icon": "fa fa-info",
 		"mode": "href",
 		"popup": {
@@ -241,7 +231,7 @@
 	},
 	{
 		"name": "Device Info",
-		"uri": "/html/util/device.info.html",
+		"uri": "./util.device.info.html",
 		"icon": "fa fa-info",
 		"mode": "href",
 		"popup": {
@@ -251,7 +241,7 @@
 	},
 	{
 		"name": "Actuator",
-		"uri": "/html/actuator/index.html",
+		"uri": "./util.actuator.index.html",
 		"icon": "fa fa-info",
 		"mode": "href",
 		"popup": {
@@ -261,7 +251,7 @@
 	},
 	{
 		"name": "Websocket",
-		"uri": "/html/util/websocket.stat.html",
+		"uri": "./util.websocket.stat.html",
 		"icon": "fa fa-info",
 		"mode": "href",
 		"popup": {

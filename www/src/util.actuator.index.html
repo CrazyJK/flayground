@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <title>Actuator</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./css/vendors.css" />
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+  </head>
+  <body class="bg-dark">
+    <div class="container-fluid">
+      <div class="d-flex my-2 text-light">
+        <div class="mr-auto">
+          <h4><i class="fa fa-list mx-2"></i> Actuator</h4>
+        </div>
+        <a href="./main.html" class="text-light mx-2">Home</a>
+      </div>
+      <div id="cardWrap" class="d-inline-flex flex-wrap"></div>
+    </div>
+
+    <script type="text/javascript">
+      const extraLinkMap = new Map();
+      extraLinkMap.set('loggers', 'util.actuator.loggers.html');
+      extraLinkMap.set('mappings', 'util.actuator.mappings.html');
+
+      $.ajax({
+        url: '/actuator',
+        cache: false,
+      }).done((json) => {
+        $.each(json._links, (key, val) => {
+          const url = val.href.replace(location.protocol + '//' + location.host, '');
+          $('<div>', { class: 'card text-white bg-dark m-2' })
+            .css({ width: 'auto', boxShadow: '2px 2px 4px 2px rgba(0, 0, 0, 0.5)' })
+            .append(
+              $('<div>', { class: 'card-body' }).append(
+                (() => {
+                  var extraLink = extraLinkMap.get(key);
+                  return extraLink ? $('<a>', { class: 'text-info float-right', href: extraLink }).append($('<i>', { class: 'fa fa-external-link small' })) : '';
+                })(),
+                $('<h5>', { class: 'card-title' }).append($('<i>', { class: 'fa fa-info-circle small mr-2' }), key),
+                (() => {
+                  if (val.templated) {
+                    const urlParts = url.split('/');
+                    const urlLast = urlParts.pop();
+                    console.log('urlParts', urlParts, 'urlLast', urlLast);
+                    return $('<div>', { class: 'input-group input-group-sm' }).append(
+                      $('<div>', { class: 'input-group-prepend' }).append($('<span>', { class: 'input-group-text border-secondary basePathname' }).html(urlParts.join('/'))),
+                      $('<input>', { class: 'form-control form-control-sm border-secondary text-light bg-dark', placeHolder: urlLast }).on('keyup', (e) => {
+                        if (e.keyCode === 13) $(e.target).closest('.input-group').find('button').get(0).click();
+                      }),
+                      $('<div>', { class: 'input-group-append' }).append(
+                        $('<button>', { class: 'btn btn-outline-secondary' })
+                          .on('click', (e) => {
+                            const basePathname = $(e.target).closest('.input-group').find('.basePathname').html();
+                            const inputValue = $(e.target).closest('.input-group').find('input').val().trim();
+                            if (inputValue.length > 0) {
+                              window.open(basePathname + '/' + inputValue, key + inputValue, 'width=800, height=600');
+                            }
+                          })
+                          .append($('<i>', { class: 'fa fa-external-link' }))
+                      )
+                    );
+                  } else {
+                    return $('<p>', { class: 'card-text' }).append(
+                      $('<a>', {
+                        class: 'text-light',
+                        href: "javascript: window.open('" + val.href + "', '" + key + "', 'width=800, height=600');",
+                      }).html(url)
+                    );
+                  }
+                })()
+              )
+            )
+            .appendTo('#cardWrap');
+        });
+      });
+    </script>
+  </body>
+</html>

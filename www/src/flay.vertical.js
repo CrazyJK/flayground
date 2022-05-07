@@ -268,7 +268,7 @@ const navigation = {
 
     if (!seenList.includes(currentIndex)) {
       seenList.push(currentIndex);
-      console.debug('showingHistory', seenList);
+      console.debug('seenList', seenList);
     }
     if (seenList.length === collectedList.length) {
       seenList = [];

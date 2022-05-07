@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <title>Device Infomation</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./css/vendors.css" />
+    <script type="text/javascript" src="/webjars/jquery/jquery.min.js"></script>
+    <script type="text/javascript" src="/webjars/popper.js/umd/popper.js"></script>
+    <script type="text/javascript" src="/webjars/bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+      const displaySystemInfo = () => {
+        const agent = navigator.userAgent.toLowerCase(),
+          MSIE = 'MSIE',
+          EDGE = 'Edge',
+          CHROME = 'Chrome',
+          FIREFOX = 'Firefox',
+          SAFARI = 'Safari',
+          browser = /trident/i.test(agent) || /msie/i.test(agent) ? MSIE : /edge/i.test(agent) ? EDGE : /chrome/i.test(agent) ? CHROME : /firefox/i.test(agent) ? FIREFOX : /safari/i.test(agent) ? SAFARI : 'Unknown',
+          WINDOWS = 'Windows',
+          LINUX = 'Linux',
+          MAC = 'Macintosh',
+          IPHONE = 'iPhone',
+          IPAD = 'iPad',
+          ANDROID = 'Android',
+          system = /Windows/i.test(agent) ? WINDOWS : /linux/i.test(agent) ? LINUX : /macintosh/i.test(agent) ? MAC : /iphone/i.test(agent) ? IPHONE : /ipad/i.test(agent) ? IPAD : /android/i.test(agent) ? ANDROID : 'Unknown';
+
+        $('#thisBrowser').html(browser);
+        $('#thisSystem').html(system);
+      };
+
+      const displayResolutionInfo = () => {
+        $('#screenWidth').html(screen.width);
+        $('#screenHeight').html(screen.height);
+        $('#windowInnerWidth').html(window.innerWidth);
+        $('#windowInnerHeight').html(window.innerHeight);
+        $('#windowOuterWidth').html(window.outerWidth);
+        $('#windowOuterHeight').html(window.outerHeight);
+      };
+
+      /* Navigator
+       * https://developer.mozilla.org/en-US/docs/Web/API/Navigator */
+      const displayNavigatorInfo = () => {
+        const navigatorProperties = [
+          // ---- Standard properties
+          ['connection', 'Provides a NetworkInformation object containing information about the network connection of a device.'], // Safari on iOS: No
+          ['cookieEnabled', 'Returns false if setting a cookie will be ignored and true otherwise.'],
+          ['credentials', 'Returns the CredentialsContainer interface which exposes methods to request credentials and notify the user agent when interesting events occur such as successful sign in or sign out.'],
+          ['deviceMemory', 'Returns the amount of device memory in gigabytes. This value is an approximation given by rounding to the nearest power of 2 and dividing that number by 1024.'],
+          ['geolocation', 'Returns a Geolocation object allowing accessing the location of the device.'],
+          ['hid', 'Returns an HID object providing methods for connecting to HID devices, listing attached HID devices, and event handlers for connected HID devices.'],
+          ['hardwareConcurrency', 'Returns the number of logical processor cores available.'],
+          ['keyboard', 'Returns a Keyboard object which provides access to functions that retrieve keyboard layout maps and toggle capturing of key presses from the physical keyboard.'],
+          ['language', 'Returns a DOMString representing the preferred language of the user, usually the language of the browser UI. The null value is returned when this is unknown.'],
+          ['languages', 'Returns an array of DOMString representing the languages known to the user, by order of preference.'],
+          ['locks', 'Returns a LockManager object that provides methods for requesting a new Lock object and querying for an existing Lock object.'],
+          ['maxTouchPoints', 'Returns the maximum number of simultaneous touch contact points are supported by the current device.'],
+          ['mediaCapabilities', 'Returns a MediaCapabilities object that can expose information about the decoding and encoding capabilities for a given format and output capabilities.'],
+          ['mediaDevices', 'Returns a reference to a MediaDevices object which can then be used to get information about available media devices'],
+          ['mediaSession', 'Returns MediaSession object which can be used to provide metadata that can be used by the browser to present information about the currently-playing media to the user, such as in a global media controls UI.'],
+          ['onLine', 'Returns a boolean value indicating whether the browser is working online'],
+          ['permissions', 'Returns a Permissions object that can be used to query and update permission status of APIs covered by the Permissions API'], // Safari on iOS: No
+          ['presentation', 'Returns a reference to the Presentation API.'],
+          ['serial', 'Returns a Serial object, which represents the entry point into the Web Serial API to enable the control of serial ports.'],
+          ['serviceWorker', 'Returns a ServiceWorkerContainer object, which provides access to registration, removal, upgrade, and communication with the ServiceWorker objects for the associated document'],
+          ['storage', 'Returns the singleton StorageManager object used for managing persistence permissions and estimating available storage on a site-by-site/app-by-app basis.'],
+          ['userAgent', 'Returns the user agent string for the current browser.'],
+          ['userAgentData', 'Returns a NavigatorUAData object, which gives access to information about the browser and operating system of the user.'],
+          ['webdriver', 'Indicates whether the user agent is controlled by automation.'],
+          ['windowControlsOverlay', 'Returns the WindowControlsOverlay interface which exposes information about the geometry of the title bar in desktop Progressive Web Apps, and an event to know whenever it changes.'],
+          ['xr', 'Returns XRSystem object, which represents the entry point into the WebXR API.'],
+
+          // ---- Deprecated properties
+          ['appCodeName', 'Returns the code name of the browser'], // deprecated. Always returns 'Mozilla', in any browser.
+          ['appName', 'Returns the name of the browser'], // deprecated. Always returns 'Netscape', in any browser.
+          ['appVersion', 'Returns the version information of the browser'], // deprecated. Returns the version of the browser as a DOMString. Do not rely on this property to return the correct value.
+          ['activeVRDisplays', 'Returns an array containing every VRDisplay object that is currently presenting (VRDisplay.ispresenting is true).'],
+          ['battery', ''],
+          ['doNotTrack', 'Reports the value of the users do-not-track preference. When this value is "yes", your web site or application should not track the user.'],
+          ['mimeTypes', 'Returns an MimeTypeArray listing the MIME types supported by the browser.'],
+          ['oscpu', 'Returns a string that represents the current operating system'],
+          ['platform', 'Returns for which platform the browser is compiled'], // deprecated. Returns a string representing the platform of the browser. Do not rely on this function to return a significant value.
+          ['plugins', 'Returns a PluginArray listing the plugins installed in the browser.'],
+          ['product', 'Returns the engine name of the browser'], // deprecated. Always returns 'Gecko', in any browser.
+          ['productSub', ''], // deprecated. Returns either the string '20030107', or '"20100101'.
+          ['vendor', 'Vendor'], // deprecated. Returns either the empty string, 'Apple Computer Inc.', or 'Google Inc.'.
+          ['vendorSub', 'vendorSub'], // deprecated. Always returns the empty string.
+
+          // ---- Methods
+          ['canShare', 'Returns true if a call to Navigator.share() would succeed.'],
+          ['clearAppBadge', 'Clears a badge on the current apps icon and returns a Promise that resolves with undefined.'],
+          ['getBattery', 'Returns a promise that resolves with a BatteryManager object that returns information about the battery charging status.'],
+          ['registerProtocolHandler', 'Allows web sites to register themselves as a possible handler for a given protocol.'],
+          ['requestMediaKeySystemAccess', 'Returns a Promise for a MediaKeySystemAccess object.'],
+          ['sendBeacon', 'Used to asynchronously transfer a small amount of data using HTTP from the User Agent to a web server.'],
+          ['setAppBadge', 'Sets a badge on the icon associated with this app and returns a Promise that resolves with undefined.'],
+          ['share', 'Invokes the native sharing mechanism of the current platform.'],
+          ['vibrate', 'Causes vibration on devices with support for it. Does nothing if vibration support isnt available.'],
+
+          // ---- Deprecated methods
+          ['getVRDisplays', 'Returns a promise that resolves to an array of VRDisplay objects representing any available VR devices connected to the computer.'],
+          ['getUserMedia', 'After having prompted the user for permission, returns the audio or video stream associated to a camera or microphone on the local computer.'],
+          ['taintEnabled', 'Returns false. JavaScript taint/untaint functions removed in JavaScript 1.2.'],
+          ['javaEnabled', 'Specifies whether or not the browser has Java enabled'], // deprecated. Always returns false.
+        ];
+
+        for (let i = 0; i < navigatorProperties.length; i++) {
+          const propertyName = navigatorProperties[i][0];
+          const propertyDesc = navigatorProperties[i][1];
+          let propertyValue = new Object();
+          try {
+            if (propertyName === 'geolocation') {
+              // https://w3c.github.io/geolocation-api/#dom-navigator-geolocation
+              if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    $('#geolocation + td').html('Latitude: ' + position.coords.latitude + ', Longitude: ' + position.coords.longitude);
+                  },
+                  (positionError) => {
+                    $('#geolocation + td').html(`<span class="text-danger">${positionError.message} [code: ${positionError.code}]</span>`);
+                  }
+                );
+              } else {
+                propertyValue = '<span class="text-warning">is not supported by this browser.</span>';
+              }
+            } else if (propertyName === 'connection') {
+              propertyValue = navigator.connection?.effectiveType;
+            } else {
+              propertyValue = eval('navigator.' + propertyName);
+            }
+          } catch (e) {
+            propertyValue = '<span class="text-danger">' + e + '</span>';
+          }
+
+          const typeOf = typeof propertyValue;
+          if (typeOf === 'object') {
+            console.log(propertyName, propertyValue);
+            propertyValue = JSON.stringify(propertyValue);
+          } else if (typeOf === 'boolean') {
+            propertyValue = String(propertyValue);
+          } else if (typeOf === 'function') {
+            propertyValue = '<span class="text-success">function</span>';
+          } else if (typeOf === 'undefined') {
+            propertyValue = '<span class="text-warning">undefined</span>';
+          }
+
+          $('.table > tbody').append($('<tr>').append($('<td>', { id: propertyName, title: propertyDesc, class: 'text-light' }).html(propertyName), $('<td>', { class: 'text-info' }).html(propertyValue)));
+        }
+      };
+
+      $(function () {
+        displaySystemInfo();
+        displayResolutionInfo();
+        displayNavigatorInfo();
+
+        $(window).on('resize', displayResolutionInfo);
+      });
+    </script>
+  </head>
+  <body class="bg-dark">
+    <div class="container">
+      <div class="alert alert-info mt-2 d-flex flex-wrap">
+        <div class="mx-1">System : <strong id="thisSystem" class="text-danger"></strong></div>
+        <div class="mx-1">Browser : <strong id="thisBrowser" class="text-danger"></strong></div>
+        <div class="mx-1">Screen : <strong id="screenWidth" class="text-danger"></strong> * <strong id="screenHeight" class="text-danger"></strong></div>
+        <div class="mx-1">outerWindow : <strong id="windowOuterWidth" class="text-danger"></strong> * <strong id="windowOuterHeight" class="text-danger"></strong></div>
+        <div class="mx-1">innerWindow : <strong id="windowInnerWidth" class="text-danger"></strong> * <strong id="windowInnerHeight" class="text-danger"></strong></div>
+      </div>
+
+      <a href="./main.html" class="mx-2" style="float: right">Home</a>
+
+      <table class="table table-borderless table-hover table-sm">
+        <caption class="py-1" style="caption-side: top">
+          <i class="fa fa-list mx-2"></i>
+          Navigator Object Properties
+        </caption>
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Value</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </body>
+</html>

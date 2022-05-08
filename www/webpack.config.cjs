@@ -30,6 +30,7 @@ module.exports = {
     'info.studio': './src/info.studio.js',
     todayis: './src/todayis.js',
     'cover.cloud': './src/cover.cloud.js',
+    image: './src/image.js',
     'image.banner': './src/image.banner.js',
     'image.board': './src/image.board.js',
     'image.cloud': './src/image.cloud.js',

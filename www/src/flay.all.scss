@@ -1,0 +1,32 @@
+body {
+  background-repeat: no-repeat;
+  background-size: 800px;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+#flayAllContainer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-start;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+}
+.flay-item {
+  aspect-ratio: 380 / 538;
+  width: 42px;
+  box-shadow: 0 0 2px 1px var(--color-box-shadow-light);
+  background-position: right top;
+  background-size: cover;
+  background-repeat: no-repeat;
+  border: 0;
+  transition: 0.4s;
+}
+.flay-item.opened:hover {
+  transform: scale(5);
+  transition: transform 0.4s 0.3s;
+}
+.flay-item.played {
+  box-shadow: 0 0 4px 2px var(--color-text-active), inset 0 0 4px 2px var(--color-text-active);
+}

@@ -1,0 +1,32 @@
+[
+	{
+		"name": "Home",
+		"method": "both",
+		"url": "./main.html"
+	},
+	{
+		"name": "Search",
+		"method": "popup",
+		"url": "./main.popup.html?target=flay.search.html"
+	},
+	{
+		"name": "Slide",
+		"method": "both",
+		"url": "./image.slide.html"
+	},
+	{
+		"name": "Split View",
+		"method": "both",
+		"url": "./split.view.html"
+	},
+	{
+		"name": "Mobile",
+		"method": "both",
+		"url": "./flay.mobile.html"
+	},
+	{
+		"name": "Today's",
+		"method": "both",
+		"url": "./main.popup.html?target=todayis.html"
+	}
+]

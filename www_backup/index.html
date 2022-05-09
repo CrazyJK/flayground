@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>Flayground</title>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<link rel="stylesheet" href="/webjars/bootstrap/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/dist/index.css" />
+		<script defer="defer" src="https://kit.fontawesome.com/6f9fb99b56.js" crossorigin="anonymous"></script>
+		<script defer="defer" src="./dist/vendors.js"></script>
+		<script defer="defer" src="./dist/runtime.js"></script>
+		<script defer="defer" src="./dist/commons.js"></script>
+		<script defer="defer" src="./dist/index.js"></script>
+	</head>
+	<body>
+		<div class="d-flex-col" style="display: none">
+			<h1 class="display-3"><a>Flayground</a></h1>
+			<div id="menuItemWrap"></div>
+			<div class="pt-4 hover-show">
+				<div class="input-group input-group-lg popup-open-group">
+					<input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL" />
+					<div class="input-group-append">
+						<button class="btn btn-outline-secondary text-secondary" type="button">Popup</button>
+					</div>
+				</div>
+				<div class="text-center collapse mt-3 popup-size-group">
+					<input type="number" id="popupWidth" value="540" class="bg-transparent border-0 text-light text-right" />
+					<span class="text-light">&nbsp;&times;&nbsp;</span>
+					<input type="number" id="popupHeight" value="997" class="bg-transparent border-0 text-light ml-2" />
+				</div>
+			</div>
+			<div class="container mt-3 hover-show">
+				<textarea class="bg-transparent border-secondary form-control" id="memo" rows="10"></textarea>
+			</div>
+		</div>
+	</body>
+</html>

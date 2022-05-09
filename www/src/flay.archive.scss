@@ -1,0 +1,70 @@
+#tableList {
+  font-size: 0.875rem;
+}
+.studio {
+  max-width: 150px;
+}
+.opus {
+  max-width: 100px;
+}
+.rank {
+  min-width: 20px;
+  text-align: right;
+  margin: 0;
+  padding-right: 4px;
+}
+.title {
+  max-width: 610px;
+}
+.actress {
+  max-width: 150px;
+}
+.release {
+  width: 100px;
+}
+@media (min-width: 992px) {
+  .title {
+    max-width: 430px;
+  }
+}
+@media (min-width: 768px) {
+  .studio {
+    max-width: 100px;
+  }
+  .title {
+    max-width: 290px;
+  }
+  .actress {
+    max-width: 100px;
+  }
+}
+
+.flay-info {
+  font-weight: 700;
+}
+#detailView {
+  position: relative;
+  display: none;
+  background-color: rgba(0, 0, 0, 0.5);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.marker-direction {
+  position: absolute;
+  top: 150px;
+  font-size: 200px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+.marker-direction:hover {
+  color: rgba(248, 249, 250, 0.5);
+}
+.marker-previous {
+  left: 10px;
+}
+.marker-next {
+  right: 10px;
+}
+.nonExist {
+  opacity: 0.7;
+}

@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <title>Split View - Flayground</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/png" href="./img/favicon/flay_0.png" />
+    <link rel="stylesheet" href="./css/vendors.css" />
+    <link rel="stylesheet" href="./split.view.css" />
+    <script defer="defer" src="./_vendors.js"></script>
+    <script defer="defer" src="./_runtime.js"></script>
+    <script defer="defer" src="./_commons.js"></script>
+    <script defer="defer" src="./split.view.js"></script>
+  </head>
+  <body>
+    <div id="splitWrapper" class="text-center">
+      <div class="row" data-y="0">
+        <div class="site col" data-scale="1.0" data-trans="0,0">
+          <div class="address-bar">
+            <div class="input-group">
+              <div class="input-group-prepend">
+                <img class="ico-site ico-popkon" src="https://pic.popkontv.com/images/www/images/common/icon.ico" />
+              </div>
+              <div class="input-group-prepend">
+                <img class="ico-site ico-panda" src="https://icache.pandalive.co.kr/code:pandatv/favicon.ico" />
+              </div>
+              <input class="form-control form-control-sm input-address" />
+              <div class="input-group-append">
+                <button class="btn btn-sm btn-outline-warning border-0" id="btnReloadSite"><i class="fa fa-refresh"></i></button>
+              </div>
+            </div>
+          </div>
+          <div class="control-btn">
+            <table>
+              <tr>
+                <td><i class="fa fa-undo"></i></td>
+                <td></td>
+                <td><i class="fa fa-expand"></i><i class="fa fa-compress hide"></i></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><i class="fa fa-arrow-up"></i></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-arrow-left"></i></td>
+                <td><i class="fa fa-circle"></i></td>
+                <td><i class="fa fa-arrow-right"></i></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><i class="fa fa-arrow-down"></i></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-plus"></i></td>
+                <td></td>
+                <td><i class="fa fa-minus"></i></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><i class="fa fa-angle-double-up"></i></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-angle-double-left"></i></td>
+                <td><i class="fa fa-circle-o"></i></td>
+                <td><i class="fa fa-angle-double-right"></i></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><i class="fa fa-angle-double-down"></i></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td></td>
+                <td><i class="fa fa-download rotate"></i></td>
+              </tr>
+              <tr>
+                <td></td>
+                <td><i class="fa fa-download"></i></td>
+                <td></td>
+              </tr>
+              <tr>
+                <td><i class="fa fa-trash-o"></i></td>
+                <td></td>
+                <td><i class="fa fa-clone"></i></td>
+              </tr>
+            </table>
+          </div>
+          <div class="video-wrap">
+            <iframe name="ifrm" src=""></iframe>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="gridModeWrap">
+      <i class="fa fa-square" data-grid="1r1c"></i>
+      <i class="fa fa-navicon rotate" data-grid="1r3c"></i>
+      <i class="fa fa-pause rotate" data-grid="2r1c"></i>
+      <i class="fa fa-th-large" data-grid="2r2c"></i>
+      <i class="fa fa-navicon" data-grid="3r1c"></i>
+    </div>
+  </body>
+</html>

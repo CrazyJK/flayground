@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flaygound Cover</title>
+    <link rel="icon" type="image/png" href="./img/favicon/flay_2.png" />
+    <link rel="stylesheet" href="./css/vendors.css" />
+    <link rel="stylesheet" href="./cover.cloud.css" />
+    <script defer type="text/javascript" src="./_vendors.js"></script>
+    <script defer type="text/javascript" src="./_runtime.js"></script>
+    <script defer type="text/javascript" src="./_commons.js"></script>
+    <script defer type="text/javascript" src="./cover.cloud.js"></script>
+  </head>
+  <body class="bg-black">
+    <div class="text-center p-3" id="keyContainer">
+      <div id="keys"></div>
+      <i class="fa fa-times hover" id="btnCloseKey"></i>
+    </div>
+
+    <div id="canvasContainer">
+      <canvas id="imageCloud" width="800" height="600"></canvas>
+      <div id="imagePane" style="display: none"></div>
+    </div>
+
+    <div id="controlBox">
+      <div class="input-group input-group-sm">
+        <div class="input-group-prepend">
+          <button class="btn btn-dark" id="btnByKey"><i class="fa fa-heart"></i> By <span id="selectedKey">key</span></button>
+          <span class="input-group-text border-dark text-light bg-dark cloud-info">0</span>
+          <button class="btn btn-dark" id="btnRotate"><i class="fa fa-random"></i> Rotate</button>
+          <button class="btn btn-dark" id="btnPause" data-status="resume"><i class="fa fa-pause"></i> Pause</button>
+        </div>
+        <input class="form-control border-dark text-light bg-dark text-right" id="inputImageSize" style="width: 40px" value="10" title="Image size" />
+        <div class="input-group-append">
+          <button class="btn btn-dark" id="btnNext"><i class="fa fa-forward"></i> Next</button>
+        </div>
+        <input class="form-control border-dark text-light bg-dark text-right" id="inputPlayTime" style="width: 40px" value="60" title="Play seconds" />
+        <div class="input-group-append">
+          <button class="btn btn-dark" id="btnPlay" data-status="stop"><i class="fa fa-play"></i> Play</button>
+          <button class="btn btn-dark" id="goHome"><i class="fa fa-home"></i></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="progress">
+      <div class="progress-bar" style="width: 100%"></div>
+    </div>
+
+    <footer></footer>
+  </body>
+</html>

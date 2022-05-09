@@ -1,0 +1,49 @@
+/* Webkit용 scrollbar ref. http://circlash.tistory.com/610 */
+/* 스크롤 바 영역 전체 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  border: 0px solid #fff;
+  background-color: rgba(255, 255, 255, 0);
+}
+/* 상하, 좌우 화살표가 포함된 부분 */
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+  display: block;
+  height: 10px;
+  /* background: url('./images/bg.png') #efefef; */
+  background-color: rgba(255, 255, 255, 0);
+}
+/* 화살표를 제외한 몸통 부분 */
+::-webkit-scrollbar-track {
+  background-color: rgba(255, 255, 255, 0);
+  /* background: #efefef; */
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 4px rgba(0, 0, 0, 0);
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0);
+}
+/* 몸통 부분에서 실제 움직이는 부분 */
+::-webkit-scrollbar-thumb {
+  height: 50px;
+  width: 50px;
+  /* background-color: rgba(0, 0, 255, .5); */
+  /* background-color: rgba(218, 218, 218, .75); */
+  background-color: rgba(36, 36, 36, 0.75);
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+  /* -webkit-box-shadow: inset 0 0 4px rgba(0,0,0,.1); */
+  /* box-shadow: inset 0 1px 1px rgba(0,0,0,.075),0 0 8px rgba(102,175,233,.6); */
+}
+
+html {
+  /* SCROLLBAR IE */
+  scrollbar-arrow-color: #efefef; /* 스크롤 바 아래위 왼쪽 오른쪽 화살표 색 */
+  scrollbar-base-color: #efefef; /* 스크롤 바 전체 배경 색 */
+  scrollbar-face-color: #729fcf; /* 상하좌우로 움직이는 부분(thumb), 화살표가 포함된 상하좌우 끝 사각형 부분(button) 색 */
+  scrollbar-track-color: #efefef; /* 스크롤 바 thumb를 제외한 나머지 빈 부분 색 */
+  scrollbar-darkshadow-color: #efefef; /* 스크롤 바 thumb, button의 오른쪽과 아래, 즉, 어두운 부분 색 */
+  scrollbar-shadow-color: #efefef;
+  scrollbar-3dlight-color: #efefef; /* 스크롤 바 thumb, button의 왼쪽과 위, 즉, 밝은 부분 색 */
+  scrollbar-highlight-color: #efefef;
+}

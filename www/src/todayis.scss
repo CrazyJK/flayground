@@ -1,0 +1,179 @@
+:root {
+  --item-border: #423d3d;
+  --item-background: rgba(16, 51, 86, 0.75);
+  --item-background-hover: rgba(16, 51, 86, 1);
+  --item-background-played: #a72b78;
+}
+#background_images {
+  background: rgba(0, 0, 0, 0.9);
+}
+#topMenu > nav {
+  padding: 0.5rem 1rem;
+}
+#folderWrapper {
+  padding: 0.5rem;
+  overflow: auto;
+}
+.folder {
+  margin-bottom: 1rem;
+}
+.folder-info {
+  display: flex;
+  justify-content: center;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-weight: 700;
+  padding: 0.5rem;
+}
+.folder-info > span:hover {
+  color: orange;
+  cursor: pointer;
+}
+.folder-info:hover .toggle-folder {
+  opacity: 1;
+}
+.toggle-folder {
+  opacity: 0;
+}
+.folder-items {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+.item {
+  display: flex;
+  flex-direction: column;
+  color: #eee;
+  text-shadow: 1px 1px 1px #000;
+  margin: 0.5rem;
+  text-align: center;
+  width: 11rem;
+  height: 7rem;
+  transition: all 0.5s ease-in-out;
+}
+.item.played {
+  background-color: var(--item-background-played);
+}
+.item.deleted {
+  display: none;
+}
+.item > div {
+  background-color: var(--item-background);
+  padding: 0.25rem;
+}
+.item:hover > div {
+  background-color: var(--item-background-hover);
+}
+.item:hover .text-suffix {
+  bottom: 0;
+}
+.item > div.item-title {
+  position: relative;
+  border: 1px solid var(--item-border);
+  border-bottom: 0;
+  height: 100%;
+  overflow: hidden;
+}
+.item > div.item-info {
+  display: flex;
+  justify-content: space-between;
+  border: 1px solid var(--item-border);
+  border-top: 0;
+  font-size: 90%;
+  padding: 0.25rem 0.5rem;
+}
+.item > div.item-action {
+  display: none;
+  justify-content: space-between;
+  align-items: baseline;
+  border: 1px solid var(--item-border);
+  border-top: 0;
+  font-size: 90%;
+  padding: 0.25rem 0.5rem;
+  transition: 0.4s;
+}
+.item:hover > div.item-action {
+  display: flex;
+}
+.item.played > div.item-action {
+  display: flex;
+}
+.text-title {
+  cursor: pointer;
+  word-break: break-word;
+  transition: all 0.3s;
+}
+.text-title:hover {
+  color: orange;
+}
+.text-suffix {
+  font-size: 80%;
+}
+.text-modified {
+  color: #6c757d;
+}
+.text-length {
+  color: #6c757d;
+}
+.text-play {
+  cursor: pointer;
+}
+.text-play:hover {
+  color: orange;
+}
+.text-delete {
+  cursor: pointer;
+}
+.text-delete:hover {
+  color: #dc3545;
+  transition: color 0.4s;
+}
+label.radio {
+  margin: 0 0.25rem;
+}
+label.radio > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+label.radio > input + span {
+  cursor: pointer;
+}
+label.radio > input + span:hover {
+  color: lightgreen;
+}
+label.radio > input:checked + span {
+  color: orange;
+}
+#videoWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  display: none;
+  background-color: #000;
+  padding: 0 5%;
+  z-index: 69;
+}
+#videoWrapper video {
+  width: 100%;
+}
+#videoWrapper span {
+  position: absolute;
+  right: 1rem;
+  bottom: 1rem;
+  font-size: 2rem;
+  padding: 0.25rem 0.5rem;
+}
+#videoWrapper span:hover {
+  background-color: transparent;
+  color: orange;
+}

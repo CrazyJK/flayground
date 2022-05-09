@@ -1,0 +1,126 @@
+body {
+  font-size: 14px;
+  font-family: 'D2Coding';
+  padding: 0 1rem;
+}
+#topMenu.sticky-top,
+.f-head,
+.f-body {
+  width: 100%;
+  padding: 0 1rem;
+}
+#topMenu.sticky-top {
+  background-color: black !important;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 0.5rem;
+  margin-bottom: 0;
+}
+.f-head.sticky-top {
+  top: 44px;
+  background-color: black !important;
+  border-bottom: 1px solid #7a7878;
+  margin-bottom: 8px;
+  padding-bottom: 4px;
+  text-transform: capitalize;
+}
+.f-head,
+.f-body {
+  background-color: #111;
+  margin: 0 auto 1rem;
+  padding: 0.5rem;
+}
+.f-head > div,
+.f-body > div {
+  display: flex;
+  gap: 2px;
+}
+.f-head > div > label,
+.f-body > div > label {
+  margin: 2px;
+}
+.f-body > div:hover > label {
+  background-color: #222;
+}
+.f-body > div.active {
+  background-color: #44423f;
+}
+.f-body > div.active > label {
+  color: orange;
+}
+
+.f-body > div.flay-not-exists > .flay-opus {
+  color: darkcyan;
+}
+.f-body > div.flay-exists {
+  color: inherit;
+}
+.f-body > div.flay-instance {
+  color: #ccc;
+}
+.f-body > div.flay-archive {
+  color: var(--secondary);
+}
+
+.flay-opus {
+  flex: 0 0 80px;
+}
+.flay-opus.find-opus {
+  color: darkslateblue !important;
+}
+.flay-title {
+  flex: 1 1 auto;
+}
+.flay-actress {
+  flex: 1 1 auto;
+  text-align: right;
+}
+.flay-actress > span.same-name {
+  color: orangered !important;
+}
+.flay-release {
+  flex: 0 0 80px;
+}
+.flay-modified {
+  flex: 0 0 66px;
+}
+.flay-rank {
+  flex: 0 0 32px;
+  text-align: right;
+}
+.flay-play {
+  flex: 0 0 32px;
+  text-align: right;
+}
+.flay-movie {
+  flex: 0 0 32px;
+  text-align: right;
+}
+.flay-subti {
+  flex: 0 0 32px;
+  text-align: right;
+}
+.flay-score {
+  flex: 0 0 36px;
+  text-align: right;
+}
+.flay-length {
+  flex: 0 0 50px;
+  text-align: right;
+}
+
+.f-body > div > label.invalid {
+  color: red;
+}
+
+#favoriteOpusInput {
+  border: 0;
+  background-color: transparent;
+  color: inherit;
+  display: inline !important;
+  padding: 0 0.5rem;
+  width: 80px;
+}
+#favoriteOpusInput.active {
+  color: var(--warning);
+}

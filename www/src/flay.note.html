@@ -1,0 +1,48 @@
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="./flay.note.css" />
+
+<div role="body">
+  <div id="topMenu">
+    <nav class="bg-light rounded-bottom">
+      <a class="navbar-brand">Note list</a>
+      <input type="search" class="form-control form-control-sm w-auto search-input" placeholder="Search" />
+      <div class="custom-control custom-checkbox mx-3">
+        <input type="checkbox" class="custom-control-input" id="listAll" checked="checked" />
+        <label class="custom-control-label" for="listAll">List all</label>
+      </div>
+    </nav>
+  </div>
+
+  <div class="container-fluid py-4">
+    <table class="table table-hover table-sm table-bordered bg-light">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Id</th>
+          <th>Author</th>
+          <th>Title</th>
+          <th>
+            Content
+            <div class="custom-control custom-switch custom-control-inline ml-3 float-right">
+              <input type="checkbox" class="custom-control-input" id="switchTitleInline" checked="checked" />
+              <label class="custom-control-label text-secondary" for="switchTitleInline">nowrap</label>
+            </div>
+          </th>
+          <th>Created</th>
+          <th>Modified</th>
+          <th>Closed</th>
+          <th>Position</th>
+          <th>Size</th>
+          <th>PicIdx</th>
+          <th>Color</th>
+          <th>Minimized</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody id="noteList"></tbody>
+    </table>
+  </div>
+</div>
+
+<script defer="defer" type="text/javascript" src="./flay.note.js"></script>

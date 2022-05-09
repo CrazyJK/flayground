@@ -1,0 +1,27 @@
+<meta charset="UTF-8" />
+<link rel="stylesheet" href="./flay.subtitles.css" />
+
+<div role="body">
+  <div id="topMenu">
+    <nav class="rounded-bottom bg-dark">
+      <span>No Subtitles</span>
+      <label class="check"><input type="checkbox" id="useTorProxy" /><span>useTor</span></label>
+      <input type="number" id="jsoupTimeout" value="60" placeholder="seconds" class="bg-transparent border-0 form-control-sm width-80 text-light" step="60" />
+      <div class="check-group">
+        <label><input type="checkbox" name="rank" id="rank0" value="0" /><span class="fa fa-circle"></span></label>
+        <label><input type="checkbox" name="rank" id="rank1" value="1" /><span class="fa fa-star"></span></label>
+        <label><input type="checkbox" name="rank" id="rank2" value="2" /><span class="fa fa-star"></span></label>
+        <label><input type="checkbox" name="rank" id="rank3" value="3" /><span class="fa fa-star"></span></label>
+        <label><input type="checkbox" name="rank" id="rank4" value="4" /><span class="fa fa-star"></span></label>
+        <label><input type="checkbox" name="rank" id="rank5" value="5" /><span class="fa fa-star"></span></label>
+      </div>
+      <span><em id="foundSubtitlesCount">0</em> / <em id="flayCount">0</em> Flay</span>
+      <button id="btnFindSubtitles">Find</button>
+      <button id="btnStopFinding" style="display: none">Pause</button>
+      <button id="btnFilterFound" style="display: none">toggle Found</button>
+    </nav>
+  </div>
+  <div id="flayList"></div>
+</div>
+
+<script type="text/javascript" src="./flay.subtitles.js"></script>

@@ -67,6 +67,7 @@ const processStart = () => {
     // scroll move
     const itemPerPage = Math.round($(window).height() / 28);
     if (currentFindingIndex > itemPerPage && currentFindingIndex % itemPerPage === 1) {
+      console.log('itemPerPage', itemPerPage, 'currentFindingIndex', currentFindingIndex, `${opus} top`, $('#' + opus).position().top);
       $('#flayList').animate({ scrollTop: $('#' + opus).position().top - 60 }, 500);
     }
   };

@@ -4,10 +4,11 @@
 
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
+import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
 import $ from 'jquery';
 import './lib/crazy.jquery.js';
 import './lib/crazy.effect.neon.js';
-import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File, DateUtils } from './lib/crazy.common.js';
+import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File, StringUtils } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
 import { Search, Util, View } from './lib/flay.utils.js';
 import { Rest } from './lib/flay.rest.service.js';
@@ -30,14 +31,10 @@ let keyInputQueue = '';
 let keyLastInputTime = Date.now();
 
 const am5Root = am5.Root.new('chartdiv');
+am5Root.locale = am5locales_ko_KR;
 
 const now = new Date();
 const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
-
-// AmCharts.dayNames = AmCharts.translations.ko.dayNames;
-// AmCharts.shortDayNames = AmCharts.translations.ko.shortDayNames;
-// AmCharts.monthNames = AmCharts.translations.ko.monthNames;
-// AmCharts.shortMonthNames = AmCharts.translations.ko.shortMonthNames;
 
 const createTag = (tag) => {
   return $('<label>', { class: 'check sm' }).append($('<input>', { type: 'checkbox', 'data-tag-id': tag.id }).data('tag', tag), $('<span>', { title: tag.description }).html(tag.name));
@@ -600,8 +597,8 @@ function attachFlayEventListener() {
       Rest.Video.update(currentFlay.video, function () {
         $this.hide();
         $('.info-overview')
-          .html(currentFlay.video.comment != '' ? currentFlay.video.comment : 'Overview')
-          .toggleClass('nonExist', currentFlay.video.comment === '')
+          .html(StringUtils.isBlank(currentFlay.video.comment) ? currentFlay.video.comment : 'Overview')
+          .toggleClass('nonExist', StringUtils.isBlank(currentFlay.video.comment))
           .show();
       });
     }
@@ -1233,8 +1230,8 @@ function showVideo(args) {
   // overview
   $('.info-overview-input').val(currentFlay.video.comment).hide();
   $('.info-overview')
-    .html(currentFlay.video.comment == '' ? 'Overview' : currentFlay.video.comment)
-    .toggleClass('nonExist', currentFlay.video.comment === '')
+    .html(StringUtils.isBlank(currentFlay.video.comment) ? 'Overview' : currentFlay.video.comment)
+    .toggleClass('nonExist', StringUtils.isBlank(currentFlay.video.comment))
     .show();
   // rank
   $('#ranker').val(currentFlay.video.rank);

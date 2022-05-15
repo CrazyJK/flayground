@@ -469,10 +469,10 @@ String.prototype.string = function (len) {
 String.prototype.zf = function (len) {
   return '0'.string(len - this.length) + this;
 };
+
 Number.prototype.zf = function (len) {
   return this.toString().zf(len);
 };
-
 Number.prototype.ifNotZero = function (suffix) {
   return this == 0 ? '' : this + (suffix ? suffix : '');
 };
@@ -482,6 +482,12 @@ Number.prototype.withComma = function () {
 Number.prototype.toDate = function (pattern) {
   return new Date(this).format(pattern);
 };
+
+export class StringUtils {
+  static isBlank(string) {
+    return string === null || string === '' || string.trim() === '';
+  }
+}
 
 export class DateUtils {
   static format(pattern, date) {

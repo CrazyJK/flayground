@@ -14,10 +14,16 @@ $('form').on('submit', function (e) {
   e.preventDefault();
 });
 
-$("#favorite, #noFavorite, input[name='viewType']").on('change', displayActress);
-$('#search').on('keyup', function (e) {
+$('#topMenu input').on('change', displayActress);
+$('#search').on('keyup', (e) => {
   e.stopPropagation();
-  if ($(this).val().length > 2) displayActress();
+  if (e.key === 'Control') {
+    return;
+  }
+  console.log('ctrlKey', e.ctrlKey, e.key);
+  if ($(e.target).val().length > 2) {
+    displayActress();
+  }
 });
 $('.btn-reload').on('click', actressLoad);
 
@@ -50,7 +56,6 @@ function actressLoad() {
 }
 
 function displayActress() {
-  var collectedList = [];
   var fav = $('#favorite').prop('checked');
   var noFav = $('#noFavorite').prop('checked');
   var query = $('#search').val().toLowerCase();
@@ -72,46 +77,45 @@ function displayActress() {
       return (data1 > data2 ? 1 : -1) * order;
     }
   };
+  console.log('displayActress', query);
 
-  $.each(actressList, function (idx, actress) {
-    var found = false;
-
-    if (fav && actress.favorite) found = true;
-    if (noFav && !actress.favorite) found = true;
-    if (found && query != '') {
-      var infotext = actress.name.toLowerCase() + actress.localName + actress.birth + actress.debut + actress.body + actress.height;
-      found = infotext.indexOf(query) > -1;
-    }
-    if (found) collectedList.push(actress);
-  });
+  const collectedList = actressList
+    .filter((actress) => {
+      let found = false;
+      if (fav && actress.favorite) found = true;
+      if (noFav && !actress.favorite) found = true;
+      if (found && query != '') {
+        var infotext = actress.name.toLowerCase() + actress.localName + actress.birth + actress.debut + actress.body + actress.height;
+        found = infotext.indexOf(query) > -1;
+      }
+      return found;
+    })
+    .sort((a1, a2) => {
+      switch (sortKey) {
+        case 'fav':
+          return compareActressInfo(a1.favorite, a2.favorite, sortOrder);
+        case 'pic':
+          return compareActressInfo(a1.coverSize, a2.coverSize, sortOrder);
+        case 'name':
+          return compareActressInfo(a1.name, a2.name, sortOrder);
+        case 'local':
+          return compareActressInfo(a1.localName, a2.localName, sortOrder);
+        case 'birth':
+        case 'age':
+          return compareActressInfo(a1.birth, a2.birth, sortOrder);
+        case 'body':
+          return compareActressInfo(Util.Actress.getCup(a1), Util.Actress.getCup(a2), sortOrder);
+        case 'height':
+          return compareActressInfo(a1.height, a2.height, sortOrder);
+        case 'debut':
+          return compareActressInfo(a1.debut, a2.debut, sortOrder);
+        default:
+          return 1;
+      }
+    });
   $('#totalCount').html('Actress ' + collectedList.length);
 
-  collectedList.sort(function (a1, a2) {
-    switch (sortKey) {
-      case 'fav':
-        return compareActressInfo(a1.favorite, a2.favorite, sortOrder);
-      case 'pic':
-        return compareActressInfo(a1.coverSize, a2.coverSize, sortOrder);
-      case 'name':
-        return compareActressInfo(a1.name, a2.name, sortOrder);
-      case 'local':
-        return compareActressInfo(a1.localName, a2.localName, sortOrder);
-      case 'birth':
-      case 'age':
-        return compareActressInfo(a1.birth, a2.birth, sortOrder);
-      case 'body':
-        return compareActressInfo(Util.Actress.getCup(a1), Util.Actress.getCup(a2), sortOrder);
-      case 'height':
-        return compareActressInfo(a1.height, a2.height, sortOrder);
-      case 'debut':
-        return compareActressInfo(a1.debut, a2.debut, sortOrder);
-      default:
-        return 1;
-    }
-  });
-
   $actressList.empty();
-
   if (viewType === 'c') {
     $('#cardViewWrapper').show();
     $('#tableViewWrapper').hide();

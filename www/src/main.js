@@ -73,7 +73,14 @@ const SlideMenu = {
               } catch (ignore) {
                 // do nothing
               }
-              $('#wrap_body').empty().html(html);
+              const menuId = menu.name.replace(' ', '_');
+              const $selectedArticle = $('#wrap_body > article#' + menuId);
+              $('#wrap_body > article').hide();
+              if ($selectedArticle.length === 0) {
+                $('#wrap_body').append($('<article>', { id: menuId }).append(html));
+              } else {
+                $selectedArticle.show();
+              }
             });
           } else if (menu.mode === 'href') {
             location.href = menu.uri;

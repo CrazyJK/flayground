@@ -7,6 +7,7 @@ module.exports = {
   mode: 'development',
   entry: {
     index: './src/index.js',
+    login: './src/login.js',
     'split.view': '/src/split.view.js',
     main: './src/main.js',
     'main.popup': './src/main.popup.js',

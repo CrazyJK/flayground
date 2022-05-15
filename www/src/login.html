@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <title>Signin Flayground</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="stylesheet" href="./css/vendors.css" />
+    <link rel="stylesheet" href="./login.css" />
+    <script defer="defer" src="./_vendors.js"></script>
+    <script defer="defer" src="./_runtime.js"></script>
+    <script defer="defer" src="./_commons.js"></script>
+    <script defer="defer" src="./login.js"></script>
+  </head>
+  <body>
+    <div class="display-middle">
+      <div class="w3-animate-top">
+        <label class="text-title chalk" id="title">FLAYGROUND</label>
+      </div>
+      <div class="w3-animate-bottom">
+        <form name="f" method="POST" autocomplete="off" id="signin">
+          <input type="checkbox" name="remember-me" class="sr-only" checked="checked" />
+          <input type="text" name="username" class="form-control-login chalk" placeholder="Name" required autofocus />
+          <input type="password" name="password" class="form-control-login chalk" placeholder="Password" required />
+          <input type="hidden" name="_csrf" />
+          <button type="submit" class="btn-login chalk">Signin</button>
+        </form>
+        <button class="btn-enter chalk-pink" id="btnEnter">Enter</button>
+      </div>
+    </div>
+  </body>
+</html>

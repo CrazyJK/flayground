@@ -1105,6 +1105,7 @@ function showVideo(args) {
           )
           .appendTo($('.info-wrapper-actress'));
 
+        // avg rank of actress
         Rest.Flay.findByActress(name, (flayListOfActress) => {
           $actress.find('.info-actress-flaycount').html(`${flayListOfActress.length}<small>F</small>`).neonLoading(false);
           $actress
@@ -1178,7 +1179,7 @@ function showVideo(args) {
       const dominatedColors = JSON.parse(SessionStorageItem.get(blobUrl));
       applyDominatedColor(dominatedColors);
     } else {
-      getDominatedColors(blobUrl, { scale: 0.2, offset: 16, limit: 3 }).then((dominatedColors) => {
+      getDominatedColors(blobUrl, { scale: 0.2, offset: 16, limit: 5 }).then((dominatedColors) => {
         SessionStorageItem.set(blobUrl, JSON.stringify(dominatedColors));
         applyDominatedColor(dominatedColors);
       });
@@ -1195,6 +1196,11 @@ function showVideo(args) {
     $('.cover-wrapper-inner.curr > .cover-box').css({
       boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[0].rgba.join(',')})`,
       backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
+    });
+    $('.color-wrapper > label').each((index, label) => {
+      $(label).css({
+        backgroundColor: `rgba(${dominatedColors[index].rgba.join(',')})`,
+      });
     });
   }
 

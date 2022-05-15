@@ -87,6 +87,10 @@ div[role='body'] {
     margin: 0 auto;
     max-width: var(--actress-width);
 
+    label {
+      padding: 0.125rem 0.25rem;
+    }
+
     .info-actress-favorite {
       flex: 0 0 2rem;
     }
@@ -98,26 +102,26 @@ div[role='body'] {
       flex: 0 0 auto;
     }
     .info-actress-flaycount {
-      flex: 0 0 3rem;
+      flex: 0 0 2.5rem;
       text-align: right;
     }
     .info-actress-avgrank {
-      flex: 0 0 4.25rem;
+      flex: 0 0 4rem;
     }
     .info-actress-age {
-      flex: 0 0 3rem;
+      flex: 0 0 2.5rem;
     }
     .info-actress-birth {
-      flex: 0 0 9rem;
+      flex: 0 0 8rem;
     }
     .info-actress-body {
-      flex: 0 0 7rem;
+      flex: 0 0 6rem;
     }
     .info-actress-height {
-      flex: 0 0 4rem;
+      flex: 0 0 3.5rem;
     }
     .info-actress-debut {
-      flex: 0 0 4rem;
+      flex: 0 0 3.5rem;
     }
   }
 }
@@ -263,6 +267,20 @@ label.text:empty {
     #rename-btn {
       flex: 0 0 auto;
     }
+  }
+}
+
+.color-wrapper {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+
+  label {
+    width: 2rem;
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    box-shadow: 1px 1px 3px 0px #0008;
+    margin: 0 0.25rem;
   }
 }
 

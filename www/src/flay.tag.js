@@ -3,15 +3,15 @@ import { Rest } from './lib/flay.rest.service';
 import { Util, View } from './lib/flay.utils';
 import './flay.tag.scss';
 
-var $tagTemplete = $('.tag');
-var isLikeSearchChecked = false;
+const $tagTemplete = $('.tag');
+let isLikeSearchChecked = false;
 
-$('form').on('submit', function (e) {
+$('form').on('submit', (e) => {
   e.preventDefault();
 });
 
 $('.tag-save').on('click', function () {
-  var tag = {};
+  const tag = {};
   $.each($('#tagInput').serializeArray(), function () {
     tag[this.name] = this.value;
   });
@@ -23,10 +23,10 @@ $('.tag-save').on('click', function () {
   }
 });
 
-$('.tag-delete').on('click', function () {
-  var tag = $('#tagInput').data('tag');
+$('.tag-delete').on('click', () => {
+  const tag = $('#tagInput').data('tag');
   if (tag && tag.id && confirm('Delete this tag?\n' + JSON.stringify(tag))) {
-    Rest.Tag.delete(tag, function () {
+    Rest.Tag.delete(tag, () => {
       tagLoad();
       $('#tagId, #tagName, #tagDesc').val('');
     });
@@ -40,40 +40,35 @@ $('#likeSearch').on('click', function () {
 });
 
 function tagLoad() {
-  var $tagList = $('#tagList');
-  let tagTotal = 0;
-  let flayTotal = 0;
+  Rest.Tag.list((tagList) => {
+    const $tagList = $('#tagList').empty();
+    let tagTotal = tagList.length;
+    let flayTotal = 0;
 
-  Rest.Tag.list(function (tagList) {
-    tagTotal = tagList.length;
     Util.Tag.sort(tagList);
-    $tagList.empty();
 
-    $.each(tagList, function (idx, tag) {
-      var $tagCard = $tagTemplete.clone();
+    tagList.forEach((tag) => {
+      const $tagCard = $tagTemplete.clone();
+      $tagCard.appendTo($tagList);
       $tagCard.data('tag', tag);
       $tagCard
         .find('.tag-name')
         .html(tag.name)
-        .on('click', function () {
+        .on('click', (e) => {
           $('#tagInput').data('tag', tag);
           $('#tagId').val(tag.id);
           $('#tagName').val(tag.name);
           $('#tagDesc').val(tag.description);
 
           $('#tagList > .tag').removeClass('active');
-          $(this).closest('.tag').addClass('active');
+          $(e.target).closest('.tag').addClass('active');
         });
       $tagCard.find('.card-text').html(tag.description);
-      $tagCard.find('.tag-open').on('click', function () {
+      $tagCard.find('.tag-open').on('click', () => {
         View.tag(tag.id);
       });
-      $tagCard.appendTo($tagList);
 
-      var findByTagCallback = function (flayList) {
-        flayTotal += flayList.length;
-        $('#summary').html(tagTotal + ' Tag, ' + flayTotal + ' Flay');
-
+      const findByTagCallback = (flayList) => {
         $tagCard.data('flayList', flayList);
         $tagCard
           .find('.flay-count')
@@ -82,6 +77,8 @@ function tagLoad() {
         $tagCard.find('.tag-name').css({
           fontSize: flayList.length * 0.25 + 16,
         });
+        flayTotal += flayList.length;
+        $('#summary').html(tagTotal + ' Tag, ' + flayTotal + ' Flay');
       };
 
       if (isLikeSearchChecked) {

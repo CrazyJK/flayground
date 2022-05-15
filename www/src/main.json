@@ -140,16 +140,6 @@
 		}
 	},
 	{
-		"name": "Lost flay",
-		"uri": "./flay.lost.html",
-		"icon": "fa fa-list",
-		"mode": "href",
-		"popup": {
-			"w": 1078,
-			"h": 1100
-		}
-	},
-	{
 		"name": "Flay All",
 		"uri": "./flay.all.html",
 		"icon": "fa fa-th",

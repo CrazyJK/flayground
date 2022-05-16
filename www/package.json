@@ -7,8 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "webpack": "webpack",
-    "webpack:w": "webpack -w",
+    "build": "webpack",
+    "watch": "webpack -w",
     "serve": "webpack serve --open"
   },
   "dependencies": {

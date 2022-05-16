@@ -63,14 +63,14 @@ export var Popup = {
   image: function (url, name) {
     var img = new Image();
     img.onload = function () {
-      Popup.open(PATH + './image.html?src=' + url, name || url, this.naturalWidth, this.naturalHeight);
+      Popup.open(PATH + './image.alone.html?src=' + url, name || url, this.naturalWidth, this.naturalHeight);
     };
     img.src = url;
   },
   imageByNo: function (no, name) {
     var img = new Image();
     img.onload = function () {
-      Popup.open(PATH + './image.html?no=' + no, name || 'image' + no, this.naturalWidth, this.naturalHeight);
+      Popup.open(PATH + './image.alone.html?no=' + no, name || 'image' + no, this.naturalWidth, this.naturalHeight);
     };
     img.src = PATH + '/static/image/' + no;
   },

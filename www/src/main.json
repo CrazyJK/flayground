@@ -91,7 +91,7 @@
 	},
 	{
 		"name": "Today`s",
-		"uri": "./todayis.html",
+		"uri": "./today.is.html",
 		"icon": "fa fa-th",
 		"mode": "include",
 		"popup": {

@@ -1248,15 +1248,15 @@ function showVideo(args) {
     $("input[data-tag-id='" + tag.id + "']", '#videoTags').prop('checked', true);
   });
   // files
-  $('.file-wrapper > div:not(.file-wrapper-rename)').empty();
+  $('#file-wrapper > div > div:not(.file-wrapper-rename)').empty();
   currentFlay.files.cover.forEach((file) => {
-    $('.file-wrapper-cover').append($('<label>', { class: 'text sm' }).html(file));
+    $('.file-wrapper-cover').append($('<label>', { class: 'text sm w-100' }).append(file, $('<span>', { class: 'text-transparent ms-2 float-end' }).html('<i class="fa fa-circle"></i>')));
   });
   currentFlay.files.movie.forEach((file) => {
     $('.file-wrapper-movie').append(
-      $('<label>', { class: 'text sm' }).append(
+      $('<label>', { class: 'text sm w-100' }).append(
         file,
-        $('<span>', { class: 'hover text-danger' })
+        $('<span>', { class: 'hover text-danger ms-2 float-end' })
           .html('<i class="fa fa-times"></i>')
           .on('click', () => {
             console.log(file);
@@ -1269,9 +1269,9 @@ function showVideo(args) {
   });
   currentFlay.files.subtitles.forEach((file) => {
     $('.file-wrapper-subtitles').append(
-      $('<label>', { class: 'text sm' }).append(
+      $('<label>', { class: 'text sm w-100' }).append(
         file,
-        $('<span>', { class: 'hover text-danger' })
+        $('<span>', { class: 'hover text-danger ms-2 float-end' })
           .html('<i class="fa fa-times"></i>')
           .on('click', () => {
             console.log(file);

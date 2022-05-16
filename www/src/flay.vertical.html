@@ -87,18 +87,20 @@
             <label class="text info-play">Play</label>
             <label class="text info-score">Score</label>
             <label class="text hover add-basket-btn"><i class="fa fa-shopping-cart"></i></label>
-            <label class="text hover toggle-files-btn" data-toggle="collapse" data-target=".file-wrapper"><i class="fa fa-folder-open"></i></label>
-            <div class="file-wrapper collapse">
-              <div class="file-wrapper-cover"></div>
-              <div class="file-wrapper-movie"></div>
-              <div class="file-wrapper-subtitles"></div>
-              <div class="file-wrapper-rename container-lg">
-                <input id="rename-studio" />
-                <input id="rename-opus" />
-                <input id="rename-title" />
-                <input id="rename-actress" />
-                <input id="rename-release" />
-                <button id="rename-btn">Rename</button>
+            <label class="text hover toggle-files-btn" data-bs-toggle="collapse" data-bs-target="#file-wrapper" aria-expanded="false" aria-controls="#file-wrapper"><i class="fa fa-folder-open"></i></label>
+            <div class="collapse" id="file-wrapper">
+              <div class="container-lg">
+                <div class="file-wrapper-cover"></div>
+                <div class="file-wrapper-movie"></div>
+                <div class="file-wrapper-subtitles"></div>
+                <div class="file-wrapper-rename input-group input-group-sm">
+                  <input id="rename-studio" class="form-control" />
+                  <input id="rename-opus" class="form-control" />
+                  <input id="rename-title" class="form-control" />
+                  <input id="rename-actress" class="form-control" />
+                  <input id="rename-release" class="form-control" />
+                  <button id="rename-btn" class="btn btn-outline-secondary">Rename</button>
+                </div>
               </div>
             </div>
           </dd>
@@ -146,13 +148,11 @@
             <span id="btnToggleNewTag"><i class="fa fa-plus"></i></span>
           </label>
         </div>
-        <div class="d-inline-flex justify-content-center mt-2">
+        <div class="d-inline-flex justify-content-center my-2">
           <div id="newTagForm" class="collapse input-group input-group-sm" style="width: 300px">
             <input id="newTagName" class="form-control border-0" placeholder="Name" />
             <input id="newTagDesc" class="form-control border-0" placeholder="Description" />
-            <div class="input-group-append">
-              <button class="btn btn-primary btn-tag-save">Regist</button>
-            </div>
+            <button class="btn btn-primary btn-tag-save">Regist</button>
           </div>
         </div>
       </div>

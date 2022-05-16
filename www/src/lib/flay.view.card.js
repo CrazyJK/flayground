@@ -76,14 +76,14 @@ export const STUDIO = 'studio',
 						<dd class="flay-card-text flay-action-wrapper">
 							<label class="text hover flay-movie">Movie</label>
 							<label class="text hover flay-subtitles">sub</label>
-							<label class="text hover flay-file-info-btn" data-toggle="collapse" data-target=".flay-file-group"><i class="fa fa-folder-open"></i></label>
+							<label class="text hover flay-file-info-btn"><i class="fa fa-folder-open"></i></label>
 						</dd>
 						<dd class="flay-card-text flay-comment-wrapper"><label class="text flay-comment hover">Comment</label><input class="flay-comment-input" placeholder="Comment"/></dd>
 						<dd class="flay-card-text flay-tag-wrapper"><label class="text flay-tag">Tag</label></dd>
 						<dd class="flay-card-text"><label class="text flay-row-title"></label></dd>
 						<dd class="flay-card-text"><label class="text flay-row-desc"></label></dd>
 					</dl>
-					<ul class="list-group flay-file-group collapse">
+					<ul class="list-group collapse flay-file-group">
 						<li class="list-group-item flay-file">
 							<div class="input-group input-group-sm">
 								<input class="form-control border-dark flay-new-studio"  style="max-width: 100px;"/>
@@ -278,8 +278,9 @@ export const STUDIO = 'studio',
         $flayCard.find('.flay-file-group').remove();
       } else {
         const $flayFileGroup = $flayCard.find('.flay-file-group');
-        $flayFileGroup.on('show.bs.collapse hidden.bs.collapse', function (e) {
-          const height = e.type === 'show' ? $(this).height() : -$(this).height();
+        $flayCard.find('.flay-file-info-btn').on('click', () => {
+          const visible = $flayFileGroup.toggle().is(':visible');
+          const height = visible ? $flayFileGroup.height() : -$flayFileGroup.height();
           window.resizeBy(0, height);
         });
         // cover file

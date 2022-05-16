@@ -1,3 +1,8 @@
+@import '../../node_modules/fontawesome-4.7/css/font-awesome.css';
+@import '../../node_modules/bootstrap/dist/css/bootstrap.min.css';
+@import '../../node_modules/jquery-ui-dist/jquery-ui.css';
+@import '../../node_modules/jquery-ui-dist/jquery-ui.theme.css';
+
 @import './@/theme.color-set.scss';
 @import './@/font.scss';
 @import './@/neon.scss';
@@ -23,6 +28,10 @@ body {
   color: var(--color-text);
   min-height: 100vh;
   transition: background-color 0.5s;
+}
+
+a {
+  text-decoration: none;
 }
 
 button.btn {
@@ -681,6 +690,11 @@ button.btn.btn-outline-flay {
   border: 1px solid var(--color-border-form);
   color: var(--color-text-form);
 }
+.input-group {
+  button {
+    border: 1px solid var(--color-border-form);
+  }
+}
 
 #topMenu {
   position: sticky;
@@ -765,4 +779,8 @@ button.btn.btn-outline-flay {
 }
 .modal-footer {
   border-top: 1px solid var(--color-border-modal);
+}
+
+.text-transparent {
+  color: transparent;
 }

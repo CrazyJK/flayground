@@ -79,6 +79,38 @@ div[role='body'] {
   }
 }
 
+#file-wrapper {
+  > div {
+    display: flex;
+    flex-direction: column;
+    > div {
+      height: 2rem;
+      font-size: 1rem;
+      > label {
+        font-family: D2Coding;
+        margin: 0;
+      }
+    }
+  }
+  .file-wrapper-rename {
+    #rename-studio {
+      flex: 0 0 100px;
+    }
+    #rename-opus {
+      flex: 0 0 100px;
+    }
+    #rename-title {
+      flex: 1 1 100px;
+    }
+    #rename-actress {
+      flex: 0 0 160px;
+    }
+    #rename-release {
+      flex: 0 0 100px;
+    }
+  }
+}
+
 .info-wrapper-actress {
   min-height: 38px;
 
@@ -204,8 +236,8 @@ label.text:empty {
 }
 
 .history-wrapper {
-  /* background-color: rgb(0 0 0 / 50%); */
-  border: 1px solid #000;
+  background-color: rgb(0 0 0 / 50%);
+  // border: 1px solid #000;
   border-radius: 4px;
   margin: auto 4rem;
 

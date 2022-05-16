@@ -107,7 +107,7 @@ const SlideMenu = {
             }
             Popup.open(url, menu.name, menu.popup.w, menu.popup.h);
           })
-          .append($('<i>', { class: 'fa fa-external-link ml-1 hover' }));
+          .append($('<i>', { class: 'fa fa-external-link hover' }));
       }
       $li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
     });

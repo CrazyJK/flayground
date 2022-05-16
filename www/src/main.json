@@ -152,7 +152,7 @@
 	{
 		"name": "Cover Cloud",
 		"uri": "./cover.cloud.html",
-		"icon": "fa fa-picture-o",
+		"icon": "fa fa-image",
 		"mode": "href",
 		"popup": {
 			"w": 1078,
@@ -162,7 +162,7 @@
 	{
 		"name": "Image Cloud",
 		"uri": "./image.cloud.html",
-		"icon": "fa fa-picture-o",
+		"icon": "fa fa-image",
 		"mode": "href",
 		"popup": {
 			"w": 1078,
@@ -172,7 +172,7 @@
 	{
 		"name": "Image Slide",
 		"uri": "./image.slide.html",
-		"icon": "fa fa-picture-o",
+		"icon": "fa fa-image",
 		"mode": "href",
 		"popup": {
 			"w": 1078,
@@ -182,7 +182,7 @@
 	{
 		"name": "Image Tablet",
 		"uri": "./image.tablet.html",
-		"icon": "fa fa-picture-o",
+		"icon": "fa fa-image",
 		"mode": "href",
 		"popup": {
 			"w": 1078,
@@ -192,7 +192,7 @@
 	{
 		"name": "Image Board",
 		"uri": "./image.board.html",
-		"icon": "fa fa-picture-o",
+		"icon": "fa fa-image",
 		"mode": "href",
 		"popup": {
 			"w": 1078,
@@ -202,7 +202,7 @@
 	{
 		"name": "Image Banner",
 		"uri": "./image.banner.html",
-		"icon": "fa fa-picture-o",
+		"icon": "fa fa-image",
 		"mode": "href",
 		"popup": {
 			"w": 1078,

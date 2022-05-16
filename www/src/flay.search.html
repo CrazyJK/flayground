@@ -45,7 +45,7 @@
           <div class="tooltip-inner">Copy!</div>
         </div>
         <div class="input-group input-group-sm mb-1">
-          <button class="btn btn-outline-primary" id="btnCopy" data-toggle="tooltip" data-clipboard-target="#fullname" style="width: 42px"><i class="fa fa-copy fa-fw"></i></button>
+          <button class="btn btn-outline-primary" id="btnCopy" style="width: 42px"><i class="fa fa-copy fa-fw"></i></button>
           <input class="form-control form-control-sm" id="fullname" placeholder="Full name" />
         </div>
         <div class="input-group input-group-sm mb-1" id="newActress">
@@ -191,21 +191,4 @@
   </div>
 </div>
 
-<script type="text/javascript" src="/webjars/clipboard/dist/clipboard.min.js"></script>
-<script type="text/javascript">
-  var clipboard = new ClipboardJS('#btnCopy');
-  clipboard
-    .on('success', function (e) {
-      e.clearSelection();
-      console.info('Action:', e.action, 'Text:', e.text, 'Trigger:', e.trigger);
-      $($(e.trigger).attr('data-clipboard-target')).effect('highlight', {}, 1000);
-      $('#btnCopyTooltip').addClass('show');
-      setTimeout(function () {
-        $('#btnCopyTooltip').removeClass('show');
-      }, 1000);
-    })
-    .on('error', function (e) {
-      alert('Action: ' + e.action + ' Trigger: ' + e.trigger);
-    });
-</script>
 <script type="text/javascript" src="./flay.search.js"></script>

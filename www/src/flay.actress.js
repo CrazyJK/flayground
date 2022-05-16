@@ -77,7 +77,7 @@ function displayActress() {
       return (data1 > data2 ? 1 : -1) * order;
     }
   };
-  console.log('displayActress', query);
+  console.log('displayActress', query, fav, noFav, viewType);
 
   const collectedList = actressList
     .filter((actress) => {

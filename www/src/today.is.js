@@ -87,7 +87,7 @@ let Todayis = {
                   }
                   console.log(`folder toggle index=${e.data}`, e.target, Todayis.toggledFolderIndex);
                 }),
-              $('<span>', { class: 'ml-3 toggle-folder' }).append(
+              $('<span>', { class: 'ms-3 toggle-folder' }).append(
                 $('<i>', { class: 'fa fa-folder-open' }).on('click', todayis, (e) => {
                   if (system === WINDOWS) {
                     Rest.Todayis.openFolder(e.data.path);

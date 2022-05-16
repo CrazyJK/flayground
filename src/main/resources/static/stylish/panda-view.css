@@ -1,0 +1,147 @@
+@charset "UTF-8";
+
+/*
+	URLs starting with: https://www.pandalive.co.kr/live/play
+ */
+
+body {
+	overflow: hidden;
+}
+
+/*
+	비디오 위치 조정
+ */
+.player-box .player-wrap {
+	position: fixed;
+}
+
+/*
+	화면에 보이는 잡티 제거
+ */
+.xrat,
+.live_logo,
+.btnSound,
+#watermark {
+	display: none;
+}
+
+/*
+	위, 좌, 우 가리기
+ */
+#header,
+#sideArea,
+.live_right_area {
+	display: none;
+}
+
+/* 방송 정보 안볼거 치우기 */
+.live_left_area .bjZone {
+	position: fixed;
+	top: -200px;
+}
+
+/* 타 방송 목록 가리기 */
+.live_left_area div.player_infor_area + div {
+	display: none;
+}
+
+/* 방송명 */
+.live_left_area .bjZone .bj_infor .tit {
+	position: fixed;
+	top: 8px;
+	left: 8px;
+	color: #fff;
+	font-size: 18px;
+	font-weight: 700;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
+	padding: 0;
+	z-index: 9999;
+}
+/* BJ 이름 */
+.live_left_area .bjZone .bj_infor .nick {
+	position: fixed;
+	top: 38px;
+	left: 8px;
+	color: #fff;
+	font-size: 18px;
+	font-weight: 700;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
+	z-index: 9999;
+}
+/* 시청자수 */
+.live_left_area .bjZone .bj_infor .infor .ic1 {
+	position: fixed;
+	top: 68px;
+	left: 8px;
+	color: #fff;
+	font-size: 18px;
+	font-weight: 700;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
+	z-index: 9999;
+}
+/* 시청자수 글자 제거 */
+.live_left_area .bjZone .bj_infor .infor li span {
+	display: none;
+}
+/* 북마크 */
+.live_left_area .bjZone .player_item_list .item li .btnBookmk {
+	position: fixed;
+	top: 8px;
+	right: 0;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
+	z-index: 9999;
+}
+/* 추천 */
+.live_left_area .bjZone .player_item_list .item li .btnUp {
+	position: fixed;
+	top: 8px;
+	right: 30px;
+	background-color: rgba(255, 255, 255, 0.125);
+	border-radius: 50%;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
+	z-index: 9999;
+}
+.live_left_area .bjZone .player_item_list .item li .btnUp .over {
+	width: 0;
+	height: 0;
+}
+/* 해상도 */
+.live_left_area .bjZone .player_item_list .hd {
+	position: fixed;
+	top: 8px;
+	right: 60px;
+	height: 100px;
+	text-shadow: 1px 1px 1px #000, 0 0 4px #000, 0 0 8px #000, 0 0 12px #000, 0 0 16px #000;
+	opacity: 1;
+	z-index: 9999;
+}
+.live_left_area .bjZone .player_item_list .hd button {
+	color: #fff;
+	text-shadow: 1px 1px 1px #000;
+}
+.live_left_area .bjZone .player_item_list .hd button.on {
+	color: #f008;
+}
+/* 포스터 */
+.plyr__poster {
+	/* display: none !important; */
+	/* opacity: 0 !important; */
+	width: 200px !important;
+	height: 200px !important;
+}
+/* 블라인드 제거 */
+.blind {
+	background: transparent !important;
+}
+.blind .box {
+	background: transparent;
+	top: 0;
+}
+.blind .box .txt1 {
+	display: block;
+}

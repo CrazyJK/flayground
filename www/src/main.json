@@ -90,7 +90,7 @@
 		}
 	},
 	{
-		"name": "Today`s",
+		"name": "Todayis",
 		"uri": "./today.is.html",
 		"icon": "fa fa-th",
 		"mode": "include",

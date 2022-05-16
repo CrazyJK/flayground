@@ -57,31 +57,40 @@ function findMode() {
     const rowOpus = $('#rowname_opus').val().trim();
     const rowTitle = $('#rowname_title').val().trim();
     const rowDesc = $('#videoDescription').val().trim();
-    console.log('btnCopy click', rowOpus, rowTitle, rowDesc);
+    const fullname = $('#fullname').val().trim();
+    console.log('btnCopy click', rowOpus, rowTitle, rowDesc, fullname);
 
-    Rest.Video.get(
-      rowOpus,
-      (video) => {
-        // success
-        video.title = rowTitle;
-        video.desc = rowDesc;
-        console.log('video', video);
+    navigator.clipboard.writeText(fullname).then(() => {
+      $('#fullname').effect('highlight', {}, 1000);
+      $('#btnCopyTooltip').addClass('show');
+      setTimeout(() => {
+        $('#btnCopyTooltip').removeClass('show');
+      }, 1000);
 
-        Rest.Video.update(video);
-      },
-      () => {
-        // fail
-        const video = {
-          opus: rowOpus,
-          title: rowTitle,
-          desc: rowDesc,
-          tags: [],
-        };
-        console.log('video', video);
+      Rest.Video.get(
+        rowOpus,
+        (video) => {
+          // success
+          video.title = rowTitle;
+          video.desc = rowDesc;
+          console.log('video', video);
 
-        Rest.Video.save(video);
-      }
-    );
+          Rest.Video.update(video);
+        },
+        () => {
+          // fail
+          const video = {
+            opus: rowOpus,
+            title: rowTitle,
+            desc: rowDesc,
+            tags: [],
+          };
+          console.log('video', video);
+
+          Rest.Video.save(video);
+        }
+      );
+    });
   });
   // 각 파트 내용을 수정하면
   $('.flay-group > input').on('keyup', function (e) {

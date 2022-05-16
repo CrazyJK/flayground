@@ -1,5 +1,5 @@
 # flayground
 
-yarn add fontawesome-4.7
+https://fontawesome.com/v4/icons/
 
-yarn add bootstrap@5.1.3 @popperjs/core@^2.10.2
+https://getbootstrap.com/docs/5.1

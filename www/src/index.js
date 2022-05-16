@@ -25,7 +25,7 @@ $('#memo')
   .text(memoText);
 
 menuItems.forEach((menu) => {
-  const $popupAnker = $('<a>').append('<i class="fas fa-location-arrow fa-flip-horizontal fa-xs mr-2"></i>');
+  const $popupAnker = $('<a>').append('<i class="fas fa-location-arrow fa-flip-horizontal fa-xs me-2"></i>');
   const $hrefAnker = $('<a>').html(menu.name);
 
   if (menu.method === 'both' || menu.method === 'popup') {

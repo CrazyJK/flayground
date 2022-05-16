@@ -46,21 +46,19 @@
                     const urlLast = urlParts.pop();
                     console.log('urlParts', urlParts, 'urlLast', urlLast);
                     return $('<div>', { class: 'input-group input-group-sm' }).append(
-                      $('<div>', { class: 'input-group-prepend' }).append($('<span>', { class: 'input-group-text border-secondary basePathname' }).html(urlParts.join('/'))),
+                      $('<span>', { class: 'input-group-text border-secondary basePathname' }).html(urlParts.join('/')),
                       $('<input>', { class: 'form-control form-control-sm border-secondary text-light bg-dark', placeHolder: urlLast }).on('keyup', (e) => {
                         if (e.keyCode === 13) $(e.target).closest('.input-group').find('button').get(0).click();
                       }),
-                      $('<div>', { class: 'input-group-append' }).append(
-                        $('<button>', { class: 'btn btn-outline-secondary' })
-                          .on('click', (e) => {
-                            const basePathname = $(e.target).closest('.input-group').find('.basePathname').html();
-                            const inputValue = $(e.target).closest('.input-group').find('input').val().trim();
-                            if (inputValue.length > 0) {
-                              window.open(basePathname + '/' + inputValue, key + inputValue, 'width=800, height=600');
-                            }
-                          })
-                          .append($('<i>', { class: 'fa fa-external-link' }))
-                      )
+                      $('<button>', { class: 'btn btn-outline-secondary' })
+                        .on('click', (e) => {
+                          const basePathname = $(e.target).closest('.input-group').find('.basePathname').html();
+                          const inputValue = $(e.target).closest('.input-group').find('input').val().trim();
+                          if (inputValue.length > 0) {
+                            window.open(basePathname + '/' + inputValue, key + inputValue, 'width=800, height=600');
+                          }
+                        })
+                        .append($('<i>', { class: 'fa fa-external-link' }))
                     );
                   } else {
                     return $('<p>', { class: 'card-text' }).append(

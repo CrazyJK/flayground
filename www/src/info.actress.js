@@ -12,12 +12,6 @@ let actress;
 
 const $flayList = $('.flay-list');
 
-$(window).on('resize', function () {
-  $flayList.css({
-    height: window.innerHeight - $('.navbar').outerHeight() - 16,
-  });
-});
-
 $('#favorite').on('click', function () {
   actress.favorite = !actress.favorite;
   var $self = $(this);
@@ -124,6 +118,16 @@ Rest.Actress.get(name, (_actress_) => {
   if (!actress.favorite) {
     $('.fa-heart').removeClass('favorite fa-heart').addClass('fa-heart-o');
   }
+  if (actress.coverSize > 0) {
+    $('nav.navbar').hover(
+      () => {
+        $('.actress-cover-wrapper').css({
+          background: 'rgba(0,0,0,0.75) url("/static/actress/' + actress.name + '/' + Random.getInteger(0, actress.coverSize - 1) + '") center top / contain no-repeat',
+        });
+      },
+      () => {}
+    );
+  }
 
   Promise.all([
     new Promise((resolve) => {
@@ -133,6 +137,12 @@ Rest.Actress.get(name, (_actress_) => {
       Rest.Flay.findByActressInArchive(actress, resolve);
     }),
   ]).then(([instanceList, archiveList]) => {
+    const flayAllList = [...instanceList, ...archiveList].sort((flay1, flay2) => {
+      return $.trim(flay2.release).toLowerCase().localeCompare($.trim(flay1.release));
+    });
+
+    $('.filter-cnt-instance').html(instanceList.length);
+    $('.filter-cnt-all-flay').html(flayAllList.length);
     $('#avgRank').html(
       ((flayList) => {
         let rankAvg = { sum: 0, cnt: 0 };
@@ -145,40 +155,28 @@ Rest.Actress.get(name, (_actress_) => {
         return (rankAvg.sum / rankAvg.cnt).toFixed(1);
       })(instanceList)
     );
+    $('.filter-cnt-unrank').html(instanceList.filter((flay) => flay.video.rank === 0).length);
 
-    const flayAllList = [...instanceList, ...archiveList];
-    flayAllList.sort((flay1, flay2) => {
-      return $.trim(flay2.release).toLowerCase().localeCompare($.trim(flay1.release));
+    displayFlayList(flayAllList).then(() => {
+      console.log('completed load');
     });
-
-    let unrankCount = 0;
-    $flayList.empty();
-    flayAllList.forEach((flay) => {
-      unrankCount += !flay.archive && flay.video.rank === 0 ? 1 : 0;
-      $flayList.appendFlayCard(flay, {
-        width: 330,
-        exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
-        fontSize: '80%',
-        archive: flay.archive,
-        class: flay.archive ? 'archive' : 'instance' + (flay.video.rank === 0 ? ' unrank' : ''),
-      });
-    });
-
-    $('.filter-cnt-unrank').html(unrankCount);
-    $('.filter-cnt-instance').html(instanceList.length);
-    $('.filter-cnt-all-flay').html(flayAllList.length);
   });
-
-  if (actress.coverSize > 0) {
-    $('nav.navbar').hover(
-      function () {
-        $('.actress-cover-wrapper').css({
-          background: 'rgba(0,0,0,0.75) url("/static/actress/' + actress.name + '/' + Random.getInteger(0, actress.coverSize - 1) + '") center top / contain no-repeat',
-        });
-      },
-      function () {}
-    );
-  }
-
-  $(window).trigger('resize');
 });
+
+async function displayFlayList(flayList) {
+  for (const flay of flayList) {
+    $flayList.appendFlayCard(flay, {
+      width: 330,
+      exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
+      fontSize: '80%',
+      archive: flay.archive,
+      class: flay.archive ? 'archive' : 'instance' + (flay.video.rank === 0 ? ' unrank' : ''),
+    });
+
+    await sleep(100);
+  }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

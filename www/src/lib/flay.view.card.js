@@ -91,9 +91,7 @@ export const STUDIO = 'studio',
 								<input class="form-control border-dark flay-new-title"/>
 								<input class="form-control border-dark flay-new-actress" style="max-width: 100px;"/>
 								<input class="form-control border-dark flay-new-release" style="max-width: 90px;"/>
-								<div class="input-group-append">
-									<button class="btn btn-outline-dark btn-flay-rename">Rename</button>
-								</div>
+                <button class="btn btn-outline-dark btn-flay-rename">Rename</button>
 							</div>
 						</li>
 					</ul>

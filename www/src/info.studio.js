@@ -5,61 +5,66 @@ import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/
 import './css/common.scss';
 
 const studioName = reqParam.s;
-
-var $flayList = $('.flay-list');
-
-$(window).on('resize', function () {
-  $flayList.css({
-    height: window.innerHeight - $('.navbar').outerHeight() - 16,
-  });
-});
-
-$('#save').on('click', function () {
-  Rest.Studio.update(
-    {
-      name: $('#name').val(),
-      company: $('#company').val(),
-      homepage: $('#homepage').val(),
-    },
-    function () {
-      $('#save').html('Updated');
-      setTimeout(function () {
-        $('#save').html('Save');
-      }, 1000);
-    }
-  );
-});
+const $flayList = $('.flay-list');
 
 Rest.Studio.get(
   studioName,
-  function (studio) {
+  (studio) => {
     document.title = studio.name + ' - ' + document.title;
     $('#name').val(studio.name);
     $('#company').val(studio.company);
     $('#homepage').val(studio.homepage);
   },
-  function () {
+  () => {
+    document.title = studioName + ' - Notfound';
     $('#name').val(studioName);
   }
 );
 
-Rest.Flay.find('studio/' + studioName, function (flayList) {
-  $('.video-count').html(flayList.length);
+Rest.Flay.find('studio/' + studioName, (flayList) => {
+  displayFlayList(flayList).then(() => {
+    console.log('completed load');
+  });
+});
 
-  flayList.sort(function (flay1, flay2) {
+async function displayFlayList(flayList) {
+  $('.video-count').html(flayList.length);
+  $flayList.empty();
+
+  flayList.sort((flay1, flay2) => {
     const c = flay2.release.toLowerCase().localeCompare(flay1.release);
     return c === 0 ? flay2.opus.toLowerCase().localeCompare(flay1.opus) : c;
   });
 
-  $flayList.empty();
-
-  $.each(flayList, function (idx, flay) {
+  let count = 0;
+  for (const flay of flayList) {
     $flayList.appendFlayCard(flay, {
       width: 330,
       exclude: [STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
       fontSize: '80%',
     });
-  });
+    $('.video-count').html(++count);
 
-  $(window).trigger('resize');
+    await sleep(100);
+  }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+$('#save').on('click', () => {
+  Rest.Studio.update(
+    {
+      name: $('#name').val().trim(),
+      company: $('#company').val().trim(),
+      homepage: $('#homepage').val().trim(),
+    },
+    () => {
+      $('#save').html('Updated');
+      setTimeout(() => {
+        $('#save').html('Save');
+      }, 1000);
+    }
+  );
 });

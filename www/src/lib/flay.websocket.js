@@ -24,10 +24,6 @@ class FlayWebsocket {
 
     this.MAX_RETRY_COUNT = 5;
     this.retryCount = 0;
-
-    // $('head').append('<link rel="stylesheet" href="/css/flay.websocket.css" />');
-    // $('head').append('<script type="text/javascript" src="/webjars/sockjs-client/sockjs.min.js"></script>');
-    // $('head').append('<script type="text/javascript" src="/webjars/stomp-websocket/stomp.min.js"></script>');
   }
 
   initiate() {

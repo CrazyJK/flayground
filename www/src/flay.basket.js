@@ -5,6 +5,7 @@
  */
 
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
 import { Rest } from './lib/flay.rest.service.js';
 import { MODIFIED, FILEINFO, ACTRESS_EXTRA, COMMENT, STUDIO, actressMapForCard } from './lib/flay.view.card.js';
 import { loading } from './lib/flay.loading.js';

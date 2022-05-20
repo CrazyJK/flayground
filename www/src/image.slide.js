@@ -3,6 +3,7 @@
  */
 
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
 import { LocalStorageItem, Popup, Random, PATH, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';

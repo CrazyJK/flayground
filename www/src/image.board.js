@@ -364,10 +364,10 @@ $controlBox
   .on('notice', function (e, msg) {
     var $span = $('<span>', { class: 'msgBox' }).html(msg).appendTo($('#notice'));
     setTimeout(function () {
-      // $span.hide('blind', { direction: 'down' }, 300, function () {
-      //   $(this).remove();
-      // });
-      $span.remove();
+      $span.hide('blind', { direction: 'down' }, 300, function () {
+        $(this).remove();
+      });
+      // $span.remove();
     }, 1500);
   })
   .on('click', '#imgPath', function () {

@@ -29,6 +29,7 @@ module.exports = {
     'info.actress': './src/info.actress.js',
     'info.flay': './src/info.flay.js',
     'info.studio': './src/info.studio.js',
+    'info.tag': './src/info.tag.js',
     'today.is': './src/today.is.js',
     'cover.cloud': './src/cover.cloud.js',
     'image.alone': './src/image.alone.js',

@@ -215,13 +215,11 @@ class FlayWebsocket {
   infoCallback(message) {
     const messageBody = JSON.parse(message.body);
 
+    console.log('infoCallback', messageBody);
+
     if (messageBody.content === 'bgtheme') {
-      try {
-        // eslint-disable-next-line no-undef
-        adjustTheme();
-      } catch (ignored) {
-        // no nothing
-      }
+      const bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'dark');
+      document.getElementsByTagName('html')[0].setAttribute('data-theme', bgThemeValue);
     } else if (messageBody.content === 'bgcolor') {
       const bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
       $('body').css({ backgroundColor: bgColor });

@@ -7,7 +7,6 @@ import { Rest } from './lib/flay.rest.service.js';
 import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import flayWebsocket from './lib/flay.websocket.js';
 import { Security } from './lib/flay.utils.js';
-import { adjustTheme } from './lib/theme.js';
 import menuItems from './main.json';
 import 'bootstrap/dist/js/bootstrap';
 import './lib/kamoru.life.timer.js';
@@ -112,6 +111,9 @@ const SlideMenu = {
       $li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
     });
     $('#username').html(username + (isAdmin ? ' Admin' : ''));
+    $('.logout').on('click', () => {
+      SlideMenu.logout('/logout');
+    });
     $('#mainHome')
       .on('click', () => {
         document.title = 'Flayground';
@@ -152,15 +154,6 @@ const SlideMenu = {
     const setTheme = () => {
       const bgThemeValue = $("input[name='bgTheme']:checked").val();
       LocalStorageItem.set('flay.bgtheme', bgThemeValue);
-
-      // adjust theme
-      $(document).ready(() => {
-        try {
-          adjustTheme();
-        } catch (error) {
-          console.error('adjustTheme', error);
-        }
-      });
 
       // broadcasting
       try {

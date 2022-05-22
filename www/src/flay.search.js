@@ -35,10 +35,10 @@ function baseSearch() {
     Search.torrent(value);
   });
   $('#btn-flay-close').on('click', function () {
-    $('#resultFlayDiv').collapse('hide');
+    $('#resultFlayDiv').hide();
   });
   $('#btn-history-close').on('click', function () {
-    $('#resultHistoryDiv').collapse('hide');
+    $('#resultHistoryDiv').hide();
   });
 }
 
@@ -489,7 +489,7 @@ function searchSource(keyword) {
 
   // find Flay
   Rest.Flay.find(keyword, function (flayList) {
-    $('#resultFlayDiv').collapse('show');
+    $('#resultFlayDiv').show();
 
     $('.flay-count').html(flayList.length);
     var $tbody = $('#foundFlayList').empty();
@@ -599,7 +599,7 @@ function searchSource(keyword) {
   Rest.History.find(keyword, function (historyList) {
     const sortedHisoryList = historyList.filter((h) => h.action !== 'UPDATE');
 
-    $('#resultHistoryDiv').collapse('show');
+    $('#resultHistoryDiv').show();
     $('.history-count').html(sortedHisoryList.length);
 
     var $tbody = $('#foundHistoryList').empty();

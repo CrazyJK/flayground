@@ -240,7 +240,7 @@ $('#inputPlayTime').on('change', function () {
   LocalStorageItem.set(ImageControl.STORAGE_PLAY_TIME, $(this).val());
 });
 $('#goHome').on('click', function () {
-  location.href = PATH + '/html/main.html';
+  location.href = PATH + '/dist/main.html';
 });
 $('#btnByKey, #btnCloseKey').on('click', function () {
   $('#keyContainer').slideToggle();

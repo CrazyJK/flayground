@@ -218,13 +218,13 @@ header#wrap_head {
     left: 0;
     bottom: 0;
     width: 0;
+    background-attachment: fixed;
     background-color: rgba(17, 17, 17, 0.75);
-    background-image: url('./img/bg/flayground_facade.jpg');
+    background-image: url('./img/bg/flayground_facade.gif');
     background-position-x: calc(50% + 100px);
     background-position-y: center;
-    background-attachment: fixed;
     background-repeat: no-repeat;
-    background-size: contain;
+    background-size: 75%;
     margin-left: var(--sidenav-width);
     transition: 0.5s;
     z-index: 9997;

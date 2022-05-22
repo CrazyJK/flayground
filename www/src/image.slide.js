@@ -9,6 +9,7 @@ import { Rest } from './lib/flay.rest.service.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
 import './lib/crazy.jquery';
 import './image.slide.scss';
+import './lib/FlayMenu';
 
 var totalCount = 0;
 var currIndex = 0;
@@ -199,7 +200,7 @@ var view = function () {
       });
       // console.log('currIndex', currIndex, 'isVerticalWindow', isVerticalWindow, 'isVerticalImage', isVerticalImage, 'imageVerticalRatio', imageVerticalRatio, 'factor', factor);
 
-      getDominatedColors(_self.src, { scale: 0.1, offset: 16, ignore: [] }).then((dominatedColors) => {
+      getDominatedColors(_self, { scale: 0.1, offset: 16, ignore: [] }).then((dominatedColors) => {
         $image.css({
           boxShadow: `inset 0 0 4rem 2rem rgba(${dominatedColors[0].rgba.join(',')})`,
           backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
@@ -224,7 +225,6 @@ var view = function () {
       currIndex++;
       show();
     }, 1000 * bgIntervalTime);
-    //			console.log('setInterval', bgIntervalTime);
   }
 };
 

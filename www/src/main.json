@@ -248,15 +248,5 @@
 			"w": 1078,
 			"h": 830
 		}
-	},
-	{
-		"name": "Logout (<span id=\"username\"></span>)",
-		"uri": "/logout",
-		"icon": "fa fa-sign-out",
-		"mode": "logout",
-		"popup": {
-			"w": 0,
-			"h": 0
-		}
 	}
 ]

@@ -114,10 +114,7 @@
 		"uri": "./flay.basket.html",
 		"icon": "fa fa-shopping-cart",
 		"mode": "include",
-		"popup": {
-			"w": "100%",
-			"h": "100%"
-		}
+		"popup": "full"
 	},
 	{
 		"name": "Score",

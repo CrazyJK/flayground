@@ -119,7 +119,7 @@ class FlayMenu extends HTMLElement {
     navWrap.setAttribute('class', 'nav-wrap');
     shadow.appendChild(navWrap);
 
-    // pin
+    // fixed pin
     const fixedPin = document.createElement('span');
     fixedPin.setAttribute('id', 'fixedPin');
     fixedPin.setAttribute('class', 'fa fa-thumb-tack');
@@ -128,7 +128,7 @@ class FlayMenu extends HTMLElement {
     });
     navWrap.appendChild(fixedPin);
 
-    // indicator
+    // open trigger
     const openTrigger = document.createElement('span');
     openTrigger.setAttribute('id', 'openTrigger');
     openTrigger.setAttribute('class', 'fa fa-angle-double-' + (alignLeft ? 'right' : 'left'));
@@ -144,24 +144,32 @@ class FlayMenu extends HTMLElement {
 
     const mainMenuNav = document.createElement('ul');
     mainMenuNav.setAttribute('class', 'nav');
+    navWrap.appendChild(mainMenuNav);
 
     menuItems.forEach((menu) => {
       const li = document.createElement('li');
       mainMenuNav.appendChild(li);
 
       // icon
-      const fa = document.createElement('i');
-      fa.setAttribute('class', menu.icon);
-      li.appendChild(fa);
+      const menuIcon = document.createElement('i');
+      menuIcon.setAttribute('class', menu.icon);
+      li.appendChild(menuIcon);
 
       // menu
-      const div = document.createElement('div');
-      li.appendChild(div);
+      const menuDiv = document.createElement('div');
+      li.appendChild(menuDiv);
 
       // decide url
       let menuURL = menu.uri;
       if (menu.mode === 'include') {
         menuURL = 'main.popup.html?target=' + menu.uri;
+      }
+      // decide popup size
+      if (menu.popup === 'full') {
+        menu.popup = {
+          w: window.innerWidth,
+          h: window.innerHeight,
+        };
       }
 
       // current window
@@ -169,17 +177,16 @@ class FlayMenu extends HTMLElement {
       anker.setAttribute('class', menu.mode);
       anker.setAttribute('href', menuURL);
       anker.textContent = menu.name;
-      div.appendChild(anker);
+      menuDiv.appendChild(anker);
 
       // new window
-      const anker2 = document.createElement('a');
-      anker2.setAttribute('href', `javascript:window.open('${menuURL}', '${menu.name}', 'width=${menu.popup.w},height=${menu.popup.h}')`);
-      const fa2 = document.createElement('i');
-      fa2.setAttribute('class', 'fa fa-external-link hover');
-      anker2.appendChild(fa2);
-      div.appendChild(anker2);
+      const popup = document.createElement('a');
+      popup.setAttribute('href', `javascript:window.open('${menuURL}', '${menu.name}', 'width=${menu.popup.w},height=${menu.popup.h}')`);
+      const popupIcon = document.createElement('i');
+      popupIcon.setAttribute('class', 'fa fa-external-link hover');
+      popup.appendChild(popupIcon);
+      menuDiv.appendChild(popup);
     });
-    navWrap.appendChild(mainMenuNav);
   }
 }
 

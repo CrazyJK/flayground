@@ -104,6 +104,12 @@ const SlideMenu = {
             } else {
               console.error('Notfound mode', menu);
             }
+            if (menu.popup === 'full') {
+              menu.popup = {
+                w: window.innerWidth,
+                h: window.innerHeight,
+              };
+            }
             Popup.open(url, menu.name, menu.popup.w, menu.popup.h);
           })
           .append($('<i>', { class: 'fa fa-external-link hover' }));

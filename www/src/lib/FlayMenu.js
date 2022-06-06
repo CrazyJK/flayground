@@ -1,4 +1,8 @@
 import menuItems from '../main.json';
+import { calculateLifeTime } from './kamoru.life.timer';
+import { Rest } from './flay.rest.service';
+import { LocalStorageItem } from './crazy.common.js';
+import flayWebsocket from './flay.websocket.js';
 
 /* ref)
    https://developer.mozilla.org/ko/docs/Web/Web_Components/Using_custom_elements
@@ -111,6 +115,21 @@ class FlayMenu extends HTMLElement {
     .nav-wrap ul.nav li:hover div a:nth-child(2) {
       opacity: 1;
     }
+
+    button#themeToggle {
+      background-color: transparent;
+      border: 1px solid #273439;
+      color: inherit;
+    }
+    button#themeToggle > i {
+      margin: 0.25rem 0.5rem;
+    }
+    button#themeToggle.dark > i.light {
+      display: none;
+    }
+    button#themeToggle.light > i.dark {
+      display: none;
+    }
     `;
     shadow.appendChild(style);
 
@@ -142,6 +161,7 @@ class FlayMenu extends HTMLElement {
     title.appendChild(titleAnker);
     navWrap.appendChild(title);
 
+    // main menu
     const mainMenuNav = document.createElement('ul');
     mainMenuNav.setAttribute('class', 'nav');
     navWrap.appendChild(mainMenuNav);
@@ -187,6 +207,15 @@ class FlayMenu extends HTMLElement {
       popup.appendChild(popupIcon);
       menuDiv.appendChild(popup);
     });
+
+    // sub menu
+    const subMenuNav = document.createElement('ul');
+    subMenuNav.setAttribute('class', 'nav');
+    navWrap.appendChild(subMenuNav);
+
+    subMenuNav.appendChild(createThemeToggle());
+    subMenuNav.appendChild(createRemainTimer());
+    subMenuNav.appendChild(createLogout());
   }
 }
 
@@ -197,3 +226,93 @@ customElements.define('flay-menu', FlayMenu);
 // flayMenu.setAttribute('data-align', 'right');
 
 document.body.prepend(new FlayMenu('left'));
+
+function createThemeToggle() {
+  let bgTheme = LocalStorageItem.get('flay.bgtheme', 'dark');
+
+  const iSun = document.createElement('i');
+  iSun.classList.add('fa', 'fa-sun-o', 'light');
+  const iMoon = document.createElement('i');
+  iMoon.classList.add('fa', 'fa-moon-o', 'dark');
+
+  const button = document.createElement('button');
+  button.setAttribute('id', 'themeToggle');
+  button.setAttribute('type', 'button');
+  button.classList.add(bgTheme);
+  button.appendChild(iSun);
+  button.appendChild(iMoon);
+  button.addEventListener('click', () => {
+    console.log('themeToggle', button, button.classList);
+    let currentTheme = button.classList.item(0);
+    let selectedTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    button.classList.replace(currentTheme, selectedTheme);
+    LocalStorageItem.set('flay.bgtheme', selectedTheme);
+    try {
+      flayWebsocket.info('bgtheme');
+    } catch (e) {
+      // no nothing
+    }
+  });
+
+  return menuItemFactory('Theme', ['fa', 'fa-toggle-on'], button);
+}
+
+function createRemainTimer() {
+  const { remainDay } = calculateLifeTime();
+  const label = document.createElement('label');
+  label.classList.add('m-0', 'hover');
+  label.setAttribute('id', 'lifeTimerWrapper');
+  label.addEventListener('click', () => {
+    window.open('./kamoru.life.timer.html', 'lifeTimer', 'width=600, height=250');
+  });
+  label.textContent = remainDay + ' days';
+
+  return menuItemFactory('Remain', ['fa', 'fa-clock-o'], label);
+}
+
+function createLogout() {
+  const label = document.createElement('label');
+  label.classList.add('m-0', 'hover');
+  label.setAttribute('id', 'logout');
+  label.addEventListener('click', () => {
+    let tokenValue = '';
+    document.cookie.split(';').forEach((cookie) => {
+      if ('XSRF-TOKEN' === cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '')) {
+        tokenValue = unescape(cookie.substr(cookie.indexOf('=') + 1));
+        return false;
+      }
+    });
+
+    const logoutForm = document.createElement('form');
+    logoutForm.setAttribute('method', 'POST');
+    logoutForm.setAttribute('action', '/logout');
+
+    const csrfField = document.createElement('input');
+    csrfField.setAttribute('type', 'hidden');
+    csrfField.setAttribute('name', '_csrf');
+    csrfField.setAttribute('value', tokenValue);
+
+    document.body.appendChild(logoutForm);
+    logoutForm.appendChild(csrfField);
+    logoutForm.submit();
+  });
+  Rest.Security.whoami((principal) => {
+    label.textContent = principal.username + ' as ' + principal.authorities[0].authority.replace(/ROLE_/gi, '');
+  });
+
+  return menuItemFactory('Logout', ['fa', 'fa-sign-out'], label);
+}
+
+function menuItemFactory(title, iconClasses, element) {
+  const li = document.createElement('li');
+  const i = document.createElement('i');
+  const div = document.createElement('div');
+  const span = document.createElement('span');
+  i.classList.add(...iconClasses);
+  span.textContent = title;
+  li.appendChild(i);
+  li.appendChild(div);
+  div.appendChild(span);
+  div.appendChild(element);
+  return li;
+}

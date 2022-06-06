@@ -4,8 +4,8 @@
 
 import jQuery from 'jquery';
 
-var STARTING = new Date(1976, 3, 28),
-  DEADLINE = new Date(2031, 3, 28);
+const STARTING = new Date(1976, 3, 28);
+const DEADLINE = new Date(2031, 3, 28);
 
 (function ($) {
   $.fn.lifeTimer = function (options) {
@@ -28,12 +28,12 @@ var STARTING = new Date(1976, 3, 28),
 						<div class="display-time" style="padding: 0 .5rem;"></div>
 					</div>`;
 
-    var SECOND = 1000,
-      MINUTE = SECOND * 60, // 1000 * 60
-      HOUR = MINUTE * 60, // 1000 * 60 * 60
-      DAY = HOUR * 24, // 1000 * 60 * 60 * 24
-      startingTime = STARTING.getTime(),
-      deadlineTime = DEADLINE.getTime();
+    // var SECOND = 1000,
+    //   MINUTE = SECOND * 60, // 1000 * 60
+    //   HOUR = MINUTE * 60, // 1000 * 60 * 60
+    //   DAY = HOUR * 24, // 1000 * 60 * 60 * 24
+    //   startingTime = STARTING.getTime(),
+    //   deadlineTime = DEADLINE.getTime();
 
     var startTimer = function () {
       var $lifeTimer = $('#life-timer');
@@ -51,19 +51,20 @@ var STARTING = new Date(1976, 3, 28),
         var pad = function (x) {
           return x < 10 ? '0' + x : x;
         };
-        var now = new Date().getTime(),
-          timeEntire = deadlineTime - startingTime,
-          timePast = now - startingTime,
-          timeRemaining = deadlineTime - now,
-          entireDay = Math.floor(timeEntire / DAY),
-          pastDay = Math.floor(timePast / DAY),
-          pastHour = Math.floor((timePast % DAY) / HOUR),
-          pastMinute = Math.floor((timePast % HOUR) / MINUTE),
-          pastSecond = Math.floor((timePast % MINUTE) / SECOND),
-          remainDay = Math.floor(timeRemaining / DAY),
-          remainHour = Math.floor((timeRemaining % DAY) / HOUR),
-          remainMinute = Math.floor((timeRemaining % HOUR) / MINUTE),
-          remainSecond = Math.floor((timeRemaining % MINUTE) / SECOND);
+        const { timeEntire, timePast, timeRemaining, pastDay, pastHour, pastMinute, pastSecond, remainDay, remainHour, remainMinute, remainSecond } = calculateLifeTime();
+        // var now = new Date().getTime(),
+        //   timeEntire = deadlineTime - startingTime,
+        //   timePast = now - startingTime,
+        //   timeRemaining = deadlineTime - now,
+        //   entireDay = Math.floor(timeEntire / DAY),
+        //   pastDay = Math.floor(timePast / DAY),
+        //   pastHour = Math.floor((timePast % DAY) / HOUR),
+        //   pastMinute = Math.floor((timePast % HOUR) / MINUTE),
+        //   pastSecond = Math.floor((timePast % MINUTE) / SECOND),
+        //   remainDay = Math.floor(timeRemaining / DAY),
+        //   remainHour = Math.floor((timeRemaining % DAY) / HOUR),
+        //   remainMinute = Math.floor((timeRemaining % HOUR) / MINUTE),
+        //   remainSecond = Math.floor((timeRemaining % MINUTE) / SECOND);
 
         if (timeRemaining < 0) {
           clearInterval(timer);
@@ -105,3 +106,41 @@ var STARTING = new Date(1976, 3, 28),
     });
   };
 })(jQuery);
+
+export function calculateLifeTime() {
+  var SECOND = 1000,
+    MINUTE = SECOND * 60, // 1000 * 60
+    HOUR = MINUTE * 60, // 1000 * 60 * 60
+    DAY = HOUR * 24, // 1000 * 60 * 60 * 24
+    startingTime = STARTING.getTime(),
+    deadlineTime = DEADLINE.getTime();
+
+  var now = Date.now(),
+    timeEntire = deadlineTime - startingTime,
+    timePast = now - startingTime,
+    timeRemaining = deadlineTime - now,
+    entireDay = Math.floor(timeEntire / DAY),
+    pastDay = Math.floor(timePast / DAY),
+    pastHour = Math.floor((timePast % DAY) / HOUR),
+    pastMinute = Math.floor((timePast % HOUR) / MINUTE),
+    pastSecond = Math.floor((timePast % MINUTE) / SECOND),
+    remainDay = Math.floor(timeRemaining / DAY),
+    remainHour = Math.floor((timeRemaining % DAY) / HOUR),
+    remainMinute = Math.floor((timeRemaining % HOUR) / MINUTE),
+    remainSecond = Math.floor((timeRemaining % MINUTE) / SECOND);
+
+  return {
+    timeEntire: timeEntire,
+    timePast: timePast,
+    timeRemaining: timeRemaining,
+    entireDay: entireDay,
+    pastDay: pastDay,
+    pastHour: pastHour,
+    pastMinute: pastMinute,
+    pastSecond: pastSecond,
+    remainDay: remainDay,
+    remainHour: remainHour,
+    remainMinute: remainMinute,
+    remainSecond: remainSecond,
+  };
+}

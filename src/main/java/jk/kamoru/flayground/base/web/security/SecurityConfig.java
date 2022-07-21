@@ -3,10 +3,11 @@ package jk.kamoru.flayground.base.web.security;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -30,12 +31,10 @@ public class SecurityConfig {
 	FlayProperties flayProperties;
 
 	@Bean
-	public AuthenticationManager authenticationManager(AuthenticationManagerBuilder auth) throws Exception {
-		auth.inMemoryAuthentication()
-				.withUser("admin").password("{noop}6974").roles("ADMIN") // {noop} for plain text
-				.and()
-				.withUser("kamoru").password("{noop}3806").roles("USER");
-		return auth.build();
+	public InMemoryUserDetailsManager userDetailsService() {
+		UserDetails user1 = User.withUsername("admin").password("{noop}6974").roles("ADMIN").build();
+		UserDetails user2 = User.withUsername("kamoru").password("{noop}3806").roles("USER").build();
+		return new InMemoryUserDetailsManager(user1, user2);
 	}
 
 	@Bean

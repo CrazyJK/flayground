@@ -1,15 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50">
-  <style>
-    svg {
-      background-color: #00000000;
-      text-align: center;
-      width: 100%;
-      height: 100%;
-    }
-		text {
-			fill: #161616;
-			font: italic bold 32px "Ink Free";
-		}
-</style>
-  <text dx="4" dy="34">Flayground</text>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 50"><style>svg{background-color:#00000000;text-align:center;width:100%;height:100%}text{fill:#161616;font:italic 700 32px &quot;Ink Free&quot;}</style><text dx="4" dy="34">Flayground</text></svg>

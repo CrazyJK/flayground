@@ -32,7 +32,7 @@
         .flay-count {
           font-size: 0.75rem;
           &.flay-count-no {
-            background-color: var(--danger);
+            color: var(--bs-danger);
           }
         }
       }

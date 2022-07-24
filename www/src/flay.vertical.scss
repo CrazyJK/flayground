@@ -384,7 +384,7 @@ label.text:empty {
   }
 }
 @media screen and (max-height: 1000px) {
-  .cover-box {
+  .cover-wrapper .cover-wrapper-inner .cover-box {
     width: var(--cover-width-sm);
     height: var(--cover-height-sm);
   }

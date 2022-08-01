@@ -9,6 +9,7 @@
 @import './@/rainbow.scss';
 @import './@/range.scss';
 @import './@/scrollbar.scss';
+@import './@/frame.scss';
 @import './@/flay.view.card.scss';
 
 :root {
@@ -702,6 +703,7 @@ button.btn.btn-outline-flay {
   justify-content: center;
   background-color: transparent;
   margin-bottom: 0.5rem;
+  z-index: 1;
 }
 #topMenu > nav {
   position: relative;
@@ -712,7 +714,7 @@ button.btn.btn-outline-flay {
   align-content: center;
   justify-content: center;
   gap: 0.5rem;
-  background-color: var(--color-bg-nav);
+  background-color: var(--color-bg);
   padding: 0.25rem 0.5rem;
   transition: background-color 0.3s;
 }

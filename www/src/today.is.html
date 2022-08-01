@@ -1,25 +1,41 @@
-<meta charset="UTF-8" />
-<link rel="stylesheet" href="./today.is.css" />
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Flay today.is</title>
+    <link rel="icon" type="image/png" href="./img/favicon/flay_2.png" />
+    <link rel="stylesheet" href="./_vendors.css" />
+    <link rel="stylesheet" href="./today.is.css" />
+    <script defer type="text/javascript" src="./_vendors.js"></script>
+    <script defer type="text/javascript" src="./_runtime.js"></script>
+    <script defer type="text/javascript" src="./_commons.js"></script>
+    <script defer type="text/javascript" src="./today.is.js"></script>
+  </head>
+  <body>
+    <main id="wrap_body">
+      <div role="body">
+        <div id="topMenu">
+          <nav class="rounded-bottom">
+            <span id="size">14</span>
+            <span id="length">2.5 GB</span>
+            <span id="sorting">
+              <label class="radio"><input type="radio" name="sort" value="T" /><span>Title</span></label>
+              <label class="radio"><input type="radio" name="sort" value="L" /><span>Length</span></label>
+              <label class="radio"><input type="radio" name="sort" value="M" /><span>Modified</span></label>
+            </span>
+          </nav>
+        </div>
 
-<div role="body">
-  <div id="topMenu">
-    <nav class="bg-light rounded-bottom">
-      <span id="size">14</span>
-      <span id="length">2.5 GB</span>
-      <span id="sorting">
-        <label class="radio"><input type="radio" name="sort" value="T" /><span>Title</span></label>
-        <label class="radio"><input type="radio" name="sort" value="L" /><span>Length</span></label>
-        <label class="radio"><input type="radio" name="sort" value="M" /><span>Modified</span></label>
-      </span>
-    </nav>
-  </div>
+        <div id="videoWrapper">
+          <video src="" controls></video>
+          <span class="stop fa fa-times"></span>
+        </div>
 
-  <div id="videoWrapper">
-    <video src="" controls></video>
-    <span class="stop fa fa-times"></span>
-  </div>
+        <div id="folderWrapper"></div>
+      </div>
+    </main>
 
-  <div id="folderWrapper"></div>
-</div>
-
-<script type="text/javascript" src="./today.is.js"></script>
+    <footer></footer>
+  </body>
+</html>

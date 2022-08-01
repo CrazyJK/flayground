@@ -1,0 +1,27 @@
+#background_images {
+  position: fixed;
+  inset: 0;
+  height: 100%;
+  margin: 0;
+  padding: 0.5rem;
+  padding-top: 0;
+
+  .col {
+    padding: 0.5rem;
+    padding-top: 0;
+
+    img {
+      border-radius: 0.25rem;
+      box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      margin-bottom: 1rem;
+      width: inherit;
+      transition: all 0.5s;
+
+      &:first-child {
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+      }
+    }
+  }
+}

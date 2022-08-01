@@ -3,11 +3,16 @@
  */
 
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.all.scss';
+
 import { Random } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { View } from './lib/flay.utils.js';
-import './css/common.scss';
-import './flay.all.scss';
 
 async function fetchAndDecode(url) {
   try {

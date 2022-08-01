@@ -3,10 +3,16 @@
  */
 
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.score.scss';
+
 import { Rest, restCall } from './lib/flay.rest.service.js';
 import { DateUtils, File, GB, birthRegExp, bodyRegExp, heightRegExp, debutRegExp } from './lib/crazy.common.js';
 import { Util, View } from './lib/flay.utils.js';
-import './flay.score.scss';
 
 let flayProperties;
 let flayList = [];

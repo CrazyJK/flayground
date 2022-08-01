@@ -1,8 +1,18 @@
+/**
+ * Flay actress
+ */
+
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.actress.scss';
+
 import { Rest } from './lib/flay.rest.service';
 import { Util, View } from './lib/flay.utils';
 import { Random, Popup } from './lib/crazy.common';
-import './flay.actress.scss';
 
 var $actressTemplete = $('.actress');
 var actressList;

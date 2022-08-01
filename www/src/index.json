@@ -1,32 +1,30 @@
 [
 	{
 		"name": "Home",
-		"method": "both",
-		"url": "./main.html"
+		"url": "./home.html"
 	},
 	{
 		"name": "Search",
-		"method": "popup",
-		"url": "./main.popup.html?target=flay.search.html"
+		"url": "./flay.search.html"
 	},
 	{
 		"name": "Slide",
-		"method": "both",
 		"url": "./image.slide.html"
 	},
 	{
 		"name": "Split View",
-		"method": "both",
 		"url": "./split.view.html"
 	},
 	{
 		"name": "Mobile",
-		"method": "both",
 		"url": "./flay.mobile.html"
 	},
 	{
 		"name": "Today's",
-		"method": "both",
-		"url": "./main.popup.html?target=todayis.html"
+		"url": "./todayis.html"
+	},
+	{
+		"name": "main",
+		"url": "./main.html"
 	}
 ]

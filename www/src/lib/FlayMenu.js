@@ -1,4 +1,4 @@
-import menuItems from '../main.json';
+import menuItems from './FlayMenu.json';
 import { calculateLifeTime } from './kamoru.life.timer';
 import { Rest } from './flay.rest.service';
 import { LocalStorageItem } from './crazy.common.js';
@@ -75,8 +75,15 @@ class FlayMenu extends HTMLElement {
       opacity: 1;
     }
     .nav-wrap h1 {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 0.5rem;
       margin: 2rem 0 1rem;
-      text-align: center;
+    }
+    .nav-wrap h1 img {
+      width: 2rem;
+      border-radius: 1rem;
     }
     .nav-wrap ul.nav {
       display: flex;
@@ -114,6 +121,11 @@ class FlayMenu extends HTMLElement {
     }
     .nav-wrap ul.nav li:hover div a:nth-child(2) {
       opacity: 1;
+    }
+
+    .nav-wrap ul.nav.nav-sub {
+      margin-top: 1rem;
+      padding-right: 0.5rem;
     }
 
     button#themeToggle {
@@ -155,8 +167,11 @@ class FlayMenu extends HTMLElement {
 
     // title
     const title = document.createElement('h1');
+    const titleImg = document.createElement('img');
+    titleImg.setAttribute('src', '/dist/img/favicon/flay_1.png');
+    title.appendChild(titleImg);
     const titleAnker = document.createElement('a');
-    titleAnker.setAttribute('href', '/dist/main.html');
+    titleAnker.setAttribute('href', '/dist/home.html');
     titleAnker.textContent = 'Flayground';
     title.appendChild(titleAnker);
     navWrap.appendChild(title);
@@ -179,11 +194,6 @@ class FlayMenu extends HTMLElement {
       const menuDiv = document.createElement('div');
       li.appendChild(menuDiv);
 
-      // decide url
-      let menuURL = menu.uri;
-      if (menu.mode === 'include') {
-        menuURL = 'main.popup.html?target=' + menu.uri;
-      }
       // decide popup size
       if (menu.popup === 'full') {
         menu.popup = {
@@ -194,14 +204,13 @@ class FlayMenu extends HTMLElement {
 
       // current window
       const anker = document.createElement('a');
-      anker.setAttribute('class', menu.mode);
-      anker.setAttribute('href', menuURL);
+      anker.setAttribute('href', menu.uri);
       anker.textContent = menu.name;
       menuDiv.appendChild(anker);
 
       // new window
       const popup = document.createElement('a');
-      popup.setAttribute('href', `javascript:window.open('${menuURL}', '${menu.name}', 'width=${menu.popup.w},height=${menu.popup.h}')`);
+      popup.setAttribute('href', `javascript:window.open('${menu.uri}', '${menu.name}', 'width=${menu.popup.w},height=${menu.popup.h}')`);
       const popupIcon = document.createElement('i');
       popupIcon.setAttribute('class', 'fa fa-external-link hover');
       popup.appendChild(popupIcon);
@@ -210,7 +219,7 @@ class FlayMenu extends HTMLElement {
 
     // sub menu
     const subMenuNav = document.createElement('ul');
-    subMenuNav.setAttribute('class', 'nav');
+    subMenuNav.setAttribute('class', 'nav nav-sub');
     navWrap.appendChild(subMenuNav);
 
     subMenuNav.appendChild(createThemeToggle());
@@ -296,8 +305,11 @@ function createLogout() {
     logoutForm.appendChild(csrfField);
     logoutForm.submit();
   });
+
   Rest.Security.whoami((principal) => {
-    label.textContent = principal.username + ' as ' + principal.authorities[0].authority.replace(/ROLE_/gi, '');
+    const small = document.createElement('small');
+    small.textContent = principal.username + ' as ' + principal.authorities[0].authority.replace(/ROLE_/gi, '');
+    label.appendChild(small);
   });
 
   return menuItemFactory('Logout', ['fa', 'fa-sign-out'], label);

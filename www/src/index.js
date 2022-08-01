@@ -25,17 +25,14 @@ $('#memo')
   .text(memoText);
 
 menuItems.forEach((menu) => {
-  const $popupAnker = $('<a>').append('<i class="fas fa-location-arrow fa-flip-horizontal fa-xs me-2"></i>');
-  const $hrefAnker = $('<a>').html(menu.name);
+  const $popupAnker = $('<a>')
+    .attr({ href: '#' })
+    .on('click', function () {
+      window.open(menu.url, 'flayground' + menu.name, 'width=1000,height=1000,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1').focus();
+    })
+    .append('<i class="fas fa-location-arrow fa-flip-horizontal fa-xs me-2"></i>');
 
-  if (menu.method === 'both' || menu.method === 'popup') {
-    $popupAnker.attr({ href: '#' }).on('click', function () {
-      window.open(menu.url, 'flayground' + Date.now(), 'width=1000,height=1000,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1').focus();
-    });
-  }
-  if (menu.method === 'both' || menu.method === 'href') {
-    $hrefAnker.attr({ href: menu.url });
-  }
+  const $hrefAnker = $('<a>').attr({ href: menu.url }).html(menu.name);
 
   $('#menuItemWrap').append($('<h2>', { class: 'display-4' }).append($popupAnker, $hrefAnker));
 });

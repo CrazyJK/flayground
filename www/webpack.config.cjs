@@ -8,8 +8,8 @@ module.exports = {
   entry: {
     index: './src/index.js',
     login: './src/login.js',
+    home: './src/home.js',
     main: './src/main.js',
-    'main.popup': './src/main.popup.js',
     'split.view': '/src/split.view.js',
     'flay.vertical': './src/flay.vertical.js',
     'flay.search': './src/flay.search.js',
@@ -38,6 +38,7 @@ module.exports = {
     'image.cloud': './src/image.cloud.js',
     'image.slide': './src/image.slide.js',
     'image.tablet': './src/image.tablet.js',
+    'image.fall': './src/image.fall.js',
     'kamoru.life.timer': './src/kamoru.life.timer.js',
   },
   devtool: 'source-map',

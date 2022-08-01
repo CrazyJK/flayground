@@ -1,10 +1,19 @@
+/**
+ * Flay tile
+ */
+
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.tile.scss';
+
 import { LocalStorageItem, Random, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { View } from './lib/flay.utils.js';
 import { FILEINFO } from './lib/flay.view.card.js';
-import './lib/crazy.jquery.js';
-import './flay.tile.scss';
 
 let flayList = [];
 let filteredList = [];

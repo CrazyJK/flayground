@@ -3,7 +3,6 @@
 		"name": "Vertical",
 		"uri": "./flay.vertical.html",
 		"icon": "fa fa-film",
-		"mode": "include",
 		"popup": {
 			"w": 0,
 			"h": 0
@@ -13,7 +12,6 @@
 		"name": "Archive",
 		"uri": "./flay.archive.html",
 		"icon": "fa fa-th",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 800
@@ -23,7 +21,6 @@
 		"name": "Tile",
 		"uri": "./flay.tile.html",
 		"icon": "fa fa-th",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 800
@@ -33,7 +30,6 @@
 		"name": "Search",
 		"uri": "./flay.search.html",
 		"icon": "fa fa-search",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 800
@@ -43,7 +39,6 @@
 		"name": "Tag",
 		"uri": "./flay.tag.html",
 		"icon": "fa fa-tags",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 800
@@ -53,7 +48,6 @@
 		"name": "Actress",
 		"uri": "./flay.actress.html",
 		"icon": "fa fa-female",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 800
@@ -63,7 +57,6 @@
 		"name": "Actress Rank",
 		"uri": "./flay.actress2.html",
 		"icon": "fa fa-female",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 800
@@ -73,7 +66,6 @@
 		"name": "Subtitles",
 		"uri": "./flay.subtitles.html",
 		"icon": "fa fa-file-text-o",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 1050
@@ -83,7 +75,6 @@
 		"name": "Summary",
 		"uri": "./flay.summary.html",
 		"icon": "fa fa-list",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 1050
@@ -93,7 +84,6 @@
 		"name": "Todayis",
 		"uri": "./today.is.html",
 		"icon": "fa fa-th",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 800
@@ -103,7 +93,6 @@
 		"name": "Notes",
 		"uri": "./flay.note.html",
 		"icon": "fa fa-sticky-note note-btn",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 800
@@ -113,14 +102,12 @@
 		"name": "Basket",
 		"uri": "./flay.basket.html",
 		"icon": "fa fa-shopping-cart",
-		"mode": "include",
 		"popup": "full"
 	},
 	{
 		"name": "Score",
 		"uri": "./flay.score.html",
 		"icon": "fa fa-list",
-		"mode": "include",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -130,7 +117,6 @@
 		"name": "Fav. Opus",
 		"uri": "./flay.fav.opus.html",
 		"icon": "fa fa-list",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -140,7 +126,6 @@
 		"name": "Flay All",
 		"uri": "./flay.all.html",
 		"icon": "fa fa-th",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -150,7 +135,6 @@
 		"name": "Cover Cloud",
 		"uri": "./cover.cloud.html",
 		"icon": "fa fa-image",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -160,7 +144,6 @@
 		"name": "Image Cloud",
 		"uri": "./image.cloud.html",
 		"icon": "fa fa-image",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -170,7 +153,6 @@
 		"name": "Image Slide",
 		"uri": "./image.slide.html",
 		"icon": "fa fa-image",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -180,7 +162,6 @@
 		"name": "Image Tablet",
 		"uri": "./image.tablet.html",
 		"icon": "fa fa-image",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -190,7 +171,6 @@
 		"name": "Image Board",
 		"uri": "./image.board.html",
 		"icon": "fa fa-image",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -200,7 +180,15 @@
 		"name": "Image Banner",
 		"uri": "./image.banner.html",
 		"icon": "fa fa-image",
-		"mode": "href",
+		"popup": {
+			"w": 1078,
+			"h": 1100
+		}
+	},
+	{
+		"name": "Image Fall",
+		"uri": "./image.fall.html",
+		"icon": "fa fa-image",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -210,7 +198,6 @@
 		"name": "RequestMap",
 		"uri": "./util.request.mappings.html",
 		"icon": "fa fa-info",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 1100
@@ -220,7 +207,6 @@
 		"name": "Device Info",
 		"uri": "./util.device.info.html",
 		"icon": "fa fa-info",
-		"mode": "href",
 		"popup": {
 			"w": 1000,
 			"h": 660
@@ -230,7 +216,6 @@
 		"name": "Actuator",
 		"uri": "./util.actuator.index.html",
 		"icon": "fa fa-info",
-		"mode": "href",
 		"popup": {
 			"w": 1000,
 			"h": 830
@@ -240,7 +225,6 @@
 		"name": "Websocket",
 		"uri": "./util.websocket.stat.html",
 		"icon": "fa fa-info",
-		"mode": "href",
 		"popup": {
 			"w": 1078,
 			"h": 830

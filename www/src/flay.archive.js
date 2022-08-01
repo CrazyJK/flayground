@@ -3,11 +3,17 @@
  */
 
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.archive.scss';
+
 import { COVER_RATIO, LocalStorageItem } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { View } from './lib/flay.utils.js';
 import { FILEINFO, ACTRESS_EXTRA, MODIFIED } from './lib/flay.view.card.js';
-import './flay.archive.scss';
 
 var FLAY_ARCHIVE_VIEWTYPE = 'flay.archive.viewType';
 var FLAY_ARCHIVE_PAGESIZE = 'flay.archive.pageSize.';

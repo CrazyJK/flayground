@@ -1,7 +1,17 @@
+/**
+ * tag list
+ */
+
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.tag.scss';
+
 import { Rest } from './lib/flay.rest.service';
 import { Util, View } from './lib/flay.utils';
-import './flay.tag.scss';
 
 const $tagTemplete = $('.tag');
 let isLikeSearchChecked = false;

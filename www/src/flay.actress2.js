@@ -1,7 +1,17 @@
+/**
+ * Flay actress rank
+ */
+
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.actress2.scss';
+
 import { Rest } from './lib/flay.rest.service';
 import { PATH, DEFAULT_SPECS } from './lib/crazy.common';
-import './flay.actress2.scss';
 
 var flayList = [];
 var actressList = [];

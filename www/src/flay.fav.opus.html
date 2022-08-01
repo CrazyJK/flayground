@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
   <head>
-    <title>Favorite Opus List :: Flayground</title>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <link rel="icon" type="image/png" href="./img/favicon/flay_0.png" />
+    <title>Favorite Opus List :: Flayground</title>
+    <link rel="icon" type="image/png" href="./img/favicon/flay_2.png" />
     <link rel="stylesheet" href="./_vendors.css" />
     <link rel="stylesheet" href="./flay.fav.opus.css" />
     <script defer type="text/javascript" src="./_vendors.js"></script>
@@ -13,40 +13,44 @@
     <script defer type="text/javascript" src="./flay.fav.opus.js"></script>
   </head>
   <body>
-    <div class="container-fluid sticky-top bg-white" id="topMenu">
-      <span class="lead font-weight-bolder">Favorite Opus List</span>
-      <span class="check-group sm">
-        <label><input type="radio" name="favoriteOpus" value="FSDSS" /><span>FSDSS</span></label>
-        <label><input type="radio" name="favoriteOpus" value="DLDSS" /><span>DLDSS</span></label>
-        <label><input type="radio" name="favoriteOpus" value="SSIS" /><span>SSIS</span></label>
-        <label><input type="radio" name="favoriteOpus" value="IPX" /><span>IPX</span></label>
-        <label><input type="text" name="favoriteOpus" id="favoriteOpusInput" placeholder="OPUS" /></label>
-      </span>
-      <a href="/dist/main.html"><i class="fa fa-home lead p-2"></i></a>
-    </div>
+    <main id="wrap_body">
+      <div role="body">
+        <div class="container-fluid sticky-top bg-white" id="topMenu">
+          <span class="lead font-weight-bolder">Favorite Opus List</span>
+          <span class="check-group sm">
+            <label><input type="radio" name="favoriteOpus" value="FSDSS" /><span>FSDSS</span></label>
+            <label><input type="radio" name="favoriteOpus" value="DLDSS" /><span>DLDSS</span></label>
+            <label><input type="radio" name="favoriteOpus" value="SSIS" /><span>SSIS</span></label>
+            <label><input type="radio" name="favoriteOpus" value="IPX" /><span>IPX</span></label>
+            <label><input type="text" name="favoriteOpus" id="favoriteOpusInput" placeholder="OPUS" /></label>
+          </span>
+          <a href="/dist/main.html"><i class="fa fa-home lead p-2"></i></a>
+        </div>
 
-    <div id="flayView">
-      <div class="f-head sticky-top">
-        <div>
-          <label class="flay-opus">opus</label>
-          <label class="flay-title">title</label>
-          <label class="flay-actress">actress</label>
-          <label class="flay-release">release</label>
-          <label class="flay-modified">modified</label>
-          <label class="flay-rank">rank</label>
-          <label class="flay-play">play</label>
-          <label class="flay-movie">movie</label>
-          <label class="flay-subti">subti</label>
-          <label class="flay-score">score</label>
-          <label class="flay-length">length</label>
+        <div id="flayView">
+          <div class="f-head sticky-top">
+            <div>
+              <label class="flay-opus">opus</label>
+              <label class="flay-title">title</label>
+              <label class="flay-actress">actress</label>
+              <label class="flay-release">release</label>
+              <label class="flay-modified">modified</label>
+              <label class="flay-rank">rank</label>
+              <label class="flay-play">play</label>
+              <label class="flay-movie">movie</label>
+              <label class="flay-subti">subti</label>
+              <label class="flay-score">score</label>
+              <label class="flay-length">length</label>
+            </div>
+          </div>
+          <div class="f-body">Select Opus</div>
+          <div class="collapse fixed-center rounded bg-warning shadow" id="coverWrap" style="width: 800px">
+            <span class="text-danger hover" style="position: absolute; right: 0; margin: 5px; font-size: 3rem; line-height: 0.5" onclick="$(this).parent().hide();">&times;</span>
+            <img class="img-thumbnail" />
+          </div>
         </div>
       </div>
-      <div class="f-body">Select Opus</div>
-      <div class="collapse fixed-center rounded bg-warning shadow" id="coverWrap" style="width: 800px">
-        <span class="text-danger hover" style="position: absolute; right: 0; margin: 5px; font-size: 3rem; line-height: 0.5" onclick="$(this).parent().hide();">&times;</span>
-        <img class="img-thumbnail" />
-      </div>
-    </div>
+    </main>
 
     <footer></footer>
   </body>

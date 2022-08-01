@@ -3,11 +3,17 @@
  */
 
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.search.scss';
+
 import { Search, Security, View } from './lib/flay.utils.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { birthRegExp, bodyRegExp, LocalStorageItem, File } from './lib/crazy.common.js';
 import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
-import './flay.search.scss';
 
 function baseSearch() {
   $('#query, #opus').on('keyup', function (e) {

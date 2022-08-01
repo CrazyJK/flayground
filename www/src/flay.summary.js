@@ -2,16 +2,21 @@
  * flay summary js
  */
 
+import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
 import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.summary.scss';
+import './lib/jquery.tagcanvas-flay';
+
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
-import $ from 'jquery';
 import { Rest } from './lib/flay.rest.service.js';
 import { Random, File } from './lib/crazy.common.js';
 import { View } from './lib/flay.utils.js';
 import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
-import './lib/jquery.tagcanvas-flay';
-import './flay.summary.scss';
 
 const filterCount = 5;
 

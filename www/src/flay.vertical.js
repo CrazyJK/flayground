@@ -2,19 +2,26 @@
  * Flay Vertical View Javascript
  */
 
+import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './flay.vertical.scss';
+
+import './lib/crazy.effect.neon.js';
+
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
-import $ from 'jquery';
-import './lib/crazy.jquery.js';
-import './lib/crazy.effect.neon.js';
+
 import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File, StringUtils } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
 import { Search, Util, View } from './lib/flay.utils.js';
 import { Rest } from './lib/flay.rest.service.js';
 import flayWebsocket from './lib/flay.websocket.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
-import './flay.vertical.scss';
 
 let flayList = [];
 let collectedList = [];

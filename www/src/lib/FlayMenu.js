@@ -26,6 +26,9 @@ class FlayMenu extends HTMLElement {
     linkElem.setAttribute('href', 'css/font-awesome.css');
     shadow.appendChild(linkElem);
 
+    // current Page
+    const currentPage = location.pathname.split('/').pop();
+
     const style = document.createElement('style');
     style.textContent = `
     a {
@@ -47,6 +50,8 @@ class FlayMenu extends HTMLElement {
     .nav-wrap.fixed,
     .nav-wrap:hover {
       ${alignLeft ? 'left' : 'right'}: 0;
+      /* box-shadow: 0 0 0.5rem var(--color-box-shadow); */
+      border-${alignLeft ? 'right' : 'left'}: 1px solid #000;
     }
     .nav-wrap > span {
       cursor: pointer;
@@ -97,6 +102,9 @@ class FlayMenu extends HTMLElement {
       align-items: center;
       flex: 0 0 2rem;
     }
+    .nav-wrap ul.nav li.active {
+      color: orange;
+    }
     .nav-wrap ul.nav li i {
       flex: 0 0 2rem;
       text-align: center;
@@ -112,6 +120,7 @@ class FlayMenu extends HTMLElement {
       width: 2rem;
       text-align: center;
       opacity: 0;
+      transition: 0.5s;
     }
     .nav-wrap ul.nav li:hover a {
       color: orange;
@@ -183,6 +192,9 @@ class FlayMenu extends HTMLElement {
 
     menuItems.forEach((menu) => {
       const li = document.createElement('li');
+      if (menu.uri.includes(currentPage)) {
+        li.setAttribute('class', 'active');
+      }
       mainMenuNav.appendChild(li);
 
       // icon
@@ -234,11 +246,14 @@ customElements.define('flay-menu', FlayMenu);
 // const flayMenu = document.createElement('flay-menu');
 // flayMenu.setAttribute('data-align', 'right');
 
+let bgTheme = LocalStorageItem.get('flay.bgtheme', 'dark');
+
+// set theme initiate
+document.getElementsByTagName('html')[0].setAttribute('data-theme', bgTheme);
+
 document.body.prepend(new FlayMenu('left'));
 
 function createThemeToggle() {
-  let bgTheme = LocalStorageItem.get('flay.bgtheme', 'dark');
-
   const iSun = document.createElement('i');
   iSun.classList.add('fa', 'fa-sun-o', 'light');
   const iMoon = document.createElement('i');
@@ -274,7 +289,9 @@ function createRemainTimer() {
   label.addEventListener('click', () => {
     window.open('./kamoru.life.timer.html', 'lifeTimer', 'width=600, height=250');
   });
-  label.textContent = remainDay + ' days';
+  const small = document.createElement('small');
+  small.textContent = remainDay + ' days';
+  label.appendChild(small);
 
   return menuItemFactory('Remain', ['fa', 'fa-clock-o'], label);
 }

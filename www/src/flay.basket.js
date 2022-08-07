@@ -11,7 +11,7 @@ import './css/common.scss';
 import './flay.basket.scss';
 
 import { Rest } from './lib/flay.rest.service.js';
-import { MODIFIED, FILEINFO, ACTRESS_EXTRA, COMMENT, STUDIO, actressMapForCard } from './lib/flay.view.card.js';
+import { MODIFIED, FILEINFO, ACTRESS_EXTRA, COMMENT, STUDIO } from './lib/flay.view.card.js';
 import { loading } from './lib/flay.loading.js';
 import { COVER_RATIO, LocalStorageItem, Random } from './lib/crazy.common.js';
 
@@ -21,6 +21,7 @@ const basket = {
   $flayList: null,
   flayList: [],
   actressList: [],
+  actressMap: new Map(),
   RAINBOW_COLOR: ['violet', 'indigo', 'blue', 'green', 'yellow', 'orange', 'red'],
   rainbowIndex: 0,
   totalDisplayCount: 0,
@@ -160,7 +161,7 @@ const basket = {
       return false;
     }
     for (const actressName of actressNameList) {
-      const actress = actressMapForCard.get(actressName);
+      const actress = basket.actressMap.get(actressName);
       if (actress && actress.favorite) {
         return true;
       }
@@ -175,6 +176,9 @@ window.grapFlay = function (opus) {
 
 Rest.Actress.listSync((list) => {
   basket.actressList = list;
+  list.forEach((actress) => {
+    basket.actressMap.set(actress.name, actress);
+  });
 });
 basket.$flayList = $('.flay-list');
 

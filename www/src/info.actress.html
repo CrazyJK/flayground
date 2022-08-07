@@ -62,13 +62,13 @@
           <div class="col-3">
             <span class="check-group mt-1">
               <label>
-                <input type="radio" name="filter" value="u" /><span>unRank<i class="badge filter-cnt-unrank"></i></span>
+                <input type="radio" id="filter-u" name="filter" value="u" /><span>unRank<i class="badge filter-cnt-unrank"></i></span>
               </label>
               <label>
-                <input type="radio" name="filter" value="i" /><span>Inst<i class="badge filter-cnt-instance"></i></span>
+                <input type="radio" id="filter-i" name="filter" value="i" /><span>Inst<i class="badge filter-cnt-instance"></i></span>
               </label>
               <label>
-                <input type="radio" name="filter" value="a" checked /><span>All<i class="badge filter-cnt-all-flay"></i></span>
+                <input type="radio" id="filter-a" name="filter" value="a" /><span>All<i class="badge filter-cnt-all-flay"></i></span>
               </label>
             </span>
           </div>
@@ -80,6 +80,10 @@
         </div>
       </div>
     </nav>
+
+    <div class="container-fluid">
+      <div id="chartdiv"></div>
+    </div>
 
     <div class="actress-cover-wrapper"></div>
 

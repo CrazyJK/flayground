@@ -8,22 +8,6 @@ import { COVER_ASPECT_RATIO, PATH, File } from './crazy.common.js';
 import { Search, Util, View } from './flay.utils.js';
 import flayWebsocket from './flay.websocket.js';
 
-let tagMapForCard = new Map();
-Rest.Tag.list((list) => {
-  console.debug(list);
-  list.forEach((tag) => {
-    tagMapForCard.set(tag.id, tag);
-  });
-});
-
-export let actressMapForCard = new Map();
-Rest.Actress.list((list) => {
-  console.debug(list);
-  list.forEach((actress) => {
-    actressMapForCard.set(actress.name, actress);
-  });
-});
-
 let previewImageBlob = '';
 Rest.Image.blobUrl(`${PATH}./img/bg/flayground_facade.jpg`, (blobUrl) => {
   previewImageBlob = blobUrl;
@@ -408,8 +392,9 @@ export const STUDIO = 'studio',
         $flayCard.find('.flay-tag-wrapper').empty();
         if (settings.width >= 500) {
           flay.video.tags.forEach((tag) => {
-            const sourceTag = tagMapForCard.get(tag.id);
-            $flayCard.find('.flay-tag-wrapper').append(`<label class="text flay-tag extra" title="${sourceTag.description}">${sourceTag.name}</label>`);
+            // const sourceTag = tagMapForCard.get(tag.id);
+            // $flayCard.find('.flay-tag-wrapper').append(`<label class="text flay-tag extra" title="${sourceTag.description}">${sourceTag.name}</label>`);
+            $flayCard.find('.flay-tag-wrapper').append(`<label class="text flay-tag extra" title="${tag.description}">${tag.name}</label>`);
           });
         }
       }
@@ -454,7 +439,8 @@ export const STUDIO = 'studio',
 
       $.each(flay.actressList, function (idx, name) {
         if (name !== '') {
-          const actress = actressMapForCard.get(name);
+          const actress = Rest.Actress.getSync(name);
+          console.log(name, actress);
           const $actress = $(templateActress);
           $actress.appendTo($wrapper);
           $actress.attr('data-actress', name);

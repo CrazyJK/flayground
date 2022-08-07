@@ -21,3 +21,8 @@ input.form-control.input-invalid {
 .btn-group > .btn {
   border: 1px solid var(--color-border-form);
 }
+
+#chartdiv {
+  background-color: rgba(0, 0, 0, 0.5);
+  height: 8rem;
+}

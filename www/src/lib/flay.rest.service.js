@@ -221,6 +221,17 @@ export const Rest = {
         console.error('Rest.Actress.get: no name!');
       }
     },
+    getSync: function (name) {
+      if (name != '') {
+        let ret = null;
+        restCall('/info/actress/' + name, { async: false }, function (actress) {
+          ret = actress;
+        });
+        return ret;
+      } else {
+        console.error('Rest.Actress.get: no name!');
+      }
+    },
     list: function (callback, failCallback) {
       restCall('/info/actress/list', {}, callback, failCallback);
     },

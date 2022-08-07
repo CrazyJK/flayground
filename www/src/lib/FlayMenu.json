@@ -9,6 +9,15 @@
     }
   },
   {
+    "name": "Search",
+    "uri": "./flay.search.html",
+    "icon": "fa fa-search",
+    "popup": {
+      "w": 1078,
+      "h": 800
+    }
+  },
+  {
     "name": "Archive",
     "uri": "./flay.archive.html",
     "icon": "fa fa-th",
@@ -21,15 +30,6 @@
     "name": "Tile",
     "uri": "./flay.tile.html",
     "icon": "fa fa-th",
-    "popup": {
-      "w": 1078,
-      "h": 800
-    }
-  },
-  {
-    "name": "Search",
-    "uri": "./flay.search.html",
-    "icon": "fa fa-search",
     "popup": {
       "w": 1078,
       "h": 800
@@ -186,7 +186,7 @@
     }
   },
   {
-    "name": "Image Fall",
+    "name": "Image Waterfall",
     "uri": "./image.fall.html",
     "icon": "fa fa-image",
     "popup": {

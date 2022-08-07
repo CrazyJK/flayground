@@ -1,8 +1,13 @@
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+
 import { reqParam } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
-import './css/common.scss';
 
 const studioName = reqParam.s;
 const $flayList = $('.flay-list');
@@ -22,6 +27,11 @@ Rest.Studio.get(
 );
 
 Rest.Flay.find('studio/' + studioName, (flayList) => {
+  flayList.sort((flay1, flay2) => {
+    const c = flay2.release.toLowerCase().localeCompare(flay1.release);
+    return c === 0 ? flay2.opus.toLowerCase().localeCompare(flay1.opus) : c;
+  });
+
   displayFlayList(flayList).then(() => {
     console.log('completed load');
   });
@@ -30,11 +40,6 @@ Rest.Flay.find('studio/' + studioName, (flayList) => {
 async function displayFlayList(flayList) {
   $('.video-count').html(flayList.length);
   $flayList.empty();
-
-  flayList.sort((flay1, flay2) => {
-    const c = flay2.release.toLowerCase().localeCompare(flay1.release);
-    return c === 0 ? flay2.opus.toLowerCase().localeCompare(flay1.opus) : c;
-  });
 
   let count = 0;
   for (const flay of flayList) {

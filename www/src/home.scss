@@ -1,0 +1,70 @@
+$columnMargin: 1.5rem;
+
+.container-grid {
+  background: var(--color-bg-overlay) url(./img/svg/flayground1.svg) no-repeat center / 600px;
+  display: grid;
+  grid-template-areas:
+    'grid-11 grid-12 grid-13'
+    'grid-21 grid-22 grid-23'
+    'grid-31 grid-32 grid-33';
+  grid-template-columns: #{$columnMargin} 1fr #{$columnMargin};
+  grid-template-rows: 2.5rem 1fr 1rem;
+
+  .grid-item {
+    overflow: auto;
+
+    @for $i from 1 through 3 {
+      @for $j from 1 through 3 {
+        &.grid-#{$i}#{$j} {
+          grid-area: grid-#{$i}#{$j};
+          border: 0;
+        }
+      }
+    }
+  }
+}
+
+#filter {
+  opacity: 0;
+  transition: 0.4s;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+#opusList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, auto));
+  grid-auto-flow: dense;
+  gap: 0.25rem;
+
+  font-family: D2Coding;
+  font-size: 0.875rem;
+
+  label {
+    margin: 0;
+    padding: 0;
+    border-radius: 0.25rem;
+    color: gray;
+    text-align: center;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    &.opened {
+      background-color: rgba(0, 0, 255, 0.5);
+      text-shadow: 0 0 1px blue;
+    }
+
+    &.selected {
+      cursor: pointer;
+      color: var(--color-text-active);
+      font-weight: 700;
+
+      &.found {
+        background-color: rgba(255, 0, 0, 0.5);
+      }
+    }
+  }
+}

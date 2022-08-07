@@ -15,6 +15,7 @@ import './lib/crazy.effect.neon.js';
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
 import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
+import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 
 import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File, StringUtils } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
@@ -38,6 +39,7 @@ let keyInputQueue = '';
 let keyLastInputTime = Date.now();
 
 const am5Root = am5.Root.new('chartdiv');
+am5Root.setThemes([am5themes_Animated.new(am5Root)]);
 am5Root.locale = am5locales_ko_KR;
 
 const now = new Date();
@@ -1411,6 +1413,7 @@ function drawGraph(historyList) {
     });
   }
 
+  // make chart
   am5Root.container.children.clear();
   let chart = am5Root.container.children.push(am5xy.XYChart.new(am5Root, {}));
 
@@ -1424,30 +1427,32 @@ function drawGraph(historyList) {
 
   let xAxis = chart.xAxes.push(
     am5xy.DateAxis.new(am5Root, {
-      maxDeviation: 0,
       baseInterval: {
         timeUnit: 'day',
         count: 1,
       },
       renderer: am5xy.AxisRendererX.new(am5Root, { inside: true }),
-      tooltip: am5.Tooltip.new(am5Root, {}),
     })
   );
 
   let xRenderer = xAxis.get('renderer');
   xRenderer.labels.template.setAll({
     fill: am5.color(0xffffff),
-    fontSize: '14px',
+    fontSize: '12px',
   });
 
   let yAxis = chart.yAxes.push(
     am5xy.ValueAxis.new(am5Root, {
       min: 0,
       max: 1,
-      maxPrecision: 0,
       renderer: am5xy.AxisRendererY.new(am5Root, { inside: true }),
     })
   );
+
+  let yRenderer = yAxis.get('renderer');
+  yRenderer.labels.template.setAll({
+    visible: false,
+  });
 
   let series = chart.series.push(
     am5xy.ColumnSeries.new(am5Root, {

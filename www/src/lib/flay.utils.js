@@ -9,12 +9,62 @@ import { Rest } from './flay.rest.service.js';
 const todayYear = new Date().getFullYear();
 
 export const Util = {
+  Flay: {
+    sort: function (flayList, sort) {
+      const compareTo = (data1, data2) => {
+        var result = 0;
+        if (typeof data1 === 'number') {
+          result = data1 - data2;
+        } else if (typeof data1 === 'string') {
+          result = data1.toLowerCase().localeCompare(data2.toLowerCase());
+        } else if (typeof data1 === 'object') {
+          // maybe actressList
+          result = Util.Actress.getNames(data1).localeCompare(Util.Actress.getNames(data2));
+        } else {
+          result = data1 > data2 ? 1 : -1;
+        }
+        return result;
+      };
+      flayList.sort(function (flay1, flay2) {
+        switch (sort) {
+          case 'S': {
+            const sVal = compareTo(flay1.studio, flay2.studio);
+            return sVal === 0 ? compareTo(flay1.opus, flay2.opus) : sVal;
+          }
+          case 'O':
+            return compareTo(flay1.opus, flay2.opus);
+          case 'T':
+            return compareTo(flay1.title, flay2.title);
+          case 'A': {
+            const aVal = compareTo(flay1.actressList, flay2.actressList);
+            return aVal === 0 ? compareTo(flay1.opus, flay2.opus) : aVal;
+          }
+          case 'R': {
+            const rVal = compareTo(flay1.release, flay2.release);
+            return rVal === 0 ? compareTo(flay1.opus, flay2.opus) : rVal;
+          }
+          case 'M':
+            return compareTo(flay1.lastModified, flay2.lastModified);
+          case 'P': {
+            const pVal = compareTo(flay1.video.play, flay2.video.play);
+            return pVal === 0 ? compareTo(flay1.release, flay2.release) : pVal;
+          }
+        }
+      });
+    },
+  },
   Tag: {
     includes: function (tags, _tag) {
       var found = false;
       $.each(tags, function (idx, tag) {
-        if (tag.id === _tag.id) {
-          found = true;
+        if (typeof _tag === 'string') {
+          if (tag.name === _tag) {
+            found = true;
+          }
+        } else {
+          if (tag.id === _tag.id) {
+            found = true;
+          }
         }
       });
       return found;

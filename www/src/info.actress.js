@@ -1,11 +1,21 @@
 import $ from 'jquery';
+import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './css/common.scss';
+import './info.actress.scss';
+
 import { reqParam, birthRegExp, bodyRegExp, heightRegExp, debutRegExp, Random } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { Util, Search } from './lib/flay.utils.js';
 import { loading } from './lib/flay.loading.js';
 import { ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
-import './css/common.scss';
-import './info.actress.scss';
+
+import * as am5 from '@amcharts/amcharts5';
+import * as am5xy from '@amcharts/amcharts5/xy';
+import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
+import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 
 const name = reqParam.name;
 let actress;
@@ -157,8 +167,11 @@ Rest.Actress.get(name, (_actress_) => {
     );
     $('.filter-cnt-unrank').html(instanceList.filter((flay) => flay.video.rank === 0).length);
 
+    renderChart(flayAllList);
+
     displayFlayList(flayAllList).then(() => {
       console.log('completed load');
+      $('#filter-i').click();
     });
   });
 });
@@ -179,4 +192,86 @@ async function displayFlayList(flayList) {
 
 function sleep(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function renderChart(flayList) {
+  let root = am5.Root.new('chartdiv');
+  root.setThemes([am5themes_Animated.new(root)]);
+  root.locale = am5locales_ko_KR;
+
+  let chart = root.container.children.push(am5xy.XYChart.new(root, {}));
+
+  let xAxis = chart.xAxes.push(
+    am5xy.DateAxis.new(root, {
+      baseInterval: {
+        timeUnit: 'day',
+        count: 1,
+      },
+      renderer: am5xy.AxisRendererX.new(root, { inside: false }),
+    })
+  );
+
+  let xRenderer = xAxis.get('renderer');
+  xRenderer.labels.template.setAll({
+    fill: am5.color(0xffffff),
+    fontSize: '12px',
+  });
+
+  let yAxis = chart.yAxes.push(
+    am5xy.ValueAxis.new(root, {
+      min: -2,
+      max: 6,
+      renderer: am5xy.AxisRendererY.new(root, { inside: true, minGridDistance: 20 }),
+    })
+  );
+
+  let yRenderer = yAxis.get('renderer');
+  yRenderer.labels.template.setAll({ visible: false });
+
+  let series = chart.series.push(
+    am5xy.SmoothedXLineSeries.new(root, {
+      xAxis: xAxis,
+      yAxis: yAxis,
+      valueYField: 'value',
+      valueXField: 'date',
+    })
+  );
+
+  let rangeDataItem = yAxis.makeDataItem({
+    value: 1000,
+    endValue: 0,
+  });
+
+  let range = series.createAxisRange(rangeDataItem);
+
+  series.strokes.template.setAll({ strokeWidth: 2 });
+  range.strokes.template.setAll({ stroke: am5.color(0xff621f) });
+
+  series.fills.template.setAll({ fillOpacity: 0.1, visible: true });
+  range.fills.template.setAll({ fill: am5.color(0xff621f) });
+
+  series.bullets.push(function () {
+    return am5.Bullet.new(root, {
+      sprite: am5.Circle.new(root, {
+        radius: 3,
+        fill: am5.color(0xffa500),
+      }),
+    });
+  });
+
+  series.data.processor = am5.DataProcessor.new(root, {
+    dateFormat: 'yyyy.MM.dd',
+    dateFields: ['date'],
+  });
+
+  series.data.setAll(
+    flayList.map((flay) => {
+      return {
+        date: flay.release,
+        value: flay.archive ? -1 : flay.video.rank,
+      };
+    })
+  );
+
+  chart.appear(1000, 100);
 }

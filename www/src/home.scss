@@ -51,16 +51,19 @@ $columnMargin: 1.5rem;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
+    opacity: 0;
 
     &.opened {
       background-color: rgba(0, 0, 255, 0.5);
       text-shadow: 0 0 1px blue;
+      opacity: 1;
     }
 
     &.selected {
       cursor: pointer;
       color: var(--color-text-active);
       font-weight: 700;
+      opacity: 1;
 
       &.found {
         background-color: rgba(255, 0, 0, 0.5);

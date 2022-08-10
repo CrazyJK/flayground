@@ -503,6 +503,31 @@ export class DateUtils {
   }
 }
 
+export class NumberUtils {
+  static calculateAverage(...number) {
+    let count = number.length;
+    let sum = number.reduce((preiousvValue, currentValue) => preiousvValue + currentValue, 0);
+    let average = sum / count;
+    // console.log('NumberUtils.calculateAverage num', number);
+    // console.log('NumberUtils.calculateAverage cnt', count);
+    // console.log('NumberUtils.calculateAverage sum', sum);
+    // console.log('NumberUtils.calculateAverage avg', average);
+    return average;
+  }
+  static calculateStandardDeviation(...number) {
+    let average = this.calculateAverage(...number);
+    let deviation = number.reduce((pV, cV) => pV + Math.pow(cV - average, 2), 0);
+    let sd = Math.sqrt(deviation / number.length);
+    // console.log('NumberUtils.calculateStandardDeviation dev', deviation);
+    // console.log('NumberUtils.calculateStandardDeviation  sd', sd);
+    return {
+      cnt: number.length,
+      avg: average,
+      sd: sd,
+    };
+  }
+}
+
 export var KB = 1024,
   MB = KB * KB,
   GB = MB * KB,

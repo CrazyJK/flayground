@@ -34,7 +34,8 @@
   display: inline-flex;
   width: 850px;
 }
-.card-body > .table {
+.card-body .table,
+.bg-chalkboard * {
   font-family: D2Coding;
 }
 .card-body .table-hover tbody tr:hover {
@@ -133,4 +134,35 @@ td.item-progress > .progress > .progress-bar {
 
 #releaseChartDiv {
   background-color: #fff8;
+}
+
+.summary-list {
+  table {
+    tbody {
+      tr {
+        td {
+          &:nth-child(1) {
+            text-align: left;
+          }
+
+          &:nth-child(2),
+          &:nth-child(3),
+          &:nth-child(5),
+          &:nth-child(6),
+          &:nth-child(8),
+          &:nth-child(9),
+          &:nth-child(10),
+          &:nth-child(12) {
+            text-align: right;
+          }
+
+          &:nth-child(4),
+          &:nth-child(7),
+          &:nth-child(11) {
+            font-size: 0.875rem;
+          }
+        }
+      }
+    }
+  }
 }

@@ -4,17 +4,21 @@
 
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
+import bootstrap from 'bootstrap/dist/js/bootstrap';
 import './lib/crazy.jquery';
 import './lib/FlayMenu';
 import './css/common.scss';
 import './flay.summary.scss';
+
 import './lib/jquery.tagcanvas-flay';
 
 import * as am5 from '@amcharts/amcharts5';
 import * as am5xy from '@amcharts/amcharts5/xy';
+import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
+import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+
 import { Rest } from './lib/flay.rest.service.js';
-import { Random, File } from './lib/crazy.common.js';
+import { Random, File, NumberUtils } from './lib/crazy.common.js';
 import { View } from './lib/flay.utils.js';
 import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
 
@@ -23,6 +27,10 @@ const filterCount = 5;
 let instanceList = [];
 let archiveList = [];
 let actressList = [];
+
+let allFlayList = [];
+let studioArray = [];
+let actressArray = [];
 
 Promise.all([
   new Promise((resolve, reject) => {
@@ -34,14 +42,66 @@ Promise.all([
   new Promise((resolve, reject) => {
     Rest.Actress.list(resolve);
   }),
-]).then(([instanceValues, archiveValues, actressValues]) => {
-  instanceList = instanceValues;
-  archiveList = archiveValues;
-  actressList = actressValues;
+]).then((result) => {
+  [instanceList, archiveList, actressList] = result;
+  allFlayList = [...instanceList, ...archiveList];
+
   console.log('Rest.Flay.list', instanceList.length);
   console.log('Rest.Archive.list', archiveList.length);
-  console.log('Rest.Actress.list', archiveList.length);
+  console.log('Rest.Actress.list', actressList.length);
+
+  loadStudioArray();
+  loadActressArray();
 });
+
+function loadStudioArray() {
+  const studioMap = {};
+  allFlayList.forEach((flay) => {
+    const key = flay.studio;
+    if (studioMap[key]) {
+      studioMap[key].push(flay);
+    } else {
+      studioMap[key] = [flay];
+    }
+  });
+
+  $.each(studioMap, function (name, flayList) {
+    studioArray.push({
+      key: name,
+      list: flayList,
+    });
+  });
+  studioArray.sort(function (d1, d2) {
+    return d2.list.length - d1.list.length;
+  });
+}
+
+function loadActressArray() {
+  const actressMap = {};
+  allFlayList.forEach((flay) => {
+    const keys = flay.actressList;
+    for (var x in keys) {
+      if (keys[x] === 'Amateur') {
+        continue;
+      }
+      if (actressMap[keys[x]]) {
+        actressMap[keys[x]].push(flay);
+      } else {
+        actressMap[keys[x]] = [flay];
+      }
+    }
+  });
+
+  $.each(actressMap, function (name, flayList) {
+    actressArray.push({
+      key: name,
+      list: flayList,
+    });
+  });
+  actressArray.sort(function (d1, d2) {
+    return d2.list.length - d1.list.length;
+  });
+}
 
 document.getElementById('groupByRelease').addEventListener('show.bs.collapse', function () {
   var val = $("input[name='releasePattern']:checked").val();
@@ -125,44 +185,34 @@ document.getElementById('groupByRank').addEventListener('show.bs.collapse', func
 });
 
 document.getElementById('groupByStudio').addEventListener('show.bs.collapse', function () {
-  var $list = $('#studioList').empty();
+  const $list = $('#studioList').empty();
 
-  var dataMap = {},
-    studioCount = 0;
-  $.each(instanceList, function (idx, flay) {
-    var key = flay.studio;
-    if (dataMap[key]) {
-      dataMap[key].push(flay);
-    } else {
-      dataMap[key] = [flay];
-      ++studioCount;
-    }
-  });
-  $('.studio-count').html(studioCount);
+  let displayCount = 0;
+  studioArray.forEach((data) => {
+    const studioName = data.key;
+    const flayList = data.list.filter((flay) => !flay.archive);
 
-  var dataArray = [];
-  $.each(dataMap, function (key, val) {
-    if (val.length > filterCount) {
-      dataArray.push({
-        key: key,
-        list: val,
-      });
+    // instance가 최소 갯수 이상만
+    if (flayList.length <= filterCount) {
+      return;
     }
-  });
-  $.each(dataArray, function (idx, data) {
-    var tagWeight = data.list.length > 100 ? 60 : data.list.length < 20 ? 10 : data.list.length / 2;
+
+    displayCount++;
+
+    const tagWeight = flayList.length > 100 ? 60 : flayList.length < 20 ? 10 : flayList.length / 2;
 
     $('<a>', {
       'data-weight': Math.round(tagWeight),
     })
-      .append(data.key + ' (' + data.list.length + ')')
+      .append(studioName + ' (' + flayList.length + ')')
       .on('click', function (e) {
         e.preventDefault();
-        View.studio(data.key);
+        View.studio(studioName);
       })
       .appendTo($list);
   });
-  $('.studio-count').html(dataArray.length + ' / ' + studioCount);
+
+  $('.studio-count').html(displayCount + ' / ' + studioArray.length);
   $('.filter-count').html(filterCount);
 
   var wOpts = {
@@ -200,134 +250,102 @@ document.getElementById('groupByStudio').addEventListener('hide.bs.collapse', fu
 });
 
 document.getElementById('StudioTable').addEventListener('show.bs.collapse', function () {
-  var dataMap = {},
-    studioCount = 0;
-  $.each(instanceList, function (idx, flay) {
-    var key = flay.studio;
-    if (dataMap[key]) {
-      dataMap[key].push(flay);
-    } else {
-      dataMap[key] = [flay];
-      ++studioCount;
-    }
-  });
+  const $tbody = $('#studioTableWrap tbody').empty();
 
-  var dataArray = [];
-  $.each(dataMap, function (key, val) {
-    if (val.length > filterCount) {
-      dataArray.push({
-        key: key,
-        list: val,
-      });
-    }
-  });
-  dataArray.sort(function (d1, d2) {
-    //		return d1.key.localeCompare(d2.key);
-    return d2.list.length - d1.list.length;
-  });
+  let displayCount = 0;
+  studioArray.forEach((data) => {
+    const studioName = data.key;
 
-  $('.studio-count').html(dataArray.length + ' / ' + studioCount);
-  $('.filter-count').html(filterCount);
+    const totalList = data.list;
+    const instanceList = [];
+    const favoriteList = [];
 
-  var $tbody = $('#studioTableWrap tbody').empty();
-  $.each(dataArray, function (idx, data) {
-    var flayLength = data.list.length;
-    var flayFileSize = 0;
-    var flayRankSum = 0;
-    var flayRankLength = 0;
-    var flayRankAvg = 0.0;
-    var favLength = 0;
-    var favFileSize = 0;
-    var favRankSum = 0;
-    var favRankLength = 0;
-    var favRankAvg = 0.0;
-    var favRatio = 0.0;
-
-    for (let flay of data.list) {
-      flayFileSize += flay.length;
-      if (flay.video.rank > 0) {
-        flayRankSum += flay.video.rank;
-        flayRankLength++;
-      }
-      if (isFavoriteActress(flay.actressList)) {
-        favLength++;
-        favFileSize += flay.length;
-        if (flay.video.rank > 0) {
-          favRankSum += flay.video.rank;
-          favRankLength++;
+    totalList.forEach((flay) => {
+      if (!flay.archive) {
+        instanceList.push(flay);
+        if (isFavoriteActress(flay.actressList)) {
+          favoriteList.push(flay);
         }
       }
+    });
+
+    // instance가 최소 갯수 이상만
+    if (instanceList.length <= filterCount) {
+      return;
     }
 
-    flayRankAvg = flayRankSum / flayRankLength;
-    favRankAvg = favRankSum / favRankLength;
-    favRatio = Math.round((favLength / flayLength) * 100) + '%';
+    displayCount++;
+
+    const tot = NumberUtils.calculateStandardDeviation(...totalList.map((flay) => flay.video.rank));
+    const ins = NumberUtils.calculateStandardDeviation(...instanceList.map((flay) => flay.video.rank));
+    const fav = NumberUtils.calculateStandardDeviation(...favoriteList.map((flay) => flay.video.rank));
 
     $('<tr>')
       .append(
-        $('<td>').html(data.key),
-        $('<td>').html(flayLength),
-        $('<td>').html(File.formatSize(flayFileSize)),
-        $('<td>').html(flayRankAvg > 0 ? flayRankAvg.toFixed(1) : ''),
+        $('<td>').html(studioName),
 
-        $('<td>').html(favLength),
-        $('<td>').html(File.formatSize(favFileSize)),
-        $('<td>').html(favRankAvg > 0 ? favRankAvg.toFixed(1) : ''),
-        $('<td>').html(favRatio)
+        $('<td>').html(tot.cnt),
+        $('<td>').html(tot.avg.toFixed(1)),
+        $('<td>').html(tot.sd.toFixed(1)),
+
+        $('<td>').html(ins.cnt),
+        $('<td>').html(ins.avg.toFixed(1)),
+        $('<td>').html(ins.sd.toFixed(1)),
+        $('<td>').html(Math.round((ins.cnt / tot.cnt) * 100) + '%'),
+
+        $('<td>').html(fav.cnt),
+        $('<td>').html(fav.avg.toFixed(1)),
+        $('<td>').html(fav.sd.toFixed(1)),
+        $('<td>').html(Math.round((fav.cnt / tot.cnt) * 100) + '%')
       )
       .on('click', function () {
-        displayFlayList(data.key, data.list);
+        displayFlayList(studioName, instanceList);
       })
       .appendTo($tbody);
   });
-});
-document.getElementById('StudioTable').addEventListener('hide.bs.collapse', function () {
-  $('#studioCanvas').tagcanvas('delete');
+
+  $tbody.find('td').each((idx, td) => {
+    const text = td.innerText;
+    if (text === 'NaN') {
+      $(td).css('color', 'var(--bs-secondary)');
+    } else if (text.startsWith('-')) {
+      $(td).css('color', 'var(--bs-danger)');
+    }
+  });
+
+  $('.studio-count').html(displayCount + ' / ' + studioArray.length);
+  $('.filter-count').html(filterCount);
 });
 
 document.getElementById('groupByActress').addEventListener('show.bs.collapse', function () {
-  var $list = $('#actressList').empty();
+  const $list = $('#actressList').empty();
 
-  var dataMap = {},
-    actressCount = 0;
-  $.each(instanceList, function (idx, flay) {
-    var keys = flay.actressList;
-    for (var x in keys) {
-      if (keys[x] === 'Amateur') {
-        continue;
-      }
-      if (dataMap[keys[x]]) {
-        dataMap[keys[x]].push(flay);
-      } else {
-        dataMap[keys[x]] = [flay];
-        ++actressCount;
-      }
-    }
-  });
+  let displayCount = 0;
+  actressArray.forEach((data) => {
+    const actressName = data.key;
+    const flayList = data.list.filter((flay) => !flay.archive);
 
-  var dataArray = [];
-  $.each(dataMap, function (key, val) {
-    if (val.length > filterCount) {
-      dataArray.push({
-        key: key,
-        list: val,
-      });
+    // instance가 최소 갯수 이상만
+    if (flayList.length <= filterCount) {
+      return;
     }
-  });
-  $.each(dataArray, function (idx, data) {
-    var tagWeight = data.list.length > 60 ? 60 : data.list.length < 10 ? 9 : data.list.length;
+
+    displayCount++;
+
+    const tagWeight = flayList.length > 60 ? 60 : flayList.length < 10 ? 9 : flayList.length;
 
     $('<a>', {
       'data-weight': Math.round(tagWeight),
     })
-      .append(data.key + ' (' + data.list.length + ')')
+      .append(data.key + ' (' + flayList.length + ')')
       .on('click', function (e) {
         e.preventDefault();
         View.actress(data.key);
       })
       .appendTo($list);
   });
-  $('.actress-count').html(dataArray.length + ' / ' + actressCount);
+
+  $('.actress-count').html(displayCount + ' / ' + actressArray.length);
   $('.filter-count').html(filterCount);
 
   var wOpts = {
@@ -364,72 +382,62 @@ document.getElementById('groupByActress').addEventListener('hide.bs.collapse', f
 });
 
 document.getElementById('ActressTable').addEventListener('show.bs.collapse', function () {
-  var dataMap = {},
-    actressCount = 0;
-  $.each(instanceList, function (idx, flay) {
-    var keys = flay.actressList;
-    for (var x in keys) {
-      if (keys[x] === 'Amateur') {
-        continue;
-      }
-      if (dataMap[keys[x]]) {
-        dataMap[keys[x]].push(flay);
-      } else {
-        dataMap[keys[x]] = [flay];
-        ++actressCount;
-      }
-    }
-  });
-
-  var dataArray = [];
-  $.each(dataMap, function (key, val) {
-    if (val.length > filterCount) {
-      dataArray.push({
-        key: key,
-        list: val,
-      });
-    }
-  });
-  dataArray.sort(function (d1, d2) {
-    //		return d1.key.localeCompare(d2.key);
-    return d2.list.length - d1.list.length;
-  });
-
-  $('.actress-count').html(dataArray.length + ' / ' + actressCount);
-  $('.filter-count').html(filterCount);
-
   var $tbody = $('#actressTableWrap tbody').empty();
-  $.each(dataArray, function (idx, data) {
-    var flayLength = data.list.length;
-    var flayFileSize = 0;
-    var filteredLength = 0;
-    var filteredFileSize = 0;
-    var filteredRankSum = 0;
-    var filteredRankLength = 0;
-    var filteredRankAvg = 0.0;
 
-    for (let flay of data.list) {
-      flayFileSize += flay.length;
-      if (flay.video.rank > 0) {
-        filteredLength++;
-        filteredFileSize += flay.length;
-        filteredRankSum += flay.video.rank;
-        filteredRankLength++;
+  let displayCount = 0;
+
+  actressArray.forEach((data) => {
+    const actressName = data.key;
+
+    const totalList = data.list;
+    const instanceList = [];
+
+    totalList.forEach((flay) => {
+      if (!flay.archive) {
+        instanceList.push(flay);
       }
+    });
+
+    // instance가 최소 갯수 이상만
+    if (instanceList.length <= filterCount) {
+      return;
     }
 
-    filteredRankAvg = filteredRankSum / filteredRankLength;
+    displayCount++;
+
+    const tot = NumberUtils.calculateStandardDeviation(...totalList.map((flay) => flay.video.rank));
+    const ins = NumberUtils.calculateStandardDeviation(...instanceList.map((flay) => flay.video.rank));
 
     $('<tr>')
-      .append($('<td>').html(data.key), $('<td>').html(flayLength), $('<td>').html(File.formatSize(flayFileSize)), $('<td>').html(filteredLength), $('<td>').html(File.formatSize(filteredFileSize)), $('<td>').html(filteredRankAvg > 0 ? filteredRankAvg.toFixed(1) : ''))
+      .append(
+        $('<td>').html(actressName),
+
+        $('<td>').html(tot.cnt),
+        $('<td>').html(tot.avg.toFixed(1)),
+        $('<td>').html(tot.sd.toFixed(1)),
+
+        $('<td>').html(ins.cnt),
+        $('<td>').html(ins.avg.toFixed(1)),
+        $('<td>').html(ins.sd.toFixed(1)),
+        $('<td>').html(Math.round((ins.cnt / tot.cnt) * 100) + '%')
+      )
       .on('click', function () {
-        displayFlayList(data.key, data.list);
+        displayFlayList(actressName, instanceList);
       })
       .appendTo($tbody);
   });
-});
-document.getElementById('ActressTable').addEventListener('hide.bs.collapse', function () {
-  $('#studioCanvas').tagcanvas('delete');
+
+  $tbody.find('td').each((idx, td) => {
+    const text = td.innerText;
+    if (text === 'NaN') {
+      $(td).css('color', 'var(--bs-secondary)');
+    } else if (text.startsWith('-')) {
+      $(td).css('color', 'var(--bs-danger)');
+    }
+  });
+
+  $('.actress-count').html(displayCount + ' / ' + actressArray.length);
+  $('.filter-count').html(filterCount);
 });
 
 function displaySummaryTableView(dataMap, $list) {
@@ -530,7 +538,7 @@ function displayFlayList(key, list, start) {
     return;
   }
 
-  $('#groupByKey').html(key + ' - ' + list.length);
+  $('#flayListModalLabel').html(key + ' - ' + list.length);
   const $flayList = $('#flayList');
   const ONE_PAGE = 21;
   if (!start) {
@@ -556,13 +564,15 @@ function displayFlayList(key, list, start) {
       displayFlayList(key, list, end);
     });
 
-  // $('.flay-list-wrapper').show();
-  $('.flay-list-modal').modal({
+  const myModal = new bootstrap.Modal('#flayListModal', {
     backdrop: false,
   });
+  myModal.show();
 }
 
 let root = am5.Root.new('releaseChart');
+root.setThemes([am5themes_Animated.new(root)]);
+root.locale = am5locales_ko_KR;
 
 // ---- flay release chart
 document.getElementById('releaseChartDiv').addEventListener('show.bs.collapse', () => {

@@ -129,6 +129,19 @@ export const Rest = {
       let keyword = typeof actress === 'object' ? actress.name : actress;
       restCall('/archive/find/actress/' + keyword, {}, callback);
     },
+    findByActressAll: (actress, callback) => {
+      Promise.all([
+        new Promise((resolve) => {
+          Rest.Flay.findByActress(actress, resolve);
+        }),
+        new Promise((resolve) => {
+          Rest.Flay.findByActressInArchive(actress, resolve);
+        }),
+      ]).then(([instanceList, archiveList]) => {
+        const flayAllList = [...instanceList, ...archiveList];
+        callback(flayAllList);
+      });
+    },
     findCandidates: function (callback) {
       restCall('/flay/candidates', { title: 'Find candidates' }, callback);
     },

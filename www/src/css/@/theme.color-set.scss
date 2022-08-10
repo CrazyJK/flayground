@@ -85,6 +85,7 @@
 .table {
   color: var(--color-text);
 }
-.table-hover tbody tr:hover {
+.table-hover tbody tr:hover,
+.table-hover > tbody > tr:hover > * {
   color: var(--color-text);
 }

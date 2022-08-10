@@ -80,7 +80,7 @@ function initiate() {
       const actress = flay.actressList.join(',');
       const tag = flay.video.tags.map((tag) => tag.name).join(',');
       const opus = flay.opus.slice(-7, flay.opus.length);
-      return $(`<label class="rank-${flay.video.rank}" data-actress="${actress}" data-tag="${tag}" data-title="${title}">${opus}</label>`).on('click', (e) => {
+      return $(`<div class="rank-${flay.video.rank}" data-actress="${actress}" data-tag="${tag}" data-title="${title}">${opus}</div>`).on('click', (e) => {
         View.flay(flay.opus);
         $(e.target).addClass('opened');
       });

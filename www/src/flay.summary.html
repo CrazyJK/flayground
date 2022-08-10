@@ -37,7 +37,7 @@
 
         <div class="container-fluid text-center">
           <div id="groupByStudio" class="collapse card m-2 bg-chalkboard">
-            <div class="card-header text-center">Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video</div>
+            <div class="card-header text-center">Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> flay</div>
             <div class="card-body text-center">
               <canvas id="studioCanvas" width="800" height="800"></canvas>
               <div id="studioList" style="display: none"></div>
@@ -45,24 +45,31 @@
           </div>
 
           <div id="StudioTable" class="collapse card m-2 bg-chalkboard">
-            <div class="card-header text-center">Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> video</div>
+            <div class="card-header text-center">Grouped by Studio (<span class="studio-count"></span>) over <span class="filter-count"></span> flay</div>
             <div class="card-body text-center pt-0">
               <div class="summary-list" id="studioTableWrap">
-                <table class="table table-sm table-hover">
+                <table class="table table-sm table-hover table-bordered">
                   <thead>
                     <tr>
                       <th rowspan="2">Name</th>
                       <th colspan="3">Total</th>
-                      <th colspan="3">Favorite</th>
-                      <th rowspan="2">Fav. ratio</th>
+                      <th colspan="4">Instance</th>
+                      <th colspan="4">Favorite</th>
                     </tr>
                     <tr>
-                      <th>length</th>
-                      <th>size</th>
-                      <th>avg rank</th>
-                      <th>length</th>
-                      <th>size</th>
-                      <th>avg rank</th>
+                      <th>flay</th>
+                      <th>rank</th>
+                      <th>s.d</th>
+
+                      <th>flay</th>
+                      <th>rank</th>
+                      <th>s.d</th>
+                      <th>%</th>
+
+                      <th>flay</th>
+                      <th>rank</th>
+                      <th>s.d</th>
+                      <th>%</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -83,19 +90,22 @@
             <div class="card-header text-center">Grouped by Actress (<span class="actress-count"></span>) over <span class="filter-count"></span> video</div>
             <div class="card-body text-center pt-0">
               <div class="summary-list" id="actressTableWrap">
-                <table class="table table-sm table-hover">
+                <table class="table table-sm table-hover table-bordered">
                   <thead>
                     <tr>
                       <th rowspan="2">Name</th>
-                      <th colspan="2">Total</th>
-                      <th colspan="3">Ranked</th>
+                      <th colspan="3">Total</th>
+                      <th colspan="4">Instance</th>
                     </tr>
                     <tr>
-                      <th>length</th>
-                      <th>size</th>
-                      <th>length</th>
-                      <th>size</th>
+                      <th>flay</th>
                       <th>rank</th>
+                      <th>s.d</th>
+
+                      <th>flay</th>
+                      <th>rank</th>
+                      <th>s.d</th>
+                      <th>%</th>
                     </tr>
                   </thead>
                   <tbody></tbody>
@@ -205,14 +215,12 @@
           </div>
         </div>
 
-        <div class="modal fade flay-list-modal" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal fade" id="flayListModal" tabindex="-1" aria-labelledby="flayListModalLabel" aria-hidden="true">
           <div class="modal-dialog modal-fluid mt-5 mx-3">
             <div class="modal-content">
               <div class="modal-header">
-                <h5 class="modal-title w-100 text-center" id="groupByKey">New message</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                  <span aria-hidden="true">&times;</span>
-                </button>
+                <h5 class="modal-title w-100 text-center" id="flayListModalLabel">New message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
               </div>
               <div class="modal-body">
                 <div class="text-center mt-2 flay-list" id="flayList"></div>
@@ -223,15 +231,6 @@
             </div>
           </div>
         </div>
-
-        <!-- <div class="flay-list-wrapper">
-          <i class="fa fa-times float-right hover" onclick="$(this).parent().hide()"></i>
-          <h4 class="text-center mt-1">
-            <label class="text title" id="groupByKey"></label>
-          </h4>
-          <div class="text-center mt-2 flay-list" id="flayList"></div>
-          <button class="btn btn-block btn-outline-secondary mt-2" id="moreFlayList" style="display: none">More</button>
-        </div> -->
       </div>
     </main>
 

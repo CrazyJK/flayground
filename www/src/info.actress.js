@@ -6,7 +6,7 @@ import './lib/FlayMenu';
 import './css/common.scss';
 import './info.actress.scss';
 
-import { reqParam, birthRegExp, bodyRegExp, heightRegExp, debutRegExp, Random } from './lib/crazy.common.js';
+import { reqParam, birthRegExp, bodyRegExp, heightRegExp, debutRegExp, Random, NumberUtils } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { Util, Search } from './lib/flay.utils.js';
 import { loading } from './lib/flay.loading.js';
@@ -153,18 +153,10 @@ Rest.Actress.get(name, (_actress_) => {
 
     $('.filter-cnt-instance').html(instanceList.length);
     $('.filter-cnt-all-flay').html(flayAllList.length);
-    $('#avgRank').html(
-      ((flayList) => {
-        let rankAvg = { sum: 0, cnt: 0 };
-        flayList
-          .filter((flay) => flay.video.rank > 0)
-          .forEach((flay) => {
-            rankAvg.sum += flay.video.rank;
-            rankAvg.cnt++;
-          });
-        return (rankAvg.sum / rankAvg.cnt).toFixed(1);
-      })(instanceList)
-    );
+
+    const { avg, sd } = NumberUtils.calculateStandardDeviation(...flayAllList.map((flay) => flay.video.rank));
+    $('#averageRank').html(avg.toFixed(1));
+    $('#standardDeviation').html(sd.toFixed(1));
     $('.filter-cnt-unrank').html(instanceList.filter((flay) => flay.video.rank === 0).length);
 
     renderChart(flayAllList);

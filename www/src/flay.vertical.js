@@ -17,7 +17,7 @@ import * as am5xy from '@amcharts/amcharts5/xy';
 import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 
-import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File, StringUtils } from './lib/crazy.common.js';
+import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File, StringUtils, NumberUtils } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
 import { Search, Util, View } from './lib/flay.utils.js';
 import { Rest } from './lib/flay.rest.service.js';
@@ -1115,23 +1115,28 @@ function showVideo(args) {
           .appendTo($('.info-wrapper-actress'));
 
         // avg rank of actress
-        Rest.Flay.findByActress(name, (flayListOfActress) => {
+        Rest.Flay.findByActressAll(name, (flayListOfActress) => {
+          const { avg, sd } = NumberUtils.calculateStandardDeviation(...flayListOfActress.map((flay) => flay.video.rank));
           $actress.find('.info-actress-flaycount').html(`${flayListOfActress.length}<small>F</small>`).neonLoading(false);
           $actress
             .find('.info-actress-avgrank')
-            .html(
-              ((flayList) => {
-                let rankAvg = { sum: 0, cnt: 0 };
-                flayList
-                  .filter((flay) => flay.video.rank > 0)
-                  .forEach((flay) => {
-                    rankAvg.sum += flay.video.rank;
-                    rankAvg.cnt++;
-                  });
-                return (rankAvg.cnt > 0 ? (rankAvg.sum / rankAvg.cnt).toFixed(1) : 0) + '<small>R/' + rankAvg.cnt + '</small>';
-              })(flayListOfActress)
-            )
+            .html(`${avg.toFixed(1)}<small>R/<span title="StandardDeviation">${sd.toFixed(1)}</span></small>`)
             .neonLoading(false);
+          // $actress
+          //   .find('.info-actress-avgrank')
+          //   .html(
+          //     ((flayList) => {
+          //       let rankAvg = { sum: 0, cnt: 0 };
+          //       flayList
+          //         .filter((flay) => flay.video.rank > 0)
+          //         .forEach((flay) => {
+          //           rankAvg.sum += flay.video.rank;
+          //           rankAvg.cnt++;
+          //         });
+          //       return (rankAvg.cnt > 0 ? (rankAvg.sum / rankAvg.cnt).toFixed(1) : 0) + '<small>R/' + rankAvg.cnt + '</small>';
+          //     })(flayListOfActress)
+          //   )
+          //   .neonLoading(false);
         });
       });
       resolve(true);

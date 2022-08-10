@@ -93,8 +93,12 @@ div[role='body'] {
         margin: 0;
         text-align: left;
       }
+      &.file-wrapper-subtitles:empty {
+        display: none;
+      }
     }
   }
+
   .file-wrapper-rename {
     #rename-studio {
       flex: 0 0 100px;
@@ -375,7 +379,7 @@ label.text:empty {
     max-width: var(--cover-width-lg);
   }
 }
-@media screen and (max-height: 1250px) {
+@media screen and (max-height: 1330px) {
   .info-wrapper > dl > dd:not(:last-child) {
     display: inline-block;
   }

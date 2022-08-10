@@ -1097,7 +1097,6 @@ function showVideo(args) {
             $('<label>', { class: 'text info-actress-local' }).html(actress.localName),
             $('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
             $('<label>', { class: 'text info-actress-avgrank' }).html('&nbsp;').neonLoading(true),
-            // $('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress, currentFlay.release.substring(0, 4)).ifNotZero('<small>y</small>')),
             $('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
             $('<label>', { class: 'text info-actress-birth' }).html(
               actress.birth.replace(/年|月|日/g, (match, offset, string) => {
@@ -1114,29 +1113,15 @@ function showVideo(args) {
           )
           .appendTo($('.info-wrapper-actress'));
 
-        // avg rank of actress
+        // flay count, rank avg
         Rest.Flay.findByActressAll(name, (flayListOfActress) => {
-          const { avg, sd } = NumberUtils.calculateStandardDeviation(...flayListOfActress.map((flay) => flay.video.rank));
-          $actress.find('.info-actress-flaycount').html(`${flayListOfActress.length}<small>F</small>`).neonLoading(false);
+          const { cnt, avg, sd } = NumberUtils.calculateStandardDeviation(...flayListOfActress.map((flay) => flay.video.rank));
+          const cntIns = flayListOfActress.filter((flay) => !flay.archive).length;
+          $actress.find('.info-actress-flaycount').html(`${cntIns}<small>/${cnt}F</small>`).neonLoading(false);
           $actress
             .find('.info-actress-avgrank')
             .html(`${avg.toFixed(1)}<small>R/<span title="StandardDeviation">${sd.toFixed(1)}</span></small>`)
             .neonLoading(false);
-          // $actress
-          //   .find('.info-actress-avgrank')
-          //   .html(
-          //     ((flayList) => {
-          //       let rankAvg = { sum: 0, cnt: 0 };
-          //       flayList
-          //         .filter((flay) => flay.video.rank > 0)
-          //         .forEach((flay) => {
-          //           rankAvg.sum += flay.video.rank;
-          //           rankAvg.cnt++;
-          //         });
-          //       return (rankAvg.cnt > 0 ? (rankAvg.sum / rankAvg.cnt).toFixed(1) : 0) + '<small>R/' + rankAvg.cnt + '</small>';
-          //     })(flayListOfActress)
-          //   )
-          //   .neonLoading(false);
         });
       });
       resolve(true);
@@ -1230,7 +1215,7 @@ function showVideo(args) {
   // modified, last access
   const mDate = new Date(currentFlay.lastModified);
   const aDate = new Date(currentFlay.video.lastAccess);
-  $('.info-modified').html(`<small>${mDate.format('yy/MM/dd')} <i class="fa fa-arrow-${mDate > aDate ? 'left' : 'right'} mx-1"></i> ${aDate.format('yy/MM/dd')}</small>`);
+  $('.info-modified').html(`<small><span title="lastModified">${mDate.format('yy/MM/dd')}</span> <i class="fa fa-arrow-${mDate > aDate ? 'left' : 'right'} mx-1"></i> <span title="lastAccess">${aDate.format('yy/MM/dd')}</span></small>`);
   // video file
   const movieSize = currentFlay.files.movie.length;
   $('.info-video')

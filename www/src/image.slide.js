@@ -4,12 +4,14 @@
 
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
+import 'bootstrap/dist/js/bootstrap';
+import './lib/crazy.jquery';
+import './lib/FlayMenu';
+import './image.slide.scss';
+
 import { LocalStorageItem, Popup, Random, PATH, File } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
-import './lib/crazy.jquery';
-import './image.slide.scss';
-import './lib/FlayMenu';
 
 var totalCount = 0;
 var currIndex = 0;
@@ -27,7 +29,6 @@ var $controlBox = $('#controlBox');
 var $progress = $('#paginationProgress > .progress-bar');
 
 $image.navEvent(function (signal, e) {
-  //		console.log('e.keyCode', signal);
   switch (signal) {
     case 32: // key space
       control.random();
@@ -53,7 +54,6 @@ $image.navEvent(function (signal, e) {
 
 $controlBox
   .on('init', function () {
-    //		console.log('$controlBox init');
     Rest.Image.size(function (count) {
       totalCount = count;
       $('#totalNo').html(totalCount);
@@ -74,7 +74,7 @@ $controlBox
     $('#currNo').val(currIndex);
   })
   .on('notice', function (e, msg) {
-    var $span = $('<span>', { class: 'msgBox' }).html(msg).appendTo($('#notice'));
+    const $span = $('<span>', { class: 'msgBox' }).html(msg).appendTo($('#notice'));
     setTimeout(function () {
       $span.hide('blind', { direction: 'right' }, 500, function () {
         $(this).remove();
@@ -126,7 +126,7 @@ $controlBox
   })
   .on('keyup', '#currNo', function (e) {
     e.stopPropagation();
-    if (e.keyCode === 13) {
+    if (e.key === 'Enter') {
       control.jump(
         parseInt(
           $(this)
@@ -144,27 +144,27 @@ $progress.on('progress', function () {
   });
 });
 
-var control = {
-  jump: function (idx) {
+const control = {
+  jump: (idx) => {
     currIndex = idx;
     view();
   },
-  random: function () {
+  random: () => {
     currIndex = Random.getInteger(0, totalCount);
     view();
   },
-  prev: function () {
+  prev: () => {
     currIndex--;
     view();
   },
-  next: function () {
+  next: () => {
     currIndex++;
     view();
   },
 };
 
-var view = function () {
-  function show() {
+const view = () => {
+  const show = () => {
     if (random) {
       currIndex = Random.getInteger(0, totalCount);
     } else {
@@ -175,21 +175,20 @@ var view = function () {
       }
     }
 
-    var image = new Image();
-    image.onload = function () {
-      var _self = this;
+    const image = new Image();
+    image.onload = () => {
       $image.css({
-        backgroundImage: 'url(' + _self.src + ')',
+        backgroundImage: 'url(' + image.src + ')',
       });
       $progress.trigger('progress');
 
       // rotate
-      var factor = 1.0,
-        degree = 0;
+      let factor = 1.0;
+      let degree = 0;
       if (autofit && bgSize === 'contain') {
-        var isVerticalWindow = window.innerWidth < window.innerHeight;
-        var isVerticalImage = _self.naturalWidth < _self.naturalHeight;
-        var imageVerticalRatio = _self.naturalHeight / _self.naturalWidth;
+        const isVerticalWindow = window.innerWidth < window.innerHeight;
+        const isVerticalImage = image.naturalWidth < image.naturalHeight;
+        const imageVerticalRatio = image.naturalHeight / image.naturalWidth;
         if (isVerticalWindow != isVerticalImage && (imageVerticalRatio < 0.8 || 1.2 < imageVerticalRatio)) {
           factor = isVerticalImage ? imageVerticalRatio : 1 / imageVerticalRatio;
           degree = 90;
@@ -200,7 +199,7 @@ var view = function () {
       });
       // console.log('currIndex', currIndex, 'isVerticalWindow', isVerticalWindow, 'isVerticalImage', isVerticalImage, 'imageVerticalRatio', imageVerticalRatio, 'factor', factor);
 
-      getDominatedColors(_self, { scale: 0.1, offset: 16, ignore: [] }).then((dominatedColors) => {
+      getDominatedColors(image, { scale: 0.1, offset: 16, ignore: [] }).then((dominatedColors) => {
         $image.css({
           boxShadow: `inset 0 0 4rem 2rem rgba(${dominatedColors[0].rgba.join(',')})`,
           backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
@@ -211,17 +210,17 @@ var view = function () {
       });
 
       // get info
-      Rest.Image.get(currIndex, function (info) {
-        $controlBox.trigger('setInfo', [_self, info]);
+      Rest.Image.get(currIndex, (info) => {
+        $controlBox.trigger('setInfo', [image, info]);
       });
     };
     image.src = PATH + '/static/image/' + currIndex;
-  }
+  };
 
   clearInterval(bgInterval);
   show();
   if (!pause) {
-    bgInterval = setInterval(function () {
+    bgInterval = setInterval(() => {
       currIndex++;
       show();
     }, 1000 * bgIntervalTime);

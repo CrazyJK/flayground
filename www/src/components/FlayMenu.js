@@ -1,8 +1,8 @@
-import menuItems from './FlayMenu.json';
-import { calculateLifeTime } from './kamoru.life.timer';
-import { Rest } from './flay.rest.service';
-import { LocalStorageItem } from './crazy.common.js';
-import flayWebsocket from './flay.websocket.js';
+import menuItems from '../components/FlayMenu.json';
+import { calculateLifeTime } from '../lib/kamoru.life.timer';
+import { Rest } from '../lib/flay.rest.service';
+import { LocalStorageItem } from '../lib/crazy.common.js';
+import flayWebsocket from '../lib/flay.websocket.js';
 
 /* ref)
    https://developer.mozilla.org/ko/docs/Web/Web_Components/Using_custom_elements

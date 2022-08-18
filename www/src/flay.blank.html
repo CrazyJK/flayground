@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Blank</title>
+    <link rel="icon" type="image/png" href="./img/favicon/flay_0.png" />
+    <link rel="stylesheet" href="./_vendors.css" />
+    <link rel="stylesheet" href="./flay.blank.css" />
+    <script defer type="text/javascript" src="./_vendors.js"></script>
+    <script defer type="text/javascript" src="./_runtime.js"></script>
+    <script defer type="text/javascript" src="./_commons.js"></script>
+    <script defer type="text/javascript" src="./flay.blank.js"></script>
+  </head>
+  <body>
+    <main class="container-grid full-screen">
+      <div class="grid-item grid-11"></div>
+      <div class="grid-item grid-12">
+        <div class="text-center" id="filter">
+          <label style="width: 8rem">
+            <input class="form-control form-control-sm border-0 find-input" type="text" id="find-title" placeholder="Title" />
+          </label>
+          <label style="width: 8rem">
+            <input class="form-control form-control-sm border-0 find-input" type="text" id="find-actress" list="actress-opt" placeholder="Actress" />
+            <datalist id="actress-opt"></datalist>
+          </label>
+          <label style="width: 8rem">
+            <input class="form-control form-control-sm border-0 find-input" type="text" id="find-tag" list="tag-opt" placeholder="Tag" />
+            <datalist id="tag-opt"></datalist>
+          </label>
+          <rank-select id="filter-rank" multiple></rank-select>
+        </div>
+      </div>
+      <div class="grid-item grid-13"></div>
+      <div class="grid-item grid-21"></div>
+      <div class="grid-item grid-22">
+        <div id="opusList"></div>
+      </div>
+      <div class="grid-item grid-23"></div>
+      <div class="grid-item grid-31"></div>
+      <div class="grid-item grid-32"></div>
+      <div class="grid-item grid-33"></div>
+    </main>
+
+    <footer></footer>
+  </body>
+</html>

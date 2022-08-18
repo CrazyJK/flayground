@@ -11,6 +11,7 @@ module.exports = {
     home: './src/home.js',
     main: './src/main.js',
     'split.view': '/src/split.view.js',
+    'flay.blank': './src/flay.blank.js',
     'flay.vertical': './src/flay.vertical.js',
     'flay.search': './src/flay.search.js',
     'flay.tag': './src/flay.tag.js',

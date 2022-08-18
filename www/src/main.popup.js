@@ -5,7 +5,7 @@ import { Rest } from './lib/flay.rest.service.js';
 import { loading } from './lib/flay.loading.js';
 import 'bootstrap/dist/js/bootstrap';
 import './css/common.scss';
-import './lib/FlayMenu';
+import './components/FlayMenu';
 
 const isAdmin = Security.hasRole('ADMIN');
 const username = Security.getName();

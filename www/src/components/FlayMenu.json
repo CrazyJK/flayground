@@ -18,6 +18,15 @@
     }
   },
   {
+    "name": "Blank",
+    "uri": "./flay.blank.html",
+    "icon": "fa fa-film",
+    "popup": {
+      "w": 0,
+      "h": 0
+    }
+  },
+  {
     "name": "Archive",
     "uri": "./flay.archive.html",
     "icon": "fa fa-th",

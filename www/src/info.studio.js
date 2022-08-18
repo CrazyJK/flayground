@@ -2,7 +2,7 @@ import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import 'bootstrap/dist/js/bootstrap';
 import './lib/crazy.jquery';
-import './lib/FlayMenu';
+import './components/FlayMenu';
 import './css/common.scss';
 
 import { reqParam } from './lib/crazy.common.js';

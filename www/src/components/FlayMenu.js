@@ -21,16 +21,23 @@ class FlayMenu extends HTMLElement {
     let alignLeft = dataAlign !== 'right';
 
     // style
-    const linkElem = document.createElement('link');
-    linkElem.setAttribute('rel', 'stylesheet');
-    linkElem.setAttribute('href', 'css/font-awesome.css');
-    shadow.appendChild(linkElem);
+    const fontAwesomelinkElem = document.createElement('link');
+    fontAwesomelinkElem.setAttribute('rel', 'stylesheet');
+    fontAwesomelinkElem.setAttribute('href', 'css/font-awesome.css');
+    shadow.appendChild(fontAwesomelinkElem);
 
     // current Page
     const currentPage = location.pathname.split('/').pop();
 
     const style = document.createElement('style');
     style.textContent = `
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+      border: 0;
+      background-color: rgba(255, 255, 255, 0);
+    }
+
     a {
       color: #607d8b;
       text-decoration: none;
@@ -46,6 +53,8 @@ class FlayMenu extends HTMLElement {
       overflow: hidden;
       z-index: 6974892;
       transition: ${alignLeft ? 'left' : 'right'} 0.4s;
+      display: flex;
+      flex-direction: column;
     }
     .nav-wrap.fixed,
     .nav-wrap:hover {
@@ -96,11 +105,20 @@ class FlayMenu extends HTMLElement {
       list-style: none;
       margin: 0;
       padding: 0;
+      font-size: 0.875em;
     }
     .nav-wrap ul.nav li {
       display: flex;
       align-items: center;
-      flex: 0 0 2rem;
+      flex: 0 0 1.75rem;
+    }
+    @media screen and (min-height: 1400px) {
+      .nav-wrap ul.nav {
+        font-size: 1em;
+      }
+      .nav-wrap ul.nav li {
+        flex: 0 0 2rem;
+      }
     }
     .nav-wrap ul.nav li.active {
       color: orange;
@@ -132,15 +150,21 @@ class FlayMenu extends HTMLElement {
       opacity: 1;
     }
 
+    .nav-wrap ul.nav.nav-main {
+      overflow-y: auto;
+    }
     .nav-wrap ul.nav.nav-sub {
-      margin-top: 1rem;
+      margin-top: auto;
+      margin-bottom: 0.5rem;
       padding-right: 0.5rem;
     }
 
     button#themeToggle {
       background-color: transparent;
-      border: 1px solid #273439;
+      border: 0;
       color: inherit;
+      margin: 0;
+      padding: 0;
     }
     button#themeToggle > i {
       margin: 0.25rem 0.5rem;
@@ -180,14 +204,14 @@ class FlayMenu extends HTMLElement {
     titleImg.setAttribute('src', '/dist/img/favicon/flay_1.png');
     title.appendChild(titleImg);
     const titleAnker = document.createElement('a');
-    titleAnker.setAttribute('href', '/dist/home.html');
+    titleAnker.setAttribute('href', '/dist/flay.ground.html');
     titleAnker.textContent = 'Flayground';
     title.appendChild(titleAnker);
     navWrap.appendChild(title);
 
     // main menu
     const mainMenuNav = document.createElement('ul');
-    mainMenuNav.setAttribute('class', 'nav');
+    mainMenuNav.setAttribute('class', 'nav nav-main');
     navWrap.appendChild(mainMenuNav);
 
     menuItems.forEach((menu) => {

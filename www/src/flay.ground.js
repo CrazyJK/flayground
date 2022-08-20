@@ -9,4 +9,4 @@ import './components/FlayMenu';
 import './components/RankSelect';
 import './css/common.scss';
 import './lib/crazy.jquery';
-import './home.scss';
+import './flay.ground.scss';

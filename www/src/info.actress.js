@@ -2,9 +2,9 @@ import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import 'bootstrap/dist/js/bootstrap';
 import './lib/crazy.jquery';
-import './components/FlayMenu';
 import './css/common.scss';
 import './info.actress.scss';
+import './lib/flay.websocket.js';
 
 import { reqParam, birthRegExp, bodyRegExp, heightRegExp, debutRegExp, Random, NumberUtils } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';

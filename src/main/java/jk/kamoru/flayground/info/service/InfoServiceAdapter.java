@@ -4,12 +4,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
 import jk.kamoru.flayground.info.domain.Info;
 import jk.kamoru.flayground.info.source.InfoSource;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoService<T, K> {
+
+	ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
 	@Autowired InfoSource<T, K> infoSource;
 	@Autowired AnnounceService notificationService;
@@ -39,20 +45,32 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
 	@Override
 	public T create(T create) {
 		T created = infoSource.create(create);
-		notificationService.announceTo("Created", created.toString());
+		try {
+			notificationService.announceTo("Created", jsonWriter.writeValueAsString(created));
+		} catch (JsonProcessingException e) {
+			log.error(e.getMessage());
+		}
 		return created;
 	}
 
 	@Override
 	public void update(T update) {
 		infoSource.update(update);
-		notificationService.announceTo("Updated", update.toString());
+		try {
+			notificationService.announceTo("Updated", jsonWriter.writeValueAsString(update));
+		} catch (JsonProcessingException e) {
+			log.error(e.getMessage());
+		}
 	}
 
 	@Override
 	public void delete(T delete) {
 		infoSource.delete(delete);
-		notificationService.announceTo("Deleted", delete.toString());
+		try {
+			notificationService.announceTo("Deleted", jsonWriter.writeValueAsString(delete));
+		} catch (JsonProcessingException e) {
+			log.error(e.getMessage());
+		}
 	}
 
 }

@@ -97,6 +97,13 @@ export const Rest = {
     getScore: function (opus, callback) {
       restCall('/flay/' + opus + '/score', {}, callback);
     },
+    getScoreSync: function (opus) {
+      let score = 0;
+      restCall('/flay/' + opus + '/score', { async: false }, function (s) {
+        score = s;
+      });
+      return score;
+    },
     list: function (callback, failCallback) {
       restCall('/flay/list', {}, callback, failCallback);
     },

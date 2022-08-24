@@ -13,7 +13,17 @@
     <script defer type="text/javascript" src="./flay.ground.js"></script>
   </head>
   <body>
-    <main class="full-screen"></main>
+    <main class="full-screen">
+      <div id="flayContainer" style="opacity: 1">
+        <img id="flayCover" />
+        <div id="flayInfo"></div>
+      </div>
+    </main>
+
+    <div class="progress bg-black w-100 fixed-bottom" id="paginationProgress" style="height: 1px">
+      <div class="progress-bar bg-danger" style="width: 0%"></div>
+    </div>
+
     <footer></footer>
   </body>
 </html>

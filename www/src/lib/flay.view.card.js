@@ -8,11 +8,6 @@ import { COVER_ASPECT_RATIO, PATH, File } from './crazy.common.js';
 import { Search, Util, View } from './flay.utils.js';
 import flayWebsocket from './flay.websocket.js';
 
-let previewImageBlob = '';
-Rest.Image.blobUrl(`${PATH}./img/bg/flayground_facade.jpg`, (blobUrl) => {
-  previewImageBlob = blobUrl;
-});
-
 export const STUDIO = 'studio',
   ACTRESS = 'actress',
   ACTRESS_EXTRA = 'actressExtra',
@@ -24,7 +19,8 @@ export const STUDIO = 'studio',
   BASKET = 'basket',
   TAG = 'tag',
   ROW_TITLE = 'rowTitle',
-  ROW_DESC = 'rowDesc';
+  ROW_DESC = 'rowDesc',
+  SEARCH = 'search';
 
 (function ($) {
   $.fn.appendFlayCard = function (flay, args) {
@@ -44,7 +40,7 @@ export const STUDIO = 'studio',
 
     const templateFlay = `
 				<div class="flay-card">
-					<dl class="flay-card-body bg-black" style="background-image: url('${previewImageBlob}')">
+					<dl class="flay-card-body bg-black" style="overflow: hidden;">
 						<dt class="flay-card-title"><label class="text lg nowrap flay-title hover">Title</label></dt>
 						<dd class="flay-card-text flay-rank-wrapper"></dd>
 						<dd class="flay-card-text"><label class="text flay-studio">Studio</label></dd>
@@ -151,9 +147,13 @@ export const STUDIO = 'studio',
           View.video(flay.opus);
         });
       // opus search
-      $flayCard.find('.flay-opus-search').on('click', function () {
-        Search.opus(flay.opus);
-      });
+      if (settings.exclude.includes(SEARCH)) {
+        $flayCard.find('.flay-opus-search').remove();
+      } else {
+        $flayCard.find('.flay-opus-search').on('click', function () {
+          Search.opus(flay.opus);
+        });
+      }
       // add-basket-btn
       if (settings.exclude.includes(BASKET)) {
         $flayCard.find('.add-basket-btn').remove();
@@ -440,7 +440,7 @@ export const STUDIO = 'studio',
       $.each(flay.actressList, function (idx, name) {
         if (name !== '') {
           const actress = Rest.Actress.getSync(name);
-          console.log(name, actress);
+          // console.log(name, actress);
           const $actress = $(templateActress);
           $actress.appendTo($wrapper);
           $actress.attr('data-actress', name);

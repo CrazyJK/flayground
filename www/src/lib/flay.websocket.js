@@ -182,6 +182,7 @@ class FlayWebsocket {
         notification.title = body.title;
         notification.content = body.content;
         notification.time.setTime(body.time);
+        console.log(body);
         break;
       }
       default:

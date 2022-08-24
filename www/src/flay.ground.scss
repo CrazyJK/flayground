@@ -1,3 +1,74 @@
 main {
-  background: var(--color-bg-overlay) url(./img/svg/flayground1.svg) no-repeat center / 600px;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center; // flex-start
+  align-items: center;
+  background-color: var(--color-bg-overlay);
+
+  #flayContainer {
+    position: relative;
+    background: url(./img/svg/flayground1.svg) no-repeat right bottom / 16rem;
+    border-radius: 1rem;
+    box-shadow: 0 0 1rem 1rem var(--color-box-shadow);
+    margin: 2rem 1rem;
+    padding: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    min-width: 800px;
+    max-width: 1200px;
+    min-height: 800px;
+
+    #flayCover {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      width: 400px;
+      border-radius: 0.5rem;
+      z-index: 1;
+      opacity: 0.75;
+    }
+
+    #flayInfo {
+      position: relative;
+      font-family: D2Coding;
+      font-size: 0.875em;
+      white-space: pre-wrap;
+      margin: 0;
+      padding: 0;
+      opacity: 1;
+      width: 100%;
+      max-height: calc(100vh - 6rem);
+      overflow-y: auto;
+      text-shadow: 1px 1px 1px var(--color-text-shadow);
+      z-index: 2;
+
+      string {
+        background-color: var(--color-bg-label);
+        color: rgb(209, 187, 130);
+      }
+      number {
+        color: rgb(168, 204, 134);
+      }
+      boolean {
+        color: lightskyblue;
+      }
+      null {
+        color: gray;
+      }
+      .square-bracket,
+      .round-bracket {
+        color: rgb(246, 246, 59);
+      }
+
+      a.anker {
+        cursor: pointer;
+        color: orange;
+        margin: 0 2px 0 4px;
+      }
+    }
+  }
 }

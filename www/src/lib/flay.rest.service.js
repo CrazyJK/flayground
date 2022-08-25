@@ -94,6 +94,17 @@ export const Rest = {
     getSync: function (opus, callback, failCallback) {
       restCall('/flay/' + opus, { async: false }, callback, failCallback);
     },
+    getFully: (opus, callback, failCallback) => {
+      restCall(
+        '/flay/fully/' + opus,
+        {},
+        function (objects) {
+          objects.flay.actressList = objects.actress;
+          callback(objects.flay);
+        },
+        failCallback
+      );
+    },
     getScore: function (opus, callback) {
       restCall('/flay/' + opus + '/score', {}, callback);
     },
@@ -106,6 +117,9 @@ export const Rest = {
     },
     list: function (callback, failCallback) {
       restCall('/flay/list', {}, callback, failCallback);
+    },
+    listOfOpus: (condition, callback, failCallback) => {
+      restCall('/flay/list/opus', { data: condition, method: 'POST' }, callback, failCallback);
     },
     listOrderbyScoreDesc: function (callback) {
       restCall('/flay/list/orderbyScoreDesc', {}, callback);

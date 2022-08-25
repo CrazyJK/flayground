@@ -14,11 +14,21 @@ import { Rest } from './lib/flay.rest.service';
 import { DateUtils, File, Random } from './lib/crazy.common';
 import { View } from './lib/flay.utils.js';
 
-Rest.Flay.list((list) => {
-  list.sort((f1, f2) => f1.release.localeCompare(f2.release));
+const condition = {
+  studio: '',
+  opus: '',
+  title: '',
+  actress: '',
+  release: '',
+  rank: [],
+  sort: 'RELEASE',
+};
 
+Rest.Flay.listOfOpus(condition, (list) => {
   const LAST_INDEX = list.length - 1;
+  const indexHistory = [];
   let index = -1;
+  let previousIndex = -1;
 
   function first() {
     index = 0;
@@ -48,83 +58,105 @@ Rest.Flay.list((list) => {
     index = Random.getInteger(0, index);
     show();
   }
-  function show() {
-    const flay = list[index];
-    // console.log('show', index, flay);
-    if (flay.actressList.length > 0) {
-      if (typeof flay.actressList[0] === 'string') {
-        flay.actressList = flay.actressList.map((name) => Rest.Actress.getSync(name));
-      }
+  function historyBack() {
+    if (indexHistory.length > 0) {
+      console.log('history is empty');
+      return;
     }
-    if (flay.score === 0) {
-      flay.score = Rest.Flay.getScoreSync(flay.opus);
+    let lastIndex = indexHistory.pop();
+    if (lastIndex === index) {
+      historyBack();
+      return;
+    }
+    index = lastIndex;
+    show('nohistory');
+  }
+  function show(from) {
+    const opus = list[index];
+    if (!opus) {
+      console.warn('opus is not valid', index, opus, list);
+      return;
+    }
+    if (previousIndex === index) {
+      console.warn('same index', index);
+      return;
     }
 
-    const jsonText = JSON.stringify(
-      flay,
-      function replacer(k, v) {
-        // console.log('k', typeof k, k, 'v', typeof v, v);
-        if (k === 'lastAccess') {
-          v = DateUtils.format('yyyy-MM-dd HH:mm:ss', v);
-        } else if (k === 'lastModified') {
-          v = DateUtils.format('yyyy-MM-dd HH:mm:ss', v);
-        } else if (k === 'length') {
-          v = File.formatSize(v);
-        } else if (k === 'actressPoint' || k === 'studioPoint' || k === 'candidate') {
-          return undefined;
-        }
+    previousIndex = index;
+    if (!from) {
+      indexHistory.push(index);
+    }
+    console.log(indexHistory, index);
 
-        if (typeof v === 'string') {
-          v = `<string>'${v.replace(/\n/gi, '<br>').replace(/\[/gi, 'bracketStart').replace(/\]/gi, 'bracketEnd')}'</string>`;
-        } else if (typeof v === 'number') {
-          v = `<number>${v}</number>`;
-        } else if (typeof v === 'boolean') {
-          v = `<boolean>${v}</boolean>`;
-        } else if (typeof v === 'object' && v === null) {
-          v = `<null>${v}</null>`;
-        }
+    Rest.Flay.getFully(opus, (flay) => {
+      const jsonText = JSON.stringify(
+        flay,
+        function replacer(k, v) {
+          // console.log('k', typeof k, k, 'v', typeof v, v);
+          if (k === 'lastAccess') {
+            v = DateUtils.format('yyyy-MM-dd HH:mm:ss', v);
+          } else if (k === 'lastModified') {
+            v = DateUtils.format('yyyy-MM-dd HH:mm:ss', v);
+          } else if (k === 'length') {
+            v = File.formatSize(v);
+          } else if (k === 'actressPoint' || k === 'studioPoint' || k === 'candidate') {
+            return undefined;
+          }
 
-        return v;
-      },
-      2
-    )
-      .replace(/"/g, '')
-      .replace(/'/g, '"')
-      .replace(/\\\\/g, '\\')
-      .replace(/\[/g, '<span class="square-bracket">[</span>')
-      .replace(/\]/g, '<span class="square-bracket">]</span>')
-      .replace(/\{/g, '<span class="round-bracket">{</span>')
-      .replace(/\}/g, '<span class="round-bracket">}</span>')
-      .replace(/bracketStart/g, '[')
-      .replace(/bracketEnd/g, ']')
-      .replace(/movie/, '<span class="movie">movie</span>')
-      .replace(/title/, '<span class="title">title</span>')
-      .replace(/localName/g, '<span class="localName">localName</span>');
+          if (typeof v === 'string') {
+            v = `<string>'${v.replace(/\n/gi, '<br>').replace(/\[/gi, 'bracketStart').replace(/\]/gi, 'bracketEnd')}'</string>`;
+          } else if (typeof v === 'number') {
+            v = `<number>${v}</number>`;
+          } else if (typeof v === 'boolean') {
+            v = `<boolean>${v}</boolean>`;
+          } else if (typeof v === 'object' && v === null) {
+            v = `<null>${v}</null>`;
+          }
 
-    $('#flayContainer').animate(
-      {
-        opacity: 0,
-      },
-      300,
-      'linear',
-      () => {
-        $('#flayCover').attr('src', '/static/cover/' + flay.opus);
-        $('#flayInfo').html(jsonText);
-        // paging
-        $('#paginationProgress > div').css({ width: (((index + 1) / (LAST_INDEX + 1)) * 100).toFixed(1) + '%' });
-        // insert anker. play, flay view, actress view
-        $('<a class="anker movie-play"><i class="fa fa-external-link"></i></a>').insertAfter('.movie');
-        $('<a class="anker flay-view"><i class="fa fa-external-link"></i></a>').insertAfter('.title');
-        $('.localName').each((index, element) => {
-          $(`<a class="anker actress-view" data-index="${index}"><i class="fa fa-external-link"></i></a>`).insertAfter(element);
-        });
-        // show
-        $('#flayContainer').animate({ opacity: 1 }, 300, 'swing');
-      }
-    );
+          return v;
+        },
+        2
+      )
+        .replace(/"/g, '')
+        .replace(/'/g, '"')
+        .replace(/\\\\/g, '\\')
+        .replace(/\[/g, '<span class="square-bracket">[</span>')
+        .replace(/\]/g, '<span class="square-bracket">]</span>')
+        .replace(/\{/g, '<span class="round-bracket">{</span>')
+        .replace(/\}/g, '<span class="round-bracket">}</span>')
+        .replace(/bracketStart/g, '[')
+        .replace(/bracketEnd/g, ']')
+        .replace(/movie/, '<span class="movie">movie</span>')
+        .replace(/title/, '<span class="title">title</span>')
+        .replace(/localName/g, '<span class="localName">localName</span>');
+
+      Rest.Image.blobUrl('/static/cover/' + flay.opus, (imageBlobUrl) => {
+        $('#flayContainer').animate(
+          {
+            opacity: 0,
+          },
+          300,
+          'linear',
+          () => {
+            $('#flayCover').css({ backgroundImage: `url('${imageBlobUrl}')` });
+            $('#flayInfo').html(jsonText);
+            // paging
+            $('#paginationProgress > div').css({ width: (((index + 1) / (LAST_INDEX + 1)) * 100).toFixed(1) + '%' });
+            // insert anker. play, flay view, actress view
+            $('<a class="anker movie-play"><i class="fa fa-external-link"></i></a>').insertAfter('.movie');
+            $('<a class="anker flay-view"><i class="fa fa-external-link"></i></a>').insertAfter('.title');
+            $('.localName').each((index, element) => {
+              $(`<a class="anker actress-view" data-index="${index}"><i class="fa fa-external-link"></i></a>`).insertAfter(element);
+            });
+            // show
+            $('#flayContainer').animate({ opacity: 1 }, 300, 'swing');
+          }
+        );
+      });
+    });
   }
   function eventHandler(e) {
-    // console.log('[eventHandler]', e.type);
+    console.log('[eventHandler]', e.type, e.key, e.originalEvent.deltaY);
     switch (e.key || (e.originalEvent.deltaY < 0 ? 'WheelUp' : 'WheelDown')) {
       case 'ArrowLeft':
       case 'WheelUp':
@@ -152,6 +184,10 @@ Rest.Flay.list((list) => {
         break;
       case 'End':
         last();
+        break;
+      case 'Backspace':
+      case '7':
+        historyBack();
         break;
     }
   }

@@ -1,27 +1,35 @@
 package jk.kamoru.flayground.flay;
 
 import java.util.Collection;
-
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.flay.service.FlayCollector;
 import jk.kamoru.flayground.flay.service.FlayService;
 import jk.kamoru.flayground.flay.service.ScoreCalculator;
+import jk.kamoru.flayground.info.domain.Actress;
+import jk.kamoru.flayground.info.service.ActressInfoService;
 
 @RestController
 @RequestMapping("/flay")
 public class FlayController {
 
 	@Autowired FlayService flayService;
+
+	@Autowired ActressInfoService actressInfoService;
 
 	@Autowired ScoreCalculator scoreCalculator;
 
@@ -37,9 +45,25 @@ public class FlayController {
 		return flay.getScore();
 	}
 
+	@GetMapping("/fully/{opus}")
+	public Map<String, Object> getFullyFlay(@PathVariable String opus) {
+		Map<String, Object> objects = new HashMap<>();
+		Flay flay = flayService.get(opus);
+		scoreCalculator.calcScore(flay);
+		objects.put("flay", flay);
+		List<Actress> actressList = flay.getActressList().stream().map(name -> actressInfoService.get(name)).collect(Collectors.toList());
+		objects.put("actress", actressList);
+		return objects;
+	}
+
 	@GetMapping("/list")
 	public Collection<Flay> getList() {
 		return flayService.list();
+	}
+
+	@PostMapping("/list/opus")
+	public List<String> getOpusList(@RequestBody FlayCollector flayCollector) {
+		return flayCollector.toOpusList(flayService.list());
 	}
 
 	@GetMapping("/list/lowScore")

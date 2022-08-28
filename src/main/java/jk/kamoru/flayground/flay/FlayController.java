@@ -4,7 +4,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.flay.domain.FlayCondition;
 import jk.kamoru.flayground.flay.service.FlayCollector;
 import jk.kamoru.flayground.flay.service.FlayService;
 import jk.kamoru.flayground.flay.service.ScoreCalculator;
@@ -33,6 +33,8 @@ public class FlayController {
 
 	@Autowired ScoreCalculator scoreCalculator;
 
+	@Autowired FlayCollector flayCollector;
+
 	@GetMapping("/{opus}")
 	public Flay get(@PathVariable String opus) {
 		return flayService.get(opus);
@@ -45,13 +47,14 @@ public class FlayController {
 		return flay.getScore();
 	}
 
-	@GetMapping("/fully/{opus}")
+	@GetMapping("/{opus}/fully")
 	public Map<String, Object> getFullyFlay(@PathVariable String opus) {
-		Map<String, Object> objects = new HashMap<>();
 		Flay flay = flayService.get(opus);
 		scoreCalculator.calcScore(flay);
+		List<Actress> actressList = flay.getActressList().stream().map(name -> actressInfoService.get(name)).toList();
+
+		Map<String, Object> objects = new HashMap<>();
 		objects.put("flay", flay);
-		List<Actress> actressList = flay.getActressList().stream().map(name -> actressInfoService.get(name)).collect(Collectors.toList());
 		objects.put("actress", actressList);
 		return objects;
 	}
@@ -59,11 +62,6 @@ public class FlayController {
 	@GetMapping("/list")
 	public Collection<Flay> getList() {
 		return flayService.list();
-	}
-
-	@PostMapping("/list/opus")
-	public List<String> getOpusList(@RequestBody FlayCollector flayCollector) {
-		return flayCollector.toOpusList(flayService.list());
 	}
 
 	@GetMapping("/list/lowScore")
@@ -74,6 +72,36 @@ public class FlayController {
 	@GetMapping("/list/orderbyScoreDesc")
 	public Collection<Flay> getListOrderbyScoreDesc() {
 		return flayService.getListOrderbyScoreDesc();
+	}
+
+	@PostMapping("/list/flay")
+	public List<Flay> getFlayList(@RequestBody FlayCondition flayCondition) {
+		return flayCollector.toFlayList(flayService.list(), flayCondition);
+	}
+
+	@PostMapping("/list/studio")
+	public List<String> getStudioList(@RequestBody FlayCondition flayCondition) {
+		return flayCollector.toStudioList(flayService.list(), flayCondition);
+	}
+
+	@PostMapping("/list/opus")
+	public List<String> getOpusList(@RequestBody FlayCondition flayCondition) {
+		return flayCollector.toOpusList(flayService.list(), flayCondition);
+	}
+
+	@PostMapping("/list/title")
+	public List<String> getTitleList(@RequestBody FlayCondition flayCondition) {
+		return flayCollector.toTitleList(flayService.list(), flayCondition);
+	}
+
+	@PostMapping("/list/actress")
+	public List<String> getActressList(@RequestBody FlayCondition flayCondition) {
+		return flayCollector.toActressList(flayService.list(), flayCondition);
+	}
+
+	@PostMapping("/list/release")
+	public List<String> getReleaseList(@RequestBody FlayCondition flayCondition) {
+		return flayCollector.toReleaseList(flayService.list(), flayCondition);
 	}
 
 	@GetMapping("/find")

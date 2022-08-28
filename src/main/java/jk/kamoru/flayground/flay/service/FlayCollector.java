@@ -2,68 +2,104 @@ package jk.kamoru.flayground.flay.service;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.flay.domain.Flay;
-import lombok.Data;
+import jk.kamoru.flayground.flay.domain.FlayCondition;
+import jk.kamoru.flayground.info.service.ActressInfoService;
 
-@Data
+@Service
 public class FlayCollector {
 
-  public static enum Sort {
-    STUDIO, OPUS, TITLE, ACTRESS, RELEASE, PLAY, RANK, LASTACCESS, LASTMODIFIED, SCORE, LENGTH;
+  @Autowired ActressInfoService actressInfoService;
+
+  @Autowired ScoreCalculator scoreCalculator;
+
+  public List<Flay> toFlayList(Collection<Flay> list, FlayCondition flayCondition) {
+    return filterAndSort(list, flayCondition).toList();
   }
 
-  static ScoreCalculator scoreCalculator = new ScoreCalculator();
-
-  private Sort sort;
-
-  private String studio;
-  private String opus;
-  private String title;
-  private String actress;
-  private String release;
-  private Integer[] rank;
-
-  public List<String> toOpusList(Collection<Flay> list) {
-    return list.stream().filter(flay -> filter(flay)).sorted((f1, f2) -> sort(f1, f2)).map(Flay::getOpus).collect(Collectors.toList());
+  public List<String> toStudioList(Collection<Flay> list, FlayCondition flayCondition) {
+    return filterAndSort(list, flayCondition).map(Flay::getStudio).distinct().toList();
   }
 
-  public List<Flay> toFlayList(Collection<Flay> list) {
-    return list.stream().filter(flay -> filter(flay)).sorted((f1, f2) -> sort(f1, f2)).collect(Collectors.toList());
+  public List<String> toOpusList(Collection<Flay> list, FlayCondition flayCondition) {
+    return filterAndSort(list, flayCondition).map(Flay::getOpus).toList();
   }
 
-  private boolean filter(Flay flay) {
-    return likeStudio(flay) && likeOpus(flay) && likeTitle(flay) && likeActress(flay) && likeRelease(flay) && containsRank(flay);
+  public List<String> toTitleList(Collection<Flay> list, FlayCondition flayCondition) {
+    return filterAndSort(list, flayCondition).map(Flay::getTitle).toList();
   }
 
-  private boolean likeStudio(Flay flay) {
+  public List<String> toActressList(Collection<Flay> list, FlayCondition flayCondition) {
+    return filterAndSort(list, flayCondition).map(Flay::getActressName).distinct().toList();
+  }
+
+  public List<String> toReleaseList(Collection<Flay> list, FlayCondition flayCondition) {
+    return filterAndSort(list, flayCondition).map(Flay::getRelease).distinct().toList();
+  }
+
+  private Stream<Flay> filterAndSort(Collection<Flay> list, FlayCondition flayCondition) {
+    return list.stream().filter(flay -> filter(flay, flayCondition)).sorted((f1, f2) -> sort(f1, f2, flayCondition));
+  }
+
+  private boolean filter(Flay flay, FlayCondition flayCondition) {
+    return likeStudio(flay, flayCondition.getStudio()) && likeOpus(flay, flayCondition.getOpus()) && likeTitle(flay, flayCondition.getTitle()) && likeActress(flay, flayCondition.getActress()) && likeRelease(flay, flayCondition.getRelease())
+        && likeSearch(flay, flayCondition)
+        && containsRank(flay, flayCondition.getRank())
+        && containsSubtitles(flay, flayCondition.isWithSubtitles())
+        && containsFavorite(flay, flayCondition);
+  }
+
+  private boolean likeStudio(Flay flay, String studio) {
     return studio == null || StringUtils.containsIgnoreCase(flay.getStudio(), studio);
   }
 
-  private boolean likeOpus(Flay flay) {
+  private boolean likeOpus(Flay flay, String opus) {
     return opus == null || StringUtils.containsIgnoreCase(flay.getOpus(), opus);
   }
 
-  private boolean likeTitle(Flay flay) {
+  private boolean likeTitle(Flay flay, String title) {
     return title == null || StringUtils.containsIgnoreCase(flay.getTitle(), title);
   }
 
-  private boolean likeActress(Flay flay) {
+  private boolean likeActress(Flay flay, String actress) {
     return actress == null || StringUtils.containsIgnoreCase(String.join(",", flay.getActressList()), actress);
   }
 
-  private boolean likeRelease(Flay flay) {
+  private boolean likeRelease(Flay flay, String release) {
     return release == null || StringUtils.contains(flay.getRelease(), release);
   }
 
-  private boolean containsRank(Flay flay) {
-    return rank == null || rank.length == 0 || ArrayUtils.contains(rank, flay.getVideo().getRank());
+  private boolean likeSearch(Flay flay, FlayCondition flayCondition) {
+    return flayCondition.getSearch() == null || (likeStudio(flay, flayCondition.getSearch()) && likeOpus(flay, flayCondition.getSearch()) && likeTitle(flay, flayCondition.getSearch()) && likeActress(flay, flayCondition.getSearch()) && likeRelease(flay, flayCondition.getSearch()));
   }
 
-  private int sort(Flay f1, Flay f2) {
-    switch (sort) {
+  private boolean containsRank(Flay flay, int[] ranks) {
+    return ranks == null || ranks.length == 0 || ArrayUtils.contains(ranks, flay.getVideo().getRank());
+  }
+
+  private boolean containsSubtitles(Flay flay, boolean withSubtitles) {
+    return !withSubtitles || flay.getFiles().get(Flay.SUBTI).size() > 0;
+  }
+
+  private boolean containsFavorite(Flay flay, FlayCondition flayCondition) {
+    final boolean withFavorite = flayCondition.isWithFavorite();
+    final boolean withNoFavorite = flayCondition.isWithNoFavorite();
+    if (withFavorite && !withNoFavorite) {
+      return flay.getActressList().stream().filter(name -> actressInfoService.get(name).isFavorite()).count() > 0;
+    } else if (!withFavorite && withNoFavorite) {
+      return flay.getActressList().size() == 0 || flay.getActressList().stream().filter(name -> actressInfoService.get(name).isFavorite()).count() == 0;
+    } else {
+      return true;
+    }
+  }
+
+  private int sort(Flay f1, Flay f2, FlayCondition flayCondition) {
+    switch (flayCondition.getSort()) {
       case STUDIO:
         return f1.getStudio().compareTo(f2.getStudio());
       case OPUS:

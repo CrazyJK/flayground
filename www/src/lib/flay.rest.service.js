@@ -96,7 +96,7 @@ export const Rest = {
     },
     getFully: (opus, callback, failCallback) => {
       restCall(
-        '/flay/fully/' + opus,
+        '/flay/' + opus + '/fully',
         {},
         function (objects) {
           objects.flay.actressList = objects.actress;
@@ -118,8 +118,23 @@ export const Rest = {
     list: function (callback, failCallback) {
       restCall('/flay/list', {}, callback, failCallback);
     },
+    listOfFlay: (condition, callback, failCallback) => {
+      restCall('/flay/list/flay', { data: condition, method: 'POST' }, callback, failCallback);
+    },
+    listOfStudio: (condition, callback, failCallback) => {
+      restCall('/flay/list/studio', { data: condition, method: 'POST' }, callback, failCallback);
+    },
     listOfOpus: (condition, callback, failCallback) => {
       restCall('/flay/list/opus', { data: condition, method: 'POST' }, callback, failCallback);
+    },
+    listOfTitle: (condition, callback, failCallback) => {
+      restCall('/flay/list/title', { data: condition, method: 'POST' }, callback, failCallback);
+    },
+    listOfActress: (condition, callback, failCallback) => {
+      restCall('/flay/list/actress', { data: condition, method: 'POST' }, callback, failCallback);
+    },
+    listOfRelease: (condition, callback, failCallback) => {
+      restCall('/flay/list/release', { data: condition, method: 'POST' }, callback, failCallback);
     },
     listOrderbyScoreDesc: function (callback) {
       restCall('/flay/list/orderbyScoreDesc', {}, callback);

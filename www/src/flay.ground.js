@@ -18,6 +18,7 @@ let indexHistory = [];
 let index = -1;
 let lastIndex = -1;
 let previousIndex = -1;
+let flay;
 
 $('#toggleDetailSearch').on('change', (e) => {
   $('#detailSearch').toggleClass('show', e.target.checked).find('input').val('');
@@ -70,14 +71,14 @@ $(window).on('keyup wheel', (e) => {
 
 $('#flayInfo')
   .on('click', '.movie-play', (e) => {
-    Rest.Flay.play(opusList[index]);
+    Rest.Flay.play(flay);
   })
   .on('click', '.flay-view', (e) => {
-    View.flay(opusList[index].opus);
+    View.flay(flay.opus);
   })
   .on('click', '.actress-view', (e) => {
     const actressIndex = $(e.target).closest('.actress-view').attr('data-index');
-    View.actress(opusList[index].actressList[actressIndex].name);
+    View.actress(flay.actressList[actressIndex].name);
   })
   .on('wheel', (e) => {
     // 스크롤 상태이면, 휠 이벤트 전파 중지. 페이지 이동 방지
@@ -206,7 +207,8 @@ function show(from) {
   }
   console.log(indexHistory, index);
 
-  Rest.Flay.getFully(opus, (flay) => {
+  Rest.Flay.getFully(opus, (_flay) => {
+    flay = _flay;
     const jsonText = JSON.stringify(
       flay,
       function replacer(k, v) {

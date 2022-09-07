@@ -2,6 +2,7 @@ import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import 'bootstrap/dist/js/bootstrap';
 import './lib/crazy.jquery';
+import './components/RankSelect';
 import './css/common.scss';
 import './info.actress.scss';
 import './lib/flay.websocket.js';
@@ -114,6 +115,18 @@ $('#delete').on('click', function () {
   }
 });
 
+$('rank-select').on('change', (e) => {
+  console.log(e.detail.rank);
+  if (e.detail.rank.length > 0) {
+    $('.flay-card').hide();
+    e.detail.rank.forEach((r) => {
+      $('.flay-card.r' + r).show();
+    });
+  } else {
+    $('.flay-card').show();
+  }
+});
+
 Rest.Actress.get(name, (_actress_) => {
   actress = _actress_;
   document.title = actress.name + ' - ' + document.title;
@@ -148,7 +161,7 @@ Rest.Actress.get(name, (_actress_) => {
     }),
   ]).then(([instanceList, archiveList]) => {
     const flayAllList = [...instanceList, ...archiveList].sort((flay1, flay2) => {
-      return $.trim(flay2.release).toLowerCase().localeCompare($.trim(flay1.release));
+      return flay2.release.trim().toLowerCase().localeCompare(flay1.release.trim());
     });
 
     $('.filter-cnt-instance').html(instanceList.length);
@@ -175,7 +188,7 @@ async function displayFlayList(flayList) {
       exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
       fontSize: '80%',
       archive: flay.archive,
-      class: flay.archive ? 'archive' : 'instance' + (flay.video.rank === 0 ? ' unrank' : ''),
+      class: flay.archive ? 'archive' : 'instance ' + (flay.video.rank === 0 ? 'unrank' : 'r' + flay.video.rank),
     });
 
     await sleep(100);

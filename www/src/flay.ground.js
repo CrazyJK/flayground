@@ -116,6 +116,8 @@ function startGround() {
     index = -1;
     previousIndex = -1;
 
+    $('#searchResultDisplay').html(opusList.length + ' Flay');
+
     random();
   });
 
@@ -177,10 +179,11 @@ function randomBackward() {
 }
 
 function historyBack() {
-  if (indexHistory.length > 0) {
+  if (indexHistory.length === 0) {
     console.log('history is empty');
     return;
   }
+  renderIndexHistoryContainer();
   let lastIndex = indexHistory.pop();
   if (lastIndex === index) {
     historyBack();
@@ -188,6 +191,12 @@ function historyBack() {
   }
   index = lastIndex;
   show('nohistory');
+}
+
+function renderIndexHistoryContainer() {
+  $('#indexHistoryContainer')
+    .empty()
+    .append(indexHistory.map((idx) => `<label>${idx + 1}</label>`));
 }
 
 function show(from) {
@@ -204,6 +213,7 @@ function show(from) {
   previousIndex = index;
   if (!from) {
     indexHistory.push(index);
+    renderIndexHistoryContainer();
   }
   console.log(indexHistory, index);
 

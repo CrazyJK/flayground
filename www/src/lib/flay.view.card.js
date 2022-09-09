@@ -457,11 +457,11 @@ export const STUDIO = 'studio',
           } else {
             $actress.find('.flay-actress-name').html(actress.name);
             $actress.find('.flay-actress-local').html(actress.localName);
-            $actress.find('.flay-actress-birth').html(actress.birth);
-            $actress.find('.flay-actress-age').html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>'));
-            $actress.find('.flay-actress-debut').html(actress.debut.ifNotZero());
-            $actress.find('.flay-actress-body').html(actress.body);
-            $actress.find('.flay-actress-height').html(actress.height.ifNotZero());
+            $actress.find('.flay-actress-birth').html(Util.Actress.getBirth(actress));
+            $actress.find('.flay-actress-age').html(Util.Actress.getAge(actress));
+            $actress.find('.flay-actress-debut').html(Util.Actress.getDebut(actress));
+            $actress.find('.flay-actress-body').html(Util.Actress.getBody(actress));
+            $actress.find('.flay-actress-height').html(Util.Actress.getHeight(actress));
             $actress.find('.flay-actress-favorite > i').on('click', function () {
               actress.favorite = !actress.favorite;
               Rest.Actress.update(actress, function () {

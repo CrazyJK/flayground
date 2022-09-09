@@ -290,19 +290,11 @@ function getActressRecordObject(idx, actress) {
           .html(actress.name)
       ),
       $('<label>', { class: 'actress-local nowrap' }).html(actress.localName),
-      $('<label>', { class: 'actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
-      $('<label>', { class: 'actress-birth' + (birthRegExp.test(actress.birth) ? '' : ' invalid') }).html(
-        actress.birth.replace(/年|月|日/g, function (match, offset, string) {
-          return '<small>' + match + '</small>';
-        })
-      ),
-      $('<label>', { class: 'actress-body' + (bodyRegExp.test(actress.body) ? '' : ' invalid') }).html(
-        actress.body.replace(/ - /g, function (match) {
-          return '<small>' + match.trim() + '</small>';
-        })
-      ),
-      $('<label>', { class: 'actress-height' + (heightRegExp.test(actress.height) ? '' : ' invalid') }).html(actress.height.ifNotZero('<small>cm</small>')),
-      $('<label>', { class: 'actress-debut' + (debutRegExp.test(actress.debut) ? '' : ' invalid') }).html(actress.debut.ifNotZero())
+      $('<label>', { class: 'actress-age' }).html(Util.Actress.getAge(actress)),
+      $('<label>', { class: 'actress-birth' + (birthRegExp.test(actress.birth) ? '' : ' invalid') }).html(Util.Actress.getBirth(actress)),
+      $('<label>', { class: 'actress-body' + (bodyRegExp.test(actress.body) ? '' : ' invalid') }).html(Util.Actress.getBody(actress)),
+      $('<label>', { class: 'actress-height' + (heightRegExp.test(actress.height) ? '' : ' invalid') }).html(Util.Actress.getHeight(actress)),
+      $('<label>', { class: 'actress-debut' + (debutRegExp.test(actress.debut) ? '' : ' invalid') }).html(Util.Actress.getDebut(actress))
     )
     .on('click', function () {
       $(this).parent().children().removeClass('active');

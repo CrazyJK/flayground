@@ -171,3 +171,18 @@ article {
     }
   }
 }
+
+#indexHistoryContainer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 1px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 0.25rem;
+
+  label {
+    font-size: 0.875em;
+    margin: 0.125rem;
+  }
+}

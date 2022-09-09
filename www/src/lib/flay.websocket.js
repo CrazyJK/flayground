@@ -192,7 +192,7 @@ class FlayWebsocket {
     const $noti = $(`
 			<div id="${notification.id}" class="announce">
 				<i class="fa fa-bell bell"></i>
-				<i class="fa fa-times hover remove" onclick="$(this).parent().remove()"></i>
+				<i class="fa fa-times hover remove" onclick="this.parentElement.remove()"></i>
 				<small class="time">${notification.time.format('a/p hh:mm')}</small>
 				<div class="announce-body">
 					<h6 class="announce-title">

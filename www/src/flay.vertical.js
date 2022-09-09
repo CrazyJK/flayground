@@ -1097,19 +1097,11 @@ function showVideo(args) {
             $('<label>', { class: 'text info-actress-local' }).html(actress.localName),
             $('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
             $('<label>', { class: 'text info-actress-avgrank' }).html('&nbsp;').neonLoading(true),
-            $('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress).ifNotZero('<small>y</small>')),
-            $('<label>', { class: 'text info-actress-birth' }).html(
-              actress.birth.replace(/年|月|日/g, (match, offset, string) => {
-                return '<small>' + match + '</small>';
-              })
-            ),
-            $('<label>', { class: 'text info-actress-body' }).html(
-              actress.body.replace(/ - /g, (match) => {
-                return '<small>' + match.trim() + '</small>';
-              })
-            ),
-            $('<label>', { class: 'text info-actress-height' }).html(actress.height.ifNotZero('<small>cm</small>')),
-            $('<label>', { class: 'text info-actress-debut' }).html(actress.debut.ifNotZero('<small>d</small>'))
+            $('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress)),
+            $('<label>', { class: 'text info-actress-birth' }).html(Util.Actress.getBirth(actress)),
+            $('<label>', { class: 'text info-actress-body' }).html(Util.Actress.getBody(actress)),
+            $('<label>', { class: 'text info-actress-height' }).html(Util.Actress.getHeight(actress)),
+            $('<label>', { class: 'text info-actress-debut' }).html(Util.Actress.getDebut(actress))
           )
           .appendTo($('.info-wrapper-actress'));
 

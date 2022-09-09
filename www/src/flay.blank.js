@@ -102,7 +102,7 @@ function initiate() {
   });
   actressNameSet.forEach((name) => {
     const actress = findActress(name);
-    $('#actress-opt').append(`<option value="${actress.name}">${actress.favorite ? '♥' : '♡'} ${actress.localName} ${Util.Actress.getAge(actress)}y</option>`);
+    $('#actress-opt').append(`<option value="${actress.name}">${actress.favorite ? '♥' : '♡'} ${actress.localName} ${Util.Actress.getAge(actress)}</option>`);
   });
 
   // render Tag List;

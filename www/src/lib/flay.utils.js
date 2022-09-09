@@ -98,14 +98,13 @@ export const Util = {
   },
   Actress: {
     getNames: function (actressList) {
-      var actressNames = '';
       if (actressList != null && Array.isArray(actressList)) {
-        $.each(actressList, function (idx, actress) {
-          if (idx > 0) actressNames += ', ';
-          actressNames += actress;
-        });
+        return actressList.map((actress) => (typeof actress === 'string' ? actress : actress.name)).join(', ');
+      } else if (typeof actressList === 'string') {
+        return actressList;
+      } else {
+        return '';
       }
-      return actressNames;
     },
     get: function (actressList, className) {
       var list = [];
@@ -125,14 +124,55 @@ export const Util = {
       return list;
     },
     getAge: function (actress, baseYear) {
-      if (actress.birth && actress.birth.length > 3) {
-        return Number(baseYear || todayYear) - parseInt(actress.birth.substring(0, 4)) + 1;
+      if (actress.birth) {
+        return `${Number(baseYear || todayYear) - parseInt(actress.birth.substring(0, 4)) + 1}<small>y</small>`;
       } else {
-        return 0;
+        return '';
+      }
+    },
+    getBirth: (actress) => {
+      if (actress.birth) {
+        return actress.birth.replace(/年|月|日/g, (match, offset, string) => {
+          return '<small>' + match + '</small>';
+        });
+      } else {
+        return '';
       }
     },
     getCup: function (actress) {
-      return actress.body.replace(/[-0-9\s]/g, '');
+      if (actress.body) {
+        return actress.body.replace(/[-0-9\s]/g, '');
+      } else {
+        return '';
+      }
+    },
+    getBody: (actress) => {
+      if (actress.body) {
+        return actress.body
+          .split(' - ')
+          .map((b) => {
+            let cup = b.replace(/[0-9]/g, '');
+            let inch = Math.round(parseInt(b) / 2.54);
+            return inch + cup;
+          })
+          .join('<small>-</small>');
+      } else {
+        return '';
+      }
+    },
+    getHeight: (actress) => {
+      if (actress.height) {
+        return actress.height + '<small>cm</small>';
+      } else {
+        return '';
+      }
+    },
+    getDebut: (actress) => {
+      if (actress.debut) {
+        return actress.debut + '<small>d</small>';
+      } else {
+        return '';
+      }
     },
     toArray: function (names) {
       var split = names.split(',');

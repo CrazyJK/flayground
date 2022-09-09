@@ -156,9 +156,9 @@ function displayActress() {
         .empty()
         .append(
           $('<div>').append($('<label>', { class: 'text info-actress-extra' }).html(actress.localName)),
-          $('<div>').append($('<label>', { class: 'text info-actress-extra' }).html(actress.birth)),
-          $('<div>').append($('<label>', { class: 'text info-actress-extra' }).html(actress.body)),
-          $('<div>').append($('<label>', { class: 'text info-actress-extra' }).append(Util.Actress.getAge(actress).ifNotZero()), $('<label>', { class: 'text info-actress-extra' }).html(actress.debut.ifNotZero()), $('<label>', { class: 'text info-actress-extra' }).html(actress.height.ifNotZero()))
+          $('<div>').append($('<label>', { class: 'text info-actress-extra' }).html(Util.Actress.getBody(actress)), $('<label>', { class: 'text info-actress-extra' }).html(Util.Actress.getHeight(actress))),
+          $('<div>').append($('<label>', { class: 'text info-actress-extra' }).html(Util.Actress.getAge(actress)), $('<label>', { class: 'text info-actress-extra' }).html(Util.Actress.getDebut(actress))),
+          $('<div>').append($('<label>', { class: 'text info-actress-extra' }).html(Util.Actress.getBirth(actress)))
         );
       if ($card.find('.card-text').text() == '') {
         $card.find('.card-text').empty();
@@ -182,11 +182,11 @@ function displayActress() {
               })
           ),
           $('<td>').html(actress.localName),
-          $('<td>').html(actress.birth),
-          $('<td>').html(Util.Actress.getAge(actress).ifNotZero()),
-          $('<td>').html(actress.body),
-          $('<td>').html(actress.height.ifNotZero()),
-          $('<td>').html(actress.debut.ifNotZero())
+          $('<td>').html(Util.Actress.getBirth(actress)),
+          $('<td>').html(Util.Actress.getAge(actress)),
+          $('<td>').html(Util.Actress.getBody(actress)),
+          $('<td>').html(Util.Actress.getHeight(actress)),
+          $('<td>').html(Util.Actress.getDebut(actress))
         )
         .appendTo($actressList);
     });

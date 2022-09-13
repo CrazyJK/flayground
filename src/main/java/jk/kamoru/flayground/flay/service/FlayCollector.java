@@ -47,7 +47,11 @@ public class FlayCollector {
   }
 
   private boolean filter(Flay flay, FlayCondition flayCondition) {
-    return likeStudio(flay, flayCondition.getStudio()) && likeOpus(flay, flayCondition.getOpus()) && likeTitle(flay, flayCondition.getTitle()) && likeActress(flay, flayCondition.getActress()) && likeRelease(flay, flayCondition.getRelease())
+    return likeStudio(flay, flayCondition.getStudio())
+        && likeOpus(flay, flayCondition.getOpus())
+        && likeTitle(flay, flayCondition.getTitle())
+        && likeActress(flay, flayCondition.getActress())
+        && likeRelease(flay, flayCondition.getRelease())
         && likeSearch(flay, flayCondition)
         && containsRank(flay, flayCondition.getRank())
         && containsSubtitles(flay, flayCondition.isWithSubtitles())
@@ -55,27 +59,32 @@ public class FlayCollector {
   }
 
   private boolean likeStudio(Flay flay, String studio) {
-    return studio == null || StringUtils.containsIgnoreCase(flay.getStudio(), studio);
+    return StringUtils.isBlank(studio) || StringUtils.containsIgnoreCase(flay.getStudio(), studio);
   }
 
   private boolean likeOpus(Flay flay, String opus) {
-    return opus == null || StringUtils.containsIgnoreCase(flay.getOpus(), opus);
+    return StringUtils.isBlank(opus) || StringUtils.containsIgnoreCase(flay.getOpus(), opus);
   }
 
   private boolean likeTitle(Flay flay, String title) {
-    return title == null || StringUtils.containsIgnoreCase(flay.getTitle(), title);
+    return StringUtils.isBlank(title) || StringUtils.containsIgnoreCase(flay.getTitle(), title);
   }
 
   private boolean likeActress(Flay flay, String actress) {
-    return actress == null || StringUtils.containsIgnoreCase(String.join(",", flay.getActressList()), actress);
+    return StringUtils.isBlank(actress) || StringUtils.containsIgnoreCase(String.join(",", flay.getActressList()), actress);
   }
 
   private boolean likeRelease(Flay flay, String release) {
-    return release == null || StringUtils.contains(flay.getRelease(), release);
+    return StringUtils.isBlank(release) || StringUtils.contains(flay.getRelease(), release);
   }
 
   private boolean likeSearch(Flay flay, FlayCondition flayCondition) {
-    return flayCondition.getSearch() == null || (likeStudio(flay, flayCondition.getSearch()) && likeOpus(flay, flayCondition.getSearch()) && likeTitle(flay, flayCondition.getSearch()) && likeActress(flay, flayCondition.getSearch()) && likeRelease(flay, flayCondition.getSearch()));
+    return StringUtils.isBlank(flayCondition.getSearch())
+        || likeStudio(flay, flayCondition.getSearch())
+        || likeOpus(flay, flayCondition.getSearch())
+        || likeTitle(flay, flayCondition.getSearch())
+        || likeActress(flay, flayCondition.getSearch())
+        || likeRelease(flay, flayCondition.getSearch());
   }
 
   private boolean containsRank(Flay flay, int[] ranks) {

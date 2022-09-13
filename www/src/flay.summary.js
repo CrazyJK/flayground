@@ -809,7 +809,7 @@ function displayFlayAllTable() {
 					<td><span id="r3d${yyyyMM}" class="flay-all-td rank3">${r3}</span></td>
 					<td><span id="r4d${yyyyMM}" class="flay-all-td rank4">${r4}</span></td>
 					<td><span id="r5d${yyyyMM}" class="flay-all-td rank5">${r5}</span></td>
-					<td><span id="d${yyyyMM}">${rt}</span></td>
+					<td><span id="d${yyyyMM}">${rt > 0 ? rt : ''}</span></td>
 				</tr>
 			`);
     curRelease = getPreviousMonthKey(curRelease);

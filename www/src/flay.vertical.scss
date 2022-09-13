@@ -331,6 +331,8 @@ label.text:empty {
   background-color: var(--color-bg);
   cursor: pointer;
   height: 1px;
+  flex-direction: row-reverse;
+  background: var(--rainbow-gradient);
 }
 #bottomMenu:hover .pagination {
   padding-bottom: 3px;
@@ -341,8 +343,8 @@ label.text:empty {
   transition: height 0.4s;
 }
 .pagination ~ .progress .progress-bar {
-  background: var(--rainbow-gradient);
-  border-radius: 0.25rem;
+  background-color: var(--color-bg);
+  // border-radius: 0.25rem;
 }
 
 #chartdiv {

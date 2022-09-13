@@ -117,7 +117,9 @@ function startGround() {
     previousIndex = -1;
 
     $('#searchResultDisplay').html(opusList.length + ' Flay');
-
+    if (opusList.length == 0) {
+      $('#flayContainer').css('opacity', 0);
+    }
     random();
   });
 

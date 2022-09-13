@@ -317,7 +317,7 @@ const navigation = {
     }
 
     $('#paginationProgress .progress-bar').css({
-      width: Math.round(((currentIndex + 1) / collectedList.length) * 100) + '%',
+      width: (100 - ((currentIndex + 1) / collectedList.length) * 100).toFixed(2) + '%',
     });
   },
   slide: {
@@ -606,7 +606,7 @@ function attachFlayEventListener() {
       Rest.Video.update(currentFlay.video, function () {
         $this.hide();
         $('.info-overview')
-          .html(StringUtils.isBlank(currentFlay.video.comment) ? currentFlay.video.comment : 'Overview')
+          .html(!StringUtils.isBlank(currentFlay.video.comment) ? currentFlay.video.comment : 'Overview')
           .toggleClass('nonExist', StringUtils.isBlank(currentFlay.video.comment))
           .show();
       });
@@ -668,6 +668,10 @@ function attachFlayEventListener() {
       release: newRelease,
     };
     Rest.Flay.rename(currentFlay.opus, newFlay, reloadCurrentFlay);
+  });
+  // original title, desc
+  $('.info-original').on('click', () => {
+    Search.translateByPapago(encodeURI(currentFlay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + currentFlay.video.desc));
   });
 }
 
@@ -1279,6 +1283,8 @@ function showVideo(args) {
   $('#rename-title').val(currentFlay.title);
   $('#rename-actress').val(currentFlay.actressList.join(', '));
   $('#rename-release').val(currentFlay.release);
+  // set original title, desc
+  $('.info-original').toggle(!StringUtils.isBlank(currentFlay.video.title) || !StringUtils.isBlank(currentFlay.video.desc));
 
   if ($('#selectTags').is(':visible')) {
     markStatisticsTag();

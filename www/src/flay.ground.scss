@@ -28,9 +28,13 @@ nav {
     display: inline-flex;
     justify-content: center;
     align-items: baseline;
-    background-color: var(--color-bg);
-    box-shadow: 0 0 1rem 1rem var(--color-box-shadow);
     padding: 0.25rem 1rem;
+
+    &:hover {
+      background-color: var(--color-bg);
+      box-shadow: 0 0 1rem 1rem var(--color-box-shadow);
+      transition: 0.4s;
+    }
 
     &#basicSearch {
       border-bottom-right-radius: 0.5rem;

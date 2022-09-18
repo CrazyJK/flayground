@@ -15,7 +15,7 @@
   <body>
     <main>
       <nav>
-        <div id="basicSearch">
+        <div class="rounded" id="basicSearch">
           <span class="check-group check-group-rounded">
             <label title="toggle detail search"><input type="checkbox" id="toggleDetailSearch" /><span class="fa fa-caret-down"></span></label>
           </span>
@@ -50,7 +50,7 @@
             <option value="LENGTH">Length</option>
           </select>
         </div>
-        <div id="detailSearch">
+        <div class="rounded" id="detailSearch">
           <input type="text" id="studioInput" list="studio-opt" placeholder="Studio" />
           <datalist id="studio-opt"></datalist>
           <input type="text" id="opusInput" list="opus-opt" placeholder="Opus" />
@@ -64,20 +64,23 @@
         </div>
       </nav>
 
-      <article>
-        <div id="flayContainer">
-          <div id="flayCover"></div>
-          <div id="flayInfo"></div>
-        </div>
-      </article>
+      <div id="flayCover">
+        <div class="cover page-target rounded"></div>
+      </div>
 
-      <aside class="progress bg-black w-100 fixed-bottom" id="paginationProgress" style="height: 1px">
-        <div class="progress-bar bg-danger" style="width: 0%"></div>
-      </aside>
+      <div id="flayInfo">
+        <div class="json-frame page-target rounded">
+          <div class="json"></div>
+        </div>
+      </div>
     </main>
 
-    <footer>
-      <div id="indexHistoryContainer" class="text-secondary"></div>
-    </footer>
+    <aside class="progress bg-black w-100 fixed-bottom" id="paginationProgress" style="height: 1px; z-index: 99">
+      <div class="progress-bar bg-danger" style="width: 0%"></div>
+    </aside>
+
+    <div id="indexHistoryContainer" class="text-secondary"></div>
+
+    <footer></footer>
   </body>
 </html>

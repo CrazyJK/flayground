@@ -22,6 +22,7 @@ let flay;
 
 $('#toggleDetailSearch').on('change', (e) => {
   $('#detailSearch').toggleClass('show', e.target.checked).find('input').val('');
+  $('main').toggleClass('extend', e.target.checked);
 });
 
 $('#searchInput, #studioInput, #opusInput, #titleInput, #actressInput, #releaseInput').on('keyup', (e) => {
@@ -69,7 +70,7 @@ $(window).on('keyup wheel', (e) => {
   }
 });
 
-$('#flayInfo')
+$('.json-frame')
   .on('click', '.movie-play', (e) => {
     Rest.Flay.play(flay);
   })
@@ -82,8 +83,7 @@ $('#flayInfo')
   })
   .on('wheel', (e) => {
     // 스크롤 상태이면, 휠 이벤트 전파 중지. 페이지 이동 방지
-    const flayInfo = document.getElementById('flayInfo');
-    // console.log('flayInfo wheel', flayInfo, flayInfo.scrollHeight, flayInfo.clientHeight);
+    const flayInfo = document.querySelector('.json-frame');
     if (flayInfo.scrollHeight > flayInfo.clientHeight) {
       e.stopPropagation();
     }
@@ -118,11 +118,10 @@ function startGround() {
 
     $('#searchResultDisplay').html(opusList.length + ' Flay');
     if (opusList.length == 0) {
-      $('#flayContainer').css('opacity', 0);
+      $('.page-target').css('opacity', 0);
     }
     random();
   });
-
   Rest.Flay.listOfStudio(condition, (list) => {
     $('#studio-opt')
       .empty()
@@ -263,25 +262,25 @@ function show(from) {
       .replace(/localName/g, '<span class="localName">localName</span>');
 
     Rest.Image.blobUrl('/static/cover/' + flay.opus, (imageBlobUrl) => {
-      $('#flayContainer').animate(
+      $('.page-target').animate(
         {
-          opacity: 0,
+          opacity: 0.25,
         },
-        300,
+        200,
         'linear',
         () => {
-          $('#flayCover').css({ backgroundImage: `url('${imageBlobUrl}')` });
-          $('#flayInfo').html(jsonText);
-          // paging
-          $('#paginationProgress > div').css({ width: (((index + 1) / (lastIndex + 1)) * 100).toFixed(1) + '%' });
+          $('#flayCover .cover').css({ backgroundImage: `url('${imageBlobUrl}')` });
+          $('#flayInfo .json').html(jsonText);
           // insert anker. play, flay view, actress view
           $('<a class="anker movie-play"><i class="fa fa-external-link"></i></a>').insertAfter('.movie');
           $('<a class="anker flay-view"><i class="fa fa-external-link"></i></a>').insertAfter('.title');
           $('.localName').each((index, element) => {
             $(`<a class="anker actress-view" data-index="${index}"><i class="fa fa-external-link"></i></a>`).insertAfter(element);
           });
+          // paging
+          $('#paginationProgress > div').css({ width: (((index + 1) / (lastIndex + 1)) * 100).toFixed(1) + '%' });
           // show
-          $('#flayContainer').animate({ opacity: 1 }, 300, 'swing');
+          $('.page-target').animate({ opacity: 1 }, 300, 'swing');
         }
       );
     });

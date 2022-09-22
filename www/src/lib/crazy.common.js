@@ -492,9 +492,15 @@ export class StringUtils {
 export class DateUtils {
   static format(pattern, date) {
     // console.log('DateUtils.format', pattern, date, typeof date);
-    if (date) {
-      if (typeof date === 'string' || typeof date === 'number') {
+    if (typeof date !== 'undefined') {
+      if (typeof date === 'string') {
         date = new Date(date);
+      } else if (typeof date === 'number') {
+        if (date > 0) {
+          date = new Date(date);
+        } else {
+          return '';
+        }
       }
     } else {
       date = new Date();

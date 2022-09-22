@@ -31,27 +31,23 @@ $('#searchInput, #studioInput, #opusInput, #titleInput, #actressInput, #releaseI
     startGround();
   }
 });
-$('input[name="rank"], #withFavorite, #withNoFavorite, #withSubtitles').on('change', startGround);
+$('input[name="rank"], #withFavorite, #withNoFavorite, #withSubtitles, #sort').on('change', startGround);
 
 $(window).on('keyup wheel', (e) => {
   // console.log('[eventHandler]', e.type, e.key, e.originalEvent.deltaY);
   switch (e.key || (e.originalEvent.deltaY < 0 ? 'WheelUp' : 'WheelDown')) {
     case 'ArrowLeft':
     case 'WheelUp':
-    case '4':
       prev();
       break;
     case 'ArrowRight':
     case 'WheelDown':
-    case '6':
       next();
       break;
     case 'ArrowUp':
-    case '8':
       randomForward();
       break;
     case 'ArrowDown':
-    case '2':
       randomBackward();
       break;
     case ' ':
@@ -64,7 +60,6 @@ $(window).on('keyup wheel', (e) => {
       last();
       break;
     case 'Backspace':
-    case '7':
       historyBack();
       break;
   }
@@ -101,7 +96,7 @@ function startGround() {
     withSubtitles: $('#withSubtitles').prop('checked'),
     withFavorite: $('#withFavorite').prop('checked'),
     withNoFavorite: $('#withNoFavorite').prop('checked'),
-    sort: 'RELEASE',
+    sort: $('#sort').val(),
   };
 
   Rest.Flay.listOfOpus(condition, (list) => {
@@ -121,26 +116,27 @@ function startGround() {
       $('.page-target').css('opacity', 0);
     }
     random();
-  });
-  Rest.Flay.listOfStudio(condition, (list) => {
-    $('#studio-opt')
-      .empty()
-      .append(list.map((item) => `<option value="${item}">${item}</option>`));
-  });
-  Rest.Flay.listOfTitle(condition, (list) => {
-    $('#title-opt')
-      .empty()
-      .append(list.map((item) => `<option value="${item}">${item}</option>`));
-  });
-  Rest.Flay.listOfActress(condition, (list) => {
-    $('#actress-opt')
-      .empty()
-      .append(list.map((item) => `<option value="${item}">${item}</option>`));
-  });
-  Rest.Flay.listOfRelease(condition, (list) => {
-    $('#release-opt')
-      .empty()
-      .append(list.map((item) => `<option value="${item}">${item}</option>`));
+
+    Rest.Flay.listOfStudio(condition, (list) => {
+      $('#studio-opt')
+        .empty()
+        .append(list.map((item) => `<option value="${item}">${item}</option>`));
+    });
+    Rest.Flay.listOfTitle(condition, (list) => {
+      $('#title-opt')
+        .empty()
+        .append(list.map((item) => `<option value="${item}">${item}</option>`));
+    });
+    Rest.Flay.listOfActress(condition, (list) => {
+      $('#actress-opt')
+        .empty()
+        .append(list.map((item) => `<option value="${item}">${item}</option>`));
+    });
+    Rest.Flay.listOfRelease(condition, (list) => {
+      $('#release-opt')
+        .empty()
+        .append(list.map((item) => `<option value="${item}">${item}</option>`));
+    });
   });
 }
 
@@ -216,14 +212,14 @@ function show(from) {
     indexHistory.push(index);
     renderIndexHistoryContainer();
   }
-  console.log(indexHistory, index);
+  // console.log(indexHistory, index);
 
   Rest.Flay.getFully(opus, (_flay) => {
     flay = _flay;
     const jsonText = JSON.stringify(
       flay,
       function replacer(k, v) {
-        // console.log('k', typeof k, k, 'v', typeof v, v);
+        // console.log('k[' + typeof k + ']', k, 'v[' + typeof v + ']', v);
         if (k === 'lastAccess') {
           v = DateUtils.format('yyyy-MM-dd HH:mm:ss', v);
         } else if (k === 'lastModified') {

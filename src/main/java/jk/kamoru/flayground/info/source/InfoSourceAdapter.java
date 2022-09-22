@@ -47,7 +47,7 @@ public abstract class InfoSourceAdapter<T extends Info<K>, K> implements InfoSou
 	public T getOrNew(K key) {
 		try {
 			return get(key);
-		} catch(InfoNotfoundException e) {
+		} catch (InfoNotfoundException e) {
 			T newInstance = newInstance(key);
 			list.add(newInstance);
 			save();
@@ -60,7 +60,8 @@ public abstract class InfoSourceAdapter<T extends Info<K>, K> implements InfoSou
 		try {
 			get(create.getKey());
 			throw new IllegalStateException("duplicated key " + create.getKey());
-		} catch(InfoNotfoundException e) {
+		} catch (InfoNotfoundException e) {
+			create.touch();
 			list.add(create);
 			save();
 			return create;
@@ -69,16 +70,15 @@ public abstract class InfoSourceAdapter<T extends Info<K>, K> implements InfoSou
 
 	@Override
 	public void update(T update) {
-		T t = get(update.getKey());
-		list.remove(t);
+		list.remove(get(update.getKey()));
+		update.touch();
 		list.add(update);
 		save();
 	}
 
 	@Override
 	public void delete(T delete) {
-		T t = get(delete.getKey());
-		list.remove(t);
+		list.remove(get(delete.getKey()));
 		save();
 	}
 

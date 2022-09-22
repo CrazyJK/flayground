@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Stream;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -120,19 +121,19 @@ public class FlayCollector {
       case RELEASE:
         return f1.getRelease().compareTo(f2.getRelease());
       case PLAY:
-        return f1.getVideo().getPlay() - f2.getVideo().getPlay();
+        return NumberUtils.compare(f1.getVideo().getPlay(), f2.getVideo().getPlay());
       case RANK:
-        return f1.getVideo().getRank() - f2.getVideo().getRank();
+        return NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank());
       case LASTACCESS:
-        return Long.valueOf(f1.getVideo().getLastAccess() - f2.getVideo().getLastAccess()).intValue();
+        return NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess());
       case LASTMODIFIED:
-        return Long.valueOf(f1.getLastModified() - f2.getLastModified()).intValue();
+        return NumberUtils.compare(f1.getLastModified(), f2.getLastModified());
       case SCORE:
         scoreCalculator.calcScore(f1);
         scoreCalculator.calcScore(f2);
-        return f1.getScore() - f2.getScore();
+        return NumberUtils.compare(f1.getScore(), f2.getScore());
       case LENGTH:
-        return Long.valueOf(f1.getLength() - f2.getLength()).intValue();
+        return NumberUtils.compare(f1.getLength(), f2.getLength());
       default:
         return 0;
     }

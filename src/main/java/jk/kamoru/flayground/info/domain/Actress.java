@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.info.domain;
 
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 import javax.validation.constraints.NotBlank;
@@ -16,8 +17,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Actress implements Info<String> {
 
-	@NotBlank
-	String name;
+	@NotBlank String name;
 	String localName;
 	String birth;
 	String body;
@@ -25,8 +25,8 @@ public class Actress implements Info<String> {
 	int debut;
 	String comment;
 	boolean favorite;
-	@JsonIgnore
-	List<File> covers;
+	@JsonIgnore List<File> covers;
+	long lastModified;
 
 	public Actress(String name) {
 		setKey(name);
@@ -37,6 +37,7 @@ public class Actress implements Info<String> {
 		this.debut = 0;
 		this.comment = "";
 		this.favorite = false;
+		this.lastModified = -1;
 	}
 
 	public int getCoverSize() {
@@ -53,6 +54,11 @@ public class Actress implements Info<String> {
 	@Override
 	public void setKey(String key) {
 		this.name = key;
+	}
+
+	@Override
+	public void touch() {
+		lastModified = new Date().getTime();
 	}
 
 	@Override

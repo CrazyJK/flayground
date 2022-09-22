@@ -1,5 +1,6 @@
 package jk.kamoru.flayground.info.domain;
 
+import java.util.Date;
 import javax.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
@@ -11,15 +12,16 @@ import lombok.NoArgsConstructor;
 @Data
 public class Tag implements Info<Integer> {
 
-	@NotBlank
-	Integer id;
+	@NotBlank Integer id;
 	String name;
 	String description;
+	long lastModified;
 
 	public Tag(Integer key) {
 		setKey(key);
 		this.name = "";
 		this.description = "";
+		this.lastModified = -1;
 	}
 
 	@Override
@@ -30,6 +32,11 @@ public class Tag implements Info<Integer> {
 	@Override
 	public void setKey(Integer key) {
 		this.id = key;
+	}
+
+	@Override
+	public void touch() {
+		lastModified = new Date().getTime();
 	}
 
 	@Override

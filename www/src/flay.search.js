@@ -66,7 +66,7 @@ function findMode() {
     const fullname = $('#fullname').val().trim();
     console.log('btnCopy click', rowOpus, rowTitle, rowDesc, fullname);
 
-    navigator.clipboard.writeText(fullname).then(() => {
+    window.navigator.clipboard.writeText(fullname).then(() => {
       $('#fullname').effect('highlight', {}, 1000);
       $('#btnCopyTooltip').addClass('show');
       setTimeout(() => {

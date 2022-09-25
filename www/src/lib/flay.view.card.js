@@ -24,6 +24,10 @@ export const STUDIO = 'studio',
 
 (function ($) {
   $.fn.appendFlayCard = function (flay, args) {
+    if (typeof flay === 'string') {
+      flay = Rest.Flay.getFullyAsync(flay);
+    }
+
     const DEFAULTS = {
       width: 800,
       include: [],
@@ -437,18 +441,25 @@ export const STUDIO = 'studio',
         else $actress.find('.flay-actress-favorite > i').addClass('fa-heart-o').removeClass('fa-heart favorite');
       };
 
-      $.each(flay.actressList, function (idx, name) {
-        if (name !== '') {
-          const actress = Rest.Actress.getSync(name);
+      flay.actressList.forEach((name) => {
+        if (typeof name !== 'undefined') {
+          let actress;
+          if (typeof name === 'string' && name !== '') {
+            actress = Rest.Actress.getSync(name);
+          } else if (typeof name === 'object') {
+            actress = name;
+          } else {
+            throw new Error('unknown actress type: ' + name);
+          }
           // console.log(name, actress);
           const $actress = $(templateActress);
           $actress.appendTo($wrapper);
-          $actress.attr('data-actress', name);
+          $actress.attr('data-actress', actress.name);
           $actress
             .find('.flay-actress-name')
-            .html(name)
+            .html(actress.name)
             .on('click', () => {
-              View.actress(name);
+              View.actress(actress.name);
             });
           setFavorite($actress, actress);
 

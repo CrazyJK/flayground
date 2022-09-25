@@ -963,40 +963,40 @@ function collectList() {
   });
 
   // make statistics map
-  const studioMap = new Map();
-  const actressMap = new Map();
+  const currentStudioMap = new Map();
+  const currentActressMap = new Map();
   let count = 1;
   for (const flay of collectedList) {
     // flay.studio
-    if (studioMap.has(flay.studio)) {
-      count = studioMap.get(flay.studio);
+    if (currentStudioMap.has(flay.studio)) {
+      count = currentStudioMap.get(flay.studio);
       count++;
     } else {
       count = 1;
     }
-    studioMap.set(flay.studio, count);
+    currentStudioMap.set(flay.studio, count);
 
     // flay.actressList
     for (const actressName of flay.actressList) {
-      if (actressMap.has(actressName)) {
-        count = actressMap.get(actressName);
+      if (currentActressMap.has(actressName)) {
+        count = currentActressMap.get(actressName);
         count++;
       } else {
         count = 1;
       }
-      actressMap.set(actressName, count);
+      currentActressMap.set(actressName, count);
     }
   }
 
   // sort statistics map
   const studioMapAsc = new Map(
-    [...studioMap.entries()].sort((a, b) => {
+    [...currentStudioMap.entries()].sort((a, b) => {
       return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
     })
   );
 
   const actressMapAsc = new Map(
-    [...actressMap.entries()].sort((a, b) => {
+    [...currentActressMap.entries()].sort((a, b) => {
       return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
     })
   );
@@ -1041,7 +1041,7 @@ function collectList() {
       )
     );
   for (const [k, v] of actressMapAsc) {
-    const a = actressMap.get(k);
+    const a = currentActressMap.get(k);
     $('#statisticsActress').append(
       $(`<label class="text hover actressTag ${v < minCount ? 'hide' : ''}">
 					<span style="font-size: ${16 + v * 1}">
@@ -1060,7 +1060,7 @@ function collectList() {
 }
 
 function showVideo(args) {
-  const setBackgroundCover = (selector, opus, callback) => {
+  const setCoverAsBackground = (selector, opus, callback) => {
     if (opus) {
       if (SessionStorageItem.has(opus)) {
         $(selector).css({ backgroundImage: `url('${SessionStorageItem.get(opus)}')` });
@@ -1169,7 +1169,7 @@ function showVideo(args) {
   });
 
   // show cover
-  setBackgroundCover('.cover-wrapper-inner.curr > .cover-box', collectedList[currentIndex].opus, (blobUrl) => {
+  setCoverAsBackground('.cover-wrapper-inner.curr > .cover-box', collectedList[currentIndex].opus, (blobUrl) => {
     if (SessionStorageItem.has(blobUrl)) {
       const dominatedColors = JSON.parse(SessionStorageItem.get(blobUrl));
       applyDominatedColor(dominatedColors);
@@ -1180,8 +1180,8 @@ function showVideo(args) {
       });
     }
   });
-  setBackgroundCover('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
-  setBackgroundCover('.cover-wrapper-inner.next > .cover-box', collectedList[currentIndex + 1]?.opus);
+  setCoverAsBackground('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
+  setCoverAsBackground('.cover-wrapper-inner.next > .cover-box', collectedList[currentIndex + 1]?.opus);
 
   // dominatedColor
   function applyDominatedColor(dominatedColors) {

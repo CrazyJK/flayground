@@ -215,6 +215,7 @@ function show(from) {
   // console.log(indexHistory, index);
 
   Rest.Flay.getFully(opus, (_flay) => {
+    // console.log(_flay);
     flay = _flay;
     const jsonText = JSON.stringify(
       flay,

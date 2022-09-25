@@ -105,6 +105,13 @@ export const Rest = {
         failCallback
       );
     },
+    getFullyAsync: (opus) => {
+      let flay;
+      restCall('/flay/' + opus + '/fully', { async: false }, (f) => {
+        flay = f;
+      });
+      return flay;
+    },
     getScore: function (opus, callback) {
       restCall('/flay/' + opus + '/score', {}, callback);
     },

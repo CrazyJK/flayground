@@ -1,6 +1,11 @@
 body {
   overflow-x: hidden;
 }
+
+nav#actressInfo {
+  justify-content: center;
+}
+
 .actress-cover-wrapper {
   position: fixed;
   top: 10rem;
@@ -13,7 +18,7 @@ body {
   transition: height 1s;
 }
 nav.navbar:hover ~ .actress-cover-wrapper {
-  height: calc(100% - 9rem);
+  height: calc(100% - 10rem);
 }
 input.form-control.input-invalid {
   color: red;

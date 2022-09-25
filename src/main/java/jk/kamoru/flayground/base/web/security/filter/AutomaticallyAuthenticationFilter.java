@@ -26,7 +26,7 @@ public class AutomaticallyAuthenticationFilter extends OncePerRequestFilter {
 
 	private final static String LOCAL_NAME = "local";
 	private final static String LOCAL_PASS = "local";
-	private final static Collection<? extends GrantedAuthority> LOCAL_AUTHORITIES = Arrays.stream(new String[] { "ROLE_ADMIN", "ROLE_USER" }).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+	private final static Collection<? extends GrantedAuthority> LOCAL_AUTHORITIES = Arrays.stream(new String[] {"ROLE_ADMIN", "ROLE_USER"}).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
 	private final static List<String> REQUIRES_AUTHENTION_SUFFIX = Arrays.asList("html");
 
 	private List<String> automaticallyCertificatedIp;

@@ -146,7 +146,7 @@ function findMode() {
     $('#opus').val(rowOpus);
     if (rowOpus !== '') {
       searchSource(rowOpus);
-      Search.opus(rowOpus);
+      Search.arzon(rowOpus);
     }
     if (rowTitle !== '') {
       // Search.translateByGoogle(rowTitle);

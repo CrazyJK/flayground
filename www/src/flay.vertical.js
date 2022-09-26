@@ -28,7 +28,8 @@ let flayList = [];
 let collectedList = [];
 let seenList = [];
 let actressList = [];
-let actressMap = {};
+/** Map<Name, Actress> */
+let mapNameActress = new Map();
 let tagList = [];
 
 let currentFlay = null;
@@ -716,25 +717,21 @@ function loadData() {
   ]).then((results) => {
     [tagList, flayList, actressList] = results;
 
-    initTag();
-    initActress();
+    // initialize Tag
+    $('.tag-list > label:not(.label-add-tag)').remove();
+    $('.tag-list').prepend(tagList.sort((t1, t2) => t1.name.localeCompare(t2.name)).map((tag) => createTag(tag)));
+
+    // initialize Actress
+    mapNameActress = actressList.reduce((map, actress) => {
+      map.set(actress.name, actress);
+      return map;
+    }, new Map());
+
     $('#pageContent').trigger('collect');
     $(window).trigger('resize');
   });
 
   SessionStorageItem.clear();
-}
-
-function initTag() {
-  $('.tag-list > label:not(.label-add-tag)').remove();
-  $('.tag-list').prepend(tagList.sort((t1, t2) => t1.name.localeCompare(t2.name)).map((tag) => createTag(tag)));
-}
-
-function initActress() {
-  actressMap = actressList.reduce((map, actress) => {
-    map.set(actress.name, actress);
-    return map;
-  }, new Map());
 }
 
 function collectList() {
@@ -782,7 +779,7 @@ function collectList() {
       return false;
     }
     for (const actressName of actressList) {
-      const actress = actressMap.get(actressName);
+      const actress = mapNameActress.get(actressName);
       if (actress.favorite) {
         return true;
       }
@@ -963,40 +960,40 @@ function collectList() {
   });
 
   // make statistics map
-  const currentStudioMap = new Map();
-  const currentActressMap = new Map();
+  const currentMapStudioCount = new Map();
+  const currentMapActressCount = new Map();
   let count = 1;
   for (const flay of collectedList) {
     // flay.studio
-    if (currentStudioMap.has(flay.studio)) {
-      count = currentStudioMap.get(flay.studio);
+    if (currentMapStudioCount.has(flay.studio)) {
+      count = currentMapStudioCount.get(flay.studio);
       count++;
     } else {
       count = 1;
     }
-    currentStudioMap.set(flay.studio, count);
+    currentMapStudioCount.set(flay.studio, count);
 
     // flay.actressList
     for (const actressName of flay.actressList) {
-      if (currentActressMap.has(actressName)) {
-        count = currentActressMap.get(actressName);
+      if (currentMapActressCount.has(actressName)) {
+        count = currentMapActressCount.get(actressName);
         count++;
       } else {
         count = 1;
       }
-      currentActressMap.set(actressName, count);
+      currentMapActressCount.set(actressName, count);
     }
   }
 
   // sort statistics map
-  const studioMapAsc = new Map(
-    [...currentStudioMap.entries()].sort((a, b) => {
+  const currentAscMapStudioCount = new Map(
+    [...currentMapStudioCount.entries()].sort((a, b) => {
       return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
     })
   );
 
-  const actressMapAsc = new Map(
-    [...currentActressMap.entries()].sort((a, b) => {
+  const currentAscMapActressCount = new Map(
+    [...currentMapActressCount.entries()].sort((a, b) => {
       return a[0].toLowerCase().localeCompare(b[0].toLowerCase());
     })
   );
@@ -1005,7 +1002,7 @@ function collectList() {
   $('#statisticsStudio')
     .empty()
     .append(
-      $('<label>', { class: 'text hover text-info float-left' }).append(
+      $('<label>', { class: 'text hover text-info me-2' }).append(
         $('<span>')
           .html('Show All')
           .on('click', function () {
@@ -1014,16 +1011,15 @@ function collectList() {
           })
       )
     );
-  for (const [k, v] of studioMapAsc) {
+  for (const [studioName, count] of currentAscMapStudioCount) {
     $('#statisticsStudio').append(
-      $(`<label class="text hover studioTag ${v < minCount ? 'hide' : ''}">
-					<span style="font-size: ${16 + v * 0.25}">${k}</span>
-					<span class="badge">${v}</span>
-				</label>`).data('k', k)
+      $(`<label class="text sm hover studioTag ${count < minCount ? 'hide' : ''}">
+					<span>${studioName}</span><i class="badge">${count}</i>
+				</label>`).data('name', studioName)
     );
   }
   $('#statisticsStudio .studioTag').on('click', (e) => {
-    $('#search').val($(e.target).data('k'));
+    $('#search').val($(e.target).closest('label.studioTag').data('name'));
     $('#pageContent').trigger('collect');
   });
   $('#statisticsStudio > label:first-child').toggle(minCount > 1);
@@ -1031,7 +1027,7 @@ function collectList() {
   $('#statisticsActress')
     .empty()
     .append(
-      $('<label>', { class: 'text hover text-info float-left' }).append(
+      $('<label>', { class: 'text hover text-info me-2' }).append(
         $('<span>')
           .html('Show All')
           .on('click', function () {
@@ -1040,27 +1036,23 @@ function collectList() {
           })
       )
     );
-  for (const [k, v] of actressMapAsc) {
-    const a = currentActressMap.get(k);
+  for (const [actressName, count] of currentAscMapActressCount) {
+    const a = mapNameActress.get(actressName);
     $('#statisticsActress').append(
-      $(`<label class="text hover actressTag ${v < minCount ? 'hide' : ''}">
-					<span style="font-size: ${16 + v * 1}">
-						<i class="fa ${a.favorite ? 'fa-heart' : ''}"></i>
-						${k}
-					</span>
-					<span class="badge">${v}</span>
-				</label>`).data('k', k)
+      $(`<label class="text sm hover actressTag ${count < minCount ? 'hide' : ''}">
+					<span>${actressName}</span><i class="badge">${count}</i>
+				</label>`).data('name', actressName)
     );
   }
   $('#statisticsActress .actressTag').on('click', (e) => {
-    $('#search').val($(e.target).data('k'));
+    $('#search').val($(e.target).closest('label.actressTag').data('name'));
     $('#pageContent').trigger('collect');
   });
   $('#statisticsActress > label:first-child').toggle(minCount > 1);
 }
 
 function showVideo(args) {
-  const setCoverAsBackground = (selector, opus, callback) => {
+  function setCoverAsBackground(selector, opus, callback) {
     if (opus) {
       if (SessionStorageItem.has(opus)) {
         $(selector).css({ backgroundImage: `url('${SessionStorageItem.get(opus)}')` });
@@ -1075,20 +1067,34 @@ function showVideo(args) {
     } else {
       $(selector).css({ backgroundImage: `url('${PATH}/static/image/random?_=${Date.now()}')` });
     }
-  };
+  }
+  function applyDominatedColor(dominatedColors) {
+    $('.cover-wrapper-inner.curr').css({
+      boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[1].rgba.join(',')})`,
+    });
+    $('.cover-wrapper-inner.curr > .cover-box').css({
+      boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[0].rgba.join(',')})`,
+      backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
+    });
+    $('.color-wrapper > label').each((index, label) => {
+      $(label).css({
+        backgroundColor: `rgba(${dominatedColors[index].rgba.join(',')})`,
+      });
+    });
+  }
 
   navigation.off();
 
   Promise.all([
+    // actress
     new Promise((resolve, reject) => {
-      // actress
       $('.info-wrapper-actress').empty();
       currentFlay.actressList.forEach((name) => {
         if (name === 'Amateur') {
           return;
         }
 
-        const actress = actressMap.get(name);
+        const actress = mapNameActress.get(name);
         if (actress === null) {
           throw 'not found actress: ' + name;
         }
@@ -1122,8 +1128,8 @@ function showVideo(args) {
       });
       resolve(true);
     }),
+    // history chart
     new Promise((resolve, reject) => {
-      // history chart
       Rest.History.find(currentFlay.opus, (histories) => {
         const playHistories = histories.filter((history) => history.action === 'PLAY');
         if (playHistories.length > 0) {
@@ -1148,8 +1154,8 @@ function showVideo(args) {
         }
       });
     }),
+    // score
     new Promise((resolve, reject) => {
-      // score
       $('.info-score').neonLoading(true);
       Rest.Flay.getScore(currentFlay.opus, (score) => {
         $('.info-score')
@@ -1182,22 +1188,6 @@ function showVideo(args) {
   });
   setCoverAsBackground('.cover-wrapper-inner.prev > .cover-box', collectedList[currentIndex - 1]?.opus);
   setCoverAsBackground('.cover-wrapper-inner.next > .cover-box', collectedList[currentIndex + 1]?.opus);
-
-  // dominatedColor
-  function applyDominatedColor(dominatedColors) {
-    $('.cover-wrapper-inner.curr').css({
-      boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[1].rgba.join(',')})`,
-    });
-    $('.cover-wrapper-inner.curr > .cover-box').css({
-      boxShadow: `inset 0 0 1rem 0.5rem rgba(${dominatedColors[0].rgba.join(',')})`,
-      backgroundColor: `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`,
-    });
-    $('.color-wrapper > label').each((index, label) => {
-      $(label).css({
-        backgroundColor: `rgba(${dominatedColors[index].rgba.join(',')})`,
-      });
-    });
-  }
 
   // show Infomation
   // studio
@@ -1283,7 +1273,7 @@ function showVideo(args) {
   $('#rename-title').val(currentFlay.title);
   $('#rename-actress').val(currentFlay.actressList.join(', '));
   $('#rename-release').val(currentFlay.release);
-  // set original title, desc
+  // toggle original title, desc
   $('.info-original').toggle(!StringUtils.isBlank(currentFlay.video.title) || !StringUtils.isBlank(currentFlay.video.desc));
 
   if ($('#selectTags').is(':visible')) {
@@ -1324,13 +1314,13 @@ function reloadCurrentFlay() {
 
 function markStatisticsTag() {
   $('#selectTags > .tag-list > label')
-    .removeClass('bg-danger')
+    .removeClass('text-danger')
     .each(function () {
       const $this = $(this);
       const name = $this.find('span').text();
       currentFlay.video.tags.forEach((tag) => {
         if (name.indexOf(tag.name) > -1) {
-          $this.addClass('bg-danger');
+          $this.addClass('text-danger');
         }
       });
     });
@@ -1357,11 +1347,6 @@ function markStatisticsActress() {
       }
     });
 }
-
-attachPageEventListener();
-attachFlayEventListener();
-initCondition();
-loadData();
 
 function drawGraph(historyList) {
   // init variables
@@ -1457,3 +1442,8 @@ function drawGraph(historyList) {
   series.appear(1000);
   chart.appear(1000, 100);
 }
+
+attachPageEventListener();
+attachFlayEventListener();
+initCondition();
+loadData();

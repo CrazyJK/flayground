@@ -1235,12 +1235,25 @@ function showVideo(args) {
   // files
   $('#file-wrapper > div > div:not(.file-wrapper-rename)').empty();
   currentFlay.files.cover.forEach((file) => {
-    $('.file-wrapper-cover').append($('<label>', { class: 'text sm w-100' }).append(file, $('<span>', { class: 'text-transparent ms-2 float-end' }).html('<i class="fa fa-circle"></i>')));
+    $('.file-wrapper-cover').append(
+      $('<label>', { class: 'text sm w-100' }).append(
+        $('<span>', { class: 'hover', title: 'Open folder' })
+          .html(file)
+          .on('click', () => {
+            Rest.Flay.openFolder(file);
+          }),
+        $('<span>', { class: 'text-transparent ms-2 float-end' }).html('<i class="fa fa-circle"></i>')
+      )
+    );
   });
   currentFlay.files.movie.forEach((file) => {
     $('.file-wrapper-movie').append(
       $('<label>', { class: 'text sm w-100' }).append(
-        file,
+        $('<span>', { class: 'hover', title: 'Open folder' })
+          .html(file)
+          .on('click', () => {
+            Rest.Flay.openFolder(file);
+          }),
         $('<span>', { class: 'hover text-danger ms-2 float-end' })
           .html('<i class="fa fa-times"></i>')
           .on('click', () => {
@@ -1255,7 +1268,11 @@ function showVideo(args) {
   currentFlay.files.subtitles.forEach((file) => {
     $('.file-wrapper-subtitles').append(
       $('<label>', { class: 'text sm w-100' }).append(
-        file,
+        $('<span>', { class: 'hover', title: 'Open folder' })
+          .html(file)
+          .on('click', () => {
+            Rest.Flay.openFolder(file);
+          }),
         $('<span>', { class: 'hover text-danger ms-2 float-end' })
           .html('<i class="fa fa-times"></i>')
           .on('click', () => {

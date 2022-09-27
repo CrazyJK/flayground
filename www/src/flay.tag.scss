@@ -1,9 +1,9 @@
 #tagList {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
-  align-items: flex-start;
   justify-content: center;
-  align-content: flex-start;
+  align-items: flex-start;
 
   .tag {
     display: inline-flex;
@@ -29,14 +29,21 @@
         align-items: flex-start;
         gap: 8px;
 
+        .badge {
+          color: var(--bs-info);
+        }
+
         .flay-count {
           font-size: 0.75rem;
+          color: var(--bs-secondary);
+
           &.flay-count-no {
             color: var(--bs-danger);
           }
         }
       }
-      .tag-dest {
+
+      .tag-desc {
         color: #0d8f00;
         text-align: center;
         word-break: keep-all;

@@ -73,7 +73,7 @@ function tagLoad() {
           $('#tagList > .tag').removeClass('active');
           $(e.target).closest('.tag').addClass('active');
         });
-      $tagCard.find('.card-text').html(tag.description);
+      $tagCard.find('.tag-desc').html(tag.description);
       $tagCard.find('.tag-open').on('click', () => {
         View.tag(tag.id);
       });

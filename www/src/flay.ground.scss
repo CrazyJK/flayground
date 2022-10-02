@@ -113,7 +113,7 @@ nav {
   align-items: center;
 
   .cover {
-    background: transparent no-repeat center / cover;
+    background: transparent no-repeat center / contain;
     width: 50rem;
     aspect-ratio: var(--cover-aspect-ratio);
     box-shadow: 0 0 1rem 0.5rem var(--color-box-shadow);

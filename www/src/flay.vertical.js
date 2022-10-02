@@ -930,8 +930,10 @@ function collectList() {
         const rVal = compareTo(flay1.release, flay2.release);
         return rVal === 0 ? compareTo(flay1.opus, flay2.opus) : rVal;
       }
-      case 'M':
+      case 'md':
         return compareTo(flay1.lastModified, flay2.lastModified);
+      case 'ac':
+        return compareTo(flay1.video.lastAccess, flay2.video.lastAccess);
       case 'P': {
         const pVal = compareTo(flay1.video.play, flay2.video.play);
         return pVal === 0 ? compareTo(flay1.release, flay2.release) : pVal;
@@ -1088,7 +1090,7 @@ function showVideo(args) {
   Promise.all([
     // actress
     new Promise((resolve, reject) => {
-      $('.info-wrapper-actress').empty();
+      $('.actress-wrapper').empty();
       currentFlay.actressList.forEach((name) => {
         if (name === 'Amateur') {
           return;
@@ -1113,7 +1115,7 @@ function showVideo(args) {
             $('<label>', { class: 'text info-actress-height' }).html(Util.Actress.getHeight(actress)),
             $('<label>', { class: 'text info-actress-debut' }).html(Util.Actress.getDebut(actress))
           )
-          .appendTo($('.info-wrapper-actress'));
+          .appendTo($('.actress-wrapper'));
 
         // flay count, rank avg
         Rest.Flay.findByActressAll(name, (flayListOfActress) => {
@@ -1305,15 +1307,7 @@ function showVideo(args) {
 }
 
 function notice(msg) {
-  $('.notice-bar')
-    .empty()
-    .append(
-      $('<label>', { class: 'text sm' })
-        .html(msg)
-        .fadeOut(5000, function () {
-          $(this).remove();
-        })
-    );
+  $('.notice-bar').html($(`<label class="text sm">${msg}</label>`).fadeOut(5000));
 }
 
 function reloadCurrentFlay() {

@@ -39,7 +39,8 @@
             <label title="Title   "><input type="radio" name="sort" value="T" /><span>T</span></label>
             <label title="Actress "><input type="radio" name="sort" value="A" /><span>A</span></label>
             <label title="Release "><input type="radio" name="sort" value="R" /><span>R</span></label>
-            <label title="Modified"><input type="radio" name="sort" value="M" /><span>M</span></label>
+            <label title="Modified"><input type="radio" name="sort" value="md" /><span>md</span></label>
+            <label title="Accessed"><input type="radio" name="sort" value="ac" /><span>ac</span></label>
             <label title="Played  "><input type="radio" name="sort" value="P" /><span>P</span></label>
           </span>
           <span class="check-group check-group-rounded">
@@ -50,7 +51,7 @@
           <label class="check">
             <span class="btn-reload" title="reload Data"><i class="fa fa-refresh"></i></span>
           </label>
-          <label class="check"><span id="playCount">0</span><small>Play</small></label>
+          <label><span class="me-1" id="playCount">0</span><small>Play</small></label>
           <button class="btn btn-sm btn-link toggle-option"><i class="fa fa-ellipsis-v"></i></button>
           <div class="rounded" id="options">
             <ul class="list-unstyled mb-0">
@@ -148,10 +149,8 @@
               <div class="cover-box"></div>
             </div>
           </div>
-          <div class="info-wrapper">
-            <dl>
-              <dd class="info-wrapper-actress"><label class="text hover info-actress">Actress</label></dd>
-            </dl>
+          <div class="actress-wrapper">
+            <div class="info-actress"></div>
           </div>
           <div class="tag-wrapper container-lg pt-1">
             <div id="videoTags" class="tag-list">

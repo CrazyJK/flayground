@@ -29,11 +29,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/banner")
 public class ImageBannerHandler {
 
-	@Autowired
-	ImageService imageService;
+	@Autowired ImageService imageService;
 
-	@Autowired
-	ImageBannerPrinter imageBannerPrinter;
+	@Autowired ImageBannerPrinter imageBannerPrinter;
 
 	@Autowired FlayProperties flayProperties;
 
@@ -51,7 +49,9 @@ public class ImageBannerHandler {
 	@PostMapping("/upload")
 	@ResponseBody
 	public String upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("width") int width) {
-		Assert.state(multipartFile != null, "file is null");
+		if (multipartFile == null) {
+			throw new RuntimeException("file is null");
+		}
 
 		File uploadDir = new File(flayProperties.getImagePaths()[0] + "/_upload");
 		Assert.state(uploadDir.exists(), "upload path is not exists");

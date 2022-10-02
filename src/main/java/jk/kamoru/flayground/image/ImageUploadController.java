@@ -32,7 +32,9 @@ public class ImageUploadController {
 	@PostMapping("/upload")
 	@ResponseBody
 	public List<Image> upload(@RequestParam("file") MultipartFile[] multipartFiles) {
-		Assert.state(multipartFiles != null, "file is null");
+		if (multipartFiles == null) {
+			throw new RuntimeException("file is null");
+		}
 		Assert.state(multipartFiles.length > 0, "file is zero");
 
 		File uploadDir = new File(flayProperties.getImagePaths()[0] + "/_upload");

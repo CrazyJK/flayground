@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
+import org.springframework.lang.Nullable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
@@ -29,7 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AccessLogInterceptor implements HandlerInterceptor {
 
 	private static final String MDC_STARTTIME = "StartTime";
-	private static final String MDC_USERNAME  = "Username";
+	private static final String MDC_USERNAME = "Username";
 
 	AccessLogService accessLogService;
 
@@ -45,28 +46,26 @@ public class AccessLogInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, @Nullable Exception ex) throws Exception {
 		String startTime = StringUtils.defaultString(MDC.get(MDC_STARTTIME), Long.toString(System.currentTimeMillis()));
-		Date   logDate     = new Date();
-		String remoteAddr  = request.getRemoteAddr();
-		String reqMethod   = request.getMethod();
-		String requestUri  = request.getRequestURI();
+		Date logDate = new Date();
+		String remoteAddr = request.getRemoteAddr();
+		String reqMethod = request.getMethod();
+		String requestUri = request.getRequestURI();
 		String contentType = StringUtils.defaultString(response.getContentType());
-		long   elapsedtime = System.currentTimeMillis() - Long.parseLong(startTime);
+		long elapsedtime = System.currentTimeMillis() - Long.parseLong(startTime);
 		String handlerInfo = "";
 		String exceptionInfo = ex == null ? "" : ex.getMessage();
-		String username    = getUsername();
-		int    status      = response.getStatus();
+		String username = getUsername();
+		int status = response.getStatus();
 
 		// for handlerInfo
 		if (handler instanceof org.springframework.web.method.HandlerMethod) { // for Controller
 			HandlerMethod method = (HandlerMethod) handler;
 			handlerInfo = String.format("%s.%s", method.getBean().getClass().getSimpleName(), method.getMethod().getName());
-		}
-		else if (handler instanceof org.springframework.web.servlet.resource.ResourceHttpRequestHandler) { // for static resources. No additional information
+		} else if (handler instanceof org.springframework.web.servlet.resource.ResourceHttpRequestHandler) { // for static resources. No additional information
 			// do nothing
-		}
-		else { // another handler
+		} else { // another handler
 			handlerInfo = String.format("%s", handler);
 		}
 

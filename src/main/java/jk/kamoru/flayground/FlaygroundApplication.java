@@ -6,11 +6,11 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class FlaygroundApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(FlaygroundApplication.class, args);
+  public static void main(String[] args) {
+    SpringApplication.run(FlaygroundApplication.class, args);
 
-		// execute last task during startup
-		Flayground.runFinalTasks();
-	}
+    // execute last task during startup
+    Flayground.runFinalTasks();
+  }
 
 }

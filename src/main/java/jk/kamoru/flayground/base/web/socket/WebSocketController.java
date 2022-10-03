@@ -10,11 +10,11 @@ import org.springframework.web.socket.config.WebSocketMessageBrokerStats;
 @RequestMapping("/websocket")
 public class WebSocketController {
 
-	@Autowired WebSocketMessageBrokerStats webSocketMessageBrokerStats;
+  @Autowired WebSocketMessageBrokerStats webSocketMessageBrokerStats;
 
-	@GetMapping("/stats")
-	public String websocketInfo() {
-		return webSocketMessageBrokerStats.toString();
-	}
+  @GetMapping("/stats")
+  public String websocketInfo() {
+    return webSocketMessageBrokerStats.toString();
+  }
 
 }

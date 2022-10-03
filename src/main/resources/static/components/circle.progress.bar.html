@@ -90,45 +90,45 @@
 							<stop offset="100%" stop-color="#673ab7" />
 						</linearGradient>
 					</defs>
-					<circle id="circle" cx="80" cy="80" r="70" stroke-linecap="round" stroke-width="20px" fill="none"/>
+					<circle id="circle" cx="80" cy="80" r="70" stroke-linecap="round" stroke-width="20px" fill="none" />
 				</svg>
 			</div>
 		</div>
 
 		<div id="controller">
 			<div>
-				<input type="number" name="circleRadius" id="circleRadius" step="10" min="50" placeholder="set circle radius">
+				<input type="number" name="circleRadius" id="circleRadius" step="10" min="50" placeholder="set circle radius" />
 				<label for="circleRadius">px. circle radius</label>
 			</div>
 			<div>
-				<input type="number" name="circleStrokeWidth" id="circleStrokeWidth" step="10" min="10" placeholder="set circle stroke width">
+				<input type="number" name="circleStrokeWidth" id="circleStrokeWidth" step="10" min="10" placeholder="set circle stroke width" />
 				<label for="circleStrokeWidth">px. stroke width</label>
 			</div>
 			<div>
-				<input type="number" name="percent" id="percent" min="0" max="100" step="1" placeholder="set percent value">
+				<input type="number" name="percent" id="percent" min="0" max="100" step="1" placeholder="set percent value" />
 				<label for="percent">%</label>
 			</div>
 		</div>
 
 		<script>
-			const elSkill   = document.querySelector(".skill");
-			const elOuter   = document.querySelector(".outer");
-			const elCircle  = document.getElementById("circle");
-			const elNumber  = document.getElementById("number");
-			const elRadius  = document.querySelector("#circleRadius");
-			const elStrokeWidth = document.querySelector("#circleStrokeWidth");
-			const elPercent = document.querySelector("#percent");
+			const elSkill = document.querySelector('.skill');
+			const elOuter = document.querySelector('.outer');
+			const elCircle = document.getElementById('circle');
+			const elNumber = document.getElementById('number');
+			const elRadius = document.querySelector('#circleRadius');
+			const elStrokeWidth = document.querySelector('#circleStrokeWidth');
+			const elPercent = document.querySelector('#percent');
 
 			let progressTimer = -1;
 
 			elRadius.value = 70;
-			elRadius.addEventListener("change", progressCircle);
+			elRadius.addEventListener('change', progressCircle);
 
 			elStrokeWidth.value = 20;
-			elStrokeWidth.addEventListener("change", progressCircle);
+			elStrokeWidth.addEventListener('change', progressCircle);
 
 			elPercent.value = 75;
-			elPercent.addEventListener("change", progressCircle);
+			elPercent.addEventListener('change', progressCircle);
 
 			progressCircle();
 
@@ -140,14 +140,14 @@
 				const circleLength = 2 * Math.PI * circleRadius;
 				const strokeWidth = Number(elStrokeWidth.value);
 
-				elSkill.style.width  = (circleRadius + strokeWidth / 2) * 2 + "px";
-				elSkill.style.height = (circleRadius + strokeWidth / 2) * 2 + "px";
+				elSkill.style.width = (circleRadius + strokeWidth / 2) * 2 + 'px';
+				elSkill.style.height = (circleRadius + strokeWidth / 2) * 2 + 'px';
 
-				elOuter.style.padding = strokeWidth + "px";
+				elOuter.style.padding = strokeWidth + 'px';
 
 				elCircle.cx.baseVal.value = circleRadius + strokeWidth / 2;
 				elCircle.cy.baseVal.value = circleRadius + strokeWidth / 2;
-				elCircle.r.baseVal.value  = circleRadius;
+				elCircle.r.baseVal.value = circleRadius;
 				elCircle.style.strokeDasharray = circleLength;
 				elCircle.style.strokeWidth = strokeWidth;
 
@@ -157,7 +157,7 @@
 						clearInterval(progressTimer);
 					} else {
 						elCircle.style.strokeDashoffset = (circleLength - (circleLength * counter++) / 100).toFixed(1);
-						elNumber.innerHTML = counter + "%";
+						elNumber.innerHTML = counter + '%';
 					}
 				}, 30);
 			}

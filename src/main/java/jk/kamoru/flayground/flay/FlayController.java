@@ -27,148 +27,148 @@ import jk.kamoru.flayground.info.service.ActressInfoService;
 @RequestMapping("/flay")
 public class FlayController {
 
-	@Autowired FlayService flayService;
+  @Autowired FlayService flayService;
 
-	@Autowired ActressInfoService actressInfoService;
+  @Autowired ActressInfoService actressInfoService;
 
-	@Autowired ScoreCalculator scoreCalculator;
+  @Autowired ScoreCalculator scoreCalculator;
 
-	@Autowired FlayCollector flayCollector;
+  @Autowired FlayCollector flayCollector;
 
-	@GetMapping("/{opus}")
-	public Flay get(@PathVariable String opus) {
-		return flayService.get(opus);
-	}
+  @GetMapping("/{opus}")
+  public Flay get(@PathVariable String opus) {
+    return flayService.get(opus);
+  }
 
-	@GetMapping("/{opus}/score")
-	public int getScore(@PathVariable String opus) {
-		Flay flay = flayService.get(opus);
-		scoreCalculator.calcScore(flay);
-		return flay.getScore();
-	}
+  @GetMapping("/{opus}/score")
+  public int getScore(@PathVariable String opus) {
+    Flay flay = flayService.get(opus);
+    scoreCalculator.calcScore(flay);
+    return flay.getScore();
+  }
 
-	@GetMapping("/{opus}/fully")
-	public Map<String, Object> getFullyFlay(@PathVariable String opus) {
-		Flay flay = flayService.get(opus);
-		scoreCalculator.calcScore(flay);
-		List<Actress> actressList = flay.getActressList().stream().map(name -> actressInfoService.get(name)).toList();
+  @GetMapping("/{opus}/fully")
+  public Map<String, Object> getFullyFlay(@PathVariable String opus) {
+    Flay flay = flayService.get(opus);
+    scoreCalculator.calcScore(flay);
+    List<Actress> actressList = flay.getActressList().stream().map(name -> actressInfoService.get(name)).toList();
 
-		Map<String, Object> objects = new HashMap<>();
-		objects.put("flay", flay);
-		objects.put("actress", actressList);
-		return objects;
-	}
+    Map<String, Object> objects = new HashMap<>();
+    objects.put("flay", flay);
+    objects.put("actress", actressList);
+    return objects;
+  }
 
-	@GetMapping("/list")
-	public Collection<Flay> getList() {
-		return flayService.list();
-	}
+  @GetMapping("/list")
+  public Collection<Flay> getList() {
+    return flayService.list();
+  }
 
-	@GetMapping("/list/lowScore")
-	public Collection<Flay> getListOfLowScore() {
-		return flayService.getListOfLowScore();
-	}
+  @GetMapping("/list/lowScore")
+  public Collection<Flay> getListOfLowScore() {
+    return flayService.getListOfLowScore();
+  }
 
-	@GetMapping("/list/orderbyScoreDesc")
-	public Collection<Flay> getListOrderbyScoreDesc() {
-		return flayService.getListOrderbyScoreDesc();
-	}
+  @GetMapping("/list/orderbyScoreDesc")
+  public Collection<Flay> getListOrderbyScoreDesc() {
+    return flayService.getListOrderbyScoreDesc();
+  }
 
-	@PostMapping("/list/flay")
-	public List<Flay> getFlayList(@RequestBody FlayCondition flayCondition) {
-		return flayCollector.toFlayList(flayService.list(), flayCondition);
-	}
+  @PostMapping("/list/flay")
+  public List<Flay> getFlayList(@RequestBody FlayCondition flayCondition) {
+    return flayCollector.toFlayList(flayService.list(), flayCondition);
+  }
 
-	@PostMapping("/list/studio")
-	public List<String> getStudioList(@RequestBody FlayCondition flayCondition) {
-		return flayCollector.toStudioList(flayService.list(), flayCondition);
-	}
+  @PostMapping("/list/studio")
+  public List<String> getStudioList(@RequestBody FlayCondition flayCondition) {
+    return flayCollector.toStudioList(flayService.list(), flayCondition);
+  }
 
-	@PostMapping("/list/opus")
-	public List<String> getOpusList(@RequestBody FlayCondition flayCondition) {
-		return flayCollector.toOpusList(flayService.list(), flayCondition);
-	}
+  @PostMapping("/list/opus")
+  public List<String> getOpusList(@RequestBody FlayCondition flayCondition) {
+    return flayCollector.toOpusList(flayService.list(), flayCondition);
+  }
 
-	@PostMapping("/list/title")
-	public List<String> getTitleList(@RequestBody FlayCondition flayCondition) {
-		return flayCollector.toTitleList(flayService.list(), flayCondition);
-	}
+  @PostMapping("/list/title")
+  public List<String> getTitleList(@RequestBody FlayCondition flayCondition) {
+    return flayCollector.toTitleList(flayService.list(), flayCondition);
+  }
 
-	@PostMapping("/list/actress")
-	public List<String> getActressList(@RequestBody FlayCondition flayCondition) {
-		return flayCollector.toActressList(flayService.list(), flayCondition);
-	}
+  @PostMapping("/list/actress")
+  public List<String> getActressList(@RequestBody FlayCondition flayCondition) {
+    return flayCollector.toActressList(flayService.list(), flayCondition);
+  }
 
-	@PostMapping("/list/release")
-	public List<String> getReleaseList(@RequestBody FlayCondition flayCondition) {
-		return flayCollector.toReleaseList(flayService.list(), flayCondition);
-	}
+  @PostMapping("/list/release")
+  public List<String> getReleaseList(@RequestBody FlayCondition flayCondition) {
+    return flayCollector.toReleaseList(flayService.list(), flayCondition);
+  }
 
-	@GetMapping("/find")
-	public Collection<Flay> findList(@RequestBody Search search) {
-		return flayService.find(search);
-	}
+  @GetMapping("/find")
+  public Collection<Flay> findList(@RequestBody Search search) {
+    return flayService.find(search);
+  }
 
-	@GetMapping("/find/{query}")
-	public Collection<Flay> findList(@PathVariable String query) {
-		return flayService.find(query);
-	}
+  @GetMapping("/find/{query}")
+  public Collection<Flay> findList(@PathVariable String query) {
+    return flayService.find(query);
+  }
 
-	@GetMapping("/find/{field}/{value}")
-	public Collection<Flay> findByFieldValue(@PathVariable String field, @PathVariable String value) {
-		return flayService.findByKeyValue(field, value);
-	}
+  @GetMapping("/find/{field}/{value}")
+  public Collection<Flay> findByFieldValue(@PathVariable String field, @PathVariable String value) {
+    return flayService.findByKeyValue(field, value);
+  }
 
-	@GetMapping("/find/tag/{id}/like")
-	public Collection<Flay> findByTagLike(@PathVariable Integer id) {
-		return flayService.findByTagLike(id);
-	}
+  @GetMapping("/find/tag/{id}/like")
+  public Collection<Flay> findByTagLike(@PathVariable Integer id) {
+    return flayService.findByTagLike(id);
+  }
 
-	@GetMapping("/candidates")
-	public Collection<Flay> findCandidates() {
-		return flayService.findCandidates();
-	}
+  @GetMapping("/candidates")
+  public Collection<Flay> findCandidates() {
+    return flayService.findCandidates();
+  }
 
-	@PatchMapping("/candidates/{opus}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void acceptCandidates(@PathVariable String opus) {
-		flayService.acceptCandidates(opus);
-	}
+  @PatchMapping("/candidates/{opus}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void acceptCandidates(@PathVariable String opus) {
+    flayService.acceptCandidates(opus);
+  }
 
-	@PatchMapping("/play/{opus}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void play(@PathVariable String opus) {
-		flayService.play(opus);
-	}
+  @PatchMapping("/play/{opus}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void play(@PathVariable String opus) {
+    flayService.play(opus);
+  }
 
-	@PatchMapping("/edit/{opus}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void edit(@PathVariable String opus) {
-		flayService.edit(opus);
-	}
+  @PatchMapping("/edit/{opus}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void edit(@PathVariable String opus) {
+    flayService.edit(opus);
+  }
 
-	@PutMapping("/rename/{opus}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void rename(@PathVariable String opus, @RequestBody Flay flay) {
-		flayService.rename(opus, flay);
-	}
+  @PutMapping("/rename/{opus}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void rename(@PathVariable String opus, @RequestBody Flay flay) {
+    flayService.rename(opus, flay);
+  }
 
-	@PutMapping("/open/folder")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void openFolder(@RequestBody String folder) {
-		flayService.openFolder(folder);
-	}
+  @PutMapping("/open/folder")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void openFolder(@RequestBody String folder) {
+    flayService.openFolder(folder);
+  }
 
-	@PutMapping("/delete/file")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteFile(@RequestBody String file) {
-		flayService.deleteFile(file);
-	}
+  @PutMapping("/delete/file")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteFile(@RequestBody String file) {
+    flayService.deleteFile(file);
+  }
 
-	@PutMapping("/delete/file/{opus}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void deleteFileOnFlay(@PathVariable String opus, @RequestBody String file) {
-		flayService.deleteFileOnFlay(opus, file);
-	}
+  @PutMapping("/delete/file/{opus}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void deleteFileOnFlay(@PathVariable String opus, @RequestBody String file) {
+    flayService.deleteFileOnFlay(opus, file);
+  }
 
 }

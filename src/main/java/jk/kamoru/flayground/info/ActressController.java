@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 import jk.kamoru.flayground.info.service.NameDistanceChecker.CheckResult;
@@ -26,65 +25,65 @@ import jk.kamoru.flayground.info.service.NameDistanceChecker.CheckResult;
 @RequestMapping("/info/actress")
 public class ActressController {
 
-	@Autowired ActressInfoService actressInfoService;
+  @Autowired ActressInfoService actressInfoService;
 
-	@GetMapping("/{name}")
-	public Actress get(@PathVariable String name) {
-		return actressInfoService.get(name);
-	}
+  @GetMapping("/{name}")
+  public Actress get(@PathVariable String name) {
+    return actressInfoService.get(name);
+  }
 
-	@GetMapping("/list")
-	public Collection<Actress> list() {
-		return actressInfoService.list();
-	}
+  @GetMapping("/list")
+  public Collection<Actress> list() {
+    return actressInfoService.list();
+  }
 
-	@GetMapping("/map")
-	public Map<String, Actress> map() {
-		return actressInfoService.list().stream().collect(Collectors.toMap(Actress::getName, Function.identity()));
-	}
+  @GetMapping("/map")
+  public Map<String, Actress> map() {
+    return actressInfoService.list().stream().collect(Collectors.toMap(Actress::getName, Function.identity()));
+  }
 
-	@GetMapping("/find/{query}")
-	public Collection<Actress> find(@PathVariable String query) {
-		return actressInfoService.find(query);
-	}
+  @GetMapping("/find/{query}")
+  public Collection<Actress> find(@PathVariable String query) {
+    return actressInfoService.find(query);
+  }
 
-	@GetMapping("/find/byLocalname/{localname}")
-	public Collection<Actress> findByLocalname(@PathVariable String localname) {
-		return actressInfoService.findByLocalname(localname);
-	}
+  @GetMapping("/find/byLocalname/{localname}")
+  public Collection<Actress> findByLocalname(@PathVariable String localname) {
+    return actressInfoService.findByLocalname(localname);
+  }
 
-	@GetMapping("/func/nameCheck/{limit}")
-	public List<CheckResult> funcNameCheck(@PathVariable double limit) {
-		return actressInfoService.funcNameCheck(limit);
-	}
+  @GetMapping("/func/nameCheck/{limit}")
+  public List<CheckResult> funcNameCheck(@PathVariable double limit) {
+    return actressInfoService.funcNameCheck(limit);
+  }
 
-	@PostMapping
-	public Actress create(@RequestBody Actress actress) {
-		return actressInfoService.create(actress);
-	}
+  @PostMapping
+  public Actress create(@RequestBody Actress actress) {
+    return actressInfoService.create(actress);
+  }
 
-	@PatchMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void update(@RequestBody Actress actress) {
-		actressInfoService.update(actress);
-	}
+  @PatchMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void update(@RequestBody Actress actress) {
+    actressInfoService.update(actress);
+  }
 
-	@PutMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void persist(@RequestBody Actress actress) {
-		actressInfoService.persist(actress);
-	}
+  @PutMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void persist(@RequestBody Actress actress) {
+    actressInfoService.persist(actress);
+  }
 
-	@PutMapping("/{name}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void rename(@PathVariable String name, @RequestBody Actress actress) {
-		actressInfoService.rename(actress, name);
-	}
+  @PutMapping("/{name}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void rename(@PathVariable String name, @RequestBody Actress actress) {
+    actressInfoService.rename(actress, name);
+  }
 
-	@DeleteMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@RequestBody Actress actress) {
-		actressInfoService.delete(actress);
-	}
+  @DeleteMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@RequestBody Actress actress) {
+    actressInfoService.delete(actress);
+  }
 
 }

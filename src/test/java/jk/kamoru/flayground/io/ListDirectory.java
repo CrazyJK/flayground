@@ -12,30 +12,30 @@ import org.junit.jupiter.api.Test;
 
 public class ListDirectory {
 
-	@Test
-	void test() throws IOException {
-		Path dir = Paths.get("K:\\Crazy\\Archive");
-		StopWatch sw = new StopWatch();
+  @Test
+  void test() throws IOException {
+    Path dir = Paths.get("K:\\Crazy\\Archive");
+    StopWatch sw = new StopWatch();
 
-		sw.start();
-		List<Path> collect = Files.list(dir).filter(Files::isDirectory).collect(Collectors.toList());
-		for (Path p : collect) {
-			System.out.println(p);
-		}
-		sw.stop();
-		System.out.println(sw.getTime());
+    sw.start();
+    List<Path> collect = Files.list(dir).filter(Files::isDirectory).collect(Collectors.toList());
+    for (Path p : collect) {
+      System.out.println(p);
+    }
+    sw.stop();
+    System.out.println(sw.getTime());
 
 
-		System.out.println("------------------------------------------------------------------------------");
+    System.out.println("------------------------------------------------------------------------------");
 
-		sw.reset();
-		sw.start();
-		List<File> collect2 = Files.walk(dir).filter(Files::isDirectory).map(Path::toFile).collect(Collectors.toList());
-		for (File p : collect2) {
-			System.out.println(p);
-		}
-		sw.stop();
-		System.out.println(sw.getTime());
+    sw.reset();
+    sw.start();
+    List<File> collect2 = Files.walk(dir).filter(Files::isDirectory).map(Path::toFile).collect(Collectors.toList());
+    for (File p : collect2) {
+      System.out.println(p);
+    }
+    sw.stop();
+    System.out.println(sw.getTime());
 
-	}
+  }
 }

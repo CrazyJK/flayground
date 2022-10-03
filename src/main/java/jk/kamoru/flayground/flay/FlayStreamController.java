@@ -22,26 +22,26 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/stream")
 public class FlayStreamController {
 
-	@Autowired FlayService flayService;
+  @Autowired FlayService flayService;
 
-	@Autowired MovieStreamHandler movieStreamHandler;
+  @Autowired MovieStreamHandler movieStreamHandler;
 
-	@GetMapping("/flay/movie/{opus}/{fileIndex}")
-	public void streamFlayMovie(@PathVariable String opus, @PathVariable int fileIndex, HttpServletRequest request, HttpServletResponse response) {
-		log.debug("START streamFlay {}", opus);
-		File file = flayService.get(opus).getFiles().get(Flay.MOVIE).get(fileIndex);
-		movieStreamHandler.streamFile(request, response, file);
-	}
+  @GetMapping("/flay/movie/{opus}/{fileIndex}")
+  public void streamFlayMovie(@PathVariable String opus, @PathVariable int fileIndex, HttpServletRequest request, HttpServletResponse response) {
+    log.debug("START streamFlay {}", opus);
+    File file = flayService.get(opus).getFiles().get(Flay.MOVIE).get(fileIndex);
+    movieStreamHandler.streamFile(request, response, file);
+  }
 
-	@GetMapping("/flay/subtitles/{opus}/{fileIndex}")
-	public void streamFlaySubtitles(@PathVariable String opus, @PathVariable int fileIndex, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		File file = flayService.get(opus).getFiles().get(Flay.SUBTI).get(fileIndex);
-		response.reset();
-		response.setHeader("Content-Length", "" + file.length());
-		// response.setHeader("Content-Type", "text/vtt; charset=utf-8");
-		response.setHeader("Content-Type", "text/" + FilenameUtils.getExtension(file.getName()) + "; charset=utf-8");
-		ServletOutputStream outputStream = response.getOutputStream();
-		outputStream.write(FileUtils.readFileToByteArray(file));
-	}
+  @GetMapping("/flay/subtitles/{opus}/{fileIndex}")
+  public void streamFlaySubtitles(@PathVariable String opus, @PathVariable int fileIndex, HttpServletRequest request, HttpServletResponse response) throws IOException {
+    File file = flayService.get(opus).getFiles().get(Flay.SUBTI).get(fileIndex);
+    response.reset();
+    response.setHeader("Content-Length", "" + file.length());
+    // response.setHeader("Content-Type", "text/vtt; charset=utf-8");
+    response.setHeader("Content-Type", "text/" + FilenameUtils.getExtension(file.getName()) + "; charset=utf-8");
+    ServletOutputStream outputStream = response.getOutputStream();
+    outputStream.write(FileUtils.readFileToByteArray(file));
+  }
 
 }

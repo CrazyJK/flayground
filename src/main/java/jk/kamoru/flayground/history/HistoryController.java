@@ -1,7 +1,6 @@
 package jk.kamoru.flayground.history;
 
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -15,21 +14,21 @@ import jk.kamoru.flayground.history.service.HistoryService;
 @RequestMapping("/info/history")
 public class HistoryController {
 
-	@Autowired HistoryService historyService;
+  @Autowired HistoryService historyService;
 
-	@GetMapping("/find/{query}")
-	public List<History> find(@PathVariable String query) {
-		return historyService.find(query);
-	}
+  @GetMapping("/find/{query}")
+  public List<History> find(@PathVariable String query) {
+    return historyService.find(query);
+  }
 
-	@GetMapping("/find/action/{action}")
-	public List<History> findAction(@PathVariable Action action) {
-		return historyService.findAction(action);
-	}
+  @GetMapping("/find/action/{action}")
+  public List<History> findAction(@PathVariable Action action) {
+    return historyService.findAction(action);
+  }
 
-	@GetMapping("/list")
-	public List<History> list() {
-		return historyService.list();
-	}
+  @GetMapping("/list")
+  public List<History> list() {
+    return historyService.list();
+  }
 
 }

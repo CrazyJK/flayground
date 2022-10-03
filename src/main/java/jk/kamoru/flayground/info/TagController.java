@@ -1,7 +1,6 @@
 package jk.kamoru.flayground.info;
 
 import java.util.Collection;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -13,7 +12,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-
 import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.service.TagInfoService;
 
@@ -21,38 +19,38 @@ import jk.kamoru.flayground.info.service.TagInfoService;
 @RequestMapping("/info/tag")
 public class TagController {
 
-	@Autowired TagInfoService tagInfoService;
+  @Autowired TagInfoService tagInfoService;
 
-	@GetMapping("/{id}")
-	public Tag get(@PathVariable Integer id) {
-		return tagInfoService.get(id);
-	}
+  @GetMapping("/{id}")
+  public Tag get(@PathVariable Integer id) {
+    return tagInfoService.get(id);
+  }
 
-	@GetMapping("/list")
-	public Collection<Tag> list() {
-		return tagInfoService.list();
-	}
+  @GetMapping("/list")
+  public Collection<Tag> list() {
+    return tagInfoService.list();
+  }
 
-	@GetMapping("/find/{query}")
-	public Collection<Tag> find(@PathVariable String query) {
-		return tagInfoService.find(query);
-	}
+  @GetMapping("/find/{query}")
+  public Collection<Tag> find(@PathVariable String query) {
+    return tagInfoService.find(query);
+  }
 
-	@PostMapping
-	public Tag create(@RequestBody Tag tag) {
-		return tagInfoService.create(tag);
-	}
+  @PostMapping
+  public Tag create(@RequestBody Tag tag) {
+    return tagInfoService.create(tag);
+  }
 
-	@PatchMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void update(@RequestBody Tag tag) {
-		tagInfoService.update(tag);
-	}
+  @PatchMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void update(@RequestBody Tag tag) {
+    tagInfoService.update(tag);
+  }
 
-	@DeleteMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@RequestBody Tag tag) {
-		tagInfoService.delete(tag);
-	}
+  @DeleteMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@RequestBody Tag tag) {
+    tagInfoService.delete(tag);
+  }
 
 }

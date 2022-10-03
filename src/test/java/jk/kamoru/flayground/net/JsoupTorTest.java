@@ -9,17 +9,17 @@ import org.junit.jupiter.api.Test;
 
 public class JsoupTorTest {
 
-	// 9051, 9150, 9151
-	Proxy torProxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 9150));
+  // 9051, 9150, 9151
+  Proxy torProxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 9150));
 
-	// "https://www.naver.com/"
-	final String siteUrl = "https://www.subtitlecat.com/index.php?search=MIAA-005";
+  // "https://www.naver.com/"
+  final String siteUrl = "https://www.subtitlecat.com/index.php?search=MIAA-005";
 
 
-	@Test
-	public void naver() throws IOException {
-		Document document = Jsoup.connect(siteUrl).proxy(torProxy).timeout(180 * 1000).get();
-		System.out.println(document.body().html());
-	}
+  @Test
+  public void naver() throws IOException {
+    Document document = Jsoup.connect(siteUrl).proxy(torProxy).timeout(180 * 1000).get();
+    System.out.println(document.body().html());
+  }
 
 }

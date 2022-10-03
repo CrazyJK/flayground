@@ -8,12 +8,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PostConstruct;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.history.domain.History;
@@ -23,68 +21,68 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class HistoryRepository {
 
-	@Autowired FlayProperties flayProperties;
+  @Autowired FlayProperties flayProperties;
 
-	List<History> list;
+  List<History> list;
 
-	AtomicLong id = new AtomicLong(0);
+  AtomicLong id = new AtomicLong(0);
 
-	File getInfoFile() {
-		return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.HISTORY);
-	}
+  File getInfoFile() {
+    return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.HISTORY);
+  }
 
-	@PostConstruct
-	void load() throws IOException, ParseException {
-		list = new ArrayList<>();
-		List<String> lines = FileUtils.readLines(getInfoFile(), Flayground.ENCODING);
-		boolean first = true;
-		for (String line : lines) {
-			if (first && line.startsWith(Flayground.UTF8_BOM)) {
-				line = line.substring(1);
-				first = false;
-			}
-			if (line.trim().length() == 0) {
-				continue;
-			}
+  @PostConstruct
+  void load() throws IOException, ParseException {
+    list = new ArrayList<>();
+    List<String> lines = FileUtils.readLines(getInfoFile(), Flayground.ENCODING);
+    boolean first = true;
+    for (String line : lines) {
+      if (first && line.startsWith(Flayground.UTF8_BOM)) {
+        line = line.substring(1);
+        first = false;
+      }
+      if (line.trim().length() == 0) {
+        continue;
+      }
 
-			String[] split = StringUtils.split(line, ",", 4);
-			History history = new History();
-			history.setId(id.getAndIncrement());
-			if (split.length > 0)
-				history.setDate(split[0].trim());
-			if (split.length > 1)
-				history.setOpus(split[1].trim());
-			if (split.length > 2)
-				history.setAction(History.Action.valueOf(split[2].trim().toUpperCase()));
-			if (split.length > 3)
-				history.setDesc(split[3].trim());
-			list.add(history);
-		}
-		log.info(String.format("%5s history - %s", list.size(), getInfoFile()));
-	}
+      String[] split = StringUtils.split(line, ",", 4);
+      History history = new History();
+      history.setId(id.getAndIncrement());
+      if (split.length > 0)
+        history.setDate(split[0].trim());
+      if (split.length > 1)
+        history.setOpus(split[1].trim());
+      if (split.length > 2)
+        history.setAction(History.Action.valueOf(split[2].trim().toUpperCase()));
+      if (split.length > 3)
+        history.setDesc(split[3].trim());
+      list.add(history);
+    }
+    log.info(String.format("%5s history - %s", list.size(), getInfoFile()));
+  }
 
-	synchronized void save(History history) {
-		history.setId(id.getAndIncrement());
-		history.setDate(Flayground.Format.Date.DateTime.format(new Date()));
-		list.add(history);
-		try {
-			FileUtils.writeStringToFile(getInfoFile(), history.toFileSaveString(), Flayground.ENCODING, true);
-		} catch (IOException e) {
-			throw new IllegalStateException("Fail to save history log");
-		}
-	}
+  synchronized void save(History history) {
+    history.setId(id.getAndIncrement());
+    history.setDate(Flayground.Format.Date.DateTime.format(new Date()));
+    list.add(history);
+    try {
+      FileUtils.writeStringToFile(getInfoFile(), history.toFileSaveString(), Flayground.ENCODING, true);
+    } catch (IOException e) {
+      throw new IllegalStateException("Fail to save history log");
+    }
+  }
 
-	public List<History> list() {
-		return list;
-	}
+  public List<History> list() {
+    return list;
+  }
 
-	public History get(Long id) {
-		return list.get(id.intValue());
-	}
+  public History get(Long id) {
+    return list.get(id.intValue());
+  }
 
-	public History create(History create) {
-		save(create);
-		return create;
-	}
+  public History create(History create) {
+    save(create);
+    return create;
+  }
 
 }

@@ -15,29 +15,29 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ExecutionTimeAdvice {
 
-	@Around("@annotation(jk.kamoru.flayground.base.advice.TrackExecutionTime)")
-	public Object measureExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
-		long startTime = System.currentTimeMillis();
-		Object proceed = joinPoint.proceed();
-		long executionTime = System.currentTimeMillis() - startTime;
+  @Around("@annotation(jk.kamoru.flayground.base.advice.TrackExecutionTime)")
+  public Object measureExecutionTime(ProceedingJoinPoint joinPoint) throws Throwable {
+    long startTime = System.currentTimeMillis();
+    Object proceed = joinPoint.proceed();
+    long executionTime = System.currentTimeMillis() - startTime;
 
-		MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
-		Method method = methodSignature.getMethod();
-		TrackExecutionTime trackExecutionTime = method.getAnnotation(TrackExecutionTime.class);
-		String description = StringUtils.defaultIfBlank(trackExecutionTime.message(), methodSignature.toShortString());
-		LEVEL level = trackExecutionTime.level();
+    MethodSignature methodSignature = (MethodSignature) joinPoint.getSignature();
+    Method method = methodSignature.getMethod();
+    TrackExecutionTime trackExecutionTime = method.getAnnotation(TrackExecutionTime.class);
+    String description = StringUtils.defaultIfBlank(trackExecutionTime.message(), methodSignature.toShortString());
+    LEVEL level = trackExecutionTime.level();
 
-		if (level.equals(LEVEL.DEBUG)) {
-			log.debug("{} -> {} ms", description, executionTime);
-		} else if (level.equals(LEVEL.INFO)) {
-			log.info("{} -> {} ms", description, executionTime);
-		} else if (level.equals(LEVEL.WARN)) {
-			log.warn("{} -> {} ms", description, executionTime);
-		} else if (level.equals(LEVEL.ERROR)) {
-			log.error("{} -> {} ms", description, executionTime);
-		}
+    if (level.equals(LEVEL.DEBUG)) {
+      log.debug("{} -> {} ms", description, executionTime);
+    } else if (level.equals(LEVEL.INFO)) {
+      log.info("{} -> {} ms", description, executionTime);
+    } else if (level.equals(LEVEL.WARN)) {
+      log.warn("{} -> {} ms", description, executionTime);
+    } else if (level.equals(LEVEL.ERROR)) {
+      log.error("{} -> {} ms", description, executionTime);
+    }
 
-		return proceed;
-	}
+    return proceed;
+  }
 
 }

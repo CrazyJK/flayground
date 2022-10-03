@@ -22,31 +22,31 @@ import jk.kamoru.flayground.todayis.service.TodayisService;
 @RequestMapping("/todayis")
 public class TodayisController {
 
-	@Autowired TodayisService todayisService;
+  @Autowired TodayisService todayisService;
 
-	@Autowired MovieStreamHandler movieStreamHandler;
+  @Autowired MovieStreamHandler movieStreamHandler;
 
-	@GetMapping("/list")
-	public Collection<Todayis> getList() {
-		return todayisService.list();
-	}
+  @GetMapping("/list")
+  public Collection<Todayis> getList() {
+    return todayisService.list();
+  }
 
-	@PatchMapping("/play")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void play(@RequestBody Todayis todayis) {
-		todayisService.play(todayis);
-	}
+  @PatchMapping("/play")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void play(@RequestBody Todayis todayis) {
+    todayisService.play(todayis);
+  }
 
-	@DeleteMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@RequestBody Todayis todayis) {
-		todayisService.delete(todayis);
-	}
+  @DeleteMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@RequestBody Todayis todayis) {
+    todayisService.delete(todayis);
+  }
 
-	@GetMapping("/stream/{uuid}")
-	public void stream(@PathVariable String uuid, HttpServletRequest request, HttpServletResponse response) {
-		Todayis todayis = todayisService.get(uuid);
-		movieStreamHandler.streamFile(request, response, new File(todayis.getFilePath()));
-	}
+  @GetMapping("/stream/{uuid}")
+  public void stream(@PathVariable String uuid, HttpServletRequest request, HttpServletResponse response) {
+    Todayis todayis = todayisService.get(uuid);
+    movieStreamHandler.streamFile(request, response, new File(todayis.getFilePath()));
+  }
 
 }

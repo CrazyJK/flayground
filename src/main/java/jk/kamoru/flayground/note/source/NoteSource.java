@@ -1,17 +1,16 @@
 package jk.kamoru.flayground.note.source;
 
 import java.util.List;
-
 import jk.kamoru.flayground.note.domain.Note;
 
 public interface NoteSource {
 
-	Note get(Note note);
+  Note get(Note note);
 
-	List<Note> list();
+  List<Note> list();
 
-	void save(Note note);
+  void save(Note note);
 
-	void delete(Note note);
+  void delete(Note note);
 
 }

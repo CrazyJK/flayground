@@ -9,12 +9,12 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface TrackExecutionTime {
 
-	static enum LEVEL {
-		DEBUG, INFO, WARN, ERROR;
-	}
+  static enum LEVEL {
+    DEBUG, INFO, WARN, ERROR;
+  }
 
-	String message() default "";
+  String message() default "";
 
-	LEVEL level() default LEVEL.DEBUG;
+  LEVEL level() default LEVEL.DEBUG;
 
 }

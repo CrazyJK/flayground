@@ -10,7 +10,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.client.HttpClient;
@@ -40,155 +39,155 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class PageImageDownloader {
 
-	private static final String ILLEGAL_EXP = "[:\\\\/%*?:|\"<>]";
-	private static final int DOCUMENT_TIMEOUT = 1000 * 60;
-	private static final long THREAD_POOL_TIMEOUT = 1000 * 60 * 1;
-	private static final int IMAGE_TIMEOUT_SECOND = 60;
+  private static final String ILLEGAL_EXP = "[:\\\\/%*?:|\"<>]";
+  private static final int DOCUMENT_TIMEOUT = 1000 * 60;
+  private static final long THREAD_POOL_TIMEOUT = 1000 * 60 * 1;
+  private static final int IMAGE_TIMEOUT_SECOND = 60;
 
-	static NumberFormat nf = NumberFormat.getNumberInstance();
+  static NumberFormat nf = NumberFormat.getNumberInstance();
 
-	static {
-		nf.setMinimumIntegerDigits(4);
-		nf.setGroupingUsed(false);
-	}
+  static {
+    nf.setMinimumIntegerDigits(4);
+    nf.setGroupingUsed(false);
+  }
 
-	String imagePageUrl;
-	String localBaseDir;
-	String folderName;
-	String titlePrefix;
-	String titleCssQuery;
-	long minimumSize;
+  String imagePageUrl;
+  String localBaseDir;
+  String folderName;
+  String titlePrefix;
+  String titleCssQuery;
+  long minimumSize;
 
-	public PageImageDownloader(String pageUrl, String downloadDir, String folderName, String titlePrefix, String titleCssQuery, int minimumKbSize) {
-		this.imagePageUrl = pageUrl;
-		this.localBaseDir = downloadDir;
-		this.folderName = folderName;
-		this.titlePrefix = titlePrefix;
-		this.titleCssQuery = titleCssQuery;
-		this.minimumSize = minimumKbSize * FileUtils.ONE_KB;
-	}
+  public PageImageDownloader(String pageUrl, String downloadDir, String folderName, String titlePrefix, String titleCssQuery, int minimumKbSize) {
+    this.imagePageUrl = pageUrl;
+    this.localBaseDir = downloadDir;
+    this.folderName = folderName;
+    this.titlePrefix = titlePrefix;
+    this.titleCssQuery = titleCssQuery;
+    this.minimumSize = minimumKbSize * FileUtils.ONE_KB;
+  }
 
-	/**
-	 * execute download
-	 *
-	 * @return Download result
-	 */
-	public DownloadResult download() {
-		log.info("Image download start - [{}]", imagePageUrl);
-		try {
-			final URL url = new URL(imagePageUrl);
-			final String domain = String.format("%s://%s%s", url.getProtocol(), url.getHost(), (url.getPort() > 0 ? ":" + url.getPort() : ""));
+  /**
+   * execute download
+   *
+   * @return Download result
+   */
+  public DownloadResult download() {
+    log.info("Image download start - [{}]", imagePageUrl);
+    try {
+      final URL url = new URL(imagePageUrl);
+      final String domain = String.format("%s://%s%s", url.getProtocol(), url.getHost(), (url.getPort() > 0 ? ":" + url.getPort() : ""));
 
-			// connect and get image page by jsoup HTML parser
-			Document document = Jsoup.connect(imagePageUrl).timeout(DOCUMENT_TIMEOUT).userAgent(Flayground.USER_AGENT).get();
+      // connect and get image page by jsoup HTML parser
+      Document document = Jsoup.connect(imagePageUrl).timeout(DOCUMENT_TIMEOUT).userAgent(Flayground.USER_AGENT).get();
 
-			// find img tag
-			Elements imgTags = document.getElementsByTag("img");
-			int imgTagSize = imgTags.size();
-			if (imgTagSize == 0) {
-				throw new DownloadException(imagePageUrl, "no image exist");
-			}
-			log.info("found {} img tags", imgTagSize);
+      // find img tag
+      Elements imgTags = document.getElementsByTag("img");
+      int imgTagSize = imgTags.size();
+      if (imgTagSize == 0) {
+        throw new DownloadException(imagePageUrl, "no image exist");
+      }
+      log.info("found {} img tags", imgTagSize);
 
-			// decide title
-			titlePrefix = StringUtils.defaultIfBlank(titlePrefix, StringUtils.isBlank(titleCssQuery) ? document.title() : document.select(titleCssQuery).first().text());
-			titlePrefix = StringUtils.defaultIfBlank(titlePrefix, imagePageUrl);
-			titlePrefix = titlePrefix.replaceAll(ILLEGAL_EXP, "");
-			titlePrefix = StringUtils.join(StringUtils.split(titlePrefix), "_");
-			log.info("decide title prefix [{}]", titlePrefix);
+      // decide title
+      titlePrefix = StringUtils.defaultIfBlank(titlePrefix, StringUtils.isBlank(titleCssQuery) ? document.title() : document.select(titleCssQuery).first().text());
+      titlePrefix = StringUtils.defaultIfBlank(titlePrefix, imagePageUrl);
+      titlePrefix = titlePrefix.replaceAll(ILLEGAL_EXP, "");
+      titlePrefix = StringUtils.join(StringUtils.split(titlePrefix), "_");
+      log.info("decide title prefix [{}]", titlePrefix);
 
-			localBaseDir = StringUtils.defaultIfBlank(localBaseDir, FileUtils.getTempDirectoryPath());
-			folderName = StringUtils.defaultIfBlank(folderName, String.valueOf(System.currentTimeMillis()));
+      localBaseDir = StringUtils.defaultIfBlank(localBaseDir, FileUtils.getTempDirectoryPath());
+      folderName = StringUtils.defaultIfBlank(folderName, String.valueOf(System.currentTimeMillis()));
 
-			File path = new File(localBaseDir, folderName);
-			if (!path.exists() || !path.isDirectory()) {
-				path.mkdirs();
-			}
-			log.info("storage path is {}", path);
+      File path = new File(localBaseDir, folderName);
+      if (!path.exists() || !path.isDirectory()) {
+        path.mkdirs();
+      }
+      log.info("storage path is {}", path);
 
-			// get httpclient
-			HttpClient httpClient = createHttpClient(IMAGE_TIMEOUT_SECOND, imgTagSize);
+      // get httpclient
+      HttpClient httpClient = createHttpClient(IMAGE_TIMEOUT_SECOND, imgTagSize);
 
-			// prepare download
-			List<ImageDownloader> tasks = new ArrayList<>();
-			int count = 0;
-			for (Element imgTag : imgTags) {
-				String imgSrc = imgTag.attr("abs:src");
-				if (StringUtils.isEmpty(imgSrc))
-					continue;
-				if (imgSrc.startsWith("/")) {
-					imgSrc = domain + imgSrc;
-				}
-				tasks.add(new ImageDownloader(imgSrc, path.getPath(), titlePrefix + "-" + nf.format(++count), minimumSize, httpClient));
-			}
+      // prepare download
+      List<ImageDownloader> tasks = new ArrayList<>();
+      int count = 0;
+      for (Element imgTag : imgTags) {
+        String imgSrc = imgTag.attr("abs:src");
+        if (StringUtils.isEmpty(imgSrc))
+          continue;
+        if (imgSrc.startsWith("/")) {
+          imgSrc = domain + imgSrc;
+        }
+        tasks.add(new ImageDownloader(imgSrc, path.getPath(), titlePrefix + "-" + nf.format(++count), minimumSize, httpClient));
+      }
 
-			// execute download
-			int nThreads = tasks.size(); // / 10 + 1;
-			log.info("using {} threads for {} image url", nThreads, tasks.size());
+      // execute download
+      int nThreads = tasks.size(); // / 10 + 1;
+      log.info("using {} threads for {} image url", nThreads, tasks.size());
 
-			ExecutorService downloadService = Executors.newFixedThreadPool(nThreads);
-			List<Future<File>> files = downloadService.invokeAll(tasks, THREAD_POOL_TIMEOUT, TimeUnit.MILLISECONDS);
-			downloadService.shutdown();
+      ExecutorService downloadService = Executors.newFixedThreadPool(nThreads);
+      List<Future<File>> files = downloadService.invokeAll(tasks, THREAD_POOL_TIMEOUT, TimeUnit.MILLISECONDS);
+      downloadService.shutdown();
 
-			// check result
-			List<File> images = new ArrayList<>();
-			for (Future<File> fileFuture : files) {
-				File file = fileFuture.get();
-				if (file != null) {
-					images.add(file);
-				}
-			}
-			log.info("Image download end. {} downloaded. {} fail", images.size(), files.size() - images.size());
+      // check result
+      List<File> images = new ArrayList<>();
+      for (Future<File> fileFuture : files) {
+        File file = fileFuture.get();
+        if (file != null) {
+          images.add(file);
+        }
+      }
+      log.info("Image download end. {} downloaded. {} fail", images.size(), files.size() - images.size());
 
-			return DownloadResult.success(imagePageUrl, path.getCanonicalPath(), images);
-		} catch (CancellationException e) {
-			log.error("Download timeout " + e.getMessage());
-			return DownloadResult.fail(imagePageUrl, e);
-		} catch (DownloadException e) {
-			log.error("Download error", e);
-			return DownloadResult.fail(imagePageUrl, e);
-		} catch (Exception e) {
-			log.error("Error", e);
-			return DownloadResult.fail(imagePageUrl, e);
-		}
-	}
+      return DownloadResult.success(imagePageUrl, path.getCanonicalPath(), images);
+    } catch (CancellationException e) {
+      log.error("Download timeout " + e.getMessage());
+      return DownloadResult.fail(imagePageUrl, e);
+    } catch (DownloadException e) {
+      log.error("Download error", e);
+      return DownloadResult.fail(imagePageUrl, e);
+    } catch (Exception e) {
+      log.error("Error", e);
+      return DownloadResult.fail(imagePageUrl, e);
+    }
+  }
 
-	/**
-	 * create HttpClient
-	 *
-	 * @param soTimeout
-	 * @param maxTotal
-	 * @return CloseableHttpClient
-	 */
-	private HttpClient createHttpClient(int soTimeout, int maxTotal) {
-		// pool setting
-		PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
-		cm.setMaxTotal(maxTotal);
-		cm.setDefaultMaxPerRoute(maxTotal);
-		return HttpClients.createMinimal(cm);
-	}
+  /**
+   * create HttpClient
+   *
+   * @param soTimeout
+   * @param maxTotal
+   * @return CloseableHttpClient
+   */
+  private HttpClient createHttpClient(int soTimeout, int maxTotal) {
+    // pool setting
+    PoolingHttpClientConnectionManager cm = new PoolingHttpClientConnectionManager();
+    cm.setMaxTotal(maxTotal);
+    cm.setDefaultMaxPerRoute(maxTotal);
+    return HttpClients.createMinimal(cm);
+  }
 
-	/**
-	 * result object of {@link PageImageDownloader}
-	 */
-	@AllArgsConstructor(access = AccessLevel.PRIVATE)
-	@Data
-	public static class DownloadResult {
+  /**
+   * result object of {@link PageImageDownloader}
+   */
+  @AllArgsConstructor(access = AccessLevel.PRIVATE)
+  @Data
+  public static class DownloadResult {
 
-		String pageUrl;
-		String localPath;
-		String message;
-		Boolean result;
-		List<File> images;
+    String pageUrl;
+    String localPath;
+    String message;
+    Boolean result;
+    List<File> images;
 
-		public static DownloadResult success(String url, String downloadeddPath, List<File> images) {
-			return new DownloadResult(url, downloadeddPath, "", true, images);
-		}
+    public static DownloadResult success(String url, String downloadeddPath, List<File> images) {
+      return new DownloadResult(url, downloadeddPath, "", true, images);
+    }
 
-		public static DownloadResult fail(String url, Exception error) {
-			return new DownloadResult(url, "", error.getMessage(), false, null);
-		}
+    public static DownloadResult fail(String url, Exception error) {
+      return new DownloadResult(url, "", error.getMessage(), false, null);
+    }
 
-	}
+  }
 
 }

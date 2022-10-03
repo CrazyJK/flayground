@@ -17,33 +17,33 @@ import jk.kamoru.flayground.flay.service.BatchExecutor;
 @RequestMapping("/batch")
 public class BatchController {
 
-	@Autowired BatchExecutor batchService;
+  @Autowired BatchExecutor batchService;
 
-	@GetMapping("/option/{option}")
-	public Boolean getOption(@PathVariable BatchExecutor.Option option) {
-		return batchService.getOption(option);
-	}
+  @GetMapping("/option/{option}")
+  public Boolean getOption(@PathVariable BatchExecutor.Option option) {
+    return batchService.getOption(option);
+  }
 
-	@PutMapping("/option/{option}")
-	public Boolean setOption(@PathVariable BatchExecutor.Option option) {
-		return batchService.toggleOption(option);
-	}
+  @PutMapping("/option/{option}")
+  public Boolean setOption(@PathVariable BatchExecutor.Option option) {
+    return batchService.toggleOption(option);
+  }
 
-	@PutMapping("/start/{operation}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void startBatch(@PathVariable BatchExecutor.Operation operation) {
-		batchService.startBatch(operation);
-	}
+  @PutMapping("/start/{operation}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void startBatch(@PathVariable BatchExecutor.Operation operation) {
+    batchService.startBatch(operation);
+  }
 
-	@GetMapping("/check/{operation}")
-	public Map<String, List<Flay>> checkBatch(@PathVariable BatchExecutor.Operation operation) {
-		return batchService.checkBatch(operation);
-	}
+  @GetMapping("/check/{operation}")
+  public Map<String, List<Flay>> checkBatch(@PathVariable BatchExecutor.Operation operation) {
+    return batchService.checkBatch(operation);
+  }
 
-	@PutMapping("/reload")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void reload() {
-		batchService.reload();
-	}
+  @PutMapping("/reload")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void reload() {
+    batchService.reload();
+  }
 
 }

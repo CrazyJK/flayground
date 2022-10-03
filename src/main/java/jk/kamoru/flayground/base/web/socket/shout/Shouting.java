@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Shouting {
 
-    private String name;
-    private String content;
+  private String name;
+  private String content;
 
 }

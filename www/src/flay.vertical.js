@@ -619,12 +619,12 @@ function attachFlayEventListener() {
     Rest.Video.update(currentFlay.video);
   });
   // actress name click
-  $('.info-wrapper-actress').on('click', '.info-actress-name', function () {
+  $('.actress-wrapper').on('click', '.info-actress-name', function () {
     var actress = $(this).closest('.info-actress').data('actress');
     if (actress.name != 'Amateur') View.actress(actress.name);
   });
   // actress favorite click
-  $('.info-wrapper-actress').on('click', '.info-actress-favorite i.fa', function () {
+  $('.actress-wrapper').on('click', '.info-actress-favorite i.fa', function () {
     var actress = $(this).closest('.info-actress').data('actress');
     var $self = $(this);
     actress.favorite = !actress.favorite;

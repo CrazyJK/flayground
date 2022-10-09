@@ -2,27 +2,27 @@
  * Flay Vertical View Javascript
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
 import './components/FlayMenu';
 import './css/common.scss';
 import './flay.vertical.scss';
+import './lib/crazy.jquery';
 
 import './lib/crazy.effect.neon.js';
 
 import * as am5 from '@amcharts/amcharts5';
-import * as am5xy from '@amcharts/amcharts5/xy';
 import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import * as am5xy from '@amcharts/amcharts5/xy';
 
-import { COVER_RATIO, DEFAULT_SPECS, LocalStorageItem, PATH, Random, SessionStorageItem, File, StringUtils, NumberUtils } from './lib/crazy.common.js';
-import { loading } from './lib/flay.loading.js';
-import { Search, Util, View } from './lib/flay.utils.js';
-import { Rest } from './lib/flay.rest.service.js';
-import flayWebsocket from './lib/flay.websocket.js';
+import { DEFAULT_SPECS, File, LocalStorageItem, NumberUtils, PATH, Random, SessionStorageItem, StringUtils } from './lib/crazy.common.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
+import { loading } from './lib/flay.loading.js';
+import { Rest } from './lib/flay.rest.service.js';
+import { Search, Util, View } from './lib/flay.utils.js';
+import flayWebsocket from './lib/flay.websocket.js';
 
 let flayList = [];
 let collectedList = [];
@@ -477,35 +477,11 @@ function attachPageEventListener() {
   // window resize
   $(window).on('resize', function () {
     var coverWrapperWidth = $('.cover-wrapper').width();
-    // var windowHeight = $(window).height();
-    // var navHeight = $("nav.navbar").outerHeight();
     const $currCoverBox = $('.cover-wrapper-inner.curr > .cover-box');
     const currCoverBoxWidth = $currCoverBox.width();
-    const currCoverBoxHeight = $currCoverBox.height();
     const calcWidth = (coverWrapperWidth - currCoverBoxWidth - 20) / 2;
-    const calcHeight = calcWidth * COVER_RATIO;
     const $sideCover = $('.cover-wrapper-inner.prev > .cover-box, .cover-wrapper-inner.next > .cover-box');
-    console.debug(`window resize currCoverBoxWidth: ${currCoverBoxWidth} calcWidth: ${calcWidth} currCoverBox.bg: ${$currCoverBox.css('background-image')}`);
-
-    if (currCoverBoxWidth / 2 > calcWidth) {
-      // too small, hide
-      $sideCover.hide();
-    } else if (currCoverBoxWidth < calcWidth) {
-      // too large, set default
-      $sideCover
-        .css({
-          width: currCoverBoxWidth,
-          height: currCoverBoxHeight,
-        })
-        .show();
-    } else {
-      $sideCover
-        .css({
-          width: calcWidth,
-          height: calcHeight,
-        })
-        .show();
-    }
+    $sideCover.toggle(currCoverBoxWidth / 2 < calcWidth);
   });
 }
 
@@ -930,10 +906,10 @@ function collectList() {
         const rVal = compareTo(flay1.release, flay2.release);
         return rVal === 0 ? compareTo(flay1.opus, flay2.opus) : rVal;
       }
-      case 'md':
+      case 'M':
         return compareTo(flay1.lastModified, flay2.lastModified);
-      case 'ac':
-        return compareTo(flay1.video.lastAccess, flay2.video.lastAccess);
+      case 'la':
+        return compareTo(Math.max(flay1.video.lastAccess, flay1.lastModified), Math.max(flay2.video.lastAccess, flay2.lastModified));
       case 'P': {
         const pVal = compareTo(flay1.video.play, flay2.video.play);
         return pVal === 0 ? compareTo(flay1.release, flay2.release) : pVal;
@@ -1101,6 +1077,13 @@ function showVideo(args) {
           throw 'not found actress: ' + name;
         }
 
+        let nowAge = Util.Actress.getAgeNumber(actress);
+        let thatAge = Util.Actress.getAgeNumber(actress, currentFlay.release.substring(0, 4));
+        let ageExpr = Util.Actress.getAge(actress);
+        if (nowAge !== thatAge) {
+          ageExpr = `${thatAge}<small>/${ageExpr}<small>`;
+        }
+
         const $actress = $('<div>', { class: 'info-actress' })
           .data('actress', actress)
           .append(
@@ -1109,7 +1092,7 @@ function showVideo(args) {
             $('<label>', { class: 'text info-actress-local' }).html(actress.localName),
             $('<label>', { class: 'text info-actress-flaycount' }).html('&nbsp;').neonLoading(true),
             $('<label>', { class: 'text info-actress-avgrank' }).html('&nbsp;').neonLoading(true),
-            $('<label>', { class: 'text info-actress-age' }).html(Util.Actress.getAge(actress)),
+            $('<label>', { class: 'text info-actress-age' }).html(ageExpr),
             $('<label>', { class: 'text info-actress-birth' }).html(Util.Actress.getBirth(actress)),
             $('<label>', { class: 'text info-actress-body' }).html(Util.Actress.getBody(actress)),
             $('<label>', { class: 'text info-actress-height' }).html(Util.Actress.getHeight(actress)),
@@ -1203,7 +1186,7 @@ function showVideo(args) {
   // modified, last access
   const mDate = new Date(currentFlay.lastModified);
   const aDate = new Date(currentFlay.video.lastAccess);
-  $('.info-modified').html(`<small><span title="lastModified">${mDate.format('yy/MM/dd')}</span> <i class="fa fa-arrow-${mDate > aDate ? 'left' : 'right'} mx-1"></i> <span title="lastAccess">${aDate.format('yy/MM/dd')}</span></small>`);
+  $('.info-modified').html(`<small><span title="lastModified">${mDate.format('yy/MM/dd')}</span><i class="fa fa-arrow-${mDate > aDate ? 'left' : 'right'} mx-1"></i><span title="lastAccess">${aDate.format('yy/MM/dd')}</span></small>`);
   // video file
   const movieSize = currentFlay.files.movie.length;
   $('.info-video')

@@ -1,7 +1,7 @@
 :root {
-  --cover-width: 800px;
-  --cover-width-lg: 900px;
-  --cover-width-sm: 600px;
+  --cover-width: 816px;
+  --cover-width-lg: 916px;
+  --cover-width-sm: 616px;
   --actress-width: 800px;
 }
 
@@ -163,64 +163,77 @@ main#wrap_body {
       }
 
       .cover-wrapper {
-        margin: 0 1rem 0.5rem;
-        display: flex;
+        position: relative;
+        display: grid;
+        grid-template-columns: 1fr var(--cover-width) 1fr;
         align-items: center;
-        justify-content: space-evenly;
-        gap: 0.5rem;
+        gap: 2rem;
+        margin: 0 2rem 1rem;
 
-        .cover-wrapper-inner {
-          display: inline-block;
-          background-color: var(--color-bg);
-          border-radius: 0;
+        .cover-wrapper-outer {
+          position: relative;
+          transition: box-shadow 0.4s;
 
-          &.curr {
-            padding: 0.5rem;
+          &:hover {
+            box-shadow: 0 0.5rem 1rem var(--color-box-shadow);
           }
 
-          .cover-box {
+          .cover-wrapper-inner {
             position: relative;
-            background: var(--color-bg) no-repeat center / contain;
-            box-shadow: 0 0 1rem 0.5rem var(--color-bg) inset;
-            border: 0;
+            background-color: var(--color-bg);
             border-radius: 0;
-            width: var(--cover-width);
-            aspect-ratio: var(--cover-aspect-ratio);
-            transition: background 0.2s ease-out;
 
-            #btnVideoClose {
-              position: absolute;
-              top: -22px;
-              right: -16px;
-              font-size: 2rem;
-              color: var(--danger);
-              cursor: pointer;
-              margin: 0.25rem;
-              display: none;
+            &.curr {
+              padding: 0.5rem;
             }
 
-            video {
+            .cover-box {
+              position: relative;
               background-color: var(--color-bg);
+              background-position: center;
+              background-repeat: no-repeat;
+              background-size: contain;
+              box-shadow: 0 0 1rem 0.5rem var(--color-bg) inset;
               border: 0;
-              display: none;
-              outline: 0;
-              margin: 0;
-              padding: 0;
+              border-radius: 0;
               width: 100%;
-              height: 100%;
-            }
+              aspect-ratio: var(--cover-aspect-ratio);
+              transition: background 0.2s ease-out;
 
-            .color-wrapper {
-              position: absolute;
-              right: 0;
-              bottom: 0;
+              #btnVideoClose {
+                position: absolute;
+                top: -22px;
+                right: -16px;
+                font-size: 2rem;
+                color: var(--danger);
+                cursor: pointer;
+                margin: 0.25rem;
+                display: none;
+              }
 
-              label {
-                width: 2rem;
-                height: 0.5rem;
-                border-radius: 0.25rem;
-                box-shadow: 1px 1px 3px 0px #0008;
-                margin: 0 0.25rem;
+              video {
+                background-color: var(--color-bg);
+                border: 0;
+                display: none;
+                outline: 0;
+                margin: 0;
+                padding: 0;
+                width: 100%;
+                height: 100%;
+              }
+
+              .color-wrapper {
+                position: absolute;
+                right: 0;
+                bottom: 0;
+
+                label {
+                  width: 2rem;
+                  height: 0.5rem;
+                  border-radius: 0.25rem;
+                  box-shadow: 1px 1px 3px 0px #0008;
+                  margin: 0 0.25rem;
+                }
               }
             }
           }
@@ -258,10 +271,11 @@ main#wrap_body {
             flex: 0 0 5rem;
           }
           .info-actress-age {
-            flex: 0 0 2.5rem;
+            flex: 0 0 4rem;
           }
           .info-actress-birth {
             flex: 0 0 8rem;
+            display: none;
           }
           .info-actress-body {
             flex: 0 0 6rem;
@@ -362,13 +376,7 @@ main#wrap_body {
           }
         }
         .cover-wrapper {
-          .cover-wrapper-inner {
-            &.curr {
-              .cover-box {
-                width: var(--cover-width-lg);
-              }
-            }
-          }
+          grid-template-columns: 1fr var(--cover-width-lg) 1fr;
         }
         .tag-wrapper {
           font-size: 1.25em;
@@ -420,11 +428,7 @@ main#wrap_body {
           }
         }
         .cover-wrapper {
-          .cover-wrapper-inner {
-            .cover-box {
-              width: var(--cover-width-sm);
-            }
-          }
+          grid-template-columns: 1fr var(--cover-width-sm) 1fr;
         }
       }
     }

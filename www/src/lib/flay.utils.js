@@ -123,9 +123,12 @@ export const Util = {
       }
       return list;
     },
+    getAgeNumber(actress, baseYear) {
+      return Number(baseYear || todayYear) - parseInt(actress.birth.substring(0, 4)) + 1;
+    },
     getAge: function (actress, baseYear) {
       if (actress.birth) {
-        return `${Number(baseYear || todayYear) - parseInt(actress.birth.substring(0, 4)) + 1}<small>y</small>`;
+        return `${this.getAgeNumber(actress, baseYear)}<small>y</small>`;
       } else {
         return '';
       }

@@ -12,24 +12,22 @@
     <script defer="defer" src="./_commons.js"></script>
     <script defer="defer" src="./index.js"></script>
   </head>
-  <body>
-    <div class="d-flex-col" style="display: none">
-      <h1 class="display-3"><a>Flayground</a></h1>
-      <div id="menuItemWrap"></div>
-      <div class="pt-4 hover-show">
-        <div class="input-group input-group-lg popup-open-group">
-          <input type="search" class="bg-transparent border-secondary form-control text-light" placeholder="URL" />
-          <button class="btn btn-outline-secondary text-secondary" type="button">Popup</button>
-        </div>
-        <div class="text-center collapse mt-3 popup-size-group">
-          <input type="number" id="popupWidth" value="540" class="bg-transparent border-0 text-light text-right" />
-          <span class="text-light">&nbsp;&times;&nbsp;</span>
-          <input type="number" id="popupHeight" value="997" class="bg-transparent border-0 text-light ml-2" />
-        </div>
+  <body class="chalk">
+    <header>Flayground</header>
+    <main>
+      <article id="menuItemWrap"></article>
+    </main>
+    <footer>
+      <div>
+        <textarea id="memo"></textarea>
       </div>
-      <div class="container mt-3 hover-show">
-        <textarea class="bg-transparent border-secondary form-control" id="memo" rows="10"></textarea>
+      <div class="popup-wrap">
+        <input type="search" placeholder="URL" id="u" />
+        <input type="number" placeholder="Width" id="w" />
+        <span>&nbsp;&times;&nbsp;</span>
+        <input type="number" placeholder="Height" id="h" />
+        <button type="button" id="b">Popup</button>
       </div>
-    </div>
+    </footer>
   </body>
 </html>

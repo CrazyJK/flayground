@@ -2,41 +2,35 @@ import $ from 'jquery';
 import menuItems from './index.json';
 import './index.scss';
 
-const popupWidth = document.getElementById('popupWidth');
-const popupHeight = document.getElementById('popupHeight');
+const INDEX_POPUP_SIZE = 'index.popup.size';
+const INDEX_MENO = 'index.memo';
 
-$('input, button', '.popup-open-group').on('click keyup', function (e) {
-  const url = $('.popup-open-group > input').val();
-  $('.popup-open-group button').toggleClass('text-secondary', url === '');
-  $('.popup-size-group.collapse').toggleClass('show', url !== '');
-  if (url !== '') {
-    const targetType = $(e.target).attr('type');
-    if ((targetType === 'button' && e.type === 'click') || (targetType === 'search' && e.keyCode === 13)) {
-      window.open(url, Date.now(), 'width=' + popupWidth.value + ',height=' + popupHeight.value + ',toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=0,resizable=1').focus();
-    }
-  }
-});
-
-const memoText = localStorage.getItem('index.memo');
-$('#memo')
-  .on('change', (e) => {
-    localStorage.setItem('index.memo', $(e.target).val());
-  })
-  .text(memoText);
-
+// menu
 menuItems.forEach((menu) => {
-  const $popupAnker = $('<a>')
-    .attr({ href: '#' })
-    .on('click', function () {
-      window.open(menu.url, 'flayground' + menu.name, 'width=1000,height=1000,toolbar=0,location=0,directories=0,titlebar=0,status=0,menubar=0,scrollbars=1,resizable=1').focus();
-    })
-    .append('<i class="fas fa-location-arrow fa-flip-horizontal fa-xs me-2"></i>');
-
-  const $hrefAnker = $('<a>').attr({ href: menu.url }).html(menu.name);
-
-  $('#menuItemWrap').append($('<h2>', { class: 'display-4' }).append($popupAnker, $hrefAnker));
+  $('#menuItemWrap').append(
+    $('<h2>').append(
+      $(`<a><i class="fas fa-location-arrow fa-flip-horizontal fa-xs me-2"></i></a>`).on('click', () => {
+        window.open(menu.url, 'flayground' + menu.name, 'width=1000,height=1000');
+      }),
+      `<a href="${menu.url}">${menu.name}</a>`
+    )
+  );
 });
 
-$('a').addClass('chalk');
+// popup
+function saveSize() {
+  localStorage.setItem(INDEX_POPUP_SIZE, $w.val() + ',' + $h.val());
+}
+const popupWH = localStorage.getItem(INDEX_POPUP_SIZE)?.split(',') || [540, 997];
+const $w = $('#w').val(popupWH[0]).on('change', saveSize);
+const $h = $('#h').val(popupWH[1]).on('change', saveSize);
+$('#b').on('click', () => {
+  window.open($('#u').val(), Date.now(), 'width=' + $w.val() + ',height=' + $h.val());
+});
 
-$('body > div').show();
+// memo
+$('#memo')
+  .text(localStorage.getItem(INDEX_MENO))
+  .on('change', (e) => {
+    localStorage.setItem(INDEX_MENO, $(e.target).val());
+  });

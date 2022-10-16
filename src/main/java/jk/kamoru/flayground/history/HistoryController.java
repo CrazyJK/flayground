@@ -23,7 +23,7 @@ public class HistoryController {
 
   @GetMapping("/find/action/{action}")
   public List<History> findAction(@PathVariable Action action) {
-    return historyService.findAction(action);
+    return historyService.findByAction(action);
   }
 
   @GetMapping("/list")

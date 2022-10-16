@@ -25,7 +25,7 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
     try {
       Flay flay = flayService.get(updateVideo.getOpus());
       flay.setVideo(updateVideo);
-      historyService.save(History.Action.UPDATE, flay);
+      historyService.save(History.Action.UPDATE, flay, null);
     } catch (FlayNotfoundException ignore) {
     }
     super.update(updateVideo);

@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 public class Tag implements Info<Integer> {
 
   @NotBlank Integer id;
-  String name;
+  @NotBlank String name;
   String description;
   long lastModified;
 

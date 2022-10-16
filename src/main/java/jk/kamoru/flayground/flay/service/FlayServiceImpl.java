@@ -152,7 +152,7 @@ public class FlayServiceImpl implements FlayService {
     flay.getVideo().increasePlayCount();
 
     videoInfoSource.update(flay.getVideo());
-    historyService.save(History.Action.PLAY, flay);
+    historyService.save(History.Action.PLAY, flay, null);
   }
 
   @Override

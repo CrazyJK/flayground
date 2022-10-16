@@ -64,8 +64,7 @@ public class FileBasedFlaySource implements FlaySource {
 
       Flay flay = null;
       if (!flayMap.containsKey(result.getOpus())) {
-        flay = flayFactory.newFlay(result);
-        flay.setArchive(isArchive);
+        flay = flayFactory.newFlay(result, isArchive);
         flayMap.put(flay.getOpus(), flay);
       } else {
         flay = flayMap.get(result.getOpus());

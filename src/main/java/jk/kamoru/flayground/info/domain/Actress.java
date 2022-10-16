@@ -14,6 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Actress implements Info<String> {
 
+  boolean favorite;
   @NotBlank String name;
   String localName;
   String birth;
@@ -21,7 +22,6 @@ public class Actress implements Info<String> {
   int height;
   int debut;
   String comment;
-  boolean favorite;
   @JsonIgnore List<File> covers;
   long lastModified;
 
@@ -30,8 +30,8 @@ public class Actress implements Info<String> {
     this.localName = "";
     this.birth = "";
     this.body = "";
-    this.height = 0;
-    this.debut = 0;
+    this.height = -1;
+    this.debut = -1;
     this.comment = "";
     this.favorite = false;
     this.lastModified = -1;

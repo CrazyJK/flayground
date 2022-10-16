@@ -1,13 +1,17 @@
 package jk.kamoru.flayground.flay.source;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.history.domain.History;
+import jk.kamoru.flayground.history.service.HistoryService;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.domain.Video;
@@ -21,6 +25,8 @@ public class FlayFactory {
   @Autowired InfoSource<Video, String> videoInfoSource;
   @Autowired InfoSource<Studio, String> studioInfoSource;
   @Autowired InfoSource<Actress, String> actressInfoSource;
+
+  @Autowired HistoryService historyService;
 
   public Result parse(File file) {
     final String originalFilename = file.getName();
@@ -84,14 +90,15 @@ public class FlayFactory {
     File file;
   }
 
-  public Flay newFlay(Result result) {
+  public Flay newFlay(Result result, boolean isArchive) {
     Flay flay = new Flay();
     flay.setStudio(getStudio(result.studio));
     flay.setOpus(result.opus);
     flay.setTitle(result.title);
     flay.setActressList(getActressList(result.actress));
     flay.setRelease(result.release);
-    flay.setVideo(getVideo(result.opus));
+    flay.setVideo(getVideo(result.opus, isArchive));
+    flay.setArchive(isArchive);
     return flay;
   }
 
@@ -99,8 +106,21 @@ public class FlayFactory {
     return studioInfoSource.getOrNew(name).getName();
   }
 
-  private Video getVideo(String opus) {
-    return videoInfoSource.getOrNew(opus);
+  private Video getVideo(String opus, boolean isArchive) {
+    Video video = videoInfoSource.getOrNew(opus);
+    if (!isArchive) {
+      long lastPlay = new Date().getTime();
+      History lastPlayHistory = historyService.findLastPlay(opus);
+      if (lastPlayHistory != null) {
+        try {
+          lastPlay = Flayground.Format.Date.DateTime.parse(lastPlayHistory.getDate()).getTime();
+        } catch (ParseException e) {
+          log.error("fail to parse", e);
+        }
+      }
+      video.setLastPlay(lastPlay);
+    }
+    return video;
   }
 
   private List<String> getActressList(String actress) {

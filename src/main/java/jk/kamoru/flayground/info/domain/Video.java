@@ -14,25 +14,27 @@ import lombok.NoArgsConstructor;
 public class Video implements Info<String> {
 
   @NotBlank String opus;
-  int play = 0;
-  int rank = 0;
-  long lastAccess = 0;
-  String comment = "";
-  String title = "";
-  String desc = "";
-  List<Tag> tags = new ArrayList<>();
+  int play;
+  int rank;
+  long lastPlay;
+  long lastAccess;
   long lastModified;
+  String comment;
+  String title;
+  String desc;
+  List<Tag> tags;
 
   public Video(String key) {
     setKey(key);
     this.play = 0;
     this.rank = 0;
-    this.lastAccess = 0;
+    this.lastPlay = -1;
+    this.lastAccess = -1;
+    this.lastModified = -1;
     this.comment = "";
     this.title = "";
     this.desc = "";
     this.tags = new ArrayList<>();
-    this.lastModified = -1;
   }
 
   @Override
@@ -52,6 +54,7 @@ public class Video implements Info<String> {
 
   public void increasePlayCount() {
     ++play;
+    lastPlay = new Date().getTime();
   }
 
 }

@@ -17,7 +17,7 @@ import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
 import * as am5xy from '@amcharts/amcharts5/xy';
 
-import { DEFAULT_SPECS, File, LocalStorageItem, NumberUtils, PATH, Random, SessionStorageItem, StringUtils } from './lib/crazy.common.js';
+import { DateUtils, DEFAULT_SPECS, File, LocalStorageItem, NumberUtils, PATH, Random, SessionStorageItem, StringUtils } from './lib/crazy.common.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
 import { loading } from './lib/flay.loading.js';
 import { Rest } from './lib/flay.rest.service.js';
@@ -909,7 +909,7 @@ function collectList() {
       case 'M':
         return compareTo(flay1.lastModified, flay2.lastModified);
       case 'la':
-        return compareTo(Math.max(flay1.video.lastAccess, flay1.lastModified), Math.max(flay2.video.lastAccess, flay2.lastModified));
+        return compareTo(Math.max(flay1.video.lastPlay, flay1.video.lastAccess, flay1.lastModified), Math.max(flay2.video.lastPlay, flay2.video.lastAccess, flay2.lastModified));
       case 'P': {
         const pVal = compareTo(flay1.video.play, flay2.video.play);
         return pVal === 0 ? compareTo(flay1.release, flay2.release) : pVal;
@@ -1121,7 +1121,7 @@ function showVideo(args) {
           // 화면 밖으로 밀려나갈거 같으면 가리기
           const canVisible = window.innerHeight > $('.tag-wrapper').position().top + $('.tag-wrapper').height() + 100;
           if (canVisible) {
-            drawGraph(histories);
+            drawGraph(playHistories);
           }
           $('.history-wrapper').toggle(canVisible);
           if (currentFlay.video.play !== playHistories.length) {
@@ -1183,10 +1183,10 @@ function showVideo(args) {
   $('.info-title').html(currentFlay.title);
   // release
   $('.info-release').html(currentFlay.release);
-  // modified, last access
-  const mDate = new Date(currentFlay.lastModified);
-  const aDate = new Date(currentFlay.video.lastAccess);
-  $('.info-modified').html(`<small><span title="lastModified">${mDate.format('yy/MM/dd')}</span><i class="fa fa-arrow-${mDate > aDate ? 'left' : 'right'} mx-1"></i><span title="lastAccess">${aDate.format('yy/MM/dd')}</span></small>`);
+  // modified, lastAccess, lastPlay
+  $('.info-lastModified').html(DateUtils.format('yy/MM/dd', currentFlay.lastModified));
+  $('.info-lastAccess').html(DateUtils.format('yy/MM/dd', currentFlay.video.lastAccess));
+  $('.info-lastPlay').html(DateUtils.format('yy/MM/dd', currentFlay.video.lastPlay));
   // video file
   const movieSize = currentFlay.files.movie.length;
   $('.info-video')
@@ -1343,21 +1343,24 @@ function markStatisticsActress() {
 }
 
 function drawGraph(historyList) {
+  // console.table(historyList);
   // init variables
   const dataMap = new Map();
 
   historyList.forEach((history) => {
-    if (history.action === 'PLAY') {
-      const key = history.date.substring(0, 10);
-      if (dataMap.has(key)) {
-        dataMap.get(key).push(history);
-      } else {
-        dataMap.set(key, [history]);
-      }
+    const key = history.date.substring(0, 10);
+    if (dataMap.has(key)) {
+      dataMap.get(key).push(history);
+    } else {
+      dataMap.set(key, [history]);
     }
   });
 
   const dataArray = [
+    {
+      date: new Date(currentFlay.release).getTime(),
+      playCount: 0,
+    },
     {
       date: Date.now(),
       playCount: 0,

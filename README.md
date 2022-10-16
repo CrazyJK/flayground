@@ -7,6 +7,14 @@ flay ground
 ```
 cd www
 yarn run watch
+or
+yarn run build
+
+# add module
+yarn add json-viewer-js
+
+# after remove
+yarn install
 ```
 
 ## ref

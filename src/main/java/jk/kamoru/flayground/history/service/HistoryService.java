@@ -11,10 +11,12 @@ public interface HistoryService {
 
   List<History> find(String query);
 
+  List<History> findByAction(Action action);
+
+  History findLastPlay(String opus);
+
   void persist(History history);
 
-  void save(Action play, Flay flay);
-
-  List<History> findAction(Action action);
+  void save(Action play, Flay flay, String deletedReason);
 
 }

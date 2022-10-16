@@ -135,6 +135,18 @@ nav {
     box-shadow: 0 0 1rem 0.5rem var(--color-box-shadow);
     background: url(./img/svg/flayground1.svg) no-repeat right bottom / 200px;
 
+    .json-expander {
+      position: absolute;
+      top: 0;
+      right: 0;
+      padding: 0.25rem 0.5rem;
+      z-index: 4;
+
+      i {
+        cursor: pointer;
+      }
+    }
+
     .json {
       position: relative;
       margin: 0;
@@ -160,9 +172,36 @@ nav {
   boolean {
     color: lightskyblue;
   }
+  date {
+    color: #9fa0cb;
+  }
+  length {
+    color: #cf7171;
+  }
   null {
     color: gray;
   }
+
+  .bracket-toggler {
+    cursor: pointer;
+
+    &::before {
+      content: '▽ ';
+      color: #745555;
+    }
+
+    &.hide {
+      &::before {
+        content: '▶ …';
+        color: #c69d9d;
+      }
+    }
+  }
+
+  .bracket-toggler.hide + .bracket {
+    display: none;
+  }
+
   .square-bracket,
   .round-bracket {
     color: rgb(246, 246, 59);

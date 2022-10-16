@@ -37,8 +37,16 @@ import lombok.extern.slf4j.Slf4j;
 public class BatchExecutor {
 
   public static enum Option {
-    /** deleteLowerScoreVideo */
-    S;
+    /** delete Lower Score Video */
+    S("delete Lower Score Video"),
+    /** delete Lower Rank Video */
+    R("delete Lower Rank Video");
+
+    private String desc;
+
+    private Option(String desc) {
+      this.desc = desc;
+    }
   }
 
   public static enum Operation {
@@ -159,12 +167,12 @@ public class BatchExecutor {
 
   void deleteLowerRank() {
     log.info("[deleteLowerRank]");
-    listLowerRank().forEach((flay) -> archiving(flay));
+    listLowerRank().forEach((flay) -> archiving(flay, Option.R));
   }
 
   void deleteLowerScore() {
     log.info("[deleteLowerScore]");
-    listLowerScore().forEach((flay) -> archiving(flay));
+    listLowerScore().forEach((flay) -> archiving(flay, Option.S));
   }
 
   private List<Flay> listLowerRank() {
@@ -355,8 +363,9 @@ public class BatchExecutor {
    * 그외 파일은 제거.(삭제 또는 휴지통)
    *
    * @param flay
+   * @param s
    */
-  private void archiving(Flay flay) {
+  private void archiving(Flay flay, Option option) {
     String yyyyMM = getArchiveFolderName(flay);
     File archiveDir = new File(flayProperties.getArchivePath(), yyyyMM);
     for (Entry<String, List<File>> entry : flay.getFiles().entrySet()) {
@@ -372,7 +381,7 @@ public class BatchExecutor {
       }
     }
     flay.setArchive(true);
-    historyService.save(Action.DELETE, flay);
+    historyService.save(Action.DELETE, flay, option.desc);
   }
 
   public synchronized void backup() {

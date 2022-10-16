@@ -2,15 +2,15 @@
  * flay ground
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
 import './components/FlayMenu';
 import './css/common.scss';
 import './flay.ground.scss';
 
-import { Rest } from './lib/flay.rest.service';
 import { DateUtils, File, Random } from './lib/crazy.common';
+import { Rest } from './lib/flay.rest.service';
 import { View } from './lib/flay.utils.js';
 
 let opusList = [];
@@ -81,6 +81,16 @@ $('.json-frame')
     const flayInfo = document.querySelector('.json-frame');
     if (flayInfo.scrollHeight > flayInfo.clientHeight) {
       e.stopPropagation();
+    }
+  })
+  .on('click', '.bracket-toggler', (e) => {
+    $(e.target).toggleClass('hide');
+  })
+  .on('click', '.json-expander', (e) => {
+    if (e.target.classList.contains('minus')) {
+      $('.json > .bracket > .bracket > .bracket-toggler').addClass('hide');
+    } else {
+      $('.bracket-toggler').removeClass('hide');
     }
   });
 
@@ -214,25 +224,48 @@ function show(from) {
   }
   // console.log(indexHistory, index);
 
-  Rest.Flay.getFully(opus, (_flay) => {
-    // console.log(_flay);
-    flay = _flay;
-    const jsonText = JSON.stringify(
+  const BRACKET_TOGGLER = '<i class="bracket-toggler"></i>';
+  const BRACKET_S = '<span class="bracket">';
+  const BRACKET_E = '</span>';
+  const SQUARE_S = '<span class="square-bracket">[</span>';
+  const SQUARE_E = '<span class="square-bracket">]</span>';
+  const ROUND_S = '<span class="round-bracket">{</span>';
+  const ROUND_E = '<span class="round-bracket">}</span>';
+
+  Rest.Flay.getFully(opus, (fullyFlay) => {
+    // console.log(fullyFlay);
+    flay = fullyFlay;
+    let jsonText = JSON.stringify(
       flay,
       function replacer(k, v) {
-        // console.log('k[' + typeof k + ']', k, 'v[' + typeof v + ']', v);
-        if (k === 'lastAccess') {
-          v = DateUtils.format('yyyy-MM-dd HH:mm:ss', v);
-        } else if (k === 'lastModified') {
-          v = DateUtils.format('yyyy-MM-dd HH:mm:ss', v);
-        } else if (k === 'length') {
-          v = File.formatSize(v);
-        } else if (k === 'actressPoint' || k === 'studioPoint' || k === 'candidate') {
+        // console.log('[' + k + ']: ', v);
+        if (v === null || v === '' || v < 1) {
           return undefined;
         }
 
+        switch (k) {
+          case 'lastPlay':
+          case 'lastAccess':
+          case 'lastModified':
+            v = DateUtils.format('yyyy-MM-dd HH:mm', v);
+            break;
+          case 'length':
+            v = File.formatSize(v);
+            break;
+          case 'actressPoint':
+          case 'studioPoint':
+          case 'candidate':
+            return undefined;
+        }
+
         if (typeof v === 'string') {
-          v = `<string>'${v.replace(/\n/gi, '<br>').replace(/\[/gi, 'bracketStart').replace(/\]/gi, 'bracketEnd')}'</string>`;
+          if (k === 'lastPlay' || k === 'lastAccess' || k === 'lastModified') {
+            v = `<date>${v}</date>`;
+          } else if (k === 'length') {
+            v = `<length>${v}</length>`;
+          } else {
+            v = `<string>${v.replace(/\n/gi, '<br>').replace(/\[/gi, 'squareBracketStart').replace(/\]/gi, 'squareBracketEnd')}</string>`;
+          }
         } else if (typeof v === 'number') {
           v = `<number>${v}</number>`;
         } else if (typeof v === 'boolean') {
@@ -244,19 +277,21 @@ function show(from) {
         return v;
       },
       2
-    )
+    );
+
+    jsonText = jsonText
       .replace(/"/g, '')
-      .replace(/'/g, '"')
       .replace(/\\\\/g, '\\')
-      .replace(/\[/g, '<span class="square-bracket">[</span>')
-      .replace(/\]/g, '<span class="square-bracket">]</span>')
-      .replace(/\{/g, '<span class="round-bracket">{</span>')
-      .replace(/\}/g, '<span class="round-bracket">}</span>')
-      .replace(/bracketStart/g, '[')
-      .replace(/bracketEnd/g, ']')
+      .replace(/\[/g, BRACKET_TOGGLER + BRACKET_S + SQUARE_S)
+      .replace(/\]/g, SQUARE_E + BRACKET_E)
+      .replace(/\{/g, BRACKET_TOGGLER + BRACKET_S + ROUND_S)
+      .replace(/\}/g, ROUND_E + BRACKET_E)
+      .replace(/squareBracketStart/g, '[')
+      .replace(/squareBracketEnd/g, ']')
       .replace(/movie/, '<span class="movie">movie</span>')
       .replace(/title/, '<span class="title">title</span>')
-      .replace(/localName/g, '<span class="localName">localName</span>');
+      .replace(/localName/g, '<span class="localName">localName</span>')
+      .substring(BRACKET_TOGGLER.length);
 
     Rest.Image.blobUrl('/static/cover/' + flay.opus, (imageBlobUrl) => {
       $('.page-target').animate(
@@ -268,14 +303,17 @@ function show(from) {
         () => {
           $('#flayCover .cover').css({ backgroundImage: `url('${imageBlobUrl}')` });
           $('#flayInfo .json').html(jsonText);
+
           // insert anker. play, flay view, actress view
           $('<a class="anker movie-play"><i class="fa fa-external-link"></i></a>').insertAfter('.movie');
           $('<a class="anker flay-view"><i class="fa fa-external-link"></i></a>').insertAfter('.title');
           $('.localName').each((index, element) => {
             $(`<a class="anker actress-view" data-index="${index}"><i class="fa fa-external-link"></i></a>`).insertAfter(element);
           });
+
           // paging
           $('#paginationProgress > div').css({ width: (((index + 1) / (lastIndex + 1)) * 100).toFixed(1) + '%' });
+
           // show
           $('.page-target').animate({ opacity: 1 }, 300, 'swing');
         }

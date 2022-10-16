@@ -24,22 +24,36 @@ public class Flay {
   String title;
   List<String> actressList;
   String release;
-  boolean archive = false;
-
-  // files
-  Map<String, List<File>> files = new HashMap<>();
-
-  Video video;
 
   int score;
   int actressPoint;
   int studioPoint;
 
+  boolean archive = false;
+
+  Video video;
+
+  // files
+  Map<String, List<File>> files = new HashMap<>();
+
   public Flay() {
-    files.put(MOVIE, new ArrayList<File>());
-    files.put(SUBTI, new ArrayList<File>());
-    files.put(COVER, new ArrayList<File>());
-    files.put(CANDI, new ArrayList<File>());
+    files.put(MOVIE, new ArrayList<>());
+    files.put(SUBTI, new ArrayList<>());
+    files.put(COVER, new ArrayList<>());
+    files.put(CANDI, new ArrayList<>());
+  }
+
+  public long getLength() {
+    return files.get(MOVIE).stream().mapToLong(File::length).sum()
+        + files.get(SUBTI).stream().mapToLong(File::length).sum()
+        + files.get(COVER).stream().mapToLong(File::length).sum();
+  }
+
+  public long getLastModified() {
+    return NumberUtils.max(
+        files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1),
+        files.get(SUBTI).stream().mapToLong(File::lastModified).max().orElse(-1),
+        files.get(COVER).stream().mapToLong(File::lastModified).max().orElse(-1));
   }
 
   public void addMovieFile(File file) {
@@ -56,19 +70,6 @@ public class Flay {
 
   public void addCandidatesFile(File file) {
     files.get(CANDI).add(file);
-  }
-
-  public long getLastModified() {
-    return NumberUtils.max(
-        files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1),
-        files.get(SUBTI).stream().mapToLong(File::lastModified).max().orElse(-1),
-        files.get(COVER).stream().mapToLong(File::lastModified).max().orElse(-1));
-  }
-
-  public long getLength() {
-    return files.get(MOVIE).stream().mapToLong(File::length).sum()
-        + files.get(SUBTI).stream().mapToLong(File::length).sum()
-        + files.get(COVER).stream().mapToLong(File::length).sum();
   }
 
   @JsonIgnore

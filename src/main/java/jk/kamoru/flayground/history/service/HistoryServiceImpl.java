@@ -1,7 +1,6 @@
 package jk.kamoru.flayground.history.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -32,7 +31,23 @@ public class HistoryServiceImpl implements HistoryService {
     return historyRepository.list().stream()
         .filter(h -> h.toFileSaveString().contains(query))
         .sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate()))
-        .collect(Collectors.toList());
+        .toList();
+  }
+
+  @Override
+  public List<History> findByAction(Action action) {
+    return historyRepository.list().stream()
+        .filter(h -> h.getAction() == action)
+        .sorted((h1, h2) -> StringUtils.compare(h1.getDate(), h2.getDate()))
+        .toList();
+  }
+
+  @Override
+  public History findLastPlay(String opus) {
+    return historyRepository.list().stream()
+        .filter(h -> StringUtils.equals(h.getOpus(), opus))
+        .filter(h -> h.getAction() == History.Action.PLAY)
+        .sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate())).findFirst().orElse(null);
   }
 
   @Override
@@ -41,20 +56,26 @@ public class HistoryServiceImpl implements HistoryService {
   }
 
   @Override
-  public void save(Action action, Flay flay) {
+  public void save(Action action, Flay flay, String deletedReason) {
+    String desc;
     try {
-      persist(new History(action, flay.getOpus(), action == Action.UPDATE ? jsonWriter.writeValueAsString(flay.getVideo()) : flay.getFullname()));
+      switch (action) {
+        case PLAY:
+          desc = flay.getFullname();
+          break;
+        case UPDATE:
+          desc = jsonWriter.writeValueAsString(flay.getVideo());
+          break;
+        case DELETE:
+          desc = deletedReason;
+          break;
+        default:
+          throw new IllegalArgumentException("unknown action: " + action);
+      }
     } catch (JsonProcessingException e) {
       throw new FlayException("fail to convert json from video", e);
     }
-  }
-
-  @Override
-  public List<History> findAction(Action action) {
-    return historyRepository.list().stream()
-        .filter(h -> h.getAction() == action)
-        .sorted((h1, h2) -> StringUtils.compare(h1.getDate(), h2.getDate()))
-        .collect(Collectors.toList());
+    persist(new History(action, flay.getOpus(), desc));
   }
 
 }

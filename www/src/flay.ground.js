@@ -100,6 +100,15 @@ function jsonExpand() {
   }
 }
 
+localStorage
+  .getItem('flay.ground.rank', '')
+  .split(',')
+  .forEach((r) => {
+    $('#rank' + r).prop('checked', true);
+  });
+
+startGround();
+
 function startGround() {
   const condition = {
     studio: $('#studioInput').val(),
@@ -114,6 +123,8 @@ function startGround() {
     withNoFavorite: $('#withNoFavorite').prop('checked'),
     sort: $('#sort').val(),
   };
+
+  localStorage.setItem('flay.ground.rank', condition.rank);
 
   Rest.Flay.listOfOpus(condition, (list) => {
     console.log('opus list length', list.length, condition);

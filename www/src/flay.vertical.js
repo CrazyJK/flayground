@@ -12,10 +12,7 @@ import './lib/crazy.jquery';
 
 import './lib/crazy.effect.neon.js';
 
-import * as am5 from '@amcharts/amcharts5';
-import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
-import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
-import * as am5xy from '@amcharts/amcharts5/xy';
+import bb, { bubble } from 'billboard.js';
 
 import { DateUtils, DEFAULT_SPECS, File, LocalStorageItem, NumberUtils, PATH, Random, SessionStorageItem, StringUtils } from './lib/crazy.common.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
@@ -39,12 +36,13 @@ let slideTimer;
 let keyInputQueue = '';
 let keyLastInputTime = Date.now();
 
-const am5Root = am5.Root.new('chartdiv');
-am5Root.setThemes([am5themes_Animated.new(am5Root)]);
-am5Root.locale = am5locales_ko_KR;
-
+// for billboard chart
+let chart;
 const now = new Date();
-const oneYearAgo = new Date(now.setFullYear(now.getFullYear() - 1));
+const startAxisForChart = `${now.getFullYear() - 1}-01`;
+const endAxisForChart = DateUtils.format('yyyy-MM', now);
+let releaseForChart = startAxisForChart;
+let playMaxForChart = 0;
 
 const createTag = (tag) => {
   return $('<label>', { class: 'check sm' }).append($('<input>', { type: 'checkbox', 'data-tag-id': tag.id }).data('tag', tag), $('<span>', { title: tag.description }).html(tag.name));
@@ -1345,102 +1343,87 @@ function markStatisticsActress() {
 function drawGraph(historyList) {
   // console.table(historyList);
   // init variables
+  releaseForChart = currentFlay.release.substring(0, 7).replace(/\./gi, '-');
+  playMaxForChart = 0;
+
   const dataMap = new Map();
-
+  dataMap.set(releaseForChart, 0.2);
   historyList.forEach((history) => {
-    const key = history.date.substring(0, 10);
+    const key = history.date.substring(0, 7);
+    let val = 0;
     if (dataMap.has(key)) {
-      dataMap.get(key).push(history);
-    } else {
-      dataMap.set(key, [history]);
+      val = dataMap.get(key);
     }
+    dataMap.set(key, ++val);
   });
+  // console.log(dataMap);
 
-  const dataArray = [
-    {
-      date: new Date(currentFlay.release).getTime(),
-      playCount: 0,
-    },
-    {
-      date: Date.now(),
-      playCount: 0,
-    },
-  ];
   // convert map to array
+  const playedDate = ['x'];
+  const playCount = ['play'];
+  dataMap.forEach((val) => {
+    playMaxForChart = Math.max(playMaxForChart, val);
+  });
+  playMaxForChart = Math.floor(playMaxForChart);
+  // console.log('playNax', playMax);
   dataMap.forEach((val, key) => {
-    dataArray.push({
-      date: new Date(key).getTime(),
-      playCount: val.length,
-    });
+    playedDate.push(key);
+    playCount.push([playMaxForChart, val]);
   });
-  // sort ascending by date
-  dataArray.sort((d1, d2) => (d1.date > d2.date ? 1 : -1));
-  // add oneYearAgo, if necessary
-  if (dataArray[0].date > oneYearAgo.getTime()) {
-    dataArray.unshift({
-      date: oneYearAgo.getTime(),
-      playCount: 0,
-    });
-  }
 
-  // make chart
-  am5Root.container.children.clear();
-  let chart = am5Root.container.children.push(am5xy.XYChart.new(am5Root, {}));
+  chart.load({
+    columns: [playedDate, playCount],
+  });
+}
 
-  let cursor = chart.set(
-    'cursor',
-    am5xy.XYCursor.new(am5Root, {
-      behavior: 'none',
-    })
-  );
-  cursor.lineY.set('visible', false);
-
-  let xAxis = chart.xAxes.push(
-    am5xy.DateAxis.new(am5Root, {
-      baseInterval: {
-        timeUnit: 'day',
-        count: 1,
+function initChart() {
+  chart = bb.generate({
+    data: {
+      x: 'x',
+      xFormat: '%Y-%m',
+      columns: [['x'], ['play']],
+      type: bubble(),
+      color: function (color, d) {
+        if (DateUtils.format('yyyy-MM', d.x) == releaseForChart) {
+          return '#fd7e14';
+        } else {
+          return color;
+        }
       },
-      renderer: am5xy.AxisRendererX.new(am5Root, { inside: true }),
-    })
-  );
-
-  let xRenderer = xAxis.get('renderer');
-  xRenderer.labels.template.setAll({
-    fill: am5.color(0xffffff),
-    fontSize: '12px',
+    },
+    bubble: {
+      maxR: 8,
+    },
+    axis: {
+      x: {
+        min: startAxisForChart,
+        max: endAxisForChart,
+        type: 'timeseries',
+        tick: {
+          format: '%y.%m',
+        },
+      },
+      y: {
+        min: 0,
+        max: playMaxForChart * 2,
+        show: false,
+        tick: {
+          show: false,
+          text: {
+            show: false,
+          },
+        },
+      },
+    },
+    legend: {
+      show: false,
+    },
+    bindto: '#chartdiv',
   });
-
-  let yAxis = chart.yAxes.push(
-    am5xy.ValueAxis.new(am5Root, {
-      min: 0,
-      max: 1,
-      renderer: am5xy.AxisRendererY.new(am5Root, { inside: true }),
-    })
-  );
-
-  let yRenderer = yAxis.get('renderer');
-  yRenderer.labels.template.setAll({
-    visible: false,
-  });
-
-  let series = chart.series.push(
-    am5xy.ColumnSeries.new(am5Root, {
-      name: 'Series',
-      xAxis: xAxis,
-      yAxis: yAxis,
-      valueYField: 'playCount',
-      valueXField: 'date',
-    })
-  );
-
-  series.data.setAll(dataArray);
-
-  series.appear(1000);
-  chart.appear(1000, 100);
 }
 
 attachPageEventListener();
 attachFlayEventListener();
 initCondition();
+initChart();
 loadData();

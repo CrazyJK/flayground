@@ -1,3 +1,5 @@
+@import 'css/billboard/insight.css';
+
 :root {
   --cover-width: 816px;
   --cover-width-lg: 916px;
@@ -305,8 +307,8 @@ main#wrap_body {
         #chartdiv {
           background-color: var(--color-bg-chart);
           border-radius: 4px;
-          width: 100%;
           height: 4rem;
+          margin: 0 1rem;
         }
       }
     }

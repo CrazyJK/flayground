@@ -19,6 +19,7 @@ let index = -1;
 let lastIndex = -1;
 let previousIndex = -1;
 let flay;
+let jsonExpanded = true;
 
 $('#toggleDetailSearch').on('change', (e) => {
   $('#detailSearch').toggleClass('show', e.target.checked).find('input').val('');
@@ -87,12 +88,17 @@ $('.json-frame')
     $(e.target).toggleClass('hide');
   })
   .on('click', '.json-expander', (e) => {
-    if (e.target.classList.contains('minus')) {
-      $('.json > .bracket > .bracket > .bracket-toggler').addClass('hide');
-    } else {
-      $('.bracket-toggler').removeClass('hide');
-    }
+    jsonExpanded = e.target.classList.contains('plus');
+    jsonExpand();
   });
+
+function jsonExpand() {
+  if (jsonExpanded) {
+    $('.bracket-toggler').removeClass('hide');
+  } else {
+    $('.json > .bracket > .bracket > .bracket-toggler').addClass('hide');
+  }
+}
 
 function startGround() {
   const condition = {
@@ -303,6 +309,7 @@ function show(from) {
         () => {
           $('#flayCover .cover').css({ backgroundImage: `url('${imageBlobUrl}')` });
           $('#flayInfo .json').html(jsonText);
+          jsonExpand();
 
           // insert anker. play, flay view, actress view
           $('<a class="anker movie-play"><i class="fa fa-external-link"></i></a>').insertAfter('.movie');

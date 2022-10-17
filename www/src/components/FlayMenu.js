@@ -1,12 +1,12 @@
 import menuItems from '../components/FlayMenu.json';
-import { calculateLifeTime } from '../lib/kamoru.life.timer';
-import { Rest } from '../lib/flay.rest.service';
 import { LocalStorageItem } from '../lib/crazy.common.js';
+import { Rest } from '../lib/flay.rest.service';
 import flayWebsocket from '../lib/flay.websocket.js';
+import { calculateLifeTime } from '../lib/kamoru.life.timer';
 
 /* ref)
-   https://developer.mozilla.org/ko/docs/Web/Web_Components/Using_custom_elements
-   https://developer.mozilla.org/ko/docs/Web/Web_Components/Using_shadow_DOM
+  https://developer.mozilla.org/ko/docs/Web/Web_Components/Using_custom_elements
+  https://developer.mozilla.org/ko/docs/Web/Web_Components/Using_shadow_DOM
  */
 
 class FlayMenu extends HTMLElement {

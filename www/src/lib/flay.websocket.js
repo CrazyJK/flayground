@@ -5,8 +5,8 @@
 
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import Stomp from 'stompjs';
 import SockJS from 'sockjs-client';
+import Stomp from 'stompjs';
 import { LocalStorageItem } from './crazy.common.js';
 import './flay.websocket.scss';
 
@@ -65,16 +65,16 @@ class FlayWebsocket {
       },
       (error) => {
         console.error('[FlayWebsocket] error', error);
-        this.showMessage({
-          command: 'ERROR',
-          content: error,
-        });
-
         if (this.retryCount < this.MAX_RETRY_COUNT) {
           setTimeout(() => {
             this.retryCount++;
             this.connect();
           }, 1000 * 5);
+        } else {
+          this.showMessage({
+            command: 'ERROR',
+            content: error,
+          });
         }
       }
     );

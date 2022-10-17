@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicLong;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -24,8 +22,6 @@ public class HistoryRepository {
   @Autowired FlayProperties flayProperties;
 
   List<History> list;
-
-  AtomicLong id = new AtomicLong(0);
 
   File getInfoFile() {
     return new File(flayProperties.getInfoPath(), Flayground.InfoFilename.HISTORY);
@@ -47,7 +43,6 @@ public class HistoryRepository {
 
       String[] split = StringUtils.split(line, ",", 4);
       History history = new History();
-      history.setId(id.getAndIncrement());
       if (split.length > 0)
         history.setDate(split[0].trim());
       if (split.length > 1)
@@ -61,28 +56,17 @@ public class HistoryRepository {
     log.info(String.format("%5s history - %s", list.size(), getInfoFile()));
   }
 
-  synchronized void save(History history) {
-    history.setId(id.getAndIncrement());
-    history.setDate(Flayground.Format.Date.DateTime.format(new Date()));
+  public List<History> list() {
+    return list;
+  }
+
+  public synchronized void save(History history) {
     list.add(history);
     try {
       FileUtils.writeStringToFile(getInfoFile(), history.toFileSaveString(), Flayground.ENCODING, true);
     } catch (IOException e) {
       throw new IllegalStateException("Fail to save history log");
     }
-  }
-
-  public List<History> list() {
-    return list;
-  }
-
-  public History get(Long id) {
-    return list.get(id.intValue());
-  }
-
-  public History create(History create) {
-    save(create);
-    return create;
   }
 
 }

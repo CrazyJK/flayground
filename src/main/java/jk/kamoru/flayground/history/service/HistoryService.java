@@ -15,8 +15,6 @@ public interface HistoryService {
 
   History findLastPlay(String opus);
 
-  void persist(History history);
-
   void save(Action play, Flay flay, String deletedReason);
 
 }

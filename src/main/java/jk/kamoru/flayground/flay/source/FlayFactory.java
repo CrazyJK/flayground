@@ -3,7 +3,6 @@ package jk.kamoru.flayground.flay.source;
 import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +26,17 @@ public class FlayFactory {
   @Autowired InfoSource<Actress, String> actressInfoSource;
 
   @Autowired HistoryService historyService;
+
+  @Data
+  public static class Result {
+    boolean valid;
+    String studio;
+    String opus;
+    String title;
+    String actress;
+    String release;
+    File file;
+  }
 
   public Result parse(File file) {
     final String originalFilename = file.getName();
@@ -79,17 +89,6 @@ public class FlayFactory {
     return result;
   }
 
-  @Data
-  public static class Result {
-    boolean valid;
-    String studio;
-    String opus;
-    String title;
-    String actress;
-    String release;
-    File file;
-  }
-
   public Flay newFlay(Result result, boolean isArchive) {
     Flay flay = new Flay();
     flay.setStudio(getStudio(result.studio));
@@ -109,16 +108,16 @@ public class FlayFactory {
   private Video getVideo(String opus, boolean isArchive) {
     Video video = videoInfoSource.getOrNew(opus);
     if (!isArchive) {
-      long lastPlay = new Date().getTime();
+      long lastPlayTime = -1;
       History lastPlayHistory = historyService.findLastPlay(opus);
       if (lastPlayHistory != null) {
         try {
-          lastPlay = Flayground.Format.Date.DateTime.parse(lastPlayHistory.getDate()).getTime();
+          lastPlayTime = Flayground.Format.Date.DateTime.parse(lastPlayHistory.getDate()).getTime();
         } catch (ParseException e) {
           log.error("fail to parse", e);
         }
       }
-      video.setLastPlay(lastPlay);
+      video.setLastPlay(lastPlayTime);
     }
     return video;
   }

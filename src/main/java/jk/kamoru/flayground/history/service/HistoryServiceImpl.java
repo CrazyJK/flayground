@@ -29,7 +29,7 @@ public class HistoryServiceImpl implements HistoryService {
   @Override
   public List<History> find(String query) {
     return historyRepository.list().stream()
-        .filter(h -> h.toFileSaveString().contains(query))
+        .filter(h -> h.match(query))
         .sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate()))
         .toList();
   }
@@ -45,37 +45,31 @@ public class HistoryServiceImpl implements HistoryService {
   @Override
   public History findLastPlay(String opus) {
     return historyRepository.list().stream()
-        .filter(h -> StringUtils.equals(h.getOpus(), opus))
-        .filter(h -> h.getAction() == History.Action.PLAY)
+        .filter(h -> h.getOpus().equals(opus) && h.getAction() == History.Action.PLAY)
         .sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate())).findFirst().orElse(null);
-  }
-
-  @Override
-  public void persist(History history) {
-    historyRepository.create(history);
   }
 
   @Override
   public void save(Action action, Flay flay, String deletedReason) {
     String desc;
-    try {
-      switch (action) {
-        case PLAY:
-          desc = flay.getFullname();
-          break;
-        case UPDATE:
+    switch (action) {
+      case PLAY:
+        desc = flay.getFullname();
+        break;
+      case UPDATE:
+        try {
           desc = jsonWriter.writeValueAsString(flay.getVideo());
           break;
-        case DELETE:
-          desc = deletedReason;
-          break;
-        default:
-          throw new IllegalArgumentException("unknown action: " + action);
-      }
-    } catch (JsonProcessingException e) {
-      throw new FlayException("fail to convert json from video", e);
+        } catch (JsonProcessingException e) {
+          throw new FlayException("fail to convert json from video", e);
+        }
+      case DELETE:
+        desc = deletedReason;
+        break;
+      default:
+        throw new IllegalArgumentException("unknown action: " + action);
     }
-    persist(new History(action, flay.getOpus(), desc));
+    historyRepository.save(new History(flay.getOpus(), action, desc));
   }
 
 }

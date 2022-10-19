@@ -4,16 +4,17 @@ body {
   height: 100vh;
   margin: 0;
   padding: 0;
-  font-family: 'Ink Free';
-  font-size: 2rem;
-  mask-image: url(./img/pattern/pattern-static.png);
-  -webkit-mask-image: url(./img/pattern/pattern-static.png);
-  // text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
 }
 main {
   display: flex;
   flex-direction: column;
   height: 100%;
+
+  font-family: 'Ink Free';
+  font-size: 2rem;
+  mask-image: url(./img/pattern/pattern-static.png);
+  -webkit-mask-image: url(./img/pattern/pattern-static.png);
+  // text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
 
   & > div {
     flex-shrink: 0;

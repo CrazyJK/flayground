@@ -10,6 +10,7 @@ module.exports = {
     login: './src/login.js',
     main: './src/main.js',
     'flay.ground': './src/flay.ground.js',
+    'flay.raw': './src/flay.raw.js',
     'flay.lastPlayed': './src/flay.lastPlayed.js',
     'flay.blank': './src/flay.blank.js',
     'flay.vertical': './src/flay.vertical.js',

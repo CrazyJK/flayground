@@ -14,77 +14,41 @@
   </head>
   <body>
     <main>
-      <nav>
-        <div class="rounded" id="basicSearch">
-          <span class="check-group check-group-rounded">
-            <label title="toggle detail search"><input type="checkbox" id="toggleDetailSearch" /><span class="fa fa-caret-down"></span></label>
-          </span>
-          <input type="search" id="searchInput" placeholder="Search" />
-          <span class="check-group check-group-rounded">
-            <label><input type="checkbox" name="rank" id="rank0" value="0" /><span class="fa fa-circle"></span></label>
-            <label><input type="checkbox" name="rank" id="rank1" value="1" /><span class="fa fa-star"></span></label>
-            <label><input type="checkbox" name="rank" id="rank2" value="2" /><span class="fa fa-star"></span></label>
-            <label><input type="checkbox" name="rank" id="rank3" value="3" /><span class="fa fa-star"></span></label>
-            <label><input type="checkbox" name="rank" id="rank4" value="4" /><span class="fa fa-star"></span></label>
-            <label><input type="checkbox" name="rank" id="rank5" value="5" /><span class="fa fa-star"></span></label>
-          </span>
-          <span class="check-group check-group-rounded">
-            <label title="withSubtitles"><input type="checkbox" id="withSubtitles" /><span class="fa fa-file-text"></span></label>
-          </span>
-          <span class="check-group check-group-rounded">
-            <label title="withFavorite"><input type="checkbox" id="withFavorite" /><span class="fa fa-heart"></span></label>
-            <label title="withNoFavorite"><input type="checkbox" id="withNoFavorite" /><span class="fa fa-heart-o"></span></label>
-          </span>
-          <label class="small" id="searchResultDisplay"></label>
-          <select id="sort">
-            <option value="STUDIO">Studio</option>
-            <option value="OPUS">Opus</option>
-            <option value="TITLE">Title</option>
-            <option value="ACTRESS">Actress</option>
-            <option value="RELEASE" selected>Release</option>
-            <option value="PLAY">Play</option>
-            <option value="RANK">Rank</option>
-            <option value="LASTACCESS">LastAccess</option>
-            <option value="LASTMODIFIED">LastModified</option>
-            <option value="SCORE">Score</option>
-            <option value="LENGTH">Length</option>
-          </select>
+      <div class="header">
+        <div>
+          <a href="/dist/index.html">Flayground</a>
+          <span id="user">kamoru</span>
         </div>
-        <div class="rounded" id="detailSearch">
-          <input type="text" id="studioInput" list="studio-opt" placeholder="Studio" />
-          <datalist id="studio-opt"></datalist>
-          <input type="text" id="opusInput" list="opus-opt" placeholder="Opus" />
-          <datalist id="opus-opt"></datalist>
-          <input type="text" id="titleInput" list="title-opt" placeholder="Title" />
-          <datalist id="title-opt"></datalist>
-          <input type="text" id="actressInput" list="actress-opt" placeholder="Actress" />
-          <datalist id="actress-opt"></datalist>
-          <input type="text" id="releaseInput" list="release-opt" placeholder="Release" />
-          <datalist id="release-opt"></datalist>
-        </div>
-      </nav>
-
-      <div id="flayCover">
-        <div class="cover page-target rounded"></div>
       </div>
-
-      <div id="flayInfo">
-        <div class="json-frame page-target rounded">
-          <div class="json-expander">
-            <i class="plus fa fa-plus-square"></i>
-            <i class="minus fa fa-minus-square"></i>
+      <div class="logo">
+        <div>
+          <img src="/dist/img/svg/flayground.svg" />
+        </div>
+      </div>
+      <div class="search">
+        <div>
+          <div>
+            <span>
+              <svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"></path>
+              </svg>
+            </span>
+            <input type="search" />
           </div>
-          <pre class="json"></pre>
+        </div>
+      </div>
+      <div class="result">
+        <div>
+          <div></div>
+        </div>
+      </div>
+      <div class="tail">
+        <div>
+          <span>jk.kamoru</span>
+          <span>v6.9.7.4</span>
         </div>
       </div>
     </main>
-
-    <aside class="progress bg-black w-100 fixed-bottom" id="paginationProgress" style="height: 1px; z-index: 99">
-      <div class="progress-bar bg-danger" style="width: 0%"></div>
-    </aside>
-
-    <div id="indexHistoryContainer" class="text-secondary"></div>
-
     <footer></footer>
   </body>
 </html>

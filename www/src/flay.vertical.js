@@ -28,6 +28,7 @@ let actressList = [];
 /** Map<Name, Actress> */
 let mapNameActress = new Map();
 let tagList = [];
+let tagMap = new Map();
 
 let currentFlay = null;
 let currentIndex = -1;
@@ -695,6 +696,18 @@ function loadData() {
     $('.tag-list > label:not(.label-add-tag)').remove();
     $('.tag-list').prepend(tagList.sort((t1, t2) => t1.name.localeCompare(t2.name)).map((tag) => createTag(tag)));
 
+    tagList.forEach((tag) => {
+      const descArray = tag.description?.split(',').map((desc) => {
+        if (desc.trim() !== '') {
+          return desc.trim();
+        }
+        return;
+      });
+      const tagHints = [tag.name, ...descArray];
+      console.log('tagHints', tagHints);
+      tagMap.set(tag.id, tagHints);
+    });
+
     // initialize Actress
     mapNameActress = actressList.reduce((map, actress) => {
       map.set(actress.name, actress);
@@ -897,7 +910,8 @@ function collectList() {
       case 'T':
         return compareTo(flay1.title, flay2.title);
       case 'A': {
-        const aVal = compareTo(flay1.actressList, flay2.actressList);
+        let aVal = compareTo(flay1.actressList, flay2.actressList);
+        aVal = aVal === 0 ? compareTo(flay1.release, flay2.release) : aVal;
         return aVal === 0 ? compareTo(flay1.opus, flay2.opus) : aVal;
       }
       case 'R': {
@@ -1215,6 +1229,19 @@ function showVideo(args) {
   currentFlay.video.tags.forEach((tag) => {
     $("input[data-tag-id='" + tag.id + "']", '#videoTags').prop('checked', true);
   });
+  // tag cadidates
+  $('#videoTags input').removeClass('tag-candidate');
+  tagMap.forEach((value, key) => {
+    for (const hint of value) {
+      if (currentFlay.title.includes(hint)) {
+        if (!$('[data-tag-id="' + key + '"]').is(':checked')) {
+          $('[data-tag-id="' + key + '"]').addClass('tag-candidate');
+        }
+        break;
+      }
+    }
+  });
+
   // files
   $('#file-wrapper > div > div:not(.file-wrapper-rename)').empty();
   currentFlay.files.cover.forEach((file) => {

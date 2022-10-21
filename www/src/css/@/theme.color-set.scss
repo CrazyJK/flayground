@@ -36,6 +36,7 @@
   --color-border-modal: rgba(0, 0, 0, 0.5);
 
   --color-input-checked: orange;
+  --color-input-checked-border: rgb(255 165 0 / 50%);
 }
 
 [data-theme='light'] {
@@ -76,6 +77,7 @@
   --color-border-modal: #dee2e6;
 
   --color-input-checked: orange;
+  --color-input-checked-border: rgb(255 165 0 / 50%);
 }
 
 /* bootstrap direct override */

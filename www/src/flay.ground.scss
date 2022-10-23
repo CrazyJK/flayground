@@ -1,114 +1,110 @@
-$logoHeight: 12rem;
-
 main {
-  display: flex;
-  flex-direction: column;
-  height: 100vh;
-
   font-family: 'Ink Free';
-  font-size: 2rem;
-  mask-image: url(./img/pattern/pattern-static.png);
-  -webkit-mask-image: url(./img/pattern/pattern-static.png);
-  // text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
+  // mask-image: url(./img/pattern/pattern-static.png);
+  // -webkit-mask-image: url(./img/pattern/pattern-static.png);
 
-  & > div {
-    flex-shrink: 0;
-    & > div {
-      padding: 0.5rem 2rem;
+  &.exists {
+    .logo {
+      height: 8rem;
+      img {
+        height: 8rem;
+        background-size: 4rem;
+      }
     }
   }
 
-  .header {
-    height: 60px;
-  }
   .logo {
-    min-height: #{$logoHeight};
-    max-height: 250px;
-    height: calc(100% - 560px);
-  }
-  .search {
-    max-height: 160px;
-  }
-  .result {
-    flex-grow: 1;
-  }
-}
-
-.header {
-  & > div {
     display: flex;
-    justify-content: space-between;
-  }
-}
-
-.logo {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  & > div {
-    max-height: #{$logoHeight};
-    position: relative;
-    height: 100%;
-    margin-top: auto;
-
+    justify-content: center;
+    align-items: flex-end;
+    height: 36rem;
+    transition: height 0.4s;
     img {
-      height: #{$logoHeight};
-      max-width: 100%;
+      background: url(./img/svg/flayground1.svg) no-repeat bottom right / 8rem;
+      height: 16rem;
+      aspect-ratio: 150 / 40;
     }
   }
-}
 
-.search {
-  & > div {
-    margin: 0 auto;
-    width: auto;
-    max-width: 584px;
+  .search {
+    position: sticky;
+    top: 0;
     & > div {
-      width: auto;
-      height: 44px;
-      border-radius: 24px;
-      border: 1px solid #5f6368;
+      background-color: var(--color-bg);
       display: flex;
+      align-items: baseline;
+      border: 1px solid #5f6368;
+      border-radius: 24px;
+      font-size: 2em;
+      margin: 0 auto;
+      max-width: 36rem;
+      height: 44px;
+      width: auto;
+      transition: 0.6s;
+      &:focus-within {
+        box-shadow: 0.25rem 0.5rem 1rem 0.5rem var(--color-box-shadow);
+      }
       span {
-        margin: 10px 0 0 14px;
-        height: 20px;
-        line-height: 20px;
-        width: 20px;
-        color: #9aa0a6;
-        fill: currentColor;
+        flex: 1 1 auto;
+        &.search-magnify {
+          margin: 10px 0 0 14px;
+          height: 20px;
+          line-height: 20px;
+          width: 20px;
+          color: #9aa0a6;
+          fill: currentColor;
+        }
+        &.search-result {
+          padding-right: 1rem;
+          white-space: nowrap;
+          font-size: 0.75em;
+        }
       }
       input {
-        width: 100%;
+        background-color: transparent;
+        border: 0;
+        color: var(--color-text);
+        padding: 0 0.25rem 0 0.5rem;
         height: 100%;
-        padding: 0 1rem 0 0.5rem;
+        width: 100%;
+        &:focus-visible {
+          outline: none;
+        }
       }
     }
   }
-}
 
-.result {
-  background: url(./img/svg/flayground1.svg) no-repeat top center / contain;
-  & > div {
-    & > div {
-      margin: 1rem;
+  .result {
+    font-family: D2Coding;
+    margin-top: 1rem;
+    .flay {
+      width: 100%;
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 0.5rem;
+      > img {
+        width: 160px;
+      }
+      > div {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+        & > label {
+          font-size: 1.25em;
+        }
+        & > div {
+          display: flex;
+          gap: 1rem;
+        }
+      }
+      label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .keyword {
+        color: orange;
+      }
     }
-  }
-}
-
-.tail {
-  & > div {
-    display: flex;
-    justify-content: flex-end;
-    gap: 1rem;
-    font-size: 0.75em;
-  }
-}
-
-input {
-  background-color: transparent;
-  border: 0;
-  color: var(--color-text);
-  &:focus-visible {
-    outline: none;
   }
 }

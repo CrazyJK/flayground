@@ -2,18 +2,18 @@
  * Flay Search
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
 import './components/FlayMenu';
 import './css/common.scss';
 import './flay.search.scss';
+import './lib/crazy.jquery';
 
-import { Search, Security, View } from './lib/flay.utils.js';
+import { birthRegExp, bodyRegExp, File, LocalStorageItem } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
-import { birthRegExp, bodyRegExp, LocalStorageItem, File } from './lib/crazy.common.js';
-import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
+import { Search, Security, View } from './lib/flay.utils.js';
+import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, RANK, STUDIO } from './lib/flay.view.card.js';
 
 function baseSearch() {
   $('#query, #opus').on('keyup', function (e) {
@@ -147,6 +147,7 @@ function findMode() {
     if (rowOpus !== '') {
       searchSource(rowOpus);
       Search.arzon(rowOpus);
+      $('#lastSearchOpus').val(rowOpus).trigger('change');
     }
     if (rowTitle !== '') {
       // Search.translateByGoogle(rowTitle);
@@ -304,6 +305,26 @@ T163 / B92(Hカップ) / W62 / H89`,
       $('#newActressDebut').val(actress.debut);
     });
   }
+
+  fetch('/stylish/nextjav_tor.html')
+    .then((response) => response.text())
+    .then((text) => {
+      $('#btnCopyStyle').data('text', text.substring(0, text.indexOf('<script>')));
+      $('#btnCopyScript').data('text', text.substring(text.indexOf('<script>')));
+      $('#findMode pre').text(text);
+    });
+
+  $('#btnCopyStyle, #btnCopyScript').on('click', (e) => {
+    const text = $(e.target).closest('button').data('text');
+    window.navigator.clipboard.writeText(text);
+  });
+
+  $('#lastSearchOpus')
+    .on('change', (e) => {
+      LocalStorageItem.set('flay.search.lastSearchOpus', e.target.value);
+      console.log('lastSearchOpus', e.target.value);
+    })
+    .val(LocalStorageItem.get('flay.search.lastSearchOpus', ''));
 }
 
 function candidateMode() {

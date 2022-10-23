@@ -300,7 +300,7 @@ main#wrap_body {
           label.check span {
             background-color: var(--color-bg-check-tag);
           }
-          .tag-candidate ~ span {
+          .tag-candidate:not(:checked) ~ span {
             border-color: var(--color-input-checked-border);
           }
         }

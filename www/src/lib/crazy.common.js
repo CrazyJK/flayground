@@ -487,6 +487,9 @@ export class StringUtils {
   static isBlank(string) {
     return string === null || string === '' || string.trim() === '';
   }
+  static trim(string) {
+    return this.isBlank(string) ? '' : string.trim();
+  }
 }
 
 export class DateUtils {

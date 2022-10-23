@@ -704,9 +704,9 @@ function loadData() {
         return;
       });
       const tagHints = [tag.name, ...descArray];
-      console.log('tagHints', tagHints);
       tagMap.set(tag.id, tagHints);
     });
+    console.log('tagMap', tagMap);
 
     // initialize Actress
     mapNameActress = actressList.reduce((map, actress) => {

@@ -33,13 +33,20 @@ $(document).on('scroll', function () {
   }
 });
 
-document.querySelector('#query').addEventListener('change', (e) => {
+$('#query').on('keyup', (e) => {
+  if (e.key !== 'Enter') {
+    return;
+  }
   keyword = StringUtils.trim(e.target.value);
   if (keyword.length > 1) {
     Rest.Archive.page(0, pageSize, keyword, displayResult);
   } else if (keyword.length === 0) {
     displayResult({ content: [], number: 0, totalElements: 0, empty: true });
   }
+});
+$('.search-magnify').on('click', (e) => {
+  keyword = 'RANDOM';
+  Rest.Archive.page(0, pageSize, keyword, displayResult);
 });
 
 $resultContainer

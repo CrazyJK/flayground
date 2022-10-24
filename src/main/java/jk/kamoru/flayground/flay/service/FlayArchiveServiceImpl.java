@@ -1,9 +1,11 @@
 package jk.kamoru.flayground.flay.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
+import org.apache.commons.lang3.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -36,15 +38,19 @@ public class FlayArchiveServiceImpl implements FlayArchiveService {
 
   @Override
   public Page<Flay> page(Pageable pageable, String keyword) {
-    List<Flay> foundList = Stream.concat(instanceFlaySource.list().stream(), archiveFlaySource.list().stream())
-        .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), keyword))
-        .sorted(releaseReversedComparator)
-        .toList();
-
+    List<Flay> foundList = new ArrayList<>();
+    if ("RANDOM".equals(keyword)) {
+      List<Flay> list = Stream.concat(instanceFlaySource.list().stream(), archiveFlaySource.list().stream()).toList();
+      foundList.add(list.get(RandomUtils.nextInt(0, list.size())));
+    } else {
+      foundList = Stream.concat(instanceFlaySource.list().stream(), archiveFlaySource.list().stream())
+          .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), keyword))
+          .sorted(releaseReversedComparator)
+          .toList();
+    }
     final long skip = pageable.getPageNumber() * pageable.getPageSize();
     final long limit = pageable.getPageSize();
-
-    log.info("[page] total found: {}, skip: {}, limit {}", foundList.size(), skip, limit);
+    log.debug("[page] total found: {}, skip: {}, limit {}", foundList.size(), skip, limit);
 
     return new PageImpl<>(foundList.stream().skip(skip).limit(limit).toList(), pageable, foundList.size());
   }

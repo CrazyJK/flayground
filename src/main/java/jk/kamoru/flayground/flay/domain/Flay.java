@@ -94,7 +94,7 @@ public class Flay {
 
   @JsonIgnore
   public String toQueryString() {
-    return String.format("%s[%s][%s]%s", getFullname(), video.getTitle(), video.getDesc(), String.join(",", video.getTags().stream().map(Tag::getName).toList()));
+    return String.format("%s[%s][%s]%s[rank%s]", getFullname(), video.getTitle(), video.getDesc(), String.join(",", video.getTags().stream().map(Tag::getName).toList()), archive ? "-1" : video.getRank());
   }
 
 }

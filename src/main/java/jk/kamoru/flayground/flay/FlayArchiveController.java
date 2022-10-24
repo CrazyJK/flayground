@@ -51,4 +51,9 @@ public class FlayArchiveController {
     return flayArchiveService.find(key, value);
   }
 
+  @GetMapping("/find/{query}")
+  public Collection<Flay> findList(@PathVariable String query) {
+    return flayArchiveService.find(query);
+  }
+
 }

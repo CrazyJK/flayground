@@ -1,13 +1,13 @@
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
 import './css/common.scss';
+import './lib/crazy.jquery';
 import './lib/flay.websocket.js';
 
-import { reqParam } from './lib/crazy.common.js';
+import { reqParam, ThreadUtils } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
-import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
+import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, RANK, STUDIO } from './lib/flay.view.card.js';
 
 const studioName = reqParam.s;
 const $flayList = $('.flay-list');
@@ -50,12 +50,8 @@ async function displayFlayList(flayList) {
     });
     $('.video-count').html(++count);
 
-    await sleep(100);
+    await ThreadUtils.sleep(500);
   }
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 $('#save').on('click', () => {

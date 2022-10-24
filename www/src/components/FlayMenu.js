@@ -45,7 +45,7 @@ class FlayMenu extends HTMLElement {
     .nav-wrap {
       background-color: #151515;
       color: #607d8b;
-      position: absolute;
+      position: fixed;
       top: 0;
       ${alignLeft ? 'left' : 'right'}: -200px;
       bottom: 0;

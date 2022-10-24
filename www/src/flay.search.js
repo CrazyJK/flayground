@@ -147,7 +147,6 @@ function findMode() {
     if (rowOpus !== '') {
       searchSource(rowOpus);
       Search.arzon(rowOpus);
-      $('#lastSearchOpus').val(rowOpus).trigger('change');
     }
     if (rowTitle !== '') {
       // Search.translateByGoogle(rowTitle);

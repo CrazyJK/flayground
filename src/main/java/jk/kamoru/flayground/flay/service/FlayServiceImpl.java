@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,7 +66,7 @@ public class FlayServiceImpl implements FlayService {
   public Collection<Flay> find(String query) {
     return instanceFlaySource.list()
         .stream()
-        .filter(f -> StringUtils.containsIgnoreCase(f.getFullname(), query))
+        .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), query))
         .sorted((f1, f2) -> StringUtils.compare(f2.getRelease(), f1.getRelease()))
         .collect(Collectors.toList());
   }
@@ -222,6 +223,14 @@ public class FlayServiceImpl implements FlayService {
       }
     }
     return lowScoreList;
+  }
+
+  @Override
+  public Collection<Flay> findAll(String query) {
+    return Stream.concat(instanceFlaySource.list().stream(), archiveFlaySource.list().stream())
+        .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), query))
+        .sorted((f1, f2) -> StringUtils.compare(f2.getRelease(), f1.getRelease()))
+        .toList();
   }
 
 }

@@ -73,4 +73,13 @@ public class FlayArchiveServiceImpl implements FlayArchiveService {
     }
   }
 
+  @Override
+  public Collection<Flay> find(String query) {
+    return archiveFlaySource.list()
+        .stream()
+        .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), query))
+        .sorted((f1, f2) -> StringUtils.compare(f2.getRelease(), f1.getRelease()))
+        .collect(Collectors.toList());
+  }
+
 }

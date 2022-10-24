@@ -1,22 +1,22 @@
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
 import './components/RankSelect';
 import './css/common.scss';
 import './info.actress.scss';
+import './lib/crazy.jquery';
 import './lib/flay.websocket.js';
 
-import { reqParam, birthRegExp, bodyRegExp, heightRegExp, debutRegExp, Random, NumberUtils } from './lib/crazy.common.js';
-import { Rest } from './lib/flay.rest.service.js';
-import { Util, Search } from './lib/flay.utils.js';
+import { birthRegExp, bodyRegExp, debutRegExp, heightRegExp, NumberUtils, Random, reqParam, ThreadUtils } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
-import { ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
+import { Rest } from './lib/flay.rest.service.js';
+import { Search, Util } from './lib/flay.utils.js';
+import { ACTRESS, COMMENT, FILEINFO, MODIFIED, RANK } from './lib/flay.view.card.js';
 
 import * as am5 from '@amcharts/amcharts5';
-import * as am5xy from '@amcharts/amcharts5/xy';
 import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import * as am5xy from '@amcharts/amcharts5/xy';
 
 const name = reqParam.name;
 let actress;
@@ -191,12 +191,8 @@ async function displayFlayList(flayList) {
       class: flay.archive ? 'archive' : 'instance ' + (flay.video.rank === 0 ? 'unrank' : 'r' + flay.video.rank),
     });
 
-    await sleep(100);
+    await ThreadUtils.sleep(500);
   }
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 function renderChart(flayList) {

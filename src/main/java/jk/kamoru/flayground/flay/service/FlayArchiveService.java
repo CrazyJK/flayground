@@ -18,4 +18,6 @@ public interface FlayArchiveService {
 
   List<Flay> find(String key, String value);
 
+  Collection<Flay> find(String query);
+
 }

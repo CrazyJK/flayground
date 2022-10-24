@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import org.apache.commons.lang3.math.NumberUtils;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
 import lombok.Data;
 
@@ -89,6 +90,11 @@ public class Flay {
   @JsonIgnore
   public String getActressName() {
     return String.join(", ", actressList);
+  }
+
+  @JsonIgnore
+  public String toQueryString() {
+    return String.format("%s[%s][%s]%s", getFullname(), video.getTitle(), video.getDesc(), String.join(",", video.getTags().stream().map(Tag::getName).toList()));
   }
 
 }

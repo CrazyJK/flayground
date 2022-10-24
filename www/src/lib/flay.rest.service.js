@@ -3,8 +3,8 @@
  */
 
 import $ from 'jquery';
-import { loading } from './flay.loading.js';
 import { PATH } from './crazy.common.js';
+import { loading } from './flay.loading.js';
 
 export const restCall = function (url, args, callback, failCallback, callbackData) {
   let isCompleted = false;
@@ -154,6 +154,9 @@ export const Rest = {
     },
     find: function (query, callback) {
       restCall('/flay/find/' + query, {}, callback);
+    },
+    findAll: function (query, callback) {
+      restCall('/flay/find/all/' + query, {}, callback);
     },
     findSync: function (query, callback) {
       restCall('/flay/find/' + query, { async: false }, callback);

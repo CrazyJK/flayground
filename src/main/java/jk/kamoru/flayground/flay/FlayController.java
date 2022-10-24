@@ -114,6 +114,11 @@ public class FlayController {
     return flayService.find(query);
   }
 
+  @GetMapping("/find/all/{query}")
+  public Collection<Flay> findAll(@PathVariable String query) {
+    return flayService.findAll(query);
+  }
+
   @GetMapping("/find/{field}/{value}")
   public Collection<Flay> findByFieldValue(@PathVariable String field, @PathVariable String value) {
     return flayService.findByKeyValue(field, value);

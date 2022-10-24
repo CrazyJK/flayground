@@ -38,6 +38,4 @@ public interface FlayService {
 
   Collection<Flay> getListOfLowScore();
 
-  Collection<Flay> findAll(String query);
-
 }

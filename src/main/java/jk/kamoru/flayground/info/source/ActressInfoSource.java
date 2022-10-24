@@ -3,7 +3,6 @@ package jk.kamoru.flayground.info.source;
 import java.io.File;
 import java.util.List;
 import java.util.function.Supplier;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -51,7 +50,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
     if (count == 0) {
       return null;
     } else {
-      return supplier.get().map(Image::getFile).collect(Collectors.toList());
+      return supplier.get().map(Image::getFile).toList();
     }
   }
 

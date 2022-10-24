@@ -3,7 +3,6 @@ package jk.kamoru.flayground.info.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +51,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
   }
 
   public Collection<Actress> findByLocalname(String localname) {
-    return super.infoSource.list().stream().filter(a -> StringUtils.equals(a.getLocalName(), localname)).collect(Collectors.toList());
+    return super.infoSource.list().stream().filter(a -> StringUtils.equals(a.getLocalName(), localname)).toList();
   }
 
   public List<CheckResult> funcNameCheck(double limit) {
@@ -61,7 +60,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
     for (Flay flay : flayService.list()) {
       actressList.addAll(flay.getActressList());
     }
-    List<Actress> distinctCollectedActressList = actressList.stream().distinct().map(a -> super.get(a)).collect(Collectors.toList());
+    List<Actress> distinctCollectedActressList = actressList.stream().distinct().map(a -> super.get(a)).toList();
 
     return NameDistanceChecker.check(distinctCollectedActressList, limit);
   }

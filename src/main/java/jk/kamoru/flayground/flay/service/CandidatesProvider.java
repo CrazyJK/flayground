@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -37,7 +36,7 @@ public class CandidatesProvider {
 
   public Collection<Flay> collect(Collection<Flay> flayList) {
     Collection<File> foundCandidates = find();
-    return flayList.stream().filter(flay -> matchAndFill(foundCandidates, flay)).collect(Collectors.toList());
+    return flayList.stream().filter(flay -> matchAndFill(foundCandidates, flay)).toList();
   }
 
   /**

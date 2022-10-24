@@ -3,7 +3,6 @@ package jk.kamoru.flayground.image;
 import java.io.File;
 import java.text.NumberFormat;
 import java.util.Collection;
-import java.util.stream.Collectors;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.filefilter.FalseFileFilter;
@@ -52,7 +51,7 @@ public class FileNameReplacer {
         continue;
       System.out.format("%-60s / %s%n", dir, dirName);
 
-      Collection<File> listFiles = FileUtils.listFiles(dir, null, false).stream().sorted((f1, f2) -> StringUtils.compare(f1.getName(), f2.getName())).collect(Collectors.toList());
+      Collection<File> listFiles = FileUtils.listFiles(dir, null, false).stream().sorted((f1, f2) -> StringUtils.compare(f1.getName(), f2.getName())).toList();
 
       int count = 0;
       for (File file : listFiles) {

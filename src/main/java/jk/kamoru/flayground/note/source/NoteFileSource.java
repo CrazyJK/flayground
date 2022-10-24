@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -71,7 +70,7 @@ public class NoteFileSource implements NoteSource {
 
   @Override
   public List<Note> list() {
-    return list.stream().sorted(Comparator.comparing(Note::getId).reversed()).collect(Collectors.toList());
+    return list.stream().sorted(Comparator.comparing(Note::getId).reversed()).toList();
   }
 
   @Override

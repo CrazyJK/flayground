@@ -2,7 +2,6 @@ package jk.kamoru.flayground.note.service;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
@@ -49,7 +48,7 @@ public class NoteServiceImpl implements NoteService {
         result = result & n.getStatus() == note.getStatus();
 
       return result;
-    }).collect(Collectors.toList());
+    }).toList();
   }
 
   @Override

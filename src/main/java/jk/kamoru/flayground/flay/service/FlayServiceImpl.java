@@ -3,11 +3,10 @@ package jk.kamoru.flayground.flay.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +44,8 @@ public class FlayServiceImpl implements FlayService {
   @Autowired AnnounceService notificationService;
   @Autowired ScoreCalculator scoreCalculator;
 
+  Comparator<Flay> releaseReversedComparator = Comparator.comparing(Flay::getRelease).reversed();
+
   @Override
   public Flay get(String key) {
     return instanceFlaySource.get(key);
@@ -57,42 +58,42 @@ public class FlayServiceImpl implements FlayService {
 
   @Override
   public Collection<Flay> find(Search search) {
-    return instanceFlaySource.list().stream().filter(f -> {
-      return search.contains(f);
-    }).collect(Collectors.toList());
+    return instanceFlaySource.list().stream()
+        .filter(f -> search.contains(f))
+        .sorted(releaseReversedComparator)
+        .toList();
   }
 
   @Override
   public Collection<Flay> find(String query) {
-    return instanceFlaySource.list()
-        .stream()
+    return instanceFlaySource.list().stream()
         .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), query))
-        .sorted((f1, f2) -> StringUtils.compare(f2.getRelease(), f1.getRelease()))
-        .collect(Collectors.toList());
+        .sorted(releaseReversedComparator)
+        .toList();
   }
 
   @TrackExecutionTime(level = TrackExecutionTime.LEVEL.DEBUG)
   @Override
   public Collection<Flay> findByKeyValue(String field, String value) {
     if ("studio".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getStudio().equals(value)).collect(Collectors.toList());
+      return instanceFlaySource.list().stream().filter(f -> f.getStudio().equals(value)).sorted(releaseReversedComparator).toList();
     } else if ("title".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getTitle().contains(value)).collect(Collectors.toList());
+      return instanceFlaySource.list().stream().filter(f -> f.getTitle().contains(value)).sorted(releaseReversedComparator).toList();
     } else if ("actress".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getActressList().stream().anyMatch(a -> a.equals(value))).collect(Collectors.toList());
+      return instanceFlaySource.list().stream().filter(f -> f.getActressList().stream().anyMatch(a -> a.equals(value))).sorted(releaseReversedComparator).toList();
     } else if ("release".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getRelease().startsWith(value)).collect(Collectors.toList());
+      return instanceFlaySource.list().stream().filter(f -> f.getRelease().startsWith(value)).sorted(releaseReversedComparator).toList();
     } else if ("rank".equalsIgnoreCase(field)) {
       int rank = Integer.parseInt(value);
-      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getRank() == rank).collect(Collectors.toList());
+      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getRank() == rank).sorted(releaseReversedComparator).toList();
     } else if ("play".equalsIgnoreCase(field)) {
       int play = Integer.parseInt(value);
-      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getPlay() == play).collect(Collectors.toList());
+      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getPlay() == play).sorted(releaseReversedComparator).toList();
     } else if ("comment".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getComment().contains(value)).collect(Collectors.toList());
+      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getComment().contains(value)).sorted(releaseReversedComparator).toList();
     } else if ("tag".equalsIgnoreCase(field)) {
       int id = Integer.parseInt(value);
-      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getTags().stream().anyMatch(t -> t.getId().intValue() == id)).collect(Collectors.toList());
+      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getTags().stream().anyMatch(t -> t.getId().intValue() == id)).sorted(releaseReversedComparator).toList();
     } else {
       throw new IllegalStateException("unknown field");
     }
@@ -142,7 +143,7 @@ public class FlayServiceImpl implements FlayService {
     return instanceFlaySource.list().stream().filter(f -> {
       String full = tag.getName() + "," + tag.getDescription();
       return f.getVideo().getTags().stream().map(Tag::getId).toList().contains(id) || StringUtils.containsAny(f.getFullname(), full.split(","));
-    }).collect(Collectors.toList());
+    }).toList();
   }
 
   @Override
@@ -223,14 +224,6 @@ public class FlayServiceImpl implements FlayService {
       }
     }
     return lowScoreList;
-  }
-
-  @Override
-  public Collection<Flay> findAll(String query) {
-    return Stream.concat(instanceFlaySource.list().stream(), archiveFlaySource.list().stream())
-        .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), query))
-        .sorted((f1, f2) -> StringUtils.compare(f2.getRelease(), f1.getRelease()))
-        .toList();
   }
 
 }

@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.time.StopWatch;
 import org.junit.jupiter.api.Test;
 
@@ -18,7 +17,7 @@ public class ListDirectory {
     StopWatch sw = new StopWatch();
 
     sw.start();
-    List<Path> collect = Files.list(dir).filter(Files::isDirectory).collect(Collectors.toList());
+    List<Path> collect = Files.list(dir).filter(Files::isDirectory).toList();
     for (Path p : collect) {
       System.out.println(p);
     }
@@ -30,7 +29,7 @@ public class ListDirectory {
 
     sw.reset();
     sw.start();
-    List<File> collect2 = Files.walk(dir).filter(Files::isDirectory).map(Path::toFile).collect(Collectors.toList());
+    List<File> collect2 = Files.walk(dir).filter(Files::isDirectory).map(Path::toFile).toList();
     for (File p : collect2) {
       System.out.println(p);
     }

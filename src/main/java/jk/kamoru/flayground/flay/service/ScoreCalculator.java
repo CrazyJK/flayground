@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -59,7 +58,7 @@ public class ScoreCalculator {
                     actressPointComparator.reversed().thenComparing(
                         modifiedComparator.reversed().thenComparing(
                             releaseComparator.reversed())))))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   public void calcScore(Flay flay) {

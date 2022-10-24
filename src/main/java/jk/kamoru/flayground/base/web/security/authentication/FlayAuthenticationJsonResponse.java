@@ -2,7 +2,6 @@ package jk.kamoru.flayground.base.web.security.authentication;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletResponse;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotWritableException;
@@ -36,7 +35,7 @@ public class FlayAuthenticationJsonResponse {
 
   public List<String> getAuthorities() {
     if (authentication != null)
-      return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList());
+      return authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority).toList();
     return null;
   }
 

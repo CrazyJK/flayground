@@ -2,7 +2,6 @@ package jk.kamoru.flayground.flay;
 
 import java.io.File;
 import java.util.Collection;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +23,7 @@ public class CandidatesController {
   public Collection<File> find(@PathVariable String keyword) {
     return candidatesProvider.find().stream()
         .filter(f -> StringUtils.containsIgnoreCase(f.getName(), keyword))
-        .collect(Collectors.toList());
+        .toList();
   }
 
 }

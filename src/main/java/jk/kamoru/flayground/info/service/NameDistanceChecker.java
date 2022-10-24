@@ -3,7 +3,6 @@ package jk.kamoru.flayground.info.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.springframework.util.StopWatch;
@@ -66,7 +65,7 @@ public class NameDistanceChecker {
     log.info("names {}. limit {}. checking {} times. {} result. Elapsed {} ms", actressList.size(), limit, count, result.size(), stopWatch.getTotalTimeMillis());
     return result.stream()
         .sorted((r1, r2) -> Double.compare(r2.getScore(), r1.getScore()))
-        .collect(Collectors.toList());
+        .toList();
   }
 
   private static boolean equalsBySort(String name1, String name2) {

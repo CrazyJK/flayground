@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import org.apache.commons.io.FileExistsException;
 import org.apache.commons.io.FileUtils;
@@ -243,7 +242,7 @@ public class FlayFileHandler {
    */
   public Collection<Path> listDirectory(Path path) {
     try {
-      return Files.list(path).filter(Files::isDirectory).collect(Collectors.toList());
+      return Files.list(path).filter(Files::isDirectory).toList();
     } catch (IOException e) {
       log.error("fail to Files.walk " + path, e);
       return null;

@@ -1,7 +1,6 @@
 package jk.kamoru.flayground.info.service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +24,7 @@ public class StudioInfoService extends InfoServiceAdapter<Studio, String> {
         .stream()
         .filter(f -> f.getOpus().contains(query))
         .sorted((f1, f2) -> NumberUtils.compare(f2.getLastModified(), f1.getLastModified()))
-        .collect(Collectors.toList());
+        .toList();
     if (list.size() > 0) {
       return super.getOrNew(list.get(0).getStudio());
     } else {

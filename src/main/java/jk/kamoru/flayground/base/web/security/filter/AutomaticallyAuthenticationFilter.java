@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,7 +22,7 @@ public class AutomaticallyAuthenticationFilter extends OncePerRequestFilter {
 
   private final static String LOCAL_NAME = "local";
   private final static String LOCAL_PASS = "local";
-  private final static Collection<? extends GrantedAuthority> LOCAL_AUTHORITIES = Arrays.stream(new String[] {"ROLE_ADMIN", "ROLE_USER"}).map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+  private final static Collection<? extends GrantedAuthority> LOCAL_AUTHORITIES = Arrays.stream(new String[] {"ROLE_ADMIN", "ROLE_USER"}).map(SimpleGrantedAuthority::new).toList();
   private final static List<String> REQUIRES_AUTHENTION_SUFFIX = Arrays.asList("html");
 
   private List<String> automaticallyCertificatedIp;

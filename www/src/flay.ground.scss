@@ -1,8 +1,8 @@
-main {
-  font-family: 'Ink Free';
-  // mask-image: url(./img/pattern/pattern-static.png);
-  // -webkit-mask-image: url(./img/pattern/pattern-static.png);
+body {
+  overflow-x: hidden;
+}
 
+main {
   &.exists {
     .logo {
       height: 8rem;
@@ -29,16 +29,18 @@ main {
   .search {
     position: sticky;
     top: 0;
+    font-family: 'Ink Free';
+
     & > div {
       background-color: var(--color-bg);
       display: flex;
       align-items: baseline;
       border: 1px solid #5f6368;
-      border-radius: 24px;
+      border-radius: 1.5rem;
       font-size: 2em;
       margin: 0 auto;
       max-width: 36rem;
-      height: 44px;
+      height: 2.75rem;
       width: auto;
       transition: 0.6s;
       &:focus-within {
@@ -47,10 +49,10 @@ main {
       span {
         flex: 1 1 auto;
         &.search-magnify {
-          margin: 10px 0 0 14px;
-          height: 20px;
-          line-height: 20px;
-          width: 20px;
+          margin: 4px 0 0 8px;
+          height: 2rem;
+          line-height: 2rem;
+          width: 2rem;
           color: #9aa0a6;
           fill: currentColor;
         }
@@ -74,9 +76,21 @@ main {
     }
   }
 
+  .summary {
+    div {
+      padding: 0.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem 0.5rem;
+      span {
+        white-space: nowrap;
+      }
+    }
+  }
+
   .result {
-    font-family: D2Coding;
     margin-top: 1rem;
+    margin-bottom: 1rem;
     .flay {
       width: 100%;
       display: flex;
@@ -84,6 +98,7 @@ main {
       margin-bottom: 0.5rem;
       img.flay-cover {
         width: 160px;
+        aspect-ratio: var(--cover-aspect-ratio);
       }
       dl {
         display: flex;
@@ -114,6 +129,10 @@ main {
       .keyword {
         color: orange;
       }
+    }
+    .flay-next {
+      margin: 0;
+      padding: 0;
     }
   }
 }

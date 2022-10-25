@@ -46,7 +46,7 @@ $('#query').on('keyup', (e) => {
 });
 $('.search-magnify').on('click', (e) => {
   keyword = 'RANDOM';
-  Rest.Archive.page(0, pageSize, keyword, displayResult);
+  Rest.Flay.page(0, pageSize, keyword, displayResult);
 });
 
 $resultContainer

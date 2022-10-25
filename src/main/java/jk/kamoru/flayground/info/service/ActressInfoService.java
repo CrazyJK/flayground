@@ -35,7 +35,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
       }
 
       // 파일에서 이름을 변경하기
-      Collection<Flay> flayListByActress = flayService.findByKeyValue("actress", oldName);
+      Collection<Flay> flayListByActress = flayService.find("actress", oldName);
       log.info("{} found {}", oldName, flayListByActress.size());
 
       for (Flay flay : flayListByActress) {

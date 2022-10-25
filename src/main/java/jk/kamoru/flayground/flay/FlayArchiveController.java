@@ -1,7 +1,6 @@
 package jk.kamoru.flayground.flay;
 
 import java.util.Collection;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -47,12 +46,12 @@ public class FlayArchiveController {
   }
 
   @GetMapping("/find/{key}/{value}")
-  public List<Flay> findActress(@PathVariable String key, @PathVariable String value) {
+  public Collection<Flay> findByKeyVakye(@PathVariable String key, @PathVariable String value) {
     return flayArchiveService.find(key, value);
   }
 
   @GetMapping("/find/{query}")
-  public Collection<Flay> findList(@PathVariable String query) {
+  public Collection<Flay> findByQuery(@PathVariable String query) {
     return flayArchiveService.find(query);
   }
 

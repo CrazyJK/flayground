@@ -122,6 +122,9 @@ export const Rest = {
       });
       return score;
     },
+    page: function (page, size, keyword, callback) {
+      restCall('/flay/page', { data: { page: page, size: size, keyword: keyword } }, callback);
+    },
     list: function (callback, failCallback) {
       restCall('/flay/list', {}, callback, failCallback);
     },

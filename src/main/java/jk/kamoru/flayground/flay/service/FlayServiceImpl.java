@@ -3,13 +3,14 @@ package jk.kamoru.flayground.flay.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
@@ -28,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-public class FlayServiceImpl implements FlayService {
+public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
 
   @Autowired FlayProperties flayProperties;
 
@@ -44,11 +45,14 @@ public class FlayServiceImpl implements FlayService {
   @Autowired AnnounceService notificationService;
   @Autowired ScoreCalculator scoreCalculator;
 
-  Comparator<Flay> releaseReversedComparator = Comparator.comparing(Flay::getRelease).reversed();
-
   @Override
   public Flay get(String key) {
     return instanceFlaySource.get(key);
+  }
+
+  @Override
+  public Page<Flay> page(Pageable pageable, String keyword) {
+    return page(instanceFlaySource.list(), pageable, keyword);
   }
 
   @Override
@@ -57,46 +61,48 @@ public class FlayServiceImpl implements FlayService {
   }
 
   @Override
+  public Collection<Flay> listOrderbyScoreDesc() {
+    return scoreCalculator.listOrderByScoreDesc(instanceFlaySource.list());
+  }
+
+  @Override
+  public Collection<Flay> listOfLowScore() {
+    final long storageLimit = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
+    List<Flay> lowScoreList = new ArrayList<>();
+    long lengthSum = 0;
+    for (Flay flay : scoreCalculator.listOrderByScoreDesc(instanceFlaySource.list())) {
+      lengthSum += flay.getLength();
+      if (lengthSum > storageLimit) {
+        lowScoreList.add(flay);
+      }
+    }
+    return lowScoreList;
+  }
+
+  @Override
   public Collection<Flay> find(Search search) {
-    return instanceFlaySource.list().stream()
-        .filter(f -> search.contains(f))
-        .sorted(releaseReversedComparator)
-        .toList();
+    return findBySearch(instanceFlaySource.list(), search);
   }
 
   @Override
   public Collection<Flay> find(String query) {
-    return instanceFlaySource.list().stream()
-        .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), query))
-        .sorted(releaseReversedComparator)
-        .toList();
+    return findByQuery(instanceFlaySource.list(), query);
   }
 
   @TrackExecutionTime(level = TrackExecutionTime.LEVEL.DEBUG)
   @Override
-  public Collection<Flay> findByKeyValue(String field, String value) {
-    if ("studio".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getStudio().equals(value)).sorted(releaseReversedComparator).toList();
-    } else if ("title".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getTitle().contains(value)).sorted(releaseReversedComparator).toList();
-    } else if ("actress".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getActressList().stream().anyMatch(a -> a.equals(value))).sorted(releaseReversedComparator).toList();
-    } else if ("release".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getRelease().startsWith(value)).sorted(releaseReversedComparator).toList();
-    } else if ("rank".equalsIgnoreCase(field)) {
-      int rank = Integer.parseInt(value);
-      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getRank() == rank).sorted(releaseReversedComparator).toList();
-    } else if ("play".equalsIgnoreCase(field)) {
-      int play = Integer.parseInt(value);
-      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getPlay() == play).sorted(releaseReversedComparator).toList();
-    } else if ("comment".equalsIgnoreCase(field)) {
-      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getComment().contains(value)).sorted(releaseReversedComparator).toList();
-    } else if ("tag".equalsIgnoreCase(field)) {
-      int id = Integer.parseInt(value);
-      return instanceFlaySource.list().stream().filter(f -> f.getVideo().getTags().stream().anyMatch(t -> t.getId().intValue() == id)).sorted(releaseReversedComparator).toList();
-    } else {
-      throw new IllegalStateException("unknown field");
-    }
+  public Collection<Flay> find(String field, String value) {
+    return findByField(instanceFlaySource.list(), field, value);
+  }
+
+  @Override
+  public Collection<Flay> findByTagLike(Integer id) {
+    Tag tag = tagInfoSource.get(id);
+    return instanceFlaySource.list().stream().filter(f -> {
+      final String[] split = StringUtils.split(tag.getName() + "," + tag.getDescription(), ",");
+      final String[] searchChars = List.of(split).stream().map(s -> s.trim()).toArray(String[]::new);
+      return f.getVideo().getTags().stream().anyMatch(t -> t.getId().equals(id)) || StringUtils.containsAny(f.getFullname(), searchChars);
+    }).toList();
   }
 
   @Override
@@ -135,15 +141,6 @@ public class FlayServiceImpl implements FlayService {
     // 전체 파일명 조정
     flayFileHandler.rename(flay);
     notificationService.announceTo("Accept candidates", flay.getFullname());
-  }
-
-  @Override
-  public Collection<Flay> findByTagLike(Integer id) {
-    Tag tag = tagInfoSource.get(id);
-    return instanceFlaySource.list().stream().filter(f -> {
-      String full = tag.getName() + "," + tag.getDescription();
-      return f.getVideo().getTags().stream().map(Tag::getId).toList().contains(id) || StringUtils.containsAny(f.getFullname(), full.split(","));
-    }).toList();
   }
 
   @Override
@@ -190,11 +187,6 @@ public class FlayServiceImpl implements FlayService {
   }
 
   @Override
-  public Collection<Flay> getListOrderbyScoreDesc() {
-    return scoreCalculator.listOrderByScoreDesc(instanceFlaySource.list());
-  }
-
-  @Override
   public void deleteFileOnFlay(String opus, String file) {
     // remove in Flay
     File deletedFile = new File(file);
@@ -210,20 +202,6 @@ public class FlayServiceImpl implements FlayService {
     deleteFile(file);
     // rename for assemble
     flayFileHandler.rename(flay);
-  }
-
-  @Override
-  public Collection<Flay> getListOfLowScore() {
-    final long storageLimit = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
-    List<Flay> lowScoreList = new ArrayList<>();
-    long lengthSum = 0;
-    for (Flay flay : scoreCalculator.listOrderByScoreDesc(instanceFlaySource.list())) {
-      lengthSum += flay.getLength();
-      if (lengthSum > storageLimit) {
-        lowScoreList.add(flay);
-      }
-    }
-    return lowScoreList;
   }
 
 }

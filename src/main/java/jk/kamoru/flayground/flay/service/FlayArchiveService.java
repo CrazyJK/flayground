@@ -1,9 +1,9 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.util.Collection;
-import java.util.List;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 
 public interface FlayArchiveService {
@@ -14,10 +14,12 @@ public interface FlayArchiveService {
 
   Collection<Flay> list();
 
-  void toInstance(String opus);
-
-  List<Flay> find(String key, String value);
+  Collection<Flay> find(Search search);
 
   Collection<Flay> find(String query);
+
+  Collection<Flay> find(String field, String value);
+
+  void toInstance(String opus);
 
 }

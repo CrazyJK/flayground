@@ -1,6 +1,8 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.util.Collection;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 
@@ -8,17 +10,23 @@ public interface FlayService {
 
   Flay get(String opus);
 
+  Page<Flay> page(Pageable pageable, String keyword);
+
   Collection<Flay> list();
+
+  Collection<Flay> listOrderbyScoreDesc();
+
+  Collection<Flay> listOfLowScore();
 
   Collection<Flay> find(Search search);
 
   Collection<Flay> find(String query);
 
-  Collection<Flay> findByKeyValue(String field, String value);
-
-  Collection<Flay> findCandidates();
+  Collection<Flay> find(String field, String value);
 
   Collection<Flay> findByTagLike(Integer id);
+
+  Collection<Flay> findCandidates();
 
   void acceptCandidates(String opus);
 
@@ -32,10 +40,6 @@ public interface FlayService {
 
   void deleteFile(String file);
 
-  Collection<Flay> getListOrderbyScoreDesc();
-
   void deleteFileOnFlay(String opus, String file);
-
-  Collection<Flay> getListOfLowScore();
 
 }

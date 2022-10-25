@@ -5,6 +5,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -66,12 +70,12 @@ public class FlayController {
 
   @GetMapping("/list/lowScore")
   public Collection<Flay> getListOfLowScore() {
-    return flayService.getListOfLowScore();
+    return flayService.listOfLowScore();
   }
 
   @GetMapping("/list/orderbyScoreDesc")
   public Collection<Flay> getListOrderbyScoreDesc() {
-    return flayService.getListOrderbyScoreDesc();
+    return flayService.listOrderbyScoreDesc();
   }
 
   @PostMapping("/list/flay")
@@ -104,6 +108,13 @@ public class FlayController {
     return flayCollector.toReleaseList(flayService.list(), flayCondition);
   }
 
+  @GetMapping("/page")
+  public Page<Flay> page(
+      @PageableDefault(size = 10, page = 0) Pageable pageable,
+      @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
+    return flayService.page(pageable, keyword);
+  }
+
   @GetMapping("/find")
   public Collection<Flay> findList(@RequestBody Search search) {
     return flayService.find(search);
@@ -116,7 +127,7 @@ public class FlayController {
 
   @GetMapping("/find/{field}/{value}")
   public Collection<Flay> findByFieldValue(@PathVariable String field, @PathVariable String value) {
-    return flayService.findByKeyValue(field, value);
+    return flayService.find(field, value);
   }
 
   @GetMapping("/find/tag/{id}/like")

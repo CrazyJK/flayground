@@ -19,6 +19,16 @@
 			"mainClass": "jk.kamoru.flayground.FlaygroundApplication",
 			"projectName": "flayground",
 			"vmArgs": "-Dspring.profiles.active=flay-home -Dserver.port=443 -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=kamoru -Dserver.ssl.key-store=classpath:cert/kamoru.jk.p12 -Dserver.ssl.key-store-password=697489"
+		},
+		{
+			"type": "java",
+			"name": "flayground SSL test",
+			"request": "launch",
+			"cwd": "${workspaceFolder}",
+			"console": "internalConsole",
+			"mainClass": "jk.kamoru.flayground.FlaygroundApplication",
+			"projectName": "flayground",
+			"vmArgs": "-Dspring.profiles.active=flay-test -Dserver.port=443 -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=kamoru -Dserver.ssl.key-store=classpath:cert/kamoru.jk.p12 -Dserver.ssl.key-store-password=697489"
 		}
 	]
 }

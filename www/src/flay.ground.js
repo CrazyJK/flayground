@@ -15,6 +15,8 @@ import { View } from './lib/flay.utils.js';
 import { BASKET, ROW_DESC, ROW_TITLE, SEARCH } from './lib/flay.view.card.js';
 
 const $resultContainer = $('.result');
+const $immediately = $('.immediately');
+
 const heightOfRecoed = 115;
 const studioMap = new Map();
 const actressMap = new Map();
@@ -35,21 +37,34 @@ $(document).on('scroll', function () {
   }
 });
 
-$('#query').on('keyup', (e) => {
-  if (e.key !== 'Enter') {
-    return;
-  }
-  keyword = StringUtils.trim(e.target.value);
-  if (keyword.length > 1) {
-    Rest.Archive.page(0, pageSize, keyword, displayResult);
-  } else if (keyword.length === 0) {
-    displayResult({ content: [], number: 0, totalElements: 0, empty: true });
-  }
-});
-$('.search-magnify').on('click', (e) => {
-  keyword = 'RANDOM';
-  Rest.Flay.page(0, pageSize, keyword, displayRandom);
-});
+$('.search-box')
+  .on('keyup', '#query', (e) => {
+    keyword = StringUtils.trim(e.target.value);
+    if (e.key === 'Enter') {
+      switch (keyword.length) {
+        case 0:
+          displayResult({ content: [], number: 0, size: 0, totalElements: 0, empty: true, last: true });
+          break;
+        case 1:
+          break;
+        default:
+          Rest.Archive.page(0, pageSize, keyword, displayResult);
+          break;
+      }
+    } else {
+      // immediately search
+      if (keyword.length > 1) {
+        Rest.Archive.page(0, pageSize, keyword, displayImmediately);
+      }
+    }
+  })
+  .on('click', '.search-magnify', (e) => {
+    keyword = 'RANDOM';
+    Rest.Flay.page(0, pageSize, keyword, displayRandom);
+  })
+  .on('click', '.search-summary-toggler', (e) => {
+    $('.summary').toggle();
+  });
 
 $resultContainer
   .on('click', '.flay-studio', function (e) {
@@ -77,12 +92,13 @@ async function displayResult(page) {
   const regExp = new RegExp(keyword, 'i');
 
   $('main').toggleClass('exists', !page.empty);
-  $('.search-result').html(page.totalElements + ' f');
+  $('.search-result').html(page.totalElements + '<small>f</small>');
   $('.summary-studio').html('');
   $('.summary-actress').html('');
 
   if (page.number === 0) {
     $resultContainer.empty();
+    $immediately.empty();
     studioMap.clear();
     actressMap.clear();
   }
@@ -136,7 +152,7 @@ async function displayResult(page) {
       </div>
     `);
 
-    $('.search-result').html((++count === page.totalElements ? '' : '<small>' + count + '/</small>') + page.totalElements + ' f');
+    $('.search-result').html((++count === page.totalElements ? '' : '<small>' + count + '/</small>') + page.totalElements + '<small>f</small>');
 
     let studioSummaryHtml = '';
     for (const [k, v] of studioMap) {
@@ -171,4 +187,23 @@ function displayRandom(page) {
   $resultContainer.empty().appendFlayCard(page.content[0], {
     exclude: [BASKET, ROW_TITLE, ROW_DESC, SEARCH],
   });
+}
+
+function displayImmediately(page) {
+  $('.search-result').html(page.totalElements + '<small>f</small>');
+  if (page.number === 0) {
+    $immediately.empty();
+  }
+
+  for (const flay of page.content) {
+    $immediately.append(`
+      <div>
+        <label>${flay.studio}</label>
+        <label>${flay.opus}</label>
+        <label>${flay.title}</label>
+        <label>${flay.actressList}</label>
+        <label>${flay.release}</label>
+      </div>
+    `);
+  }
 }

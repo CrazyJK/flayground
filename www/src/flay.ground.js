@@ -24,6 +24,7 @@ let keyword;
 
 window.addEventListener('resize', (e) => {
   pageSize = Math.round(window.innerHeight / heightOfRecoed);
+  $(document).trigger('scroll');
 });
 
 $(document).on('scroll', function () {

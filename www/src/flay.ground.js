@@ -12,7 +12,6 @@ import './flay.ground.scss';
 import { StringUtils, ThreadUtils } from './lib/crazy.common';
 import { Rest } from './lib/flay.rest.service.js';
 import { View } from './lib/flay.utils.js';
-import { BASKET, ROW_DESC, ROW_TITLE, SEARCH } from './lib/flay.view.card.js';
 
 const $resultContainer = $('.result');
 const $immediately = $('.immediately');
@@ -60,7 +59,7 @@ $('.search-box')
   })
   .on('click', '.search-magnify', (e) => {
     keyword = 'RANDOM';
-    Rest.Flay.page(0, pageSize, keyword, displayRandom);
+    Rest.Flay.page(0, pageSize, keyword, displayResult);
   })
   .on('click', '.search-summary-toggler', (e) => {
     $('.summary').toggle();
@@ -81,6 +80,9 @@ $resultContainer
   })
   .on('click', '.flay-tag', function (e) {
     View.tag($(this).attr('data-id'));
+  })
+  .on('click', '.flay-cover', function (e) {
+    $(e.target).closest('.flay').toggleClass('wide');
   });
 
 async function displayResult(page) {
@@ -121,7 +123,7 @@ async function displayResult(page) {
     }
 
     $resultContainer.append(`
-      <div class="flay">
+      <div class="flay ${page.totalElements === 1 ? 'wide' : ''}">
         <img class="flay-cover" src="/static/cover/${flay.opus}" />
         <dl>
           <dt>
@@ -176,17 +178,6 @@ async function displayResult(page) {
       })
       .appendTo($resultContainer);
   }
-}
-
-function displayRandom(page) {
-  if (page.empty) {
-    return;
-  }
-
-  $('.search-result, .summary-studio, .summary-actress').html('');
-  $resultContainer.empty().appendFlayCard(page.content[0], {
-    exclude: [BASKET, ROW_TITLE, ROW_DESC, SEARCH],
-  });
 }
 
 function displayImmediately(page) {

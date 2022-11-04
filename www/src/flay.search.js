@@ -55,7 +55,7 @@ function findMode() {
     Search.opusByRandom();
   });
   $('#btnReset').dblclick(function () {
-    $('#findMode .form-control').val('').removeClass('input-empty input-invalid input-warning');
+    $('#findMode .form-control:not([id="lastSearchOpus"])').val('').removeClass('input-empty input-invalid input-warning');
     $('#findMode input:checkbox').prop('checked', false).next().find('i.fa').removeClass('fa-heart').addClass('fa-heart-o');
     $('#newActress').data('actress', null);
   });

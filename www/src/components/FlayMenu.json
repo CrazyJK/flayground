@@ -214,7 +214,7 @@
   },
   {
     "name": "RequestMap",
-    "uri": "./util.request.mappings.html",
+    "uri": "./util.actuator.mappings.html",
     "icon": "fa fa-info",
     "popup": {
       "w": 1078,

@@ -627,7 +627,7 @@ function attachFlayEventListener() {
   $('.cover-wrapper-inner.curr > .cover-box').on('click', Flaying.start);
   $('.cover-wrapper-inner.curr > .cover-box > #btnVideoClose').on('click', Flaying.stop);
   // rename flay
-  $('.file-wrapper .file-wrapper-rename input').on('keyup', (e) => {
+  $('#file-wrapper .file-wrapper-rename input').on('keyup', (e) => {
     e.stopPropagation();
   });
   $('#rename-btn').on('click', () => {
@@ -838,7 +838,8 @@ function collectList() {
       // 비디오 없이 자막만 있는
       matched = flay.files.movie.length === 0 && flay.files.subtitles.length > 0;
     } else {
-      matched = flay.files.movie.length > 0 || flay.files.subtitles.length > 0;
+      // matched = flay.files.movie.length > 0 || flay.files.subtitles.length > 0;
+      matched = true;
     }
     if (!matched) {
       continue;

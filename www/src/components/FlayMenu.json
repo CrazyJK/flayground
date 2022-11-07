@@ -3,10 +3,7 @@
     "name": "Vertical",
     "uri": "./flay.vertical.html",
     "icon": "fa fa-film",
-    "popup": {
-      "w": 0,
-      "h": 0
-    }
+    "popup": "full"
   },
   {
     "name": "Search",
@@ -21,19 +18,13 @@
     "name": "Raw",
     "uri": "./flay.raw.html",
     "icon": "fa fa-file-text",
-    "popup": {
-      "w": 0,
-      "h": 0
-    }
+    "popup": "full"
   },
   {
     "name": "Blank",
     "uri": "./flay.blank.html",
     "icon": "fa fa-film",
-    "popup": {
-      "w": 0,
-      "h": 0
-    }
+    "popup": "full"
   },
   {
     "name": "Archive",

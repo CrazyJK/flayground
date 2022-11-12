@@ -136,6 +136,7 @@ public class Flayground implements AsyncConfigurer {
         return new Thread(r, "FinalTask-" + threadNumber.getAndIncrement());
       }
     });
+
     for (Runnable task : finalTasks) {
       finalExecutor.execute(task);
     }

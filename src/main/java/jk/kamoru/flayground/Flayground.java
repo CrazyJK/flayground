@@ -127,7 +127,7 @@ public class Flayground implements AsyncConfigurer {
   public static BlockingQueue<Runnable> finalTasks = new LinkedBlockingQueue<>();
 
   public static void runFinalTasks() {
-    log.info("start final {} Tasks", finalTasks.size());
+    log.info("Starting final {} Tasks", finalTasks.size());
     ExecutorService finalExecutor = Executors.newFixedThreadPool(finalTasks.size(), new ThreadFactory() {
       private final AtomicInteger threadNumber = new AtomicInteger(1);
 

@@ -35,7 +35,7 @@ public class FileBasedFlaySource implements FlaySource {
   @PostConstruct
   @Override
   public synchronized void load() {
-    log.info("[load]");
+    log.info("[Load {}]", isArchive ? "Archive" : "Instance");
 
     final Collection<File> listFiles = new ArrayList<>();
     for (File path : paths) {

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.history.domain.History;
@@ -16,6 +17,7 @@ import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.source.InfoSource;
 import lombok.extern.slf4j.Slf4j;
 
+@Component
 @Slf4j
 public class FlayFactory {
 

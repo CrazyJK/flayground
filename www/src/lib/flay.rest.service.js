@@ -46,7 +46,7 @@ export const restCall = function (url, args, callback, failCallback, callbackDat
   if (settings.method !== 'GET' && typeof settings.data === 'object') {
     settings.data = JSON.stringify(settings.data);
   }
-  console.debug('restCall', url, settings);
+  // console.debug('restCall', url, settings);
 
   $.ajax(PATH + url, settings)
     .done(function (data) {
@@ -82,7 +82,7 @@ export const restCall = function (url, args, callback, failCallback, callbackDat
       }
     })
     .always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {
-      console.debug('ajax always', data_jqXHR, textStatus, jqXHR_errorThrown);
+      // console.debug('ajax always', data_jqXHR, textStatus, jqXHR_errorThrown);
     });
 };
 

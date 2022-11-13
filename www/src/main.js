@@ -2,15 +2,15 @@
  * flay.main.js
  */
 
-import $ from 'jquery';
-import { Rest } from './lib/flay.rest.service.js';
-import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
-import flayWebsocket from './lib/flay.websocket.js';
-import { Security } from './lib/flay.utils.js';
-import menuItems from './main.json';
 import 'bootstrap/dist/js/bootstrap';
-import './lib/kamoru.life.timer.js';
+import $ from 'jquery';
 import './css/common.scss';
+import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
+import { Rest } from './lib/flay.rest.service.js';
+import { Security } from './lib/flay.utils.js';
+import { flayWebsocket } from './lib/flay.websocket.js';
+import './lib/kamoru.life.timer.js';
+import menuItems from './main.json';
 import './main.scss';
 
 const isAdmin = Security.hasRole('ADMIN');

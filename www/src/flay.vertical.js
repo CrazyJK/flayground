@@ -5,7 +5,7 @@
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import './components/FlayMenu';
+import { flayWebsocket } from './components/FlayMenu';
 import './css/common.scss';
 import './flay.vertical.scss';
 import './lib/crazy.jquery';
@@ -19,7 +19,6 @@ import { getDominatedColors } from './lib/crazy.dominated-color.js';
 import { loading } from './lib/flay.loading.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { Search, Util, View } from './lib/flay.utils.js';
-import flayWebsocket from './lib/flay.websocket.js';
 
 let flayList = [];
 let collectedList = [];
@@ -254,7 +253,7 @@ const navigation = {
       let randomIndex = -1;
       do {
         randomIndex = Random.getInteger(0, collectedList.length - 1);
-        console.debug(`random ${randomIndex} seen ${seenList.length} collect ${collectedList.length}`);
+        // console.debug(`random ${randomIndex} seen ${seenList.length} collect ${collectedList.length}`);
         if (!seenList.includes(randomIndex)) {
           break;
         }
@@ -277,7 +276,7 @@ const navigation = {
 
     if (!seenList.includes(currentIndex)) {
       seenList.push(currentIndex);
-      console.debug('seenList', seenList);
+      // console.debug('seenList', seenList);
     }
     if (seenList.length === collectedList.length) {
       seenList = [];
@@ -304,7 +303,7 @@ const navigation = {
     const pageLength = 12;
     var start = Math.max(currentIndex - (pageLength / 2 - 1), 0);
     var end = Math.min(currentIndex + pageLength / 2, collectedList.length);
-    console.debug(`[paging] start=${start} end=${end}`);
+    // console.debug(`[paging] start=${start} end=${end}`);
 
     if (start > 0) {
       addPaginationBtn(0); // first page
@@ -529,18 +528,14 @@ function attachFlayEventListener() {
 						</style>
 					</head>
 					<body>
-						<aside>
-							<iframe src="/html/info/info.history.html?opus=${currentFlay.opus}"></iframe>
-						</aside>
-						<main>`;
-      histories.forEach((history, index) => {
-        html += `<div class="history-item">
-								<label>${total--}</label>
-								<label>${history.action}</label>
-								<label>${history.date}</label>
-							</div>`;
-      });
-      html += `
+						<main>
+            ${histories.map((history) => {
+              return `<div class="history-item">
+                        <label>${total--}</label>
+                        <label>${history.action}</label>
+                        <label>${history.date}</label>
+                      </div>`;
+            })}
 						</main>
 						<script>
 						document.addEventListener("DOMContentLoaded", function() {
@@ -550,9 +545,8 @@ function attachFlayEventListener() {
 						});
 						</script>
 					</body>
-				</html>
-				`;
-      console.debug('history', histories, html);
+				</html>`;
+      // console.debug('history', histories, html);
       const historyPopup = window.open('', 'historyPopup', 'width=400,height=' + height + ',' + DEFAULT_SPECS);
       historyPopup.document.open();
       historyPopup.document.write(html);
@@ -706,7 +700,6 @@ function loadData() {
       const tagHints = [tag.name, ...descArray];
       tagMap.set(tag.id, tagHints);
     });
-    console.log('tagMap', tagMap);
 
     // initialize Actress
     mapNameActress = actressList.reduce((map, actress) => {

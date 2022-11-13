@@ -12,7 +12,7 @@ export async function getDominatedColors(src, opts) {
     ignore: GREY_RGB_ARRAY,
     ...opts,
   };
-  console.debug('getDominatedColors', 'scale', scale, 'offset', offset, 'limit', limit, 'ignore', ignore.length);
+  // console.debug('getDominatedColors', 'scale', scale, 'offset', offset, 'limit', limit, 'ignore', ignore.length);
 
   if (scale > 1 || scale <= 0) {
     throw new Error(`You set scale to ${scale}, which isn't between 0-1. This is either pointless (> 1) or a no-op (≤ 0)`);

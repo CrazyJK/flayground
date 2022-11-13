@@ -10,6 +10,9 @@ import Stomp from 'stompjs';
 import { LocalStorageItem } from './crazy.common.js';
 import './flay.websocket.scss';
 
+var consoleDebug = console.debug;
+consoleDebug = () => {};
+
 class FlayWebsocket {
   constructor() {
     this.STOMP_ENDPOINT = 'https://flay.kamoru.jk/flayground-websocket';
@@ -57,7 +60,7 @@ class FlayWebsocket {
     this.stompClient.connect(
       {},
       (connect) => {
-        console.log('[FlayWebsocket] connected', connect);
+        consoleDebug('[FlayWebsocket] connected', connect);
         this.retryCount = 0;
         this.username = connect.headers['user-name'];
         this.showMessage(connect);
@@ -80,7 +83,7 @@ class FlayWebsocket {
     );
 
     this.stompClient.debug = (str) => {
-      console.debug('stomp debug', str);
+      consoleDebug('stomp debug', str);
     };
   }
 
@@ -97,39 +100,39 @@ class FlayWebsocket {
 
   subscribe() {
     const announceSubscription = this.stompClient.subscribe(this.TOPIC_ANNOUNCE, (message) => {
-      console.debug('[FlayWebsocket] announce', message);
+      consoleDebug('[FlayWebsocket] announce', message);
       message.ack();
       this.showMessage(message, 'ANNOUNCE');
     });
-    console.debug('[FlayWebsocket] subscription announce', announceSubscription);
+    consoleDebug('[FlayWebsocket] subscription announce', announceSubscription);
 
     const announceToSubscription = this.stompClient.subscribe(this.TOPIC_ANNOUNCE_TO, (message) => {
-      console.debug('[FlayWebsocket] announce to', message);
+      consoleDebug('[FlayWebsocket] announce to', message);
       message.ack();
       this.showMessage(message, 'ANNOUNCE');
     });
-    console.debug('[FlayWebsocket] subscription announce to', announceToSubscription);
+    consoleDebug('[FlayWebsocket] subscription announce to', announceToSubscription);
 
     const saySubscription = this.stompClient.subscribe(this.TOPIC_SAY, (message) => {
-      console.debug('[FlayWebsocket] say', message);
+      consoleDebug('[FlayWebsocket] say', message);
       message.ack();
       this.showMessage(message, 'SAY');
     });
-    console.debug('[FlayWebsocket] subscription say', saySubscription);
+    consoleDebug('[FlayWebsocket] subscription say', saySubscription);
 
     const sayToSubscription = this.stompClient.subscribe(this.TOPIC_SAY_TO, (message) => {
-      console.debug('[FlayWebsocket] say to', message);
+      consoleDebug('[FlayWebsocket] say to', message);
       message.ack();
       this.showMessage(message, 'SAY');
     });
-    console.debug('[FlayWebsocket] subscription say to', sayToSubscription);
+    consoleDebug('[FlayWebsocket] subscription say to', sayToSubscription);
 
     const queueInfoSubscription = this.stompClient.subscribe(this.QUEUE_INFO, (message) => {
-      console.debug('[FlayWebsocket] queue', message);
+      consoleDebug('[FlayWebsocket] queue', message);
       message.ack();
       this.infoCallback(message);
     });
-    console.debug('[FlayWebsocket] subscription queueInfo', queueInfoSubscription);
+    consoleDebug('[FlayWebsocket] subscription queueInfo', queueInfoSubscription);
   }
 
   say(message, to) {
@@ -240,7 +243,5 @@ class FlayWebsocket {
   }
 }
 
-const flayWebsocket = new FlayWebsocket();
+export let flayWebsocket = new FlayWebsocket();
 flayWebsocket.initiate();
-
-export default flayWebsocket;

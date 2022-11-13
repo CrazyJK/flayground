@@ -11,7 +11,6 @@ import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
-import jk.kamoru.flayground.flay.source.FlayFactory.Result;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -19,10 +18,9 @@ public class FileBasedFlaySource implements FlaySource {
 
   @Autowired FlayFactory flayFactory;
 
-  boolean isArchive;
-
-  Map<String, Flay> flayMap;
+  private boolean isArchive;
   private File[] paths;
+  private Map<String, Flay> flayMap;
 
   public FileBasedFlaySource(File... paths) {
     this(false, paths);
@@ -31,6 +29,7 @@ public class FileBasedFlaySource implements FlaySource {
   public FileBasedFlaySource(boolean isArchive, File... paths) {
     this.isArchive = isArchive;
     this.paths = paths;
+    this.flayMap = new HashMap<>();
   }
 
   @PostConstruct
@@ -38,40 +37,41 @@ public class FileBasedFlaySource implements FlaySource {
   public synchronized void load() {
     log.info("[load]");
 
-    flayMap = new HashMap<>();
-    Collection<File> listFiles = new ArrayList<>();
-    for (File dir : paths) {
-      if (dir.isDirectory()) {
-        Collection<File> found = FileUtils.listFiles(dir, null, true);
-        log.info(String.format("%5s file    - %s", found.size(), dir));
+    final Collection<File> listFiles = new ArrayList<>();
+    for (File path : paths) {
+      if (path.isDirectory()) {
+        Collection<File> found = FileUtils.listFiles(path, null, true);
+        log.info(String.format("%5s file    - %s", found.size(), path));
         listFiles.addAll(found);
       } else {
-        log.warn("Invalid source path {}", dir);
+        log.warn("Invalid source path {}", path);
       }
     }
 
+    flayMap.clear();;
     for (File file : listFiles) {
       String suffix = FilenameUtils.getExtension(file.getName()).toLowerCase();
       if ("ds_store".contains(suffix)) {
         continue;
       }
 
-      Result result = flayFactory.parse(file);
+      FlayFileResult result = FlayFileResolver.resolve(file);
       if (!result.valid) {
         log.warn(" invalid file - {}", file);
         continue;
       }
 
       Flay flay = null;
-      if (!flayMap.containsKey(result.getOpus())) {
+      try {
+        flay = get(result.opus);
+      } catch (FlayNotfoundException e) {
         flay = flayFactory.newFlay(result, isArchive);
         flayMap.put(flay.getOpus(), flay);
-      } else {
-        flay = flayMap.get(result.getOpus());
       }
 
       flayFactory.addFile(flay, result.file);
     }
+
     log.info(String.format("%5s Flay", flayMap.size()));
   }
 

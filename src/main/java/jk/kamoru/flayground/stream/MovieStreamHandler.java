@@ -89,7 +89,7 @@ public class MovieStreamHandler {
     } catch (ClientAbortException e) {
       log.debug("canceled by client: {}", e.getMessage());
     } catch (IOException e) {
-      log.error("fail to stream", e);
+      log.error("fail: {}", e.getMessage());
     }
   }
 

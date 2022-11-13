@@ -2,6 +2,13 @@
 	"configurations": [
 		{
 			"type": "java",
+			"name": "Launch FindAndRenameActress",
+			"request": "launch",
+			"mainClass": "jk.kamoru.flayground.source.FindAndRenameActress",
+			"projectName": "flayground"
+		},
+		{
+			"type": "java",
 			"name": "flayground",
 			"request": "launch",
 			"cwd": "${workspaceFolder}",

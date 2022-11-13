@@ -6,7 +6,7 @@ import jQuery from 'jquery';
 import { COVER_ASPECT_RATIO, File } from './crazy.common.js';
 import { Rest } from './flay.rest.service.js';
 import { Search, Util, View } from './flay.utils.js';
-import flayWebsocket from './flay.websocket.js';
+import { flayWebsocket } from './flay.websocket.js';
 
 export const STUDIO = 'studio',
   ACTRESS = 'actress',

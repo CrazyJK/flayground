@@ -41,12 +41,9 @@ class FlayMenu extends HTMLElement {
     }
 
     a {
-      color: #607d8b;
       text-decoration: none;
     }
     .nav-wrap {
-      background-color: #151515;
-      color: #607d8b;
       position: fixed;
       top: 0;
       ${alignLeft ? 'left' : 'right'}: -200px;
@@ -63,6 +60,20 @@ class FlayMenu extends HTMLElement {
       ${alignLeft ? 'left' : 'right'}: 0;
       /* box-shadow: 0 0 0.5rem var(--color-box-shadow); */
       border-${alignLeft ? 'right' : 'left'}: 1px solid #000;
+    }
+    .nav-wrap.dark {
+      background-color: #151515;
+      color: #607d8b;
+    }
+    .nav-wrap.dark a {
+      color: #607d8b;
+    }
+    .nav-wrap.light {
+      background-color: #ffe;
+      color: #000;
+    }
+    .nav-wrap.light a {
+      color: #000;
     }
     .nav-wrap > span {
       cursor: pointer;
@@ -140,7 +151,6 @@ class FlayMenu extends HTMLElement {
       width: 2rem;
       text-align: center;
       opacity: 0;
-      transition: 0.5s;
     }
     .nav-wrap ul.nav li:hover a {
       color: orange;
@@ -150,6 +160,7 @@ class FlayMenu extends HTMLElement {
     }
     .nav-wrap ul.nav li:hover div a:nth-child(2) {
       opacity: 1;
+      transition: 0.3s 0.2s;
     }
 
     .nav-wrap ul.nav.nav-main {
@@ -169,7 +180,8 @@ class FlayMenu extends HTMLElement {
       padding: 0;
     }
     button#themeToggle > i {
-      margin: 0.25rem 0.5rem;
+      margin: 0.125rem 0.25rem;
+      font-size: 1.25em;
     }
     button#themeToggle.dark > i.light {
       display: none;
@@ -182,7 +194,7 @@ class FlayMenu extends HTMLElement {
 
     // main wrapper
     const navWrap = document.createElement('nav');
-    navWrap.setAttribute('class', 'nav-wrap');
+    navWrap.setAttribute('class', 'nav-wrap ' + bgTheme);
     shadow.appendChild(navWrap);
 
     // fixed pin
@@ -260,7 +272,7 @@ class FlayMenu extends HTMLElement {
     subMenuNav.setAttribute('class', 'nav nav-sub');
     navWrap.appendChild(subMenuNav);
 
-    subMenuNav.appendChild(createThemeToggle());
+    subMenuNav.appendChild(createThemeToggle(shadow));
     subMenuNav.appendChild(createRemainTimer());
     subMenuNav.appendChild(createLogout());
   }
@@ -279,7 +291,9 @@ document.getElementsByTagName('html')[0].setAttribute('data-theme', bgTheme);
 
 document.body.prepend(new FlayMenu('left'));
 
-function createThemeToggle() {
+function createThemeToggle(shadow) {
+  const navWrap = shadow.querySelector('nav.nav-wrap');
+
   const iSun = document.createElement('i');
   iSun.classList.add('fa', 'fa-sun-o', 'light');
   const iMoon = document.createElement('i');
@@ -292,10 +306,11 @@ function createThemeToggle() {
   button.appendChild(iSun);
   button.appendChild(iMoon);
   button.addEventListener('click', () => {
-    console.log('themeToggle', button, button.classList);
+    // console.log('themeToggle', button, button.classList, navWrap);
     let currentTheme = button.classList.item(0);
     let selectedTheme = currentTheme === 'dark' ? 'light' : 'dark';
     button.classList.replace(currentTheme, selectedTheme);
+    navWrap.classList.replace(currentTheme, selectedTheme);
     LocalStorageItem.set('flay.bgtheme', selectedTheme);
     try {
       flayWebsocket.info('bgtheme');

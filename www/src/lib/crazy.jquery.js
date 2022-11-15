@@ -35,6 +35,7 @@ import jquery from 'jquery';
 	 */
   $.fn.navEvent = function (callback) {
     var detectEvent = function (e, callbackFunction) {
+      console.debug(`detectEvent target=${e.target.tagName} type=${e.type} key=${e.key} which=${e.which} delta=${e.originalEvent.wheelDelta} ctrl=${e.ctrlKey} alt=${e.altKey} shift=${e.shiftKey}`);
       e.stopPropagation();
       callbackFunction(obtainSignal(e), e);
     };
@@ -92,7 +93,7 @@ import jquery from 'jquery';
   /**
    * function containsIgnorecase
    */
-  $.extend($.expr[':'], {
+  $.extend($.expr.pseudos, {
     containsIgnorecase: function (elem, i, match, array) {
       return (elem.textContent || elem.innerText || '').toLowerCase().indexOf((match[3] || '').toLowerCase()) >= 0;
     },

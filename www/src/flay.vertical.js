@@ -131,7 +131,6 @@ const Flaying = {
 const navigation = {
   event: function () {
     $('#pageContent').navEvent(function (signal, e) {
-      console.debug(`navEvent target=${e.target.tagName} signal=${signal} type=${e.type} ctrl=${e.ctrlKey} alt=${e.altKey} shift=${e.shiftKey} key=${e.key}`);
       switch (signal) {
         case 1: // wheel: up
         case 37: // key  : left

@@ -456,6 +456,7 @@ function batchMode() {
     Rest.Batch.start(type, title);
     $('#batchCheck').removeAttr('open');
     $('#lowerRank, #lowerScore').empty();
+    $('#feedbackMessage').empty().show();
   });
   $('.btn-batch-check').on('click', function () {
     var type = $(this).data('type');
@@ -690,4 +691,9 @@ if (scriptCode !== '') {
 
 window.returnFalse = function () {
   return false;
+};
+
+window.batchFeedback = function (noti) {
+  console.log(noti);
+  $('#feedbackMessage').append(noti.content + '\n');
 };

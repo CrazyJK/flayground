@@ -793,3 +793,12 @@ button.btn.btn-outline-flay {
 .float-right {
   float: right;
 }
+
+.console {
+  font-family: D2Coding;
+  font-size: 14px;
+  text-align: start;
+  background-color: var(--color-bg-console);
+  color: var(--color-text-console);
+  padding: 0.5rem;
+}

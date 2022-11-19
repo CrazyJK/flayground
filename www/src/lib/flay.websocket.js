@@ -161,6 +161,7 @@ class FlayWebsocket {
 
   showMessage(message, type) {
     const notification = {
+      type: message.command,
       id: '',
       title: '',
       content: '',
@@ -185,11 +186,19 @@ class FlayWebsocket {
         notification.title = body.title;
         notification.content = body.content;
         notification.time.setTime(body.time);
-        console.log(body);
         break;
       }
       default:
         throw new TypeError('unknown message command');
+    }
+
+    console.log('notification', notification);
+    if (notification.type === 'MESSAGE' && (notification.title === 'Batch' || notification.title === 'Backup')) {
+      if (typeof batchFeedback === 'function') {
+        // eslint-disable-next-line no-undef
+        batchFeedback(notification);
+        return;
+      }
     }
 
     const $noti = $(`

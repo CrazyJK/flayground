@@ -117,18 +117,24 @@ public class BatchExecutor {
   }
 
   protected void instanceBatch() {
+    notificationService.announce("Batch", "Instance Source");
+
+    notificationService.announce("Batch", "[deleteLowerRank]");
     deleteLowerRank();
 
-    if (flayProperties.isDeleteLowerScore())
+    if (flayProperties.isDeleteLowerScore()) {
+      notificationService.announce("Batch", "[deleteLowerScore]");
       deleteLowerScore();
+    }
 
+    notificationService.announce("Batch", "[assembleFlay]");
     assembleFlay();
 
+    notificationService.announce("Batch", "[deleteEmptyFolder]");
     deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(), flayProperties.getStoragePath()));
 
+    notificationService.announce("Batch", "[instanceFlaySource.load]");
     instanceFlaySource.load();
-
-    notificationService.announce("Batch", "Instance Source");
   }
 
   protected Map<String, List<Flay>> instanceCheck() {
@@ -141,6 +147,9 @@ public class BatchExecutor {
   }
 
   protected void archiveBatch() {
+    notificationService.announce("Batch", "Archive Source");
+
+    notificationService.announce("Batch", "[relocateArchiveFile]");
     log.info("[relocateArchiveFile]");
     for (Flay flay : archiveFlaySource.list()) {
       String yyyyMM = getArchiveFolderName(flay);
@@ -158,11 +167,11 @@ public class BatchExecutor {
       }
     }
 
+    notificationService.announce("Batch", "[deleteEmptyFolder]");
     deleteEmptyFolder(flayProperties.getArchivePath());
 
+    notificationService.announce("Batch", "[archiveFlaySource.load]");
     archiveFlaySource.load();
-
-    notificationService.announce("Batch", "Archive Source");
   }
 
   void deleteLowerRank() {
@@ -239,6 +248,7 @@ public class BatchExecutor {
             if (coverFiles != null && coverFiles.size() > 0) {
               flay.getFiles().get(Flay.COVER).add(coverFiles.get(0));
               log.info("add Cover {}", coverFiles.get(0));
+              notificationService.announce("Batch", "add Cover " + coverFiles.get(0));
             }
           } catch (FlayNotfoundException ignore) {
           }
@@ -251,6 +261,7 @@ public class BatchExecutor {
             if (subtitlesFiles != null && subtitlesFiles.size() > 0) {
               flay.getFiles().get(Flay.SUBTI).addAll(subtitlesFiles);
               log.info("add subtiles {}", subtitlesFiles);
+              notificationService.announce("Batch", "add subtiles " + subtitlesFiles);
             }
           } catch (FlayNotfoundException ignore) {
           }
@@ -262,13 +273,15 @@ public class BatchExecutor {
         List<File> value = entry.getValue();
         for (File file : value) {
           if (!delegatePath.equals(file.getParentFile())) {
-            log.info(String.format("move [%-10s r%s %7s] %-20s => %s / %s",
+            final String message = String.format("move [%-10s r%s %7s] %-20s => %s / %s",
                 flay.getOpus(),
                 flay.getVideo().getRank(),
                 flayFileHandler.prettyFileLength(file.length()),
                 file.getParent(),
                 delegatePath,
-                file.getName()));
+                file.getName());
+            log.info(message);
+            notificationService.announce("Batch", message);
             flayFileHandler.moveFileToDirectory(file, delegatePath);
           }
         }
@@ -373,9 +386,11 @@ public class BatchExecutor {
       for (File file : entry.getValue()) {
         if (Flay.COVER.equals(key) || Flay.SUBTI.equals(key)) {
           log.info("will be move {} to {}", file, archiveDir);
+          notificationService.announce("Batch", "will be move " + file + " to " + archiveDir);
           flayFileHandler.moveFileToDirectory(file, archiveDir);
         } else {
           log.info("will be delete {}", file);
+          notificationService.announce("Batch", "will be delete " + file);
           flayFileHandler.deleteFile(file);
         }
       }
@@ -389,7 +404,11 @@ public class BatchExecutor {
       log.warn("Backup path is wrong");
       return;
     }
-    log.info("[Backup] START {}", flayProperties.getBackupPath());
+    String message;
+
+    message = String.format("[Backup] START %s", flayProperties.getBackupPath());
+    log.info(message);
+    notificationService.announce("Backup", message);
 
     final String CSV_HEADER = "Studio,Opus,Title,Actress,Released,Rank,Fullname";
     final String CSV_FORMAT = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
@@ -416,7 +435,9 @@ public class BatchExecutor {
     List<String> archiveCsvDataList = new ArrayList<>();
 
     // instance info
-    log.info("[Backup] Write instance csv {} to {}", BACKUP_INSTANCE_CSV_FILENAME, backupRootPath);
+    message = String.format("[Backup] Write instance csv %s to %s", BACKUP_INSTANCE_CSV_FILENAME, backupRootPath);
+    log.info(message);
+    notificationService.announce("Backup", message);
     instanceCsvDataList.add(CSV_HEADER);
     for (Flay flay : instanceFlayList) {
       instanceCsvDataList.add(String.format(CSV_FORMAT,
@@ -425,7 +446,9 @@ public class BatchExecutor {
     writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceCsvDataList);
 
     // archive info
-    log.info("[Backup] Write archive  csv {}  to {}", BACKUP_ARCHIVE_CSV_FILENAME, backupRootPath);
+    message = String.format("[Backup] Write archive  csv %s  to %s", BACKUP_ARCHIVE_CSV_FILENAME, backupRootPath);
+    log.info(message);
+    notificationService.announce("Backup", message);
     archiveCsvDataList.add(CSV_HEADER);
     for (Flay flay : archiveFlayList) {
       archiveCsvDataList.add(String.format(CSV_FORMAT,
@@ -446,11 +469,15 @@ public class BatchExecutor {
     writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_ARCHIVE_CSV_FILENAME), archiveCsvDataList);
 
     // Info folder copy
-    log.info("[Backup] Copy Info folder {} to {}", flayProperties.getInfoPath(), backupRootPath);
+    message = String.format("[Backup] Copy Info folder %s to %s", flayProperties.getInfoPath(), backupRootPath);
+    log.info(message);
+    notificationService.announce("Backup", message);
     flayFileHandler.copyDirectoryToDirectory(flayProperties.getInfoPath(), backupRootPath);
 
     // Instance - Cover, Subtitles file copy
-    log.info("[Backup] Copy Instance file to {}", backupInstanceFilePath);
+    message = String.format("[Backup] Copy Instance file to %s", backupInstanceFilePath);
+    log.info(message);
+    notificationService.announce("Backup", message);
     for (Flay flay : instanceFlayList) {
       for (File file : flay.getFiles().get(Flay.COVER))
         flayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
@@ -458,18 +485,24 @@ public class BatchExecutor {
         flayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
     }
 
-    log.info("[Backup] Compress Instance folder");
+    message = "[Backup] Compress Instance folder";
+    log.info(message);
+    notificationService.announce("Backup", message);
     compress(backupInstanceJarFile, backupRootPath);
 
-    log.info("[Backup] Compress Archive folder");
+    message = "[Backup] Compress Archive folder";
+    log.info(message);
+    notificationService.announce("Backup", message);
     compress(backupArchiveJarFile, flayProperties.getArchivePath());
 
-    log.info("[Backup] Delete Instance Backup Temp folder {}", backupRootPath);
+    message = String.format("[Backup] Delete Instance Backup Temp folder %s", backupRootPath);
+    log.info(message);
+    notificationService.announce("Backup", message);
     flayFileHandler.deleteDirectory(backupRootPath);
 
-    notificationService.announce("Backup", "Flay source");
-
-    log.info("[Backup] END");
+    message = "[Backup] END";
+    log.info(message);
+    notificationService.announce("Backup", message);
   }
 
   private void writeFileWithUTF8BOM(File file, Collection<String> lines) {
@@ -486,20 +519,28 @@ public class BatchExecutor {
   }
 
   private void compress(File destJarFile, File targetFolder) {
-    /*
-     * jar options -c 새 아카이브를 생성합니다. -v 표준 출력에 상세 정보 출력을 생성합니다. -f 아카이브 파일 이름을 지정합니다. -0 저장 전용: ZIP 압축을
-     * 사용하지 않습니다. -M 항목에 대해 Manifest 파일을 생성하지 않습니다.
-     */
+    // jar options
+    // -c 새 아카이브를 생성합니다.
+    // -v 표준 출력에 상세 정보 출력을 생성합니다.
+    // -f 아카이브 파일 이름을 지정합니다.
+    // -0 저장 전용: ZIP 압축을 사용하지 않습니다.
+    // -M 항목에 대해 Manifest 파일을 생성하지 않습니다.
     List<String> commands = Arrays.asList("jar", "cvf0M", destJarFile.getAbsolutePath(), "-C", targetFolder.getAbsolutePath(), ".");
     File logFile = new File(flayProperties.getQueuePath(), destJarFile.getName() + "." + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");
     ProcessBuilder builder = new ProcessBuilder(commands);
     builder.redirectOutput(Redirect.to(logFile));
     builder.redirectError(Redirect.INHERIT);
     try {
-      log.info("         jar {}", commands);
+      String message = "         jar " + commands;
+      log.info(message);
+      notificationService.announce("Backup", message);
+
       Process process = builder.start();
       process.waitFor();
-      log.info("         completed {}", flayFileHandler.prettyFileLength(destJarFile.length()));
+
+      message = "         completed " + flayFileHandler.prettyFileLength(destJarFile.length());
+      log.info(message);
+      notificationService.announce("Backup", message);
     } catch (IOException | InterruptedException e) {
       throw new IllegalStateException("Fail to jar", e);
     }

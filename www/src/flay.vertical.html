@@ -98,6 +98,11 @@
                 <label class="text hover add-basket-btn"><i class="fa fa-shopping-cart"></i></label>
                 <label class="text hover toggle-files-btn" data-bs-toggle="collapse" data-bs-target="#file-wrapper" aria-expanded="false" aria-controls="#file-wrapper"><i class="fa fa-folder-open"></i></label>
               </dd>
+              <dd>
+                <label class="text hover info-original">原語</label>
+                <label class="text hover info-overview">Overview</label>
+                <input class="form-control input-flay info-overview-input" placeholder="Overview" />
+              </dd>
               <dt>
                 <div class="collapse" id="file-wrapper">
                   <div class="container-lg">
@@ -114,11 +119,6 @@
                     </div>
                   </div>
                 </div>
-              </dt>
-              <dt>
-                <label class="text hover info-original">原語</label>
-                <label class="text hover info-overview">Overview</label>
-                <input class="form-control input-flay info-overview-input" placeholder="Overview" />
               </dt>
               <dt>
                 <span class="ranker">
@@ -158,27 +158,23 @@
           <div class="actress-wrapper">
             <div class="info-actress"></div>
           </div>
-          <div class="tag-wrapper container-lg pt-1">
+          <div class="tag-wrapper pt-1">
             <div id="videoTags" class="tag-list">
               <label class="check sm label-add-tag">
                 <span id="btnToggleNewTag"><i class="fa fa-plus"></i></span>
               </label>
             </div>
-            <div class="d-inline-flex justify-content-center my-2">
-              <div id="newTagForm" class="collapse input-group input-group-sm" style="width: 300px">
-                <input id="newTagName" class="form-control border-0" placeholder="Name" />
-                <input id="newTagDesc" class="form-control border-0" placeholder="Description" />
-                <button class="btn btn-primary btn-tag-save">Regist</button>
+            <div>
+              <div id="newTagForm" class="collapse input-group input-group-sm mx-auto" style="width: 300px">
+                <input id="newTagName" class="form-control" placeholder="Name" />
+                <input id="newTagDesc" class="form-control" placeholder="Description" />
+                <button class="btn btn-tag-save">Regist</button>
               </div>
             </div>
           </div>
-          <div class="info-modified">
-            <small>
-              <label class="text small"> modified: <span class="info-lastModified">18/04/28</span> access: <span class="info-lastAccess">22/01/12</span> played: <span class="info-lastPlay">22/01/12</span> </label>
-            </small>
-          </div>
-          <div class="history-wrapper container-lg">
+          <div class="history-wrapper">
             <div id="chartdiv"></div>
+            <div class="info-date">modified: <span class="info-lastModified">18/04/28</span> access: <span class="info-lastAccess">22/01/12</span> played: <span class="info-lastPlay">22/01/12</span></div>
           </div>
         </div>
       </div>

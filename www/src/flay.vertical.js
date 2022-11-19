@@ -1123,12 +1123,12 @@ function showVideo(args) {
       Rest.History.find(currentFlay.opus, (histories) => {
         const playHistories = histories.filter((history) => history.action === 'PLAY');
         if (playHistories.length > 0) {
-          // 화면 밖으로 밀려나갈거 같으면 가리기
+          // 화면 밖으로 밀려나갈거 같으면 차트 가리기
           const canVisible = window.innerHeight > $('.tag-wrapper').position().top + $('.tag-wrapper').height() + 100;
           if (canVisible) {
             drawGraph(playHistories);
           }
-          $('.history-wrapper').toggle(canVisible);
+          $('#chartdiv').toggle(canVisible);
           if (currentFlay.video.play !== playHistories.length) {
             currentFlay.video.play = playHistories.length;
             Rest.Video.update(currentFlay.video, () => {
@@ -1139,7 +1139,7 @@ function showVideo(args) {
             resolve(true);
           }
         } else {
-          $('.history-wrapper').hide();
+          $('#chartdiv').hide();
           resolve(true);
         }
       });

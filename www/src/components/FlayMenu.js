@@ -58,7 +58,7 @@ class FlayMenu extends HTMLElement {
     .nav-wrap.fixed,
     .nav-wrap:hover {
       ${alignLeft ? 'left' : 'right'}: 0;
-      /* box-shadow: 0 0 0.5rem var(--color-box-shadow); */
+      box-shadow: 0 0 0.5rem var(--color-box-shadow);
       border-${alignLeft ? 'right' : 'left'}: 1px solid #000;
     }
     .nav-wrap.dark {
@@ -69,7 +69,7 @@ class FlayMenu extends HTMLElement {
       color: #607d8b;
     }
     .nav-wrap.light {
-      background-color: #ffe;
+      background-color: #fff;
       color: #000;
     }
     .nav-wrap.light a {

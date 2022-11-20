@@ -2,14 +2,15 @@
  * tag list
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
 import './components/FlayMenu';
 import './css/common.scss';
 import './flay.tag.scss';
+import './lib/crazy.jquery';
 
+import { ThreadUtils } from './lib/crazy.common';
 import { Rest } from './lib/flay.rest.service';
 import { Util, View } from './lib/flay.utils';
 
@@ -50,14 +51,14 @@ $('#likeSearch').on('click', function () {
 });
 
 function tagLoad() {
-  Rest.Tag.list((tagList) => {
+  Rest.Tag.list(async (tagList) => {
     const $tagList = $('#tagList').empty();
     let tagTotal = tagList.length;
     let flayTotal = 0;
 
     Util.Tag.sort(tagList);
 
-    tagList.forEach((tag) => {
+    for (let tag of tagList) {
       const $tagCard = $tagTemplete.clone();
       $tagCard.appendTo($tagList);
       $tagCard.data('tag', tag);
@@ -96,7 +97,8 @@ function tagLoad() {
       } else {
         Rest.Flay.findByTag(tag, findByTagCallback);
       }
-    });
+      await ThreadUtils.sleep(69);
+    }
   });
 }
 

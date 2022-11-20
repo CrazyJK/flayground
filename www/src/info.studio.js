@@ -1,6 +1,7 @@
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
+import './components/RankSelect';
 import './css/common.scss';
 import './lib/crazy.jquery';
 import './lib/flay.websocket.js';
@@ -47,10 +48,11 @@ async function displayFlayList(flayList) {
       width: 330,
       exclude: [STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO],
       fontSize: '80%',
+      class: flay.video.rank === 0 ? 'unrank' : 'r' + flay.video.rank,
     });
-    $('.video-count').html(++count);
+    $('.video-count').html(++count + '/' + flayList.length);
 
-    await ThreadUtils.sleep(500);
+    await ThreadUtils.sleep(82);
   }
 }
 
@@ -68,4 +70,16 @@ $('#save').on('click', () => {
       }, 1000);
     }
   );
+});
+
+$('rank-select').on('change', (e) => {
+  console.log(e.detail.rank);
+  if (e.detail.rank.length > 0) {
+    $('.flay-card').hide();
+    e.detail.rank.forEach((r) => {
+      $('.flay-card.r' + r).show();
+    });
+  } else {
+    $('.flay-card').show();
+  }
 });

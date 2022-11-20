@@ -13,19 +13,22 @@
     <script defer type="text/javascript" src="./info.tag.js"></script>
   </head>
   <body>
-    <nav class="navbar navbar-expand-sm sticky-top p-2 bg-black justify-content-center">
-      <div class="container row">
-        <div class="col-4">
+    <nav class="sticky-top p-2 bg-black">
+      <div class="row container-flay">
+        <div class="col-3">
           <div class="input-group input-group-sm">
             <input class="form-control" name="name" id="name" placeholder="Name..." />
             <span class="input-group-text video-count"></span>
           </div>
         </div>
-        <div class="col-6">
+        <div class="col-5">
           <input class="form-control form-control-sm" name="description" id="description" placeholder="Description..." />
         </div>
         <div class="col-1">
           <button class="btn btn-outline-light btn-sm" id="save">Save</button>
+        </div>
+        <div class="col-2">
+          <rank-select id="filter-rank" multiple></rank-select>
         </div>
         <div class="col-1">
           <label class="check"><input type="checkbox" id="marked" /><span>Marked</span></label>

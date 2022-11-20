@@ -66,22 +66,28 @@ $('#search').on('click', function () {
 });
 
 $('input:radio[name="filter"]').on('change', (e) => {
-  console.log('filter', $(e.target).val());
   const filterVal = $(e.target).val();
-  switch (filterVal) {
-    case 'u':
-      $('.flay-list > .flay-card').hide();
-      $('.flay-list > .flay-card.unrank').show();
-      break;
-    case 'i':
-      $('.flay-list > .flay-card').hide();
-      $('.flay-list > .flay-card.instance').show();
-      break;
-    case 'a':
-      $('.flay-list > .flay-card').show();
-      break;
-  }
+  const rankValues = $('rank-select').attr('data-value');
+  const ranks = rankValues ? rankValues.split(',') : [];
+  toggleFlayCard(ranks, filterVal);
 });
+
+$('rank-select').on('change', (e) => {
+  const filterVal = $('input:radio[name="filter"]:checked').val();
+  toggleFlayCard(e.detail.rank, filterVal);
+});
+
+function toggleFlayCard(ranks, filter) {
+  // console.log('toggleFlayCard', ranks, filter);
+  $('.flay-card').hide();
+  if (ranks.length > 0) {
+    ranks.forEach((r) => {
+      $('.flay-card' + (filter === 'i' ? '.instance' : '') + '.r' + r).show();
+    });
+  } else {
+    $('.flay-card' + (filter === 'i' ? '.instance' : '')).show();
+  }
+}
 
 $('#save').on('click', function () {
   var originalName = actress.name;
@@ -112,18 +118,6 @@ $('#delete').on('click', function () {
     Rest.Actress.delete(actress, function () {
       self.close();
     });
-  }
-});
-
-$('rank-select').on('change', (e) => {
-  console.log(e.detail.rank);
-  if (e.detail.rank.length > 0) {
-    $('.flay-card').hide();
-    e.detail.rank.forEach((r) => {
-      $('.flay-card.r' + r).show();
-    });
-  } else {
-    $('.flay-card').show();
   }
 });
 
@@ -188,10 +182,10 @@ async function displayFlayList(flayList) {
       exclude: [ACTRESS, MODIFIED, RANK, COMMENT, FILEINFO],
       fontSize: '80%',
       archive: flay.archive,
-      class: flay.archive ? 'archive' : 'instance ' + (flay.video.rank === 0 ? 'unrank' : 'r' + flay.video.rank),
+      class: (flay.archive ? 'archive' : 'instance') + ' r' + flay.video.rank,
     });
 
-    await ThreadUtils.sleep(500);
+    await ThreadUtils.sleep(82);
   }
 }
 

@@ -48,7 +48,7 @@ public class SecurityConfig {
         .and()
         .authorizeRequests()
         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-        .antMatchers("/", "/favicon.ico", "/index.html", "/webjars/**").permitAll()
+        .antMatchers("/", "/favicon.ico", "/index.html", "/webjars/**", "/flayground-websocket/**").permitAll()
         .antMatchers("/batch/**").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and()

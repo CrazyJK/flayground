@@ -105,6 +105,7 @@ class RankSelect extends HTMLElement {
         }
 
         this.dispatchEvent(new CustomEvent('change', { detail: { rank: rankValues, checked: checked, value: rankValue }, cancelable: true, composed: false, bubbles: false }));
+        this.setAttribute('data-value', rankValues.toString());
       });
 
       switch (i) {

@@ -24,93 +24,93 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class LocalImageSource implements ImageSource {
 
-	@Autowired FlayProperties flayProperties;
+  @Autowired FlayProperties flayProperties;
 
-	@Autowired AnnounceService notificationService;
-	@Autowired FlayFileHandler flayFileHandler;
+  @Autowired AnnounceService notificationService;
+  @Autowired FlayFileHandler flayFileHandler;
 
-	private List<Image> imageList;
-	private boolean changed = false;
+  private List<Image> imageList;
+  private boolean changed = false;
 
-	@PostConstruct
-	public void postConstruct() {
-		load();
-		registWatcher();
-	}
+  @PostConstruct
+  public void postConstruct() {
+    load();
+    registWatcher();
+  }
 
-	private void registWatcher() {
-		Flayground.finalTasks.add(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
+  private void registWatcher() {
+    Flayground.addFinalTask(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
 
-            @Override
-            protected void createdFile(File file) {
-                changed = Flayground.FILE.isImage(file);
-            }
+      @Override
+      protected void createdFile(File file) {
+        changed = Flayground.FILE.isImage(file);
+      }
 
-            @Override
-            protected void deletedFile(File file) {
-                changed = Flayground.FILE.isImage(file);
-            }
+      @Override
+      protected void deletedFile(File file) {
+        changed = Flayground.FILE.isImage(file);
+      }
 
-            @Override
-            protected void modifiedFile(File file) {
-                changed = Flayground.FILE.isImage(file);
-            }
+      @Override
+      protected void modifiedFile(File file) {
+        changed = Flayground.FILE.isImage(file);
+      }
 
-        });
-	}
+    });
+  }
 
-	@CacheEvict(cacheNames = {"bannerCache"}, allEntries = true)
-	private synchronized void load() {
-		AtomicInteger indexCounter = new AtomicInteger(0);
-		imageList = new ArrayList<>();
-		for (File dir : flayProperties.getImagePaths()) {
-			if (dir.isDirectory()) {
-				Collection<File> listFiles = FileUtils.listFiles(dir, null, true);
-				log.info(String.format("%5s file    - %s", listFiles.size(), dir));
-				for (File file : listFiles) {
-					if (Flayground.FILE.isImage(file)) {
-						imageList.add(indexCounter.get(), new Image(file, indexCounter.getAndIncrement()));
-					}
-				}
-			}
-		}
-		log.info(String.format("%5s Image", size()));
-	}
+  @CacheEvict(cacheNames = {"bannerCache"}, allEntries = true)
+  private synchronized void load() {
+    AtomicInteger indexCounter = new AtomicInteger(0);
+    imageList = new ArrayList<>();
+    for (File dir : flayProperties.getImagePaths()) {
+      if (dir.isDirectory()) {
+        Collection<File> listFiles = FileUtils.listFiles(dir, null, true);
+        log.info(String.format("%5s file    - %s", listFiles.size(), dir));
+        for (File file : listFiles) {
+          if (Flayground.FILE.isImage(file)) {
+            imageList.add(indexCounter.get(), new Image(file, indexCounter.getAndIncrement()));
+          }
+        }
+      }
+    }
+    log.info(String.format("%5s Image", size()));
+  }
 
-	@Scheduled(fixedRate = 1000 * 30)
-	protected void checkChangedAndReload() {
-		if (changed) {
-			log.info("Image was changed, Source will be reloaded");
-			load();
-			notificationService.announce("Image reload", size() + " images");
-		}
-		changed = false;
-	}
+  @Scheduled(fixedRate = 1000 * 30)
+  protected void checkChangedAndReload() {
+    if (changed) {
+      log.info("Image was changed, Source will be reloaded");
+      load();
+      notificationService.announce("Image reload", size() + " images");
+    }
+    changed = false;
+  }
 
-	@Override
-	public List<Image> list() {
-		return imageList;
-	}
+  @Override
+  public List<Image> list() {
+    return imageList;
+  }
 
-	@Override
-	public int size() {
-		return imageList.size();
-	}
+  @Override
+  public int size() {
+    return imageList.size();
+  }
 
-	@Override
-	public Image get(int idx) {
-		if (-1 < idx && idx < size())
-			return imageList.get(idx);
-		else
-			throw new ImageNotfoundException(idx);
-	}
+  @Override
+  public Image get(int idx) {
+    if (-1 < idx && idx < size())
+      return imageList.get(idx);
+    else
+      throw new ImageNotfoundException(idx);
+  }
 
-	@Override
-	public void delete(int idx) {
-		Image image = get(idx);
-		imageList.remove(image);
-		flayFileHandler.deleteFile(image.getFile());
-		notificationService.announce("Image removed", image.getFile().toString());
-	}
+  @Override
+  public void delete(int idx) {
+    Image image = get(idx);
+    imageList.remove(image);
+    flayFileHandler.deleteFile(image.getFile());
+    notificationService.announce("Image removed", image.getFile().toString());
+  }
 
 }

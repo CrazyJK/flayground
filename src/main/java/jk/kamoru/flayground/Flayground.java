@@ -124,7 +124,11 @@ public class Flayground implements AsyncConfigurer {
     return executor;
   }
 
-  public static BlockingQueue<Runnable> finalTasks = new LinkedBlockingQueue<>();
+  private static BlockingQueue<Runnable> finalTasks = new LinkedBlockingQueue<>();
+
+  public static void addFinalTask(Runnable runnable) {
+    finalTasks.add(runnable);
+  }
 
   public static void runFinalTasks() {
     log.info("Starting final {} Tasks", finalTasks.size());

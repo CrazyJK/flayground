@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,18 +29,18 @@ public class FileBasedFlaySource implements FlaySource {
     this.isArchive = isArchive;
     this.paths = paths;
     this.flayMap = new HashMap<>();
+    log.debug("FlaySource.<init> {}", isArchive ? "Archive" : "Instance");
   }
 
-  @PostConstruct
   @Override
   public synchronized void load() {
-    log.info("[Load {}]", isArchive ? "Archive" : "Instance");
+    final String LOAD = "[Load " + (isArchive ? "Archive" : "Instance") + "]";
 
     final Collection<File> listFiles = new ArrayList<>();
     for (File path : paths) {
       if (path.isDirectory()) {
         Collection<File> found = FileUtils.listFiles(path, null, true);
-        log.info(String.format("%5s file    - %s", found.size(), path));
+        log.info(String.format("%-15s %5s file    - %s", LOAD, found.size(), path));
         listFiles.addAll(found);
       } else {
         log.warn("Invalid source path {}", path);
@@ -57,7 +56,7 @@ public class FileBasedFlaySource implements FlaySource {
 
       FlayFileResult result = FlayFileResolver.resolve(file);
       if (!result.valid) {
-        log.warn(" invalid file - {}", file);
+        log.warn("%-15s invalid file - {}", LOAD, file);
         continue;
       }
 
@@ -72,7 +71,7 @@ public class FileBasedFlaySource implements FlaySource {
       flayFactory.addFile(flay, result.file);
     }
 
-    log.info(String.format("%5s Flay", flayMap.size()));
+    log.info(String.format("%-15s %5s Flay", LOAD, flayMap.size()));
   }
 
   @Override

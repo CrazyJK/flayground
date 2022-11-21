@@ -1,4 +1,4 @@
-export var agent = navigator.userAgent.toLowerCase(),
+export const agent = navigator.userAgent.toLowerCase(),
   MSIE = 'MSIE',
   EDGE = 'Edge',
   CHROME = 'Chrome',
@@ -17,7 +17,7 @@ export var agent = navigator.userAgent.toLowerCase(),
   COVER_RATIO = 0.6625,
   COVER_ASPECT_RATIO = '80 / 53';
 
-export var Popup = {
+export const Popup = {
   /**
    * 팝업창을 띄운다.
    * @param url
@@ -27,7 +27,7 @@ export var Popup = {
    * @param positionMethod if null, 화면 가운데. Mouse 마우스 위치.
    * @param specs if null, default is DEFAULT_SPECS
    */
-  open: function (url, name, width, height, positionMethod, specs, event) {
+  open(url, name, width, height, positionMethod, specs, event) {
     // console.log("[popup] Call popup : ", url, name, width, height, positionMethod, specs, event);
     var windowScreenWidth = window.screen.width,
       windowScreenHeight = window.screen.height;
@@ -60,14 +60,14 @@ export var Popup = {
       popupWindow.focus();
     }
   },
-  image: function (url, name) {
+  image(url, name) {
     var img = new Image();
     img.onload = function () {
       Popup.open(PATH + './image.alone.html?src=' + url, name || url, this.naturalWidth, this.naturalHeight);
     };
     img.src = url;
   },
-  imageByNo: function (no, name) {
+  imageByNo(no, name) {
     var img = new Image();
     img.onload = function () {
       Popup.open(PATH + './image.alone.html?no=' + no, name || 'image' + no, this.naturalWidth, this.naturalHeight);
@@ -76,21 +76,21 @@ export var Popup = {
   },
 };
 
-export var Random = {
-  get: function (start, end) {
+export const Random = {
+  get(start, end) {
     return Math.random() * (end - start) + start;
   },
-  getInteger: function (start, end) {
+  getInteger(start, end) {
     // start부터 end사이의 random 정수 반환
     return Math.round(this.get(start, end));
   },
-  getHex: function (start, end) {
+  getHex(start, end) {
     return this.getInteger(start, end).toString(16);
   },
-  getBoolean: function () {
+  getBoolean() {
     return this.getInteger(1, 2) === 1;
   },
-  getFont: function (inputFont) {
+  getFont(inputFont) {
     const GOOGLE_FONTAPI = 'https://fonts.googleapis.com/css?family=';
     const GOOGLE_WEBFONTS = [
       'clipregular',
@@ -357,69 +357,69 @@ export var Random = {
     document.getElementsByTagName('head')[0].appendChild(link);
     return selectedFont;
   },
-  getColor: function (alpha) {
+  getColor(alpha) {
     if (alpha) return 'rgba(' + this.getInteger(0, 255) + ',' + this.getInteger(0, 255) + ',' + this.getInteger(0, 255) + ',' + (alpha === 'r' ? this.get(0, 1) : alpha) + ')';
     else return '#' + this.getHex(0, 255).zf(2) + this.getHex(0, 255).zf(2) + this.getHex(0, 255).zf(2);
   },
 };
 
-export var LocalStorageItem = {
-  set: function (itemName, itemValue) {
+export const LocalStorageItem = {
+  set(itemName, itemValue) {
     if (typeof Storage !== 'undefined') localStorage.setItem(itemName, itemValue);
   },
-  get: function (itemName, notfoundDefault) {
+  get(itemName, notfoundDefault) {
     return typeof Storage !== 'undefined' && (localStorage.getItem(itemName) || notfoundDefault);
   },
-  getInteger: function (itemName, notfoundDefault) {
+  getInteger(itemName, notfoundDefault) {
     return parseInt(this.get(itemName, notfoundDefault));
   },
-  getBoolean: function (itemName, notfoundDefault) {
+  getBoolean(itemName, notfoundDefault) {
     if (notfoundDefault) {
       return this.get(itemName, notfoundDefault.toString()) === 'true';
     } else {
       return this.get(itemName) === 'true';
     }
   },
-  split: function (itemName, notfoundDefault, delimiter) {
+  split(itemName, notfoundDefault, delimiter) {
     return this.get(itemName, notfoundDefault).split(delimiter);
   },
-  has: (itemName) => {
+  has(itemName) {
     // eslint-disable-next-line no-prototype-builtins
     return localStorage.hasOwnProperty(itemName);
   },
-  remove: (itemName) => {
+  remove(itemName) {
     localStorage.removeItem(itemName);
   },
-  clear: () => {
+  clear() {
     localStorage.clear();
   },
 };
 
-export var SessionStorageItem = {
-  set: function (itemName, itemValue) {
+export const SessionStorageItem = {
+  set(itemName, itemValue) {
     if (typeof Storage !== 'undefined') sessionStorage.setItem(itemName, itemValue);
   },
-  get: function (itemName, notfoundDefault) {
+  get(itemName, notfoundDefault) {
     return typeof Storage !== 'undefined' && (sessionStorage.getItem(itemName) || notfoundDefault);
   },
-  getInteger: function (itemName, notfoundDefault) {
+  getInteger(itemName, notfoundDefault) {
     return parseInt(this.get(itemName, notfoundDefault));
   },
-  getBoolean: function (itemName, notfoundDefault) {
+  getBoolean(itemName, notfoundDefault) {
     if (notfoundDefault) {
       return this.get(itemName, notfoundDefault.toString()) === 'true';
     } else {
       return this.get(itemName) === 'true';
     }
   },
-  has: (itemName) => {
+  has(itemName) {
     // eslint-disable-next-line no-prototype-builtins
     return sessionStorage.hasOwnProperty(itemName);
   },
-  remove: (itemName) => {
+  remove(itemName) {
     sessionStorage.removeItem(itemName);
   },
-  clear: () => {
+  clear() {
     sessionStorage.clear();
   },
 };
@@ -537,12 +537,12 @@ export class NumberUtils {
   }
 }
 
-export var KB = 1024,
+export const KB = 1024,
   MB = KB * KB,
   GB = MB * KB,
   TB = GB * KB;
-export var File = {
-  formatSize: function (length, unit, digits) {
+export const File = {
+  formatSize(length, unit, digits) {
     if (unit) {
       if (typeof digits === 'undefined') digits = 1;
       if (unit === 'MB') {
@@ -551,6 +551,8 @@ export var File = {
         return (length / GB).toFixed(digits) + ' GB';
       } else if (unit === 'TB') {
         return (length / TB).toFixed(digits) + ' TB';
+      } else {
+        return length + ' ' + unit;
       }
     } else {
       if (length < KB) return length + ' B';
@@ -560,19 +562,17 @@ export var File = {
       else return (length / TB).toFixed(2) + ' <span>TB</span>';
     }
   },
-  validName: (name) => {
+  validName(name) {
     // \ / : * ? " < > |
     return name.replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：').replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂').replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
   },
 };
 
-export var reqParam = location.search
+export const reqParam = location.search
   .split(/[?&]/)
   .slice(1)
-  .map(function (paramPair) {
-    return paramPair.split(/=(.+)?/).slice(0, 2);
-  })
-  .reduce(function (obj, pairArray) {
+  .map((paramPair) => paramPair.split(/=(.+)?/).slice(0, 2))
+  .reduce((obj, pairArray) => {
     obj[pairArray[0]] = pairArray[1];
     return obj;
   }, {});
@@ -582,8 +582,8 @@ export const bodyRegExp = /^(7[0-9]|8[0-9]|9[0-9]|1\d{2})[A-J]? - (5[0-9]|6[0-9]
 export const heightRegExp = /^(1[4-7][0-9])$/;
 export const debutRegExp = /^(199[0-9]|20[0-2][0-9])$/;
 
-export class ThreadUtils {
-  static sleep(ms) {
+export const ThreadUtils = {
+  sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-}
+  },
+};

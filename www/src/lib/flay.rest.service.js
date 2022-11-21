@@ -21,7 +21,7 @@ export const restCall = function (url, args, callback, failCallback, callbackDat
     cache: false,
     title: '',
     loadingDelay: 300,
-    beforeSend: function (xhr, settings) {
+    beforeSend(xhr, settings) {
       // if (loading === null) {
       //   loading = new Loading();
       // }
@@ -88,13 +88,13 @@ export const restCall = function (url, args, callback, failCallback, callbackDat
 
 export const Rest = {
   Flay: {
-    get: function (opus, callback, failCallback) {
+    get(opus, callback, failCallback) {
       restCall('/flay/' + opus, {}, callback, failCallback);
     },
-    getSync: function (opus, callback, failCallback) {
+    getSync(opus, callback, failCallback) {
       restCall('/flay/' + opus, { async: false }, callback, failCallback);
     },
-    getFully: (opus, callback, failCallback) => {
+    getFully(opus, callback, failCallback) {
       restCall(
         '/flay/' + opus + '/fully',
         {},
@@ -105,80 +105,80 @@ export const Rest = {
         failCallback
       );
     },
-    getFullyAsync: (opus) => {
+    getFullyAsync(opus) {
       let flay;
       restCall('/flay/' + opus + '/fully', { async: false }, (f) => {
         flay = f;
       });
       return flay;
     },
-    getScore: function (opus, callback) {
+    getScore(opus, callback) {
       restCall('/flay/' + opus + '/score', {}, callback);
     },
-    getScoreSync: function (opus) {
+    getScoreSync(opus) {
       let score = 0;
       restCall('/flay/' + opus + '/score', { async: false }, function (s) {
         score = s;
       });
       return score;
     },
-    page: function (page, size, keyword, callback) {
+    page(page, size, keyword, callback) {
       restCall('/flay/page', { data: { page: page, size: size, keyword: keyword } }, callback);
     },
-    list: function (callback, failCallback) {
+    list(callback, failCallback) {
       restCall('/flay/list', {}, callback, failCallback);
     },
-    listOfFlay: (condition, callback, failCallback) => {
+    listOfFlay(condition, callback, failCallback) {
       restCall('/flay/list/flay', { data: condition, method: 'POST' }, callback, failCallback);
     },
-    listOfStudio: (condition, callback, failCallback) => {
+    listOfStudio(condition, callback, failCallback) {
       restCall('/flay/list/studio', { data: condition, method: 'POST' }, callback, failCallback);
     },
-    listOfOpus: (condition, callback, failCallback) => {
+    listOfOpus(condition, callback, failCallback) {
       restCall('/flay/list/opus', { data: condition, method: 'POST' }, callback, failCallback);
     },
-    listOfTitle: (condition, callback, failCallback) => {
+    listOfTitle(condition, callback, failCallback) {
       restCall('/flay/list/title', { data: condition, method: 'POST' }, callback, failCallback);
     },
-    listOfActress: (condition, callback, failCallback) => {
+    listOfActress(condition, callback, failCallback) {
       restCall('/flay/list/actress', { data: condition, method: 'POST' }, callback, failCallback);
     },
-    listOfRelease: (condition, callback, failCallback) => {
+    listOfRelease(condition, callback, failCallback) {
       restCall('/flay/list/release', { data: condition, method: 'POST' }, callback, failCallback);
     },
-    listOrderbyScoreDesc: function (callback) {
+    listOrderbyScoreDesc(callback) {
       restCall('/flay/list/orderbyScoreDesc', {}, callback);
     },
-    listOfLowScore: function (callback) {
+    listOfLowScore(callback) {
       restCall('/flay/list/lowScore', {}, callback);
     },
-    search: function (search, callback) {
+    search(search, callback) {
       restCall('/flay/find', { data: search }, callback);
     },
-    find: function (query, callback) {
+    find(query, callback) {
       restCall('/flay/find/' + query, {}, callback);
     },
-    findAll: function (query, callback) {
+    findAll(query, callback) {
       restCall('/flay/find/all/' + query, {}, callback);
     },
-    findSync: function (query, callback) {
+    findSync(query, callback) {
       restCall('/flay/find/' + query, { async: false }, callback);
     },
-    findByTag: function (tag, callback) {
+    findByTag(tag, callback) {
       restCall('/flay/find/tag/' + tag.id, {}, callback);
     },
-    findByTagLike: function (tag, callback) {
+    findByTagLike(tag, callback) {
       restCall('/flay/find/tag/' + tag.id + '/like', {}, callback);
     },
-    findByActress: function (actress, callback) {
+    findByActress(actress, callback) {
       let keyword = typeof actress === 'object' ? actress.name : actress;
       restCall('/flay/find/actress/' + keyword, {}, callback);
     },
-    findByActressInArchive: function (actress, callback) {
+    findByActressInArchive(actress, callback) {
       let keyword = typeof actress === 'object' ? actress.name : actress;
       restCall('/archive/find/actress/' + keyword, {}, callback);
     },
-    findByActressAll: (actress, callback) => {
+    findByActressAll(actress, callback) {
       Promise.all([
         new Promise((resolve) => {
           Rest.Flay.findByActress(actress, resolve);
@@ -191,99 +191,99 @@ export const Rest = {
         callback(flayAllList);
       });
     },
-    findCandidates: function (callback) {
+    findCandidates(callback) {
       restCall('/flay/candidates', { title: 'Find candidates' }, callback);
     },
-    acceptCandidates: function (flay, callback) {
+    acceptCandidates(flay, callback) {
       restCall('/flay/candidates/' + flay.opus, { method: 'PATCH' }, callback);
     },
-    play: function (flay, callback, callbackData) {
+    play(flay, callback, callbackData) {
       flay.video.play++;
       restCall('/flay/play/' + flay.opus, { method: 'PATCH' }, callback, null, callbackData);
     },
-    subtitles: function (flay) {
+    subtitles(flay) {
       restCall('/flay/edit/' + flay.opus, { method: 'PATCH' });
     },
-    rename: function (opus, flay, callback) {
+    rename(opus, flay, callback) {
       restCall('/flay/rename/' + opus, { data: flay, method: 'PUT' }, callback);
     },
-    openFolder: function (folder) {
+    openFolder(folder) {
       restCall('/flay/open/folder', { method: 'PUT', data: folder });
     },
-    deleteFile: function (file, callback) {
+    deleteFile(file, callback) {
       restCall('/flay/delete/file', { method: 'PUT', data: file }, callback);
     },
-    deleteFileOnFlay: function (opus, file, callback) {
+    deleteFileOnFlay(opus, file, callback) {
       restCall('/flay/delete/file/' + opus, { method: 'PUT', data: file }, callback);
     },
   },
   Cover: {
-    base64: function (opus, callback) {
+    base64(opus, callback) {
       restCall('/static/cover/' + opus + '/base64', { async: false, mimeType: 'text/plain' }, callback);
     },
   },
   Archive: {
-    get: function (opus, callback) {
+    get(opus, callback) {
       restCall('/archive/' + opus, {}, callback);
     },
-    page: function (page, size, keyword, callback) {
+    page(page, size, keyword, callback) {
       restCall('/archive/page', { data: { page: page, size: size, keyword: keyword } }, callback);
     },
-    list: function (callback, failCallback) {
+    list(callback, failCallback) {
       restCall('/archive/list', {}, callback, failCallback);
     },
-    toInstance: function (opus, callback) {
+    toInstance(opus, callback) {
       restCall('/archive/toInstance/' + opus, { method: 'PATCH' }, callback);
     },
   },
   History: {
-    list: function (callback) {
+    list(callback) {
       restCall('/info/history/list', {}, callback);
     },
-    find: function (query, callback) {
+    find(query, callback) {
       restCall('/info/history/find/' + query, {}, callback);
     },
-    findAction: function (action, callback) {
+    findAction(action, callback) {
       restCall('/info/history/find/action/' + action, {}, callback);
     },
   },
   Video: {
-    update: function (video, callback, callbackData) {
+    update(video, callback, callbackData) {
       restCall('/info/video', { data: video, method: 'PATCH' }, callback, null, callbackData);
     },
-    save: function (video, callback) {
+    save(video, callback) {
       restCall('/info/video', { data: video, method: 'POST' }, callback);
     },
-    list: function (callback) {
+    list(callback) {
       restCall('/info/video/list', {}, callback);
     },
-    get: function (opus, callback, failCallback) {
+    get(opus, callback, failCallback) {
       restCall('/info/video/' + opus, {}, callback, failCallback);
     },
-    find: function (keyword, callback) {
+    find(keyword, callback) {
       restCall('/info/video/find/' + keyword, {}, callback);
     },
   },
   Studio: {
-    findOneByOpus: function (opus, callback) {
+    findOneByOpus(opus, callback) {
       restCall('/info/studio/findOneByOpus/' + opus, {}, callback);
     },
-    get: function (name, callback, failCallback) {
+    get(name, callback, failCallback) {
       restCall('/info/studio/' + name, {}, callback, failCallback);
     },
-    update: function (studio, callback) {
+    update(studio, callback) {
       restCall('/info/studio', { data: studio, method: 'PATCH' }, callback);
     },
   },
   Actress: {
-    get: function (name, callback) {
+    get(name, callback) {
       if (name != '') {
         restCall('/info/actress/' + name, {}, callback);
       } else {
         console.error('Rest.Actress.get: no name!');
       }
     },
-    getSync: function (name) {
+    getSync(name) {
       if (name != '') {
         let ret = null;
         restCall('/info/actress/' + name, { async: false }, function (actress) {
@@ -294,50 +294,50 @@ export const Rest = {
         console.error('Rest.Actress.get: no name!');
       }
     },
-    list: function (callback, failCallback) {
+    list(callback, failCallback) {
       restCall('/info/actress/list', {}, callback, failCallback);
     },
-    listSync: function (callback, failCallback) {
+    listSync(callback, failCallback) {
       restCall('/info/actress/list', { async: false }, callback, failCallback);
     },
-    update: function (actress, callback) {
+    update(actress, callback) {
       restCall('/info/actress', { data: actress, method: 'PATCH' }, callback);
     },
-    persist: function (actress, callback) {
+    persist(actress, callback) {
       restCall('/info/actress', { data: actress, method: 'PUT' }, callback);
     },
-    rename: function (originalName, actress, callback) {
+    rename(originalName, actress, callback) {
       restCall('/info/actress/' + originalName, { data: actress, method: 'PUT' }, callback);
     },
-    findByLocalname: function (name, callback) {
+    findByLocalname(name, callback) {
       restCall('/info/actress/find/byLocalname/' + name, {}, callback);
     },
-    nameCheck: function (limit, callback) {
+    nameCheck(limit, callback) {
       restCall('/info/actress/func/nameCheck/' + limit, { title: 'Name checking...' }, callback);
     },
-    delete: function (actress, callback) {
+    delete(actress, callback) {
       restCall('/info/actress', { data: actress, method: 'DELETE' }, callback);
     },
   },
   Tag: {
-    get: function (tagId, callback) {
+    get(tagId, callback) {
       restCall('/info/tag/' + tagId, {}, callback);
     },
-    list: function (callback) {
+    list(callback) {
       restCall('/info/tag/list', {}, callback);
     },
-    create: function (tag, callback) {
+    create(tag, callback) {
       restCall('/info/tag', { data: tag, method: 'POST' }, callback);
     },
-    update: function (tag, callback) {
+    update(tag, callback) {
       restCall('/info/tag', { data: tag, method: 'PATCH' }, callback);
     },
-    delete: function (tag, callback) {
+    delete(tag, callback) {
       restCall('/info/tag', { data: tag, method: 'DELETE' }, callback);
     },
   },
   Image: {
-    size: function (callback) {
+    size(callback) {
       if (callback) {
         restCall('/image/size', { async: false }, callback);
       } else {
@@ -348,22 +348,22 @@ export const Rest = {
         return total;
       }
     },
-    list: function (callback) {
+    list(callback) {
       restCall('/image/list', {}, callback);
     },
-    download: function (data, callback) {
+    download(data, callback) {
       restCall('/image/pageImageDownload', { data: data, title: 'Download images' }, callback);
     },
-    get: function (idx, callback) {
+    get(idx, callback) {
       restCall('/image/' + idx, {}, callback);
     },
-    delete: function (idx, callback) {
+    delete(idx, callback) {
       restCall('/image/' + idx, { method: 'DELETE' }, callback);
     },
-    paint: function (idx) {
+    paint(idx) {
       restCall('/image/paint/' + idx, { method: 'PATCH' });
     },
-    blobUrl: function (url, thenFunc) {
+    blobUrl(url, thenFunc) {
       new Promise((resolve, reject) => {
         var xhr = new XMLHttpRequest();
         xhr.open('GET', url);
@@ -383,39 +383,39 @@ export const Rest = {
     },
   },
   Html: {
-    get: function (url, callback) {
+    get(url, callback) {
       restCall(url, { contentType: 'text/plain', mimeType: 'text/plain' }, callback);
     },
   },
   Batch: {
-    start: function (type, title, callback) {
+    start(type, title, callback) {
       restCall('/batch/start/' + type, { method: 'PUT', title: title }, callback);
     },
-    check: function (type, title, callback) {
+    check(type, title, callback) {
       restCall('/batch/check/' + type, { title: title }, callback);
     },
-    setOption: function (type, callback) {
+    setOption(type, callback) {
       restCall('/batch/option/' + type, { method: 'PUT' }, callback);
     },
-    getOption: function (type, callback) {
+    getOption(type, callback) {
       restCall('/batch/option/' + type, {}, callback);
     },
-    reload: function (callback) {
+    reload(callback) {
       restCall('/batch/reload', { method: 'PUT', title: 'Source reload' }, callback);
     },
   },
   Security: {
-    whoami: function (callback) {
+    whoami(callback) {
       restCall('/security/whoami', { async: false }, callback);
     },
-    isAutomaticallyCertificated: function () {
+    isAutomaticallyCertificated() {
       var result;
       restCall('/security/isAutomaticallyCertificated', { async: false }, function (isAuto) {
         result = Boolean(isAuto);
       });
       return result;
     },
-    login: function (username, password, callback, failCallback) {
+    login(username, password, callback, failCallback) {
       $.ajax({
         url: '/html/login.html',
         method: 'POST',
@@ -424,7 +424,7 @@ export const Rest = {
           username: username,
           password: password,
         },
-        success: function (response) {
+        success(response) {
           console.info(response);
           if (response.result) {
             if (callback) callback(response);
@@ -436,16 +436,16 @@ export const Rest = {
     },
   },
   Todayis: {
-    list: function (callback) {
+    list(callback) {
       restCall('/todayis/list', {}, callback);
     },
-    play: function (todayis, callback) {
+    play(todayis, callback) {
       restCall('/todayis/play', { data: todayis, method: 'PATCH' }, callback);
     },
-    delete: function (todayis, callback) {
+    delete(todayis, callback) {
       restCall('/todayis', { data: todayis, method: 'DELETE' }, callback);
     },
-    openFolder: function (folder) {
+    openFolder(folder) {
       restCall('/flay/open/folder', { method: 'PUT', data: folder });
     },
   },

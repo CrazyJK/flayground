@@ -10,7 +10,7 @@ const todayYear = new Date().getFullYear();
 
 export const Util = {
   Flay: {
-    sort: function (flayList, sort) {
+    sort(flayList, sort) {
       const compareTo = (data1, data2) => {
         var result = 0;
         if (typeof data1 === 'number') {
@@ -54,7 +54,7 @@ export const Util = {
     },
   },
   Tag: {
-    includes: function (tags, _tag) {
+    includes(tags, _tag) {
       var found = false;
       $.each(tags, function (idx, tag) {
         if (typeof _tag === 'string') {
@@ -69,7 +69,7 @@ export const Util = {
       });
       return found;
     },
-    indexOf: function (tags, _tag) {
+    indexOf(tags, _tag) {
       var found = -1;
       $.each(tags, function (idx, tag) {
         if (tag.id === _tag.id) {
@@ -78,26 +78,26 @@ export const Util = {
       });
       return found;
     },
-    push: function (tags, tag) {
+    push(tags, tag) {
       var idx = Util.Tag.indexOf(tags, tag);
       if (idx < 0) {
         tags.push(tag);
       }
     },
-    remove: function (tags, tag) {
+    remove(tags, tag) {
       var idx = Util.Tag.indexOf(tags, tag);
       if (idx > -1) {
         tags.splice(idx, 1);
       }
     },
-    sort: function (tags) {
+    sort(tags) {
       tags.sort(function (t1, t2) {
         return t1.name.localeCompare(t2.name);
       });
     },
   },
   Actress: {
-    getNames: function (actressList) {
+    getNames(actressList) {
       if (actressList != null && Array.isArray(actressList)) {
         return actressList.map((actress) => (typeof actress === 'string' ? actress : actress.name)).join(', ');
       } else if (typeof actressList === 'string') {
@@ -106,7 +106,7 @@ export const Util = {
         return '';
       }
     },
-    get: function (actressList, className) {
+    get(actressList, className) {
       var list = [];
       if (actressList != null && Array.isArray(actressList)) {
         $.each(actressList, function (idx, actress) {
@@ -126,14 +126,14 @@ export const Util = {
     getAgeNumber(actress, baseYear) {
       return Number(baseYear || todayYear) - parseInt(actress.birth.substring(0, 4)) + 1;
     },
-    getAge: function (actress, baseYear) {
+    getAge(actress, baseYear) {
       if (actress.birth) {
         return `${this.getAgeNumber(actress, baseYear)}<small>y</small>`;
       } else {
         return '';
       }
     },
-    getBirth: (actress) => {
+    getBirth(actress) {
       if (actress.birth) {
         return actress.birth.replace(/年|月|日/g, (match, offset, string) => {
           return '<small>' + match + '</small>';
@@ -142,14 +142,14 @@ export const Util = {
         return '';
       }
     },
-    getCup: function (actress) {
+    getCup(actress) {
       if (actress.body) {
         return actress.body.replace(/[-0-9\s]/g, '');
       } else {
         return '';
       }
     },
-    getBody: (actress) => {
+    getBody(actress) {
       if (actress.body) {
         return actress.body
           .split(' - ')
@@ -163,21 +163,21 @@ export const Util = {
         return '';
       }
     },
-    getHeight: (actress) => {
+    getHeight(actress) {
       if (actress.height) {
         return actress.height + '<small>cm</small>';
       } else {
         return '';
       }
     },
-    getDebut: (actress) => {
+    getDebut(actress) {
       if (actress.debut) {
         return actress.debut + '<small>d</small>';
       } else {
         return '';
       }
     },
-    toArray: function (names) {
+    toArray(names) {
       var split = names.split(',');
       for (var i = 0; i < split.length; i++) {
         split[i] = split[i].trim();
@@ -188,10 +188,10 @@ export const Util = {
 };
 
 export const View = {
-  flay: function (opus) {
+  flay(opus) {
     Popup.open(PATH + './info.flay.html?opus=' + opus, 'flay-' + opus, 800, 770);
   },
-  flayInPage: (flay) => {
+  flayInPage(flay) {
     if ($('#flayInPage').length === 0) {
       $(`	<div id="flayInPage" class="collapse fixed-center rounded shadow" style="width: 800px">
 					<span class="text-light hover" style="position: absolute; right: 0; bottom: 0; margin: 5px; font-size: 3rem; line-height: 0.5; text-shadow: 0px 0px 4px #000;" onclick="$(this).parent().hide();">&times;</span>
@@ -201,17 +201,17 @@ export const View = {
     $('#flayInPage > div').empty().appendFlayCard(flay);
     $('#flayInPage').show();
   },
-  video: function (opus) {
+  video(opus) {
     Popup.open(PATH + '/info/video/' + opus, 'video-' + opus, 400, 300);
   },
-  actress: function (name) {
+  actress(name) {
     Popup.open(PATH + './info.actress.html?name=' + name, 'actress-' + name, 1072, 1100);
   },
-  tag: function (tagId) {
+  tag(tagId) {
     // Popup.open(PATH + '/info/tag/' + tagId, 'Tag-' + tagId, 800, 650);
     Popup.open(PATH + './info.tag.html?id=' + tagId, 'Tag-' + tagId, 1072, 650);
   },
-  studio: function (name) {
+  studio(name) {
     Popup.open(PATH + './info.studio.html?s=' + name, 'Studio-' + name, 1072, 1900);
   },
 };
@@ -231,47 +231,47 @@ const URL_SEARCH_SUBTITLES = 'https://www.subtitlecat.com/index.php?search=';
 const URL_FIND_ACTRESS = 'http://javtorrent.re/tag/';
 
 export const Search = {
-  opus: (keyword) => {
+  opus(keyword) {
     var url = FIREFOX === browser ? URL_SEARCH_ARZON : URL_SEARCH_AVNORI;
     Popup.open(url + keyword, 'opusSearch', 1500, 1000);
   },
-  arzon: (keyword) => {
+  arzon(keyword) {
     Popup.open(URL_SEARCH_ARZON + keyword, 'arzonSearch', 800, 1000);
   },
-  avnori: (keyword) => {
+  avnori(keyword) {
     Popup.open(URL_SEARCH_AVNORI + keyword, 'avnoriSearch', 800, 1000);
   },
-  avdbs: (keyword) => {
+  avdbs(keyword) {
     Popup.open(URL_SEARCH_AVDBS + keyword, 'avdbsSearch', 800, 1000);
   },
-  nextjav: (keyword) => {
+  nextjav(keyword) {
     Popup.open(URL_SEARCH_NEXTJAV + keyword, 'nextjavSearch', 800, 1000);
   },
-  actress: (keyword) => {
+  actress(keyword) {
     Popup.open(URL_SEARCH_ACTRESS + encodeURI(keyword), 'actressSearch', 1200, 950);
   },
-  torrent: (keyword) => {
+  torrent(keyword) {
     Popup.open(URL_SEARCH_GOOGLE + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
   },
-  google: (keyword) => {
+  google(keyword) {
     Popup.open(URL_SEARCH_GOOGLE + keyword, 'googleSearch', 800, 1000);
   },
-  translateByPapago: (message) => {
+  translateByPapago(message) {
     Popup.open(URL_TRANSLATE_PAPAGO + message, 'translateByPapago', 1000, 500);
   },
-  translateByGoogle: (message) => {
+  translateByGoogle(message) {
     Popup.open(URL_TRANSLATE_GOOGLE + message, 'translateByGoogle', 1000, 500);
   },
-  opusByRandom: () => {
+  opusByRandom() {
     Search.opus(Random.getInteger(1, 999));
   },
-  find: (keyword) => {
+  find(keyword) {
     Popup.open(URL_FIND_ACTRESS + encodeURI(keyword), 'findSearch', 1200, 950);
   },
-  subtitles: (keyword, w, h) => {
+  subtitles(keyword, w, h) {
     Popup.open(URL_SEARCH_SUBTITLES + keyword, 'subtitlesSearch', w || 900, h || 950);
   },
-  subtitlesUrlIfFound: (opus, callback) => {
+  subtitlesUrlIfFound(opus, callback) {
     $.ajax({
       url: '/file/find/exists/subtitles?opus=' + opus,
       success: (result) => {
@@ -285,29 +285,29 @@ export const Search = {
 
 export const Security = {
   principal: null,
-  getUser: () => {
+  getUser() {
     Rest.Security.whoami((principal) => {
-      Security.principal = principal;
+      this.principal = principal;
     });
   },
-  hasRole: (role) => {
-    if (Security.principal == null) {
-      Security.getUser();
+  hasRole(role) {
+    if (this.principal == null) {
+      this.getUser();
     }
-    for (let { authority } of Security.principal.authorities) {
+    for (let { authority } of this.principal.authorities) {
       if (authority === 'ROLE_' + role) {
         return true;
       }
     }
     return false;
   },
-  getName: () => {
-    if (Security.principal == null) {
-      Security.getUser();
+  getName() {
+    if (this.principal == null) {
+      this.getUser();
     }
-    return Security.principal.username;
+    return this.principal.username;
   },
-  isAutomaticallyCertificated: () => {
+  isAutomaticallyCertificated() {
     return Rest.Security.isAutomaticallyCertificated();
   },
 };

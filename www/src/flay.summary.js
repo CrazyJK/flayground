@@ -275,7 +275,6 @@ document.getElementById('StudioTable').addEventListener('show.bs.collapse', func
     }
 
     displayCount++;
-
     const tot = NumberUtils.calculateStandardDeviation(...totalList.map((flay) => flay.video.rank));
     const ins = NumberUtils.calculateStandardDeviation(...instanceList.map((flay) => flay.video.rank));
     const fav = NumberUtils.calculateStandardDeviation(...favoriteList.map((flay) => flay.video.rank));

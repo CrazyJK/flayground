@@ -6,7 +6,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
+import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.flay.service.FlayService;
@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
   @Autowired FlayService flayService;
-  @Autowired AnnounceService notificationService;
+  @Autowired TopicMessageService topicMessageService;
   @Autowired FlayFileHandler flayFileHandler;
 
   public void rename(Actress actress, String oldName) {
@@ -46,7 +46,7 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
         flayFileHandler.rename(flay, actressList);
       }
-      notificationService.announceTo("Rename Actress", oldName + " -> " + actress.getName());
+      topicMessageService.sendFromServerToAll("Rename Actress", oldName + " -> " + actress.getName());
     }
   }
 

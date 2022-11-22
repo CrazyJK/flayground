@@ -14,7 +14,7 @@ import org.springframework.stereotype.Repository;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.watch.DirectoryWatcher;
-import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
+import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.image.ImageNotfoundException;
 import jk.kamoru.flayground.image.domain.Image;
@@ -26,7 +26,7 @@ public class LocalImageSource implements ImageSource {
 
   @Autowired FlayProperties flayProperties;
 
-  @Autowired AnnounceService notificationService;
+  @Autowired TopicMessageService topicMessageService;
   @Autowired FlayFileHandler flayFileHandler;
 
   private List<Image> imageList;
@@ -82,7 +82,7 @@ public class LocalImageSource implements ImageSource {
     if (changed) {
       log.info("Image was changed, Source will be reloaded");
       load();
-      notificationService.announce("Image reload", size() + " images");
+      topicMessageService.sendFromServerToAll("Image reload", size() + " images");
     }
     changed = false;
   }
@@ -110,7 +110,7 @@ public class LocalImageSource implements ImageSource {
     Image image = get(idx);
     imageList.remove(image);
     flayFileHandler.deleteFile(image.getFile());
-    notificationService.announce("Image removed", image.getFile().toString());
+    topicMessageService.sendFromServerToAll("Image removed", image.getFile().toString());
   }
 
 }

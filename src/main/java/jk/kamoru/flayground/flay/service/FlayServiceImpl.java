@@ -15,7 +15,7 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.advice.TrackExecutionTime;
-import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
+import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -42,7 +42,7 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
   @Autowired FlayActionHandler flayActionHandler;
   @Autowired FlayFileHandler flayFileHandler;
   @Autowired CandidatesProvider candidatesProvider;
-  @Autowired AnnounceService notificationService;
+  @Autowired TopicMessageService topicMessageService;
   @Autowired ScoreCalculator scoreCalculator;
 
   @Override
@@ -140,7 +140,7 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     }
     // 전체 파일명 조정
     flayFileHandler.rename(flay);
-    notificationService.announceTo("Accept candidates", flay.getFullname());
+    topicMessageService.sendFromServerToCurrentUser("Accept candidates", flay.getFullname());
   }
 
   @Override
@@ -172,7 +172,7 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
       flay = archiveFlaySource.get(opus);
     }
     flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
-    notificationService.announceTo("Rename Flay", newFlay.getFullname());
+    topicMessageService.sendFromServerToCurrentUser("Rename Flay", newFlay.getFullname());
   }
 
   @Override

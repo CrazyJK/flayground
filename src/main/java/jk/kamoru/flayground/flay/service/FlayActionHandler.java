@@ -11,7 +11,7 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
+import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.image.domain.Image;
 import lombok.extern.slf4j.Slf4j;
@@ -22,21 +22,21 @@ public class FlayActionHandler {
 
   @Autowired FlayProperties flayProperties;
 
-  @Autowired AnnounceService notificationService;
+  @Autowired TopicMessageService topicMessageService;
 
   public void play(Flay flay) {
     exec(composite(flayProperties.getPlayerApp(), flay.getFiles().get(Flay.MOVIE)));
-    notificationService.announceTo("Play " + flay.getOpus(), flay.getFullname());
+    topicMessageService.sendFromServerToCurrentUser("Play " + flay.getOpus(), flay.getFullname());
   }
 
   public void edit(Flay flay) {
     exec(composite(flayProperties.getEditorApp(), flay.getFiles().get(Flay.SUBTI)));
-    notificationService.announceTo("Edit " + flay.getOpus(), flay.getFullname());
+    topicMessageService.sendFromServerToCurrentUser("Edit " + flay.getOpus(), flay.getFullname());
   }
 
   public void paint(Image image) {
     exec(composite(flayProperties.getPaintApp(), Arrays.asList(image.getFile())));
-    notificationService.announceTo("Paint " + image.getName(), image.getPath());
+    topicMessageService.sendFromServerToCurrentUser("Paint " + image.getName(), image.getPath());
   }
 
   @Async

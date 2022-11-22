@@ -164,7 +164,7 @@ export const STUDIO = 'studio',
       } else {
         $flayCard.find('.add-basket-btn').on('click', function () {
           if (!flay.archive) {
-            flayWebsocket.info('{"mode":"grap", "opus":"' + flay.opus + '"}');
+            flayWebsocket.info({ mode: 'grap', opus: flay.opus });
           }
         });
       }

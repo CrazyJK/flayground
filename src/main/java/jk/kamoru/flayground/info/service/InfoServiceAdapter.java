@@ -5,7 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import jk.kamoru.flayground.base.web.socket.notice.AnnounceService;
+import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.info.domain.Info;
 import jk.kamoru.flayground.info.source.InfoSource;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +16,7 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
   ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
   @Autowired InfoSource<T, K> infoSource;
-  @Autowired AnnounceService notificationService;
+  @Autowired TopicMessageService topicMessageService;
 
   @Override
   public T get(K key) {
@@ -44,7 +44,7 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
   public T create(T create) {
     T created = infoSource.create(create);
     try {
-      notificationService.announceTo("Created", jsonWriter.writeValueAsString(created));
+      topicMessageService.sendFromServerToAll("Created", jsonWriter.writeValueAsString(created));
     } catch (JsonProcessingException e) {
       log.error(e.getMessage());
     }
@@ -55,7 +55,7 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
   public void update(T update) {
     infoSource.update(update);
     try {
-      notificationService.announceTo("Updated", jsonWriter.writeValueAsString(update));
+      topicMessageService.sendFromServerToAll("Updated", jsonWriter.writeValueAsString(update));
     } catch (JsonProcessingException e) {
       log.error(e.getMessage());
     }
@@ -65,7 +65,7 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
   public void delete(T delete) {
     infoSource.delete(delete);
     try {
-      notificationService.announceTo("Deleted", jsonWriter.writeValueAsString(delete));
+      topicMessageService.sendFromServerToAll("Deleted", jsonWriter.writeValueAsString(delete));
     } catch (JsonProcessingException e) {
       log.error(e.getMessage());
     }

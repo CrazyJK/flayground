@@ -614,7 +614,7 @@ function attachFlayEventListener() {
   });
   // add-basket-btn
   $('.add-basket-btn').on('click', function () {
-    flayWebsocket.info('{"mode":"grap", "opus":"' + currentFlay.opus + '"}');
+    flayWebsocket.info({ mode: 'grap', opus: currentFlay.opus });
   });
   // control video stream
   $('.cover-wrapper-inner.curr > .cover-box').on('click', Flaying.start);

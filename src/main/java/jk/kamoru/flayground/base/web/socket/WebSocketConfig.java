@@ -10,20 +10,24 @@ import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerCo
 @EnableWebSocketMessageBroker
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
-  public static final String STOMP_ENDPOINT = "/flayground-websocket";
-
+  private static final String STOMP_ENDPOINT = "/flayground-websocket";
   private static final String TOPIC = "/topic";
   private static final String QUEUE = "/queue";
   private static final String APP_DEST_PREFIX = "/flayground";
 
-  /* 서버에서 보내는 메시지 */
-  public static final String TOPIC_ANNOUNCE = TOPIC + "/announce";
+  public static final String MESSAGE = "/message";
+  public static final String SAY = "/say";
+  public static final String DATA = "/data";
 
-  /* 사용자가 보내는 메시지 */
-  public static final String TOPIC_SAY = TOPIC + "/say";
+  /** 메시지 구독 */
+  public static final String TOPIC_MESSAGE = TOPIC + MESSAGE;
 
-  /* 자신에게 보내는 정보 */
-  public static final String QUEUE_INFO = QUEUE + "/info";
+  /** 대화 구독 */
+  public static final String TOPIC_SAY = TOPIC + SAY;
+
+  /** 정보 구독 */
+  public static final String QUEUE_DATA = QUEUE + DATA;
+
 
   @Override
   public void registerStompEndpoints(StompEndpointRegistry registry) {

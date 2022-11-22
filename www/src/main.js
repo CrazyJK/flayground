@@ -163,7 +163,7 @@ const SlideMenu = {
 
       // broadcasting
       try {
-        flayWebsocket.info('bgtheme');
+        flayWebsocket.info({ mode: 'bgtheme' });
       } catch (e) {
         // no nothing
       }
@@ -182,7 +182,7 @@ const SlideMenu = {
         $('body').css({ backgroundColor: $(e.target).val() });
         try {
           // broadcasting
-          flayWebsocket.info('bgcolor');
+          flayWebsocket.info({ mode: 'bgcolor' });
         } catch (e) {
           // no nothing
         }

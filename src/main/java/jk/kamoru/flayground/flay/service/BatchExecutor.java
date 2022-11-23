@@ -393,11 +393,11 @@ public class BatchExecutor {
       for (File file : entry.getValue()) {
         if (Flay.COVER.equals(key) || Flay.SUBTI.equals(key)) {
           log.info("will be move {} to {}", file, archiveDir);
-          queueDataService.queueFromServerToCurrentUser("batch", " will be move " + file + " to " + archiveDir);
+          queueDataService.queueFromServerToCurrentUser("batch", "  will be move " + file + " to " + archiveDir);
           flayFileHandler.moveFileToDirectory(file, archiveDir);
         } else {
           log.info("will be delete {}", file);
-          queueDataService.queueFromServerToCurrentUser("batch", "will be delete " + file);
+          queueDataService.queueFromServerToCurrentUser("batch", "  will be delete " + file);
           flayFileHandler.deleteFile(file);
         }
       }

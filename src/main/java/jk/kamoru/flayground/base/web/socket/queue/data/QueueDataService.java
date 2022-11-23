@@ -31,7 +31,7 @@ public class QueueDataService {
   }
 
   public void queue(Object content, String from, String to) {
-    log.info("queue: [{}] from [{}] to [{}]", content, from, to);
+    log.debug("queue: [{}] from [{}] to [{}]", content, from, to);
     if (StringUtils.isBlank(to)) {
       messagingTemplate.convertAndSend(QUEUE_DATA, PayLoad.builder().type(DATA).from(from).content(content).build());
     } else {

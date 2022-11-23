@@ -39,7 +39,7 @@ public class TopicSayService {
    * @param to
    */
   public void say(String message, String from, String to) {
-    log.info("say: [{}] from [{}] to [{}]", message, from, to);
+    log.debug("say: [{}] from [{}] to [{}]", message, from, to);
     if (StringUtils.isBlank(to)) {
       messagingTemplate.convertAndSend(TOPIC_SAY, PayLoad.builder().type(SAY).from(from).content(message).build());
     } else {

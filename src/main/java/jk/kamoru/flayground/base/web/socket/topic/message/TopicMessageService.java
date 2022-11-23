@@ -31,7 +31,7 @@ public class TopicMessageService {
   }
 
   public void send(String subject, String body, String from, String to) {
-    log.info("send [{}: {}] from [{}] to [{}]", subject, body, from, to);
+    log.debug("send [{}: {}] from [{}] to [{}]", subject, body, from, to);
     if (StringUtils.isBlank(to)) {
       messagingTemplate.convertAndSend(TOPIC_MESSAGE,
           PayLoad.builder().type(MESSAGE).from(from).subject(subject).content(body).build());

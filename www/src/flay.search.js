@@ -694,6 +694,6 @@ window.returnFalse = function () {
 };
 
 window.batchFeedback = function (data) {
-  console.log(data);
+  console.debug(data);
   $('#feedbackMessage').append(data + '\n');
 };

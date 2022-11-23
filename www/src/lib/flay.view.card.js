@@ -164,7 +164,7 @@ export const STUDIO = 'studio',
       } else {
         $flayCard.find('.add-basket-btn').on('click', function () {
           if (!flay.archive) {
-            flayWebsocket.info({ mode: 'grap', opus: flay.opus });
+            flayWebsocket.data({ mode: 'grap', opus: flay.opus });
           }
         });
       }
@@ -211,7 +211,7 @@ export const STUDIO = 'studio',
                   Rest.Batch.reload(function () {
                     Rest.Video.get(flay.opus, function (video) {
                       video.rank = 0;
-                      Rest.Video.update(video, function () {});
+                      Rest.Video.update(video);
                     });
                   });
                 });

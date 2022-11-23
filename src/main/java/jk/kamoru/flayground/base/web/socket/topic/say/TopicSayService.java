@@ -2,12 +2,13 @@ package jk.kamoru.flayground.base.web.socket.topic.say;
 
 import static jk.kamoru.flayground.base.web.socket.WebSocketConfig.SAY;
 import static jk.kamoru.flayground.base.web.socket.WebSocketConfig.TOPIC_SAY;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.stereotype.Service;
+
+import jk.kamoru.flayground.base.web.security.SecurityService;
 import jk.kamoru.flayground.base.web.socket.PayLoad;
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,38 +16,39 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class TopicSayService {
 
-  @Autowired SimpMessagingTemplate messagingTemplate;
+  @Autowired
+  SimpMessagingTemplate messagingTemplate;
+
+  @Autowired
+  SecurityService securityService;
 
   /**
    * 서버에서 전달하는 대화
+   * 
    * @param topicSay
    */
-  public void sayFromServer(TopicSay topicSay) {
-    sayFrom(topicSay, PayLoad.SERVER);
+  public void sayFromServerToAll(String message) {
+    say(message, PayLoad.SERVER, null);
   }
 
-  /**
-   * 사용자간 대화
-   * @param topicSay
-   */
-  public void say(TopicSay topicSay) {
-    User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-    sayFrom(topicSay, user.getUsername());
+  public void sayFromServerToCurrentUser(String message) {
+    say(message, PayLoad.SERVER, securityService.getUsername());
   }
 
   /**
    * 메시징 구현.
-   * 공개인지 개인인지는 {@link TopicSay#to} 로 구분
-   * @param topicSay
+   * 
+   * @param message
    * @param from
+   * @param to
    */
-  private void sayFrom(TopicSay topicSay, String from) {
-    log.debug("say: {} from {}", topicSay, from);
-    final String to = topicSay.getTo();
+  public void say(String message, String from, String to) {
+    log.info("say: [{}] from [{}] to [{}]", message, from, to);
     if (StringUtils.isBlank(to)) {
-      messagingTemplate.convertAndSend(TOPIC_SAY, PayLoad.builder().type(SAY).from(from).body(topicSay.getContent()).build());
+      messagingTemplate.convertAndSend(TOPIC_SAY, PayLoad.builder().type(SAY).from(from).content(message).build());
     } else {
-      messagingTemplate.convertAndSendToUser(to, TOPIC_SAY, PayLoad.builder().type(SAY).from(from).to(to).body(topicSay.getContent()).build());
+      messagingTemplate.convertAndSendToUser(to, TOPIC_SAY,
+          PayLoad.builder().type(SAY).from(from).to(to).content(message).build());
     }
   }
 

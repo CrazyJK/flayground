@@ -10,20 +10,16 @@ import Stomp from 'stompjs';
 import { LocalStorageItem } from './crazy.common.js';
 import './flay.websocket.scss';
 
-var consoleDebug = console.debug;
-// consoleDebug = () => {};
-
 const ANNOUNCE_WRAPPER_ID = 'announceWrapper';
 
 class FlayWebsocket {
   constructor() {
     this.STOMP_ENDPOINT = '/flayground-websocket';
 
-    this.TOPIC_ANNOUNCE = '/topic/announce';
-    this.TOPIC_ANNOUNCE_TO = '/user/topic/announce';
+    this.USER = '/user';
+    this.TOPIC_MESSAGE = '/topic/message';
     this.TOPIC_SAY = '/topic/say';
-    this.TOPIC_SAY_TO = '/user/topic/say';
-    this.QUEUE_INFO = '/user/queue/info';
+    this.QUEUE_DATA = '/queue/data';
 
     this.MAX_RETRY_COUNT = 5;
     this.retryCount = 0;
@@ -44,7 +40,7 @@ class FlayWebsocket {
         })
         .trigger('change');
     } else {
-      consoleDebug('flayWebsocket', 'switch is not exist. will be connected automatically');
+      console.debug('flayWebsocket', 'switch is not exist. will be connected automatically');
       this.connect();
     }
 
@@ -57,12 +53,12 @@ class FlayWebsocket {
   connect() {
     this.stompClient = Stomp.over(new SockJS(this.STOMP_ENDPOINT));
     this.stompClient.debug = (str) => {
-      consoleDebug('stomp debug', str);
+      // console.debug('[stomp debug]', str);
     };
     this.stompClient.connect(
       {},
       (connect) => {
-        consoleDebug('[FlayWebsocket] connected', connect);
+        console.debug('[FlayWebsocket] connected', connect);
         this.retryCount = 0;
         this.username = connect.headers['user-name'];
         showMessage(connect);
@@ -85,61 +81,74 @@ class FlayWebsocket {
   disconnect() {
     if (this.stompClient !== null) {
       this.stompClient.disconnect(() => {
-        consoleDebug('[FlayWebsocket] disconnected');
+        console.warn('[FlayWebsocket] disconnected');
         showMessage({ command: 'DISCONNECTED' });
       });
     }
   }
 
   subscribe() {
-    const announceSubscription = this.stompClient.subscribe(this.TOPIC_ANNOUNCE, (message) => {
-      consoleDebug('[FlayWebsocket] announce', message);
+    this.stompClient.subscribe(this.TOPIC_MESSAGE, (message) => {
+      console.debug('[FlayWebsocket] TOPIC_MESSAGE', message);
       message.ack();
-      showMessage(message, 'ANNOUNCE');
+      showMessage(message);
     });
-    consoleDebug('[FlayWebsocket] subscription announce', announceSubscription);
 
-    const announceToSubscription = this.stompClient.subscribe(this.TOPIC_ANNOUNCE_TO, (message) => {
-      consoleDebug('[FlayWebsocket] announce to', message);
+    this.stompClient.subscribe(this.USER + this.TOPIC_MESSAGE, (message) => {
+      console.debug('[FlayWebsocket] USER TOPIC_MESSAGE', message);
       message.ack();
-      showMessage(message, 'ANNOUNCE');
+      showMessage(message);
     });
-    consoleDebug('[FlayWebsocket] subscription announce to', announceToSubscription);
 
-    const saySubscription = this.stompClient.subscribe(this.TOPIC_SAY, (message) => {
-      consoleDebug('[FlayWebsocket] say', message);
+    this.stompClient.subscribe(this.TOPIC_SAY, (message) => {
+      console.debug('[FlayWebsocket] TOPIC_SAY', message);
       message.ack();
-      showMessage(message, 'SAY');
+      showMessage(message);
     });
-    consoleDebug('[FlayWebsocket] subscription say', saySubscription);
 
-    const sayToSubscription = this.stompClient.subscribe(this.TOPIC_SAY_TO, (message) => {
-      consoleDebug('[FlayWebsocket] say to', message);
+    this.stompClient.subscribe(this.USER + this.TOPIC_SAY, (message) => {
+      console.debug('[FlayWebsocket] USER TOPIC_SAY', message);
       message.ack();
-      showMessage(message, 'SAY');
+      showMessage(message);
     });
-    consoleDebug('[FlayWebsocket] subscription say to', sayToSubscription);
 
-    const queueInfoSubscription = this.stompClient.subscribe(this.QUEUE_INFO, (message) => {
-      consoleDebug('[FlayWebsocket] queue', message);
+    this.stompClient.subscribe(this.QUEUE_DATA, (message) => {
+      console.debug('[FlayWebsocket] QUEUE_DATA', message);
       // message.ack();
-      infoCallback(message);
+      queueDataCallback(message);
     });
-    consoleDebug('[FlayWebsocket] subscription queueInfo', queueInfoSubscription);
+
+    this.stompClient.subscribe(this.USER + this.QUEUE_DATA, (message) => {
+      console.debug('[FlayWebsocket] USER QUEUE_DATA', message);
+      // message.ack();
+      queueDataCallback(message);
+    });
   }
 
+  /**
+   * 대화 전달
+   * @param {*} message
+   * @param {*} to 생략시 모두에게
+   */
   say(message, to) {
-    this.stompClient.send('/flayground/say' + (to ? 'To' : ''), { to: to }, JSON.stringify({ name: this.username, content: message }));
-    consoleDebug(`[FlayWebsocket] send say ${message} to ${to}`);
+    to = to ? to : '';
+    this.stompClient.send('/flayground/say', { from: this.username, to: to }, message);
+    console.log(`[FlayWebsocket] send say: ${message} to ${to}`);
   }
 
-  info(payLoad) {
-    this.stompClient.send('/flayground/info', { to: this.username }, JSON.stringify(payLoad));
-    consoleDebug(`[FlayWebsocket] send info ${payLoad}`);
+  /**
+   * 데이터 전달
+   * @param {JSON} payLoad
+   * @param {*} to 생략시 자기 자신
+   */
+  data(payLoad, to) {
+    to = to ? to : this.username;
+    this.stompClient.send('/flayground/data', { from: this.username, to: to }, JSON.stringify(payLoad));
+    console.log(`[FlayWebsocket] send data: ${payLoad} to ${to}`);
   }
 }
 
-const InfoCallMethods = {
+const QueueDataCallbackMethods = {
   bgtheme: () => {
     const bgThemeValue = LocalStorageItem.get('flay.bgtheme', 'dark');
     document.getElementsByTagName('html')[0].setAttribute('data-theme', bgThemeValue);
@@ -154,27 +163,35 @@ const InfoCallMethods = {
       grapFlay(opus);
     }
   },
-  batch: (notification) => {
+  batch: ({ data }) => {
     if (typeof batchFeedback === 'function') {
       // eslint-disable-next-line no-undef
-      batchFeedback(notification);
+      batchFeedback(data);
       return;
     }
   },
 };
 
-const infoCallback = (message) => {
+const queueDataCallback = (message) => {
   const messageBody = JSON.parse(message.body);
-  const messageBodyContent = JSON.parse(messageBody.content.replace(/&quot;/g, '"'));
-  consoleDebug('messageBodyContent', messageBodyContent);
+  console.debug('messageBody', messageBody);
 
-  InfoCallMethods[messageBodyContent.mode](messageBodyContent);
+  let messageBodyContent = messageBody.content;
+  if (typeof messageBodyContent === 'string') {
+    messageBodyContent = JSON.parse(messageBody.content.replace(/&quot;/g, '"'));
+  }
+  console.debug('messageBodyContent', messageBodyContent);
+
+  QueueDataCallbackMethods[messageBodyContent.mode](messageBodyContent);
 };
 
-const showMessage = (message, type) => {
+const showMessage = (message) => {
   const notification = {
-    type: message.command,
+    command: message.command,
     id: '',
+    type: '',
+    from: '',
+    to: '',
     title: '',
     content: '',
     time: new Date(),
@@ -195,7 +212,10 @@ const showMessage = (message, type) => {
     case 'MESSAGE': {
       const body = JSON.parse(message.body);
       notification.id = message.headers['message-id'];
-      notification.title = body.title;
+      notification.type = body.type;
+      notification.from = body.from;
+      notification.to = body.to;
+      notification.title = body.subject;
       notification.content = body.content;
       notification.time.setTime(body.time);
       break;
@@ -203,15 +223,7 @@ const showMessage = (message, type) => {
     default:
       throw new TypeError('unknown message command');
   }
-
-  consoleDebug('notification', notification);
-  if (notification.type === 'MESSAGE' && (notification.title === 'Batch' || notification.title === 'Backup')) {
-    if (typeof batchFeedback === 'function') {
-      // eslint-disable-next-line no-undef
-      batchFeedback(notification);
-      return;
-    }
-  }
+  console.debug('notification', notification);
 
   const $noti = $(`
     <div id="${notification.id}" class="announce">
@@ -220,8 +232,15 @@ const showMessage = (message, type) => {
       <small class="time">${notification.time.format('a/p hh:mm')}</small>
       <div class="announce-body">
         <h6 class="announce-title">
-          ${type === 'SAY' ? '<span class="announce-from">From</span>' : ''}
-          ${notification.title}
+    ${(() => {
+      let html = '';
+      if (notification.type === '/say') {
+        html += '<span class="announce-from">From</span> ' + notification.from;
+      } else {
+        html += notification.title;
+      }
+      return html;
+    })()}
         </h6>
         <div class="announce-desc">${notification.content.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}</div>
       </div>
@@ -239,3 +258,8 @@ const showMessage = (message, type) => {
 
 export let flayWebsocket = new FlayWebsocket();
 flayWebsocket.initiate();
+
+// setTimeout(() => {
+//   flayWebsocket.say('blar~ blar~ blar');
+//   flayWebsocket.say('blar~ blar~ blar', 'local');
+// }, 1000 * 3);

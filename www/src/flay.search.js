@@ -693,7 +693,7 @@ window.returnFalse = function () {
   return false;
 };
 
-window.batchFeedback = function (noti) {
-  console.log(noti);
-  $('#feedbackMessage').append(noti.content + '\n');
+window.batchFeedback = function (data) {
+  console.log(data);
+  $('#feedbackMessage').append(data + '\n');
 };

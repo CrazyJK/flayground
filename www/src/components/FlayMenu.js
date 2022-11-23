@@ -313,7 +313,7 @@ function createThemeToggle(shadow) {
     navWrap.classList.replace(currentTheme, selectedTheme);
     LocalStorageItem.set('flay.bgtheme', selectedTheme);
     try {
-      flayWebsocket.info({ mode: 'bgtheme' });
+      flayWebsocket.data({ mode: 'bgtheme' });
     } catch (e) {
       // no nothing
     }

@@ -3,10 +3,9 @@ package jk.kamoru.flayground.base.web.socket.queue.data;
 import lombok.Data;
 
 @Data
-public class QueueData {
+public class ServerQueue {
 
-  String from;
-  String to;
-  String body;
+  final String mode;
+  final String data;
 
 }

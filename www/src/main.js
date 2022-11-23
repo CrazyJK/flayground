@@ -163,7 +163,7 @@ const SlideMenu = {
 
       // broadcasting
       try {
-        flayWebsocket.info({ mode: 'bgtheme' });
+        flayWebsocket.data({ mode: 'bgtheme' });
       } catch (e) {
         // no nothing
       }
@@ -182,7 +182,7 @@ const SlideMenu = {
         $('body').css({ backgroundColor: $(e.target).val() });
         try {
           // broadcasting
-          flayWebsocket.info({ mode: 'bgcolor' });
+          flayWebsocket.data({ mode: 'bgcolor' });
         } catch (e) {
           // no nothing
         }
@@ -211,7 +211,9 @@ const SlideMenu = {
             backgroundImage: "url('/static/image/" + selectedBgIndex + "')",
           });
         },
-        () => {}
+        () => {
+          // do nothing
+        }
       );
       $('.sidenav > h4 > a').hover(
         () => {
@@ -220,7 +222,9 @@ const SlideMenu = {
           }
           $('#specialView').css('backgroundImage', '');
         },
-        () => {}
+        () => {
+          // do nothing
+        }
       );
       $('.sidenav > h4 > img').on('click', () => {
         Popup.imageByNo(selectedBgIndex);

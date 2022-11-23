@@ -6,12 +6,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.advice.TrackExecutionTime;
@@ -31,19 +33,30 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
-  @Autowired FlaySource instanceFlaySource;
-  @Autowired FlaySource archiveFlaySource;
-  @Autowired InfoSource<Video, String> videoInfoSource;
-  @Autowired InfoSource<Tag, Integer> tagInfoSource;
+  @Autowired
+  FlaySource instanceFlaySource;
+  @Autowired
+  FlaySource archiveFlaySource;
+  @Autowired
+  InfoSource<Video, String> videoInfoSource;
+  @Autowired
+  InfoSource<Tag, Integer> tagInfoSource;
 
-  @Autowired HistoryService historyService;
-  @Autowired FlayActionHandler flayActionHandler;
-  @Autowired FlayFileHandler flayFileHandler;
-  @Autowired CandidatesProvider candidatesProvider;
-  @Autowired TopicMessageService topicMessageService;
-  @Autowired ScoreCalculator scoreCalculator;
+  @Autowired
+  HistoryService historyService;
+  @Autowired
+  FlayActionHandler flayActionHandler;
+  @Autowired
+  FlayFileHandler flayFileHandler;
+  @Autowired
+  CandidatesProvider candidatesProvider;
+  @Autowired
+  TopicMessageService topicMessageService;
+  @Autowired
+  ScoreCalculator scoreCalculator;
 
   @Override
   public Flay get(String key) {
@@ -101,7 +114,8 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     return instanceFlaySource.list().stream().filter(f -> {
       final String[] split = StringUtils.split(tag.getName() + "," + tag.getDescription(), ",");
       final String[] searchChars = List.of(split).stream().map(s -> s.trim()).toArray(String[]::new);
-      return f.getVideo().getTags().stream().anyMatch(t -> t.getId().equals(id)) || StringUtils.containsAny(f.getFullname(), searchChars);
+      return f.getVideo().getTags().stream().anyMatch(t -> t.getId().equals(id))
+          || StringUtils.containsAny(f.getFullname(), searchChars);
     }).toList();
   }
 
@@ -171,7 +185,8 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     } catch (FlayNotfoundException e) {
       flay = archiveFlaySource.get(opus);
     }
-    flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
+    flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(),
+        newFlay.getRelease());
     topicMessageService.sendFromServerToCurrentUser("Rename Flay", newFlay.getFullname());
   }
 

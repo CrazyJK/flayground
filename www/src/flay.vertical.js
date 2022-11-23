@@ -528,13 +528,7 @@ function attachFlayEventListener() {
 					</head>
 					<body>
 						<main>
-            ${histories.map((history) => {
-              return `<div class="history-item">
-                        <label>${total--}</label>
-                        <label>${history.action}</label>
-                        <label>${history.date}</label>
-                      </div>`;
-            })}
+            ${histories.map((history) => `<div class="history-item"><label>${total--}</label><label>${history.action}</label><label>${history.date}</label></div>`)}
 						</main>
 						<script>
 						document.addEventListener("DOMContentLoaded", function() {
@@ -614,7 +608,7 @@ function attachFlayEventListener() {
   });
   // add-basket-btn
   $('.add-basket-btn').on('click', function () {
-    flayWebsocket.info({ mode: 'grap', opus: currentFlay.opus });
+    flayWebsocket.data({ mode: 'grap', opus: currentFlay.opus });
   });
   // control video stream
   $('.cover-wrapper-inner.curr > .cover-box').on('click', Flaying.start);

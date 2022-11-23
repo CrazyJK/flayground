@@ -1,7 +1,6 @@
 /**
  * loading view class
  */
-
 class Loading {
   constructor() {
     const PARENT_SELECTOR = 'body > footer';

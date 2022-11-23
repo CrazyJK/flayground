@@ -11,6 +11,8 @@ import jquery from 'jquery';
     case 1001 : // mouseup : left   click
     case 1002 : // mouseup : middle click
     case 1003 : // mouseup : right  click
+    case 1004 : // mouseup : prev   click
+    case 1005 : // mouseup : next   click
     case   13 : // keyup : enter
     case   32 : // keyup : space
     case   33 : // keyup : PageUp
@@ -36,6 +38,7 @@ import jquery from 'jquery';
   $.fn.navEvent = function (callback) {
     const detectEvent = (e, callbackFunction) => {
       console.debug(`detectEvent target=${e.target.tagName} type=${e.type} key=${e.key} which=${e.which} delta=${e.originalEvent.wheelDelta} ctrl=${e.ctrlKey} alt=${e.altKey} shift=${e.shiftKey}`);
+      e.preventDefault();
       e.stopPropagation();
       callbackFunction(obtainSignal(e), e);
     };

@@ -44,9 +44,7 @@ const endAxisForChart = DateUtils.format('yyyy-MM', now);
 let releaseForChart = startAxisForChart;
 let playMaxForChart = 0;
 
-const createTag = (tag) => {
-  return $('<label>', { class: 'check sm' }).append($('<input>', { type: 'checkbox', 'data-tag-id': tag.id }).data('tag', tag), $('<span>', { title: tag.description }).html(tag.name));
-};
+const createTag = (tag) => $('<label>', { class: 'check sm' }).append($('<input>', { type: 'checkbox', 'data-tag-id': tag.id }).data('tag', tag), $('<span>', { title: tag.description }).html(tag.name));
 
 $.fn.appendTag = function (tagList, tag) {
   return this.each(function () {
@@ -65,7 +63,7 @@ $.fn.appendTag = function (tagList, tag) {
 const Flaying = {
   isPlay: false,
   seekTime: 10,
-  start: function (e) {
+  start(e) {
     e.stopPropagation();
     if (!Flaying.isPlay) {
       let $video = $('video');
@@ -95,7 +93,7 @@ const Flaying = {
       Flaying.isPlay = true;
     }
   },
-  stop: function (e) {
+  stop(e) {
     e.stopPropagation();
     let $video = $('video');
     let _video = $video.get(0);
@@ -104,7 +102,7 @@ const Flaying = {
     $('#btnVideoClose').hide();
     Flaying.isPlay = false;
   },
-  forward: function (e) {
+  forward(e) {
     let $video = $('video');
     let _video = $video.get(0);
     if (Flaying.isPlay) {
@@ -115,7 +113,7 @@ const Flaying = {
       _video.currentTime += Flaying.seekTime;
     }
   },
-  backward: function (e) {
+  backward(e) {
     let $video = $('video');
     let _video = $video.get(0);
     if (Flaying.isPlay) {
@@ -129,14 +127,16 @@ const Flaying = {
 };
 
 const navigation = {
-  event: function () {
+  event() {
     $('#pageContent').navEvent(function (signal, e) {
       switch (signal) {
         case 1: // wheel: up
         case 37: // key  : left
+        case 1004: // mouseup : prev   click
           navigation.previous(e);
           break;
         case -1: // wheel: down
+        case 1005: // mouseup : next   click
         case 39: {
           // key  : right
           let mode = $("input[name='autoSlideMode']:checked").val();
@@ -227,27 +227,27 @@ const navigation = {
       }
     });
   },
-  on: function () {
+  on() {
     $('#pageContent').navActive(true);
   },
-  off: function () {
+  off() {
     $('#pageContent').navActive(false);
   },
-  previous: function (e) {
+  previous(e) {
     if (Flaying.isPlay) {
       Flaying.backward(e);
     } else {
       navigation.go(currentIndex - 1);
     }
   },
-  next: function (e) {
+  next(e) {
     if (Flaying.isPlay) {
       Flaying.forward(e);
     } else {
       navigation.go(currentIndex + 1);
     }
   },
-  random: function (args) {
+  random(args) {
     if (!Flaying.isPlay) {
       let randomIndex = -1;
       do {
@@ -261,12 +261,12 @@ const navigation = {
       navigation.go(randomIndex, args);
     }
   },
-  go: function (idx, args) {
+  go(idx, args) {
     if (idx < 0 || idx > collectedList.length - 1) {
       console.warn(`navigation.go wrong index ${idx}`);
       return;
     }
-    var prevIndex = currentIndex;
+    const prevIndex = currentIndex;
     currentIndex = idx;
     if (collectedList.length > 1 && prevIndex === currentIndex) {
       return;
@@ -285,8 +285,8 @@ const navigation = {
     showVideo(args);
     navigation.paging();
   },
-  paging: function () {
-    var addPaginationBtn = (idx) => {
+  paging() {
+    const addPaginationBtn = (idx) => {
       $('<li>', { class: 'page-item' + (idx === currentIndex ? ' active' : '') })
         .append(
           $('<a>', { class: 'page-link' })
@@ -300,14 +300,14 @@ const navigation = {
 
     $('.pagination').empty();
     const pageLength = 12;
-    var start = Math.max(currentIndex - (pageLength / 2 - 1), 0);
-    var end = Math.min(currentIndex + pageLength / 2, collectedList.length);
+    const start = Math.max(currentIndex - (pageLength / 2 - 1), 0);
+    const end = Math.min(currentIndex + pageLength / 2, collectedList.length);
     // console.debug(`[paging] start=${start} end=${end}`);
 
     if (start > 0) {
       addPaginationBtn(0); // first page
     }
-    for (var i = start; i < end; i++) {
+    for (let i = start; i < end; i++) {
       addPaginationBtn(i);
     }
     if (end < collectedList.length) {
@@ -319,9 +319,9 @@ const navigation = {
     });
   },
   slide: {
-    on: function () {
-      var run = function () {
-        var mode = $("input[name='autoSlideMode']:checked").val();
+    on() {
+      const run = () => {
+        const mode = $("input[name='autoSlideMode']:checked").val();
         if (mode === 'R') {
           navigation.random();
         } else {
@@ -336,7 +336,7 @@ const navigation = {
         run();
       }, 5000);
     },
-    off: function () {
+    off() {
       clearInterval(slideTimer);
     },
   },

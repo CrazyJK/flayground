@@ -6,7 +6,7 @@ import $ from 'jquery';
 import { PATH } from './crazy.common.js';
 import { loading } from './flay.loading.js';
 
-export const restCall = function (url, args, callback, failCallback, callbackData) {
+export const restCall = (url, args, callback, failCallback, callbackData) => {
   let isCompleted = false;
   let loadingTimeout = -1;
   let loadingIndex = -1;
@@ -35,7 +35,7 @@ export const restCall = function (url, args, callback, failCallback, callbackDat
         }
         xhr.setRequestHeader(CSRF_HEADER_NAME, csrfHeaderValue);
       }
-      loadingTimeout = setTimeout(function () {
+      loadingTimeout = setTimeout(() => {
         if (!isCompleted) {
           loadingIndex = loading.on(`<span class="d2code">[${settings.method.toUpperCase()}] ${url}</span> ${settings.title}`);
         }
@@ -49,14 +49,14 @@ export const restCall = function (url, args, callback, failCallback, callbackDat
   // console.debug('restCall', url, settings);
 
   $.ajax(PATH + url, settings)
-    .done(function (data) {
+    .done((data) => {
       isCompleted = true;
       clearTimeout(loadingTimeout);
       loading.off(loadingIndex);
 
       callback && callback(data, callbackData);
     })
-    .fail(function (jqXHR, textStatus, errorThrown) {
+    .fail((jqXHR, textStatus, errorThrown) => {
       console.error('restCall fail', url, '\n jqXHR=', jqXHR, '\n textStatus=', textStatus, '\n errorThrown=', errorThrown);
       isCompleted = true;
 
@@ -81,7 +81,7 @@ export const restCall = function (url, args, callback, failCallback, callbackDat
         }
       }
     })
-    .always(function (data_jqXHR, textStatus, jqXHR_errorThrown) {
+    .always((data_jqXHR, textStatus, jqXHR_errorThrown) => {
       // console.debug('ajax always', data_jqXHR, textStatus, jqXHR_errorThrown);
     });
 };
@@ -98,7 +98,7 @@ export const Rest = {
       restCall(
         '/flay/' + opus + '/fully',
         {},
-        function (objects) {
+        (objects) => {
           objects.flay.actressList = objects.actress;
           callback(objects.flay);
         },
@@ -107,9 +107,7 @@ export const Rest = {
     },
     getFullyAsync(opus) {
       let flay;
-      restCall('/flay/' + opus + '/fully', { async: false }, (f) => {
-        flay = f;
-      });
+      restCall('/flay/' + opus + '/fully', { async: false }, (f) => (flay = f));
       return flay;
     },
     getScore(opus, callback) {
@@ -117,9 +115,7 @@ export const Rest = {
     },
     getScoreSync(opus) {
       let score = 0;
-      restCall('/flay/' + opus + '/score', { async: false }, function (s) {
-        score = s;
-      });
+      restCall('/flay/' + opus + '/score', { async: false }, (s) => (score = s));
       return score;
     },
     page(page, size, keyword, callback) {
@@ -286,9 +282,7 @@ export const Rest = {
     getSync(name) {
       if (name != '') {
         let ret = null;
-        restCall('/info/actress/' + name, { async: false }, function (actress) {
-          ret = actress;
-        });
+        restCall('/info/actress/' + name, { async: false }, (actress) => (ret = actress));
         return ret;
       } else {
         console.error('Rest.Actress.get: no name!');
@@ -342,9 +336,7 @@ export const Rest = {
         restCall('/image/size', { async: false }, callback);
       } else {
         var total = 0;
-        restCall('/image/size', { async: false }, function (max) {
-          total = max;
-        });
+        restCall('/image/size', { async: false }, (max) => (total = max));
         return total;
       }
     },
@@ -409,10 +401,8 @@ export const Rest = {
       restCall('/security/whoami', { async: false }, callback);
     },
     isAutomaticallyCertificated() {
-      var result;
-      restCall('/security/isAutomaticallyCertificated', { async: false }, function (isAuto) {
-        result = Boolean(isAuto);
-      });
+      let result = false;
+      restCall('/security/isAutomaticallyCertificated', { async: false }, (isAuto) => (result = Boolean(isAuto)));
       return result;
     },
     login(username, password, callback, failCallback) {

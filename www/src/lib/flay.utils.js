@@ -25,7 +25,7 @@ export const Util = {
         }
         return result;
       };
-      flayList.sort(function (flay1, flay2) {
+      flayList.sort((flay1, flay2) => {
         switch (sort) {
           case 'S': {
             const sVal = compareTo(flay1.studio, flay2.studio);
@@ -54,46 +54,41 @@ export const Util = {
     },
   },
   Tag: {
-    includes(tags, _tag) {
-      var found = false;
-      $.each(tags, function (idx, tag) {
-        if (typeof _tag === 'string') {
-          if (tag.name === _tag) {
-            found = true;
+    includes(tags, tag) {
+      for (let tagsElement of tags) {
+        if (typeof tag === 'string') {
+          if (tagsElement.name === tag) {
+            return true;
           }
         } else {
-          if (tag.id === _tag.id) {
-            found = true;
+          if (tagsElement.id === tag.id) {
+            return true;
           }
         }
-      });
-      return found;
+      }
+      return false;
     },
-    indexOf(tags, _tag) {
-      var found = -1;
-      $.each(tags, function (idx, tag) {
-        if (tag.id === _tag.id) {
-          found = idx;
+    indexOf(tags, tag) {
+      for (let i = 0; i < tags.length; i++) {
+        if (tags[i].id === tag.id) {
+          return i;
         }
-      });
-      return found;
+      }
+      return -1;
     },
     push(tags, tag) {
-      var idx = Util.Tag.indexOf(tags, tag);
-      if (idx < 0) {
+      if (!this.includes(tags, tag)) {
         tags.push(tag);
       }
     },
     remove(tags, tag) {
-      var idx = Util.Tag.indexOf(tags, tag);
+      const idx = this.indexOf(tags, tag);
       if (idx > -1) {
         tags.splice(idx, 1);
       }
     },
     sort(tags) {
-      tags.sort(function (t1, t2) {
-        return t1.name.localeCompare(t2.name);
-      });
+      tags.sort((t1, t2) => t1.name.localeCompare(t2.name));
     },
   },
   Actress: {
@@ -107,21 +102,10 @@ export const Util = {
       }
     },
     get(actressList, className) {
-      var list = [];
       if (actressList != null && Array.isArray(actressList)) {
-        $.each(actressList, function (idx, actress) {
-          var $actress = $('<span>', { class: className ? 'actress' : '' })
-            .html(actress)
-            .on('click', function () {
-              View.actress(actress);
-            })
-            .css({
-              cursor: 'pointer',
-            });
-          list.push($actress);
-        });
+        return actressList.map((actress) => $(`<span class="${className ? className : ''}" style="cursor:pointer">${actress}</span>`).on('click', () => View.actress(actress)));
       }
-      return list;
+      return [];
     },
     getAgeNumber(actress, baseYear) {
       return Number(baseYear || todayYear) - parseInt(actress.birth.substring(0, 4)) + 1;
@@ -129,25 +113,20 @@ export const Util = {
     getAge(actress, baseYear) {
       if (actress.birth) {
         return `${this.getAgeNumber(actress, baseYear)}<small>y</small>`;
-      } else {
-        return '';
       }
+      return '';
     },
     getBirth(actress) {
       if (actress.birth) {
-        return actress.birth.replace(/年|月|日/g, (match, offset, string) => {
-          return '<small>' + match + '</small>';
-        });
-      } else {
-        return '';
+        return actress.birth.replace(/年|月|日/g, (match, offset, string) => '<small>' + match + '</small>');
       }
+      return '';
     },
     getCup(actress) {
       if (actress.body) {
         return actress.body.replace(/[-0-9\s]/g, '');
-      } else {
-        return '';
       }
+      return '';
     },
     getBody(actress) {
       if (actress.body) {
@@ -159,30 +138,23 @@ export const Util = {
             return inch + cup;
           })
           .join('<small>-</small>');
-      } else {
-        return '';
       }
+      return '';
     },
     getHeight(actress) {
       if (actress.height) {
         return actress.height + '<small>cm</small>';
-      } else {
-        return '';
       }
+      return '';
     },
     getDebut(actress) {
       if (actress.debut) {
         return actress.debut + '<small>d</small>';
-      } else {
-        return '';
       }
+      return '';
     },
     toArray(names) {
-      var split = names.split(',');
-      for (var i = 0; i < split.length; i++) {
-        split[i] = split[i].trim();
-      }
-      return split;
+      return names.split(',').map((name) => name.trim());
     },
   },
 };

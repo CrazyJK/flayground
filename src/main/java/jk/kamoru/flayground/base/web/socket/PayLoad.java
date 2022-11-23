@@ -12,10 +12,8 @@ public class PayLoad {
 
   private static final AtomicInteger integer = new AtomicInteger();
 
-  @Builder.Default
-  private int index = integer.incrementAndGet();
-  @Builder.Default
-  private long time = System.currentTimeMillis();
+  @Builder.Default private int index = integer.incrementAndGet();
+  @Builder.Default private long time = System.currentTimeMillis();
   private String type;
   private String from;
   private String to;

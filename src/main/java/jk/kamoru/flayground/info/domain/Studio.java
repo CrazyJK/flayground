@@ -12,31 +12,31 @@ import lombok.NoArgsConstructor;
 @Data
 public class Studio implements Info<String> {
 
-	@NotBlank String name;
-	String company;
-	URL homepage;
-	long lastModified;
+  @NotBlank String name;
+  String company;
+  URL homepage;
+  long lastModified;
 
-	public Studio(String key) {
-		setKey(key);
-		this.company = "";
-		this.homepage = null;
-		this.lastModified = -1;
-	}
+  public Studio(String key) {
+    setKey(key);
+    this.company = "";
+    this.homepage = null;
+    this.lastModified = -1;
+  }
 
-	@Override
-	public String getKey() {
-		return name;
-	}
+  @Override
+  public String getKey() {
+    return name;
+  }
 
-	@Override
-	public void setKey(String key) {
-		this.name = key;
-	}
+  @Override
+  public void setKey(String key) {
+    this.name = key;
+  }
 
-	@Override
-	public void touch() {
-		lastModified = new Date().getTime();
-	}
+  @Override
+  public void touch() {
+    lastModified = new Date().getTime();
+  }
 
 }

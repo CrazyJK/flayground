@@ -16,13 +16,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.web.socket.queue.data.QueueDataService;
@@ -61,22 +59,14 @@ public class BatchExecutor {
     B
   }
 
-  @Autowired
-  FlayProperties flayProperties;
-  @Autowired
-  FlaySource instanceFlaySource;
-  @Autowired
-  FlaySource archiveFlaySource;
-  @Autowired
-  HistoryService historyService;
-  @Autowired
-  ScoreCalculator scoreCalculator;
-  @Autowired
-  FlayFileHandler flayFileHandler;
-  @Autowired
-  TopicMessageService topicMessageService;
-  @Autowired
-  QueueDataService queueDataService;
+  @Autowired FlayProperties flayProperties;
+  @Autowired FlaySource instanceFlaySource;
+  @Autowired FlaySource archiveFlaySource;
+  @Autowired HistoryService historyService;
+  @Autowired ScoreCalculator scoreCalculator;
+  @Autowired FlayFileHandler flayFileHandler;
+  @Autowired TopicMessageService topicMessageService;
+  @Autowired QueueDataService queueDataService;
 
   public void reload() {
     log.info("[reload]");

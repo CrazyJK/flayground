@@ -20,33 +20,33 @@ import jk.kamoru.flayground.note.service.NoteService;
 @RequestMapping("/info/note")
 public class NoteController {
 
-	@Autowired NoteService noteService;
+  @Autowired NoteService noteService;
 
-	@GetMapping("/{id}")
-	public Note get(@PathVariable long id) {
-		return noteService.get(id);
-	}
+  @GetMapping("/{id}")
+  public Note get(@PathVariable long id) {
+    return noteService.get(id);
+  }
 
-	@GetMapping("/list")
-	public Collection<Note> list(@RequestHeader(name = "admin", required = false, defaultValue = "false") boolean admin) {
-		return noteService.list(admin);
-	}
+  @GetMapping("/list")
+  public Collection<Note> list(@RequestHeader(name = "admin", required = false, defaultValue = "false") boolean admin) {
+    return noteService.list(admin);
+  }
 
-	@PatchMapping("/find")
-	public Collection<Note> find(@RequestBody Note note, @RequestHeader(name = "admin", required = false, defaultValue = "false") boolean admin) {
-		return noteService.find(note, admin);
-	}
+  @PatchMapping("/find")
+  public Collection<Note> find(@RequestBody Note note, @RequestHeader(name = "admin", required = false, defaultValue = "false") boolean admin) {
+    return noteService.find(note, admin);
+  }
 
-	@PutMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void persist(@RequestBody Note note) {
-		noteService.persist(note);
-	}
+  @PutMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void persist(@RequestBody Note note) {
+    noteService.persist(note);
+  }
 
-	@DeleteMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@RequestBody Note note) {
-		noteService.delete(note);
-	}
+  @DeleteMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@RequestBody Note note) {
+    noteService.delete(note);
+  }
 
 }

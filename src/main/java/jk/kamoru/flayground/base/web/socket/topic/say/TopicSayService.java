@@ -2,12 +2,10 @@ package jk.kamoru.flayground.base.web.socket.topic.say;
 
 import static jk.kamoru.flayground.base.web.socket.WebSocketConfig.SAY;
 import static jk.kamoru.flayground.base.web.socket.WebSocketConfig.TOPIC_SAY;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import jk.kamoru.flayground.base.web.security.SecurityService;
 import jk.kamoru.flayground.base.web.socket.PayLoad;
 import lombok.extern.slf4j.Slf4j;
@@ -16,15 +14,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class TopicSayService {
 
-  @Autowired
-  SimpMessagingTemplate messagingTemplate;
+  @Autowired SimpMessagingTemplate messagingTemplate;
 
-  @Autowired
-  SecurityService securityService;
+  @Autowired SecurityService securityService;
 
   /**
    * 서버에서 전달하는 대화
-   * 
+   *
    * @param topicSay
    */
   public void sayFromServerToAll(String message) {
@@ -37,7 +33,7 @@ public class TopicSayService {
 
   /**
    * 메시징 구현.
-   * 
+   *
    * @param message
    * @param from
    * @param to

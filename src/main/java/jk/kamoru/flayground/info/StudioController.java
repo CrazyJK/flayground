@@ -19,43 +19,43 @@ import jk.kamoru.flayground.info.service.StudioInfoService;
 @RequestMapping("/info/studio")
 public class StudioController {
 
-	@Autowired StudioInfoService studioInfoService;
+  @Autowired StudioInfoService studioInfoService;
 
-	@GetMapping("/{name}")
-	public Studio get(@PathVariable String name) {
-		return studioInfoService.get(name);
-	}
+  @GetMapping("/{name}")
+  public Studio get(@PathVariable String name) {
+    return studioInfoService.get(name);
+  }
 
-	@GetMapping("/list")
-	public Collection<Studio> list() {
-		return studioInfoService.list();
-	}
+  @GetMapping("/list")
+  public Collection<Studio> list() {
+    return studioInfoService.list();
+  }
 
-	@GetMapping("/find/{query}")
-	public Collection<Studio> find(@PathVariable String query) {
-		return studioInfoService.find(query);
-	}
+  @GetMapping("/find/{query}")
+  public Collection<Studio> find(@PathVariable String query) {
+    return studioInfoService.find(query);
+  }
 
-	@GetMapping("/findOneByOpus/{opus}")
-	public Studio findOneByOpus(@PathVariable String opus) {
-		return studioInfoService.findOneByOpus(opus);
-	}
+  @GetMapping("/findOneByOpus/{opus}")
+  public Studio findOneByOpus(@PathVariable String opus) {
+    return studioInfoService.findOneByOpus(opus);
+  }
 
-	@PostMapping
-	public Studio create(@RequestBody Studio studio) {
-		return studioInfoService.create(studio);
-	}
+  @PostMapping
+  public Studio create(@RequestBody Studio studio) {
+    return studioInfoService.create(studio);
+  }
 
-	@PatchMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void update(@RequestBody Studio studio) {
-		studioInfoService.update(studio);
-	}
+  @PatchMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void update(@RequestBody Studio studio) {
+    studioInfoService.update(studio);
+  }
 
-	@DeleteMapping
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@RequestBody Studio studio) {
-		studioInfoService.delete(studio);
-	}
+  @DeleteMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@RequestBody Studio studio) {
+    studioInfoService.delete(studio);
+  }
 
 }

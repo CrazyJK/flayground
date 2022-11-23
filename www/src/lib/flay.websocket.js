@@ -232,15 +232,15 @@ const showMessage = (message) => {
       <small class="time">${notification.time.format('a/p hh:mm')}</small>
       <div class="announce-body">
         <h6 class="announce-title">
-    ${(() => {
-      let html = '';
-      if (notification.type === '/say') {
-        html += '<span class="announce-from">From</span> ' + notification.from;
-      } else {
-        html += notification.title;
-      }
-      return html;
-    })()}
+          ${(() => {
+            let html = '';
+            if (notification.type === '/say') {
+              html += '<span class="announce-from">From</span> ' + notification.from;
+            } else {
+              html += notification.title;
+            }
+            return html;
+          })()}
         </h6>
         <div class="announce-desc">${notification.content.replace(/\n/g, '<br>').replace(/ /g, '&nbsp;')}</div>
       </div>

@@ -6,11 +6,9 @@ import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
@@ -22,11 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayActionHandler {
 
-  @Autowired
-  FlayProperties flayProperties;
+  @Autowired FlayProperties flayProperties;
 
-  @Autowired
-  TopicMessageService topicMessageService;
+  @Autowired TopicMessageService topicMessageService;
 
   public void play(Flay flay) {
     exec(composite(flayProperties.getPlayerApp(), flay.getFiles().get(Flay.MOVIE)));

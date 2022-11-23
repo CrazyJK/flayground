@@ -18,39 +18,39 @@ import jk.kamoru.flayground.image.service.ImageService;
 @RequestMapping("/image")
 public class ImageController {
 
-	@Autowired ImageService imageService;
-	@Autowired FlayActionHandler flayActionHandler;
+  @Autowired ImageService imageService;
+  @Autowired FlayActionHandler flayActionHandler;
 
-	@GetMapping("/list")
-	public List<Image> list() {
-		return imageService.list();
-	}
+  @GetMapping("/list")
+  public List<Image> list() {
+    return imageService.list();
+  }
 
-	@GetMapping("/size")
-	public int size() {
-		return imageService.size();
-	}
+  @GetMapping("/size")
+  public int size() {
+    return imageService.size();
+  }
 
-	@GetMapping("/random")
-	public Image random() {
-		return imageService.random();
-	}
+  @GetMapping("/random")
+  public Image random() {
+    return imageService.random();
+  }
 
-	@GetMapping("/{idx}")
-	public Image get(@PathVariable int idx) {
-		return imageService.get(idx);
-	}
+  @GetMapping("/{idx}")
+  public Image get(@PathVariable int idx) {
+    return imageService.get(idx);
+  }
 
-	@DeleteMapping("/{idx}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable int idx) {
-		imageService.delete(idx);
-	}
+  @DeleteMapping("/{idx}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void delete(@PathVariable int idx) {
+    imageService.delete(idx);
+  }
 
-	@PatchMapping("/paint/{idx}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void paint(@PathVariable int idx) {
-		flayActionHandler.paint(imageService.get(idx));
-	}
+  @PatchMapping("/paint/{idx}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void paint(@PathVariable int idx) {
+    flayActionHandler.paint(imageService.get(idx));
+  }
 
 }

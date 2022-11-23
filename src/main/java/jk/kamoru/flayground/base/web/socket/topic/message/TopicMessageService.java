@@ -2,12 +2,10 @@ package jk.kamoru.flayground.base.web.socket.topic.message;
 
 import static jk.kamoru.flayground.base.web.socket.WebSocketConfig.MESSAGE;
 import static jk.kamoru.flayground.base.web.socket.WebSocketConfig.TOPIC_MESSAGE;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import jk.kamoru.flayground.base.web.security.SecurityService;
 import jk.kamoru.flayground.base.web.socket.PayLoad;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class TopicMessageService {
 
-  @Autowired
-  SimpMessagingTemplate messagingTemplate;
+  @Autowired SimpMessagingTemplate messagingTemplate;
 
-  @Autowired
-  SecurityService securityService;
+  @Autowired SecurityService securityService;
 
   public void sendFromServerToAll(String subject, String body) {
     send(subject, body, PayLoad.SERVER, null);

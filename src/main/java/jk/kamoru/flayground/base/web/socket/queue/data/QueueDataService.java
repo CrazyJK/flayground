@@ -2,12 +2,10 @@ package jk.kamoru.flayground.base.web.socket.queue.data;
 
 import static jk.kamoru.flayground.base.web.socket.WebSocketConfig.DATA;
 import static jk.kamoru.flayground.base.web.socket.WebSocketConfig.QUEUE_DATA;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-
 import jk.kamoru.flayground.base.web.security.SecurityService;
 import jk.kamoru.flayground.base.web.socket.PayLoad;
 import lombok.extern.slf4j.Slf4j;
@@ -16,11 +14,9 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class QueueDataService {
 
-  @Autowired
-  SimpMessagingTemplate messagingTemplate;
+  @Autowired SimpMessagingTemplate messagingTemplate;
 
-  @Autowired
-  SecurityService securityService;
+  @Autowired SecurityService securityService;
 
   public void queueFromServerToCurrentUser(String mode, String data) {
     queue(new ServerQueue(mode, data), PayLoad.SERVER, securityService.getUsername());

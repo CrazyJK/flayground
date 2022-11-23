@@ -5,14 +5,14 @@ import jk.kamoru.flayground.image.domain.Image;
 
 public interface ImageService {
 
-	List<Image> list();
+  List<Image> list();
 
-	Image get(int idx);
+  Image get(int idx);
 
-	Image random();
+  Image random();
 
-	int size();
+  int size();
 
-	void delete(int idx);
+  void delete(int idx);
 
 }

@@ -1,6 +1,5 @@
 package jk.kamoru.flayground.base.web.socket.queue.data;
 
-import lombok.Builder;
 import lombok.Data;
 
 @Data

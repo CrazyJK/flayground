@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.web.socket.queue.data.QueueDataService;
-import jk.kamoru.flayground.base.web.socket.queue.data.ServerQueue;
 import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;

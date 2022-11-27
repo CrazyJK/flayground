@@ -15,9 +15,11 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -119,31 +121,41 @@ public class Flayground implements AsyncConfigurer {
     executor.setCorePoolSize(7);
     executor.setMaxPoolSize(42);
     executor.setQueueCapacity(11);
-    executor.setThreadNamePrefix("FlayAsync-");
+    executor.setThreadNamePrefix("Flay-Async-");
     executor.initialize();
     return executor;
   }
 
-  private static BlockingQueue<Runnable> finalTasks = new LinkedBlockingQueue<>();
+  @Configuration
+  public static class ApplicationReady {
 
-  public static void addFinalTask(Runnable runnable) {
-    finalTasks.add(runnable);
-  }
+    private static BlockingQueue<Runnable> finalTasks = new LinkedBlockingQueue<>();
 
-  public static void runFinalTasks() {
-    log.info("Starting final {} Tasks", finalTasks.size());
-    ExecutorService finalExecutor = Executors.newFixedThreadPool(finalTasks.size(), new ThreadFactory() {
-      private final AtomicInteger threadNumber = new AtomicInteger(1);
-
-      @Override
-      public Thread newThread(Runnable r) {
-        return new Thread(r, "FinalTask-" + threadNumber.getAndIncrement());
-      }
-    });
-
-    for (Runnable task : finalTasks) {
-      finalExecutor.execute(task);
+    public static void add(Runnable runnable) {
+      finalTasks.add(runnable);
     }
+
+    @EventListener(ApplicationReadyEvent.class)
+    public static void run() {
+      final int taskLength = finalTasks.size();
+
+      ExecutorService finalExecutor = Executors.newFixedThreadPool(taskLength, new ThreadFactory() {
+        private final AtomicInteger threadNumber = new AtomicInteger(0);
+
+        @Override
+        public Thread newThread(Runnable r) {
+          return new Thread(r, "Flay-Final-" + threadNumber.incrementAndGet());
+        }
+      });
+
+      log.info("Running Ready Event {}", taskLength);
+      for (Runnable task : finalTasks) {
+        finalExecutor.execute(task);
+      }
+
+      finalExecutor.shutdown();
+    }
+
   }
 
 }

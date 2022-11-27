@@ -13,10 +13,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoService<T, K> {
 
-  ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
-
   @Autowired InfoSource<T, K> infoSource;
+
   @Autowired TopicMessageService topicMessageService;
+
+  ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
   @Override
   public T get(K key) {

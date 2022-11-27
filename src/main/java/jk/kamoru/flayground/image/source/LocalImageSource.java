@@ -25,9 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 public class LocalImageSource implements ImageSource {
 
   @Autowired FlayProperties flayProperties;
+  @Autowired FlayFileHandler flayFileHandler;
 
   @Autowired TopicMessageService topicMessageService;
-  @Autowired FlayFileHandler flayFileHandler;
 
   private List<Image> imageList;
   private boolean changed = false;
@@ -39,7 +39,7 @@ public class LocalImageSource implements ImageSource {
   }
 
   private void registWatcher() {
-    Flayground.addFinalTask(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
+    Flayground.ApplicationReady.add(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
 
       @Override
       protected void createdFile(File file) {

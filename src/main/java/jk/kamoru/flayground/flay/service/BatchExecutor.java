@@ -65,6 +65,7 @@ public class BatchExecutor {
   @Autowired HistoryService historyService;
   @Autowired ScoreCalculator scoreCalculator;
   @Autowired FlayFileHandler flayFileHandler;
+
   @Autowired TopicMessageService topicMessageService;
   @Autowired QueueDataService queueDataService;
 

@@ -20,8 +20,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
   @Autowired FlayService flayService;
-  @Autowired TopicMessageService topicMessageService;
   @Autowired FlayFileHandler flayFileHandler;
+
+  @Autowired TopicMessageService topicMessageService;
 
   public void rename(Actress actress, String oldName) {
     if (actress.getName().equals(oldName)) {

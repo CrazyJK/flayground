@@ -31,30 +31,20 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
 
-  @Autowired
-  FlayProperties flayProperties;
+  @Autowired FlayProperties flayProperties;
 
-  @Autowired
-  FlaySource instanceFlaySource;
-  @Autowired
-  FlaySource archiveFlaySource;
-  @Autowired
-  InfoSource<Video, String> videoInfoSource;
-  @Autowired
-  InfoSource<Tag, Integer> tagInfoSource;
+  @Autowired FlaySource instanceFlaySource;
+  @Autowired FlaySource archiveFlaySource;
+  @Autowired InfoSource<Video, String> videoInfoSource;
+  @Autowired InfoSource<Tag, Integer> tagInfoSource;
 
-  @Autowired
-  HistoryService historyService;
-  @Autowired
-  FlayActionHandler flayActionHandler;
-  @Autowired
-  FlayFileHandler flayFileHandler;
-  @Autowired
-  CandidatesProvider candidatesProvider;
-  @Autowired
-  TopicMessageService topicMessageService;
-  @Autowired
-  ScoreCalculator scoreCalculator;
+  @Autowired HistoryService historyService;
+  @Autowired FlayActionHandler flayActionHandler;
+  @Autowired FlayFileHandler flayFileHandler;
+  @Autowired CandidatesProvider candidatesProvider;
+  @Autowired ScoreCalculator scoreCalculator;
+
+  @Autowired TopicMessageService topicMessageService;
 
   @Override
   public Flay get(String key) {

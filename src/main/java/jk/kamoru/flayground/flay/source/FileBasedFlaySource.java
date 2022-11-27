@@ -40,7 +40,7 @@ public class FileBasedFlaySource implements FlaySource {
     for (File path : paths) {
       if (path.isDirectory()) {
         Collection<File> found = FileUtils.listFiles(path, null, true);
-        log.info(String.format("%-15s %5s file    - %s", LOAD, found.size(), path));
+        log.info(String.format("%-15s %5s file - %s", LOAD, found.size(), path));
         listFiles.addAll(found);
       } else {
         log.warn("Invalid source path {}", path);

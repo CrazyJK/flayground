@@ -19,7 +19,7 @@ public class FlayConfig {
   public FlaySource instanceFlaySource() {
     File[] instancePaths = ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(), flayProperties.getStoragePath());
     FlaySource flaySource = new FileBasedFlaySource(instancePaths);
-    Flayground.addFinalTask(new Runnable() {
+    Flayground.ApplicationReady.add(new Runnable() {
       @Override
       public void run() {
         flaySource.load();
@@ -31,7 +31,7 @@ public class FlayConfig {
   @Bean("archiveFlaySource")
   public FlaySource archiveFlaySource() {
     FlaySource flaySource = new FileBasedFlaySource(true, flayProperties.getArchivePath());
-    Flayground.addFinalTask(new Runnable() {
+    Flayground.ApplicationReady.add(new Runnable() {
       @Override
       public void run() {
         flaySource.load();

@@ -61,7 +61,7 @@ function tagLoad() {
     for (let tag of tagList) {
       const $tagCard = $tagTemplete.clone();
       $tagCard.appendTo($tagList);
-      $tagCard.data('tag', tag);
+      $tagCard.data('tag', tag).attr('id', 'tag-' + tag.id);
       $tagCard
         .find('.tag-name')
         .html(tag.name)
@@ -78,7 +78,10 @@ function tagLoad() {
       $tagCard.find('.tag-open').on('click', () => {
         View.tag(tag.id);
       });
+    }
 
+    for (let tag of tagList) {
+      const $tagCard = $('#tag-' + tag.id);
       const findByTagCallback = (flayList) => {
         $tagCard.data('flayList', flayList);
         $tagCard

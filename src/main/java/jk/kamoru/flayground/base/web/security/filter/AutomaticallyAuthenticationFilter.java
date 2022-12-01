@@ -4,10 +4,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,6 +11,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -34,7 +34,9 @@ public class AutomaticallyAuthenticationFilter extends OncePerRequestFilter {
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
     String requestURI = request.getRequestURI();
-    if (requiresAuthentication(requestURI) && SecurityContextHolder.getContext().getAuthentication() == null) {
+    boolean isRequiresAuthentication = requiresAuthentication(requestURI);
+    log.debug("requestURI: {}, isRequiresAuthentication: {}, {}", requestURI, isRequiresAuthentication, SecurityContextHolder.getContext().getAuthentication());
+    if (isRequiresAuthentication && SecurityContextHolder.getContext().getAuthentication() == null) {
       String remoteAddr = request.getRemoteAddr();
 
       if (automaticallyCertificatedIp.contains(remoteAddr)) {

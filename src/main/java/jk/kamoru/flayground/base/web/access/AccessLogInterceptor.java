@@ -1,8 +1,6 @@
 package jk.kamoru.flayground.base.web.access;
 
 import java.util.Date;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.MDC;
 import org.springframework.lang.Nullable;
@@ -10,6 +8,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jk.kamoru.flayground.base.web.access.domain.AccessLog;
 import jk.kamoru.flayground.base.web.access.service.AccessLogService;
 import lombok.extern.slf4j.Slf4j;

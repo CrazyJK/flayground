@@ -2,10 +2,10 @@ package jk.kamoru.flayground.base.web;
 
 import java.util.Arrays;
 import java.util.Map;
-import javax.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import jakarta.servlet.http.HttpServletRequest;
 
 @Controller
 @RequestMapping("/xss")

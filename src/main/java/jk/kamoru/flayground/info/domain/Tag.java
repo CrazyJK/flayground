@@ -1,7 +1,6 @@
 package jk.kamoru.flayground.info.domain;
 
 import java.util.Date;
-import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,8 +10,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class Tag implements Info<Integer> {
 
-  @NotBlank Integer id;
-  @NotBlank String name;
+  Integer id;
+  String name;
   String description;
   long lastModified;
 

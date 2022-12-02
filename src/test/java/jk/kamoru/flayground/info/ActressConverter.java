@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import javax.validation.constraints.NotNull;
 import org.junit.jupiter.api.Test;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -57,7 +58,7 @@ public class ActressConverter {
 @Data
 class ToActress {
 
-  String name;
+  @NotNull String name;
   String localName;
   String birth;
   String body;
@@ -114,7 +115,7 @@ class ToActress {
 @Data
 class FromActress {
 
-  String name;
+  @NotNull String name;
   String localName;
   String birth;
   String body;

@@ -3,6 +3,7 @@ package jk.kamoru.flayground.info.domain;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Data
 public class Video implements Info<String> {
 
-  String opus;
+  @NotBlank String opus;
   int play;
   int rank;
   long lastPlay;

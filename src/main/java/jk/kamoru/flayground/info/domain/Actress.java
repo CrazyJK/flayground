@@ -3,6 +3,7 @@ package jk.kamoru.flayground.info.domain;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import javax.validation.constraints.NotBlank;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Actress implements Info<String> {
 
   boolean favorite;
-  String name;
+  @NotBlank String name;
   String localName;
   String birth;
   String body;

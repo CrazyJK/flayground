@@ -8,12 +8,10 @@ import 'jquery-ui-dist/jquery-ui';
 import { flayWebsocket } from './components/FlayMenu';
 import './css/common.scss';
 import './flay.vertical.scss';
+import './lib/crazy.effect.neon.js';
 import './lib/crazy.jquery';
 
-import './lib/crazy.effect.neon.js';
-
 import bb, { bubble } from 'billboard.js';
-
 import { DateUtils, DEFAULT_SPECS, File, LocalStorageItem, NumberUtils, PATH, Random, SessionStorageItem, StringUtils } from './lib/crazy.common.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
 import { loading } from './lib/flay.loading.js';
@@ -23,9 +21,12 @@ import { Search, Util, View } from './lib/flay.utils.js';
 let flayList = [];
 let collectedList = [];
 let seenList = [];
+let history = { on: false, list: [], pointer: -1 };
+
 let actressList = [];
 /** Map<Name, Actress> */
 let mapNameActress = new Map();
+
 let tagList = [];
 let tagMap = new Map();
 
@@ -171,16 +172,23 @@ const navigation = {
         case 34: // keyup: pageDown
           navigation.go(currentIndex + 9);
           break;
+        case 38: // keyup: ArrowUp
+          navigation.history(-1);
+          break;
+        case 40: // keyup: ArrowDown
+          navigation.history(1);
+          break;
       }
 
       if (e.type === 'keyup') {
         // filter key
         // [a-z]: 65 ~ 90
         // [0-9]: 48 ~ 57, 96 ~ 105 (numpad)
-        // -: 189, 109 (numpad)
-        // enter: 13
-        // backspace: 8
-        if ((65 <= signal && signal <= 96) || (48 <= signal && signal <= 57) || (96 <= signal && signal <= 105) || 189 === signal || 109 === signal || 13 === signal || 8 === signal) {
+        // [-]: 189, 109 (numpad)
+        // [enter]: 13
+        // [backspace]: 8
+        // [esc]: 27
+        if ((65 <= signal && signal <= 96) || (48 <= signal && signal <= 57) || (96 <= signal && signal <= 105) || 189 === signal || 109 === signal || 13 === signal || 8 === signal || 27 === signal) {
           const currentTime = new Date().getTime();
           // 5s over, key reset
           if (currentTime - keyLastInputTime > 5000) {
@@ -217,6 +225,9 @@ const navigation = {
               break;
             case 8: // backspace
               keyInputQueue = keyInputQueue.slice(0, -1);
+              break;
+            case 27: // esc
+              keyInputQueue = '';
               break;
             default:
               keyInputQueue += e.key;
@@ -261,6 +272,19 @@ const navigation = {
       navigation.go(randomIndex, args);
     }
   },
+  history(step) {
+    // history 이동
+    if (-1 < history.pointer + step && history.pointer + step < history.list.length) {
+      history.on = true;
+      history.pointer += step;
+      const id = history.list[history.pointer];
+      console.debug(`history index ${history.pointer} -> ${id}`);
+      notice(`<span class="text-info">${history.list.map((v, i) => `<span class="${i === history.pointer ? 'text-warning' : ''}">${v}</span>`)}</span>`);
+      navigation.go(id, { history: true });
+    } else {
+      notice(`<span class="text-warning">history overflow</span>`);
+    }
+  },
   go(idx, args) {
     if (idx < 0 || idx > collectedList.length - 1) {
       console.warn(`navigation.go wrong index ${idx}`);
@@ -273,13 +297,22 @@ const navigation = {
     }
     currentFlay = collectedList[currentIndex];
 
-    if (!seenList.includes(currentIndex)) {
-      seenList.push(currentIndex);
-      // console.debug('seenList', seenList);
-    }
-    if (seenList.length === collectedList.length) {
-      seenList = [];
-      notice(`<span class="text-danger">Saw every flay</span>`);
+    // history
+    if (!args?.history) {
+      history.on = false;
+      history.list.push(currentIndex);
+      history.pointer = history.list.length - 1;
+      console.debug('history.list', history.list);
+      console.debug('history.pointer', history.pointer);
+
+      if (!seenList.includes(currentIndex)) {
+        seenList.push(currentIndex);
+      }
+      console.debug('seenList', seenList);
+      if (seenList.length === collectedList.length) {
+        seenList = [];
+        notice(`<span class="text-danger">Saw every flay</span>`);
+      }
     }
 
     showVideo(args);

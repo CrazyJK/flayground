@@ -842,6 +842,7 @@ function collectList() {
   });
 
   // filtering
+  history = { on: false, list: [], pointer: -1 };
   seenList = [];
   collectedList = [];
   for (const flay of flayList) {

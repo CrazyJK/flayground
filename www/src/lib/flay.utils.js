@@ -112,7 +112,7 @@ export const Util = {
     },
     getAge(actress, baseYear) {
       if (actress.birth) {
-        return `${this.getAgeNumber(actress, baseYear)}<small>y</small>`;
+        return `<span title="${actress.birth}">${this.getAgeNumber(actress, baseYear)}<small>y</small></span>`;
       }
       return '';
     },

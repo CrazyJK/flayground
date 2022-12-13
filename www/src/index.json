@@ -24,6 +24,10 @@
     "url": "./todayis.html"
   },
   {
+    "name": "Diary",
+    "url": "./flay.diary.html"
+  },
+  {
     "name": "main",
     "url": "./main.html"
   }

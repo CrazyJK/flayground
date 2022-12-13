@@ -4,14 +4,19 @@
 main {
   display: grid;
   grid-template-areas:
-    'diary-meta diary-list'
-    'diary-edit diary-list';
-  grid-template-columns: 1fr 9rem;
-  grid-template-rows: 3rem 1fr;
+    'diary-cal'
+    'diary-meta'
+    'diary-edit';
+  grid-template-columns: 1fr;
+  grid-template-rows: 14rem 3rem 1fr;
   gap: 0.5rem;
 
   padding: 0.5rem 3rem;
   height: 100vh;
+
+  #diaryCal {
+    grid-area: diary-cal;
+  }
 
   #diaryMeta {
     grid-area: diary-meta;
@@ -33,42 +38,75 @@ main {
       border: 1px solid var(--color-border-form);
     }
   }
+}
 
-  #diaryList {
-    grid-area: diary-list;
+.calendar {
+  display: flex;
+  flex-direction: row-reverse;
+  gap: 1rem;
 
-    position: relative;
-    display: flex;
-    flex-direction: column;
+  font-size: 12px;
 
-    border: 1px solid var(--color-border-form);
-    border-radius: 0.25rem;
+  .month {
+    flex: 0 0 auto;
 
-    .diary-list {
-      position: absolute;
-      inset: 0;
-      overflow: auto;
+    width: 14rem;
 
-      label {
-        display: block;
-        margin: 0.25rem 0.5rem;
-        text-align: center;
-        cursor: pointer;
+    .dates {
+      display: flex;
+      flex-flow: row wrap;
+      align-content: flex-start;
 
-        &:hover {
-          background-color: aliceblue;
-          border-radius: 0.25rem;
+      border-top: 1px solid var(--color-border-form);
+      border-right: 1px solid var(--color-border-form);
+
+      .date {
+        position: relative;
+        flex-shrink: 0;
+        width: calc(100% / 7);
+        height: 2rem;
+        padding: 2px 4px;
+        text-align: right;
+        border-bottom: 1px solid var(--color-border-form);
+        border-left: 1px solid var(--color-border-form);
+
+        &.side {
+          color: lightgray;
         }
 
-        &.active {
-          color: orange;
-        }
+        &.ref {
+          cursor: pointer;
 
-        i.fa {
-          margin-left: 0.25rem;
-          width: 1rem;
+          &:hover {
+            background-color: rgb(240 248 255 / 25%);
+          }
+
+          &.today {
+            color: var(--bs-yellow);
+          }
+
+          &.written {
+            // border-radius: 50%;
+            // background-color: #438a72;
+
+            i.fa {
+              position: absolute;
+              left: 2px;
+              bottom: 2px;
+            }
+          }
         }
       }
+    }
+
+    .day:nth-child(7n + 1),
+    .date:nth-child(7n + 1) {
+      color: #d13e3e;
+    }
+
+    .day:nth-child(7n),
+    .date:nth-child(7n) {
+      color: #396ee2;
     }
   }
 }

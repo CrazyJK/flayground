@@ -108,6 +108,15 @@
     }
   },
   {
+    "name": "Diary",
+    "uri": "./flay.diary.html",
+    "icon": "fa fa-book",
+    "popup": {
+      "w": 1078,
+      "h": 800
+    }
+  },
+  {
     "name": "Basket",
     "uri": "./flay.basket.html",
     "icon": "fa fa-shopping-cart",

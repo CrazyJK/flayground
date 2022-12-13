@@ -28,6 +28,7 @@ module.exports = {
     'flay.note': './src/flay.note.js',
     'flay.all': './src/flay.all.js',
     'flay.fav.opus': './src/flay.fav.opus.js',
+    'flay.diary': './src/flay.diary.js',
     'info.actress': './src/info.actress.js',
     'info.flay': './src/info.flay.js',
     'info.studio': './src/info.studio.js',

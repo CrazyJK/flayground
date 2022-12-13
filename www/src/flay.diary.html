@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diary</title>
+    <link rel="icon" type="image/png" href="./img/favicon/flay_1.png" />
+    <link rel="stylesheet" href="./_vendors.css" />
+    <link rel="stylesheet" href="./flay.diary.css" />
+    <script defer type="text/javascript" src="./_vendors.js"></script>
+    <script defer type="text/javascript" src="./_runtime.js"></script>
+    <script defer type="text/javascript" src="./_commons.js"></script>
+    <script defer type="text/javascript" src="./flay.diary.js"></script>
+  </head>
+  <body>
+    <main>
+      <div id="diaryMeta" class="input-group">
+        <input type="text" class="form-control" placeholder="Title..." id="diaryTitle" readonly />
+        <div class="input-group-text check-group">
+          <label><input type="radio" name="diaryWeather" value="sunny" /><span class="fa fa-sun-o"></span></label>
+          <label><input type="radio" name="diaryWeather" value="cloud" /><span class="fa fa-cloud"></span></label>
+          <label><input type="radio" name="diaryWeather" value="rainy" /><span class="fa fa-tint"></span></label>
+          <label><input type="radio" name="diaryWeather" value="snowy" /><span class="fa fa-snowflake-o"></span></label>
+        </div>
+        <div class="input-group-text" id="diaryDay"></div>
+        <input type="date" class="form-control" id="diaryDate" />
+      </div>
+      <div id="diaryEditor"></div>
+      <div id="diaryList">
+        <div class="diary-list"></div>
+      </div>
+    </main>
+    <footer></footer>
+  </body>
+</html>

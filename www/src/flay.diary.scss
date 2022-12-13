@@ -1,0 +1,74 @@
+@import '../node_modules/@toast-ui/editor/dist/toastui-editor.css';
+@import '../node_modules/@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+
+main {
+  display: grid;
+  grid-template-areas:
+    'diary-meta diary-list'
+    'diary-edit diary-list';
+  grid-template-columns: 1fr 9rem;
+  grid-template-rows: 3rem 1fr;
+  gap: 0.5rem;
+
+  padding: 0.5rem 3rem;
+  height: 100vh;
+
+  #diaryMeta {
+    grid-area: diary-meta;
+
+    .check-group label input[type='radio'] ~ span {
+      width: 1.75rem;
+    }
+
+    input[type='date'] {
+      width: 9rem !important;
+      flex-grow: 0 !important;
+    }
+  }
+
+  #diaryEditor {
+    grid-area: diary-edit;
+
+    .toastui-editor-defaultUI {
+      border: 1px solid var(--color-border-form);
+    }
+  }
+
+  #diaryList {
+    grid-area: diary-list;
+
+    position: relative;
+    display: flex;
+    flex-direction: column;
+
+    border: 1px solid var(--color-border-form);
+    border-radius: 0.25rem;
+
+    .diary-list {
+      position: absolute;
+      inset: 0;
+      overflow: auto;
+
+      label {
+        display: block;
+        margin: 0.25rem 0.5rem;
+        text-align: center;
+        cursor: pointer;
+
+        &:hover {
+          background-color: aliceblue;
+          border-radius: 0.25rem;
+        }
+
+        &.active {
+          color: orange;
+        }
+
+        i.fa {
+          margin-left: 0.25rem;
+          width: 1rem;
+        }
+      }
+    }
+  }
+}

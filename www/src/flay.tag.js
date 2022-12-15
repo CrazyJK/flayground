@@ -89,7 +89,7 @@ function tagLoad() {
           .html(flayList.length)
           .addClass(flayList.length > 0 ? '' : 'flay-count-no');
         $tagCard.find('.tag-name').css({
-          fontSize: flayList.length * 0.25 + 16,
+          fontSize: flayList.length * 0.125 + 16,
         });
         flayTotal += flayList.length;
         $('#summary').html(tagTotal + ' Tag, ' + flayTotal + ' Flay');

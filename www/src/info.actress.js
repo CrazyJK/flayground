@@ -170,6 +170,7 @@ Rest.Actress.get(name, (_actress_) => {
 
     displayFlayList(flayAllList).then(() => {
       console.log('completed load');
+      $('#filter-rank, #filter-archive').css({ opacity: 1 });
       $('#filter-i').click();
     });
   });

@@ -36,6 +36,7 @@
         .flay-count {
           font-size: 0.75rem;
           color: var(--bs-secondary);
+          min-width: 2rem;
 
           &.flay-count-no {
             color: var(--bs-danger);

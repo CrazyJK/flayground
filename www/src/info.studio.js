@@ -3,6 +3,7 @@ import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import './components/RankSelect';
 import './css/common.scss';
+import './info.studio.scss';
 import './lib/crazy.jquery';
 import './lib/flay.websocket.js';
 
@@ -35,6 +36,7 @@ Rest.Flay.find('studio/' + studioName, (flayList) => {
 
   displayFlayList(flayList).then(() => {
     console.log('completed load');
+    $('#filter-rank').css({ opacity: 1 });
   });
 });
 

@@ -31,3 +31,8 @@ input.form-control.input-invalid {
   background-color: rgba(0, 0, 0, 0.5);
   height: 8rem;
 }
+
+#filter-rank,
+#filter-archive {
+  opacity: 0;
+}

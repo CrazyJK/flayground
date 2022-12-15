@@ -76,9 +76,11 @@ Rest.Tag.get(id, function (_tag) {
         fontSize: '80%',
         class: (isTagMarked ? 'tag-mark' : 'tag-unmark') + ' r' + flay.video.rank,
       });
+      $('.video-count').html(tagMarkedCount + ' / ' + flayList.length);
+
       await ThreadUtils.sleep(82);
     }
 
-    $('.video-count').html(tagMarkedCount + ' / ' + flayList.length);
+    $('#filter-rank').css({ opacity: 1 });
   });
 });

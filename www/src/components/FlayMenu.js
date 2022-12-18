@@ -1,6 +1,7 @@
 import menuItems from '../components/FlayMenu.json';
 import { LocalStorageItem } from '../lib/crazy.common.js';
 import { Rest } from '../lib/flay.rest.service';
+import '../lib/flay.sse';
 import { flayWebsocket } from '../lib/flay.websocket.js';
 import { calculateLifeTime } from '../lib/kamoru.life.timer';
 

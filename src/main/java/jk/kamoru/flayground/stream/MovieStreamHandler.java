@@ -7,7 +7,6 @@ import java.io.RandomAccessFile;
 import java.text.NumberFormat;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import org.apache.catalina.connector.ClientAbortException;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
@@ -86,8 +85,6 @@ public class MovieStreamHandler {
         out.write(buffer, 0, total);
         partSize -= len;
       } while (partSize > 0);
-    } catch (ClientAbortException e) {
-      log.debug("canceled by client: {}", e.getMessage());
     } catch (IOException e) {
       log.error("fail: {}", e.getMessage());
     }

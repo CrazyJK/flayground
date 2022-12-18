@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
+import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.image.domain.Image;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +25,18 @@ public class FlayActionHandler {
 
   @Autowired TopicMessageService topicMessageService;
 
+  @Autowired SseEmitters sseEmitters;
+
   public void play(Flay flay) {
     exec(composite(flayProperties.getPlayerApp(), flay.getFiles().get(Flay.MOVIE)));
     topicMessageService.sendFromServerToCurrentUser("Play " + flay.getOpus(), flay.getFullname());
+    sseEmitters.send(flay);
   }
 
   public void edit(Flay flay) {
     exec(composite(flayProperties.getEditorApp(), flay.getFiles().get(Flay.SUBTI)));
     topicMessageService.sendFromServerToCurrentUser("Edit " + flay.getOpus(), flay.getFullname());
+    sseEmitters.send(flay);
   }
 
   public void paint(Image image) {

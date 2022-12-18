@@ -16,6 +16,7 @@ import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.advice.TrackExecutionTime;
 import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
+import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -45,6 +46,8 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
   @Autowired ScoreCalculator scoreCalculator;
 
   @Autowired TopicMessageService topicMessageService;
+
+  @Autowired SseEmitters sseEmitters;
 
   @Override
   public Flay get(String key) {
@@ -173,9 +176,9 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     } catch (FlayNotfoundException e) {
       flay = archiveFlaySource.get(opus);
     }
-    flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(),
-        newFlay.getRelease());
+    flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
     topicMessageService.sendFromServerToCurrentUser("Rename Flay", newFlay.getFullname());
+    sseEmitters.send(flay);
   }
 
   @Override

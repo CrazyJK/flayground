@@ -6,6 +6,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
+import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.info.domain.Info;
 import jk.kamoru.flayground.info.source.InfoSource;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,8 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
   @Autowired InfoSource<T, K> infoSource;
 
   @Autowired TopicMessageService topicMessageService;
+
+  @Autowired SseEmitters sseEmitters;
 
   ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
@@ -46,6 +49,7 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
     T created = infoSource.create(create);
     try {
       topicMessageService.sendFromServerToAll("Created", jsonWriter.writeValueAsString(created));
+      sseEmitters.send(create);
     } catch (JsonProcessingException e) {
       log.error(e.getMessage());
     }
@@ -57,6 +61,7 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
     infoSource.update(update);
     try {
       topicMessageService.sendFromServerToAll("Updated", jsonWriter.writeValueAsString(update));
+      sseEmitters.send(update);
     } catch (JsonProcessingException e) {
       log.error(e.getMessage());
     }
@@ -67,6 +72,7 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
     infoSource.delete(delete);
     try {
       topicMessageService.sendFromServerToAll("Deleted", jsonWriter.writeValueAsString(delete));
+      sseEmitters.send(delete);
     } catch (JsonProcessingException e) {
       log.error(e.getMessage());
     }

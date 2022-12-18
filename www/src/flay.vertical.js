@@ -1475,3 +1475,22 @@ attachFlayEventListener();
 initCondition();
 initChart();
 loadData();
+
+window.emitFlay = (flay) => {
+  console.log('received flay', flay);
+};
+window.emitStudio = (studio) => {
+  console.log('received studio', studio);
+};
+window.emitVideo = (video) => {
+  console.log('received video', video);
+};
+window.emitActress = (actress) => {
+  console.log('received actress', actress);
+};
+window.emitTag = (tag) => {
+  console.log('received tag', tag);
+};
+window.emitMesssage = (message) => {
+  console.log('received message', message);
+};

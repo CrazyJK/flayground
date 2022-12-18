@@ -2,18 +2,18 @@
  * basket
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
 import './components/FlayMenu';
 import './css/common.scss';
 import './flay.basket.scss';
+import './lib/crazy.jquery';
 
-import { Rest } from './lib/flay.rest.service.js';
-import { MODIFIED, FILEINFO, ACTRESS_EXTRA, COMMENT, STUDIO } from './lib/flay.view.card.js';
-import { loading } from './lib/flay.loading.js';
 import { COVER_RATIO, LocalStorageItem, Random } from './lib/crazy.common.js';
+import { loading } from './lib/flay.loading.js';
+import { Rest } from './lib/flay.rest.service.js';
+import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, STUDIO } from './lib/flay.view.card.js';
 
 const basket = {
   CARD_MARGIN: 4,
@@ -170,8 +170,10 @@ const basket = {
   },
 };
 
-window.grapFlay = function (opus) {
-  basket.toggleFlay(opus);
+const grapChannel = new BroadcastChannel('grap_channel');
+grapChannel.onmessage = (event) => {
+  console.debug(event);
+  basket.toggleFlay(event.data);
 };
 
 Rest.Actress.listSync((list) => {

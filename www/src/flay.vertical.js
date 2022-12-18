@@ -5,7 +5,7 @@
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import { flayWebsocket } from './components/FlayMenu';
+import './components/FlayMenu';
 import './css/common.scss';
 import './flay.vertical.scss';
 import './lib/crazy.effect.neon.js';
@@ -17,6 +17,8 @@ import { getDominatedColors } from './lib/crazy.dominated-color.js';
 import { loading } from './lib/flay.loading.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { Search, Util, View } from './lib/flay.utils.js';
+
+const grapChannel = new BroadcastChannel('grap_channel');
 
 let flayList = [];
 let collectedList = [];
@@ -641,7 +643,7 @@ function attachFlayEventListener() {
   });
   // add-basket-btn
   $('.add-basket-btn').on('click', function () {
-    flayWebsocket.data({ mode: 'grap', opus: currentFlay.opus });
+    grapChannel.postMessage(currentFlay.opus);
   });
   // control video stream
   $('.cover-wrapper-inner.curr > .cover-box').on('click', Flaying.start);

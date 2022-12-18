@@ -6,7 +6,8 @@ import jQuery from 'jquery';
 import { COVER_ASPECT_RATIO, File } from './crazy.common.js';
 import { Rest } from './flay.rest.service.js';
 import { Search, Util, View } from './flay.utils.js';
-import { flayWebsocket } from './flay.websocket.js';
+
+const grapChannel = new BroadcastChannel('grap_channel');
 
 export const STUDIO = 'studio',
   ACTRESS = 'actress',
@@ -164,7 +165,7 @@ export const STUDIO = 'studio',
       } else {
         $flayCard.find('.add-basket-btn').on('click', function () {
           if (!flay.archive) {
-            flayWebsocket.data({ mode: 'grap', opus: flay.opus });
+            grapChannel.postMessage(flay.opus);
           }
         });
       }

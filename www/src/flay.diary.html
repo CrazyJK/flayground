@@ -16,13 +16,14 @@
     <main>
       <div id="diaryCal">
         <div class="calendar">
-          <!-- <div class="month">
+          <!-- [...<div class="month">
+            <h5 class="month-name">December</h5>
             <div class="dates"></div>
-          </div> -->
+          </div>] -->
         </div>
       </div>
-      <div id="diaryMeta" class="input-group">
-        <input type="text" class="form-control" placeholder="Title..." id="diaryTitle" readonly />
+      <div id="diaryMeta" class="input-group" style="display: none">
+        <input type="text" class="form-control" placeholder="Title..." id="diaryTitle" />
         <div class="input-group-text check-group">
           <label><input type="radio" name="diaryWeather" value="sunny" /><span class="fa fa-sun-o"></span></label>
           <label><input type="radio" name="diaryWeather" value="cloud" /><span class="fa fa-cloud"></span></label>
@@ -30,7 +31,7 @@
           <label><input type="radio" name="diaryWeather" value="snowy" /><span class="fa fa-snowflake-o"></span></label>
         </div>
         <div class="input-group-text" id="diaryDay"></div>
-        <input type="date" class="form-control" id="diaryDate" />
+        <input type="date" class="form-control" id="diaryDate" readonly />
       </div>
       <div id="diaryEditor"></div>
     </main>

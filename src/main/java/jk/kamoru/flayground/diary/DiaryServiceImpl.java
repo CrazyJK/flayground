@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.diary;
 
 import java.util.Collection;
+import java.util.Date;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +28,7 @@ public class DiaryServiceImpl implements DiaryService {
 
   @Override
   public Diary save(Diary diary) {
+    diary.setLastModified(new Date());
     return diarySource.save(diary);
   }
 

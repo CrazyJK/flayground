@@ -1,19 +1,16 @@
 import Editor from '@toast-ui/editor';
-import 'bootstrap/dist/js/bootstrap';
+import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import './components/FlayMenu';
 import { LocalStorageItem } from './lib/crazy.common.js';
+import { loading } from './lib/flay.loading.js';
 import { restCall } from './lib/flay.rest.service.js';
 
 import './css/common.scss';
 import './flay.diary.scss';
 
-const weatherMap = {
-  sunny: 'sun-o',
-  cloud: 'cloud',
-  rainy: 'tint',
-  snowy: 'snowflake-o',
-};
+let currentDiary = { date: '', weather: '', title: '', content: '', created: null, lastModified: null };
 
+const diaryMeta = document.querySelector('#diaryMeta');
 const diaryTitle = document.querySelector('#diaryTitle');
 const diaryDate = document.querySelector('#diaryDate');
 const diaryDay = document.querySelector('#diaryDay');
@@ -26,6 +23,7 @@ const diaryEditor = new Editor({
   theme: LocalStorageItem.get('flay.bgtheme', 'dark'),
   hideModeSwitch: true,
   autofocus: false,
+  plugins: [colorSyntax],
   events: {
     load: (editor) => {
       console.debug('load', editor);
@@ -44,6 +42,7 @@ diaryEditor.hide();
 renderCalendar();
 markDiaryDates();
 addCalendarEventListener();
+addDiaryEventListener();
 
 /**
  * 화면에 달력 표현
@@ -57,7 +56,7 @@ function renderCalendar() {
 
   let html = '';
   for (let r = 0; r < renderingMonthSize; r++) {
-    console.log('rendering', r);
+    console.debug('rendering', r);
 
     const refDate = new Date(today.getFullYear(), today.getMonth() - r, today.getDate());
     const refYear = refDate.getFullYear();
@@ -121,7 +120,7 @@ function renderCalendar() {
  */
 function addCalendarEventListener() {
   document.querySelector('.calendar').addEventListener('click', (e) => {
-    console.log('click Calendar date');
+    console.debug('click Calendar date');
 
     // 클릭 이벤트에서 label node 찾기
     let clickedDate;
@@ -166,8 +165,16 @@ function addCalendarEventListener() {
   });
 }
 
+function addDiaryEventListener() {
+  diaryTitle.addEventListener('blur', saveDiary);
+  document.querySelectorAll('input[name="diaryWeather"]').forEach((weather) => {
+    weather.addEventListener('click', saveDiary);
+  });
+  // 에디터 변경은 에디터에서 blur 함수 호출됨
+}
+
 /**
- * 일기쓴 날짜 로딩
+ * 일기쓴 날짜를 불러와 달력에 별 표시
  */
 function markDiaryDates() {
   fetch('/diary/dates')
@@ -193,42 +200,63 @@ function markDiaryDates() {
 function loadDiary(diary) {
   console.log('loadDiary', diary);
 
+  currentDiary = diary;
+
   diaryTitle.value = diary.title;
   diaryDate.value = diary.date;
   diaryDay.innerHTML = getDay(diary.date);
-  document.querySelector('[name="diaryWeather"][value="' + diary.weather + '"]').click();
   diaryEditor.setHTML(diary.content, false);
+  document.querySelector('[name="diaryWeather"][value="' + diary.weather + '"]').checked = true;
 
-  // 제목, 본문 쓰기 모드 설정
-  diaryTitle.removeAttribute('readonly');
+  // 제목, 본문 show
   diaryEditor.show();
+  diaryMeta.style.display = '';
 }
 
 /**
  * 작성된 일기를 서버에 저장
  * @returns 제목, 날짜 필수
  */
-function saveDiary() {
+function saveDiary(e) {
+  console.debug('called saveDiary', e?.target);
+
   const date = diaryDate.value;
   const title = diaryTitle.value;
   const weather = document.querySelector('[name="diaryWeather"]:checked')?.value;
   const content = diaryEditor.getHTML();
 
   if (date === '' || title === '' || typeof weather === 'undefined') {
+    console.debug('diary date is empty');
+    return;
+  }
+  if (currentDiary.date !== date) {
+    loading.error('date changed');
+  }
+  if (currentDiary.weather === weather && currentDiary.title === title && currentDiary.content === content) {
+    console.debug('diary data unchanged');
     return;
   }
 
-  const diary = {
-    date: date,
-    weather: weather,
-    title: title,
-    content: content,
-  };
+  // localStorage에 저장전 diary 저장
+  LocalStorageItem.set(`diary-${Date.now()}`, JSON.stringify(currentDiary));
+  // n일전 diary 삭제
+  const today = Date.now();
+  const offsetMs = 1000 * 60 * 60 * 24 * 3;
+  LocalStorageItem.findStartsWith('diary-').forEach((item) => {
+    // console.log('storage diary', item.key, item.value);
+    const writtenMs = Number(item.key.split('-')[1]);
+    if (today - writtenMs > offsetMs) {
+      console.log('Storage에서 지난 일기 기록 삭제', item.key, item.value);
+      LocalStorageItem.remove(item.key);
+    }
+  });
 
-  console.log('saveDiary', diary);
+  currentDiary.weather = weather;
+  currentDiary.title = title;
+  currentDiary.content = content;
 
-  restCall('/diary', { method: 'POST', data: diary }, (diary) => {
-    console.log('성공:', diary);
+  restCall('/diary', { method: 'POST', data: currentDiary }, (diary) => {
+    console.log('saved Diary', diary);
     markDiaryDates();
   });
 }

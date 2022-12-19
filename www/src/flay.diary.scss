@@ -1,5 +1,7 @@
-@import '../node_modules/@toast-ui/editor/dist/toastui-editor.css';
-@import '../node_modules/@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+@import '@toast-ui/editor/dist/toastui-editor.css';
+@import '@toast-ui/editor/dist/theme/toastui-editor-dark.css';
+@import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
+@import 'tui-color-picker/dist/tui-color-picker.css';
 
 main {
   display: grid;
@@ -37,6 +39,12 @@ main {
     .toastui-editor-defaultUI {
       border: 1px solid var(--color-border-form);
     }
+  }
+}
+
+@media screen and (max-width: 900px) {
+  main {
+    padding: 0.5rem 1rem;
   }
 }
 
@@ -86,14 +94,15 @@ main {
           }
 
           &.written {
-            // border-radius: 50%;
-            // background-color: #438a72;
-
             i.fa {
               position: absolute;
               left: 2px;
               bottom: 2px;
             }
+          }
+
+          &.active {
+            background-color: rgba(214, 134, 29, 0.25);
           }
         }
       }

@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import jk.kamoru.flayground.FlayProperties;
+import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -25,6 +26,8 @@ public class DiarySourceImpl implements DiarySource {
   private static final String DIARY = "diary";
 
   @Autowired FlayProperties flayProperties;
+
+  @Autowired TopicMessageService topicMessageService;
 
   ObjectMapper jsonReader = new ObjectMapper();
   ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
@@ -74,6 +77,9 @@ public class DiarySourceImpl implements DiarySource {
     } catch (IOException e) {
       throw new IllegalStateException("Fail to save diary file ", e);
     }
+
+    topicMessageService.sendFromServerToCurrentUser("DIARY", "saved " + diary.getDate());
+    log.info("diary saved {} : {}", diary.getDate(), diary.getTitle());
 
     return diary;
   }

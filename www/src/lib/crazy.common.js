@@ -393,6 +393,13 @@ export const LocalStorageItem = {
   clear() {
     localStorage.clear();
   },
+  findStartsWith(itemName) {
+    return Object.keys(localStorage)
+      .filter((key) => key.startsWith(itemName))
+      .map((key) => {
+        return { key: key, value: localStorage.getItem(key) };
+      });
+  },
 };
 
 export const SessionStorageItem = {
@@ -421,6 +428,13 @@ export const SessionStorageItem = {
   },
   clear() {
     sessionStorage.clear();
+  },
+  findStartsWith(itemName) {
+    return Object.keys(sessionStorage)
+      .filter((key) => key.startsWith(itemName))
+      .map((key) => {
+        return { key: key, value: sessionStorage.getItem(key) };
+      });
   },
 };
 

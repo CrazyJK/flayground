@@ -8,7 +8,7 @@ import { restCall } from './lib/flay.rest.service.js';
 import './css/common.scss';
 import './kamoru.diary.scss';
 
-let currentDiary = { date: '', weather: '', title: '', content: '', created: null, lastModified: null };
+let currentDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null }, content: '' };
 
 const diaryMeta = document.querySelector('#diaryMeta');
 const diaryTitle = document.querySelector('#diaryTitle');
@@ -159,9 +159,11 @@ function addCalendarEventListener() {
         .then((diary) => loadDiary(diary));
     } else {
       loadDiary({
-        title: '',
-        date: date,
-        weather: 'sunny',
+        meta: {
+          title: '',
+          date: date,
+          weather: 'sunny',
+        },
         content: '',
       });
     }
@@ -183,14 +185,15 @@ function addDiaryEventListener() {
  * 일기쓴 날짜를 불러와 달력에 별 표시
  */
 function markDiaryDates() {
-  fetch('/diary/dates')
+  fetch('/diary/meta')
     .then((response) => response.json())
     .then((list) => {
-      list.forEach((date) => {
-        const dateElement = document.querySelector('#d-' + date);
+      list.forEach((meta) => {
+        const dateElement = document.querySelector('#d-' + meta.date);
         if (dateElement !== null) {
           const markerElement = document.createElement('i');
           markerElement.setAttribute('class', 'fa fa-star');
+          markerElement.setAttribute('title', meta.title);
 
           dateElement.classList.add('written');
           dateElement.appendChild(markerElement);
@@ -208,11 +211,11 @@ function loadDiary(diary) {
 
   currentDiary = diary;
 
-  diaryTitle.value = diary.title;
-  diaryDate.value = diary.date;
-  diaryDay.innerHTML = getDay(diary.date);
+  diaryTitle.value = diary.meta.title;
+  diaryDate.value = diary.meta.date;
+  diaryDay.innerHTML = getDay(diary.meta.date);
   diaryEditor.setHTML(diary.content, false);
-  document.querySelector('[name="diaryWeather"][value="' + diary.weather + '"]').checked = true;
+  document.querySelector('[name="diaryWeather"][value="' + diary.meta.weather + '"]').checked = true;
 
   // 제목, 본문 show
   diaryEditor.show();
@@ -235,10 +238,11 @@ function saveDiary(e) {
     console.debug('diary date is empty');
     return;
   }
-  if (currentDiary.date !== date) {
+  if (currentDiary.meta.date !== date) {
     loading.error('date changed');
+    return;
   }
-  if (currentDiary.weather === weather && currentDiary.title === title && currentDiary.content === content) {
+  if (currentDiary.meta.weather === weather && currentDiary.meta.title === title && currentDiary.content === content) {
     console.debug('diary data unchanged');
     return;
   }
@@ -257,8 +261,8 @@ function saveDiary(e) {
     }
   });
 
-  currentDiary.weather = weather;
-  currentDiary.title = title;
+  currentDiary.meta.weather = weather;
+  currentDiary.meta.title = title;
   currentDiary.content = content;
 
   restCall('/diary', { method: 'POST', data: currentDiary }, (diary) => {

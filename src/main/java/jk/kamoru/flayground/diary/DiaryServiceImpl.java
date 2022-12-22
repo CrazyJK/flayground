@@ -2,9 +2,11 @@ package jk.kamoru.flayground.diary;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import jk.kamoru.flayground.diary.Diary.Meta;
 
 @Service
 public class DiaryServiceImpl implements DiaryService {
@@ -28,8 +30,13 @@ public class DiaryServiceImpl implements DiaryService {
 
   @Override
   public Diary save(Diary diary) {
-    diary.setLastModified(new Date());
+    diary.getMeta().setLastModified(new Date());
     return diarySource.save(diary);
+  }
+
+  @Override
+  public List<Meta> meta() {
+    return diarySource.list().stream().map(Diary::getMeta).toList();
   }
 
 }

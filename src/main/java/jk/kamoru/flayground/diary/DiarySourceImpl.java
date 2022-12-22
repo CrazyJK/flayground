@@ -10,11 +10,10 @@ import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import com.fasterxml.jackson.core.exc.StreamReadException;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import jk.kamoru.flayground.FlayException;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import lombok.extern.slf4j.Slf4j;
@@ -35,14 +34,19 @@ public class DiarySourceImpl implements DiarySource {
   Map<String, Diary> diaryMap = new TreeMap<>();
 
   @PostConstruct
-  void load() throws StreamReadException, DatabindException, IOException {
+  void load() {
     diaryMap.clear();
 
     Collection<File> listFiles = FileUtils.listFiles(getDiaryPathFile(), new String[] {DIARY}, false);
     log.info(String.format("%5s %-7s - %s", listFiles.size(), DIARY, getDiaryPathFile()));
     for (File file : listFiles) {
-      Diary diary = jsonReader.readValue(file, new TypeReference<Diary>() {});
-      diaryMap.put(diary.getDate(), diary);
+      Diary diary;
+      try {
+        diary = jsonReader.readValue(file, new TypeReference<Diary>() {});
+        diaryMap.put(diary.getMeta().getDate(), diary);
+      } catch (IOException e) {
+        throw new FlayException(String.format("fail to diary read %s : %s", file, e.getMessage()), e);
+      }
     }
   }
 
@@ -70,16 +74,16 @@ public class DiarySourceImpl implements DiarySource {
 
   @Override
   public Diary save(Diary diary) {
-    diaryMap.put(diary.getDate(), diary);
+    diaryMap.put(diary.getMeta().getDate(), diary);
 
     try {
-      jsonWriter.writeValue(new File(getDiaryPathFile(), diary.getDate() + "." + DIARY), diary);
+      jsonWriter.writeValue(new File(getDiaryPathFile(), diary.getMeta().getDate() + "." + DIARY), diary);
     } catch (IOException e) {
       throw new IllegalStateException("Fail to save diary file ", e);
     }
 
-    topicMessageService.sendFromServerToCurrentUser("DIARY", "saved " + diary.getDate());
-    log.info("diary saved {} : {}", diary.getDate(), diary.getTitle());
+    topicMessageService.sendFromServerToCurrentUser("DIARY", "saved " + diary.getMeta().getDate());
+    log.info("diary saved {} : {}", diary.getMeta().getDate(), diary.getMeta().getTitle());
 
     return diary;
   }

@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.diary;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import jk.kamoru.flayground.diary.Diary.Meta;
 
 @RestController
 @RequestMapping("/diary")
@@ -24,6 +26,11 @@ public class DiaryController {
   @GetMapping("/dates")
   public Set<String> dates() {
     return diaryService.dates();
+  }
+
+  @GetMapping("/meta")
+  public List<Meta> metaList() {
+    return diaryService.meta();
   }
 
   @GetMapping("/date/{date}")

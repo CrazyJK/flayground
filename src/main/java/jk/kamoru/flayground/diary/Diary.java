@@ -6,11 +6,16 @@ import lombok.Data;
 @Data
 public class Diary {
 
-  private String date;
-  private String weather;
-  private String title;
+  @Data
+  static class Meta {
+    private String date;
+    private String weather;
+    private String title;
+    private Date created = new Date();
+    private Date lastModified;
+  }
+
+  private Meta meta;
   private String content;
-  private Date created = new Date();
-  private Date lastModified;
 
 }

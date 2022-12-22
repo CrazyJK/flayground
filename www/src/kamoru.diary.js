@@ -6,7 +6,7 @@ import { loading } from './lib/flay.loading.js';
 import { restCall } from './lib/flay.rest.service.js';
 
 import './css/common.scss';
-import './flay.diary.scss';
+import './kamoru.diary.scss';
 
 let currentDiary = { date: '', weather: '', title: '', content: '', created: null, lastModified: null };
 
@@ -40,7 +40,6 @@ const diaryEditor = new Editor({
 diaryEditor.hide();
 
 renderCalendar();
-markDiaryDates();
 addCalendarEventListener();
 addDiaryEventListener();
 
@@ -54,7 +53,9 @@ function renderCalendar() {
   const todayMonth = today.getMonth();
   const todayDay = today.getDate();
 
-  let html = '';
+  const calendar = document.querySelector('.calendar');
+  calendar.innerHTML = '';
+
   for (let r = 0; r < renderingMonthSize; r++) {
     console.debug('rendering', r);
 
@@ -90,29 +91,31 @@ function renderCalendar() {
       dates.push(date);
     }
 
-    html += `
-      <div class="month">
-        <h5 class="month-name">${new Intl.DateTimeFormat('en-US', { month: 'long' }).format(refDate)}</h5>
-        <div class="dates">${dates
-          .map((date) => {
-            const year = date.getFullYear();
-            const month = date.getMonth();
-            const day = date.getDate();
+    const month = document.createElement('div');
+    month.setAttribute('class', 'month');
+    month.innerHTML = `
+      <h6 class="month-name">${refYear}. ${refMonth + 1}</h6>
+      <div class="dates">${dates
+        .map((date) => {
+          const year = date.getFullYear();
+          const month = date.getMonth();
+          const day = date.getDate();
 
-            const yyyymmdd = `${year}-${month + 1}-${day < 10 ? '0' + day : day}`;
-            const isSameMonth = refYear === year && refMonth === month;
-            const isToday = todayYear === year && todayMonth === month && todayDay === day;
+          const yyyymmdd = `${year}-${month + 1}-${day < 10 ? '0' + day : day}`;
+          const isSameMonth = refYear === year && refMonth === month;
+          const isToday = todayYear === year && todayMonth === month && todayDay === day;
 
-            return `<div class="date ${isSameMonth ? 'ref' : 'side'} ${isToday ? 'today' : ''}"
-                title="${date.toLocaleDateString()}"
-                id="d-${isSameMonth ? yyyymmdd : ''}">${day}</div>`;
-          })
-          .join('')}
-        </div>
+          return `<div class="date ${isSameMonth ? 'ref' : 'side'} ${isToday ? 'today' : ''}"
+              title="${date.toLocaleDateString()}"
+              id="d-${isSameMonth ? yyyymmdd : ''}">${day}</div>`;
+        })
+        .join('')}
       </div>`;
+
+    calendar.appendChild(month);
   }
 
-  document.querySelector('.calendar').innerHTML = html;
+  markDiaryDates();
 }
 
 /**
@@ -165,6 +168,9 @@ function addCalendarEventListener() {
   });
 }
 
+/**
+ * 일기 작성창 이벤트. 제목, 날씨
+ */
 function addDiaryEventListener() {
   diaryTitle.addEventListener('blur', saveDiary);
   document.querySelectorAll('input[name="diaryWeather"]').forEach((weather) => {

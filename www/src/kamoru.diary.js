@@ -1,5 +1,10 @@
+/**
+ * kamoru diary
+ */
+
 import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
+
 import './components/FlayMenu';
 import { LocalStorageItem } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';

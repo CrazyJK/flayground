@@ -5,13 +5,14 @@
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
+
 import './components/FlayMenu';
+import { StringUtils, ThreadUtils } from './lib/crazy.common';
+import { Rest } from './lib/flay.rest.service';
+import { View } from './lib/flay.utils';
+
 import './css/common.scss';
 import './flay.ground.scss';
-
-import { StringUtils, ThreadUtils } from './lib/crazy.common';
-import { Rest } from './lib/flay.rest.service.js';
-import { View } from './lib/flay.utils.js';
 
 const $resultContainer = $('.result');
 const $immediately = $('.immediately');

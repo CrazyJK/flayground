@@ -2,21 +2,22 @@
  * Flay Vertical View Javascript
  */
 
+import bb, { bubble } from 'billboard.js';
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
+
 import './components/FlayMenu';
+import { DateUtils, DEFAULT_SPECS, File, LocalStorageItem, NumberUtils, PATH, Random, SessionStorageItem, StringUtils } from './lib/crazy.common';
+import { getDominatedColors } from './lib/crazy.dominated-color';
+import './lib/crazy.effect.neon';
+import './lib/crazy.jquery';
+import { loading } from './lib/flay.loading';
+import { Rest } from './lib/flay.rest.service';
+import { Search, Util, View } from './lib/flay.utils';
+
 import './css/common.scss';
 import './flay.vertical.scss';
-import './lib/crazy.effect.neon.js';
-import './lib/crazy.jquery';
-
-import bb, { bubble } from 'billboard.js';
-import { DateUtils, DEFAULT_SPECS, File, LocalStorageItem, NumberUtils, PATH, Random, SessionStorageItem, StringUtils } from './lib/crazy.common.js';
-import { getDominatedColors } from './lib/crazy.dominated-color.js';
-import { loading } from './lib/flay.loading.js';
-import { Rest } from './lib/flay.rest.service.js';
-import { Search, Util, View } from './lib/flay.utils.js';
 
 const grapChannel = new BroadcastChannel('grap_channel');
 

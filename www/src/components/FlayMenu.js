@@ -1,4 +1,5 @@
 import menuItems from '../components/FlayMenu.json';
+import { imageWaterfall } from '../components/ImageWaterfall';
 import { LocalStorageItem } from '../lib/crazy.common.js';
 import { Rest } from '../lib/flay.rest.service';
 import '../lib/flay.sse';
@@ -173,14 +174,14 @@ class FlayMenu extends HTMLElement {
       padding-right: 0.5rem;
     }
 
-    button#themeToggle {
+    button {
       background-color: transparent;
       border: 0;
       color: inherit;
       margin: 0;
       padding: 0;
     }
-    button#themeToggle > i {
+    button > i {
       margin: 0.125rem 0.25rem;
       font-size: 1.25em;
     }
@@ -188,6 +189,13 @@ class FlayMenu extends HTMLElement {
       display: none;
     }
     button#themeToggle.light > i.dark {
+      display: none;
+    }
+
+    button#imageToggle.toggle-on > i.fa-toggle-off {
+      display: none;
+    }
+    button#imageToggle.toggle-off > i.fa-toggle-on {
       display: none;
     }
     `;
@@ -273,6 +281,7 @@ class FlayMenu extends HTMLElement {
     subMenuNav.setAttribute('class', 'nav nav-sub');
     navWrap.appendChild(subMenuNav);
 
+    subMenuNav.appendChild(createImageWaterfallToggle());
     subMenuNav.appendChild(createThemeToggle(shadow));
     subMenuNav.appendChild(createRemainTimer());
     subMenuNav.appendChild(createLogout());
@@ -291,6 +300,34 @@ let bgTheme = LocalStorageItem.get('flay.bgtheme', 'dark');
 document.getElementsByTagName('html')[0].setAttribute('data-theme', bgTheme);
 
 document.body.prepend(new FlayMenu('left'));
+
+function createImageWaterfallToggle() {
+  const iOn = document.createElement('i');
+  iOn.classList.add('fa', 'fa-toggle-on');
+  const iOff = document.createElement('i');
+  iOff.classList.add('fa', 'fa-toggle-off');
+
+  const button = document.createElement('button');
+  button.setAttribute('id', 'imageToggle');
+  button.setAttribute('type', 'button');
+  button.setAttribute('class', 'toggle-off');
+  button.classList.add(bgTheme);
+  button.appendChild(iOn);
+  button.appendChild(iOff);
+  button.addEventListener('click', () => {
+    if (button.classList.contains('toggle-on')) {
+      button.classList.replace('toggle-on', 'toggle-off');
+      imageWaterfall.stop();
+    } else {
+      button.classList.replace('toggle-off', 'toggle-on');
+      imageWaterfall.start();
+    }
+  });
+
+  return menuItemFactory('Image', ['fa', 'fa-toggle-on'], button, () => {
+    imageWaterfall.empty();
+  });
+}
 
 function createThemeToggle(shadow) {
   const navWrap = shadow.querySelector('nav.nav-wrap');
@@ -374,7 +411,7 @@ function createLogout() {
   return menuItemFactory('Logout', ['fa', 'fa-sign-out'], label);
 }
 
-function menuItemFactory(title, iconClasses, element) {
+function menuItemFactory(title, iconClasses, element, clickEventHandler) {
   const li = document.createElement('li');
   const i = document.createElement('i');
   const div = document.createElement('div');
@@ -385,5 +422,10 @@ function menuItemFactory(title, iconClasses, element) {
   li.appendChild(div);
   div.appendChild(span);
   div.appendChild(element);
+
+  if (clickEventHandler) {
+    span.addEventListener('click', clickEventHandler);
+  }
+
   return li;
 }

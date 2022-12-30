@@ -1,6 +1,9 @@
+import '@fortawesome/fontawesome-free/js/all.js';
 import $ from 'jquery';
 import menuItems from './index.json';
 import './index.scss';
+
+// https://fontawesome.com/v6/search?o=r&m=free
 
 const INDEX_POPUP_SIZE = 'index.popup.size';
 const INDEX_MENO = 'index.memo';

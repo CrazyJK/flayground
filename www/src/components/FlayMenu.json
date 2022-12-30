@@ -123,6 +123,15 @@
     }
   },
   {
+    "name": "Flay Cover Flow",
+    "uri": "./flay.cover.flow.html",
+    "icon": "fa fa-image",
+    "popup": {
+      "w": 1078,
+      "h": 1100
+    }
+  },
+  {
     "name": "Cover Cloud",
     "uri": "./cover.cloud.html",
     "icon": "fa fa-image",

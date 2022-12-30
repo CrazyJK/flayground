@@ -90,24 +90,6 @@
     }
   },
   {
-    "name": "Todayis",
-    "uri": "./today.is.html",
-    "icon": "fa fa-th",
-    "popup": {
-      "w": 1078,
-      "h": 800
-    }
-  },
-  {
-    "name": "Notes",
-    "uri": "./flay.note.html",
-    "icon": "fa fa-sticky-note note-btn",
-    "popup": {
-      "w": 1078,
-      "h": 800
-    }
-  },
-  {
     "name": "Basket",
     "uri": "./flay.basket.html",
     "icon": "fa fa-shopping-cart",
@@ -201,6 +183,24 @@
     "popup": {
       "w": 1078,
       "h": 1100
+    }
+  },
+  {
+    "name": "Todayis",
+    "uri": "./today.is.html",
+    "icon": "fa fa-th",
+    "popup": {
+      "w": 1078,
+      "h": 800
+    }
+  },
+  {
+    "name": "Notes",
+    "uri": "./flay.note.html",
+    "icon": "fa fa-sticky-note note-btn",
+    "popup": {
+      "w": 1078,
+      "h": 800
     }
   },
   {

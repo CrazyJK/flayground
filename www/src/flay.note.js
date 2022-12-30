@@ -277,6 +277,13 @@ $('#switchTitleInline').on('change', function () {
   });
 });
 
+$('#listAll')
+  .on('change', function () {
+    isListAll = $('#listAll').prop('checked');
+    console.log('#listAll checked', isListAll);
+  })
+  .trigger('change');
+
 $('.search-input')
   .on('keyup', function (e, init) {
     if (init) {
@@ -296,8 +303,3 @@ $('.search-input')
     }
   })
   .trigger('keyup', [true]);
-
-$('#listAll').on('change', function () {
-  isListAll = $('#listAll').prop('checked');
-  console.log('#listAll checked', isListAll);
-});

@@ -14,10 +14,57 @@ class ImageWaterfall extends HTMLElement {
     // Create a shadow root
     const shadow = this.attachShadow({ mode: 'open' });
 
-    const linkElem = document.createElement('link');
-    linkElem.setAttribute('rel', 'stylesheet');
-    linkElem.setAttribute('href', 'css/ImageWaterfall.css');
-    shadow.appendChild(linkElem);
+    const style = document.createElement('style');
+    style.textContent = `
+    div.waterfall {
+      position: fixed;
+      inset: 0;
+      z-index: -4;
+
+      display: flex;
+      gap: 1rem;
+
+      padding: 0 1rem;
+    }
+
+    div.waterfall > div.col {
+      flex: 1 0 0%;
+
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+
+      position: relative;
+    }
+
+    div.waterfall > div.col > img {
+      width: 100%;
+      border-radius: 0.25rem;
+      box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+
+      position: relative;
+    }
+
+    div.waterfall > div.col > img:first-child {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    div.layer {
+      position: fixed;
+      inset: 0;
+      z-index: -3;
+
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+    }
+
+    div.layer.show {
+      display: block;
+    }
+    `;
+    shadow.appendChild(style);
 
     this.wrap = document.createElement('div');
     this.wrap.setAttribute('class', 'waterfall');

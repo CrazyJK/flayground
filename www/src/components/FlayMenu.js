@@ -54,7 +54,7 @@ class FlayMenu extends HTMLElement {
       width: 200px;
       overflow: hidden;
       z-index: 6974892;
-      transition: ${alignLeft ? 'left' : 'right'} 0.4s;
+      transition: ${alignLeft ? 'left' : 'right'} 0.4s 2s;
       display: flex;
       flex-direction: column;
     }
@@ -63,6 +63,7 @@ class FlayMenu extends HTMLElement {
       ${alignLeft ? 'left' : 'right'}: 0;
       box-shadow: 0 0 0.5rem var(--color-box-shadow);
       border-${alignLeft ? 'right' : 'left'}: 1px solid #000;
+      transition: ${alignLeft ? 'left' : 'right'} 0.4s;
     }
     .nav-wrap.dark {
       background-color: #151515;

@@ -213,6 +213,15 @@
     }
   },
   {
+    "name": "Actuator",
+    "uri": "./util.actuator.index.html",
+    "icon": "fa fa-info",
+    "popup": {
+      "w": 1000,
+      "h": 830
+    }
+  },
+  {
     "name": "RequestMap",
     "uri": "./util.actuator.mappings.html",
     "icon": "fa fa-info",
@@ -228,15 +237,6 @@
     "popup": {
       "w": 1000,
       "h": 660
-    }
-  },
-  {
-    "name": "Actuator",
-    "uri": "./util.actuator.index.html",
-    "icon": "fa fa-info",
-    "popup": {
-      "w": 1000,
-      "h": 830
     }
   },
   {

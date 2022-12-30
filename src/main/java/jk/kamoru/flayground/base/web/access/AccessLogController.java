@@ -33,7 +33,7 @@ public class AccessLogController {
   @GetMapping("/requestMappingList")
   public List<Map<String, String>> requestMapping(Model model) {
     List<Map<String, String>> mappingList = new ArrayList<>();
-    RequestMappingHandlerMapping rmhm = context.getBean(RequestMappingHandlerMapping.class);
+    RequestMappingHandlerMapping rmhm = (RequestMappingHandlerMapping) context.getBean("requestMappingHandlerMapping");
     for (Entry<RequestMappingInfo, HandlerMethod> entry : rmhm.getHandlerMethods().entrySet()) {
       RequestMappingInfo requestMappingInfo = entry.getKey();
       HandlerMethod handlerMethod = entry.getValue();

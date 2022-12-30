@@ -116,25 +116,25 @@ module.exports = {
       },
     ],
   },
-  optimization: {
-    moduleIds: 'deterministic',
-    // runtimeChunk: 'single',
-    runtimeChunk: {
-      name: '_runtime',
-    },
-    splitChunks: {
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: '_vendors',
-          chunks: 'all',
-        },
-        commons: {
-          test: /[\\/]lib[\\/]/,
-          name: '_commons',
-          chunks: 'all',
-        },
-      },
-    },
-  },
+  // optimization: {
+  //   moduleIds: 'deterministic',
+  //   // runtimeChunk: 'single',
+  //   runtimeChunk: {
+  //     name: '_runtime',
+  //   },
+  //   splitChunks: {
+  //     cacheGroups: {
+  //       vendor: {
+  //         test: /[\\/]node_modules[\\/]/,
+  //         name: '_vendors',
+  //         chunks: 'all',
+  //       },
+  //       commons: {
+  //         test: /[\\/]lib[\\/]/,
+  //         name: '_commons',
+  //         chunks: 'all',
+  //       },
+  //     },
+  //   },
+  // },
 };

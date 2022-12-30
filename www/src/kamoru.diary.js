@@ -10,8 +10,8 @@ import { LocalStorageItem } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
 import { restCall } from './lib/flay.rest.service.js';
 
-import './css/common.scss';
 import './kamoru.diary.scss';
+import './styles/common.scss';
 
 let currentDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null }, content: '' };
 

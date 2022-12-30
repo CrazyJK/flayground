@@ -4,11 +4,14 @@
 
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import { LocalStorageItem, Popup, Random, PATH, File } from './lib/crazy.common.js';
-import { Rest } from './lib/flay.rest.service.js';
+
+import './components/FlayMenu';
+import { File, LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import './lib/crazy.jquery';
-import './css/common.scss';
+import { Rest } from './lib/flay.rest.service.js';
+
 import './image.tablet.scss';
+import './styles/common.scss';
 
 var totalCount = 0;
 var currIndex = 0;

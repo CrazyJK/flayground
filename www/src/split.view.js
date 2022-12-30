@@ -1,5 +1,6 @@
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
+
 import './split.view.scss';
 
 const colHtml = $('.row').html();

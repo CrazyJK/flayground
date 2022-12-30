@@ -4,12 +4,15 @@
 
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import { LocalStorageItem, Random, PATH, Popup, File } from './lib/crazy.common.js';
-import { Rest } from './lib/flay.rest.service.js';
-import './lib/crazy.jquery';
+
+import './components/FlayMenu';
+import { File, LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import './lib/crazy.effect.neon';
-import './css/common.scss';
+import './lib/crazy.jquery';
+import { Rest } from './lib/flay.rest.service.js';
+
 import './image.board.scss';
+import './styles/common.scss';
 
 var totalCount = 0;
 var lastIndex = 0;

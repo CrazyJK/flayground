@@ -16,8 +16,8 @@ import { loading } from './lib/flay.loading';
 import { Rest } from './lib/flay.rest.service';
 import { Search, Util, View } from './lib/flay.utils';
 
-import './css/common.scss';
 import './flay.vertical.scss';
+import './styles/common.scss';
 
 const grapChannel = new BroadcastChannel('grap_channel');
 

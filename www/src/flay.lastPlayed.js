@@ -1,7 +1,10 @@
 import bb, { bubble, zoom } from 'billboard.js';
-import './flay.lastPlayed.scss';
+
 import { DateUtils } from './lib/crazy.common';
 import { Rest } from './lib/flay.rest.service';
+
+import './flay.lastPlayed.scss';
+import './styles/common.scss';
 
 Rest.Flay.list((list) => {
   const playedMap = new Map();

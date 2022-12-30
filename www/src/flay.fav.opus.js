@@ -2,18 +2,19 @@
  * flay favorite opus
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
-import './components/FlayMenu';
-import './css/common.scss';
-import './flay.fav.opus.scss';
 
+import './components/FlayMenu';
+import { DateUtils, File } from './lib/crazy.common.js';
+import './lib/crazy.jquery';
 import { loading } from './lib/flay.loading.js';
 import { Rest, restCall } from './lib/flay.rest.service.js';
-import { Util, Search, View } from './lib/flay.utils.js';
-import { DateUtils, File } from './lib/crazy.common.js';
+import { Search, Util, View } from './lib/flay.utils.js';
+
+import './flay.fav.opus.scss';
+import './styles/common.scss';
 
 let rankPoint = 0,
   playPoint = 0,

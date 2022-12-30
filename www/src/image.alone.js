@@ -1,8 +1,10 @@
 import $ from 'jquery';
-import { LocalStorageItem, reqParam, PATH, Random, browser, system, LINUX, WINDOWS, CHROME, FIREFOX, MSIE, EDGE, File } from './lib/crazy.common';
+
+import { browser, CHROME, EDGE, File, FIREFOX, LINUX, LocalStorageItem, MSIE, PATH, Random, reqParam, system, WINDOWS } from './lib/crazy.common';
 import { Rest } from './lib/flay.rest.service';
-import './css/common.scss';
+
 import './image.alone.scss';
+import './styles/common.scss';
 
 let $glass;
 const glass = {

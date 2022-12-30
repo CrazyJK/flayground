@@ -1,10 +1,10 @@
 import $ from 'jquery';
+import './info.flay.scss';
 import { reqParam } from './lib/crazy.common.js';
-import { ROW_TITLE, ROW_DESC } from './lib/flay.view.card.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { Util } from './lib/flay.utils.js';
-import './css/common.scss';
-import './info.flay.scss';
+import { ROW_DESC, ROW_TITLE } from './lib/flay.view.card.js';
+import './styles/common.scss';
 
 var opus = reqParam.opus;
 var flay;

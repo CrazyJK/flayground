@@ -1,15 +1,16 @@
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import './components/RankSelect';
-import './css/common.scss';
-import './info.studio.scss';
-import './lib/crazy.jquery';
-import './lib/flay.websocket.js';
 
+import './components/RankSelect';
 import { reqParam, ThreadUtils } from './lib/crazy.common.js';
+import './lib/crazy.jquery';
 import { Rest } from './lib/flay.rest.service.js';
 import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, RANK, STUDIO } from './lib/flay.view.card.js';
+import './lib/flay.websocket.js';
+
+import './info.studio.scss';
+import './styles/common.scss';
 
 const studioName = reqParam.s;
 const $flayList = $('.flay-list');

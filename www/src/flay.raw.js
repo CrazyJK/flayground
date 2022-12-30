@@ -6,8 +6,8 @@ import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import './components/FlayMenu';
-import './css/common.scss';
 import './flay.raw.scss';
+import './styles/common.scss';
 
 import { DateUtils, File, LocalStorageItem, Random } from './lib/crazy.common';
 import { Rest } from './lib/flay.rest.service';

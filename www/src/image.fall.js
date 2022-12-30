@@ -2,16 +2,17 @@
  * Image fall
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
-import './components/FlayMenu';
-import './css/common.scss';
-import './image.fall.scss';
 
-import { Rest } from './lib/flay.rest.service.js';
+import './components/FlayMenu';
 import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
+import './lib/crazy.jquery';
+import { Rest } from './lib/flay.rest.service.js';
+
+import './image.fall.scss';
+import './styles/common.scss';
 
 const Background = {
   imageIndexArray: [],

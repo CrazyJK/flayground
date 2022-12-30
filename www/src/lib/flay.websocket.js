@@ -7,7 +7,9 @@ import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import SockJS from 'sockjs-client';
 import Stomp from 'stompjs';
+
 import { LocalStorageItem } from './crazy.common.js';
+
 import './flay.websocket.scss';
 
 const ANNOUNCE_WRAPPER_ID = 'announceWrapper';
@@ -133,7 +135,7 @@ class FlayWebsocket {
   say(message, to) {
     to = to ? to : '';
     this.stompClient.send('/flayground/say', { from: this.username, to: to }, message);
-    console.log(`[FlayWebsocket] send say: ${message} to ${to}`);
+    console.debug(`[FlayWebsocket] send say: ${message} to ${to}`);
   }
 
   /**
@@ -144,7 +146,7 @@ class FlayWebsocket {
   data(payLoad, to) {
     to = to ? to : this.username;
     this.stompClient.send('/flayground/data', { from: this.username, to: to }, JSON.stringify(payLoad));
-    console.log(`[FlayWebsocket] send data: ${payLoad} to ${to}`);
+    console.debug(`[FlayWebsocket] send data: ${JSON.stringify(payLoad)} to ${to}`);
   }
 }
 

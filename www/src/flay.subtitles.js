@@ -2,16 +2,17 @@
  * subtitles js
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
-import './components/FlayMenu';
-import './css/common.scss';
-import './flay.subtitles.scss';
 
+import './components/FlayMenu';
+import './lib/crazy.jquery';
 import { Rest, restCall } from './lib/flay.rest.service.js';
 import { Search, View } from './lib/flay.utils.js';
+
+import './flay.subtitles.scss';
+import './styles/common.scss';
 
 let noSubtitlesOpusList = [];
 let intervalFindSubtitles = -1;

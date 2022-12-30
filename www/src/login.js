@@ -1,4 +1,5 @@
 import $ from 'jquery';
+
 import './login.scss';
 
 $(window).on('keyup', function (e) {

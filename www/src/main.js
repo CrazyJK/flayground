@@ -4,7 +4,6 @@
 
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
-import './css/common.scss';
 import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { Security } from './lib/flay.utils.js';
@@ -12,6 +11,7 @@ import { flayWebsocket } from './lib/flay.websocket.js';
 import './lib/kamoru.life.timer.js';
 import menuItems from './main.json';
 import './main.scss';
+import './styles/common.scss';
 
 const isAdmin = Security.hasRole('ADMIN');
 const username = Security.getName();

@@ -2,16 +2,18 @@
  * image.slide.js
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
-import './components/FlayMenu';
-import './image.slide.scss';
 
-import { LocalStorageItem, Popup, Random, PATH, File } from './lib/crazy.common.js';
-import { Rest } from './lib/flay.rest.service.js';
+import './components/FlayMenu';
+import { File, LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import { getDominatedColors } from './lib/crazy.dominated-color.js';
+import './lib/crazy.jquery';
+import { Rest } from './lib/flay.rest.service.js';
+
+import './image.slide.scss';
+import './styles/common.scss';
 
 var totalCount = 0;
 var currIndex = 0;

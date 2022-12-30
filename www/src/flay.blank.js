@@ -2,14 +2,14 @@
  * flay home
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
 import './components/FlayMenu';
 import './components/RankSelect';
-import './css/common.scss';
 import './flay.blank.scss';
+import './lib/crazy.jquery';
+import './styles/common.scss';
 
 import { Rest } from './lib/flay.rest.service.js';
 import { Util, View } from './lib/flay.utils.js';

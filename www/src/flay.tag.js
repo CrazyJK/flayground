@@ -5,14 +5,15 @@
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import './components/FlayMenu';
-import './css/common.scss';
-import './flay.tag.scss';
-import './lib/crazy.jquery';
 
+import './components/FlayMenu';
 import { ThreadUtils } from './lib/crazy.common';
+import './lib/crazy.jquery';
 import { Rest } from './lib/flay.rest.service';
 import { Util, View } from './lib/flay.utils';
+
+import './flay.tag.scss';
+import './styles/common.scss';
 
 const $tagTemplete = $('.tag');
 let isLikeSearchChecked = false;

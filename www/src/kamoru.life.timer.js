@@ -1,7 +1,9 @@
 import $ from 'jquery';
+
 import './lib/kamoru.life.timer';
-import './css/common.scss';
+
 import './kamoru.life.timer.scss';
+import './styles/common.scss';
 
 $('#lifeTimerWrap').lifeTimer({
   classes: 'text-center text-light',

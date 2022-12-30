@@ -2,16 +2,17 @@
  * today is
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
-import './components/FlayMenu';
-import './css/common.scss';
-import './today.is.scss';
 
-import { system, WINDOWS, File } from './lib/crazy.common.js';
+import './components/FlayMenu';
+import { File, system, WINDOWS } from './lib/crazy.common.js';
+import './lib/crazy.jquery';
 import { Rest } from './lib/flay.rest.service.js';
+
+import './styles/common.scss';
+import './today.is.scss';
 
 let Todayis = {
   list: [],

@@ -1,10 +1,11 @@
-import menuItems from '../components/FlayMenu.json';
 import { imageWaterfall } from '../components/ImageWaterfall';
 import { LocalStorageItem } from '../lib/crazy.common.js';
 import { Rest } from '../lib/flay.rest.service';
 import '../lib/flay.sse';
 import { flayWebsocket } from '../lib/flay.websocket.js';
 import { calculateLifeTime } from '../lib/kamoru.life.timer';
+
+import menuItems from '../components/FlayMenu.json';
 
 export { flayWebsocket };
 
@@ -326,9 +327,15 @@ function createImageWaterfallToggle() {
   });
 
   return menuItemFactory('ImageWaterfall', ['fa', 'fa-toggle-on'], button, () => {
-    imageWaterfall.toggleLayer();
     const main = document.querySelector('body > main');
-    main.style.display = main.style.display != 'none' ? 'none' : 'block';
+    const isVisible = main.style.display != 'none';
+    if (isVisible) {
+      main.style.display = 'none';
+      imageWaterfall.front();
+    } else {
+      main.style.display = 'block';
+      imageWaterfall.behind();
+    }
   });
 }
 

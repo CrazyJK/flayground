@@ -2,10 +2,10 @@ import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import './components/RankSelect';
-import './css/common.scss';
 import './info.tag.scss';
 import './lib/crazy.jquery';
 import './lib/flay.websocket.js';
+import './styles/common.scss';
 
 import { reqParam, ThreadUtils } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';

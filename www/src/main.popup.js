@@ -1,11 +1,11 @@
-import $ from 'jquery';
-import { Security } from './lib/flay.utils.js';
-import { reqParam } from './lib/crazy.common.js';
-import { Rest } from './lib/flay.rest.service.js';
-import { loading } from './lib/flay.loading.js';
 import 'bootstrap/dist/js/bootstrap';
-import './css/common.scss';
+import $ from 'jquery';
 import './components/FlayMenu';
+import { reqParam } from './lib/crazy.common.js';
+import { loading } from './lib/flay.loading.js';
+import { Rest } from './lib/flay.rest.service.js';
+import { Security } from './lib/flay.utils.js';
+import './styles/common.scss';
 
 const isAdmin = Security.hasRole('ADMIN');
 const username = Security.getName();

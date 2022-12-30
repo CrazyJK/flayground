@@ -2,17 +2,18 @@
  * flay.score.html
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
-import './components/FlayMenu';
-import './css/common.scss';
-import './flay.score.scss';
 
+import './components/FlayMenu';
+import { birthRegExp, bodyRegExp, DateUtils, debutRegExp, File, GB, heightRegExp } from './lib/crazy.common.js';
+import './lib/crazy.jquery';
 import { Rest, restCall } from './lib/flay.rest.service.js';
-import { DateUtils, File, GB, birthRegExp, bodyRegExp, heightRegExp, debutRegExp } from './lib/crazy.common.js';
 import { Util, View } from './lib/flay.utils.js';
+
+import './flay.score.scss';
+import './styles/common.scss';
 
 let flayProperties;
 let flayList = [];

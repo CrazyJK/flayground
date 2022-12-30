@@ -5,15 +5,16 @@
 import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import './components/FlayMenu';
-import './css/common.scss';
-import './flay.basket.scss';
-import './lib/crazy.jquery';
 
+import './components/FlayMenu';
 import { COVER_RATIO, LocalStorageItem, Random } from './lib/crazy.common.js';
+import './lib/crazy.jquery';
 import { loading } from './lib/flay.loading.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, STUDIO } from './lib/flay.view.card.js';
+
+import './flay.basket.scss';
+import './styles/common.scss';
 
 const basket = {
   CARD_MARGIN: 4,

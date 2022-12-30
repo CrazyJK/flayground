@@ -6,9 +6,9 @@ import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
 import './components/FlayMenu';
-import './css/common.scss';
 import './flay.search.scss';
 import './lib/crazy.jquery';
+import './styles/common.scss';
 
 import { birthRegExp, bodyRegExp, File, LocalStorageItem } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';

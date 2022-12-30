@@ -2,25 +2,25 @@
  * flay summary js
  */
 
+import bootstrap from 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import bootstrap from 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
 import './components/FlayMenu';
-import './css/common.scss';
 import './flay.summary.scss';
+import './lib/crazy.jquery';
+import './styles/common.scss';
 
 import './lib/jquery.tagcanvas-flay';
 
 import * as am5 from '@amcharts/amcharts5';
-import * as am5xy from '@amcharts/amcharts5/xy';
 import am5locales_ko_KR from '@amcharts/amcharts5/locales/ko_KR';
 import am5themes_Animated from '@amcharts/amcharts5/themes/Animated';
+import * as am5xy from '@amcharts/amcharts5/xy';
 
+import { File, NumberUtils, Random } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
-import { Random, File, NumberUtils } from './lib/crazy.common.js';
 import { View } from './lib/flay.utils.js';
-import { STUDIO, ACTRESS_EXTRA, MODIFIED, RANK, COMMENT, FILEINFO } from './lib/flay.view.card.js';
+import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, RANK, STUDIO } from './lib/flay.view.card.js';
 
 const filterCount = 5;
 

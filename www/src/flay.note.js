@@ -2,16 +2,17 @@
  * note
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
-import './components/FlayMenu';
-import './css/common.scss';
-import './flay.note.scss';
 
-import { restCall, Rest } from './lib/flay.rest.service.js';
-import { DateUtils, Random, PATH } from './lib/crazy.common.js';
+import './components/FlayMenu';
+import { DateUtils, PATH, Random } from './lib/crazy.common.js';
+import './lib/crazy.jquery';
+import { Rest, restCall } from './lib/flay.rest.service.js';
+
+import './flay.note.scss';
+import './styles/common.scss';
 
 var totalCount = 0;
 

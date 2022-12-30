@@ -11,8 +11,8 @@ import { StringUtils, ThreadUtils } from './lib/crazy.common';
 import { Rest } from './lib/flay.rest.service';
 import { View } from './lib/flay.utils';
 
-import './css/common.scss';
 import './flay.ground.scss';
+import './styles/common.scss';
 
 const $resultContainer = $('.result');
 const $immediately = $('.immediately');

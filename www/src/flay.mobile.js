@@ -2,13 +2,15 @@
  * Video Vertical View Javascript
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
+
+import { File, Random } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { Util } from './lib/flay.utils.js';
-import { Random, File } from './lib/crazy.common.js';
-import 'bootstrap/dist/js/bootstrap';
-import './css/common.scss';
+
 import './flay.mobile.scss';
+import './styles/common.scss';
 
 let flaymobile = null;
 

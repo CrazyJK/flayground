@@ -3,11 +3,15 @@
  */
 
 import $ from 'jquery';
-import { Rest, restCall } from './lib/flay.rest.service.js';
+
+import './components/FlayMenu';
 import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
-import { loading } from './lib/flay.loading.js';
 import './lib/crazy.jquery';
+import { loading } from './lib/flay.loading.js';
+import { Rest, restCall } from './lib/flay.rest.service.js';
+
 import './image.banner.scss';
+import './styles/common.scss';
 
 function ProgressBar(selector, args) {
   var DEFAULTS = {

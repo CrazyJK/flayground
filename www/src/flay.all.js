@@ -2,17 +2,18 @@
  * flay.all.js
  */
 
+import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import 'jquery-ui-dist/jquery-ui';
-import 'bootstrap/dist/js/bootstrap';
-import './lib/crazy.jquery';
-import './components/FlayMenu';
-import './css/common.scss';
-import './flay.all.scss';
 
+import './components/FlayMenu';
 import { Random } from './lib/crazy.common.js';
+import './lib/crazy.jquery';
 import { Rest } from './lib/flay.rest.service.js';
 import { View } from './lib/flay.utils.js';
+
+import './flay.all.scss';
+import './styles/common.scss';
 
 async function fetchAndDecode(url) {
   try {

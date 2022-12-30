@@ -6,7 +6,8 @@ class ImageWaterfall extends HTMLElement {
   constructor() {
     super();
 
-    this.COLUMN_WIDTH = 350;
+    const COLUMN_WIDTH = 350;
+
     this.INTERVAL = 1000 * 3;
     this.timer = -1;
 
@@ -28,7 +29,7 @@ class ImageWaterfall extends HTMLElement {
     shadow.appendChild(this.layer);
 
     window.addEventListener('resize', () => {
-      let calcuratedColCount = Math.floor(window.innerWidth / this.COLUMN_WIDTH);
+      let calcuratedColCount = Math.floor(window.innerWidth / COLUMN_WIDTH);
       let currColumnCount = this.wrap.childElementCount;
       console.debug('colCount', calcuratedColCount, currColumnCount);
 
@@ -67,6 +68,8 @@ class ImageWaterfall extends HTMLElement {
   async run() {
     console.debug('run', this.wrap.childElementCount, this.wrap.childNodes);
 
+    this.layer.classList.add('show');
+
     const imageSize = await fetch('/image/size').then((res) => res.json());
     console.debug('imageSize', imageSize);
 
@@ -94,6 +97,11 @@ class ImageWaterfall extends HTMLElement {
 
         selectedCol.prepend(img);
       };
+      img.addEventListener('click', (e) => {
+        console.debug('img click', e.target);
+        const imgNo = e.target.src.split('/').pop();
+        window.open('image.alone.html?no=' + imgNo, 'img-' + imgNo, `width=${img.naturalWidth}, height=${img.naturalHeight}`);
+      });
 
       let randomIndex = -1;
       do {
@@ -121,8 +129,8 @@ class ImageWaterfall extends HTMLElement {
 
   stop() {
     clearInterval(this.timer);
-    this.timer = -1;
-    console.debug('clear timer', this.timer);
+    this.timer = null;
+    console.debug('clear timer');
   }
 
   empty() {
@@ -131,8 +139,18 @@ class ImageWaterfall extends HTMLElement {
     }
   }
 
-  toggleLayer() {
-    this.layer.classList.toggle('hide');
+  /**
+   * layer를 가려서 앞으로 보내기
+   */
+  front() {
+    this.layer.classList.remove('show');
+  }
+
+  /**
+   * layer를 보여서 백그라운드로 가기
+   */
+  behind() {
+    this.layer.classList.add('show');
   }
 }
 

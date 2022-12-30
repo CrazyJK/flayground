@@ -1,10 +1,13 @@
 import $ from 'jquery';
-import { Rest } from './lib/flay.rest.service.js';
-import { LocalStorageItem, Random, PATH, Popup } from './lib/crazy.common.js';
+
+import './components/FlayMenu';
+import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import './lib/crazy.jquery.js';
+import { Rest } from './lib/flay.rest.service.js';
 import './lib/jquery.tagcanvas-flay.js';
-import './css/common.scss';
+
 import './image.cloud.scss';
+import './styles/common.scss';
 
 const inputImageSize = document.getElementById('inputImageSize');
 const inputPlayTime = document.getElementById('inputPlayTime');
@@ -243,7 +246,7 @@ $(document).ready(function () {
     LocalStorageItem.set(ImageControl.STORAGE_PLAY_TIME, $(this).val());
   });
   $('#goHome').on('click', function () {
-    location.href = PATH + '/dist/main.html';
+    location.href = PATH + '/dist/index.html';
   });
   $('#btnByKey, #btnCloseKey').on('click', function () {
     $('#keyContainer').slideToggle();

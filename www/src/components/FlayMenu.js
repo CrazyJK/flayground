@@ -54,7 +54,7 @@ class FlayMenu extends HTMLElement {
       width: 200px;
       overflow: hidden;
       z-index: 6974892;
-      transition: ${alignLeft ? 'left' : 'right'} 0.4s 2s;
+      transition: ${alignLeft ? 'left' : 'right'} 0.4s 0.4s;
       display: flex;
       flex-direction: column;
     }

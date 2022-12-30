@@ -9,7 +9,43 @@
     <script defer type="text/javascript" src="./flay.cover.flow.js"></script>
   </head>
   <body>
-    <main></main>
+    <main>
+      <nav>
+        <div class="rounded" id="basicSearch">
+          <input type="search" id="searchInput" placeholder="Search" />
+          <span class="check-group check-group-rounded">
+            <label><input type="checkbox" name="rank" id="rank0" value="0" /><span class="fa fa-circle"></span></label>
+            <label><input type="checkbox" name="rank" id="rank1" value="1" /><span class="fa fa-star"></span></label>
+            <label><input type="checkbox" name="rank" id="rank2" value="2" /><span class="fa fa-star"></span></label>
+            <label><input type="checkbox" name="rank" id="rank3" value="3" /><span class="fa fa-star"></span></label>
+            <label><input type="checkbox" name="rank" id="rank4" value="4" /><span class="fa fa-star"></span></label>
+            <label><input type="checkbox" name="rank" id="rank5" value="5" /><span class="fa fa-star"></span></label>
+          </span>
+          <span class="check-group check-group-rounded">
+            <label title="withSubtitles"><input type="checkbox" id="withSubtitles" /><span class="fa fa-file-text"></span></label>
+          </span>
+          <span class="check-group check-group-rounded">
+            <label title="withFavorite"><input type="checkbox" id="withFavorite" /><span class="fa fa-heart"></span></label>
+            <label title="withNoFavorite"><input type="checkbox" id="withNoFavorite" /><span class="fa fa-heart-o"></span></label>
+          </span>
+          <label class="small" id="searchResultDisplay"></label>
+          <select id="sort">
+            <option value="STUDIO">Studio</option>
+            <option value="OPUS">Opus</option>
+            <option value="TITLE">Title</option>
+            <option value="ACTRESS">Actress</option>
+            <option value="RELEASE" selected>Release</option>
+            <option value="PLAY">Play</option>
+            <option value="RANK">Rank</option>
+            <option value="LASTACCESS">LastAccess</option>
+            <option value="LASTMODIFIED">LastModified</option>
+            <option value="SCORE">Score</option>
+            <option value="LENGTH">Length</option>
+          </select>
+        </div>
+      </nav>
+      <div id="coverFlow"></div>
+    </main>
     <footer></footer>
   </body>
 </html>

@@ -27,7 +27,7 @@ class FlayMenu extends HTMLElement {
     // style
     const fontAwesomelinkElem = document.createElement('link');
     fontAwesomelinkElem.setAttribute('rel', 'stylesheet');
-    fontAwesomelinkElem.setAttribute('href', 'css/font-awesome.css');
+    fontAwesomelinkElem.setAttribute('href', 'css/fontawesome/font-awesome-v4.css');
     shadow.appendChild(fontAwesomelinkElem);
 
     // current Page
@@ -178,12 +178,13 @@ class FlayMenu extends HTMLElement {
       background-color: transparent;
       border: 0;
       color: inherit;
+      cursor: pointer;
       margin: 0;
       padding: 0;
     }
-    button > i {
+    button > i.fa {
       margin: 0.125rem 0.25rem;
-      font-size: 1.25em;
+      font-size: 1.5em;
     }
     button#themeToggle.dark > i.light {
       display: none;
@@ -324,8 +325,10 @@ function createImageWaterfallToggle() {
     }
   });
 
-  return menuItemFactory('Image', ['fa', 'fa-toggle-on'], button, () => {
-    imageWaterfall.empty();
+  return menuItemFactory('ImageWaterfall', ['fa', 'fa-toggle-on'], button, () => {
+    imageWaterfall.toggleLayer();
+    const main = document.querySelector('body > main');
+    main.style.display = main.style.display != 'none' ? 'none' : 'block';
   });
 }
 

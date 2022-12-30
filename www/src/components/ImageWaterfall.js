@@ -3,10 +3,10 @@
  */
 
 class ImageWaterfall extends HTMLElement {
-  constructor(align) {
+  constructor() {
     super();
 
-    this.COLUMN_WIDTH = 400;
+    this.COLUMN_WIDTH = 350;
     this.INTERVAL = 1000 * 3;
     this.timer = -1;
 
@@ -22,10 +22,10 @@ class ImageWaterfall extends HTMLElement {
     this.wrap.setAttribute('class', 'waterfall');
     shadow.appendChild(this.wrap);
 
-    // dark layout
-    this.layout = document.createElement('div');
-    this.layout.setAttribute('class', 'layout');
-    shadow.appendChild(this.layout);
+    // dark layer
+    this.layer = document.createElement('div');
+    this.layer.setAttribute('class', 'layer');
+    shadow.appendChild(this.layer);
 
     window.addEventListener('resize', () => {
       let calcuratedColCount = Math.floor(window.innerWidth / this.COLUMN_WIDTH);
@@ -58,8 +58,6 @@ class ImageWaterfall extends HTMLElement {
         }
       }
     });
-
-    // this.run();
   }
 
   start() {
@@ -131,6 +129,10 @@ class ImageWaterfall extends HTMLElement {
     for (let col of this.wrap.children) {
       col.innerHTML = '';
     }
+  }
+
+  toggleLayer() {
+    this.layer.classList.toggle('hide');
   }
 }
 

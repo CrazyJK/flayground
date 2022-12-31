@@ -5,6 +5,7 @@
 import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 
+import FlayAttach from './components/FlayAttach';
 import './components/FlayMenu';
 import { LocalStorageItem } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
@@ -19,6 +20,7 @@ const diaryMeta = document.querySelector('#diaryMeta');
 const diaryTitle = document.querySelector('#diaryTitle');
 const diaryDate = document.querySelector('#diaryDate');
 const diaryDay = document.querySelector('#diaryDay');
+const diaryAttch = document.querySelector('#diaryAttch');
 const diaryEditor = new Editor({
   el: document.querySelector('#diaryEditor'),
   height: '100%',
@@ -43,6 +45,14 @@ const diaryEditor = new Editor({
   },
 });
 diaryEditor.hide();
+
+// flay attach
+// const flayAttach = diaryAttch.appendChild(document.createElement('flay-attach'));
+const flayAttach = diaryAttch.appendChild(new FlayAttach());
+flayAttach.setAttribute('id', 'flayAttach');
+flayAttach.addEventListener('change', (e) => {
+  console.log('flayAttach change', e.detail.files);
+});
 
 renderCalendar();
 addCalendarEventListener();
@@ -106,7 +116,7 @@ function renderCalendar() {
           const month = date.getMonth();
           const day = date.getDate();
 
-          const yyyymmdd = `${year}-${month + 1}-${day < 10 ? '0' + day : day}`;
+          const yyyymmdd = `${year}-${month + 1 < 10 ? '0' + (month + 1) : month + 1}-${day < 10 ? '0' + day : day}`;
           const isSameMonth = refYear === year && refMonth === month;
           const isToday = todayYear === year && todayMonth === month && todayDay === day;
 

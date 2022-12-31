@@ -98,7 +98,7 @@ class ImageWaterfall extends HTMLElement {
 
     window.addEventListener('keyup', (e) => {
       console.debug('keyup', e.key);
-      if (e.key === 'f') {
+      if (e.key === 'fuck') {
         if (this.timer > -1) {
           this.stop();
         } else {

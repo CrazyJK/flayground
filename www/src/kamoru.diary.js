@@ -253,7 +253,12 @@ function saveDiary(e) {
   }
 
   // localStorage에 저장전 diary 저장
-  LocalStorageItem.set(`diary-${Date.now()}`, JSON.stringify(currentDiary));
+  try {
+    LocalStorageItem.set(`diary-${Date.now()}`, JSON.stringify(currentDiary));
+  } catch (e) {
+    console.warn(e.message);
+  }
+
   // n일전 diary 삭제
   const today = Date.now();
   const offsetMs = 1000 * 60 * 60 * 24 * 3;

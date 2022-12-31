@@ -23,6 +23,7 @@ public class Video implements Info<String> {
   String title;
   String desc;
   List<Tag> tags;
+  List<Date> likes;
 
   public Video(String key) {
     setKey(key);
@@ -35,6 +36,7 @@ public class Video implements Info<String> {
     this.title = "";
     this.desc = "";
     this.tags = new ArrayList<>();
+    this.likes = new ArrayList<>();
   }
 
   @Override
@@ -55,6 +57,12 @@ public class Video implements Info<String> {
   public void increasePlayCount() {
     ++play;
     lastPlay = new Date().getTime();
+  }
+
+  public void initLikes() {
+    if (likes == null) {
+      likes = new ArrayList<>();
+    }
   }
 
 }

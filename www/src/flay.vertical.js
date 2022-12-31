@@ -646,6 +646,20 @@ function attachFlayEventListener() {
   $('.add-basket-btn').on('click', function () {
     grapChannel.postMessage(currentFlay.opus);
   });
+  // like-btn: 좋아요 하루 1번
+  $('.like-btn').on('click', () => {
+    if (currentFlay.video.likes === null) {
+      currentFlay.video.likes = [];
+    }
+
+    const yyyyMMdd = new Date().format('yyyy-MM-dd');
+    const todayLikeCount = currentFlay.video.likes.filter((like) => like.substring(0, 10) === yyyyMMdd).length;
+
+    if (todayLikeCount === 0) {
+      currentFlay.video.likes.push(new Date());
+      Rest.Video.update(currentFlay.video);
+    }
+  });
   // control video stream
   $('.cover-wrapper-inner.curr > .cover-box').on('click', Flaying.start);
   $('.cover-wrapper-inner.curr > .cover-box > #btnVideoClose').on('click', Flaying.stop);
@@ -1336,6 +1350,15 @@ function showVideo(args) {
   if ($('#statisticsActress').is(':visible')) {
     markStatisticsActress();
   }
+
+  // mark Like
+  console.log('likes', currentFlay.video.likes, currentFlay.video.likes?.length);
+  const likeCount = currentFlay.video.likes?.length;
+  $('.like-btn').attr('title', likeCount > 0 ? 'like ' + likeCount : '');
+
+  const yyyyMMdd = new Date().format('yyyy-MM-dd');
+  const todayLikeCount = currentFlay.video.likes?.filter((like) => like.substring(0, 10) === yyyyMMdd).length;
+  $('.like-btn').toggleClass('thumbs-up', todayLikeCount > 0);
 }
 
 function notice(msg) {
@@ -1487,6 +1510,22 @@ window.emitStudio = (studio) => {
 };
 window.emitVideo = (video) => {
   console.log('received video', video);
+  for (let flay of flayList) {
+    if (flay.opus === video.opus) {
+      flay.video = video;
+      break;
+    }
+  }
+  for (let flay of collectedList) {
+    if (flay.opus === video.opus) {
+      flay.video = video;
+      break;
+    }
+  }
+  if (currentFlay.opus === video.opus) {
+    currentFlay.video = video;
+  }
+  showVideo();
 };
 window.emitActress = (actress) => {
   console.log('received actress', actress);

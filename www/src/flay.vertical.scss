@@ -177,6 +177,10 @@ main#wrap_body {
           padding: 0.125rem;
           transition: all 0.4s;
         }
+
+        .like-btn.thumbs-up {
+          color: var(--color-input-checked);
+        }
       }
 
       .cover-wrapper {

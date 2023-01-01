@@ -7,7 +7,7 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 
 import FlayAttach from './components/FlayAttach';
 import './components/FlayMenu';
-import { LocalStorageItem } from './lib/crazy.common.js';
+import { GB, LocalStorageItem } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
 import { restCall } from './lib/flay.rest.service.js';
 
@@ -48,9 +48,18 @@ diaryEditor.hide();
 
 // flay attach
 // const flayAttach = diaryAttch.appendChild(document.createElement('flay-attach'));
-const flayAttach = diaryAttch.appendChild(new FlayAttach());
-flayAttach.setAttribute('id', 'flayAttach');
-flayAttach.addEventListener('change', (e) => {
+const flayAttach = diaryAttch.appendChild(
+  new FlayAttach({
+    id: 'flayAttach',
+    maxLengthPerFile: GB * 2,
+    totalFileCount: 0,
+    totalFileLength: GB * 10,
+    attachChangeCallback: (files) => {
+      console.log('attachCallback', files);
+    },
+  })
+);
+flayAttach.addEventListener('attach', (e) => {
   console.log('flayAttach change', e.detail.files);
 });
 

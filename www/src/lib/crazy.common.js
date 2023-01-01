@@ -569,11 +569,11 @@ export const File = {
         return length + ' ' + unit;
       }
     } else {
-      if (length < KB) return length + ' B';
-      else if (length < MB) return (length / KB).toFixed(0) + ' kB';
-      else if (length < GB) return (length / MB).toFixed(0) + ' <span>MB</span>';
-      else if (length < TB) return (length / GB).toFixed(1) + ' <span>GB</span>';
-      else return (length / TB).toFixed(2) + ' <span>TB</span>';
+      if (length < KB) return length + ' <small>B</small>';
+      else if (length < MB) return (length / KB).toFixed(0) + ' <small>kB</small>';
+      else if (length < GB) return (length / MB).toFixed(0) + ' <small>MB</small>';
+      else if (length < TB) return (length / GB).toFixed(1) + ' <small>GB</small>';
+      else return (length / TB).toFixed(2) + ' <small>TB</small>';
     }
   },
   validName(name) {
@@ -600,4 +600,19 @@ export const ThreadUtils = {
   sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
   },
+};
+
+export const CSRF_COOKIE_NAME = 'XSRF-TOKEN';
+export const CSRF_HEADER_NAME = 'X-XSRF-TOKEN';
+export const CSRF_HEADER = {
+  'X-XSRF-TOKEN': (() => {
+    let csrfHeaderValue = null;
+    for (const cookie of document.cookie.split(';')) {
+      if (cookie.substring(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '') === CSRF_COOKIE_NAME) {
+        csrfHeaderValue = cookie.substring(cookie.indexOf('=') + 1);
+        break;
+      }
+    }
+    return csrfHeaderValue;
+  })(),
 };

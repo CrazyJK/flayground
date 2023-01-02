@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import jk.kamoru.flayground.base.web.attach.Attach.Ticket;
 
 @RestController
 @RequestMapping("/attach")
@@ -19,19 +20,19 @@ public class AttachController {
 
   @PostMapping("/upload")
   @ResponseBody
-  public List<Attach> upload(@RequestParam("file") MultipartFile[] multipartFiles) {
+  public List<Ticket> upload(@RequestParam("file") MultipartFile[] multipartFiles) {
     if (multipartFiles == null) {
       throw new IllegalStateException("file is null");
     }
     Assert.state(multipartFiles.length > 0, "file length is zero");
 
-    return attachService.accept(multipartFiles);
+    return attachService.saveInPocket(multipartFiles);
   }
 
   @DeleteMapping("/remove")
   @ResponseBody
-  public Attach remove(@RequestParam("key") String key) {
-    return attachService.remove(key);
+  public Ticket remove(@RequestParam("key") String key) {
+    return attachService.removeInPocket(key);
   }
 
 }

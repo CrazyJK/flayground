@@ -42,6 +42,8 @@ public class FlayProperties {
   private File editorApp;
   private File paintApp;
 
+  private File attachPath;
+
   private String recyclebin = "FLAY_RECYCLEBIN";
   private boolean recyclebinUse = true;
 

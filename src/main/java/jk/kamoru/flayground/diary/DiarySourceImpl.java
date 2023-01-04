@@ -8,6 +8,8 @@ import java.util.Set;
 import java.util.TreeMap;
 import javax.annotation.PostConstruct;
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -15,6 +17,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import jk.kamoru.flayground.FlayException;
 import jk.kamoru.flayground.FlayProperties;
+import jk.kamoru.flayground.base.web.attach.Attach;
+import jk.kamoru.flayground.base.web.attach.AttachPocket;
 import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,8 +27,11 @@ import lombok.extern.slf4j.Slf4j;
 public class DiarySourceImpl implements DiarySource {
 
   private static final String DIARY = "diary";
+  private static final String ATTACH = "attach";
 
   @Autowired FlayProperties flayProperties;
+
+  @Autowired AttachPocket attachPocket;
 
   @Autowired TopicMessageService topicMessageService;
 
@@ -76,6 +83,23 @@ public class DiarySourceImpl implements DiarySource {
   public Diary save(Diary diary) {
     diaryMap.put(diary.getMeta().getDate(), diary);
 
+    if (diary.getAddedAttachUniqueKeys() != null) {
+      int lastCount = getLastFileNumber(diary);
+
+      for (String uniqueKey : diary.getAddedAttachUniqueKeys()) {
+        Attach attach = attachPocket.out(uniqueKey);
+        File destFile = new File(getDiaryPathFile(), diary.getMeta().getDate() + "." + ATTACH + "." + ++lastCount);
+        try {
+          FileUtils.copyFile(attach.getFile(), destFile);
+          attach.close();
+        } catch (IOException e) {
+          throw new IllegalStateException("Fail to copy file ", e);
+        }
+
+        diary.addAttach(Diary.Attach.builder().file(destFile).name(attach.getOriginalFilename()).contentType(attach.getContentType()).size(attach.getSize()).build());
+      }
+    }
+
     try {
       jsonWriter.writeValue(new File(getDiaryPathFile(), diary.getMeta().getDate() + "." + DIARY), diary);
     } catch (IOException e) {
@@ -86,6 +110,14 @@ public class DiarySourceImpl implements DiarySource {
     log.info("diary saved {} : {}", diary.getMeta().getDate(), diary.getMeta().getTitle());
 
     return diary;
+  }
+
+  private int getLastFileNumber(Diary diary) {
+    if (diary.getAttachs() == null || diary.getAttachs().size() == 0) {
+      return 0;
+    } else {
+      return diary.getAttachs().stream().mapToInt((attach) -> NumberUtils.toInt(FilenameUtils.getExtension(attach.getFile().getName()))).max().orElse(0);
+    }
   }
 
 }

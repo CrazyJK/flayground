@@ -14,7 +14,7 @@ import { restCall } from './lib/flay.rest.service.js';
 import './kamoru.diary.scss';
 import './styles/common.scss';
 
-let currentDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null }, content: '' };
+let currentDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null }, content: '', addedAttachUniqueKeys: [] };
 
 const diaryMeta = document.querySelector('#diaryMeta');
 const diaryTitle = document.querySelector('#diaryTitle');
@@ -56,6 +56,13 @@ const flayAttach = diaryAttch.appendChild(
     totalFileLength: GB * 10,
     attachChangeCallback: (files) => {
       console.log('attachCallback', files);
+
+      currentDiary['addedAttachUniqueKeys'] = [];
+      if (files.length > 0) {
+        for (let file of files) {
+          currentDiary.addedAttachUniqueKeys.push(file.uniqueKey);
+        }
+      }
     },
   })
 );

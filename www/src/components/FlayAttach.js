@@ -167,7 +167,7 @@ export default class FlayAttach extends HTMLElement {
   addFileRemoveEventListener() {
     this.fileList.addEventListener('click', (e) => {
       if (e.target.className !== 'file-remove') return;
-      this.removeFile(e.target.dataset.index);
+      this.removeFile(e.target.dataset.uniquekey);
     });
   }
 
@@ -228,29 +228,27 @@ export default class FlayAttach extends HTMLElement {
     // 체크된 파일 추가
     Array.from(drapedFileArray).forEach((file) => this.dataTransfer.items.add(file));
 
-    // 서버로 업로드 호출. hashcode 받기
+    // 서버로 업로드 호출. ticket 받기
     this.uploadToServer();
-
-    this.changeCallback();
   }
 
   /**
    * 파일 제거
-   * @param {Number} deleteIndex 클릭된 파일 인덱스
+   * @param {Number} uniqueKey 클릭된 파일 인덱스
    */
-  removeFile(deleteIndex) {
+  removeFile(uniqueKey) {
     // 서버로 파일 제거 호출
-    this.removeToServer(deleteIndex);
+    this.removeToServer(uniqueKey, () => {
+      const tmpDataTranster = new DataTransfer();
+      Array.from(this.getFiles())
+        .filter((file) => file.uniqueKey != uniqueKey)
+        .forEach((file) => {
+          tmpDataTranster.items.add(file);
+        });
+      this.dataTransfer = tmpDataTranster;
 
-    const tmpDataTranster = new DataTransfer();
-    Array.from(this.getFiles())
-      .filter((file, index) => index != deleteIndex)
-      .forEach((file) => {
-        tmpDataTranster.items.add(file);
-      });
-    this.dataTransfer = tmpDataTranster;
-
-    this.changeCallback();
+      this.changeCallback();
+    });
   }
 
   /**
@@ -293,11 +291,11 @@ export default class FlayAttach extends HTMLElement {
     this.fileList.innerHTML = '';
     Array.from(this.getFiles()).forEach((file) => {
       this.fileList.innerHTML += `
-          <li id="${file.lastModified}">
+          <li id="${file.uniqueKey}">
             <label class="file-icon"><i class="fa fa-${getFileIcon(file)}"></i></label>
             <label class="file-name">${file.name}</label>
             <label class="file-size">${File.formatSize(file.size)}</label>
-            <button class="file-remove" data-index="${this.fileCount}">X</button>
+            <button class="file-remove" data-uniquekey="${file.uniqueKey}">X</button>
           </li>`;
 
       this.fileCount++;
@@ -323,21 +321,34 @@ export default class FlayAttach extends HTMLElement {
       .then((response) => response.json())
       .then((result) => {
         console.log('Success:', result);
+        Array.from(result).forEach((ticket) => {
+          for (const file of this.getFiles()) {
+            if (file.name === ticket.filename) {
+              file['uniqueKey'] = ticket.uniqueKey;
+              break;
+            }
+          }
+
+          this.changeCallback();
+        });
       })
       .catch((error) => {
         console.error('Error:', error);
       });
   }
 
-  removeToServer(removeIndex) {
+  removeToServer(uniqueKey, callback) {
     fetch('/attach/remove', {
       method: 'DELETE',
       headers: new Headers(CSRF_HEADER),
-      body: removeIndex,
+      body: uniqueKey,
     })
       .then((response) => response.json())
       .then((result) => {
         console.log('Success:', result);
+        if (callback) {
+          callback();
+        }
       })
       .catch((error) => {
         console.error('Error:', error);

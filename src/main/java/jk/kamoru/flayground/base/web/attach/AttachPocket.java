@@ -15,7 +15,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.base.web.attach.Attach.Ticket;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class AttachPocket {
 
@@ -23,6 +25,11 @@ public class AttachPocket {
 
   Map<String, Attach> attachMap = new ConcurrentHashMap<>();
 
+  /**
+   * 첨부를 포켓에 넣는다
+   * @param multipartFiles
+   * @return 첨부 티켓
+   */
   public List<Ticket> in(MultipartFile... multipartFiles) {
     return Arrays.stream(multipartFiles).map((multipartFile) -> {
       if (multipartFile.isEmpty()) {
@@ -33,19 +40,24 @@ public class AttachPocket {
       final String originalFilename = multipartFile.getOriginalFilename();
       final String contentType = multipartFile.getContentType();
       final long size = multipartFile.getSize();
+      log.debug("Attach name[{}] originalFilename[{}] content-type[{}] {} bytes", name, originalFilename, contentType, size);
 
       String uniqueKey = generateUniqueKey(name, originalFilename, contentType, size);
+      log.debug("uniqueKey = {}", uniqueKey);
 
       if (!attachMap.containsKey(uniqueKey)) {
         File pocketFile = new File(flayProperties.getAttachPath(), uniqueKey);
         try {
           multipartFile.transferTo(pocketFile);
+          log.debug("pocketFile = {}", pocketFile);
         } catch (IOException e) {
           throw new IllegalStateException("multipartFile transfer fail: " + e.getMessage(), e);
         }
 
         Attach attach = new Attach(pocketFile, uniqueKey, name, originalFilename, contentType, size);
         attachMap.put(uniqueKey, attach);
+      } else {
+        log.debug("already contains file");
       }
 
       return attachMap.get(uniqueKey).getTicket();
@@ -58,10 +70,10 @@ public class AttachPocket {
       attachMap.remove(uniqueKey);
       return attach;
     }
-    return null;
+    throw new IllegalStateException("attach is not contains");
   }
 
-  String generateUniqueKey(String name, String originalFilename, String contentType, long size) {
+  protected String generateUniqueKey(String name, String originalFilename, String contentType, long size) {
     final String string = name + originalFilename + contentType + size;
     byte[] bytes = string.getBytes();
     ByteBuffer byteBuffer = ByteBuffer.wrap(bytes);
@@ -81,7 +93,7 @@ public class AttachPocket {
     }
   }
 
-  String generateFileHash(File file) {
+  protected String generateFileHash(File file) {
     try (FileInputStream fileInputStream = new FileInputStream(file)) {
       MessageDigest messageDigest = MessageDigest.getInstance("MD5");
 

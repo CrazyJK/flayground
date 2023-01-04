@@ -1,5 +1,6 @@
 package jk.kamoru.flayground.base.web.attach;
 
+import java.io.IOException;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,11 @@ public class AttachServiceImpl implements AttachService {
 
   @Override
   public Ticket removeInPocket(String key) {
-    return attachPocket.out(key).getTicket();
+    try (Attach attach = attachPocket.out(key)) {
+      return attach.getTicket();
+    } catch (IOException e) {
+      throw new IllegalStateException(e);
+    }
   }
 
 }

@@ -1,11 +1,14 @@
 package jk.kamoru.flayground.base.web.attach;
 
+import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
+import org.apache.commons.io.FileUtils;
 import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class Attach {
+public class Attach implements Closeable {
 
   @Builder
   @Data
@@ -31,6 +34,11 @@ public class Attach {
     this.contentType = contentType;
     this.size = size;
     this.ticket = Ticket.builder().uniqueKey(uniqueKey).filename(originalFilename).build();
+  }
+
+  @Override
+  public void close() throws IOException {
+    FileUtils.deleteQuietly(file);
   }
 
 }

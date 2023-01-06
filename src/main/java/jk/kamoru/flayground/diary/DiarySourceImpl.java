@@ -103,8 +103,10 @@ public class DiarySourceImpl implements DiarySource {
 
     File diaryFile = new File(getDiaryPathFile(), diary.getMeta().getDate() + "." + DIARY);
     try {
-      // backup previous
-      FileUtils.copyFile(diaryFile, getBackupFile(diaryFile));
+      // backup previous, if exists
+      if (diaryFile.exists()) {
+        FileUtils.copyFile(diaryFile, getBackupFile(diaryFile));
+      }
       // save
       jsonWriter.writeValue(diaryFile, diary);
     } catch (IOException e) {

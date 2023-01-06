@@ -354,6 +354,33 @@ export default class FlayAttach extends HTMLElement {
         console.error('Error:', error);
       });
   }
+
+  init(files) {
+    console.log('init', files);
+    this.dataTransfer.clearData();
+    this.renderFileList();
+
+    if (files) {
+      this.fileCount = 0;
+      this.fileLength = 0;
+      Array.from(files).forEach((file) => {
+        this.fileList.innerHTML += `
+        <li>
+          <label class="file-icon"><i class="fa fa-file"></i></label>
+          <label class="file-name">${file.name}</label>
+          <label class="file-size">${File.formatSize(file.size)}</label>
+          <button class="file-remove" data-uniquekey="${file.file}">X</button>
+        </li>`;
+
+        this.fileCount++;
+        this.fileLength += file.size;
+      });
+      // summary render
+      this.fileSummary.innerHTML = `
+        <labe>${this.fileCount} <small>${this.options.totalFileCount > 0 ? `/ ${this.options.totalFileCount} ` : ''}files</small></labe>
+        <labe>${File.formatSize(this.fileLength)} ${this.options.totalFileLength > 0 ? `/ ${File.formatSize(this.options.totalFileLength)}` : ''}</labe>`;
+    }
+  }
 }
 
 // Define the new element

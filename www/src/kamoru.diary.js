@@ -242,11 +242,12 @@ function loadDiary(diary) {
 
   currentDiary = diary;
 
-  diaryTitle.value = diary.meta.title;
-  diaryDate.value = diary.meta.date;
-  diaryDay.innerHTML = getDay(diary.meta.date);
-  diaryEditor.setHTML(diary.content, false);
-  document.querySelector('[name="diaryWeather"][value="' + diary.meta.weather + '"]').checked = true;
+  diaryTitle.value = diary.meta.title; // title
+  diaryDate.value = diary.meta.date; // date
+  diaryDay.innerHTML = getDay(diary.meta.date); // day of week
+  diaryEditor.setHTML(diary.content, false); // content
+  document.querySelector('[name="diaryWeather"][value="' + diary.meta.weather + '"]').checked = true; // weather
+  flayAttach.init(diary.attachs);
 
   // 제목, 본문 show
   diaryEditor.show();

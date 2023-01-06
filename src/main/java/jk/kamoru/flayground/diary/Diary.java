@@ -4,9 +4,9 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Builder;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 public class Diary {
@@ -20,10 +20,11 @@ public class Diary {
     private Date lastModified;
   }
 
-  @Builder
+  @AllArgsConstructor
+  @NoArgsConstructor
   @Data
   static class Attach {
-    @JsonIgnore private File file;
+    private File file;
     private String name;
     private String contentType;
     private long size;
@@ -40,6 +41,10 @@ public class Diary {
       attachs = new ArrayList<>();
     }
     attachs.add(attach);
+  }
+
+  void resetAddedAttachUniqueKeys() {
+    addedAttachUniqueKeys = null;
   }
 
 }

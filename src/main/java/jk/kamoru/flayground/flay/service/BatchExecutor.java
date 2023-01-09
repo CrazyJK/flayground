@@ -518,7 +518,7 @@ public class BatchExecutor {
   }
 
   private void writeFileWithUTF8BOM(File file, Collection<String> lines) {
-    try (BufferedWriter bufferedWriter = Files.newBufferedWriter(file.toPath(), Charset.forName("UTF-8"),
+    try (BufferedWriter bufferedWriter = Files.newBufferedWriter(file.toPath(), Charset.forName(Flayground.ENCODING),
         StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
       bufferedWriter.write(65279); // UTF-8의 BOM인 "EF BB BF"를 UTF-16BE 로 변환
       for (String line : lines) {

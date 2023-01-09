@@ -1,6 +1,7 @@
 package jk.kamoru.flayground;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -39,6 +40,7 @@ public class Flayground implements AsyncConfigurer {
   public static final String USER_AGENT = "Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36";
 
   public static final String ENCODING = "UTF-8";
+  public static final Charset CHARSET = Charset.forName(ENCODING);
   public static final String UTF8_BOM = "\uFEFF";
   public static final String LINE = System.getProperty("line.separator");
 

@@ -51,18 +51,11 @@ diaryEditor.hide();
 const flayAttach = diaryAttch.appendChild(
   new FlayAttach({
     id: 'flayAttach',
-    maxLengthPerFile: GB * 2,
     totalFileCount: 0,
-    totalFileLength: GB * 10,
-    attachChangeCallback: (files) => {
-      console.log('attachCallback', files);
-
-      currentDiary['addedAttachUniqueKeys'] = [];
-      if (files.length > 0) {
-        for (let file of files) {
-          currentDiary.addedAttachUniqueKeys.push(file.uniqueKey);
-        }
-      }
+    totalFileLength: GB * 1,
+    attachChangeCallback: (attach) => {
+      console.log('attachCallback', attach);
+      currentDiary.meta.attachId = attach.id;
     },
   })
 );
@@ -247,7 +240,7 @@ function loadDiary(diary) {
   diaryDay.innerHTML = getDay(diary.meta.date); // day of week
   diaryEditor.setHTML(diary.content, false); // content
   document.querySelector('[name="diaryWeather"][value="' + diary.meta.weather + '"]').checked = true; // weather
-  flayAttach.init(diary.attachs);
+  flayAttach.initiate(diary.meta.attachId, 'DIARY', diary.meta.date);
 
   // 제목, 본문 show
   diaryEditor.show();
@@ -304,6 +297,7 @@ function saveDiary(e) {
 
   restCall('/diary', { method: 'POST', data: currentDiary }, (diary) => {
     console.log('saved Diary', diary);
+    currentDiary = diary;
     markDiaryDates();
   });
 }

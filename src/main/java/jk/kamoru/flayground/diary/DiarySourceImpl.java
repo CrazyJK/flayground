@@ -18,8 +18,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import jk.kamoru.flayground.FlayException;
 import jk.kamoru.flayground.FlayProperties;
-import jk.kamoru.flayground.base.web.attach.Attach;
-import jk.kamoru.flayground.base.web.attach.AttachPocket;
 import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,11 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 public class DiarySourceImpl implements DiarySource {
 
   private static final String DIARY = "diary";
-  private static final String ATTACH = "attach";
 
   @Autowired FlayProperties flayProperties;
-
-  @Autowired AttachPocket attachPocket;
 
   @Autowired TopicMessageService topicMessageService;
 
@@ -84,25 +79,9 @@ public class DiarySourceImpl implements DiarySource {
   public Diary save(Diary diary) {
     diaryMap.put(diary.getMeta().getDate(), diary);
 
-    if (diary.getAddedAttachUniqueKeys() != null) {
-      int lastCount = getLastFileNumber(diary);
-
-      for (String uniqueKey : diary.getAddedAttachUniqueKeys()) {
-        Attach attach = attachPocket.out(uniqueKey);
-        File destFile = new File(getDiaryPathFile(), diary.getMeta().getDate() + "." + ATTACH + "." + ++lastCount);
-        try {
-          FileUtils.copyFile(attach.getFile(), destFile);
-          attach.close();
-        } catch (IOException e) {
-          throw new IllegalStateException("Fail to copy file ", e);
-        }
-        diary.addAttach(new Diary.Attach(destFile, attach.getOriginalFilename(), attach.getContentType(), attach.getSize()));
-      }
-      diary.resetAddedAttachUniqueKeys();
-    }
-
-    File diaryFile = new File(getDiaryPathFile(), diary.getMeta().getDate() + "." + DIARY);
     try {
+      File diaryFile = new File(getDiaryPathFile(), diary.getMeta().getDate() + "." + DIARY);
+
       // backup previous, if exists
       if (diaryFile.exists()) {
         FileUtils.copyFile(diaryFile, getBackupFile(diaryFile));
@@ -123,14 +102,6 @@ public class DiarySourceImpl implements DiarySource {
     File parentFile = file.getParentFile();
     int maxNumber = Stream.of(parentFile.listFiles()).filter(f -> f.getName().startsWith(file.getName())).mapToInt(f -> NumberUtils.toInt(FilenameUtils.getExtension(f.getName()))).max().orElse(0);
     return new File(parentFile, file.getName() + "." + ++maxNumber);
-  }
-
-  private int getLastFileNumber(Diary diary) {
-    if (diary.getAttachs() == null || diary.getAttachs().size() == 0) {
-      return 0;
-    } else {
-      return diary.getAttachs().stream().mapToInt((attach) -> NumberUtils.toInt(FilenameUtils.getExtension(attach.getFile().getName()))).max().orElse(0);
-    }
   }
 
 }

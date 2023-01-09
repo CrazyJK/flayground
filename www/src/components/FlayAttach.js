@@ -1,9 +1,13 @@
-import { CSRF_HEADER, File } from '../lib/crazy.common';
+import { CSRF_HEADER, File, MB } from '../lib/crazy.common';
+
+const MULTIPART = {
+  maxFileSize: MB * 30, // max-file-size=30MB
+  maxRequestSize: MB * 100, // max-request-size=100MB
+};
 
 const OPT_DEFAULT = {
   id: 'flayAttach',
   attachChangeCallback: null,
-  maxLengthPerFile: 0,
   totalFileCount: 0,
   totalFileLength: 0,
 };
@@ -33,13 +37,19 @@ const CSS = `
     height: calc(100% - 1rem);
     margin: 0;
     padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .wrapper.file-transfer .file-box {
+    background: rgba(250, 0, 250, 0.25)
+        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='green' font-size='20'>File transfer...</text></svg>")
+        center no-repeat;
   }
 
   .wrapper.file-dragover .file-list {
     background: rgba(0, 250, 250, 0.25)
         url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='green' font-size='20'>Drop file here!</text></svg>")
         center no-repeat;
-
   }
 
   .file-list {
@@ -59,6 +69,10 @@ const CSS = `
   }
   .file-list > li:hover {
     background-color: rgba(250, 250, 0, 0.125);
+  }
+  .file-list > li > .file-name > a {
+    color: var(--color-text);
+    text-decoration: none;
   }
   .file-list > li > .file-size {
     margin-left: auto;
@@ -100,11 +114,6 @@ export default class FlayAttach extends HTMLElement {
 
     this.options = { ...OPT_DEFAULT, ...opts };
 
-    // 첨부 파일 관리 객체
-    this.dataTransfer = new DataTransfer();
-    this.fileCount = 0;
-    this.fileLength = 0;
-
     // shadow root을 생성합니다
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
     this.setAttribute('id', this.options.id);
@@ -136,6 +145,12 @@ export default class FlayAttach extends HTMLElement {
 
     // 생성된 요소들을 shadow DOM에 부착합니다
     this.shadowRoot.append(fontAwesomelink, style, this.wrapper);
+
+    this.attach = null;
+    this.fileCount = 0;
+    this.fileLength = 0;
+
+    this.initiate('1c414415614211313313e1401ec1421c31fc1961431f71ee', 'TEMP', 'unnamed');
   }
 
   /**
@@ -167,25 +182,71 @@ export default class FlayAttach extends HTMLElement {
   addFileRemoveEventListener() {
     this.fileList.addEventListener('click', (e) => {
       if (e.target.className !== 'file-remove') return;
-      this.removeFile(e.target.dataset.uniquekey);
+      this.removeFile(e.target.dataset.attachfileid);
     });
   }
 
   /**
+   * 첨부 초기화
+   * @param {*} files
+   */
+  initiate(id, type, name) {
+    console.log('initiate', id, type, name);
+
+    if (id) {
+      // 기존 첨부 가져오기
+      fetch('/attach/' + id)
+        .then((response) => response.json())
+        .then((attach) => this.changeCallback(attach))
+        .catch((error) => console.error('get', error));
+    } else {
+      // 신규 첨부 생성
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('type', type);
+
+      fetch('/attach/create', {
+        method: 'POST',
+        headers: new Headers(CSRF_HEADER),
+        body: formData,
+      })
+        .then((response) => response.json())
+        .then((attach) => this.changeCallback(attach))
+        .catch((error) => console.error('create', error));
+    }
+  }
+
+  /**
+   * 첨부가 변경될때 콜백
+   */
+  changeCallback(attach) {
+    console.log('changeCallback', attach);
+    this.attach = attach;
+    this.renderFileList();
+    this.dispatchEvent(new CustomEvent('attach', { detail: { files: this.attach }, cancelable: true, composed: false, bubbles: false }));
+    this.setAttribute('length', this.getFiles().length);
+
+    if (this.options.attachChangeCallback) {
+      this.options.attachChangeCallback(this.attach);
+    }
+
+    this.wrapper.classList.remove('file-transfer');
+  }
+
+  /**
    * 파일 추가
-   * @param {FileList} files
+   * 중복 파일, 제한 크기 초과 체크 후 서버로 전송
+   * @param {FileList} dataTransferFiles
    * @returns
    */
-  insertFile(files) {
-    // 중복 파일, 제한 크기 초과 체크
-
+  insertFile(dataTransferFiles) {
     let drapedFileArray = [];
     let drapedFileLength = 0;
     let duplicatedText = [];
     let overflowText = [];
 
     // 중복 파일이 있는지
-    Array.from(files).forEach((file) => {
+    Array.from(dataTransferFiles).forEach((file) => {
       if (this.containsFile(file)) {
         duplicatedText.push(file.name);
       }
@@ -196,20 +257,27 @@ export default class FlayAttach extends HTMLElement {
     }
 
     // 단일 파일 최대 크기 초과 했는지
-    Array.from(files).forEach((file) => {
-      if (0 < this.options.maxLengthPerFile && this.options.maxLengthPerFile < file.size) {
+    Array.from(dataTransferFiles).forEach((file) => {
+      if (0 < MULTIPART.maxFileSize && MULTIPART.maxFileSize < file.size) {
         overflowText.push(`${file.name}: ${File.formatSize(file.size, 'MB', 0)}`);
       }
     });
     if (overflowText.length > 0) {
-      alert(`제한 크기(${File.formatSize(this.options.maxLengthPerFile, 'MB', 0)})를 초과한 파일이 있습니다.\n\t${overflowText.join('\n\t')}`);
+      alert(`제한 크기(${File.formatSize(MULTIPART.maxFileSize, 'MB', 0)})를 초과한 파일이 있습니다.\n\t${overflowText.join('\n\t')}`);
       return;
     }
 
-    Array.from(files).forEach((file) => {
+    Array.from(dataTransferFiles).forEach((file) => {
       drapedFileArray.push(file);
       drapedFileLength += file.size;
     });
+
+    // 단일 요청의 최대 크기 초과 했는지
+    if (0 < MULTIPART.maxRequestSize && MULTIPART.maxRequestSize < drapedFileLength) {
+      alert(`단일 요청의 최대 크기(${File.formatSize(MULTIPART.maxRequestSize, 'MB', 0)})를 초과했습니다.
+        현재 첨부한 파일의 전체 크기: ${File.formatSize(drapedFileLength, 'MB', 0)}`);
+      return;
+    }
 
     // 파일 갯수를 초과 했는지
     if (0 < this.options.totalFileCount && this.options.totalFileCount < drapedFileArray.length + this.fileCount) {
@@ -225,39 +293,34 @@ export default class FlayAttach extends HTMLElement {
       return;
     }
 
-    // 체크된 파일 추가
-    Array.from(drapedFileArray).forEach((file) => this.dataTransfer.items.add(file));
+    this.wrapper.classList.add('file-transfer');
 
-    // 서버로 업로드 호출. ticket 받기
-    this.uploadToServer();
+    // 체크가 완료된 파일
+    const dataTransfer = new DataTransfer();
+    Array.from(drapedFileArray).forEach((file) => dataTransfer.items.add(file));
+
+    // 서버로 업로드 호출
+    this.uploadToServer(dataTransfer);
   }
 
   /**
    * 파일 제거
    * @param {Number} uniqueKey 클릭된 파일 인덱스
    */
-  removeFile(uniqueKey) {
-    // 서버로 파일 제거 호출
-    this.removeToServer(uniqueKey, () => {
-      const tmpDataTranster = new DataTransfer();
-      Array.from(this.getFiles())
-        .filter((file) => file.uniqueKey != uniqueKey)
-        .forEach((file) => {
-          tmpDataTranster.items.add(file);
-        });
-      this.dataTransfer = tmpDataTranster;
+  removeFile(attachfileid) {
+    this.wrapper.classList.add('file-transfer');
 
-      this.changeCallback();
-    });
+    // 서버로 파일 제거 호출
+    this.removeToServer(attachfileid);
   }
 
   /**
-   * 동일 파일이 있는지
+   * 동일 파일이 있는지. 파일 이름으로 체크
    * @param {File} newFile
    * @returns
    */
   containsFile(newFile) {
-    return Array.from(this.getFiles()).filter((file) => file.lastModified === newFile.lastModified && file.name === newFile.name).length > 0;
+    return Array.from(this.getFiles()).filter((file) => file.name === newFile.name).length > 0;
   }
 
   /**
@@ -265,20 +328,7 @@ export default class FlayAttach extends HTMLElement {
    * @returns
    */
   getFiles() {
-    return this.dataTransfer.files;
-  }
-
-  /**
-   * 첨부가 변경될때 콜백
-   */
-  changeCallback() {
-    this.renderFileList();
-    this.dispatchEvent(new CustomEvent('attach', { detail: { files: this.getFiles() }, cancelable: true, composed: false, bubbles: false }));
-    this.setAttribute('length', this.getFiles().length);
-
-    if (this.options.attachChangeCallback) {
-      this.options.attachChangeCallback(this.getFiles());
-    }
+    return this.attach.attachFiles;
   }
 
   /**
@@ -289,17 +339,17 @@ export default class FlayAttach extends HTMLElement {
     this.fileLength = 0;
 
     this.fileList.innerHTML = '';
-    Array.from(this.getFiles()).forEach((file) => {
+    Array.from(this.getFiles()).forEach((attachFile) => {
       this.fileList.innerHTML += `
-          <li id="${file.uniqueKey}">
-            <label class="file-icon"><i class="fa fa-${getFileIcon(file)}"></i></label>
-            <label class="file-name">${file.name}</label>
-            <label class="file-size">${File.formatSize(file.size)}</label>
-            <button class="file-remove" data-uniquekey="${file.uniqueKey}">X</button>
+          <li id="${attachFile.id}">
+            <label class="file-icon"><i class="fa fa-${getFileIcon(attachFile)}"></i></label>
+            <label class="file-name"><a href="/attach/${this.attach.id}/${attachFile.id}/download">${attachFile.name}</a></label>
+            <label class="file-size">${File.formatSize(attachFile.size)}</label>
+            <button class="file-remove" data-attachfileid="${attachFile.id}">X</button>
           </li>`;
 
       this.fileCount++;
-      this.fileLength += file.size;
+      this.fileLength += attachFile.size;
     });
     // summary render
     this.fileSummary.innerHTML = `
@@ -307,9 +357,14 @@ export default class FlayAttach extends HTMLElement {
       <labe>${File.formatSize(this.fileLength)} ${this.options.totalFileLength > 0 ? `/ ${File.formatSize(this.options.totalFileLength)}` : ''}</labe>`;
   }
 
-  uploadToServer() {
+  /**
+   * 드랍된 파일을 서버로 전송한다
+   * @param {DataTransfer} dataTransfer
+   */
+  uploadToServer(dataTransfer) {
     const formData = new FormData();
-    for (const file of this.getFiles()) {
+    formData.append('id', this.attach.id);
+    for (const file of dataTransfer.files) {
       formData.append('file', file);
     }
 
@@ -319,67 +374,27 @@ export default class FlayAttach extends HTMLElement {
       body: formData,
     })
       .then((response) => response.json())
-      .then((result) => {
-        console.log('Success:', result);
-        Array.from(result).forEach((ticket) => {
-          for (const file of this.getFiles()) {
-            if (file.name === ticket.filename) {
-              file['uniqueKey'] = ticket.uniqueKey;
-              break;
-            }
-          }
-
-          this.changeCallback();
-        });
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
+      .then((attach) => this.changeCallback(attach))
+      .catch((error) => console.error('upload', error));
   }
 
-  removeToServer(uniqueKey, callback) {
+  /**
+   * 서버에 임시 저장된 파일 삭제
+   * @param {String} attachFileId
+   */
+  removeToServer(attachFileId) {
+    const formData = new FormData();
+    formData.append('id', this.attach.id);
+    formData.append('attachFileId', attachFileId);
+
     fetch('/attach/remove', {
       method: 'DELETE',
       headers: new Headers(CSRF_HEADER),
-      body: uniqueKey,
+      body: formData,
     })
       .then((response) => response.json())
-      .then((result) => {
-        console.log('Success:', result);
-        if (callback) {
-          callback();
-        }
-      })
-      .catch((error) => {
-        console.error('Error:', error);
-      });
-  }
-
-  init(files) {
-    console.log('init', files);
-    this.dataTransfer.clearData();
-    this.renderFileList();
-
-    if (files) {
-      this.fileCount = 0;
-      this.fileLength = 0;
-      Array.from(files).forEach((file) => {
-        this.fileList.innerHTML += `
-        <li>
-          <label class="file-icon"><i class="fa fa-file"></i></label>
-          <label class="file-name">${file.name}</label>
-          <label class="file-size">${File.formatSize(file.size)}</label>
-          <button class="file-remove" data-uniquekey="${file.file}">X</button>
-        </li>`;
-
-        this.fileCount++;
-        this.fileLength += file.size;
-      });
-      // summary render
-      this.fileSummary.innerHTML = `
-        <labe>${this.fileCount} <small>${this.options.totalFileCount > 0 ? `/ ${this.options.totalFileCount} ` : ''}files</small></labe>
-        <labe>${File.formatSize(this.fileLength)} ${this.options.totalFileLength > 0 ? `/ ${File.formatSize(this.options.totalFileLength)}` : ''}</labe>`;
-    }
+      .then((attach) => this.changeCallback(attach))
+      .catch((error) => console.error('remove', error));
   }
 }
 

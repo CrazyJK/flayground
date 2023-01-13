@@ -21,7 +21,8 @@ public class AttachServiceImpl implements AttachService {
     try {
       return attachSource.get(id);
     } catch (AttachNotfoundException e) {
-      return attachSource.create(id, name, type);
+      Attach attach = attachSource.create(id, name, type);
+      return attachSource.save(attach);
     }
   }
 

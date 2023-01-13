@@ -3,125 +3,200 @@
 @import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css';
 @import 'tui-color-picker/dist/tui-color-picker.css';
 
+// grid
 main {
   display: grid;
   grid-template-areas:
-    'diary-cal'
-    'diary-meta'
-    'diary-edit'
-    'diary-attach';
+    'grid-calendar'
+    'grid-diary';
   grid-template-columns: 1fr;
-  grid-template-rows: 14rem 3rem 1fr 9rem;
+  grid-template-rows: 14rem 1fr;
   gap: 0.5rem;
 
-  padding: 0.5rem 3rem;
-  height: 100vh;
-
-  #diaryCal {
-    grid-area: diary-cal;
+  #grid-calendar {
+    grid-area: grid-calendar;
   }
+  #grid-diary {
+    grid-area: grid-diary;
+  }
+}
+
+// grid
+#diaryWrap {
+  display: grid;
+  grid-template-areas:
+    'diary-meta'
+    'diary-body'
+    'diary-attach';
+  grid-template-columns: 1fr;
+  grid-template-rows: 3rem 1fr 9rem;
+  gap: 0.5rem;
 
   #diaryMeta {
     grid-area: diary-meta;
-
-    .check-group label input[type='radio'] ~ span {
-      width: 1.75rem;
-    }
-
-    input[type='date'] {
-      width: 9rem !important;
-      flex-grow: 0 !important;
-    }
   }
-
-  #diaryEditor {
-    grid-area: diary-edit;
-
-    .toastui-editor-defaultUI {
-      border: 1px solid var(--color-border-form);
-    }
+  #diaryBody {
+    grid-area: diary-body;
   }
-
   #diaryAttch {
     grid-area: diary-attach;
   }
 }
 
-@media screen and (max-width: 900px) {
-  main {
-    padding: 0.5rem 1rem;
+main {
+  padding: 0.5rem 3rem;
+  height: 100vh;
+
+  #grid-diary {
+    display: none;
   }
 }
 
-.calendar {
-  display: flex;
-  flex-direction: row-reverse;
-  justify-content: space-between;
-  // gap: 1rem;
+@media screen and (max-width: 900px) {
+  main {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
 
-  font-size: 12px;
+#diaryWrap {
+  position: relative;
+  height: 100%;
 
-  .month {
-    flex: 0 0 auto;
+  #diaryMeta {
+    position: relative;
 
-    width: 14rem;
+    #diaryWeather {
+      .check-group label input[type='radio'] ~ span {
+        width: 1.75rem;
+      }
+    }
+    #diaryDate {
+      width: 9rem !important;
+      flex-grow: 0 !important;
+    }
+  }
 
-    .dates {
-      display: flex;
-      flex-flow: row wrap;
-      align-content: flex-start;
+  #diaryBody {
+    position: relative;
+    .toastui-editor-defaultUI {
+      border: 1px solid var(--color-border-form);
+    }
+  }
+}
 
-      border-top: 1px solid var(--color-border-form);
-      border-right: 1px solid var(--color-border-form);
+#diaryViewer {
+  display: none;
+  position: fixed;
+  inset: 0;
+  margin: 1rem;
+  padding: 0;
+  background-color: var(--color-bg-box);
+  border: 1px solid var(--color-border-form);
+  border-radius: 0.5rem;
+  box-shadow: 0 0 16px 8px var(--color-box-shadow);
+  z-index: 999;
 
-      .date {
-        position: relative;
-        flex-shrink: 0;
-        width: calc(100% / 7);
-        height: 2rem;
-        padding: 2px 4px;
-        text-align: right;
-        border-bottom: 1px solid var(--color-border-form);
-        border-left: 1px solid var(--color-border-form);
+  #diaryViewerInner {
+    position: absolute;
+    inset: 0;
+    overflow: auto;
+    margin: 0.5rem;
+    text-align: center;
+    background-color: var(--color-bg);
+    border-radius: 0.25rem;
 
-        &.side {
-          color: lightgray;
-        }
+    .toastui-editor-contents {
+      padding: 1rem;
+    }
+  }
 
-        &.ref {
-          cursor: pointer;
+  #diaryViewerClose {
+    position: absolute;
+    right: 0;
+    top: 0;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    background-color: transparent;
+    color: var(--color-text-active);
+    font-size: 2rem;
+    line-height: 0;
+  }
+}
 
-          &:hover {
-            background-color: rgb(240 248 255 / 25%);
+#diaryCal {
+  width: 100%;
+
+  .calendar {
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+
+    font-size: 12px;
+
+    .month {
+      flex: 0 0 auto;
+
+      width: 14rem;
+
+      .dates {
+        display: flex;
+        flex-flow: row wrap;
+        align-content: flex-start;
+
+        border-top: 1px solid var(--color-border-form);
+        border-right: 1px solid var(--color-border-form);
+
+        .date {
+          position: relative;
+          flex-shrink: 0;
+          width: calc(100% / 7);
+          height: 2rem;
+          padding: 2px 4px;
+          text-align: right;
+          border-bottom: 1px solid var(--color-border-form);
+          border-left: 1px solid var(--color-border-form);
+
+          &.side {
+            color: lightgray;
           }
 
-          &.today {
-            color: var(--bs-yellow);
-          }
+          &.ref {
+            cursor: pointer;
 
-          &.written {
-            i.fa {
-              position: absolute;
-              left: 2px;
-              bottom: 2px;
+            &:hover {
+              background-color: rgb(240 248 255 / 25%);
             }
-          }
 
-          &.active {
-            background-color: rgba(214, 134, 29, 0.25);
+            &.today {
+              color: var(--bs-yellow);
+            }
+
+            &.written {
+              i.fa {
+                position: absolute;
+                left: 2px;
+                bottom: 2px;
+              }
+            }
+
+            &.active {
+              background-color: rgba(214, 134, 29, 0.25);
+            }
           }
         }
       }
-    }
 
-    .day:nth-child(7n + 1),
-    .date:nth-child(7n + 1) {
-      color: #d13e3e;
-    }
+      .day:nth-child(7n + 1),
+      .date:nth-child(7n + 1) {
+        color: #d13e3e;
+      }
 
-    .day:nth-child(7n),
-    .date:nth-child(7n) {
-      color: #396ee2;
+      .day:nth-child(7n),
+      .date:nth-child(7n) {
+        color: #396ee2;
+      }
     }
   }
 }

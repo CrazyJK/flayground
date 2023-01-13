@@ -1,5 +1,7 @@
 /**
  * kamoru diary
+ *
+ * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
 
 import Editor from '@toast-ui/editor';
@@ -14,15 +16,17 @@ import { restCall } from './lib/flay.rest.service.js';
 import './kamoru.diary.scss';
 import './styles/common.scss';
 
-let currentDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null }, content: '', addedAttachUniqueKeys: [] };
+const newDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null }, content: '' };
+let currentDiary = newDiary;
 
-const diaryMeta = document.querySelector('#diaryMeta');
+const gridDiary = document.querySelector('#grid-diary');
+const diaryWrap = document.querySelector('#diaryWrap');
 const diaryTitle = document.querySelector('#diaryTitle');
+const diaryWeather = document.querySelector('#diaryWeather');
 const diaryDate = document.querySelector('#diaryDate');
 const diaryDay = document.querySelector('#diaryDay');
-const diaryAttch = document.querySelector('#diaryAttch');
 const diaryEditor = new Editor({
-  el: document.querySelector('#diaryEditor'),
+  el: document.querySelector('#diaryBody'),
   height: '100%',
   minHeight: '300px',
   initialEditType: 'wysiwyg',
@@ -45,6 +49,7 @@ const diaryEditor = new Editor({
   },
 });
 diaryEditor.hide();
+const diaryAttch = document.querySelector('#diaryAttch');
 
 // flay attach
 // const flayAttach = diaryAttch.appendChild(document.createElement('flay-attach'));
@@ -54,18 +59,19 @@ const flayAttach = diaryAttch.appendChild(
     totalFileCount: 0,
     totalFileLength: GB * 1,
     attachChangeCallback: (attach) => {
-      console.log('attachCallback', attach);
+      console.debug('attachCallback', attach);
       currentDiary.meta.attachId = attach.id;
     },
   })
 );
 flayAttach.addEventListener('attach', (e) => {
-  console.log('flayAttach change', e.detail.files);
+  console.debug('flayAttach change', e.detail.files);
 });
 
 renderCalendar();
 addCalendarEventListener();
 addDiaryEventListener();
+addDiaryViewerEventListener();
 
 /**
  * 화면에 달력 표현
@@ -182,14 +188,10 @@ function addCalendarEventListener() {
         .then((response) => response.json())
         .then((diary) => loadDiary(diary));
     } else {
-      loadDiary({
-        meta: {
-          title: '',
-          date: date,
-          weather: 'sunny',
-        },
-        content: '',
-      });
+      newDiary.meta.attachId = null;
+      newDiary.meta.date = date;
+      newDiary.meta.weather = 'sunny';
+      loadDiary(newDiary);
     }
   });
 }
@@ -203,6 +205,24 @@ function addDiaryEventListener() {
     weather.addEventListener('click', saveDiary);
   });
   // 에디터 변경은 에디터에서 blur 함수 호출됨
+}
+
+function addDiaryViewerEventListener() {
+  // diary Viewer Close
+  document.getElementById('diaryViewerClose').addEventListener('click', (e) => {
+    document.getElementById('diaryViewer').style.display = 'none';
+  });
+  // diary Viewer Show
+  document.getElementById('diaryViewerShow').addEventListener('click', (e) => {
+    Editor.factory({
+      el: document.querySelector('#diaryViewerInner'),
+      viewer: true,
+      height: '100%',
+      theme: LocalStorageItem.get('flay.bgtheme', 'dark'),
+      initialValue: diaryEditor.getHTML(),
+    });
+    document.getElementById('diaryViewer').style.display = 'block';
+  });
 }
 
 /**
@@ -235,16 +255,14 @@ function loadDiary(diary) {
 
   currentDiary = diary;
 
+  gridDiary.style.display = 'block';
   diaryTitle.value = diary.meta.title; // title
-  diaryDate.value = diary.meta.date; // date
-  diaryDay.innerHTML = getDay(diary.meta.date); // day of week
-  diaryEditor.setHTML(diary.content, false); // content
   document.querySelector('[name="diaryWeather"][value="' + diary.meta.weather + '"]').checked = true; // weather
-  flayAttach.initiate(diary.meta.attachId, 'DIARY', diary.meta.date);
-
-  // 제목, 본문 show
+  diaryDay.innerHTML = getDay(diary.meta.date); // day of week
+  diaryDate.value = diary.meta.date; // date
+  diaryEditor.setHTML(diary.content, false); // content
   diaryEditor.show();
-  diaryMeta.style.display = '';
+  flayAttach.initiate(diary.meta.attachId, 'DIARY', diary.meta.date); // attach
 }
 
 /**

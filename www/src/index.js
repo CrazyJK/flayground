@@ -30,7 +30,10 @@ const popupWH = localStorage.getItem(INDEX_POPUP_SIZE)?.split(',') || [540, 997]
 const $w = $('#w').val(popupWH[0]).on('change', saveSize);
 const $h = $('#h').val(popupWH[1]).on('change', saveSize);
 $('#b').on('click', () => {
-  window.open($('#u').val(), Date.now(), 'width=' + $w.val() + ',height=' + $h.val());
+  const url = $('#u').val();
+  if (url !== '') {
+    window.open(url, Date.now(), 'width=' + $w.val() + ',height=' + $h.val());
+  }
 });
 
 // memo

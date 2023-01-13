@@ -52,7 +52,7 @@ body {
               text-shadow: 0 0 2px #f00, 0 0 4px #f00, 0 0 6px #f00, 0 0 8px #999999, 0 0 10px #000000;
             }
 
-            i {
+            svg {
               min-width: 42px;
             }
           }
@@ -60,6 +60,7 @@ body {
           &:nth-child(2) {
             flex: 1 1 auto;
             white-space: nowrap;
+            font-weight: 400;
 
             &:hover {
               color: orange;
@@ -99,6 +100,9 @@ body {
         color: #{$textColor};
         font-size: 2rem;
         text-align: center;
+      }
+      button {
+        cursor: pointer;
       }
 
       textarea {

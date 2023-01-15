@@ -696,6 +696,9 @@ button.btn.btn-outline-flay {
     border: 1px solid var(--color-border-form);
   }
 }
+.form-control option {
+  background-color: var(--color-bg);
+}
 
 #topMenu {
   position: sticky;

@@ -68,7 +68,7 @@ class RankSelect extends HTMLElement {
     // style
     const linkElem = document.createElement('link');
     linkElem.setAttribute('rel', 'stylesheet');
-    linkElem.setAttribute('href', 'css/font-awesome.css');
+    linkElem.setAttribute('href', 'css/fontawesome/font-awesome-v4.css');
     shadow.appendChild(linkElem);
 
     const style = document.createElement('style');

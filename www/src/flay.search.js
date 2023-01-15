@@ -51,6 +51,15 @@ function baseSearch() {
 function findMode() {
   const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
 
+  Rest.Flay.listOfStudio(
+    {
+      sort: 'STUDIO',
+    },
+    (list) => {
+      $('#studio-list').append(list.map((studio) => `<option value="${studio}">`));
+    }
+  );
+
   $('.btn-find-random-opus').on('click', function () {
     Search.opusByRandom();
   });

@@ -448,7 +448,7 @@ function attachPageEventListener() {
   });
 
   // filter, rank & sort condition change
-  $("#favorite, #noFavorite, #video, #subtitles, #rank0, #rank1, #rank2, #rank3, #rank4, #rank5, input[name='sort']").on('change', collectList);
+  $('#favorite, #noFavorite, #video, #subtitles, #rank0, #rank1, #rank2, #rank3, #rank4, #rank5, #sort').on('change', collectList);
 
   // collect
   $('#pageContent').on('collect', collectList);
@@ -705,7 +705,7 @@ function initCondition() {
   for (let x in ranks) {
     $('#rank' + x).prop('checked', ranks[x] === '1');
   }
-  $('input[name="sort"][value="' + sort + '"]').prop('checked', true);
+  $('#sort').val(sort);
   $('input[name="source"][value="' + source + '"]').prop('checked', true);
   $('input[name="autoSlideMode"][value="' + autoSlide + '"]').prop('checked', true);
 }
@@ -760,7 +760,13 @@ function loadData() {
 function collectList() {
   const compareTo = (data1, data2) => {
     var result = 0;
-    if (typeof data1 === 'number') {
+    if (data1 === null && data2 === null) {
+      result = 0;
+    } else if (data1 !== null && data2 === null) {
+      result = 1;
+    } else if (data1 === null && data2 !== null) {
+      result = -1;
+    } else if (typeof data1 === 'number') {
       result = data1 - data2;
     } else if (typeof data1 === 'string') {
       result = data1.toLowerCase().localeCompare(data2.toLowerCase());
@@ -824,7 +830,7 @@ function collectList() {
   const rank3 = $('#rank3').prop('checked') ? '3' : '';
   const rank4 = $('#rank4').prop('checked') ? '4' : '';
   const rank5 = $('#rank5').prop('checked') ? '5' : '';
-  const sort = $("input[name='sort']:checked").val();
+  const sort = $('#sort').val();
   const source = $("input[name='source']:checked").val();
   const autoSlide = $("input[name='autoSlideMode']:checked").val();
 
@@ -939,29 +945,47 @@ function collectList() {
   // sorting
   collectedList.sort(function (flay1, flay2) {
     switch (sort) {
+      // studio
       case 'S': {
         const sVal = compareTo(flay1.studio, flay2.studio);
         return sVal === 0 ? compareTo(flay1.opus, flay2.opus) : sVal;
       }
+      // opus
       case 'O':
         return compareTo(flay1.opus, flay2.opus);
+      // title
       case 'T':
         return compareTo(flay1.title, flay2.title);
+      // actress
       case 'A': {
         let aVal = compareTo(flay1.actressList, flay2.actressList);
         aVal = aVal === 0 ? compareTo(flay1.release, flay2.release) : aVal;
         return aVal === 0 ? compareTo(flay1.opus, flay2.opus) : aVal;
       }
+      // release
       case 'R': {
         const rVal = compareTo(flay1.release, flay2.release);
         return rVal === 0 ? compareTo(flay1.opus, flay2.opus) : rVal;
       }
+      // lastModified
       case 'M':
         return compareTo(flay1.lastModified, flay2.lastModified);
+      // Last Access & Modified
       case 'la':
         return compareTo(Math.max(flay1.video.lastPlay, flay1.video.lastAccess, flay1.lastModified), Math.max(flay2.video.lastPlay, flay2.video.lastAccess, flay2.lastModified));
-      case 'P': {
+      // Play Count
+      case 'PC': {
         const pVal = compareTo(flay1.video.play, flay2.video.play);
+        return pVal === 0 ? compareTo(flay1.release, flay2.release) : pVal;
+      }
+      // Last Played Date
+      case 'LP': {
+        const pVal = compareTo(flay1.video.lastPlay, flay2.video.lastPlay);
+        return pVal === 0 ? compareTo(flay1.release, flay2.release) : pVal;
+      }
+      // Like
+      case 'L': {
+        const pVal = compareTo(flay1.video.likes ? flay1.video.likes.length : 0, flay2.video.likes ? flay2.video.likes.length : 0);
         return pVal === 0 ? compareTo(flay1.release, flay2.release) : pVal;
       }
     }
@@ -1354,7 +1378,7 @@ function showVideo(args) {
   // mark Like
   console.log('likes', currentFlay.video.likes, currentFlay.video.likes?.length);
   const likeCount = currentFlay.video.likes?.length;
-  $('.like-btn').attr('title', likeCount > 0 ? 'like ' + likeCount : '');
+  $('.like-btn').attr('title', `like ${likeCount > 0 ? likeCount : ''}`);
 
   const yyyyMMdd = new Date().format('yyyy-MM-dd');
   const todayLikeCount = currentFlay.video.likes?.filter((like) => like.substring(0, 10) === yyyyMMdd).length;

@@ -8,8 +8,8 @@
   .tag {
     display: inline-flex;
     margin: 0.25rem;
-    max-width: 20rem;
-    min-width: 10rem;
+    max-width: 16rem;
+    min-width: 8rem;
     transition: 0.4s;
 
     &:hover {
@@ -21,7 +21,7 @@
     }
 
     .card-body {
-      padding: 1rem;
+      padding: 0.75rem;
 
       .tag-title {
         display: flex;

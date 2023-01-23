@@ -17,35 +17,19 @@ import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, RANK, STUDIO } from './lib/
 
 function baseSearch() {
   $('#query, #opus').on('keyup', function (e) {
-    if (e.keyCode != 13) {
-      return;
-    }
+    if (e.key !== 'Enter') return;
     var keyword = $(this).val().trim().toUpperCase();
     searchSource(keyword);
   });
-  $('.btn-search-opus').on('click', function () {
-    var value = $('#query').val();
-    Search.opus(value);
-  });
-  $('.btn-search-actress').on('click', function () {
-    var isShow = $('#findMode').hasClass('show');
-    var query = $('#query').val();
-    var name = $('#actress').val();
-    var value = '';
-    if (isShow && name) value = name;
-    else value = query;
-    Search.actress(value);
-  });
-  $('.btn-search-torrent').on('click', function () {
-    var value = $('#query').val();
-    Search.torrent(value);
-  });
-  $('#btn-flay-close').on('click', function () {
-    $('#resultFlayDiv').hide();
-  });
-  $('#btn-history-close').on('click', function () {
-    $('#resultHistoryDiv').hide();
-  });
+
+  $('.btn-search-google ').on('click', () => Search.google($('#query').val()));
+  $('.btn-search-arzon  ').on('click', () => Search.arzon($('#query').val()));
+  $('.btn-search-avnori ').on('click', () => Search.avnori($('#query').val()));
+  $('.btn-search-minnano').on('click', () => Search.actress($('#query').val()));
+  $('.btn-search-nextjav').on('click', () => Search.nextjav($('#query').val()));
+
+  $('#btn-flay-close   ').on('click', () => $('#resultFlayDiv').hide());
+  $('#btn-history-close').on('click', () => $('#resultHistoryDiv').hide());
 }
 
 function findMode() {

@@ -132,3 +132,11 @@ fieldset > legend {
   padding: 0 0.5rem;
   width: auto;
 }
+
+.btn-flay:hover {
+  color: var(--color-text-active) !important;
+}
+
+.dropdown-menu {
+  min-width: auto !important;
+}

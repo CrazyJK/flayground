@@ -1,0 +1,71 @@
+/*
+  bootstrap modification
+*/
+
+/* modified bootstrap 4 */
+.page-item.active .page-link {
+  background-color: var(--color-bg-page);
+  border-color: midnightblue;
+  color: var(--color-text-active);
+}
+.page-item.active .page-link:hover {
+  color: var(--color-text-active);
+}
+.page-item:not(.disabled) .page-link {
+  cursor: pointer;
+}
+.page-item.disabled .page-link {
+  background-color: var(--color-bg-page);
+}
+.page-link {
+  background-color: var(--color-bg-page);
+  color: var(--color-text);
+  font-weight: 400;
+  text-shadow: 1px 1px 2px var(--color-text-shadow);
+}
+.page-link:hover {
+  background-color: var(--color-bg-page);
+  color: var(--color-text-hover);
+}
+
+.btn-link,
+.btn-link:hover {
+  color: midnightblue;
+}
+.img-thumbnail {
+  background-color: transparent;
+}
+.btn:focus,
+.custom-select:focus,
+.form-control:focus,
+.page-link:focus {
+  box-shadow: none;
+}
+
+/* bootstrap 4 modal */
+.modal-dialog.modal-fluid {
+  max-width: 100%;
+}
+.modal-content {
+  background-color: var(--color-bg-modal);
+  border: 1px solid var(--color-border-modal);
+}
+.modal-header {
+  border-bottom: 1px solid var(--color-border-modal);
+}
+.modal-footer {
+  border-top: 1px solid var(--color-border-modal);
+}
+
+// Buttons with dropdowns
+.dropdown-menu {
+  background-color: var(--color-bg-card);
+}
+.dropdown-item {
+  color: var(--color-text);
+}
+.dropdown-item:focus,
+.dropdown-item:hover {
+  background-color: var(--color-bg-card);
+  color: var(--color-text-active);
+}

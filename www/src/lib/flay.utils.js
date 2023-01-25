@@ -5,6 +5,7 @@
 import $ from 'jquery';
 import { browser, FIREFOX, PATH, Popup, Random } from './crazy.common.js';
 import { Rest } from './flay.rest.service.js';
+import './flay.view.card';
 
 const todayYear = new Date().getFullYear();
 

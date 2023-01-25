@@ -1376,7 +1376,7 @@ function showVideo(args) {
   }
 
   // mark Like
-  console.log('likes', currentFlay.video.likes, currentFlay.video.likes?.length);
+  console.debug('likes', currentFlay.video.likes, currentFlay.video.likes?.length);
   const likeCount = currentFlay.video.likes?.length;
   $('.like-btn').attr('title', `like ${likeCount > 0 ? likeCount : ''}`);
 

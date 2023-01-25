@@ -22,6 +22,7 @@ module.exports = {
     'flay.tile': './src/flay.tile.js',
     'flay.basket': './src/flay.basket.js',
     'flay.mobile': './src/flay.mobile.js',
+    'flay.like': './src/flay.like.js',
     'flay.score': './src/flay.score.js',
     'flay.subtitles': './src/flay.subtitles.js',
     'flay.summary': './src/flay.summary.js',

@@ -96,6 +96,15 @@
     "popup": "full"
   },
   {
+    "name": "Like",
+    "uri": "./flay.like.html",
+    "icon": "fa fa-list",
+    "popup": {
+      "w": 1078,
+      "h": 1100
+    }
+  },
+  {
     "name": "Score",
     "uri": "./flay.score.html",
     "icon": "fa fa-list",

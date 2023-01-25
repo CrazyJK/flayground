@@ -1,5 +1,5 @@
 [data-theme='dark'] {
-  --color-bg: #0f0f0f;
+  --color-bg: #181818;
   --color-bg-label: rgba(0, 0, 0, 0.125);
   --color-bg-label-hover: rgba(0, 0, 0, 0.75);
   --color-bg-label-title: rgba(0, 0, 0, 1);
@@ -88,16 +88,4 @@
 
   --color-input-checked: orange;
   --color-input-checked-border: rgb(255 165 0 / 50%);
-}
-
-/* bootstrap direct override */
-.bg-light {
-  background-color: var(--color-bg-light) !important;
-}
-.table {
-  color: var(--color-text);
-}
-.table-hover tbody tr:hover,
-.table-hover > tbody > tr:hover > * {
-  color: var(--color-text);
 }

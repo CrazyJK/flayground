@@ -69,3 +69,14 @@
   background-color: var(--color-bg-card);
   color: var(--color-text-active);
 }
+
+.bg-light {
+  background-color: var(--color-bg-light) !important;
+}
+.table {
+  color: var(--color-text);
+}
+.table-hover tbody tr:hover,
+.table-hover > tbody > tr:hover > * {
+  color: var(--color-text);
+}

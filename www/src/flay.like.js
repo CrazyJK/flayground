@@ -42,16 +42,19 @@ async function render(list) {
     document.querySelector('body > main').innerHTML += `
       <article>
         <h3><i class="fa fa-thumbs-up ms-2 text-danger" title="Like"></i> ${likeDate}</h3>
-        <ol>${Array.from(likeDateMap[likeDate])
-          .map((flay) => {
-            return `
-              <li>
-                <div class="flay" data-opus="${flay.opus}">
-                  <label class="flay-title">${flay.title}</label>
-                </div>
-              </li>`;
-          })
-          .join('')}</ol>
+        <ol>
+          ${Array.from(likeDateMap[likeDate])
+            .map((flay) => {
+              return `
+                <li>
+                  <div class="flay" data-opus="${flay.opus}">
+                    <label class="flay-title">${flay.title}</label>
+                  </div>
+                </li>
+              `;
+            })
+            .join()}
+        </ol>
       </article>
     `;
   }

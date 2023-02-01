@@ -52,7 +52,6 @@ diaryEditor.hide();
 const diaryAttch = document.querySelector('#diaryAttch');
 
 // flay attach
-// const flayAttach = diaryAttch.appendChild(document.createElement('flay-attach'));
 const flayAttach = diaryAttch.appendChild(
   new FlayAttach({
     id: 'flayAttach',
@@ -188,9 +187,13 @@ function addCalendarEventListener() {
         .then((response) => response.json())
         .then((diary) => loadDiary(diary));
     } else {
-      newDiary.meta.attachId = null;
       newDiary.meta.date = date;
       newDiary.meta.weather = 'sunny';
+      newDiary.meta.title = '';
+      newDiary.meta.created = null;
+      newDiary.meta.lastModified = null;
+      newDiary.meta.attachId = null;
+      newDiary.content = '';
       loadDiary(newDiary);
     }
   });

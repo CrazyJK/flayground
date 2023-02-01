@@ -40,16 +40,16 @@ const CSS = `
     font-size: 0.875rem;
   }
 
-  .wrapper.file-transfer .file-box {
-    background: rgba(250, 0, 250, 0.25)
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='green' font-size='20'>File transfer...</text></svg>")
-        center no-repeat;
+  .wrapper.file-empty .file-list {
+    background: transparent url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='192px'><text x='0' y='15' fill='lightgray' font-size='20'>Drag and drop here</text></svg>") center no-repeat;
   }
 
   .wrapper.file-dragover .file-list {
-    background: rgba(0, 250, 250, 0.25)
-        url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='green' font-size='20'>Drop file here!</text></svg>")
-        center no-repeat;
+    background: rgba(0, 0, 0, 0.125) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='orange' font-size='20'>Drop file here!</text></svg>") center no-repeat;
+  }
+
+  .wrapper.file-transfer .file-list {
+    background: rgba(0, 0, 0, 0.25) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='orange' font-size='20'>File transfer...</text></svg>") center no-repeat;
   }
 
   .file-list {
@@ -92,7 +92,7 @@ const CSS = `
     height: 1.5rem;
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: flex-end;
     gap: 1rem;
     padding: 0 3rem;
   }
@@ -231,6 +231,7 @@ export default class FlayAttach extends HTMLElement {
     }
 
     this.wrapper.classList.remove('file-transfer');
+    this.wrapper.classList.toggle('file-empty', attach.attachFiles.length === 0);
   }
 
   /**

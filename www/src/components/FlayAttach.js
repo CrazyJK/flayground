@@ -97,6 +97,10 @@ const CSS = `
     padding: 0 3rem;
   }
 
+  #fileSelector {
+    cursor: pointer;
+  }
+
   input[type="file"] {
     position: absolute;
     width: 1px;
@@ -114,6 +118,10 @@ export default class FlayAttach extends HTMLElement {
 
     this.options = { ...OPT_DEFAULT, ...opts };
 
+    this.attach = null;
+    this.fileCount = 0;
+    this.fileLength = 0;
+
     // shadow root을 생성합니다
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
     this.setAttribute('id', this.options.id);
@@ -130,8 +138,9 @@ export default class FlayAttach extends HTMLElement {
     this.fileSummary = this.fileBox.appendChild(document.createElement('div'));
     this.fileSummary.setAttribute('class', 'file-summary');
 
-    const fileInput = this.fileBox.appendChild(document.createElement('input'));
-    fileInput.setAttribute('type', 'file');
+    this.fileInput = this.fileBox.appendChild(document.createElement('input'));
+    this.fileInput.setAttribute('type', 'file');
+    this.fileInput.setAttribute('multiple', 'multiple');
 
     const fontAwesomelink = document.createElement('link');
     fontAwesomelink.setAttribute('rel', 'stylesheet');
@@ -142,13 +151,10 @@ export default class FlayAttach extends HTMLElement {
 
     this.addFileDragEventListener();
     this.addFileRemoveEventListener();
+    this.addFileFinderClickEventListener();
 
     // 생성된 요소들을 shadow DOM에 부착합니다
     this.shadowRoot.append(fontAwesomelink, style, this.wrapper);
-
-    this.attach = null;
-    this.fileCount = 0;
-    this.fileLength = 0;
 
     this.initiate('1c414415614211313313e1401ec1421c31fc1961431f71ee', 'TEMP', 'unnamed');
   }
@@ -183,6 +189,19 @@ export default class FlayAttach extends HTMLElement {
     this.fileList.addEventListener('click', (e) => {
       if (e.target.className !== 'file-remove') return;
       this.removeFile(e.target.dataset.attachfileid);
+    });
+  }
+
+  /**
+   * 파일박스 클릭 이밴트
+   */
+  addFileFinderClickEventListener() {
+    this.fileSummary.addEventListener('click', (e) => {
+      if (e.target.id !== 'fileSelector') return;
+      this.fileInput.click();
+    });
+    this.fileInput.addEventListener('change', (e) => {
+      this.insertFile(e.target.files);
     });
   }
 
@@ -354,8 +373,9 @@ export default class FlayAttach extends HTMLElement {
     });
     // summary render
     this.fileSummary.innerHTML = `
-      <labe>${this.fileCount} <small>${this.options.totalFileCount > 0 ? `/ ${this.options.totalFileCount} ` : ''}files</small></labe>
-      <labe>${File.formatSize(this.fileLength)} ${this.options.totalFileLength > 0 ? `/ ${File.formatSize(this.options.totalFileLength)}` : ''}</labe>`;
+      <label>${this.fileCount} <small>${this.options.totalFileCount > 0 ? `/ ${this.options.totalFileCount} ` : ''}files</small></label>
+      <label id="fileSelector">Select</label>
+      <label>${File.formatSize(this.fileLength)} ${this.options.totalFileLength > 0 ? `/ ${File.formatSize(this.options.totalFileLength)}` : ''}</label>`;
   }
 
   /**

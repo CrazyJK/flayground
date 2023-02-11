@@ -516,6 +516,15 @@ function attachPageEventListener() {
     const $sideCover = $('.cover-wrapper-inner.prev > .cover-box, .cover-wrapper-inner.next > .cover-box');
     $sideCover.toggle(currCoverBoxWidth / 2 < calcWidth);
   });
+
+  // cover-box prev, next
+  $('.cover-box').on('click', (e) => {
+    if ($(e.target).parent().hasClass('prev')) {
+      navigation.previous();
+    } else if ($(e.target).parent().hasClass('next')) {
+      navigation.next();
+    }
+  });
 }
 
 function attachFlayEventListener() {

@@ -98,7 +98,7 @@
   {
     "name": "Like",
     "uri": "./flay.like.html",
-    "icon": "fa fa-list",
+    "icon": "fa fa-thumbs-up",
     "popup": {
       "w": 1078,
       "h": 1100

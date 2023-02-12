@@ -3,17 +3,17 @@ chcp 65001
 
 setlocal
 
-rem Guess FLAYGROUND_HOME
+@REM Guess FLAYGROUND_HOME
 set "CURRENT_DIR=%cd%"
 set "FLAYGROUND_HOME=%CURRENT_DIR%"
-if exist "%FLAYGROUND_HOME%\target\Flayground.jar" goto okHome
+if exist "%FLAYGROUND_HOME%\target" goto setEnv
 cd ..
 set "FLAYGROUND_HOME=%cd%"
-if exist "%FLAYGROUND_HOME%\target\Flayground.jar" goto okHome
+if exist "%FLAYGROUND_HOME%\target" goto setEnv
 echo invalid FLAYGROUND_HOME: %FLAYGROUND_HOME%
 goto end
-:okHome
 
+:setEnv
 set "JAVA_OPTS=%JAVA_OPTS% -Dspring.profiles.active=flay-home"
 set "JAVA_OPTS=%JAVA_OPTS% -Dfile.encoding=UTF-8"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.awt.headless=true"
@@ -40,11 +40,26 @@ set "JAVA_OPTS=%JAVA_OPTS% -Dserver.ssl.key-store-password=697489"
 goto execCmd
 
 :execCmd
+echo ===========================================================================================
+echo Build WWW
+echo ===========================================================================================
+cd www
+start /wait /b cmd /c yarn run build
 
+echo ===========================================================================================
+echo Build maven
+echo ===========================================================================================
+cd ..
+start /wait /b cmd /c mvn clean package
+
+echo ===========================================================================================
+echo Start Flayground
+echo -------------------------------------------------------------------------------------------
 echo Using FLAYGROUND: %FLAYGROUND_HOME%
-echo Using JAVA_HOME:  %JAVA_HOME%
-echo Using JAVA_OPTS:  %JAVA_OPTS%
+echo Using  JAVA_HOME: %JAVA_HOME%
+echo Using  JAVA_OPTS: %JAVA_OPTS%
+echo ===========================================================================================
 
-"%JAVA_HOME%"\bin\java.exe %JAVA_OPTS% -jar "%FLAYGROUND_HOME%"\target\Flayground.jar
+"%JAVA_HOME%\bin\java.exe" %JAVA_OPTS% -jar "%FLAYGROUND_HOME%\target\Flayground.jar"
 
 :end

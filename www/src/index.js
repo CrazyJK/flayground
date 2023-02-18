@@ -1,9 +1,7 @@
 import '@fortawesome/fontawesome-free/js/all.js';
 import $ from 'jquery';
-
-import './index.scss';
-
 import menuItems from './index.json';
+import './index.scss';
 
 // https://fontawesome.com/v6/search?o=r&m=free
 
@@ -17,7 +15,7 @@ menuItems.forEach((menu) => {
       $(`<a><i class="fas fa-location-arrow fa-flip-horizontal fa-xs me-2"></i></a>`).on('click', () => {
         window.open(menu.url, 'flayground' + menu.name, 'width=1000,height=1000');
       }),
-      `<a href="${menu.url}">${menu.name}</a>`
+      $(`<a href="${menu.url}">${menu.name}</a>`)
     )
   );
 });
@@ -26,13 +24,19 @@ menuItems.forEach((menu) => {
 function saveSize() {
   localStorage.setItem(INDEX_POPUP_SIZE, $w.val() + ',' + $h.val());
 }
-const popupWH = localStorage.getItem(INDEX_POPUP_SIZE)?.split(',') || [540, 997];
-const $w = $('#w').val(popupWH[0]).on('change', saveSize);
-const $h = $('#h').val(popupWH[1]).on('change', saveSize);
-$('#b').on('click', () => {
-  const url = $('#u').val();
+function openPopup() {
+  const url = $u.val().trim();
   if (url !== '') {
     window.open(url, Date.now(), 'width=' + $w.val() + ',height=' + $h.val());
+  }
+}
+const [w, h] = localStorage.getItem(INDEX_POPUP_SIZE)?.split(',') || [540, 997];
+const $w = $('#w').on('change', saveSize).val(w);
+const $h = $('#h').on('change', saveSize).val(h);
+const $b = $('#b').on('click', openPopup);
+const $u = $('#u').on('keyup', (e) => {
+  if (e.key === 'Enter') {
+    openPopup();
   }
 });
 

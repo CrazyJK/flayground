@@ -10,18 +10,18 @@
   <body class="chalk">
     <header>Flayground</header>
     <main>
-      <article id="menuItemWrap"></article>
+      <article id="menuItemWrap" class="chalk"></article>
     </main>
-    <footer>
-      <div>
-        <textarea id="memo" class="chalk"></textarea>
+    <footer class="chalk">
+      <div class="memo-wrap chalk">
+        <textarea id="memo" spellcheck="false"></textarea>
       </div>
-      <div class="popup-wrap">
-        <input type="search" placeholder="URL" id="u" class="chalk" />
-        <input type="number" placeholder="Width" id="w" class="chalk" />
+      <div class="popup-wrap chalk">
+        <input id="u" type="search" placeholder="URL" spellcheck="false" />
+        <input id="w" type="number" placeholder="Width" />
         <span>&nbsp;&times;&nbsp;</span>
-        <input type="number" placeholder="Height" id="h" class="chalk" />
-        <button type="button" id="b" class="chalk">Popup</button>
+        <input id="h" type="number" placeholder="Height" />
+        <button id="b" type="button">Popup</button>
       </div>
     </footer>
   </body>

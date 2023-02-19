@@ -29,8 +29,8 @@ let Todayis = {
     };
 
     const sort = $("input[name='sort']:checked").val();
-    Todayis.list.sort(function (t1, t2) {
-      var c1 = compare(t2.path, t1.path);
+    Todayis.list.sort((t1, t2) => {
+      var c1 = compare(t1.path, t2.path);
       switch (sort) {
         case 'T':
           return c1 === 0 ? compare(t1.name, t2.name) : c1;
@@ -45,6 +45,10 @@ let Todayis = {
     $('#sorting > label > input').on('change', () => {
       Todayis.sortTodayis();
       Todayis.renderTodayis();
+    });
+
+    $('#toggleBtn').on('click', () => {
+      $('.folder-items').toggle();
     });
 
     $('#videoWrapper').on('wheel', (e) => {
@@ -64,12 +68,6 @@ let Todayis = {
       $('#videoWrapper video').get(0).pause();
       $('#videoWrapper').hide();
     });
-
-    $(window)
-      .on('resize', () => {
-        $('#folderWrapper').height(window.innerHeight - $('#topMenu').height());
-      })
-      .trigger('resize');
   },
   renderFolder: () => {
     const $folderWrapper = $('#folderWrapper').empty();
@@ -87,7 +85,7 @@ let Todayis = {
           .append(
             $('<div>', { class: 'folder-info' }).append(
               $('<span>')
-                .html(todayis.path)
+                .html(todayis.path.split('\\').join('<small style="color:orange" class="mx-1">/</small>'))
                 .on('click', currendFolderIndex, (e) => {
                   $(e.target).closest('.folder').find('.folder-items').toggle();
 

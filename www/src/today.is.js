@@ -14,69 +14,76 @@ import { Rest } from './lib/flay.rest.service.js';
 import './styles/common.scss';
 import './today.is.scss';
 
-let Todayis = {
+let viewMode;
+let sort;
+
+Rest.Todayis.list((list) => {
+  Todayis.list = list;
+  render();
+});
+
+// START addEventListener
+$('#viewMode, #sorting').on('change', render);
+$('#toggleBtn').on('click', () => $('.folder-items').toggle(700));
+
+$('#videoWrapper').on('wheel', (e) => {
+  e.stopPropagation();
+  const video = $('#videoWrapper video').get(0);
+  const videoSeekTime = 10;
+  if (e.originalEvent.wheelDelta < 0) {
+    video.currentTime += videoSeekTime;
+  } else {
+    video.currentTime -= videoSeekTime;
+  }
+});
+$('#videoWrapper span.stop').on('click', (e) => {
+  $('#videoWrapper video').get(0).pause();
+  $('#videoWrapper').hide();
+});
+// END addEventListener
+
+function render() {
+  viewMode = $('#viewMode').val();
+  sort = $('#sorting').val();
+
+  Todayis.list.sort((t1, t2) => {
+    const c1 = viewMode === 'F' ? compare(t1.path, t2.path) : 0;
+    switch (sort) {
+      case 'T':
+        return c1 === 0 ? compare(t1.name, t2.name) : c1;
+      case 'L':
+        return c1 === 0 ? compare(t1.length, t2.length) : c1;
+      case 'M':
+        return c1 === 0 ? compare(t2.lastModified, t1.lastModified) : c1;
+    }
+  });
+
+  if (viewMode === 'F') {
+    Todayis.renderFolderTree();
+  } else {
+    Todayis.renderLastModified();
+  }
+
+  let size = 0;
+  let length = 0;
+
+  $.each(Todayis.list, (idx, todayis) => {
+    size++;
+    length += todayis.length;
+  });
+
+  $('#size').html(size + ' Movie');
+  $('#length').html(File.formatSize(length));
+}
+
+const Todayis = {
   list: [],
   toggledFolderIndex: [],
-  sortTodayis: () => {
-    const compare = function (d1, d2) {
-      if (typeof d1 === 'number') {
-        return d1 - d2;
-      } else if (typeof d1 === 'string') {
-        return d1.toLowerCase().localeCompare(d2.toLowerCase());
-      } else {
-        return d1 > d2 ? 1 : -1;
-      }
-    };
 
-    const sort = $("input[name='sort']:checked").val();
-    Todayis.list.sort((t1, t2) => {
-      var c1 = compare(t1.path, t2.path);
-      switch (sort) {
-        case 'T':
-          return c1 === 0 ? compare(t1.name, t2.name) : c1;
-        case 'L':
-          return c1 === 0 ? compare(t1.length, t2.length) : c1;
-        case 'M':
-          return c1 === 0 ? compare(t1.lastModified, t2.lastModified) : c1;
-      }
-    });
-  },
-  addEvent: () => {
-    $('#sorting > label > input').on('change', () => {
-      Todayis.sortTodayis();
-      Todayis.renderTodayis();
-    });
-
-    $('#toggleBtn').on('click', () => {
-      $('.folder-items').toggle();
-    });
-
-    $('#videoWrapper').on('wheel', (e) => {
-      console.log('wheel', e);
-      e.stopPropagation();
-      const video = $('#videoWrapper video').get(0);
-      const videoSeekTime = 10;
-      if (e.originalEvent.wheelDelta < 0) {
-        video.currentTime += videoSeekTime;
-      } else {
-        video.currentTime -= videoSeekTime;
-      }
-    });
-
-    $('#videoWrapper span.stop').on('click', (e) => {
-      console.log('stop click', e.target);
-      $('#videoWrapper video').get(0).pause();
-      $('#videoWrapper').hide();
-    });
-  },
-  renderFolder: () => {
+  renderFolderTree: () => {
     const $folderWrapper = $('#folderWrapper').empty();
     let previousPath = '';
-    let size = 0;
-    let length = 0;
     let currendFolderIndex = 0;
-
-    Todayis.sortTodayis();
 
     $.each(Todayis.list, (idx, todayis) => {
       if (todayis.path !== previousPath) {
@@ -87,7 +94,7 @@ let Todayis = {
               $('<span>')
                 .html(todayis.path.split('\\').join('<small style="color:orange" class="mx-1">/</small>'))
                 .on('click', currendFolderIndex, (e) => {
-                  $(e.target).closest('.folder').find('.folder-items').toggle();
+                  $(e.target).closest('.folder').find('.folder-items').toggle(700);
 
                   if (Todayis.toggledFolderIndex.includes(e.data)) {
                     Todayis.toggledFolderIndex.splice(Todayis.toggledFolderIndex.indexOf(e.data), 1);
@@ -112,15 +119,8 @@ let Todayis = {
 
       todayis['folderIndex'] = currendFolderIndex - 1;
       previousPath = todayis.path;
-      size++;
-      length += todayis.length;
     });
 
-    $('#size').html(size + ' Movie');
-    $('#length').html(File.formatSize(length));
-  },
-  renderTodayis: () => {
-    $('.folder-items').empty();
     $.each(Todayis.list, (idx, todayis) => {
       $('#fidx' + todayis.folderIndex + ' > div.folder-items').append(
         $('<div>', { class: 'item', 'data-idx': idx }).append(
@@ -166,15 +166,42 @@ let Todayis = {
       );
     });
   },
-  start: () => {
-    $('#sorting > label:nth-child(3) > input').prop('checked', true);
-    Rest.Todayis.list((list) => {
-      Todayis.list = list;
-      Todayis.addEvent();
-      Todayis.renderFolder();
-      Todayis.renderTodayis();
+  renderLastModified: () => {
+    const $folderWrapper = $('#folderWrapper').empty();
+    const $ul = $('<ul>', { class: 'list-lastmodified' }).appendTo($folderWrapper);
+    Array.from(Todayis.list).forEach((todayis) => {
+      $ul.append(
+        $('<li>', { class: 'item' }).append(
+          `<label class="li-item-date">${new Date(todayis.lastModified).format('yyyy-MM-dd')}</label>`,
+          `<label class="li-item-size">${File.formatSize(todayis.length)}</label>`,
+          $(`<label class="li-item-path" title="${todayis.path}"><i class="fa fa-folder-open"></i></label>`).on('click', todayis, (e) => {
+            if (system === WINDOWS) {
+              Rest.Todayis.openFolder(e.data.path);
+            }
+          }),
+          $(`<label class="li-item-name">${todayis.name}</label>`).on('click', todayis, (e) => {
+            console.log('play click', e.data.uuid);
+            const newUrl = '/todayis/stream/' + e.data.uuid;
+            const curUrl = $('#videoWrapper video').attr('src');
+            if (newUrl !== curUrl) {
+              $('#videoWrapper video').attr({ src: newUrl });
+            }
+            $('#videoWrapper').show();
+            $('#videoWrapper video').get(0).play();
+            $(e.target).closest('.item').addClass('played');
+          })
+        )
+      );
     });
   },
 };
 
-Todayis.start();
+function compare(d1, d2) {
+  if (typeof d1 === 'number') {
+    return d1 - d2;
+  } else if (typeof d1 === 'string') {
+    return d1.toLowerCase().localeCompare(d2.toLowerCase());
+  } else {
+    return d1 > d2 ? 1 : -1;
+  }
+}

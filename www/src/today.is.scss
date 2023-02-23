@@ -33,6 +33,16 @@
       color: orange;
     }
   }
+
+  select {
+    background-color: transparent;
+    border: 0;
+    color: var(--color-text);
+    option {
+      background-color: var(--color-bg);
+      color: var(--color-text);
+    }
+  }
 }
 
 #folderWrapper {
@@ -45,6 +55,7 @@
     .folder-info {
       display: flex;
       justify-content: flex-start;
+      background-color: var(--color-bg-label-title);
       color: var(--color-text);
       font-weight: 700;
       padding: 0.5rem;
@@ -168,6 +179,51 @@
       }
       .item.played > div.item-action {
         display: flex;
+      }
+    }
+  }
+
+  .list-lastmodified {
+    margin: 0;
+    padding: 0;
+    li {
+      display: flex;
+      padding: 0.125rem 0;
+
+      &:hover {
+        background-color: var(--color-bg-label-title);
+      }
+
+      &.played {
+        background-color: var(--item-background-played);
+      }
+
+      label {
+        width: max-content;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+
+        &.li-item-date {
+          flex: 0 0 6rem;
+        }
+        &.li-item-size {
+          flex: 0 0 4rem;
+        }
+        &.li-item-path {
+          flex: 0 0 2rem;
+          cursor: pointer;
+          &:hover {
+            color: orange;
+          }
+        }
+        &.li-item-name {
+          flex: 1 1 auto;
+          cursor: pointer;
+          &:hover {
+            color: orange;
+          }
+        }
       }
     }
   }

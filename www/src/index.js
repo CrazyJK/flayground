@@ -12,10 +12,12 @@ const INDEX_MENO = 'index.memo';
 menuItems.forEach((menu) => {
   $('#menuItemWrap').append(
     $('<h2>').append(
-      $(`<a><i class="fas fa-location-arrow fa-flip-horizontal fa-xs me-2"></i></a>`).on('click', () => {
-        window.open(menu.url, 'flayground' + menu.name, 'width=1000,height=1000');
-      }),
-      $(`<a href="${menu.url}">${menu.name}</a>`)
+      $('<label>').append(
+        $(`<a><i class="fas fa-location-arrow fa-flip-horizontal fa-xs me-2"></i></a>`).on('click', () => {
+          window.open(menu.url, 'flayground' + menu.name, 'width=1000,height=1000');
+        })
+      ),
+      $('<label>').append($(`<a href="${menu.url}">${menu.name}</a>`))
     )
   );
 });

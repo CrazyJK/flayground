@@ -19,6 +19,7 @@ body {
   main {
     article {
       margin: 2rem auto;
+      width: 18rem;
 
       h2 {
         display: flex;
@@ -26,42 +27,44 @@ body {
         margin: 0 0 1rem;
 
         &:hover {
-          a:first-child {
+          label:first-child {
             opacity: 1;
             transition: 0.5s 0.3s;
           }
         }
 
-        a {
-          color: #{$textColor};
-          text-decoration: none;
-          transition: 0.5s;
+        label {
+          a {
+            color: #{$textColor};
+            text-decoration: none;
+            transition: 0.5s;
 
-          &:hover {
-            cursor: pointer;
+            &:hover {
+              cursor: pointer;
+            }
+
+            &:nth-child(2) {
+              flex: 1 1 auto;
+              white-space: nowrap;
+              font-weight: 400;
+
+              &:hover {
+                color: orange;
+              }
+            }
           }
 
           &:first-child {
             flex: 0 0 3rem;
             opacity: 0;
 
-            &:hover {
+            a:hover {
               color: #f00 !important;
               text-shadow: 0 0 2px #f00, 0 0 4px #f00, 0 0 6px #f00, 0 0 8px #999999, 0 0 10px #000000;
             }
 
             svg {
               min-width: 42px;
-            }
-          }
-
-          &:nth-child(2) {
-            flex: 1 1 auto;
-            white-space: nowrap;
-            font-weight: 400;
-
-            &:hover {
-              color: orange;
             }
           }
         }

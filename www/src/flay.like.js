@@ -53,7 +53,7 @@ async function render(list) {
                 </li>
               `;
             })
-            .join()}
+            .join('')}
         </ol>
       </article>
     `;

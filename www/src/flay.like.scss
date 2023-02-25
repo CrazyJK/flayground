@@ -1,12 +1,27 @@
 article {
-  border-top: 1px solid rgba(0, 0, 0, 0.25);
+  background-color: var(--color-bg-page);
+  border: 1px solid rgba(0, 0, 0, 0.25);
+  border-radius: 0.25rem;
+  box-shadow: 0.25rem 0.25rem 1rem 0.5rem var(--color-box-shadow);
+  margin: 1rem;
   text-align: center;
+  transition: 0.4s;
+
+  &:hover {
+    background-color: var(--color-bg-page-hover);
+  }
+
+  h3 {
+    background-color: var(--color-bg-label-title);
+    margin: 0.25rem 0 0.5rem;
+  }
 }
 
 ol {
   display: inline-flex;
   flex-wrap: wrap;
   list-style: none;
+  justify-content: center;
 
   li {
     margin: 0.5rem;

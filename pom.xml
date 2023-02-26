@@ -6,7 +6,7 @@
 
   <groupId>jk.kamoru</groupId>
   <artifactId>flayground</artifactId>
-  <version>6.9.7.4-19</version>
+  <version>6.9.7.4-20</version>
   <packaging>jar</packaging>
 
   <name>Flayground</name>
@@ -16,7 +16,7 @@
   <parent>
     <groupId>org.springframework.boot</groupId>
     <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.7.9</version>
+    <version>3.0.3</version>
     <relativePath /> <!-- lookup parent from repository -->
   </parent>
 
@@ -58,10 +58,10 @@
       <groupId>javax.cache</groupId>
       <artifactId>cache-api</artifactId>
     </dependency>
-    <dependency>
+    <!-- <dependency>
       <groupId>org.ehcache</groupId>
       <artifactId>ehcache</artifactId>
-    </dependency>
+    </dependency> -->
 
     <dependency>
       <groupId>org.apache.commons</groupId>
@@ -88,9 +88,15 @@
       <version>1.15.3</version>
     </dependency>
 
-    <dependency>
+    <!-- <dependency>
       <groupId>javax.validation</groupId>
       <artifactId>validation-api</artifactId>
+    </dependency> -->
+    <!-- https://mvnrepository.com/artifact/jakarta.validation/jakarta.validation-api -->
+    <dependency>
+      <groupId>jakarta.validation</groupId>
+      <artifactId>jakarta.validation-api</artifactId>
+      <!-- <version>3.0.2</version> -->
     </dependency>
 
     <dependency>

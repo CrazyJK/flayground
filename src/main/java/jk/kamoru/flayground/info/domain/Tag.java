@@ -1,7 +1,8 @@
 package jk.kamoru.flayground.info.domain;
 
 import java.util.Date;
-import javax.validation.constraints.NotBlank;
+
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

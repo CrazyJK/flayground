@@ -17,6 +17,7 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.base.web.security.authentication.FlayAuthenticationFailureHandler;
 import jk.kamoru.flayground.base.web.security.authentication.FlayAuthenticationSuccessHandler;
@@ -46,10 +47,10 @@ public class SecurityConfig {
         .cors()
         .configurationSource(getCorsConfigurationSource())
         .and()
-        .authorizeRequests()
+        .authorizeHttpRequests()
         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-        .antMatchers("/", "/favicon.ico", "/index.html", "/flayground-websocket/**").permitAll()
-        .antMatchers("/batch/**").hasRole("ADMIN")
+        .requestMatchers("/", "/favicon.ico", "/index.html", "/flayground-websocket/**").permitAll()
+        .requestMatchers("/batch/**").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and()
         .formLogin()

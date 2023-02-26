@@ -2,8 +2,9 @@ package jk.kamoru.flayground.base.web.access.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import jk.kamoru.flayground.Flayground;
 import lombok.Data;
 

@@ -21,6 +21,9 @@ class FlayMenu extends HTMLElement {
     // Create a shadow root
     const shadow = this.attachShadow({ mode: 'open' });
 
+    // width
+    const width = 200;
+
     // get align
     let dataAlign = this.getAttribute('data-align') || align;
     let alignLeft = dataAlign !== 'right';
@@ -51,7 +54,7 @@ class FlayMenu extends HTMLElement {
       top: 0;
       ${alignLeft ? 'left' : 'right'}: -200px;
       bottom: 0;
-      width: 200px;
+      width: ${width}px;
       overflow: hidden;
       z-index: 6974892;
       transition: ${alignLeft ? 'left' : 'right'} 0.4s 0.4s;
@@ -204,19 +207,30 @@ class FlayMenu extends HTMLElement {
     `;
     shadow.appendChild(style);
 
+    const bodyMain = document.querySelector('body > main');
+
     // main wrapper
     const navWrap = document.createElement('nav');
     navWrap.setAttribute('class', 'nav-wrap ' + bgTheme);
     shadow.appendChild(navWrap);
 
     // fixed pin
+    let isFixed = LocalStorageItem.getBoolean('flay.menu.fixed', false);
+    navWrap.classList.toggle('fixed', isFixed);
+    bodyMain.style.left = isFixed ? width + 'px' : 0 + 'px';
+
     const fixedPin = document.createElement('span');
     fixedPin.setAttribute('id', 'fixedPin');
     fixedPin.setAttribute('class', 'fa fa-thumb-tack');
     fixedPin.addEventListener('click', (e) => {
       navWrap.classList.toggle('fixed');
+      isFixed = navWrap.classList.contains('fixed');
+      bodyMain.style.left = isFixed ? width + 'px' : 0 + 'px';
+      LocalStorageItem.set('flay.menu.fixed', isFixed);
     });
     navWrap.appendChild(fixedPin);
+
+    console.log('bodyMain', bodyMain, 'left', bodyMain.style.left);
 
     // open trigger
     const openTrigger = document.createElement('span');

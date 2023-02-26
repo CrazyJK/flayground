@@ -418,8 +418,8 @@ main#wrap_body {
   }
 }
 
-// 높이가 1330보다 작으면
-@media screen and (max-height: 1330px) {
+// 높이가 1359보다 작으면
+@media screen and (max-height: 1359px) {
   main#wrap_body {
     #pageContent {
       .video-wrapper {
@@ -444,8 +444,8 @@ main#wrap_body {
   }
 }
 
-// 높이가 1000보다 작으면
-@media screen and (max-height: 1000px) {
+// 높이가 1080보다 작으면
+@media screen and (max-height: 1080px) {
   main#wrap_body {
     #pageContent {
       .video-wrapper {

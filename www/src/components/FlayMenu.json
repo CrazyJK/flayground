@@ -15,6 +15,12 @@
     }
   },
   {
+    "name": "Ground",
+    "uri": "./flay.ground.html",
+    "icon": "fa fa-square-o",
+    "popup": "full"
+  },
+  {
     "name": "Raw",
     "uri": "./flay.raw.html",
     "icon": "fa fa-file-text",
@@ -126,6 +132,15 @@
     "name": "Flay All",
     "uri": "./flay.all.html",
     "icon": "fa fa-th",
+    "popup": {
+      "w": 1078,
+      "h": 1100
+    }
+  },
+  {
+    "name": "Mobile",
+    "uri": "./flay.mobile.html",
+    "icon": "fa fa-tablet",
     "popup": {
       "w": 1078,
       "h": 1100

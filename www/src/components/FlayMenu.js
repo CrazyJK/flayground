@@ -244,7 +244,7 @@ class FlayMenu extends HTMLElement {
     titleImg.setAttribute('src', '/dist/img/favicon/flay_1.png');
     title.appendChild(titleImg);
     const titleAnker = document.createElement('a');
-    titleAnker.setAttribute('href', '/dist/flay.ground.html');
+    titleAnker.setAttribute('href', '/dist/index.html');
     titleAnker.textContent = 'Flayground';
     title.appendChild(titleAnker);
     navWrap.appendChild(title);

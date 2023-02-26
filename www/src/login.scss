@@ -1,20 +1,6 @@
 body {
   background-color: rgb(28, 28, 28);
 }
-.chalk {
-  color: #eee;
-  mask-image: url(./img/pattern/pattern-static.png);
-  -webkit-mask-image: url(./img/pattern/pattern-static.png);
-  font-family: 'Ink Free';
-  text-shadow: 0 0 2px #fff, 0 0 4px #fff, 0 0 6px #fff, 0 0 8px #999999, 0 0 10px #000000;
-}
-.chalk-pink {
-  color: #ffc0cb;
-  mask-image: url(./img/pattern/pattern-static.png);
-  -webkit-mask-image: url(./img/pattern/pattern-static.png);
-  font-family: 'Ink Free';
-  text-shadow: 0 0 2px #ffc0cb, 0 0 4px #ffc0cb, 0 0 6px #ffc0cb, 0 0 8px #999999, 0 0 10px #000000;
-}
 .display-middle {
   position: absolute;
   top: 50%;

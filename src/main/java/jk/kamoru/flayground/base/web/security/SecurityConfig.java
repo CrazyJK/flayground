@@ -11,8 +11,6 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.CorsUtils;
@@ -21,7 +19,6 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.base.web.security.authentication.FlayAuthenticationFailureHandler;
 import jk.kamoru.flayground.base.web.security.authentication.FlayAuthenticationSuccessHandler;
-import jk.kamoru.flayground.base.web.security.filter.AutomaticallyAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -42,14 +39,16 @@ public class SecurityConfig {
         .frameOptions().sameOrigin()
         .and()
         .csrf()
-        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-        .and()
+        .disable()
+        // .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+        // .and()
         .cors()
         .configurationSource(getCorsConfigurationSource())
         .and()
         .authorizeHttpRequests()
         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
-        .requestMatchers("/", "/favicon.ico", "/index.html", "/flayground-websocket/**").permitAll()
+        .requestMatchers("/", "/favicon.ico", "/index.html", "/dist/img/**").permitAll() // "/flayground-websocket/**"
+        .requestMatchers("/dist/login.css", "/dist/login.js", "/dist/login.js.map", "/dist/login.css.map").permitAll() // for /dist/login.html
         .requestMatchers("/batch/**").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and()
@@ -64,15 +63,15 @@ public class SecurityConfig {
         .logout()
         .logoutSuccessUrl("/")
         .and()
-        .addFilterBefore(automaticallyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
+        // .addFilterBefore(automaticallyAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class)
         .httpBasic();
     return http.build();
   }
 
-  @Bean
-  public AutomaticallyAuthenticationFilter automaticallyAuthenticationFilter() {
-    return new AutomaticallyAuthenticationFilter(flayProperties.getAutomaticallyCertificatedIp());
-  }
+  // @Bean
+  // public AutomaticallyAuthenticationFilter automaticallyAuthenticationFilter() {
+  //   return new AutomaticallyAuthenticationFilter(flayProperties.getAutomaticallyCertificatedIp());
+  // }
 
   @Bean
   public AuthenticationSuccessHandler getFlayAuthenticationSuccessHandler() {

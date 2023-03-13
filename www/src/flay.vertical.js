@@ -1388,6 +1388,7 @@ function showVideo(args) {
   console.debug('likes', currentFlay.video.likes, currentFlay.video.likes?.length);
   const likeCount = currentFlay.video.likes?.length;
   $('.like-btn').attr('title', `like ${likeCount > 0 ? likeCount : ''}`);
+  $('.like-cnt').html(likeCount > 0 ? likeCount : '');
 
   const yyyyMMdd = new Date().format('yyyy-MM-dd');
   const todayLikeCount = currentFlay.video.likes?.filter((like) => like.substring(0, 10) === yyyyMMdd).length;

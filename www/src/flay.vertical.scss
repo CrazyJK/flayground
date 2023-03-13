@@ -180,6 +180,13 @@ main#wrap_body {
 
         .like-btn.thumbs-up {
           color: var(--color-input-checked);
+          transform: rotateZ(-20deg);
+        }
+        .like-cnt {
+          position: relative;
+          left: -13px;
+          color: var(--color-text-reverse);
+          font-size: 14px;
         }
       }
 

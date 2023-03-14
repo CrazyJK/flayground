@@ -163,10 +163,9 @@ export const STUDIO = 'studio',
       if (settings.exclude.includes(BASKET) || flay.archive) {
         $flayCard.find('.add-basket-btn').remove();
       } else {
-        $flayCard.find('.add-basket-btn').on('click', function () {
-          if (!flay.archive) {
-            grapChannel.postMessage(flay.opus);
-          }
+        $flayCard.find('.add-basket-btn').on('click', function (e) {
+          grapChannel.postMessage(flay.opus);
+          $(e.target).addClass('selected');
         });
       }
       // title

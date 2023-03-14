@@ -104,3 +104,9 @@
 .flay-rank-sm {
   box-shadow: 0 0 8px 4px #fff, 0 0 8px 4px #000, inset 0 0 4px 2px #f00;
 }
+
+.add-basket-btn {
+  .selected {
+    color: var(--color-text-active);
+  }
+}

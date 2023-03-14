@@ -160,7 +160,7 @@ export const STUDIO = 'studio',
         });
       }
       // add-basket-btn
-      if (settings.exclude.includes(BASKET)) {
+      if (settings.exclude.includes(BASKET) || flay.archive) {
         $flayCard.find('.add-basket-btn').remove();
       } else {
         $flayCard.find('.add-basket-btn').on('click', function () {

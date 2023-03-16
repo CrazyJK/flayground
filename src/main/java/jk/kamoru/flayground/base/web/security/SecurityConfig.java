@@ -33,6 +33,7 @@ public class SecurityConfig {
     return new InMemoryUserDetailsManager(user1, user2);
   }
 
+  // https://spring.io/blog/2022/02/21/spring-security-without-the-websecurityconfigureradapter
   @Bean
   protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
     http.headers()

@@ -24,7 +24,8 @@ import jk.kamoru.flayground.base.web.security.authentication.FlayAuthenticationS
 @EnableWebSecurity
 public class SecurityConfig {
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
   @Bean
   public InMemoryUserDetailsManager userDetailsService() {
@@ -49,12 +50,12 @@ public class SecurityConfig {
         .authorizeHttpRequests()
         .requestMatchers(CorsUtils::isPreFlightRequest).permitAll()
         .requestMatchers("/", "/favicon.ico", "/index.html", "/dist/img/**").permitAll() // "/flayground-websocket/**"
-        .requestMatchers("/dist/login.css", "/dist/login.js", "/dist/login.js.map", "/dist/login.css.map").permitAll() // for /dist/login.html
+        // .requestMatchers("/dist/login.css", "/dist/login.js", "/dist/login.js.map", "/dist/login.css.map").permitAll() // for /dist/login.html
         .requestMatchers("/batch/**").hasRole("ADMIN")
         .anyRequest().authenticated()
         .and()
         .formLogin()
-        .loginPage("/dist/login.html").permitAll()
+        .loginPage("/login.html").permitAll()
         .successHandler(getFlayAuthenticationSuccessHandler())
         .failureHandler(getFlayAuthenticationFailureHandler())
         .and()

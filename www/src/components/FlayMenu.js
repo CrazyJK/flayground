@@ -217,7 +217,7 @@ class FlayMenu extends HTMLElement {
     // fixed pin
     let isFixed = LocalStorageItem.getBoolean('flay.menu.fixed', false);
     navWrap.classList.toggle('fixed', isFixed);
-    bodyMain.style.left = isFixed ? width + 'px' : 0 + 'px';
+    if (bodyMain) bodyMain.style.left = isFixed ? width + 'px' : 0 + 'px';
 
     const fixedPin = document.createElement('span');
     fixedPin.setAttribute('id', 'fixedPin');
@@ -225,12 +225,12 @@ class FlayMenu extends HTMLElement {
     fixedPin.addEventListener('click', (e) => {
       navWrap.classList.toggle('fixed');
       isFixed = navWrap.classList.contains('fixed');
-      bodyMain.style.left = isFixed ? width + 'px' : 0 + 'px';
+      if (bodyMain) bodyMain.style.left = isFixed ? width + 'px' : 0 + 'px';
       LocalStorageItem.set('flay.menu.fixed', isFixed);
     });
     navWrap.appendChild(fixedPin);
 
-    console.log('bodyMain', bodyMain, 'left', bodyMain.style.left);
+    if (bodyMain) console.log('bodyMain', bodyMain, 'left', bodyMain.style.left);
 
     // open trigger
     const openTrigger = document.createElement('span');

@@ -3,7 +3,9 @@ package jk.kamoru.flayground.base.web.attach;
 import java.io.File;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.springframework.web.multipart.MultipartFile;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,11 +52,10 @@ public class Attach {
   }
 
   /**
-   *
    * @param attachFileId
    * @return
    * @throws AttachFileNotfoundException 찾지 못할때
-   * @throws IllegalStateException 2개 이상일때
+   * @throws IllegalStateException       2개 이상일때
    */
   public AttachFile getAttachFile(String attachFileId) {
     final List<AttachFile> list = getAttachFiles().stream().filter((attachFile) -> attachFile.getId().equals(attachFileId)).toList();

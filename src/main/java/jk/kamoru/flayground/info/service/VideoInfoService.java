@@ -3,8 +3,10 @@ package jk.kamoru.flayground.info.service;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayService;
@@ -16,8 +18,10 @@ import jk.kamoru.flayground.info.domain.Video;
 @Service
 public class VideoInfoService extends InfoServiceAdapter<Video, String> {
 
-  @Autowired FlayService flayService;
-  @Autowired HistoryService historyService;
+  @Autowired
+  FlayService flayService;
+  @Autowired
+  HistoryService historyService;
 
   @Override
   public void update(Video updateVideo) {

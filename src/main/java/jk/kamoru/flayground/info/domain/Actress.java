@@ -17,14 +17,16 @@ import lombok.NoArgsConstructor;
 public class Actress implements Info<String> {
 
   boolean favorite;
-  @NotBlank String name;
+  @NotBlank
+  String name;
   String localName;
   String birth;
   String body;
   int height;
   int debut;
   String comment;
-  @JsonIgnore List<File> covers;
+  @JsonIgnore
+  List<File> covers;
   long lastModified;
 
   public Actress(String name) {

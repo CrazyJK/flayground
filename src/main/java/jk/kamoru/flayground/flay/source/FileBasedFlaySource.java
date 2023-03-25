@@ -5,9 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FileBasedFlaySource implements FlaySource {
 
-  @Autowired FlayFactory flayFactory;
+  @Autowired
+  FlayFactory flayFactory;
 
   private boolean isArchive;
   private File[] paths;
@@ -47,7 +50,8 @@ public class FileBasedFlaySource implements FlaySource {
       }
     }
 
-    flayMap.clear();;
+    flayMap.clear();
+    ;
     for (File file : listFiles) {
       String suffix = FilenameUtils.getExtension(file.getName()).toLowerCase();
       if ("ds_store".contains(suffix)) {

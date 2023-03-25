@@ -3,6 +3,7 @@ package jk.kamoru.flayground.image;
 import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.util.Assert;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.image.banner.AnsiColors.BitDepth;
 import jk.kamoru.flayground.image.banner.ImageBannerPrinter;
@@ -27,19 +29,19 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/banner")
 public class ImageBannerHandler {
 
-  @Autowired ImageService imageService;
+  @Autowired
+  ImageService imageService;
 
-  @Autowired ImageBannerPrinter imageBannerPrinter;
+  @Autowired
+  ImageBannerPrinter imageBannerPrinter;
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
   AtomicInteger counter = new AtomicInteger();
 
   @GetMapping("/{idx}/{width}/{height}")
-  public String getBannerImage(@PathVariable int idx, @PathVariable int width, @PathVariable int height,
-      @RequestParam(required = false, defaultValue = "false") boolean invert,
-      @RequestParam(required = false, defaultValue = "FOUR") BitDepth bitDepth,
-      @RequestParam(required = false, defaultValue = "TEXT") PixelMode pixelMode) {
+  public String getBannerImage(@PathVariable int idx, @PathVariable int width, @PathVariable int height, @RequestParam(required = false, defaultValue = "false") boolean invert, @RequestParam(required = false, defaultValue = "FOUR") BitDepth bitDepth, @RequestParam(required = false, defaultValue = "TEXT") PixelMode pixelMode) {
     Image image = imageService.get(idx);
     return imageBannerPrinter.get(image.getFile(), width, height, 0, invert, bitDepth, pixelMode);
   }
@@ -68,6 +70,5 @@ public class ImageBannerHandler {
 
     return imageBannerPrinter.get(targetImageFile, width, 0, 0, true, BitDepth.FOUR, PixelMode.TEXT);
   }
-
 
 }

@@ -2,9 +2,12 @@ package jk.kamoru.flayground.info.source;
 
 import java.io.File;
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.info.domain.Studio;
@@ -12,7 +15,8 @@ import jk.kamoru.flayground.info.domain.Studio;
 @Repository
 public class StudioInfoSource extends InfoSourceJsonAdapter<Studio, String> {
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
   @Override
   File getInfoFile() {
@@ -21,7 +25,8 @@ public class StudioInfoSource extends InfoSourceJsonAdapter<Studio, String> {
 
   @Override
   TypeReference<List<Studio>> getTypeReference() {
-    return new TypeReference<List<Studio>>() {};
+    return new TypeReference<List<Studio>>() {
+    };
   }
 
   @Override

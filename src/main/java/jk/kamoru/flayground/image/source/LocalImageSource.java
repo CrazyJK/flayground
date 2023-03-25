@@ -40,25 +40,24 @@ public class LocalImageSource implements ImageSource {
   }
 
   private void registWatcher() {
-    Flayground.ApplicationReady
-        .add(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
+    Flayground.ApplicationReady.add(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
 
-          @Override
-          protected void createdFile(File file) {
-            changed = Flayground.FILE.isImage(file);
-          }
+      @Override
+      protected void createdFile(File file) {
+        changed = Flayground.FILE.isImage(file);
+      }
 
-          @Override
-          protected void deletedFile(File file) {
-            changed = Flayground.FILE.isImage(file);
-          }
+      @Override
+      protected void deletedFile(File file) {
+        changed = Flayground.FILE.isImage(file);
+      }
 
-          @Override
-          protected void modifiedFile(File file) {
-            changed = Flayground.FILE.isImage(file);
-          }
+      @Override
+      protected void modifiedFile(File file) {
+        changed = Flayground.FILE.isImage(file);
+      }
 
-        });
+    });
   }
 
   @CacheEvict(cacheNames = { "bannerCache" }, allEntries = true)

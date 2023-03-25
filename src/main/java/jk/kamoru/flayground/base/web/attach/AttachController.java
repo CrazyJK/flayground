@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.file.Files;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -20,13 +21,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+
 import jk.kamoru.flayground.Flayground;
 
 @RestController
 @RequestMapping("/attach")
 public class AttachController {
 
-  @Autowired AttachService attachService;
+  @Autowired
+  AttachService attachService;
 
   @GetMapping("/{id}")
   @ResponseBody

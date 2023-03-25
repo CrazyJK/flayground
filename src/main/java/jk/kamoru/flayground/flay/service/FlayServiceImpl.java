@@ -106,8 +106,7 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     return instanceFlaySource.list().stream().filter(f -> {
       final String[] split = StringUtils.split(tag.getName() + "," + tag.getDescription(), ",");
       final String[] searchChars = List.of(split).stream().map(s -> s.trim()).toArray(String[]::new);
-      return f.getVideo().getTags().stream().anyMatch(t -> t.getId().equals(id))
-          || StringUtils.containsAny(f.getFullname(), searchChars);
+      return f.getVideo().getTags().stream().anyMatch(t -> t.getId().equals(id)) || StringUtils.containsAny(f.getFullname(), searchChars);
     }).toList();
   }
 
@@ -176,8 +175,7 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     } catch (FlayNotfoundException e) {
       flay = archiveFlaySource.get(opus);
     }
-    flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(),
-        newFlay.getRelease());
+    flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
     sseEmitters.send(flay);
   }
 

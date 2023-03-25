@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.info.service;
 
 import java.util.List;
+
 import jk.kamoru.flayground.info.domain.Info;
 
 public interface InfoService<T extends Info<K>, K> {

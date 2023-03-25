@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.Base64;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayArchiveService;
@@ -30,10 +32,14 @@ import jk.kamoru.flayground.info.source.ActressInfoSource;
 @RequestMapping("/static")
 public class ImageRequestHandler {
 
-  @Autowired FlayService flayService;
-  @Autowired FlayArchiveService flayArchiveService;
-  @Autowired ImageService imageService;
-  @Autowired ActressInfoSource actressInfoSource;
+  @Autowired
+  FlayService flayService;
+  @Autowired
+  FlayArchiveService flayArchiveService;
+  @Autowired
+  ImageService imageService;
+  @Autowired
+  ActressInfoSource actressInfoSource;
 
   @GetMapping("/cover/{opus}")
   @ResponseBody

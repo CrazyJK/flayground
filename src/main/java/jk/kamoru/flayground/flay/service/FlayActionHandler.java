@@ -40,17 +40,17 @@ public class FlayActionHandler {
   public void openFolder(String folder) {
     String explorer = "";
     switch (Flayground.OS.SYSTEM) {
-      case WINDOWS:
-        explorer = "explorer";
-        break;
-      case LINUX:
-        explorer = "nemo";
-        break;
-      case MAC:
-        explorer = "open";
-        break;
-      default:
-        throw new IllegalStateException("no specified OS");
+    case WINDOWS:
+      explorer = "explorer";
+      break;
+    case LINUX:
+      explorer = "nemo";
+      break;
+    case MAC:
+      explorer = "open";
+      break;
+    default:
+      throw new IllegalStateException("no specified OS");
     }
 
     File file = new File(folder);

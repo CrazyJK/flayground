@@ -22,6 +22,7 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> extends InfoSo
 
   /**
    * json 변환 type reference
+   * 
    * @return
    */
   abstract TypeReference<List<T>> getTypeReference();

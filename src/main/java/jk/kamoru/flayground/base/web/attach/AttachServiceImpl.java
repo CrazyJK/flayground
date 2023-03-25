@@ -3,12 +3,14 @@ package jk.kamoru.flayground.base.web.attach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+
 import jk.kamoru.flayground.base.web.attach.Attach.Type;
 
 @Service
 public class AttachServiceImpl implements AttachService {
 
-  @Autowired AttachSource attachSource;
+  @Autowired
+  AttachSource attachSource;
 
   @Override
   public Attach get(String id) {

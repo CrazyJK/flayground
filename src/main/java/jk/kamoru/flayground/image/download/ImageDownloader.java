@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Header;
@@ -15,6 +16,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClients;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -63,12 +65,11 @@ public class ImageDownloader implements Callable<File> {
     this(imgSrc, null, null, 0);
   }
 
-
   /**
    * Constructs a new <code>ImageDownloader</code> using image source, destination directory<br>
    * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
    *
-   * @param imgSrc image source url
+   * @param imgSrc  image source url
    * @param destDir destination directory
    */
   public ImageDownloader(String imgSrc, String destDir) {
@@ -76,26 +77,24 @@ public class ImageDownloader implements Callable<File> {
   }
 
   /**
-   * Constructs a new <code>ImageDownloader</code> using image source, destination directory,
-   * title<br>
+   * Constructs a new <code>ImageDownloader</code> using image source, destination directory, title<br>
    * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
    *
-   * @param imgSrc image source url
+   * @param imgSrc  image source url
    * @param destDir destination directory
-   * @param title image title
+   * @param title   image title
    */
   public ImageDownloader(String imgSrc, String destDir, String title) {
     this(imgSrc, destDir, title, 0);
   }
 
   /**
-   * Constructs a new <code>ImageDownloader</code> using image source, destination directory,
-   * title<br>
+   * Constructs a new <code>ImageDownloader</code> using image source, destination directory, title<br>
    * execute {@link #download()} or using {@link java.util.concurrent.ExecutorService ExecutorService}
    *
-   * @param imgSrc image source url
-   * @param destDir destination directory
-   * @param title image title
+   * @param imgSrc      image source url
+   * @param destDir     destination directory
+   * @param title       image title
    * @param minimunSize minimum image size(bytes)
    */
   public ImageDownloader(String imgSrc, String destDir, String title, long minimunSize) {

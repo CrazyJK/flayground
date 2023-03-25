@@ -4,9 +4,12 @@ import java.io.File;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+
 import com.fasterxml.jackson.core.type.TypeReference;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.image.domain.Image;
@@ -16,8 +19,10 @@ import jk.kamoru.flayground.info.domain.Actress;
 @Repository
 public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
-  @Autowired FlayProperties flayProperties;
-  @Autowired ImageService imageService;
+  @Autowired
+  FlayProperties flayProperties;
+  @Autowired
+  ImageService imageService;
 
   @Override
   File getInfoFile() {
@@ -26,7 +31,8 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
   @Override
   TypeReference<List<Actress>> getTypeReference() {
-    return new TypeReference<List<Actress>>() {};
+    return new TypeReference<List<Actress>>() {
+    };
   }
 
   @Override

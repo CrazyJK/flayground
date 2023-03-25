@@ -4,14 +4,17 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.diary.Diary.Meta;
 
 @Service
 public class DiaryServiceImpl implements DiaryService {
 
-  @Autowired DiarySource diarySource;
+  @Autowired
+  DiarySource diarySource;
 
   @Override
   public Set<String> dates() {

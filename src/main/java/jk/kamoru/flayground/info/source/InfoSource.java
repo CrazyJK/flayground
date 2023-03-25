@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.info.source;
 
 import java.util.List;
+
 import jk.kamoru.flayground.info.domain.Info;
 
 public interface InfoSource<T extends Info<K>, K> {

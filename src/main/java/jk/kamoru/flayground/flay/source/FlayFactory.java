@@ -4,9 +4,11 @@ import java.io.File;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.history.domain.History;
@@ -21,10 +23,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class FlayFactory {
 
-  @Autowired InfoSource<Video, String> videoInfoSource;
-  @Autowired InfoSource<Studio, String> studioInfoSource;
-  @Autowired InfoSource<Actress, String> actressInfoSource;
-  @Autowired HistoryService historyService;
+  @Autowired
+  InfoSource<Video, String> videoInfoSource;
+  @Autowired
+  InfoSource<Studio, String> studioInfoSource;
+  @Autowired
+  InfoSource<Actress, String> actressInfoSource;
+  @Autowired
+  HistoryService historyService;
 
   protected Flay newFlay(FlayFileResult result, boolean isArchive) {
     Flay flay = new Flay();

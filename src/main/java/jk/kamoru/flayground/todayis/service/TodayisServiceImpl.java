@@ -4,9 +4,11 @@ import java.io.File;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+
 import org.apache.commons.io.FileUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.service.FlayAsyncExecutor;
@@ -17,9 +19,11 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class TodayisServiceImpl implements TodayisService {
 
-  @Autowired FlayAsyncExecutor flayAsyncExecutor;
+  @Autowired
+  FlayAsyncExecutor flayAsyncExecutor;
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
   private Map<String, Todayis> map;
 

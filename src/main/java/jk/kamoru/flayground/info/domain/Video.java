@@ -14,7 +14,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class Video implements Info<String> {
 
-  @NotBlank String opus;
+  @NotBlank
+  String opus;
   int play;
   int rank;
   long lastPlay;

@@ -1,12 +1,14 @@
 package jk.kamoru.flayground.base.web.attach;
 
 import org.springframework.web.multipart.MultipartFile;
+
 import jk.kamoru.flayground.base.web.attach.Attach.Type;
 
 public interface AttachService {
 
   /**
    * 첨부그룹 구한다
+   * 
    * @param id
    * @return
    */
@@ -14,6 +16,7 @@ public interface AttachService {
 
   /**
    * name과 type으로 새 첨부그룹ID를 만든다
+   * 
    * @param name
    * @param type
    * @return
@@ -22,6 +25,7 @@ public interface AttachService {
 
   /**
    * 첨부그룹ID에 새 첨부를 추가한다
+   * 
    * @param id
    * @param multipartFiles
    */
@@ -29,6 +33,7 @@ public interface AttachService {
 
   /**
    * 첨부그룹ID에서 첨부를 삭제한다
+   * 
    * @param id
    * @param attachFile
    */

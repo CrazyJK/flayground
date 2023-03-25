@@ -43,10 +43,7 @@ public class FlayAsyncExecutor {
 
   private void execute(List<String> commands) {
     try {
-      Process process = new ProcessBuilder(commands)
-          .redirectOutput(Redirect.INHERIT)
-          .redirectError(Redirect.INHERIT)
-          .start();
+      Process process = new ProcessBuilder(commands).redirectOutput(Redirect.INHERIT).redirectError(Redirect.INHERIT).start();
       log.info("exec {}", commands);
       log.debug("process {}", process.info());
     } catch (IOException e) {

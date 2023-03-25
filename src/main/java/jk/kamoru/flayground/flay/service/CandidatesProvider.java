@@ -4,11 +4,13 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -20,7 +22,8 @@ public class CandidatesProvider {
 
   private static final String[] CANDIDATES_FILE_SUFFIXs = ArrayUtils.addAll(Flayground.FILE.VIDEO_SUFFIXs, Flayground.FILE.SUBTITLES_SUFFIXs);
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
   public Collection<File> find() {
     Collection<File> candidatesFiles = new ArrayList<>();
@@ -41,6 +44,7 @@ public class CandidatesProvider {
 
   /**
    * add cadidates Movie, Subtitles to flay
+   * 
    * @param flay
    * @return
    */

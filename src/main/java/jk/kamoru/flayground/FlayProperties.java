@@ -7,10 +7,13 @@ import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+
 import org.apache.commons.lang3.BooleanUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 
@@ -82,12 +85,7 @@ public class FlayProperties {
       Enumeration<NetworkInterface> networkInterfaces = NetworkInterface.getNetworkInterfaces();
       while (networkInterfaces.hasMoreElements()) {
         NetworkInterface networkInterface = networkInterfaces.nextElement();
-        log.debug(String.format("NetworkInterface: %-5s %-4s %-8s %-7s %-50s",
-            networkInterface.getName(),
-            networkInterface.isUp() ? "up" : "down",
-            networkInterface.isLoopback() ? "loopback" : "",
-            networkInterface.isVirtual() ? "virtual" : "",
-            networkInterface.getDisplayName()));
+        log.debug(String.format("NetworkInterface: %-5s %-4s %-8s %-7s %-50s", networkInterface.getName(), networkInterface.isUp() ? "up" : "down", networkInterface.isLoopback() ? "loopback" : "", networkInterface.isVirtual() ? "virtual" : "", networkInterface.getDisplayName()));
 
         if (networkInterface.isUp()) {
           System.out.println();
@@ -102,10 +100,7 @@ public class FlayProperties {
               serverIPs.add(inetAddress.getHostAddress());
             }
 
-            System.out.format("\t    └ InetAddress: %-9s %-15s %s%n",
-                inetAddress.isLoopbackAddress() ? "Loopback" : inetAddress.isLinkLocalAddress() ? "LinkLocal" : inetAddress.isSiteLocalAddress() ? "SiteLocal" : "unknown",
-                inetAddress.getHostName(),
-                inetAddress.getHostAddress());
+            System.out.format("\t    └ InetAddress: %-9s %-15s %s%n", inetAddress.isLoopbackAddress() ? "Loopback" : inetAddress.isLinkLocalAddress() ? "LinkLocal" : inetAddress.isSiteLocalAddress() ? "SiteLocal" : "unknown", inetAddress.getHostName(), inetAddress.getHostAddress());
           }
         }
       }

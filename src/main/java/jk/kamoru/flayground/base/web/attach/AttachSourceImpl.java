@@ -26,7 +26,8 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class AttachSourceImpl implements AttachSource {
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
   private static final String ATTACH = "attach";
 
@@ -40,11 +41,12 @@ public class AttachSourceImpl implements AttachSource {
   void init() throws StreamReadException, DatabindException, IOException {
     log.debug("AttachSource init");
     attachBasePath = flayProperties.getAttachPath();
-    Collection<File> listFiles = FileUtils.listFiles(attachBasePath, new String[] {ATTACH}, false);
+    Collection<File> listFiles = FileUtils.listFiles(attachBasePath, new String[] { ATTACH }, false);
     log.info(String.format("%5s %-7s - %s", listFiles.size(), ATTACH, attachBasePath));
 
     for (File file : listFiles) {
-      Attach attach = jsonReader.readValue(file, new TypeReference<Attach>() {});
+      Attach attach = jsonReader.readValue(file, new TypeReference<Attach>() {
+      });
       map.put(attach.getId(), attach);
     }
   }

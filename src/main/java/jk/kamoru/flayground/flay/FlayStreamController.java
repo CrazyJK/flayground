@@ -24,9 +24,11 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/stream")
 public class FlayStreamController {
 
-  @Autowired FlayService flayService;
+  @Autowired
+  FlayService flayService;
 
-  @Autowired MovieStreamHandler movieStreamHandler;
+  @Autowired
+  MovieStreamHandler movieStreamHandler;
 
   @GetMapping("/flay/movie/{opus}/{fileIndex}")
   public void streamFlayMovie(@PathVariable String opus, @PathVariable int fileIndex, HttpServletRequest request, HttpServletResponse response) {

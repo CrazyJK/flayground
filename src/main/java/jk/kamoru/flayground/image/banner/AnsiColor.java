@@ -1,6 +1,5 @@
 package jk.kamoru.flayground.image.banner;
 
-
 public enum AnsiColor implements AnsiElement {
 
   DEFAULT("39"),

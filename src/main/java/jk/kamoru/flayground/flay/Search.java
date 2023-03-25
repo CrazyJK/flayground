@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.flay;
 
 import org.apache.commons.lang3.StringUtils;
+
 import lombok.Data;
 
 @Data
@@ -17,8 +18,7 @@ public class Search {
     } else if (StringUtils.isBlank(query) && favorite != null) {
       return StringUtils.containsIgnoreCase(domain.toString(), "favorite=" + favorite);
     } else if (!StringUtils.isBlank(query) && favorite != null) {
-      return StringUtils.containsIgnoreCase(domain.toString(), query)
-          && StringUtils.containsIgnoreCase(domain.toString(), "favorite=" + favorite);
+      return StringUtils.containsIgnoreCase(domain.toString(), query) && StringUtils.containsIgnoreCase(domain.toString(), "favorite=" + favorite);
     }
     return false;
   }

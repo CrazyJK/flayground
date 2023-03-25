@@ -3,6 +3,7 @@ package jk.kamoru.flayground.base.watch;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_CREATE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_DELETE;
 import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.FileSystems;
@@ -19,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
+
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -59,7 +61,7 @@ public abstract class DirectoryWatcher implements Runnable {
 
   /**
    * @param taskName task name
-   * @param dirs directories to watched
+   * @param dirs     directories to watched
    */
   public DirectoryWatcher(String taskName, File... dirs) {
     this.taskName = taskName;

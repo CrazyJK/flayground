@@ -3,12 +3,14 @@ package jk.kamoru.flayground.info.service;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.info.domain.Tag;
 
 @Service
 public class TagInfoService extends InfoServiceAdapter<Tag, Integer> {
 
-  @Autowired VideoInfoService videoInfoService;
+  @Autowired
+  VideoInfoService videoInfoService;
 
   @Override
   public Tag create(Tag create) {

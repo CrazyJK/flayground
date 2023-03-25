@@ -10,22 +10,14 @@ import jk.kamoru.flayground.flay.domain.Flay;
 
 public abstract class FlayServiceAdapter {
 
-  protected Comparator<Flay> comparator = Comparator.comparing(Flay::getRelease).reversed()
-      .thenComparing(Comparator.comparing(Flay::getStudio).reversed()
-          .thenComparing(Comparator.comparing(Flay::getOpus).reversed()));
+  protected Comparator<Flay> comparator = Comparator.comparing(Flay::getRelease).reversed().thenComparing(Comparator.comparing(Flay::getStudio).reversed().thenComparing(Comparator.comparing(Flay::getOpus).reversed()));
 
   protected Collection<Flay> findBySearch(Collection<Flay> list, Search search) {
-    return list.stream()
-        .filter(f -> search.contains(f))
-        .sorted(comparator)
-        .toList();
+    return list.stream().filter(f -> search.contains(f)).sorted(comparator).toList();
   }
 
   protected Collection<Flay> findByQuery(Collection<Flay> list, String query) {
-    return list.stream()
-        .filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), query))
-        .sorted(comparator)
-        .toList();
+    return list.stream().filter(f -> StringUtils.containsIgnoreCase(f.toQueryString(), query)).sorted(comparator).toList();
   }
 
   protected Collection<Flay> findByField(Collection<Flay> list, String key, String value) {
@@ -34,8 +26,7 @@ public abstract class FlayServiceAdapter {
     } else if ("title".equalsIgnoreCase(key)) {
       return list.stream().filter(f -> f.getTitle().contains(value)).sorted(comparator).toList();
     } else if ("actress".equalsIgnoreCase(key)) {
-      return list.stream().filter(f -> f.getActressList().stream().anyMatch(a -> a.equals(value))).sorted(comparator)
-          .toList();
+      return list.stream().filter(f -> f.getActressList().stream().anyMatch(a -> a.equals(value))).sorted(comparator).toList();
     } else if ("release".equalsIgnoreCase(key)) {
       return list.stream().filter(f -> f.getRelease().startsWith(value)).sorted(comparator).toList();
     } else if ("rank".equalsIgnoreCase(key)) {
@@ -48,8 +39,7 @@ public abstract class FlayServiceAdapter {
       return list.stream().filter(f -> f.getVideo().getComment().contains(value)).sorted(comparator).toList();
     } else if ("tag".equalsIgnoreCase(key)) {
       final int id = Integer.parseInt(value);
-      return list.stream().filter(f -> f.getVideo().getTags().stream().anyMatch(t -> t.getId().intValue() == id))
-          .sorted(comparator).toList();
+      return list.stream().filter(f -> f.getVideo().getTags().stream().anyMatch(t -> t.getId().intValue() == id)).sorted(comparator).toList();
     } else {
       throw new IllegalStateException("unknown key");
     }

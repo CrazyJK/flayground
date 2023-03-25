@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.diary;
 
 import java.util.Date;
+
 import lombok.Data;
 
 @Data

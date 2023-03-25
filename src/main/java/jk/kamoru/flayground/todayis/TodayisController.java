@@ -24,9 +24,11 @@ import jk.kamoru.flayground.todayis.service.TodayisService;
 @RequestMapping("/todayis")
 public class TodayisController {
 
-  @Autowired TodayisService todayisService;
+  @Autowired
+  TodayisService todayisService;
 
-  @Autowired MovieStreamHandler movieStreamHandler;
+  @Autowired
+  MovieStreamHandler movieStreamHandler;
 
   @GetMapping("/list")
   public Collection<Todayis> getList() {

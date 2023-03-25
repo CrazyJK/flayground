@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.apache.commons.lang3.math.NumberUtils;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
 import lombok.Data;
@@ -45,16 +48,11 @@ public class Flay {
   }
 
   public long getLength() {
-    return files.get(MOVIE).stream().mapToLong(File::length).sum()
-        + files.get(SUBTI).stream().mapToLong(File::length).sum()
-        + files.get(COVER).stream().mapToLong(File::length).sum();
+    return files.get(MOVIE).stream().mapToLong(File::length).sum() + files.get(SUBTI).stream().mapToLong(File::length).sum() + files.get(COVER).stream().mapToLong(File::length).sum();
   }
 
   public long getLastModified() {
-    return NumberUtils.max(
-        files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1),
-        files.get(SUBTI).stream().mapToLong(File::lastModified).max().orElse(-1),
-        files.get(COVER).stream().mapToLong(File::lastModified).max().orElse(-1));
+    return NumberUtils.max(files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1), files.get(SUBTI).stream().mapToLong(File::lastModified).max().orElse(-1), files.get(COVER).stream().mapToLong(File::lastModified).max().orElse(-1));
   }
 
   public void addMovieFile(File file) {

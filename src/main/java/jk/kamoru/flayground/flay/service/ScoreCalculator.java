@@ -52,26 +52,19 @@ public class ScoreCalculator {
       f.setStudioPoint(studioCountMap.get(f.getStudio()).intValue());
     });
 
-    return filteredList.stream()
-        .filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0) // 비디오가 없는 것 제외
-        .sorted(
-            scoreComparator.reversed().thenComparing(
-                studioPointComparator.reversed().thenComparing(
-                    actressPointComparator.reversed().thenComparing(
-                        modifiedComparator.reversed().thenComparing(
-                            releaseComparator.reversed())))))
-        .toList();
+    return filteredList.stream().filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0) // 비디오가 없는 것 제외
+        .sorted(scoreComparator.reversed().thenComparing(studioPointComparator.reversed().thenComparing(actressPointComparator.reversed().thenComparing(modifiedComparator.reversed().thenComparing(releaseComparator.reversed()))))).toList();
   }
 
   public void calcScore(Flay flay) {
     flay.setScore(resolveRank(flay) * flayProperties.getScore().getRankPoint()
         // + flay.getVideo().getPlay() * flayProperties.getScore().getPlayPoint()
-        + existingCountOfSubtitle(flay) * flayProperties.getScore().getSubtitlesPoint()
-        + countFavoriteActress(flay) * flayProperties.getScore().getFavoritePoint());
+        + existingCountOfSubtitle(flay) * flayProperties.getScore().getSubtitlesPoint() + countFavoriteActress(flay) * flayProperties.getScore().getFavoritePoint());
   }
 
   /**
    * flay의 rank. rank == 0 이면, tag에서 찾는다
+   * 
    * @param flay
    * @return
    */
@@ -81,13 +74,13 @@ public class ScoreCalculator {
     } else {
       // {1: 50, 2: 63, 3: 64, 4: 65, 5: 66}
       List<Integer> tags = flay.getVideo().getTags().stream().map(Tag::getId).toList();
-      return tags.contains(66) ? 5
-          : tags.contains(65) ? 4 : tags.contains(64) ? 3 : tags.contains(63) ? 2 : tags.contains(50) ? 1 : 0;
+      return tags.contains(66) ? 5 : tags.contains(65) ? 4 : tags.contains(64) ? 3 : tags.contains(63) ? 2 : tags.contains(50) ? 1 : 0;
     }
   }
 
   /**
    * 자막이 있으면 1, 없으면 0
+   * 
    * @param flay
    * @return
    */
@@ -97,12 +90,12 @@ public class ScoreCalculator {
 
   /**
    * flay의 배우들의 favorite 갯수
+   * 
    * @param flay
    * @return
    */
   private int countFavoriteActress(Flay flay) {
-    return flay.getActressList().stream()
-        .mapToInt(a -> StringUtils.isNotBlank(a) && actressInfoSource.get(a).isFavorite() ? 1 : 0).sum();
+    return flay.getActressList().stream().mapToInt(a -> StringUtils.isNotBlank(a) && actressInfoSource.get(a).isFavorite() ? 1 : 0).sum();
   }
 
   // 출연배우의 작품 함계

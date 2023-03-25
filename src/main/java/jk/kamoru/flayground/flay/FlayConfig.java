@@ -1,10 +1,12 @@
 package jk.kamoru.flayground.flay;
 
 import java.io.File;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.source.FileBasedFlaySource;
@@ -13,7 +15,8 @@ import jk.kamoru.flayground.flay.source.FlaySource;
 @Configuration
 public class FlayConfig {
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
   @Bean("instanceFlaySource")
   public FlaySource instanceFlaySource() {

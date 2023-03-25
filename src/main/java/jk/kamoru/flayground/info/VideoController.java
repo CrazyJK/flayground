@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.info;
 
 import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.VideoInfoService;
 
@@ -19,7 +21,8 @@ import jk.kamoru.flayground.info.service.VideoInfoService;
 @RequestMapping("/info/video")
 public class VideoController {
 
-  @Autowired VideoInfoService videoInfoService;
+  @Autowired
+  VideoInfoService videoInfoService;
 
   @GetMapping("/{opus}")
   public Video get(@PathVariable String opus) {

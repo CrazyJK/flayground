@@ -3,9 +3,11 @@ package jk.kamoru.flayground.info.service;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.text.similarity.JaroWinklerDistance;
 import org.springframework.util.StopWatch;
+
 import jk.kamoru.flayground.info.domain.Actress;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * 배우 이름의 유사도 결정.<br>
  * Jara-Winkler Distance algorithm
+ * 
  * @author kamoru
  * @see JaroWinklerDistance
  */
@@ -26,6 +29,7 @@ public class NameDistanceChecker {
 
   /**
    * {@link #LIMIT}을 넘는 유사도의 이름을 반환
+   * 
    * @param actressList
    * @return
    */
@@ -35,6 +39,7 @@ public class NameDistanceChecker {
 
   /**
    * limit을 넘는 유사도의 이름을 반환
+   * 
    * @param actressList
    * @param limit
    * @return
@@ -51,9 +56,7 @@ public class NameDistanceChecker {
         Actress actress2 = actressList.get(j);
 
         count++;
-        double score = equalsBySort(actress1.getName(), actress2.getName())
-            ? 1.0
-            : jaroWinklerDistance.apply(actress1.getName(), actress2.getName());
+        double score = equalsBySort(actress1.getName(), actress2.getName()) ? 1.0 : jaroWinklerDistance.apply(actress1.getName(), actress2.getName());
 
         if (score > limit) {
           result.add(new CheckResult(actress1, actress2, score));
@@ -63,9 +66,7 @@ public class NameDistanceChecker {
     stopWatch.stop();
 
     log.info("names {}. limit {}. checking {} times. {} result. Elapsed {} ms", actressList.size(), limit, count, result.size(), stopWatch.getTotalTimeMillis());
-    return result.stream()
-        .sorted((r1, r2) -> Double.compare(r2.getScore(), r1.getScore()))
-        .toList();
+    return result.stream().sorted((r1, r2) -> Double.compare(r2.getScore(), r1.getScore())).toList();
   }
 
   private static boolean equalsBySort(String name1, String name2) {

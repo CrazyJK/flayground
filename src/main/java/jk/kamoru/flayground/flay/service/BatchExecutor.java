@@ -79,44 +79,44 @@ public class BatchExecutor {
 
   public Boolean getOption(Option type) {
     switch (type) {
-      case S:
-        return flayProperties.isDeleteLowerScore();
-      default:
-        throw new IllegalArgumentException("unknown batch option");
+    case S:
+      return flayProperties.isDeleteLowerScore();
+    default:
+      throw new IllegalArgumentException("unknown batch option");
     }
   }
 
   public Boolean toggleOption(Option type) {
     switch (type) {
-      case S:
-        return flayProperties.negateDeleteLowerScore();
-      default:
-        throw new IllegalArgumentException("unknown batch option");
+    case S:
+      return flayProperties.negateDeleteLowerScore();
+    default:
+      throw new IllegalArgumentException("unknown batch option");
     }
   }
 
   public void startBatch(Operation operation) {
     switch (operation) {
-      case I:
-        instanceBatch();
-        break;
-      case A:
-        archiveBatch();
-        break;
-      case B:
-        backup();
-        break;
-      default:
-        throw new IllegalArgumentException("unknown batch operation");
+    case I:
+      instanceBatch();
+      break;
+    case A:
+      archiveBatch();
+      break;
+    case B:
+      backup();
+      break;
+    default:
+      throw new IllegalArgumentException("unknown batch operation");
     }
   }
 
   public Map<String, List<Flay>> checkBatch(Operation operation) {
     switch (operation) {
-      case I:
-        return instanceCheck();
-      default:
-        throw new IllegalArgumentException("unknown batch operation");
+    case I:
+      return instanceCheck();
+    default:
+      throw new IllegalArgumentException("unknown batch operation");
     }
   }
 
@@ -129,8 +129,7 @@ public class BatchExecutor {
 
     assembleFlay();
 
-    deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(),
-        flayProperties.getStoragePath()));
+    deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(), flayProperties.getStoragePath()));
 
     instanceFlaySource.load();
   }
@@ -189,8 +188,7 @@ public class BatchExecutor {
 
   private List<Flay> listLowerScore() {
     log.info(String.format("[listLowerScore] limit   %4s GB", flayProperties.getStorageLimit()));
-    log.info(String.format("[listLowerScore] total   %4s GB",
-        instanceFlaySource.list().stream().mapToLong(f -> f.getLength()).sum() / FileUtils.ONE_GB));
+    log.info(String.format("[listLowerScore] total   %4s GB", instanceFlaySource.list().stream().mapToLong(f -> f.getLength()).sum() / FileUtils.ONE_GB));
     List<Flay> lowerScoreList = new ArrayList<>();
     final long storageSize = flayProperties.getStorageLimit() * FileUtils.ONE_GB;
     long lengthSum = 0;
@@ -265,13 +263,7 @@ public class BatchExecutor {
         List<File> value = entry.getValue();
         for (File file : value) {
           if (!delegatePath.equals(file.getParentFile())) {
-            final String message = String.format("move [%-10s r%s %7s] %-20s => %s / %s",
-                flay.getOpus(),
-                flay.getVideo().getRank(),
-                flayFileHandler.prettyFileLength(file.length()),
-                file.getParent(),
-                delegatePath,
-                file.getName());
+            final String message = String.format("move [%-10s r%s %7s] %-20s => %s / %s", flay.getOpus(), flay.getVideo().getRank(), flayFileHandler.prettyFileLength(file.length()), file.getParent(), delegatePath, file.getName());
             log.info(message);
             flayFileHandler.moveFileToDirectory(file, delegatePath);
           }
@@ -427,9 +419,7 @@ public class BatchExecutor {
     log.info(message);
     instanceCsvDataList.add(CSV_HEADER);
     for (Flay flay : instanceFlayList) {
-      instanceCsvDataList.add(String.format(CSV_FORMAT,
-          flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(),
-          flay.getVideo().getRank(), flay.getFullname()));
+      instanceCsvDataList.add(String.format(CSV_FORMAT, flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), flay.getVideo().getRank(), flay.getFullname()));
     }
     writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceCsvDataList);
 
@@ -438,9 +428,7 @@ public class BatchExecutor {
     log.info(message);
     archiveCsvDataList.add(CSV_HEADER);
     for (Flay flay : archiveFlayList) {
-      archiveCsvDataList.add(String.format(CSV_FORMAT,
-          flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), "",
-          flay.getFullname()));
+      archiveCsvDataList.add(String.format(CSV_FORMAT, flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), "", flay.getFullname()));
     }
     for (History history : historyList) {
       String opus = history.getOpus();
@@ -488,8 +476,7 @@ public class BatchExecutor {
   }
 
   private void writeFileWithUTF8BOM(File file, Collection<String> lines) {
-    try (BufferedWriter bufferedWriter = Files.newBufferedWriter(file.toPath(), Charset.forName(Flayground.ENCODING),
-        StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
+    try (BufferedWriter bufferedWriter = Files.newBufferedWriter(file.toPath(), Charset.forName(Flayground.ENCODING), StandardOpenOption.CREATE, StandardOpenOption.WRITE)) {
       bufferedWriter.write(65279); // UTF-8의 BOM인 "EF BB BF"를 UTF-16BE 로 변환
       for (String line : lines) {
         bufferedWriter.write(line);
@@ -508,10 +495,8 @@ public class BatchExecutor {
     // -f 아카이브 파일 이름을 지정합니다.
     // -0 저장 전용: ZIP 압축을 사용하지 않습니다.
     // -M 항목에 대해 Manifest 파일을 생성하지 않습니다.
-    List<String> commands = Arrays.asList("jar", "cvf0M", destJarFile.getAbsolutePath(), "-C",
-        targetFolder.getAbsolutePath(), ".");
-    File logFile = new File(flayProperties.getQueuePath(),
-        destJarFile.getName() + "." + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");
+    List<String> commands = Arrays.asList("jar", "cvf0M", destJarFile.getAbsolutePath(), "-C", targetFolder.getAbsolutePath(), ".");
+    File logFile = new File(flayProperties.getQueuePath(), destJarFile.getName() + "." + Flayground.Format.Date.YYYY_MM_DD.format(new Date()) + ".log");
     ProcessBuilder builder = new ProcessBuilder(commands);
     builder.redirectOutput(Redirect.to(logFile));
     builder.redirectError(Redirect.INHERIT);

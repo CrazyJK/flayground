@@ -3,11 +3,13 @@ package jk.kamoru.flayground.flay.service;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.domain.FlayCondition;
 import jk.kamoru.flayground.info.service.ActressInfoService;
@@ -15,9 +17,11 @@ import jk.kamoru.flayground.info.service.ActressInfoService;
 @Service
 public class FlayCollector {
 
-  @Autowired ActressInfoService actressInfoService;
+  @Autowired
+  ActressInfoService actressInfoService;
 
-  @Autowired ScoreCalculator scoreCalculator;
+  @Autowired
+  ScoreCalculator scoreCalculator;
 
   public List<Flay> toFlayList(Collection<Flay> list, FlayCondition flayCondition) {
     return filterAndSort(list, flayCondition).toList();
@@ -48,15 +52,8 @@ public class FlayCollector {
   }
 
   private boolean filter(Flay flay, FlayCondition flayCondition) {
-    return likeStudio(flay, flayCondition.getStudio())
-        && likeOpus(flay, flayCondition.getOpus())
-        && likeTitle(flay, flayCondition.getTitle())
-        && likeActress(flay, flayCondition.getActress())
-        && likeRelease(flay, flayCondition.getRelease())
-        && likeSearch(flay, flayCondition)
-        && containsRank(flay, flayCondition.getRank())
-        && containsSubtitles(flay, flayCondition.isWithSubtitles())
-        && containsFavorite(flay, flayCondition);
+    return likeStudio(flay, flayCondition.getStudio()) && likeOpus(flay, flayCondition.getOpus()) && likeTitle(flay, flayCondition.getTitle()) && likeActress(flay, flayCondition.getActress()) && likeRelease(flay, flayCondition.getRelease()) && likeSearch(flay, flayCondition) && containsRank(flay, flayCondition.getRank())
+        && containsSubtitles(flay, flayCondition.isWithSubtitles()) && containsFavorite(flay, flayCondition);
   }
 
   private boolean likeStudio(Flay flay, String studio) {
@@ -80,12 +77,7 @@ public class FlayCollector {
   }
 
   private boolean likeSearch(Flay flay, FlayCondition flayCondition) {
-    return StringUtils.isBlank(flayCondition.getSearch())
-        || likeStudio(flay, flayCondition.getSearch())
-        || likeOpus(flay, flayCondition.getSearch())
-        || likeTitle(flay, flayCondition.getSearch())
-        || likeActress(flay, flayCondition.getSearch())
-        || likeRelease(flay, flayCondition.getSearch());
+    return StringUtils.isBlank(flayCondition.getSearch()) || likeStudio(flay, flayCondition.getSearch()) || likeOpus(flay, flayCondition.getSearch()) || likeTitle(flay, flayCondition.getSearch()) || likeActress(flay, flayCondition.getSearch()) || likeRelease(flay, flayCondition.getSearch());
   }
 
   private boolean containsRank(Flay flay, int[] ranks) {
@@ -110,32 +102,32 @@ public class FlayCollector {
 
   private int sort(Flay f1, Flay f2, FlayCondition flayCondition) {
     switch (flayCondition.getSort()) {
-      case STUDIO:
-        return f1.getStudio().compareTo(f2.getStudio());
-      case OPUS:
-        return f1.getOpus().compareTo(f2.getOpus());
-      case TITLE:
-        return f1.getTitle().compareTo(f2.getTitle());
-      case ACTRESS:
-        return String.join(",", f1.getActressList()).compareTo(String.join(",", f2.getActressList()));
-      case RELEASE:
-        return f1.getRelease().compareTo(f2.getRelease());
-      case PLAY:
-        return NumberUtils.compare(f1.getVideo().getPlay(), f2.getVideo().getPlay());
-      case RANK:
-        return NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank());
-      case LASTACCESS:
-        return NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess());
-      case LASTMODIFIED:
-        return NumberUtils.compare(f1.getLastModified(), f2.getLastModified());
-      case SCORE:
-        scoreCalculator.calcScore(f1);
-        scoreCalculator.calcScore(f2);
-        return NumberUtils.compare(f1.getScore(), f2.getScore());
-      case LENGTH:
-        return NumberUtils.compare(f1.getLength(), f2.getLength());
-      default:
-        return 0;
+    case STUDIO:
+      return f1.getStudio().compareTo(f2.getStudio());
+    case OPUS:
+      return f1.getOpus().compareTo(f2.getOpus());
+    case TITLE:
+      return f1.getTitle().compareTo(f2.getTitle());
+    case ACTRESS:
+      return String.join(",", f1.getActressList()).compareTo(String.join(",", f2.getActressList()));
+    case RELEASE:
+      return f1.getRelease().compareTo(f2.getRelease());
+    case PLAY:
+      return NumberUtils.compare(f1.getVideo().getPlay(), f2.getVideo().getPlay());
+    case RANK:
+      return NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank());
+    case LASTACCESS:
+      return NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess());
+    case LASTMODIFIED:
+      return NumberUtils.compare(f1.getLastModified(), f2.getLastModified());
+    case SCORE:
+      scoreCalculator.calcScore(f1);
+      scoreCalculator.calcScore(f2);
+      return NumberUtils.compare(f1.getScore(), f2.getScore());
+    case LENGTH:
+      return NumberUtils.compare(f1.getLength(), f2.getLength());
+    default:
+      return 0;
     }
   }
 

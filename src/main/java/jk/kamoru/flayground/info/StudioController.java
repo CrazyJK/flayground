@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.info;
 
 import java.util.Collection;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.service.StudioInfoService;
 
@@ -19,7 +21,8 @@ import jk.kamoru.flayground.info.service.StudioInfoService;
 @RequestMapping("/info/studio")
 public class StudioController {
 
-  @Autowired StudioInfoService studioInfoService;
+  @Autowired
+  StudioInfoService studioInfoService;
 
   @GetMapping("/{name}")
   public Studio get(@PathVariable String name) {

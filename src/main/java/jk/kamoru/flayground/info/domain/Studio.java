@@ -13,7 +13,8 @@ import lombok.NoArgsConstructor;
 @Data
 public class Studio implements Info<String> {
 
-  @NotBlank String name;
+  @NotBlank
+  String name;
   String company;
   URL homepage;
   long lastModified;

@@ -1,6 +1,7 @@
 package jk.kamoru.flayground.image.banner;
 
 import java.util.Locale;
+
 import org.springframework.util.Assert;
 
 public abstract class AnsiOutput {
@@ -23,6 +24,7 @@ public abstract class AnsiOutput {
 
   /**
    * Sets if ANSI output is enabled.
+   * 
    * @param enabled if ANSI is enabled, disabled or detected
    */
   public static void setEnabled(Enabled enabled) {
@@ -32,8 +34,8 @@ public abstract class AnsiOutput {
 
   /**
    * Sets if the System.console() is known to be available.
-   * @param consoleAvailable if the console is known to be available or {@code null} to
-   * use standard detection logic.
+   * 
+   * @param consoleAvailable if the console is known to be available or {@code null} to use standard detection logic.
    */
   public static void setConsoleAvailable(Boolean consoleAvailable) {
     AnsiOutput.consoleAvailable = consoleAvailable;
@@ -45,6 +47,7 @@ public abstract class AnsiOutput {
 
   /**
    * Encode a single {@link AnsiElement} if output is enabled.
+   * 
    * @param element the element to encode
    * @return the encoded element or an empty string
    */
@@ -56,8 +59,8 @@ public abstract class AnsiOutput {
   }
 
   /**
-   * Create a new ANSI string from the specified elements. Any {@link AnsiElement}s will
-   * be encoded as required.
+   * Create a new ANSI string from the specified elements. Any {@link AnsiElement}s will be encoded as required.
+   * 
    * @param elements the elements to encode
    * @return a string of the encoded elements
    */
@@ -131,14 +134,12 @@ public abstract class AnsiOutput {
   }
 
   /**
-   * Possible values to pass to {@link AnsiOutput#setEnabled}. Determines when to output
-   * ANSI escape sequences for coloring application output.
+   * Possible values to pass to {@link AnsiOutput#setEnabled}. Determines when to output ANSI escape sequences for coloring application output.
    */
   public enum Enabled {
 
     /**
-     * Try to detect whether ANSI coloring capabilities are available. The default
-     * value for {@link AnsiOutput}.
+     * Try to detect whether ANSI coloring capabilities are available. The default value for {@link AnsiOutput}.
      */
     DETECT,
 

@@ -2,6 +2,7 @@ package jk.kamoru.flayground.info.source;
 
 import java.io.File;
 import java.util.List;
+
 import jk.kamoru.flayground.info.InfoNotfoundException;
 import jk.kamoru.flayground.info.domain.Info;
 
@@ -11,12 +12,14 @@ public abstract class InfoSourceAdapter<T extends Info<K>, K> implements InfoSou
 
   /**
    * json 정보 파일
+   * 
    * @return
    */
   abstract File getInfoFile();
 
   /**
    * 도메인 생성
+   * 
    * @param key
    * @return
    */

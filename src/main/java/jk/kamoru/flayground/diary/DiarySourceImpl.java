@@ -101,11 +101,7 @@ public class DiarySourceImpl implements DiarySource {
 
   private File getBackupFile(File file) {
     File parentFile = file.getParentFile();
-    int maxNumber = Stream.of(parentFile.listFiles())
-        .filter(f -> f.getName().startsWith(file.getName()))
-        .mapToInt(f -> NumberUtils.toInt(FilenameUtils.getExtension(f.getName())))
-        .max()
-        .orElse(0);
+    int maxNumber = Stream.of(parentFile.listFiles()).filter(f -> f.getName().startsWith(file.getName())).mapToInt(f -> NumberUtils.toInt(FilenameUtils.getExtension(f.getName()))).max().orElse(0);
     return new File(parentFile, file.getName() + "." + ++maxNumber);
   }
 

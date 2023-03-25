@@ -3,10 +3,11 @@ package jk.kamoru.flayground.info.service;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
+
 import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
@@ -20,12 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
-  @Autowired FlayService flayService;
-  @Autowired FlayFileHandler flayFileHandler;
-
-  @Autowired TopicMessageService topicMessageService;
-
-  @Autowired SseEmitters sseEmitters;
+  @Autowired
+  FlayService flayService;
+  @Autowired
+  FlayFileHandler flayFileHandler;
+  @Autowired
+  SseEmitters sseEmitters;
 
   public void rename(Actress actress, String oldName) {
     if (actress.getName().equals(oldName)) {
@@ -50,7 +51,6 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
 
         flayFileHandler.rename(flay, actressList);
       }
-      topicMessageService.sendFromServerToAll("Rename Actress", oldName + " -> " + actress.getName());
       sseEmitters.send(actress);
     }
   }

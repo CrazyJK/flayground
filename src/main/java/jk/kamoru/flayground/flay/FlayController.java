@@ -4,10 +4,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,9 +14,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.domain.FlayCondition;
 import jk.kamoru.flayground.flay.service.FlayCollector;
@@ -31,13 +29,17 @@ import jk.kamoru.flayground.info.service.ActressInfoService;
 @RequestMapping("/flay")
 public class FlayController {
 
-  @Autowired FlayService flayService;
+  @Autowired
+  FlayService flayService;
 
-  @Autowired ActressInfoService actressInfoService;
+  @Autowired
+  ActressInfoService actressInfoService;
 
-  @Autowired ScoreCalculator scoreCalculator;
+  @Autowired
+  ScoreCalculator scoreCalculator;
 
-  @Autowired FlayCollector flayCollector;
+  @Autowired
+  FlayCollector flayCollector;
 
   @GetMapping("/{opus}")
   public Flay get(@PathVariable String opus) {
@@ -106,13 +108,6 @@ public class FlayController {
   @PostMapping("/list/release")
   public List<String> getReleaseList(@RequestBody FlayCondition flayCondition) {
     return flayCollector.toReleaseList(flayService.list(), flayCondition);
-  }
-
-  @GetMapping("/page")
-  public Page<Flay> page(
-      @PageableDefault(size = 10, page = 0) Pageable pageable,
-      @RequestParam(value = "keyword", required = false, defaultValue = "") String keyword) {
-    return flayService.page(pageable, keyword);
   }
 
   @GetMapping("/find")

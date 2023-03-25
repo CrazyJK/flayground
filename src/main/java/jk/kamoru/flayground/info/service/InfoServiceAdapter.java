@@ -1,24 +1,23 @@
 package jk.kamoru.flayground.info.service;
 
 import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import com.fasterxml.jackson.core.JsonProcessingException;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
+
 import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.info.domain.Info;
 import jk.kamoru.flayground.info.source.InfoSource;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoService<T, K> {
 
-  @Autowired InfoSource<T, K> infoSource;
+  @Autowired
+  InfoSource<T, K> infoSource;
 
-  @Autowired TopicMessageService topicMessageService;
-
-  @Autowired SseEmitters sseEmitters;
+  @Autowired
+  SseEmitters sseEmitters;
 
   ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
@@ -47,35 +46,20 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
   @Override
   public T create(T create) {
     T created = infoSource.create(create);
-    try {
-      topicMessageService.sendFromServerToAll("Created", jsonWriter.writeValueAsString(created));
-      sseEmitters.send(create);
-    } catch (JsonProcessingException e) {
-      log.error(e.getMessage());
-    }
+    sseEmitters.send(create);
     return created;
   }
 
   @Override
   public void update(T update) {
     infoSource.update(update);
-    try {
-      topicMessageService.sendFromServerToAll("Updated", jsonWriter.writeValueAsString(update));
-      sseEmitters.send(update);
-    } catch (JsonProcessingException e) {
-      log.error(e.getMessage());
-    }
+    sseEmitters.send(update);
   }
 
   @Override
   public void delete(T delete) {
     infoSource.delete(delete);
-    try {
-      topicMessageService.sendFromServerToAll("Deleted", jsonWriter.writeValueAsString(delete));
-      sseEmitters.send(delete);
-    } catch (JsonProcessingException e) {
-      log.error(e.getMessage());
-    }
+    sseEmitters.send(delete);
   }
 
 }

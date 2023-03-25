@@ -1,11 +1,10 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.util.Collection;
-import java.util.stream.Stream;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -14,9 +13,12 @@ import jk.kamoru.flayground.flay.source.FlaySource;
 @Service
 public class FlayArchiveServiceImpl extends FlayServiceAdapter implements FlayArchiveService {
 
-  @Autowired FlaySource instanceFlaySource;
-  @Autowired FlaySource archiveFlaySource;
-  @Autowired FlayFileHandler flayFileHandler;
+  @Autowired
+  FlaySource instanceFlaySource;
+  @Autowired
+  FlaySource archiveFlaySource;
+  @Autowired
+  FlayFileHandler flayFileHandler;
 
   @Override
   public Flay get(String opus) {
@@ -25,11 +27,6 @@ public class FlayArchiveServiceImpl extends FlayServiceAdapter implements FlayAr
     } catch (FlayNotfoundException e) {
       return archiveFlaySource.get(opus);
     }
-  }
-
-  @Override
-  public Page<Flay> page(Pageable pageable, String keyword) {
-    return page(Stream.concat(instanceFlaySource.list().stream(), archiveFlaySource.list().stream()).toList(), pageable, keyword);
   }
 
   @Override

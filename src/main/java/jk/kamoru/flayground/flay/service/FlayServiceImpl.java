@@ -6,16 +6,14 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.base.advice.TrackExecutionTime;
-import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.Search;
@@ -32,31 +30,35 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
-  @Autowired FlaySource instanceFlaySource;
-  @Autowired FlaySource archiveFlaySource;
-  @Autowired InfoSource<Video, String> videoInfoSource;
-  @Autowired InfoSource<Tag, Integer> tagInfoSource;
+  @Autowired
+  FlaySource instanceFlaySource;
+  @Autowired
+  FlaySource archiveFlaySource;
+  @Autowired
+  InfoSource<Video, String> videoInfoSource;
+  @Autowired
+  InfoSource<Tag, Integer> tagInfoSource;
 
-  @Autowired HistoryService historyService;
-  @Autowired FlayActionHandler flayActionHandler;
-  @Autowired FlayFileHandler flayFileHandler;
-  @Autowired CandidatesProvider candidatesProvider;
-  @Autowired ScoreCalculator scoreCalculator;
+  @Autowired
+  HistoryService historyService;
+  @Autowired
+  FlayActionHandler flayActionHandler;
+  @Autowired
+  FlayFileHandler flayFileHandler;
+  @Autowired
+  CandidatesProvider candidatesProvider;
+  @Autowired
+  ScoreCalculator scoreCalculator;
 
-  @Autowired TopicMessageService topicMessageService;
-
-  @Autowired SseEmitters sseEmitters;
+  @Autowired
+  SseEmitters sseEmitters;
 
   @Override
   public Flay get(String key) {
     return instanceFlaySource.get(key);
-  }
-
-  @Override
-  public Page<Flay> page(Pageable pageable, String keyword) {
-    return page(instanceFlaySource.list(), pageable, keyword);
   }
 
   @Override
@@ -93,7 +95,6 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     return findByQuery(instanceFlaySource.list(), query);
   }
 
-  @TrackExecutionTime(level = TrackExecutionTime.LEVEL.DEBUG)
   @Override
   public Collection<Flay> find(String field, String value) {
     return findByField(instanceFlaySource.list(), field, value);
@@ -145,7 +146,6 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     }
     // 전체 파일명 조정
     flayFileHandler.rename(flay);
-    topicMessageService.sendFromServerToCurrentUser("Accept candidates", flay.getFullname());
   }
 
   @Override
@@ -176,8 +176,8 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     } catch (FlayNotfoundException e) {
       flay = archiveFlaySource.get(opus);
     }
-    flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(), newFlay.getRelease());
-    topicMessageService.sendFromServerToCurrentUser("Rename Flay", newFlay.getFullname());
+    flayFileHandler.rename(flay, newFlay.getStudio(), newFlay.getTitle(), newFlay.getActressList(),
+        newFlay.getRelease());
     sseEmitters.send(flay);
   }
 

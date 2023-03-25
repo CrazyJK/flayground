@@ -16,7 +16,6 @@ import jakarta.annotation.PostConstruct;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.watch.DirectoryWatcher;
-import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.image.ImageNotfoundException;
 import jk.kamoru.flayground.image.domain.Image;
@@ -26,10 +25,10 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class LocalImageSource implements ImageSource {
 
-  @Autowired FlayProperties flayProperties;
-  @Autowired FlayFileHandler flayFileHandler;
-
-  @Autowired TopicMessageService topicMessageService;
+  @Autowired
+  FlayProperties flayProperties;
+  @Autowired
+  FlayFileHandler flayFileHandler;
 
   private List<Image> imageList;
   private boolean changed = false;
@@ -41,27 +40,28 @@ public class LocalImageSource implements ImageSource {
   }
 
   private void registWatcher() {
-    Flayground.ApplicationReady.add(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
+    Flayground.ApplicationReady
+        .add(new DirectoryWatcher(this.getClass().getSimpleName(), flayProperties.getImagePaths()) {
 
-      @Override
-      protected void createdFile(File file) {
-        changed = Flayground.FILE.isImage(file);
-      }
+          @Override
+          protected void createdFile(File file) {
+            changed = Flayground.FILE.isImage(file);
+          }
 
-      @Override
-      protected void deletedFile(File file) {
-        changed = Flayground.FILE.isImage(file);
-      }
+          @Override
+          protected void deletedFile(File file) {
+            changed = Flayground.FILE.isImage(file);
+          }
 
-      @Override
-      protected void modifiedFile(File file) {
-        changed = Flayground.FILE.isImage(file);
-      }
+          @Override
+          protected void modifiedFile(File file) {
+            changed = Flayground.FILE.isImage(file);
+          }
 
-    });
+        });
   }
 
-  @CacheEvict(cacheNames = {"bannerCache"}, allEntries = true)
+  @CacheEvict(cacheNames = { "bannerCache" }, allEntries = true)
   private synchronized void load() {
     AtomicInteger indexCounter = new AtomicInteger(0);
     imageList = new ArrayList<>();
@@ -84,7 +84,6 @@ public class LocalImageSource implements ImageSource {
     if (changed) {
       log.info("Image was changed, Source will be reloaded");
       load();
-      topicMessageService.sendFromServerToAll("Image reload", size() + " images");
     }
     changed = false;
   }
@@ -112,7 +111,6 @@ public class LocalImageSource implements ImageSource {
     Image image = get(idx);
     imageList.remove(image);
     flayFileHandler.deleteFile(image.getFile());
-    topicMessageService.sendFromServerToAll("Image removed", image.getFile().toString());
   }
 
 }

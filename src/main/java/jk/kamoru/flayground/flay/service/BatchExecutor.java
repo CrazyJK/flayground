@@ -16,15 +16,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.base.web.socket.queue.data.QueueDataService;
-import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -59,20 +59,22 @@ public class BatchExecutor {
     B
   }
 
-  @Autowired FlayProperties flayProperties;
-  @Autowired FlaySource instanceFlaySource;
-  @Autowired FlaySource archiveFlaySource;
-  @Autowired HistoryService historyService;
-  @Autowired ScoreCalculator scoreCalculator;
-  @Autowired FlayFileHandler flayFileHandler;
-
-  @Autowired TopicMessageService topicMessageService;
-  @Autowired QueueDataService queueDataService;
+  @Autowired
+  FlayProperties flayProperties;
+  @Autowired
+  FlaySource instanceFlaySource;
+  @Autowired
+  FlaySource archiveFlaySource;
+  @Autowired
+  HistoryService historyService;
+  @Autowired
+  ScoreCalculator scoreCalculator;
+  @Autowired
+  FlayFileHandler flayFileHandler;
 
   public void reload() {
     log.info("[reload]");
     instanceFlaySource.load();
-    topicMessageService.sendFromServerToAll("Reload", "Instance Source");
   }
 
   public Boolean getOption(Option type) {
@@ -119,27 +121,18 @@ public class BatchExecutor {
   }
 
   protected void instanceBatch() {
-    topicMessageService.sendFromServerToAll("Batch", "start Instance Source");
-    queueDataService.queueFromServerToCurrentUser("batch", "Instance Source");
-
-    queueDataService.queueFromServerToCurrentUser("batch", "[deleteLowerRank]");
     deleteLowerRank();
 
     if (flayProperties.isDeleteLowerScore()) {
-      queueDataService.queueFromServerToCurrentUser("batch", "[deleteLowerScore]");
       deleteLowerScore();
     }
 
-    queueDataService.queueFromServerToCurrentUser("batch", "[assembleFlay]");
     assembleFlay();
 
-    queueDataService.queueFromServerToCurrentUser("batch", "[deleteEmptyFolder]");
     deleteEmptyFolder(ArrayUtils.addAll(flayProperties.getStagePaths(), flayProperties.getCoverPath(),
         flayProperties.getStoragePath()));
 
-    queueDataService.queueFromServerToCurrentUser("batch", "[instanceFlaySource.load]");
     instanceFlaySource.load();
-    topicMessageService.sendFromServerToAll("Batch", "end Instance Source");
   }
 
   protected Map<String, List<Flay>> instanceCheck() {
@@ -152,10 +145,6 @@ public class BatchExecutor {
   }
 
   protected void archiveBatch() {
-    topicMessageService.sendFromServerToAll("Batch", "start Archive Source");
-    queueDataService.queueFromServerToCurrentUser("batch", "Archive Source");
-
-    queueDataService.queueFromServerToCurrentUser("batch", "[relocateArchiveFile]");
     log.info("[relocateArchiveFile]");
     for (Flay flay : archiveFlaySource.list()) {
       String yyyyMM = getArchiveFolderName(flay);
@@ -173,12 +162,9 @@ public class BatchExecutor {
       }
     }
 
-    queueDataService.queueFromServerToCurrentUser("batch", "[deleteEmptyFolder]");
     deleteEmptyFolder(flayProperties.getArchivePath());
 
-    queueDataService.queueFromServerToCurrentUser("batch", "[archiveFlaySource.load]");
     archiveFlaySource.load();
-    topicMessageService.sendFromServerToAll("Batch", "end Archive Source");
   }
 
   void deleteLowerRank() {
@@ -256,7 +242,6 @@ public class BatchExecutor {
             if (coverFiles != null && coverFiles.size() > 0) {
               flay.getFiles().get(Flay.COVER).add(coverFiles.get(0));
               log.info("add Cover {}", coverFiles.get(0));
-              queueDataService.queueFromServerToCurrentUser("batch", "add Cover " + coverFiles.get(0));
             }
           } catch (FlayNotfoundException ignore) {
           }
@@ -269,7 +254,6 @@ public class BatchExecutor {
             if (subtitlesFiles != null && subtitlesFiles.size() > 0) {
               flay.getFiles().get(Flay.SUBTI).addAll(subtitlesFiles);
               log.info("add subtiles {}", subtitlesFiles);
-              queueDataService.queueFromServerToCurrentUser("batch", "add subtiles " + subtitlesFiles);
             }
           } catch (FlayNotfoundException ignore) {
           }
@@ -289,7 +273,6 @@ public class BatchExecutor {
                 delegatePath,
                 file.getName());
             log.info(message);
-            queueDataService.queueFromServerToCurrentUser("batch", message);
             flayFileHandler.moveFileToDirectory(file, delegatePath);
           }
         }
@@ -394,11 +377,9 @@ public class BatchExecutor {
       for (File file : entry.getValue()) {
         if (Flay.COVER.equals(key) || Flay.SUBTI.equals(key)) {
           log.info("will be move {} to {}", file, archiveDir);
-          queueDataService.queueFromServerToCurrentUser("batch", "  will be move " + file + " to " + archiveDir);
           flayFileHandler.moveFileToDirectory(file, archiveDir);
         } else {
           log.info("will be delete {}", file);
-          queueDataService.queueFromServerToCurrentUser("batch", "  will be delete " + file);
           flayFileHandler.deleteFile(file);
         }
       }
@@ -416,7 +397,6 @@ public class BatchExecutor {
 
     message = String.format("[Backup] START %s", flayProperties.getBackupPath());
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
 
     final String CSV_HEADER = "Studio,Opus,Title,Actress,Released,Rank,Fullname";
     final String CSV_FORMAT = "\"%s\",\"%s\",\"%s\",\"%s\",\"%s\",%s,\"%s\"";
@@ -445,7 +425,6 @@ public class BatchExecutor {
     // instance info
     message = String.format("[Backup] Write instance csv %s to %s", BACKUP_INSTANCE_CSV_FILENAME, backupRootPath);
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
     instanceCsvDataList.add(CSV_HEADER);
     for (Flay flay : instanceFlayList) {
       instanceCsvDataList.add(String.format(CSV_FORMAT,
@@ -457,7 +436,6 @@ public class BatchExecutor {
     // archive info
     message = String.format("[Backup] Write archive  csv %s  to %s", BACKUP_ARCHIVE_CSV_FILENAME, backupRootPath);
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
     archiveCsvDataList.add(CSV_HEADER);
     for (Flay flay : archiveFlayList) {
       archiveCsvDataList.add(String.format(CSV_FORMAT,
@@ -481,13 +459,11 @@ public class BatchExecutor {
     // Info folder copy
     message = String.format("[Backup] Copy Info folder %s to %s", flayProperties.getInfoPath(), backupRootPath);
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
     flayFileHandler.copyDirectoryToDirectory(flayProperties.getInfoPath(), backupRootPath);
 
     // Instance - Cover, Subtitles file copy
     message = String.format("[Backup] Copy Instance file to %s", backupInstanceFilePath);
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
     for (Flay flay : instanceFlayList) {
       for (File file : flay.getFiles().get(Flay.COVER))
         flayFileHandler.copyFileToDirectory(file, backupInstanceFilePath);
@@ -497,24 +473,18 @@ public class BatchExecutor {
 
     message = "[Backup] Compress Instance folder";
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
     compress(backupInstanceJarFile, backupRootPath);
 
     message = "[Backup] Compress Archive folder";
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
     compress(backupArchiveJarFile, flayProperties.getArchivePath());
 
     message = String.format("[Backup] Delete Instance Backup Temp folder %s", backupRootPath);
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
     flayFileHandler.deleteDirectory(backupRootPath);
 
     message = "[Backup] END";
     log.info(message);
-    queueDataService.queueFromServerToCurrentUser("batch", message);
-
-    topicMessageService.sendFromServerToCurrentUser("Backup", "Backup completed");
   }
 
   private void writeFileWithUTF8BOM(File file, Collection<String> lines) {
@@ -548,14 +518,12 @@ public class BatchExecutor {
     try {
       String message = "         jar " + commands;
       log.info(message);
-      queueDataService.queueFromServerToCurrentUser("batch", message);
 
       Process process = builder.start();
       process.waitFor();
 
       message = "         completed " + flayFileHandler.prettyFileLength(destJarFile.length());
       log.info(message);
-      queueDataService.queueFromServerToCurrentUser("batch", message);
     } catch (IOException | InterruptedException e) {
       throw new IllegalStateException("Fail to jar", e);
     }

@@ -13,24 +13,22 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
+
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Configuration
-@EnableAspectJAutoProxy
 @EnableAsync
-@EnableCaching
 @EnableScheduling
 @Slf4j
 public class Flayground implements AsyncConfigurer {
@@ -53,7 +51,11 @@ public class Flayground implements AsyncConfigurer {
       public static final SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
       public static final SimpleDateFormat YYYY_MM = new SimpleDateFormat("yyyy-MM");
 
-      public static final Pattern RELEASE_DATE_PATTERN = Pattern.compile("^((2000|2400|2800|(19|2[0-9](0[48]|[2468][048]|[13579][26]))).02.29)$" + "|^(((19|2[0-9])[0-9]{2}).02.(0[1-9]|1[0-9]|2[0-8]))$" + "|^(((19|2[0-9])[0-9]{2}).(0[13578]|10|12).(0[1-9]|[12][0-9]|3[01]))$" + "|^(((19|2[0-9])[0-9]{2}).(0[469]|11).(0[1-9]|[12][0-9]|30))$");
+      public static final Pattern RELEASE_DATE_PATTERN = Pattern
+          .compile("^((2000|2400|2800|(19|2[0-9](0[48]|[2468][048]|[13579][26]))).02.29)$"
+              + "|^(((19|2[0-9])[0-9]{2}).02.(0[1-9]|1[0-9]|2[0-8]))$"
+              + "|^(((19|2[0-9])[0-9]{2}).(0[13578]|10|12).(0[1-9]|[12][0-9]|3[01]))$"
+              + "|^(((19|2[0-9])[0-9]{2}).(0[469]|11).(0[1-9]|[12][0-9]|30))$");
     }
 
     public static class Number {
@@ -100,9 +102,10 @@ public class Flayground implements AsyncConfigurer {
   }
 
   public static class FILE {
-    public static final String[] VIDEO_SUFFIXs = new String[] {"avi", "mpg", "mkv", "wmv", "mp4", "mov", "rmvb", "m2ts"};
-    public static final String[] IMAGE_SUFFIXs = new String[] {"jpg", "jpeg", "png", "gif", "jfif", "webp"};
-    public static final String[] SUBTITLES_SUFFIXs = new String[] {"smi", "srt", "ass", "smil"};
+    public static final String[] VIDEO_SUFFIXs = new String[] { "avi", "mpg", "mkv", "wmv", "mp4", "mov", "rmvb",
+        "m2ts" };
+    public static final String[] IMAGE_SUFFIXs = new String[] { "jpg", "jpeg", "png", "gif", "jfif", "webp" };
+    public static final String[] SUBTITLES_SUFFIXs = new String[] { "smi", "srt", "ass", "smil" };
 
     public static boolean isVideo(File file) {
       return ArrayUtils.contains(VIDEO_SUFFIXs, FilenameUtils.getExtension(file.getName()).toLowerCase());

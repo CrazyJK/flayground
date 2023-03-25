@@ -1,11 +1,12 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
-import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.image.domain.Image;
@@ -13,29 +14,27 @@ import jk.kamoru.flayground.image.domain.Image;
 @Service
 public class FlayActionHandler {
 
-  @Autowired FlayAsyncExecutor flayAsyncExecutor;
+  @Autowired
+  FlayAsyncExecutor flayAsyncExecutor;
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
-  @Autowired TopicMessageService topicMessageService;
-
-  @Autowired SseEmitters sseEmitters;
+  @Autowired
+  SseEmitters sseEmitters;
 
   public void play(Flay flay) {
     flayAsyncExecutor.exec(flayProperties.getPlayerApp(), flay.getFiles().get(Flay.MOVIE));
-    topicMessageService.sendFromServerToCurrentUser("Play " + flay.getOpus(), flay.getFullname());
     sseEmitters.send(flay);
   }
 
   public void edit(Flay flay) {
     flayAsyncExecutor.exec(flayProperties.getEditorApp(), flay.getFiles().get(Flay.SUBTI));
-    topicMessageService.sendFromServerToCurrentUser("Edit " + flay.getOpus(), flay.getFullname());
     sseEmitters.send(flay);
   }
 
   public void paint(Image image) {
     flayAsyncExecutor.exec(flayProperties.getPaintApp(), image.getFile());
-    topicMessageService.sendFromServerToCurrentUser("Paint " + image.getName(), image.getPath());
   }
 
   public void openFolder(String folder) {

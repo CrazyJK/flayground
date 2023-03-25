@@ -6,11 +6,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
 import jk.kamoru.flayground.FlayProperties;
-import jk.kamoru.flayground.base.advice.TrackExecutionTime;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.domain.Tag;
@@ -19,9 +20,11 @@ import jk.kamoru.flayground.info.source.InfoSource;
 @Component
 public class ScoreCalculator {
 
-  @Autowired FlayProperties flayProperties;
+  @Autowired
+  FlayProperties flayProperties;
 
-  @Autowired InfoSource<Actress, String> actressInfoSource;
+  @Autowired
+  InfoSource<Actress, String> actressInfoSource;
 
   Comparator<Flay> scoreComparator = Comparator.comparing(Flay::getScore);
   Comparator<Flay> studioPointComparator = Comparator.comparing(Flay::getStudioPoint);
@@ -31,7 +34,6 @@ public class ScoreCalculator {
 
   Map<String, AtomicInteger> studioCountMap = new HashMap<>();
 
-  @TrackExecutionTime(message = "flay list order by score desc", level = TrackExecutionTime.LEVEL.INFO)
   public Collection<Flay> listOrderByScoreDesc(Collection<Flay> flayList) {
     // rank = 제외
     List<Flay> filteredList = flayList.stream().filter(flay -> flay.getVideo().getRank() > 0).toList();
@@ -79,7 +81,8 @@ public class ScoreCalculator {
     } else {
       // {1: 50, 2: 63, 3: 64, 4: 65, 5: 66}
       List<Integer> tags = flay.getVideo().getTags().stream().map(Tag::getId).toList();
-      return tags.contains(66) ? 5 : tags.contains(65) ? 4 : tags.contains(64) ? 3 : tags.contains(63) ? 2 : tags.contains(50) ? 1 : 0;
+      return tags.contains(66) ? 5
+          : tags.contains(65) ? 4 : tags.contains(64) ? 3 : tags.contains(63) ? 2 : tags.contains(50) ? 1 : 0;
     }
   }
 
@@ -98,7 +101,8 @@ public class ScoreCalculator {
    * @return
    */
   private int countFavoriteActress(Flay flay) {
-    return flay.getActressList().stream().mapToInt(a -> StringUtils.isNotBlank(a) && actressInfoSource.get(a).isFavorite() ? 1 : 0).sum();
+    return flay.getActressList().stream()
+        .mapToInt(a -> StringUtils.isNotBlank(a) && actressInfoSource.get(a).isFavorite() ? 1 : 0).sum();
   }
 
   // 출연배우의 작품 함계

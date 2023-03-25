@@ -21,7 +21,6 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import jakarta.annotation.PostConstruct;
 import jk.kamoru.flayground.FlayException;
 import jk.kamoru.flayground.FlayProperties;
-import jk.kamoru.flayground.base.web.socket.topic.message.TopicMessageService;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -30,9 +29,8 @@ public class DiarySourceImpl implements DiarySource {
 
   private static final String DIARY = "diary";
 
-  @Autowired FlayProperties flayProperties;
-
-  @Autowired TopicMessageService topicMessageService;
+  @Autowired
+  FlayProperties flayProperties;
 
   ObjectMapper jsonReader = new ObjectMapper();
   ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
@@ -43,12 +41,13 @@ public class DiarySourceImpl implements DiarySource {
   void load() {
     diaryMap.clear();
 
-    Collection<File> listFiles = FileUtils.listFiles(getDiaryPathFile(), new String[] {DIARY}, false);
+    Collection<File> listFiles = FileUtils.listFiles(getDiaryPathFile(), new String[] { DIARY }, false);
     log.info(String.format("%5s %-7s - %s", listFiles.size(), DIARY, getDiaryPathFile()));
     for (File file : listFiles) {
       Diary diary;
       try {
-        diary = jsonReader.readValue(file, new TypeReference<Diary>() {});
+        diary = jsonReader.readValue(file, new TypeReference<Diary>() {
+        });
         diaryMap.put(diary.getMeta().getDate(), diary);
       } catch (IOException e) {
         throw new FlayException(String.format("fail to diary read %s : %s", file, e.getMessage()), e);
@@ -95,7 +94,6 @@ public class DiarySourceImpl implements DiarySource {
       throw new IllegalStateException("Fail to save diary file ", e);
     }
 
-    topicMessageService.sendFromServerToCurrentUser("DIARY", "saved " + diary.getMeta().getDate());
     log.info("diary saved {} : {}", diary.getMeta().getDate(), diary.getMeta().getTitle());
 
     return diary;
@@ -103,7 +101,8 @@ public class DiarySourceImpl implements DiarySource {
 
   private File getBackupFile(File file) {
     File parentFile = file.getParentFile();
-    int maxNumber = Stream.of(parentFile.listFiles()).filter(f -> f.getName().startsWith(file.getName())).mapToInt(f -> NumberUtils.toInt(FilenameUtils.getExtension(f.getName()))).max().orElse(0);
+    int maxNumber = Stream.of(parentFile.listFiles()).filter(f -> f.getName().startsWith(file.getName()))
+        .mapToInt(f -> NumberUtils.toInt(FilenameUtils.getExtension(f.getName()))).max().orElse(0);
     return new File(parentFile, file.getName() + "." + ++maxNumber);
   }
 

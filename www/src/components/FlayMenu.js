@@ -1,13 +1,9 @@
 import { imageWaterfall } from '../components/ImageWaterfall';
 import { LocalStorageItem } from '../lib/crazy.common.js';
-import { Rest } from '../lib/flay.rest.service';
 import '../lib/flay.sse';
-import { flayWebsocket } from '../lib/flay.websocket.js';
 import { calculateLifeTime } from '../lib/kamoru.life.timer';
 
 import menuItems from '../components/FlayMenu.json';
-
-export { flayWebsocket };
 
 /* ref)
   https://developer.mozilla.org/ko/docs/Web/Web_Components/Using_custom_elements
@@ -375,11 +371,6 @@ function createThemeToggle(shadow) {
     button.classList.replace(currentTheme, selectedTheme);
     navWrap.classList.replace(currentTheme, selectedTheme);
     LocalStorageItem.set('flay.bgtheme', selectedTheme);
-    try {
-      flayWebsocket.data({ mode: 'bgtheme' });
-    } catch (e) {
-      // no nothing
-    }
   });
 
   return menuItemFactory('Theme', ['fa', 'fa-toggle-on'], button);
@@ -425,12 +416,6 @@ function createLogout() {
     document.body.appendChild(logoutForm);
     logoutForm.appendChild(csrfField);
     logoutForm.submit();
-  });
-
-  Rest.Security.whoami((principal) => {
-    const small = document.createElement('small');
-    small.textContent = principal.username + ' as ' + principal.authorities[0].authority.replace(/ROLE_/gi, '');
-    label.appendChild(small);
   });
 
   return menuItemFactory('Logout', ['fa', 'fa-sign-out'], label);

@@ -396,35 +396,6 @@ export const Rest = {
       restCall('/batch/reload', { method: 'PUT', title: 'Source reload' }, callback);
     },
   },
-  Security: {
-    whoami(callback) {
-      restCall('/security/whoami', { async: false }, callback);
-    },
-    isAutomaticallyCertificated() {
-      let result = false;
-      restCall('/security/isAutomaticallyCertificated', { async: false }, (isAuto) => (result = Boolean(isAuto)));
-      return result;
-    },
-    login(username, password, callback, failCallback) {
-      $.ajax({
-        url: '/html/login.html',
-        method: 'POST',
-        dataType: 'json',
-        data: {
-          username: username,
-          password: password,
-        },
-        success(response) {
-          console.info(response);
-          if (response.result) {
-            if (callback) callback(response);
-          } else {
-            if (failCallback) failCallback(response);
-          }
-        },
-      });
-    },
-  },
   Todayis: {
     list(callback) {
       restCall('/todayis/list', {}, callback);

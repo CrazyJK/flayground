@@ -7,7 +7,6 @@ import { reqParam, ThreadUtils } from './lib/crazy.common.js';
 import './lib/crazy.jquery';
 import { Rest } from './lib/flay.rest.service.js';
 import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, RANK, STUDIO } from './lib/flay.view.card.js';
-import './lib/flay.websocket.js';
 
 import './info.studio.scss';
 import './styles/common.scss';

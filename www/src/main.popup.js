@@ -4,12 +4,7 @@ import './components/FlayMenu';
 import { reqParam } from './lib/crazy.common.js';
 import { loading } from './lib/flay.loading.js';
 import { Rest } from './lib/flay.rest.service.js';
-import { Security } from './lib/flay.utils.js';
 import './styles/common.scss';
-
-const isAdmin = Security.hasRole('ADMIN');
-const username = Security.getName();
-console.info(`User is ${username} ${isAdmin ? 'has ADMIN Role' : ''}`);
 
 const targetUrl = reqParam.target;
 console.log('targetUrl', targetUrl);

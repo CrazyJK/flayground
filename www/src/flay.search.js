@@ -12,7 +12,7 @@ import './styles/common.scss';
 
 import { birthRegExp, bodyRegExp, File, LocalStorageItem } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
-import { Search, Security, View } from './lib/flay.utils.js';
+import { Search, View } from './lib/flay.utils.js';
 import { ACTRESS_EXTRA, COMMENT, FILEINFO, MODIFIED, RANK, STUDIO } from './lib/flay.view.card.js';
 
 function baseSearch() {
@@ -663,15 +663,10 @@ function searchSource(keyword) {
 // activate
 baseSearch();
 findMode();
-
-if (Security.hasRole('ADMIN')) {
-  candidateMode();
-  imageDownloadMode();
-  batchMode();
-  reloadMode();
-} else {
-  $("[aria-role='ADMIN']").empty().hide();
-}
+candidateMode();
+imageDownloadMode();
+batchMode();
+reloadMode();
 
 $('#imageScript').on('change', function () {
   LocalStorageItem.set('imageScript', $(this).val());

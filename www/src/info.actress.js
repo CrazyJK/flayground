@@ -9,7 +9,6 @@ import { loading } from './lib/flay.loading.js';
 import { Rest } from './lib/flay.rest.service.js';
 import { Search, Util } from './lib/flay.utils.js';
 import { ACTRESS, COMMENT, FILEINFO, MODIFIED, RANK } from './lib/flay.view.card.js';
-import './lib/flay.websocket.js';
 
 import './info.actress.scss';
 import './styles/common.scss';

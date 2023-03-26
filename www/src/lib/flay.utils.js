@@ -4,7 +4,6 @@
 
 import $ from 'jquery';
 import { browser, FIREFOX, PATH, Popup, Random } from './crazy.common.js';
-import { Rest } from './flay.rest.service.js';
 import './flay.view.card';
 
 const todayYear = new Date().getFullYear();
@@ -253,34 +252,5 @@ export const Search = {
         }
       },
     });
-  },
-};
-
-export const Security = {
-  principal: null,
-  getUser() {
-    Rest.Security.whoami((principal) => {
-      this.principal = principal;
-    });
-  },
-  hasRole(role) {
-    if (this.principal == null) {
-      this.getUser();
-    }
-    for (let { authority } of this.principal.authorities) {
-      if (authority === 'ROLE_' + role) {
-        return true;
-      }
-    }
-    return false;
-  },
-  getName() {
-    if (this.principal == null) {
-      this.getUser();
-    }
-    return this.principal.username;
-  },
-  isAutomaticallyCertificated() {
-    return Rest.Security.isAutomaticallyCertificated();
   },
 };

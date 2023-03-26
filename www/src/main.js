@@ -6,16 +6,10 @@ import 'bootstrap/dist/js/bootstrap';
 import $ from 'jquery';
 import { LocalStorageItem, PATH, Popup, Random } from './lib/crazy.common.js';
 import { Rest } from './lib/flay.rest.service.js';
-import { Security } from './lib/flay.utils.js';
-import { flayWebsocket } from './lib/flay.websocket.js';
 import './lib/kamoru.life.timer.js';
 import menuItems from './main.json';
 import './main.scss';
 import './styles/common.scss';
-
-const isAdmin = Security.hasRole('ADMIN');
-const username = Security.getName();
-console.log(`User is ${username} ${isAdmin ? 'has ADMIN Role' : ''}`);
 
 const SlideMenu = {
   init: () => {
@@ -116,7 +110,7 @@ const SlideMenu = {
       }
       $li.append($icon, $menu.append($name, $popup)).appendTo($wrap);
     });
-    $('#username').html(username + (isAdmin ? ' Admin' : ''));
+    $('#username').hide();
     $('.logout').on('click', () => {
       SlideMenu.logout('/logout');
     });
@@ -160,13 +154,6 @@ const SlideMenu = {
     const setTheme = () => {
       const bgThemeValue = $("input[name='bgTheme']:checked").val();
       LocalStorageItem.set('flay.bgtheme', bgThemeValue);
-
-      // broadcasting
-      try {
-        flayWebsocket.data({ mode: 'bgtheme' });
-      } catch (e) {
-        // no nothing
-      }
     };
     let bgTheme = LocalStorageItem.get('flay.bgtheme', 'dark');
     let bgColor = LocalStorageItem.get('flay.bgcolor', '#000000');
@@ -180,12 +167,6 @@ const SlideMenu = {
       .val(bgColor)
       .on('change', (e) => {
         $('body').css({ backgroundColor: $(e.target).val() });
-        try {
-          // broadcasting
-          flayWebsocket.data({ mode: 'bgcolor' });
-        } catch (e) {
-          // no nothing
-        }
         LocalStorageItem.set('flay.bgcolor', $(e.target).val());
       })
       .trigger('change');
@@ -199,39 +180,35 @@ const SlideMenu = {
   },
   specialViewPause: false,
   specialView: () => {
-    if (Security.isAutomaticallyCertificated()) {
-      let selectedBgIndex = -1;
-      $('#mainMenuWrap > li > div > a:nth-child(1)').hover(
-        () => {
-          if (SlideMenu.specialViewPause) {
-            return;
-          }
-          selectedBgIndex = Random.getInteger(0, Background.count);
-          $('#specialView').css({
-            backgroundImage: "url('/static/image/" + selectedBgIndex + "')",
-          });
-        },
-        () => {
-          // do nothing
+    let selectedBgIndex = -1;
+    $('#mainMenuWrap > li > div > a:nth-child(1)').hover(
+      () => {
+        if (SlideMenu.specialViewPause) {
+          return;
         }
-      );
-      $('.sidenav > h4 > a').hover(
-        () => {
-          if (SlideMenu.specialViewPause) {
-            return;
-          }
-          $('#specialView').css('backgroundImage', '');
-        },
-        () => {
-          // do nothing
+        selectedBgIndex = Random.getInteger(0, Background.count);
+        $('#specialView').css({
+          backgroundImage: "url('/static/image/" + selectedBgIndex + "')",
+        });
+      },
+      () => {
+        // do nothing
+      }
+    );
+    $('.sidenav > h4 > a').hover(
+      () => {
+        if (SlideMenu.specialViewPause) {
+          return;
         }
-      );
-      $('.sidenav > h4 > img').on('click', () => {
-        Popup.imageByNo(selectedBgIndex);
-      });
-    } else {
-      $('#specialView').hide();
-    }
+        $('#specialView').css('backgroundImage', '');
+      },
+      () => {
+        // do nothing
+      }
+    );
+    $('.sidenav > h4 > img').on('click', () => {
+      Popup.imageByNo(selectedBgIndex);
+    });
   },
 };
 

@@ -271,14 +271,5 @@
       "w": 1000,
       "h": 660
     }
-  },
-  {
-    "name": "Websocket",
-    "uri": "./util.websocket.stat.html",
-    "icon": "fa fa-info",
-    "popup": {
-      "w": 1078,
-      "h": 830
-    }
   }
 ]

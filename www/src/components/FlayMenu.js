@@ -297,7 +297,6 @@ class FlayMenu extends HTMLElement {
     subMenuNav.appendChild(createImageWaterfallToggle());
     subMenuNav.appendChild(createThemeToggle(shadow));
     subMenuNav.appendChild(createRemainTimer());
-    subMenuNav.appendChild(createLogout());
   }
 }
 
@@ -389,36 +388,6 @@ function createRemainTimer() {
   label.appendChild(small);
 
   return menuItemFactory('Remain', ['fa', 'fa-clock-o'], label);
-}
-
-function createLogout() {
-  const label = document.createElement('label');
-  label.classList.add('m-0', 'hover');
-  label.setAttribute('id', 'logout');
-  label.addEventListener('click', () => {
-    let tokenValue = '';
-    document.cookie.split(';').forEach((cookie) => {
-      if ('XSRF-TOKEN' === cookie.substr(0, cookie.indexOf('=')).replace(/^\s+|\s+$/g, '')) {
-        tokenValue = unescape(cookie.substr(cookie.indexOf('=') + 1));
-        return false;
-      }
-    });
-
-    const logoutForm = document.createElement('form');
-    logoutForm.setAttribute('method', 'POST');
-    logoutForm.setAttribute('action', '/logout');
-
-    const csrfField = document.createElement('input');
-    csrfField.setAttribute('type', 'hidden');
-    csrfField.setAttribute('name', '_csrf');
-    csrfField.setAttribute('value', tokenValue);
-
-    document.body.appendChild(logoutForm);
-    logoutForm.appendChild(csrfField);
-    logoutForm.submit();
-  });
-
-  return menuItemFactory('Logout', ['fa', 'fa-sign-out'], label);
 }
 
 function menuItemFactory(title, iconClasses, element, clickEventHandler) {

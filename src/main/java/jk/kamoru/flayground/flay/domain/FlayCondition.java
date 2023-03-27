@@ -9,7 +9,7 @@ public class FlayCondition {
     STUDIO, OPUS, TITLE, ACTRESS, RELEASE, PLAY, RANK, LASTACCESS, LASTMODIFIED, SCORE, LENGTH;
   }
 
-  private Sort sort;
+  private Sort sort = Sort.OPUS;
 
   private String studio;
   private String opus;

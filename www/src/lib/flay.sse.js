@@ -17,7 +17,7 @@ sse.onmessage = (e) => {
   console.debug('<< onmessage', e);
 };
 
-/**
+/*
  * Event name:
  *   CONNECT, FLAY, STUDIO, VIDEO, ACTRESS, TAG, MESSAGE
  */

@@ -1567,6 +1567,6 @@ window.emitActress = (actress) => {
 window.emitTag = (tag) => {
   console.log('received tag', tag);
 };
-window.emitMesssage = (message) => {
+window.emitMessage = (message) => {
   console.log('received message', message);
 };

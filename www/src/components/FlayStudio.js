@@ -2,30 +2,33 @@
  *
  */
 export default class FlayStudio extends HTMLElement {
-  /**
-   *
-   * @param {String} name
-   * @param {String} opus
-   */
-  constructor(name, opus) {
+  constructor() {
     super();
 
-    // shadow root을 생성합니다
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const wrapper = document.createElement('div');
-    wrapper.setAttribute('data-opus', opus);
+    this.wrapper = document.createElement('div');
+    this.wrapper.classList.add('studio');
 
-    const label = wrapper.appendChild(document.createElement('label'));
-    label.setAttribute('title', name);
-    label.textContent = name;
+    this.label = this.wrapper.appendChild(document.createElement('label'));
 
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
     style.setAttribute('href', './css/components.css');
 
-    // 생성된 요소들을 shadow DOM에 부착합니다
-    this.shadowRoot.append(style, wrapper);
+    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+  }
+
+  /**
+   *
+   * @param {String} name
+   * @param {String} opus
+   */
+  set(name, opus) {
+    this.wrapper.setAttribute('data-opus', opus);
+
+    this.label.setAttribute('title', name);
+    this.label.textContent = name;
   }
 }
 

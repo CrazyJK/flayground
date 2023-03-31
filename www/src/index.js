@@ -26,15 +26,15 @@ let opusList = [];
 
 Promise.all([fetchOpusList()])
   .then(([opusValues]) => {
-    console.log('promise.all', opusValues);
+    console.debug('promise.all', opusValues);
     // set data
     opusList = opusValues;
 
     // initiate Elements
     initiateComponents();
 
-    // event
-    addEventListener();
+    // navigation event
+    addNavigationEventListener();
 
     // start
     navigator(NEXT);
@@ -103,9 +103,9 @@ function initiateComponents() {
   const historyElement = document.querySelector('.history');
 }
 
-function addEventListener() {
+function addNavigationEventListener() {
   window.addEventListener('wheel', (e) => {
-    console.log('wheel', e.deltaY, e);
+    console.debug('wheel', e.deltaY, e);
     switch (e.deltaY) {
       case 100: // wheel down
         navigator(NEXT);
@@ -119,7 +119,7 @@ function addEventListener() {
   });
 
   window.addEventListener('keyup', (e) => {
-    console.log('keyup', e.code, e);
+    console.debug('keyup', e.code, e);
     switch (e.code) {
       case 'ArrowRight':
         navigator(NEXT);
@@ -161,7 +161,7 @@ function navigator(direction) {
 
   // With View Transitions:
   const transition = document.startViewTransition(() => renderFlay(opus));
-  console.log('transition', transition);
+  console.debug('transition', transition);
 }
 
 function renderFlay(opus) {

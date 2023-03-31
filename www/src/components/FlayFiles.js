@@ -14,6 +14,11 @@ export default class FlayFiles extends HTMLElement {
     this.playElement = this.wrapper.appendChild(document.createElement('button'));
     this.playElement.addEventListener('click', (e) => {
       console.log('playClick', this.flay.opus);
+      fetch('/flay/play/' + this.flay.opus, { method: 'PATCH' })
+        .then((res) => res.text())
+        .then((text) => {
+          console.log('played', text);
+        });
     });
 
     this.subtitlesElement = this.wrapper.appendChild(document.createElement('button'));
@@ -28,7 +33,6 @@ export default class FlayFiles extends HTMLElement {
       this.fileListElement.classList.toggle('show');
     });
 
-    // files
     this.fileListElement = this.wrapper.appendChild(document.createElement('ol'));
     this.fileListElement.classList.add('files');
     this.fileListElement.addEventListener('click', (e) => {
@@ -48,16 +52,19 @@ export default class FlayFiles extends HTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    const existsMovie = flay.files.movie.length;
-    const existsSubtitles = flay.files.subtitles.length;
+
+    let movieSize = flay.files.movie.length;
+    let subtitlesSize = flay.files.subtitles.length;
 
     this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.playElement.setAttribute('title', existsMovie ? 'Movie' : 'no Movie');
-    this.playElement.textContent = existsMovie ? 'Movie' : 'noMovie';
+    this.playElement.setAttribute('title', movieSize + ' Movie');
+    this.playElement.textContent = movieSize ? (movieSize > 1 ? movieSize + ' ' : '') + 'Movie' : 'noMovie';
 
-    this.subtitlesElement.setAttribute('title', existsSubtitles ? 'Subtitles' : 'no Subtitles');
-    this.subtitlesElement.textContent = existsSubtitles ? 'Subtitles' : 'noSub';
+    this.subtitlesElement.setAttribute('title', subtitlesSize + ' Subtitles');
+    this.subtitlesElement.textContent = subtitlesSize ? (subtitlesSize > 1 ? subtitlesSize + ' ' : '') + 'Sub' : 'noSub';
+
+    this.filesElement.innerHTML = getPrettyFilesize(flay.length) + ' files';
 
     this.fileListElement.textContent = null;
 
@@ -80,3 +87,16 @@ export default class FlayFiles extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-files', FlayFiles);
+
+function getPrettyFilesize(length) {
+  const KB = 1024;
+  const MB = KB * 1024;
+  const GB = MB * 1024;
+  if (length > GB) {
+    return (length / GB).toFixed(1) + '<small>GB</small>';
+  } else if (length > MB) {
+    return (length / MB).toFixed(0) + '<small>MB</small>';
+  } else {
+    return (length / KB).toFixed(0) + '<small>KB</small>';
+  }
+}

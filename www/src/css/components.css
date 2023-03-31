@@ -57,6 +57,16 @@ div.actress > div {
   align-items: center;
   gap: 1rem;
 }
+div.actress > div > span {
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
+}
+div.actress > div > span > label {
+  display: inline-flex;
+}
+div.actress > div > .name {
+  margin-right: auto;
+}
 
 /* for FlayCover */
 div.cover {
@@ -82,7 +92,7 @@ ol.files.show {
   display: block;
 }
 ol.files li {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-family: D2Coding;
 }
 
@@ -93,23 +103,21 @@ div.rank {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  align-items: flex-end;
+  align-items: center;
 }
 
 div.rank-group {
   display: inline-flex;
   gap: 0.5rem;
 }
-div.rank-group img {
-  display: none;
-  width: 2rem;
+div.rank-group label svg {
   aspect-ratio: 157 / 150;
 }
-div.rank-group input:not(:checked) + label > img.normal {
-  display: block;
+div.rank-group input[value='-1']:checked + label {
+  color: #f00a;
 }
-div.rank-group input:checked + label > img.active {
-  display: block;
+div.rank-group input[value='0']:checked + label {
+  color: #0ff8;
 }
 
 /* for FlayRelease */

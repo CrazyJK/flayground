@@ -20,11 +20,11 @@ export default class FlayActress extends HTMLElement {
 
   /**
    *
+   * @param {Flay} flay
    * @param {Actress[]} actressList
-   * @param {String} opus
    */
-  set(actressList, opus) {
-    this.wrapper.setAttribute('data-opus', opus);
+  set(flay, actressList) {
+    this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.textContent = null;
 
     actressList.forEach((actress) => {

@@ -2,11 +2,7 @@
  *
  */
 export default class FlayTag extends HTMLElement {
-  /**
-   *
-   * @param {Tag[]} tagList
-   */
-  constructor(tagList) {
+  constructor() {
     super();
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
@@ -15,20 +11,33 @@ export default class FlayTag extends HTMLElement {
     this.wrapper.classList.add('tag');
 
     this.tagInputElementArray = [];
+    this.opus = null;
 
-    Array.from(tagList).forEach((tag) => {
-      const tagInputElement = this.wrapper.appendChild(document.createElement('input'));
-      tagInputElement.setAttribute('type', 'checkbox');
-      tagInputElement.setAttribute('name', 'tag');
-      tagInputElement.setAttribute('id', 'tag' + tag.id);
+    fetch('/info/tag/list')
+      .then((res) => res.json())
+      .then((tagList) => {
+        Array.from(tagList)
+          .sort((t1, t2) => {
+            return t1.name.localeCompare(t2.name);
+          })
+          .forEach((tag) => {
+            const tagInputElement = this.wrapper.appendChild(document.createElement('input'));
+            tagInputElement.setAttribute('type', 'checkbox');
+            tagInputElement.setAttribute('name', 'tag');
+            tagInputElement.setAttribute('id', 'tag' + tag.id);
+            tagInputElement.setAttribute('value', tag.id);
+            tagInputElement.addEventListener('change', (e) => {
+              console.log('tagChange', this.opus, e.target.value, e.target.checked);
+            });
 
-      const label = this.wrapper.appendChild(document.createElement('label'));
-      label.setAttribute('title', tag.name + '\n' + tag.description);
-      label.setAttribute('for', 'tag' + tag.id);
-      label.textContent = tag.name;
+            const label = this.wrapper.appendChild(document.createElement('label'));
+            label.setAttribute('title', tag.name + '\n' + tag.description);
+            label.setAttribute('for', 'tag' + tag.id);
+            label.textContent = tag.name;
 
-      this.tagInputElementArray.push(tagInputElement);
-    });
+            this.tagInputElementArray.push(tagInputElement);
+          });
+      });
 
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
@@ -39,19 +48,19 @@ export default class FlayTag extends HTMLElement {
 
   /**
    *
-   * @param {Tag[]} tags
-   * @param {String} opus
+   * @param {Flay} flay
    */
-  set(tags, opus) {
-    this.wrapper.setAttribute('data-opus', opus);
+  set(flay) {
+    this.opus = flay.opus;
+    this.wrapper.setAttribute('data-opus', flay.opus);
 
     this.tagInputElementArray.forEach((input) => {
-      let id = input.getAttribute('id');
-      let foundTags = Array.from(tags).filter((tag) => 'tag' + tag.id === id);
+      let id = input.getAttribute('value');
+      let foundTags = Array.from(flay.video.tags).filter((tag) => tag.id === Number(id));
       if (foundTags.length > 0) {
-        input.setAttribute('checked', true);
+        input.checked = true;
       } else {
-        input.removeAttribute('checked');
+        input.checked = false;
       }
     });
   }

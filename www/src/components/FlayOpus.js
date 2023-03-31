@@ -21,13 +21,13 @@ export default class FlayOpus extends HTMLElement {
 
   /**
    *
-   * @param {String} opus
+   * @param {Flay} flay
    */
-  set(opus) {
-    this.wrapper.setAttribute('data-opus', opus);
+  set(flay) {
+    this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.opusLabelElement.setAttribute('title', opus);
-    this.opusLabelElement.textContent = opus;
+    this.opusLabelElement.setAttribute('title', flay.opus);
+    this.opusLabelElement.textContent = flay.opus;
   }
 }
 

@@ -10,6 +10,7 @@ export default class FlayRank extends HTMLElement {
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('rank');
 
+    this.flay = null;
     this.rankInputElementArray = [];
 
     const rankGroupElement = this.wrapper.appendChild(document.createElement('div'));
@@ -19,7 +20,11 @@ export default class FlayRank extends HTMLElement {
       const rankInputElement = rankGroupElement.appendChild(document.createElement('input'));
       rankInputElement.setAttribute('type', 'radio');
       rankInputElement.setAttribute('name', 'rank');
+      rankInputElement.setAttribute('value', i);
       rankInputElement.setAttribute('id', 'rank' + i);
+      rankInputElement.addEventListener('change', (e) => {
+        console.log('rankChange', this.flay.opus, e.target.value);
+      });
 
       const rankLabelElement = rankGroupElement.appendChild(document.createElement('label'));
       rankLabelElement.setAttribute('for', 'rank' + i);
@@ -36,6 +41,9 @@ export default class FlayRank extends HTMLElement {
     }
 
     this.likeElement = this.wrapper.appendChild(document.createElement('button'));
+    this.likeElement.addEventListener('click', (e) => {
+      console.log('likeClick', this.flay.opus);
+    });
 
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
@@ -46,20 +54,20 @@ export default class FlayRank extends HTMLElement {
 
   /**
    *
-   * @param {Video} video
-   * @param {String} opus
+   * @param {Flay} flay
    */
-  set(video, opus) {
-    this.wrapper.setAttribute('data-opus', opus);
+  set(flay) {
+    this.flay = flay;
+    this.wrapper.setAttribute('data-opus', flay.opus);
 
     this.rankInputElementArray.forEach((input, index) => {
       input.removeAttribute('checked');
-      if (index === video.rank + 1) {
-        input.click();
+      if (index === flay.video.rank + 1) {
+        input.checked = true;
       }
     });
 
-    let likeCount = video.likes ? video.likes.length : '';
+    let likeCount = flay.video.likes ? (flay.video.likes.length > 0 ? flay.video.likes.length : '') : '';
 
     this.likeElement.setAttribute('title', 'Like' + likeCount);
     this.likeElement.textContent = 'Like' + likeCount;

@@ -21,14 +21,13 @@ export default class FlayStudio extends HTMLElement {
 
   /**
    *
-   * @param {String} name
-   * @param {String} opus
+   * @param {Flay} flay
    */
-  set(name, opus) {
-    this.wrapper.setAttribute('data-opus', opus);
+  set(flay) {
+    this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.label.setAttribute('title', name);
-    this.label.textContent = name;
+    this.label.setAttribute('title', flay.studio);
+    this.label.textContent = flay.studio;
   }
 }
 

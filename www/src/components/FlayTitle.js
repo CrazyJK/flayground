@@ -21,14 +21,13 @@ export default class FlayTitle extends HTMLElement {
 
   /**
    *
-   * @param {String} title
-   * @param {String} opus
+   * @param {Flay} flay
    */
-  set(title, opus) {
-    this.wrapper.setAttribute('data-opus', opus);
+  set(flay) {
+    this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.titleLabelElement.setAttribute('title', title);
-    this.titleLabelElement.textContent = title;
+    this.titleLabelElement.setAttribute('title', flay.title);
+    this.titleLabelElement.textContent = flay.title;
   }
 }
 

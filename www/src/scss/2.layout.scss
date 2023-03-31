@@ -1,3 +1,6 @@
+html {
+  font-size: 16px;
+}
 body {
   position: absolute;
   inset: 0;
@@ -7,7 +10,7 @@ body {
 
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-size: 16px;
+  font-size: 1rem;
   font-weight: 400;
 
   display: grid;

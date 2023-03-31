@@ -21,14 +21,13 @@ export default class FlayRelease extends HTMLElement {
 
   /**
    *
-   * @param {String} release
-   * @param {String} opus
+   * @param {Flay} flay
    */
-  set(release, opus) {
-    this.wrapper.setAttribute('data-opus', opus);
+  set(flay) {
+    this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.label.setAttribute('title', release);
-    this.label.textContent = release;
+    this.label.setAttribute('title', flay.release);
+    this.label.textContent = flay.release;
   }
 }
 

@@ -21,21 +21,14 @@ let params = {
   sort: 'RELEASE',
 };
 
-let opusIndex = 0;
+let opusIndex = -1;
 let opusList = [];
-let tagList = [];
 
-Promise.all([fetchOpusList(), fetchTagList()])
-  .then(([opusValues, tagValues]) => {
-    console.log('promise.all', opusValues, tagValues);
-    // sort tag
-    tagValues.sort((t1, t2) => {
-      return t1.name.localeCompare(t2.name);
-    });
-
+Promise.all([fetchOpusList()])
+  .then(([opusValues]) => {
+    console.log('promise.all', opusValues);
     // set data
     opusList = opusValues;
-    tagList = tagValues;
 
     // initiate Elements
     initiateComponents();
@@ -44,15 +37,11 @@ Promise.all([fetchOpusList(), fetchTagList()])
     addEventListener();
 
     // start
-    navigator(RANDOM);
+    navigator(NEXT);
   })
   .catch((error) => {
     console.error('Error:', error);
   });
-
-async function fetchTagList() {
-  return await fetch('/info/tag/list').then((res) => res.json());
-}
 
 async function fetchOpusList() {
   return await fetch('/flay/list/opus', {
@@ -108,7 +97,7 @@ function initiateComponents() {
   // tag
   const tagElement = document.querySelector('.tag');
   tagElement.textContent = null;
-  flayTag = tagElement.appendChild(new FlayTag(tagList));
+  flayTag = tagElement.appendChild(new FlayTag());
 
   // history
   const historyElement = document.querySelector('.history');
@@ -176,25 +165,22 @@ function navigator(direction) {
 }
 
 function renderFlay(opus) {
-  flayOpus.set(opus);
-  flayCover.set(opus);
   // fetch flay
   fetch('/flay/' + opus + '/fully')
     .then((res) => res.json())
-    .then((data) => {
-      console.log('data', data);
-      const { actress, flay } = data;
-      console.log('flay', flay);
-      console.log('actress', actress);
-      console.log('tags', flay.video.tags);
+    .then((fullyFlay) => {
+      console.log('data', fullyFlay);
+      const { actress, flay } = fullyFlay;
 
-      flayStudio.set(flay.studio, flay.opus);
-      flayTitle.set(flay.title, flay.opus);
-      flayRelease.set(flay.release, opus);
-      flayActress.set(actress, opus);
-      flayFiles.set(flay.files, opus);
-      flayRank.set(flay.video, opus);
-      flayTag.set(flay.video.tags, opus);
+      flayOpus.set(flay);
+      flayCover.set(flay);
+      flayStudio.set(flay);
+      flayTitle.set(flay);
+      flayRelease.set(flay);
+      flayActress.set(flay, actress);
+      flayFiles.set(flay);
+      flayRank.set(flay);
+      flayTag.set(flay);
       // history
     });
 }

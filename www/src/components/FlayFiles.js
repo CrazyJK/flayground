@@ -7,24 +7,32 @@ export default class FlayFiles extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
+    this.flay = null;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('files');
 
     this.playElement = this.wrapper.appendChild(document.createElement('button'));
+    this.playElement.addEventListener('click', (e) => {
+      console.log('playClick', this.flay.opus);
+    });
 
     this.subtitlesElement = this.wrapper.appendChild(document.createElement('button'));
+    this.subtitlesElement.addEventListener('click', (e) => {
+      console.log('subtitlesClick', this.flay.opus);
+    });
 
     this.filesElement = this.wrapper.appendChild(document.createElement('button'));
     this.filesElement.setAttribute('title', 'show files');
     this.filesElement.textContent = 'files';
+    this.filesElement.addEventListener('click', () => {
+      this.fileListElement.classList.toggle('show');
+    });
 
     // files
     this.fileListElement = this.wrapper.appendChild(document.createElement('ol'));
     this.fileListElement.classList.add('files');
-
-    // event
-    this.filesElement.addEventListener('click', () => {
-      this.fileListElement.classList.toggle('show');
+    this.fileListElement.addEventListener('click', (e) => {
+      console.log('filesClick', this.flay.opus, e.target);
     });
 
     const style = document.createElement('link');
@@ -36,14 +44,14 @@ export default class FlayFiles extends HTMLElement {
 
   /**
    *
-   * @param {Files} title
-   * @param {String} opus
+   * @param {Flay} flay
    */
-  set(files, opus) {
-    const existsMovie = files.movie.length;
-    const existsSubtitles = files.subtitles.length;
+  set(flay) {
+    this.flay = flay;
+    const existsMovie = flay.files.movie.length;
+    const existsSubtitles = flay.files.subtitles.length;
 
-    this.wrapper.setAttribute('data-opus', opus);
+    this.wrapper.setAttribute('data-opus', flay.opus);
 
     this.playElement.setAttribute('title', existsMovie ? 'Movie' : 'no Movie');
     this.playElement.textContent = existsMovie ? 'Movie' : 'noMovie';
@@ -53,17 +61,17 @@ export default class FlayFiles extends HTMLElement {
 
     this.fileListElement.textContent = null;
 
-    Array.from(files.cover).forEach((path) => {
+    Array.from(flay.files.cover).forEach((path) => {
       const fileElement = this.fileListElement.appendChild(document.createElement('li'));
       fileElement.textContent = path;
     });
 
-    Array.from(files.movie).forEach((path) => {
+    Array.from(flay.files.movie).forEach((path) => {
       const fileElement = this.fileListElement.appendChild(document.createElement('li'));
       fileElement.textContent = path;
     });
 
-    Array.from(files.subtitles).forEach((path) => {
+    Array.from(flay.files.subtitles).forEach((path) => {
       const fileElement = this.fileListElement.appendChild(document.createElement('li'));
       fileElement.textContent = path;
     });

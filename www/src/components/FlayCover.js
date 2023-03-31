@@ -21,11 +21,11 @@ export default class FlayCover extends HTMLElement {
 
   /**
    *
-   * @param {String} opus
+   * @param {Flay} flay
    */
-  set(opus) {
-    this.wrapper.setAttribute('data-opus', opus);
-    this.wrapper.style.backgroundImage = `url(/static/cover/${opus})`;
+  set(flay) {
+    this.wrapper.setAttribute('data-opus', flay.opus);
+    this.wrapper.style.backgroundImage = `url(/static/cover/${flay.opus})`;
 
     // this.imgElement.setAttribute('src', '/static/cover/' + opus);
   }

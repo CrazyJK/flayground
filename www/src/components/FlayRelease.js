@@ -7,10 +7,14 @@ export default class FlayRelease extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
+    this.flay = null;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('release');
 
-    this.label = this.wrapper.appendChild(document.createElement('label'));
+    this.releaseLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.lastModifiedLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.lastAccessLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.lastPlayLabel = this.wrapper.appendChild(document.createElement('label'));
 
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
@@ -24,12 +28,24 @@ export default class FlayRelease extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
+    this.flay = flay;
+    this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.label.setAttribute('title', flay.release);
-    this.label.textContent = flay.release;
+    this.releaseLabel.textContent = flay.release;
+    this.lastModifiedLabel.innerHTML = '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>';
+    this.lastAccessLabel.innerHTML = '<small>' + dateFormat(flay.video.lastAccess) + '<i class="badge">acc</i></small>';
+    this.lastPlayLabel.innerHTML = '<small>' + dateFormat(flay.video.lastPlay) + '<i class="badge">play</i></small>';
   }
 }
 
 // Define the new element
 customElements.define('flay-release', FlayRelease);
+
+function dateFormat(time) {
+  const date = new Date(time);
+  let year = date.getFullYear();
+  let month = date.getMonth() + 1;
+  let day = date.getDate();
+  return `${year}-${month > 9 ? month : '0' + month}-${day > 9 ? day : '0' + day}`;
+}

@@ -1,3 +1,5 @@
+import FlayAction from '../util/FlayAction';
+
 /**
  *
  */
@@ -28,7 +30,7 @@ export default class FlayActress extends HTMLElement {
   set(flay, actressList) {
     this.flay = flay;
     this.actressList = actressList;
-
+    this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.textContent = null;
 
@@ -38,18 +40,28 @@ export default class FlayActress extends HTMLElement {
       // favorite
       const favoriteElement = actressDiv.appendChild(document.createElement('span'));
       const input = favoriteElement.appendChild(document.createElement('input'));
-      input.setAttribute('type', 'checkbox');
-      input.setAttribute('id', 'fav' + index);
+      input.id = 'fav' + index;
+      input.type = 'checkbox';
       input.checked = actress.favorite;
+      input.addEventListener('change', (e) => {
+        console.log('favoriteChange', e.target.checked, actress.name);
+        FlayAction.setFavorite(actress.name, e.target.checked);
+      });
+
       const label = favoriteElement.appendChild(document.createElement('label'));
       label.setAttribute('for', 'fav' + index);
       label.innerHTML = `<svg width="1.5rem" height="1.5rem" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>`;
 
       // name
-      const nameElement = actressDiv.appendChild(document.createElement('label'));
+      const nameElement = actressDiv.appendChild(document.createElement('a'));
+      nameElement.href = '#';
       nameElement.classList.add('name');
-      nameElement.setAttribute('title', actress.name + (actress.comment ? ' - ' + actress.comment : ''));
+      nameElement.title = actress.name + (actress.comment ? ' - ' + actress.comment : '');
       nameElement.innerHTML = actress.name;
+      nameElement.addEventListener('click', () => {
+        console.log('nameClick', actress.name);
+        window.open('/info/actress/' + actress.name, actress.name, 'width=640px,height=800px');
+      });
 
       // localName
       const localNameElement = actressDiv.appendChild(document.createElement('label'));

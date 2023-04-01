@@ -1,4 +1,5 @@
 import FlayActress from './components/FlayActress';
+import FlayComment from './components/FlayComment';
 import FlayCover from './components/FlayCover';
 import FlayFiles from './components/FlayFiles';
 import FlayOpus from './components/FlayOpus';
@@ -15,7 +16,7 @@ const PREV = 'PREV';
 const RANDOM = 'RANDOM';
 
 // components
-let flayCover, flayStudio, flayOpus, flayTitle, flayRelease, flayActress, flayFiles, flayRank, flayTag;
+let flayCover, flayStudio, flayOpus, flayTitle, flayComment, flayRelease, flayActress, flayFiles, flayRank, flayTag;
 
 let params = {
   sort: 'RELEASE',
@@ -74,15 +75,20 @@ function initiateComponents() {
   titleElement.textContent = null;
   flayTitle = titleElement.appendChild(new FlayTitle());
 
-  // release
-  const releaseElement = document.querySelector('.release');
-  releaseElement.textContent = null;
-  flayRelease = releaseElement.appendChild(new FlayRelease());
+  // comment
+  const commentElement = document.querySelector('.comment');
+  commentElement.textContent = null;
+  flayComment = commentElement.appendChild(new FlayComment());
 
   // actress
   const actressElement = document.querySelector('.actress');
   actressElement.textContent = null;
   flayActress = actressElement.appendChild(new FlayActress());
+
+  // release
+  const releaseElement = document.querySelector('.release');
+  releaseElement.textContent = null;
+  flayRelease = releaseElement.appendChild(new FlayRelease());
 
   // files, play
   const filesElement = document.querySelector('.files');
@@ -105,7 +111,11 @@ function initiateComponents() {
 
 function addNavigationEventListener() {
   window.addEventListener('wheel', (e) => {
+    e.stopPropagation();
     console.debug('wheel', e.deltaY, e);
+    if (e.ctrlKey) {
+      return;
+    }
     switch (e.deltaY) {
       case 100: // wheel down
         navigator(NEXT);
@@ -169,15 +179,16 @@ function renderFlay(opus) {
   fetch('/flay/' + opus + '/fully')
     .then((res) => res.json())
     .then((fullyFlay) => {
-      console.log('data', fullyFlay);
       const { actress, flay } = fullyFlay;
+      console.log('data', flay, actress);
 
-      flayOpus.set(flay);
       flayCover.set(flay);
       flayStudio.set(flay);
+      flayOpus.set(flay);
       flayTitle.set(flay);
-      flayRelease.set(flay);
+      flayComment.set(flay);
       flayActress.set(flay, actress);
+      flayRelease.set(flay);
       flayFiles.set(flay);
       flayRank.set(flay);
       flayTag.set(flay);

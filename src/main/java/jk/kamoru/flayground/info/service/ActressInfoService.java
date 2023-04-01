@@ -79,4 +79,10 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
     }
   }
 
+  public void setFavorite(String name, boolean checked) {
+    Actress actress = super.infoSource.get(name);
+    actress.setFavorite(checked);
+    super.update(actress);
+  }
+
 }

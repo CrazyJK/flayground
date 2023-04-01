@@ -9,12 +9,15 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
+import jk.kamoru.flayground.info.service.TagInfoService;
 import jk.kamoru.flayground.info.service.VideoInfoService;
 
 @RestController
@@ -23,6 +26,9 @@ public class VideoController {
 
   @Autowired
   VideoInfoService videoInfoService;
+
+  @Autowired
+  TagInfoService tagInfoService;
 
   @GetMapping("/{opus}")
   public Video get(@PathVariable String opus) {
@@ -54,6 +60,31 @@ public class VideoController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@RequestBody Video video) {
     videoInfoService.delete(video);
+  }
+
+  @PutMapping("/rank/{opus}/{rank}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void setRank(@PathVariable String opus, @PathVariable int rank) {
+    videoInfoService.setRank(opus, rank);
+  }
+
+  @PutMapping("/like/{opus}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void setLike(@PathVariable String opus) {
+    videoInfoService.setLike(opus);
+  }
+
+  @PutMapping("/tag/{opus}/{tagId}/{checked}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void toggleTag(@PathVariable String opus, @PathVariable Integer tagId, @PathVariable boolean checked) {
+    Tag tag = tagInfoService.get(tagId);
+    videoInfoService.toggleTag(opus, tag, checked);
+  }
+
+  @PutMapping("/comment/{opus}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void setComment(@PathVariable String opus, @RequestBody String comment) {
+    videoInfoService.setComment(opus, comment);
   }
 
 }

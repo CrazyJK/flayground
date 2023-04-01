@@ -1,3 +1,5 @@
+import FlayAction from '../util/FlayAction';
+
 /**
  *
  */
@@ -27,6 +29,7 @@ export default class FlayRank extends HTMLElement {
       rankInputElement.setAttribute('id', 'rank' + i);
       rankInputElement.addEventListener('change', (e) => {
         console.log('rankChange', this.flay.opus, e.target.value);
+        FlayAction.setRank(this.flay.opus, e.target.value);
       });
 
       const rankLabelElement = rankGroupElement.appendChild(document.createElement('label'));
@@ -55,7 +58,10 @@ export default class FlayRank extends HTMLElement {
     this.likeElement = this.wrapper.appendChild(document.createElement('button'));
     this.likeElement.addEventListener('click', (e) => {
       console.log('likeClick', this.flay.opus);
+      FlayAction.setLike(this.flay.opus);
     });
+
+    this.scoreLabel = this.wrapper.appendChild(document.createElement('label'));
 
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
@@ -70,6 +76,7 @@ export default class FlayRank extends HTMLElement {
    */
   set(flay) {
     this.flay = flay;
+    this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
 
     this.rankInputElementArray.forEach((input, index) => {
@@ -82,7 +89,9 @@ export default class FlayRank extends HTMLElement {
     let likeCount = flay.video.likes ? (flay.video.likes.length > 0 ? flay.video.likes.length : '') : '';
 
     this.likeElement.setAttribute('title', 'Like' + likeCount);
-    this.likeElement.innerHTML = 'Like<small>' + likeCount + '</small>';
+    this.likeElement.innerHTML = 'Like<i class="badge">' + likeCount + '</i>';
+
+    this.scoreLabel.innerHTML = 'Score<i class="badge">' + flay.score + '</i>';
   }
 }
 

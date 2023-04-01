@@ -41,6 +41,9 @@ public class Tag implements Info<Integer> {
     lastModified = new Date().getTime();
   }
 
+  /*
+   * id로 비교
+   */
   @Override
   public boolean equals(Object obj) {
     if (this == obj)

@@ -1,3 +1,5 @@
+import FlayAction from '../util/FlayAction';
+
 /**
  *
  */
@@ -11,32 +13,36 @@ export default class FlayFiles extends HTMLElement {
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('files');
 
-    this.playElement = this.wrapper.appendChild(document.createElement('button'));
-    this.playElement.addEventListener('click', (e) => {
+    this.movieBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.movieBtn.addEventListener('click', (e) => {
       console.log('playClick', this.flay.opus);
-      fetch('/flay/play/' + this.flay.opus, { method: 'PATCH' })
-        .then((res) => res.text())
-        .then((text) => {
-          console.log('played', text);
-        });
+      FlayAction.play(this.flay.opus);
     });
 
-    this.subtitlesElement = this.wrapper.appendChild(document.createElement('button'));
-    this.subtitlesElement.addEventListener('click', (e) => {
+    this.subBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.subBtn.addEventListener('click', (e) => {
       console.log('subtitlesClick', this.flay.opus);
+      FlayAction.editSubtitles(this.flay.opus);
     });
 
-    this.filesElement = this.wrapper.appendChild(document.createElement('button'));
-    this.filesElement.setAttribute('title', 'show files');
-    this.filesElement.textContent = 'files';
-    this.filesElement.addEventListener('click', () => {
+    this.playLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.playLabel.innerHTML = 'Play';
+
+    this.sizeLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.sizeLabel.innerHTML = '';
+
+    this.fileShowBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.fileShowBtn.setAttribute('title', 'show files');
+    this.fileShowBtn.textContent = 'files';
+    this.fileShowBtn.addEventListener('click', () => {
       this.fileListElement.classList.toggle('show');
     });
 
     this.fileListElement = this.wrapper.appendChild(document.createElement('ol'));
     this.fileListElement.classList.add('files');
     this.fileListElement.addEventListener('click', (e) => {
-      console.log('filesClick', this.flay.opus, e.target);
+      console.log('filesClick', this.flay.opus, e.target.textContent);
+      FlayAction.explore(e.target.textContent);
     });
 
     const style = document.createElement('link');
@@ -51,20 +57,22 @@ export default class FlayFiles extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.flay = flay;
-
     let movieSize = flay.files.movie.length;
     let subtitlesSize = flay.files.subtitles.length;
 
+    this.flay = flay;
+    this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.playElement.setAttribute('title', movieSize + ' Movie');
-    this.playElement.textContent = movieSize ? (movieSize > 1 ? movieSize + ' ' : '') + 'Movie' : 'noMovie';
+    this.movieBtn.setAttribute('title', movieSize + ' Movie');
+    this.movieBtn.innerHTML = 'Movie<i class="badge">' + movieSize + '</i>';
 
-    this.subtitlesElement.setAttribute('title', subtitlesSize + ' Subtitles');
-    this.subtitlesElement.textContent = subtitlesSize ? (subtitlesSize > 1 ? subtitlesSize + ' ' : '') + 'Sub' : 'noSub';
+    this.subBtn.setAttribute('title', subtitlesSize + ' Subtitles');
+    this.subBtn.innerHTML = 'Sub<i class="badge">' + subtitlesSize + '</i>';
 
-    this.filesElement.innerHTML = getPrettyFilesize(flay.length) + ' files';
+    this.playLabel.innerHTML = 'Play<i class="badge">' + flay.video.play + '</i>';
+
+    this.sizeLabel.innerHTML = getPrettyFilesize(flay.length);
 
     this.fileListElement.textContent = null;
 

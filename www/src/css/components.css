@@ -20,6 +20,15 @@ button:hover {
   cursor: pointer;
 }
 
+/* common: badge */
+i.badge {
+  float: right;
+  margin: 0 0 0 0.25rem;
+  font-size: smaller;
+  font-style: normal;
+  font-weight: normal;
+}
+
 /* common: input checkbox, radio */
 input[type='checkbox'],
 input[type='radio'] {
@@ -45,9 +54,14 @@ input[type='radio']:checked + label {
   color: var(--color-checked);
 }
 
-label {
+/* common: label, a */
+label, a {
   font-size: 1.25rem;
   font-weight: 700;
+}
+a {
+  text-decoration: none;
+  color: var(--color-text);
 }
 
 /* for FlayActress */
@@ -105,7 +119,6 @@ div.rank {
   justify-content: center;
   align-items: center;
 }
-
 div.rank-group {
   display: inline-flex;
   gap: 0.5rem;
@@ -121,22 +134,46 @@ div.rank-group input[value='0']:checked + label {
 }
 
 /* for FlayRelease */
+div.release {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
 
 /* for FlayStudio */
 
 /* for FlayTag */
-div.tag {
+div.tag .tag-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: baseline;
   gap: 0.5rem 0.75rem;
 }
-div.tag label {
+div.tag .tag-list label {
   font-size: 1rem;
 }
+div.tag .tag-list .tag-new-btn {
+  font-size: 1rem;
+}
+div.tag .tag-new {
+  display: none;
+}
+div.tag .tag-new.show {
+  display: block;
+}
+div.tag .tag-new input {
+  background-color: transparent;
+  color: var(--color-text);
+  margin: 0.25rem;
+  border: 0;
+  padding: 0.25rem;
+  font-size: 1.25rem;
+  text-align: center;
+}
 
-/* fir FlayTitle */
+/* for FlayTitle */
 div.title label {
   position: relative;
   display: block;
@@ -144,4 +181,21 @@ div.title label {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+
+/* for FlayComment */
+div.comment input {
+  position: relative;
+  display: block;
+  background-color: transparent;
+  color: var(--color-text);
+  margin: 0;
+  border: 0;
+  padding: 0.25rem 0;
+  width: 100%;
+  font-size: 1.25rem;
+  text-align: center;
+}
+div.comment .placeholder {
+  color: var(--color-text-placeholder);
 }

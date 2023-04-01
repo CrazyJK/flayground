@@ -83,6 +83,12 @@ public class ActressController {
     actressInfoService.rename(actress, name);
   }
 
+  @PutMapping("/favorite/{name}/{checked}")
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void setFavorite(@PathVariable String name, @PathVariable boolean checked) {
+    actressInfoService.setFavorite(name, checked);
+  }
+
   @DeleteMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void delete(@RequestBody Actress actress) {

@@ -3,6 +3,8 @@ package jk.kamoru.flayground.info.domain;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
@@ -24,7 +26,7 @@ public class Video implements Info<String> {
   String comment;
   String title;
   String desc;
-  List<Tag> tags;
+  Set<Tag> tags;
   List<Date> likes;
 
   public Video(String key) {
@@ -37,7 +39,7 @@ public class Video implements Info<String> {
     this.comment = "";
     this.title = "";
     this.desc = "";
-    this.tags = new ArrayList<>();
+    this.tags = new TreeSet<>();
     this.likes = new ArrayList<>();
   }
 
@@ -65,6 +67,11 @@ public class Video implements Info<String> {
     if (likes == null) {
       likes = new ArrayList<>();
     }
+  }
+
+  public void addLike() {
+    initLikes();
+    likes.add(new Date());
   }
 
 }

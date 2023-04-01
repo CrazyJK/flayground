@@ -1,10 +1,12 @@
 package jk.kamoru.flayground.flay.service;
 
 import java.io.File;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import jk.kamoru.flayground.FlayException;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.web.sse.SseEmitters;
@@ -24,12 +26,22 @@ public class FlayActionHandler {
   SseEmitters sseEmitters;
 
   public void play(Flay flay) {
+    List<File> movieFileList = flay.getFiles().get(Flay.MOVIE);
+    if (movieFileList == null || movieFileList.size() == 0) {
+      throw new FlayException("영상 파일이 없습니다");
+    }
+
     flayAsyncExecutor.exec(flayProperties.getPlayerApp(), flay.getFiles().get(Flay.MOVIE));
     sseEmitters.send(flay);
   }
 
   public void edit(Flay flay) {
-    flayAsyncExecutor.exec(flayProperties.getEditorApp(), flay.getFiles().get(Flay.SUBTI));
+    List<File> subtitlesFileList = flay.getFiles().get(Flay.SUBTI);
+    if (subtitlesFileList == null || subtitlesFileList.size() == 0) {
+      throw new FlayException("자막 파일이 없습니다");
+    }
+
+    flayAsyncExecutor.exec(flayProperties.getEditorApp(), subtitlesFileList.get(0));
     sseEmitters.send(flay);
   }
 

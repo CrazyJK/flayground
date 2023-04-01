@@ -2,6 +2,7 @@ import FlayActress from './components/FlayActress';
 import FlayComment from './components/FlayComment';
 import FlayCover from './components/FlayCover';
 import FlayFiles from './components/FlayFiles';
+import FlayNavigator from './components/FlayNavigator';
 import FlayOpus from './components/FlayOpus';
 import FlayRank from './components/FlayRank';
 import FlayRelease from './components/FlayRelease';
@@ -10,19 +11,15 @@ import FlayTag from './components/FlayTag';
 import FlayTitle from './components/FlayTitle';
 import './index.scss';
 import './scss/style.scss';
-
-const NEXT = 'NEXT';
-const PREV = 'PREV';
-const RANDOM = 'RANDOM';
+import './util/flay.sse';
 
 // components
-let flayCover, flayStudio, flayOpus, flayTitle, flayComment, flayRelease, flayActress, flayFiles, flayRank, flayTag;
+let flayCover, flayStudio, flayOpus, flayTitle, flayComment, flayRelease, flayActress, flayFiles, flayRank, flayTag, flayNavigator;
 
 let params = {
   sort: 'RELEASE',
 };
 
-let opusIndex = -1;
 let opusList = [];
 
 Promise.all([fetchOpusList()])
@@ -33,12 +30,6 @@ Promise.all([fetchOpusList()])
 
     // initiate Elements
     initiateComponents();
-
-    // navigation event
-    addNavigationEventListener();
-
-    // start
-    navigator(NEXT);
   })
   .catch((error) => {
     console.error('Error:', error);
@@ -107,71 +98,12 @@ function initiateComponents() {
 
   // history
   const historyElement = document.querySelector('.history');
-}
 
-function addNavigationEventListener() {
-  window.addEventListener('wheel', (e) => {
-    e.stopPropagation();
-    console.debug('wheel', e.deltaY, e);
-    if (e.ctrlKey) {
-      return;
-    }
-    switch (e.deltaY) {
-      case 100: // wheel down
-        navigator(NEXT);
-        break;
-      case -100: // wheel up
-        navigator(PREV);
-        break;
-      default:
-        break;
-    }
-  });
-
-  window.addEventListener('keyup', (e) => {
-    console.debug('keyup', e.code, e);
-    switch (e.code) {
-      case 'ArrowRight':
-        navigator(NEXT);
-        break;
-      case 'ArrowLeft':
-        navigator(PREV);
-        break;
-      case 'Space':
-        navigator(RANDOM);
-        break;
-      default:
-        break;
-    }
-  });
-}
-
-function navigator(direction) {
-  switch (direction) {
-    case NEXT:
-      opusIndex += 1;
-      break;
-    case PREV:
-      opusIndex -= 1;
-      break;
-    case RANDOM:
-      opusIndex = Math.floor(Math.random() * opusList.length);
-      break;
-    default:
-      throw new Error('unknown direction');
-  }
-
-  let opus = opusList[opusIndex];
-
-  // Fallback for browsers that don't support View Transitions:
-  if (!document.startViewTransition) {
-    renderFlay(opus);
-    return;
-  }
-
-  // With View Transitions:
-  const transition = document.startViewTransition(() => renderFlay(opus));
-  console.debug('transition', transition);
+  // flayNavigator
+  flayNavigator = document.querySelector('body > footer').appendChild(new FlayNavigator());
+  flayNavigator.setData(opusList);
+  flayNavigator.setHandler((opus) => renderFlay(opus));
+  flayNavigator.start();
 }
 
 function renderFlay(opus) {
@@ -195,3 +127,10 @@ function renderFlay(opus) {
       // history
     });
 }
+
+window.emitFlay = (flay) => {
+  renderFlay(flay.opus);
+};
+window.emitVideo = (video) => {
+  renderFlay(video.opus);
+};

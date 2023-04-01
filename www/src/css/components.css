@@ -199,3 +199,46 @@ div.comment input {
 div.comment .placeholder {
   color: var(--color-text-placeholder);
 }
+
+/* for FlayNavigator */
+div.navigator .progress {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+}
+div.navigator .progress .progress-bar {
+  position: relative;
+  height: 1px;
+  background-color: #f00;
+}
+div.navigator .paging {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2px;
+}
+div.navigator .paging .page {
+  position: relative;
+  margin: 0;
+  border: 1px solid #aaa;
+  border-right: 0;
+  padding: 0.125rem;
+  min-width: 2.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+div.navigator .paging .page:last-child {
+  border-right: 1px solid #aaa;
+}
+div.navigator .paging .page a {
+  font-size: 0.875rem;
+  font-weight: normal;
+}
+div.navigator .paging .page:hover a {
+  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
+}
+div.navigator .paging .page a.active {
+  color: var(--color-checked);
+}

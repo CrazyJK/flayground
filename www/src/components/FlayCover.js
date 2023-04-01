@@ -11,8 +11,6 @@ export default class FlayCover extends HTMLElement {
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('cover');
 
-    // this.imgElement = this.wrapper.appendChild(document.createElement('img'));
-
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
     style.setAttribute('href', './css/components.css');
@@ -29,8 +27,6 @@ export default class FlayCover extends HTMLElement {
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.style.backgroundImage = `url(/static/cover/${flay.opus})`;
-
-    // this.imgElement.setAttribute('src', '/static/cover/' + opus);
   }
 }
 

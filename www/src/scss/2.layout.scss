@@ -2,33 +2,14 @@ html {
   font-size: 16px;
 }
 body {
-  position: absolute;
-  inset: 0;
+  position: relative;
   margin: 0;
   padding: 0;
-  overflow: hidden;
 
   background-color: var(--color-bg);
   color: var(--color-text);
   font-size: 1rem;
   font-weight: 400;
-
-  display: grid;
-  grid-template-rows: 4rem 1fr 2rem;
-
-  & > header {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: nowrap;
-    justify-content: center;
-    align-items: center;
-  }
-  & > main {
-    position: relative;
-  }
-  & > footer {
-    position: relative;
-  }
 }
 
 img {

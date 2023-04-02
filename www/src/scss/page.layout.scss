@@ -1,0 +1,22 @@
+body {
+  position: absolute !important;
+  inset: 0;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-rows: 4rem 1fr 2rem;
+
+  & > header {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+  }
+  & > main {
+    position: relative;
+  }
+  & > footer {
+    position: relative;
+  }
+}

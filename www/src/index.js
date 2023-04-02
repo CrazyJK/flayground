@@ -10,7 +10,6 @@ import FlayStudio from './components/FlayStudio';
 import FlayTag from './components/FlayTag';
 import FlayTitle from './components/FlayTitle';
 import './index.scss';
-import './scss/style.scss';
 import './util/flay.sse';
 
 // components

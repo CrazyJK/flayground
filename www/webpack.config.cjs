@@ -7,6 +7,7 @@ module.exports = {
   mode: 'development',
   entry: {
     index: './src/index.js',
+    'flay.one': './src/flay.one.js',
   },
   devtool: 'source-map',
   devServer: {

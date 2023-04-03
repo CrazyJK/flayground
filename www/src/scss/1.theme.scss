@@ -4,6 +4,9 @@
   --color-text-shadow-over: orange;
   --color-text-placeholder: #aaa;
   --color-checked: orange;
+  --color-border: #111;
+
+  --box-shadow: 0 2px 16px 4px #000;
 }
 
 [theme=light] {
@@ -12,4 +15,7 @@
   --color-text-shadow-over: orange;
   --color-text-placeholder: #555;
   --color-checked: orange;
+  --color-border: #ddd;
+
+  --box-shadow: 0 2px 16px 4px #000;
 }

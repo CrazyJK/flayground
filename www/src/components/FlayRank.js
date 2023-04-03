@@ -1,4 +1,5 @@
 import FlayAction from '../util/flay.action';
+import SVG from './svg.json';
 
 /**
  *
@@ -18,9 +19,6 @@ export default class FlayRank extends HTMLElement {
     const rankGroupElement = this.wrapper.appendChild(document.createElement('div'));
     rankGroupElement.classList.add('rank-group');
 
-    const SVG_prefix = '<svg version="1.1" x="0px" y="0px" viewBox="-30 -30 460 440" width="1.75rem"><g>';
-    const SVG_suffic = '</g></svg>';
-
     for (let i = -1; i <= 5; i++) {
       const rankInputElement = rankGroupElement.appendChild(document.createElement('input'));
       rankInputElement.setAttribute('type', 'radio');
@@ -35,22 +33,7 @@ export default class FlayRank extends HTMLElement {
       const rankLabelElement = rankGroupElement.appendChild(document.createElement('label'));
       rankLabelElement.setAttribute('for', 'rank' + i);
       rankLabelElement.setAttribute('title', 'rank ' + i);
-
-      if (i === -1) {
-        rankLabelElement.innerHTML = `${SVG_prefix}<line stroke="currentColor" stroke-width="20%" x1="360" y1="360" x2="40" y2="40" stroke-linecap="round" /><line stroke="currentColor" stroke-width="20%" x1="40" y1="360" x2="360" y2="40" stroke-linecap="round" />${SVG_suffic}`;
-      } else if (i === 0) {
-        rankLabelElement.innerHTML = `${SVG_prefix}<circle fill="currentColor" stroke="currentColor" stroke-width="10%" cx="200" cy="200" r="180" />${SVG_suffic}`;
-      } else if (i === 1) {
-        rankLabelElement.innerHTML = `${SVG_prefix}<polygon fill="#00000000" stroke="currentColor" stroke-width="10%" stroke-linejoin="round" points="200,0 262,125 400,145 300,242 323,380 200,315 76,380 100,242 0,145 138,125 200,0" /><polygon fill="currentColor" stroke="currentColor" stroke-width="5%" stroke-linejoin="round" points="200,0 262,125 200,210 138,125" />${SVG_suffic}`;
-      } else if (i === 2) {
-        rankLabelElement.innerHTML = `${SVG_prefix}<polygon fill="#00000000" stroke="currentColor" stroke-width="10%" stroke-linejoin="round" points="200,0 262,125 400,145 300,242 323,380 200,315 76,380 100,242 0,145 138,125 200,0" /><polygon fill="currentColor" stroke="currentColor" stroke-width="5%" stroke-linejoin="round" points="200,0 262,125 400,145 300,242 200,210 138,125" />${SVG_suffic}`;
-      } else if (i === 3) {
-        rankLabelElement.innerHTML = `${SVG_prefix}<polygon fill="#00000000" stroke="currentColor" stroke-width="10%" stroke-linejoin="round" points="200,0 262,125 400,145 300,242 323,380 200,315 76,380 100,242 0,145 138,125 200,0" /><polygon fill="currentColor" stroke="currentColor" stroke-width="5%" stroke-linejoin="round" points="200,0 262,125 400,145 300,242 323,380 200,315 200,210 138,125" />${SVG_suffic}`;
-      } else if (i === 4) {
-        rankLabelElement.innerHTML = `${SVG_prefix}<polygon fill="#00000000" stroke="currentColor" stroke-width="10%" stroke-linejoin="round" points="200,0 262,125 400,145 300,242 323,380 200,315 76,380 100,242 0,145 138,125 200,0" /><polygon fill="currentColor" stroke="currentColor" stroke-width="5%" stroke-linejoin="round" points="200,0 262,125 400,145 300,242 323,380 200,315  76,380 100,242 200,210 138,125" />${SVG_suffic}`;
-      } else if (i === 5) {
-        rankLabelElement.innerHTML = `${SVG_prefix}<polygon fill="currentColor" stroke="currentColor" stroke-width="10%" stroke-linejoin="round" points="200,0 262,125 400,145 300,242 323,380 200,315 76,380 100,242 0,145 138,125 200,0" />${SVG_suffic}`;
-      }
+      rankLabelElement.innerHTML = SVG.rank[i + 1];
 
       this.rankInputElementArray.push(rankInputElement);
     }

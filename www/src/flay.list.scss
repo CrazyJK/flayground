@@ -1,0 +1,16 @@
+@import './scss/style.scss';
+@import './scss/page.layout.scss';
+
+flay-condition,
+flay-one,
+flay-navigator {
+  opacity: 0;
+  transition: 0.8s;
+}
+
+flay-one {
+  position: relative;
+  display: block;
+  margin: 0 auto;
+  width: 50rem;
+}

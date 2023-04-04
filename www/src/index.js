@@ -2,8 +2,8 @@ import FlayActress from './components/FlayActress';
 import FlayComment from './components/FlayComment';
 import FlayCover from './components/FlayCover';
 import FlayFiles from './components/FlayFiles';
-import FlayNavigator from './components/FlayNavigator';
 import FlayOpus from './components/FlayOpus';
+import FlayPagination from './components/FlayPagination';
 import FlayRank from './components/FlayRank';
 import FlayRelease from './components/FlayRelease';
 import FlayStudio from './components/FlayStudio';
@@ -13,7 +13,7 @@ import './index.scss';
 import './util/flay.sse';
 
 // components
-let flayCover, flayStudio, flayOpus, flayTitle, flayComment, flayRelease, flayActress, flayFiles, flayRank, flayTag, flayNavigator;
+let flayCover, flayStudio, flayOpus, flayTitle, flayComment, flayRelease, flayActress, flayFiles, flayRank, flayTag, flayPagination;
 
 let params = {
   sort: 'RELEASE',
@@ -98,11 +98,11 @@ function initiateComponents() {
   // history
   const historyElement = document.querySelector('.history');
 
-  // flayNavigator
-  flayNavigator = document.querySelector('body > footer').appendChild(new FlayNavigator());
-  flayNavigator.setData(opusList);
-  flayNavigator.setHandler((opus) => renderFlay(opus));
-  flayNavigator.start();
+  // flayPagination
+  flayPagination = document.querySelector('body > footer').appendChild(new FlayPagination());
+  flayPagination.setData(opusList);
+  flayPagination.setHandler((opus) => renderFlay(opus));
+  flayPagination.start();
 }
 
 function renderFlay(opus) {

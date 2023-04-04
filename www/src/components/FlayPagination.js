@@ -9,7 +9,7 @@ const PAGEDOWN = 'PAGEDOWN';
 /**
  *
  */
-export default class FlayNavigator extends HTMLElement {
+export default class FlayPagination extends HTMLElement {
   constructor() {
     super();
 
@@ -177,4 +177,4 @@ export default class FlayNavigator extends HTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-navigator', FlayNavigator);
+customElements.define('flay-navigator', FlayPagination);

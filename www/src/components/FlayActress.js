@@ -54,7 +54,6 @@ export default class FlayActress extends HTMLElement {
       label.innerHTML = SVG.favorite;
       // name
       const nameElement = actressDiv.appendChild(document.createElement('a'));
-      nameElement.href = '#';
       nameElement.classList.add('name');
       nameElement.title = actress.name + (actress.comment ? ' - ' + actress.comment : '');
       nameElement.innerHTML = actress.name;
@@ -76,7 +75,7 @@ export default class FlayActress extends HTMLElement {
       let currentYear = new Date().getFullYear();
       let releaseYear = Number(flay.release.substring(0, 4));
       let birthYear = Number(actress.birth.substring(0, 4));
-      ageElement.innerHTML = actress.birth ? `${releaseYear - birthYear + 1}<small>/${releaseYear !== currentYear ? currentYear - birthYear + 1 : ''}y</small>` : '';
+      ageElement.innerHTML = actress.birth ? `${releaseYear - birthYear + 1}<small>${releaseYear !== currentYear ? '/' + (currentYear - birthYear + 1) : ''}y</small>` : '';
 
       // birth
       // const birthElement = actressDiv.appendChild(document.createElement('label'));

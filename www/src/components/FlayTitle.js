@@ -11,8 +11,9 @@ export default class FlayTitle extends HTMLElement {
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('title');
 
-    this.titleLabelElement = this.wrapper.appendChild(document.createElement('label'));
-    this.titleLabelElement.addEventListener('click', () => {
+    this.label = this.wrapper.appendChild(document.createElement('label'));
+    this.anker = this.label.appendChild(document.createElement('a'));
+    this.anker.addEventListener('click', () => {
       console.log('titleClick', this.flay.opus);
       // window.open('/flay/' + this.flay.opus, this.flay.opus, 'width=640px,height=800px');
       window.open('/dist/flay.one.html?opus=' + this.flay.opus, this.flay.opus, 'width=800px,height=1200px');
@@ -34,8 +35,8 @@ export default class FlayTitle extends HTMLElement {
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.titleLabelElement.setAttribute('title', flay.title);
-    this.titleLabelElement.textContent = flay.title;
+    this.anker.setAttribute('title', flay.title);
+    this.anker.textContent = flay.title;
   }
 }
 

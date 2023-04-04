@@ -140,7 +140,7 @@ export default class FlayNavigator extends HTMLElement {
   }
 
   start() {
-    this.navigator(NEXT);
+    this.navigator(RANDOM);
   }
 
   render() {
@@ -170,7 +170,6 @@ export default class FlayNavigator extends HTMLElement {
       });
 
       const anker = page.appendChild(document.createElement('a'));
-      anker.href = '#';
       anker.classList.toggle('active', i === this.opusIndex);
       anker.innerHTML = i + 1;
     }

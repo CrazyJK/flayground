@@ -99,6 +99,10 @@ a {
   text-decoration: none;
   color: var(--color-text);
 }
+a:hover {
+  cursor: pointer;
+  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
+}
 
 /* for FlayActress */
 div.actress > div {
@@ -172,17 +176,17 @@ div.rank {
   justify-content: center;
   align-items: center;
 }
-div.rank-group {
+div.rank div.rank-group {
   display: inline-flex;
   gap: 0.5rem;
 }
-div.rank-group label svg {
+div.rank div.rank-group label svg {
   aspect-ratio: 157 / 150;
 }
-div.rank-group input[value='-1']:checked + label {
+div.rank div.rank-group input[value='-1']:checked + label {
   color: #f00a;
 }
-div.rank-group input[value='0']:checked + label {
+div.rank div.rank-group input[value='0']:checked + label {
   color: #0ff8;
 }
 
@@ -286,6 +290,7 @@ article.flay {
 }
 article.flay:hover {
   box-shadow: var(--box-shadow);
+  border-radius: 0.25rem;
 }
 article.flay > div {
   margin-bottom: 1rem;
@@ -308,7 +313,6 @@ div.condition:hover {
   box-shadow: var(--box-shadow);
 }
 div.condition > div > input[type='search'] {
-  border-bottom: 1px solid var(--color-border);
   outline: none;
 }
 div.condition > div > input[type='search']:hover {

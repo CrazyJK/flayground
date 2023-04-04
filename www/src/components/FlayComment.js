@@ -18,7 +18,7 @@ export default class FlayComment extends HTMLElement {
     this.div = this.wrapper.appendChild(document.createElement('div'));
 
     this.japanese = this.div.appendChild(document.createElement('a'));
-    this.japanese.setAttribute('href', '#');
+    this.japanese.title = '번역보기';
     this.japanese.innerHTML = '原語';
     this.japanese.style.marginRight = '8px';
     this.japanese.addEventListener('click', () => {
@@ -31,7 +31,6 @@ export default class FlayComment extends HTMLElement {
     });
 
     this.comment = this.div.appendChild(document.createElement('a'));
-    this.comment.setAttribute('href', '#');
     this.comment.innerHTML = COMMENT;
     this.comment.addEventListener('click', () => {
       console.log('commentLabelClick', this.flay.opus);

@@ -45,6 +45,7 @@ export default class FlayRank extends HTMLElement {
     });
 
     this.scoreLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.scoreLabel.classList.add('score-label');
 
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
@@ -75,6 +76,9 @@ export default class FlayRank extends HTMLElement {
     this.likeElement.innerHTML = 'Like<i class="badge">' + likeCount + '</i>';
 
     this.scoreLabel.innerHTML = 'Score<i class="badge">' + flay.score + '</i>';
+
+    let domRect = this.wrapper.getBoundingClientRect();
+    this.wrapper.classList.toggle('small', domRect.width < 600);
   }
 }
 

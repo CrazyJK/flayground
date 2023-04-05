@@ -2,15 +2,20 @@
 @import './scss/page.layout.scss';
 
 flay-condition,
-flay-one,
-flay-navigator {
+flay-page,
+flay-pagination {
   opacity: 0;
   transition: 0.8s;
 }
 
-flay-one {
+flay-page {
   position: relative;
   display: block;
   margin: 0 auto;
   width: 50rem;
+}
+
+flay-card {
+  width: 400px;
+  aspect-ratio: 400 / 269;
 }

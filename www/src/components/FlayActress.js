@@ -101,6 +101,9 @@ export default class FlayActress extends HTMLElement {
       debutElement.setAttribute('title', actress.debut);
       debutElement.innerHTML = actress.debut ? actress.debut + '<small>d</small>' : '';
     });
+
+    let domRect = this.wrapper.getBoundingClientRect();
+    this.wrapper.classList.toggle('small', domRect.width < 600);
   }
 }
 

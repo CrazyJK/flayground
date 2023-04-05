@@ -13,8 +13,11 @@ export default class FlayRelease extends HTMLElement {
 
     this.releaseLabel = this.wrapper.appendChild(document.createElement('label'));
     this.lastModifiedLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.lastModifiedLabel.classList.add('modified-label');
     this.lastAccessLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.lastAccessLabel.classList.add('access-label');
     this.lastPlayLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.lastPlayLabel.classList.add('played-label');
 
     const style = document.createElement('link');
     style.setAttribute('rel', 'stylesheet');
@@ -36,6 +39,9 @@ export default class FlayRelease extends HTMLElement {
     this.lastModifiedLabel.innerHTML = '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>';
     this.lastAccessLabel.innerHTML = '<small>' + dateFormat(flay.video.lastAccess) + '<i class="badge">acc</i></small>';
     this.lastPlayLabel.innerHTML = '<small>' + dateFormat(flay.video.lastPlay) + '<i class="badge">play</i></small>';
+
+    let domRect = this.wrapper.getBoundingClientRect();
+    this.wrapper.classList.toggle('small', domRect.width < 600);
   }
 }
 

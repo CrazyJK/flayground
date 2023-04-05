@@ -11,13 +11,17 @@ button {
   border: 0;
   padding: 0;
   background: transparent;
-  color: var(--color-text);
+  color: inherit;
   font-size: 1.5rem;
   font-family: D2Coding;
 }
 button:hover {
   text-shadow: 1px 1px 2px var(--color-text-shadow-over);
   cursor: pointer;
+}
+button > svg {
+  display: inline-block;
+  width: 1.75rem;
 }
 
 /* common: badge */
@@ -97,7 +101,7 @@ label, a {
 }
 a {
   text-decoration: none;
-  color: var(--color-text);
+  color: inherit;
 }
 a:hover {
   cursor: pointer;
@@ -120,6 +124,22 @@ div.actress > div > span > label {
 }
 div.actress > div > .name {
   margin-right: auto;
+}
+@media screen and (max-width: 600px) {
+  .localName,
+  .age,
+  .body,
+  .height,
+  .debut {
+    display: none;
+  }
+}
+div.actress.small .localName,
+div.actress.small .age,
+div.actress.small .body,
+div.actress.small .height,
+div.actress.small .debut {
+  display: none;
 }
 
 /* for FlayComment */
@@ -158,6 +178,9 @@ div.files {
 }
 ol.files {
   display: none;
+  margin: 0.5rem;
+  padding: 0;
+  list-style: none;
 }
 ol.files.show {
   display: block;
@@ -165,6 +188,21 @@ ol.files.show {
 ol.files li {
   font-size: 0.875rem;
   font-family: D2Coding;
+  margin-bottom: 0.25rem;
+}
+@media screen and (max-width: 600px) {
+  .sub-btn,
+  .play-label,
+  .size-label,
+  .files-btn {
+    display: none;
+  }
+}
+div.files.small .sub-btn,
+div.files.small .play-label,
+div.files.small .size-label,
+div.files.small .files-btn {
+  display: none;
 }
 
 /* for FlayOpus */
@@ -189,6 +227,14 @@ div.rank div.rank-group input[value='-1']:checked + label {
 div.rank div.rank-group input[value='0']:checked + label {
   color: #0ff8;
 }
+@media screen and (max-width: 600px) {
+  .score-label {
+    display: none;
+  }
+}
+div.rank.small .score-label {
+  display: none;
+}
 
 /* for FlayRelease */
 div.release {
@@ -196,6 +242,18 @@ div.release {
   gap: 1rem;
   justify-content: center;
   align-items: center;
+}
+@media screen and (max-width: 600px) {
+  .modified-label,
+  .access-label,
+  .played-label {
+    display: none;
+  }
+}
+div.release.small .modified-label,
+div.release.small .access-label,
+div.release.small .played-label {
+  display: none;
 }
 
 /* for FlayStudio */
@@ -240,66 +298,6 @@ div.title label {
   max-width: 100%;
 }
 
-/* for FlayPagination */
-div.navigator .progress {
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-}
-div.navigator .progress .progress-bar {
-  position: relative;
-  height: 1px;
-  background-color: #f00;
-}
-div.navigator .paging {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 2px;
-}
-div.navigator .paging .page {
-  position: relative;
-  margin: 0;
-  border: 1px solid #aaa;
-  border-right: 0;
-  padding: 0.125rem;
-  min-width: 2.5rem;
-  font-size: 1rem;
-  cursor: pointer;
-}
-div.navigator .paging .page:last-child {
-  border-right: 1px solid #aaa;
-}
-div.navigator .paging .page a {
-  font-size: 0.875rem;
-  font-weight: normal;
-}
-div.navigator .paging .page:hover a {
-  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
-}
-div.navigator .paging .page a.active {
-  color: var(--color-checked);
-}
-
-/* for FlayOne */
-article.flay {
-  padding-bottom: 1rem;
-  transition: 0.4s;
-}
-article.flay:hover {
-  box-shadow: var(--box-shadow);
-  border-radius: 0.25rem;
-}
-article.flay > div {
-  margin-bottom: 1rem;
-}
-
-article.flay > div:not(.cover) {
-  padding: 0 1rem;
-}
-
 /* for FlayCondition */
 div.condition {
   display: flex;
@@ -325,4 +323,48 @@ div.condition > div > label {
 div.condition > div > select {
   font-size: 1rem;
   outline: none;
+}
+
+/* for FlayPagination */
+div.pagination .paging {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+div.pagination .paging .page {
+  position: relative;
+  margin: 0;
+  border: 1px solid #aaa;
+  border-right: 0;
+  padding: 0.25rem;
+  line-height: 1.25rem;
+  min-width: 2.5rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+div.pagination .paging .page:last-child {
+  border-right: 1px solid #aaa;
+}
+div.pagination .paging .page a {
+  font-size: 0.875rem;
+  font-weight: normal;
+}
+div.pagination .paging .page:hover a {
+  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
+}
+div.pagination .paging .page a.active {
+  color: var(--color-checked);
+}
+div.pagination .progress {
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+}
+div.pagination .progress .progress-bar {
+  position: relative;
+  height: 1px;
+  background-color: #f00;
 }

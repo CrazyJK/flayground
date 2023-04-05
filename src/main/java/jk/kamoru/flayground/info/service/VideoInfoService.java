@@ -58,7 +58,7 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
   public void setLike(String opus) {
     Video video = this.infoSource.get(opus);
     Date today = new Date();
-    if (video.getLikes().stream().filter((date) -> isSameDay(today, date)).count() == 0) {
+    if (video.getLikes() == null || video.getLikes().stream().filter((date) -> isSameDay(today, date)).count() == 0) {
       video.addLike();
     }
     this.update(video);

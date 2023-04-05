@@ -16,7 +16,7 @@ export default class FlayTitle extends HTMLElement {
     this.anker.addEventListener('click', () => {
       console.log('titleClick', this.flay.opus);
       // window.open('/flay/' + this.flay.opus, this.flay.opus, 'width=640px,height=800px');
-      window.open('/dist/flay.one.html?opus=' + this.flay.opus, this.flay.opus, 'width=800px,height=1200px');
+      window.open('/dist/flay.card.html?opus=' + this.flay.opus, this.flay.opus, 'width=800px,height=536px');
     });
 
     const style = document.createElement('link');

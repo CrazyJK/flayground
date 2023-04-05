@@ -12,33 +12,28 @@ const PAGEDOWN = 'PAGEDOWN';
 export default class FlayPagination extends HTMLElement {
   constructor() {
     super();
+    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    this.wrapper = document.createElement('div');
+    this.wrapper.classList.add('pagination');
+    const style = document.createElement('link');
+    style.setAttribute('rel', 'stylesheet');
+    style.setAttribute('href', './css/components.css');
+    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.opus = null;
     this.opusIndex = -1;
     this.opusList = null;
     this.handler = null;
 
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('navigator');
+    this.paging = this.wrapper.appendChild(document.createElement('div'));
+    this.paging.classList.add('paging');
 
     this.progress = this.wrapper.appendChild(document.createElement('div'));
     this.progress.classList.add('progress');
     this.progressBar = this.progress.appendChild(document.createElement('div'));
     this.progressBar.classList.add('progress-bar');
 
-    this.paging = this.wrapper.appendChild(document.createElement('div'));
-    this.paging.classList.add('paging');
-
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/components.css');
-
-    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
-
     window.addEventListener('wheel', (e) => {
-      // e.stopPropagation();
       console.log('PageNavigator.wheel', e.deltaY, e);
       if (e.ctrlKey) {
         return;
@@ -177,4 +172,4 @@ export default class FlayPagination extends HTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-navigator', FlayPagination);
+customElements.define('flay-pagination', FlayPagination);

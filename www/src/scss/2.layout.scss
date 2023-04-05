@@ -12,10 +12,14 @@ body {
   margin: 0;
   padding: 0;
 
-  background-color: var(--color-bg);
-  color: var(--color-text);
   font-size: 1rem;
   font-weight: 400;
+}
+
+
+* {
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 img {

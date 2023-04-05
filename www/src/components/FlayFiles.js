@@ -1,4 +1,5 @@
 import FlayAction from '../util/flay.action';
+import SVG from './svg.json';
 
 /**
  *
@@ -20,20 +21,24 @@ export default class FlayFiles extends HTMLElement {
     });
 
     this.subBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.subBtn.classList.add('sub-btn');
     this.subBtn.addEventListener('click', (e) => {
       console.log('subtitlesClick', this.flay.opus);
       FlayAction.editSubtitles(this.flay.opus);
     });
 
     this.playLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.playLabel.classList.add('play-label');
     this.playLabel.innerHTML = 'Play';
 
     this.sizeLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.sizeLabel.classList.add('size-label');
     this.sizeLabel.innerHTML = '';
 
     this.fileShowBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.fileShowBtn.classList.add('files-btn');
     this.fileShowBtn.setAttribute('title', 'show files');
-    this.fileShowBtn.textContent = 'files';
+    this.fileShowBtn.innerHTML = SVG.folder;
     this.fileShowBtn.addEventListener('click', () => {
       this.fileListElement.classList.toggle('show');
     });
@@ -90,6 +95,9 @@ export default class FlayFiles extends HTMLElement {
       const fileElement = this.fileListElement.appendChild(document.createElement('li'));
       fileElement.textContent = path;
     });
+
+    let domRect = this.wrapper.getBoundingClientRect();
+    this.wrapper.classList.toggle('small', domRect.width < 600);
   }
 }
 

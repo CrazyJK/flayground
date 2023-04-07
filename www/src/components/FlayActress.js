@@ -34,6 +34,7 @@ export default class FlayActress extends HTMLElement {
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.textContent = null;
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     actressList.forEach((actress, index) => {
       const actressDiv = this.wrapper.appendChild(document.createElement('div'));
@@ -101,9 +102,6 @@ export default class FlayActress extends HTMLElement {
       debutElement.setAttribute('title', actress.debut);
       debutElement.innerHTML = actress.debut ? actress.debut + '<small>d</small>' : '';
     });
-
-    let domRect = this.wrapper.getBoundingClientRect();
-    this.wrapper.classList.toggle('small', domRect.width < 600);
   }
 }
 

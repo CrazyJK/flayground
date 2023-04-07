@@ -86,6 +86,7 @@ export default class FlayTag extends HTMLElement {
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.tagInputElementArray.forEach((input) => {
       let id = input.getAttribute('value');

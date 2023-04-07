@@ -9,6 +9,7 @@ module.exports = {
     index: './src/index.js',
     'flay.card': './src/flay.card.js',
     'flay.list': './src/flay.list.js',
+    'flay.tile': './src/flay.tile.js',
   },
   devtool: 'source-map',
   devServer: {

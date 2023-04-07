@@ -34,14 +34,12 @@ export default class FlayRelease extends HTMLElement {
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.releaseLabel.textContent = flay.release;
     this.lastModifiedLabel.innerHTML = '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>';
     this.lastAccessLabel.innerHTML = '<small>' + dateFormat(flay.video.lastAccess) + '<i class="badge">acc</i></small>';
     this.lastPlayLabel.innerHTML = '<small>' + dateFormat(flay.video.lastPlay) + '<i class="badge">play</i></small>';
-
-    let domRect = this.wrapper.getBoundingClientRect();
-    this.wrapper.classList.toggle('small', domRect.width < 600);
   }
 }
 

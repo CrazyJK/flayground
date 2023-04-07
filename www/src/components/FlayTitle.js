@@ -34,6 +34,7 @@ export default class FlayTitle extends HTMLElement {
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.anker.setAttribute('title', flay.title);
     this.anker.textContent = flay.title;

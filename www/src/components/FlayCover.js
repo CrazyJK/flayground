@@ -26,6 +26,10 @@ export default class FlayCover extends HTMLElement {
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
+    if (this.parentElement) {
+      this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+    }
+
     this.wrapper.style.backgroundImage = `url(/static/cover/${flay.opus})`;
   }
 }

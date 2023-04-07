@@ -62,6 +62,7 @@ export default class FlayRank extends HTMLElement {
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.rankInputElementArray.forEach((input, index) => {
       input.removeAttribute('checked');
@@ -76,9 +77,6 @@ export default class FlayRank extends HTMLElement {
     this.likeElement.innerHTML = 'Like<i class="badge">' + likeCount + '</i>';
 
     this.scoreLabel.innerHTML = 'Score<i class="badge">' + flay.score + '</i>';
-
-    let domRect = this.wrapper.getBoundingClientRect();
-    this.wrapper.classList.toggle('small', domRect.width < 600);
   }
 }
 

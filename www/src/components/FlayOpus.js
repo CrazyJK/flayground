@@ -32,6 +32,7 @@ export default class FlayOpus extends HTMLElement {
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.opusLabelElement.setAttribute('title', flay.opus);
     this.opusLabelElement.textContent = flay.opus;

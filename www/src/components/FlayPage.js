@@ -24,8 +24,8 @@ export default class FlayPage extends HTMLElement {
 
     this.flayStudio = wrapper.appendChild(new FlayStudio());
     this.flayOpus = wrapper.appendChild(new FlayOpus());
-    this.flayTitle = wrapper.appendChild(new FlayTitle());
     this.flayComment = wrapper.appendChild(new FlayComment());
+    this.flayTitle = wrapper.appendChild(new FlayTitle());
     this.flayCover = wrapper.appendChild(new FlayCover());
     this.flayActress = wrapper.appendChild(new FlayActress());
     this.flayFiles = wrapper.appendChild(new FlayFiles());
@@ -39,6 +39,8 @@ export default class FlayPage extends HTMLElement {
    * @param {String} opus
    */
   set(opus) {
+    this.setAttribute('opus', opus);
+
     fetch('/flay/' + opus + '/fully')
       .then((res) => res.json())
       .then((fullyFlay) => {

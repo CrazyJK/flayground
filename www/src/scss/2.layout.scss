@@ -6,20 +6,29 @@ html {
     font-size: 14px;
   }
 }
+@media screen and (min-height: 1600px) {
+  html {
+    font-size: 18px;
+  }
+}
+@media screen and (min-height: 1800px) {
+  html {
+    font-size: 20px;
+  }
+}
+
+* {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
 
 body {
   position: relative;
   margin: 0;
   padding: 0;
 
-  font-size: 1rem;
+  font-size: var(--font-normal);
   font-weight: 400;
-}
-
-
-* {
-  background-color: var(--color-bg);
-  color: var(--color-text);
 }
 
 img {
@@ -41,6 +50,6 @@ button {
   padding: 0;
   background: transparent;
   color: var(--color-text);
-  font-size: 1rem;
+  font-size: var(--font-normal);
   font-family: D2Coding;
 }

@@ -32,6 +32,7 @@ export default class FlayStudio extends HTMLElement {
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.label.setAttribute('title', flay.studio);
     this.label.textContent = flay.studio;

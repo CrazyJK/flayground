@@ -23,9 +23,9 @@ export default class FlayCard extends HTMLElement {
     link.setAttribute('href', './css/FlayCard.css');
     this.shadowRoot.append(link, this.flayCover, this.wrapper);
 
+    this.flayTitle = this.wrapper.appendChild(new FlayTitle());
     this.flayStudio = this.wrapper.appendChild(new FlayStudio());
     this.flayOpus = this.wrapper.appendChild(new FlayOpus());
-    this.flayTitle = this.wrapper.appendChild(new FlayTitle());
     this.flayComment = this.wrapper.appendChild(new FlayComment());
     this.flayActress = this.wrapper.appendChild(new FlayActress());
     this.flayFiles = this.wrapper.appendChild(new FlayFiles());
@@ -39,6 +39,8 @@ export default class FlayCard extends HTMLElement {
    * @param {String} opus
    */
   set(opus) {
+    this.setAttribute('opus', opus);
+
     fetch('/flay/' + opus + '/fully')
       .then((res) => res.json())
       .then((fullyFlay) => {
@@ -55,7 +57,7 @@ export default class FlayCard extends HTMLElement {
         this.flayTag.set(flay);
       });
 
-    let domRect = this.flayCover.getBoundingClientRect();
+    let domRect = this.getBoundingClientRect();
     this.wrapper.classList.toggle('small', domRect.width < 600);
   }
 }

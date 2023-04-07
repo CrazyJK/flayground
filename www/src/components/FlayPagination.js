@@ -111,15 +111,17 @@ export default class FlayPagination extends HTMLElement {
 
     this.opus = this.opusList[this.opusIndex];
 
-    // Fallback for browsers that don't support View Transitions:
-    if (!document.startViewTransition) {
-      this.handler(this.opus);
-      return;
-    }
+    if (this.handler != null) {
+      // Fallback for browsers that don't support View Transitions:
+      if (!document.startViewTransition) {
+        this.handler(this.opus);
+        return;
+      }
 
-    // With View Transitions:
-    const transition = document.startViewTransition(() => this.handler(this.opus));
-    console.debug('transition', transition);
+      // With View Transitions:
+      const transition = document.startViewTransition(() => this.handler(this.opus));
+      console.debug('transition', transition);
+    }
 
     this.render();
   }
@@ -132,6 +134,14 @@ export default class FlayPagination extends HTMLElement {
   setHandler(handler) {
     console.log('setHandler', handler);
     this.handler = handler;
+  }
+
+  get(offset) {
+    if (offset) {
+      return this.opusList[this.opusIndex + offset];
+    } else {
+      return this.opus;
+    }
   }
 
   start() {

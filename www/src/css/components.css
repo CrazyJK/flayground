@@ -12,8 +12,9 @@ button {
   padding: 0;
   background: transparent;
   color: inherit;
-  font-size: 1.5rem;
+  font-size: var(--font-largest);
   font-family: D2Coding;
+  outline: none;
 }
 button:hover {
   text-shadow: 1px 1px 2px var(--color-text-shadow-over);
@@ -28,12 +29,15 @@ button > svg {
 i.badge {
   float: right;
   margin: 0 0 0 0.25rem;
-  font-size: smaller;
+  font-size: var(--font-small);
   font-style: normal;
   font-weight: normal;
 }
 
 /* common: input checkbox, radio */
+input {
+  outline: none;
+}
 input[type='checkbox'],
 input[type='radio'] {
   position: absolute;
@@ -73,7 +77,7 @@ input[type='search'] {
   margin: 0;
   border: 0;
   padding: 0.25rem 0;
-  font-size: 1.25rem;
+  font-size: var(--font-large);
   text-align: center;
 }
 
@@ -85,23 +89,25 @@ select {
   margin: 0;
   border: 0;
   padding: 0.25rem 0;
-  font-size: 1.25rem;
+  font-size: var(--font-large);
+  outline: none;
 }
 select option {
   position: relative;
   background-color: var(--color-bg);
   color: var(--color-text);
-  font-size: 1rem;
+  font-size: var(--font-normal);
 }
 
 /* common: label, a */
 label, a {
-  font-size: 1.25rem;
+  font-size: var(--font-large);
   font-weight: 700;
 }
 a {
   text-decoration: none;
   color: inherit;
+  outline: none;
 }
 a:hover {
   cursor: pointer;
@@ -141,6 +147,16 @@ div.actress.small .height,
 div.actress.small .debut {
   display: none;
 }
+div.actress.small > div {
+  gap: 0.5rem;
+}
+div.actress.small svg {
+  width: 1rem;
+  height: 1rem;
+}
+div.actress.small a {
+  font-size: var(--font-small);
+}
 
 /* for FlayComment */
 div.comment input {
@@ -152,7 +168,7 @@ div.comment input {
   border: 0;
   padding: 0.25rem 0;
   width: 100%;
-  font-size: 1.25rem;
+  font-size: var(--font-large);
   text-align: center;
 }
 div.comment .placeholder {
@@ -174,7 +190,9 @@ div.files {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  align-items: center;
+}
+div.files .files-btn {
+  display: inline-flex;
 }
 ol.files {
   display: none;
@@ -186,7 +204,7 @@ ol.files.show {
   display: block;
 }
 ol.files li {
-  font-size: 0.875rem;
+  font-size: var(--font-small);
   font-family: D2Coding;
   margin-bottom: 0.25rem;
 }
@@ -204,8 +222,14 @@ div.files.small .size-label,
 div.files.small .files-btn {
   display: none;
 }
+div.files.small button {
+  font-size: var(--font-normal);
+}
 
 /* for FlayOpus */
+div.opus.small label {
+  font-size: var(--font-small);
+}
 
 /* for FlayRank */
 div.rank {
@@ -232,8 +256,24 @@ div.rank div.rank-group input[value='0']:checked + label {
     display: none;
   }
 }
+div.rank.small {
+  gap: 0.5rem;
+}
 div.rank.small .score-label {
   display: none;
+}
+div.rank div.rank-group {
+  gap: 0.25rem;
+}
+div.rank.small label {
+  font-size: var(--font-normal);
+}
+div.rank.small label svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+div.rank.small button {
+  font-size: var(--font-normal);
 }
 
 /* for FlayRelease */
@@ -255,8 +295,14 @@ div.release.small .access-label,
 div.release.small .played-label {
   display: none;
 }
+div.release.small label {
+  font-size: var(--font-small);
+}
 
 /* for FlayStudio */
+div.studio.small label {
+  font-size: var(--font-small);
+}
 
 /* for FlayTag */
 div.tag .tag-list {
@@ -267,10 +313,10 @@ div.tag .tag-list {
   gap: 0.5rem 0.75rem;
 }
 div.tag .tag-list label {
-  font-size: 1rem;
+  font-size: var(--font-normal);
 }
 div.tag .tag-list .tag-new-btn {
-  font-size: 1rem;
+  font-size: var(--font-normal);
 }
 div.tag .tag-new {
   display: none;
@@ -284,7 +330,7 @@ div.tag .tag-new input {
   margin: 0.25rem;
   border: 0;
   padding: 0.25rem;
-  font-size: 1.25rem;
+  font-size: var(--font-large);
   text-align: center;
 }
 
@@ -297,6 +343,13 @@ div.title label {
   white-space: nowrap;
   max-width: 100%;
 }
+div.title label a {
+  font-size: var(--font-largest);
+}
+div.title.small label,
+div.title.small a {
+  font-size: var(--font-small);
+}
 
 /* for FlayCondition */
 div.condition {
@@ -306,9 +359,6 @@ div.condition {
   align-items: center;
   padding: 0.5rem;
   transition: 0.4s;
-}
-div.condition:hover {
-  box-shadow: var(--box-shadow);
 }
 div.condition > div > input[type='search'] {
   outline: none;
@@ -321,7 +371,7 @@ div.condition > div > label {
   margin: 0 0.25rem;
 }
 div.condition > div > select {
-  font-size: 1rem;
+  font-size: var(--font-normal);
   outline: none;
 }
 
@@ -340,14 +390,14 @@ div.pagination .paging .page {
   padding: 0.25rem;
   line-height: 1.25rem;
   min-width: 2.5rem;
-  font-size: 1rem;
+  font-size: var(--font-normal);
   cursor: pointer;
 }
 div.pagination .paging .page:last-child {
   border-right: 1px solid #aaa;
 }
 div.pagination .paging .page a {
-  font-size: 0.875rem;
+  font-size: var(--font-small);
   font-weight: normal;
 }
 div.pagination .paging .page:hover a {

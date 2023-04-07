@@ -1,0 +1,15 @@
+@import './scss/style.scss';
+@import './scss/page.layout.scss';
+
+article.flay {
+  margin: 0.25rem auto;
+  border: 1px dashed #eee;
+  padding: 0.25rem;
+  max-width: 800px;
+
+  & > div {
+    margin: 0.25rem;
+    border: 1px dashed #eee;
+    padding: 0.25rem;
+  }
+}

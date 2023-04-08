@@ -47,7 +47,7 @@ input[type='radio'] {
   margin: -1px;
   border: 0;
   padding: 0;
-  clip: rect(0,0,0,0);
+  clip: rect(0, 0, 0, 0);
 }
 input[type='checkbox'] + label,
 input[type='radio'] + label {
@@ -100,7 +100,8 @@ select option {
 }
 
 /* common: label, a */
-label, a {
+label,
+a {
   font-size: var(--font-large);
   font-weight: 700;
 }
@@ -141,6 +142,7 @@ div.actress > div > .name {
   }
 }
 div.actress.small .localName,
+div.actress.small .flaySize,
 div.actress.small .age,
 div.actress.small .body,
 div.actress.small .height,
@@ -186,27 +188,64 @@ div.cover img {
 }
 
 /* for FlayFiles */
-div.files {
+div.files > div.info {
   display: flex;
   gap: 1rem;
   justify-content: center;
 }
-div.files .files-btn {
+div.files > div.info > .files-btn {
   display: inline-flex;
 }
-ol.files {
+div.files > div.list {
   display: none;
+}
+div.files > div.list.show {
+  display: block;
+}
+div.files > div.list > ol {
   margin: 0.5rem;
   padding: 0;
   list-style: none;
+  text-align: left;
 }
-ol.files.show {
-  display: block;
-}
-ol.files li {
+div.files > div.list > ol > li {
   font-size: var(--font-small);
   font-family: D2Coding;
   margin-bottom: 0.25rem;
+}
+div.files > div.list > div.rename-flay {
+  display: flex;
+}
+div.files > div.list > div.rename-flay > input#studio {
+  flex: 0 0 auto;
+  width: 4rem;
+}
+div.files > div.list > div.rename-flay > input#opus {
+  flex: 0 0 auto;
+  width: 3rem;
+}
+div.files > div.list > div.rename-flay > input#title {
+  flex: 1 1 auto;
+}
+div.files > div.list > div.rename-flay > input#actress {
+  flex: 0 0 auto;
+  width: 6rem;
+}
+div.files > div.list > div.rename-flay > input#release {
+  flex: 0 0 auto;
+  width: 4rem;
+}
+div.files > div.list > div.rename-flay > input,
+div.files > div.list > div.rename-flay > button {
+  font-size: var(--font-smallest);
+  font-family: D2Coding;
+  border: 2px dashed purple;
+  border-right: 0;
+  padding: 4px;
+}
+div.files > div.list > div.rename-flay > button {
+  font-size: var(--font-small);
+  border-right: 2px dashed purple;
 }
 @media screen and (max-width: 600px) {
   .sub-btn,

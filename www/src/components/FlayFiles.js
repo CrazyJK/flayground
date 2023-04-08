@@ -7,54 +7,76 @@ import SVG from './svg.json';
 export default class FlayFiles extends HTMLElement {
   constructor() {
     super();
-
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    this.flay = null;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('files');
+    const style = document.createElement('link');
+    style.setAttribute('rel', 'stylesheet');
+    style.setAttribute('href', './css/components.css');
+    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    this.movieBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.flay = null;
+
+    this.infoDiv = this.wrapper.appendChild(document.createElement('div'));
+    this.infoDiv.classList.add('info');
+
+    this.movieBtn = this.infoDiv.appendChild(document.createElement('button'));
     this.movieBtn.addEventListener('click', (e) => {
       console.log('playClick', this.flay.opus);
       FlayAction.play(this.flay.opus);
     });
 
-    this.subBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.subBtn = this.infoDiv.appendChild(document.createElement('button'));
     this.subBtn.classList.add('sub-btn');
     this.subBtn.addEventListener('click', (e) => {
       console.log('subtitlesClick', this.flay.opus);
       FlayAction.editSubtitles(this.flay.opus);
     });
 
-    this.playLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.playLabel = this.infoDiv.appendChild(document.createElement('label'));
     this.playLabel.classList.add('play-label');
     this.playLabel.innerHTML = 'Play';
 
-    this.sizeLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.sizeLabel = this.infoDiv.appendChild(document.createElement('label'));
     this.sizeLabel.classList.add('size-label');
     this.sizeLabel.innerHTML = '';
 
-    this.fileShowBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.fileShowBtn = this.infoDiv.appendChild(document.createElement('button'));
     this.fileShowBtn.classList.add('files-btn');
     this.fileShowBtn.setAttribute('title', 'show files');
     this.fileShowBtn.innerHTML = SVG.folder;
     this.fileShowBtn.addEventListener('click', () => {
-      this.fileListElement.classList.toggle('show');
+      this.listDiv.classList.toggle('show');
     });
 
-    this.fileListElement = this.wrapper.appendChild(document.createElement('ol'));
-    this.fileListElement.classList.add('files');
-    this.fileListElement.addEventListener('click', (e) => {
+    this.listDiv = this.wrapper.appendChild(document.createElement('div'));
+    this.listDiv.classList.add('list');
+
+    this.fileList = this.listDiv.appendChild(document.createElement('ol'));
+    this.fileList.addEventListener('click', (e) => {
       console.log('filesClick', this.flay.opus, e.target.textContent);
       FlayAction.explore(e.target.textContent);
     });
 
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/components.css');
-
-    this.shadowRoot.append(style, this.wrapper, this.fileListElement); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.renameDiv = this.listDiv.appendChild(document.createElement('div'));
+    this.renameDiv.classList.add('rename-flay');
+    ['studio', 'opus', 'title', 'actress', 'release'].forEach((name) => {
+      let input = this.renameDiv.appendChild(document.createElement('input'));
+      input.placeholder = name;
+      input.type = 'text';
+      input.id = name;
+      if (name === 'opus') {
+        input.readOnly = true;
+      }
+      this[name + 'Input'] = input;
+    });
+    this.renameBtn = this.renameDiv.appendChild(document.createElement('button'));
+    this.renameBtn.innerHTML = 'Rename';
+    this.renameBtn.addEventListener('click', (e) => {
+      let newName = `[${this.studioInput.value}][${this.opusInput.value}][${this.titleInput.value}][${this.actressInput.value}][${this.releaseInput.value}]`;
+      console.log('renameClick', newName);
+      FlayAction.renameFlay(this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
+    });
   }
 
   /**
@@ -62,10 +84,10 @@ export default class FlayFiles extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
+    this.flay = flay;
     let movieSize = flay.files.movie.length;
     let subtitlesSize = flay.files.subtitles.length;
 
-    this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
@@ -80,22 +102,28 @@ export default class FlayFiles extends HTMLElement {
 
     this.sizeLabel.innerHTML = getPrettyFilesize(flay.length);
 
-    this.fileListElement.textContent = null;
+    this.fileList.textContent = null;
 
     Array.from(flay.files.cover).forEach((path) => {
-      const fileElement = this.fileListElement.appendChild(document.createElement('li'));
+      const fileElement = this.fileList.appendChild(document.createElement('li'));
       fileElement.textContent = path;
     });
 
     Array.from(flay.files.movie).forEach((path) => {
-      const fileElement = this.fileListElement.appendChild(document.createElement('li'));
+      const fileElement = this.fileList.appendChild(document.createElement('li'));
       fileElement.textContent = path;
     });
 
     Array.from(flay.files.subtitles).forEach((path) => {
-      const fileElement = this.fileListElement.appendChild(document.createElement('li'));
+      const fileElement = this.fileList.appendChild(document.createElement('li'));
       fileElement.textContent = path;
     });
+
+    this.studioInput.value = flay.studio;
+    this.opusInput.value = flay.opus;
+    this.titleInput.value = flay.title;
+    this.actressInput.value = flay.actressList.join(', ');
+    this.releaseInput.value = flay.release;
   }
 }
 

@@ -69,6 +69,15 @@ export default class FlayActress extends HTMLElement {
       localNameElement.setAttribute('title', actress.localName);
       localNameElement.innerHTML = actress.localName;
 
+      // flay size
+      const flaySize = actressDiv.appendChild(document.createElement('label'));
+      flaySize.classList.add('flaySize');
+      fetch(`/flay/find/actress/${actress.name}`)
+        .then((response) => response.json())
+        .then((flayList) => {
+          flaySize.innerHTML = flayList.length + '<small>f</small>';
+        });
+
       // age
       const ageElement = actressDiv.appendChild(document.createElement('label'));
       ageElement.classList.add('age');

@@ -25,9 +25,7 @@ export default {
       '/info/tag',
       {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id: -1, name: tagName, description: '' }),
       },
       callback,
@@ -37,29 +35,42 @@ export default {
   setComment: (opus, comment, callback, failCallback) => {
     action('/info/video/comment/' + opus, { method: 'PUT', body: comment + ' ' }, callback, failCallback);
   },
+  renameFlay: (studio, opus, title, actress, release, callback, failCallback) => {
+    action(
+      '/flay/rename/' + opus,
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ studio: studio, opus: opus, title: title, actressList: actress.split(','), release: release }),
+      },
+      callback,
+      failCallback
+    );
+  },
 };
 
 async function action(url, requestInit, callback, failCallback) {
   const response = await fetch(url, requestInit);
   console.debug(url, response.ok, response.status);
 
-  if (response.status === 200) {
-    response.json().then((data) => {
-      if (callback) callback(data);
-    });
-  } else if (response.status === 204) {
-    if (callback) callback();
-  } else if (response.status === 404) {
-    response.json().then((data) => {
-      console.error(data.message);
-      if (failCallback) failCallback(data);
-    });
-  } else if (response.status === 500) {
-    response.json().then((data) => {
-      console.error(data.message);
-      if (failCallback) failCallback(data);
-    });
-  } else {
-    throw new Error('정의 안된 status code');
+  switch (response.status) {
+    case 200:
+      response.json().then((data) => {
+        if (callback) callback(data);
+      });
+      break;
+    case 204:
+      if (callback) callback();
+      break;
+    case 400:
+    case 404:
+    case 500:
+      response.json().then((data) => {
+        console.error(response.status, data.message);
+        if (failCallback) failCallback(data);
+      });
+      break;
+    default:
+      throw new Error('정의 안된 status code');
   }
 }

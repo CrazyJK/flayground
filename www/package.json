@@ -10,8 +10,7 @@
     "build": "webpack",
     "watch": "webpack -w"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "devDependencies": {
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.7.1",

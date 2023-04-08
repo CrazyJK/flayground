@@ -47,6 +47,21 @@ export default {
       failCallback
     );
   },
+  putActress: (actress, callback, failCallback) => {
+    action(
+      '/info/actress',
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(actress),
+      },
+      callback,
+      failCallback
+    );
+  },
+  listOfStudio: (callback, failCallback) => {
+    action('/flay/list/studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: 'STUDIO' }) }, callback, failCallback);
+  },
 };
 
 async function action(url, requestInit, callback, failCallback) {

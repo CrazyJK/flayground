@@ -1,12 +1,22 @@
 import FlayCondition from './components/FlayCondition';
 import FlayPage from './components/FlayPage';
 import FlayPagination from './components/FlayPagination';
+import FlaySearch from './components/FlaySearch';
 import './flay.list.scss';
 import './util/flay.sse';
 
 const flayCondition = document.querySelector('body > header').appendChild(new FlayCondition());
 const flayPage = document.querySelector('body > main').appendChild(new FlayPage());
 const flayPagination = document.querySelector('body > footer').appendChild(new FlayPagination());
+
+let flaySearch = null;
+
+document.querySelector('#toggleFlaySearch').addEventListener('click', () => {
+  if (flaySearch === null) {
+    flaySearch = document.querySelector('body > main').appendChild(new FlaySearch());
+  }
+  flaySearch.style.display = 'block';
+});
 
 flayCondition.addEventListener('change', (e) => {
   console.log('flayCondition change', e.detail);

@@ -45,11 +45,33 @@ public class VideoController {
     return videoInfoService.find(query);
   }
 
+  /**
+   * 신규 생성
+   * 
+   * @param video
+   * @return
+   */
   @PostMapping
   public Video create(@RequestBody Video video) {
     return videoInfoService.create(video);
   }
 
+  /**
+   * 없으면 신규, 있으면 수정
+   * 
+   * @param video
+   * @return
+   */
+  @PutMapping
+  public Video put(@RequestBody Video video) {
+    return videoInfoService.put(video);
+  }
+
+  /**
+   * 기존 수정
+   * 
+   * @param video
+   */
   @PatchMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void update(@RequestBody Video video) {

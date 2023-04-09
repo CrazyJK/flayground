@@ -28,7 +28,7 @@ public class SseEmitters {
 
   private final List<SseEmitter> sseEmitters = new CopyOnWriteArrayList<>();
 
-  public SseEmitter create() {
+  protected SseEmitter create() {
     SseEmitter sseEmitter = new SseEmitter(TIMEOUT);
     sseEmitter.onCompletion(() -> {
       log.debug("{} onCompletion", sseEmitter);
@@ -83,7 +83,7 @@ public class SseEmitters {
       send(EVENT.ACTRESS, object);
     } else if (object instanceof Tag) {
       send(EVENT.TAG, object);
-    } else if (object instanceof String) {
+    } else if (object instanceof SseMessage) {
       send(EVENT.MESSAGE, object);
     } else {
       throw new FlayException("undefined object");

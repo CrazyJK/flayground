@@ -10,12 +10,13 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import jk.kamoru.flayground.base.web.sse.LogAndSse;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-public class FileBasedFlaySource implements FlaySource {
+public class FileBasedFlaySource extends LogAndSse implements FlaySource {
 
   @Autowired
   FlayFactory flayFactory;
@@ -43,7 +44,7 @@ public class FileBasedFlaySource implements FlaySource {
     for (File path : paths) {
       if (path.isDirectory()) {
         Collection<File> found = FileUtils.listFiles(path, null, true);
-        log.info(String.format("%-15s %5s file - %s", LOAD, found.size(), path));
+        batchLogger(String.format("%-15s %5s file - %s", LOAD, found.size(), path));
         listFiles.addAll(found);
       } else {
         log.warn("Invalid source path {}", path);
@@ -75,7 +76,7 @@ public class FileBasedFlaySource implements FlaySource {
       flayFactory.addFile(flay, result.file);
     }
 
-    log.info(String.format("%-15s %5s Flay", LOAD, flayMap.size()));
+    batchLogger(String.format("%-15s %5s Flay", LOAD, flayMap.size()));
   }
 
   @Override

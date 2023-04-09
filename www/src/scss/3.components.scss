@@ -42,3 +42,24 @@ flay-title,
 flay-comment {
   padding: 0 0.5rem;
 }
+
+flay-pagination {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+
+flay-page {
+  min-width: 800px;
+  width: 900px;
+  margin: auto;
+}
+
+flay-batch {
+  max-width: 100%;
+}
+
+flay-candidate {
+  max-height: 100%;
+}

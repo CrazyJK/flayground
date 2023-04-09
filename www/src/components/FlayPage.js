@@ -17,9 +17,10 @@ export default class FlayPage extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' });
     const wrapper = document.createElement('article');
+    wrapper.classList.add('page');
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/FlayPage.css');
+    link.setAttribute('href', './css/components.css');
     this.shadowRoot.append(link, wrapper);
 
     this.flayStudio = wrapper.appendChild(new FlayStudio());
@@ -32,6 +33,19 @@ export default class FlayPage extends HTMLElement {
     this.flayRank = wrapper.appendChild(new FlayRank());
     this.flayRelease = wrapper.appendChild(new FlayRelease());
     this.flayTag = wrapper.appendChild(new FlayTag());
+
+    this.opus = null;
+
+    window.emitFlay = (flay) => {
+      if (this.opus === flay.opus) {
+        this.set(flay.opus);
+      }
+    };
+    window.emitVideo = (video) => {
+      if (this.opus === video.opus) {
+        this.set(video.opus);
+      }
+    };
   }
 
   /**
@@ -39,6 +53,7 @@ export default class FlayPage extends HTMLElement {
    * @param {String} opus
    */
   set(opus) {
+    this.opus = opus;
     this.setAttribute('opus', opus);
 
     fetch('/flay/' + opus + '/fully')

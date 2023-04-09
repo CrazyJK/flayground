@@ -10,34 +10,42 @@ const PAGEDOWN = 'PAGEDOWN';
  *
  */
 export default class FlayPagination extends HTMLElement {
-  constructor() {
+  constructor(listener) {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('pagination');
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/components.css');
+    this.shadowRoot.append(link, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.opus = null;
     this.opusIndex = -1;
     this.opusList = null;
-    this.handler = null;
+    this.listener = listener;
+    this.active = true;
 
-    this.paging = this.wrapper.appendChild(document.createElement('div'));
-    this.paging.classList.add('paging');
+    this.PAGING = this.wrapper.appendChild(document.createElement('div'));
+    this.PAGING.classList.add('paging');
 
-    this.progress = this.wrapper.appendChild(document.createElement('div'));
-    this.progress.classList.add('progress');
-    this.progressBar = this.progress.appendChild(document.createElement('div'));
-    this.progressBar.classList.add('progress-bar');
+    const PROGRESS = this.wrapper.appendChild(document.createElement('div'));
+    PROGRESS.classList.add('progress');
+    this.PROGRESS_BAR = PROGRESS.appendChild(document.createElement('div'));
+    this.PROGRESS_BAR.classList.add('progress-bar');
 
     window.addEventListener('wheel', (e) => {
-      console.log('PageNavigator.wheel', e.deltaY, e);
+      if (!this.active) {
+        return;
+      }
       if (e.ctrlKey) {
         return;
       }
+      let isInLayer = e.target.closest('#layer');
+      if (isInLayer) {
+        return;
+      }
+      console.debug('wheel', e.deltaY, e.target, e.target.closest('#layer'), e);
       switch (e.deltaY) {
         case 100: // wheel down
           this.navigator(NEXT);
@@ -51,7 +59,10 @@ export default class FlayPagination extends HTMLElement {
     });
 
     window.addEventListener('keyup', (e) => {
-      console.log('PageNavigator.keyup', e.code, e);
+      if (!this.active) {
+        return;
+      }
+      console.debug('keyup', e.code, e.target, e);
       switch (e.code) {
         case 'ArrowRight':
           this.navigator(NEXT);
@@ -78,6 +89,27 @@ export default class FlayPagination extends HTMLElement {
           break;
       }
     });
+  }
+
+  set(opusList) {
+    this.opusList = opusList;
+    this.navigator(RANDOM);
+  }
+
+  get(offset) {
+    if (offset) {
+      return this.opusList[this.opusIndex + offset];
+    } else {
+      return this.opus;
+    }
+  }
+
+  on() {
+    this.active = true;
+  }
+
+  off() {
+    this.active = false;
   }
 
   navigator(direction) {
@@ -111,46 +143,17 @@ export default class FlayPagination extends HTMLElement {
 
     this.opus = this.opusList[this.opusIndex];
 
-    if (this.handler != null) {
-      // Fallback for browsers that don't support View Transitions:
-      if (!document.startViewTransition) {
-        this.handler(this.opus);
-        return;
+    if (this.opus) {
+      this.render();
+      if (this.listener) {
+        this.listener(this.opus);
       }
-
-      // With View Transitions:
-      const transition = document.startViewTransition(() => this.handler(this.opus));
-      console.debug('transition', transition);
     }
-
-    this.render();
-  }
-
-  setData(opusList) {
-    console.log('set', opusList);
-    this.opusList = opusList;
-  }
-
-  setHandler(handler) {
-    console.log('setHandler', handler);
-    this.handler = handler;
-  }
-
-  get(offset) {
-    if (offset) {
-      return this.opusList[this.opusIndex + offset];
-    } else {
-      return this.opus;
-    }
-  }
-
-  start() {
-    this.navigator(RANDOM);
   }
 
   render() {
     let lastIndex = this.opusList.length - 1;
-    this.progressBar.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
+    this.PROGRESS_BAR.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 
     let start = Math.max(this.opusIndex - 5, 0);
     let end = Math.min(start + 10, lastIndex);
@@ -164,9 +167,9 @@ export default class FlayPagination extends HTMLElement {
       range.push(lastIndex);
     }
 
-    this.paging.textContent = null;
+    this.PAGING.textContent = null;
     for (let i of range) {
-      const page = this.paging.appendChild(document.createElement('label'));
+      const page = this.PAGING.appendChild(document.createElement('label'));
       page.classList.add('page');
       page.addEventListener('click', () => {
         console.log('pageClick', i);

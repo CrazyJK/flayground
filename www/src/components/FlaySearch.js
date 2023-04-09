@@ -34,6 +34,7 @@ export default class FlaySearch extends HTMLElement {
     const title = this.shadowRoot.querySelector('#title');
     const actress = this.shadowRoot.querySelector('#actress');
     const release = this.shadowRoot.querySelector('#release');
+    const flayFullname = this.shadowRoot.querySelector('#flayFullname');
 
     const actressFavorite = this.shadowRoot.querySelector('#actressFavorite');
     const actressName = this.shadowRoot.querySelector('#actressName');
@@ -47,47 +48,17 @@ export default class FlaySearch extends HTMLElement {
     let NEXTJAV_STYLE = null;
     let NEXTJAV_SCRIPT = null;
 
-    emptyBtn.addEventListener('click', () => {
-      console.log('emptyBtnClick');
-      this.shadowRoot.querySelectorAll('input').forEach((input) => (input.value = ''));
-      this.shadowRoot.querySelectorAll('input[type="checkbox"]').forEach((input) => (input.checked = false));
-      this.shadowRoot.querySelectorAll('textarea').forEach((textarea) => (textarea.value = ''));
+    // 키 이벤트 전파 방지
+    this.wrapper.addEventListener('keyup', (e) => e.stopPropagation());
+    //  spellcheck="false"
+    this.shadowRoot.querySelectorAll('input, textarea').forEach((element) => {
+      element.setAttribute('spellcheck', false);
     });
-    copyBtn.addEventListener('click', () => {
-      let fullName = `[${studio.value}][${opus.value}][${title.value}][${actress.value}][${release.value}]`;
-      console.log('copyBtnClick', fullName);
-      window.navigator.clipboard.writeText(fullName);
-    });
-    saveBtn.addEventListener('click', () => {
-      let actress = { favorite: actressFavorite.checked, name: actressName.value, localName: actressLocalname.value, birth: actressBirth.value, body: actressBody.value, height: actressHeight.value, debut: actressDebut.value };
-      console.log('saveBtnClick', actress);
-      FlayAction.putActress(actress);
-    });
-    actressRowData.addEventListener('keyup', (e) => {
-      e.stopPropagation();
-      if (e.keyCode === 17) {
-        // Control key ignored
-        return;
-      }
-      e.target.value.split('\n').forEach((line) => {
-        console.log('actressRowData line', line);
-        if (/[0-9]年/.test(line)) {
-          // 1987年09月07日 （現在 34歳）おとめ座
-          const birth = line.split(' ')[0];
-          actressBirth.value = birth;
-        } else if (line.indexOf('T') > -1) {
-          // T161 / B83(Eカップ) / W58 / H82 / S
-          const splitText = line.split(' / ');
-          const height = splitText[0].substring(1);
-          const body = splitText[1] + ' / ' + splitText[2] + ' / ' + splitText[3];
-          actressBody.value = body;
-          actressHeight.value = height;
-        }
-      });
-    });
-    this.shadowRoot.querySelectorAll('.search-input').forEach((input) => {
+
+    // 기초 데이터 입력
+    [inputOpus, inputTitle, inputActress, inputDesc].forEach((input) => {
       input.addEventListener('keyup', (e) => {
-        e.stopPropagation();
+        e.target.value = e.target.value.trim();
         if (e.keyCode !== 13) {
           return;
         }
@@ -96,6 +67,7 @@ export default class FlaySearch extends HTMLElement {
         if (inputOpus.value !== '') {
           let inOpus = inputOpus.value.toUpperCase();
           // find Flay
+          this.shadowRoot.querySelector('#found-flay').innerHTML = '';
           fetch('/flay/' + inOpus)
             .then((res) => res.json())
             .then((flay) => {
@@ -114,19 +86,19 @@ export default class FlaySearch extends HTMLElement {
             .then((foundStudio) => (studio.value = foundStudio.name));
           // searching Arzon
           const URL_SEARCH_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
-          window.open(URL_SEARCH_ARZON + inOpus, 'arzon' + inOpus, 'width=800px,height=1000px');
+          window.open(URL_SEARCH_ARZON + inOpus, 'arzon', 'width=800px,height=1000px');
           // set opus
           opus.value = inOpus;
         }
         // find actress
         if (inputActress.value !== '') {
-          inputActress.value.split(',').forEach((localname) => {
+          inputActress.value.split(' ').forEach((localname) => {
             fetch('/info/actress/find/byLocalname/' + localname)
               .then((res) => res.json())
               .then((list) => {
                 console.log('find actress', list);
                 if (list.length === 1) {
-                  actress.value = (actress.value !== '' ? ',' : '') + list[0].name;
+                  actress.value += (actress.value !== '' ? ',' : '') + list[0].name;
                   actressFavorite.checked = list[0].favorite;
                   actressName.value = list[0].name;
                   actressLocalname.value = list[0].localName;
@@ -150,6 +122,78 @@ export default class FlaySearch extends HTMLElement {
         }
       });
     });
+    emptyBtn.addEventListener('click', () => {
+      console.log('emptyBtnClick');
+      this.shadowRoot.querySelectorAll('input:not(#lastSearchOpus)').forEach((input) => (input.value = ''));
+      this.shadowRoot.querySelectorAll('input[type="checkbox"]').forEach((input) => (input.checked = false));
+      this.shadowRoot.querySelectorAll('textarea').forEach((textarea) => (textarea.value = ''));
+    });
+
+    // 요소 이벤트
+    [studio, opus, title, actress, release].forEach((input) => {
+      input.addEventListener('change', (e) => {
+        e.target.value = e.target.value.trim().replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：').replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂').replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
+        let fullName = `[${studio.value}][${opus.value}][${title.value}][${actress.value}][${release.value}]`;
+        flayFullname.value = fullName;
+      });
+    });
+    release.addEventListener('keyup', (e) => {
+      const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
+      release.value = release.value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
+      let isValid = DATE_PATTERN.test(release.value);
+      release.classList.toggle('input-invalid', !isValid);
+    });
+    copyBtn.addEventListener('click', () => {
+      console.log('copyBtnClick', flayFullname.value);
+      window.navigator.clipboard.writeText(flayFullname.value).then(() => {
+        FlayAction.putVideo({
+          opus: opus.value,
+          title: inputTitle.value,
+          desc: inputDesc.value,
+        });
+      });
+    });
+
+    // 배우 이벤트
+    // actressName, actressLocalname, actressBirth, actressBody, actressHeight, actressDebut
+    saveBtn.addEventListener('click', () => {
+      let actress = { favorite: actressFavorite.checked, name: actressName.value, localName: actressLocalname.value, birth: actressBirth.value, body: actressBody.value, height: actressHeight.value, debut: actressDebut.value };
+      console.log('saveBtnClick', actress);
+      FlayAction.putActress(actress);
+    });
+    actressRowData.addEventListener('keyup', (e) => {
+      e.stopPropagation();
+      if (e.keyCode === 17) {
+        // Control key ignored
+        return;
+      }
+      e.target.value.split('\n').forEach((line) => {
+        console.log('actressRowData line', line);
+        const birthRegExp = /^(19[0-9][0-9]|20\d{2})年(0[0-9]|1[0-2])月(0[1-9]|[1-2][0-9]|3[0-1])日$/;
+        const bodyRegExp = /^(7[0-9]|8[0-9]|9[0-9]|1\d{2})[A-J]? - (5[0-9]|6[0-9]) - (7[0-9]|8[0-9]|9[0-9]|1\d{2})$/;
+        const heightRegExp = /^(1[4-7][0-9])$/;
+        const debutRegExp = /^(199[0-9]|20[0-2][0-9])$/;
+        if (/[0-9]年/.test(line)) {
+          // 1987年09月07日 （現在 34歳）おとめ座
+          const birth = line.split(' ')[0];
+          actressBirth.value = birth;
+          actressBirth.classList.toggle('input-invalid', !birthRegExp.test(actressBirth.value));
+        } else if (line.indexOf('T') > -1) {
+          // T161 / B83(Eカップ) / W58 / H82 / S
+          const splitText = line.split(' / ');
+          const height = splitText[0].substring(1);
+          const body = splitText[1] + ' / ' + splitText[2] + ' / ' + splitText[3];
+          actressBody.value = body
+            .trim()
+            .replace(/^[A-Z]|\(|カップ\)/gi, '')
+            .replace(/\/ [A-Z]/gi, '- ');
+          actressBody.classList.toggle('input-invalid', !bodyRegExp.test(actressBody.value));
+          actressHeight.value = height;
+          actressHeight.classList.toggle('input-invalid', !heightRegExp.test(actressBody.value));
+        }
+      });
+    });
+
     // copy style
     this.shadowRoot.querySelector('#copyStyle').addEventListener('click', () => {
       window.navigator.clipboard.writeText(NEXTJAV_STYLE);
@@ -174,8 +218,8 @@ export default class FlaySearch extends HTMLElement {
     fetch('/stylish/nextjav_tor.html')
       .then((response) => response.text())
       .then((text) => {
-        NEXTJAV_STYLE = text.substring(0, text.indexOf('<script>'));
-        NEXTJAV_SCRIPT = text.substring(text.indexOf('<script>'));
+        NEXTJAV_STYLE = text.substring(0, text.indexOf('</style>') + '</style>'.length);
+        NEXTJAV_SCRIPT = text.substring(text.indexOf('</style>') + '</style>'.length).trim();
       });
   }
 }
@@ -200,7 +244,6 @@ const HTML = `
     <input type="text" id="inputTemp" />
   </div>
   <div>
-    <button type="button" id="copyBtn" placeholder="copy Name">Copy</button>
     <input  type="text"   id="studio"  placeholder="Studio" list="studio-list" />
     <datalist             id="studio-list"></datalist>
     <input  type="text"   id="opus"    placeholder="Opus" />
@@ -209,6 +252,7 @@ const HTML = `
     <input  type="text"   id="release" placeholder="Release" />
   </div>
   <div>
+    <button type="button" id="copyBtn" placeholder="copy Name">Copy</button>
     <input type="text" id="flayFullname" placeholder="flay fullname" />
   </div>
 </div>
@@ -228,15 +272,15 @@ const HTML = `
   </div>
   <div>
     <textarea id="actressRowData" placeholder="input: 1999年12月01日 （現在 21歳) いて座
-サイズ
 
+サイズ
 T163 / B92(Hカップ) / W62 / H89"></textarea>
   </div>
 </div>
 <div class="search-group">
   <div>
-    <button id="copyStyle">Copy nextjav Style</button>
-    <button id="copyScript">Copy nextjav Script</button>
+    <button id="copyStyle">[nextjav Style]</button>
+    <button id="copyScript">[nextjav Script]</button>
     <input type="text" id="lastSearchOpus" />
   </div>
 </div>

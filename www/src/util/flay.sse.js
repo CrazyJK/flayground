@@ -1,3 +1,5 @@
+import './flay.sse.scss';
+
 /*
  * ref. https://developer.mozilla.org/ko/docs/Web/API/Server-sent_events
  */
@@ -67,8 +69,35 @@ sse.addEventListener('TAG', (e) => {
 
 sse.addEventListener('MESSAGE', (e) => {
   console.debug(e.type, e.data);
-  const message = JSON.parse(e.data);
-  if (typeof window.emitMessage === 'function') {
-    window.emitMessage(message);
+  const data = JSON.parse(e.data);
+  if (data.type === 'Batch') {
+    if (typeof window.emitBatch === 'function') {
+      window.emitBatch(data);
+    }
+  } else if (data.type === 'Notice') {
+    if (typeof window.emitNotice === 'function') {
+      window.emitNotice(data);
+    }
+  } else {
+    if (typeof window.emitMessage === 'function') {
+      window.emitMessage(data);
+    }
   }
 });
+
+window.emitNotice = (data) => {
+  console.log('emitNotice', data);
+  let noticeWrapper = document.querySelector('#notice-wrapper');
+  if (noticeWrapper === null) {
+    noticeWrapper = document.querySelector('body').appendChild(document.createElement('div'));
+    noticeWrapper.id = 'notice-wrapper';
+  }
+  let notice = noticeWrapper.appendChild(document.createElement('div'));
+  notice.innerHTML = `
+    <label>${data.message}</label>
+  `;
+
+  setTimeout(() => {
+    notice.remove();
+  }, 1000 * 3);
+};

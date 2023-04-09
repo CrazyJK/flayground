@@ -92,11 +92,13 @@ export default class FlayFiles extends HTMLElement {
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
-    this.movieBtn.setAttribute('title', movieSize + ' Movie');
+    this.movieBtn.title = movieSize + ' Movie';
     this.movieBtn.innerHTML = 'Movie<i class="badge">' + movieSize + '</i>';
+    this.movieBtn.classList.toggle('no-exist', movieSize === 0);
 
-    this.subBtn.setAttribute('title', subtitlesSize + ' Subtitles');
+    this.subBtn.title = subtitlesSize + ' Subtitles';
     this.subBtn.innerHTML = 'Sub<i class="badge">' + subtitlesSize + '</i>';
+    this.subBtn.classList.toggle('no-exist', subtitlesSize === 0);
 
     this.playLabel.innerHTML = 'Play<i class="badge">' + flay.video.play + '</i>';
 

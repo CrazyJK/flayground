@@ -62,6 +62,24 @@ export default {
   listOfStudio: (callback, failCallback) => {
     action('/flay/list/studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: 'STUDIO' }) }, callback, failCallback);
   },
+  putVideo: (video, callback, failCallback) => {
+    action('/info/video', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(video) }, callback, failCallback);
+  },
+  reload: (callback, failCallback) => {
+    action('/batch/reload', { method: 'PUT' }, callback, failCallback);
+  },
+  batch: (operation, callback, failCallback) => {
+    action('/batch/start/' + operation, { method: 'PUT' }, callback, failCallback);
+  },
+  batchSetOption: (option, callback, failCallback) => {
+    action('/batch/option/' + option, { method: 'PUT' }, callback, failCallback);
+  },
+  batchGetOption: (type, callback, failCallback) => {
+    action('/batch/option/' + type, { method: 'GET' }, callback, failCallback);
+  },
+  acceptCandidates: (opus, callback, failCallback) => {
+    action('/flay/candidates/' + opus, { method: 'PATCH' }, callback, failCallback);
+  },
 };
 
 async function action(url, requestInit, callback, failCallback) {

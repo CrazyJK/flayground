@@ -24,6 +24,20 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
   @Autowired
   HistoryService historyService;
 
+  /**
+   * 신규 video 저장. 기존에 있는지 찾아보고 동작
+   *
+   * @param video
+   * @return
+   */
+  public Video put(Video putVideo) {
+    Video video = this.infoSource.getOrNew(putVideo.getOpus());
+    video.setTitle(putVideo.getTitle());
+    video.setDesc(putVideo.getDesc());
+    this.update(video);
+    return video;
+  }
+
   @Override
   public void update(Video updateVideo) {
     updateVideo.setLastAccess(new Date().getTime());

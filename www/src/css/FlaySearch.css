@@ -1,6 +1,7 @@
 .flay-search {
   border: 1px solid #000;
   padding: 1rem;
+  width: 990px;
 }
 
 .flay-search > div.search-group {
@@ -37,10 +38,14 @@ button:hover {
   text-shadow: 1px 1px 2px var(--color-text-shadow-over);
 }
 
+.input-invalid {
+  background-color: #dc143c80;
+}
+
 /* input data */
 #inputOpus {
   flex: 0 0 none;
-  width: 7rem;
+  width: 8rem;
 }
 #inputTitle {
   flex: 1 1 auto;
@@ -60,7 +65,7 @@ button:hover {
 }
 #studio {
   flex: 0 0 auto;
-  width: 6rem;
+  width: 7rem;
 }
 #opus {
   flex: 0 0 auto;
@@ -75,7 +80,7 @@ button:hover {
 }
 #release {
   flex: 0 0 auto;
-  width: 6rem;
+  width: 7rem;
 }
 #flayFullname {
   flex: 1 1 auto;
@@ -115,7 +120,7 @@ button:hover {
 #actressRowData {
   flex: 1 1 auto;
   font-size: 14px;
-  height: 5rem;
+  height: 72px;
 }
 
 /* about nextjav, lastSearchOpus */

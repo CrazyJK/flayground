@@ -38,8 +38,12 @@ export default class FlayRank extends HTMLElement {
       this.rankInputElementArray.push(rankInputElement);
     }
 
-    this.likeElement = this.wrapper.appendChild(document.createElement('button'));
-    this.likeElement.addEventListener('click', (e) => {
+    this.rankLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.rankLabel.classList.add('rank-label');
+
+    this.likeBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.likeBtn.classList.add('like-btn');
+    this.likeBtn.addEventListener('click', (e) => {
       console.log('likeClick', this.flay.opus);
       FlayAction.setLike(this.flay.opus);
     });
@@ -71,10 +75,12 @@ export default class FlayRank extends HTMLElement {
       }
     });
 
+    this.rankLabel.innerHTML = flay.video.rank + '<small>R</small>';
+
     let likeCount = flay.video.likes ? (flay.video.likes.length > 0 ? flay.video.likes.length : '') : '';
 
-    this.likeElement.setAttribute('title', 'Like' + likeCount);
-    this.likeElement.innerHTML = 'Like<i class="badge">' + likeCount + '</i>';
+    this.likeBtn.setAttribute('title', 'Like' + likeCount);
+    this.likeBtn.innerHTML = 'Like<i class="badge">' + likeCount + '</i>';
 
     this.scoreLabel.innerHTML = 'Score<i class="badge">' + flay.score + '</i>';
   }

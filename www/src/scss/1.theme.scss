@@ -1,6 +1,7 @@
 [theme='dark'] {
   --color-bg: #242424;
   --color-bg-notice: #111;
+  --color-bg-cover: #111;
 
   --color-text: #eee;
   --color-text-secondary: #888;
@@ -8,6 +9,7 @@
   --color-text-placeholder: #aaa;
   --color-checked: orange;
   --color-border: #111;
+  --color-border-active: orange;
 
   --box-shadow: 0 2px 16px 4px #000;
 }
@@ -15,6 +17,7 @@
 [theme='light'] {
   --color-bg: #fff;
   --color-bg-notice: #ccc;
+  --color-bg-cover: #ccc;
 
   --color-text: #242424;
   --color-text-secondary: #888;
@@ -22,6 +25,7 @@
   --color-text-placeholder: #555;
   --color-checked: orange;
   --color-border: #ddd;
+  --color-border-active: orange;
 
   --box-shadow: 0 2px 16px 4px #000;
 }

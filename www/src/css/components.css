@@ -56,6 +56,9 @@ input[type='radio'] {
 input[type='checkbox'] + label,
 input[type='radio'] + label {
   cursor: pointer;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
 }
 input[type='checkbox'] + label:hover,
 input[type='radio'] + label:hover {
@@ -68,8 +71,8 @@ input[type='radio']:checked + label {
 input[type='checkbox'] + label > svg,
 input[type='radio'] + label > svg {
   display: inline-block;
-  width: 1.75rem;
-  height: 1.75rem;
+  height: var(--font-large);
+  width: var(--font-large);
 }
 
 /* common: input text, search  */
@@ -136,6 +139,11 @@ div.actress > div > span > label {
 div.actress > div > .name {
   margin-right: auto;
 }
+div.actress .localName,
+div.actress .flaysize,
+div.actress .body {
+  white-space: nowrap;
+}
 @media screen and (max-width: 600px) {
   .localName,
   .age,
@@ -185,6 +193,7 @@ div.comment .placeholder {
 div.cover {
   aspect-ratio: 400 / 269;
   background: transparent no-repeat center / contain;
+  background-color: var(--color-bg-cover);
 }
 div.cover img {
   border-radius: 0.25rem;
@@ -263,7 +272,7 @@ div.files.small .sub-btn,
 div.files.small .play-label,
 div.files.small .size-label,
 div.files.small .files-btn {
-  display: none;
+  display: none !important;
 }
 div.files.small button {
   font-size: var(--font-normal);
@@ -294,6 +303,9 @@ div.rank div.rank-group input[value='-1']:checked + label {
 div.rank div.rank-group input[value='0']:checked + label {
   color: #0ff8;
 }
+div.rank .rank-label {
+  display: none;
+}
 @media screen and (max-width: 600px) {
   .score-label {
     display: none;
@@ -302,8 +314,13 @@ div.rank div.rank-group input[value='0']:checked + label {
 div.rank.small {
   gap: 0.5rem;
 }
-div.rank.small .score-label {
+div.rank.small .rank-group,
+div.rank.small .score-label,
+div.rank.small .like-btn {
   display: none;
+}
+div.rank.small .rank-label {
+  display: block;
 }
 div.rank div.rank-group {
   gap: 0.25rem;
@@ -481,6 +498,8 @@ article.page > :not(flay-cover) {
 
 /* for FlayNav */
 div.nav {
+  position: absolute;
+  inset: 0;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -488,17 +507,26 @@ div.nav {
 div.nav > ul {
   list-style: none;
   padding: 0;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: flex-start;
-  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 div.nav > ul > li {
   padding: 0 1rem;
+  text-align: left;
 }
 div.nav > ul > li.active {
   color: var(--color-checked);
+}
+div.nav > ul:nth-child(2) {
+  margin-bottom: auto;
+}
+div.nav > ul > li > .theme-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+div.nav > ul > li > .theme-group label svg {
+  width: 2rem;
+  height: 2rem;
 }
 
 flay-card {

@@ -1,0 +1,78 @@
+@import './scss/style.scss';
+
+header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: auto;
+  padding: 1rem;
+  width: 800px;
+
+  & > div {
+    display: flex;
+    gap: 0.25rem;
+    min-height: 2.5rem;
+
+    input {
+      flex: 1 1 auto;
+      width: 1px;
+    }
+    input,
+    input[type='checkbox'] + label,
+    label,
+    button,
+    textarea {
+      border: 1px dashed chocolate;
+    }
+    label,
+    input[type='text'] {
+      text-align: center;
+    }
+    input[type='checkbox'] + label {
+      padding: 0.25rem 0.75rem;
+    }
+
+    #name {
+      flex: 1 1 auto;
+    }
+    #localName {
+      flex: 1 1 auto;
+    }
+    #birth {
+      flex: 1 1 auto;
+    }
+    #age {
+      flex: 0 1 auto;
+      width: 50px;
+    }
+    #body {
+      flex: 1 1 auto;
+    }
+    #height {
+      flex: 0 1 auto;
+      width: 100px;
+    }
+    #debut {
+      flex: 0 1 auto;
+      width: 100px;
+    }
+    #comment {
+      flex: 1 1 auto;
+    }
+    #saveBtn {
+      cursor: pointer;
+    }
+  }
+}
+
+article {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem;
+
+  flay-card {
+    width: 400px;
+  }
+}

@@ -21,6 +21,22 @@ export default class FlayActress extends HTMLElement {
     style.setAttribute('href', './css/components.css');
 
     this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+
+    window.emitActress = (updatedActress) => {
+      let found = false;
+      let newActressList = [];
+      for (let actress of this.actressList) {
+        if (actress.name === updatedActress.name) {
+          newActressList.push(updatedActress);
+          found = true;
+        } else {
+          newActressList.push(actress);
+        }
+      }
+      if (found) {
+        this.set(this.flay, newActressList);
+      }
+    };
   }
 
   /**
@@ -60,7 +76,8 @@ export default class FlayActress extends HTMLElement {
       nameElement.innerHTML = actress.name;
       nameElement.addEventListener('click', () => {
         console.log('nameClick', actress.name);
-        window.open('/info/actress/' + actress.name, actress.name, 'width=640px,height=800px');
+        // window.open('/info/actress/' + actress.name, actress.name, 'width=640px,height=800px');
+        window.open('flay.actress.html?name=' + actress.name, actress.name, 'width=960px,height=1200px');
       });
 
       // localName

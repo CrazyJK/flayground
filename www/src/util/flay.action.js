@@ -80,6 +80,9 @@ export default {
   acceptCandidates: (opus, callback, failCallback) => {
     action('/flay/candidates/' + opus, { method: 'PATCH' }, callback, failCallback);
   },
+  updateActress: (actress, callback, failCallback) => {
+    action('/info/actress', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(actress) }, callback, failCallback);
+  },
 };
 
 async function action(url, requestInit, callback, failCallback) {

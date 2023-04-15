@@ -20,7 +20,7 @@ export default class FlayNav extends HTMLElement {
 
     const MENU_LIST = wrapper.appendChild(document.createElement('ul'));
 
-    ['page', 'search', 'batch', 'candidate'].forEach((menu) => {
+    ['page', 'search', 'batch', 'candidate'].forEach((menu, index) => {
       const LI = MENU_LIST.appendChild(document.createElement('li'));
       const ANKER = LI.appendChild(document.createElement('a'));
       ANKER.innerHTML = menu.toLocaleUpperCase();
@@ -32,6 +32,10 @@ export default class FlayNav extends HTMLElement {
         e.target.parentNode.classList.toggle('active');
         listener(menu);
       });
+
+      if (index === 0) {
+        LI.classList.add('active');
+      }
     });
 
     const OPTION_LIST = wrapper.appendChild(document.createElement('ul'));

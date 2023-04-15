@@ -48,7 +48,13 @@ public class FlayCollector {
   }
 
   private Stream<Flay> filterAndSort(Collection<Flay> list, FlayCondition flayCondition) {
-    return list.stream().filter(flay -> filter(flay, flayCondition)).sorted((f1, f2) -> sort(f1, f2, flayCondition));
+    return list.stream().filter(flay -> filter(flay, flayCondition)).sorted((f1, f2) -> {
+      if (flayCondition.isReverse()) {
+        return sort(f2, f1, flayCondition);
+      } else {
+        return sort(f1, f2, flayCondition);
+      }
+    });
   }
 
   private boolean filter(Flay flay, FlayCondition flayCondition) {
@@ -116,6 +122,8 @@ public class FlayCollector {
       return NumberUtils.compare(f1.getVideo().getPlay(), f2.getVideo().getPlay());
     case RANK:
       return NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank());
+    case LASTPLAY:
+      return NumberUtils.compare(f1.getVideo().getLastPlay(), f2.getVideo().getLastPlay());
     case LASTACCESS:
       return NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess());
     case LASTMODIFIED:

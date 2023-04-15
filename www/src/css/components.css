@@ -3,7 +3,7 @@ div {
   text-align: center;
 }
 
-.no-exist {
+.disable {
   color: var(--color-text-secondary);
 }
 
@@ -20,7 +20,7 @@ button {
   font-family: D2Coding;
   outline: none;
 }
-button:hover {
+button:not(.disable):hover {
   text-shadow: 1px 1px 2px var(--color-text-shadow-over);
   cursor: pointer;
 }
@@ -222,9 +222,13 @@ div.files > div.list > ol {
   text-align: left;
 }
 div.files > div.list > ol > li {
-  font-size: var(--font-small);
+  font-size: var(--font-smallest);
   font-family: D2Coding;
   margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
 }
 div.files > div.list > div.rename-flay {
   display: flex;
@@ -393,6 +397,9 @@ div.tag .tag-new input {
   font-size: var(--font-large);
   text-align: center;
 }
+div.tag.small input:not(:checked) + label {
+  display: none;
+}
 
 /* for FlayTitle */
 div.title label {
@@ -504,13 +511,16 @@ div.nav {
   flex-direction: column;
   flex-wrap: nowrap;
 }
+div.nav > img {
+  margin: 0.25rem 0.5rem;
+}
 div.nav > ul {
   list-style: none;
   padding: 0;
   margin-bottom: 0.5rem;
 }
 div.nav > ul > li {
-  padding: 0 1rem;
+  padding: 0 1rem 0.5rem;
   text-align: left;
 }
 div.nav > ul > li.active {

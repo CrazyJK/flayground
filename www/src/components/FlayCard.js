@@ -32,6 +32,7 @@ export default class FlayCard extends HTMLElement {
     this.flayRank = this.wrapper.appendChild(new FlayRank());
     this.flayRelease = this.wrapper.appendChild(new FlayRelease());
     this.flayTag = this.wrapper.appendChild(new FlayTag());
+    this.flayTag.classList.add('small');
   }
 
   /**

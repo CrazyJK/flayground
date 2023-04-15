@@ -131,10 +131,13 @@ export default class FlaySearch extends HTMLElement {
 
     // 요소 이벤트
     [studio, opus, title, actress, release].forEach((input) => {
-      input.addEventListener('change', (e) => {
+      input.addEventListener('keyup', (e) => {
         e.target.value = e.target.value.trim().replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：').replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂').replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
         let fullName = `[${studio.value}][${opus.value}][${title.value}][${actress.value}][${release.value}]`;
         flayFullname.value = fullName;
+        if (e.target.id === 'actress') {
+          actressName.value = e.target.value.trim();
+        }
       });
     });
     release.addEventListener('keyup', (e) => {
@@ -189,7 +192,7 @@ export default class FlaySearch extends HTMLElement {
             .replace(/\/ [A-Z]/gi, '- ');
           actressBody.classList.toggle('input-invalid', !bodyRegExp.test(actressBody.value));
           actressHeight.value = height;
-          actressHeight.classList.toggle('input-invalid', !heightRegExp.test(actressBody.value));
+          actressHeight.classList.toggle('input-invalid', !heightRegExp.test(actressHeight.value));
         }
       });
     });

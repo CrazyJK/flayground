@@ -10,10 +10,12 @@ export default class FlayCondition extends HTMLElement {
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
     const wrapper = document.createElement('div');
     wrapper.classList.add('condition');
+    const style = document.createElement('style');
+    style.innerHTML = CSS;
     const link = document.createElement('link');
     link.setAttribute('rel', 'stylesheet');
     link.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(link, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(style, link, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.listener = listener;
 
@@ -44,7 +46,7 @@ export default class FlayCondition extends HTMLElement {
     }
 
     // sort
-    const SORT_METHODS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH'];
+    const SORT_METHODS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH'];
     const SORT_DIV = wrapper.appendChild(document.createElement('div'));
     this.SORT_SELECT = createSelect(SORT_DIV, 0, 'sort', SORT_METHODS, 'Sort method');
     addEventListener(this, 'change', this.SORT_SELECT);
@@ -84,9 +86,7 @@ export default class FlayCondition extends HTMLElement {
       rank: this.RANK_CHECKBOX_ARRAY.filter((rank) => rank.checked).map((rank) => rank.value),
       sort: this.SORT_SELECT.value,
     };
-
     FlayStorage.local.set('FlayCondition.condition', JSON.stringify(this.condition));
-
     return this.condition;
   }
 
@@ -152,6 +152,7 @@ function addEventListener(THIS, type, element) {
     element.addEventListener(type, (e) => {
       e.stopPropagation();
       if (e.code === 'Enter' || e.code === 'NumpadEnter') {
+        e.target.value = e.target.value.trim();
         THIS.fetch();
       }
     });
@@ -165,3 +166,28 @@ function addEventListener(THIS, type, element) {
     });
   }
 }
+
+const CSS = `
+div.condition {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  transition: 0.4s;
+}
+div.condition > div > input[type='search'] {
+  outline: none;
+}
+div.condition > div > input[type='search']:hover {
+  background: #0004;
+  border-radius: 0.5rem;
+}
+div.condition > div > label {
+  margin: 0 0.25rem;
+}
+div.condition > div > select {
+  font-size: var(--font-normal);
+  outline: none;
+}
+`;

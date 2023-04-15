@@ -15,6 +15,7 @@ const condition = {
   withNoFavorite: false,
   rank: [0, 1, 2, 3, 4, 5],
   sort: 'RELEASE',
+  reverse: true,
 };
 
 const favorite = document.querySelector('#favorite');

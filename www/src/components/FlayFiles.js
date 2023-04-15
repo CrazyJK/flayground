@@ -23,14 +23,14 @@ export default class FlayFiles extends HTMLElement {
     this.movieBtn = this.infoDiv.appendChild(document.createElement('button'));
     this.movieBtn.addEventListener('click', (e) => {
       console.log('playClick', this.flay.opus);
-      FlayAction.play(this.flay.opus);
+      if (this.flay.files.movie.length > 0) FlayAction.play(this.flay.opus);
     });
 
     this.subBtn = this.infoDiv.appendChild(document.createElement('button'));
     this.subBtn.classList.add('sub-btn');
     this.subBtn.addEventListener('click', (e) => {
       console.log('subtitlesClick', this.flay.opus);
-      FlayAction.editSubtitles(this.flay.opus);
+      if (this.flay.files.subtitles.length > 0) FlayAction.editSubtitles(this.flay.opus);
     });
 
     this.playLabel = this.infoDiv.appendChild(document.createElement('label'));
@@ -85,22 +85,18 @@ export default class FlayFiles extends HTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    let movieSize = flay.files.movie.length;
-    let subtitlesSize = flay.files.subtitles.length;
-
-    this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
+    this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
-    this.movieBtn.title = movieSize + ' Movie';
-    this.movieBtn.innerHTML = 'Movie<i class="badge">' + movieSize + '</i>';
-    this.movieBtn.classList.toggle('no-exist', movieSize === 0);
+    this.movieBtn.innerHTML = 'Movie<i class="badge">' + flay.files.movie.length + '</i>';
+    this.movieBtn.classList.toggle('disable', flay.files.movie.length === 0);
 
-    this.subBtn.title = subtitlesSize + ' Subtitles';
-    this.subBtn.innerHTML = 'Sub<i class="badge">' + subtitlesSize + '</i>';
-    this.subBtn.classList.toggle('no-exist', subtitlesSize === 0);
+    this.subBtn.innerHTML = 'Sub<i class="badge">' + flay.files.subtitles.length + '</i>';
+    this.subBtn.classList.toggle('disable', flay.files.subtitles.length === 0);
 
     this.playLabel.innerHTML = 'Play<i class="badge">' + flay.video.play + '</i>';
+    this.playLabel.classList.toggle('disable', flay.video.play === 0);
 
     this.sizeLabel.innerHTML = getPrettyFilesize(flay.length);
 

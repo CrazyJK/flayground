@@ -37,9 +37,9 @@ export default class FlayRelease extends HTMLElement {
     this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.releaseLabel.textContent = flay.release;
-    this.lastModifiedLabel.innerHTML = '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>';
-    this.lastAccessLabel.innerHTML = '<small>' + dateFormat(flay.video.lastAccess) + '<i class="badge">acc</i></small>';
-    this.lastPlayLabel.innerHTML = '<small>' + dateFormat(flay.video.lastPlay) + '<i class="badge">play</i></small>';
+    this.lastModifiedLabel.innerHTML = flay.lastModified > 0 ? '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>' : '';
+    this.lastAccessLabel.innerHTML = flay.video.lastAccess > 0 ? '<small>' + dateFormat(flay.video.lastAccess) + '<i class="badge">acc</i></small>' : '';
+    this.lastPlayLabel.innerHTML = flay.video.lastPlay > 0 ? '<small>' + dateFormat(flay.video.lastPlay) + '<i class="badge">play</i></small>' : '';
   }
 }
 

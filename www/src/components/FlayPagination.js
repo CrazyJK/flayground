@@ -143,11 +143,9 @@ export default class FlayPagination extends HTMLElement {
 
     this.opus = this.opusList[this.opusIndex];
 
-    if (this.opus) {
-      this.render();
-      if (this.listener) {
-        this.listener(this.opus);
-      }
+    this.render();
+    if (this.listener) {
+      this.listener(this.opus);
     }
   }
 

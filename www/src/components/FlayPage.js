@@ -53,6 +53,11 @@ export default class FlayPage extends HTMLElement {
    * @param {String} opus
    */
   set(opus) {
+    if (!opus) {
+      this.style.display = 'none';
+      return;
+    }
+
     this.opus = opus;
     this.setAttribute('opus', opus);
 
@@ -70,6 +75,7 @@ export default class FlayPage extends HTMLElement {
         this.flayFiles.set(flay);
         this.flayRank.set(flay);
         this.flayTag.set(flay);
+        this.style.display = 'block';
       });
   }
 }

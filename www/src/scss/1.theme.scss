@@ -12,6 +12,7 @@
   --color-border-active: orange;
 
   --box-shadow: 0 2px 16px 4px #000;
+  --box-shadow-cover: inset 0 0 0.5rem 0.25rem #ccc;
 }
 
 [theme='light'] {
@@ -28,6 +29,7 @@
   --color-border-active: orange;
 
   --box-shadow: 0 2px 16px 4px #000;
+  --box-shadow-cover: inset 0 0 0.5rem 0.25rem #000;
 }
 
 :root {

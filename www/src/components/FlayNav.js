@@ -64,7 +64,6 @@ const makeThemeRadio = (parent, theme) => {
     } else {
       changeTheme(getPrefersColorSchemeDarkQuery().matches);
     }
-    FlayStorage.local.set('FlayNav.theme', e.target.value);
   });
 
   const label = parent.appendChild(document.createElement('label'));
@@ -76,7 +75,11 @@ const makeThemeRadio = (parent, theme) => {
   }
 };
 
-const changeTheme = (isDarkMode) => document.documentElement.setAttribute('theme', isDarkMode ? 'dark' : 'light');
+const changeTheme = (isDarkMode) => {
+  let mode = isDarkMode ? 'dark' : 'light';
+  FlayStorage.local.set('FlayNav.theme', mode);
+  document.documentElement.setAttribute('theme', mode);
+};
 
 const getPrefersColorSchemeDarkQuery = () => {
   if (!window.matchMedia) {

@@ -1,12 +1,16 @@
 @import './scss/style.scss';
 
 header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
   margin: auto;
   padding: 1rem;
-  width: 800px;
+  max-width: 999px;
 
   & > div {
     display: flex;
@@ -19,6 +23,7 @@ header {
     }
     input,
     input[type='checkbox'] + label,
+    select,
     label,
     button,
     textarea {
@@ -51,10 +56,12 @@ header {
     #height {
       flex: 0 1 auto;
       width: 100px;
+      text-align: right;
     }
     #debut {
       flex: 0 1 auto;
       width: 100px;
+      text-align: right;
     }
     #comment {
       flex: 1 1 auto;
@@ -66,13 +73,31 @@ header {
 }
 
 article {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  display: grid;
+  justify-content: space-evenly;
+  grid-template-columns: repeat(3, 1ft);
   gap: 1rem;
   padding: 1rem;
 
   flay-card {
-    width: 400px;
+    width: 100%;
+  }
+}
+
+@media screen and (max-width: 2560px) {
+  article {
+    grid-template-columns: repeat(6, minmax(auto, 400px));
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  article {
+    grid-template-columns: repeat(4, minmax(auto, 400px));
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  article {
+    grid-template-columns: repeat(3, minmax(auto, 333px));
   }
 }

@@ -194,10 +194,7 @@ div.cover {
   aspect-ratio: 400 / 269;
   background: transparent no-repeat center / contain;
   background-color: var(--color-bg-cover);
-}
-div.cover img {
-  border-radius: 0.25rem;
-  width: 100%;
+  box-shadow: var(--box-shadow-cover);
 }
 
 /* for FlayFiles */

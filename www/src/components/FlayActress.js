@@ -21,22 +21,6 @@ export default class FlayActress extends HTMLElement {
     style.setAttribute('href', './css/components.css');
 
     this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
-
-    window.emitActress = (updatedActress) => {
-      let found = false;
-      let newActressList = [];
-      for (let actress of this.actressList) {
-        if (actress.name === updatedActress.name) {
-          newActressList.push(updatedActress);
-          found = true;
-        } else {
-          newActressList.push(actress);
-        }
-      }
-      if (found) {
-        this.set(this.flay, newActressList);
-      }
-    };
   }
 
   /**

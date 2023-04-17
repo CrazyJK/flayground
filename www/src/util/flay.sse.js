@@ -101,3 +101,5 @@ window.emitNotice = (data) => {
     notice.remove();
   }, 1000 * 3);
 };
+
+window.emitMessage = (data) => alert(data);

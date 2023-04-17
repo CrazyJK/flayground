@@ -13,7 +13,7 @@ import FlayTitle from './FlayTitle';
  *
  */
 export default class FlayCard extends HTMLElement {
-  constructor() {
+  constructor(options) {
     super();
     this.attachShadow({ mode: 'open' });
     this.flayCover = new FlayCover();
@@ -33,6 +33,15 @@ export default class FlayCard extends HTMLElement {
     this.flayRelease = this.wrapper.appendChild(new FlayRelease());
     this.flayTag = this.wrapper.appendChild(new FlayTag());
     this.flayTag.classList.add('small');
+
+    if (options && options.excludes) {
+      this.excludes = options.excludes;
+    } else {
+      this.excludes = [];
+    }
+    this.opus = null;
+    this.flay = null;
+    this.actress = null;
   }
 
   /**
@@ -40,26 +49,63 @@ export default class FlayCard extends HTMLElement {
    * @param {String} opus
    */
   set(opus) {
+    if (!opus) {
+      this.style.display = 'none';
+      return;
+    }
+
+    this.opus = opus;
     this.setAttribute('opus', opus);
 
     fetch('/flay/' + opus + '/fully')
       .then((res) => res.json())
       .then((fullyFlay) => {
         const { actress, flay } = fullyFlay;
-        this.flayCover.set(flay);
-        this.flayStudio.set(flay);
-        this.flayOpus.set(flay);
-        this.flayTitle.set(flay);
-        this.flayComment.set(flay);
-        this.flayActress.set(flay, actress);
-        this.flayRelease.set(flay);
-        this.flayFiles.set(flay);
-        this.flayRank.set(flay);
-        this.flayTag.set(flay);
+        this.flay = flay;
+        this.actress = actress;
+
+        if (!this.excludes.includes('FlayCover')) {
+          this.flayCover.set(flay);
+        }
+        if (!this.excludes.includes('FlayStudio')) {
+          this.flayStudio.set(flay);
+        }
+        if (!this.excludes.includes('FlayOpus')) {
+          this.flayOpus.set(flay);
+        }
+        if (!this.excludes.includes('FlayTitle')) {
+          this.flayTitle.set(flay);
+        }
+        if (!this.excludes.includes('FlayComment')) {
+          this.flayComment.set(flay);
+        }
+        if (!this.excludes.includes('FlayActress')) {
+          this.flayActress.set(flay, actress);
+        }
+        if (!this.excludes.includes('FlayRelease')) {
+          this.flayRelease.set(flay);
+        }
+        if (!this.excludes.includes('FlayFiles')) {
+          this.flayFiles.set(flay);
+        }
+        if (!this.excludes.includes('FlayRank')) {
+          this.flayRank.set(flay);
+        }
+        if (!this.excludes.includes('FlayTag')) {
+          this.flayTag.set(flay);
+        }
+        this.setAttribute('rank', flay.video.rank);
       });
 
     let domRect = this.getBoundingClientRect();
     this.wrapper.classList.toggle('small', domRect.width < 600);
+  }
+
+  /**
+   * reload data
+   */
+  reload() {
+    this.set(this.opus);
   }
 }
 

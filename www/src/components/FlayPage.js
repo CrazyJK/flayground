@@ -35,17 +35,8 @@ export default class FlayPage extends HTMLElement {
     this.flayTag = wrapper.appendChild(new FlayTag());
 
     this.opus = null;
-
-    window.emitFlay = (flay) => {
-      if (this.opus === flay.opus) {
-        this.set(flay.opus);
-      }
-    };
-    window.emitVideo = (video) => {
-      if (this.opus === video.opus) {
-        this.set(video.opus);
-      }
-    };
+    this.flay = null;
+    this.actress = null;
   }
 
   /**
@@ -65,6 +56,8 @@ export default class FlayPage extends HTMLElement {
       .then((res) => res.json())
       .then((fullyFlay) => {
         const { actress, flay } = fullyFlay;
+        this.flay = flay;
+        this.actress = actress;
         this.flayCover.set(flay);
         this.flayStudio.set(flay);
         this.flayOpus.set(flay);
@@ -75,8 +68,16 @@ export default class FlayPage extends HTMLElement {
         this.flayFiles.set(flay);
         this.flayRank.set(flay);
         this.flayTag.set(flay);
+
         this.style.display = 'block';
       });
+  }
+
+  /**
+   * reload data
+   */
+  reload() {
+    this.set(this.opus);
   }
 }
 

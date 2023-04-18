@@ -8,11 +8,10 @@ module.exports = {
   entry: {
     index: './src/index.js',
     'flay.ground': './src/flay.ground.js',
-    'flay.actress': './src/flay.actress.js',
-    'flay.card': './src/flay.card.js',
-    'flay.list': './src/flay.list.js',
-    'flay.tile': './src/flay.tile.js',
-    'flay.part': './src/flay.part.js',
+    'card.flay': './src/card.flay.js',
+    'card.studio': './src/card.studio.js',
+    'card.actress': './src/card.actress.js',
+    'card.tag': './src/card.tag.js',
   },
   devtool: 'source-map',
   devServer: {

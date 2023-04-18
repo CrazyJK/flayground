@@ -1,5 +1,5 @@
-import FlayAction from '../util/flay.action';
-import SVG from './svg.json';
+import FlayAction from '../../util/flay.action';
+import SVG from '../svg.json';
 
 /**
  *

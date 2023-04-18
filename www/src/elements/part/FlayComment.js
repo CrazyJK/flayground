@@ -1,4 +1,4 @@
-import FlayAction from '../util/flay.action';
+import FlayAction from '../../util/flay.action';
 
 const COMMENT = 'Comment';
 
@@ -79,7 +79,7 @@ export default class FlayComment extends HTMLElement {
     this.comment.innerHTML = blank ? COMMENT : comment;
     this.comment.classList.toggle('placeholder', blank);
     this.input.value = comment;
-    this.japanese.classList.toggle('placeholder', flay.video.title == null);
+    this.japanese.classList.toggle('disable', flay.video.title == null);
   }
 }
 

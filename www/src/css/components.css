@@ -117,7 +117,7 @@ a {
   color: inherit;
   outline: none;
 }
-a:hover {
+a:not(.disable):hover {
   cursor: pointer;
   text-shadow: 1px 1px 2px var(--color-text-shadow-over);
 }

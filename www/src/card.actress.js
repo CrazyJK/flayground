@@ -1,6 +1,6 @@
-import FlayCard from './components/FlayCard';
-import SVG from './components/svg.json';
-import './flay.actress.scss';
+import './card.actress.scss';
+import FlayCard from './elements/card/FlayCard';
+import SVG from './elements/svg.json';
 import flayAction from './util/flay.action';
 import './util/flay.sse';
 

@@ -1,10 +1,10 @@
-import FlayBatch from './components/FlayBatch';
-import FlayCandidate from './components/FlayCandidate';
-import FlayCondition from './components/FlayCondition';
-import FlayNav from './components/FlayNav';
-import FlayPage from './components/FlayPage';
-import FlayPagination from './components/FlayPagination';
-import FlaySearch from './components/FlaySearch';
+import FlayBatch from './elements/layer/FlayBatch';
+import FlayCandidate from './elements/layer/FlayCandidate';
+import FlaySearch from './elements/layer/FlaySearch';
+import FlayCondition from './elements/page/FlayCondition';
+import FlayNav from './elements/page/FlayNav';
+import FlayPage from './elements/page/FlayPage';
+import FlayPagination from './elements/page/FlayPagination';
 import './flay.ground.scss';
 import './util/flay.sse';
 

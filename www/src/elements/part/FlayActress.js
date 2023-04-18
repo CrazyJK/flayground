@@ -1,5 +1,5 @@
-import FlayAction from '../util/flay.action';
-import SVG from './svg.json';
+import FlayAction from '../../util/flay.action';
+import SVG from '../svg.json';
 
 /**
  *
@@ -7,20 +7,16 @@ import SVG from './svg.json';
 export default class FlayActress extends HTMLElement {
   constructor() {
     super();
-
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    this.wrapper = document.createElement('div');
+    this.wrapper.classList.add('actress');
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/components.css');
+    this.shadowRoot.append(link, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
     this.actressList = null;
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('actress');
-
-    // 외부 스타일을 shadow dom에 적용하기
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/components.css');
-
-    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   /**
@@ -31,10 +27,10 @@ export default class FlayActress extends HTMLElement {
   set(flay, actressList) {
     this.flay = flay;
     this.actressList = actressList;
-    this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
-    this.wrapper.textContent = null;
+    this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+    this.wrapper.textContent = null;
 
     actressList.forEach((actress, index) => {
       const actressDiv = this.wrapper.appendChild(document.createElement('div'));
@@ -61,7 +57,7 @@ export default class FlayActress extends HTMLElement {
       nameElement.addEventListener('click', () => {
         console.log('nameClick', actress.name);
         // window.open('/info/actress/' + actress.name, actress.name, 'width=640px,height=800px');
-        window.open('flay.actress.html?name=' + actress.name, actress.name, 'width=960px,height=1200px');
+        window.open('card.actress.html?name=' + actress.name, actress.name, 'width=960px,height=1200px');
       });
 
       // localName
@@ -69,6 +65,7 @@ export default class FlayActress extends HTMLElement {
       localNameElement.classList.add('localName');
       localNameElement.setAttribute('title', actress.localName);
       localNameElement.innerHTML = actress.localName;
+      localNameElement.addEventListener('click', () => window.open('/info/actress/' + actress.name, actress.name, 'width=640px,height=800px'));
 
       // flay size
       const flaySize = actressDiv.appendChild(document.createElement('label'));

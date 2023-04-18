@@ -1,5 +1,5 @@
-import FlayCard from './components/FlayCard';
-import './flay.card.scss';
+import './card.flay.scss';
+import FlayCard from './elements/card/FlayCard';
 import './util/flay.sse';
 
 const urlParams = new URL(location.href).searchParams;

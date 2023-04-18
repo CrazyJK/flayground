@@ -1,6 +1,6 @@
-import FlayAction from '../util/flay.action';
-import FlayStorage from '../util/flay.storage';
-import SVG from './svg.json';
+import FlayAction from '../../util/flay.action';
+import FlayStorage from '../../util/flay.storage';
+import SVG from '../svg.json';
 
 /**
  *

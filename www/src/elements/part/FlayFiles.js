@@ -65,6 +65,10 @@ export default class FlayFiles extends HTMLElement {
       input.placeholder = name;
       input.type = 'text';
       input.id = name;
+      input.setAttribute('spellcheck', false);
+      input.addEventListener('keyup', (e) => {
+        e.stopPropagation();
+      });
       if (name === 'opus') {
         input.readOnly = true;
       }

@@ -114,6 +114,7 @@ function createInput(parent, index, name, value, placeholder, type) {
   input.name = name;
   input.value = value;
   input.placeholder = placeholder;
+  input.setAttribute('spellcheck', false);
 
   return input;
 }

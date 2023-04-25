@@ -5,6 +5,7 @@ const FIRST = 'FIRST';
 const LAST = 'LAST';
 const PAGEUP = 'PAGEUP';
 const PAGEDOWN = 'PAGEDOWN';
+const BACK = 'BACK';
 
 /**
  *
@@ -25,6 +26,7 @@ export default class FlayPagination extends HTMLElement {
     this.opusList = null;
     this.listener = listener;
     this.active = true;
+    this.history = [];
 
     this.PAGING = this.wrapper.appendChild(document.createElement('div'));
     this.PAGING.classList.add('paging');
@@ -70,6 +72,9 @@ export default class FlayPagination extends HTMLElement {
         case 'ArrowLeft':
           this.navigator(PREV);
           break;
+        case 'ArrowUp':
+          this.navigator(BACK);
+          break;
         case 'Space':
           this.navigator(RANDOM);
           break;
@@ -113,35 +118,54 @@ export default class FlayPagination extends HTMLElement {
   }
 
   navigator(direction) {
-    if (direction) {
-      switch (direction) {
-        case NEXT:
-          this.opusIndex = Math.min(this.opusIndex + 1, this.opusList.length - 1);
-          break;
-        case PREV:
-          this.opusIndex = Math.max(this.opusIndex - 1, 0);
-          break;
-        case RANDOM:
-          this.opusIndex = Math.floor(Math.random() * this.opusList.length);
-          break;
-        case FIRST:
-          this.opusIndex = 0;
-          break;
-        case LAST:
-          this.opusIndex = this.opusList.length - 1;
-          break;
-        case PAGEUP:
-          this.opusIndex = Math.max(this.opusIndex - 10, 0);
-          break;
-        case PAGEDOWN:
-          this.opusIndex = Math.min(this.opusIndex + 10, this.opusList.length - 1);
-          break;
-        default:
-          throw new Error('unknown direction');
-      }
+    switch (direction) {
+      case NEXT:
+        this.opusIndex = Math.min(this.opusIndex + 1, this.opusList.length - 1);
+        this.history.push(this.opusIndex);
+        break;
+      case PREV:
+        this.opusIndex = Math.max(this.opusIndex - 1, 0);
+        this.history.push(this.opusIndex);
+        break;
+      case RANDOM:
+        this.opusIndex = Math.floor(Math.random() * this.opusList.length);
+        if (this.history.length > this.opusList.length) {
+          this.history = [];
+        }
+        if (this.history.includes(this.opusIndex)) {
+          this.navigator(RANDOM);
+        }
+        this.history.push(this.opusIndex);
+        break;
+      case FIRST:
+        this.opusIndex = 0;
+        this.history.push(this.opusIndex);
+        break;
+      case LAST:
+        this.opusIndex = this.opusList.length - 1;
+        this.history.push(this.opusIndex);
+        break;
+      case PAGEUP:
+        this.opusIndex = Math.max(this.opusIndex - 10, 0);
+        this.history.push(this.opusIndex);
+        break;
+      case PAGEDOWN:
+        this.opusIndex = Math.min(this.opusIndex + 10, this.opusList.length - 1);
+        this.history.push(this.opusIndex);
+        break;
+      case BACK:
+        this.opusIndex = this.history.splice(this.history.length - 2, 1)[0];
+        break;
+      default:
+        throw new Error('unknown direction');
     }
-
     this.opus = this.opusList[this.opusIndex];
+    console.log('history', this.history, this.opusIndex, this.opus);
+
+    if (!this.opus) {
+      console.error('opus is not valid', this.opus);
+      return;
+    }
 
     this.render();
     if (this.listener) {

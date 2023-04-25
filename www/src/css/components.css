@@ -327,7 +327,7 @@ div.rank div.rank-group {
   gap: 0.25rem;
 }
 div.rank.small label {
-  font-size: var(--font-normal);
+  font-size: var(--font-small);
 }
 div.rank.small label svg {
   width: 1.25rem;
@@ -361,7 +361,7 @@ div.release.small label {
 }
 
 /* for FlayStudio */
-div.studio.small label {
+div.studio.small a {
   font-size: var(--font-small);
 }
 

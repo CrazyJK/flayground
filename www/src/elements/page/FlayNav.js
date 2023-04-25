@@ -62,7 +62,7 @@ const makeThemeRadio = (parent, theme) => {
     if (e.target.value !== 'os') {
       changeTheme(e.target.value === 'dark');
     } else {
-      changeTheme(getPrefersColorSchemeDarkQuery().matches);
+      changeTheme(getPrefersColorSchemeDarkQuery().matches, true);
     }
   });
 
@@ -75,10 +75,14 @@ const makeThemeRadio = (parent, theme) => {
   }
 };
 
-const changeTheme = (isDarkMode) => {
+const changeTheme = (isDarkMode, isOS) => {
   let mode = isDarkMode ? 'dark' : 'light';
-  FlayStorage.local.set('FlayNav.theme', mode);
   document.documentElement.setAttribute('theme', mode);
+  if (isOS) {
+    FlayStorage.local.set('FlayNav.theme', 'os');
+  } else {
+    FlayStorage.local.set('FlayNav.theme', mode);
+  }
 };
 
 const getPrefersColorSchemeDarkQuery = () => {

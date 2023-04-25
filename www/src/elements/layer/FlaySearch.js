@@ -132,19 +132,19 @@ export default class FlaySearch extends HTMLElement {
     // 요소 이벤트
     [studio, opus, title, actress, release].forEach((input) => {
       input.addEventListener('keyup', (e) => {
-        e.target.value = e.target.value.trim().replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：').replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂').replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
+        actressName.value = e.target.value.trim();
+        if (e.target.id === 'title') {
+          e.target.value = e.target.value.trim().replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：').replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂').replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
+        } else if (e.target.id === 'release') {
+          const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
+          e.target.value = release.value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
+          let isValid = DATE_PATTERN.test(e.target.value);
+          e.target.classList.toggle('input-invalid', !isValid);
+        }
+
         let fullName = `[${studio.value}][${opus.value}][${title.value}][${actress.value}][${release.value}]`;
         flayFullname.value = fullName;
-        if (e.target.id === 'actress') {
-          actressName.value = e.target.value.trim();
-        }
       });
-    });
-    release.addEventListener('keyup', (e) => {
-      const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
-      release.value = release.value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
-      let isValid = DATE_PATTERN.test(release.value);
-      release.classList.toggle('input-invalid', !isValid);
     });
     copyBtn.addEventListener('click', () => {
       console.log('copyBtnClick', flayFullname.value);

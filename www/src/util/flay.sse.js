@@ -102,4 +102,10 @@ window.emitNotice = (data) => {
   }, 1000 * 3);
 };
 
-window.emitMessage = (data) => alert(data);
+window.emitMessage = (...datas) => {
+  let message = '';
+  for (let data of datas) {
+    message += JSON.stringify(data) + '\n';
+  }
+  alert(message);
+};

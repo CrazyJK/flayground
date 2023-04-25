@@ -98,7 +98,11 @@ export default class FlayPagination extends HTMLElement {
 
   set(opusList) {
     this.opusList = opusList;
-    this.navigator(RANDOM);
+    if (!!opusList && opusList.length > 0) {
+      this.navigator(RANDOM);
+    } else {
+      window.emitMessage('open is not valid', opusList);
+    }
   }
 
   get(offset) {

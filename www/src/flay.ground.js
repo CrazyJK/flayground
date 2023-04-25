@@ -1,6 +1,7 @@
 import FlayBatch from './elements/layer/FlayBatch';
 import FlayCandidate from './elements/layer/FlayCandidate';
 import FlaySearch from './elements/layer/FlaySearch';
+import TagLayer from './elements/layer/TagLayer';
 import FlayCondition from './elements/page/FlayCondition';
 import FlayNav from './elements/page/FlayNav';
 import FlayPage from './elements/page/FlayPage';
@@ -8,7 +9,7 @@ import FlayPagination from './elements/page/FlayPagination';
 import './flay.ground.scss';
 import './util/flay.sse';
 
-const flayNav = new FlayNav((menu) => changeMenu(menu));
+const flayNav = new FlayNav((menu) => changeLayer(menu));
 const flayPage = new FlayPage();
 const flayPagination = new FlayPagination((opus) => renderFlayPage(opus));
 const flayCondition = new FlayCondition((list) => flayPagination.set(list));
@@ -29,7 +30,7 @@ function renderFlayPage(opus) {
   }
 }
 
-function changeMenu(menu) {
+function changeLayer(menu) {
   console.log('[changeMenu]', menu);
   LAYER.textContent = null;
   switch (menu) {
@@ -49,6 +50,11 @@ function changeMenu(menu) {
       break;
     case 'candidate':
       LAYER.appendChild(new FlayCandidate());
+      ASIDE.style.display = 'block';
+      flayPagination.off();
+      break;
+    case 'tag':
+      LAYER.appendChild(new TagLayer());
       ASIDE.style.display = 'block';
       flayPagination.off();
       break;

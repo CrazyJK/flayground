@@ -20,7 +20,7 @@ export default class FlayNav extends HTMLElement {
 
     const MENU_LIST = wrapper.appendChild(document.createElement('ul'));
 
-    ['page', 'search', 'batch', 'candidate'].forEach((menu, index) => {
+    ['page', 'search', 'batch', 'candidate', 'tag'].forEach((menu, index) => {
       const LI = MENU_LIST.appendChild(document.createElement('li'));
       const ANKER = LI.appendChild(document.createElement('a'));
       ANKER.innerHTML = menu.toLocaleUpperCase();

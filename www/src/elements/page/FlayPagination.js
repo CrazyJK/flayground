@@ -61,6 +61,7 @@ export default class FlayPagination extends HTMLElement {
     });
 
     window.addEventListener('keyup', (e) => {
+      e.stopPropagation();
       if (!this.active) {
         return;
       }
@@ -122,49 +123,54 @@ export default class FlayPagination extends HTMLElement {
   }
 
   navigator(direction) {
-    switch (direction) {
-      case NEXT:
-        this.opusIndex = Math.min(this.opusIndex + 1, this.opusList.length - 1);
-        this.history.push(this.opusIndex);
-        break;
-      case PREV:
-        this.opusIndex = Math.max(this.opusIndex - 1, 0);
-        this.history.push(this.opusIndex);
-        break;
-      case RANDOM:
-        this.opusIndex = Math.floor(Math.random() * this.opusList.length);
-        if (this.history.length > this.opusList.length) {
-          this.history = [];
-        }
-        if (this.history.includes(this.opusIndex)) {
-          this.navigator(RANDOM);
-        }
-        this.history.push(this.opusIndex);
-        break;
-      case FIRST:
-        this.opusIndex = 0;
-        this.history.push(this.opusIndex);
-        break;
-      case LAST:
-        this.opusIndex = this.opusList.length - 1;
-        this.history.push(this.opusIndex);
-        break;
-      case PAGEUP:
-        this.opusIndex = Math.max(this.opusIndex - 10, 0);
-        this.history.push(this.opusIndex);
-        break;
-      case PAGEDOWN:
-        this.opusIndex = Math.min(this.opusIndex + 10, this.opusList.length - 1);
-        this.history.push(this.opusIndex);
-        break;
-      case BACK:
-        this.opusIndex = this.history.splice(this.history.length - 2, 1)[0];
-        break;
-      default:
-        throw new Error('unknown direction');
+    if (typeof direction === 'string') {
+      switch (direction) {
+        case NEXT:
+          this.opusIndex = Math.min(this.opusIndex + 1, this.opusList.length - 1);
+          this.history.push(this.opusIndex);
+          break;
+        case PREV:
+          this.opusIndex = Math.max(this.opusIndex - 1, 0);
+          this.history.push(this.opusIndex);
+          break;
+        case RANDOM:
+          this.opusIndex = Math.floor(Math.random() * this.opusList.length);
+          if (this.history.length > this.opusList.length) {
+            this.history = [];
+          }
+          if (this.history.includes(this.opusIndex)) {
+            this.navigator(RANDOM);
+          }
+          this.history.push(this.opusIndex);
+          break;
+        case FIRST:
+          this.opusIndex = 0;
+          this.history.push(this.opusIndex);
+          break;
+        case LAST:
+          this.opusIndex = this.opusList.length - 1;
+          this.history.push(this.opusIndex);
+          break;
+        case PAGEUP:
+          this.opusIndex = Math.max(this.opusIndex - 10, 0);
+          this.history.push(this.opusIndex);
+          break;
+        case PAGEDOWN:
+          this.opusIndex = Math.min(this.opusIndex + 10, this.opusList.length - 1);
+          this.history.push(this.opusIndex);
+          break;
+        case BACK:
+          this.opusIndex = this.history.splice(this.history.length - 2, 1)[0];
+          break;
+        default:
+          throw new Error('unknown direction');
+      }
+    } else if (typeof direction === 'number') {
+      this.opusIndex = direction;
     }
+
     this.opus = this.opusList[this.opusIndex];
-    console.log('history', this.history, this.opusIndex, this.opus);
+    console.debug('history', this.history, this.opusIndex, this.opus);
 
     if (!this.opus) {
       console.error('opus is not valid', this.opus);
@@ -199,8 +205,7 @@ export default class FlayPagination extends HTMLElement {
       page.classList.add('page');
       page.addEventListener('click', () => {
         console.log('pageClick', i);
-        this.opusIndex = i;
-        this.navigator();
+        this.navigator(i);
       });
 
       const anker = page.appendChild(document.createElement('a'));

@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Tag implements Info<Integer> {
+public class Tag implements Info<Integer>, Comparable<Integer> {
 
   @NotBlank
   Integer id;
@@ -67,6 +67,11 @@ public class Tag implements Info<Integer> {
     int result = 1;
     result = prime * result + ((id == null) ? 0 : id.hashCode());
     return result;
+  }
+
+  @Override
+  public int compareTo(Integer i) {
+    return id - i;
   }
 
 }

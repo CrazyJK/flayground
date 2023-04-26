@@ -32,6 +32,42 @@ export default {
       failCallback
     );
   },
+  updateTag: (tag, callback, failCallback) => {
+    action(
+      '/info/tag',
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(tag),
+      },
+      callback,
+      failCallback
+    );
+  },
+  putTag: (id, name, desc, callback, failCallback) => {
+    action(
+      '/info/tag',
+      {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, name: name, description: desc }),
+      },
+      callback,
+      failCallback
+    );
+  },
+  deleteTag: (id, name, desc, callback, failCallback) => {
+    action(
+      '/info/tag',
+      {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: id, name: name, description: desc }),
+      },
+      callback,
+      failCallback
+    );
+  },
   setComment: (opus, comment, callback, failCallback) => {
     action('/info/video/comment/' + opus, { method: 'PUT', body: comment + ' ' }, callback, failCallback);
   },

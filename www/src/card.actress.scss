@@ -1,103 +1,35 @@
 @import './scss/style.scss';
+@import './scss/card.layout.scss';
 
-header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-
-  display: flex;
-  flex-direction: column;
-  gap: 0.25rem;
-  margin: auto;
-  padding: 1rem;
-  max-width: 999px;
-
-  & > div {
-    display: flex;
-    gap: 0.25rem;
-    min-height: 2.5rem;
-
-    input {
-      flex: 1 1 auto;
-      width: 1px;
-    }
-    input,
-    input[type='checkbox'] + label,
-    select,
-    label,
-    button,
-    textarea {
-      border: 1px dashed chocolate;
-    }
-    label,
-    input[type='text'] {
-      text-align: center;
-    }
-    input[type='checkbox'] + label {
-      padding: 0.25rem 0.75rem;
-    }
-
-    #name {
-      flex: 1 1 auto;
-    }
-    #localName {
-      flex: 1 1 auto;
-    }
-    #birth {
-      flex: 1 1 auto;
-    }
-    #age {
-      flex: 0 1 auto;
-      width: 50px;
-    }
-    #body {
-      flex: 1 1 auto;
-    }
-    #height {
-      flex: 0 1 auto;
-      width: 100px;
-      text-align: right;
-    }
-    #debut {
-      flex: 0 1 auto;
-      width: 100px;
-      text-align: right;
-    }
-    #comment {
-      flex: 1 1 auto;
-    }
-    #saveBtn {
-      cursor: pointer;
-    }
-  }
+#name {
+  flex: 1 1 auto;
 }
-
-article {
-  display: grid;
-  justify-content: space-evenly;
-  grid-template-columns: repeat(3, 1ft);
-  gap: 1rem;
-  padding: 1rem;
-
-  flay-card {
-    width: 100%;
-  }
+#localName {
+  flex: 1 1 auto;
 }
-
-@media screen and (max-width: 2560px) {
-  article {
-    grid-template-columns: repeat(6, minmax(auto, 400px));
-  }
+#birth {
+  flex: 1 1 auto;
 }
-
-@media screen and (max-width: 1280px) {
-  article {
-    grid-template-columns: repeat(4, minmax(auto, 400px));
-  }
+#age {
+  flex: 0 1 auto;
+  width: 50px;
 }
-
-@media screen and (max-width: 1080px) {
-  article {
-    grid-template-columns: repeat(3, minmax(auto, 333px));
-  }
+#body {
+  flex: 1 1 auto;
+}
+#height {
+  flex: 0 1 auto;
+  width: 100px;
+  text-align: right;
+}
+#debut {
+  flex: 0 1 auto;
+  width: 100px;
+  text-align: right;
+}
+#comment {
+  flex: 1 1 auto;
+}
+#saveBtn {
+  cursor: pointer;
 }

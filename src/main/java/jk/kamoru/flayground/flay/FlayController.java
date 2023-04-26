@@ -125,6 +125,11 @@ public class FlayController {
     return flayService.find(field, value);
   }
 
+  @GetMapping("/count/{field}/{value}")
+  public int countByFieldValue(@PathVariable String field, @PathVariable String value) {
+    return flayService.find(field, value).size();
+  }
+
   @GetMapping("/find/tag/{id}/like")
   public Collection<Flay> findByTagLike(@PathVariable Integer id) {
     return flayService.findByTagLike(id);

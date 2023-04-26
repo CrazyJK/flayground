@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -48,6 +49,17 @@ public class TagController {
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void update(@RequestBody Tag tag) {
     tagInfoService.update(tag);
+  }
+
+  @PutMapping
+  @ResponseStatus(HttpStatus.NO_CONTENT)
+  public void put(@RequestBody Tag tag) {
+    System.out.println(tag);
+    if (tag.getId() > 0) {
+      tagInfoService.update(tag);
+    } else {
+      tagInfoService.create(tag);
+    }
   }
 
   @DeleteMapping

@@ -17,6 +17,8 @@ const flayCondition = new FlayCondition((list) => flayPagination.set(list));
 const ASIDE = document.querySelector('body > main > aside');
 const LAYER = document.querySelector('body > main > aside > #layer');
 
+let currentLayer = 'page';
+
 document.querySelector('body > nav').appendChild(flayNav);
 document.querySelector('body > main > header').appendChild(flayCondition);
 document.querySelector('body > main > article').appendChild(flayPage);
@@ -33,6 +35,7 @@ function renderFlayPage(opus) {
 function changeLayer(menu) {
   console.log('[changeMenu]', menu);
   LAYER.textContent = null;
+  currentLayer = menu;
   switch (menu) {
     case 'page':
       ASIDE.style.display = 'none';
@@ -75,4 +78,7 @@ window.emitActress = (actress) => {
 };
 window.emitTag = (tag) => {
   flayPage.reload();
+  if (currentLayer === 'tag') {
+    changeLayer('tag');
+  }
 };

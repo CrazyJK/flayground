@@ -61,7 +61,7 @@ public class FileBasedFlaySource extends LogAndSse implements FlaySource {
 
       FlayFileResult result = FlayFileResolver.resolve(file);
       if (!result.valid) {
-        log.warn("%-15s invalid file - {}", LOAD, file);
+        log.warn(String.format("%-15s invalid file - %s", LOAD, file));
         continue;
       }
 

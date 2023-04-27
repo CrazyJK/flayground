@@ -2,6 +2,7 @@ import './card.tag.scss';
 import FlayCard from './elements/card/FlayCard';
 import flayAction from './util/flay.action';
 import './util/flay.sse';
+import './util/theme.listener';
 
 const urlParams = new URL(location.href).searchParams;
 const id = urlParams.get('id');
@@ -112,14 +113,4 @@ window.emitActress = (actress) => {
 };
 window.emitTag = (tag) => {
   if (id === tag.id) fetchTag();
-};
-
-/**
- * Storage change Listener
- */
-onstorage = (e) => {
-  console.log('onstorage', e.key, e.oldValue, e.newValue);
-  if (e.key === 'FlayNav.theme') {
-    document.getElementsByTagName('html')[0].setAttribute('theme', e.newValue);
-  }
 };

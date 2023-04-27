@@ -1,6 +1,7 @@
 import './card.flay.scss';
 import FlayCard from './elements/card/FlayCard';
 import './util/flay.sse';
+import './util/theme.listener';
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');
@@ -24,14 +25,4 @@ window.emitActress = (actress) => {
 };
 window.emitTag = (tag) => {
   flayCard.reload();
-};
-
-/**
- * Storage change Listener
- */
-onstorage = (e) => {
-  console.log('onstorage', e.key, e.oldValue, e.newValue);
-  if (e.key === 'FlayNav.theme') {
-    document.getElementsByTagName('html')[0].setAttribute('theme', e.newValue);
-  }
 };

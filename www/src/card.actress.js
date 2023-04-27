@@ -3,6 +3,7 @@ import FlayCard from './elements/card/FlayCard';
 import SVG from './elements/svg.json';
 import flayAction from './util/flay.action';
 import './util/flay.sse';
+import './util/theme.listener';
 
 const urlParams = new URL(location.href).searchParams;
 const actressName = urlParams.get('name');
@@ -147,14 +148,4 @@ window.emitActress = (actress) => {
 };
 window.emitTag = (tag) => {
   fetchActress();
-};
-
-/**
- * Storage change Listener
- */
-onstorage = (e) => {
-  console.log('onstorage', e.key, e.oldValue, e.newValue);
-  if (e.key === 'FlayNav.theme') {
-    document.getElementsByTagName('html')[0].setAttribute('theme', e.newValue);
-  }
 };

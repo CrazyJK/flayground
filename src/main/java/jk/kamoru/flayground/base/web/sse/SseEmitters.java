@@ -24,7 +24,7 @@ public class SseEmitters {
     CONNECT, FLAY, STUDIO, VIDEO, ACTRESS, TAG, MESSAGE;
   }
 
-  private static final Long TIMEOUT = Duration.ofMinutes(6).toMillis();
+  private static final Long TIMEOUT = Duration.ofHours(6).toMillis();
 
   private final List<SseEmitter> sseEmitters = new CopyOnWriteArrayList<>();
 

@@ -12,6 +12,7 @@
   --color-border-active: orange;
 
   --box-shadow: 0 2px 16px 4px #000;
+  --box-shadow-small: 0 2px 16px 4px #000;
   --box-shadow-cover: inset 0 0 0.5rem 0.25rem #ccc;
 }
 
@@ -29,6 +30,7 @@
   --color-border-active: orange;
 
   --box-shadow: 0 2px 16px 4px #000;
+  --box-shadow-small: 0 2px 16px 4px #000;
   --box-shadow-cover: inset 0 0 0.5rem 0.25rem #000;
 }
 
@@ -38,4 +40,6 @@
   --font-normal: 1rem;
   --font-large: 1.25rem;
   --font-largest: 1.5rem;
+
+  --border-radius: 0.125rem;
 }

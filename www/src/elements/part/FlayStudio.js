@@ -15,7 +15,8 @@ export default class FlayStudio extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
-    this.studio = this.wrapper.appendChild(document.createElement('a'));
+    const label = this.wrapper.appendChild(document.createElement('label'));
+    this.studio = label.appendChild(document.createElement('a'));
     this.studio.addEventListener('click', () => {
       console.log('studioClick', this.flay.studio);
       // window.open('/info/studio/' + this.flay.studio, this.flay.studio, 'width=640px,height=800px');
@@ -42,7 +43,4 @@ customElements.define('flay-studio', FlayStudio);
 
 const CSS = `
 /* for FlayStudio */
-div.studio.small a {
-  font-size: var(--font-small);
-}
 `;

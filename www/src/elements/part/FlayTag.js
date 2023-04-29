@@ -111,15 +111,23 @@ async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElemen
 
 const CSS = `
 /* for FlayTag */
+div.tag {
+  padding-bottom: 1rem;
+}
 div.tag .tag-list {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
   align-items: baseline;
-  gap: 0.5rem 0.75rem;
+  gap: 0.25rem 0.5rem;
 }
 div.tag .tag-list label {
   font-size: var(--font-normal);
+  transition: 0.2s;
+}
+div.tag .tag-list label:hover {
+  box-shadow: var(--box-shadow-small);
+  border-radius: var(--border-radius);
 }
 div.tag .tag-list .tag-new-btn {
   font-size: var(--font-normal);

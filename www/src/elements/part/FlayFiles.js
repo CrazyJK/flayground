@@ -153,6 +153,7 @@ div.files > div.info {
   display: flex;
   gap: 1rem;
   justify-content: center;
+  align-items: center;
 }
 div.files > div.info > .files-btn {
   display: inline-flex;

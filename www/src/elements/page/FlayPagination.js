@@ -244,7 +244,7 @@ div.pagination .paging .page:last-child {
 }
 div.pagination .paging .page a {
   font-size: var(--font-small);
-  font-weight: normal;
+  font-weight: 700;
 }
 div.pagination .paging .page:hover a {
   text-shadow: 1px 1px 2px var(--color-text-shadow-over);

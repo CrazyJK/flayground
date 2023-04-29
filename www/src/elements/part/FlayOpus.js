@@ -15,7 +15,8 @@ export default class FlayOpus extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
-    this.opus = this.wrapper.appendChild(document.createElement('label'));
+    const label = this.wrapper.appendChild(document.createElement('label'));
+    this.opus = label.appendChild(document.createElement('a'));
     this.opus.addEventListener('click', () => {
       console.log('opusClick', this.flay.opus);
       window.open('/flay/' + this.flay.opus, this.flay.opus, 'width=800px,height=1200px');
@@ -41,7 +42,4 @@ customElements.define('flay-opus', FlayOpus);
 
 const CSS = `
 /* for FlayOpus */
-div.opus.small label {
-  font-size: var(--font-small);
-}
 `;

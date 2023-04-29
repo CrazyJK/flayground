@@ -116,6 +116,7 @@ div.nav {
 }
 div.nav > img {
   margin: 0.25rem 0.5rem;
+  height: auto;
 }
 div.nav > ul {
   list-style: none;

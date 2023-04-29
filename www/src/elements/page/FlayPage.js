@@ -23,7 +23,7 @@ export default class FlayPage extends HTMLElement {
     STYLE.innerHTML = CSS;
     const wrapper = document.createElement('article');
     wrapper.classList.add('page');
-    this.shadowRoot.append(LINK, wrapper);
+    this.shadowRoot.append(LINK, STYLE, wrapper);
 
     this.flayStudio = wrapper.appendChild(new FlayStudio());
     this.flayOpus = wrapper.appendChild(new FlayOpus());

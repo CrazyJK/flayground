@@ -123,7 +123,7 @@ div.actress > div {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  gap: 1rem;
+  gap: 0.5rem;
 }
 div.actress > div > span {
   margin-top: 0.25rem;
@@ -149,6 +149,7 @@ div.actress .body {
     display: none;
   }
 }
+
 div.actress.small .localName,
 div.actress.small .flaySize,
 div.actress.small .age,

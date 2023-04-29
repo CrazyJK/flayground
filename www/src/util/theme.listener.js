@@ -1,9 +1,11 @@
+import FlayStorage from './flay.storage';
+
 /**
  * Storage theme change Listener
  */
 onstorage = (e) => {
   console.log('onstorage', e.key, e.oldValue, e.newValue);
-  if (e.key === 'FlayNav.theme') {
+  if (e.key === THEME_KEY) {
     let theme = '';
     if (e.newValue !== 'os') {
       theme = e.newValue;
@@ -15,7 +17,7 @@ onstorage = (e) => {
         theme = query.matches ? 'dark' : 'light';
       }
     }
-    document.getElementsByTagName('html')[0].setAttribute('theme', theme);
+    changeTheme(theme);
   }
 };
 
@@ -25,3 +27,9 @@ const getPrefersColorSchemeDarkQuery = () => {
   }
   return window.matchMedia('(prefers-color-scheme: dark)');
 };
+
+const changeTheme = (theme) => document.getElementsByTagName('html')[0].setAttribute('theme', theme);
+
+const THEME_KEY = 'FlayNav.theme';
+
+changeTheme(FlayStorage.local.get(THEME_KEY));

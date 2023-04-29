@@ -56,8 +56,4 @@ div.title label {
 div.title label a {
   font-size: var(--font-largest);
 }
-div.title.small label,
-div.title.small a {
-  font-size: var(--font-small);
-}
 `;

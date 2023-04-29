@@ -66,36 +66,47 @@ export default class FlayCard extends HTMLElement {
         this.flay = flay;
         this.actress = actress;
 
-        if (!this.excludes.includes('FlayCover')) {
-          this.flayCover.set(flay);
-        }
-        if (!this.excludes.includes('FlayStudio')) {
-          this.flayStudio.set(flay);
-        }
-        if (!this.excludes.includes('FlayOpus')) {
-          this.flayOpus.set(flay);
-        }
-        if (!this.excludes.includes('FlayTitle')) {
-          this.flayTitle.set(flay);
-        }
-        if (!this.excludes.includes('FlayComment')) {
-          this.flayComment.set(flay);
-        }
-        if (!this.excludes.includes('FlayActress')) {
-          this.flayActress.set(flay, actress);
-        }
-        if (!this.excludes.includes('FlayRelease')) {
-          this.flayRelease.set(flay);
-        }
-        if (!this.excludes.includes('FlayFiles')) {
-          this.flayFiles.set(flay);
-        }
-        if (!this.excludes.includes('FlayRank')) {
-          this.flayRank.set(flay);
-        }
-        if (!this.excludes.includes('FlayTag')) {
-          this.flayTag.set(flay);
-        }
+        let coverExclude = this.excludes.includes('FlayCover');
+        let studioExclude = this.excludes.includes('FlayStudio');
+        let opusExclude = this.excludes.includes('FlayOpus');
+        let titleExclude = this.excludes.includes('FlayTitle');
+        let commentExclude = this.excludes.includes('FlayComment');
+        let actressExclude = this.excludes.includes('FlayActress');
+        let releaseExclude = this.excludes.includes('FlayRelease');
+        let filesExclude = this.excludes.includes('FlayFiles');
+        let rankExclude = this.excludes.includes('FlayRank');
+        let tagExclude = this.excludes.includes('FlayTag');
+
+        if (!coverExclude) this.flayCover.set(flay);
+        this.flayCover.classList.toggle('hide', coverExclude);
+
+        if (!studioExclude) this.flayStudio.set(flay);
+        this.flayStudio.classList.toggle('hide', studioExclude);
+
+        if (!opusExclude) this.flayOpus.set(flay);
+        this.flayOpus.classList.toggle('hide', opusExclude);
+
+        if (!titleExclude) this.flayTitle.set(flay);
+        this.flayTitle.classList.toggle('hide', titleExclude);
+
+        if (!commentExclude) this.flayComment.set(flay);
+        this.flayComment.classList.toggle('hide', commentExclude);
+
+        if (!actressExclude) this.flayActress.set(flay, actress);
+        this.flayActress.classList.toggle('hide', actressExclude);
+
+        if (!releaseExclude) this.flayRelease.set(flay);
+        this.flayRelease.classList.toggle('hide', releaseExclude);
+
+        if (!filesExclude) this.flayFiles.set(flay);
+        this.flayFiles.classList.toggle('hide', filesExclude);
+
+        if (!rankExclude) this.flayRank.set(flay);
+        this.flayRank.classList.toggle('hide', rankExclude);
+
+        if (!tagExclude) this.flayTag.set(flay);
+        this.flayTag.classList.toggle('hide', tagExclude);
+
         this.setAttribute('rank', flay.video.rank);
       });
 
@@ -126,6 +137,8 @@ article {
   align-items: flex-start;
   gap: 0.5rem;
   padding: 0.5rem;
+
+  background-color: transparent;
 }
 
 article > * {
@@ -133,6 +146,10 @@ article > * {
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   max-width: calc(100% - 0.5rem);
+}
+
+article > .hide {
+  display: none;
 }
 
 @media screen and (max-width: 600px) {

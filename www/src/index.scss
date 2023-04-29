@@ -1,5 +1,27 @@
 @import './scss/style.scss';
-@import './scss/page.layout.scss';
+
+body {
+  position: absolute !important;
+  inset: 0;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-rows: 4rem 1fr 3rem;
+
+  & > header {
+    position: relative;
+  }
+  & > main {
+    position: relative;
+  }
+  & > footer {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
+    flex-direction: column;
+    flex-wrap: nowrap;
+  }
+}
 
 main {
   display: flex;

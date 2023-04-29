@@ -8,12 +8,17 @@ const COMMENT = 'Comment';
 export default class FlayComment extends HTMLElement {
   constructor() {
     super();
-
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    this.flay = null;
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('comment');
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+
+    this.flay = null;
 
     this.div = this.wrapper.appendChild(document.createElement('div'));
 
@@ -55,12 +60,6 @@ export default class FlayComment extends HTMLElement {
         this.input.style.display = 'none';
       });
     });
-
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/components.css');
-
-    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   /**
@@ -85,3 +84,22 @@ export default class FlayComment extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-comment', FlayComment);
+
+const CSS = `
+/* for FlayComment */
+div.comment input {
+  position: relative;
+  display: block;
+  background-color: transparent;
+  color: var(--color-text);
+  margin: 0;
+  border: 0;
+  padding: 0.25rem 0;
+  width: 100%;
+  font-size: var(--font-large);
+  text-align: center;
+}
+div.comment .placeholder {
+  color: var(--color-text-placeholder);
+}
+`;

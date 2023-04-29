@@ -16,12 +16,14 @@ export default class FlayPage extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     const wrapper = document.createElement('article');
     wrapper.classList.add('page');
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(link, wrapper);
+    this.shadowRoot.append(LINK, wrapper);
 
     this.flayStudio = wrapper.appendChild(new FlayStudio());
     this.flayOpus = wrapper.appendChild(new FlayOpus());
@@ -82,3 +84,22 @@ export default class FlayPage extends HTMLElement {
 }
 
 customElements.define('flay-page', FlayPage);
+
+const CSS = `
+/* for FlayPage */
+article.page {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  padding-bottom: 1rem;
+  transition: 0.4s;
+}
+article.page > * {
+  margin-bottom: 0.5rem;
+  min-height: 2rem;
+}
+article.page > :not(flay-cover) {
+  padding: 0 1rem;
+}
+`;

@@ -7,11 +7,15 @@ import SVG from '../svg.json';
 export default class FlayRank extends HTMLElement {
   constructor() {
     super();
-
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('rank');
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
     this.rankInputElementArray = [];
@@ -50,12 +54,6 @@ export default class FlayRank extends HTMLElement {
 
     this.scoreLabel = this.wrapper.appendChild(document.createElement('label'));
     this.scoreLabel.classList.add('score-label');
-
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/components.css');
-
-    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   /**
@@ -88,3 +86,58 @@ export default class FlayRank extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-rank', FlayRank);
+
+const CSS = `
+/* for FlayRank */
+div.rank {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+div.rank div.rank-group {
+  display: inline-flex;
+  gap: 0.5rem;
+}
+div.rank div.rank-group label svg {
+  aspect-ratio: 157 / 150;
+}
+div.rank div.rank-group input[value='-1']:checked + label {
+  color: #f00a;
+}
+div.rank div.rank-group input[value='0']:checked + label {
+  color: #0ff8;
+}
+div.rank .rank-label {
+  display: none;
+}
+@media screen and (max-width: 600px) {
+  .score-label {
+    display: none;
+  }
+}
+div.rank.small {
+  gap: 0.5rem;
+}
+div.rank.small .rank-group,
+div.rank.small .score-label,
+div.rank.small .like-btn {
+  display: none;
+}
+div.rank.small .rank-label {
+  display: block;
+}
+div.rank div.rank-group {
+  gap: 0.25rem;
+}
+div.rank.small label {
+  font-size: var(--font-small);
+}
+div.rank.small label svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+div.rank.small button {
+  font-size: var(--font-normal);
+}
+`;

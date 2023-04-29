@@ -14,12 +14,14 @@ export default class FlayPagination extends HTMLElement {
   constructor(listener) {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('pagination');
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(link, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.opus = null;
     this.opusIndex = -1;
@@ -217,3 +219,49 @@ export default class FlayPagination extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-pagination', FlayPagination);
+
+const CSS = `
+/* for FlayPagination */
+div.pagination .paging {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+div.pagination .paging .page {
+  position: relative;
+  margin: 0;
+  border: 1px solid #aaa;
+  border-right: 0;
+  padding: 0.25rem;
+  line-height: 1.25rem;
+  min-width: 2.5rem;
+  font-size: var(--font-normal);
+  cursor: pointer;
+}
+div.pagination .paging .page:last-child {
+  border-right: 1px solid #aaa;
+}
+div.pagination .paging .page a {
+  font-size: var(--font-small);
+  font-weight: normal;
+}
+div.pagination .paging .page:hover a {
+  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
+}
+div.pagination .paging .page a.active {
+  color: var(--color-checked);
+}
+div.pagination .progress {
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+}
+div.pagination .progress .progress-bar {
+  position: relative;
+  height: 1px;
+  background-color: #f00;
+}
+`;

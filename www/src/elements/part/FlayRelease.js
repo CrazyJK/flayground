@@ -4,12 +4,17 @@
 export default class FlayRelease extends HTMLElement {
   constructor() {
     super();
-
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    this.flay = null;
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('release');
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+
+    this.flay = null;
 
     this.releaseLabel = this.wrapper.appendChild(document.createElement('label'));
     this.lastModifiedLabel = this.wrapper.appendChild(document.createElement('label'));
@@ -18,12 +23,6 @@ export default class FlayRelease extends HTMLElement {
     this.lastAccessLabel.classList.add('access-label');
     this.lastPlayLabel = this.wrapper.appendChild(document.createElement('label'));
     this.lastPlayLabel.classList.add('played-label');
-
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/components.css');
-
-    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   /**
@@ -53,3 +52,28 @@ function dateFormat(time) {
   let day = date.getDate();
   return `${year}-${month > 9 ? month : '0' + month}-${day > 9 ? day : '0' + day}`;
 }
+
+const CSS = `
+/* for FlayRelease */
+div.release {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+}
+@media screen and (max-width: 600px) {
+  .modified-label,
+  .access-label,
+  .played-label {
+    display: none;
+  }
+}
+div.release.small .modified-label,
+div.release.small .access-label,
+div.release.small .played-label {
+  display: none;
+}
+div.release.small label {
+  font-size: var(--font-small);
+}
+`;

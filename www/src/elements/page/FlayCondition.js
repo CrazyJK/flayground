@@ -8,14 +8,14 @@ export default class FlayCondition extends HTMLElement {
   constructor(listener) {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     const wrapper = document.createElement('div');
     wrapper.classList.add('condition');
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(style, link, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(LINK, STYLE, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.listener = listener;
 
@@ -169,6 +169,7 @@ function addEventListener(THIS, type, element) {
 }
 
 const CSS = `
+/* for FlayCondition */
 div.condition {
   display: flex;
   gap: 1rem;

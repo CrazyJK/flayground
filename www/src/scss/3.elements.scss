@@ -12,10 +12,15 @@ flay-pagination,
 flay-condition,
 flay-card,
 flay-page,
-flay-search {
+flay-search,
+flay-batch,
+flay-candidate,
+tag-layer {
   position: relative;
   display: block;
   overflow: hidden;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 flay-actress,

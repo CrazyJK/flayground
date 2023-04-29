@@ -3,8 +3,63 @@ div {
   text-align: center;
 }
 
-.disable {
-  color: var(--color-text-secondary);
+a,
+pre,
+div,
+span,
+label,
+button,
+input,
+textarea,
+nav,
+header,
+main,
+article,
+footer {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+}
+
+a,
+input,
+button,
+textarea,
+label,
+input[type='checkbox'] + label,
+input[type='radio'] + label {
+  position: relative;
+  background-color: transparent;
+  display: inline-block;
+  margin: 0;
+  border: 0;
+  padding: 0.25rem;
+  font-size: var(--font-large);
+  outline: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+textarea {
+  width: 100%;
+}
+
+img {
+  position: relative;
+  display: block;
+  margin: auto;
+  height: 100%;
+}
+
+pre {
+  font-family: D2Coding;
+}
+
+/* ::spelling-error off */
+input::spelling-error,
+textarea::spelling-error {
+  text-decoration: none;
 }
 
 /* common: button */
@@ -122,471 +177,6 @@ a:not(.disable):hover {
   text-shadow: 1px 1px 2px var(--color-text-shadow-over);
 }
 
-/* for FlayActress */
-div.actress > div {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 1rem;
-}
-div.actress > div > span {
-  margin-top: 0.25rem;
-  margin-left: 0.25rem;
-}
-div.actress > div > span > label {
-  display: inline-flex;
-}
-div.actress > div > .name {
-  margin-right: auto;
-}
-div.actress .localName,
-div.actress .flaysize,
-div.actress .body {
-  white-space: nowrap;
-}
-@media screen and (max-width: 600px) {
-  .localName,
-  .age,
-  .body,
-  .height,
-  .debut {
-    display: none;
-  }
-}
-div.actress.small .localName,
-div.actress.small .flaySize,
-div.actress.small .age,
-div.actress.small .body,
-div.actress.small .height,
-div.actress.small .debut {
-  display: none;
-}
-div.actress.small > div {
-  gap: 0.5rem;
-}
-div.actress.small svg {
-  width: 1rem;
-  height: 1rem;
-}
-div.actress.small a {
-  font-size: var(--font-small);
-}
-
-/* for FlayComment */
-div.comment input {
-  position: relative;
-  display: block;
-  background-color: transparent;
-  color: var(--color-text);
-  margin: 0;
-  border: 0;
-  padding: 0.25rem 0;
-  width: 100%;
-  font-size: var(--font-large);
-  text-align: center;
-}
-div.comment .placeholder {
-  color: var(--color-text-placeholder);
-}
-
-/* for FlayCover */
-div.cover {
-  aspect-ratio: 400 / 269;
-  background: transparent no-repeat center / contain;
-  background-color: var(--color-bg-cover);
-  box-shadow: var(--box-shadow-cover);
-}
-
-/* for FlayFiles */
-div.files > div.info {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-}
-div.files > div.info > .files-btn {
-  display: inline-flex;
-}
-div.files > div.list {
-  display: none;
-}
-div.files > div.list.show {
-  display: block;
-}
-div.files > div.list > ol {
-  margin: 0.5rem;
-  padding: 0;
-  list-style: none;
-  text-align: left;
-}
-div.files > div.list > ol > li {
-  font-size: var(--font-smallest);
-  font-family: D2Coding;
-  margin-bottom: 0.25rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-div.files > div.list > div.rename-flay {
-  display: flex;
-}
-div.files > div.list > div.rename-flay > input#studio {
-  flex: 0 0 auto;
-  width: 4rem;
-}
-div.files > div.list > div.rename-flay > input#opus {
-  flex: 0 0 auto;
-  width: 3rem;
-}
-div.files > div.list > div.rename-flay > input#title {
-  flex: 1 1 auto;
-}
-div.files > div.list > div.rename-flay > input#actress {
-  flex: 0 0 auto;
-  width: 6rem;
-}
-div.files > div.list > div.rename-flay > input#release {
-  flex: 0 0 auto;
-  width: 4rem;
-}
-div.files > div.list > div.rename-flay > input,
-div.files > div.list > div.rename-flay > button {
-  font-size: var(--font-smallest);
-  font-family: D2Coding;
-  border: 2px dashed purple;
-  border-right: 0;
-  padding: 4px;
-}
-div.files > div.list > div.rename-flay > button {
-  font-size: var(--font-small);
-  border-right: 2px dashed purple;
-}
-@media screen and (max-width: 600px) {
-  .sub-btn,
-  .play-label,
-  .size-label,
-  .files-btn {
-    display: none;
-  }
-}
-div.files.small .sub-btn,
-div.files.small .play-label,
-div.files.small .size-label,
-div.files.small .files-btn {
-  display: none !important;
-}
-div.files.small button {
-  font-size: var(--font-normal);
-}
-
-/* for FlayOpus */
-div.opus.small label {
-  font-size: var(--font-small);
-}
-
-/* for FlayRank */
-div.rank {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  align-items: center;
-}
-div.rank div.rank-group {
-  display: inline-flex;
-  gap: 0.5rem;
-}
-div.rank div.rank-group label svg {
-  aspect-ratio: 157 / 150;
-}
-div.rank div.rank-group input[value='-1']:checked + label {
-  color: #f00a;
-}
-div.rank div.rank-group input[value='0']:checked + label {
-  color: #0ff8;
-}
-div.rank .rank-label {
-  display: none;
-}
-@media screen and (max-width: 600px) {
-  .score-label {
-    display: none;
-  }
-}
-div.rank.small {
-  gap: 0.5rem;
-}
-div.rank.small .rank-group,
-div.rank.small .score-label,
-div.rank.small .like-btn {
-  display: none;
-}
-div.rank.small .rank-label {
-  display: block;
-}
-div.rank div.rank-group {
-  gap: 0.25rem;
-}
-div.rank.small label {
-  font-size: var(--font-small);
-}
-div.rank.small label svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-div.rank.small button {
-  font-size: var(--font-normal);
-}
-
-/* for FlayRelease */
-div.release {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  align-items: center;
-}
-@media screen and (max-width: 600px) {
-  .modified-label,
-  .access-label,
-  .played-label {
-    display: none;
-  }
-}
-div.release.small .modified-label,
-div.release.small .access-label,
-div.release.small .played-label {
-  display: none;
-}
-div.release.small label {
-  font-size: var(--font-small);
-}
-
-/* for FlayStudio */
-div.studio.small a {
-  font-size: var(--font-small);
-}
-
-/* for FlayTag */
-div.tag .tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
-  gap: 0.5rem 0.75rem;
-}
-div.tag .tag-list label {
-  font-size: var(--font-normal);
-}
-div.tag .tag-list .tag-new-btn {
-  font-size: var(--font-normal);
-}
-div.tag .tag-new {
-  display: none;
-}
-div.tag .tag-new.show {
-  display: block;
-}
-div.tag .tag-new input {
-  background-color: transparent;
-  color: var(--color-text);
-  margin: 0.25rem;
-  border: 0;
-  padding: 0.25rem;
-  font-size: var(--font-large);
-  text-align: center;
-}
-div.tag.small input:not(:checked) + label {
-  display: none;
-}
-
-/* for FlayTitle */
-div.title label {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-div.title label a {
-  font-size: var(--font-largest);
-}
-div.title.small label,
-div.title.small a {
-  font-size: var(--font-small);
-}
-
-/* for FlayCondition */
-div.condition {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5rem;
-  transition: 0.4s;
-}
-div.condition > div > input[type='search'] {
-  outline: none;
-}
-div.condition > div > input[type='search']:hover {
-  background: #0004;
-  border-radius: 0.5rem;
-}
-div.condition > div > label {
-  margin: 0 0.25rem;
-}
-div.condition > div > select {
-  font-size: var(--font-normal);
-  outline: none;
-}
-
-/* for FlayPagination */
-div.pagination .paging {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 4px;
-}
-div.pagination .paging .page {
-  position: relative;
-  margin: 0;
-  border: 1px solid #aaa;
-  border-right: 0;
-  padding: 0.25rem;
-  line-height: 1.25rem;
-  min-width: 2.5rem;
-  font-size: var(--font-normal);
-  cursor: pointer;
-}
-div.pagination .paging .page:last-child {
-  border-right: 1px solid #aaa;
-}
-div.pagination .paging .page a {
-  font-size: var(--font-small);
-  font-weight: normal;
-}
-div.pagination .paging .page:hover a {
-  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
-}
-div.pagination .paging .page a.active {
-  color: var(--color-checked);
-}
-div.pagination .progress {
-  position: relative;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-}
-div.pagination .progress .progress-bar {
-  position: relative;
-  height: 1px;
-  background-color: #f00;
-}
-
-/* for FlayPage */
-article.page {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: center;
-  padding-bottom: 1rem;
-  transition: 0.4s;
-}
-article.page > * {
-  margin-bottom: 0.5rem;
-  min-height: 2rem;
-}
-article.page > :not(flay-cover) {
-  padding: 0 1rem;
-}
-
-/* for FlayNav */
-div.nav {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-}
-div.nav > img {
-  margin: 0.25rem 0.5rem;
-}
-div.nav > ul {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 0.5rem;
-}
-div.nav > ul > li {
-  padding: 0 1rem 0.5rem;
-  text-align: left;
-}
-div.nav > ul > li.active {
-  color: var(--color-checked);
-}
-div.nav > ul:nth-child(2) {
-  margin-bottom: auto;
-}
-div.nav > ul > li > .theme-group {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-}
-div.nav > ul > li > .theme-group label svg {
-  width: 2rem;
-  height: 2rem;
-}
-
-/* for tag-layer */
-.tag-layer div {
-  margin: 1rem;
-}
-.tag-layer div.tag-header {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-}
-.tag-layer div.tag-header label {
-  min-width: 2rem;
-}
-.tag-layer ol {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  justify-content: space-evenly;
-  align-items: flex-start;
-  gap: 0.5rem 0.125rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-.tag-layer ol li {
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--color-border);
-  padding: 0.25rem;
-  max-width: 220px;
-  min-width: 100px;
-  transition: 0.4s;
-}
-.tag-layer ol li:hover {
-  box-shadow: var(--box-shadow);
-}
-.tag-layer ol li label {
-  position: relative;
-}
-.tag-layer ol li label:nth-child(1) {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.25rem;
-}
-.tag-layer ol li label:nth-child(2) {
-  font-size: var(--font-normal);
-  font-weight: 400;
-}
-.tag-layer ol li span {
-  flex: 1 1 auto;
-}
-
 flay-card {
   position: relative;
 }
@@ -621,4 +211,9 @@ flay-card {
   background-color: rgba(36, 36, 36, 0.75);
   -webkit-border-radius: 8px;
   border-radius: 8px;
+}
+
+/* class */
+.disable {
+  color: var(--color-text-secondary);
 }

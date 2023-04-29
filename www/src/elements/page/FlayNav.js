@@ -8,12 +8,14 @@ export default class FlayNav extends HTMLElement {
   constructor(listener) {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     const wrapper = document.createElement('div');
     wrapper.classList.add('nav');
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(link, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(LINK, STYLE, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     const HEADER_IMG = wrapper.appendChild(document.createElement('img'));
     HEADER_IMG.src = './img/svg/flayground-text.svg';
@@ -102,3 +104,41 @@ const runOsThemeListener = (fn) => {
 };
 
 runOsThemeListener(changeTheme);
+
+const CSS = `
+/* for FlayNav */
+div.nav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+}
+div.nav > img {
+  margin: 0.25rem 0.5rem;
+}
+div.nav > ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 0.5rem;
+}
+div.nav > ul > li {
+  padding: 0 1rem 0.5rem;
+  text-align: left;
+}
+div.nav > ul > li.active {
+  color: var(--color-checked);
+}
+div.nav > ul:nth-child(2) {
+  margin-bottom: auto;
+}
+div.nav > ul > li > .theme-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+div.nav > ul > li > .theme-group label svg {
+  width: 2rem;
+  height: 2rem;
+}
+`;

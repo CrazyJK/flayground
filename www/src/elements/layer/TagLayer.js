@@ -5,14 +5,14 @@ export default class TagLayer extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     const wrapper = document.createElement('div');
     wrapper.classList.add('tag-layer');
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(style, link, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(STYLE, LINK, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     const HEADER_DIV = wrapper.appendChild(document.createElement('div'));
     HEADER_DIV.classList.add('tag-header');
@@ -106,3 +106,56 @@ export default class TagLayer extends HTMLElement {
 
 // Define the new element
 customElements.define('tag-layer', TagLayer);
+
+const CSS = `
+/* for tag-layer */
+.tag-layer div {
+  margin: 1rem;
+}
+.tag-layer div.tag-header {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+}
+.tag-layer div.tag-header label {
+  min-width: 2rem;
+}
+.tag-layer ol {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: space-evenly;
+  align-items: flex-start;
+  gap: 0.5rem 0.125rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.tag-layer ol li {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--color-border);
+  padding: 0.25rem;
+  max-width: 220px;
+  min-width: 100px;
+  transition: 0.4s;
+}
+.tag-layer ol li:hover {
+  box-shadow: var(--box-shadow);
+}
+.tag-layer ol li label {
+  position: relative;
+}
+.tag-layer ol li label:nth-child(1) {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.25rem;
+}
+.tag-layer ol li label:nth-child(2) {
+  font-size: var(--font-normal);
+  font-weight: 400;
+}
+.tag-layer ol li span {
+  flex: 1 1 auto;
+}
+`;

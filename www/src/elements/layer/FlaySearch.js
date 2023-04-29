@@ -9,12 +9,14 @@ export default class FlaySearch extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('flay-search');
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/FlaySearch.css');
-    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.wrapper.innerHTML = HTML;
 
@@ -290,4 +292,141 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 <div class="search-group">
   <div id="found-flay"></div>
 </div>
+`;
+
+const CSS = `
+.flay-search {
+  border: 1px solid #000;
+  padding: 1rem;
+  width: 990px;
+}
+
+.flay-search > div.search-group {
+  border: 2px dashed rgb(66, 46, 7);
+  margin-bottom: 1rem;
+}
+.flay-search > div.search-group > div {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  justify-content: space-between;
+  margin: 2px;
+}
+
+input,
+textarea,
+button,
+.checkbox {
+  background: #0004;
+  color: var(--color-text);
+  margin: 1px 2px;
+  border: 0;
+  border-radius: 2px;
+  padding: 2px;
+  outline: none;
+  font: normal 16px D2Coding;
+}
+
+button {
+  cursor: pointer;
+}
+button:hover {
+  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
+}
+
+.input-invalid {
+  background-color: #dc143c80;
+}
+
+/* input data */
+#inputOpus {
+  flex: 0 0 none;
+  width: 8rem;
+}
+#inputTitle {
+  flex: 1 1 auto;
+}
+#inputActress {
+  flex: 0 0 none;
+  width: 10rem;
+}
+#inputDesc {
+  flex: 1 1 auto;
+  height: 4rem;
+}
+
+/* result data */
+#inputTemp {
+  flex: 1 1 auto;
+}
+#studio {
+  flex: 0 0 auto;
+  width: 7rem;
+}
+#opus {
+  flex: 0 0 auto;
+  width: 6rem;
+}
+#title {
+  flex: 1 1 auto;
+}
+#actress {
+  flex: 0 0 auto;
+  width: 8rem;
+}
+#release {
+  flex: 0 0 auto;
+  width: 7rem;
+}
+#flayFullname {
+  flex: 1 1 auto;
+}
+
+/* actress input */
+#actressFavorite {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  clip: rect(0, 0, 0, 0);
+}
+#actressFavorite + label {
+  cursor: pointer;
+  display: inline-flex;
+  padding: 0 4px;
+}
+#actressFavorite:checked + label {
+  color: var(--color-checked);
+}
+#actressFavorite + label > svg {
+  width: 14px;
+}
+#actressName,
+#actressLocalname,
+#actressBirth,
+#actressBody,
+#actressHeight,
+#actressDebut {
+  flex: 1 1 auto;
+  width: 1px;
+}
+#actressRowData {
+  flex: 1 1 auto;
+  font-size: 14px;
+  height: 72px;
+}
+
+/* about nextjav, lastSearchOpus */
+#lastSearchOpus {
+  flex: 1 1 auto;
+}
+
+/* found flay */
+#found-flay {
+  padding: 0.5rem;
+}
 `;

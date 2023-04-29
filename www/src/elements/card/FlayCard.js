@@ -16,12 +16,14 @@ export default class FlayCard extends HTMLElement {
   constructor(options) {
     super();
     this.attachShadow({ mode: 'open' });
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.flayCover = new FlayCover();
     this.wrapper = document.createElement('article');
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/FlayCard.css');
-    this.shadowRoot.append(link, this.flayCover, this.wrapper);
+    this.shadowRoot.append(LINK, STYLE, this.flayCover, this.wrapper);
 
     this.flayTitle = this.wrapper.appendChild(new FlayTitle());
     this.flayStudio = this.wrapper.appendChild(new FlayStudio());
@@ -110,3 +112,54 @@ export default class FlayCard extends HTMLElement {
 }
 
 customElements.define('flay-card', FlayCard);
+
+const CSS = `
+article {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  gap: 0.5rem;
+  padding: 0.5rem;
+}
+
+article > * {
+  background-color: var(--color-bg);
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  max-width: calc(100% - 0.5rem);
+}
+
+@media screen and (max-width: 600px) {
+  html {
+    font-size: 12px;
+  }
+  article.small {
+    gap: 0.25rem;
+    padding: 0.25rem;
+  }
+  flay-comment,
+  flay-tag {
+    display: none;
+  }
+}
+
+article.small {
+  gap: 0.25rem;
+  padding: 0.25rem;
+}
+
+article.small flay-comment,
+article.small flay-tag {
+  display: none;
+}
+article.small > * {
+  padding: 0.125rem 0.25rem;
+  max-width: calc(100% - 0.5rem);
+}
+`;

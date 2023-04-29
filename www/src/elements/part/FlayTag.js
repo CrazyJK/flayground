@@ -7,12 +7,14 @@ export default class FlayTag extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('tag');
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(link, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
     this.tagInputElementArray = [];
@@ -106,3 +108,41 @@ async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElemen
       });
     });
 }
+
+const CSS = `
+/* for FlayTag */
+div.tag .tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: baseline;
+  gap: 0.5rem 0.75rem;
+}
+div.tag .tag-list label {
+  font-size: var(--font-normal);
+}
+div.tag .tag-list .tag-new-btn {
+  font-size: var(--font-normal);
+}
+div.tag .tag-new {
+  display: none;
+}
+div.tag .tag-new.show {
+  display: block;
+}
+div.tag .tag-new input {
+  background-color: transparent;
+  color: var(--color-text);
+  margin: 0.25rem;
+  border: 0;
+  padding: 0.25rem;
+  font-size: var(--font-large);
+  text-align: center;
+}
+div.tag.small input:not(:checked) + label {
+  display: none;
+}
+div.tag.small .tag-new-btn {
+  display: none;
+}
+`;

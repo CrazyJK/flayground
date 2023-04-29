@@ -8,12 +8,14 @@ export default class FlayFiles extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('files');
-    const style = document.createElement('link');
-    style.setAttribute('rel', 'stylesheet');
-    style.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(style, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
 
@@ -144,3 +146,87 @@ function getPrettyFilesize(length) {
     return (length / KB).toFixed(0) + '<small>KB</small>';
   }
 }
+
+const CSS = `
+/* for FlayFiles */
+div.files > div.info {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+div.files > div.info > .files-btn {
+  display: inline-flex;
+}
+div.files > div.list {
+  display: none;
+}
+div.files > div.list.show {
+  display: block;
+}
+div.files > div.list > ol {
+  margin: 0.5rem;
+  padding: 0;
+  list-style: none;
+  text-align: left;
+}
+div.files > div.list > ol > li {
+  font-size: var(--font-smallest);
+  font-family: D2Coding;
+  margin-bottom: 0.25rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 100%;
+}
+div.files > div.list > div.rename-flay {
+  display: flex;
+}
+div.files > div.list > div.rename-flay > input#studio {
+  flex: 0 0 auto;
+  width: 4rem;
+}
+div.files > div.list > div.rename-flay > input#opus {
+  flex: 0 0 auto;
+  width: 3rem;
+}
+div.files > div.list > div.rename-flay > input#title {
+  flex: 1 1 auto;
+}
+div.files > div.list > div.rename-flay > input#actress {
+  flex: 0 0 auto;
+  width: 6rem;
+}
+div.files > div.list > div.rename-flay > input#release {
+  flex: 0 0 auto;
+  width: 4rem;
+}
+div.files > div.list > div.rename-flay > input,
+div.files > div.list > div.rename-flay > button {
+  font-size: var(--font-smallest);
+  font-family: D2Coding;
+  border: 2px dashed purple;
+  border-right: 0;
+  padding: 4px;
+}
+div.files > div.list > div.rename-flay > button {
+  font-size: var(--font-small);
+  border-right: 2px dashed purple;
+}
+@media screen and (max-width: 600px) {
+  .sub-btn,
+  .play-label,
+  .size-label,
+  .files-btn {
+    display: none;
+  }
+}
+div.files.small .sub-btn,
+div.files.small .play-label,
+div.files.small .size-label,
+div.files.small .files-btn {
+  display: none !important;
+}
+div.files.small button {
+  font-size: var(--font-normal);
+}
+`;

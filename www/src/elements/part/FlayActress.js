@@ -8,12 +8,14 @@ export default class FlayActress extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    const LINK = document.createElement('link');
+    LINK.setAttribute('rel', 'stylesheet');
+    LINK.setAttribute('href', './css/components.css');
+    const STYLE = document.createElement('style');
+    STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('actress');
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/components.css');
-    this.shadowRoot.append(link, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
     this.actressList = null;
@@ -114,3 +116,55 @@ export default class FlayActress extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-actress', FlayActress);
+
+const CSS = `
+/* for FlayActress */
+div.actress > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+}
+div.actress > div > span {
+  margin-top: 0.25rem;
+  margin-left: 0.25rem;
+}
+div.actress > div > span > label {
+  display: inline-flex;
+}
+div.actress > div > .name {
+  margin-right: auto;
+}
+div.actress .localName,
+div.actress .flaysize,
+div.actress .body {
+  white-space: nowrap;
+}
+@media screen and (max-width: 600px) {
+  .localName,
+  .age,
+  .body,
+  .height,
+  .debut {
+    display: none;
+  }
+}
+div.actress.small .localName,
+div.actress.small .flaySize,
+div.actress.small .age,
+div.actress.small .body,
+div.actress.small .height,
+div.actress.small .debut {
+  display: none;
+}
+div.actress.small > div {
+  gap: 0.5rem;
+}
+div.actress.small svg {
+  width: 1rem;
+  height: 1rem;
+}
+div.actress.small a {
+  font-size: var(--font-small);
+}
+`;

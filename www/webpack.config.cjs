@@ -7,7 +7,7 @@ module.exports = {
   mode: 'development',
   entry: {
     index: './src/index.js',
-    'flay.ground': './src/flay.ground.js',
+    'page.ground': './src/page.ground.js',
     'card.flay': './src/card.flay.js',
     'card.studio': './src/card.studio.js',
     'card.actress': './src/card.actress.js',

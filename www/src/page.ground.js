@@ -6,7 +6,7 @@ import FlayCondition from './elements/page/FlayCondition';
 import FlayNav from './elements/page/FlayNav';
 import FlayPage from './elements/page/FlayPage';
 import FlayPagination from './elements/page/FlayPagination';
-import './flay.ground.scss';
+import './page.ground.scss';
 import './util/flay.sse';
 
 const flayNav = new FlayNav((menu) => changeLayer(menu));

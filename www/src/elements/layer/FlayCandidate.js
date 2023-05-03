@@ -58,23 +58,32 @@ export default class FlayCandidate extends HTMLElement {
 customElements.define('flay-candidate', FlayCandidate);
 
 const HTML = `
-  <button id="getCadidate">Candidate <i class="badge" id="candidateLength">0</i></button>
-  <ol id="candidatesFlay"></ol>
+  <div>
+    <button id="getCadidate">Candidate <i class="badge" id="candidateLength">0</i></button>
+  </div>
+  <div>
+    <ol id="candidatesFlay"></ol>
+  </div>
 `;
 
 const CSS = `
 div.candidate {
+  display: grid;
+  grid-template-rows: 3rem 1fr;
+
+  padding: 1rem;
   width: 800px;
-  height: 100%;
 }
 
 div.candidate ol {
   display: flex;
   flex-direction: column;
-  list-style: none;
-  padding: 1rem;
   gap: 1rem;
-  height: calc(100% - 5rem);
+
+  list-style: none;
+  padding: 0;
+  margin: 0;
+
   overflow: auto;
 }
 div.candidate ol li {

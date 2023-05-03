@@ -103,4 +103,10 @@ article.page > * {
 article.page > flay-cover {
   padding: 0;
 }
+article.page > flay-cover,
+article.page > flay-actress,
+article.page > flay-files,
+article.page > flay-rank {
+  margin: 0.25rem 0;
+}
 `;

@@ -106,7 +106,7 @@ div.rank div.rank-group input[value='-1']:checked + label {
   color: #f00a;
 }
 div.rank div.rank-group input[value='0']:checked + label {
-  color: #0ff8;
+  color: #3f7e7e;
 }
 div.rank .rank-label {
   display: none;
@@ -126,9 +126,6 @@ div.rank.small .like-btn {
 }
 div.rank.small .rank-label {
   display: block;
-}
-div.rank div.rank-group {
-  gap: 0.25rem;
 }
 div.rank.small label {
   font-size: var(--font-small);

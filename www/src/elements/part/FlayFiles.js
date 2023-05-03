@@ -165,10 +165,12 @@ div.files > div.list.show {
   display: block;
 }
 div.files > div.list > ol {
-  margin: 0.5rem;
-  padding: 0;
+  margin: 0;
+  padding: 0.5rem;
   list-style: none;
   text-align: left;
+  border: 2px dashed purple;
+  border-bottom: 0;
 }
 div.files > div.list > ol > li {
   font-size: var(--font-smallest);
@@ -178,6 +180,9 @@ div.files > div.list > ol > li {
   text-overflow: ellipsis;
   white-space: nowrap;
   max-width: 100%;
+}
+div.files > div.list > ol > li:last-child {
+  margin-bottom: 0;
 }
 div.files > div.list > div.rename-flay {
   display: flex;

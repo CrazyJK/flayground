@@ -70,12 +70,15 @@ const HTML = `
 
 const CSS = `
 div.flay-batch {
-  padding: 2rem;
+  padding: 1rem;
   border-radius: 0.25rem;
 }
 div.flay-batch > div {
   display: flex;
   gap: 1rem;
+}
+div.flay-batch > div:first-child {
+  margin-bottom: 1rem;
 }
 
 span,
@@ -91,7 +94,7 @@ div.flay-batch pre {
   font-size: 14px;
   text-align: left;
   flex: 1 1 auto;
-  margin: 1rem;
+  margin: 0;
   border: 1px solid var(--color-border);
   padding: 1rem;
   background-color: #111;

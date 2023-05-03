@@ -123,6 +123,7 @@ div.tag .tag-list {
 }
 div.tag .tag-list label {
   font-size: var(--font-normal);
+  padding: 0.25rem;
   transition: 0.2s;
 }
 div.tag .tag-list label:hover {

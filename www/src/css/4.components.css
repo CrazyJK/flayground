@@ -115,6 +115,7 @@ input[type='radio'] + label > svg {
 /* input text, search, textarea  */
 input[type='text'],
 input[type='search'],
+input[type='number'],
 textarea {
   position: relative;
   background-color: transparent;

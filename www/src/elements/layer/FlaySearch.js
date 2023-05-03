@@ -314,10 +314,10 @@ const CSS = `
   margin: 2px;
 }
 
-input,
-textarea,
-button,
-.checkbox {
+.flay-search input,
+.flay-search textarea,
+.flay-search button,
+.flay-search .checkbox {
   background: #0004;
   color: var(--color-text);
   margin: 1px 2px;
@@ -326,6 +326,7 @@ button,
   padding: 2px;
   outline: none;
   font: normal 16px D2Coding;
+  text-align: left !important;
 }
 
 button {

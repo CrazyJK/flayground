@@ -96,10 +96,11 @@ article.page {
   transition: 0.4s;
 }
 article.page > * {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.25rem;
   min-height: 2rem;
+  padding: 0 0.5rem;
 }
-article.page > :not(flay-cover) {
-  padding: 0 1rem;
+article.page > flay-cover {
+  padding: 0;
 }
 `;

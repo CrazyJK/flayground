@@ -46,7 +46,8 @@ const FlayStorage = {
       return FlayStorage.session.get(name, defaultValue).split(',');
     },
     getObject: (name, defaultValue) => {
-      return JSON.parse(FlayStorage.session.get(name, defaultValue));
+      let value = FlayStorage.session.get(name, defaultValue);
+      return value === null || value === '' ? defaultValue : JSON.parse(value);
     },
     remove: (name) => {
       sessionStorage.removeItem(name);

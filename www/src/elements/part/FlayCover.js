@@ -1,3 +1,6 @@
+import { getDominatedColors } from '../../util/dominatedColor';
+import FlayStorage from '../../util/flay.storage';
+
 /**
  *
  */
@@ -18,6 +21,12 @@ export default class FlayCover extends HTMLElement {
     this.wrapper.addEventListener('click', (e) => {
       e.target.classList.toggle('full');
     });
+
+    this.colorWrapper = this.wrapper.appendChild(document.createElement('div'));
+    this.colorWrapper.classList.add('color-wrapper');
+    for (let i = 0; i < 5; i++) {
+      this.colorWrapper.appendChild(document.createElement('label'));
+    }
   }
 
   /**
@@ -31,10 +40,29 @@ export default class FlayCover extends HTMLElement {
     if (this.parentElement) {
       this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
     }
-    this.wrapper.style.backgroundImage = `url(/static/cover/${flay.opus})`;
+    let url = `/static/cover/${flay.opus}`;
+    this.wrapper.style.backgroundImage = `url(${url})`;
+
+    // 대표색상 추출
+    let savedDominatedColors = FlayStorage.session.getObject('dominatedColor_' + flay.opus, null);
+    if (savedDominatedColors == null) {
+      getDominatedColors(url, { scale: 0.2, offset: 16, limit: 5 }).then((dominatedColors) => {
+        FlayStorage.session.set('dominatedColor_' + flay.opus, JSON.stringify(dominatedColors));
+        this.applyDominatedColor(dominatedColors);
+      });
+    } else {
+      this.applyDominatedColor(savedDominatedColors);
+    }
+    // TODO 영상 스트리링
   }
-  // TODO 대표색상 추출
-  // TODO 영상 스트리링
+
+  applyDominatedColor(dominatedColors) {
+    this.wrapper.style.boxShadow = `inset 0 0 1rem 0.5rem rgba(${dominatedColors[1].rgba.join(',')})`;
+    this.wrapper.style.backgroundColor = `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`;
+    this.wrapper.querySelectorAll('.color-wrapper > label').forEach((label, index) => {
+      label.style.backgroundColor = `rgba(${dominatedColors[index].rgba.join(',')})`;
+    });
+  }
 }
 
 // Define the new element
@@ -54,5 +82,20 @@ div.cover.full {
 }
 div.cover.small {
   box-shadow: none;
+}
+div.cover .color-wrapper {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  padding-right: 0.25rem;
+  display: flex;
+  background-color: transparent;
+}
+div.cover .color-wrapper label {
+  width: 1rem;
+  height: 0.125rem;
+  border-radius: 0.25rem;
+  box-shadow: 1px 1px 3px 0px #0008;
+  margin: 0.25rem;
 }
 `;

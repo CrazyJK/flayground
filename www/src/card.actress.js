@@ -1,6 +1,7 @@
 import './card.actress.scss';
 import FlayCard from './elements/card/FlayCard';
 import SVG from './elements/svg.json';
+import Search from './util/Search';
 import flayAction from './util/flay.action';
 import './util/flay.sse';
 import './util/theme.listener';
@@ -30,6 +31,7 @@ const height = document.querySelector('#height');
 const debut = document.querySelector('#debut');
 const comment = document.querySelector('#comment');
 const saveBtn = document.querySelector('#saveBtn');
+const findBtn = document.querySelector('#findBtn');
 
 favLabel.innerHTML = SVG.favorite;
 document.title = actressName;
@@ -79,6 +81,8 @@ saveBtn.addEventListener('click', () => {
     comment: comment.value.trim(),
   });
 });
+
+findBtn.addEventListener('click', (e) => Search.actress(localName.value));
 
 function calcAge(birth) {
   if (birth === null || birth.trim().length === 0) {

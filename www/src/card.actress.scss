@@ -30,6 +30,8 @@
 #comment {
   flex: 1 1 auto;
 }
-#saveBtn {
-  cursor: pointer;
+
+#favorite + label {
+  display: inline-flex;
+  align-items: center;
 }

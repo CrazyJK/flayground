@@ -1,3 +1,4 @@
+import Search from '../../util/Search';
 import FlayAction from '../../util/flay.action';
 import FlayStorage from '../../util/flay.storage';
 import SVG from '../svg.json';
@@ -87,8 +88,7 @@ export default class FlaySearch extends HTMLElement {
             .then((res) => res.json())
             .then((foundStudio) => (studio.value = foundStudio.name));
           // searching Arzon
-          const URL_SEARCH_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
-          window.open(URL_SEARCH_ARZON + inOpus, 'arzon', 'width=800px,height=1000px');
+          Search.opusByArzon(inOpus);
           // set opus
           opus.value = inOpus;
         }
@@ -110,17 +110,14 @@ export default class FlaySearch extends HTMLElement {
                   actressDebut.value = list[0].debut;
                 } else {
                   actressLocalname.value = localname;
-                  // searching actress
-                  const URL_SEARCH_ACTRESS = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
-                  window.open(URL_SEARCH_ACTRESS + localname, 'minnano' + localname, 'width=1200px,height=950px');
+                  Search.actress(localname);
                 }
               });
           });
         }
         // call translate
         if (inputTitle.value !== '' || inputDesc.value !== '') {
-          let url = 'https://papago.naver.com/?sk=auto&tk=ko&st=' + inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value;
-          window.open(url, 'translateByPapago', 'width=1000px,height=500px');
+          Search.translateByPapago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
         }
       });
     });

@@ -1,4 +1,5 @@
 import FlayAction from '../../util/flay.action';
+import Search from '../../util/Search';
 
 const COMMENT = 'Comment';
 
@@ -31,8 +32,7 @@ export default class FlayComment extends HTMLElement {
       if (this.flay.video.title == null || this.flay.video.title === '') {
         return;
       }
-      let url = 'https://papago.naver.com/?sk=auto&tk=ko&st=' + this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc;
-      window.open(url, 'translateByPapago', 'width=1000px,height=500px');
+      Search.translateByPapago(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
     });
 
     this.comment = this.div.appendChild(document.createElement('a'));

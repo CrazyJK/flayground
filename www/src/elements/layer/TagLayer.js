@@ -109,6 +109,15 @@ customElements.define('tag-layer', TagLayer);
 
 const CSS = `
 /* for tag-layer */
+.tag-layer {
+  display: grid;
+  grid-template-rows: 4rem 1fr;
+  position: fixed;
+  top: 0;
+  left: 1rem;
+  right: 1rem;
+  bottom: 1rem;
+}
 .tag-layer div {
   margin: 1rem;
 }
@@ -119,6 +128,9 @@ const CSS = `
 }
 .tag-layer div.tag-header label {
   min-width: 2rem;
+}
+.tag-layer .tag-main {
+  overflow: auto;
 }
 .tag-layer ol {
   display: flex;

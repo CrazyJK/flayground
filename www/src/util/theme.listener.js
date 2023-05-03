@@ -6,18 +6,7 @@ import FlayStorage from './flay.storage';
 onstorage = (e) => {
   console.log('onstorage', e.key, e.oldValue, e.newValue);
   if (e.key === THEME_KEY) {
-    let theme = '';
-    if (e.newValue !== 'os') {
-      theme = e.newValue;
-    } else {
-      const query = getPrefersColorSchemeDarkQuery();
-      if (query === null) {
-        theme = 'light';
-      } else {
-        theme = query.matches ? 'dark' : 'light';
-      }
-    }
-    changeTheme(theme);
+    changeTheme(e.newValue);
   }
 };
 
@@ -28,7 +17,17 @@ const getPrefersColorSchemeDarkQuery = () => {
   return window.matchMedia('(prefers-color-scheme: dark)');
 };
 
-const changeTheme = (theme) => document.getElementsByTagName('html')[0].setAttribute('theme', theme);
+const changeTheme = (theme) => {
+  if (theme === 'os') {
+    const query = getPrefersColorSchemeDarkQuery();
+    if (query === null) {
+      theme = 'light';
+    } else {
+      theme = query.matches ? 'dark' : 'light';
+    }
+  }
+  document.getElementsByTagName('html')[0].setAttribute('theme', theme);
+};
 
 const THEME_KEY = 'FlayNav.theme';
 

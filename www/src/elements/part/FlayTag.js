@@ -38,7 +38,7 @@ export default class FlayTag extends HTMLElement {
       FlayAction.newTag(e.target.value, (tag) => {
         fetchTag(this.flay, this.tagInputElementArray, this.tagListElement, this.tagNewElement).then(() => {
           FlayAction.toggleTag(this.flay.opus, tag.id, true, () => {
-            this.tagNewElement.style.display = 'none';
+            this.tagNewElement.classList.remove('show');
           });
         });
       });

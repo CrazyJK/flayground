@@ -1,58 +1,43 @@
 @import './css/style.scss';
 
 body {
-  position: absolute !important;
+  position: absolute;
   inset: 0;
   overflow: hidden;
 
   display: grid;
-  grid-template-rows: 4rem 1fr 3rem;
+  grid-template-rows: 8rem 1fr 3rem;
 
-  & > header {
-    position: relative;
+  header {
+    img {
+      height: 100%;
+    }
   }
-  & > main {
-    position: relative;
+
+  main {
+    ul {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+
+      li {
+        a {
+          color: #161616;
+          font: italic 700 4rem 'Ink Free';
+          text-shadow: 0.125rem 0.125rem rgba(156, 156, 156, 0.25);
+          transition: 0.2s;
+        }
+      }
+    }
   }
-  & > footer {
-    position: relative;
+
+  footer {
     display: flex;
     justify-content: flex-end;
     flex-direction: column;
     flex-wrap: nowrap;
-  }
-}
-
-main {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  img {
-    height: 8rem;
-  }
-
-  ul {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    list-style: none;
-    margin: 0;
-    padding: 0;
-
-    li {
-      margin: 0.5rem;
-
-      a {
-        color: #161616;
-        font: italic 700 4rem 'Ink Free';
-        text-shadow: 0.125rem 0.125rem rgba(156, 156, 156, 0.25);
-        transition: 0.4s;
-      }
-      a:hover {
-        text-shadow: 0.125rem 0.125rem rgba(162, 184, 40, 0.25);
-      }
-    }
   }
 }

@@ -238,6 +238,7 @@ div.pagination .paging .page {
   min-width: 2.5rem;
   font-size: var(--font-normal);
   cursor: pointer;
+  text-align: center;
 }
 div.pagination .paging .page:last-child {
   border-right: 1px solid #aaa;

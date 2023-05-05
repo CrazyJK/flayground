@@ -10,7 +10,10 @@
     "build": "webpack",
     "watch": "webpack -w"
   },
-  "dependencies": {},
+  "dependencies": {
+    "@toast-ui/editor": "^3.2.1",
+    "@toast-ui/editor-plugin-color-syntax": "^3.1.0"
+  },
   "devDependencies": {
     "copy-webpack-plugin": "^10.2.4",
     "css-loader": "^6.7.1",

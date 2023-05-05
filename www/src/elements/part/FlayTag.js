@@ -25,10 +25,10 @@ export default class FlayTag extends HTMLElement {
     this.tagNewElement = this.wrapper.appendChild(document.createElement('div'));
     this.tagNewElement.classList.add('tag-new');
 
-    const tagNewInput = this.tagNewElement.appendChild(document.createElement('input'));
-    tagNewInput.type = 'search';
-    tagNewInput.placeholder = 'new Tag';
-    tagNewInput.addEventListener('keyup', (e) => {
+    this.tagNewInput = this.tagNewElement.appendChild(document.createElement('input'));
+    this.tagNewInput.type = 'search';
+    this.tagNewInput.placeholder = 'new Tag';
+    this.tagNewInput.addEventListener('keyup', (e) => {
       e.preventDefault();
       e.stopPropagation();
       if (e.code !== 'Enter' && e.code !== 'NumpadEnter') {
@@ -55,24 +55,40 @@ export default class FlayTag extends HTMLElement {
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small') || this.classList.contains('small'));
 
-    fetchTag(this.flay, this.tagInputElementArray, this.tagListElement, this.tagNewElement).then(() => {
-      this.tagInputElementArray.forEach((input) => {
-        let id = input.getAttribute('value');
-        let foundTags = Array.from(flay.video.tags).filter((tag) => tag.id === Number(id));
-        if (foundTags.length > 0) {
-          input.checked = true;
-        } else {
-          input.checked = false;
-        }
+    fetchTag(this.flay, this.tagInputElementArray, this.tagListElement, this.tagNewElement, this.tagNewInput)
+      .then(() => {
+        this.tagInputElementArray.forEach((input) => {
+          let id = input.getAttribute('value');
+          let foundTags = Array.from(flay.video.tags).filter((tag) => tag.id === Number(id));
+          if (foundTags.length > 0) {
+            input.checked = true;
+          } else {
+            input.checked = false;
+          }
+        });
+      })
+      .then(() => {
+        this.tagListElement.childNodes.forEach((child) => {
+          if (child.tagName === 'LABEL') {
+            let keywords = [child.textContent, ...child.title.split(',')].filter((keyword) => keyword !== '').map((keyword) => keyword.trim());
+            let found = false;
+            for (let keyword of keywords) {
+              if ((flay.title + flay.video.comment).indexOf(keyword) > -1) {
+                found = true;
+                break;
+              }
+            }
+            child.classList.toggle('candidate', found);
+          }
+        });
       });
-    });
   }
 }
 
 // Define the new element
 customElements.define('flay-tag', FlayTag);
 
-async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElement) {
+async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElement, tagNewInput) {
   return fetch('/info/tag/list')
     .then((res) => res.json())
     .then((tagList) => {
@@ -93,7 +109,7 @@ async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElemen
           });
 
           const label = tagListElement.appendChild(document.createElement('label'));
-          label.setAttribute('title', tag.name + '\n' + tag.description);
+          label.setAttribute('title', tag.description);
           label.setAttribute('for', 'tag' + tag.id);
           label.textContent = tag.name;
 
@@ -105,6 +121,9 @@ async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElemen
       tagNewBtn.textContent = 'NEW';
       tagNewBtn.addEventListener('click', () => {
         tagNewElement.classList.toggle('show');
+        if (tagNewElement.classList.contains('show')) {
+          tagNewInput.focus();
+        }
       });
     });
 }
@@ -153,5 +172,8 @@ div.tag.small input:not(:checked) + label {
 }
 div.tag.small .tag-new-btn {
   display: none;
+}
+.candidate {
+  color: #f00b;
 }
 `;

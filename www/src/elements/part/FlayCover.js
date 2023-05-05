@@ -87,13 +87,13 @@ div.cover .color-wrapper {
   position: absolute;
   bottom: 0;
   right: 0;
-  padding-right: 0.25rem;
+  padding: 0.25rem;
   display: flex;
   background-color: transparent;
 }
 div.cover .color-wrapper label {
-  width: 1rem;
-  height: 0.125rem;
+  width: 1.5rem;
+  height: 0.5rem;
   border-radius: 0.25rem;
   box-shadow: 1px 1px 3px 0px #0008;
   margin: 0.25rem;

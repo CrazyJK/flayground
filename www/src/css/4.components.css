@@ -1,6 +1,5 @@
 div {
   position: relative;
-  text-align: center;
 }
 
 a,
@@ -118,6 +117,7 @@ input[type='radio'] + label > svg {
 input[type='text'],
 input[type='search'],
 input[type='number'],
+input[type='date'],
 textarea {
   position: relative;
   background-color: transparent;
@@ -125,6 +125,7 @@ textarea {
   margin: 0;
   border: 0;
   padding: 0.25rem 0;
+  font-family: 'Malgun Gothic';
   font-size: var(--font-large);
   text-align: center;
 }
@@ -175,28 +176,26 @@ a:not(.disable):hover {
 ::-webkit-scrollbar {
   width: 8px;
   height: 8px;
-  border: 0px solid #fff;
-  background-color: rgba(255, 255, 255, 0);
+  border: 0;
+  background-color: transparent;
 }
 /* 상하, 좌우 화살표가 포함된 부분 */
 ::-webkit-scrollbar-button:start:decrement,
 ::-webkit-scrollbar-button:end:increment {
+  width: 8px;
+  height: 8px;
   display: block;
-  height: 10px;
-  background-color: rgba(255, 255, 255, 0);
+  background-color: transparent;
 }
 /* 화살표를 제외한 몸통 부분 */
 ::-webkit-scrollbar-track {
-  background-color: rgba(255, 255, 255, 0);
-  border-radius: 10px;
-  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0);
+  background-color: transparent;
+  border-radius: 4px;
 }
 /* 몸통 부분에서 실제 움직이는 부분 */
 ::-webkit-scrollbar-thumb {
-  height: 50px;
-  width: 50px;
   background-color: rgba(36, 36, 36, 0.75);
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 /* class */

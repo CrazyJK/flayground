@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Diary</title>
+    <link rel="icon" type="image/png" href="./img/favicon/flay_1.png" />
+    <link rel="stylesheet" href="./kamoru.diary.css" />
+    <script defer type="text/javascript" src="./kamoru.diary.js"></script>
+  </head>
+  <body>
+    <main>
+      <div id="grid-calendar">
+        <div id="diaryCal">
+          <div class="calendar"></div>
+        </div>
+      </div>
+      <div id="grid-diary" style="display: none">
+        <div id="diaryWrap">
+          <div id="diaryMeta">
+            <input id="diaryTitle" type="text" placeholder="Title..." />
+            <div id="diaryWeather">
+              <input type="radio" name="diaryWeather" id="weather-sunny" value="sunny" />
+              <label for="weather-sunny">Sunny</label>
+              <input type="radio" name="diaryWeather" id="weather-cloud" value="cloud" />
+              <label for="weather-cloud">Cloud</label>
+              <input type="radio" name="diaryWeather" id="weather-rainy" value="rainy" />
+              <label for="weather-rainy">Rain</label>
+              <input type="radio" name="diaryWeather" id="weather-snowy" value="snowy" />
+              <label for="weather-snowy">Snow</label>
+            </div>
+            <div><label id="diaryDay"></label></div>
+            <input id="diaryDate" type="date" readonly />
+            <button id="diaryViewerShow">View&nbsp;</button>
+          </div>
+          <div id="diaryBody"></div>
+          <div id="diaryAttch"></div>
+        </div>
+      </div>
+    </main>
+    <div id="diaryViewer">
+      <div id="diaryViewerInner"></div>
+      <button id="diaryViewerClose">X</button>
+    </div>
+    <footer></footer>
+  </body>
+</html>

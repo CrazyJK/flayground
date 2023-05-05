@@ -45,6 +45,9 @@ customElements.define('flay-title', FlayTitle);
 
 const CSS = `
 /* for FlayTitle */
+div.title {
+  text-align: center;
+}
 div.title label {
   position: relative;
   display: block;

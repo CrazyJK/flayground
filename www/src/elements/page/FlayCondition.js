@@ -142,7 +142,7 @@ function createSelect(parent, index, name, values, title) {
   values.forEach((value) => {
     const option = select.appendChild(document.createElement('option'));
     option.value = value;
-    option.innerHTML = value;
+    option.innerHTML = value.charAt(0) + value.slice(1).toLowerCase();
   });
 
   return select;
@@ -191,5 +191,8 @@ div.condition > div > label {
 div.condition > div > select {
   font-size: var(--font-normal);
   outline: none;
+}
+div.condition > div > select > option {
+  font-size: var(--font-small);
 }
 `;

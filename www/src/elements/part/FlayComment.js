@@ -87,6 +87,9 @@ customElements.define('flay-comment', FlayComment);
 
 const CSS = `
 /* for FlayComment */
+div.comment {
+  text-align: center;
+}
 div.comment input {
   position: relative;
   display: block;

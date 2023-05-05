@@ -42,4 +42,7 @@ customElements.define('flay-opus', FlayOpus);
 
 const CSS = `
 /* for FlayOpus */
+div.opus {
+  text-align: center;
+}
 `;

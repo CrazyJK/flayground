@@ -12,6 +12,7 @@ module.exports = {
     'card.studio': './src/card.studio.js',
     'card.actress': './src/card.actress.js',
     'card.tag': './src/card.tag.js',
+    'kamoru.diary': './src/kamoru.diary.js',
   },
   devtool: 'source-map',
   devServer: {

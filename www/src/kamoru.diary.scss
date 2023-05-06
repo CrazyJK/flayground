@@ -57,6 +57,14 @@ main {
       flex: 1 1 auto;
     }
 
+    #diaryWeather {
+      label {
+        img {
+          width: 2rem;
+        }
+      }
+    }
+
     #diaryDate {
       flex: 0 1 auto;
     }
@@ -90,6 +98,11 @@ main {
 
     .toastui-editor-contents {
       padding: 1rem;
+
+      img {
+        margin-left: auto;
+        margin-right: auto;
+      }
     }
   }
 

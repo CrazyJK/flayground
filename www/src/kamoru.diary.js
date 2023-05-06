@@ -9,8 +9,13 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 
 import FlayAttach from './elements/part/FlayAttach';
 import './kamoru.diary.scss';
-import FlayStorage from './util/flay.storage';
 import './util/theme.listener';
+
+import SVG from './elements/svg.json';
+document.querySelector('#weather-sunny + label').innerHTML = SVG.weather.sunny;
+document.querySelector('#weather-cloud + label').innerHTML = SVG.weather.cloud;
+document.querySelector('#weather-rainy + label').innerHTML = SVG.weather.rain;
+document.querySelector('#weather-snowy + label').innerHTML = SVG.weather.snow;
 
 const GB = 1024 * 1024 * 1024;
 const newDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null }, content: '' };
@@ -66,11 +71,6 @@ flayAttach.addEventListener('attach', (e) => {
 let diaryList = [];
 
 Promise.resolve().then(fetchDiary).then(renderCalendar).then(addCalendarEventListener).then(addDiaryEventListener).then(addDiaryViewerEventListener);
-
-// renderCalendar();
-// addCalendarEventListener();
-// addDiaryEventListener();
-// addDiaryViewerEventListener();
 
 async function fetchDiary() {
   return fetch('/diary/meta')
@@ -306,25 +306,6 @@ function saveDiary(e) {
     return;
   }
 
-  // localStorage에 저장전 diary 저장
-  try {
-    FlayStorage.local.set(`diary-${Date.now()}`, JSON.stringify(currentDiary));
-  } catch (e) {
-    console.warn(e.message);
-  }
-
-  // n일전 diary 삭제
-  const today = Date.now();
-  const offsetMs = 1000 * 60 * 60 * 24 * 3;
-  FlayStorage.local.findStartsWith('diary-').forEach((item) => {
-    // console.log('storage diary', item.key, item.value);
-    const writtenMs = Number(item.key.split('-')[1]);
-    if (today - writtenMs > offsetMs) {
-      console.log('Storage에서 지난 일기 기록 삭제', item.key, item.value);
-      FlayStorage.local.remove(item.key);
-    }
-  });
-
   currentDiary.meta.weather = weather;
   currentDiary.meta.title = title;
   currentDiary.content = content;
@@ -340,12 +321,6 @@ function saveDiary(e) {
       currentDiary = diary;
       markDiaryDates();
     });
-
-  // restCall('/diary', { method: 'POST', data: currentDiary }, (diary) => {
-  //   console.log('saved Diary', diary);
-  //   currentDiary = diary;
-  //   markDiaryDates();
-  // });
 }
 
 // ======== utilities ========

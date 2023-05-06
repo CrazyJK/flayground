@@ -28,6 +28,7 @@ export default class FlayCandidate extends HTMLElement {
         .then((list) => {
           console.log('cadidate', list);
           BADGE.innerHTML = list.length;
+          LIST.textContent = null;
           list.forEach((flay) => {
             const ITEM = LIST.appendChild(document.createElement('li'));
             const BTN = ITEM.appendChild(document.createElement('button'));
@@ -68,32 +69,43 @@ const HTML = `
 
 const CSS = `
 div.candidate {
+  position: fixed;
+  inset: 0;
+  margin: 0 auto;
+
   display: grid;
   grid-template-rows: 3rem 1fr;
 
   padding: 1rem;
-  width: 800px;
+  width: 900px;
 }
-
+div.candidate div {
+  text-align: center;
+  overflow: auto;
+}
 div.candidate ol {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.25rem;
 
   list-style: none;
-  padding: 0;
+  padding: 1rem;
   margin: 0;
 
   overflow: auto;
 }
 div.candidate ol li {
-  border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   padding: 0.5rem;
-  box-shadow: var(--box-shadow);
+  transition: 0.2s;
+
+}
+div.candidate ol li:hover {
+  background-color: var(--color-bg-hover);
 }
 div.candidate ol li div {
   aspect-ratio: 400 / 269;
+  background: no-repeat center / contain;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -109,13 +121,13 @@ div.candidate ol li div label {
   font-size: 1rem;
 }
 div.candidate ol li button {
-  text-align: left;
   font: 700 1rem D2Coding;
-  padding: 0.25rem;
+  padding: 0.25rem 0.5rem;
+  margin-bottom: 0.5rem;
+  border-radius: 0.25rem;
+  transition: 0.2s;
 }
-
-div.candidate img {
-  width: 100%;
-  aspect-ratio: 400 / 269;
+div.candidate ol li button:hover {
+  background-color: var(--color-bg-hover);
 }
 `;

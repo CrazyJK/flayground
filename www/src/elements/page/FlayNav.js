@@ -19,6 +19,9 @@ export default class FlayNav extends HTMLElement {
 
     const HEADER_IMG = wrapper.appendChild(document.createElement('img'));
     HEADER_IMG.src = './img/svg/flayground-text.svg';
+    HEADER_IMG.addEventListener('click', () => {
+      location.href = 'index.html';
+    });
 
     const MENU_LIST = wrapper.appendChild(document.createElement('ul'));
 

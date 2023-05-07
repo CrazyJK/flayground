@@ -53,7 +53,6 @@ export default class FlayCover extends HTMLElement {
     } else {
       this.applyDominatedColor(savedDominatedColors);
     }
-    // TODO 영상 스트리링
   }
 
   applyDominatedColor(dominatedColors) {

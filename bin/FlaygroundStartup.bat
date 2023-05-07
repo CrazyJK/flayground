@@ -58,7 +58,7 @@ start /wait /b cmd /c mvn clean package
 title FLAYGROUND
 
 echo ===========================================================================================
-echo Start Flayground
+echo Start Flayground %1
 echo -------------------------------------------------------------------------------------------
 echo Using FLAYGROUND: %FLAYGROUND_HOME%
 echo Using  JAVA_HOME: %JAVA_HOME%

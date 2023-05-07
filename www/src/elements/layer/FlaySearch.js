@@ -295,7 +295,6 @@ const CSS = `
 .flay-search {
   border: 1px solid #000;
   padding: 1rem;
-  width: 990px;
 }
 
 .flay-search > div.search-group {
@@ -330,7 +329,7 @@ button {
   cursor: pointer;
 }
 button:hover {
-  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
+  text-shadow: var(--text-shadow);
 }
 
 .input-invalid {

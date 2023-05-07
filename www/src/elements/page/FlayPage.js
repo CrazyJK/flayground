@@ -94,6 +94,7 @@ article.page {
   justify-content: center;
   padding-bottom: 1rem;
   transition: 0.4s;
+  margin: auto;
 }
 article.page > * {
   margin-bottom: 0.25rem;
@@ -108,5 +109,9 @@ article.page > flay-actress,
 article.page > flay-files,
 article.page > flay-rank {
   margin: 0.25rem 0;
+}
+article.page > flay-cover {
+  margin: 1rem 0;
+  padding: 0;
 }
 `;

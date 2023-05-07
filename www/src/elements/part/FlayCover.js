@@ -19,7 +19,7 @@ export default class FlayCover extends HTMLElement {
 
     this.flay = null;
     this.wrapper.addEventListener('click', (e) => {
-      e.target.classList.toggle('full');
+      e.target.classList.toggle('contain');
     });
 
     this.colorWrapper = this.wrapper.appendChild(document.createElement('div'));
@@ -57,7 +57,7 @@ export default class FlayCover extends HTMLElement {
   }
 
   applyDominatedColor(dominatedColors) {
-    this.wrapper.style.boxShadow = `inset 0 0 1rem 0.5rem rgba(${dominatedColors[1].rgba.join(',')})`;
+    this.wrapper.style.boxShadow = `inset 0 0 0.5rem 0.25rem rgba(${dominatedColors[0].rgba.join(',')}), inset 0 0 1rem 0.5rem rgba(${dominatedColors[1].rgba.join(',')})`;
     this.wrapper.style.backgroundColor = `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`;
     this.wrapper.querySelectorAll('.color-wrapper > label').forEach((label, index) => {
       label.style.backgroundColor = `rgba(${dominatedColors[index].rgba.join(',')})`;
@@ -71,14 +71,13 @@ customElements.define('flay-cover', FlayCover);
 const CSS = `
 /* for FlayCover */
 div.cover {
-  aspect-ratio: 400 / 269;
-  background: transparent no-repeat center / contain;
-  background-color: var(--color-bg-cover);
-  box-shadow: var(--box-shadow-cover);
-  border-radius: 0.125rem;
+  aspect-ratio: var(--cover-aspect-ratio);
+  background: var(--color-bg-cover) no-repeat center / cover;
+  border-radius: var(--border-radius);
+  transition: 0.2s;
 }
-div.cover.full {
-  background-size: cover;
+div.cover.contain {
+  background-size: contain;
 }
 div.cover.small {
   box-shadow: none;

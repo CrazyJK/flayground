@@ -64,12 +64,12 @@ button {
   padding: 0;
   background: transparent;
   color: inherit;
-  font-size: var(--font-largest);
-  font-family: D2Coding;
+  font-size: var(--font-large);
+  font-weight: 700;
   outline: none;
 }
 button:not(.disable):hover {
-  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
+  text-shadow: var(--text-shadow);
   cursor: pointer;
 }
 button > svg {
@@ -98,8 +98,7 @@ input[type='radio'] + label {
 }
 input[type='checkbox'] + label:hover,
 input[type='radio'] + label:hover {
-  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
-  color: var(--color-checked-over);
+  text-shadow: var(--text-shadow);
   transition: 0.4s;
 }
 input[type='checkbox']:checked + label,
@@ -169,7 +168,7 @@ a {
 }
 a:not(.disable):hover {
   cursor: pointer;
-  text-shadow: 1px 1px 2px var(--color-text-shadow-over);
+  text-shadow: var(--text-shadow);
 }
 
 /* class */

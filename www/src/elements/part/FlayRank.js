@@ -77,8 +77,9 @@ export default class FlayRank extends HTMLElement {
 
     let likeCount = flay.video.likes ? (flay.video.likes.length > 0 ? flay.video.likes.length : '') : '';
 
-    this.likeBtn.setAttribute('title', 'Like' + likeCount);
-    this.likeBtn.innerHTML = 'Like<i class="badge">' + likeCount + '</i>';
+    this.likeBtn.setAttribute('title', 'Shot ' + likeCount);
+    this.likeBtn.innerHTML = 'Shot<i class="badge">' + likeCount + '</i>';
+    this.likeBtn.classList.toggle('disable', likeCount === '');
 
     this.scoreLabel.innerHTML = 'Score<i class="badge">' + flay.score + '</i>';
   }
@@ -93,7 +94,7 @@ div.rank {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  align-items: center;
+  align-items: baseline;
 }
 div.rank div.rank-group {
   display: inline-flex;

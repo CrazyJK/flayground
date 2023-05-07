@@ -132,14 +132,36 @@ div.actress > div > span {
 div.actress > div > span > label {
   display: inline-flex;
 }
-div.actress > div > .name {
-  margin-right: auto;
-}
-div.actress .localName,
-div.actress .flaysize,
-div.actress .body {
+div.actress > div > label {
+  text-align: center;
   white-space: nowrap;
 }
+div.actress .name {
+  flex: 1 1 auto;
+}
+div.actress .localName {
+  flex: 0 1 auto;
+}
+div.actress .flaySize {
+  flex: 0 1 2rem;
+  text-align: right;
+}
+div.actress .age {
+  flex: 0 1 2rem;
+  text-align: right;
+}
+div.actress .body {
+  flex: 0 1 6.5rem;
+}
+div.actress .height {
+  flex: 0 1 auto;
+  text-align: right;
+}
+div.actress .debut {
+  flex: 0 1 auto;
+  text-align: right;
+}
+
 @media screen and (max-width: 600px) {
   .localName,
   .age,

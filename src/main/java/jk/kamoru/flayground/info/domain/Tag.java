@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Tag implements Info<Integer>, Comparable<Integer> {
+public class Tag implements Info<Integer>, Comparable<Tag> {
 
   @NotBlank
   Integer id;
@@ -70,8 +70,8 @@ public class Tag implements Info<Integer>, Comparable<Integer> {
   }
 
   @Override
-  public int compareTo(Integer i) {
-    return id - i;
+  public int compareTo(Tag tag) {
+    return id - tag.id;
   }
 
 }

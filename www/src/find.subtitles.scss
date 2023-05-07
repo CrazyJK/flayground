@@ -1,0 +1,91 @@
+@import './css/style.scss';
+@import './css/layout.card.scss';
+
+nav {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 1rem;
+}
+
+#flayList {
+  overflow: auto;
+}
+
+.flay-item {
+  display: flex;
+  gap: 8px;
+  font-family: D2Coding;
+  font-size: 80%;
+  font-weight: 700;
+  padding: 0 1rem;
+  height: 28px;
+
+  &:hover {
+    color: orange;
+  }
+
+  &.found-subtitles {
+    color: green;
+    text-shadow: 0 0 1px #9f9292;
+
+    &.active-subtitles {
+      text-shadow: var(--text-shadow);
+    }
+  }
+
+  &.hide {
+    display: none;
+  }
+
+  label {
+    font-size: var(--font-small);
+    font-weight: 400;
+  }
+
+  .flay-count {
+    flex: 0 0 50px;
+    text-align: right;
+  }
+  .flay-studio {
+    flex: 0 0 90px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .flay-opus {
+    flex: 0 0 90px;
+  }
+  .flay-title {
+    flex: 1 0 300px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .flay-actressList {
+    flex: 0 0 140px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+  .flay-release {
+    flex: 0 0 80px;
+  }
+  .flay-rank {
+    flex: 0 0 30px;
+    text-align: center;
+  }
+  .flay-tag {
+    flex: 0 0 70px;
+    font-size: var(--font-smallest);
+  }
+  .flay-subtitles {
+    flex: 1 0 100px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    a {
+      font-size: inherit;
+    }
+  }
+}

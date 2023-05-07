@@ -13,6 +13,7 @@ module.exports = {
     'card.actress': './src/card.actress.js',
     'card.tag': './src/card.tag.js',
     'kamoru.diary': './src/kamoru.diary.js',
+    'find.subtitles': './src/find.subtitles.js',
   },
   devtool: 'source-map',
   devServer: {

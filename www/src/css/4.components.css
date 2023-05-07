@@ -175,6 +175,9 @@ a:not(.disable):hover {
 .disable {
   color: var(--color-text-secondary);
 }
+.error {
+  color: var(--color-text-danger);
+}
 
 /* badge */
 i.badge {

@@ -119,6 +119,9 @@ export default {
   updateActress: (actress, callback, failCallback) => {
     action('/info/actress', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(actress) }, callback, failCallback);
   },
+  subtitlesUrlIfFound: (opus, callback, failCallback) => {
+    action('/file/find/exists/subtitles?opus=' + opus, {}, callback, failCallback);
+  },
 };
 
 async function action(url, requestInit, callback, failCallback) {

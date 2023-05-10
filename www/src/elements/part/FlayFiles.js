@@ -1,4 +1,5 @@
 import FlayAction from '../../util/flay.action';
+import Search from '../../util/Search';
 import SVG from '../svg.json';
 
 /**
@@ -32,7 +33,11 @@ export default class FlayFiles extends HTMLElement {
     this.subBtn.classList.add('sub-btn');
     this.subBtn.addEventListener('click', (e) => {
       console.log('subtitlesClick', this.flay.opus);
-      if (this.flay.files.subtitles.length > 0) FlayAction.editSubtitles(this.flay.opus);
+      if (this.flay.files.subtitles.length > 0) {
+        FlayAction.editSubtitles(this.flay.opus);
+      } else {
+        Search.subtitles(this.flay.opus);
+      }
     });
 
     this.playLabel = this.infoDiv.appendChild(document.createElement('label'));

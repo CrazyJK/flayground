@@ -38,6 +38,7 @@ textarea {
   padding: 0;
   font-size: var(--font-large);
   font-weight: 700;
+  text-shadow: var(--text-shadow);
   outline: none;
   transition: 0.2s;
 }
@@ -46,11 +47,11 @@ a {
   text-decoration: none;
 }
 a:not(.disable):hover {
-  text-shadow: var(--text-shadow);
+  text-shadow: var(--text-shadow-hover);
 }
 
 button:not(.disable):hover {
-  text-shadow: var(--text-shadow);
+  text-shadow: var(--text-shadow-hover);
 }
 button > svg {
   width: 1.75rem;
@@ -77,7 +78,7 @@ input[type='radio'] {
 }
 input[type='checkbox'] + label:hover,
 input[type='radio'] + label:hover {
-  text-shadow: var(--text-shadow);
+  text-shadow: var(--text-shadow-hover);
 }
 input[type='checkbox']:checked + label,
 input[type='radio']:checked + label {

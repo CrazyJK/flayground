@@ -142,6 +142,7 @@ div.tag .tag-list {
 div.tag .tag-list label {
   font-size: var(--font-normal);
   padding: 0.25rem;
+  transition: box-shadow 0.4s 0.2s;
 }
 div.tag .tag-list label:hover {
   box-shadow: var(--box-shadow-small);

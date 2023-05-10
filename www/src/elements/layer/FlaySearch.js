@@ -325,13 +325,6 @@ const CSS = `
   text-align: left !important;
 }
 
-button {
-  cursor: pointer;
-}
-button:hover {
-  text-shadow: var(--text-shadow);
-}
-
 .input-invalid {
   background-color: #dc143c80;
 }

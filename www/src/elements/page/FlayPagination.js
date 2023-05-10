@@ -248,7 +248,7 @@ div.pagination .paging .page a {
   font-weight: 700;
 }
 div.pagination .paging .page:hover a {
-  text-shadow: var(--text-shadow);
+  text-shadow: var(--text-shadow-hover);
 }
 div.pagination .paging .page a.active {
   color: var(--color-checked);

@@ -35,23 +35,27 @@ export default class FlayCover extends HTMLElement {
    */
   set(flay) {
     this.flay = flay;
+
+    let url = `/static/cover/${flay.opus}`;
+    let isSmall = this.classList.contains('small') || this.parentElement?.classList.contains('small');
+
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
-    if (this.parentElement) {
-      this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
-    }
-    let url = `/static/cover/${flay.opus}`;
+    this.wrapper.classList.toggle('small', isSmall);
     this.wrapper.style.backgroundImage = `url(${url})`;
 
-    // 대표색상 추출
-    let savedDominatedColors = FlayStorage.session.getObject('dominatedColor_' + flay.opus, null);
-    if (savedDominatedColors == null) {
-      getDominatedColors(url, { scale: 0.2, offset: 16, limit: 5 }).then((dominatedColors) => {
-        FlayStorage.session.set('dominatedColor_' + flay.opus, JSON.stringify(dominatedColors));
-        this.applyDominatedColor(dominatedColors);
-      });
-    } else {
-      this.applyDominatedColor(savedDominatedColors);
+    this.colorWrapper.classList.toggle('hide', isSmall);
+    if (!isSmall) {
+      // 대표색상 추출
+      let savedDominatedColors = FlayStorage.session.getObject('dominatedColor_' + flay.opus, null);
+      if (savedDominatedColors == null) {
+        getDominatedColors(url, { scale: 0.2, offset: 16, limit: 5 }).then((dominatedColors) => {
+          FlayStorage.session.set('dominatedColor_' + flay.opus, JSON.stringify(dominatedColors));
+          this.applyDominatedColor(dominatedColors);
+        });
+      } else {
+        this.applyDominatedColor(savedDominatedColors);
+      }
     }
   }
 
@@ -68,7 +72,6 @@ export default class FlayCover extends HTMLElement {
 customElements.define('flay-cover', FlayCover);
 
 const CSS = `
-/* for FlayCover */
 div.cover {
   aspect-ratio: var(--cover-aspect-ratio);
   background: var(--color-bg-cover) no-repeat center / cover;
@@ -88,6 +91,9 @@ div.cover .color-wrapper {
   padding: 0.25rem;
   display: flex;
   background-color: transparent;
+}
+div.cover .color-wrapper.hide {
+  display: none;
 }
 div.cover .color-wrapper label {
   width: 1.5rem;

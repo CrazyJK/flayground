@@ -1,5 +1,6 @@
 html {
   font-size: 16px;
+  font-family: 'Malgun Gothic';
 }
 // 1080, 1920, 1440, 2560
 @media screen and (max-height: 2560px) {
@@ -30,8 +31,4 @@ body {
 
   background-color: var(--color-bg);
   color: var(--color-text);
-
-  font-family: 'Malgun Gothic';
-  font-size: var(--font-normal);
-  font-weight: 400;
 }

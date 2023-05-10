@@ -1,86 +1,69 @@
-div {
-  position: relative;
-}
-
-a,
-pre,
-div,
-span,
-label,
-button,
-input,
-textarea,
-nav,
 header,
 main,
 article,
-footer {
+footer,
+div,
+pre,
+nav,
+ul,
+ol,
+span,
+label,
+a,
+button,
+input,
+select,
+option,
+textarea {
+  position: relative;
   background-color: var(--color-bg);
   color: var(--color-text);
 }
 
 a,
-input,
 button,
-textarea,
-label,
+input[type='text'],
+input[type='search'],
+input[type='number'],
+input[type='date'],
 input[type='checkbox'] + label,
-input[type='radio'] + label {
-  position: relative;
+input[type='radio'] + label,
+select,
+textarea {
   background-color: transparent;
-  display: inline-block;
+  cursor: pointer;
+  display: inline-flex;
   margin: 0;
   border: 0;
   padding: 0;
-  font-size: var(--font-large);
-  outline: none;
-}
-
-/* img */
-img {
-  position: relative;
-  display: block;
-  margin: auto;
-  height: 100%;
-}
-
-/* pre */
-pre {
-  font-family: D2Coding;
-}
-
-/* ::spelling-error off */
-input::spelling-error,
-textarea::spelling-error {
-  text-decoration: none;
-}
-
-/* button */
-button {
-  position: relative;
-  display: inline-block;
-  margin: 0;
-  border: 0;
-  padding: 0;
-  background: transparent;
-  color: inherit;
   font-size: var(--font-large);
   font-weight: 700;
   outline: none;
+  transition: 0.2s;
 }
+
+a {
+  text-decoration: none;
+}
+a:not(.disable):hover {
+  text-shadow: var(--text-shadow);
+}
+
 button:not(.disable):hover {
   text-shadow: var(--text-shadow);
-  cursor: pointer;
 }
 button > svg {
-  display: inline-flex;
   width: 1.75rem;
 }
 
-/* input checkbox, radio */
-input {
-  outline: none;
+input[type='text'],
+input[type='search'],
+input[type='number'],
+input[type='date'] {
+  padding: 0.25rem 0;
+  text-align: center;
 }
+
 input[type='checkbox'],
 input[type='radio'] {
   position: absolute;
@@ -92,14 +75,9 @@ input[type='radio'] {
   padding: 0;
   clip: rect(0, 0, 0, 0);
 }
-input[type='checkbox'] + label,
-input[type='radio'] + label {
-  cursor: pointer;
-}
 input[type='checkbox'] + label:hover,
 input[type='radio'] + label:hover {
   text-shadow: var(--text-shadow);
-  transition: 0.4s;
 }
 input[type='checkbox']:checked + label,
 input[type='radio']:checked + label {
@@ -107,85 +85,64 @@ input[type='radio']:checked + label {
 }
 input[type='checkbox'] + label > svg,
 input[type='radio'] + label > svg {
-  display: inline-block;
   height: var(--font-large);
   width: var(--font-large);
 }
 
-/* input text, search, textarea  */
-input[type='text'],
-input[type='search'],
-input[type='number'],
-input[type='date'],
-textarea {
-  position: relative;
-  background-color: transparent;
-  color: var(--color-text);
-  margin: 0;
-  border: 0;
-  padding: 0.25rem 0;
-  font-family: 'Malgun Gothic';
-  font-size: var(--font-large);
-  text-align: center;
-}
-
-/* textarea */
-textarea {
-  width: 100%;
-}
-
-/* select */
 select {
-  position: relative;
-  background-color: var(--color-bg);
-  color: var(--color-text);
-  margin: 0;
-  border: 0;
   padding: 0.25rem 0;
-  font-size: var(--font-large);
-  outline: none;
 }
 select option {
-  position: relative;
-  background-color: var(--color-bg);
-  color: var(--color-text);
   font-size: var(--font-normal);
 }
 
-/* label */
+textarea {
+  padding: 0.25rem 0;
+  width: 100%;
+}
+
+img {
+  position: relative;
+  display: block;
+  margin: auto;
+  height: 100%;
+}
+
+pre {
+  font-family: D2Coding;
+}
+
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
 label {
+  font-size: var(--font-large);
   font-weight: 700;
 }
 
-/* a */
-a {
-  font-weight: 700;
-}
-a {
+input::spelling-error,
+textarea::spelling-error {
   text-decoration: none;
-  color: inherit;
-  outline: none;
-}
-a:not(.disable):hover {
-  cursor: pointer;
-  text-shadow: var(--text-shadow);
 }
 
-/* class */
 .disable {
-  color: var(--color-text-secondary);
+  color: var(--color-text-secondary) !important;
+  cursor: initial !important;
 }
 .error {
-  color: var(--color-text-danger);
+  color: var(--color-text-danger) !important;
 }
 
-/* badge */
 i.badge {
   float: right;
   margin: 0 0 0 0.25rem;
   font-size: var(--font-small);
   font-style: normal;
-  font-weight: normal;
+  font-weight: 400;
 }
 
 /* 커스텀 엘리먼트 small 모드 */

@@ -129,7 +129,6 @@ async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElemen
 }
 
 const CSS = `
-/* for FlayTag */
 div.tag {
   padding-bottom: 1rem;
 }
@@ -143,7 +142,6 @@ div.tag .tag-list {
 div.tag .tag-list label {
   font-size: var(--font-normal);
   padding: 0.25rem;
-  transition: 0.2s;
 }
 div.tag .tag-list label:hover {
   box-shadow: var(--box-shadow-small);
@@ -154,18 +152,15 @@ div.tag .tag-list .tag-new-btn {
 }
 div.tag .tag-new {
   display: none;
+  text-align: center;
 }
 div.tag .tag-new.show {
   display: block;
 }
 div.tag .tag-new input {
-  background-color: transparent;
-  color: var(--color-text);
   margin: 0.25rem;
   border: 0;
   padding: 0.25rem;
-  font-size: var(--font-large);
-  text-align: center;
 }
 div.tag.small input:not(:checked) + label {
   display: none;

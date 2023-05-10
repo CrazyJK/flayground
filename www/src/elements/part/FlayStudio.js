@@ -42,7 +42,6 @@ export default class FlayStudio extends HTMLElement {
 customElements.define('flay-studio', FlayStudio);
 
 const CSS = `
-/* for FlayStudio */
 div.studio {
   text-align:center;
 }

@@ -41,7 +41,6 @@ export default class FlayOpus extends HTMLElement {
 customElements.define('flay-opus', FlayOpus);
 
 const CSS = `
-/* for FlayOpus */
 div.opus {
   text-align: center;
 }

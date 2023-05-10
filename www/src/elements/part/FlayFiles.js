@@ -153,15 +153,11 @@ function getPrettyFilesize(length) {
 }
 
 const CSS = `
-/* for FlayFiles */
 div.files > div.info {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  align-items: center;
-}
-div.files > div.info > .files-btn {
-  display: inline-flex;
+  align-items: flex-end;
 }
 div.files > div.list {
   display: none;

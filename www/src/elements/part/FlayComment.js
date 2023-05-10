@@ -86,20 +86,12 @@ export default class FlayComment extends HTMLElement {
 customElements.define('flay-comment', FlayComment);
 
 const CSS = `
-/* for FlayComment */
 div.comment {
   text-align: center;
 }
 div.comment input {
-  position: relative;
-  display: block;
-  background-color: transparent;
-  color: var(--color-text);
-  margin: 0;
-  border: 0;
   padding: 0.25rem 0;
   width: 100%;
-  font-size: var(--font-large);
   text-align: center;
 }
 div.comment .placeholder {

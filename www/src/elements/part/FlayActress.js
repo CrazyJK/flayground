@@ -118,19 +118,14 @@ export default class FlayActress extends HTMLElement {
 customElements.define('flay-actress', FlayActress);
 
 const CSS = `
-/* for FlayActress */
 div.actress > div {
   display: flex;
   justify-content: space-between;
-  align-items: center;
   gap: 0.5rem;
 }
 div.actress > div > span {
   margin-top: 0.25rem;
   margin-left: 0.25rem;
-}
-div.actress > div > span > label {
-  display: inline-flex;
 }
 div.actress > div > label {
   text-align: center;
@@ -138,6 +133,7 @@ div.actress > div > label {
 }
 div.actress .name {
   flex: 1 1 auto;
+  white-space: nowrap;
 }
 div.actress .localName {
   flex: 0 1 auto;

@@ -44,7 +44,6 @@ export default class FlayTitle extends HTMLElement {
 customElements.define('flay-title', FlayTitle);
 
 const CSS = `
-/* for FlayTitle */
 div.title {
   text-align: center;
 }
@@ -57,6 +56,7 @@ div.title label {
   max-width: 100%;
 }
 div.title label a {
+  display: inline;
   font-size: var(--font-largest);
 }
 `;

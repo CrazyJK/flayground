@@ -17,9 +17,10 @@ export default class FlayNav extends HTMLElement {
     wrapper.classList.add('nav');
     this.shadowRoot.append(LINK, STYLE, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    const HEADER_IMG = wrapper.appendChild(document.createElement('img'));
-    HEADER_IMG.src = './img/svg/flayground-text.svg';
-    HEADER_IMG.addEventListener('click', () => {
+    const HEADER = wrapper.appendChild(document.createElement('header'));
+    const home = HEADER.appendChild(document.createElement('a'));
+    home.innerHTML = 'flayground';
+    home.addEventListener('click', () => {
       location.href = 'index.html';
     });
 
@@ -28,7 +29,7 @@ export default class FlayNav extends HTMLElement {
     ['page', 'search', 'batch', 'candidate', 'tag'].forEach((menu, index) => {
       const LI = MENU_LIST.appendChild(document.createElement('li'));
       const ANKER = LI.appendChild(document.createElement('a'));
-      ANKER.innerHTML = menu.toLocaleUpperCase();
+      ANKER.innerHTML = menu;
       ANKER.addEventListener('click', (e) => {
         console.log('anker click', menu);
         MENU_LIST.childNodes.forEach((child) => {
@@ -117,32 +118,34 @@ div.nav {
   flex-direction: column;
   flex-wrap: nowrap;
 }
-div.nav > img {
-  margin: 0.25rem 0.5rem;
-  height: auto;
-}
-div.nav > ul {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 0.5rem;
-}
-div.nav > ul > li {
-  padding: 0 1rem 0.5rem;
-  text-align: left;
-}
-div.nav > ul > li.active {
-  color: var(--color-checked);
+div.nav > header > a {
+  padding: 0.5rem 1rem 1rem;
+  font-family: 'Ink Free';
+  font-size: var(--font-largest);
+  text-transform: capitalize;
 }
 div.nav > ul:nth-child(2) {
   margin-bottom: auto;
+}
+div.nav > ul > li {
+  padding: 0.25rem 1rem;
+  text-align: left;
+}
+div.nav > ul > li > a {
+  font-family: 'Ink Free';
+  text-transform: capitalize;
+}
+div.nav > ul > li.active > a {
+  color: var(--color-checked);
 }
 div.nav > ul > li > .theme-group {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  margin: 0.5rem 0;
 }
-div.nav > ul > li > .theme-group label svg {
-  width: 2rem;
-  height: 2rem;
+div.nav > ul > li > .theme-group > label > svg {
+  width: 1.5rem;
+  height: 1.5rem;
 }
 `;

@@ -111,7 +111,10 @@ export default class FlayCard extends HTMLElement {
       });
 
     let domRect = this.getBoundingClientRect();
-    this.wrapper.classList.toggle('small', domRect.width < 600);
+    let isSmall = domRect.width < 600;
+
+    this.wrapper.classList.toggle('small', isSmall);
+    this.flayCover.classList.toggle('small', isSmall);
   }
 
   /**

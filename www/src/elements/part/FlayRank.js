@@ -82,6 +82,7 @@ export default class FlayRank extends HTMLElement {
     this.likeBtn.classList.toggle('disable', likeCount === '');
 
     this.scoreLabel.innerHTML = 'Score<i class="badge">' + flay.score + '</i>';
+    this.scoreLabel.classList.toggle('disable', flay.score === 0);
   }
 }
 
@@ -89,7 +90,6 @@ export default class FlayRank extends HTMLElement {
 customElements.define('flay-rank', FlayRank);
 
 const CSS = `
-/* for FlayRank */
 div.rank {
   display: flex;
   gap: 1rem;

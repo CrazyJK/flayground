@@ -54,7 +54,6 @@ function dateFormat(time) {
 }
 
 const CSS = `
-/* for FlayRelease */
 div.release {
   display: flex;
   gap: 1rem;

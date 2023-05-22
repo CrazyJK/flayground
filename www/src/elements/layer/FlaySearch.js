@@ -131,9 +131,10 @@ export default class FlaySearch extends HTMLElement {
     // 요소 이벤트
     [studio, opus, title, actress, release].forEach((input) => {
       input.addEventListener('keyup', (e) => {
-        actressName.value = e.target.value.trim();
         if (e.target.id === 'title') {
           e.target.value = e.target.value.trim().replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：').replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂').replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
+        } else if (e.target.id === 'actress') {
+          actressName.value = e.target.value.trim();
         } else if (e.target.id === 'release') {
           const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
           e.target.value = release.value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
@@ -295,6 +296,7 @@ const CSS = `
 .flay-search {
   border: 1px solid #000;
   padding: 1rem;
+  width: 900px;
 }
 
 .flay-search > div.search-group {
@@ -316,6 +318,7 @@ const CSS = `
 .flay-search .checkbox {
   background: #0004;
   color: var(--color-text);
+  cursor: initial !important;
   margin: 1px 2px;
   border: 0;
   border-radius: 2px;

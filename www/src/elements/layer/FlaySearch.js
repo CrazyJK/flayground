@@ -88,7 +88,7 @@ export default class FlaySearch extends HTMLElement {
             .then((res) => res.json())
             .then((foundStudio) => (studio.value = foundStudio.name));
           // searching Arzon
-          Search.opusByArzon(inOpus);
+          Search.opus.Arzon(inOpus);
           // set opus
           opus.value = inOpus;
         }
@@ -110,14 +110,15 @@ export default class FlaySearch extends HTMLElement {
                   actressDebut.value = list[0].debut;
                 } else {
                   actressLocalname.value = localname;
-                  Search.actress(localname);
+                  Search.actress.Minnano(localname);
                 }
               });
           });
         }
         // call translate
         if (inputTitle.value !== '' || inputDesc.value !== '') {
-          Search.translateByPapago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
+          Search.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
+          Search.translate.DeepL(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
         }
       });
     });

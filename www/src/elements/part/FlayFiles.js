@@ -36,7 +36,7 @@ export default class FlayFiles extends HTMLElement {
       if (this.flay.files.subtitles.length > 0) {
         FlayAction.editSubtitles(this.flay.opus);
       } else {
-        Search.subtitles(this.flay.opus);
+        Search.subtitles.Subtitlecat(this.flay.opus);
       }
     });
 

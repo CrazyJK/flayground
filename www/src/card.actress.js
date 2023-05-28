@@ -83,7 +83,7 @@ saveBtn.addEventListener('click', () => {
   });
 });
 
-findBtn.addEventListener('click', (e) => Search.actress(localName.value));
+findBtn.addEventListener('click', (e) => Search.actress.Minnano(localName.value));
 
 addResizeLazyEventListener(() => {
   flayMap.forEach((flayCard) => {

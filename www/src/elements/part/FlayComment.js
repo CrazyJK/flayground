@@ -32,7 +32,8 @@ export default class FlayComment extends HTMLElement {
       if (this.flay.video.title == null || this.flay.video.title === '') {
         return;
       }
-      Search.translateByPapago(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
+      Search.translate.Papago(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
+      Search.translate.DeepL(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
     });
 
     this.comment = this.div.appendChild(document.createElement('a'));

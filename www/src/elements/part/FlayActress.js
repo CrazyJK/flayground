@@ -21,17 +21,21 @@ export default class FlayActress extends HTMLElement {
     this.actressList = null;
   }
 
+  resize() {
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+  }
+
   /**
    *
    * @param {Flay} flay
    * @param {Actress[]} actressList
    */
   set(flay, actressList) {
+    this.resize();
     this.flay = flay;
     this.actressList = actressList;
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
     this.wrapper.textContent = null;
 
     actressList.forEach((actress, index) => {

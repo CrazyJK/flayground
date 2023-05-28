@@ -5,6 +5,7 @@ import Search from './util/Search';
 import flayAction from './util/flay.action';
 import './util/flay.sse';
 import './util/theme.listener';
+import { addResizeLazyEventListener } from './util/windowResize';
 
 const urlParams = new URL(location.href).searchParams;
 const actressName = urlParams.get('name');
@@ -83,6 +84,12 @@ saveBtn.addEventListener('click', () => {
 });
 
 findBtn.addEventListener('click', (e) => Search.actress(localName.value));
+
+addResizeLazyEventListener(() => {
+  flayMap.forEach((flayCard) => {
+    flayCard.resize();
+  });
+});
 
 function calcAge(birth) {
   if (birth === null || birth.trim().length === 0) {

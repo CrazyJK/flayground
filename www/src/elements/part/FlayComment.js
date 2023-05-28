@@ -62,15 +62,19 @@ export default class FlayComment extends HTMLElement {
     });
   }
 
+  resize() {
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+  }
+
   /**
    *
    * @param {Flay} flay
    */
   set(flay) {
+    this.resize();
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     let comment = flay.video.comment === null ? '' : flay.video.comment.trim();
     let blank = comment === '';

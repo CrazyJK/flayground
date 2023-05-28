@@ -58,6 +58,7 @@ export default class FlayCard extends HTMLElement {
 
     this.opus = opus;
     this.setAttribute('opus', opus);
+    this.resize();
 
     fetch('/flay/' + opus + '/fully')
       .then((res) => res.json())
@@ -109,12 +110,6 @@ export default class FlayCard extends HTMLElement {
 
         this.setAttribute('rank', flay.video.rank);
       });
-
-    let domRect = this.getBoundingClientRect();
-    let isSmall = domRect.width < 600;
-
-    this.wrapper.classList.toggle('small', isSmall);
-    this.flayCover.classList.toggle('small', isSmall);
   }
 
   /**
@@ -122,6 +117,24 @@ export default class FlayCard extends HTMLElement {
    */
   reload() {
     this.set(this.opus);
+  }
+
+  resize() {
+    let domRect = this.getBoundingClientRect();
+    let isSmall = domRect.width < 600;
+
+    this.wrapper.classList.toggle('small', isSmall);
+
+    this.flayCover.resize();
+    this.flayTitle.resize();
+    this.flayStudio.resize();
+    this.flayOpus.resize();
+    this.flayComment.resize();
+    this.flayActress.resize();
+    this.flayFiles.resize();
+    this.flayRank.resize();
+    this.flayRelease.resize();
+    this.flayTag.resize();
   }
 }
 

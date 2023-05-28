@@ -3,6 +3,7 @@ import FlayCard from './elements/card/FlayCard';
 import flayAction from './util/flay.action';
 import './util/flay.sse';
 import './util/theme.listener';
+import { addResizeLazyEventListener } from './util/windowResize';
 
 const urlParams = new URL(location.href).searchParams;
 const id = urlParams.get('id');
@@ -52,6 +53,12 @@ delBtn.addEventListener('click', () => {
   if (confirm('A U sure?')) {
     flayAction.deleteTag(tagId.textContent, tagName.value, tagDesc.value);
   }
+});
+
+addResizeLazyEventListener(() => {
+  flayMap.forEach((flayCard) => {
+    flayCard.resize();
+  });
 });
 
 async function renderFlayCardList(opusList) {

@@ -3,6 +3,7 @@ import FlayCard from './elements/card/FlayCard';
 import flayAction from './util/flay.action';
 import './util/flay.sse';
 import './util/theme.listener';
+import { addResizeLazyEventListener } from './util/windowResize';
 
 const urlParams = new URL(location.href).searchParams;
 const name = urlParams.get('name');
@@ -45,6 +46,12 @@ flayRank.addEventListener('change', (e) => {
 
 saveBtn.addEventListener('click', () => {
   flayAction.putStudio(studioName.value, studioCompany.value, studioHomepage.value);
+});
+
+addResizeLazyEventListener(() => {
+  flayMap.forEach((flayCard) => {
+    flayCard.resize();
+  });
 });
 
 async function renderFlayCardList(opusList) {

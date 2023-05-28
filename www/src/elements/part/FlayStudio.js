@@ -20,8 +20,12 @@ export default class FlayStudio extends HTMLElement {
     this.studio.addEventListener('click', () => {
       console.log('studioClick', this.flay.studio);
       // window.open('/info/studio/' + this.flay.studio, this.flay.studio, 'width=640px,height=800px');
-      window.open('card.studio.html?name=' + this.flay.studio, this.flay.studio, 'width=640px,height=800px');
+      window.open('card.studio.html?name=' + this.flay.studio, this.flay.studio, 'width=960px,height=1200px');
     });
+  }
+
+  resize() {
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
   }
 
   /**
@@ -29,10 +33,10 @@ export default class FlayStudio extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
+    this.resize();
     this.flay = flay;
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.studio.textContent = flay.studio;
   }

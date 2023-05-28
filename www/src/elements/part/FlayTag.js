@@ -45,15 +45,19 @@ export default class FlayTag extends HTMLElement {
     });
   }
 
+  resize() {
+    this.wrapper.classList.toggle('small', this.classList.contains('small') || this.parentElement?.classList.contains('small'));
+  }
+
   /**
    *
    * @param {Flay} flay
    */
   set(flay) {
+    this.resize();
     this.flay = flay;
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small') || this.classList.contains('small'));
 
     fetchTag(this.flay, this.tagInputElementArray, this.tagListElement, this.tagNewElement, this.tagNewInput)
       .then(() => {

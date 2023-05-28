@@ -25,15 +25,19 @@ export default class FlayRelease extends HTMLElement {
     this.lastPlayLabel.classList.add('played-label');
   }
 
+  resize() {
+    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+  }
+
   /**
    *
    * @param {Flay} flay
    */
   set(flay) {
+    this.resize();
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
 
     this.releaseLabel.textContent = flay.release;
     this.lastModifiedLabel.innerHTML = flay.lastModified > 0 ? '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>' : '';

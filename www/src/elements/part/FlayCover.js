@@ -18,6 +18,8 @@ export default class FlayCover extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
+    this.isSamll = false;
+
     this.wrapper.addEventListener('click', (e) => {
       e.target.classList.toggle('contain');
     });
@@ -29,23 +31,27 @@ export default class FlayCover extends HTMLElement {
     }
   }
 
+  resize() {
+    this.isSmall = this.classList.contains('small') || this.parentElement?.classList.contains('small');
+    this.wrapper.classList.toggle('small', this.isSmall);
+    this.colorWrapper.classList.toggle('hide', this.isSmall);
+  }
+
   /**
    *
    * @param {Flay} flay
    */
   set(flay) {
+    this.resize();
     this.flay = flay;
 
     let url = `/static/cover/${flay.opus}`;
-    let isSmall = this.classList.contains('small') || this.parentElement?.classList.contains('small');
 
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.classList.toggle('small', isSmall);
     this.wrapper.style.backgroundImage = `url(${url})`;
 
-    this.colorWrapper.classList.toggle('hide', isSmall);
-    if (!isSmall) {
+    if (!this.isSmall) {
       // 대표색상 추출
       let savedDominatedColors = FlayStorage.session.getObject('dominatedColor_' + flay.opus, null);
       if (savedDominatedColors == null) {

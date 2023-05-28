@@ -81,7 +81,7 @@ export default class TagLayer extends HTMLElement {
             let tagName = nameLabel.appendChild(document.createElement('a'));
             tagName.innerHTML = tag.name;
             tagName.addEventListener('click', (e) => {
-              window.open('card.tag.html?id=' + tag.id, 'tag' + tag.id, 'width=800px,height=1200px');
+              window.open('card.tag.html?id=' + tag.id, 'tag' + tag.id, 'width=960px,height=1200px');
             });
             let tagEdit = nameLabel.appendChild(document.createElement('a'));
             tagEdit.innerHTML = SVG.edit;

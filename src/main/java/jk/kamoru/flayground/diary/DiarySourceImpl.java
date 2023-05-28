@@ -14,6 +14,7 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.core.StreamReadConstraints;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -35,11 +36,15 @@ public class DiarySourceImpl implements DiarySource {
   ObjectMapper jsonReader = new ObjectMapper();
   ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
+  StreamReadConstraints streamReadConstraints = StreamReadConstraints.builder().maxStringLength(Integer.MAX_VALUE).build();
+
   Map<String, Diary> diaryMap = new TreeMap<>();
 
   @PostConstruct
   void load() {
     diaryMap.clear();
+
+    jsonReader.getFactory().setStreamReadConstraints(streamReadConstraints);
 
     Collection<File> listFiles = FileUtils.listFiles(getDiaryPathFile(), new String[] { DIARY }, false);
     log.info(String.format("%5s %-7s - %s", listFiles.size(), DIARY, getDiaryPathFile()));

@@ -1,7 +1,7 @@
 package jk.kamoru.flayground.info.source;
 
 import java.io.File;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -24,8 +24,8 @@ public class VideoInfoSource extends InfoSourceJsonAdapter<Video, String> {
   }
 
   @Override
-  TypeReference<List<Video>> getTypeReference() {
-    return new TypeReference<List<Video>>() {
+  TypeReference<CopyOnWriteArrayList<Video>> getTypeReference() {
+    return new TypeReference<CopyOnWriteArrayList<Video>>() {
     };
   }
 

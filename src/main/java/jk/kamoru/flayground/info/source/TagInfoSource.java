@@ -1,7 +1,7 @@
 package jk.kamoru.flayground.info.source;
 
 import java.io.File;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -24,8 +24,8 @@ public class TagInfoSource extends InfoSourceJsonAdapter<Tag, Integer> {
   }
 
   @Override
-  TypeReference<List<Tag>> getTypeReference() {
-    return new TypeReference<List<Tag>>() {
+  TypeReference<CopyOnWriteArrayList<Tag>> getTypeReference() {
+    return new TypeReference<CopyOnWriteArrayList<Tag>>() {
     };
   }
 

@@ -2,6 +2,7 @@ package jk.kamoru.flayground.info.source;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -30,8 +31,8 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
   }
 
   @Override
-  TypeReference<List<Actress>> getTypeReference() {
-    return new TypeReference<List<Actress>>() {
+  TypeReference<CopyOnWriteArrayList<Actress>> getTypeReference() {
+    return new TypeReference<CopyOnWriteArrayList<Actress>>() {
     };
   }
 

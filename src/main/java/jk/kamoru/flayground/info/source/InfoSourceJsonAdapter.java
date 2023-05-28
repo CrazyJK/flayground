@@ -2,7 +2,7 @@ package jk.kamoru.flayground.info.source;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -22,12 +22,13 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> extends InfoSo
 
   /**
    * json 변환 type reference
-   * 
+   *
    * @return
    */
-  abstract TypeReference<List<T>> getTypeReference();
+  abstract TypeReference<CopyOnWriteArrayList<T>> getTypeReference();
 
-  void extraInfoLoad() {}
+  void extraInfoLoad() {
+  }
 
   @PostConstruct
   void load() {

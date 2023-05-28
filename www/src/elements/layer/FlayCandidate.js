@@ -38,6 +38,7 @@ export default class FlayCandidate extends HTMLElement {
               flayAction.acceptCandidates(flay.opus, () => {
                 DIV.remove();
                 LIST.insertBefore(ITEM, null);
+                BTN.removeEventListener('click');
               });
             });
             const DIV = ITEM.appendChild(document.createElement('div'));

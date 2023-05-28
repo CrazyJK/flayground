@@ -14,6 +14,7 @@ module.exports = {
     'card.tag': './src/card.tag.js',
     'kamoru.diary': './src/kamoru.diary.js',
     'find.subtitles': './src/find.subtitles.js',
+    'shot.history': './src/shot.history.js',
   },
   devtool: 'source-map',
   devServer: {

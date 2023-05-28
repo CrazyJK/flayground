@@ -37,7 +37,7 @@ public class HistoryServiceImpl implements HistoryService {
 
   @Override
   public List<History> findByAction(Action action) {
-    return historyRepository.list().stream().filter(h -> h.getAction() == action).sorted((h1, h2) -> StringUtils.compare(h1.getDate(), h2.getDate())).toList();
+    return historyRepository.list().stream().filter(h -> h.getAction() == action).sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate())).toList();
   }
 
   @Override

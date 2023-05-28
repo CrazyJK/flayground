@@ -1,0 +1,40 @@
+@import './css/style.scss';
+@import './css/layout.card.scss';
+
+main {
+  div {
+    background-color: #0004;
+    margin: 1rem;
+    border-radius: 0.5rem;
+    padding: 0;
+
+    label {
+      background-color: transparent;
+      font-size: var(--font-largest);
+      padding: 0.25rem 0.5rem;
+    }
+    div {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      background: transparent;
+      margin: 0;
+      border: 0;
+      padding: 0.75rem;
+
+      flay-card {
+        width: 400px;
+
+        &.shot {
+          box-shadow: 0 0 1rem 0.125rem #f00;
+        }
+      }
+    }
+  }
+}
+
+#next {
+  display: block;
+  width: 100%;
+  padding: 0.25rem 0 1rem;
+}

@@ -318,7 +318,6 @@ const CSS = `
 .flay-search .checkbox {
   background: #0004;
   color: var(--color-text);
-  cursor: initial !important;
   margin: 1px 2px;
   border: 0;
   border-radius: 2px;
@@ -326,6 +325,11 @@ const CSS = `
   outline: none;
   font: normal 16px D2Coding;
   text-align: left !important;
+}
+
+.flay-search input,
+.flay-search textarea {
+  cursor: initial !important;
 }
 
 .input-invalid {

@@ -83,7 +83,7 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
     c1.setTime(d1);
     Calendar c2 = Calendar.getInstance();
     c2.setTime(d2);
-    return c1.get(Calendar.YEAR) == c1.get(Calendar.YEAR) && c1.get(Calendar.MONTH) == c1.get(Calendar.MONTH) && c1.get(Calendar.DAY_OF_MONTH) == c1.get(Calendar.DAY_OF_MONTH);
+    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
   }
 
   public void toggleTag(String opus, Tag tag, boolean checked) {

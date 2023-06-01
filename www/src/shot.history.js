@@ -1,7 +1,6 @@
+import FlayCard from './elements/card/FlayCard';
 import './shot.history.scss';
 import './util/theme.listener';
-// import FlayAction from './util/flay.action';
-import FlayCard from './elements/card/FlayCard';
 
 let i = 0;
 
@@ -43,7 +42,7 @@ async function render(date, list) {
   console.debug('render', date, list);
   let div = MAIN.appendChild(document.createElement('div'));
   let label = div.appendChild(document.createElement('label'));
-  label.textContent = date;
+  label.textContent = date + ' ' + new Intl.DateTimeFormat('ko-KR', { weekday: 'short' }).format(new Date(date));
   let cardDiv = div.appendChild(document.createElement('div'));
   for (let h of list) {
     console.debug('history', h.opus, h);

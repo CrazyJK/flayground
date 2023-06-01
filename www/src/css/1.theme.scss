@@ -1,57 +1,87 @@
-[theme='dark'] {
-  --color-bg: #242424;
-  --color-bg-notice: #111;
-  --color-bg-cover: #111;
-  --color-bg-hover: #444;
-
-  --color-text: #eee;
-  --color-text-secondary: #888;
-  --color-text-placeholder: #aaa;
-  --color-text-danger: #f00;
-
-  --color-checked: orange;
-
-  --color-border: #111;
-  --color-border-active: orange;
-
-  --box-shadow: 0 2px 16px 4px #000;
-  --box-shadow-small: 0 2px 8px 2px #0008;
-
-  --text-shadow: 1px 1px 2px #444;
-  --text-shadow-hover: 1px 1px 2px orange;
-}
-
-[theme='light'] {
-  --color-bg: #fff;
-  --color-bg-notice: #ccc;
-  --color-bg-cover: #ccc;
-  --color-bg-hover: #aaa;
-
-  --color-text: #242424;
-  --color-text-secondary: #888;
-  --color-text-placeholder: #555;
-  --color-text-danger: #f00;
-
-  --color-checked: orange;
-
-  --color-border: #ddd;
-  --color-border-active: orange;
-
-  --box-shadow: 0 2px 16px 4px #000;
-  --box-shadow-small: 0 2px 8px 2px #0008;
-
-  --text-shadow: 1px 1px 2px #aaa;
-  --text-shadow-hover: 1px 1px 2px orange;
-}
-
+// font size
 :root {
   --font-smallest: 0.7rem;
   --font-small: 0.875rem;
   --font-normal: 1rem;
   --font-large: 1.25rem;
   --font-largest: 1.5rem;
+}
 
+// border-radius
+:root {
   --border-radius: 0.125rem;
+}
 
+// custom definition
+:root {
   --cover-aspect-ratio: 400 / 269;
+}
+
+// color definition
+:root {
+  --color-orange: #ffa500;
+  --color-red: #ff0000;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --color-black-alpha-light: #00000044;
+  --color-black-alpha-dark: #00000088;
+
+  --color-light: #eeeeee;
+  --color-light-dark: #dddddd;
+
+  --color-dark: #242424;
+  --color-dark-light: #555555;
+  --color-dark-dark: #111111;
+
+  --color-gray: #808080;
+  --color-gray-light: #cccccc;
+  --color-gray-dark: #aaaaaa;
+}
+
+// light theme
+:root {
+  --color-bg: var(--color-white);
+  --color-bg-notice: var(--color-gray-light);
+  --color-bg-cover: var(--color-gray-light);
+  --color-bg-hover: var(--color-gray-dark);
+
+  --color-text: var(--color-dark);
+  --color-text-secondary: var(--color-gray);
+  --color-text-placeholder: var(--color-dark-light);
+  --color-text-danger: var(--color-red);
+
+  --color-checked: var(--color-orange);
+
+  --color-border: var(--color-light-dark);
+  --color-border-active: var(--color-orange);
+
+  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
+  --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
+
+  --text-shadow: 1px 1px 2px var(--color-gray-dark);
+  --text-shadow-hover: 1px 1px 2px var(--color-orange);
+}
+
+// dark theme
+[theme='dark'] {
+  --color-bg: var(--color-dark);
+  --color-bg-notice: var(--color-dark-dark);
+  --color-bg-cover: var(--color-dark-dark);
+  --color-bg-hover: var(--color-dark-light);
+
+  --color-text: var(--color-light);
+  --color-text-secondary: var(--color-gray);
+  --color-text-placeholder: var(--color-gray-dark);
+  --color-text-danger: var(--color-red);
+
+  --color-checked: var(--color-orange);
+
+  --color-border: var(--color-dark-dark);
+  --color-border-active: var(--color-orange);
+
+  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
+  --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
+
+  --text-shadow: 1px 1px 2px var(--color-dark-light);
+  --text-shadow-hover: 1px 1px 2px var(--color-orange);
 }

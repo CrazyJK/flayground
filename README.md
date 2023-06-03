@@ -6,6 +6,7 @@ flay ground
 
 ```
 cd www
+del -Recurse -Force ..\src\main\resources\static\dist\*
 yarn run watch
 or
 yarn run build

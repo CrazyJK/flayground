@@ -2,6 +2,7 @@ const URL_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
 const URL_AVNORI = 'https://avnori6.com/bbs/search.php?search_flag=search&stx=';
 const URL_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
 const URL_NEXTJAV = 'https://nextjav.com/torrent/detail/';
+const URL_NEXTJAV_DOWNLOAD = 'https://nextjav.com/save/{}/nextjav-torrent-{}.torrent';
 const URL_MINNANO = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
 const URL_GOOGLE = 'https://www.google.co.kr/search?q=';
 const URL_SUBTITLECAT = 'https://www.subtitlecat.com/index.php?search=';
@@ -32,6 +33,11 @@ export default {
   torrent: {
     Nextjav(keyword) {
       popupOpen(URL_NEXTJAV + keyword, 'nextjavSearch', 800, 1000);
+    },
+    Download(opus) {
+      let url = URL_NEXTJAV_DOWNLOAD.replace(/{}/gi, opus);
+      window.navigator.clipboard.writeText(url);
+      popupOpen(url, 'nextjavDownload', 800, 100);
     },
     Google(keyword) {
       popupOpen(URL_GOOGLE + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);

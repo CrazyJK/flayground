@@ -65,7 +65,7 @@ async function renderFlayCardList(opusList) {
   document.querySelector('article').textContent = null;
   flayMap.clear();
   for (let opus of opusList) {
-    let flayCard = new FlayCard({ excludes: ['FlayActress', 'FlayTag'] });
+    let flayCard = new FlayCard({ excludes: [] });
     flayMap.set(opus, flayCard);
     document.querySelector('article').appendChild(flayCard);
     flayCard.set(opus);

@@ -1,9 +1,17 @@
 @import './css/style.scss';
 @import './css/layout.card.scss';
 
+#tagId {
+  padding: 0.25rem 0.5rem 0;
+}
+
 #tagName {
   flex: 1 1 auto;
 }
 #tagDesc {
   flex: 1 1 auto;
+}
+
+header > div button {
+  display: initial;
 }

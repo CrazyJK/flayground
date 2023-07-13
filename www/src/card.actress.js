@@ -109,7 +109,7 @@ async function renderFlayCardList(opusList) {
     document.querySelector('article').appendChild(flayCard);
     flayCard.set(opus);
 
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 100));
   }
 }
 

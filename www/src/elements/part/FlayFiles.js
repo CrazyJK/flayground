@@ -26,7 +26,11 @@ export default class FlayFiles extends HTMLElement {
     this.movieBtn = this.infoDiv.appendChild(document.createElement('button'));
     this.movieBtn.addEventListener('click', (e) => {
       console.log('playClick', this.flay.opus);
-      if (this.flay.files.movie.length > 0) FlayAction.play(this.flay.opus);
+      if (this.flay.files.movie.length > 0) {
+        FlayAction.play(this.flay.opus);
+      } else {
+        Search.torrent.Download(this.flay.opus);
+      }
     });
 
     this.subBtn = this.infoDiv.appendChild(document.createElement('button'));
@@ -210,6 +214,9 @@ div.files > div.list > div.rename-flay > input#actress {
 div.files > div.list > div.rename-flay > input#release {
   flex: 0 0 auto;
   width: 4rem;
+}
+div.files > div.list > div.rename-flay > input {
+  cursor: auto;
 }
 div.files > div.list > div.rename-flay > input,
 div.files > div.list > div.rename-flay > button {

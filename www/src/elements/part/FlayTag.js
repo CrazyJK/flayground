@@ -167,6 +167,9 @@ div.tag .tag-new input {
   border: 0;
   padding: 0.25rem;
 }
+div.tag.small {
+  padding: 0;
+}
 div.tag.small input:not(:checked) + label {
   display: none;
 }

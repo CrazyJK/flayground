@@ -2,13 +2,6 @@
   "configurations": [
     {
       "type": "java",
-      "name": "VideoInfoService",
-      "request": "launch",
-      "mainClass": "jk.kamoru.flayground.info.service.VideoInfoService",
-      "projectName": "flayground"
-    },
-    {
-      "type": "java",
       "name": "flayground",
       "request": "launch",
       "cwd": "${workspaceFolder}",

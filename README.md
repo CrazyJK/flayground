@@ -56,3 +56,7 @@ https://www.freecodecamp.org/korean/news/git-delete-local-or-remote-branch/
     # 삭제
     > git push origin -d <원격 브랜치 이름>
     ex) git push origin -d springboot3
+
+## Swagger
+
+/swagger-ui/index.html

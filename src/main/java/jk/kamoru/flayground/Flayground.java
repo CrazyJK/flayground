@@ -139,6 +139,10 @@ public class Flayground implements AsyncConfigurer {
     public static void run() {
       final int taskLength = finalTasks.size();
 
+      if (taskLength  == 0) {
+        return;
+      }
+
       ExecutorService finalExecutor = Executors.newFixedThreadPool(taskLength, new ThreadFactory() {
         private final AtomicInteger threadNumber = new AtomicInteger(0);
 

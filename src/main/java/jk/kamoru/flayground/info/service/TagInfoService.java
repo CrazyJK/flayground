@@ -1,6 +1,5 @@
 package jk.kamoru.flayground.info.service;
 
-import org.apache.commons.lang3.math.NumberUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,7 +18,7 @@ public class TagInfoService extends InfoServiceAdapter<Tag, Integer> {
   }
 
   private Integer getNextId() {
-    return list().stream().max((t1, t2) -> NumberUtils.compare(t1.getId(), t2.getId())).get().getId() + 1;
+    return list().stream().mapToInt(x -> x.getId()).max().orElse(0) + 1;
   }
 
   @Override

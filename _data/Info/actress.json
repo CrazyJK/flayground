@@ -1,1 +1,12 @@
-[]
+[ {
+  "favorite" : false,
+  "name" : "Nam Jongkwan",
+  "localName" : "남종관",
+  "birth" : "1976年04月28日",
+  "body" : "",
+  "height" : 164,
+  "debut" : 1995,
+  "comment" : null,
+  "lastModified" : 1689560455501,
+  "coverSize" : 0
+} ]

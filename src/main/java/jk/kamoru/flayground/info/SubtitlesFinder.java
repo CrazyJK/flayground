@@ -16,8 +16,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -37,7 +37,7 @@ public class SubtitlesFinder {
 
   Proxy torProxy = new Proxy(Proxy.Type.SOCKS, new InetSocketAddress("127.0.0.1", 9150));
 
-  @RequestMapping("/file/find/exists/subtitles")
+  @GetMapping("/file/find/exists/subtitles")
   @ResponseBody
   public Map<String, Object> findSubtitls(@RequestParam("opus") String opus) {
     Map<String, Object> result = new HashMap<>();

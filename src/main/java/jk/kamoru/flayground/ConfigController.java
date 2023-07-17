@@ -22,8 +22,15 @@ public class ConfigController {
   public Map<String, Object> show() throws IllegalAccessException, IllegalArgumentException, InvocationTargetException {
     Map<String, Object> propertiesMap = new HashMap<>();
     for (Method method : FlayProperties.class.getMethods()) {
-      if (method.getName().startsWith("get")) {
-        propertiesMap.put(StringUtils.uncapitalize(method.getName().substring(3)), method.invoke(flayProperties));
+      final String methodName = method.getName();
+      if (methodName.startsWith("get")) {
+        String key = StringUtils.uncapitalize(methodName.substring(3));
+        Object val = method.invoke(flayProperties);
+        propertiesMap.put(key, val);
+      } else if (methodName.startsWith("is")) {
+        String key = StringUtils.uncapitalize(methodName.substring(2));
+        Object val = method.invoke(flayProperties);
+        propertiesMap.put(key, val);
       }
     }
     return propertiesMap;

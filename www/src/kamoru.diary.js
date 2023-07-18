@@ -86,14 +86,21 @@ async function fetchDiary() {
 function renderCalendar() {
   let renderingMonthSize = Math.floor(document.querySelector('#diaryCal').clientWidth / (14 * 16));
 
-  let datePart = diaryList[0].date.split('-');
-  let firstYear = parseInt(datePart[0]);
-  let firstMonth = parseInt(datePart[1]) - 1;
-
   const today = new Date();
   const todayYear = today.getFullYear();
   const todayMonth = today.getMonth();
   const todayDay = today.getDate();
+
+  let diaryList0Date;
+  if (diaryList === null || diaryList.length === 0) {
+    diaryList0Date = todayYear + '-' + (todayMonth - 2);
+  } else {
+    diaryList0Date = diaryList[0].date;
+  }
+
+  let datePart = diaryList0Date.split('-');
+  let firstYear = parseInt(datePart[0]);
+  let firstMonth = parseInt(datePart[1]) - 1;
 
   renderingMonthSize = todayYear * 12 + todayMonth - firstYear * 12 - firstMonth;
 

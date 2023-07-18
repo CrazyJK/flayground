@@ -230,7 +230,7 @@ export default class FlayAttach extends HTMLElement {
       fetch('/attach/' + id)
         .then((response) => response.json())
         .then((attach) => this.changeCallback(attach))
-        .catch((error) => console.error('get', error));
+        .catch((error) => console.error('get fetch attach', id, error));
     } else {
       // 신규 첨부 생성
       const formData = new FormData();

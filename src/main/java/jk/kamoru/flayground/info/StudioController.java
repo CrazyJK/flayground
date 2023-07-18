@@ -29,7 +29,7 @@ public class StudioController {
     return studioInfoService.get(name);
   }
 
-  @GetMapping("/list")
+  @GetMapping
   public Collection<Studio> list() {
     return studioInfoService.list();
   }

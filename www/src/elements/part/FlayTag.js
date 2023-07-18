@@ -93,7 +93,7 @@ export default class FlayTag extends HTMLElement {
 customElements.define('flay-tag', FlayTag);
 
 async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElement, tagNewInput) {
-  return fetch('/info/tag/list')
+  return fetch('/info/tag')
     .then((res) => res.json())
     .then((tagList) => {
       tagListElement.textContent = null;

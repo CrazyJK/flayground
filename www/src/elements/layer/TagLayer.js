@@ -65,7 +65,7 @@ export default class TagLayer extends HTMLElement {
 
     // list
     const LIST_DIV = MAIN_DIV.appendChild(document.createElement('ol'));
-    fetch('/info/tag/list')
+    fetch('/info/tag')
       .then((res) => res.json())
       .then((tagList) => {
         Array.from(tagList)

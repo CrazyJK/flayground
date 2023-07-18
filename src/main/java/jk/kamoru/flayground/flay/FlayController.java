@@ -65,7 +65,7 @@ public class FlayController {
     return objects;
   }
 
-  @GetMapping("/list")
+  @GetMapping
   public Collection<Flay> getList() {
     return flayService.list();
   }

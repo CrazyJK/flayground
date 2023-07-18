@@ -35,7 +35,7 @@ public class VideoController {
     return videoInfoService.get(opus);
   }
 
-  @GetMapping("/list")
+  @GetMapping
   public Collection<Video> list() {
     return videoInfoService.list();
   }

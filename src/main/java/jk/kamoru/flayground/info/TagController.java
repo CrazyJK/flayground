@@ -30,7 +30,7 @@ public class TagController {
     return tagInfoService.get(id);
   }
 
-  @GetMapping("/list")
+  @GetMapping
   public Collection<Tag> list() {
     return tagInfoService.list();
   }

@@ -30,7 +30,7 @@ public class TodayisController {
   @Autowired
   MovieStreamHandler movieStreamHandler;
 
-  @GetMapping("/list")
+  @GetMapping
   public Collection<Todayis> getList() {
     return todayisService.list();
   }

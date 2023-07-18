@@ -26,7 +26,7 @@ public class FlayArchiveController {
     return flayArchiveService.get(opus);
   }
 
-  @GetMapping("/list")
+  @GetMapping
   public Collection<Flay> list() {
     return flayArchiveService.list();
   }

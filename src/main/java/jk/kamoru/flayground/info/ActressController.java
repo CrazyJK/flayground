@@ -35,7 +35,7 @@ public class ActressController {
     return actressInfoService.get(name);
   }
 
-  @GetMapping("/list")
+  @GetMapping
   public Collection<Actress> list() {
     return actressInfoService.list();
   }

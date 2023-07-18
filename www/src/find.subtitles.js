@@ -173,7 +173,7 @@ document.querySelector('#btnFilterFound').addEventListener('click', () => {
 
 document.querySelectorAll("input[name='rank']").forEach((rank) => rank.addEventListener('change', displayList));
 
-fetch('/flay/list')
+fetch('/flay')
   .then((res) => res.json())
   .then((list) => {
     flayList = list;

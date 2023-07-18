@@ -25,7 +25,7 @@ public class ImageController {
   @Autowired
   FlayActionHandler flayActionHandler;
 
-  @GetMapping("/list")
+  @GetMapping
   public List<Image> list() {
     return imageService.list();
   }

@@ -29,7 +29,7 @@ public class HistoryController {
     return historyService.findByAction(action);
   }
 
-  @GetMapping("/list")
+  @GetMapping
   public List<History> list() {
     return historyService.list();
   }

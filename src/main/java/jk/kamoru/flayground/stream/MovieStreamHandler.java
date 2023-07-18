@@ -65,7 +65,10 @@ public class MovieStreamHandler {
       log.debug("stream {} {} MB from {}%", file, NumberFormat.getNumberInstance().format(movieSize / FileUtils.ONE_MB), (int) ((float) rangeStart / movieSize * 100));
     }
 
-    try (RandomAccessFile randomFile = new RandomAccessFile(file, "r")) {
+    try (
+      RandomAccessFile randomFile = new RandomAccessFile(file, "r");
+      OutputStream out = response.getOutputStream();
+    ) {
       // seeking file
       randomFile.seek(rangeStart);
 
@@ -78,9 +81,9 @@ public class MovieStreamHandler {
       response.setStatus(isPart ? 206 : 200);
 
       // write in response
-      final int bufferSize = 8 * 1024;
+      final int bufferSize = (int) FileUtils.ONE_KB * 8;
       final byte[] buffer = new byte[bufferSize];
-      OutputStream out = response.getOutputStream();
+      
       do {
         int len = (int) Math.min(partSize, bufferSize);
         int total = randomFile.read(buffer, 0, len);

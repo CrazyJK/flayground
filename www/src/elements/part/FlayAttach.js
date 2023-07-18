@@ -237,7 +237,7 @@ export default class FlayAttach extends HTMLElement {
       formData.append('name', name);
       formData.append('type', type);
 
-      fetch('/attach/create', {
+      fetch('/attach', {
         method: 'POST',
         body: formData,
       })
@@ -401,8 +401,8 @@ export default class FlayAttach extends HTMLElement {
       formData.append('file', file);
     }
 
-    fetch('/attach/upload', {
-      method: 'POST',
+    fetch('/attach', {
+      method: 'PUT',
       body: formData,
     })
       .then((response) => response.json())
@@ -419,7 +419,7 @@ export default class FlayAttach extends HTMLElement {
     formData.append('id', this.attach.id);
     formData.append('attachFileId', attachFileId);
 
-    fetch('/attach/remove', {
+    fetch('/attach', {
       method: 'DELETE',
       body: formData,
     })

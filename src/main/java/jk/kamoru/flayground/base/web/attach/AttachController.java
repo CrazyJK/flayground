@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -56,19 +57,19 @@ public class AttachController {
     return new ResponseEntity<Object>(resource, headers, HttpStatus.OK);
   }
 
-  @PostMapping("/create")
+  @PostMapping
   @ResponseBody
   public Attach create(@RequestParam("name") String name, @RequestParam("type") Attach.Type type) {
     return attachService.create(name, type);
   }
 
-  @PostMapping("/upload")
+  @PutMapping
   @ResponseBody
   public Attach upload(@RequestParam("id") String id, @RequestParam("file") MultipartFile[] multipartFiles) {
     return attachService.upload(id, multipartFiles);
   }
 
-  @DeleteMapping("/remove")
+  @DeleteMapping
   @ResponseBody
   public Attach remove(@RequestParam("id") String id, @RequestParam("attachFileId") String attachFileId) {
     return attachService.remove(id, attachFileId);

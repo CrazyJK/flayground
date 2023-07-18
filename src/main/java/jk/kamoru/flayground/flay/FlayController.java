@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -170,13 +171,13 @@ public class FlayController {
     flayService.openFolder(folder);
   }
 
-  @PutMapping("/delete/file")
+  @DeleteMapping("/file")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteFile(@RequestBody String file) {
     flayService.deleteFile(file);
   }
 
-  @PutMapping("/delete/file/{opus}")
+  @DeleteMapping("/file/{opus}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteFileOnFlay(@PathVariable String opus, @RequestBody String file) {
     flayService.deleteFileOnFlay(opus, file);

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.domain.FlayCondition;
 import jk.kamoru.flayground.flay.service.FlayCollector;
@@ -26,6 +27,7 @@ import jk.kamoru.flayground.flay.service.ScoreCalculator;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "FlayController")
 @RestController
 @RequestMapping("/flay")
 public class FlayController {
@@ -159,6 +161,7 @@ public class FlayController {
     flayService.edit(opus);
   }
 
+  @Operation(summary = "이름 변경")
   @PutMapping("/rename/{opus}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void rename(@PathVariable String opus, @RequestBody Flay flay) {

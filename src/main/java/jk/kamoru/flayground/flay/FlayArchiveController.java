@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayArchiveService;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "FlayArchiveController")
 @RestController
 @RequestMapping("/archive")
 public class FlayArchiveController {

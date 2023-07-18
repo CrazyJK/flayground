@@ -26,8 +26,9 @@ import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import lombok.extern.slf4j.Slf4j;
 
-@RestController
 @Slf4j
+@io.swagger.v3.oas.annotations.tags.Tag(name = "SubtitlesFinder")
+@RestController
 public class SubtitlesFinder {
 
   @Autowired

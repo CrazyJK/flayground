@@ -21,6 +21,7 @@ import jk.kamoru.flayground.image.domain.Image;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
+@io.swagger.v3.oas.annotations.tags.Tag(name = "ImageUploadController")
 @Controller
 @RequestMapping("/image")
 public class ImageUploadController {

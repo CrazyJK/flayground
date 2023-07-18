@@ -23,8 +23,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.flayground.Flayground;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "AttachController")
 @RestController
 @RequestMapping("/attach")
 public class AttachController {
@@ -57,18 +59,21 @@ public class AttachController {
     return new ResponseEntity<Object>(resource, headers, HttpStatus.OK);
   }
 
+  @Operation(summary = "신규 생성")
   @PostMapping
   @ResponseBody
   public Attach create(@RequestParam("name") String name, @RequestParam("type") Attach.Type type) {
     return attachService.create(name, type);
   }
 
+  @Operation(summary = "파일 추가")
   @PutMapping
   @ResponseBody
   public Attach upload(@RequestParam("id") String id, @RequestParam("file") MultipartFile[] multipartFiles) {
     return attachService.upload(id, multipartFiles);
   }
 
+  @Operation(summary = "파일 제거")
   @DeleteMapping
   @ResponseBody
   public Attach remove(@RequestParam("id") String id, @RequestParam("attachFileId") String attachFileId) {

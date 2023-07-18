@@ -14,9 +14,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.service.StudioInfoService;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "StudioController")
 @RestController
 @RequestMapping("/info/studio")
 public class StudioController {
@@ -44,11 +46,13 @@ public class StudioController {
     return studioInfoService.findOneByOpus(opus);
   }
 
+  @Operation(summary = "신규 생성")
   @PostMapping
   public Studio create(@RequestBody Studio studio) {
     return studioInfoService.create(studio);
   }
 
+  @Operation(summary = "수정")
   @PatchMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void update(@RequestBody Studio studio) {

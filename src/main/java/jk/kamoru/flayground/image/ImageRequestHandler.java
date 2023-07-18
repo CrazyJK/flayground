@@ -28,6 +28,7 @@ import jk.kamoru.flayground.flay.service.FlayService;
 import jk.kamoru.flayground.image.service.ImageService;
 import jk.kamoru.flayground.info.source.ActressInfoSource;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "ImageRequestHandler")
 @Controller
 @RequestMapping("/static")
 public class ImageRequestHandler {

@@ -15,11 +15,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.TagInfoService;
 import jk.kamoru.flayground.info.service.VideoInfoService;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "VideoController")
 @RestController
 @RequestMapping("/info/video")
 public class VideoController {
@@ -45,33 +47,19 @@ public class VideoController {
     return videoInfoService.find(query);
   }
 
-  /**
-   * 신규 생성
-   * 
-   * @param video
-   * @return
-   */
+  @Operation(summary = "신규 생성")
   @PostMapping
   public Video create(@RequestBody Video video) {
     return videoInfoService.create(video);
   }
 
-  /**
-   * 없으면 신규, 있으면 수정
-   * 
-   * @param video
-   * @return
-   */
+  @Operation(summary = "없으면 신규, 있으면 수정")
   @PutMapping
   public Video put(@RequestBody Video video) {
     return videoInfoService.put(video);
   }
 
-  /**
-   * 기존 수정
-   * 
-   * @param video
-   */
+  @Operation(summary = "수정")
   @PatchMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void update(@RequestBody Video video) {

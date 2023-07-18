@@ -14,12 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jk.kamoru.flayground.stream.MovieStreamHandler;
 import jk.kamoru.flayground.todayis.domain.Todayis;
 import jk.kamoru.flayground.todayis.service.TodayisService;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "TodayisController")
 @RestController
 @RequestMapping("/todayis")
 public class TodayisController {
@@ -47,6 +49,7 @@ public class TodayisController {
     todayisService.delete(todayis);
   }
 
+  @Operation(summary = "파일 스트리밍")
   @GetMapping("/stream/{uuid}")
   public void stream(@PathVariable String uuid, HttpServletRequest request, HttpServletResponse response) {
     Todayis todayis = todayisService.get(uuid);

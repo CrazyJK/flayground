@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jk.kamoru.flayground.flay.service.CandidatesProvider;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "CandidatesController")
 @RestController
 public class CandidatesController {
 

@@ -19,10 +19,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 import jk.kamoru.flayground.info.service.NameDistanceChecker.CheckResult;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "ActressController")
 @RestController
 @RequestMapping("/info/actress")
 public class ActressController {
@@ -60,24 +62,28 @@ public class ActressController {
     return actressInfoService.funcNameCheck(limit);
   }
 
+  @Operation(summary = "신규 생성")
   @PostMapping
   public Actress create(@RequestBody Actress actress) {
     return actressInfoService.create(actress);
   }
 
+  @Operation(summary = "수정")
   @PatchMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void update(@RequestBody Actress actress) {
     actressInfoService.update(actress);
   }
 
+  @Operation(summary = "병합")
   @PutMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void persist(@RequestBody Actress actress) {
     actressInfoService.persist(actress);
   }
 
-  @PutMapping("/{name}")
+  @Operation(summary = "이름 변경")
+  @PutMapping("/rename/{name}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void rename(@PathVariable String name, @RequestBody Actress actress) {
     actressInfoService.rename(actress, name);

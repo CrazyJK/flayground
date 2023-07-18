@@ -12,6 +12,7 @@ import jk.kamoru.flayground.history.domain.History;
 import jk.kamoru.flayground.history.domain.History.Action;
 import jk.kamoru.flayground.history.service.HistoryService;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "HistoryController")
 @RestController
 @RequestMapping("/info/history")
 public class HistoryController {

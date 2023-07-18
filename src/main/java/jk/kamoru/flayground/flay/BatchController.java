@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.BatchExecutor;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "BatchController")
 @RestController
 @RequestMapping("/batch")
 public class BatchController {

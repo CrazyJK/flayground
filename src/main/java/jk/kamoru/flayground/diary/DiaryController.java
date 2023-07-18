@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import jk.kamoru.flayground.diary.Diary.Meta;
 
+@io.swagger.v3.oas.annotations.tags.Tag(name = "DiaryController")
 @RestController
 @RequestMapping("/diary")
 public class DiaryController {

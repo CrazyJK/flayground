@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jk.kamoru.flayground.image.download.PageImageDownloader;
 import jk.kamoru.flayground.image.download.PageImageDownloader.DownloadResult;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "PageImageDownloadController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "PageImageDownload")
 @RestController
 @RequestMapping("/image")
 public class PageImageDownloadController {

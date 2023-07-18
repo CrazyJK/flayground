@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.flayground.Flayground;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "AttachController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Attach")
 @RestController
 @RequestMapping("/attach")
 public class AttachController {

@@ -18,7 +18,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.flayground.info.domain.Studio;
 import jk.kamoru.flayground.info.service.StudioInfoService;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "StudioController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Studio")
 @RestController
 @RequestMapping("/info/studio")
 public class StudioController {

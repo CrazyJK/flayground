@@ -21,7 +21,7 @@ import jk.kamoru.flayground.info.domain.Video;
 import jk.kamoru.flayground.info.service.TagInfoService;
 import jk.kamoru.flayground.info.service.VideoInfoService;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "VideoController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Video")
 @RestController
 @RequestMapping("/info/video")
 public class VideoController {

@@ -16,7 +16,7 @@ import jk.kamoru.flayground.flay.service.FlayActionHandler;
 import jk.kamoru.flayground.image.domain.Image;
 import jk.kamoru.flayground.image.service.ImageService;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "ImageController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Image")
 @RestController
 @RequestMapping("/image")
 public class ImageController {

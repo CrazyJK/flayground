@@ -24,7 +24,7 @@ import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 import jk.kamoru.flayground.info.service.NameDistanceChecker.CheckResult;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "ActressController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Actress")
 @RestController
 @RequestMapping("/info/actress")
 public class ActressController {

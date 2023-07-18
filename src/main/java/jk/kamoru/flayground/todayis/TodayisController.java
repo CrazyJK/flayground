@@ -21,7 +21,7 @@ import jk.kamoru.flayground.stream.MovieStreamHandler;
 import jk.kamoru.flayground.todayis.domain.Todayis;
 import jk.kamoru.flayground.todayis.service.TodayisService;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "TodayisController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Todayis")
 @RestController
 @RequestMapping("/todayis")
 public class TodayisController {

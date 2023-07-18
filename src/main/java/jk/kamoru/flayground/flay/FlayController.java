@@ -27,7 +27,7 @@ import jk.kamoru.flayground.flay.service.ScoreCalculator;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.service.ActressInfoService;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "FlayController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Flay")
 @RestController
 @RequestMapping("/flay")
 public class FlayController {

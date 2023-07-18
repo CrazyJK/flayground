@@ -19,7 +19,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.flayground.info.domain.Tag;
 import jk.kamoru.flayground.info.service.TagInfoService;
 
-@io.swagger.v3.oas.annotations.tags.Tag(name = "TagController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Tag")
 @RestController
 @RequestMapping("/info/tag")
 public class TagController {

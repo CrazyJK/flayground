@@ -20,7 +20,7 @@ import jk.kamoru.flayground.stream.MovieStreamHandler;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
-@io.swagger.v3.oas.annotations.tags.Tag(name = "FlayStreamController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "FlayStream")
 @Controller
 @RequestMapping("/stream")
 public class FlayStreamController {

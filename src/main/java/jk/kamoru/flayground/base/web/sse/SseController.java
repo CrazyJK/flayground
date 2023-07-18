@@ -11,7 +11,7 @@ import lombok.extern.slf4j.Slf4j;
  * SseController
  */
 @Slf4j
-@io.swagger.v3.oas.annotations.tags.Tag(name = "SseController")
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Sse")
 @RestController
 public class SseController {
 

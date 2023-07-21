@@ -18,7 +18,7 @@ set "JAVA_OPTS=%JAVA_OPTS% -Dspring.profiles.active=flay-home"
 set "JAVA_OPTS=%JAVA_OPTS% -Dfile.encoding=UTF-8"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.awt.headless=true"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.net.preferIPv4Stack=true"
-set "JAVA_OPTS=%JAVA_OPTS% -Dlogging.file.name=%JK_GROUND_HOME%\logs\flayground.log"
+set "JAVA_OPTS=%JAVA_OPTS% -Dlogging.file.name=%JK_GROUND_HOME%\logs\jkground.log"
 set "JAVA_OPTS=%JAVA_OPTS% -XX:+UseG1GC -XX:+DisableExplicitGC -XX:+UseStringDeduplication"
 
 if ""%1"" == """" goto setHTTP
@@ -58,13 +58,13 @@ start /wait /b cmd /c mvn clean package
 title JK_GROUND
 
 echo ===========================================================================================
-echo Start Flayground %1
+echo Start JK_GROUND %1
 echo -------------------------------------------------------------------------------------------
 echo Using JK_GROUND: %JK_GROUND_HOME%
 echo Using JAVA_HOME: %JAVA_HOME%
 echo Using JAVA_OPTS: %JAVA_OPTS%
 echo ===========================================================================================
 
-"%JAVA_HOME%\bin\java.exe" %JAVA_OPTS% -jar "%JK_GROUND_HOME%\target\Flayground.jar"
+"%JAVA_HOME%\bin\java.exe" %JAVA_OPTS% -jar "%JK_GROUND_HOME%\target\JK-Ground.jar"
 
 :end

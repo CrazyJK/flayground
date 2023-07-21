@@ -11,6 +11,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import jakarta.annotation.PostConstruct;
+import jk.kamoru.flayground.info.InfoException;
 import jk.kamoru.flayground.info.domain.Info;
 import lombok.extern.slf4j.Slf4j;
 
@@ -38,7 +39,7 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> extends InfoSo
       log.info(String.format("%5s %-7s - %s", list.size(), FilenameUtils.getBaseName(infoFile.getName()), getInfoFile()));
       extraInfoLoad();
     } catch (IOException e) {
-      throw new IllegalStateException("Fail to load info file " + infoFile, e);
+      throw new InfoException("Fail to load info file " + infoFile, e);
     }
   }
 
@@ -47,7 +48,7 @@ public abstract class InfoSourceJsonAdapter<T extends Info<K>, K> extends InfoSo
     try {
       jsonWriter.writeValue(getInfoFile(), list);
     } catch (IOException e) {
-      throw new IllegalStateException("Fail to save info file " + getInfoFile(), e);
+      throw new InfoException("Fail to save info file " + getInfoFile(), e);
     }
   }
 

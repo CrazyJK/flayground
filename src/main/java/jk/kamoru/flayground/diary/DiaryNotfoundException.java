@@ -1,4 +1,4 @@
-package jk.kamoru.flayground.base.web.attach;
+package jk.kamoru.flayground.diary;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -6,12 +6,12 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import jk.kamoru.flayground.Flayground;
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-public class AttachNotfoundException extends AttachException {
-
+public class DiaryNotfoundException extends DiaryException {
+    
   private static final long serialVersionUID = Flayground.SERIAL_VERSION_UID;
 
-  public AttachNotfoundException(String attachId) {
-    super("Notfound Attach: " + attachId);
+  public DiaryNotfoundException(String message) {
+    super("Notfound Diary: " + message);
   }
 
 }

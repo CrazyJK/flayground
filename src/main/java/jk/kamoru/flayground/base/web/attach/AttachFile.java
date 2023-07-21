@@ -39,7 +39,7 @@ public class AttachFile {
     try {
       multipartFile.transferTo(dest);
     } catch (IllegalStateException | IOException e) {
-      throw new IllegalStateException("multipartFile transfer fail: " + e.getMessage(), e);
+      throw new AttachException("multipartFile transfer fail: " + e.getMessage(), e);
     }
 
     final String id = AttachUtils.generateFileHash(dest);

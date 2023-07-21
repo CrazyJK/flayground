@@ -76,7 +76,7 @@ public class AttachSourceImpl implements AttachSource {
     try {
       jsonWriter.writeValue(attachFile, attach);
     } catch (IOException e) {
-      throw new IllegalStateException("Fail to save attachGroup file ", e);
+      throw new AttachException("Fail to save attachGroup file ", e);
     }
     return attach;
   }

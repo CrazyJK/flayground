@@ -5,6 +5,7 @@ import java.util.Comparator;
 
 import org.apache.commons.lang3.StringUtils;
 
+import jk.kamoru.flayground.flay.FlayException;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
 
@@ -41,7 +42,7 @@ public abstract class FlayServiceAdapter {
       final int id = Integer.parseInt(value);
       return list.stream().filter(f -> f.getVideo().getTags().stream().anyMatch(t -> t.getId().intValue() == id)).sorted(comparator).toList();
     } else {
-      throw new IllegalStateException("unknown key");
+      throw new FlayException("unknown key");
     }
   }
 

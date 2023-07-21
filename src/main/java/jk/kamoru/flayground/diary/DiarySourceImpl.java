@@ -20,7 +20,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
 import jakarta.annotation.PostConstruct;
-import jk.kamoru.flayground.GroundException;
 import jk.kamoru.flayground.FlayProperties;
 import lombok.extern.slf4j.Slf4j;
 
@@ -55,7 +54,7 @@ public class DiarySourceImpl implements DiarySource {
         });
         diaryMap.put(diary.getMeta().getDate(), diary);
       } catch (IOException e) {
-        throw new GroundException(String.format("fail to diary read %s : %s", file, e.getMessage()), e);
+        throw new DiaryException(String.format("fail to diary read %s : %s", file, e.getMessage()), e);
       }
     }
   }
@@ -77,7 +76,7 @@ public class DiarySourceImpl implements DiarySource {
   @Override
   public Diary find(String date) {
     if (!diaryMap.containsKey(date)) {
-      throw new RuntimeException("not found " + date);
+      throw new DiaryNotfoundException(date);
     }
     return diaryMap.get(date);
   }
@@ -96,7 +95,7 @@ public class DiarySourceImpl implements DiarySource {
       // save
       jsonWriter.writeValue(diaryFile, diary);
     } catch (IOException e) {
-      throw new IllegalStateException("Fail to save diary file ", e);
+      throw new DiaryException("Fail to save diary file ", e);
     }
 
     log.info("diary saved {} : {}", diary.getMeta().getDate(), diary.getMeta().getTitle());

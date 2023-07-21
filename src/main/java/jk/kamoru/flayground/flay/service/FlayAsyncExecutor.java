@@ -10,6 +10,7 @@ import java.util.stream.Stream;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
+import jk.kamoru.flayground.flay.FlayException;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -48,7 +49,7 @@ public class FlayAsyncExecutor {
       log.debug("process {}", process.info());
     } catch (IOException e) {
       log.error("exec error", e);
-      throw new IllegalStateException("exec error", e);
+      throw new FlayException("exec error", e);
     }
   }
 

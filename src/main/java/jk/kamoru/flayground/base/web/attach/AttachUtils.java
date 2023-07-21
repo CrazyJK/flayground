@@ -34,7 +34,7 @@ public class AttachUtils {
 
       return sb.toString();
     } catch (NoSuchAlgorithmException e) {
-      throw new IllegalStateException("generate string hash fail: " + e.getMessage(), e);
+      throw new AttachException("generate string hash fail: " + e.getMessage(), e);
     }
   }
 
@@ -55,7 +55,7 @@ public class AttachUtils {
       }
       return sb.toString();
     } catch (IOException | NoSuchAlgorithmException e) {
-      throw new IllegalStateException("generate FileHash fail: " + e.getMessage(), e);
+      throw new AttachException("generate FileHash fail: " + e.getMessage(), e);
     }
   }
 

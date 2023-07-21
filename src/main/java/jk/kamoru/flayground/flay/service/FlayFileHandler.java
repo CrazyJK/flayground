@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
+import jk.kamoru.flayground.flay.FlayException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import lombok.extern.slf4j.Slf4j;
 
@@ -63,7 +64,7 @@ public class FlayFileHandler {
         if (renameTo) {
           newFiles.add(newFile);
         } else {
-          throw new IllegalStateException("fail to renameTo");
+          throw new FlayException("fail to renameTo");
         }
       }
       flay.getFiles().put(key, newFiles);
@@ -74,7 +75,7 @@ public class FlayFileHandler {
     try {
       Files.createDirectories(directory.toPath());
     } catch (IOException e) {
-      throw new IllegalStateException("fail to createDirectory " + directory, e);
+      throw new FlayException("fail to createDirectory " + directory, e);
     }
   }
 
@@ -82,7 +83,7 @@ public class FlayFileHandler {
     try {
       FileUtils.cleanDirectory(directory);
     } catch (IOException e) {
-      throw new IllegalStateException("fail to cleanDirectory " + directory, e);
+      throw new FlayException("fail to cleanDirectory " + directory, e);
     }
   }
 
@@ -91,7 +92,7 @@ public class FlayFileHandler {
       FileUtils.deleteDirectory(directory);
       log.warn("deleted Directory {}", directory);
     } catch (IOException e) {
-      throw new IllegalStateException("fail to deleteDirectory " + directory, e);
+      throw new FlayException("fail to deleteDirectory " + directory, e);
     }
   }
 
@@ -101,7 +102,7 @@ public class FlayFileHandler {
       checkDiskSpace(fromDirectory, length);
       FileUtils.copyDirectoryToDirectory(fromDirectory, toDirectory);
     } catch (IOException e) {
-      throw new IllegalStateException("fail to copyDirectoryToDirectory " + fromDirectory + " to " + toDirectory, e);
+      throw new FlayException("fail to copyDirectoryToDirectory " + fromDirectory + " to " + toDirectory, e);
     }
   }
 
@@ -149,7 +150,7 @@ public class FlayFileHandler {
       }
       log.info("Folder clone END");
     } catch (IOException e) {
-      throw new IllegalStateException("fail to cloneFolder " + srcFolder + " to " + destFolder, e);
+      throw new FlayException("fail to cloneFolder " + srcFolder + " to " + destFolder, e);
     }
   }
 
@@ -158,7 +159,7 @@ public class FlayFileHandler {
       checkDiskSpace(directory, file.length());
       FileUtils.copyFileToDirectory(file, directory);
     } catch (IOException e) {
-      throw new IllegalStateException("fail to copyFileToDirectory " + file + " to " + directory, e);
+      throw new FlayException("fail to copyFileToDirectory " + file + " to " + directory, e);
     }
   }
 
@@ -179,7 +180,7 @@ public class FlayFileHandler {
         moveFileToDirectory(file, directory);
       }
     } catch (IOException e) {
-      throw new IllegalStateException("fail to moveFileToDirectory " + file + " to " + directory, e);
+      throw new FlayException("fail to moveFileToDirectory " + file + " to " + directory, e);
     }
   }
 
@@ -192,7 +193,7 @@ public class FlayFileHandler {
 
   public void deleteFile(File file) {
     if (file.isDirectory()) {
-      throw new IllegalStateException("fail to delete file. it is directory: " + file);
+      throw new FlayException("fail to delete file. it is directory: " + file);
     }
     if (flayProperties.isRecyclebinUse()) {
       File recyclebin = new File(file.toPath().getRoot().toFile(), flayProperties.getRecyclebin());
@@ -202,7 +203,7 @@ public class FlayFileHandler {
       boolean result = FileUtils.deleteQuietly(file);
       log.warn("deleted File {}", file);
       if (!result) {
-        throw new IllegalStateException("fail to deleteFile " + file);
+        throw new FlayException("fail to deleteFile " + file);
       }
     }
   }

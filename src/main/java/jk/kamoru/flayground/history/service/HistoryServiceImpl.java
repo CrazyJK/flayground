@@ -10,8 +10,8 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
-import jk.kamoru.flayground.GroundException;
 import jk.kamoru.flayground.flay.domain.Flay;
+import jk.kamoru.flayground.history.HistoryException;
 import jk.kamoru.flayground.history.domain.History;
 import jk.kamoru.flayground.history.domain.History.Action;
 import jk.kamoru.flayground.history.source.HistoryRepository;
@@ -57,7 +57,7 @@ public class HistoryServiceImpl implements HistoryService {
         desc = jsonWriter.writeValueAsString(flay.getVideo());
         break;
       } catch (JsonProcessingException e) {
-        throw new GroundException("fail to convert json from video", e);
+        throw new HistoryException("fail to convert json from video", e);
       }
     case DELETE:
       desc = deletedReason;

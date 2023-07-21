@@ -6,10 +6,10 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.flayground.GroundException;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.web.sse.SseEmitters;
+import jk.kamoru.flayground.flay.FlayException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.image.domain.Image;
 
@@ -28,7 +28,7 @@ public class FlayActionHandler {
   public void play(Flay flay) {
     List<File> movieFileList = flay.getFiles().get(Flay.MOVIE);
     if (movieFileList == null || movieFileList.size() == 0) {
-      throw new GroundException("영상 파일이 없습니다");
+      throw new FlayException("영상 파일이 없습니다");
     }
 
     flayAsyncExecutor.exec(flayProperties.getPlayerApp(), flay.getFiles().get(Flay.MOVIE));
@@ -38,7 +38,7 @@ public class FlayActionHandler {
   public void edit(Flay flay) {
     List<File> subtitlesFileList = flay.getFiles().get(Flay.SUBTI);
     if (subtitlesFileList == null || subtitlesFileList.size() == 0) {
-      throw new GroundException("자막 파일이 없습니다");
+      throw new FlayException("자막 파일이 없습니다");
     }
 
     flayAsyncExecutor.exec(flayProperties.getEditorApp(), subtitlesFileList.get(0));
@@ -62,7 +62,7 @@ public class FlayActionHandler {
       explorer = "open";
       break;
     default:
-      throw new IllegalStateException("no specified OS");
+      throw new FlayException("no specified OS");
     }
 
     File file = new File(folder);

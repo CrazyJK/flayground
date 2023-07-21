@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.web.sse.SseEmitters;
+import jk.kamoru.flayground.flay.FlayException;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.Search;
 import jk.kamoru.flayground.flay.domain.Flay;
@@ -135,7 +136,7 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
         flayFileHandler.moveFileToDirectory(file, baseFolder);
         subtiList.add(new File(baseFolder, filename));
       } else {
-        throw new IllegalStateException("file is not known suffix. " + file);
+        throw new FlayException("file is not known suffix. " + file);
       }
     }
     candiList.clear();
@@ -167,7 +168,7 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
   public void rename(String opus, Flay newFlay) {
     log.info("rename {}, {}", opus, newFlay.getFullname());
     if (!opus.equals(newFlay.getOpus())) {
-      throw new IllegalArgumentException("Not allowed to change opus");
+      throw new FlayException("Not allowed to change opus");
     }
     Flay flay = null;
     try {

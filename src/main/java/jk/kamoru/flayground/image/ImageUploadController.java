@@ -35,7 +35,7 @@ public class ImageUploadController {
   @ResponseBody
   public List<Image> upload(@RequestParam("file") MultipartFile[] multipartFiles) {
     if (multipartFiles == null) {
-      throw new RuntimeException("file is null");
+      throw new ImageException("file is null");
     }
     Assert.state(multipartFiles.length > 0, "file is zero");
 
@@ -58,7 +58,7 @@ public class ImageUploadController {
         // FileUtils.copyInputStreamToFile(multipartFile.getInputStream(), targetImageFile);
       } catch (IOException e) {
         FileUtils.deleteQuietly(targetImageFile);
-        throw new IllegalStateException("upload image failed " + e.getMessage(), e);
+        throw new ImageException("upload image failed " + e.getMessage(), e);
       }
       images.add(new Image(targetImageFile, fileIdx));
     }

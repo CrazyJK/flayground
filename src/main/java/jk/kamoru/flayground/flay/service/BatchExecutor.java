@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.base.web.sse.LogAndSse;
+import jk.kamoru.flayground.flay.FlayBatchException;
 import jk.kamoru.flayground.flay.FlayNotfoundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.source.FlaySource;
@@ -87,7 +88,7 @@ public class BatchExecutor extends LogAndSse {
     case S:
       return flayProperties.isDeleteLowerScore();
     default:
-      throw new IllegalArgumentException("unknown batch option");
+      throw new FlayBatchException("unknown batch option");
     }
   }
 
@@ -96,7 +97,7 @@ public class BatchExecutor extends LogAndSse {
     case S:
       return flayProperties.negateDeleteLowerScore();
     default:
-      throw new IllegalArgumentException("unknown batch option");
+      throw new FlayBatchException("unknown batch option");
     }
   }
 
@@ -113,7 +114,7 @@ public class BatchExecutor extends LogAndSse {
       backup();
       break;
     default:
-      throw new IllegalArgumentException("unknown batch operation");
+      throw new FlayBatchException("unknown batch operation");
     }
   }
 
@@ -122,7 +123,7 @@ public class BatchExecutor extends LogAndSse {
     case I:
       return instanceCheck();
     default:
-      throw new IllegalArgumentException("unknown batch operation");
+      throw new FlayBatchException("unknown batch operation");
     }
   }
 
@@ -226,7 +227,7 @@ public class BatchExecutor extends LogAndSse {
       }
       coverPath = flayProperties.getCoverPath().getCanonicalPath();
     } catch (IOException e) {
-      throw new IllegalStateException("assembleFlay CanonicalPath error", e);
+      throw new FlayBatchException("assembleFlay CanonicalPath error", e);
     }
 
     for (Flay flay : instanceFlaySource.list()) {
@@ -346,7 +347,7 @@ public class BatchExecutor extends LogAndSse {
         return new File(coverPath, flay.getRelease().substring(0, 4));
       }
     } catch (IOException e) {
-      throw new IllegalStateException("getDelegatePath CanonicalPath error", e);
+      throw new FlayBatchException("getDelegatePath CanonicalPath error", e);
     }
 
     batchLogger("Not determine delegate path, return to Queue path. %s", flay.getOpus());
@@ -495,7 +496,7 @@ public class BatchExecutor extends LogAndSse {
       }
       bufferedWriter.flush();
     } catch (IOException e) {
-      throw new IllegalStateException("Fail to writeFileWithUTF8BOM", e);
+      throw new FlayBatchException("Fail to writeFileWithUTF8BOM", e);
     }
   }
 
@@ -521,7 +522,7 @@ public class BatchExecutor extends LogAndSse {
       message = "         completed " + flayFileHandler.prettyFileLength(destJarFile.length());
       batchLogger(message);
     } catch (IOException | InterruptedException e) {
-      throw new IllegalStateException("Fail to jar", e);
+      throw new FlayBatchException("Fail to jar", e);
     }
   }
 

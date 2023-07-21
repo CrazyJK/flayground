@@ -62,7 +62,7 @@ public class Attach {
     if (list == null || list.size() == 0) {
       throw new AttachFileNotfoundException(attachFileId);
     } else if (list.size() > 1) {
-      throw new IllegalStateException("duplicated AttachFile by " + attachFileId);
+      throw new AttachException("duplicated AttachFile by " + attachFileId);
     }
     return list.get(0);
   }

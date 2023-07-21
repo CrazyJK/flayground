@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import jk.kamoru.flayground.FlayProperties;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.flay.service.FlayAsyncExecutor;
+import jk.kamoru.flayground.todayis.TodayisException;
 import jk.kamoru.flayground.todayis.domain.Todayis;
 import lombok.extern.slf4j.Slf4j;
 
@@ -45,7 +46,7 @@ public class TodayisServiceImpl implements TodayisService {
   @Override
   public Todayis get(String uuid) {
     if (map == null || map.isEmpty()) {
-      throw new IllegalStateException("data is null or empty");
+      throw new TodayisException("data is null or empty");
     }
     return map.get(uuid);
   }

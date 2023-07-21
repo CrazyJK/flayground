@@ -51,7 +51,7 @@ public class ImageBannerHandler {
   @ResponseBody
   public String upload(@RequestParam("file") MultipartFile multipartFile, @RequestParam("width") int width) {
     if (multipartFile == null) {
-      throw new RuntimeException("file is null");
+      throw new ImageException("file is null");
     }
 
     File uploadDir = new File(flayProperties.getImagePaths()[0] + "/_upload");
@@ -66,7 +66,7 @@ public class ImageBannerHandler {
       multipartFile.transferTo(targetImageFile);
     } catch (IOException e) {
       FileUtils.deleteQuietly(targetImageFile);
-      throw new IllegalStateException("upload image failed " + e.getMessage(), e);
+      throw new ImageException("upload image failed " + e.getMessage(), e);
     }
 
     return imageBannerPrinter.get(targetImageFile, width, 0, 0, true, BitDepth.FOUR, PixelMode.TEXT);

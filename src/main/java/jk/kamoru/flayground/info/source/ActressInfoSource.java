@@ -50,9 +50,8 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
   }
 
   private List<File> findCoverFile(String name) {
-    Supplier<Stream<Image>> supplier = () -> imageService.list().stream().filter(i -> {
-      return i.getName().startsWith(name);
-    });
+    Supplier<Stream<Image>> supplier = () -> imageService.list().stream().filter(image -> image.getName().startsWith(name));
+    
     long count = supplier.get().count();
     if (count == 0) {
       return null;

@@ -7,7 +7,6 @@ public interface Info<K> {
   @JsonIgnore
   K getKey();
 
-  @JsonIgnore
   void setKey(K key);
 
   /**

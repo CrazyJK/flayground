@@ -4,9 +4,6 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
-
 import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.info.domain.Info;
 import jk.kamoru.flayground.info.source.InfoSource;
@@ -18,8 +15,6 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
 
   @Autowired
   SseEmitters sseEmitters;
-
-  ObjectWriter jsonWriter = new ObjectMapper().writerWithDefaultPrettyPrinter();
 
   @Override
   public T get(K key) {
@@ -38,9 +33,7 @@ public abstract class InfoServiceAdapter<T extends Info<K>, K> implements InfoSe
 
   @Override
   public List<T> find(String query) {
-    return infoSource.list().stream().filter(t -> {
-      return t.toString().contains(query);
-    }).toList();
+    return infoSource.list().stream().filter(t -> t.toString().contains(query)).toList();
   }
 
   @Override

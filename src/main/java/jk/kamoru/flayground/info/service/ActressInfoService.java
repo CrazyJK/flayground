@@ -8,7 +8,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.flayground.base.web.sse.SseEmitters;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.flay.service.FlayFileHandler;
 import jk.kamoru.flayground.flay.service.FlayService;
@@ -25,8 +24,6 @@ public class ActressInfoService extends InfoServiceAdapter<Actress, String> {
   FlayService flayService;
   @Autowired
   FlayFileHandler flayFileHandler;
-  @Autowired
-  SseEmitters sseEmitters;
 
   public void rename(Actress actress, String oldName) {
     if (actress.getName().equals(oldName)) {

@@ -11,7 +11,7 @@ import javax.imageio.ImageIO;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.flayground.FlayException;
+import jk.kamoru.flayground.GroundException;
 import jk.kamoru.flayground.Flayground;
 import jk.kamoru.flayground.image.banner.AnsiColors.BitDepth;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +34,7 @@ public class ImageBannerPrinter {
       }
       return "Fail to get image: " + imageFile;
     } catch (Exception e) {
-      throw new FlayException("fail to make banner", e);
+      throw new GroundException("fail to make banner", e);
     }
   }
 

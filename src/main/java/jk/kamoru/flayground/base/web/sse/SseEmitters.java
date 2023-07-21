@@ -8,7 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
-import jk.kamoru.flayground.FlayException;
+import jk.kamoru.flayground.GroundException;
 import jk.kamoru.flayground.flay.domain.Flay;
 import jk.kamoru.flayground.info.domain.Actress;
 import jk.kamoru.flayground.info.domain.Studio;
@@ -86,7 +86,7 @@ public class SseEmitters {
     } else if (object instanceof SseMessage) {
       send(EVENT.MESSAGE, object);
     } else {
-      throw new FlayException("undefined object");
+      throw new GroundException("undefined object");
     }
   }
 

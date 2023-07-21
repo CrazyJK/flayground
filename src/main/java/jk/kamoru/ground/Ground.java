@@ -121,7 +121,7 @@ public class Ground implements AsyncConfigurer {
     executor.setCorePoolSize(7);
     executor.setMaxPoolSize(42);
     executor.setQueueCapacity(11);
-    executor.setThreadNamePrefix("Flay-Async-");
+    executor.setThreadNamePrefix("Ground-Async-");
     executor.initialize();
     return executor;
   }
@@ -148,7 +148,7 @@ public class Ground implements AsyncConfigurer {
 
         @Override
         public Thread newThread(Runnable r) {
-          return new Thread(r, "Flay-Final-" + threadNumber.incrementAndGet());
+          return new Thread(r, "Ground-Final-" + threadNumber.incrementAndGet());
         }
       });
 

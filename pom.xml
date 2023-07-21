@@ -4,11 +4,11 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>jk.kamoru</groupId>
-  <artifactId>flayground</artifactId>
+  <artifactId>jk-ground</artifactId>
   <version>6.9.7.4-21</version>
   <packaging>jar</packaging>
 
-  <name>Flayground</name>
+  <name>JK-Ground</name>
   <description>serve flay</description>
 
   <parent>

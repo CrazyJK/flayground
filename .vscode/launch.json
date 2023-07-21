@@ -2,42 +2,42 @@
   "configurations": [
     {
       "type": "java",
-      "name": "flayground",
+      "name": "Ground",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
-      "projectName": "flayground",
+      "mainClass": "jk.kamoru.ground.GroundApplication",
+      "projectName": "Ground",
       "vmArgs": "-Dspring.profiles.active=flay-home"
     },
     {
       "type": "java",
-      "name": "flayground test",
+      "name": "Ground test",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
-      "projectName": "flayground",
+      "mainClass": "jk.kamoru.ground.GroundApplication",
+      "projectName": "Ground",
       "vmArgs": "-Dspring.profiles.active=flay-test"
     },
     {
       "type": "java",
-      "name": "flayground SSL",
+      "name": "Ground SSL",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
-      "projectName": "flayground",
+      "mainClass": "jk.kamoru.ground.GroundApplication",
+      "projectName": "Ground",
       "vmArgs": "-Dspring.profiles.active=flay-home -Dserver.port=443 -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=kamoru -Dserver.ssl.key-store=classpath:cert/kamoru.jk.p12 -Dserver.ssl.key-store-password=697489"
     },
     {
       "type": "java",
-      "name": "flayground SSL test",
+      "name": "Ground SSL test",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
-      "projectName": "flayground",
+      "mainClass": "jk.kamoru.ground.GroundApplication",
+      "projectName": "Ground",
       "vmArgs": "-Dspring.profiles.active=flay-test -Dserver.port=443 -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=kamoru -Dserver.ssl.key-store=classpath:cert/kamoru.jk.p12 -Dserver.ssl.key-store-password=697489"
     }
   ]

@@ -7,7 +7,6 @@
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
-      "projectName": "JK-Ground",
       "vmArgs": "-Dspring.profiles.active=ground-home"
     },
     {
@@ -17,7 +16,6 @@
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
-      "projectName": "JK-Ground",
       "vmArgs": "-Dspring.profiles.active=ground-test"
     },
     {
@@ -27,7 +25,6 @@
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
-      "projectName": "JK-Ground",
       "vmArgs": "-Dspring.profiles.active=ground-home -Dserver.port=443 -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=kamoru -Dserver.ssl.key-store=classpath:cert/kamoru.jk.p12 -Dserver.ssl.key-store-password=697489"
     },
     {
@@ -37,7 +34,6 @@
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
-      "projectName": "JK-Ground",
       "vmArgs": "-Dspring.profiles.active=ground-test -Dserver.port=443 -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=kamoru -Dserver.ssl.key-store=classpath:cert/kamoru.jk.p12 -Dserver.ssl.key-store-password=697489"
     }
   ]

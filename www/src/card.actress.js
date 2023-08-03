@@ -33,6 +33,7 @@ const debut = document.querySelector('#debut');
 const comment = document.querySelector('#comment');
 const saveBtn = document.querySelector('#saveBtn');
 const findBtn = document.querySelector('#findBtn');
+const searchBtn = document.querySelector('#searchBtn');
 
 favLabel.innerHTML = SVG.favorite;
 document.title = actressName;
@@ -84,6 +85,8 @@ saveBtn.addEventListener('click', () => {
 });
 
 findBtn.addEventListener('click', (e) => Search.actress.Minnano(localName.value));
+
+searchBtn.addEventListener('click', (e) => Search.actress.Nextjav(name.value));
 
 addResizeLazyEventListener(() => {
   flayMap.forEach((flayCard) => {

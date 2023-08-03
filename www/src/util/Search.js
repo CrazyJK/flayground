@@ -4,6 +4,7 @@ const URL_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
 const URL_NEXTJAV = 'https://nextjav.com/torrent/detail/';
 const URL_NEXTJAV_DOWNLOAD = 'https://nextjav.com/save/{}/nextjav-torrent-{}.torrent';
 const URL_MINNANO = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
+const URL_NEXTJAV_ACTRESS = 'https://nextjav.com/actress/';
 const URL_GOOGLE = 'https://www.google.co.kr/search?q=';
 const URL_SUBTITLECAT = 'https://www.subtitlecat.com/index.php?search=';
 const URL_TRANSLATE_GOOGLE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
@@ -28,6 +29,9 @@ export default {
   actress: {
     Minnano(keyword) {
       popupOpen(URL_MINNANO + encodeURI(keyword), 'MINNANO', 1200, 950);
+    },
+    Nextjav(name) {
+      popupOpen(URL_NEXTJAV_ACTRESS + name.toLowerCase().replace(' ', '-'), 'NEXTJAV_ACTRESS', 800, 100);
     },
   },
   torrent: {

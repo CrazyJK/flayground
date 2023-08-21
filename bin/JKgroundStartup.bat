@@ -14,7 +14,7 @@ echo invalid JK_GROUND_HOME: %JK_GROUND_HOME%
 goto end
 
 :setEnv
-set "JAVA_OPTS=%JAVA_OPTS% -Dspring.profiles.active=flay-home"
+set "JAVA_OPTS=%JAVA_OPTS% -Dspring.profiles.active=ground-home"
 set "JAVA_OPTS=%JAVA_OPTS% -Dfile.encoding=UTF-8"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.awt.headless=true"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.net.preferIPv4Stack=true"

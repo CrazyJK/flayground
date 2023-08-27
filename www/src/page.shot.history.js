@@ -1,5 +1,5 @@
 import FlayCard from './elements/card/FlayCard';
-import './shot.history.scss';
+import './page.shot.history.scss';
 import './util/theme.listener';
 
 let i = 0;

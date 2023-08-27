@@ -1,7 +1,7 @@
 /**
  * subtitles js
  */
-import './find.subtitles.scss';
+import './page.find.subtitles.scss';
 import FlayAction from './util/flay.action';
 import './util/theme.listener';
 

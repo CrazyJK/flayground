@@ -33,13 +33,16 @@ export default class FlayCandidate extends HTMLElement {
             const ITEM = LIST.appendChild(document.createElement('li'));
             const BTN = ITEM.appendChild(document.createElement('button'));
             BTN.innerHTML = flay.files.candidate.join('\n');
+            BTN.dataset.accept = 'N';
             BTN.addEventListener('click', () => {
-              console.log('accept', flay.files.candidate);
-              flayAction.acceptCandidates(flay.opus, () => {
-                DIV.remove();
-                LIST.insertBefore(ITEM, null);
-                BTN.removeEventListener('click');
-              });
+              if (BTN.dataset.accept === 'N') {
+                flayAction.acceptCandidates(flay.opus, () => {
+                  console.log('accept', flay.files.candidate);
+                  DIV.remove();
+                  LIST.insertBefore(ITEM, null);
+                  BTN.dataset.accept = 'Y';
+                });
+              }
             });
             const DIV = ITEM.appendChild(document.createElement('div'));
             DIV.style.backgroundImage = `url(/static/cover/${flay.opus})`;

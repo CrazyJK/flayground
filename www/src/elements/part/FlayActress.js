@@ -56,8 +56,9 @@ export default class FlayActress extends HTMLElement {
       label.setAttribute('for', 'fav' + index);
       label.innerHTML = SVG.favorite;
       // name
-      const nameElement = actressDiv.appendChild(document.createElement('a'));
-      nameElement.classList.add('name');
+      const nameLabel = actressDiv.appendChild(document.createElement('label'));
+      nameLabel.classList.add('name');
+      const nameElement = nameLabel.appendChild(document.createElement('a'));
       nameElement.title = actress.name + (actress.comment ? ' - ' + actress.comment : '');
       nameElement.innerHTML = actress.name;
       nameElement.addEventListener('click', () => {
@@ -138,6 +139,7 @@ div.actress > div > label {
 div.actress .name {
   flex: 1 1 auto;
   white-space: nowrap;
+  text-align: start;
 }
 div.actress .localName {
   flex: 0 1 auto;

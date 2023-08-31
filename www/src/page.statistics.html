@@ -10,11 +10,39 @@
   </head>
   <body>
     <header>
+      <h1>Statistics</h1>
       <nav>
-        <label>Statistics</label>
+        <input type="date" id="startDate" />
+        <input type="date" id="endDate" />
+        <label id="info"></label>
       </nav>
     </header>
 
-    <main></main>
+    <main>
+      <div class="row">
+        <div class="col">
+          <h2>Studio</h2>
+          <ol id="studio">
+            <li class="head">
+              <label class="name">Name</label>
+              <label class="sum">Sum</label>
+              <label class="avg">Avg</label>
+              <label class="size">Size</label>
+            </li>
+          </ol>
+        </div>
+        <div class="col">
+          <h2>Actress</h2>
+          <ol id="actress">
+            <li class="head">
+              <label class="name">Name</label>
+              <label class="sum">Sum</label>
+              <label class="avg">Avg</label>
+              <label class="size">Size</label>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </main>
   </body>
 </html>

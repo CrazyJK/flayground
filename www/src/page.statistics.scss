@@ -1,2 +1,50 @@
 @import './css/style.scss';
 @import './css/layout.card.scss';
+
+main {
+  ol {
+    li {
+      display: flex;
+      justify-content: space-between;
+      margin: auto 1rem;
+      border-top: 1px solid transparent;
+      border-bottom: 2px solid transparent;
+      padding: 2px;
+
+      &.head {
+        label {
+          font-size: var(--font-largest);
+        }
+      }
+
+      &:not(.head):hover {
+        border-top-color: #000c;
+        border-bottom-color: #000c;
+      }
+
+      .name {
+        flex: 1 1 auto;
+      }
+      .sum {
+        flex: 0 0 4rem;
+        text-align: right;
+      }
+      .avg {
+        flex: 0 0 4rem;
+        text-align: right;
+      }
+      .size {
+        flex: 0 0 4rem;
+        text-align: right;
+      }
+    }
+  }
+}
+
+.row {
+  display: flex;
+  .col {
+    flex: 1 1 50%;
+    padding: 1rem;
+  }
+}

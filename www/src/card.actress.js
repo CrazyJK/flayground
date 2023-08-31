@@ -9,6 +9,9 @@ import { addResizeLazyEventListener } from './util/windowResize';
 
 const urlParams = new URL(location.href).searchParams;
 const actressName = urlParams.get('name');
+const startDate = urlParams.get('s');
+const endDate = urlParams.get('e');
+
 const flayMap = new Map();
 const condition = {
   search: actressName,
@@ -54,14 +57,33 @@ function fetchActress() {
       comment.value = actress.comment;
     });
 
-  fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) })
-    .then((res) => res.json())
-    .then((list) => {
-      console.log(list);
-      renderFlayCardList(list).then(() => {
-        countFlaySizeByRank();
+  if (startDate && endDate) {
+    fetch('/flay/find/actress/' + actressName)
+      .then((res) => res.json())
+      .then((list) => {
+        const opusList = Array.from(list)
+          .filter((flay) => {
+            if (startDate && endDate) {
+              return startDate < flay.release && flay.release < endDate;
+            } else {
+              return true;
+            }
+          })
+          .map((flay) => flay.opus);
+        renderFlayCardList(opusList).then(() => {
+          countFlaySizeByRank();
+        });
       });
-    });
+  } else {
+    fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) })
+      .then((res) => res.json())
+      .then((opusList) => {
+        console.log(opusList);
+        renderFlayCardList(opusList).then(() => {
+          countFlaySizeByRank();
+        });
+      });
+  }
 }
 
 fetchActress();

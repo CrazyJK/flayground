@@ -7,6 +7,8 @@ import { addResizeLazyEventListener } from './util/windowResize';
 
 const urlParams = new URL(location.href).searchParams;
 const name = urlParams.get('name');
+const startDate = urlParams.get('s');
+const endDate = urlParams.get('e');
 
 const flayMap = new Map();
 
@@ -30,7 +32,15 @@ function fetchStudio() {
   fetch('/flay/find/studio/' + name)
     .then((res) => res.json())
     .then((list) => {
-      let opusList = Array.from(list).map((flay) => flay.opus);
+      const opusList = Array.from(list)
+        .filter((flay) => {
+          if (startDate && endDate) {
+            return startDate < flay.release && flay.release < endDate;
+          } else {
+            return true;
+          }
+        })
+        .map((flay) => flay.opus);
       renderFlayCardList(opusList).then(() => {
         countFlaySizeByRank();
       });

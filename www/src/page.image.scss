@@ -1,0 +1,75 @@
+@import './css/style.scss';
+
+main {
+  position: fixed;
+  inset: 0;
+
+  display: flex;
+  transition: 0.4s;
+
+  &.vertical {
+    img:not(.vertical) {
+      transform: rotate(90deg);
+    }
+  }
+
+  &:not(.vertical) {
+    img.vertical {
+      transform: rotate(90deg);
+    }
+  }
+
+  img {
+    width: auto;
+    height: auto;
+    max-width: 100%;
+    max-height: 100%;
+
+    border-radius: 1rem;
+    transition: 0.4s;
+  }
+}
+
+footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background-color: transparent;
+
+  div.info {
+    display: flex;
+    justify-content: center;
+    gap: 0 1rem;
+    background-color: transparent;
+    padding: 0 1rem;
+
+    label {
+      background-color: transparent;
+      text-shadow: var(--text-shadow);
+      font-size: var(--font-normal);
+
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+
+      &#imgIdx {
+        flex: 0 0 auto;
+      }
+      &#imgSize {
+        flex: 0 0 auto;
+      }
+    }
+  }
+}
+
+.progress {
+  height: 1px;
+
+  .progress-bar {
+    background-color: #f00;
+    height: 1px;
+    transition: 0.4s;
+  }
+}

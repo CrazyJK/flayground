@@ -16,6 +16,7 @@ module.exports = {
     'page.find.subtitles': './src/page.find.subtitles.js',
     'page.shot.history': './src/page.shot.history.js',
     'page.statistics': './src/page.statistics.js',
+    'page.image': './src/page.image.js',
   },
   devtool: 'source-map',
   devServer: {

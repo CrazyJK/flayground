@@ -82,6 +82,12 @@ async function getImageData(src, scale) {
   });
 }
 
+/**
+ *
+ * @param {*} src url or Image
+ * @param {*} opts
+ * @returns
+ */
 export async function getDominatedColors(src, opts) {
   if (!src) {
     throw new Error('src must be specified');

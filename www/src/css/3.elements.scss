@@ -54,6 +54,12 @@ flay-page {
   margin: auto;
 }
 
+@media screen and (min-width: 1280px) {
+  flay-page {
+    max-width: 1200px;
+  }
+}
+
 flay-batch {
   max-width: 100%;
 }

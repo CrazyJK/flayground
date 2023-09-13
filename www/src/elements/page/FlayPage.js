@@ -110,8 +110,11 @@ article.page > flay-files,
 article.page > flay-rank {
   margin: 0.25rem 0;
 }
-article.page > flay-cover {
-  margin: 1rem 0;
+article.page > flay-cover,
+article.page > flay-actress {
+  margin: 1rem auto;
   padding: 0;
+  width: 100%;
+  max-width: 900px;
 }
 `;

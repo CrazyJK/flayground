@@ -68,7 +68,7 @@ export default class FlayCard extends HTMLElement {
    *
    * @param {String} opus
    */
-  set(opus, fullyFlay) {
+  async set(opus, fullyFlay) {
     if (!opus) {
       this.style.display = 'none';
       return;
@@ -81,7 +81,7 @@ export default class FlayCard extends HTMLElement {
     if (fullyFlay) {
       this.render(fullyFlay);
     } else {
-      fetch('/flay/' + opus + '/fully')
+      await fetch('/flay/' + opus + '/fully')
         .then((res) => {
           if (res.status === 404) {
             this.notfound(opus);
@@ -95,6 +95,14 @@ export default class FlayCard extends HTMLElement {
           console.error(e);
         });
     }
+  }
+
+  getFlay() {
+    return this.flay;
+  }
+
+  getActress() {
+    return this.actress;
   }
 
   notfound(opus) {

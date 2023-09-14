@@ -132,9 +132,9 @@ async function renderFlayCardList(opusList) {
     let flayCard = new FlayCard({ excludes: ['FlayActress'] });
     flayMap.set(opus, flayCard);
     document.querySelector('article').appendChild(flayCard);
-    flayCard.set(opus);
-
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await flayCard.set(opus).then(() => {
+      return new Promise((resolve) => setTimeout(resolve, 100));
+    });
   }
 }
 
@@ -155,15 +155,18 @@ function toggleByRank(selectedRank) {
 
 function countFlaySizeByRank() {
   let flaySizeByRank = [0, 0, 0, 0, 0, 0];
+  let sumRank = 0;
+  let totalFlay = 0;
   document.querySelectorAll('flay-card').forEach((flayCard, key, parent) => {
     let rank = parseInt(flayCard.getAttribute('rank'));
     flaySizeByRank[rank] += 1;
-
-    flaySizeByRank.forEach((flaySize, r) => {
-      document.querySelector(`#flayRank option[value="${r}"]`).innerHTML = `Rank ${r} : ${flaySize}`;
-    });
-    document.querySelector(`#flayRank option:first-child`).innerHTML = `Rank : ${parent.length}`;
+    sumRank += rank;
+    totalFlay++;
   });
+  flaySizeByRank.forEach((flaySize, r) => {
+    document.querySelector(`#flayRank option[value="${r}"]`).innerHTML = `Rank ${r} : ${flaySize}`;
+  });
+  document.querySelector(`#flayRank option:first-child`).innerHTML = `Rank ${(sumRank / totalFlay).toFixed(1)} : ${totalFlay} F`;
 }
 
 window.emitFlay = (flay) => {

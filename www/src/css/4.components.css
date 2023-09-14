@@ -134,6 +134,9 @@ textarea::spelling-error {
   color: var(--color-text-secondary) !important;
   cursor: initial !important;
 }
+.hide {
+  display: none !important;
+}
 .error {
   color: var(--color-text-danger) !important;
 }

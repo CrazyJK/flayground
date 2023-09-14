@@ -62,6 +62,9 @@ public class SseEmitters {
     } catch (IOException e) {
       log.debug("{} send error: {}", sseEmitter, e.getMessage());
       remove(sseEmitter);
+    } catch (Exception e) {
+      log.debug("{} send error: {}", sseEmitter, e.getMessage());
+      remove(sseEmitter);
     }
   }
 

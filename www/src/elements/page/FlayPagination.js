@@ -189,30 +189,63 @@ export default class FlayPagination extends HTMLElement {
     let lastIndex = this.opusList.length - 1;
     this.PROGRESS_BAR.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 
-    let start = Math.max(this.opusIndex - 5, 0);
-    let end = Math.min(start + 10, lastIndex);
-    let range = Array(end - start + 1)
-      .fill(start)
-      .map((x, y) => x + y);
-    if (range[0] > 0) {
-      range.unshift(0);
-    }
-    if (range[range.length - 1] < lastIndex) {
-      range.push(lastIndex);
-    }
+    let method = 0;
+    if (method == 0) {
+      let currPageNo = Math.ceil((this.opusIndex + 1) / 10);
+      let lastPageNo = Math.ceil(this.opusList.length / 10);
+      let pageRange = [];
+      if (1 < currPageNo) {
+        pageRange.push(0);
+      }
+      for (let i = 0; i < 10; i++) {
+        pageRange.push((currPageNo - 1) * 10 + i);
+      }
+      if (currPageNo < lastPageNo) {
+        pageRange.push(lastIndex);
+      }
+      console.log('pageRange', pageRange, currPageNo, lastPageNo);
 
-    this.PAGING.textContent = null;
-    for (let i of range) {
-      const page = this.PAGING.appendChild(document.createElement('label'));
-      page.classList.add('page');
-      page.addEventListener('click', () => {
-        console.log('pageClick', i);
-        this.navigator(i);
-      });
+      this.PAGING.textContent = null;
+      for (let i of pageRange) {
+        const page = this.PAGING.appendChild(document.createElement('label'));
+        page.classList.add('page');
+        if (i > lastIndex) {
+          page.classList.add('disable');
+        } else {
+          page.addEventListener('click', () => {
+            console.debug('pageClick', i);
+            this.navigator(i);
+          });
+        }
+        const anker = page.appendChild(document.createElement('a'));
+        anker.classList.toggle('active', i === this.opusIndex);
+        anker.innerHTML = i + 1;
+      }
+    } else {
+      let start = Math.max(this.opusIndex - 5, 0);
+      let end = Math.min(start + 10, lastIndex);
+      let range = Array(end - start + 1)
+        .fill(start)
+        .map((x, y) => x + y);
+      if (range[0] > 0) {
+        range.unshift(0);
+      }
+      if (range[range.length - 1] < lastIndex) {
+        range.push(lastIndex);
+      }
 
-      const anker = page.appendChild(document.createElement('a'));
-      anker.classList.toggle('active', i === this.opusIndex);
-      anker.innerHTML = i + 1;
+      this.PAGING.textContent = null;
+      for (let i of range) {
+        const page = this.PAGING.appendChild(document.createElement('label'));
+        page.classList.add('page');
+        page.addEventListener('click', () => {
+          console.debug('pageClick', i);
+          this.navigator(i);
+        });
+        const anker = page.appendChild(document.createElement('a'));
+        anker.classList.toggle('active', i === this.opusIndex);
+        anker.innerHTML = i + 1;
+      }
     }
   }
 }
@@ -246,6 +279,9 @@ div.pagination .paging .page:last-child {
 div.pagination .paging .page a {
   font-size: var(--font-small);
   font-weight: 700;
+}
+div.pagination .paging .page.disable a {
+  color: var(--color-text-secondary);
 }
 div.pagination .paging .page:hover a {
   text-shadow: var(--text-shadow-hover);

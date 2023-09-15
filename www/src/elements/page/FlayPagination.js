@@ -203,7 +203,7 @@ export default class FlayPagination extends HTMLElement {
       if (currPageNo < lastPageNo) {
         pageRange.push(lastIndex);
       }
-      console.log('pageRange', pageRange, currPageNo, lastPageNo);
+      console.debug('pageRange', pageRange, currPageNo, lastPageNo);
 
       this.PAGING.textContent = null;
       for (let i of pageRange) {

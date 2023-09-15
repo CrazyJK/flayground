@@ -24,6 +24,9 @@ export default class FlayCover extends HTMLElement {
       e.target.classList.toggle('contain');
     });
 
+    this.coverImage = this.wrapper.appendChild(document.createElement('img'));
+    this.coverImage.classList.add('cover-image');
+
     this.colorWrapper = this.wrapper.appendChild(document.createElement('div'));
     this.colorWrapper.classList.add('color-wrapper');
     for (let i = 0; i < 5; i++) {
@@ -45,29 +48,32 @@ export default class FlayCover extends HTMLElement {
     this.resize();
     this.flay = flay;
 
-    let url = `/static/cover/${flay.opus}`;
+    const url = `/static/cover/${flay.opus}`;
 
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.style.backgroundImage = `url(${url})`;
 
-    if (!this.isSmall) {
-      // 대표색상 추출
-      let savedDominatedColors = FlayStorage.session.getObject('dominatedColor_' + flay.opus, null);
-      if (savedDominatedColors == null) {
-        getDominatedColors(url, { scale: 0.2, offset: 16, limit: 5 }).then((dominatedColors) => {
-          FlayStorage.session.set('dominatedColor_' + flay.opus, JSON.stringify(dominatedColors));
-          this.applyDominatedColor(dominatedColors);
-        });
-      } else {
-        this.applyDominatedColor(savedDominatedColors);
+    this.coverImage.onload = () => {
+      this.coverImage.style.maxHeight = `calc(${this.coverImage.width}px * 269 / 400)`;
+      if (!this.isSmall) {
+        // 대표색상 추출
+        let savedDominatedColors = FlayStorage.session.getObject('dominatedColor_' + flay.opus, null);
+        if (savedDominatedColors == null) {
+          getDominatedColors(this.coverImage, { scale: 0.2, offset: 16, limit: 5 }).then((dominatedColors) => {
+            FlayStorage.session.set('dominatedColor_' + flay.opus, JSON.stringify(dominatedColors));
+            this.applyDominatedColor(dominatedColors);
+          });
+        } else {
+          this.applyDominatedColor(savedDominatedColors);
+        }
       }
-    }
+    };
+    this.coverImage.src = url;
   }
 
   applyDominatedColor(dominatedColors) {
-    this.wrapper.style.boxShadow = `inset 0 0 0.5rem 0.25rem rgba(${dominatedColors[0].rgba.join(',')}), inset 0 0 1rem 0.5rem rgba(${dominatedColors[1].rgba.join(',')})`;
-    this.wrapper.style.backgroundColor = `rgba(${dominatedColors[0].rgba[0]},${dominatedColors[0].rgba[1]},${dominatedColors[0].rgba[2]},0.5)`;
+    const [r, g, b] = dominatedColors[Math.ceil(Math.random() * 5) - 1].rgba;
+    this.wrapper.style.backgroundColor = `rgba(${r},${g},${b},0.5)`;
     this.wrapper.querySelectorAll('.color-wrapper > label').forEach((label, index) => {
       label.style.backgroundColor = `rgba(${dominatedColors[index].rgba.join(',')})`;
     });
@@ -80,8 +86,14 @@ customElements.define('flay-cover', FlayCover);
 const CSS = `
 div.cover {
   aspect-ratio: var(--cover-aspect-ratio);
-  background: var(--color-bg-cover) no-repeat center / cover;
+  background: transparent no-repeat center / cover;
   border-radius: var(--border-radius);
+  box-shadow: inset 0 0 0.25rem 0.125rem var(--color-bg-cover);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  width: calc(100% - 1rem);
   transition: 0.2s;
 }
 div.cover.contain {
@@ -94,8 +106,9 @@ div.cover .color-wrapper {
   position: absolute;
   bottom: 0;
   right: 0;
-  padding: 0.25rem;
+  padding: 0.75rem;
   display: flex;
+  gap: 0.5rem;
   background-color: transparent;
 }
 div.cover .color-wrapper.hide {
@@ -104,8 +117,17 @@ div.cover .color-wrapper.hide {
 div.cover .color-wrapper label {
   width: 1.5rem;
   height: 0.5rem;
+  border: 0;
   border-radius: 0.25rem;
   box-shadow: 1px 1px 3px 0px #0008;
-  margin: 0.25rem;
+  margin: 0;
+  padding: 0;
+}
+div.cover .cover-image {
+  border: 0;
+  border-radius: 0.25rem;
+  padding: 0;
+  width: 100%;
+  height: auto;
 }
 `;

@@ -93,7 +93,7 @@ div.cover {
   justify-content: center;
   align-items: center;
   padding: 0.5rem;
-  width: calc(100% - 1rem);
+  width: 100%;
   transition: 0.2s;
 }
 div.cover.contain {

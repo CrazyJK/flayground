@@ -45,7 +45,7 @@ export default class FlayPage extends HTMLElement {
    *
    * @param {String} opus
    */
-  set(opus) {
+  async set(opus) {
     if (!opus) {
       this.style.display = 'none';
       return;
@@ -54,7 +54,7 @@ export default class FlayPage extends HTMLElement {
     this.opus = opus;
     this.setAttribute('opus', opus);
 
-    fetch('/flay/' + opus + '/fully')
+    await fetch('/flay/' + opus + '/fully')
       .then((res) => res.json())
       .then((fullyFlay) => {
         const { actress, flay } = fullyFlay;

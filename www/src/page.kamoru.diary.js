@@ -12,6 +12,10 @@ import './page.kamoru.diary.scss';
 import './util/theme.listener';
 
 import SVG from './elements/svg.json';
+
+import SideNavBar from './elements/page/SideNavBar';
+document.querySelector('body').prepend(new SideNavBar());
+
 document.querySelector('#weather-sunny + label').innerHTML = SVG.weather.sunny;
 document.querySelector('#weather-cloud + label').innerHTML = SVG.weather.cloud;
 document.querySelector('#weather-rainy + label').innerHTML = SVG.weather.rain;

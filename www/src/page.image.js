@@ -2,6 +2,9 @@ import './page.image.scss';
 import { getDominatedColors } from './util/dominatedColor';
 import './util/theme.listener';
 
+import SideNavBar from './elements/page/SideNavBar';
+document.querySelector('body').prepend(new SideNavBar());
+
 const main = document.querySelector('main');
 const img = document.querySelector('img');
 const imgIdx = document.querySelector('#imgIdx');

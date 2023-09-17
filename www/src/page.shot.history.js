@@ -2,6 +2,9 @@ import FlayCard from './elements/card/FlayCard';
 import './page.shot.history.scss';
 import './util/theme.listener';
 
+import SideNavBar from './elements/page/SideNavBar';
+document.querySelector('body').prepend(new SideNavBar());
+
 let i = 0;
 
 showHistory();

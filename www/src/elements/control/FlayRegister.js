@@ -6,7 +6,7 @@ import SVG from '../svg.json';
 /**
  *
  */
-export default class FlaySearch extends HTMLElement {
+export default class FlayRegister extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
@@ -16,7 +16,7 @@ export default class FlaySearch extends HTMLElement {
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('flay-search');
+    this.wrapper.classList.add('flay-register');
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.wrapper.innerHTML = HTML;
@@ -229,7 +229,7 @@ export default class FlaySearch extends HTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-search', FlaySearch);
+customElements.define('flay-register', FlayRegister);
 
 const HTML = `
 <div class="search-group">
@@ -294,17 +294,16 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 `;
 
 const CSS = `
-.flay-search {
-  border: 1px solid #000;
+.flay-register {
   padding: 1rem;
-  width: 900px;
+  width: 100%;
 }
 
-.flay-search > div.search-group {
+.flay-register > div.search-group {
   border: 2px dashed rgb(66, 46, 7);
   margin-bottom: 1rem;
 }
-.flay-search > div.search-group > div {
+.flay-register > div.search-group > div {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -313,10 +312,10 @@ const CSS = `
   margin: 2px;
 }
 
-.flay-search input,
-.flay-search textarea,
-.flay-search button,
-.flay-search .checkbox {
+.flay-register input,
+.flay-register textarea,
+.flay-register button,
+.flay-register .checkbox {
   background: #0004;
   color: var(--color-text);
   margin: 1px 2px;
@@ -328,8 +327,8 @@ const CSS = `
   text-align: left !important;
 }
 
-.flay-search input,
-.flay-search textarea {
+.flay-register input,
+.flay-register textarea {
   cursor: initial !important;
 }
 
@@ -426,5 +425,8 @@ const CSS = `
 /* found flay */
 #found-flay {
   padding: 0.5rem;
+}
+#found-flay label {
+  font-size: var(--font-smallest);
 }
 `;

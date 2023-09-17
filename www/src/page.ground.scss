@@ -1,16 +1,2 @@
 @import './css/style.scss';
 @import './css/layout.page.scss';
-
-#layer {
-  position: absolute;
-  inset: 0;
-
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-
-  background-color: transparent;
-}
-#layer > * {
-  box-shadow: var(--box-shadow);
-}

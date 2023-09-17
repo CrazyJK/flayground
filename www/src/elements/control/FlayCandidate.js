@@ -73,15 +73,9 @@ const HTML = `
 
 const CSS = `
 div.candidate {
-  position: fixed;
-  inset: 0;
-  margin: 0 auto;
-
   display: grid;
   grid-template-rows: 3rem 1fr;
-
   padding: 1rem;
-  width: 900px;
 }
 div.candidate div {
   text-align: center;

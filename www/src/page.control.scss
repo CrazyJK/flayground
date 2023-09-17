@@ -1,0 +1,42 @@
+@import './css/style.scss';
+
+main {
+  display: grid;
+  grid-template-rows: 3rem 1fr;
+  position: fixed;
+  inset: 0;
+
+  header {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+
+    .tab-group {
+      display: flex;
+      justify-content: center;
+
+      .tab-button {
+        border: 1px solid var(--color-border);
+        padding: 0.25rem 0.5rem;
+
+        &.active {
+          text-shadow: 1px 1px 2px var(--color-checked);
+        }
+      }
+    }
+  }
+
+  article {
+    border-top: 1px solid var(--color-border);
+    overflow: auto;
+    background: transparent url('./img/svg/flayground-circle.svg') no-repeat center / 20rem fixed;
+
+    .tab-content {
+      display: none;
+
+      &.active {
+        display: block;
+      }
+    }
+  }
+}

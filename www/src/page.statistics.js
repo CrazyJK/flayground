@@ -1,6 +1,9 @@
 import './page.statistics.scss';
 import './util/theme.listener';
 
+import SideNavBar from './elements/page/SideNavBar';
+document.querySelector('body').prepend(new SideNavBar());
+
 let rawList = [];
 let startDate;
 let endDate;

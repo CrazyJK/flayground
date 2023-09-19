@@ -1,5 +1,6 @@
 import FlayPage from './elements/page/FlayPage';
 import './index.scss';
+import './util/flay.sse';
 
 import SideNavBar from './elements/page/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
@@ -32,3 +33,19 @@ function showFlay() {
     flayPage.style.opacity = 1;
   });
 }
+
+window.emitFlay = (flay) => {
+  if (flayPage.opus === flay.opus) flayPage.reload();
+};
+window.emitStudio = (studio) => {
+  if (flayPage.flay.studio === studio.name) flayPage.reload();
+};
+window.emitVideo = (video) => {
+  if (flayPage.opus === video.opus) flayPage.reload();
+};
+window.emitActress = (actress) => {
+  if (Array.from(flayPage.flay.actressList).filter((name) => name === actress.name).length > 0) flayPage.reload();
+};
+window.emitTag = (tag) => {
+  flayPage.reload();
+};

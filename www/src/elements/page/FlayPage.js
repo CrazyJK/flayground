@@ -117,4 +117,10 @@ article.page > flay-actress {
   width: 100%;
   max-width: 900px;
 }
+@media screen and (max-height: 1400px) {
+  article.page > flay-cover,
+  article.page > flay-actress {
+    margin: 0.5rem auto;
+  }
+}
 `;

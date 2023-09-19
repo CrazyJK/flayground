@@ -60,6 +60,12 @@ flay-page {
   }
 }
 
+@media screen and (max-width: 900px) {
+  flay-page {
+    max-width: 800px;
+  }
+}
+
 flay-batch {
   max-width: 100%;
 }

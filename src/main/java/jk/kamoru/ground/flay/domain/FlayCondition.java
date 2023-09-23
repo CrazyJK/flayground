@@ -9,7 +9,7 @@ public class FlayCondition {
     STUDIO, OPUS, TITLE, ACTRESS, RELEASE, PLAY, RANK, LASTPLAY, LASTACCESS, LASTMODIFIED, SCORE, LENGTH;
   }
 
-  private Sort sort = Sort.OPUS;
+  private Sort sort = Sort.RELEASE;
   private boolean reverse = false;
 
   private String studio;
@@ -17,10 +17,10 @@ public class FlayCondition {
   private String title;
   private String actress;
   private String release;
-  private int[] rank;
+  private int[] rank = new int[] { 0, 1, 2, 3, 4, 5 };
   private String search;
-  private boolean withSubtitles;
-  private boolean withFavorite;
-  private boolean withNoFavorite;
+  private boolean withSubtitles = false;
+  private boolean withFavorite = false;
+  private boolean withNoFavorite = false;
 
 }

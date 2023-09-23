@@ -1,3 +1,5 @@
+import { addResizeLazyEventListener } from '../../util/windowResize';
+
 const NEXT = 'NEXT';
 const PREV = 'PREV';
 const RANDOM = 'RANDOM';
@@ -100,6 +102,10 @@ export default class FlayPagination extends HTMLElement {
           break;
       }
     });
+
+    addResizeLazyEventListener(() => {
+      this.display();
+    });
   }
 
   set(opusList) {
@@ -192,14 +198,16 @@ export default class FlayPagination extends HTMLElement {
 
     let method = 0;
     if (method == 0) {
-      let currPageNo = Math.ceil((this.opusIndex + 1) / 10);
-      let lastPageNo = Math.ceil(this.opusList.length / 10);
+      let domRect = this.getBoundingClientRect();
+      const RANGE = domRect.width > 1200 ? 20 : 10;
+      let currPageNo = Math.ceil((this.opusIndex + 1) / RANGE);
+      let lastPageNo = Math.ceil(this.opusList.length / RANGE);
       let pageRange = [];
       if (1 < currPageNo) {
         pageRange.push(0);
       }
-      for (let i = 0; i < 10; i++) {
-        pageRange.push((currPageNo - 1) * 10 + i);
+      for (let i = 0; i < RANGE; i++) {
+        pageRange.push((currPageNo - 1) * RANGE + i);
       }
       if (currPageNo < lastPageNo) {
         pageRange.push(lastIndex);

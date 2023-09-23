@@ -44,10 +44,6 @@ export default class FlayFiles extends HTMLElement {
       }
     });
 
-    this.playLabel = this.infoDiv.appendChild(document.createElement('label'));
-    this.playLabel.classList.add('play-label');
-    this.playLabel.innerHTML = 'Play';
-
     this.sizeLabel = this.infoDiv.appendChild(document.createElement('label'));
     this.sizeLabel.classList.add('size-label');
     this.sizeLabel.innerHTML = '';
@@ -113,9 +109,6 @@ export default class FlayFiles extends HTMLElement {
 
     this.subBtn.innerHTML = 'Sub<i class="badge">' + flay.files.subtitles.length + '</i>';
     this.subBtn.classList.toggle('disable', flay.files.subtitles.length === 0);
-
-    this.playLabel.innerHTML = 'Play<i class="badge">' + flay.video.play + '</i>';
-    this.playLabel.classList.toggle('disable', flay.video.play === 0);
 
     this.sizeLabel.innerHTML = getPrettyFilesize(flay.length);
 
@@ -232,14 +225,12 @@ div.files > div.list > div.rename-flay > button {
 }
 @media screen and (max-width: 600px) {
   .sub-btn,
-  .play-label,
   .size-label,
   .files-btn {
     display: none;
   }
 }
 div.files.small .sub-btn,
-div.files.small .play-label,
 div.files.small .size-label,
 div.files.small .files-btn {
   display: none !important;

@@ -5,7 +5,7 @@ export function addResizeLazyEventListener(callback) {
   window.addEventListener('resize', () => {
     clearTimeout(timer);
     timer = setTimeout(() => {
-      console.log('window resize', callback);
+      console.debug('window resize', callback);
       if (callback) {
         callback();
       }

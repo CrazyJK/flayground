@@ -44,11 +44,6 @@ export default class FlayRelease extends HTMLElement {
     this.modifiedSpan.innerHTML = dateFormat(flay.lastModified);
     this.accessSpan.innerHTML = dateFormat(flay.video.lastAccess);
     this.playedSpan.innerHTML = dateFormat(flay.video.lastPlay);
-
-    // this.releaseLabel.textContent = flay.release;
-    // this.lastModifiedLabel.innerHTML = flay.lastModified > 0 ? '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>' : '';
-    // this.lastAccessLabel.innerHTML = flay.video.lastAccess > 0 ? '<small>' + dateFormat(flay.video.lastAccess) + '<i class="badge">acc</i></small>' : '';
-    // this.lastPlayLabel.innerHTML = flay.video.lastPlay > 0 ? '<small>' + dateFormat(flay.video.lastPlay) + '<i class="badge">play</i></small>' : '';
   }
 }
 
@@ -57,13 +52,13 @@ customElements.define('flay-release', FlayRelease);
 
 function dateFormat(time) {
   if (time < 0) {
-    return '0000-00-00';
+    return '00/00/00';
   }
   const date = new Date(time);
-  let year = date.getFullYear();
+  let year = date.getFullYear() - 2000;
   let month = date.getMonth() + 1;
   let day = date.getDate();
-  return `${year}-${month > 9 ? month : '0' + month}-${day > 9 ? day : '0' + day}`;
+  return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day}`;
 }
 
 const HTML = `
@@ -78,16 +73,14 @@ div.release {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  align-items: center;
-}
-div.release label {
-  min-width: 8rem;
-  text-align: center;
+  align-items: baseline;
 }
 div.release .modified-label,
 div.release .access-label,
 div.release .played-label {
   font-size: var(--font-normal);
+  min-width: 7rem;
+  text-align: center;
 }
 
 div.release.small .modified-label,

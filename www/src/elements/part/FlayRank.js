@@ -52,6 +52,9 @@ export default class FlayRank extends HTMLElement {
       FlayAction.setLike(this.flay.opus);
     });
 
+    this.playLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.playLabel.classList.add('play-label');
+
     this.scoreLabel = this.wrapper.appendChild(document.createElement('label'));
     this.scoreLabel.classList.add('score-label');
   }
@@ -82,11 +85,14 @@ export default class FlayRank extends HTMLElement {
     let likeCount = flay.video.likes ? (flay.video.likes.length > 0 ? flay.video.likes.length : '') : '';
 
     this.likeBtn.setAttribute('title', 'Shot ' + likeCount);
-    this.likeBtn.innerHTML = 'Shot<i class="badge">' + likeCount + '</i>';
-    this.likeBtn.classList.toggle('disable', likeCount === '');
+    this.likeBtn.innerHTML = '<span>Shot</span><i class="badge">' + likeCount + '</i>';
+    this.likeBtn.classList.toggle('notyet', likeCount === '');
 
-    this.scoreLabel.innerHTML = 'Score<i class="badge score">' + flay.score + '</i>';
-    this.scoreLabel.classList.toggle('disable', flay.score === 0);
+    this.playLabel.innerHTML = '<span>Play</span><i class="badge play">' + flay.video.play + '</i>';
+    this.playLabel.classList.toggle('notyet', flay.video.play === 0);
+
+    this.scoreLabel.innerHTML = '<span>Score</span><i class="badge score">' + flay.score + '</i>';
+    this.scoreLabel.classList.toggle('notyet', flay.score === 0);
   }
 }
 
@@ -125,6 +131,7 @@ div.rank.small {
   gap: 0.5rem;
 }
 div.rank.small .rank-group,
+div.rank.small .play-label,
 div.rank.small .score-label,
 div.rank.small .like-btn {
   display: none;
@@ -144,5 +151,8 @@ div.rank.small button {
 }
 .badge.score {
   min-width: 2rem;
+}
+.notyet span {
+  color: var(--color-text-secondary);
 }
 `;

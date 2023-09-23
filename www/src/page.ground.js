@@ -7,21 +7,27 @@ import './util/flay.sse';
 import SideNavBar from './elements/page/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
+const flayCondition = new FlayCondition();
 const flayPage = new FlayPage();
-const flayPagination = new FlayPagination((opus) => renderFlayPage(opus));
-const flayCondition = new FlayCondition((list) => flayPagination.set(list));
+const flayPagination = new FlayPagination();
+
+flayCondition.addEventListener('change', (e) => {
+  console.debug('flayCondition', e.type, e.detail.list, e);
+  flayPagination.set(e.detail.list);
+});
+
+flayPagination.addEventListener('change', (e) => {
+  console.debug('flayPagination', e.type, e.target.opus, e);
+  if (!document.startViewTransition) {
+    flayPage.set(e.target.opus);
+  } else {
+    document.startViewTransition(() => flayPage.set(e.target.opus));
+  }
+});
 
 document.querySelector('body > main > header').appendChild(flayCondition);
 document.querySelector('body > main > article').appendChild(flayPage);
 document.querySelector('body > main > footer').appendChild(flayPagination);
-
-function renderFlayPage(opus) {
-  if (!document.startViewTransition) {
-    flayPage.set(opus);
-  } else {
-    document.startViewTransition(() => flayPage.set(opus));
-  }
-}
 
 window.emitFlay = (flay) => {
   if (flayPage.opus === flay.opus) flayPage.reload();

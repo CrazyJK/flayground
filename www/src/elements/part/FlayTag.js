@@ -1,8 +1,5 @@
 import FlayAction from '../../util/flay.action';
 
-/**
- *
- */
 export default class FlayTag extends HTMLElement {
   constructor() {
     super();
@@ -14,21 +11,30 @@ export default class FlayTag extends HTMLElement {
     STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('tag');
+    this.wrapper.innerHTML = `
+      <div class="tag-list" id="tagList">
+        <button class="tag-new-btn" id="tagNewBtn">NEW</button>
+      </div>
+      <div class="tag-new" id="tagNewWrap">
+        <input type="search" id="tagNewInput" placeholder="new Tag">
+      </div>
+    `;
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
-    this.tagInputElementArray = [];
+    this.tagList = null;
 
-    this.tagListElement = this.wrapper.appendChild(document.createElement('div'));
-    this.tagListElement.classList.add('tag-list');
+    const tagNewBtn = this.shadowRoot.querySelector('#tagNewBtn');
+    const tagNewWrap = this.shadowRoot.querySelector('#tagNewWrap');
+    const tagNewInput = this.shadowRoot.querySelector('#tagNewInput');
 
-    this.tagNewElement = this.wrapper.appendChild(document.createElement('div'));
-    this.tagNewElement.classList.add('tag-new');
+    tagNewBtn.addEventListener('click', (e) => {
+      if (tagNewWrap.classList.toggle('show')) {
+        tagNewInput.focus();
+      }
+    });
 
-    this.tagNewInput = this.tagNewElement.appendChild(document.createElement('input'));
-    this.tagNewInput.type = 'search';
-    this.tagNewInput.placeholder = 'new Tag';
-    this.tagNewInput.addEventListener('keyup', (e) => {
+    tagNewInput.addEventListener('keyup', (e) => {
       e.preventDefault();
       e.stopPropagation();
       if (e.code !== 'Enter' && e.code !== 'NumpadEnter') {
@@ -36,9 +42,9 @@ export default class FlayTag extends HTMLElement {
       }
       console.log('tagNewInputKeyup', this.flay.opus, '[' + e.target.value + ']');
       FlayAction.newTag(e.target.value, (tag) => {
-        fetchTag(this.flay, this.tagInputElementArray, this.tagListElement, this.tagNewElement).then(() => {
+        this.#fetchTag(true).then(() => {
           FlayAction.toggleTag(this.flay.opus, tag.id, true, () => {
-            this.tagNewElement.classList.remove('show');
+            tagNewWrap.classList.remove('show');
           });
         });
       });
@@ -52,16 +58,17 @@ export default class FlayTag extends HTMLElement {
   /**
    *
    * @param {Flay} flay
+   * @param {boolean} reload
    */
-  set(flay) {
+  set(flay, reload) {
     this.resize();
     this.flay = flay;
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
 
-    fetchTag(this.flay, this.tagInputElementArray, this.tagListElement, this.tagNewElement, this.tagNewInput)
-      .then(() => {
-        this.tagInputElementArray.forEach((input) => {
+    this.#fetchTag(reload)
+      .then((tagListWrap) => {
+        tagListWrap.querySelectorAll('input').forEach((input) => {
           let id = input.getAttribute('value');
           let foundTags = Array.from(flay.video.tags).filter((tag) => tag.id === Number(id));
           if (foundTags.length > 0) {
@@ -70,67 +77,62 @@ export default class FlayTag extends HTMLElement {
             input.checked = false;
           }
         });
+        return tagListWrap;
       })
-      .then(() => {
-        this.tagListElement.childNodes.forEach((child) => {
-          if (child.tagName === 'LABEL') {
-            let keywords = [child.textContent, ...child.title.split(',')].filter((keyword) => keyword !== '').map((keyword) => keyword.trim());
-            let found = false;
-            for (let keyword of keywords) {
-              if ((flay.title + flay.video.comment).indexOf(keyword) > -1) {
-                found = true;
-                break;
-              }
+      .then((tagListWrap) => {
+        tagListWrap.querySelectorAll('label').forEach((label) => {
+          const keywords = [label.textContent, ...label.title.split(',')].filter((keyword) => keyword !== '').map((keyword) => keyword.trim());
+          let found = false;
+          for (let keyword of keywords) {
+            if ((flay.title + flay.video.comment).indexOf(keyword) > -1) {
+              found = true;
+              break;
             }
-            child.classList.toggle('candidate', found);
           }
+          label.classList.toggle('candidate', found);
         });
       });
+  }
+
+  async #fetchTag(reload) {
+    const tagListWrap = this.shadowRoot.querySelector('#tagList');
+    if (this.tagList === null || reload) {
+      this.tagList = await fetch('/info/tag').then((res) => res.json());
+
+      tagListWrap.querySelectorAll('input, label').forEach((element) => {
+        element.remove();
+      });
+
+      Array.from(this.tagList)
+        .sort((t1, t2) => {
+          return t2.name.localeCompare(t1.name);
+        })
+        .forEach((tag) => {
+          const input = document.createElement('input');
+          input.setAttribute('type', 'checkbox');
+          input.setAttribute('name', 'tag');
+          input.setAttribute('id', 'tag' + tag.id);
+          input.setAttribute('value', tag.id);
+          input.addEventListener('change', (e) => {
+            console.log('tagChange', this.flay.opus, e.target.value, e.target.checked);
+            FlayAction.toggleTag(this.flay.opus, e.target.value, e.target.checked);
+          });
+
+          const label = document.createElement('label');
+          label.setAttribute('title', tag.description);
+          label.setAttribute('for', 'tag' + tag.id);
+          label.textContent = tag.name;
+
+          tagListWrap.prepend(label);
+          tagListWrap.prepend(input);
+        });
+    }
+    return tagListWrap;
   }
 }
 
 // Define the new element
 customElements.define('flay-tag', FlayTag);
-
-async function fetchTag(flay, tagInputElementArray, tagListElement, tagNewElement, tagNewInput) {
-  return fetch('/info/tag')
-    .then((res) => res.json())
-    .then((tagList) => {
-      tagListElement.textContent = null;
-      Array.from(tagList)
-        .sort((t1, t2) => {
-          return t1.name.localeCompare(t2.name);
-        })
-        .forEach((tag) => {
-          const tagInputElement = tagListElement.appendChild(document.createElement('input'));
-          tagInputElement.setAttribute('type', 'checkbox');
-          tagInputElement.setAttribute('name', 'tag');
-          tagInputElement.setAttribute('id', 'tag' + tag.id);
-          tagInputElement.setAttribute('value', tag.id);
-          tagInputElement.addEventListener('change', (e) => {
-            console.log('tagChange', flay.opus, e.target.value, e.target.checked);
-            FlayAction.toggleTag(flay.opus, e.target.value, e.target.checked);
-          });
-
-          const label = tagListElement.appendChild(document.createElement('label'));
-          label.setAttribute('title', tag.description);
-          label.setAttribute('for', 'tag' + tag.id);
-          label.textContent = tag.name;
-
-          tagInputElementArray.push(tagInputElement);
-        });
-
-      const tagNewBtn = tagListElement.appendChild(document.createElement('button'));
-      tagNewBtn.classList.add('tag-new-btn');
-      tagNewBtn.textContent = 'NEW';
-      tagNewBtn.addEventListener('click', () => {
-        tagNewElement.classList.toggle('show');
-        if (tagNewElement.classList.contains('show')) {
-          tagNewInput.focus();
-        }
-      });
-    });
-}
 
 const CSS = `
 div.tag {

@@ -1,9 +1,6 @@
 import { getDominatedColors } from '../../util/dominatedColor';
 import FlayStorage from '../../util/flay.storage';
 
-/**
- *
- */
 export default class FlayCover extends HTMLElement {
   constructor() {
     super();
@@ -18,10 +15,9 @@ export default class FlayCover extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.flay = null;
-    this.isSamll = false;
 
-    this.wrapper.addEventListener('click', (e) => {
-      e.target.classList.toggle('contain');
+    this.wrapper.addEventListener('click', () => {
+      this.wrapper.classList.toggle('contain');
     });
 
     this.coverImage = this.wrapper.appendChild(document.createElement('img'));
@@ -35,9 +31,7 @@ export default class FlayCover extends HTMLElement {
   }
 
   resize() {
-    this.isSmall = this.classList.contains('small') || this.parentElement?.classList.contains('small');
-    this.wrapper.classList.toggle('small', this.isSmall);
-    this.colorWrapper.classList.toggle('hide', this.isSmall);
+    this.wrapper.classList.toggle('small', this.classList.contains('small') || this.parentElement?.classList.contains('small'));
   }
 
   /**
@@ -47,31 +41,34 @@ export default class FlayCover extends HTMLElement {
   set(flay) {
     this.resize();
     this.flay = flay;
-
-    const url = `/static/cover/${flay.opus}`;
-
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
 
+    const COVER_URL = `/static/cover/${flay.opus}`;
+
     this.coverImage.onload = () => {
-      this.coverImage.style.maxHeight = `calc(${this.coverImage.width}px * 269 / 400)`;
-      if (!this.isSmall) {
+      // this.coverImage.style.maxHeight = `calc(${this.coverImage.width}px * 269 / 400)`;
+      if (!this.#isSmall()) {
         // 대표색상 추출
         let savedDominatedColors = FlayStorage.session.getObject('dominatedColor_' + flay.opus, null);
         if (savedDominatedColors == null) {
           getDominatedColors(this.coverImage, { scale: 0.2, offset: 16, limit: 5 }).then((dominatedColors) => {
             FlayStorage.session.set('dominatedColor_' + flay.opus, JSON.stringify(dominatedColors));
-            this.applyDominatedColor(dominatedColors);
+            this.#applyDominatedColor(dominatedColors);
           });
         } else {
-          this.applyDominatedColor(savedDominatedColors);
+          this.#applyDominatedColor(savedDominatedColors);
         }
       }
     };
-    this.coverImage.src = url;
+    this.coverImage.src = COVER_URL;
   }
 
-  applyDominatedColor(dominatedColors) {
+  #isSmall() {
+    return this.wrapper.classList.contains('small');
+  }
+
+  #applyDominatedColor(dominatedColors) {
     const [r, g, b] = dominatedColors[Math.ceil(Math.random() * 5) - 1].rgba;
     this.wrapper.style.backgroundColor = `rgba(${r},${g},${b},0.5)`;
     this.wrapper.querySelectorAll('.color-wrapper > label').forEach((label, index) => {
@@ -94,13 +91,25 @@ div.cover {
   align-items: center;
   padding: 0.5rem;
   width: 100%;
+  overflow: hidden;
   transition: 0.2s;
 }
-div.cover.contain {
-  background-size: contain;
-}
 div.cover.small {
+  align-items: flex-start;
   box-shadow: none;
+  padding: 0;
+}
+div.cover .cover-image {
+  border: 0;
+  border-radius: 0.25rem;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: auto;
+}
+div.cover.contain .cover-image {
+  width: auto;
+  height: 104%;
 }
 div.cover .color-wrapper {
   position: absolute;
@@ -111,7 +120,7 @@ div.cover .color-wrapper {
   gap: 0.5rem;
   background-color: transparent;
 }
-div.cover .color-wrapper.hide {
+div.cover.small .color-wrapper {
   display: none;
 }
 div.cover .color-wrapper label {
@@ -122,12 +131,5 @@ div.cover .color-wrapper label {
   box-shadow: 1px 1px 3px 0px #0008;
   margin: 0;
   padding: 0;
-}
-div.cover .cover-image {
-  border: 0;
-  border-radius: 0.25rem;
-  padding: 0;
-  width: 100%;
-  height: auto;
 }
 `;

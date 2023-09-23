@@ -1,24 +1,33 @@
 import FlayStorage from '../../util/flay.storage';
 import SVG from '../svg.json';
 
-/**
- *
- */
 export default class FlayCondition extends HTMLElement {
-  constructor(listener) {
+  condition = {
+    search: '',
+    withSubtitles: false,
+    withFavorite: false,
+    withNoFavorite: false,
+    rank: ['0'],
+    sort: 'RELEASE',
+  };
+
+  constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('condition');
-    this.shadowRoot.append(LINK, STYLE, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    const WRAPPER = document.createElement('div');
+    WRAPPER.classList.add('condition');
+    this.shadowRoot.append(LINK, STYLE, WRAPPER); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    this.listener = listener;
+    this.render(WRAPPER);
+  }
 
+  render(wrapper) {
     // search
     const SEARCH_DIV = wrapper.appendChild(document.createElement('div'));
     this.INPUT_SEARCH = createInput(SEARCH_DIV, 1, 'search', '', 'Keyword', 'search');
@@ -50,17 +59,9 @@ export default class FlayCondition extends HTMLElement {
     const SORT_DIV = wrapper.appendChild(document.createElement('div'));
     this.SORT_SELECT = createSelect(SORT_DIV, 0, 'sort', SORT_METHODS, 'Sort method');
     addEventListener(this, 'change', this.SORT_SELECT);
+  }
 
-    // initial value
-    this.condition = {
-      search: '',
-      withSubtitles: false,
-      withFavorite: false,
-      withNoFavorite: false,
-      rank: ['0'],
-      sort: 'RELEASE',
-    };
-
+  connectedCallback() {
     this.condition = FlayStorage.local.getObject('FlayCondition.condition', JSON.stringify(this.condition));
 
     this.SUBTITLES_CHECKBOX.checked = this.condition.withSubtitles;
@@ -77,7 +78,7 @@ export default class FlayCondition extends HTMLElement {
    *
    * @returns 검색 조건 객체
    */
-  get() {
+  getCondition() {
     this.condition = {
       search: this.INPUT_SEARCH.value,
       withSubtitles: this.SUBTITLES_CHECKBOX.checked,
@@ -94,12 +95,14 @@ export default class FlayCondition extends HTMLElement {
    * 조건에 맞는 opus 목록
    */
   fetch() {
-    fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.get()) })
+    fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.getCondition()) })
       .then((res) => res.json())
       .then((list) => {
-        if (this.listener) {
-          this.listener(list);
-        }
+        this.dispatchEvent(
+          new CustomEvent('change', {
+            detail: { list: list },
+          })
+        );
       });
   }
 }

@@ -153,6 +153,7 @@ i.badge {
   font-size: var(--font-small);
   font-style: normal;
   font-weight: 400;
+  min-width: 1rem;
 }
 
 /* 커스텀 엘리먼트 small 모드 */

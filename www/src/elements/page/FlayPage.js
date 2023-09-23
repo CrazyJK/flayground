@@ -9,13 +9,15 @@ import FlayStudio from '../part/FlayStudio';
 import FlayTag from '../part/FlayTag';
 import FlayTitle from '../part/FlayTitle';
 
-/**
- *
- */
 export default class FlayPage extends HTMLElement {
+  opus = null;
+  flay = null;
+  actress = null;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
@@ -31,21 +33,17 @@ export default class FlayPage extends HTMLElement {
     this.flayTitle = wrapper.appendChild(new FlayTitle());
     this.flayCover = wrapper.appendChild(new FlayCover());
     this.flayActress = wrapper.appendChild(new FlayActress());
+    this.flayRelease = wrapper.appendChild(new FlayRelease());
     this.flayFiles = wrapper.appendChild(new FlayFiles());
     this.flayRank = wrapper.appendChild(new FlayRank());
-    this.flayRelease = wrapper.appendChild(new FlayRelease());
     this.flayTag = wrapper.appendChild(new FlayTag());
-
-    this.opus = null;
-    this.flay = null;
-    this.actress = null;
   }
 
   /**
    *
    * @param {String} opus
    */
-  async set(opus) {
+  async set(opus, reload) {
     if (!opus) {
       this.style.display = 'none';
       return;
@@ -60,16 +58,17 @@ export default class FlayPage extends HTMLElement {
         const { actress, flay } = fullyFlay;
         this.flay = flay;
         this.actress = actress;
-        this.flayCover.set(flay);
-        this.flayStudio.set(flay);
-        this.flayOpus.set(flay);
-        this.flayTitle.set(flay);
-        this.flayComment.set(flay);
-        this.flayActress.set(flay, actress);
-        this.flayRelease.set(flay);
-        this.flayFiles.set(flay);
-        this.flayRank.set(flay);
-        this.flayTag.set(flay);
+
+        this.flayCover.set(flay, reload);
+        this.flayStudio.set(flay, reload);
+        this.flayOpus.set(flay, reload);
+        this.flayTitle.set(flay, reload);
+        this.flayComment.set(flay, reload);
+        this.flayActress.set(flay, actress, reload);
+        this.flayRelease.set(flay, reload);
+        this.flayFiles.set(flay, reload);
+        this.flayRank.set(flay, reload);
+        this.flayTag.set(flay, reload);
 
         this.style.display = 'block';
       });
@@ -79,7 +78,7 @@ export default class FlayPage extends HTMLElement {
    * reload data
    */
   reload() {
-    this.set(this.opus);
+    this.set(this.opus, true);
   }
 }
 

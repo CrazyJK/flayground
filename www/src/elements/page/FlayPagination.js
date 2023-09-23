@@ -7,37 +7,40 @@ const PAGEUP = 'PAGEUP';
 const PAGEDOWN = 'PAGEDOWN';
 const BACK = 'BACK';
 
-/**
- *
- */
 export default class FlayPagination extends HTMLElement {
-  constructor(listener) {
+  opus = null;
+  opusIndex = -1;
+  opusList = null;
+  active = true;
+  history = [];
+
+  constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('pagination');
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    const WRAPPER = document.createElement('div');
+    WRAPPER.classList.add('pagination');
+    this.shadowRoot.append(LINK, STYLE, WRAPPER); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    this.opus = null;
-    this.opusIndex = -1;
-    this.opusList = null;
-    this.listener = listener;
-    this.active = true;
-    this.history = [];
+    this.render(WRAPPER);
+  }
 
-    this.PAGING = this.wrapper.appendChild(document.createElement('div'));
+  render(wrapper) {
+    this.PAGING = wrapper.appendChild(document.createElement('div'));
     this.PAGING.classList.add('paging');
 
-    const PROGRESS = this.wrapper.appendChild(document.createElement('div'));
+    const PROGRESS = wrapper.appendChild(document.createElement('div'));
     PROGRESS.classList.add('progress');
     this.PROGRESS_BAR = PROGRESS.appendChild(document.createElement('div'));
     this.PROGRESS_BAR.classList.add('progress-bar');
+  }
 
+  connectedCallback() {
     window.addEventListener('wheel', (e) => {
       if (!this.active) {
         return;
@@ -179,13 +182,11 @@ export default class FlayPagination extends HTMLElement {
       return;
     }
 
-    this.render();
-    if (this.listener) {
-      this.listener(this.opus);
-    }
+    this.display();
+    this.dispatchEvent(new CustomEvent('change'));
   }
 
-  render() {
+  display() {
     let lastIndex = this.opusList.length - 1;
     this.PROGRESS_BAR.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 

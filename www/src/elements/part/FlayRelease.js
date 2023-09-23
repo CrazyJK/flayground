@@ -2,9 +2,12 @@
  *
  */
 export default class FlayRelease extends HTMLElement {
+  flay = null;
+
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
@@ -12,17 +15,15 @@ export default class FlayRelease extends HTMLElement {
     STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('release');
+    this.wrapper.innerHTML = HTML;
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+  }
 
-    this.flay = null;
-
-    this.releaseLabel = this.wrapper.appendChild(document.createElement('label'));
-    this.lastModifiedLabel = this.wrapper.appendChild(document.createElement('label'));
-    this.lastModifiedLabel.classList.add('modified-label');
-    this.lastAccessLabel = this.wrapper.appendChild(document.createElement('label'));
-    this.lastAccessLabel.classList.add('access-label');
-    this.lastPlayLabel = this.wrapper.appendChild(document.createElement('label'));
-    this.lastPlayLabel.classList.add('played-label');
+  connectedCallback() {
+    this.releaseSpan = this.shadowRoot.querySelector('#release');
+    this.modifiedSpan = this.shadowRoot.querySelector('#modified');
+    this.accessSpan = this.shadowRoot.querySelector('#access');
+    this.playedSpan = this.shadowRoot.querySelector('#played');
   }
 
   resize() {
@@ -39,10 +40,15 @@ export default class FlayRelease extends HTMLElement {
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
 
-    this.releaseLabel.textContent = flay.release;
-    this.lastModifiedLabel.innerHTML = flay.lastModified > 0 ? '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>' : '';
-    this.lastAccessLabel.innerHTML = flay.video.lastAccess > 0 ? '<small>' + dateFormat(flay.video.lastAccess) + '<i class="badge">acc</i></small>' : '';
-    this.lastPlayLabel.innerHTML = flay.video.lastPlay > 0 ? '<small>' + dateFormat(flay.video.lastPlay) + '<i class="badge">play</i></small>' : '';
+    this.releaseSpan.innerHTML = flay.release;
+    this.modifiedSpan.innerHTML = dateFormat(flay.lastModified);
+    this.accessSpan.innerHTML = dateFormat(flay.video.lastAccess);
+    this.playedSpan.innerHTML = dateFormat(flay.video.lastPlay);
+
+    // this.releaseLabel.textContent = flay.release;
+    // this.lastModifiedLabel.innerHTML = flay.lastModified > 0 ? '<small>' + dateFormat(flay.lastModified) + '<i class="badge">mod</i></small>' : '';
+    // this.lastAccessLabel.innerHTML = flay.video.lastAccess > 0 ? '<small>' + dateFormat(flay.video.lastAccess) + '<i class="badge">acc</i></small>' : '';
+    // this.lastPlayLabel.innerHTML = flay.video.lastPlay > 0 ? '<small>' + dateFormat(flay.video.lastPlay) + '<i class="badge">play</i></small>' : '';
   }
 }
 
@@ -50,12 +56,22 @@ export default class FlayRelease extends HTMLElement {
 customElements.define('flay-release', FlayRelease);
 
 function dateFormat(time) {
+  if (time < 0) {
+    return '0000-00-00';
+  }
   const date = new Date(time);
   let year = date.getFullYear();
   let month = date.getMonth() + 1;
   let day = date.getDate();
   return `${year}-${month > 9 ? month : '0' + month}-${day > 9 ? day : '0' + day}`;
 }
+
+const HTML = `
+<label class="release-label" ><span id="release" >2023.08.09</span></label>
+<label class="modified-label"><sub>mod    </sub><span id="modified">2023-08-20</span></label>
+<label class="access-label"  ><sub>access </sub><span id="access"  >2023-08-20</span></label>
+<label class="played-label"  ><sub>play   </sub><span id="played"  >2023-08-20</span></label>
+`;
 
 const CSS = `
 div.release {
@@ -64,13 +80,16 @@ div.release {
   justify-content: center;
   align-items: center;
 }
-@media screen and (max-width: 600px) {
-  .modified-label,
-  .access-label,
-  .played-label {
-    display: none;
-  }
+div.release label {
+  min-width: 8rem;
+  text-align: center;
 }
+div.release .modified-label,
+div.release .access-label,
+div.release .played-label {
+  font-size: var(--font-normal);
+}
+
 div.release.small .modified-label,
 div.release.small .access-label,
 div.release.small .played-label {
@@ -78,5 +97,13 @@ div.release.small .played-label {
 }
 div.release.small label {
   font-size: var(--font-small);
+}
+
+@media screen and (max-width: 600px) {
+  .modified-label,
+  .access-label,
+  .played-label {
+    display: none;
+  }
 }
 `;

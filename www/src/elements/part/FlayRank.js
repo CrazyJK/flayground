@@ -85,7 +85,7 @@ export default class FlayRank extends HTMLElement {
     this.likeBtn.innerHTML = 'Shot<i class="badge">' + likeCount + '</i>';
     this.likeBtn.classList.toggle('disable', likeCount === '');
 
-    this.scoreLabel.innerHTML = 'Score<i class="badge">' + flay.score + '</i>';
+    this.scoreLabel.innerHTML = 'Score<i class="badge score">' + flay.score + '</i>';
     this.scoreLabel.classList.toggle('disable', flay.score === 0);
   }
 }
@@ -141,5 +141,8 @@ div.rank.small label svg {
 }
 div.rank.small button {
   font-size: var(--font-normal);
+}
+.badge.score {
+  min-width: 2rem;
 }
 `;

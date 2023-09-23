@@ -4,21 +4,31 @@ export default class SideNavBar extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('nav');
-    wrapper.innerHTML = HTML;
-    this.shadowRoot.append(LINK, STYLE, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    const WRAPPER = document.createElement('div');
+    WRAPPER.classList.add('nav');
+    WRAPPER.innerHTML = HTML;
+    this.shadowRoot.append(LINK, STYLE, WRAPPER); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    // const NavOpen = this.parentElement.append(document.createElement('label'));
+    this.render();
   }
+
+  render() {}
 
   connectedCallback() {
     console.debug('connected', this.parentElement, this.parentElement.closest('html').querySelector('head'), this.shadowRoot.querySelectorAll('a'));
+
+    this.renderParent();
+
+    this.markActiveMenu();
+  }
+
+  renderParent() {
     const NAV_OPEN = document.createElement('label');
     NAV_OPEN.classList.add('nav-open');
     this.parentElement.insertBefore(NAV_OPEN, this);
@@ -26,8 +36,9 @@ export default class SideNavBar extends HTMLElement {
     const PAREMT_STYLE = document.createElement('style');
     PAREMT_STYLE.innerHTML = PARENT_CSS;
     this.parentElement.closest('html').querySelector('head').append(PAREMT_STYLE);
+  }
 
-    // set active
+  markActiveMenu() {
     this.shadowRoot.querySelectorAll('a').forEach((anker) => {
       if (anker.href.indexOf(location.pathname) > -1) {
         anker.parentElement.classList.add('active');
@@ -96,7 +107,7 @@ const HTML = `
 <ul>
   <li><a href="page.control.html"     >control</a></li>
   <li><a href="/swagger-ui/index.html">swagger</a></li>
-  <li><theme-controller/></li>
+  <li style="margin-top: 1rem;"><theme-controller/></li>
 </ul>
 `;
 

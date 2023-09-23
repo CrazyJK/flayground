@@ -13,15 +13,6 @@ const startDate = urlParams.get('s');
 const endDate = urlParams.get('e');
 
 const flayMap = new Map();
-const condition = {
-  search: actressName,
-  withSubtitles: false,
-  withFavorite: false,
-  withNoFavorite: false,
-  rank: [0, 1, 2, 3, 4, 5],
-  sort: 'RELEASE',
-  reverse: true,
-};
 
 const favorite = document.querySelector('#favorite');
 const favLabel = document.querySelector('#favorite + label');
@@ -57,33 +48,22 @@ function fetchActress() {
       comment.value = actress.comment;
     });
 
-  if (startDate && endDate) {
-    fetch('/flay/find/actress/' + actressName)
-      .then((res) => res.json())
-      .then((list) => {
-        const opusList = Array.from(list)
-          .filter((flay) => {
-            if (startDate && endDate) {
-              return startDate < flay.release && flay.release < endDate;
-            } else {
-              return true;
-            }
-          })
-          .map((flay) => flay.opus);
-        renderFlayCardList(opusList).then(() => {
-          countFlaySizeByRank();
-        });
+  fetch('/flay/find/actress/' + actressName)
+    .then((res) => res.json())
+    .then((list) => {
+      const opusList = Array.from(list)
+        .filter((flay) => {
+          if (startDate && endDate) {
+            return startDate < flay.release && flay.release < endDate;
+          } else {
+            return true;
+          }
+        })
+        .map((flay) => flay.opus);
+      renderFlayCardList(opusList).then(() => {
+        countFlaySizeByRank();
       });
-  } else {
-    fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) })
-      .then((res) => res.json())
-      .then((opusList) => {
-        console.log(opusList);
-        renderFlayCardList(opusList).then(() => {
-          countFlaySizeByRank();
-        });
-      });
-  }
+    });
 }
 
 fetchActress();

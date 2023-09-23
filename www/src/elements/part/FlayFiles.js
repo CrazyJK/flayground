@@ -158,7 +158,7 @@ div.files > div.info {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  align-items: flex-end;
+  align-items: stretch;
 }
 div.files > div.list {
   display: none;

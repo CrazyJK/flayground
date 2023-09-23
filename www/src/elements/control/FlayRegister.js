@@ -72,7 +72,12 @@ export default class FlayRegister extends HTMLElement {
           // find Flay
           this.shadowRoot.querySelector('#found-flay').innerHTML = '';
           fetch('/flay/' + inOpus)
-            .then((res) => res.json())
+            .then((res) => {
+              if (res.ok) {
+                return res.json();
+              }
+              throw new Error('notfound: ' + inOpus);
+            })
             .then((flay) => {
               // display Flay
               this.shadowRoot.querySelector('#found-flay').innerHTML = `
@@ -82,6 +87,9 @@ export default class FlayRegister extends HTMLElement {
                 <label>${flay.actressList.join(',')}</label>
                 <label>${flay.release}</label>
               `;
+            })
+            .catch((e) => {
+              console.error(e.message);
             });
           // find Studio
           fetch('/info/studio/findOneByOpus/' + inOpus)
@@ -307,7 +315,7 @@ const CSS = `
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  align-items: baseline;
+  align-items: stretch;
   justify-content: space-between;
   margin: 2px;
 }

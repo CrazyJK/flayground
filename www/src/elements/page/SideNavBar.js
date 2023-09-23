@@ -58,12 +58,13 @@ div.nav {
   flex-direction: column;
   flex-wrap: nowrap;
 }
-
+div.nav > header {
+  padding: 1rem;
+}
 div.nav > header.active > a {
   color: var(--color-checked);
 }
 div.nav > header > a {
-  padding: 0.5rem 1rem 1rem;
   font-family: 'Ink Free';
   font-size: var(--font-largest);
   text-transform: capitalize;

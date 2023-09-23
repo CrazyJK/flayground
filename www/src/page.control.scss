@@ -17,7 +17,13 @@ main {
 
       .tab-button {
         border: 1px solid var(--color-border);
+        border-right: 0;
+        border-bottom: 0;
         padding: 0.25rem 0.5rem;
+
+        &:last-child {
+          border-right: 1px solid var(--color-border);
+        }
 
         &.active {
           text-shadow: 1px 1px 2px var(--color-checked);

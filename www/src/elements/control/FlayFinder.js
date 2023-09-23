@@ -124,6 +124,8 @@ function renderHistory(list, keyword, wrapper) {
         if (e.target.classList.contains('opus')) {
           console.log('opus clicked', history.opus);
           window.open('card.flay.html?opus=' + history.opus, history.opus, 'width=800px,height=536px');
+        } else if (e.target.classList.contains('desc')) {
+          window.open('/info/video/' + history.opus, 'info' + history.opus, 'width=400px,height=600px');
         }
       });
       wrapper.append(DIV);

@@ -20,25 +20,31 @@ export default class TagLayer extends HTMLElement {
     MAIN_DIV.classList.add('tag-main');
 
     // header
-    const TAG_ID = HEADER_DIV.appendChild(document.createElement('label'));
+    const TAG_ID = HEADER_DIV.appendChild(document.createElement('input'));
+    TAG_ID.id = 'tagId';
+    TAG_ID.type = 'text';
+    TAG_ID.placeholder = 'ID';
+    TAG_ID.readOnly = true;
     TAG_ID.addEventListener('click', (e) => {
-      TAG_ID.textContent = '';
+      TAG_ID.value = '';
       TAG_NAME.value = '';
       TAG_DESC.value = '';
     });
 
     const TAG_NAME = HEADER_DIV.appendChild(document.createElement('input'));
+    TAG_NAME.id = 'tagName';
     TAG_NAME.type = 'text';
     TAG_NAME.placeholder = 'Tag name';
 
     const TAG_DESC = HEADER_DIV.appendChild(document.createElement('input'));
+    TAG_DESC.id = 'tagDesc';
     TAG_DESC.type = 'text';
     TAG_DESC.placeholder = 'Description...';
 
     const TAG_APPLY = HEADER_DIV.appendChild(document.createElement('button'));
     TAG_APPLY.textContent = 'Apply';
     TAG_APPLY.addEventListener('click', () => {
-      let tagId = TAG_ID.textContent;
+      let tagId = TAG_ID.value;
       let tagName = TAG_NAME.value;
       let tagDesc = TAG_DESC.value;
       console.log('tag apply click', tagId, tagName, tagDesc);
@@ -53,7 +59,7 @@ export default class TagLayer extends HTMLElement {
     const TAG_DEL = HEADER_DIV.appendChild(document.createElement('button'));
     TAG_DEL.textContent = 'Del';
     TAG_DEL.addEventListener('click', () => {
-      let tagId = TAG_ID.textContent;
+      let tagId = TAG_ID.value;
       let tagName = TAG_NAME.value;
       let tagDesc = TAG_DESC.value;
       if (tagId !== '') {
@@ -86,7 +92,7 @@ export default class TagLayer extends HTMLElement {
             let tagEdit = nameLabel.appendChild(document.createElement('a'));
             tagEdit.innerHTML = SVG.edit;
             tagEdit.addEventListener('click', (e) => {
-              TAG_ID.innerHTML = tag.id;
+              TAG_ID.value = tag.id;
               TAG_NAME.value = tag.name;
               TAG_DESC.value = tag.description;
             });
@@ -118,51 +124,60 @@ const CSS = `
 }
 .tag-layer div.tag-header {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   gap: 1rem;
 }
-.tag-layer div.tag-header label {
-  min-width: 2rem;
+.tag-layer div.tag-header input,
+.tag-layer div.tag-header button {
+  border: 1px dashed chocolate;
 }
+
+.tag-layer div.tag-header input#tagId {
+  max-width: 3rem;
+}
+.tag-layer div.tag-header input#tagDesc {
+  flex: 1 1 auto;
+}
+.tag-layer div.tag-header button {
+  padding: 0 1rem;
+}
+
 .tag-layer .tag-main {
   overflow: auto;
 }
-.tag-layer ol {
+.tag-layer .tag-main ol {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: space-evenly;
   align-items: flex-start;
-  gap: 0.5rem 0.125rem;
+  gap: 0.5rem 0.25rem;
   list-style: none;
   margin: 0;
   padding: 0;
 }
-.tag-layer ol li {
+.tag-layer .tag-main ol li {
   display: flex;
   flex-direction: column;
   border: 1px solid var(--color-border);
   padding: 0.25rem;
-  max-width: 220px;
-  min-width: 100px;
+  /* max-width: 220px; */
+  min-width: 5rem;
   transition: 0.4s;
 }
-.tag-layer ol li:hover {
+.tag-layer .tag-main ol li:hover {
   box-shadow: var(--box-shadow);
 }
-.tag-layer ol li label {
-  position: relative;
-}
-.tag-layer ol li label:nth-child(1) {
+.tag-layer .tag-main ol li label:nth-child(1) {
   display: flex;
   justify-content: space-between;
   gap: 0.25rem;
 }
-.tag-layer ol li label:nth-child(2) {
+.tag-layer .tag-main ol li label:nth-child(2) {
   font-size: var(--font-normal);
   font-weight: 400;
 }
-.tag-layer ol li span {
+.tag-layer .tag-main ol li span {
   flex: 1 1 auto;
 }
 `;

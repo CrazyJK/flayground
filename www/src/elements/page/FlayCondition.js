@@ -181,13 +181,6 @@ div.condition {
   padding: 0.5rem;
   transition: 0.4s;
 }
-div.condition > div > input[type='search'] {
-  outline: none;
-}
-div.condition > div > input[type='search']:hover {
-  background: #0004;
-  border-radius: 0.5rem;
-}
 div.condition > div > label {
   margin: 0 0.25rem;
 }

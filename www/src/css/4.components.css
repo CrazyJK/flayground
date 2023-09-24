@@ -165,3 +165,19 @@ div.small label a {
 div.small label {
   padding: 0.125rem !important;
 }
+
+h1 {
+  font-size: var(--font-largest);
+}
+h2 {
+  font-size: var(--font-large);
+}
+h3 {
+  font-size: var(--font-normal);
+}
+h4 {
+  font-size: var(--font-small);
+}
+h5 {
+  font-size: var(--font-smallest);
+}

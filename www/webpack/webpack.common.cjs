@@ -19,6 +19,7 @@ module.exports = {
     'page.statistics': './src/page.statistics.js',
     'page.tags': './src/page.tags.js',
     'page.image': './src/page.image.js',
+    'popup.flay': './src/popup.flay.js',
   },
   devtool: 'source-map',
   devServer: {

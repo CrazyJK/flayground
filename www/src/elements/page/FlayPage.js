@@ -8,6 +8,7 @@ import FlayRelease from '../part/FlayRelease';
 import FlayStudio from '../part/FlayStudio';
 import FlayTag from '../part/FlayTag';
 import FlayTitle from '../part/FlayTitle';
+import SVG from '../svg.json';
 
 export default class FlayPage extends HTMLElement {
   opus = null;
@@ -37,6 +38,17 @@ export default class FlayPage extends HTMLElement {
     this.flayFiles = wrapper.appendChild(new FlayFiles());
     this.flayRank = wrapper.appendChild(new FlayRank());
     this.flayTag = wrapper.appendChild(new FlayTag());
+
+    if (location.pathname.indexOf('popup.flay.html') < 0) {
+      const newWindowBtn = wrapper.appendChild(document.createElement('button'));
+      newWindowBtn.id = 'newWindowBtn';
+      newWindowBtn.innerHTML = SVG.newWindow;
+      newWindowBtn.addEventListener('click', () => {
+        window.open('popup.flay.html?opus=' + this.opus, this.opus, 'width=800px,height=1280px');
+      });
+    } else {
+      this.flayTitle.deactivate();
+    }
   }
 
   /**
@@ -121,5 +133,17 @@ article.page > flay-actress {
   article.page > flay-actress {
     margin: 0.5rem auto;
   }
+}
+#newWindowBtn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 1;
+  padding: 0.25rem;
+  margin: 0;
+  opacity: 0;
+}
+#newWindowBtn:hover {
+  opacity: 1;
 }
 `;

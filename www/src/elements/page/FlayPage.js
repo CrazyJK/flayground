@@ -146,4 +146,7 @@ article.page > flay-actress {
 #newWindowBtn:hover {
   opacity: 1;
 }
+#newWindow {
+  width: 1.25rem;
+}
 `;

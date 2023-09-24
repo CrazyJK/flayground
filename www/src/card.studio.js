@@ -18,6 +18,8 @@ const studioHomepage = document.querySelector('#studioHomepage');
 const flayRank = document.querySelector('#flayRank');
 const saveBtn = document.querySelector('#saveBtn');
 
+document.title = name + ' Studio';
+
 function fetchStudio() {
   fetch('/info/studio/' + name)
     .then((res) => res.json())
@@ -25,8 +27,6 @@ function fetchStudio() {
       studioName.value = studio.name;
       studioCompany.value = studio.company;
       studioHomepage.value = studio.homepage;
-
-      document.title = studio.name + ' tag';
     });
 
   fetch('/flay/find/studio/' + name)

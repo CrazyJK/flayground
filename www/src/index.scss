@@ -25,3 +25,27 @@ main {
     }
   }
 }
+
+@keyframes slideOut {
+  to {
+    opacity: 0;
+    transform: translateX(-900px);
+  }
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(900px);
+  }
+}
+
+flay-page {
+  view-transition-name: flay-page;
+}
+
+::view-transition-old(flay-page) {
+  animation-name: slideOut;
+}
+::view-transition-new(flay-page) {
+  animation-name: slideIn;
+}

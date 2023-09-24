@@ -29,8 +29,10 @@ fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'applicati
 
 function showFlay() {
   let randomIndex = Math.ceil(Math.random() * opusList.length);
-  flayPage.set(opusList[randomIndex]).then(() => {
-    flayPage.style.opacity = 1;
+  document.startViewTransition(() => {
+    flayPage.set(opusList[randomIndex]).then(() => {
+      flayPage.style.opacity = 1;
+    });
   });
 }
 

@@ -16,6 +16,7 @@ export default class FlayCard extends HTMLElement {
   constructor(options) {
     super();
     this.attachShadow({ mode: 'open' });
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');

@@ -35,8 +35,8 @@ export default class FlayPage extends HTMLElement {
     this.flayCover = wrapper.appendChild(new FlayCover());
     this.flayActress = wrapper.appendChild(new FlayActress());
     this.flayRelease = wrapper.appendChild(new FlayRelease());
-    this.flayFiles = wrapper.appendChild(new FlayFiles());
     this.flayRank = wrapper.appendChild(new FlayRank());
+    this.flayFiles = wrapper.appendChild(new FlayFiles());
     this.flayTag = wrapper.appendChild(new FlayTag());
 
     if (location.pathname.indexOf('popup.flay.html') < 0) {
@@ -108,30 +108,22 @@ article.page {
   margin: auto;
 }
 article.page > * {
-  margin-bottom: 0.25rem;
-  min-height: 2rem;
+  margin: 0.25rem auto;
   padding: 0 0.5rem;
+  min-height: 2rem;
+  width: 100%;
 }
 article.page > flay-cover {
+  margin: 0.5rem auto;
   padding: 0;
-}
-article.page > flay-cover,
-article.page > flay-actress,
-article.page > flay-files,
-article.page > flay-rank {
-  margin: 0.25rem 0;
 }
 article.page > flay-cover,
 article.page > flay-actress {
-  margin: 1rem auto;
-  padding: 0;
-  width: 100%;
   max-width: 900px;
 }
 @media screen and (max-height: 1400px) {
-  article.page > flay-cover,
-  article.page > flay-actress {
-    margin: 0.5rem auto;
+  article.page > flay-cover {
+    margin: 0.25rem auto;
   }
 }
 #newWindowBtn {
@@ -139,9 +131,10 @@ article.page > flay-actress {
   top: 0;
   right: 0;
   z-index: 1;
-  padding: 0.25rem;
   margin: 0;
+  padding: 0.25rem;
   opacity: 0;
+  width: initial;
 }
 #newWindowBtn:hover {
   opacity: 1;

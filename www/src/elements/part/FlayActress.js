@@ -130,7 +130,6 @@ div.actress > div {
 }
 div.actress > div > span {
   margin-top: 0.25rem;
-  margin-left: 0.25rem;
 }
 div.actress > div > label {
   text-align: center;

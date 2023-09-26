@@ -43,8 +43,8 @@ module.exports = {
           },
         },
         {
-          from: 'src/css',
-          to: 'css',
+          from: 'src/css/*.css',
+          to: 'css/[name][ext]',
         },
         {
           from: 'src/img',

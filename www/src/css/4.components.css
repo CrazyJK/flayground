@@ -22,7 +22,6 @@ select,
 option,
 textarea {
   position: relative;
-  background-color: var(--color-bg);
   color: var(--color-text);
 }
 
@@ -100,6 +99,7 @@ select {
   padding: 0.25rem 0;
 }
 select option {
+  background-color: var(--color-bg);
   font-size: var(--font-normal);
 }
 

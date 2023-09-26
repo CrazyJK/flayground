@@ -131,6 +131,7 @@ side-nav {
   width: 200px;
   transition: left 0.4s 0.4s;
   z-index: 74;
+  background-color: var(--color-bg);
 }
 
 .nav-open:hover + side-nav, side-nav:hover {

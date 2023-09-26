@@ -44,7 +44,7 @@ export default class FlayPage extends HTMLElement {
       newWindowBtn.id = 'newWindowBtn';
       newWindowBtn.innerHTML = SVG.newWindow;
       newWindowBtn.addEventListener('click', () => {
-        window.open('popup.flay.html?opus=' + this.opus, this.opus, 'width=800px,height=1280px');
+        window.open('popup.flay.html?opus=' + this.opus, 'popup.' + this.opus, 'width=800px,height=1280px');
       });
     } else {
       this.flayTitle.deactivate();
@@ -140,6 +140,7 @@ article.page > flay-actress {
   opacity: 1;
 }
 #newWindow {
+  color: var(--color-text-secondary);
   width: 1.25rem;
 }
 `;

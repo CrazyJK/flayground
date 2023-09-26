@@ -22,10 +22,8 @@ let condition = {
 
 fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) })
   .then((res) => res.json())
-  .then((list) => {
-    opusList = list;
-    showFlay();
-  });
+  .then((list) => (opusList = list))
+  .then(showFlay);
 
 function showFlay() {
   let randomIndex = Math.ceil(Math.random() * opusList.length);

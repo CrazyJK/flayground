@@ -1,4 +1,4 @@
-import FlayImage from './elements/image/FlayImage';
+import ImageFrame from './elements/image/ImageFrame';
 import './page.image.scss';
 import './util/theme.listener';
 
@@ -12,8 +12,8 @@ const imgPath = document.querySelector('#imgPath');
 const imgName = document.querySelector('#imgName');
 const imgSize = document.querySelector('#imgSize');
 
-const flayImage = new FlayImage();
-main.append(flayImage);
+const imageFrame = new ImageFrame();
+main.append(imageFrame);
 
 let imageSize = 0;
 let imageIdx = 0;
@@ -100,7 +100,7 @@ function navigator(code) {
 }
 
 function drawImage() {
-  flayImage.set(imageIdx).then((image) => {
+  imageFrame.set(imageIdx).then((image) => {
     console.log(imageIdx, 'drawImage then', image.info, image.colors);
     decideRotateView();
     drawInfo();
@@ -110,25 +110,25 @@ function drawImage() {
 
 function decideRotateView() {
   const isVerticalFrame = document.documentElement.clientWidth < document.documentElement.clientHeight;
-  const isVerticalImage = flayImage.img.naturalWidth <= flayImage.img.naturalHeight;
+  const isVerticalImage = imageFrame.img.naturalWidth <= imageFrame.img.naturalHeight;
   if (isVerticalFrame && isVerticalImage) {
     isRotated = false;
   } else if (isVerticalFrame && !isVerticalImage) {
-    isRotated = document.documentElement.clientWidth < flayImage.img.naturalWidth;
+    isRotated = document.documentElement.clientWidth < imageFrame.img.naturalWidth;
   } else if (!isVerticalFrame && isVerticalImage) {
-    isRotated = document.documentElement.clientHeight < flayImage.img.naturalHeight;
+    isRotated = document.documentElement.clientHeight < imageFrame.img.naturalHeight;
   } else {
     isRotated = false;
   }
   console.log(imageIdx, 'decideRotateView', isRotated);
-  flayImage.classList.toggle('rotate', isRotated);
+  imageFrame.classList.toggle('rotate', isRotated);
 }
 
 function drawInfo() {
-  imgIdx.innerHTML = '#' + flayImage.info.idx;
-  imgPath.innerHTML = flayImage.info.path;
-  imgName.innerHTML = flayImage.info.name;
-  imgSize.innerHTML = flayImage.img.naturalWidth + 'x' + flayImage.img.naturalHeight;
+  imgIdx.innerHTML = '#' + imageFrame.info.idx;
+  imgPath.innerHTML = imageFrame.info.path;
+  imgName.innerHTML = imageFrame.info.name;
+  imgSize.innerHTML = imageFrame.img.naturalWidth + 'x' + imageFrame.img.naturalHeight;
 }
 
 function progressBar() {

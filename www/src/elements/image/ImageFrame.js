@@ -1,6 +1,6 @@
 import { getDominatedColors } from '../../util/dominatedColor';
 
-export default class FlayImage extends HTMLElement {
+export default class ImageFrame extends HTMLElement {
   info;
   colors;
 
@@ -18,7 +18,7 @@ export default class FlayImage extends HTMLElement {
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
     this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('flay-image');
+    this.wrapper.classList.add('image-frame');
     this.wrapper.innerHTML = HTML;
     this.shadowRoot.append(LINK, STYLE, this.wrapper);
 
@@ -59,7 +59,7 @@ export default class FlayImage extends HTMLElement {
   }
 }
 
-customElements.define('flay-image', FlayImage);
+customElements.define('image-frame', ImageFrame);
 
 const HTML = `
 <img>
@@ -70,21 +70,21 @@ const HTML = `
 `;
 
 const CSS = `
-.flay-image {
+.image-frame {
   transition: 0.4s;
 }
 
-.flay-image.rotate {
+.image-frame.rotate {
   transform: rotate(90deg);
 }
 
-.flay-image img {
+.image-frame img {
   width: 100%;
   height: auto;
   transition: 0.4s;
 }
 
-.flay-image div.info {
+.image-frame div.info {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -98,10 +98,10 @@ const CSS = `
   justify-content: space-between;
   gap: 0 1rem;
 }
-.flay-image:hover div.info {
+.image-frame:hover div.info {
   opacity: 1;
 }
-.flay-image div.info label {
+.image-frame div.info label {
   background-color: transparent;
   text-shadow: var(--text-shadow);
   font-size: var(--font-normal);
@@ -110,7 +110,7 @@ const CSS = `
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.flay-image div.info label#imgIdx {
+.image-frame div.info label#imgIdx {
   flex: 0 0 auto;
 }
 `;

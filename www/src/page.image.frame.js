@@ -1,5 +1,5 @@
 import ImageFrame from './elements/image/ImageFrame';
-import './page.image.scss';
+import './page.image.frame.scss';
 import './util/theme.listener';
 
 import SideNavBar from './elements/page/SideNavBar';

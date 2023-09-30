@@ -100,7 +100,8 @@ const HTML = `
   <li><a href="page.statistics.html"  >statistics</a></li>
 </ul>
 <ul>
-  <li><a href="page.image.html"       >image</a></li>
+  <li><a href="page.image.frame.html">image frame</a></li>
+  <li><a href="page.image.grid.html" >image grid</a></li>
 </ul>
 <ul>
   <li><a href="page.kamoru.diary.html">diary</a></li>

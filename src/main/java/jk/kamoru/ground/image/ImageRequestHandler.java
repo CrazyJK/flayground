@@ -2,6 +2,8 @@ package jk.kamoru.ground.image;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Base64;
 
@@ -21,10 +23,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectWriter;
+
 import jk.kamoru.ground.flay.FlayNotfoundException;
 import jk.kamoru.ground.flay.domain.Flay;
 import jk.kamoru.ground.flay.service.FlayArchiveService;
 import jk.kamoru.ground.flay.service.FlayService;
+import jk.kamoru.ground.image.domain.Image;
 import jk.kamoru.ground.image.service.ImageService;
 import jk.kamoru.ground.info.source.ActressInfoSource;
 
@@ -41,6 +47,8 @@ public class ImageRequestHandler {
   ImageService imageService;
   @Autowired
   ActressInfoSource actressInfoSource;
+
+  ObjectWriter jsonWriter = new ObjectMapper().writer();
 
   @GetMapping("/cover/{opus}")
   @ResponseBody
@@ -75,19 +83,35 @@ public class ImageRequestHandler {
   @GetMapping("/image/{idx}")
   @ResponseBody
   public HttpEntity<byte[]> getImage(@PathVariable Integer idx) throws IOException {
-    return getImageEntity(imageService.get(idx).getFile());
+    return getImageEntity(imageService.get(idx));
   }
 
   @GetMapping("/image/random")
   @ResponseBody
   public HttpEntity<byte[]> getImageRandom() throws IOException {
-    return getImageEntity(imageService.random().getFile());
+    return getImageEntity(imageService.random());
   }
 
   @GetMapping("/actress/{name}/{index}")
   @ResponseBody
   public HttpEntity<byte[]> getActressCover(@PathVariable String name, @PathVariable int index) throws IOException {
     return getImageEntity(actressInfoSource.get(name).getCovers().get(index));
+  }
+
+  HttpEntity<byte[]> getImageEntity(Image image) throws IOException {
+    File file = image.getFile();
+    if (file == null) {
+      return null;
+    }
+    byte[] bytes = FileUtils.readFileToByteArray(file);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentLength(file.length());
+    headers.setContentType(probeMediaType(file));
+    headers.set("idx", String.valueOf(image.getIdx()));
+    headers.set("name", URLEncoder.encode(image.getName(), StandardCharsets.UTF_8));
+    headers.set("path", URLEncoder.encode(image.getPath(), StandardCharsets.UTF_8));
+    headers.set("modified", String.valueOf(image.getModified()));
+    return new HttpEntity<byte[]>(bytes, headers);
   }
 
   HttpEntity<byte[]> getImageEntity(File file) throws IOException {

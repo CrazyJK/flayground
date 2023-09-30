@@ -42,13 +42,19 @@ export default class ImageFrame extends HTMLElement {
   }
 
   async set(imageIdx) {
-    this.img.src = '/static/image/' + imageIdx;
-    await this.img.decode();
-    console.debug(imageIdx, 'img onload', this.img.naturalWidth, this.img.naturalHeight);
+    const res = await fetch('/static/image/' + imageIdx);
+    let idx = res.headers.get('Idx');
+    let name = decodeURIComponent(res.headers.get('Name').replace(/\+/g, ' '));
+    let path = decodeURIComponent(res.headers.get('Path').replace(/\+/g, ' '));
+    let modified = new Date(Number(res.headers.get('Modified')));
 
-    this.info = await fetch('/image/' + imageIdx).then((res) => res.json());
-    this.imgIdx.innerHTML = '#' + this.info.idx;
-    this.imgName.innerHTML = this.info.name;
+    const myBlob = await res.blob();
+    this.img.src = URL.createObjectURL(myBlob);
+
+    await this.img.decode();
+    this.info = { idx: idx, name: name, path: path, modified: modified, width: this.img.naturalWidth, height: this.img.naturalHeight };
+    this.imgIdx.innerHTML = '#' + idx;
+    this.imgName.innerHTML = name;
     console.debug(imageIdx, 'imageInfo', this.info);
 
     this.colors = await getDominatedColors(this.img, { scale: 0.2, offset: 16, limit: 5 });

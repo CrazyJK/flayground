@@ -103,6 +103,9 @@ export default class TagLayer extends HTMLElement {
               .then((res) => res.json())
               .then((count) => {
                 flayCount.innerHTML = count;
+                if (count === 0) {
+                  flayCount.classList.add('zero');
+                }
               });
           });
         return tagList;
@@ -114,7 +117,6 @@ export default class TagLayer extends HTMLElement {
 customElements.define('tag-layer', TagLayer);
 
 const CSS = `
-/* for tag-layer */
 .tag-layer {
   display: grid;
   grid-template-rows: 4rem 1fr;
@@ -143,6 +145,8 @@ const CSS = `
 }
 
 .tag-layer .tag-main {
+  margin: 0;
+  padding: 1rem;
   overflow: auto;
 }
 .tag-layer .tag-main ol {
@@ -154,7 +158,6 @@ const CSS = `
   gap: 0.5rem 0.25rem;
   list-style: none;
   margin: 0;
-  padding: 0;
 }
 .tag-layer .tag-main ol li {
   display: flex;
@@ -174,10 +177,14 @@ const CSS = `
   gap: 0.25rem;
 }
 .tag-layer .tag-main ol li label:nth-child(2) {
-  font-size: var(--font-normal);
+  font-size: var(--font-small);
   font-weight: 400;
+  text-align: center;
 }
 .tag-layer .tag-main ol li span {
   flex: 1 1 auto;
+}
+.badge.zero {
+  color: var(--color-red);
 }
 `;

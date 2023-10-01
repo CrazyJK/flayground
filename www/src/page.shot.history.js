@@ -43,8 +43,8 @@ function getDate(priorDay) {
 
 async function render(date, list) {
   console.debug('render', date, list);
-  let div = MAIN.appendChild(document.createElement('div'));
-  let label = div.appendChild(document.createElement('label'));
+  let div = MAIN.appendChild(document.createElement('fieldset'));
+  let label = div.appendChild(document.createElement('legend'));
   label.textContent = date + ' ' + new Intl.DateTimeFormat('ko-KR', { weekday: 'short' }).format(new Date(date));
   let cardDiv = div.appendChild(document.createElement('div'));
   for (let h of list) {

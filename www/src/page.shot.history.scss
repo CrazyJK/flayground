@@ -2,37 +2,49 @@
 @import './css/layout.card.scss';
 
 main {
-  div {
-    // background-color: #0004;
-    margin: 1rem 1rem 2rem;
-    border-radius: 0.5rem;
-    padding: 0;
-    box-shadow: var(--box-shadow);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  padding: 1rem;
 
-    label {
-      background-color: transparent;
-      font-size: var(--font-largest);
-      padding: 0.25rem 0.5rem;
+  fieldset {
+    display: inline-block;
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    margin: 0;
+    padding: 0;
+    transition: 0.4s;
+
+    &:hover {
+      box-shadow: var(--box-shadow);
+      legend {
+        box-shadow: var(--box-shadow-small);
+      }
     }
+
+    legend {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 0.25rem;
+      margin: 0.25rem 0.5rem;
+      padding: 0.25rem 0.5rem;
+      font-size: var(--font-large);
+      transition: 0.4s;
+    }
+
     div {
       display: flex;
       flex-wrap: wrap;
-      align-items: flex-start;
+      justify-content: flex-start;
       gap: 1rem 1.5rem;
-      background: transparent;
       margin: 0;
       border: 0;
       padding: 0.75rem;
-      box-shadow: none;
-
-      &:empty {
-        padding: 0;
-      }
 
       flay-card {
         width: 480px;
         border-radius: 0.25rem;
-        box-shadow: var(--box-shadow-small);
 
         &.shot {
           box-shadow: 0 0 0.5rem 0.125rem #f00;

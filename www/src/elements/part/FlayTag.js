@@ -1,14 +1,24 @@
 import FlayAction from '../../util/flay.action';
 
+/**
+ * Custom element of Tag
+ */
 export default class FlayTag extends HTMLElement {
+  flay;
+  tagList = null;
+
   constructor() {
     super();
+
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
+
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
+
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('tag');
     this.wrapper.innerHTML = `
@@ -19,14 +29,10 @@ export default class FlayTag extends HTMLElement {
         <input type="search" id="tagNewInput" placeholder="new Tag">
       </div>
     `;
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    this.flay = null;
-    this.tagList = null;
-
-    const tagNewBtn = this.shadowRoot.querySelector('#tagNewBtn');
-    const tagNewWrap = this.shadowRoot.querySelector('#tagNewWrap');
-    const tagNewInput = this.shadowRoot.querySelector('#tagNewInput');
+    const tagNewBtn = this.wrapper.querySelector('#tagNewBtn');
+    const tagNewWrap = this.wrapper.querySelector('#tagNewWrap');
+    const tagNewInput = this.wrapper.querySelector('#tagNewInput');
 
     tagNewBtn.addEventListener('click', (e) => {
       if (tagNewWrap.classList.toggle('show')) {
@@ -49,6 +55,12 @@ export default class FlayTag extends HTMLElement {
         });
       });
     });
+
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+  }
+
+  connectedCallback() {
+    this.#fetchTag();
   }
 
   resize() {
@@ -96,8 +108,16 @@ export default class FlayTag extends HTMLElement {
 
   async #fetchTag(reload) {
     const tagListWrap = this.shadowRoot.querySelector('#tagList');
+
+    if (window.tagList && window.tagList.length > 0) {
+      this.tagList = window.tagList;
+    }
+
     if (this.tagList === null || reload) {
       this.tagList = await fetch('/info/tag').then((res) => res.json());
+      if (window.tagList) {
+        window.tagList = this.tagList;
+      }
 
       tagListWrap.querySelectorAll('input, label').forEach((element) => {
         element.remove();
@@ -171,6 +191,9 @@ div.tag .tag-new input {
 }
 div.tag.small {
   padding: 0;
+}
+div.tag.small .tag-list label {
+  padding: 0.125rem;
 }
 div.tag.small input:not(:checked) + label {
   display: none;

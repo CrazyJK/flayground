@@ -10,21 +10,23 @@ import FlayTag from '../part/FlayTag';
 import FlayTitle from '../part/FlayTitle';
 
 /**
- *
+ * Custom element of Card
  */
 export default class FlayCard extends HTMLElement {
   constructor(options) {
     super();
+
     this.attachShadow({ mode: 'open' });
 
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
+
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
+
     this.flayCover = new FlayCover();
     this.wrapper = document.createElement('article');
-    this.shadowRoot.append(LINK, STYLE, this.flayCover, this.wrapper);
 
     this.flayTitle = this.wrapper.appendChild(new FlayTitle());
     this.flayStudio = this.wrapper.appendChild(new FlayStudio());
@@ -45,6 +47,8 @@ export default class FlayCard extends HTMLElement {
     this.opus = null;
     this.flay = null;
     this.actress = null;
+
+    this.shadowRoot.append(LINK, STYLE, this.flayCover, this.wrapper);
   }
 
   resize() {

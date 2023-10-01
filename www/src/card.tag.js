@@ -5,6 +5,9 @@ import './util/flay.sse';
 import './util/theme.listener';
 import { addResizeLazyEventListener } from './util/windowResize';
 
+window.tagList = [];
+window.actressMap = new Map();
+
 const urlParams = new URL(location.href).searchParams;
 const id = urlParams.get('id');
 

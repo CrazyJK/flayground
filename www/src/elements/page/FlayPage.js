@@ -17,16 +17,20 @@ export default class FlayPage extends HTMLElement {
 
   constructor() {
     super();
+  }
+
+  connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/4.components.css');
+
+    const style = document.createElement('style');
+    style.innerHTML = CSS;
+
     const wrapper = document.createElement('article');
     wrapper.classList.add('page');
-    this.shadowRoot.append(LINK, STYLE, wrapper);
 
     this.flayStudio = wrapper.appendChild(new FlayStudio());
     this.flayOpus = wrapper.appendChild(new FlayOpus());
@@ -39,16 +43,18 @@ export default class FlayPage extends HTMLElement {
     this.flayFiles = wrapper.appendChild(new FlayFiles());
     this.flayTag = wrapper.appendChild(new FlayTag());
 
-    if (location.pathname.indexOf('popup.flay.html') < 0) {
+    if (location.pathname.indexOf('popup.flay.html') > -1) {
+      this.flayTitle.deactivate();
+    } else {
       const newWindowBtn = wrapper.appendChild(document.createElement('button'));
       newWindowBtn.id = 'newWindowBtn';
       newWindowBtn.innerHTML = SVG.newWindow;
       newWindowBtn.addEventListener('click', () => {
         window.open('popup.flay.html?opus=' + this.opus, 'popup.' + this.opus, 'width=800px,height=1280px');
       });
-    } else {
-      this.flayTitle.deactivate();
     }
+
+    this.shadowRoot.append(link, style, wrapper);
   }
 
   /**
@@ -67,19 +73,19 @@ export default class FlayPage extends HTMLElement {
     await fetch('/flay/' + opus + '/fully')
       .then((res) => res.json())
       .then((fullyFlay) => {
-        const { actress, flay } = fullyFlay;
+        const { flay, actress } = fullyFlay;
         this.flay = flay;
         this.actress = actress;
 
-        this.flayCover.set(flay, reload);
         this.flayStudio.set(flay, reload);
         this.flayOpus.set(flay, reload);
-        this.flayTitle.set(flay, reload);
         this.flayComment.set(flay, reload);
+        this.flayTitle.set(flay, reload);
+        this.flayCover.set(flay, reload);
         this.flayActress.set(flay, actress, reload);
         this.flayRelease.set(flay, reload);
-        this.flayFiles.set(flay, reload);
         this.flayRank.set(flay, reload);
+        this.flayFiles.set(flay, reload);
         this.flayTag.set(flay, reload);
 
         this.style.display = 'block';
@@ -97,7 +103,6 @@ export default class FlayPage extends HTMLElement {
 customElements.define('flay-page', FlayPage);
 
 const CSS = `
-/* for FlayPage */
 article.page {
   display: flex;
   flex-direction: column;

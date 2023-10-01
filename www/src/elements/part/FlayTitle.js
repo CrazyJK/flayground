@@ -1,25 +1,28 @@
 /**
- *
+ * Custom element of Title
  */
 export default class FlayTitle extends HTMLElement {
-  flay = null;
+  flay;
   active = true;
 
   constructor() {
     super();
+
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
+
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
+
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('title');
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    this.label = this.wrapper.appendChild(document.createElement('label'));
-    this.anker = this.label.appendChild(document.createElement('a'));
+    const label = this.wrapper.appendChild(document.createElement('label'));
+    this.anker = label.appendChild(document.createElement('a'));
+    this.anker.innerHTML = 'Title';
     this.anker.addEventListener('click', () => {
       if (this.active) {
         console.log('titleClick', this.flay.opus);
@@ -27,6 +30,8 @@ export default class FlayTitle extends HTMLElement {
         window.open('card.flay.html?opus=' + this.flay.opus, this.flay.opus, 'width=800px,height=536px');
       }
     });
+
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize() {

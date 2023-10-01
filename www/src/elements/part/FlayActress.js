@@ -2,23 +2,28 @@ import FlayAction from '../../util/flay.action';
 import SVG from '../svg.json';
 
 /**
- *
+ * Custom element of Actress
  */
 export default class FlayActress extends HTMLElement {
+  flay;
+  actressList;
+
   constructor() {
     super();
+
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
+
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
+
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('actress');
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    this.flay = null;
-    this.actressList = null;
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize() {
@@ -51,10 +56,10 @@ export default class FlayActress extends HTMLElement {
         console.log('favoriteChange', e.target.checked, actress.name);
         FlayAction.setFavorite(actress.name, e.target.checked);
       });
-
       const label = favoriteElement.appendChild(document.createElement('label'));
       label.setAttribute('for', 'fav' + index);
       label.innerHTML = SVG.favorite;
+
       // name
       const nameLabel = actressDiv.appendChild(document.createElement('label'));
       nameLabel.classList.add('name');
@@ -77,11 +82,22 @@ export default class FlayActress extends HTMLElement {
       // flay size
       const flaySize = actressDiv.appendChild(document.createElement('label'));
       flaySize.classList.add('flaySize');
-      fetch(`/flay/find/actress/${actress.name}`)
-        .then((response) => response.json())
-        .then((flayList) => {
-          flaySize.innerHTML = flayList.length + '<small>f</small>';
-        });
+      let flayCount;
+      if (window.actressMap) {
+        flayCount = window.actressMap.get(actress.name);
+      }
+      if (flayCount) {
+        flaySize.innerHTML = flayCount + '<small>f</small>';
+      } else {
+        fetch(`/flay/count/actress/${actress.name}`)
+          .then((response) => response.text())
+          .then((flayCount) => {
+            flaySize.innerHTML = flayCount + '<small>f</small>';
+            if (window.actressMap) {
+              window.actressMap.set(actress.name, flayCount);
+            }
+          });
+      }
 
       // age
       const ageElement = actressDiv.appendChild(document.createElement('label'));

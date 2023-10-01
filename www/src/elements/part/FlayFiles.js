@@ -3,27 +3,31 @@ import Search from '../../util/Search';
 import SVG from '../svg.json';
 
 /**
- *
+ * Custom element of File
  */
 export default class FlayFiles extends HTMLElement {
+  flay;
+
   constructor() {
     super();
+
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
     const LINK = document.createElement('link');
     LINK.setAttribute('rel', 'stylesheet');
     LINK.setAttribute('href', './css/4.components.css');
+
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
+
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('files');
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    this.flay = null;
+    const infoDiv = this.wrapper.appendChild(document.createElement('div'));
+    infoDiv.classList.add('info');
 
-    this.infoDiv = this.wrapper.appendChild(document.createElement('div'));
-    this.infoDiv.classList.add('info');
-
-    this.movieBtn = this.infoDiv.appendChild(document.createElement('button'));
+    this.movieBtn = infoDiv.appendChild(document.createElement('button'));
+    this.movieBtn.innerHTML = 'Movie<i class="badge">0</i>';
     this.movieBtn.addEventListener('click', (e) => {
       console.log('playClick', this.flay.opus);
       if (this.flay.files.movie.length > 0) {
@@ -33,8 +37,9 @@ export default class FlayFiles extends HTMLElement {
       }
     });
 
-    this.subBtn = this.infoDiv.appendChild(document.createElement('button'));
+    this.subBtn = infoDiv.appendChild(document.createElement('button'));
     this.subBtn.classList.add('sub-btn');
+    this.subBtn.innerHTML = 'Sub<i class="badge">0</i>';
     this.subBtn.addEventListener('click', (e) => {
       console.log('subtitlesClick', this.flay.opus);
       if (this.flay.files.subtitles.length > 0) {
@@ -44,11 +49,11 @@ export default class FlayFiles extends HTMLElement {
       }
     });
 
-    this.sizeLabel = this.infoDiv.appendChild(document.createElement('label'));
+    this.sizeLabel = infoDiv.appendChild(document.createElement('label'));
     this.sizeLabel.classList.add('size-label');
-    this.sizeLabel.innerHTML = '';
+    this.sizeLabel.innerHTML = '0<small>GB</small>';
 
-    this.fileShowBtn = this.infoDiv.appendChild(document.createElement('button'));
+    this.fileShowBtn = infoDiv.appendChild(document.createElement('button'));
     this.fileShowBtn.classList.add('files-btn');
     this.fileShowBtn.setAttribute('title', 'show files');
     this.fileShowBtn.innerHTML = SVG.folder;
@@ -88,6 +93,8 @@ export default class FlayFiles extends HTMLElement {
       console.log('renameClick', newName);
       FlayAction.renameFlay(this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
     });
+
+    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize() {

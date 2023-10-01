@@ -7,6 +7,8 @@ import './util/flay.sse';
 import './util/theme.listener';
 import { addResizeLazyEventListener } from './util/windowResize';
 
+window.tagList = [];
+
 const urlParams = new URL(location.href).searchParams;
 const actressName = urlParams.get('name');
 const startDate = urlParams.get('s');

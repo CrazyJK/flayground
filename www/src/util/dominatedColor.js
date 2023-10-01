@@ -42,13 +42,13 @@ const getRGBAs = (data, ignoreRGBs, offset) => {
   return counts.sort((a, b) => b.count - a.count);
 };
 
-const getContext = (width, height) => {
-  let canvas = document.querySelector('#dominatedColorCanvas');
+const getContext = (img, width, height) => {
+  let canvas = img.parentNode.querySelector('.dominated-color-canvas');
   if (canvas === null) {
     canvas = document.createElement('canvas');
-    canvas.setAttribute('id', 'dominatedColorCanvas');
+    canvas.classList.add('dominated-color-canvas');
     canvas.setAttribute('style', 'display:none');
-    document.body.appendChild(canvas);
+    img.parentNode.appendChild(canvas);
   }
   canvas.setAttribute('width', width);
   canvas.setAttribute('height', height);
@@ -58,7 +58,7 @@ const getContext = (width, height) => {
 const getContextImageData = (img, scale) => {
   const width = Math.round(img.width * scale);
   const height = Math.round(img.height * scale);
-  const context = getContext(width, height);
+  const context = getContext(img, width, height);
   context.drawImage(img, 0, 0, width, height);
   const { data } = context.getImageData(0, 0, width, height);
   return data;

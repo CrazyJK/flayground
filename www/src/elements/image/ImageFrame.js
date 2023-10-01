@@ -1,8 +1,13 @@
 import { getDominatedColors } from '../../util/dominatedColor';
 
 export default class ImageFrame extends HTMLElement {
+  idx;
   info;
   colors;
+  wrapper;
+  img;
+  imgIdx;
+  imgName;
 
   static get observedAttributes() {
     return ['class'];
@@ -10,24 +15,27 @@ export default class ImageFrame extends HTMLElement {
 
   constructor() {
     super();
+  }
+
+  connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/4.components.css');
+
+    const style = document.createElement('style');
+    style.innerHTML = CSS;
+
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('image-frame');
     this.wrapper.innerHTML = HTML;
-    this.shadowRoot.append(LINK, STYLE, this.wrapper);
+    this.shadowRoot.append(link, style, this.wrapper);
 
     this.img = this.shadowRoot.querySelector('img');
     this.imgIdx = this.shadowRoot.querySelector('#imgIdx');
     this.imgName = this.shadowRoot.querySelector('#imgName');
   }
-
-  connectedCallback() {}
 
   attributeChangedCallback(name, oldValue, newValue) {
     console.debug(this.idx, 'attributes changed', name, oldValue, newValue);
@@ -42,6 +50,8 @@ export default class ImageFrame extends HTMLElement {
   }
 
   async set(imageIdx) {
+    this.idx = imageIdx;
+
     const res = await fetch('/static/image/' + imageIdx);
     let idx = res.headers.get('Idx');
     let name = decodeURIComponent(res.headers.get('Name').replace(/\+/g, ' '));
@@ -79,17 +89,14 @@ const CSS = `
 .image-frame {
   transition: 0.4s;
 }
-
 .image-frame.rotate {
   transform: rotate(90deg);
 }
-
 .image-frame img {
   width: 100%;
   height: auto;
   transition: 0.4s;
 }
-
 .image-frame div.info {
   position: absolute;
   bottom: 0;

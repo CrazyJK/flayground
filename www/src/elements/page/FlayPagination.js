@@ -1,3 +1,4 @@
+import { getRandomInt } from '../../util/random';
 import { addResizeLazyEventListener } from '../../util/windowResize';
 
 const NEXT = 'NEXT';
@@ -145,7 +146,7 @@ export default class FlayPagination extends HTMLElement {
           this.history.push(this.opusIndex);
           break;
         case RANDOM:
-          this.opusIndex = Math.floor(Math.random() * this.opusList.length);
+          this.opusIndex = getRandomInt(0, this.opusList.length);
           if (this.history.length > this.opusList.length) {
             this.history = [];
           }

@@ -1,3 +1,4 @@
+import { getRandomInt } from '../../util/random';
 import { addResizeLazyEventListener } from '../../util/windowResize';
 
 const PANE_WIDTH = 360;
@@ -115,7 +116,7 @@ export default class ImageFall extends HTMLElement {
       console.debug('getDivIdx reset', this.divIndexArray);
     }
 
-    let randomIndex = Math.floor(Math.random() * this.divIndexArray.length);
+    let randomIndex = getRandomInt(0, this.divIndexArray.length);
     let pickedIndex = this.divIndexArray.splice(randomIndex, 1);
     console.debug('getDivIdx', this.divIndexArray.length, randomIndex, pickedIndex);
 
@@ -128,7 +129,7 @@ export default class ImageFall extends HTMLElement {
       console.debug('getImageIdx reset', this.imageIndexArray);
     }
 
-    let randomIndex = Math.floor(Math.random() * this.imageIndexArray.length);
+    let randomIndex = getRandomInt(0, this.imageIndexArray.length);
     let pickedIndex = this.imageIndexArray.splice(randomIndex, 1);
     console.debug('getImageIdx', this.imageIndexArray.length, randomIndex, pickedIndex);
 

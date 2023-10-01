@@ -1,5 +1,6 @@
 import ImageFrame from './elements/image/ImageFrame';
 import './page.image.frame.scss';
+import { getRandomInt } from './util/random';
 import './util/theme.listener';
 
 import SideNavBar from './elements/page/SideNavBar';
@@ -64,7 +65,7 @@ function dispatchEventCode(e) {
 function navigator(code) {
   switch (code) {
     case 'Space':
-      imageIdx = Math.round(Math.random() * imageSize);
+      imageIdx = getRandomInt(0, imageSize);
       break;
     case 'Home':
       imageIdx = 0;

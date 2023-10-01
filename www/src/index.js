@@ -1,6 +1,7 @@
 import FlayPage from './elements/page/FlayPage';
 import './index.scss';
 import './util/flay.sse';
+import { getRandomInt } from './util/random';
 
 import SideNavBar from './elements/page/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
@@ -26,7 +27,7 @@ fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'applicati
   .then(showFlay);
 
 function showFlay() {
-  let randomIndex = Math.ceil(Math.random() * opusList.length);
+  let randomIndex = getRandomInt(0, opusList.length);
   document.startViewTransition(() => {
     flayPage.set(opusList[randomIndex]).then(() => {
       flayPage.style.opacity = 1;

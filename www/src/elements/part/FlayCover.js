@@ -1,5 +1,6 @@
 import { getDominatedColors } from '../../util/dominatedColor';
 import FlayStorage from '../../util/flay.storage';
+import { getRandomInt } from '../../util/random';
 
 /**
  * Custom element of Cover
@@ -76,7 +77,7 @@ export default class FlayCover extends HTMLElement {
   }
 
   #applyDominatedColor(dominatedColors) {
-    const [r, g, b] = dominatedColors[Math.ceil(Math.random() * 5) - 1].rgba;
+    const [r, g, b] = dominatedColors[getRandomInt(0, 5)].rgba;
     this.wrapper.style.backgroundColor = `rgba(${r},${g},${b},0.5)`;
     this.wrapper.querySelectorAll('.color-wrapper > label').forEach((label, index) => {
       label.style.backgroundColor = `rgba(${dominatedColors[index].rgba.join(',')})`;

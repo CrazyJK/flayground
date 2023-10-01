@@ -346,14 +346,14 @@ const CSS = `
 
 /* input data */
 #inputOpus {
-  flex: 0 0 none;
+  flex: 0 0 auto;
   width: 8rem;
 }
 #inputTitle {
   flex: 1 1 auto;
 }
 #inputActress {
-  flex: 0 0 none;
+  flex: 0 0 auto;
   width: 10rem;
 }
 #inputDesc {
@@ -432,10 +432,10 @@ const CSS = `
 
 /* found flay */
 #found-flay {
-  background-color: var(--color-orange);
   padding: 0.5rem;
 }
 #found-flay label {
   font-size: var(--font-small);
+  color: var(--color-orange);
 }
 `;

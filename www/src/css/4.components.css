@@ -49,6 +49,13 @@ textarea {
   transition: 0.2s;
 }
 
+input[type='text'],
+input[type='search'],
+input[type='number'],
+textarea {
+  cursor: initial;
+}
+
 a {
   text-decoration: none;
 }

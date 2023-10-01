@@ -432,9 +432,10 @@ const CSS = `
 
 /* found flay */
 #found-flay {
+  background-color: var(--color-orange);
   padding: 0.5rem;
 }
 #found-flay label {
-  font-size: var(--font-smallest);
+  font-size: var(--font-small);
 }
 `;

@@ -22,6 +22,15 @@ main {
         border-bottom-color: #000c;
       }
 
+      label {
+        font-size: var(--font-normal);
+        font-weight: 400;
+
+        a {
+          font-size: var(--font-normal);
+        }
+      }
+
       .name {
         flex: 1 1 auto;
       }

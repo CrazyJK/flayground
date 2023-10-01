@@ -139,11 +139,11 @@ function renderTable(selector, rawMap) {
     const sum = item.appendChild(document.createElement('label'));
     sum.classList.add('sum');
     sum.innerHTML = value.rank.sum;
-    const avg = item.appendChild(document.createElement('label'));
-    avg.classList.add('avg');
-    avg.innerHTML = value.rank.avg.toFixed(2);
     const size = item.appendChild(document.createElement('label'));
     size.classList.add('size');
     size.innerHTML = value.list.length;
+    const avg = item.appendChild(document.createElement('label'));
+    avg.classList.add('avg');
+    avg.innerHTML = value.rank.avg.toFixed(2);
   });
 }

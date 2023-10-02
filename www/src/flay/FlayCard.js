@@ -205,7 +205,7 @@ article.small flay-tag {
   display: none;
 }
 article.small > * {
-  padding: 0.125rem 0.25rem;
+  padding: 0.125rem 0.125rem 0;
   border-radius: 0.125rem;
   max-width: calc(100% - 0.5rem);
 }

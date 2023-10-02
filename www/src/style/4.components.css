@@ -164,10 +164,16 @@ i.badge {
 }
 
 /* 커스텀 엘리먼트 small 모드 */
+.card label,
+.card label a,
+.card button {
+  font-size: var(--font-normal) !important;
+}
 .small label,
 .small label a,
 .small button {
   font-size: var(--font-small) !important;
+  text-shadow: none;
 }
 div.small label {
   padding: 0.125rem !important;

@@ -49,7 +49,7 @@ async function render(date, list) {
   let cardDiv = div.appendChild(document.createElement('div'));
   for (let h of list) {
     console.debug('history', h.opus, h);
-    let flayCard = cardDiv.appendChild(new FlayCard({ excludes: ['FlayTag'] }));
+    let flayCard = cardDiv.appendChild(new FlayCard({ excludes: ['FlayTag', 'FlayComment', 'FlayFiles'] }));
 
     fetch('/flay/' + h.opus + '/fully')
       .then((res) => {

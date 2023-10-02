@@ -1,4 +1,4 @@
-import FlayPage from './elements/page/FlayPage';
+import FlayPage from './flay/FlayPage';
 import './popup.flay.scss';
 import './util/flay.sse';
 import './util/theme.listener';

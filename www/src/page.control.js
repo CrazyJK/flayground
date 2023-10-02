@@ -1,12 +1,12 @@
-import FlayBatch from './elements/control/FlayBatch';
-import FlayCandidate from './elements/control/FlayCandidate';
-import FlayFinder from './elements/control/FlayFinder';
-import FlayRegister from './elements/control/FlayRegister';
-import SubtitlesFinder from './elements/control/SubtitlesFinder';
+import FlayBatch from './control/FlayBatch';
+import FlayCandidate from './control/FlayCandidate';
+import FlayFinder from './control/FlayFinder';
+import FlayRegister from './control/FlayRegister';
+import SubtitlesFinder from './control/SubtitlesFinder';
 import './page.control.scss';
 import './util/flay.sse';
 
-import SideNavBar from './elements/page/SideNavBar';
+import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
 let targetId;

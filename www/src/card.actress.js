@@ -1,6 +1,6 @@
+import SVG from '../resources/svg/svg.json';
 import './card.actress.scss';
-import FlayCard from './elements/card/FlayCard';
-import SVG from './elements/svg.json';
+import FlayCard from './flay/FlayCard';
 import Search from './util/Search';
 import flayAction from './util/flay.action';
 import './util/flay.sse';

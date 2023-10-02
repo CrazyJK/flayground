@@ -1,5 +1,5 @@
-import flayAction from '../../util/flay.action';
-import SVG from '../svg.json';
+import SVG from '../../resources/svg/svg.json';
+import flayAction from '../util/flay.action';
 
 export default class TagLayer extends HTMLElement {
   constructor() {

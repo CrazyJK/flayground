@@ -1,7 +1,7 @@
-import TagLayer from './elements/control/TagLayer';
+import TagLayer from './control/TagLayer';
 import './page.tags.scss';
 
-import SideNavBar from './elements/page/SideNavBar';
+import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
 document.querySelector('body').appendChild(new TagLayer());

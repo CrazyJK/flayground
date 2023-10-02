@@ -1,10 +1,10 @@
-import FlayCondition from './elements/page/FlayCondition';
-import FlayPage from './elements/page/FlayPage';
-import FlayPagination from './elements/page/FlayPagination';
+import FlayPage from './flay/FlayPage';
+import FlayCondition from './flay/page/FlayCondition';
+import FlayPagination from './flay/page/FlayPagination';
 import './page.ground.scss';
 import './util/flay.sse';
 
-import SideNavBar from './elements/page/SideNavBar';
+import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
 const flayCondition = new FlayCondition();

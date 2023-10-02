@@ -1,9 +1,9 @@
-import FlayPage from './elements/page/FlayPage';
+import FlayPage from './flay/FlayPage';
 import './index.scss';
 import './util/flay.sse';
 import { getRandomInt } from './util/random';
 
-import SideNavBar from './elements/page/SideNavBar';
+import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
 const flayPage = new FlayPage();

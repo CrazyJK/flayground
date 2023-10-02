@@ -1,13 +1,13 @@
-import FlayActress from '../part/FlayActress';
-import FlayComment from '../part/FlayComment';
-import FlayCover from '../part/FlayCover';
-import FlayFiles from '../part/FlayFiles';
-import FlayOpus from '../part/FlayOpus';
-import FlayRank from '../part/FlayRank';
-import FlayRelease from '../part/FlayRelease';
-import FlayStudio from '../part/FlayStudio';
-import FlayTag from '../part/FlayTag';
-import FlayTitle from '../part/FlayTitle';
+import FlayActress from './part/FlayActress';
+import FlayComment from './part/FlayComment';
+import FlayCover from './part/FlayCover';
+import FlayFiles from './part/FlayFiles';
+import FlayOpus from './part/FlayOpus';
+import FlayRank from './part/FlayRank';
+import FlayRelease from './part/FlayRelease';
+import FlayStudio from './part/FlayStudio';
+import FlayTag from './part/FlayTag';
+import FlayTitle from './part/FlayTitle';
 
 /**
  * Custom element of Card

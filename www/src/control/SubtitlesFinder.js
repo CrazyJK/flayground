@@ -1,4 +1,4 @@
-import FlayAction from '../../util/flay.action';
+import FlayAction from '../util/flay.action';
 
 export default class SubtitlesFinder extends HTMLElement {
   constructor() {

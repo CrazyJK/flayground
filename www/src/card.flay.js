@@ -1,5 +1,5 @@
 import './card.flay.scss';
-import FlayCard from './elements/card/FlayCard';
+import FlayCard from './flay/FlayCard';
 import './util/flay.sse';
 import './util/theme.listener';
 

@@ -1,7 +1,7 @@
-import Search from '../../util/Search';
-import FlayAction from '../../util/flay.action';
-import FlayStorage from '../../util/flay.storage';
-import SVG from '../svg.json';
+import SVG from '../../resources/svg/svg.json';
+import Search from '../util/Search';
+import FlayAction from '../util/flay.action';
+import FlayStorage from '../util/flay.storage';
 
 /**
  *

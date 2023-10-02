@@ -1,9 +1,9 @@
-import ImageFrame from './elements/image/ImageFrame';
+import ImageFrame from './image/part/ImageFrame';
 import './page.image.frame.scss';
 import { getRandomInt } from './util/random';
 import './util/theme.listener';
 
-import SideNavBar from './elements/page/SideNavBar';
+import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
 const main = document.querySelector('main');

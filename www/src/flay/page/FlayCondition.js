@@ -1,5 +1,5 @@
+import SVG from '../../../resources/svg/svg.json';
 import FlayStorage from '../../util/flay.storage';
-import SVG from '../svg.json';
 
 export default class FlayCondition extends HTMLElement {
   condition = {

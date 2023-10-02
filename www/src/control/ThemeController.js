@@ -1,5 +1,5 @@
-import FlayStorage from '../../util/flay.storage';
-import SVG from '../svg.json';
+import SVG from '../../resources/svg/svg.json';
+import FlayStorage from '../util/flay.storage';
 
 export default class ThemeController extends HTMLElement {
   constructor(listener) {

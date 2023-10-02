@@ -1,5 +1,5 @@
+import SVG from '../../../resources/svg/svg.json';
 import FlayAction from '../../util/flay.action';
-import SVG from '../svg.json';
 
 /**
  * Custom element of Actress

@@ -1,4 +1,4 @@
-import flayAction from '../../util/flay.action';
+import flayAction from '../util/flay.action';
 
 /**
  *

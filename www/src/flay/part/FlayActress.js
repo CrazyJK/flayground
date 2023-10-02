@@ -191,12 +191,12 @@ div.actress .debut {
   text-align: right;
 }
 
-div.actress.small .localName,
-div.actress.small .flaySize,
-div.actress.small .age,
-div.actress.small .body,
-div.actress.small .height,
-div.actress.small .debut {
+div.actress.card .localName,
+div.actress.card .flaySize,
+div.actress.card .age,
+div.actress.card .body,
+div.actress.card .height,
+div.actress.card .debut {
   display: none;
 }
 div.actress.small > div {

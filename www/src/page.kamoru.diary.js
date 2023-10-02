@@ -11,7 +11,7 @@ import FlayAttach from './attach/FlayAttach';
 import './lib/ThemeListener';
 import './page.kamoru.diary.scss';
 
-import SVG from '../resources/svg/svg.json';
+import SVG from './svg/svg.json';
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

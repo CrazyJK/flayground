@@ -1,4 +1,4 @@
-import SVG from '../../resources/svg/svg.json';
+import SVG from '../svg/svg.json';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';

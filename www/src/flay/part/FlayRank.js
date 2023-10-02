@@ -1,4 +1,4 @@
-import SVG from '../../../resources/svg/svg.json';
+import SVG from '../../svg/svg.json';
 import FlayAction from '../../util/FlayAction';
 
 /**

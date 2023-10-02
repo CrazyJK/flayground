@@ -1,8 +1,8 @@
-import SVG from '../resources/svg/svg.json';
 import './card.actress.scss';
 import FlayCard from './flay/FlayCard';
 import './lib/SseConnector';
 import './lib/ThemeListener';
+import SVG from './svg/svg.json';
 import FlayAction from './util/FlayAction';
 import FlaySearch from './util/FlaySearch';
 import { addResizeLazyEventListener } from './util/resizeListener';

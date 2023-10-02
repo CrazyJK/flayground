@@ -1,4 +1,4 @@
-@import '../resources/style/style.scss';
+@import './style/style.scss';
 
 main {
   display: grid;
@@ -35,7 +35,7 @@ main {
   article {
     border-top: 1px solid var(--color-border);
     overflow: auto;
-    background: transparent url('../resources/svg/flayground-circle.svg') no-repeat center / 20rem fixed;
+    background: transparent url('./svg/flayground-circle.svg') no-repeat center / 20rem fixed;
 
     .tab-content {
       display: none;

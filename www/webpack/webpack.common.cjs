@@ -43,19 +43,19 @@ module.exports = {
           },
         },
         {
-          from: 'resources/style/*.css',
+          from: 'src/style/*.css',
           to: 'css/[name][ext]',
         },
         {
-          from: 'resources/favicon/*.png',
+          from: 'src/favicon/*.png',
           to: 'favicon/[name][ext]',
         },
         {
-          from: 'resources/favicon/*.ico',
+          from: 'src/favicon/*.ico',
           to: 'favicon/[name][ext]',
         },
         {
-          from: 'resources/svg/*.svg',
+          from: 'src/svg/*.svg',
           to: 'svg/[name][ext]',
         },
       ],

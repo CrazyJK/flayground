@@ -26,8 +26,11 @@ export default class FlayActress extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
-  resize() {
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+  resize(domRect) {
+    this.domRect = domRect;
+    this.isCard = this.classList.contains('card');
+    this.wrapper.classList.toggle('card', this.isCard);
+    this.wrapper.classList.toggle('small', domRect.width < 400);
   }
 
   /**
@@ -36,7 +39,6 @@ export default class FlayActress extends HTMLElement {
    * @param {Actress[]} actressList
    */
   set(flay, actressList) {
-    this.resize();
     this.flay = flay;
     this.actressList = actressList;
     this.wrapper.setAttribute('data-opus', flay.opus);
@@ -187,16 +189,6 @@ div.actress .height {
 div.actress .debut {
   flex: 0 1 auto;
   text-align: right;
-}
-
-@media screen and (max-width: 600px) {
-  .localName,
-  .age,
-  .body,
-  .height,
-  .debut {
-    display: none;
-  }
 }
 
 div.actress.small .localName,

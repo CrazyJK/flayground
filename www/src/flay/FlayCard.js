@@ -13,21 +13,30 @@ import FlayTitle from './part/FlayTitle';
  * Custom element of Card
  */
 export default class FlayCard extends HTMLElement {
+  opus;
+  flay;
+  actress;
+
   constructor(options) {
     super();
 
+    if (options && options.excludes) {
+      this.excludes = options.excludes;
+    } else {
+      this.excludes = [];
+    }
+
     this.attachShadow({ mode: 'open' });
 
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/4.components.css');
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const style = document.createElement('style');
+    style.innerHTML = CSS;
 
-    this.flayCover = new FlayCover();
     this.wrapper = document.createElement('article');
-
+    this.flayCover = new FlayCover();
     this.flayTitle = this.wrapper.appendChild(new FlayTitle());
     this.flayStudio = this.wrapper.appendChild(new FlayStudio());
     this.flayOpus = this.wrapper.appendChild(new FlayOpus());
@@ -37,37 +46,26 @@ export default class FlayCard extends HTMLElement {
     this.flayRank = this.wrapper.appendChild(new FlayRank());
     this.flayRelease = this.wrapper.appendChild(new FlayRelease());
     this.flayTag = this.wrapper.appendChild(new FlayTag());
-    this.flayTag.classList.add('small');
 
-    if (options && options.excludes) {
-      this.excludes = options.excludes;
-    } else {
-      this.excludes = [];
-    }
-    this.opus = null;
-    this.flay = null;
-    this.actress = null;
+    this.flayCover.classList.add('card');
+    this.flayTitle.classList.add('card');
+    this.flayStudio.classList.add('card');
+    this.flayOpus.classList.add('card');
+    this.flayComment.classList.add('card');
+    this.flayActress.classList.add('card');
+    this.flayFiles.classList.add('card');
+    this.flayRank.classList.add('card');
+    this.flayRelease.classList.add('card');
+    this.flayTag.classList.add('card');
 
-    this.shadowRoot.append(LINK, STYLE, this.flayCover, this.wrapper);
+    this.shadowRoot.append(link, style, this.flayCover, this.wrapper);
   }
 
-  resize() {
-    let domRect = this.getBoundingClientRect();
-    let isSmall = domRect.width < 600;
-
-    this.flayCover.classList.toggle('small', isSmall);
-    this.wrapper.classList.toggle('small', isSmall);
-
-    this.flayCover.resize();
-    this.flayTitle.resize();
-    this.flayStudio.resize();
-    this.flayOpus.resize();
-    this.flayComment.resize();
-    this.flayActress.resize();
-    this.flayFiles.resize();
-    this.flayRank.resize();
-    this.flayRelease.resize();
-    this.flayTag.resize();
+  /**
+   * reload data
+   */
+  reload() {
+    this.set(this.opus);
   }
 
   /**
@@ -82,25 +80,74 @@ export default class FlayCard extends HTMLElement {
 
     this.opus = opus;
     this.setAttribute('opus', opus);
-    this.resize();
 
-    if (fullyFlay) {
-      this.render(fullyFlay);
-    } else {
-      await fetch('/flay/' + opus + '/fully')
-        .then((res) => {
-          if (res.status === 404) {
-            this.notfound(opus);
-          }
-          return res.json();
-        })
-        .then((fullyFlay) => {
-          this.render(fullyFlay);
-        })
-        .catch((e) => {
-          console.error(e);
-        });
+    if (!fullyFlay) {
+      const res = await fetch('/flay/' + opus + '/fully');
+      if (res.status === 404) {
+        this.notfound(opus);
+      } else {
+        fullyFlay = await res.json();
+      }
     }
+    this.render(fullyFlay);
+    this.resize();
+  }
+
+  resize() {
+    const domRect = this.getBoundingClientRect();
+    this.wrapper.classList.toggle('small', domRect.width < 400);
+
+    this.flayCover.resize(domRect);
+    this.flayTitle.resize(domRect);
+    this.flayStudio.resize(domRect);
+    this.flayOpus.resize(domRect);
+    this.flayComment.resize(domRect);
+    this.flayActress.resize(domRect);
+    this.flayFiles.resize(domRect);
+    this.flayRank.resize(domRect);
+    this.flayRelease.resize(domRect);
+    this.flayTag.resize(domRect);
+  }
+
+  render(fullyFlay) {
+    const { actress, flay } = fullyFlay;
+    this.flay = flay;
+    this.actress = actress;
+
+    this.setAttribute('rank', flay.video.rank);
+
+    const coverExclude = this.excludes.includes('FlayCover');
+    const studioExclude = this.excludes.includes('FlayStudio');
+    const opusExclude = this.excludes.includes('FlayOpus');
+    const titleExclude = this.excludes.includes('FlayTitle');
+    const commentExclude = this.excludes.includes('FlayComment');
+    const actressExclude = this.excludes.includes('FlayActress');
+    const releaseExclude = this.excludes.includes('FlayRelease');
+    const filesExclude = this.excludes.includes('FlayFiles');
+    const rankExclude = this.excludes.includes('FlayRank');
+    const tagExclude = this.excludes.includes('FlayTag');
+
+    if (!coverExclude) this.flayCover.set(flay);
+    if (!studioExclude) this.flayStudio.set(flay);
+    if (!opusExclude) this.flayOpus.set(flay);
+    if (!titleExclude) this.flayTitle.set(flay);
+    if (!commentExclude) this.flayComment.set(flay);
+    if (!actressExclude) this.flayActress.set(flay, actress);
+    if (!releaseExclude) this.flayRelease.set(flay);
+    if (!filesExclude) this.flayFiles.set(flay);
+    if (!rankExclude) this.flayRank.set(flay);
+    if (!tagExclude) this.flayTag.set(flay);
+
+    this.flayCover.classList.toggle('hide', coverExclude);
+    this.flayStudio.classList.toggle('hide', studioExclude);
+    this.flayOpus.classList.toggle('hide', opusExclude);
+    this.flayTitle.classList.toggle('hide', titleExclude);
+    this.flayComment.classList.toggle('hide', commentExclude);
+    this.flayActress.classList.toggle('hide', actressExclude);
+    this.flayRelease.classList.toggle('hide', releaseExclude);
+    this.flayFiles.classList.toggle('hide', filesExclude);
+    this.flayRank.classList.toggle('hide', rankExclude);
+    this.flayTag.classList.toggle('hide', tagExclude);
   }
 
   getFlay() {
@@ -115,62 +162,6 @@ export default class FlayCard extends HTMLElement {
     this.wrapper.classList.add('notfound');
     this.flayOpus.set({ opus: opus });
     throw new Error('notfound ' + opus);
-  }
-
-  /**
-   * reload data
-   */
-  reload() {
-    this.set(this.opus);
-  }
-
-  render(fullyFlay) {
-    const { actress, flay } = fullyFlay;
-    this.flay = flay;
-    this.actress = actress;
-
-    let coverExclude = this.excludes.includes('FlayCover');
-    let studioExclude = this.excludes.includes('FlayStudio');
-    let opusExclude = this.excludes.includes('FlayOpus');
-    let titleExclude = this.excludes.includes('FlayTitle');
-    let commentExclude = this.excludes.includes('FlayComment');
-    let actressExclude = this.excludes.includes('FlayActress');
-    let releaseExclude = this.excludes.includes('FlayRelease');
-    let filesExclude = this.excludes.includes('FlayFiles');
-    let rankExclude = this.excludes.includes('FlayRank');
-    let tagExclude = this.excludes.includes('FlayTag');
-
-    if (!coverExclude) this.flayCover.set(flay);
-    this.flayCover.classList.toggle('hide', coverExclude);
-
-    if (!studioExclude) this.flayStudio.set(flay);
-    this.flayStudio.classList.toggle('hide', studioExclude);
-
-    if (!opusExclude) this.flayOpus.set(flay);
-    this.flayOpus.classList.toggle('hide', opusExclude);
-
-    if (!titleExclude) this.flayTitle.set(flay);
-    this.flayTitle.classList.toggle('hide', titleExclude);
-
-    if (!commentExclude) this.flayComment.set(flay);
-    this.flayComment.classList.toggle('hide', commentExclude);
-
-    if (!actressExclude) this.flayActress.set(flay, actress);
-    this.flayActress.classList.toggle('hide', actressExclude);
-
-    if (!releaseExclude) this.flayRelease.set(flay);
-    this.flayRelease.classList.toggle('hide', releaseExclude);
-
-    if (!filesExclude) this.flayFiles.set(flay);
-    this.flayFiles.classList.toggle('hide', filesExclude);
-
-    if (!rankExclude) this.flayRank.set(flay);
-    this.flayRank.classList.toggle('hide', rankExclude);
-
-    if (!tagExclude) this.flayTag.set(flay);
-    this.flayTag.classList.toggle('hide', tagExclude);
-
-    this.setAttribute('rank', flay.video.rank);
   }
 }
 
@@ -204,20 +195,6 @@ article > .hide {
   display: none;
 }
 
-@media screen and (max-width: 600px) {
-  html {
-    font-size: 12px;
-  }
-  article.small {
-    gap: 0.25rem;
-    padding: 0.25rem;
-  }
-  flay-comment,
-  flay-tag {
-    display: none;
-  }
-}
-
 article.small {
   gap: 0.25rem;
   padding: 0.25rem;
@@ -229,6 +206,7 @@ article.small flay-tag {
 }
 article.small > * {
   padding: 0.125rem 0.25rem;
+  border-radius: 0.125rem;
   max-width: calc(100% - 0.5rem);
 }
 

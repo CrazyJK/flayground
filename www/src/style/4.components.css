@@ -46,7 +46,6 @@ textarea {
   font-weight: 700;
   text-shadow: var(--text-shadow);
   outline: none;
-  transition: 0.2s;
 }
 
 input[type='text'],
@@ -165,10 +164,10 @@ i.badge {
 }
 
 /* 커스텀 엘리먼트 small 모드 */
-div.small label,
-div.small label a {
+.small label,
+.small label a,
+.small button {
   font-size: var(--font-small) !important;
-  padding: 0rem !important;
 }
 div.small label {
   padding: 0.125rem !important;

@@ -2,6 +2,7 @@ import './card.flay.scss';
 import FlayCard from './flay/FlayCard';
 import './lib/SseConnector';
 import './lib/ThemeListener';
+import { addResizeLazyEventListener } from './util/resizeListener';
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');
@@ -10,6 +11,10 @@ const flayCard = document.body.appendChild(new FlayCard());
 flayCard.set(opus);
 
 document.title = opus;
+
+addResizeLazyEventListener(() => {
+  flayCard.resize();
+});
 
 window.emitFlay = (flay) => {
   if (opus === flay.opus) flayCard.reload();

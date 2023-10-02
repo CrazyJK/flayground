@@ -65,8 +65,11 @@ export default class FlayRank extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
-  resize() {
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+  resize(domRect) {
+    this.domRect = domRect;
+    this.isCard = this.classList.contains('card');
+    this.wrapper.classList.toggle('card', this.isCard);
+    this.wrapper.classList.toggle('small', domRect.width < 400);
   }
 
   /**
@@ -74,7 +77,6 @@ export default class FlayRank extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.resize();
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
@@ -128,18 +130,21 @@ div.rank div.rank-group input[value='0']:checked + label {
 div.rank .rank-label {
   display: none;
 }
-@media screen and (max-width: 600px) {
-  .score-label {
-    display: none;
-  }
-}
-div.rank.small {
+div.rank.card {
   gap: 0.5rem;
 }
+div.rank.card .rank-group,
+div.rank.card .score-label {
+  display: none;
+}
+div.rank.card .rank-label {
+  display: block;
+}
+
 div.rank.small .rank-group,
+div.rank.small .like-btn,
 div.rank.small .play-label,
-div.rank.small .score-label,
-div.rank.small .like-btn {
+div.rank.small .score-label {
   display: none;
 }
 div.rank.small .rank-label {

@@ -97,8 +97,11 @@ export default class FlayFiles extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
-  resize() {
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+  resize(domRect) {
+    this.domRect = domRect;
+    this.isCard = this.classList.contains('card');
+    this.wrapper.classList.toggle('card', this.isCard);
+    this.wrapper.classList.toggle('small', domRect.width < 400);
   }
 
   /**
@@ -106,7 +109,6 @@ export default class FlayFiles extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.resize();
     this.flay = flay;
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
@@ -230,19 +232,15 @@ div.files > div.list > div.rename-flay > button {
   font-size: var(--font-small);
   border-right: 2px dashed purple;
 }
-@media screen and (max-width: 600px) {
-  .sub-btn,
-  .size-label,
-  .files-btn {
-    display: none;
-  }
-}
+
 div.files.small .sub-btn,
 div.files.small .size-label,
 div.files.small .files-btn {
   display: none !important;
 }
-div.files.small button {
-  font-size: var(--font-normal);
+
+div.files.card .size-label,
+div.files.card .files-btn {
+  display: none;
 }
 `;

@@ -60,11 +60,14 @@ export default class FlayTag extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#fetchTag();
+    // this.#fetchTag();
   }
 
-  resize() {
-    this.wrapper.classList.toggle('small', this.classList.contains('small') || this.parentElement?.classList.contains('small'));
+  resize(domRect) {
+    this.domRect = domRect;
+    this.isCard = this.classList.contains('card');
+    this.wrapper.classList.toggle('card', this.isCard);
+    this.wrapper.classList.toggle('small', domRect.width < 400);
   }
 
   /**
@@ -73,7 +76,6 @@ export default class FlayTag extends HTMLElement {
    * @param {boolean} reload
    */
   set(flay, reload) {
-    this.resize();
     this.flay = flay;
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
@@ -107,46 +109,49 @@ export default class FlayTag extends HTMLElement {
   }
 
   async #fetchTag(reload) {
-    const tagListWrap = this.shadowRoot.querySelector('#tagList');
+    const tagListWrap = this.wrapper.querySelector('#tagList');
+    console.log(this.flay.opus, 'window.tagList.length', window.tagList?.length);
 
     if (window.tagList && window.tagList.length > 0) {
       this.tagList = window.tagList;
     }
 
     if (this.tagList === null || reload) {
+      console.log(this.flay.opus, 'fetch');
       this.tagList = await fetch('/info/tag').then((res) => res.json());
       if (window.tagList) {
         window.tagList = this.tagList;
       }
+    }
 
-      tagListWrap.querySelectorAll('input, label').forEach((element) => {
-        element.remove();
+    tagListWrap.querySelectorAll('input, label').forEach((element) => {
+      element.remove();
+    });
+
+    Array.from(this.tagList)
+      .sort((t1, t2) => {
+        return t2.name.localeCompare(t1.name);
+      })
+      .forEach((tag) => {
+        const input = document.createElement('input');
+        input.setAttribute('type', 'checkbox');
+        input.setAttribute('name', 'tag');
+        input.setAttribute('id', 'tag' + tag.id);
+        input.setAttribute('value', tag.id);
+        input.addEventListener('change', (e) => {
+          console.log('tagChange', this.flay.opus, e.target.value, e.target.checked);
+          FlayAction.toggleTag(this.flay.opus, e.target.value, e.target.checked);
+        });
+
+        const label = document.createElement('label');
+        label.setAttribute('title', tag.description);
+        label.setAttribute('for', 'tag' + tag.id);
+        label.textContent = tag.name;
+
+        tagListWrap.prepend(label);
+        tagListWrap.prepend(input);
       });
 
-      Array.from(this.tagList)
-        .sort((t1, t2) => {
-          return t2.name.localeCompare(t1.name);
-        })
-        .forEach((tag) => {
-          const input = document.createElement('input');
-          input.setAttribute('type', 'checkbox');
-          input.setAttribute('name', 'tag');
-          input.setAttribute('id', 'tag' + tag.id);
-          input.setAttribute('value', tag.id);
-          input.addEventListener('change', (e) => {
-            console.log('tagChange', this.flay.opus, e.target.value, e.target.checked);
-            FlayAction.toggleTag(this.flay.opus, e.target.value, e.target.checked);
-          });
-
-          const label = document.createElement('label');
-          label.setAttribute('title', tag.description);
-          label.setAttribute('for', 'tag' + tag.id);
-          label.textContent = tag.name;
-
-          tagListWrap.prepend(label);
-          tagListWrap.prepend(input);
-        });
-    }
     return tagListWrap;
   }
 }
@@ -189,16 +194,16 @@ div.tag .tag-new input {
   border: 0;
   padding: 0.25rem;
 }
-div.tag.small {
+div.tag.card {
   padding: 0;
 }
-div.tag.small .tag-list label {
+div.tag.card .tag-list label {
   padding: 0.125rem;
 }
-div.tag.small input:not(:checked) + label {
+div.tag.card input:not(:checked) + label {
   display: none;
 }
-div.tag.small .tag-new-btn {
+div.tag.card .tag-new-btn {
   display: none;
 }
 .candidate {

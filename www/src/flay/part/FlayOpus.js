@@ -30,8 +30,11 @@ export default class FlayOpus extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
-  resize() {
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+  resize(domRect) {
+    this.domRect = domRect;
+    this.isCard = this.classList.contains('card');
+    this.wrapper.classList.toggle('card', this.isCard);
+    this.wrapper.classList.toggle('small', domRect.width < 400);
   }
 
   /**
@@ -39,7 +42,6 @@ export default class FlayOpus extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.resize();
     this.flay = flay;
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);

@@ -30,8 +30,11 @@ export default class FlayRelease extends HTMLElement {
     this.playedSpan = this.shadowRoot.querySelector('#played');
   }
 
-  resize() {
-    this.wrapper.classList.toggle('small', this.parentElement.classList.contains('small'));
+  resize(domRect) {
+    this.domRect = domRect;
+    this.isCard = this.classList.contains('card');
+    this.wrapper.classList.toggle('card', this.isCard);
+    this.wrapper.classList.toggle('small', domRect.width < 400);
   }
 
   /**
@@ -39,7 +42,6 @@ export default class FlayRelease extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.resize();
     this.flay = flay;
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
@@ -87,20 +89,9 @@ div.release .played-label {
   text-align: center;
 }
 
-div.release.small .modified-label,
-div.release.small .access-label,
-div.release.small .played-label {
+div.release.card .modified-label,
+div.release.card .access-label,
+div.release.card .played-label {
   display: none;
-}
-div.release.small label {
-  font-size: var(--font-small);
-}
-
-@media screen and (max-width: 600px) {
-  .modified-label,
-  .access-label,
-  .played-label {
-    display: none;
-  }
 }
 `;

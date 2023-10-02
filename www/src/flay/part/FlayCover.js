@@ -38,8 +38,10 @@ export default class FlayCover extends HTMLElement {
     this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
-  resize() {
-    this.wrapper.classList.toggle('small', this.classList.contains('small') || this.parentElement?.classList.contains('small'));
+  resize(domRect) {
+    this.domRect = domRect;
+    this.isCard = this.classList.contains('card');
+    this.wrapper.classList.toggle('card', this.isCard);
   }
 
   /**
@@ -47,16 +49,16 @@ export default class FlayCover extends HTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.resize();
     this.flay = flay;
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
 
     const COVER_URL = `/static/cover/${flay.opus}`;
 
+    this.coverImage.title = flay.opus;
     this.coverImage.onload = () => {
       // this.coverImage.style.maxHeight = `calc(${this.coverImage.width}px * 269 / 400)`;
-      if (!this.#isSmall()) {
+      if (!this.isCard) {
         // 대표색상 추출
         let savedDominatedColors = FlayStorage.session.getObject('dominatedColor_' + flay.opus, null);
         if (savedDominatedColors == null) {
@@ -70,10 +72,6 @@ export default class FlayCover extends HTMLElement {
       }
     };
     this.coverImage.src = COVER_URL;
-  }
-
-  #isSmall() {
-    return this.wrapper.classList.contains('small');
   }
 
   #applyDominatedColor(dominatedColors) {
@@ -102,10 +100,10 @@ div.cover {
   overflow: hidden;
   transition: 0.2s;
 }
-div.cover.small {
+div.cover.card {
   align-items: flex-start;
-  box-shadow: none;
   padding: 0;
+  transition: none;
 }
 div.cover .cover-image {
   border: 0;
@@ -128,7 +126,7 @@ div.cover .color-wrapper {
   gap: 0.5rem;
   background-color: transparent;
 }
-div.cover.small .color-wrapper {
+div.cover.card .color-wrapper {
   display: none;
 }
 div.cover .color-wrapper label {

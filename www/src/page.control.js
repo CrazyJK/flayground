@@ -3,8 +3,8 @@ import FlayCandidate from './control/FlayCandidate';
 import FlayFinder from './control/FlayFinder';
 import FlayRegister from './control/FlayRegister';
 import SubtitlesFinder from './control/SubtitlesFinder';
+import './lib/SseConnector';
 import './page.control.scss';
-import './util/flay.sse';
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

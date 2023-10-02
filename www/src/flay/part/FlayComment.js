@@ -1,5 +1,5 @@
-import FlayAction from '../../util/flay.action';
-import Search from '../../util/Search';
+import FlayAction from '../../util/FlayAction';
+import Search from '../../util/FlaySearch';
 
 const COMMENT = 'Comment';
 

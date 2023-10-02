@@ -1,9 +1,9 @@
 import './card.studio.scss';
 import FlayCard from './flay/FlayCard';
-import flayAction from './util/flay.action';
-import './util/flay.sse';
-import './util/theme.listener';
-import { addResizeLazyEventListener } from './util/windowResize';
+import './lib/SseConnector';
+import './lib/ThemeListener';
+import flayAction from './util/FlayAction';
+import { addResizeLazyEventListener } from './util/resizeListener';
 
 window.tagList = [];
 window.actressMap = new Map();

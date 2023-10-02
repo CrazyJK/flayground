@@ -1,5 +1,5 @@
 import SVG from '../../resources/svg/svg.json';
-import flayAction from '../util/flay.action';
+import FlayAction from '../util/FlayAction';
 
 export default class TagLayer extends HTMLElement {
   constructor() {
@@ -52,7 +52,7 @@ export default class TagLayer extends HTMLElement {
         if (tagId === '') {
           tagId = '-1';
         }
-        flayAction.putTag(tagId, tagName, tagDesc);
+        FlayAction.putTag(tagId, tagName, tagDesc);
       }
     });
 
@@ -64,7 +64,7 @@ export default class TagLayer extends HTMLElement {
       let tagDesc = TAG_DESC.value;
       if (tagId !== '') {
         if (confirm('A U sure?')) {
-          flayAction.deleteTag(tagId, tagName, tagDesc);
+          FlayAction.deleteTag(tagId, tagName, tagDesc);
         }
       }
     });

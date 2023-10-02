@@ -1,8 +1,8 @@
 import FlayPage from './flay/FlayPage';
 import FlayCondition from './flay/page/FlayCondition';
 import FlayPagination from './flay/page/FlayPagination';
+import './lib/SseConnector';
 import './page.ground.scss';
-import './util/flay.sse';
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

@@ -1,5 +1,5 @@
 import SVG from '../../../resources/svg/svg.json';
-import FlayAction from '../../util/flay.action';
+import FlayAction from '../../util/FlayAction';
 
 /**
  * Custom element of Rank

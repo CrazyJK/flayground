@@ -1,7 +1,7 @@
 import FlayPage from './flay/FlayPage';
 import './index.scss';
-import './util/flay.sse';
-import { getRandomInt } from './util/random';
+import './lib/SseConnector';
+import { getRandomInt } from './util/randomNumber';
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

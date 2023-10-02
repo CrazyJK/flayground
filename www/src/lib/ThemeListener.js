@@ -1,4 +1,4 @@
-import FlayStorage from './flay.storage';
+import FlayStorage from '../util/FlayStorage';
 
 /**
  * Storage theme change Listener

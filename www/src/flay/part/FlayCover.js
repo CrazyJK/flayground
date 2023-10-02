@@ -1,6 +1,6 @@
 import { getDominatedColors } from '../../util/dominatedColor';
-import FlayStorage from '../../util/flay.storage';
-import { getRandomInt } from '../../util/random';
+import FlayStorage from '../../util/FlayStorage';
+import { getRandomInt } from '../../util/randomNumber';
 
 /**
  * Custom element of Cover

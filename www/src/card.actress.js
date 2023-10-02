@@ -1,11 +1,11 @@
 import SVG from '../resources/svg/svg.json';
 import './card.actress.scss';
 import FlayCard from './flay/FlayCard';
-import Search from './util/Search';
-import flayAction from './util/flay.action';
-import './util/flay.sse';
-import './util/theme.listener';
-import { addResizeLazyEventListener } from './util/windowResize';
+import './lib/SseConnector';
+import './lib/ThemeListener';
+import FlayAction from './util/FlayAction';
+import FlaySearch from './util/FlaySearch';
+import { addResizeLazyEventListener } from './util/resizeListener';
 
 window.tagList = [];
 
@@ -76,7 +76,7 @@ flayRank.addEventListener('change', (e) => {
 });
 
 saveBtn.addEventListener('click', () => {
-  flayAction.updateActress({
+  FlayAction.updateActress({
     favorite: favorite.checked,
     name: name.value.trim(),
     localName: localName.value.trim(),
@@ -88,9 +88,9 @@ saveBtn.addEventListener('click', () => {
   });
 });
 
-findBtn.addEventListener('click', (e) => Search.actress.Minnano(localName.value));
+findBtn.addEventListener('click', (e) => FlaySearch.actress.Minnano(localName.value));
 
-searchBtn.addEventListener('click', (e) => Search.actress.Nextjav(name.value));
+searchBtn.addEventListener('click', (e) => FlaySearch.actress.Nextjav(name.value));
 
 addResizeLazyEventListener(() => {
   flayMap.forEach((flayCard) => {

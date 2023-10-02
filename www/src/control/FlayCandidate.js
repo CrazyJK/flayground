@@ -1,4 +1,4 @@
-import flayAction from '../util/flay.action';
+import FlayAction from '../util/FlayAction';
 
 /**
  *
@@ -36,7 +36,7 @@ export default class FlayCandidate extends HTMLElement {
             BTN.dataset.accept = 'N';
             BTN.addEventListener('click', () => {
               if (BTN.dataset.accept === 'N') {
-                flayAction.acceptCandidates(flay.opus, () => {
+                FlayAction.acceptCandidates(flay.opus, () => {
                   console.log('accept', flay.files.candidate);
                   DIV.remove();
                   LIST.insertBefore(ITEM, null);

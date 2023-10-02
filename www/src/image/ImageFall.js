@@ -1,5 +1,5 @@
-import { getRandomInt } from '../util/random';
-import { addResizeLazyEventListener } from '../util/windowResize';
+import { getRandomInt } from '../util/randomNumber';
+import { addResizeLazyEventListener } from '../util/resizeListener';
 
 const PANE_WIDTH = 360;
 

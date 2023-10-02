@@ -1,7 +1,7 @@
 import './card.flay.scss';
 import FlayCard from './flay/FlayCard';
-import './util/flay.sse';
-import './util/theme.listener';
+import './lib/SseConnector';
+import './lib/ThemeListener';
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');

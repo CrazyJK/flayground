@@ -1,9 +1,9 @@
 import './card.tag.scss';
 import FlayCard from './flay/FlayCard';
-import flayAction from './util/flay.action';
-import './util/flay.sse';
-import './util/theme.listener';
-import { addResizeLazyEventListener } from './util/windowResize';
+import './lib/SseConnector';
+import './lib/ThemeListener';
+import FlayAction from './util/FlayAction';
+import { addResizeLazyEventListener } from './util/resizeListener';
 
 window.tagList = [];
 window.actressMap = new Map();
@@ -49,12 +49,12 @@ flayRank.addEventListener('change', (e) => {
 });
 
 saveBtn.addEventListener('click', () => {
-  flayAction.putTag(tagId.textContent, tagName.value, tagDesc.value);
+  FlayAction.putTag(tagId.textContent, tagName.value, tagDesc.value);
 });
 
 delBtn.addEventListener('click', () => {
   if (confirm('A U sure?')) {
-    flayAction.deleteTag(tagId.textContent, tagName.value, tagDesc.value);
+    FlayAction.deleteTag(tagId.textContent, tagName.value, tagDesc.value);
   }
 });
 

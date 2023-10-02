@@ -8,8 +8,8 @@ import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 
 import FlayAttach from './attach/FlayAttach';
+import './lib/ThemeListener';
 import './page.kamoru.diary.scss';
-import './util/theme.listener';
 
 import SVG from '../resources/svg/svg.json';
 

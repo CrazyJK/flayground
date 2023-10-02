@@ -1,7 +1,7 @@
 import SVG from '../../resources/svg/svg.json';
-import Search from '../util/Search';
-import FlayAction from '../util/flay.action';
-import FlayStorage from '../util/flay.storage';
+import FlayAction from '../util/FlayAction';
+import FlaySearch from '../util/FlaySearch';
+import FlayStorage from '../util/FlayStorage';
 
 /**
  *
@@ -96,7 +96,7 @@ export default class FlayRegister extends HTMLElement {
             .then((res) => res.json())
             .then((foundStudio) => (studio.value = foundStudio.name));
           // searching Arzon
-          Search.opus.Arzon(inOpus);
+          FlaySearch.opus.Arzon(inOpus);
           // set opus
           opus.value = inOpus;
         }
@@ -118,15 +118,15 @@ export default class FlayRegister extends HTMLElement {
                   actressDebut.value = list[0].debut;
                 } else {
                   actressLocalname.value = localname;
-                  Search.actress.Minnano(localname);
+                  FlaySearch.actress.Minnano(localname);
                 }
               });
           });
         }
         // call translate
         if (inputTitle.value !== '' || inputDesc.value !== '') {
-          Search.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
-          Search.translate.DeepL(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
+          FlaySearch.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
+          FlaySearch.translate.DeepL(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
         }
       });
     });

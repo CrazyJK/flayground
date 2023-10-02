@@ -1,4 +1,4 @@
-import flayAction from '../util/flay.action';
+import FlayAction from '../util/FlayAction';
 
 /**
  *
@@ -20,26 +20,26 @@ export default class FlayBatch extends HTMLElement {
 
     const reload = this.shadowRoot.querySelector('#reload');
     reload.addEventListener('click', () => {
-      flayAction.reload();
+      FlayAction.reload();
     });
     const lowerScore = this.shadowRoot.querySelector('#lowerScore');
     lowerScore.addEventListener('change', (e) => {
-      flayAction.batchSetOption('S');
+      FlayAction.batchSetOption('S');
     });
-    flayAction.batchGetOption('S', (booleanOptionValue) => {
+    FlayAction.batchGetOption('S', (booleanOptionValue) => {
       lowerScore.checked = booleanOptionValue;
     });
     const instanceBatch = this.shadowRoot.querySelector('#instanceBatch');
     instanceBatch.addEventListener('click', () => {
-      flayAction.batch('I');
+      FlayAction.batch('I');
     });
     const archiveBatch = this.shadowRoot.querySelector('#archiveBatch');
     archiveBatch.addEventListener('click', () => {
-      flayAction.batch('A');
+      FlayAction.batch('A');
     });
     const backup = this.shadowRoot.querySelector('#backup');
     backup.addEventListener('click', () => {
-      flayAction.batch('B');
+      FlayAction.batch('B');
     });
     const batchLog = this.shadowRoot.querySelector('#batchLog');
 

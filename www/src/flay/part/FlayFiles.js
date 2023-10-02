@@ -1,6 +1,6 @@
 import SVG from '../../../resources/svg/svg.json';
-import Search from '../../util/Search';
-import FlayAction from '../../util/flay.action';
+import FlayAction from '../../util/FlayAction';
+import Search from '../../util/FlaySearch';
 
 /**
  * Custom element of File

@@ -1,4 +1,4 @@
-import './flay.sse.scss';
+import './SseConnector.scss';
 
 /*
  * ref. https://developer.mozilla.org/ko/docs/Web/API/Server-sent_events

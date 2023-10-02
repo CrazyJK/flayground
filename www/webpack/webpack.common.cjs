@@ -22,10 +22,6 @@ module.exports = {
     'popup.flay': './src/popup.flay.js',
   },
   devtool: 'source-map',
-  devServer: {
-    static: './dist',
-    allowedHosts: ['flay.kamoru.jk'],
-  },
   output: {
     // filename: '[name].[contenthash].js',
     filename: '[name].js',

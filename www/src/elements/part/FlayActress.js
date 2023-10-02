@@ -118,7 +118,7 @@ export default class FlayActress extends HTMLElement {
       const bodyElement = actressDiv.appendChild(document.createElement('label'));
       bodyElement.classList.add('body');
       bodyElement.setAttribute('title', actress.body);
-      bodyElement.innerHTML = actress.body.replace(/ /g, '');
+      bodyElement.innerHTML = toInchBody(actress.body);
 
       // height
       const heightElement = actressDiv.appendChild(document.createElement('label'));
@@ -137,6 +137,16 @@ export default class FlayActress extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-actress', FlayActress);
+
+function toInchBody(body) {
+  let parts = body.split('-');
+  let b = parts[0].replace(/[^0-9]/g, '').trim();
+  let c = parts[0].replace(/[0-9]/g, '').trim();
+  let w = parts[1].trim();
+  let h = parts[2].trim();
+
+  return Math.round(b / 2.54) + c + '-' + Math.round(w / 2.54) + '-' + Math.round(h / 2.54);
+}
 
 const CSS = `
 div.actress > div {

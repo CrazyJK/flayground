@@ -1,5 +1,9 @@
 @import './style/style.scss';
 
+[theme='dark'] {
+  --color-text: #a3a3a3;
+}
+
 main {
   position: fixed;
   inset: 0;

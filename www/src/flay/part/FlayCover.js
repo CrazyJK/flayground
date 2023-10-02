@@ -55,7 +55,6 @@ export default class FlayCover extends HTMLElement {
 
     const COVER_URL = `/static/cover/${flay.opus}`;
 
-    this.coverImage.title = flay.opus;
     this.coverImage.onload = () => {
       // this.coverImage.style.maxHeight = `calc(${this.coverImage.width}px * 269 / 400)`;
       if (!this.isCard) {

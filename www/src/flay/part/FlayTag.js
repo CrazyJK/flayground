@@ -110,14 +110,12 @@ export default class FlayTag extends HTMLElement {
 
   async #fetchTag(reload) {
     const tagListWrap = this.wrapper.querySelector('#tagList');
-    console.log(this.flay.opus, 'window.tagList.length', window.tagList?.length);
 
     if (window.tagList && window.tagList.length > 0) {
       this.tagList = window.tagList;
     }
 
     if (this.tagList === null || reload) {
-      console.log(this.flay.opus, 'fetch');
       this.tagList = await fetch('/info/tag').then((res) => res.json());
       if (window.tagList) {
         window.tagList = this.tagList;

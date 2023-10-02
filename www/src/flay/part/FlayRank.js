@@ -50,6 +50,7 @@ export default class FlayRank extends HTMLElement {
     this.rankLabel.classList.add('rank-label');
 
     this.likeBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.likeBtn.type = 'button';
     this.likeBtn.classList.add('like-btn');
     this.likeBtn.addEventListener('click', (e) => {
       console.log('likeClick', this.flay.opus);
@@ -90,11 +91,14 @@ export default class FlayRank extends HTMLElement {
 
     this.rankLabel.innerHTML = flay.video.rank + '<small>R</small>';
 
-    let likeCount = flay.video.likes ? (flay.video.likes.length > 0 ? flay.video.likes.length : '') : '';
+    let likeCount = 0;
+    if (flay.video.likes?.length) {
+      likeCount = flay.video.likes.length;
+    }
 
     this.likeBtn.setAttribute('title', 'Shot ' + likeCount);
     this.likeBtn.innerHTML = '<span>Shot</span><i class="badge">' + likeCount + '</i>';
-    this.likeBtn.classList.toggle('notyet', likeCount === '');
+    this.likeBtn.classList.toggle('notyet', likeCount === 0);
 
     this.playLabel.innerHTML = '<span>Play</span><i class="badge play">' + flay.video.play + '</i>';
     this.playLabel.classList.toggle('notyet', flay.video.play === 0);
@@ -163,7 +167,8 @@ div.rank.small button {
 .badge.score {
   min-width: 2rem;
 }
-.notyet span {
+.notyet span,
+.notyet i {
   color: var(--color-text-secondary);
 }
 `;

@@ -48,6 +48,8 @@ export default class FlayPage extends HTMLElement {
     } else {
       const newWindowBtn = wrapper.appendChild(document.createElement('button'));
       newWindowBtn.id = 'newWindowBtn';
+      newWindowBtn.type = 'button';
+      newWindowBtn.title = 'popup new Window';
       newWindowBtn.innerHTML = SVG.newWindow;
       newWindowBtn.addEventListener('click', () => {
         window.open('popup.flay.html?opus=' + this.opus, 'popup.' + this.opus, 'width=800px,height=1280px');
@@ -140,11 +142,12 @@ article.page > flay-actress {
   padding: 0.25rem;
   opacity: 0;
   width: initial;
+  transition: 0.4s;
 }
 #newWindowBtn:hover {
   opacity: 1;
 }
-#newWindow {
+#newWindowBtn svg {
   color: var(--color-text-secondary);
   width: 1.25rem;
 }

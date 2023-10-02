@@ -167,7 +167,7 @@ div.files > div.info {
   display: flex;
   gap: 1rem;
   justify-content: center;
-  align-items: stretch;
+  align-items: flex-start;
 }
 div.files > div.list {
   display: none;

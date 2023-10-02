@@ -1,7 +1,22 @@
 @import './style/style.scss';
 @import './style/layout.card.scss';
 
-main {
+header {
+  nav {
+    .tab-button {
+      margin: 0 0.5rem;
+    }
+  }
+}
+
+.tab-content {
+  display: none;
+  padding: 1rem;
+}
+
+#studioActress {
+  margin: 0 auto;
+  max-width: 1080px;
   ol {
     li {
       display: flex;
@@ -46,6 +61,64 @@ main {
         flex: 0 0 4rem;
         text-align: right;
       }
+    }
+  }
+}
+
+#rankGrounp {
+  ul {
+    li {
+      margin-bottom: 1rem;
+      div {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+
+        &.head {
+          gap: 1rem;
+        }
+        &.list {
+          padding-left: 1rem;
+          label {
+            font-size: var(--font-small);
+            &.active {
+              color: var(--color-checked);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+#timeline {
+  padding: 1rem;
+
+  .timeline-grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(4rem, auto));
+    gap: 0.25rem;
+
+    .grid-head,
+    .grid-data {
+      border-right: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .grid-data.rank {
+      display: inline-flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      align-content: flex-start;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+  }
+
+  label {
+    font-size: var(--font-small);
+    &.active {
+      color: var(--color-checked);
     }
   }
 }

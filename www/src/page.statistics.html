@@ -12,35 +12,114 @@
     <header>
       <h1>Statistics</h1>
       <nav>
-        <input type="date" id="startDate" />
-        <input type="date" id="endDate" />
-        <label id="info"></label>
+        <button type="button" class="tab-button" id="studioActressBtn">Studio/Actress</button>
+        <button type="button" class="tab-button" id="rankGrounpBtn">Rank Group</button>
+        <button type="button" class="tab-button" id="timelineBtn">Timeline</button>
       </nav>
     </header>
 
     <main>
-      <div class="row">
-        <div class="col">
-          <h2>Studio</h2>
-          <ol id="studio">
-            <li class="head">
-              <label class="name">Name</label>
-              <label class="sum">Sum</label>
-              <label class="size">Size</label>
-              <label class="avg">Avg</label>
-            </li>
-          </ol>
+      <div class="tab-content" id="studioActress">
+        <div>
+          <input type="date" id="startDate" />
+          <input type="date" id="endDate" />
+          <label id="info"></label>
         </div>
-        <div class="col">
-          <h2>Actress</h2>
-          <ol id="actress">
-            <li class="head">
-              <label class="name">Name</label>
-              <label class="sum">Sum</label>
-              <label class="size">Size</label>
-              <label class="avg">Avg</label>
-            </li>
-          </ol>
+        <div class="row">
+          <div class="col">
+            <h2>Studio</h2>
+            <ol id="studio">
+              <li class="head">
+                <label class="name">Name</label>
+                <label class="sum">Sum</label>
+                <label class="size">Size</label>
+                <label class="avg">Avg</label>
+              </li>
+            </ol>
+          </div>
+          <div class="col">
+            <h2>Actress</h2>
+            <ol id="actress">
+              <li class="head">
+                <label class="name">Name</label>
+                <label class="sum">Sum</label>
+                <label class="size">Size</label>
+                <label class="avg">Avg</label>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <div class="tab-content" id="rankGrounp">
+        <ul>
+          <li id="rank5">
+            <div class="head">
+              <label>Rank 5</label>
+              <label class="count">Flay 5</label>
+              <label class="length">5 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank4">
+            <div class="head">
+              <label>Rank 4</label>
+              <label class="count">Flay 4</label>
+              <label class="length">4 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank3">
+            <div class="head">
+              <label>Rank 3</label>
+              <label class="count">Flay 3</label>
+              <label class="length">3 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank2">
+            <div class="head">
+              <label>Rank 2</label>
+              <label class="count">Flay 2</label>
+              <label class="length">2 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank1">
+            <div class="head">
+              <label>Rank 1</label>
+              <label class="count">Flay 1</label>
+              <label class="length">1 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank0">
+            <div class="head">
+              <label>Rank 0</label>
+              <label class="count">Flay 0</label>
+              <label class="length">0 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank-1">
+            <div class="head">
+              <label>Rank -1</label>
+              <label class="count">Flay -1</label>
+              <label class="length">-1 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+        </ul>
+      </div>
+      <div class="tab-content" id="timeline">
+        <div class="timeline-grid">
+          <div class="grid-head time">Date</div>
+          <div class="grid-head rank">Rank -1</div>
+          <div class="grid-head rank">Rank 0</div>
+          <div class="grid-head rank">Rank 1</div>
+          <div class="grid-head rank">Rank 2</div>
+          <div class="grid-head rank">Rank 3</div>
+          <div class="grid-head rank">Rank 4</div>
+          <div class="grid-head rank">Rank 5</div>
         </div>
       </div>
     </main>

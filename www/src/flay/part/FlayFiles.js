@@ -1,6 +1,7 @@
 import SVG from '../../svg/svg.json';
 import FlayAction from '../../util/FlayAction';
 import Search from '../../util/FlaySearch';
+import { getPrettyFilesize } from '../../util/fileUtils';
 
 /**
  * Custom element of File
@@ -119,7 +120,8 @@ export default class FlayFiles extends HTMLElement {
     this.subBtn.innerHTML = 'Sub<i class="badge">' + flay.files.subtitles.length + '</i>';
     this.subBtn.classList.toggle('disable', flay.files.subtitles.length === 0);
 
-    this.sizeLabel.innerHTML = getPrettyFilesize(flay.length);
+    const [size, unit] = getPrettyFilesize(flay.length);
+    this.sizeLabel.innerHTML = `${size}<small>${unit}</small>`;
 
     this.fileList.textContent = null;
 
@@ -148,19 +150,6 @@ export default class FlayFiles extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-files', FlayFiles);
-
-function getPrettyFilesize(length) {
-  const KB = 1024;
-  const MB = KB * 1024;
-  const GB = MB * 1024;
-  if (length > GB) {
-    return (length / GB).toFixed(1) + '<small>GB</small>';
-  } else if (length > MB) {
-    return (length / MB).toFixed(0) + '<small>MB</small>';
-  } else {
-    return (length / KB).toFixed(0) + '<small>KB</small>';
-  }
-}
 
 const CSS = `
 div.files > div.info {

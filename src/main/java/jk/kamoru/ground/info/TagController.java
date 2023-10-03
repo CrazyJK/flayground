@@ -1,6 +1,9 @@
 package jk.kamoru.ground.info;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +19,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jk.kamoru.ground.flay.service.FlayService;
 import jk.kamoru.ground.info.domain.Tag;
 import jk.kamoru.ground.info.service.TagInfoService;
 
@@ -27,9 +31,25 @@ public class TagController {
   @Autowired
   TagInfoService tagInfoService;
 
+  @Autowired
+  FlayService flayService;
+
   @GetMapping("/{id}")
   public Tag get(@PathVariable Integer id) {
     return tagInfoService.get(id);
+  }
+
+  @GetMapping("/withCount")
+  public List<Map<String, Object>> listWidthCount() {
+    return tagInfoService.list().stream().map((tag) -> {
+      Map<String, Object> tagMap = new HashMap<>();
+      tagMap.put("id", tag.getId());
+      tagMap.put("name", tag.getName());
+      tagMap.put("description", tag.getDescription());
+      tagMap.put("count", flayService.find("tag", String.valueOf(tag.getId())).size());
+
+      return tagMap;
+    }).toList();
   }
 
   @GetMapping

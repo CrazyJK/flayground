@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" theme="dark">
   <head>
     <meta charset="UTF-8" />
@@ -8,5 +8,18 @@
     <link rel="stylesheet" href="./page.tags.css" />
     <script defer type="text/javascript" src="./page.tags.js"></script>
   </head>
-  <body></body>
+  <body>
+    <header>
+      <div>
+        <input type="text" id="tagId" placeholder="ID" readonly />
+        <input type="text" id="tagName" placeholder="Tag name" />
+        <input type="text" id="tagDesc" placeholder="Description..." />
+        <button type="button" id="applyBtn">Apply</button>
+        <button type="button" id="deleteBtn">Del</button>
+      </div>
+    </header>
+    <main>
+      <ol></ol>
+    </main>
+  </body>
 </html>

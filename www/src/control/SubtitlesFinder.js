@@ -1,19 +1,139 @@
 import FlayAction from '../util/FlayAction';
 
+const CSS = `
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
+  gap: 1rem;
+  padding: 0.5rem;
+}
+
+#flayList {
+  overflow: auto;
+}
+
+.flay-item {
+  display: flex;
+  gap: 8px;
+  font-family: D2Coding;
+  font-size: 80%;
+  font-weight: 700;
+  padding: 0 1rem;
+  height: 28px;
+}
+.flay-item label {
+  font-size: var(--font-small);
+  font-weight: 400;
+}
+.flay-item:hover {
+  color: orange;
+}
+.flay-item.found-subtitles {
+  color: green;
+  text-shadow: 0 0 1px #9f9292;
+
+}
+.flay-item.found-subtitles.active-subtitles {
+  text-shadow: var(--text-shadow);
+}
+.flay-item.hide {
+  display: none;
+}
+.flay-item .flay-count {
+  flex: 0 0 50px;
+  text-align: right;
+}
+.flay-item .flay-studio {
+  flex: 0 0 90px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.flay-item .flay-opus {
+  flex: 0 0 90px;
+}
+.flay-item .flay-title {
+  flex: 1 0 300px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.flay-item .flay-actressList {
+  flex: 0 0 140px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.flay-item .flay-release {
+  flex: 0 0 80px;
+}
+.flay-item .flay-rank {
+  flex: 0 0 30px;
+  text-align: center;
+}
+.flay-item .flay-tag {
+  flex: 0 0 70px;
+  font-size: var(--font-smallest);
+}
+.flay-item .flay-subtitles {
+  flex: 1 0 100px;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.flay-item .flay-subtitles a {
+  font-size: inherit;
+}
+`;
+
+const HTML = `
+<div class="header">
+  <div class="check-group">
+    <input type="checkbox" name="rank" id="rank0" value="0" />
+    <label for="rank0">0</label>
+    <input type="checkbox" name="rank" id="rank1" value="1" />
+    <label for="rank1">1</label>
+    <input type="checkbox" name="rank" id="rank2" value="2" />
+    <label for="rank2">2</label>
+    <input type="checkbox" name="rank" id="rank3" value="3" />
+    <label for="rank3">3</label>
+    <input type="checkbox" name="rank" id="rank4" value="4" />
+    <label for="rank4">4</label>
+    <input type="checkbox" name="rank" id="rank5" value="5" />
+    <label for="rank5">5</label>
+  </div>
+  <label><em id="foundSubtitlesCount">0</em> / <em id="flayCount">0</em> Flay</label>
+  <button id="btnFindSubtitles">Find</button>
+  <button id="btnStopFinding" style="display: none">Pause</button>
+  <button id="btnFilterFound" style="display: none">toggle Found</button>
+</div>
+<div id="flayList"></div>
+`;
+
 export default class SubtitlesFinder extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('subtitles-finder');
-    this.wrapper.innerHTML = HTML;
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/4.components.css');
+
+    const style = document.createElement('style');
+    style.innerHTML = CSS;
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('subtitles-finder');
+    wrapper.innerHTML = HTML;
+
+    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+  }
+
+  connectedCallback() {
     let noSubtitlesOpusList = [];
     let intervalFindSubtitles = -1;
     let foundSubtitlesCount = 0;
@@ -202,117 +322,3 @@ export default class SubtitlesFinder extends HTMLElement {
 
 // Define the new element
 customElements.define('subtitles-finder', SubtitlesFinder);
-
-const CSS = `
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 0.5rem;
-}
-
-#flayList {
-  overflow: auto;
-}
-
-.flay-item {
-  display: flex;
-  gap: 8px;
-  font-family: D2Coding;
-  font-size: 80%;
-  font-weight: 700;
-  padding: 0 1rem;
-  height: 28px;
-}
-.flay-item label {
-  font-size: var(--font-small);
-  font-weight: 400;
-}
-.flay-item:hover {
-  color: orange;
-}
-.flay-item.found-subtitles {
-  color: green;
-  text-shadow: 0 0 1px #9f9292;
-
-}
-.flay-item.found-subtitles.active-subtitles {
-  text-shadow: var(--text-shadow);
-}
-.flay-item.hide {
-  display: none;
-}
-.flay-item .flay-count {
-  flex: 0 0 50px;
-  text-align: right;
-}
-.flay-item .flay-studio {
-  flex: 0 0 90px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.flay-item .flay-opus {
-  flex: 0 0 90px;
-}
-.flay-item .flay-title {
-  flex: 1 0 300px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.flay-item .flay-actressList {
-  flex: 0 0 140px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.flay-item .flay-release {
-  flex: 0 0 80px;
-}
-.flay-item .flay-rank {
-  flex: 0 0 30px;
-  text-align: center;
-}
-.flay-item .flay-tag {
-  flex: 0 0 70px;
-  font-size: var(--font-smallest);
-}
-.flay-item .flay-subtitles {
-  flex: 1 0 100px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.flay-item .flay-subtitles a {
-  font-size: inherit;
-}
-`;
-
-const HTML = `
-<div class="header">
-  <div class="check-group">
-    <input type="checkbox" name="rank" id="rank0" value="0" />
-    <label for="rank0">0</label>
-    <input type="checkbox" name="rank" id="rank1" value="1" />
-    <label for="rank1">1</label>
-    <input type="checkbox" name="rank" id="rank2" value="2" />
-    <label for="rank2">2</label>
-    <input type="checkbox" name="rank" id="rank3" value="3" />
-    <label for="rank3">3</label>
-    <input type="checkbox" name="rank" id="rank4" value="4" />
-    <label for="rank4">4</label>
-    <input type="checkbox" name="rank" id="rank5" value="5" />
-    <label for="rank5">5</label>
-  </div>
-  <label><em id="foundSubtitlesCount">0</em> / <em id="flayCount">0</em> Flay</label>
-  <button id="btnFindSubtitles">Find</button>
-  <button id="btnStopFinding" style="display: none">Pause</button>
-  <button id="btnFilterFound" style="display: none">toggle Found</button>
-</div>
-<div id="flayList"></div>
-`;

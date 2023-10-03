@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en" theme="dark">
   <head>
     <meta charset="UTF-8" />
@@ -10,21 +10,25 @@
   </head>
   <body>
     <header>
-      <h1>Statistics</h1>
-      <nav>
-        <button type="button" class="tab-button" id="studioActressBtn">Studio/Actress</button>
-        <button type="button" class="tab-button" id="rankGrounpBtn">Rank Group</button>
-        <button type="button" class="tab-button" id="timelineBtn">Timeline</button>
-      </nav>
-    </header>
-
-    <main>
-      <div class="tab-content" id="studioActress">
+      <div class="head-group">
+        <h1>
+          Statistics
+          <label id="info"></label>
+        </h1>
         <div>
           <input type="date" id="startDate" />
           <input type="date" id="endDate" />
-          <label id="info"></label>
         </div>
+      </div>
+      <div class="tab-button-group" role="tablist">
+        <button type="button" class="tab-button" role="tab" target="#studioActress" id="studioActressBtn" active>Studio/Actress</button>
+        <button type="button" class="tab-button" role="tab" target="#rankGrounp" id="rankGrounpBtn">Rank Group</button>
+        <button type="button" class="tab-button" role="tab" target="#timeline" id="timelineBtn">Timeline</button>
+      </div>
+    </header>
+
+    <main class="tab-content-group">
+      <div class="tab-content" role="tabpanel" id="studioActress">
         <div class="row">
           <div class="col">
             <h2>Studio</h2>
@@ -50,7 +54,7 @@
           </div>
         </div>
       </div>
-      <div class="tab-content" id="rankGrounp">
+      <div class="tab-content" role="tabpanel" id="rankGrounp">
         <ul>
           <li id="rank5">
             <div class="head">
@@ -110,7 +114,7 @@
           </li>
         </ul>
       </div>
-      <div class="tab-content" id="timeline">
+      <div class="tab-content" role="tabpanel" id="timeline">
         <div class="timeline-grid">
           <div class="grid-head time">Date</div>
           <div class="grid-head rank">Rank -1</div>

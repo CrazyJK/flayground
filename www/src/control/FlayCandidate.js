@@ -1,67 +1,5 @@
 import FlayAction from '../util/FlayAction';
 
-/**
- *
- */
-export default class FlayCandidate extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('candidate');
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
-
-    this.wrapper.innerHTML = HTML;
-
-    const BUTTON = this.shadowRoot.querySelector('#getCadidate');
-    const BADGE = this.shadowRoot.querySelector('#candidateLength');
-    const LIST = this.shadowRoot.querySelector('#candidatesFlay');
-
-    BUTTON.addEventListener('click', () => {
-      fetch('/flay/candidates')
-        .then((res) => res.json())
-        .then((list) => {
-          console.log('cadidate', list);
-          BADGE.innerHTML = list.length;
-          LIST.textContent = null;
-          list.forEach((flay) => {
-            const ITEM = LIST.appendChild(document.createElement('li'));
-            const BTN = ITEM.appendChild(document.createElement('button'));
-            BTN.innerHTML = flay.files.candidate.join('\n');
-            BTN.dataset.accept = 'N';
-            BTN.addEventListener('click', () => {
-              if (BTN.dataset.accept === 'N') {
-                FlayAction.acceptCandidates(flay.opus, () => {
-                  console.log('accept', flay.files.candidate);
-                  DIV.remove();
-                  LIST.insertBefore(ITEM, null);
-                  BTN.dataset.accept = 'Y';
-                });
-              }
-            });
-            const DIV = ITEM.appendChild(document.createElement('div'));
-            DIV.style.backgroundImage = `url(/static/cover/${flay.opus})`;
-            DIV.innerHTML = `
-              <label>${flay.studio}</label>
-              <label>${flay.opus}</label>
-              <label>${flay.title}</label>
-              <label>${flay.actressList}</label>
-              <label>${flay.release}</label>
-            `;
-          });
-        });
-    });
-  }
-}
-
-// Define the new element
-customElements.define('flay-candidate', FlayCandidate);
-
 const HTML = `
   <div>
     <button id="getCadidate">Candidate <i class="badge" id="candidateLength">0</i></button>
@@ -129,3 +67,70 @@ div.candidate ol li button:hover {
   background-color: var(--color-bg-hover);
 }
 `;
+
+/**
+ *
+ */
+export default class FlayCandidate extends HTMLElement {
+  constructor() {
+    super();
+    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/4.components.css');
+
+    const style = document.createElement('style');
+    style.innerHTML = CSS;
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('candidate');
+    wrapper.innerHTML = HTML;
+
+    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+  }
+
+  connectedCallback() {
+    const BUTTON = this.shadowRoot.querySelector('#getCadidate');
+    const BADGE = this.shadowRoot.querySelector('#candidateLength');
+    const LIST = this.shadowRoot.querySelector('#candidatesFlay');
+
+    BUTTON.addEventListener('click', () => {
+      fetch('/flay/candidates')
+        .then((res) => res.json())
+        .then((list) => {
+          console.log('cadidate', list);
+          BADGE.innerHTML = list.length;
+          LIST.textContent = null;
+          list.forEach((flay) => {
+            const ITEM = LIST.appendChild(document.createElement('li'));
+            const BTN = ITEM.appendChild(document.createElement('button'));
+            BTN.innerHTML = flay.files.candidate.join('\n');
+            BTN.dataset.accept = 'N';
+            BTN.addEventListener('click', () => {
+              if (BTN.dataset.accept === 'N') {
+                FlayAction.acceptCandidates(flay.opus, () => {
+                  console.log('accept', flay.files.candidate);
+                  DIV.remove();
+                  LIST.insertBefore(ITEM, null);
+                  BTN.dataset.accept = 'Y';
+                });
+              }
+            });
+            const DIV = ITEM.appendChild(document.createElement('div'));
+            DIV.style.backgroundImage = `url(/static/cover/${flay.opus})`;
+            DIV.innerHTML = `
+              <label>${flay.studio}</label>
+              <label>${flay.opus}</label>
+              <label>${flay.title}</label>
+              <label>${flay.actressList}</label>
+              <label>${flay.release}</label>
+            `;
+          });
+        });
+    });
+  }
+}
+
+// Define the new element
+customElements.define('flay-candidate', FlayCandidate);

@@ -2,21 +2,45 @@
 @import './style/layout.card.scss';
 
 header {
-  nav {
+  .head-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    h1 {
+      margin: 0;
+      label {
+        border: 0;
+      }
+    }
+    div {
+      display: flex;
+      gap: 1rem;
+      input {
+        border: 0;
+        width: auto;
+      }
+    }
+  }
+  .tab-group {
+    margin-top: 1rem;
     .tab-button {
       margin: 0 0.5rem;
     }
   }
 }
 
-.tab-content {
-  display: none;
-  padding: 1rem;
+main {
+  .tab-content {
+    padding: 0 1rem 1rem;
+  }
 }
 
 #studioActress {
   margin: 0 auto;
   max-width: 1080px;
+  h2 {
+    margin: 0;
+  }
   ol {
     li {
       display: flex;
@@ -26,23 +50,18 @@ header {
       border-bottom: 2px solid transparent;
       padding: 2px;
 
-      &.head {
-        label {
-          font-size: var(--font-largest);
-        }
-      }
-
       &:not(.head):hover {
         border-top-color: #000c;
         border-bottom-color: #000c;
       }
 
-      label {
-        font-size: var(--font-normal);
-        font-weight: 400;
-
-        a {
-          font-size: var(--font-normal);
+      &:not(.head) {
+        label {
+          font-size: 90%;
+          font-weight: 400;
+          a {
+            font-size: 100%;
+          }
         }
       }
 
@@ -73,18 +92,22 @@ header {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
+        align-items: baseline;
 
         &.head {
           gap: 1rem;
+          .count {
+            font-size: 90%;
+            margin-left: auto;
+          }
+          .length {
+            font-size: 90%;
+            flex: 0 0 5rem;
+            text-align: end;
+          }
         }
         &.list {
-          padding-left: 1rem;
-          label {
-            font-size: var(--font-small);
-            &.active {
-              color: var(--color-checked);
-            }
-          }
+          padding: 0.5rem 0 0 1rem;
         }
       }
     }
@@ -92,8 +115,6 @@ header {
 }
 
 #timeline {
-  padding: 1rem;
-
   .timeline-grid {
     display: grid;
     grid-template-columns: repeat(8, minmax(4rem, auto));
@@ -114,19 +135,26 @@ header {
       align-items: flex-start;
     }
   }
-
-  label {
-    font-size: var(--font-small);
-    &.active {
-      color: var(--color-checked);
-    }
-  }
 }
 
 .row {
   display: flex;
   .col {
     flex: 1 1 50%;
-    padding: 1rem;
+  }
+}
+
+label.flay {
+  width: 1rem;
+  height: 1rem;
+  background-color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 0.125rem;
+
+  &.archive {
+    background-color: var(--color-text-secondary);
+  }
+  &.active {
+    border: 1px solid var(--color-border-active);
   }
 }

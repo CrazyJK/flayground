@@ -1,17 +1,103 @@
+const CSS = `
+.wrapper {
+  padding-bottom: 1rem;
+}
+.wrapper.search-wrapper {
+  padding: 0.5rem;
+  text-align: center;
+}
+.wrapper > ol {
+  padding: 0.25rem 0.5rem;
+}
+.item {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+.item:hover {
+  text-shadow: var(--text-shadow-hover);
+}
+.item label {
+  font-size: var(--font-normal);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: 0.125rem 0.25rem;
+}
+.studio {
+  flex: 0 0 4rem;
+}
+.opus {
+  flex: 0 0 6rem;
+}
+.title {
+  flex: 1 1 auto;
+}
+.actress {
+  flex: 0 0 8rem;
+}
+.release {
+  flex: 0 0 6rem;
+}
+.action {
+  flex: 0 0 5rem;
+}
+.date {
+  flex: 0 0 11rem;
+}
+.desc {
+  flex: 1 1 auto;
+}
+.tags {
+  flex: 1 1 auto;
+}
+`;
+
+const HTML = `
+<div class="wrapper search-wrapper">
+  <input type="search" id="search" name="search" placeholder="Search..." spellcheck="false">
+</div>
+<div class="wrapper instance-wrapper">
+  <h1>Instance</h1>
+  <ol></ol>
+</div>
+<div class="wrapper archive-wrapper">
+  <h1>Archive</h1>
+  <ol></ol>
+</div>
+<div class="wrapper info-wrapper">
+  <h1>Info</h1>
+  <ol></ol>
+</div>
+<div class="wrapper history-wrapper">
+  <h1>History</h1>
+  <ol></ol>
+</div>
+`;
+
 export default class FlayFinder extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('flay-finder');
-    this.wrapper.innerHTML = HTML;
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/4.components.css');
+
+    const style = document.createElement('style');
+    style.innerHTML = CSS;
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('flay-finder');
+    wrapper.innerHTML = HTML;
+
+    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+  }
+
+  connectedCallback() {
+    const Wrapper = this.shadowRoot.querySelector('.flay-finder');
     const SearchInput = this.shadowRoot.querySelector('#search');
     const Instance = this.shadowRoot.querySelector('.instance-wrapper > ol');
     const Archive = this.shadowRoot.querySelector('.archive-wrapper > ol');
@@ -38,7 +124,7 @@ export default class FlayFinder extends HTMLElement {
       }
     });
 
-    this.wrapper.addEventListener('click', (e) => {
+    Wrapper.addEventListener('click', (e) => {
       let action = e.target.dataset.action;
       let opus = e.target.dataset.opus;
       console.debug('click', e.target, action, opus);
@@ -175,82 +261,3 @@ function dateFormat(time) {
 
 // Define the new element
 customElements.define('flay-finder', FlayFinder);
-
-const CSS = `
-.wrapper {
-  padding-bottom: 1rem;
-}
-.wrapper.search-wrapper {
-  padding: 0.5rem;
-  text-align: center;
-}
-.wrapper > ol {
-  padding: 0.25rem 0.5rem;
-}
-.item {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-.item:hover {
-  text-shadow: var(--text-shadow-hover);
-}
-.item label {
-  font-size: var(--font-normal);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding: 0.125rem 0.25rem;
-}
-.studio {
-  flex: 0 0 4rem;
-}
-.opus {
-  flex: 0 0 6rem;
-}
-.title {
-  flex: 1 1 auto;
-}
-.actress {
-  flex: 0 0 8rem;
-}
-.release {
-  flex: 0 0 6rem;
-}
-.action {
-  flex: 0 0 5rem;
-}
-.date {
-  flex: 0 0 11rem;
-}
-.desc {
-  flex: 1 1 auto;
-}
-.tags {
-  flex: 1 1 auto;
-}
-`;
-
-const HTML = `
-<div class="wrapper search-wrapper">
-  <input type="search" id="search" name="search" placeholder="Search..." spellcheck="false">
-</div>
-<div class="wrapper instance-wrapper">
-  <h1>Instance</h1>
-  <ol></ol>
-</div>
-<div class="wrapper archive-wrapper">
-  <h1>Archive</h1>
-  <ol></ol>
-</div>
-<div class="wrapper info-wrapper">
-  <h1>Info</h1>
-  <ol></ol>
-</div>
-<div class="wrapper history-wrapper">
-  <h1>History</h1>
-  <ol></ol>
-</div>
-`;

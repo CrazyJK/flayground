@@ -1,3 +1,4 @@
+import './lib/TabUI';
 import './lib/ThemeListener';
 import './page.statistics.scss';
 import { getPrettyFilesize } from './util/fileUtils';
@@ -5,53 +6,65 @@ import { getPrettyFilesize } from './util/fileUtils';
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
+const to2 = (n) => (n < 10 ? '0' + n : n);
+const startDateInput = document.querySelector('#startDate');
+const endDateInput = document.querySelector('#endDate');
+
+startDateInput.addEventListener('change', start);
+endDateInput.addEventListener('change', start);
+
 let rawList = [];
+let filteredList = [];
 let startDate;
 let endDate;
 
-fetch('/flay')
-  .then((res) => res.json())
-  .then((list) => (rawList = list))
-  .then(() => {
-    const to2 = (n) => (n < 10 ? '0' + n : n);
-    const startDate = document.querySelector('#startDate');
-    const endDate = document.querySelector('#endDate');
+Promise.all([fetch('/flay').then((res) => res.json()), fetch('/archive').then((res) => res.json())]).then(([flayList, archiveList]) => {
+  rawList.push(...flayList);
+  archiveList.forEach((a) => {
+    if (flayList.filter((f) => f.opus === a.opus).length === 0) {
+      rawList.push(a);
+    }
+  });
+  rawList = Array.from(rawList).sort((f1, f2) => f1.release.localeCompare(f2.release));
 
-    // set initial value
-    const today = new Date();
-    const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-    startDate.value = `${today.getFullYear()}-01-01`;
-    endDate.value = `${today.getFullYear()}-${to2(lastDayOfMonth.getMonth() + 1)}-${to2(lastDayOfMonth.getDate())}`;
+  start();
+});
 
-    startDate.addEventListener('change', startStudioActress);
-    endDate.addEventListener('change', startStudioActress);
+setInitialValue();
 
-    startStudioActress();
-    startRankGroup();
-    startTimeline();
+function setInitialValue() {
+  const today = new Date();
+  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+  startDateInput.value = `${today.getFullYear() - 1}-${to2(lastDayOfMonth.getMonth() + 2)}-01`;
+  endDateInput.value = `${today.getFullYear()}-${to2(lastDayOfMonth.getMonth() + 1)}-${to2(lastDayOfMonth.getDate())}`;
+}
+
+function start() {
+  startDate = document.querySelector('#startDate').value.replace(/-/g, '.');
+  endDate = document.querySelector('#endDate').value.replace(/-/g, '.');
+
+  filteredList = [];
+  rawList.forEach((flay) => {
+    if (startDate && endDate) {
+      if (startDate < flay.release && flay.release < endDate) {
+        filteredList.push(flay);
+      }
+    } else {
+      filteredList.push(flay);
+    }
   });
 
-const studioActressBtn = document.querySelector('#studioActressBtn');
-const rankGrounpBtn = document.querySelector('#rankGrounpBtn');
-const timelineBtn = document.querySelector('#timelineBtn');
+  document.querySelector('#info').innerHTML = filteredList.length + ' Flay';
 
-studioActressBtn.addEventListener('click', (e) => {
-  document.querySelectorAll('.tab-content').forEach((element) => (element.style.display = 'none'));
-  document.querySelector('#studioActress').style.display = 'block';
-});
-rankGrounpBtn.addEventListener('click', (e) => {
-  document.querySelectorAll('.tab-content').forEach((element) => (element.style.display = 'none'));
-  document.querySelector('#rankGrounp').style.display = 'block';
-});
-timelineBtn.addEventListener('click', (e) => {
-  document.querySelectorAll('.tab-content').forEach((element) => (element.style.display = 'none'));
-  document.querySelector('#timeline').style.display = 'block';
-});
+  startStudioActress();
+  startRankGroup();
+  startTimeline();
+}
 
 function startStudioActress() {
-  function analyzeStudio(flayList) {
+  function analyzeStudio() {
     const rawMap = new Map();
-    Array.from(flayList).forEach((flay) => {
+    Array.from(filteredList).forEach((flay) => {
       fillMap(rawMap, flay.studio, flay);
     });
     calculateRank(rawMap);
@@ -59,9 +72,9 @@ function startStudioActress() {
     console.debug('studio rank map', rawMap);
   }
 
-  function analyzeActress(flayList) {
+  function analyzeActress() {
     const rawMap = new Map();
-    Array.from(flayList).forEach((flay) => {
+    Array.from(filteredList).forEach((flay) => {
       Array.from(flay.actressList).forEach((actress) => {
         fillMap(rawMap, actress, flay);
       });
@@ -113,7 +126,9 @@ function startStudioActress() {
     // sort
     const mapToArray = [...rawMap];
     mapToArray.sort((a, b) => {
-      return b[1].rank.sum - a[1].rank.sum;
+      const avgCompage = b[1].rank.avg - a[1].rank.avg;
+      const sumCompate = b[1].rank.sum - a[1].rank.sum;
+      return avgCompage === 0 ? sumCompate : avgCompage;
     });
 
     mapToArray.forEach((element) => {
@@ -144,31 +159,15 @@ function startStudioActress() {
     });
   }
 
-  startDate = document.querySelector('#startDate').value.replace(/-/g, '.');
-  endDate = document.querySelector('#endDate').value.replace(/-/g, '.');
-
-  const filteredList = [];
-  rawList.forEach((flay) => {
-    if (startDate && endDate) {
-      if (startDate < flay.release && flay.release < endDate) {
-        filteredList.push(flay);
-      }
-    } else {
-      filteredList.push(flay);
-    }
-  });
-
-  document.querySelector('#info').innerHTML = filteredList.length + ' Flay';
-
-  analyzeStudio(filteredList);
-  analyzeActress(filteredList);
+  analyzeStudio();
+  analyzeActress();
 }
 
 function startRankGroup() {
   const rankMap = new Map();
   Array.from({ length: 7 }, (v, i) => i).forEach((r) => rankMap.set(r - 1, []));
 
-  Array.from(rawList).forEach((flay) => rankMap.get(flay.video.rank).push(flay));
+  Array.from(filteredList).forEach((flay) => rankMap.get(flay.video.rank).push(flay));
 
   rankMap.forEach((flayList, key) => {
     const rankList = document.querySelector(`#rank${key} .list`);
@@ -183,7 +182,8 @@ function startRankGroup() {
 
       const flayLabel = rankList.appendChild(document.createElement('label'));
       flayLabel.title = flay.opus;
-      flayLabel.innerHTML = '■';
+      flayLabel.classList.add('flay');
+      flayLabel.classList.toggle('archive', flay.archive);
       flayLabel.addEventListener('click', () => {
         flayLabel.classList.add('active');
         window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
@@ -201,7 +201,8 @@ function startTimeline() {
     flayList.forEach((flay) => {
       const flayLabel = document.createElement('label');
       flayLabel.title = flay.opus;
-      flayLabel.innerHTML = '■';
+      flayLabel.classList.add('flay');
+      flayLabel.classList.toggle('archive', flay.archive);
       flayLabel.addEventListener('click', () => {
         flayLabel.classList.add('active');
         window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
@@ -210,9 +211,9 @@ function startTimeline() {
     });
     return labels;
   };
-  const sortedFlayList = Array.from(rawList).sort((f1, f2) => f1.release.localeCompare(f2.release));
-  const firstDate = new Date(sortedFlayList[0].release);
-  const lastDate = new Date(sortedFlayList[sortedFlayList.length - 1].release);
+
+  const firstDate = new Date(filteredList[0].release);
+  const lastDate = new Date(filteredList[filteredList.length - 1].release);
   console.debug('date', firstDate, lastDate);
 
   const dates = [];
@@ -224,7 +225,7 @@ function startTimeline() {
 
   const timelineMap = new Map();
   dates.sort((d1, d2) => d2.localeCompare(d1)).forEach((d) => timelineMap.set(d, []));
-  sortedFlayList.forEach((flay) => timelineMap.get(flay.release.substring(0, 7)).push(flay));
+  filteredList.forEach((flay) => timelineMap.get(flay.release.substring(0, 7)).push(flay));
   console.debug(timelineMap);
 
   const wrapper = document.querySelector('.timeline-grid');

@@ -1,57 +1,5 @@
 import FlayAction from '../util/FlayAction';
 
-/**
- *
- */
-export default class FlayBatch extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('flay-batch');
-    this.shadowRoot.append(LINK, STYLE, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
-
-    wrapper.innerHTML = HTML;
-
-    const reload = this.shadowRoot.querySelector('#reload');
-    reload.addEventListener('click', () => {
-      FlayAction.reload();
-    });
-    const lowerScore = this.shadowRoot.querySelector('#lowerScore');
-    lowerScore.addEventListener('change', (e) => {
-      FlayAction.batchSetOption('S');
-    });
-    FlayAction.batchGetOption('S', (booleanOptionValue) => {
-      lowerScore.checked = booleanOptionValue;
-    });
-    const instanceBatch = this.shadowRoot.querySelector('#instanceBatch');
-    instanceBatch.addEventListener('click', () => {
-      FlayAction.batch('I');
-    });
-    const archiveBatch = this.shadowRoot.querySelector('#archiveBatch');
-    archiveBatch.addEventListener('click', () => {
-      FlayAction.batch('A');
-    });
-    const backup = this.shadowRoot.querySelector('#backup');
-    backup.addEventListener('click', () => {
-      FlayAction.batch('B');
-    });
-    const batchLog = this.shadowRoot.querySelector('#batchLog');
-
-    window.emitBatch = (data) => {
-      batchLog.innerHTML += data.message + '\n';
-    };
-  }
-}
-
-// Define the new element
-customElements.define('flay-batch', FlayBatch);
-
 const HTML = `
 <div>
   <button id="reload">Reload</button>
@@ -103,3 +51,61 @@ div.flay-batch pre {
   overflow: auto;
 }
 `;
+
+/**
+ *
+ */
+export default class FlayBatch extends HTMLElement {
+  constructor() {
+    super();
+
+    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
+    const link = document.createElement('link');
+    link.setAttribute('rel', 'stylesheet');
+    link.setAttribute('href', './css/4.components.css');
+
+    const style = document.createElement('style');
+    style.innerHTML = CSS;
+
+    const wrapper = document.createElement('div');
+    wrapper.classList.add('flay-batch');
+    wrapper.innerHTML = HTML;
+
+    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+  }
+
+  connectedCallback() {
+    const reload = this.shadowRoot.querySelector('#reload');
+    reload.addEventListener('click', () => {
+      FlayAction.reload();
+    });
+    const lowerScore = this.shadowRoot.querySelector('#lowerScore');
+    lowerScore.addEventListener('change', (e) => {
+      FlayAction.batchSetOption('S');
+    });
+    FlayAction.batchGetOption('S', (booleanOptionValue) => {
+      lowerScore.checked = booleanOptionValue;
+    });
+    const instanceBatch = this.shadowRoot.querySelector('#instanceBatch');
+    instanceBatch.addEventListener('click', () => {
+      FlayAction.batch('I');
+    });
+    const archiveBatch = this.shadowRoot.querySelector('#archiveBatch');
+    archiveBatch.addEventListener('click', () => {
+      FlayAction.batch('A');
+    });
+    const backup = this.shadowRoot.querySelector('#backup');
+    backup.addEventListener('click', () => {
+      FlayAction.batch('B');
+    });
+    const batchLog = this.shadowRoot.querySelector('#batchLog');
+
+    window.emitBatch = (data) => {
+      batchLog.innerHTML += data.message + '\n';
+    };
+  }
+}
+
+// Define the new element
+customElements.define('flay-batch', FlayBatch);

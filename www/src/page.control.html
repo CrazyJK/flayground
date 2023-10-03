@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -11,20 +11,30 @@
   <body>
     <main>
       <header>
-        <div class="tab-group">
-          <button class="tab-button" for="search">Search</button>
-          <button class="tab-button" for="regist">Regist</button>
-          <button class="tab-button" for="batch">Batch</button>
-          <button class="tab-button" for="subtitles">Subtitles</button>
-          <button class="tab-button" for="candidates">Candidates</button>
+        <div class="tab-group" role="tablist">
+          <button type="button" class="tab-button" role="tab" target="#searchPanel" active>Search</button>
+          <button type="button" class="tab-button" role="tab" target="#registPanel">Regist</button>
+          <button type="button" class="tab-button" role="tab" target="#batchPanel">Batch</button>
+          <button type="button" class="tab-button" role="tab" target="#subtitlesPanel">Subtitles</button>
+          <button type="button" class="tab-button" role="tab" target="#candidatesPanel">Candidates</button>
         </div>
       </header>
       <article class="scrollable">
-        <div class="tab-content" id="search"></div>
-        <div class="tab-content" id="regist"></div>
-        <div class="tab-content" id="batch"></div>
-        <div class="tab-content" id="subtitles"></div>
-        <div class="tab-content" id="candidates"></div>
+        <div class="tab-content" role="tabpanel" id="searchPanel">
+          <flay-finder></flay-finder>
+        </div>
+        <div class="tab-content" role="tabpanel" id="registPanel">
+          <flay-register></flay-register>
+        </div>
+        <div class="tab-content" role="tabpanel" id="batchPanel">
+          <flay-batch></flay-batch>
+        </div>
+        <div class="tab-content" role="tabpanel" id="subtitlesPanel">
+          <subtitles-finder></subtitles-finder>
+        </div>
+        <div class="tab-content" role="tabpanel" id="candidatesPanel">
+          <flay-candidate></flay-candidate>
+        </div>
       </article>
     </main>
   </body>

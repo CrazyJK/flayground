@@ -36,13 +36,5 @@ main {
     border-top: 1px solid var(--color-border);
     overflow: auto;
     background: transparent url('./svg/flayground-circle.svg') no-repeat center / 20rem fixed;
-
-    .tab-content {
-      display: none;
-
-      &.active {
-        display: block;
-      }
-    }
   }
 }

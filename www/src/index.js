@@ -26,7 +26,8 @@ document.querySelector('body > main > header > button').addEventListener('click'
 
 fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) })
   .then((res) => res.json())
-  .then((list) => opusList.push(...list));
+  .then((list) => opusList.push(...list))
+  .then(showFlay);
 
 window.emitFlay = (flay) => {
   if (flayPage.opus === flay.opus) flayPage.reload();

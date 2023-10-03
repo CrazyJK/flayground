@@ -61,37 +61,30 @@ export default class FlayPage extends HTMLElement {
 
   /**
    *
-   * @param {String} opus
+   * @param {string} opus
+   * @param {boolean} reload
+   * @returns [flay, actress]
    */
   async set(opus, reload) {
-    if (!opus) {
-      this.style.display = 'none';
-      return;
-    }
-
     this.opus = opus;
     this.setAttribute('opus', opus);
 
-    await fetch('/flay/' + opus + '/fully')
-      .then((res) => res.json())
-      .then((fullyFlay) => {
-        const { flay, actress } = fullyFlay;
-        this.flay = flay;
-        this.actress = actress;
+    const { flay, actress } = await fetch('/flay/' + opus + '/fully').then((res) => res.json());
+    this.flay = flay;
+    this.actress = actress;
 
-        this.flayStudio.set(flay, reload);
-        this.flayOpus.set(flay, reload);
-        this.flayComment.set(flay, reload);
-        this.flayTitle.set(flay, reload);
-        this.flayCover.set(flay, reload);
-        this.flayActress.set(flay, actress, reload);
-        this.flayRelease.set(flay, reload);
-        this.flayRank.set(flay, reload);
-        this.flayFiles.set(flay, reload);
-        this.flayTag.set(flay, reload);
+    this.flayStudio.set(flay, reload);
+    this.flayOpus.set(flay, reload);
+    this.flayComment.set(flay, reload);
+    this.flayTitle.set(flay, reload);
+    this.flayCover.set(flay, reload);
+    this.flayActress.set(flay, actress, reload);
+    this.flayRelease.set(flay, reload);
+    this.flayRank.set(flay, reload);
+    this.flayFiles.set(flay, reload);
+    this.flayTag.set(flay, reload);
 
-        this.style.display = 'block';
-      });
+    return [flay, actress];
   }
 
   /**

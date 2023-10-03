@@ -1,4 +1,4 @@
-import '../control/ThemeController';
+import './part/ThemeController';
 
 export default class SideNavBar extends HTMLElement {
   constructor() {

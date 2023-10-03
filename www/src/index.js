@@ -6,34 +6,27 @@ import { getRandomInt } from './util/randomNumber';
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
-const flayPage = new FlayPage();
-document.querySelector('body > main > article').appendChild(flayPage);
-
-document.querySelector('body > main > header > button').addEventListener('click', showFlay);
-
-let opusList;
-let condition = {
-  search: null,
-  withSubtitles: false,
-  withFavorite: false,
-  withNoFavorite: false,
-  rank: [0, 1, 2, 3, 4, 5],
-  sort: 'RELEASE',
+const flayPage = document.querySelector('body > main > article').appendChild(new FlayPage());
+const opusList = [];
+const opusIndexes = [];
+const condition = { rank: [0, 1, 2, 3, 4, 5] };
+const getRandomOpus = () => {
+  if (opusIndexes.length === 0) opusIndexes.push(...Array.from({ length: opusList.length }, (v, i) => i));
+  return opusList[opusIndexes.splice(getRandomInt(0, opusIndexes.length), 1)[0]];
 };
-
-fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) })
-  .then((res) => res.json())
-  .then((list) => (opusList = list))
-  .then(showFlay);
-
-function showFlay() {
-  let randomIndex = getRandomInt(0, opusList.length);
+const showFlay = () => {
   document.startViewTransition(() => {
-    flayPage.set(opusList[randomIndex]).then(() => {
+    flayPage.set(getRandomOpus()).then(() => {
       flayPage.style.opacity = 1;
     });
   });
-}
+};
+
+document.querySelector('body > main > header > button').addEventListener('click', showFlay);
+
+fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) })
+  .then((res) => res.json())
+  .then((list) => opusList.push(...list));
 
 window.emitFlay = (flay) => {
   if (flayPage.opus === flay.opus) flayPage.reload();

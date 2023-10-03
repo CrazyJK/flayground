@@ -11,6 +11,7 @@ module.exports = {
     'card.studio': './src/card.studio.js',
     'card.actress': './src/card.actress.js',
     'card.tag': './src/card.tag.js',
+    'page.today': './src/page.today.js',
     'page.ground': './src/page.ground.js',
     'page.tags': './src/page.tags.js',
     'page.control': './src/page.control.js',

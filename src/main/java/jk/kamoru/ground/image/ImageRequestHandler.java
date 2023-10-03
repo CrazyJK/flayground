@@ -62,6 +62,18 @@ public class ImageRequestHandler {
     return getImageEntity(flay.getCover());
   }
 
+  @GetMapping("/cover/{opus}/withData")
+  @ResponseBody
+  public HttpEntity<byte[]> getCoverWithData(@PathVariable String opus) throws IOException {
+    Flay flay = null;
+    try {
+      flay = flayService.get(opus);
+    } catch (FlayNotfoundException e) {
+      flay = flayArchiveService.get(opus);
+    }
+    return getCoverEntity(flay);
+  }
+
   @GetMapping("/cover/{opus}/base64")
   @ResponseBody
   public String getBase64Cover(@PathVariable String opus) throws IOException {
@@ -96,6 +108,19 @@ public class ImageRequestHandler {
   @ResponseBody
   public HttpEntity<byte[]> getActressCover(@PathVariable String name, @PathVariable int index) throws IOException {
     return getImageEntity(actressInfoSource.get(name).getCovers().get(index));
+  }
+
+  HttpEntity<byte[]> getCoverEntity(Flay flay) throws IOException {
+    File file = flay.getCover();
+    if (file == null) {
+      return null;
+    }
+    byte[] bytes = FileUtils.readFileToByteArray(file);
+    HttpHeaders headers = new HttpHeaders();
+    headers.setContentLength(file.length());
+    headers.setContentType(probeMediaType(file));
+    headers.set("data", URLEncoder.encode(jsonWriter.writeValueAsString(flay), StandardCharsets.UTF_8));
+    return new HttpEntity<byte[]>(bytes, headers);
   }
 
   HttpEntity<byte[]> getImageEntity(Image image) throws IOException {

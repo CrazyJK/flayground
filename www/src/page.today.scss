@@ -1,0 +1,45 @@
+@import './style/style.scss';
+
+body {
+  main {
+    display: grid;
+    align-content: stretch;
+    justify-content: space-between;
+    align-items: stretch;
+    justify-items: stretch;
+
+    padding: 10px;
+
+    div {
+      padding: 10px;
+
+      div {
+        padding: 0;
+        aspect-ratio: var(--cover-aspect-ratio);
+        background-size: cover;
+        background-repeat: no-repeat;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 2560px) {
+  // QHD 가로 풀
+  main {
+    grid-template-columns: repeat(auto-fill, minmax(25%, auto));
+  }
+}
+
+@media screen and (max-width: 1280px) {
+  // QHD 가로 절반
+  main {
+    grid-template-columns: repeat(auto-fill, minmax(50%, auto));
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  // benq 세로 풀
+  main {
+    grid-template-columns: repeat(auto-fill, minmax(50%, auto));
+  }
+}

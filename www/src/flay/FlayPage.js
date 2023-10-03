@@ -103,7 +103,6 @@ article.page {
   flex-direction: column;
   flex-wrap: nowrap;
   justify-content: center;
-  padding-bottom: 1rem;
   transition: 0.4s;
   margin: auto;
 }

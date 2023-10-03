@@ -34,6 +34,13 @@ const searchBtn = document.querySelector('#searchBtn');
 favLabel.innerHTML = SVG.favorite;
 document.title = actressName;
 
+render();
+
+function render() {
+  fetchActress();
+  fetchFlay();
+}
+
 function fetchActress() {
   fetch('/info/actress/' + actressName)
     .then((res) => res.json())
@@ -49,7 +56,9 @@ function fetchActress() {
       debut.value = actress.debut;
       comment.value = actress.comment;
     });
+}
 
+function fetchFlay(params) {
   fetch('/flay/find/actress/' + actressName)
     .then((res) => res.json())
     .then((list) => {
@@ -67,8 +76,6 @@ function fetchActress() {
       });
     });
 }
-
-fetchActress();
 
 flayRank.addEventListener('change', (e) => {
   console.log('rank change', e.target.value);

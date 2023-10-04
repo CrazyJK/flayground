@@ -69,7 +69,7 @@ div.nav > header.active > a {
 }
 div.nav > header > a {
   font-family: 'Ink Free';
-  font-size: var(--font-largest);
+  font-size: var(--size-largest);
   text-transform: capitalize;
 }
 
@@ -137,7 +137,7 @@ side-nav {
   left: -200px;
   bottom: 0;
   width: 200px;
-  transition: linear left 0.4s 0.4s;
+  transition: linear left 0.4s 0.4s, box-shadow 0.8s;
   z-index: 74;
   background-color: var(--color-bg);
   border-right: 1px solid var(--color-border);
@@ -147,6 +147,9 @@ side-nav {
 side-nav:hover,
 side-nav.open {
   left: 0;
-  transition: left 0.4s;
+  transition: left 0.4s, box-shadow 0.8s;
+}
+side-nav.open {
+  box-shadow: var(--box-shadow-small);
 }
 `;

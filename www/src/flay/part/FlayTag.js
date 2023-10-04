@@ -169,7 +169,7 @@ div.tag .tag-list {
   gap: 0.25rem 0.5rem;
 }
 div.tag .tag-list label {
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
   padding: 0.25rem;
   transition: box-shadow 0.4s 0.2s;
 }
@@ -178,7 +178,7 @@ div.tag .tag-list label:hover {
   border-radius: var(--border-radius);
 }
 div.tag .tag-list .tag-new-btn {
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
 }
 div.tag .tag-new {
   display: none;

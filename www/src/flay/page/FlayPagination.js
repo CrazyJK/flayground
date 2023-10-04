@@ -279,7 +279,7 @@ div.pagination .paging .page {
   padding: 0.25rem;
   line-height: 1.25rem;
   min-width: 2.5rem;
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
   cursor: pointer;
   text-align: center;
 }
@@ -287,7 +287,7 @@ div.pagination .paging .page:last-child {
   border-right: 1px solid #aaa;
 }
 div.pagination .paging .page a {
-  font-size: var(--font-small);
+  font-size: var(--size-small);
   font-weight: 700;
 }
 div.pagination .paging .page.disable a {

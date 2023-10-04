@@ -20,7 +20,7 @@ const CSS = `
   text-shadow: var(--text-shadow-hover);
 }
 .item label {
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;

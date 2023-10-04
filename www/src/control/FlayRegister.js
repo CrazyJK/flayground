@@ -199,7 +199,7 @@ const CSS = `
   padding: 0.5rem;
 }
 #found-flay label {
-  font-size: var(--font-small);
+  font-size: var(--size-small);
   color: var(--color-orange);
 }
 `;

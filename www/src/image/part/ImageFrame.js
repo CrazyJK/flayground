@@ -117,7 +117,7 @@ const CSS = `
 .image-frame div.info label {
   background-color: transparent;
   text-shadow: var(--text-shadow);
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
 
   overflow: hidden;
   white-space: nowrap;

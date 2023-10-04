@@ -26,7 +26,7 @@ const CSS = `
   height: 28px;
 }
 .flay-item label {
-  font-size: var(--font-small);
+  font-size: var(--size-small);
   font-weight: 400;
 }
 .flay-item:hover {
@@ -77,7 +77,7 @@ const CSS = `
 }
 .flay-item .flay-tag {
   flex: 0 0 70px;
-  font-size: var(--font-smallest);
+  font-size: var(--size-smallest);
 }
 .flay-item .flay-subtitles {
   flex: 1 0 100px;

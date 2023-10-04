@@ -76,12 +76,12 @@ div.title label {
 }
 div.title label a {
   display: inline;
-  font-size: var(--font-largest);
+  font-size: var(--size-largest);
 }
 div.title.card label a {
-  font-size: var(--font-large);
+  font-size: var(--size-large);
 }
 div.title.small label a {
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
 }
 `;

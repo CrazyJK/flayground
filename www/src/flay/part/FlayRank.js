@@ -155,14 +155,14 @@ div.rank.small .rank-label {
   display: block;
 }
 div.rank.small label {
-  font-size: var(--font-small);
+  font-size: var(--size-small);
 }
 div.rank.small label svg {
   width: 1.25rem;
   height: 1.25rem;
 }
 div.rank.small button {
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
 }
 .badge.score {
   min-width: 2rem;

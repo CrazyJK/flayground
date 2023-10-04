@@ -173,7 +173,7 @@ div.files > div.list > ol {
   border-bottom: 0;
 }
 div.files > div.list > ol > li {
-  font-size: var(--font-smallest);
+  font-size: var(--size-smallest);
   font-family: D2Coding;
   margin-bottom: 0.25rem;
   overflow: hidden;
@@ -211,14 +211,14 @@ div.files > div.list > div.rename-flay > input {
 }
 div.files > div.list > div.rename-flay > input,
 div.files > div.list > div.rename-flay > button {
-  font-size: var(--font-smallest);
+  font-size: var(--size-smallest);
   font-family: D2Coding;
   border: 2px dashed purple;
   border-right: 0;
   padding: 4px;
 }
 div.files > div.list > div.rename-flay > button {
-  font-size: var(--font-small);
+  font-size: var(--size-small);
   border-right: 2px dashed purple;
 }
 

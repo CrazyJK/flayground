@@ -84,7 +84,7 @@ div.release {
 div.release .modified-label,
 div.release .access-label,
 div.release .played-label {
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
   min-width: 7rem;
   text-align: center;
 }

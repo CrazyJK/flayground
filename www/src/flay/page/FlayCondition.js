@@ -185,10 +185,10 @@ div.condition > div > label {
   margin: 0 0.25rem;
 }
 div.condition > div > select {
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
   outline: none;
 }
 div.condition > div > select > option {
-  font-size: var(--font-small);
+  font-size: var(--size-small);
 }
 `;

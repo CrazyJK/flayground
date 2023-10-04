@@ -43,7 +43,7 @@ textarea {
   border: 0;
   padding: 0;
   font-family: inherit;
-  font-size: var(--font-large);
+  font-size: var(--size-large);
   font-weight: 700;
   text-shadow: var(--text-shadow);
   outline: none;
@@ -100,8 +100,8 @@ input[type='radio']:checked + label {
 }
 input[type='checkbox'] + label > svg,
 input[type='radio'] + label > svg {
-  height: var(--font-large);
-  width: var(--font-large);
+  height: var(--size-large);
+  width: var(--size-large);
 }
 
 select {
@@ -109,7 +109,7 @@ select {
 }
 select option {
   background-color: var(--color-bg);
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
 }
 
 textarea {
@@ -136,7 +136,7 @@ ol {
 }
 
 label {
-  font-size: var(--font-large);
+  font-size: var(--size-large);
   font-weight: 700;
 }
 
@@ -159,7 +159,7 @@ textarea::spelling-error {
 i.badge {
   float: right;
   margin: 0 0 0 0.25rem;
-  font-size: var(--font-small);
+  font-size: var(--size-small);
   font-style: normal;
   font-weight: 400;
   min-width: 1rem;
@@ -169,12 +169,12 @@ i.badge {
 .card label,
 .card label a,
 .card button {
-  font-size: var(--font-normal) !important;
+  font-size: var(--size-normal) !important;
 }
 .small label,
 .small label a,
 .small button {
-  font-size: var(--font-small) !important;
+  font-size: var(--size-small) !important;
   text-shadow: none;
 }
 div.small label {
@@ -182,17 +182,17 @@ div.small label {
 }
 
 h1 {
-  font-size: var(--font-largest);
+  font-size: var(--size-largest);
 }
 h2 {
-  font-size: var(--font-large);
+  font-size: var(--size-large);
 }
 h3 {
-  font-size: var(--font-normal);
+  font-size: var(--size-normal);
 }
 h4 {
-  font-size: var(--font-small);
+  font-size: var(--size-small);
 }
 h5 {
-  font-size: var(--font-smallest);
+  font-size: var(--size-smallest);
 }

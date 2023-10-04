@@ -207,6 +207,6 @@ div.actress.small svg {
   height: 1rem;
 }
 div.actress.small a {
-  font-size: var(--font-small);
+  font-size: var(--size-small);
 }
 `;

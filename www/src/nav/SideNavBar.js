@@ -94,8 +94,11 @@ const HTML = `
   <a href="index.html">Flayground</a>
 </header>
 <ul>
-  <li><a href="page.today.html"       >today</a></li>
   <li><a href="page.ground.html"      >ground</a></li>
+  <li><a href="page.today.html"       >today</a></li>
+  <li><a href="page.random.html"      >random</a></li>
+</ul>
+<ul>
   <li><a href="page.tags.html"        >tags</a></li>
   <li><a href="page.shot.history.html">shot history</a></li>
   <li><a href="page.statistics.html"  >statistics</a></li>

@@ -1,0 +1,55 @@
+@import './style/style.scss';
+
+[theme='dark'] {
+  --color-text: #a3a3a3;
+}
+
+main {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+
+  display: grid;
+  grid-template-rows: 6rem 1fr;
+
+  header {
+    text-align: center;
+    button {
+      height: 100%;
+      img {
+        height: 100%;
+      }
+    }
+  }
+
+  article {
+    flay-page {
+      opacity: 0;
+      transition: opacity 1s cubic-bezier(0.4, 0, 1, 1) 0.2s;
+    }
+  }
+}
+
+@keyframes slideOut {
+  to {
+    opacity: 0;
+    transform: translateX(-900px);
+  }
+}
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(900px);
+  }
+}
+
+flay-page {
+  view-transition-name: flay-page;
+}
+
+::view-transition-old(flay-page) {
+  animation-name: slideOut;
+}
+::view-transition-new(flay-page) {
+  animation-name: slideIn;
+}

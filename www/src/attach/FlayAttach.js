@@ -1,3 +1,5 @@
+import componentCssLoader from '../style/componentCssLoader';
+
 const File = {
   formatSize: (length) => {
     const KB = 1024;
@@ -155,9 +157,7 @@ export default class FlayAttach extends HTMLElement {
     this.fileInput.setAttribute('type', 'file');
     this.fileInput.setAttribute('multiple', 'multiple');
 
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
 
     const STYLE = document.createElement('style');
     STYLE.textContent = CSS;
@@ -167,7 +167,7 @@ export default class FlayAttach extends HTMLElement {
     this.addFileFinderClickEventListener();
 
     // 생성된 요소들을 shadow DOM에 부착합니다
-    this.shadowRoot.append(LINK, STYLE, this.wrapper);
+    this.shadowRoot.append(STYLE, this.wrapper);
 
     this.initiate('1c414415614211313313e1401ec1421c31fc1961431f71ee', 'TEMP', 'unnamed');
   }

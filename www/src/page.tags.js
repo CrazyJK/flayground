@@ -1,6 +1,9 @@
 import './page.tags.scss';
+import componentCssLoader from './style/componentCssLoader';
 import SVG from './svg/svg.json';
 import FlayAction from './util/FlayAction';
+
+componentCssLoader();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

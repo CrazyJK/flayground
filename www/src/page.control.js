@@ -6,6 +6,9 @@ import './control/SubtitlesFinder';
 import './lib/SseConnector';
 import './lib/TabUI';
 import './page.control.scss';
+import componentCssLoader from './style/componentCssLoader';
+
+componentCssLoader();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

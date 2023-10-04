@@ -1,3 +1,4 @@
+import componentCssLoader from '../../style/componentCssLoader';
 import { getRandomInt } from '../../util/randomNumber';
 import { addResizeLazyEventListener } from '../../util/resizeListener';
 
@@ -21,14 +22,13 @@ export default class FlayPagination extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
+
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
     const WRAPPER = document.createElement('div');
     WRAPPER.classList.add('pagination');
-    this.shadowRoot.append(LINK, STYLE, WRAPPER); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(STYLE, WRAPPER); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.render(WRAPPER);
   }

@@ -1,3 +1,4 @@
+import componentCssLoader from '../style/componentCssLoader';
 import SVG from '../svg/svg.json';
 import FlayAction from '../util/FlayAction';
 import FlaySearch from '../util/FlaySearch';
@@ -212,9 +213,7 @@ export default class FlayRegister extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -223,7 +222,7 @@ export default class FlayRegister extends HTMLElement {
     wrapper.classList.add('flay-register');
     wrapper.innerHTML = HTML;
 
-    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {

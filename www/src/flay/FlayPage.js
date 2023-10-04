@@ -1,3 +1,4 @@
+import componentCssLoader from '../style/componentCssLoader';
 import SVG from '../svg/svg.json';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
@@ -22,9 +23,7 @@ export default class FlayPage extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -56,7 +55,7 @@ export default class FlayPage extends HTMLElement {
       });
     }
 
-    this.shadowRoot.append(link, style, wrapper);
+    this.shadowRoot.append(style, wrapper);
   }
 
   /**

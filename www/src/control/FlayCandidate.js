@@ -1,3 +1,4 @@
+import componentCssLoader from '../style/componentCssLoader';
 import FlayAction from '../util/FlayAction';
 
 const HTML = `
@@ -76,9 +77,7 @@ export default class FlayCandidate extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -87,7 +86,7 @@ export default class FlayCandidate extends HTMLElement {
     wrapper.classList.add('candidate');
     wrapper.innerHTML = HTML;
 
-    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {

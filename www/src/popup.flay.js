@@ -2,6 +2,9 @@ import FlayPage from './flay/FlayPage';
 import './lib/SseConnector';
 import './lib/ThemeListener';
 import './popup.flay.scss';
+import componentCssLoader from './style/componentCssLoader';
+
+componentCssLoader();
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');

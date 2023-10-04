@@ -1,3 +1,4 @@
+import componentCssLoader from '../style/componentCssLoader';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';
@@ -28,9 +29,7 @@ export default class FlayCard extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
 
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -58,7 +57,7 @@ export default class FlayCard extends HTMLElement {
     this.flayRelease.classList.add('card');
     this.flayTag.classList.add('card');
 
-    this.shadowRoot.append(link, style, this.flayCover, this.wrapper);
+    this.shadowRoot.append(style, this.flayCover, this.wrapper);
   }
 
   /**

@@ -1,6 +1,9 @@
 import './lib/SseConnector';
 import './page.today.scss';
+import componentCssLoader from './style/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
+
+componentCssLoader();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

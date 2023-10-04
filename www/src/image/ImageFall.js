@@ -1,3 +1,4 @@
+import componentCssLoader from '../style/componentCssLoader';
 import { getRandomInt } from '../util/randomNumber';
 import { addResizeLazyEventListener } from '../util/resizeListener';
 
@@ -16,13 +17,12 @@ export default class ImageFall extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
+
     const style = document.createElement('style');
     style.innerHTML = CSS;
     const main = document.createElement('main');
-    this.shadowRoot.append(link, style, main);
+    this.shadowRoot.append(style, main);
 
     addResizeLazyEventListener(() => {
       document.startViewTransition(() => {

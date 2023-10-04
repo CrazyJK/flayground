@@ -1,3 +1,4 @@
+import componentCssLoader from '../../style/componentCssLoader';
 import { getDominatedColors } from '../../util/dominatedColor';
 
 export default class ImageFrame extends HTMLElement {
@@ -20,9 +21,7 @@ export default class ImageFrame extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    const link = document.createElement('link');
-    link.setAttribute('rel', 'stylesheet');
-    link.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -30,7 +29,7 @@ export default class ImageFrame extends HTMLElement {
     this.wrapper = document.createElement('div');
     this.wrapper.classList.add('image-frame');
     this.wrapper.innerHTML = HTML;
-    this.shadowRoot.append(link, style, this.wrapper);
+    this.shadowRoot.append(style, this.wrapper);
 
     this.img = this.shadowRoot.querySelector('img');
     this.imgIdx = this.shadowRoot.querySelector('#imgIdx');

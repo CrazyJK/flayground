@@ -13,6 +13,10 @@ import './page.kamoru.diary.scss';
 
 import SVG from './svg/svg.json';
 
+import componentCssLoader from './style/componentCssLoader';
+
+componentCssLoader();
+
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 

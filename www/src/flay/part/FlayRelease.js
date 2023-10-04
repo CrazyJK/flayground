@@ -1,3 +1,5 @@
+import componentCssLoader from '../../style/componentCssLoader';
+
 /**
  * Custom element of Release
  */
@@ -9,9 +11,7 @@ export default class FlayRelease extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
+    componentCssLoader(this.shadowRoot);
 
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
@@ -20,7 +20,7 @@ export default class FlayRelease extends HTMLElement {
     this.wrapper.classList.add('release');
     this.wrapper.innerHTML = HTML;
 
-    this.shadowRoot.append(LINK, STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {

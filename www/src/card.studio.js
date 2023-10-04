@@ -2,8 +2,11 @@ import './card.studio.scss';
 import FlayCard from './flay/FlayCard';
 import './lib/SseConnector';
 import './lib/ThemeListener';
+import componentCssLoader from './style/componentCssLoader';
 import flayAction from './util/FlayAction';
 import { addResizeLazyEventListener } from './util/resizeListener';
+
+componentCssLoader();
 
 window.tagList = [];
 window.actressMap = new Map();

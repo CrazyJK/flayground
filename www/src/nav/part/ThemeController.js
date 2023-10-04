@@ -1,3 +1,4 @@
+import componentCssLoader from '../../style/componentCssLoader';
 import SVG from '../../svg/svg.json';
 import FlayStorage from '../../util/FlayStorage';
 
@@ -5,14 +6,14 @@ export default class ThemeController extends HTMLElement {
   constructor(listener) {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-    const LINK = document.createElement('link');
-    LINK.setAttribute('rel', 'stylesheet');
-    LINK.setAttribute('href', './css/4.components.css');
+
+    componentCssLoader(this.shadowRoot);
+
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
     const wrapper = document.createElement('div');
     wrapper.classList.add('theme-controller');
-    this.shadowRoot.append(LINK, STYLE, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(STYLE, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     const DIV = wrapper.appendChild(document.createElement('div'));
     DIV.classList.add('theme-group');

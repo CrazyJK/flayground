@@ -26,16 +26,19 @@ export default class SideNavBar extends HTMLElement {
     this.renderParent();
 
     this.markActiveMenu();
+
+    this.shadowRoot.addEventListener('click', (e) => {
+      console.log('click', e.target);
+      this.classList.toggle('open');
+    });
   }
 
   renderParent() {
-    const NAV_OPEN = document.createElement('label');
+    const NAV_OPEN = this.parentElement.insertBefore(document.createElement('label'), this);
     NAV_OPEN.classList.add('nav-open');
-    this.parentElement.insertBefore(NAV_OPEN, this);
 
-    const PAREMT_STYLE = document.createElement('style');
+    const PAREMT_STYLE = this.parentElement.closest('html').querySelector('head').appendChild(document.createElement('style'));
     PAREMT_STYLE.innerHTML = PARENT_CSS;
-    this.parentElement.closest('html').querySelector('head').append(PAREMT_STYLE);
   }
 
   markActiveMenu() {
@@ -134,13 +137,15 @@ side-nav {
   left: -200px;
   bottom: 0;
   width: 200px;
-  transition: left 0.4s 0.4s;
+  transition: linear left 0.4s 0.4s;
   z-index: 74;
   background-color: var(--color-bg);
+  border-right: 1px solid var(--color-border);
 }
 
-.nav-open:hover + side-nav, side-nav:hover {
-  border-right: 1px solid var(--color-border);
+.nav-open:hover + side-nav,
+side-nav:hover,
+side-nav.open {
   left: 0;
   transition: left 0.4s;
 }

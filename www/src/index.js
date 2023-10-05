@@ -1,6 +1,6 @@
 import './index.scss';
-import componentCssLoader from './style/componentCssLoader';
 
+import componentCssLoader from './style/componentCssLoader';
 componentCssLoader();
 
 import SideNavBar from './nav/SideNavBar';

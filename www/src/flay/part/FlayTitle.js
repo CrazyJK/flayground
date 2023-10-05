@@ -5,7 +5,6 @@ import componentCssLoader from '../../style/componentCssLoader';
  */
 export default class FlayTitle extends HTMLElement {
   flay;
-  active = true;
 
   constructor() {
     super();
@@ -23,14 +22,13 @@ export default class FlayTitle extends HTMLElement {
     const label = this.wrapper.appendChild(document.createElement('label'));
     this.anker = label.appendChild(document.createElement('a'));
     this.anker.innerHTML = 'Title';
-    this.anker.addEventListener('click', () => {
-      if (this.active) {
-        console.log('titleClick', this.flay.opus);
+    if (location.pathname.indexOf('popup.flay.html') < 0) {
+      this.anker.addEventListener('click', () => {
         // window.open('/flay/' + this.flay.opus, this.flay.opus, 'width=640px,height=800px');
         // window.open('card.flay.html?opus=' + this.flay.opus, this.flay.opus, 'width=800px,height=536px');
         window.open('popup.flay.html?opus=' + this.flay.opus, 'popup.' + this.flay.opus, 'width=800px,height=1280px');
-      }
-    });
+      });
+    }
 
     this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
@@ -40,10 +38,6 @@ export default class FlayTitle extends HTMLElement {
     this.isCard = this.classList.contains('card');
     this.wrapper.classList.toggle('card', this.isCard);
     this.wrapper.classList.toggle('small', domRect.width < 400);
-  }
-
-  deactivate() {
-    this.active = false;
   }
 
   /**

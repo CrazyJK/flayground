@@ -1,5 +1,4 @@
 import componentCssLoader from '../style/componentCssLoader';
-import SVG from '../svg/svg.json';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';
@@ -41,19 +40,6 @@ export default class FlayPage extends HTMLElement {
     this.flayRank = wrapper.appendChild(new FlayRank());
     this.flayFiles = wrapper.appendChild(new FlayFiles());
     this.flayTag = wrapper.appendChild(new FlayTag());
-
-    if (location.pathname.indexOf('popup.flay.html') > -1) {
-      this.flayTitle.deactivate();
-    } else {
-      const newWindowBtn = wrapper.appendChild(document.createElement('button'));
-      newWindowBtn.id = 'newWindowBtn';
-      newWindowBtn.type = 'button';
-      newWindowBtn.title = 'popup new Window';
-      newWindowBtn.innerHTML = SVG.newWindow;
-      newWindowBtn.addEventListener('click', () => {
-        window.open('popup.flay.html?opus=' + this.opus, 'popup.' + this.opus, 'width=800px,height=1280px');
-      });
-    }
 
     this.shadowRoot.append(style, wrapper);
   }
@@ -123,23 +109,5 @@ article.page > flay-actress {
   article.page > flay-cover {
     margin: 0.25rem auto;
   }
-}
-#newWindowBtn {
-  position: absolute;
-  top: 0;
-  right: 0;
-  z-index: 1;
-  margin: 0;
-  padding: 0.25rem;
-  opacity: 0;
-  width: initial;
-  transition: 0.4s;
-}
-#newWindowBtn:hover {
-  opacity: 1;
-}
-#newWindowBtn svg {
-  color: var(--color-text-secondary);
-  width: 1.25rem;
 }
 `;

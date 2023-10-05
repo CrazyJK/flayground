@@ -10,9 +10,11 @@ export default class SideNavBar extends HTMLElement {
 
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
+
     const WRAPPER = document.createElement('div');
     WRAPPER.classList.add('nav');
     WRAPPER.innerHTML = HTML;
+
     this.shadowRoot.append(STYLE, WRAPPER); // 생성된 요소들을 shadow DOM에 부착합니다
 
     this.render();

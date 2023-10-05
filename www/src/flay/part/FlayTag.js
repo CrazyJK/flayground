@@ -46,12 +46,12 @@ export default class FlayTag extends HTMLElement {
         return;
       }
       console.log('tagNewInputKeyup', this.flay.opus, '[' + e.target.value + ']');
-      FlayAction.newTag(e.target.value, (tag) => {
-        this.#fetchTag(true).then(() => {
-          FlayAction.toggleTag(this.flay.opus, tag.id, true, () => {
-            tagNewWrap.classList.remove('show');
-          });
-        });
+      FlayAction.newTagOnOpus(e.target.value, this.flay.opus, (tag) => {
+        // this.#fetchTag(true).then(() => {
+        //   FlayAction.toggleTag(this.flay.opus, tag.id, true, () => {
+        tagNewWrap.classList.remove('show');
+        //   });
+        // });
       });
     });
 

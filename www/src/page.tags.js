@@ -29,7 +29,7 @@ TAG_APPLY.addEventListener('click', () => {
     if (tagId === '') {
       tagId = '-1';
     }
-    FlayAction.putTag(tagId, tagName, tagDesc);
+    FlayAction.putTag(tagId, tagName, tagDesc, renderTagList);
   }
 });
 TAG_DEL.addEventListener('click', () => {
@@ -38,7 +38,7 @@ TAG_DEL.addEventListener('click', () => {
   let tagDesc = TAG_DESC.value;
   if (tagId !== '') {
     if (confirm('A U sure?')) {
-      FlayAction.deleteTag(tagId, tagName, tagDesc);
+      FlayAction.deleteTag(tagId, tagName, tagDesc, renderTagList);
     }
   }
 });
@@ -46,40 +46,46 @@ TAG_DEL.addEventListener('click', () => {
 // list
 const LIST_WRAPPER = document.querySelector('ol');
 
-fetch('/info/tag/withCount')
-  .then((res) => res.json())
-  .then((tagList) => {
-    Array.from(tagList)
-      .sort((t1, t2) => {
-        return t1.name.localeCompare(t2.name);
-      })
-      .forEach((tag) => {
-        let li = LIST_WRAPPER.appendChild(document.createElement('li'));
-        let dl = li.appendChild(document.createElement('dl'));
-        let dt = dl.appendChild(document.createElement('dt'));
-        let dd = dl.appendChild(document.createElement('dd'));
+renderTagList();
 
-        let editLabel = dt.appendChild(document.createElement('label'));
-        let nameLabel = dt.appendChild(document.createElement('label'));
-        let contLabel = dt.appendChild(document.createElement('label'));
-        let descLabel = dd.appendChild(document.createElement('label'));
+function renderTagList() {
+  LIST_WRAPPER.textContent = null;
 
-        editLabel.innerHTML = SVG.edit;
-        nameLabel.innerHTML = tag.name;
-        contLabel.innerHTML = tag.count;
-        descLabel.innerHTML = tag.description;
+  fetch('/info/tag/withCount')
+    .then((res) => res.json())
+    .then((tagList) => {
+      Array.from(tagList)
+        .sort((t1, t2) => {
+          return t1.name.localeCompare(t2.name);
+        })
+        .forEach((tag) => {
+          let li = LIST_WRAPPER.appendChild(document.createElement('li'));
+          let dl = li.appendChild(document.createElement('dl'));
+          let dt = dl.appendChild(document.createElement('dt'));
+          let dd = dl.appendChild(document.createElement('dd'));
 
-        if (tag.count === 0) {
-          contLabel.classList.add('zero');
-        }
+          let editLabel = dt.appendChild(document.createElement('label'));
+          let nameLabel = dt.appendChild(document.createElement('label'));
+          let contLabel = dt.appendChild(document.createElement('label'));
+          let descLabel = dd.appendChild(document.createElement('label'));
 
-        nameLabel.addEventListener('click', (e) => {
-          window.open('card.tag.html?id=' + tag.id, 'tag' + tag.id, 'width=960px,height=1200px');
+          editLabel.innerHTML = SVG.edit;
+          nameLabel.innerHTML = tag.name;
+          contLabel.innerHTML = tag.count;
+          descLabel.innerHTML = tag.description;
+
+          if (tag.count === 0) {
+            contLabel.classList.add('zero');
+          }
+
+          nameLabel.addEventListener('click', (e) => {
+            window.open('card.tag.html?id=' + tag.id, 'tag' + tag.id, 'width=960px,height=1200px');
+          });
+          editLabel.addEventListener('click', (e) => {
+            TAG_ID.value = tag.id;
+            TAG_NAME.value = tag.name;
+            TAG_DESC.value = tag.description;
+          });
         });
-        editLabel.addEventListener('click', (e) => {
-          TAG_ID.value = tag.id;
-          TAG_NAME.value = tag.name;
-          TAG_DESC.value = tag.description;
-        });
-      });
-  });
+    });
+}

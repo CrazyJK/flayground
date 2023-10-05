@@ -68,6 +68,14 @@ public class TagController {
     return tagInfoService.create(tag);
   }
 
+  @Operation(summary = "신규 생성 후 opus에 추가")
+  @PostMapping("/{opus}")
+  public Tag createAndToggle(@RequestBody Tag tag, @PathVariable String opus) {
+    Tag createdTag = tagInfoService.create(tag);
+    flayService.get(opus).getVideo().getTags().add(createdTag);
+    return createdTag;
+  }
+
   @Operation(summary = "수정")
   @PatchMapping
   @ResponseStatus(HttpStatus.NO_CONTENT)

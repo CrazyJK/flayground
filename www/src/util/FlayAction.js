@@ -32,6 +32,18 @@ export default {
       failCallback
     );
   },
+  newTagOnOpus: (tagName, opus, callback, failCallback) => {
+    action(
+      '/info/tag/' + opus,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ id: -1, name: tagName, description: '' }),
+      },
+      callback,
+      failCallback
+    );
+  },
   updateTag: (tag, callback, failCallback) => {
     action(
       '/info/tag',

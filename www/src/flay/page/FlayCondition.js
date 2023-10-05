@@ -24,8 +24,6 @@ export default class FlayCondition extends HTMLElement {
     WRAPPER.classList.add('condition');
     this.shadowRoot.append(STYLE, WRAPPER); // 생성된 요소들을 shadow DOM에 부착합니다
 
-    componentCssLoader(this.shadowRoot);
-
     this.render(WRAPPER);
   }
 
@@ -100,11 +98,19 @@ export default class FlayCondition extends HTMLElement {
     fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(this.getCondition()) })
       .then((res) => res.json())
       .then((list) => {
-        this.dispatchEvent(
-          new CustomEvent('change', {
-            detail: { list: list },
-          })
-        );
+        if (list.length > 0) {
+          this.dispatchEvent(
+            new CustomEvent('change', {
+              detail: { list: list },
+            })
+          );
+        } else {
+          // not found flay
+          this.shadowRoot.querySelector('#search1').animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], {
+            duration: 1000,
+            iterations: 1,
+          });
+        }
       });
   }
 }
@@ -182,6 +188,9 @@ div.condition {
   align-items: center;
   padding: 0.5rem;
   transition: 0.4s;
+}
+div.condition > div > input[type='search'] {
+  border-radius: 0.5rem;
 }
 div.condition > div > label {
   margin: 0 0.25rem;

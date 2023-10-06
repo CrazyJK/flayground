@@ -30,7 +30,7 @@ export default class SideNavBar extends HTMLElement {
     this.markActiveMenu();
 
     this.shadowRoot.addEventListener('click', (e) => {
-      console.log('click', e.target);
+      console.debug('click', e.target);
       this.classList.toggle('open');
     });
   }

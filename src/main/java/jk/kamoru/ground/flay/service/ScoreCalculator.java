@@ -26,6 +26,7 @@ public class ScoreCalculator {
   @Autowired
   InfoSource<Actress, String> actressInfoSource;
 
+  Comparator<Flay> likeComparator = Comparator.comparing(Flay::getLikeCount);
   Comparator<Flay> scoreComparator = Comparator.comparing(Flay::getScore);
   Comparator<Flay> studioPointComparator = Comparator.comparing(Flay::getStudioPoint);
   Comparator<Flay> actressPointComparator = Comparator.comparing(Flay::getActressPoint);
@@ -35,8 +36,8 @@ public class ScoreCalculator {
   Map<String, AtomicInteger> studioCountMap = new HashMap<>();
 
   public Collection<Flay> listOrderByScoreDesc(Collection<Flay> flayList) {
-    // rank = 제외
-    List<Flay> filteredList = flayList.stream().filter(flay -> flay.getVideo().getRank() > 0).toList();
+    // rank 0 제외, 비디오가 없는 것 제외
+    List<Flay> filteredList = flayList.stream().filter(flay -> flay.getVideo().getRank() > 0 && flay.getFiles().get(Flay.MOVIE).size() > 0).toList();
 
     filteredList.forEach(f -> {
       if (studioCountMap.containsKey(f.getStudio())) {
@@ -52,8 +53,14 @@ public class ScoreCalculator {
       f.setStudioPoint(studioCountMap.get(f.getStudio()).intValue());
     });
 
-    return filteredList.stream().filter(f -> f.getFiles().get(Flay.MOVIE).size() > 0) // 비디오가 없는 것 제외
-        .sorted(scoreComparator.reversed().thenComparing(studioPointComparator.reversed().thenComparing(actressPointComparator.reversed().thenComparing(modifiedComparator.reversed().thenComparing(releaseComparator.reversed()))))).toList();
+    return filteredList.stream()
+        .sorted(
+          likeComparator.reversed().thenComparing(
+            scoreComparator.reversed().thenComparing(
+              studioPointComparator.reversed().thenComparing(
+                actressPointComparator.reversed().thenComparing(
+                  modifiedComparator.reversed().thenComparing(
+                    releaseComparator.reversed())))))).toList();
   }
 
   public void calcScore(Flay flay) {

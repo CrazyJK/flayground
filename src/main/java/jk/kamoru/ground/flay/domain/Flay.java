@@ -48,11 +48,15 @@ public class Flay {
   }
 
   public long getLength() {
-    return files.get(MOVIE).stream().mapToLong(File::length).sum() + files.get(SUBTI).stream().mapToLong(File::length).sum() + files.get(COVER).stream().mapToLong(File::length).sum();
+    return files.get(MOVIE).stream().mapToLong(File::length).sum()
+        + files.get(SUBTI).stream().mapToLong(File::length).sum()
+        + files.get(COVER).stream().mapToLong(File::length).sum();
   }
 
   public long getLastModified() {
-    return NumberUtils.max(files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1), files.get(SUBTI).stream().mapToLong(File::lastModified).max().orElse(-1), files.get(COVER).stream().mapToLong(File::lastModified).max().orElse(-1));
+    return NumberUtils.max(files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1),
+        files.get(SUBTI).stream().mapToLong(File::lastModified).max().orElse(-1),
+        files.get(COVER).stream().mapToLong(File::lastModified).max().orElse(-1));
   }
 
   public void addMovieFile(File file) {
@@ -69,6 +73,11 @@ public class Flay {
 
   public void addCandidatesFile(File file) {
     files.get(CANDI).add(file);
+  }
+
+  @JsonIgnore
+  public int getLikeCount() {
+    return video.getLikes() != null ? video.getLikes().size() : 0;
   }
 
   @JsonIgnore
@@ -92,7 +101,8 @@ public class Flay {
 
   @JsonIgnore
   public String toQueryString() {
-    return String.format("%s[%s][%s]%s[rank%s]", getFullname(), video.getTitle(), video.getDesc(), String.join(",", video.getTags().stream().map(Tag::getName).toList()), archive ? "-1" : video.getRank());
+    return String.format("%s[%s][%s]%s[rank%s]", getFullname(), video.getTitle(), video.getDesc(),
+        String.join(",", video.getTags().stream().map(Tag::getName).toList()), archive ? "-1" : video.getRank());
   }
 
 }

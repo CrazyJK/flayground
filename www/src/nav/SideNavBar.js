@@ -23,23 +23,34 @@ export default class SideNavBar extends HTMLElement {
   render() {}
 
   connectedCallback() {
-    console.debug('connected', this.parentElement, this.parentElement.closest('html').querySelector('head'), this.shadowRoot.querySelectorAll('a'));
+    console.debug('connected', this.parentElement, this.#getTopElement().querySelector('head'), this.shadowRoot.querySelectorAll('a'));
 
     this.renderParent();
 
     this.markActiveMenu();
 
     this.shadowRoot.addEventListener('click', (e) => {
-      console.debug('click', e.target);
-      this.classList.toggle('open');
+      console.debug('click', e.target.tagName);
+      if (e.target.tagName === 'LI' || e.target.tagName === 'DIV') {
+        this.classList.toggle('open');
+      }
     });
+
+    this.shadowRoot.querySelector('#debug').addEventListener('click', (e) => {
+      this.debug = !this.debug;
+      document.documentElement.setAttribute('debug', this.debug);
+    });
+  }
+
+  #getTopElement() {
+    return this.parentElement.closest('html');
   }
 
   renderParent() {
     const NAV_OPEN = this.parentElement.insertBefore(document.createElement('label'), this);
     NAV_OPEN.classList.add('nav-open');
 
-    const PAREMT_STYLE = this.parentElement.closest('html').querySelector('head').appendChild(document.createElement('style'));
+    const PAREMT_STYLE = this.#getTopElement().querySelector('head').appendChild(document.createElement('style'));
     PAREMT_STYLE.innerHTML = PARENT_CSS;
   }
 
@@ -116,6 +127,7 @@ const HTML = `
   <li><a href="page.kamoru.diary.html">diary</a></li>
 </ul>
 <ul>
+  <li><a href="javascript:" id="debug">debug</a></li>
   <li><a href="page.control.html"     >control</a></li>
   <li><a href="/swagger-ui/index.html">swagger</a></li>
   <li style="margin-top: 1rem;"><theme-controller/></li>

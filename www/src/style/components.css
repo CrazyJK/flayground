@@ -196,3 +196,19 @@ h4 {
 h5 {
   font-size: var(--size-smallest);
 }
+
+*,
+a,
+button,
+input[type='date'],
+input[type='text'],
+input[type='search'],
+input[type='number'],
+input[type='date'],
+input[type='checkbox'] + label,
+input[type='radio'] + label,
+select,
+textarea {
+  border: var(--debug-border);
+  padding: var(--debug-padding);
+}

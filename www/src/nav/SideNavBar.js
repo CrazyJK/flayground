@@ -136,9 +136,9 @@ const PARENT_CSS = `
 side-nav {
   position: fixed;
   top: 0;
-  left: -200px;
+  left: -10rem;
   bottom: 0;
-  width: 200px;
+  width: 10rem;
   transition: linear left 0.4s 0.4s, box-shadow 0.8s;
   z-index: 74;
   background-color: var(--color-bg);

@@ -141,10 +141,10 @@ customElements.define('flay-actress', FlayActress);
 
 function toInchBody(body) {
   let parts = body.split('-');
-  let b = parts[0].replace(/[^0-9]/g, '').trim();
-  let c = parts[0].replace(/[0-9]/g, '').trim();
-  let w = parts[1].trim();
-  let h = parts[2].trim();
+  let b = parts[0]?.replace(/[^0-9]/g, '').trim();
+  let c = parts[0]?.replace(/[0-9]/g, '').trim();
+  let w = parts[1]?.trim();
+  let h = parts[2]?.trim();
 
   return Math.round(b / 2.54) + c + '-' + Math.round(w / 2.54) + '-' + Math.round(h / 2.54);
 }

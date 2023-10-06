@@ -152,8 +152,10 @@ function countFlaySizeByRank() {
   document.querySelectorAll('flay-card').forEach((flayCard, key, parent) => {
     let rank = parseInt(flayCard.getAttribute('rank'));
     flaySizeByRank[rank] += 1;
-    sumRank += rank;
-    totalFlay++;
+    if (rank !== 0) {
+      sumRank += rank;
+      totalFlay++;
+    }
   });
   flaySizeByRank.forEach((flaySize, r) => {
     document.querySelector(`#flayRank option[value="${r}"]`).innerHTML = `Rank ${r} : ${flaySize}`;

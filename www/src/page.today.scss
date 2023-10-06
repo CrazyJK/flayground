@@ -1,23 +1,50 @@
 @import './style/style.scss';
 
-body {
-  main {
-    display: grid;
-    align-content: stretch;
-    justify-content: space-between;
-    align-items: stretch;
-    justify-items: stretch;
+main {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(20%, auto));
+  align-content: stretch;
+  justify-content: space-between;
+  align-items: stretch;
+  justify-items: stretch;
 
-    padding: 10px;
+  padding: 0.5rem;
+
+  div {
+    padding: 1rem;
 
     div {
-      padding: 10px;
+      aspect-ratio: var(--cover-aspect-ratio);
+      background-size: cover;
+      background-repeat: no-repeat;
+      box-shadow: inset 0 0 1rem 0.5rem var(--color-bg);
+      padding: 0;
 
-      div {
-        padding: 0;
-        aspect-ratio: var(--cover-aspect-ratio);
-        background-size: cover;
-        background-repeat: no-repeat;
+      label {
+        position: absolute;
+        display: inline-block;
+        bottom: 0;
+        margin: 0;
+        padding: 0.5rem 0.5rem 0.75rem;
+        width: 100%;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        background-color: #00000088;
+        box-shadow: inset 0 0 0.5rem 0.25rem var(--color-bg);
+        text-align: center;
+        color: #eeeeee;
+
+        svg {
+          color: #eeeeee;
+        }
+
+        a {
+          font-size: var(--size-normal);
+          cursor: pointer;
+          color: #eeeeee;
+          text-shadow: 1px 1px 2px #555555;
+        }
       }
     }
   }

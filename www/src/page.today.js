@@ -1,13 +1,15 @@
 import './lib/SseConnector';
+import SideNavBar from './nav/SideNavBar';
 import './page.today.scss';
 import componentCssLoader from './style/componentCssLoader';
+import SVG from './svg/svg.json';
 import { getRandomInt } from './util/randomNumber';
 
 componentCssLoader();
 
-import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
+const MAIN = document.querySelector('main');
 const opusList = [];
 const opusIndexes = [];
 const condition = { rank: [0, 1, 2, 3, 4, 5] };
@@ -15,7 +17,6 @@ const getRandomOpus = () => {
   if (opusIndexes.length === 0) opusIndexes.push(...Array.from({ length: opusList.length }, (v, i) => i));
   return opusList[opusIndexes.splice(getRandomInt(0, opusIndexes.length), 1)[0]];
 };
-const MAIN = document.querySelector('main');
 const showCover = async () => {
   const opus = getRandomOpus();
 
@@ -27,14 +28,16 @@ const showCover = async () => {
   const coverBlob = await res.blob();
   const coverURL = URL.createObjectURL(coverBlob);
 
-  const outer = MAIN.appendChild(document.createElement('div'));
-  outer.title = `● ${flay.studio}\n● ${flay.opus}\n● ${flay.title}\n● ${flay.actressList.join(',')}\n● ${flay.release}\n● Rank: ${flay.video.rank}`;
+  // const info = `● ${flay.studio}\n● ${flay.opus}\n● ${flay.title}\n● ${flay.actressList.join(',')}\n● ${flay.release}\n● Rank: ${flay.video.rank}`;
 
-  const inner = outer.appendChild(document.createElement('div'));
-  inner.style.backgroundImage = `url(${coverURL})`;
-  inner.addEventListener('click', () => {
-    window.open('popup.flay.html?opus=' + opus, 'popup.' + opus, 'width=800px,height=1280px');
-  });
+  MAIN.appendChild(document.createElement('div')).innerHTML = `
+    <div style="background-image: url(${coverURL})">
+      <label>
+        ${SVG.rank[flay.video.rank + 1]}
+        <a data-opus="${flay.opus}">${flay.title}</a>
+      </label>
+    </div>
+  `;
 };
 const start = async () => {
   for (let i = 0; i < 16; i++) {
@@ -53,5 +56,12 @@ window.addEventListener('scroll', function () {
   if (isScrollAtBottom) {
     console.log('scroll at bottom');
     start();
+  }
+});
+
+document.addEventListener('click', (e) => {
+  const opus = e.target.dataset.opus;
+  if (opus) {
+    window.open('popup.flay.html?opus=' + opus, 'popup.' + opus, 'width=800px,height=1280px');
   }
 });

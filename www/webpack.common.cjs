@@ -14,6 +14,7 @@ module.exports = {
     'page.ground': './src/page.ground.js',
     'page.today': './src/page.today.js',
     'page.random': './src/page.random.js',
+    'page.develop': './src/page.develop.js',
     'page.tags': './src/page.tags.js',
     'page.control': './src/page.control.js',
     'page.shot.history': './src/page.shot.history.js',

@@ -1,9 +1,9 @@
 import FlayCard from './flay/FlayCard';
 import './lib/ThemeListener';
 import './page.shot.history.scss';
-import componentCssLoader from './style/componentCssLoader';
+import { appendStyle } from './util/componentCssLoader';
 
-componentCssLoader();
+appendStyle();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

@@ -1,7 +1,7 @@
-import componentCssLoader from '../../style/componentCssLoader';
 import SVG from '../../svg/svg.json';
 import FlayAction from '../../util/FlayAction';
 import Search from '../../util/FlaySearch';
+import { componentCss } from '../../util/componentCssLoader';
 import { getPrettyFilesize } from '../../util/fileUtils';
 
 /**
@@ -14,8 +14,6 @@ export default class FlayFiles extends HTMLElement {
     super();
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    componentCssLoader(this.shadowRoot);
 
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
@@ -151,6 +149,7 @@ export default class FlayFiles extends HTMLElement {
 customElements.define('flay-files', FlayFiles);
 
 const CSS = `
+${componentCss}
 div.files > div.info {
   display: flex;
   gap: 1rem;

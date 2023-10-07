@@ -1,7 +1,8 @@
-import componentCssLoader from '../style/componentCssLoader';
+import { componentCss } from '../util/componentCssLoader';
 import FlayAction from '../util/FlayAction';
 
 const CSS = `
+${componentCss}
 .header {
   position: sticky;
   top: 0;
@@ -119,8 +120,6 @@ export default class SubtitlesFinder extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;

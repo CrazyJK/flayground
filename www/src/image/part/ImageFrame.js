@@ -1,4 +1,4 @@
-import componentCssLoader from '../../style/componentCssLoader';
+import { componentCss } from '../../util/componentCssLoader';
 import { getDominatedColors } from '../../util/dominatedColor';
 
 export default class ImageFrame extends HTMLElement {
@@ -20,8 +20,6 @@ export default class ImageFrame extends HTMLElement {
 
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
-
-    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -85,6 +83,7 @@ const HTML = `
 `;
 
 const CSS = `
+${componentCss}
 .image-frame {
   transition: 0.4s;
 }

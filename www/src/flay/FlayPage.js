@@ -1,4 +1,4 @@
-import componentCssLoader from '../style/componentCssLoader';
+import { componentCss } from '../util/componentCssLoader';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';
@@ -21,8 +21,6 @@ export default class FlayPage extends HTMLElement {
 
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
-
-    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -83,6 +81,7 @@ export default class FlayPage extends HTMLElement {
 customElements.define('flay-page', FlayPage);
 
 const CSS = `
+${componentCss}
 article.page {
   display: flex;
   flex-direction: column;

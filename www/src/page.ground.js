@@ -3,9 +3,9 @@ import FlayCondition from './flay/page/FlayCondition';
 import FlayPagination from './flay/page/FlayPagination';
 import './lib/SseConnector';
 import './page.ground.scss';
-import componentStyleLoader from './style/componentCssLoader';
+import { appendStyle } from './util/componentCssLoader';
 
-componentStyleLoader();
+appendStyle();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

@@ -6,16 +6,13 @@
 
 import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-
 import FlayAttach from './attach/FlayAttach';
 import './lib/ThemeListener';
 import './page.kamoru.diary.scss';
-
 import SVG from './svg/svg.json';
+import { appendStyle } from './util/componentCssLoader';
 
-import componentCssLoader from './style/componentCssLoader';
-
-componentCssLoader();
+appendStyle();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

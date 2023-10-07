@@ -2,10 +2,10 @@ import './card.flay.scss';
 import FlayCard from './flay/FlayCard';
 import './lib/SseConnector';
 import './lib/ThemeListener';
-import componentCssLoader from './style/componentCssLoader';
+import { appendStyle } from './util/componentCssLoader';
 import { addResizeLazyEventListener } from './util/resizeListener';
 
-componentCssLoader();
+appendStyle();
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');

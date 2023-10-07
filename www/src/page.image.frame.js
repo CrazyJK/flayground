@@ -1,10 +1,10 @@
 import ImageFrame from './image/part/ImageFrame';
 import './lib/ThemeListener';
 import './page.image.frame.scss';
-import componentCssLoader from './style/componentCssLoader';
+import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
 
-componentCssLoader();
+appendStyle();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

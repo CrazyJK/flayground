@@ -1,4 +1,4 @@
-import componentCssLoader from '../../style/componentCssLoader';
+import { componentCss } from '../../util/componentCssLoader';
 
 /**
  * Custom element of Release
@@ -10,8 +10,6 @@ export default class FlayRelease extends HTMLElement {
     super();
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    componentCssLoader(this.shadowRoot);
 
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
@@ -75,6 +73,7 @@ const HTML = `
 `;
 
 const CSS = `
+${componentCss}
 div.release {
   display: flex;
   gap: 1rem;

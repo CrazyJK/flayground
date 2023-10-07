@@ -1,7 +1,7 @@
 import './index.scss';
+import { appendStyle } from './util/componentCssLoader';
 
-import componentCssLoader from './style/componentCssLoader';
-componentCssLoader();
+appendStyle();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

@@ -1,6 +1,6 @@
-import componentCssLoader from '../../style/componentCssLoader';
 import SVG from '../../svg/svg.json';
 import FlayStorage from '../../util/FlayStorage';
+import { componentCss } from '../../util/componentCssLoader';
 
 export default class FlayCondition extends HTMLElement {
   condition = {
@@ -15,8 +15,6 @@ export default class FlayCondition extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    componentCssLoader(this.shadowRoot);
 
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
@@ -180,6 +178,7 @@ function addEventListener(THIS, type, element) {
 }
 
 const CSS = `
+${componentCss}
 /* for FlayCondition */
 div.condition {
   display: flex;

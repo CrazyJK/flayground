@@ -1,10 +1,10 @@
 import './lib/TabUI';
 import './lib/ThemeListener';
 import './page.statistics.scss';
-import componentCssLoader from './style/componentCssLoader';
+import { appendStyle } from './util/componentCssLoader';
 import { getPrettyFilesize } from './util/fileUtils';
 
-componentCssLoader();
+appendStyle();
 
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());

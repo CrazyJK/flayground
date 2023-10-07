@@ -1,8 +1,8 @@
-import componentCssLoader from '../style/componentCssLoader';
 import SVG from '../svg/svg.json';
 import FlayAction from '../util/FlayAction';
 import FlaySearch from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
+import { componentCss } from '../util/componentCssLoader';
 
 const HTML = `
 <div class="search-group">
@@ -67,6 +67,7 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 `;
 
 const CSS = `
+${componentCss}
 .flay-register {
   padding: 1rem;
   width: 100%;
@@ -212,8 +213,6 @@ export default class FlayRegister extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;

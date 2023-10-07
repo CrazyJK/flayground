@@ -1,4 +1,4 @@
-import componentCssLoader from '../style/componentCssLoader';
+import { componentCss } from '../util/componentCssLoader';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';
@@ -28,8 +28,6 @@ export default class FlayCard extends HTMLElement {
     }
 
     this.attachShadow({ mode: 'open' });
-
-    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -167,6 +165,7 @@ export default class FlayCard extends HTMLElement {
 customElements.define('flay-card', FlayCard);
 
 const CSS = `
+${componentCss}
 article {
   position: absolute;
   top: 0;

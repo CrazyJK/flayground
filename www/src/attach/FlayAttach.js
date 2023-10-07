@@ -1,4 +1,4 @@
-import componentCssLoader from '../style/componentCssLoader';
+import { componentCss } from '../util/componentCssLoader';
 
 const File = {
   formatSize: (length) => {
@@ -28,6 +28,7 @@ const OPT_DEFAULT = {
 };
 
 const CSS = `
+  ${componentCss}
   ::-webkit-scrollbar {
     width: 0.25rem;
   }
@@ -156,8 +157,6 @@ export default class FlayAttach extends HTMLElement {
     this.fileInput = this.fileBox.appendChild(document.createElement('input'));
     this.fileInput.setAttribute('type', 'file');
     this.fileInput.setAttribute('multiple', 'multiple');
-
-    componentCssLoader(this.shadowRoot);
 
     const STYLE = document.createElement('style');
     STYLE.textContent = CSS;

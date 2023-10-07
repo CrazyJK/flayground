@@ -1,6 +1,6 @@
-import componentCssLoader from '../../style/componentCssLoader';
 import SVG from '../../svg/svg.json';
 import FlayAction from '../../util/FlayAction';
+import { componentCss } from '../../util/componentCssLoader';
 
 /**
  * Custom element of Rank
@@ -12,8 +12,6 @@ export default class FlayRank extends HTMLElement {
     super();
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    componentCssLoader(this.shadowRoot);
 
     const STYLE = document.createElement('style');
     STYLE.innerHTML = CSS;
@@ -111,6 +109,7 @@ export default class FlayRank extends HTMLElement {
 customElements.define('flay-rank', FlayRank);
 
 const CSS = `
+${componentCss}
 div.rank {
   display: flex;
   gap: 1rem;

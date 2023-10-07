@@ -1,4 +1,4 @@
-import componentCssLoader from '../style/componentCssLoader';
+import { componentCss } from '../util/componentCssLoader';
 import { getRandomInt } from '../util/randomNumber';
 import { addResizeLazyEventListener } from '../util/resizeListener';
 
@@ -16,8 +16,6 @@ export default class ImageFall extends HTMLElement {
 
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
-
-    componentCssLoader(this.shadowRoot);
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
@@ -140,6 +138,7 @@ export default class ImageFall extends HTMLElement {
 customElements.define('image-fall', ImageFall);
 
 const CSS = `
+${componentCss}
 main {
   padding: 0.5rem;
   overflow: hidden;

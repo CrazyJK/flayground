@@ -1,11 +1,11 @@
 import './lib/SseConnector';
 import SideNavBar from './nav/SideNavBar';
 import './page.today.scss';
-import componentCssLoader from './style/componentCssLoader';
 import SVG from './svg/svg.json';
+import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
 
-componentCssLoader();
+appendStyle();
 
 document.querySelector('body').prepend(new SideNavBar());
 

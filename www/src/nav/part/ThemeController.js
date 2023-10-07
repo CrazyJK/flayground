@@ -30,6 +30,7 @@ const makeThemeRadio = (parent, theme) => {
   radio.name = 'theme';
   radio.id = 'theme' + theme;
   radio.value = theme;
+  radio.title = theme;
   radio.addEventListener('click', (e) => {
     if (e.target.value !== 'os') {
       changeTheme(e.target.value === 'dark');

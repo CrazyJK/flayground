@@ -16,8 +16,7 @@ const getRandomOpus = () => {
 
 fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({}) })
   .then((res) => res.json())
-  .then((list) => opusList.push(...list))
-  .then(start);
+  .then((list) => opusList.push(...list));
 
 function start() {
   appendDevelop().then(removeDevelop);
@@ -35,12 +34,10 @@ async function appendDevelop() {
 
   flayDevelop.style.position = 'absolute';
   flayDevelop.style.width = width + 'px';
-  // flayDevelop.style.height = height + 'px';
   flayDevelop.style.top = top + 'px';
   flayDevelop.style.left = left + 'px';
 
   document.querySelector('main').append(flayDevelop);
-  console.log('flayDevelop appended');
 }
 
 function removeDevelop() {

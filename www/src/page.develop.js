@@ -1,4 +1,4 @@
-import FlayDevelop from './flay/FlayDevelop';
+import FlayDevelop from './develop/FlayDevelop';
 import SideNavBar from './nav/SideNavBar';
 import './page.develop.scss';
 import { appendStyle } from './util/componentCssLoader';

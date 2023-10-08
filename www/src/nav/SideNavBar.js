@@ -84,28 +84,30 @@ const HTML = `
     <a href="index.html">Flayground</a>
   </header>
   <ul>
-    <li><a href="page.ground.html" >ground</a></li>
-    <li><a href="page.today.html"  >today</a></li>
-    <li><a href="page.random.html" >random</a></li>
-    <li><a href="page.develop.html">develop</a></li>
+    <li><a href="page.ground.html">ground</a></li>
+    <li><a href="page.today.html">today</a></li>
+    <li><a href="page.random.html">random</a></li>
   </ul>
   <ul>
-    <li><a href="page.tags.html"        >tags</a></li>
+    <li><a href="page.tags.html">tags</a></li>
     <li><a href="page.shot.history.html">shot history</a></li>
-    <li><a href="page.statistics.html"  >statistics</a></li>
+    <li><a href="page.statistics.html">statistics</a></li>
   </ul>
   <ul>
     <li><a href="page.image.frame.html">image</a></li>
-    <li><a href="page.image.grid.html" >images</a></li>
+    <li><a href="page.image.grid.html">images</a></li>
   </ul>
   <ul>
     <li><a href="page.kamoru.diary.html">diary</a></li>
   </ul>
   <ul>
+    <li><a href="page.develop.html">develop</a></li>
+  </ul>
+  <ul>
     <li><a href="javascript:" id="debug">debug</a></li>
-    <li><a href="page.control.html"     >control</a></li>
+    <li><a href="page.control.html">control</a></li>
     <li><a href="/swagger-ui/index.html">swagger</a></li>
-    <li style="margin-top: 1rem;"><theme-controller/></li>
+    <li style="margin-top: 1rem;"><theme-controller /></li>
   </ul>
 </div>
 `;

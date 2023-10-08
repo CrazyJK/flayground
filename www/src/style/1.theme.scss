@@ -58,6 +58,7 @@
 
   --color-border: var(--color-light-dark);
   --color-border-active: var(--color-orange);
+  --color-border-reversed: var(--color-black-alpha-dark);
 
   --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
   --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
@@ -84,6 +85,7 @@
 
   --color-border: var(--color-dark-dark);
   --color-border-active: var(--color-orange);
+  --color-border-reversed: var(--color-light-dark);
 
   --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
   --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);

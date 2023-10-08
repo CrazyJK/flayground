@@ -1,4 +1,5 @@
 import './index.scss';
+import './lib/ThemeListener';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();

@@ -6,23 +6,20 @@ main {
 
   display: grid;
   grid-template-areas:
-    'header header'
-    ' nav   article';
-  grid-template-rows: 300px 1fr;
-  grid-template-columns: 400px 1fr;
+    'nav header'
+    'nav article';
+  grid-template-rows: 277px 1fr;
+  grid-template-columns: 408px 1fr;
 
   header {
     grid-area: header;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    &.dropzone-wrapper {
+      flex-wrap: nowrap;
+    }
   }
 
   nav {
     grid-area: nav;
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
   }
 
   article {
@@ -30,29 +27,25 @@ main {
     border-top: 1px solid var(--color-border);
   }
 
-  flay-develop {
-    box-shadow: var(--box-shadow-large);
-    border: 4px solid var(--color-border-reversed);
-    user-select: none;
+  .dropzone-wrapper {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    overflow: hidden;
+    gap: 8px;
+    margin-right: 8px;
+    padding-bottom: 8px;
 
-    &.dragging {
-      opacity: 0.5;
-      border: 4px solid var(--color-border-active);
+    .dropzone {
+      width: 400px;
+      aspect-ratio: 400 / 269;
     }
   }
-}
-
-.dropzone {
-  background-color: var(--color-bg-cover);
-
-  &.dragover {
-    background-color: purple;
-  }
 
   flay-develop {
-    position: relative !important;
-    width: 400px !important;
-    left: auto !important;
-    top: auto !important;
+    display: block;
+    box-shadow: var(--box-shadow-large);
+    border: 4px solid var(--color-border-reversed);
   }
 }

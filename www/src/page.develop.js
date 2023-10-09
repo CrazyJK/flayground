@@ -1,4 +1,5 @@
 import FlayDevelop from './develop/FlayDevelop';
+import * as DragDrop from './lib/Drag&Drop';
 import SideNavBar from './nav/SideNavBar';
 import './page.develop.scss';
 import { appendStyle } from './util/componentCssLoader';
@@ -26,7 +27,6 @@ async function appendDevelop() {
   const opus = getRandomOpus();
   const flayDevelop = new FlayDevelop(opus);
   await flayDevelop.ready();
-  flayDevelop.setMoveable();
 
   const article = document.querySelector('article');
   const width = 600;
@@ -41,6 +41,8 @@ async function appendDevelop() {
   flayDevelop.style.top = top + 'px';
 
   article.append(flayDevelop);
+
+  DragDrop.setMoveable(flayDevelop);
 }
 
 function removeDevelop() {
@@ -52,44 +54,12 @@ function removeDevelop() {
 
 document.addEventListener('wheel', start);
 
-window.dragged;
-
-document.querySelectorAll('.dropzone').forEach((dropzone) => {
-  dropzone.addEventListener(
-    'dragover',
-    (event) => {
-      // prevent default to allow drop
-      event.preventDefault();
-    },
-    false
-  );
-
-  dropzone.addEventListener('dragenter', (e) => {
-    console.log(e.type, e.target);
-    // highlight potential drop target when the draggable element enters it
-    if (e.target.classList.contains('dropzone')) {
-      e.target.classList.add('dragover');
-    }
-  });
-
-  dropzone.addEventListener('dragleave', (e) => {
-    console.log(e.type, e.target);
-    // reset background of potential drop target when the draggable element leaves it
-    if (e.target.classList.contains('dropzone')) {
-      e.target.classList.remove('dragover');
-    }
-  });
-
-  dropzone.addEventListener('drop', (e) => {
-    console.log(e.type, e);
-    // prevent default action (open as link for some elements)
-    e.preventDefault();
-    // move dragged element to the selected drop target
-    if (e.target.classList.contains('dropzone')) {
-      e.target.classList.remove('dragover');
-      if (window.dragged) {
-        e.target.appendChild(window.dragged);
-      }
-    }
-  });
+// fill dropzone
+document.querySelectorAll('.dropzone-wrapper').forEach((wrapper) => {
+  for (let i = 0; i < 7; i++) {
+    const dropzone = wrapper.appendChild(document.createElement('div'));
+    dropzone.classList.add('dropzone');
+  }
 });
+
+document.querySelectorAll('.dropzone').forEach(DragDrop.setDropzone);

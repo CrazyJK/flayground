@@ -136,6 +136,14 @@ export default {
   },
 };
 
+/**
+ * fetch action
+ *
+ * @param {string} url
+ * @param {object} requestInit
+ * @param {function} callback
+ * @param {function} failCallback
+ */
 async function action(url, requestInit, callback, failCallback) {
   const response = await fetch(url, requestInit);
   console.debug(url, response.ok, response.status);

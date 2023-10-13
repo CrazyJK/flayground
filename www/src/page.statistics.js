@@ -38,7 +38,7 @@ setInitialValue();
 function setInitialValue() {
   const today = new Date();
   const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  startDateInput.value = `${today.getFullYear() - 1}-${to2(lastDayOfMonth.getMonth() + 2)}-01`;
+  startDateInput.value = `${today.getFullYear() - 1}-${to2(lastDayOfMonth.getMonth() + 1)}-01`;
   endDateInput.value = `${today.getFullYear()}-${to2(lastDayOfMonth.getMonth() + 1)}-${to2(lastDayOfMonth.getDate())}`;
 }
 
@@ -177,6 +177,8 @@ function startRankGroup() {
     const countLabel = document.querySelector(`#rank${key} .count`);
     const lengthLabel = document.querySelector(`#rank${key} .length`);
 
+    rankList.textContent = null;
+
     let count = 0;
     let length = 0;
     flayList.forEach((flay) => {
@@ -232,6 +234,8 @@ function startTimeline() {
   console.debug(timelineMap);
 
   const wrapper = document.querySelector('.timeline-grid');
+  wrapper.querySelectorAll('div:not(.grid-head)').forEach((div) => div.remove());
+
   timelineMap.forEach((flayList, key) => {
     const rankMap = new Map();
     Array.from({ length: 7 }, (v, i) => i).forEach((r) => rankMap.set(r - 1, []));

@@ -1,4 +1,5 @@
 import { componentCss } from '../../util/componentCssLoader';
+import { dateFormat } from '../../util/dateUtils';
 
 /**
  * Custom element of Release
@@ -45,25 +46,14 @@ export default class FlayRelease extends HTMLElement {
     this.wrapper.setAttribute('data-opus', flay.opus);
 
     this.releaseSpan.innerHTML = flay.release;
-    this.modifiedSpan.innerHTML = dateFormat(flay.lastModified);
-    this.accessSpan.innerHTML = dateFormat(flay.video.lastAccess);
-    this.playedSpan.innerHTML = dateFormat(flay.video.lastPlay);
+    this.modifiedSpan.innerHTML = dateFormat(flay.lastModified, 'yy/mm/dd');
+    this.accessSpan.innerHTML = dateFormat(flay.video.lastAccess, 'yy/mm/dd');
+    this.playedSpan.innerHTML = dateFormat(flay.video.lastPlay, 'yy/mm/dd');
   }
 }
 
 // Define the new element
 customElements.define('flay-release', FlayRelease);
-
-function dateFormat(time) {
-  if (time < 0) {
-    return '00/00/00';
-  }
-  const date = new Date(time);
-  let year = date.getFullYear() - 2000;
-  let month = date.getMonth() + 1;
-  let day = date.getDate();
-  return `${year}/${month > 9 ? month : '0' + month}/${day > 9 ? day : '0' + day}`;
-}
 
 const HTML = `
 <label class="release-label" ><span id="release" >2023.08.09</span></label>

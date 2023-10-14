@@ -1,9 +1,9 @@
-import './card.tag.scss';
 import FlayCard from './flay/FlayCard';
 import './lib/SseConnector';
 import './lib/ThemeListener';
-import { appendStyle } from './util/componentCssLoader';
+import './popup.tag.scss';
 import FlayAction from './util/FlayAction';
+import { appendStyle } from './util/componentCssLoader';
 import { addResizeLazyEventListener } from './util/resizeListener';
 
 appendStyle();

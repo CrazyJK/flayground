@@ -1,68 +1,41 @@
-import './card.actress.scss';
 import FlayCard from './flay/FlayCard';
 import './lib/SseConnector';
 import './lib/ThemeListener';
-import SVG from './svg/svg.json';
-import FlayAction from './util/FlayAction';
-import FlaySearch from './util/FlaySearch';
+import './popup.studio.scss';
+import flayAction from './util/FlayAction';
 import { appendStyle } from './util/componentCssLoader';
 import { addResizeLazyEventListener } from './util/resizeListener';
 
 appendStyle();
 
 window.tagList = [];
+window.actressMap = new Map();
 
 const urlParams = new URL(location.href).searchParams;
-const actressName = urlParams.get('name');
+const name = urlParams.get('name');
 const startDate = urlParams.get('s');
 const endDate = urlParams.get('e');
 
 const flayMap = new Map();
 
-const favorite = document.querySelector('#favorite');
-const favLabel = document.querySelector('#favorite + label');
-const name = document.querySelector('#name');
-const localName = document.querySelector('#localName');
+const studioName = document.querySelector('#studioName');
+const studioCompany = document.querySelector('#studioCompany');
+const studioHomepage = document.querySelector('#studioHomepage');
 const flayRank = document.querySelector('#flayRank');
-const birth = document.querySelector('#birth');
-const age = document.querySelector('#age');
-const body = document.querySelector('#body');
-const height = document.querySelector('#height');
-const debut = document.querySelector('#debut');
-const comment = document.querySelector('#comment');
 const saveBtn = document.querySelector('#saveBtn');
-const findBtn = document.querySelector('#findBtn');
-const searchBtn = document.querySelector('#searchBtn');
 
-favLabel.innerHTML = SVG.favorite;
-document.title = actressName;
+document.title = name + ' Studio';
 
-render();
-
-function render() {
-  fetchActress();
-  fetchFlay();
-}
-
-function fetchActress() {
-  fetch('/info/actress/' + actressName)
+function fetchStudio() {
+  fetch('/info/studio/' + name)
     .then((res) => res.json())
-    .then((actress) => {
-      console.log(actress);
-      favorite.checked = actress.favorite;
-      name.value = actress.name;
-      localName.value = actress.localName;
-      birth.value = actress.birth;
-      age.innerHTML = calcAge(actress.birth) + '<small>y</small>';
-      body.value = actress.body;
-      height.value = actress.height;
-      debut.value = actress.debut;
-      comment.value = actress.comment;
+    .then((studio) => {
+      studioName.value = studio.name;
+      studioCompany.value = studio.company;
+      studioHomepage.value = studio.homepage;
     });
-}
 
-function fetchFlay(params) {
-  fetch('/flay/find/actress/' + actressName)
+  fetch('/flay/find/studio/' + name)
     .then((res) => res.json())
     .then((list) => {
       const opusList = Array.from(list)
@@ -80,27 +53,16 @@ function fetchFlay(params) {
     });
 }
 
+fetchStudio();
+
 flayRank.addEventListener('change', (e) => {
   console.log('rank change', e.target.value);
   toggleByRank(e.target.value);
 });
 
 saveBtn.addEventListener('click', () => {
-  FlayAction.updateActress({
-    favorite: favorite.checked,
-    name: name.value.trim(),
-    localName: localName.value.trim(),
-    debut: debut.value.trim(),
-    birth: birth.value.trim(),
-    body: body.value.trim(),
-    height: height.value.trim(),
-    comment: comment.value.trim(),
-  });
+  flayAction.putStudio(studioName.value, studioCompany.value, studioHomepage.value);
 });
-
-findBtn.addEventListener('click', (e) => FlaySearch.actress.Minnano(localName.value));
-
-searchBtn.addEventListener('click', (e) => FlaySearch.actress.Nextjav(name.value));
 
 addResizeLazyEventListener(() => {
   flayMap.forEach((flayCard) => {
@@ -108,20 +70,11 @@ addResizeLazyEventListener(() => {
   });
 });
 
-function calcAge(birth) {
-  if (birth === null || birth.trim().length === 0) {
-    return '';
-  }
-  let birthYear = parseInt(birth.substring(0, 4));
-  let todayYear = new Date().getFullYear();
-  return todayYear - birthYear + 1;
-}
-
 async function renderFlayCardList(opusList) {
   document.querySelector('article').textContent = null;
   flayMap.clear();
   for (let opus of opusList) {
-    let flayCard = new FlayCard({ excludes: ['FlayActress'] });
+    let flayCard = new FlayCard({ excludes: ['FlayStudio', 'FlayTag'] });
     flayMap.set(opus, flayCard);
     document.querySelector('article').appendChild(flayCard);
     await flayCard.set(opus).then(() => {
@@ -166,19 +119,16 @@ function countFlaySizeByRank() {
 window.emitFlay = (flay) => {
   let flayCard = flayMap.get(flay.opus);
   if (flayCard) flayCard.reload();
+  countFlaySizeByRank();
 };
 window.emitStudio = (studio) => {
-  flayMap.forEach((flayCard) => {
-    if (flayCard.flay.studio === studio.name) flayCard.reload();
-  });
+  if (name === studio.name) fetchStudio();
 };
 window.emitVideo = (video) => {
   let flayCard = flayMap.get(video.opus);
   if (flayCard) flayCard.reload();
+  countFlaySizeByRank();
 };
 window.emitActress = (actress) => {
-  if (actressName === actress.name) fetchActress();
-};
-window.emitTag = (tag) => {
-  fetchActress();
+  fetchStudio();
 };

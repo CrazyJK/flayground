@@ -145,9 +145,9 @@ function startStudioActress() {
       link.innerHTML = key;
       link.addEventListener('click', () => {
         if (selector === '#studio') {
-          window.open('card.studio.html?name=' + key + '&s=' + startDate + '&e=' + endDate, key, 'width=960px,height=1200px');
+          window.open('popup.studio.html?name=' + key + '&s=' + startDate + '&e=' + endDate, key, 'width=960px,height=1200px');
         } else {
-          window.open('card.actress.html?name=' + key + '&s=' + startDate + '&e=' + endDate, key, 'width=960px,height=1200px');
+          window.open('popup.actress.html?name=' + key + '&s=' + startDate + '&e=' + endDate, key, 'width=960px,height=1200px');
         }
       });
       const sum = item.appendChild(document.createElement('label'));

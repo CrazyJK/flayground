@@ -1,6 +1,6 @@
 import FlayCard from './flay/FlayCard';
 import './lib/ThemeListener';
-import './page.shot.history.scss';
+import './page.shot-history.scss';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();

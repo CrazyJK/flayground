@@ -90,15 +90,15 @@ const HTML = `
   </ul>
   <ul>
     <li><a href="page.tags.html">tags</a></li>
-    <li><a href="page.shot.history.html">shot history</a></li>
+    <li><a href="page.shot-history.html">shot history</a></li>
     <li><a href="page.statistics.html">statistics</a></li>
   </ul>
   <ul>
-    <li><a href="page.image.frame.html">image</a></li>
-    <li><a href="page.image.grid.html">images</a></li>
+    <li><a href="page.image-frame.html">image</a></li>
+    <li><a href="page.image-grid.html">images</a></li>
   </ul>
   <ul>
-    <li><a href="page.kamoru.diary.html">diary</a></li>
+    <li><a href="page.kamoru-diary.html">diary</a></li>
   </ul>
   <ul>
     <li><a href="page.develop.html">develop</a></li>

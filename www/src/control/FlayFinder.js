@@ -128,7 +128,7 @@ export default class FlayFinder extends HTMLElement {
       let opus = e.target.dataset.opus;
       console.debug('click', e.target, action, opus);
       if (action === 'flay') {
-        window.open('card.flay.html?opus=' + opus, opus, 'width=800px,height=536px');
+        window.open('popup.flay-card.html?opus=' + opus, opus, 'width=800px,height=536px');
       } else if (action === 'info') {
         window.open('/info/video/' + opus, 'info' + opus, 'width=400px,height=600px');
       }

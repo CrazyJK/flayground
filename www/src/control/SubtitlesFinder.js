@@ -272,7 +272,7 @@ export default class SubtitlesFinder extends HTMLElement {
           flayItem.addEventListener('click', (e) => {
             if (e.target.classList.contains('flay-title')) {
               // view flay card
-              window.open('card.flay.html?opus=' + flay.opus, flay.opus, 'width=800px,height=536px');
+              window.open('popup.flay-card.html?opus=' + flay.opus, flay.opus, 'width=800px,height=536px');
             } else if (e.target.tagName === 'A') {
               // click subtiles link
               flayItem.classList.add('active-subtitles');

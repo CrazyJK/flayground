@@ -79,7 +79,7 @@ function renderTagList() {
           }
 
           nameLabel.addEventListener('click', (e) => {
-            window.open('card.tag.html?id=' + tag.id, 'tag' + tag.id, 'width=960px,height=1200px');
+            window.open('popup.tag.html?id=' + tag.id, 'tag' + tag.id, 'width=960px,height=1200px');
           });
           editLabel.addEventListener('click', (e) => {
             TAG_ID.value = tag.id;

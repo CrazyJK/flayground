@@ -22,8 +22,6 @@ export default class FlayTitle extends HTMLElement {
     this.anker.innerHTML = 'Title';
     if (location.pathname.indexOf('popup.flay.html') < 0) {
       this.anker.addEventListener('click', () => {
-        // window.open('/flay/' + this.flay.opus, this.flay.opus, 'width=640px,height=800px');
-        // window.open('card.flay.html?opus=' + this.flay.opus, this.flay.opus, 'width=800px,height=536px');
         window.open('popup.flay.html?opus=' + this.flay.opus, 'popup.' + this.flay.opus, 'width=800px,height=1280px');
       });
     }

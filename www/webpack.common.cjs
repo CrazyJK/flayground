@@ -15,6 +15,7 @@ module.exports = {
     'page.control': './src/page.control.js',
     'page.shot-history': './src/page.shot-history.js',
     'page.statistics': './src/page.statistics.js',
+    'page.image-page': './src/page.image-page.js',
     'page.image-one': './src/page.image-one.js',
     'page.image-grid': './src/page.image-grid.js',
     'page.kamoru-diary': './src/page.kamoru-diary.js',

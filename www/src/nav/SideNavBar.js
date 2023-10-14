@@ -94,7 +94,8 @@ const HTML = `
     <li><a href="page.statistics.html">statistics</a></li>
   </ul>
   <ul>
-    <li><a href="page.image-frame.html">image one</a></li>
+    <li><a href="page.image-page.html">image page</a></li>
+    <li><a href="page.image-one.html">image one</a></li>
     <li><a href="page.image-grid.html">image grid</a></li>
   </ul>
   <ul>

@@ -2,7 +2,7 @@ import FlayPage from './flay/FlayPage';
 import FlayCondition from './flay/page/FlayCondition';
 import FlayPagination from './flay/page/FlayPagination';
 import './lib/SseConnector';
-import './page.ground.scss';
+import './page.flay-page.scss';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();

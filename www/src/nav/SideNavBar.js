@@ -81,12 +81,12 @@ const HTML = `
 </style>
 <div class="nav">
   <header>
-    <a href="index.html">Flayground</a>
+    <a href="index.html">flay ground</a>
   </header>
   <ul>
-    <li><a href="page.ground.html">ground</a></li>
-    <li><a href="page.today.html">today</a></li>
-    <li><a href="page.random.html">random</a></li>
+    <li><a href="page.flay-page.html">flay page</a></li>
+    <li><a href="page.flay-one.html">flay one</a></li>
+    <li><a href="page.flay-grid.html">flay grid</a></li>
   </ul>
   <ul>
     <li><a href="page.tags.html">tags</a></li>
@@ -94,8 +94,8 @@ const HTML = `
     <li><a href="page.statistics.html">statistics</a></li>
   </ul>
   <ul>
-    <li><a href="page.image-frame.html">image</a></li>
-    <li><a href="page.image-grid.html">images</a></li>
+    <li><a href="page.image-frame.html">image one</a></li>
+    <li><a href="page.image-grid.html">image grid</a></li>
   </ul>
   <ul>
     <li><a href="page.kamoru-diary.html">diary</a></li>

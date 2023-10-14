@@ -1,6 +1,6 @@
 import ImageFrame from './image/part/ImageFrame';
 import './lib/ThemeListener';
-import './page.image-frame.scss';
+import './page.image-one.scss';
 import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
 

@@ -1,6 +1,6 @@
 import FlayPage from './flay/FlayPage';
 import './lib/SseConnector';
-import './page.random.scss';
+import './page.flay-one.scss';
 import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
 

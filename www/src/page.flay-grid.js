@@ -1,6 +1,6 @@
 import './lib/SseConnector';
 import SideNavBar from './nav/SideNavBar';
-import './page.today.scss';
+import './page.flay-grid.scss';
 import SVG from './svg/svg.json';
 import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';

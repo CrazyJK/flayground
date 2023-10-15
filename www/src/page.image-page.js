@@ -1,3 +1,4 @@
+import './image/part/ImageFrame';
 import './lib/ThemeListener';
 import SideNavBar from './nav/SideNavBar';
 import './page.image-page.scss';
@@ -86,19 +87,29 @@ fetch('/image')
 const renderImage = async (images) => {
   console.debug(images);
 
-  document.querySelector('#path').innerHTML = images[0].path;
-  document.querySelector('#count').innerHTML = images.length + ' images';
+  const pathLabel = document.querySelector('#path');
+  pathLabel.innerHTML = images[0].path;
+
+  const countLabel = document.querySelector('#count');
+  let count = 0;
+
+  const previewLayer = document.querySelector('.preview');
+  previewLayer.classList.remove('show');
+  const imageFrame = document.querySelector('image-frame');
 
   const article = document.querySelector('article');
   article.textContent = null;
+
   for (const image of images) {
-    // [{ idx, name, path, length, modified, file }]
-    // const imageFrame = main.appendChild(new ImageFrame());
-    // imageFrame.set(image.idx);
+    countLabel.innerHTML = ++count + ' images';
 
     const item = article.appendChild(document.createElement('div'));
     item.title = `#${image.idx} - ${image.name} - ${getPrettyFilesize(image.length).join(' ')} - ${dateFormat(image.modified, 'yyyy-mm-dd')}`;
     item.style.backgroundImage = `url(/static/image/${image.idx})`;
+    item.addEventListener('click', () => {
+      imageFrame.set(image.idx);
+      previewLayer.classList.add('show');
+    });
 
     await new Promise((resolve) => setTimeout(resolve, 20));
   }
@@ -119,3 +130,7 @@ document.querySelectorAll('main header button').forEach((button) =>
     article.classList.add('size-' + size);
   })
 );
+
+document.querySelector('.preview').addEventListener('click', (e) => {
+  e.target.classList.remove('show');
+});

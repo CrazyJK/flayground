@@ -1,6 +1,58 @@
 import { componentCss } from '../../util/componentCssLoader';
 import { getDominatedColors } from '../../util/dominatedColor';
 
+const HTML = `
+<img>
+<div class="info">
+  <label id="imgIdx"></label>
+  <label id="imgName"></label>
+</div>
+`;
+
+const CSS = `
+${componentCss}
+.image-frame {
+  transition: 0.4s;
+}
+.image-frame.rotate {
+  transform: rotate(90deg);
+}
+.image-frame img {
+  width: 100%;
+  height: auto;
+  transition: 0.4s;
+}
+.image-frame div.info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: transparent linear-gradient(0deg, var(--color-bg), transparent);
+  padding: 0.25rem 1rem;
+  opacity: 0;
+  transition: 0.4s;
+
+  display: flex;
+  justify-content: space-between;
+  gap: 0 1rem;
+}
+.image-frame:hover div.info {
+  opacity: 1;
+}
+.image-frame div.info label {
+  background-color: transparent;
+  text-shadow: var(--text-shadow);
+  font-size: var(--size-normal);
+
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.image-frame div.info label#imgIdx {
+  flex: 0 0 auto;
+}
+`;
+
 export default class ImageFrame extends HTMLElement {
   idx;
   info;
@@ -73,55 +125,3 @@ export default class ImageFrame extends HTMLElement {
 }
 
 customElements.define('image-frame', ImageFrame);
-
-const HTML = `
-<img>
-<div class="info">
-  <label id="imgIdx"></label>
-  <label id="imgName"></label>
-</div>
-`;
-
-const CSS = `
-${componentCss}
-.image-frame {
-  transition: 0.4s;
-}
-.image-frame.rotate {
-  transform: rotate(90deg);
-}
-.image-frame img {
-  width: 100%;
-  height: auto;
-  transition: 0.4s;
-}
-.image-frame div.info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: transparent linear-gradient(0deg, var(--color-bg), transparent);
-  padding: 0.25rem 1rem;
-  opacity: 0;
-  transition: 0.4s;
-
-  display: flex;
-  justify-content: space-between;
-  gap: 0 1rem;
-}
-.image-frame:hover div.info {
-  opacity: 1;
-}
-.image-frame div.info label {
-  background-color: transparent;
-  text-shadow: var(--text-shadow);
-  font-size: var(--size-normal);
-
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.image-frame div.info label#imgIdx {
-  flex: 0 0 auto;
-}
-`;

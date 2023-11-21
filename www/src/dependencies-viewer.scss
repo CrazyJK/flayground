@@ -1,0 +1,26 @@
+@import './style/style.scss';
+
+g {
+  .node {
+    cursor: pointer;
+    color: #c6c5fe;
+
+    &.noDependency {
+      color: #cfffac;
+    }
+  }
+
+  .edge {
+    color: #757575;
+  }
+
+  &.active {
+    &.node {
+      color: red;
+    }
+
+    &.edge {
+      color: red;
+    }
+  }
+}

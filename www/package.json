@@ -7,8 +7,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
+    "deploy": "node ./madge.cjs && webpack --env=prod",
     "build": "webpack --env=prod",
-    "watch": "webpack --env=dev -w"
+    "watch": "webpack --env=dev -w",
+    "madge": "node ./madge.cjs"
   },
   "dependencies": {
     "@toast-ui/editor": "^3.2.1",
@@ -21,6 +23,7 @@
     "eslint-config-prettier": "^9.0.0",
     "eslint-plugin-prettier": "^5.0.0",
     "html-webpack-plugin": "^5.5.0",
+    "madge": "^6.1.0",
     "mini-css-extract-plugin": "^2.6.0",
     "postcss": "^8.4.12",
     "postcss-loader": "^7.3.3",

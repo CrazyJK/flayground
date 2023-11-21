@@ -24,6 +24,7 @@ module.exports = {
     'popup.studio': './src/popup.studio.js',
     'popup.actress': './src/popup.actress.js',
     'popup.tag': './src/popup.tag.js',
+    'dependencies-viewer': './src/dependencies-viewer.js',
   },
   devtool: 'source-map',
   output: {

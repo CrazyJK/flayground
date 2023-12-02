@@ -2,7 +2,8 @@ package jk.kamoru.ground.image.service;
 
 import java.util.List;
 
-import org.apache.commons.lang3.RandomUtils;
+import org.apache.commons.rng.UniformRandomProvider;
+import org.apache.commons.rng.simple.RandomSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,8 @@ import jk.kamoru.ground.image.source.ImageSource;
 
 @Service
 public class ImageServiceImpl implements ImageService {
+
+  UniformRandomProvider rng = RandomSource.XO_RO_SHI_RO_128_PP.create();
 
   @Autowired
   ImageSource imageSource;
@@ -27,7 +30,7 @@ public class ImageServiceImpl implements ImageService {
 
   @Override
   public Image random() {
-    return imageSource.get(RandomUtils.nextInt(0, size()));
+    return imageSource.get(rng.nextInt(0, size()));
   }
 
   @Override

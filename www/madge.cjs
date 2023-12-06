@@ -1,7 +1,7 @@
 const madge = require('madge');
 const fs = require('fs');
 
-const entries = ['index', 'page.flay-page', 'page.flay-one', 'page.flay-grid', 'page.develop', 'page.tags', 'page.control', 'page.shot-history', 'page.statistics', 'page.image-page', 'page.image-one', 'page.image-grid', 'page.kamoru-diary', 'popup.flay', 'popup.flay-card', 'popup.studio', 'popup.actress', 'popup.tag'];
+const entries = ['index', 'page.flay-page', 'page.flay-one', 'page.flay-grid', 'page.develop', 'page.tags', 'page.control', 'page.shot-history', 'page.statistics', 'page.image-page', 'page.image-one', 'page.image-grid', 'page.kamoru-diary', 'popup.flay', 'popup.flay-card', 'popup.studio', 'popup.actress', 'popup.tag', 'test-extendsElement'];
 
 const madgeConfig = {
   includeNpm: true,

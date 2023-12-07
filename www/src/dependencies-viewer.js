@@ -52,7 +52,7 @@ document.querySelector('main').addEventListener('click', (e) => {
     // 선택 노드
     let id = clickedNode.id;
     let selected = clickedNode.classList.contains('active');
-    console.log('node', id, selected);
+    console.info('node', id, selected);
     // 선택 여부
     // node
     clickedNode.classList.add('active');
@@ -60,11 +60,11 @@ document.querySelector('main').addEventListener('click', (e) => {
     document.querySelectorAll('main svg g.edge').forEach((edge) => {
       if (edge.dataset.from === id) {
         edge.classList.add('from', 'active');
-        console.log('edge to', edge.dataset.to);
+        console.info('edge to', edge.dataset.to);
         document.querySelector(`#${edge.dataset.to}`).classList.add('active');
       } else if (edge.dataset.to === id) {
         edge.classList.add('to', 'active');
-        console.log('edge from', edge.dataset.from);
+        console.info('edge from', edge.dataset.from);
         document.querySelector(`#${edge.dataset.from}`).classList.add('active');
       }
     });

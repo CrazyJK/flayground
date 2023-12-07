@@ -97,3 +97,34 @@ GET과 동일하지만 서버에서 HTML 본문을 Return하지 않음. (상태 
 ## DELETE
 
 특정 리소스를 삭제함.
+
+# remove console
+
+```sh
+yarn add -D babel-plugin-transform-remove-console
+yarn add -D babel-loader @babel/core
+```
+
+.babelrc
+
+```json
+{
+  "plugins": [["transform-remove-console", { "exclude": ["error", "warn", "info"] }]]
+}
+```
+
+webpack.config.js
+
+```js
+module.exports = {
+  module: {
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+      },
+    ],
+  },
+};
+```

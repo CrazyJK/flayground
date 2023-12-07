@@ -9,6 +9,7 @@
   "scripts": {
     "deploy": "node ./madge.cjs && webpack --env=prod",
     "build": "webpack --env=prod",
+    "buildDev": "webpack --env=dev",
     "watch": "webpack --env=dev -w",
     "madge": "node ./madge.cjs"
   },
@@ -17,6 +18,9 @@
     "@toast-ui/editor-plugin-color-syntax": "^3.1.0"
   },
   "devDependencies": {
+    "@babel/core": "^7.23.5",
+    "babel-loader": "^9.1.3",
+    "babel-plugin-transform-remove-console": "^6.9.4",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.1",
     "eslint": "^8.14.0",

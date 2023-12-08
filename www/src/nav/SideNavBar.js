@@ -12,7 +12,6 @@ export default class SideNavBar extends HTMLElement {
     this.shadowRoot.innerHTML = HTML;
 
     this.shadowRoot.querySelectorAll('a').forEach((anker) => {
-      console.log(anker.href);
       if (anker.href.indexOf(location.pathname) > -1) {
         anker.parentElement.classList.add('active');
       }

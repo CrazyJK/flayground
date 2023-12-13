@@ -1,5 +1,14 @@
 @import './style/style.scss';
 
+article {
+  margin: 2rem;
+  border-bottom: 1px solid #000;
+}
+
 canvas {
+  border: 1px solid #000;
+}
+
+img {
   border: 1px solid #000;
 }

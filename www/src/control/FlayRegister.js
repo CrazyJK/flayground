@@ -292,6 +292,9 @@ export default class FlayRegister extends HTMLElement {
                 <label>${flay.actressList.join(',')}</label>
                 <label>${flay.release}</label>
               `;
+              this.shadowRoot.querySelector('#found-flay label:nth-child(2)').addEventListener('click', () => {
+                window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
+              });
             })
             .catch((e) => {
               console.error(e.message);

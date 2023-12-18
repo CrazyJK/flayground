@@ -88,17 +88,30 @@ export default class FlayRank extends HTMLElement {
 
     this.rankLabel.innerHTML = flay.video.rank + '<small>R</small>';
 
+    let likeHistories = '';
     let likeCount = 0;
-    if (flay.video.likes?.length) {
+    if (flay.video.likes) {
       likeCount = flay.video.likes.length;
+      likeHistories = flay.video.likes
+        .reverse()
+        .map((like) => like.substring(0, 16).replace(/T/, ' '))
+        .join(`\n`);
     }
 
-    this.likeBtn.setAttribute('title', 'Shot ' + likeCount);
     this.likeBtn.innerHTML = '<span>Shot</span><i class="badge">' + likeCount + '</i>';
     this.likeBtn.classList.toggle('notyet', likeCount === 0);
+    this.likeBtn.title = likeHistories;
 
     this.playLabel.innerHTML = '<span>Play</span><i class="badge play">' + flay.video.play + '</i>';
     this.playLabel.classList.toggle('notyet', flay.video.play === 0);
+    fetch(`/info/history/find/${this.flay.opus}`)
+      .then((res) => res.json())
+      .then((histories) => {
+        this.playLabel.title = Array.from(histories)
+          .filter((history) => history.action === 'PLAY')
+          .map((history) => history.date.substring(0, 16))
+          .join(`\n`);
+      });
 
     this.scoreLabel.innerHTML = '<span>Score</span><i class="badge score">' + flay.score + '</i>';
     this.scoreLabel.classList.toggle('notyet', flay.score === 0);

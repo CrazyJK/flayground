@@ -24,6 +24,7 @@ header {
     input[type='text'],
     input[type='search'],
     input[type='number'],
+    input[type='radio'] + label,
     input[type='checkbox'] + label,
     select,
     label,
@@ -35,6 +36,7 @@ header {
     input[type='text'] {
       text-align: center;
     }
+    input[type='radio'] + label,
     input[type='checkbox'] + label {
       padding: 0.25rem 0.75rem;
     }

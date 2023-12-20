@@ -2,6 +2,10 @@
 @import './style/layout.sticky-header.scss';
 @import './style/layout.grid-card.scss';
 
+#favorite + label {
+  display: inline-flex;
+  align-items: center;
+}
 #name {
   flex: 1 1 auto;
 }
@@ -30,11 +34,13 @@
 }
 #comment {
   flex: 1 1 auto;
+  padding: 0.25rem;
 }
-
-#favorite + label {
-  display: inline-flex;
-  align-items: center;
+#flayRank {
+  flex: 0 1 auto;
+}
+#totalCount {
+  flex: 0 0 5rem;
 }
 
 header > div button {

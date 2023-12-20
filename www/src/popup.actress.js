@@ -112,7 +112,7 @@ class PopupActress {
         this.actressName.value = actress.name;
         this.localName.value = actress.localName;
         this.birth.value = actress.birth;
-        this.age.innerHTML = calcAge(actress.birth) + '<small>y</small>';
+        this.age.value = calcAge(actress.birth) + 'y';
         this.body.value = actress.body;
         this.height.value = actress.height;
         this.debut.value = actress.debut;
@@ -120,24 +120,31 @@ class PopupActress {
       });
   }
 
-  #fetchFlay() {
-    fetch('/flay/find/actress/' + this.name)
-      .then((res) => res.json())
-      .then((list) => {
-        const opusList = Array.from(list)
-          .filter((flay) => {
-            if (this.startDate && this.endDate) {
-              return this.startDate < flay.release && flay.release < this.endDate;
-            } else {
-              return true;
-            }
-          })
-          .map((flay) => flay.opus);
+  async #fetchFlay() {
+    const instanceFlayList = await fetch('/flay/find/actress/' + this.name).then((res) => res.json());
+    const archiveFlayList = await fetch('/archive/find/actress/' + this.name).then((res) => res.json());
 
-        this.#renderFlayCardList(opusList)
-          .then(() => this.#randerRankSelectOption())
-          .then(() => this.flayRank.dispatchEvent(new Event('change')));
-      });
+    this.allFlayList = Array.from(instanceFlayList);
+    archiveFlayList.forEach((archiveFlay) => {
+      if (this.allFlayList.filter((flay) => flay.opus === archiveFlay.opus).length === 0) {
+        this.allFlayList.push(archiveFlay);
+      }
+    });
+    document.querySelector('#totalCount').value = this.allFlayList.length + ' F';
+
+    const opusList = this.allFlayList
+      .filter((flay) => {
+        if (this.startDate && this.endDate) {
+          return this.startDate < flay.release && flay.release < this.endDate;
+        } else {
+          return true;
+        }
+      })
+      .map((flay) => flay.opus);
+
+    this.#renderFlayCardList(opusList)
+      .then(() => this.#renderRankSelectOption())
+      .then(() => this.flayRank.dispatchEvent(new Event('change')));
   }
 
   async #renderFlayCardList(opusList) {
@@ -155,24 +162,34 @@ class PopupActress {
     return Array.from(this.flayCardMap.values());
   }
 
-  #randerRankSelectOption() {
-    let flaySizeByRank = [0, 0, 0, 0, 0, 0];
-    let sumRank = 0;
-    let totalFlay = 0;
-    this.#flayCardList().forEach((flayCard, key, parent) => {
-      let rank = parseInt(flayCard.getAttribute('rank'));
-      flaySizeByRank[rank] += 1;
+  #renderRankSelectOption() {
+    let flayCountMap = new Map();
+    for (let i = -1; i <= 5; i++) {
+      flayCountMap.set(i, { instance: 0, archive: 0 });
+    }
+
+    let [instanceTotal, archiveTotal] = [0, 0];
+    let [sum, count] = [0, 0];
+    this.allFlayList.forEach((flay) => {
+      let rank = flay.video.rank;
+      const countObj = flayCountMap.get(rank);
+      if (flay.archive) {
+        countObj.archive++;
+        archiveTotal++;
+      } else {
+        countObj.instance++;
+        instanceTotal++;
+      }
       if (rank !== 0) {
-        sumRank += rank;
-        totalFlay++;
+        sum += rank;
+        count++;
       }
     });
-    flaySizeByRank.forEach((flaySize, rank) => {
-      document.querySelector(`#flayRank option[value="${rank}"]`).innerHTML = `Rank ${rank} : ${flaySize}`;
+    flayCountMap.forEach((countObj, rank) => {
+      document.querySelector(`#flayRank option[value="${rank}"]`).innerHTML = `Rank ${rank} : ${countObj.instance} ${countObj.archive > 0 ? ' 🆚 ' + countObj.archive : ''}`; // 🔺🔻⛔⭕🚫🆚
     });
-    let avg = totalFlay > 0 ? (sumRank / totalFlay).toFixed(1) : 0;
-    let tot = this.#flayCardList().length;
-    document.querySelector(`#flayRank option:first-child`).innerHTML = `Rank ${avg} : ${tot} F`;
+    let avg = count > 0 ? (sum / count).toFixed(1) : 0;
+    document.querySelector(`#flayRank option:first-child`).innerHTML = `Rank ${avg} : ${instanceTotal} 🆚 ${archiveTotal}`;
   }
 
   #resetStudioList() {

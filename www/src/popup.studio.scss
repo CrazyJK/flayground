@@ -14,6 +14,22 @@ header {
     min-width: 900px;
     max-width: 999px;
     margin: auto;
+
+    #studioName {
+      flex: 1 1 auto;
+    }
+    #studioCompany {
+      flex: 1 1 auto;
+    }
+    #studioHomepage {
+      flex: 1 1 auto;
+    }
+    #flayRank {
+      flex: 0 1 auto;
+    }
+    #totalCount {
+      flex: 0 0 5rem;
+    }
   }
   .actress-list,
   .tag-list {

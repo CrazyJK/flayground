@@ -112,6 +112,11 @@ export default class FlayCard extends HTMLElement {
     this.actress = actress;
 
     this.setAttribute('rank', flay.video.rank);
+    if (flay.archive) {
+      this.setAttribute('archive', true);
+      this.wrapper.classList.add('archive');
+      this.flayCover.classList.add('archive');
+    }
 
     const coverExclude = this.excludes.includes('FlayCover');
     const studioExclude = this.excludes.includes('FlayStudio');
@@ -216,6 +221,13 @@ article.notfound flay-files,
 article.notfound flay-rank,
 article.notfound flay-release,
 article.notfound flay-tag {
+  display: none;
+}
+
+flay-cover.archive {
+  opacity: 0.7;
+}
+article.archive flay-files {
   display: none;
 }
 `;

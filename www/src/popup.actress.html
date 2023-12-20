@@ -17,6 +17,7 @@
         <input type="text" id="localName" placeholder="localName..." />
         <select id="flayRank">
           <option value="">Rank</option>
+          <option value="-1">Rank -1</option>
           <option value="0">Rank 0</option>
           <option value="1">Rank 1</option>
           <option value="2">Rank 2</option>
@@ -24,11 +25,12 @@
           <option value="4">Rank 4</option>
           <option value="5">Rank 5</option>
         </select>
+        <input type="text" id="totalCount" title="total flay count" readonly />
         <button id="saveBtn">Save</button>
       </div>
       <div class="actress-info">
         <input type="text" id="birth" placeholder="birth..." />
-        <label id="age" title="age"></label>
+        <input type="text" id="age" title="age" readonly />
         <input type="text" id="body" placeholder="body..." />
         <input type="number" id="height" placeholder="height..." />
         <input type="number" id="debut" placeholder="debut" />

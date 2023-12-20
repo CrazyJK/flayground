@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import jk.kamoru.ground.flay.domain.Flay;
 import jk.kamoru.ground.flay.domain.FlayCondition;
+import jk.kamoru.ground.flay.service.FlayArchiveService;
 import jk.kamoru.ground.flay.service.FlayCollector;
 import jk.kamoru.ground.flay.service.FlayService;
 import jk.kamoru.ground.flay.service.ScoreCalculator;
@@ -34,6 +35,9 @@ public class FlayController {
 
   @Autowired
   FlayService flayService;
+
+  @Autowired
+  FlayArchiveService flayArchiveService;
 
   @Autowired
   ActressInfoService actressInfoService;
@@ -58,7 +62,12 @@ public class FlayController {
 
   @GetMapping("/{opus}/fully")
   public Map<String, Object> getFullyFlay(@PathVariable String opus) {
-    Flay flay = flayService.get(opus);
+    Flay flay = null;
+    try {
+      flay = flayService.get(opus);
+    } catch (FlayNotfoundException e) {
+      flay = flayArchiveService.get(opus);
+    }
     scoreCalculator.calcScore(flay);
     List<Actress> actressList = flay.getActressList().stream().map(name -> actressInfoService.get(name)).toList();
 

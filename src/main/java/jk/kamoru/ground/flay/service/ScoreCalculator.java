@@ -64,14 +64,21 @@ public class ScoreCalculator {
   }
 
   public void calcScore(Flay flay) {
-    flay.setScore(resolveRank(flay) * properties.getScore().getRankPoint()
+    flay.setScore(
+        resolveLikes(flay) * properties.getScore().getLikePoint() +
+        resolveRank(flay) * properties.getScore().getRankPoint() +
         // + flay.getVideo().getPlay() * properties.getScore().getPlayPoint()
-        + existingCountOfSubtitle(flay) * properties.getScore().getSubtitlesPoint() + countFavoriteActress(flay) * properties.getScore().getFavoritePoint());
+        existingCountOfSubtitle(flay) * properties.getScore().getSubtitlesPoint() +
+        countFavoriteActress(flay) * properties.getScore().getFavoritePoint());
+  }
+
+  private int resolveLikes(Flay flay) {
+    return flay.getVideo().getLikes() == null ? 0 : flay.getVideo().getLikes().size();
   }
 
   /**
    * flay의 rank. rank == 0 이면, tag에서 찾는다
-   * 
+   *
    * @param flay
    * @return
    */
@@ -87,7 +94,7 @@ public class ScoreCalculator {
 
   /**
    * 자막이 있으면 1, 없으면 0
-   * 
+   *
    * @param flay
    * @return
    */
@@ -97,7 +104,7 @@ public class ScoreCalculator {
 
   /**
    * flay의 배우들의 favorite 갯수
-   * 
+   *
    * @param flay
    * @return
    */

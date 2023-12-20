@@ -76,6 +76,7 @@ public class GroundProperties {
     private int playPoint = 1;
     private int subtitlesPoint = 30;
     private int favoritePoint = 30;
+    private int likePoint = 50;
   }
 
   protected static List<String> getSiteLocalAddresses() {

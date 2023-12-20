@@ -5,3 +5,28 @@
 header > div button {
   display: initial;
 }
+
+header {
+  max-width: none;
+
+  .studio-info {
+    width: 100%;
+    min-width: 900px;
+    max-width: 999px;
+    margin: auto;
+  }
+  .actress-list,
+  .tag-list {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+    border: 1px dashed chocolate;
+
+    label {
+      font-size: var(--size-small);
+      line-height: 20px;
+      border: 0 !important;
+    }
+  }
+}

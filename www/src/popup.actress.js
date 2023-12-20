@@ -16,14 +16,14 @@ class PopupActress {
 
     // get Parameter
     const urlParams = new URL(location.href).searchParams;
-    this.actressName = urlParams.get('name');
+    this.name = urlParams.get('name');
     this.startDate = urlParams.get('s');
     this.endDate = urlParams.get('e');
 
     // 주요 엘리먼트
     this.favorite = document.querySelector('#favorite');
     this.favLabel = document.querySelector('#favorite + label');
-    this.name = document.querySelector('#name');
+    this.actressName = document.querySelector('#name');
     this.localName = document.querySelector('#localName');
     this.flayRank = document.querySelector('#flayRank');
     this.birth = document.querySelector('#birth');
@@ -39,7 +39,7 @@ class PopupActress {
     this.tagList = document.querySelector('.tag-list');
 
     this.favLabel.innerHTML = SVG.favorite;
-    document.title = this.actressName;
+    document.title = this.name;
 
     // 조건에 맞는 카드 토글 이벤트
     this.flayRank.addEventListener('change', () => {
@@ -49,16 +49,22 @@ class PopupActress {
       this.#renderStudioList();
       this.#renderTagList();
     });
-    this.studioList.addEventListener('change', () => this.#toggleFlayCard());
-    this.tagList.addEventListener('change', () => this.#toggleFlayCard());
+    this.studioList.addEventListener('change', () => {
+      this.#resetTagList();
+      this.#toggleFlayCard();
+      this.#renderTagList();
+    });
+    this.tagList.addEventListener('change', () => {
+      this.#toggleFlayCard();
+    });
     // 검색 이벤트
     this.findBtn.addEventListener('click', (e) => FlaySearch.actress.Minnano(this.localName.value));
-    this.searchBtn.addEventListener('click', (e) => FlaySearch.actress.Nextjav(this.name.value));
+    this.searchBtn.addEventListener('click', (e) => FlaySearch.actress.Nextjav(this.actressName.value));
     // 저장 이벤트
     this.saveBtn.addEventListener('click', () => {
       FlayAction.updateActress({
         favorite: this.favorite.checked,
-        name: this.name.value.trim(),
+        name: this.actressName.value.trim(),
         localName: this.localName.value.trim(),
         debut: this.debut.value.trim(),
         birth: this.birth.value.trim(),
@@ -88,10 +94,7 @@ class PopupActress {
       if (flayCard) flayCard.reload();
     };
     window.emitActress = (actress) => {
-      if (this.actressName === actress.name) this.#fetchActress();
-    };
-    window.emitTag = (tag) => {
-      this.#fetchActress();
+      if (this.name === actress.name) this.#fetchActress();
     };
   }
 
@@ -101,12 +104,12 @@ class PopupActress {
   }
 
   #fetchActress() {
-    fetch('/info/actress/' + this.actressName)
+    fetch('/info/actress/' + this.name)
       .then((res) => res.json())
       .then((actress) => {
         console.log(actress);
         this.favorite.checked = actress.favorite;
-        this.name.value = actress.name;
+        this.actressName.value = actress.name;
         this.localName.value = actress.localName;
         this.birth.value = actress.birth;
         this.age.innerHTML = calcAge(actress.birth) + '<small>y</small>';
@@ -118,7 +121,7 @@ class PopupActress {
   }
 
   #fetchFlay() {
-    fetch('/flay/find/actress/' + this.actressName)
+    fetch('/flay/find/actress/' + this.name)
       .then((res) => res.json())
       .then((list) => {
         const opusList = Array.from(list)
@@ -143,8 +146,6 @@ class PopupActress {
       this.flayCardMap.set(opus, flayCard);
 
       await flayCard.set(opus).then(() => {
-        flayCard.dataset.studio = flayCard.flay.studio;
-        flayCard.dataset.tags = flayCard.flay.video.tags?.map((tag) => tag.id).join(',');
         return new Promise((resolve) => setTimeout(resolve, 100));
       });
     }
@@ -188,14 +189,14 @@ class PopupActress {
       if (flayCard.style.display === 'none') {
         return;
       }
-      const studio = flayCard.dataset.studio;
+      const studio = flayCard.flay.studio;
       if (!list.includes(studio)) {
         list.push(studio);
       }
     });
     document.querySelector('.studio-list').innerHTML = list
-      .sort((s1, s2) => s1.localeCompare(s2))
-      .map((studio) => `<input type="checkbox" id="${studio}" value="${studio}"><label for="${studio}">${studio}</label>`)
+      .sort((n1, n2) => n1.localeCompare(n2))
+      .map((name) => `<input type="checkbox" id="${name}" value="${name}"><label for="${name}">${name}</label>`)
       .join('');
   }
 
@@ -235,7 +236,7 @@ class PopupActress {
       let show = true;
       // 조건에 맞쳐 숨길 카드 선택
       // rank로 filter
-      if (rank && rank !== flayCard.flay.video.rank) {
+      if (!isNaN(rank) && rank !== flayCard.flay.video.rank) {
         // 다른 rank면 숨기기
         show = false;
       }
@@ -265,8 +266,6 @@ class PopupActress {
     });
   }
 }
-
-// window.tagList = [];
 
 function calcAge(birth) {
   if (birth === null || birth.trim().length === 0) {

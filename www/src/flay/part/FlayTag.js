@@ -43,6 +43,9 @@ export default class FlayTag extends HTMLElement {
       if (e.code !== 'Enter' && e.code !== 'NumpadEnter') {
         return;
       }
+      if (e.target.value.trim() === '') {
+        return;
+      }
       console.log('tagNewInputKeyup', this.flay.opus, '[' + e.target.value + ']');
       FlayAction.newTagOnOpus(e.target.value, this.flay.opus, (tag) => {
         // this.#fetchTag(true).then(() => {

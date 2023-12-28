@@ -101,7 +101,7 @@ div.comment {
   text-align: center;
 }
 div.comment input {
-  padding: 0.25rem 0;
+  padding: 0;
   width: 100%;
   text-align: center;
 }

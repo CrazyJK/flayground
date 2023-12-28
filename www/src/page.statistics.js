@@ -189,6 +189,7 @@ function startRankGroup() {
       flayLabel.title = flay.opus;
       flayLabel.classList.add('flay');
       flayLabel.classList.toggle('archive', flay.archive);
+      flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
       flayLabel.addEventListener('click', () => {
         flayLabel.classList.add('active');
         window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
@@ -208,6 +209,7 @@ function startTimeline() {
       flayLabel.title = flay.opus;
       flayLabel.classList.add('flay');
       flayLabel.classList.toggle('archive', flay.archive);
+      flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
       flayLabel.addEventListener('click', () => {
         flayLabel.classList.add('active');
         window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');

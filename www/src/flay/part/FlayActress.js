@@ -76,7 +76,7 @@ export default class FlayActress extends HTMLElement {
       localNameElement.classList.add('localName');
       localNameElement.setAttribute('title', actress.localName);
       localNameElement.innerHTML = actress.localName;
-      localNameElement.addEventListener('click', () => window.open('/info/actress/' + actress.name, actress.name, 'width=640px,height=800px'));
+      localNameElement.addEventListener('click', () => window.open('/info/actress/' + actress.name, actress.name + '_info', 'width=640px,height=800px'));
 
       // flay size
       const flaySize = actressDiv.appendChild(document.createElement('label'));

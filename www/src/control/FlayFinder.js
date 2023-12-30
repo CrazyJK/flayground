@@ -56,6 +56,10 @@ ${componentCss}
 .tags {
   flex: 1 1 auto;
 }
+.item.actress-item {
+  flex-wrap: wrap;
+  justify-content: flex-start;
+}
 `;
 
 const HTML = `
@@ -68,6 +72,10 @@ const HTML = `
 </div>
 <div class="wrapper archive-wrapper">
   <h1>Archive</h1>
+  <ol></ol>
+</div>
+<div class="wrapper actress-wrapper">
+  <h1>Actress</h1>
   <ol></ol>
 </div>
 <div class="wrapper info-wrapper">
@@ -100,8 +108,9 @@ export default class FlayFinder extends HTMLElement {
     const SearchInput = this.shadowRoot.querySelector('#search');
     const Instance = this.shadowRoot.querySelector('.instance-wrapper > ol');
     const Archive = this.shadowRoot.querySelector('.archive-wrapper > ol');
-    const History = this.shadowRoot.querySelector('.history-wrapper > ol');
+    const Actress = this.shadowRoot.querySelector('.actress-wrapper > ol');
     const Info = this.shadowRoot.querySelector('.info-wrapper > ol');
+    const History = this.shadowRoot.querySelector('.history-wrapper > ol');
 
     let keyword = '';
 
@@ -118,8 +127,9 @@ export default class FlayFinder extends HTMLElement {
         console.log('search');
         fetchAndRender('/flay/find/', keyword, Instance, renderInstance);
         fetchAndRender('/archive/find/', keyword, Archive, renderArchive);
-        fetchAndRender('/info/history/find/', keyword, History, renderHistory);
+        fetchAndRender('/info/actress/find/', keyword, Actress, renderActress);
         fetchAndRender('/info/video/find/', keyword, Info, renderInfo);
+        fetchAndRender('/info/history/find/', keyword, History, renderHistory);
       }
     });
 
@@ -131,6 +141,12 @@ export default class FlayFinder extends HTMLElement {
         window.open('popup.flay.html?opus=' + opus, opus, 'width=800px,height=1280px');
       } else if (action === 'info') {
         window.open('/info/video/' + opus, 'info' + opus, 'width=400px,height=600px');
+      } else if (action === 'actressName') {
+        let actressName = e.target.closest('li').dataset.actressName;
+        window.open('popup.actress.html?name=' + actressName, actressName, 'width=960px,height=1200px');
+      } else if (action === 'actressLocalName') {
+        let actressName = e.target.closest('li').dataset.actressName;
+        window.open('/info/actress/' + actressName, actressName + '_info', 'width=640px,height=800px');
       }
     });
   }
@@ -141,7 +157,7 @@ function fetchAndRender(url, keyword, wrapper, callback) {
     .then((res) => res.json())
     .then((list) => {
       callback(
-        Array.from(list).sort((t1, t2) => t2.opus.localeCompare(t1.opus)),
+        Array.from(list).sort((t1, t2) => t2.release.localeCompare(t1.release)),
         keyword,
         wrapper
       );
@@ -243,6 +259,31 @@ function renderInfo(list, keyword, wrapper) {
         child.title = child.innerHTML;
         child.dataset.opus = info.opus;
       }
+    });
+  }
+}
+
+function renderActress(list, keyword, wrapper) {
+  console.log('renderActress', list);
+  if (list.length === 0) {
+    wrapper.innerHTML = `<label class="error">Not found ${keyword}</label>`;
+  } else {
+    wrapper.textContent = null;
+    Array.from(list).forEach((actress) => {
+      const ITEM = document.createElement('li');
+      ITEM.classList.add('actress-item', 'item');
+      ITEM.innerHTML = `
+        <label class="favorite">${actress.favorite ? '💛' : '🩶'}</label>
+        <label class="name" data-action="actressName">${actress.name}</label>
+        <label class="localName" data-action="actressLocalName">${actress.localName}</label>
+        <label class="birth">${actress.birth}</label>
+        <label class="body">${actress.body}</label>
+        <label class="height">${actress.height}</label>
+        <label class="debut">${actress.debut}</label>
+        <label class="comment" title=${actress.comment}>${actress.comment}</label>
+      `;
+      wrapper.append(ITEM);
+      ITEM.dataset.actressName = actress.name;
     });
   }
 }

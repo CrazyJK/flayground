@@ -102,6 +102,21 @@ export default class FlayPagination extends HTMLElement {
       }
     });
 
+    window.addEventListener('mouseup', (e) => {
+      console.debug(e.type, e.button, e);
+      /*
+      MouseEvent: button
+        0: Main button pressed, usually the left button or the un-initialized state
+        1: Auxiliary button pressed, usually the wheel button or the middle button (if present)
+        2: Secondary button pressed, usually the right button
+        3: Fourth button, typically the Browser Back button
+        4: Fifth button, typically the Browser Forward button
+      */
+      if (e.button === 1) {
+        this.navigator(RANDOM);
+      }
+    });
+
     addResizeLazyEventListener(() => {
       this.display();
     });

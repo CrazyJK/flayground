@@ -83,4 +83,7 @@ div.release.card .access-label,
 div.release.card .played-label {
   display: none;
 }
+div.release.archive .release-label span {
+  color: var(--color-gray-dark);
+}
 `;

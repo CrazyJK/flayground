@@ -57,4 +57,7 @@ ${componentCss}
 div.studio {
   text-align:center;
 }
+div.studio.archive a {
+  color: var(--color-gray-dark);
+}
 `;

@@ -76,4 +76,7 @@ div.title.card label a {
 div.title.small label a {
   font-size: var(--size-normal);
 }
+div.title.archive label a {
+  color: var(--color-gray-dark);
+}
 `;

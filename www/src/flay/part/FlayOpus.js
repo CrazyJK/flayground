@@ -56,4 +56,7 @@ ${componentCss}
 div.opus {
   text-align: center;
 }
+div.opus.archive a {
+  color: var(--color-gray-dark);
+}
 `;

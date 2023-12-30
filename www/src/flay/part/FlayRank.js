@@ -182,4 +182,7 @@ div.rank.small button {
 .notyet i {
   color: var(--color-text-secondary);
 }
+div.rank.archive .rank-label {
+  color: var(--color-gray-dark);
+}
 `;

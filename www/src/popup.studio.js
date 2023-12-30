@@ -102,6 +102,7 @@ class PopupStudio {
     document.querySelector('#totalCount').value = this.allFlayList.length + ' F';
 
     const opusList = instanceFlayList
+      .sort((f1, f2) => f2.release.localeCompare(f1.release))
       .filter((flay) => {
         if (this.startDate && this.endDate) {
           return this.startDate < flay.release && flay.release < this.endDate;

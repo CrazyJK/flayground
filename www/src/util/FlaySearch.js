@@ -1,5 +1,4 @@
 const URL_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
-const URL_AVNORI = 'https://avnori6.com/bbs/search.php?search_flag=search&stx=';
 const URL_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
 const URL_NEXTJAV = 'https://nextjav.com/torrent/detail/';
 const URL_NEXTJAV_DOWNLOAD = 'https://nextjav.com/save/{}/nextjav-torrent-{}.torrent';
@@ -15,15 +14,12 @@ export default {
   google(keyword) {
     popupOpen(URL_GOOGLE + keyword, 'googleSearch', 800, 1000);
   },
+  Avdbs(keyword) {
+    popupOpen(URL_AVDBS + keyword + '&seq=' + Date.now(), 'avdbsSearch', 800, 1000);
+  },
   opus: {
     Arzon(keyword) {
       popupOpen(URL_ARZON + keyword, 'arzonSearch', 1500, 1000);
-    },
-    Avnori(keyword) {
-      popupOpen(URL_AVNORI + keyword, 'avnoriSearch', 800, 1000);
-    },
-    Avdbs(keyword) {
-      popupOpen(URL_AVDBS + keyword, 'avdbsSearch', 800, 1000);
     },
   },
   actress: {

@@ -33,11 +33,13 @@ class PopupActress {
     this.debut = document.querySelector('#debut');
     this.comment = document.querySelector('#comment');
     this.saveBtn = document.querySelector('#saveBtn');
-    this.findBtn = document.querySelector('#findBtn');
-    this.searchBtn = document.querySelector('#searchBtn');
     this.studioList = document.querySelector('.studio-list');
     this.tagList = document.querySelector('.tag-list');
     this.toggleArchive = document.querySelector('#toggleArchive');
+
+    this.searchAvdbsBtn = document.querySelector('#searchAvdbsBtn');
+    this.searchNextjavBtn = document.querySelector('#searchNextjavBtn');
+    this.searchMinnanoBtn = document.querySelector('#searchMinnanoBtn');
 
     this.favLabel.innerHTML = SVG.favorite;
     document.title = this.name;
@@ -59,8 +61,9 @@ class PopupActress {
       this.#toggleFlayCard();
     });
     // 검색 이벤트
-    this.findBtn.addEventListener('click', (e) => FlaySearch.actress.Minnano(this.localName.value));
-    this.searchBtn.addEventListener('click', (e) => FlaySearch.actress.Nextjav(this.actressName.value));
+    this.searchAvdbsBtn.addEventListener('click', (e) => FlaySearch.Avdbs(this.localName.value));
+    this.searchNextjavBtn.addEventListener('click', (e) => FlaySearch.actress.Nextjav(this.actressName.value));
+    this.searchMinnanoBtn.addEventListener('click', (e) => FlaySearch.actress.Minnano(this.localName.value));
     // 저장 이벤트
     this.saveBtn.addEventListener('click', () => {
       FlayAction.updateActress({

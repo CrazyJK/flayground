@@ -37,6 +37,7 @@ class PopupActress {
     this.searchBtn = document.querySelector('#searchBtn');
     this.studioList = document.querySelector('.studio-list');
     this.tagList = document.querySelector('.tag-list');
+    this.toggleArchive = document.querySelector('#toggleArchive');
 
     this.favLabel.innerHTML = SVG.favorite;
     document.title = this.name;
@@ -72,6 +73,14 @@ class PopupActress {
         height: this.height.value.trim(),
         comment: this.comment.value.trim(),
       });
+    });
+    this.toggleArchive.addEventListener('click', () => {
+      Array.from(document.querySelectorAll('flay-card'))
+        .filter((flayCard) => flayCard.hasAttribute('archive'))
+        .filter((flayCard) => flayCard.dataset.show === 'true')
+        .forEach((flayCard) => {
+          flayCard.style.display = flayCard.style.display === 'none' ? 'block' : 'none';
+        });
     });
     // 리사이즈 이벤트
     addResizeLazyEventListener(() => {
@@ -130,7 +139,7 @@ class PopupActress {
         this.allFlayList.push(archiveFlay);
       }
     });
-    document.querySelector('#totalCount').value = this.allFlayList.length + ' F';
+    this.toggleArchive.innerHTML = this.allFlayList.length + ' F';
 
     const opusList = this.allFlayList
       .sort((f1, f2) => f2.release.localeCompare(f1.release))
@@ -244,11 +253,11 @@ class PopupActress {
     let studios = Array.from(this.studioList.querySelectorAll('input:checked')).map((input) => input.value);
     let tags = Array.from(this.tagList.querySelectorAll('input:checked')).map((input) => parseInt(input.value));
 
-    console.log(`
-      rank: ${rank}
-      studios: ${studios.join(', ')}
-      tags: ${tags.join(', ')}
-    `);
+    // console.log(`
+    //   rank: ${rank}
+    //   studios: ${studios.join(', ')}
+    //   tags: ${tags.join(', ')}
+    // `);
 
     this.#flayCardList().forEach((flayCard) => {
       let show = true;
@@ -280,6 +289,7 @@ class PopupActress {
         }
       }
 
+      flayCard.dataset.show = show;
       flayCard.style.display = show ? 'block' : 'none';
     });
   }

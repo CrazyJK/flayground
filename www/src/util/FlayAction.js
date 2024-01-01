@@ -146,7 +146,7 @@ export default {
  */
 async function action(url, requestInit, callback, failCallback) {
   const response = await fetch(url, requestInit);
-  console.debug(url, response.ok, response.status);
+  console.debug(url, response.ok, response.status, response);
 
   switch (response.status) {
     case 200:
@@ -168,4 +168,24 @@ async function action(url, requestInit, callback, failCallback) {
     default:
       throw new Error('정의 안된 status code');
   }
+
+  let messageBar = document.querySelector('body').appendChild(document.createElement('label', { class: 'message-bar' }));
+  messageBar.style.position = 'fixed';
+  messageBar.style.right = 0;
+  messageBar.style.bottom = 0;
+  messageBar.style.backgroundColor = 'var(--color-bg)';
+  messageBar.style.padding = '0.5rem 1rem';
+  messageBar.style.fontWeight = 400;
+  messageBar.style.boxShadow = 'var(--box-shadow) inset';
+  messageBar.innerHTML = `[${requestInit.method ? requestInit.method : 'GET'}] ${url} - ${response.status}`;
+
+  if ([200, 204].includes(response.status)) {
+    // show success message
+  } else {
+    // show fail message
+    messageBar.classList.add('error');
+  }
+  setTimeout(() => {
+    messageBar.remove();
+  }, 1000 * 2);
 }

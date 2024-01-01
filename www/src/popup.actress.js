@@ -142,7 +142,6 @@ class PopupActress {
         this.allFlayList.push(archiveFlay);
       }
     });
-    this.toggleArchive.innerHTML = this.allFlayList.length + ' F';
 
     const opusList = this.allFlayList
       .sort((f1, f2) => f2.release.localeCompare(f1.release))
@@ -262,6 +261,7 @@ class PopupActress {
     //   tags: ${tags.join(', ')}
     // `);
 
+    let archiveCount = 0;
     this.#flayCardList().forEach((flayCard) => {
       let show = true;
       // 조건에 맞쳐 숨길 카드 선택
@@ -294,7 +294,12 @@ class PopupActress {
 
       flayCard.dataset.show = show;
       flayCard.style.display = show ? 'block' : 'none';
+      if (show) {
+        flayCard.hasAttribute('archive') && archiveCount++;
+      }
     });
+
+    this.toggleArchive.innerHTML = archiveCount + ' F';
   }
 }
 

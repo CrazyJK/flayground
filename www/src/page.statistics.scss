@@ -137,6 +137,29 @@ main {
   }
 }
 
+#actressAge {
+  .actressAge-grid {
+    display: grid;
+    grid-template-columns: repeat(8, minmax(4rem, auto));
+    gap: 0.25rem;
+
+    .grid-head,
+    .grid-data {
+      border-right: 1px solid var(--color-border);
+      border-bottom: 1px solid var(--color-border);
+    }
+
+    .grid-data.rank {
+      display: inline-flex;
+      flex-wrap: wrap;
+      flex-direction: row;
+      align-content: flex-start;
+      justify-content: flex-start;
+      align-items: flex-start;
+    }
+  }
+}
+
 .row {
   display: flex;
   .col {

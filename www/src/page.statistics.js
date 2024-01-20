@@ -62,6 +62,7 @@ function start() {
   startStudioActress();
   startRankGroup();
   startTimeline();
+  startActressAge();
 }
 
 function startStudioActress() {
@@ -202,23 +203,6 @@ function startRankGroup() {
 }
 
 function startTimeline() {
-  const getFlayLabel = (flayList) => {
-    const labels = [];
-    flayList.forEach((flay) => {
-      const flayLabel = document.createElement('label');
-      flayLabel.title = flay.opus;
-      flayLabel.classList.add('flay');
-      flayLabel.classList.toggle('archive', flay.archive);
-      flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
-      flayLabel.addEventListener('click', () => {
-        flayLabel.classList.add('active');
-        window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
-      });
-      labels.push(flayLabel);
-    });
-    return labels;
-  };
-
   const firstDate = new Date(filteredList[0].release);
   const lastDate = new Date(filteredList[filteredList.length - 1].release);
   console.debug('date', firstDate, lastDate);
@@ -263,3 +247,85 @@ function startTimeline() {
     }
   });
 }
+
+/**
+ * 발매일자의 배우 나이별 순위
+ */
+async function startActressAge() {
+  const actressMap = new Map();
+  const ageFlayMap = new Map();
+  //
+  async function getActressInfo(name) {
+    if (!actressMap.has(name)) {
+      const actress = await fetch(`/info/actress/${name}`).then((res) => res.json());
+      actressMap.set(name, actress);
+    }
+    return actressMap.get(name);
+  }
+
+  for (const flay of filteredList) {
+    if (flay.archive) {
+      continue;
+    }
+    const releaseYear = flay.release.substring(0, 4);
+    for (const actressName of flay.actressList) {
+      const actress = await getActressInfo(actressName);
+      const actressBirthYear = actress.birth?.substring(0, 4);
+      let actressAgeAtRelease = parseInt(releaseYear) - parseInt(actressBirthYear) + 1;
+      if (isNaN(actressAgeAtRelease)) {
+        actressAgeAtRelease = 99;
+      }
+      if (!ageFlayMap.has(actressAgeAtRelease)) {
+        ageFlayMap.set(actressAgeAtRelease, []);
+      }
+      ageFlayMap.get(actressAgeAtRelease).push(flay);
+    }
+  }
+
+  const wrapper = document.querySelector('.actressAge-grid');
+  wrapper.querySelectorAll('div:not(.grid-head)').forEach((div) => div.remove());
+
+  const sortedAgeFlayMap = new Map(Array.from(ageFlayMap).sort((a, b) => a[0] - b[0]));
+
+  sortedAgeFlayMap.forEach((flayList, key) => {
+    const rankMap = new Map();
+    Array.from({ length: 7 }, (v, i) => i).forEach((r) => rankMap.set(r - 1, []));
+    Array.from(flayList).forEach((flay) => rankMap.get(flay.video.rank).push(flay));
+
+    const time = wrapper.appendChild(document.createElement('div'));
+    time.classList.add('grid-data', 'time');
+    time.innerHTML = key;
+    for (let i = -1; i <= 5; i++) {
+      const rank = wrapper.appendChild(document.createElement('div'));
+      rank.classList.add('grid-data', 'rank');
+      let count = 0;
+      let length = 0;
+      rankMap.get(i).forEach((flay) => {
+        count++;
+        length += flay.length;
+      });
+      if (count > 0) {
+        const [size, unit] = getPrettyFilesize(length);
+        rank.title = `${count} Flay, ${size} ${unit}`;
+      }
+      rank.append(...getFlayLabel(rankMap.get(i)));
+    }
+  });
+}
+
+const getFlayLabel = (flayList) => {
+  const labels = [];
+  flayList.forEach((flay) => {
+    const flayLabel = document.createElement('label');
+    flayLabel.title = flay.opus;
+    flayLabel.classList.add('flay');
+    flayLabel.classList.toggle('archive', flay.archive);
+    flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
+    flayLabel.addEventListener('click', () => {
+      flayLabel.classList.add('active');
+      window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
+    });
+    labels.push(flayLabel);
+  });
+  return labels;
+};

@@ -123,13 +123,13 @@ export default class FlayActress extends HTMLElement {
       const heightElement = actressDiv.appendChild(document.createElement('label'));
       heightElement.classList.add('height');
       heightElement.setAttribute('title', actress.height);
-      heightElement.innerHTML = actress.height ? actress.height + '<small>cm</small>' : '';
+      heightElement.innerHTML = actress.height && actress.height > 0 ? actress.height + '<small>cm</small>' : '';
 
       // debut
       const debutElement = actressDiv.appendChild(document.createElement('label'));
       debutElement.classList.add('debut');
       debutElement.setAttribute('title', actress.debut);
-      debutElement.innerHTML = actress.debut ? actress.debut + '<small>d</small>' : '';
+      debutElement.innerHTML = actress.debut && actress.debut > 0 ? actress.debut + '<small>d</small>' : '';
     });
   }
 }
@@ -138,6 +138,9 @@ export default class FlayActress extends HTMLElement {
 customElements.define('flay-actress', FlayActress);
 
 function toInchBody(body) {
+  if (body === null || body.trim() === '') {
+    return '';
+  }
   let parts = body.split('-');
   let b = parts[0]?.replace(/[^0-9]/g, '').trim();
   let c = parts[0]?.replace(/[0-9]/g, '').trim();

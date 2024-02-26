@@ -44,9 +44,7 @@ export default class FlayPage extends HTMLElement {
 
     addResizeLazyEventListener(() => {
       // 24' 모니터에서 선택된 태그만 보이기
-      if (window.innerHeight < 998) {
-        this.flayTag.shadowRoot.querySelector('.tag').classList.add('card');
-      }
+      this.flayTag.shadowRoot.querySelector('.tag').classList.toggle('card', window.innerHeight < 998);
     });
   }
 

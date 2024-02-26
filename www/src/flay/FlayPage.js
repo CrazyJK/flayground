@@ -1,4 +1,5 @@
 import { componentCss } from '../util/componentCssLoader';
+import { addResizeLazyEventListener } from '../util/resizeListener';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';
@@ -40,6 +41,13 @@ export default class FlayPage extends HTMLElement {
     this.flayTag = wrapper.appendChild(new FlayTag());
 
     this.shadowRoot.append(style, wrapper);
+
+    addResizeLazyEventListener(() => {
+      // 24' 모니터에서 선택된 태그만 보이기
+      if (window.innerHeight < 998) {
+        this.flayTag.shadowRoot.querySelector('.tag').classList.add('card');
+      }
+    });
   }
 
   /**
@@ -107,6 +115,11 @@ article.page > flay-actress {
 @media screen and (max-height: 1400px) {
   article.page > flay-cover {
     margin: 0.25rem auto;
+  }
+}
+@media screen and (max-height: 997px) {
+  article.page {
+    max-width: 800px;
   }
 }
 `;

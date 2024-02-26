@@ -1,18 +1,23 @@
-const delay = 300;
+const DELAY = 300;
+const listeners = [];
+
 let timer = null;
 
-const callbacks = [];
-
-export function addResizeLazyEventListener(callback) {
-  callbacks.push(callback);
+/**
+ * window resize 이벤트 핸들러를 등록한다
+ * @param {Function} listener
+ */
+export function addResizeLazyEventListener(listener) {
+  listeners.push(listener);
+  window.dispatchEvent(new Event('resize'));
 }
 
 window.addEventListener('resize', () => {
   clearTimeout(timer);
   timer = setTimeout(() => {
-    console.debug('window resize', callbacks);
-    for (let callback of callbacks) {
+    console.debug('window resize', listeners);
+    for (const callback of listeners) {
       callback();
     }
-  }, delay);
+  }, DELAY);
 });

@@ -1,0 +1,54 @@
+@import './style/style.scss';
+@import './style/component.css';
+
+body {
+  img {
+    width: 800px;
+  }
+  div {
+    position: relative;
+    margin-top: 0.25rem;
+    line-height: 2rem;
+    height: 2rem;
+    text-align: center;
+    font-weight: 700;
+
+    &::after {
+      position: absolute;
+      top: 0;
+      font-size: smaller;
+      font-weight: 400;
+      color: var(--color-text-secondary);
+    }
+
+    &.last-access::after,
+    &.last-modified::after,
+    &.last-play::after {
+      left: calc(50% + 3rem);
+    }
+    &.last-access::after {
+      content: 'lastAccess';
+    }
+    &.last-modified::after {
+      content: 'lastModified';
+    }
+    &.last-play::after {
+      content: 'lastPlayed';
+    }
+
+    &.play::after,
+    &.shot::after,
+    &.rank::after {
+      left: calc(50% + 1rem);
+    }
+    &.play::after {
+      content: 'play';
+    }
+    &.shot::after {
+      content: 'shot';
+    }
+    &.rank::after {
+      content: 'rank';
+    }
+  }
+}

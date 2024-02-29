@@ -27,6 +27,7 @@ textarea {
 
 a,
 button,
+input[type='url'],
 input[type='date'],
 input[type='text'],
 input[type='search'],
@@ -49,6 +50,7 @@ textarea {
   outline: none;
 }
 
+input[type='url'],
 input[type='text'],
 input[type='search'],
 input[type='number'],
@@ -70,6 +72,7 @@ button > svg {
   width: 1.75rem;
 }
 
+input[type='url'],
 input[type='date'],
 input[type='text'],
 input[type='search'],

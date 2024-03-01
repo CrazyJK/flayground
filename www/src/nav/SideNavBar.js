@@ -28,8 +28,6 @@ export default class SideNavBar extends HTMLElement {
           document.documentElement.setAttribute('debug', this.debug);
         } else if (id === 'panda') {
           window.open('popup.panda-tv.html', Date.now(), `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
-        } else if (id === 'blank') {
-          window.open('blank.html', Date.now(), `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
         }
       }
     });
@@ -89,6 +87,7 @@ const HTML = `
   </header>
   <ul>
     <li><a href="page.flay-page.html">flay page</a></li>
+    <li><a href="page.archive.html">flay archive</a></li>
     <li><a href="page.flay-one.html">flay one</a></li>
     <li><a href="page.flay-grid.html">flay grid</a></li>
   </ul>
@@ -112,7 +111,7 @@ const HTML = `
     <li><a href="javascript:" id="panda">Panda TV</a></li>
   </ul>
   <ul>
-    <li><a href="javascript:" id="blank">blank</a></li>
+    <li><a href="blank.html">blank</a></li>
   </ul>
   <ul>
     <li><a href="javascript:" id="debug">debug</a></li>

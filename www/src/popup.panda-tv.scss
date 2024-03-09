@@ -3,29 +3,12 @@
 main {
   position: fixed;
   inset: 0;
-
-  &.loaded {
-    iframe {
-      &#login {
-        display: none;
-      }
-      &#list {
-        height: 100vh;
-      }
-    }
-  }
+  padding: 3rem;
 
   iframe {
     position: relative;
     border: 0;
     width: 100%;
-
-    &#login {
-      height: 100px;
-    }
-
-    &#list {
-      height: 100px;
-    }
+    height: 100%;
   }
 }

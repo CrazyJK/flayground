@@ -11,5 +11,5 @@ loginFrame.src = loginURL;
 loginFrame.onload = () => {
   loginFrame.parentElement.classList.add('loaded');
 
-  listFrame.src = listURL;
+  location.href = listURL;
 };

@@ -6,6 +6,7 @@ import { getPrettyFilesize } from './util/fileUtils';
 
 appendStyle();
 
+import { sortable } from './lib/TableUtils';
 import SideNavBar from './nav/SideNavBar';
 document.querySelector('body').prepend(new SideNavBar());
 
@@ -99,6 +100,7 @@ function startStudioActress() {
           avg: 0,
           sum: 0,
         },
+        shotLength: 0,
       });
     } else {
       value.list.push(flay);
@@ -109,14 +111,19 @@ function startStudioActress() {
     rawMap.forEach((value, key, map) => {
       // sum
       let sum = 0;
+      let shotLength = 0;
       value.list.forEach((flay) => {
         sum += flay.video.rank;
+        if (flay.video.likes?.length > 0) {
+          ++shotLength;
+        }
       });
       // avg
       let avg = sum / value.list.length;
       // set
       value.rank.sum = sum;
       value.rank.avg = avg;
+      value.shotLength = shotLength;
     });
   }
 
@@ -151,16 +158,24 @@ function startStudioActress() {
           window.open('popup.actress.html?name=' + key + '&s=' + startDate + '&e=' + endDate, key, 'width=960px,height=1200px');
         }
       });
-      const sum = item.appendChild(document.createElement('label'));
-      sum.classList.add('sum');
-      sum.innerHTML = value.rank.sum;
+
+      // const sum = item.appendChild(document.createElement('label'));
+      // sum.classList.add('sum');
+      // sum.innerHTML = value.rank.sum;
+
       const size = item.appendChild(document.createElement('label'));
       size.classList.add('size');
       size.innerHTML = value.list.length;
+
+      const shot = item.appendChild(document.createElement('label'));
+      shot.classList.add('shot');
+      shot.innerHTML = value.shotLength;
+
       const avg = item.appendChild(document.createElement('label'));
       avg.classList.add('avg');
       avg.innerHTML = value.rank.avg.toFixed(2);
     });
+    sortable(wrap);
   }
 
   analyzeStudio();

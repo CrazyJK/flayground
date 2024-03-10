@@ -167,6 +167,10 @@ class PopupActress {
       await flayCard.set(opus).then(() => {
         return new Promise((resolve) => setTimeout(resolve, 100));
       });
+
+      if (flayCard.flay.video.likes?.length > 0) {
+        flayCard.classList.add('shot');
+      }
     }
   }
 

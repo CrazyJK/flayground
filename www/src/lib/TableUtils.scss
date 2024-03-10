@@ -1,0 +1,9 @@
+[data-sort='0']::after {
+  content: '';
+}
+[data-sort='1']::after {
+  content: '🔻';
+}
+[data-sort='2']::after {
+  content: '🔺';
+}

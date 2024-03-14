@@ -1,5 +1,6 @@
 package jk.kamoru.ground.flay.service;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Stream;
@@ -40,7 +41,11 @@ public class FlayCollector {
   }
 
   public List<String> toActressList(Collection<Flay> list, FlayCondition flayCondition) {
-    return filterAndSort(list, flayCondition).map(Flay::getActressName).distinct().toList();
+    List<String> names = new ArrayList<>();
+    filterAndSort(list, flayCondition).forEach((flay) -> {
+      names.addAll(flay.getActressList());
+    });
+    return names.stream().distinct().toList();
   }
 
   public List<String> toReleaseList(Collection<Flay> list, FlayCondition flayCondition) {
@@ -58,7 +63,10 @@ public class FlayCollector {
   }
 
   private boolean filter(Flay flay, FlayCondition flayCondition) {
-    return likeStudio(flay, flayCondition.getStudio()) && likeOpus(flay, flayCondition.getOpus()) && likeTitle(flay, flayCondition.getTitle()) && likeActress(flay, flayCondition.getActress()) && likeRelease(flay, flayCondition.getRelease()) && likeSearch(flay, flayCondition) && containsRank(flay, flayCondition.getRank())
+    return likeStudio(flay, flayCondition.getStudio()) && likeOpus(flay, flayCondition.getOpus())
+        && likeTitle(flay, flayCondition.getTitle()) && likeActress(flay, flayCondition.getActress())
+        && likeRelease(flay, flayCondition.getRelease()) && likeSearch(flay, flayCondition)
+        && containsRank(flay, flayCondition.getRank())
         && containsSubtitles(flay, flayCondition.isWithSubtitles()) && containsFavorite(flay, flayCondition);
   }
 
@@ -75,7 +83,8 @@ public class FlayCollector {
   }
 
   private boolean likeActress(Flay flay, String actress) {
-    return StringUtils.isBlank(actress) || StringUtils.containsIgnoreCase(String.join(",", flay.getActressList()), actress);
+    return StringUtils.isBlank(actress)
+        || StringUtils.containsIgnoreCase(String.join(",", flay.getActressList()), actress);
   }
 
   private boolean likeRelease(Flay flay, String release) {
@@ -83,7 +92,9 @@ public class FlayCollector {
   }
 
   private boolean likeSearch(Flay flay, FlayCondition flayCondition) {
-    return StringUtils.isBlank(flayCondition.getSearch()) || likeStudio(flay, flayCondition.getSearch()) || likeOpus(flay, flayCondition.getSearch()) || likeTitle(flay, flayCondition.getSearch()) || likeActress(flay, flayCondition.getSearch()) || likeRelease(flay, flayCondition.getSearch());
+    return StringUtils.isBlank(flayCondition.getSearch()) || likeStudio(flay, flayCondition.getSearch())
+        || likeOpus(flay, flayCondition.getSearch()) || likeTitle(flay, flayCondition.getSearch())
+        || likeActress(flay, flayCondition.getSearch()) || likeRelease(flay, flayCondition.getSearch());
   }
 
   private boolean containsRank(Flay flay, int[] ranks) {
@@ -100,7 +111,8 @@ public class FlayCollector {
     if (withFavorite && !withNoFavorite) {
       return flay.getActressList().stream().filter(name -> actressInfoService.get(name).isFavorite()).count() > 0;
     } else if (!withFavorite && withNoFavorite) {
-      return flay.getActressList().size() == 0 || flay.getActressList().stream().filter(name -> actressInfoService.get(name).isFavorite()).count() == 0;
+      return flay.getActressList().size() == 0
+          || flay.getActressList().stream().filter(name -> actressInfoService.get(name).isFavorite()).count() == 0;
     } else {
       return true;
     }
@@ -108,34 +120,34 @@ public class FlayCollector {
 
   private int sort(Flay f1, Flay f2, FlayCondition flayCondition) {
     switch (flayCondition.getSort()) {
-    case STUDIO:
-      return f1.getStudio().compareTo(f2.getStudio());
-    case OPUS:
-      return f1.getOpus().compareTo(f2.getOpus());
-    case TITLE:
-      return f1.getTitle().compareTo(f2.getTitle());
-    case ACTRESS:
-      return String.join(",", f1.getActressList()).compareTo(String.join(",", f2.getActressList()));
-    case RELEASE:
-      return f1.getRelease().compareTo(f2.getRelease());
-    case PLAY:
-      return NumberUtils.compare(f1.getVideo().getPlay(), f2.getVideo().getPlay());
-    case RANK:
-      return NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank());
-    case LASTPLAY:
-      return NumberUtils.compare(f1.getVideo().getLastPlay(), f2.getVideo().getLastPlay());
-    case LASTACCESS:
-      return NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess());
-    case LASTMODIFIED:
-      return NumberUtils.compare(f1.getLastModified(), f2.getLastModified());
-    case SCORE:
-      scoreCalculator.calcScore(f1);
-      scoreCalculator.calcScore(f2);
-      return NumberUtils.compare(f1.getScore(), f2.getScore());
-    case LENGTH:
-      return NumberUtils.compare(f1.getLength(), f2.getLength());
-    default:
-      return 0;
+      case STUDIO:
+        return f1.getStudio().compareTo(f2.getStudio());
+      case OPUS:
+        return f1.getOpus().compareTo(f2.getOpus());
+      case TITLE:
+        return f1.getTitle().compareTo(f2.getTitle());
+      case ACTRESS:
+        return String.join(",", f1.getActressList()).compareTo(String.join(",", f2.getActressList()));
+      case RELEASE:
+        return f1.getRelease().compareTo(f2.getRelease());
+      case PLAY:
+        return NumberUtils.compare(f1.getVideo().getPlay(), f2.getVideo().getPlay());
+      case RANK:
+        return NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank());
+      case LASTPLAY:
+        return NumberUtils.compare(f1.getVideo().getLastPlay(), f2.getVideo().getLastPlay());
+      case LASTACCESS:
+        return NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess());
+      case LASTMODIFIED:
+        return NumberUtils.compare(f1.getLastModified(), f2.getLastModified());
+      case SCORE:
+        scoreCalculator.calcScore(f1);
+        scoreCalculator.calcScore(f2);
+        return NumberUtils.compare(f1.getScore(), f2.getScore());
+      case LENGTH:
+        return NumberUtils.compare(f1.getLength(), f2.getLength());
+      default:
+        return 0;
     }
   }
 

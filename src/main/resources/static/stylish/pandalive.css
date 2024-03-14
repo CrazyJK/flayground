@@ -8,6 +8,9 @@ body {
   background-color: #000;
   overflow-x: hidden;
 }
+body[layout='play'] {
+  overflow: hidden;
+}
 #wrapper {
   padding: 0;
   min-width: unset;

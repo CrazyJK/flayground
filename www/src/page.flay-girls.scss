@@ -1,0 +1,47 @@
+@import './style/style.scss';
+
+ul {
+  padding: 1rem;
+
+  li {
+    display: flex;
+    align-items: center;
+    padding-bottom: 1rem;
+
+    &.head {
+      position: sticky;
+      top: 0;
+      background-color: var(--color-bg);
+      z-index: 1;
+    }
+
+    &:not(.head) {
+      height: 8rem;
+      label:not(.cover) {
+        padding: 0 0.5rem;
+      }
+    }
+
+    .cover {
+      flex: 0 0 12rem;
+      height: 100%;
+      background-position: top right;
+      background-size: 26rem;
+    }
+    .name {
+      flex: 1 0 auto;
+    }
+    .age {
+      flex: 0 0 5rem;
+      text-align: end;
+    }
+    .flay-size {
+      flex: 0 0 5rem;
+      text-align: end;
+    }
+    .shot-size {
+      flex: 0 0 5rem;
+      text-align: end;
+    }
+  }
+}

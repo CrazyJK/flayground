@@ -87,6 +87,9 @@ const HTML = `
   </header>
   <ul>
     <li><a href="page.flay-page.html">flay page</a></li>
+    <li><a href="page.flay-girls.html">flay girls</a></li>
+  </ul>
+  <ul>
     <li><a href="page.archive.html">flay archive</a></li>
     <li><a href="page.flay-one.html">flay one</a></li>
     <li><a href="page.flay-grid.html">flay grid</a></li>

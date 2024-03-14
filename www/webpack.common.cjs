@@ -11,6 +11,7 @@ module.exports = {
     'page.archive': './src/page.archive.js',
     'page.flay-page': './src/page.flay-page.js',
     'page.flay-one': './src/page.flay-one.js',
+    'page.flay-girls': './src/page.flay-girls.js',
     'page.flay-grid': './src/page.flay-grid.js',
     'page.develop': './src/page.develop.js',
     'page.tags': './src/page.tags.js',

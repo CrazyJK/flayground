@@ -1,7 +1,6 @@
 const madge = require('madge');
 const fs = require('fs');
-
-const entries = ['index', 'page.flay-page', 'page.flay-one', 'page.flay-grid', 'page.develop', 'page.tags', 'page.control', 'page.shot-history', 'page.statistics', 'page.image-page', 'page.image-one', 'page.image-grid', 'page.kamoru-diary', 'popup.flay', 'popup.flay-card', 'popup.studio', 'popup.actress', 'popup.tag', 'test-extendsElement'];
+const path = require('path');
 
 const madgeConfig = {
   includeNpm: true,
@@ -11,19 +10,17 @@ const madgeConfig = {
   rankdir: 'LR',
 };
 
-// entries.forEach((entry) => {
-//   madge(`src/${entry}.js`, madgeConfig)
-//     .then((res) => res.image(`madge/${entry}.svg`))
-//     .then((writtenImagePath) => {
-//       console.log('Image written to ' + writtenImagePath);
-//     });
-// });
-
-let dependenciesSvgJson = [];
-
 (async () => {
-  //
+  const dependenciesSvgJson = [];
+  const entries = fs
+    .readdirSync('src', { withFileTypes: true })
+    .filter((dirent) => dirent.isFile())
+    .filter((dirent) => path.extname(dirent.name) === '.js')
+    .map((dirent) => path.parse(dirent.name).name);
+
   for (let entry of entries) {
+    console.log('process...', entry);
+
     let res = await madge(`src/${entry}.js`, madgeConfig);
     let output = await res.svg();
     let svgString = output.toString();

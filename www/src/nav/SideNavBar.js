@@ -26,8 +26,8 @@ export default class SideNavBar extends HTMLElement {
         if (id === 'debug') {
           this.debug = !this.debug;
           document.documentElement.setAttribute('debug', this.debug);
-        } else if (id === 'panda') {
-          window.open('popup.panda-tv.html', Date.now(), `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
+        } else if (id === 'dependencies') {
+          window.open('dependencies-viewer.html', Date.now(), `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
         }
       }
     });
@@ -114,6 +114,7 @@ const HTML = `
     <li><a href="blank.html">blank</a></li>
   </ul>
   <ul>
+    <li><a href="javascript:" id="dependencies">dependencies</a></li>
     <li><a href="javascript:" id="debug">debug</a></li>
     <li><a href="page.control.html">control</a></li>
     <li><a href="/swagger-ui/index.html">swagger</a></li>

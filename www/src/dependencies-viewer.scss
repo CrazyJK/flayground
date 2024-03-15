@@ -1,26 +1,40 @@
 @import './style/style.scss';
 
-g {
-  .node {
-    cursor: pointer;
-    color: #c6c5fe;
+header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
 
-    &.noDependency {
-      color: #cfffac;
-    }
-  }
+main {
+  svg {
+    max-width: 100%;
+    height: auto;
 
-  .edge {
-    color: #757575;
-  }
+    g {
+      .node {
+        cursor: pointer;
+        color: #c6c5fe;
 
-  &.active {
-    &.node {
-      color: red;
-    }
+        &.noDependency {
+          color: #cfffac;
+        }
+      }
 
-    &.edge {
-      color: red;
+      .edge {
+        color: #757575;
+      }
+
+      &.active {
+        &.node {
+          color: red;
+        }
+
+        &.edge {
+          color: red;
+        }
+      }
     }
   }
 }

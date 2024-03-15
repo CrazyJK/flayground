@@ -1,5 +1,9 @@
 import dependencies from './dependencies-viewer.json';
 import './dependencies-viewer.scss';
+import './lib/ThemeListener';
+import { appendStyle } from './util/componentCssLoader';
+
+appendStyle();
 
 const dependenciesMap = Array.from(dependencies).reduce((map, obj) => {
   map.set(obj.entry, obj.svg);

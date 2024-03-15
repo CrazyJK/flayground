@@ -1,4 +1,5 @@
 import './image/part/ImageFrame';
+import { lazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import './lib/ThemeListener';
 import SideNavBar from './nav/SideNavBar';
 import './page.image-page.scss';
@@ -91,7 +92,7 @@ const renderImage = async (images) => {
   pathLabel.innerHTML = images[0].path;
 
   const countLabel = document.querySelector('#count');
-  let count = 0;
+  countLabel.innerHTML = images.length + ' <small>images</small>';
 
   const previewLayer = document.querySelector('.preview');
   previewLayer.classList.remove('show');
@@ -101,18 +102,16 @@ const renderImage = async (images) => {
   article.textContent = null;
 
   for (const image of images) {
-    countLabel.innerHTML = ++count + ' images';
-
     const item = article.appendChild(document.createElement('div'));
+    item.dataset.lazyBackgroundImageUrl = `/static/image/${image.idx}`;
     item.title = `#${image.idx} - ${image.name} - ${getPrettyFilesize(image.length).join(' ')} - ${dateFormat(image.modified, 'yyyy-mm-dd')}`;
-    item.style.backgroundImage = `url(/static/image/${image.idx})`;
     item.addEventListener('click', () => {
       imageFrame.set(image.idx);
       previewLayer.classList.add('show');
     });
-
-    await new Promise((resolve) => setTimeout(resolve, 20));
   }
+
+  lazyLoadBackgrungImage();
 };
 
 document.querySelectorAll('main header button').forEach((button) =>

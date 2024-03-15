@@ -1,3 +1,4 @@
+import { lazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import './lib/SseConnector';
 import { sortable } from './lib/TableUtils';
 import './lib/ThemeListener';
@@ -36,7 +37,6 @@ class Page {
     actressInfos.sort((a1, a2) => {
       return a2.list.length - a1.list.length;
     });
-    console.log(actressInfos[0]);
 
     const UL = document.querySelector('ul');
 
@@ -51,7 +51,7 @@ class Page {
 
       const LI = UL.appendChild(document.createElement('li'));
       LI.innerHTML = `
-      <label class="cover" data-opus="${topFlay.opus}" style="background-image: url('/static/cover/${topFlay.opus}')">&nbsp;</label>
+      <label class="cover" data-opus="${topFlay.opus}" data-lazy-background-image-url="/static/cover/${topFlay.opus}">&nbsp;</label>
       <label class="name" data-name="${name}"><a>${name}</a></label>
       <label class="age">${age}</label>
       <label class="flay-size">${flaySize}</label>
@@ -68,6 +68,8 @@ class Page {
     }
 
     sortable(UL, { noSort: [0] });
+
+    lazyLoadBackgrungImage();
   }
 
   #calcAge(birth) {

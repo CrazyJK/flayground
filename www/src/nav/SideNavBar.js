@@ -111,9 +111,6 @@ const HTML = `
     <li><a href="page.develop.html">develop</a></li>
   </ul>
   <ul>
-    <li><a href="javascript:" id="panda">Panda TV</a></li>
-  </ul>
-  <ul>
     <li><a href="blank.html">blank</a></li>
   </ul>
   <ul>

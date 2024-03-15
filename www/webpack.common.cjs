@@ -28,9 +28,7 @@ module.exports = {
     'popup.actress': './src/popup.actress.js',
     'popup.tag': './src/popup.tag.js',
     'dependencies-viewer': './src/dependencies-viewer.js',
-    'test-extendsElement': './src/test-extendsElement.js',
     'test-canvas': './src/test-canvas.js',
-    'popup.panda-tv': './src/popup.panda-tv.js',
   },
   devtool: 'source-map',
   output: {

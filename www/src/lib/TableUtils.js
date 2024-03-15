@@ -4,11 +4,18 @@ const NO_SORT = 0;
 const DESCENDING = 1;
 const ASCENDING = 2;
 
+const DefaultOptions = {
+  sort: [],
+  noSort: [],
+};
+
 /**
  * 테이블 구조에 정렬 기능 추가
  * @param {Element} table
+ * @param {DefaultOptions} options
  */
-export const sortable = (table) => {
+export const sortable = (table, options) => {
+  const opts = Object.assign({}, DefaultOptions, options);
   // thead
   let theadTr;
   if (table.querySelector('thead') !== null) {
@@ -39,18 +46,28 @@ export const sortable = (table) => {
   console.debug(theadTr, tbodyList, tfootTr);
 
   // add sort event
-  Array.from(theadTr.children).forEach((td, index) => {
-    td.addEventListener('click', (e) => {
-      console.log('head', td, index);
+  Array.from(theadTr.children).forEach((th, index) => {
+    // noSort
+    if (opts.noSort.length > 0 && opts.noSort.includes(index)) {
+      return;
+    }
+    // sort
+    if (opts.sort.length > 0 && !opts.sort.includes(index)) {
+      return;
+    }
+
+    // sort event
+    th.addEventListener('click', (e) => {
+      console.log('head', th, index);
       Array.from(theadTr.children)
         .filter((td) => td !== e.target)
         .forEach((td) => (td.dataset.sort = 0));
 
-      if (!td.dataset.sort) {
-        td.dataset.sort = NO_SORT;
+      if (!th.dataset.sort) {
+        th.dataset.sort = NO_SORT;
       }
-      td.dataset.sort = (parseInt(td.dataset.sort) + 1) % 3;
-      const sort = parseInt(td.dataset.sort);
+      th.dataset.sort = (parseInt(th.dataset.sort) + 1) % 3;
+      const sort = parseInt(th.dataset.sort);
 
       tbodyList.sort((tr1, tr2) => {
         const no1 = tr1.dataset.no;

@@ -67,16 +67,12 @@ class Page {
       });
     }
 
-    sortable(UL);
+    sortable(UL, { noSort: [0] });
   }
 
   #calcAge(birth) {
-    const year = birth?.substring(0, 4);
-    if (isNaN(year) && year !== '') {
-      return '&nbsp;';
-    } else {
-      return new Date().getFullYear() - parseInt(year) + 1;
-    }
+    const age = new Date().getFullYear() - parseInt(birth?.substring(0, 4)) + 1;
+    return isNaN(age) ? 0 : age;
   }
 
   /**

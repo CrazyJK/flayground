@@ -102,7 +102,7 @@ const HTML = `
   <ul>
     <li><a href="page.image-page.html">image page</a></li>
     <li><a href="page.image-one.html">image one</a></li>
-    <li><a href="page.image-grid.html">image grid</a></li>
+    <li><a href="page.image-fall.html">image fall</a></li>
   </ul>
   <ul>
     <li><a href="page.kamoru-diary.html">diary</a></li>

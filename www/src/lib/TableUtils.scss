@@ -1,9 +1,10 @@
-[data-sort='0']::after {
-  content: '';
+[data-sort='1'] {
+  background: linear-gradient(180deg, var(--color-text), var(--color-text) 50%, #f00);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
-[data-sort='1']::after {
-  content: '🔻';
-}
-[data-sort='2']::after {
-  content: '🔺';
+[data-sort='2'] {
+  background: linear-gradient(0deg, var(--color-text), var(--color-text) 30%, #f00);
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }

@@ -7,6 +7,7 @@ const ASCENDING = 2;
 const DefaultOptions = {
   sort: [],
   noSort: [],
+  initSortIndex: -1,
 };
 
 /**
@@ -21,7 +22,7 @@ export const sortable = (table, options) => {
   if (table.querySelector('thead') !== null) {
     theadTr = table.querySelector('thead tr');
   } else {
-    theadTr = table.querySelector('.head');
+    theadTr = table.querySelector('.thead');
   }
 
   // tfoot
@@ -39,7 +40,7 @@ export const sortable = (table, options) => {
     tbodyList = Array.from(table.querySelectorAll('tbody tr'));
     tbodyList.forEach((tr, i) => (tr.dataset.no = i + 1));
   } else {
-    tbodyList = Array.from(table.children).filter((tr) => !tr.classList.contains('head') && !tr.classList.contains('foot'));
+    tbodyList = Array.from(table.children).filter((tr) => !tr.classList.contains('thead') && !tr.classList.contains('foot'));
     tbodyList.forEach((tr, i) => (tr.dataset.no = i + 1));
   }
 
@@ -58,7 +59,7 @@ export const sortable = (table, options) => {
 
     // sort event
     th.addEventListener('click', (e) => {
-      console.log('head', th, index);
+      console.log('thead', th, index);
       Array.from(theadTr.children)
         .filter((td) => td !== e.target)
         .forEach((td) => (td.dataset.sort = 0));
@@ -97,5 +98,9 @@ export const sortable = (table, options) => {
         prevTr = tr;
       }
     });
+
+    if (opts.initSortIndex === index) {
+      th.click();
+    }
   });
 };

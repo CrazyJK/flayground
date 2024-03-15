@@ -1,47 +1,61 @@
 @import './style/style.scss';
 
 ul {
-  padding: 1rem 2rem;
+  margin: 0;
+  padding: 0;
 
   li {
     display: flex;
     align-items: center;
-    padding-bottom: 1rem;
 
-    &.head {
+    &.thead {
       position: sticky;
       top: 0;
       background-color: var(--color-bg);
       z-index: 1;
+      padding: 0.5rem 1rem;
     }
 
-    &:not(.head) {
+    &:not(.thead) {
       height: 8rem;
-      label:not(.cover) {
+      margin: 0.5rem 1rem 1rem;
+
+      // &:hover {
+      //   box-shadow: inset var(--box-shadow);
+      //   transition: 0.3s;
+      // }
+    }
+
+    label {
+      &.cover {
+        flex: 0 0 12rem;
+        height: 100%;
+        background-position: top right;
+        background-size: 28rem;
+        text-align: center;
+      }
+      &:not(.cover) {
         padding: 0 0.5rem;
       }
-    }
-
-    .cover {
-      flex: 0 0 12rem;
-      height: 100%;
-      background-position: top right;
-      background-size: 26rem;
-    }
-    .name {
-      flex: 1 0 auto;
-    }
-    .age {
-      flex: 0 0 5rem;
-      text-align: end;
-    }
-    .flay-size {
-      flex: 0 0 5rem;
-      text-align: end;
-    }
-    .shot-size {
-      flex: 0 0 5rem;
-      text-align: end;
+      &.name {
+        flex: 1 0 auto;
+      }
+      &.age {
+        flex: 0 0 5rem;
+        text-align: end;
+      }
+      &.flay-count {
+        flex: 0 0 5rem;
+        text-align: end;
+      }
+      &.shot-flay-count {
+        flex: 0 0 5rem;
+        text-align: end;
+      }
+      &.shot-total-count {
+        flex: 0 0 5rem;
+        text-align: end;
+      }
     }
   }
 }

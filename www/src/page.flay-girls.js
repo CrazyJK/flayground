@@ -35,7 +35,7 @@ class Page {
 
     const actressInfos = Array.from(actressMap.values());
     actressInfos.sort((a1, a2) => {
-      return a2.list.length - a1.list.length;
+      return this.#getTotalShotCount(a2.list) - this.#getTotalShotCount(a1.list);
     });
 
     const UL = document.querySelector('ul');
@@ -46,16 +46,18 @@ class Page {
       const actress = await fetch('/info/actress/' + name).then((res) => res.json());
       const topFlay = this.#getTopFlay(list);
       const age = this.#calcAge(actress.birth);
-      const flaySize = list.length;
-      const shotSize = list.filter((flay) => flay.video.likes?.length > 0).length;
+      const flayCount = list.length;
+      const shotFlayCount = list.filter((flay) => flay.video.likes?.length > 0).length;
+      const shotTotalCount = this.#getTotalShotCount(list);
 
       const LI = UL.appendChild(document.createElement('li'));
       LI.innerHTML = `
-      <label class="cover" data-opus="${topFlay.opus}" data-lazy-background-image-url="/static/cover/${topFlay.opus}">&nbsp;</label>
+      <label class="cover" data-opus="${topFlay.opus}" title="${topFlay.opus} ${topFlay.title}" data-lazy-background-image-url="/static/cover/${topFlay.opus}">&nbsp;</label>
       <label class="name" data-name="${name}"><a>${name}</a></label>
       <label class="age">${age}</label>
-      <label class="flay-size">${flaySize}</label>
-      <label class="shot-size">${shotSize}</label>
+      <label class="flay-count">${flayCount}</label>
+      <label class="shot-flay-count">${shotFlayCount}</label>
+      <label class="shot-total-count">${shotTotalCount}</label>
       `;
       LI.addEventListener('click', (e) => {
         const label = e.target.closest('label');
@@ -67,11 +69,26 @@ class Page {
       });
     }
 
-    sortable(UL, { noSort: [0] });
+    document.querySelector('.thead .cover').addEventListener('click', () => {
+      document.querySelectorAll('ul li:not(.thead)').forEach((li) => {
+        if (li.style.height === 'auto') {
+          li.removeAttribute('style');
+        } else {
+          li.style.height = 'auto';
+        }
+      });
+    });
+
+    sortable(UL, { noSort: [0], initSortIndex: 5 });
 
     lazyLoadBackgrungImage();
   }
 
+  /**
+   *
+   * @param {string} birth
+   * @returns {number} age
+   */
   #calcAge(birth) {
     const age = new Date().getFullYear() - parseInt(birth?.substring(0, 4)) + 1;
     return isNaN(age) ? 0 : age;
@@ -80,6 +97,7 @@ class Page {
   /**
    *
    * @param {flay[]} list
+   * @returns {flay} top flay
    */
   #getTopFlay(list) {
     return list.sort((f1, f2) => {
@@ -94,6 +112,18 @@ class Page {
       }
       return ret;
     })[0];
+  }
+
+  /**
+   *
+   * @param {flay[]} flayList
+   * @returns {number} sum of shot count
+   */
+  #getTotalShotCount(flayList) {
+    return flayList.reduce((sum, flay) => {
+      sum += flay.video.likes?.length > 0 ? flay.video.likes.length : 0;
+      return sum;
+    }, 0);
   }
 }
 

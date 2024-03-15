@@ -110,6 +110,7 @@ const renderImage = async (images) => {
       previewLayer.classList.add('show');
     });
   }
+  article.firstChild.scrollIntoView(false);
 
   lazyLoadBackgrungImage();
 };

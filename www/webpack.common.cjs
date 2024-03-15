@@ -20,7 +20,7 @@ module.exports = {
     'page.statistics': './src/page.statistics.js',
     'page.image-page': './src/page.image-page.js',
     'page.image-one': './src/page.image-one.js',
-    'page.image-grid': './src/page.image-grid.js',
+    'page.image-fall': './src/page.image-fall.js',
     'page.kamoru-diary': './src/page.kamoru-diary.js',
     'popup.flay': './src/popup.flay.js',
     'popup.flay-card': './src/popup.flay-card.js',

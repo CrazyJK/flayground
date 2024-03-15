@@ -1,6 +1,6 @@
 import ImageFall from './image/ImageFall';
 import './lib/ThemeListener';
-import './page.image-grid.scss';
+import './page.image-fall.scss';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();

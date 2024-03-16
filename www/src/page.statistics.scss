@@ -50,12 +50,12 @@ main {
       border-bottom: 2px solid transparent;
       padding: 2px;
 
-      &:not(.head):hover {
+      &:not(.thead):hover {
         border-top-color: #000c;
         border-bottom-color: #000c;
       }
 
-      &:not(.head) {
+      &:not(.thead) {
         label {
           font-size: 90%;
           font-weight: 400;
@@ -98,7 +98,7 @@ main {
         flex-wrap: wrap;
         align-items: baseline;
 
-        &.head {
+        &.thead {
           gap: 1rem;
           .count {
             font-size: 90%;

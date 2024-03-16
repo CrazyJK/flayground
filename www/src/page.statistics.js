@@ -132,7 +132,7 @@ function startStudioActress() {
     if (!wrap) {
       return;
     }
-    document.querySelectorAll(`${selector} li:not(.head)`).forEach((li) => li.remove());
+    document.querySelectorAll(`${selector} li:not(.thead)`).forEach((li) => li.remove());
 
     // sort
     const mapToArray = [...rawMap];

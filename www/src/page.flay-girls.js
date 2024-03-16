@@ -1,4 +1,4 @@
-import { lazyLoadBackgrungImage } from './lib/ImageLazyLoad';
+import { addLazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import './lib/SseConnector';
 import { sortable } from './lib/TableUtils';
 import './lib/ThemeListener';
@@ -67,6 +67,8 @@ class Page {
           window.open('popup.actress.html?name=' + label.dataset.name, label.dataset.name, 'width=960px,height=1200px');
         }
       });
+
+      addLazyLoadBackgrungImage(LI);
     }
 
     document.querySelector('.thead .cover').addEventListener('click', () => {
@@ -81,7 +83,7 @@ class Page {
 
     sortable(UL, { noSort: [0], initSortIndex: 5 });
 
-    lazyLoadBackgrungImage();
+    // lazyLoadBackgrungImage();
   }
 
   /**

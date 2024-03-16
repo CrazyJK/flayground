@@ -25,3 +25,9 @@ export const lazyLoadBackgrungImage = () => {
 
   console.log('lazyLoadBackgrungImage completed');
 };
+
+export const addLazyLoadBackgrungImage = (element) => {
+  element.querySelectorAll('[data-lazy-background-image-url]').forEach((image) => {
+    backgroundImageObserver.observe(image);
+  });
+};

@@ -53,21 +53,8 @@ class PopupStudio {
       });
     });
     // sse 수신 이벤트
-    window.emitFlay = (flay) => {
-      let flayCard = this.flayCardMap.get(flay.opus);
-      if (flayCard) flayCard.reload();
-    };
     window.emitStudio = (studio) => {
-      if (name === studio.name) this.#fetchStudio();
-    };
-    window.emitVideo = (video) => {
-      let flayCard = this.flayCardMap.get(video.opus);
-      if (flayCard) flayCard.reload();
-    };
-    window.emitActress = (actress) => {
-      this.flayCardMap.forEach((flayCard) => {
-        if (flayCard.flay.actressList.includes(actress.name)) flayCard.reload();
-      });
+      if (this.name === studio.name) this.#fetchStudio();
     };
   }
 

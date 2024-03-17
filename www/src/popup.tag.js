@@ -110,22 +110,7 @@ function countFlaySizeByRank() {
   });
 }
 
-window.emitFlay = (flay) => {
-  let flayCard = flayMap.get(flay.opus);
-  if (flayCard) flayCard.reload();
-};
-window.emitStudio = (studio) => {
-  flayMap.forEach((flayCard) => {
-    if (flayCard.flay.studio === studio.name) flayCard.reload();
-  });
-};
-window.emitVideo = (video) => {
-  let flayCard = flayMap.get(video.opus);
-  if (flayCard) flayCard.reload();
-};
-window.emitActress = (actress) => {
-  fetchTag();
-};
+// sse 수신 이벤트
 window.emitTag = (tag) => {
   if (id === tag.id) fetchTag();
 };

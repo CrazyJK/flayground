@@ -30,58 +30,47 @@ sse.addEventListener('CONNECT', (e) => {
 sse.addEventListener('FLAY', (e) => {
   console.debug(e.type, e.data);
   const flay = JSON.parse(e.data);
-  if (typeof window.emitFlay === 'function') {
-    window.emitFlay(flay);
-  }
+  emitFlay(flay);
+  if (typeof window.emitFlay === 'function') window.emitFlay(flay);
 });
 
 sse.addEventListener('STUDIO', (e) => {
   console.debug(e.type, e.data);
   const studio = JSON.parse(e.data);
-  if (typeof window.emitStudio === 'function') {
-    window.emitStudio(studio);
-  }
+  emitStudio(studio);
+  if (typeof window.emitStudio === 'function') window.emitStudio(studio);
 });
 
 sse.addEventListener('VIDEO', (e) => {
   console.debug(e.type, e.data);
   const video = JSON.parse(e.data);
-  if (typeof window.emitVideo === 'function') {
-    window.emitVideo(video);
-  }
+  emitVideo(video);
+  if (typeof window.emitVideo === 'function') window.emitVideo(video);
 });
 
 sse.addEventListener('ACTRESS', (e) => {
   console.debug(e.type, e.data);
   const actress = JSON.parse(e.data);
-  if (typeof window.emitActress === 'function') {
-    window.emitActress(actress);
-  }
+  emitActress(actress);
+  if (typeof window.emitActress === 'function') window.emitActress(actress);
 });
 
 sse.addEventListener('TAG', (e) => {
   console.debug(e.type, e.data);
   const tag = JSON.parse(e.data);
-  if (typeof window.emitTag === 'function') {
-    window.emitTag(tag);
-  }
+  emitTag(tag);
+  if (typeof window.emitTag === 'function') window.emitTag(tag);
 });
 
 sse.addEventListener('MESSAGE', (e) => {
   console.debug(e.type, e.data);
   const data = JSON.parse(e.data);
   if (data.type === 'Batch') {
-    if (typeof window.emitBatch === 'function') {
-      window.emitBatch(data);
-    }
+    if (typeof window.emitBatch === 'function') window.emitBatch(data);
   } else if (data.type === 'Notice') {
-    if (typeof window.emitNotice === 'function') {
-      window.emitNotice(data);
-    }
+    if (typeof window.emitNotice === 'function') window.emitNotice(data);
   } else {
-    if (typeof window.emitMessage === 'function') {
-      window.emitMessage(data);
-    }
+    if (typeof window.emitMessage === 'function') window.emitMessage(data);
   }
 });
 
@@ -109,3 +98,33 @@ window.emitMessage = (...datas) => {
   }
   alert(message);
 };
+
+function emitFlay(flay) {
+  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+    if (flayElement.opus === flay.opus) flayElement.reload();
+  });
+}
+
+function emitVideo(video) {
+  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+    if (flayElement.opus === video.opus) flayElement.reload();
+  });
+}
+
+function emitStudio(studio) {
+  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+    if (flayElement.flay.studio === studio.name) flayElement.reload();
+  });
+}
+
+function emitActress(actress) {
+  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+    if (flayElement.flay.actressList.includes(actress.name)) flayElement.reload();
+  });
+}
+
+function emitTag(tag) {
+  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+    flayElement.reload();
+  });
+}

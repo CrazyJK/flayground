@@ -89,19 +89,6 @@ class PopupActress {
       });
     });
     // sse 수신 이벤트
-    window.emitFlay = (flay) => {
-      let flayCard = this.flayCardMap.get(flay.opus);
-      if (flayCard) flayCard.reload();
-    };
-    window.emitStudio = (studio) => {
-      this.flayCardMap.forEach((flayCard) => {
-        if (flayCard.flay.studio === studio.name) flayCard.reload();
-      });
-    };
-    window.emitVideo = (video) => {
-      let flayCard = this.flayCardMap.get(video.opus);
-      if (flayCard) flayCard.reload();
-    };
     window.emitActress = (actress) => {
       if (this.name === actress.name) this.#fetchActress();
     };

@@ -3,10 +3,7 @@ import './lib/SseConnector';
 import './lib/ThemeListener';
 import './popup.tag.scss';
 import FlayAction from './util/FlayAction';
-import { appendStyle } from './util/componentCssLoader';
 import { addResizeLazyEventListener } from './util/resizeListener';
-
-appendStyle();
 
 window.tagList = [];
 window.actressMap = new Map();

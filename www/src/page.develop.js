@@ -2,10 +2,7 @@ import FlayDevelop from './develop/FlayDevelop';
 import * as DragDrop from './lib/Drag&Drop';
 import './nav/appendSideNavBar';
 import './page.develop.scss';
-import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
-
-appendStyle();
 
 const opusList = [];
 const opusIndexes = [];

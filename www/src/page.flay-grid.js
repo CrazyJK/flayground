@@ -2,10 +2,7 @@ import './lib/SseConnector';
 import './nav/appendSideNavBar';
 import './page.flay-grid.scss';
 import SVG from './svg/svg.json';
-import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
-
-appendStyle();
 
 const MAIN = document.querySelector('main');
 const opusList = [];

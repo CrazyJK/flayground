@@ -4,12 +4,9 @@ import { sortable } from './lib/TableUtils';
 import './lib/ThemeListener';
 import './nav/appendSideNavBar';
 import './page.flay-girls.scss';
-import { appendStyle } from './util/componentCssLoader';
 
 class Page {
-  constructor() {
-    appendStyle();
-  }
+  constructor() {}
 
   async start() {
     this.condition = {

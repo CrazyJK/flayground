@@ -4,9 +4,6 @@ import FlayPagination from './flay/page/FlayPagination';
 import './lib/SseConnector';
 import './nav/appendSideNavBar';
 import './page.flay-page.scss';
-import { appendStyle } from './util/componentCssLoader';
-
-appendStyle();
 
 const flayCondition = new FlayCondition();
 const flayPage = new FlayPage();

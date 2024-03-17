@@ -5,13 +5,10 @@ import './popup.actress.scss';
 import SVG from './svg/svg.json';
 import FlayAction from './util/FlayAction';
 import FlaySearch from './util/FlaySearch';
-import { appendStyle } from './util/componentCssLoader';
 import { addResizeLazyEventListener } from './util/resizeListener';
 
 class PopupActress {
   constructor() {
-    appendStyle();
-
     this.flayCardMap = new Map();
 
     // get Parameter

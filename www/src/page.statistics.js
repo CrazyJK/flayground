@@ -3,10 +3,7 @@ import { sortable } from './lib/TableUtils';
 import './lib/ThemeListener';
 import './nav/appendSideNavBar';
 import './page.statistics.scss';
-import { appendStyle } from './util/componentCssLoader';
 import { getPrettyFilesize } from './util/fileUtils';
-
-appendStyle();
 
 const to2 = (n) => (n < 10 ? '0' + n : n);
 const startDateInput = document.querySelector('#startDate');

@@ -11,9 +11,6 @@ import './lib/ThemeListener';
 import './nav/appendSideNavBar';
 import './page.kamoru-diary.scss';
 import SVG from './svg/svg.json';
-import { appendStyle } from './util/componentCssLoader';
-
-appendStyle();
 
 document.querySelector('#weather-sunny + label').innerHTML = SVG.weather.sunny;
 document.querySelector('#weather-cloud + label').innerHTML = SVG.weather.cloud;

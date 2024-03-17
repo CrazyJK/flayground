@@ -3,11 +3,8 @@ import { lazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import './lib/ThemeListener';
 import './nav/appendSideNavBar';
 import './page.image-page.scss';
-import { appendStyle } from './util/componentCssLoader';
 import { dateFormat } from './util/dateUtils';
 import { getPrettyFilesize } from './util/fileUtils';
-
-appendStyle();
 
 fetch('/image')
   .then((res) => res.json())

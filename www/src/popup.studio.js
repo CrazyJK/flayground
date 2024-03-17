@@ -3,13 +3,10 @@ import './lib/SseConnector';
 import './lib/ThemeListener';
 import './popup.studio.scss';
 import flayAction from './util/FlayAction';
-import { appendStyle } from './util/componentCssLoader';
 import { addResizeLazyEventListener } from './util/resizeListener';
 
 class PopupStudio {
   constructor() {
-    appendStyle();
-
     this.flayCardMap = new Map();
 
     // get Parameter

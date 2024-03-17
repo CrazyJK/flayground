@@ -2,10 +2,7 @@ import ImageFrame from './image/part/ImageFrame';
 import './lib/ThemeListener';
 import './nav/appendSideNavBar';
 import './page.image-one.scss';
-import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
-
-appendStyle();
 
 const main = document.querySelector('main');
 const img = document.querySelector('img');

@@ -2,9 +2,6 @@ import FlayCard from './flay/FlayCard';
 import './lib/ThemeListener';
 import './nav/appendSideNavBar';
 import './page.shot-history.scss';
-import { appendStyle } from './util/componentCssLoader';
-
-appendStyle();
 
 let i = 0;
 

@@ -1,5 +1,5 @@
 import './dependencies-viewer.scss';
-import './init/Page';
+import './init/Popup';
 
 import dependencies from './dependencies-viewer.json';
 

@@ -1,11 +1,9 @@
 import './blank.scss';
 import './lib/ThemeListener';
-import SideNavBar from './nav/SideNavBar';
+import './nav/appendSideNavBar';
 
 class Page {
-  constructor() {
-    document.querySelector('body').prepend(new SideNavBar());
-  }
+  constructor() {}
 
   async start() {}
 }

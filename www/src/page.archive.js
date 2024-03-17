@@ -1,9 +1,8 @@
 import './lib/ThemeListener';
-import SideNavBar from './nav/SideNavBar';
+import './nav/appendSideNavBar';
 import './page.archive.scss';
 import { dateFormat } from './util/dateUtils';
 import { getRandomInt } from './util/randomNumber';
-document.querySelector('body').prepend(new SideNavBar());
 
 class Page {
   MAIN;

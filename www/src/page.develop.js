@@ -1,12 +1,11 @@
 import FlayDevelop from './develop/FlayDevelop';
 import * as DragDrop from './lib/Drag&Drop';
-import SideNavBar from './nav/SideNavBar';
+import './nav/appendSideNavBar';
 import './page.develop.scss';
 import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
 
 appendStyle();
-document.querySelector('body').prepend(new SideNavBar());
 
 const opusList = [];
 const opusIndexes = [];

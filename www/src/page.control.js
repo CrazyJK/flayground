@@ -5,10 +5,8 @@ import './control/FlayRegister';
 import './control/SubtitlesFinder';
 import './lib/SseConnector';
 import './lib/TabUI';
+import './nav/appendSideNavBar';
 import './page.control.scss';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();
-
-import SideNavBar from './nav/SideNavBar';
-document.querySelector('body').prepend(new SideNavBar());

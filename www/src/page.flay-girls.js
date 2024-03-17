@@ -2,14 +2,13 @@ import { addLazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import './lib/SseConnector';
 import { sortable } from './lib/TableUtils';
 import './lib/ThemeListener';
-import SideNavBar from './nav/SideNavBar';
+import './nav/appendSideNavBar';
 import './page.flay-girls.scss';
 import { appendStyle } from './util/componentCssLoader';
 
 class Page {
   constructor() {
     appendStyle();
-    document.querySelector('body').prepend(new SideNavBar());
   }
 
   async start() {

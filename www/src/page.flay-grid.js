@@ -1,13 +1,11 @@
 import './lib/SseConnector';
-import SideNavBar from './nav/SideNavBar';
+import './nav/appendSideNavBar';
 import './page.flay-grid.scss';
 import SVG from './svg/svg.json';
 import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
 
 appendStyle();
-
-document.querySelector('body').prepend(new SideNavBar());
 
 const MAIN = document.querySelector('main');
 const opusList = [];

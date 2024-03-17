@@ -8,14 +8,12 @@ import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import FlayAttach from './attach/FlayAttach';
 import './lib/ThemeListener';
+import './nav/appendSideNavBar';
 import './page.kamoru-diary.scss';
 import SVG from './svg/svg.json';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();
-
-import SideNavBar from './nav/SideNavBar';
-document.querySelector('body').prepend(new SideNavBar());
 
 document.querySelector('#weather-sunny + label').innerHTML = SVG.weather.sunny;
 document.querySelector('#weather-cloud + label').innerHTML = SVG.weather.cloud;

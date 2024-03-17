@@ -1,12 +1,10 @@
 import FlayCard from './flay/FlayCard';
 import './lib/ThemeListener';
+import './nav/appendSideNavBar';
 import './page.shot-history.scss';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();
-
-import SideNavBar from './nav/SideNavBar';
-document.querySelector('body').prepend(new SideNavBar());
 
 let i = 0;
 

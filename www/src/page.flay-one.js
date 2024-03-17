@@ -1,13 +1,11 @@
 import FlayPage from './flay/FlayPage';
 import './lib/SseConnector';
+import './nav/appendSideNavBar';
 import './page.flay-one.scss';
 import { appendStyle } from './util/componentCssLoader';
 import { getRandomInt } from './util/randomNumber';
 
 appendStyle();
-
-import SideNavBar from './nav/SideNavBar';
-document.querySelector('body').prepend(new SideNavBar());
 
 const flayPage = document.querySelector('body > main > article').appendChild(new FlayPage());
 const opusList = [];

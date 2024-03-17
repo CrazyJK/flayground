@@ -1,12 +1,10 @@
+import './nav/appendSideNavBar';
 import './page.tags.scss';
 import SVG from './svg/svg.json';
 import FlayAction from './util/FlayAction';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();
-
-import SideNavBar from './nav/SideNavBar';
-document.querySelector('body').prepend(new SideNavBar());
 
 // header
 const TAG_ID = document.querySelector('#tagId');

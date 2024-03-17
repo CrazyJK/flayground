@@ -1,14 +1,13 @@
 import './image/part/ImageFrame';
 import { lazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import './lib/ThemeListener';
-import SideNavBar from './nav/SideNavBar';
+import './nav/appendSideNavBar';
 import './page.image-page.scss';
 import { appendStyle } from './util/componentCssLoader';
 import { dateFormat } from './util/dateUtils';
 import { getPrettyFilesize } from './util/fileUtils';
 
 appendStyle();
-document.querySelector('body').prepend(new SideNavBar());
 
 fetch('/image')
   .then((res) => res.json())

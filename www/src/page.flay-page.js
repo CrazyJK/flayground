@@ -2,13 +2,11 @@ import FlayPage from './flay/FlayPage';
 import FlayCondition from './flay/page/FlayCondition';
 import FlayPagination from './flay/page/FlayPagination';
 import './lib/SseConnector';
+import './nav/appendSideNavBar';
 import './page.flay-page.scss';
 import { appendStyle } from './util/componentCssLoader';
 
 appendStyle();
-
-import SideNavBar from './nav/SideNavBar';
-document.querySelector('body').prepend(new SideNavBar());
 
 const flayCondition = new FlayCondition();
 const flayPage = new FlayPage();

@@ -69,6 +69,7 @@ export default class FlayCover extends HTMLElement {
       }
     };
     this.coverImage.src = COVER_URL;
+    this.coverImage.title = flay.opus;
   }
 
   #applyDominatedColor(dominatedColors) {

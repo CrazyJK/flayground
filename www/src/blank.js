@@ -1,6 +1,5 @@
 import './blank.scss';
-import './lib/ThemeListener';
-import './nav/appendSideNavBar';
+import './init/Page';
 
 class Page {
   constructor() {}

@@ -1,7 +1,7 @@
-import FlayCard from './flay/FlayCard';
-import './lib/SseConnector';
-import './lib/ThemeListener';
+import './init/Popup';
 import './popup.flay-card.scss';
+
+import FlayCard from './flay/FlayCard';
 import { addResizeLazyEventListener } from './util/resizeListener';
 
 const urlParams = new URL(location.href).searchParams;

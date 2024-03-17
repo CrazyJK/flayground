@@ -1,7 +1,7 @@
-import FlayCard from './flay/FlayCard';
-import './lib/ThemeListener';
-import './nav/appendSideNavBar';
+import './init/Page';
 import './page.shot-history.scss';
+
+import FlayCard from './flay/FlayCard';
 
 let i = 0;
 

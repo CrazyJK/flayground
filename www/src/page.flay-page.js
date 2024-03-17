@@ -1,9 +1,9 @@
+import './init/Page';
+import './page.flay-page.scss';
+
 import FlayPage from './flay/FlayPage';
 import FlayCondition from './flay/page/FlayCondition';
 import FlayPagination from './flay/page/FlayPagination';
-import './lib/SseConnector';
-import './nav/appendSideNavBar';
-import './page.flay-page.scss';
 
 const flayCondition = new FlayCondition();
 const flayPage = new FlayPage();

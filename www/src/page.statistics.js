@@ -1,8 +1,8 @@
+import './init/Page';
+import './page.statistics.scss';
+
 import './lib/TabUI';
 import { sortable } from './lib/TableUtils';
-import './lib/ThemeListener';
-import './nav/appendSideNavBar';
-import './page.statistics.scss';
 import { getPrettyFilesize } from './util/fileUtils';
 
 const to2 = (n) => (n < 10 ? '0' + n : n);

@@ -4,12 +4,12 @@
  * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
 
+import './init/Page';
+import './page.kamoru-diary.scss';
+
 import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import FlayAttach from './attach/FlayAttach';
-import './lib/ThemeListener';
-import './nav/appendSideNavBar';
-import './page.kamoru-diary.scss';
 import SVG from './svg/svg.json';
 
 document.querySelector('#weather-sunny + label').innerHTML = SVG.weather.sunny;

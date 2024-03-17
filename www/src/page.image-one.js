@@ -1,7 +1,7 @@
-import ImageFrame from './image/part/ImageFrame';
-import './lib/ThemeListener';
-import './nav/appendSideNavBar';
+import './init/Page';
 import './page.image-one.scss';
+
+import ImageFrame from './image/part/ImageFrame';
 import { getRandomInt } from './util/randomNumber';
 
 const main = document.querySelector('main');

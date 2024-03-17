@@ -1,6 +1,6 @@
-import './lib/ThemeListener';
-import './nav/appendSideNavBar';
+import './init/Page';
 import './page.archive.scss';
+
 import { dateFormat } from './util/dateUtils';
 import { getRandomInt } from './util/randomNumber';
 

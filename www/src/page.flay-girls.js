@@ -1,9 +1,8 @@
-import { addLazyLoadBackgrungImage } from './lib/ImageLazyLoad';
-import './lib/SseConnector';
-import { sortable } from './lib/TableUtils';
-import './lib/ThemeListener';
-import './nav/appendSideNavBar';
+import './init/Page';
 import './page.flay-girls.scss';
+
+import { addLazyLoadBackgrungImage } from './lib/ImageLazyLoad';
+import { sortable } from './lib/TableUtils';
 
 class Page {
   constructor() {}

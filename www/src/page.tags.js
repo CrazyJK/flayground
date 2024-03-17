@@ -1,5 +1,6 @@
-import './nav/appendSideNavBar';
+import './init/Page';
 import './page.tags.scss';
+
 import SVG from './svg/svg.json';
 import FlayAction from './util/FlayAction';
 

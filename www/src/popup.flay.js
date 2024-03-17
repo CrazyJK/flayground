@@ -1,7 +1,7 @@
-import FlayPage from './flay/FlayPage';
-import './lib/SseConnector';
-import './lib/ThemeListener';
+import './init/Popup';
 import './popup.flay.scss';
+
+import FlayPage from './flay/FlayPage';
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');

@@ -1,7 +1,7 @@
-import FlayPage from './flay/FlayPage';
-import './lib/SseConnector';
-import './nav/appendSideNavBar';
+import './init/Page';
 import './page.flay-one.scss';
+
+import FlayPage from './flay/FlayPage';
 import { getRandomInt } from './util/randomNumber';
 
 const flayPage = document.querySelector('body > main > article').appendChild(new FlayPage());

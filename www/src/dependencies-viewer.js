@@ -1,6 +1,7 @@
-import dependencies from './dependencies-viewer.json';
 import './dependencies-viewer.scss';
-import './lib/ThemeListener';
+import './init/Page';
+
+import dependencies from './dependencies-viewer.json';
 
 const dependenciesMap = Array.from(dependencies).reduce((map, obj) => {
   map.set(obj.entry, obj.svg);

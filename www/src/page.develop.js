@@ -1,7 +1,8 @@
+import './init/Page';
+import './page.develop.scss';
+
 import FlayDevelop from './develop/FlayDevelop';
 import * as DragDrop from './lib/Drag&Drop';
-import './nav/appendSideNavBar';
-import './page.develop.scss';
 import { getRandomInt } from './util/randomNumber';
 
 const opusList = [];

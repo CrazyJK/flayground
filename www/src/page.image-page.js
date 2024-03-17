@@ -1,8 +1,8 @@
+import './init/Page';
+import './page.image-page.scss';
+
 import './image/part/ImageFrame';
 import { lazyLoadBackgrungImage } from './lib/ImageLazyLoad';
-import './lib/ThemeListener';
-import './nav/appendSideNavBar';
-import './page.image-page.scss';
 import { dateFormat } from './util/dateUtils';
 import { getPrettyFilesize } from './util/fileUtils';
 

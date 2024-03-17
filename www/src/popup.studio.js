@@ -1,7 +1,7 @@
-import FlayCard from './flay/FlayCard';
-import './lib/SseConnector';
-import './lib/ThemeListener';
+import './init/Popup';
 import './popup.studio.scss';
+
+import FlayCard from './flay/FlayCard';
 import flayAction from './util/FlayAction';
 import { addResizeLazyEventListener } from './util/resizeListener';
 

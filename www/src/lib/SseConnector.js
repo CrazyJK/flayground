@@ -65,12 +65,16 @@ sse.addEventListener('TAG', (e) => {
 sse.addEventListener('MESSAGE', (e) => {
   console.debug(e.type, e.data);
   const data = JSON.parse(e.data);
-  if (data.type === 'Batch') {
-    if (typeof window.emitBatch === 'function') window.emitBatch(data);
-  } else if (data.type === 'Notice') {
-    if (typeof window.emitNotice === 'function') window.emitNotice(data);
-  } else {
-    if (typeof window.emitMessage === 'function') window.emitMessage(data);
+  switch (data.type) {
+    case 'Batch':
+      if (typeof window.emitBatch === 'function') window.emitBatch(data);
+      break;
+    case 'Notice':
+      if (typeof window.emitNotice === 'function') window.emitNotice(data);
+      break;
+    default:
+      if (typeof window.emitMessage === 'function') window.emitMessage(data);
+      break;
   }
 });
 

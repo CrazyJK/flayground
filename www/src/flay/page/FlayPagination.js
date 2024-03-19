@@ -122,6 +122,10 @@ export default class FlayPagination extends HTMLElement {
     });
   }
 
+  /**
+   * set opus list
+   * @param {string[]} opusList
+   */
   set(opusList) {
     this.opusList = opusList;
     if (!!opusList && opusList.length > 0) {

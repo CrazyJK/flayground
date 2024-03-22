@@ -50,25 +50,51 @@ header > div button {
 
 header {
   max-width: none;
+  display: grid;
+  grid-template-columns: 1fr minmax(900px, 999px) 1fr;
+  height: 11rem;
 
-  .actress-info {
+  .header-center {
+    display: flex;
+    flex-direction: column;
     width: 100%;
-    min-width: 900px;
-    max-width: 999px;
-    margin: auto;
-  }
-  .studio-list,
-  .tag-list {
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0;
-    border: 1px dashed chocolate;
 
-    label {
-      font-size: var(--size-small);
-      line-height: 20px;
-      border: 0 !important;
+    .actress-info {
+      display: flex;
+      width: 100%;
+      min-width: 900px;
+      max-width: 999px;
+      margin: auto;
+    }
+  }
+
+  .header-side {
+    overflow: auto;
+
+    &.studio-list,
+    &.tag-list {
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      border: 1px dashed chocolate;
+      margin: 2px;
+
+      label {
+        font-size: var(--size-small);
+        line-height: 20px;
+        border: 0 !important;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  // benq 세로 풀
+  header {
+    grid-template-columns: 1fr;
+    .header-side {
+      display: none;
     }
   }
 }

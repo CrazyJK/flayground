@@ -59,4 +59,45 @@ ul {
       }
     }
   }
+
+  &.box {
+    li:not(.thead) {
+      display: inline-grid;
+      grid-template-areas:
+        'cover cover cover cover'
+        'name name name name'
+        'age flaycount shotflay shottotal';
+      grid-template-rows: 8rem 2rem 2rem;
+      grid-template-columns: 3rem 3rem 3rem 3rem;
+      align-items: center;
+      width: auto;
+      height: auto;
+      margin-left: 0.5rem;
+      margin-right: 0.5rem;
+
+      label {
+        text-align: center;
+        padding: 0;
+      }
+
+      .cover {
+        grid-area: cover;
+      }
+      .name {
+        grid-area: name;
+      }
+      .age {
+        grid-area: age;
+      }
+      .flay-count {
+        grid-area: flaycount;
+      }
+      .shot-flay-count {
+        grid-area: shotflay;
+      }
+      .shot-total-count {
+        grid-area: shottotal;
+      }
+    }
+  }
 }

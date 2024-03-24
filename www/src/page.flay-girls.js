@@ -66,7 +66,7 @@ class Page {
       addLazyLoadBackgrungImage(LI);
     }
 
-    document.querySelector('.thead .cover').addEventListener('click', () => {
+    document.querySelector('.thead .cover .list-simple').addEventListener('click', () => {
       document.querySelectorAll('ul li:not(.thead)').forEach((li) => {
         if (li.style.height === 'auto') {
           li.removeAttribute('style');
@@ -76,9 +76,13 @@ class Page {
       });
     });
 
-    sortable(UL, { noSort: [0], initSortIndex: 5 });
+    document.querySelector('.thead .cover .view-mode').addEventListener('click', (e) => {
+      const viewMode = UL.classList.toggle('box');
+      e.target.innerHTML = viewMode ? 'Box' : 'List';
+      document.querySelector('.thead .cover .list-simple').innerHTML = viewMode ? '' : 'simple';
+    });
 
-    // lazyLoadBackgrungImage();
+    sortable(UL, { noSort: [0], initSortIndex: 5 });
   }
 
   /**

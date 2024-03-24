@@ -23,11 +23,10 @@ public class SseEmitters {
     CONNECT, FLAY, STUDIO, VIDEO, ACTRESS, TAG, MESSAGE;
   }
 
-  private static final Long TIMEOUT = Duration.ofHours(6).toMillis();
-
   private final List<SseEmitter> sseEmitters = new CopyOnWriteArrayList<>();
 
   protected SseEmitter create() {
+    final Long TIMEOUT = Duration.ofHours(6).toMillis();
     SseEmitter sseEmitter = new SseEmitter(TIMEOUT);
     sseEmitter.onCompletion(() -> {
       log.debug("{} onCompletion", sseEmitter);
@@ -56,8 +55,13 @@ public class SseEmitters {
   }
 
   private void send(SseEmitter sseEmitter, EVENT event, Object payload) {
+    final String name = event.name();
+    if (name == null)
+      throw new IllegalArgumentException("null is null");
+    if (payload == null)
+      throw new IllegalArgumentException("payload is null");
     try {
-      sseEmitter.send(SseEmitter.event().name(event.name()).data(payload));
+      sseEmitter.send(SseEmitter.event().name(name).data(payload));
       log.debug("{} send {} - {}", sseEmitter, event, payload);
     } catch (IOException e) {
       log.debug("{} send error: {}", sseEmitter, e.getMessage());

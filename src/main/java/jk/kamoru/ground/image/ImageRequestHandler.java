@@ -152,7 +152,10 @@ public class ImageRequestHandler {
 
   MediaType probeMediaType(File file) {
     try {
-      return MediaType.valueOf(Files.probeContentType(file.toPath()));
+      String probedContentType = Files.probeContentType(file.toPath());
+      if (probedContentType == null)
+        throw new IllegalStateException("probedContentType is null");
+      return MediaType.valueOf(probedContentType);
     } catch (InvalidMediaTypeException | IOException e) {
       String suffix = StringUtils.substringAfterLast(file.getName(), ".");
       if ("webp".equalsIgnoreCase(suffix)) {

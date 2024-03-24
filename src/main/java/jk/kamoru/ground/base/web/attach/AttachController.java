@@ -2,6 +2,7 @@ package jk.kamoru.ground.base.web.attach;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.file.Files;
 
@@ -51,10 +52,13 @@ public class AttachController {
     AttachFile attachFile = attachService.get(id).getAttachFile(attachFileId);
     File file = attachFile.getFile();
 
-    Resource resource = new InputStreamResource(Files.newInputStream(file.toPath()));
-
+    InputStream inputStream = Files.newInputStream(file.toPath());
+    if (inputStream == null)
+      throw new IllegalStateException("inputStream from attachFile is null");
+    Resource resource = new InputStreamResource(inputStream);
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentDisposition(ContentDisposition.builder("attachment").filename(URLEncoder.encode(attachFile.getName(), Ground.CHARSET)).build());
+    headers.setContentDisposition(ContentDisposition.builder("attachment")
+        .filename(URLEncoder.encode(attachFile.getName(), Ground.CHARSET)).build());
 
     return new ResponseEntity<Object>(resource, headers, HttpStatus.OK);
   }

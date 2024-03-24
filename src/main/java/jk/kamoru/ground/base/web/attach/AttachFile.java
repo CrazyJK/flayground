@@ -37,6 +37,8 @@ public class AttachFile {
     final long size = multipartFile.getSize();
 
     try {
+      if (dest == null)
+        throw new IllegalArgumentException("dest file is null");
       multipartFile.transferTo(dest);
     } catch (IllegalStateException | IOException e) {
       throw new AttachException("multipartFile transfer fail: " + e.getMessage(), e);

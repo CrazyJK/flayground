@@ -32,7 +32,6 @@ input[type='date'],
 input[type='text'],
 input[type='search'],
 input[type='number'],
-input[type='date'],
 input[type='checkbox'] + label,
 input[type='radio'] + label,
 select,
@@ -76,8 +75,7 @@ input[type='url'],
 input[type='date'],
 input[type='text'],
 input[type='search'],
-input[type='number'],
-input[type='date'] {
+input[type='number'] {
   padding: 0.25rem 0;
   text-align: center;
 }
@@ -203,7 +201,7 @@ h5 {
 *,
 a,
 button,
-input[type='date'],
+input[type='url'],
 input[type='text'],
 input[type='search'],
 input[type='number'],

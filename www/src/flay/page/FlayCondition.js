@@ -53,7 +53,7 @@ export default class FlayCondition extends HTMLElement {
     }
 
     // sort
-    const SORT_METHODS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH'];
+    const SORT_METHODS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'];
     const SORT_DIV = wrapper.appendChild(document.createElement('div'));
     this.SORT_SELECT = createSelect(SORT_DIV, 0, 'sort', SORT_METHODS, 'Sort method');
     addEventListener(this, 'change', this.SORT_SELECT);

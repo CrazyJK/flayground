@@ -6,7 +6,7 @@ import lombok.Data;
 public class FlayCondition {
 
   public static enum Sort {
-    STUDIO, OPUS, TITLE, ACTRESS, RELEASE, PLAY, RANK, LASTPLAY, LASTACCESS, LASTMODIFIED, SCORE, LENGTH;
+    STUDIO, OPUS, TITLE, ACTRESS, RELEASE, PLAY, RANK, LASTPLAY, LASTACCESS, LASTMODIFIED, SCORE, LENGTH, SHOT;
   }
 
   private Sort sort = Sort.RELEASE;

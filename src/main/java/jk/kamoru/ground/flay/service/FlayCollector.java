@@ -146,9 +146,15 @@ public class FlayCollector {
         return NumberUtils.compare(f1.getScore(), f2.getScore());
       case LENGTH:
         return NumberUtils.compare(f1.getLength(), f2.getLength());
+      case SHOT:
+        return NumberUtils.compare(getLikeCount(f1), getLikeCount(f2));
       default:
         return 0;
     }
+  }
+
+  private int getLikeCount(Flay flay) {
+    return flay.getVideo().getLikes() == null ? 0 : flay.getVideo().getLikes().size();
   }
 
 }

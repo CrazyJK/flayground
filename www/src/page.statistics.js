@@ -240,6 +240,7 @@ function startTimeline() {
     const time = wrapper.appendChild(document.createElement('div'));
     time.classList.add('grid-data', 'time');
     time.innerHTML = key;
+    let flayCount = 0;
     for (let i = -1; i <= 5; i++) {
       const rank = wrapper.appendChild(document.createElement('div'));
       rank.classList.add('grid-data', 'rank');
@@ -254,7 +255,9 @@ function startTimeline() {
         rank.title = `${count} Flay, ${size} ${unit}`;
       }
       rank.append(...getFlayLabel(rankMap.get(i)));
+      flayCount += count;
     }
+    time.innerHTML += `<br><small>(${flayCount})</small>`;
   });
 }
 

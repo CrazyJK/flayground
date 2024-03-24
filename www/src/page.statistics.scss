@@ -131,6 +131,10 @@ main {
       border-bottom: 1px solid var(--color-border);
     }
 
+    .grid-data.time {
+      text-align: center;
+    }
+
     .grid-data.rank {
       display: inline-flex;
       flex-wrap: wrap;

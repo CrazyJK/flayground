@@ -3,6 +3,7 @@ import './page.tags.scss';
 
 import SVG from './svg/svg.json';
 import FlayAction from './util/FlayAction';
+import { addResizeLazyEventListener } from './util/resizeListener';
 
 // header
 const TAG_ID = document.querySelector('#tagId');
@@ -85,3 +86,20 @@ function renderTagList() {
         });
     });
 }
+
+// resize event
+addResizeLazyEventListener(() => {
+  LIST_WRAPPER.querySelectorAll('li').forEach((li) => {
+    if (window.innerWidth >= 1920) {
+      const countLabel = li.querySelector('dt label:last-child');
+      const count = parseInt(countLabel.textContent);
+      const countStep = Math.floor(count / 5);
+
+      li.querySelectorAll('dt label').forEach((label) => {
+        label.style.fontSize = `calc(var(--size-normal) + ${countStep}px)`;
+      });
+    } else {
+      li.querySelectorAll('dt label').forEach((label) => (label.style.fontSize = ''));
+    }
+  });
+});

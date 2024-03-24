@@ -217,7 +217,7 @@ export default class FlayPagination extends HTMLElement {
     let method = 0;
     if (method == 0) {
       let domRect = this.getBoundingClientRect();
-      const RANGE = domRect.width > 1200 ? 20 : 10;
+      const RANGE = domRect.width > 1200 ? 30 : 15;
       let currPageNo = Math.ceil((this.opusIndex + 1) / RANGE);
       let lastPageNo = Math.ceil(this.opusList.length / RANGE);
       let pageRange = [];

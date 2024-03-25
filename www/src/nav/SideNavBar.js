@@ -2,6 +2,8 @@ import { componentCss } from '../util/componentCssLoader';
 import './part/ThemeController';
 
 export default class SideNavBar extends HTMLElement {
+  debug = 0; // elememnts를 구분해서 보기 위한 조건
+
   constructor() {
     super();
   }
@@ -24,7 +26,7 @@ export default class SideNavBar extends HTMLElement {
       } else if (e.target.tagName === 'A') {
         const id = e.target.id;
         if (id === 'debug') {
-          this.debug = !this.debug;
+          this.debug = ++this.debug % 3;
           document.documentElement.setAttribute('debug', this.debug);
         } else if (id === 'dependencies') {
           window.open('dependencies-viewer.html', Date.now(), `width=${window.innerWidth}px,height=${window.innerHeight}px'`);

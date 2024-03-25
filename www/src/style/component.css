@@ -198,18 +198,36 @@ h5 {
   font-size: var(--size-smallest);
 }
 
-*,
-a,
-button,
-input[type='url'],
-input[type='text'],
-input[type='search'],
-input[type='number'],
-input[type='date'],
-input[type='checkbox'] + label,
-input[type='radio'] + label,
-select,
-textarea {
-  border: var(--debug-border);
-  padding: var(--debug-padding);
+[debug='1'] {
+  --debug1-outline: #418546 dashed 1px;
+}
+[debug='2'] {
+  --debug1-outline: #418546 dashed 1px;
+  --debug2-outline: #da57a6 dotted 1px;
+}
+
+flay-actress,
+flay-cover,
+flay-files,
+flay-opus,
+flay-rank,
+flay-release,
+flay-studio,
+flay-tag,
+flay-title,
+flay-comment,
+flay-pagination,
+flay-condition,
+flay-card,
+flay-page,
+flay-register,
+flay-batch,
+flay-candidate,
+tag-layer,
+side-nav {
+  outline: var(--debug1-outline) !important;
+}
+
+* {
+  outline: var(--debug2-outline) !important;
 }

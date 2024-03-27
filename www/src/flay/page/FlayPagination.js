@@ -211,6 +211,9 @@ export default class FlayPagination extends HTMLElement {
   }
 
   display() {
+    if (!this.opusList) {
+      return;
+    }
     let lastIndex = this.opusList.length - 1;
     this.PROGRESS_BAR.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 

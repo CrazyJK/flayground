@@ -48,10 +48,6 @@ module.exports = {
           },
         },
         {
-          from: 'src/style/*.css',
-          to: 'css/[name][ext]',
-        },
-        {
           from: 'src/favicon/*.png',
           to: 'favicon/[name][ext]',
         },

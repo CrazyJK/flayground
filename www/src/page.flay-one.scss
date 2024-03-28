@@ -1,32 +1,20 @@
 @import './style/style.scss';
 
-[theme='dark'] {
-  --color-text: #a3a3a3;
-}
-
 main {
   position: fixed;
   inset: 0;
   overflow: hidden;
 
-  display: grid;
-  grid-template-rows: 6rem 1fr;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-  header {
-    text-align: center;
-    button {
-      height: 100%;
-      img {
-        height: 100%;
-      }
-    }
-  }
+  background: center center / contain no-repeat transparent;
 
-  article {
-    flay-page {
-      opacity: 0;
-      transition: opacity 1s cubic-bezier(0.4, 0, 1, 1) 0.2s;
-    }
+  flay-title {
+    writing-mode: vertical-lr;
+    background-color: var(--color-bg-transparent);
+    padding: 1rem;
   }
 }
 

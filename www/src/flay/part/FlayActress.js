@@ -35,9 +35,16 @@ export default class FlayActress extends HTMLElement {
    * @param {Flay} flay
    * @param {Actress[]} actressList
    */
-  set(flay, actressList) {
+  async set(flay, actressList = []) {
     this.flay = flay;
+
+    if (actressList.length === 0) {
+      for (const name of flay.actressList) {
+        actressList.push(await fetch(`/info/actress/${name}`).then((res) => res.json()));
+      }
+    }
     this.actressList = actressList;
+
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.textContent = null;

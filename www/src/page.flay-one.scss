@@ -1,43 +1,27 @@
 @import './style/style.scss';
 
-main {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-
-  background: center center / contain no-repeat transparent;
-
-  flay-title {
-    writing-mode: vertical-lr;
-    background-color: var(--color-bg-transparent);
-    padding: 1rem;
-  }
-}
-
-@keyframes slideOut {
+@keyframes slideLeft {
   to {
     opacity: 0;
-    transform: translateX(-900px);
+    transform: translateX(-100%);
   }
 }
-@keyframes slideIn {
+@keyframes slideRight {
   from {
     opacity: 0;
-    transform: translateX(900px);
+    transform: translateX(100%);
   }
 }
-
-flay-page {
-  view-transition-name: flay-page;
+::view-transition-old(one) {
+  animation-name: slideLeft;
+}
+::view-transition-new(one) {
+  animation-name: slideRight;
 }
 
-::view-transition-old(flay-page) {
-  animation-name: slideOut;
-}
-::view-transition-new(flay-page) {
-  animation-name: slideIn;
+main {
+  view-transition-name: one;
+  position: fixed;
+  inset: 0;
+  background: center center / contain no-repeat transparent;
 }

@@ -88,6 +88,8 @@ export default class FlayCard extends HTMLElement {
     }
     this.render(fullyFlay);
     this.resize();
+
+    return fullyFlay;
   }
 
   resize() {

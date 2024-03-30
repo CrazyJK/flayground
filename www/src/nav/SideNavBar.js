@@ -30,6 +30,8 @@ export default class SideNavBar extends HTMLElement {
           document.documentElement.setAttribute('debug', this.debug);
         } else if (id === 'dependencies') {
           window.open('dependencies-viewer.html', Date.now(), `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
+        } else if (id === 'swagger') {
+          window.open('/swagger-ui/index.html', 'swagger', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
         }
       }
     });
@@ -102,6 +104,9 @@ const HTML = `
     <li><a href="page.statistics.html">statistics</a></li>
   </ul>
   <ul>
+    <li><a href="page.control.html">control</a></li>
+  </ul>
+  <ul>
     <li><a href="page.image-page.html">image page</a></li>
     <li><a href="page.image-one.html">image one</a></li>
     <li><a href="page.image-fall.html">image fall</a></li>
@@ -116,10 +121,9 @@ const HTML = `
     <li><a href="blank.html">blank</a></li>
   </ul>
   <ul>
-    <li><a href="javascript:" id="dependencies">dependencies</a></li>
-    <li><a href="javascript:" id="debug">debug</a></li>
-    <li><a href="page.control.html">control</a></li>
-    <li><a href="/swagger-ui/index.html">swagger</a></li>
+    <li><a id="debug">debug</a></li>
+    <li><a id="swagger">swagger↗</a></li>
+    <li><a id="dependencies">dependencies↗</a></li>
     <li style="margin-top: 1rem;"><theme-controller /></li>
   </ul>
 </div>

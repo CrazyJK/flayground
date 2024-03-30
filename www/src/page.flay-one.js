@@ -1,43 +1,29 @@
 import './init/Page';
 import './page.flay-one.scss';
 
-import { getRandomInt } from './util/randomNumber';
+import { OpusProvider } from './lib/OpusProvider';
 
-class Page {
-  opusList;
-  opusIndexes;
-  condition;
-  coverContainer;
+class Page extends OpusProvider {
+  opus;
   coverURL;
+  coverContainer;
 
   constructor() {
-    this.opusList = [];
-    this.opusIndexes = [];
-    this.condition = { rank: [0, 1, 2, 3, 4, 5] };
-    this.coverContainer = document.querySelector('body > main');
-  }
+    super();
 
-  #getRandomOpus() {
-    if (this.opusIndexes.length === 0) this.opusIndexes.push(...Array.from({ length: this.opusList.length }, (v, i) => i));
-    return this.opusList[this.opusIndexes.splice(getRandomInt(0, this.opusIndexes.length), 1)[0]];
+    this.coverContainer = document.querySelector('body > main');
   }
 
   #showCover() {
     URL.revokeObjectURL(this.coverURL);
     document.startViewTransition(async () => {
-      this.opus = this.#getRandomOpus();
+      this.opus = await this.getRandomOpus();
       this.coverURL = URL.createObjectURL(await fetch(`/static/cover/${this.opus}`).then((res) => res.blob()));
       this.coverContainer.style.backgroundImage = `url(${this.coverURL})`;
     });
   }
 
   async start() {
-    this.opusList = await fetch('/flay/list/opus', {
-      method: 'post',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(this.condition),
-    }).then((res) => res.json());
-
     this.#showCover();
 
     this.coverContainer.addEventListener('click', () => {

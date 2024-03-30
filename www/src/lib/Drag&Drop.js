@@ -89,7 +89,7 @@ export const setDropzone = (dropzone) => {
     // move dragged element to the selected drop target
     if (e.target.classList.contains('dropzone')) {
       e.target.classList.remove('dragover');
-      e.target.appendChild(dragged);
+      e.target.insertBefore(dragged, null);
     }
   });
 };

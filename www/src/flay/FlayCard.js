@@ -27,6 +27,10 @@ export default class FlayCard extends HTMLElement {
       this.excludes = [];
     }
 
+    this.init();
+  }
+
+  init() {
     this.attachShadow({ mode: 'open' });
 
     const style = document.createElement('style');
@@ -61,8 +65,8 @@ export default class FlayCard extends HTMLElement {
   /**
    * reload data
    */
-  reload() {
-    this.set(this.opus);
+  async reload() {
+    return await this.set(this.opus);
   }
 
   /**

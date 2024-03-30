@@ -97,6 +97,7 @@ const HTML = `
     <li><a href="page.archive.html">flay archive</a></li>
     <li><a href="page.flay-one.html">flay one</a></li>
     <li><a href="page.flay-grid.html">flay grid</a></li>
+    <li><a href="page.dragndrop.html">drag & drop</a></li>
   </ul>
   <ul>
     <li><a href="page.tags.html">tags</a></li>
@@ -113,9 +114,6 @@ const HTML = `
   </ul>
   <ul>
     <li><a href="page.kamoru-diary.html">diary</a></li>
-  </ul>
-  <ul>
-    <li><a href="page.develop.html">develop</a></li>
   </ul>
   <ul>
     <li><a href="blank.html">blank</a></li>

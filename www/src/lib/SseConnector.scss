@@ -19,3 +19,30 @@
   padding: 0.5rem 1rem;
   text-align: right;
 }
+
+#message-wrapper {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  justify-content: center;
+  align-items: flex-start;
+
+  background-color: var(--color-bg-transparent);
+
+  &.show {
+    display: flex;
+  }
+
+  & > div {
+    background-color: var(--color-bg);
+    padding: 2rem;
+    box-shadow: var(--box-shadow-large);
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+  }
+}

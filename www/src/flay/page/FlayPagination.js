@@ -131,7 +131,7 @@ export default class FlayPagination extends HTMLElement {
     if (!!opusList && opusList.length > 0) {
       this.navigator(RANDOM);
     } else {
-      window.emitMessage('opusList is not valid', opusList);
+      window.emitMessage('검색 결과가 없습니다.');
     }
   }
 

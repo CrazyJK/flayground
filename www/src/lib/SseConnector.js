@@ -96,11 +96,24 @@ window.emitNotice = (data) => {
 };
 
 window.emitMessage = (...datas) => {
-  let message = '';
+  let messages = '';
   for (let data of datas) {
-    message += JSON.stringify(data) + '\n';
+    messages += JSON.stringify(data) + '<br>';
   }
-  alert(message);
+
+  let messageWrapper = document.querySelector('#message-wrapper');
+  if (messageWrapper === null) {
+    messageWrapper = document.querySelector('body').appendChild(document.createElement('div'));
+    messageWrapper.id = 'message-wrapper';
+    messageWrapper.appendChild(document.createElement('div')).id = 'message';
+    messageWrapper.addEventListener('click', (e) => {
+      e.stopPropagation();
+      e.target.classList.remove('show');
+      e.target.querySelector('#message').textContent = null;
+    });
+  }
+  messageWrapper.querySelector('#message').innerHTML += `<label>${messages}</label>`;
+  messageWrapper.classList.add('show');
 };
 
 function emitFlay(flay) {

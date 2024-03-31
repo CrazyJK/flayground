@@ -1,19 +1,16 @@
 import './init/Page';
 import './page.flay-grid.scss';
 
+import FlayCondition from './flay/page/FlayCondition';
 import { OpusProvider } from './lib/OpusProvider';
 import SVG from './svg/svg.json';
 
 class Page extends OpusProvider {
-  MAIN;
-
   constructor() {
     super();
-
-    this.MAIN = document.querySelector('main');
   }
 
-  async showCover() {
+  async #showCover() {
     const opus = await this.getRandomOpus();
 
     const res = await fetch('/static/cover/' + opus + '/withData');
@@ -24,7 +21,7 @@ class Page extends OpusProvider {
     const coverBlob = await res.blob();
     const coverURL = URL.createObjectURL(coverBlob);
 
-    this.MAIN.appendChild(document.createElement('div')).innerHTML = `
+    document.querySelector('main').appendChild(document.createElement('div')).innerHTML = `
       <div style="background-image: url(${coverURL})">
         <label>
           ${SVG.rank[flay.video.rank + 1]}
@@ -36,12 +33,17 @@ class Page extends OpusProvider {
 
   async show() {
     for (let i = 0; i < 16; i++) {
-      await this.showCover();
+      await this.#showCover();
     }
   }
 
   async start() {
-    await this.show();
+    const flayCondition = document.querySelector('body > header').appendChild(new FlayCondition());
+    flayCondition.addEventListener('change', async (e) => {
+      this.setOpusList(e.detail.list);
+      document.querySelector('main').textContent = null;
+      await this.show();
+    });
 
     window.addEventListener('scroll', () => {
       const isScrollAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;

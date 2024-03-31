@@ -31,6 +31,11 @@ export class OpusProvider {
       }).then((res) => res.json());
   }
 
+  setOpusList(list) {
+    this.opusList = list;
+    this.opusIndex = -1;
+  }
+
   async getRandomOpus() {
     await this.#fetchOpusList();
     if (this.opusIndexes.length === 0) {

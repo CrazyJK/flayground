@@ -1,5 +1,12 @@
 @import './style/style.scss';
 
+header {
+  position: sticky;
+  top: 0;
+  background-color: var(--color-bg);
+  z-index: 1;
+}
+
 main {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(20%, auto));

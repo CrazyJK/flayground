@@ -1,6 +1,7 @@
 import './init/Page';
 import './page.flay-one.scss';
 
+import FlayCondition from './flay/page/FlayCondition';
 import { OpusProvider } from './lib/OpusProvider';
 
 class Page extends OpusProvider {
@@ -24,7 +25,12 @@ class Page extends OpusProvider {
   }
 
   async start() {
-    this.#showCover();
+    const flayCondition = document.querySelector('body > header').appendChild(new FlayCondition());
+    flayCondition.addEventListener('change', async (e) => {
+      this.setOpusList(e.detail.list);
+
+      this.#showCover();
+    });
 
     this.coverContainer.addEventListener('click', () => {
       window.open('popup.flay.html?opus=' + this.opus, 'popup.' + this.opus, 'width=800px,height=1280px');

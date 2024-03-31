@@ -1,33 +1,35 @@
+import FlayPagination from './flay/page/FlayPagination';
 import './init/Page';
 import './page.archive.scss';
 
 import { dateFormat } from './util/dateUtils';
-import { getRandomInt } from './util/randomNumber';
 
 class Page {
-  MAIN;
-  list;
   coverURL;
 
-  constructor() {
-    this.MAIN = document.querySelector('main');
-  }
+  constructor() {}
 
   async start() {
-    this.list = await fetch('/archive').then((res) => res.json());
+    const list = await fetch('/archive').then((res) => res.json());
 
-    document.addEventListener('wheel', async (e) => await this.show());
+    const archiveMap = Array.from(list).reduce((map, archive) => {
+      map.set(archive.opus, archive);
+      return map;
+    }, new Map());
+
+    const flayPagination = document.querySelector('body > footer').appendChild(new FlayPagination());
+    flayPagination.addEventListener('change', async (e) => {
+      const opus = e.target.opus;
+      await this.#show(archiveMap.get(opus));
+    });
+    flayPagination.set(Array.from(archiveMap.keys()));
   }
 
-  async show() {
+  async #show(flay) {
     URL.revokeObjectURL(this.coverURL);
-    this.MAIN.textContent = null;
-
-    const randomIndex = getRandomInt(0, this.list.length);
-    const flay = this.list[randomIndex];
     this.coverURL = URL.createObjectURL(await fetch(`/static/cover/${flay.opus}`).then((res) => res.blob()));
 
-    this.MAIN.innerHTML = `
+    document.querySelector('main').innerHTML = `
       <img class="cover"    src="${this.coverURL}">
       <div class="studio"       >${flay.studio}                                            </div>
       <div class="opus"         >${flay.opus}                                              </div>
@@ -44,8 +46,6 @@ class Page {
       <div class="tags"         >${toBlank(flay.video.tags?.map((t) => t.name).join(', '))}</div>
       <div class="jp-title"     >${toBlank(flay.video.title)}                              </div>
       <div class="jp-desc"      >${toBlank(flay.video.desc)}                               </div>`;
-
-    console.log(flay);
   }
 }
 

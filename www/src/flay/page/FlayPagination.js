@@ -124,11 +124,11 @@ export default class FlayPagination extends HTMLElement {
 
   /**
    * set opus list
-   * @param {string[]} opusList
+   * @param {string[]} list
    */
-  set(opusList) {
-    this.opusList = opusList;
-    if (!!opusList && opusList.length > 0) {
+  set(list) {
+    this.opusList = list;
+    if (!!this.opusList && this.opusList.length > 0) {
       this.navigator(RANDOM);
     } else {
       window.emitMessage('검색 결과가 없습니다.');

@@ -24,8 +24,6 @@ class Page extends OpusProvider {
     const coverBlob = await res.blob();
     const coverURL = URL.createObjectURL(coverBlob);
 
-    // const info = `● ${flay.studio}\n● ${flay.opus}\n● ${flay.title}\n● ${flay.actressList.join(',')}\n● ${flay.release}\n● Rank: ${flay.video.rank}`;
-
     this.MAIN.appendChild(document.createElement('div')).innerHTML = `
       <div style="background-image: url(${coverURL})">
         <label>

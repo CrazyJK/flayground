@@ -35,5 +35,9 @@ main {
   article {
     border-top: 1px solid var(--color-border);
     overflow: auto;
+
+    & > div {
+      height: 100%;
+    }
   }
 }

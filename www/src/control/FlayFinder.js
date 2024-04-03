@@ -6,6 +6,11 @@ ${componentCss}
   padding-bottom: 1rem;
 }
 .wrapper.search-wrapper {
+  position: sticky;
+  top: 0;
+  background-color: var(--color-bg);
+  z-index: 1;
+
   padding: 0.5rem;
   text-align: center;
 }

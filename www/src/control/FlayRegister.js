@@ -90,7 +90,7 @@ ${componentCss}
 .flay-register textarea,
 .flay-register button,
 .flay-register .checkbox {
-  background: #0004;
+  background: var(--color-bg-input);
   color: var(--color-text);
   margin: 1px 2px;
   border: 0;

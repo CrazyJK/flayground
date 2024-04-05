@@ -1,27 +1,23 @@
-import { componentCss } from '../util/componentCssLoader';
 import FlayAction from '../util/FlayAction';
 
 const HTML = `
   <div>
-    <button id="getCadidate">Candidate <i class="badge" id="candidateLength">0</i></button>
+    <button id="getCadidate">Candidate <i id="candidateLength">0</i></button>
   </div>
-  <div>
-    <ol id="candidatesFlay"></ol>
-  </div>
+  <ol id="candidatesFlay"></ol>
 `;
 
 const CSS = `
-${componentCss}
-div.candidate {
+div.flay-candidate {
   display: grid;
   grid-template-rows: 3rem 1fr;
-  padding: 1rem;
+  height: 100%;
 }
-div.candidate div {
-  text-align: center;
-  overflow: auto;
+div.flay-candidate > div {
+  display: flex;
+  justify-content: center;
 }
-div.candidate ol {
+div.flay-candidate ol {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
@@ -32,16 +28,16 @@ div.candidate ol {
 
   overflow: auto;
 }
-div.candidate ol li {
+div.flay-candidate ol li {
   border-radius: 0.5rem;
   padding: 0.5rem;
   transition: 0.2s;
 
 }
-div.candidate ol li:hover {
+div.flay-candidate ol li:hover {
   background-color: var(--color-bg-hover);
 }
-div.candidate ol li div {
+div.flay-candidate ol li div {
   aspect-ratio: 400 / 269;
   background: no-repeat center / contain;
   display: flex;
@@ -51,21 +47,21 @@ div.candidate ol li div {
   padding: 0.5rem;
   border-radius: 0.25rem;
 }
-div.candidate ol li div label {
+div.flay-candidate ol li div label {
   background-color: var(--color-bg);
   color: var(--color-text);
   padding: 0.25rem 0.5rem;
   border-radius: 0.25rem;
   font-size: 1rem;
 }
-div.candidate ol li button {
+div.flay-candidate ol li button {
   font: 700 1rem D2Coding;
   padding: 0.25rem 0.5rem;
   margin-bottom: 0.5rem;
   border-radius: 0.25rem;
   transition: 0.2s;
 }
-div.candidate ol li button:hover {
+div.flay-candidate ol li button:hover {
   background-color: var(--color-bg-hover);
 }
 `;
@@ -76,19 +72,25 @@ div.candidate ol li button:hover {
 export default class FlayCandidate extends HTMLElement {
   constructor() {
     super();
+  }
+
+  connectedCallback() {
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style/component.css';
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
 
     const wrapper = document.createElement('div');
-    wrapper.classList.add('candidate');
+    wrapper.classList.add(this.tagName.toLowerCase());
     wrapper.innerHTML = HTML;
 
-    this.shadowRoot.append(style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
-  }
+    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
-  connectedCallback() {
     const BUTTON = this.shadowRoot.querySelector('#getCadidate');
     const BADGE = this.shadowRoot.querySelector('#candidateLength');
     const LIST = this.shadowRoot.querySelector('#candidatesFlay');
@@ -104,17 +106,17 @@ export default class FlayCandidate extends HTMLElement {
             const ITEM = LIST.appendChild(document.createElement('li'));
             const BTN = ITEM.appendChild(document.createElement('button'));
             BTN.innerHTML = flay.files.candidate.join('\n');
-            BTN.dataset.accept = 'N';
-            BTN.addEventListener('click', () => {
-              if (BTN.dataset.accept === 'N') {
+            BTN.addEventListener(
+              'click',
+              () => {
                 FlayAction.acceptCandidates(flay.opus, () => {
                   console.log('accept', flay.files.candidate);
                   DIV.remove();
                   LIST.insertBefore(ITEM, null);
-                  BTN.dataset.accept = 'Y';
                 });
-              }
-            });
+              },
+              { once: true }
+            );
             const DIV = ITEM.appendChild(document.createElement('div'));
             DIV.style.backgroundImage = `url(/static/cover/${flay.opus})`;
             DIV.innerHTML = `

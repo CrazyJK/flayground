@@ -1,8 +1,6 @@
-import { componentCss } from '../util/componentCssLoader';
 import FlayAction from '../util/FlayAction';
 
 const CSS = `
-${componentCss}
 .header {
   position: sticky;
   top: 0;
@@ -12,6 +10,7 @@ ${componentCss}
   align-items: baseline;
   gap: 1rem;
   padding: 0.5rem;
+  background-color: var(--color-bg);
 }
 
 #flayList {
@@ -121,14 +120,19 @@ export default class SubtitlesFinder extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style/component.css';
+
     const style = document.createElement('style');
     style.innerHTML = CSS;
 
     const wrapper = document.createElement('div');
-    wrapper.classList.add('subtitles-finder');
+    wrapper.classList.add(this.tagName.toLowerCase());
     wrapper.innerHTML = HTML;
 
-    this.shadowRoot.append(style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {

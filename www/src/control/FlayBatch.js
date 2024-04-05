@@ -1,4 +1,3 @@
-import { componentCss } from '../util/componentCssLoader';
 import FlayAction from '../util/FlayAction';
 
 const HTML = `
@@ -18,7 +17,6 @@ const HTML = `
 `;
 
 const CSS = `
-${componentCss}
 div.flay-batch {
   padding: 1rem;
   border-radius: 0.25rem;
@@ -63,14 +61,19 @@ export default class FlayBatch extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style/component.css';
+
     const style = document.createElement('style');
     style.innerHTML = CSS;
 
     const wrapper = document.createElement('div');
-    wrapper.classList.add('flay-batch');
+    wrapper.classList.add(this.tagName.toLowerCase());
     wrapper.innerHTML = HTML;
 
-    this.shadowRoot.append(style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {

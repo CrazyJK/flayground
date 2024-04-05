@@ -1,11 +1,11 @@
-import { componentCss } from '../util/componentCssLoader';
-
 const CSS = `
-${componentCss}
-.wrapper {
-  padding-bottom: 1rem;
+.flay-finder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 3rem 1fr;
 }
-.wrapper.search-wrapper {
+.flay-finder .search-wrapper {
   position: sticky;
   top: 0;
   background-color: var(--color-bg);
@@ -14,15 +14,28 @@ ${componentCss}
   padding: 0.5rem;
   text-align: center;
 }
-.wrapper > ol {
-  padding: 0.25rem 0.5rem;
+.flay-finder .result-wrapper {
+  overflow: auto;
 }
+.flay-finder .result-wrapper > h1 {
+  position: sticky;
+  top: 0;
+  background-color: var(--color-bg);
+  margin: 0;
+  padding: 0 1rem;
+  z-index: 1;
+}
+.flay-finder .result-wrapper > ol {
+  padding:0.5rem;
+}
+
 .item {
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
   gap: 0.5rem;
+  width: 100%;
 }
 .item:hover {
   text-shadow: var(--text-shadow-hover);
@@ -68,54 +81,51 @@ ${componentCss}
 `;
 
 const HTML = `
-<div class="wrapper search-wrapper">
-  <input type="search" id="search" name="search" placeholder="Search..." spellcheck="false">
+<div class="search-wrapper">
+  <input type="search" id="search" placeholder="Search..." spellcheck="false">
 </div>
-<div class="wrapper instance-wrapper">
+<div class="result-wrapper">
   <h1>Instance</h1>
-  <ol></ol>
-</div>
-<div class="wrapper archive-wrapper">
+  <ol class="instance-list"></ol>
   <h1>Archive</h1>
-  <ol></ol>
-</div>
-<div class="wrapper actress-wrapper">
+  <ol class="archive-list"></ol>
   <h1>Actress</h1>
-  <ol></ol>
-</div>
-<div class="wrapper info-wrapper">
+  <ol class="actress-list"></ol>
   <h1>Info</h1>
-  <ol></ol>
-</div>
-<div class="wrapper history-wrapper">
+  <ol class="info-list"></ol>
   <h1>History</h1>
-  <ol></ol>
+  <ol class="history-list"></ol>
 </div>
 `;
 
 export default class FlayFinder extends HTMLElement {
   constructor() {
     super();
+  }
+
+  connectedCallback() {
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style/component.css';
 
     const style = document.createElement('style');
     style.innerHTML = CSS;
 
     const wrapper = document.createElement('div');
-    wrapper.classList.add('flay-finder');
+    wrapper.classList.add(this.tagName.toLowerCase());
     wrapper.innerHTML = HTML;
 
-    this.shadowRoot.append(style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
-  }
+    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
-  connectedCallback() {
-    const Wrapper = this.shadowRoot.querySelector('.flay-finder');
     const SearchInput = this.shadowRoot.querySelector('#search');
-    const Instance = this.shadowRoot.querySelector('.instance-wrapper > ol');
-    const Archive = this.shadowRoot.querySelector('.archive-wrapper > ol');
-    const Actress = this.shadowRoot.querySelector('.actress-wrapper > ol');
-    const Info = this.shadowRoot.querySelector('.info-wrapper > ol');
-    const History = this.shadowRoot.querySelector('.history-wrapper > ol');
+    const Instance = this.shadowRoot.querySelector('.instance-list');
+    const Archive = this.shadowRoot.querySelector('.archive-list');
+    const Actress = this.shadowRoot.querySelector('.actress-list');
+    const Info = this.shadowRoot.querySelector('.info-list');
+    const History = this.shadowRoot.querySelector('.history-list');
 
     let keyword = '';
 
@@ -138,7 +148,7 @@ export default class FlayFinder extends HTMLElement {
       }
     });
 
-    Wrapper.addEventListener('click', (e) => {
+    wrapper.addEventListener('click', (e) => {
       let action = e.target.dataset.action;
       let opus = e.target.dataset.opus;
       console.debug('click', e.target, action, opus);
@@ -162,7 +172,7 @@ function fetchAndRender(url, keyword, wrapper, callback) {
     .then((res) => res.json())
     .then((list) => {
       callback(
-        Array.from(list).sort((t1, t2) => t2.release.localeCompare(t1.release)),
+        Array.from(list).sort((t1, t2) => t2.release?.localeCompare(t1.release)),
         keyword,
         wrapper
       );

@@ -11,12 +11,14 @@ export default class FlayActress extends HTMLElement {
 
   constructor() {
     super();
+  }
 
+  connectedCallback() {
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
     const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
-    link.tyoe = 'text/css';
+    link.type = 'text/css';
     link.href = 'style.css';
 
     this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));

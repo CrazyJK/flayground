@@ -21,7 +21,7 @@ export default class FlayCondition extends HTMLElement {
 
     const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
-    link.tyoe = 'text/css';
+    link.type = 'text/css';
     link.href = 'style.css';
 
     const condition = FlayStorage.local.getObject('FlayCondition.condition', JSON.stringify(DEFAULT_CONDITION));

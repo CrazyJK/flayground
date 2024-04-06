@@ -17,7 +17,7 @@ export default class FlayComment extends HTMLElement {
 
     const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
-    link.tyoe = 'text/css';
+    link.type = 'text/css';
     link.href = 'style.css';
 
     this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));

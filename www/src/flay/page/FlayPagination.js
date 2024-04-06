@@ -25,7 +25,7 @@ export default class FlayPagination extends HTMLElement {
 
     const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
-    link.tyoe = 'text/css';
+    link.type = 'text/css';
     link.href = 'style.css';
 
     const wrapper = this.shadowRoot.appendChild(document.createElement('div'));

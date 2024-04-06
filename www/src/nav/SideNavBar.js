@@ -1,5 +1,28 @@
-import { componentCss } from '../util/componentCssLoader';
 import './part/ThemeController';
+
+const menuList = [
+  { url: 'page.flay-page.html', name: 'flay page' },
+  { url: 'page.flay-girls.html', name: 'flay girls' },
+  {},
+  { url: 'page.archive.html', name: 'flay archive' },
+  { url: 'page.flay-one.html', name: 'flay one' },
+  { url: 'page.flay-grid.html', name: 'flay grid' },
+  { url: 'page.dragndrop.html', name: 'drag & drop' },
+  {},
+  { url: 'page.tags.html', name: 'tags' },
+  { url: 'page.shot-history.html', name: 'shot history' },
+  { url: 'page.statistics.html', name: 'statistics' },
+  {},
+  { url: 'page.control.html', name: 'control' },
+  {},
+  { url: 'page.image-page.html', name: 'image page' },
+  { url: 'page.image-one.html', name: 'image one' },
+  { url: 'page.image-fall.html', name: 'image fall' },
+  {},
+  { url: 'page.kamoru-diary.html', name: 'diary' },
+  {},
+  { url: 'blank.html', name: 'blank' },
+];
 
 export default class SideNavBar extends HTMLElement {
   debug = 0; // elememnts를 구분해서 보기 위한 조건
@@ -11,7 +34,38 @@ export default class SideNavBar extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    this.shadowRoot.innerHTML = HTML;
+    this.parentElement.closest('html').querySelector('head').appendChild(document.createElement('style')).innerHTML = PARENT_CSS;
+    this.parentElement.insertBefore(document.createElement('label'), this).classList.add('nav-open');
+
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style/component.css';
+
+    const style = this.shadowRoot.appendChild(document.createElement('style'));
+    style.innerHTML = CSS;
+
+    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    wrapper.classList.add(this.tagName.toLowerCase());
+    wrapper.innerHTML = `
+    <header>
+      <div><a href="index.html">flay ground</a></div>
+    </header>
+    <article>
+      ${menuList
+        .map((menu) => {
+          if (menu.url) return `<div class="menu"><a href="${menu.url}">${menu.name}</a></div>`;
+          return '<div></div>';
+        })
+        .join('')}
+    </article>
+    <footer>
+      <div><a id="debug">debug</a></div>
+      <div><a id="swagger">swagger↗</a></div>
+      <div><a id="dependencies">dependencies↗</a></div>
+      <div style="margin-top: 1rem;"><theme-controller></theme-controller></div>
+    </footer>
+    `;
 
     this.shadowRoot.querySelectorAll('a').forEach((anker) => {
       if (anker.href.indexOf(location.pathname) > -1) {
@@ -21,110 +75,69 @@ export default class SideNavBar extends HTMLElement {
 
     this.shadowRoot.addEventListener('click', (e) => {
       console.debug('click', e.target.tagName);
-      if (e.target.tagName === 'LI' || e.target.tagName === 'DIV') {
-        this.classList.toggle('open');
-      } else if (e.target.tagName === 'A') {
-        const id = e.target.id;
-        if (id === 'debug') {
-          this.debug = ++this.debug % 3;
-          document.documentElement.setAttribute('debug', this.debug);
-        } else if (id === 'dependencies') {
-          window.open('dependencies-viewer.html', Date.now(), `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
-        } else if (id === 'swagger') {
-          window.open('/swagger-ui/index.html', 'swagger', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
+      if (e.target.tagName === 'A') {
+        switch (e.target.id) {
+          case 'debug': {
+            this.debug = ++this.debug % 3;
+            document.documentElement.setAttribute('debug', this.debug);
+            break;
+          }
+          case 'dependencies':
+            window.open('dependencies-viewer.html', 'dependencies-viewer', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
+            break;
+          case 'swagger':
+            window.open('/swagger-ui/index.html', 'swagger', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
+            break;
+          default:
+            break;
         }
+      } else {
+        this.classList.toggle('open');
       }
     });
-
-    const PAREMT_STYLE = this.parentElement.closest('html').querySelector('head').appendChild(document.createElement('style'));
-    PAREMT_STYLE.innerHTML = PARENT_CSS;
-    const NAV_OPEN = this.parentElement.insertBefore(document.createElement('label'), this);
-    NAV_OPEN.classList.add('nav-open');
   }
 }
 
 // Define the new element
 customElements.define('side-nav', SideNavBar);
 
-const HTML = `
-<style>
-  ${componentCss}
-  div.nav {
-    position: absolute;
-    inset: 0;
-    display: flex;
-    flex-direction: column;
-    flex-wrap: nowrap;
-  }
-  div.nav > header {
-    padding: 1rem;
-  }
-  div.nav > header.active > a {
-    color: var(--color-checked);
-  }
-  div.nav > header > a {
-    font-family: 'Ink Free';
-    font-size: var(--size-largest);
-    text-transform: capitalize;
-  }
-  div.nav > ul {
-    margin-bottom: 1rem;
-  }
-  div.nav > ul:last-child {
-    margin-top: auto;
-  }
-  div.nav > ul > li {
-    padding: 0.25rem 1rem;
-    text-align: left;
-  }
-  div.nav > ul > li > a {
-    font-family: 'Ink Free';
-    text-transform: capitalize;
-  }
-  div.nav > ul > li.active > a {
-    color: var(--color-checked);
-  }
-</style>
-<div class="nav">
-  <header>
-    <a href="index.html">flay ground</a>
-  </header>
-  <ul>
-    <li><a href="page.flay-page.html">flay page</a></li>
-    <li><a href="page.flay-girls.html">flay girls</a></li>
-  </ul>
-  <ul>
-    <li><a href="page.archive.html">flay archive</a></li>
-    <li><a href="page.flay-one.html">flay one</a></li>
-    <li><a href="page.flay-grid.html">flay grid</a></li>
-    <li><a href="page.dragndrop.html">drag & drop</a></li>
-  </ul>
-  <ul>
-    <li><a href="page.tags.html">tags</a></li>
-    <li><a href="page.shot-history.html">shot history</a></li>
-    <li><a href="page.statistics.html">statistics</a></li>
-  </ul>
-  <ul>
-    <li><a href="page.control.html">control</a></li>
-  </ul>
-  <ul>
-    <li><a href="page.image-page.html">image page</a></li>
-    <li><a href="page.image-one.html">image one</a></li>
-    <li><a href="page.image-fall.html">image fall</a></li>
-  </ul>
-  <ul>
-    <li><a href="page.kamoru-diary.html">diary</a></li>
-  </ul>
-  <ul>
-    <li><a href="blank.html">blank</a></li>
-  </ul>
-  <ul>
-    <li><a id="debug">debug</a></li>
-    <li><a id="swagger">swagger↗</a></li>
-    <li><a id="dependencies">dependencies↗</a></li>
-    <li style="margin-top: 1rem;"><theme-controller /></li>
-  </ul>
-</div>
+const CSS = `
+.side-nav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+}
+.side-nav > header {
+  padding: 1rem;
+}
+.side-nav > header a {
+  font-size: var(--size-largest);
+}
+.side-nav > article {
+  margin-bottom: auto;
+  padding: 1rem;
+  overflow: auto;
+}
+.side-nav > footer {
+  padding: 1rem;
+}
+
+div {
+  line-height: 2rem;
+}
+div:empty {
+  margin-bottom: 1rem;
+}
+.active > a {
+  color: var(--color-checked);
+}
+a {
+  font-family: 'Ink Free';
+  text-transform: capitalize;
+}
 `;
 
 const PARENT_CSS = `

@@ -1,6 +1,6 @@
-import { componentCss } from '../../util/componentCssLoader';
 import FlayAction from '../../util/FlayAction';
 import Search from '../../util/FlaySearch';
+import './FlayComment.scss';
 
 const COMMENT = 'Comment';
 
@@ -15,11 +15,13 @@ export default class FlayComment extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('comment');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
 
     const div = this.wrapper.appendChild(document.createElement('div'));
 
@@ -62,8 +64,6 @@ export default class FlayComment extends HTMLElement {
         this.input.style.display = 'none';
       });
     });
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize(domRect) {
@@ -94,26 +94,3 @@ export default class FlayComment extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-comment', FlayComment);
-
-const CSS = `
-${componentCss}
-div.comment {
-  text-align: center;
-}
-div.comment input {
-  padding: 0;
-  width: 100%;
-  text-align: center;
-}
-div.comment .placeholder {
-  color: var(--color-text-placeholder);
-}
-
-.japanese {
-  margin-right: 8px;
-}
-
-.card .japanese {
-  display: none;
-}
-`;

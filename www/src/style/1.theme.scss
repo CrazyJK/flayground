@@ -104,3 +104,11 @@
   --text-shadow: 1px 1px 2px var(--color-dark-light);
   --text-shadow-hover: 1px 1px 2px var(--color-orange);
 }
+
+[debug='1'] {
+  --debug1-outline: #418546 dashed 1px;
+}
+[debug='2'] {
+  --debug1-outline: #418546 dashed 1px;
+  --debug2-outline: #da57a6 dotted 1px;
+}

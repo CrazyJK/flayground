@@ -1,0 +1,83 @@
+.flay-finder {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: 3rem 1fr;
+
+  .search-wrapper {
+    position: sticky;
+    top: 0;
+    background-color: var(--color-bg);
+    z-index: 1;
+
+    padding: 0.5rem;
+    text-align: center;
+  }
+
+  .result-wrapper {
+    overflow: auto;
+
+    h1 {
+      position: sticky;
+      top: 0;
+      background-color: var(--color-bg);
+      margin: 0;
+      padding: 0 1rem;
+      z-index: 1;
+    }
+
+    ol {
+      padding: 0.5rem;
+    }
+  }
+
+  .item {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+    gap: 0.5rem;
+    width: 100%;
+  }
+  .item:hover {
+    text-shadow: var(--text-shadow-hover);
+  }
+  .item label {
+    font-size: var(--size-normal);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 0.125rem 0.25rem;
+  }
+  .studio {
+    flex: 0 0 4rem;
+  }
+  .opus {
+    flex: 0 0 6rem;
+  }
+  .title {
+    flex: 1 1 auto;
+  }
+  .actress {
+    flex: 0 0 8rem;
+  }
+  .release {
+    flex: 0 0 6rem;
+  }
+  .action {
+    flex: 0 0 5rem;
+  }
+  .date {
+    flex: 0 0 11rem;
+  }
+  .desc {
+    flex: 1 1 auto;
+  }
+  .tags {
+    flex: 1 1 auto;
+  }
+  .item.actress-item {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+  }
+}

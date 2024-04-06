@@ -1,6 +1,6 @@
 import SVG from '../../svg/svg.json';
 import FlayAction from '../../util/FlayAction';
-import { componentCss } from '../../util/componentCssLoader';
+import './FlayRank.scss';
 
 /**
  * Custom element of Rank
@@ -13,11 +13,13 @@ export default class FlayRank extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('rank');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
 
     this.rankInputElementArray = [];
 
@@ -59,8 +61,6 @@ export default class FlayRank extends HTMLElement {
 
     this.scoreLabel = this.wrapper.appendChild(document.createElement('label'));
     this.scoreLabel.classList.add('score-label');
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize(domRect) {
@@ -120,69 +120,3 @@ export default class FlayRank extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-rank', FlayRank);
-
-const CSS = `
-${componentCss}
-div.rank {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  align-items: baseline;
-}
-div.rank div.rank-group {
-  display: inline-flex;
-  gap: 0.5rem;
-}
-div.rank div.rank-group label svg {
-  aspect-ratio: 157 / 150;
-}
-div.rank div.rank-group input[value='-1']:checked + label {
-  color: #f00a;
-}
-div.rank div.rank-group input[value='0']:checked + label {
-  color: #3f7e7e;
-}
-div.rank .rank-label {
-  display: none;
-}
-div.rank.card {
-  gap: 0.5rem;
-}
-div.rank.card .rank-group,
-div.rank.card .score-label {
-  display: none;
-}
-div.rank.card .rank-label {
-  display: block;
-}
-
-div.rank.small .rank-group,
-div.rank.small .like-btn,
-div.rank.small .play-label,
-div.rank.small .score-label {
-  display: none;
-}
-div.rank.small .rank-label {
-  display: block;
-}
-div.rank.small label {
-  font-size: var(--size-small);
-}
-div.rank.small label svg {
-  width: 1.25rem;
-  height: 1.25rem;
-}
-div.rank.small button {
-  font-size: var(--size-normal);
-}
-.badge.score {
-  min-width: 2rem;
-}
-.notyet span,
-.notyet i {
-  color: var(--color-text-secondary);
-}
-div.rank.archive .rank-label {
-  color: var(--color-gray-dark);
-}
-`;

@@ -1,0 +1,32 @@
+.flay-page {
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: center;
+  transition: 0.4s;
+  margin: auto;
+}
+.flay-page > * {
+  margin: 0.25rem auto;
+  padding: 0 0.5rem;
+  min-height: 2rem;
+  width: 100%;
+}
+.flay-page > flay-cover {
+  margin: 0.5rem auto;
+  padding: 0;
+}
+.flay-page > flay-cover,
+.flay-page > flay-actress {
+  max-width: 900px;
+}
+@media screen and (max-height: 1400px) {
+  .flay-page > flay-cover {
+    margin: 0.25rem auto;
+  }
+}
+@media screen and (max-height: 997px) {
+  .flay-page {
+    max-width: 800px;
+  }
+}

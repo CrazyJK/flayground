@@ -1,0 +1,63 @@
+div.flay-candidate {
+  display: grid;
+  grid-template-rows: 3rem 1fr;
+  height: 100%;
+
+  & > div {
+    display: flex;
+    justify-content: center;
+  }
+
+  ol {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+
+    list-style: none;
+    padding: 1rem;
+    margin: 0;
+
+    overflow: auto;
+
+    li {
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      transition: 0.2s;
+
+      &:hover {
+        background-color: var(--color-bg-hover);
+      }
+
+      div {
+        aspect-ratio: 400 / 269;
+        background: no-repeat center / contain;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        border-radius: 0.25rem;
+
+        label {
+          background-color: var(--color-bg);
+          color: var(--color-text);
+          padding: 0.25rem 0.5rem;
+          border-radius: 0.25rem;
+          font-size: 1rem;
+        }
+      }
+
+      button {
+        font: 700 1rem D2Coding;
+        padding: 0.25rem 0.5rem;
+        margin-bottom: 0.5rem;
+        border-radius: 0.25rem;
+        transition: 0.2s;
+
+        &:hover {
+          background-color: var(--color-bg-hover);
+        }
+      }
+    }
+  }
+}

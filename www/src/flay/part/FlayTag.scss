@@ -1,0 +1,59 @@
+.flay-tag {
+  padding-bottom: 1rem;
+
+  .tag-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.25rem 0.5rem;
+
+    label {
+      font-size: var(--size-normal);
+      padding: 0.25rem;
+      transition: box-shadow 0.4s 0.2s;
+
+      &:hover {
+        box-shadow: var(--box-shadow-small);
+        border-radius: var(--border-radius);
+      }
+    }
+
+    .tag-new-btn {
+      font-size: var(--size-normal);
+    }
+  }
+
+  .tag-new {
+    display: none;
+    text-align: center;
+
+    &.show {
+      display: block;
+    }
+
+    input {
+      margin: 0.25rem;
+      border: 0;
+      padding: 0.25rem;
+    }
+  }
+
+  &.card {
+    padding: 0;
+
+    .tag-list label {
+      padding: 0.125rem;
+    }
+    input:not(:checked) + label {
+      display: none;
+    }
+    .tag-new-btn {
+      display: none;
+    }
+  }
+
+  .candidate {
+    color: #f00b;
+  }
+}

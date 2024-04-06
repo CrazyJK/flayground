@@ -1,84 +1,4 @@
-const CSS = `
-.flay-finder {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  grid-template-rows: 3rem 1fr;
-}
-.flay-finder .search-wrapper {
-  position: sticky;
-  top: 0;
-  background-color: var(--color-bg);
-  z-index: 1;
-
-  padding: 0.5rem;
-  text-align: center;
-}
-.flay-finder .result-wrapper {
-  overflow: auto;
-}
-.flay-finder .result-wrapper > h1 {
-  position: sticky;
-  top: 0;
-  background-color: var(--color-bg);
-  margin: 0;
-  padding: 0 1rem;
-  z-index: 1;
-}
-.flay-finder .result-wrapper > ol {
-  padding:0.5rem;
-}
-
-.item {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-  gap: 0.5rem;
-  width: 100%;
-}
-.item:hover {
-  text-shadow: var(--text-shadow-hover);
-}
-.item label {
-  font-size: var(--size-normal);
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  padding: 0.125rem 0.25rem;
-}
-.studio {
-  flex: 0 0 4rem;
-}
-.opus {
-  flex: 0 0 6rem;
-}
-.title {
-  flex: 1 1 auto;
-}
-.actress {
-  flex: 0 0 8rem;
-}
-.release {
-  flex: 0 0 6rem;
-}
-.action {
-  flex: 0 0 5rem;
-}
-.date {
-  flex: 0 0 11rem;
-}
-.desc {
-  flex: 1 1 auto;
-}
-.tags {
-  flex: 1 1 auto;
-}
-.item.actress-item {
-  flex-wrap: wrap;
-  justify-content: flex-start;
-}
-`;
+import './FlayFinder.scss';
 
 const HTML = `
 <div class="search-wrapper">
@@ -106,19 +26,14 @@ export default class FlayFinder extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const link = document.createElement('link');
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
     link.tyoe = 'text/css';
-    link.href = 'style/component.css';
+    link.href = 'style.css';
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
-
-    const wrapper = document.createElement('div');
+    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
     wrapper.classList.add(this.tagName.toLowerCase());
     wrapper.innerHTML = HTML;
-
-    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
 
     const SearchInput = this.shadowRoot.querySelector('#search');
     const Instance = this.shadowRoot.querySelector('.instance-list');

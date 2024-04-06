@@ -1,4 +1,4 @@
-import { componentCss } from '../../util/componentCssLoader';
+import './FlayTitle.scss';
 
 /**
  * Custom element of Title
@@ -11,11 +11,13 @@ export default class FlayTitle extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('title');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
 
     const label = this.wrapper.appendChild(document.createElement('label'));
     this.anker = label.appendChild(document.createElement('a'));
@@ -25,8 +27,6 @@ export default class FlayTitle extends HTMLElement {
         window.open('popup.flay.html?opus=' + this.flay.opus, 'popup.' + this.flay.opus, 'width=800px,height=1280px');
       });
     }
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize(domRect) {
@@ -52,31 +52,3 @@ export default class FlayTitle extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-title', FlayTitle);
-
-const CSS = `
-${componentCss}
-div.title {
-  text-align: center;
-}
-div.title label {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-div.title label a {
-  display: inline;
-  font-size: var(--size-largest);
-}
-div.title.card label a {
-  font-size: var(--size-large);
-}
-div.title.small label a {
-  font-size: var(--size-normal);
-}
-div.title.archive label a {
-  color: var(--color-gray-dark);
-}
-`;

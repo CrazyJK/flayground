@@ -15,11 +15,13 @@ flay-page,
 flay-register,
 flay-batch,
 flay-candidate,
-tag-layer {
+tag-layer,
+side-nav {
   position: relative;
   display: block;
   overflow: hidden;
   color: var(--color-text);
+  outline: var(--debug1-outline) !important;
 }
 
 flay-actress,

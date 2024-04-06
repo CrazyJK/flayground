@@ -1,95 +1,5 @@
 import FlayAction from '../util/FlayAction';
-
-const CSS = `
-.header {
-  position: sticky;
-  top: 0;
-  z-index: 1;
-  display: flex;
-  justify-content: center;
-  align-items: baseline;
-  gap: 1rem;
-  padding: 0.5rem;
-  background-color: var(--color-bg);
-}
-
-#flayList {
-  overflow: auto;
-}
-
-.flay-item {
-  display: flex;
-  gap: 8px;
-  font-family: D2Coding;
-  font-size: 80%;
-  font-weight: 700;
-  padding: 0 1rem;
-  height: 28px;
-}
-.flay-item label {
-  font-size: var(--size-small);
-  font-weight: 400;
-}
-.flay-item:hover {
-  color: orange;
-}
-.flay-item.found-subtitles {
-  color: green;
-  text-shadow: 0 0 1px #9f9292;
-
-}
-.flay-item.found-subtitles.active-subtitles {
-  text-shadow: var(--text-shadow);
-}
-.flay-item.hide {
-  display: none;
-}
-.flay-item .flay-count {
-  flex: 0 0 50px;
-  text-align: right;
-}
-.flay-item .flay-studio {
-  flex: 0 0 90px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.flay-item .flay-opus {
-  flex: 0 0 90px;
-}
-.flay-item .flay-title {
-  flex: 1 0 300px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.flay-item .flay-actressList {
-  flex: 0 0 140px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.flay-item .flay-release {
-  flex: 0 0 80px;
-}
-.flay-item .flay-rank {
-  flex: 0 0 30px;
-  text-align: center;
-}
-.flay-item .flay-tag {
-  flex: 0 0 70px;
-  font-size: var(--size-smallest);
-}
-.flay-item .flay-subtitles {
-  flex: 1 0 100px;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.flay-item .flay-subtitles a {
-  font-size: inherit;
-}
-`;
+import './SubtitlesFinder.scss';
 
 const HTML = `
 <div class="header">
@@ -120,19 +30,14 @@ export default class SubtitlesFinder extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const link = document.createElement('link');
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
     link.tyoe = 'text/css';
-    link.href = 'style/component.css';
+    link.href = 'style.css';
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
-
-    const wrapper = document.createElement('div');
+    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
     wrapper.classList.add(this.tagName.toLowerCase());
     wrapper.innerHTML = HTML;
-
-    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {
@@ -263,18 +168,18 @@ export default class SubtitlesFinder extends HTMLElement {
           flayItem.setAttribute('rank', flay.video.rank);
           flayItem.classList.add('flay-item');
           flayItem.innerHTML = `
-          <label class="flay-count">${++count}</label>
-          <label class="flay-studio">${flay.studio}</label>
-          <label class="flay-opus">${flay.opus}</label>
-          <label class="flay-title hover">${flay.title}</label>
-          <label class="flay-actressList">${flay.actressList}</label>
-          <label class="flay-release">${flay.release}</label>
-          <label class="flay-rank">${flay.video.rank > 0 ? flay.video.rank : ''}</label>
-          <label class="flay-tag">${ifTag(flay, 90)}</label>
-          <label class="flay-subtitles"></label>
-        `;
+            <label class="count">${++count}</label>
+            <label class="studio">${flay.studio}</label>
+            <label class="opus">${flay.opus}</label>
+            <label class="title">${flay.title}</label>
+            <label class="actressList">${flay.actressList}</label>
+            <label class="release">${flay.release}</label>
+            <label class="rank">${flay.video.rank > 0 ? flay.video.rank : ''}</label>
+            <label class="tag">${ifTag(flay, 90)}</label>
+            <label class="subtitles"></label>
+          `;
           flayItem.addEventListener('click', (e) => {
-            if (e.target.classList.contains('flay-title')) {
+            if (e.target.classList.contains('title')) {
               // view flay card
               window.open('popup.flay-card.html?opus=' + flay.opus, flay.opus, 'width=800px,height=536px');
             } else if (e.target.tagName === 'A') {

@@ -2,6 +2,7 @@ import SVG from '../svg/svg.json';
 import FlayAction from '../util/FlayAction';
 import FlaySearch from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
+import './FlayRegister.scss';
 
 const HTML = `
 <div class="search-group">
@@ -65,145 +66,6 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 </div>
 `;
 
-const CSS = `
-.flay-register {
-  padding: 1rem;
-  width: 100%;
-}
-
-.flay-register > div.search-group {
-  border: 2px dashed rgb(66, 46, 7);
-  margin-bottom: 1rem;
-}
-.flay-register > div.search-group > div {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: stretch;
-  justify-content: space-between;
-  margin: 2px;
-}
-
-.flay-register input,
-.flay-register textarea,
-.flay-register button,
-.flay-register .checkbox {
-  background: var(--color-bg-input);
-  color: var(--color-text);
-  margin: 1px 2px;
-  border: 0;
-  border-radius: 2px;
-  padding: 2px;
-  outline: none;
-  font: normal 16px D2Coding;
-  text-align: left !important;
-}
-
-.flay-register input,
-.flay-register textarea {
-  cursor: initial !important;
-}
-
-.input-invalid {
-  background-color: #dc143c80;
-}
-
-/* input data */
-#inputOpus {
-  flex: 0 0 auto;
-  width: 8rem;
-}
-#inputTitle {
-  flex: 1 1 auto;
-}
-#inputActress {
-  flex: 0 0 auto;
-  width: 10rem;
-}
-#inputDesc {
-  flex: 1 1 auto;
-  height: 4rem;
-}
-
-/* result data */
-#inputTemp {
-  flex: 1 1 auto;
-}
-#studio {
-  flex: 0 0 auto;
-  width: 7rem;
-}
-#opus {
-  flex: 0 0 auto;
-  width: 6rem;
-}
-#title {
-  flex: 1 1 auto;
-}
-#actress {
-  flex: 0 0 auto;
-  width: 8rem;
-}
-#release {
-  flex: 0 0 auto;
-  width: 7rem;
-}
-#flayFullname {
-  flex: 1 1 auto;
-}
-
-/* actress input */
-#actressFavorite {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  margin: -1px;
-  border: 0;
-  padding: 0;
-  clip: rect(0, 0, 0, 0);
-}
-#actressFavorite + label {
-  cursor: pointer;
-  display: inline-flex;
-  padding: 0 4px;
-}
-#actressFavorite:checked + label {
-  color: var(--color-checked);
-}
-#actressFavorite + label > svg {
-  width: 14px;
-}
-#actressName,
-#actressLocalname,
-#actressBirth,
-#actressBody,
-#actressHeight,
-#actressDebut {
-  flex: 1 1 auto;
-  width: 1px;
-}
-#actressRowData {
-  flex: 1 1 auto;
-  font-size: 14px;
-  height: 72px;
-}
-
-/* about nextjav, lastSearchOpus */
-#lastSearchOpus {
-  flex: 1 1 auto;
-}
-
-/* found flay */
-#found-flay {
-  padding: 0.5rem;
-}
-#found-flay label {
-  font-size: var(--size-small);
-  color: var(--color-orange);
-}
-`;
-
 /**
  *
  */
@@ -212,19 +74,14 @@ export default class FlayRegister extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const link = document.createElement('link');
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
     link.tyoe = 'text/css';
-    link.href = 'style/component.css';
+    link.href = 'style.css';
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
-
-    const wrapper = document.createElement('div');
+    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
     wrapper.classList.add(this.tagName.toLowerCase());
     wrapper.innerHTML = HTML;
-
-    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {

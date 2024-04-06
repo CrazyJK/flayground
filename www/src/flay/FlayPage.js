@@ -1,5 +1,5 @@
-import { componentCss } from '../util/componentCssLoader';
 import { addResizeLazyEventListener } from '../util/resizeListener';
+import './FlayPage.scss';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';
@@ -23,11 +23,13 @@ export default class FlayPage extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    const wrapper = document.createElement('article');
-    wrapper.classList.add('page');
+    const wrapper = this.shadowRoot.appendChild(document.createElement('article'));
+    wrapper.classList.add(this.tagName.toLowerCase());
 
     this.flayStudio = wrapper.appendChild(new FlayStudio());
     this.flayOpus = wrapper.appendChild(new FlayOpus());
@@ -40,11 +42,9 @@ export default class FlayPage extends HTMLElement {
     this.flayFiles = wrapper.appendChild(new FlayFiles());
     this.flayTag = wrapper.appendChild(new FlayTag());
 
-    this.shadowRoot.append(style, wrapper);
-
     addResizeLazyEventListener(() => {
       // 24' 모니터에서 선택된 태그만 보이기
-      this.flayTag.shadowRoot.querySelector('.tag').classList.toggle('card', window.innerHeight < 998);
+      this.flayTag.shadowRoot.querySelector('.flay-tag').classList.toggle('card', window.innerHeight < 998);
     });
   }
 
@@ -85,39 +85,3 @@ export default class FlayPage extends HTMLElement {
 }
 
 customElements.define('flay-page', FlayPage);
-
-const CSS = `
-${componentCss}
-article.page {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: center;
-  transition: 0.4s;
-  margin: auto;
-}
-article.page > * {
-  margin: 0.25rem auto;
-  padding: 0 0.5rem;
-  min-height: 2rem;
-  width: 100%;
-}
-article.page > flay-cover {
-  margin: 0.5rem auto;
-  padding: 0;
-}
-article.page > flay-cover,
-article.page > flay-actress {
-  max-width: 900px;
-}
-@media screen and (max-height: 1400px) {
-  article.page > flay-cover {
-    margin: 0.25rem auto;
-  }
-}
-@media screen and (max-height: 997px) {
-  article.page {
-    max-width: 800px;
-  }
-}
-`;

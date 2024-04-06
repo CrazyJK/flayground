@@ -1,7 +1,7 @@
 import FlayStorage from '../../util/FlayStorage';
-import { componentCss } from '../../util/componentCssLoader';
 import { getDominatedColors } from '../../util/dominatedColor';
 import { getRandomInt } from '../../util/randomNumber';
+import './FlayCover.scss';
 
 /**
  * Custom element of Cover
@@ -14,11 +14,13 @@ export default class FlayCover extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('cover');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
     this.wrapper.addEventListener('click', () => {
       this.wrapper.classList.toggle('contain');
     });
@@ -32,8 +34,6 @@ export default class FlayCover extends HTMLElement {
     for (let i = 0; i < 5; i++) {
       this.colorWrapper.appendChild(document.createElement('label'));
     }
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize(domRect) {
@@ -82,58 +82,3 @@ export default class FlayCover extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-cover', FlayCover);
-
-const CSS = `
-${componentCss}
-div.cover {
-  aspect-ratio: var(--cover-aspect-ratio);
-  background: transparent no-repeat center / cover;
-  border-radius: var(--border-radius);
-  box-shadow: inset 0 0 0.25rem 0.125rem var(--color-bg-cover);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 0.5rem;
-  width: 100%;
-  overflow: hidden;
-  transition: 0.2s;
-}
-div.cover.card {
-  align-items: flex-start;
-  padding: 0;
-  transition: none;
-}
-div.cover .cover-image {
-  border: 0;
-  border-radius: 0.25rem;
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: auto;
-}
-div.cover.contain .cover-image {
-  width: auto;
-  height: 104%;
-}
-div.cover .color-wrapper {
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  padding: 0.75rem;
-  display: flex;
-  gap: 0.5rem;
-  background-color: transparent;
-}
-div.cover.card .color-wrapper {
-  display: none;
-}
-div.cover .color-wrapper label {
-  width: 1.5rem;
-  height: 0.5rem;
-  border: 0;
-  border-radius: 0.25rem;
-  box-shadow: 1px 1px 3px 0px #0008;
-  margin: 0;
-  padding: 0;
-}
-`;

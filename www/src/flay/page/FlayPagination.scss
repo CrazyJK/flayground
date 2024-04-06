@@ -1,0 +1,47 @@
+/* for FlayPagination */
+.flay-pagination .paging {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+.flay-pagination .paging .page {
+  position: relative;
+  margin: 0;
+  border: 1px solid #aaa;
+  border-right: 0;
+  padding: 0.25rem;
+  line-height: 1.25rem;
+  min-width: 2.5rem;
+  font-size: var(--size-normal);
+  cursor: pointer;
+  text-align: center;
+}
+.flay-pagination .paging .page:last-child {
+  border-right: 1px solid #aaa;
+}
+.flay-pagination .paging .page a {
+  font-size: var(--size-small);
+  font-weight: 700;
+}
+.flay-pagination .paging .page.disable a {
+  color: var(--color-text-secondary);
+}
+.flay-pagination .paging .page:hover a {
+  text-shadow: var(--text-shadow-hover);
+}
+.flay-pagination .paging .page a.active {
+  color: var(--color-checked);
+}
+.flay-pagination .progress {
+  position: relative;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+}
+.flay-pagination .progress .progress-bar {
+  position: relative;
+  height: 1px;
+  background-color: #f00;
+}

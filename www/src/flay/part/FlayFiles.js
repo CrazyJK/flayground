@@ -1,8 +1,8 @@
 import SVG from '../../svg/svg.json';
 import FlayAction from '../../util/FlayAction';
 import Search from '../../util/FlaySearch';
-import { componentCss } from '../../util/componentCssLoader';
 import { getPrettyFilesize } from '../../util/fileUtils';
+import './FlayFiles.scss';
 
 /**
  * Custom element of File
@@ -15,11 +15,13 @@ export default class FlayFiles extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('files');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
 
     const infoDiv = this.wrapper.appendChild(document.createElement('div'));
     infoDiv.classList.add('info');
@@ -91,8 +93,6 @@ export default class FlayFiles extends HTMLElement {
       console.log('renameClick', newName);
       FlayAction.renameFlay(this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
     });
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize(domRect) {
@@ -147,87 +147,3 @@ export default class FlayFiles extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-files', FlayFiles);
-
-const CSS = `
-${componentCss}
-div.files > div.info {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  align-items: flex-start;
-}
-div.files > div.list {
-  display: none;
-}
-div.files > div.list.show {
-  display: block;
-}
-div.files > div.list > ol {
-  margin: 0;
-  padding: 0.5rem;
-  list-style: none;
-  text-align: left;
-  border: 2px dashed purple;
-  border-bottom: 0;
-}
-div.files > div.list > ol > li {
-  font-size: var(--size-smallest);
-  font-family: D2Coding;
-  margin-bottom: 0.25rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-div.files > div.list > ol > li:last-child {
-  margin-bottom: 0;
-}
-div.files > div.list > div.rename-flay {
-  display: flex;
-}
-div.files > div.list > div.rename-flay > input#studio {
-  flex: 0 0 auto;
-  width: 4rem;
-}
-div.files > div.list > div.rename-flay > input#opus {
-  flex: 0 0 auto;
-  width: 3rem;
-}
-div.files > div.list > div.rename-flay > input#title {
-  flex: 1 1 auto;
-}
-div.files > div.list > div.rename-flay > input#actress {
-  flex: 0 0 auto;
-  width: 6rem;
-}
-div.files > div.list > div.rename-flay > input#release {
-  flex: 0 0 auto;
-  width: 4rem;
-}
-div.files > div.list > div.rename-flay > input {
-  cursor: auto;
-}
-div.files > div.list > div.rename-flay > input,
-div.files > div.list > div.rename-flay > button {
-  font-size: var(--size-smallest);
-  font-family: D2Coding;
-  border: 2px dashed purple;
-  border-right: 0;
-  padding: 4px;
-}
-div.files > div.list > div.rename-flay > button {
-  font-size: var(--size-small);
-  border-right: 2px dashed purple;
-}
-
-div.files.small .sub-btn,
-div.files.small .size-label,
-div.files.small .files-btn {
-  display: none !important;
-}
-
-div.files.card .size-label,
-div.files.card .files-btn {
-  display: none;
-}
-`;

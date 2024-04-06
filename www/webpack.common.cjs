@@ -8,6 +8,7 @@ module.exports = {
   entry: {
     index: './src/index.js',
     blank: './src/blank.js',
+    style: './src/style.js',
     'page.archive': './src/page.archive.js',
     'page.flay-page': './src/page.flay-page.js',
     'page.flay-one': './src/page.flay-one.js',
@@ -46,10 +47,6 @@ module.exports = {
           to({ context, absoluteFilename }) {
             return '[name][ext]';
           },
-        },
-        {
-          from: 'src/style/*.css',
-          to: 'style/[name][ext]',
         },
         {
           from: 'src/favicon/*.png',

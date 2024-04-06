@@ -1,4 +1,4 @@
-import { componentCss } from '../util/componentCssLoader';
+import './FlayCard.scss';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';
@@ -33,20 +33,27 @@ export default class FlayCard extends HTMLElement {
   init() {
     this.attachShadow({ mode: 'open' });
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('article');
-    this.flayCover = new FlayCover();
-    this.flayTitle = this.wrapper.appendChild(new FlayTitle());
-    this.flayStudio = this.wrapper.appendChild(new FlayStudio());
-    this.flayOpus = this.wrapper.appendChild(new FlayOpus());
-    this.flayComment = this.wrapper.appendChild(new FlayComment());
-    this.flayActress = this.wrapper.appendChild(new FlayActress());
-    this.flayFiles = this.wrapper.appendChild(new FlayFiles());
-    this.flayRank = this.wrapper.appendChild(new FlayRank());
-    this.flayRelease = this.wrapper.appendChild(new FlayRelease());
-    this.flayTag = this.wrapper.appendChild(new FlayTag());
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('article'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
+
+    this.flayCover = this.wrapper.appendChild(new FlayCover());
+    this.flayInfo = this.wrapper.appendChild(document.createElement('div'));
+    this.flayInfo.classList.add('flay-info');
+
+    this.flayTitle = this.flayInfo.appendChild(new FlayTitle());
+    this.flayStudio = this.flayInfo.appendChild(new FlayStudio());
+    this.flayOpus = this.flayInfo.appendChild(new FlayOpus());
+    this.flayComment = this.flayInfo.appendChild(new FlayComment());
+    this.flayActress = this.flayInfo.appendChild(new FlayActress());
+    this.flayFiles = this.flayInfo.appendChild(new FlayFiles());
+    this.flayRank = this.flayInfo.appendChild(new FlayRank());
+    this.flayRelease = this.flayInfo.appendChild(new FlayRelease());
+    this.flayTag = this.flayInfo.appendChild(new FlayTag());
 
     this.flayCover.classList.add('card');
     this.flayTitle.classList.add('card');
@@ -58,8 +65,6 @@ export default class FlayCard extends HTMLElement {
     this.flayRank.classList.add('card');
     this.flayRelease.classList.add('card');
     this.flayTag.classList.add('card');
-
-    this.shadowRoot.append(style, this.flayCover, this.wrapper);
   }
 
   /**
@@ -98,7 +103,7 @@ export default class FlayCard extends HTMLElement {
 
   resize() {
     const domRect = this.getBoundingClientRect();
-    this.wrapper.classList.toggle('small', domRect.width < 400);
+    this.flayInfo.classList.toggle('small', domRect.width < 400);
 
     this.flayCover.resize(domRect);
     this.flayTitle.resize(domRect);
@@ -121,7 +126,6 @@ export default class FlayCard extends HTMLElement {
     if (flay.archive) {
       this.setAttribute('archive', true);
       this.wrapper.classList.add('archive');
-      this.flayCover.classList.add('archive');
     }
 
     const coverExclude = this.excludes.includes('FlayCover');
@@ -167,73 +171,10 @@ export default class FlayCard extends HTMLElement {
   }
 
   notfound(opus) {
-    this.wrapper.classList.add('notfound');
+    this.flayInfo.classList.add('notfound');
     this.flayOpus.set({ opus: opus });
     throw new Error('notfound ' + opus);
   }
 }
 
 customElements.define('flay-card', FlayCard);
-
-const CSS = `
-${componentCss}
-article {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  align-items: flex-start;
-  gap: 0.5rem;
-  padding: 0.5rem;
-
-  background-color: transparent;
-}
-
-article > * {
-  background-color: var(--color-bg);
-  padding: 0.25rem 0.5rem;
-  border-radius: 0.25rem;
-  max-width: calc(100% - 0.5rem);
-}
-
-article > .hide {
-  display: none;
-}
-
-article.small {
-  gap: 0.25rem;
-  padding: 0.25rem;
-}
-
-article.small flay-comment,
-article.small flay-tag {
-  display: none;
-}
-article.small > * {
-  padding: 0.125rem 0.125rem 0;
-  border-radius: 0.125rem;
-  max-width: calc(100% - 0.5rem);
-}
-
-article.notfound flay-title,
-article.notfound flay-studio,
-article.notfound flay-comment,
-article.notfound flay-actress,
-article.notfound flay-files,
-article.notfound flay-rank,
-article.notfound flay-release,
-article.notfound flay-tag {
-  display: none;
-}
-
-flay-cover.archive {
-  opacity: 0.7;
-}
-article.archive flay-files {
-  display: none;
-}
-`;

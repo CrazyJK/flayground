@@ -1,5 +1,5 @@
-import { componentCss } from '../../util/componentCssLoader';
 import { dateFormat } from '../../util/dateUtils';
+import './FlayRelease.scss';
 
 /**
  * Custom element of Release
@@ -12,14 +12,14 @@ export default class FlayRelease extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('release');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
     this.wrapper.innerHTML = HTML;
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {
@@ -60,30 +60,4 @@ const HTML = `
 <label class="modified-label"><sub>mod    </sub><span id="modified">2023-08-20</span></label>
 <label class="access-label"  ><sub>access </sub><span id="access"  >2023-08-20</span></label>
 <label class="played-label"  ><sub>play   </sub><span id="played"  >2023-08-20</span></label>
-`;
-
-const CSS = `
-${componentCss}
-div.release {
-  display: flex;
-  gap: 1rem;
-  justify-content: center;
-  align-items: baseline;
-}
-div.release .modified-label,
-div.release .access-label,
-div.release .played-label {
-  font-size: var(--size-normal);
-  min-width: 7rem;
-  text-align: center;
-}
-
-div.release.card .modified-label,
-div.release.card .access-label,
-div.release.card .played-label {
-  display: none;
-}
-div.release.archive .release-label span {
-  color: var(--color-gray-dark);
-}
 `;

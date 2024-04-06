@@ -2,6 +2,7 @@
 ::after,
 ::before {
   box-sizing: border-box;
+  outline: var(--debug2-outline) !important;
 }
 
 header,
@@ -196,64 +197,4 @@ h4 {
 }
 h5 {
   font-size: var(--size-smallest);
-}
-
-[debug='1'] {
-  --debug1-outline: #418546 dashed 1px;
-}
-[debug='2'] {
-  --debug1-outline: #418546 dashed 1px;
-  --debug2-outline: #da57a6 dotted 1px;
-}
-
-flay-actress,
-flay-cover,
-flay-files,
-flay-opus,
-flay-rank,
-flay-release,
-flay-studio,
-flay-tag,
-flay-title,
-flay-comment,
-flay-pagination,
-flay-condition,
-flay-card,
-flay-page,
-flay-register,
-flay-batch,
-flay-candidate,
-tag-layer,
-side-nav {
-  outline: var(--debug1-outline) !important;
-}
-
-* {
-  outline: var(--debug2-outline) !important;
-}
-
-/* 스크롤 바 영역 전체 */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-  border: 0;
-  background-color: transparent;
-}
-/* 상하, 좌우 화살표가 포함된 부분 */
-::-webkit-scrollbar-button:start:decrement,
-::-webkit-scrollbar-button:end:increment {
-  width: 8px;
-  height: 8px;
-  display: block;
-  background-color: transparent;
-}
-/* 화살표를 제외한 몸통 부분 */
-::-webkit-scrollbar-track {
-  background-color: transparent;
-  border-radius: 4px;
-}
-/* 몸통 부분에서 실제 움직이는 부분 */
-::-webkit-scrollbar-thumb {
-  background-color: #aaa4;
-  border-radius: 4px;
 }

@@ -1,4 +1,4 @@
-import { componentCss } from '../../util/componentCssLoader';
+import './FlayOpus.scss';
 
 /**
  * Custom element of Opus
@@ -11,11 +11,13 @@ export default class FlayOpus extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('opus');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
 
     const label = this.wrapper.appendChild(document.createElement('label'));
     this.opus = label.appendChild(document.createElement('a'));
@@ -24,8 +26,6 @@ export default class FlayOpus extends HTMLElement {
       console.log('opusClick', this.flay.opus);
       window.open('/flay/' + this.flay.opus, this.flay.opus, 'width=800px,height=1200px');
     });
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize(domRect) {
@@ -50,13 +50,3 @@ export default class FlayOpus extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-opus', FlayOpus);
-
-const CSS = `
-${componentCss}
-div.opus {
-  text-align: center;
-}
-div.opus.archive a {
-  color: var(--color-gray-dark);
-}
-`;

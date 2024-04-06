@@ -1,5 +1,5 @@
-import { componentCss } from '../../util/componentCssLoader';
 import { getDominatedColors } from '../../util/dominatedColor';
+import './ImageFrame.scss';
 
 const HTML = `
 <img>
@@ -7,50 +7,6 @@ const HTML = `
   <label id="imgIdx"></label>
   <label id="imgName"></label>
 </div>
-`;
-
-const CSS = `
-${componentCss}
-.image-frame {
-  transition: 0.4s;
-}
-.image-frame.rotate {
-  transform: rotate(90deg);
-}
-.image-frame img {
-  width: 100%;
-  height: auto;
-  transition: 0.4s;
-}
-.image-frame div.info {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: transparent linear-gradient(0deg, var(--color-bg), transparent);
-  padding: 0.25rem 1rem;
-  opacity: 0;
-  transition: 0.4s;
-
-  display: flex;
-  justify-content: space-between;
-  gap: 0 1rem;
-}
-.image-frame:hover div.info {
-  opacity: 1;
-}
-.image-frame div.info label {
-  background-color: transparent;
-  text-shadow: var(--text-shadow);
-  font-size: var(--size-normal);
-
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-}
-.image-frame div.info label#imgIdx {
-  flex: 0 0 auto;
-}
 `;
 
 export default class ImageFrame extends HTMLElement {
@@ -73,13 +29,14 @@ export default class ImageFrame extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('image-frame');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
     this.wrapper.innerHTML = HTML;
-    this.shadowRoot.append(style, this.wrapper);
 
     this.img = this.shadowRoot.querySelector('img');
     this.imgIdx = this.shadowRoot.querySelector('#imgIdx');

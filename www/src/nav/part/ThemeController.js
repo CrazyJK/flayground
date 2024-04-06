@@ -1,6 +1,6 @@
 import SVG from '../../svg/svg.json';
 import FlayStorage from '../../util/FlayStorage';
-import { componentCss } from '../../util/componentCssLoader';
+import './ThemeController.scss';
 
 const THEME_KEY = 'FlayNav.theme';
 const OS = 'os';
@@ -15,11 +15,13 @@ export default class ThemeController extends HTMLElement {
     super();
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
-    const wrapper = document.createElement('div');
-    wrapper.classList.add('theme-controller');
-    this.shadowRoot.append(style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
+
+    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    wrapper.classList.add(this.tagName.toLowerCase());
 
     const themeGroup = wrapper.appendChild(document.createElement('div'));
     themeGroup.classList.add('theme-group');
@@ -85,24 +87,3 @@ export default class ThemeController extends HTMLElement {
 
 // Define the new element
 customElements.define('theme-controller', ThemeController);
-
-const CSS = `
-${componentCss}
-.theme-controller {
-  display: flex;
-  align-items: center;
-  width: 100%;
-  height: 100%;
-  padding: 0.125rem 0.5rem;
-}
-.theme-group {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  width: 100%;
-}
-.theme-group > input + label > svg {
-  width: 1.5rem;
-  height: 1.5rem;
-}
-`;

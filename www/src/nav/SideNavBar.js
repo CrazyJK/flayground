@@ -1,4 +1,5 @@
 import './part/ThemeController';
+import './SideNavBar.scss';
 
 const menuList = [
   { url: 'page.flay-page.html', name: 'flay page' },
@@ -40,10 +41,7 @@ export default class SideNavBar extends HTMLElement {
     const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
     link.tyoe = 'text/css';
-    link.href = 'style/component.css';
-
-    const style = this.shadowRoot.appendChild(document.createElement('style'));
-    style.innerHTML = CSS;
+    link.href = 'style.css';
 
     const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
     wrapper.classList.add(this.tagName.toLowerCase());
@@ -100,45 +98,6 @@ export default class SideNavBar extends HTMLElement {
 
 // Define the new element
 customElements.define('side-nav', SideNavBar);
-
-const CSS = `
-.side-nav {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: space-between;
-}
-.side-nav > header {
-  padding: 1rem;
-}
-.side-nav > header a {
-  font-size: var(--size-largest);
-}
-.side-nav > article {
-  margin-bottom: auto;
-  padding: 1rem;
-  overflow: auto;
-}
-.side-nav > footer {
-  padding: 1rem;
-}
-
-div {
-  line-height: 2rem;
-}
-div:empty {
-  margin-bottom: 1rem;
-}
-.active > a {
-  color: var(--color-checked);
-}
-a {
-  font-family: 'Ink Free';
-  text-transform: capitalize;
-}
-`;
 
 const PARENT_CSS = `
 .nav-open {

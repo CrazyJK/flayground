@@ -1,4 +1,4 @@
-import { componentCss } from '../../util/componentCssLoader';
+import './FlayStudio.scss';
 
 /**
  * Custom element of Studio
@@ -11,11 +11,13 @@ export default class FlayStudio extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('studio');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
 
     const label = this.wrapper.appendChild(document.createElement('label'));
     this.studio = label.appendChild(document.createElement('a'));
@@ -25,8 +27,6 @@ export default class FlayStudio extends HTMLElement {
       // window.open('/info/studio/' + this.flay.studio, this.flay.studio, 'width=640px,height=800px');
       window.open('popup.studio.html?name=' + this.flay.studio, this.flay.studio, 'width=960px,height=1200px');
     });
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   resize(domRect) {
@@ -51,13 +51,3 @@ export default class FlayStudio extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-studio', FlayStudio);
-
-const CSS = `
-${componentCss}
-div.studio {
-  text-align:center;
-}
-div.studio.archive a {
-  color: var(--color-gray-dark);
-}
-`;

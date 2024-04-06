@@ -1,6 +1,6 @@
 import SVG from '../../svg/svg.json';
 import FlayAction from '../../util/FlayAction';
-import { componentCss } from '../../util/componentCssLoader';
+import './FlayActress.scss';
 
 /**
  * Custom element of Actress
@@ -14,13 +14,13 @@ export default class FlayActress extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('actress');
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
   }
 
   resize(domRect) {
@@ -156,65 +156,3 @@ function toInchBody(body) {
 
   return Math.round(b / 2.54) + c + '-' + Math.round(w / 2.54) + '-' + Math.round(h / 2.54);
 }
-
-const CSS = `
-${componentCss}
-div.actress > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-div.actress > div > span {
-  margin-top: 0.25rem;
-}
-div.actress > div > label {
-  text-align: center;
-  white-space: nowrap;
-}
-div.actress .name {
-  flex: 1 1 auto;
-  white-space: nowrap;
-  text-align: start;
-}
-div.actress .localName {
-  flex: 0 1 auto;
-}
-div.actress .flaySize {
-  flex: 0 1 2rem;
-  text-align: right;
-}
-div.actress .age {
-  flex: 0 1 2rem;
-  text-align: right;
-}
-div.actress .body {
-  flex: 0 1 6.5rem;
-}
-div.actress .height {
-  flex: 0 1 auto;
-  text-align: right;
-}
-div.actress .debut {
-  flex: 0 1 auto;
-  text-align: right;
-}
-
-div.actress.card .localName,
-div.actress.card .flaySize,
-div.actress.card .age,
-div.actress.card .body,
-div.actress.card .height,
-div.actress.card .debut {
-  display: none;
-}
-div.actress.small > div {
-  gap: 0.5rem;
-}
-div.actress.small svg {
-  width: 1rem;
-  height: 1rem;
-}
-div.actress.small a {
-  font-size: var(--size-small);
-}
-`;

@@ -1,0 +1,22 @@
+.flay-release {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: baseline;
+}
+.flay-release .modified-label,
+.flay-release .access-label,
+.flay-release .played-label {
+  font-size: var(--size-normal);
+  min-width: 7rem;
+  text-align: center;
+}
+
+.flay-release.card .modified-label,
+.flay-release.card .access-label,
+.flay-release.card .played-label {
+  display: none;
+}
+.flay-release.archive .release-label span {
+  color: var(--color-gray-dark);
+}

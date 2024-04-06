@@ -1,4 +1,5 @@
 import FlayAction from '../util/FlayAction';
+import './FlayBatch.scss';
 
 const HTML = `
 <div>
@@ -16,42 +17,6 @@ const HTML = `
 </div>
 `;
 
-const CSS = `
-div.flay-batch {
-  padding: 1rem;
-  border-radius: 0.25rem;
-}
-div.flay-batch > div {
-  display: flex;
-  gap: 1rem;
-}
-div.flay-batch > div:first-child {
-  margin-bottom: 1rem;
-}
-
-span,
-button {
-  border: 1px solid var(--color-border);
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  box-shadow: var(--box-shadow);
-}
-
-div.flay-batch pre {
-  font-family: D2Coding;
-  font-size: 14px;
-  text-align: left;
-  flex: 1 1 auto;
-  margin: 0;
-  border: 1px solid var(--color-border);
-  padding: 1rem;
-  background-color: #111;
-  color: #eee;
-  width: 100%;
-  overflow: auto;
-}
-`;
-
 /**
  *
  */
@@ -59,21 +24,16 @@ export default class FlayBatch extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    this.attachShadow({ mode: 'open' });
 
-    const link = document.createElement('link');
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
     link.tyoe = 'text/css';
-    link.href = 'style/component.css';
+    link.href = 'style.css';
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
-
-    const wrapper = document.createElement('div');
+    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
     wrapper.classList.add(this.tagName.toLowerCase());
     wrapper.innerHTML = HTML;
-
-    this.shadowRoot.append(link, style, wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {

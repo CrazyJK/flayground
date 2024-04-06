@@ -1,6 +1,6 @@
 import SVG from '../../svg/svg.json';
 import FlayStorage from '../../util/FlayStorage';
-import { componentCss } from '../../util/componentCssLoader';
+import './FlayCondition.scss';
 
 const DEFAULT_CONDITION = {
   search: '',
@@ -19,36 +19,14 @@ export default class FlayCondition extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = `
-      ${componentCss}
-      div.condition {
-        display: flex;
-        gap: 1rem;
-        justify-content: center;
-        align-items: center;
-        padding: 0.5rem;
-        transition: 0.4s;
-      }
-      div.condition > div > input[type='search'] {
-        border-radius: 0.5rem;
-      }
-      div.condition > div > label {
-        margin: 0 0.25rem;
-      }
-      div.condition > div > select {
-        font-size: var(--size-normal);
-        outline: none;
-      }
-      div.condition > div > select > option {
-        font-size: var(--size-small);
-        text-transform: capitalize;
-      }
-    `;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
     const condition = FlayStorage.local.getObject('FlayCondition.condition', JSON.stringify(DEFAULT_CONDITION));
-    const WRAPPER = document.createElement('div');
-    WRAPPER.classList.add('condition');
+    const WRAPPER = this.shadowRoot.appendChild(document.createElement('div'));
+    WRAPPER.classList.add(this.tagName.toLowerCase());
     WRAPPER.innerHTML = `
       <div>
         <input type="search" id="search" placeholder="Keyword" spellcheck="false">
@@ -73,8 +51,6 @@ export default class FlayCondition extends HTMLElement {
       </div>
     `;
     WRAPPER.addEventListener('change', () => this.fetch());
-
-    this.shadowRoot.append(STYLE, WRAPPER);
   }
 
   connectedCallback() {

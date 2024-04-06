@@ -1,0 +1,20 @@
+.flay-comment {
+  text-align: center;
+
+  input {
+    padding: 0;
+    width: 100%;
+    text-align: center;
+  }
+  .placeholder {
+    color: var(--color-text-placeholder);
+  }
+
+  .japanese {
+    margin-right: 8px;
+  }
+
+  .card .japanese {
+    display: none;
+  }
+}

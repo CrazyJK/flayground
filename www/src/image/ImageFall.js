@@ -1,6 +1,6 @@
-import { componentCss } from '../util/componentCssLoader';
 import { getRandomInt } from '../util/randomNumber';
 import { addResizeLazyEventListener } from '../util/resizeListener';
+import './ImageFall.scss';
 
 const PANE_WIDTH = 360;
 
@@ -17,10 +17,13 @@ export default class ImageFall extends HTMLElement {
   connectedCallback() {
     this.attachShadow({ mode: 'open' });
 
-    const style = document.createElement('style');
-    style.innerHTML = CSS;
-    const main = document.createElement('main');
-    this.shadowRoot.append(style, main);
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
+
+    const main = this.shadowRoot.appendChild(document.createElement('main'));
+    main.classList.add(this.tagName.toLowerCase());
 
     addResizeLazyEventListener(() => {
       document.startViewTransition(() => {
@@ -136,36 +139,3 @@ export default class ImageFall extends HTMLElement {
 }
 
 customElements.define('image-fall', ImageFall);
-
-const CSS = `
-${componentCss}
-main {
-  padding: 0.5rem;
-  overflow: hidden;
-  width: 100%;
-
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-}
-main div {
-  width: 100%;
-}
-main div div {
-  padding: 0.5rem;
-  top: -500px;
-  height: 0;
-  transition: cubic-bezier(0.4, 0, 1, 1) 0.4s;
-}
-main div div img {
-  display: block;
-  width: 100%;
-  height: auto;
-  box-shadow: var(--box-shadow-small);
-  filter: grayscale(0.5) brightness(0.5);
-  transition: 0.4s;
-}
-main div div img:hover {
-  filter: none;
-}
-`;

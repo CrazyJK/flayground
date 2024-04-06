@@ -1,4 +1,4 @@
-import { componentCss } from '../util/componentCssLoader';
+import './FlayAttach.scss';
 
 const File = {
   formatSize: (length) => {
@@ -27,104 +27,6 @@ const OPT_DEFAULT = {
   totalFileLength: 0,
 };
 
-const CSS = `
-  ${componentCss}
-  ::-webkit-scrollbar {
-    width: 0.25rem;
-  }
-  ::-webkit-scrollbar-thumb {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 0.25rem;
-  }
-
-  .wrapper {
-    position: relative;
-    width: calc(100% - 2px);
-    height: calc(100% - 2px);
-    margin: 0;
-    padding: 0;
-    border: 1px solid var(--color-border-active);
-    border-radius: 0;
-  }
-
-  .file-box {
-    position: relative;
-    width: calc(100% - 1rem);
-    height: calc(100% - 1rem);
-    margin: 0;
-    padding: 0.5rem;
-    font-size: 0.875rem;
-  }
-
-  .wrapper.file-empty .file-list {
-    background: transparent url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='192px'><text x='0' y='15' fill='lightgray' font-size='20'>Drag and drop here</text></svg>") center no-repeat;
-  }
-
-  .wrapper.file-dragover .file-list {
-    background: rgba(0, 0, 0, 0.125) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='orange' font-size='20'>Drop file here!</text></svg>") center no-repeat;
-  }
-
-  .wrapper.file-transfer .file-list {
-    background: rgba(0, 0, 0, 0.25) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='orange' font-size='20'>File transfer...</text></svg>") center no-repeat;
-  }
-
-  .file-list {
-    height: calc(100% - 1.5rem);
-    overflow: auto;
-    margin: 0;
-    padding: 0 0 0 0.5rem;
-  }
-  .file-list > li {
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    gap: 1rem;
-    margin: 0.125rem;
-    padding: 0.125rem 0.25rem;
-    border-radius: 0.25rem;
-  }
-  .file-list > li:hover {
-    background-color: rgba(250, 250, 0, 0.125);
-  }
-  .file-list > li > .file-name > a {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-  .file-list > li > .file-size {
-    margin-left: auto;
-  }
-  .file-list > li > button {
-    background-color: transparent;
-    border: 0;
-    color: red;
-    cursor: pointer;
-  }
-  .file-list > li > button:hover {
-    text-shadow: 1px 1px black;
-  }
-
-  .file-summary {
-    border-top: 1px solid var(--color-border-active);
-    height: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-end;
-    gap: 1rem;
-    padding: 0 3rem;
-  }
-
-  #fileSelector {
-    cursor: pointer;
-  }
-
-  input[type="file"] {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    display: none;
-  }
-`;
-
 /**
  * 커스텀 파일 첨부 박스
  */
@@ -142,8 +44,13 @@ export default class FlayAttach extends HTMLElement {
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
     this.setAttribute('id', this.options.id);
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.setAttribute('class', 'wrapper');
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
+
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
 
     this.fileBox = this.wrapper.appendChild(document.createElement('div'));
     this.fileBox.setAttribute('class', 'file-box');
@@ -158,15 +65,9 @@ export default class FlayAttach extends HTMLElement {
     this.fileInput.setAttribute('type', 'file');
     this.fileInput.setAttribute('multiple', 'multiple');
 
-    const STYLE = document.createElement('style');
-    STYLE.textContent = CSS;
-
     this.addFileDragEventListener();
     this.addFileRemoveEventListener();
     this.addFileFinderClickEventListener();
-
-    // 생성된 요소들을 shadow DOM에 부착합니다
-    this.shadowRoot.append(STYLE, this.wrapper);
 
     this.initiate('1c414415614211313313e1401ec1421c31fc1961431f71ee', 'TEMP', 'unnamed');
   }

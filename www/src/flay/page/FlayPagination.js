@@ -1,6 +1,6 @@
-import { componentCss } from '../../util/componentCssLoader';
 import { getRandomInt } from '../../util/randomNumber';
 import { addResizeLazyEventListener } from '../../util/resizeListener';
+import './FlayPagination.scss';
 
 const NEXT = 'NEXT';
 const PREV = 'PREV';
@@ -20,18 +20,17 @@ export default class FlayPagination extends HTMLElement {
 
   constructor() {
     super();
+
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
-    const WRAPPER = document.createElement('div');
-    WRAPPER.classList.add('pagination');
-    this.shadowRoot.append(STYLE, WRAPPER); // 생성된 요소들을 shadow DOM에 부착합니다
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.render(WRAPPER);
-  }
+    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    wrapper.classList.add(this.tagName.toLowerCase());
 
-  render(wrapper) {
     this.PAGING = wrapper.appendChild(document.createElement('div'));
     this.PAGING.classList.add('paging');
 
@@ -282,54 +281,3 @@ export default class FlayPagination extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-pagination', FlayPagination);
-
-const CSS = `
-${componentCss}
-/* for FlayPagination */
-div.pagination .paging {
-  position: relative;
-  display: flex;
-  justify-content: center;
-  margin-bottom: 4px;
-}
-div.pagination .paging .page {
-  position: relative;
-  margin: 0;
-  border: 1px solid #aaa;
-  border-right: 0;
-  padding: 0.25rem;
-  line-height: 1.25rem;
-  min-width: 2.5rem;
-  font-size: var(--size-normal);
-  cursor: pointer;
-  text-align: center;
-}
-div.pagination .paging .page:last-child {
-  border-right: 1px solid #aaa;
-}
-div.pagination .paging .page a {
-  font-size: var(--size-small);
-  font-weight: 700;
-}
-div.pagination .paging .page.disable a {
-  color: var(--color-text-secondary);
-}
-div.pagination .paging .page:hover a {
-  text-shadow: var(--text-shadow-hover);
-}
-div.pagination .paging .page a.active {
-  color: var(--color-checked);
-}
-div.pagination .progress {
-  position: relative;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-}
-div.pagination .progress .progress-bar {
-  position: relative;
-  height: 1px;
-  background-color: #f00;
-}
-`;

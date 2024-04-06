@@ -1,5 +1,5 @@
-import { componentCss } from '../../util/componentCssLoader';
 import FlayAction from '../../util/FlayAction';
+import './FlayTag.scss';
 
 /**
  * Custom element of Tag
@@ -13,11 +13,13 @@ export default class FlayTag extends HTMLElement {
 
     this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const STYLE = document.createElement('style');
-    STYLE.innerHTML = CSS;
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.tyoe = 'text/css';
+    link.href = 'style.css';
 
-    this.wrapper = document.createElement('div');
-    this.wrapper.classList.add('tag');
+    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    this.wrapper.classList.add(this.tagName.toLowerCase());
     this.wrapper.innerHTML = `
       <div class="tag-list" id="tagList">
         <button class="tag-new-btn" id="tagNewBtn">NEW</button>
@@ -55,8 +57,6 @@ export default class FlayTag extends HTMLElement {
         // });
       });
     });
-
-    this.shadowRoot.append(STYLE, this.wrapper); // 생성된 요소들을 shadow DOM에 부착합니다
   }
 
   connectedCallback() {
@@ -156,56 +156,3 @@ export default class FlayTag extends HTMLElement {
 
 // Define the new element
 customElements.define('flay-tag', FlayTag);
-
-const CSS = `
-${componentCss}
-div.tag {
-  padding-bottom: 1rem;
-}
-div.tag .tag-list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  align-items: baseline;
-  gap: 0.25rem 0.5rem;
-}
-div.tag .tag-list label {
-  font-size: var(--size-normal);
-  padding: 0.25rem;
-  transition: box-shadow 0.4s 0.2s;
-}
-div.tag .tag-list label:hover {
-  box-shadow: var(--box-shadow-small);
-  border-radius: var(--border-radius);
-}
-div.tag .tag-list .tag-new-btn {
-  font-size: var(--size-normal);
-}
-div.tag .tag-new {
-  display: none;
-  text-align: center;
-}
-div.tag .tag-new.show {
-  display: block;
-}
-div.tag .tag-new input {
-  margin: 0.25rem;
-  border: 0;
-  padding: 0.25rem;
-}
-div.tag.card {
-  padding: 0;
-}
-div.tag.card .tag-list label {
-  padding: 0.125rem;
-}
-div.tag.card input:not(:checked) + label {
-  display: none;
-}
-div.tag.card .tag-new-btn {
-  display: none;
-}
-.candidate {
-  color: #f00b;
-}
-`;

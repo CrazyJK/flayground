@@ -3,7 +3,6 @@ import './popup.tag.scss';
 
 import FlayCard from './flay/FlayCard';
 import FlayAction from './util/FlayAction';
-import { addResizeLazyEventListener } from './util/resizeListener';
 
 window.tagList = [];
 window.actressMap = new Map();
@@ -56,12 +55,6 @@ delBtn.addEventListener('click', () => {
   if (confirm('A U sure?')) {
     FlayAction.deleteTag(tagId.textContent, tagName.value, tagDesc.value);
   }
-});
-
-addResizeLazyEventListener(() => {
-  flayMap.forEach((flayCard) => {
-    flayCard.resize();
-  });
 });
 
 async function renderFlayCardList(opusList) {

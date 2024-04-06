@@ -14,7 +14,9 @@
     margin-right: 8px;
   }
 
-  .card .japanese {
-    display: none;
+  &.card {
+    .japanese {
+      display: none;
+    }
   }
 }

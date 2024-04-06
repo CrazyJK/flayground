@@ -1,26 +1,19 @@
 import SVG from '../../svg/svg.json';
 import FlayAction from '../../util/FlayAction';
+import FlayHTMLElement from './FlayHTMLElement';
 import './FlayRank.scss';
 
 /**
  * Custom element of Rank
  */
-export default class FlayRank extends HTMLElement {
+export default class FlayRank extends FlayHTMLElement {
   flay;
 
   constructor() {
     super();
+  }
 
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    this.wrapper.classList.add(this.tagName.toLowerCase());
-
+  connectedCallback() {
     this.rankInputElementArray = [];
 
     const rankGroupElement = this.wrapper.appendChild(document.createElement('div'));
@@ -61,13 +54,6 @@ export default class FlayRank extends HTMLElement {
 
     this.scoreLabel = this.wrapper.appendChild(document.createElement('label'));
     this.scoreLabel.classList.add('score-label');
-  }
-
-  resize(domRect) {
-    this.domRect = domRect;
-    this.isCard = this.classList.contains('card');
-    this.wrapper.classList.toggle('card', this.isCard);
-    this.wrapper.classList.toggle('small', domRect.width < 400);
   }
 
   /**

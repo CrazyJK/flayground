@@ -3,7 +3,6 @@ import './popup.studio.scss';
 
 import FlayCard from './flay/FlayCard';
 import flayAction from './util/FlayAction';
-import { addResizeLazyEventListener } from './util/resizeListener';
 
 class PopupStudio {
   constructor() {
@@ -46,12 +45,7 @@ class PopupStudio {
     this.saveBtn.addEventListener('click', () => {
       flayAction.putStudio(this.studioName.value, this.studioCompany.value, this.studioHomepage.value);
     });
-    // 리사이즈 이벤트
-    addResizeLazyEventListener(() => {
-      this.flayCardMap.forEach((flayCard) => {
-        flayCard.resize();
-      });
-    });
+
     // sse 수신 이벤트
     window.emitStudio = (studio) => {
       if (this.name === studio.name) this.#fetchStudio();

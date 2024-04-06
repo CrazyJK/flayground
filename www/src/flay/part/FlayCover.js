@@ -2,25 +2,19 @@ import FlayStorage from '../../util/FlayStorage';
 import { getDominatedColors } from '../../util/dominatedColor';
 import { getRandomInt } from '../../util/randomNumber';
 import './FlayCover.scss';
+import FlayHTMLElement from './FlayHTMLElement';
 
 /**
  * Custom element of Cover
  */
-export default class FlayCover extends HTMLElement {
+export default class FlayCover extends FlayHTMLElement {
   flay;
 
   constructor() {
     super();
+  }
 
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    this.wrapper.classList.add(this.tagName.toLowerCase());
+  connectedCallback() {
     this.wrapper.addEventListener('click', () => {
       this.wrapper.classList.toggle('contain');
     });
@@ -34,12 +28,6 @@ export default class FlayCover extends HTMLElement {
     for (let i = 0; i < 5; i++) {
       this.colorWrapper.appendChild(document.createElement('label'));
     }
-  }
-
-  resize(domRect) {
-    this.domRect = domRect;
-    this.isCard = this.classList.contains('card');
-    this.wrapper.classList.toggle('card', this.isCard);
   }
 
   /**

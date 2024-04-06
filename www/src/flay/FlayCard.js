@@ -1,3 +1,4 @@
+import { addResizeLazyEventListener } from '../util/resizeListener';
 import './FlayCard.scss';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
@@ -45,26 +46,19 @@ export default class FlayCard extends HTMLElement {
     this.flayInfo = this.wrapper.appendChild(document.createElement('div'));
     this.flayInfo.classList.add('flay-info');
 
-    this.flayTitle = this.flayInfo.appendChild(new FlayTitle());
-    this.flayStudio = this.flayInfo.appendChild(new FlayStudio());
-    this.flayOpus = this.flayInfo.appendChild(new FlayOpus());
-    this.flayComment = this.flayInfo.appendChild(new FlayComment());
-    this.flayActress = this.flayInfo.appendChild(new FlayActress());
-    this.flayFiles = this.flayInfo.appendChild(new FlayFiles());
-    this.flayRank = this.flayInfo.appendChild(new FlayRank());
-    this.flayRelease = this.flayInfo.appendChild(new FlayRelease());
-    this.flayTag = this.flayInfo.appendChild(new FlayTag());
+    this.flayTitle = this.flayInfo.appendChild(new FlayTitle().setCard());
+    this.flayStudio = this.flayInfo.appendChild(new FlayStudio().setCard());
+    this.flayOpus = this.flayInfo.appendChild(new FlayOpus().setCard());
+    this.flayComment = this.flayInfo.appendChild(new FlayComment().setCard());
+    this.flayActress = this.flayInfo.appendChild(new FlayActress().setCard());
+    this.flayFiles = this.flayInfo.appendChild(new FlayFiles().setCard());
+    this.flayRank = this.flayInfo.appendChild(new FlayRank().setCard());
+    this.flayRelease = this.flayInfo.appendChild(new FlayRelease().setCard());
+    this.flayTag = this.flayInfo.appendChild(new FlayTag().setCard());
 
-    this.flayCover.classList.add('card');
-    this.flayTitle.classList.add('card');
-    this.flayStudio.classList.add('card');
-    this.flayOpus.classList.add('card');
-    this.flayComment.classList.add('card');
-    this.flayActress.classList.add('card');
-    this.flayFiles.classList.add('card');
-    this.flayRank.classList.add('card');
-    this.flayRelease.classList.add('card');
-    this.flayTag.classList.add('card');
+    addResizeLazyEventListener(() => {
+      this.resize();
+    });
   }
 
   /**
@@ -96,7 +90,6 @@ export default class FlayCard extends HTMLElement {
       }
     }
     this.render(fullyFlay);
-    this.resize();
 
     return fullyFlay;
   }

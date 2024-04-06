@@ -5,23 +5,27 @@
   justify-content: center;
   transition: 0.4s;
   margin: auto;
+
+  & > * {
+    margin: 0.25rem auto;
+    padding: 0 0.5rem;
+    min-height: 2rem;
+    width: 100%;
+  }
+
+  flay-cover {
+    margin: 0.5rem auto;
+    padding: 0;
+  }
+
+  flay-cover,
+  flay-actress {
+    max-width: 900px;
+  }
 }
-.flay-page > * {
-  margin: 0.25rem auto;
-  padding: 0 0.5rem;
-  min-height: 2rem;
-  width: 100%;
-}
-.flay-page > flay-cover {
-  margin: 0.5rem auto;
-  padding: 0;
-}
-.flay-page > flay-cover,
-.flay-page > flay-actress {
-  max-width: 900px;
-}
+
 @media screen and (max-height: 1400px) {
-  .flay-page > flay-cover {
+  .flay-page flay-cover {
     margin: 0.25rem auto;
   }
 }

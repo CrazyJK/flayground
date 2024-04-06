@@ -5,7 +5,6 @@ import FlayCard from './flay/FlayCard';
 import SVG from './svg/svg.json';
 import FlayAction from './util/FlayAction';
 import FlaySearch from './util/FlaySearch';
-import { addResizeLazyEventListener } from './util/resizeListener';
 
 class PopupActress {
   constructor() {
@@ -82,12 +81,7 @@ class PopupActress {
           flayCard.style.display = flayCard.style.display === 'none' ? 'block' : 'none';
         });
     });
-    // 리사이즈 이벤트
-    addResizeLazyEventListener(() => {
-      this.flayCardMap.forEach((flayCard) => {
-        flayCard.resize();
-      });
-    });
+
     // sse 수신 이벤트
     window.emitActress = (actress) => {
       if (this.name === actress.name) this.#fetchActress();

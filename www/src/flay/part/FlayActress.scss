@@ -1,58 +1,68 @@
-.flay-actress > div {
-  display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-}
-.flay-actress > div > span {
-  margin-top: 0.25rem;
-}
-.flay-actress > div > label {
-  text-align: center;
-  white-space: nowrap;
-}
-.flay-actress .name {
-  flex: 1 1 auto;
-  white-space: nowrap;
-  text-align: start;
-}
-.flay-actress .localName {
-  flex: 0 1 auto;
-}
-.flay-actress .flaySize {
-  flex: 0 1 2rem;
-  text-align: right;
-}
-.flay-actress .age {
-  flex: 0 1 2rem;
-  text-align: right;
-}
-.flay-actress .body {
-  flex: 0 1 6.5rem;
-}
-.flay-actress .height {
-  flex: 0 1 auto;
-  text-align: right;
-}
-.flay-actress .debut {
-  flex: 0 1 auto;
-  text-align: right;
-}
+.flay-actress {
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
 
-.flay-actress.card .localName,
-.flay-actress.card .flaySize,
-.flay-actress.card .age,
-.flay-actress.card .body,
-.flay-actress.card .height,
-.flay-actress.card .debut {
-  display: none;
-}
-.flay-actress.small > div {
-  gap: 0.5rem;
-}
-.flay-actress.small svg {
-  width: 1rem;
-  height: 1rem;
-}
-.flay-actress.small a {
-  font-size: var(--size-small);
+    span {
+      margin-top: 0.25rem;
+    }
+    label {
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .name {
+      flex: 1 1 auto;
+      white-space: nowrap;
+      text-align: start;
+    }
+    .localName {
+      flex: 0 1 auto;
+    }
+    .flaySize {
+      flex: 0 1 2rem;
+      text-align: right;
+    }
+    .age {
+      flex: 0 1 2rem;
+      text-align: right;
+    }
+    .body {
+      flex: 0 1 6.5rem;
+    }
+    .height {
+      flex: 0 1 auto;
+      text-align: right;
+    }
+    .debut {
+      flex: 0 1 auto;
+      text-align: right;
+    }
+  }
+
+  &.card {
+    .localName,
+    .flaySize,
+    .age,
+    .body,
+    .height,
+    .debut {
+      display: none;
+    }
+  }
+
+  &.small {
+    div {
+      gap: 0.5rem;
+
+      svg {
+        width: 1rem;
+        height: 1rem;
+      }
+      a {
+        font-size: var(--size-small);
+      }
+    }
+  }
 }

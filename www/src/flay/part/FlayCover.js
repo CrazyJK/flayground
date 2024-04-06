@@ -57,6 +57,7 @@ export default class FlayCover extends FlayHTMLElement {
       }
     };
     this.coverImage.src = COVER_URL;
+    this.coverImage.classList.toggle('no-movie', flay.files.movie.length === 0);
   }
 
   #applyDominatedColor(dominatedColors) {

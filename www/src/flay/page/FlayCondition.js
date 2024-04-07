@@ -72,6 +72,7 @@ export default class FlayCondition extends HTMLElement {
       sort: this.shadowRoot.querySelector('#sort').value,
     };
     const list = await fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) }).then((res) => res.json());
+    console.debug('opus list', list);
     if (list.length === 0) {
       // not found flay
       this.shadowRoot.querySelector('.condition').animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });

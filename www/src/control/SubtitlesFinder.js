@@ -52,7 +52,7 @@ export default class SubtitlesFinder extends HTMLElement {
         ++currentFindingIndex;
         const opus = noSubtitlesOpusList.shift();
         const flayItem = this.shadowRoot.querySelector('#opus_' + opus + '');
-        const subtitles = this.shadowRoot.querySelector('#opus_' + opus + ' > .flay-subtitles');
+        const subtitles = this.shadowRoot.querySelector('#opus_' + opus + ' > .subtitles');
         subtitles.innerHTML = 'finding...';
 
         // const $sub = $('#' + opus + ' > .flay-subtitles').html('finding...'); // mark current active
@@ -91,7 +91,8 @@ export default class SubtitlesFinder extends HTMLElement {
           }
         );
         // scroll move
-        const scrollable = this.parentElement.closest('.scrollable');
+        // const scrollable = this.parentElement.closest('.scrollable');
+        const scrollable = this.shadowRoot.querySelector('#flayList').parentElement;
         const itemPerPage = Math.round(scrollable.clientHeight / 28);
         // console.log('scrollable.clientHeight', scrollable.clientHeight, 'currentFindingIndex', currentFindingIndex, 'currentFindingIndex % itemPerPage', currentFindingIndex % itemPerPage);
         if (currentFindingIndex > itemPerPage && currentFindingIndex % itemPerPage === 1) {

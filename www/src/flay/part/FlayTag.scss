@@ -12,11 +12,6 @@
       font-size: var(--size-normal);
       padding: 0.25rem;
       transition: box-shadow 0.4s 0.2s;
-
-      &:hover {
-        box-shadow: var(--box-shadow-small);
-        border-radius: var(--border-radius);
-      }
     }
 
     .tag-new-btn {

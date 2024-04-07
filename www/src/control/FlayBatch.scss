@@ -1,35 +1,45 @@
 .flay-batch {
-  padding: 1rem;
-  border-radius: 0.25rem;
+  display: grid;
+  grid-template-rows: 3rem 1fr;
+  height: 100%;
 
   & > div {
-    display: flex;
-    gap: 1rem;
-
     &:first-child {
-      margin-bottom: 1rem;
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      justify-content: center;
+
+      span,
+      button {
+        border: 1px solid var(--color-border);
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        transition: 0.4s;
+
+        &:hover {
+          box-shadow: var(--box-shadow);
+        }
+      }
     }
-  }
 
-  span,
-  button {
-    border: 1px solid var(--color-border);
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    box-shadow: var(--box-shadow);
-  }
+    &:nth-child(2) {
+      overflow: auto;
+      padding: 0.25rem 1rem;
 
-  pre {
-    font-family: D2Coding;
-    font-size: 14px;
-    text-align: left;
-    flex: 1 1 auto;
-    margin: 0;
-    border: 1px solid var(--color-border);
-    padding: 1rem;
-    background-color: #111;
-    color: #eee;
-    width: 100%;
-    overflow: auto;
+      pre {
+        font-family: D2Coding;
+        font-size: 14px;
+        text-align: left;
+        flex: 1 1 auto;
+        margin: 0;
+        border: 1px solid var(--color-border);
+        padding: 1rem;
+        background-color: #111;
+        color: #eee;
+        width: 100%;
+        overflow: auto;
+      }
+    }
   }
 }

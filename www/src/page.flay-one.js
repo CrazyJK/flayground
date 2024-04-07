@@ -57,8 +57,18 @@ class Page extends OpusProvider {
       this.#showCover();
     });
 
-    this.flayContainer.addEventListener('click', () => {
-      window.open(`popup.flay.html?opus=${this.opus}`, `popup.${this.opus}`, 'width=800px,height=1280px');
+    this.flayContainer.addEventListener('click', (e) => {
+      if (e.target.tagName === 'IMG') {
+        window.open(`/static/cover/${this.opus}`, `cover.${this.opus}`, 'width=800px,height=538px');
+      } else {
+        switch (e.target.className) {
+          case 'title':
+            window.open(`popup.flay.html?opus=${this.opus}`, `popup.${this.opus}`, 'width=800px,height=1280px');
+            break;
+          default:
+            break;
+        }
+      }
     });
 
     window.addEventListener('wheel', (e) => {

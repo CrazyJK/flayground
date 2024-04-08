@@ -2,17 +2,14 @@ import './init/Page';
 import './page.flay-grid.scss';
 
 import FlayCondition from './flay/page/FlayCondition';
-import { OpusProvider } from './lib/OpusProvider';
 import SVG from './svg/svg.json';
 
-class Page extends OpusProvider {
-  constructor() {
-    super();
-  }
+class Page {
+  opusList = [];
 
-  async #showCover() {
-    const opus = await this.getRandomOpus();
+  constructor() {}
 
+  async #showCover(opus) {
     const res = await fetch('/static/cover/' + opus + '/withData');
     const data = res.headers.get('Data');
     const dataDecoded = decodeURIComponent(data.replace(/\+/g, ' '));
@@ -33,14 +30,17 @@ class Page extends OpusProvider {
 
   async show() {
     for (let i = 0; i < 16; i++) {
-      await this.#showCover();
+      const opus = this.opusList.shift();
+      if (!opus) break;
+      await this.#showCover(opus);
     }
   }
 
   async start() {
     const flayCondition = document.querySelector('body > header').appendChild(new FlayCondition());
     flayCondition.addEventListener('change', async (e) => {
-      this.setOpusList(e.detail.list);
+      this.opusList = e.detail.list;
+
       document.querySelector('main').textContent = null;
       await this.show();
     });

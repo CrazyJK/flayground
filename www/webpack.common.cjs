@@ -23,6 +23,7 @@ module.exports = {
     'page.image-one': './src/page.image-one.js',
     'page.image-fall': './src/page.image-fall.js',
     'page.kamoru-diary': './src/page.kamoru-diary.js',
+    'popup.cover': './src/popup.cover.js',
     'popup.flay': './src/popup.flay.js',
     'popup.flay-card': './src/popup.flay-card.js',
     'popup.studio': './src/popup.studio.js',

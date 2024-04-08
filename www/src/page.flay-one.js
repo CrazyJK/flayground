@@ -59,7 +59,8 @@ class Page extends OpusProvider {
 
     this.flayContainer.addEventListener('click', (e) => {
       if (e.target.tagName === 'IMG') {
-        window.open(`/static/cover/${this.opus}`, `cover.${this.opus}`, 'width=800px,height=538px');
+        // window.open(`/static/cover/${this.opus}`, `cover.${this.opus}`, 'width=800px,height=538px');
+        window.open(`popup.cover.html?opus=${this.opus}`, `cover.${this.opus}`, 'width=800px,height=538px');
       } else {
         switch (e.target.className) {
           case 'title':

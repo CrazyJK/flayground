@@ -38,6 +38,10 @@ export default class FlayPagination extends HTMLElement {
     PROGRESS.classList.add('progress');
     this.PROGRESS_BAR = PROGRESS.appendChild(document.createElement('div'));
     this.PROGRESS_BAR.classList.add('progress-bar');
+
+    this.coverThumbnail = this.shadowRoot.appendChild(document.createElement('div'));
+    this.coverThumbnail.classList.add('cover-thumbnail');
+    this.coverThumbnail.innerHTML = `<div class="top-left"></div><div class="top-right"></div><div class="bottom-left"></div><div class="bottom-right"></div>`;
   }
 
   connectedCallback() {
@@ -217,7 +221,7 @@ export default class FlayPagination extends HTMLElement {
     this.PROGRESS_BAR.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 
     let method = 0;
-    if (method == 0) {
+    if (method === 0) {
       let domRect = this.getBoundingClientRect();
       const RANGE = domRect.width > 1200 ? 30 : 15;
       let currPageNo = Math.ceil((this.opusIndex + 1) / RANGE);
@@ -241,13 +245,33 @@ export default class FlayPagination extends HTMLElement {
         if (i > lastIndex) {
           page.classList.add('disable');
         } else {
+          page.dataset.opus = this.opusList[i];
+          page.classList.toggle('active', i === this.opusIndex);
           page.addEventListener('click', () => {
             console.debug('pageClick', i);
             this.navigator(i);
           });
+
+          page.addEventListener('mouseenter', (e) => {
+            if (e.target.classList.contains('active') || e.target.classList.contains('disable')) {
+              return;
+            }
+            const domRect = e.target.getBoundingClientRect();
+            // console.log(e.type, page.dataset.opus, domRect);
+            const coverWidth = domRect.width * 6;
+
+            this.coverThumbnail.classList.add('show');
+            this.coverThumbnail.style.backgroundImage = `url(/static/cover/${page.dataset.opus})`;
+            this.coverThumbnail.style.width = `${coverWidth}px`;
+            this.coverThumbnail.style.bottom = `${window.innerHeight - domRect.y}px`;
+            this.coverThumbnail.style.left = `${domRect.x + domRect.width / 2 - coverWidth / 2}px`;
+          });
+          page.addEventListener('mouseleave', (e) => {
+            // console.log(e.type, page.dataset.opus);
+            this.coverThumbnail.classList.remove('show');
+          });
         }
         const anker = page.appendChild(document.createElement('a'));
-        anker.classList.toggle('active', i === this.opusIndex);
         anker.innerHTML = i + 1;
       }
     } else {

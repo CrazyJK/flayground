@@ -5,18 +5,21 @@
   align-items: center;
   padding: 0.5rem;
   transition: 0.4s;
-}
-.flay-condition > div > input[type='search'] {
-  border-radius: 0.5rem;
-}
-.flay-condition > div > label {
-  margin: 0 0.25rem;
-}
-.flay-condition > div > select {
-  font-size: var(--size-normal);
-  outline: none;
-}
-.flay-condition > div > select > option {
-  font-size: var(--size-small);
-  text-transform: capitalize;
+
+  div {
+    input[type='search'] {
+      border-radius: 0.5rem;
+    }
+    label {
+      margin: 0 0.25rem;
+    }
+    select {
+      font-size: var(--size-normal);
+      text-transform: capitalize;
+      outline: none;
+      option {
+        font-size: var(--size-small);
+      }
+    }
+  }
 }

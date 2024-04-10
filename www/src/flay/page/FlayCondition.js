@@ -48,7 +48,7 @@ export default class FlayCondition extends HTMLElement {
       </div>
       <div>
         <select id="sort" title="Sort method">
-          ${SORTS.map((opt) => `<option value="${opt}" ${condition.sort === opt ? 'selected' : ''}>${opt}</option>`).join('')}
+          ${SORTS.map((opt) => `<option value="${opt}" ${condition.sort === opt ? 'selected' : ''}>${opt.toLowerCase()}</option>`).join('')}
         </select>
       </div>
     `;

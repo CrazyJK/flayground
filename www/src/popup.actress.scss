@@ -2,6 +2,56 @@
 @import './style/layout.sticky-header.scss';
 @import './style/layout.grid-card.scss';
 
+header {
+  display: grid;
+  grid-template-columns: 1fr minmax(900px, 999px) 1fr;
+  height: 11rem;
+
+  .header-center {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+
+    .actress-info {
+      display: flex;
+      gap: 0.25rem;
+      width: 100%;
+    }
+  }
+
+  .header-side {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+
+    &.studio-list,
+    &.tag-list {
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      border: 1px dashed chocolate;
+      padding: 2px;
+
+      label {
+        font-size: var(--size-small);
+        line-height: 20px;
+        border: 0 !important;
+      }
+    }
+  }
+}
+
+@media screen and (max-width: 1080px) {
+  // benq 세로 풀
+  header {
+    grid-template-columns: 1fr;
+    .header-side {
+      display: none;
+    }
+  }
+}
+
 #favorite + label {
   display: inline-flex;
   align-items: center;
@@ -41,63 +91,4 @@
 }
 #totalCount {
   flex: 0 0 5rem;
-}
-
-header > div button {
-  display: initial;
-}
-
-header {
-  max-width: none;
-  display: grid;
-  grid-template-columns: 1fr minmax(900px, 999px) 1fr;
-  height: 11rem;
-
-  .header-center {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    .actress-info {
-      display: flex;
-      width: 100%;
-      min-width: 900px;
-      max-width: 999px;
-      margin: auto;
-    }
-  }
-
-  .header-side {
-    overflow: auto;
-
-    &.studio-list,
-    &.tag-list {
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 0;
-      border: 1px dashed chocolate;
-      margin: 2px;
-
-      label {
-        font-size: var(--size-small);
-        line-height: 20px;
-        border: 0 !important;
-      }
-    }
-  }
-}
-
-@media screen and (max-width: 1080px) {
-  // benq 세로 풀
-  header {
-    grid-template-columns: 1fr;
-    .header-side {
-      display: none;
-    }
-  }
-}
-
-flay-card.shot {
-  box-shadow: 0 0 0.25rem 0.125rem #f00;
 }

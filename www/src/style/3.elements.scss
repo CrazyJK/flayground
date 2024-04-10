@@ -58,6 +58,12 @@ flay-page {
   margin: auto;
 }
 
+flay-card {
+  &.shot {
+    box-shadow: 0 0 0.25rem 0.125rem #f00;
+  }
+}
+
 @media screen and (min-width: 1278px) {
   flay-page {
     max-width: 1200px;

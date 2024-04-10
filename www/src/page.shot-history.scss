@@ -6,20 +6,21 @@ main {
   flex-direction: column;
   align-items: flex-start;
   gap: 1rem;
-  padding: 1rem;
 
   fieldset {
     display: inline-block;
     border: 1px solid var(--color-border);
-    border-radius: 0.25rem;
+    border-left: 0;
+    border-right: 0;
     margin: 0;
     padding: 0;
+    width: 100%;
     transition: 0.4s;
 
     &:hover {
-      box-shadow: var(--box-shadow);
+      box-shadow: var(--box-shadow) inset;
       legend {
-        box-shadow: var(--box-shadow-small);
+        box-shadow: var(--box-shadow-small) inset;
       }
     }
 
@@ -45,10 +46,6 @@ main {
       flay-card {
         width: 480px;
         border-radius: 0.25rem;
-
-        &.shot {
-          box-shadow: 0 0 0.5rem 0.125rem #f00;
-        }
       }
     }
   }

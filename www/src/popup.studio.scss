@@ -2,19 +2,8 @@
 @import './style/layout.sticky-header.scss';
 @import './style/layout.grid-card.scss';
 
-header > div button {
-  display: initial;
-}
-
 header {
-  max-width: none;
-
   .studio-info {
-    width: 100%;
-    min-width: 900px;
-    max-width: 999px;
-    margin: auto;
-
     #studioName {
       flex: 1 1 auto;
     }

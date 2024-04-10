@@ -22,4 +22,8 @@
 ::-webkit-scrollbar-thumb {
   background-color: #aaa4;
   border-radius: 4px;
+
+  &:hover {
+    background-color: #aaaa;
+  }
 }

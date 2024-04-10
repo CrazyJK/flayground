@@ -6,15 +6,19 @@ header {
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
-  margin: auto;
+
+  margin: 0;
   padding: 1rem;
-  max-width: 999px;
   background-color: var(--color-bg);
 
-  & > div {
+  & > * {
+    flex: 1 0 auto;
+
     display: flex;
     gap: 0.25rem;
+    width: 999px;
     min-height: 2.5rem;
+    margin: auto;
 
     input {
       flex: 1 1 auto;

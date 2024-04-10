@@ -3,15 +3,17 @@
 @import './style/layout.grid-card.scss';
 
 header {
-  input {
-    &#tagId {
-      max-width: 3rem;
-    }
-    &#tagName {
-      max-width: 12rem;
-    }
-    &#tagDesc {
-      flex: 1 1 auto;
+  div {
+    input {
+      &#tagId {
+        max-width: 3rem;
+      }
+      &#tagName {
+        max-width: 12rem;
+      }
+      &#tagDesc {
+        flex: 1 1 auto;
+      }
     }
   }
 }

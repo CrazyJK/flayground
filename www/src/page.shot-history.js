@@ -35,7 +35,7 @@ class Page {
       const date = this.#getDate(this.prevDay);
       const shotOpusList = this.shotDateOpusMap.get(date);
 
-      this.#render(date, shotOpusList);
+      await this.#render(date, shotOpusList);
 
       await new Promise((resolve) => setTimeout(resolve, 100));
     }

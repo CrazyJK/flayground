@@ -64,9 +64,9 @@ async function renderFlayCardList(opusList) {
     let flayCard = new FlayCard({ excludes: [] });
     flayMap.set(opus, flayCard);
     document.querySelector('article').appendChild(flayCard);
-    flayCard.set(opus);
+    await flayCard.set(opus);
 
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => setTimeout(resolve, 10));
   }
 }
 

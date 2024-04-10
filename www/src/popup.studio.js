@@ -101,7 +101,7 @@ class PopupStudio {
       this.flayCardMap.set(opus, flayCard);
 
       await flayCard.set(opus).then(() => {
-        return new Promise((resolve) => setTimeout(resolve, 100));
+        return new Promise((resolve) => setTimeout(resolve, 10));
       });
     }
   }

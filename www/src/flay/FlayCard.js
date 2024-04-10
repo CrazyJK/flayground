@@ -57,8 +57,25 @@ export default class FlayCard extends HTMLElement {
     this.flayTag = this.flayInfo.appendChild(new FlayTag().setCard());
 
     addResizeLazyEventListener(() => {
-      this.resize();
+      this.#resize();
     });
+    this.#resize();
+  }
+
+  #resize() {
+    const domRect = this.getBoundingClientRect();
+    this.flayInfo.classList.toggle('small', domRect.width < 400);
+
+    this.flayCover.resize(domRect);
+    this.flayTitle.resize(domRect);
+    this.flayStudio.resize(domRect);
+    this.flayOpus.resize(domRect);
+    this.flayComment.resize(domRect);
+    this.flayActress.resize(domRect);
+    this.flayFiles.resize(domRect);
+    this.flayRank.resize(domRect);
+    this.flayRelease.resize(domRect);
+    this.flayTag.resize(domRect);
   }
 
   /**
@@ -89,28 +106,12 @@ export default class FlayCard extends HTMLElement {
         fullyFlay = await res.json();
       }
     }
-    this.render(fullyFlay);
+    this.#render(fullyFlay);
 
     return fullyFlay;
   }
 
-  resize() {
-    const domRect = this.getBoundingClientRect();
-    this.flayInfo.classList.toggle('small', domRect.width < 400);
-
-    this.flayCover.resize(domRect);
-    this.flayTitle.resize(domRect);
-    this.flayStudio.resize(domRect);
-    this.flayOpus.resize(domRect);
-    this.flayComment.resize(domRect);
-    this.flayActress.resize(domRect);
-    this.flayFiles.resize(domRect);
-    this.flayRank.resize(domRect);
-    this.flayRelease.resize(domRect);
-    this.flayTag.resize(domRect);
-  }
-
-  render(fullyFlay) {
+  #render(fullyFlay) {
     const { actress, flay } = fullyFlay;
     this.flay = flay;
     this.actress = actress;

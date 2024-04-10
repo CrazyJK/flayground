@@ -9,5 +9,11 @@ const flayCondition = document.querySelector('body > main > header').appendChild
 const flayPagination = document.querySelector('body > main > footer').appendChild(new FlayPagination());
 const flayPage = document.querySelector('body > main > article').appendChild(new FlayPage());
 
-flayCondition.addEventListener('change', (e) => flayPagination.set(e.detail.list));
-flayPagination.addEventListener('change', (e) => document.startViewTransition(() => flayPage.set(e.target.opus)));
+flayCondition.addEventListener('change', () => flayPagination.set(flayCondition.opusList));
+flayPagination.addEventListener('change', () =>
+  document.startViewTransition(async () => {
+    flayPagination.off();
+    await flayPage.set(flayPagination.opus);
+    flayPagination.on();
+  })
+);

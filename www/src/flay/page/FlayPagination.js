@@ -11,6 +11,9 @@ const PAGEUP = 'PAGEUP';
 const PAGEDOWN = 'PAGEDOWN';
 const BACK = 'BACK';
 
+/**
+ * 페이지 표현
+ */
 export default class FlayPagination extends HTMLElement {
   opus = null;
   opusIndex = -1;
@@ -21,7 +24,7 @@ export default class FlayPagination extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    this.attachShadow({ mode: 'open' });
 
     const link = this.shadowRoot.appendChild(document.createElement('link'));
     link.rel = 'stylesheet';
@@ -30,83 +33,62 @@ export default class FlayPagination extends HTMLElement {
 
     const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
     wrapper.classList.add(this.tagName.toLowerCase());
+    wrapper.innerHTML = `
+      <div class="paging"></div>
+      <div class="progress">
+        <div class="progress-bar"></div>
+      </div>
+      <div class="cover-thumbnail">
+        <div class="top-left"></div>   <div class="top-right"></div>
+        <div class="bottom-left"></div><div class="bottom-right"></div>
+      </div>
+    `;
 
-    this.PAGING = wrapper.appendChild(document.createElement('div'));
-    this.PAGING.classList.add('paging');
-
-    const PROGRESS = wrapper.appendChild(document.createElement('div'));
-    PROGRESS.classList.add('progress');
-    this.PROGRESS_BAR = PROGRESS.appendChild(document.createElement('div'));
-    this.PROGRESS_BAR.classList.add('progress-bar');
-
-    this.coverThumbnail = this.shadowRoot.appendChild(document.createElement('div'));
-    this.coverThumbnail.classList.add('cover-thumbnail');
-    this.coverThumbnail.innerHTML = `<div class="top-left"></div><div class="top-right"></div><div class="bottom-left"></div><div class="bottom-right"></div>`;
+    this.paging = wrapper.querySelector('.paging');
+    this.progressBar = wrapper.querySelector('.progress-bar');
+    this.coverThumbnail = wrapper.querySelector('.cover-thumbnail');
   }
 
   connectedCallback() {
     window.addEventListener('wheel', (e) => {
-      if (!this.active) {
-        return;
-      }
-      if (e.ctrlKey) {
-        return;
-      }
-      let isInLayer = e.target.closest('#layer');
-      if (isInLayer) {
-        return;
-      }
-      console.debug('wheel', e.deltaY, e.target, e.target.closest('#layer'), e);
+      if (!this.active) return;
+      if (e.ctrlKey) return;
+      if (e.target.closest('#layer')) return;
+
       switch (e.deltaY) {
         case 100: // wheel down
-          this.navigator(NEXT);
-          break;
+          return this.#navigator(NEXT);
         case -100: // wheel up
-          this.navigator(PREV);
-          break;
-        default:
-          break;
+          return this.#navigator(PREV);
       }
     });
 
     window.addEventListener('keyup', (e) => {
       e.stopPropagation();
-      if (!this.active) {
-        return;
-      }
-      console.debug('keyup', e.code, e.target, e);
+      if (!this.active) return;
+
       switch (e.code) {
         case 'ArrowRight':
-          this.navigator(NEXT);
-          break;
+          return this.#navigator(NEXT);
         case 'ArrowLeft':
-          this.navigator(PREV);
-          break;
+          return this.#navigator(PREV);
         case 'ArrowUp':
-          this.navigator(BACK);
-          break;
+          return this.#navigator(BACK);
         case 'Space':
-          this.navigator(RANDOM);
-          break;
+          return this.#navigator(RANDOM);
         case 'Home':
-          this.navigator(FIRST);
-          break;
+          return this.#navigator(FIRST);
         case 'End':
-          this.navigator(LAST);
-          break;
+          return this.#navigator(LAST);
         case 'PageUp':
-          this.navigator(PAGEUP);
-          break;
+          return this.#navigator(PAGEUP);
         case 'PageDown':
-          this.navigator(PAGEDOWN);
-          break;
-        default:
-          break;
+          return this.#navigator(PAGEDOWN);
       }
     });
 
     window.addEventListener('mouseup', (e) => {
-      console.debug(e.type, e.button, e);
+      if (!this.active) return;
       /*
       MouseEvent: button
         0: Main button pressed, usually the left button or the un-initialized state
@@ -115,13 +97,11 @@ export default class FlayPagination extends HTMLElement {
         3: Fourth button, typically the Browser Back button
         4: Fifth button, typically the Browser Forward button
       */
-      if (e.button === 1) {
-        this.navigator(RANDOM);
-      }
+      if (e.button === 1) this.#navigator(RANDOM);
     });
 
     addResizeLazyEventListener(() => {
-      this.display();
+      this.#display();
     });
   }
 
@@ -132,7 +112,7 @@ export default class FlayPagination extends HTMLElement {
   set(list) {
     this.opusList = list;
     if (!!this.opusList && this.opusList.length > 0) {
-      this.navigator(RANDOM);
+      this.#navigator(RANDOM);
     } else {
       window.emitMessage('검색 결과가 없습니다.');
     }
@@ -154,7 +134,12 @@ export default class FlayPagination extends HTMLElement {
     this.active = false;
   }
 
-  navigator(direction) {
+  /**
+   * 페이지 이동을 결정하고, 이벤트 발생
+   * @param {*} direction 방향 또는 인덱스
+   * @returns
+   */
+  #navigator(direction) {
     if (typeof direction === 'string') {
       switch (direction) {
         case NEXT:
@@ -171,7 +156,7 @@ export default class FlayPagination extends HTMLElement {
             this.history = [];
           }
           if (this.history.includes(this.opusIndex)) {
-            this.navigator(RANDOM);
+            this.#navigator(RANDOM);
           }
           this.history.push(this.opusIndex);
           break;
@@ -206,100 +191,67 @@ export default class FlayPagination extends HTMLElement {
 
     if (!this.opus) {
       console.error('opus is not valid', this.opus);
-      return;
+      return false;
     }
 
-    this.display();
-    this.dispatchEvent(new CustomEvent('change'));
+    this.dispatchEvent(new Event('change'));
+    return this.#display();
   }
 
-  display() {
+  /**
+   * 페이징 화면 렌더링
+   * @returns
+   */
+  #display() {
     if (!this.opusList) {
-      return;
+      return false;
     }
-    let lastIndex = this.opusList.length - 1;
-    this.PROGRESS_BAR.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
+    const lastIndex = this.opusList.length - 1;
+    this.progressBar.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 
-    let method = 0;
-    if (method === 0) {
-      let domRect = this.getBoundingClientRect();
-      const RANGE = domRect.width > 1200 ? 30 : 15;
-      let currPageNo = Math.ceil((this.opusIndex + 1) / RANGE);
-      let lastPageNo = Math.ceil(this.opusList.length / RANGE);
-      let pageRange = [];
-      if (1 < currPageNo) {
-        pageRange.push(0);
-      }
-      for (let i = 0; i < RANGE; i++) {
-        pageRange.push((currPageNo - 1) * RANGE + i);
-      }
-      if (currPageNo < lastPageNo) {
-        pageRange.push(lastIndex);
-      }
-      console.debug('pageRange', pageRange, currPageNo, lastPageNo);
+    const domRect = this.getBoundingClientRect();
+    const RANGE = domRect.width > 1200 ? 30 : 15;
+    const currPageNo = Math.ceil((this.opusIndex + 1) / RANGE);
+    const lastPageNo = Math.ceil(this.opusList.length / RANGE);
+    const pageRange = [];
+    if (1 < currPageNo) {
+      pageRange.push(0);
+    }
+    for (let i = 0; i < RANGE; i++) {
+      pageRange.push((currPageNo - 1) * RANGE + i);
+    }
+    if (currPageNo < lastPageNo) {
+      pageRange.push(lastIndex);
+    }
+    console.debug('pageRange', pageRange, currPageNo, lastPageNo);
 
-      this.PAGING.textContent = null;
-      for (let i of pageRange) {
-        const page = this.PAGING.appendChild(document.createElement('label'));
-        page.classList.add('page');
-        if (i > lastIndex) {
-          page.classList.add('disable');
-        } else {
-          page.dataset.opus = this.opusList[i];
-          page.classList.toggle('active', i === this.opusIndex);
-          page.addEventListener('click', () => {
-            console.debug('pageClick', i);
-            this.navigator(i);
-          });
+    this.paging.textContent = null;
+    for (let i of pageRange) {
+      const page = this.paging.appendChild(document.createElement('label'));
+      page.classList.add('page');
+      page.classList.toggle('disable', i > lastIndex);
+      page.classList.toggle('active', i === this.opusIndex);
+      page.innerHTML = `<a>${i + 1}</a>`;
+      if (i <= lastIndex) {
+        page.addEventListener('click', () => this.#navigator(i));
+        page.addEventListener('mouseleave', () => this.coverThumbnail.classList.remove('show'));
+        page.addEventListener('mouseenter', () => {
+          if (page.classList.contains('active')) {
+            return;
+          }
+          const opus = this.opusList[i];
+          const domRect = page.getBoundingClientRect();
+          const coverWidth = domRect.width * 6;
 
-          page.addEventListener('mouseenter', (e) => {
-            if (e.target.classList.contains('active') || e.target.classList.contains('disable')) {
-              return;
-            }
-            const domRect = e.target.getBoundingClientRect();
-            // console.log(e.type, page.dataset.opus, domRect);
-            const coverWidth = domRect.width * 6;
-
-            this.coverThumbnail.classList.add('show');
-            this.coverThumbnail.style.backgroundImage = `url(/static/cover/${page.dataset.opus})`;
-            this.coverThumbnail.style.width = `${coverWidth}px`;
-            this.coverThumbnail.style.bottom = `${window.innerHeight - domRect.y}px`;
-            this.coverThumbnail.style.left = `${domRect.x + domRect.width / 2 - coverWidth / 2}px`;
-          });
-          page.addEventListener('mouseleave', (e) => {
-            // console.log(e.type, page.dataset.opus);
-            this.coverThumbnail.classList.remove('show');
-          });
-        }
-        const anker = page.appendChild(document.createElement('a'));
-        anker.innerHTML = i + 1;
-      }
-    } else {
-      let start = Math.max(this.opusIndex - 5, 0);
-      let end = Math.min(start + 10, lastIndex);
-      let range = Array(end - start + 1)
-        .fill(start)
-        .map((x, y) => x + y);
-      if (range[0] > 0) {
-        range.unshift(0);
-      }
-      if (range[range.length - 1] < lastIndex) {
-        range.push(lastIndex);
-      }
-
-      this.PAGING.textContent = null;
-      for (let i of range) {
-        const page = this.PAGING.appendChild(document.createElement('label'));
-        page.classList.add('page');
-        page.addEventListener('click', () => {
-          console.debug('pageClick', i);
-          this.navigator(i);
+          this.coverThumbnail.classList.add('show');
+          this.coverThumbnail.style.backgroundImage = `url(/static/cover/${opus})`;
+          this.coverThumbnail.style.width = `${coverWidth}px`;
+          this.coverThumbnail.style.bottom = `${window.innerHeight - domRect.y}px`;
+          this.coverThumbnail.style.left = `${domRect.x + domRect.width / 2 - coverWidth / 2}px`;
         });
-        const anker = page.appendChild(document.createElement('a'));
-        anker.classList.toggle('active', i === this.opusIndex);
-        anker.innerHTML = i + 1;
       }
     }
+    return true;
   }
 }
 

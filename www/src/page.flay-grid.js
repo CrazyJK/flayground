@@ -38,8 +38,8 @@ class Page {
 
   async start() {
     const flayCondition = document.querySelector('body > header').appendChild(new FlayCondition());
-    flayCondition.addEventListener('change', async (e) => {
-      this.opusList = e.detail.list;
+    flayCondition.addEventListener('change', async () => {
+      this.opusList = flayCondition.opusList;
 
       document.querySelector('main').textContent = null;
       await this.show();

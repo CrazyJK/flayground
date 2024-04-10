@@ -14,6 +14,8 @@ const RANKS = [0, 1, 2, 3, 4, 5];
 const SORTS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'];
 
 export default class FlayCondition extends HTMLElement {
+  opusList = [];
+
   constructor() {
     super();
 
@@ -50,17 +52,17 @@ export default class FlayCondition extends HTMLElement {
         </select>
       </div>
     `;
-    WRAPPER.addEventListener('change', () => this.fetch());
+    WRAPPER.addEventListener('change', () => this.#fetch());
   }
 
   connectedCallback() {
-    this.fetch();
+    this.#fetch();
   }
 
   /**
    * 조건에 맞는 opus 목록
    */
-  async fetch() {
+  async #fetch() {
     const condition = {
       search: this.shadowRoot.querySelector('#search').value,
       withSubtitles: this.shadowRoot.querySelector('#withSubtitles').checked,
@@ -71,13 +73,12 @@ export default class FlayCondition extends HTMLElement {
         .map((rank) => rank.value),
       sort: this.shadowRoot.querySelector('#sort').value,
     };
-    const list = await fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) }).then((res) => res.json());
-    console.debug('opus list', list);
-    if (list.length === 0) {
+    this.opusList = await fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) }).then((res) => res.json());
+    if (this.opusList.length === 0) {
       // not found flay
-      this.shadowRoot.querySelector('.condition').animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });
+      this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });
     }
-    this.dispatchEvent(new CustomEvent('change', { detail: { list: list } }));
+    this.dispatchEvent(new Event('change'));
     FlayStorage.local.set('FlayCondition.condition', JSON.stringify(condition));
   }
 }

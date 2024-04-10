@@ -51,8 +51,8 @@ class Page extends OpusProvider {
 
   async start() {
     const flayCondition = document.querySelector('body > main > header').appendChild(new FlayCondition());
-    flayCondition.addEventListener('change', async (e) => {
-      this.setOpusList(e.detail.list);
+    flayCondition.addEventListener('change', async () => {
+      this.setOpusList(flayCondition.opusList);
 
       this.#showCover();
     });

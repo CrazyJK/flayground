@@ -63,7 +63,7 @@
   }
 
   &.archive {
-    .rank-label {
+    * {
       color: var(--color-gray-dark);
     }
   }

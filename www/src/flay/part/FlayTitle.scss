@@ -1,24 +1,35 @@
 .flay-title {
   text-align: center;
-}
-.flay-title label {
-  position: relative;
-  display: block;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-.flay-title label a {
-  display: inline;
-  font-size: var(--size-largest);
-}
-.flay-title.card label a {
-  font-size: var(--size-large);
-}
-.flay-title.small label a {
-  font-size: var(--size-normal);
-}
-.flay-title.archive label a {
-  color: var(--color-gray-dark);
+
+  label {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+
+    a {
+      display: inline;
+      font-size: var(--size-largest);
+    }
+  }
+
+  &.card {
+    a {
+      font-size: var(--size-large);
+    }
+  }
+
+  &.small {
+    a {
+      font-size: var(--size-normal);
+    }
+  }
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
+    }
+  }
 }

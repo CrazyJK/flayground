@@ -61,7 +61,6 @@ export default class FlayActress extends FlayHTMLElement {
       nameElement.title = actress.name + (actress.comment ? ' - ' + actress.comment : '');
       nameElement.innerHTML = actress.name;
       nameElement.addEventListener('click', () => {
-        console.log('nameClick', actress.name);
         // window.open('/info/actress/' + actress.name, actress.name, 'width=640px,height=800px');
         window.open('popup.actress.html?name=' + actress.name, actress.name, 'width=960px,height=1200px');
       });

@@ -51,4 +51,10 @@
   .candidate {
     color: #f00b;
   }
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
+    }
+  }
 }

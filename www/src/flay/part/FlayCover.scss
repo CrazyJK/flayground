@@ -18,10 +18,6 @@
     padding: 0;
     width: 100%;
     height: auto;
-
-    &.no-movie {
-      opacity: 0.5;
-    }
   }
 
   .color-wrapper {
@@ -54,10 +50,20 @@
     }
   }
 
+  &.no-movie {
+    opacity: 0.5;
+  }
+
   &.contain {
     .cover-image {
       width: auto;
       height: 104%;
+    }
+  }
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
     }
   }
 }

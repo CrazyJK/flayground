@@ -42,7 +42,7 @@ export default class FlayCard extends HTMLElement {
     this.wrapper = this.shadowRoot.appendChild(document.createElement('article'));
     this.wrapper.classList.add(this.tagName.toLowerCase());
 
-    this.flayCover = this.wrapper.appendChild(new FlayCover());
+    this.flayCover = this.wrapper.appendChild(new FlayCover().setCard());
     this.flayInfo = this.wrapper.appendChild(document.createElement('div'));
     this.flayInfo.classList.add('flay-info');
 

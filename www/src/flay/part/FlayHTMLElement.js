@@ -1,4 +1,6 @@
 export default class FlayHTMLElement extends HTMLElement {
+  inCard = false;
+
   constructor() {
     super();
 
@@ -15,6 +17,7 @@ export default class FlayHTMLElement extends HTMLElement {
 
   setCard() {
     this.wrapper.classList.add('card');
+    this.inCard = true;
     return this;
   }
 

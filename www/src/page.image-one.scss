@@ -37,7 +37,7 @@ footer {
     opacity: 1;
   }
 
-  div.info {
+  .info {
     display: flex;
     justify-content: center;
     gap: 0 1rem;
@@ -61,14 +61,14 @@ footer {
       }
     }
   }
-}
 
-.progress {
-  height: 1px;
-
-  .progress-bar {
-    background-color: #f00;
+  .progress {
     height: 1px;
-    transition: 0.4s;
+
+    .progress-bar {
+      background-color: #f00;
+      height: 1px;
+      transition: 0.4s;
+    }
   }
 }

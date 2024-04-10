@@ -10,10 +10,11 @@ const flayPagination = document.querySelector('body > main > footer').appendChil
 const flayPage = document.querySelector('body > main > article').appendChild(new FlayPage());
 
 flayCondition.addEventListener('change', () => flayPagination.set(flayCondition.opusList));
-flayPagination.addEventListener('change', () =>
-  document.startViewTransition(async () => {
-    flayPagination.off();
+flayPagination.addEventListener('change', async () => {
+  flayPagination.off();
+  const viewTransition = document.startViewTransition(async () => {
     await flayPage.set(flayPagination.opus);
-    flayPagination.on();
-  })
-);
+  });
+  await viewTransition.updateCallbackDone;
+  flayPagination.on();
+});

@@ -1,4 +1,4 @@
-import SVG from '../../svg/svg.json';
+import SVG from '../../svg/svg';
 import FlayAction from '../../util/FlayAction';
 import './FlayActress.scss';
 import FlayHTMLElement from './FlayHTMLElement';

@@ -2,7 +2,7 @@ import './init/Page';
 import './page.flay-grid.scss';
 
 import FlayCondition from './flay/page/FlayCondition';
-import SVG from './svg/svg.json';
+import SVG from './svg/svg';
 
 class Page {
   opusList = [];

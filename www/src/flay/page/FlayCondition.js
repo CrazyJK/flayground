@@ -1,4 +1,4 @@
-import SVG from '../../svg/svg.json';
+import SVG from '../../svg/svg';
 import FlayStorage from '../../util/FlayStorage';
 import './FlayCondition.scss';
 

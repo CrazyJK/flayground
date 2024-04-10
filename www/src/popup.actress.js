@@ -2,7 +2,7 @@ import './init/Popup';
 import './popup.actress.scss';
 
 import FlayCard from './flay/FlayCard';
-import SVG from './svg/svg.json';
+import SVG from './svg/svg';
 import FlayAction from './util/FlayAction';
 import FlaySearch from './util/FlaySearch';
 

@@ -20,6 +20,7 @@ export default class FlayPagination extends HTMLElement {
   opusList = null;
   active = true;
   history = [];
+  pageRange = 0;
 
   constructor() {
     super();
@@ -111,6 +112,7 @@ export default class FlayPagination extends HTMLElement {
    */
   set(list) {
     this.opusList = list;
+    this.history = [];
     if (!!this.opusList && this.opusList.length > 0) {
       this.#navigator(RANDOM);
     } else {
@@ -144,41 +146,41 @@ export default class FlayPagination extends HTMLElement {
       switch (direction) {
         case NEXT:
           this.opusIndex = Math.min(this.opusIndex + 1, this.opusList.length - 1);
-          this.history.push(this.opusIndex);
+          this.putHistory(this.opusIndex);
           break;
         case PREV:
           this.opusIndex = Math.max(this.opusIndex - 1, 0);
-          this.history.push(this.opusIndex);
+          this.putHistory(this.opusIndex);
           break;
         case RANDOM:
           this.opusIndex = getRandomInt(0, this.opusList.length);
-          if (this.history.length > this.opusList.length) {
-            this.history = [];
-          }
-          if (this.history.includes(this.opusIndex)) {
+          if (!this.putHistory(this.opusIndex)) {
             this.#navigator(RANDOM);
           }
-          this.history.push(this.opusIndex);
           break;
         case FIRST:
           this.opusIndex = 0;
-          this.history.push(this.opusIndex);
+          this.putHistory(this.opusIndex);
           break;
         case LAST:
           this.opusIndex = this.opusList.length - 1;
-          this.history.push(this.opusIndex);
+          this.putHistory(this.opusIndex);
           break;
         case PAGEUP:
-          this.opusIndex = Math.max(this.opusIndex - 10, 0);
-          this.history.push(this.opusIndex);
+          this.opusIndex = Math.max(this.opusIndex - this.pageRange, 0);
+          this.putHistory(this.opusIndex);
           break;
         case PAGEDOWN:
-          this.opusIndex = Math.min(this.opusIndex + 10, this.opusList.length - 1);
-          this.history.push(this.opusIndex);
+          this.opusIndex = Math.min(this.opusIndex + this.pageRange, this.opusList.length - 1);
+          this.putHistory(this.opusIndex);
           break;
-        case BACK:
-          this.opusIndex = this.history.splice(this.history.length - 2, 1)[0];
+        case BACK: {
+          const backIndex = this.history.splice(this.history.length - 2, 1)[0];
+          if (typeof backIndex !== 'undefined') {
+            this.opusIndex = backIndex;
+          }
           break;
+        }
         default:
           throw new Error('unknown direction');
       }
@@ -187,15 +189,31 @@ export default class FlayPagination extends HTMLElement {
     }
 
     this.opus = this.opusList[this.opusIndex];
-    console.debug('history', this.history, this.opusIndex, this.opus);
-
     if (!this.opus) {
-      console.error('opus is not valid', this.opus);
+      console.info(`navigator: index=${this.opusIndex}, opus=${this.opus}`);
       return false;
     }
+    console.debug(`navigator: index=${this.opusIndex}, opus=${this.opus}`);
+    console.debug('history', this.history);
 
     this.dispatchEvent(new Event('change'));
     return this.#display();
+  }
+
+  /**
+   * 히스토리 관리
+   * @param {number} index
+   * @returns 추가되면 true
+   */
+  putHistory(index) {
+    if (this.history.length === this.opusList.length) {
+      this.history = [];
+    }
+    if (this.history.includes(index)) {
+      return false;
+    }
+    this.history.push(index);
+    return true;
   }
 
   /**
@@ -210,20 +228,22 @@ export default class FlayPagination extends HTMLElement {
     this.progressBar.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 
     const domRect = this.getBoundingClientRect();
-    const RANGE = domRect.width > 1200 ? 30 : 15;
-    const currPageNo = Math.ceil((this.opusIndex + 1) / RANGE);
-    const lastPageNo = Math.ceil(this.opusList.length / RANGE);
+    this.pageRange = domRect.width > 1200 ? 30 : 15;
+
+    const currPageNo = Math.ceil((this.opusIndex + 1) / this.pageRange);
+    const lastPageNo = Math.ceil(this.opusList.length / this.pageRange);
     const pageRange = [];
     if (1 < currPageNo) {
       pageRange.push(0);
     }
-    for (let i = 0; i < RANGE; i++) {
-      pageRange.push((currPageNo - 1) * RANGE + i);
+    for (let i = 0; i < this.pageRange; i++) {
+      pageRange.push((currPageNo - 1) * this.pageRange + i);
     }
     if (currPageNo < lastPageNo) {
       pageRange.push(lastIndex);
     }
-    console.debug('pageRange', pageRange, currPageNo, lastPageNo);
+    console.debug('pageRange', pageRange);
+    console.debug(`page: ${currPageNo} / ${lastPageNo}`);
 
     this.paging.textContent = null;
     for (let i of pageRange) {

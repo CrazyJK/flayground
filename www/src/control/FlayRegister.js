@@ -1,4 +1,4 @@
-import SVG from '../svg/svg';
+import SVG from '../svg/SVG';
 import FlayAction from '../util/FlayAction';
 import FlaySearch from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';

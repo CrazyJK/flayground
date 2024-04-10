@@ -1,7 +1,7 @@
 import './init/Page';
 import './page.tags.scss';
 
-import SVG from './svg/svg';
+import SVG from './svg/SVG';
 import FlayAction from './util/FlayAction';
 import { addResizeLazyEventListener } from './util/resizeListener';
 

@@ -10,7 +10,7 @@ import './page.kamoru-diary.scss';
 import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import FlayAttach from './attach/FlayAttach';
-import SVG from './svg/svg';
+import SVG from './svg/SVG';
 
 document.querySelector('#weather-sunny + label').innerHTML = SVG.weather.sunny;
 document.querySelector('#weather-cloud + label').innerHTML = SVG.weather.cloud;

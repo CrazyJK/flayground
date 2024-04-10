@@ -1,4 +1,4 @@
-import SVG from '../../svg/svg';
+import SVG from '../../svg/SVG';
 import FlayAction from '../../util/FlayAction';
 import Search from '../../util/FlaySearch';
 import { getPrettyFilesize } from '../../util/fileUtils';

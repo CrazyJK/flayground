@@ -1,4 +1,4 @@
-import SVG from '../../svg/svg';
+import SVG from '../../svg/SVG';
 import FlayStorage from '../../util/FlayStorage';
 import './ThemeController.scss';
 

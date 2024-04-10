@@ -53,38 +53,40 @@ main {
           gap: 0.5rem;
 
           label {
-            font-size: var(--size-normal);
             font-size: inherit;
-
-            &:nth-child(1) {
-              cursor: pointer;
-              min-width: 1rem;
-              text-align: right;
-              &:hover {
-                color: var(--color-orange);
-              }
+          }
+          .edit {
+            cursor: pointer;
+            min-width: 1rem;
+            text-align: right;
+            &:hover {
+              color: var(--color-orange);
             }
-            &:nth-child(2) {
-              cursor: pointer;
-              &:hover {
-                text-shadow: var(--text-shadow-hover);
-              }
-            }
-            &:nth-child(3) {
-              font-weight: 400;
-              min-width: 1rem;
-              text-align: left;
+            svg {
+              width: var(--size-small);
+              transition: 0.2s;
             }
           }
-          svg {
-            width: var(--size-small);
-            transition: 0.2s;
+          .name {
+            cursor: pointer;
+            &:hover {
+              text-shadow: var(--text-shadow-hover);
+            }
+          }
+          .count {
+            font-weight: 400;
+            min-width: 1rem;
+            text-align: left;
+            &.zero {
+              color: var(--color-red);
+              font-weight: 300 !important;
+            }
           }
         }
         dd {
           margin: 0;
           text-align: center;
-          label {
+          .desc {
             font-size: var(--size-small);
             font-weight: 400;
           }
@@ -92,9 +94,4 @@ main {
       }
     }
   }
-}
-
-.zero {
-  color: var(--color-red);
-  font-weight: 300 !important;
 }

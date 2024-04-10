@@ -56,50 +56,40 @@ function renderTagList() {
           return t1.name.localeCompare(t2.name);
         })
         .forEach((tag) => {
-          let li = LIST_WRAPPER.appendChild(document.createElement('li'));
-          let dl = li.appendChild(document.createElement('dl'));
-          let dt = dl.appendChild(document.createElement('dt'));
-          let dd = dl.appendChild(document.createElement('dd'));
+          const li = LIST_WRAPPER.appendChild(document.createElement('li'));
+          li.innerHTML = `
+            <dl>
+              <dt>
+                <label class="edit">${SVG.edit}</label>
+                <label class="name">${tag.name}</label>
+                <label class="count ${tag.count === 0 ? 'zero' : ''}">${tag.count}</label>
+              </dt>
+              <dd>
+                <label class="desc">${tag.description}</label>
+              </dd>
+            </dl>
+          `;
 
-          let editLabel = dt.appendChild(document.createElement('label'));
-          let nameLabel = dt.appendChild(document.createElement('label'));
-          let contLabel = dt.appendChild(document.createElement('label'));
-          let descLabel = dd.appendChild(document.createElement('label'));
-
-          editLabel.innerHTML = SVG.edit;
-          nameLabel.innerHTML = tag.name;
-          contLabel.innerHTML = tag.count;
-          descLabel.innerHTML = tag.description;
-
-          if (tag.count === 0) {
-            contLabel.classList.add('zero');
-          }
-
-          nameLabel.addEventListener('click', (e) => {
+          li.querySelector('.name').addEventListener('click', () => {
             window.open('popup.tag.html?id=' + tag.id, 'tag' + tag.id, 'width=960px,height=1200px');
           });
-          editLabel.addEventListener('click', (e) => {
+          li.querySelector('.edit').addEventListener('click', () => {
             TAG_ID.value = tag.id;
             TAG_NAME.value = tag.name;
             TAG_DESC.value = tag.description;
           });
+          // resize event
+          addResizeLazyEventListener(() => {
+            if (window.innerWidth >= 1920) {
+              // FHD 해상도 이상이면, flay 갯수에 비례하여 폰트 크기 설정
+              const count = parseInt(li.querySelector('.count').textContent);
+              const countStep = Math.floor(count / 5);
+
+              li.querySelectorAll('dt label').forEach((label) => (label.style.fontSize = `calc(var(--size-normal) + ${countStep}px)`));
+            } else {
+              li.querySelectorAll('dt label').forEach((label) => (label.style.fontSize = ''));
+            }
+          });
         });
     });
 }
-
-// resize event
-addResizeLazyEventListener(() => {
-  LIST_WRAPPER.querySelectorAll('li').forEach((li) => {
-    if (window.innerWidth >= 1920) {
-      const countLabel = li.querySelector('dt label:last-child');
-      const count = parseInt(countLabel.textContent);
-      const countStep = Math.floor(count / 5);
-
-      li.querySelectorAll('dt label').forEach((label) => {
-        label.style.fontSize = `calc(var(--size-normal) + ${countStep}px)`;
-      });
-    } else {
-      li.querySelectorAll('dt label').forEach((label) => (label.style.fontSize = ''));
-    }
-  });
-});

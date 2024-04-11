@@ -1,3 +1,4 @@
+import SVG from '../../svg/SVG';
 import FlayStorage from '../../util/FlayStorage';
 import { getDominatedColors } from '../../util/dominatedColor';
 import { getRandomInt } from '../../util/randomNumber';
@@ -15,9 +16,7 @@ export default class FlayCover extends FlayHTMLElement {
   }
 
   connectedCallback() {
-    this.wrapper.addEventListener('click', () => {
-      this.wrapper.classList.toggle('contain');
-    });
+    this.wrapper.addEventListener('click', () => this.wrapper.classList.toggle('contain'));
 
     this.coverImage = this.wrapper.appendChild(document.createElement('img'));
     this.coverImage.classList.add('cover-image');
@@ -28,6 +27,14 @@ export default class FlayCover extends FlayHTMLElement {
     for (let i = 0; i < 5; i++) {
       this.colorWrapper.appendChild(document.createElement('label'));
     }
+
+    this.popupCoverWrap = this.wrapper.appendChild(document.createElement('div'));
+    this.popupCoverWrap.classList.add('popup-cover-wrapper');
+    this.popupCoverWrap.innerHTML = `${SVG.newWindow}`;
+    this.popupCoverWrap.querySelector('svg').addEventListener('click', (e) => {
+      e.stopPropagation();
+      window.open(`popup.cover.html?opus=${this.flay.opus}`, `cover.${this.opus}`, 'width=800px,height=538px');
+    });
   }
 
   /**

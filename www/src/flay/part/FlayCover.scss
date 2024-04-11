@@ -40,12 +40,29 @@
     }
   }
 
+  .popup-cover-wrapper {
+    position: absolute;
+    top: 0;
+    right: 0;
+    svg {
+      color: transparent;
+      margin: 0.5rem;
+      width: 1.25rem;
+      cursor: pointer;
+      transition: 0.2s;
+      &:hover {
+        color: var(--color-orange);
+      }
+    }
+  }
+
   &.card {
     align-items: flex-start;
     padding: 0;
     transition: none;
 
-    .color-wrapper {
+    .color-wrapper,
+    .popup-cover-wrapper {
       display: none;
     }
   }

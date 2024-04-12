@@ -122,6 +122,10 @@ export default class FlayCard extends HTMLElement {
       this.wrapper.classList.add('archive');
     }
 
+    if (this.flay.video.likes?.length > 0) {
+      this.classList.add('shot');
+    }
+
     const coverExclude = this.excludes.includes('FlayCover');
     const studioExclude = this.excludes.includes('FlayStudio');
     const opusExclude = this.excludes.includes('FlayOpus');

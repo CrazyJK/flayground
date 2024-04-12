@@ -1,13 +1,11 @@
-[role='tab']:hover {
-  text-shadow: var(--text-shadow-hover);
+[role='tab'] {
+  &[active] {
+    color: var(--color-checked);
+  }
 }
-[role='tab'][active] {
-  color: var(--color-checked);
-}
-
 [role='tabpanel'] {
   display: none;
-}
-[role='tabpanel'][active] {
-  display: block;
+  &[active] {
+    display: block;
+  }
 }

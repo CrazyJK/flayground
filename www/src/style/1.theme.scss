@@ -69,6 +69,8 @@
   --color-border-active: var(--color-orange);
   --color-border-reversed: var(--color-black-alpha-dark);
 
+  --color-tab-active: var(--color-orange);
+
   --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
   --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
   --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
@@ -89,19 +91,10 @@
   --color-bg-input-focus: #00000081;
 
   --color-text: var(--color-light);
-  --color-text-secondary: var(--color-gray);
   --color-text-placeholder: var(--color-gray-dark);
-  --color-text-danger: var(--color-red);
-
-  --color-checked: var(--color-orange);
 
   --color-border: var(--color-dark-dark);
-  --color-border-active: var(--color-orange);
   --color-border-reversed: var(--color-light-dark);
-
-  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
-  --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
-  --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
 
   --text-shadow: 1px 1px 2px var(--color-dark-light);
   --text-shadow-hover: 1px 1px 2px var(--color-orange);

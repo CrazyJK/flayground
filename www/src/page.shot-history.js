@@ -81,7 +81,7 @@ class Page {
     for (let opus of opusList) {
       const flayCard = cardList.appendChild(new FlayCard({ excludes: ['FlayTag', 'FlayComment', 'FlayFiles'] }));
       const fullyFlay = await flayCard.set(opus);
-      flayCard.classList.toggle('shot', fullyFlay.flay.video.likes?.filter((likeDate) => this.#getRefDate(likeDate) === refDate).length > 0);
+      flayCard.classList.toggle('shot', fullyFlay?.flay.video.likes?.filter((likeDate) => this.#getRefDate(likeDate) === refDate).length > 0);
     }
   }
 

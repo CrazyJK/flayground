@@ -1,9 +1,11 @@
 import './init/Page';
 import './page.statistics.scss';
 
-import './lib/TabUI';
+import { tabUI } from './lib/TabUI';
 import { sortable } from './lib/TableUtils';
 import { getPrettyFilesize } from './util/fileUtils';
+
+tabUI(document);
 
 const to2 = (n) => (n < 10 ? '0' + n : n);
 const startDateInput = document.querySelector('#startDate');

@@ -9,21 +9,6 @@
     <script defer type="text/javascript" src="page.control.js"></script>
   </head>
   <body>
-    <main>
-      <header class="tab-group" role="tablist">
-        <button type="button" class="tab-button" role="tab" target="#searchPanel" active>Search</button>
-        <button type="button" class="tab-button" role="tab" target="#registPanel">Regist</button>
-        <button type="button" class="tab-button" role="tab" target="#batchPanel">Batch</button>
-        <button type="button" class="tab-button" role="tab" target="#subtitlesPanel">Subtitles</button>
-        <button type="button" class="tab-button" role="tab" target="#candidatesPanel">Candidates</button>
-      </header>
-      <article>
-        <flay-finder class="tab-content" role="tabpanel" id="searchPanel"></flay-finder>
-        <flay-register class="tab-content" role="tabpanel" id="registPanel"></flay-register>
-        <flay-batch class="tab-content" role="tabpanel" id="batchPanel"></flay-batch>
-        <subtitles-finder class="tab-content" role="tabpanel" id="subtitlesPanel"></subtitles-finder>
-        <flay-candidate class="tab-content" role="tabpanel" id="candidatesPanel"></flay-candidate>
-      </article>
-    </main>
+    <flay-control></flay-control>
   </body>
 </html>

@@ -3,6 +3,7 @@ import './style.scss';
 import './attach/FlayAttach';
 import './control/FlayBatch';
 import './control/FlayCandidate';
+import './control/FlayControl';
 import './control/FlayFinder';
 import './control/FlayRegister';
 import './control/SubtitlesFinder';

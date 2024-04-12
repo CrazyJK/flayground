@@ -5,6 +5,22 @@
   outline: var(--debug2-outline) !important;
 }
 
+h1 {
+  font-size: var(--size-largest);
+}
+h2 {
+  font-size: var(--size-large);
+}
+h3 {
+  font-size: var(--size-normal);
+}
+h4 {
+  font-size: var(--size-small);
+}
+h5 {
+  font-size: var(--size-smallest);
+}
+
 header,
 main,
 article,
@@ -28,15 +44,10 @@ textarea {
 
 a,
 button,
-input[type='url'],
-input[type='date'],
-input[type='text'],
-input[type='search'],
-input[type='number'],
-input[type='checkbox'] + label,
-input[type='radio'] + label,
 select,
-textarea {
+textarea,
+input,
+input + label {
   background-color: transparent;
   cursor: pointer;
   display: inline;
@@ -51,32 +62,11 @@ textarea {
 }
 
 input[type='url'],
-input[type='text'],
-input[type='search'],
-input[type='number'],
-textarea {
-  cursor: initial;
-}
-
-a {
-  text-decoration: none;
-}
-a:not(.disable):hover {
-  text-shadow: var(--text-shadow-hover);
-}
-
-button:not(.disable):hover {
-  text-shadow: var(--text-shadow-hover);
-}
-button > svg {
-  width: 1.75rem;
-}
-
-input[type='url'],
 input[type='date'],
 input[type='text'],
 input[type='search'],
 input[type='number'] {
+  cursor: initial;
   padding: 0.25rem 0;
   text-align: center;
 }
@@ -91,27 +81,44 @@ input[type='radio'] {
   border: 0;
   padding: 0;
   clip: rect(0, 0, 0, 0);
+
+  &:checked + label {
+    color: var(--color-checked);
+  }
+
+  & + label {
+    &:hover {
+      text-shadow: var(--text-shadow-hover);
+    }
+    svg {
+      height: var(--size-large);
+      width: var(--size-large);
+    }
+  }
 }
-input[type='checkbox'] + label:hover,
-input[type='radio'] + label:hover {
-  text-shadow: var(--text-shadow-hover);
+
+a {
+  text-decoration: none;
+  &:not(.disable):hover {
+    text-shadow: var(--text-shadow-hover);
+  }
 }
-input[type='checkbox']:checked + label,
-input[type='radio']:checked + label {
-  color: var(--color-checked);
-}
-input[type='checkbox'] + label > svg,
-input[type='radio'] + label > svg {
-  height: var(--size-large);
-  width: var(--size-large);
+
+button {
+  &:not(.disable):hover {
+    text-shadow: var(--text-shadow-hover);
+  }
+  svg {
+    width: 1.75rem;
+  }
 }
 
 select {
   padding: 0.25rem 0;
-}
-select option {
-  background-color: var(--color-bg);
-  font-size: var(--size-normal);
+  option {
+    background-color: var(--color-bg);
+    font-size: var(--size-normal);
+  }
 }
 
 textarea {
@@ -158,7 +165,7 @@ textarea::spelling-error {
   color: var(--color-text-danger) !important;
 }
 
-i.badge {
+.badge {
   float: right;
   margin: 0 0 0 0.25rem;
   font-size: var(--size-small);
@@ -168,33 +175,20 @@ i.badge {
 }
 
 /* 커스텀 엘리먼트 small 모드 */
-.card label,
-.card label a,
-.card button {
-  font-size: var(--size-normal) !important;
-}
-.small label,
-.small label a,
-.small button {
-  font-size: var(--size-small) !important;
-  text-shadow: none;
-}
-div.small label {
-  padding: 0.125rem !important;
+.card {
+  label,
+  a,
+  button {
+    font-size: var(--size-normal) !important;
+  }
 }
 
-h1 {
-  font-size: var(--size-largest);
-}
-h2 {
-  font-size: var(--size-large);
-}
-h3 {
-  font-size: var(--size-normal);
-}
-h4 {
-  font-size: var(--size-small);
-}
-h5 {
-  font-size: var(--size-smallest);
+.small {
+  label,
+  a,
+  button {
+    font-size: var(--size-small) !important;
+    text-shadow: none;
+    padding: 0.125rem !important;
+  }
 }

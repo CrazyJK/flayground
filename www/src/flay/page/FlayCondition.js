@@ -31,7 +31,8 @@ export default class FlayCondition extends HTMLElement {
     WRAPPER.classList.add(this.tagName.toLowerCase());
     WRAPPER.innerHTML = `
       <div>
-        <input type="search" id="search" placeholder="Keyword" spellcheck="false">
+        <input type="search" id="search" list="search-items" placeholder="Search" spellcheck="false">
+        <datalist id="search-items"></datalist>
       </div>
       <div>
         <input type="checkbox" id="withSubtitles" ${condition.withSubtitles ? 'checked' : ''}>
@@ -80,6 +81,28 @@ export default class FlayCondition extends HTMLElement {
     }
     this.dispatchEvent(new Event('change'));
     FlayStorage.local.set('FlayCondition.condition', JSON.stringify(condition));
+  }
+
+  /**
+   * 검색을 위한 datalist option 추가
+   * @param {Flay} flay
+   */
+  updateSearchItem(flay) {
+    this.#addSearchItem(flay.studio);
+    this.#addSearchItem(flay.opus);
+    this.#addSearchItem(flay.opus.split('-').shift());
+    this.#addSearchItem(flay.release.substring(0, 4));
+
+    flay.actressList?.forEach((name) => this.#addSearchItem(name));
+    flay.video.tags?.forEach((tag) => this.#addSearchItem(tag.name));
+  }
+
+  #addSearchItem(item) {
+    this.shadowRoot.querySelector(`#search-items option[value="${item}"]`)?.remove();
+
+    const option = document.createElement('option');
+    option.value = item;
+    this.shadowRoot.querySelector('#search-items').prepend(option);
   }
 }
 

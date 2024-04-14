@@ -13,7 +13,8 @@ flayCondition.addEventListener('change', () => flayPagination.set(flayCondition.
 flayPagination.addEventListener('change', async () => {
   flayPagination.off();
   const viewTransition = document.startViewTransition(async () => {
-    await flayPage.set(flayPagination.opus);
+    const [flay] = await flayPage.set(flayPagination.opus);
+    flayCondition.updateSearchItem(flay);
   });
   await viewTransition.updateCallbackDone;
   flayPagination.on();

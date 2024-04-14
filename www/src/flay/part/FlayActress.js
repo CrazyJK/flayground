@@ -1,5 +1,6 @@
 import SVG from '../../svg/SVG';
 import FlayAction from '../../util/FlayAction';
+import StringUtils from '../../util/StringUtils';
 import './FlayActress.scss';
 import FlayHTMLElement from './FlayHTMLElement';
 
@@ -12,6 +13,8 @@ export default class FlayActress extends FlayHTMLElement {
 
   constructor() {
     super();
+
+    this.actressList = [];
   }
 
   connectedCallback() {
@@ -28,16 +31,17 @@ export default class FlayActress extends FlayHTMLElement {
 
     if (actressList.length === 0) {
       for (const name of flay.actressList) {
+        if (StringUtils.isBlank(name)) continue;
         actressList.push(await fetch(`/info/actress/${name}`).then((res) => res.json()));
       }
     }
-    this.actressList = actressList;
+    this.actressList = actressList.filter((actress) => !StringUtils.isBlank(actress.name));
 
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.textContent = null;
 
-    actressList.forEach((actress, index) => {
+    this.actressList.forEach((actress, index) => {
       const actressDiv = this.wrapper.appendChild(document.createElement('div'));
 
       // favorite
@@ -60,10 +64,7 @@ export default class FlayActress extends FlayHTMLElement {
       const nameElement = nameLabel.appendChild(document.createElement('a'));
       nameElement.title = actress.name + (actress.comment ? ' - ' + actress.comment : '');
       nameElement.innerHTML = actress.name;
-      nameElement.addEventListener('click', () => {
-        // window.open('/info/actress/' + actress.name, actress.name, 'width=640px,height=800px');
-        window.open('popup.actress.html?name=' + actress.name, actress.name, 'width=960px,height=1200px');
-      });
+      nameElement.addEventListener('click', () => window.open('popup.actress.html?name=' + actress.name, actress.name, 'width=960px,height=1200px'));
 
       // localName
       const localNameElement = actressDiv.appendChild(document.createElement('label'));

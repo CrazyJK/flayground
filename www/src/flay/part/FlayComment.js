@@ -1,5 +1,6 @@
 import FlayAction from '../../util/FlayAction';
 import Search from '../../util/FlaySearch';
+import StringUtils from '../../util/StringUtils';
 import './FlayComment.scss';
 import FlayHTMLElement from './FlayHTMLElement';
 
@@ -24,7 +25,7 @@ export default class FlayComment extends FlayHTMLElement {
     this.japanese.classList.add('japanese');
     this.japanese.addEventListener('click', () => {
       console.log('原語Click', this.flay.video.title, this.flay.video.desc);
-      if (this.flay.video.title == null || this.flay.video.title === '') {
+      if (StringUtils.isBlank(this.flay.video.title)) {
         return;
       }
       Search.translate.Papago(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
@@ -68,7 +69,7 @@ export default class FlayComment extends FlayHTMLElement {
     this.wrapper.classList.toggle('archive', this.flay.archive);
     this.wrapper.setAttribute('data-opus', flay.opus);
 
-    let comment = flay.video.comment === null ? '' : flay.video.comment.trim();
+    let comment = StringUtils.isBlank(flay.video.comment) ? '' : flay.video.comment.trim();
     let blank = comment === '';
     this.comment.title = blank ? COMMENT : comment;
     this.comment.innerHTML = blank ? COMMENT : comment;

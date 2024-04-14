@@ -14,7 +14,7 @@ export default class FlayRelease extends FlayHTMLElement {
 
   connectedCallback() {
     this.wrapper.innerHTML = `
-      <label class="release-label" ><span id="release">2023.08.09</span></label>
+      <label class="release-label" >                  <span id="release" >2023.08.09</span></label>
       <label class="modified-label"><sub>mod    </sub><span id="modified">2023-08-20</span></label>
       <label class="access-label"  ><sub>access </sub><span id="access"  >2023-08-20</span></label>
       <label class="played-label"  ><sub>play   </sub><span id="played"  >2023-08-20</span></label>

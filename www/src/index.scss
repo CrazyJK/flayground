@@ -7,10 +7,6 @@
 }
 
 body {
-  background-image: url(./svg/flayground-text.svg);
-  background-position: center;
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: calc(100% - 400px);
+  background: var(--color-bg) url(./svg/flayground-circle.svg) no-repeat fixed center / min(100%, 600px);
   background-blend-mode: exclusion;
 }

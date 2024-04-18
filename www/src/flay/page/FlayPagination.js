@@ -118,6 +118,27 @@ export default class FlayPagination extends HTMLElement {
     } else {
       window.emitMessage('검색 결과가 없습니다.');
     }
+
+    // 랜덤으로 9개 띄우기
+    this.shadowRoot.querySelector('button')?.remove();
+    const count = Math.min(9, this.opusList.length);
+    const button = this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).appendChild(document.createElement('button'));
+    button.innerHTML = count;
+    button.addEventListener(
+      'click',
+      async () => {
+        for (let i = 0; i < count; i++) {
+          this.#navigator(RANDOM);
+          window.open('popup.flay.html?opus=' + this.opus, 'popup.' + this.opus, 'width=800px,height=1280px');
+          button.innerHTML = count - i;
+          button.animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+        }
+        this.#navigator(RANDOM);
+        button.remove();
+      },
+      { once: true }
+    );
   }
 
   get(offset) {

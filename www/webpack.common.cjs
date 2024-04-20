@@ -15,6 +15,8 @@ module.exports = {
     'page.flay-girls': './src/page.flay-girls.js',
     'page.flay-grid': './src/page.flay-grid.js',
     'page.dragndrop': './src/page.dragndrop.js',
+    'page.actress': './src/page.actress.js',
+    'page.studio': './src/page.studio.js',
     'page.tags': './src/page.tags.js',
     'page.control': './src/page.control.js',
     'page.shot-history': './src/page.shot-history.js',

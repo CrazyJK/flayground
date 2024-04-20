@@ -93,7 +93,7 @@ export const sortable = (table, options) => {
       let prevTr = tbodyList[0];
       for (let i = 0; i < tbodyList.length; i++) {
         const tr = tbodyList[i];
-        table.insertBefore(tr, prevTr);
+        table.insertBefore(tr, null);
 
         prevTr = tr;
       }

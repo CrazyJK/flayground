@@ -1,0 +1,17 @@
+@import './style/style.scss';
+@import './style/layout.sticky-header.scss';
+@import './style/layout.grid-card.scss';
+
+main {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  flex-direction: row;
+
+  flay-studuo {
+    border-radius: 0.25rem;
+    &.found {
+      background-color: var(--color-bg-focus);
+    }
+  }
+}

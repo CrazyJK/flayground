@@ -9,14 +9,17 @@ body {
     grid-template-rows: 4rem 1fr 3rem;
 
     & > header {
-      position: relative;
+      overflow: auto;
     }
     & > article {
-      position: relative;
       overflow: hidden;
     }
     & > footer {
-      position: relative;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      overflow: auto;
     }
   }
 }

@@ -21,6 +21,7 @@ export default class FlayPagination extends HTMLElement {
   active = true;
   history = [];
   pageRange = 0;
+  randomEnd = 9;
 
   constructor() {
     super();
@@ -43,30 +44,34 @@ export default class FlayPagination extends HTMLElement {
         <div class="top-left"></div>   <div class="top-right"></div>
         <div class="bottom-left"></div><div class="bottom-right"></div>
       </div>
+      <button class="random-popup-button">${this.randomEnd}</button>
     `;
 
     this.paging = wrapper.querySelector('.paging');
     this.progressBar = wrapper.querySelector('.progress-bar');
     this.coverThumbnail = wrapper.querySelector('.cover-thumbnail');
+    this.randomPopupButton = wrapper.querySelector('.random-popup-button');
   }
 
   connectedCallback() {
     window.addEventListener('wheel', (e) => {
-      if (!this.active) return;
-      if (e.ctrlKey) return;
-      if (e.target.closest('#layer')) return;
+      if (!this.active) return false;
+      if (e.ctrlKey) return false;
+      if (e.target.closest('#layer')) return false;
 
-      switch (e.deltaY) {
-        case 100: // wheel down
-          return this.#navigator(NEXT);
-        case -100: // wheel up
-          return this.#navigator(PREV);
-      }
+      return this.#navigator(e.deltaY > 0 ? NEXT : PREV);
     });
 
     window.addEventListener('keyup', (e) => {
       e.stopPropagation();
-      if (!this.active) return;
+      if (!this.active) return false;
+
+      if (e.code.startsWith('Numpad') || e.code.startsWith('Digit')) {
+        if (this.randomPopupButton.classList.contains('input-mode')) {
+          this.randomPopupButton.innerHTML = e.key;
+          this.randomEnd = Number(e.key);
+        }
+      }
 
       switch (e.code) {
         case 'ArrowRight':
@@ -86,29 +91,67 @@ export default class FlayPagination extends HTMLElement {
         case 'PageDown':
           return this.#navigator(PAGEDOWN);
       }
+      return false;
     });
 
     window.addEventListener('mouseup', (e) => {
-      if (!this.active) return;
-      /*
-      MouseEvent: button
-        0: Main button pressed, usually the left button or the un-initialized state
-        1: Auxiliary button pressed, usually the wheel button or the middle button (if present)
-        2: Secondary button pressed, usually the right button
-        3: Fourth button, typically the Browser Back button
-        4: Fifth button, typically the Browser Forward button
-      */
-      if (e.button === 1) this.#navigator(RANDOM);
+      e.preventDefault();
+      if (!this.active) return false;
+
+      /* MouseEvent: button */
+      switch (e.button) {
+        case 0: // 0: Main button pressed, usually the left button or the un-initialized state
+          break;
+        case 1: // 1: Auxiliary button pressed, usually the wheel button or the middle button (if present)
+          return this.#navigator(RANDOM);
+        case 2: // 2: Secondary button pressed, usually the right button
+          break;
+        case 3: // 3: Fourth button, typically the Browser Back button
+          return this.#navigator(NEXT);
+        case 4: // 4: Fifth button, typically the Browser Forward button
+          return this.#navigator(PREV);
+      }
+      return false;
     });
 
     addResizeLazyEventListener(() => {
       this.#display();
     });
+
+    this.randomPopupButton.addEventListener('mouseover', () => this.randomPopupButton.classList.add('input-mode'));
+    this.randomPopupButton.addEventListener('mouseout', () => this.randomPopupButton.classList.remove('input-mode'));
+    this.randomPopupButton.addEventListener('click', async () => {
+      this.shadowRoot.querySelector(`.${this.tagName.toLowerCase()} aside`)?.remove();
+      const popupIndicators = this.shadowRoot.querySelector(`.${this.tagName.toLowerCase()}`).appendChild(document.createElement('aside'));
+      const randomCount = Math.min(this.randomEnd, this.opusList.length);
+
+      for (let i = 0; i < randomCount; i++) {
+        this.#decideOpus(RANDOM);
+        let randomPopup = window.open(`popup.flay.html?opus=${this.opus}&popupNo=${i + 1}`, `randomPopup.${i}`, 'width=800px,height=1280px');
+
+        this.randomPopupButton.innerHTML = randomCount - i;
+        this.randomPopupButton.animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
+
+        const popupIndicator = popupIndicators.appendChild(document.createElement('button'));
+        popupIndicator.innerHTML = i + 1;
+        popupIndicator.addEventListener('mouseover', () => randomPopup.postMessage('over'));
+        popupIndicator.addEventListener('mouseout', () => randomPopup.postMessage('out'));
+        popupIndicator.addEventListener('click', () => {
+          this.#decideOpus(RANDOM);
+          randomPopup = window.open(`popup.flay.html?opus=${this.opus}&popupNo=${i + 1}`, `randomPopup.${i}`, 'width=800px,height=1280px');
+
+          popupIndicator.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
+        });
+
+        await new Promise((resolve) => setTimeout(resolve, 1000));
+      }
+      this.randomPopupButton.innerHTML = randomCount;
+    });
   }
 
   /**
    * set opus list
-   * @param {string[]} list
+   * @param {string[]} list of opus
    */
   set(list) {
     this.opusList = list;
@@ -118,27 +161,6 @@ export default class FlayPagination extends HTMLElement {
     } else {
       window.emitMessage('검색 결과가 없습니다.');
     }
-
-    // 랜덤으로 9개 띄우기
-    this.shadowRoot.querySelector('button')?.remove();
-    const count = Math.min(9, this.opusList.length);
-    const button = this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).appendChild(document.createElement('button'));
-    button.innerHTML = count;
-    button.addEventListener(
-      'click',
-      async () => {
-        for (let i = 0; i < count; i++) {
-          this.#navigator(RANDOM);
-          window.open('popup.flay.html?opus=' + this.opus, 'popup.' + this.opus, 'width=800px,height=1280px');
-          button.innerHTML = count - i;
-          button.animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
-          await new Promise((resolve) => setTimeout(resolve, 1000));
-        }
-        this.#navigator(RANDOM);
-        button.remove();
-      },
-      { once: true }
-    );
   }
 
   get(offset) {
@@ -163,37 +185,44 @@ export default class FlayPagination extends HTMLElement {
    * @returns
    */
   #navigator(direction) {
+    this.#decideOpus(direction);
+    this.dispatchEvent(new Event('change'));
+    this.#display();
+    return true;
+  }
+
+  #decideOpus(direction) {
     if (typeof direction === 'string') {
       switch (direction) {
         case NEXT:
           this.opusIndex = Math.min(this.opusIndex + 1, this.opusList.length - 1);
-          this.putHistory(this.opusIndex);
+          this.#putHistory(this.opusIndex);
           break;
         case PREV:
           this.opusIndex = Math.max(this.opusIndex - 1, 0);
-          this.putHistory(this.opusIndex);
+          this.#putHistory(this.opusIndex);
           break;
         case RANDOM:
           this.opusIndex = getRandomInt(0, this.opusList.length);
-          if (!this.putHistory(this.opusIndex)) {
-            this.#navigator(RANDOM);
+          if (!this.#putHistory(this.opusIndex)) {
+            this.#decideOpus(direction);
           }
           break;
         case FIRST:
           this.opusIndex = 0;
-          this.putHistory(this.opusIndex);
+          this.#putHistory(this.opusIndex);
           break;
         case LAST:
           this.opusIndex = this.opusList.length - 1;
-          this.putHistory(this.opusIndex);
+          this.#putHistory(this.opusIndex);
           break;
         case PAGEUP:
           this.opusIndex = Math.max(this.opusIndex - this.pageRange, 0);
-          this.putHistory(this.opusIndex);
+          this.#putHistory(this.opusIndex);
           break;
         case PAGEDOWN:
           this.opusIndex = Math.min(this.opusIndex + this.pageRange, this.opusList.length - 1);
-          this.putHistory(this.opusIndex);
+          this.#putHistory(this.opusIndex);
           break;
         case BACK: {
           const backIndex = this.history.splice(this.history.length - 2, 1)[0];
@@ -211,14 +240,10 @@ export default class FlayPagination extends HTMLElement {
 
     this.opus = this.opusList[this.opusIndex];
     if (!this.opus) {
-      console.info(`navigator: index=${this.opusIndex}, opus=${this.opus}`);
-      return false;
+      throw new Error(`navigator: index=${this.opusIndex}, opus=${this.opus}`);
     }
     console.debug(`navigator: index=${this.opusIndex}, opus=${this.opus}`);
     console.debug('history', this.history);
-
-    this.dispatchEvent(new Event('change'));
-    return this.#display();
   }
 
   /**
@@ -226,7 +251,7 @@ export default class FlayPagination extends HTMLElement {
    * @param {number} index
    * @returns 추가되면 true
    */
-  putHistory(index) {
+  #putHistory(index) {
     if (this.history.length === this.opusList.length) {
       this.history = [];
     }
@@ -243,8 +268,9 @@ export default class FlayPagination extends HTMLElement {
    */
   #display() {
     if (!this.opusList) {
-      return false;
+      throw new Error('opusList is not valid');
     }
+
     const lastIndex = this.opusList.length - 1;
     this.progressBar.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 
@@ -292,9 +318,7 @@ export default class FlayPagination extends HTMLElement {
         });
       }
     }
-    return true;
   }
 }
 
-// Define the new element
 customElements.define('flay-pagination', FlayPagination);

@@ -1,9 +1,6 @@
 @import './style/style.scss';
 
 main {
-  img {
-    width: 800px;
-  }
   div {
     position: relative;
     margin-top: 0.25rem;
@@ -18,6 +15,13 @@ main {
       font-size: smaller;
       font-weight: 400;
       color: var(--color-text-secondary);
+    }
+
+    &.cover {
+      width: 800px;
+      aspect-ratio: var(--cover-aspect-ratio);
+      margin: auto;
+      background: top / contain no-repeat;
     }
 
     &.last-access::after,
@@ -55,4 +59,11 @@ main {
       font-size: smaller;
     }
   }
+}
+
+footer {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
 }

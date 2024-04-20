@@ -81,17 +81,38 @@
     }
   }
 
-  button {
+  & > button {
     position: fixed;
     right: 0;
     bottom: 0;
     font-family: 'Ink free';
-    border-radius: 50%;
+    border-radius: 25%;
     border: 2px solid var(--color-border-active);
+    background-color: var(--color-bg);
     box-shadow: var(--box-shadow);
     width: 2rem;
     height: 2rem;
     margin: 0.5rem;
     z-index: 1;
+
+    & ~ aside {
+      position: fixed;
+      right: 0;
+      bottom: 3rem;
+      display: flex;
+      flex-direction: column;
+
+      button {
+        font-family: 'Ink free';
+        border-radius: 50%;
+        border: 2px solid var(--color-border-active);
+        background-color: var(--color-bg);
+        box-shadow: var(--box-shadow-small);
+        width: 2rem;
+        height: 2rem;
+        margin: 0.5rem;
+        z-index: 2;
+      }
+    }
   }
 }

@@ -11,6 +11,7 @@ class Page {
 
   async start() {
     const list = await fetch('/archive').then((res) => res.json());
+    list.sort((a1, a2) => a1.release.localeCompare(a2.release));
 
     const archiveMap = Array.from(list).reduce((map, archive) => {
       map.set(archive.opus, archive);
@@ -30,7 +31,7 @@ class Page {
     this.coverURL = URL.createObjectURL(await fetch(`/static/cover/${flay.opus}`).then((res) => res.blob()));
 
     document.querySelector('main').innerHTML = `
-      <img class="cover"    src="${this.coverURL}">
+      <div class="cover" style="background-image: url(${this.coverURL})">                  </div>
       <div class="studio"       >${flay.studio}                                            </div>
       <div class="opus"         >${flay.opus}                                              </div>
       <div class="title"        >${flay.title}                                             </div>

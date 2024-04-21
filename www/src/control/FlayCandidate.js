@@ -3,7 +3,7 @@ import './FlayCandidate.scss';
 
 const HTML = `
   <div>
-    <button id="getCadidate">Candidate <i id="candidateLength">0</i></button>
+    <button id="getCadidate"><span id="candidateLength">0</span> Candidates</button>
   </div>
   <ol id="candidatesFlay"></ol>
 `;

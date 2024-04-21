@@ -11,10 +11,11 @@ div.flay-candidate {
   ol {
     display: flex;
     flex-direction: row;
-    gap: 1rem;
-    align-items: center;
     flex-wrap: wrap;
+    align-content: flex-start;
     justify-content: center;
+    align-items: center;
+    gap: 1rem;
 
     list-style: none;
     padding: 1rem;

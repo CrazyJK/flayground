@@ -49,7 +49,7 @@
   }
 
   .candidate {
-    color: #f00b;
+    text-shadow: var(--text-shadow-active);
   }
 
   &.archive {

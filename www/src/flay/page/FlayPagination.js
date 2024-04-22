@@ -21,7 +21,7 @@ export default class FlayPagination extends HTMLElement {
   active = true;
   history = [];
   pageRange = 0;
-  randomEnd = 9;
+  randomEnd = 6;
 
   constructor() {
     super();

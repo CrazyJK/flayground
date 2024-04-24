@@ -21,7 +21,7 @@ export default class FlayPagination extends HTMLElement {
   active = true;
   history = [];
   pageRange = 0;
-  randomEnd = 6;
+  randomEnd = 3;
 
   constructor() {
     super();
@@ -124,6 +124,7 @@ export default class FlayPagination extends HTMLElement {
       this.shadowRoot.querySelector(`.${this.tagName.toLowerCase()} aside`)?.remove();
       const popupIndicators = this.shadowRoot.querySelector(`.${this.tagName.toLowerCase()}`).appendChild(document.createElement('aside'));
       const randomCount = Math.min(this.randomEnd, this.opusList.length);
+      const currOpusIndex = this.opusIndex;
 
       for (let i = 0; i < randomCount; i++) {
         this.#decideOpus(RANDOM);
@@ -145,7 +146,9 @@ export default class FlayPagination extends HTMLElement {
 
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
+
       this.randomPopupButton.innerHTML = randomCount;
+      this.opusIndex = currOpusIndex;
     });
   }
 

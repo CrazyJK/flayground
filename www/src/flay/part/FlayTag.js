@@ -11,9 +11,11 @@ export default class FlayTag extends FlayHTMLElement {
 
   constructor() {
     super();
+
+    this.init();
   }
 
-  connectedCallback() {
+  init() {
     this.wrapper.innerHTML = `
       <div class="tag-list" id="tagList">
         <button class="tag-new-btn" id="tagNewBtn">NEW</button>

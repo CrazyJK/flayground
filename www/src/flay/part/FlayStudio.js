@@ -9,9 +9,11 @@ export default class FlayStudio extends FlayHTMLElement {
 
   constructor() {
     super();
+
+    this.init();
   }
 
-  connectedCallback() {
+  init() {
     const label = this.wrapper.appendChild(document.createElement('label'));
     this.studio = label.appendChild(document.createElement('a'));
     this.studio.innerHTML = 'Studio';

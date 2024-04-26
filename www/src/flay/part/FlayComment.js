@@ -14,9 +14,11 @@ export default class FlayComment extends FlayHTMLElement {
 
   constructor() {
     super();
+
+    this.init();
   }
 
-  connectedCallback() {
+  init() {
     const div = this.wrapper.appendChild(document.createElement('div'));
 
     this.japanese = div.appendChild(document.createElement('a'));

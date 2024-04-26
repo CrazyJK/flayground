@@ -9,9 +9,11 @@ export default class FlayTitle extends FlayHTMLElement {
 
   constructor() {
     super();
+
+    this.init();
   }
 
-  connectedCallback() {
+  init() {
     const label = this.wrapper.appendChild(document.createElement('label'));
     this.anker = label.appendChild(document.createElement('a'));
     this.anker.innerHTML = 'Title';

@@ -13,9 +13,11 @@ export default class FlayCover extends FlayHTMLElement {
 
   constructor() {
     super();
+
+    this.init();
   }
 
-  connectedCallback() {
+  init() {
     this.wrapper.addEventListener('click', () => this.wrapper.classList.toggle('contain'));
 
     this.coverImage = this.wrapper.appendChild(document.createElement('img'));

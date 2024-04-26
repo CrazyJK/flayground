@@ -13,9 +13,11 @@ export default class FlayFiles extends FlayHTMLElement {
 
   constructor() {
     super();
+
+    this.init();
   }
 
-  connectedCallback() {
+  init() {
     const infoDiv = this.wrapper.appendChild(document.createElement('div'));
     infoDiv.classList.add('info');
 

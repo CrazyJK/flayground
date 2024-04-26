@@ -11,9 +11,11 @@ export default class FlayRank extends FlayHTMLElement {
 
   constructor() {
     super();
+
+    this.init();
   }
 
-  connectedCallback() {
+  init() {
     this.rankInputElementArray = [];
 
     const rankGroupElement = this.wrapper.appendChild(document.createElement('div'));

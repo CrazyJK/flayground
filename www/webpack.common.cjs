@@ -7,7 +7,6 @@ module.exports = {
   mode: 'development',
   entry: {
     index: './src/index.js',
-    blank: './src/blank.js',
     style: './src/style.js',
     'page.archive': './src/page.archive.js',
     'page.flay-page': './src/page.flay-page.js',

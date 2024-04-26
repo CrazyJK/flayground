@@ -37,6 +37,7 @@ export default class ImageFrame extends HTMLElement {
     const path = decodeURIComponent(res.headers.get('Path').replace(/\+/g, ' '));
     const modified = new Date(Number(res.headers.get('Modified')));
 
+    URL.revokeObjectURL(this.img.src);
     this.img.src = URL.createObjectURL(await res.blob());
     await this.img.decode();
 

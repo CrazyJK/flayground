@@ -52,7 +52,7 @@ public class FileBasedFlaySource extends LogAndSse implements FlaySource {
     }
 
     flayMap.clear();
-    ;
+
     for (File file : listFiles) {
       String suffix = FilenameUtils.getExtension(file.getName()).toLowerCase();
       if ("ds_store".contains(suffix)) {

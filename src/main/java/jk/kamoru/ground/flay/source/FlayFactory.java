@@ -15,6 +15,7 @@ import jk.kamoru.ground.history.domain.History;
 import jk.kamoru.ground.history.service.HistoryService;
 import jk.kamoru.ground.info.domain.Actress;
 import jk.kamoru.ground.info.domain.Studio;
+import jk.kamoru.ground.info.domain.Tag;
 import jk.kamoru.ground.info.domain.Video;
 import jk.kamoru.ground.info.source.InfoSource;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,8 @@ public class FlayFactory {
   InfoSource<Studio, String> studioInfoSource;
   @Autowired
   InfoSource<Actress, String> actressInfoSource;
+  @Autowired
+  InfoSource<Tag, Integer> tagInfoSource;
   @Autowired
   HistoryService historyService;
 
@@ -72,6 +75,13 @@ public class FlayFactory {
       }
       video.setLastPlay(lastPlayTime);
     }
+    // update tag
+    video.getTags().forEach((tag) -> {
+      Integer id = tag.getId();
+      Tag tagInSource = tagInfoSource.get(id);
+      tag.setName(tagInSource.getName());
+      tag.setDescription(tagInSource.getDescription());
+    });
     return video;
   }
 

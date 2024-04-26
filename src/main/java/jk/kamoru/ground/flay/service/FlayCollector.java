@@ -63,11 +63,15 @@ public class FlayCollector {
   }
 
   private boolean filter(Flay flay, FlayCondition flayCondition) {
-    return likeStudio(flay, flayCondition.getStudio()) && likeOpus(flay, flayCondition.getOpus())
-        && likeTitle(flay, flayCondition.getTitle()) && likeActress(flay, flayCondition.getActress())
-        && likeRelease(flay, flayCondition.getRelease()) && likeSearch(flay, flayCondition)
+    return likeSearch(flay, flayCondition)
+        && likeStudio(flay, flayCondition.getStudio())
+        && likeOpus(flay, flayCondition.getOpus())
+        && likeTitle(flay, flayCondition.getTitle())
+        && likeActress(flay, flayCondition.getActress())
+        && likeRelease(flay, flayCondition.getRelease())
         && containsRank(flay, flayCondition.getRank())
-        && containsSubtitles(flay, flayCondition.isWithSubtitles()) && containsFavorite(flay, flayCondition);
+        && containsSubtitles(flay, flayCondition.isWithSubtitles())
+        && containsFavorite(flay, flayCondition);
   }
 
   private boolean likeStudio(Flay flay, String studio) {
@@ -92,9 +96,18 @@ public class FlayCollector {
   }
 
   private boolean likeSearch(Flay flay, FlayCondition flayCondition) {
-    return StringUtils.isBlank(flayCondition.getSearch()) || likeStudio(flay, flayCondition.getSearch())
-        || likeOpus(flay, flayCondition.getSearch()) || likeTitle(flay, flayCondition.getSearch())
-        || likeActress(flay, flayCondition.getSearch()) || likeRelease(flay, flayCondition.getSearch());
+    return StringUtils.isBlank(flayCondition.getSearch())
+        || likeStudio(flay, flayCondition.getSearch())
+        || likeOpus(flay, flayCondition.getSearch())
+        || likeTitle(flay, flayCondition.getSearch())
+        || likeActress(flay, flayCondition.getSearch())
+        || likeRelease(flay, flayCondition.getSearch())
+        || containsTag(flay, flayCondition.getSearch());
+  }
+
+  private boolean containsTag(Flay flay, String tagName) {
+    return StringUtils.isBlank(tagName)
+        || flay.getVideo().getTags().stream().anyMatch(tag -> tagName.equals(tag.getName()));
   }
 
   private boolean containsRank(Flay flay, int[] ranks) {

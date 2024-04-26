@@ -85,9 +85,9 @@ function renderTagList() {
               const count = parseInt(li.querySelector('.count').textContent);
               const countStep = Math.floor(count / 5);
 
-              li.querySelectorAll('dt label').forEach((label) => (label.style.fontSize = `calc(var(--size-normal) + ${countStep}px)`));
+              li.querySelectorAll('dt label.name').forEach((label) => (label.style.fontSize = `calc(var(--size-normal) + ${countStep}px)`));
             } else {
-              li.querySelectorAll('dt label').forEach((label) => (label.style.fontSize = ''));
+              li.querySelectorAll('dt label.name').forEach((label) => (label.style.fontSize = ''));
             }
           });
         });

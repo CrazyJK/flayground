@@ -14,9 +14,14 @@ const popupNo = urlParams.get('popupNo');
 if (popupNo) {
   document.title += ` [${popupNo}]`;
 
+  const offset = (parseInt(popupNo) - 1) % 3;
   const popupMarker = document.querySelector('body').appendChild(document.createElement('label'));
   popupMarker.classList.add('marker');
   popupMarker.innerHTML = popupNo;
+  popupMarker.addEventListener('click', () => {
+    window.moveBy(window.screen.availLeft - window.screenLeft + (window.screen.availWidth / 3) * offset, window.screen.availTop - window.screenTop);
+    window.resizeTo(window.screen.availWidth / 3, window.screen.availHeight);
+  });
 
   window.addEventListener(
     'message',

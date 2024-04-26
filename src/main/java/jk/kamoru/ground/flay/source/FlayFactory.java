@@ -13,6 +13,7 @@ import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.flay.domain.Flay;
 import jk.kamoru.ground.history.domain.History;
 import jk.kamoru.ground.history.service.HistoryService;
+import jk.kamoru.ground.info.InfoNotfoundException;
 import jk.kamoru.ground.info.domain.Actress;
 import jk.kamoru.ground.info.domain.Studio;
 import jk.kamoru.ground.info.domain.Tag;
@@ -78,9 +79,13 @@ public class FlayFactory {
     // update tag
     video.getTags().forEach((tag) -> {
       Integer id = tag.getId();
-      Tag tagInSource = tagInfoSource.get(id);
-      tag.setName(tagInSource.getName());
-      tag.setDescription(tagInSource.getDescription());
+      try {
+        Tag tagInSource = tagInfoSource.get(id);
+        tag.setName(tagInSource.getName());
+        tag.setDescription(tagInSource.getDescription());
+      } catch (InfoNotfoundException e) {
+        log.warn("not found tag: id={} name={} desc={} opus={}", id, tag.getName(), tag.getDescription(), opus);
+      }
     });
     return video;
   }

@@ -4,6 +4,8 @@ import './SideNavBar.scss';
 const menuList = [
   { url: 'page.flay-page.html', name: 'flay page' },
   {},
+  { url: 'page.flay-play.html', name: 'flay play' },
+  {},
   { url: 'page.archive.html', name: 'flay archive' },
   { url: 'page.flay-one.html', name: 'flay one' },
   { url: 'page.flay-grid.html', name: 'flay grid' },

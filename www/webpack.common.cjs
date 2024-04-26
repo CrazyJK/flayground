@@ -13,6 +13,7 @@ module.exports = {
     'page.flay-one': './src/page.flay-one.js',
     'page.flay-girls': './src/page.flay-girls.js',
     'page.flay-grid': './src/page.flay-grid.js',
+    'page.flay-play': './src/page.flay-play.js',
     'page.dragndrop': './src/page.dragndrop.js',
     'page.actress': './src/page.actress.js',
     'page.studio': './src/page.studio.js',

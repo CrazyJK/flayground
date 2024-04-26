@@ -24,8 +24,6 @@ const menuList = [
   { url: 'page.image-fall.html', name: 'image fall' },
   {},
   { url: 'page.kamoru-diary.html', name: 'diary' },
-  {},
-  { url: 'blank.html', name: 'blank' },
 ];
 
 export default class SideNavBar extends HTMLElement {

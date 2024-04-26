@@ -37,14 +37,16 @@
   &.card {
     padding: 0;
 
-    .tag-list label {
-      padding: 0.125rem;
-    }
-    input:not(:checked) + label {
-      display: none;
-    }
-    .tag-new-btn {
-      display: none;
+    .tag-list {
+      label {
+        padding: 0.125rem;
+      }
+      input:not(:checked) + label {
+        display: none;
+      }
+      .tag-new-btn {
+        display: none;
+      }
     }
   }
 
@@ -56,5 +58,25 @@
     * {
       color: var(--color-gray-dark);
     }
+  }
+}
+
+@media screen and (max-height: 997px) {
+  .flay-tag {
+    .tag-list {
+      gap: 0.125rem 0.25rem;
+      label {
+        padding: 0.125rem;
+      }
+      button {
+        display: none;
+      }
+    }
+  }
+}
+
+@media screen and (max-height: 989px) {
+  input[type='checkbox']:not(:checked) + label {
+    display: none;
   }
 }

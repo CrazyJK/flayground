@@ -1,4 +1,3 @@
-import { addResizeLazyEventListener } from '../util/resizeListener';
 import './FlayPage.scss';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
@@ -41,11 +40,6 @@ export default class FlayPage extends HTMLElement {
     this.flayRank = wrapper.appendChild(new FlayRank());
     this.flayFiles = wrapper.appendChild(new FlayFiles());
     this.flayTag = wrapper.appendChild(new FlayTag());
-
-    addResizeLazyEventListener(() => {
-      // 24' 모니터에서 선택된 태그만 보이기
-      this.flayTag.shadowRoot.querySelector('.flay-tag').classList.toggle('card', window.innerHeight < 998);
-    });
   }
 
   /**

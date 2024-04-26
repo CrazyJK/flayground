@@ -17,12 +17,12 @@ main {
     width: 100%;
     transition: 0.4s;
 
-    &:hover {
-      box-shadow: var(--box-shadow) inset;
-      legend {
-        box-shadow: var(--box-shadow-small) inset;
-      }
-    }
+    // &:hover {
+    //   box-shadow: var(--box-shadow) inset;
+    //   legend {
+    //     box-shadow: var(--box-shadow-small) inset;
+    //   }
+    // }
 
     legend {
       background-color: var(--color-bg);

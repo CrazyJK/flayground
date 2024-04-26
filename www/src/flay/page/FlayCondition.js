@@ -103,6 +103,8 @@ export default class FlayCondition extends HTMLElement {
     const option = document.createElement('option');
     option.value = item;
     this.shadowRoot.querySelector('#search-items').prepend(option);
+
+    this.shadowRoot.querySelectorAll('#search-items option').forEach((option, i) => i > 30 && option.remove());
   }
 }
 

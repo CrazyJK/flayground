@@ -25,7 +25,6 @@
 
 // color definition
 :root {
-  --color-transparent: transparent;
   --color-orange: #ffa500;
   --color-red: #ff0000;
   --color-blue: #0000ff;
@@ -78,9 +77,9 @@
   --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
   --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
 
-  --text-shadow: 1px 1px 2px var(--color-gray-dark);
-  --text-shadow-hover: 1px 1px 2px var(--color-blue);
-  --text-shadow-active: 1px 1px 2px var(--color-orange);
+  --text-shadow: 1px 1px 1px var(--color-gray-dark);
+  --text-shadow-hover: 1px 1px 1px var(--color-blue);
+  --text-shadow-active: 1px 1px 1px var(--color-orange);
 }
 
 // dark theme

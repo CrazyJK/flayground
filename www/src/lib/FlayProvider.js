@@ -20,23 +20,23 @@ export class FlayProvider extends OpusProvider {
   }
 
   async get(opus) {
-    const index = this.getIndex(opus);
-    this.opus = this.getOpus(index);
+    const index = await this.getIndex(opus);
+    this.opus = await this.getOpus(index);
     return await this.#returnData();
   }
 
   async random() {
-    this.opus = this.getRandomOpus();
+    this.opus = await this.getRandomOpus();
     return await this.#returnData();
   }
 
   async next() {
-    this.opus = this.getNextOpus();
+    this.opus = await this.getNextOpus();
     return await this.#returnData();
   }
 
   async prev() {
-    this.opus = this.getPrevOpus();
+    this.opus = await this.getPrevOpus();
     return await this.#returnData();
   }
 }

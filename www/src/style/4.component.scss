@@ -6,18 +6,21 @@
 }
 
 h1 {
-  font-size: var(--size-largest);
+  font-size: var(--size-huge);
 }
 h2 {
-  font-size: var(--size-large);
+  font-size: var(--size-largest);
 }
 h3 {
-  font-size: var(--size-normal);
+  font-size: var(--size-large);
 }
 h4 {
-  font-size: var(--size-small);
+  font-size: var(--size-normal);
 }
 h5 {
+  font-size: var(--size-small);
+}
+h6 {
   font-size: var(--size-smallest);
 }
 
@@ -164,6 +167,12 @@ textarea::spelling-error {
 .error {
   color: var(--color-text-danger) !important;
 }
+.warn {
+  color: var(--color-text-warn) !important;
+}
+.small {
+  font-size: small;
+}
 
 .badge {
   float: right;
@@ -174,7 +183,7 @@ textarea::spelling-error {
   min-width: 1rem;
 }
 
-/* 커스텀 엘리먼트 small 모드 */
+/* 커스텀 엘리먼트 모드 */
 .card {
   label,
   a,

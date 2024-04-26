@@ -1,12 +1,1 @@
 @import './style/style.scss';
-
-[theme='dark'] {
-  body {
-    background-blend-mode: unset;
-  }
-}
-
-body {
-  background: var(--color-bg) url(./svg/flayground-circle.svg) no-repeat fixed center / min(100%, 600px);
-  background-blend-mode: exclusion;
-}

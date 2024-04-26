@@ -17,7 +17,7 @@
   .result-wrapper {
     overflow: auto;
 
-    h1 {
+    h2 {
       position: sticky;
       top: 0;
       background-color: var(--color-bg);
@@ -50,7 +50,7 @@
     padding: 0.125rem 0.25rem;
   }
   .studio {
-    flex: 0 0 4rem;
+    flex: 0 0 6rem;
   }
   .opus {
     flex: 0 0 6rem;
@@ -79,5 +79,10 @@
   .item.actress-item {
     flex-wrap: wrap;
     justify-content: flex-start;
+  }
+
+  .notfound {
+    font-size: var(--size-normal);
+    color: var(--color-text-warn);
   }
 }

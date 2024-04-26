@@ -5,15 +5,15 @@ const HTML = `
   <input type="search" id="search" placeholder="Search..." spellcheck="false">
 </div>
 <div class="result-wrapper">
-  <h1>Instance</h1>
+  <h2>Instance</h2>
   <ol class="instance-list"></ol>
-  <h1>Archive</h1>
+  <h2>Archive</h2>
   <ol class="archive-list"></ol>
-  <h1>Actress</h1>
+  <h2>Actress</h2>
   <ol class="actress-list"></ol>
-  <h1>Info</h1>
+  <h2>Info</h2>
   <ol class="info-list"></ol>
-  <h1>History</h1>
+  <h2>History</h2>
   <ol class="history-list"></ol>
 </div>
 `;
@@ -97,7 +97,7 @@ function fetchAndRender(url, keyword, wrapper, callback) {
 function renderInstance(list, keyword, wrapper) {
   console.log('renderInstance', list);
   if (list.length === 0) {
-    wrapper.innerHTML = `<label class="error">Not found ${keyword}</label>`;
+    wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
     Array.from(list).forEach((flay) => {
@@ -122,7 +122,7 @@ function renderInstance(list, keyword, wrapper) {
 function renderArchive(list, keyword, wrapper) {
   console.log('renderArchive', list);
   if (list.length === 0) {
-    wrapper.innerHTML = `<label class="error">Not found ${keyword}</label>`;
+    wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
     Array.from(list).forEach((flay) => {
@@ -147,7 +147,7 @@ function renderArchive(list, keyword, wrapper) {
 function renderHistory(list, keyword, wrapper) {
   console.log('renderHistory', list);
   if (list.length === 0) {
-    wrapper.innerHTML = `<label class="error">Not found ${keyword}</label>`;
+    wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
     Array.from(list).forEach((history) => {
@@ -171,7 +171,7 @@ function renderHistory(list, keyword, wrapper) {
 function renderInfo(list, keyword, wrapper) {
   console.log('renderInfo', list);
   if (list.length === 0) {
-    wrapper.innerHTML = `<label class="error">Not found ${keyword}</label>`;
+    wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
     Array.from(list).forEach((info) => {
@@ -196,7 +196,7 @@ function renderInfo(list, keyword, wrapper) {
 function renderActress(list, keyword, wrapper) {
   console.log('renderActress', list);
   if (list.length === 0) {
-    wrapper.innerHTML = `<label class="error">Not found ${keyword}</label>`;
+    wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
     Array.from(list).forEach((actress) => {

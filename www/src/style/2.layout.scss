@@ -1,7 +1,24 @@
+[theme='dark'] {
+  body {
+    background-blend-mode: unset;
+  }
+}
+
 html {
   font-size: 16px;
-  font-family: 'Malgun Gothic';
+  // font-family: 'Malgun Gothic';
+
+  body {
+    position: relative;
+    margin: 0;
+    padding: 0;
+
+    background: var(--color-bg) url(./svg/flayground-circle.svg) no-repeat fixed right bottom/min(100%, 10rem);
+    background-blend-mode: exclusion;
+    color: var(--color-text);
+  }
 }
+
 // 1080, 1920, 1440, 2560
 @media screen and (max-height: 2560px) {
   html {
@@ -22,15 +39,6 @@ html {
   html {
     font-size: 14px;
   }
-}
-
-body {
-  position: relative;
-  margin: 0;
-  padding: 0;
-
-  background-color: var(--color-bg);
-  color: var(--color-text);
 }
 
 /* Mobile - Landscape */

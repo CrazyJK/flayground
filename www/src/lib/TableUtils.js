@@ -1,8 +1,8 @@
 import './TableUtils.scss';
 
 const NO_SORT = 0;
-const DESCENDING = 1;
-const ASCENDING = 2;
+const ASCENDING = 1;
+const DESCENDING = 2;
 
 const DefaultOptions = {
   sort: [],

@@ -64,7 +64,7 @@ export default class FlayCard extends HTMLElement {
 
   #resize() {
     const domRect = this.getBoundingClientRect();
-    this.flayInfo.classList.toggle('small', domRect.width < 400);
+    this.flayInfo.classList.toggle('small', domRect.width <= 400);
 
     this.flayCover.resize(domRect);
     this.flayTitle.resize(domRect);

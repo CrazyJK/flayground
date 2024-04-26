@@ -26,6 +26,6 @@ export default class FlayHTMLElement extends HTMLElement {
    * @param {DOMRect} parentDOMRect
    */
   resize(parentDOMRect) {
-    this.wrapper.classList.toggle('small', parentDOMRect.width < 400);
+    this.wrapper.classList.toggle('small', parentDOMRect.width <= 400);
   }
 }

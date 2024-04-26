@@ -4,26 +4,21 @@ import './page.image-one.scss';
 import ImageFrame from './image/part/ImageFrame';
 import { getRandomInt } from './util/randomNumber';
 
-const main = document.querySelector('main');
-const img = document.querySelector('img');
+const imageFrame = document.querySelector('main').appendChild(new ImageFrame());
 const imgIdx = document.querySelector('#imgIdx');
 const imgPath = document.querySelector('#imgPath');
 const imgName = document.querySelector('#imgName');
 const imgSize = document.querySelector('#imgSize');
 
-const imageFrame = new ImageFrame();
-main.append(imageFrame);
-
 let imageSize = 0;
 let imageIdx = 0;
-let isRotated = false;
 let playTimer = -1;
 
 fetch('/image/size')
   .then((res) => res.text())
   .then((text) => {
     imageSize = Number(text);
-    console.log('imageSize', imageSize);
+    console.debug('imageSize', imageSize);
 
     navigator('Space');
   });
@@ -46,10 +41,11 @@ function dispatchEventCode(e) {
     code = e.code;
   } else if (e.type === 'click') {
     code = e.ctrlKey || e.altKey ? 'Play' : 'Pause';
+    console.log('navigator', code);
   }
-  console.log('navigator', code);
 
   if (code === 'Play') {
+    clearTimeout(playTimer);
     playTimer = setInterval(() => {
       navigator(e.ctrlKey ? 'WheelDown' : 'Space');
     }, 1000 * 10);
@@ -98,28 +94,28 @@ function navigator(code) {
   drawImage();
 }
 
-function drawImage() {
-  imageFrame.set(imageIdx).then((image) => {
-    console.log(imageIdx, 'drawImage then', image.info, image.colors);
-    decideRotateView();
-    drawInfo();
-  });
+async function drawImage() {
+  await imageFrame.set(imageIdx);
+  decideRotateView();
+  drawInfo();
   progressBar();
 }
 
 function decideRotateView() {
-  const isVerticalFrame = document.documentElement.clientWidth < document.documentElement.clientHeight;
-  const isVerticalImage = imageFrame.img.naturalWidth <= imageFrame.img.naturalHeight;
+  const isVerticalFrame = window.innerWidth < window.innerHeight;
+  const isVerticalImage = imageFrame.info.width <= imageFrame.info.height;
+
+  let isRotated = false;
   if (isVerticalFrame && isVerticalImage) {
     isRotated = false;
   } else if (isVerticalFrame && !isVerticalImage) {
-    isRotated = document.documentElement.clientWidth < imageFrame.img.naturalWidth;
+    isRotated = window.innerWidth < imageFrame.info.width;
   } else if (!isVerticalFrame && isVerticalImage) {
-    isRotated = document.documentElement.clientHeight < imageFrame.img.naturalHeight;
+    isRotated = window.innerHeight < imageFrame.info.height;
   } else {
     isRotated = false;
   }
-  console.log(imageIdx, 'decideRotateView', isRotated);
+  console.debug(imageIdx, 'decideRotateView', isRotated);
   imageFrame.classList.toggle('rotate', isRotated);
 }
 
@@ -127,7 +123,7 @@ function drawInfo() {
   imgIdx.innerHTML = '#' + imageFrame.info.idx;
   imgPath.innerHTML = imageFrame.info.path;
   imgName.innerHTML = imageFrame.info.name;
-  imgSize.innerHTML = imageFrame.img.naturalWidth + 'x' + imageFrame.img.naturalHeight;
+  imgSize.innerHTML = imageFrame.info.width + 'x' + imageFrame.info.height;
 }
 
 function progressBar() {

@@ -11,47 +11,28 @@ main {
 
   background: transparent no-repeat fixed top center / 800px;
 
-  header,
-  footer {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-
-    background-color: var(--color-bg);
-    padding: 1rem;
-    width: 100%;
+  article {
+    box-shadow: var(--box-shadow);
+    margin: 2rem;
   }
 
-  article {
-    video {
-      aspect-ratio: 16 / 9;
-      width: 100%;
-      min-width: 800px;
-      max-height: 100%;
+  .progress {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    margin: 0;
+    padding: 0;
 
-      background-color: #000;
-      box-shadow: var(--box-shadow);
-    }
+    display: flex;
+    justify-content: center;
 
-    .progress {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
+    .progress-bar {
+      position: relative;
+      height: 2px;
+      background-color: #f00;
+      transition: 0.5s;
       margin: 0;
       padding: 0;
-
-      display: flex;
-      justify-content: center;
-
-      .progress-bar {
-        position: relative;
-        height: 2px;
-        background-color: #f00;
-        transition: 1s;
-        margin: 0;
-        padding: 0;
-      }
     }
   }
 

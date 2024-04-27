@@ -1,0 +1,42 @@
+flay-video-player {
+  position: relative;
+  display: block;
+}
+
+.flay-video-player {
+  position: relative;
+  display: flex;
+
+  background-color: #000;
+  border: 2px solid #000;
+
+  &:hover {
+    .info {
+      display: block;
+    }
+  }
+
+  video {
+    // aspect-ratio: 16 / 9;
+    width: 100%;
+  }
+
+  .info {
+    display: none;
+    position: absolute;
+    top: 0;
+    width: 100%;
+    background-color: var(--color-bg-transparent);
+
+    .header,
+    .footer {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .header {
+      padding: 0.5rem;
+    }
+  }
+}

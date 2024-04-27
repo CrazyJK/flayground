@@ -21,6 +21,7 @@ import './flay/part/FlayRelease';
 import './flay/part/FlayStudio';
 import './flay/part/FlayTag';
 import './flay/part/FlayTitle';
+import './flay/part/FlayVideoPlayer';
 import './image/ImageFall';
 import './image/part/FlayImage';
 import './image/part/ImageFrame';

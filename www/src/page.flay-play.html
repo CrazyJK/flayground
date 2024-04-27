@@ -10,23 +10,24 @@
   </head>
   <body>
     <main>
-      <div>
+      <header>
         <flay-title></flay-title>
-      </div>
-      <video></video>
-      <div>
+      </header>
+      <article>
+        <video></video>
+        <div class="progress">
+          <div class="progress-bar"></div>
+        </div>
+      </article>
+      <footer>
         <flay-studio mode="card"></flay-studio>
         <flay-opus mode="card"></flay-opus>
         <flay-actress mode="card"></flay-actress>
         <flay-release mode="card"></flay-release>
         <flay-rank mode="card"></flay-rank>
         <flay-tag mode="card"></flay-tag>
-      </div>
+      </footer>
+      <button type="button" id="nextFlay">⏭️</button>
     </main>
-    <footer>
-      <div class="progress">
-        <div class="progress-bar"></div>
-      </div>
-    </footer>
   </body>
 </html>

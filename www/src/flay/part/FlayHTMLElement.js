@@ -1,6 +1,17 @@
 export default class FlayHTMLElement extends HTMLElement {
   inCard = false;
 
+  static get observedAttributes() {
+    return ['mode'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.debug('attributeChangedCallback', name, oldValue, newValue);
+    if (newValue === 'card') {
+      this.setCard();
+    }
+  }
+
   constructor() {
     super();
 

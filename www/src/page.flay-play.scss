@@ -4,19 +4,26 @@ main {
   position: fixed;
   inset: 0;
 
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-
   background: transparent no-repeat fixed top center / 800px;
 
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+
   article {
-    box-shadow: var(--box-shadow);
-    margin: 2rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+    aspect-ratio: 16 / 9 auto;
+    height: 100%;
+    padding: 2rem;
 
     flay-video-player {
-      width: 100%;
+      box-shadow: var(--box-shadow);
     }
   }
 
@@ -46,14 +53,5 @@ main {
     right: 0;
     font-size: var(--size-huge);
     margin: 0.5rem;
-  }
-}
-
-@media screen and (max-height: 1080px) {
-  // FHD 가로
-  main {
-    article {
-      margin: 8rem;
-    }
   }
 }

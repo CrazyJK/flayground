@@ -6,7 +6,7 @@ import './flay/part/FlayStudio';
 import './flay/part/FlayTag';
 import './flay/part/FlayTitle';
 
-import './flay/part/FlayVideoPlayer';
+import FlayVideoPlayer, { toTime } from './flay/part/FlayVideoPlayer';
 
 import './init/Page';
 import { FlayProvider } from './lib/FlayProvider';
@@ -25,22 +25,26 @@ class Page extends FlayProvider {
   constructor() {
     super();
 
-    this.videoPlayer = document.querySelector('flay-video-player');
+    this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
     this.videoPlayer.setAttribute('controls', true);
     this.videoPlayer.setAttribute('volume', 0.1);
+    // this.videoPlayer.setAttribute('autoplay', true);
   }
 
   async play() {
     try {
       const { opus, flay, actress } = await this.random();
-      console.log('play', opus);
 
       document.querySelector('main').style.backgroundImage = `url(/static/cover/${opus})`;
 
-      this.videoPlayer.set(opus, flay, actress);
-      const duration = await this.videoPlayer.play();
+      await this.videoPlayer.set(opus, flay, actress);
+      console.log('videoPlayer is setted', opus);
+
+      const duration = this.videoPlayer.getDuration();
       const seekTime = getRandomInt(1, duration - this.MaxPlayTime);
-      await this.videoPlayer.play(seekTime);
+
+      await this.videoPlayer.seek(seekTime);
+      console.log('videoPlayer is seeked', toTime(seekTime));
 
       this.#setPlayTimeAndNext(seekTime, duration);
     } catch (error) {
@@ -68,7 +72,7 @@ class Page extends FlayProvider {
         await this.play();
       }
     }, 1000);
-    console.log(`#setPlayTimeAndNext play for ${playTime} seconds`);
+    console.log('videoPlayer will be played for', toTime(playTime));
   }
 
   async start() {

@@ -1,16 +1,8 @@
-import './flay/part/FlayActress';
-import './flay/part/FlayOpus';
-import './flay/part/FlayRank';
-import './flay/part/FlayRelease';
-import './flay/part/FlayStudio';
-import './flay/part/FlayTag';
-import './flay/part/FlayTitle';
+import './init/Page';
+import './page.flay-play.scss';
 
 import FlayVideoPlayer, { toTime } from './flay/part/FlayVideoPlayer';
-
-import './init/Page';
 import { FlayProvider } from './lib/FlayProvider';
-import './page.flay-play.scss';
 import { getRandomInt } from './util/randomNumber';
 
 class Page extends FlayProvider {
@@ -49,26 +41,31 @@ class Page extends FlayProvider {
       this.#setPlayTimeAndNext(seekTime, duration);
     } catch (error) {
       console.error(error);
-      this.play();
+      await this.play();
     }
   }
 
   #setPlayTimeAndNext(seekTime, duration) {
     const leftTime = duration - seekTime; // 남은 시간 초
     const playTime = getRandomInt(this.MinPlayTime, Math.min(leftTime, this.MaxPlayTime));
+    let sec = playTime;
 
     const progressBar = document.querySelector('.progress-bar');
-    progressBar.title = playTime;
-    progressBar.style.width = '100%';
+    const progressMarker = document.querySelector('.progress-marker');
 
-    let sec = playTime;
+    progressBar.style.width = (sec / this.MaxPlayTime) * 100 + '%';
+    progressMarker.innerHTML = toTime(sec);
+
     clearTimeout(this.progressTimer);
     this.progressTimer = setInterval(async () => {
-      progressBar.style.width = (--sec / playTime) * 100 + '%';
+      --sec;
+      progressBar.style.width = (sec / this.MaxPlayTime) * 100 + '%';
+      progressMarker.innerHTML = toTime(sec);
 
       if (sec === 0) {
         clearTimeout(this.progressTimer);
         progressBar.style.width = '100%';
+        progressMarker.innerHTML = toTime(this.MaxPlayTime);
         await this.play();
       }
     }, 1000);
@@ -76,11 +73,8 @@ class Page extends FlayProvider {
   }
 
   async start() {
-    await this.play();
-
     document.querySelector('#nextFlay').addEventListener('click', async () => await this.play());
-
-    console.log('started!');
+    document.querySelector('#nextFlay').dispatchEvent(new Event('click'));
   }
 }
 

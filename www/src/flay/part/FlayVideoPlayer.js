@@ -15,6 +15,7 @@ export default class FlayVideoPlayer extends HTMLElement {
   duration;
   loaded;
   playing;
+  error;
 
   constructor() {
     super();
@@ -77,6 +78,7 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.duration = -1;
     this.loaded = false;
     this.playing = false;
+    this.error = false;
   }
 
   /**
@@ -85,11 +87,15 @@ export default class FlayVideoPlayer extends HTMLElement {
    * @returns
    */
   #wait(isPlay) {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
         if (this.playing === isPlay) {
           clearInterval(timer);
           resolve(true);
+        }
+        if (this.error) {
+          clearInterval(timer);
+          reject('Error: ' + this.opus);
         }
       }, 10);
     });
@@ -97,10 +103,13 @@ export default class FlayVideoPlayer extends HTMLElement {
 
   #addVideoEvent() {
     this.video.addEventListener('error', (e) => {
+      this.error = true;
       console.error(this.opus, `[${e.type}]`, e);
-      throw new Error('video error');
     }); // 에러가 발생하여 리소스를 로드할 수 없는 시점에 발생합니다.
-    this.video.addEventListener('abort', (e) => console.error(this.opus, `[${e.type}]`, e)); // 에러 외의 원인으로 전체 리소스가 로드 되지 못했을 때 발생합니다.
+    this.video.addEventListener('abort', (e) => {
+      this.error = true;
+      console.error(this.opus, `[${e.type}]`, e);
+    }); // 에러 외의 원인으로 전체 리소스가 로드 되지 못했을 때 발생합니다.
 
     this.video.addEventListener('emptied', (e) => console.debug(this.opus, `[${e.type}]`)); // 미디어가 제거된 시점에 발생합니다. 예를 들어 미디어가 이미 (부분적으로라도) 로드 되었는데. HTMLMediaElement.load() 메소드 호출로 재 로드할 경우 발생합니다
 
@@ -157,11 +166,15 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.shadowRoot.querySelector('flay-tag').set(flay);
     this.shadowRoot.querySelector('flay-tag').setCard();
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
         if (this.loaded) {
           clearInterval(timer);
           resolve(true);
+        }
+        if (this.error) {
+          clearInterval(timer);
+          reject('Error: ' + this.opus);
         }
       }, 10);
     });

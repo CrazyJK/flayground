@@ -28,6 +28,7 @@ class Page extends FlayProvider {
     try {
       const { opus, flay, actress } = await this.random();
 
+      document.title = `${opus} ${flay.title} ${flay.actressList.join(' ')}`;
       document.querySelector('main').style.backgroundImage = `url(/static/cover/${opus})`;
 
       await this.videoPlayer.set(opus, flay, actress);
@@ -42,7 +43,7 @@ class Page extends FlayProvider {
       this.#setPlayTimeAndNext(seekTime, duration);
     } catch (error) {
       console.error(error);
-      await this.play();
+      this.#next();
     }
   }
 
@@ -67,16 +68,20 @@ class Page extends FlayProvider {
         clearTimeout(this.progressTimer);
         progressBar.style.width = '100%';
         progressMarker.innerHTML = toTime(this.MaxPlayTime);
-        await this.play();
+        this.#next();
       }
     }, 1000);
     console.log('videoPlayer will be played for', toTime(playTime));
   }
 
+  #next() {
+    document.querySelector('#nextFlay').dispatchEvent(new Event('click'));
+  }
+
   async start() {
     document.querySelector('#nextFlay').innerHTML = SVG.controls.nextTrack;
-    document.querySelector('#nextFlay').addEventListener('click', async () => await this.play());
-    document.querySelector('#nextFlay').dispatchEvent(new Event('click'));
+    document.querySelector('#nextFlay').addEventListener('click', () => this.play());
+    this.#next();
   }
 }
 

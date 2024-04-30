@@ -3,6 +3,7 @@ import './page.flay-play.scss';
 
 import FlayVideoPlayer, { toTime } from './flay/part/FlayVideoPlayer';
 import { FlayProvider } from './lib/FlayProvider';
+import SVG from './svg/SVG';
 import { getRandomInt } from './util/randomNumber';
 
 class Page extends FlayProvider {
@@ -73,6 +74,7 @@ class Page extends FlayProvider {
   }
 
   async start() {
+    document.querySelector('#nextFlay').innerHTML = SVG.controls.nextTrack;
     document.querySelector('#nextFlay').addEventListener('click', async () => await this.play());
     document.querySelector('#nextFlay').dispatchEvent(new Event('click'));
   }

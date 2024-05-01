@@ -48,7 +48,17 @@ export default class FlayCover extends FlayHTMLElement {
     this.wrapper.setAttribute('data-opus', flay.opus);
     this.wrapper.classList.toggle('archive', this.flay.archive);
 
+    this.wrapper.classList.remove('visible');
+    URL.revokeObjectURL(this.coverImage.src);
+
     const COVER_URL = `/static/cover/${flay.opus}`;
+
+    fetch(COVER_URL)
+      .then((res) => res.blob())
+      .then((blob) => {
+        this.wrapper.classList.add('visible');
+        this.coverImage.src = URL.createObjectURL(blob);
+      });
 
     this.coverImage.onload = () => {
       // this.coverImage.style.maxHeight = `calc(${this.coverImage.width}px * 269 / 400)`;
@@ -66,7 +76,7 @@ export default class FlayCover extends FlayHTMLElement {
         this.#applyDominatedColor(savedDominatedColors);
       }
     };
-    this.coverImage.src = COVER_URL;
+    // this.coverImage.src = COVER_URL;
   }
 
   #applyDominatedColor(dominatedColors) {

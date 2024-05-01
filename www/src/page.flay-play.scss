@@ -40,6 +40,7 @@ footer {
     justify-content: center;
     margin: 0;
     padding: 0;
+    background-color: var(--color-bg);
 
     .progress-bar {
       position: relative;
@@ -58,6 +59,22 @@ footer {
     align-items: center;
     gap: 1rem;
 
+    &:hover {
+      div {
+        box-shadow: var(--box-shadow-small);
+      }
+    }
+
+    div {
+      background-color: var(--color-bg);
+      padding: 0 0.5rem;
+      border-top-left-radius: 0.5rem;
+      border-top-right-radius: 0.5rem;
+      height: 1.5rem;
+      display: inline-flex;
+      transition: 0.4s;
+    }
+
     input[type='number'] {
       font-size: var(--size-normal);
       width: 2.5rem;
@@ -71,14 +88,12 @@ footer {
       display: flex;
       justify-content: center;
       align-items: center;
-      border-radius: 50%;
       width: 1.5rem;
       height: 1.5rem;
       transition: 0.4s;
 
       &:hover {
         color: var(--color-orange);
-        box-shadow: var(--box-shadow-small);
       }
 
       svg {

@@ -55,7 +55,7 @@ export default class SideNavBar extends HTMLElement {
     <article>
       ${menuList
         .map((menu) => {
-          if (menu.url) return `<div class="menu"><a href="${menu.url}">${menu.name}</a></div>`;
+          if (menu.url) return `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>`;
           return '<div></div>';
         })
         .join('')}

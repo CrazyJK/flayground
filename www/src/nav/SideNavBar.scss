@@ -21,9 +21,20 @@
 
     div {
       line-height: 2rem;
-    }
-    div:empty {
-      margin-bottom: 1rem;
+      &:empty {
+        margin-bottom: 1rem;
+      }
+      a {
+        white-space: nowrap;
+      }
+      &:hover {
+        a + a {
+          opacity: 1;
+        }
+      }
+      a + a {
+        opacity: 0;
+      }
     }
   }
 

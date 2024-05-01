@@ -16,6 +16,7 @@ export default class FlayVideoPlayer extends HTMLElement {
   loaded;
   playing;
   error;
+  showInfo = false;
 
   constructor() {
     super();
@@ -24,7 +25,7 @@ export default class FlayVideoPlayer extends HTMLElement {
   }
 
   static get observedAttributes() {
-    return ['controls', 'volume', 'autoplay'];
+    return ['controls', 'volume', 'autoplay', 'info'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -38,6 +39,10 @@ export default class FlayVideoPlayer extends HTMLElement {
         break;
       case 'autoplay':
         this.video.autoplay = newValue === 'true';
+        break;
+      case 'info':
+        this.showInfo = newValue === 'true';
+        this.shadowRoot.querySelector('.info').classList.toggle('hide', !this.showInfo);
         break;
     }
   }
@@ -53,7 +58,7 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.wrapper = this.shadowRoot.appendChild(document.createElement('article'));
     this.wrapper.classList.add(this.tagName.toLowerCase());
     this.wrapper.innerHTML = `<video></video>
-    <div class="info">
+    <div class="info hide">
       <div class="header">
         <flay-title mode="card"></flay-title>
       </div>
@@ -199,7 +204,7 @@ export default class FlayVideoPlayer extends HTMLElement {
    */
   async play() {
     if (!this.playing) {
-      this.video.play();
+      await this.video.play();
     }
     await this.#wait(true);
   }

@@ -1,6 +1,6 @@
 const URI_PREFIX = '/static/image/';
 
-class FlayImage extends HTMLImageElement {
+export default class FlayImage extends HTMLImageElement {
   constructor() {
     super();
   }
@@ -12,7 +12,7 @@ class FlayImage extends HTMLImageElement {
   attributeChangedCallback(name, oldValue, newValue) {
     console.debug('attributeChangedCallback', name, oldValue, newValue);
     this.src = URI_PREFIX + newValue;
-    // this.setTitle();
+    this.setTitle();
   }
 
   connectedCallback() {

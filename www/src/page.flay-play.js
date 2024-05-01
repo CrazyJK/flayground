@@ -8,8 +8,8 @@ import FlayStorage from './util/FlayStorage';
 import { getRandomInt } from './util/randomNumber';
 
 class Page extends FlayProvider {
+  sec = 10;
   videoPlayer;
-  progressTimer;
 
   /** 최소 플레이 초 */
   MinPlayTime = 60 * 1;
@@ -20,10 +20,12 @@ class Page extends FlayProvider {
     super();
 
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
+    this.progressBar = document.querySelector('.progress-bar');
+    this.videoRemainingTime = document.querySelector('.video-remaining-time');
+
     this.#initVideoControls();
     this.#initVideoVolume();
     this.#initVideoInfo();
-
     this.#initPlayNext();
   }
 
@@ -63,62 +65,51 @@ class Page extends FlayProvider {
     this.playNextFlayBtn.addEventListener('click', () => this.play());
   }
 
+  #displayTime() {
+    this.progressBar.style.width = (this.sec / this.MaxPlayTime) * 100 + '%';
+    this.videoRemainingTime.innerHTML = toTime(this.sec);
+  }
+
   async play() {
     const { opus, flay, actress } = await this.random();
 
     document.title = `${opus} ${flay.title} ${flay.actressList.join(' ')}`;
     document.querySelector('main').style.backgroundImage = `url(/static/cover/${opus})`;
 
-    let [totalTime, seekTime] = [-1, -1];
     try {
       await this.videoPlayer.set(opus, flay, actress);
       console.log('videoPlayer is setted', opus);
 
-      totalTime = this.videoPlayer.getDuration();
-      seekTime = getRandomInt(1, totalTime - this.MaxPlayTime);
+      const totalTime = this.videoPlayer.getDuration();
+      const seekTime = getRandomInt(1, totalTime - this.MaxPlayTime);
 
       await this.videoPlayer.seek(seekTime);
       console.log('videoPlayer is seeked', toTime(seekTime));
+
+      this.sec = getRandomInt(this.MinPlayTime, Math.min(totalTime - seekTime, this.MaxPlayTime));
+      this.#displayTime();
+      console.log('videoPlayer will be played for', toTime(this.sec));
     } catch (e) {
-      console.error('play Error', e.message);
+      this.sec = 10;
+      console.error('play Error', e.message, `retry in ${this.sec}s`);
     }
-    if (totalTime > seekTime) this.#setPlayTimeAndNext(totalTime - seekTime);
-  }
-
-  #setPlayTimeAndNext(leftTime) {
-    const playTime = getRandomInt(this.MinPlayTime, Math.min(leftTime, this.MaxPlayTime));
-    let sec = playTime;
-
-    const progressBar = document.querySelector('.progress-bar');
-    const videoRemainingTimer = document.querySelector('.video-remaining-time');
-
-    progressBar.style.width = (sec / this.MaxPlayTime) * 100 + '%';
-    videoRemainingTimer.innerHTML = toTime(sec);
-
-    clearTimeout(this.progressTimer);
-    this.progressTimer = setInterval(() => {
-      --sec;
-      progressBar.style.width = (sec / this.MaxPlayTime) * 100 + '%';
-      videoRemainingTimer.innerHTML = toTime(sec);
-
-      if (sec === 0) {
-        clearTimeout(this.progressTimer);
-        progressBar.style.width = '100%';
-        videoRemainingTimer.innerHTML = toTime(this.MaxPlayTime);
-
-        this.#next();
-      }
-    }, 1000);
-    console.log('videoPlayer will be played for', toTime(playTime));
-  }
-
-  #next() {
-    this.playNextFlayBtn.dispatchEvent(new Event('click'));
   }
 
   async start() {
-    this.#next();
+    await this.play();
+
+    setInterval(async () => {
+      --this.sec;
+      this.#displayTime();
+
+      if (this.sec === 0) {
+        this.sec = this.MaxPlayTime;
+        this.#displayTime();
+
+        await this.play();
+      }
+    }, 1000);
   }
 }
 
-new Page().start();
+new Page().start().then(() => console.log('started'));

@@ -1,10 +1,10 @@
 import './init/Page';
 import './page.flay-play.scss';
 
-import './flay/part/FlayCover';
 import FlayVideoPlayer, { toTime } from './flay/part/FlayVideoPlayer';
 import { FlayProvider } from './lib/FlayProvider';
 import SVG from './svg/SVG';
+import FlayStorage from './util/FlayStorage';
 import { getRandomInt } from './util/randomNumber';
 
 class Page extends FlayProvider {
@@ -20,56 +20,92 @@ class Page extends FlayProvider {
     super();
 
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
-    this.videoPlayer.setAttribute('controls', true);
-    this.videoPlayer.setAttribute('volume', 0.1);
-    // this.videoPlayer.setAttribute('autoplay', true);
+    this.#initVideoControls();
+    this.#initVideoVolume();
+    this.#initVideoInfo();
+
+    this.#initPlayNext();
+  }
+
+  #initVideoControls() {
+    this.videoControlChecker = document.querySelector('#video-control');
+    this.videoControlChecker.addEventListener('change', () => {
+      this.videoPlayer.setAttribute('controls', this.videoControlChecker.checked);
+      FlayStorage.local.set('flay-play-video-control', this.videoControlChecker.checked);
+    });
+    this.videoControlChecker.checked = FlayStorage.local.getBoolean('flay-play-video-control', false);
+    this.videoControlChecker.dispatchEvent(new Event('change'));
+  }
+
+  #initVideoVolume() {
+    this.videoVolumeChecker = document.querySelector('#video-volume');
+    this.videoVolumeChecker.addEventListener('change', () => {
+      this.videoPlayer.setAttribute('volume', parseInt(this.videoVolumeChecker.value) / 100);
+      FlayStorage.local.set('flay-play-video-volume', this.videoVolumeChecker.value);
+    });
+    this.videoVolumeChecker.value = FlayStorage.local.getNumber('flay-play-video-volume', 10);
+    this.videoVolumeChecker.dispatchEvent(new Event('change'));
+  }
+
+  #initVideoInfo() {
+    this.videoInfoChecker = document.querySelector('#video-info');
+    this.videoInfoChecker.addEventListener('change', () => {
+      this.videoPlayer.setAttribute('info', this.videoInfoChecker.checked);
+      FlayStorage.local.set('flay-play-video-info', this.videoInfoChecker.checked);
+    });
+    this.videoInfoChecker.checked = FlayStorage.local.getBoolean('flay-play-video-info', false);
+    this.videoInfoChecker.dispatchEvent(new Event('change'));
+  }
+
+  #initPlayNext() {
+    this.playNextFlayBtn = document.querySelector('#play-next-flay');
+    this.playNextFlayBtn.innerHTML = SVG.controls.nextTrack;
+    this.playNextFlayBtn.addEventListener('click', () => this.play());
   }
 
   async play() {
+    const { opus, flay, actress } = await this.random();
+
+    document.title = `${opus} ${flay.title} ${flay.actressList.join(' ')}`;
+    document.querySelector('main').style.backgroundImage = `url(/static/cover/${opus})`;
+
+    let [totalTime, seekTime] = [-1, -1];
     try {
-      const { opus, flay, actress } = await this.random();
-
-      document.title = `${opus} ${flay.title} ${flay.actressList.join(' ')}`;
-      // document.querySelector('main').style.backgroundImage = `url(/static/cover/${opus})`;
-      document.querySelector('flay-cover').set(flay);
-
       await this.videoPlayer.set(opus, flay, actress);
       console.log('videoPlayer is setted', opus);
 
-      const duration = this.videoPlayer.getDuration();
-      const seekTime = getRandomInt(1, duration - this.MaxPlayTime);
+      totalTime = this.videoPlayer.getDuration();
+      seekTime = getRandomInt(1, totalTime - this.MaxPlayTime);
 
       await this.videoPlayer.seek(seekTime);
       console.log('videoPlayer is seeked', toTime(seekTime));
-
-      this.#setPlayTimeAndNext(seekTime, duration);
-    } catch (error) {
-      console.error(error);
-      this.#next();
+    } catch (e) {
+      console.error('play Error', e.message);
     }
+    if (totalTime > seekTime) this.#setPlayTimeAndNext(totalTime - seekTime);
   }
 
-  #setPlayTimeAndNext(seekTime, duration) {
-    const leftTime = duration - seekTime; // 남은 시간 초
+  #setPlayTimeAndNext(leftTime) {
     const playTime = getRandomInt(this.MinPlayTime, Math.min(leftTime, this.MaxPlayTime));
     let sec = playTime;
 
     const progressBar = document.querySelector('.progress-bar');
-    const progressMarker = document.querySelector('.progress-marker');
+    const videoRemainingTimer = document.querySelector('.video-remaining-time');
 
     progressBar.style.width = (sec / this.MaxPlayTime) * 100 + '%';
-    progressMarker.innerHTML = toTime(sec);
+    videoRemainingTimer.innerHTML = toTime(sec);
 
     clearTimeout(this.progressTimer);
-    this.progressTimer = setInterval(async () => {
+    this.progressTimer = setInterval(() => {
       --sec;
       progressBar.style.width = (sec / this.MaxPlayTime) * 100 + '%';
-      progressMarker.innerHTML = toTime(sec);
+      videoRemainingTimer.innerHTML = toTime(sec);
 
       if (sec === 0) {
         clearTimeout(this.progressTimer);
         progressBar.style.width = '100%';
-        progressMarker.innerHTML = toTime(this.MaxPlayTime);
+        videoRemainingTimer.innerHTML = toTime(this.MaxPlayTime);
+
         this.#next();
       }
     }, 1000);
@@ -77,12 +113,10 @@ class Page extends FlayProvider {
   }
 
   #next() {
-    document.querySelector('#nextFlay').dispatchEvent(new Event('click'));
+    this.playNextFlayBtn.dispatchEvent(new Event('click'));
   }
 
   async start() {
-    document.querySelector('#nextFlay').innerHTML = SVG.controls.nextTrack;
-    document.querySelector('#nextFlay').addEventListener('click', () => this.play());
     this.#next();
   }
 }

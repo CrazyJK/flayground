@@ -1,6 +1,7 @@
 import './init/Page';
 import './page.flay-play.scss';
 
+import './flay/part/FlayCover';
 import FlayVideoPlayer, { toTime } from './flay/part/FlayVideoPlayer';
 import { FlayProvider } from './lib/FlayProvider';
 import SVG from './svg/SVG';
@@ -29,7 +30,8 @@ class Page extends FlayProvider {
       const { opus, flay, actress } = await this.random();
 
       document.title = `${opus} ${flay.title} ${flay.actressList.join(' ')}`;
-      document.querySelector('main').style.backgroundImage = `url(/static/cover/${opus})`;
+      // document.querySelector('main').style.backgroundImage = `url(/static/cover/${opus})`;
+      document.querySelector('flay-cover').set(flay);
 
       await this.videoPlayer.set(opus, flay, actress);
       console.log('videoPlayer is setted', opus);

@@ -100,3 +100,9 @@ button#nextFlay {
     height: 100%;
   }
 }
+
+flay-cover {
+  z-index: -1;
+  width: 800px;
+  margin: auto;
+}

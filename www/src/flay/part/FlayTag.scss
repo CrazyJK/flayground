@@ -76,7 +76,11 @@
 }
 
 @media screen and (max-height: 989px) {
-  input[type='checkbox']:not(:checked) + label {
-    display: none;
+  .flay-tag {
+    .tag-list {
+      input[type='checkbox']:not(:checked) + label {
+        display: none;
+      }
+    }
   }
 }

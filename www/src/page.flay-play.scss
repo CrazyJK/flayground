@@ -71,12 +71,12 @@ footer {
       border-top-left-radius: 0.5rem;
       border-top-right-radius: 0.5rem;
       height: 1.5rem;
-      display: inline-flex;
       transition: 0.4s;
     }
 
     input[type='number'] {
       font-size: var(--size-normal);
+      padding: 0;
       width: 2.5rem;
     }
 

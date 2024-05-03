@@ -109,6 +109,10 @@ a {
 }
 
 button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
   &:not(.disable):hover {
     text-shadow: var(--text-shadow-hover);
   }

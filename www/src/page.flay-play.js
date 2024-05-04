@@ -22,7 +22,7 @@ class Page extends FlayProvider {
 
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
     this.progressBar = document.querySelector('.progress-bar');
-    this.videoRemainingTime = document.querySelector('.video-remaining-time');
+    this.playRemainingTime = document.querySelector('#play-remaining-time');
 
     this.#initVideoControls();
     this.#initVideoVolume();
@@ -32,33 +32,34 @@ class Page extends FlayProvider {
   }
 
   #initVideoControls() {
-    this.videoControlChecker = document.querySelector('#video-control');
-    this.videoControlChecker.addEventListener('change', () => {
-      this.videoPlayer.setAttribute('controls', this.videoControlChecker.checked);
-      FlayStorage.local.set('flay-play-video-control', this.videoControlChecker.checked);
+    this.videoControlsToggler = document.querySelector('#toggle-video-controls');
+    this.videoControlsToggler.addEventListener('change', () => {
+      this.videoPlayer.setAttribute('controls', this.videoControlsToggler.checked);
+      FlayStorage.local.set('flay-play-video-control', this.videoControlsToggler.checked);
     });
-    this.videoControlChecker.checked = FlayStorage.local.getBoolean('flay-play-video-control', false);
-    this.videoControlChecker.dispatchEvent(new Event('change'));
-  }
-
-  #initVideoVolume() {
-    this.videoVolumeChecker = document.querySelector('#video-volume');
-    this.videoVolumeChecker.addEventListener('change', () => {
-      this.videoPlayer.setAttribute('volume', parseInt(this.videoVolumeChecker.value) / 100);
-      FlayStorage.local.set('flay-play-video-volume', this.videoVolumeChecker.value);
-    });
-    this.videoVolumeChecker.value = FlayStorage.local.getNumber('flay-play-video-volume', 10);
-    this.videoVolumeChecker.dispatchEvent(new Event('change'));
+    this.videoControlsToggler.checked = FlayStorage.local.getBoolean('flay-play-video-control', false);
+    this.videoControlsToggler.dispatchEvent(new Event('change'));
   }
 
   #initVideoInfo() {
-    this.videoInfoChecker = document.querySelector('#video-info');
-    this.videoInfoChecker.addEventListener('change', () => {
-      this.videoPlayer.setAttribute('info', this.videoInfoChecker.checked);
-      FlayStorage.local.set('flay-play-video-info', this.videoInfoChecker.checked);
+    this.videoInfoToggler = document.querySelector('#toggle-video-info');
+    this.videoInfoToggler.addEventListener('change', () => {
+      this.videoPlayer.setAttribute('info', this.videoInfoToggler.checked);
+      FlayStorage.local.set('flay-play-video-info', this.videoInfoToggler.checked);
     });
-    this.videoInfoChecker.checked = FlayStorage.local.getBoolean('flay-play-video-info', false);
-    this.videoInfoChecker.dispatchEvent(new Event('change'));
+    this.videoInfoToggler.checked = FlayStorage.local.getBoolean('flay-play-video-info', false);
+    this.videoInfoToggler.dispatchEvent(new Event('change'));
+  }
+
+  #initVideoVolume() {
+    document.querySelector('#video-volume-label').innerHTML = SVG.controls.volume;
+    this.videoVolume = document.querySelector('#video-volume');
+    this.videoVolume.addEventListener('change', () => {
+      this.videoPlayer.setAttribute('volume', parseInt(this.videoVolume.value) / 100);
+      FlayStorage.local.set('flay-play-video-volume', this.videoVolume.value);
+    });
+    this.videoVolume.value = FlayStorage.local.getNumber('flay-play-video-volume', 10);
+    this.videoVolume.dispatchEvent(new Event('change'));
   }
 
   #initPlayNext() {
@@ -75,7 +76,7 @@ class Page extends FlayProvider {
 
   #displayTime() {
     this.progressBar.style.width = (this.sec / this.MaxPlayTime) * 100 + '%';
-    this.videoRemainingTime.innerHTML = toTime(this.sec);
+    this.playRemainingTime.innerHTML = toTime(this.sec);
   }
 
   async play() {

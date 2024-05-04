@@ -72,35 +72,40 @@ footer {
       border-top-right-radius: 0.5rem;
       height: 1.5rem;
       transition: 0.4s;
-    }
 
-    input[type='number'] {
-      font-size: var(--size-normal);
-      padding: 0;
-      width: 2.5rem;
-    }
-
-    label {
-      font-size: var(--size-normal);
-    }
-
-    button#play-next-flay,
-    button#pause-next-flay {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      width: 1.5rem;
-      height: 1.5rem;
-      transition: 0.4s;
-
-      &.active,
-      &:hover {
-        color: var(--color-orange);
+      label {
+        font-size: var(--size-normal);
       }
 
-      svg {
-        width: 100%;
-        height: 100%;
+      &.control-wrap {
+        display: flex;
+        padding-right: 0;
+
+        button,
+        label,
+        input {
+          display: inline-flex;
+          justify-content: center;
+          align-items: center;
+          width: 1.5rem;
+          height: 1.5rem;
+          transition: 0.4s;
+
+          &.active {
+            color: var(--color-orange);
+          }
+
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        input[type='number'] {
+          font-size: var(--size-normal);
+          padding: 0 0 0.1rem;
+          width: 2.5rem;
+        }
       }
     }
   }

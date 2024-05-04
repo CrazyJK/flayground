@@ -122,6 +122,7 @@ export default class SideNavBar extends HTMLElement {
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.newWindow;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.controls.nextTrack;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.controls.pause;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.controls.volume;
     wrapper.querySelector('article').append(svgWrap);
   }
 }

@@ -56,8 +56,9 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 </div>
 <div class="search-group">
   <div>
-    <button id="copyStyle">[nextjav Style]</button>
-    <button id="copyScript">[nextjav Script]</button>
+  <button id="copyStyle">[nextjav] Style</button>
+  <button id="copyScript">Script</button>
+  <button id="openNextjav" onclick="window.open('https://nextjav.com')">Open</button>
     <input type="text" id="lastSearchOpus" />
   </div>
 </div>

@@ -1,7 +1,7 @@
 import './init/Page';
 import './page.flay-play.scss';
 
-import FlayVideoPlayer, { toTime } from './flay/part/FlayVideoPlayer';
+import FlayVideoPlayer, { toTime } from './flay/FlayVideoPlayer';
 import { FlayProvider } from './lib/FlayProvider';
 import SVG from './svg/SVG';
 import FlayStorage from './util/FlayStorage';

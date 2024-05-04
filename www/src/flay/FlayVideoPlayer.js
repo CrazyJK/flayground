@@ -1,11 +1,11 @@
-import './FlayActress';
-import './FlayOpus';
-import './FlayRank';
-import './FlayRelease';
-import './FlayStudio';
-import './FlayTag';
-import './FlayTitle';
 import './FlayVideoPlayer.scss';
+import './part/FlayActress';
+import './part/FlayOpus';
+import './part/FlayRank';
+import './part/FlayRelease';
+import './part/FlayStudio';
+import './part/FlayTag';
+import './part/FlayTitle';
 
 /**
  * Flay Video Player implements HTMLVideoElement
@@ -57,20 +57,21 @@ export default class FlayVideoPlayer extends HTMLElement {
 
     this.wrapper = this.shadowRoot.appendChild(document.createElement('article'));
     this.wrapper.classList.add(this.tagName.toLowerCase());
-    this.wrapper.innerHTML = `<video></video>
-    <div class="info hide">
-      <div class="header">
-        <flay-title mode="card"></flay-title>
-      </div>
-      <div class="footer">
-        <flay-studio mode="card"></flay-studio>
-        <flay-opus mode="card"></flay-opus>
-        <flay-actress mode="card"></flay-actress>
-        <flay-release mode="card"></flay-release>
-        <flay-rank mode="card"></flay-rank>
-        <flay-tag mode="card"></flay-tag>
-      </div>
-    </div>`;
+    this.wrapper.innerHTML = `
+      <video></video>
+      <div class="info hide">
+        <div class="header">
+          <flay-title mode="card"></flay-title>
+        </div>
+        <div class="footer">
+          <flay-studio mode="card"></flay-studio>
+          <flay-opus mode="card"></flay-opus>
+          <flay-actress mode="card"></flay-actress>
+          <flay-release mode="card"></flay-release>
+          <flay-rank mode="card"></flay-rank>
+          <flay-tag mode="card"></flay-tag>
+        </div>
+      </div>`;
 
     this.video = this.shadowRoot.querySelector('video');
     this.video.preload = 'auto';

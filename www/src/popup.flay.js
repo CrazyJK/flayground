@@ -42,6 +42,11 @@ if (popupNo) {
     const offset = parseInt(e.target.dataset.offset);
     positionTo(offset);
   });
+
+  window.screen.orientation.onchange = () => {
+    positionMarker.classList.toggle('hide', window.screen.orientation.type.startsWith('portrait'));
+  };
+  window.screen.orientation.dispatchEvent(new Event('change'));
 }
 
 function positionTo(offset) {

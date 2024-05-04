@@ -84,7 +84,8 @@ footer {
       font-size: var(--size-normal);
     }
 
-    button#play-next-flay {
+    button#play-next-flay,
+    button#pause-next-flay {
       display: flex;
       justify-content: center;
       align-items: center;
@@ -92,6 +93,7 @@ footer {
       height: 1.5rem;
       transition: 0.4s;
 
+      &.active,
       &:hover {
         color: var(--color-orange);
       }

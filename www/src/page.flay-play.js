@@ -10,6 +10,7 @@ import { getRandomInt } from './util/randomNumber';
 class Page extends FlayProvider {
   sec = 10;
   videoPlayer;
+  isPaused = false;
 
   /** 최소 플레이 초 */
   MinPlayTime = 60 * 1;
@@ -27,6 +28,7 @@ class Page extends FlayProvider {
     this.#initVideoVolume();
     this.#initVideoInfo();
     this.#initPlayNext();
+    this.#initPauseNext();
   }
 
   #initVideoControls() {
@@ -65,6 +67,12 @@ class Page extends FlayProvider {
     this.playNextFlayBtn.addEventListener('click', () => this.play());
   }
 
+  #initPauseNext() {
+    this.pauseNextFlayBtn = document.querySelector('#pause-next-flay');
+    this.pauseNextFlayBtn.innerHTML = SVG.controls.pause;
+    this.pauseNextFlayBtn.addEventListener('click', () => this.pauseToggle());
+  }
+
   #displayTime() {
     this.progressBar.style.width = (this.sec / this.MaxPlayTime) * 100 + '%';
     this.videoRemainingTime.innerHTML = toTime(this.sec);
@@ -93,12 +101,21 @@ class Page extends FlayProvider {
       this.sec = 10;
       console.error('play Error', e.message, `retry in ${this.sec}s`);
     }
+
+    this.pauseToggle(false);
+  }
+
+  pauseToggle(force = null) {
+    this.isPaused = force !== null ? force : !this.isPaused;
+    this.pauseNextFlayBtn.classList.toggle('active', this.isPaused);
   }
 
   async start() {
     await this.play();
 
     setInterval(async () => {
+      if (this.isPaused) return;
+
       --this.sec;
       this.#displayTime();
 

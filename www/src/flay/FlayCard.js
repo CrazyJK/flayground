@@ -104,9 +104,9 @@ export default class FlayCard extends HTMLElement {
         this.notfound(opus);
       } else {
         fullyFlay = await res.json();
-        this.#render(fullyFlay);
       }
     }
+    this.#render(fullyFlay);
 
     return fullyFlay;
   }

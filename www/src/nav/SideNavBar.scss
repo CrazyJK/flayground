@@ -50,3 +50,28 @@
     text-transform: capitalize;
   }
 }
+
+.svg-wrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+
+  &:hover {
+    label {
+      svg {
+        color: orange;
+      }
+    }
+  }
+
+  label {
+    display: inline-flex;
+    padding: 0.125rem;
+
+    svg {
+      color: #fffa;
+      width: 1.5rem;
+    }
+  }
+}

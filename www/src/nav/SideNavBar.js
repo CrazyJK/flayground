@@ -1,3 +1,4 @@
+import SVG from '../svg/SVG';
 import './part/ThemeController';
 import './SideNavBar.scss';
 
@@ -96,6 +97,32 @@ export default class SideNavBar extends HTMLElement {
         this.classList.toggle('open');
       }
     });
+
+    const svgWrap = document.createElement('div');
+    svgWrap.classList.add('svg-wrap');
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.subtitles;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.favorite;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.noFavorite;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[0];
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[1];
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[2];
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[3];
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[4];
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[5];
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[6];
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.folder;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.theme.os;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.theme.light;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.theme.dark;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.edit;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.weather.sunny;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.weather.cloud;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.weather.rain;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.weather.snow;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.newWindow;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.controls.nextTrack;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.controls.pause;
+    wrapper.querySelector('article').append(svgWrap);
   }
 }
 

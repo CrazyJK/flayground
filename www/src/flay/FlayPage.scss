@@ -91,3 +91,20 @@
     }
   }
 }
+
+@media screen and (max-height: 750px) {
+  .flay-page {
+    flay-studio,
+    flay-comment {
+      display: none;
+    }
+  }
+}
+
+@media screen and (max-height: 600px) {
+  .flay-page {
+    flay-opus {
+      display: none;
+    }
+  }
+}

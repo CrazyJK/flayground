@@ -12,6 +12,8 @@ import './part/FlayTitle';
  */
 export default class FlayVideoPlayer extends HTMLElement {
   opus;
+  flay;
+  actress;
   duration;
   loaded;
   playing;
@@ -79,12 +81,25 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.#addVideoEvent();
   }
 
-  #initiate(opus = null) {
+  #initiate(opus = null, flay = null, actress = null) {
     this.opus = opus;
+    this.flay = flay;
+    this.actress = actress;
     this.duration = -1;
     this.loaded = false;
     this.playing = false;
     this.error = false;
+  }
+
+  #renderFlayPart(reload = false) {
+    this.shadowRoot.querySelector('flay-studio').set(this.flay, reload);
+    this.shadowRoot.querySelector('flay-opus').set(this.flay, reload);
+    this.shadowRoot.querySelector('flay-title').set(this.flay, reload);
+    this.shadowRoot.querySelector('flay-actress').set(this.flay, this.actress, reload);
+    this.shadowRoot.querySelector('flay-release').set(this.flay, reload);
+    this.shadowRoot.querySelector('flay-rank').set(this.flay, reload);
+    this.shadowRoot.querySelector('flay-tag').set(this.flay, reload);
+    this.shadowRoot.querySelector('flay-tag').setCard();
   }
 
   /**
@@ -171,20 +186,13 @@ export default class FlayVideoPlayer extends HTMLElement {
    * @returns
    */
   set(opus, flay, actress) {
-    this.#initiate(opus);
+    this.#initiate(opus, flay, actress);
 
     this.video.poster = `/static/cover/${opus}`;
     this.video.src = `/stream/flay/movie/${opus}/0`;
     this.video.load();
 
-    this.shadowRoot.querySelector('flay-studio').set(flay);
-    this.shadowRoot.querySelector('flay-opus').set(flay);
-    this.shadowRoot.querySelector('flay-title').set(flay);
-    this.shadowRoot.querySelector('flay-actress').set(flay, actress);
-    this.shadowRoot.querySelector('flay-release').set(flay);
-    this.shadowRoot.querySelector('flay-rank').set(flay);
-    this.shadowRoot.querySelector('flay-tag').set(flay);
-    this.shadowRoot.querySelector('flay-tag').setCard();
+    this.#renderFlayPart();
 
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
@@ -236,11 +244,21 @@ export default class FlayVideoPlayer extends HTMLElement {
   getDuration() {
     return this.duration;
   }
+
+  /**
+   * flay 정보 리로드
+   */
+  async reload() {
+    const { flay, actress } = await fetch('/flay/' + this.opus + '/fully').then((res) => res.json());
+    this.flay = flay;
+    this.actress = actress;
+
+    this.#renderFlayPart(true);
+  }
 }
 
 customElements.define('flay-video-player', FlayVideoPlayer);
 
 export function toTime(seconds) {
-  // Convert seconds to milliseconds
   return new Date(seconds * 1000).toISOString().slice(11, 19);
 }

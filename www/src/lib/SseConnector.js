@@ -117,31 +117,31 @@ window.emitMessage = (...datas) => {
 };
 
 function emitFlay(flay) {
-  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     if (flayElement.opus === flay.opus) flayElement.reload();
   });
 }
 
 function emitVideo(video) {
-  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     if (flayElement.opus === video.opus) flayElement.reload();
   });
 }
 
 function emitStudio(studio) {
-  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     if (flayElement.flay.studio === studio.name) flayElement.reload();
   });
 }
 
 function emitActress(actress) {
-  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     if (flayElement.flay.actressList.includes(actress.name)) flayElement.reload();
   });
 }
 
 function emitTag(tag) {
-  document.querySelectorAll('flay-page, flay-card').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     flayElement.reload();
   });
 }

@@ -27,48 +27,66 @@ body {
   right: 0;
   z-index: 2;
 
+  $snapSize: 1.5rem;
+  $borderRadius: calc($snapSize / 6);
+  $gap: calc($snapSize / 6);
+
+  background-color: var(--color-layer-bg);
+  box-shadow: -2px 2px 8px -2px var(--color-layer-box-shadow);
+  border-bottom-left-radius: $borderRadius;
+
   opacity: 0;
   &:hover {
     opacity: 1;
+  }
+
+  &.portrait-primary {
     .layout {
-      background-color: var(--color-bg-hover);
+      .row {
+        width: calc($snapSize * 2);
+      }
+    }
+  }
+  &.landscape-primary {
+    .layout {
+      .row {
+        width: calc($snapSize * 4);
+      }
     }
   }
 
-  $snap-size: 1.5rem;
-
   .layout {
-    border-radius: calc($snap-size / 6);
-    margin: calc($snap-size / 3);
+    display: flex;
+    flex-direction: column;
+    gap: $gap;
+    margin: calc($snapSize / 3);
+    padding: $gap;
+
+    border: 1px solid transparent;
+    border-radius: $borderRadius;
+
+    &:hover {
+      background-color: var(--color-layer-bg-hover);
+    }
 
     .row {
       display: flex;
+      gap: $gap;
 
       label {
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        width: $snap-size;
-        height: $snap-size;
-        border-radius: calc($snap-size / 6);
+        flex: 1 1 auto;
+        height: $snapSize;
+        background-color: var(--color-layer-bg);
+        border: 1px solid var(--color-layer-border);
         cursor: pointer;
-        opacity: 0;
 
         &:hover {
-          background-color: var(--color-bg-transparent);
-          opacity: 1;
+          box-shadow: 0 0 1.5rem var(--color-pink) inset;
         }
 
         &.active {
-          background-color: var(--color-bg-focus);
-          opacity: 1;
+          background-color: var(--color-bg-active);
         }
-      }
-    }
-
-    &.row-1 {
-      label {
-        height: calc($snap-size * 2);
       }
     }
   }

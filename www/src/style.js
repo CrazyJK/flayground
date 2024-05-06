@@ -8,6 +8,7 @@ import './control/FlayFinder';
 import './control/FlayRegister';
 import './control/SubtitlesFinder';
 import './flay/FlayCard';
+import './flay/FlayMonitor';
 import './flay/FlayPage';
 import './flay/FlayVideoPlayer';
 import './flay/page/FlayCondition';

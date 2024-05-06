@@ -1,0 +1,15 @@
+flay-monitor {
+  position: relative;
+  display: block;
+}
+
+.flay-monitor {
+  display: flex;
+  width: 100%;
+  padding: 1rem;
+  background-color: var(--color-bg);
+
+  canvas {
+    width: 100%;
+  }
+}

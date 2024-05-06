@@ -58,6 +58,7 @@
   --color-bg-input-focus: #ffc0cb83;
   --color-bg-side-nav: #f3f3f3;
   --color-bg-focus: #ffc0cb83;
+  --color-bg-active: #ffc0cb83;
 
   --color-text: var(--color-dark);
   --color-text-secondary: var(--color-gray);
@@ -80,6 +81,11 @@
   --text-shadow: 1px 1px 1px var(--color-gray-dark);
   --text-shadow-hover: 1px 1px 1px var(--color-blue);
   --text-shadow-active: 1px 1px 1px var(--color-orange);
+
+  --color-layer-bg: #f3f3f3;
+  --color-layer-bg-hover: #00000032;
+  --color-layer-border: #00000032;
+  --color-layer-box-shadow: #000;
 }
 
 // dark theme
@@ -102,6 +108,11 @@
 
   --text-shadow: 1px 1px 2px var(--color-dark-light);
   --text-shadow-hover: 1px 1px 2px var(--color-orange);
+
+  --color-layer-bg: #202020;
+  --color-layer-bg-hover: #ffffff32;
+  --color-layer-border: #ffffff32;
+  --color-layer-box-shadow: gray;
 }
 
 [debug='1'] {

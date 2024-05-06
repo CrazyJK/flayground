@@ -1,6 +1,7 @@
 import './init/Page';
 import './page.flay-play.scss';
 
+import FlayMonitor from './flay/FlayMonitor';
 import FlayVideoPlayer, { toTime } from './flay/FlayVideoPlayer';
 import { FlayProvider } from './lib/FlayProvider';
 import SVG from './svg/SVG';
@@ -29,6 +30,8 @@ class Page extends FlayProvider {
     this.#initVideoInfo();
     this.#initPlayNext();
     this.#initPauseNext();
+
+    document.querySelector('footer').prepend(new FlayMonitor());
   }
 
   #initVideoControls() {

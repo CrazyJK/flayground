@@ -103,6 +103,10 @@ window.screen.onchange = () => {
 };
 window.screen.dispatchEvent(new Event('change'));
 
+window.onbeforeunload = (e) => {
+  opener?.document.querySelector('flay-monitor')?.removeFlay(opus);
+};
+
 // setInterval(() => {
 //   opener?.document.querySelector('flay-monitor')?.addFlay(opus, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);
 // }, 1000);

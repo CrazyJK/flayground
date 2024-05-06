@@ -50,20 +50,24 @@ export default class FlayMonitor extends HTMLElement {
   }
 
   addFlay(name, left, top, width, height) {
-    let rect = this.flayMap.get(name);
-    console.log('addFlay', name, left, top, width, height, rect);
-    if (rect) {
-      this.removeRect(rect);
-    }
-    rect = { left: Math.floor(left), top: Math.floor(top), w: Math.floor(width), h: Math.floor(height) };
+    this.removeFlay(name);
 
-    this.addRect(name, rect);
+    const rect = { left: Math.floor(left), top: Math.floor(top), w: Math.floor(width), h: Math.floor(height) };
+    this.#addRect(name, rect);
     this.flayMap.set(name, rect);
 
-    console.log(this.flayMap);
+    console.log('addFlay', name, rect, this.flayMap);
   }
 
-  addRect(name, { left, top, w, h }) {
+  removeFlay(name) {
+    const rect = this.flayMap.get(name);
+    if (rect) {
+      this.#removeRect(rect);
+    }
+    console.log('removeFlay', name);
+  }
+
+  #addRect(name, { left, top, w, h }) {
     const [x, y] = [this.#toX(left), this.#toY(top)];
     const lineWidth = 20;
     const margin = 30;
@@ -94,7 +98,7 @@ export default class FlayMonitor extends HTMLElement {
     ctx.fillText(name, x + w / 2, y + h / 2, w);
   }
 
-  removeRect({ left, top, w, h }) {
+  #removeRect({ left, top, w, h }) {
     const [x, y] = [this.#toX(left), this.#toY(top)];
     const ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
     ctx.fillStyle = MonitorBackgroundColor;

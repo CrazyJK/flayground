@@ -60,10 +60,38 @@ export default class FlayMonitor extends HTMLElement {
     ctx.fillRect(this.#toX(Monitor3.left), this.#toY(Monitor3.top), Monitor3.width, Monitor3.height);
     ctx.fillRect(this.#toX(Monitor4.left), this.#toY(Monitor4.top), Monitor4.width, Monitor4.height);
 
+    this.#removeBackground();
+
     this.addEventListener('click', (e) => {
       e.stopPropagation();
       this.classList.toggle('fixed');
     });
+  }
+
+  #removeBackground() {
+    const ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
+
+    let [x, y, w, h] = [0, 0, 0, 0];
+    // Monitor1
+    [x, y, w, h] = [Monitor1.left, this.top, Monitor1.width, Monitor1.top - this.top];
+    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
+    [x, y, w, h] = [Monitor1.left, Monitor1.bottom, Monitor1.width, this.bottom - Monitor1.bottom];
+    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
+    // Monitor2
+    [x, y, w, h] = [Monitor2.left, this.top, Monitor2.width, Monitor2.top - this.top];
+    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
+    [x, y, w, h] = [Monitor2.left, Monitor2.bottom, Monitor2.width, this.bottom - Monitor2.bottom];
+    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
+    // Monitor3
+    [x, y, w, h] = [Monitor3.left, this.top, Monitor3.width, Monitor3.top - this.top];
+    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
+    [x, y, w, h] = [Monitor3.left, Monitor3.bottom, Monitor3.width, this.bottom - Monitor3.bottom];
+    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
+    // Monitor4
+    [x, y, w, h] = [Monitor4.left, this.top, Monitor4.width, Monitor4.top - this.top];
+    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
+    [x, y, w, h] = [Monitor4.left, Monitor4.bottom, Monitor4.width, this.bottom - Monitor4.bottom];
+    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
   }
 
   addFlay(name, left, top, width, height) {
@@ -114,6 +142,8 @@ export default class FlayMonitor extends HTMLElement {
     ctx.fillStyle = 'black';
     ctx.textAlign = 'center';
     ctx.fillText(name, x + w / 2, y + h / 2, w);
+
+    this.#removeBackground();
   }
 
   #removeRect({ left, top, w, h }) {
@@ -121,6 +151,8 @@ export default class FlayMonitor extends HTMLElement {
     const ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
     ctx.fillStyle = MonitorBackgroundColor;
     ctx.fillRect(x, y, w, h);
+
+    this.#removeBackground();
   }
 
   #toX(left) {

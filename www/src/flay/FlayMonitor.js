@@ -13,6 +13,18 @@ const Monitor4 = { left: 0, top: 0, right: 1920, bottom: 1032, width: 1920, heig
 export default class FlayMonitor extends HTMLElement {
   flayMap = new Map();
 
+  static get observedAttributes() {
+    return ['class'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    console.debug('attributeChangedCallback', name, oldValue, newValue);
+    if (name === 'class') {
+      oldValue?.split(' ').forEach((cssClass) => cssClass !== '' && this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.remove(cssClass));
+      newValue?.split(' ').forEach((cssClass) => cssClass !== '' && this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.add(cssClass));
+    }
+  }
+
   constructor() {
     super();
 
@@ -68,6 +80,7 @@ export default class FlayMonitor extends HTMLElement {
     const rect = this.flayMap.get(name);
     if (rect) {
       this.#removeRect(rect);
+      this.flayMap.delete(name);
     }
     console.log('removeFlay', name);
   }

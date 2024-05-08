@@ -1,4 +1,4 @@
-import FlayMonitor from '../flay/FlayMonitor';
+import '../flay/FlayMonitor';
 import SVG from '../svg/SVG';
 import './part/ThemeController';
 import './SideNavBar.scss';
@@ -38,7 +38,11 @@ export default class SideNavBar extends HTMLElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.toggle('open', newValue?.includes('open'));
+    console.debug('attributeChangedCallback', name, oldValue, newValue);
+    if (name === 'class') {
+      oldValue?.split(' ').forEach((cssClass) => cssClass !== '' && this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.remove(cssClass));
+      newValue?.split(' ').forEach((cssClass) => cssClass !== '' && this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.add(cssClass));
+    }
   }
 
   constructor() {
@@ -71,14 +75,13 @@ export default class SideNavBar extends HTMLElement {
         .join('')}
     </article>
     <footer>
+      <div><flay-monitor></flay-monitor></div>
       <div><a id="debug">debug</a></div>
       <div><a id="swagger">swagger↗</a></div>
       <div><a id="dependencies">dependencies↗</a></div>
       <div style="margin-top: 1rem;"><theme-controller></theme-controller></div>
     </footer>
     `;
-
-    this.shadowRoot.querySelector('footer').prepend(new FlayMonitor());
 
     this.shadowRoot.querySelectorAll('a').forEach((anker) => {
       if (anker.href.indexOf(location.pathname) > -1) {

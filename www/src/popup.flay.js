@@ -107,10 +107,12 @@ window.onbeforeunload = (e) => {
   findMonitor()?.removeFlay(opus);
 };
 
+window.addEventListener('mouseout', (e) => {
+  if (e.toElement === null) {
+    findMonitor()?.addFlay(opus, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);
+  }
+});
+
 function findMonitor() {
   return opener?.document.querySelector('side-nav')?.shadowRoot.querySelector('flay-monitor');
 }
-
-// setInterval(() => {
-//   opener?.document.querySelector('flay-monitor')?.addFlay(opus, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);
-// }, 1000);

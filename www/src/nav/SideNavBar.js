@@ -1,3 +1,4 @@
+import FlayMonitor from '../flay/FlayMonitor';
 import SVG from '../svg/SVG';
 import './part/ThemeController';
 import './SideNavBar.scss';
@@ -31,6 +32,14 @@ const menuList = [
 
 export default class SideNavBar extends HTMLElement {
   debug = 0; // elememnts를 구분해서 보기 위한 조건
+
+  static get observedAttributes() {
+    return ['class'];
+  }
+
+  attributeChangedCallback(name, oldValue, newValue) {
+    this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.toggle('open', newValue?.includes('open'));
+  }
 
   constructor() {
     super();
@@ -68,6 +77,8 @@ export default class SideNavBar extends HTMLElement {
       <div style="margin-top: 1rem;"><theme-controller></theme-controller></div>
     </footer>
     `;
+
+    this.shadowRoot.querySelector('footer').prepend(new FlayMonitor());
 
     this.shadowRoot.querySelectorAll('a').forEach((anker) => {
       if (anker.href.indexOf(location.pathname) > -1) {

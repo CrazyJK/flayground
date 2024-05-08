@@ -47,6 +47,11 @@ export default class FlayMonitor extends HTMLElement {
     ctx.fillRect(this.#toX(Monitor2.left), this.#toY(Monitor2.top), Monitor2.width, Monitor2.height);
     ctx.fillRect(this.#toX(Monitor3.left), this.#toY(Monitor3.top), Monitor3.width, Monitor3.height);
     ctx.fillRect(this.#toX(Monitor4.left), this.#toY(Monitor4.top), Monitor4.width, Monitor4.height);
+
+    this.addEventListener('click', (e) => {
+      e.stopPropagation();
+      this.classList.toggle('fixed');
+    });
   }
 
   addFlay(name, left, top, width, height) {

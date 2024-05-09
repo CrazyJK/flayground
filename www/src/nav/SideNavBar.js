@@ -125,6 +125,7 @@ export default class SideNavBar extends HTMLElement {
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[5];
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.rank[6];
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.folder;
+    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.newWindow;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.theme.os;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.theme.light;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.theme.dark;
@@ -133,7 +134,6 @@ export default class SideNavBar extends HTMLElement {
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.weather.cloud;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.weather.rain;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.weather.snow;
-    svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.newWindow;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.controls.nextTrack;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.controls.pause;
     svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.controls.volume;

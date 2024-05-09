@@ -35,7 +35,13 @@ export default class FlayMonitor extends HTMLElement {
     this.bottom = Math.max(Monitor1.bottom, Monitor2.bottom, Monitor3.bottom, Monitor4.bottom);
     this.width = this.right - this.left;
     this.height = this.bottom - this.top;
-    console.log(this.left, this.top, this.right, this.bottom, this.width, this.height);
+    console.log(`screen
+      (${this.left}, ${this.top})
+          ▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦
+          ▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦  ${this.height}
+          ▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦▦
+                            ${this.width}                   (${this.right}, ${this.bottom})
+    `);
   }
 
   connectedCallback() {
@@ -70,28 +76,15 @@ export default class FlayMonitor extends HTMLElement {
 
   #removeBackground() {
     const ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
+    const clearRect = (monitor) => {
+      ctx.clearRect(this.#toX(monitor.left), this.#toY(this.top), monitor.width, monitor.top - this.top);
+      ctx.clearRect(this.#toX(monitor.left), this.#toY(monitor.bottom), monitor.width, this.bottom - monitor.bottom);
+    };
 
-    let [x, y, w, h] = [0, 0, 0, 0];
-    // Monitor1
-    [x, y, w, h] = [Monitor1.left, this.top, Monitor1.width, Monitor1.top - this.top];
-    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
-    [x, y, w, h] = [Monitor1.left, Monitor1.bottom, Monitor1.width, this.bottom - Monitor1.bottom];
-    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
-    // Monitor2
-    [x, y, w, h] = [Monitor2.left, this.top, Monitor2.width, Monitor2.top - this.top];
-    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
-    [x, y, w, h] = [Monitor2.left, Monitor2.bottom, Monitor2.width, this.bottom - Monitor2.bottom];
-    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
-    // Monitor3
-    [x, y, w, h] = [Monitor3.left, this.top, Monitor3.width, Monitor3.top - this.top];
-    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
-    [x, y, w, h] = [Monitor3.left, Monitor3.bottom, Monitor3.width, this.bottom - Monitor3.bottom];
-    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
-    // Monitor4
-    [x, y, w, h] = [Monitor4.left, this.top, Monitor4.width, Monitor4.top - this.top];
-    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
-    [x, y, w, h] = [Monitor4.left, Monitor4.bottom, Monitor4.width, this.bottom - Monitor4.bottom];
-    ctx.clearRect(this.#toX(x), this.#toY(y), w, h);
+    clearRect(Monitor1);
+    clearRect(Monitor2);
+    clearRect(Monitor3);
+    clearRect(Monitor4);
   }
 
   addFlay(name, left, top, width, height) {
@@ -101,7 +94,7 @@ export default class FlayMonitor extends HTMLElement {
     this.#addRect(name, rect);
     this.flayMap.set(name, rect);
 
-    console.log('addFlay', name, rect, this.flayMap);
+    console.debug('addFlay', name, rect, this.flayMap);
   }
 
   removeFlay(name) {
@@ -110,7 +103,7 @@ export default class FlayMonitor extends HTMLElement {
       this.#removeRect(rect);
       this.flayMap.delete(name);
     }
-    console.log('removeFlay', name);
+    console.debug('removeFlay', name);
   }
 
   #addRect(name, { left, top, w, h }) {
@@ -118,7 +111,7 @@ export default class FlayMonitor extends HTMLElement {
     const lineWidth = 20;
     const margin = 30;
     const ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
-    console.log('addRect', x, y, w, h);
+    console.debug('addRect', x, y, w, h);
 
     // 사각 바탕
     ctx.fillStyle = FlayBackgroundColor;

@@ -1,11 +1,11 @@
 {
   "name": "Flayground",
   "short_name": "Flay",
-  "display": "standalone",
-  "start_url": "/",
+  "start_url": "/?start=/dist/index.html",
+  "display": "minimal-ui",
   "icons": [
     {
-      "src": "/dist/favicon/flay_0.png",
+      "src": "/dist/favicon/flay.png",
       "sizes": "256x256"
     }
   ],

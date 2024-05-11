@@ -1,6 +1,7 @@
 import './init/Popup';
 import './popup.flay.scss';
 
+import { deletePosition, updatePosition } from './flay/FlayMonitor';
 import FlayPage from './flay/FlayPage';
 
 const urlParams = new URL(location.href).searchParams;
@@ -87,8 +88,7 @@ window.screen.onchange = () => {
     ${window.screenLeft}, ${window.screenTop}${separator}▣ ${w}, ${h}
     `);
 
-    // opener addRect
-    findMonitor()?.addFlay(opus, window.screenLeft, window.screenTop, w, h);
+    updatePosition(opus, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);
   });
 
   layouts[window.screen.width].forEach(([COL, ROW]) => {
@@ -103,16 +103,6 @@ window.screen.onchange = () => {
 };
 window.screen.dispatchEvent(new Event('change'));
 
-window.onbeforeunload = (e) => {
-  findMonitor()?.removeFlay(opus);
-};
+window.onbeforeunload = () => deletePosition(opus);
 
-window.addEventListener('mouseout', (e) => {
-  if (e.toElement === null) {
-    findMonitor()?.addFlay(opus, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);
-  }
-});
-
-function findMonitor() {
-  return opener?.document.querySelector('side-nav')?.shadowRoot.querySelector('flay-monitor');
-}
+window.onmouseout = (e) => e.toElement === null && updatePosition(opus, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);

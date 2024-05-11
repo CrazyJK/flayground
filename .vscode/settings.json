@@ -7,5 +7,8 @@
         "**/target": true
     },
     "java.inlayHints.parameterNames.enabled": "none",
-    "editor.minimap.enabled": false
+    "editor.minimap.enabled": false,
+    "search.exclude": {
+      "**/dependencies-viewer.json": true
+    }
 }

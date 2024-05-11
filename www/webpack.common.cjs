@@ -31,6 +31,7 @@ module.exports = {
     'popup.studio': './src/popup.studio.js',
     'popup.actress': './src/popup.actress.js',
     'popup.tag': './src/popup.tag.js',
+    'popup.monitor': './src/popup.monitor.js',
     'dependencies-viewer': './src/dependencies-viewer.js',
     'test-canvas': './src/test-canvas.js',
   },

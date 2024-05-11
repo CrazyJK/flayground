@@ -64,7 +64,7 @@ const getContextImageData = (img, scale) => {
   return data;
 };
 
-async function getImageData(src, scale) {
+function getImageData(src, scale) {
   const img = new Image();
 
   // Can't set cross origin to be anonymous for data url's

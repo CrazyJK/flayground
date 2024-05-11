@@ -22,6 +22,7 @@ export default class FlayPagination extends HTMLElement {
   history = [];
   pageRange = 0;
   randomEnd = 6;
+  lastTypedTime = -1;
 
   constructor() {
     super();
@@ -69,8 +70,15 @@ export default class FlayPagination extends HTMLElement {
 
       if (e.code.startsWith('Numpad') || e.code.startsWith('Digit')) {
         if (this.randomPopupButton.classList.contains('input-mode')) {
-          this.randomPopupButton.innerHTML = e.key;
-          this.randomEnd = Number(e.key);
+          const continueType = this.lastTypedTime > 0 && Date.now() - this.lastTypedTime < 1000 * 1;
+          if (continueType) {
+            this.randomPopupButton.innerHTML += e.key;
+          } else {
+            this.randomPopupButton.innerHTML = e.key;
+          }
+          this.randomEnd = Number(this.randomPopupButton.innerHTML);
+
+          this.lastTypedTime = Date.now();
         }
       }
 

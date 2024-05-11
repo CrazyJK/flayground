@@ -109,6 +109,12 @@ export default class FlayMonitor extends HTMLElement {
     });
   }
 
+  async getImageURL() {
+    return new Promise((resolve, reject) => {
+      this.shadowRoot.querySelector('canvas').toBlob((blob) => resolve(URL.createObjectURL(blob)), 'image/jpeg', 0.95);
+    });
+  }
+
   /**
    * @param {string} name
    * @param {object} position

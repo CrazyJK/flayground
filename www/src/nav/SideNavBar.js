@@ -67,12 +67,7 @@ export default class SideNavBar extends HTMLElement {
       <div><a href="index.html">flay ground</a></div>
     </header>
     <article>
-      ${menuList
-        .map((menu) => {
-          if (menu.url) return `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>`;
-          return '<div></div>';
-        })
-        .join('')}
+      ${menuList.map((menu) => (menu.url ? `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>` : '<div></div>')).join('')}
     </article>
     <footer>
       <div><flay-monitor></flay-monitor></div>
@@ -83,6 +78,7 @@ export default class SideNavBar extends HTMLElement {
     </footer>
     `;
 
+    /** active 메뉴 표시 */
     this.shadowRoot.querySelectorAll('a').forEach((anker) => {
       if (anker.href.indexOf(location.pathname) > -1) {
         anker.parentElement.classList.add('active');
@@ -90,8 +86,9 @@ export default class SideNavBar extends HTMLElement {
     });
 
     this.shadowRoot.addEventListener('click', (e) => {
-      console.debug('click', e.target.tagName);
-      if (e.target.tagName === 'A') {
+      const tagName = e.target.tagName;
+      console.debug('click', tagName);
+      if (tagName === 'A') {
         switch (e.target.id) {
           case 'debug': {
             this.debug = ++this.debug % 3;
@@ -104,9 +101,9 @@ export default class SideNavBar extends HTMLElement {
           case 'swagger':
             window.open('/swagger-ui/index.html', 'swagger', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
             break;
-          default:
-            break;
         }
+      } else if (tagName === 'FLAY-MONITOR') {
+        window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
       } else {
         this.classList.toggle('open');
       }

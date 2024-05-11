@@ -87,6 +87,7 @@ export default class FlayMonitor extends HTMLElement {
    * @param {object} positionInfo
    */
   #renderPosition(positionInfo) {
+    console.debug('renderPosition', positionInfo);
     this.#renderForeground();
     Object.entries(positionInfo).forEach(([key, position]) => this.#drawFlay(key, position));
     this.#removeBackground();

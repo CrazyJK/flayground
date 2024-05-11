@@ -4,7 +4,7 @@ import './page.image-page.scss';
 import './image/part/ImageFrame';
 import { lazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import { dateFormat } from './util/dateUtils';
-import FileUtils from './util/xFileUtils';
+import FileUtils from './util/FileUtils';
 
 fetch('/image')
   .then((res) => res.json())

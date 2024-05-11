@@ -3,7 +3,7 @@ import './page.statistics.scss';
 
 import { tabUI } from './lib/TabUI';
 import { sortable } from './lib/TableUtils';
-import FileUtils from './util/xFileUtils';
+import FileUtils from './util/FileUtils';
 
 tabUI(document);
 

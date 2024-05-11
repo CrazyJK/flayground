@@ -1,7 +1,7 @@
 import SVG from '../../svg/SVG';
+import FileUtils from '../../util/FileUtils';
 import FlayAction from '../../util/FlayAction';
 import Search from '../../util/FlaySearch';
-import FileUtils from '../../util/xFileUtils';
 import './FlayFiles.scss';
 import FlayHTMLElement from './FlayHTMLElement';
 

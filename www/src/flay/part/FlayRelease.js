@@ -38,9 +38,9 @@ export default class FlayRelease extends FlayHTMLElement {
     this.wrapper.setAttribute('data-opus', flay.opus);
 
     this.releaseSpan.innerHTML = flay.release;
-    this.modifiedSpan.innerHTML = DateUtils.format(flay.lastModified, 'yy/mm/dd');
-    this.accessSpan.innerHTML = DateUtils.format(flay.video.lastAccess, 'yy/mm/dd');
-    this.playedSpan.innerHTML = DateUtils.format(flay.video.lastPlay, 'yy/mm/dd');
+    this.modifiedSpan.innerHTML = DateUtils.format(flay.lastModified, 'yy/MM/dd');
+    this.accessSpan.innerHTML = DateUtils.format(flay.video.lastAccess, 'yy/MM/dd');
+    this.playedSpan.innerHTML = DateUtils.format(flay.video.lastPlay, 'yy/MM/dd');
   }
 }
 

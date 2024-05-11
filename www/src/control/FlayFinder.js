@@ -180,9 +180,9 @@ function renderInfo(list, keyword, wrapper) {
       ITEM.classList.add('info-item', 'item');
       ITEM.innerHTML = `
         <label class="opus" data-action="flay">${info.opus}</label>
-        <label class="rank" data-action="info">Rank: ${info.rank} <small>${DateUtils.format(info.lastModified, 'yy/mm/dd')}</small></label>
-        <label class="play" data-action="info">Play: ${info.play} <small>${DateUtils.format(info.lastPlay, 'yy/mm/dd')}</small></label>
-        <label class="like" data-action="info">Shot: ${info.likes?.length > 0 ? info.likes.length : ''} <small>${info.likes?.length > 0 ? DateUtils.format(info.likes[info.likes.length - 1], 'yy/mm/dd') : ''}</small></label>
+        <label class="rank" data-action="info">Rank: ${info.rank} <small>${DateUtils.format(info.lastModified, 'yy/MM/dd')}</small></label>
+        <label class="play" data-action="info">Play: ${info.play} <small>${DateUtils.format(info.lastPlay, 'yy/MM/dd')}</small></label>
+        <label class="like" data-action="info">Shot: ${info.likes?.length > 0 ? info.likes.length : ''} <small>${info.likes?.length > 0 ? DateUtils.format(info.likes[info.likes.length - 1], 'yy/MM/dd') : ''}</small></label>
         <label class="tags">${info.tags?.map((tag) => tag.name).join(', ')}</label>
       `;
       wrapper.append(ITEM);

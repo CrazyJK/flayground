@@ -100,7 +100,7 @@ const renderImage = async (images) => {
   for (const image of images) {
     const item = article.appendChild(document.createElement('div'));
     item.dataset.lazyBackgroundImageUrl = `/static/image/${image.idx}`;
-    item.title = `#${image.idx} - ${image.name} - ${FileUtils.prettySize(image.length).join(' ')} - ${DateUtils.format(image.modified, 'yyyy-mm-dd')}`;
+    item.title = `#${image.idx} - ${image.name} - ${FileUtils.prettySize(image.length).join(' ')} - ${DateUtils.format(image.modified, 'yyyy-MM-dd')}`;
     item.addEventListener('click', () => {
       imageFrame.set(image.idx);
       previewLayer.classList.add('show');

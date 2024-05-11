@@ -31,16 +31,16 @@ class Page {
     this.coverURL = URL.createObjectURL(await fetch(`/static/cover/${flay.opus}`).then((res) => res.blob()));
 
     document.querySelector('main').innerHTML = `
-      <div class="cover" style="background-image: url(${this.coverURL})">                  </div>
-      <div class="studio"       >${flay.studio}                                            </div>
-      <div class="opus"         >${flay.opus}                                              </div>
-      <div class="title"        >${flay.title}                                             </div>
-      <div class="actress"      >${flay.actressList.join(', ')}                            </div>
-      <div class="ralease"      >${flay.release}                                           </div>
+      <div class="cover" style="background-image: url(${this.coverURL})">                              </div>
+      <div class="studio"       >${flay.studio}                                                        </div>
+      <div class="opus"         >${flay.opus}                                                          </div>
+      <div class="title"        >${flay.title}                                                         </div>
+      <div class="actress"      >${flay.actressList.join(', ')}                                        </div>
+      <div class="ralease"      >${flay.release}                                                       </div>
       <div class="comment"      >${StringUtils.toBlank(flay.video.comment)}                            </div>
-      <div class="last-access"  >${DateUtils.format(flay.video.lastAccess, 'yyyy-mm-dd')}        </div>
-      <div class="last-modified">${DateUtils.format(flay.video.lastModified, 'yyyy-mm-dd')}      </div>
-      <div class="last-play"    >${DateUtils.format(flay.video.lastPlay, 'yyyy-mm-dd')}          </div>
+      <div class="last-access"  >${DateUtils.format(flay.video.lastAccess, 'yyyy-MM-dd')}              </div>
+      <div class="last-modified">${DateUtils.format(flay.video.lastModified, 'yyyy-MM-dd')}            </div>
+      <div class="last-play"    >${DateUtils.format(flay.video.lastPlay, 'yyyy-MM-dd')}                </div>
       <div class="play"         >${StringUtils.toBlank(flay.video.play)}                               </div>
       <div class="shot"         >${StringUtils.toBlank(flay.video.likes?.length)}                      </div>
       <div class="rank"         >${StringUtils.toBlank(flay.video.rank)}                               </div>

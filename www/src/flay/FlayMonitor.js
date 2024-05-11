@@ -5,6 +5,8 @@ const MonitorBackgroundColor = 'lightgray';
 const FlayBackgroundColor = 'orange';
 const FlayBorderColor = 'orangered';
 
+const STORAGE_KEY = 'flay.position.info';
+
 // 왼쪽부터 모니터 좌표
 const Monitors = [
   { left: -6200, top: -626, right: -3641, bottom: 814, width: 2560, height: 1440 },
@@ -64,8 +66,8 @@ export default class FlayMonitor extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#renderForeground();
-    this.#removeBackground();
+    // initial draw
+    this.#renderPosition(FlayStorage.local.getObject(STORAGE_KEY, '{}'));
 
     /** 클릭되면 fixed 클래스 추가 */
     // this.addEventListener('click', (e) => {
@@ -75,11 +77,19 @@ export default class FlayMonitor extends HTMLElement {
 
     /** 스토리지를 통해서 창들의 위치를 그린다 */
     window.addEventListener('storage', (e) => {
-      if (e.key !== 'flay.position.info') return;
-      this.#renderForeground();
-      Object.entries(JSON.parse(e.newValue)).forEach(([key, position]) => this.#drawFlay(key, position));
-      this.#removeBackground();
+      if (e.key !== STORAGE_KEY) return;
+      this.#renderPosition(JSON.parse(e.newValue));
     });
+  }
+
+  /**
+   * 창들의 위치 그리기
+   * @param {object} positionInfo
+   */
+  #renderPosition(positionInfo) {
+    this.#renderForeground();
+    Object.entries(positionInfo).forEach(([key, position]) => this.#drawFlay(key, position));
+    this.#removeBackground();
   }
 
   /** 모니터를 그린다 */
@@ -151,18 +161,11 @@ customElements.define('flay-monitor', FlayMonitor);
  * @param {number} width
  * @param {number} height
  */
-export const updatePosition = (name, left, top, width, height) => {
-  const positionInfo = FlayStorage.local.getObject('flay.position.info', '{}');
-  positionInfo[name] = { left: left, top: top, width: width, height: height };
-  FlayStorage.local.setObject('flay.position.info', positionInfo);
-};
-
-/**
- * 위치 정보 삭제
- * @param {string} name
- */
-export const deletePosition = (name) => {
-  const positionInfo = FlayStorage.local.getObject('flay.position.info', '{}');
+export const updatePosition = (name, left, top, width = 0, height) => {
+  const positionInfo = FlayStorage.local.getObject(STORAGE_KEY, '{}');
   delete positionInfo[name];
-  FlayStorage.local.setObject('flay.position.info', positionInfo);
+  if (width > 0) {
+    positionInfo[name] = { left: left, top: top, width: width, height: height };
+  }
+  FlayStorage.local.setObject(STORAGE_KEY, positionInfo);
 };

@@ -3,7 +3,7 @@ import './page.flay-one.scss';
 
 import FlayCondition from './flay/page/FlayCondition';
 import { OpusProvider } from './lib/OpusProvider';
-import { dateFormat } from './util/dateUtils';
+import DateUtils from './util/DateUtils';
 import StringUtils from './util/StringUtils';
 
 class Page extends OpusProvider {
@@ -38,9 +38,9 @@ class Page extends OpusProvider {
       <div class="actress"      >${flay.actressList.join(', ')}                                        </div>
       <div class="ralease"      >${flay.release}                                                       </div>
       <div class="comment"      >${StringUtils.toBlank(flay.video.comment)}                            </div>
-      <div class="last-access"  >${dateFormat(flay.video.lastAccess, 'yyyy-mm-dd')}                    </div>
-      <div class="last-modified">${dateFormat(flay.video.lastModified, 'yyyy-mm-dd')}                  </div>
-      <div class="last-play"    >${dateFormat(flay.video.lastPlay, 'yyyy-mm-dd')}                      </div>
+      <div class="last-access"  >${DateUtils.format(flay.video.lastAccess, 'yyyy-mm-dd')}                    </div>
+      <div class="last-modified">${DateUtils.format(flay.video.lastModified, 'yyyy-mm-dd')}                  </div>
+      <div class="last-play"    >${DateUtils.format(flay.video.lastPlay, 'yyyy-mm-dd')}                      </div>
       <div class="play"         >${StringUtils.toBlank(flay.video.play)}                               </div>
       <div class="shot"         >${StringUtils.toBlank(flay.video.likes?.length)}                      </div>
       <div class="rank"         >${StringUtils.toBlank(flay.video.rank)}                               </div>

@@ -1,9 +1,8 @@
 import FlayPagination from './flay/page/FlayPagination';
 import './init/Page';
 import './page.archive.scss';
+import DateUtils from './util/DateUtils';
 import StringUtils from './util/StringUtils';
-
-import { dateFormat } from './util/dateUtils';
 
 class Page {
   coverURL;
@@ -39,9 +38,9 @@ class Page {
       <div class="actress"      >${flay.actressList.join(', ')}                            </div>
       <div class="ralease"      >${flay.release}                                           </div>
       <div class="comment"      >${StringUtils.toBlank(flay.video.comment)}                            </div>
-      <div class="last-access"  >${dateFormat(flay.video.lastAccess, 'yyyy-mm-dd')}        </div>
-      <div class="last-modified">${dateFormat(flay.video.lastModified, 'yyyy-mm-dd')}      </div>
-      <div class="last-play"    >${dateFormat(flay.video.lastPlay, 'yyyy-mm-dd')}          </div>
+      <div class="last-access"  >${DateUtils.format(flay.video.lastAccess, 'yyyy-mm-dd')}        </div>
+      <div class="last-modified">${DateUtils.format(flay.video.lastModified, 'yyyy-mm-dd')}      </div>
+      <div class="last-play"    >${DateUtils.format(flay.video.lastPlay, 'yyyy-mm-dd')}          </div>
       <div class="play"         >${StringUtils.toBlank(flay.video.play)}                               </div>
       <div class="shot"         >${StringUtils.toBlank(flay.video.likes?.length)}                      </div>
       <div class="rank"         >${StringUtils.toBlank(flay.video.rank)}                               </div>

@@ -1,4 +1,4 @@
-import { dateFormat } from '../../util/dateUtils';
+import DateUtils from '../../util/DateUtils';
 import FlayHTMLElement from './FlayHTMLElement';
 import './FlayRelease.scss';
 
@@ -38,9 +38,9 @@ export default class FlayRelease extends FlayHTMLElement {
     this.wrapper.setAttribute('data-opus', flay.opus);
 
     this.releaseSpan.innerHTML = flay.release;
-    this.modifiedSpan.innerHTML = dateFormat(flay.lastModified, 'yy/mm/dd');
-    this.accessSpan.innerHTML = dateFormat(flay.video.lastAccess, 'yy/mm/dd');
-    this.playedSpan.innerHTML = dateFormat(flay.video.lastPlay, 'yy/mm/dd');
+    this.modifiedSpan.innerHTML = DateUtils.format(flay.lastModified, 'yy/mm/dd');
+    this.accessSpan.innerHTML = DateUtils.format(flay.video.lastAccess, 'yy/mm/dd');
+    this.playedSpan.innerHTML = DateUtils.format(flay.video.lastPlay, 'yy/mm/dd');
   }
 }
 

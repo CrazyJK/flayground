@@ -3,7 +3,7 @@ import './page.image-page.scss';
 
 import './image/part/ImageFrame';
 import { lazyLoadBackgrungImage } from './lib/ImageLazyLoad';
-import { dateFormat } from './util/dateUtils';
+import DateUtils from './util/DateUtils';
 import FileUtils from './util/FileUtils';
 
 fetch('/image')
@@ -100,7 +100,7 @@ const renderImage = async (images) => {
   for (const image of images) {
     const item = article.appendChild(document.createElement('div'));
     item.dataset.lazyBackgroundImageUrl = `/static/image/${image.idx}`;
-    item.title = `#${image.idx} - ${image.name} - ${FileUtils.prettySize(image.length).join(' ')} - ${dateFormat(image.modified, 'yyyy-mm-dd')}`;
+    item.title = `#${image.idx} - ${image.name} - ${FileUtils.prettySize(image.length).join(' ')} - ${DateUtils.format(image.modified, 'yyyy-mm-dd')}`;
     item.addEventListener('click', () => {
       imageFrame.set(image.idx);
       previewLayer.classList.add('show');

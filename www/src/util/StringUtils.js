@@ -1,6 +1,6 @@
 export default class StringUtils {
   /**
-   *
+   * 값이 없거나, 빈값, 공백뿐인지
    * @param {string?} text
    * @returns
    */
@@ -8,7 +8,13 @@ export default class StringUtils {
     return typeof text === 'undefined' || text === null || text.trim() === '';
   }
 
-  static toBlank(text) {
-    return text === null || typeof text === 'undefined' ? '' : text;
+  /**
+   * blank라면, def 반환
+   * @param {string} text
+   * @param {string} def 생략되면 빈값('')
+   * @returns
+   */
+  static toBlank(text, def = '') {
+    return this.isBlank(text) ? def : text;
   }
 }

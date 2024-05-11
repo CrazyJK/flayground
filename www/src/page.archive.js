@@ -1,6 +1,7 @@
 import FlayPagination from './flay/page/FlayPagination';
 import './init/Page';
 import './page.archive.scss';
+import StringUtils from './util/StringUtils';
 
 import { dateFormat } from './util/dateUtils';
 
@@ -37,21 +38,17 @@ class Page {
       <div class="title"        >${flay.title}                                             </div>
       <div class="actress"      >${flay.actressList.join(', ')}                            </div>
       <div class="ralease"      >${flay.release}                                           </div>
-      <div class="comment"      >${toBlank(flay.video.comment)}                            </div>
+      <div class="comment"      >${StringUtils.toBlank(flay.video.comment)}                            </div>
       <div class="last-access"  >${dateFormat(flay.video.lastAccess, 'yyyy-mm-dd')}        </div>
       <div class="last-modified">${dateFormat(flay.video.lastModified, 'yyyy-mm-dd')}      </div>
       <div class="last-play"    >${dateFormat(flay.video.lastPlay, 'yyyy-mm-dd')}          </div>
-      <div class="play"         >${toBlank(flay.video.play)}                               </div>
-      <div class="shot"         >${toBlank(flay.video.likes?.length)}                      </div>
-      <div class="rank"         >${toBlank(flay.video.rank)}                               </div>
-      <div class="tags"         >${toBlank(flay.video.tags?.map((t) => t.name).join(', '))}</div>
-      <div class="jp-title"     >${toBlank(flay.video.title)}                              </div>
-      <div class="jp-desc"      >${toBlank(flay.video.desc)}                               </div>`;
+      <div class="play"         >${StringUtils.toBlank(flay.video.play)}                               </div>
+      <div class="shot"         >${StringUtils.toBlank(flay.video.likes?.length)}                      </div>
+      <div class="rank"         >${StringUtils.toBlank(flay.video.rank)}                               </div>
+      <div class="tags"         >${StringUtils.toBlank(flay.video.tags?.map((t) => t.name).join(', '))}</div>
+      <div class="jp-title"     >${StringUtils.toBlank(flay.video.title)}                              </div>
+      <div class="jp-desc"      >${StringUtils.toBlank(flay.video.desc)}                               </div>`;
   }
 }
 
 new Page().start();
-
-function toBlank(text) {
-  return text === null || typeof text === 'undefined' ? '' : text;
-}

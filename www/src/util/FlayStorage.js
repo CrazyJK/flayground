@@ -3,6 +3,9 @@ const FlayStorage = {
     set: (name, value) => {
       localStorage.setItem(name, value);
     },
+    setObject: (name, object) => {
+      FlayStorage.local.set(name, JSON.stringify(object));
+    },
     get: (name, defaultValue) => {
       let value = localStorage.getItem(name);
       return value !== null ? value : defaultValue ? defaultValue : '';

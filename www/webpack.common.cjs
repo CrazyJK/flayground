@@ -53,6 +53,14 @@ module.exports = {
           },
         },
         {
+          from: 'src/favicon/*.png',
+          to: 'favicon/[name][ext]',
+        },
+        {
+          from: 'src/favicon/*.ico',
+          to: 'favicon/[name][ext]',
+        },
+        {
           from: 'src/svg/*.svg',
           to: 'svg/[name][ext]',
         },

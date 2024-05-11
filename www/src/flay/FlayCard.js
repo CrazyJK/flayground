@@ -1,4 +1,4 @@
-import { addResizeLazyEventListener } from '../util/resizeListener';
+import { addResizeListener } from '../util/windowAddEventListener';
 import './FlayCard.scss';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
@@ -56,7 +56,7 @@ export default class FlayCard extends HTMLElement {
     this.flayRelease = this.flayInfo.appendChild(new FlayRelease().setCard());
     this.flayTag = this.flayInfo.appendChild(new FlayTag().setCard());
 
-    addResizeLazyEventListener(() => {
+    addResizeListener(() => {
       this.#resize();
     });
     this.#resize();

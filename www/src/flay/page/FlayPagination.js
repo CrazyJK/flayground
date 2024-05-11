@@ -1,5 +1,5 @@
 import { getRandomInt } from '../../util/randomNumber';
-import { addResizeLazyEventListener } from '../../util/resizeListener';
+import { addResizeListener } from '../../util/windowAddEventListener';
 import './FlayPagination.scss';
 
 const NEXT = 'NEXT';
@@ -123,7 +123,7 @@ export default class FlayPagination extends HTMLElement {
       return false;
     });
 
-    addResizeLazyEventListener(() => {
+    addResizeListener(() => {
       this.#display();
     });
 

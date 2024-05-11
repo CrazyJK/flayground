@@ -5,7 +5,7 @@ import FlayCard from './flay/FlayCard';
 import * as DragDrop from './lib/Drag&Drop';
 import { FlayProvider } from './lib/FlayProvider';
 import { getRandomInt } from './util/randomNumber';
-import { addResizeLazyEventListener } from './util/resizeListener';
+import { addResizeListener } from './util/windowAddEventListener';
 
 class Page extends FlayProvider {
   constructor() {
@@ -58,7 +58,7 @@ class Page extends FlayProvider {
   }
 
   async start() {
-    addResizeLazyEventListener(() => {
+    addResizeListener(() => {
       this.fillDropzone();
     });
 

@@ -3,7 +3,7 @@ import './page.tags.scss';
 
 import SVG from './svg/SVG';
 import FlayAction from './util/FlayAction';
-import { addResizeLazyEventListener } from './util/resizeListener';
+import { addResizeListener } from './util/windowAddEventListener';
 
 // header
 const TAG_ID = document.querySelector('#tagId');
@@ -79,7 +79,7 @@ function renderTagList() {
             TAG_DESC.value = tag.description;
           });
           // resize event
-          addResizeLazyEventListener(() => {
+          addResizeListener(() => {
             if (window.innerWidth >= 1920) {
               // FHD 해상도 이상이면, flay 갯수에 비례하여 폰트 크기 설정
               const count = parseInt(li.querySelector('.count').textContent);

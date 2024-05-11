@@ -1,5 +1,5 @@
 import { getRandomInt } from '../util/randomNumber';
-import { addResizeLazyEventListener } from '../util/resizeListener';
+import { addResizeListener } from '../util/windowAddEventListener';
 import './ImageFall.scss';
 
 const PANE_WIDTH = 360;
@@ -25,7 +25,7 @@ export default class ImageFall extends HTMLElement {
     const main = this.shadowRoot.appendChild(document.createElement('main'));
     main.classList.add(this.tagName.toLowerCase());
 
-    addResizeLazyEventListener(() => {
+    addResizeListener(() => {
       document.startViewTransition(() => {
         this.resizeDiv();
       });

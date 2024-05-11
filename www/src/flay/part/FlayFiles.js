@@ -1,7 +1,7 @@
 import SVG from '../../svg/SVG';
 import FlayAction from '../../util/FlayAction';
 import Search from '../../util/FlaySearch';
-import { getPrettyFilesize } from '../../util/fileUtils';
+import FileUtils from '../../util/xFileUtils';
 import './FlayFiles.scss';
 import FlayHTMLElement from './FlayHTMLElement';
 
@@ -105,7 +105,7 @@ export default class FlayFiles extends FlayHTMLElement {
     this.subBtn.innerHTML = 'Sub<i class="badge">' + flay.files.subtitles.length + '</i>';
     this.subBtn.classList.toggle('disable', flay.files.subtitles.length === 0);
 
-    const [size, unit] = getPrettyFilesize(flay.length);
+    const [size, unit] = FileUtils.prettySize(flay.length);
     this.sizeLabel.innerHTML = `${size}<small>${unit}</small>`;
 
     this.fileList.textContent = null;

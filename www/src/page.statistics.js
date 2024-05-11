@@ -3,7 +3,7 @@ import './page.statistics.scss';
 
 import { tabUI } from './lib/TabUI';
 import { sortable } from './lib/TableUtils';
-import { getPrettyFilesize } from './util/fileUtils';
+import FileUtils from './util/xFileUtils';
 
 tabUI(document);
 
@@ -209,7 +209,7 @@ function startRankGroup() {
       });
     });
     countLabel.innerHTML = count > 0 ? count + ' Flay' : '';
-    const [size, unit] = getPrettyFilesize(length);
+    const [size, unit] = FileUtils.prettySize(length);
     lengthLabel.innerHTML = length > 0 ? `${size} <small>${unit}</small>` : '';
   });
 }
@@ -253,7 +253,7 @@ function startTimeline() {
         length += flay.length;
       });
       if (count > 0) {
-        const [size, unit] = getPrettyFilesize(length);
+        const [size, unit] = FileUtils.prettySize(length);
         rank.title = `${count} Flay, ${size} ${unit}`;
       }
       rank.append(...getFlayLabel(rankMap.get(i)));
@@ -320,7 +320,7 @@ async function startActressAge() {
         length += flay.length;
       });
       if (count > 0) {
-        const [size, unit] = getPrettyFilesize(length);
+        const [size, unit] = FileUtils.prettySize(length);
         rank.title = `${count} Flay, ${size} ${unit}`;
       }
       rank.append(...getFlayLabel(rankMap.get(i)));

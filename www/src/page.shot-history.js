@@ -2,7 +2,7 @@ import './init/Page';
 import './page.shot-history.scss';
 
 import FlayCard from './flay/FlayCard';
-import { getDayOfWeek } from './util/dateUtils';
+import DateUtils from './util/DateUtils';
 
 class Page {
   prevDay;
@@ -74,7 +74,7 @@ class Page {
     const MAIN = document.querySelector('body > main');
     const div = MAIN.appendChild(document.createElement('fieldset'));
     div.innerHTML = `
-      <legend>${refDate + ' ' + getDayOfWeek(refDate)}</legend>
+      <legend>${refDate + ' ' + DateUtils.getDayOfWeek(refDate)}</legend>
       <div class="card-list"></div>
     `;
     const cardList = div.querySelector('.card-list');

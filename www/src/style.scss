@@ -1,1 +1,38 @@
 @import './style/style.scss';
+
+.svg-wrap {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+
+  padding: 1rem;
+
+  &:hover {
+    label {
+      background-color: var(--color-bg-focus);
+    }
+  }
+
+  label {
+    display: inline-flex;
+    border: 1px solid var(--color-border);
+    transition: 0.4s;
+
+    &:hover {
+      svg {
+        color: orange;
+      }
+    }
+
+    svg {
+      color: #df2525ab;
+      width: 9rem;
+      transition: 0.4s;
+    }
+  }
+
+  img {
+    width: 9rem;
+  }
+}

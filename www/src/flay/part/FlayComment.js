@@ -1,5 +1,5 @@
 import FlayAction from '../../util/FlayAction';
-import Search from '../../util/FlaySearch';
+import FlaySearch from '../../util/FlaySearch';
 import StringUtils from '../../util/StringUtils';
 import './FlayComment.scss';
 import FlayHTMLElement from './FlayHTMLElement';
@@ -30,8 +30,8 @@ export default class FlayComment extends FlayHTMLElement {
       if (StringUtils.isBlank(this.flay.video.title)) {
         return;
       }
-      Search.translate.Papago(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
-      Search.translate.DeepL(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
+      FlaySearch.translate.Papago(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
+      FlaySearch.translate.DeepL(this.flay.video.title + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + this.flay.video.desc);
     });
 
     this.comment = div.appendChild(document.createElement('a'));

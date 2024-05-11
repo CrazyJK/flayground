@@ -1,7 +1,7 @@
 import SVG from '../../svg/SVG';
 import FileUtils from '../../util/FileUtils';
 import FlayAction from '../../util/FlayAction';
-import Search from '../../util/FlaySearch';
+import FlaySearch from '../../util/FlaySearch';
 import './FlayFiles.scss';
 import FlayHTMLElement from './FlayHTMLElement';
 
@@ -28,7 +28,7 @@ export default class FlayFiles extends FlayHTMLElement {
       if (this.flay.files.movie.length > 0) {
         FlayAction.play(this.flay.opus);
       } else {
-        Search.torrent.Download(this.flay.opus);
+        FlaySearch.torrent.Download(this.flay.opus);
       }
     });
 
@@ -40,7 +40,7 @@ export default class FlayFiles extends FlayHTMLElement {
       if (this.flay.files.subtitles.length > 0) {
         FlayAction.editSubtitles(this.flay.opus);
       } else {
-        Search.subtitles.Subtitlecat(this.flay.opus);
+        FlaySearch.subtitles.Subtitlecat(this.flay.opus);
       }
     });
 

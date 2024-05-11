@@ -1,10 +1,23 @@
 import { updatePosition } from '../flay/FlayMonitor';
-import { addResizeLazyEventListener } from '../util/resizeListener';
+import { addBeforeunloadListener, addLoadListener, addMouseoutListener, addResizeListener, addVisibilitychangeListener } from '../util/windowAddEventListener';
 
-window.onbeforeunload = () => updatePosition(document.title);
+addLoadListener(() => update());
 
-window.onmouseout = (e) => e.toElement === null && updatePosition(document.title, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);
+addBeforeunloadListener(() => update());
 
-window.onload = () => updatePosition(document.title, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);
+addResizeListener(() => update());
 
-addResizeLazyEventListener(() => updatePosition(document.title, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight));
+addMouseoutListener((e) => e.toElement === null && update());
+
+addVisibilitychangeListener(
+  () => update(),
+  () => remove()
+);
+
+function update() {
+  updatePosition(document.title, window.screenLeft, window.screenTop, window.outerWidth, window.outerHeight);
+}
+
+function remove() {
+  updatePosition(document.title);
+}

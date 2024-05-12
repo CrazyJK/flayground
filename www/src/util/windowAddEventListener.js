@@ -13,105 +13,84 @@ let resizeTimer = null;
 let visibleTimer = null;
 
 /**
- * window resize 이벤트 핸들러를 등록한다
- * @param {Function} listener
- */
-export function addResizeListener(listener) {
-  resizeListeners.push(listener);
-  window.dispatchEvent(new Event('resize'));
-}
-
-/**
  * window load 이벤트 등록
  * @param {Function} listener
  */
-export function addLoadListener(listener) {
+export const addLoadListener = (listener) => {
   loadListeners.push(listener);
-}
+};
 
 /**
  * window beforeunload 이벤트 등록
  * @param {Function} listener
  */
-export function addBeforeunloadListener(listener) {
+export const addBeforeunloadListener = (listener) => {
   beforeunloadListeners.push(listener);
-}
+};
 
 /**
  * window mouseout 이벤트 등록
  * @param {Function} listener
  */
-export function addMouseoutListener(listener) {
+export const addMouseoutListener = (listener) => {
   mouseoutListeners.push(listener);
-}
+};
 
 /**
  * 마우스가 화면 밖으로 나간 이벤트 등록
  * @param {Function} listener
  */
-export function addMouseoutToNullListener(listener) {
+export const addMouseoutToNullListener = (listener) => {
   mouseoutToNullListeners.push(listener);
-}
+};
+
+/**
+ * window resize 이벤트 핸들러를 등록한다
+ * @param {Function} listener
+ */
+export const addResizeListener = (listener) => {
+  resizeListeners.push(listener);
+  window.dispatchEvent(new Event('resize'));
+};
 
 /**
  * window visibilitychange 이벤트 등록
  * @param {Function} visibleListener
  * @param {Function} hiddenListener
  */
-export function addVisibilitychangeListener(visibleListener, hiddenListener) {
+export const addVisibilitychangeListener = (visibleListener, hiddenListener) => {
   visibleListeners.push(visibleListener);
   hiddenListeners.push(hiddenListener);
-}
+};
+
+window.addEventListener('load', (e) => executeListeners(e, loadListeners));
+
+window.addEventListener('beforeunload', (e) => executeListeners(e, beforeunloadListeners));
+
+window.addEventListener('mouseout', (e) => {
+  if (e.toElement === null) executeListeners(e, mouseoutToNullListeners);
+  executeListeners(e, mouseoutListeners);
+});
 
 window.addEventListener('resize', (e) => {
   clearTimeout(resizeTimer);
-  resizeTimer = setTimeout(() => {
-    console.debug(e.type, resizeListeners);
-    for (const listener of resizeListeners) {
-      listener(e);
-    }
-  }, RESIZE_DELAY);
-});
-
-window.addEventListener('beforeunload', (e) => {
-  console.debug(e.type, beforeunloadListeners);
-  for (const listener of beforeunloadListeners) {
-    listener(e);
-  }
-});
-
-window.addEventListener('load', (e) => {
-  console.debug(e.type, loadListeners);
-  for (const listener of loadListeners) {
-    listener(e);
-  }
-});
-
-window.addEventListener('mouseout', (e) => {
-  if (e.toElement === null) {
-    console.debug(e.type, 'toElement null', mouseoutToNullListeners);
-    for (const listener of mouseoutToNullListeners) {
-      listener(e);
-    }
-  }
-  // console.debug(e.type, mouseoutListeners);
-  for (const listener of mouseoutListeners) {
-    listener(e);
-  }
+  resizeTimer = setTimeout(() => executeListeners(e, resizeListeners), RESIZE_DELAY);
 });
 
 window.addEventListener('visibilitychange', (e) => {
-  console.debug(e.type, visibleListeners, hiddenListeners);
   if (document.visibilityState === 'visible') {
     clearTimeout(visibleTimer);
-    visibleTimer = setTimeout(() => {
-      for (const listener of visibleListeners) {
-        listener(e);
-      }
-    }, VISIBLE_DELAY);
+    visibleTimer = setTimeout(() => executeListeners(e, visibleListeners), VISIBLE_DELAY);
   } else {
-    for (const listener of hiddenListeners) {
+    executeListeners(e, hiddenListeners);
+  }
+});
+
+function executeListeners(e, listeners) {
+  if (listeners.length > 0) {
+    console.debug(e.type, listeners);
+    for (const listener of listeners) {
       listener(e);
     }
   }
-});
+}

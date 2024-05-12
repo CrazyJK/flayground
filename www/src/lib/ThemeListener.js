@@ -7,15 +7,15 @@ const DARK = 'dark';
 
 const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
-let theme = FlayStorage.local.get(THEME_KEY);
+let theme = FlayStorage.local.get(THEME_KEY, OS);
 let isDark;
 
 /**
  * Storage theme change Listener
  */
 onstorage = (e) => {
-  console.debug('onstorage', e.key, e.oldValue, e.newValue);
   if (e.key === THEME_KEY) {
+    console.debug('onstorage', e.key, e.oldValue, e.newValue);
     theme = e.newValue;
     applyTheme();
   }

@@ -76,9 +76,18 @@
     }
   }
 
+  .search-nextjav {
+    opacity: 0;
+    &:hover {
+      transition: opacity 0.4s;
+      opacity: 1;
+    }
+  }
+
   &.small {
     .sub-btn,
     .size-label,
+    .search-nextjav,
     .files-btn {
       display: none !important;
     }
@@ -86,6 +95,7 @@
 
   &.card {
     .size-label,
+    .search-nextjav,
     .files-btn {
       display: none;
     }

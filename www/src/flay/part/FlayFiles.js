@@ -56,6 +56,13 @@ export default class FlayFiles extends FlayHTMLElement {
       this.listDiv.classList.toggle('show');
     });
 
+    this.downloadBtn = infoDiv.appendChild(document.createElement('button'));
+    this.downloadBtn.classList.add('search-nextjav');
+    this.downloadBtn.innerHTML = SVG.torrent;
+    this.downloadBtn.addEventListener('click', () => {
+      FlaySearch.torrent.Nextjav(this.flay.opus);
+    });
+
     this.listDiv = this.wrapper.appendChild(document.createElement('div'));
     this.listDiv.classList.add('list');
 

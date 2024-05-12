@@ -4,6 +4,7 @@ const loadListeners = [];
 const mouseoutListeners = [];
 const visibleListeners = [];
 const hiddenListeners = [];
+const windowmoveListeners = [];
 
 const RESIZE_DELAY = 300;
 const VISIBLE_DELAY = 300;
@@ -44,6 +45,10 @@ export function addMouseoutListener(listener) {
   mouseoutListeners.push(listener);
 }
 
+export function addWindowmoveListener(listener) {
+  windowmoveListeners.push(listener);
+}
+
 /**
  * window visibilitychange 이벤트 등록
  * @param {Function} visibleListener
@@ -80,9 +85,16 @@ window.addEventListener('load', (e) => {
 });
 
 window.addEventListener('mouseout', (e) => {
-  console.debug(e.type, mouseoutListeners);
-  for (const listener of mouseoutListeners) {
-    listener(e);
+  if (e.toElement === null) {
+    console.debug(e.type, windowmoveListeners);
+    for (const listener of windowmoveListeners) {
+      listener(e);
+    }
+  } else {
+    console.debug(e.type, mouseoutListeners);
+    for (const listener of mouseoutListeners) {
+      listener(e);
+    }
   }
 });
 

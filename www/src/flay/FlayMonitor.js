@@ -116,6 +116,15 @@ export default class FlayMonitor extends HTMLElement {
   }
 
   /**
+   * storage clear, re-draw
+   */
+  clear() {
+    // storage clear
+    FlayStorage.local.setObject(STORAGE_KEY, {});
+    this.#renderPosition({});
+  }
+
+  /**
    * @param {string} name
    * @param {object} position
    */

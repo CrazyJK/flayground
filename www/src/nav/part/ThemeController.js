@@ -57,8 +57,8 @@ export default class ThemeController extends HTMLElement {
   onThemeListener() {
     // storage 변경에 대한 리스너 등록
     onstorage = (e) => {
-      console.debug('[onThemeListener] onstorage', e.key, e.oldValue, e.newValue);
       if (e.key === THEME_KEY) {
+        console.debug('[onThemeListener] onstorage', e.key, e.oldValue, e.newValue);
         this.theme = e.newValue;
         this.applyTheme();
       }

@@ -20,12 +20,6 @@ export default class FlayVideoPlayer extends HTMLElement {
   error;
   showInfo = false;
 
-  constructor() {
-    super();
-
-    this.#initiate();
-  }
-
   static get observedAttributes() {
     return ['controls', 'volume', 'autoplay', 'info'];
   }
@@ -44,9 +38,15 @@ export default class FlayVideoPlayer extends HTMLElement {
         break;
       case 'info':
         this.showInfo = newValue === 'true';
-        this.shadowRoot.querySelector('.info').classList.toggle('hide', !this.showInfo);
+        this.info.classList.toggle('hide', !this.showInfo);
         break;
     }
+  }
+
+  constructor() {
+    super();
+
+    this.#initiate();
   }
 
   connectedCallback() {
@@ -57,26 +57,13 @@ export default class FlayVideoPlayer extends HTMLElement {
     link.type = 'text/css';
     link.href = 'style.css';
 
-    this.wrapper = this.shadowRoot.appendChild(document.createElement('article'));
-    this.wrapper.classList.add(this.tagName.toLowerCase());
-    this.wrapper.innerHTML = `
-      <video></video>
-      <div class="info hide">
-        <div class="header">
-          <flay-title mode="card"></flay-title>
-        </div>
-        <div class="footer">
-          <flay-studio mode="card"></flay-studio>
-          <flay-opus mode="card"></flay-opus>
-          <flay-actress mode="card"></flay-actress>
-          <flay-release mode="card"></flay-release>
-          <flay-rank mode="card"></flay-rank>
-          <flay-tag mode="card"></flay-tag>
-        </div>
-      </div>`;
+    const wrapper = this.shadowRoot.appendChild(document.createElement('article'));
+    wrapper.classList.add(this.tagName.toLowerCase());
 
-    this.video = this.shadowRoot.querySelector('video');
+    this.video = wrapper.appendChild(document.createElement('video'));
     this.video.preload = 'auto';
+
+    this.info = wrapper.appendChild(document.createElement('flay-video-info'));
 
     this.#addVideoEvent();
   }
@@ -89,17 +76,6 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.loaded = false;
     this.playing = false;
     this.error = false;
-  }
-
-  #renderFlayPart(reload = false) {
-    this.shadowRoot.querySelector('flay-studio').set(this.flay, reload);
-    this.shadowRoot.querySelector('flay-opus').set(this.flay, reload);
-    this.shadowRoot.querySelector('flay-title').set(this.flay, reload);
-    this.shadowRoot.querySelector('flay-actress').set(this.flay, this.actress, reload);
-    this.shadowRoot.querySelector('flay-release').set(this.flay, reload);
-    this.shadowRoot.querySelector('flay-rank').set(this.flay, reload);
-    this.shadowRoot.querySelector('flay-tag').set(this.flay, reload);
-    this.shadowRoot.querySelector('flay-tag').setCard();
   }
 
   #addVideoEvent() {
@@ -183,7 +159,7 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.video.src = `/stream/flay/movie/${opus}/0`;
     this.video.load();
 
-    this.#renderFlayPart();
+    this.info.set(flay, actress);
 
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
@@ -264,7 +240,7 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.flay = flay;
     this.actress = actress;
 
-    this.#renderFlayPart(true);
+    this.info.set(flay, actress, true);
   }
 }
 
@@ -273,3 +249,44 @@ customElements.define('flay-video-player', FlayVideoPlayer);
 export function toTime(seconds) {
   return new Date(seconds * 1000).toISOString().slice(11, 19);
 }
+
+class FlayVideoInfo extends HTMLElement {
+  constructor() {
+    super();
+
+    this.attachShadow({ mode: 'open' });
+
+    const link = this.shadowRoot.appendChild(document.createElement('link'));
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = 'style.css';
+
+    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
+    wrapper.classList.add(this.tagName.toLowerCase());
+    wrapper.innerHTML = `
+      <div class="header">
+        <flay-title mode="card"></flay-title>
+      </div>
+      <div class="footer">
+        <flay-studio mode="card"></flay-studio>
+        <flay-opus mode="card"></flay-opus>
+        <flay-actress mode="card"></flay-actress>
+        <flay-release mode="card"></flay-release>
+        <flay-rank mode="card"></flay-rank>
+        <flay-tag mode="card"></flay-tag>
+      </div>`;
+  }
+
+  set(flay, actress, reload = false) {
+    this.shadowRoot.querySelector('flay-studio').set(flay, reload);
+    this.shadowRoot.querySelector('flay-opus').set(flay, reload);
+    this.shadowRoot.querySelector('flay-title').set(flay, reload);
+    this.shadowRoot.querySelector('flay-actress').set(flay, actress, reload);
+    this.shadowRoot.querySelector('flay-release').set(flay, reload);
+    this.shadowRoot.querySelector('flay-rank').set(flay, reload);
+    this.shadowRoot.querySelector('flay-tag').set(flay, reload);
+    this.shadowRoot.querySelector('flay-tag').setCard();
+  }
+}
+
+customElements.define('flay-video-info', FlayVideoInfo);

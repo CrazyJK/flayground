@@ -44,9 +44,9 @@ class App extends FlayProvider {
     playNextFlayBtn.innerHTML = SVG.controls.nextTrack;
     playNextFlayBtn.addEventListener('click', () => this.play());
 
-    const pauseNextFlayBtn = document.querySelector('#pause-next-flay');
-    pauseNextFlayBtn.innerHTML = SVG.controls.pause;
-    pauseNextFlayBtn.addEventListener('click', () => this.pauseToggle());
+    this.pauseNextFlayBtn = document.querySelector('#pause-next-flay');
+    this.pauseNextFlayBtn.innerHTML = SVG.controls.pause;
+    this.pauseNextFlayBtn.addEventListener('click', () => this.pauseToggle());
 
     document.querySelector('#video-volume-label').innerHTML = SVG.controls.volume;
     const videoVolume = document.querySelector('#video-volume');

@@ -45,6 +45,10 @@ export function addMouseoutListener(listener) {
   mouseoutListeners.push(listener);
 }
 
+/**
+ * 창 이동 이벤트 등록
+ * @param {Function} listener
+ */
 export function addWindowmoveListener(listener) {
   windowmoveListeners.push(listener);
 }
@@ -60,10 +64,9 @@ export function addVisibilitychangeListener(visibleListener, hiddenListener) {
 }
 
 window.addEventListener('resize', (e) => {
-  console.debug(e.type, resizeListeners);
   clearTimeout(resizeTimer);
   resizeTimer = setTimeout(() => {
-    console.debug('window resize', resizeListeners);
+    console.debug(e.type, resizeListeners);
     for (const listener of resizeListeners) {
       listener(e);
     }
@@ -86,15 +89,14 @@ window.addEventListener('load', (e) => {
 
 window.addEventListener('mouseout', (e) => {
   if (e.toElement === null) {
-    console.debug(e.type, windowmoveListeners);
+    console.debug(e.type, 'window move', windowmoveListeners);
     for (const listener of windowmoveListeners) {
       listener(e);
     }
-  } else {
-    console.debug(e.type, mouseoutListeners);
-    for (const listener of mouseoutListeners) {
-      listener(e);
-    }
+  }
+  // console.debug(e.type, mouseoutListeners);
+  for (const listener of mouseoutListeners) {
+    listener(e);
   }
 });
 

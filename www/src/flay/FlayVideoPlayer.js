@@ -102,26 +102,6 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.shadowRoot.querySelector('flay-tag').setCard();
   }
 
-  /**
-   * playing의 상태 변화를 기다린다
-   * @param {boolean} isPlay
-   * @returns
-   */
-  #wait(isPlay) {
-    return new Promise((resolve, reject) => {
-      const timer = setInterval(() => {
-        if (this.playing === isPlay) {
-          clearInterval(timer);
-          resolve(true);
-        }
-        if (this.error) {
-          clearInterval(timer);
-          reject('Error: ' + this.opus);
-        }
-      }, 10);
-    });
-  }
-
   #addVideoEvent() {
     // 에러가 발생하여 리소스를 로드할 수 없는 시점에 발생합니다.
     this.video.addEventListener('error', (e) => {
@@ -161,19 +141,30 @@ export default class FlayVideoPlayer extends HTMLElement {
     });
     // 추가 버퍼링 없이 전체 미디어를 재생할 수 있는 시점에 발생합니다.
     this.video.addEventListener('canplaythrough', (e) => console.debug(this.opus, `[${e.type}]`));
+    // 브라우저가 리소르를 로딩 중일 때 주기적으로 발생합니다.
+    // this.video.addEventListener('progress', (e) => console.debug(this.opus, `[${e.type}]`));
+    // currentTime 속성이 변경되는 시점에 발생합니다.
+    // this.video.addEventListener('timeupdate', (e) => console.debug(this.opus, `[${e.type}]`));
+    // 미디어 로딩이 중지된 시점에 발생합니다.
+    // this.video.addEventListener('suspend', (e) => console.debug(this.opus, `[${e.type}]`));
+
+    // 미디어 시킹이 시작되는 시점에 발생합니다.
+    // this.video.addEventListener('seeking', (e) => console.debug(this.opus, `[${e.type}]`));
+    // 미디어 시킹이 완료되는 시점에 발생합니다.
+    this.video.addEventListener('seeked', (e) => console.debug(this.opus, `[${e.type}]`, 'time', toTime(this.video.currentTime)));
 
     // 미디어 일시 정지를 요청하고 paused 상태로 진입하는 시점에 발생합니다. 일반적으로 HTMLMediaElement.pause() 메소드가 호출되는 시점입니다
     this.video.addEventListener('pause', (e) => {
       this.playing = false;
       console.debug(this.opus, `[${e.type}]`, 'playing', this.playing);
     });
-    // 미디어 시킹이 완료되는 시점에 발생합니다.
-    this.video.addEventListener('seeked', (e) => console.debug(this.opus, `[${e.type}]`, 'time', toTime(this.video.currentTime)));
+
     // 일시적인 버퍼 부족으로 재생이 정지된 시점에 발생합니다.
     this.video.addEventListener('waiting', (e) => {
       this.playing = false;
       console.debug(this.opus, `[${e.type}]`, 'playing', this.playing);
     });
+
     // 미디어가 끝까지 재생 완료 된 시점에 발생합니다.
     this.video.addEventListener('ended', (e) => console.debug(this.opus, `[${e.type}]`));
   }
@@ -197,6 +188,26 @@ export default class FlayVideoPlayer extends HTMLElement {
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
         if (this.loaded) {
+          clearInterval(timer);
+          resolve(true);
+        }
+        if (this.error) {
+          clearInterval(timer);
+          reject('Error: ' + this.opus);
+        }
+      }, 10);
+    });
+  }
+
+  /**
+   * playing의 상태 변화를 기다린다
+   * @param {boolean} isPlay
+   * @returns
+   */
+  #wait(isPlay) {
+    return new Promise((resolve, reject) => {
+      const timer = setInterval(() => {
+        if (this.playing === isPlay) {
           clearInterval(timer);
           resolve(true);
         }

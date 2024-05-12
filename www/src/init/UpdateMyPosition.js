@@ -1,5 +1,5 @@
 import { updatePosition } from '../flay/FlayMonitor';
-import { addBeforeunloadListener, addLoadListener, addResizeListener, addVisibilitychangeListener, addWindowmoveListener } from '../util/windowAddEventListener';
+import { addBeforeunloadListener, addLoadListener, addMouseoutToNullListener, addResizeListener, addVisibilitychangeListener } from '../util/windowAddEventListener';
 
 addLoadListener(() => update());
 
@@ -7,7 +7,7 @@ addBeforeunloadListener(() => update());
 
 addResizeListener(() => update());
 
-addWindowmoveListener(() => update());
+addMouseoutToNullListener(() => update());
 
 addVisibilitychangeListener(
   () => update(),

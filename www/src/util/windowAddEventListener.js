@@ -2,9 +2,9 @@ const resizeListeners = [];
 const beforeunloadListeners = [];
 const loadListeners = [];
 const mouseoutListeners = [];
+const mouseoutToNullListeners = [];
 const visibleListeners = [];
 const hiddenListeners = [];
-const windowmoveListeners = [];
 
 const RESIZE_DELAY = 300;
 const VISIBLE_DELAY = 300;
@@ -46,11 +46,11 @@ export function addMouseoutListener(listener) {
 }
 
 /**
- * 창 이동 이벤트 등록
+ * 마우스가 화면 밖으로 나간 이벤트 등록
  * @param {Function} listener
  */
-export function addWindowmoveListener(listener) {
-  windowmoveListeners.push(listener);
+export function addMouseoutToNullListener(listener) {
+  mouseoutToNullListeners.push(listener);
 }
 
 /**
@@ -89,8 +89,8 @@ window.addEventListener('load', (e) => {
 
 window.addEventListener('mouseout', (e) => {
   if (e.toElement === null) {
-    console.debug(e.type, 'window move', windowmoveListeners);
-    for (const listener of windowmoveListeners) {
+    console.debug(e.type, 'toElement null', mouseoutToNullListeners);
+    for (const listener of mouseoutToNullListeners) {
       listener(e);
     }
   }

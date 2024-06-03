@@ -5,8 +5,10 @@ export default class StringUtils {
    * @returns
    */
   static isBlank(text) {
+    if (text === null) return true;
+    if (typeof text === 'undefined') return true;
     if (typeof text !== 'string') return false;
-    return typeof text === 'undefined' || text === null || text.trim() === '';
+    return text.trim() === '';
   }
 
   /**

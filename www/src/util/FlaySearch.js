@@ -1,14 +1,16 @@
-const URL_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
-const URL_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
-const URL_NEXTJAV = 'https://nextjav.com/torrent/detail/';
-const URL_NEXTJAV_DOWNLOAD = 'https://nextjav.com/save/{}/nextjav-torrent-{}.torrent';
-const URL_MINNANO = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
-const URL_NEXTJAV_ACTRESS = 'https://nextjav.com/actress/';
-const URL_GOOGLE = 'https://www.google.co.kr/search?q=';
-const URL_SUBTITLECAT = 'https://www.subtitlecat.com/index.php?search=';
-const URL_TRANSLATE_GOOGLE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
-const URL_TRANSLATE_PAPAGO = 'https://papago.naver.com/?sk=auto&tk=ko&st=';
-const URL_TRANSLATE_DEEPL = 'https://www.deepl.com/translator#ja/ko/';
+export const URL_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
+export const URL_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
+export const URL_NEXTJAV = 'https://nextjav.com/torrent/detail/';
+export const URL_NEXTJAV_DOWNLOAD = 'https://nextjav.com/save/{}/nextjav-torrent-{}.torrent';
+export const URL_MINNANO = 'https://www.minnano-av.com/search_result.php?search_scope=actress&search=+Go+&search_word=';
+export const URL_NEXTJAV_ACTRESS = 'https://nextjav.com/actress/';
+export const URL_GOOGLE = 'https://www.google.co.kr/search?q=';
+export const URL_SUBTITLECAT = 'https://www.subtitlecat.com/index.php?search=';
+export const URL_TRANSLATE_GOOGLE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
+export const URL_TRANSLATE_PAPAGO = 'https://papago.naver.com/?sk=auto&tk=ko&st=';
+export const URL_TRANSLATE_DEEPL = 'https://www.deepl.com/translator#ja/ko/';
+export const URL_NONOJAV_PAGE = 'https://www.nanojav.com/jav/?order=new&page=1';
+export const URL_NONOJAV_SEARCH = 'https://www.nanojav.com/jav/search/?q=';
 
 export default {
   google(keyword) {
@@ -41,6 +43,10 @@ export default {
     },
     Google(keyword) {
       popupOpen(URL_GOOGLE + keyword + '+FHD+torrent', 'torrentSearch', 900, 950);
+    },
+    Nonojav(keyword = null) {
+      const url = keyword === null ? URL_NONOJAV_PAGE : URL_NONOJAV_SEARCH + keyword;
+      popupOpen(url, 'nonojavSearch', 800, 1000);
     },
   },
   translate: {

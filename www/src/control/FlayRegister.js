@@ -1,6 +1,6 @@
 import SVG from '../svg/SVG';
 import FlayAction from '../util/FlayAction';
-import FlaySearch from '../util/FlaySearch';
+import FlaySearch, { URL_NONOJAV_PAGE } from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
 import './FlayRegister.scss';
 
@@ -56,9 +56,10 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 </div>
 <div class="search-group">
   <div>
-  <button id="copyStyle">[nextjav] Style</button>
-  <button id="copyScript">Script</button>
-  <button id="openNextjav" onclick="window.open('https://nextjav.com')">Open</button>
+    <button id="copyStyle" style="display:none">[nextjav] Style</button>
+    <button id="copyScript" style="display:none">Script</button>
+    <button id="openNextjav" style="display:none" onclick="window.open('https://nextjav.com')">Open</button>
+    <button id="openNextjav" onclick="window.open('${URL_NONOJAV_PAGE}')">Open</button>
     <input type="text" id="lastSearchOpus" />
   </div>
 </div>

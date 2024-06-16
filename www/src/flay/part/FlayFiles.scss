@@ -76,7 +76,7 @@
     }
   }
 
-  .search-nextjav {
+  .search-torrent {
     opacity: 0;
     &:hover {
       transition: opacity 0.4s;
@@ -87,7 +87,7 @@
   &.small {
     .sub-btn,
     .size-label,
-    .search-nextjav,
+    .search-torrent,
     .files-btn {
       display: none !important;
     }
@@ -95,7 +95,7 @@
 
   &.card {
     .size-label,
-    .search-nextjav,
+    .search-torrent,
     .files-btn {
       display: none;
     }

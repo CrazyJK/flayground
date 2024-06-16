@@ -59,7 +59,7 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
     <button id="copyStyle" style="display:none">[nextjav] Style</button>
     <button id="copyScript" style="display:none">Script</button>
     <button id="openNextjav" style="display:none" onclick="window.open('https://nextjav.com')">Open</button>
-    <button id="openNextjav" onclick="window.open('${URL_NONOJAV_PAGE}')">Open</button>
+    <button id="openNanojav" onclick="window.open('${URL_NONOJAV_PAGE}')">Open</button>
     <input type="text" id="lastSearchOpus" />
   </div>
 </div>

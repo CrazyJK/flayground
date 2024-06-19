@@ -48,11 +48,11 @@ export default {
     },
     Nonojav(keyword = null) {
       const url = keyword === null ? URL_NONOJAV_PAGE : URL_NONOJAV_SEARCH + keyword;
-      popupOpen(url, 'nonojavSearch', 800, 1000);
+      popupOpen(url, 'nonojavSearch', 1000, 1600);
     },
     Ijav(keyword = null) {
       const url = keyword === null ? URL_IJAV_PAGE : URL_IJAV_SEARCH + keyword;
-      popupOpen(url, 'ijavSearch', 800, 1000);
+      popupOpen(url, 'ijavSearch', 1000, 1600);
     },
   },
   translate: {

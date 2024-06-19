@@ -52,8 +52,9 @@ export default class FlayFinder extends HTMLElement {
         console.log('clean');
         Instance.textContent = null;
         Archive.textContent = null;
-        History.textContent = null;
+        Actress.textContent = null;
         Info.textContent = null;
+        History.textContent = null;
       } else {
         console.log('search');
         fetchAndRender('/flay/find/', keyword, Instance, renderInstance);

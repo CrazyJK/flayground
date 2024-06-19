@@ -11,6 +11,8 @@ export const URL_TRANSLATE_PAPAGO = 'https://papago.naver.com/?sk=auto&tk=ko&st=
 export const URL_TRANSLATE_DEEPL = 'https://www.deepl.com/translator#ja/ko/';
 export const URL_NONOJAV_PAGE = 'https://www.nanojav.com/jav/?order=new&page=1';
 export const URL_NONOJAV_SEARCH = 'https://www.nanojav.com/jav/search/?q=';
+export const URL_IJAV_PAGE = 'https://ijavtorrent.com/';
+export const URL_IJAV_SEARCH = 'https://ijavtorrent.com/?searchTerm=';
 
 export default {
   google(keyword) {
@@ -47,6 +49,10 @@ export default {
     Nonojav(keyword = null) {
       const url = keyword === null ? URL_NONOJAV_PAGE : URL_NONOJAV_SEARCH + keyword;
       popupOpen(url, 'nonojavSearch', 800, 1000);
+    },
+    Ijav(keyword = null) {
+      const url = keyword === null ? URL_IJAV_PAGE : URL_IJAV_SEARCH + keyword;
+      popupOpen(url, 'ijavSearch', 800, 1000);
     },
   },
   translate: {

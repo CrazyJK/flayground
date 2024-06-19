@@ -61,6 +61,7 @@ export default class FlayFiles extends FlayHTMLElement {
     this.downloadBtn.innerHTML = SVG.torrent;
     this.downloadBtn.addEventListener('click', () => {
       FlaySearch.torrent.Nonojav(this.flay.opus);
+      FlaySearch.torrent.Ijav(this.flay.opus);
     });
 
     this.listDiv = this.wrapper.appendChild(document.createElement('div'));

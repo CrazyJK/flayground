@@ -59,8 +59,9 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
     <button id="copyStyle" style="display:none">[nextjav] Style</button>
     <button id="copyScript" style="display:none">Script</button>
     <button id="openNextjav" style="display:none" onclick="window.open('https://nextjav.com')">Open</button>
-    <button id="openNanojav" onclick="window.open('${URL_NONOJAV_PAGE}')">Open</button>
+    <button id="openNanojav" onclick="window.open('${URL_NONOJAV_PAGE}')">List Open</button>
     <input type="text" id="lastSearchOpus" />
+    <button id="openTorrent">Torrent Open</button>
   </div>
 </div>
 <div class="search-group">
@@ -289,6 +290,12 @@ export default class FlayRegister extends HTMLElement {
       FlayStorage.local.set('flay.search.lastSearchOpus', e.target.value);
     });
     this.shadowRoot.querySelector('#lastSearchOpus').value = FlayStorage.local.get('flay.search.lastSearchOpus', '');
+    // open Torrent
+    this.shadowRoot.querySelector('#openTorrent').addEventListener('click', () => {
+      const opus = this.shadowRoot.querySelector('#inputOpus').value;
+      FlaySearch.torrent.Nonojav(opus);
+      FlaySearch.torrent.Ijav(opus);
+    });
 
     // studio-list
     FlayAction.listOfStudio((list) => {

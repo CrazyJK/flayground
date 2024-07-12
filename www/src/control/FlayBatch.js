@@ -63,7 +63,9 @@ export default class FlayBatch extends HTMLElement {
     const batchLog = this.shadowRoot.querySelector('#batchLog');
 
     window.emitBatch = (data) => {
-      batchLog.innerHTML += data.message + '\n';
+      const div = batchLog.appendChild(document.createElement('div'));
+      div.innerHTML = data.message;
+      div.scrollIntoView(true);
     };
   }
 }

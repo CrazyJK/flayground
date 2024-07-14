@@ -35,7 +35,7 @@ export default class FlayCover extends FlayHTMLElement {
     this.popupCoverWrap.innerHTML = `${SVG.newWindow}`;
     this.popupCoverWrap.querySelector('svg').addEventListener('click', (e) => {
       e.stopPropagation();
-      window.open(`popup.cover.html?opus=${this.flay.opus}`, `cover.${this.opus}`, 'width=800px,height=538px');
+      window.open(`popup.cover.html?opus=${this.flay.opus}`, `cover.${this.flay.opus}`, 'width=800px,height=538px');
     });
   }
 

@@ -3,8 +3,11 @@ import StringUtils from '../util/StringUtils';
 import './FlayArticle.scss';
 
 export default class FlayArticle extends HTMLDivElement {
-  constructor() {
+  constructor(args) {
     super();
+    if (args) {
+      if (args.card) this.classList.add('card');
+    }
   }
 
   connectedCallback() {
@@ -48,10 +51,10 @@ export default class FlayArticle extends HTMLDivElement {
     });
   }
 
-  set(flay) {
+  set(flay, coverURL) {
     this.opus = flay.opus;
 
-    this.querySelector('.cover').style.backgroundImage = `url(/static/cover/${flay.opus})`;
+    this.querySelector('.cover').style.backgroundImage = `url(${coverURL ? coverURL : `/static/cover/${flay.opus}`})`;
 
     this.querySelector('.studio').innerHTML = flay.studio;
     this.querySelector('.opus').innerHTML = flay.opus;

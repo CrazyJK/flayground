@@ -30,6 +30,10 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
+
+      span {
+        text-shadow: var(--text-shadow);
+      }
     }
 
     dt {
@@ -38,6 +42,28 @@
       .title {
         font-size: var(--size-large);
         min-height: 2.5rem;
+      }
+    }
+  }
+
+  &.card {
+    dl {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      padding: 0 1rem;
+      text-align: left;
+
+      dt {
+        span {
+          background-color: var(--color-bg-transparent);
+          border-radius: 0.25rem;
+        }
+      }
+
+      dd {
+        display: none;
       }
     }
   }

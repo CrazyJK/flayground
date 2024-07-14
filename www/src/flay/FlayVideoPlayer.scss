@@ -19,6 +19,9 @@ flay-video-player {
   video {
     aspect-ratio: 16 / 9;
     width: 100%;
+    &[poster] {
+      object-fit: cover;
+    }
   }
 }
 

@@ -20,6 +20,7 @@ class App extends FlayProvider {
   constructor() {
     super();
 
+    this.flayCoverImage = document.querySelector('body').appendChild(new FlayCoverImage());
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
     this.progressBar = document.querySelector('.progress-bar');
     this.playRemainingTime = document.querySelector('#play-remaining-time');
@@ -67,7 +68,8 @@ class App extends FlayProvider {
     const { opus, flay, actress } = await this.random();
 
     document.title = `${opus} ${flay.title} ${flay.actressList.join(' ')}`;
-    document.querySelector('main').style.backgroundImage = `url(/static/cover/${opus})`;
+
+    this.flayCoverImage.set(opus);
 
     try {
       await this.videoPlayer.set(opus, flay, actress);
@@ -113,5 +115,35 @@ class App extends FlayProvider {
     }, 1000);
   }
 }
+
+class FlayCoverImage extends HTMLDivElement {
+  constructor() {
+    super();
+    this.classList.add('flay-cover-image');
+  }
+
+  connectedCallback() {
+    this.style.aspectRatio = 'var(--cover-aspect-ratio)';
+    this.style.background = 'transparent no-repeat center / cover';
+    this.style.boxShadow = 'inset 0 0 1rem 0.5rem var(--color-bg-hover)';
+    this.style.borderRadius = '0.25rem';
+    this.style.margin = '1rem auto';
+    this.style.width = 'min(100%, 800px)';
+    this.style.zIndex = -1;
+  }
+
+  set(opus) {
+    this.style.backgroundImage = `url(/static/cover/${opus})`;
+    this.animate(
+      [
+        { transform: 'scale(0)', opacity: 0 },
+        { transform: 'scale(1)', opacity: 1 },
+      ],
+      { duration: 800, iterations: 1 }
+    );
+  }
+}
+
+customElements.define('flay-cover-image', FlayCoverImage, { extends: 'div' });
 
 new App().start().then(() => console.log('started'));

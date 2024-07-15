@@ -31,11 +31,11 @@ flay-video-info {
   width: 100%;
   display: block;
   opacity: 0;
+  transition: 0.4s;
 }
 
 .flay-video-info {
   background-color: var(--color-bg-transparent);
-  transition: 0.4s;
 
   .header,
   .footer {

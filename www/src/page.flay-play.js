@@ -139,7 +139,7 @@ class FlayCoverImage extends HTMLDivElement {
         { transform: 'scale(0)', opacity: 0 },
         { transform: 'scale(1)', opacity: 1 },
       ],
-      { duration: 800, iterations: 1 }
+      { duration: 800, iterations: 1, easing: 'cubic-bezier(0.42, 0, 0.58, 1)' }
     );
   }
 }

@@ -20,55 +20,87 @@ class App extends FlayProvider {
   constructor() {
     super();
 
+    document.querySelector('#play-next-flay').innerHTML = SVG.controls.nextTrack;
+    document.querySelector('[for="pause-video"]').innerHTML = SVG.controls.pause;
+    document.querySelector('[for="video-volume"]').innerHTML = SVG.controls.volume;
+
     this.flayCoverImage = document.querySelector('body').appendChild(new FlayCoverImage());
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
-    this.progressBar = document.querySelector('.progress-bar');
-    this.playRemainingTime = document.querySelector('#play-remaining-time');
 
+    this.progressBar = document.querySelector('.progress-bar');
+    this.remainingTime = document.querySelector('[for="toggle-remaining-time"]');
+    this.pauseVideo = document.querySelector('#pause-video');
+    this.videoVolume = document.querySelector('#video-volume');
+
+    this.#initControl(); // 재생 컨트롤 보일지 여부
+    this.#initInfo(); // Flay 정보 보일지 여부
+    this.#initRemainingTime(); // 재생 남은 시간 멈출지 여부
+    this.#initNextFlay(); // 다음 Flay로 넘어갈지 여부
+    this.#initPause(); // 비디오 재생 멈출지
+    this.#initVolume(); // 볼륨 조정
+
+    this.videoPlayer.addEventListener('play', (e) => {
+      console.debug(e.type, e.detail.status);
+      this.pauseVideo.checked = !e.detail.status;
+    });
+
+    this.videoPlayer.addEventListener('volume', (e) => {
+      console.debug(e.type, e.detail.volume);
+      this.videoVolume.value = e.detail.volume * 100;
+      FlayStorage.local.set('flay-play-video-volume', e.detail.volume * 100);
+    });
+  }
+
+  #initControl() {
     const videoControlsToggler = document.querySelector('#toggle-video-controls');
-    videoControlsToggler.addEventListener('change', () => {
-      this.videoPlayer.setAttribute('controls', videoControlsToggler.checked);
-      FlayStorage.local.set('flay-play-video-control', videoControlsToggler.checked);
+    videoControlsToggler.addEventListener('change', (e) => {
+      this.videoPlayer.setAttribute('controls', e.target.checked);
+      FlayStorage.local.set('flay-play-video-control', e.target.checked);
     });
     videoControlsToggler.checked = FlayStorage.local.getBoolean('flay-play-video-control', false);
     videoControlsToggler.dispatchEvent(new Event('change'));
+  }
 
+  #initInfo() {
     const videoInfoToggler = document.querySelector('#toggle-video-info');
-    videoInfoToggler.addEventListener('change', () => {
-      this.videoPlayer.setAttribute('info', videoInfoToggler.checked);
-      FlayStorage.local.set('flay-play-video-info', videoInfoToggler.checked);
+    videoInfoToggler.addEventListener('change', (e) => {
+      this.videoPlayer.setAttribute('info', e.target.checked);
+      FlayStorage.local.set('flay-play-video-info', e.target.checked);
     });
     videoInfoToggler.checked = FlayStorage.local.getBoolean('flay-play-video-info', false);
     videoInfoToggler.dispatchEvent(new Event('change'));
+  }
 
-    const playNextFlayBtn = document.querySelector('#play-next-flay');
-    playNextFlayBtn.innerHTML = SVG.controls.nextTrack;
-    playNextFlayBtn.addEventListener('click', () => this.play());
+  #initRemainingTime() {
+    document.querySelector('#toggle-remaining-time').addEventListener('change', (e) => (this.isPaused = !e.target.checked));
+  }
 
-    this.pauseNextFlayBtn = document.querySelector('#pause-next-flay');
-    this.pauseNextFlayBtn.innerHTML = SVG.controls.pause;
-    this.pauseNextFlayBtn.addEventListener('click', () => this.pauseToggle());
+  #initNextFlay() {
+    document.querySelector('#play-next-flay').addEventListener('click', () => this.play());
+  }
 
-    document.querySelector('#video-volume-label').innerHTML = SVG.controls.volume;
-    const videoVolume = document.querySelector('#video-volume');
-    videoVolume.addEventListener('change', () => {
-      this.videoPlayer.setAttribute('volume', parseInt(videoVolume.value) / 100);
-      FlayStorage.local.set('flay-play-video-volume', videoVolume.value);
+  #initPause() {
+    this.pauseVideo.addEventListener('change', (e) => (e.target.checked ? this.videoPlayer.pause() : this.videoPlayer.play()));
+  }
+
+  #initVolume() {
+    this.videoVolume.addEventListener('change', (e) => {
+      this.videoPlayer.setAttribute('volume', parseInt(e.target.value) / 100);
+      FlayStorage.local.set('flay-play-video-volume', e.target.value);
     });
-    videoVolume.value = FlayStorage.local.getNumber('flay-play-video-volume', 10);
-    videoVolume.dispatchEvent(new Event('change'));
+    this.videoVolume.value = FlayStorage.local.getNumber('flay-play-video-volume', 10);
+    this.videoVolume.dispatchEvent(new Event('change'));
   }
 
   #displayTime() {
     this.progressBar.style.width = (this.sec / this.MaxPlayTime) * 100 + '%';
-    this.playRemainingTime.innerHTML = toTime(this.sec);
+    this.remainingTime.innerHTML = toTime(this.sec);
   }
 
   async play() {
     const { opus, flay, actress } = await this.random();
 
     document.title = `${opus} ${flay.title} ${flay.actressList.join(' ')}`;
-
     this.flayCoverImage.set(opus);
 
     try {
@@ -82,19 +114,16 @@ class App extends FlayProvider {
       console.log('videoPlayer is seeked', toTime(seekTime));
 
       this.sec = getRandomInt(this.MinPlayTime, Math.min(totalTime - seekTime, this.MaxPlayTime));
-      this.#displayTime();
       console.log('videoPlayer will be played for', toTime(this.sec));
+
+      this.#displayTime();
+
+      this.isPaused = false;
+      this.pauseVideo.checked = false;
     } catch (e) {
       this.sec = 10;
       console.error('play Error', e.message, `retry in ${this.sec}s`);
     }
-
-    this.pauseToggle(false);
-  }
-
-  pauseToggle(force = null) {
-    this.isPaused = force !== null ? force : !this.isPaused;
-    this.pauseNextFlayBtn.classList.toggle('active', this.isPaused);
   }
 
   async start() {

@@ -16,19 +16,25 @@
       <div class="video-control-panel">
         <div>
           <input type="checkbox" id="toggle-video-controls" />
-          <label for="toggle-video-controls">Controls</label>
+          <label for="toggle-video-controls">controls</label>
         </div>
         <div>
           <input type="checkbox" id="toggle-video-info" />
-          <label for="toggle-video-info">Info</label>
+          <label for="toggle-video-info">info</label>
         </div>
         <div>
-          <label id="play-remaining-time"></label>
+          <input type="checkbox" id="toggle-remaining-time" checked />
+          <label for="toggle-remaining-time">00:00:00</label>
         </div>
-        <div class="control-wrap">
-          <button type="button" id="pause-next-flay" title="pause">⏸️</button>
+        <div>
           <button type="button" id="play-next-flay" title="next Flay">⏭️</button>
-          <label for="video-volume" id="video-volume-label" title="volume">🛜</label>
+        </div>
+        <div>
+          <input type="checkbox" id="pause-video" />
+          <label for="pause-video">⏸️</label>
+        </div>
+        <div>
+          <label for="video-volume" title="volume">🛜</label>
           <input type="number" id="video-volume" min="0" step="5" max="100" value="10" />
         </div>
       </div>

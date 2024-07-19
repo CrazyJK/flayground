@@ -67,46 +67,41 @@ footer {
     }
 
     div {
+      display: flex;
       background-color: var(--color-bg);
-      padding: 0 0.5rem;
+      padding: 0.25rem 0.5rem 0.125rem;
       border-top-left-radius: 0.5rem;
       border-top-right-radius: 0.5rem;
-      height: 1.5rem;
+      height: 2rem;
       transition: 0.4s;
+
+      button,
+      label,
+      input {
+        display: inline-flex;
+        justify-content: center;
+        align-items: center;
+        // height: 1.75rem;
+        transition: 0.4s;
+
+        &.active {
+          color: var(--color-orange);
+        }
+
+        svg {
+          width: 100%;
+          height: 100%;
+        }
+      }
 
       label {
         font-size: var(--size-normal);
       }
 
-      &.control-wrap {
-        display: flex;
-        padding-right: 0;
-
-        button,
-        label,
-        input {
-          display: inline-flex;
-          justify-content: center;
-          align-items: center;
-          width: 1.5rem;
-          height: 1.5rem;
-          transition: 0.4s;
-
-          &.active {
-            color: var(--color-orange);
-          }
-
-          svg {
-            width: 100%;
-            height: 100%;
-          }
-        }
-
-        input[type='number'] {
-          font-size: var(--size-normal);
-          padding: 0 0 0.1rem;
-          width: 2.5rem;
-        }
+      input[type='number'] {
+        font-size: var(--size-normal);
+        padding: 0 0 0.1rem;
+        width: 3rem;
       }
     }
   }

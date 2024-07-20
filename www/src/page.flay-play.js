@@ -95,6 +95,7 @@ class App extends FlayProvider {
   }
 
   #initKeepFlay() {
+    document.querySelector('#keepFlay').innerHTML = SVG.basket;
     document.querySelector('#keepFlay').addEventListener('click', () => FlayBasket.add(this.videoPlayer.opus));
   }
 

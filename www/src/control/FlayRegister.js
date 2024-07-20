@@ -61,7 +61,8 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
     <button id="openNextjav" style="display:none" onclick="window.open('https://nextjav.com')">Open</button>
     <button id="openNanojav" onclick="window.open('${URL_NONOJAV_PAGE}')">List Open</button>
     <input type="text" id="lastSearchOpus" />
-    <button id="openTorrent">Torrent Open</button>
+    <button id="dnNonoTorrent">Nonojav Dn</button>
+    <button id="dnIjavTorrent">Ijav Dn</button>
   </div>
 </div>
 <div class="search-group">
@@ -290,12 +291,9 @@ export default class FlayRegister extends HTMLElement {
       FlayStorage.local.set('flay.search.lastSearchOpus', e.target.value);
     });
     this.shadowRoot.querySelector('#lastSearchOpus').value = FlayStorage.local.get('flay.search.lastSearchOpus', '');
-    // open Torrent
-    this.shadowRoot.querySelector('#openTorrent').addEventListener('click', () => {
-      const opus = this.shadowRoot.querySelector('#inputOpus').value;
-      FlaySearch.torrent.Nonojav(opus);
-      FlaySearch.torrent.Ijav(opus);
-    });
+    // open Torrent download
+    this.shadowRoot.querySelector('#dnNonoTorrent').addEventListener('click', () => FlaySearch.torrent.Nonojav(inputOpus.value));
+    this.shadowRoot.querySelector('#dnIjavTorrent').addEventListener('click', () => FlaySearch.torrent.Ijav(inputOpus.value));
 
     // studio-list
     FlayAction.listOfStudio((list) => {

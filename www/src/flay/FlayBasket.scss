@@ -1,9 +1,9 @@
-.FlayBasket {
+.flay-basket {
   display: grid;
   justify-content: space-evenly;
   grid-template-columns: repeat(auto-fill, minmax(20%, 350px));
 
-  .FlayBasketItem {
+  .flay-basket-item {
     aspect-ratio: var(--cover-aspect-ratio);
     background: center center / cover no-repeat transparent;
     box-shadow: inset 0 0 1rem 0.5rem var(--color-bg-hover);

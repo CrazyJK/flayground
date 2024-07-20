@@ -8,7 +8,7 @@ const BASKET_KEY = 'flay-basket';
 export default class FlayBasket extends HTMLDivElement {
   constructor() {
     super();
-    this.classList.add(this.constructor.name);
+    this.classList.add('flay-basket');
   }
 
   connectedCallback() {
@@ -54,7 +54,7 @@ class FlayBasketItem extends HTMLDivElement {
     super();
 
     this.dataset.opus = opus;
-    this.classList.add(this.constructor.name);
+    this.classList.add('flay-basket-item');
     // this.style.backgroundImage = `url(/static/cover/${opus})`;
     this.innerHTML = `
       <button type="button" class="popup-flay">title</button>

@@ -1,6 +1,7 @@
 import './init/Page';
 import './page.flay-play.scss';
 
+import FlayBasket from './flay/FlayBasket';
 import FlayVideoPlayer, { toTime } from './flay/FlayVideoPlayer';
 import { FlayProvider } from './lib/FlayProvider';
 import SVG from './svg/SVG';
@@ -38,6 +39,7 @@ class App extends FlayProvider {
     this.#initNextFlay(); // 다음 Flay로 넘어갈지 여부
     this.#initPause(); // 비디오 재생 멈출지
     this.#initVolume(); // 볼륨 조정
+    this.#initKeepFlay(); // Flay 보관
 
     this.videoPlayer.addEventListener('play', (e) => {
       console.debug(e.type, e.detail.status);
@@ -90,6 +92,10 @@ class App extends FlayProvider {
     });
     this.videoVolume.value = FlayStorage.local.getNumber('flay-play-video-volume', 10);
     this.videoVolume.dispatchEvent(new Event('change'));
+  }
+
+  #initKeepFlay() {
+    document.querySelector('#keepFlay').addEventListener('click', () => FlayBasket.add(this.videoPlayer.opus));
   }
 
   #displayTime() {

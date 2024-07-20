@@ -6,6 +6,10 @@ div.flay-candidate {
   & > div {
     display: flex;
     justify-content: center;
+
+    & > button {
+      gap: 0.5rem;
+    }
   }
 
   ol {
@@ -30,35 +34,16 @@ div.flay-candidate {
       width: 1000px;
       text-align: center;
 
-      &:hover {
-        box-shadow: var(--box-shadow);
-      }
-
       button {
         font: 700 1rem D2Coding;
         padding: 0.25rem 0.5rem;
         margin-bottom: 0.5rem;
         border-radius: 0.25rem;
         transition: 0.2s;
-      }
 
-      div {
-        aspect-ratio: 400 / 269;
-        background: no-repeat center / contain;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.5rem;
-        padding: 0.5rem;
-        border-radius: 0.25rem;
-
-        label {
-          background-color: var(--color-bg);
-          color: var(--color-text);
-          padding: 0.25rem 0.5rem;
-          border-radius: 0.25rem;
-          font-size: 1rem;
-          line-height: 2rem;
+        &:hover {
+          background-color: var(--color-bg-transparent);
+          box-shadow: var(--box-shadow);
         }
       }
     }

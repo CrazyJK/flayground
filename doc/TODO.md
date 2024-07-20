@@ -1,5 +1,8 @@
 # TODO
 
+- 발매 당시 나이별 정리
+- shot flay list
+
 # done
 
 - page play click then show play timeline

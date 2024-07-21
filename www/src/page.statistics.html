@@ -16,6 +16,10 @@
           <label id="info"></label>
         </h1>
         <div>
+          <input type="checkbox" id="withArchiveData" checked />
+          <label for="withArchiveData">Archive</label>
+        </div>
+        <div>
           <input type="date" id="startDate" />
           <input type="date" id="endDate" />
         </div>
@@ -25,6 +29,7 @@
         <button type="button" class="tab-button" role="tab" target="#rankGrounp" id="rankGrounpBtn">Rank Group</button>
         <button type="button" class="tab-button" role="tab" target="#timeline" id="timelineBtn">Timeline</button>
         <button type="button" class="tab-button" role="tab" target="#actressAge" id="actressAgeBtn">Actress age</button>
+        <button type="button" class="tab-button" role="tab" target="#shotFlay" id="shotFlayBtn">Shot Flay (<span id="shotFlayCount"></span>)</button>
       </div>
     </header>
 
@@ -139,6 +144,18 @@
           <div class="grid-head rank">Rank 3</div>
           <div class="grid-head rank">Rank 4</div>
           <div class="grid-head rank">Rank 5</div>
+        </div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="shotFlay">
+        <div class="grid-column">
+          <div class="statistics">
+            <div class="statistics-studio"></div>
+            <div class="statistics-release"></div>
+          </div>
+          <ol class="shot-flay-list"></ol>
+          <div class="statistics">
+            <div class="statistics-actress"></div>
+          </div>
         </div>
       </div>
     </main>

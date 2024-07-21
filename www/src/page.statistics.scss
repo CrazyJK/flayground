@@ -131,7 +131,8 @@ main {
     }
 
     .grid-data.time {
-      text-align: center;
+      display: flex;
+      justify-content: space-between;
     }
 
     .grid-data.rank {
@@ -155,6 +156,11 @@ main {
     .grid-data {
       border-right: 1px solid var(--color-border);
       border-bottom: 1px solid var(--color-border);
+    }
+
+    .grid-data.time {
+      display: flex;
+      justify-content: space-between;
     }
 
     .grid-data.rank {
@@ -190,5 +196,99 @@ label.flay {
   }
   &.active {
     border: 1px solid var(--color-border-active);
+  }
+}
+
+#shotFlay {
+  .grid-column {
+    display: grid;
+    grid-template-columns: 13rem 1fr 13rem;
+    margin: auto;
+    width: 100%;
+  }
+
+  .statistics {
+    position: relative;
+
+    & > div {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem 0.5rem;
+      margin-bottom: 1rem;
+
+      input:checked + label {
+        span {
+          color: var(--color-checked);
+        }
+      }
+
+      input:disabled + label {
+        span {
+          color: var(--color-text-secondary);
+        }
+      }
+
+      label {
+        display: flex;
+        justify-content: space-between;
+
+        font-size: 90%;
+        font-weight: 400;
+        background-color: var(--color-bg-transparent);
+        padding: 0.25rem 0.75rem;
+        border-radius: 0.25rem;
+
+        span:nth-child(2) {
+          flex: 0 0 2rem;
+          text-align: end;
+          margin-left: auto;
+        }
+        span:nth-child(3) {
+          flex: 0 0 2rem;
+          text-align: end;
+        }
+      }
+    }
+  }
+
+  ol.shot-flay-list {
+    display: grid;
+    justify-content: space-evenly;
+    grid-template-columns: repeat(auto-fill, minmax(20%, 450px));
+
+    margin: 0 auto auto;
+    width: 100%;
+
+    li {
+      div {
+        display: flex;
+        flex-direction: column-reverse;
+        gap: 0.5rem;
+
+        aspect-ratio: var(--cover-aspect-ratio);
+        background: center center / cover no-repeat transparent;
+        box-shadow: inset 0 0 1rem 0.5rem var(--color-bg-hover);
+        border-radius: 0.25rem;
+        margin: 1rem;
+      }
+
+      label {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+
+        &.release,
+        &.opus,
+        &.studio {
+          display: none;
+        }
+
+        span {
+          background-color: var(--color-bg-transparent);
+          padding: 0 0.5rem;
+          border-radius: 0.25rem;
+        }
+      }
+    }
   }
 }

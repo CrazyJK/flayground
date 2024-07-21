@@ -1,37 +1,49 @@
 .flay-basket {
-  display: grid;
-  justify-content: space-evenly;
-  grid-template-columns: repeat(auto-fill, minmax(20%, 350px));
+  .list {
+    display: grid;
+    justify-content: space-evenly;
+    grid-template-columns: repeat(auto-fill, minmax(20%, 350px));
 
-  .flay-basket-item {
-    aspect-ratio: var(--cover-aspect-ratio);
-    background: center center / cover no-repeat transparent;
-    box-shadow: inset 0 0 1rem 0.5rem var(--color-bg-hover);
-    border-radius: 0.25rem;
-    margin: 1rem;
+    .flay-basket-item {
+      aspect-ratio: var(--cover-aspect-ratio);
+      background: center center / cover no-repeat transparent;
+      box-shadow: inset 0 0 1rem 0.5rem var(--color-bg-hover);
+      border-radius: 0.25rem;
+      margin: 1rem;
 
-    button {
-      position: absolute;
-      background-color: var(--color-bg-transparent);
-      padding: 0.25rem;
+      button {
+        position: absolute;
+        background-color: var(--color-bg-transparent);
+        padding: 0.25rem;
+      }
+
+      .popup-flay {
+        top: 0;
+        left: 0;
+        border-bottom-right-radius: 0.25rem;
+
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        max-width: 100%;
+        display: inline-block;
+      }
+
+      .empty-this {
+        right: 0;
+        bottom: 0;
+        border-top-left-radius: 0.25rem;
+      }
     }
+  }
 
-    .popup-flay {
-      top: 0;
-      left: 0;
-      border-bottom-right-radius: 0.25rem;
+  .control {
+    position: fixed;
+    right: 0;
+    bottom: 0;
 
-      white-space: nowrap;
-      text-overflow: ellipsis;
-      overflow: hidden;
-      max-width: 100%;
-      display: inline-block;
-    }
-
-    .empty-this {
-      right: 0;
-      bottom: 0;
-      border-top-left-radius: 0.25rem;
-    }
+    background-color: var(--color-bg-transparent);
+    border-top-left-radius: 50%;
+    padding: 1rem 0.5rem 0.5rem 1rem;
   }
 }

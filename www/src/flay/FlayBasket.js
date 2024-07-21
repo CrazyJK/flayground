@@ -9,6 +9,12 @@ export default class FlayBasket extends HTMLDivElement {
   constructor() {
     super();
     this.classList.add('flay-basket');
+    this.innerHTML = `
+      <div class="list"></div>
+      <div class="control">
+        <button type="button" id="emptyAll">${SVG.trashBin}</button>
+      </div>
+    `;
   }
 
   connectedCallback() {
@@ -17,14 +23,26 @@ export default class FlayBasket extends HTMLDivElement {
       this.render();
     };
     this.render();
+
+    this.querySelector('#emptyAll').addEventListener('click', () => {
+      FlayBasket.clear();
+      this.render();
+    });
   }
 
   render() {
+    const basket = getBasket();
+    if (basket.size === 0) this.querySelector('.list').textContent = null;
+
+    this.querySelectorAll('.flay-basket-item').forEach((item) => {
+      if (!basket.has(item.dataset.opus)) item.remove();
+    });
+
     let prevItem = null;
-    getBasket().forEach((opus) => {
+    basket.forEach((opus) => {
       let item = this.querySelector(`[data-opus="${opus}"]`);
       if (item === null) item = new FlayBasketItem(opus);
-      this.insertBefore(item, prevItem);
+      this.querySelector('.list').insertBefore(item, prevItem);
       prevItem = item;
     });
   }

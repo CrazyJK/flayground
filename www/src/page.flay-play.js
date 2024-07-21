@@ -107,7 +107,6 @@ class App extends FlayProvider {
   async play() {
     const { opus, flay, actress } = await this.random();
 
-    document.title = `${opus} ${flay.title} ${flay.actressList.join(' ')}`;
     this.flayCoverImage.set(opus);
 
     try {

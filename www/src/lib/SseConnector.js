@@ -86,13 +86,8 @@ window.emitNotice = (data) => {
     noticeWrapper.id = 'notice-wrapper';
   }
   let notice = noticeWrapper.appendChild(document.createElement('div'));
-  notice.innerHTML = `
-    <label>${data.message}</label>
-  `;
-
-  setTimeout(() => {
-    notice.remove();
-  }, 1000 * 3);
+  notice.innerHTML = `<label>${typeof data === 'object' ? data.message : data}</label>`;
+  setTimeout(() => notice.remove(), 1000 * 3);
 };
 
 window.emitMessage = (...datas) => {

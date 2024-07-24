@@ -8,16 +8,17 @@
   flex-direction: column-reverse;
   align-items: flex-end;
 
-  background-color: transparent;
-}
+  background-color: var(--color-bg);
+  z-index: 5888926974;
 
-#notice-wrapper > div {
-  box-shadow: var(--box-shadow);
-  margin: 0.25rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.25rem;
-  padding: 0.5rem 1rem;
-  text-align: right;
+  & > div {
+    border: 1px solid var(--color-border);
+    border-radius: 0.25rem;
+    box-shadow: var(--box-shadow);
+    margin: 0.25rem;
+    padding: 0.5rem 1rem;
+    text-align: center;
+  }
 }
 
 #message-wrapper {

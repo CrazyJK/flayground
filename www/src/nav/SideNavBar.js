@@ -133,7 +133,7 @@ side-nav {
   bottom: 0;
   width: 10rem;
   transition: linear left 0.4s 0.4s, box-shadow 0.8s;
-  z-index: 74;
+  z-index: 6974;
   background-color: var(--color-bg);
   border-right: 1px solid var(--color-border);
 }

@@ -293,7 +293,6 @@ class FlayVideoInfo extends HTMLElement {
     this.shadowRoot.querySelector('flay-release').set(flay, reload);
     this.shadowRoot.querySelector('flay-rank').set(flay, reload);
     this.shadowRoot.querySelector('flay-tag').set(flay, reload);
-    this.shadowRoot.querySelector('flay-tag').setCard();
   }
 }
 

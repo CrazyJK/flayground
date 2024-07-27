@@ -16,6 +16,12 @@
     }
   }
 
+  &.card {
+    button {
+      display: none !important;
+    }
+  }
+
   &.archive {
     * {
       color: var(--color-gray-dark);

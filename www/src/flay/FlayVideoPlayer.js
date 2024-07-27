@@ -12,8 +12,6 @@ import './part/FlayTitle';
  */
 export default class FlayVideoPlayer extends HTMLElement {
   opus;
-  flay;
-  actress;
   duration;
   loaded;
   playing;
@@ -70,8 +68,6 @@ export default class FlayVideoPlayer extends HTMLElement {
 
   #initiate(opus = null, flay = null, actress = null) {
     this.opus = opus;
-    this.flay = flay;
-    this.actress = actress;
     this.duration = -1;
     this.loaded = false;
     this.playing = false;
@@ -245,9 +241,6 @@ export default class FlayVideoPlayer extends HTMLElement {
    */
   async reload() {
     const { flay, actress } = await fetch('/flay/' + this.opus + '/fully').then((res) => res.json());
-    this.flay = flay;
-    this.actress = actress;
-
     this.info.set(flay, actress, true);
   }
 }

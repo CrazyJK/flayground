@@ -19,10 +19,10 @@ export default class FlayBasket extends HTMLDivElement {
       </div>
     `;
 
-    this.flayCountEl = this.querySelector('#flayCount');
     this.listEl = this.querySelector('.list');
-    this.emptyAllEl = this.querySelector('#emptyAll');
     this.columnLengthEl = this.querySelector('#columnLength');
+    this.flayCountEl = this.querySelector('#flayCount');
+    this.emptyAllEl = this.querySelector('#emptyAll');
   }
 
   connectedCallback() {
@@ -62,6 +62,7 @@ export default class FlayBasket extends HTMLDivElement {
       let item = this.querySelector(`[data-opus="${opus}"]`);
       if (item === null) {
         item = new FlayBasketItem(opus);
+        item.addEventListener('delete', () => this.render());
         isNew = true;
       }
 
@@ -145,7 +146,7 @@ class FlayBasketItem extends HTMLDivElement {
       { duration: 800, iterations: 1, easing: 'cubic-bezier(0.42, 0, 0.58, 1)' }
     ).finished;
     FlayBasket.remove(this.dataset.opus);
-    this.remove();
+    this.dispatchEvent(new CustomEvent('delete'));
   }
 }
 

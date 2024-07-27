@@ -10,6 +10,9 @@
     input[type='search'] {
       border-radius: 0.5rem;
       width: 16rem;
+      &:hover {
+        background-color: var(--color-bg-transparent);
+      }
     }
     datalist {
       width: 16rem;

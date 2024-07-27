@@ -32,8 +32,10 @@ export default class FlayBasket extends HTMLDivElement {
     };
 
     this.emptyAllEl.addEventListener('click', () => {
-      FlayBasket.clear();
-      this.render();
+      if (confirm('A U Sure?')) {
+        FlayBasket.clear();
+        this.render();
+      }
     });
 
     this.columnLengthEl.addEventListener('change', () => {

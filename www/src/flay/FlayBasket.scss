@@ -38,6 +38,10 @@
         border-top-left-radius: 0.25rem;
         border-bottom-right-radius: 0.25rem;
         padding: 0.25rem;
+
+        svg {
+          width: var(--size-large);
+        }
       }
 
       .popup-flay {

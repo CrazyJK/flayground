@@ -113,7 +113,9 @@ class FlayBasketItem extends HTMLDivElement {
     this.classList.add('flay-basket-item');
     this.innerHTML = `
       <button type="button" class="popup-flay">title</button>
-      <button type="button" class="empty-this">${SVG.trashBin}</button>
+      <div class="flay-basket-item-cover">
+        <button type="button" class="empty-this">${SVG.trashBin}</button>
+      </div>
     `;
 
     this.querySelector('.popup-flay').addEventListener('click', async () => {
@@ -127,7 +129,7 @@ class FlayBasketItem extends HTMLDivElement {
     fetch(`/static/cover/${opus}/withData`).then((res) => {
       const flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
       res.blob().then((blob) => {
-        this.style.backgroundImage = `url(${URL.createObjectURL(blob)})`;
+        this.querySelector('.flay-basket-item-cover').style.backgroundImage = `url(${URL.createObjectURL(blob)})`;
         this.querySelector('.popup-flay').innerHTML = flay.title;
       });
     });

@@ -8,15 +8,14 @@ import SVG from './svg/SVG';
 import FlayStorage from './util/FlayStorage';
 import { getRandomInt } from './util/randomNumber';
 
+/** 최소 플레이 초 */
+const MinPlayTime = 60 * 2;
+/** 최대 플레이 초 */
+const MaxPlayTime = 60 * 5;
+
 class App extends FlayProvider {
   sec = 10;
-  videoPlayer;
   isPaused = false;
-
-  /** 최소 플레이 초 */
-  MinPlayTime = 60 * 1;
-  /** 최대 플레이 초 */
-  MaxPlayTime = 60 * 5;
 
   constructor(opts) {
     super(opts);
@@ -25,10 +24,11 @@ class App extends FlayProvider {
     document.querySelector('[for="pause-video"]').innerHTML = SVG.controls.pause;
     document.querySelector('[for="video-volume"]').innerHTML = SVG.controls.volume;
 
-    this.flayCoverImage = document.querySelector('body').appendChild(new FlayCoverImage());
+    this.flayCoverImage = document.querySelector('header').appendChild(new FlayCoverImage());
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
 
     this.progressBar = document.querySelector('.progress-bar');
+    this.remainingTimeCheck = document.querySelector('#toggle-remaining-time');
     this.remainingTime = document.querySelector('[for="toggle-remaining-time"]');
     this.pauseVideo = document.querySelector('#pause-video');
     this.videoVolume = document.querySelector('#video-volume');
@@ -74,7 +74,7 @@ class App extends FlayProvider {
   }
 
   #initRemainingTime() {
-    document.querySelector('#toggle-remaining-time').addEventListener('change', (e) => (this.isPaused = !e.target.checked));
+    this.remainingTimeCheck.addEventListener('change', (e) => (this.isPaused = !e.target.checked));
   }
 
   #initNextFlay() {
@@ -114,17 +114,18 @@ class App extends FlayProvider {
       console.log('videoPlayer is setted', opus);
 
       const totalTime = this.videoPlayer.getDuration();
-      const seekTime = getRandomInt(1, totalTime - this.MaxPlayTime);
+      const seekTime = getRandomInt(1, totalTime - MaxPlayTime);
 
       await this.videoPlayer.seek(seekTime);
       console.log('videoPlayer is seeked', toTime(seekTime));
 
-      this.sec = getRandomInt(this.MinPlayTime, Math.min(totalTime - seekTime, this.MaxPlayTime));
+      this.sec = getRandomInt(MinPlayTime, Math.min(totalTime - seekTime, MaxPlayTime));
       console.log('videoPlayer will be played for', toTime(this.sec));
 
       this.#displayTime();
 
       this.isPaused = false;
+      this.remainingTimeCheck.checked = true;
       this.pauseVideo.checked = false;
     } catch (e) {
       this.sec = 10;
@@ -142,7 +143,7 @@ class App extends FlayProvider {
       this.#displayTime();
 
       if (this.sec === 0) {
-        this.sec = this.MaxPlayTime;
+        this.sec = MaxPlayTime;
         this.#displayTime();
 
         await this.play();

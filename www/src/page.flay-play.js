@@ -24,7 +24,6 @@ class App extends FlayProvider {
     document.querySelector('[for="pause-video"]').innerHTML = SVG.controls.pause;
     document.querySelector('[for="video-volume"]').innerHTML = SVG.controls.volume;
 
-    this.flayCoverImage = document.querySelector('header').appendChild(new FlayCoverImage());
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
 
     this.progressBar = document.querySelector('.progress-bar');
@@ -107,8 +106,6 @@ class App extends FlayProvider {
   async play() {
     const { opus, flay, actress } = await this.random();
 
-    this.flayCoverImage.set(opus);
-
     try {
       await this.videoPlayer.set(opus, flay, actress);
       console.log('videoPlayer is setted', opus);
@@ -151,35 +148,5 @@ class App extends FlayProvider {
     }, 1000);
   }
 }
-
-class FlayCoverImage extends HTMLDivElement {
-  constructor() {
-    super();
-    this.classList.add('flay-cover-image');
-  }
-
-  connectedCallback() {
-    this.style.aspectRatio = 'var(--cover-aspect-ratio)';
-    this.style.background = 'transparent no-repeat center / cover';
-    this.style.boxShadow = 'inset 0 0 1rem 0.5rem var(--color-bg-hover)';
-    this.style.borderRadius = '0.25rem';
-    this.style.margin = '1rem auto';
-    this.style.width = 'min(100%, 800px)';
-    this.style.zIndex = -1;
-  }
-
-  set(opus) {
-    this.style.backgroundImage = `url(/static/cover/${opus})`;
-    this.animate(
-      [
-        { transform: 'scale(0)', opacity: 0 },
-        { transform: 'scale(1)', opacity: 1 },
-      ],
-      { duration: 800, iterations: 1, easing: 'cubic-bezier(0.42, 0, 0.58, 1)' }
-    );
-  }
-}
-
-customElements.define('flay-cover-image', FlayCoverImage, { extends: 'div' });
 
 new App().start().then(() => console.log('started'));

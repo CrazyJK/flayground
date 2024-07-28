@@ -67,8 +67,8 @@ export default class FlayVideoPlayer extends HTMLElement {
    * @returns
    */
   load(opus, flay, actress) {
+    this.classList.toggle('load', false);
     this.opus = opus;
-
     this.flayVideo.set(opus);
     this.flayVideoInfo.set(flay, actress);
     this.flayVideoPoster.set(flay);
@@ -76,6 +76,7 @@ export default class FlayVideoPlayer extends HTMLElement {
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
         if (this.flayVideo.loaded) {
+          this.classList.toggle('load', true);
           clearInterval(timer);
           resolve(true);
         }

@@ -1,6 +1,11 @@
 flay-video-player {
   position: relative;
   display: block;
+  opacity: 0;
+
+  &.load {
+    opacity: 1;
+  }
 }
 
 .flay-video-player {

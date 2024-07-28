@@ -10,12 +10,6 @@ flay-video-player {
   background-color: #000;
   border: 2px solid #000;
 
-  &:hover {
-    flay-video-info {
-      opacity: 1;
-    }
-  }
-
   video {
     aspect-ratio: 16 / 9;
     width: 100%;
@@ -23,31 +17,59 @@ flay-video-player {
       object-fit: cover;
     }
   }
-}
 
-flay-video-info {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  display: block;
-  opacity: 0;
-  transition: 0.4s;
-}
-
-.flay-video-info {
-  background-color: var(--color-bg-transparent);
-
-  .header,
-  .footer {
-    display: flex;
-    justify-content: center;
+  .flay-video-info {
+    position: absolute;
+    top: 0;
     width: 100%;
+    display: block;
+    background-color: var(--color-bg-transparent);
+    transition: 0.4s;
+    opacity: 0;
+
+    .header,
+    .footer {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .header {
+      padding: 0.5rem 0.5rem 0;
+    }
+    .footer {
+      flex-wrap: wrap;
+    }
   }
 
-  .header {
-    padding: 0.5rem 0.5rem 0;
+  .flay-video-poster {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: -1;
+    margin: 1rem auto;
+    width: 100%;
+    max-width: 800px;
+    transition: 0.4s;
+    opacity: 0;
+
+    flay-cover {
+      box-shadow: var(--box-shadow);
+      height: 0;
+    }
   }
-  .footer {
-    flex-wrap: wrap;
+
+  &:hover {
+    .flay-video-info {
+      opacity: 1;
+
+      &:hover ~ .flay-video-poster {
+        opacity: 1;
+        flay-cover {
+          height: auto;
+        }
+      }
+    }
   }
 }

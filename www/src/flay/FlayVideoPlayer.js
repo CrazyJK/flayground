@@ -1,5 +1,6 @@
 import './FlayVideoPlayer.scss';
 import './part/FlayActress';
+import './part/FlayCover';
 import './part/FlayOpus';
 import './part/FlayRank';
 import './part/FlayRelease';
@@ -61,7 +62,8 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.video = wrapper.appendChild(document.createElement('video'));
     this.video.preload = 'auto';
 
-    this.info = wrapper.appendChild(document.createElement('flay-video-info'));
+    this.info = wrapper.appendChild(new FlayVideoInfo());
+    this.poster = wrapper.appendChild(new FlayVideoPoster());
 
     this.#addVideoEvent();
   }
@@ -164,6 +166,7 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.video.load();
 
     this.info.set(flay, actress);
+    this.poster.set(flay);
 
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
@@ -242,29 +245,16 @@ export default class FlayVideoPlayer extends HTMLElement {
   async reload() {
     const { flay, actress } = await fetch('/flay/' + this.opus + '/fully').then((res) => res.json());
     this.info.set(flay, actress, true);
+    this.poster.set(flay);
   }
 }
 
-customElements.define('flay-video-player', FlayVideoPlayer);
-
-export function toTime(seconds) {
-  return new Date(seconds * 1000).toISOString().slice(11, 19);
-}
-
-class FlayVideoInfo extends HTMLElement {
+class FlayVideoInfo extends HTMLDivElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = `
+    this.classList.add('flay-video-info');
+    this.innerHTML = `
       <div class="header">
         <flay-title mode="card"></flay-title>
       </div>
@@ -275,18 +265,40 @@ class FlayVideoInfo extends HTMLElement {
         <flay-release mode="card"></flay-release>
         <flay-rank mode="card"></flay-rank>
         <flay-tag mode="card"></flay-tag>
-      </div>`;
+      </div>
+    `;
   }
 
   set(flay, actress, reload = false) {
-    this.shadowRoot.querySelector('flay-studio').set(flay, reload);
-    this.shadowRoot.querySelector('flay-opus').set(flay, reload);
-    this.shadowRoot.querySelector('flay-title').set(flay, reload);
-    this.shadowRoot.querySelector('flay-actress').set(flay, actress, reload);
-    this.shadowRoot.querySelector('flay-release').set(flay, reload);
-    this.shadowRoot.querySelector('flay-rank').set(flay, reload);
-    this.shadowRoot.querySelector('flay-tag').set(flay, reload);
+    this.querySelector('flay-studio').set(flay, reload);
+    this.querySelector('flay-opus').set(flay, reload);
+    this.querySelector('flay-title').set(flay, reload);
+    this.querySelector('flay-actress').set(flay, actress, reload);
+    this.querySelector('flay-release').set(flay, reload);
+    this.querySelector('flay-rank').set(flay, reload);
+    this.querySelector('flay-tag').set(flay, reload);
   }
 }
 
-customElements.define('flay-video-info', FlayVideoInfo);
+class FlayVideoPoster extends HTMLDivElement {
+  constructor() {
+    super();
+
+    this.classList.add('flay-video-poster');
+    this.innerHTML = `
+      <flay-cover mode="card"></flay-cover>
+    `;
+  }
+
+  set(flay) {
+    this.querySelector('flay-cover').set(flay);
+  }
+}
+
+customElements.define('flay-video-player', FlayVideoPlayer);
+customElements.define('flay-video-info', FlayVideoInfo, { extends: 'div' });
+customElements.define('flay-video-poster', FlayVideoPoster, { extends: 'div' });
+
+export function toTime(seconds) {
+  return new Date(seconds * 1000).toISOString().slice(11, 19);
+}

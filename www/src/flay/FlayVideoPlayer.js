@@ -22,16 +22,16 @@ export default class FlayVideoPlayer extends HTMLElement {
     console.debug('attributeChangedCallback', name, oldValue, newValue);
     switch (name) {
       case 'controls':
-        this.video.controls = newValue === 'true';
+        this.flayVideo.controls = newValue === 'true';
         break;
       case 'volume':
-        this.video.volume = parseFloat(newValue);
+        this.flayVideo.volume = parseFloat(newValue);
         break;
       case 'autoplay':
-        this.video.autoplay = newValue === 'true';
+        this.flayVideo.autoplay = newValue === 'true';
         break;
       case 'info':
-        this.info.classList.toggle('hide', newValue !== 'true');
+        this.flayVideoInfo.classList.toggle('hide', newValue !== 'true');
         break;
     }
   }
@@ -51,9 +51,9 @@ export default class FlayVideoPlayer extends HTMLElement {
     const wrapper = this.shadowRoot.appendChild(document.createElement('article'));
     wrapper.classList.add(this.tagName.toLowerCase());
 
-    this.video = wrapper.appendChild(new FlayVideo());
-    this.info = wrapper.appendChild(new FlayVideoInfo());
-    this.poster = wrapper.appendChild(new FlayVideoPoster());
+    this.flayVideo = wrapper.appendChild(new FlayVideo());
+    this.flayVideoInfo = wrapper.appendChild(new FlayVideoInfo());
+    this.flayVideoPoster = wrapper.appendChild(new FlayVideoPoster());
   }
 
   /**
@@ -66,17 +66,17 @@ export default class FlayVideoPlayer extends HTMLElement {
   load(opus, flay, actress) {
     this.opus = opus;
 
-    this.video.set(opus);
-    this.info.set(flay, actress);
-    this.poster.set(flay);
+    this.flayVideo.set(opus);
+    this.flayVideoInfo.set(flay, actress);
+    this.flayVideoPoster.set(flay);
 
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
-        if (this.video.loaded) {
+        if (this.flayVideo.loaded) {
           clearInterval(timer);
           resolve(true);
         }
-        if (this.video.error) {
+        if (this.flayVideo.error) {
           clearInterval(timer);
           reject('Error: ' + this.opus);
         }
@@ -92,11 +92,11 @@ export default class FlayVideoPlayer extends HTMLElement {
   #wait(isPlay) {
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
-        if (this.video.playing === isPlay) {
+        if (this.flayVideo.playing === isPlay) {
           clearInterval(timer);
           resolve(true);
         }
-        if (this.video.error) {
+        if (this.flayVideo.error) {
           clearInterval(timer);
           reject('Error: ' + this.opus);
         }
@@ -108,8 +108,8 @@ export default class FlayVideoPlayer extends HTMLElement {
    * video play
    */
   async play() {
-    if (!this.video.playing) {
-      await this.video.play();
+    if (!this.flayVideo.playing) {
+      await this.flayVideo.play();
     }
     await this.#wait(true);
   }
@@ -119,7 +119,7 @@ export default class FlayVideoPlayer extends HTMLElement {
    * @param {number} seekTime
    */
   async seek(seekTime) {
-    this.video.currentTime = seekTime;
+    this.flayVideo.currentTime = seekTime;
     await this.play();
   }
 
@@ -127,8 +127,8 @@ export default class FlayVideoPlayer extends HTMLElement {
    * video pause
    */
   async pause() {
-    if (this.video.playing) {
-      this.video.pause();
+    if (this.flayVideo.playing) {
+      this.flayVideo.pause();
     }
     await this.#wait(false);
   }
@@ -138,19 +138,27 @@ export default class FlayVideoPlayer extends HTMLElement {
    * @returns {number}
    */
   get duration() {
-    return this.video.duration;
+    return this.flayVideo.duration;
   }
 
   get currentTime() {
-    return this.video.currentTime;
+    return this.flayVideo.currentTime;
   }
 
   get poster() {
-    return this.video.poster;
+    return this.flayVideo.poster;
   }
 
   get currentSrc() {
-    return this.video.currentSrc;
+    return this.flayVideo.currentSrc;
+  }
+
+  get playing() {
+    return this.flayVideo.playing;
+  }
+
+  get volume() {
+    return this.flayVideo.volume;
   }
 
   /**
@@ -158,8 +166,7 @@ export default class FlayVideoPlayer extends HTMLElement {
    */
   async reload() {
     const { flay, actress } = await fetch('/flay/' + this.opus + '/fully').then((res) => res.json());
-    this.info.set(flay, actress, true);
-    this.poster.set(flay);
+    this.flayVideoInfo.set(flay, actress, true);
   }
 }
 

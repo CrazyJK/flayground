@@ -107,10 +107,10 @@ class App extends FlayProvider {
     const { opus, flay, actress } = await this.random();
 
     try {
-      await this.videoPlayer.set(opus, flay, actress);
-      console.log('videoPlayer is setted', opus);
+      await this.videoPlayer.load(opus, flay, actress);
+      console.log('videoPlayer is loaded', opus);
 
-      const totalTime = this.videoPlayer.getDuration();
+      const totalTime = this.videoPlayer.duration;
       const seekTime = getRandomInt(1, totalTime - MaxPlayTime);
 
       await this.videoPlayer.seek(seekTime);
@@ -126,7 +126,7 @@ class App extends FlayProvider {
       this.pauseVideo.checked = false;
     } catch (e) {
       this.sec = 10;
-      console.error('play Error', e.message, `retry in ${this.sec}s`);
+      console.error('play Error', e.message, `retry in ${this.sec}s`, e);
     }
   }
 

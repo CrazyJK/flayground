@@ -100,7 +100,7 @@ class App extends FlayProvider {
   }
 
   #displayTime() {
-    this.progressBar.style.width = (this.sec / this.MaxPlayTime) * 100 + '%';
+    this.progressBar.style.width = (this.sec / MaxPlayTime) * 100 + '%';
     this.remainingTime.innerHTML = toTime(this.sec);
   }
 

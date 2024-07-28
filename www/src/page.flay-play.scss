@@ -81,7 +81,6 @@ footer {
         display: inline-flex;
         justify-content: center;
         align-items: center;
-        // height: 1.75rem;
         transition: 0.4s;
 
         &.active {
@@ -101,7 +100,13 @@ footer {
       input[type='number'] {
         font-size: var(--size-normal);
         padding: 0 0 0.1rem;
-        width: 3rem;
+        width: 1.5rem;
+      }
+      input[type='number']::-webkit-outer-spin-button,
+      input[type='number']::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
       }
     }
   }

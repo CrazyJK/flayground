@@ -51,12 +51,10 @@ flay-video-player {
     margin: 1rem auto;
     width: 100%;
     max-width: 800px;
-    transition: 0.4s;
     opacity: 0;
 
     flay-cover {
       box-shadow: var(--box-shadow);
-      height: 0;
     }
   }
 
@@ -65,10 +63,8 @@ flay-video-player {
       opacity: 1;
     }
     .flay-video-poster {
+      transition: 0.4s;
       opacity: 1;
-      flay-cover {
-        height: auto;
-      }
     }
   }
 }

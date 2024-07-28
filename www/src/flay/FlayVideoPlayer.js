@@ -141,6 +141,18 @@ export default class FlayVideoPlayer extends HTMLElement {
     return this.video.duration;
   }
 
+  get currentTime() {
+    return this.video.currentTime;
+  }
+
+  get poster() {
+    return this.video.poster;
+  }
+
+  get currentSrc() {
+    return this.video.currentSrc;
+  }
+
   /**
    * flay 정보 리로드
    */

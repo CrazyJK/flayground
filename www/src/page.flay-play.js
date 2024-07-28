@@ -18,8 +18,8 @@ class App extends FlayProvider {
   /** 최대 플레이 초 */
   MaxPlayTime = 60 * 5;
 
-  constructor() {
-    super();
+  constructor(opts) {
+    super(opts);
 
     document.querySelector('#play-next-flay').innerHTML = SVG.controls.nextTrack;
     document.querySelector('[for="pause-video"]').innerHTML = SVG.controls.pause;

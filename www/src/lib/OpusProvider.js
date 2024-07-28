@@ -16,24 +16,29 @@ export class OpusProvider {
   condition;
 
   constructor(opts) {
-    this.opusList = null;
+    this.setCondition(opts);
+  }
+
+  setCondition(condition) {
+    this.condition = Object.assign(DEFAULT_CONDITION, condition);
+    this.setOpusList(null);
+  }
+
+  setOpusList(list) {
+    console.log('setOpusList', list);
+    this.opusList = list;
     this.opusIndex = -1;
     this.opusIndexes = [];
-    this.condition = Object.assign(DEFAULT_CONDITION, opts);
   }
 
   async #fetchOpusList() {
+    console.log('fetchOpusList', this.opusList);
     if (this.opusList === null)
       this.opusList = await fetch('/flay/list/opus', {
         method: 'post',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(this.condition),
       }).then((res) => res.json());
-  }
-
-  setOpusList(list) {
-    this.opusList = list;
-    this.opusIndex = -1;
   }
 
   async getRandomOpus() {
@@ -89,5 +94,9 @@ export class OpusProvider {
     } else {
       return -1;
     }
+  }
+
+  get size() {
+    return this.opusList.length;
   }
 }

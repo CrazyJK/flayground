@@ -3,8 +3,8 @@ import { OpusProvider } from './OpusProvider';
 export class FlayProvider extends OpusProvider {
   opus;
 
-  constructor() {
-    super();
+  constructor(opts) {
+    super(opts);
     this.opus = null;
   }
 

@@ -34,6 +34,7 @@ class App extends FlayProvider {
 
     this.#initControl(); // 재생 컨트롤 보일지 여부
     this.#initInfo(); // Flay 정보 보일지 여부
+    this.#initCover(); // Flay 포스터 보일지 여부
     this.#initRemainingTime(); // 재생 남은 시간 멈출지 여부
     this.#initNextFlay(); // 다음 Flay로 넘어갈지 여부
     this.#initPause(); // 비디오 재생 멈출지
@@ -70,6 +71,16 @@ class App extends FlayProvider {
     });
     videoInfoToggler.checked = FlayStorage.local.getBoolean('flay-play-video-info', false);
     videoInfoToggler.dispatchEvent(new Event('change'));
+  }
+
+  #initCover() {
+    const videoPosterToggler = document.querySelector('#toggle-video-poster');
+    videoPosterToggler.addEventListener('change', (e) => {
+      this.videoPlayer.setAttribute('poster', e.target.checked);
+      FlayStorage.local.set('flay-play-video-poster', e.target.checked);
+    });
+    videoPosterToggler.checked = FlayStorage.local.getBoolean('flay-play-video-poster', false);
+    videoPosterToggler.dispatchEvent(new Event('change'));
   }
 
   #initRemainingTime() {

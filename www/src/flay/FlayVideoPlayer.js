@@ -15,7 +15,7 @@ export default class FlayVideoPlayer extends HTMLElement {
   opus;
 
   static get observedAttributes() {
-    return ['controls', 'volume', 'autoplay', 'info'];
+    return ['controls', 'volume', 'autoplay', 'info', 'poster'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -32,6 +32,9 @@ export default class FlayVideoPlayer extends HTMLElement {
         break;
       case 'info':
         this.flayVideoInfo.classList.toggle('hide', newValue !== 'true');
+        break;
+      case 'poster':
+        this.flayVideoPoster.classList.toggle('hide', newValue !== 'true');
         break;
     }
   }

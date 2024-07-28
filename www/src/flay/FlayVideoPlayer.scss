@@ -63,12 +63,11 @@ flay-video-player {
   &:hover {
     .flay-video-info {
       opacity: 1;
-
-      &:hover ~ .flay-video-poster {
-        opacity: 1;
-        flay-cover {
-          height: auto;
-        }
+    }
+    .flay-video-poster {
+      opacity: 1;
+      flay-cover {
+        height: auto;
       }
     }
   }

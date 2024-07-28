@@ -25,14 +25,12 @@ export class OpusProvider {
   }
 
   setOpusList(list) {
-    console.log('setOpusList', list);
     this.opusList = list;
     this.opusIndex = -1;
     this.opusIndexes = [];
   }
 
   async #fetchOpusList() {
-    console.log('fetchOpusList', this.opusList);
     if (this.opusList === null)
       this.opusList = await fetch('/flay/list/opus', {
         method: 'post',

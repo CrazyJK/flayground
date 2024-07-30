@@ -173,9 +173,7 @@ class FlayBasketItem extends HTMLDivElement {
     this.flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
     this.querySelector('.flay-basket-item-cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
     this.querySelector('.popup-flay').innerHTML = this.flay.title;
-    this.flay.video.tags?.forEach((tag) => {
-      this.querySelector('.tags').innerHTML += `<label>${tag.name}</label>`;
-    });
+    this.querySelector('.tags').innerHTML = this.flay.video.tags?.map((tag) => `<label>${tag.name}</label>`).join('');
   }
 
   hasActress(name) {

@@ -12,8 +12,8 @@ export default class FlayBasket extends HTMLDivElement {
     this.classList.add('flay-basket');
     this.innerHTML = `
       <div class="body">
-      <div id="actressList"></div>
-        <div class="list"></div>
+        <div id="actressList"></div>
+        <div id="basketList"></div>
       </div>
       <div class="footer">
         <div class="control">
@@ -24,7 +24,7 @@ export default class FlayBasket extends HTMLDivElement {
       </div>
     `;
 
-    this.listEl = this.querySelector('.list');
+    this.listEl = this.querySelector('#basketList');
     this.columnLengthEl = this.querySelector('#columnLength');
     this.flayCountEl = this.querySelector('#flayCount');
     this.emptyAllEl = this.querySelector('#emptyAll');
@@ -142,8 +142,6 @@ export default class FlayBasket extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-basket', FlayBasket, { extends: 'div' });
-
 class FlayBasketItem extends HTMLDivElement {
   flay;
 
@@ -154,6 +152,7 @@ class FlayBasketItem extends HTMLDivElement {
     this.innerHTML = `
       <button type="button" class="popup-flay">title</button>
       <div class="flay-basket-item-cover">
+        <div class="tags"></div>
         <button type="button" class="empty-this">${SVG.trashBin}</button>
       </div>
     `;
@@ -174,6 +173,9 @@ class FlayBasketItem extends HTMLDivElement {
     this.flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
     this.querySelector('.flay-basket-item-cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
     this.querySelector('.popup-flay').innerHTML = this.flay.title;
+    this.flay.video.tags?.forEach((tag) => {
+      this.querySelector('.tags').innerHTML += `<label>${tag.name}</label>`;
+    });
   }
 
   hasActress(name) {
@@ -194,6 +196,7 @@ class FlayBasketItem extends HTMLDivElement {
   }
 }
 
+customElements.define('flay-basket', FlayBasket, { extends: 'div' });
 customElements.define('flay-basket-item', FlayBasketItem, { extends: 'div' });
 
 /**

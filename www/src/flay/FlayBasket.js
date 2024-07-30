@@ -11,11 +11,16 @@ export default class FlayBasket extends HTMLDivElement {
     super();
     this.classList.add('flay-basket');
     this.innerHTML = `
-      <div class="list"></div>
-      <div class="control">
-        <input type="range" id="columnLength" min="1" max="5" step="1" value="5">
-        <label><span id="flayCount">0</span><span>F</span></label>
-        <button type="button" id="emptyAll" title="empty All">${SVG.trashBin}</button>
+      <div class="body">
+      <div id="actressList"></div>
+        <div class="list"></div>
+      </div>
+      <div class="footer">
+        <div class="control">
+          <input type="range" id="columnLength" min="1" max="5" step="1" value="5">
+          <label><span id="flayCount">0</span><span>F</span></label>
+          <button type="button" id="emptyAll" title="empty All">${SVG.trashBin}</button>
+        </div>
       </div>
     `;
 
@@ -28,13 +33,13 @@ export default class FlayBasket extends HTMLDivElement {
   connectedCallback() {
     onstorage = async (e) => {
       if (e.key !== BASKET_KEY) return;
-      this.render();
+      await this.render();
     };
 
-    this.emptyAllEl.addEventListener('click', () => {
+    this.emptyAllEl.addEventListener('click', async () => {
       if (confirm('A U Sure?')) {
         FlayBasket.clear();
-        this.render();
+        await this.render();
       }
     });
 
@@ -48,7 +53,7 @@ export default class FlayBasket extends HTMLDivElement {
     this.render();
   }
 
-  render() {
+  async render() {
     const basket = getBasket();
     this.flayCountEl.innerHTML = basket.size;
     if (basket.size === 0) this.listEl.textContent = null;
@@ -61,7 +66,8 @@ export default class FlayBasket extends HTMLDivElement {
       let isNew = false;
       let item = this.querySelector(`[data-opus="${opus}"]`);
       if (item === null) {
-        item = new FlayBasketItem(opus);
+        item = new FlayBasketItem();
+        await item.set(opus);
         item.addEventListener('delete', () => this.render());
         isNew = true;
       }
@@ -79,6 +85,38 @@ export default class FlayBasket extends HTMLDivElement {
           { duration: 600, iterations: 1, easing: 'ease' }
         );
     }
+
+    const actressListEl = this.querySelector('#actressList');
+    actressListEl.textContent = null;
+    Array.from(this.querySelectorAll(`[data-opus]`))
+      .reduce((map, item) => {
+        item.flay.actressList.forEach((name) => {
+          if (!map.has(name)) map.set(name, { size: 0 });
+          map.get(name).size += 1;
+        });
+        return map;
+      }, new Map())
+      .forEach((obj, name) => {
+        const key = name.replace(/ /g, '');
+        actressListEl.innerHTML += `
+          <input type="checkbox" id="${key}" value="${name}">
+          <label class="border" for="${key}">${name} <small>(${obj.size})</small></label>
+        `;
+      });
+
+    actressListEl.addEventListener('change', () => {
+      const itemList = this.querySelectorAll(`[data-opus]`);
+      const checkedList = actressListEl.querySelectorAll('input:checked');
+
+      itemList.forEach((item) => item.classList.toggle('hide', checkedList.length > 0));
+      checkedList.forEach((checkbox) => {
+        itemList.forEach((item) => {
+          if (item.hasActress(checkbox.value)) item.classList.remove('hide');
+        });
+      });
+
+      this.flayCountEl.innerHTML = this.querySelectorAll(`[data-opus]:not(.hide)`).length;
+    });
   }
 
   static add(opus) {
@@ -107,10 +145,11 @@ export default class FlayBasket extends HTMLDivElement {
 customElements.define('flay-basket', FlayBasket, { extends: 'div' });
 
 class FlayBasketItem extends HTMLDivElement {
-  constructor(opus) {
+  flay;
+
+  constructor() {
     super();
 
-    this.dataset.opus = opus;
     this.classList.add('flay-basket-item');
     this.innerHTML = `
       <button type="button" class="popup-flay">title</button>
@@ -121,19 +160,24 @@ class FlayBasketItem extends HTMLDivElement {
 
     this.querySelector('.popup-flay').addEventListener('click', async () => {
       await this.delete();
-      window.open('popup.flay.html?opus=' + opus, 'popup.' + opus, 'width=800px,height=1280px');
+      window.open('popup.flay.html?opus=' + this.flay.opus, 'popup.' + this.flay.opus, 'width=800px,height=1280px');
     });
     this.querySelector('.empty-this').addEventListener('click', async () => {
       await this.delete();
     });
+  }
 
-    fetch(`/static/cover/${opus}/withData`).then((res) => {
-      const flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
-      res.blob().then((blob) => {
-        this.querySelector('.flay-basket-item-cover').style.backgroundImage = `url(${URL.createObjectURL(blob)})`;
-        this.querySelector('.popup-flay').innerHTML = flay.title;
-      });
-    });
+  async set(opus) {
+    this.dataset.opus = opus;
+
+    const res = await fetch(`/static/cover/${opus}/withData`);
+    this.flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
+    this.querySelector('.flay-basket-item-cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
+    this.querySelector('.popup-flay').innerHTML = this.flay.title;
+  }
+
+  hasActress(name) {
+    return this.flay.actressList.includes(name);
   }
 
   async delete() {

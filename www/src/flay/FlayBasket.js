@@ -2,6 +2,7 @@ import SVG from '../svg/SVG';
 import FlayStorage from '../util/FlayStorage';
 import StringUtils from '../util/StringUtils';
 import './FlayBasket.scss';
+import FlayCard from './FlayCard';
 
 const BASKET_KEY = 'flay-basket';
 const BASKET_COLUMN = 'flay-basket.column.length';
@@ -66,7 +67,7 @@ export default class FlayBasket extends HTMLDivElement {
       let isNew = false;
       let item = this.querySelector(`[data-opus="${opus}"]`);
       if (item === null) {
-        item = new FlayBasketItem();
+        item = new FlayBasketCard();
         await item.set(opus);
         item.addEventListener('delete', () => this.render());
         isNew = true;
@@ -194,8 +195,30 @@ class FlayBasketItem extends HTMLDivElement {
   }
 }
 
+class FlayBasketCard extends FlayBasketItem {
+  constructor() {
+    super();
+
+    this.classList.add('flay-basket-card');
+    this.innerHTML = ``;
+    this.flayCard = this.appendChild(new FlayCard({ excludes: ['FlayFiles', 'FlayStudio', 'FlayOpus', 'FlayRelease'] }));
+    this.emptyThis = this.appendChild(document.createElement('button'));
+    this.emptyThis.classList.add('empty-this');
+    this.emptyThis.type = 'button';
+    this.emptyThis.innerHTML = SVG.trashBin;
+    this.emptyThis.addEventListener('click', async () => await this.delete());
+  }
+
+  async set(opus) {
+    this.dataset.opus = opus;
+    const { flay, actress } = await this.flayCard.set(opus);
+    this.flay = flay;
+  }
+}
+
 customElements.define('flay-basket', FlayBasket, { extends: 'div' });
 customElements.define('flay-basket-item', FlayBasketItem, { extends: 'div' });
+customElements.define('flay-basket-card', FlayBasketCard, { extends: 'div' });
 
 /**
  *

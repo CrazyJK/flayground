@@ -201,7 +201,10 @@ class FlayBasketCard extends FlayBasketItem {
 
     this.classList.add('flay-basket-card');
     this.innerHTML = ``;
+
     this.flayCard = this.appendChild(new FlayCard({ excludes: ['FlayFiles', 'FlayStudio', 'FlayOpus', 'FlayRelease'] }));
+    this.flayCard.addEventListener('click', async () => await this.delete());
+
     this.emptyThis = this.appendChild(document.createElement('button'));
     this.emptyThis.classList.add('empty-this');
     this.emptyThis.type = 'button';

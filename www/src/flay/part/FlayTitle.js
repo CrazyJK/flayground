@@ -20,6 +20,7 @@ export default class FlayTitle extends FlayHTMLElement {
     if (location.pathname.indexOf('popup.flay.html') < 0) {
       this.anker.addEventListener('click', () => {
         window.open('popup.flay.html?opus=' + this.flay.opus, 'popup.' + this.flay.opus, 'width=800px,height=1280px');
+        this.dispatchEvent(new Event('click', { composed: true }));
       });
     }
   }

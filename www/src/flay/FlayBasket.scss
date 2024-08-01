@@ -61,18 +61,45 @@
       padding: 0.5rem;
       transition: 0.4s;
 
-      .popup-flay {
-        display: inline-block;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-        max-width: 100%;
-        padding-bottom: 0.25rem;
-      }
-
-      .flay-basket-item-cover {
+      .cover {
         aspect-ratio: var(--cover-aspect-ratio);
         background: center center / cover no-repeat transparent;
+      }
+
+      .title {
+        padding-top: 0.5rem;
+
+        .popup-flay {
+          display: inline-block;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 100%;
+          padding-bottom: 0.25rem;
+        }
+      }
+
+      .info {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+
+        .actress,
+        .tags {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
+
+        .actress {
+          flex: 1 0 auto;
+        }
+
+        label {
+          text-shadow: var(--text-shadow);
+          font-size: var(--size-normal);
+          padding: 0 0.25rem 0.125rem 0.125rem;
+        }
       }
 
       .empty-this {
@@ -84,23 +111,6 @@
         padding: 0.25rem 0 0 0.25rem;
         opacity: 0;
         transition: 0.4s;
-      }
-
-      .tags {
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 0.25rem;
-        height: 100%;
-        overflow: hidden;
-
-        label {
-          background-color: var(--color-bg-transparent);
-          text-shadow: var(--text-shadow);
-          font-size: var(--size-normal);
-          padding: 0 0.25rem 0.125rem 0.125rem;
-          border-radius: 0 0.25rem 0.25rem 0;
-        }
       }
 
       &:hover {
@@ -125,6 +135,11 @@
     background-color: var(--color-bg-transparent);
     border-top-left-radius: 1rem;
     padding: 0.5rem;
+    transition: 0.4s;
+
+    &:hover {
+      background-color: var(--color-bg);
+    }
 
     $range-size: 1.5rem;
     $range-radius: calc($range-size / 4);

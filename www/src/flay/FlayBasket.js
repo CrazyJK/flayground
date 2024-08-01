@@ -67,7 +67,8 @@ export default class FlayBasket extends HTMLDivElement {
       let isNew = false;
       let item = this.querySelector(`[data-opus="${opus}"]`);
       if (item === null) {
-        item = new FlayBasketCard();
+        // item = new FlayBasketCard();
+        item = new FlayBasketItem();
         await item.set(opus);
         item.addEventListener('delete', () => this.render());
         isNew = true;
@@ -151,11 +152,15 @@ class FlayBasketItem extends HTMLDivElement {
 
     this.classList.add('flay-basket-item');
     this.innerHTML = `
-      <button type="button" class="popup-flay">title</button>
-      <div class="flay-basket-item-cover">
-        <div class="tags"></div>
-        <button type="button" class="empty-this">${SVG.trashBin}</button>
+      <div class="cover"></div>
+      <div class="title">
+        <button type="button" class="popup-flay">title</button>
       </div>
+      <div class="info">
+        <div class="actress"></div>
+        <div class="tags"></div>
+      </div>
+      <button type="button" class="empty-this">${SVG.trashBin}</button>
     `;
 
     this.querySelector('.popup-flay').addEventListener('click', async () => {
@@ -172,9 +177,11 @@ class FlayBasketItem extends HTMLDivElement {
 
     const res = await fetch(`/static/cover/${opus}/withData`);
     this.flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
-    this.querySelector('.flay-basket-item-cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
+
+    this.querySelector('.cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
     this.querySelector('.popup-flay').innerHTML = this.flay.title;
-    this.querySelector('.tags').innerHTML = this.flay.video.tags?.map((tag) => `<label>${tag.name}</label>`).join('');
+    this.querySelector('.actress').innerHTML = this.flay.actressList?.map((name) => `<label>${name}</label>`).join(', ');
+    this.querySelector('.tags').innerHTML = this.flay.video.tags?.map((tag) => `<label>${tag.name}</label>`).join(' ');
   }
 
   hasActress(name) {

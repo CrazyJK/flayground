@@ -64,6 +64,25 @@
       .cover {
         aspect-ratio: var(--cover-aspect-ratio);
         background: center center / cover no-repeat transparent;
+
+        .comment {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+
+          background-color: var(--color-bg-transparent);
+          padding: 0.25rem 0.25rem;
+
+          display: inline-block;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 100%;
+
+          &:empty {
+            display: none;
+          }
+        }
       }
 
       .title {
@@ -94,12 +113,12 @@
         .actress {
           flex: 1 0 auto;
         }
+      }
 
-        label {
-          text-shadow: var(--text-shadow);
-          font-size: var(--size-normal);
-          padding: 0 0.25rem 0.125rem 0.125rem;
-        }
+      label {
+        text-shadow: var(--text-shadow);
+        font-size: var(--size-normal);
+        padding: 0 0.25rem 0.125rem 0.125rem;
       }
 
       .empty-this {

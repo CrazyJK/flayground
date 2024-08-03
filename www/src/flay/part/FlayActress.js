@@ -75,21 +75,20 @@ export default class FlayActress extends FlayHTMLElement {
       // flay size
       const flaySize = actressDiv.appendChild(document.createElement('label'));
       flaySize.classList.add('flaySize');
-      let flayCount;
-      if (window.actressMap) {
-        flayCount = window.actressMap.get(actress.name);
-      }
-      if (flayCount) {
-        flaySize.innerHTML = flayCount + '<small>f</small>';
-      } else {
-        fetch(`/flay/count/actress/${actress.name}`)
-          .then((response) => response.text())
-          .then((flayCount) => {
-            flaySize.innerHTML = flayCount + '<small>f</small>';
-            if (window.actressMap) {
-              window.actressMap.set(actress.name, flayCount);
-            }
-          });
+      if (flaySize.checkVisibility()) {
+        if (!window.actressMap) window.actressMap = new Map();
+
+        let flayCount = window.actressMap.get(actress.name);
+        if (flayCount !== null) {
+          flaySize.innerHTML = flayCount + '<small>f</small>';
+        } else {
+          fetch(`/flay/count/actress/${actress.name}`)
+            .then((response) => response.text())
+            .then((flayCount) => {
+              flaySize.innerHTML = flayCount + '<small>f</small>';
+              if (window.actressMap) window.actressMap.set(actress.name, flayCount);
+            });
+        }
       }
 
       // age

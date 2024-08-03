@@ -22,6 +22,27 @@ main {
   }
 }
 
+footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  z-index: 6974;
+
+  display: inline-flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 1rem;
+
+  background-color: var(--color-bg-transparent);
+  border-top-left-radius: 1rem;
+  padding: 0.5rem;
+  transition: 0.4s;
+
+  &:hover {
+    background-color: var(--color-bg);
+  }
+}
+
 @media screen and (max-width: 2560px) {
   // QHD 가로 풀
   main {

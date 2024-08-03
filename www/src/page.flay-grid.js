@@ -3,6 +3,8 @@ import './page.flay-grid.scss';
 
 import FlayArticle from './flay/FlayArticle';
 import FlayCondition from './flay/page/FlayCondition';
+import GridControl from './lib/GridControl';
+import { addResizeListener } from './util/windowAddEventListener';
 
 class Page {
   opusList = [];
@@ -11,23 +13,25 @@ class Page {
 
   async #showCover(opus) {
     const res = await fetch('/static/cover/' + opus + '/withData');
-    const data = res.headers.get('Data');
-    const dataDecoded = decodeURIComponent(data.replace(/\+/g, ' '));
-    const flay = JSON.parse(dataDecoded);
-
-    const coverBlob = await res.blob();
-    const coverURL = URL.createObjectURL(coverBlob);
+    const flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
+    const coverURL = URL.createObjectURL(await res.blob());
 
     const flayArticle = document.querySelector('main').appendChild(new FlayArticle({ card: true }));
     flayArticle.set(flay, coverURL);
+
+    document.querySelector('#flayCount').innerHTML = this.opusList.length;
+
+    return window.innerHeight > flayArticle.getBoundingClientRect().top;
   }
 
   async show() {
-    for (let i = 0; i < 16; i++) {
+    let visible = true;
+    do {
       const opus = this.opusList.shift();
       if (!opus) break;
-      await this.#showCover(opus);
-    }
+
+      visible = await this.#showCover(opus);
+    } while (visible);
   }
 
   async start() {
@@ -35,9 +39,15 @@ class Page {
     flayCondition.addEventListener('change', async () => {
       this.opusList = flayCondition.opusList;
 
+      document.querySelector('#flayTotal').innerHTML = this.opusList.length;
       document.querySelector('main').textContent = null;
       await this.show();
     });
+
+    document
+      .querySelector('footer')
+      .appendChild(new GridControl('main'))
+      .addEventListener('change', () => this.show());
 
     window.addEventListener('scroll', () => {
       const isScrollAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
@@ -46,6 +56,8 @@ class Page {
         this.show();
       }
     });
+
+    addResizeListener(() => this.show());
   }
 }
 

@@ -45,23 +45,6 @@
   }
 
   #basketList {
-    display: grid;
-    justify-content: space-evenly;
-    grid-template-columns: repeat(auto-fill, minmax(20%, 350px));
-
-    &[data-column='1'] {
-      grid-template-columns: repeat(auto-fill, minmax(100%, 350px));
-    }
-    &[data-column='2'] {
-      grid-template-columns: repeat(auto-fill, minmax(50%, 350px));
-    }
-    &[data-column='3'] {
-      grid-template-columns: repeat(auto-fill, minmax(33%, 350px));
-    }
-    &[data-column='4'] {
-      grid-template-columns: repeat(auto-fill, minmax(25%, 350px));
-    }
-
     .flay-basket-item {
       background-color: var(--color-bg-transparent);
       border: 1px solid var(--color-border);
@@ -167,27 +150,6 @@
 
     &:hover {
       background-color: var(--color-bg);
-    }
-
-    $range-size: 1.5rem;
-    $range-radius: calc($range-size / 4);
-
-    input[type='range'] {
-      appearance: none;
-      outline: none;
-      background-color: #ffe28340;
-      border-radius: $range-radius;
-      height: $range-size;
-      accent-color: #ffe283;
-      box-shadow: var(--box-shadow);
-    }
-    input[type='range']::-webkit-slider-thumb {
-      appearance: none;
-      cursor: pointer;
-      background-color: #ffe283;
-      height: $range-size;
-      width: $range-size;
-      border-radius: $range-radius;
     }
   }
 }

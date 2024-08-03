@@ -1,3 +1,4 @@
+import GridControl from '../lib/GridControl';
 import SVG from '../svg/SVG';
 import FlayStorage from '../util/FlayStorage';
 import StringUtils from '../util/StringUtils';
@@ -5,7 +6,6 @@ import './FlayBasket.scss';
 import FlayCard from './FlayCard';
 
 const BASKET_KEY = 'flay-basket';
-const BASKET_COLUMN = 'flay-basket.column.length';
 
 export default class FlayBasket extends HTMLDivElement {
   constructor() {
@@ -18,7 +18,6 @@ export default class FlayBasket extends HTMLDivElement {
       </div>
       <div class="footer">
         <div class="control">
-          <input type="range" id="columnLength" min="1" max="5" step="1" value="5">
           <label><span id="flayCount">0</span><span>F</span></label>
           <button type="button" id="emptyAll" title="empty All">${SVG.trashBin}</button>
         </div>
@@ -26,7 +25,6 @@ export default class FlayBasket extends HTMLDivElement {
     `;
 
     this.listEl = this.querySelector('#basketList');
-    this.columnLengthEl = this.querySelector('#columnLength');
     this.flayCountEl = this.querySelector('#flayCount');
     this.emptyAllEl = this.querySelector('#emptyAll');
   }
@@ -44,12 +42,7 @@ export default class FlayBasket extends HTMLDivElement {
       }
     });
 
-    this.columnLengthEl.addEventListener('change', () => {
-      this.listEl.dataset.column = this.columnLengthEl.value;
-      FlayStorage.local.set(BASKET_COLUMN, this.columnLengthEl.value);
-    });
-    this.columnLengthEl.value = FlayStorage.local.getNumber(BASKET_COLUMN, 0);
-    this.columnLengthEl.dispatchEvent(new Event('change'));
+    this.querySelector('.control').prepend(new GridControl('#basketList'));
 
     this.render();
   }

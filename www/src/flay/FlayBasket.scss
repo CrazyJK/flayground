@@ -40,6 +40,7 @@
     display: grid;
     justify-content: space-evenly;
     grid-template-columns: repeat(auto-fill, minmax(20%, 350px));
+    padding: 0.5rem;
 
     &[data-column='1'] {
       grid-template-columns: repeat(auto-fill, minmax(100%, 350px));
@@ -56,6 +57,7 @@
 
     .flay-basket-item {
       background-color: var(--color-bg-transparent);
+      border: 1px solid var(--color-border);
       border-radius: 0.25rem;
       margin: 0.5rem;
       padding: 0.5rem;

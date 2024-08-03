@@ -40,7 +40,6 @@
     display: grid;
     justify-content: space-evenly;
     grid-template-columns: repeat(auto-fill, minmax(20%, 350px));
-    padding: 0.5rem;
 
     &[data-column='1'] {
       grid-template-columns: repeat(auto-fill, minmax(100%, 350px));

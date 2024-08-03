@@ -87,7 +87,16 @@ window.emitNotice = (data) => {
   }
   let notice = noticeWrapper.appendChild(document.createElement('div'));
   notice.innerHTML = `<label>${typeof data === 'object' ? data.message : data}</label>`;
-  setTimeout(() => notice.remove(), 1000 * 3);
+  setTimeout(async () => {
+    await notice.animate(
+      [
+        { opacity: 1, trasform: 'scale(1.0)' },
+        { opacity: 0, trasform: 'scale(0)' },
+      ],
+      { duration: 400, iterations: 1 }
+    ).finished;
+    notice.remove();
+  }, 1000 * 3);
 };
 
 window.emitMessage = (...datas) => {

@@ -102,7 +102,7 @@ export default class FlayBasket extends HTMLDivElement {
         const key = name.replace(/ /g, '');
         actressListEl.innerHTML += `
           <input type="checkbox" id="${key}" value="${name}">
-          <label class="border" for="${key}">${name} <small>(${obj.size})</small></label>
+          <label class="border" for="${key}">${name} <small style="font-size: calc(var(--size-small) + ${obj.size}px)">${obj.size}</small></label>
         `;
       });
 

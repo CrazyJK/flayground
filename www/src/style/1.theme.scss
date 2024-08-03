@@ -79,9 +79,10 @@
 
   --color-tab-active: var(--color-orange);
 
-  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
   --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
+  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
   --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
+  --box-shadow-smallest: 0 2px 8px 0 var(--color-black-alpha-light);
 
   --text-shadow: 1px 1px 1px var(--color-gray-dark);
   --text-shadow-hover: 1px 1px 1px var(--color-blue);

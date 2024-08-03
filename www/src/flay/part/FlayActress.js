@@ -78,8 +78,8 @@ export default class FlayActress extends FlayHTMLElement {
       if (flaySize.checkVisibility()) {
         if (!window.actressMap) window.actressMap = new Map();
 
-        let flayCount = window.actressMap.get(actress.name);
-        if (flayCount !== null) {
+        const flayCount = window.actressMap.get(actress.name);
+        if (flayCount) {
           flaySize.innerHTML = flayCount + '<small>f</small>';
         } else {
           fetch(`/flay/count/actress/${actress.name}`)

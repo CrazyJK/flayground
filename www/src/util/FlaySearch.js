@@ -9,7 +9,7 @@ export const URL_SUBTITLECAT = 'https://www.subtitlecat.com/index.php?search=';
 export const URL_TRANSLATE_GOOGLE = 'https://translate.google.co.kr/?hl=ko&tab=wT#ja/ko/';
 export const URL_TRANSLATE_PAPAGO = 'https://papago.naver.com/?sk=auto&tk=ko&st=';
 export const URL_TRANSLATE_DEEPL = 'https://www.deepl.com/translator#ja/ko/';
-export const URL_NONOJAV_PAGE = 'https://www.nanojav.com/jav/?order=release_date&page=1';
+export const URL_NONOJAV_PAGE = 'https://www.nanojav.com/jav/?order=new&page=1';
 export const URL_NONOJAV_SEARCH = 'https://www.nanojav.com/jav/search/?q=';
 export const URL_IJAV_PAGE = 'https://ijavtorrent.com/';
 export const URL_IJAV_SEARCH = 'https://ijavtorrent.com/?searchTerm=';

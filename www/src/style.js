@@ -66,6 +66,8 @@ svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.tag;
 svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.trashBin;
 svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.basket;
 svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.json;
+svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.play;
+svgWrap.appendChild(document.createElement('label')).innerHTML = SVG.youtube;
 
 svgWrap.appendChild(document.createElement('label')).appendChild(new Image()).src = './svg/flayground-text.svg';
 svgWrap.appendChild(document.createElement('label')).appendChild(new Image()).src = './svg/flayground-circle.svg';

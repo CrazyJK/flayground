@@ -2,6 +2,7 @@ import SVG from '../../svg/SVG';
 import FileUtils from '../../util/FileUtils';
 import FlayAction from '../../util/FlayAction';
 import FlaySearch from '../../util/FlaySearch';
+import { playInLayer } from '../FlayVideoPlayer';
 import './FlayFiles.scss';
 import FlayHTMLElement from './FlayHTMLElement';
 
@@ -20,6 +21,11 @@ export default class FlayFiles extends FlayHTMLElement {
   init() {
     const infoDiv = this.wrapper.appendChild(document.createElement('div'));
     infoDiv.classList.add('info');
+
+    this.playBtn = infoDiv.appendChild(document.createElement('button'));
+    this.playBtn.classList.add('flay-play');
+    this.playBtn.innerHTML = SVG.youtube;
+    this.playBtn.addEventListener('click', async () => await playInLayer(this.flay.opus));
 
     this.movieBtn = infoDiv.appendChild(document.createElement('button'));
     this.movieBtn.innerHTML = 'Movie<i class="badge">0</i>';

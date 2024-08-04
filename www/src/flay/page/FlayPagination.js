@@ -55,6 +55,8 @@ export default class FlayPagination extends HTMLElement {
   }
 
   connectedCallback() {
+    document.addEventListener('videoPlayer', (e) => (this.active = !e.detail.isPlay));
+
     window.addEventListener('wheel', (e) => {
       if (!this.active) return false;
       if (e.ctrlKey) return false;

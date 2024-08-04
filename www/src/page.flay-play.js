@@ -42,8 +42,8 @@ class App extends FlayProvider {
     this.#initKeepFlay(); // Flay 보관
 
     this.videoPlayer.addEventListener('play', (e) => {
-      console.debug(e.type, e.detail.status);
-      this.pauseVideo.checked = !e.detail.status;
+      console.debug(e.type, e.detail.isPlay);
+      this.pauseVideo.checked = !e.detail.isPlay;
     });
 
     this.videoPlayer.addEventListener('volume', (e) => {

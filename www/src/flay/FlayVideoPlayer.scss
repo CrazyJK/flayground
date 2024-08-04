@@ -69,3 +69,31 @@ flay-video-player {
     }
   }
 }
+
+.layer-play {
+  position: fixed;
+  inset: 0;
+
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  justify-items: center;
+
+  background-color: var(--color-bg-transparent);
+
+  article {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    overflow: hidden;
+    aspect-ratio: 16 / 9 auto;
+    height: 100%;
+    padding: 3rem 2rem;
+
+    flay-video-player {
+      box-shadow: var(--box-shadow);
+    }
+  }
+}

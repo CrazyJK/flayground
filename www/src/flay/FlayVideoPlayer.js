@@ -1,3 +1,4 @@
+import { getRandomInt } from '../util/randomNumber';
 import './FlayVideoPlayer.scss';
 import './part/FlayActress';
 import './part/FlayCover';
@@ -39,8 +40,19 @@ export default class FlayVideoPlayer extends HTMLElement {
     }
   }
 
-  constructor() {
+  constructor(opts) {
     super();
+
+    this.options = {
+      ...{
+        controls: true,
+        volume: 1,
+        autoplay: false,
+        info: true,
+        poster: true,
+      },
+      ...opts,
+    };
   }
 
   connectedCallback() {
@@ -57,6 +69,18 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.flayVideo = wrapper.appendChild(new FlayVideo());
     this.flayVideoInfo = wrapper.appendChild(new FlayVideoInfo());
     this.flayVideoPoster = wrapper.appendChild(new FlayVideoPoster());
+
+    this.#setOptions();
+  }
+
+  #setOptions() {
+    console.log('FlayVideoPlayer #setOptions', this.options);
+
+    this.setAttribute('controls', this.options.controls);
+    this.setAttribute('volume', this.options.volume);
+    this.setAttribute('autoplay', this.options.autoplay);
+    this.setAttribute('info', this.options.info);
+    this.setAttribute('poster', this.options.poster);
   }
 
   /**
@@ -70,8 +94,8 @@ export default class FlayVideoPlayer extends HTMLElement {
     this.classList.toggle('load', false);
     this.opus = opus;
     this.flayVideo.set(opus);
-    this.flayVideoInfo.set(flay, actress);
-    this.flayVideoPoster.set(flay);
+    if (this.options.info) this.flayVideoInfo.set(flay, actress);
+    if (this.options.poster) this.flayVideoPoster.set(flay);
 
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
@@ -86,6 +110,16 @@ export default class FlayVideoPlayer extends HTMLElement {
         }
       }, 10);
     });
+  }
+
+  /**
+   * flay 정보 리로드
+   */
+  async reload() {
+    if (this.options.info) {
+      const { flay, actress } = await fetch('/flay/' + this.opus + '/fully').then((res) => res.json());
+      this.flayVideoInfo.set(flay, actress, true);
+    }
   }
 
   /**
@@ -163,14 +197,6 @@ export default class FlayVideoPlayer extends HTMLElement {
 
   get volume() {
     return this.flayVideo.volume;
-  }
-
-  /**
-   * flay 정보 리로드
-   */
-  async reload() {
-    const { flay, actress } = await fetch('/flay/' + this.opus + '/fully').then((res) => res.json());
-    this.flayVideoInfo.set(flay, actress, true);
   }
 }
 
@@ -252,7 +278,7 @@ class FlayVideo extends HTMLVideoElement {
   #dispatchPlayEvent(e, isPlay) {
     this.playing = isPlay;
     console.log('🎥', this.opus, `[${e.type}]`, 'playing', this.playing, 'time', toTime(this.currentTime));
-    this.dispatchEvent(new CustomEvent('play', { bubbles: true, composed: true, detail: { status: this.playing } }));
+    this.dispatchEvent(new CustomEvent('play', { bubbles: true, composed: true, detail: { isPlay: this.playing } }));
   }
 
   #dispatchVolumeEvent(e) {
@@ -315,3 +341,39 @@ customElements.define('flay-video-poster', FlayVideoPoster, { extends: 'div' });
 export function toTime(seconds) {
   return new Date(seconds * 1000).toISOString().slice(11, 19);
 }
+
+let prevOpus = null;
+
+export const playInLayer = async (opus) => {
+  console.log('playInLayer', opus, prevOpus);
+
+  let videoPlayer = null;
+  let layer = document.querySelector('.layer-play');
+  if (layer === null) {
+    layer = document.querySelector('body').appendChild(document.createElement('div'));
+    layer.classList.add('layer-play');
+    layer.innerHTML = '<article></article>';
+    layer.addEventListener('click', (e) => {
+      console.debug('layer click', e.target.tagName);
+      if (e.target.tagName !== 'FLAY-VIDEO-PLAYER') {
+        layer.classList.add('hide');
+        videoPlayer.pause();
+        document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: false } }));
+      }
+    });
+    videoPlayer = layer.querySelector('article').appendChild(new FlayVideoPlayer({ info: false, poster: false, volume: 0.05 }));
+  } else {
+    layer.classList.remove('hide');
+    videoPlayer = layer.querySelector('flay-video-player');
+  }
+
+  if (prevOpus !== opus) {
+    await videoPlayer.load(opus);
+    await videoPlayer.seek(getRandomInt(60 * 3, videoPlayer.duration));
+  } else {
+    await videoPlayer.play();
+  }
+  document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: true } }));
+
+  prevOpus = opus;
+};

@@ -51,7 +51,7 @@ export default class FlayCandidate extends HTMLElement {
               { once: true }
             );
 
-            const flayArticle = ITEM.appendChild(new FlayArticle({ card: true }));
+            const flayArticle = ITEM.appendChild(new FlayArticle({ mode: 'card' }));
             flayArticle.set(flay);
           });
         });

@@ -6,7 +6,7 @@ export default class FlayArticle extends HTMLDivElement {
   constructor(args) {
     super();
     if (args) {
-      if (args.card) this.classList.add('card');
+      if (args.mode) this.classList.add(args.mode);
     }
   }
 
@@ -20,10 +20,10 @@ export default class FlayArticle extends HTMLDivElement {
         <dt><span class="title"         ></span></dt>
         <dt class="actress-wrap"></dt>
         <dt><span class="release"       ></span></dt>
+        <dt><span class="tags"          ></span></dt>
         <dd><span class="rank"          ></span> <small>rank</small></dd>
         <dd><span class="play"          ></span> <small>play</small></dd>
         <dd><span class="shot"          ></span> <small>shot</small></dd>
-        <dd><span class="tags"          ></span></dd>
         <dd><span class="comment"       ></span></dd>
         <dd><span class="jp-title"      ></span></dd>
         <dd><span class="jp-desc"       ></span></dd>

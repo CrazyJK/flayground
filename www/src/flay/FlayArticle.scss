@@ -67,4 +67,17 @@
       }
     }
   }
+
+  &.simple {
+    dl {
+      margin: 0.5rem auto 0.25rem;
+
+      dt {
+        min-height: 1.75rem;
+      }
+      dd {
+        display: none;
+      }
+    }
+  }
 }

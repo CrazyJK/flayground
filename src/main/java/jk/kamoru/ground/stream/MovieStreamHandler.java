@@ -4,11 +4,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.RandomAccessFile;
-import java.text.NumberFormat;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.request.async.AsyncRequestNotUsableException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,17 +58,7 @@ public class MovieStreamHandler {
     }
     partSize = rangeEnd - rangeStart + 1;
 
-    // log
-    if (rangeStart == 0) {
-      log.info("stream {}", file);
-    } else {
-      log.debug("stream {} {} MB from {}%", file, NumberFormat.getNumberInstance().format(movieSize / FileUtils.ONE_MB), (int) ((float) rangeStart / movieSize * 100));
-    }
-
-    try (
-      RandomAccessFile randomFile = new RandomAccessFile(file, "r");
-      OutputStream out = response.getOutputStream();
-    ) {
+    try (RandomAccessFile randomFile = new RandomAccessFile(file, "r"); OutputStream out = response.getOutputStream();) {
       // seeking file
       randomFile.seek(rangeStart);
 
@@ -81,17 +71,32 @@ public class MovieStreamHandler {
       response.setStatus(isPart ? 206 : 200);
 
       // write in response
-      final int bufferSize = (int) FileUtils.ONE_KB * 8;
+      final int bufferSize = (int) FileUtils.ONE_KB * 8 * 2;
       final byte[] buffer = new byte[bufferSize];
-      
+
+      final long onePercentSize = movieSize / 100;
+      long loopStreamSize = onePercentSize;
+      long currentStreamSize = rangeStart;
+
       do {
+        if (loopStreamSize >= onePercentSize) {
+          log.debug("streaming {} {}%", file.getName(), (int) ((float) currentStreamSize / movieSize * 100));
+          loopStreamSize -= onePercentSize;
+        }
+
         int len = (int) Math.min(partSize, bufferSize);
         int total = randomFile.read(buffer, 0, len);
         out.write(buffer, 0, total);
         partSize -= len;
+
+        loopStreamSize += total;
+        currentStreamSize += total;
       } while (partSize > 0);
+    } catch (AsyncRequestNotUsableException e) {
+      // do nothing
+      // log.debug("AsyncRequestNotUsableException: {}", e.getMessage());
     } catch (IOException e) {
-      log.error("fail: {}", e.getMessage());
+      log.error("fail: " + e.getMessage(), e);
     }
   }
 

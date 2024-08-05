@@ -33,7 +33,6 @@ public class FlayStreamController {
 
   @GetMapping("/flay/movie/{opus}/{fileIndex}")
   public void streamFlayMovie(@PathVariable String opus, @PathVariable int fileIndex, HttpServletRequest request, HttpServletResponse response) {
-    log.debug("START streamFlay {}", opus);
     File file = flayService.get(opus).getFiles().get(Flay.MOVIE).get(fileIndex);
     movieStreamHandler.streamFile(request, response, file);
   }

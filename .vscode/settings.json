@@ -10,5 +10,6 @@
     "editor.minimap.enabled": false,
     "search.exclude": {
       "**/dependencies-viewer.json": true
-    }
+    },
+    "java.format.settings.url": ".vscode/java-formatter.xml"
 }

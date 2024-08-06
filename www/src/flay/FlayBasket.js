@@ -119,14 +119,14 @@ export default class FlayBasket extends HTMLDivElement {
     basket.delete(opus);
     basket.add(opus);
     setBasket(basket);
-    window.emitNotice('add Basket: ' + opus);
+    window.emitNotice(`add Basket: ${opus} ${basket.size} flay`);
   }
 
   static remove(opus) {
     const basket = getBasket();
     basket.delete(opus);
     setBasket(basket);
-    window.emitNotice('remove Basket: ' + opus);
+    window.emitNotice(`remove Basket: ${opus} ${basket.size} flay`);
   }
 
   static clear() {

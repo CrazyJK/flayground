@@ -27,6 +27,8 @@ yarn add -D webpack
 
 https://manytools.org/hacker-tools/ascii-banner/
 
+font: Roman
+
 ## ref
 
 https://fontawesome.com/v4/icons/

@@ -1,3 +1,4 @@
+import FlayStorage from '../util/FlayStorage';
 import { getRandomInt } from '../util/randomNumber';
 import './FlayVideoPlayer.scss';
 import './part/FlayActress';
@@ -8,6 +9,8 @@ import './part/FlayRelease';
 import './part/FlayStudio';
 import './part/FlayTag';
 import './part/FlayTitle';
+
+const FLAY_PREV_PLAY_TIME_KEY = 'flay.prev.play.time.';
 
 /**
  * Flay Video Player implements HTMLVideoElement
@@ -91,6 +94,10 @@ export default class FlayVideoPlayer extends HTMLElement {
    * @returns
    */
   load(opus, flay, actress) {
+    // 이전 플레이 시간 기록
+    if (this.opus) {
+      FlayStorage.local.set(FLAY_PREV_PLAY_TIME_KEY + this.opus, this.flayVideo.currentTime);
+    }
     this.classList.toggle('load', false);
     this.opus = opus;
     this.flayVideo.set(opus);
@@ -159,6 +166,17 @@ export default class FlayVideoPlayer extends HTMLElement {
   async seek(seekTime) {
     this.flayVideo.currentTime = seekTime;
     await this.play();
+  }
+
+  async seekRandom(lastTime = 0) {
+    const totalTime = this.flayVideo.duration;
+    const prevTime = FlayStorage.local.getNumber(FLAY_PREV_PLAY_TIME_KEY + this.opus, totalTime + 1);
+    const seekTime = totalTime - lastTime < prevTime ? getRandomInt(1, totalTime - lastTime) : prevTime;
+
+    this.flayVideo.currentTime = seekTime;
+    await this.play();
+
+    return seekTime;
   }
 
   /**
@@ -369,7 +387,7 @@ export const playInLayer = async (opus) => {
 
   if (prevOpus !== opus) {
     await videoPlayer.load(opus);
-    await videoPlayer.seek(getRandomInt(60 * 3, videoPlayer.duration));
+    await videoPlayer.seekRandom();
   } else {
     await videoPlayer.play();
   }

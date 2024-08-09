@@ -1,8 +1,8 @@
 /**
  * 랜덤 난수
  *
- * @param {*} min 최솟값. 포함
- * @param {*} max 최댓값. 제외
+ * @param {number} min 최솟값. 포함
+ * @param {number} max 최댓값. 제외
  * @returns
  */
 export function getRandomArbitrary(min, max) {
@@ -12,8 +12,8 @@ export function getRandomArbitrary(min, max) {
 /**
  * 랜덤 정수
  *
- * @param {*} min 최솟값. 포함
- * @param {*} max 최댓값. 제외
+ * @param {number} min 최솟값. 포함
+ * @param {number} max 최댓값. 제외
  * @returns
  */
 export function getRandomInt(min, max) {
@@ -25,8 +25,8 @@ export function getRandomInt(min, max) {
 /**
  * 랜덤 정수
  *
- * @param {*} min 최솟값. 포함
- * @param {*} max 최댓값. 포함
+ * @param {number} min 최솟값. 포함
+ * @param {number} max 최댓값. 포함
  * @returns
  */
 export function getRandomIntInclusive(min, max) {

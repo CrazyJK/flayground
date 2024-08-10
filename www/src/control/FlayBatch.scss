@@ -45,4 +45,75 @@
       }
     }
   }
+
+  #lowerScoreFlayList {
+    div {
+      display: flex;
+      text-align: center;
+      justify-content: center;
+      align-items: baseline;
+      gap: 1rem;
+      padding-bottom: 1rem;
+    }
+
+    ol {
+      margin: auto;
+      max-width: 100%;
+
+      li {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: nowrap;
+        justify-content: space-between;
+        align-items: baseline;
+
+        padding-bottom: 0.25rem;
+        line-height: 1.75rem;
+
+        &.head {
+          label {
+            font-weight: 700;
+          }
+        }
+
+        label {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          font-weight: 400;
+          font-size: var(--size-normal);
+          a {
+            font-weight: 400;
+            font-size: var(--size-normal);
+          }
+        }
+
+        .studio,
+        .opus {
+          flex: 0 0 6rem;
+        }
+        .title {
+          flex: 1 1 auto;
+          padding-right: 0.5rem;
+        }
+        .actress {
+          flex: 0 0 8rem;
+        }
+        .release {
+          flex: 0 0 5rem;
+        }
+        .like,
+        .rank,
+        .sub,
+        .score {
+          flex: 0 0 3rem;
+          text-align: right;
+        }
+
+        &:not(.head):hover {
+          background-color: var(--color-bg-transparent);
+        }
+      }
+    }
+  }
 }

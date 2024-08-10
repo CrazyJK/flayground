@@ -59,8 +59,8 @@ public class ScoreCalculator {
             scoreComparator.reversed().thenComparing(
               studioPointComparator.reversed().thenComparing(
                 actressPointComparator.reversed().thenComparing(
-                  modifiedComparator.reversed().thenComparing(
-                    releaseComparator.reversed())))))).toList();
+                  releaseComparator.reversed().thenComparing(
+                    modifiedComparator.reversed())))))).toList();
   }
 
   public void calcScore(Flay flay) {

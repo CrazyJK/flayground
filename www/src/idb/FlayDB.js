@@ -42,6 +42,10 @@ export default class FlayDB extends FlayIndexedDB {
     for (const opus of opusList) await this.delete(storeName, opus);
   }
 
+  async deleteAll() {
+    await this.clear(storeName);
+  }
+
   async select(opus) {
     return await this.get(storeName, opus);
   }
@@ -90,3 +94,19 @@ export default class FlayDB extends FlayIndexedDB {
     return (await this.selectAll()).filter((flay) => flay.video.likes?.length > n);
   }
 }
+
+export const loadFlayDB = async () => {
+  const flayDB = new FlayDB();
+  await flayDB.openDB();
+
+  await flayDB.deleteAll();
+
+  await Promise.all([
+    fetch('/flay')
+      .then((res) => res.json())
+      .then((list) => flayDB.update(...list)),
+    fetch('/archive')
+      .then((res) => res.json())
+      .then((list) => flayDB.update(...list)),
+  ]);
+};

@@ -1,3 +1,4 @@
+import FlayPlayTimeDB from '../idb/FlayPlayTimeDB';
 import { getRandomInt } from '../util/randomNumber';
 import './FlayVideoPlayer.scss';
 import './part/FlayActress';
@@ -9,16 +10,8 @@ import './part/FlayStudio';
 import './part/FlayTag';
 import './part/FlayTitle';
 
-import FlayDB from '../lib/FlayIndexedDB';
-
-const DB_NAME = 'flay-ground-db';
-const DB_VERSION = 3; // Use a long long for this value (don't use a float)
-const DB_SCHEMA = [{ name: 'FlayPlayTime', keyPath: 'opus', index: [{ key: 'time', unique: false }] }];
-
-const FLAY_PLAY_TIME_NAME = 'FlayPlayTime';
-
-const db = new FlayDB();
-await db.open(DB_NAME, DB_VERSION, DB_SCHEMA);
+const db = new FlayPlayTimeDB();
+await db.openDB();
 
 /**
  * Flay Video Player implements HTMLVideoElement
@@ -182,7 +175,7 @@ export default class FlayVideoPlayer extends HTMLElement {
    */
   async seekRandom(lastOffsetTime = 0) {
     const totalTime = this.flayVideo.duration;
-    const prevTime = db.get(FLAY_PLAY_TIME_NAME, this.opus)?.time || totalTime + 1;
+    const prevTime = db.select(this.opus)?.time || totalTime + 1;
     const seekTime = totalTime - lastOffsetTime < prevTime ? getRandomInt(1, totalTime - lastOffsetTime) : prevTime;
 
     this.flayVideo.currentTime = seekTime;
@@ -426,4 +419,4 @@ export const playInLayer = async (opus) => {
  * @param {number} time
  * @returns
  */
-const updateFlayTime = async (opus, time) => db.put(FLAY_PLAY_TIME_NAME, { opus: opus, time: time });
+const updateFlayTime = async (opus, time) => db.update({ opus: opus, time: time });

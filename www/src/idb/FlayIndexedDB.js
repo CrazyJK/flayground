@@ -1,7 +1,8 @@
 // https://developer.mozilla.org/ko/docs/Web/API/IndexedDB_API/Using_IndexedDB
 
-export default class FlayDB {
+export default class FlayIndexedDB {
   db;
+  isDebug = false;
 
   constructor() {}
 
@@ -30,12 +31,12 @@ export default class FlayDB {
     });
   }
 
-  #getStore(storeName, mode = 'readonly') {
+  getStore(storeName, mode = 'readonly') {
     return this.db.transaction(storeName, mode).objectStore(storeName);
   }
 
   #reqSuccessVoidHandler(resolve, storeName, command, e, ...args) {
-    console.debug('[FlayDB]', storeName, command, e, ...args);
+    this.isDebug && console.debug('[FlayDB]', storeName, command, e, ...args);
     resolve();
   }
 
@@ -46,19 +47,75 @@ export default class FlayDB {
 
   get(storeName, key) {
     return new Promise((resolve, reject) => {
-      const req = this.#getStore(storeName).get(key);
+      const req = this.getStore(storeName).get(key);
       req.onsuccess = (e) => {
         const record = e.target.result;
-        console.debug('[FlayDB]', storeName, 'get', key, record, e);
+        this.isDebug && console.debug('[FlayDB]', storeName, 'get', key, record, e);
         resolve(record);
       };
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'get', e, key);
     });
   }
 
+  getAll(storeName) {
+    return new Promise((resolve, reject) => {
+      const flayList = [];
+      const req = this.getStore(storeName).openCursor();
+      req.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          flayList.push(cursor.value);
+          cursor.continue();
+        } else {
+          this.isDebug && console.debug('getAll', flayList.length);
+          resolve(flayList);
+        }
+      };
+      req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'getAll', e);
+    });
+  }
+
+  find(storeName, key, value) {
+    return new Promise((resolve, reject) => {
+      const flayList = [];
+      const req = this.getStore(storeName).index(key).openCursor(IDBKeyRange.only(value));
+      req.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          flayList.push(cursor.value);
+          cursor.continue();
+        } else {
+          this.isDebug && console.debug('find', key, value, flayList.length);
+          resolve(flayList);
+        }
+      };
+      req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'find', e, key);
+    });
+  }
+
+  findLike(storeName, key, value) {
+    return new Promise((resolve, reject) => {
+      const flayList = [];
+      const req = this.getStore(storeName).index(key).openCursor();
+      req.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          if (cursor.value[key].includes(value)) {
+            flayList.push(cursor.value);
+          }
+          cursor.continue();
+        } else {
+          this.isDebug && console.debug('find', key, value, flayList.length);
+          resolve(flayList);
+        }
+      };
+      req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'find', e, key);
+    });
+  }
+
   add(storeName, record) {
     return new Promise((resolve, reject) => {
-      const req = this.#getStore(storeName, 'readwrite').add(record);
+      const req = this.getStore(storeName, 'readwrite').add(record);
       req.onsuccess = (e) => this.#reqSuccessVoidHandler(resolve, storeName, 'add', e, record);
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'add', e, record);
     });
@@ -66,7 +123,7 @@ export default class FlayDB {
 
   put(storeName, record) {
     return new Promise((resolve, reject) => {
-      const req = this.#getStore(storeName, 'readwrite').put(record);
+      const req = this.getStore(storeName, 'readwrite').put(record);
       req.onsuccess = (e) => this.#reqSuccessVoidHandler(resolve, storeName, 'put', e, record);
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'put', e, record);
     });
@@ -74,7 +131,7 @@ export default class FlayDB {
 
   delete(storeName, key) {
     return new Promise((resolve, reject) => {
-      const req = this.#getStore(storeName, 'readwrite').delete(key);
+      const req = this.getStore(storeName, 'readwrite').delete(key);
       req.onsuccess = (e) => this.#reqSuccessVoidHandler(resolve, storeName, 'delete', e, key);
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'delete', e, key);
     });
@@ -82,7 +139,7 @@ export default class FlayDB {
 
   clear(storeName) {
     return new Promise((resolve, reject) => {
-      const req = this.#getStore(storeName, 'readwrite').clear();
+      const req = this.getStore(storeName, 'readwrite').clear();
       req.onsuccess = (e) => this.#reqSuccessVoidHandler(resolve, storeName, 'clear', e);
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'clear', e);
     });
@@ -92,21 +149,13 @@ export default class FlayDB {
 // (async () => {
 //   const DB_NAME = 'flay-ground-db';
 //   const DB_VERSION = 3; // Use a long long for this value (don't use a float)
-
 //   const DB_STORE_NAME = 'FlayPlayTime';
-
 //   const schema = [{ name: 'FlayPlayTime', keyPath: 'opus', index: [{ key: 'time', unique: false }] }];
-
 //   const db = new FlayDB();
 //   await db.open(DB_NAME, DB_VERSION, schema);
-
 //   await db.put(DB_STORE_NAME, { opus: 'asdf', time: 2 });
-
 //   await db.get(DB_STORE_NAME, 'asdfx');
-
 //   await db.delete(DB_STORE_NAME, 'asdf');
-
 //   await db.add(DB_STORE_NAME, { opus: 'asdf', time: 42 });
-
 //   await db.clear(DB_STORE_NAME);
 // })();

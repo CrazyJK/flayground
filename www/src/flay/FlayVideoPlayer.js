@@ -11,7 +11,21 @@ import './part/FlayTag';
 import './part/FlayTitle';
 
 const db = new FlayPlayTimeDB();
-await db.openDB();
+
+/**
+ * 플레이 시간 기록
+ * @param {string} opus
+ * @param {number} time
+ * @returns
+ */
+const putFlayPlayTime = (opus, time) => db.update({ opus: opus, time: time });
+
+/**
+ *
+ * @param {string} opus
+ * @returns
+ */
+const getFlayPlayTime = async (opus) => await db.select(opus);
 
 /**
  * Flay Video Player implements HTMLVideoElement
@@ -96,7 +110,7 @@ export default class FlayVideoPlayer extends HTMLElement {
    */
   load(opus, flay, actress) {
     // 이전 플레이 시간 기록
-    if (this.opus) updateFlayTime(this.opus, this.flayVideo.currentTime);
+    if (this.opus) putFlayPlayTime(this.opus, this.flayVideo.currentTime);
 
     this.classList.toggle('load', false);
     this.opus = opus;
@@ -170,16 +184,21 @@ export default class FlayVideoPlayer extends HTMLElement {
 
   /**
    * 랜덤 타임을 플레이 하거나, 이전 플레이 타임에 이어서 플레이 한다
+   *
+   * [ 1 ] ---- [ seekTime ] ---- [ lastTime = totalTime - lastOffsetTime ] -- [ endTime ]
+   *
    * @param {number} lastOffsetTime 랜덤 타임 구할때, 총 플레이 시간에서 마이너스 할 초
    * @returns
    */
-  async seekRandom(lastOffsetTime = 0) {
-    const totalTime = this.flayVideo.duration;
-    const prevTime = db.select(this.opus)?.time || totalTime + 1;
-    const seekTime = totalTime - lastOffsetTime < prevTime ? getRandomInt(1, totalTime - lastOffsetTime) : prevTime;
+  async playRandomSeekOrContinuously(lastOffsetTime = 0) {
+    const dbFlayPlayTime = await getFlayPlayTime(this.opus);
 
-    this.flayVideo.currentTime = seekTime;
-    await this.play();
+    const endTime = this.flayVideo.duration;
+    const lastTime = endTime - lastOffsetTime;
+    const prevTime = dbFlayPlayTime?.time || endTime + 1;
+    const seekTime = lastTime < prevTime ? getRandomInt(1, lastTime) : prevTime;
+
+    await this.seek(seekTime);
 
     return seekTime;
   }
@@ -276,7 +295,7 @@ class FlayVideo extends HTMLVideoElement {
     /* 브라우저가 리소르를 로딩 중일 때 주기적으로 발생합니다. */
     this.addEventListener('progress', (e) => {
       // console.debug('🎦', this.opus, `[${e.type}]`, this.currentTime);
-      this.playing && updateFlayTime(this.opus, this.currentTime);
+      this.playing && putFlayPlayTime(this.opus, this.currentTime);
     });
     /* 미디어 로딩이 중지된 시점에 발생합니다. */
     // this.addEventListener('suspend', (e) => console.debug('🎦', this.opus, `[${e.type}]`, 'time', toTime(this.currentTime)));
@@ -404,7 +423,7 @@ export const playInLayer = async (opus) => {
 
   if (prevOpus !== opus) {
     await videoPlayer.load(opus);
-    await videoPlayer.seekRandom();
+    await videoPlayer.playRandomSeekOrContinuously();
   } else {
     await videoPlayer.play();
   }
@@ -412,11 +431,3 @@ export const playInLayer = async (opus) => {
 
   prevOpus = opus;
 };
-
-/**
- * 플레이 시간 기록
- * @param {string} opus
- * @param {number} time
- * @returns
- */
-const updateFlayTime = async (opus, time) => db.update({ opus: opus, time: time });

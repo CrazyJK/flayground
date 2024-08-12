@@ -10,15 +10,26 @@ export default class FlayPlayTimeDB extends FlayIndexedDB {
     super();
   }
 
-  async openDB() {
+  async #openDB() {
     await this.open(dbName, dbVersion, dbSchema);
   }
 
+  /**
+   *
+   * @param {string} opus
+   * @returns {Promise<{opus: string, time: number}>}
+   */
   async select(opus) {
+    if (!this.db) await this.#openDB();
     return await this.get(storeName, opus);
   }
 
-  async update(value) {
-    await this.put(storeName, value);
+  /**
+   *
+   * @param {{opus: string, time: number}} flayPlayTime
+   */
+  async update(flayPlayTime) {
+    if (!this.db) await this.#openDB();
+    await this.put(storeName, flayPlayTime);
   }
 }

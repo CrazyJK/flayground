@@ -121,7 +121,7 @@ class App extends FlayProvider {
       await this.videoPlayer.load(opus, flay, actress);
       console.log('videoPlayer is loaded', opus);
 
-      const seekTime = await this.videoPlayer.seekRandom(MaxPlayTime);
+      const seekTime = await this.videoPlayer.playRandomSeekOrContinuously(MaxPlayTime);
       console.log('videoPlayer is seeked', toTime(this.videoPlayer.currentTime));
 
       this.sec = getRandomInt(MinPlayTime, Math.min(this.videoPlayer.duration - seekTime, MaxPlayTime));

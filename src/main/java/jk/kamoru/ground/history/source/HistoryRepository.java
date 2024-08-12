@@ -3,8 +3,8 @@ package jk.kamoru.ground.history.source;
 import java.io.File;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -12,8 +12,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import jakarta.annotation.PostConstruct;
-import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.Ground;
+import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.history.HistoryException;
 import jk.kamoru.ground.history.domain.History;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +22,8 @@ import lombok.extern.slf4j.Slf4j;
 @Repository
 public class HistoryRepository {
 
-  @Autowired GroundProperties properties;
+  @Autowired
+  GroundProperties properties;
 
   List<History> list;
 
@@ -32,7 +33,7 @@ public class HistoryRepository {
 
   @PostConstruct
   void load() throws IOException, ParseException {
-    list = new ArrayList<>();
+    list = new CopyOnWriteArrayList<>();
     List<String> lines = FileUtils.readLines(getInfoFile(), Ground.ENCODING);
     boolean first = true;
     for (String line : lines) {

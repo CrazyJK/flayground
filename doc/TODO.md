@@ -8,3 +8,4 @@
 - add shot to score logic
 - rank within archive
 - statistics: shot flay list
+- java.util.ConcurrentModificationException: null => CopyOnWriteArrayList

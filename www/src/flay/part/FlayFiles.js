@@ -2,6 +2,7 @@ import SVG from '../../svg/SVG';
 import FileUtils from '../../util/FileUtils';
 import FlayAction from '../../util/FlayAction';
 import FlaySearch from '../../util/FlaySearch';
+import FlayBasket from '../FlayBasket';
 import { playInLayer } from '../FlayVideoPlayer';
 import './FlayFiles.scss';
 import FlayHTMLElement from './FlayHTMLElement';
@@ -32,7 +33,7 @@ export default class FlayFiles extends FlayHTMLElement {
     this.movieBtn.addEventListener('click', (e) => {
       console.log('playClick', this.flay.opus);
       if (this.flay.files.movie.length > 0) {
-        FlayAction.play(this.flay.opus);
+        FlayAction.play(this.flay.opus).then(() => FlayBasket.remove(this.flay.opus));
       } else {
         FlaySearch.torrent.Download(this.flay.opus);
       }

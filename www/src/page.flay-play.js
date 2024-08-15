@@ -134,7 +134,9 @@ class App extends FlayProvider {
       this.pauseVideo.checked = false;
     } catch (e) {
       this.sec = 10;
-      console.error('play Error', e.message, `retry in ${this.sec}s`, e);
+      const message = `play Error ${e.message}. retry in ${this.sec}s`;
+      console.error(message, e);
+      window.emitNotice(message);
     }
   }
 

@@ -127,7 +127,7 @@ export default class FlayVideoPlayer extends HTMLElement {
         }
         if (this.flayVideo.error) {
           clearInterval(timer);
-          reject('Error: ' + this.opus);
+          reject(`load Error: [${this.opus}] ${this.flayVideo.error?.message}`);
         }
       }, 10);
     });
@@ -157,7 +157,7 @@ export default class FlayVideoPlayer extends HTMLElement {
         }
         if (this.flayVideo.error) {
           clearInterval(timer);
-          reject('Error: ' + this.opus);
+          reject(`${isPlay ? 'play' : 'pause'} Error: [${this.opus}] ${this.flayVideo.error?.message}`);
         }
       }, 10);
     });

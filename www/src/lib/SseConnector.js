@@ -78,7 +78,7 @@ sse.addEventListener('MESSAGE', (e) => {
   }
 });
 
-window.emitNotice = (data) => {
+window.emitNotice = (data, warn = false) => {
   console.log('emitNotice', data);
   let noticeWrapper = document.querySelector('#notice-wrapper');
   if (noticeWrapper === null) {
@@ -87,6 +87,7 @@ window.emitNotice = (data) => {
   }
   let notice = noticeWrapper.appendChild(document.createElement('div'));
   notice.innerHTML = `<label>${typeof data === 'object' ? data.message : data}</label>`;
+  notice.classList.toggle('warn', warn);
   setTimeout(async () => {
     await notice.animate(
       [
@@ -100,10 +101,7 @@ window.emitNotice = (data) => {
 };
 
 window.emitMessage = (...datas) => {
-  let messages = '';
-  for (let data of datas) {
-    messages += JSON.stringify(data) + '<br>';
-  }
+  let messages = datas.map((data) => JSON.stringify(data).replace(/"/g, '')).join('<br>');
 
   let messageWrapper = document.querySelector('#message-wrapper');
   if (messageWrapper === null) {

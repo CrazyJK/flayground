@@ -4,6 +4,7 @@ import './page.statistics.scss';
 import { tabUI } from './lib/TabUI';
 import { sortable } from './lib/TableUtils';
 import FileUtils from './util/FileUtils';
+import { popupActress, popupFlay, popupStudio } from './util/FlaySearch';
 import StringUtils from './util/StringUtils';
 
 tabUI(document);
@@ -165,9 +166,9 @@ function startStudioActress() {
       link.innerHTML = key;
       link.addEventListener('click', () => {
         if (selector === '#studio') {
-          window.open('popup.studio.html?name=' + key + '&s=' + startDate + '&e=' + endDate, key, 'width=960px,height=1200px');
+          popupStudio(key, startDate, endDate);
         } else {
-          window.open('popup.actress.html?name=' + key + '&s=' + startDate + '&e=' + endDate, key, 'width=960px,height=1200px');
+          popupActress(key, startDate, endDate);
         }
       });
 
@@ -220,7 +221,7 @@ function startRankGroup() {
       flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
       flayLabel.addEventListener('click', () => {
         flayLabel.classList.add('active');
-        window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
+        popupFlay(flay.opus);
       });
     });
     countLabel.innerHTML = count > 0 ? count + ' Flay' : '';
@@ -420,7 +421,7 @@ async function startShotFlay() {
         <label class="release"><span>${flay.release}</span></label>
       </div>
     `;
-    item.querySelector('.title').addEventListener('click', () => window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px'));
+    item.querySelector('.title').addEventListener('click', () => popupFlay(flay.opus));
   });
   document.querySelector('#shotFlayCount').innerHTML = shotFlayList.length;
   console.log(studioMap, actressMap, releaseMap);
@@ -528,7 +529,7 @@ const getFlayLabel = (flayList) => {
     flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
     flayLabel.addEventListener('click', () => {
       flayLabel.classList.add('active');
-      window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
+      popupFlay(flay.opus);
     });
     labels.push(flayLabel);
   });

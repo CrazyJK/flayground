@@ -1,5 +1,6 @@
 import SVG from '../../svg/SVG';
 import FlayAction from '../../util/FlayAction';
+import { popupActress, popupActressInfo } from '../../util/FlaySearch';
 import StringUtils from '../../util/StringUtils';
 import './FlayActress.scss';
 import FlayHTMLElement from './FlayHTMLElement';
@@ -64,13 +65,13 @@ export default class FlayActress extends FlayHTMLElement {
       const nameElement = nameLabel.appendChild(document.createElement('a'));
       nameElement.title = actress.name + (actress.comment ? ' - ' + actress.comment : '');
       nameElement.innerHTML = actress.name;
-      nameElement.addEventListener('click', () => window.open('popup.actress.html?name=' + actress.name, actress.name, 'width=960px,height=1200px'));
+      nameElement.addEventListener('click', () => popupActress(actress.name));
 
       // localName
       const localNameElement = actressDiv.appendChild(document.createElement('label'));
       localNameElement.classList.add('localName');
       localNameElement.innerHTML = actress.localName;
-      localNameElement.addEventListener('click', () => window.open('/info/actress/' + actress.name, actress.name + '_info', 'width=640px,height=800px'));
+      localNameElement.addEventListener('click', () => popupActressInfo(actress.name));
 
       // flay size
       const flaySize = actressDiv.appendChild(document.createElement('label'));

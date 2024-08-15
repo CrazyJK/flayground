@@ -1,4 +1,5 @@
 import DateUtils from '../util/DateUtils';
+import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '../util/FlaySearch';
 import './FlayFinder.scss';
 
 const HTML = `
@@ -70,15 +71,15 @@ export default class FlayFinder extends HTMLElement {
       let opus = e.target.dataset.opus;
       console.debug('click', e.target, action, opus);
       if (action === 'flay') {
-        window.open('popup.flay.html?opus=' + opus, opus, 'width=800px,height=1280px');
+        popupFlay(opus);
       } else if (action === 'info') {
-        window.open('/info/video/' + opus, 'info' + opus, 'width=400px,height=600px');
+        popupVideoInfo(opus);
       } else if (action === 'actressName') {
         let actressName = e.target.closest('li').dataset.actressName;
-        window.open('popup.actress.html?name=' + actressName, actressName, 'width=960px,height=1200px');
+        popupActress(actressName);
       } else if (action === 'actressLocalName') {
         let actressName = e.target.closest('li').dataset.actressName;
-        window.open('/info/actress/' + actressName, actressName + '_info', 'width=640px,height=800px');
+        popupActressInfo(actressName);
       }
     });
   }

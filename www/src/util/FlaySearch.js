@@ -74,5 +74,18 @@ export default {
 };
 
 function popupOpen(url, target, width, height) {
-  window.open(url, target, `width=${width}px, height=${height}px`);
+  const top = window.screen.availTop + (window.screen.availHeight - height) / 2;
+  const left = window.screen.availLeft + (window.screen.availWidth - width) / 2;
+  return window.open(url, target, `width=${width}px, height=${height}px, top=${top}px, left=${left}px`);
 }
+
+export const popupFlay = (opus) => popupOpen('popup.flay.html?opus=' + opus, 'flay.' + opus, 800, 1280);
+export const popupFlayCard = (opus) => popupOpen('popup.flay-card.html?opus=' + opus, 'flay.card.' + opus, 800, 536);
+export const popupCover = (opus) => popupOpen('popup.cover.html?opus=' + opus, 'cover.' + opus, 800, 538);
+export const popupStudio = (name, startDate = '', endDate = '') => popupOpen('popup.studio.html?name=' + name + '&s=' + startDate + '&e=' + endDate, 'studio.' + name, 960, 1200);
+export const popupActress = (name, startDate = '', endDate = '') => popupOpen('popup.actress.html?name=' + name + '&s=' + startDate + '&e=' + endDate, 'actress.' + name, 960, 1200);
+export const popupTag = (tagId) => popupOpen('popup.tag.html?id=' + tagId, 'tag.' + tagId, 960, 1200);
+
+export const popupFlayInfo = (opus) => popupOpen('/flay/' + opus, 'flay.json.' + opus, 800, 1200);
+export const popupVideoInfo = (opus) => popupOpen('/info/video/' + opus, 'video.json.' + opus, 400, 600);
+export const popupActressInfo = (name) => popupOpen('/info/actress/' + name, 'actress.json.' + name, 640, 800);

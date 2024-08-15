@@ -1,3 +1,4 @@
+import { popupStudio } from '../../util/FlaySearch';
 import FlayHTMLElement from './FlayHTMLElement';
 import './FlayStudio.scss';
 
@@ -17,11 +18,7 @@ export default class FlayStudio extends FlayHTMLElement {
     const label = this.wrapper.appendChild(document.createElement('label'));
     this.studio = label.appendChild(document.createElement('a'));
     this.studio.innerHTML = 'Studio';
-    this.studio.addEventListener('click', () => {
-      console.log('studioClick', this.flay.studio);
-      // window.open('/info/studio/' + this.flay.studio, this.flay.studio, 'width=640px,height=800px');
-      window.open('popup.studio.html?name=' + this.flay.studio, this.flay.studio, 'width=960px,height=1200px');
-    });
+    this.studio.addEventListener('click', () => popupStudio(this.flay.studio));
   }
 
   /**

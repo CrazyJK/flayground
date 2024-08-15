@@ -1,4 +1,5 @@
 import FlayAction from '../util/FlayAction';
+import { popupActress, popupFlay } from '../util/FlaySearch';
 import './FlayBatch.scss';
 
 const HTML = `
@@ -109,10 +110,10 @@ export default class FlayBatch extends HTMLElement {
       if (e.target.tagName !== 'A') return;
       if (e.target.closest('label').classList.contains('opus')) {
         const opus = e.target.innerHTML;
-        window.open('popup.flay.html?opus=' + opus, 'popup.' + opus, 'width=800px,height=1280px');
+        popupFlay(opus);
       } else if (e.target.closest('label').classList.contains('actress')) {
         const name = e.target.innerHTML;
-        window.open('popup.actress.html?name=' + name, name, 'width=960px,height=1200px');
+        popupActress(name);
       }
     });
 

@@ -1,6 +1,6 @@
 import SVG from '../svg/SVG';
 import FlayAction from '../util/FlayAction';
-import FlaySearch, { URL_NONOJAV_PAGE } from '../util/FlaySearch';
+import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
 import './FlayRegister.scss';
 
@@ -144,19 +144,19 @@ export default class FlayRegister extends HTMLElement {
 
           let flay = await fetch('/flay/' + inOpus).then((res) => (res.ok ? res.json() : false));
           if (!flay) flay = await fetch('/archive/' + inOpus).then((res) => (res.ok ? res.json() : false));
-          if (!flay) throw new Error('notfound: ' + inOpus);
-
-          foundFlayEl.classList.toggle('archive', flay.archive);
-          foundFlayEl.innerHTML = `
-            <label>${flay.studio}</label>
-            <label>${flay.opus}</label>
-            <label>${flay.title}</label>
-            <label>${flay.actressList.join(',')}</label>
-            <label>${flay.release}</label>
-          `;
-          foundFlayEl.querySelector('label:nth-child(2)').addEventListener('click', () => {
-            window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
-          });
+          if (flay) {
+            foundFlayEl.innerHTML = `
+              <label>${flay.studio}</label>
+              <label>${flay.opus}</label>
+              <label>${flay.title}</label>
+              <label>${flay.actressList.join(',')}</label>
+              <label>${flay.release}</label>
+            `;
+            foundFlayEl.classList.toggle('archive', flay.archive);
+            foundFlayEl.querySelector('label:nth-child(2)').addEventListener('click', () => popupFlay(flay.opus));
+          } else {
+            console.log('notfound: ' + inOpus);
+          }
 
           // find Studio
           fetch('/info/studio/findOneByOpus/' + inOpus)

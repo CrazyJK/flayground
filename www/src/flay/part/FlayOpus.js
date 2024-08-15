@@ -1,5 +1,5 @@
 import SVG from '../../svg/SVG';
-import FlaySearch from '../../util/FlaySearch';
+import FlaySearch, { popupFlayInfo } from '../../util/FlaySearch';
 import FlayBasket from '../FlayBasket';
 import FlayHTMLElement from './FlayHTMLElement';
 import './FlayOpus.scss';
@@ -26,7 +26,7 @@ export default class FlayOpus extends FlayHTMLElement {
     `;
 
     this.wrapper.querySelector('a').addEventListener('click', () => FlaySearch.opus.Arzon(this.flay.opus));
-    this.wrapper.querySelector('#jsonViewBtn').addEventListener('click', () => window.open('/flay/' + this.flay.opus, this.flay.opus, 'width=800px,height=1200px'));
+    this.wrapper.querySelector('#jsonViewBtn').addEventListener('click', () => popupFlayInfo(this.flay.opus));
     this.wrapper.querySelector('#keepBasketBtn').addEventListener('click', () => FlayBasket.add(this.flay.opus));
   }
 

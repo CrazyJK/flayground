@@ -1,4 +1,5 @@
 import FlayAction from '../util/FlayAction';
+import { popupFlayCard } from '../util/FlaySearch';
 import './SubtitlesFinder.scss';
 
 const HTML = `
@@ -182,7 +183,7 @@ export default class SubtitlesFinder extends HTMLElement {
           flayItem.addEventListener('click', (e) => {
             if (e.target.classList.contains('title')) {
               // view flay card
-              window.open('popup.flay-card.html?opus=' + flay.opus, flay.opus, 'width=800px,height=536px');
+              popupFlayCard(flay.opus);
             } else if (e.target.tagName === 'A') {
               // click subtiles link
               flayItem.classList.add('active-subtitles');

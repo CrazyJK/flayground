@@ -3,6 +3,7 @@ import './page.flay-girls.scss';
 
 import { addLazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import { sortable } from './lib/TableUtils';
+import { popupActress, popupFlay } from './util/FlaySearch';
 
 class Page {
   constructor() {}
@@ -57,9 +58,9 @@ class Page {
       LI.addEventListener('click', (e) => {
         const label = e.target.closest('label');
         if (label?.classList.contains('cover')) {
-          window.open('popup.flay.html?opus=' + label.dataset.opus, 'popup.' + label.dataset.opus, 'width=800px,height=1280px');
+          popupFlay(label.dataset.opus);
         } else if (label?.classList.contains('name') && e.target.tagName === 'A') {
-          window.open('popup.actress.html?name=' + label.dataset.name, label.dataset.name, 'width=960px,height=1200px');
+          popupActress(label.dataset.name);
         }
       });
 

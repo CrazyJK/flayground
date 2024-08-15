@@ -1,3 +1,4 @@
+import { popupFlay } from '../../util/FlaySearch';
 import FlayHTMLElement from './FlayHTMLElement';
 import './FlayTitle.scss';
 
@@ -19,7 +20,7 @@ export default class FlayTitle extends FlayHTMLElement {
     this.anker.innerHTML = 'Title';
     if (location.pathname.indexOf('popup.flay.html') < 0) {
       this.anker.addEventListener('click', () => {
-        window.open('popup.flay.html?opus=' + this.flay.opus, 'popup.' + this.flay.opus, 'width=800px,height=1280px');
+        popupFlay(this.flay.opus);
         this.dispatchEvent(new Event('click', { composed: true }));
       });
     }

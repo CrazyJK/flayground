@@ -1,5 +1,6 @@
 import GridControl from '../lib/GridControl';
 import SVG from '../svg/SVG';
+import { popupFlay } from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
 import StringUtils from '../util/StringUtils';
 import './FlayBasket.scss';
@@ -160,7 +161,7 @@ class FlayBasketItem extends HTMLDivElement {
 
     this.querySelector('.popup-flay').addEventListener('click', async () => {
       await this.delete();
-      window.open('popup.flay.html?opus=' + this.flay.opus, 'popup.' + this.flay.opus, 'width=800px,height=1280px');
+      popupFlay(this.flay.opus);
     });
     this.querySelector('.empty-this').addEventListener('click', async () => {
       await this.delete();

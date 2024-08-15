@@ -1,4 +1,5 @@
 import DateUtils from '../util/DateUtils';
+import { popupActress, popupCover, popupFlay, popupFlayInfo } from '../util/FlaySearch';
 import StringUtils from '../util/StringUtils';
 import './FlayArticle.scss';
 
@@ -33,22 +34,10 @@ export default class FlayArticle extends HTMLDivElement {
       </dl>
     `;
 
-    this.querySelector('.cover').addEventListener('click', () => {
-      window.open(`popup.cover.html?opus=${this.opus}`, `cover.${this.opus}`, 'width=800px,height=538px');
-    });
-
-    this.querySelector('.opus').addEventListener('click', () => {
-      window.open('/flay/' + this.opus, this.opus, 'width=800px,height=1200px');
-    });
-
-    this.querySelector('.title').addEventListener('click', () => {
-      window.open(`popup.flay.html?opus=${this.opus}`, `popup.${this.opus}`, 'width=800px,height=1280px');
-    });
-
-    this.querySelector('.actress-wrap').addEventListener('click', (e) => {
-      const name = e.target.textContent;
-      window.open('popup.actress.html?name=' + name, name, 'width=960px,height=1200px');
-    });
+    this.querySelector('.cover').addEventListener('click', () => popupCover(this.opus));
+    this.querySelector('.opus').addEventListener('click', () => popupFlayInfo(this.opus));
+    this.querySelector('.title').addEventListener('click', () => popupFlay(this.opus));
+    this.querySelector('.actress-wrap').addEventListener('click', (e) => popupActress(e.target.textContent));
   }
 
   set(flay, coverURL) {

@@ -3,6 +3,7 @@ import './page.tags.scss';
 import SVG from './svg/SVG';
 
 import FlayAction from './util/FlayAction';
+import { popupTag } from './util/FlaySearch';
 import { addResizeListener } from './util/windowAddEventListener';
 
 class FlayTagInfo extends HTMLDListElement {
@@ -25,9 +26,7 @@ class FlayTagInfo extends HTMLDListElement {
       </dd>
     `;
 
-    this.querySelector('.name').addEventListener('click', () => {
-      window.open('popup.tag.html?id=' + this.tag.id, 'tag' + this.tag.id, 'width=960px,height=1200px');
-    });
+    this.querySelector('.name').addEventListener('click', () => popupTag(this.tag.id));
 
     addResizeListener(() => {
       if (window.innerWidth >= 1920) {

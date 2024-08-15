@@ -129,40 +129,35 @@ export default class FlayRegister extends HTMLElement {
 
     // 기초 데이터 입력
     [inputOpus, inputTitle, inputActress, inputDesc].forEach((input) => {
-      input.addEventListener('keyup', (e) => {
-        e.target.value = e.target.value.trim();
+      input.addEventListener('keyup', async (e) => {
+        e.target.value = e.target.value.trim().toUpperCase();
         if (e.keyCode !== 13) {
           return;
         }
         console.log('search-input', inputOpus.value, inputTitle.value, inputActress.value, inputDesc.value);
         // find opus
         if (inputOpus.value !== '') {
-          let inOpus = inputOpus.value.toUpperCase();
+          const inOpus = inputOpus.value;
+          const foundFlayEl = this.shadowRoot.querySelector('#found-flay');
           // find Flay
-          this.shadowRoot.querySelector('#found-flay').innerHTML = '';
-          fetch('/flay/' + inOpus)
-            .then((res) => {
-              if (res.ok) {
-                return res.json();
-              }
-              throw new Error('notfound: ' + inOpus);
-            })
-            .then((flay) => {
-              // display Flay
-              this.shadowRoot.querySelector('#found-flay').innerHTML = `
-                <label>${flay.studio}</label>
-                <label>${flay.opus}</label>
-                <label>${flay.title}</label>
-                <label>${flay.actressList.join(',')}</label>
-                <label>${flay.release}</label>
-              `;
-              this.shadowRoot.querySelector('#found-flay label:nth-child(2)').addEventListener('click', () => {
-                window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
-              });
-            })
-            .catch((e) => {
-              console.error(e.message);
-            });
+          foundFlayEl.innerHTML = '';
+
+          let flay = await fetch('/flay/' + inOpus).then((res) => (res.ok ? res.json() : false));
+          if (!flay) flay = await fetch('/archive/' + inOpus).then((res) => (res.ok ? res.json() : false));
+          if (!flay) throw new Error('notfound: ' + inOpus);
+
+          foundFlayEl.classList.toggle('archive', flay.archive);
+          foundFlayEl.innerHTML = `
+            <label>${flay.studio}</label>
+            <label>${flay.opus}</label>
+            <label>${flay.title}</label>
+            <label>${flay.actressList.join(',')}</label>
+            <label>${flay.release}</label>
+          `;
+          foundFlayEl.querySelector('label:nth-child(2)').addEventListener('click', () => {
+            window.open('popup.flay.html?opus=' + flay.opus, 'popup.' + flay.opus, 'width=800px,height=1280px');
+          });
+
           // find Studio
           fetch('/info/studio/findOneByOpus/' + inOpus)
             .then((res) => res.json())

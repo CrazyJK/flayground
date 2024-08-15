@@ -131,9 +131,16 @@
   /* found flay */
   #found-flay {
     padding: 0.5rem;
-  }
-  #found-flay label {
-    font-size: var(--size-small);
-    color: var(--color-orange);
+
+    label {
+      font-size: var(--size-small);
+      color: var(--color-orange);
+    }
+
+    &.archive {
+      label {
+        color: var(--color-red);
+      }
+    }
   }
 }

@@ -6,6 +6,7 @@ const menuList = [
   { url: 'page.flay-page.html', name: 'flay page' },
   {},
   { url: 'page.flay-play.html', name: 'flay play' },
+  { url: 'page.flay-play-history.html', name: 'play history' },
   { url: 'page.flay-basket.html', name: 'basket' },
   {},
   { url: 'page.archive.html', name: 'flay archive' },

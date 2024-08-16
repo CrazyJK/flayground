@@ -24,6 +24,11 @@ export default class FlayIndexedDB {
         console.log('[FlayIndexedDB] open onupgradeneeded', this.dbSchema, e);
 
         Array.from(dbSchema).forEach((schema) => {
+          try {
+            e.currentTarget.result.deleteObjectStore(schema.name);
+          } catch (error) {
+            console.warn(error);
+          }
           const store = e.currentTarget.result.createObjectStore(schema.name, { keyPath: schema.keyPath });
           Array.from(schema.index).forEach((index) => {
             store.createIndex(index.key, index.key, { unique: index.unique });
@@ -61,16 +66,36 @@ export default class FlayIndexedDB {
 
   getAll(storeName) {
     return new Promise((resolve, reject) => {
-      const flayList = [];
+      const list = [];
       const req = this.#getStore(storeName).openCursor();
       req.onsuccess = (e) => {
         const cursor = e.target.result;
         if (cursor) {
-          flayList.push(cursor.value);
+          list.push(cursor.value);
           cursor.continue();
         } else {
-          this.isDebug && console.debug('getAll', flayList.length);
-          resolve(flayList);
+          this.isDebug && console.debug('getAll', list.length);
+          resolve(list);
+        }
+      };
+      req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'getAll', e);
+    });
+  }
+
+  getAllByIndex(storeName, indexName, ascending = true) {
+    return new Promise((resolve, reject) => {
+      const list = [];
+      const req = this.#getStore(storeName)
+        .index(indexName)
+        .openCursor(null, ascending ? 'next' : 'prev');
+      req.onsuccess = (e) => {
+        const cursor = e.target.result;
+        if (cursor) {
+          list.push(cursor.value);
+          cursor.continue();
+        } else {
+          this.isDebug && console.debug('getAllByIndex', list.length);
+          resolve(list);
         }
       };
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'getAll', e);

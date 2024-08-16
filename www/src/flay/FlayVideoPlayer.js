@@ -12,19 +12,7 @@ import './part/FlayTitle';
 
 const db = new FlayPlayTimeDB();
 
-/**
- * 플레이 시간 기록
- * @param {string} opus
- * @param {number} time
- * @returns
- */
-const putFlayPlayTime = (opus, time) => db.update({ opus: opus, time: time });
-
-/**
- *
- * @param {string} opus
- * @returns
- */
+const putFlayPlayTime = (opus, time, duration) => db.update(opus, time, duration);
 const getFlayPlayTime = async (opus) => await db.select(opus);
 
 /**
@@ -109,9 +97,6 @@ export default class FlayVideoPlayer extends HTMLElement {
    * @returns
    */
   load(opus, flay, actress) {
-    // 이전 플레이 시간 기록
-    if (this.opus) putFlayPlayTime(this.opus, this.flayVideo.currentTime);
-
     this.classList.toggle('load', false);
     this.opus = opus;
     this.flayVideo.set(opus);
@@ -295,7 +280,7 @@ class FlayVideo extends HTMLVideoElement {
     /* 브라우저가 리소르를 로딩 중일 때 주기적으로 발생합니다. */
     this.addEventListener('progress', (e) => {
       // console.debug('🎦', this.opus, `[${e.type}]`, this.currentTime);
-      this.playing && putFlayPlayTime(this.opus, this.currentTime);
+      this.playing && putFlayPlayTime(this.opus, this.currentTime, this.duration);
     });
     /* 미디어 로딩이 중지된 시점에 발생합니다. */
     // this.addEventListener('suspend', (e) => console.debug('🎦', this.opus, `[${e.type}]`, 'time', toTime(this.currentTime)));

@@ -43,6 +43,21 @@ export default class FlayBasket extends HTMLDivElement {
       }
     });
 
+    const actressListEl = this.querySelector('#actressList');
+    actressListEl.addEventListener('change', () => {
+      const itemList = this.querySelectorAll(`[data-opus]`);
+      const checkedList = actressListEl.querySelectorAll('input:checked');
+
+      itemList.forEach((item) => item.classList.toggle('hide', checkedList.length > 0));
+      checkedList.forEach((checkbox) => {
+        itemList.forEach((item) => {
+          if (item.hasActress(checkbox.value)) item.classList.remove('hide');
+        });
+      });
+
+      this.flayCountEl.innerHTML = this.querySelectorAll(`[data-opus]:not(.hide)`).length;
+    });
+
     this.querySelector('.control').prepend(new GridControl('#basketList'));
 
     this.render();
@@ -99,20 +114,6 @@ export default class FlayBasket extends HTMLDivElement {
           <label class="border" for="${key}">${name} <small style="font-size: calc(var(--size-small) + ${obj.size}px)">${obj.size}</small></label>
         `;
       });
-
-    actressListEl.addEventListener('change', () => {
-      const itemList = this.querySelectorAll(`[data-opus]`);
-      const checkedList = actressListEl.querySelectorAll('input:checked');
-
-      itemList.forEach((item) => item.classList.toggle('hide', checkedList.length > 0));
-      checkedList.forEach((checkbox) => {
-        itemList.forEach((item) => {
-          if (item.hasActress(checkbox.value)) item.classList.remove('hide');
-        });
-      });
-
-      this.flayCountEl.innerHTML = this.querySelectorAll(`[data-opus]:not(.hide)`).length;
-    });
   }
 
   static add(opus) {

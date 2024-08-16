@@ -28,6 +28,7 @@ export default class FlayBasket extends HTMLDivElement {
     this.listEl = this.querySelector('#basketList');
     this.flayCountEl = this.querySelector('#flayCount');
     this.emptyAllEl = this.querySelector('#emptyAll');
+    this.actressListEl = this.querySelector('#actressList');
   }
 
   connectedCallback() {
@@ -43,10 +44,9 @@ export default class FlayBasket extends HTMLDivElement {
       }
     });
 
-    const actressListEl = this.querySelector('#actressList');
-    actressListEl.addEventListener('change', () => {
+    this.actressListEl.addEventListener('change', () => {
       const itemList = this.querySelectorAll(`[data-opus]`);
-      const checkedList = actressListEl.querySelectorAll('input:checked');
+      const checkedList = this.actressListEl.querySelectorAll('input:checked');
 
       itemList.forEach((item) => item.classList.toggle('hide', checkedList.length > 0));
       checkedList.forEach((checkbox) => {
@@ -59,6 +59,8 @@ export default class FlayBasket extends HTMLDivElement {
     });
 
     this.querySelector('.control').prepend(new GridControl('#basketList'));
+
+    this.flayCountEl.addEventListener('click', () => this.actressListEl.classList.toggle('hide'));
 
     this.render();
   }
@@ -97,8 +99,7 @@ export default class FlayBasket extends HTMLDivElement {
         );
     }
 
-    const actressListEl = this.querySelector('#actressList');
-    actressListEl.textContent = null;
+    this.actressListEl.textContent = null;
     Array.from(this.querySelectorAll(`[data-opus]`))
       .reduce((map, item) => {
         item.flay.actressList.forEach((name) => {
@@ -109,7 +110,7 @@ export default class FlayBasket extends HTMLDivElement {
       }, new Map())
       .forEach((obj, name) => {
         const key = name.replace(/ /g, '');
-        actressListEl.innerHTML += `
+        this.actressListEl.innerHTML += `
           <input type="checkbox" id="${key}" value="${name}">
           <label class="border" for="${key}">${name} <small style="font-size: calc(var(--size-small) + ${obj.size}px)">${obj.size}</small></label>
         `;

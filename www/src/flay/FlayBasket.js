@@ -2,9 +2,9 @@ import GridControl from '../lib/GridControl';
 import SVG from '../svg/SVG';
 import { popupFlay } from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
+import { getRandomInt } from '../util/randomNumber';
 import StringUtils from '../util/StringUtils';
 import './FlayBasket.scss';
-import FlayCard from './FlayCard';
 
 const BASKET_KEY = 'flay-basket';
 
@@ -14,16 +14,19 @@ export default class FlayBasket extends HTMLDivElement {
     this.classList.add('flay-basket');
     this.innerHTML = `
       <div class="body">
-        <div id="actressList"></div>
+        <div id="actressList" class="hide"></div>
         <div id="basketList"></div>
       </div>
       <div class="footer">
         <div class="control">
-          <label><span id="flayCount">0</span><span>F</span></label>
+          <button type="button" id="pickUpRandomFlay" title="pick up random flay"><span id="flayCount">0</span> Flay</button>
+          <button type="button" id="toggleActressName" title="toggle actress name"><span id="actressCount">0</span> ${SVG.vagina}</button>
           <button type="button" id="emptyAll" title="empty All">${SVG.trashBin}</button>
         </div>
       </div>
     `;
+
+    this.querySelector('.control').prepend(new GridControl('#basketList'));
 
     this.listEl = this.querySelector('#basketList');
     this.flayCountEl = this.querySelector('#flayCount');
@@ -58,9 +61,14 @@ export default class FlayBasket extends HTMLDivElement {
       this.flayCountEl.innerHTML = this.querySelectorAll(`[data-opus]:not(.hide)`).length;
     });
 
-    this.querySelector('.control').prepend(new GridControl('#basketList'));
+    this.querySelector('#pickUpRandomFlay').addEventListener('click', () => {
+      const max = this.listEl.children.length;
+      const pickedflay = this.listEl.children[getRandomInt(0, max)];
+      console.log(max, pickedflay);
+      pickedflay.popup();
+    });
 
-    this.flayCountEl.addEventListener('click', () => this.actressListEl.classList.toggle('hide'));
+    this.querySelector('#toggleActressName').addEventListener('click', () => this.actressListEl.classList.toggle('hide'));
 
     this.render();
   }
@@ -108,12 +116,13 @@ export default class FlayBasket extends HTMLDivElement {
         });
         return map;
       }, new Map())
-      .forEach((obj, name) => {
+      .forEach((obj, name, map) => {
         const key = name.replace(/ /g, '');
         this.actressListEl.innerHTML += `
           <input type="checkbox" id="${key}" value="${name}">
           <label class="border" for="${key}">${name} <small style="font-size: calc(var(--size-small) + ${obj.size}px)">${obj.size}</small></label>
         `;
+        this.querySelector('#actressCount').innerHTML = map.size;
       });
   }
 
@@ -161,13 +170,8 @@ class FlayBasketItem extends HTMLDivElement {
       <button type="button" class="empty-this">${SVG.trashBin}</button>
     `;
 
-    this.querySelector('.popup-flay').addEventListener('click', async () => {
-      await this.delete();
-      popupFlay(this.flay.opus);
-    });
-    this.querySelector('.empty-this').addEventListener('click', async () => {
-      await this.delete();
-    });
+    this.querySelector('.popup-flay').addEventListener('click', async () => await this.popup());
+    this.querySelector('.empty-this').addEventListener('click', async () => await this.delete());
   }
 
   async set(opus) {
@@ -199,35 +203,15 @@ class FlayBasketItem extends HTMLDivElement {
     FlayBasket.remove(this.dataset.opus);
     this.dispatchEvent(new CustomEvent('delete'));
   }
-}
 
-class FlayBasketCard extends FlayBasketItem {
-  constructor() {
-    super();
-
-    this.classList.add('flay-basket-card');
-    this.innerHTML = ``;
-
-    this.flayCard = this.appendChild(new FlayCard({ excludes: ['FlayFiles', 'FlayStudio', 'FlayOpus', 'FlayRelease'] }));
-    this.flayCard.addEventListener('click', async () => await this.delete());
-
-    this.emptyThis = this.appendChild(document.createElement('button'));
-    this.emptyThis.classList.add('empty-this');
-    this.emptyThis.type = 'button';
-    this.emptyThis.innerHTML = SVG.trashBin;
-    this.emptyThis.addEventListener('click', async () => await this.delete());
-  }
-
-  async set(opus) {
-    this.dataset.opus = opus;
-    const { flay, actress } = await this.flayCard.set(opus);
-    this.flay = flay;
+  async popup() {
+    await this.delete();
+    popupFlay(this.flay.opus);
   }
 }
 
 customElements.define('flay-basket', FlayBasket, { extends: 'div' });
 customElements.define('flay-basket-item', FlayBasketItem, { extends: 'div' });
-customElements.define('flay-basket-card', FlayBasketCard, { extends: 'div' });
 
 /**
  *

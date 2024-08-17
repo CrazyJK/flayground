@@ -28,10 +28,15 @@ export default class FlayBasket extends HTMLDivElement {
 
     this.querySelector('.control').prepend(new GridControl('#basketList'));
 
-    this.listEl = this.querySelector('#basketList');
-    this.flayCountEl = this.querySelector('#flayCount');
-    this.emptyAllEl = this.querySelector('#emptyAll');
     this.actressListEl = this.querySelector('#actressList');
+    this.listEl = this.querySelector('#basketList');
+
+    this.flayCountEl = this.querySelector('#flayCount');
+    this.actressCountEl = this.querySelector('#actressCount');
+
+    this.pickUpRandomFlayEl = this.querySelector('#pickUpRandomFlay');
+    this.toggleActressNameEl = this.querySelector('#toggleActressName');
+    this.emptyAllEl = this.querySelector('#emptyAll');
   }
 
   connectedCallback() {
@@ -39,13 +44,6 @@ export default class FlayBasket extends HTMLDivElement {
       if (e.key !== BASKET_KEY) return;
       await this.render();
     };
-
-    this.emptyAllEl.addEventListener('click', async () => {
-      if (confirm('A U Sure?')) {
-        FlayBasket.clear();
-        await this.render();
-      }
-    });
 
     this.actressListEl.addEventListener('change', () => {
       const itemList = this.querySelectorAll(`[data-opus]`);
@@ -61,24 +59,28 @@ export default class FlayBasket extends HTMLDivElement {
       this.flayCountEl.innerHTML = this.querySelectorAll(`[data-opus]:not(.hide)`).length;
     });
 
-    this.querySelector('#pickUpRandomFlay').addEventListener('click', () => {
-      const max = this.listEl.children.length;
-      const pickedflay = this.listEl.children[getRandomInt(0, max)];
-      console.log(max, pickedflay);
-      pickedflay.popup();
+    this.pickUpRandomFlayEl.addEventListener('click', () => {
+      const shownFlayList = Array.from(this.listEl.children).filter((item) => !item.classList.contains('hide'));
+      shownFlayList[getRandomInt(0, shownFlayList.length)]?.popup();
     });
 
-    this.querySelector('#toggleActressName').addEventListener('click', () => this.actressListEl.classList.toggle('hide'));
+    this.toggleActressNameEl.addEventListener('click', () => this.actressListEl.classList.toggle('hide'));
+
+    this.emptyAllEl.addEventListener('click', async () => {
+      if (confirm('A U Sure?')) {
+        FlayBasket.clear();
+        await this.render();
+      }
+    });
 
     this.render();
   }
 
   async render() {
     const basket = getBasket();
-    this.flayCountEl.innerHTML = basket.size;
-    if (basket.size === 0) this.listEl.textContent = null;
 
-    this.querySelectorAll('.flay-basket-item').forEach((item) => {
+    if (basket.size === 0) this.listEl.textContent = null;
+    Array.from(this.listEl.children).forEach((item) => {
       if (!basket.has(item.dataset.opus)) item.remove();
     });
 
@@ -86,7 +88,6 @@ export default class FlayBasket extends HTMLDivElement {
       let isNew = false;
       let item = this.querySelector(`[data-opus="${opus}"]`);
       if (item === null) {
-        // item = new FlayBasketCard();
         item = new FlayBasketItem();
         await item.set(opus);
         item.addEventListener('delete', () => this.render());
@@ -108,7 +109,7 @@ export default class FlayBasket extends HTMLDivElement {
     }
 
     this.actressListEl.textContent = null;
-    Array.from(this.querySelectorAll(`[data-opus]`))
+    Array.from(this.listEl.children)
       .reduce((map, item) => {
         item.flay.actressList.forEach((name) => {
           if (!map.has(name)) map.set(name, { size: 0 });
@@ -116,14 +117,16 @@ export default class FlayBasket extends HTMLDivElement {
         });
         return map;
       }, new Map())
-      .forEach((obj, name, map) => {
+      .forEach((obj, name) => {
         const key = name.replace(/ /g, '');
         this.actressListEl.innerHTML += `
           <input type="checkbox" id="${key}" value="${name}">
           <label class="border" for="${key}">${name} <small style="font-size: calc(var(--size-small) + ${obj.size}px)">${obj.size}</small></label>
         `;
-        this.querySelector('#actressCount').innerHTML = map.size;
       });
+
+    this.flayCountEl.innerHTML = this.listEl.children.length;
+    this.actressCountEl.innerHTML = this.actressListEl.querySelectorAll('input').length;
   }
 
   static add(opus) {

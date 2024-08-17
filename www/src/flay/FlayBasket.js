@@ -1,6 +1,6 @@
 import GridControl from '../lib/GridControl';
 import SVG from '../svg/SVG';
-import { popupFlay } from '../util/FlaySearch';
+import { popupActress, popupFlay, popupTag } from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
 import { getRandomInt } from '../util/randomNumber';
 import StringUtils from '../util/StringUtils';
@@ -164,7 +164,7 @@ class FlayBasketItem extends HTMLDivElement {
         <label class="comment"></label>
       </div>
       <div class="title">
-        <button type="button" class="popup-flay">title</button>
+        <a class="popup-flay">title</a>
       </div>
       <div class="info">
         <div class="actress"></div>
@@ -172,9 +172,6 @@ class FlayBasketItem extends HTMLDivElement {
       </div>
       <button type="button" class="empty-this">${SVG.trashBin}</button>
     `;
-
-    this.querySelector('.popup-flay').addEventListener('click', async () => await this.popup());
-    this.querySelector('.empty-this').addEventListener('click', async () => await this.delete());
   }
 
   async set(opus) {
@@ -186,8 +183,13 @@ class FlayBasketItem extends HTMLDivElement {
     this.querySelector('.cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
     this.querySelector('.comment').innerHTML = this.flay.video.comment;
     this.querySelector('.popup-flay').innerHTML = this.flay.title;
-    this.querySelector('.actress').innerHTML = this.flay.actressList?.map((name) => `<label>${name}</label>`).join(', ');
-    this.querySelector('.tags').innerHTML = this.flay.video.tags?.map((tag) => `<label>${tag.name}</label>`).join(' ');
+    this.querySelector('.actress').innerHTML = this.flay.actressList?.map((name) => `<a>${name}</a>`).join(', ');
+    this.querySelector('.tags').innerHTML = this.flay.video.tags?.map((tag) => `<a data-id="${tag.id}">${tag.name}</a>`).join(' ');
+
+    this.querySelector('.popup-flay').addEventListener('click', async () => await this.popup());
+    this.querySelector('.empty-this').addEventListener('click', async () => await this.delete());
+    this.querySelectorAll('.actress a').forEach((a) => a.addEventListener('click', (e) => popupActress(e.target.innerHTML)));
+    this.querySelectorAll('.tags a').forEach((a) => a.addEventListener('click', (e) => popupTag(e.target.dataset.id)));
   }
 
   hasActress(name) {

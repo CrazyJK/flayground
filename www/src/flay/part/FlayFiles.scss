@@ -85,6 +85,16 @@
   }
 
   &.small {
+    .info {
+      gap: 0.5rem;
+
+      .flay-play {
+        svg {
+          width: 1.25rem;
+        }
+      }
+    }
+
     .sub-btn,
     .size-label,
     .search-torrent,

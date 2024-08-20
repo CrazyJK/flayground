@@ -202,6 +202,7 @@ export default class FlayRegister extends HTMLElement {
       this.shadowRoot.querySelectorAll('input:not(#lastSearchOpus)').forEach((input) => (input.value = ''));
       this.shadowRoot.querySelectorAll('input[type="checkbox"]').forEach((input) => (input.checked = false));
       this.shadowRoot.querySelectorAll('textarea').forEach((textarea) => (textarea.value = ''));
+      this.shadowRoot.querySelectorAll('.input-invalid').forEach((input) => input.classList.remove('input-invalid'));
     });
 
     // 요소 이벤트

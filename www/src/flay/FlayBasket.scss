@@ -64,6 +64,8 @@
 
           background-color: var(--color-bg-transparent);
           padding: 0.25rem 0.25rem;
+          font-size: var(--size-normal);
+          text-shadow: var(--text-shadow);
 
           display: inline-block;
           white-space: nowrap;
@@ -86,7 +88,6 @@
           text-overflow: ellipsis;
           overflow: hidden;
           max-width: 100%;
-          padding-bottom: 0.25rem;
         }
       }
 
@@ -94,12 +95,19 @@
         display: flex;
         justify-content: space-between;
         align-items: baseline;
+        gap: 0.5rem;
 
         .actress,
         .tags {
           text-overflow: ellipsis;
           white-space: nowrap;
           overflow: hidden;
+
+          a {
+            font-size: var(--size-normal);
+            font-weight: 400;
+            text-shadow: var(--text-shadow);
+          }
         }
 
         .actress {
@@ -108,19 +116,13 @@
         }
       }
 
-      label {
-        font-size: var(--size-normal);
-        text-shadow: var(--text-shadow);
-        padding: 0 0.25rem 0.125rem 0.125rem;
-      }
-
       .empty-this {
         position: absolute;
         top: 0;
         right: 0;
 
         border-bottom-left-radius: 0.5rem;
-        padding: 0 0 0.125rem 0.125rem;
+        padding: 0 0 0.25rem 0.125rem;
         opacity: 0;
         transition: 0.4s;
       }

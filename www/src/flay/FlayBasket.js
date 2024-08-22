@@ -184,7 +184,10 @@ class FlayBasketItem extends HTMLDivElement {
     this.querySelector('.comment').innerHTML = this.flay.video.comment;
     this.querySelector('.popup-flay').innerHTML = this.flay.title;
     this.querySelector('.actress').innerHTML = this.flay.actressList?.map((name) => `<a>${name}</a>`).join(', ');
-    this.querySelector('.tags').innerHTML = this.flay.video.tags?.map((tag) => `<a data-id="${tag.id}">${tag.name}</a>`).join(' ');
+    this.querySelector('.tags').innerHTML = this.flay.video.tags
+      ?.filter((tag) => ![50, 63, 64, 65, 66].includes(tag.id))
+      .map((tag) => `<a data-id="${tag.id}">${tag.name}</a>`)
+      .join(' ');
 
     this.querySelector('.popup-flay').addEventListener('click', async () => await this.popup());
     this.querySelector('.empty-this').addEventListener('click', async () => await this.delete());

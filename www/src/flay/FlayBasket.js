@@ -28,10 +28,10 @@ export default class FlayBasket extends HTMLDivElement {
 
     this.querySelector('.control').prepend(new GridControl('#basketList'));
 
-    this.actressListEl = this.querySelector('#actressList');
-    this.listEl = this.querySelector('#basketList');
-
+    this.flayListEl = this.querySelector('#basketList');
     this.flayCountEl = this.querySelector('#flayCount');
+
+    this.actressListEl = this.querySelector('#actressList');
     this.actressCountEl = this.querySelector('#actressCount');
 
     this.pickUpRandomFlayEl = this.querySelector('#pickUpRandomFlay');
@@ -46,8 +46,10 @@ export default class FlayBasket extends HTMLDivElement {
     };
 
     this.actressListEl.addEventListener('change', () => {
-      const itemList = this.querySelectorAll(`[data-opus]`);
-      const checkedList = this.actressListEl.querySelectorAll('input:checked');
+      const itemList = Array.from(this.flayListEl.children);
+      const checkedList = Array.from(this.actressListEl.children)
+        .map((span) => span.querySelector('input'))
+        .filter((input) => input.checked);
 
       itemList.forEach((item) => item.classList.toggle('hide', checkedList.length > 0));
       checkedList.forEach((checkbox) => {
@@ -56,11 +58,11 @@ export default class FlayBasket extends HTMLDivElement {
         });
       });
 
-      this.flayCountEl.innerHTML = this.querySelectorAll(`[data-opus]:not(.hide)`).length;
+      this.flayCountEl.innerHTML = itemList.filter((item) => !item.classList.contains('hide')).length;
     });
 
     this.pickUpRandomFlayEl.addEventListener('click', () => {
-      const shownFlayList = Array.from(this.listEl.children).filter((item) => !item.classList.contains('hide'));
+      const shownFlayList = Array.from(this.flayListEl.children).filter((item) => !item.classList.contains('hide'));
       shownFlayList[getRandomInt(0, shownFlayList.length)]?.popup();
     });
 
@@ -79,25 +81,23 @@ export default class FlayBasket extends HTMLDivElement {
   async render() {
     const basket = getBasket();
 
-    if (basket.size === 0) this.listEl.textContent = null;
-    Array.from(this.listEl.children).forEach((item) => {
-      if (!basket.has(item.dataset.opus)) item.remove();
+    if (basket.size === 0) this.flayListEl.textContent = null;
+    Array.from(this.flayListEl.children).forEach((item) => {
+      if (!basket.has(item.opus)) item.remove();
     });
 
     for (const opus of basket) {
-      let isNew = false;
-      let item = this.querySelector(`[data-opus="${opus}"]`);
-      if (item === null) {
-        item = new FlayBasketItem();
-        await item.set(opus);
+      let item = this.querySelector(`#${opus}`);
+      const isNew = item === null;
+      if (isNew) {
+        item = new FlayBasketItem(opus);
         item.addEventListener('delete', () => this.render());
-        isNew = true;
       }
 
-      this.listEl.prepend(item);
+      this.flayListEl.prepend(item);
       item.scrollIntoView(false);
 
-      if (isNew)
+      if (isNew) {
         item.animate(
           [
             { transform: 'scale(0.9)', opacity: 0.5 },
@@ -106,12 +106,15 @@ export default class FlayBasket extends HTMLDivElement {
           ],
           { duration: 600, iterations: 1, easing: 'ease' }
         );
+        await new Promise((resolve) => setTimeout(resolve, 30));
+      }
+      this.flayCountEl.innerHTML = this.flayListEl.children.length;
     }
 
     this.actressListEl.textContent = null;
-    Array.from(this.listEl.children)
+    Array.from(this.flayListEl.children)
       .reduce((map, item) => {
-        item.flay.actressList.forEach((name) => {
+        item.actressList.forEach((name) => {
           if (!map.has(name)) map.set(name, { size: 0 });
           map.get(name).size += 1;
         });
@@ -119,14 +122,12 @@ export default class FlayBasket extends HTMLDivElement {
       }, new Map())
       .forEach((obj, name) => {
         const key = name.replace(/ /g, '');
-        this.actressListEl.innerHTML += `
+        this.actressListEl.appendChild(document.createElement('span')).innerHTML = `
           <input type="checkbox" id="${key}" value="${name}">
           <label class="border" for="${key}">${name} <small style="font-size: calc(var(--size-small) + ${obj.size}px)">${obj.size}</small></label>
         `;
+        this.actressCountEl.innerHTML = this.actressListEl.children.length;
       });
-
-    this.flayCountEl.innerHTML = this.listEl.children.length;
-    this.actressCountEl.innerHTML = this.actressListEl.querySelectorAll('input').length;
   }
 
   static add(opus) {
@@ -151,13 +152,14 @@ export default class FlayBasket extends HTMLDivElement {
     window.emitNotice('clear Basket');
   }
 }
+customElements.define('flay-basket', FlayBasket, { extends: 'div' });
 
 class FlayBasketItem extends HTMLDivElement {
-  flay;
-
-  constructor() {
+  constructor(opus) {
     super();
 
+    this.id = opus;
+    this.opus = opus;
     this.classList.add('flay-basket-item');
     this.innerHTML = `
       <div class="cover">
@@ -172,34 +174,40 @@ class FlayBasketItem extends HTMLDivElement {
       </div>
       <button type="button" class="empty-this">${SVG.trashBin}</button>
     `;
+
+    this.querySelector('.empty-this').addEventListener('click', async () => await this.#delete(opus));
+
+    fetch(`/static/cover/${opus}/withData`).then(async (res) => {
+      const flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
+      this.querySelector('.cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
+      this.querySelector('.comment').innerHTML = flay.video.comment;
+      this.querySelector('.popup-flay').innerHTML = flay.title;
+      this.querySelector('.popup-flay').addEventListener('click', async () => {
+        await this.#delete(opus);
+        popupFlay(opus);
+      });
+      this.querySelector('.actress').append(
+        ...Array.from(flay.actressList || []).map((name) => {
+          const a = document.createElement('a');
+          a.innerHTML = name;
+          a.addEventListener('click', () => popupActress(name));
+          return a;
+        })
+      );
+      this.querySelector('.tags').append(
+        ...Array.from(flay.video.tags || [])
+          .filter((tag) => ![50, 63, 64, 65, 66].includes(tag.id))
+          .map((tag) => {
+            const a = document.createElement('a');
+            a.innerHTML = tag.name;
+            a.addEventListener('click', () => popupTag(tag.id));
+            return a;
+          })
+      );
+    });
   }
 
-  async set(opus) {
-    this.dataset.opus = opus;
-
-    const res = await fetch(`/static/cover/${opus}/withData`);
-    this.flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
-
-    this.querySelector('.cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
-    this.querySelector('.comment').innerHTML = this.flay.video.comment;
-    this.querySelector('.popup-flay').innerHTML = this.flay.title;
-    this.querySelector('.actress').innerHTML = this.flay.actressList?.map((name) => `<a>${name}</a>`).join(', ');
-    this.querySelector('.tags').innerHTML = this.flay.video.tags
-      ?.filter((tag) => ![50, 63, 64, 65, 66].includes(tag.id))
-      .map((tag) => `<a data-id="${tag.id}">${tag.name}</a>`)
-      .join(' ');
-
-    this.querySelector('.popup-flay').addEventListener('click', async () => await this.popup());
-    this.querySelector('.empty-this').addEventListener('click', async () => await this.delete());
-    this.querySelectorAll('.actress a').forEach((a) => a.addEventListener('click', (e) => popupActress(e.target.innerHTML)));
-    this.querySelectorAll('.tags a').forEach((a) => a.addEventListener('click', (e) => popupTag(e.target.dataset.id)));
-  }
-
-  hasActress(name) {
-    return this.flay.actressList.includes(name);
-  }
-
-  async delete() {
+  async #delete(opus) {
     await this.animate(
       [
         { transform: 'scale(1)', opacity: 1 },
@@ -208,17 +216,18 @@ class FlayBasketItem extends HTMLDivElement {
       ],
       { duration: 800, iterations: 1, easing: 'cubic-bezier(0.42, 0, 0.58, 1)' }
     ).finished;
-    FlayBasket.remove(this.dataset.opus);
+    FlayBasket.remove(opus);
     this.dispatchEvent(new CustomEvent('delete'));
   }
 
-  async popup() {
-    await this.delete();
-    popupFlay(this.flay.opus);
+  hasActress(name) {
+    return this.actressList.includes(name);
+  }
+
+  get actressList() {
+    return Array.from(this.querySelectorAll('.actress a')).map((a) => a.innerHTML);
   }
 }
-
-customElements.define('flay-basket', FlayBasket, { extends: 'div' });
 customElements.define('flay-basket-item', FlayBasketItem, { extends: 'div' });
 
 /**

@@ -9,8 +9,8 @@ const hiddenListeners = [];
 const RESIZE_DELAY = 300;
 const VISIBLE_DELAY = 300;
 
-let resizeTimer = null;
-let visibleTimer = null;
+let resizeTimer;
+let visibleTimer;
 
 /**
  * window load 이벤트 등록
@@ -45,12 +45,13 @@ export const addMouseoutToNullListener = (listener) => {
 };
 
 /**
- * window resize 이벤트 핸들러를 등록한다
+ * window resize 이벤트 핸들러를 등록한다.
+ * - 등록 즉시 1회 수행한다
  * @param {Function} listener
  */
 export const addResizeListener = (listener) => {
   resizeListeners.push(listener);
-  window.dispatchEvent(new Event('resize'));
+  listener();
 };
 
 /**

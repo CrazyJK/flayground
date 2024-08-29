@@ -1,5 +1,6 @@
 import FlayPlayTimeDB from '../idb/FlayPlayTimeDB';
 import { getRandomInt } from '../util/randomNumber';
+import { addResizeListener } from '../util/windowAddEventListener';
 import './FlayVideoPlayer.scss';
 import './part/FlayActress';
 import './part/FlayCover';
@@ -384,35 +385,44 @@ let prevOpus = null;
  * @param {string} opus
  */
 export const playInLayer = async (opus) => {
+  const dispatchPlayEvent = (isPlay) => document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: isPlay } }));
+  const setPlayerPosition = () => {
+    const flayCoverRect = document.querySelector('flay-page')?.shadowRoot.querySelector('flay-cover').getBoundingClientRect();
+    if (flayCoverRect) {
+      const { top, left, width, height } = flayCoverRect;
+      layer.querySelector('article').style.cssText = `position: fixed; top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px;`;
+    }
+  };
+
   console.log('playInLayer', opus, prevOpus);
 
-  let videoPlayer = null;
-  let layer = document.querySelector('.layer-play');
+  let layer = document.querySelector('#playInLayer');
   if (layer === null) {
     layer = document.querySelector('body').appendChild(document.createElement('div'));
-    layer.classList.add('layer-play');
-    layer.innerHTML = '<article></article>';
+    layer.id = 'playInLayer';
+    layer.appendChild(document.createElement('article')).appendChild(new FlayVideoPlayer({ info: false, poster: false, volume: 0.05 }));
     layer.addEventListener('click', (e) => {
       console.debug('layer click', e.target.tagName);
       if (e.target.tagName !== 'FLAY-VIDEO-PLAYER') {
         layer.classList.add('hide');
         videoPlayer.pause();
-        document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: false } }));
+        dispatchPlayEvent(false);
       }
     });
-    videoPlayer = layer.querySelector('article').appendChild(new FlayVideoPlayer({ info: false, poster: false, volume: 0.05 }));
-  } else {
-    layer.classList.remove('hide');
-    videoPlayer = layer.querySelector('flay-video-player');
   }
 
+  addResizeListener(() => setPlayerPosition());
+
+  layer.classList.remove('hide');
+
+  const videoPlayer = layer.querySelector('flay-video-player');
   if (prevOpus !== opus) {
     await videoPlayer.load(opus);
     await videoPlayer.playRandomSeekOrContinuously();
   } else {
     await videoPlayer.play();
   }
-  document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: true } }));
+  dispatchPlayEvent(true);
 
   prevOpus = opus;
 };

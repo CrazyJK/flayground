@@ -17,7 +17,7 @@ const BACK = 'BACK';
 export default class FlayPagination extends HTMLElement {
   opus = null;
   opusIndex = -1;
-  opusList = null;
+  opusList = [];
   active = true;
   history = [];
   pageRange = 0;

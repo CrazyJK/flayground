@@ -182,10 +182,7 @@ class FlayBasketItem extends HTMLDivElement {
       this.querySelector('.cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
       this.querySelector('.comment').innerHTML = flay.video.comment;
       this.querySelector('.popup-flay').innerHTML = flay.title;
-      this.querySelector('.popup-flay').addEventListener('click', async () => {
-        await this.#delete(opus);
-        popupFlay(opus);
-      });
+      this.querySelector('.popup-flay').addEventListener('click', async () => this.popup());
       this.querySelector('.actress').append(
         ...Array.from(flay.actressList || []).map((name) => {
           const a = document.createElement('a');
@@ -218,6 +215,11 @@ class FlayBasketItem extends HTMLDivElement {
     ).finished;
     FlayBasket.remove(opus);
     this.dispatchEvent(new CustomEvent('delete'));
+  }
+
+  async popup() {
+    await this.#delete(this.id);
+    popupFlay(this.id);
   }
 
   hasActress(name) {

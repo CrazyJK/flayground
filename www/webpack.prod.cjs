@@ -10,4 +10,9 @@ module.exports = {
       },
     ],
   },
+  performance: {
+    hints: 'error',
+    maxAssetSize: 1000000,
+    maxEntrypointSize: 1000000,
+  },
 };

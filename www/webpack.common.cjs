@@ -1,6 +1,7 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 module.exports = {
   /* mode: development, production, none */
@@ -40,6 +41,7 @@ module.exports = {
   devtool: 'source-map',
   output: {
     // filename: '[name].[contenthash].js',
+    // filename: '[name].[chunkhash].js',
     filename: '[name].js',
     path: path.resolve(__dirname, '../src/main/resources/static/dist'),
     clean: true,
@@ -66,7 +68,17 @@ module.exports = {
           from: 'src/svg/*.svg',
           to: 'svg/[name][ext]',
         },
+        {
+          from: 'src/*.json',
+          to: '[name][ext]',
+        },
       ],
+    }),
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static',
+      reportFilename: 'bundle-report.html',
+      openAnalyzer: false,
+      // excludeAssets: [/node_modules/],
     }),
   ],
   module: {
@@ -112,4 +124,23 @@ module.exports = {
       },
     ],
   },
+  performance: {
+    assetFilter: function (assetFilename) {
+      return !assetFilename.endsWith('.json') && !assetFilename.endsWith('.map') && assetFilename !== 'style.js';
+    },
+    maxAssetSize: 500000,
+    maxEntrypointSize: 600000,
+    hints: false,
+  },
+  // optimization: {
+  //   splitChunks: {
+  //     cacheGroups: {
+  //       vendor: {
+  //         chunks: 'initial',
+  //         name: 'vendor',
+  //         enforce: true,
+  //       },
+  //     },
+  //   },
+  // },
 };

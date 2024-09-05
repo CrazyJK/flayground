@@ -1,8 +1,6 @@
 import './init/Page';
 import './page.flay-play.scss';
 
-import FlayBasket from './flay/FlayBasket';
-import FlayVideoPlayer, { toTime } from './flay/FlayVideoPlayer';
 import { FlayProvider } from './lib/FlayProvider';
 import SVG from './svg/SVG';
 import FlayStorage from './util/FlayStorage';
@@ -106,7 +104,10 @@ class App extends FlayProvider {
 
   #initKeepFlay() {
     document.querySelector('#keepFlay').innerHTML = SVG.basket;
-    document.querySelector('#keepFlay').addEventListener('click', () => FlayBasket.add(this.videoPlayer.opus));
+    document.querySelector('#keepFlay').addEventListener('click', async () => {
+      const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ './flay/FlayBasket');
+      FlayBasket.add(this.videoPlayer.opus);
+    });
   }
 
   #displayTime() {
@@ -159,4 +160,10 @@ class App extends FlayProvider {
   }
 }
 
-new App().start().then(() => console.log('started'));
+let toTime;
+let FlayVideoPlayer;
+import(/* webpackChunkName: "FlayVideoPlayer" */ './flay/FlayVideoPlayer').then((module) => {
+  FlayVideoPlayer = module.FlayVideoPlayer;
+  toTime = module.toTime;
+  new App().start().then(() => console.log('started'));
+});

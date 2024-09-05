@@ -8,7 +8,7 @@ import './FlayBasket.scss';
 
 const BASKET_KEY = 'flay-basket';
 
-export default class FlayBasket extends HTMLDivElement {
+export class FlayBasket extends HTMLDivElement {
   constructor() {
     super();
     this.classList.add('flay-basket');

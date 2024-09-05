@@ -19,7 +19,7 @@ const getFlayPlayTime = async (opus) => await db.select(opus);
 /**
  * Flay Video Player implements HTMLVideoElement
  */
-export default class FlayVideoPlayer extends HTMLElement {
+export class FlayVideoPlayer extends HTMLElement {
   opus;
 
   static get observedAttributes() {

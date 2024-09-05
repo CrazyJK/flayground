@@ -2,8 +2,6 @@ import SVG from '../../svg/SVG';
 import FileUtils from '../../util/FileUtils';
 import FlayAction from '../../util/FlayAction';
 import FlaySearch from '../../util/FlaySearch';
-import FlayBasket from '../FlayBasket';
-import { playInLayer } from '../FlayVideoPlayer';
 import './FlayFiles.scss';
 import FlayHTMLElement from './FlayHTMLElement';
 
@@ -26,14 +24,20 @@ export default class FlayFiles extends FlayHTMLElement {
     this.playBtn = infoDiv.appendChild(document.createElement('button'));
     this.playBtn.classList.add('flay-play');
     this.playBtn.innerHTML = SVG.youtube;
-    this.playBtn.addEventListener('click', async () => await playInLayer(this.flay.opus));
+    this.playBtn.addEventListener('click', async () => {
+      const { playInLayer } = await import(/* webpackChunkName: "FlayVideoPlayer" */ '../FlayVideoPlayer');
+      await playInLayer(this.flay.opus);
+    });
 
     this.movieBtn = infoDiv.appendChild(document.createElement('button'));
     this.movieBtn.innerHTML = 'Movie<i class="badge">0</i>';
     this.movieBtn.addEventListener('click', (e) => {
       console.log('playClick', this.flay.opus);
       if (this.flay.files.movie.length > 0) {
-        FlayAction.play(this.flay.opus).then(() => FlayBasket.remove(this.flay.opus));
+        FlayAction.play(this.flay.opus).then(async () => {
+          const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '../FlayBasket');
+          FlayBasket.remove(this.flay.opus);
+        });
       } else {
         FlaySearch.torrent.Download(this.flay.opus);
       }

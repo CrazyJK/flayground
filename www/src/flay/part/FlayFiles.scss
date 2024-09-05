@@ -1,0 +1,119 @@
+.flay-files {
+  .info {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    align-items: flex-start;
+  }
+
+  .list {
+    display: none;
+
+    ol {
+      margin: 0;
+      padding: 0.5rem;
+      list-style: none;
+      text-align: left;
+      border: 2px dashed purple;
+      border-bottom: 0;
+      li {
+        font-size: var(--size-smallest);
+        font-family: D2Coding;
+        margin-bottom: 0.25rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        max-width: 100%;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+      }
+    }
+
+    .rename-flay {
+      display: flex;
+
+      input {
+        cursor: auto;
+      }
+      input,
+      button {
+        font-size: var(--size-smallest);
+        font-family: D2Coding;
+        border: 2px dashed purple;
+        border-right: 0;
+        padding: 4px;
+      }
+      button {
+        font-size: var(--size-small);
+        border-right: 2px dashed purple;
+      }
+
+      #studio {
+        flex: 0 0 auto;
+        width: 4rem;
+      }
+      #opus {
+        flex: 0 0 auto;
+        width: 3rem;
+      }
+      #title {
+        flex: 1 1 auto;
+      }
+      #actress {
+        flex: 0 0 auto;
+        width: 6rem;
+      }
+      #release {
+        flex: 0 0 auto;
+        width: 4rem;
+      }
+    }
+
+    &.show {
+      display: block;
+    }
+  }
+
+  .search-torrent {
+    opacity: 0;
+    &:hover {
+      transition: opacity 0.4s;
+      opacity: 1;
+    }
+  }
+
+  &.small {
+    .info {
+      gap: 0.5rem;
+
+      .flay-play {
+        svg {
+          width: 1.25rem;
+        }
+      }
+    }
+
+    .sub-btn,
+    .size-label,
+    .search-torrent,
+    .files-btn {
+      display: none !important;
+    }
+  }
+
+  &.card {
+    .size-label,
+    .search-torrent,
+    .files-btn {
+      display: none;
+    }
+  }
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
+    }
+  }
+}

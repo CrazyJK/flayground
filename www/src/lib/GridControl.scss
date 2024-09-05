@@ -1,0 +1,74 @@
+$columns: (
+  1: 100%,
+  2: 50%,
+  3: 33%,
+  4: 25%,
+  5: 20%,
+  6: 16%,
+  7: 14%,
+);
+
+.grid-container {
+  display: grid;
+  justify-content: space-evenly;
+
+  $base-width: 350px;
+
+  @each $key, $val in $columns {
+    &[data-column='#{$key}'] {
+      grid-template-columns: repeat(auto-fill, minmax($val, $base-width));
+    }
+  }
+}
+
+.grid-control {
+  display: flex;
+  align-items: center;
+
+  $range-size: 1.5rem;
+  $range-radius: calc($range-size / 4);
+
+  input[type='range'] {
+    appearance: none;
+    accent-color: #ffe283;
+    background-color: #ffe28340;
+    outline: none;
+    border-radius: $range-radius;
+    box-shadow: var(--box-shadow);
+    height: $range-size;
+    // width: auto;
+  }
+  input[type='range']::-webkit-slider-thumb {
+    appearance: none;
+    background-color: #ffe283;
+    border-radius: $range-radius;
+    cursor: pointer;
+    height: $range-size;
+    width: $range-size;
+  }
+
+  .range-mark {
+    position: absolute;
+    // left: 0;
+    color: var(--color-dark);
+    font-size: var(--size-normal);
+    text-shadow: var(--text-shadow);
+    text-align: center;
+    width: $range-size;
+    transition: none;
+  }
+
+  @for $i from 2 to length($columns) + 1 {
+    &[data-max='#{$i}'] {
+      input[type='range'] {
+        width: calc($range-size * $i);
+      }
+
+      @for $j from 1 to $i + 1 {
+        .range-mark[data-value='#{$j}'] {
+          left: calc(100% / $i * calc($j - 1));
+        }
+      }
+    }
+  }
+}

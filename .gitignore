@@ -36,7 +36,6 @@ target/
 
 # mac
 .DS_Store
-.vscode/settings.json
 
 # node.js
 node_modules
@@ -45,4 +44,8 @@ yarn.lock
 
 # webpack dist
 www/dist
-src/main/resources/static/dist
+src/main/resources/static/dist*
+
+#diablo4
+doc/diablo4
+dependencies-viewer.json

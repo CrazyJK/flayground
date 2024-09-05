@@ -1,0 +1,31 @@
+$scroll-unit: 0.25rem;
+
+/* 스크롤 바 영역 전체 */
+::-webkit-scrollbar {
+  background-color: transparent;
+  border: 0;
+  width: $scroll-unit;
+  height: $scroll-unit;
+}
+/* 상하, 좌우 화살표가 포함된 부분 */
+::-webkit-scrollbar-button:start:decrement,
+::-webkit-scrollbar-button:end:increment {
+  background-color: transparent;
+  display: block;
+  width: $scroll-unit;
+  height: $scroll-unit;
+}
+/* 화살표를 제외한 몸통 부분 */
+::-webkit-scrollbar-track {
+  background-color: transparent;
+  border-radius: calc($scroll-unit / 2);
+}
+/* 몸통 부분에서 실제 움직이는 부분 */
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: calc($scroll-unit / 2);
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.75);
+  }
+}

@@ -1,0 +1,9 @@
+.flay-studio {
+  text-align: center;
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
+    }
+  }
+}

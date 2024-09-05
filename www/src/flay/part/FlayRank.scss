@@ -1,0 +1,70 @@
+.flay-rank {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: baseline;
+
+  .badge.score {
+    min-width: 2rem;
+  }
+  .notyet span,
+  .notyet i {
+    color: var(--color-text-secondary);
+  }
+  div.rank-group {
+    display: inline-flex;
+    gap: 0.5rem;
+  }
+  div.rank-group label svg {
+    aspect-ratio: 157 / 150;
+  }
+  div.rank-group input[value='-1']:checked + label {
+    color: #f00a;
+  }
+  div.rank-group input[value='0']:checked + label {
+    color: #3f7e7e;
+  }
+  .rank-label {
+    display: none;
+  }
+
+  &.card {
+    gap: 0.5rem;
+
+    .rank-group,
+    .score-label {
+      display: none;
+    }
+    .rank-label {
+      display: block;
+    }
+  }
+
+  &.small {
+    .rank-group,
+    .like-btn,
+    .play-label,
+    .score-label {
+      display: none;
+    }
+    .rank-label {
+      display: block;
+    }
+    label {
+      font-size: var(--size-small);
+      svg {
+        width: 1.25rem;
+        height: 1.25rem;
+      }
+    }
+    button {
+      font-size: var(--size-normal);
+    }
+  }
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
+    }
+  }
+}

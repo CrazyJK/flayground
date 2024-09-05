@@ -1,0 +1,221 @@
+*,
+::after,
+::before {
+  box-sizing: border-box;
+  outline: var(--debug2-outline) !important;
+}
+
+h1 {
+  font-size: var(--size-huge);
+}
+h2 {
+  font-size: var(--size-largest);
+}
+h3 {
+  font-size: var(--size-large);
+}
+h4 {
+  font-size: var(--size-normal);
+}
+h5 {
+  font-size: var(--size-small);
+}
+h6 {
+  font-size: var(--size-smallest);
+}
+
+header,
+main,
+article,
+footer,
+div,
+pre,
+nav,
+ul,
+ol,
+span,
+label,
+a,
+button,
+input,
+select,
+option,
+textarea,
+video {
+  position: relative;
+  color: var(--color-text);
+}
+
+a,
+button,
+select,
+textarea,
+input,
+input + label {
+  background-color: transparent;
+  cursor: pointer;
+  display: inline;
+  margin: 0;
+  border: 0;
+  padding: 0;
+  font-family: inherit;
+  font-size: var(--size-large);
+  font-weight: 700;
+  text-shadow: var(--text-shadow);
+  outline: none;
+}
+
+input[type='url'],
+input[type='date'],
+input[type='text'],
+input[type='search'],
+input[type='number'] {
+  cursor: initial;
+  padding: 0.25rem 0;
+  text-align: center;
+}
+
+input[type='checkbox'],
+input[type='radio'] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  margin: -1px;
+  border: 0;
+  padding: 0;
+  clip: rect(0, 0, 0, 0);
+
+  &:checked + label {
+    color: var(--color-checked);
+  }
+
+  & + label {
+    transition: 0.4s;
+    &.border {
+      background-color: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: var(--border-radius-large);
+      padding: 0.125rem 0.5rem 0.25rem;
+      &:hover {
+        box-shadow: var(--box-shadow-small);
+      }
+    }
+    &:hover {
+      text-shadow: var(--text-shadow-hover);
+    }
+    svg {
+      height: var(--size-large);
+      width: var(--size-large);
+    }
+  }
+}
+
+a {
+  text-decoration: none;
+  &:not(.disable):hover {
+    text-shadow: var(--text-shadow-hover);
+  }
+}
+
+button {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+
+  &:not(.disable):hover {
+    text-shadow: var(--text-shadow-hover);
+  }
+  svg {
+    width: 1.75rem;
+  }
+  span {
+    color: inherit;
+  }
+}
+
+select {
+  padding: 0.25rem 0;
+  option {
+    background-color: var(--color-bg);
+    font-size: var(--size-normal);
+  }
+}
+
+textarea {
+  padding: 0.25rem 0;
+  width: 100%;
+}
+
+img {
+  position: relative;
+  display: block;
+  margin: auto;
+  height: 100%;
+}
+
+pre {
+  font-family: D2Coding;
+}
+
+ul,
+ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+label {
+  font-size: var(--size-large);
+  font-weight: 700;
+}
+
+input::spelling-error,
+textarea::spelling-error {
+  text-decoration: none;
+}
+
+.disable {
+  color: var(--color-text-secondary) !important;
+  cursor: initial !important;
+}
+.hide {
+  display: none !important;
+}
+.error {
+  color: var(--color-text-danger) !important;
+}
+.warn {
+  color: var(--color-text-warn) !important;
+}
+.small {
+  font-size: small;
+}
+
+.badge {
+  float: right;
+  margin: 0 0 0 0.25rem;
+  font-size: var(--size-small);
+  font-style: normal;
+  font-weight: 400;
+  min-width: 1rem;
+}
+
+/* 커스텀 엘리먼트 모드 */
+.card {
+  label,
+  a,
+  button {
+    font-size: var(--size-normal) !important;
+  }
+}
+
+.small {
+  label,
+  a,
+  button {
+    font-size: var(--size-small) !important;
+    text-shadow: none;
+    padding: 0.125rem !important;
+  }
+}

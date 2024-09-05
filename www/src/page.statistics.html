@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en" theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Statistics</title>
+    <link rel="icon" type="image/png" href="./favicon/flay_1.png" />
+    <link rel="stylesheet" type="text/css" href="./page.statistics.css" />
+    <script defer type="text/javascript" src="./page.statistics.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="head-group">
+        <h1>
+          Statistics
+          <label id="info"></label>
+        </h1>
+        <div>
+          <input type="checkbox" id="withArchiveData" checked />
+          <label for="withArchiveData">Archive</label>
+        </div>
+        <div>
+          <input type="date" id="startDate" />
+          <input type="date" id="endDate" />
+        </div>
+      </div>
+      <div class="tab-button-group" role="tablist">
+        <button type="button" class="tab-button" role="tab" target="#studioActress" id="studioActressBtn" active>Studio/Actress</button>
+        <button type="button" class="tab-button" role="tab" target="#rankGrounp" id="rankGrounpBtn">Rank Group</button>
+        <button type="button" class="tab-button" role="tab" target="#timeline" id="timelineBtn">Timeline</button>
+        <button type="button" class="tab-button" role="tab" target="#actressAge" id="actressAgeBtn">Actress age</button>
+        <button type="button" class="tab-button" role="tab" target="#shotFlay" id="shotFlayBtn">Shot Flay (<span id="shotFlayCount"></span>)</button>
+      </div>
+    </header>
+
+    <main class="tab-content-group">
+      <div class="tab-content" role="tabpanel" id="studioActress">
+        <div class="row">
+          <div class="col">
+            <h2>Studio</h2>
+            <ol id="studio">
+              <li class="thead">
+                <label class="name">Name</label>
+                <!-- <label class="sum" title="rank sum">Ranks</label> -->
+                <label class="size" title="flay count">Flay</label>
+                <label class="shot" title="shot count">Shot</label>
+                <label class="avg" title="rank avg">Avg</label>
+              </li>
+            </ol>
+          </div>
+          <div class="col">
+            <h2>Actress</h2>
+            <ol id="actress">
+              <li class="thead">
+                <label class="name">Name</label>
+                <!-- <label class="sum" title="rank sum">Ranks</label> -->
+                <label class="size" title="flay count">Flay</label>
+                <label class="shot" title="shot count">Shot</label>
+                <label class="avg" title="rank avg">Avg</label>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="rankGrounp">
+        <ul>
+          <li id="rank5">
+            <div class="thead">
+              <label>Rank 5</label>
+              <label class="count">Flay 5</label>
+              <label class="length">5 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank4">
+            <div class="thead">
+              <label>Rank 4</label>
+              <label class="count">Flay 4</label>
+              <label class="length">4 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank3">
+            <div class="thead">
+              <label>Rank 3</label>
+              <label class="count">Flay 3</label>
+              <label class="length">3 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank2">
+            <div class="thead">
+              <label>Rank 2</label>
+              <label class="count">Flay 2</label>
+              <label class="length">2 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank1">
+            <div class="thead">
+              <label>Rank 1</label>
+              <label class="count">Flay 1</label>
+              <label class="length">1 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank0">
+            <div class="thead">
+              <label>Rank 0</label>
+              <label class="count">Flay 0</label>
+              <label class="length">0 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+          <li id="rank-1">
+            <div class="thead">
+              <label>Rank -1</label>
+              <label class="count">Flay -1</label>
+              <label class="length">-1 TB</label>
+            </div>
+            <div class="list"></div>
+          </li>
+        </ul>
+      </div>
+      <div class="tab-content" role="tabpanel" id="timeline">
+        <div class="timeline-grid">
+          <div class="grid-head time">Date</div>
+          <div class="grid-head rank">Rank -1</div>
+          <div class="grid-head rank">Rank 0</div>
+          <div class="grid-head rank">Rank 1</div>
+          <div class="grid-head rank">Rank 2</div>
+          <div class="grid-head rank">Rank 3</div>
+          <div class="grid-head rank">Rank 4</div>
+          <div class="grid-head rank">Rank 5</div>
+        </div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="actressAge">
+        <div class="actressAge-grid">
+          <div class="grid-head age">Age</div>
+          <div class="grid-head rank">Rank -1</div>
+          <div class="grid-head rank">Rank 0</div>
+          <div class="grid-head rank">Rank 1</div>
+          <div class="grid-head rank">Rank 2</div>
+          <div class="grid-head rank">Rank 3</div>
+          <div class="grid-head rank">Rank 4</div>
+          <div class="grid-head rank">Rank 5</div>
+        </div>
+      </div>
+      <div class="tab-content" role="tabpanel" id="shotFlay">
+        <div class="grid-column">
+          <div class="statistics">
+            <div class="statistics-studio"></div>
+            <div class="statistics-release"></div>
+          </div>
+          <ol class="shot-flay-list"></ol>
+          <div class="statistics">
+            <div class="statistics-actress"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

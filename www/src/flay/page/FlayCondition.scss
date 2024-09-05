@@ -1,0 +1,36 @@
+.flay-condition {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  transition: 0.4s;
+
+  div {
+    input[type='search'] {
+      border-radius: 0.5rem;
+      width: 16rem;
+      &:hover {
+        background-color: var(--color-bg-transparent);
+      }
+    }
+    datalist {
+      width: 16rem;
+      option {
+        font-size: var(--size-small);
+        width: 16rem;
+      }
+    }
+    label {
+      margin: 0 0.25rem;
+    }
+    select {
+      font-size: var(--size-normal);
+      text-transform: capitalize;
+      outline: none;
+      option {
+        font-size: var(--size-small);
+      }
+    }
+  }
+}

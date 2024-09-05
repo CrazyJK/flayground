@@ -1,0 +1,51 @@
+div.flay-candidate {
+  display: grid;
+  grid-template-rows: 3rem 1fr;
+  height: 100%;
+
+  & > div {
+    display: flex;
+    justify-content: center;
+
+    & > button {
+      gap: 0.5rem;
+    }
+  }
+
+  ol {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: flex-start;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+
+    list-style: none;
+    padding: 1rem;
+    margin: 0;
+
+    overflow: auto;
+
+    li {
+      border-radius: 0.5rem;
+      padding: 0.5rem;
+      transition: 0.2s;
+      width: 1000px;
+      text-align: center;
+
+      button {
+        font: 700 1rem D2Coding;
+        padding: 0.25rem 0.5rem;
+        margin-bottom: 0.5rem;
+        border-radius: 0.25rem;
+        transition: 0.2s;
+
+        &:hover {
+          background-color: var(--color-bg-transparent);
+          box-shadow: var(--box-shadow);
+        }
+      }
+    }
+  }
+}

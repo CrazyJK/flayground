@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en" theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Studio</title>
+    <link rel="icon" type="image/png" href="./favicon/flay_2.png" />
+    <link rel="stylesheet" type="text/css" href="popup.studio.css" />
+    <script defer type="text/javascript" src="popup.studio.js"></script>
+  </head>
+  <body>
+    <header>
+      <div class="studio-info">
+        <input type="text" id="studioName" placeholder="name..." />
+        <input type="text" id="studioCompany" placeholder="company..." />
+        <input type="text" id="studioHomepage" placeholder="homepage..." />
+        <select id="flayRank">
+          <option value="">Rank</option>
+          <option value="-1">Rank -1</option>
+          <option value="0">Rank 0</option>
+          <option value="1">Rank 1</option>
+          <option value="2">Rank 2</option>
+          <option value="3">Rank 3</option>
+          <option value="4">Rank 4</option>
+          <option value="5">Rank 5</option>
+        </select>
+        <input type="text" id="totalCount" title="total flay count" readonly />
+        <button id="saveBtn">Save</button>
+      </div>
+      <div class="actress-list"></div>
+      <div class="tag-list"></div>
+    </header>
+    <article></article>
+  </body>
+</html>

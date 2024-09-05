@@ -1,0 +1,11 @@
+[role='tab'] {
+  &[active] {
+    color: var(--color-tab-active);
+  }
+}
+[role='tabpanel'] {
+  display: none;
+  &[active] {
+    display: block;
+  }
+}

@@ -1,0 +1,35 @@
+.flay-title {
+  text-align: center;
+
+  label {
+    position: relative;
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 100%;
+
+    a {
+      display: inline;
+      font-size: var(--size-largest);
+    }
+  }
+
+  &.card {
+    a {
+      font-size: var(--size-large);
+    }
+  }
+
+  &.small {
+    a {
+      font-size: var(--size-normal);
+    }
+  }
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
+    }
+  }
+}

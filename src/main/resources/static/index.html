@@ -1,69 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Flay</title>
-		<style>
-			body {
-				background-color: #000;
-				overflow: hidden;
-				margin: 0;
-				padding: 0;
-				transition: background-color 3s;
-			}
-			a {
-				position: absolute;
-				top: 0;
-				left: 0;
-				margin: 0;
-				padding: 0;
-				text-decoration: none;
-				transition-duration: 0s;
-				transition-timing-function: linear;
-			}
-		</style>
-		<script>
-			async function process() {
-				const body = document.querySelector('body');
-				const anker = document.querySelector('a');
-				const image = document.querySelector('a > img');
-				let x1 = 0;
-				let y1 = 0;
-
-				do {
-					let r = Math.round(Math.random() * 256);
-					let g = Math.round(Math.random() * 256);
-					let b = Math.round(Math.random() * 256);
-
-					let x2 = Math.round(Math.random() * (window.innerWidth - image.width));
-					let y2 = Math.round(Math.random() * (window.innerHeight - image.width));
-
-					let distance = Math.round(Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2)));
-					let duration = distance * 4;
-
-					body.style.transitionDuration = duration + 'ms';
-					body.style.backgroundColor = `rgb(${r},${g},${b})`;
-
-					anker.style.transitionDuration = duration + 'ms';
-					anker.style.top = y2 + 'px';
-					anker.style.left = x2 + 'px';
-					anker.animate([{ transform: 'scale(1)' }, { transform: `scale(${duration / 1000 + 1})` }, { transform: 'scale(1)' }], { duration: duration, iterations: 1 });
-
-					await new Promise((resolve) => setTimeout(resolve, duration));
-
-					x1 = x2;
-					y1 = y2;
-				} while (true);
-			}
-		</script>
-	</head>
-	<body>
-		<a href="dist/index.html">
-			<img src="dist/img/svg/flayground1.svg" width="100" />
-		</a>
-		<script>
-			process();
-		</script>
-	</body>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Facade</title>
+    <style type="text/css">
+      body {
+        position: fixed;
+        inset: 0;
+        margin: 0;
+        border: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #202020 url(dist/svg/flayground-text.svg) no-repeat fixed center / 300px;
+      }
+      a {
+        width: 150px;
+        height: 100px;
+      }
+    </style>
+    <script>
+      const urlParams = new URL(location.href).searchParams;
+      const start = urlParams.get('start');
+      if (start) {
+        location.href = start;
+      }
+    </script>
+  </head>
+  <body>
+    <a href="dist/index.html"></a>
+    <a href="multi.html"></a>
+  </body>
 </html>

@@ -1,0 +1,94 @@
+::-webkit-scrollbar {
+  width: 0.25rem;
+}
+::-webkit-scrollbar-thumb {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 0.25rem;
+}
+
+.flay-attach {
+  position: relative;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--color-border-active);
+  border-radius: 0;
+
+  .file-box {
+    position: relative;
+    width: calc(100% - 1rem);
+    height: calc(100% - 1rem);
+    margin: 0;
+    padding: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .file-list {
+    height: calc(100% - 1.5rem);
+    overflow: auto;
+    margin: 0;
+    padding: 0 0 0 0.5rem;
+  }
+  .file-list > li {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 1rem;
+    margin: 0.125rem;
+    padding: 0.125rem 0.25rem;
+    border-radius: 0.25rem;
+  }
+  .file-list > li:hover {
+    background-color: rgba(250, 250, 0, 0.125);
+  }
+  .file-list > li > .file-name > a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+  .file-list > li > .file-size {
+    margin-left: auto;
+  }
+  .file-list > li > button {
+    background-color: transparent;
+    border: 0;
+    color: red;
+    cursor: pointer;
+  }
+  .file-list > li > button:hover {
+    text-shadow: 1px 1px black;
+  }
+
+  .file-summary {
+    border-top: 1px solid var(--color-border-active);
+    height: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    gap: 1rem;
+    padding: 0 3rem;
+  }
+
+  #fileSelector {
+    cursor: pointer;
+  }
+
+  input[type='file'] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    display: none;
+  }
+}
+
+.flay-attach.file-empty .file-list {
+  background: transparent url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='192px'><text x='0' y='15' fill='lightgray' font-size='20'>Drag and drop here</text></svg>") center no-repeat;
+}
+
+.flay-attach.file-dragover .file-list {
+  background: rgba(0, 0, 0, 0.125) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='orange' font-size='20'>Drop file here!</text></svg>") center no-repeat;
+}
+
+.flay-attach.file-transfer .file-list {
+  background: rgba(0, 0, 0, 0.25) url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' version='1.1' height='32px' width='144px'><text x='0' y='15' fill='orange' font-size='20'>File transfer...</text></svg>") center no-repeat;
+}

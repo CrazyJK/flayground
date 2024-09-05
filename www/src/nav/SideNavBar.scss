@@ -1,0 +1,52 @@
+.side-nav {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  background-color: var(--color-bg-side-nav);
+
+  header {
+    padding: 1rem;
+    a {
+      font-size: var(--size-largest);
+    }
+  }
+
+  article {
+    margin-bottom: auto;
+    padding: 1rem;
+    overflow: auto;
+
+    div {
+      line-height: 2rem;
+      &:empty {
+        margin-bottom: 1rem;
+      }
+      a {
+        white-space: nowrap;
+      }
+      &:hover {
+        a + a {
+          opacity: 1;
+        }
+      }
+      a + a {
+        opacity: 0;
+      }
+    }
+  }
+
+  footer {
+    padding: 1rem;
+  }
+
+  .active > a {
+    color: var(--color-checked);
+  }
+  a {
+    font-family: 'Ink Free';
+    text-transform: capitalize;
+  }
+}

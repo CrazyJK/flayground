@@ -1,0 +1,39 @@
+@import './style/style.scss';
+
+@keyframes slideLeft {
+  to {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+}
+@keyframes slideRight {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+}
+::view-transition-old(slide) {
+  animation-name: slideLeft;
+}
+::view-transition-new(slide) {
+  animation-name: slideRight;
+}
+
+body {
+  & > main {
+    position: fixed;
+    inset: 0;
+
+    display: grid;
+    grid-template-rows: 4rem 1fr;
+
+    & > header {
+      position: relative;
+      overflow: hidden;
+    }
+    & > article {
+      view-transition-name: slide;
+      overflow: hidden;
+    }
+  }
+}

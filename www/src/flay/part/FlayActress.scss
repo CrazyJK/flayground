@@ -1,0 +1,74 @@
+.flay-actress {
+  div {
+    display: flex;
+    justify-content: space-between;
+    gap: 0.5rem;
+
+    span {
+      margin-top: 0.25rem;
+    }
+    label {
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .name {
+      flex: 1 1 auto;
+      white-space: nowrap;
+      text-align: start;
+    }
+    .localName {
+      flex: 0 1 auto;
+    }
+    .flaySize {
+      flex: 0 1 2rem;
+      text-align: right;
+    }
+    .age {
+      flex: 0 1 2rem;
+      text-align: right;
+    }
+    .body {
+      flex: 0 1 6.5rem;
+    }
+    .height {
+      flex: 0 1 auto;
+      text-align: right;
+    }
+    .debut {
+      flex: 0 1 auto;
+      text-align: right;
+    }
+  }
+
+  &.card {
+    .localName,
+    .flaySize,
+    .age,
+    .body,
+    .height,
+    .debut {
+      display: none;
+    }
+  }
+
+  &.small {
+    div {
+      gap: 0.5rem;
+
+      svg {
+        width: 1rem;
+        height: 1rem;
+      }
+      a {
+        font-size: var(--size-small);
+      }
+    }
+  }
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
+    }
+  }
+}

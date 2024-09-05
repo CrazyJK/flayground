@@ -1,0 +1,30 @@
+.flay-opus {
+  text-align: center;
+
+  div {
+    display: inline-flex;
+    gap: 1rem;
+
+    button {
+      display: none;
+    }
+
+    &:hover {
+      button {
+        display: flex;
+      }
+    }
+  }
+
+  &.card {
+    button {
+      display: none !important;
+    }
+  }
+
+  &.archive {
+    * {
+      color: var(--color-gray-dark);
+    }
+  }
+}

@@ -1,0 +1,18 @@
+@import './style/style.scss';
+@import './style/layout.sticky-header.scss';
+@import './style/layout.grid-card.scss';
+
+#tagId {
+  padding: 0.25rem 0.5rem 0;
+}
+
+#tagName {
+  flex: 1 1 auto;
+}
+#tagDesc {
+  flex: 1 1 auto;
+}
+
+header > div button {
+  display: initial;
+}

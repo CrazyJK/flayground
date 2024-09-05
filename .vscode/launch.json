@@ -2,43 +2,39 @@
   "configurations": [
     {
       "type": "java",
-      "name": "flayground",
+      "name": "Ground",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
-      "projectName": "flayground",
-      "vmArgs": "-Dspring.profiles.active=flay-home"
+      "mainClass": "jk.kamoru.ground.GroundApplication",
+      "vmArgs": "-Dspring.profiles.active=ground-home,env-dev"
     },
     {
       "type": "java",
-      "name": "flayground test",
+      "name": "Ground test",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
-      "projectName": "flayground",
-      "vmArgs": "-Dspring.profiles.active=flay-test"
+      "mainClass": "jk.kamoru.ground.GroundApplication",
+      "vmArgs": "-Dspring.profiles.active=ground-test,env-dev"
     },
     {
       "type": "java",
-      "name": "flayground SSL",
+      "name": "Ground SSL",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
-      "projectName": "flayground",
-      "vmArgs": "-Dspring.profiles.active=flay-home -Dserver.port=443 -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=kamoru -Dserver.ssl.key-store=classpath:cert/kamoru.jk.p12 -Dserver.ssl.key-store-password=697489"
+      "mainClass": "jk.kamoru.ground.GroundApplication",
+      "vmArgs": "-Dspring.profiles.active=ground-home,env-dev,env-ssl"
     },
     {
       "type": "java",
-      "name": "flayground SSL test",
+      "name": "Ground SSL test",
       "request": "launch",
       "cwd": "${workspaceFolder}",
       "console": "internalConsole",
-      "mainClass": "jk.kamoru.flayground.FlaygroundApplication",
-      "projectName": "flayground",
-      "vmArgs": "-Dspring.profiles.active=flay-test -Dserver.port=443 -Dserver.ssl.enabled=true -Dserver.ssl.key-alias=kamoru -Dserver.ssl.key-store=classpath:cert/kamoru.jk.p12 -Dserver.ssl.key-store-password=697489"
+      "mainClass": "jk.kamoru.ground.GroundApplication",
+      "vmArgs": "-Dspring.profiles.active=ground-test,env-dev,env-ssl"
     }
   ]
 }

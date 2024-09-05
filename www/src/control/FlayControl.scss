@@ -1,0 +1,45 @@
+.flay-control {
+  position: absolute;
+  inset: 0;
+
+  display: grid;
+  grid-template-rows: 3rem 1fr;
+
+  header {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-end;
+    border-bottom: 1px solid var(--color-border);
+
+    .tab-button {
+      border: 1px solid var(--color-border);
+      border-right: 0;
+      border-bottom: 0;
+      padding: 0.25rem 0.5rem;
+
+      &:last-child {
+        border-right: 1px solid var(--color-border);
+      }
+
+      &.active {
+        text-shadow: 1px 1px 2px var(--color-checked);
+      }
+    }
+  }
+
+  article {
+    overflow: hidden;
+
+    flay-finder,
+    flay-register,
+    flay-batch,
+    subtitles-finder,
+    flay-candidate {
+      position: relative;
+      // display: block;
+      height: 100%;
+      width: 100%;
+    }
+  }
+}

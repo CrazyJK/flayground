@@ -1,0 +1,119 @@
+.flay-pagination {
+  .paging {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 4px;
+
+    .page {
+      position: relative;
+      margin: 0;
+      background-color: var(--color-bg);
+      border: 1px solid #aaa;
+      border-right: 0;
+      padding: 0.25rem;
+      line-height: 1.25rem;
+      min-width: 2.5rem;
+      font-size: var(--size-normal);
+      cursor: pointer;
+      text-align: center;
+
+      &:last-child {
+        border-right: 1px solid #aaa;
+      }
+      &:hover {
+        a {
+          text-shadow: var(--text-shadow-hover);
+        }
+      }
+      &.disable {
+        a {
+          color: var(--color-text-secondary);
+        }
+      }
+      &.active {
+        a {
+          color: var(--color-checked);
+        }
+      }
+
+      a {
+        font-size: var(--size-small);
+        font-weight: 700;
+      }
+    }
+  }
+
+  .progress {
+    position: relative;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+
+    .progress-bar {
+      position: relative;
+      height: 1px;
+      background-color: #f00;
+    }
+  }
+
+  .cover-thumbnail {
+    position: fixed;
+    display: none;
+    aspect-ratio: var(--cover-aspect-ratio);
+    background: var(--color-bg) no-repeat top center / contain;
+
+    div {
+      &.bottom-left {
+        border-top-right-radius: 1rem;
+        background-color: var(--color-bg);
+      }
+      &.bottom-right {
+        border-top-left-radius: 1rem;
+        background-color: var(--color-bg);
+      }
+    }
+
+    &.show {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-template-rows: 1fr 1rem;
+    }
+  }
+
+  & > button {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    font-family: 'Ink free';
+    border-radius: 25%;
+    border: 2px solid var(--color-border-active);
+    background-color: var(--color-bg);
+    box-shadow: var(--box-shadow);
+    width: 2rem;
+    height: 2rem;
+    margin: 0.5rem;
+    z-index: 1;
+
+    & ~ aside {
+      position: fixed;
+      right: 0;
+      bottom: 3rem;
+      display: flex;
+      flex-direction: column;
+
+      button {
+        font-family: 'Ink free';
+        border-radius: 50%;
+        border: 2px solid var(--color-border-active);
+        background-color: var(--color-bg);
+        box-shadow: var(--box-shadow-small);
+        width: 2rem;
+        height: 2rem;
+        margin: 0.5rem;
+        z-index: 2;
+      }
+    }
+  }
+}

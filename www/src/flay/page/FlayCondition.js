@@ -1,7 +1,7 @@
-import SVGfavorite from '../../svg/favorite.svg';
-import SVGnoFavorite from '../../svg/noFavorite.svg';
+import favoriteSVG from '../../svg/favorite.svg';
+import noFavoriteSVG from '../../svg/noFavorite.svg';
 import rankSVG from '../../svg/rankSVG';
-import SVGsubtitles from '../../svg/subtitles.svg';
+import subtitlesSVG from '../../svg/subtitles.svg';
 import FlayStorage from '../../util/FlayStorage';
 import './FlayCondition.scss';
 
@@ -39,13 +39,13 @@ export default class FlayCondition extends HTMLElement {
       </div>
       <div>
         <input type="checkbox" id="withSubtitles" ${condition.withSubtitles ? 'checked' : ''}>
-        <label for="withSubtitles" title="with Subtitles">${SVGsubtitles}</label>
+        <label for="withSubtitles" title="with Subtitles">${subtitlesSVG}</label>
       </div>
       <div>
         <input type="checkbox" id="withFavorite" ${condition.withFavorite ? 'checked' : ''}>
-        <label for="withFavorite" title="with Favorite">${SVGfavorite}</label>
+        <label for="withFavorite" title="with Favorite">${favoriteSVG}</label>
         <input type="checkbox" id="withNoFavorite" ${condition.withNoFavorite ? 'checked' : ''}>
-        <label for="withNoFavorite" title="with No Favorite">${SVGnoFavorite}</label>
+        <label for="withNoFavorite" title="with No Favorite">${noFavoriteSVG}</label>
       </div>
       <div>
         ${RANKS.map((r) => `<input type="checkbox" name="rank" value="${r}" id="rank${r}" ${condition.rank.includes(String(r)) ? 'checked' : ''}><label for="rank${r}" title="Rank ${r}">${rankSVG[r + 1]}</label>`).join('')}

@@ -1,4 +1,4 @@
-import SVGfavorite from '../../svg/favorite.svg';
+import favoriteSVG from '../../svg/favorite.svg';
 import FlayAction from '../../util/FlayAction';
 import { popupActress, popupActressInfo } from '../../util/FlaySearch';
 import StringUtils from '../../util/StringUtils';
@@ -57,7 +57,7 @@ export default class FlayActress extends FlayHTMLElement {
       });
       const label = favoriteElement.appendChild(document.createElement('label'));
       label.setAttribute('for', 'fav' + index);
-      label.innerHTML = SVGfavorite;
+      label.innerHTML = favoriteSVG;
 
       // name
       const nameLabel = actressDiv.appendChild(document.createElement('label'));

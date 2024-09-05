@@ -1,6 +1,6 @@
-import SVGfolder from '../../svg/folder.svg';
-import SVGtorrent from '../../svg/torrent.svg';
-import SVGyoutube from '../../svg/youtube.svg';
+import folderSVG from '../../svg/folder.svg';
+import torrentSVG from '../../svg/torrent.svg';
+import youtubeSVG from '../../svg/youtube.svg';
 import FileUtils from '../../util/FileUtils';
 import FlayAction from '../../util/FlayAction';
 import FlaySearch from '../../util/FlaySearch';
@@ -25,7 +25,7 @@ export default class FlayFiles extends FlayHTMLElement {
 
     this.playBtn = infoDiv.appendChild(document.createElement('button'));
     this.playBtn.classList.add('flay-play');
-    this.playBtn.innerHTML = SVGyoutube;
+    this.playBtn.innerHTML = youtubeSVG;
     this.playBtn.addEventListener('click', async () => {
       const { playInLayer } = await import(/* webpackChunkName: "FlayVideoPlayer" */ '../FlayVideoPlayer');
       await playInLayer(this.flay.opus);
@@ -64,14 +64,14 @@ export default class FlayFiles extends FlayHTMLElement {
     this.fileShowBtn = infoDiv.appendChild(document.createElement('button'));
     this.fileShowBtn.classList.add('files-btn');
     this.fileShowBtn.setAttribute('title', 'show files');
-    this.fileShowBtn.innerHTML = SVGfolder;
+    this.fileShowBtn.innerHTML = folderSVG;
     this.fileShowBtn.addEventListener('click', () => {
       this.listDiv.classList.toggle('show');
     });
 
     this.downloadBtn = infoDiv.appendChild(document.createElement('button'));
     this.downloadBtn.classList.add('search-torrent');
-    this.downloadBtn.innerHTML = SVGtorrent;
+    this.downloadBtn.innerHTML = torrentSVG;
     this.downloadBtn.addEventListener('click', () => {
       FlaySearch.torrent.Nonojav(this.flay.opus);
       FlaySearch.torrent.Ijav(this.flay.opus);

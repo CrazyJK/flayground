@@ -2,7 +2,7 @@ import './init/Popup';
 import './popup.actress.scss';
 
 import FlayCard from './flay/FlayCard';
-import SVGfavorite from './svg/favorite.svg';
+import favoriteSVG from './svg/favorite.svg';
 import FlayAction from './util/FlayAction';
 import FlaySearch from './util/FlaySearch';
 
@@ -37,7 +37,7 @@ class PopupActress {
     this.searchNextjavBtn = document.querySelector('#searchNextjavBtn');
     this.searchMinnanoBtn = document.querySelector('#searchMinnanoBtn');
 
-    this.favLabel.innerHTML = SVGfavorite;
+    this.favLabel.innerHTML = favoriteSVG;
     document.title = this.name;
 
     // 조건에 맞는 카드 토글 이벤트

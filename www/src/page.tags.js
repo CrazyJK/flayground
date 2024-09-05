@@ -1,6 +1,6 @@
 import './init/Page';
 import './page.tags.scss';
-import SVGtag from './svg/tag.svg';
+import tagSVG from './svg/tag.svg';
 
 import FlayAction from './util/FlayAction';
 import { popupTag } from './util/FlaySearch';
@@ -17,7 +17,7 @@ class FlayTagInfo extends HTMLDListElement {
     this.classList.add('flay-tag-info');
     this.innerHTML = `
       <dt>
-        <label class="icon">${SVGtag}</label>
+        <label class="icon">${tagSVG}</label>
         <label class="name">${this.tag.name}</label>
         <label class="count ${this.tag.count === 0 ? 'zero' : ''}">${this.tag.count}</label>
       </dt>

@@ -1,7 +1,7 @@
 import './init/Page';
 import './page.actress.scss';
-import SVGfavorite from './svg/favorite.svg';
-import SVGnoFavorite from './svg/noFavorite.svg';
+import favoriteSVG from './svg/favorite.svg';
+import noFavoriteSVG from './svg/noFavorite.svg';
 import StringUtils from './util/StringUtils';
 
 class Page {
@@ -16,7 +16,7 @@ class Page {
     actressList.forEach((actress) => {
       const item = main.appendChild(document.createElement('div'));
       item.innerHTML = `
-        <label class="favorite  ">${actress.favorite ? SVGfavorite : SVGnoFavorite}</label>
+        <label class="favorite  ">${actress.favorite ? favoriteSVG : noFavoriteSVG}</label>
         <label class="name      " title="${actress.comment}">${actress.name}</label>
         <label class="local-name">${actress.localName}</label>
         <label class="birth     ">${actress.birth}</label>

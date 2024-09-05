@@ -10,15 +10,15 @@ import './page.kamoru-diary.scss';
 import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import FlayAttach from './attach/FlayAttach';
-import SVGweatherCloud from './svg/weather_cloud.svg';
-import SVGWeatherRain from './svg/weather_rain.svg';
-import SVGweatherSnow from './svg/weather_snow.svg';
-import SVGweatherSunny from './svg/weather_sunny.svg';
+import weatherCloudSVG from './svg/weather_cloud.svg';
+import WeatherRainSVG from './svg/weather_rain.svg';
+import weatherSnowSVG from './svg/weather_snow.svg';
+import weatherSunnySVG from './svg/weather_sunny.svg';
 
-document.querySelector('#weather-sunny + label').innerHTML = SVGweatherSunny;
-document.querySelector('#weather-cloud + label').innerHTML = SVGweatherCloud;
-document.querySelector('#weather-rainy + label').innerHTML = SVGWeatherRain;
-document.querySelector('#weather-snowy + label').innerHTML = SVGweatherSnow;
+document.querySelector('#weather-sunny + label').innerHTML = weatherSunnySVG;
+document.querySelector('#weather-cloud + label').innerHTML = weatherCloudSVG;
+document.querySelector('#weather-rainy + label').innerHTML = WeatherRainSVG;
+document.querySelector('#weather-snowy + label').innerHTML = weatherSnowSVG;
 
 const GB = 1024 * 1024 * 1024;
 const newDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null }, content: '' };

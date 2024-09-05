@@ -1,6 +1,6 @@
 import GridControl from '../lib/GridControl';
-import SVGvagina from '../svg/vagina.svg';
-import SVGtrashBin from '../svg/trashBin.svg';
+import trashBinSVG from '../svg/trashBin.svg';
+import vaginaSVG from '../svg/vagina.svg';
 import { popupActress, popupFlay, popupTag } from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
 import { getRandomInt } from '../util/randomNumber';
@@ -21,8 +21,8 @@ export class FlayBasket extends HTMLDivElement {
       <div class="footer">
         <div class="control">
           <button type="button" id="pickUpRandomFlay" title="pick up random flay"><span id="flayCount">0</span> Flay</button>
-          <button type="button" id="toggleActressName" title="toggle actress name"><span id="actressCount">0</span> ${SVGvagina}</button>
-          <button type="button" id="emptyAll" title="empty All">${SVGtrashBin}</button>
+          <button type="button" id="toggleActressName" title="toggle actress name"><span id="actressCount">0</span> ${vaginaSVG}</button>
+          <button type="button" id="emptyAll" title="empty All">${trashBinSVG}</button>
         </div>
       </div>
     `;
@@ -173,7 +173,7 @@ class FlayBasketItem extends HTMLDivElement {
         <div class="actress"></div>
         <div class="tags"></div>
       </div>
-      <button type="button" class="empty-this">${SVGtrashBin}</button>
+      <button type="button" class="empty-this">${trashBinSVG}</button>
     `;
 
     this.querySelector('.empty-this').addEventListener('click', async () => await this.#delete(opus));

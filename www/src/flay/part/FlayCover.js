@@ -1,4 +1,4 @@
-import SVGnewWindow from '../../svg/newWindow.svg';
+import newWindowSVG from '../../svg/newWindow.svg';
 import { popupCover } from '../../util/FlaySearch';
 import FlayStorage from '../../util/FlayStorage';
 import { getDominatedColors } from '../../util/dominatedColor';
@@ -33,7 +33,7 @@ export default class FlayCover extends FlayHTMLElement {
 
     this.popupCoverWrap = this.wrapper.appendChild(document.createElement('div'));
     this.popupCoverWrap.classList.add('popup-cover-wrapper');
-    this.popupCoverWrap.innerHTML = `${SVGnewWindow}`;
+    this.popupCoverWrap.innerHTML = `${newWindowSVG}`;
     this.popupCoverWrap.querySelector('svg').addEventListener('click', (e) => {
       e.stopPropagation();
       popupCover(this.flay.opus);

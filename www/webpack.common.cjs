@@ -124,21 +124,13 @@ module.exports = {
   },
   performance: {
     assetFilter: function (assetFilename) {
-      return !assetFilename.endsWith('.json') && !assetFilename.endsWith('.map') && assetFilename !== 'style.js' && assetFilename !== 'page.kamoru-diary.js';
+      const lastIndex = assetFilename.lastIndexOf('.');
+      const name = assetFilename.substring(0, lastIndex);
+      const suffix = assetFilename.substring(lastIndex + 1);
+      return !['json', 'map', 'ico'].includes(suffix) && !['style', 'page.kamoru-diary'].includes(name);
     },
     maxAssetSize: 500000,
     maxEntrypointSize: 500000,
     hints: false,
   },
-  // optimization: {
-  //   splitChunks: {
-  //     cacheGroups: {
-  //       vendor: {
-  //         chunks: 'initial',
-  //         name: 'vendor',
-  //         enforce: true,
-  //       },
-  //     },
-  //   },
-  // },
 };

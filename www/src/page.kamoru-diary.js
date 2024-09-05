@@ -10,15 +10,12 @@ import './page.kamoru-diary.scss';
 import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import FlayAttach from './attach/FlayAttach';
-import weatherCloudSVG from './svg/weather_cloud.svg';
-import WeatherRainSVG from './svg/weather_rain.svg';
-import weatherSnowSVG from './svg/weather_snow.svg';
-import weatherSunnySVG from './svg/weather_sunny.svg';
+import weatherSVG from './svg/js/weatherSVG';
 
-document.querySelector('#weather-sunny + label').innerHTML = weatherSunnySVG;
-document.querySelector('#weather-cloud + label').innerHTML = weatherCloudSVG;
-document.querySelector('#weather-rainy + label').innerHTML = WeatherRainSVG;
-document.querySelector('#weather-snowy + label').innerHTML = weatherSnowSVG;
+document.querySelector('#weather-sunny + label').innerHTML = weatherSVG.sunny;
+document.querySelector('#weather-cloud + label').innerHTML = weatherSVG.cloud;
+document.querySelector('#weather-rainy + label').innerHTML = weatherSVG.rain;
+document.querySelector('#weather-snowy + label').innerHTML = weatherSVG.snow;
 
 const GB = 1024 * 1024 * 1024;
 const newDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null }, content: '' };

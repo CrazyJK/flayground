@@ -1,6 +1,6 @@
 import favoriteSVG from '../../svg/favorite.svg';
+import rankSVG from '../../svg/js/rankSVG';
 import noFavoriteSVG from '../../svg/noFavorite.svg';
-import rankSVG from '../../svg/rankSVG';
 import subtitlesSVG from '../../svg/subtitles.svg';
 import FlayStorage from '../../util/FlayStorage';
 import './FlayCondition.scss';

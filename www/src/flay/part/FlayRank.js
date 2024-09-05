@@ -1,4 +1,4 @@
-import rankSVG from '../../svg/rankSVG';
+import rankSVG from '../../svg/js/rankSVG';
 import FlayAction from '../../util/FlayAction';
 import FlayHTMLElement from './FlayHTMLElement';
 import './FlayRank.scss';

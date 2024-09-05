@@ -3,9 +3,7 @@ import './page.flay-play.scss';
 
 import { FlayProvider } from './lib/FlayProvider';
 import basketSVG from './svg/basket.svg';
-import controlsNextTrackSVG from './svg/controls_nextTrack.svg';
-import controlsPauseSVG from './svg/controls_pause.svg';
-import controlsVolumeSVG from './svg/controls_volume.svg';
+import controlsSVG from './svg/js/controlsSVG';
 import FlayStorage from './util/FlayStorage';
 import { getRandomInt } from './util/randomNumber';
 
@@ -21,9 +19,9 @@ class App extends FlayProvider {
   constructor(opts) {
     super(opts);
 
-    document.querySelector('#play-next-flay').innerHTML = controlsNextTrackSVG;
-    document.querySelector('[for="pause-video"]').innerHTML = controlsPauseSVG;
-    document.querySelector('[for="video-volume"]').innerHTML = controlsVolumeSVG;
+    document.querySelector('#play-next-flay').innerHTML = controlsSVG.nextTrack;
+    document.querySelector('[for="pause-video"]').innerHTML = controlsSVG.pause;
+    document.querySelector('[for="video-volume"]').innerHTML = controlsSVG.volume;
 
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
 

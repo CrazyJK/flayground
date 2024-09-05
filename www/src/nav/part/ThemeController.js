@@ -1,4 +1,4 @@
-import SVG from '../../svg/SVG';
+import themeSVG from '../../svg/themeSVG';
 import FlayStorage from '../../util/FlayStorage';
 import './ThemeController.scss';
 
@@ -35,7 +35,7 @@ export default class ThemeController extends HTMLElement {
 
       const label = themeGroup.appendChild(document.createElement('label'));
       label.setAttribute('for', 'theme' + theme);
-      label.innerHTML = SVG.theme[theme];
+      label.innerHTML = themeSVG[theme];
       label.addEventListener('click', () => {
         FlayStorage.local.set(THEME_KEY, theme);
         console.debug('set Storage Theme', theme);

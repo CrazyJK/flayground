@@ -14,7 +14,7 @@ body {
   margin: 0;
   padding: 0;
 
-  background: var(--color-bg) url(./svg/flayground-circle.svg) no-repeat fixed right bottom / min(100%, 10rem);
+  background: var(--color-bg) no-repeat fixed right bottom / min(100%, 10rem);
   background-blend-mode: exclusion;
   color: var(--color-text);
 }

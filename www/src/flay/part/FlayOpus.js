@@ -1,4 +1,5 @@
-import SVG from '../../svg/SVG';
+import SVGjson from '../../svg/json.svg';
+import SVGbasket from '../../svg/basket.svg';
 import FlaySearch, { popupFlayInfo } from '../../util/FlaySearch';
 import FlayHTMLElement from './FlayHTMLElement';
 import './FlayOpus.scss';
@@ -18,9 +19,9 @@ export default class FlayOpus extends FlayHTMLElement {
   init() {
     this.wrapper.innerHTML = `
       <div>
-        <button type="button" id="jsonViewBtn">${SVG.json}</button>
+        <button type="button" id="jsonViewBtn">${SVGjson}</button>
         <label><a>Opus</a></label>
-        <button type="button" id="keepBasketBtn">${SVG.basket}</button>
+        <button type="button" id="keepBasketBtn">${SVGbasket}</button>
       </div>
     `;
 

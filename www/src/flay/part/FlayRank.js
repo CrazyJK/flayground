@@ -1,4 +1,4 @@
-import SVG from '../../svg/SVG';
+import rankSVG from '../../svg/rankSVG';
 import FlayAction from '../../util/FlayAction';
 import FlayHTMLElement from './FlayHTMLElement';
 import './FlayRank.scss';
@@ -35,7 +35,7 @@ export default class FlayRank extends FlayHTMLElement {
       const rankLabelElement = rankGroupElement.appendChild(document.createElement('label'));
       rankLabelElement.setAttribute('for', 'rank' + i);
       rankLabelElement.setAttribute('title', 'rank ' + i);
-      rankLabelElement.innerHTML = SVG.rank[i + 1];
+      rankLabelElement.innerHTML = rankSVG[i + 1];
 
       this.rankInputElementArray.push(rankInputElement);
     }

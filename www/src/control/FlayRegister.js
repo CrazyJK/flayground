@@ -1,4 +1,4 @@
-import SVG from '../svg/SVG';
+import SVGfavorite from '../svg/favorite.svg';
 import FlayAction from '../util/FlayAction';
 import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '../util/FlaySearch';
 import FlayStorage from '../util/FlayStorage';
@@ -37,7 +37,7 @@ const HTML = `
   <div>
     <span class="checkbox">
       <input type="checkbox" id="actressFavorite" />
-      <label for="actressFavorite">${SVG.favorite}</label>
+      <label for="actressFavorite">${SVGfavorite}</label>
     </span>
     <input  type="text"   id="actressName"      placeholder="name" />
     <input  type="text"   id="actressLocalname" placeholder="localName" />

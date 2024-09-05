@@ -56,15 +56,11 @@ module.exports = {
           },
         },
         {
-          from: 'src/favicon/*.png',
+          from: 'img/favicon/*',
           to: 'favicon/[name][ext]',
         },
         {
-          from: 'src/favicon/*.ico',
-          to: 'favicon/[name][ext]',
-        },
-        {
-          from: 'src/svg/*.svg',
+          from: 'img/svg/*',
           to: 'svg/[name][ext]',
         },
         {
@@ -110,25 +106,28 @@ module.exports = {
         ],
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/i,
+        test: /\.(png|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
+      },
+      {
+        test: /\.svg/,
+        type: 'asset/source',
+        generator: {
+          emit: false,
+        },
       },
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
       },
-      {
-        test: /\.txt$/,
-        use: 'raw-loader',
-      },
     ],
   },
   performance: {
     assetFilter: function (assetFilename) {
-      return !assetFilename.endsWith('.json') && !assetFilename.endsWith('.map') && assetFilename !== 'style.js';
+      return !assetFilename.endsWith('.json') && !assetFilename.endsWith('.map') && assetFilename !== 'style.js' && assetFilename !== 'page.kamoru-diary.js';
     },
     maxAssetSize: 500000,
-    maxEntrypointSize: 600000,
+    maxEntrypointSize: 500000,
     hints: false,
   },
   // optimization: {

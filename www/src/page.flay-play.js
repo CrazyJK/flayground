@@ -2,7 +2,10 @@ import './init/Page';
 import './page.flay-play.scss';
 
 import { FlayProvider } from './lib/FlayProvider';
-import SVG from './svg/SVG';
+import SVGbasket from './svg/basket.svg';
+import SVGcontrolsNextTrack from './svg/controls_nextTrack.svg';
+import SVGcontrolsPause from './svg/controls_pause.svg';
+import SVGcontrolsVolume from './svg/controls_volume.svg';
 import FlayStorage from './util/FlayStorage';
 import { getRandomInt } from './util/randomNumber';
 
@@ -18,9 +21,9 @@ class App extends FlayProvider {
   constructor(opts) {
     super(opts);
 
-    document.querySelector('#play-next-flay').innerHTML = SVG.controls.nextTrack;
-    document.querySelector('[for="pause-video"]').innerHTML = SVG.controls.pause;
-    document.querySelector('[for="video-volume"]').innerHTML = SVG.controls.volume;
+    document.querySelector('#play-next-flay').innerHTML = SVGcontrolsNextTrack;
+    document.querySelector('[for="pause-video"]').innerHTML = SVGcontrolsPause;
+    document.querySelector('[for="video-volume"]').innerHTML = SVGcontrolsVolume;
 
     this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
 
@@ -103,7 +106,7 @@ class App extends FlayProvider {
   }
 
   #initKeepFlay() {
-    document.querySelector('#keepFlay').innerHTML = SVG.basket;
+    document.querySelector('#keepFlay').innerHTML = SVGbasket;
     document.querySelector('#keepFlay').addEventListener('click', async () => {
       const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ './flay/FlayBasket');
       FlayBasket.add(this.videoPlayer.opus);

@@ -36,7 +36,6 @@ module.exports = {
     'popup.tag': './src/popup.tag.js',
     'popup.monitor': './src/popup.monitor.js',
     'dependencies-viewer': './src/dependencies-viewer.js',
-    'test-canvas': './src/test-canvas.js',
   },
   devtool: 'source-map',
   output: {

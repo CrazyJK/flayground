@@ -118,7 +118,7 @@ export default {
         <path d="M34,15.5v17a.5.5,0,0,0,.9.3,14,14,0,0,0,0-17.6A.5.5,0,0,0,34,15.5Z"/>
       </svg>`,
   },
-  cloudDown: `<svg id="cloudDown width="2rem" viewBox="-2.4 -2.4 28.80 28.80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+  cloudDown: `<svg id="cloudDown" width="2rem" viewBox="-2.4 -2.4 28.80 28.80" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
       <path d="M5.25589 16C3.8899 15.0291 3 13.4422 3 11.6493C3 9.20008 4.8 6.9375 7.5 6.5C8.34694 4.48637 10.3514 3 12.6893 3C15.684 3 18.1317 5.32251 18.3 8.25C19.8893 8.94488 21 10.6503 21 12.4969C21 14.0582 20.206 15.4339 19 16.2417M12 21V11M12 21L9 18M12 21L15 18"/>
     </svg>`,
   torrent: `<svg id="torrent" fill="currentColor" width="2rem" viewBox="-1.4 -1.4 16.80 16.80">

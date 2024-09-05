@@ -75,8 +75,9 @@ export default class SideNavBar extends HTMLElement {
     <footer>
       <div><flay-monitor></flay-monitor></div>
       <div><a id="debug">debug</a></div>
-      <div><a id="swagger">swagger↗</a></div>
-      <div><a id="dependencies">dependencies↗</a></div>
+      <div><a id="swagger">swagger</a></div>
+      <div><a id="dependencies">dependencies</a></div>
+      <div><a id="bundleReport">bundle report</a></div>
       <div style="margin-top: 1rem;"><theme-controller></theme-controller></div>
     </footer>
     `;
@@ -103,6 +104,9 @@ export default class SideNavBar extends HTMLElement {
             break;
           case 'swagger':
             window.open('/swagger-ui/index.html', 'swagger', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
+            break;
+          case 'bundleReport':
+            window.open('bundle-report.html', 'bundle-report', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
             break;
         }
       } else if (tagName === 'FLAY-MONITOR') {

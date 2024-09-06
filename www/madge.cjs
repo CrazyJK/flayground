@@ -8,6 +8,10 @@ const madgeConfig = {
   fontName: 'D2Coding',
   webpackConfig: './webpack.common.cjs',
   rankdir: 'LR',
+  // excludeRegExp: ['.scss', 'svg'],
+  nodeColor: '#c6c5fe',
+  noDependencyColor: '#cfffac',
+  edgeColor: '#757575',
 };
 
 (async () => {

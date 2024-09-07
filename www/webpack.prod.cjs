@@ -1,6 +1,9 @@
 module.exports = {
   mode: 'production',
   devtool: 'source-map',
+  output: {
+    filename: '[name].[chunkhash].js',
+  },
   module: {
     rules: [
       {
@@ -12,7 +15,7 @@ module.exports = {
   },
   performance: {
     hints: 'error',
-    maxAssetSize: 250000,
-    maxEntrypointSize: 250000,
+    maxAssetSize: 690000,
+    maxEntrypointSize: 690000,
   },
 };

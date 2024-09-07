@@ -2,10 +2,11 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const WebpackManifestPlugin = require('webpack-manifest-plugin').WebpackManifestPlugin;
 
 module.exports = {
   /* mode: development, production, none */
-  mode: 'development',
+  mode: 'none',
   entry: {
     index: './src/index.js',
     style: './src/style.js',
@@ -74,6 +75,11 @@ module.exports = {
       reportFilename: 'bundle-report.html',
       openAnalyzer: false,
       // excludeAssets: [/node_modules/],
+    }),
+    new WebpackManifestPlugin({
+      fileName: 'assets.json',
+      basePath: '',
+      publicPath: '',
     }),
   ],
   module: {

@@ -56,9 +56,6 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 </div>
 <div class="search-group">
   <div>
-    <button id="copyStyle" style="display:none">[nextjav] Style</button>
-    <button id="copyScript" style="display:none">Script</button>
-    <button id="openNextjav" style="display:none" onclick="window.open('https://nextjav.com')">Open</button>
     <button id="openNanojav" onclick="window.open('${URL_NONOJAV_PAGE}')">List Open</button>
     <input type="text" id="lastSearchOpus" />
     <button id="dnNonoTorrent">Nonojav Dn</button>
@@ -116,9 +113,6 @@ export default class FlayRegister extends HTMLElement {
     const actressHeight = this.shadowRoot.querySelector('#actressHeight');
     const actressDebut = this.shadowRoot.querySelector('#actressDebut');
     const actressRowData = this.shadowRoot.querySelector('#actressRowData');
-
-    let NEXTJAV_STYLE = null;
-    let NEXTJAV_SCRIPT = null;
 
     // 키 이벤트 전파 방지
     Wrapper.addEventListener('keyup', (e) => e.stopPropagation());
@@ -274,14 +268,6 @@ export default class FlayRegister extends HTMLElement {
       });
     });
 
-    // copy style
-    this.shadowRoot.querySelector('#copyStyle').addEventListener('click', () => {
-      window.navigator.clipboard.writeText(NEXTJAV_STYLE);
-    });
-    // copy script
-    this.shadowRoot.querySelector('#copyScript').addEventListener('click', () => {
-      window.navigator.clipboard.writeText(NEXTJAV_SCRIPT);
-    });
     // update lastSearchOpus
     this.shadowRoot.querySelector('#lastSearchOpus').addEventListener('change', (e) => {
       FlayStorage.local.set('flay.search.lastSearchOpus', e.target.value);
@@ -297,13 +283,6 @@ export default class FlayRegister extends HTMLElement {
         .map((studio) => `<option value="${studio}">`)
         .join('');
     });
-    // fetch nextjav style
-    fetch('/stylish/nextjav_tor.html')
-      .then((response) => response.text())
-      .then((text) => {
-        NEXTJAV_STYLE = text.substring(0, text.indexOf('</style>') + '</style>'.length);
-        NEXTJAV_SCRIPT = text.substring(text.indexOf('</style>') + '</style>'.length).trim();
-      });
   }
 }
 

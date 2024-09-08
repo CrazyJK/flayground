@@ -44,6 +44,7 @@ module.exports = {
     // filename: '[name].[chunkhash].js',
     filename: '[name].js',
     path: path.resolve(__dirname, '../src/main/resources/static/dist'),
+    publicPath: '',
     clean: true,
   },
   plugins: [
@@ -77,9 +78,7 @@ module.exports = {
       // excludeAssets: [/node_modules/],
     }),
     new WebpackManifestPlugin({
-      fileName: 'assets.json',
-      basePath: '',
-      publicPath: '',
+      filter: (file) => file.name.endsWith('.js'),
     }),
   ],
   module: {

@@ -1,23 +1,22 @@
 const fs = require('fs');
+const path = require('path');
 
 const { entry, output } = require('./webpack.common.cjs');
-const outputPath = output.path;
-const assets = require(outputPath + '\\assets.json');
+const manifest = require(output.path + '/manifest.json');
 
 Object.keys(entry).forEach((entryName) => {
   const htmlName = `${entryName}.html`;
   const cssName = `${entryName}.css`;
   const jsName = `${entryName}.js`;
+  const htmlFilename = path.resolve(output.path, htmlName);
 
-  const chunkhash = assets[jsName].replace(entryName, '').replace('.js', '').substring(1);
+  const chunkhash = manifest[jsName].replace(entryName, '').replace('.js', '').substring(1);
   const newCssName = cssName + '?ch=' + chunkhash;
-  const newJsName = assets[jsName];
+  const newJsName = manifest[jsName];
 
-  const htmlFilename = `${outputPath}\\${htmlName}`;
   const html = fs.readFileSync(htmlFilename, { encoding: 'utf8', flag: 'r' });
   const replacedHtml = html.replace(jsName, newJsName).replace(cssName, newCssName);
-
   fs.writeFileSync(htmlFilename, replacedHtml, 'utf8');
 
-  console.log('[html]', htmlName, '    [css]', newCssName, '    [js]', newJsName);
+  console.log('[chunkhash]', chunkhash, '[html]', htmlFilename);
 });

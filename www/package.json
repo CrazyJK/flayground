@@ -1,14 +1,13 @@
 {
   "name": "flay-www",
   "version": "1.0.0",
-  "main": "index.js",
   "repository": "https://github.com/CrazyJK/flayground",
   "author": "kamoru",
   "license": "MIT",
   "private": true,
   "scripts": {
-    "deploy": "node ./madge.cjs && webpack --env=prod && node ./replaceHTML.cjs",
-    "build": "webpack --env=prod && node ./replaceHTML.cjs",
+    "deploy": "node ./madge.cjs && webpack --env=prod && node ./appendChunkhash.cjs",
+    "build": "webpack --env=prod && node ./appendChunkhash.cjs",
     "buildDev": "webpack --env=dev",
     "watch": "webpack --env=dev -w",
     "madge": "node ./madge.cjs"

@@ -46,7 +46,7 @@ export default class FlayPage extends HTMLElement {
    *
    * @param {string} opus
    * @param {boolean} reload
-   * @returns [flay, actress]
+   * @returns
    */
   async set(opus, reload) {
     this.opus = opus;
@@ -67,7 +67,7 @@ export default class FlayPage extends HTMLElement {
     this.flayFiles.set(flay, reload);
     this.flayTag.set(flay, reload);
 
-    return [flay, actress];
+    return { flay, actress };
   }
 
   /**

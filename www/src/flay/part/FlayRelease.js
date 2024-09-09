@@ -22,10 +22,14 @@ export default class FlayRelease extends FlayHTMLElement {
       <label class="played-label"  ><sub>play   </sub><span id="played"  >2023-08-20</span></label>
     `;
 
-    this.releaseSpan = this.shadowRoot.querySelector('#release');
-    this.modifiedSpan = this.shadowRoot.querySelector('#modified');
-    this.accessSpan = this.shadowRoot.querySelector('#access');
-    this.playedSpan = this.shadowRoot.querySelector('#played');
+    this.releaseSpan = this.querySelector('#release');
+    this.modifiedSpan = this.querySelector('#modified');
+    this.accessSpan = this.querySelector('#access');
+    this.playedSpan = this.querySelector('#played');
+  }
+
+  connectedCallback() {
+    this.classList.add('flay-release');
   }
 
   /**
@@ -45,4 +49,4 @@ export default class FlayRelease extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-release', FlayRelease);
+customElements.define('flay-release', FlayRelease, { extends: 'div' });

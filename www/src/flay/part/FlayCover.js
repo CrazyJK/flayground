@@ -40,6 +40,10 @@ export default class FlayCover extends FlayHTMLElement {
     });
   }
 
+  connectedCallback() {
+    this.classList.add('flay-cover');
+  }
+
   /**
    *
    * @param {Flay} flay
@@ -90,4 +94,4 @@ export default class FlayCover extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-cover', FlayCover);
+customElements.define('flay-cover', FlayCover, { extends: 'div' });

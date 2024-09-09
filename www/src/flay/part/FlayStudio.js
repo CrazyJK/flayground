@@ -21,6 +21,10 @@ export default class FlayStudio extends FlayHTMLElement {
     this.studio.addEventListener('click', () => popupStudio(this.flay.studio));
   }
 
+  connectedCallback() {
+    this.classList.add('flay-studio');
+  }
+
   /**
    *
    * @param {Flay} flay
@@ -35,4 +39,4 @@ export default class FlayStudio extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-studio', FlayStudio);
+customElements.define('flay-studio', FlayStudio, { extends: 'div' });

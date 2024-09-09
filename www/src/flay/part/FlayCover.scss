@@ -3,15 +3,18 @@
   background: transparent no-repeat center / cover;
   border-radius: var(--border-radius);
   box-shadow: inset 0 0 0.25rem 0.125rem var(--color-bg-cover);
+
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 0.5rem;
-  width: 100%;
   overflow: hidden;
   transition: 0.2s;
 
-  &.visible {
+  padding: 0.5rem !important;
+  width: 100%;
+  max-width: 900px;
+
+  .visible {
     .cover-image {
       transform: scale(1);
       opacity: 1;

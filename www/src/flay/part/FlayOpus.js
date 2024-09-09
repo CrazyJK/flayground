@@ -33,6 +33,10 @@ export default class FlayOpus extends FlayHTMLElement {
     });
   }
 
+  connectedCallback() {
+    this.classList.add('flay-opus');
+  }
+
   /**
    *
    * @param {Flay} flay
@@ -46,4 +50,4 @@ export default class FlayOpus extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-opus', FlayOpus);
+customElements.define('flay-opus', FlayOpus, { extends: 'div' });

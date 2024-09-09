@@ -58,6 +58,10 @@ export default class FlayRank extends FlayHTMLElement {
     this.scoreLabel.classList.add('score-label');
   }
 
+  connectedCallback() {
+    this.classList.add('flay-rank');
+  }
+
   /**
    *
    * @param {Flay} flay
@@ -107,4 +111,4 @@ export default class FlayRank extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-rank', FlayRank);
+customElements.define('flay-rank', FlayRank, { extends: 'div' });

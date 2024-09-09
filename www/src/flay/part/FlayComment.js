@@ -62,6 +62,10 @@ export default class FlayComment extends FlayHTMLElement {
     });
   }
 
+  connectedCallback() {
+    this.classList.add('flay-comment');
+  }
+
   /**
    *
    * @param {Flay} flay
@@ -82,4 +86,4 @@ export default class FlayComment extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-comment', FlayComment);
+customElements.define('flay-comment', FlayComment, { extends: 'div' });

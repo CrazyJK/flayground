@@ -19,7 +19,7 @@ export default class FlayActress extends FlayHTMLElement {
   }
 
   connectedCallback() {
-    //
+    this.classList.add('flay-actress');
   }
 
   /**
@@ -127,7 +127,7 @@ export default class FlayActress extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-actress', FlayActress);
+customElements.define('flay-actress', FlayActress, { extends: 'div' });
 
 function toInchBody(body) {
   if (body === null || body.trim() === '') {

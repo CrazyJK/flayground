@@ -111,6 +111,10 @@ export default class FlayFiles extends FlayHTMLElement {
     });
   }
 
+  connectedCallback() {
+    this.classList.add('flay-files');
+  }
+
   /**
    *
    * @param {Flay} flay
@@ -155,4 +159,4 @@ export default class FlayFiles extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-files', FlayFiles);
+customElements.define('flay-files', FlayFiles, { extends: 'div' });

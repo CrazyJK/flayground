@@ -26,6 +26,10 @@ export default class FlayTitle extends FlayHTMLElement {
     }
   }
 
+  connectedCallback() {
+    this.classList.add('flay-title');
+  }
+
   /**
    *
    * @param {Flay} flay
@@ -41,4 +45,4 @@ export default class FlayTitle extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-title', FlayTitle);
+customElements.define('flay-title', FlayTitle, { extends: 'div' });

@@ -55,6 +55,10 @@ export default class FlayTag extends FlayHTMLElement {
     });
   }
 
+  connectedCallback() {
+    this.classList.add('flay-tag');
+  }
+
   /**
    *
    * @param {Flay} flay
@@ -140,4 +144,4 @@ export default class FlayTag extends FlayHTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-tag', FlayTag);
+customElements.define('flay-tag', FlayTag, { extends: 'div' });

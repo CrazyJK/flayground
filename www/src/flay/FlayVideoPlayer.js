@@ -19,7 +19,7 @@ const getFlayPlayTime = async (opus) => await db.select(opus);
 /**
  * Flay Video Player implements HTMLVideoElement
  */
-export class FlayVideoPlayer extends HTMLElement {
+export class FlayVideoPlayer extends HTMLDivElement {
   opus;
 
   static get observedAttributes() {
@@ -63,14 +63,15 @@ export class FlayVideoPlayer extends HTMLElement {
   }
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' });
+    this.classList.add('flay-video-info');
+    // this.attachShadow({ mode: 'open' });
 
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
+    // const link = this.shadowRoot.appendChild(document.createElement('link'));
+    // link.rel = 'stylesheet';
+    // link.type = 'text/css';
+    // link.href = 'style.css';
 
-    const wrapper = this.shadowRoot.appendChild(document.createElement('article'));
+    const wrapper = this.appendChild(document.createElement('article'));
     wrapper.classList.add(this.tagName.toLowerCase());
 
     this.flayVideo = wrapper.appendChild(new FlayVideo());
@@ -325,27 +326,27 @@ class FlayVideoInfo extends HTMLDivElement {
     this.classList.add('flay-video-info');
     this.innerHTML = `
       <div class="header">
-        <flay-title mode="card"></flay-title>
+        <div class="flay-title" is="flay-title" mode="card"></div>
       </div>
       <div class="footer">
-        <flay-studio mode="card"></flay-studio>
-        <flay-opus mode="card"></flay-opus>
-        <flay-actress mode="card"></flay-actress>
-        <flay-release mode="card"></flay-release>
-        <flay-rank mode="card"></flay-rank>
-        <flay-tag mode="card"></flay-tag>
+        <div class="flay-studio"  is="flay-studio"  mode="card"></div>
+        <div class="flay-opus"    is="flay-opus"    mode="card"></div>
+        <div class="flay-actress" is="flay-actress" mode="card"></div>
+        <div class="flay-release" is="flay-release" mode="card"></div>
+        <div class="flay-rank"    is="flay-rank"    mode="card"></div>
+        <div class="flay-tag"     is="flay-tag"     mode="card"></div>
       </div>
     `;
   }
 
   set(flay, actress, reload = false) {
-    this.querySelector('flay-studio').set(flay, reload);
-    this.querySelector('flay-opus').set(flay, reload);
-    this.querySelector('flay-title').set(flay, reload);
-    this.querySelector('flay-actress').set(flay, actress, reload);
-    this.querySelector('flay-release').set(flay, reload);
-    this.querySelector('flay-rank').set(flay, reload);
-    this.querySelector('flay-tag').set(flay, reload);
+    this.querySelector('.flay-studio').set(flay, reload);
+    this.querySelector('.flay-opus').set(flay, reload);
+    this.querySelector('.flay-title').set(flay, reload);
+    this.querySelector('.flay-actress').set(flay, actress, reload);
+    this.querySelector('.flay-release').set(flay, reload);
+    this.querySelector('.flay-rank').set(flay, reload);
+    this.querySelector('.flay-tag').set(flay, reload);
   }
 }
 
@@ -355,16 +356,16 @@ class FlayVideoPoster extends HTMLDivElement {
 
     this.classList.add('flay-video-poster');
     this.innerHTML = `
-      <flay-cover mode="card"></flay-cover>
+      <div class="flay-cover" is="flay-cover" mode="card"></div>
     `;
   }
 
   set(flay) {
-    this.querySelector('flay-cover').set(flay);
+    this.querySelector('.flay-cover').set(flay);
   }
 }
 
-customElements.define('flay-video-player', FlayVideoPlayer);
+customElements.define('flay-video-player', FlayVideoPlayer, { extends: 'div' });
 customElements.define('flay-video', FlayVideo, { extends: 'video' });
 customElements.define('flay-video-info', FlayVideoInfo, { extends: 'div' });
 customElements.define('flay-video-poster', FlayVideoPoster, { extends: 'div' });
@@ -387,7 +388,7 @@ let prevOpus = null;
 export const playInLayer = async (opus) => {
   const dispatchPlayEvent = (isPlay) => document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: isPlay } }));
   const setPlayerPosition = () => {
-    const flayCoverRect = document.querySelector('flay-page')?.shadowRoot.querySelector('flay-cover').getBoundingClientRect();
+    const flayCoverRect = document.querySelector('flay-page')?.querySelector('flay-cover').getBoundingClientRect();
     if (flayCoverRect) {
       const { top, left, width, height } = flayCoverRect;
       layer.querySelector('article').style.cssText = `position: fixed; top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px;`;

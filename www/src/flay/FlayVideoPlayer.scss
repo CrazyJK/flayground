@@ -1,4 +1,4 @@
-flay-video-player {
+.flay-video-player {
   position: relative;
   display: block;
   opacity: 0;
@@ -6,9 +6,7 @@ flay-video-player {
   &.load {
     opacity: 1;
   }
-}
 
-.flay-video-player {
   position: relative;
   display: flex;
 

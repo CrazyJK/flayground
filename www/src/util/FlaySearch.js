@@ -79,7 +79,7 @@ function popupOpen(url, target, width, height) {
   return window.open(url, target, `width=${width}px, height=${height}px, top=${top}px, left=${left}px`);
 }
 
-export const popupFlay = (opus) => popupOpen('popup.flay.html?opus=' + opus, 'flay.' + opus, 800, 1280);
+export const popupFlay = (opus) => popupOpen('popup.flay.html?opus=' + opus, 'flay.' + opus, 800, 1320);
 export const popupFlayCard = (opus) => popupOpen('popup.flay-card.html?opus=' + opus, 'flay.card.' + opus, 800, 536);
 export const popupCover = (opus) => popupOpen('popup.cover.html?opus=' + opus, 'cover.' + opus, 800, 538);
 export const popupStudio = (name, startDate = '', endDate = '') => popupOpen('popup.studio.html?name=' + name + '&s=' + startDate + '&e=' + endDate, 'studio.' + name, 960, 1200);

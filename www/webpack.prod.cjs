@@ -1,9 +1,16 @@
+const WebpackManifestPlugin = require('webpack-manifest-plugin').WebpackManifestPlugin;
+
 module.exports = {
   mode: 'production',
   devtool: 'source-map',
   output: {
     filename: '[name].[chunkhash].js',
   },
+  plugins: [
+    new WebpackManifestPlugin({
+      filter: (file) => file.name.endsWith('.js'),
+    }),
+  ],
   module: {
     rules: [
       {

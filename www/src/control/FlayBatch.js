@@ -85,8 +85,9 @@ export default class FlayBatch extends HTMLElement {
     const ol = this.shadowRoot.querySelector('#lowerScoreFlayList ol');
     this.shadowRoot.querySelectorAll('.lowerScoreBtn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
+        const mode = e.target.dataset.mode;
         // orderbyScoreDesc, lowScore
-        fetch(`/flay/list/${e.target.dataset.mode === '0' ? 'orderbyScoreDesc' : 'lowScore'}`)
+        fetch(`/flay/list/${mode === '0' ? 'orderbyScoreDesc' : 'lowScore'}`)
           .then((res) => res.json())
           .then((list) => {
             ol.querySelectorAll('li:not(.head)').forEach((li) => li.remove());
@@ -102,6 +103,11 @@ export default class FlayBatch extends HTMLElement {
                 <label class="sub"    >${flay.files.subtitles.length}</label>
                 <label class="score"  >${flay.score}</label>
               `;
+              if (mode === '1') {
+                ol.appendChild(document.createElement('li')).innerHTML = `
+                  <img src="/static/cover/${flay.opus}" style="width:600px">
+                `;
+              }
             });
           });
       });

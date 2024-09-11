@@ -289,7 +289,7 @@ export default class FlayPagination extends HTMLElement {
     this.progressBar.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
 
     const domRect = this.getBoundingClientRect();
-    this.pageRange = domRect.width > 1200 ? 30 : 15;
+    this.pageRange = domRect.width > 1440 ? 30 : 15;
 
     const currPageNo = Math.ceil((this.opusIndex + 1) / this.pageRange);
     const lastPageNo = Math.ceil(this.opusList.length / this.pageRange);

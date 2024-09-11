@@ -110,7 +110,7 @@ export default class SideNavBar extends HTMLElement {
             break;
         }
       } else if (tagName === 'FLAY-MONITOR') {
-        window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
+        window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=460');
       } else {
         this.classList.toggle('open');
       }

@@ -16,23 +16,16 @@ const DEFAULT_CONDITION = {
 const RANKS = [0, 1, 2, 3, 4, 5];
 const SORTS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'];
 
-export default class FlayCondition extends HTMLElement {
+export default class FlayCondition extends HTMLDivElement {
   opusList = [];
 
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
     const condition = FlayStorage.local.getObject('FlayCondition.condition', JSON.stringify(DEFAULT_CONDITION));
-    const WRAPPER = this.shadowRoot.appendChild(document.createElement('div'));
-    WRAPPER.classList.add(this.tagName.toLowerCase());
-    WRAPPER.innerHTML = `
+
+    this.classList.add('flay-condition');
+    this.innerHTML = `
       <div>
         <input type="search" id="search" list="search-items" placeholder="Search" spellcheck="false">
         <datalist id="search-items"></datalist>
@@ -56,7 +49,7 @@ export default class FlayCondition extends HTMLElement {
         </select>
       </div>
     `;
-    WRAPPER.addEventListener('change', () => this.#fetch());
+    this.addEventListener('change', () => this.#fetch());
   }
 
   connectedCallback() {
@@ -68,21 +61,21 @@ export default class FlayCondition extends HTMLElement {
    */
   async #fetch() {
     const condition = {
-      search: this.shadowRoot.querySelector('#search').value,
-      withSubtitles: this.shadowRoot.querySelector('#withSubtitles').checked,
-      withFavorite: this.shadowRoot.querySelector('#withFavorite').checked,
-      withNoFavorite: this.shadowRoot.querySelector('#withNoFavorite').checked,
-      rank: Array.from(this.shadowRoot.querySelectorAll('[name="rank"]'))
+      search: this.querySelector('#search').value,
+      withSubtitles: this.querySelector('#withSubtitles').checked,
+      withFavorite: this.querySelector('#withFavorite').checked,
+      withNoFavorite: this.querySelector('#withNoFavorite').checked,
+      rank: Array.from(this.querySelectorAll('[name="rank"]'))
         .filter((rank) => rank.checked)
         .map((rank) => rank.value),
-      sort: this.shadowRoot.querySelector('#sort').value,
+      sort: this.querySelector('#sort').value,
     };
     this.opusList = await fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) }).then((res) => res.json());
     if (this.opusList.length === 0) {
       // not found flay
-      this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });
+      this.animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });
     }
-    this.dispatchEvent(new Event('change'));
+    this.dispatchEvent(new CustomEvent('fetch'));
     FlayStorage.local.set('FlayCondition.condition', JSON.stringify(condition));
   }
 
@@ -101,14 +94,14 @@ export default class FlayCondition extends HTMLElement {
   }
 
   #addSearchItem(item) {
-    this.shadowRoot.querySelector(`#search-items option[value="${item}"]`)?.remove();
+    this.querySelector(`#search-items option[value="${item}"]`)?.remove();
 
     const option = document.createElement('option');
     option.value = item;
-    this.shadowRoot.querySelector('#search-items').prepend(option);
+    this.querySelector('#search-items').prepend(option);
 
-    this.shadowRoot.querySelectorAll('#search-items option').forEach((option, i) => i > 30 && option.remove());
+    this.querySelectorAll('#search-items option').forEach((option, i) => i > 30 && option.remove());
   }
 }
 
-customElements.define('flay-condition', FlayCondition);
+customElements.define('flay-condition', FlayCondition, { extends: 'div' });

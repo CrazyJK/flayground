@@ -15,7 +15,7 @@ export default class FlayStudio extends FlayHTMLElement {
   }
 
   init() {
-    const label = this.wrapper.appendChild(document.createElement('label'));
+    const label = this.appendChild(document.createElement('label'));
     this.studio = label.appendChild(document.createElement('a'));
     this.studio.innerHTML = 'Studio';
     this.studio.addEventListener('click', () => popupStudio(this.flay.studio));
@@ -31,8 +31,8 @@ export default class FlayStudio extends FlayHTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    this.wrapper.setAttribute('data-opus', flay.opus);
-    this.wrapper.classList.toggle('archive', this.flay.archive);
+    this.setAttribute('data-opus', flay.opus);
+    this.classList.toggle('archive', this.flay.archive);
 
     this.studio.textContent = flay.studio;
   }

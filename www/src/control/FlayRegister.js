@@ -70,54 +70,46 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 /**
  *
  */
-export default class FlayRegister extends HTMLElement {
+export default class FlayRegister extends HTMLDivElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = HTML;
+    this.classList.add('flay-register');
+    this.innerHTML = HTML;
   }
 
   connectedCallback() {
-    const Wrapper = this.shadowRoot.querySelector('.flay-register');
-    const emptyBtn = this.shadowRoot.querySelector('#emptyBtn');
-    const copyBtn = this.shadowRoot.querySelector('#copyBtn');
-    const saveBtn = this.shadowRoot.querySelector('#saveBtn');
+    const emptyBtn = this.querySelector('#emptyBtn');
+    const copyBtn = this.querySelector('#copyBtn');
+    const saveBtn = this.querySelector('#saveBtn');
 
-    const inputOpus = this.shadowRoot.querySelector('#inputOpus');
-    const inputTitle = this.shadowRoot.querySelector('#inputTitle');
-    const inputActress = this.shadowRoot.querySelector('#inputActress');
-    const inputDesc = this.shadowRoot.querySelector('#inputDesc');
-    const inputTemp = this.shadowRoot.querySelector('#inputTemp');
+    const inputOpus = this.querySelector('#inputOpus');
+    const inputTitle = this.querySelector('#inputTitle');
+    const inputActress = this.querySelector('#inputActress');
+    const inputDesc = this.querySelector('#inputDesc');
+    const inputTemp = this.querySelector('#inputTemp');
 
-    const studio = this.shadowRoot.querySelector('#studio');
-    const studioList = this.shadowRoot.querySelector('#studio-list');
-    const opus = this.shadowRoot.querySelector('#opus');
-    const title = this.shadowRoot.querySelector('#title');
-    const actress = this.shadowRoot.querySelector('#actress');
-    const release = this.shadowRoot.querySelector('#release');
-    const flayFullname = this.shadowRoot.querySelector('#flayFullname');
+    const studio = this.querySelector('#studio');
+    const studioList = this.querySelector('#studio-list');
+    const opus = this.querySelector('#opus');
+    const title = this.querySelector('#title');
+    const actress = this.querySelector('#actress');
+    const release = this.querySelector('#release');
+    const flayFullname = this.querySelector('#flayFullname');
 
-    const actressFavorite = this.shadowRoot.querySelector('#actressFavorite');
-    const actressName = this.shadowRoot.querySelector('#actressName');
-    const actressLocalname = this.shadowRoot.querySelector('#actressLocalname');
-    const actressBirth = this.shadowRoot.querySelector('#actressBirth');
-    const actressBody = this.shadowRoot.querySelector('#actressBody');
-    const actressHeight = this.shadowRoot.querySelector('#actressHeight');
-    const actressDebut = this.shadowRoot.querySelector('#actressDebut');
-    const actressRowData = this.shadowRoot.querySelector('#actressRowData');
+    const actressFavorite = this.querySelector('#actressFavorite');
+    const actressName = this.querySelector('#actressName');
+    const actressLocalname = this.querySelector('#actressLocalname');
+    const actressBirth = this.querySelector('#actressBirth');
+    const actressBody = this.querySelector('#actressBody');
+    const actressHeight = this.querySelector('#actressHeight');
+    const actressDebut = this.querySelector('#actressDebut');
+    const actressRowData = this.querySelector('#actressRowData');
 
     // 키 이벤트 전파 방지
-    Wrapper.addEventListener('keyup', (e) => e.stopPropagation());
+    this.addEventListener('keyup', (e) => e.stopPropagation());
     //  spellcheck="false"
-    this.shadowRoot.querySelectorAll('input, textarea').forEach((element) => {
+    this.querySelectorAll('input, textarea').forEach((element) => {
       element.setAttribute('spellcheck', false);
     });
 
@@ -132,7 +124,7 @@ export default class FlayRegister extends HTMLElement {
         // find opus
         if (inputOpus.value !== '') {
           const inOpus = inputOpus.value;
-          const foundFlayEl = this.shadowRoot.querySelector('#found-flay');
+          const foundFlayEl = this.querySelector('#found-flay');
           // find Flay
           foundFlayEl.innerHTML = '';
 
@@ -193,10 +185,10 @@ export default class FlayRegister extends HTMLElement {
     });
     emptyBtn.addEventListener('click', () => {
       console.log('emptyBtnClick');
-      this.shadowRoot.querySelectorAll('input:not(#lastSearchOpus)').forEach((input) => (input.value = ''));
-      this.shadowRoot.querySelectorAll('input[type="checkbox"]').forEach((input) => (input.checked = false));
-      this.shadowRoot.querySelectorAll('textarea').forEach((textarea) => (textarea.value = ''));
-      this.shadowRoot.querySelectorAll('.input-invalid').forEach((input) => input.classList.remove('input-invalid'));
+      this.querySelectorAll('input:not(#lastSearchOpus)').forEach((input) => (input.value = ''));
+      this.querySelectorAll('input[type="checkbox"]').forEach((input) => (input.checked = false));
+      this.querySelectorAll('textarea').forEach((textarea) => (textarea.value = ''));
+      this.querySelectorAll('.input-invalid').forEach((input) => input.classList.remove('input-invalid'));
     });
 
     // 요소 이벤트
@@ -269,13 +261,13 @@ export default class FlayRegister extends HTMLElement {
     });
 
     // update lastSearchOpus
-    this.shadowRoot.querySelector('#lastSearchOpus').addEventListener('change', (e) => {
+    this.querySelector('#lastSearchOpus').addEventListener('change', (e) => {
       FlayStorage.local.set('flay.search.lastSearchOpus', e.target.value);
     });
-    this.shadowRoot.querySelector('#lastSearchOpus').value = FlayStorage.local.get('flay.search.lastSearchOpus', '');
+    this.querySelector('#lastSearchOpus').value = FlayStorage.local.get('flay.search.lastSearchOpus', '');
     // open Torrent download
-    this.shadowRoot.querySelector('#dnNonoTorrent').addEventListener('click', () => FlaySearch.torrent.Nonojav(inputOpus.value));
-    this.shadowRoot.querySelector('#dnIjavTorrent').addEventListener('click', () => FlaySearch.torrent.Ijav(inputOpus.value));
+    this.querySelector('#dnNonoTorrent').addEventListener('click', () => FlaySearch.torrent.Nonojav(inputOpus.value));
+    this.querySelector('#dnIjavTorrent').addEventListener('click', () => FlaySearch.torrent.Ijav(inputOpus.value));
 
     // studio-list
     FlayAction.listOfStudio((list) => {
@@ -287,4 +279,4 @@ export default class FlayRegister extends HTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-register', FlayRegister);
+customElements.define('flay-register', FlayRegister, { extends: 'div' });

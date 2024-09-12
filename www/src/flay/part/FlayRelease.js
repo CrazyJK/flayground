@@ -15,7 +15,7 @@ export default class FlayRelease extends FlayHTMLElement {
   }
 
   init() {
-    this.wrapper.innerHTML = `
+    this.innerHTML = `
       <label class="release-label" >                  <span id="release" >2023.08.09</span></label>
       <label class="modified-label"><sub>mod    </sub><span id="modified">2023-08-20</span></label>
       <label class="access-label"  ><sub>access </sub><span id="access"  >2023-08-20</span></label>
@@ -38,8 +38,8 @@ export default class FlayRelease extends FlayHTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.setAttribute('data-opus', flay.opus);
+    this.classList.toggle('archive', this.flay.archive);
+    this.setAttribute('data-opus', flay.opus);
 
     this.releaseSpan.innerHTML = flay.release;
     this.modifiedSpan.innerHTML = DateUtils.format(flay.lastModified, 'yy/MM/dd');

@@ -14,12 +14,10 @@ export default class FlayHTMLElement extends HTMLDivElement {
 
   constructor() {
     super();
-
-    this.wrapper = this.appendChild(document.createElement('article'));
   }
 
   setCard() {
-    this.wrapper.classList.add('card');
+    this.classList.add('card');
     this.inCard = true;
     return this;
   }
@@ -29,6 +27,6 @@ export default class FlayHTMLElement extends HTMLDivElement {
    * @param {DOMRect} parentDOMRect
    */
   resize(parentDOMRect) {
-    this.wrapper.classList.toggle('small', parentDOMRect.width <= 400);
+    this.classList.toggle('small', parentDOMRect.width <= 400);
   }
 }

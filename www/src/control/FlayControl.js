@@ -7,40 +7,33 @@ import './FlayFinder';
 import './FlayRegister';
 import './SubtitlesFinder';
 
-export default class FlayControl extends HTMLElement {
+export default class FlayControl extends HTMLDivElement {
   constructor() {
     super();
+
+    this.classList.add('flay-control');
   }
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = `
+    this.innerHTML = `
       <header class="tab-group" role="tablist">
-        <button type="button" class="tab-button" role="tab" target="#searchPanel" active>Search</button>
-        <button type="button" class="tab-button" role="tab" target="#registPanel">Regist</button>
-        <button type="button" class="tab-button" role="tab" target="#batchPanel">Batch</button>
-        <button type="button" class="tab-button" role="tab" target="#subtitlesPanel">Subtitles</button>
-        <button type="button" class="tab-button" role="tab" target="#candidatesPanel">Candidates</button>
+        <button type="button" class="tab-button" role="tab" target="#searchPanel" active >Search     </button>
+        <button type="button" class="tab-button" role="tab" target="#registPanel"        >Regist     </button>
+        <button type="button" class="tab-button" role="tab" target="#batchPanel"         >Batch      </button>
+        <button type="button" class="tab-button" role="tab" target="#subtitlesPanel"     >Subtitles  </button>
+        <button type="button" class="tab-button" role="tab" target="#candidatesPanel"    >Candidates </button>
       </header>
       <article>
-        <flay-finder      class="tab-content" role="tabpanel" id="searchPanel"></flay-finder>
-        <flay-register    class="tab-content" role="tabpanel" id="registPanel"></flay-register>
-        <flay-batch       class="tab-content" role="tabpanel" id="batchPanel"></flay-batch>
-        <subtitles-finder class="tab-content" role="tabpanel" id="subtitlesPanel"></subtitles-finder>
-        <flay-candidate   class="tab-content" role="tabpanel" id="candidatesPanel"></flay-candidate>
+        <div is="flay-finder"      class="tab-content flay-finder"      role="tabpanel" id="searchPanel"    ></div>
+        <div is="flay-register"    class="tab-content flay-register"    role="tabpanel" id="registPanel"    ></div>
+        <div is="flay-batch"       class="tab-content flay-batch"       role="tabpanel" id="batchPanel"     ></div>
+        <div is="subtitles-finder" class="tab-content subtitles-finder" role="tabpanel" id="subtitlesPanel" ></div>
+        <div is="flay-candidate"   class="tab-content flay-candidate"   role="tabpanel" id="candidatesPanel"></div>
       </article>
     `;
 
-    tabUI(this.shadowRoot);
+    tabUI(this);
   }
 }
 
-customElements.define('flay-control', FlayControl);
+customElements.define('flay-control', FlayControl, { extends: 'div' });

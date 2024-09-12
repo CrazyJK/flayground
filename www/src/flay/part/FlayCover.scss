@@ -14,7 +14,7 @@
   width: 100%;
   max-width: 900px;
 
-  .visible {
+  &.visible {
     .cover-image {
       transform: scale(1);
       opacity: 1;

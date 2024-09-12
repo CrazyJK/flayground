@@ -17,7 +17,7 @@ export default class FlayOpus extends FlayHTMLElement {
   }
 
   init() {
-    this.wrapper.innerHTML = `
+    this.innerHTML = `
       <div>
         <button type="button" id="jsonViewBtn">${jsonSVG}</button>
         <label><a>Opus</a></label>
@@ -25,9 +25,9 @@ export default class FlayOpus extends FlayHTMLElement {
       </div>
     `;
 
-    this.wrapper.querySelector('a').addEventListener('click', () => FlaySearch.opus.Arzon(this.flay.opus));
-    this.wrapper.querySelector('#jsonViewBtn').addEventListener('click', () => popupFlayInfo(this.flay.opus));
-    this.wrapper.querySelector('#keepBasketBtn').addEventListener('click', async () => {
+    this.querySelector('a').addEventListener('click', () => FlaySearch.opus.Arzon(this.flay.opus));
+    this.querySelector('#jsonViewBtn').addEventListener('click', () => popupFlayInfo(this.flay.opus));
+    this.querySelector('#keepBasketBtn').addEventListener('click', async () => {
       const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '../FlayBasket');
       FlayBasket.add(this.flay.opus);
     });
@@ -43,9 +43,9 @@ export default class FlayOpus extends FlayHTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    this.wrapper.dataset.opus = flay.opus;
-    this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.querySelector('a').innerHTML = flay.opus;
+    this.dataset.opus = flay.opus;
+    this.classList.toggle('archive', this.flay.archive);
+    this.querySelector('a').innerHTML = flay.opus;
   }
 }
 

@@ -18,31 +18,11 @@ const Monitors = [
 /**
  * 모니터에 창의 위치 모아 보기
  */
-export default class FlayMonitor extends HTMLElement {
-  static get observedAttributes() {
-    return ['class'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.debug('attributeChangedCallback', name, oldValue, newValue);
-    if (name === 'class') {
-      oldValue?.split(' ').forEach((cssClass) => cssClass !== '' && this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.remove(cssClass));
-      newValue?.split(' ').forEach((cssClass) => cssClass !== '' && this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.add(cssClass));
-    }
-  }
-
+export default class FlayMonitor extends HTMLDivElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
+    this.classList.add('flay-monitor');
 
     // 0,0을 기준으로 상하좌우 제일 먼거
     this.left = Math.min(...Monitors.map((monitor) => monitor.left));
@@ -60,7 +40,7 @@ export default class FlayMonitor extends HTMLElement {
                             ${this.width}                   (${this.right}, ${this.bottom})
     `);
 
-    const canvas = wrapper.appendChild(document.createElement('canvas'));
+    const canvas = this.appendChild(document.createElement('canvas'));
     canvas.width = this.width;
     canvas.height = this.height;
   }
@@ -95,14 +75,14 @@ export default class FlayMonitor extends HTMLElement {
 
   /** 모니터를 그린다 */
   #renderForeground() {
-    const ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
+    const ctx = this.querySelector('canvas').getContext('2d');
     ctx.fillStyle = MonitorBackgroundColor;
     Monitors.forEach((monitor) => ctx.fillRect(this.#toX(monitor.left), this.#toY(monitor.top), monitor.width, monitor.height));
   }
 
   /** 모니터 밖의 영역을 지운다 */
   #removeBackground() {
-    const ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
+    const ctx = this.querySelector('canvas').getContext('2d');
     Monitors.forEach((monitor) => {
       ctx.clearRect(this.#toX(monitor.left), this.#toY(this.top), monitor.width, monitor.top - this.top);
       ctx.clearRect(this.#toX(monitor.left), this.#toY(monitor.bottom), monitor.width, this.bottom - monitor.bottom);
@@ -111,7 +91,7 @@ export default class FlayMonitor extends HTMLElement {
 
   getImageURL() {
     return new Promise((resolve, reject) => {
-      this.shadowRoot.querySelector('canvas').toBlob((blob) => resolve(URL.createObjectURL(blob)), 'image/jpeg', 0.95);
+      this.querySelector('canvas').toBlob((blob) => resolve(URL.createObjectURL(blob)), 'image/jpeg', 0.95);
     });
   }
 
@@ -129,7 +109,7 @@ export default class FlayMonitor extends HTMLElement {
    * @param {object} position
    */
   #drawFlay(name, { left, top, width, height }) {
-    const ctx = this.shadowRoot.querySelector('canvas').getContext('2d');
+    const ctx = this.querySelector('canvas').getContext('2d');
     const lineWidth = 20;
     const margin = 30;
     const [x, y] = [this.#toX(left), this.#toY(top)];
@@ -167,7 +147,7 @@ export default class FlayMonitor extends HTMLElement {
   }
 }
 
-customElements.define('flay-monitor', FlayMonitor);
+customElements.define('flay-monitor', FlayMonitor, { extends: 'div' });
 
 /**
  * 위치 정보 업데이트

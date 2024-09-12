@@ -19,19 +19,19 @@ export default class FlayCover extends FlayHTMLElement {
   }
 
   init() {
-    this.wrapper.addEventListener('click', () => this.wrapper.classList.toggle('contain'));
+    this.addEventListener('click', () => this.classList.toggle('contain'));
 
-    this.coverImage = this.wrapper.appendChild(document.createElement('img'));
+    this.coverImage = this.appendChild(document.createElement('img'));
     this.coverImage.classList.add('cover-image');
     this.coverImage.loading = 'lazy';
 
-    this.colorWrapper = this.wrapper.appendChild(document.createElement('div'));
+    this.colorWrapper = this.appendChild(document.createElement('div'));
     this.colorWrapper.classList.add('color-wrapper');
     for (let i = 0; i < 5; i++) {
       this.colorWrapper.appendChild(document.createElement('label'));
     }
 
-    this.popupCoverWrap = this.wrapper.appendChild(document.createElement('div'));
+    this.popupCoverWrap = this.appendChild(document.createElement('div'));
     this.popupCoverWrap.classList.add('popup-cover-wrapper');
     this.popupCoverWrap.innerHTML = `${newWindowSVG}`;
     this.popupCoverWrap.querySelector('svg').addEventListener('click', (e) => {
@@ -50,10 +50,10 @@ export default class FlayCover extends FlayHTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    this.wrapper.setAttribute('data-opus', flay.opus);
-    this.wrapper.classList.toggle('archive', this.flay.archive);
+    this.setAttribute('data-opus', flay.opus);
+    this.classList.toggle('archive', this.flay.archive);
 
-    this.wrapper.classList.remove('visible');
+    this.classList.remove('visible');
     URL.revokeObjectURL(this.coverImage.src);
 
     const COVER_URL = `/static/cover/${flay.opus}`;
@@ -61,7 +61,7 @@ export default class FlayCover extends FlayHTMLElement {
     fetch(COVER_URL)
       .then((res) => res.blob())
       .then((blob) => {
-        this.wrapper.classList.add('visible');
+        this.classList.add('visible');
         this.coverImage.src = URL.createObjectURL(blob);
       });
 
@@ -86,8 +86,8 @@ export default class FlayCover extends FlayHTMLElement {
 
   #applyDominatedColor(dominatedColors) {
     const [r, g, b] = dominatedColors[getRandomInt(0, 5)].rgba;
-    this.wrapper.style.backgroundColor = `rgba(${r},${g},${b},0.5)`;
-    this.wrapper.querySelectorAll('.color-wrapper > label').forEach((label, index) => {
+    this.style.backgroundColor = `rgba(${r},${g},${b},0.5)`;
+    this.querySelectorAll('.color-wrapper > label').forEach((label, index) => {
       label.style.backgroundColor = `rgba(${dominatedColors[index].rgba.join(',')})`;
     });
   }

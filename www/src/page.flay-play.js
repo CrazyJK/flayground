@@ -23,7 +23,7 @@ class App extends FlayProvider {
     document.querySelector('[for="pause-video"]').innerHTML = controlsSVG.pause;
     document.querySelector('[for="video-volume"]').innerHTML = controlsSVG.volume;
 
-    this.videoPlayer = document.querySelector('article').appendChild(new FlayVideoPlayer());
+    this.videoPlayer = document.querySelector('main > article').appendChild(new FlayVideoPlayer());
 
     this.progressBar = document.querySelector('.progress-bar');
     this.remainingTimeCheck = document.querySelector('#toggle-remaining-time');

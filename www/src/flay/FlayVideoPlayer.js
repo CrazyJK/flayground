@@ -50,6 +50,7 @@ export class FlayVideoPlayer extends HTMLDivElement {
   constructor(opts) {
     super();
 
+    this.classList.add('flay-video-player');
     this.options = {
       ...{
         controls: true,
@@ -63,20 +64,9 @@ export class FlayVideoPlayer extends HTMLDivElement {
   }
 
   connectedCallback() {
-    this.classList.add('flay-video-info');
-    // this.attachShadow({ mode: 'open' });
-
-    // const link = this.shadowRoot.appendChild(document.createElement('link'));
-    // link.rel = 'stylesheet';
-    // link.type = 'text/css';
-    // link.href = 'style.css';
-
-    const wrapper = this.appendChild(document.createElement('article'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-
-    this.flayVideo = wrapper.appendChild(new FlayVideo());
-    this.flayVideoInfo = wrapper.appendChild(new FlayVideoInfo());
-    this.flayVideoPoster = wrapper.appendChild(new FlayVideoPoster());
+    this.flayVideo = this.appendChild(new FlayVideo());
+    this.flayVideoInfo = this.appendChild(new FlayVideoInfo());
+    this.flayVideoPoster = this.appendChild(new FlayVideoPoster());
 
     this.#setOptions();
   }
@@ -416,7 +406,7 @@ export const playInLayer = async (opus) => {
 
   layer.classList.remove('hide');
 
-  const videoPlayer = layer.querySelector('flay-video-player');
+  const videoPlayer = layer.querySelector('.flay-video-player');
   if (prevOpus !== opus) {
     await videoPlayer.load(opus);
     await videoPlayer.playRandomSeekOrContinuously();

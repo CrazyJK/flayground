@@ -7,23 +7,15 @@ const OS = 'os';
 const LIGHT = 'light';
 const DARK = 'dark';
 
-export default class ThemeController extends HTMLElement {
+export default class ThemeController extends HTMLDivElement {
   theme;
   isDark;
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
+    this.classList.add('theme-controller');
 
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-
-    const themeGroup = wrapper.appendChild(document.createElement('div'));
+    const themeGroup = this.appendChild(document.createElement('div'));
     themeGroup.classList.add('theme-group');
     [OS, LIGHT, DARK].forEach((theme) => {
       const radio = themeGroup.appendChild(document.createElement('input'));
@@ -80,10 +72,10 @@ export default class ThemeController extends HTMLElement {
     }
     console.debug('[applyTheme] theme', this.theme, 'isDark', this.isDark);
 
-    this.shadowRoot.querySelector('input#theme' + this.theme).checked = true;
+    this.querySelector('input#theme' + this.theme).checked = true;
     document.documentElement.setAttribute('theme', this.isDark ? DARK : LIGHT);
   }
 }
 
 // Define the new element
-customElements.define('theme-controller', ThemeController);
+customElements.define('theme-controller', ThemeController, { extends: 'div' });

@@ -14,7 +14,7 @@ const BACK = 'BACK';
 /**
  * 페이지 표현
  */
-export default class FlayPagination extends HTMLElement {
+export default class FlayPagination extends HTMLDivElement {
   opus = null;
   opusIndex = -1;
   opusList = [];
@@ -27,16 +27,8 @@ export default class FlayPagination extends HTMLElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = `
+    this.classList.add('flay-pagination');
+    this.innerHTML = `
       <div class="paging"></div>
       <div class="progress">
         <div class="progress-bar"></div>
@@ -48,10 +40,10 @@ export default class FlayPagination extends HTMLElement {
       <button class="random-popup-button">${this.randomEnd}</button>
     `;
 
-    this.paging = wrapper.querySelector('.paging');
-    this.progressBar = wrapper.querySelector('.progress-bar');
-    this.coverThumbnail = wrapper.querySelector('.cover-thumbnail');
-    this.randomPopupButton = wrapper.querySelector('.random-popup-button');
+    this.paging = this.querySelector('.paging');
+    this.progressBar = this.querySelector('.progress-bar');
+    this.coverThumbnail = this.querySelector('.cover-thumbnail');
+    this.randomPopupButton = this.querySelector('.random-popup-button');
   }
 
   connectedCallback() {
@@ -132,8 +124,8 @@ export default class FlayPagination extends HTMLElement {
     this.randomPopupButton.addEventListener('mouseover', () => this.randomPopupButton.classList.add('input-mode'));
     this.randomPopupButton.addEventListener('mouseout', () => this.randomPopupButton.classList.remove('input-mode'));
     this.randomPopupButton.addEventListener('click', async () => {
-      this.shadowRoot.querySelector(`.${this.tagName.toLowerCase()} aside`)?.remove();
-      const popupIndicators = this.shadowRoot.querySelector(`.${this.tagName.toLowerCase()}`).appendChild(document.createElement('aside'));
+      this.querySelector(`.${this.tagName.toLowerCase()} aside`)?.remove();
+      const popupIndicators = this.querySelector(`.${this.tagName.toLowerCase()}`).appendChild(document.createElement('aside'));
       const randomCount = Math.min(this.randomEnd, this.opusList.length);
       const currOpusIndex = this.opusIndex;
 
@@ -335,4 +327,4 @@ export default class FlayPagination extends HTMLElement {
   }
 }
 
-customElements.define('flay-pagination', FlayPagination);
+customElements.define('flay-pagination', FlayPagination, { extends: 'div' });

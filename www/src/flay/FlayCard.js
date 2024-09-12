@@ -14,13 +14,15 @@ import FlayTitle from './part/FlayTitle';
 /**
  * Custom element of Card
  */
-export default class FlayCard extends HTMLElement {
+export default class FlayCard extends HTMLDivElement {
   opus;
   flay;
   actress;
 
   constructor(options) {
     super();
+
+    this.classList.add('flay-card');
 
     if (options && options.excludes) {
       this.excludes = options.excludes;
@@ -32,18 +34,8 @@ export default class FlayCard extends HTMLElement {
   }
 
   init() {
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    this.wrapper = this.shadowRoot.appendChild(document.createElement('article'));
-    this.wrapper.classList.add(this.tagName.toLowerCase());
-
-    this.flayCover = this.wrapper.appendChild(new FlayCover().setCard());
-    this.flayInfo = this.wrapper.appendChild(document.createElement('div'));
+    this.flayCover = this.appendChild(new FlayCover().setCard());
+    this.flayInfo = this.appendChild(document.createElement('div'));
     this.flayInfo.classList.add('flay-info');
 
     this.flayTitle = this.flayInfo.appendChild(new FlayTitle().setCard());
@@ -119,7 +111,7 @@ export default class FlayCard extends HTMLElement {
     this.setAttribute('rank', flay.video.rank);
     if (flay.archive) {
       this.setAttribute('archive', true);
-      this.wrapper.classList.add('archive');
+      this.classList.add('archive');
     }
 
     if (this.flay.video.likes?.length > 0) {
@@ -176,4 +168,4 @@ export default class FlayCard extends HTMLElement {
   }
 }
 
-customElements.define('flay-card', FlayCard);
+customElements.define('flay-card', FlayCard, { extends: 'div' });

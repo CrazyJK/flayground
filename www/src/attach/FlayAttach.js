@@ -30,7 +30,7 @@ const OPT_DEFAULT = {
 /**
  * 커스텀 파일 첨부 박스
  */
-export default class FlayAttach extends HTMLElement {
+export default class FlayAttach extends HTMLDivElement {
   constructor(opts) {
     super();
 
@@ -40,19 +40,10 @@ export default class FlayAttach extends HTMLElement {
     this.fileCount = 0;
     this.fileLength = 0;
 
-    // shadow root을 생성합니다
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
     this.setAttribute('id', this.options.id);
+    this.classList.add('flay-attach');
 
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    this.wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    this.wrapper.classList.add(this.tagName.toLowerCase());
-
-    this.fileBox = this.wrapper.appendChild(document.createElement('div'));
+    this.fileBox = this.appendChild(document.createElement('div'));
     this.fileBox.setAttribute('class', 'file-box');
 
     this.fileList = this.fileBox.appendChild(document.createElement('ol'));
@@ -78,19 +69,19 @@ export default class FlayAttach extends HTMLElement {
   addFileDragEventListener() {
     this.fileList.addEventListener('dragover', (e) => {
       e.preventDefault();
-      this.wrapper.classList.add('file-dragover');
+      this.classList.add('file-dragover');
     });
 
     this.fileList.addEventListener('dragenter', (e) => {});
 
     this.fileList.addEventListener('dragleave', (e) => {
-      this.wrapper.classList.remove('file-dragover');
+      this.classList.remove('file-dragover');
     });
 
     this.fileList.addEventListener('drop', (e) => {
       e.preventDefault();
       e.stopPropagation();
-      this.wrapper.classList.remove('file-dragover');
+      this.classList.remove('file-dragover');
       this.insertFile(e.dataTransfer.files);
     });
   }
@@ -161,8 +152,8 @@ export default class FlayAttach extends HTMLElement {
       this.options.attachChangeCallback(this.attach);
     }
 
-    this.wrapper.classList.remove('file-transfer');
-    this.wrapper.classList.toggle('file-empty', attach.attachFiles.length === 0);
+    this.classList.remove('file-transfer');
+    this.classList.toggle('file-empty', attach.attachFiles.length === 0);
   }
 
   /**
@@ -225,7 +216,7 @@ export default class FlayAttach extends HTMLElement {
       return;
     }
 
-    this.wrapper.classList.add('file-transfer');
+    this.classList.add('file-transfer');
 
     // 체크가 완료된 파일
     const dataTransfer = new DataTransfer();
@@ -240,7 +231,7 @@ export default class FlayAttach extends HTMLElement {
    * @param {Number} uniqueKey 클릭된 파일 인덱스
    */
   removeFile(attachfileid) {
-    this.wrapper.classList.add('file-transfer');
+    this.classList.add('file-transfer');
 
     // 서버로 파일 제거 호출
     this.removeToServer(attachfileid);
@@ -330,7 +321,7 @@ export default class FlayAttach extends HTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-attach', FlayAttach);
+customElements.define('flay-attach', FlayAttach, { extends: 'div' });
 
 function getFileIcon(file) {
   function getFileType(fileExt, fileType) {

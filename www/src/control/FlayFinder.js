@@ -20,29 +20,21 @@ const HTML = `
 </div>
 `;
 
-export default class FlayFinder extends HTMLElement {
+export default class FlayFinder extends HTMLDivElement {
   constructor() {
     super();
+
+    this.classList.add('flay-finder');
+    this.innerHTML = HTML;
   }
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = HTML;
-
-    const SearchInput = this.shadowRoot.querySelector('#search');
-    const Instance = this.shadowRoot.querySelector('.instance-list');
-    const Archive = this.shadowRoot.querySelector('.archive-list');
-    const Actress = this.shadowRoot.querySelector('.actress-list');
-    const Info = this.shadowRoot.querySelector('.info-list');
-    const History = this.shadowRoot.querySelector('.history-list');
+    const SearchInput = this.querySelector('#search');
+    const Instance = this.querySelector('.instance-list');
+    const Archive = this.querySelector('.archive-list');
+    const Actress = this.querySelector('.actress-list');
+    const Info = this.querySelector('.info-list');
+    const History = this.querySelector('.history-list');
 
     let keyword = '';
 
@@ -66,7 +58,7 @@ export default class FlayFinder extends HTMLElement {
       }
     });
 
-    wrapper.addEventListener('click', (e) => {
+    this.addEventListener('click', (e) => {
       let action = e.target.dataset.action;
       let opus = e.target.dataset.opus;
       console.debug('click', e.target, action, opus);
@@ -222,4 +214,4 @@ function renderActress(list, keyword, wrapper) {
 }
 
 // Define the new element
-customElements.define('flay-finder', FlayFinder);
+customElements.define('flay-finder', FlayFinder, { extends: 'div' });

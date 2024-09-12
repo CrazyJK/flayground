@@ -15,7 +15,7 @@ export default class FlayTitle extends FlayHTMLElement {
   }
 
   init() {
-    const label = this.wrapper.appendChild(document.createElement('label'));
+    const label = this.appendChild(document.createElement('label'));
     this.anker = label.appendChild(document.createElement('a'));
     this.anker.innerHTML = 'Title';
     if (location.pathname.indexOf('popup.flay.html') < 0) {
@@ -36,8 +36,8 @@ export default class FlayTitle extends FlayHTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.setAttribute('data-opus', flay.opus);
+    this.classList.toggle('archive', this.flay.archive);
+    this.setAttribute('data-opus', flay.opus);
 
     this.anker.setAttribute('title', flay.title);
     this.anker.textContent = flay.title;

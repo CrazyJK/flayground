@@ -5,35 +5,27 @@ import './FlayCandidate.scss';
 /**
  * accept candidate
  */
-export default class FlayCandidate extends HTMLElement {
+export default class FlayCandidate extends HTMLDivElement {
   constructor() {
     super();
-  }
 
-  connectedCallback() {
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = `
+    this.classList.add('flay-candidate');
+    this.innerHTML = `
       <div>
         <button id="getCadidate"><span id="candidateLength">0</span> Candidates</button>
       </div>
       <ol id="candidatesFlay"></ol>
     `;
+  }
 
-    wrapper.querySelector('#getCadidate').addEventListener('click', () => {
+  connectedCallback() {
+    this.querySelector('#getCadidate').addEventListener('click', () => {
       fetch('/flay/candidates')
         .then((res) => res.json())
         .then((list) => {
-          wrapper.querySelector('#candidateLength').innerHTML = list.length;
+          this.querySelector('#candidateLength').innerHTML = list.length;
 
-          const LIST = wrapper.querySelector('#candidatesFlay');
+          const LIST = this.querySelector('#candidatesFlay');
           LIST.textContent = null;
           list.forEach((flay) => {
             const ITEM = LIST.appendChild(document.createElement('li'));
@@ -59,4 +51,4 @@ export default class FlayCandidate extends HTMLElement {
   }
 }
 
-customElements.define('flay-candidate', FlayCandidate);
+customElements.define('flay-candidate', FlayCandidate, { extends: 'div' });

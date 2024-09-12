@@ -10,36 +10,27 @@ import FlayStudio from './part/FlayStudio';
 import FlayTag from './part/FlayTag';
 import FlayTitle from './part/FlayTitle';
 
-export default class FlayPage extends HTMLElement {
+export default class FlayPage extends HTMLDivElement {
   opus = null;
   flay = null;
   actress = null;
 
   constructor() {
     super();
+    this.classList.add('flay-page');
   }
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('article'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-
-    this.flayStudio = wrapper.appendChild(new FlayStudio());
-    this.flayOpus = wrapper.appendChild(new FlayOpus());
-    this.flayComment = wrapper.appendChild(new FlayComment());
-    this.flayTitle = wrapper.appendChild(new FlayTitle());
-    this.flayCover = wrapper.appendChild(new FlayCover());
-    this.flayActress = wrapper.appendChild(new FlayActress());
-    this.flayRelease = wrapper.appendChild(new FlayRelease());
-    this.flayRank = wrapper.appendChild(new FlayRank());
-    this.flayFiles = wrapper.appendChild(new FlayFiles());
-    this.flayTag = wrapper.appendChild(new FlayTag());
+    this.flayStudio = this.appendChild(new FlayStudio());
+    this.flayOpus = this.appendChild(new FlayOpus());
+    this.flayComment = this.appendChild(new FlayComment());
+    this.flayTitle = this.appendChild(new FlayTitle());
+    this.flayCover = this.appendChild(new FlayCover());
+    this.flayActress = this.appendChild(new FlayActress());
+    this.flayRelease = this.appendChild(new FlayRelease());
+    this.flayRank = this.appendChild(new FlayRank());
+    this.flayFiles = this.appendChild(new FlayFiles());
+    this.flayTag = this.appendChild(new FlayTag());
   }
 
   /**
@@ -78,4 +69,4 @@ export default class FlayPage extends HTMLElement {
   }
 }
 
-customElements.define('flay-page', FlayPage);
+customElements.define('flay-page', FlayPage, { extends: 'div' });

@@ -26,19 +26,12 @@ const HTML = `
 <div id="flayList"></div>
 `;
 
-export default class SubtitlesFinder extends HTMLElement {
+export default class SubtitlesFinder extends HTMLDivElement {
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
 
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = HTML;
+    this.classList.add('subtitles-finder');
+    this.innerHTML = HTML;
   }
 
   connectedCallback() {
@@ -52,8 +45,8 @@ export default class SubtitlesFinder extends HTMLElement {
       const findSubtitles = () => {
         ++currentFindingIndex;
         const opus = noSubtitlesOpusList.shift();
-        const flayItem = this.shadowRoot.querySelector('#opus_' + opus + '');
-        const subtitles = this.shadowRoot.querySelector('#opus_' + opus + ' > .subtitles');
+        const flayItem = this.querySelector('#opus_' + opus + '');
+        const subtitles = this.querySelector('#opus_' + opus + ' > .subtitles');
         subtitles.innerHTML = 'finding...';
 
         // const $sub = $('#' + opus + ' > .flay-subtitles').html('finding...'); // mark current active
@@ -64,7 +57,7 @@ export default class SubtitlesFinder extends HTMLElement {
               if (result.url.length > 0) {
                 // counting found subtitles
                 foundSubtitlesCount++;
-                this.shadowRoot.querySelector('#foundSubtitlesCount').innerHTML = foundSubtitlesCount; // mark found count
+                this.querySelector('#foundSubtitlesCount').innerHTML = foundSubtitlesCount; // mark found count
 
                 subtitles.textContent = null;
                 flayItem.classList.add('found-subtitles');
@@ -93,22 +86,22 @@ export default class SubtitlesFinder extends HTMLElement {
         );
         // scroll move
         // const scrollable = this.parentElement.closest('.scrollable');
-        const scrollable = this.shadowRoot.querySelector('#flayList').parentElement;
+        const scrollable = this.querySelector('#flayList').parentElement;
         const itemPerPage = Math.round(scrollable.clientHeight / 28);
         // console.log('scrollable.clientHeight', scrollable.clientHeight, 'currentFindingIndex', currentFindingIndex, 'currentFindingIndex % itemPerPage', currentFindingIndex % itemPerPage);
         if (currentFindingIndex > itemPerPage && currentFindingIndex % itemPerPage === 1) {
           let offsetTop = flayItem.offsetTop;
           console.log('itemPerPage', itemPerPage, 'currentFindingIndex', currentFindingIndex, `${opus} offsetTop`, offsetTop, scrollable);
-          // this.shadowRoot.querySelector('html').scrollTop = offsetTop - 60;
+          // this.querySelector('html').scrollTop = offsetTop - 60;
           scrollable.scrollTop = offsetTop - 60;
         }
       };
 
       // initiate
-      this.shadowRoot.querySelector('#btnStopFinding').style.display = 'block';
-      this.shadowRoot.querySelector('#btnFindSubtitles').style.display = 'none';
-      this.shadowRoot.querySelector('#btnFilterFound').style.display = 'none';
-      this.shadowRoot.querySelector('#foundSubtitlesCount').innerHTML = '0';
+      this.querySelector('#btnStopFinding').style.display = 'block';
+      this.querySelector('#btnFindSubtitles').style.display = 'none';
+      this.querySelector('#btnFilterFound').style.display = 'none';
+      this.querySelector('#foundSubtitlesCount').innerHTML = '0';
       intervalFindSubtitles = -1;
       foundSubtitlesCount = 0;
 
@@ -127,29 +120,29 @@ export default class SubtitlesFinder extends HTMLElement {
     const processStop = () => {
       clearInterval(intervalFindSubtitles);
       if (noSubtitlesOpusList.length === 0) {
-        this.shadowRoot.querySelector('#btnFindSubtitles').style.display = 'none';
-        this.shadowRoot.querySelector('#btnStopFinding').style.display = 'none';
+        this.querySelector('#btnFindSubtitles').style.display = 'none';
+        this.querySelector('#btnStopFinding').style.display = 'none';
       } else {
-        this.shadowRoot.querySelector('#btnFindSubtitles').innerHTML = 'Resume';
+        this.querySelector('#btnFindSubtitles').innerHTML = 'Resume';
       }
-      this.shadowRoot.querySelector('#btnStopFinding').style.display = 'none';
-      this.shadowRoot.querySelector('#btnFindSubtitles').style.display = 'block';
-      this.shadowRoot.querySelector('#btnFilterFound').style.display = 'block';
+      this.querySelector('#btnStopFinding').style.display = 'none';
+      this.querySelector('#btnFindSubtitles').style.display = 'block';
+      this.querySelector('#btnFilterFound').style.display = 'block';
     };
 
     const displayList = (e) => {
       // filter rank
       const selectedRank = [];
-      this.shadowRoot.querySelectorAll("input[name='rank']:checked").forEach((rank) => {
+      this.querySelectorAll("input[name='rank']:checked").forEach((rank) => {
         selectedRank.push(Number(rank.value));
       });
 
       // initiate
-      this.shadowRoot.querySelector('#btnFindSubtitles').style.display = 'block';
-      this.shadowRoot.querySelector('#btnFindSubtitles').innerHTML = 'Find';
-      this.shadowRoot.querySelector('#btnStopFinding').style.display = 'none';
-      this.shadowRoot.querySelector('#btnFilterFound').style.display = 'none';
-      this.shadowRoot.querySelector('#flayList').textContent = null;
+      this.querySelector('#btnFindSubtitles').style.display = 'block';
+      this.querySelector('#btnFindSubtitles').innerHTML = 'Find';
+      this.querySelector('#btnStopFinding').style.display = 'none';
+      this.querySelector('#btnFilterFound').style.display = 'none';
+      this.querySelector('#flayList').textContent = null;
       noSubtitlesOpusList = [];
       currentFindingIndex = 0;
 
@@ -165,7 +158,7 @@ export default class SubtitlesFinder extends HTMLElement {
         .forEach((flay, count) => {
           noSubtitlesOpusList.push(flay.opus);
 
-          let flayItem = this.shadowRoot.querySelector('#flayList').appendChild(document.createElement('div'));
+          let flayItem = this.querySelector('#flayList').appendChild(document.createElement('div'));
           flayItem.id = 'opus_' + flay.opus;
           flayItem.setAttribute('rank', flay.video.rank);
           flayItem.classList.add('flay-item');
@@ -191,7 +184,7 @@ export default class SubtitlesFinder extends HTMLElement {
           });
         });
 
-      this.shadowRoot.querySelector('#flayCount').innerHTML = noSubtitlesOpusList.length; // mark total count
+      this.querySelector('#flayCount').innerHTML = noSubtitlesOpusList.length; // mark total count
     };
 
     const ifTag = (flay, tagId) => {
@@ -206,19 +199,19 @@ export default class SubtitlesFinder extends HTMLElement {
     };
 
     // start find
-    this.shadowRoot.querySelector('#btnFindSubtitles').addEventListener('click', processStart);
+    this.querySelector('#btnFindSubtitles').addEventListener('click', processStart);
 
     // stop find
-    this.shadowRoot.querySelector('#btnStopFinding').addEventListener('click', processStop);
+    this.querySelector('#btnStopFinding').addEventListener('click', processStop);
 
     // filter found subtitles
-    this.shadowRoot.querySelector('#btnFilterFound').addEventListener('click', () => {
-      this.shadowRoot.querySelectorAll('.flay-item:not(.found-subtitles)').forEach((item) => {
+    this.querySelector('#btnFilterFound').addEventListener('click', () => {
+      this.querySelectorAll('.flay-item:not(.found-subtitles)').forEach((item) => {
         item.classList.toggle('hide');
       });
     });
 
-    this.shadowRoot.querySelectorAll("input[name='rank']").forEach((rank) => rank.addEventListener('change', displayList));
+    this.querySelectorAll("input[name='rank']").forEach((rank) => rank.addEventListener('change', displayList));
 
     fetch('/flay')
       .then((res) => res.json())
@@ -230,4 +223,4 @@ export default class SubtitlesFinder extends HTMLElement {
 }
 
 // Define the new element
-customElements.define('subtitles-finder', SubtitlesFinder);
+customElements.define('subtitles-finder', SubtitlesFinder, { extends: 'div' });

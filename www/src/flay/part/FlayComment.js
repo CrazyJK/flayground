@@ -19,7 +19,7 @@ export default class FlayComment extends FlayHTMLElement {
   }
 
   init() {
-    const div = this.wrapper.appendChild(document.createElement('div'));
+    const div = this.appendChild(document.createElement('div'));
 
     this.japanese = div.appendChild(document.createElement('a'));
     this.japanese.title = '번역보기';
@@ -43,7 +43,7 @@ export default class FlayComment extends FlayHTMLElement {
       this.input.focus();
     });
 
-    this.input = this.wrapper.appendChild(document.createElement('input'));
+    this.input = this.appendChild(document.createElement('input'));
     this.input.type = 'text';
     this.input.placeholder = COMMENT;
     this.input.style.display = 'none';
@@ -72,8 +72,8 @@ export default class FlayComment extends FlayHTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.setAttribute('data-opus', flay.opus);
+    this.classList.toggle('archive', this.flay.archive);
+    this.setAttribute('data-opus', flay.opus);
 
     let comment = StringUtils.isBlank(flay.video.comment) ? '' : flay.video.comment.trim();
     let blank = comment === '';

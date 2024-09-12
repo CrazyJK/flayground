@@ -1,22 +1,22 @@
-flay-actress,
-flay-cover,
-flay-files,
-flay-opus,
-flay-rank,
-flay-release,
-flay-studio,
-flay-tag,
-flay-title,
-flay-comment,
-flay-pagination,
-flay-condition,
-flay-card,
-flay-page,
-flay-register,
-flay-batch,
-flay-candidate,
-tag-layer,
-side-nav {
+.flay-actress,
+.flay-cover,
+.flay-files,
+.flay-opus,
+.flay-rank,
+.flay-release,
+.flay-studio,
+.flay-tag,
+.flay-title,
+.flay-comment,
+.flay-pagination,
+.flay-condition,
+.flay-card,
+.flay-page,
+.flay-register,
+.flay-batch,
+.flay-candidate,
+.tag-layer,
+.side-nav {
   position: relative;
   display: block;
   overflow: hidden;
@@ -24,39 +24,39 @@ side-nav {
   outline: var(--debug1-outline) !important;
 }
 
-flay-actress,
-flay-files,
-flay-opus,
-flay-rank,
-flay-release,
-flay-studio,
-flay-tag,
-flay-title,
-flay-comment {
+.flay-actress,
+.flay-files,
+.flay-opus,
+.flay-rank,
+.flay-release,
+.flay-studio,
+.flay-tag,
+.flay-title,
+.flay-comment {
   min-height: 2rem;
   padding: 0 0.5rem;
 }
 
-flay-page {
+.flay-page {
   width: 100%;
   max-width: 900px;
   margin: auto;
 }
 
-flay-card {
+.flay-card {
   &.shot {
     box-shadow: 0 0 0.25rem 0.125rem #f00;
   }
 }
 
 @media screen and (min-width: 1278px) {
-  flay-page {
+  .flay-page {
     max-width: 1200px;
   }
 }
 
 @media screen and (max-width: 900px) {
-  flay-page {
+  .flay-page {
     max-width: 800px;
   }
 }

@@ -18,7 +18,7 @@ export default class FlayRank extends FlayHTMLElement {
   init() {
     this.rankInputElementArray = [];
 
-    const rankGroupElement = this.wrapper.appendChild(document.createElement('div'));
+    const rankGroupElement = this.appendChild(document.createElement('div'));
     rankGroupElement.classList.add('rank-group');
 
     for (let i = -1; i <= 5; i++) {
@@ -40,10 +40,10 @@ export default class FlayRank extends FlayHTMLElement {
       this.rankInputElementArray.push(rankInputElement);
     }
 
-    this.rankLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.rankLabel = this.appendChild(document.createElement('label'));
     this.rankLabel.classList.add('rank-label');
 
-    this.likeBtn = this.wrapper.appendChild(document.createElement('button'));
+    this.likeBtn = this.appendChild(document.createElement('button'));
     this.likeBtn.type = 'button';
     this.likeBtn.classList.add('like-btn');
     this.likeBtn.addEventListener('click', (e) => {
@@ -51,10 +51,10 @@ export default class FlayRank extends FlayHTMLElement {
       FlayAction.setLike(this.flay.opus);
     });
 
-    this.playLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.playLabel = this.appendChild(document.createElement('label'));
     this.playLabel.classList.add('play-label');
 
-    this.scoreLabel = this.wrapper.appendChild(document.createElement('label'));
+    this.scoreLabel = this.appendChild(document.createElement('label'));
     this.scoreLabel.classList.add('score-label');
   }
 
@@ -68,8 +68,8 @@ export default class FlayRank extends FlayHTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.setAttribute('data-opus', flay.opus);
+    this.classList.toggle('archive', this.flay.archive);
+    this.setAttribute('data-opus', flay.opus);
 
     this.rankInputElementArray.forEach((input, index) => {
       input.removeAttribute('checked');

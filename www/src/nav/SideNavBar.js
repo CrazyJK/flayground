@@ -33,39 +33,18 @@ const menuList = [
   { url: 'style.html', name: 'style' },
 ];
 
-export default class SideNavBar extends HTMLElement {
+export default class SideNavBar extends HTMLDivElement {
   debug = 0; // elememnts를 구분해서 보기 위한 조건
-
-  static get observedAttributes() {
-    return ['class'];
-  }
-
-  attributeChangedCallback(name, oldValue, newValue) {
-    console.debug('attributeChangedCallback', name, oldValue, newValue);
-    if (name === 'class') {
-      oldValue?.split(' ').forEach((cssClass) => cssClass !== '' && this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.remove(cssClass));
-      newValue?.split(' ').forEach((cssClass) => cssClass !== '' && this.shadowRoot.querySelector('.' + this.tagName.toLowerCase()).classList.add(cssClass));
-    }
-  }
 
   constructor() {
     super();
+    this.classList.add('side-nav-bar');
   }
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' }); // 'this.shadowRoot'을 설정하고 반환합니다
-
-    this.parentElement.closest('html').querySelector('head').appendChild(document.createElement('style')).innerHTML = PARENT_CSS;
     this.parentElement.insertBefore(document.createElement('label'), this).classList.add('nav-open');
 
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = `
+    this.innerHTML = `
     <header>
       <div><a href="index.html">flay ground</a></div>
     </header>
@@ -73,23 +52,23 @@ export default class SideNavBar extends HTMLElement {
       ${menuList.map((menu) => (menu.url ? `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>` : '<div></div>')).join('')}
     </article>
     <footer>
-      <div><flay-monitor></flay-monitor></div>
+      <div class="flay-monitor" is="flay-monitor"></div>
       <div><a id="debug">debug</a></div>
       <div><a id="swagger">swagger</a></div>
       <div><a id="dependencies">dependencies</a></div>
       <div><a id="bundleReport">bundle report</a></div>
-      <div style="margin-top: 1rem;"><theme-controller></theme-controller></div>
+      <div class="theme-controller" is="theme-controller" style="margin-top: 1rem;"></div>
     </footer>
     `;
 
     /** active 메뉴 표시 */
-    this.shadowRoot.querySelectorAll('a').forEach((anker) => {
+    this.querySelectorAll('a').forEach((anker) => {
       if (anker.href.indexOf(location.pathname) > -1) {
         anker.parentElement.classList.add('active');
       }
     });
 
-    this.shadowRoot.addEventListener('click', (e) => {
+    this.addEventListener('click', (e) => {
       const tagName = e.target.tagName;
       console.debug('click', tagName);
       if (tagName === 'A') {
@@ -109,7 +88,7 @@ export default class SideNavBar extends HTMLElement {
             window.open('bundle-report.html', 'bundle-report', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
             break;
         }
-      } else if (tagName === 'FLAY-MONITOR') {
+      } else if (e.target.closest('.flay-monitor')) {
         window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
       } else {
         this.classList.toggle('open');
@@ -119,36 +98,4 @@ export default class SideNavBar extends HTMLElement {
 }
 
 // Define the new element
-customElements.define('side-nav', SideNavBar);
-
-const PARENT_CSS = `
-.nav-open {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 2rem;
-  height: 2rem;
-  background-color: transparent;
-  z-index: 69;
-}
-side-nav {
-  position: fixed;
-  top: 0;
-  left: -10rem;
-  bottom: 0;
-  width: 10rem;
-  transition: linear left 0.4s 0.4s, box-shadow 0.8s;
-  z-index: 6974;
-  background-color: var(--color-bg);
-  border-right: 1px solid var(--color-border);
-}
-.nav-open:hover + side-nav,
-side-nav:hover,
-side-nav.open {
-  left: 0;
-  transition: left 0.4s, box-shadow 0.8s;
-}
-side-nav.open {
-  box-shadow: var(--box-shadow-small);
-}
-`;
+customElements.define('side-nav-bar', SideNavBar, { extends: 'div' });

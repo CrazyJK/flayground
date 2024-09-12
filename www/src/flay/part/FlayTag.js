@@ -16,7 +16,7 @@ export default class FlayTag extends FlayHTMLElement {
   }
 
   init() {
-    this.wrapper.innerHTML = `
+    this.innerHTML = `
       <div class="tag-list" id="tagList">
         <button class="tag-new-btn" id="tagNewBtn">NEW</button>
       </div>
@@ -25,9 +25,9 @@ export default class FlayTag extends FlayHTMLElement {
       </div>
     `;
 
-    const tagNewBtn = this.wrapper.querySelector('#tagNewBtn');
-    const tagNewWrap = this.wrapper.querySelector('#tagNewWrap');
-    const tagNewInput = this.wrapper.querySelector('#tagNewInput');
+    const tagNewBtn = this.querySelector('#tagNewBtn');
+    const tagNewWrap = this.querySelector('#tagNewWrap');
+    const tagNewInput = this.querySelector('#tagNewInput');
 
     tagNewBtn.addEventListener('click', (e) => {
       if (tagNewWrap.classList.toggle('show')) {
@@ -66,8 +66,8 @@ export default class FlayTag extends FlayHTMLElement {
    */
   set(flay, reload) {
     this.flay = flay;
-    this.wrapper.setAttribute('data-opus', flay.opus);
-    this.wrapper.classList.toggle('archive', this.flay.archive);
+    this.setAttribute('data-opus', flay.opus);
+    this.classList.toggle('archive', this.flay.archive);
 
     this.#fetchTag(reload)
       .then((tagListWrap) => {
@@ -98,7 +98,7 @@ export default class FlayTag extends FlayHTMLElement {
   }
 
   async #fetchTag(reload) {
-    const tagListWrap = this.wrapper.querySelector('#tagList');
+    const tagListWrap = this.querySelector('#tagList');
 
     if (window.tagList && window.tagList.length > 0) {
       this.tagList = window.tagList;

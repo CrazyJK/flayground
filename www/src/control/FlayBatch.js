@@ -41,49 +41,41 @@ const HTML = `
 /**
  *
  */
-export default class FlayBatch extends HTMLElement {
+export default class FlayBatch extends HTMLDivElement {
   constructor() {
     super();
 
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const wrapper = this.shadowRoot.appendChild(document.createElement('div'));
-    wrapper.classList.add(this.tagName.toLowerCase());
-    wrapper.innerHTML = HTML;
+    this.classList.add('flay-batch');
+    this.innerHTML = HTML;
   }
 
   connectedCallback() {
-    const reload = this.shadowRoot.querySelector('#reload');
+    const reload = this.querySelector('#reload');
     reload.addEventListener('click', () => {
       FlayAction.reload();
     });
-    const lowerScore = this.shadowRoot.querySelector('#lowerScore');
+    const lowerScore = this.querySelector('#lowerScore');
     lowerScore.addEventListener('change', (e) => {
       FlayAction.batchSetOption('S');
     });
     FlayAction.batchGetOption('S', (booleanOptionValue) => {
       lowerScore.checked = booleanOptionValue;
     });
-    const instanceBatch = this.shadowRoot.querySelector('#instanceBatch');
+    const instanceBatch = this.querySelector('#instanceBatch');
     instanceBatch.addEventListener('click', () => {
       FlayAction.batch('I');
     });
-    const archiveBatch = this.shadowRoot.querySelector('#archiveBatch');
+    const archiveBatch = this.querySelector('#archiveBatch');
     archiveBatch.addEventListener('click', () => {
       FlayAction.batch('A');
     });
-    const backup = this.shadowRoot.querySelector('#backup');
+    const backup = this.querySelector('#backup');
     backup.addEventListener('click', () => {
       FlayAction.batch('B');
     });
 
-    const ol = this.shadowRoot.querySelector('#lowerScoreFlayList ol');
-    this.shadowRoot.querySelectorAll('.lowerScoreBtn').forEach((btn) => {
+    const ol = this.querySelector('#lowerScoreFlayList ol');
+    this.querySelectorAll('.lowerScoreBtn').forEach((btn) => {
       btn.addEventListener('click', (e) => {
         // orderbyScoreDesc, lowScore
         fetch(`/flay/list/${e.target.dataset.mode === '0' ? 'orderbyScoreDesc' : 'lowScore'}`)
@@ -117,7 +109,7 @@ export default class FlayBatch extends HTMLElement {
       }
     });
 
-    const batchLog = this.shadowRoot.querySelector('#batchLog');
+    const batchLog = this.querySelector('#batchLog');
     window.emitBatch = (data) => {
       const div = batchLog.appendChild(document.createElement('div'));
       div.innerHTML = data.message;
@@ -127,4 +119,4 @@ export default class FlayBatch extends HTMLElement {
 }
 
 // Define the new element
-customElements.define('flay-batch', FlayBatch);
+customElements.define('flay-batch', FlayBatch, { extends: 'div' });

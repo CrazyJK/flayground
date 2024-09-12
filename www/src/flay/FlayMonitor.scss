@@ -1,7 +1,11 @@
-flay-monitor {
+.flay-monitor {
   position: relative;
   display: block;
   transition: 0.4s;
+
+  display: flex;
+  width: 100%;
+  padding: 0.125rem;
 
   &.fixed {
     position: fixed;
@@ -9,21 +13,14 @@ flay-monitor {
     right: 0;
     bottom: 0;
     width: 100%;
+
     max-width: 1200px;
     margin: auto;
+    padding: 1rem;
+
     background-color: var(--color-bg-transparent);
     box-shadow: var(--box-shadow-large);
     z-index: 1;
-  }
-}
-
-.flay-monitor {
-  display: flex;
-  width: 100%;
-  padding: 0.125rem;
-
-  &.fixed {
-    padding: 1rem;
   }
 
   canvas {

@@ -13,19 +13,19 @@
     width: 100%;
   }
 
-  flay-cover {
+  .flay-cover {
     margin: 0.5rem auto;
     padding: 0;
   }
 
-  flay-cover,
-  flay-actress {
+  .flay-cover,
+  .flay-actress {
     max-width: 900px;
   }
 }
 
 @media screen and (max-height: 1400px) {
-  .flay-page flay-cover {
+  .flay-page .flay-cover {
     margin: 0.25rem auto;
   }
 }
@@ -35,67 +35,10 @@
   }
 }
 
-@media screen and (width: 1920px) {
-  $cover-width: 1100px;
-  $top: 4rem;
-
-  .flay-page {
-    flay-studio,
-    flay-opus,
-    flay-comment,
-    // flay-title,
-    // flay-actress,
-    // flay-release,
-    // flay-rank,
-    flay-files,
-    flay-tag {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: calc(100% / 2 - $cover-width / 2);
-    }
-    flay-studio {
-      top: calc($top);
-    }
-    flay-opus {
-      top: calc($top + 3rem);
-    }
-    flay-comment {
-      top: calc($top + 6rem);
-    }
-    // flay-title {
-    //   top: calc($top + 9rem);
-    // }
-    // flay-release {
-    //   top: calc($top + 12rem);
-    // }
-    // flay-rank {
-    //   top: calc($top + 15rem);
-    // }
-    flay-files {
-      top: calc($top + 18rem);
-    }
-    // flay-actress {
-    //   top: calc($top + 21rem);
-    // }
-
-    flay-tag {
-      top: calc($top);
-      left: unset;
-      right: 0;
-    }
-
-    flay-cover {
-      width: $cover-width;
-      max-width: unset;
-    }
-  }
-}
-
 @media screen and (max-height: 750px) {
   .flay-page {
-    flay-studio,
-    flay-comment {
+    .flay-studio,
+    .flay-comment {
       display: none;
     }
   }
@@ -103,7 +46,7 @@
 
 @media screen and (max-height: 600px) {
   .flay-page {
-    flay-opus {
+    .flay-opus {
       display: none;
     }
   }

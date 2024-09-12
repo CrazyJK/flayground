@@ -4,7 +4,7 @@ import './ImageFall.scss';
 
 const PANE_WIDTH = 360;
 
-export default class ImageFall extends HTMLElement {
+export default class ImageFall extends HTMLDivElement {
   contunue = true;
   imageLength = -1;
   imageIndexArray = [];
@@ -12,19 +12,10 @@ export default class ImageFall extends HTMLElement {
 
   constructor() {
     super();
+    this.classList.add('image-fall');
   }
 
   connectedCallback() {
-    this.attachShadow({ mode: 'open' });
-
-    const link = this.shadowRoot.appendChild(document.createElement('link'));
-    link.rel = 'stylesheet';
-    link.type = 'text/css';
-    link.href = 'style.css';
-
-    const main = this.shadowRoot.appendChild(document.createElement('main'));
-    main.classList.add(this.tagName.toLowerCase());
-
     addResizeListener(() => {
       document.startViewTransition(() => {
         this.resizeDiv();
@@ -45,20 +36,19 @@ export default class ImageFall extends HTMLElement {
   }
 
   resizeDiv() {
-    const main = this.shadowRoot.querySelector('main');
-    let paneCount = Math.round(main.clientWidth / PANE_WIDTH);
+    let paneCount = Math.round(this.clientWidth / PANE_WIDTH);
     this.divIndexArray = Array.from({ length: paneCount }, (v, i) => i);
-    console.debug('resizeDiv', main.clientWidth, main.clientHeight, paneCount);
+    console.debug('resizeDiv', this.clientWidth, this.clientHeight, paneCount);
 
-    let imageList = this.shadowRoot.querySelectorAll('main > div > div');
+    let imageList = this.querySelectorAll('.row > div');
     console.debug('resizeDiv imageList', imageList.length);
 
-    main.textContent = null;
+    this.textContent = null;
     for (let i = 0; i < paneCount; i++) {
-      main.innerHTML += `<div></div>`;
+      this.innerHTML += `<div class="row"></div>`;
     }
 
-    let divList = this.shadowRoot.querySelectorAll('main > div');
+    let divList = this.querySelectorAll('.row');
     imageList.forEach((img, index) => {
       divList[index % divList.length].append(img);
       img.style.height = 'auto';
@@ -76,7 +66,7 @@ export default class ImageFall extends HTMLElement {
   }
 
   async addImage() {
-    let divList = this.shadowRoot.querySelectorAll('main > div');
+    let divList = this.querySelectorAll('.row');
     let divIndex = this.getDivIdx(divList.length);
     let imageIndex = this.getImageIdx();
     let div = divList[divIndex];
@@ -138,4 +128,4 @@ export default class ImageFall extends HTMLElement {
   }
 }
 
-customElements.define('image-fall', ImageFall);
+customElements.define('image-fall', ImageFall, { extends: 'div' });

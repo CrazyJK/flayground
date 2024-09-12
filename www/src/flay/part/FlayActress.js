@@ -38,12 +38,12 @@ export default class FlayActress extends FlayHTMLElement {
     }
     this.actressList = actressList.filter((actress) => !StringUtils.isBlank(actress.name));
 
-    this.wrapper.setAttribute('data-opus', flay.opus);
-    this.wrapper.classList.toggle('archive', this.flay.archive);
-    this.wrapper.textContent = null;
+    this.setAttribute('data-opus', flay.opus);
+    this.classList.toggle('archive', this.flay.archive);
+    this.textContent = null;
 
     this.actressList.forEach((actress, index) => {
-      const actressDiv = this.wrapper.appendChild(document.createElement('div'));
+      const actressDiv = this.appendChild(document.createElement('div'));
 
       // favorite
       const favoriteElement = actressDiv.appendChild(document.createElement('span'));

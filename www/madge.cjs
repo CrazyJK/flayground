@@ -16,21 +16,19 @@ const madgeConfig = {
 
 (async () => {
   const dependenciesSvgJson = [];
-  const entries = fs
-    .readdirSync('src', { withFileTypes: true })
-    .filter((dirent) => dirent.isFile())
-    .filter((dirent) => path.extname(dirent.name) === '.js')
-    .map((dirent) => path.parse(dirent.name).name);
 
-  for (let entry of entries) {
-    console.log('process...', entry);
+  const { entry } = require('./webpack.common.cjs');
 
-    let res = await madge(`src/${entry}.js`, madgeConfig);
-    let output = await res.svg();
-    let svgString = output.toString();
+  for (const [name, path] of Object.entries(entry)) {
+    console.log('process...', name);
 
-    dependenciesSvgJson.push({ entry: entry, svg: svgString });
+    const res = await madge(path, madgeConfig);
+    const output = await res.svg();
+    const svgString = output.toString();
+
+    dependenciesSvgJson.push({ entry: name, svg: svgString });
   }
+
   fs.writeFile('./src/dependencies-viewer.json', JSON.stringify(dependenciesSvgJson), 'utf8', () => {
     console.log('write dependencies-viewer.json');
   });

@@ -14,8 +14,8 @@ class Page {
       return map;
     }, new Map());
 
-    const flayArticle = document.querySelector('main').appendChild(new FlayArticle());
-    const flayPagination = document.querySelector('footer').appendChild(new FlayPagination());
+    const flayArticle = document.querySelector('body > main').appendChild(new FlayArticle());
+    const flayPagination = document.querySelector('body > footer').appendChild(new FlayPagination());
 
     flayPagination.addEventListener('change', (e) => {
       const opus = e.target.opus;

@@ -36,7 +36,7 @@ class Page {
 
   async start() {
     const flayCondition = document.querySelector('body > header').appendChild(new FlayCondition());
-    flayCondition.addEventListener('change', async () => {
+    flayCondition.addEventListener('fetch', async () => {
       this.opusList = flayCondition.opusList;
 
       document.querySelector('#flayTotal').innerHTML = this.opusList.length;
@@ -45,7 +45,7 @@ class Page {
     });
 
     document
-      .querySelector('footer')
+      .querySelector('body > footer')
       .appendChild(new GridControl('main'))
       .addEventListener('change', () => this.show());
 

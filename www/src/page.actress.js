@@ -11,7 +11,7 @@ class Page {
     const actressList = await fetch('/info/actress').then((res) => res.json());
     console.log(actressList);
 
-    const main = document.querySelector('main');
+    const main = document.querySelector('body > main');
 
     actressList.forEach((actress) => {
       const item = main.appendChild(document.createElement('div'));
@@ -26,15 +26,15 @@ class Page {
       `;
     });
 
-    document.querySelector('input').addEventListener('change', (e) => {
+    document.querySelector('body > main input').addEventListener('change', (e) => {
       const keyword = e.target.value;
       if (StringUtils.isBlank(keyword)) {
-        main.querySelectorAll('div').forEach((actressDiv) => {
+        main.querySelectorAll('body > main > div').forEach((actressDiv) => {
           actressDiv.classList.toggle('found', false);
           actressDiv.classList.toggle('hide', false);
         });
       } else {
-        main.querySelectorAll('div').forEach((actressDiv) => {
+        main.querySelectorAll('body > main > div').forEach((actressDiv) => {
           const found = actressDiv.innerText.toLowerCase().indexOf(keyword.toLowerCase()) > -1;
           actressDiv.classList.toggle('hide', !found);
         });

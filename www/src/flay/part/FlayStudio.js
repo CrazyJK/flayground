@@ -31,7 +31,7 @@ export default class FlayStudio extends FlayHTMLElement {
    */
   set(flay) {
     this.flay = flay;
-    this.setAttribute('data-opus', flay.opus);
+    this.dataset.opus = flay.opus ? flay.opus : '';
     this.classList.toggle('archive', this.flay.archive);
 
     this.studio.textContent = flay.studio;

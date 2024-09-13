@@ -4,8 +4,8 @@
   }
 }
 [role='tabpanel'] {
-  display: none;
+  display: none !important;
   &[active] {
-    display: block;
+    display: block !important;
   }
 }

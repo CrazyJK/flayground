@@ -26,14 +26,14 @@ export default class FlayRank extends FlayHTMLElement {
       rankInputElement.setAttribute('type', 'radio');
       rankInputElement.setAttribute('name', 'rank');
       rankInputElement.setAttribute('value', i);
-      rankInputElement.setAttribute('id', 'rank' + i);
+      rankInputElement.setAttribute('id', 'flay-rank' + i);
       rankInputElement.addEventListener('change', (e) => {
         console.log('rankChange', this.flay.opus, e.target.value);
         FlayAction.setRank(this.flay.opus, e.target.value);
       });
 
       const rankLabelElement = rankGroupElement.appendChild(document.createElement('label'));
-      rankLabelElement.setAttribute('for', 'rank' + i);
+      rankLabelElement.setAttribute('for', 'flay-rank' + i);
       rankLabelElement.setAttribute('title', 'rank ' + i);
       rankLabelElement.innerHTML = rankSVG[i + 1];
 

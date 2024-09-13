@@ -92,9 +92,9 @@ const renderImage = async (images) => {
 
   const previewLayer = document.querySelector('.preview');
   previewLayer.classList.remove('show');
-  const imageFrame = document.querySelector('image-frame');
+  const imageFrame = document.querySelector('.image-frame');
 
-  const article = document.querySelector('article');
+  const article = document.querySelector('body > main > article');
   article.textContent = null;
 
   for (const image of images) {

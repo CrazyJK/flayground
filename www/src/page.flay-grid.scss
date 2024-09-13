@@ -1,45 +1,47 @@
 @import './style/style.scss';
 
-header {
-  position: sticky;
-  top: 0;
-  background-color: var(--color-bg);
-  z-index: 1;
-}
-
-main {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(20%, auto));
-  align-content: stretch;
-  justify-content: space-between;
-  align-items: stretch;
-  justify-items: stretch;
-
-  padding: 0.5rem;
-
-  & > div.flay-article {
-    margin: 0.5rem;
-  }
-}
-
-footer {
-  position: fixed;
-  right: 0;
-  bottom: 0;
-  z-index: 6974;
-
-  display: inline-flex;
-  justify-content: flex-end;
-  align-items: center;
-  gap: 1rem;
-
-  background-color: var(--color-bg-transparent);
-  border-top-left-radius: 1rem;
-  padding: 0.5rem;
-  transition: 0.4s;
-
-  &:hover {
+body {
+  & > header {
+    position: sticky;
+    top: 0;
     background-color: var(--color-bg);
+    z-index: 1;
+  }
+
+  & > main {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20%, auto));
+    align-content: stretch;
+    justify-content: space-between;
+    align-items: stretch;
+    justify-items: stretch;
+
+    padding: 0.5rem;
+
+    & > div.flay-article {
+      margin: 0.5rem;
+    }
+  }
+
+  & > footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    z-index: 6974;
+
+    display: inline-flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+
+    background-color: var(--color-bg-transparent);
+    border-top-left-radius: 1rem;
+    padding: 0.5rem;
+    transition: 0.4s;
+
+    &:hover {
+      background-color: var(--color-bg);
+    }
   }
 }
 

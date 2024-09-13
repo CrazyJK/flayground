@@ -1,34 +1,35 @@
 @import './style/style.scss';
 @import './style/layout.sticky-header.scss';
-@import './style/layout.grid-card.scss';
 
-header {
-  div {
-    input {
-      &#tagId {
-        max-width: 3rem;
-      }
-      &#tagName {
-        max-width: 12rem;
-      }
-      &#tagDesc {
-        flex: 1 1 auto;
+body {
+  & > header {
+    div {
+      input {
+        &#tagId {
+          max-width: 3rem;
+        }
+        &#tagName {
+          max-width: 12rem;
+        }
+        &#tagDesc {
+          flex: 1 1 auto;
+        }
       }
     }
   }
-}
 
-main {
-  margin: 0;
-  padding: 1rem;
+  & > main {
+    margin: 0;
+    padding: 1rem;
 
-  ol {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-evenly;
-    align-items: flex-start;
-    gap: 0.5rem 0.25rem;
+    ol {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      justify-content: space-evenly;
+      align-items: flex-start;
+      gap: 0.5rem 0.25rem;
+    }
   }
 }
 

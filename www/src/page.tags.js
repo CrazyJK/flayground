@@ -63,7 +63,7 @@ TAG_DEL.addEventListener('click', () => {
 renderTagList();
 
 function renderTagList() {
-  const listEl = document.querySelector('ol');
+  const listEl = document.querySelector('body > main > ol');
   listEl.textContent = null;
 
   fetch('/info/tag/withCount')

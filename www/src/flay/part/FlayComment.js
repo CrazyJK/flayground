@@ -44,6 +44,7 @@ export default class FlayComment extends FlayHTMLElement {
     });
 
     this.input = this.appendChild(document.createElement('input'));
+    this.input.name = 'flayComment';
     this.input.type = 'text';
     this.input.placeholder = COMMENT;
     this.input.style.display = 'none';

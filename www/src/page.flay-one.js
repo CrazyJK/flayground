@@ -11,10 +11,10 @@ class Page extends OpusProvider {
   }
 
   async start() {
-    this.flayCondition = document.querySelector('header').appendChild(new FlayCondition());
-    this.flayArticle = document.querySelector('article').appendChild(new FlayArticle());
+    this.flayCondition = document.querySelector('body > main > header').appendChild(new FlayCondition());
+    this.flayArticle = document.querySelector('body > main > article').appendChild(new FlayArticle());
 
-    this.flayCondition.addEventListener('change', async () => {
+    this.flayCondition.addEventListener('fetch', async () => {
       this.setOpusList(this.flayCondition.opusList);
       this.#show();
     });

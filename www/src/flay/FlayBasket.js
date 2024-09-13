@@ -173,7 +173,7 @@ class FlayBasketItem extends HTMLDivElement {
         <div class="actress"></div>
         <div class="tags"></div>
       </div>
-      <button type="button" class="empty-this">${trashBinSVG}</button>
+      <button type="button" class="empty-this" title="remove flay in basket">${trashBinSVG}</button>
     `;
 
     this.querySelector('.empty-this').addEventListener('click', async () => await this.#delete(opus));

@@ -25,6 +25,7 @@ export default class FlayFiles extends FlayHTMLElement {
 
     this.playBtn = infoDiv.appendChild(document.createElement('button'));
     this.playBtn.classList.add('flay-play');
+    this.playBtn.title = 'play on layer';
     this.playBtn.innerHTML = youtubeSVG;
     this.playBtn.addEventListener('click', async () => {
       const { playInLayer } = await import(/* webpackChunkName: "FlayVideoPlayer" */ '../FlayVideoPlayer');
@@ -71,6 +72,7 @@ export default class FlayFiles extends FlayHTMLElement {
 
     this.downloadBtn = infoDiv.appendChild(document.createElement('button'));
     this.downloadBtn.classList.add('search-torrent');
+    this.downloadBtn.title = 'search torrent';
     this.downloadBtn.innerHTML = torrentSVG;
     this.downloadBtn.addEventListener('click', () => {
       FlaySearch.torrent.Nonojav(this.flay.opus);
@@ -89,10 +91,10 @@ export default class FlayFiles extends FlayHTMLElement {
     this.renameDiv = this.listDiv.appendChild(document.createElement('div'));
     this.renameDiv.classList.add('rename-flay');
     ['studio', 'opus', 'title', 'actress', 'release'].forEach((name) => {
-      let input = this.renameDiv.appendChild(document.createElement('input'));
+      const input = this.renameDiv.appendChild(document.createElement('input'));
       input.placeholder = name;
+      input.name = name;
       input.type = 'text';
-      input.id = name;
       input.setAttribute('spellcheck', false);
       input.addEventListener('keyup', (e) => {
         e.stopPropagation();
@@ -103,10 +105,11 @@ export default class FlayFiles extends FlayHTMLElement {
       this[name + 'Input'] = input;
     });
     this.renameBtn = this.renameDiv.appendChild(document.createElement('button'));
+    this.renameBtn.type = 'button';
+    this.renameBtn.title = 'rename flay file name';
     this.renameBtn.innerHTML = 'Rename';
-    this.renameBtn.addEventListener('click', (e) => {
-      let newName = `[${this.studioInput.value}][${this.opusInput.value}][${this.titleInput.value}][${this.actressInput.value}][${this.releaseInput.value}]`;
-      console.log('renameClick', newName);
+    this.renameBtn.addEventListener('click', () => {
+      console.log('renameClick', this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
       FlayAction.renameFlay(this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
     });
   }

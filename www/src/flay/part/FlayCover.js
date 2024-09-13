@@ -24,6 +24,7 @@ export default class FlayCover extends FlayHTMLElement {
     this.coverImage = this.appendChild(document.createElement('img'));
     this.coverImage.classList.add('cover-image');
     this.coverImage.loading = 'lazy';
+    this.coverImage.ariaLabel = 'flay cover';
 
     this.colorWrapper = this.appendChild(document.createElement('div'));
     this.colorWrapper.classList.add('color-wrapper');

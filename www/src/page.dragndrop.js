@@ -17,7 +17,7 @@ class Page extends FlayProvider {
     const flayCard = new FlayCard({ excludes: ['FlayComment', 'FlayFiles', 'FlayTag'] });
     flayCard.set(opus);
 
-    const article = document.querySelector('article');
+    const article = document.querySelector('body > article');
     const width = 400;
     const height = parseInt((width * 269) / 400);
 

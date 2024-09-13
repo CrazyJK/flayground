@@ -13,15 +13,12 @@ export default class FlayOpus extends FlayHTMLElement {
   constructor() {
     super();
 
-    this.init();
-  }
-
-  init() {
+    this.classList.add('flay-opus');
     this.innerHTML = `
       <div>
-        <button type="button" id="jsonViewBtn">${jsonSVG}</button>
+        <button type="button" id="jsonViewBtn" title="flay json viewer">${jsonSVG}</button>
         <label><a>Opus</a></label>
-        <button type="button" id="keepBasketBtn">${basketSVG}</button>
+        <button type="button" id="keepBasketBtn" title="keep flay in basket">${basketSVG}</button>
       </div>
     `;
 
@@ -33,9 +30,7 @@ export default class FlayOpus extends FlayHTMLElement {
     });
   }
 
-  connectedCallback() {
-    this.classList.add('flay-opus');
-  }
+  connectedCallback() {}
 
   /**
    *

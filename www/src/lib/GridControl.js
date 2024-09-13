@@ -14,7 +14,7 @@ export default class GridControl extends HTMLDivElement {
     this.dataset.max = this.max;
     this.classList.add('grid-control');
     this.innerHTML = `
-      <input type="range" min="1" max="${this.max}" step="1" value="${this.max}">
+      <input type="range" min="1" max="${this.max}" step="1" value="${this.max}" title="column size">
       <label class="range-mark" data-value="${this.max}">${this.max}</label>
     `;
   }

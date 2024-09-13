@@ -3,7 +3,7 @@ import { popupActress, popupFlay } from '../util/FlaySearch';
 import './FlayBatch.scss';
 
 const HTML = `
-<div>
+<div class="batch-buttons">
   <button id="reload">Reload</button>
   <span>
     <input type="checkbox" id="lowerScore" />
@@ -13,28 +13,28 @@ const HTML = `
   <button id="archiveBatch">Archive Batch</button>
   <button id="backup">Backup</button>
 </div>
-<div>
+<div class="batch-logs">
   <pre id="batchLog"></pre>
-  <div id="lowerScoreFlayList">
-    <div>
-      <label>Lower score Flay</label>
-      <button type="button" class="lowerScoreBtn" data-mode="0">list</button>
-      <button type="button" class="lowerScoreBtn" data-mode="1">only</button>
-    </div>
-    <ol>
-      <li class="head">
-        <label class="studio" >Studio </label>
-        <label class="opus"   >Opus   </label>
-        <label class="title"  >Title  </label>
-        <label class="actress">Actress</label>
-        <label class="release">Release</label>
-        <label class="like"   >Like   </label>
-        <label class="rank"   >Rank   </label>
-        <label class="sub"    >Sub.   </label>
-        <label class="score"  >Score  </label>
-      </li>
-    </ol>
+</div>
+<div class="batch-lower-list" id="lowerScoreFlayList">
+  <div>
+    <label>Lower score Flay</label>
+    <button type="button" class="lowerScoreBtn" data-mode="0">list</button>
+    <button type="button" class="lowerScoreBtn" data-mode="1">only</button>
   </div>
+  <ol>
+    <li class="head">
+      <label class="studio" >Studio </label>
+      <label class="opus"   >Opus   </label>
+      <label class="title"  >Title  </label>
+      <label class="actress">Actress</label>
+      <label class="release">Release</label>
+      <label class="like"   >Like   </label>
+      <label class="rank"   >Rank   </label>
+      <label class="sub"    >Sub.   </label>
+      <label class="score"  >Score  </label>
+    </li>
+  </ol>
 </div>
 `;
 

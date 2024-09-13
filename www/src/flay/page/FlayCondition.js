@@ -70,7 +70,7 @@ export default class FlayCondition extends HTMLDivElement {
         .map((rank) => rank.value),
       sort: this.querySelector('#sort').value,
     };
-    this.opusList = await fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(condition) }).then((res) => res.json());
+    this.opusList = await fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, cache: 'no-cache', body: JSON.stringify(condition) }).then((res) => res.json());
     if (this.opusList.length === 0) {
       // not found flay
       this.animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });

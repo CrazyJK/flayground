@@ -18,5 +18,5 @@ Object.keys(entry).forEach((entryName) => {
   const replacedHtml = html.replace(jsName, newJsName).replace(cssName, newCssName);
   fs.writeFileSync(htmlFilename, replacedHtml, 'utf8');
 
-  console.log('[chunkhash]', chunkhash, '[html]', htmlFilename);
+  console.log('[chunkhash]', chunkhash, '[html]', htmlName);
 });

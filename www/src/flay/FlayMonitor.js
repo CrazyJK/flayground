@@ -9,10 +9,10 @@ const STORAGE_KEY = 'flay.position.info';
 
 // 왼쪽부터 모니터 좌표
 const Monitors = [
-  { left: -6200, top: -626, right: -3641, bottom: 814, width: 2560, height: 1440 },
-  { left: -3640, top: -713, right: -2561, bottom: 1207, width: 1080, height: 1920 },
-  { left: -2560, top: -360, right: -1, bottom: 1080, width: 2560, height: 1440 },
-  { left: 0, top: 0, right: 1920, bottom: 1032, width: 1920, height: 1032 },
+  { left: -2560, top: 71, right: -1, bottom: 1510, width: 2560, height: 1440 },
+  { left: 0, top: 0, right: 1079, bottom: 1919, width: 1080, height: 1920 },
+  { left: 1080, top: 60, right: 3639, bottom: 1499, width: 2560, height: 1440 },
+  { left: 3640, top: -520, right: 5079, bottom: 2039, width: 1440, height: 2560 },
 ];
 
 /**
@@ -29,8 +29,8 @@ export default class FlayMonitor extends HTMLDivElement {
     this.top = Math.min(...Monitors.map((monitor) => monitor.top));
     this.right = Math.max(...Monitors.map((monitor) => monitor.right));
     this.bottom = Math.max(...Monitors.map((monitor) => monitor.bottom));
-    this.width = this.right - this.left;
-    this.height = this.bottom - this.top;
+    this.width = this.right - this.left + 1;
+    this.height = this.bottom - this.top + 1;
 
     console.log(`screen
       (${this.left}, ${this.top})

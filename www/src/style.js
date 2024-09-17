@@ -1,37 +1,5 @@
-import './init/Page';
+// import './init/Page';
 import './style.scss';
-
-import './attach/FlayAttach';
-import './control/FlayBatch';
-import './control/FlayCandidate';
-import './control/FlayFinder';
-import './control/FlayRegister';
-import './control/SubtitlesFinder';
-import './flay/FlayCard';
-import './flay/FlayMonitor';
-import './flay/FlayPage';
-import './flay/FlayVideoPlayer';
-import './flay/page/FlayCondition';
-import './flay/page/FlayPagination';
-import './flay/part/FlayActress';
-import './flay/part/FlayComment';
-import './flay/part/FlayCover';
-import './flay/part/FlayFiles';
-import './flay/part/FlayOpus';
-import './flay/part/FlayRank';
-import './flay/part/FlayRelease';
-import './flay/part/FlayStudio';
-import './flay/part/FlayTag';
-import './flay/part/FlayTitle';
-import './image/ImageFall';
-import './image/part/FlayImage';
-import './image/part/ImageFrame';
-import './lib/Drag&Drop';
-import './lib/SseConnector';
-import './lib/TabUI';
-import './lib/TableUtils';
-import './nav/SideNavBar';
-import './nav/part/ThemeController';
 
 import basketSVG from './svg/basket.svg';
 import cloudDownSVG from './svg/cloudDown.svg';
@@ -54,44 +22,50 @@ import rankSVG from './svg/js/rankSVG';
 import themeSVG from './svg/js/themeSVG';
 import weatherSVG from './svg/js/weatherSVG';
 
-const svgWrap = document.createElement('div');
-svgWrap.classList.add('svg-wrap');
-svgWrap.appendChild(document.createElement('label')).innerHTML = subtitlesSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = favoriteSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = noFavoriteSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = folderSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = newWindowSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = editSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = torrentSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = cloudDownSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = tagSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = trashBinSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = basketSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = jsonSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = playSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = youtubeSVG;
-svgWrap.appendChild(document.createElement('label')).innerHTML = vaginaSVG;
+Element.prototype.appendSVG = function (svg) {
+  this.appendChild(document.createElement('label')).innerHTML = svg;
+  return this;
+};
 
-svgWrap.appendChild(document.createElement('label')).innerHTML = controlsSVG.nextTrack;
-svgWrap.appendChild(document.createElement('label')).innerHTML = controlsSVG.pause;
-svgWrap.appendChild(document.createElement('label')).innerHTML = controlsSVG.volume;
-svgWrap.appendChild(document.createElement('label')).innerHTML = rankSVG[0];
-svgWrap.appendChild(document.createElement('label')).innerHTML = rankSVG[1];
-svgWrap.appendChild(document.createElement('label')).innerHTML = rankSVG[2];
-svgWrap.appendChild(document.createElement('label')).innerHTML = rankSVG[3];
-svgWrap.appendChild(document.createElement('label')).innerHTML = rankSVG[4];
-svgWrap.appendChild(document.createElement('label')).innerHTML = rankSVG[5];
-svgWrap.appendChild(document.createElement('label')).innerHTML = rankSVG[6];
-svgWrap.appendChild(document.createElement('label')).innerHTML = themeSVG.os;
-svgWrap.appendChild(document.createElement('label')).innerHTML = themeSVG.light;
-svgWrap.appendChild(document.createElement('label')).innerHTML = themeSVG.dark;
-svgWrap.appendChild(document.createElement('label')).innerHTML = weatherSVG.cloud;
-svgWrap.appendChild(document.createElement('label')).innerHTML = weatherSVG.rain;
-svgWrap.appendChild(document.createElement('label')).innerHTML = weatherSVG.snow;
-svgWrap.appendChild(document.createElement('label')).innerHTML = weatherSVG.sunny;
+Element.prototype.appendIMG = function (imgSrc) {
+  this.appendChild(document.createElement('label')).appendChild(new Image()).src = imgSrc;
+  return this;
+};
 
-svgWrap.appendChild(document.createElement('label')).appendChild(new Image()).src = './svg/flayground-text.svg';
-svgWrap.appendChild(document.createElement('label')).appendChild(new Image()).src = './svg/flayground-circle.svg';
-svgWrap.appendChild(document.createElement('label')).appendChild(new Image()).src = './svg/flayground-circle-t.svg';
-
-document.querySelector('body').append(svgWrap);
+document
+  .getElementById('svgContainer')
+  .appendSVG(subtitlesSVG)
+  .appendSVG(favoriteSVG)
+  .appendSVG(noFavoriteSVG)
+  .appendSVG(folderSVG)
+  .appendSVG(newWindowSVG)
+  .appendSVG(editSVG)
+  .appendSVG(torrentSVG)
+  .appendSVG(cloudDownSVG)
+  .appendSVG(tagSVG)
+  .appendSVG(trashBinSVG)
+  .appendSVG(basketSVG)
+  .appendSVG(jsonSVG)
+  .appendSVG(playSVG)
+  .appendSVG(youtubeSVG)
+  .appendSVG(vaginaSVG)
+  .appendSVG(controlsSVG.nextTrack)
+  .appendSVG(controlsSVG.pause)
+  .appendSVG(controlsSVG.volume)
+  .appendSVG(rankSVG[0])
+  .appendSVG(rankSVG[1])
+  .appendSVG(rankSVG[2])
+  .appendSVG(rankSVG[3])
+  .appendSVG(rankSVG[4])
+  .appendSVG(rankSVG[5])
+  .appendSVG(rankSVG[6])
+  .appendSVG(themeSVG.os)
+  .appendSVG(themeSVG.light)
+  .appendSVG(themeSVG.dark)
+  .appendSVG(weatherSVG.cloud)
+  .appendSVG(weatherSVG.rain)
+  .appendSVG(weatherSVG.snow)
+  .appendSVG(weatherSVG.sunny)
+  .appendIMG('./svg/flayground-text.svg')
+  .appendIMG('./svg/flayground-circle.svg')
+  .appendIMG('./svg/flayground-circle-t.svg');

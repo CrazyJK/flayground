@@ -1,4 +1,4 @@
-// import './init/Page';
+import './init/Page';
 import './style.scss';
 
 import basketSVG from './svg/basket.svg';

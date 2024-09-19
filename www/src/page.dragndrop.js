@@ -35,7 +35,7 @@ class Page extends FlayProvider {
   }
 
   removeFlayCard() {
-    const flayCardList = document.querySelector('.movezone').querySelectorAll('flay-card');
+    const flayCardList = document.querySelector('.movezone').querySelectorAll('.flay-card');
     for (let i = 0; i < flayCardList.length - 5; i++) {
       flayCardList[i].remove();
     }

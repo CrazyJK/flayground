@@ -378,7 +378,7 @@ let prevOpus = null;
 export const playInLayer = async (opus) => {
   const dispatchPlayEvent = (isPlay) => document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: isPlay } }));
   const setPlayerPosition = () => {
-    const flayCoverRect = document.querySelector('flay-page')?.querySelector('flay-cover').getBoundingClientRect();
+    const flayCoverRect = document.querySelector('.flay-page')?.querySelector('.flay-cover').getBoundingClientRect();
     if (flayCoverRect) {
       const { top, left, width, height } = flayCoverRect;
       layer.querySelector('article').style.cssText = `position: fixed; top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px;`;

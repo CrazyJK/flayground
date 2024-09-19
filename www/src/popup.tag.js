@@ -71,7 +71,7 @@ async function renderFlayCardList(opusList) {
 }
 
 function toggleByRank(selectedRank) {
-  document.querySelectorAll('flay-card').forEach((flayCard) => {
+  document.querySelectorAll('.flay-card').forEach((flayCard) => {
     if (selectedRank === '') {
       flayCard.style.display = 'block';
     } else {
@@ -89,7 +89,7 @@ function countFlaySizeByRank() {
   let flaySizeByRank = [0, 0, 0, 0, 0, 0];
   let sumRank = 0;
   let totalFlay = 0;
-  document.querySelectorAll('flay-card').forEach((flayCard, key, parent) => {
+  document.querySelectorAll('.flay-card').forEach((flayCard, key, parent) => {
     let rank = parseInt(flayCard.getAttribute('rank'));
     flaySizeByRank[rank] += 1;
     if (rank !== 0) {

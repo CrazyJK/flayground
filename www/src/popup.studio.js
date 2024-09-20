@@ -2,6 +2,7 @@ import './init/Popup';
 import './popup.studio.scss';
 
 import FlayCard from './flay/FlayCard';
+import GridControl from './lib/GridControl';
 import flayAction from './util/FlayAction';
 
 class PopupStudio {
@@ -55,10 +56,12 @@ class PopupStudio {
   start() {
     this.#fetchStudio();
     this.#fetchFlay();
+
+    document.querySelector('body > footer').appendChild(new GridControl('body > article'));
   }
 
   #fetchStudio() {
-    fetch('/info/studio/' + name)
+    fetch('/info/studio/' + this.name)
       .then((res) => res.json())
       .then((studio) => {
         this.studioName.value = studio.name;

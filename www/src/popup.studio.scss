@@ -1,37 +1,59 @@
 @import './style/style.scss';
 @import './style/layout.sticky-header.scss';
-@import './style/layout.grid-card.scss';
 
-header {
-  .studio-info {
-    #studioName {
-      flex: 1 1 auto;
+body {
+  & > header {
+    .studio-info {
+      #studioName {
+        flex: 1 1 auto;
+      }
+      #studioCompany {
+        flex: 1 1 auto;
+      }
+      #studioHomepage {
+        flex: 1 1 auto;
+      }
+      #flayRank {
+        flex: 0 1 auto;
+      }
+      #totalCount {
+        flex: 0 0 5rem;
+      }
     }
-    #studioCompany {
-      flex: 1 1 auto;
-    }
-    #studioHomepage {
-      flex: 1 1 auto;
-    }
-    #flayRank {
-      flex: 0 1 auto;
-    }
-    #totalCount {
-      flex: 0 0 5rem;
+    .actress-list,
+    .tag-list {
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 0;
+      border: 1px dashed chocolate;
+
+      label {
+        font-size: var(--size-small);
+        line-height: 20px;
+        border: 0 !important;
+      }
     }
   }
-  .actress-list,
-  .tag-list {
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0;
-    border: 1px dashed chocolate;
 
-    label {
-      font-size: var(--size-small);
-      line-height: 20px;
-      border: 0 !important;
+  & > article {
+    padding: 0.5rem;
+    & > .flay-card {
+      margin: 0.5rem;
     }
+  }
+
+  & > footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    padding: 1rem;
+    background-color: var(--color-bg-transparent);
+    border-top-left-radius: 1rem;
+    &:hover {
+      background-color: var(--color-bg);
+      box-shadow: 0 0 16px 4px var(--color-black-alpha-dark);
+    }
+    transition: 0.4s;
   }
 }

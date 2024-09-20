@@ -2,6 +2,7 @@ import './init/Popup';
 import './popup.tag.scss';
 
 import FlayCard from './flay/FlayCard';
+import GridControl from './lib/GridControl';
 import FlayAction from './util/FlayAction';
 
 window.tagList = [];
@@ -18,6 +19,8 @@ const tagDesc = document.querySelector('#tagDesc');
 const saveBtn = document.querySelector('#saveBtn');
 const delBtn = document.querySelector('#delBtn');
 const flayRank = document.querySelector('#flayRank');
+
+document.querySelector('body > footer').appendChild(new GridControl('body > article'));
 
 function fetchTag() {
   fetch('/info/tag/' + id)

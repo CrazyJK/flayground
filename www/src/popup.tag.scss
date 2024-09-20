@@ -1,18 +1,40 @@
 @import './style/style.scss';
 @import './style/layout.sticky-header.scss';
-@import './style/layout.grid-card.scss';
 
-#tagId {
-  padding: 0.25rem 0.5rem 0;
-}
+body {
+  & > header {
+    #tagId {
+      padding: 0.25rem 0.5rem 0;
+    }
+    #tagName {
+      flex: 1 1 auto;
+    }
+    #tagDesc {
+      flex: 2 1 auto;
+    }
+    button {
+      display: initial;
+    }
+  }
 
-#tagName {
-  flex: 1 1 auto;
-}
-#tagDesc {
-  flex: 1 1 auto;
-}
+  & > article {
+    padding: 0.5rem;
+    & > .flay-card {
+      margin: 0.5rem;
+    }
+  }
 
-header > div button {
-  display: initial;
+  & > footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    padding: 1rem;
+    background-color: var(--color-bg-transparent);
+    border-top-left-radius: 1rem;
+    &:hover {
+      background-color: var(--color-bg);
+      box-shadow: 0 0 16px 4px var(--color-black-alpha-dark);
+    }
+    transition: 0.4s;
+  }
 }

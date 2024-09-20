@@ -1,50 +1,72 @@
 @import './style/style.scss';
 @import './style/layout.sticky-header.scss';
-@import './style/layout.grid-card.scss';
 
-header {
-  display: grid;
-  grid-template-columns: 1fr minmax(900px, 999px) 1fr;
-  height: 11rem;
+body {
+  & > header {
+    display: grid;
+    grid-template-columns: 1fr minmax(900px, 999px) 1fr;
+    height: 11rem;
 
-  .header-center {
-    display: flex;
-    flex-direction: column;
-    width: 100%;
-
-    .actress-info {
+    .header-center {
       display: flex;
-      gap: 0.25rem;
+      flex-direction: column;
       width: 100%;
+
+      .actress-info {
+        display: flex;
+        gap: 0.25rem;
+        width: 100%;
+      }
+    }
+
+    .header-side {
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+
+      &.studio-list,
+      &.tag-list {
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        gap: 0;
+        border: 1px dashed chocolate;
+        padding: 2px;
+
+        label {
+          font-size: var(--size-small);
+          line-height: 20px;
+          border: 0 !important;
+        }
+      }
     }
   }
 
-  .header-side {
-    width: 100%;
-    height: 100%;
-    overflow: auto;
-
-    &.studio-list,
-    &.tag-list {
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 0;
-      border: 1px dashed chocolate;
-      padding: 2px;
-
-      label {
-        font-size: var(--size-small);
-        line-height: 20px;
-        border: 0 !important;
-      }
+  & > article {
+    padding: 0.5rem;
+    & > .flay-card {
+      margin: 0.5rem;
     }
+  }
+
+  & > footer {
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    padding: 1rem;
+    background-color: var(--color-bg-transparent);
+    border-top-left-radius: 1rem;
+    &:hover {
+      background-color: var(--color-bg);
+      box-shadow: 0 0 16px 4px var(--color-black-alpha-dark);
+    }
+    transition: 0.4s;
   }
 }
 
 @media screen and (max-width: 1080px) {
   // benq 세로 풀
-  header {
+  body > header {
     grid-template-columns: 1fr;
     .header-side {
       display: none;

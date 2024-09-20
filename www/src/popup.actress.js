@@ -2,6 +2,7 @@ import './init/Popup';
 import './popup.actress.scss';
 
 import FlayCard from './flay/FlayCard';
+import GridControl from './lib/GridControl';
 import favoriteSVG from './svg/favorite.svg';
 import FlayAction from './util/FlayAction';
 import FlaySearch from './util/FlaySearch';
@@ -91,6 +92,8 @@ class PopupActress {
   start() {
     this.#fetchActress();
     this.#fetchFlay();
+
+    document.querySelector('body > footer').appendChild(new GridControl('body > article'));
   }
 
   #fetchActress() {

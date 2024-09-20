@@ -34,7 +34,7 @@ main {
       transition: 0.4s;
     }
 
-    div {
+    div.card-list {
       display: flex;
       flex-wrap: wrap;
       justify-content: flex-start;
@@ -43,8 +43,8 @@ main {
       border: 0;
       padding: 0.75rem;
 
-      flay-card {
-        width: 480px;
+      .flay-card {
+        max-width: 480px;
         border-radius: 0.25rem;
       }
     }

@@ -32,7 +32,7 @@ Promise.all([fetch('/flay').then((res) => res.json()), fetch('/archive').then((r
   start();
 });
 
-setInitialValue();
+// setInitialValue();
 
 function setInitialValue() {
   const today = new Date();

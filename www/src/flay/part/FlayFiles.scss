@@ -50,22 +50,22 @@
         border-right: 2px dashed purple;
       }
 
-      #studio {
+      [name='studio'] {
         flex: 0 0 auto;
         width: 4rem;
       }
-      #opus {
+      [name='opus'] {
         flex: 0 0 auto;
         width: 3rem;
       }
-      #title {
+      [name='title'] {
         flex: 1 1 auto;
       }
-      #actress {
+      [name='actress'] {
         flex: 0 0 auto;
         width: 6rem;
       }
-      #release {
+      [name='release'] {
         flex: 0 0 auto;
         width: 4rem;
       }

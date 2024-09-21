@@ -26,7 +26,7 @@ class Page {
       `;
     });
 
-    document.querySelector('body > main input').addEventListener('change', (e) => {
+    document.querySelector('body > header input').addEventListener('change', (e) => {
       const keyword = e.target.value;
       if (StringUtils.isBlank(keyword)) {
         main.querySelectorAll('body > main > div').forEach((actressDiv) => {

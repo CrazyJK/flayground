@@ -22,6 +22,7 @@ class PopupActress {
     this.favLabel = document.querySelector('#favorite + label');
     this.actressName = document.querySelector('#name');
     this.localName = document.querySelector('#localName');
+    this.otherNames = document.querySelector('#otherNames');
     this.flayRank = document.querySelector('#flayRank');
     this.birth = document.querySelector('#birth');
     this.age = document.querySelector('#age');
@@ -67,6 +68,7 @@ class PopupActress {
         favorite: this.favorite.checked,
         name: this.actressName.value.trim(),
         localName: this.localName.value.trim(),
+        otherNames: this.otherNames.value.split(',').map((name) => name.trim()),
         debut: this.debut.value.trim(),
         birth: this.birth.value.trim(),
         body: this.body.value.trim(),
@@ -100,10 +102,11 @@ class PopupActress {
     fetch('/info/actress/' + this.name)
       .then((res) => res.json())
       .then((actress) => {
-        console.log(actress);
+        console.log('actress', actress);
         this.favorite.checked = actress.favorite;
         this.actressName.value = actress.name;
         this.localName.value = actress.localName;
+        this.otherNames.value = actress.otherNames.join(', ');
         this.birth.value = actress.birth;
         this.age.value = calcAge(actress.birth) + 'y';
         this.body.value = actress.body;

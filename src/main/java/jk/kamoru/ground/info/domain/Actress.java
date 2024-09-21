@@ -1,6 +1,7 @@
 package jk.kamoru.ground.info.domain;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -20,6 +21,7 @@ public class Actress implements Info<String> {
   @NotBlank
   String name;
   String localName;
+  List<String> otherNames;
   String birth;
   String body;
   int height;
@@ -45,7 +47,12 @@ public class Actress implements Info<String> {
     return covers == null ? 0 : covers.size();
   }
 
-  public void setCoverSize(int coverSize) {}
+  public void setCoverSize(int coverSize) {
+  }
+
+  public List<String> getOtherNames() {
+    return otherNames == null ? new ArrayList<>() : otherNames;
+  }
 
   @Override
   public String getKey() {

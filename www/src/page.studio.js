@@ -1,6 +1,7 @@
-import FlayStudio from './flay/part/FlayStudio';
 import './init/Page';
 import './page.studio.scss';
+
+import FlayStudio from './flay/part/FlayStudio';
 import StringUtils from './util/StringUtils';
 
 class Page {
@@ -9,21 +10,20 @@ class Page {
   async start() {
     const studioList = await fetch('/info/studio').then((res) => res.json());
 
+    const searchInput = document.querySelector('body > header input');
     const main = document.querySelector('body > main');
+
+    // render
     studioList.forEach((studio) => main.appendChild(new FlayStudio()).set({ studio: studio.name, archive: false }));
 
-    document.querySelector('body > header input').addEventListener('change', (e) => {
+    // search
+    searchInput.setAttribute('placeholder', `${studioList.length} Studio. Enter a keyword to search`);
+    searchInput.addEventListener('change', (e) => {
       const keyword = e.target.value;
       if (StringUtils.isBlank(keyword)) {
-        main.querySelectorAll('.flay-studio').forEach((flayStudio) => {
-          flayStudio.classList.toggle('found', false);
-          flayStudio.classList.toggle('hide', false);
-        });
+        main.querySelectorAll('.flay-studio').forEach((flayStudio) => flayStudio.classList.remove('found'));
       } else {
-        main.querySelectorAll('.flay-studio').forEach((flayStudio) => {
-          const found = flayStudio.flay.studio.toLowerCase().indexOf(keyword.toLowerCase()) > -1;
-          flayStudio.classList.toggle('hide', !found);
-        });
+        main.querySelectorAll('.flay-studio').forEach((flayStudio) => flayStudio.classList.toggle('found', flayStudio.flay.studio.toLowerCase().includes(keyword.toLowerCase())));
       }
     });
   }

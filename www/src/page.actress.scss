@@ -8,9 +8,15 @@ body {
     flex-wrap: wrap;
     gap: 0.25rem 1rem;
     justify-content: center;
+    padding: 0 1rem 1rem;
 
     div {
-      box-shadow: inset 0 0 1rem 0.5rem rgba(245, 227, 239, 0.3);
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+      max-width: 999px;
+
+      box-shadow: inset 0 0 1rem 0.5rem rgba(245, 227, 239, 0.1);
       border: 1px solid transparent;
       border-radius: var(--border-radius-huge);
       padding: 0.125rem 0.5rem;
@@ -27,13 +33,12 @@ body {
         white-space: nowrap;
       }
 
-      display: flex;
-
       .favorite {
         width: 2.5rem;
       }
       .name {
-        width: 12rem;
+        flex: 1 1 auto;
+        width: 13rem;
       }
       .local-name {
         width: 8rem;

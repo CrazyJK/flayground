@@ -68,7 +68,10 @@ class PopupActress {
         favorite: this.favorite.checked,
         name: this.actressName.value.trim(),
         localName: this.localName.value.trim(),
-        otherNames: this.otherNames.value.split(',').map((name) => name.trim()),
+        otherNames: this.otherNames.value
+          .split(',')
+          .filter((name) => name.trim() !== '')
+          .map((name) => name.trim()),
         debut: this.debut.value.trim(),
         birth: this.birth.value.trim(),
         body: this.body.value.trim(),

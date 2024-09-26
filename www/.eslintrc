@@ -34,11 +34,7 @@
     "prettier/prettier": [
       "error",
       {
-        "code": 360,
-        "printWidth": 360,
-        "endOfLine": "auto",
-        "useTabs": false,
-        "tabWidth": 2
+        "endOfLine": "auto"
       }
     ],
     "no-unused-vars": "off"

@@ -6,7 +6,7 @@
   margin: auto;
   border: 0;
   padding: 0.5rem;
-  background-color: var(--color-bg);
+  background-color: var(--color-bg-transparent);
   box-shadow: var(--box-shadow);
   border-radius: 0.25rem;
 
@@ -30,19 +30,19 @@
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
-
-      span {
-        text-shadow: var(--text-shadow);
+      text-shadow: var(--text-shadow);
+      small {
+        margin-left: 0.5rem;
       }
     }
-
     dt {
       min-height: 2.25rem;
       font-weight: 700;
-      .title {
-        font-size: var(--size-large);
-        min-height: 2.5rem;
-      }
+    }
+
+    .title {
+      font-size: var(--size-large);
+      min-height: 2.5rem;
     }
   }
 
@@ -56,12 +56,9 @@
       text-align: left;
 
       dt {
-        span {
-          background-color: var(--color-bg-transparent);
-          border-radius: 0.25rem;
-        }
+        background-color: var(--color-bg-transparent);
+        border-radius: 0.25rem;
       }
-
       dd {
         display: none;
       }
@@ -71,11 +68,20 @@
   &.simple {
     dl {
       margin: 0.5rem auto 0.25rem;
+      font-size: var(--size-small);
 
       dt {
-        min-height: 1.75rem;
+        min-height: 1.5rem;
       }
       dd {
+        display: none;
+      }
+
+      .title {
+        font-size: var(--size-normal);
+        min-height: 1.75rem;
+      }
+      .tags {
         display: none;
       }
     }

@@ -36,7 +36,6 @@ class PopupActress {
     this.toggleArchive = document.querySelector('#toggleArchive');
 
     this.searchAvdbsBtn = document.querySelector('#searchAvdbsBtn');
-    this.searchNextjavBtn = document.querySelector('#searchNextjavBtn');
     this.searchMinnanoBtn = document.querySelector('#searchMinnanoBtn');
 
     this.favLabel.innerHTML = favoriteSVG;
@@ -60,7 +59,6 @@ class PopupActress {
     });
     // 검색 이벤트
     this.searchAvdbsBtn.addEventListener('click', (e) => FlaySearch.Avdbs(this.localName.value));
-    this.searchNextjavBtn.addEventListener('click', (e) => FlaySearch.actress.Nextjav(this.actressName.value));
     this.searchMinnanoBtn.addEventListener('click', (e) => FlaySearch.actress.Minnano(this.localName.value));
     // 저장 이벤트
     this.saveBtn.addEventListener('click', () => {
@@ -94,41 +92,43 @@ class PopupActress {
     };
   }
 
-  start() {
-    this.#fetchActress();
+  async start() {
+    await this.#fetchActress();
     this.#fetchFlay();
 
     document.querySelector('body > footer').appendChild(new GridControl('body > article'));
   }
 
-  #fetchActress() {
-    fetch('/info/actress/' + this.name)
-      .then((res) => res.json())
-      .then((actress) => {
-        console.log('actress', actress);
-        this.favorite.checked = actress.favorite;
-        this.actressName.value = actress.name;
-        this.localName.value = actress.localName;
-        this.otherNames.value = actress.otherNames.join(', ');
-        this.birth.value = actress.birth;
-        this.age.value = calcAge(actress.birth) + 'y';
-        this.body.value = actress.body;
-        this.height.value = actress.height;
-        this.debut.value = actress.debut;
-        this.comment.value = actress.comment;
-      });
+  async #fetchActress() {
+    this.actress = await fetch('/info/actress/' + this.name).then((res) => res.json());
+    console.log('actress', this.actress);
+
+    this.favorite.checked = this.actress.favorite;
+    this.actressName.value = this.actress.name;
+    this.localName.value = this.actress.localName;
+    this.otherNames.value = this.actress.otherNames.join(', ');
+    this.birth.value = this.actress.birth;
+    this.age.value = calcAge(this.actress.birth) + 'y';
+    this.body.value = this.actress.body;
+    this.height.value = this.actress.height;
+    this.debut.value = this.actress.debut;
+    this.comment.value = this.actress.comment;
   }
 
   async #fetchFlay() {
-    const instanceFlayList = await fetch('/flay/find/actress/' + this.name).then((res) => res.json());
-    const archiveFlayList = await fetch('/archive/find/actress/' + this.name).then((res) => res.json());
+    this.allFlayList = [];
 
-    this.allFlayList = Array.from(instanceFlayList);
-    archiveFlayList.forEach((archiveFlay) => {
-      if (this.allFlayList.filter((flay) => flay.opus === archiveFlay.opus).length === 0) {
-        this.allFlayList.push(archiveFlay);
-      }
-    });
+    for (const name of [this.name, ...this.actress.otherNames]) {
+      const instanceFlayList = await fetch('/flay/find/actress/' + name).then((res) => res.json());
+      const archiveFlayList = await fetch('/archive/find/actress/' + name).then((res) => res.json());
+
+      this.allFlayList.push(...instanceFlayList);
+      archiveFlayList.forEach((archiveFlay) => {
+        if (this.allFlayList.filter((flay) => flay.opus === archiveFlay.opus).length === 0) {
+          this.allFlayList.push(archiveFlay);
+        }
+      });
+    }
 
     const opusList = this.allFlayList
       .sort((f1, f2) => f2.release.localeCompare(f1.release))

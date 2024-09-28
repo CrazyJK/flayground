@@ -30,9 +30,6 @@ export default {
     Minnano(keyword) {
       popupOpen(URL_MINNANO + encodeURI(keyword), 'MINNANO', 1200, 950);
     },
-    Nextjav(name) {
-      popupOpen(URL_NEXTJAV_ACTRESS + name.toLowerCase().replace(' ', '-'), 'NEXTJAV_ACTRESS', 800, 100);
-    },
   },
   torrent: {
     Nextjav(keyword) {

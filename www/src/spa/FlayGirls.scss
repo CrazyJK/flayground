@@ -1,0 +1,102 @@
+.flay-girls {
+  ul {
+    margin: 0;
+    padding: 0;
+
+    li {
+      display: flex;
+      align-items: center;
+
+      &.thead {
+        position: sticky;
+        top: 0;
+        background-color: var(--color-bg);
+        z-index: 1;
+        padding: 0.5rem 1rem;
+      }
+
+      &:not(.thead) {
+        height: 8rem;
+        margin: 0.5rem 1rem 1rem;
+
+        // &:hover {
+        //   box-shadow: inset var(--box-shadow);
+        //   transition: 0.3s;
+        // }
+      }
+
+      label {
+        &.cover {
+          flex: 0 0 12rem;
+          height: 100%;
+          background-position: top right;
+          background-size: 28rem;
+          text-align: center;
+        }
+        &:not(.cover) {
+          padding: 0 0.5rem;
+        }
+        &.name {
+          flex: 1 0 auto;
+        }
+        &.age {
+          flex: 0 0 5rem;
+          text-align: end;
+        }
+        &.flay-count {
+          flex: 0 0 5rem;
+          text-align: end;
+        }
+        &.shot-flay-count {
+          flex: 0 0 5rem;
+          text-align: end;
+        }
+        &.shot-total-count {
+          flex: 0 0 5rem;
+          text-align: end;
+        }
+      }
+    }
+
+    &.box {
+      li:not(.thead) {
+        display: inline-grid;
+        grid-template-areas:
+          'cover cover cover cover'
+          'name name name name'
+          'age flaycount shotflay shottotal';
+        grid-template-rows: 8rem 2rem 2rem;
+        grid-template-columns: 3rem 3rem 3rem 3rem;
+        align-items: center;
+        width: auto;
+        height: auto;
+        margin-left: 0.5rem;
+        margin-right: 0.5rem;
+
+        label {
+          text-align: center;
+          padding: 0;
+        }
+
+        .cover {
+          grid-area: cover;
+        }
+        .name {
+          grid-area: name;
+        }
+        .age {
+          grid-area: age;
+        }
+        .flay-count {
+          grid-area: flaycount;
+        }
+        .shot-flay-count {
+          grid-area: shotflay;
+        }
+        .shot-total-count {
+          grid-area: shottotal;
+        }
+      }
+    }
+  }
+}

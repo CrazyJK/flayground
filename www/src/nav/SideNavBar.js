@@ -3,27 +3,27 @@ import './part/ThemeController';
 import './SideNavBar.scss';
 
 const menuList = [
-  { url: 'page.flay-page.html', name: 'flay page' },
+  { url: 'page.flay-page.html', name: 'flay page', module: 'FlayPage' },
   {},
-  { url: 'page.flay-one.html', name: 'flay one' },
-  { url: 'page.flay-grid.html', name: 'flay grid' },
+  { url: 'page.flay-one.html', name: 'flay one', module: 'FlayOne' },
+  { url: 'page.flay-grid.html', name: 'flay grid', module: 'FlayGrid' },
   {},
-  { url: 'page.flay-basket.html', name: 'basket' },
+  { url: 'page.flay-basket.html', name: 'basket', module: 'FlayBasket' },
   {},
-  { url: 'page.flay-play.html', name: 'flay play' },
-  { url: 'page.flay-play-history.html', name: 'play history' },
+  { url: 'page.flay-play.html', name: 'flay play', module: 'FlayPlay' },
+  { url: 'page.flay-play-history.html', name: 'play history', module: 'PlayHistory' },
   {},
-  { url: 'page.archive.html', name: 'flay archive' },
+  { url: 'page.archive.html', name: 'flay archive', module: 'FlayArchive' },
   {},
-  { url: 'page.flay-girls.html', name: 'girls' },
+  { url: 'page.flay-girls.html', name: 'girls', module: 'FlayGirls' },
   { url: 'page.statistics.html', name: 'statistics' },
-  { url: 'page.shot-history.html', name: 'shot history' },
+  { url: 'page.shot-history.html', name: 'shot history', module: 'ShotHistory' },
   {},
-  { url: 'page.studio.html', name: 'studio' },
-  { url: 'page.actress.html', name: 'actress' },
-  { url: 'page.tags.html', name: 'tags' },
+  { url: 'page.studio.html', name: 'studio', module: 'Studio' },
+  { url: 'page.actress.html', name: 'actress', module: 'Actress' },
+  { url: 'page.tags.html', name: 'tags', module: 'Tags' },
   {},
-  { url: 'page.control.html', name: 'control' },
+  { url: 'page.control.html', name: 'control', module: 'Control' },
   {},
   { url: 'page.image-one.html', name: 'image one' },
   { url: 'page.image-page.html', name: 'image page' },
@@ -40,7 +40,7 @@ export default class SideNavBar extends HTMLDivElement {
 
   constructor() {
     super();
-    this.classList.add('side-nav-bar');
+    this.classList.add('side-nav-bar', 'open');
   }
 
   connectedCallback() {
@@ -51,7 +51,7 @@ export default class SideNavBar extends HTMLDivElement {
       <div><a href="index.html">flay ground</a></div>
     </header>
     <article>
-      ${menuList.map((menu) => (menu.url ? `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>` : '<div></div>')).join('')}
+      ${menuList.map((menu) => (menu.url ? `<div class="menu"><a data-module="${menu.module}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>` : '<div></div>')).join('')}
     </article>
     <footer>
       <div class="flay-monitor" is="flay-monitor"></div>
@@ -72,7 +72,7 @@ export default class SideNavBar extends HTMLDivElement {
 
     this.addEventListener('click', (e) => {
       const tagName = e.target.tagName;
-      console.debug('click', tagName);
+      console.debug('click', tagName, e.target);
       if (tagName === 'A') {
         switch (e.target.id) {
           case 'debug': {
@@ -89,6 +89,11 @@ export default class SideNavBar extends HTMLDivElement {
           case 'bundleReport':
             window.open('bundle-report.html', 'bundle-report', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
             break;
+          default: {
+            if (e.target.dataset?.module) {
+              this.appendComponent(e.target.dataset.module);
+            }
+          }
         }
       } else if (e.target.closest('.flay-monitor')) {
         window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
@@ -97,7 +102,34 @@ export default class SideNavBar extends HTMLDivElement {
       }
     });
   }
+
+  async appendComponent(moduleName) {
+    console.log('appendModule', moduleName);
+    const module = await getModule(moduleName);
+    document.querySelector('body > main').replaceChildren(new module.default());
+  }
 }
 
 // Define the new element
 customElements.define('side-nav-bar', SideNavBar, { extends: 'div' });
+
+async function getModule(name) {
+  switch (name) {
+    case 'FlayPage':
+      return await import(/* webpackChunkName: "FlayPage" */ '../spa/FlayPage');
+    case 'FlayOne':
+      return await import(/* webpackChunkName: "FlayOne" */ '../spa/FlayOne');
+    case 'FlayGrid':
+      return await import(/* webpackChunkName: "FlayGrid" */ '../spa/FlayGrid');
+    case 'FlayBasket':
+      return await import(/* webpackChunkName: "FlayBasket" */ '../spa/FlayBasket');
+    case 'FlayPlay':
+      return await import(/* webpackChunkName: "FlayPlay" */ '../spa/FlayPlay');
+    case 'PlayHistory':
+      return await import(/* webpackChunkName: "PlayHistory" */ '../spa/PlayHistory');
+    case 'FlayArchive':
+      return await import(/* webpackChunkName: "FlayArchive" */ '../spa/FlayArchive');
+    case 'FlayGirls':
+      return await import(/* webpackChunkName: "FlayGirls" */ '../spa/FlayGirls');
+  }
+}

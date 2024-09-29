@@ -1,0 +1,169 @@
+.flay-basket {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  transition: 0.4s ease-in-out;
+
+  .body {
+    height: 100%;
+    overflow: hidden auto;
+    padding-bottom: 3rem;
+  }
+
+  .footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    text-align: end;
+  }
+
+  #actressList {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+
+    background-color: var(--color-bg-transparent);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: baseline;
+    gap: 0.5rem;
+    padding: 0.5rem;
+
+    label {
+      font-size: var(--size-normal);
+      small {
+        font-weight: 400;
+      }
+
+      &:hover {
+        box-shadow: var(--box-shadow-smallest);
+      }
+    }
+  }
+
+  #basketList {
+    .flay-basket-item {
+      background-color: var(--color-bg-transparent);
+      border: 1px solid var(--color-border);
+      border-radius: 0.25rem;
+      margin: 0.5rem;
+      padding: 0.5rem;
+      transition: 0.4s;
+
+      .cover {
+        aspect-ratio: var(--cover-aspect-ratio);
+        background: center center / cover no-repeat transparent;
+
+        .comment {
+          position: absolute;
+          left: 0;
+          bottom: 0;
+
+          background-color: var(--color-bg-transparent);
+          padding: 0.25rem 0.25rem;
+          font-size: var(--size-normal);
+          text-shadow: var(--text-shadow);
+
+          display: inline-block;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 100%;
+
+          &:empty {
+            display: none;
+          }
+        }
+      }
+
+      .title {
+        padding-top: 0.5rem;
+
+        .popup-flay {
+          display: inline-block;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          max-width: 100%;
+        }
+      }
+
+      .info {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 0.5rem;
+
+        .actress,
+        .tags {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+
+          a {
+            font-size: var(--size-normal);
+            font-weight: 400;
+            text-shadow: var(--text-shadow);
+            margin-right: 0.5rem;
+          }
+        }
+
+        .actress {
+          flex: 1 0 auto;
+          max-width: 100%;
+        }
+      }
+
+      .empty-this {
+        position: absolute;
+        top: 0;
+        right: 0;
+
+        border-bottom-left-radius: 0.5rem;
+        padding: 0 0 0.25rem 0.125rem;
+        opacity: 0;
+        transition: 0.4s;
+      }
+
+      &:hover {
+        box-shadow:
+          inset 0 0 1rem 0.5rem var(--color-bg-transparent),
+          var(--box-shadow-small);
+
+        .empty-this {
+          opacity: 1;
+          background-color: var(--color-bg-transparent);
+          &:hover {
+            color: var(--color-orange);
+          }
+        }
+      }
+    }
+  }
+
+  .control {
+    display: inline-flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 1rem;
+
+    background-color: var(--color-bg-transparent);
+    border-top-left-radius: 1rem;
+    padding: 0.5rem;
+    transition: 0.4s;
+
+    &:hover {
+      background-color: var(--color-bg);
+    }
+
+    button {
+      transition: 0.4s;
+      &:hover {
+        color: var(--color-orange);
+      }
+    }
+  }
+}

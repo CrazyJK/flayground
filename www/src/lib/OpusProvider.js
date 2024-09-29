@@ -9,13 +9,14 @@ const DEFAULT_CONDITION = {
   sort: 'RELEASE',
 };
 
-export class OpusProvider {
+export class OpusProvider extends HTMLDivElement {
   opusList;
   opusIndex;
   opusIndexes;
   condition;
 
   constructor(opts) {
+    super();
     this.setCondition(opts);
   }
 

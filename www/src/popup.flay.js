@@ -1,14 +1,14 @@
 import './init/Popup';
 import './popup.flay.scss';
 
-import FlayPage from './flay/FlayPage';
+import FlayVertical from './flay/FlayVertical';
 import snapLayouts from './util/snapLayouts';
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');
 
 document.title = opus;
-document.querySelector('body').appendChild(new FlayPage()).set(opus);
+document.querySelector('body').appendChild(new FlayVertical()).set(opus);
 
 const popupNo = urlParams.get('popupNo');
 if (popupNo) {

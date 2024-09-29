@@ -1,4 +1,4 @@
-import './FlayPage.scss';
+import './FlayVertical.scss';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
 import FlayCover from './part/FlayCover';
@@ -10,7 +10,7 @@ import FlayStudio from './part/FlayStudio';
 import FlayTag from './part/FlayTag';
 import FlayTitle from './part/FlayTitle';
 
-export default class FlayPage extends HTMLDivElement {
+export default class FlayVertical extends HTMLDivElement {
   opus = null;
   flay = null;
   actress = null;
@@ -69,4 +69,4 @@ export default class FlayPage extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-page', FlayPage, { extends: 'div' });
+customElements.define('flay-vertical', FlayVertical, { extends: 'div' });

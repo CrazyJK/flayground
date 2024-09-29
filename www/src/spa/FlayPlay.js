@@ -149,7 +149,7 @@ export default class FlayPlay extends FlayProvider {
   #initKeepFlay() {
     this.querySelector('#keepFlay').innerHTML = basketSVG;
     this.querySelector('#keepFlay').addEventListener('click', async () => {
-      const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ './flay/FlayBasket');
+      const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '../flay/FlayBasket');
       FlayBasket.add(this.videoPlayer.opus);
     });
   }

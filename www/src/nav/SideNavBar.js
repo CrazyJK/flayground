@@ -48,7 +48,7 @@ export default class SideNavBar extends HTMLDivElement {
 
     this.innerHTML = `
     <header>
-      <div><a href="index.html">flay ground</a></div>
+      <div><a href="page.html">flay ground</a></div>
     </header>
     <article>
       ${menuList.map((menu) => (menu.url ? `<div class="menu"><a data-module="${menu.module}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>` : '<div></div>')).join('')}

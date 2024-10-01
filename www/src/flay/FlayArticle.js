@@ -12,7 +12,7 @@ export default class FlayArticle extends HTMLDivElement {
   }
 
   connectedCallback() {
-    this.classList.add('flay-article');
+    this.classList.add('flay-article', 'flay-div');
     this.innerHTML = `
       <div class="cover"></div>
       <dl>

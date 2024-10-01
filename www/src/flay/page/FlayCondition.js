@@ -24,7 +24,7 @@ export default class FlayCondition extends HTMLDivElement {
 
     const condition = FlayStorage.local.getObject('FlayCondition.condition', JSON.stringify(DEFAULT_CONDITION));
 
-    this.classList.add('flay-condition');
+    this.classList.add('flay-condition', 'flay-div');
     this.innerHTML = `
       <div>
         <input type="search" id="search" list="search-items" placeholder="Search" spellcheck="false">

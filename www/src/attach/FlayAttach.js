@@ -41,7 +41,7 @@ export default class FlayAttach extends HTMLDivElement {
     this.fileLength = 0;
 
     this.setAttribute('id', this.options.id);
-    this.classList.add('flay-attach');
+    this.classList.add('flay-attach', 'flay-div');
 
     this.fileBox = this.appendChild(document.createElement('div'));
     this.fileBox.setAttribute('class', 'file-box');

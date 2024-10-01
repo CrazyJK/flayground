@@ -50,7 +50,7 @@ export class FlayVideoPlayer extends HTMLDivElement {
   constructor(opts) {
     super();
 
-    this.classList.add('flay-video-player');
+    this.classList.add('flay-video-player', 'flay-div');
     this.options = {
       ...{
         controls: true,
@@ -313,7 +313,7 @@ class FlayVideoInfo extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('flay-video-info');
+    this.classList.add('flay-video-info', 'flay-div');
     this.innerHTML = `
       <div class="header">
         <div class="flay-title" is="flay-title" mode="card"></div>
@@ -344,7 +344,7 @@ class FlayVideoPoster extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('flay-video-poster');
+    this.classList.add('flay-video-poster', 'flay-div');
     this.innerHTML = `
       <div class="flay-cover" is="flay-cover" mode="card"></div>
     `;

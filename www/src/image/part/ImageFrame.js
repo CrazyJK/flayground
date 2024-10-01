@@ -7,7 +7,7 @@ export default class ImageFrame extends HTMLDivElement {
 
   constructor() {
     super();
-    this.classList.add('image-frame');
+    this.classList.add('image-frame', 'flay-div');
   }
 
   connectedCallback() {

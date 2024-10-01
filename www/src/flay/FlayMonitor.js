@@ -22,7 +22,7 @@ export default class FlayMonitor extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('flay-monitor');
+    this.classList.add('flay-monitor', 'flay-div');
 
     // 0,0을 기준으로 상하좌우 제일 먼거
     this.left = Math.min(...Monitors.map((monitor) => monitor.left));

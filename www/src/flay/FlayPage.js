@@ -17,7 +17,7 @@ export default class FlayPage extends HTMLDivElement {
 
   constructor() {
     super();
-    this.classList.add('flay-page');
+    this.classList.add('flay-page', 'flay-div');
   }
 
   connectedCallback() {

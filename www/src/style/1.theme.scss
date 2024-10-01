@@ -128,3 +128,13 @@
   --debug1-outline: #418546 dashed 1px;
   --debug2-outline: #da57a6 dotted 1px;
 }
+
+.flay-div {
+  outline: var(--debug1-outline) !important;
+}
+
+*,
+::after,
+::before {
+  outline: var(--debug2-outline) !important;
+}

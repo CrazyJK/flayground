@@ -13,7 +13,7 @@ export default class ThemeController extends HTMLDivElement {
 
   constructor() {
     super();
-    this.classList.add('theme-controller');
+    this.classList.add('theme-controller', 'flay-div');
 
     const themeGroup = this.appendChild(document.createElement('div'));
     themeGroup.classList.add('theme-group');

@@ -1,4 +1,5 @@
 import '../flay/FlayMonitor';
+import { toggleDebug } from '../lib/DebugOutline';
 import { addResizeListener } from '../util/windowAddEventListener';
 import './part/ThemeController';
 import './SideNavBar.scss';
@@ -37,11 +38,9 @@ const menuList = [
 ];
 
 export default class SideNavBar extends HTMLDivElement {
-  debug = 0; // elememnts를 구분해서 보기 위한 조건
-
   constructor() {
     super();
-    this.classList.add('side-nav-bar');
+    this.classList.add('side-nav-bar', 'flay-div');
   }
 
   connectedCallback() {
@@ -77,11 +76,9 @@ export default class SideNavBar extends HTMLDivElement {
       console.debug('click', tagName);
       if (tagName === 'A') {
         switch (e.target.id) {
-          case 'debug': {
-            this.debug = ++this.debug % 3;
-            document.documentElement.setAttribute('debug', this.debug);
+          case 'debug':
+            toggleDebug();
             break;
-          }
           case 'dependencies':
             window.open('dependencies-viewer.html', 'dependencies-viewer', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
             break;

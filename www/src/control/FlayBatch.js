@@ -45,7 +45,7 @@ export default class FlayBatch extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('flay-batch');
+    this.classList.add('flay-batch', 'flay-div');
     this.innerHTML = HTML;
   }
 

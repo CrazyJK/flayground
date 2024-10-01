@@ -30,7 +30,7 @@ export default class SubtitlesFinder extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('subtitles-finder');
+    this.classList.add('subtitles-finder', 'flay-div');
     this.innerHTML = HTML;
   }
 

@@ -14,6 +14,7 @@ export default class FlayHTMLElement extends HTMLDivElement {
 
   constructor() {
     super();
+    this.classList.add('flay-div');
   }
 
   setCard() {

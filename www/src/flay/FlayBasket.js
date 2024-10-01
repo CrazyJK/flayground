@@ -12,7 +12,7 @@ const BASKET_KEY = 'flay-basket';
 export class FlayBasket extends HTMLDivElement {
   constructor() {
     super();
-    this.classList.add('flay-basket');
+    this.classList.add('flay-basket', 'flay-div');
     this.innerHTML = `
       <div class="body">
         <div id="actressList" class="hide"></div>
@@ -161,7 +161,7 @@ class FlayBasketItem extends HTMLDivElement {
 
     this.id = opus;
     this.opus = opus;
-    this.classList.add('flay-basket-item');
+    this.classList.add('flay-basket-item', 'flay-div');
     this.innerHTML = `
       <div class="cover">
         <label class="comment"></label>

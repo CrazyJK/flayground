@@ -12,7 +12,7 @@ export default class ImageFall extends HTMLDivElement {
 
   constructor() {
     super();
-    this.classList.add('image-fall');
+    this.classList.add('image-fall', 'flay-div');
   }
 
   connectedCallback() {

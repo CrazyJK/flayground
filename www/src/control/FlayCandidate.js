@@ -9,7 +9,7 @@ export default class FlayCandidate extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('flay-candidate');
+    this.classList.add('flay-candidate', 'flay-div');
     this.innerHTML = `
       <div>
         <button id="getCadidate"><span id="candidateLength">0</span> Candidates</button>

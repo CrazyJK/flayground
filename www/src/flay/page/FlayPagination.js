@@ -27,7 +27,7 @@ export default class FlayPagination extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('flay-pagination');
+    this.classList.add('flay-pagination', 'flay-div');
     this.innerHTML = `
       <div class="paging"></div>
       <div class="progress">
@@ -282,9 +282,9 @@ export default class FlayPagination extends HTMLDivElement {
 
     const [width, height] = [window.innerWidth, window.innerHeight];
     if (height >= 1900) {
-      this.pageRange = width > 1200 ? 20 : 15;
+      this.pageRange = width > 1440 ? 20 : 15;
     } else {
-      this.pageRange = width > 1200 ? 30 : 15;
+      this.pageRange = width > 1440 ? 30 : 15;
     }
 
     const currPageNo = Math.ceil((this.opusIndex + 1) / this.pageRange);

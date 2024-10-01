@@ -2,7 +2,13 @@
 ::after,
 ::before {
   box-sizing: border-box;
-  outline: var(--debug2-outline) !important;
+}
+
+body {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  color: var(--color-text);
 }
 
 h1 {
@@ -202,7 +208,6 @@ textarea::spelling-error {
   min-width: 1rem;
 }
 
-/* 커스텀 엘리먼트 모드 */
 .card {
   label,
   a,

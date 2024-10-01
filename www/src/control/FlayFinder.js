@@ -24,7 +24,7 @@ export default class FlayFinder extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('flay-finder');
+    this.classList.add('flay-finder', 'flay-div');
     this.innerHTML = HTML;
   }
 

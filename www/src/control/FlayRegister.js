@@ -74,7 +74,7 @@ export default class FlayRegister extends HTMLDivElement {
   constructor() {
     super();
 
-    this.classList.add('flay-register');
+    this.classList.add('flay-register', 'flay-div');
     this.innerHTML = HTML;
   }
 

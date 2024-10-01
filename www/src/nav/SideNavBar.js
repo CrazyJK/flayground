@@ -1,4 +1,5 @@
 import '../flay/FlayMonitor';
+import { addResizeListener } from '../util/windowAddEventListener';
 import './part/ThemeController';
 import './SideNavBar.scss';
 
@@ -55,6 +56,7 @@ export default class SideNavBar extends HTMLDivElement {
     </article>
     <footer>
       <div class="flay-monitor" is="flay-monitor"></div>
+      <div class="window-size"></div>
       <div><a id="debug">debug</a></div>
       <div><a id="swagger">swagger</a></div>
       <div><a id="dependencies">dependencies</a></div>
@@ -95,6 +97,11 @@ export default class SideNavBar extends HTMLDivElement {
       } else {
         this.classList.toggle('open');
       }
+    });
+
+    addResizeListener(() => {
+      const [width, height] = [window.innerWidth, window.innerHeight];
+      this.querySelector('.window-size').innerHTML = `${width} x ${height}`;
     });
   }
 }

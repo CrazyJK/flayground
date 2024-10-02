@@ -5,7 +5,7 @@ body {
   & > header {
     display: grid;
     grid-template-columns: 1fr minmax(900px, 999px) 1fr;
-    height: 11rem;
+    height: 12rem;
 
     .header-center {
       display: flex;

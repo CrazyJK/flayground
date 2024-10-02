@@ -1,38 +1,52 @@
 @import './style/style.scss';
 
-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 1;
-}
+body {
+  overflow: hidden;
 
-main {
-  svg {
-    max-width: 100%;
-    height: auto;
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: var(--color-bg-transparent);
+  }
 
-    g {
-      .node {
-        cursor: pointer;
-        color: #c6c5fe;
+  main {
+    svg {
+      g {
+        .node {
+          cursor: pointer;
+          color: #c6c5fe;
 
-        &.noDependency {
-          color: #cfffac;
+          // &.noDependency {
+          //   color: #cfffac;
+          // }
+          &.scss {
+            color: #f8acff;
+            path {
+              color: transparent;
+            }
+          }
+          &.svg {
+            color: #acf3ff;
+            path {
+              color: transparent;
+            }
+          }
         }
-      }
 
-      .edge {
-        color: #757575;
-      }
-
-      &.active {
-        &.node {
-          color: red;
+        .edge {
+          color: #757575;
         }
 
-        &.edge {
-          color: red;
+        &.active {
+          &.node {
+            color: red;
+          }
+
+          &.edge {
+            color: red;
+          }
         }
       }
     }

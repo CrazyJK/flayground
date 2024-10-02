@@ -21,10 +21,14 @@ fetch('./dependencies-viewer.json')
       let entry = e.target.value;
       if (entry) {
         document.querySelector('main').innerHTML = dependenciesMap.get(e.target.value);
+        document.querySelector('main > svg > g > title').remove();
 
         // node에 id 재설정
         document.querySelectorAll('main svg g.node').forEach((node) => {
-          node.id = node.querySelector('title').textContent.replace(/\//g, '_').replace(/\./g, '_');
+          const title = node.querySelector('title').textContent;
+
+          node.id = title.replace(/\//g, '_').replace(/\./g, '_');
+          node.classList.add(title.substring(title.lastIndexOf('.') + 1));
 
           // nodeColor = #c6c5fe, noDependencyColor = #cfffac
           let color = node.querySelector('path').getAttribute('stroke');
@@ -81,4 +85,76 @@ fetch('./dependencies-viewer.json')
         });
       }
     });
+
+    // js만 보기 토글
+    let toggleJS = false;
+    document.querySelector('#onlyJS').addEventListener('click', () => {
+      document.querySelectorAll('svg > g > g').forEach((g) => {
+        let containsJS = null;
+        if (g.classList.contains('node')) {
+          containsJS = g.classList.contains('js'); // 노드
+        } else if (g.classList.contains('edge')) {
+          containsJS = g.dataset.from.endsWith('js') && g.dataset.to.endsWith('js'); // 화살표
+        }
+        if (containsJS !== null) g.classList.toggle('hide', !toggleJS && !containsJS);
+      });
+      toggleJS = !toggleJS;
+    });
   });
+
+class DragMove {
+  isMoving = false;
+  offsetX = 0;
+  offsetY = 0;
+  scale = 100;
+
+  constructor(containerSelector, objectSelector, zoomIndicatorSelector) {
+    this.moveContainer = document.querySelector(containerSelector);
+    this.movingObject = document.querySelector(objectSelector);
+    if (zoomIndicatorSelector) this.zoomIndicator = document.querySelector(zoomIndicatorSelector);
+    if (this.zoomIndicator) this.zoomIndicator.title = 'click for reset';
+  }
+
+  #moveStart(e) {
+    this.offsetX = e.clientX - this.movingObject.offsetLeft;
+    this.offsetY = e.clientY - this.movingObject.offsetTop;
+    this.isMoving = true;
+  }
+
+  #moveStop() {
+    this.isMoving = false;
+  }
+
+  #moving(e) {
+    if (!this.isMoving) return;
+    this.movingObject.style.left = e.clientX - this.offsetX + 'px';
+    this.movingObject.style.top = e.clientY - this.offsetY + 'px';
+  }
+
+  #zoom(e) {
+    this.scale = this.scale + (e.deltaY > 0 ? 10 : -10);
+    this.scale = Math.max(this.scale, 50);
+    this.scale = Math.min(this.scale, 200);
+
+    this.movingObject.style.transform = `scale(${this.scale / 100})`;
+    if (this.zoomIndicator) this.zoomIndicator.innerHTML = this.scale + '%';
+  }
+
+  #reset() {
+    this.scale = 100;
+    this.movingObject.style.left = '0px';
+    this.movingObject.style.top = '0px';
+    this.movingObject.style.transform = `scale(${this.scale / 100})`;
+    if (this.zoomIndicator) this.zoomIndicator.innerHTML = this.scale + '%';
+  }
+
+  async start() {
+    this.movingObject.addEventListener('wheel', (e) => this.#zoom(e));
+    this.movingObject.addEventListener('mousedown', (e) => this.#moveStart(e));
+    this.moveContainer.addEventListener('mouseup', (e) => this.#moveStop(e));
+    this.moveContainer.addEventListener('mousemove', (e) => this.#moving(e));
+    if (this.zoomIndicator) this.zoomIndicator.addEventListener('click', (e) => this.#reset(e));
+  }
+}
+
+new DragMove('body', 'main', '#zoomIndicator').start();

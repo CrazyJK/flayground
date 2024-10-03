@@ -56,8 +56,11 @@
       text-align: left;
 
       dt {
-        background-color: var(--color-bg-transparent);
-        border-radius: 0.25rem;
+        span {
+          background-color: var(--color-bg-transparent);
+          border-radius: 0.25rem;
+          padding: 0 0.25rem 0.125rem;
+        }
       }
       dd {
         display: none;

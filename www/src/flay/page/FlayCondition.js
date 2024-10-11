@@ -74,6 +74,7 @@ export default class FlayCondition extends HTMLDivElement {
     if (this.opusList.length === 0) {
       // not found flay
       this.animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });
+      window.emitMessage('검색 결과가 없습니다.');
     }
     this.dispatchEvent(new CustomEvent('fetch'));
     FlayStorage.local.set('FlayCondition.condition', JSON.stringify(condition));

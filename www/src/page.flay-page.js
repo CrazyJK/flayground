@@ -12,10 +12,15 @@ const flayPage = document.querySelector('body > main > article').appendChild(new
 flayCondition.addEventListener('fetch', () => flayPagination.set(flayCondition.opusList));
 flayPagination.addEventListener('change', async () => {
   flayPagination.off();
-  const viewTransition = document.startViewTransition(async () => {
-    const { flay } = await flayPage.set(flayPagination.opus);
-    flayCondition.updateSearchItem(flay);
-  });
-  await viewTransition.updateCallbackDone;
-  flayPagination.on();
+  if (flayPagination.opus) {
+    const viewTransition = document.startViewTransition(async () => {
+      const { flay } = await flayPage.set(flayPagination.opus);
+      flayPage.classList.toggle('hide', false);
+      flayCondition.updateSearchItem(flay);
+    });
+    await viewTransition.updateCallbackDone;
+    flayPagination.on();
+  } else {
+    flayPage.classList.toggle('hide', true);
+  }
 });

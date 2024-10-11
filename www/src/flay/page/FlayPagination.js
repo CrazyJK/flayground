@@ -162,11 +162,7 @@ export default class FlayPagination extends HTMLDivElement {
   set(list) {
     this.opusList = list;
     this.history = [];
-    if (!!this.opusList && this.opusList.length > 0) {
-      this.#navigator(RANDOM);
-    } else {
-      window.emitMessage('검색 결과가 없습니다.');
-    }
+    this.#navigator(RANDOM);
   }
 
   get(offset) {
@@ -245,10 +241,8 @@ export default class FlayPagination extends HTMLDivElement {
     }
 
     this.opus = this.opusList[this.opusIndex];
-    if (!this.opus) {
-      throw new Error(`navigator: index=${this.opusIndex}, opus=${this.opus}`);
-    }
-    console.debug(`navigator: index=${this.opusIndex}, opus=${this.opus}`);
+
+    console.debug('navigator: index', this.opusIndex, 'opus', this.opus);
     console.debug('history', this.history);
   }
 
@@ -275,6 +269,12 @@ export default class FlayPagination extends HTMLDivElement {
   #display() {
     if (!this.opusList) {
       throw new Error('opusList is not valid');
+    }
+
+    if (this.opusList.length === 0) {
+      this.progressBar.style.width = 0;
+      this.paging.textContent = null;
+      return;
     }
 
     const lastIndex = this.opusList.length - 1;

@@ -310,7 +310,10 @@ export default class FlayPagination extends HTMLDivElement {
       page.classList.toggle('active', i === this.opusIndex);
       page.innerHTML = `<a>${i + 1}</a>`;
       if (i <= lastIndex) {
-        page.addEventListener('click', () => this.#navigator(i));
+        page.addEventListener('click', () => {
+          this.#navigator(i);
+          this.coverThumbnail.classList.remove('show');
+        });
         page.addEventListener('mouseleave', () => this.coverThumbnail.classList.remove('show'));
         page.addEventListener('mouseenter', () => {
           if (page.classList.contains('active')) {

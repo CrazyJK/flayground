@@ -124,8 +124,8 @@ export default class FlayPagination extends HTMLDivElement {
     this.randomPopupButton.addEventListener('mouseover', () => this.randomPopupButton.classList.add('input-mode'));
     this.randomPopupButton.addEventListener('mouseout', () => this.randomPopupButton.classList.remove('input-mode'));
     this.randomPopupButton.addEventListener('click', async () => {
-      this.querySelector(`.${this.tagName.toLowerCase()} aside`)?.remove();
-      const popupIndicators = this.querySelector(`.${this.tagName.toLowerCase()}`).appendChild(document.createElement('aside'));
+      this.querySelector('aside')?.remove();
+      const popupIndicators = this.appendChild(document.createElement('aside'));
       const randomCount = Math.min(this.randomEnd, this.opusList.length);
       const currOpusIndex = this.opusIndex;
 

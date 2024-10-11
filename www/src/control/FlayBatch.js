@@ -13,9 +13,6 @@ const HTML = `
   <button id="archiveBatch">Archive Batch</button>
   <button id="backup">Backup</button>
 </div>
-<div class="batch-logs">
-  <pre id="batchLog"></pre>
-</div>
 <div class="batch-lower-list" id="lowerScoreFlayList">
   <div>
     <label>Lower score Flay</label>
@@ -35,6 +32,9 @@ const HTML = `
       <label class="score"  >Score  </label>
     </li>
   </ol>
+</div>
+<div class="batch-logs">
+  <pre id="batchLog"></pre>
 </div>
 `;
 

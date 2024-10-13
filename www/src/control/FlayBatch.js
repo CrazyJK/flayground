@@ -14,11 +14,6 @@ const HTML = `
   <button id="backup">Backup</button>
 </div>
 <div class="batch-lower-list" id="lowerScoreFlayList">
-  <div>
-    <label>Lower score Flay</label>
-    <button type="button" class="lowerScoreBtn" data-mode="0">list</button>
-    <button type="button" class="lowerScoreBtn" data-mode="1">only</button>
-  </div>
   <ol>
     <li class="head">
       <label class="studio" >Studio </label>
@@ -33,6 +28,7 @@ const HTML = `
     </li>
   </ol>
 </div>
+<div id="lowerScoreFlayChart"></div>
 <div class="batch-logs">
   <pre id="batchLog"></pre>
 </div>
@@ -57,9 +53,15 @@ export default class FlayBatch extends HTMLDivElement {
     const lowerScore = this.querySelector('#lowerScore');
     lowerScore.addEventListener('change', (e) => {
       FlayAction.batchSetOption('S');
+      if (lowerScore.checked) {
+        this.#showLowerScoreFlay();
+      }
     });
     FlayAction.batchGetOption('S', (booleanOptionValue) => {
       lowerScore.checked = booleanOptionValue;
+      if (lowerScore.checked) {
+        this.#showLowerScoreFlay();
+      }
     });
     const instanceBatch = this.querySelector('#instanceBatch');
     instanceBatch.addEventListener('click', () => {
@@ -74,36 +76,16 @@ export default class FlayBatch extends HTMLDivElement {
       FlayAction.batch('B');
     });
 
+    const batchLog = this.querySelector('#batchLog');
+    window.emitBatch = (data) => {
+      const div = batchLog.appendChild(document.createElement('div'));
+      div.innerHTML = data.message;
+      div.scrollIntoView(true);
+    };
+  }
+
+  #showLowerScoreFlay() {
     const ol = this.querySelector('#lowerScoreFlayList ol');
-    this.querySelectorAll('.lowerScoreBtn').forEach((btn) => {
-      btn.addEventListener('click', (e) => {
-        const mode = e.target.dataset.mode;
-        // orderbyScoreDesc, lowScore
-        fetch(`/flay/list/${mode === '0' ? 'orderbyScoreDesc' : 'lowScore'}`)
-          .then((res) => res.json())
-          .then((list) => {
-            ol.querySelectorAll('li:not(.head)').forEach((li) => li.remove());
-            list.reverse().forEach((flay) => {
-              ol.appendChild(document.createElement('li')).innerHTML = `
-                <label class="studio" >${flay.studio}</label>
-                <label class="opus"   ><a>${flay.opus}</a></label>
-                <label class="title"  >${flay.title}</label>
-                <label class="actress">${flay.actressList.map((name) => `<a>${name}</a>`).join(', ')}</label>
-                <label class="release">${flay.release}</label>
-                <label class="like"   >${flay.video.likes?.length || 0}</label>
-                <label class="rank"   >${flay.video.rank}</label>
-                <label class="sub"    >${flay.files.subtitles.length}</label>
-                <label class="score"  >${flay.score}</label>
-              `;
-              if (mode === '1') {
-                ol.appendChild(document.createElement('li')).innerHTML = `
-                  <img src="/static/cover/${flay.opus}" style="width:600px">
-                `;
-              }
-            });
-          });
-      });
-    });
     ol.addEventListener('click', (e) => {
       if (e.target.tagName !== 'A') return;
       if (e.target.closest('label').classList.contains('opus')) {
@@ -114,13 +96,68 @@ export default class FlayBatch extends HTMLDivElement {
         popupActress(name);
       }
     });
+    // orderbyScoreDesc, lowScore
+    fetch(`/flay/list/lowScore`)
+      .then((res) => res.json())
+      .then((list) => {
+        ol.querySelectorAll('li:not(.head)').forEach((li) => li.remove());
+        list.reverse().forEach((flay) => {
+          ol.appendChild(document.createElement('li')).innerHTML = `
+            <label class="studio" >${flay.studio}</label>
+            <label class="opus"   ><a>${flay.opus}</a></label>
+            <label class="title"  >${flay.title}</label>
+            <label class="actress">${flay.actressList.map((name) => `<a>${name}</a>`).join(', ')}</label>
+            <label class="release">${flay.release}</label>
+            <label class="like"   >${flay.video.likes?.length || 0}</label>
+            <label class="rank"   >${flay.video.rank}</label>
+            <label class="sub"    >${flay.files.subtitles.length}</label>
+            <label class="score"  >${flay.score}</label>
+          `;
+          ol.appendChild(document.createElement('li')).innerHTML = `<img src="/static/cover/${flay.opus}" style="width:600px">`;
+        });
+      });
 
-    const batchLog = this.querySelector('#batchLog');
-    window.emitBatch = (data) => {
-      const div = batchLog.appendChild(document.createElement('div'));
-      div.innerHTML = data.message;
-      div.scrollIntoView(true);
-    };
+    fetch(`/flay/list/orderbyScoreDesc`)
+      .then((res) => res.json())
+      .then((list) => {
+        const scoreMap = new Map();
+        list.forEach((flay) => {
+          const key = 'S' + flay.score;
+          if (!scoreMap.has(key)) {
+            scoreMap.set(key, new Array());
+          }
+          scoreMap.get(key).push(flay);
+        });
+        console.log('scoreMap', scoreMap);
+
+        const chartWrap = this.querySelector('#lowerScoreFlayChart');
+        chartWrap.textContent = null;
+        scoreMap.forEach((list, key) => {
+          const score = key.substring(1);
+          console.log(score, list.length);
+        });
+
+        const scoreList = Array.from(scoreMap.keys()).sort((s1, s2) => parseInt(s2.substring(1)) - parseInt(s1.substring(1)));
+        console.log('scoreList', scoreList);
+        scoreList.forEach((key) => {
+          const scoreWrap = chartWrap.appendChild(document.createElement('div'));
+          scoreWrap.appendChild(document.createElement('div')).innerHTML = `<label>${key.substring(1)}</label>`;
+          scoreWrap.appendChild(document.createElement('div')).append(
+            ...scoreMap.get(key).map((flay) => {
+              const flayLabel = document.createElement('label');
+              flayLabel.title = flay.opus;
+              flayLabel.classList.add('flay');
+              flayLabel.classList.toggle('archive', flay.archive);
+              flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
+              flayLabel.addEventListener('click', () => {
+                flayLabel.classList.add('active');
+                popupFlay(flay.opus);
+              });
+              return flayLabel;
+            })
+          );
+        });
+      });
   }
 }
 

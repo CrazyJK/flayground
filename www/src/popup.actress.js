@@ -78,12 +78,14 @@ class PopupActress {
       });
     });
     this.toggleArchive.addEventListener('click', () => {
+      const isArchive = this.toggleArchive.dataset.archive === 'on';
       Array.from(document.querySelectorAll('.flay-card'))
         .filter((flayCard) => flayCard.hasAttribute('archive'))
         .filter((flayCard) => flayCard.dataset.show === 'true')
         .forEach((flayCard) => {
-          flayCard.style.display = flayCard.style.display === 'none' ? 'block' : 'none';
+          flayCard.classList.toggle('hide', isArchive);
         });
+      this.toggleArchive.dataset.archive = isArchive ? 'off' : 'on';
     });
 
     // sse 수신 이벤트
@@ -124,7 +126,7 @@ class PopupActress {
 
       this.allFlayList.push(...instanceFlayList);
       archiveFlayList.forEach((archiveFlay) => {
-        if (this.allFlayList.filter((flay) => flay.opus === archiveFlay.opus).length === 0) {
+        if (!this.allFlayList.some((flay) => flay.opus === archiveFlay.opus)) {
           this.allFlayList.push(archiveFlay);
         }
       });
@@ -143,7 +145,8 @@ class PopupActress {
 
     this.#renderFlayCardList(opusList)
       .then(() => this.#renderRankSelectOption())
-      .then(() => this.flayRank.dispatchEvent(new Event('change')));
+      .then(() => this.flayRank.dispatchEvent(new Event('change')))
+      .then(() => this.toggleArchive.dispatchEvent(new Event('click')));
   }
 
   async #renderFlayCardList(opusList) {

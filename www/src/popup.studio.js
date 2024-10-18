@@ -76,7 +76,7 @@ class PopupStudio {
 
     this.allFlayList = Array.from(instanceFlayList);
     archiveFlayList.forEach((archiveFlay) => {
-      if (this.allFlayList.filter((flay) => flay.opus === archiveFlay.opus).length === 0) {
+      if (!this.allFlayList.some((flay) => flay.opus === archiveFlay.opus)) {
         this.allFlayList.push(archiveFlay);
       }
     });

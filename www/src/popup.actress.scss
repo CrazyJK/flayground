@@ -40,6 +40,10 @@ body {
         }
       }
     }
+
+    [data-archive='off'] {
+      color: var(--color-text-secondary);
+    }
   }
 
   & > article {

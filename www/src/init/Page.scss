@@ -1,3 +1,5 @@
+@import '../style/style.scss';
+
 body {
   background: var(--color-bg) no-repeat fixed right bottom / min(100%, 10rem);
   background-blend-mode: exclusion;

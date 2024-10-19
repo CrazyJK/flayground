@@ -45,6 +45,7 @@ class Page {
       const flayCount = list.length;
       const shotFlayCount = list.filter((flay) => flay.video.likes?.length > 0).length;
       const shotTotalCount = this.#getTotalShotCount(list);
+      const score = this.#getScore(name, list);
 
       const LI = UL.appendChild(document.createElement('li'));
       LI.innerHTML = `
@@ -54,6 +55,7 @@ class Page {
       <label class="flay-count">${flayCount}</label>
       <label class="shot-flay-count">${shotFlayCount}</label>
       <label class="shot-total-count">${shotTotalCount}</label>
+      <label class="total-score">${score}</label>
       `;
       LI.addEventListener('click', (e) => {
         const label = e.target.closest('label');
@@ -83,7 +85,7 @@ class Page {
       document.querySelector('.thead .cover .list-simple').innerHTML = viewMode ? '' : 'simple';
     });
 
-    sortable(UL, { noSort: [0], initSortIndex: 5 });
+    sortable(UL, { noSort: [0], initSortIndex: 6 });
   }
 
   /**
@@ -124,6 +126,15 @@ class Page {
   #getTotalShotCount(flayList) {
     return flayList.reduce((sum, flay) => {
       sum += flay.video.likes?.length > 0 ? flay.video.likes.length : 0;
+      return sum;
+    }, 0);
+  }
+
+  #getScore(name, flayList) {
+    return flayList.reduce((sum, flay) => {
+      if (flay.actressList.includes(name)) {
+        sum += flay.score;
+      }
       return sum;
     }, 0);
   }

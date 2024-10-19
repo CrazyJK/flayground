@@ -1,5 +1,5 @@
 import './init/Page';
-import './page.flay-girls.scss';
+import './page.girls.scss';
 
 import { addLazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import { sortable } from './lib/TableUtils';

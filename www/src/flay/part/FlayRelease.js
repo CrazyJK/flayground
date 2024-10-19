@@ -1,5 +1,5 @@
 import DateUtils from '../../util/DateUtils';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayRelease.scss';
 
 /**
@@ -48,5 +48,4 @@ export default class FlayRelease extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-release', FlayRelease, { extends: 'div' });
+defineCustomElements('flay-release', FlayRelease);

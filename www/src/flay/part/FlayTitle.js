@@ -1,5 +1,5 @@
 import { popupFlay } from '../../util/FlaySearch';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayTitle.scss';
 
 /**
@@ -44,5 +44,4 @@ export default class FlayTitle extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-title', FlayTitle, { extends: 'div' });
+defineCustomElements('flay-title', FlayTitle);

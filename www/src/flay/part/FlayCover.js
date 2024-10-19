@@ -4,7 +4,7 @@ import FlayStorage from '../../util/FlayStorage';
 import { getDominatedColors } from '../../util/dominatedColor';
 import { getRandomInt } from '../../util/randomNumber';
 import './FlayCover.scss';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
 /**
  * Custom element of Cover
@@ -94,5 +94,4 @@ export default class FlayCover extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-cover', FlayCover, { extends: 'div' });
+defineCustomElements('flay-cover', FlayCover);

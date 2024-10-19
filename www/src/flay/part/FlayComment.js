@@ -2,7 +2,7 @@ import FlayAction from '../../util/FlayAction';
 import FlaySearch from '../../util/FlaySearch';
 import StringUtils from '../../util/StringUtils';
 import './FlayComment.scss';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
 const COMMENT = 'Comment';
 
@@ -86,5 +86,4 @@ export default class FlayComment extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-comment', FlayComment, { extends: 'div' });
+defineCustomElements('flay-comment', FlayComment);

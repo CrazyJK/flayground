@@ -1,5 +1,5 @@
 import { popupStudio } from '../../util/FlaySearch';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayStudio.scss';
 
 /**
@@ -38,5 +38,4 @@ export default class FlayStudio extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-studio', FlayStudio, { extends: 'div' });
+defineCustomElements('flay-studio', FlayStudio);

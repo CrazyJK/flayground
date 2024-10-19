@@ -31,3 +31,12 @@ export default class FlayHTMLElement extends HTMLDivElement {
     this.classList.toggle('small', parentDOMRect.width <= 400);
   }
 }
+
+/**
+ * Define the new element
+ * @param {string} name
+ * @param {CustomElementConstructor} constructor
+ */
+export const defineCustomElements = (name, constructor) => {
+  customElements.define(name, constructor, { extends: 'div' });
+};

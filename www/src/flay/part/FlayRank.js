@@ -1,6 +1,6 @@
 import rankSVG from '../../svg/js/rankSVG';
 import FlayAction from '../../util/FlayAction';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayRank.scss';
 
 /**
@@ -110,5 +110,4 @@ export default class FlayRank extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-rank', FlayRank, { extends: 'div' });
+defineCustomElements('flay-rank', FlayRank);

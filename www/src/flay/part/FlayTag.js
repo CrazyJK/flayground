@@ -1,5 +1,5 @@
 import FlayAction from '../../util/FlayAction';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayTag.scss';
 
 /**
@@ -143,5 +143,4 @@ export default class FlayTag extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-tag', FlayTag, { extends: 'div' });
+defineCustomElements('flay-tag', FlayTag);

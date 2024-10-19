@@ -1,7 +1,7 @@
 import basketSVG from '../../svg/basket.svg';
 import jsonSVG from '../../svg/json.svg';
 import FlaySearch, { popupFlayInfo } from '../../util/FlaySearch';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayOpus.scss';
 
 /**
@@ -44,5 +44,4 @@ export default class FlayOpus extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-opus', FlayOpus, { extends: 'div' });
+defineCustomElements('flay-opus', FlayOpus);

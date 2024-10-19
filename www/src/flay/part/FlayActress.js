@@ -3,7 +3,7 @@ import FlayAction from '../../util/FlayAction';
 import { popupActress, popupActressInfo } from '../../util/FlaySearch';
 import StringUtils from '../../util/StringUtils';
 import './FlayActress.scss';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
 /**
  * Custom element of Actress
@@ -126,8 +126,7 @@ export default class FlayActress extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-actress', FlayActress, { extends: 'div' });
+defineCustomElements('flay-actress', FlayActress);
 
 function toInchBody(body) {
   if (body === null || body.trim() === '') {

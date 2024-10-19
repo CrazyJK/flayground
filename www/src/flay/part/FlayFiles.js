@@ -5,7 +5,7 @@ import FileUtils from '../../util/FileUtils';
 import FlayAction from '../../util/FlayAction';
 import FlaySearch from '../../util/FlaySearch';
 import './FlayFiles.scss';
-import FlayHTMLElement from './FlayHTMLElement';
+import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
 /**
  * Custom element of File
@@ -161,5 +161,4 @@ export default class FlayFiles extends FlayHTMLElement {
   }
 }
 
-// Define the new element
-customElements.define('flay-files', FlayFiles, { extends: 'div' });
+defineCustomElements('flay-files', FlayFiles);

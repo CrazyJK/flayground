@@ -19,6 +19,8 @@ const madgeConfig = {
 
   const { entry } = require('./webpack.common.cjs');
 
+  console.log('\n⚙️ madge for dependencies');
+
   for (const [name, path] of Object.entries(entry)) {
     console.log('process...', name);
 
@@ -31,5 +33,6 @@ const madgeConfig = {
 
   fs.writeFile('./src/dependencies-viewer.json', JSON.stringify(dependenciesSvgJson), 'utf8', () => {
     console.log('write dependencies-viewer.json');
+    console.log('');
   });
 })();

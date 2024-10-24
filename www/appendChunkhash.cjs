@@ -4,6 +4,8 @@ const path = require('path');
 const { entry, output } = require('./webpack.common.cjs');
 const manifest = require(output.path + '/manifest.json');
 
+console.log('\n⚙️ append Chunkhash');
+
 Object.keys(entry).forEach((entryName) => {
   const htmlName = `${entryName}.html`;
   const cssName = `${entryName}.css`;

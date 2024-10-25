@@ -1,10 +1,10 @@
 package jk.kamoru.ground.info.service;
 
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
+import org.apache.commons.lang3.time.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -71,19 +71,11 @@ public class VideoInfoService extends InfoServiceAdapter<Video, String> {
 
   public void setLike(String opus) {
     Video video = this.infoSource.get(opus);
-    Date today = new Date();
-    if (video.getLikes() == null || video.getLikes().stream().filter((date) -> isSameDay(today, date)).count() == 0) {
+    long today = new Date().getTime();
+    if (video.getLikes() == null || video.getLikes().stream().filter((date) -> (date.getTime() + DateUtils.MILLIS_PER_HOUR * 6) > today).count() == 0) {
       video.addLike();
+      this.update(video);
     }
-    this.update(video);
-  }
-
-  private static boolean isSameDay(Date d1, Date d2) {
-    Calendar c1 = Calendar.getInstance();
-    c1.setTime(d1);
-    Calendar c2 = Calendar.getInstance();
-    c2.setTime(d2);
-    return c1.get(Calendar.YEAR) == c2.get(Calendar.YEAR) && c1.get(Calendar.DAY_OF_YEAR) == c2.get(Calendar.DAY_OF_YEAR);
   }
 
   public void toggleTag(String opus, Tag tag, boolean checked) {

@@ -29,8 +29,9 @@ class FlayTagInfo extends HTMLDListElement {
     this.querySelector('.name').addEventListener('click', () => popupTag(this.tag.id));
 
     addResizeListener(() => {
-      if (window.innerWidth >= 1920) {
-        // FHD 해상도 이상이면, flay 갯수에 비례하여 폰트 크기 설정
+      const [area, fhd] = [window.innerWidth * window.innerHeight, 1987200];
+      if (area > fhd) {
+        // FHD 해상도 면적 이상이면, flay 갯수에 비례하여 폰트 크기 설정
         this.querySelector('.name').style.fontSize = `calc(var(--size-normal) + ${Math.floor(this.tag.count / 5)}px)`;
       } else {
         this.querySelector('.name').style.fontSize = '';

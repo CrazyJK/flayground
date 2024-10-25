@@ -278,7 +278,7 @@ export default class FlayPagination extends HTMLDivElement {
     }
 
     const lastIndex = this.opusList.length - 1;
-    this.progressBar.style.width = `${(this.opusIndex / lastIndex) * 100}%`;
+    this.progressBar.style.width = `${((this.opusIndex + 1) / this.opusList.length) * 100}%`;
 
     const [width, height] = [window.innerWidth, window.innerHeight];
     if (height >= 1900) {

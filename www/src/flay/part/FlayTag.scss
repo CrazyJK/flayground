@@ -9,28 +9,14 @@
     gap: 0.25rem 0.5rem;
 
     label {
+      color: var(--color-text-secondary);
       font-size: var(--size-normal);
       padding: 0.25rem;
       transition: box-shadow 0.4s 0.2s;
-    }
 
-    .tag-new-btn {
-      font-size: var(--size-normal);
-    }
-  }
-
-  .tag-new {
-    display: none;
-    text-align: center;
-
-    &.show {
-      display: block;
-    }
-
-    input {
-      margin: 0.25rem;
-      border: 0;
-      padding: 0.25rem;
+      &.candidate {
+        text-shadow: var(--text-shadow-active);
+      }
     }
   }
 
@@ -44,14 +30,7 @@
       input:not(:checked) + label {
         display: none;
       }
-      .tag-new-btn {
-        display: none;
-      }
     }
-  }
-
-  .candidate {
-    text-shadow: var(--text-shadow-active);
   }
 
   &.archive {
@@ -67,9 +46,6 @@
       gap: 0.125rem 0.25rem;
       label {
         padding: 0.125rem;
-      }
-      button {
-        display: none;
       }
     }
   }

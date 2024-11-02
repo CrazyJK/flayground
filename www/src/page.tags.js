@@ -2,6 +2,7 @@ import './init/Page';
 import './page.tags.scss';
 import tagSVG from './svg/tag.svg';
 
+import { tagGroup } from './flay/part/FlayTag';
 import FlayAction from './util/FlayAction';
 import { popupTag } from './util/FlaySearch';
 import { addResizeListener } from './util/windowAddEventListener';
@@ -10,14 +11,12 @@ class FlayTagInfo extends HTMLDListElement {
   constructor(tag) {
     super();
     this.tag = tag;
-  }
 
-  connectedCallback() {
     this.dataset.id = this.tag.id;
     this.classList.add('flay-tag-info');
     this.innerHTML = `
       <dt>
-        <label class="icon">${tagSVG}</label>
+        <label class="icon" title="${this.tag.id}">${tagSVG}</label>
         <label class="name">${this.tag.name}</label>
         <label class="count ${this.tag.count === 0 ? 'zero' : ''}">${this.tag.count}</label>
       </dt>
@@ -26,6 +25,7 @@ class FlayTagInfo extends HTMLDListElement {
       </dd>
     `;
 
+    this.addEventListener('click', () => ([TAG_ID.value, TAG_NAME.value, TAG_DESC.value] = [this.tag.id, this.tag.name, this.tag.description]));
     this.querySelector('.name').addEventListener('click', () => popupTag(this.tag.id));
 
     addResizeListener(() => {
@@ -64,19 +64,25 @@ TAG_DEL.addEventListener('click', () => {
 renderTagList();
 
 function renderTagList() {
-  const listEl = document.querySelector('body > main > ol');
-  listEl.textContent = null;
+  document.querySelector('body > main').innerHTML = Object.entries(tagGroup)
+    .map(([key, info]) => `<fieldset><legend>${key}: ${info.name} ${info.desc}</legend><div id="${key}"></div></fieldset>`)
+    .join('');
 
   fetch('/info/tag/withCount')
     .then((res) => res.json())
-    .then((tagList) =>
+    .then((tagList) => {
       Array.from(tagList)
         .sort((t1, t2) => t1.name.localeCompare(t2.name))
-        .forEach((tag) =>
-          listEl
-            .appendChild(document.createElement('li'))
-            .appendChild(new FlayTagInfo(tag))
-            .addEventListener('click', () => ([TAG_ID.value, TAG_NAME.value, TAG_DESC.value] = [tag.id, tag.name, tag.description]))
-        )
-    );
+        .forEach((tag) => {
+          const flayTagInfo = new FlayTagInfo(tag);
+
+          document.querySelector('#etc').append(flayTagInfo);
+          Object.entries(tagGroup).forEach(([key, info]) => {
+            if (info.ids.includes(tag.id)) {
+              document.querySelector('#' + key).append(flayTagInfo);
+              return;
+            }
+          });
+        });
+    });
 }

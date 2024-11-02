@@ -1,18 +1,27 @@
 .flay-tag {
+  padding-left: 0;
+  padding-right: 0;
   padding-bottom: 1rem;
 
   .tag-list {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    align-items: baseline;
-    gap: 0.25rem 0.5rem;
+    gap: 0.25rem;
+    margin-bottom: 0.25rem;
+
+    &:hover {
+      label {
+        background-color: var(--color-bg-transparent);
+      }
+    }
 
     label {
       color: #cdcdcd;
       font-size: var(--size-normal);
-      padding: 0.25rem;
+      padding: 0.125rem 0.25rem 0.25rem;
       transition: box-shadow 0.4s 0.2s;
+      border-radius: 0.25rem;
 
       &.candidate {
         text-shadow: var(--text-shadow-active);

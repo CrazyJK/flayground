@@ -13,7 +13,6 @@ export default class FlayTag extends FlayHTMLElement {
     super();
 
     this.classList.add('flay-tag');
-    this.innerHTML = `<div class="tag-list" id="tagList"></div>`;
   }
 
   /**
@@ -30,51 +29,62 @@ export default class FlayTag extends FlayHTMLElement {
   }
 
   async #displayTag(reload) {
-    const tagListWrap = this.querySelector('#tagList');
-
     if (this.tagList === null || reload) {
+      this.innerHTML = Object.entries(tagGroup)
+        .map(([key, info]) => `<div class="tag-list" id="${key}" title="${info.name} ${info.desc}"></div>`)
+        .join('');
+
       this.tagList = await fetch('/info/tag').then((res) => res.json());
-
-      tagListWrap.textContent = null;
-
-      Array.from(this.tagList)
+      this.tagList
         .sort((t1, t2) => t1.name.localeCompare(t2.name))
         .forEach((tag) => {
           const input = document.createElement('input');
-          input.setAttribute('type', 'checkbox');
-          input.setAttribute('name', 'tag');
-          input.setAttribute('id', 'tag' + tag.id);
-          input.setAttribute('value', tag.id);
-          input.addEventListener('change', (e) => {
-            console.log('tagChange', this.flay.opus, e.target.value, e.target.checked);
-            FlayAction.toggleTag(this.flay.opus, e.target.value, e.target.checked);
-          });
+          input.type = 'checkbox';
+          input.id = 'tag' + tag.id;
+          input.value = tag.id;
+          input.addEventListener('change', (e) => FlayAction.toggleTag(this.flay.opus, e.target.value, e.target.checked));
 
           const label = document.createElement('label');
-          label.setAttribute('title', tag.description);
           label.setAttribute('for', 'tag' + tag.id);
-          label.textContent = tag.name;
+          label.title = tag.description;
+          label.innerHTML = tag.name;
 
-          tagListWrap.append(input, label);
+          this.querySelector(`#etc`).append(input, label);
+          Object.entries(tagGroup).forEach(([key, info]) => {
+            if (info.ids.includes(tag.id)) {
+              this.querySelector('#' + key).append(input, label);
+              return;
+            }
+          });
         });
     }
 
-    tagListWrap.querySelectorAll('input').forEach((input) => {
-      input.checked = Array.from(this.flay.video.tags).filter((tag) => tag.id === Number(input.value)).length > 0;
-    });
+    this.querySelectorAll('input').forEach((input) => (input.checked = Array.from(this.flay.video.tags).some((tag) => tag.id === Number(input.value))));
 
-    tagListWrap.querySelectorAll('label').forEach((label) => {
-      const keywords = [label.textContent, ...label.title.split(',')].filter((keyword) => keyword !== '').map((keyword) => keyword.trim());
-      let found = false;
-      for (let keyword of keywords) {
-        if ((this.flay.title + this.flay.video.comment).indexOf(keyword) > -1) {
-          found = true;
-          break;
-        }
-      }
-      label.classList.toggle('candidate', found);
-    });
+    this.querySelectorAll('label').forEach((label) =>
+      label.classList.toggle(
+        'candidate',
+        [label.textContent, ...label.title.split(',')]
+          .filter((keyword) => keyword !== '')
+          .map((keyword) => keyword.trim())
+          .some((keyword) => (this.flay.title + this.flay.video.comment).includes(keyword))
+      )
+    );
   }
 }
 
 defineCustomElements('flay-tag', FlayTag);
+
+export const tagGroup = {
+  actress: { name: '여배우', desc: '역활', ids: [23, 45, 5, 32, 95, 83, 105, 78, 155, 92, 74, 127, 147, 11, 17, 53, 105, 8, 145] },
+  costume: { name: '여배우 복장', desc: '', ids: [39, 59, 21, 24, 22, 114] },
+  atmosphere: { name: '연기 분위기', desc: '어떤 분위기로 하는가', ids: [73, 141, 68, 36, 69, 99, 102, 57, 146] },
+  impressive: { name: '인상적인 장면', desc: '', ids: [112, 156, 159, 122, 139, 77, 118, 15, 110] },
+  situation: { name: '상황', desc: 'NTR', ids: [87, 103, 106, 107, 16, 100, 151, 27, 135, 58, 108, 7, 97, 123, 117, 80, 157, 152, 61, 44, 128, 144, 54, 46, 132, 47, 13, 55, 149, 25, 120, 134, 98] },
+  place: { name: '장소', desc: '어디서 하나', ids: [30, 75, 164, 1, 143, 162, 163, 85, 56, 115, 138, 12, 109, 19, 20, 96, 6, 71, 140, 35, 3, 79, 153] },
+  actor: { name: '남배우', desc: '역활', ids: [154, 94, 142, 121, 130, 111, 116, 137, 148] },
+  number: { name: '출연자 수', desc: '', ids: [86, 91, 89, 88, 136, 158, 31, 133] },
+  grade: { name: '예비 랭크', desc: '', ids: [50, 63, 64, 65, 66] },
+  screen: { name: '영상정보', desc: '', ids: [104, 161, 101, 18, 72] },
+  etc: { name: '기타', desc: '', ids: [] },
+};

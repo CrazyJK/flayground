@@ -75,7 +75,6 @@ export default class FlayFiles extends FlayHTMLElement {
     this.downloadBtn.title = 'search torrent';
     this.downloadBtn.innerHTML = torrentSVG;
     this.downloadBtn.addEventListener('click', () => {
-      FlaySearch.torrent.Nonojav(this.flay.opus);
       FlaySearch.torrent.Ijav(this.flay.opus);
     });
 

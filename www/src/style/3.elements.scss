@@ -1,40 +1,12 @@
-.flay-actress,
-.flay-files,
-.flay-opus,
-.flay-rank,
-.flay-release,
 .flay-studio,
-.flay-tag,
+.flay-opus,
+.flay-comment,
 .flay-title,
-.flay-comment {
+.flay-actress,
+.flay-release,
+.flay-rank,
+.flay-files,
+.flay-tag {
   min-height: 2rem;
   padding: 0 0.5rem;
-}
-
-.flay-page {
-  width: 100%;
-  max-width: 900px;
-  margin: auto;
-}
-
-.flay-card {
-  overflow: hidden;
-  box-shadow: 0 0 0.25rem 0.125rem var(--color-layer-box-shadow);
-  margin: auto;
-
-  &.shot {
-    box-shadow: 0 0 0.25rem 0.125rem #f00;
-  }
-}
-
-@media screen and (min-width: 1278px) {
-  .flay-page {
-    max-width: 1200px;
-  }
-}
-
-@media screen and (max-width: 900px) {
-  .flay-page {
-    max-width: 800px;
-  }
 }

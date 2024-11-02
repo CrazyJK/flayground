@@ -1,4 +1,8 @@
 .flay-card {
+  overflow: hidden;
+  box-shadow: 0 0 0.25rem 0.125rem var(--color-layer-box-shadow);
+  margin: auto;
+
   &.notfound {
     flay-title,
     flay-studio,
@@ -19,6 +23,10 @@
     flay-cover {
       opacity: 0.7;
     }
+  }
+
+  &.shot {
+    box-shadow: 0 0 0.25rem 0.125rem #f00;
   }
 
   .flay-info {

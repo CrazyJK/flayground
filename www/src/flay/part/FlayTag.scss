@@ -1,4 +1,10 @@
 .flay-tag {
+  display: inline-flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: center;
+  gap: 0 1rem;
+
   .tag-list {
     display: flex;
     flex-wrap: wrap;
@@ -13,7 +19,6 @@
     }
 
     label {
-      color: #cdcdcd;
       font-size: var(--size-normal);
       padding: 0.125rem 0.25rem 0.25rem;
       transition: box-shadow 0.4s 0.2s;
@@ -27,6 +32,7 @@
 
   &.card {
     padding: 0;
+    column-gap: 0.125rem;
 
     .tag-list {
       display: inline-flex;

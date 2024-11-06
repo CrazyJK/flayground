@@ -3,8 +3,8 @@ package jk.kamoru.ground.flay.source;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,7 +32,7 @@ public class FileBasedFlaySource extends LogAndSse implements FlaySource {
   public FileBasedFlaySource(boolean isArchive, File... paths) {
     this.isArchive = isArchive;
     this.paths = paths;
-    this.flayMap = new HashMap<>();
+    this.flayMap = new ConcurrentHashMap<>();
     log.debug("FlaySource.<init> {}", isArchive ? "Archive" : "Instance");
   }
 

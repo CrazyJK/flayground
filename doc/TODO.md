@@ -9,3 +9,4 @@
 - rank within archive
 - statistics: shot flay list
 - java.util.ConcurrentModificationException: null => CopyOnWriteArrayList
+- java.util.ConcurrentModificationException: null => ConcurrentHashMap

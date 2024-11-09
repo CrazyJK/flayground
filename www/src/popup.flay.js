@@ -6,11 +6,14 @@ import snapLayouts from './util/snapLayouts';
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');
+const popupNo = urlParams.get('popupNo');
 
 document.title = opus;
-document.querySelector('body').appendChild(new FlayPage()).set(opus);
 
-const popupNo = urlParams.get('popupNo');
+const flayPage = document.querySelector('body').appendChild(new FlayPage());
+flayPage.classList.add('popup');
+flayPage.set(opus);
+
 if (popupNo) {
   document.title += ` [${popupNo}]`;
 

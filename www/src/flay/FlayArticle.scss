@@ -44,6 +44,14 @@
       font-size: var(--size-large);
       min-height: 2.5rem;
     }
+
+    .opus,
+    .title,
+    .actress {
+      span {
+        cursor: pointer;
+      }
+    }
   }
 
   &.card {
@@ -86,6 +94,28 @@
       }
       .tags {
         display: none;
+      }
+    }
+  }
+
+  &.cover {
+    dl {
+      margin: 0.25rem auto 0;
+
+      dt,
+      dd {
+        display: none;
+      }
+
+      .title {
+        display: block;
+        font-size: var(--size-normal);
+        min-height: 1.5rem;
+      }
+      .actress {
+        display: block;
+        font-size: var(--size-small);
+        min-height: 1.25rem;
       }
     }
   }

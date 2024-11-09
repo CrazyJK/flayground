@@ -16,7 +16,7 @@ class Page {
     const flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
     const coverURL = URL.createObjectURL(await res.blob());
 
-    const flayArticle = document.querySelector('main').appendChild(new FlayArticle({ mode: 'simple' }));
+    const flayArticle = document.querySelector('main').appendChild(new FlayArticle({ mode: 'cover' }));
     flayArticle.set(flay, coverURL);
 
     document.querySelector('#flayCount').innerHTML = this.opusList.length;

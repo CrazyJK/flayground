@@ -35,9 +35,11 @@ export default class FlayArticle extends HTMLDivElement {
     `;
 
     this.querySelector('.cover').addEventListener('click', () => popupCover(this.opus));
-    this.querySelector('.opus').addEventListener('click', () => popupFlayInfo(this.opus));
-    this.querySelector('.title').addEventListener('click', () => popupFlay(this.opus));
-    this.querySelector('.actress').addEventListener('click', (e) => popupActress(e.target.textContent));
+    this.querySelector('.opus span').addEventListener('click', () => popupFlayInfo(this.opus));
+    this.querySelector('.title span').addEventListener('click', () => popupFlay(this.opus));
+    this.querySelector('.actress').addEventListener('click', (e) => {
+      if (e.target.tagName === 'SPAN') popupActress(e.target.textContent);
+    });
   }
 
   set(flay, coverURL) {

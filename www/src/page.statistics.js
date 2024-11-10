@@ -1,6 +1,8 @@
 import './init/Page';
 import './page.statistics.scss';
 
+import FlayMarker from './flay/FlayMarker';
+import VideoDatePanel from './flay/panel/VideoDatePanel';
 import { tabUI } from './lib/TabUI';
 import { sortable } from './lib/TableUtils';
 import FileUtils from './util/FileUtils';
@@ -75,6 +77,7 @@ function start() {
   startStudioActress();
   startRankGroup();
   startTimeline();
+  startLastDate();
   startActressAge();
   startShotFlay();
 }
@@ -214,15 +217,7 @@ function startRankGroup() {
       count++;
       length += flay.length;
 
-      const flayLabel = rankList.appendChild(document.createElement('label'));
-      flayLabel.title = flay.opus;
-      flayLabel.classList.add('flay');
-      flayLabel.classList.toggle('archive', flay.archive);
-      flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
-      flayLabel.addEventListener('click', () => {
-        flayLabel.classList.add('active');
-        popupFlay(flay.opus);
-      });
+      rankList.appendChild(new FlayMarker(flay));
     });
     countLabel.innerHTML = count > 0 ? count + ' Flay' : '';
     const [size, unit] = FileUtils.prettySize(length);
@@ -289,7 +284,7 @@ function startTimeline() {
         const [size, unit] = FileUtils.prettySize(length);
         rank.title = `${count} Flay, ${size} ${unit}`;
       }
-      rank.append(...getFlayLabel(rankMap.get(i)));
+      rank.append(...rankMap.get(i).map((flay) => new FlayMarker(flay)));
       flayCount += count;
       shotCount += shot;
     }
@@ -363,7 +358,8 @@ async function startActressAge() {
         const [size, unit] = FileUtils.prettySize(length);
         rank.title = `${count} Flay, ${size} ${unit}`;
       }
-      rank.append(...getFlayLabel(rankMap.get(i)));
+
+      rank.append(...rankMap.get(i).map((flay) => new FlayMarker(flay)));
       flayCount += count;
       shotCount += shot;
     }
@@ -519,19 +515,7 @@ async function startShotFlay() {
   });
 }
 
-const getFlayLabel = (flayList) => {
-  const labels = [];
-  flayList.forEach((flay) => {
-    const flayLabel = document.createElement('label');
-    flayLabel.title = flay.opus;
-    flayLabel.classList.add('flay');
-    flayLabel.classList.toggle('archive', flay.archive);
-    flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
-    flayLabel.addEventListener('click', () => {
-      flayLabel.classList.add('active');
-      popupFlay(flay.opus);
-    });
-    labels.push(flayLabel);
-  });
-  return labels;
-};
+function startLastDate() {
+  document.querySelector('#lastDate').textContent = null;
+  document.querySelector('#lastDate').appendChild(new VideoDatePanel(filteredList));
+}

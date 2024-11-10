@@ -1,0 +1,48 @@
+.video-date-panel {
+  .mode-select {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+  }
+
+  .display-wrap {
+    > div {
+      margin: 0 0 1rem;
+      border: 0;
+      padding: 0;
+
+      > h5 {
+        font-weight: 700;
+        padding: 0 0.5rem;
+        margin: 0;
+      }
+
+      > div {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+
+        &.unknown-date {
+          display: block;
+        }
+
+        > fieldset {
+          margin: 0 0.125rem;
+          border: 1px solid var(--color-border-reversed);
+          padding: 0 0.25rem 0.25rem;
+
+          > legend {
+            font-weight: 400;
+            padding: 0 0.5rem;
+          }
+
+          > div {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-content: flex-start;
+          }
+        }
+      }
+    }
+  }
+}

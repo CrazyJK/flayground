@@ -4,7 +4,6 @@
   flex-direction: row;
   justify-content: center;
   gap: 0.125rem 1rem;
-  max-width: calc(100% - 8rem);
 
   .tag-list {
     display: flex;
@@ -55,27 +54,6 @@
   &.archive {
     * {
       color: var(--color-gray-dark);
-    }
-  }
-}
-
-@media screen and (max-height: 997px) {
-  .flay-tag {
-    .tag-list {
-      gap: 0.125rem 0.25rem;
-      label {
-        padding: 0.125rem;
-      }
-    }
-  }
-}
-
-@media screen and (max-height: 989px) {
-  .flay-tag {
-    .tag-list {
-      input[type='checkbox']:not(:checked) + label {
-        display: none;
-      }
     }
   }
 }

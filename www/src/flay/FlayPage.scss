@@ -5,9 +5,10 @@
   justify-content: center;
   transition: 0.4s;
   margin: auto;
+  max-width: 800px;
 
-  & > * {
-    margin: 0.25rem auto;
+  & > .flay-div {
+    margin: 0.125rem auto;
     padding: 0 0.5rem;
     min-height: 2rem;
     width: 100%;
@@ -15,42 +16,35 @@
 
   .flay-cover {
     margin: 0.5rem auto;
-    padding: 0;
   }
 
   .flay-cover,
   .flay-actress {
     max-width: 900px;
   }
+}
 
-  &.popup {
+// FHD 세로보다 클때 크기 조정
+@media screen and (min-width: 1080px) {
+  .flay-page {
+    max-width: 90%;
+  }
+}
+
+// 팝업시 세로 높이에 따라 간단히 보이기
+@media screen and (max-height: 989px) {
+  .flay-page.popup {
     .flay-tag {
-      max-width: calc(100% - 2rem);
+      .tag-list {
+        input[type='checkbox']:not(:checked) + label {
+          display: none;
+        }
+      }
     }
-  }
-}
-
-@media screen and (max-height: 1400px) {
-  .flay-page .flay-cover {
-    margin: 0.25rem auto;
-  }
-}
-@media (min-width: 1280px) {
-  .flay-page {
-    flay-cover,
-    flay-actress {
-      max-width: 1200px;
-    }
-  }
-}
-
-@media screen and (max-height: 997px) {
-  .flay-page {
-    max-width: 800px;
   }
 }
 @media screen and (max-height: 750px) {
-  .flay-page {
+  .flay-page.popup {
     .flay-studio,
     .flay-comment {
       display: none;
@@ -58,21 +52,9 @@
   }
 }
 @media screen and (max-height: 600px) {
-  .flay-page {
+  .flay-page.popup {
     .flay-opus {
       display: none;
     }
-  }
-}
-
-@media screen and (min-width: 1278px) {
-  .flay-page {
-    max-width: calc(100% - 10rem);
-  }
-}
-
-@media screen and (max-width: 900px) {
-  .flay-page {
-    max-width: 800px;
   }
 }

@@ -16,20 +16,20 @@ class Page extends OpusProvider {
 
     this.flayCondition.addEventListener('fetch', async () => {
       this.setOpusList(this.flayCondition.opusList);
-      this.#show();
+      await this.#show();
     });
 
-    window.addEventListener('wheel', (e) => {
-      if (e.deltaY > 0) this.#show();
+    window.addEventListener('wheel', async (e) => {
+      if (e.deltaY > 0) await this.#show();
     });
   }
 
-  #show() {
-    document.startViewTransition(async () => {
+  async #show() {
+    await document.startViewTransition(async () => {
       const opus = await this.getRandomOpus();
       const flay = await fetch(`/flay/${opus}`).then((res) => res.json());
       this.flayArticle.set(flay);
-    });
+    }).finished;
   }
 }
 

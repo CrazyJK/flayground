@@ -134,36 +134,43 @@ public class FlayCollector {
   private int sort(Flay f1, Flay f2, FlayCondition flayCondition) {
     switch (flayCondition.getSort()) {
       case STUDIO:
-        return f1.getStudio().compareTo(f2.getStudio());
+        return thenSortByOpus(f1.getStudio().compareTo(f2.getStudio()), f1, f2);
       case OPUS:
-        return f1.getOpus().compareTo(f2.getOpus());
+        return thenSortByOpus(0, f1, f2);
       case TITLE:
-        return f1.getTitle().compareTo(f2.getTitle());
+        return thenSortByOpus(f1.getTitle().compareTo(f2.getTitle()), f1, f2);
       case ACTRESS:
-        return String.join(",", f1.getActressList()).compareTo(String.join(",", f2.getActressList()));
+        return thenSortByOpus(String.join(",", f1.getActressList()).compareTo(String.join(",", f2.getActressList())), f1, f2);
       case RELEASE:
-        return f1.getRelease().compareTo(f2.getRelease());
+        return thenSortByOpus(f1.getRelease().compareTo(f2.getRelease()), f1, f2);
       case PLAY:
-        return NumberUtils.compare(f1.getVideo().getPlay(), f2.getVideo().getPlay());
+        return thenSortByOpus(NumberUtils.compare(f1.getVideo().getPlay(), f2.getVideo().getPlay()), f1, f2);
       case RANK:
-        return NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank());
+        return thenSortByOpus(NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank()), f1, f2);
       case LASTPLAY:
-        return NumberUtils.compare(f1.getVideo().getLastPlay(), f2.getVideo().getLastPlay());
+        return thenSortByOpus(NumberUtils.compare(f1.getVideo().getLastPlay(), f2.getVideo().getLastPlay()), f1, f2);
       case LASTACCESS:
-        return NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess());
+        return thenSortByOpus(NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess()), f1, f2);
       case LASTMODIFIED:
-        return NumberUtils.compare(f1.getLastModified(), f2.getLastModified());
+        return thenSortByOpus(NumberUtils.compare(f1.getLastModified(), f2.getLastModified()), f1, f2);
       case SCORE:
         scoreCalculator.calcScore(f1);
         scoreCalculator.calcScore(f2);
-        return NumberUtils.compare(f1.getScore(), f2.getScore());
+        return thenSortByOpus(NumberUtils.compare(f1.getScore(), f2.getScore()), f1, f2);
       case LENGTH:
-        return NumberUtils.compare(f1.getLength(), f2.getLength());
+        return thenSortByOpus(NumberUtils.compare(f1.getLength(), f2.getLength()), f1, f2);
       case SHOT:
-        return NumberUtils.compare(getLikeCount(f1), getLikeCount(f2));
+        return thenSortByOpus(NumberUtils.compare(getLikeCount(f1), getLikeCount(f2)), f1, f2);
       default:
         return 0;
     }
+  }
+
+  private int thenSortByOpus(int comparedValue, Flay f1, Flay f2) {
+    if (comparedValue == 0) {
+      return f1.getOpus().compareTo(f2.getOpus());
+    }
+    return comparedValue;
   }
 
   private int getLikeCount(Flay flay) {

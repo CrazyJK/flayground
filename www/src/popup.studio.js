@@ -44,7 +44,11 @@ class PopupStudio {
     });
     // 저장 이벤트
     this.saveBtn.addEventListener('click', () => {
-      flayAction.putStudio(this.studioName.value, this.studioCompany.value, this.studioHomepage.value);
+      flayAction.putStudio({
+        name: this.studioName.value,
+        company: this.studioCompany.value,
+        homepage: this.studioHomepage.value,
+      });
     });
 
     // sse 수신 이벤트

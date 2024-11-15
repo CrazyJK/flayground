@@ -107,6 +107,18 @@ export default {
       failCallback
     );
   },
+  putStudio: (studio, callback, failCallback) => {
+    return action(
+      '/info/studio',
+      {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(studio),
+      },
+      callback,
+      failCallback
+    );
+  },
   listOfStudio: (callback, failCallback) => {
     return action('/flay/list/studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: 'STUDIO' }) }, callback, failCallback);
   },

@@ -54,7 +54,7 @@ export default class FlayPagination extends HTMLDivElement {
       if (!this.active) return false;
       if (e.ctrlKey) return false;
       if (e.target.closest('#layer')) return false;
-      if (e.target.closest('side-nav')) return false;
+      if (e.target.closest('.side-nav-bar')) return false;
 
       return this.#navigator(e.deltaY > 0 ? NEXT : PREV);
     });

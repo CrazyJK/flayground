@@ -49,6 +49,7 @@ export default class FlayCondition extends HTMLDivElement {
         </select>
       </div>
     `;
+    this.querySelector('#search').addEventListener('keyup', (e) => e.stopPropagation());
     this.addEventListener('change', () => this.#fetch());
   }
 

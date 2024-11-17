@@ -27,7 +27,7 @@ export default class FlayCondition extends HTMLDivElement {
     this.classList.add('flay-condition', 'flay-div');
     this.innerHTML = `
       <div>
-        <input type="search" id="search" list="search-items" placeholder="Search" spellcheck="false">
+        <input type="search" id="search" list="search-items" placeholder="Search" spellcheck="false" autocomplete="off">
         <datalist id="search-items"></datalist>
       </div>
       <div>

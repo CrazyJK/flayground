@@ -92,8 +92,14 @@ export class FlayBasket extends HTMLDivElement {
       let item = this.querySelector(`#${opus}`);
       const isNew = item === null;
       if (isNew) {
-        item = new FlayBasketItem(opus);
-        item.addEventListener('delete', () => this.render());
+        try {
+          await FlayCache.getFlay(opus);
+          item = new FlayBasketItem(opus);
+          item.addEventListener('delete', () => this.render());
+        } catch (error) {
+          FlayBasket.remove(opus);
+          continue;
+        }
       }
 
       this.flayListEl.prepend(item);

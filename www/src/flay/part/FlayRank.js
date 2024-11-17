@@ -40,6 +40,7 @@ export default class FlayRank extends FlayHTMLElement {
     this.setFlay(flay);
 
     this.querySelector('#flay-rank' + flay.video.rank).checked = true;
+    this.querySelector('.rank-label').classList.toggle('notyet', flay.video.rank < 1);
     this.querySelector('.rank').innerHTML = flay.video.rank;
 
     const likeCount = flay.video.likes?.length || 0;

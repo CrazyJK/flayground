@@ -6,20 +6,13 @@ import './FlayTitle.scss';
  * Custom element of Title
  */
 export default class FlayTitle extends FlayHTMLElement {
-  flay;
-
   constructor() {
     super();
 
-    this.init();
-  }
+    this.innerHTML = `<label><a>Title</a></label>`;
 
-  init() {
-    const label = this.appendChild(document.createElement('label'));
-    this.anker = label.appendChild(document.createElement('a'));
-    this.anker.innerHTML = 'Title';
     if (location.pathname.indexOf('popup.flay.html') < 0) {
-      this.anker.addEventListener('click', () => {
+      this.querySelector('a').addEventListener('click', () => {
         popupFlay(this.flay.opus);
         this.dispatchEvent(new Event('click', { composed: true }));
       });
@@ -35,12 +28,10 @@ export default class FlayTitle extends FlayHTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.flay = flay;
-    this.classList.toggle('archive', this.flay.archive);
-    this.setAttribute('data-opus', flay.opus);
+    this.setFlay(flay);
 
-    this.anker.setAttribute('title', flay.title);
-    this.anker.textContent = flay.title;
+    this.querySelector('a').title = flay.title;
+    this.querySelector('a').textContent = flay.title;
   }
 }
 

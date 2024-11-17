@@ -6,19 +6,12 @@ import './FlayStudio.scss';
  * Custom element of Studio
  */
 export default class FlayStudio extends FlayHTMLElement {
-  flay;
-
   constructor() {
     super();
 
-    this.init();
-  }
+    this.innerHTML = `<label><a>Studio</a></label>`;
 
-  init() {
-    const label = this.appendChild(document.createElement('label'));
-    this.studio = label.appendChild(document.createElement('a'));
-    this.studio.innerHTML = 'Studio';
-    this.studio.addEventListener('click', () => popupStudio(this.flay.studio));
+    this.querySelector('a').addEventListener('click', () => popupStudio(this.flay.studio));
   }
 
   connectedCallback() {
@@ -30,11 +23,9 @@ export default class FlayStudio extends FlayHTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.flay = flay;
-    this.dataset.opus = flay.opus ? flay.opus : '';
-    this.classList.toggle('archive', this.flay.archive);
+    this.setFlay(flay);
 
-    this.studio.textContent = flay.studio;
+    this.querySelector('a').textContent = flay.studio;
   }
 }
 

@@ -11,31 +11,33 @@ import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
  * Custom element of File
  */
 export default class FlayFiles extends FlayHTMLElement {
-  flay;
-
   constructor() {
     super();
 
-    this.init();
-  }
+    this.innerHTML = `
+      <div class="info">
+        <button type="button" class="flay-play" title="play on layer">${youtubeSVG}</button>
+        <button type="button" class="flay-movie">Movie<i class="badge movie-length">0</i></button>
+        <button type="button" class="sub-btn">Sub<i class="badge sub-length">0</i></button>
+        <label class="size-label"><span class="size-num">0</span><small class="size-unit">GB</small></label>
+        <button type="button" class="files-btn" title="show files">${folderSVG}</button>
+        <button type="button" class="search-torrent" title="search torrent">${torrentSVG}</button>
+      </div>
+      <div class="list">
+        <ol></ol>
+        <div class="rename-flay">
+          ${['studio', 'opus', 'title', 'actress', 'release'].map((name) => `<input type="text" name="${name}" placeholder="${name}" spellcheck="false">`).join('')}
+          <button type="button" title="rename flay file name" id="renameBtn">Rename</button>
+        </div>
+      </div>
+    `;
 
-  init() {
-    const infoDiv = this.appendChild(document.createElement('div'));
-    infoDiv.classList.add('info');
-
-    this.playBtn = infoDiv.appendChild(document.createElement('button'));
-    this.playBtn.classList.add('flay-play');
-    this.playBtn.title = 'play on layer';
-    this.playBtn.innerHTML = youtubeSVG;
-    this.playBtn.addEventListener('click', async () => {
+    this.querySelector('.flay-play').addEventListener('click', async () => {
       const { playInLayer } = await import(/* webpackChunkName: "FlayVideoPlayer" */ '../FlayVideoPlayer');
       await playInLayer(this.flay.opus);
     });
 
-    this.movieBtn = infoDiv.appendChild(document.createElement('button'));
-    this.movieBtn.innerHTML = 'Movie<i class="badge">0</i>';
-    this.movieBtn.addEventListener('click', (e) => {
-      console.log('playClick', this.flay.opus);
+    this.querySelector('.flay-movie').addEventListener('click', () => {
       if (this.flay.files.movie.length > 0) {
         FlayAction.play(this.flay.opus).then(async () => {
           const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '../FlayBasket');
@@ -46,11 +48,7 @@ export default class FlayFiles extends FlayHTMLElement {
       }
     });
 
-    this.subBtn = infoDiv.appendChild(document.createElement('button'));
-    this.subBtn.classList.add('sub-btn');
-    this.subBtn.innerHTML = 'Sub<i class="badge">0</i>';
-    this.subBtn.addEventListener('click', (e) => {
-      console.log('subtitlesClick', this.flay.opus);
+    this.querySelector('.sub-btn').addEventListener('click', () => {
       if (this.flay.files.subtitles.length > 0) {
         FlayAction.editSubtitles(this.flay.opus);
       } else {
@@ -58,56 +56,21 @@ export default class FlayFiles extends FlayHTMLElement {
       }
     });
 
-    this.sizeLabel = infoDiv.appendChild(document.createElement('label'));
-    this.sizeLabel.classList.add('size-label');
-    this.sizeLabel.innerHTML = '0<small>GB</small>';
-
-    this.fileShowBtn = infoDiv.appendChild(document.createElement('button'));
-    this.fileShowBtn.classList.add('files-btn');
-    this.fileShowBtn.setAttribute('title', 'show files');
-    this.fileShowBtn.innerHTML = folderSVG;
-    this.fileShowBtn.addEventListener('click', () => {
-      this.listDiv.classList.toggle('show');
+    this.querySelector('.files-btn').addEventListener('click', () => {
+      this.querySelector('.list').classList.toggle('show');
     });
 
-    this.downloadBtn = infoDiv.appendChild(document.createElement('button'));
-    this.downloadBtn.classList.add('search-torrent');
-    this.downloadBtn.title = 'search torrent';
-    this.downloadBtn.innerHTML = torrentSVG;
-    this.downloadBtn.addEventListener('click', () => {
+    this.querySelector('.search-torrent').addEventListener('click', () => {
       FlaySearch.torrent.Ijav(this.flay.opus);
     });
 
-    this.listDiv = this.appendChild(document.createElement('div'));
-    this.listDiv.classList.add('list');
-
-    this.fileList = this.listDiv.appendChild(document.createElement('ol'));
-    this.fileList.addEventListener('click', (e) => {
-      console.log('filesClick', this.flay.opus, e.target.textContent);
+    this.querySelector('.list ol').addEventListener('click', (e) => {
       FlayAction.explore(e.target.textContent);
     });
 
-    this.renameDiv = this.listDiv.appendChild(document.createElement('div'));
-    this.renameDiv.classList.add('rename-flay');
-    ['studio', 'opus', 'title', 'actress', 'release'].forEach((name) => {
-      const input = this.renameDiv.appendChild(document.createElement('input'));
-      input.placeholder = name;
-      input.name = name;
-      input.type = 'text';
-      input.setAttribute('spellcheck', false);
-      input.addEventListener('keyup', (e) => {
-        e.stopPropagation();
-      });
-      if (name === 'opus') {
-        input.readOnly = true;
-      }
-      this[name + 'Input'] = input;
-    });
-    this.renameBtn = this.renameDiv.appendChild(document.createElement('button'));
-    this.renameBtn.type = 'button';
-    this.renameBtn.title = 'rename flay file name';
-    this.renameBtn.innerHTML = 'Rename';
-    this.renameBtn.addEventListener('click', () => {
+    this.querySelectorAll('.rename-flay input').forEach((input) => input.addEventListener('keyup', (e) => e.stopPropagation()));
+
+    this.querySelector('#renameBtn').addEventListener('click', () => {
       console.log('renameClick', this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
       FlayAction.renameFlay(this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
     });
@@ -122,41 +85,38 @@ export default class FlayFiles extends FlayHTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.flay = flay;
-    this.setAttribute('data-opus', flay.opus);
-    this.classList.toggle('archive', this.flay.archive);
+    this.setFlay(flay);
 
-    this.movieBtn.innerHTML = 'Movie<i class="badge">' + flay.files.movie.length + '</i>';
-    this.movieBtn.classList.toggle('disable', flay.files.movie.length === 0);
+    this.querySelector('.movie-length').innerHTML = flay.files.movie.length;
+    this.querySelector('.flay-movie').classList.toggle('disable', flay.files.movie.length === 0);
 
-    this.subBtn.innerHTML = 'Sub<i class="badge">' + flay.files.subtitles.length + '</i>';
-    this.subBtn.classList.toggle('disable', flay.files.subtitles.length === 0);
+    this.querySelector('.sub-length').innerHTML = flay.files.subtitles.length;
+    this.querySelector('.sub-btn').classList.toggle('disable', flay.files.subtitles.length === 0);
 
     const [size, unit] = FileUtils.prettySize(flay.length);
-    this.sizeLabel.innerHTML = `${size}<small>${unit}</small>`;
+    this.querySelector('.size-num').innerHTML = size;
+    this.querySelector('.size-unit').innerHTML = unit;
 
-    this.fileList.textContent = null;
+    const fileList = this.querySelector('.list ol');
+    fileList.textContent = null;
 
     Array.from(flay.files.cover).forEach((path) => {
-      const fileElement = this.fileList.appendChild(document.createElement('li'));
-      fileElement.textContent = path;
+      fileList.appendChild(document.createElement('li')).textContent = path;
     });
 
     Array.from(flay.files.movie).forEach((path) => {
-      const fileElement = this.fileList.appendChild(document.createElement('li'));
-      fileElement.textContent = path;
+      fileList.appendChild(document.createElement('li')).textContent = path;
     });
 
     Array.from(flay.files.subtitles).forEach((path) => {
-      const fileElement = this.fileList.appendChild(document.createElement('li'));
-      fileElement.textContent = path;
+      fileList.appendChild(document.createElement('li')).textContent = path;
     });
 
-    this.studioInput.value = flay.studio;
-    this.opusInput.value = flay.opus;
-    this.titleInput.value = flay.title;
-    this.actressInput.value = flay.actressList.join(', ');
-    this.releaseInput.value = flay.release;
+    this.querySelector('[name="studio"]').value = flay.studio;
+    this.querySelector('[name="opus"]').value = flay.opus;
+    this.querySelector('[name="title"]').value = flay.title;
+    this.querySelector('[name="actress"]').value = flay.actressList.join(', ');
+    this.querySelector('[name="release"]').value = flay.release;
   }
 }
 

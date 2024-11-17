@@ -15,22 +15,22 @@ const dbSchema = [
   },
 ];
 
-export default class FlayPlayTimeDB extends FlayIndexedDB {
+export default class PlayTimeDB extends FlayIndexedDB {
   constructor() {
     super();
   }
 
-  async #openDB() {
+  async #init() {
     await this.open(dbName, dbVersion, dbSchema);
   }
 
   async select(opus) {
-    if (!this.db) await this.#openDB();
+    await this.#init();
     return await this.get(storeName, opus);
   }
 
   async update(opus, time, duration) {
-    if (!this.db) await this.#openDB();
+    await this.#init();
     const record = {
       opus: opus,
       time: time,
@@ -41,7 +41,7 @@ export default class FlayPlayTimeDB extends FlayIndexedDB {
   }
 
   async listByLastPlayed() {
-    if (!this.db) await this.#openDB();
+    await this.#init();
     return await this.getAllByIndex(storeName, 'lastPlayed', false);
   }
 }

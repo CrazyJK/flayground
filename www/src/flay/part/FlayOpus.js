@@ -8,12 +8,9 @@ import './FlayOpus.scss';
  * Custom element of Opus
  */
 export default class FlayOpus extends FlayHTMLElement {
-  flay;
-
   constructor() {
     super();
 
-    this.classList.add('flay-opus');
     this.innerHTML = `
       <div>
         <button type="button" id="jsonViewBtn" title="flay json viewer">${jsonSVG}</button>
@@ -30,16 +27,17 @@ export default class FlayOpus extends FlayHTMLElement {
     });
   }
 
-  connectedCallback() {}
+  connectedCallback() {
+    this.classList.add('flay-opus');
+  }
 
   /**
    *
    * @param {Flay} flay
    */
   set(flay) {
-    this.flay = flay;
-    this.dataset.opus = flay.opus;
-    this.classList.toggle('archive', this.flay.archive);
+    this.setFlay(flay);
+
     this.querySelector('a').innerHTML = flay.opus;
   }
 }

@@ -6,26 +6,15 @@ import './FlayRelease.scss';
  * Custom element of Release
  */
 export default class FlayRelease extends FlayHTMLElement {
-  flay;
-
   constructor() {
     super();
 
-    this.init();
-  }
-
-  init() {
     this.innerHTML = `
-      <label class="release-label" >                  <span id="release" >2023.08.09</span></label>
-      <label class="modified-label"><sub>mod    </sub><span id="modified">2023-08-20</span></label>
-      <label class="access-label"  ><sub>access </sub><span id="access"  >2023-08-20</span></label>
-      <label class="played-label"  ><sub>play   </sub><span id="played"  >2023-08-20</span></label>
+      <label class="release-label" >                  <span id="release" >0000.00.00</span></label>
+      <label class="modified-label"><sub>mod    </sub><span id="modified">00/00/00</span></label>
+      <label class="access-label"  ><sub>access </sub><span id="access"  >00/00/00</span></label>
+      <label class="played-label"  ><sub>play   </sub><span id="played"  >00/00/00</span></label>
     `;
-
-    this.releaseSpan = this.querySelector('#release');
-    this.modifiedSpan = this.querySelector('#modified');
-    this.accessSpan = this.querySelector('#access');
-    this.playedSpan = this.querySelector('#played');
   }
 
   connectedCallback() {
@@ -37,14 +26,12 @@ export default class FlayRelease extends FlayHTMLElement {
    * @param {Flay} flay
    */
   set(flay) {
-    this.flay = flay;
-    this.classList.toggle('archive', this.flay.archive);
-    this.setAttribute('data-opus', flay.opus);
+    this.setFlay(flay);
 
-    this.releaseSpan.innerHTML = flay.release;
-    this.modifiedSpan.innerHTML = DateUtils.format(flay.lastModified, 'yy/MM/dd');
-    this.accessSpan.innerHTML = DateUtils.format(flay.video.lastAccess, 'yy/MM/dd');
-    this.playedSpan.innerHTML = DateUtils.format(flay.video.lastPlay, 'yy/MM/dd');
+    this.querySelector('#release').innerHTML = flay.release;
+    this.querySelector('#modified').innerHTML = DateUtils.format(flay.lastModified, 'yy/MM/dd');
+    this.querySelector('#access').innerHTML = DateUtils.format(flay.video.lastAccess, 'yy/MM/dd');
+    this.querySelector('#played').innerHTML = DateUtils.format(flay.video.lastPlay, 'yy/MM/dd');
   }
 }
 

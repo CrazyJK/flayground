@@ -1,3 +1,4 @@
+import FlayCache from '../lib/FlayCache';
 import GridControl from '../lib/GridControl';
 import trashBinSVG from '../svg/trashBin.svg';
 import vaginaSVG from '../svg/vagina.svg';
@@ -178,30 +179,35 @@ class FlayBasketItem extends HTMLDivElement {
 
     this.querySelector('.empty-this').addEventListener('click', async () => await this.#delete(opus));
 
-    fetch(`/static/cover/${opus}/withData`).then(async (res) => {
-      const flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
-      this.querySelector('.cover').style.backgroundImage = `url(${URL.createObjectURL(await res.blob())})`;
-      this.querySelector('.comment').innerHTML = flay.video.comment;
-      this.querySelector('.popup-flay').innerHTML = flay.title;
-      this.querySelector('.popup-flay').addEventListener('click', async () => this.popup());
-      this.querySelector('.actress').append(
-        ...Array.from(flay.actressList || []).map((name) => {
-          const a = document.createElement('a');
-          a.innerHTML = name;
-          a.addEventListener('click', () => popupActress(name));
-          return a;
-        })
-      );
-      this.querySelector('.tags').append(
-        ...Array.from(flay.video.tags || [])
-          .filter((tag) => ![50, 63, 64, 65, 66].includes(tag.id))
-          .map((tag) => {
+    FlayCache.getFlay(opus)
+      .then((flay) => {
+        this.querySelector('.comment').innerHTML = flay.video.comment;
+        this.querySelector('.popup-flay').innerHTML = flay.title;
+        this.querySelector('.popup-flay').addEventListener('click', async () => this.popup());
+        this.querySelector('.actress').append(
+          ...Array.from(flay.actressList || []).map((name) => {
             const a = document.createElement('a');
-            a.innerHTML = tag.name;
-            a.addEventListener('click', () => popupTag(tag.id));
+            a.innerHTML = name;
+            a.addEventListener('click', () => popupActress(name));
             return a;
           })
-      );
+        );
+        this.querySelector('.tags').append(
+          ...Array.from(flay.video.tags || [])
+            .filter((tag) => ![50, 63, 64, 65, 66].includes(tag.id))
+            .map((tag) => {
+              const a = document.createElement('a');
+              a.innerHTML = tag.name;
+              a.addEventListener('click', () => popupTag(tag.id));
+              return a;
+            })
+        );
+      })
+      .catch((e) => {
+        console.warn(e);
+      });
+    FlayCache.getCover(opus).then((url) => {
+      this.querySelector('.cover').style.backgroundImage = `url(${url})`;
     });
   }
 

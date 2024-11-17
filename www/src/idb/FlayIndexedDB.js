@@ -1,7 +1,7 @@
 // https://developer.mozilla.org/ko/docs/Web/API/IndexedDB_API/Using_IndexedDB
 
 export default class FlayIndexedDB {
-  db;
+  #db;
   isDebug = false;
 
   constructor(isDebug) {
@@ -9,37 +9,36 @@ export default class FlayIndexedDB {
   }
 
   open(dbName, dbVersion, dbSchema) {
+    if (this.#db) return;
     return new Promise((resolve, reject) => {
       const req = indexedDB.open(dbName, dbVersion);
       req.onsuccess = (e) => {
-        this.db = e.target.result;
-        console.log('[FlayIndexedDB] open', e);
+        this.#db = e.target.result;
+        console.debug('[FlayIndexedDB] open', dbName, dbVersion, e);
         resolve();
       };
       req.onerror = (e) => {
-        console.error('[FlayIndexedDB] open Error', e);
+        console.error('[FlayIndexedDB] open Error', dbName, dbVersion, e);
         reject(e.target.error);
       };
       req.onupgradeneeded = (e) => {
-        console.log('[FlayIndexedDB] open onupgradeneeded', this.dbSchema, e);
-
+        console.log('[FlayIndexedDB] open onupgradeneeded', dbName, dbVersion, e);
+        Array.from(e.currentTarget.result.objectStoreNames).forEach((storeName) => {
+          e.currentTarget.result.deleteObjectStore(storeName);
+        });
         Array.from(dbSchema).forEach((schema) => {
-          try {
-            e.currentTarget.result.deleteObjectStore(schema.name);
-          } catch (error) {
-            console.warn(error);
-          }
           const store = e.currentTarget.result.createObjectStore(schema.name, { keyPath: schema.keyPath });
-          Array.from(schema.index).forEach((index) => {
-            store.createIndex(index.key, index.key, { unique: index.unique });
-          });
+          schema.index &&
+            Array.from(schema.index).forEach((index) => {
+              store.createIndex(index.key, index.key, { unique: index.unique });
+            });
         });
       };
     });
   }
 
   #getStore(storeName, mode = 'readonly') {
-    return this.db.transaction(storeName, mode).objectStore(storeName);
+    return this.#db.transaction(storeName, mode).objectStore(storeName);
   }
 
   #reqSuccessVoidHandler(resolve, storeName, command, e, ...args) {

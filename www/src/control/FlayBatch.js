@@ -1,3 +1,4 @@
+import FlayCache from '../lib/FlayCache';
 import FlayAction from '../util/FlayAction';
 import { popupActress, popupFlay } from '../util/FlaySearch';
 import './FlayBatch.scss';
@@ -48,7 +49,9 @@ export default class FlayBatch extends HTMLDivElement {
   connectedCallback() {
     const reload = this.querySelector('#reload');
     reload.addEventListener('click', () => {
-      FlayAction.reload();
+      FlayAction.reload(() => {
+        FlayCache.clearAll();
+      });
     });
     const lowerScore = this.querySelector('#lowerScore');
     lowerScore.addEventListener('change', (e) => {
@@ -65,11 +68,15 @@ export default class FlayBatch extends HTMLDivElement {
     });
     const instanceBatch = this.querySelector('#instanceBatch');
     instanceBatch.addEventListener('click', () => {
-      FlayAction.batch('I');
+      FlayAction.batch('I', () => {
+        FlayCache.clearAll();
+      });
     });
     const archiveBatch = this.querySelector('#archiveBatch');
     archiveBatch.addEventListener('click', () => {
-      FlayAction.batch('A');
+      FlayAction.batch('A', () => {
+        FlayCache.clearAll();
+      });
     });
     const backup = this.querySelector('#backup');
     backup.addEventListener('click', () => {
@@ -113,7 +120,7 @@ export default class FlayBatch extends HTMLDivElement {
             <label class="sub"    >${flay.files.subtitles.length}</label>
             <label class="score"  >${flay.score}</label>
           `;
-          ol.appendChild(document.createElement('li')).innerHTML = `<img src="/static/cover/${flay.opus}" style="width:600px">`;
+          ol.appendChild(document.createElement('li')).innerHTML = `<img loading="lazy" src="/static/cover/${flay.opus}" style="width:600px">`;
         });
       });
 

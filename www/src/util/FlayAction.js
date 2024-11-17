@@ -151,8 +151,8 @@ export default {
 /**
  * fetch action
  *
- * @param {string} url
- * @param {object} requestInit
+ * @param {RequestInfo | URL} url
+ * @param {RequestInit} requestInit
  * @param {function} callback
  * @param {function} failCallback
  */

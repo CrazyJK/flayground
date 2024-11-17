@@ -1,3 +1,4 @@
+import FlayCache from './FlayCache';
 import { OpusProvider } from './OpusProvider';
 
 export class FlayProvider extends OpusProvider {
@@ -9,13 +10,13 @@ export class FlayProvider extends OpusProvider {
   }
 
   async #returnData() {
-    const fully = await fetch(`/flay/${this.opus}/fully`).then((res) => res.json());
+    const { flay, actress } = await FlayCache.getFlayActress(this.opus);
     return {
       index: this.opusIndex,
       total: this.opusList.length,
       opus: this.opus,
-      flay: fully.flay,
-      actress: fully.actress,
+      flay: flay,
+      actress: actress,
     };
   }
 

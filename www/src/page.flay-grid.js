@@ -3,6 +3,7 @@ import './page.flay-grid.scss';
 
 import FlayArticle from './flay/FlayArticle';
 import FlayCondition from './flay/page/FlayCondition';
+import FlayCache from './lib/FlayCache';
 import GridControl from './lib/GridControl';
 import { addResizeListener } from './util/windowAddEventListener';
 
@@ -12,12 +13,9 @@ class Page {
   constructor() {}
 
   async #showCover(opus) {
-    const res = await fetch('/static/cover/' + opus + '/withData');
-    const flay = JSON.parse(decodeURIComponent(res.headers.get('Data').replace(/\+/g, ' ')));
-    const coverURL = URL.createObjectURL(await res.blob());
-
+    const flay = await FlayCache.getFlay(opus);
     const flayArticle = document.querySelector('main').appendChild(new FlayArticle({ mode: 'cover' }));
-    flayArticle.set(flay, coverURL);
+    flayArticle.set(flay);
 
     document.querySelector('#flayCount').innerHTML = this.opusList.length;
 

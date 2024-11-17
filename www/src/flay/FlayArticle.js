@@ -1,3 +1,4 @@
+import FlayCache from '../lib/FlayCache';
 import DateUtils from '../util/DateUtils';
 import { popupActress, popupCover, popupFlay, popupFlayInfo } from '../util/FlaySearch';
 import StringUtils from '../util/StringUtils';
@@ -42,10 +43,12 @@ export default class FlayArticle extends HTMLDivElement {
     });
   }
 
-  set(flay, coverURL) {
+  set(flay) {
     this.opus = flay.opus;
 
-    this.querySelector('.cover').style.backgroundImage = `url(${coverURL ? coverURL : `/static/cover/${flay.opus}`})`;
+    FlayCache.getCover(this.opus).then((url) => {
+      this.querySelector('.cover').style.backgroundImage = `url(${url})`;
+    });
 
     this.querySelector('.studio span').innerHTML = flay.studio;
     this.querySelector('.opus span').innerHTML = flay.opus;

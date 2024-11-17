@@ -3,6 +3,7 @@ import './page.statistics.scss';
 
 import FlayMarker from './flay/FlayMarker';
 import VideoDatePanel from './flay/panel/VideoDatePanel';
+import FlayCache from './lib/FlayCache';
 import { tabUI } from './lib/TabUI';
 import { sortable } from './lib/TableUtils';
 import FileUtils from './util/FileUtils';
@@ -404,11 +405,11 @@ async function startShotFlay() {
   const wrapper = document.querySelector('.shot-flay-list');
   wrapper.textContent = null;
 
-  shotFlayList.forEach((flay) => {
+  for (const flay of shotFlayList) {
     const item = wrapper.appendChild(document.createElement('li'));
     item.dataset.filter = `${flay.studio} ${flay.actressList.join(' ')} ${flay.release.substring(0, 4)}`;
     item.innerHTML = `
-      <div style="background-image: url(/static/cover/${flay.opus})">
+      <div style="background-image: url(${await FlayCache.getCover(flay.opus)})">
         <label class="title"><span>${flay.title}</span></label>
         <label class="actress"><span>${flay.actressList.join(', ')}</span></label>
         <label class="shot"><span>${flay.video.likes.length}</span></label>
@@ -418,7 +419,7 @@ async function startShotFlay() {
       </div>
     `;
     item.querySelector('.title').addEventListener('click', () => popupFlay(flay.opus));
-  });
+  }
   document.querySelector('#shotFlayCount').innerHTML = shotFlayList.length;
   console.log(studioMap, actressMap, releaseMap);
 

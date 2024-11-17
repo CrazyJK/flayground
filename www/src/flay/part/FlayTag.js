@@ -6,12 +6,13 @@ import './FlayTag.scss';
  * Custom element of Tag
  */
 export default class FlayTag extends FlayHTMLElement {
-  flay;
   tagList = null;
 
   constructor() {
     super();
+  }
 
+  connectedCallback() {
     this.classList.add('flay-tag');
   }
 
@@ -21,9 +22,7 @@ export default class FlayTag extends FlayHTMLElement {
    * @param {boolean} reload
    */
   set(flay, reload) {
-    this.flay = flay;
-    this.setAttribute('data-opus', flay.opus);
-    this.classList.toggle('archive', this.flay.archive);
+    this.setFlay(flay);
 
     this.#displayTag(reload);
   }

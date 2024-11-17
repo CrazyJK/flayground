@@ -1,3 +1,4 @@
+import FlayCache from '../lib/FlayCache';
 import './FlayPage.scss';
 import FlayActress from './part/FlayActress';
 import FlayComment from './part/FlayComment';
@@ -43,7 +44,7 @@ export default class FlayPage extends HTMLDivElement {
     this.opus = opus;
     this.setAttribute('opus', opus);
 
-    const { flay, actress } = await fetch('/flay/' + opus + '/fully').then((res) => res.json());
+    const { flay, actress } = await FlayCache.getFlayActress(opus);
     this.flay = flay;
     this.actress = actress;
 

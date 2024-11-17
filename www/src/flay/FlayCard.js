@@ -79,7 +79,9 @@ export default class FlayCard extends HTMLDivElement {
 
   /**
    *
-   * @param {String} opus
+   * @param {string} opus
+   * @param {{flay, actress}} fullyFlay
+   * @returns
    */
   async set(opus, fullyFlay) {
     if (!opus) {

@@ -1,4 +1,5 @@
 export default class FlayHTMLElement extends HTMLDivElement {
+  flay = null;
   inCard = false;
 
   static get observedAttributes() {
@@ -15,6 +16,12 @@ export default class FlayHTMLElement extends HTMLDivElement {
   constructor() {
     super();
     this.classList.add('flay-div');
+  }
+
+  setFlay(flay) {
+    this.flay = flay;
+    this.dataset.opus = flay.opus;
+    this.classList.toggle('archive', flay.archive);
   }
 
   setCard() {

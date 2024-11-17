@@ -1,5 +1,5 @@
 import { toTime } from './flay/FlayVideoPlayer';
-import FlayPlayTimeDB from './idb/FlayPlayTimeDB';
+import PlayTimeDB from './idb/PlayTimeDB';
 import './init/Page';
 import './page.flay-play-history.scss';
 import DateUtils from './util/DateUtils';
@@ -8,7 +8,7 @@ class Page {
   db;
 
   constructor() {
-    this.db = new FlayPlayTimeDB();
+    this.db = new PlayTimeDB();
   }
 
   async start() {

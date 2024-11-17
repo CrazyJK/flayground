@@ -48,6 +48,9 @@
       input:not(:checked) + label {
         display: none;
       }
+      &#grade {
+        display: none;
+      }
     }
   }
 

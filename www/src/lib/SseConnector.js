@@ -28,10 +28,10 @@ sse.addEventListener('CONNECT', (e) => {
   console.debug('<< connected', receivedConnectData);
 });
 
-sse.addEventListener('FLAY', (e) => {
+sse.addEventListener('FLAY', async (e) => {
   console.debug(e.type, e.data);
   const flay = JSON.parse(e.data);
-  FlayCache.clear(flay.opus);
+  await FlayCache.clear(flay.opus);
   emitFlay(flay);
   if (typeof window.emitFlay === 'function') window.emitFlay(flay);
 });
@@ -43,10 +43,10 @@ sse.addEventListener('STUDIO', (e) => {
   if (typeof window.emitStudio === 'function') window.emitStudio(studio);
 });
 
-sse.addEventListener('VIDEO', (e) => {
+sse.addEventListener('VIDEO', async (e) => {
   console.debug(e.type, e.data);
   const video = JSON.parse(e.data);
-  FlayCache.clear(video.opus);
+  await FlayCache.clear(video.opus);
   emitVideo(video);
   if (typeof window.emitVideo === 'function') window.emitVideo(video);
 });

@@ -1,10 +1,5 @@
 # TODO
 
-MIAB-360
-MIDV-925
-PRED-725
-MIDV-959
-
 # done
 
 - page play click then show play timeline

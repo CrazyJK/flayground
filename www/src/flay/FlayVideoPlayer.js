@@ -1,5 +1,5 @@
 import PlayTimeDB from '../idb/PlayTimeDB';
-import FlayCache from '../lib/FlayCache';
+import FlayFetch from '../lib/FlayFetch';
 import { getRandomInt } from '../util/randomNumber';
 import { addResizeListener } from '../util/windowAddEventListener';
 import './FlayVideoPlayer.scss';
@@ -116,7 +116,7 @@ export class FlayVideoPlayer extends HTMLDivElement {
    */
   async reload() {
     if (this.options.info) {
-      const { flay, actress } = await FlayCache.getFlayActress(this.opus);
+      const { flay, actress } = await FlayFetch.getFlayActress(this.opus);
       this.flayVideoInfo.set(flay, actress, true);
     }
   }
@@ -236,7 +236,7 @@ class FlayVideo extends HTMLVideoElement {
     this.opus = opus;
     this.loaded = false;
     this.playing = false;
-    FlayCache.getCover(opus).then((url) => (this.poster = url));
+    FlayFetch.getCover(opus).then((url) => (this.poster = url));
     this.src = `/stream/flay/movie/${opus}/0`;
     this.load();
   }

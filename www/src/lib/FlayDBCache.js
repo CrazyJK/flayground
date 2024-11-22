@@ -22,17 +22,17 @@ const actressFlayCountStore = new ActressFlayCountStore();
 
 const coverObjectURLMap = new Map();
 
-export default class FlayCache {
+export default class FlayDBCache {
   /**
    *
    * @param {string} opus
    * @returns
    */
   static async getFlayActress(opus) {
-    const flay = await FlayCache.getFlay(opus);
+    const flay = await FlayDBCache.getFlay(opus);
     const actressList = [];
     for (const name of flay.actressList) {
-      actressList.push(await FlayCache.getActress(name));
+      actressList.push(await FlayDBCache.getActress(name));
     }
     return { flay: flay, actress: actressList };
   }
@@ -50,7 +50,7 @@ export default class FlayCache {
         throw new Error(flay.message);
       }
       await flayStore.update(flay);
-      console.debug('[FlayCache] update flay', opus);
+      console.debug('[FlayDBCache] update flay', opus);
     }
     return flay;
   }
@@ -68,7 +68,7 @@ export default class FlayCache {
         throw new Error(actress.message);
       }
       await actressStore.update(actress);
-      console.debug('[FlayCache] update actress', name);
+      console.debug('[FlayDBCache] update actress', name);
     }
     return actress;
   }
@@ -81,7 +81,7 @@ export default class FlayCache {
         throw new Error(score.message);
       }
       record = await scoreStore.update(opus, score);
-      console.debug('[FlayCache] update score', opus);
+      console.debug('[FlayDBCache] update score', opus);
     }
     return record.score;
   }
@@ -97,7 +97,7 @@ export default class FlayCache {
       if (!cover) {
         const blob = await fetch(`/static/cover/${opus}`).then((res) => res.blob());
         cover = await coverStore.update(opus, blob);
-        console.debug('[FlayCache] update cover', opus);
+        console.debug('[FlayDBCache] update cover', opus);
       }
       coverObjectURLMap.set(opus, URL.createObjectURL(cover.blob));
     }
@@ -114,7 +114,7 @@ export default class FlayCache {
     if (!record) {
       const histories = await fetch(`/info/history/find/${opus}`).then((res) => res.json());
       record = await historyStore.update(opus, histories);
-      console.debug('[FlayCache] update history', opus);
+      console.debug('[FlayDBCache] update history', opus);
     }
     return record.histories;
   }
@@ -129,7 +129,7 @@ export default class FlayCache {
     if (!record) {
       const flayCount = await fetch(`/flay/count/actress/${name}`).then((res) => res.text());
       record = await actressFlayCountStore.update(name, flayCount);
-      console.debug('[FlayCache] update actressFlayCount', name);
+      console.debug('[FlayDBCache] update actressFlayCount', name);
     }
     return record.flayCount;
   }
@@ -148,7 +148,7 @@ export default class FlayCache {
     flayStore.remove(opus);
     coverStore.remove(opus);
     historyStore.remove(opus);
-    console.log('[FlayCache] cleae', opus);
+    console.log('[FlayDBCache] cleae', opus);
   }
 
   static async clearAll() {
@@ -157,6 +157,6 @@ export default class FlayCache {
     await historyStore.removeAll();
     await actressStore.removeAll();
     await actressFlayCountStore.removeAll();
-    console.log('[FlayCache] clearAll');
+    console.log('[FlayDBCache] clearAll');
   }
 }

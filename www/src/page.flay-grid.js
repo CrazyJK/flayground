@@ -3,7 +3,7 @@ import './page.flay-grid.scss';
 
 import FlayArticle from './flay/FlayArticle';
 import FlayCondition from './flay/page/FlayCondition';
-import FlayCache from './lib/FlayCache';
+import FlayFetch from './lib/FlayFetch';
 import GridControl from './lib/GridControl';
 import { addResizeListener } from './util/windowAddEventListener';
 
@@ -13,7 +13,7 @@ class Page {
   constructor() {}
 
   async #showCover(opus) {
-    const flay = await FlayCache.getFlay(opus);
+    const flay = await FlayFetch.getFlay(opus);
     const flayArticle = document.querySelector('main').appendChild(new FlayArticle({ mode: 'cover' }));
     flayArticle.set(flay);
 

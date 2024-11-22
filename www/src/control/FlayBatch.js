@@ -1,4 +1,4 @@
-import FlayCache from '../lib/FlayCache';
+import FlayFetch from '../lib/FlayFetch';
 import FlayAction from '../util/FlayAction';
 import { popupActress, popupFlay } from '../util/FlaySearch';
 import './FlayBatch.scss';
@@ -50,7 +50,7 @@ export default class FlayBatch extends HTMLDivElement {
     const reload = this.querySelector('#reload');
     reload.addEventListener('click', () => {
       FlayAction.reload(() => {
-        FlayCache.clearAll();
+        FlayFetch.clearAll();
       });
     });
     const lowerScore = this.querySelector('#lowerScore');
@@ -69,13 +69,13 @@ export default class FlayBatch extends HTMLDivElement {
     const instanceBatch = this.querySelector('#instanceBatch');
     instanceBatch.addEventListener('click', () => {
       FlayAction.batch('I', () => {
-        FlayCache.clearAll();
+        FlayFetch.clearAll();
       });
     });
     const archiveBatch = this.querySelector('#archiveBatch');
     archiveBatch.addEventListener('click', () => {
       FlayAction.batch('A', () => {
-        FlayCache.clearAll();
+        FlayFetch.clearAll();
       });
     });
     const backup = this.querySelector('#backup');

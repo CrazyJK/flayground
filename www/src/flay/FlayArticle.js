@@ -1,4 +1,4 @@
-import FlayCache from '../lib/FlayCache';
+import FlayFetch from '../lib/FlayFetch';
 import DateUtils from '../util/DateUtils';
 import { popupActress, popupCover, popupFlay, popupFlayInfo } from '../util/FlaySearch';
 import StringUtils from '../util/StringUtils';
@@ -46,7 +46,7 @@ export default class FlayArticle extends HTMLDivElement {
   set(flay) {
     this.opus = flay.opus;
 
-    FlayCache.getCover(this.opus).then((url) => {
+    FlayFetch.getCover(this.opus).then((url) => {
       this.querySelector('.cover').style.backgroundImage = `url(${url})`;
     });
 

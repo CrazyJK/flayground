@@ -3,7 +3,7 @@ import './page.flay-one.scss';
 
 import FlayArticle from './flay/FlayArticle';
 import FlayCondition from './flay/page/FlayCondition';
-import FlayCache from './lib/FlayCache';
+import FlayFetch from './lib/FlayFetch';
 import { OpusProvider } from './lib/OpusProvider';
 
 class Page extends OpusProvider {
@@ -28,7 +28,7 @@ class Page extends OpusProvider {
   async #show() {
     await document.startViewTransition(async () => {
       const opus = await this.getRandomOpus();
-      const flay = await FlayCache.getFlay(opus);
+      const flay = await FlayFetch.getFlay(opus);
       this.flayArticle.set(flay);
     }).finished;
   }

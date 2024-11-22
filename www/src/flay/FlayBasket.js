@@ -1,4 +1,4 @@
-import FlayCache from '../lib/FlayCache';
+import FlayFetch from '../lib/FlayFetch';
 import GridControl from '../lib/GridControl';
 import trashBinSVG from '../svg/trashBin.svg';
 import vaginaSVG from '../svg/vagina.svg';
@@ -93,7 +93,7 @@ export class FlayBasket extends HTMLDivElement {
       const isNew = item === null;
       if (isNew) {
         try {
-          await FlayCache.getFlay(opus);
+          await FlayFetch.getFlay(opus);
           item = new FlayBasketItem(opus);
           item.addEventListener('delete', () => this.render());
         } catch (error) {
@@ -185,7 +185,7 @@ class FlayBasketItem extends HTMLDivElement {
 
     this.querySelector('.empty-this').addEventListener('click', async () => await this.#delete(opus));
 
-    FlayCache.getFlay(opus)
+    FlayFetch.getFlay(opus)
       .then((flay) => {
         this.querySelector('.comment').innerHTML = flay.video.comment;
         this.querySelector('.popup-flay').innerHTML = flay.title;
@@ -212,7 +212,7 @@ class FlayBasketItem extends HTMLDivElement {
       .catch((e) => {
         console.warn(e);
       });
-    FlayCache.getCover(opus).then((url) => {
+    FlayFetch.getCover(opus).then((url) => {
       this.querySelector('.cover').style.backgroundImage = `url(${url})`;
     });
   }

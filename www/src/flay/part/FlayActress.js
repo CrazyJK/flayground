@@ -1,4 +1,4 @@
-import FlayCache from '../../lib/FlayCache';
+import FlayFetch from '../../lib/FlayFetch';
 import favoriteSVG from '../../svg/favorite.svg';
 import FlayAction from '../../util/FlayAction';
 import { popupActress, popupActressInfo } from '../../util/FlaySearch';
@@ -64,7 +64,7 @@ export default class FlayActress extends FlayHTMLElement {
         const flaySize = actressDiv.appendChild(document.createElement('label'));
         flaySize.classList.add('flaySize');
         if (flaySize.checkVisibility()) {
-          FlayCache.getCountOfFlay(actress.name).then((flayCount) => (flaySize.innerHTML = flayCount + '<small>f</small>'));
+          FlayFetch.getCountOfFlay(actress.name).then((flayCount) => (flaySize.innerHTML = flayCount + '<small>f</small>'));
         }
 
         // age

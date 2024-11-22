@@ -1,4 +1,4 @@
-import FlayCache from '../../lib/FlayCache';
+import FlayFetch from '../../lib/FlayFetch';
 import newWindowSVG from '../../svg/newWindow.svg';
 import { popupCover } from '../../util/FlaySearch';
 import FlayStorage from '../../util/FlayStorage';
@@ -67,7 +67,7 @@ export default class FlayCover extends FlayHTMLElement {
       }
     };
 
-    FlayCache.getCover(this.flay.opus).then((objectURL) => {
+    FlayFetch.getCover(this.flay.opus).then((objectURL) => {
       this.#coverImage.src = objectURL;
     });
   }

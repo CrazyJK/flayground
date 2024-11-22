@@ -1,4 +1,4 @@
-import FlayCache from '../../lib/FlayCache';
+import FlayFetch from '../../lib/FlayFetch';
 import rankSVG from '../../svg/js/rankSVG';
 import FlayAction from '../../util/FlayAction';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
@@ -56,14 +56,14 @@ export default class FlayRank extends FlayHTMLElement {
 
     this.querySelector('.play').innerHTML = flay.video.play;
     this.querySelector('.play-label').classList.toggle('notyet', flay.video.play === 0);
-    FlayCache.getHistories(this.flay.opus).then((histories) => {
+    FlayFetch.getHistories(this.flay.opus).then((histories) => {
       this.querySelector('.play-label').title = Array.from(histories)
         .filter((history) => history.action === 'PLAY')
         .map((history) => history.date.substring(0, 16))
         .join(`\n`);
     });
 
-    FlayCache.getScore(flay.opus).then((score) => {
+    FlayFetch.getScore(flay.opus).then((score) => {
       this.querySelector('.score').innerHTML = score;
       this.querySelector('.score-label').classList.toggle('notyet', score === 0);
     });

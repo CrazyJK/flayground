@@ -1,4 +1,4 @@
-import FlayCache from '../../lib/FlayCache';
+import FlayFetch from '../../lib/FlayFetch';
 import { getRandomInt } from '../../util/randomNumber';
 import { addResizeListener } from '../../util/windowAddEventListener';
 import './FlayPagination.scss';
@@ -325,7 +325,7 @@ export default class FlayPagination extends HTMLDivElement {
           const coverWidth = domRect.width * 6;
 
           this.coverThumbnail.classList.add('show');
-          FlayCache.getCover(opus).then((url) => {
+          FlayFetch.getCover(opus).then((url) => {
             this.coverThumbnail.style.backgroundImage = `url(${url})`;
           });
           this.coverThumbnail.style.width = `${coverWidth}px`;

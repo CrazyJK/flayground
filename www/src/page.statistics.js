@@ -3,7 +3,7 @@ import './page.statistics.scss';
 
 import FlayMarker from './flay/FlayMarker';
 import VideoDatePanel from './flay/panel/VideoDatePanel';
-import FlayCache from './lib/FlayCache';
+import FlayFetch from './lib/FlayFetch';
 import { tabUI } from './lib/TabUI';
 import { sortable } from './lib/TableUtils';
 import FileUtils from './util/FileUtils';
@@ -409,7 +409,7 @@ async function startShotFlay() {
     const item = wrapper.appendChild(document.createElement('li'));
     item.dataset.filter = `${flay.studio} ${flay.actressList.join(' ')} ${flay.release.substring(0, 4)}`;
     item.innerHTML = `
-      <div style="background-image: url(${await FlayCache.getCover(flay.opus)})">
+      <div style="background-image: url(${await FlayFetch.getCover(flay.opus)})">
         <label class="title"><span>${flay.title}</span></label>
         <label class="actress"><span>${flay.actressList.join(', ')}</span></label>
         <label class="shot"><span>${flay.video.likes.length}</span></label>

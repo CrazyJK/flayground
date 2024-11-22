@@ -1,4 +1,4 @@
-import FlayCache from './FlayCache';
+import FlayFetch from './FlayFetch';
 import './SseConnector.scss';
 
 /*
@@ -31,7 +31,7 @@ sse.addEventListener('CONNECT', (e) => {
 sse.addEventListener('FLAY', async (e) => {
   console.debug(e.type, e.data);
   const flay = JSON.parse(e.data);
-  await FlayCache.clear(flay.opus);
+  await FlayFetch.clear(flay.opus);
   emitFlay(flay);
   if (typeof window.emitFlay === 'function') window.emitFlay(flay);
 });
@@ -46,7 +46,7 @@ sse.addEventListener('STUDIO', (e) => {
 sse.addEventListener('VIDEO', async (e) => {
   console.debug(e.type, e.data);
   const video = JSON.parse(e.data);
-  await FlayCache.clear(video.opus);
+  await FlayFetch.clear(video.opus);
   emitVideo(video);
   if (typeof window.emitVideo === 'function') window.emitVideo(video);
 });

@@ -1,5 +1,6 @@
 package jk.kamoru.ground.flay;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -80,6 +81,21 @@ public class FlayController {
   @GetMapping
   public Collection<Flay> getList() {
     return flayService.list();
+  }
+
+  @GetMapping("/list/fully")
+  public List<Map<String, Object>> getFullyFlayList() {
+    List<Map<String, Object>> dataList = new ArrayList<>();
+    Collection<Flay> flayList = flayService.list();
+    for (Flay flay : flayList) {
+      scoreCalculator.calcScore(flay);
+
+      Map<String, Object> data = new HashMap<>();
+      data.put("flay", flay);
+      data.put("actress", flay.getActressList().stream().map(name -> actressInfoService.get(name)).toList());
+      dataList.add(data);
+    }
+    return dataList;
   }
 
   @GetMapping("/list/lowScore")

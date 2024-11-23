@@ -37,6 +37,15 @@ ul {
       }
       &.name {
         flex: 1 0 auto;
+        span {
+          margin-right: 0.25rem;
+          svg {
+            width: 1rem;
+          }
+          &.fav {
+            color: orange;
+          }
+        }
       }
       &.age {
         flex: 0 0 5rem;

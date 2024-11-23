@@ -1,74 +1,14 @@
 import './init/Page';
 import './page.girls.scss';
 
+import FlayFetch from './lib/FlayFetch';
 import { addLazyLoadBackgrungImage } from './lib/ImageLazyLoad';
 import { sortable } from './lib/TableUtils';
+import favoriteSVG from './svg/favorite.svg';
 import { popupActress, popupFlay } from './util/FlaySearch';
 
-class Page {
-  constructor() {}
-
-  async start() {
-    this.condition = {
-      search: '',
-      withSubtitles: false,
-      withFavorite: false,
-      withNoFavorite: false,
-      rank: [],
-      sort: 'RELEASE',
-    };
-    const flayList = await fetch('/flay').then((res) => res.json());
-    const actressMap = Array.from(flayList).reduce((nameMap, flay) => {
-      flay.actressList.forEach((name) => {
-        if (!nameMap.has(name)) {
-          nameMap.set(name, { name: name, list: [flay] });
-        } else {
-          nameMap.get(name).list.push(flay);
-        }
-      });
-      return nameMap;
-    }, new Map());
-
-    const actressInfos = Array.from(actressMap.values());
-    actressInfos.sort((a1, a2) => {
-      return this.#getTotalShotCount(a2.list) - this.#getTotalShotCount(a1.list);
-    });
-
-    const UL = document.querySelector('ul');
-
-    for (const info of actressInfos) {
-      const list = info.list;
-      const name = info.name;
-      const actress = await fetch('/info/actress/' + name).then((res) => res.json());
-      const topFlay = this.#getTopFlay(list);
-      const age = this.#calcAge(actress.birth);
-      const flayCount = list.length;
-      const shotFlayCount = list.filter((flay) => flay.video.likes?.length > 0).length;
-      const shotTotalCount = this.#getTotalShotCount(list);
-      const score = this.#getScore(name, list);
-
-      const LI = UL.appendChild(document.createElement('li'));
-      LI.innerHTML = `
-      <label class="cover" data-opus="${topFlay.opus}" title="${topFlay.opus} ${topFlay.title}" data-lazy-background-image-url="/static/cover/${topFlay.opus}">&nbsp;</label>
-      <label class="name" data-name="${name}"><a>${name}</a></label>
-      <label class="age">${age}</label>
-      <label class="flay-count">${flayCount}</label>
-      <label class="shot-flay-count">${shotFlayCount}</label>
-      <label class="shot-total-count">${shotTotalCount}</label>
-      <label class="total-score">${score}</label>
-      `;
-      LI.addEventListener('click', (e) => {
-        const label = e.target.closest('label');
-        if (label?.classList.contains('cover')) {
-          popupFlay(label.dataset.opus);
-        } else if (label?.classList.contains('name') && e.target.tagName === 'A') {
-          popupActress(label.dataset.name);
-        }
-      });
-
-      addLazyLoadBackgrungImage(LI);
-    }
-
+class PageGirls {
+  constructor() {
     document.querySelector('.thead .cover .list-simple').addEventListener('click', () => {
       document.querySelectorAll('ul li:not(.thead)').forEach((li) => {
         if (li.style.height === 'auto') {
@@ -80,64 +20,61 @@ class Page {
     });
 
     document.querySelector('.thead .cover .view-mode').addEventListener('click', (e) => {
-      const viewMode = UL.classList.toggle('box');
+      const viewMode = document.querySelector('ul').classList.toggle('box');
       e.target.innerHTML = viewMode ? 'Box' : 'List';
       document.querySelector('.thead .cover .list-simple').innerHTML = viewMode ? '' : 'simple';
     });
+  }
+
+  async start() {
+    const UL = document.querySelector('ul');
+
+    Array.from(await FlayFetch.getFullyFlayList())
+      .reduce((map, { flay, actress: actressList }) => {
+        actressList.forEach((actress) => {
+          if (!map.has(actress.name)) {
+            map.set(actress.name, { actress: actress, flayList: [flay] });
+          } else {
+            map.get(actress.name).flayList.push(flay);
+          }
+        });
+        return map;
+      }, new Map())
+      .forEach(({ actress, flayList }, name) => {
+        const age = new Date().getFullYear() - parseInt(actress.birth?.substring(0, 4) || new Date().getFullYear() + 1) + 1;
+        const flayCount = flayList.length;
+        const shotFlayCount = flayList.filter((flay) => flay.video.likes?.length > 0).length;
+        const shotTotalCount = flayList.reduce((sum, flay) => sum + (flay.video.likes?.length > 0 ? flay.video.likes.length : 0), 0);
+        const score = flayList.reduce((sum, flay) => sum + flay.score, 0);
+        const topFlay = flayList.sort((f1, f2) => {
+          let ret = f1.actressList.length - f2.actressList.length;
+          if (ret === 0) {
+            ret = f2.video.rank - f1.video.rank;
+            if (ret === 0) {
+              ret = (f2.video.likes?.length || 0) - (f1.video.likes?.length || 0);
+            }
+          }
+          return ret;
+        })[0];
+
+        const LI = UL.appendChild(document.createElement('li'));
+        LI.innerHTML = `
+          <label class="cover" title="${topFlay.opus} ${topFlay.title}" data-lazy-background-image-url="/static/cover/${topFlay.opus}">&nbsp;</label>
+          <label class="name"><span class="${actress.favorite ? 'fav' : ''}">${favoriteSVG}</span><a>${name}</a></label>
+          <label class="age" title="나이">${age}</label>
+          <label class="flay-count" title="Flay 수">${flayCount}</label>
+          <label class="shot-flay-count" title="샷한 Flay 수">${shotFlayCount}</label>
+          <label class="shot-total-count" title="전체 샷 수">${shotTotalCount}</label>
+          <label class="total-score" title="스코어 합계">${score}</label>
+        `;
+        LI.querySelector('.cover').addEventListener('click', () => popupFlay(topFlay.opus));
+        LI.querySelector('.name a').addEventListener('click', () => popupActress(name));
+
+        addLazyLoadBackgrungImage(LI);
+      });
 
     sortable(UL, { noSort: [0], initSortIndex: 6 });
   }
-
-  /**
-   *
-   * @param {string} birth
-   * @returns {number} age
-   */
-  #calcAge(birth) {
-    const age = new Date().getFullYear() - parseInt(birth?.substring(0, 4)) + 1;
-    return isNaN(age) ? 0 : age;
-  }
-
-  /**
-   *
-   * @param {flay[]} list
-   * @returns {flay} top flay
-   */
-  #getTopFlay(list) {
-    return list.sort((f1, f2) => {
-      let ret = f1.actressList.length - f2.actressList.length;
-      if (ret === 0) {
-        ret = f2.video.rank - f1.video.rank;
-        if (ret === 0) {
-          const l1 = f1.video.likes?.length > 0 ? f1.video.likes.length : 0;
-          const l2 = f2.video.likes?.length > 0 ? f2.video.likes.length : 0;
-          ret = l2 - l1;
-        }
-      }
-      return ret;
-    })[0];
-  }
-
-  /**
-   *
-   * @param {flay[]} flayList
-   * @returns {number} sum of shot count
-   */
-  #getTotalShotCount(flayList) {
-    return flayList.reduce((sum, flay) => {
-      sum += flay.video.likes?.length > 0 ? flay.video.likes.length : 0;
-      return sum;
-    }, 0);
-  }
-
-  #getScore(name, flayList) {
-    return flayList.reduce((sum, flay) => {
-      if (flay.actressList.includes(name)) {
-        sum += flay.score;
-      }
-      return sum;
-    }, 0);
-  }
 }
 
-new Page().start();
+new PageGirls().start();

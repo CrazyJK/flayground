@@ -11,6 +11,13 @@ const coverObjectURLMap = new Map();
 export default class FlayFetch {
   /**
    *
+   * @returns {Promise<any[]>} [{flay: Flay, actress: Actress[] }]
+   */
+  static async getFullyFlayList() {
+    return await fetch('/flay/list/fully').then((res) => res.json());
+  }
+  /**
+   *
    * @param {string} opus
    * @returns
    */
@@ -37,7 +44,7 @@ export default class FlayFetch {
   }
 
   static async getScore(opus) {
-    return await fetch(`/flay/${opus}/score`).then((res) => res.text());
+    return Number((await fetch(`/flay/${opus}/score`).then((res) => res.text())) || 0);
   }
 
   /**

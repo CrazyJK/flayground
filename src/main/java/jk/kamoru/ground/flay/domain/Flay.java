@@ -54,7 +54,8 @@ public class Flay {
   }
 
   public long getLastModified() {
-    return NumberUtils.max(files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1),
+    return NumberUtils.max(
+        files.get(MOVIE).stream().mapToLong(File::lastModified).max().orElse(-1),
         files.get(SUBTI).stream().mapToLong(File::lastModified).max().orElse(-1),
         files.get(COVER).stream().mapToLong(File::lastModified).max().orElse(-1));
   }

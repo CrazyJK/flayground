@@ -37,7 +37,7 @@ public class SseEmitters {
       sseEmitter.complete();
     });
     sseEmitter.onError((e) -> {
-      // log.error("{} onError: {}", sseEmitter, e.getMessage());
+      log.error("{} onError: {}", sseEmitter, e.getMessage());
       sseEmitter.complete();
     });
 

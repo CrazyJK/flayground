@@ -1,3 +1,4 @@
+import { addBeforeunloadListener } from '../util/windowAddEventListener';
 import FlayFetch from './FlayFetch';
 import './SseConnector.scss';
 
@@ -6,6 +7,8 @@ import './SseConnector.scss';
  */
 
 const sse = new EventSource('/sse');
+
+addBeforeunloadListener(() => sse.close());
 
 sse.onopen = (e) => {
   console.debug('<< onopen', e);

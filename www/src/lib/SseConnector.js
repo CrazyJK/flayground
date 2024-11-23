@@ -78,6 +78,9 @@ sse.addEventListener('MESSAGE', (e) => {
     case 'Notice':
       if (typeof window.emitNotice === 'function') window.emitNotice(data);
       break;
+    case 'CURL':
+      if (typeof window.emitCurl === 'function') window.emitCurl(data);
+      break;
     default:
       if (typeof window.emitMessage === 'function') window.emitMessage(data);
       break;

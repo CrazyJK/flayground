@@ -29,4 +29,8 @@ public abstract class LogAndSse {
     batchLogger(String.format(format, args));
   }
 
+  protected void curlLogger(String html) {
+    sseEmitters.send(SseMessage.builder().type(Type.CURL).message(html).build());
+  }
+
 }

@@ -8,7 +8,7 @@ import lombok.Getter;
 public class SseMessage {
 
   public static enum Type {
-    Batch, Notice
+    Batch, Notice, CURL
   }
 
   Type type;

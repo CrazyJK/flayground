@@ -26,6 +26,7 @@ const menuList = [
   { url: 'page.tags.html', name: 'tags' },
   {},
   { url: 'page.control.html', name: 'control' },
+  { url: 'page.crawling.html', name: 'crawling' },
   {},
   { url: 'page.image-one.html', name: 'image one' },
   { url: 'page.image-page.html', name: 'image page' },

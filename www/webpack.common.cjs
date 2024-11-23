@@ -28,6 +28,7 @@ module.exports = {
     'page.image-one': './src/page.image-one.js',
     'page.image-fall': './src/page.image-fall.js',
     'page.kamoru-diary': './src/page.kamoru-diary.js',
+    'page.crawling': './src/page.crawling.js',
     'popup.cover': './src/popup.cover.js',
     'popup.flay': './src/popup.flay.js',
     'popup.flay-card': './src/popup.flay-card.js',

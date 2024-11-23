@@ -1,6 +1,7 @@
 package jk.kamoru.ground;
 
 import java.io.File;
+import java.lang.reflect.Method;
 import java.nio.charset.Charset;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -17,6 +18,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.aop.interceptor.AsyncUncaughtExceptionHandler;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.event.EventListener;
@@ -51,7 +53,9 @@ public class Ground implements AsyncConfigurer {
       public static final SimpleDateFormat YYYY_MM_DD = new SimpleDateFormat("yyyy-MM-dd");
       public static final SimpleDateFormat YYYY_MM = new SimpleDateFormat("yyyy-MM");
 
-      public static final Pattern RELEASE_DATE_PATTERN = Pattern.compile("^((2000|2400|2800|(19|2[0-9](0[48]|[2468][048]|[13579][26]))).02.29)$" + "|^(((19|2[0-9])[0-9]{2}).02.(0[1-9]|1[0-9]|2[0-8]))$" + "|^(((19|2[0-9])[0-9]{2}).(0[13578]|10|12).(0[1-9]|[12][0-9]|3[01]))$" + "|^(((19|2[0-9])[0-9]{2}).(0[469]|11).(0[1-9]|[12][0-9]|30))$");
+      public static final Pattern RELEASE_DATE_PATTERN = Pattern
+          .compile("^((2000|2400|2800|(19|2[0-9](0[48]|[2468][048]|[13579][26]))).02.29)$" + "|^(((19|2[0-9])[0-9]{2}).02.(0[1-9]|1[0-9]|2[0-8]))$"
+              + "|^(((19|2[0-9])[0-9]{2}).(0[13578]|10|12).(0[1-9]|[12][0-9]|3[01]))$" + "|^(((19|2[0-9])[0-9]{2}).(0[469]|11).(0[1-9]|[12][0-9]|30))$");
     }
 
     public static class Number {
@@ -126,6 +130,11 @@ public class Ground implements AsyncConfigurer {
     return executor;
   }
 
+  @Override
+  public AsyncUncaughtExceptionHandler getAsyncUncaughtExceptionHandler() {
+    return new CustomAsyncExceptionHandler();
+  }
+
   @Configuration
   public static class ApplicationReady {
 
@@ -139,7 +148,7 @@ public class Ground implements AsyncConfigurer {
     public static void run() {
       final int taskLength = finalTasks.size();
 
-      if (taskLength  == 0) {
+      if (taskLength == 0) {
         return;
       }
 
@@ -160,6 +169,21 @@ public class Ground implements AsyncConfigurer {
       finalExecutor.shutdown();
     }
 
+  }
+
+}
+
+@Slf4j
+class CustomAsyncExceptionHandler implements AsyncUncaughtExceptionHandler {
+
+  @SuppressWarnings("null")
+  @Override
+  public void handleUncaughtException(Throwable throwable, Method method, Object... obj) {
+    log.warn("Exception message - " + throwable.getMessage());
+    log.warn("Method name - " + method.getName());
+    for (Object param : obj) {
+      log.warn("Parameter value - " + param);
+    }
   }
 
 }

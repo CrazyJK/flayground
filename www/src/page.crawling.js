@@ -1,59 +1,114 @@
+import NanoStore from './idb/nano/store/NanoStore';
 import './init/Page';
+import FlayFetch from './lib/FlayFetch';
 import './page.crawling.scss';
 import DateUtils from './util/DateUtils';
 
 const DOMAIN = 'https://www.nanojav.com';
 const LIST_URL = DOMAIN + '/jav/?order=new&page=';
 const domParser = new DOMParser();
+const nanoStore = new NanoStore();
 
 class Page {
+  #itemList = [];
+  #paging = {
+    isActive: true,
+    srcPageNo: 0,
+    itemIndex: -1,
+    itemLength: 0,
+    needCrawling: () => {
+      return this.#paging.itemIndex >= this.#paging.itemLength;
+    },
+  };
+
   constructor() {
-    this.urlInput = document.querySelector('body > main > header input[type="url"]');
-    this.pageInput = document.querySelector('body > main > header input[type="number"]');
-    this.crawlingBtn = document.querySelector('body > main > header button');
+    this.srcPageURL = document.querySelector('#srcPageURL');
+    this.srcPageNo = document.querySelector('#srcPageNo');
+    this.startBtn = document.querySelector('#startBtn');
+    this.startBtn.addEventListener('click', async () => {
+      this.#paging.srcPageNo = this.srcPageNo.value - 1;
+      this.starter.classList.add('hide');
+      await this.#next();
+    });
+
     this.article = document.querySelector('body > main > article');
-    this.footer = document.querySelector('body > main > footer');
+    this.article.addEventListener('wheel', async (e) => {
+      if (!this.#paging.isActive) return;
 
-    this.urlInput.value = LIST_URL;
-    this.pageInput.addEventListener('change', async () => await this.callCrawling());
-    this.crawlingBtn.addEventListener('click', async () => await this.callCrawling());
+      if (e.deltaY > 0) await this.#next();
+      else await this.#prev();
+    });
+
+    this.retryBtn = document.querySelector('body > main > footer > #retryBtn');
+    this.retryBtn.addEventListener('click', () => this.#callCrawling());
+
+    this.itemRepository = document.querySelector('#itemRepository');
+    this.starter = document.querySelector('#starter');
+    this.notice = document.querySelector('#notice');
   }
 
-  async callCrawling() {
-    this.toggleDisable(true);
-    this.message(this.pageInput.value + '페이지 크롤링 중');
-    await fetch(`/crawling/curl?url=${encodeURIComponent(LIST_URL + this.pageInput.value)}`).then((res) => res.text());
+  async #next() {
+    ++this.#paging.itemIndex;
+
+    if (this.#paging.needCrawling()) {
+      ++this.#paging.srcPageNo;
+      await this.#callCrawling();
+    } else {
+      await this.#showItem();
+    }
   }
 
-  async start() {
-    await this.callCrawling();
+  async #prev() {
+    --this.#paging.itemIndex;
+
+    if (this.#paging.itemIndex < 0) {
+      this.#paging.itemIndex = 0;
+      return;
+    }
+    await this.#showItem();
   }
 
-  message(message) {
-    this.footer.innerHTML = message;
+  #message(message, isError = false) {
+    document.querySelector('body > main > footer > #message').innerHTML = message;
+    document.querySelector('body > main > footer > #message').classList.toggle('error', isError);
   }
 
-  toggleDisable(force) {
-    this.pageInput.disabled = force;
-    this.crawlingBtn.disabled = force;
+  #toggleActive(force) {
+    this.#paging.isActive = force;
   }
 
-  /**
-   *
-   * @param {object[]} dataList
-   */
-  render(dataList) {
-    console.debug(dataList);
+  async #showItem() {
+    const data = this.#itemList[this.#paging.itemIndex];
 
-    this.article.textContent = null;
-    dataList.forEach((data) => {
-      const div = this.article.appendChild(document.createElement('div'));
+    // 이전 item을 itemRepository에 넣어 놓기
+    const prevDiv = this.article.querySelector('div');
+    if (prevDiv) this.itemRepository.insertBefore(prevDiv, null);
+
+    // itemRepository에 있는 item 꺼내서 끼워 넣기
+    this.article.insertBefore(this.itemRepository.querySelector(`div[data-opus="${data.opus.text}"]`), null);
+
+    await nanoStore.update(data.opus.text, Date.now());
+
+    this.#message(`${this.#paging.srcPageNo} page, ${this.#paging.itemIndex + 1} / ${this.#paging.itemLength} post`);
+  }
+
+  async #renderItemList(itemList) {
+    for (const data of itemList) {
+      const video = await FlayFetch.getVideo(data.opus.text);
+
+      const div = this.itemRepository.appendChild(document.createElement('div'));
+      div.dataset.opus = data.opus.text;
+      div.dataset.itemIndex = this.#paging.itemIndex;
+      div.classList.toggle('already-view', !video.error);
       div.innerHTML = `
         <div class="cover">
           <img src="${data.cover}">
         </div>
         <div class="opus">
           <label data-href="${data.opus.href}">${data.opus.text}</label>
+        </div>
+        <div class="video">
+          ${video.error ? '' : `<label>${video.rank}<sub>rank</sub></label><label>${video.play}<sub>play</sub></label><label>${DateUtils.format(video.lastModified, 'yyyy-MM-dd')}<sub>modified</sub></label>`}
         </div>
         <div class="release">
           <label>${data.release}</label>
@@ -71,7 +126,7 @@ class Page {
           ${data.downloadList.map((download) => `<label data-href="${download.href}">${download.type} ${download.text}</label>`).join('')}
         </div>
         <div class="posted" title="posted">
-          <label data-href="${data.posted.href}">${data.posted.text}</label>
+          <label data-href="${data.posted.href}">${data.posted.text}<sub>posted</sub></label>
         </div>
       `;
 
@@ -87,29 +142,30 @@ class Page {
           })
         )
       );
-    });
-  }
-}
 
-const page = new Page();
-page.start();
-
-window.emitCurl = (data) => {
-  page.toggleDisable(false);
-
-  const doc = domParser.parseFromString(data.message, 'text/html');
-  console.debug(doc);
-
-  const postList = Array.from(doc.querySelectorAll('#content > div > div > div:nth-child(2) > div > div'));
-  if (postList.length > 0) {
-    page.message(postList.length + '개 구함');
-  } else {
-    page.message('데이터를 구하지 못함');
-    return;
+      const record = await nanoStore.select(data.opus.text);
+      if (record) {
+        div.classList.add('already-view');
+        div.querySelector('.posted').appendChild(document.createElement('label')).innerHTML = `${DateUtils.format(record.date, 'yyyy-MM-dd HH:mm')}<sub>view</sub>`;
+      }
+    }
   }
 
-  page.render(
-    postList.map((div) => {
+  async parseOfNanojav(data) {
+    const doc = domParser.parseFromString(data.message, 'text/html');
+    console.debug(doc);
+
+    const postList = Array.from(doc.querySelectorAll('#content > div > div > div:nth-child(2) > div > div'));
+    if (postList.length > 0) {
+      this.#message(postList.length + '개 아이템 구함');
+      this.#toggleActive(true);
+    } else {
+      this.#message('데이터를 구하지 못함', true);
+      this.retryBtn.disabled = false; // 수동으로 다시 요청하도록 버튼 노출
+      return;
+    }
+
+    const itemList = postList.map((div) => {
       const elementOfImg = div.querySelector('img.cover');
       const elementOfOpus = div.querySelector('h3.title a');
       const elementOfPost = div.querySelector('p.subtitle a');
@@ -135,6 +191,36 @@ window.emitCurl = (data) => {
         })),
         tagList: Array.from(nodeListOfTags).map((a) => ({ text: a.textContent.trim(), href: a.getAttribute('href') })),
       };
-    })
-  );
-};
+    });
+
+    this.#itemList.push(...itemList);
+    this.#paging.itemLength += postList.length;
+
+    console.debug(this.#paging, this.#itemList);
+
+    await this.#renderItemList(itemList);
+    await this.#showItem();
+
+    this.notice.classList.add('hide');
+  }
+
+  async #callCrawling() {
+    this.#toggleActive(false);
+
+    const url = LIST_URL + this.#paging.srcPageNo;
+    this.srcPageURL.href = url;
+    this.srcPageURL.innerHTML = url;
+
+    this.notice.querySelector('#noticeMessage').innerHTML = this.#paging.srcPageNo + '페이지 크롤링 중...';
+    this.notice.classList.remove('hide');
+
+    await fetch(`/crawling/curl?url=${encodeURIComponent(url)}`).then((res) => res.text());
+  }
+
+  async start() {}
+}
+
+const page = new Page();
+page.start();
+
+window.emitCurl = async (data) => await page.parseOfNanojav(data);

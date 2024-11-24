@@ -69,6 +69,10 @@ export default class FlayFetch {
     return await fetch(`/info/history/find/${opus}`).then((res) => res.json());
   }
 
+  static async getVideo(opus) {
+    return await fetch(`/info/video/${opus}`).then((res) => res.json());
+  }
+
   /**
    *
    * @param {string} name

@@ -11,12 +11,26 @@
   <body>
     <main>
       <header>
-        <input type="url" />
-        <input type="number" min="1" step="1" value="1" />
-        <button type="button">Crawling</button>
+        <a id="srcPageURL" target="_blank"></a>
       </header>
       <article></article>
-      <footer></footer>
+      <footer>
+        <label id="message"></label>
+        <button type="button" id="retryBtn" disabled>Retry</button>
+      </footer>
     </main>
+    <aside id="itemRepository" class="hide"></aside>
+    <div id="starter">
+      <div>
+        <label>시작할 페이지 번호를 정해주세요</label>
+        <input type="number" id="srcPageNo" min="1" step="1" value="1" />
+        <button type="button" id="startBtn">시작</button>
+      </div>
+    </div>
+    <div id="notice" class="hide">
+      <div>
+        <label id="noticeMessage"></label>
+      </div>
+    </div>
   </body>
 </html>

@@ -17,7 +17,8 @@
     opacity: 1;
   }
 
-  &.portrait-primary {
+  &.portrait-primary,
+  &.portrait-secondary {
     .layout {
       .row {
         width: calc($snapSize * 2);

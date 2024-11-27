@@ -71,8 +71,9 @@ export default class FlayFiles extends FlayHTMLElement {
     this.querySelectorAll('.rename-flay input').forEach((input) => input.addEventListener('keyup', (e) => e.stopPropagation()));
 
     this.querySelector('#renameBtn').addEventListener('click', () => {
-      console.log('renameClick', this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
-      FlayAction.renameFlay(this.studioInput.value, this.opusInput.value, this.titleInput.value, this.actressInput.value, this.releaseInput.value);
+      const [studio, opus, title, actress, release] = Array.from(this.querySelectorAll('.rename-flay input')).map((input) => input.value.trim());
+      console.log('renameClick', studio, opus, title, actress, release);
+      FlayAction.renameFlay(studio, opus, title, actress, release);
     });
   }
 

@@ -31,6 +31,18 @@ body {
       border: 1px dashed var(--color-border-reversed);
       margin-bottom: 0.5rem;
 
+      &:hover {
+        background-color: var(--color-bg-transparent);
+        box-shadow: var(--box-shadow);
+        border-color: var(--color-orange);
+
+        legend {
+          background-color: var(--color-bg-transparent);
+          box-shadow: var(--box-shadow);
+          border-radius: 0.25rem;
+        }
+      }
+
       legend {
         font-weight: 700;
         text-transform: capitalize;

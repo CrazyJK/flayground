@@ -20,6 +20,7 @@ const menuList = [
   { url: 'page.girls.html', name: 'girls' },
   { url: 'page.statistics.html', name: 'statistics' },
   { url: 'page.shot-history.html', name: 'shot history' },
+  { url: 'page.play-history.html', name: 'play history' },
   {},
   { url: 'page.studio.html', name: 'studio' },
   { url: 'page.actress.html', name: 'actress' },

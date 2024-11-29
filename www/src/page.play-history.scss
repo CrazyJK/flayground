@@ -1,0 +1,30 @@
+body {
+  main {
+    > article {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      align-items: flex-end;
+
+      border-bottom: 2px solid var(--color-border);
+      height: 16rem;
+      overflow: hidden;
+
+      > div {
+        background-color: var(--color-orange);
+        min-width: 1px;
+        height: 0;
+
+        &:hover {
+          background-color: var(--color-red);
+        }
+      }
+    }
+
+    > .legend {
+      margin: 0;
+      text-align: center;
+    }
+  }
+}

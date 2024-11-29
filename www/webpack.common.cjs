@@ -23,6 +23,7 @@ module.exports = {
     'page.tags': './src/page.tags.js',
     'page.control': './src/page.control.js',
     'page.shot-history': './src/page.shot-history.js',
+    'page.play-history': './src/page.play-history.js',
     'page.statistics': './src/page.statistics.js',
     'page.image-page': './src/page.image-page.js',
     'page.image-one': './src/page.image-one.js',

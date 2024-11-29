@@ -21,7 +21,7 @@ const HTML = `
     <input type="text" id="inputTemp" />
   </div>
   <div>
-    <input  type="text"   id="studio"  placeholder="Studio" list="studio-list" />
+    <input  type="text"   id="studio"  placeholder="Studio" list="studio-list" autocomplete="off" />
     <datalist             id="studio-list"></datalist>
     <input  type="text"   id="opus"    placeholder="Opus" />
     <input  type="text"   id="title"   placeholder="Title" />

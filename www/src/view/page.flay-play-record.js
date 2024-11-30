@@ -1,9 +1,10 @@
+import './inc/Page';
+import './page.flay-play-record.scss';
+
 import PlayTimeDB from '../flay/idb/PlayTimeDB';
 import { toTime } from '../flay/panel/FlayVideoPlayer';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
-import './inc/Page';
-import './page.flay-play-record.scss';
 
 class Page {
   db;

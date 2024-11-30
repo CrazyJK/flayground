@@ -1,8 +1,9 @@
+import './inc/Page';
+import './page.crawling.scss';
+
 import NanoStore from '../flay/idb/nano/store/NanoStore';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
-import './inc/Page';
-import './page.crawling.scss';
 
 const DOMAIN = 'https://www.nanojav.com';
 const LIST_URL = DOMAIN + '/jav/?order=new&page=';

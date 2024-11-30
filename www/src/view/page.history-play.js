@@ -1,6 +1,7 @@
-import DateUtils from '../lib/DateUtils';
 import './inc/Page';
 import './page.history-play.scss';
+
+import DateUtils from '../lib/DateUtils';
 
 class Page {
   constructor() {}

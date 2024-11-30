@@ -1,6 +1,6 @@
-import { addBeforeunloadListener } from '../util/windowAddEventListener';
 import FlayFetch from './FlayFetch';
 import './SseConnector.scss';
+import { addBeforeunloadListener } from './windowAddEventListener';
 
 /*
  * ref. https://developer.mozilla.org/ko/docs/Web/API/Server-sent_events

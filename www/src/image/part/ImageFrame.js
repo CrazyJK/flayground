@@ -1,4 +1,4 @@
-import { getDominatedColors } from '../../util/dominatedColor';
+import { getDominatedColors } from '../../lib/dominatedColor';
 import './ImageFrame.scss';
 
 export default class ImageFrame extends HTMLDivElement {

@@ -1,4 +1,4 @@
-import FlayStorage from '../util/FlayStorage';
+import FlayStorage from './FlayStorage';
 
 const THEME_KEY = 'FlayNav.theme';
 const OS = 'os';

@@ -1,5 +1,5 @@
-import DateUtils from '../../util/DateUtils';
-import FlayMarker from '../FlayMarker';
+import DateUtils from '../../lib/DateUtils';
+import FlayMarker from '../domain/FlayMarker';
 import './VideoDatePanel.scss';
 
 export default class VideoDatePanel extends HTMLDivElement {

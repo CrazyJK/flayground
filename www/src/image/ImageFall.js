@@ -1,5 +1,5 @@
-import { getRandomInt } from '../util/randomNumber';
-import { addResizeListener } from '../util/windowAddEventListener';
+import { getRandomInt } from '../lib/randomNumber';
+import { addResizeListener } from '../lib/windowAddEventListener';
 import './ImageFall.scss';
 
 const PANE_WIDTH = 360;

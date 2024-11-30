@@ -31,8 +31,9 @@ const madgeConfig = {
     dependenciesSvgJson.push({ entry: name, svg: svgString });
   }
 
-  fs.writeFile('./src/dependencies-viewer.json', JSON.stringify(dependenciesSvgJson), 'utf8', () => {
-    console.log('write dependencies-viewer.json');
+  const filePath = './data/dependencies-viewer.json';
+  fs.writeFile(filePath, JSON.stringify(dependenciesSvgJson), 'utf8', () => {
+    console.log('write', filePath);
     console.log('');
   });
 })();

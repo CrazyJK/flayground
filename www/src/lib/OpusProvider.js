@@ -1,4 +1,4 @@
-import { getRandomInt } from '../util/randomNumber';
+import { getRandomInt } from './randomNumber';
 
 const DEFAULT_CONDITION = {
   search: '',

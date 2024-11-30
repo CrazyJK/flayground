@@ -1,5 +1,5 @@
 import './init/Page';
-import './page.shot-history.scss';
+import './page.history-shot.scss';
 
 import FlayCard from './flay/FlayCard';
 import DateUtils from './util/DateUtils';

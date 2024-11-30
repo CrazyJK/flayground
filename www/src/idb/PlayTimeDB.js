@@ -40,6 +40,11 @@ export default class PlayTimeDB extends FlayIndexedDB {
     await this.put(storeName, record);
   }
 
+  async remove(opus) {
+    await this.#init();
+    await this.delete(storeName, opus);
+  }
+
   async listByLastPlayed() {
     await this.#init();
     return await this.getAllByIndex(storeName, 'lastPlayed', false);

@@ -34,6 +34,11 @@ export default class FlayFetch {
     return await fetch(`/flay/${opus}`).then((res) => res.json());
   }
 
+  static async existsFlay(opus) {
+    const res = await fetch(`/flay/${opus}`, { method: 'HEAD' });
+    return res.status === 200;
+  }
+
   /**
    *
    * @param {string} name
@@ -75,7 +80,7 @@ export default class FlayFetch {
 
   /**
    *
-   * @param {string} name
+   * @param {string} name actress name
    * @returns
    */
   static async getCountOfFlay(name) {

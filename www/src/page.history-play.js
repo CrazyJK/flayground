@@ -1,5 +1,5 @@
 import './init/Page';
-import './page.play-history.scss';
+import './page.history-play.scss';
 import DateUtils from './util/DateUtils';
 
 class Page {

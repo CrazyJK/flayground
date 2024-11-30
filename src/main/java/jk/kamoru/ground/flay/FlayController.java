@@ -211,4 +211,9 @@ public class FlayController {
     flayService.deleteFileOnFlay(opus, file);
   }
 
+  @PostMapping("/exists")
+  public Map<String, Boolean> exists(@RequestBody Collection<String> opusList) {
+    return flayService.exists(opusList);
+  }
+
 }

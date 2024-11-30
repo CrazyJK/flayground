@@ -15,10 +15,13 @@ class Page {
   async start() {
     const LIST = document.querySelector('body > main > ol');
     const records = await this.db.listByLastPlayed();
+
+    const existsResult = await FlayFetch.existsFlayList(...records.map((record) => record.opus));
+
     for (const recode of records) {
-      const exists = await FlayFetch.existsFlay(recode.opus);
-      if (!exists) {
+      if (!existsResult[recode.opus]) {
         await this.db.remove(recode.opus);
+        console.log('not exists', recode.opus);
         continue;
       }
 

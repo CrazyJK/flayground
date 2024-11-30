@@ -39,6 +39,14 @@ export default class FlayFetch {
     return res.status === 200;
   }
 
+  static async existsFlayList(...opus) {
+    return await fetch(`/flay/exists`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(opus),
+    }).then((res) => res.json());
+  }
+
   /**
    *
    * @param {string} name

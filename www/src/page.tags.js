@@ -84,8 +84,17 @@ async function renderTagList() {
         .forEach((tag) => {
           const flayTagInfo = new FlayTagInfo(tag);
           flayTagInfo.addEventListener('drop', async (e) => {
-            tag.group = e.target.parentElement.id;
-            await FlayAction.updateTag(tag);
+            const dropzone = e.target.closest('.dropzone');
+            const newGroup = dropzone.id;
+            if (tag.group !== newGroup) {
+              tag.group = newGroup;
+              await FlayAction.updateTag(tag);
+            }
+            // 해당 드롭존에 태그 다시 정렬
+            const sorted = Array.from(dropzone.querySelectorAll('.flay-tag-info')).sort((t1, t2) => t1.tag.name.localeCompare(t2.tag.name));
+            for (const flayTagInfo of sorted) {
+              dropzone.insertBefore(flayTagInfo, null);
+            }
           });
 
           document.querySelector('#etc').append(flayTagInfo);

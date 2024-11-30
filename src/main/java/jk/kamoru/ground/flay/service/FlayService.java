@@ -1,6 +1,7 @@
 package jk.kamoru.ground.flay.service;
 
 import java.util.Collection;
+import java.util.Map;
 
 import jk.kamoru.ground.flay.Search;
 import jk.kamoru.ground.flay.domain.Flay;
@@ -38,5 +39,7 @@ public interface FlayService {
   void deleteFile(String file);
 
   void deleteFileOnFlay(String opus, String file);
+
+  Map<String, Boolean> exists(Collection<String> opusList);
 
 }

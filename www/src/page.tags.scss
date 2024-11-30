@@ -30,6 +30,9 @@ body {
       position: relative;
       border: 1px dashed var(--color-border-reversed);
       margin-bottom: 0.5rem;
+      transition:
+        background-color 0.4s,
+        box-shadow 0.4s;
 
       &:hover {
         background-color: var(--color-bg-transparent);
@@ -73,7 +76,8 @@ body {
         }
 
         &.dropzone {
-          box-shadow: 0 0 8px 4px var(--color-border);
+          // box-shadow: 0 0 8px 4px var(--color-border);
+          box-shadow: none;
           padding: 1rem;
 
           .flay-tag-info[draggable='true'] {

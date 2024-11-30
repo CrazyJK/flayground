@@ -3,7 +3,9 @@ package jk.kamoru.ground.flay.service;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -12,8 +14,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.Ground;
+import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.base.web.sse.SseEmitters;
 import jk.kamoru.ground.flay.FlayException;
 import jk.kamoru.ground.flay.FlayNotfoundException;
@@ -209,4 +211,17 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     flayFileHandler.rename(flay);
   }
 
+  @Override
+  public Map<String, Boolean> exists(Collection<String> opusList) {
+    Map<String, Boolean> existsMap = new HashMap<>();
+    opusList.forEach((opus) -> {
+      try {
+        instanceFlaySource.get(opus);
+        existsMap.put(opus, true);
+      } catch (Exception e) {
+        existsMap.put(opus, false);
+      }
+    });
+    return existsMap;
+  }
 }

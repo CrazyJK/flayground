@@ -2,6 +2,10 @@ import './Drag&Drop.scss';
 
 let dragged;
 
+/**
+ * 엘리먼트를 움직이게
+ * @param {Element} element
+ */
 export const setMoveable = (element) => {
   element.draggable = true;
 
@@ -59,6 +63,10 @@ export const setMoveable = (element) => {
   });
 };
 
+/**
+ * 드래그중인 엘리먼트를 드랍 받을수 있게
+ * @param {Element} dropzone
+ */
 export const setDropzone = (dropzone) => {
   dropzone.addEventListener(
     'dragover',
@@ -90,6 +98,7 @@ export const setDropzone = (dropzone) => {
     if (e.target.classList.contains('dropzone')) {
       e.target.classList.remove('dragover');
       e.target.insertBefore(dragged, null);
+      dragged.dispatchEvent(new Event('drop'));
     }
   });
 };

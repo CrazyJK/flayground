@@ -2,6 +2,8 @@ package jk.kamoru.ground.info.domain;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -10,31 +12,30 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Data
-public class Tag implements Info<Integer>, Comparable<Tag> {
+public class TagGroup implements Info<String>, Comparable<TagGroup> {
 
   @NotBlank
-  Integer id;
+  String id;
   @NotBlank
   String name;
-  String group;
-  String description;
+  String desc;
+  @JsonIgnore
   long lastModified;
 
-  public Tag(Integer key) {
+  public TagGroup(String key) {
     setKey(key);
     this.name = "";
-    this.description = "";
-    this.group = "";
+    this.desc = "";
     this.lastModified = -1;
   }
 
   @Override
-  public Integer getKey() {
+  public String getKey() {
     return id;
   }
 
   @Override
-  public void setKey(Integer key) {
+  public void setKey(String key) {
     this.id = key;
   }
 
@@ -54,7 +55,7 @@ public class Tag implements Info<Integer>, Comparable<Tag> {
       return false;
     if (getClass() != obj.getClass())
       return false;
-    Tag other = (Tag) obj;
+    TagGroup other = (TagGroup) obj;
     if (id == null) {
       if (other.id != null)
         return false;
@@ -72,8 +73,8 @@ public class Tag implements Info<Integer>, Comparable<Tag> {
   }
 
   @Override
-  public int compareTo(Tag tag) {
-    return id - tag.id;
+  public int compareTo(TagGroup tagGroup) {
+    return id.compareTo(tagGroup.id);
   }
 
 }

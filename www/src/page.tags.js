@@ -2,7 +2,7 @@ import './init/Page';
 import './page.tags.scss';
 import tagSVG from './svg/tag.svg';
 
-import { tagGroup } from './flay/part/FlayTag';
+import * as DragDrop from './lib/Drag&Drop';
 import FlayAction from './util/FlayAction';
 import { popupTag } from './util/FlaySearch';
 import { addResizeListener } from './util/windowAddEventListener';
@@ -12,7 +12,9 @@ class FlayTagInfo extends HTMLDListElement {
     super();
     this.tag = tag;
 
+    this.draggable = true;
     this.dataset.id = this.tag.id;
+    this.dataset.flayCount = this.tag.count;
     this.classList.add('flay-tag-info');
     this.innerHTML = `
       <dt>
@@ -27,16 +29,6 @@ class FlayTagInfo extends HTMLDListElement {
 
     this.addEventListener('click', () => ([TAG_ID.value, TAG_NAME.value, TAG_DESC.value] = [this.tag.id, this.tag.name, this.tag.description]));
     this.querySelector('.name').addEventListener('click', () => popupTag(this.tag.id));
-
-    addResizeListener(() => {
-      const [area, fhd] = [window.innerWidth * window.innerHeight, 1987200];
-      if (area > fhd) {
-        // FHD 해상도 면적 이상이면, flay 갯수에 비례하여 폰트 크기 설정
-        this.querySelector('.name').style.fontSize = `calc(var(--size-normal) + ${Math.floor(this.tag.count / 5)}px)`;
-      } else {
-        this.querySelector('.name').style.fontSize = '';
-      }
-    });
   }
 }
 
@@ -63,10 +55,26 @@ TAG_DEL.addEventListener('click', () => {
 
 renderTagList();
 
-function renderTagList() {
-  document.querySelector('body > main').innerHTML = Object.entries(tagGroup)
-    .map(([key, info]) => `<fieldset><legend>${key}: ${info.name} ${info.desc}</legend><div id="${key}"></div></fieldset>`)
-    .join('');
+async function renderTagList() {
+  const tagGroupList = await fetch('/info/tagGroup').then((res) => res.json());
+
+  Array.from(tagGroupList).forEach(({ id, name, desc }) => {
+    const groupDiv = document.querySelector('body > main').appendChild(document.createElement('fieldset'));
+    groupDiv.innerHTML = `<legend>${id}: ${name} ${desc}</legend><div id="${id}"></div>`;
+
+    const dropzone = groupDiv.querySelector('div');
+    dropzone.classList.add('dropzone');
+    DragDrop.setDropzone(dropzone);
+
+    if (id === 'etc') {
+      const pin = document.createElement('span');
+      pin.innerHTML = `📌`;
+      pin.className = 'pin';
+      pin.addEventListener('click', () => groupDiv.classList.toggle('fixed'));
+
+      groupDiv.insertAdjacentElement('afterbegin', pin);
+    }
+  });
 
   fetch('/info/tag/withCount')
     .then((res) => res.json())
@@ -75,14 +83,23 @@ function renderTagList() {
         .sort((t1, t2) => t1.name.localeCompare(t2.name))
         .forEach((tag) => {
           const flayTagInfo = new FlayTagInfo(tag);
+          flayTagInfo.addEventListener('drop', async (e) => {
+            tag.group = e.target.parentElement.id;
+            await FlayAction.updateTag(tag);
+          });
 
           document.querySelector('#etc').append(flayTagInfo);
-          Object.entries(tagGroup).forEach(([key, info]) => {
-            if (info.ids.includes(tag.id)) {
-              document.querySelector('#' + key).append(flayTagInfo);
-              return;
-            }
-          });
+          if (tag.group) document.querySelector('#' + tag.group)?.append(flayTagInfo);
+
+          DragDrop.setMoveable(flayTagInfo);
         });
     });
 }
+
+addResizeListener(() => {
+  // FHD 해상도 면적 이상이면, flay 갯수에 비례하여 폰트 크기 설정
+  const isHugeScreen = window.innerWidth * window.innerHeight > 1080 * 1920;
+  document.querySelectorAll('.flay-tag-info').forEach((flayTagInfo) => {
+    flayTagInfo.querySelector('.name').style.fontSize = isHugeScreen ? `calc(var(--size-normal) + ${Math.floor(Number(flayTagInfo.dataset.flayCount) / 5)}px)` : '';
+  });
+});

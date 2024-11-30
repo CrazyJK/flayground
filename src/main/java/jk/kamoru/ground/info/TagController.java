@@ -45,9 +45,9 @@ public class TagController {
       Map<String, Object> tagMap = new HashMap<>();
       tagMap.put("id", tag.getId());
       tagMap.put("name", tag.getName());
+      tagMap.put("group", tag.getGroup());
       tagMap.put("description", tag.getDescription());
       tagMap.put("count", flayService.find("tag", String.valueOf(tag.getId())).size());
-
       return tagMap;
     }).toList();
   }

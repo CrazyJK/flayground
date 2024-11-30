@@ -80,6 +80,7 @@ public class Ground implements AsyncConfigurer {
     public static final String STUDIO = "studio.json";
     public static final String VIDEO = "video.json";
     public static final String TAG = "tag.json";
+    public static final String TAG_GROUP = "tagGroup.json";
     public static final String ACCESS = "access.json";
     public static final String NOTE = "note.json";
   }

@@ -18,16 +18,16 @@ body {
   }
 
   & > main {
-    display: inline-flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
     gap: 0.5rem 2rem;
 
     margin: 0;
     padding: 1rem;
 
     fieldset {
+      position: relative;
       border: 1px dashed var(--color-border-reversed);
       margin-bottom: 0.5rem;
 
@@ -40,6 +40,16 @@ body {
           background-color: var(--color-bg-transparent);
           box-shadow: var(--box-shadow);
           border-radius: 0.25rem;
+        }
+      }
+
+      &.fixed {
+        position: sticky;
+        bottom: 0;
+        background-color: var(--color-bg);
+
+        .pin {
+          transform: rotate(-45deg);
         }
       }
 
@@ -57,6 +67,28 @@ body {
         justify-content: center;
         align-items: flex-start;
         gap: 0.5rem 0.25rem;
+
+        &:empty {
+          min-height: 3rem;
+        }
+
+        &.dropzone {
+          box-shadow: 0 0 8px 4px var(--color-border);
+          padding: 1rem;
+
+          .flay-tag-info[draggable='true'] {
+            width: auto !important;
+          }
+        }
+      }
+
+      .pin {
+        position: absolute;
+        top: 0;
+        right: 0;
+        cursor: pointer;
+        margin: 0.5rem 0.75rem;
+        z-index: 1;
       }
     }
   }

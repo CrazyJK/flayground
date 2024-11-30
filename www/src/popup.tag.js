@@ -30,7 +30,7 @@ function fetchTag() {
       tagName.value = tag.name;
       tagDesc.value = tag.description;
 
-      document.title = tag.name + ' tag';
+      document.title = `${tag.group}: ${tag.name} tag`;
     });
 
   fetch('/flay/find/tag/' + id)

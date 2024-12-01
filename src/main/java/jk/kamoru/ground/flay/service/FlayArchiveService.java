@@ -11,6 +11,8 @@ public interface FlayArchiveService {
 
   Collection<Flay> list();
 
+  Collection<String> listOpus();
+
   Collection<Flay> find(Search search);
 
   Collection<Flay> find(String query);

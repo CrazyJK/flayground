@@ -56,4 +56,9 @@ public class FlayArchiveServiceImpl extends FlayServiceAdapter implements FlayAr
     archiveFlaySource.list().remove(flay);
   }
 
+  @Override
+  public Collection<String> listOpus() {
+    return archiveFlaySource.list().stream().map((flay) -> flay.getOpus()).toList();
+  }
+
 }

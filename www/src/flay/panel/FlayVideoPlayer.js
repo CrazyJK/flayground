@@ -116,7 +116,7 @@ export class FlayVideoPlayer extends HTMLDivElement {
    */
   async reload() {
     if (this.options.info) {
-      const { flay, actress } = await FlayFetch.getFlayActress(this.opus);
+      const { flay, actress } = await FlayFetch.getFullyFlay(this.opus);
       this.flayVideoInfo.set(flay, actress, true);
     }
   }

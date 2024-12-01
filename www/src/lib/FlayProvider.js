@@ -10,7 +10,7 @@ export class FlayProvider extends OpusProvider {
   }
 
   async #returnData() {
-    const { flay, actress } = await FlayFetch.getFlayActress(this.opus);
+    const { flay, actress } = await FlayFetch.getFullyFlay(this.opus);
     return {
       index: this.opusIndex,
       total: this.opusList.length,

@@ -44,7 +44,7 @@ export default class FlayPage extends HTMLDivElement {
     this.opus = opus;
     this.setAttribute('opus', opus);
 
-    const { flay, actress } = await FlayFetch.getFlayActress(opus);
+    const { flay, actress } = await FlayFetch.getFullyFlay(opus);
     this.flay = flay;
     this.actress = actress;
 

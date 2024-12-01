@@ -9,20 +9,12 @@
 const coverObjectURLMap = new Map();
 
 export default class FlayFetch {
-  /**
-   *
-   * @returns {Promise<any[]>} [{flay: Flay, actress: Actress[] }]
-   */
+  static async getFullyFlay(opus) {
+    return await fetch(`/flay/${opus}/fully`).then((res) => res.json());
+  }
+
   static async getFullyFlayList() {
     return await fetch('/flay/list/fully').then((res) => res.json());
-  }
-  /**
-   *
-   * @param {string} opus
-   * @returns
-   */
-  static async getFlayActress(opus) {
-    return await fetch(`/flay/${opus}/fully`).then((res) => res.json());
   }
 
   /**
@@ -45,6 +37,18 @@ export default class FlayFetch {
 
   static async existsFlayList(...opus) {
     return await fetch('/flay/exists', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(opus) }).then((res) => res.json());
+  }
+
+  static async getArchive(opus) {
+    return await fetch(`/archive/${opus}`).then((res) => res.json());
+  }
+
+  static async getArchiveList() {
+    return await fetch('/archive').then((res) => res.json());
+  }
+
+  static async getArchiveOpusList() {
+    return await fetch('/archive/list/opus').then((res) => res.json());
   }
 
   /**

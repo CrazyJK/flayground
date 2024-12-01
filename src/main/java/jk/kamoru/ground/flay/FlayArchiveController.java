@@ -32,6 +32,11 @@ public class FlayArchiveController {
     return flayArchiveService.list();
   }
 
+  @GetMapping("/list/opus")
+  public Collection<String> listOpus() {
+    return flayArchiveService.listOpus();
+  }
+
   @PatchMapping("/toInstance/{opus}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void toInstance(@PathVariable String opus) {

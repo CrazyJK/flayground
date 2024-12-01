@@ -88,18 +88,16 @@ export class FlayBasket extends HTMLDivElement {
       if (!basket.has(item.opus)) item.remove();
     });
 
-    for (const opus of basket) {
-      let item = this.querySelector(`#${opus}`);
+    const existsList = await FlayFetch.existsFlayList(...basket);
+    for (const opus of basket) if (!existsList[opus]) FlayBasket.remove(opus);
+
+    const flayList = await FlayFetch.getFlayList(...basket);
+    for (const flay of flayList) {
+      let item = this.querySelector(`#${flay.opus}`);
       const isNew = item === null;
       if (isNew) {
-        try {
-          await FlayFetch.getFlay(opus);
-          item = new FlayBasketItem(opus);
-          item.addEventListener('delete', () => this.render());
-        } catch (error) {
-          FlayBasket.remove(opus);
-          continue;
-        }
+        item = new FlayBasketItem(flay);
+        item.addEventListener('delete', () => this.render());
       }
 
       this.flayListEl.prepend(item);
@@ -163,11 +161,11 @@ export class FlayBasket extends HTMLDivElement {
 customElements.define('flay-basket', FlayBasket, { extends: 'div' });
 
 class FlayBasketItem extends HTMLDivElement {
-  constructor(opus) {
+  constructor(flay) {
     super();
 
-    this.id = opus;
-    this.opus = opus;
+    this.id = flay.opus;
+    this.opus = flay.opus;
     this.classList.add('flay-basket-item', 'flay-div');
     this.innerHTML = `
       <div class="cover">
@@ -183,36 +181,31 @@ class FlayBasketItem extends HTMLDivElement {
       <button type="button" class="empty-this" title="remove flay in basket">${trashBinSVG}</button>
     `;
 
-    this.querySelector('.empty-this').addEventListener('click', async () => await this.#delete(opus));
+    this.querySelector('.empty-this').addEventListener('click', async () => await this.#delete(flay.opus));
 
-    FlayFetch.getFlay(opus)
-      .then((flay) => {
-        this.querySelector('.comment').innerHTML = flay.video.comment;
-        this.querySelector('.popup-flay').innerHTML = flay.title;
-        this.querySelector('.popup-flay').addEventListener('click', async () => this.popup());
-        this.querySelector('.actress').append(
-          ...Array.from(flay.actressList || []).map((name) => {
-            const a = document.createElement('a');
-            a.innerHTML = name;
-            a.addEventListener('click', () => popupActress(name));
-            return a;
-          })
-        );
-        this.querySelector('.tags').append(
-          ...Array.from(flay.video.tags || [])
-            .filter((tag) => ![50, 63, 64, 65, 66].includes(tag.id))
-            .map((tag) => {
-              const a = document.createElement('a');
-              a.innerHTML = tag.name;
-              a.addEventListener('click', () => popupTag(tag.id));
-              return a;
-            })
-        );
+    this.querySelector('.comment').innerHTML = flay.video.comment;
+    this.querySelector('.popup-flay').innerHTML = flay.title;
+    this.querySelector('.popup-flay').addEventListener('click', async () => this.popup());
+    this.querySelector('.actress').append(
+      ...Array.from(flay.actressList || []).map((name) => {
+        const a = document.createElement('a');
+        a.innerHTML = name;
+        a.addEventListener('click', () => popupActress(name));
+        return a;
       })
-      .catch((e) => {
-        console.warn(e);
-      });
-    FlayFetch.getCover(opus).then((url) => {
+    );
+    this.querySelector('.tags').append(
+      ...Array.from(flay.video.tags || [])
+        .filter((tag) => ![50, 63, 64, 65, 66].includes(tag.id))
+        .map((tag) => {
+          const a = document.createElement('a');
+          a.innerHTML = tag.name;
+          a.addEventListener('click', () => popupTag(tag.id));
+          return a;
+        })
+    );
+
+    FlayFetch.getCover(flay.opus).then((url) => {
       this.querySelector('.cover').style.backgroundImage = `url(${url})`;
     });
   }

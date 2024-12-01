@@ -224,4 +224,9 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
     });
     return existsMap;
   }
+
+  @Override
+  public Collection<Flay> listByOpus(Collection<String> opusList) {
+    return opusList.stream().map((opus) -> instanceFlaySource.get(opus)).toList();
+  }
 }

@@ -83,6 +83,11 @@ public class FlayController {
     return flayService.list();
   }
 
+  @PostMapping
+  public Collection<Flay> getListByOpus(@RequestBody Collection<String> opusList) {
+    return flayService.listByOpus(opusList);
+  }
+
   @GetMapping("/list/fully")
   public List<Map<String, Object>> getFullyFlayList() {
     List<Map<String, Object>> dataList = new ArrayList<>();

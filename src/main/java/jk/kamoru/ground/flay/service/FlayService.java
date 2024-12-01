@@ -12,6 +12,8 @@ public interface FlayService {
 
   Collection<Flay> list();
 
+  Collection<Flay> listByOpus(Collection<String> opusList);
+
   Collection<Flay> listOrderbyScoreDesc();
 
   Collection<Flay> listOfLowScore();

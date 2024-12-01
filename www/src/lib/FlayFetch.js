@@ -34,17 +34,17 @@ export default class FlayFetch {
     return await fetch(`/flay/${opus}`).then((res) => res.json());
   }
 
+  static async getFlayList(...opus) {
+    return await fetch('/flay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(opus) }).then((res) => res.json());
+  }
+
   static async existsFlay(opus) {
     const res = await fetch(`/flay/${opus}`, { method: 'HEAD' });
     return res.status === 200;
   }
 
   static async existsFlayList(...opus) {
-    return await fetch(`/flay/exists`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(opus),
-    }).then((res) => res.json());
+    return await fetch('/flay/exists', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(opus) }).then((res) => res.json());
   }
 
   /**

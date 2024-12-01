@@ -6,7 +6,7 @@ export default class DateUtils {
    * @returns
    */
   static format(time, pattern = 'yyyy-MM-dd HH:mm:ss') {
-    if (time < 0) {
+    if (time < 0 || time === '') {
       return pattern.replace(/yyyy/gi, '0000').replace(/yy/gi, '00').replace(/MM/gi, '00').replace(/M/gi, '0').replace(/dd/gi, '00').replace(/d/gi, '0');
     } else {
       const date = this.getDate(time);
@@ -40,6 +40,7 @@ export default class DateUtils {
     const type = typeof value;
     switch (type) {
       case 'number':
+        return new Date(value);
       case 'string':
         return new Date(value);
       default:

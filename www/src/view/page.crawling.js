@@ -4,6 +4,7 @@ import './page.crawling.scss';
 import NanoStore from '../flay/idb/nano/store/NanoStore';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
+import StringUtils from '../lib/StringUtils';
 
 const DOMAIN = 'https://www.nanojav.com';
 const LIST_URL = DOMAIN + '/jav/?order=new&page=';
@@ -105,13 +106,13 @@ class Page {
         <div class="cover">
           <img src="${data.cover}">
         </div>
-        <div class="opus">
+        <div class="opus" title="opus">
           <label data-href="${data.opus.href}">${data.opus.text}</label>
         </div>
-        <div class="video">
+        <div class="video" title="video info">
           ${video.error ? '' : `<label>${video.rank}<sub>rank</sub></label><label>${video.play}<sub>play</sub></label><label>${DateUtils.format(video.lastModified, 'yyyy-MM-dd')}<sub>modified</sub></label>`}
         </div>
-        <div class="release">
+        <div class="release" title="release">
           <label>${data.release}</label>
         </div>
         <div class="title" title="title">
@@ -131,18 +132,9 @@ class Page {
         </div>
       `;
 
-      div.querySelector('.opus label').addEventListener('click', (e) =>
-        window.navigator.clipboard.writeText(e.target.textContent).then(() => {
-          e.target.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
-        })
-      );
-      div.querySelectorAll('.download-list label').forEach((label) =>
-        label.addEventListener('click', (e) =>
-          window.navigator.clipboard.writeText(DOMAIN + e.target.dataset.href).then(() => {
-            e.target.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
-          })
-        )
-      );
+      div.querySelector('.opus label').addEventListener('click', (e) => this.#copyToClipboard(e.target));
+      div.querySelector('.title label').addEventListener('click', (e) => this.#copyToClipboard(e.target));
+      div.querySelectorAll('.download-list label').forEach((label) => label.addEventListener('click', (e) => this.#copyToClipboard(e.target, DOMAIN + e.target.dataset.href)));
 
       const record = await nanoStore.select(data.opus.text);
       if (record) {
@@ -150,6 +142,19 @@ class Page {
         div.querySelector('.posted').appendChild(document.createElement('label')).innerHTML = `${DateUtils.format(record.date, 'yyyy-MM-dd HH:mm')}<sub>view</sub>`;
       }
     }
+  }
+
+  #copyToClipboard(target, text) {
+    window.navigator.clipboard.writeText(StringUtils.isBlank(text) ? this.#getText(target) : text).then(() => {
+      target.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
+    });
+  }
+
+  #getText(element) {
+    return element?.textContent.trim();
+  }
+  #getHref(element) {
+    return element?.getAttribute('href');
   }
 
   async parseOfNanojav(data) {
@@ -166,31 +171,32 @@ class Page {
       return;
     }
 
-    const itemList = postList.map((div) => {
+    const itemList = postList.map((div, i) => {
       const elementOfImg = div.querySelector('img.cover');
-      const elementOfOpus = div.querySelector('h3.title a');
-      const elementOfPost = div.querySelector('p.subtitle a');
-      const elementOfSubtitle = div.querySelector('div.card-content > p:nth-child(4)');
-      const elementOfRelease = div.querySelector('div.card-content > p:nth-child(5)');
-      const nodeListOfActress = div.querySelectorAll('div.card-content > div.mb-2.buttons.are-small > a');
-      const nodeListOfDownload = div.querySelectorAll('div.card-content > div.is-uppercase.has-text-weight-bold.buttons > a');
+      const elementOfOpus = div.querySelector('.card-content h3.title a');
+      const elementOfPost = div.querySelector('.card-content p.subtitle a');
       const nodeListOfTags = div.querySelectorAll('.tags a');
+      const existsTag = div.querySelector('.tag') !== null;
+      const elementOfSubtitle = div.querySelector(`.card-content > p:nth-child(${existsTag ? 4 : 3})`);
+      const elementOfRelease = div.querySelector(`.card-content > p:nth-child(${existsTag ? 5 : 4})`);
+      const nodeListOfActress = div.querySelectorAll('.card-content > div.mb-2.buttons.are-small > a');
+      const nodeListOfDownload = div.querySelectorAll('.card-content > div.is-uppercase.has-text-weight-bold.buttons > a');
 
       return {
-        opus: { text: elementOfOpus.textContent.trim(), href: elementOfOpus.getAttribute('href') },
+        opus: { text: this.#getText(elementOfOpus), href: this.#getHref(elementOfOpus) },
         cover: elementOfImg.src,
-        release: DateUtils.format(elementOfRelease?.textContent.replace('Release date:', ''), 'yyyy.MM.dd'),
-        posted: { text: DateUtils.format(elementOfPost.textContent, 'yyyy-MM-dd'), href: elementOfPost.getAttribute('href') },
-        title: elementOfSubtitle.textContent,
-        actressList: Array.from(nodeListOfActress).map((a) => ({ text: a.textContent.trim(), href: a.getAttribute('href') })),
+        release: DateUtils.format(this.#getText(elementOfRelease).replace('Release date:', ''), 'yyyy.MM.dd'),
+        posted: { text: DateUtils.format(this.#getText(elementOfPost), 'yyyy-MM-dd'), href: this.#getHref(elementOfPost) },
+        title: this.#getText(elementOfSubtitle),
+        actressList: Array.from(nodeListOfActress).map((a) => ({ text: this.#getText(a), href: this.#getHref(a) })),
         downloadList: Array.from(nodeListOfDownload).map((a) => ({
-          text: a.textContent.trim(),
-          href: a.getAttribute('href'),
+          text: this.#getText(a),
+          href: this.#getHref(a),
           type: Array.from(a.querySelectorAll('.tooltip'))
             ?.map((tip) => tip.dataset.tooltip)
             .join(','),
         })),
-        tagList: Array.from(nodeListOfTags).map((a) => ({ text: a.textContent.trim(), href: a.getAttribute('href') })),
+        tagList: Array.from(nodeListOfTags).map((a) => ({ text: this.#getText(a), href: this.#getHref(a) })),
       };
     });
 

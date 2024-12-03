@@ -60,6 +60,10 @@ export default class FlayFetch {
     return await fetch(`/info/actress/${name}`).then((res) => res.json());
   }
 
+  static async getActressListByLocalname(localName) {
+    return await fetch(`/info/actress/find/byLocalname/${localName}`).then((res) => res.json());
+  }
+
   static async getScore(opus) {
     return Number((await fetch(`/flay/${opus}/score`).then((res) => res.text())) || 0);
   }

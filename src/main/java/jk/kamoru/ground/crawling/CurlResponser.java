@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Future;
 
+import org.apache.commons.io.FileUtils;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
@@ -32,6 +33,7 @@ public class CurlResponser extends LogAndSse {
       if (identical.get()) {
         String html = Files.readString(contentFile.toPath());
         curlLogger(html);
+        FileUtils.deleteQuietly(contentFile);
       }
     } catch (Exception e) {
       log.error("error", e);

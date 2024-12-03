@@ -4,6 +4,7 @@ import './page.crawling.scss';
 import NanoStore from '../flay/idb/nano/store/NanoStore';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
+import { popupActress } from '../lib/FlaySearch';
 import StringUtils from '../lib/StringUtils';
 
 const DOMAIN = 'https://www.nanojav.com';
@@ -98,6 +99,24 @@ class Page {
     for (const data of itemList) {
       const video = await FlayFetch.getVideo(data.opus.text);
 
+      for (const actress of data.actressList) {
+        let [eng, jap] = ['', ''];
+
+        const name = actress.text;
+        if (name.includes('(')) {
+          [eng, jap] = name
+            .substring(0, name.length - 1)
+            .split('(')
+            .map((s) => s.trim());
+          eng = eng.split(' ').reverse().join(' ');
+        } else {
+          const actressList = await FlayFetch.getActressListByLocalname(name);
+          [eng, jap] = [actressList.length > 0 ? actressList[0].name : '', name];
+        }
+        actress['eng'] = eng;
+        actress['jap'] = jap;
+      }
+
       const div = this.itemRepository.appendChild(document.createElement('div'));
       div.dataset.opus = data.opus.text;
       div.dataset.itemIndex = this.#paging.itemIndex;
@@ -122,7 +141,7 @@ class Page {
           ${data.tagList.map((tag) => `<label data-href="${tag.href}">${tag.text}</label>`).join('')}
         </div>
         <div class="actress-list" title="actress">
-          ${data.actressList.map((actress) => `<label data-href="${actress.href}">${actress.text}</label>`).join('')}
+          ${data.actressList.map((actress) => `<label data-href="${actress.href}" title="${actress.text}"><span title="english name">${actress.eng}</span> <span title="japannes name">${actress.jap}</span></label>`).join('')}
         </div>
         <div class="download-list" title="download. click to copy">
           ${data.downloadList.map((download) => `<label data-href="${download.href}">${download.type} ${download.text}</label>`).join('')}
@@ -135,6 +154,7 @@ class Page {
       div.querySelector('.opus label').addEventListener('click', (e) => this.#copyToClipboard(e.target));
       div.querySelector('.title label').addEventListener('click', (e) => this.#copyToClipboard(e.target));
       div.querySelectorAll('.download-list label').forEach((label) => label.addEventListener('click', (e) => this.#copyToClipboard(e.target, DOMAIN + e.target.dataset.href)));
+      div.querySelectorAll('.actress-list label span').forEach((span) => span.addEventListener('click', (e) => popupActress(e.target.textContent)));
 
       const record = await nanoStore.select(data.opus.text);
       if (record) {

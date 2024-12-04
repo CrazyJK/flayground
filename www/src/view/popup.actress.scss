@@ -1,56 +1,60 @@
 body {
-  & > header {
-    display: grid;
-    grid-template-columns: 1fr minmax(900px, 999px) 1fr;
-    height: 12rem;
+  > header.sticky {
+    > div {
+      display: grid;
+      grid-template-columns: 1fr minmax(900px, 999px) 1fr;
+      height: 10rem;
+      max-width: 100%;
 
-    .header-center {
-      display: flex;
-      flex-direction: column;
-      width: 100%;
-
-      .actress-info {
+      .header-center {
         display: flex;
-        gap: 0.25rem;
+        flex-direction: column;
         width: 100%;
-      }
-    }
 
-    .header-side {
-      width: 100%;
-      height: 100%;
-      overflow: auto;
-
-      &.studio-list,
-      &.tag-list {
-        flex-wrap: wrap;
-        justify-content: center;
-        align-items: center;
-        gap: 0;
-        border: 1px dashed chocolate;
-        padding: 2px;
-
-        label {
-          font-size: var(--size-small);
-          line-height: 20px;
-          border: 0 !important;
+        .actress-info {
+          display: flex;
+          gap: 0.25rem;
+          width: 100%;
         }
       }
-    }
 
-    [data-archive='off'] {
-      color: var(--color-text-secondary);
+      .header-side {
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+
+        &.studio-list,
+        &.tag-list {
+          display: flex;
+          flex-wrap: wrap;
+          justify-content: center;
+          align-items: center;
+          gap: 0;
+          border: 1px dashed chocolate;
+          padding: 2px;
+
+          label {
+            font-size: var(--size-small);
+            line-height: 20px;
+            border: 0 !important;
+          }
+        }
+      }
+
+      [data-archive='off'] {
+        color: var(--color-text-secondary);
+      }
     }
   }
 
-  & > article {
+  > article {
     padding: 0.5rem;
     & > .flay-card {
       margin: 0.5rem;
     }
   }
 
-  & > footer {
+  > footer {
     position: fixed;
     right: 0;
     bottom: 0;
@@ -67,10 +71,10 @@ body {
 
 @media screen and (max-width: 1080px) {
   // benq 세로 풀
-  body > header {
+  body > header.sticky > div {
     grid-template-columns: 1fr;
     .header-side {
-      display: none;
+      display: none !important;
     }
   }
 }

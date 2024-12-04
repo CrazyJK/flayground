@@ -10,43 +10,45 @@
   </head>
   <body>
     <header class="sticky">
-      <div class="header-side left studio-list"></div>
-      <div class="header-center">
-        <div class="actress-info">
-          <input type="checkbox" id="favorite" />
-          <label for="favorite" title="favorite"></label>
-          <input type="text" id="name" placeholder="name..." />
-          <input type="text" id="localName" placeholder="localName..." />
-          <select id="flayRank">
-            <option value="">Rank</option>
-            <option value="-1">Rank -1</option>
-            <option value="0">Rank 0</option>
-            <option value="1">Rank 1</option>
-            <option value="2">Rank 2</option>
-            <option value="3">Rank 3</option>
-            <option value="4">Rank 4</option>
-            <option value="5">Rank 5</option>
-          </select>
-          <button id="toggleArchive" title="toggle Archive" data-archive="on"></button>
-          <button id="saveBtn">Save</button>
+      <div>
+        <div class="header-side left studio-list"></div>
+        <div class="header-center">
+          <div class="actress-info">
+            <input type="checkbox" id="favorite" />
+            <label for="favorite" title="favorite"></label>
+            <input type="text" id="name" placeholder="name..." />
+            <input type="text" id="localName" placeholder="localName..." />
+            <select id="flayRank">
+              <option value="">Rank</option>
+              <option value="-1">Rank -1</option>
+              <option value="0">Rank 0</option>
+              <option value="1">Rank 1</option>
+              <option value="2">Rank 2</option>
+              <option value="3">Rank 3</option>
+              <option value="4">Rank 4</option>
+              <option value="5">Rank 5</option>
+            </select>
+            <button id="toggleArchive" title="toggle Archive" data-archive="on"></button>
+            <button id="saveBtn">Save</button>
+          </div>
+          <div class="actress-info">
+            <input type="text" id="birth" placeholder="birth..." />
+            <input type="text" id="age" title="age" readonly />
+            <input type="text" id="body" placeholder="body..." />
+            <input type="number" id="height" placeholder="height..." />
+            <input type="number" id="debut" placeholder="debut" />
+            <button id="searchAvdbsBtn" title="search actress www.avdbs.com">Avdbs</button>
+            <button id="searchMinnanoBtn" title="search actress www.minnano-av.com">Minnano</button>
+          </div>
+          <div class="actress-info">
+            <input type="text" id="otherNames" placeholder="other names..." />
+          </div>
+          <div class="actress-info">
+            <textarea id="comment"></textarea>
+          </div>
         </div>
-        <div class="actress-info">
-          <input type="text" id="birth" placeholder="birth..." />
-          <input type="text" id="age" title="age" readonly />
-          <input type="text" id="body" placeholder="body..." />
-          <input type="number" id="height" placeholder="height..." />
-          <input type="number" id="debut" placeholder="debut" />
-          <button id="searchAvdbsBtn" title="search actress www.avdbs.com">Avdbs</button>
-          <button id="searchMinnanoBtn" title="search actress www.minnano-av.com">Minnano</button>
-        </div>
-        <div class="actress-info">
-          <input type="text" id="otherNames" placeholder="other names..." />
-        </div>
-        <div class="actress-info">
-          <textarea id="comment"></textarea>
-        </div>
+        <div class="header-side right tag-list"></div>
       </div>
-      <div class="header-side right tag-list"></div>
     </header>
     <article></article>
     <footer></footer>

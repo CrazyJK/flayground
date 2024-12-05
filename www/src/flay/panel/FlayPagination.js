@@ -38,16 +38,19 @@ export default class FlayPagination extends HTMLDivElement {
         <div class="top-left"></div>   <div class="top-right"></div>
         <div class="bottom-left"></div><div class="bottom-right"></div>
       </div>
-      <button class="random-popup-button">${this.randomEnd}</button>
+      <button type="button" class="side-btn random-popup-button" title="popup random Flay">${this.randomEnd}</button>
+      <button type="button" class="side-btn random-flow-button" title="flow random">F</button>
     `;
 
     this.paging = this.querySelector('.paging');
     this.progressBar = this.querySelector('.progress-bar');
     this.coverThumbnail = this.querySelector('.cover-thumbnail');
-    this.randomPopupButton = this.querySelector('.random-popup-button');
   }
 
   connectedCallback() {
+    const randomPopupButton = this.querySelector('.random-popup-button');
+    const randomFlowButton = this.querySelector('.random-flow-button');
+
     document.addEventListener('videoPlayer', (e) => (this.active = !e.detail.isPlay));
 
     window.addEventListener('wheel', (e) => {
@@ -64,14 +67,14 @@ export default class FlayPagination extends HTMLDivElement {
       if (!this.active) return false;
 
       if (e.code.startsWith('Numpad') || e.code.startsWith('Digit')) {
-        if (this.randomPopupButton.classList.contains('input-mode')) {
+        if (randomPopupButton.classList.contains('input-mode')) {
           const continueType = this.lastTypedTime > 0 && Date.now() - this.lastTypedTime < 1000 * 1;
           if (continueType) {
-            this.randomPopupButton.innerHTML += e.key;
+            randomPopupButton.innerHTML += e.key;
           } else {
-            this.randomPopupButton.innerHTML = e.key;
+            randomPopupButton.innerHTML = e.key;
           }
-          this.randomEnd = Number(this.randomPopupButton.innerHTML);
+          this.randomEnd = Number(randomPopupButton.innerHTML);
 
           this.lastTypedTime = Date.now();
         }
@@ -122,9 +125,9 @@ export default class FlayPagination extends HTMLDivElement {
       this.#display();
     });
 
-    this.randomPopupButton.addEventListener('mouseover', () => this.randomPopupButton.classList.add('input-mode'));
-    this.randomPopupButton.addEventListener('mouseout', () => this.randomPopupButton.classList.remove('input-mode'));
-    this.randomPopupButton.addEventListener('click', async () => {
+    randomPopupButton.addEventListener('mouseover', () => randomPopupButton.classList.add('input-mode'));
+    randomPopupButton.addEventListener('mouseout', () => randomPopupButton.classList.remove('input-mode'));
+    randomPopupButton.addEventListener('click', async () => {
       this.querySelector('aside')?.remove();
       const popupIndicators = this.appendChild(document.createElement('aside'));
       const randomCount = Math.min(this.randomEnd, this.opusList.length);
@@ -134,8 +137,8 @@ export default class FlayPagination extends HTMLDivElement {
         this.#decideOpus(RANDOM);
         let randomPopup = window.open(`popup.flay.html?opus=${this.opus}&popupNo=${i + 1}`, `randomPopup.${i}`, 'width=800px,height=1280px');
 
-        this.randomPopupButton.innerHTML = randomCount - i;
-        this.randomPopupButton.animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
+        randomPopupButton.innerHTML = randomCount - i;
+        randomPopupButton.animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
 
         const popupIndicator = popupIndicators.appendChild(document.createElement('button'));
         popupIndicator.innerHTML = i + 1;
@@ -151,8 +154,28 @@ export default class FlayPagination extends HTMLDivElement {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      this.randomPopupButton.innerHTML = randomCount;
+      randomPopupButton.innerHTML = randomCount;
       this.opusIndex = currOpusIndex;
+    });
+
+    const INTERVAL = 10;
+    let randomFlowInterval;
+    randomFlowButton.addEventListener('click', () => {
+      randomFlowButton.animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
+      if (randomFlowButton.toggleAttribute('start')) {
+        let countDown = INTERVAL;
+        randomFlowInterval = setInterval(() => {
+          randomFlowButton.innerHTML = --countDown;
+          if (countDown === 0) {
+            randomFlowButton.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 400, iterations: 1 });
+            this.#navigator(RANDOM);
+            countDown = INTERVAL;
+          }
+        }, 1000);
+      } else {
+        randomFlowButton.innerHTML = 'F';
+        clearInterval(randomFlowInterval);
+      }
     });
   }
 

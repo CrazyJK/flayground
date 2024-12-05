@@ -82,7 +82,7 @@
     }
   }
 
-  & > button {
+  & > button.side-btn {
     position: fixed;
     right: 0;
     bottom: 0;
@@ -96,7 +96,7 @@
     margin: 0.5rem;
     z-index: 1;
 
-    & ~ aside {
+    &.random-popup-button ~ aside {
       position: fixed;
       right: 0;
       bottom: 3rem;
@@ -114,6 +114,10 @@
         margin: 0.5rem;
         z-index: 2;
       }
+    }
+
+    &.random-flow-button {
+      left: 0;
     }
   }
 }

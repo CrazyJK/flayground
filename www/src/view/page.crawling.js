@@ -110,11 +110,12 @@ class Page {
             .map((s) => s.trim());
           eng = eng.split(' ').reverse().join(' ');
         } else {
-          const actressList = await FlayFetch.getActressListByLocalname(name);
-          [eng, jap] = [actressList.length > 0 ? actressList[0].name : '', name];
+          jap = name;
         }
-        actress['eng'] = eng;
+        const actressList = await FlayFetch.getActressListByLocalname(jap);
+        actress['eng'] = eng || actressList[0]?.name || ' ';
         actress['jap'] = jap;
+        actress['fav'] = actressList[0]?.favorite ? '💛' : '';
       }
 
       const div = this.itemRepository.appendChild(document.createElement('div'));
@@ -141,7 +142,7 @@ class Page {
           ${data.tagList.map((tag) => `<label data-href="${tag.href}">${tag.text}</label>`).join('')}
         </div>
         <div class="actress-list" title="actress">
-          ${data.actressList.map((actress) => `<label data-href="${actress.href}" title="${actress.text}"><span title="english name">${actress.eng}</span> <span title="japannes name">${actress.jap}</span></label>`).join('')}
+          ${data.actressList.map((actress) => `<label data-href="${actress.href}" title="${actress.text}">${actress.fav}<span title="english name">${actress.eng}</span> <span title="japannes name">${actress.jap}</span></label>`).join('')}
         </div>
         <div class="download-list" title="download. click to copy">
           ${data.downloadList.map((download) => `<label data-href="${download.href}">${download.type} ${download.text}</label>`).join('')}

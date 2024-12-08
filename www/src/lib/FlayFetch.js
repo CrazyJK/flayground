@@ -30,6 +30,10 @@ export default class FlayFetch {
     return await fetch('/flay', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(opus) }).then((res) => res.json());
   }
 
+  static async getOpusList(condition) {
+    return await fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, cache: 'no-cache', body: JSON.stringify(condition) }).then((res) => res.json());
+  }
+
   static async existsFlay(opus) {
     const res = await fetch(`/flay/${opus}`, { method: 'HEAD' });
     return res.status === 200;

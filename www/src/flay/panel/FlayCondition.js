@@ -1,3 +1,4 @@
+import FlayFetch from '../../lib/FlayFetch';
 import FlayStorage from '../../lib/FlayStorage';
 import favoriteSVG from '../../svg/favorite';
 import noFavoriteSVG from '../../svg/noFavorite';
@@ -71,7 +72,7 @@ export default class FlayCondition extends HTMLDivElement {
         .map((rank) => rank.value),
       sort: this.querySelector('#sort').value,
     };
-    this.opusList = await fetch('/flay/list/opus', { method: 'post', headers: { 'Content-Type': 'application/json' }, cache: 'no-cache', body: JSON.stringify(condition) }).then((res) => res.json());
+    this.opusList = await FlayFetch.getOpusList(condition);
     if (this.opusList.length === 0) {
       // not found flay
       this.animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });
@@ -86,13 +87,12 @@ export default class FlayCondition extends HTMLDivElement {
    * @param {Flay} flay
    */
   updateSearchItem(flay) {
-    this.#addSearchItem(flay.studio);
-    this.#addSearchItem(flay.opus);
-    this.#addSearchItem(flay.opus.split('-').shift());
-    this.#addSearchItem(flay.release.substring(0, 4));
-
-    flay.actressList?.forEach((name) => this.#addSearchItem(name));
     flay.video.tags?.forEach((tag) => this.#addSearchItem(tag.name));
+    flay.actressList?.forEach((name) => this.#addSearchItem(name));
+    this.#addSearchItem(flay.release.substring(0, 4));
+    this.#addSearchItem(flay.opus.split('-').shift());
+    // this.#addSearchItem(flay.opus);
+    this.#addSearchItem(flay.studio);
   }
 
   #addSearchItem(item) {

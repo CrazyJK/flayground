@@ -1,3 +1,4 @@
+import FlayFetch from './FlayFetch';
 import { getRandomInt } from './randomNumber';
 
 const DEFAULT_CONDITION = {
@@ -31,12 +32,7 @@ export class OpusProvider {
   }
 
   async #fetchOpusList() {
-    if (this.opusList === null)
-      this.opusList = await fetch('/flay/list/opus', {
-        method: 'post',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(this.condition),
-      }).then((res) => res.json());
+    if (this.opusList === null) this.opusList = await FlayFetch.getOpusList(this.condition);
   }
 
   async getRandomOpus() {

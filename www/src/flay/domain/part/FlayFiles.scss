@@ -44,6 +44,10 @@
         border: 2px dashed purple;
         border-right: 0;
         padding: 4px;
+        transition: background-color 0.4s;
+        &:hover {
+          background-color: #4a4a4a;
+        }
       }
       button {
         font-size: var(--size-small);

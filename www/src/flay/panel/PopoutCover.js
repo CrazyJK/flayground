@@ -38,10 +38,11 @@ export default class 커버튀어나오기 extends OpusProvider {
       });
     });
 
+    const 커버비율 = 269 / 400;
     const 여유공간 = 100;
     const { width: 판때기너비, height: 판때기높이 } = this.#판때기.getBoundingClientRect();
-    const 너비 = Math.min(1200, 판때기너비 / 2);
-    const 높이 = 너비 * (269 / 400);
+    const 너비 = Math.min(1200, 판때기너비 / 2) + getRandomInt(0, 여유공간 * 2);
+    const 높이 = 너비 * 커버비율;
     const 왼쪽 = 이벤트 ? 이벤트.x - 너비 / 2 : getRandomInt(여유공간, 판때기너비 - 너비 - 여유공간);
     const 위 = 이벤트 ? 이벤트.y - 높이 / 2 : getRandomInt(여유공간, 판때기높이 - 높이 - 여유공간);
 

@@ -9,6 +9,7 @@ export default class 커버튀어나오기 extends OpusProvider {
   #나오기완료;
   #원래크기_키프레임;
   #크기0_키프레임;
+  #크기110퍼_키프레임;
   #애니메이션옵션;
 
   constructor(판때기, 최소초 = 10, 최대초 = 30) {
@@ -20,6 +21,7 @@ export default class 커버튀어나오기 extends OpusProvider {
     this.#나오기완료 = true;
     this.#원래크기_키프레임 = { transform: 'none' };
     this.#크기0_키프레임 = { transform: 'scale(0)' };
+    this.#크기110퍼_키프레임 = { transform: 'scale(1.1)', offset: 0.7 };
     this.#애니메이션옵션 = { duration: 500, iterations: 1 };
   }
 
@@ -60,7 +62,7 @@ export default class 커버튀어나오기 extends OpusProvider {
     커버.onclick = () => popupFlay(품번);
     커버.onload = () => {
       this.#판때기.appendChild(커버);
-      커버.animate([this.#크기0_키프레임, this.#원래크기_키프레임], this.#애니메이션옵션).finished.then(() => {
+      커버.animate([this.#크기0_키프레임, this.#크기110퍼_키프레임, this.#원래크기_키프레임], this.#애니메이션옵션).finished.then(() => {
         this.#나오기완료 = true;
       });
     };

@@ -1,12 +1,15 @@
 .flay-condition {
   display: flex;
-  gap: 1rem;
   justify-content: center;
-  align-items: flex-end;
+  gap: 1rem;
   padding: 0.5rem;
   transition: 0.4s;
 
   div {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 0.5rem;
+
     input[type='search'] {
       border-radius: 0.5rem;
       width: 16rem;

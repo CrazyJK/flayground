@@ -63,14 +63,13 @@ export default class FlayComment extends FlayHTMLElement {
   set(flay) {
     this.setFlay(flay);
 
-    const comment = flay.video.comment?.trim() || '';
-    const isBlank = comment === '';
+    const comment = StringUtils.toBlank(flay.video.comment, COMMENT);
 
-    this.querySelector('.comment').title = isBlank ? COMMENT : comment;
-    this.querySelector('.comment').innerHTML = isBlank ? COMMENT : comment;
-    this.querySelector('.comment').classList.toggle('placeholder', isBlank);
     this.querySelector('input').value = comment;
-    this.querySelector('.japanese').classList.toggle('hide', flay.video.title == null);
+    this.querySelector('.comment').title = comment;
+    this.querySelector('.comment').innerHTML = comment;
+    this.querySelector('.comment').classList.toggle('placeholder', StringUtils.isBlank(flay.video.comment));
+    this.querySelector('.japanese').classList.toggle('hide', StringUtils.isBlank(flay.video.title));
   }
 }
 

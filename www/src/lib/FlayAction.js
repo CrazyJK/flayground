@@ -183,15 +183,17 @@ async function action(url, requestInit, callback = () => {}, failCallback = () =
 
   const messageBar = document.querySelector('body').appendChild(document.createElement('label'));
   messageBar.classList.add('message-bar');
-  messageBar.style.position = 'fixed';
-  messageBar.style.right = 0;
-  messageBar.style.bottom = 0;
-  messageBar.style.backgroundColor = 'var(--color-bg)';
-  messageBar.style.padding = '0.5rem 1rem';
-  messageBar.style.fontWeight = 400;
-  messageBar.style.boxShadow = 'var(--box-shadow) inset';
-  messageBar.style.zIndex = 999;
-  messageBar.innerHTML = `[${requestInit.method ? requestInit.method : 'GET'}] ${url} - ${response.status}`;
+  messageBar.style.cssText = `
+    position: fixed;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-bg);
+    box-shadow: var(--box-shadow) inset;
+    padding: 0.5rem 1rem;
+    font-weight: 400;
+    z-index: 999;
+  `;
+  messageBar.innerHTML = `[${requestInit.method || 'GET'}] ${url} - ${response.status}`;
 
   if ([200, 204].includes(response.status)) {
     // show success message

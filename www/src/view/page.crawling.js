@@ -41,6 +41,14 @@ class Page {
       if (e.deltaY > 0) await this.#next();
       else await this.#prev();
     });
+    window.addEventListener('keyup', async (e) => {
+      switch (e.code) {
+        case 'ArrowRight':
+          return await this.#next();
+        case 'ArrowLeft':
+          return await this.#prev();
+      }
+    });
 
     this.retryBtn = document.querySelector('body > main > footer > #retryBtn');
     this.retryBtn.addEventListener('click', () => this.#callCrawling());

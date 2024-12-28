@@ -15,7 +15,7 @@ const DEFAULT_CONDITION = {
   sort: 'RELEASE',
 };
 const RANKS = [0, 1, 2, 3, 4, 5];
-const SORTS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'];
+const SORTS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LAST PLAY', 'LAST ACCESS', 'LAST MODIFIED', 'SCORE', 'LENGTH', 'SHOT'];
 
 export default class FlayCondition extends HTMLDivElement {
   opusList = [];
@@ -46,7 +46,7 @@ export default class FlayCondition extends HTMLDivElement {
       </div>
       <div>
         <select id="sort" title="Sort method">
-          ${SORTS.map((opt) => `<option value="${opt}" ${condition.sort === opt ? 'selected' : ''}>${opt.toLowerCase()}</option>`).join('')}
+          ${SORTS.map((opt) => `<option value="${opt.replace(/ /gi, '')}" ${condition.sort === opt ? 'selected' : ''}>${opt.toLowerCase()}</option>`).join('')}
         </select>
       </div>
     `;

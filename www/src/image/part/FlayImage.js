@@ -1,4 +1,5 @@
-const URI_PREFIX = '/static/image/';
+import DateUtils from '../../lib/DateUtils';
+import FileUtils from '../../lib/FileUtils';
 
 export default class FlayImage extends HTMLImageElement {
   constructor() {
@@ -6,42 +7,56 @@ export default class FlayImage extends HTMLImageElement {
   }
 
   static get observedAttributes() {
-    return ['data-idx'];
+    return ['data-idx', 'src'];
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
     console.debug('attributeChangedCallback', name, oldValue, newValue);
-    this.src = URI_PREFIX + newValue;
-    this.setTitle();
+    switch (name) {
+      case 'data-idx':
+        this.src = '/static/image/' + newValue;
+        break;
+      case 'src':
+        this.#loadInfo();
+        break;
+    }
   }
 
   connectedCallback() {
-    console.debug('connectedCallback src', this.src);
-    this.setTitle();
+    console.debug('connectedCallback');
   }
 
   adoptedCallback() {
-    console.debug('Custom element moved to new page.');
+    console.debug('adoptedCallback: Custom element moved to new page.');
   }
 
-  #getIdx() {
-    if (this.src) {
-      return Number(this.src.split('/').pop());
+  #loadInfo() {
+    const idx = Number(this.src?.split('/').pop()) || -1;
+    if (idx < 0) {
+      this.removeAttribute('title');
+      return;
     }
-    return -1;
-  }
 
-  async setTitle() {
-    let idx = this.#getIdx();
-    if (idx > -1) {
-      await this.decode();
+    this.decode().then(() =>
       fetch('/image/' + idx)
         .then((res) => res.json())
         .then((info) => {
-          console.debug('setTitle', this, info);
-          this.title = `※ Idx: ${info.idx}\n※ Path: ${info.path}\n※ Name: ${info.name}\n※ Size: ${this.naturalWidth} x ${this.naturalHeight}`;
-        });
-    }
+          info['width'] = this.naturalWidth;
+          info['height'] = this.naturalHeight;
+          console.debug('image info', info);
+
+          this.dataset.name = info.name;
+          this.dataset.path = info.path;
+          this.dataset.file = info.file;
+          this.dataset.fileSize = FileUtils.prettySize(info.length).join('');
+          this.dataset.modified = DateUtils.format(info.modified, 'yyyy-MM-dd');
+          this.dataset.width = info.width;
+          this.dataset.height = info.height;
+          this.alt = `※ Idx: ${info.idx}\n※ Path: ${info.path}\n※ Name: ${info.name}\n※ Size: ${info.width} x ${info.height}`;
+
+          this.dispatchEvent(new CustomEvent('loaded', { detail: { info: info } }));
+        })
+    );
   }
 }
 

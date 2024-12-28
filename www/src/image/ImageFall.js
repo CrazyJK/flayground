@@ -57,11 +57,7 @@ export default class ImageFall extends HTMLDivElement {
 
   render() {
     setInterval(() => {
-      if (this.contunue) {
-        // document.startViewTransition(() => {
-        this.addImage();
-        // });
-      }
+      if (this.contunue) this.addImage();
     }, 1000 * 3);
   }
 
@@ -74,7 +70,8 @@ export default class ImageFall extends HTMLDivElement {
     let innerDiv = document.createElement('div');
     div.prepend(innerDiv);
 
-    const res = await fetch('/static/image/' + imageIndex);
+    const imageURL = '/static/image/' + imageIndex;
+    const res = await fetch(imageURL);
     let idx = res.headers.get('Idx');
     let name = decodeURIComponent(res.headers.get('Name').replace(/\+/g, ' '));
     let path = decodeURIComponent(res.headers.get('Path').replace(/\+/g, ' '));
@@ -83,6 +80,10 @@ export default class ImageFall extends HTMLDivElement {
     let image = new Image();
     image.src = URL.createObjectURL(myBlob);
     image.title = `Idx: ${idx}\nName: ${name}\nPath: ${path}`;
+    image.addEventListener('click', () => {
+      // window.open(imageURL, 'image' + imageIndex, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
+      window.open(`popup.image.html?idx=${imageIndex}&max=${this.imageLength}`, `image${imageIndex}`, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
+    });
     innerDiv.append(image);
 
     await image.decode();
@@ -93,6 +94,7 @@ export default class ImageFall extends HTMLDivElement {
       let images = div.querySelectorAll('div');
       let lastImage = div.querySelector('div:last-child');
       if (images.length > 9) {
+        URL.revokeObjectURL(lastImage.querySelector('img').src);
         lastImage.remove();
       }
       console.debug('div', idx, 'images', images.length);

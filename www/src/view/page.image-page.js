@@ -58,7 +58,7 @@ fetch('/image')
           nameLabel.innerHTML = ID.decode(idArray[i]);
 
           if (i === idArray.length - 1) {
-            nameLabel.innerHTML += ' (' + images.length + ')';
+            nameLabel.innerHTML += ' <i>(' + images.length + ')</i>';
             nameLabel.addEventListener('click', () => {
               renderImage(images);
               wrapper.querySelectorAll('a.active').forEach((a) => a.classList.remove('active'));

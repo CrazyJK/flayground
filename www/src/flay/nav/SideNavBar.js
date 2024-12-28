@@ -11,6 +11,7 @@ const menuList = [
   { url: 'page.flay-grid.html', name: 'flay grid' },
   {},
   { url: 'page.flay-basket.html', name: 'basket' },
+  { url: 'page.cover-popout.html', name: 'cover popout' },
   {},
   { url: 'page.flay-play.html', name: 'flay play' },
   { url: 'page.flay-play-record.html', name: 'play record' },
@@ -32,6 +33,7 @@ const menuList = [
   { url: 'page.image-one.html', name: 'image one' },
   { url: 'page.image-page.html', name: 'image page' },
   { url: 'page.image-fall.html', name: 'image fall' },
+  { url: 'popup.image.html', name: 'image pop' },
   {},
   { url: 'page.kamoru-diary.html', name: 'diary' },
   {},
@@ -53,7 +55,14 @@ export default class SideNavBar extends HTMLDivElement {
       <div><a href="index.html">flay ground</a></div>
     </header>
     <article>
-      ${menuList.map((menu) => (menu.url ? `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>` : '<div></div>')).join('')}
+      ${menuList
+        .map((menu) => {
+          if (menu.url) {
+            return `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>`;
+          }
+          return '<div></div>';
+        })
+        .join('')}
     </article>
     <footer>
       <div class="flay-monitor" is="flay-monitor"></div>

@@ -17,6 +17,7 @@ module.exports = {
     'page.flay-play': './src/view/page.flay-play.js',
     'page.flay-play-record': './src/view/page.flay-play-record.js',
     'page.flay-basket': './src/view/page.flay-basket.js',
+    'page.cover-popout': './src/view/page.cover-popout.js',
     'page.dragndrop': './src/view/page.dragndrop.js',
     'page.girls': './src/view/page.girls.js',
     'page.actress': './src/view/page.actress.js',
@@ -38,6 +39,7 @@ module.exports = {
     'popup.actress': './src/view/popup.actress.js',
     'popup.tag': './src/view/popup.tag.js',
     'popup.monitor': './src/view/popup.monitor.js',
+    'popup.image': './src/view/popup.image.js',
   },
   devtool: 'source-map',
   output: {

@@ -6,9 +6,15 @@ const PANE_WIDTH = 360;
 
 export default class ImageFall extends HTMLDivElement {
   contunue = true;
+  willRandom = false;
+
   imageLength = -1;
+
   imageIndexArray = [];
+  iamgeIndex = -1;
+
   divIndexArray = [];
+  divIndex = -1;
 
   constructor() {
     super();
@@ -16,117 +22,123 @@ export default class ImageFall extends HTMLDivElement {
   }
 
   connectedCallback() {
-    addResizeListener(() => {
-      document.startViewTransition(() => {
-        this.resizeDiv();
-      });
-    });
+    addResizeListener(() => document.startViewTransition(() => this.#resizeDiv()));
 
     window.addEventListener('keyup', (e) => {
-      if (e.code === 'Space') {
-        this.contunue = !this.contunue;
+      switch (e.code) {
+        case 'Space':
+          this.contunue = !this.contunue;
+          break;
+        case 'KeyR':
+          this.willRandom = true;
+          break;
+        case 'KeyF':
+          this.willRandom = false;
+          break;
       }
     });
 
     fetch('/image/size')
       .then((res) => res.text())
       .then((text) => (this.imageLength = Number(text)))
-      .then(() => this.resizeDiv())
-      .then(() => this.render());
+      .then(() => this.#resizeDiv())
+      .then(() => this.#render());
   }
 
-  resizeDiv() {
-    let paneCount = Math.round(this.clientWidth / PANE_WIDTH);
-    this.divIndexArray = Array.from({ length: paneCount }, (v, i) => i);
-    console.debug('resizeDiv', this.clientWidth, this.clientHeight, paneCount);
-
-    let imageList = this.querySelectorAll('.row > div');
-    console.debug('resizeDiv imageList', imageList.length);
+  #resizeDiv() {
+    const paneCount = Math.round(this.clientWidth / PANE_WIDTH);
+    const imageWrapList = this.querySelectorAll('.row > div');
 
     this.textContent = null;
     for (let i = 0; i < paneCount; i++) {
       this.innerHTML += `<div class="row"></div>`;
     }
 
-    let divList = this.querySelectorAll('.row');
-    imageList.forEach((img, index) => {
-      divList[index % divList.length].append(img);
-      img.style.height = 'auto';
+    const divList = this.querySelectorAll('.row');
+    imageWrapList.forEach((imageWrap, index) => {
+      divList[index % divList.length].append(imageWrap);
+      imageWrap.style.height = 'auto';
     });
   }
 
-  render() {
+  #render() {
     setInterval(() => {
-      if (this.contunue) this.addImage();
+      if (this.contunue) this.#addImage();
     }, 1000 * 3);
   }
 
-  async addImage() {
-    let divList = this.querySelectorAll('.row');
-    let divIndex = this.getDivIdx(divList.length);
-    let imageIndex = this.getImageIdx();
-    let div = divList[divIndex];
+  async #addImage() {
+    const divList = this.querySelectorAll('.row');
+    const divIndex = this.#getDivIdx(divList.length);
+    const imageIndex = this.#getImageIdx();
 
-    let innerDiv = document.createElement('div');
-    div.prepend(innerDiv);
+    const imageWrap = document.createElement('div');
+    divList[divIndex].prepend(imageWrap);
 
     const imageURL = '/static/image/' + imageIndex;
     const res = await fetch(imageURL);
-    let idx = res.headers.get('Idx');
-    let name = decodeURIComponent(res.headers.get('Name').replace(/\+/g, ' '));
-    let path = decodeURIComponent(res.headers.get('Path').replace(/\+/g, ' '));
+    const idx = res.headers.get('Idx');
+    const name = decodeURIComponent(res.headers.get('Name').replace(/\+/g, ' '));
+    const path = decodeURIComponent(res.headers.get('Path').replace(/\+/g, ' '));
 
-    const myBlob = await res.blob();
-    let image = new Image();
-    image.src = URL.createObjectURL(myBlob);
+    const imageBlob = await res.blob();
+    const image = new Image();
+    image.src = URL.createObjectURL(imageBlob);
     image.title = `Idx: ${idx}\nName: ${name}\nPath: ${path}`;
     image.addEventListener('click', () => {
       // window.open(imageURL, 'image' + imageIndex, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
       window.open(`popup.image.html?idx=${imageIndex}&max=${this.imageLength}`, `image${imageIndex}`, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
     });
-    innerDiv.append(image);
+    imageWrap.append(image);
 
     await image.decode();
-    innerDiv.style.height = `calc(${image.height}px + 1rem)`;
-    innerDiv.style.top = 0;
+    imageWrap.style.height = `calc(${image.height}px + 1rem)`;
+    imageWrap.style.top = 0;
 
-    divList.forEach((div, idx) => {
-      let images = div.querySelectorAll('div');
-      let lastImage = div.querySelector('div:last-child');
+    divList.forEach((div) => {
+      const images = div.querySelectorAll('div');
       if (images.length > 9) {
+        const lastImage = div.querySelector('div:last-child');
         URL.revokeObjectURL(lastImage.querySelector('img').src);
         lastImage.remove();
       }
-      console.debug('div', idx, 'images', images.length);
     });
 
-    console.debug(`addImage idx: ${imageIndex} at div[${divIndex}] of ${divList.length}`);
+    console.debug(`div[${divIndex + 1}/${divList.length}] ${imageIndex} - ${name}`);
   }
 
-  getDivIdx(divLength) {
-    if (this.divIndexArray.length === 0) {
+  #getDivIdx(divLength) {
+    if (0 === this.divIndexArray.length || divLength < this.divIndexArray.length) {
       this.divIndexArray = Array.from({ length: divLength }, (v, i) => i);
-      console.debug('getDivIdx reset', this.divIndexArray);
+      this.divIndex = 0;
     }
 
-    let randomIndex = getRandomInt(0, this.divIndexArray.length);
-    let pickedIndex = this.divIndexArray.splice(randomIndex, 1);
-    console.debug('getDivIdx', this.divIndexArray.length, randomIndex, pickedIndex);
+    if (this.willRandom) {
+      this.divIndex = getRandomInt(0, this.divIndexArray.length);
+    } else {
+      if (this.divIndex >= this.divIndexArray.length) {
+        this.divIndex = 0;
+      }
+    }
 
-    return pickedIndex[0];
+    return this.divIndexArray.splice(this.divIndex, 1)[0];
   }
 
-  getImageIdx() {
+  #getImageIdx() {
     if (this.imageIndexArray.length === 0) {
       this.imageIndexArray = Array.from({ length: this.imageLength }, (v, i) => i);
-      console.debug('getImageIdx reset', this.imageIndexArray);
+      this.iamgeIndex = getRandomInt(0, this.imageIndexArray.length);
     }
 
-    let randomIndex = getRandomInt(0, this.imageIndexArray.length);
-    let pickedIndex = this.imageIndexArray.splice(randomIndex, 1);
-    console.debug('getImageIdx', this.imageIndexArray.length, randomIndex, pickedIndex);
+    if (this.willRandom) {
+      this.currentIamgeIndex = getRandomInt(0, this.imageIndexArray.length);
+    } else {
+      if (this.iamgeIndex >= this.imageIndexArray.length) {
+        this.currentIndex = 0;
+      }
+    }
 
-    return pickedIndex[0];
+    return this.imageIndexArray.splice(this.iamgeIndex, 1)[0];
   }
 }
 

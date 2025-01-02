@@ -6,7 +6,8 @@ import rankSVG from '../../svg/ranks';
 import subtitlesSVG from '../../svg/subtitles';
 import './FlayCondition.scss';
 
-const DEFAULT_CONDITION = {
+const CONDITION_KEY = 'FlayCondition.condition';
+const CONDITION_VALUE_DEFAULT = {
   search: '',
   withSubtitles: false,
   withFavorite: false,
@@ -14,8 +15,9 @@ const DEFAULT_CONDITION = {
   rank: ['0'],
   sort: 'RELEASE',
 };
-const RANKS = [0, 1, 2, 3, 4, 5];
-const SORTS = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LAST PLAY', 'LAST ACCESS', 'LAST MODIFIED', 'SCORE', 'LENGTH', 'SHOT'];
+const RANKs = [0, 1, 2, 3, 4, 5];
+const SORTs = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'];
+const ifTrue = (condition, text) => (condition ? text : '');
 
 export default class FlayCondition extends HTMLDivElement {
   opusList = [];
@@ -23,7 +25,7 @@ export default class FlayCondition extends HTMLDivElement {
   constructor() {
     super();
 
-    const condition = FlayStorage.local.getObject('FlayCondition.condition', JSON.stringify(DEFAULT_CONDITION));
+    const condition = FlayStorage.local.getObject(CONDITION_KEY, JSON.stringify(CONDITION_VALUE_DEFAULT));
 
     this.classList.add('flay-condition', 'flay-div');
     this.innerHTML = `
@@ -32,21 +34,18 @@ export default class FlayCondition extends HTMLDivElement {
         <datalist id="search-items"></datalist>
       </div>
       <div>
-        <input type="checkbox" id="withSubtitles" ${condition.withSubtitles ? 'checked' : ''}>
-        <label for="withSubtitles" title="with Subtitles">${subtitlesSVG}</label>
+        <input type="checkbox" id="withSubtitles" ${ifTrue(condition.withSubtitles, 'checked')}><label for="withSubtitles" title="with Subtitles">${subtitlesSVG}</label>
       </div>
       <div>
-        <input type="checkbox" id="withFavorite" ${condition.withFavorite ? 'checked' : ''}>
-        <label for="withFavorite" title="with Favorite">${favoriteSVG}</label>
-        <input type="checkbox" id="withNoFavorite" ${condition.withNoFavorite ? 'checked' : ''}>
-        <label for="withNoFavorite" title="with No Favorite">${noFavoriteSVG}</label>
+        <input type="checkbox" id="withFavorite" ${ifTrue(condition.withFavorite, 'checked')}><label for="withFavorite" title="with Favorite">${favoriteSVG}</label>
+        <input type="checkbox" id="withNoFavorite" ${ifTrue(condition.withNoFavorite, 'checked')}><label for="withNoFavorite" title="with No Favorite">${noFavoriteSVG}</label>
       </div>
       <div>
-        ${RANKS.map((r) => `<input type="checkbox" name="rank" value="${r}" id="rank${r}" ${condition.rank.includes(String(r)) ? 'checked' : ''}><label for="rank${r}" title="Rank ${r}">${rankSVG[r + 1]}</label>`).join('')}
+        ${RANKs.map((r) => `<input type="checkbox" name="rank" value="${r}" id="rank${r}" ${ifTrue(condition.rank.includes(String(r)), 'checked')}><label for="rank${r}" title="Rank ${r}">${rankSVG[r + 1]}</label>`).join('')}
       </div>
       <div>
         <select id="sort" title="Sort method">
-          ${SORTS.map((opt) => `<option value="${opt.replace(/ /gi, '')}" ${condition.sort === opt ? 'selected' : ''}>${opt.toLowerCase()}</option>`).join('')}
+          ${SORTs.map((opt) => `<option value="${opt}" ${ifTrue(condition.sort === opt, 'selected')}>${opt.replace(/LAST/gi, 'LAST ').toLowerCase()}</option>`).join('')}
         </select>
       </div>
     `;
@@ -67,9 +66,7 @@ export default class FlayCondition extends HTMLDivElement {
       withSubtitles: this.querySelector('#withSubtitles').checked,
       withFavorite: this.querySelector('#withFavorite').checked,
       withNoFavorite: this.querySelector('#withNoFavorite').checked,
-      rank: Array.from(this.querySelectorAll('[name="rank"]'))
-        .filter((rank) => rank.checked)
-        .map((rank) => rank.value),
+      rank: Array.from(this.querySelectorAll('[name="rank"]:checked')).map((rank) => rank.value),
       sort: this.querySelector('#sort').value,
     };
     this.opusList = await FlayFetch.getOpusList(condition);
@@ -78,8 +75,8 @@ export default class FlayCondition extends HTMLDivElement {
       this.animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });
       window.emitMessage('검색 결과가 없습니다.');
     }
+    FlayStorage.local.set(CONDITION_KEY, JSON.stringify(condition));
     this.dispatchEvent(new CustomEvent('fetch'));
-    FlayStorage.local.set('FlayCondition.condition', JSON.stringify(condition));
   }
 
   /**
@@ -95,6 +92,10 @@ export default class FlayCondition extends HTMLDivElement {
     this.#addSearchItem(flay.studio);
   }
 
+  /**
+   * datalist에 option 채우기
+   * @param {string} item
+   */
   #addSearchItem(item) {
     this.querySelector(`#search-items option[value="${item}"]`)?.remove();
 

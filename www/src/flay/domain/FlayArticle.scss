@@ -14,13 +14,7 @@ $borderRadius: 0.5rem;
     display: flex;
     aspect-ratio: var(--cover-aspect-ratio);
     background: transparent no-repeat center / cover;
-    box-shadow: inset 0 0 1rem 0.5rem var(--color-bg-transparent);
     border-radius: $borderRadius;
-    transition: 0.4s;
-
-    &:hover {
-      box-shadow: none;
-    }
   }
 
   dl {
@@ -56,6 +50,7 @@ $borderRadius: 0.5rem;
     .actress {
       span {
         cursor: pointer;
+        margin: 0 0.25rem;
       }
     }
   }
@@ -82,29 +77,16 @@ $borderRadius: 0.5rem;
     }
   }
 
-  &.simple {
-    dl {
-      margin: 0.5rem auto 0.25rem;
-      font-size: var(--size-small);
+  &.cover {
+    .cover {
+      box-shadow: inset 0 0 1rem 0.5rem var(--color-bg-transparent);
+      transition: 0.4s;
 
-      dt {
-        min-height: 1.5rem;
-      }
-      dd {
-        display: none;
-      }
-
-      .title {
-        font-size: var(--size-normal);
-        min-height: 1.75rem;
-      }
-      .tags {
-        display: none;
+      &:hover {
+        box-shadow: none;
       }
     }
-  }
 
-  &.cover {
     dl {
       margin: 0.25rem auto 0;
       padding: 0 1rem 0.5rem;

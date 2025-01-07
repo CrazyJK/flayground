@@ -5,6 +5,7 @@ import FlayArticle from '../flay/domain/FlayArticle';
 import FlayCondition from '../flay/panel/FlayCondition';
 import FlayFetch from '../lib/FlayFetch';
 import GridControl from '../lib/GridControl';
+import { getRandomInt } from '../lib/randomNumber';
 import { addResizeListener } from '../lib/windowAddEventListener';
 
 class Page {
@@ -25,7 +26,7 @@ class Page {
   async show() {
     let visible = true;
     do {
-      const opus = this.opusList.shift();
+      const opus = Math.random() > 0.5 ? this.opusList.shift() : this.opusList.splice(getRandomInt(0, this.opusList.length), 1)[0];
       if (!opus) break;
 
       visible = await this.#showCover(opus);

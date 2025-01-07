@@ -1,4 +1,5 @@
 import FlayAction from '../../../lib/FlayAction';
+import FlayFetch from '../../../lib/FlayFetch';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayTag.scss';
 
@@ -6,7 +7,7 @@ import './FlayTag.scss';
  * Custom element of Tag
  */
 export default class FlayTag extends FlayHTMLElement {
-  tagList = null;
+  #rendered = false;
 
   constructor() {
     super();
@@ -27,32 +28,34 @@ export default class FlayTag extends FlayHTMLElement {
     this.#displayTag(reload);
   }
 
+  async #renderTag() {
+    const tagGroupList = await FlayFetch.getTagGroups();
+    this.innerHTML = tagGroupList.map(({ id, name, desc }) => `<div class="tag-list" id="${id}" title="${name} ${desc}"></div>`).join('');
+
+    const tagList = await FlayFetch.getTags();
+    tagList
+      .sort((t1, t2) => t1.name.localeCompare(t2.name))
+      .forEach((tag) => {
+        const input = document.createElement('input');
+        input.type = 'checkbox';
+        input.id = 'tag' + tag.id;
+        input.value = tag.id;
+        input.addEventListener('change', (e) => FlayAction.toggleTag(this.flay.opus, e.target.value, e.target.checked));
+
+        const label = document.createElement('label');
+        label.setAttribute('for', 'tag' + tag.id);
+        label.title = tag.description;
+        label.innerHTML = tag.name;
+
+        this.querySelector(`#etc`).append(input, label);
+        if (tag.group) this.querySelector('#' + tag.group)?.append(input, label);
+      });
+  }
+
   async #displayTag(reload) {
-    if (this.tagList === null || reload) {
-      const tagGroupList = await fetch('/info/tagGroup').then((res) => res.json());
-
-      this.innerHTML = Array.from(tagGroupList)
-        .map(({ id, name, desc }) => `<div class="tag-list" id="${id}" title="${name} ${desc}"></div>`)
-        .join('');
-
-      this.tagList = await fetch('/info/tag').then((res) => res.json());
-      this.tagList
-        .sort((t1, t2) => t1.name.localeCompare(t2.name))
-        .forEach((tag) => {
-          const input = document.createElement('input');
-          input.type = 'checkbox';
-          input.id = 'tag' + tag.id;
-          input.value = tag.id;
-          input.addEventListener('change', (e) => FlayAction.toggleTag(this.flay.opus, e.target.value, e.target.checked));
-
-          const label = document.createElement('label');
-          label.setAttribute('for', 'tag' + tag.id);
-          label.title = tag.description;
-          label.innerHTML = tag.name;
-
-          this.querySelector(`#etc`).append(input, label);
-          if (tag.group) this.querySelector('#' + tag.group)?.append(input, label);
-        });
+    if (!this.#rendered || reload) {
+      await this.#renderTag();
+      this.#rendered = true;
     }
 
     this.querySelectorAll('input').forEach((input) => {

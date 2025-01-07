@@ -7,6 +7,8 @@
  */
 
 const coverObjectURLMap = new Map();
+let tagGroupList = null;
+let tagList = null;
 
 export default class FlayFetch {
   static async getFullyFlay(opus) {
@@ -105,6 +107,24 @@ export default class FlayFetch {
    */
   static async getCountOfFlay(name) {
     return await fetch(`/flay/count/actress/${name}`).then((res) => res.text());
+  }
+
+  /**
+   *
+   * @returns {Promise<TagGroup[]>}
+   */
+  static async getTagGroups() {
+    if (tagGroupList === null) tagGroupList = await fetch('/info/tagGroup').then((res) => res.json());
+    return tagGroupList;
+  }
+
+  /**
+   *
+   * @returns {Promise<Tag[]>}
+   */
+  static async getTags() {
+    if (tagList === null) tagList = await fetch('/info/tag').then((res) => res.json());
+    return tagList;
   }
 
   /**

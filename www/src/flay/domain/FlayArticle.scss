@@ -1,3 +1,5 @@
+$borderRadius: 0.5rem;
+
 .flay-article {
   position: relative;
 
@@ -5,16 +7,21 @@
 
   margin: auto;
   border: 0;
-  padding: 0.5rem;
-  background-color: var(--color-bg-transparent);
-  box-shadow: var(--box-shadow);
-  border-radius: 0.25rem;
+  padding: 0;
+  // background-color: var(--color-bg-transparent);
+  border-radius: $borderRadius;
 
   .cover {
+    display: flex;
     aspect-ratio: var(--cover-aspect-ratio);
     background: transparent no-repeat center / cover;
-    box-shadow: inset 0 0 1rem 0.5rem var(--color-bg-hover);
-    border-radius: 0.25rem;
+    box-shadow: inset 0 0 1rem 0.5rem var(--color-bg-transparent);
+    border-radius: $borderRadius;
+    transition: 0.4s;
+
+    &:hover {
+      box-shadow: none;
+    }
   }
 
   dl {
@@ -66,7 +73,7 @@
       dt {
         span {
           background-color: var(--color-bg-transparent);
-          border-radius: 0.25rem;
+          border-radius: $borderRadius;
           padding: 0 0.25rem 0.125rem;
         }
       }
@@ -101,6 +108,7 @@
   &.cover {
     dl {
       margin: 0.25rem auto 0;
+      padding: 0 1rem 0.5rem;
 
       dt,
       dd {
@@ -116,6 +124,17 @@
         display: block;
         font-size: var(--size-small);
         min-height: 1.25rem;
+      }
+    }
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  .flay-article {
+    dl {
+      dt,
+      dd {
+        text-shadow: none;
       }
     }
   }

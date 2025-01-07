@@ -34,20 +34,24 @@ export default class FlayArticle extends HTMLDivElement {
         <dd class="last-play"    ><span></span></dd>
       </dl>
     `;
+
+    this.querySelector('.opus  span').addEventListener('click', () => popupFlayInfo(this.flay.opus));
+    this.querySelector('.title span').addEventListener('click', () => popupFlay(this.flay.opus));
+    this.querySelector('.cover').addEventListener('click', () => {
+      if (!this.flay.archive) import(/* webpackChunkName: "FlayVideoPlayer" */ '../panel/FlayVideoPlayer').then((module) => module.playInLayer(this.flay.opus));
+    });
+    this.querySelector('.actress').addEventListener('click', (e) => {
+      if (e.target.tagName === 'SPAN') popupActress(e.target.textContent);
+    });
   }
 
   set(flay) {
+    this.flay = flay;
+
     this.querySelector('.studio        span').innerHTML = flay.studio;
     this.querySelector('.opus          span').innerHTML = flay.opus;
     this.querySelector('.title         span').innerHTML = flay.title;
-    this.querySelector('.actress').append(
-      ...flay.actressList.map((name) => {
-        const span = document.createElement('span');
-        span.innerHTML = name;
-        span.addEventListener('click', () => popupActress(name));
-        return span;
-      })
-    );
+    this.querySelector('.actress           ').innerHTML = flay.actressList.map((name) => `<span>${name}</span>`).join('');
     this.querySelector('.release       span').innerHTML = flay.release;
     this.querySelector('.tags          span').innerHTML = StringUtils.toBlank(flay.video.tags?.map((tag) => tag.name).join(', '));
     this.querySelector('.rank          span').innerHTML = StringUtils.toBlank(flay.video.rank) + '<small>rank</small>';
@@ -60,15 +64,8 @@ export default class FlayArticle extends HTMLDivElement {
     this.querySelector('.last-modified span').innerHTML = flay.video.lastModified > 0 ? DateUtils.format(flay.video.lastModified, 'yy.MM.dd') + '<small>modified</small>' : '';
     this.querySelector('.last-play     span').innerHTML = flay.video.lastPlay > 0 ? DateUtils.format(flay.video.lastPlay, 'yy.MM.dd') + '<small>played</small>' : '';
 
-    this.querySelector('.opus          span').addEventListener('click', () => popupFlayInfo(flay.opus));
-    this.querySelector('.title         span').addEventListener('click', () => popupFlay(flay.opus));
-
     FlayFetch.getCover(flay.opus).then((url) => {
       this.querySelector('.cover').style.backgroundImage = `url(${url})`;
-      if (!flay.archive)
-        this.querySelector('.cover').addEventListener('click', () => {
-          import(/* webpackChunkName: "FlayVideoPlayer" */ '../panel/FlayVideoPlayer').then((module) => module.playInLayer(flay.opus));
-        });
     });
   }
 }

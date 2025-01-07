@@ -1,6 +1,6 @@
 import DateUtils from '../../lib/DateUtils';
 import FlayFetch from '../../lib/FlayFetch';
-import { popupActress, popupCover, popupFlay, popupFlayInfo } from '../../lib/FlaySearch';
+import { popupActress, popupFlay, popupFlayInfo } from '../../lib/FlaySearch';
 import StringUtils from '../../lib/StringUtils';
 import './FlayArticle.scss';
 
@@ -35,7 +35,9 @@ export default class FlayArticle extends HTMLDivElement {
       </dl>
     `;
 
-    this.querySelector('.cover').addEventListener('click', () => popupCover(this.opus));
+    this.querySelector('.cover').addEventListener('click', () => {
+      import(/* webpackChunkName: "FlayVideoPlayer" */ '../panel/FlayVideoPlayer').then((module) => module.playInLayer(this.opus));
+    });
     this.querySelector('.opus span').addEventListener('click', () => popupFlayInfo(this.opus));
     this.querySelector('.title span').addEventListener('click', () => popupFlay(this.opus));
     this.querySelector('.actress').addEventListener('click', (e) => {

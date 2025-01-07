@@ -1,36 +1,45 @@
-@keyframes slideLeft {
+$duration: 0.3s;
+$transformMethod: rotate3d(0, 1, 0, 90deg);
+
+@keyframes old-flay {
   to {
     opacity: 0;
-    transform: translateX(-100%);
+    transform: $transformMethod;
   }
 }
-@keyframes slideRight {
+@keyframes new-flay {
   from {
     opacity: 0;
-    transform: translateX(100%);
+    transform: $transformMethod;
   }
 }
-::view-transition-old(slide) {
-  animation-name: slideLeft;
+
+::view-transition-old(next-flay) {
+  animation-name: old-flay;
+  animation-duration: $duration;
+  transform-origin: left;
 }
-::view-transition-new(slide) {
-  animation-name: slideRight;
+::view-transition-new(next-flay) {
+  animation-name: new-flay;
+  animation-duration: $duration;
+  animation-delay: $duration;
+  transform-origin: right;
 }
 
 body {
-  & > main {
+  > main {
     position: fixed;
     inset: 0;
 
     display: grid;
     grid-template-rows: 4rem 1fr;
 
-    & > header {
+    > header {
       position: relative;
       overflow: hidden;
     }
-    & > article {
-      view-transition-name: slide;
+    > article {
+      view-transition-name: next-flay;
       overflow: hidden;
     }
   }

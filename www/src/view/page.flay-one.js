@@ -4,33 +4,45 @@ import './page.flay-one.scss';
 import FlayArticle from '../flay/domain/FlayArticle';
 import FlayCondition from '../flay/panel/FlayCondition';
 import FlayFetch from '../lib/FlayFetch';
-import { OpusProvider } from '../lib/OpusProvider';
+import { getRandomInt } from '../lib/randomNumber';
 
-class Page extends OpusProvider {
-  constructor() {
-    super();
-  }
+class Page {
+  opusList;
+  opusIndexes;
 
   async start() {
-    this.flayCondition = document.querySelector('body > main > header').appendChild(new FlayCondition());
-    this.flayArticle = document.querySelector('body > main > article').appendChild(new FlayArticle());
+    const flayCondition = document.querySelector('body > main > header').appendChild(new FlayCondition());
+    const flayArticle = document.querySelector('body > main > article').appendChild(new FlayArticle());
 
-    this.flayCondition.addEventListener('fetch', async () => {
-      this.setOpusList(this.flayCondition.opusList);
-      await this.#show();
+    flayCondition.addEventListener('fetch', async () => {
+      this.opusList = flayCondition.opusList;
+      this.opusIndexes = [];
+      await this.#show(flayArticle);
     });
 
     window.addEventListener('wheel', async (e) => {
-      if (e.deltaY > 0) await this.#show();
+      if (e.deltaY > 0) await this.#show(flayArticle);
     });
   }
 
-  async #show() {
+  /**
+   *
+   * @param {FlayArticle} flayArticle
+   */
+  async #show(flayArticle) {
     await document.startViewTransition(async () => {
-      const opus = await this.getRandomOpus();
+      const opus = this.#getRandomOpus();
       const flay = await FlayFetch.getFlay(opus);
-      this.flayArticle.set(flay);
+      flayArticle.set(flay);
     }).finished;
+  }
+
+  #getRandomOpus() {
+    if (this.opusIndexes.length === 0) {
+      this.opusIndexes.push(...Array.from({ length: this.opusList.length }, (v, i) => i));
+    }
+    const opusIndex = this.opusIndexes.splice(getRandomInt(0, this.opusIndexes.length), 1)[0];
+    return this.opusList[opusIndex];
   }
 }
 

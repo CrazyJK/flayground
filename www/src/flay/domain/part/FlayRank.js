@@ -63,10 +63,11 @@ export default class FlayRank extends FlayHTMLElement {
         .join(`\n`);
     });
 
-    FlayFetch.getScore(flay.opus).then((score) => {
-      this.querySelector('.score').innerHTML = score;
-      this.querySelector('.score-label').classList.toggle('notyet', score === 0);
-    });
+    if (!flay.archive)
+      FlayFetch.getScore(flay.opus).then((score) => {
+        this.querySelector('.score').innerHTML = score;
+        this.querySelector('.score-label').classList.toggle('notyet', score === 0);
+      });
   }
 }
 

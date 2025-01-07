@@ -51,11 +51,13 @@ export default class FlayTag extends FlayHTMLElement {
           label.innerHTML = tag.name;
 
           this.querySelector(`#etc`).append(input, label);
-          if (tag.group) document.querySelector('#' + tag.group)?.append(input, label);
+          if (tag.group) this.querySelector('#' + tag.group)?.append(input, label);
         });
     }
 
-    this.querySelectorAll('input').forEach((input) => (input.checked = Array.from(this.flay.video.tags).some((tag) => tag.id === Number(input.value))));
+    this.querySelectorAll('input').forEach((input) => {
+      input.checked = Array.from(this.flay.video.tags).some((tag) => tag.id === Number(input.value));
+    });
 
     this.querySelectorAll('label').forEach((label) =>
       label.classList.toggle(

@@ -56,8 +56,9 @@ TAG_DEL.addEventListener('click', () => {
 renderTagList();
 
 async function renderTagList() {
-  const tagGroupList = await fetch('/info/tagGroup').then((res) => res.json());
+  document.querySelector('body > main').textContent = null;
 
+  const tagGroupList = await fetch('/info/tagGroup').then((res) => res.json());
   Array.from(tagGroupList).forEach(({ id, name, desc }) => {
     const groupDiv = document.querySelector('body > main').appendChild(document.createElement('fieldset'));
     groupDiv.innerHTML = `<legend>${id}: ${name} ${desc}</legend><div id="${id}"></div>`;

@@ -30,6 +30,7 @@ module.exports = {
     'page.image-page': './src/view/page.image-page.js',
     'page.image-one': './src/view/page.image-one.js',
     'page.image-fall': './src/view/page.image-fall.js',
+    'page.image-download': './src/view/page.image-download.js',
     'page.kamoru-diary': './src/view/page.kamoru-diary.js',
     'page.crawling': './src/view/page.crawling.js',
     'popup.cover': './src/view/popup.cover.js',

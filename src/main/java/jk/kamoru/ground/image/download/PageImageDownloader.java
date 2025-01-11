@@ -111,6 +111,7 @@ public class PageImageDownloader {
       HttpClient httpClient = createHttpClient(IMAGE_TIMEOUT_SECOND, imgTagSize);
 
       // prepare download
+      List<String> imageUrls = new ArrayList<>();
       List<ImageDownloader> tasks = new ArrayList<>();
       int count = 0;
       for (Element imgTag : imgTags) {
@@ -120,6 +121,7 @@ public class PageImageDownloader {
         if (imgSrc.startsWith("/")) {
           imgSrc = domain + imgSrc;
         }
+        imageUrls.add(imgSrc);
         tasks.add(new ImageDownloader(imgSrc, path.getPath(), titlePrefix + "-" + nf.format(++count), minimumSize, httpClient));
       }
 
@@ -132,16 +134,16 @@ public class PageImageDownloader {
       downloadService.shutdown();
 
       // check result
-      List<File> images = new ArrayList<>();
+      List<File> imageFiles = new ArrayList<>();
       for (Future<File> fileFuture : files) {
         File file = fileFuture.get();
         if (file != null) {
-          images.add(file);
+          imageFiles.add(file);
         }
       }
-      log.info("Image download end. {} downloaded. {} fail", images.size(), files.size() - images.size());
+      log.info("Image download end. {} downloaded. {} fail", imageFiles.size(), files.size() - imageFiles.size());
 
-      return DownloadResult.success(imagePageUrl, path.getCanonicalPath(), images);
+      return DownloadResult.success(imagePageUrl, path.getCanonicalPath(), imageFiles, imageUrls);
     } catch (CancellationException e) {
       log.error("Download timeout " + e.getMessage());
       return DownloadResult.fail(imagePageUrl, e);
@@ -180,14 +182,15 @@ public class PageImageDownloader {
     String localPath;
     String message;
     Boolean result;
-    List<File> images;
+    List<File> imageFiles;
+    List<String> imageUrls;
 
-    public static DownloadResult success(String url, String downloadeddPath, List<File> images) {
-      return new DownloadResult(url, downloadeddPath, "", true, images);
+    public static DownloadResult success(String url, String downloadeddPath, List<File> imageFiles, List<String> imageUrls) {
+      return new DownloadResult(url, downloadeddPath, "", true, imageFiles, imageUrls);
     }
 
     public static DownloadResult fail(String url, Exception error) {
-      return new DownloadResult(url, "", error.getMessage(), false, null);
+      return new DownloadResult(url, "", error.getMessage(), false, null, null);
     }
 
   }

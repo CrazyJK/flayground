@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en" theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Image Downloader</title>
+    <link rel="icon" type="image/png" href="./favicon/flay.png" />
+    <link rel="stylesheet" type="text/css" href="page.image-download.css" />
+    <script defer type="text/javascript" src="page.image-download.js"></script>
+  </head>
+  <body>
+    <main>
+      <header>
+        <div>
+          <input type="url" id="pageUrl" placeholder="pageUrl" />
+        </div>
+        <div>
+          <input type="text" id="downloadDir" placeholder="downloadDir" />
+          <input type="text" id="folderName" placeholder="folderName" />
+          <input type="text" id="titlePrefix" placeholder="titlePrefix" />
+          <input type="text" id="titleCssQuery" placeholder="titleCssQuery" />
+          <input type="number" id="minimumKbSize" placeholder="minimumKbSize" value="10" min="0" step="10" title="minimum Size(KB)" />
+        </div>
+      </header>
+      <article>
+        <div>
+          <button type="button" class="btn" id="openFolderBtn" title="Open folder"></button>
+        </div>
+        <div>
+          <ol id="fileList"></ol>
+        </div>
+        <div>
+          <ol id="images"></ol>
+        </div>
+      </article>
+      <footer></footer>
+    </main>
+  </body>
+</html>

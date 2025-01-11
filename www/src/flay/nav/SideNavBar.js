@@ -35,6 +35,8 @@ const menuList = [
   { url: 'page.image-fall.html', name: 'image fall' },
   { url: 'popup.image.html', name: 'image pop' },
   {},
+  { url: 'page.image-download.html', name: 'pic download' },
+  {},
   { url: 'page.kamoru-diary.html', name: 'diary' },
   {},
   { url: 'page.dragndrop.html', name: 'drag & drop' },

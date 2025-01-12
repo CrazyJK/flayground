@@ -104,7 +104,7 @@ export default class ImageFall extends HTMLDivElement {
       }
     });
 
-    console.debug(`div[${divIndex + 1}/${divList.length}] ${imageIndex} - ${name}`);
+    // console.debug(`div[${divIndex + 1}/${divList.length}] ${imageIndex} - ${name}`);
   }
 
   #getDivIdx(divLength) {

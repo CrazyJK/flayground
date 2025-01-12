@@ -1,0 +1,117 @@
+.draggable-window {
+  position: absolute;
+  overflow: visible;
+  -webkit-tap-highlight-color: transparent;
+  pointer-events: auto;
+  z-index: 13;
+  box-shadow: var(--box-shadow-smallest);
+  border-radius: 4px;
+
+  .edges {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    height: 0px;
+    width: 0px;
+    overflow: visible;
+    -webkit-tap-highlight-color: transparent;
+    z-index: 14;
+
+    .edge {
+      position: absolute;
+      overflow: hidden;
+      -webkit-tap-highlight-color: transparent;
+
+      &.top,
+      &.bottom {
+        cursor: ns-resize;
+        height: 8px;
+      }
+      &.left,
+      &.right {
+        cursor: ew-resize;
+        width: 8px;
+      }
+      &.top-left,
+      &.bottom-right {
+        cursor: nwse-resize;
+        height: 8px;
+        width: 8px;
+      }
+      &.top-right,
+      &.bottom-left {
+        cursor: nesw-resize;
+        height: 8px;
+        width: 8px;
+      }
+    }
+  }
+
+  .inner {
+    position: absolute;
+    height: 100%;
+    width: 100%;
+    background-color: var(--color-bg-transparent);
+    border: 2px solid var(--color-border);
+    border-radius: 4px;
+    display: grid;
+    grid-template-rows: 2rem 1fr;
+
+    .title-panel {
+      position: relative;
+      width: 100%;
+      overflow: hidden;
+      border-bottom: 1px solid var(--color-border);
+      border-radius: 2px 2px 0px 0px;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+
+      .title {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        cursor: move;
+        flex-grow: 1;
+        height: 100%;
+        padding: 3px 3px 3px 8px;
+
+        span {
+          font-weight: 700;
+        }
+      }
+
+      .buttons {
+        .btn {
+          cursor: pointer;
+          padding: 0 0.25rem;
+        }
+      }
+    }
+
+    .body-panel {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden auto;
+      -webkit-tap-highlight-color: transparent;
+    }
+  }
+}
+
+[debug='1'],
+[debug='2'] {
+  .draggable-window {
+    .edges {
+      .edge {
+        background-color: rgba(65, 133, 70, 0.25);
+      }
+      .top-left,
+      .bottom-right,
+      .top-right,
+      .bottom-left {
+        background-color: rgba(218, 87, 166, 0.25);
+      }
+    }
+  }
+}

@@ -131,7 +131,7 @@ export default class ImageFall extends HTMLDivElement {
     }
 
     if (this.willRandom) {
-      this.currentIamgeIndex = getRandomInt(0, this.imageIndexArray.length);
+      this.iamgeIndex = getRandomInt(0, this.imageIndexArray.length);
     } else {
       if (this.iamgeIndex >= this.imageIndexArray.length) {
         this.currentIndex = 0;

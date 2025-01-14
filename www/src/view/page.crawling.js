@@ -4,7 +4,7 @@ import './page.crawling.scss';
 import NanoStore from '../flay/idb/nano/store/NanoStore';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
-import { popupActress } from '../lib/FlaySearch';
+import { popupActress, popupFlay } from '../lib/FlaySearch';
 import StringUtils from '../lib/StringUtils';
 
 const DOMAIN = 'https://www.nanojav.com';
@@ -164,6 +164,7 @@ class Page {
       div.querySelector('.title label').addEventListener('click', (e) => this.#copyToClipboard(e.target));
       div.querySelectorAll('.download-list label').forEach((label) => label.addEventListener('click', (e) => this.#copyToClipboard(e.target, DOMAIN + e.target.dataset.href)));
       div.querySelectorAll('.actress-list label span').forEach((span) => span.addEventListener('click', (e) => popupActress(e.target.textContent)));
+      div.querySelectorAll('.video label').forEach((label) => label.addEventListener('click', (e) => popupFlay(div.dataset.opus)));
 
       const record = await nanoStore.select(data.opus.text);
       if (record) {

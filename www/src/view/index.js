@@ -36,7 +36,7 @@ class Page {
           edges: 'top,right',
         })
       )
-      .addContent(new ImageFall());
+      .addContent(new ImageFall({ mode: 'random' }));
   }
 }
 

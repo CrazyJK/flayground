@@ -3,6 +3,7 @@ import { addResizeListener } from '../lib/windowAddEventListener';
 import './ImageFall.scss';
 
 const PANE_WIDTH = 360;
+const DEFAULT_OPTS = { mode: 'serial', auto: true };
 
 export default class ImageFall extends HTMLDivElement {
   contunue = true;
@@ -16,9 +17,13 @@ export default class ImageFall extends HTMLDivElement {
   divIndexArray = [];
   divIndex = -1;
 
-  constructor() {
+  constructor(opts = DEFAULT_OPTS) {
     super();
     this.classList.add('image-fall', 'flay-div');
+
+    const { mode, auto } = { ...DEFAULT_OPTS, ...opts };
+    this.contunue = auto;
+    this.willRandom = mode === 'random';
   }
 
   connectedCallback() {

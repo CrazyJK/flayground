@@ -21,6 +21,7 @@ import controlsSVG from '../svg/controls';
 import rankSVG from '../svg/ranks';
 import themeSVG from '../svg/themes';
 import weatherSVG from '../svg/weathers';
+import windowButton from '../svg/windowButton';
 
 Element.prototype.appendSVG = function (svg) {
   this.appendChild(document.createElement('label')).innerHTML = svg;
@@ -66,6 +67,9 @@ document
   .appendSVG(weatherSVG.rain)
   .appendSVG(weatherSVG.snow)
   .appendSVG(weatherSVG.sunny)
+  .appendSVG(windowButton.minimize)
+  .appendSVG(windowButton.maximize)
+  .appendSVG(windowButton.terminate)
   .appendIMG('./svg/flayground-text.svg')
   .appendIMG('./svg/flayground-circle.svg')
   .appendIMG('./svg/flayground-circle-t.svg');

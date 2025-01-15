@@ -3,6 +3,7 @@ import './index.scss';
 
 import ImageFall from '../image/ImageFall';
 import DraggableWindow from '../lib/DraggableWindow';
+import { getRandomInt } from '../lib/randomNumber';
 
 class Page {
   constructor() {}
@@ -13,11 +14,11 @@ class Page {
         document
           .querySelector('body > main')
           .appendChild(
-            new DraggableWindow('추천 Flay', {
-              top: 920,
-              left: 40,
-              width: 800,
-              height: 800,
+            new DraggableWindow('Today`s Flay', {
+              top: 0,
+              left: 0,
+              width: getRandomInt(window.innerWidth / 2, (window.innerWidth * 4) / 5),
+              height: getRandomInt(window.innerHeight / 2, (window.innerHeight * 4) / 5),
               edges: 'bottom,left',
             })
           )
@@ -28,11 +29,11 @@ class Page {
     document
       .querySelector('body > main')
       .appendChild(
-        new DraggableWindow('이미지 추천', {
-          top: 10,
-          left: 460,
-          width: 400,
-          height: 800,
+        new DraggableWindow('Image Fallen', {
+          top: 0,
+          left: 0,
+          width: 500,
+          height: getRandomInt(window.innerHeight / 2, (window.innerHeight * 4) / 5),
           edges: 'top,right',
         })
       )

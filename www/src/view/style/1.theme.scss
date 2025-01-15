@@ -65,6 +65,7 @@
   --color-bg-side-nav: #f3f3f3;
   --color-bg-focus: #ffc0cb83;
   --color-bg-active: #ffc0cb83;
+  --color-bg-window: #eee;
 
   --color-text: var(--color-dark);
   --color-text-secondary: var(--color-gray);
@@ -77,6 +78,7 @@
   --color-border: var(--color-light-dark);
   --color-border-active: var(--color-orange);
   --color-border-reversed: var(--color-black-alpha-dark);
+  --color-border-window: #4b4b4b;
 
   --color-tab-active: var(--color-orange);
 
@@ -106,12 +108,14 @@
   --color-bg-input-focus: #00000081;
   --color-bg-side-nav: #202020;
   --color-bg-focus: #333a41;
+  --color-bg-window: #333;
 
   --color-text: var(--color-light);
   --color-text-placeholder: var(--color-gray-dark);
 
   --color-border: var(--color-dark-dark);
   --color-border-reversed: var(--color-light-dark);
+  --color-border-window: #4b4b4b;
 
   --text-shadow: 1px 1px 2px var(--color-dark-light);
   --text-shadow-hover: 1px 1px 2px var(--color-orange);

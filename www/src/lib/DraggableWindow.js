@@ -1,3 +1,4 @@
+import windowButton from '../svg/windowButton';
 import './DraggableWindow.scss';
 import StringUtils from './StringUtils';
 import { addResizeListener } from './windowAddEventListener';
@@ -27,6 +28,8 @@ export default class DraggableWindow extends HTMLDivElement {
   #edgeTopRight___;
   #edgeBottomLeft_;
   #edgeBottomRight;
+
+  static zIndex = 13;
 
   /**
    *
@@ -63,8 +66,9 @@ export default class DraggableWindow extends HTMLDivElement {
             <span>${title}</span>
           </div>
           <div class="buttons">
-            <button type="button" class="btn minimize">━</button>
-            <button type="button" class="btn close">Ｘ</button>
+            <button type="button" class="btn minimize">${windowButton.minimize /** ━ */}</button>
+            <button type="button" class="btn maximize">${windowButton.maximize}</button>
+            <button type="button" class="btn terminate">${windowButton.terminate /** Ｘ */}</button>
           </div>
         </div>
         <div class="body-panel">
@@ -104,8 +108,13 @@ export default class DraggableWindow extends HTMLDivElement {
 
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
     document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.querySelector('.title-panel .minimize').addEventListener('click', () => this.#hideHandler());
-    this.querySelector('.title-panel .close').addEventListener('click', () => this.#closeHandler());
+
+    this.querySelector('.title-panel .minimize').addEventListener('click', () => this.#minimizeHandler());
+    this.querySelector('.title-panel .maximize').addEventListener('click', () => this.#maximizeHandler());
+    this.querySelector('.title-panel .terminate').addEventListener('click', () => this.#terminateHandler());
+
+    this.addEventListener('click', () => (this.style.zIndex = ++DraggableWindow.zIndex));
+
     addResizeListener(() => this.#resizeHandler());
   }
 
@@ -114,11 +123,15 @@ export default class DraggableWindow extends HTMLDivElement {
     this.#setViewport();
   }
 
-  #hideHandler() {
-    this.classList.toggle('hide');
+  #minimizeHandler() {
+    this.classList.toggle('minimize');
   }
 
-  #closeHandler() {
+  #maximizeHandler() {
+    this.classList.toggle('maximize');
+  }
+
+  #terminateHandler() {
     this.remove();
   }
 

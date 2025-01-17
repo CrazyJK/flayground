@@ -1,24 +1,28 @@
 import './inc/Page';
 import './index.scss';
 
+import FlayModalWindow from '../lib/FlayModalWindow';
+
+import FlayVideoViewPanel from '../flay/panel/FlayVideoViewPanel';
 import ImageFall from '../image/ImageFall';
-import DraggableWindow from '../lib/DraggableWindow';
 import { getRandomInt } from '../lib/randomNumber';
 
 class Page {
   constructor() {}
 
   async start() {
+    const [wUnit, hUnit] = [window.innerWidth / 12, window.innerHeight / 12];
+
     import(/* webpackChunkName: "PopoutCover" */ '../flay/panel/PopoutCover').then((module) =>
       new module.default(
         document
           .querySelector('body > main')
           .appendChild(
-            new DraggableWindow('Today`s Flay', {
+            new FlayModalWindow('Today`s Flay', {
               top: 0,
               left: 0,
-              width: getRandomInt(window.innerWidth / 2, (window.innerWidth * 4) / 5),
-              height: getRandomInt(window.innerHeight / 2, (window.innerHeight * 4) / 5),
+              width: getRandomInt(0, wUnit) + wUnit * 4,
+              height: getRandomInt(0, hUnit) + hUnit * 4,
               edges: 'bottom,left',
             })
           )
@@ -29,15 +33,29 @@ class Page {
     document
       .querySelector('body > main')
       .appendChild(
-        new DraggableWindow('Image Fallen', {
+        new FlayModalWindow('Image Fallen', {
           top: 0,
           left: 0,
-          width: 500,
-          height: getRandomInt(window.innerHeight / 2, (window.innerHeight * 4) / 5),
+          width: getRandomInt(0, wUnit) + wUnit,
+          height: getRandomInt(0, hUnit) + hUnit * 10,
           edges: 'top,right',
         })
       )
       .addContent(new ImageFall({ mode: 'random' }));
+
+    document
+      .querySelector('body > main')
+      .appendChild(
+        new FlayModalWindow('Video', {
+          top: 0,
+          left: 0,
+          width: getRandomInt(0, wUnit) + wUnit * 6,
+          height: getRandomInt(0, hUnit) + hUnit * 6,
+          edges: 'top,left',
+        })
+      )
+      .addContent(new FlayVideoViewPanel())
+      .start();
   }
 }
 

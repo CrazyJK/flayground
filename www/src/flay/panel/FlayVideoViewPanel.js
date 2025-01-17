@@ -149,7 +149,7 @@ export default class FlayVideoViewPanel extends HTMLDivElement {
   #initKeepFlay() {
     this.querySelector('#keepFlay').innerHTML = basketSVG;
     this.querySelector('#keepFlay').addEventListener('click', async () => {
-      const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '../flay/panel/FlayBasket');
+      const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ './FlayBasket');
       FlayBasket.add(this.videoPlayer.opus);
     });
   }

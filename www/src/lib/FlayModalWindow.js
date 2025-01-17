@@ -1,12 +1,12 @@
 import windowButton from '../svg/windowButton';
-import './DraggableWindow.scss';
+import './FlayModalWindow.scss';
 import StringUtils from './StringUtils';
 import { addResizeListener } from './windowAddEventListener';
 
 const OFFSET = 4;
 const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: null };
 
-export default class DraggableWindow extends HTMLDivElement {
+export default class FlayModalWindow extends HTMLDivElement {
   #top;
   #left;
   #width;
@@ -48,7 +48,7 @@ export default class DraggableWindow extends HTMLDivElement {
     this.#minHeight = minHeight;
     this.dataset.edges = edges;
 
-    this.classList.add('draggable-window', 'flay-div');
+    this.classList.add('flay-modal-window', 'flay-div');
     this.innerHTML = `
       <div class="edges">
         <div class="edge top"></div>
@@ -113,7 +113,7 @@ export default class DraggableWindow extends HTMLDivElement {
     this.querySelector('.title-panel .maximize').addEventListener('click', () => this.#maximizeHandler());
     this.querySelector('.title-panel .terminate').addEventListener('click', () => this.#terminateHandler());
 
-    this.addEventListener('click', () => (this.style.zIndex = ++DraggableWindow.zIndex));
+    this.addEventListener('click', () => (this.style.zIndex = ++FlayModalWindow.zIndex));
 
     addResizeListener(() => this.#resizeHandler());
   }
@@ -271,4 +271,4 @@ export default class DraggableWindow extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-draggable-window', DraggableWindow, { extends: 'div' });
+customElements.define('flay-modal-window', FlayModalWindow, { extends: 'div' });

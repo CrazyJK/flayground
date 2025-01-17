@@ -51,7 +51,6 @@ export class FlayVideoPlayer extends HTMLDivElement {
   constructor(opts) {
     super();
 
-    this.classList.add('flay-video-player', 'flay-div');
     this.options = {
       ...{
         controls: true,
@@ -62,9 +61,8 @@ export class FlayVideoPlayer extends HTMLDivElement {
       },
       ...opts,
     };
-  }
 
-  connectedCallback() {
+    this.classList.add('flay-video-player', 'flay-div');
     this.flayVideo = this.appendChild(new FlayVideo());
     this.flayVideoInfo = this.appendChild(new FlayVideoInfo());
     this.flayVideoPoster = this.appendChild(new FlayVideoPoster());

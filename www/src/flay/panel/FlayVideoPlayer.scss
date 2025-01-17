@@ -1,17 +1,14 @@
 .flay-video-player {
   position: relative;
-  display: block;
+  display: flex;
   opacity: 0;
+
+  background-color: #000;
+  border: 2px solid #000;
 
   &.load {
     opacity: 1;
   }
-
-  position: relative;
-  display: flex;
-
-  background-color: #000;
-  border: 2px solid #000;
 
   video {
     aspect-ratio: 16 / 9;
@@ -29,6 +26,7 @@
     background-color: var(--color-bg-transparent);
     transition: 0.4s;
     opacity: 0;
+    z-index: -1;
 
     .header,
     .footer {
@@ -46,35 +44,37 @@
   }
 
   .flay-video-poster {
-    position: fixed;
+    position: absolute;
     top: 0;
     left: 0;
     right: 0;
-
-    max-width: 800px;
+    bottom: 0;
     width: 100%;
+    max-width: 800px;
+    overflow: hidden;
+
+    display: flex;
+    align-items: center;
 
     box-shadow: none;
     margin: 1rem auto;
     padding: 1rem;
-    opacity: 0.5;
+    opacity: 0;
     z-index: -1;
 
-    transition: 0.4s;
-
-    &:hover {
-      box-shadow: 0 0 4rem 1rem var(--color-bg);
-      margin: 2rem auto;
-      padding: 0;
-      opacity: 1;
-      z-index: 1;
-    }
+    transition: 0.4s 0s;
   }
 
   &:hover {
     .flay-video-info {
       opacity: 1;
+      z-index: 2;
     }
+  }
+  .flay-video-info:hover + .flay-video-poster {
+    opacity: 1;
+    z-index: 1;
+    transition: 0.4s 0.2s;
   }
 }
 

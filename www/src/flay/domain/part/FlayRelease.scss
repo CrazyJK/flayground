@@ -4,18 +4,14 @@
   justify-content: center;
   align-items: baseline;
 
-  .modified-label,
-  .access-label,
-  .played-label {
+  > label {
     font-size: var(--size-normal);
     min-width: 7rem;
     text-align: center;
   }
 
   &.card {
-    .modified-label,
-    .access-label,
-    .played-label {
+    .extra {
       display: none;
     }
   }

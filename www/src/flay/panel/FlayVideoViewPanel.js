@@ -12,6 +12,8 @@ const MinPlayTime = 60 * 2;
 const MaxPlayTime = 60 * 5;
 
 export default class FlayVideoViewPanel extends HTMLDivElement {
+  #timer = -1;
+
   constructor() {
     super();
 
@@ -95,6 +97,14 @@ export default class FlayVideoViewPanel extends HTMLDivElement {
     });
   }
 
+  connectedCallback() {
+    this.start();
+  }
+
+  disconnectedCallback() {
+    clearInterval(this.#timer);
+  }
+
   #initControl() {
     const videoControlsToggler = this.querySelector('#toggle-video-controls');
     videoControlsToggler.addEventListener('change', (e) => {
@@ -161,6 +171,7 @@ export default class FlayVideoViewPanel extends HTMLDivElement {
 
   async play() {
     const { opus, flay, actress } = await this.flayProvider.random();
+    this.dispatchEvent(new CustomEvent('FlayVideoViewPanel.play', { bubbles: true, composed: true, detail: { flay: flay } }));
 
     try {
       await this.videoPlayer.load(opus, flay, actress);
@@ -188,7 +199,7 @@ export default class FlayVideoViewPanel extends HTMLDivElement {
   async start() {
     await this.play();
 
-    setInterval(async () => {
+    this.#timer = setInterval(async () => {
       if (this.isPaused) return;
 
       --this.sec;

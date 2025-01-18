@@ -6,6 +6,7 @@ const PANE_WIDTH = 360;
 const DEFAULT_OPTS = { mode: 'serial', auto: true };
 
 export default class ImageFall extends HTMLDivElement {
+  timer = -1;
   contunue = true;
   willRandom = false;
 
@@ -50,6 +51,10 @@ export default class ImageFall extends HTMLDivElement {
       .then(() => this.#render());
   }
 
+  disconnectedCallback() {
+    clearInterval(this.timer);
+  }
+
   #resizeDiv() {
     const paneCount = Math.round(this.clientWidth / PANE_WIDTH);
     const imageWrapList = this.querySelectorAll('.row > div');
@@ -67,7 +72,7 @@ export default class ImageFall extends HTMLDivElement {
   }
 
   #render() {
-    setInterval(() => {
+    this.timer = setInterval(() => {
       if (this.contunue) this.#addImage();
     }, 1000 * 3);
   }

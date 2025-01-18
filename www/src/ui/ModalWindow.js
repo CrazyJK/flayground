@@ -124,6 +124,19 @@ export default class ModalWindow extends HTMLDivElement {
     this.#setViewport();
   }
 
+  appendChild(element) {
+    this.querySelector('.body-panel').appendChild(element);
+    return element;
+  }
+
+  set windowTitle(title) {
+    this.querySelector('.title span').innerHTML = title;
+  }
+
+  get windowTitle() {
+    return this.querySelector('.title span').textContent;
+  }
+
   #minimizeHandler() {
     this.classList.toggle('minimize');
   }
@@ -133,6 +146,9 @@ export default class ModalWindow extends HTMLDivElement {
   }
 
   #terminateHandler() {
+    while (this.firstChild) {
+      this.removeChild(this.firstChild);
+    }
     this.remove();
   }
 
@@ -257,19 +273,6 @@ export default class ModalWindow extends HTMLDivElement {
     this.#edgeTopRight___.style.cssText = `top: ${this.#top - OFFSET}px;                left: ${this.#left + this.#width - OFFSET}px;`;
     this.#edgeBottomLeft_.style.cssText = `top: ${this.#top + this.#height - OFFSET}px; left: ${this.#left - OFFSET}px;`;
     this.#edgeBottomRight.style.cssText = `top: ${this.#top + this.#height - OFFSET}px; left: ${this.#left + this.#width - OFFSET}px;`;
-  }
-
-  addContent(element) {
-    this.querySelector('.body-panel').appendChild(element);
-    return element;
-  }
-
-  getBodyPanel() {
-    return this.querySelector('.body-panel');
-  }
-
-  setTitle(title) {
-    this.querySelector('.title span').innerHTML = title;
   }
 }
 

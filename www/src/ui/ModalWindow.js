@@ -67,9 +67,9 @@ export default class ModalWindow extends HTMLDivElement {
             <span>${title}</span>
           </div>
           <div class="buttons">
-            <button type="button" class="btn minimize">${windowButton.minimize /** ━ */}</button>
+            <button type="button" class="btn minimize">${windowButton.minimize}</button>
             <button type="button" class="btn maximize">${windowButton.maximize}</button>
-            <button type="button" class="btn terminate">${windowButton.terminate /** Ｘ */}</button>
+            <button type="button" class="btn terminate">${windowButton.terminate}</button>
           </div>
         </div>
         <div class="body-panel">

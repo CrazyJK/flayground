@@ -3,7 +3,7 @@ import './popup.tag.scss';
 
 import FlayCard from '../flay/domain/FlayCard';
 import FlayAction from '../lib/FlayAction';
-import GridControl from '../lib/GridControl';
+import GridControl from '../ui/GridControl';
 
 window.tagList = [];
 window.actressMap = new Map();

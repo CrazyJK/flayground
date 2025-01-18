@@ -4,8 +4,8 @@ import './popup.actress.scss';
 import FlayCard from '../flay/domain/FlayCard';
 import FlayAction from '../lib/FlayAction';
 import FlaySearch from '../lib/FlaySearch';
-import GridControl from '../lib/GridControl';
 import favoriteSVG from '../svg/favorite';
+import GridControl from '../ui/GridControl';
 
 class PopupActress {
   constructor() {

@@ -1,11 +1,11 @@
 import FlayFetch from '../../lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '../../lib/FlaySearch';
 import FlayStorage from '../../lib/FlayStorage';
-import GridControl from '../../lib/GridControl';
 import { getRandomInt } from '../../lib/randomNumber';
 import StringUtils from '../../lib/StringUtils';
 import trashBinSVG from '../../svg/trashBin';
 import vaginaSVG from '../../svg/vagina';
+import GridControl from '../../ui/GridControl';
 import './FlayBasket.scss';
 
 const BASKET_KEY = 'flay-basket';

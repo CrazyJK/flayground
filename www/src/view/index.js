@@ -1,7 +1,7 @@
 import './inc/Page';
 import './index.scss';
 
-import FlayModalWindow from '../lib/FlayModalWindow';
+import ModalWindow from '../ui/ModalWindow';
 
 import FlayVideoViewPanel from '../flay/panel/FlayVideoViewPanel';
 import ImageFall from '../image/ImageFall';
@@ -18,7 +18,7 @@ class Page {
         document
           .querySelector('body > main')
           .appendChild(
-            new FlayModalWindow('Today`s Flay', {
+            new ModalWindow('Today`s Flay', {
               top: 0,
               left: 0,
               width: getRandomInt(0, wUnit) + wUnit * 4,
@@ -33,7 +33,7 @@ class Page {
     document
       .querySelector('body > main')
       .appendChild(
-        new FlayModalWindow('Image Fallen', {
+        new ModalWindow('Image Fallen', {
           top: 0,
           left: 0,
           width: getRandomInt(0, wUnit) + wUnit,
@@ -46,7 +46,7 @@ class Page {
     document
       .querySelector('body > main')
       .appendChild(
-        new FlayModalWindow('Video', {
+        new ModalWindow('Video', {
           top: 0,
           left: 0,
           width: getRandomInt(0, wUnit) + wUnit * 6,

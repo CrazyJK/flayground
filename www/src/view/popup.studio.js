@@ -3,7 +3,7 @@ import './popup.studio.scss';
 
 import FlayCard from '../flay/domain/FlayCard';
 import flayAction from '../lib/FlayAction';
-import GridControl from '../lib/GridControl';
+import GridControl from '../ui/GridControl';
 
 class PopupStudio {
   constructor() {

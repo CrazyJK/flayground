@@ -1,12 +1,13 @@
+import './ModalWindow.scss';
+
+import StringUtils from '../lib/StringUtils';
+import { addResizeListener } from '../lib/windowAddEventListener';
 import windowButton from '../svg/windowButton';
-import './FlayModalWindow.scss';
-import StringUtils from './StringUtils';
-import { addResizeListener } from './windowAddEventListener';
 
 const OFFSET = 4;
 const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: null };
 
-export default class FlayModalWindow extends HTMLDivElement {
+export default class ModalWindow extends HTMLDivElement {
   #top;
   #left;
   #width;
@@ -48,7 +49,7 @@ export default class FlayModalWindow extends HTMLDivElement {
     this.#minHeight = minHeight;
     this.dataset.edges = edges;
 
-    this.classList.add('flay-modal-window', 'flay-div');
+    this.classList.add('modal-window', 'flay-div');
     this.innerHTML = `
       <div class="edges">
         <div class="edge top"></div>
@@ -113,7 +114,7 @@ export default class FlayModalWindow extends HTMLDivElement {
     this.querySelector('.title-panel .maximize').addEventListener('click', () => this.#maximizeHandler());
     this.querySelector('.title-panel .terminate').addEventListener('click', () => this.#terminateHandler());
 
-    this.addEventListener('click', () => (this.style.zIndex = ++FlayModalWindow.zIndex));
+    this.addEventListener('click', () => (this.style.zIndex = ++ModalWindow.zIndex));
 
     addResizeListener(() => this.#resizeHandler());
   }
@@ -271,4 +272,4 @@ export default class FlayModalWindow extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-modal-window', FlayModalWindow, { extends: 'div' });
+customElements.define('modal-window', ModalWindow, { extends: 'div' });

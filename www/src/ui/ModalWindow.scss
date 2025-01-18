@@ -1,4 +1,4 @@
-.flay-modal-window {
+.modal-window {
   position: absolute;
   overflow: visible;
   -webkit-tap-highlight-color: transparent;
@@ -127,7 +127,7 @@
 
 [debug='1'],
 [debug='2'] {
-  .flay-modal-window {
+  .modal-window {
     .edges {
       .edge {
         background-color: rgba(65, 133, 70, 0.25);

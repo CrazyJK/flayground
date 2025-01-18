@@ -98,10 +98,13 @@ export class FlayVideoPlayer extends HTMLDivElement {
       const timer = setInterval(() => {
         if (this.flayVideo.loaded) {
           this.classList.toggle('load', true);
+          this.classList.toggle('error', false);
           clearInterval(timer);
           resolve(true);
         }
         if (this.flayVideo.error) {
+          this.classList.toggle('load', false);
+          this.classList.toggle('error', true);
           clearInterval(timer);
           reject(`load Error: [${this.opus}] ${this.flayVideo.error?.message}`);
         }

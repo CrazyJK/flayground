@@ -3,7 +3,9 @@ import './page.flay-page.scss';
 
 import FlayPage from '../flay/domain/FlayPage';
 import FlayCondition from '../flay/panel/FlayCondition';
+import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
 import FlayPagination from '../flay/panel/FlayPagination';
+import ModalWindow from '../ui/ModalWindow';
 
 const flayCondition = document.querySelector('body > main > header').appendChild(new FlayCondition());
 const flayPagination = document.querySelector('body > main > footer').appendChild(new FlayPagination());
@@ -24,3 +26,16 @@ flayPagination.addEventListener('change', async () => {
     flayPage.classList.toggle('hide', true);
   }
 });
+
+document
+  .querySelector('body')
+  .appendChild(
+    new ModalWindow('Memo', {
+      top: 60,
+      left: 0,
+      width: 300,
+      height: 200,
+      edges: 'right',
+    })
+  )
+  .appendChild(new FlayMemoEditor());

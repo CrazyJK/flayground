@@ -111,10 +111,12 @@ export default class ModalWindow extends HTMLDivElement {
     document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
-    this.addEventListener('mousedown', () => (this.style.zIndex = ++ModalWindow.zIndex));
     this.querySelector('.title-panel .minimize').addEventListener('click', () => this.#minimizeHandler());
     this.querySelector('.title-panel .maximize').addEventListener('click', () => this.#maximizeHandler());
     this.querySelector('.title-panel .terminate').addEventListener('click', () => this.#terminateHandler());
+
+    this.addEventListener('mousedown', () => (this.style.zIndex = ++ModalWindow.zIndex));
+    this.addEventListener('wheel', (e) => e.stopPropagation());
 
     addResizeListener(() => this.#resizeWindowHandler());
   }
@@ -172,7 +174,7 @@ export default class ModalWindow extends HTMLDivElement {
     this.#setViewport();
     this.classList.remove('floating');
 
-    window.dispatchEvent(new Event('resize'));
+    // window.dispatchEvent(new Event('resize'));
   }
 
   #moveHandler(e) {

@@ -133,7 +133,7 @@ module.exports = {
       const lastIndex = assetFilename.lastIndexOf('.');
       const name = assetFilename.substring(0, lastIndex);
       const suffix = assetFilename.substring(lastIndex + 1);
-      return !['json', 'map', 'ico'].includes(suffix) && !['style', 'page.kamoru-diary'].includes(name);
+      return !['json', 'map', 'ico'].includes(suffix) && !name.startsWith('vendors');
     },
     maxAssetSize: 500000,
     maxEntrypointSize: 500000,

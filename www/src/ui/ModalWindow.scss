@@ -4,8 +4,9 @@
   -webkit-tap-highlight-color: transparent;
   pointer-events: auto;
   z-index: 13;
-  box-shadow: var(--box-shadow-smallest);
   border-radius: 4px;
+  box-shadow: var(--box-shadow-smallest);
+  transition: box-shadow 0.4s;
 
   .edges {
     position: fixed;
@@ -15,7 +16,7 @@
     width: 0px;
     overflow: visible;
     -webkit-tap-highlight-color: transparent;
-    z-index: 14;
+    z-index: 1;
 
     .edge {
       position: absolute;
@@ -75,8 +76,10 @@
         flex-grow: 1;
         height: 100%;
         padding: 3px 3px 3px 8px;
+        z-index: 1;
 
         span {
+          color: var(--color-text-window);
           font-weight: 700;
         }
       }
@@ -87,7 +90,7 @@
         padding: 0 0.25rem;
 
         .btn {
-          cursor: pointer;
+          color: var(--color-text-window);
 
           svg {
             width: 1.5rem;
@@ -122,6 +125,26 @@
     .edges {
       display: none;
     }
+  }
+
+  &.floating {
+    .inner {
+      .title-panel {
+        .title span,
+        .buttons .btn {
+          color: var(--color-text);
+        }
+      }
+    }
+    .outer {
+      position: fixed;
+      inset: 0;
+      background-color: transparent;
+    }
+  }
+
+  &:hover {
+    box-shadow: var(--box-shadow);
   }
 }
 

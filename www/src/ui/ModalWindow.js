@@ -8,6 +8,8 @@ const OFFSET = 4;
 const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: null };
 
 export default class ModalWindow extends HTMLDivElement {
+  static zIndex = 13;
+
   #top;
   #left;
   #width;
@@ -29,8 +31,6 @@ export default class ModalWindow extends HTMLDivElement {
   #edgeTopRight___;
   #edgeBottomLeft_;
   #edgeBottomRight;
-
-  static zIndex = 13;
 
   /**
    *
@@ -67,14 +67,15 @@ export default class ModalWindow extends HTMLDivElement {
             <span>${title}</span>
           </div>
           <div class="buttons">
-            <button type="button" class="btn minimize">${windowButton.minimize}</button>
-            <button type="button" class="btn maximize">${windowButton.maximize}</button>
-            <button type="button" class="btn terminate">${windowButton.terminate}</button>
+            <button type="button" class="btn minimize" title="말기">${windowButton.minimize}</button>
+            <button type="button" class="btn maximize" title="최대화">${windowButton.maximize}</button>
+            <button type="button" class="btn terminate" title="닫기">${windowButton.terminate}</button>
           </div>
         </div>
         <div class="body-panel">
         </div>
       </div>
+      <div class="outer"></div>
     `;
 
     this.#titleBar_______ = this.querySelector('.title-panel .title');
@@ -106,17 +107,15 @@ export default class ModalWindow extends HTMLDivElement {
     this.#edgeTopRight___.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeBottomLeft_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeBottomRight.addEventListener('mouseup', (e) => this.#stoptHandler(e));
+    document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
 
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
-    document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
 
     this.querySelector('.title-panel .minimize').addEventListener('click', () => this.#minimizeHandler());
     this.querySelector('.title-panel .maximize').addEventListener('click', () => this.#maximizeHandler());
     this.querySelector('.title-panel .terminate').addEventListener('click', () => this.#terminateHandler());
 
-    this.addEventListener('click', () => (this.style.zIndex = ++ModalWindow.zIndex));
-
-    addResizeListener(() => this.#resizeHandler());
+    addResizeListener(() => this.#resizeWindowHandler());
   }
 
   connectedCallback() {
@@ -136,7 +135,7 @@ export default class ModalWindow extends HTMLDivElement {
     this.remove();
   }
 
-  #resizeHandler() {
+  #resizeWindowHandler() {
     this.#decideViewportInWindow();
     this.#setViewport();
   }
@@ -146,14 +145,16 @@ export default class ModalWindow extends HTMLDivElement {
     this.#mode = mode;
     this.#prevClientX = e.clientX;
     this.#prevClientY = e.clientY;
+    this.classList.add('floating');
+    this.style.zIndex = ++ModalWindow.zIndex;
   }
 
   #stoptHandler(e) {
     this.#active = false;
     this.#mode = null;
-
     this.#decideViewportInWindow();
     this.#setViewport();
+    this.classList.remove('floating');
 
     window.dispatchEvent(new Event('resize'));
   }

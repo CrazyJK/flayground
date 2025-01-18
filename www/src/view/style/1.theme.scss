@@ -72,13 +72,14 @@
   --color-text-placeholder: var(--color-dark-light);
   --color-text-danger: var(--color-red);
   --color-text-warn: orangered;
+  --color-text-window: #918b8b;
 
   --color-checked: var(--color-orange);
 
   --color-border: var(--color-light-dark);
   --color-border-active: var(--color-orange);
   --color-border-reversed: var(--color-black-alpha-dark);
-  --color-border-window: #4b4b4b;
+  --color-border-window: #d3cece;
 
   --color-tab-active: var(--color-orange);
 
@@ -112,6 +113,7 @@
 
   --color-text: var(--color-light);
   --color-text-placeholder: var(--color-gray-dark);
+  --color-text-window: var(--color-light);
 
   --color-border: var(--color-dark-dark);
   --color-border-reversed: var(--color-light-dark);

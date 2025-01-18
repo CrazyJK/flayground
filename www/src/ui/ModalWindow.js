@@ -107,10 +107,11 @@ export default class ModalWindow extends HTMLDivElement {
     this.#edgeTopRight___.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeBottomLeft_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeBottomRight.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
 
+    document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
+    this.addEventListener('mousedown', () => (this.style.zIndex = ++ModalWindow.zIndex));
     this.querySelector('.title-panel .minimize').addEventListener('click', () => this.#minimizeHandler());
     this.querySelector('.title-panel .maximize').addEventListener('click', () => this.#maximizeHandler());
     this.querySelector('.title-panel .terminate').addEventListener('click', () => this.#terminateHandler());
@@ -146,7 +147,6 @@ export default class ModalWindow extends HTMLDivElement {
     this.#prevClientX = e.clientX;
     this.#prevClientY = e.clientY;
     this.classList.add('floating');
-    this.style.zIndex = ++ModalWindow.zIndex;
   }
 
   #stoptHandler(e) {

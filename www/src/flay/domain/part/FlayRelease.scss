@@ -4,7 +4,7 @@
   justify-content: center;
   align-items: baseline;
 
-  > label {
+  > label:not(.extra) {
     font-size: var(--size-normal);
     min-width: 7rem;
     text-align: center;

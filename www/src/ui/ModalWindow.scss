@@ -128,18 +128,32 @@
   }
 
   &.floating {
+    .edges {
+      position: relative;
+      .edge {
+        position: fixed;
+        z-index: 2;
+      }
+    }
     .inner {
       .title-panel {
         .title span,
         .buttons .btn {
           color: var(--color-text);
         }
+        .title {
+          z-index: 2;
+        }
+      }
+      .body-panel {
+        z-index: 0;
       }
     }
     .outer {
       position: fixed;
       inset: 0;
       background-color: transparent;
+      z-index: 1;
     }
   }
 
@@ -154,13 +168,25 @@
     .edges {
       .edge {
         background-color: rgba(65, 133, 70, 0.25);
+        background-color: #0f0a;
       }
       .top-left,
       .bottom-right,
       .top-right,
       .bottom-left {
         background-color: rgba(218, 87, 166, 0.25);
+        background-color: #f00a;
       }
+    }
+    .inner {
+      .title-panel {
+        .title {
+          background-color: #ff0a;
+        }
+      }
+    }
+    .outer {
+      background-color: #f003;
     }
   }
 }

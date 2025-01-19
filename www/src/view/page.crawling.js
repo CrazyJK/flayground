@@ -2,10 +2,12 @@ import './inc/Page';
 import './page.crawling.scss';
 
 import NanoStore from '../flay/idb/nano/store/NanoStore';
+import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
 import { popupActress, popupFlay } from '../lib/FlaySearch';
 import StringUtils from '../lib/StringUtils';
+import ModalWindow from '../ui/ModalWindow';
 
 const DOMAIN = 'https://www.nanojav.com';
 const LIST_URL = DOMAIN + '/jav/?order=new&page=';
@@ -261,3 +263,16 @@ const page = new Page();
 page.start();
 
 window.emitCurl = async (data) => await page.parseOfNanojav(data);
+
+document
+  .querySelector('body')
+  .appendChild(
+    new ModalWindow('Memo', {
+      top: 60,
+      left: 0,
+      width: 400,
+      height: 250,
+      edges: 'bottom,right',
+    })
+  )
+  .appendChild(new FlayMemoEditor());

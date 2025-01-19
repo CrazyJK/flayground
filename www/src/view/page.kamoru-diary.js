@@ -1,7 +1,6 @@
 /**
  * kamoru diary
  *
- * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
 
 import './inc/Page';
@@ -22,15 +21,14 @@ let diaryList = [];
   const newDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null }, content: '' };
   let currentDiary = newDiary;
 
-  const { FlayHtmlEditor, FlayHtmlViewer, EVENT_BLUR } = await import(/* webpackChunkName: "FlayEditor" */ '../flay/panel/FlayEditor');
-
   const gridDiary = document.querySelector('#grid-diary');
   const diaryWrap = document.querySelector('#diaryWrap');
   const diaryTitle = document.querySelector('#diaryTitle');
   const diaryDate = document.querySelector('#diaryDate');
   const diaryDay = document.querySelector('#diaryDay');
-  const diaryEditor = document.querySelector('#diaryBody').appendChild(new FlayHtmlEditor());
-  diaryEditor.addEventListener(EVENT_BLUR, async () => await saveDiary());
+
+  const { ToastHtmlEditor } = await import(/* webpackChunkName: "ToastHtmlEditor" */ '../ui/editor/ToastHtmlEditor');
+  const diaryEditor = document.querySelector('#diaryBody').appendChild(new ToastHtmlEditor({ blur: () => saveDiary() }));
   diaryEditor.hide();
   const diaryAttch = document.querySelector('#diaryAttch');
 
@@ -220,8 +218,12 @@ let diaryList = [];
       document.getElementById('diaryViewer').style.display = 'none';
     });
     // diary Viewer Show
-    const htmlViewer = document.querySelector('#diaryViewerInner').appendChild(new FlayHtmlViewer());
     document.getElementById('diaryViewerShow').addEventListener('click', async (e) => {
+      let htmlViewer = document.querySelector('#diaryViewerInner .toast-html-viewer');
+      if (htmlViewer === null) {
+        const { ToastHtmlViewer } = await import(/* webpackChunkName: "ToastHtmlViewer" */ '../ui/editor/ToastHtmlViewer');
+        htmlViewer = document.querySelector('#diaryViewerInner').appendChild(new ToastHtmlViewer());
+      }
       htmlViewer.setHTML(diaryEditor.getHTML());
 
       document.getElementById('diaryViewer').style.display = 'block';

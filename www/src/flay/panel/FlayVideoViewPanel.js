@@ -1,3 +1,4 @@
+import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import { FlayProvider } from '../../lib/FlayProvider';
 import FlayStorage from '../../lib/FlayStorage';
 import { getRandomInt } from '../../lib/randomNumber';
@@ -171,7 +172,7 @@ export default class FlayVideoViewPanel extends HTMLDivElement {
 
   async play() {
     const { opus, flay, actress } = await this.flayProvider.random();
-    this.dispatchEvent(new CustomEvent('FlayVideoViewPanel.play', { bubbles: true, composed: true, detail: { flay: flay } }));
+    this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `[${flay.opus}] ${flay.title}` } }));
 
     try {
       await this.videoPlayer.load(opus, flay, actress);

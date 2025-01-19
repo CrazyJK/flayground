@@ -7,6 +7,21 @@ import '../flay/panel/FlayFinder';
 import '../flay/panel/FlayRegister';
 import '../flay/panel/SubtitlesFinder';
 
+import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
 import { tabUI } from '../lib/TabUI';
+import ModalWindow from '../ui/ModalWindow';
 
 tabUI(document);
+
+document
+  .querySelector('body')
+  .appendChild(
+    new ModalWindow('Memo', {
+      top: 60,
+      left: 0,
+      width: 400,
+      height: 250,
+      edges: 'bottom,right',
+    })
+  )
+  .appendChild(new FlayMemoEditor());

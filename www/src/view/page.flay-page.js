@@ -36,6 +36,7 @@ document
       width: 300,
       height: 200,
       edges: 'right',
+      initialMode: 'minimize',
     })
   )
   .appendChild(new FlayMemoEditor());

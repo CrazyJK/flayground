@@ -1,11 +1,12 @@
 import './ModalWindow.scss';
 
+import { EVENT_CHANGE_TITLE } from '../GroundConstant';
 import StringUtils from '../lib/StringUtils';
 import { addResizeListener } from '../lib/windowAddEventListener';
 import windowButton from '../svg/windowButton';
 
 const OFFSET = 4;
-const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: null };
+const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: null, initialMode: 'normal' };
 
 export default class ModalWindow extends HTMLDivElement {
   static zIndex = 13;
@@ -40,7 +41,7 @@ export default class ModalWindow extends HTMLDivElement {
   constructor(title = '', opts = {}) {
     super();
 
-    const { top, left, width, height, minWidth, minHeight, edges } = { ...DEFAULT_OPTS, ...opts };
+    const { top, left, width, height, minWidth, minHeight, edges, initialMode } = { ...DEFAULT_OPTS, ...opts };
     this.#top = top;
     this.#left = left;
     this.#width = width;
@@ -48,6 +49,7 @@ export default class ModalWindow extends HTMLDivElement {
     this.#minWidth = minWidth;
     this.#minHeight = minHeight;
     this.dataset.edges = edges;
+    this.classList.add(initialMode);
 
     this.classList.add('modal-window', 'flay-div');
     this.innerHTML = `
@@ -116,7 +118,9 @@ export default class ModalWindow extends HTMLDivElement {
     this.querySelector('.title-panel .terminate').addEventListener('click', () => this.#terminateHandler());
 
     this.addEventListener('mousedown', () => (this.style.zIndex = ++ModalWindow.zIndex));
+
     this.addEventListener('wheel', (e) => e.stopPropagation());
+    this.addEventListener('keyup', (e) => e.stopPropagation());
 
     addResizeListener(() => this.#resizeWindowHandler());
   }
@@ -127,6 +131,7 @@ export default class ModalWindow extends HTMLDivElement {
   }
 
   appendChild(element) {
+    element.addEventListener(EVENT_CHANGE_TITLE, (e) => (this.windowTitle = e.detail.title));
     this.querySelector('.body-panel').appendChild(element);
     return element;
   }

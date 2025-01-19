@@ -1,23 +1,17 @@
 import './FlayMemoEditor.scss';
 
+import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import DateUtils from '../../lib/DateUtils';
 
 export default class FlayMemoEditor extends HTMLDivElement {
-  lastUpdated;
-
   constructor() {
     super();
-
     this.classList.add('flay-memo-editor', 'flay-div');
   }
 
   async connectedCallback() {
-    const { FlayHtmlEditor, EVENT_LOAD, EVENT_BLUR } = await import(/* webpackChunkName: "FlayEditor" */ './FlayEditor');
-    this.htmlEditor = new FlayHtmlEditor();
-    this.htmlEditor.addEventListener(EVENT_LOAD, async () => await this.load());
-    this.htmlEditor.addEventListener(EVENT_BLUR, async () => await this.save());
-
-    this.append(this.htmlEditor);
+    const { ToastHtmlEditor } = await import(/* webpackChunkName: "ToastHtmlEditor" */ '../../ui/editor/ToastHtmlEditor');
+    this.htmlEditor = this.appendChild(new ToastHtmlEditor({ load: async () => await this.load(), blur: async () => await this.save() }));
   }
 
   async load() {
@@ -28,13 +22,12 @@ export default class FlayMemoEditor extends HTMLDivElement {
 
   async save() {
     const html = this.htmlEditor.getHTML();
-    const retMemo = await fetch('/memo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ html: html, date: 0 }) }).then((res) => res.json());
-    this.#successCallback(retMemo);
+    const memo = await fetch('/memo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ html: html, date: 0 }) }).then((res) => res.json());
+    this.#successCallback(memo);
   }
 
   #successCallback(memo) {
-    console.log('successCallback', DateUtils.format(memo.date));
-    this.lastUpdated = memo.date;
+    this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'HH:mm:ss')}</span>` } }));
   }
 }
 

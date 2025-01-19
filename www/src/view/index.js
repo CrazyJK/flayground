@@ -49,8 +49,6 @@ class Page {
     main.appendChild(modalWindow2).appendChild(new ImageFall({ mode: 'random' }));
     main.appendChild(modalWindow3).appendChild(new FlayVideoViewPanel());
     main.appendChild(modalWindow4).appendChild(new FlayMemoEditor());
-
-    main.addEventListener('FlayVideoViewPanel.play', (e) => (modalWindow3.windowTitle = e.detail.flay.title));
   }
 }
 

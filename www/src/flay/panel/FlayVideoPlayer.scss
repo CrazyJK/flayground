@@ -53,15 +53,14 @@
     right: 0;
     bottom: 0;
     width: 100%;
-    max-width: 800px;
-    overflow: hidden;
 
     display: flex;
-    align-items: center;
+    justify-content: center;
+    align-items: flex-start;
 
-    box-shadow: none;
-    margin: 1rem auto;
-    padding: 1rem;
+    background: transparent no-repeat center / contain;
+    margin: 8rem 1rem 3rem;
+    padding: 0;
     opacity: 0;
     z-index: -1;
 

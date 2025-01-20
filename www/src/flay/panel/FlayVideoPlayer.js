@@ -347,13 +347,10 @@ class FlayVideoPoster extends HTMLDivElement {
     super();
 
     this.classList.add('flay-video-poster', 'flay-div');
-    this.innerHTML = `
-      <div class="flay-cover" is="flay-cover" mode="card"></div>
-    `;
   }
 
   set(flay) {
-    this.querySelector('.flay-cover').set(flay);
+    this.style.backgroundImage = `url(/static/cover/${flay.opus})`;
   }
 }
 

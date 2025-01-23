@@ -1,4 +1,4 @@
-import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
+import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import { FlayProvider } from '../../lib/FlayProvider';
 import FlayStorage from '../../lib/FlayStorage';
 import { getRandomInt } from '../../lib/randomNumber';
@@ -162,6 +162,7 @@ export default class FlayVideoViewPanel extends HTMLDivElement {
     this.querySelector('#keepFlay').addEventListener('click', async () => {
       const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ './FlayBasket');
       FlayBasket.add(this.videoPlayer.opus);
+      this.dispatchEvent(new CustomEvent(EVENT_BASKET_ADD, { bubbles: true }));
     });
   }
 

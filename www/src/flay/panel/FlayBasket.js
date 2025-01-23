@@ -1,3 +1,4 @@
+import { EVENT_BASKET_ADD } from '../../GroundConstant';
 import FlayFetch from '../../lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '../../lib/FlaySearch';
 import FlayStorage from '../../lib/FlayStorage';
@@ -46,6 +47,8 @@ export class FlayBasket extends HTMLDivElement {
       if (e.key !== BASKET_KEY) return;
       await this.render();
     };
+
+    document.addEventListener(EVENT_BASKET_ADD, async () => await this.render());
 
     this.actressListEl.addEventListener('change', () => {
       const itemList = Array.from(this.flayListEl.children);

@@ -27,7 +27,7 @@ export default class FlayMemoEditor extends HTMLDivElement {
   }
 
   #successCallback(memo) {
-    this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'HH:mm:ss')}</span>` } }));
+    this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'M/d HH:mm')}</span>` } }));
   }
 }
 

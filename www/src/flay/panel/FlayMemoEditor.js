@@ -2,6 +2,7 @@ import './FlayMemoEditor.scss';
 
 import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import DateUtils from '../../lib/DateUtils';
+import FileUtils from '../../lib/FileUtils';
 
 export default class FlayMemoEditor extends HTMLDivElement {
   constructor() {
@@ -21,13 +22,16 @@ export default class FlayMemoEditor extends HTMLDivElement {
   }
 
   async save() {
-    const html = this.htmlEditor.getHTML();
-    const memo = await fetch('/memo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ html: html, date: 0 }) }).then((res) => res.json());
+    // const html = this.htmlEditor.getHTML();
+    // const memo = await fetch('/memo', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ html: html, date: 0 }) }).then((res) => res.json());
+    const formData = new FormData();
+    formData.set('html', this.htmlEditor.getHTML());
+    const memo = await fetch('/memo', { method: 'POST', body: formData }).then((res) => res.json());
     this.#successCallback(memo);
   }
 
   #successCallback(memo) {
-    this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'M/d HH:mm')}</span>` } }));
+    this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'M/d HH:mm')} ${FileUtils.prettySize(memo.size).join('')}</span>` } }));
   }
 }
 

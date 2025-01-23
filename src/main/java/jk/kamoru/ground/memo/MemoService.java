@@ -4,5 +4,5 @@ public interface MemoService {
 
   Memo read();
 
-  Memo write(Memo memo);
+  Memo write(String html);
 }

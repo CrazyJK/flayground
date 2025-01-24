@@ -30,7 +30,7 @@ public interface FlayService {
 
   void acceptCandidates(String opus);
 
-  void play(String opus);
+  void play(String opus, float seekTime);
 
   void edit(String opus);
 

@@ -1,6 +1,6 @@
 export default {
-  play: (opus, callback, failCallback) => {
-    return action('/flay/play/' + opus, { method: 'PATCH' }, callback, failCallback);
+  play: (opus, time = 0, callback, failCallback) => {
+    return action('/flay/play/' + opus + '?seekTime=' + time, { method: 'PATCH' }, callback, failCallback);
   },
   editSubtitles: (opus, callback, failCallback) => {
     return action('/flay/edit/' + opus, { method: 'PATCH' }, callback, failCallback);

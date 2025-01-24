@@ -4,6 +4,7 @@ import FlaySearch from '../../../lib/FlaySearch';
 import folderSVG from '../../../svg/folder';
 import torrentSVG from '../../../svg/torrent';
 import youtubeSVG from '../../../svg/youtube';
+import PlayTimeDB from '../../idb/PlayTimeDB';
 import './FlayFiles.scss';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
@@ -37,9 +38,14 @@ export default class FlayFiles extends FlayHTMLElement {
       await playInLayer(this.flay.opus);
     });
 
-    this.querySelector('.flay-movie').addEventListener('click', () => {
+    const playTimeDB = new PlayTimeDB();
+
+    this.querySelector('.flay-movie').addEventListener('click', async () => {
       if (this.flay.files.movie.length > 0) {
-        FlayAction.play(this.flay.opus).then(async () => {
+        const record = await playTimeDB.select(this.flay.opus);
+        console.log('record', record);
+
+        FlayAction.play(this.flay.opus, record.time).then(async () => {
           const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '../../panel/FlayBasket');
           FlayBasket.remove(this.flay.opus);
         });

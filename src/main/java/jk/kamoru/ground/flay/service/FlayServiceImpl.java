@@ -151,9 +151,9 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
   }
 
   @Override
-  public void play(String opus) {
+  public void play(String opus, float seekTime) {
     Flay flay = instanceFlaySource.get(opus);
-    flayActionHandler.play(flay);
+    flayActionHandler.play(flay, seekTime);
 
     flay.getVideo().increasePlayCount();
 

@@ -146,10 +146,12 @@ export default class ModalWindow extends HTMLDivElement {
 
   #minimizeHandler() {
     this.classList.toggle('minimize');
+    this.dispatchEvent(new Event('resize', { bubbles: true }));
   }
 
   #maximizeHandler() {
     this.classList.toggle('maximize');
+    this.dispatchEvent(new Event('resize', { bubbles: true }));
   }
 
   #terminateHandler() {
@@ -178,8 +180,6 @@ export default class ModalWindow extends HTMLDivElement {
     this.#decideViewportInWindow();
     this.#setViewport();
     this.classList.remove('floating');
-
-    // window.dispatchEvent(new Event('resize'));
   }
 
   #moveHandler(e) {

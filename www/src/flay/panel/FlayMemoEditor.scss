@@ -1,4 +1,9 @@
 .flay-memo-editor {
   position: absolute;
   inset: 0;
+
+  a,
+  span {
+    font-size: unset;
+  }
 }

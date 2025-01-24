@@ -56,18 +56,6 @@ class Page {
 
     main
       .appendChild(
-        new ModalWindow('Cover', {
-          top: getRandomInt(0, hUnit) + hUnit * 7,
-          left: 0,
-          width: getRandomInt(0, wUnit) + wUnit * 4,
-          height: getRandomInt(0, hUnit) + hUnit * 2,
-          edges: 'right',
-        })
-      )
-      .appendChild(new PopoutCover());
-
-    main
-      .appendChild(
         new ModalWindow('Memo', {
           top: 0,
           left: 0,
@@ -77,6 +65,9 @@ class Page {
         })
       )
       .appendChild(new FlayMemoEditor());
+
+    main.appendChild(new PopoutCover());
+    main.style.cssText = 'position: fixed; inset: 0';
   }
 }
 

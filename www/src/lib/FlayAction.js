@@ -1,5 +1,5 @@
 export default {
-  play: (opus, time = 0, callback, failCallback) => {
+  play: (opus, time = -1, callback, failCallback) => {
     return action('/flay/play/' + opus + '?seekTime=' + time, { method: 'PATCH' }, callback, failCallback);
   },
   editSubtitles: (opus, callback, failCallback) => {

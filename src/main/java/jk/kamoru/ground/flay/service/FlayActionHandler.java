@@ -31,14 +31,17 @@ public class FlayActionHandler {
       throw new FlayException("영상 파일이 없습니다");
     }
 
-    // 시간 초를 시간 분 초 밀리초로 변경
-    long hours = (long) seekTime / 3600;
-    long minutes = ((long) seekTime % 3600) / 60;
-    long seconds = (long) seekTime % 60;
-    long milliseconds = (long) ((seekTime - (long) seekTime) * 1000);
+    String seekOption = "";
+    if (seekTime > -1) {
+      // 시간 초를 시간 분 초 밀리초로 변경
+      long hours = (long) seekTime / 3600;
+      long minutes = ((long) seekTime % 3600) / 60;
+      long seconds = (long) seekTime % 60;
+      long milliseconds = (long) ((seekTime - (long) seekTime) * 1000);
 
-    // /seek=hh:mm:ss.ms : 지정된 시간으로 재생 시작
-    final String seekOption = String.format("/seek=%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+      // /seek=hh:mm:ss.ms : 지정된 시간으로 재생 시작
+      seekOption = String.format("/seek=%02d:%02d:%02d.%03d", hours, minutes, seconds, milliseconds);
+    }
 
     flayAsyncExecutor.exec(properties.getPlayerApp().getAbsolutePath(), flay.getFiles().get(Flay.MOVIE).get(0).getAbsolutePath(), seekOption);
     sseEmitters.send(flay);

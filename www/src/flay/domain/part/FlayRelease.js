@@ -30,7 +30,7 @@ export default class FlayRelease extends FlayHTMLElement {
     this.setFlay(flay);
 
     const shotLength = flay.video.likes?.length || 0;
-    const lastShoted = shotLength > 0 ? flay.video.likes[shotLength - 1] : 0;
+    const lastShoted = shotLength > 0 ? flay.video.likes[shotLength - 1] : -1;
 
     this.querySelector('#release').innerHTML = flay.release;
     this.querySelector('#modified').innerHTML = DateUtils.format(flay.lastModified, 'yy/MM/dd');

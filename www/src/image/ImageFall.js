@@ -96,7 +96,6 @@ export default class ImageFall extends HTMLDivElement {
     image.src = URL.createObjectURL(imageBlob);
     image.title = `Idx: ${idx}\nName: ${name}\nPath: ${path}`;
     image.addEventListener('click', () => {
-      // window.open(imageURL, 'image' + imageIndex, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
       window.open(`popup.image.html?idx=${imageIndex}&max=${this.imageLength}`, `image${imageIndex}`, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
     });
     imageWrap.append(image);
@@ -104,9 +103,12 @@ export default class ImageFall extends HTMLDivElement {
     try {
       await image.decode();
     } catch (error) {
+      URL.revokeObjectURL(image.src);
       image.remove();
+      imageWrap.remove();
       return;
     }
+
     imageWrap.style.height = `calc(${image.height}px + 1rem)`;
     imageWrap.style.top = 0;
 

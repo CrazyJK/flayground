@@ -28,7 +28,7 @@ export default class ImageFall extends HTMLDivElement {
   }
 
   connectedCallback() {
-    addResizeListener(() => document.startViewTransition(() => this.#resizeDiv()));
+    addResizeListener(() => this.#resizeDiv());
 
     window.addEventListener('keyup', (e) => {
       switch (e.code) {
@@ -101,7 +101,12 @@ export default class ImageFall extends HTMLDivElement {
     });
     imageWrap.append(image);
 
-    await image.decode();
+    try {
+      await image.decode();
+    } catch (error) {
+      image.remove();
+      return;
+    }
     imageWrap.style.height = `calc(${image.height}px + 1rem)`;
     imageWrap.style.top = 0;
 

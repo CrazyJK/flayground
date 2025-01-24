@@ -215,7 +215,7 @@ export default class ModalWindow extends HTMLDivElement {
     this.#prevClientX = e.clientX;
     this.#prevClientY = e.clientY;
 
-    if (this.#mode !== 'move') this.dispatchEvent(new Event('resize'));
+    if (this.#mode !== 'move') this.dispatchEvent(new Event('resize', { bubbles: true }));
   }
 
   /**

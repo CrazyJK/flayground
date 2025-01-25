@@ -1,3 +1,4 @@
+import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import FlayStorage from '../../lib/FlayStorage';
 
 export default class BrowserPanel extends HTMLElement {
@@ -46,9 +47,7 @@ export default class BrowserPanel extends HTMLElement {
     this.#inputURL = this.shadowRoot.querySelector('input');
     this.#listURL = this.shadowRoot.querySelector('#url-list');
     this.#frame = this.shadowRoot.querySelector('.frame');
-  }
 
-  connectedCallback() {
     this.#inputURL.addEventListener('keyup', (e) => {
       if (e.key !== 'Enter') return;
       this.#frame.src = e.target.value;
@@ -56,6 +55,13 @@ export default class BrowserPanel extends HTMLElement {
       this.#saveDatalist();
     });
 
+    this.#frame.addEventListener('load', () => {
+      const title = new URL(this.#frame.src).host + ' ' + this.#frame.src.split('/').pop();
+      this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: title } }));
+    });
+  }
+
+  connectedCallback() {
     this.#loadDatalist();
   }
 

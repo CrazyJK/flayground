@@ -1,5 +1,3 @@
-import './PopoutCover.scss';
-
 import { popupFlay } from '../../lib/FlaySearch';
 import { OpusProvider } from '../../lib/OpusProvider';
 import { getRandomInt } from '../../lib/randomNumber';
@@ -61,7 +59,7 @@ export default class PopoutCover extends HTMLDivElement {
 
     const 커버비율 = 269 / 400;
     const 여유공간 = 100;
-    const { width: 판때기너비, height: 판때기높이 } = this.getBoundingClientRect();
+    const { width: 판때기너비, height: 판때기높이 } = this.parentElement.getBoundingClientRect();
     const 너비 = Math.min(1000, 판때기너비 / 2) + getRandomInt(0, 여유공간 * 2);
     const 높이 = 너비 * 커버비율;
     const 왼쪽 = 이벤트 ? 이벤트.x - 너비 / 2 : getRandomInt(여유공간, 판때기너비 - 너비 - 여유공간);

@@ -20,7 +20,7 @@ const FlayStorage = {
       return FlayStorage.local.get(name)?.split(',') || defaultValue;
     },
     getNumber: (name, defaultValue) => {
-      return Number(FlayStorage.local.get(name) || defaultValue);
+      return Number(FlayStorage.local.get(name)) || defaultValue;
     },
     getBoolean: (name, defaultValue) => {
       const value = FlayStorage.local.get(name, defaultValue);

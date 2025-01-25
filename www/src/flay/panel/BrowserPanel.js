@@ -2,9 +2,9 @@ import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import FlayStorage from '../../lib/FlayStorage';
 
 export default class BrowserPanel extends HTMLElement {
-  #inputURL;
-  #listURL;
-  #frame;
+  #input;
+  #datalist;
+  #iframe;
 
   constructor() {
     super();
@@ -12,51 +12,58 @@ export default class BrowserPanel extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
-          display: grid;
-          grid-template-rows: auto 1fr;
           position: absolute;
-          top: 0;
-          left: 0;
-          width: 100%;
-          height: 100%;
+          inset: 0;
           background-color: var(--color-bg-transparent);
           overflow: hidden;
         }
+        iframe {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          border: none;
+        }
+        .url-bar {
+          position: absolute;
+          top: 0;
+          width: 100%;
+          opacity: 0;
+        }
+        .url-bar:focus-within, .url-bar:hover {
+          opacity: 1;
+        }
         .url-bar input {
+          display: block;
           width: 100%;
           padding: 0.5em;
           border: 0;
           background-color: var(--color-bg);
           color: var(--color-text);
         }
-        .frame-wrap .frame {
-          width: 100%;
-          height: 100%;
-          border: none;
-        }
       </style>
+      <iframe></iframe>
       <div class="url-bar">
         <input type="url" list="url-list" placeholder="Enter URL"/>
         <datalist id="url-list">
       </div>
-      <dib class="frame-wrap">
-        <iframe class="frame"></iframe>
-      </div>
     `;
 
-    this.#inputURL = this.shadowRoot.querySelector('input');
-    this.#listURL = this.shadowRoot.querySelector('#url-list');
-    this.#frame = this.shadowRoot.querySelector('.frame');
+    this.#input = this.shadowRoot.querySelector('input');
+    this.#datalist = this.shadowRoot.querySelector('#url-list');
+    this.#iframe = this.shadowRoot.querySelector('iframe');
 
-    this.#inputURL.addEventListener('keyup', (e) => {
+    this.#input.addEventListener('keyup', (e) => {
       if (e.key !== 'Enter') return;
-      this.#frame.src = e.target.value;
-      this.#addDatalist(e.target.value);
+      const url = e.target.value.trim();
+      if (url === '') return;
+
+      this.#iframe.src = url;
+      this.#addDatalist(url);
       this.#saveDatalist();
     });
 
-    this.#frame.addEventListener('load', () => {
-      const title = new URL(this.#frame.src).host + ' ' + this.#frame.src.split('/').pop();
+    this.#iframe.addEventListener('load', () => {
+      const title = new URL(this.#iframe.src).host + ' ' + this.#iframe.src.split('/').pop();
       this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: title } }));
     });
   }
@@ -66,22 +73,19 @@ export default class BrowserPanel extends HTMLElement {
   }
 
   #addDatalist(url) {
-    this.#listURL.querySelector(`option[value="${url}"]`)?.remove();
-
-    const option = document.createElement('option');
-    option.value = url;
-    this.#listURL.prepend(option);
-
-    this.#listURL.querySelectorAll('option').forEach((option, i) => i > 30 && option.remove());
+    this.#datalist.querySelectorAll(`option[value="${url}"]`).forEach((option) => option.remove());
+    this.#datalist.prepend(new Option(url, url));
+    this.#datalist.querySelectorAll('option').forEach((option, i) => i > 30 && option.remove());
   }
 
   #loadDatalist() {
+    this.#datalist.textContent = null;
     const urls = FlayStorage.local.getArray('urls');
-    urls.forEach((url) => this.#addDatalist(url));
+    urls.filter((url) => url !== '').forEach((url) => this.#datalist.appendChild(new Option(url, url)));
   }
 
   #saveDatalist() {
-    const urls = Array.from(this.#listURL.querySelectorAll('option')).map((option) => option.value);
+    const urls = Array.from(this.#datalist.querySelectorAll('option')).map((option) => option.value);
     FlayStorage.local.setArray('urls', urls);
   }
 }

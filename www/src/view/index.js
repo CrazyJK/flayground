@@ -3,12 +3,13 @@ import './index.scss';
 
 import ModalWindow from '../ui/ModalWindow';
 
+import BrowserPanel from '../flay/panel/BrowserPanel';
 import { FlayBasket } from '../flay/panel/FlayBasket';
 import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
 import FlayVideoViewPanel from '../flay/panel/FlayVideoViewPanel';
-import PopoutCover from '../flay/panel/PopoutCover';
 import ImageFall from '../image/ImageFall';
 import { getRandomInt } from '../lib/randomNumber';
+import ModalShadowWindow from '../ui/ModalShadowWindow';
 
 class Page {
   constructor() {}
@@ -16,9 +17,16 @@ class Page {
   async start() {
     const [wUnit, hUnit] = [window.innerWidth / 12, window.innerHeight / 12];
 
-    const main = document.querySelector('body > main');
+    this.#videoWindow(wUnit, hUnit);
+    this.#basketWindow(wUnit, hUnit);
+    this.#memoWindow(wUnit, hUnit);
+    this.#imageWindow(wUnit, hUnit);
+    this.#browserWindow(wUnit, hUnit);
+  }
 
-    main
+  #videoWindow(wUnit, hUnit) {
+    document
+      .querySelector('body > main')
       .appendChild(
         new ModalWindow('Video', {
           top: 0,
@@ -29,8 +37,11 @@ class Page {
         })
       )
       .appendChild(new FlayVideoViewPanel());
+  }
 
-    main
+  #basketWindow(wUnit, hUnit) {
+    document
+      .querySelector('body > main')
       .appendChild(
         new ModalWindow('Basket', {
           top: 0,
@@ -41,20 +52,11 @@ class Page {
         })
       )
       .appendChild(new FlayBasket());
+  }
 
-    main
-      .appendChild(
-        new ModalWindow('Image Fallen', {
-          top: 0,
-          left: 0,
-          width: getRandomInt(0, wUnit) + wUnit * 2,
-          height: getRandomInt(0, hUnit) + hUnit * 7,
-          edges: 'top,right',
-        })
-      )
-      .appendChild(new ImageFall({ mode: 'random' }));
-
-    main
+  #memoWindow(wUnit, hUnit) {
+    document
+      .querySelector('body > main')
       .appendChild(
         new ModalWindow('Memo', {
           top: 0,
@@ -65,9 +67,36 @@ class Page {
         })
       )
       .appendChild(new FlayMemoEditor());
+  }
 
-    main.appendChild(new PopoutCover());
-    main.style.cssText = 'position: fixed; inset: 0';
+  #imageWindow(wUnit, hUnit) {
+    document
+      .querySelector('body > main')
+      .appendChild(
+        new ModalWindow('Image Fallen', {
+          top: 0,
+          left: 0,
+          width: getRandomInt(0, wUnit) + wUnit * 2,
+          height: getRandomInt(0, hUnit) + hUnit * 7,
+          edges: 'top,right',
+        })
+      )
+      .appendChild(new ImageFall({ mode: 'random' }));
+  }
+
+  #browserWindow(wUnit, hUnit) {
+    document
+      .querySelector('body > main')
+      .appendChild(
+        new ModalShadowWindow('Browser Panel', {
+          top: getRandomInt(0, hUnit) + hUnit * 6,
+          left: getRandomInt(0, wUnit) + wUnit * 2,
+          width: getRandomInt(0, wUnit) + wUnit * 6,
+          height: getRandomInt(0, hUnit) + hUnit * 4,
+          edges: 'center',
+        })
+      )
+      .appendChild(new BrowserPanel());
   }
 }
 

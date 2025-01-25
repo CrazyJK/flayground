@@ -7,7 +7,7 @@ import BrowserPanel from '../flay/panel/BrowserPanel';
 import { FlayBasket } from '../flay/panel/FlayBasket';
 import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
 import FlayVideoViewPanel from '../flay/panel/FlayVideoViewPanel';
-import { EDGE } from '../GroundConstant';
+import { MODAL_EDGE } from '../GroundConstant';
 import ImageFall from '../image/ImageFall';
 import { getRandomInt } from '../lib/randomNumber';
 import ModalShadowWindow from '../ui/ModalShadowWindow';
@@ -34,7 +34,7 @@ class Page {
           left: 0,
           width: getRandomInt(0, wUnit) + wUnit * 8,
           height: getRandomInt(0, hUnit) + hUnit * 4,
-          edges: [EDGE.TOP, EDGE.LEFT],
+          edges: [MODAL_EDGE.TOP, MODAL_EDGE.LEFT],
         })
       )
       .appendChild(new FlayVideoViewPanel());
@@ -49,7 +49,7 @@ class Page {
           left: 0,
           width: getRandomInt(0, wUnit) + wUnit * 8,
           height: getRandomInt(0, hUnit) + hUnit * 6,
-          edges: [EDGE.BOTTOM, EDGE.LEFT],
+          edges: [MODAL_EDGE.BOTTOM, MODAL_EDGE.LEFT],
         })
       )
       .appendChild(new FlayBasket());
@@ -64,7 +64,7 @@ class Page {
           left: 0,
           width: getRandomInt(0, wUnit) + wUnit * 4,
           height: getRandomInt(0, hUnit) + hUnit * 2,
-          edges: [EDGE.BOTTOM, EDGE.RIGHT],
+          edges: [MODAL_EDGE.BOTTOM, MODAL_EDGE.RIGHT],
         })
       )
       .appendChild(new FlayMemoEditor());
@@ -79,7 +79,7 @@ class Page {
           left: 0,
           width: getRandomInt(0, wUnit) + wUnit * 2,
           height: getRandomInt(0, hUnit) + hUnit * 7,
-          edges: [EDGE.TOP, EDGE.RIGHT],
+          edges: [MODAL_EDGE.TOP, MODAL_EDGE.RIGHT],
         })
       )
       .appendChild(new ImageFall({ mode: 'random' }));
@@ -94,7 +94,7 @@ class Page {
           left: getRandomInt(0, wUnit) + wUnit * 2,
           width: getRandomInt(0, wUnit) + wUnit * 6,
           height: getRandomInt(0, hUnit) + hUnit * 4,
-          edges: [EDGE.CENTER],
+          edges: [MODAL_EDGE.CENTER],
         })
       )
       .appendChild(new BrowserPanel());

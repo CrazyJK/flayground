@@ -8,6 +8,7 @@ import '../flay/panel/FlayRegister';
 import '../flay/panel/SubtitlesFinder';
 
 import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
+import { MODAL_EDGE } from '../GroundConstant';
 import { tabUI } from '../lib/TabUI';
 import ModalWindow from '../ui/ModalWindow';
 
@@ -21,7 +22,7 @@ document
       left: 0,
       width: 400,
       height: 250,
-      edges: 'bottom,right',
+      edges: [MODAL_EDGE.BOTTOM, MODAL_EDGE.RIGHT],
     })
   )
   .appendChild(new FlayMemoEditor());

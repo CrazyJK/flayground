@@ -24,7 +24,7 @@ export const nextWindowzIndex = () => {
 };
 
 /** 모달 윈도우의 모드 */
-export const MODE = {
+export const MODAL_MODE = {
   NORMAL: 'normal',
   MINIMIZE: 'minimize',
   MAXIMIZE: 'maximize',
@@ -32,7 +32,7 @@ export const MODE = {
 };
 
 /** 모달 윈도우의 가장자리 */
-export const EDGE = {
+export const MODAL_EDGE = {
   TOP: 'top',
   LEFT: 'left',
   RIGHT: 'right',

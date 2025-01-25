@@ -1,4 +1,4 @@
-import { EDGE, EVENT_CHANGE_TITLE, MODE, nextWindowzIndex } from '../GroundConstant';
+import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '../GroundConstant';
 import { addResizeListener } from '../lib/windowAddEventListener';
 import windowButton from '../svg/windowButton';
 
@@ -179,7 +179,7 @@ const cssText = `
 `;
 
 const OFFSET = 4; // 창의 가장자리 여백
-const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: [], initialMode: MODE.NORMAL }; // 창의 기본 옵션
+const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: [], initialMode: MODAL_MODE.NORMAL }; // 창의 기본 옵션
 
 export default class ModalShadowWindow extends HTMLElement {
   #top = 0; // 창의 상단 위치
@@ -231,14 +231,14 @@ export default class ModalShadowWindow extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>${cssText}</style>
       <div class="edges">
-        <div class="edge ${EDGE.TOP}"></div>
-        <div class="edge ${EDGE.LEFT}"></div>
-        <div class="edge ${EDGE.RIGHT}"></div>
-        <div class="edge ${EDGE.BOTTOM}"></div>
-        <div class="edge ${EDGE.TOP_LEFT}"></div>
-        <div class="edge ${EDGE.TOP_RIGHT}"></div>
-        <div class="edge ${EDGE.BOTTOM_LEFT}"></div>
-        <div class="edge ${EDGE.BOTTOM_RIGHT}"></div>
+        <div class="edge ${MODAL_EDGE.TOP}"></div>
+        <div class="edge ${MODAL_EDGE.LEFT}"></div>
+        <div class="edge ${MODAL_EDGE.RIGHT}"></div>
+        <div class="edge ${MODAL_EDGE.BOTTOM}"></div>
+        <div class="edge ${MODAL_EDGE.TOP_LEFT}"></div>
+        <div class="edge ${MODAL_EDGE.TOP_RIGHT}"></div>
+        <div class="edge ${MODAL_EDGE.BOTTOM_LEFT}"></div>
+        <div class="edge ${MODAL_EDGE.BOTTOM_RIGHT}"></div>
       </div>
       <div class="inner">
         <div class="title-panel">
@@ -246,9 +246,9 @@ export default class ModalShadowWindow extends HTMLElement {
             <span>${title}</span>
           </div>
           <div class="buttons">
-            <button type="button" class="btn ${MODE.MINIMIZE}" title="말기">${windowButton.minimize}</button>
-            <button type="button" class="btn ${MODE.MAXIMIZE}" title="최대화">${windowButton.maximize}</button>
-            <button type="button" class="btn ${MODE.TERMINATE}" title="닫기">${windowButton.terminate}</button>
+            <button type="button" class="btn ${MODAL_MODE.MINIMIZE}" title="말기">${windowButton.minimize}</button>
+            <button type="button" class="btn ${MODAL_MODE.MAXIMIZE}" title="최대화">${windowButton.maximize}</button>
+            <button type="button" class="btn ${MODAL_MODE.TERMINATE}" title="닫기">${windowButton.terminate}</button>
           </div>
         </div>
         <div class="body-panel">
@@ -264,24 +264,24 @@ export default class ModalShadowWindow extends HTMLElement {
     this.#bodyPanel = _inner.querySelector('.body-panel');
 
     this.#titleBar_______ = _inner.querySelector('.title');
-    this.#edgeTopLine____ = _edges.querySelector('.edge.' + EDGE.TOP);
-    this.#edgeLeftLine___ = _edges.querySelector('.edge.' + EDGE.LEFT);
-    this.#edgeRightLine__ = _edges.querySelector('.edge.' + EDGE.RIGHT);
-    this.#edgeBottomLine_ = _edges.querySelector('.edge.' + EDGE.BOTTOM);
-    this.#edgeTopLeft____ = _edges.querySelector('.edge.' + EDGE.TOP_LEFT);
-    this.#edgeTopRight___ = _edges.querySelector('.edge.' + EDGE.TOP_RIGHT);
-    this.#edgeBottomLeft_ = _edges.querySelector('.edge.' + EDGE.BOTTOM_LEFT);
-    this.#edgeBottomRight = _edges.querySelector('.edge.' + EDGE.BOTTOM_RIGHT);
+    this.#edgeTopLine____ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP);
+    this.#edgeLeftLine___ = _edges.querySelector('.edge.' + MODAL_EDGE.LEFT);
+    this.#edgeRightLine__ = _edges.querySelector('.edge.' + MODAL_EDGE.RIGHT);
+    this.#edgeBottomLine_ = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM);
+    this.#edgeTopLeft____ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP_LEFT);
+    this.#edgeTopRight___ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP_RIGHT);
+    this.#edgeBottomLeft_ = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM_LEFT);
+    this.#edgeBottomRight = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM_RIGHT);
 
     this.#titleBar_______.addEventListener('mousedown', (e) => this.#startHandler(e, 'move'));
-    this.#edgeTopLine____.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.TOP));
-    this.#edgeLeftLine___.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.LEFT));
-    this.#edgeRightLine__.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.RIGHT));
-    this.#edgeBottomLine_.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.BOTTOM));
-    this.#edgeTopLeft____.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.TOP_LEFT));
-    this.#edgeTopRight___.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.TOP_RIGHT));
-    this.#edgeBottomLeft_.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.BOTTOM_LEFT));
-    this.#edgeBottomRight.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.BOTTOM_RIGHT));
+    this.#edgeTopLine____.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.TOP));
+    this.#edgeLeftLine___.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.LEFT));
+    this.#edgeRightLine__.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.RIGHT));
+    this.#edgeBottomLine_.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM));
+    this.#edgeTopLeft____.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.TOP_LEFT));
+    this.#edgeTopRight___.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.TOP_RIGHT));
+    this.#edgeBottomLeft_.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM_LEFT));
+    this.#edgeBottomRight.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM_RIGHT));
 
     this.#titleBar_______.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeTopLine____.addEventListener('mouseup', (e) => this.#stoptHandler(e));
@@ -375,18 +375,18 @@ export default class ModalShadowWindow extends HTMLElement {
           this.#top += e.clientY - this.#prevClientY;
           this.#left += e.clientX - this.#prevClientX;
           break;
-        case EDGE.TOP:
+        case MODAL_EDGE.TOP:
           this.#top += e.clientY - this.#prevClientY;
           this.#height -= e.clientY - this.#prevClientY;
           break;
-        case EDGE.BOTTOM:
+        case MODAL_EDGE.BOTTOM:
           this.#height += e.clientY - this.#prevClientY;
           break;
-        case EDGE.LEFT:
+        case MODAL_EDGE.LEFT:
           this.#left += e.clientX - this.#prevClientX;
           this.#width -= e.clientX - this.#prevClientX;
           break;
-        case EDGE.RIGHT:
+        case MODAL_EDGE.RIGHT:
           this.#width += e.clientX - this.#prevClientX;
           break;
       }
@@ -422,27 +422,27 @@ export default class ModalShadowWindow extends HTMLElement {
 
     // 코너에 붙어있는지 결정
     if (this.#edges.length === 0) {
-      if (this.#top === OFFSET) this.#edges.push(EDGE.TOP);
-      if (this.#left === OFFSET) this.#edges.push(EDGE.LEFT);
-      if (this.#left === window.innerWidth - this.#width - OFFSET) this.#edges.push(EDGE.RIGHT);
-      if (this.#top === window.innerHeight - this.#height - OFFSET) this.#edges.push(EDGE.BOTTOM);
+      if (this.#top === OFFSET) this.#edges.push(MODAL_EDGE.TOP);
+      if (this.#left === OFFSET) this.#edges.push(MODAL_EDGE.LEFT);
+      if (this.#left === window.innerWidth - this.#width - OFFSET) this.#edges.push(MODAL_EDGE.RIGHT);
+      if (this.#top === window.innerHeight - this.#height - OFFSET) this.#edges.push(MODAL_EDGE.BOTTOM);
     }
 
     this.#edges.forEach((edge) => {
       switch (edge) {
-        case EDGE.TOP:
+        case MODAL_EDGE.TOP:
           this.#top = OFFSET;
           break;
-        case EDGE.BOTTOM:
+        case MODAL_EDGE.BOTTOM:
           this.#top = window.innerHeight - this.#height - OFFSET;
           break;
-        case EDGE.LEFT:
+        case MODAL_EDGE.LEFT:
           this.#left = OFFSET;
           break;
-        case EDGE.RIGHT:
+        case MODAL_EDGE.RIGHT:
           this.#left = window.innerWidth - this.#width - OFFSET;
           break;
-        case EDGE.CENTER:
+        case MODAL_EDGE.CENTER:
           this.#top = (window.innerHeight - this.#height) / 2;
           this.#left = (window.innerWidth - this.#width) / 2;
           break;

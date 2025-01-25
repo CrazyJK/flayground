@@ -3,6 +3,7 @@ import './page.crawling.scss';
 
 import NanoStore from '../flay/idb/nano/store/NanoStore';
 import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
+import { MODAL_EDGE } from '../GroundConstant';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
 import { popupActress, popupFlay } from '../lib/FlaySearch';
@@ -272,7 +273,7 @@ document
       left: 0,
       width: 400,
       height: 250,
-      edges: 'bottom,right',
+      edges: [MODAL_EDGE.BOTTOM, MODAL_EDGE.RIGHT],
     })
   )
   .appendChild(new FlayMemoEditor());

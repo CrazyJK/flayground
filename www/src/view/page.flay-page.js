@@ -5,6 +5,7 @@ import FlayPage from '../flay/domain/FlayPage';
 import FlayCondition from '../flay/panel/FlayCondition';
 import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
 import FlayPagination from '../flay/panel/FlayPagination';
+import { MODAL_EDGE, MODAL_MODE } from '../GroundConstant';
 import ModalWindow from '../ui/ModalWindow';
 
 const flayCondition = document.querySelector('body > main > header').appendChild(new FlayCondition());
@@ -35,8 +36,8 @@ document
       left: 0,
       width: 300,
       height: 200,
-      edges: 'right',
-      initialMode: 'minimize',
+      edges: [MODAL_EDGE.RIGHT],
+      initialMode: MODAL_MODE.MINIMIZE,
     })
   )
   .appendChild(new FlayMemoEditor());

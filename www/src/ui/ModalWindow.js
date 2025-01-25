@@ -1,37 +1,38 @@
 import './ModalWindow.scss';
 
-import { EVENT_CHANGE_TITLE } from '../GroundConstant';
-import StringUtils from '../lib/StringUtils';
+import { EDGE, EVENT_CHANGE_TITLE, MODE, nextWindowzIndex } from '../GroundConstant';
 import { addResizeListener } from '../lib/windowAddEventListener';
 import windowButton from '../svg/windowButton';
 
-const OFFSET = 4;
-const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: null, initialMode: 'normal' };
+const OFFSET = 4; // 창의 가장자리 여백
+const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: [], initialMode: MODE.NORMAL }; // 창의 기본 옵션
 
 export default class ModalWindow extends HTMLDivElement {
-  static zIndex = 13;
+  #top = 0; // 창의 상단 위치
+  #left = 0; // 창의 좌측 위치
+  #width = 0; // 창의 너비
+  #height = 0; // 창의 높이
+  #minWidth = 0; // 창의 최소 너비
+  #minHeight = 0; // 창의 최소 높이
+  #edges = []; // 창의 위치를 고정시킬 엣지
 
-  #top;
-  #left;
-  #width;
-  #height;
-  #minWidth;
-  #minHeight;
+  #prevClientX = 0; // 이전 클릭 위치
+  #prevClientY = 0; // 이전 클릭 위치
+  #mode = ''; // 창의 동작 모드. 'move', 'top', 'left', 'right', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'
+  #active = false; // 창의 동작 여부
 
-  #prevClientX = 0;
-  #prevClientY = 0;
-  #mode;
-  #active = false;
+  #titleSpan; // 창의 제목
+  #bodyPanel; // 창의 내용. 여기에 appendChild로 추가된 요소가 들어감
 
-  #titleBar_______;
-  #edgeTopLine____;
-  #edgeLeftLine___;
-  #edgeRightLine__;
-  #edgeBottomLine_;
-  #edgeTopLeft____;
-  #edgeTopRight___;
-  #edgeBottomLeft_;
-  #edgeBottomRight;
+  #titleBar_______; // 창의 타이틀
+  #edgeTopLine____; // 창의 상단 엣지
+  #edgeLeftLine___; // 창의 좌측 엣지
+  #edgeRightLine__; // 창의 우측 엣지
+  #edgeBottomLine_; // 창의 하단 엣지
+  #edgeTopLeft____; // 창의 상단 좌측 엣지
+  #edgeTopRight___; // 창의 상단 우측 엣지
+  #edgeBottomLeft_; // 창의 하단 좌측 엣지
+  #edgeBottomRight; // 창의 하단 우측 엣지
 
   /**
    *
@@ -48,20 +49,19 @@ export default class ModalWindow extends HTMLDivElement {
     this.#height = height;
     this.#minWidth = minWidth;
     this.#minHeight = minHeight;
-    this.dataset.edges = edges;
-    this.classList.add(initialMode);
+    this.#edges = edges;
 
-    this.classList.add('modal-window', 'flay-div');
+    this.classList.add('modal-window', 'flay-div', initialMode);
     this.innerHTML = `
       <div class="edges">
-        <div class="edge top"></div>
-        <div class="edge left"></div>
-        <div class="edge right"></div>
-        <div class="edge bottom"></div>
-        <div class="edge top-left"></div>
-        <div class="edge top-right"></div>
-        <div class="edge bottom-left"></div>
-        <div class="edge bottom-right"></div>
+        <div class="edge ${EDGE.TOP}"></div>
+        <div class="edge ${EDGE.LEFT}"></div>
+        <div class="edge ${EDGE.RIGHT}"></div>
+        <div class="edge ${EDGE.BOTTOM}"></div>
+        <div class="edge ${EDGE.TOP_LEFT}"></div>
+        <div class="edge ${EDGE.TOP_RIGHT}"></div>
+        <div class="edge ${EDGE.BOTTOM_LEFT}"></div>
+        <div class="edge ${EDGE.BOTTOM_RIGHT}"></div>
       </div>
       <div class="inner">
         <div class="title-panel">
@@ -69,9 +69,9 @@ export default class ModalWindow extends HTMLDivElement {
             <span>${title}</span>
           </div>
           <div class="buttons">
-            <button type="button" class="btn minimize" title="말기">${windowButton.minimize}</button>
-            <button type="button" class="btn maximize" title="최대화">${windowButton.maximize}</button>
-            <button type="button" class="btn terminate" title="닫기">${windowButton.terminate}</button>
+            <button type="button" class="btn ${MODE.MINIMIZE}" title="말기">${windowButton.minimize}</button>
+            <button type="button" class="btn ${MODE.MAXIMIZE}" title="최대화">${windowButton.maximize}</button>
+            <button type="button" class="btn ${MODE.TERMINATE}" title="닫기">${windowButton.terminate}</button>
           </div>
         </div>
         <div class="body-panel">
@@ -80,25 +80,31 @@ export default class ModalWindow extends HTMLDivElement {
       <div class="outer"></div>
     `;
 
-    this.#titleBar_______ = this.querySelector('.title-panel .title');
-    this.#edgeTopLine____ = this.querySelector('.edge.top');
-    this.#edgeLeftLine___ = this.querySelector('.edge.left');
-    this.#edgeRightLine__ = this.querySelector('.edge.right');
-    this.#edgeBottomLine_ = this.querySelector('.edge.bottom');
-    this.#edgeTopLeft____ = this.querySelector('.edge.top-left');
-    this.#edgeTopRight___ = this.querySelector('.edge.top-right');
-    this.#edgeBottomLeft_ = this.querySelector('.edge.bottom-left');
-    this.#edgeBottomRight = this.querySelector('.edge.bottom-right');
+    const _edges = this.querySelector('.edges');
+    const _inner = this.querySelector('.inner');
+
+    this.#titleSpan = _inner.querySelector('.title span');
+    this.#bodyPanel = _inner.querySelector('.body-panel');
+
+    this.#titleBar_______ = _inner.querySelector('.title');
+    this.#edgeTopLine____ = _edges.querySelector('.edge.' + EDGE.TOP);
+    this.#edgeLeftLine___ = _edges.querySelector('.edge.' + EDGE.LEFT);
+    this.#edgeRightLine__ = _edges.querySelector('.edge.' + EDGE.RIGHT);
+    this.#edgeBottomLine_ = _edges.querySelector('.edge.' + EDGE.BOTTOM);
+    this.#edgeTopLeft____ = _edges.querySelector('.edge.' + EDGE.TOP_LEFT);
+    this.#edgeTopRight___ = _edges.querySelector('.edge.' + EDGE.TOP_RIGHT);
+    this.#edgeBottomLeft_ = _edges.querySelector('.edge.' + EDGE.BOTTOM_LEFT);
+    this.#edgeBottomRight = _edges.querySelector('.edge.' + EDGE.BOTTOM_RIGHT);
 
     this.#titleBar_______.addEventListener('mousedown', (e) => this.#startHandler(e, 'move'));
-    this.#edgeTopLine____.addEventListener('mousedown', (e) => this.#startHandler(e, 'top'));
-    this.#edgeLeftLine___.addEventListener('mousedown', (e) => this.#startHandler(e, 'left'));
-    this.#edgeRightLine__.addEventListener('mousedown', (e) => this.#startHandler(e, 'right'));
-    this.#edgeBottomLine_.addEventListener('mousedown', (e) => this.#startHandler(e, 'bottom'));
-    this.#edgeTopLeft____.addEventListener('mousedown', (e) => this.#startHandler(e, 'top-left'));
-    this.#edgeTopRight___.addEventListener('mousedown', (e) => this.#startHandler(e, 'top-right'));
-    this.#edgeBottomLeft_.addEventListener('mousedown', (e) => this.#startHandler(e, 'bottom-left'));
-    this.#edgeBottomRight.addEventListener('mousedown', (e) => this.#startHandler(e, 'bottom-right'));
+    this.#edgeTopLine____.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.TOP));
+    this.#edgeLeftLine___.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.LEFT));
+    this.#edgeRightLine__.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.RIGHT));
+    this.#edgeBottomLine_.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.BOTTOM));
+    this.#edgeTopLeft____.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.TOP_LEFT));
+    this.#edgeTopRight___.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.TOP_RIGHT));
+    this.#edgeBottomLeft_.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.BOTTOM_LEFT));
+    this.#edgeBottomRight.addEventListener('mousedown', (e) => this.#startHandler(e, EDGE.BOTTOM_RIGHT));
 
     this.#titleBar_______.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeTopLine____.addEventListener('mouseup', (e) => this.#stoptHandler(e));
@@ -113,11 +119,11 @@ export default class ModalWindow extends HTMLDivElement {
     document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
-    this.querySelector('.title-panel .minimize').addEventListener('click', () => this.#minimizeHandler());
-    this.querySelector('.title-panel .maximize').addEventListener('click', () => this.#maximizeHandler());
-    this.querySelector('.title-panel .terminate').addEventListener('click', () => this.#terminateHandler());
+    _inner.querySelector('.minimize').addEventListener('click', () => this.#minimizeHandler());
+    _inner.querySelector('.maximize').addEventListener('click', () => this.#maximizeHandler());
+    _inner.querySelector('.terminate').addEventListener('click', () => this.#terminateHandler());
 
-    this.addEventListener('mousedown', () => (this.style.zIndex = ++ModalWindow.zIndex));
+    this.addEventListener('mousedown', () => (this.style.zIndex = nextWindowzIndex()));
 
     this.addEventListener('wheel', (e) => e.stopPropagation());
     this.addEventListener('keyup', (e) => e.stopPropagation());
@@ -132,16 +138,16 @@ export default class ModalWindow extends HTMLDivElement {
 
   appendChild(element) {
     element.addEventListener(EVENT_CHANGE_TITLE, (e) => (this.windowTitle = e.detail.title));
-    this.querySelector('.body-panel').appendChild(element);
+    this.#bodyPanel.appendChild(element);
     return element;
   }
 
   set windowTitle(title) {
-    this.querySelector('.title span').innerHTML = title;
+    this.#titleSpan.innerHTML = title;
   }
 
   get windowTitle() {
-    return this.querySelector('.title span').textContent;
+    return this.#titleSpan.textContent;
   }
 
   #minimizeHandler() {
@@ -192,24 +198,24 @@ export default class ModalWindow extends HTMLDivElement {
           this.#top += e.clientY - this.#prevClientY;
           this.#left += e.clientX - this.#prevClientX;
           break;
-        case 'top':
+        case EDGE.TOP:
           this.#top += e.clientY - this.#prevClientY;
           this.#height -= e.clientY - this.#prevClientY;
           break;
-        case 'bottom':
+        case EDGE.BOTTOM:
           this.#height += e.clientY - this.#prevClientY;
           break;
-        case 'left':
+        case EDGE.LEFT:
           this.#left += e.clientX - this.#prevClientX;
           this.#width -= e.clientX - this.#prevClientX;
           break;
-        case 'right':
+        case EDGE.RIGHT:
           this.#width += e.clientX - this.#prevClientX;
           break;
       }
     });
 
-    this.dataset.edges = ''; // 움직였으면 엣지 해제
+    this.#edges = []; // 움직였으면 엣지 해제
     this.#setViewport();
 
     this.#prevClientX = e.clientX;
@@ -238,28 +244,30 @@ export default class ModalWindow extends HTMLDivElement {
     }
 
     // 코너에 붙어있는지 결정
-    if (StringUtils.isBlank(this.dataset.edges)) {
-      const edges = [];
-      if (this.#top === OFFSET) edges.push('top');
-      if (this.#left === OFFSET) edges.push('left');
-      if (this.#left === window.innerWidth - this.#width - OFFSET) edges.push('right');
-      if (this.#top === window.innerHeight - this.#height - OFFSET) edges.push('bottom');
-      this.dataset.edges = edges.join(',');
+    if (this.#edges.length === 0) {
+      if (this.#top === OFFSET) this.#edges.push(EDGE.TOP);
+      if (this.#left === OFFSET) this.#edges.push(EDGE.LEFT);
+      if (this.#left === window.innerWidth - this.#width - OFFSET) this.#edges.push(EDGE.RIGHT);
+      if (this.#top === window.innerHeight - this.#height - OFFSET) this.#edges.push(EDGE.BOTTOM);
     }
 
-    this.dataset.edges.split(',').forEach((edge) => {
+    this.#edges.forEach((edge) => {
       switch (edge) {
-        case 'top':
+        case EDGE.TOP:
           this.#top = OFFSET;
           break;
-        case 'bottom':
+        case EDGE.BOTTOM:
           this.#top = window.innerHeight - this.#height - OFFSET;
           break;
-        case 'left':
+        case EDGE.LEFT:
           this.#left = OFFSET;
           break;
-        case 'right':
+        case EDGE.RIGHT:
           this.#left = window.innerWidth - this.#width - OFFSET;
+          break;
+        case EDGE.CENTER:
+          this.#top = (window.innerHeight - this.#height) / 2;
+          this.#left = (window.innerWidth - this.#width) / 2;
           break;
       }
     });

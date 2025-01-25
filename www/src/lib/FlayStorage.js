@@ -37,23 +37,28 @@ const FlayStorage = {
     set: (name, value) => {
       sessionStorage.setItem(name, value);
     },
-    get: (name, defaultValue) => {
+    setObject: (name, object) => {
+      FlayStorage.session.set(name, JSON.stringify(object));
+    },
+    setArray: (name, array) => {
+      FlayStorage.session.set(name, array.join(','));
+    },
+    get: (name, defaultValue = '') => {
       let value = sessionStorage.getItem(name);
-      return value !== null ? value : defaultValue ? defaultValue : '';
+      return value !== null ? value : defaultValue;
+    },
+    getObject: (name, defaultValue = {}) => {
+      return JSON.parse(FlayStorage.session.get(name)) || defaultValue;
+    },
+    getArray: (name, defaultValue = []) => {
+      return FlayStorage.session.get(name)?.split(',') || defaultValue;
     },
     getNumber: (name, defaultValue) => {
-      return Number(FlayStorage.session.get(name, defaultValue));
+      return Number(FlayStorage.session.get(name)) || defaultValue;
     },
     getBoolean: (name, defaultValue) => {
-      let value = FlayStorage.session.get(name, defaultValue);
+      const value = FlayStorage.session.get(name, defaultValue);
       return value === true || value === 'true' || value === 'on' || value === 'yes' || value === 'Y';
-    },
-    getArray: (name, defaultValue) => {
-      return FlayStorage.session.get(name, defaultValue).split(',');
-    },
-    getObject: (name, defaultValue) => {
-      let value = FlayStorage.session.get(name, defaultValue);
-      return value === null || value === '' ? defaultValue : JSON.parse(value);
     },
     remove: (name) => {
       sessionStorage.removeItem(name);

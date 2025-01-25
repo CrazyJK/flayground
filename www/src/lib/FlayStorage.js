@@ -6,22 +6,25 @@ const FlayStorage = {
     setObject: (name, object) => {
       FlayStorage.local.set(name, JSON.stringify(object));
     },
-    get: (name, defaultValue) => {
+    setArray: (name, array) => {
+      FlayStorage.local.set(name, array.join(','));
+    },
+    get: (name, defaultValue = '') => {
       let value = localStorage.getItem(name);
-      return value !== null ? value : defaultValue ? defaultValue : '';
+      return value !== null ? value : defaultValue;
+    },
+    getObject: (name, defaultValue = {}) => {
+      return JSON.parse(FlayStorage.local.get(name)) || defaultValue;
+    },
+    getArray: (name, defaultValue = []) => {
+      return FlayStorage.local.get(name)?.split(',') || defaultValue;
     },
     getNumber: (name, defaultValue) => {
-      return Number(FlayStorage.local.get(name, defaultValue));
+      return Number(FlayStorage.local.get(name) || defaultValue);
     },
     getBoolean: (name, defaultValue) => {
-      let value = FlayStorage.local.get(name, defaultValue);
+      const value = FlayStorage.local.get(name, defaultValue);
       return value === true || value === 'true' || value === 'on' || value === 'yes' || value === 'Y';
-    },
-    getArray: (name, defaultValue) => {
-      return FlayStorage.local.get(name, defaultValue).split(',');
-    },
-    getObject: (name, defaultValue) => {
-      return JSON.parse(FlayStorage.local.get(name, defaultValue));
     },
     remove: (name) => {
       localStorage.removeItem(name);

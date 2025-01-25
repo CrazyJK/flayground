@@ -225,9 +225,8 @@ export default class ModalShadowWindow extends HTMLElement {
     this.#minWidth = minWidth;
     this.#minHeight = minHeight;
     this.dataset.edges = edges;
-    this.classList.add(initialMode);
-    this.classList.add('modal-shadow-window', 'flay-div');
 
+    this.classList.add('flay-div', initialMode);
     this.shadowRoot.innerHTML = `
       <style>${cssText}</style>
       <div class="edges">

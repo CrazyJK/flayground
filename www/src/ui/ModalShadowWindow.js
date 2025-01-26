@@ -41,7 +41,7 @@ const cssText = `
     position: fixed;
     inset: 0;
     background-color: transparent;
-    z-index: 1;
+    z-index: 0;
   }
 
   :host(.maximize) {
@@ -301,7 +301,7 @@ export default class ModalShadowWindow extends HTMLElement {
     this.#edgeBottomLeft_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeBottomRight.addEventListener('mouseup', (e) => this.#stoptHandler(e));
 
-    document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
+    // document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
     _inner.querySelector('.' + MODAL_MODE.MINIMIZE).addEventListener('click', () => this.#minimizeHandler());

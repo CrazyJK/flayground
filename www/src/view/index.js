@@ -32,8 +32,8 @@ class Page {
         new ModalWindow('Video', {
           top: 0,
           left: 0,
-          width: getRandomInt(0, wUnit) + wUnit * 8,
-          height: getRandomInt(0, hUnit) + hUnit * 4,
+          width: getRandomInt(0, wUnit) + wUnit * 6,
+          height: getRandomInt(0, hUnit) + hUnit * 7,
           edges: [MODAL_EDGE.TOP, MODAL_EDGE.LEFT],
         })
       )
@@ -47,8 +47,8 @@ class Page {
         new ModalWindow('Basket', {
           top: 0,
           left: 0,
-          width: getRandomInt(0, wUnit) + wUnit * 8,
-          height: getRandomInt(0, hUnit) + hUnit * 6,
+          width: getRandomInt(0, wUnit) + wUnit * 4,
+          height: getRandomInt(0, hUnit) + hUnit * 3,
           edges: [MODAL_EDGE.BOTTOM, MODAL_EDGE.LEFT],
         })
       )
@@ -62,7 +62,7 @@ class Page {
         new ModalWindow('Memo', {
           top: 0,
           left: 0,
-          width: getRandomInt(0, wUnit) + wUnit * 4,
+          width: getRandomInt(0, wUnit) + wUnit * 1,
           height: getRandomInt(0, hUnit) + hUnit * 2,
           edges: [MODAL_EDGE.BOTTOM, MODAL_EDGE.RIGHT],
         })
@@ -77,8 +77,8 @@ class Page {
         new ModalWindow('Image Fallen', {
           top: 0,
           left: 0,
-          width: getRandomInt(0, wUnit) + wUnit * 2,
-          height: getRandomInt(0, hUnit) + hUnit * 7,
+          width: getRandomInt(0, wUnit) + wUnit * 1,
+          height: getRandomInt(0, hUnit) + hUnit * 8,
           edges: [MODAL_EDGE.TOP, MODAL_EDGE.RIGHT],
         })
       )
@@ -90,12 +90,12 @@ class Page {
       .querySelector('body > main')
       .appendChild(
         new ModalShadowWindow('Browser Panel', {
-          top: getRandomInt(0, hUnit) + hUnit * 6,
-          left: getRandomInt(0, wUnit) + wUnit * 2,
-          width: getRandomInt(0, wUnit) + wUnit * 6,
-          height: getRandomInt(0, hUnit) + hUnit * 4,
+          top: 0,
+          left: getRandomInt(0, wUnit) + wUnit * 6,
+          width: 730,
+          height: 1326,
           initialMode: MODAL_MODE.NORMAL,
-          edges: [MODAL_EDGE.CENTER],
+          edges: [MODAL_EDGE.TOP],
         })
       )
       .appendChild(new BrowserPanel());

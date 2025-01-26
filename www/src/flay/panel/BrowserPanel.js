@@ -63,8 +63,12 @@ export default class BrowserPanel extends HTMLElement {
     });
 
     this.#iframe.addEventListener('load', () => {
-      const title = new URL(this.#iframe.src).host + ' ' + this.#iframe.src.split('/').pop();
-      this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: title } }));
+      try {
+        const title = new URL(this.#iframe.src).host + ' ' + this.#iframe.src.split('/').pop();
+        this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: title } }));
+      } catch (error) {
+        console.warn(error);
+      }
     });
   }
 

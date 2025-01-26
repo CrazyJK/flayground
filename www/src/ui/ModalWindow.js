@@ -278,15 +278,19 @@ export default class ModalWindow extends HTMLDivElement {
       switch (edge) {
         case MODAL_EDGE.TOP:
           this.#top = OFFSET;
+          if (this.#edges.includes(MODAL_EDGE.BOTTOM)) this.#height = window.innerHeight - OFFSET * 2;
           break;
         case MODAL_EDGE.BOTTOM:
           this.#top = window.innerHeight - this.#height - OFFSET;
+          if (this.#edges.includes(MODAL_EDGE.TOP)) this.#height = window.innerHeight - OFFSET * 2;
           break;
         case MODAL_EDGE.LEFT:
           this.#left = OFFSET;
+          if (this.#edges.includes(MODAL_EDGE.RIGHT)) this.#width = window.innerWidth - OFFSET * 2;
           break;
         case MODAL_EDGE.RIGHT:
           this.#left = window.innerWidth - this.#width - OFFSET;
+          if (this.#edges.includes(MODAL_EDGE.LEFT)) this.#width = window.innerWidth - OFFSET * 2;
           break;
         case MODAL_EDGE.CENTER:
           this.#top = (window.innerHeight - this.#height) / 2;

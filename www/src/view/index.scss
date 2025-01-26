@@ -1,0 +1,16 @@
+body {
+  > footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: flex;
+    gap: 1rem;
+
+    button {
+      margin: 0.5rem 1rem;
+      border: 1px solid var(--color-border-window);
+      padding: 0.25rem 0.5rem;
+      border-radius: 3px;
+    }
+  }
+}

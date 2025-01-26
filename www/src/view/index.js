@@ -18,11 +18,11 @@ class Page {
   async start() {
     const [wUnit, hUnit] = [window.innerWidth / 12, window.innerHeight / 12];
 
-    this.#videoWindow(wUnit, hUnit);
-    this.#basketWindow(wUnit, hUnit);
-    this.#memoWindow(wUnit, hUnit);
-    this.#imageWindow(wUnit, hUnit);
-    this.#browserWindow(wUnit, hUnit);
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Video', () => this.#videoWindow(wUnit, hUnit)));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Basket', () => this.#basketWindow(wUnit, hUnit)));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Memo', () => this.#memoWindow(wUnit, hUnit)));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Image', () => this.#imageWindow(wUnit, hUnit)));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Borwser', () => this.#browserWindow(wUnit, hUnit)));
   }
 
   #videoWindow(wUnit, hUnit) {
@@ -103,3 +103,11 @@ class Page {
 }
 
 new Page().start();
+
+function newHTMLButtonElement(type, text, callback) {
+  const button = document.createElement('button');
+  button.textContent = text;
+  button.type = type;
+  button.addEventListener('click', callback);
+  return button;
+}

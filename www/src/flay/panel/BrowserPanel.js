@@ -1,10 +1,12 @@
 import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import FlayStorage from '../../lib/FlayStorage';
+import windowButton from '../../svg/windowButton';
 
 export default class BrowserPanel extends HTMLElement {
   #input;
   #datalist;
   #iframe;
+  #reload;
 
   constructor() {
     super();
@@ -28,40 +30,53 @@ export default class BrowserPanel extends HTMLElement {
           top: 0;
           width: 100%;
           opacity: 0;
+          display: flex;
+          outline: none;
         }
         .url-bar:focus-within, .url-bar:hover {
           opacity: 1;
         }
+        .url-bar button {
+          background-color: var(--color-bg);
+          color: var(--color-text);
+          border: none;
+          display: flex;
+          align-items: center;
+          cursor: pointer;
+        }
+        .url-bar button svg {
+          width: 1.25rem;
+        }
         .url-bar input {
+          background-color: var(--color-bg);
+          color: var(--color-text);
+          border: 0;
           display: block;
           width: 100%;
           padding: 0.5em;
-          border: 0;
-          background-color: var(--color-bg);
-          color: var(--color-text);
+          outline: none;
         }
       </style>
       <iframe></iframe>
       <div class="url-bar">
+        <button type="button" id="reload">${windowButton.reload}</button>
         <input type="url" list="url-list" placeholder="Enter URL"/>
         <datalist id="url-list">
       </div>
     `;
 
+    this.#reload = this.shadowRoot.querySelector('#reload');
     this.#input = this.shadowRoot.querySelector('input');
     this.#datalist = this.shadowRoot.querySelector('#url-list');
     this.#iframe = this.shadowRoot.querySelector('iframe');
 
     this.#input.addEventListener('keyup', (e) => {
       if (e.key !== 'Enter') return;
-      const url = e.target.value.trim();
-      if (url === '') return;
-
-      this.#iframe.src = url;
-      this.#addDatalist(url);
-      this.#saveDatalist();
+      this.#loadFrame();
     });
-
+    this.#reload.addEventListener('click', () => {
+      this.#loadFrame();
+    });
     this.#iframe.addEventListener('load', () => {
       try {
         const title = new URL(this.#iframe.src).host + ' ' + this.#iframe.src.split('/').pop();
@@ -74,6 +89,14 @@ export default class BrowserPanel extends HTMLElement {
 
   connectedCallback() {
     this.#loadDatalist();
+  }
+
+  #loadFrame() {
+    const url = this.#input.value.trim();
+    if (url === '') return;
+    this.#iframe.src = url;
+    this.#addDatalist(url);
+    this.#saveDatalist();
   }
 
   #addDatalist(url) {

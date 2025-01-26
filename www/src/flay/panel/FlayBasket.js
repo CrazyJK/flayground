@@ -3,7 +3,6 @@ import FlayFetch from '../../lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '../../lib/FlaySearch';
 import FlayStorage from '../../lib/FlayStorage';
 import { getRandomInt } from '../../lib/randomNumber';
-import StringUtils from '../../lib/StringUtils';
 import trashBinSVG from '../../svg/trashBin';
 import vaginaSVG from '../../svg/vagina';
 import GridControl from '../../ui/GridControl';
@@ -246,8 +245,7 @@ customElements.define('flay-basket-item', FlayBasketItem, { extends: 'div' });
  * @returns {Set<string>} basket
  */
 function getBasket() {
-  const value = FlayStorage.local.get(BASKET_KEY, '');
-  return new Set(StringUtils.isBlank(value) ? [] : value.split(','));
+  return new Set(FlayStorage.local.getArray(BASKET_KEY));
 }
 
 /**
@@ -255,5 +253,5 @@ function getBasket() {
  * @param {Set<string>} basket
  */
 function setBasket(basket) {
-  FlayStorage.local.set(BASKET_KEY, Array.from(basket).join(','));
+  FlayStorage.local.setArray(BASKET_KEY, Array.from(basket));
 }

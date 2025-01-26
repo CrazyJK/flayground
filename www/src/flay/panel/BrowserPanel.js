@@ -27,7 +27,7 @@ export default class BrowserPanel extends HTMLElement {
         }
         .url-bar {
           position: absolute;
-          top: 0;
+          bottom: 0;
           width: 100%;
           opacity: 0;
           display: flex;

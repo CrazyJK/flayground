@@ -7,7 +7,7 @@ import BrowserPanel from '../flay/panel/BrowserPanel';
 import { FlayBasket } from '../flay/panel/FlayBasket';
 import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
 import FlayVideoViewPanel from '../flay/panel/FlayVideoViewPanel';
-import { MODAL_EDGE } from '../GroundConstant';
+import { MODAL_EDGE, MODAL_MODE } from '../GroundConstant';
 import ImageFall from '../image/ImageFall';
 import { getRandomInt } from '../lib/randomNumber';
 import ModalShadowWindow from '../ui/ModalShadowWindow';
@@ -94,6 +94,7 @@ class Page {
           left: getRandomInt(0, wUnit) + wUnit * 2,
           width: getRandomInt(0, wUnit) + wUnit * 6,
           height: getRandomInt(0, hUnit) + hUnit * 4,
+          initialMode: MODAL_MODE.NORMAL,
           edges: [MODAL_EDGE.CENTER],
         })
       )

@@ -124,7 +124,7 @@ export default class ModalWindow extends HTMLDivElement {
     this.#edgeBottomLeft_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeBottomRight.addEventListener('mouseup', (e) => this.#stoptHandler(e));
 
-    document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
+    // document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
     _inner.querySelector('.' + MODAL_MODE.MINIMIZE).addEventListener('click', () => this.#minimizeHandler());

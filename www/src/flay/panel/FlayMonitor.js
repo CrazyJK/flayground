@@ -47,7 +47,7 @@ export default class FlayMonitor extends HTMLDivElement {
 
   connectedCallback() {
     // initial draw
-    this.#renderPosition(FlayStorage.local.getObject(STORAGE_KEY, '{}'));
+    this.#renderPosition(FlayStorage.local.getObject(STORAGE_KEY));
 
     /** 클릭되면 fixed 클래스 추가 */
     // this.addEventListener('click', (e) => {
@@ -158,7 +158,7 @@ customElements.define('flay-monitor', FlayMonitor, { extends: 'div' });
  * @param {number} height
  */
 export const updatePosition = (name, left, top, width = 0, height) => {
-  const positionInfo = FlayStorage.local.getObject(STORAGE_KEY, '{}');
+  const positionInfo = FlayStorage.local.getObject(STORAGE_KEY);
   delete positionInfo[name];
   if (width > 0) {
     positionInfo[name] = { left: left, top: top, width: width, height: height };

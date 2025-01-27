@@ -51,7 +51,7 @@ const cssText = `
 }
 :host footer .info label#imgIdx,
 :host footer .info label#imgSize,
-:host footer .info label#status {
+:host footer .info label#control {
   flex: 0 0 auto;
 }
 
@@ -65,14 +65,17 @@ const cssText = `
 }
 `;
 
+const [PAUSE, RANDOM, FORWARD] = ['Pause', 'Random', 'Forward'];
+
 export class ImageOne extends HTMLElement {
   #flayImage;
   #imgIdx;
   #imgPath;
   #imgName;
   #imgSize;
-  #status;
+  #control;
   #progressBar;
+  #willRandom = false;
 
   constructor() {
     super();
@@ -94,7 +97,7 @@ export class ImageOne extends HTMLElement {
           <label id="imgPath"></label>
           <label id="imgName"></label>
           <label id="imgSize"></label>
-          <label id="status"></label>
+          <label id="control">${PAUSE}</label>
         </div>
         <div class="progress">
           <div class="progress-bar"></div>
@@ -107,10 +110,12 @@ export class ImageOne extends HTMLElement {
     this.#imgPath = this.shadowRoot.querySelector('#imgPath');
     this.#imgName = this.shadowRoot.querySelector('#imgName');
     this.#imgSize = this.shadowRoot.querySelector('#imgSize');
-    this.#status = this.shadowRoot.querySelector('#status');
+    this.#control = this.shadowRoot.querySelector('#control');
     this.#progressBar = this.shadowRoot.querySelector('.progress-bar');
 
     this.#flayImage.addEventListener('loaded', (e) => this.drawInfo(e.detail.info));
+    this.#control.addEventListener('click', (e) => this.randomOrForward(e));
+
     this.addEventListener('wheel', (e) => this.onWheel(e));
     this.addEventListener('click', (e) => this.onClick(e));
     this.addEventListener('keyup', (e) => this.onKeyup(e));
@@ -135,13 +140,18 @@ export class ImageOne extends HTMLElement {
 
   onClick(e) {
     clearTimeout(this.playTimer);
-    this.#status.innerHTML = '';
-    if (e.ctrlKey || e.altKey) {
-      this.#status.innerHTML = e.ctrlKey ? 'Forward' : 'Random';
-      this.playTimer = setInterval(() => {
-        this.navigator(e.ctrlKey ? 'WheelDown' : 'Space');
-      }, 1000 * 10);
-    }
+    this.#control.innerHTML = PAUSE;
+  }
+
+  randomOrForward(e) {
+    e.stopPropagation();
+
+    this.#willRandom = !this.#willRandom;
+    this.#control.innerHTML = this.#willRandom ? RANDOM : FORWARD;
+    clearTimeout(this.playTimer);
+    this.playTimer = setInterval(() => {
+      this.navigator(this.#willRandom ? 'Space' : 'WheelDown');
+    }, 1000 * 10);
   }
 
   async navigator(code) {

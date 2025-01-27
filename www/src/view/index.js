@@ -1,8 +1,6 @@
 import './inc/Page';
 import './index.scss';
 
-import ModalWindow from '../ui/ModalWindow';
-
 import BrowserPanel from '../flay/panel/BrowserPanel';
 import { FlayBasket } from '../flay/panel/FlayBasket';
 import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
@@ -12,6 +10,7 @@ import ImageFall from '../image/ImageFall';
 import ImageOne from '../image/ImageOne';
 import { getRandomInt } from '../lib/randomNumber';
 import ModalShadowWindow from '../ui/ModalShadowWindow';
+import ModalWindow from '../ui/ModalWindow';
 
 class Page {
   constructor() {}

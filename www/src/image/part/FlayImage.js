@@ -11,7 +11,7 @@ export default class FlayImage extends HTMLImageElement {
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
-    console.debug('attributeChangedCallback', name, oldValue, newValue);
+    // console.debug('attributeChangedCallback', name, oldValue, newValue);
     switch (name) {
       case 'data-idx':
         this.src = '/static/image/' + newValue;
@@ -31,9 +31,9 @@ export default class FlayImage extends HTMLImageElement {
   }
 
   #loadInfo() {
-    const idx = Number(this.src?.split('/').pop()) || -1;
+    const idx = Number(this.src?.split('/').pop());
     if (idx < 0) {
-      this.removeAttribute('title');
+      this.removeAttribute('alt');
       return;
     }
 
@@ -43,7 +43,7 @@ export default class FlayImage extends HTMLImageElement {
         .then((info) => {
           info['width'] = this.naturalWidth;
           info['height'] = this.naturalHeight;
-          console.debug('image info', info);
+          // console.debug('image info', info);
 
           this.dataset.name = info.name;
           this.dataset.path = info.path;

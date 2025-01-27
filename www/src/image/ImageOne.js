@@ -12,34 +12,50 @@ const cssText = `
   justify-content: center;
   align-items: center;
 }
-:host img {
+:host(:hover) header,
+:host(:hover) footer {
+  opacity: 1;
+}
+:host(.full) img {
+  width: 100%;
+}
+
+img {
   object-fit: contain;
   width: auto;
   height: auto;
   max-width: 100%;
   max-height: 100%;
 }
-:host footer {
+
+header,
+footer {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
   background-color: transparent;
-  background-image: linear-gradient(0, black, transparent);
   opacity: 0;
   transition: opacity 0.4s;
 }
-:host footer:hover {
-  opacity: 1;
+
+header {
+  top: 0;
+  background-image: linear-gradient(0, transparent, black);
 }
-:host footer .info {
+
+footer {
+  bottom: 0;
+  background-image: linear-gradient(0, black, transparent);
+}
+
+.info {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   gap: 0 1rem;
   background-color: transparent;
   padding: 0.25rem 1rem;
 }
-:host footer .info label {
+.info label {
   background-color: transparent;
   text-shadow: var(--text-shadow);
   font-size: var(--size-small);
@@ -49,16 +65,14 @@ const cssText = `
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-:host footer .info label#imgIdx,
-:host footer .info label#imgSize,
-:host footer .info label#control {
+.info label#imgIdx,
+.info label#imgSize {
   flex: 0 0 auto;
 }
-
-:host footer .progress {
+.progress {
   height: 1px;
 }
-:host footer .progress .progress-bar {
+.progress .progress-bar {
   background-color: #f00;
   height: 1px;
   transition: 0.4s;
@@ -66,6 +80,7 @@ const cssText = `
 `;
 
 const [PAUSE, RANDOM, FORWARD] = ['Pause', 'Random', 'Forward'];
+const [ORIGINAL, FULLSIZE] = ['Original', 'Fullsize'];
 
 export class ImageOne extends HTMLElement {
   #flayImage;
@@ -73,9 +88,12 @@ export class ImageOne extends HTMLElement {
   #imgPath;
   #imgName;
   #imgSize;
-  #control;
+  #viewMode;
+  #flowMode;
   #progressBar;
+
   #willRandom = false;
+  #willFullsize = false;
 
   constructor() {
     super();
@@ -84,12 +102,18 @@ export class ImageOne extends HTMLElement {
 
     this.imageIdx = 0;
     this.imageSize = 0;
-    this.playTimer = null;
+    this.timer = null;
 
     this.setAttribute('tabindex', '0'); // 포커스를 받을 수 있도록 tabindex 속성 추가
     this.classList.add('image-one', 'flay-div');
     this.shadowRoot.innerHTML = `
       <style>${cssText}</style>
+      <header>
+        <div class="info">
+          <label id="viewMode">${ORIGINAL}</label>
+          <label id="flowMode">${PAUSE}</label>
+        </div>
+      </header>
       <img is="flay-image">
       <footer>
         <div class="info">
@@ -97,7 +121,6 @@ export class ImageOne extends HTMLElement {
           <label id="imgPath"></label>
           <label id="imgName"></label>
           <label id="imgSize"></label>
-          <label id="control">${PAUSE}</label>
         </div>
         <div class="progress">
           <div class="progress-bar"></div>
@@ -110,12 +133,13 @@ export class ImageOne extends HTMLElement {
     this.#imgPath = this.shadowRoot.querySelector('#imgPath');
     this.#imgName = this.shadowRoot.querySelector('#imgName');
     this.#imgSize = this.shadowRoot.querySelector('#imgSize');
-    this.#control = this.shadowRoot.querySelector('#control');
     this.#progressBar = this.shadowRoot.querySelector('.progress-bar');
+    this.#viewMode = this.shadowRoot.querySelector('#viewMode');
+    this.#flowMode = this.shadowRoot.querySelector('#flowMode');
 
     this.#flayImage.addEventListener('loaded', (e) => this.drawInfo(e.detail.info));
-    this.#control.addEventListener('click', (e) => this.randomOrForward(e));
-
+    this.#viewMode.addEventListener('click', (e) => this.fullOrOriginal(e));
+    this.#flowMode.addEventListener('click', (e) => this.randomOrForward(e));
     this.addEventListener('wheel', (e) => this.onWheel(e));
     this.addEventListener('click', (e) => this.onClick(e));
     this.addEventListener('keyup', (e) => this.onKeyup(e));
@@ -130,6 +154,10 @@ export class ImageOne extends HTMLElement {
       });
   }
 
+  disconnectedCallback() {
+    clearInterval(this.timer);
+  }
+
   onWheel(e) {
     this.navigator(e.wheelDelta > 0 ? 'WheelUp' : 'WheelDown');
   }
@@ -139,22 +167,26 @@ export class ImageOne extends HTMLElement {
   }
 
   onClick(e) {
-    clearTimeout(this.playTimer);
-    this.#control.innerHTML = PAUSE;
+    clearInterval(this.timer);
+    this.#flowMode.innerHTML = PAUSE;
+  }
+
+  fullOrOriginal(e) {
+    e.stopPropagation();
+    this.#willFullsize = !this.#willFullsize;
+    this.#viewMode.innerHTML = this.#willFullsize ? FULLSIZE : ORIGINAL;
+    this.classList.toggle('full', this.#willFullsize);
   }
 
   randomOrForward(e) {
     e.stopPropagation();
-
+    clearInterval(this.timer);
     this.#willRandom = !this.#willRandom;
-    this.#control.innerHTML = this.#willRandom ? RANDOM : FORWARD;
-    clearTimeout(this.playTimer);
-    this.playTimer = setInterval(() => {
-      this.navigator(this.#willRandom ? 'Space' : 'WheelDown');
-    }, 1000 * 10);
+    this.#flowMode.innerHTML = this.#willRandom ? RANDOM : FORWARD;
+    this.timer = setInterval(() => this.navigator(this.#willRandom ? 'Space' : 'WheelDown'), 1000 * 10);
   }
 
-  async navigator(code) {
+  navigator(code) {
     switch (code) {
       case 'Space':
         this.imageIdx = getRandomInt(0, this.imageSize);
@@ -176,10 +208,10 @@ export class ImageOne extends HTMLElement {
         this.imageIdx = this.imageIdx === this.imageSize - 1 ? 0 : this.imageIdx + 1;
         break;
     }
-    await this.drawImage();
+    this.drawImage();
   }
 
-  async drawImage() {
+  drawImage() {
     this.#flayImage.dataset.idx = this.imageIdx;
     this.progressBar();
   }

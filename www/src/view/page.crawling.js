@@ -2,13 +2,13 @@ import './inc/Page';
 import './page.crawling.scss';
 
 import NanoStore from '../flay/idb/nano/store/NanoStore';
-import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
+import { FlayMemoEditor } from '../flay/panel/FlayMemoEditor';
 import { MODAL_EDGE } from '../GroundConstant';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
 import { popupActress, popupFlay } from '../lib/FlaySearch';
 import StringUtils from '../lib/StringUtils';
-import ModalWindow from '../ui/ModalWindow';
+import { ModalWindow } from '../ui/ModalWindow';
 
 const DOMAIN = 'https://www.nanojav.com';
 const LIST_URL = DOMAIN + '/jav/?order=new&page=';

@@ -11,7 +11,7 @@ const MEMO_STORAGE_KEY = 'flay-memo';
  * Memo editor
  * @extends {HTMLDivElement}
  */
-export default class FlayMemoEditor extends HTMLDivElement {
+export class FlayMemoEditor extends HTMLDivElement {
   constructor() {
     super();
     this.classList.add('flay-memo-editor', 'flay-div');

@@ -7,7 +7,7 @@ import windowButton from '../svg/windowButton';
 const OFFSET = 4; // 창의 가장자리 여백
 const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: [], initialMode: MODAL_MODE.NORMAL }; // 창의 기본 옵션
 
-export default class ModalWindow extends HTMLDivElement {
+export class ModalWindow extends HTMLDivElement {
   #top = 0; // 창의 상단 위치
   #left = 0; // 창의 좌측 위치
   #width = 0; // 창의 너비

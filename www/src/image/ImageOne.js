@@ -65,7 +65,7 @@ const cssText = `
 }
 `;
 
-export default class ImageOne extends HTMLElement {
+export class ImageOne extends HTMLElement {
   #flayImage;
   #imgIdx;
   #imgPath;

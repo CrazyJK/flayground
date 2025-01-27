@@ -7,10 +7,10 @@ import '../flay/panel/FlayFinder';
 import '../flay/panel/FlayRegister';
 import '../flay/panel/SubtitlesFinder';
 
-import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
+import { FlayMemoEditor } from '../flay/panel/FlayMemoEditor';
 import { MODAL_EDGE } from '../GroundConstant';
 import { tabUI } from '../lib/TabUI';
-import ModalWindow from '../ui/ModalWindow';
+import { ModalWindow } from '../ui/ModalWindow';
 
 tabUI(document);
 

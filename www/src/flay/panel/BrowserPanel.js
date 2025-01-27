@@ -2,7 +2,7 @@ import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import FlayStorage from '../../lib/FlayStorage';
 import windowButton from '../../svg/windowButton';
 
-export default class BrowserPanel extends HTMLElement {
+export class BrowserPanel extends HTMLElement {
   #input;
   #datalist;
   #iframe;

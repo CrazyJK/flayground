@@ -5,7 +5,7 @@ import './ImageFall.scss';
 const PANE_WIDTH = 360;
 const DEFAULT_OPTS = { mode: 'serial', auto: true };
 
-export default class ImageFall extends HTMLDivElement {
+export class ImageFall extends HTMLDivElement {
   timer = -1;
   contunue = true;
   willRandom = false;

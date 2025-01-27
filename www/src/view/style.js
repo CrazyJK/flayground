@@ -70,6 +70,8 @@ document
   .appendSVG(windowButton.maximize)
   .appendSVG(windowButton.terminate)
   .appendSVG(windowButton.reload)
+  .appendSVG(windowButton.fullscreen)
+  .appendSVG(windowButton.normalscreen)
   .appendIMG('./svg/flayground-text.svg')
   .appendIMG('./svg/flayground-circle.svg')
   .appendIMG('./svg/flayground-circle-t.svg');

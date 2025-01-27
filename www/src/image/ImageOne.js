@@ -12,7 +12,6 @@ const cssText = `
   justify-content: center;
   align-items: center;
 }
-:host(:hover) header,
 :host(:hover) footer {
   opacity: 1;
 }
@@ -26,49 +25,51 @@ img {
   height: auto;
   max-width: 100%;
   max-height: 100%;
+  box-shadow: var(--box-shadow);
 }
 
-header,
 footer {
   position: absolute;
   left: 0;
   right: 0;
+  bottom: 0;
+  background-image: linear-gradient(0, black, transparent);
   background-color: transparent;
   opacity: 0;
   transition: opacity 0.4s;
 }
 
-header {
-  top: 0;
-  background-image: linear-gradient(0, transparent, black);
-}
-
-footer {
-  bottom: 0;
-  background-image: linear-gradient(0, black, transparent);
-}
-
 .info {
   display: flex;
   justify-content: space-between;
-  gap: 0 1rem;
-  background-color: transparent;
+  gap: 0 0.5rem;
   padding: 0.25rem 1rem;
 }
-.info label {
+.info label,
+.info button {
   background-color: transparent;
+  border: 0;
+  color: var(--color-white);
   text-shadow: var(--text-shadow);
   font-size: var(--size-small);
   font-weight: 400;
-  color: var(--color-white);
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.info label#imgIdx,
-.info label#imgSize {
+.info button {
+  cursor: pointer;
+}
+.info #imgIdx,
+.info #imgSize,
+.info #viewMode,
+.info #flowMode {
   flex: 0 0 auto;
 }
+.info #viewMode {
+  margin-left: auto;
+}
+
 .progress {
   height: 1px;
 }
@@ -108,12 +109,6 @@ export class ImageOne extends HTMLElement {
     this.classList.add('image-one', 'flay-div');
     this.shadowRoot.innerHTML = `
       <style>${cssText}</style>
-      <header>
-        <div class="info">
-          <label id="viewMode">${ORIGINAL}</label>
-          <label id="flowMode">${PAUSE}</label>
-        </div>
-      </header>
       <img is="flay-image">
       <footer>
         <div class="info">
@@ -121,6 +116,8 @@ export class ImageOne extends HTMLElement {
           <label id="imgPath"></label>
           <label id="imgName"></label>
           <label id="imgSize"></label>
+          <button id="viewMode">${ORIGINAL}</button>
+          <button id="flowMode">${PAUSE}</button>
         </div>
         <div class="progress">
           <div class="progress-bar"></div>

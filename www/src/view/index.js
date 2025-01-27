@@ -9,6 +9,7 @@ import FlayMemoEditor from '../flay/panel/FlayMemoEditor';
 import FlayVideoViewPanel from '../flay/panel/FlayVideoViewPanel';
 import { MODAL_EDGE, MODAL_MODE } from '../GroundConstant';
 import ImageFall from '../image/ImageFall';
+import ImageOne from '../image/ImageOne';
 import { getRandomInt } from '../lib/randomNumber';
 import ModalShadowWindow from '../ui/ModalShadowWindow';
 
@@ -21,7 +22,8 @@ class Page {
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Video', () => this.#videoWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Basket', () => this.#basketWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Memo', () => this.#memoWindow(wUnit, hUnit)));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Image', () => this.#imageWindow(wUnit, hUnit)));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageFall', () => this.#imageFallWindow(wUnit, hUnit)));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageOne', () => this.#imageOneWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Borwser', () => this.#browserWindow(wUnit, hUnit)));
   }
 
@@ -70,7 +72,7 @@ class Page {
       .appendChild(new FlayMemoEditor());
   }
 
-  #imageWindow(wUnit, hUnit) {
+  #imageFallWindow(wUnit, hUnit) {
     document
       .querySelector('body > main')
       .appendChild(
@@ -83,6 +85,21 @@ class Page {
         })
       )
       .appendChild(new ImageFall({ mode: 'random' }));
+  }
+
+  #imageOneWindow(wUnit, hUnit) {
+    document
+      .querySelector('body > main')
+      .appendChild(
+        new ModalShadowWindow('Image One', {
+          top: 0,
+          left: 0,
+          width: getRandomInt(0, wUnit) + wUnit * 8,
+          height: getRandomInt(0, hUnit) + hUnit * 6,
+          edges: [MODAL_EDGE.TOP, MODAL_EDGE.RIGHT],
+        })
+      )
+      .appendChild(new ImageOne({ mode: 'random' }));
   }
 
   #browserWindow(wUnit, hUnit) {

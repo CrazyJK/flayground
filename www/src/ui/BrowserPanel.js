@@ -1,6 +1,6 @@
-import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
-import FlayStorage from '../../lib/FlayStorage';
-import windowButton from '../../svg/windowButton';
+import { EVENT_CHANGE_TITLE } from '../GroundConstant';
+import FlayStorage from '../lib/FlayStorage';
+import windowButton from '../svg/windowButton';
 
 export class BrowserPanel extends HTMLElement {
   #input;
@@ -25,21 +25,32 @@ export class BrowserPanel extends HTMLElement {
           height: 100%;
           border: none;
         }
-        .url-bar {
+        .hover-bar {
+          background-color: transparent;
           position: absolute;
-          bottom: 0;
+          top: 0;
           width: 100%;
-          opacity: 0;
+          height: 8px;
+        }
+        .hover-bar:hover + .url-bar {
           display: flex;
-          outline: none;
         }
         .url-bar:focus-within, .url-bar:hover {
-          opacity: 1;
+          display: flex;
+        }
+        .url-bar {
+          position: absolute;
+          top: 8px;
+          padding: 0 8px;
+          width: calc(100% - 16px);
+          display: none;
+          outline: none;
         }
         .url-bar button {
           background-color: var(--color-bg);
           color: var(--color-text);
           border: none;
+          border-radius: 4px 0 0 4px;
           display: flex;
           align-items: center;
           cursor: pointer;
@@ -51,6 +62,7 @@ export class BrowserPanel extends HTMLElement {
           background-color: var(--color-bg);
           color: var(--color-text);
           border: 0;
+          border-radius: 0 4px 4px 0;
           display: block;
           width: 100%;
           padding: 0.5em;
@@ -58,6 +70,7 @@ export class BrowserPanel extends HTMLElement {
         }
       </style>
       <iframe></iframe>
+      <div class="hover-bar"></div>
       <div class="url-bar">
         <button type="button" id="reload">${windowButton.reload}</button>
         <input type="url" list="url-list" placeholder="Enter URL"/>

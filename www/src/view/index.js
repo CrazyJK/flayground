@@ -107,7 +107,7 @@ class Page {
   }
 
   #browserWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "BrowserPanel" */ '../flay/panel/BrowserPanel').then(({ BrowserPanel }) => {
+    import(/* webpackChunkName: "BrowserPanel" */ '../ui/BrowserPanel').then(({ BrowserPanel }) => {
       document
         .querySelector('body > main')
         .appendChild(

@@ -73,7 +73,7 @@ class Page {
   }
 
   #imageFallWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "ImageFall" */ '../flay/panel/ImageFall').then(({ ImageFall }) => {
+    import(/* webpackChunkName: "ImageFall" */ '../image/ImageFall').then(({ ImageFall }) => {
       document
         .querySelector('body > main')
         .appendChild(

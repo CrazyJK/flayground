@@ -6,6 +6,7 @@ import { ModalWindow } from '../ui/ModalWindow';
 
 import { MODAL_EDGE, MODAL_MODE } from '../GroundConstant';
 import { getRandomInt } from '../lib/randomNumber';
+import { Countdown } from '../ui/Countdown';
 
 class Page {
   constructor() {}
@@ -19,6 +20,7 @@ class Page {
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageFall', () => this.#imageFallWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageOne', () => this.#imageOneWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Borwser', () => this.#browserWindow(wUnit, hUnit)));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Countdown', () => this.#countdown()));
   }
 
   #videoWindow(wUnit, hUnit) {
@@ -122,6 +124,36 @@ class Page {
         )
         .appendChild(new BrowserPanel());
     });
+  }
+
+  #countdown() {
+    const header = document.querySelector('body').appendChild(document.createElement('header'));
+
+    const countdown = header.appendChild(new Countdown());
+    const time = header.appendChild(document.createElement('input'));
+    const startBtn = header.appendChild(document.createElement('button'));
+    const stopBtn = header.appendChild(document.createElement('button'));
+    const resetBtn = header.appendChild(document.createElement('button'));
+
+    startBtn.innerHTML = 'Start';
+    stopBtn.innerHTML = 'Stop';
+    resetBtn.innerHTML = 'Reset';
+
+    time.type = 'number';
+    time.min = 1;
+    time.stop = 1;
+    time.value = 10;
+
+    header.style.cssText = 'position: absolute; top: 10rem; left: 10rem; display: flex; flex-direction: column; align-items: center;';
+    countdown.style.cssText = 'padding: 1rem; border: 1px solid var(--color-orange); width: 12rem; height: 12rem';
+    time.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+    startBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+    stopBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+    resetBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+
+    startBtn.addEventListener('click', () => countdown.start(time.value));
+    stopBtn.addEventListener('click', () => countdown.stop());
+    resetBtn.addEventListener('click', () => countdown.reset());
   }
 }
 

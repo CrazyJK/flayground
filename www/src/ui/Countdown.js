@@ -41,17 +41,17 @@ export class Countdown extends HTMLElement {
     this.reset();
 
     const timeout = (seconds * 1000) / 360;
-    let i = 1;
+    let i = 0;
 
     this.#circle.style.transition = `transform ${timeout}ms`;
     this.#timer = setInterval(() => {
+      i++;
       if (i > 360) {
         this.stop();
         return;
       }
 
       this.#circle.style.transform = `rotate(${i}deg)`;
-      i++;
     }, timeout);
   }
 

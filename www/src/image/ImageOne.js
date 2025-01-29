@@ -1,4 +1,5 @@
 import { getRandomInt } from '../lib/randomNumber';
+import { Countdown } from '../ui/Countdown';
 import './part/FlayImage';
 
 const cssText = `
@@ -63,7 +64,8 @@ footer {
 .info #imgIdx,
 .info #imgSize,
 .info #viewMode,
-.info #flowMode {
+.info #flowMode,
+.info count-down {
   flex: 0 0 auto;
 }
 .info #viewMode {
@@ -93,6 +95,7 @@ export class ImageOne extends HTMLElement {
   #viewMode;
   #flowMode;
   #progressBar;
+  #countdown;
 
   #willRandom = false;
   #willFullsize = false;
@@ -134,6 +137,7 @@ export class ImageOne extends HTMLElement {
     this.#progressBar = this.shadowRoot.querySelector('.progress-bar');
     this.#viewMode = this.shadowRoot.querySelector('#viewMode');
     this.#flowMode = this.shadowRoot.querySelector('#flowMode');
+    this.#countdown = this.shadowRoot.querySelector('.info').appendChild(new Countdown());
 
     this.#flayImage.addEventListener('loaded', (e) => this.drawInfo(e.detail.info));
     this.#viewMode.addEventListener('click', (e) => this.fullOrOriginal(e));
@@ -153,7 +157,7 @@ export class ImageOne extends HTMLElement {
   }
 
   disconnectedCallback() {
-    clearInterval(this.timer);
+    this.#stop();
   }
 
   onWheel(e) {
@@ -165,7 +169,7 @@ export class ImageOne extends HTMLElement {
   }
 
   onClick(e) {
-    clearInterval(this.timer);
+    this.#stop();
     this.#flowMode.innerHTML = PAUSE;
   }
 
@@ -178,14 +182,21 @@ export class ImageOne extends HTMLElement {
 
   randomOrForward(e) {
     e.stopPropagation();
-    clearInterval(this.timer);
+    this.#stop();
 
     this.#willRandom = !this.#willRandom;
     this.#flowMode.innerHTML = this.#willRandom ? RANDOM : FORWARD;
 
+    this.#countdown.start(TIMER);
     this.timer = setInterval(() => {
+      this.#countdown.start(TIMER);
       this.navigator(this.#willRandom ? 'Space' : 'WheelDown');
     }, 1000 * TIMER);
+  }
+
+  #stop() {
+    clearInterval(this.timer);
+    this.#countdown.reset();
   }
 
   navigator(code) {

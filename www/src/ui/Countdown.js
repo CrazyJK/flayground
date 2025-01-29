@@ -1,6 +1,6 @@
 export class Countdown extends HTMLElement {
-  #willStop;
-  #countdownCircle;
+  #circle;
+  #timer = -1;
 
   constructor() {
     super();
@@ -9,6 +9,7 @@ export class Countdown extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
+          display: block;
           position: relative;
           width: var(--size-large);
           height: var(--size-large);
@@ -25,8 +26,7 @@ export class Countdown extends HTMLElement {
       <div></div>
     `;
 
-    this.#willStop = false;
-    this.#countdownCircle = this.shadowRoot.querySelector('div');
+    this.#circle = this.shadowRoot.querySelector('div');
   }
 
   connectedCallback() {
@@ -37,29 +37,32 @@ export class Countdown extends HTMLElement {
     this.stop();
   }
 
-  async start(seconds) {
+  start(seconds) {
     this.reset();
+
     const timeout = (seconds * 1000) / 360;
+    let i = 1;
 
-    this.#willStop = false;
-    this.#countdownCircle.style.transition = `transform ${timeout}ms`;
+    this.#circle.style.transition = `transform ${timeout}ms`;
+    this.#timer = setInterval(() => {
+      if (i > 360) {
+        this.stop();
+        return;
+      }
 
-    for (let i = 1; i <= 360; i++) {
-      if (this.#willStop) break;
-      this.#countdownCircle.style.transform = `rotate(${i}deg)`;
-
-      await new Promise((resolve) => setTimeout(resolve, timeout));
-    }
+      this.#circle.style.transform = `rotate(${i}deg)`;
+      i++;
+    }, timeout);
   }
 
   stop() {
-    this.#willStop = true;
+    clearInterval(this.#timer);
   }
 
   reset() {
-    this.#willStop = true;
-    this.#countdownCircle.style.transition = 'unset';
-    this.#countdownCircle.style.transform = 'unset';
+    this.stop();
+    this.#circle.style.transition = 'unset';
+    this.#circle.style.transform = 'unset';
   }
 }
 

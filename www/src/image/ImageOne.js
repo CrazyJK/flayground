@@ -1,5 +1,4 @@
 import { getRandomInt } from '../lib/randomNumber';
-import { Countdown } from '../ui/Countdown';
 import './part/FlayImage';
 
 const cssText = `
@@ -64,8 +63,7 @@ footer {
 .info #imgIdx,
 .info #imgSize,
 .info #viewMode,
-.info #flowMode,
-.info count-down {
+.info #flowMode {
   flex: 0 0 auto;
 }
 .info #viewMode {
@@ -128,8 +126,6 @@ export class ImageOne extends HTMLElement {
       </footer>
     `;
 
-    this.countdown = this.shadowRoot.querySelector('footer > .info').appendChild(new Countdown());
-
     this.#flayImage = this.shadowRoot.querySelector('img');
     this.#imgIdx = this.shadowRoot.querySelector('#imgIdx');
     this.#imgPath = this.shadowRoot.querySelector('#imgPath');
@@ -171,7 +167,6 @@ export class ImageOne extends HTMLElement {
   onClick(e) {
     clearInterval(this.timer);
     this.#flowMode.innerHTML = PAUSE;
-    this.countdown.reset();
   }
 
   fullOrOriginal(e) {
@@ -184,12 +179,11 @@ export class ImageOne extends HTMLElement {
   randomOrForward(e) {
     e.stopPropagation();
     clearInterval(this.timer);
+
     this.#willRandom = !this.#willRandom;
     this.#flowMode.innerHTML = this.#willRandom ? RANDOM : FORWARD;
 
-    this.countdown.start(TIMER);
     this.timer = setInterval(() => {
-      this.countdown.start(TIMER);
       this.navigator(this.#willRandom ? 'Space' : 'WheelDown');
     }, 1000 * TIMER);
   }

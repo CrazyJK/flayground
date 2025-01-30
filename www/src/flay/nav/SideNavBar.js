@@ -41,6 +41,7 @@ const menuList = [
   {},
   { url: 'page.dragndrop.html', name: 'drag & drop' },
   { url: 'style.html', name: 'style' },
+  { url: 'test.html', name: 'test' },
 ];
 
 export default class SideNavBar extends HTMLDivElement {

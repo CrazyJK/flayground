@@ -174,6 +174,7 @@ export class FlayVideoViewPanel extends HTMLDivElement {
   async play() {
     const { opus, flay, actress } = await this.flayProvider.random();
     this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `[${flay.opus}] ${flay.actressList.join(',')} - ${flay.title}` } }));
+    this.dispatchEvent(new CustomEvent('flay-load', { detail: { opus, flay, actress } }));
 
     try {
       await this.videoPlayer.load(opus, flay, actress);

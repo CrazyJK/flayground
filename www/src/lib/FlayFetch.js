@@ -138,4 +138,9 @@ export default class FlayFetch {
   static async clearAll() {
     coverObjectURLMap.clear();
   }
+
+  static async clearTag() {
+    tagGroupList = null;
+    tagList = null;
+  }
 }

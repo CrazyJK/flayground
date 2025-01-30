@@ -64,6 +64,7 @@ sse.addEventListener('ACTRESS', (e) => {
 sse.addEventListener('TAG', (e) => {
   console.debug(e.type, e.data);
   const tag = JSON.parse(e.data);
+  FlayFetch.clearTag();
   emitTag(tag);
   if (typeof window.emitTag === 'function') window.emitTag(tag);
 });

@@ -27,7 +27,7 @@ class FlayTagInfo extends HTMLDListElement {
       </dd>
     `;
 
-    this.addEventListener('click', () => ([TAG_ID.value, TAG_NAME.value, TAG_DESC.value] = [this.tag.id, this.tag.name, this.tag.description]));
+    this.addEventListener('click', () => ([TAG_ID.value, TAG_GROUP.value, TAG_NAME.value, TAG_DESC.value] = [this.tag.id, this.tag.group, this.tag.name, this.tag.description]));
     this.querySelector('.name').addEventListener('click', () => popupTag(this.tag.id));
   }
 }
@@ -36,17 +36,18 @@ customElements.define('flay-tag-info', FlayTagInfo, { extends: 'dl' });
 
 // header
 const TAG_ID = document.querySelector('#tagId');
+const TAG_GROUP = document.querySelector('#tagGroup');
 const TAG_NAME = document.querySelector('#tagName');
 const TAG_DESC = document.querySelector('#tagDesc');
 const TAG_APPLY = document.querySelector('#applyBtn');
 const TAG_DEL = document.querySelector('#deleteBtn');
 
-let [tagId, tagName, tagDesc] = ['', '', ''];
+let [tagId, tagGroup, tagName, tagDesc] = ['', '', '', ''];
 
 TAG_ID.addEventListener('click', () => ([TAG_ID.value, TAG_NAME.value, TAG_DESC.value] = ['', '', '']));
 TAG_APPLY.addEventListener('click', () => {
-  [tagId, tagName, tagDesc] = [TAG_ID.value, TAG_NAME.value, TAG_DESC.value];
-  if (tagName !== '') FlayAction.putTag(tagId === '' ? '-1' : tagId, tagName, tagDesc, renderTagList);
+  [tagId, tagGroup, tagName, tagDesc] = [TAG_ID.value, TAG_GROUP.value, TAG_NAME.value, TAG_DESC.value];
+  if (tagName !== '') FlayAction.putTag(tagId === '' ? '-1' : tagId, tagGroup, tagName, tagDesc, renderTagList);
 });
 TAG_DEL.addEventListener('click', () => {
   [tagId, tagName, tagDesc] = [TAG_ID.value, TAG_NAME.value, TAG_DESC.value];

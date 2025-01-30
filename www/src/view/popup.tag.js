@@ -14,6 +14,7 @@ const id = urlParams.get('id');
 const flayMap = new Map();
 
 const tagId = document.querySelector('#tagId');
+const tagGroup = document.querySelector('#tagGroup');
 const tagName = document.querySelector('#tagName');
 const tagDesc = document.querySelector('#tagDesc');
 const saveBtn = document.querySelector('#saveBtn');
@@ -27,6 +28,7 @@ function fetchTag() {
     .then((res) => res.json())
     .then((tag) => {
       tagId.innerHTML = tag.id;
+      tagGroup.value = tag.group;
       tagName.value = tag.name;
       tagDesc.value = tag.description;
 
@@ -51,7 +53,7 @@ flayRank.addEventListener('change', (e) => {
 });
 
 saveBtn.addEventListener('click', () => {
-  FlayAction.putTag(tagId.textContent, tagName.value, tagDesc.value);
+  FlayAction.putTag(tagId.textContent, tagGroup.value, tagName.value, tagDesc.value);
 });
 
 delBtn.addEventListener('click', () => {

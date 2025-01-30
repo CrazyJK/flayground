@@ -56,13 +56,13 @@ export default {
       failCallback
     );
   },
-  putTag: (id, name, desc, callback, failCallback) => {
+  putTag: (id, group, name, desc, callback, failCallback) => {
     return action(
       '/info/tag',
       {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ id: id, name: name, description: desc }),
+        body: JSON.stringify({ id: id, group: group, name: name, description: desc }),
       },
       callback,
       failCallback

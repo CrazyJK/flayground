@@ -43,3 +43,23 @@ export const MODAL_EDGE = {
   BOTTOM_LEFT: 'bottom-left',
   BOTTOM_RIGHT: 'bottom-right',
 };
+
+export const EventCode = {
+  ARROW_DOWN: 'ArrowDown',
+  ARROW_LEFT: 'ArrowLeft',
+  ARROW_RIGHT: 'ArrowRight',
+  ARROW_UP: 'ArrowUp',
+  BACKSPACE: 'Backspace',
+  DELETE: 'Delete',
+  END: 'End',
+  ENTER: 'Enter',
+  ESCAPE: 'Escape',
+  HOME: 'Home',
+  INSERT: 'Insert',
+  PAGE_DOWN: 'PageDown',
+  PAGE_UP: 'PageUp',
+  SPACE: 'Space',
+  TAB: 'Tab',
+  WHEEL_DOWN: 'WheelDown',
+  WHEEL_UP: 'WheelUp',
+};

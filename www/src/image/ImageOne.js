@@ -1,5 +1,6 @@
+import { EventCode } from '../GroundConstant';
 import { getRandomInt } from '../lib/randomNumber';
-import { Countdown } from '../ui/Countdown';
+import { Countdown, EVENT_COUNTDOWN_END } from '../ui/Countdown';
 import './part/FlayImage';
 
 const cssText = `
@@ -16,7 +17,7 @@ const cssText = `
 :host(:hover) footer {
   opacity: 1;
 }
-:host(.full) img {
+:host(.fullsize) img {
   width: 100%;
 }
 
@@ -43,6 +44,7 @@ footer {
 .info {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 0 0.5rem;
   padding: 0.25rem 1rem;
 }
@@ -58,8 +60,10 @@ footer {
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-.info button {
+.info button,
+.info count-down {
   cursor: pointer;
+  text-transform: capitalize;
 }
 .info #imgIdx,
 .info #imgSize,
@@ -82,8 +86,9 @@ footer {
 }
 `;
 
-const [PAUSE, RANDOM, FORWARD] = ['Pause', 'Random', 'Forward'];
-const [ORIGINAL, FULLSIZE] = ['Original', 'Fullsize'];
+const [RANDOM, FORWARD] = ['random', 'forward'];
+const [ORIGINAL, FULLSIZE] = ['original', 'fullsize'];
+const PLAY = 'play';
 const TIMER = 10;
 
 export class ImageOne extends HTMLElement {
@@ -97,9 +102,6 @@ export class ImageOne extends HTMLElement {
   #progressBar;
   #countdown;
 
-  #willRandom = false;
-  #willFullsize = false;
-
   constructor() {
     super();
 
@@ -107,7 +109,6 @@ export class ImageOne extends HTMLElement {
 
     this.imageIdx = 0;
     this.imageSize = 0;
-    this.timer = null;
 
     this.setAttribute('tabindex', '0'); // 포커스를 받을 수 있도록 tabindex 속성 추가
     this.classList.add('image-one', 'flay-div');
@@ -121,7 +122,7 @@ export class ImageOne extends HTMLElement {
           <label id="imgName"></label>
           <label id="imgSize"></label>
           <button id="viewMode">${ORIGINAL}</button>
-          <button id="flowMode">${PAUSE}</button>
+          <button id="flowMode">${FORWARD}</button>
         </div>
         <div class="progress">
           <div class="progress-bar"></div>
@@ -139,12 +140,16 @@ export class ImageOne extends HTMLElement {
     this.#flowMode = this.shadowRoot.querySelector('#flowMode');
     this.#countdown = this.shadowRoot.querySelector('.info').appendChild(new Countdown());
 
-    this.#flayImage.addEventListener('loaded', (e) => this.drawInfo(e.detail.info));
-    this.#viewMode.addEventListener('click', (e) => this.fullOrOriginal(e));
-    this.#flowMode.addEventListener('click', (e) => this.randomOrForward(e));
-    this.addEventListener('wheel', (e) => this.onWheel(e));
-    this.addEventListener('click', (e) => this.onClick(e));
-    this.addEventListener('keyup', (e) => this.onKeyup(e));
+    this.#flayImage.addEventListener('loaded', (e) => this.#drawInfo(e.detail.info));
+
+    this.#viewMode.addEventListener('click', (e) => this.#viewToggler(e));
+    this.#flowMode.addEventListener('click', (e) => this.#flowToggler(e));
+    this.#countdown.addEventListener('click', (e) => this.#playToggler(e));
+    this.#countdown.addEventListener(EVENT_COUNTDOWN_END, () => this.#onCountdownEnd());
+
+    this.addEventListener('click', (e) => this.#playToggler(e, false));
+    this.addEventListener('wheel', (e) => this.#navigateOnWheel(e));
+    this.addEventListener('keyup', (e) => this.#navigateOnKeyup(e));
   }
 
   connectedCallback() {
@@ -152,92 +157,78 @@ export class ImageOne extends HTMLElement {
       .then((res) => res.text())
       .then((text) => {
         this.imageSize = Number(text);
-        this.navigator('Space');
+        this.#navigator('Space');
       });
   }
 
-  disconnectedCallback() {
-    this.#stop();
+  #navigateOnWheel(e) {
+    this.#navigator(e.wheelDelta > 0 ? EventCode.WHEEL_UP : EventCode.WHEEL_DOWN);
   }
 
-  onWheel(e) {
-    this.navigator(e.wheelDelta > 0 ? 'WheelUp' : 'WheelDown');
+  #navigateOnKeyup(e) {
+    this.#navigator(e.code);
   }
 
-  onKeyup(e) {
-    this.navigator(e.code);
+  #navigateByFlowMode() {
+    this.#navigator(this.classList.contains(RANDOM) ? EventCode.SPACE : EventCode.ARROW_RIGHT);
   }
 
-  onClick(e) {
-    this.#stop();
-    this.#flowMode.innerHTML = PAUSE;
-  }
-
-  fullOrOriginal(e) {
+  #viewToggler(e) {
     e.stopPropagation();
-    this.#willFullsize = !this.#willFullsize;
-    this.#viewMode.innerHTML = this.#willFullsize ? FULLSIZE : ORIGINAL;
-    this.classList.toggle('full', this.#willFullsize);
+    this.#viewMode.innerHTML = this.classList.toggle(FULLSIZE) ? FULLSIZE : ORIGINAL;
   }
 
-  randomOrForward(e) {
+  #flowToggler(e) {
     e.stopPropagation();
-    this.#stop();
+    this.#flowMode.innerHTML = this.classList.toggle(RANDOM) ? RANDOM : FORWARD;
+  }
 
-    this.#willRandom = !this.#willRandom;
-    this.#flowMode.innerHTML = this.#willRandom ? RANDOM : FORWARD;
-
-    this.#countdown.start(TIMER);
-    this.timer = setInterval(() => {
+  #playToggler(e, force) {
+    e.stopPropagation();
+    if (this.classList.toggle(PLAY, force)) {
       this.#countdown.start(TIMER);
-      this.navigator(this.#willRandom ? 'Space' : 'WheelDown');
-    }, 1000 * TIMER);
+    } else {
+      this.#countdown.reset();
+    }
   }
 
-  #stop() {
-    clearInterval(this.timer);
-    this.#countdown.reset();
+  #onCountdownEnd() {
+    this.#navigateByFlowMode();
+    this.#countdown.start(TIMER);
   }
 
-  navigator(code) {
+  #navigator(code) {
     switch (code) {
-      case 'Space':
+      case EventCode.SPACE:
         this.imageIdx = getRandomInt(0, this.imageSize);
         break;
-      case 'Home':
+      case EventCode.HOME:
         this.imageIdx = 0;
         break;
-      case 'End':
+      case EventCode.END:
         this.imageIdx = this.imageSize - 1;
         break;
-      case 'WheelUp':
-      case 'ArrowUp':
-      case 'ArrowLeft':
+      case EventCode.WHEEL_UP:
+      case EventCode.ARROW_UP:
+      case EventCode.ARROW_LEFT:
         this.imageIdx = this.imageIdx === 0 ? this.imageSize - 1 : this.imageIdx - 1;
         break;
-      case 'WheelDown':
-      case 'ArrowDown':
-      case 'ArrowRight':
+      case EventCode.WHEEL_DOWN:
+      case EventCode.ARROW_DOWN:
+      case EventCode.ARROW_RIGHT:
         this.imageIdx = this.imageIdx === this.imageSize - 1 ? 0 : this.imageIdx + 1;
         break;
     }
-    this.drawImage();
-  }
 
-  drawImage() {
     this.#flayImage.dataset.idx = this.imageIdx;
-    this.progressBar();
+    this.#progressBar.style.width = `${((this.imageIdx + 1) / this.imageSize) * 100}%`;
   }
 
-  drawInfo(info) {
+  #drawInfo(info) {
     this.#imgIdx.textContent = info.idx;
     this.#imgPath.textContent = info.path;
     this.#imgName.textContent = info.name;
     this.#imgSize.textContent = `${info.width} x ${info.height}`;
-  }
-
-  progressBar() {
-    this.#progressBar.style.width = `${((this.imageIdx + 1) / this.imageSize) * 100}%`;
   }
 }
 

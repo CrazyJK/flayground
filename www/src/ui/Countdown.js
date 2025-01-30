@@ -1,6 +1,39 @@
+// 카운트다운 이벤트 상수 정의
+export const EVENT_COUNTDOWN_START = 'countdown-start';
+export const EVENT_COUNTDOWN_END = 'countdown-end';
+export const EVENT_COUNTDOWN_RESET = 'countdown-reset';
+export const EVENT_COUNTDOWN_PAUSE = 'countdown-pause';
+export const EVENT_COUNTDOWN_RESUME = 'countdown-resume';
+
+/**
+ * 카운트다운 타이머를 표시하는 커스텀 요소.
+ *
+ * @class Countdown
+ * @extends {HTMLElement}
+ * @private {HTMLElement} #circle - 카운트다운을 나타내는 원형 요소.
+ * @private {number} #startTime - 카운트다운 시작 시간.
+ * @private {number} #duration - 카운트다운 지속 시간(밀리초).
+ * @private {number} #elapsedTime - 경과 시간.
+ * @private {number} #animationFrame - 카운트다운 애니메이션 프레임 ID.
+ * @private {boolean} #isPaused - 카운트다운이 일시 중지되었는지 여부.
+ *
+ * @method connectedCallback - 요소가 DOM에 추가될 때 호출됨.
+ * @method disconnectedCallback - 요소가 DOM에서 제거될 때 호출됨.
+ * @method start - 카운트다운 타이머를 시작함.
+ * @param {number} seconds - 카운트다운 지속 시간(초).
+ * @method reset - 카운트다운 타이머를 초기화함.
+ * @method pause - 카운트다운 타이머를 일시 중지함.
+ * @method resume - 카운트다운 타이머를 재개함.
+ * @method #cancel - 애니메이션 프레임을 취소함.
+ * @method #animate - 카운트다운 타이머를 애니메이션함.
+ */
 export class Countdown extends HTMLElement {
   #circle;
-  #timer = -1;
+  #startTime;
+  #duration;
+  #elapsedTime;
+  #animationFrame;
+  #isPaused;
 
   constructor() {
     super();
@@ -19,14 +52,16 @@ export class Countdown extends HTMLElement {
           width: 100%;
           height: 100%;
           background: conic-gradient(#fff, #000);
-          /* border: 2px solid var(--color-border-window); */
           border-radius: 50%;
+          transition: unset;
         }
       </style>
       <div></div>
     `;
 
     this.#circle = this.shadowRoot.querySelector('div');
+    this.#isPaused = false;
+    this.#elapsedTime = 0;
   }
 
   connectedCallback() {
@@ -34,35 +69,59 @@ export class Countdown extends HTMLElement {
   }
 
   disconnectedCallback() {
-    this.stop();
+    this.#cancel();
   }
 
   start(seconds) {
     this.reset();
-
-    const timeout = (seconds * 1000) / 360;
-    let i = 0;
-
-    this.#circle.style.transition = `transform ${timeout}ms`;
-    this.#timer = setInterval(() => {
-      i++;
-      if (i > 360) {
-        this.stop();
-        return;
-      }
-
-      this.#circle.style.transform = `rotate(${i}deg)`;
-    }, timeout);
-  }
-
-  stop() {
-    clearInterval(this.#timer);
+    this.#duration = seconds * 1000;
+    this.#startTime = performance.now();
+    this.#animate();
+    this.dispatchEvent(new Event(EVENT_COUNTDOWN_START));
   }
 
   reset() {
-    this.stop();
-    this.#circle.style.transition = 'unset';
+    this.#cancel();
     this.#circle.style.transform = 'unset';
+    this.#elapsedTime = 0;
+    this.#isPaused = false;
+    this.dispatchEvent(new Event(EVENT_COUNTDOWN_RESET));
+  }
+
+  pause() {
+    if (!this.#isPaused) {
+      this.#isPaused = true;
+      this.#elapsedTime += performance.now() - this.#startTime;
+      this.#cancel();
+      this.dispatchEvent(new Event(EVENT_COUNTDOWN_PAUSE));
+    }
+  }
+
+  resume() {
+    if (this.#isPaused) {
+      this.#isPaused = false;
+      this.#startTime = performance.now();
+      this.#animate();
+      this.dispatchEvent(new Event(EVENT_COUNTDOWN_RESUME));
+    }
+  }
+
+  #cancel() {
+    cancelAnimationFrame(this.#animationFrame);
+  }
+
+  #animate() {
+    const elapsed = performance.now() - this.#startTime + this.#elapsedTime;
+    const progress = Math.min(elapsed / this.#duration, 1);
+    const degrees = progress * 360;
+
+    this.#circle.style.transform = `rotate(${degrees}deg)`;
+
+    if (progress < 1) {
+      this.#animationFrame = requestAnimationFrame(() => this.#animate());
+    } else {
+      this.dispatchEvent(new Event(EVENT_COUNTDOWN_END));
+    }
   }
 }
 

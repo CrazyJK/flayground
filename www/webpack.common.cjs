@@ -9,6 +9,7 @@ module.exports = {
   entry: {
     index: './src/view/index.js',
     style: './src/view/style.js',
+    test: './src/view/test.js',
     'dependencies-viewer': './src/view/dependencies-viewer.js',
     'page.archive': './src/view/page.archive.js',
     'page.flay-page': './src/view/page.flay-page.js',

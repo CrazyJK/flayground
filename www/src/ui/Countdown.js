@@ -64,9 +64,7 @@ export class Countdown extends HTMLElement {
     this.#elapsedTime = 0;
   }
 
-  connectedCallback() {
-    this.reset();
-  }
+  connectedCallback() {}
 
   disconnectedCallback() {
     this.#cancel();
@@ -74,6 +72,7 @@ export class Countdown extends HTMLElement {
 
   start(seconds) {
     this.reset();
+    this.dataset.seconds = seconds;
     this.#duration = seconds * 1000;
     this.#startTime = performance.now();
     this.#animate();
@@ -115,6 +114,7 @@ export class Countdown extends HTMLElement {
     const progress = Math.min(elapsed / this.#duration, 1);
     const degrees = progress * 360;
 
+    this.dataset.seconds = Math.ceil((this.#duration - elapsed) / 1000);
     this.#circle.style.transform = `rotate(${degrees}deg)`;
 
     if (progress < 1) {

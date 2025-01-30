@@ -1,13 +1,12 @@
 import { popupFlay } from '../../lib/FlaySearch';
 import { OpusProvider } from '../../lib/OpusProvider';
 import { getRandomInt } from '../../lib/randomNumber';
+import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '../../ui/Countdown';
 
 export default class PopoutCover extends HTMLDivElement {
-  #타이머 = -1;
   #품번제공기;
   #최소초;
   #최대초;
-  #나오기완료;
 
   /**
    *
@@ -17,29 +16,21 @@ export default class PopoutCover extends HTMLDivElement {
   constructor(최소초 = 10, 최대초 = 30) {
     super();
 
-    this.classList.add('popout-cover', 'flay-div');
-
     this.#최소초 = 최소초;
     this.#최대초 = 최대초;
-    this.#나오기완료 = true;
     this.#품번제공기 = new OpusProvider();
+
+    this.classList.add('popout-cover', 'flay-div');
+    this.style.cssText = `position: relative; width: 100%; height: 100%; overflow: hidden;`;
+
+    this.countdown = this.appendChild(new Countdown());
+    this.countdown.style.cssText = `position: absolute; right: 0; bottom: 0;`;
+    this.countdown.addEventListener(EVENT_COUNTDOWN_START, async (e) => await this.하나나오기());
+    this.countdown.addEventListener(EVENT_COUNTDOWN_END, () => this.countdown.start(getRandomInt(this.#최소초, this.#최대초)));
   }
 
   connectedCallback() {
-    this.계속나오기();
-  }
-
-  disconnectedCallback() {
-    clearTimeout(this.#타이머);
-  }
-
-  /**
-   *
-   * @param {Event} 이벤트
-   */
-  async 계속나오기(이벤트 = null) {
-    await this.하나나오기(이벤트);
-    this.#타이머 = setTimeout(async () => await this.계속나오기(), 1000 * getRandomInt(this.#최소초, this.#최대초));
+    this.countdown.start(getRandomInt(this.#최소초, this.#최대초));
   }
 
   /**
@@ -48,9 +39,6 @@ export default class PopoutCover extends HTMLDivElement {
    * @returns
    */
   async 하나나오기(이벤트 = null) {
-    if (!this.#나오기완료) return;
-    this.#나오기완료 = false;
-
     this.querySelectorAll('img').forEach((커버) => {
       커버.animate([{ transform: 'none' }, { transform: 'scale(0)' }], { duration: 400, iterations: 1 }).finished.then(() => {
         커버.remove();
@@ -91,7 +79,6 @@ export default class PopoutCover extends HTMLDivElement {
         ],
         { duration: 800, iterations: 1 }
       ).finished;
-      this.#나오기완료 = true;
     };
   }
 }

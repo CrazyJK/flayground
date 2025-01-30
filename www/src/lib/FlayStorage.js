@@ -17,7 +17,7 @@ const FlayStorage = {
       return JSON.parse(FlayStorage.local.get(name, null)) || defaultValue;
     },
     getArray: (name, defaultValue = []) => {
-      return FlayStorage.local.get(name)?.split(',') || defaultValue;
+      return FlayStorage.local.get(name, null)?.split(',') || defaultValue;
     },
     getNumber: (name, defaultValue) => {
       return Number(FlayStorage.local.get(name)) || defaultValue;
@@ -51,7 +51,7 @@ const FlayStorage = {
       return JSON.parse(FlayStorage.session.get(name, null)) || defaultValue;
     },
     getArray: (name, defaultValue = []) => {
-      return FlayStorage.session.get(name)?.split(',') || defaultValue;
+      return FlayStorage.session.get(name, null)?.split(',') || defaultValue;
     },
     getNumber: (name, defaultValue) => {
       return Number(FlayStorage.session.get(name)) || defaultValue;

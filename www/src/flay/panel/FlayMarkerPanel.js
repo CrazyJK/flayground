@@ -1,6 +1,6 @@
 import FlayFetch from '../../lib/FlayFetch';
 import { getRandomIntInclusive } from '../../lib/randomNumber';
-import { EVENT_TIMER_END, EVENT_TIMER_START, EVENT_TIMER_TICK, Timer } from '../../ui/Countdown';
+import { EVENT_TIMER_END, EVENT_TIMER_START, EVENT_TIMER_TICK, TickTimer } from '../../ui/TickTimer';
 import FlayMarker from '../domain/FlayMarker';
 import './FlayMarkerPanel.scss';
 
@@ -9,7 +9,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     super();
     this.classList.add('flay-marker-panel');
 
-    this.timer = new Timer();
+    this.timer = new TickTimer();
     this.timer.addEventListener(EVENT_TIMER_START, () => document.startViewTransition(() => this.#render()));
     this.timer.addEventListener(EVENT_TIMER_END, () => this.#start());
     this.timer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));

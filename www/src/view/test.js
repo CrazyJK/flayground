@@ -8,6 +8,7 @@ import { MODAL_EDGE, MODAL_MODE } from '../GroundConstant';
 import fetchJsonp from '../lib/fetchJsonp';
 import { getRandomInt } from '../lib/randomNumber';
 import { Countdown } from '../ui/Countdown';
+import { TickTimer } from '../ui/TickTimer';
 
 class Page {
   constructor() {}
@@ -22,6 +23,7 @@ class Page {
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageOne', () => this.#imageOneWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Browser', () => this.#browserWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Countdown', () => this.#countdown()));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'TickTimer', () => this.#tickTimer()));
 
     fetchJsonp('https://api.github.com/users')
       .then((data) => console.log('users', data))
@@ -163,6 +165,40 @@ class Page {
     pauseBtn.addEventListener('click', () => countdown.pause());
     resumeBtn.addEventListener('click', () => countdown.resume());
     resetBtn.addEventListener('click', () => countdown.reset());
+  }
+
+  #tickTimer() {
+    const header = document.querySelector('body').appendChild(document.createElement('header'));
+
+    const timer = header.appendChild(new TickTimer());
+    const time = header.appendChild(document.createElement('input'));
+    const startBtn = header.appendChild(document.createElement('button'));
+    const pauseBtn = header.appendChild(document.createElement('button'));
+    const resumeBtn = header.appendChild(document.createElement('button'));
+    const stopBtn = header.appendChild(document.createElement('button'));
+
+    startBtn.textContent = 'Start';
+    pauseBtn.textContent = 'Pause';
+    resumeBtn.textContent = 'Resume';
+    stopBtn.textContent = 'Stop';
+
+    time.type = 'number';
+    time.min = 1;
+    time.step = 1;
+    time.value = 10;
+
+    header.style.cssText = 'position: absolute; top: 10rem; left: 24rem; display: flex; flex-direction: column; align-items: center;';
+    timer.style.cssText = 'padding: 1rem; border: 1px solid var(--color-orange); width: 12rem; height: 12rem';
+    time.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+    startBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+    pauseBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+    resumeBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+    stopBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
+
+    startBtn.addEventListener('click', () => timer.start(time.value));
+    stopBtn.addEventListener('click', () => timer.stop());
+    pauseBtn.addEventListener('click', () => timer.pause());
+    resumeBtn.addEventListener('click', () => timer.resume());
   }
 }
 

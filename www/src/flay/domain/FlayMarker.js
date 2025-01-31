@@ -2,14 +2,10 @@ import { popupFlay } from '../../lib/FlaySearch';
 import './FlayMarker.scss';
 
 export default class FlayMarker extends HTMLLabelElement {
-  constructor(flay) {
+  constructor(flay, options = { showTitle: true }) {
     super();
 
-    this.title = `${flay.studio}
-${flay.opus}
-${flay.title}
-${flay.actressList.join(', ')}
-${flay.release}`;
+    this.flay = flay;
     this.classList.add('flay-marker');
     this.classList.toggle('shot', flay.video.likes?.length > 0);
     this.classList.toggle('archive', flay.archive);
@@ -17,6 +13,14 @@ ${flay.release}`;
       popupFlay(flay.opus);
       this.classList.add('active');
     });
+
+    if (options.showTitle) {
+      this.title = `${flay.studio}
+${flay.opus}
+${flay.title}
+${flay.actressList.join(', ')}
+${flay.release}`;
+    }
   }
 }
 

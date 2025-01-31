@@ -34,9 +34,17 @@ export class TickTimer extends HTMLElement {
     this.shadowRoot.innerHTML = `
       <style>
         :host {
+          position: relative;
           display: block;
-          font-size: 2em;
-          text-align: center;
+          font-size: var(--size-large);
+        }
+        div {
+          position: relative;
+          width: 100%;
+          height: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
         }
       </style>
       <div id="time"></div>

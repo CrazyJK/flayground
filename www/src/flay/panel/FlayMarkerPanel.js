@@ -10,7 +10,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.classList.add('flay-marker-panel');
 
     this.timer = new TickTimer();
-    this.timer.addEventListener(EVENT_TIMER_START, () => document.startViewTransition(() => this.#render()));
+    this.timer.addEventListener(EVENT_TIMER_START, () => this.#render());
     this.timer.addEventListener(EVENT_TIMER_END, () => this.#start());
     this.timer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));
   }
@@ -56,8 +56,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
         }
         break;
     }
-    this.textContent = '';
-    this.append(...this.markerList);
+    document.startViewTransition(() => {
+      this.textContent = '';
+      this.append(...this.markerList);
+    });
   }
 }
 

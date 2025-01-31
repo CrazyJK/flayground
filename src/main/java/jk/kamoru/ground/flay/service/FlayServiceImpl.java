@@ -227,6 +227,6 @@ public class FlayServiceImpl extends FlayServiceAdapter implements FlayService {
 
   @Override
   public Collection<Flay> listByOpus(Collection<String> opusList) {
-    return opusList.stream().map((opus) -> instanceFlaySource.get(opus)).toList();
+    return opusList.size() == 0 ? instanceFlaySource.list() : opusList.stream().map((opus) -> instanceFlaySource.get(opus)).toList();
   }
 }

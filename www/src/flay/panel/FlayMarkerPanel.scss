@@ -1,0 +1,21 @@
+.flay-marker-panel {
+  position: absolute;
+  inset: 0px;
+  padding: 8rem;
+
+  display: flex;
+  flex-wrap: wrap;
+  align-content: center;
+}
+
+@media (orientation: landscape) {
+  .flay-marker-panel {
+    flex-direction: row;
+  }
+}
+
+@media (orientation: portrait) {
+  .flay-marker-panel {
+    flex-direction: column;
+  }
+}

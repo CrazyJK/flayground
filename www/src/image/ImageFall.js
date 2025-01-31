@@ -66,7 +66,7 @@ export class ImageFall extends HTMLDivElement {
 
     const divList = this.querySelectorAll('.row');
     imageWrapList.forEach((imageWrap, index) => {
-      divList[index % divList.length].append(imageWrap);
+      divList[index % divList.length]?.append(imageWrap);
       imageWrap.style.height = 'auto';
     });
   }

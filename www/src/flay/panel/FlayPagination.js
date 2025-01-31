@@ -186,7 +186,7 @@ export default class FlayPagination extends HTMLDivElement {
   set(list) {
     this.opusList = list;
     this.history = [];
-    this.#navigator(RANDOM);
+    this.#navigator(this.opus || RANDOM);
   }
 
   get(offset) {
@@ -258,7 +258,12 @@ export default class FlayPagination extends HTMLDivElement {
           break;
         }
         default:
-          throw new Error('unknown direction');
+          // 품번이라고 가정
+          this.opusIndex = this.opusList.indexOf(direction);
+          if (this.opusIndex === -1) {
+            this.#decideOpus(RANDOM);
+          }
+          break;
       }
     } else if (typeof direction === 'number') {
       this.opusIndex = direction;

@@ -3,4 +3,11 @@ body {
   inset: 0;
   display: grid;
   grid-template-rows: auto 1fr auto;
+
+  > main {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    padding: 8rem;
+  }
 }

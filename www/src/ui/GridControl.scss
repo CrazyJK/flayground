@@ -12,7 +12,7 @@ $columns: (
   display: grid;
   justify-content: space-evenly;
 
-  $base-width: 350px;
+  $base-width: 348px;
 
   @each $key, $val in $columns {
     &[data-column='#{$key}'] {

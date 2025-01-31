@@ -79,9 +79,9 @@ function popupOpen(url, target, width, height) {
 export const popupFlay = (opus) => popupOpen('popup.flay.html?opus=' + opus, 'flay.' + opus, 800, 1350);
 export const popupFlayCard = (opus) => popupOpen('popup.flay-card.html?opus=' + opus, 'flay.card.' + opus, 800, 536);
 export const popupCover = (opus) => popupOpen('popup.cover.html?opus=' + opus, 'cover.' + opus, 800, 538);
-export const popupStudio = (name, startDate = '', endDate = '') => popupOpen('popup.studio.html?name=' + name + '&s=' + startDate + '&e=' + endDate, 'studio.' + name, 960, 1200);
-export const popupActress = (name, startDate = '', endDate = '') => popupOpen('popup.actress.html?name=' + name + '&s=' + startDate + '&e=' + endDate, 'actress.' + name, 960, 1200);
-export const popupTag = (tagId) => popupOpen('popup.tag.html?id=' + tagId, 'tag.' + tagId, 960, 1200);
+export const popupStudio = (name, startDate = '', endDate = '') => popupOpen('popup.studio.html?name=' + name + '&s=' + startDate + '&e=' + endDate, 'studio.' + name, 1080, 1200);
+export const popupActress = (name, startDate = '', endDate = '') => popupOpen('popup.actress.html?name=' + name + '&s=' + startDate + '&e=' + endDate, 'actress.' + name, 1080, 1200);
+export const popupTag = (tagId) => popupOpen('popup.tag.html?id=' + tagId, 'tag.' + tagId, 1080, 1200);
 
 export const popupFlayInfo = (opus) => popupOpen('/flay/' + opus, 'flay.json.' + opus, 800, 1200);
 export const popupVideoInfo = (opus) => popupOpen('/info/video/' + opus, 'video.json.' + opus, 400, 600);

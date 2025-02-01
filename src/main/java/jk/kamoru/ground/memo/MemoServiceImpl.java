@@ -37,7 +37,7 @@ public class MemoServiceImpl implements MemoService {
   public Memo write(String html) {
     try {
       File file = getFile();
-      Files.writeString(file.toPath(), html, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.WRITE);
+      Files.writeString(file.toPath(), html, StandardCharsets.UTF_8, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
       return new Memo("", file.lastModified(), file.length());
     } catch (IOException e) {
       throw new FlayException("fail to write memo", e);

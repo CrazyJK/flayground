@@ -7,6 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.v3.oas.annotations.Operation;
+
+@io.swagger.v3.oas.annotations.tags.Tag(name = "Memo")
 @RestController
 @RequestMapping("/memo")
 public class MemoController {
@@ -14,11 +17,13 @@ public class MemoController {
   @Autowired
   MemoService memoService;
 
+  @Operation(summary = "메모 읽기")
   @GetMapping
   public Memo read() {
     return memoService.read();
   }
 
+  @Operation(summary = "메모 저장")
   @PostMapping
   public Memo postMethodName(@RequestParam String html) {
     return memoService.write(html);

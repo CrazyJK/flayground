@@ -15,11 +15,7 @@ export default class FlayMarker extends HTMLLabelElement {
     });
 
     if (options.showTitle) {
-      this.title = `${flay.studio}
-${flay.opus}
-${flay.title}
-${flay.actressList.join(', ')}
-${flay.release}`;
+      this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}`;
     }
   }
 }

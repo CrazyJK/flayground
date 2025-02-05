@@ -12,6 +12,7 @@
 
   > label {
     opacity: 0;
+    transition: 0.3s;
 
     &.shot {
       opacity: 0.5;
@@ -20,7 +21,6 @@
     &:hover {
       opacity: 1;
       transform: scale(1.1);
-      transition: 0.3s;
       z-index: 1;
     }
   }

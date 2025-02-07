@@ -1,10 +1,15 @@
 import FlayFetch from '../../lib/FlayFetch';
-import { getRandomIntInclusive } from '../../lib/randomNumber';
+import { getRandomInt, getRandomIntInclusive } from '../../lib/randomNumber';
+import { addResizeListener } from '../../lib/windowAddEventListener';
 import { EVENT_TIMER_END, EVENT_TIMER_START, EVENT_TIMER_TICK, TickTimer } from '../../ui/TickTimer';
 import FlayMarker from '../domain/FlayMarker';
 import './FlayMarkerPanel.scss';
 
 export class FlayMarkerPanel extends HTMLDivElement {
+  #timerID = 0;
+  #maxX = 0;
+  #maxY = 0;
+
   constructor() {
     super();
     this.classList.add('flay-marker-panel');
@@ -13,6 +18,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.timer.addEventListener(EVENT_TIMER_START, () => this.#render());
     this.timer.addEventListener(EVENT_TIMER_END, () => this.#start());
     this.timer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));
+
+    addResizeListener(() => this.#setRelativePositions());
   }
 
   connectedCallback() {
@@ -59,7 +66,73 @@ export class FlayMarkerPanel extends HTMLDivElement {
     document.startViewTransition(() => {
       this.textContent = '';
       this.append(...this.markerList);
+
+      this.#setRelativePositions();
+      this.#movingMarker();
     });
+  }
+
+  #setRelativePositions() {
+    if (!this.markerList || this.markerList.length === 0) return;
+
+    [this.#maxX, this.#maxY] = [0, 0];
+    const firstMarker = this.markerList[0];
+    const firstRect = firstMarker.getBoundingClientRect();
+    this.markerList.forEach((marker, index) => {
+      if (index === 0) {
+        marker.dataset.xy = '0,0';
+      } else {
+        const rect = marker.getBoundingClientRect();
+        const relativeX = (rect.left - firstRect.left) / firstRect.width;
+        const relativeY = (rect.top - firstRect.top) / firstRect.height;
+        marker.dataset.xy = `${relativeX},${relativeY}`;
+
+        this.#maxX = Math.max(this.#maxX, relativeX);
+        this.#maxY = Math.max(this.#maxY, relativeY);
+      }
+    });
+  }
+
+  #movingMarker() {
+    clearInterval(this.#timerID);
+    this.markerList.forEach((marker) => marker.classList.remove('highlight'));
+
+    const INTERVAL = 700;
+    const DIRECTIONs = [
+      [0, -1], // up
+      [0, 1], // down
+      [-1, 0], // left
+      [1, 0], // right
+      [-1, -1], // up-left
+      [1, -1], // up-right
+      [-1, 1], // down-left
+      [1, 1], // down-right
+    ];
+    const highlightMarker = (marker) => {
+      marker.classList.add('highlight');
+      // setTimeout(() => marker.classList.remove('highlight'), INTERVAL * 10);
+    };
+    const getNextMarker = (x, y) => {
+      const [dx, dy] = DIRECTIONs[getRandomInt(0, DIRECTIONs.length)];
+      const nextX = Math.min(Math.max(x + dx, 0), this.#maxX);
+      const nextY = Math.min(Math.max(y + dy, 0), this.#maxY);
+      const nextMarker = this.markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
+      if (!nextMarker || nextMarker.classList.contains('highlight')) {
+        return getNextMarker(nextX, nextY);
+      } else {
+        return nextMarker;
+      }
+    };
+
+    const startMarker = this.markerList[getRandomInt(0, this.markerList.length)];
+    let [x, y] = startMarker.dataset.xy.split(',').map(Number);
+    highlightMarker(startMarker);
+
+    this.#timerID = setInterval(() => {
+      const marker = getNextMarker(x, y);
+      [x, y] = marker.dataset.xy.split(',').map(Number);
+      highlightMarker(marker);
+    }, INTERVAL);
   }
 }
 

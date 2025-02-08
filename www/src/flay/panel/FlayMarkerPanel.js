@@ -64,8 +64,6 @@ export class FlayMarkerPanel extends HTMLDivElement {
         break;
     }
 
-    this.#stopMarker();
-
     document
       .startViewTransition(() => {
         this.append(...this.markerList);
@@ -97,11 +95,6 @@ export class FlayMarkerPanel extends HTMLDivElement {
     });
   }
 
-  #stopMarker() {
-    clearInterval(this.#timerID);
-    this.markerList.forEach((marker) => marker.classList.remove('highlight'));
-  }
-
   #movingMarker() {
     const INTERVAL = 700;
     const DIRECTIONs = [
@@ -130,6 +123,9 @@ export class FlayMarkerPanel extends HTMLDivElement {
         return nextMarker;
       }
     };
+
+    clearInterval(this.#timerID);
+    this.markerList.forEach((marker) => marker.classList.remove('highlight'));
 
     const startMarker = this.markerList[getRandomInt(0, this.markerList.length)];
     let [x, y] = startMarker.dataset.xy.split(',').map(Number);

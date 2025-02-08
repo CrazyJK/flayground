@@ -41,7 +41,7 @@ export default class FlayAttach extends HTMLDivElement {
     this.fileCount = 0;
     this.fileLength = 0;
 
-    this.setAttribute('id', this.options.id);
+    this.id = this.options.id;
     this.classList.add('flay-attach', 'flay-div');
 
     this.fileBox = this.appendChild(document.createElement('div'));
@@ -146,7 +146,7 @@ export default class FlayAttach extends HTMLDivElement {
     console.log('changeCallback', attach);
     this.attach = attach;
     this.renderFileList();
-    this.dispatchEvent(new CustomEvent('attach', { detail: { files: this.attach }, cancelable: true, composed: false, bubbles: false }));
+    this.dispatchEvent(new CustomEvent('attachChange', { detail: { files: this.attach }, cancelable: true, composed: false, bubbles: false }));
     this.setAttribute('length', this.getFiles().length);
 
     if (this.options.attachChangeCallback) {

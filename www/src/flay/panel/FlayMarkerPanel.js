@@ -63,6 +63,9 @@ export class FlayMarkerPanel extends HTMLDivElement {
         }
         break;
     }
+
+    this.#stopMarker();
+
     document
       .startViewTransition(() => {
         this.append(...this.markerList);
@@ -94,10 +97,12 @@ export class FlayMarkerPanel extends HTMLDivElement {
     });
   }
 
-  #movingMarker() {
+  #stopMarker() {
     clearInterval(this.#timerID);
     this.markerList.forEach((marker) => marker.classList.remove('highlight'));
+  }
 
+  #movingMarker() {
     const INTERVAL = 700;
     const DIRECTIONs = [
       [0, -1], // up

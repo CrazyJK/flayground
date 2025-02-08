@@ -63,13 +63,14 @@ export class FlayMarkerPanel extends HTMLDivElement {
         }
         break;
     }
-    document.startViewTransition(() => {
-      this.textContent = '';
-      this.append(...this.markerList);
-
-      this.#setRelativePositions();
-      this.#movingMarker();
-    });
+    document
+      .startViewTransition(() => {
+        this.append(...this.markerList);
+      })
+      .finished.then(() => {
+        this.#setRelativePositions();
+        this.#movingMarker();
+      });
   }
 
   #setRelativePositions() {
@@ -110,6 +111,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     ];
     const highlightMarker = (marker) => {
       marker.classList.add('highlight');
+      marker.animate([{ transform: 'scale(1.0)' }, { transform: 'scale(1.2)' }], { duration: INTERVAL });
       // setTimeout(() => marker.classList.remove('highlight'), INTERVAL * 10);
     };
     const getNextMarker = (x, y) => {

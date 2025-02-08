@@ -1,3 +1,4 @@
+import windowButton from '../svg/windowButton';
 import './FlayAttach.scss';
 
 const File = {
@@ -268,7 +269,7 @@ export default class FlayAttach extends HTMLDivElement {
             <label class="file-icon"><i class="fa fa-${getFileIcon(attachFile)}"></i></label>
             <label class="file-name"><a href="/attach/${this.attach.id}/${attachFile.id}/download">${attachFile.name}</a></label>
             <label class="file-size">${File.formatSize(attachFile.size)}</label>
-            <button class="file-remove" data-attachfileid="${attachFile.id}">X</button>
+            <button class="file-remove" data-attachfileid="${attachFile.id}">${windowButton.terminate}</button>
           </li>`;
 
       this.fileCount++;

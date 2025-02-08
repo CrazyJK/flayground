@@ -8,6 +8,7 @@ import './page.kamoru-diary.scss';
 
 import FlayAttach from '../attach/FlayAttach';
 import weatherSVG from '../svg/weathers';
+import windowButton from '../svg/windowButton';
 
 let diaryList = [];
 
@@ -21,7 +22,7 @@ let diaryList = [];
   const newDiary = { meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null }, content: '' };
   let currentDiary = newDiary;
 
-  const gridDiary = document.querySelector('#grid-diary');
+  const gridDiary = document.querySelector('#diaryWriteContainer');
   const diaryWrap = document.querySelector('#diaryWrap');
   const diaryTitle = document.querySelector('#diaryTitle');
   const diaryDate = document.querySelector('#diaryDate');
@@ -55,103 +56,141 @@ let diaryList = [];
       .then((response) => response.json())
       .then((list) => {
         diaryList = list;
+        console.debug('fetched diaryList', diaryList);
       });
   }
 
-  /**
-   * 화면에 달력 표현
-   */
   function renderCalendar() {
-    let renderingMonthSize = Math.floor(document.querySelector('#diaryCal').clientWidth / (14 * 16));
-
+    const dates = diaryList.map((diary) => diary.date);
+    const startDate = dates.reduce((min, d) => (d < min ? d : min), dates[0]);
     const today = new Date();
-    const todayYear = today.getFullYear();
-    const todayMonth = today.getMonth();
-    const todayDay = today.getDate();
+    const year = today.getFullYear();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const day = String(today.getDate()).padStart(2, '0');
+    const endDate = `${year}-${month}-${day}`;
+    console.debug('Start Date:', startDate, 'End Date:', endDate);
 
-    let diaryList0Date;
-    if (diaryList === null || diaryList.length === 0) {
-      diaryList0Date = todayYear + '-' + (todayMonth - 2);
-    } else {
-      diaryList0Date = diaryList[0].date;
-    }
-
-    let datePart = diaryList0Date.split('-');
-    let firstYear = parseInt(datePart[0]);
-    let firstMonth = parseInt(datePart[1]) - 1;
-
-    renderingMonthSize = todayYear * 12 + todayMonth - firstYear * 12 - firstMonth;
-
-    const calendar = document.querySelector('.calendar');
-    calendar.innerHTML = '';
-
-    for (let r = 0; r <= renderingMonthSize; r++) {
-      console.debug('rendering', r);
-
-      const refDate = new Date(today.getFullYear(), today.getMonth() - r, today.getDate());
-      const refYear = refDate.getFullYear();
-      const refMonth = refDate.getMonth();
-      const refDay = refDate.getDate();
-      const refDayOfWeek = refDate.getDay();
-      console.debug('today', refYear, refMonth, refDay, refDayOfWeek);
-
-      const firstDateOfMonth = new Date(refYear, refMonth, 1);
-      const firstDayOfMonth = firstDateOfMonth.getDay();
-      console.debug('first of month', firstDateOfMonth.toLocaleDateString(), firstDayOfMonth);
-
-      const firstDateOfCalendar = new Date(refYear, refMonth, 1 - firstDayOfMonth);
-      console.debug('first date of calendar', firstDateOfCalendar.toLocaleDateString());
-
-      const lastDateOfMonth = new Date(refYear, refMonth + 1, 0);
-      const lastDayOfMonth = lastDateOfMonth.getDay();
-      console.debug('last date of month', lastDateOfMonth.toLocaleDateString(), lastDayOfMonth);
-
-      const lastDateOfCalendar = new Date(refYear, refMonth + 1, 6 - lastDayOfMonth);
-      console.debug('last date of calendar', lastDateOfCalendar.toLocaleDateString());
-
-      const diffDay = Math.abs((lastDateOfCalendar - firstDateOfCalendar) / (1000 * 60 * 60 * 24)) + 1;
-      console.debug('diff day', diffDay);
-
-      const dates = [];
-      for (let i = 0; i < diffDay; i++) {
-        const date = new Date(refYear, refMonth, 1 - firstDayOfMonth + i);
-        console.debug(date.toLocaleDateString());
-
-        dates.push(date);
-      }
-
-      const month = document.createElement('div');
-      month.setAttribute('class', 'month');
-      month.innerHTML = `
-      <label class="month-name">${refYear}. ${refMonth + 1}</label>
-      <div class="dates">${dates
-        .map((date) => {
-          const year = date.getFullYear();
-          const month = date.getMonth();
-          const day = date.getDate();
-
-          const yyyymmdd = `${year}-${month + 1 < 10 ? '0' + (month + 1) : month + 1}-${day < 10 ? '0' + day : day}`;
-          const isSameMonth = refYear === year && refMonth === month;
-          const isToday = todayYear === year && todayMonth === month && todayDay === day;
-
-          return `<div class="date ${isSameMonth ? 'ref' : 'side'} ${isToday ? 'today' : ''}"
-              title="${date.toLocaleDateString()}"
-              id="d-${isSameMonth ? yyyymmdd : ''}"><span>${day}</span></div>`;
-        })
-        .join('')}
-      </div>`;
-
-      calendar.appendChild(month);
-    }
+    renderCalendarsBetweenDates(startDate, endDate);
 
     markDiaryDates();
+  }
+
+  function renderCalendarsBetweenDates(startStr, endStr, containerId = 'calendarContainer') {
+    const container = document.getElementById(containerId);
+    if (!container) {
+      throw new Error(`id "${containerId}"를 가진 컨테이너를 찾을 수 없습니다`);
+    }
+    container.innerHTML = '';
+
+    // 파싱: 시작 날짜와 종료 날짜 (형식: YYYY-MM-DD)
+    const [startYear, startMonth] = startStr.split('-').map(Number);
+    const [endYear, endMonth] = endStr.split('-').map(Number);
+    const startDate = new Date(startYear, startMonth - 1, 1);
+    const endDate = new Date(endYear, endMonth - 1, 1);
+
+    // 시작부터 종료까지 월별 배열 (월은 오름차순)
+    let current = new Date(startDate);
+    const monthList = [];
+    while (current <= endDate) {
+      monthList.push(new Date(current));
+      current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
+    }
+
+    // 연도별로 그룹핑 (연도는 시간 역순)
+    const yearGroups = {};
+    monthList.forEach((monthDate) => {
+      const year = monthDate.getFullYear();
+      if (!yearGroups[year]) {
+        yearGroups[year] = [];
+      }
+      yearGroups[year].push(monthDate);
+    });
+
+    // 연도 키를 내림차순 정렬
+    const sortedYears = Object.keys(yearGroups)
+      .map(Number)
+      .sort((a, b) => b - a);
+
+    sortedYears.forEach((year) => {
+      // 해당 연도의 월은 오름차순으로 정렬합니다.
+      const monthsForYear = yearGroups[year].sort((a, b) => a.getMonth() - b.getMonth());
+      const yearContainer = document.createElement('div');
+      yearContainer.classList.add('year-group');
+
+      const yearHeader = document.createElement('h2');
+      yearHeader.textContent = year;
+      yearContainer.appendChild(yearHeader);
+
+      monthsForYear.forEach((monthDate) => {
+        const y = monthDate.getFullYear();
+        const m = monthDate.getMonth(); // 0-indexed
+        const firstOfMonth = new Date(y, m, 1);
+        const firstDayOfWeek = firstOfMonth.getDay();
+        const startCalendar = new Date(y, m, 1 - firstDayOfWeek);
+
+        const lastOfMonth = new Date(y, m + 1, 0);
+        const lastDayOfWeek = lastOfMonth.getDay();
+        const endCalendar = new Date(y, m, lastOfMonth.getDate() + (6 - lastDayOfWeek));
+
+        // 생성할 날짜 배열
+        const totalDays = Math.round((endCalendar - startCalendar) / (1000 * 60 * 60 * 24)) + 1;
+        const dates = [];
+        for (let i = 0; i < totalDays; i++) {
+          const date = new Date(startCalendar);
+          date.setDate(startCalendar.getDate() + i);
+          dates.push(date);
+        }
+
+        // 월 컨테이너 생성
+        const monthDiv = document.createElement('div');
+        monthDiv.classList.add('month');
+
+        const monthLabel = document.createElement('label');
+        monthLabel.classList.add('month-name');
+        monthLabel.textContent = `${y}. ${m + 1}`;
+        monthDiv.appendChild(monthLabel);
+
+        const datesDiv = document.createElement('div');
+        datesDiv.classList.add('dates');
+
+        dates.forEach((date, i) => {
+          const dateDiv = document.createElement('div');
+          dateDiv.classList.add('date');
+          // 현재 월에 속한 날짜만 'current' 클래스로 처리
+          if (date.getMonth() === m) {
+            dateDiv.classList.add('current');
+            dateDiv.classList.toggle('sat', date.getDay() === 6); // 토요일
+            dateDiv.classList.toggle('sun', date.getDay() === 0); // 일요일
+            const yy = date.getFullYear();
+            const mm = String(date.getMonth() + 1).padStart(2, '0');
+            const dd = String(date.getDate()).padStart(2, '0');
+            dateDiv.id = `d-${yy}-${mm}-${dd}`;
+          } else {
+            dateDiv.classList.add('other');
+          }
+          // dateDiv.setAttribute('title', date.toLocaleDateString());
+
+          const span = document.createElement('span');
+          span.textContent = date.getDate();
+          dateDiv.appendChild(span);
+          datesDiv.appendChild(dateDiv);
+        });
+
+        monthDiv.appendChild(datesDiv);
+        yearContainer.appendChild(monthDiv);
+      });
+      container.appendChild(yearContainer);
+    });
+
+    // 오늘날짜(endStr)에 today 클래스 추가
+    document.getElementById(`d-${endStr}`).classList.add('today');
   }
 
   /**
    * 달력 클릭 이벤트
    */
   function addCalendarEventListener() {
-    document.querySelectorAll('.calendar .date').forEach((date) => {
+    document.querySelectorAll('.dates .date').forEach((date) => {
       date.addEventListener('click', (e) => {
         console.debug('click Calendar date', e.target);
 
@@ -166,7 +205,7 @@ let diaryList = [];
         }
 
         // ref 날이 아니면, path
-        if (!clickedDate.classList.contains('ref')) {
+        if (!clickedDate.classList.contains('current')) {
           return;
         }
 
@@ -214,8 +253,9 @@ let diaryList = [];
 
   function addDiaryViewerEventListener() {
     // diary Viewer Close
+    document.getElementById('diaryViewerClose').innerHTML = windowButton.terminate;
     document.getElementById('diaryViewerClose').addEventListener('click', (e) => {
-      document.getElementById('diaryViewer').style.display = 'none';
+      document.getElementById('diaryReadContainer').style.display = 'none';
     });
     // diary Viewer Show
     document.getElementById('diaryViewerShow').addEventListener('click', async (e) => {
@@ -226,7 +266,7 @@ let diaryList = [];
       }
       htmlViewer.setHTML(diaryEditor.getHTML());
 
-      document.getElementById('diaryViewer').style.display = 'block';
+      document.getElementById('diaryReadContainer').style.display = 'block';
     });
   }
 
@@ -236,13 +276,9 @@ let diaryList = [];
   function markDiaryDates() {
     diaryList.forEach((meta) => {
       const dateElement = document.querySelector('#d-' + meta.date);
-      if (dateElement !== null) {
-        const markerElement = document.createElement('label');
-        markerElement.setAttribute('title', meta.title);
-        markerElement.innerHTML = '★';
-
+      if (dateElement) {
         dateElement.classList.add('written');
-        dateElement.appendChild(markerElement);
+        dateElement.setAttribute('title', meta.title);
       }
     });
   }

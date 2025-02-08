@@ -12,13 +12,13 @@
   height: calc(100% - 2px);
   margin: 0;
   padding: 0;
-  border: 1px solid var(--color-border-active);
+  // border: 1px solid var(--color-border-active);
   border-radius: 0;
 
   .file-box {
     position: relative;
     width: calc(100% - 1rem);
-    height: calc(100% - 1rem);
+    height: 100%;
     margin: 0;
     padding: 0.5rem;
     font-size: 0.875rem;
@@ -33,11 +33,16 @@
   .file-list > li {
     display: flex;
     justify-content: space-between;
-    align-items: baseline;
+    align-items: center;
     gap: 1rem;
     margin: 0.125rem;
     padding: 0.125rem 0.25rem;
     border-radius: 0.25rem;
+
+    label,
+    a {
+      font-size: var(--size-normal);
+    }
   }
   .file-list > li:hover {
     background-color: rgba(250, 250, 0, 0.125);
@@ -52,7 +57,7 @@
   .file-list > li > button {
     background-color: transparent;
     border: 0;
-    color: red;
+    color: var(--color-text-danger);
     cursor: pointer;
   }
   .file-list > li > button:hover {
@@ -60,13 +65,17 @@
   }
 
   .file-summary {
-    border-top: 1px solid var(--color-border-active);
+    border-top: 1px solid var(--color-border);
     height: 1.5rem;
     display: flex;
     justify-content: space-between;
     align-items: flex-end;
     gap: 1rem;
     padding: 0 3rem;
+
+    label {
+      font-size: var(--size-normal);
+    }
   }
 
   #fileSelector {

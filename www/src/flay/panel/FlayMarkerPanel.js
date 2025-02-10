@@ -34,6 +34,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
   }
 
   #render() {
+    clearInterval(this.#timerID);
+    this.markerList.forEach((marker) => marker.classList.remove('highlight'));
+    this.classList.add('rendering');
+
     const ORDERs = ['studio', 'opus', 'title', 'actress', 'release', 'random', 'rank', 'shot', 'play', 'modified'];
     this.dataset.order = ORDERs[getRandomInt(0, ORDERs.length)];
     this.markerList.sort((m1, m2) => {
@@ -62,17 +66,14 @@ export class FlayMarkerPanel extends HTMLDivElement {
     });
 
     document
-      .startViewTransition(() => {
-        this.append(...this.markerList);
-      })
-      .finished.then(() => {
-        this.#setRelativePositions();
-        this.#movingMarker();
-      });
+      .startViewTransition(() => this.append(...this.markerList))
+      .finished.then(() => this.#setRelativePositions())
+      .then(() => this.#movingMarker())
+      .then(() => this.classList.remove('rendering'));
   }
 
   #setRelativePositions() {
-    if (!this.markerList || this.markerList.length === 0) return;
+    if (!this.markerList) return;
 
     [this.#maxX, this.#maxY] = [0, 0];
     const firstMarker = this.markerList[0];
@@ -86,8 +87,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
         const relativeY = (rect.top - firstRect.top) / firstRect.height;
         marker.dataset.xy = `${relativeX},${relativeY}`;
 
-        this.#maxX = Math.max(this.#maxX, relativeX);
-        this.#maxY = Math.max(this.#maxY, relativeY);
+        [this.#maxX, this.#maxY] = [Math.max(this.#maxX, relativeX), Math.max(this.#maxY, relativeY)];
       }
     });
   }
@@ -119,9 +119,6 @@ export class FlayMarkerPanel extends HTMLDivElement {
         return nextMarker;
       }
     };
-
-    clearInterval(this.#timerID);
-    this.markerList.forEach((marker) => marker.classList.remove('highlight'));
 
     const startMarker = this.markerList[getRandomInt(0, this.markerList.length)];
     let [x, y] = startMarker.dataset.xy.split(',').map(Number);

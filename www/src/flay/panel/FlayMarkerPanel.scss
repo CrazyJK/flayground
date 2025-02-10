@@ -4,6 +4,7 @@
   flex-wrap: wrap;
   align-content: center;
 
+  &.rendering,
   &:hover {
     > label {
       opacity: 0.05;

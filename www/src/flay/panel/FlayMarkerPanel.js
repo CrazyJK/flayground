@@ -9,6 +9,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
   #timerID = 0;
   #maxX = 0;
   #maxY = 0;
+  #n = 0;
 
   constructor() {
     super();
@@ -33,9 +34,19 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.timer.start(getRandomIntInclusive(50, 70));
   }
 
-  #render() {
+  async #render() {
     clearInterval(this.#timerID);
-    this.markerList.forEach((marker) => marker.classList.remove('highlight'));
+    this.timer.pause();
+    // this.markerList.forEach((marker) => marker.classList.remove('highlight'));
+    for (let i = this.#n; i >= 0; i--) {
+      const marker = this.markerList.find((marker) => marker.dataset.n === String(i));
+      if (marker) {
+        marker.dataset.n = null;
+        marker.classList.remove('highlight');
+        await new Promise((resolve) => setTimeout(resolve, 100));
+      }
+    }
+    this.timer.resume();
     this.classList.add('rendering');
 
     const ORDERs = ['studio', 'opus', 'title', 'actress', 'release', 'random', 'rank', 'shot', 'play', 'modified'];
@@ -105,6 +116,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
       [1, 1], // down-right
     ];
     const highlightMarker = (marker) => {
+      marker.dataset.n = this.#n++;
       marker.classList.add('highlight');
       marker.animate([{ transform: 'scale(1.0)' }, { transform: 'scale(1.2)' }], { duration: INTERVAL });
     };
@@ -119,6 +131,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
         return nextMarker;
       }
     };
+
+    this.n = 0;
 
     const startMarker = this.markerList[getRandomInt(0, this.markerList.length)];
     let [x, y] = startMarker.dataset.xy.split(',').map(Number);

@@ -34,35 +34,32 @@ export class FlayMarkerPanel extends HTMLDivElement {
   }
 
   #render() {
-    switch (getRandomIntInclusive(0, 5)) {
-      case 0:
-        this.dataset.order = 'studio';
-        this.markerList.sort((m1, m2) => m2.flay.studio.localeCompare(m1.flay.studio));
-        break;
-      case 1:
-        this.dataset.order = 'opus';
-        this.markerList.sort((m1, m2) => m2.flay.opus.localeCompare(m1.flay.opus));
-        break;
-      case 2:
-        this.dataset.order = 'title';
-        this.markerList.sort((m1, m2) => m2.flay.title.localeCompare(m1.flay.title));
-        break;
-      case 3:
-        this.dataset.order = 'actress';
-        this.markerList.sort((m1, m2) => m2.flay.actressList.join(',').localeCompare(m1.flay.actressList.join(',')));
-        break;
-      case 4:
-        this.dataset.order = 'release';
-        this.markerList.sort((m1, m2) => m2.flay.release.localeCompare(m1.flay.release));
-        break;
-      case 5:
-        this.dataset.order = 'random';
-        for (let i = this.markerList.length - 1; i > 0; i--) {
-          const j = Math.floor(Math.random() * (i + 1));
-          [this.markerList[i], this.markerList[j]] = [this.markerList[j], this.markerList[i]];
-        }
-        break;
-    }
+    const ORDERs = ['studio', 'opus', 'title', 'actress', 'release', 'random', 'rank', 'shot', 'play', 'modified'];
+    this.dataset.order = ORDERs[getRandomInt(0, ORDERs.length)];
+    this.markerList.sort((m1, m2) => {
+      switch (this.dataset.order) {
+        case ORDERs[0]:
+          return m2.flay.studio.localeCompare(m1.flay.studio);
+        case ORDERs[1]:
+          return m2.flay.opus.localeCompare(m1.flay.opus);
+        case ORDERs[2]:
+          return m2.flay.title.localeCompare(m1.flay.title);
+        case ORDERs[3]:
+          return m2.flay.actressList.join(',').localeCompare(m1.flay.actressList.join(','));
+        case ORDERs[4]:
+          return m2.flay.release.localeCompare(m1.flay.release);
+        case ORDERs[5]:
+          return getRandomIntInclusive(-1, 1);
+        case ORDERs[6]:
+          return m2.flay.video.rank - m1.flay.video.rank;
+        case ORDERs[7]:
+          return (m2.flay.video.likes?.length || 0) - (m1.flay.video.likes?.length || 0);
+        case ORDERs[8]:
+          return m2.flay.video.play - m1.flay.video.play;
+        case ORDERs[9]:
+          return m2.flay.lastModified - m1.flay.lastModified;
+      }
+    });
 
     document
       .startViewTransition(() => {
@@ -110,7 +107,6 @@ export class FlayMarkerPanel extends HTMLDivElement {
     const highlightMarker = (marker) => {
       marker.classList.add('highlight');
       marker.animate([{ transform: 'scale(1.0)' }, { transform: 'scale(1.2)' }], { duration: INTERVAL });
-      // setTimeout(() => marker.classList.remove('highlight'), INTERVAL * 10);
     };
     const getNextMarker = (x, y) => {
       const [dx, dy] = DIRECTIONs[getRandomInt(0, DIRECTIONs.length)];

@@ -53,7 +53,7 @@ export class TickTimer extends HTMLElement {
     this.#paused = false;
     this.render();
     this.#intervalId = setInterval(() => this.#tick(), 1000);
-    this.dispatchEvent(new Event(EVENT_TIMER_START));
+    this.dispatchEvent(new CustomEvent(EVENT_TIMER_START));
   }
 
   /**
@@ -63,7 +63,7 @@ export class TickTimer extends HTMLElement {
     if (this.#intervalId !== null && !this.#paused) {
       clearInterval(this.#intervalId);
       this.#paused = true;
-      this.dispatchEvent(new Event(EVENT_TIMER_PAUSE));
+      this.dispatchEvent(new CustomEvent(EVENT_TIMER_PAUSE));
     }
   }
 
@@ -75,7 +75,7 @@ export class TickTimer extends HTMLElement {
       this.#paused = false;
       this.render();
       this.#intervalId = setInterval(() => this.#tick(), 1000);
-      this.dispatchEvent(new Event(EVENT_TIMER_RESUME));
+      this.dispatchEvent(new CustomEvent(EVENT_TIMER_RESUME));
     }
   }
 
@@ -113,7 +113,7 @@ export class TickTimer extends HTMLElement {
       clearInterval(this.#intervalId);
       this.#intervalId = null;
       this.#paused = false;
-      this.dispatchEvent(new Event(EVENT_TIMER_END));
+      this.dispatchEvent(new CustomEvent(EVENT_TIMER_END));
     }
   }
 

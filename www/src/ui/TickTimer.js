@@ -48,11 +48,11 @@ export class TickTimer extends HTMLElement {
    * @param {number} seconds 시작할 초
    */
   start(seconds) {
+    clearInterval(this.#intervalId);
     this.#seconds = seconds;
-    this.stop();
+    this.#isPaused = false;
     this.render();
     this.#intervalId = setInterval(() => this.#tick(), 1000);
-    this.#isPaused = false;
     this.dispatchEvent(new Event(EVENT_TIMER_START));
   }
 

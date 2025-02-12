@@ -27,12 +27,8 @@
 
   &.rendering,
   &:hover {
-    > label {
+    > label:not(.highlight) {
       opacity: 0.05;
-
-      &.highlight {
-        opacity: 0.3;
-      }
     }
   }
 

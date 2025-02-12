@@ -128,6 +128,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
       marker.dataset.n = ++this.#n;
       marker.classList.add('highlight');
       marker.animate([{ transform: 'scale(1.0)' }, { transform: 'scale(1.2)' }], { duration: INTERVAL });
+      marker.scrollIntoView(false);
+      marker.showCover();
     };
     const getNextMarker = (x, y) => {
       const [dx, dy] = DIRECTIONs[getRandomInt(0, DIRECTIONs.length)];

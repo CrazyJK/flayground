@@ -1,5 +1,3 @@
-// TickTimer 클래스에 일시정지, 재개 기능 추가
-
 export const EVENT_TIMER_START = 'timer-start';
 export const EVENT_TIMER_END = 'timer-end';
 export const EVENT_TIMER_TICK = 'timer-tick';
@@ -7,26 +5,13 @@ export const EVENT_TIMER_PAUSE = 'timer-pause';
 export const EVENT_TIMER_RESUME = 'timer-resume';
 
 /**
- * 초를 입력받아 시간을 재주는 클래스.
- *
- * @class TickTimer
- * @extends {HTMLElement}
- * @private {number} #seconds - 타이머 시간(초).
- * @private {number} #intervalId - setInterval ID.
- * @private {boolean} #isPaused - 타이머 일시정지 상태.
- *
- * @method connectedCallback - 요소가 DOM에 추가될 때 호출됨.
- * @method disconnectedCallback - 요소가 DOM에서 제거될 때 호출됨.
- * @method start - 타이머를 시작함.
- * @method stop - 타이머를 중지함.
- * @method pause - 타이머를 일시정지함.
- * @method resume - 타이머를 재개함.
- * @method #tick - 타이머의 매 초마다 호출됨.
+ * 타이머 컴포넌트
+ * @extends HTMLElement
  */
 export class TickTimer extends HTMLElement {
-  #seconds;
-  #intervalId;
-  #isPaused;
+  #seconds = 0;
+  #intervalId = null;
+  #isPaused = false;
 
   constructor() {
     super();
@@ -47,11 +32,7 @@ export class TickTimer extends HTMLElement {
           align-items: center;
         }
       </style>
-      <div id="time"></div>
-    `;
-    this.#seconds = 0;
-    this.#intervalId = null;
-    this.#isPaused = false;
+      <div id="time"></div>`;
   }
 
   connectedCallback() {
@@ -62,6 +43,10 @@ export class TickTimer extends HTMLElement {
     this.stop();
   }
 
+  /**
+   * 타이머를 시작합니다.
+   * @param {number} seconds 시작할 초
+   */
   start(seconds) {
     this.#seconds = seconds;
     this.stop();
@@ -71,14 +56,21 @@ export class TickTimer extends HTMLElement {
     this.dispatchEvent(new Event(EVENT_TIMER_START));
   }
 
+  /**
+   * 타이머를 중지합니다.
+   */
   stop() {
     if (this.#intervalId !== null) {
       clearInterval(this.#intervalId);
       this.#intervalId = null;
+      this.dispatchEvent(new Event(EVENT_TIMER_END));
     }
     this.#isPaused = false;
   }
 
+  /**
+   * 타이머를 일시정지합니다.
+   */
   pause() {
     if (this.#intervalId !== null && !this.#isPaused) {
       clearInterval(this.#intervalId);
@@ -87,6 +79,9 @@ export class TickTimer extends HTMLElement {
     }
   }
 
+  /**
+   * 타이머를 재개합니다
+   */
   resume() {
     if (this.#isPaused) {
       this.#intervalId = setInterval(() => this.#tick(), 1000);
@@ -95,6 +90,22 @@ export class TickTimer extends HTMLElement {
     }
   }
 
+  /**
+   * 타이머를 일시정지 또는 재개합니다.
+   * @returns {boolean} 상태. 재개 상태이면 true, 아니면 false
+   */
+  toggle() {
+    if (this.#isPaused) {
+      this.resume();
+    } else {
+      this.pause();
+    }
+    return !this.#isPaused;
+  }
+
+  /**
+   * 1초마다 호출되는 콜백 함수
+   */
   #tick() {
     if (this.#seconds > 0) {
       this.#seconds--;
@@ -102,10 +113,12 @@ export class TickTimer extends HTMLElement {
       this.dispatchEvent(new CustomEvent(EVENT_TIMER_TICK, { detail: { seconds: this.#seconds } }));
     } else {
       this.stop();
-      this.dispatchEvent(new Event(EVENT_TIMER_END));
     }
   }
 
+  /**
+   * 화면을 렌더링합니다.
+   */
   render() {
     this.shadowRoot.getElementById('time').textContent = this.#seconds;
   }

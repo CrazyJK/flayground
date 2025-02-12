@@ -115,14 +115,14 @@ export class FlayMarkerPanel extends HTMLDivElement {
   #movingMarker() {
     const INTERVAL = 700;
     const DIRECTIONs = [
-      [0, -1], // up
-      [0, 1], // down
-      [-1, 0], // left
-      [1, 0], // right
-      [-1, -1], // up-left
-      [1, -1], // up-right
-      [-1, 1], // down-left
-      [1, 1], // down-right
+      /** up */ [0, -1],
+      /** down */ [0, 1],
+      /** left */ [-1, 0],
+      /** right */ [1, 0],
+      /** up-left */ [-1, -1],
+      /** up-right */ [1, -1],
+      /** down-left */ [-1, 1],
+      /** down-right */ [1, 1],
     ];
     const highlightMarker = (marker) => {
       marker.dataset.n = ++this.#n;

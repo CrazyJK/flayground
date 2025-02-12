@@ -9,7 +9,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
   #timerID = 0;
   #maxX = 0;
   #maxY = 0;
-  #n = 0;
+  #n = -1;
+  #paused = false;
 
   constructor() {
     super();
@@ -21,6 +22,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.timer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));
 
     addResizeListener(() => this.#setRelativePositions());
+
+    this.addEventListener('click', (e) => {
+      if (e.target === this) this.#togglePause();
+    });
   }
 
   connectedCallback() {
@@ -31,21 +36,26 @@ export class FlayMarkerPanel extends HTMLDivElement {
   }
 
   #start() {
-    this.timer.start(getRandomIntInclusive(50, 70));
+    this.timer.start(getRandomIntInclusive(50, 70) * 2);
+  }
+
+  #togglePause() {
+    this.#paused = !this.timer.toggle(); // 일시정지, 재개
+    this.classList.toggle('paused', this.#paused);
   }
 
   async #render() {
     clearInterval(this.#timerID);
     this.timer.pause();
-    // this.markerList.forEach((marker) => marker.classList.remove('highlight'));
     for (let i = this.#n; i >= 0; i--) {
       const marker = this.markerList.find((marker) => marker.dataset.n === String(i));
       if (marker) {
-        marker.dataset.n = null;
-        marker.classList.remove('highlight');
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        marker.dataset.n = '';
+        marker.classList.remove('highlight', 'active');
+        await new Promise((resolve) => setTimeout(resolve, i / 2)); // 점검 빨리 사라지도록
       }
     }
+    this.#n = -1;
     this.timer.resume();
     this.classList.add('rendering');
 
@@ -76,11 +86,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
       }
     });
 
-    document
-      .startViewTransition(() => this.append(...this.markerList))
-      .finished.then(() => this.#setRelativePositions())
-      .then(() => this.#movingMarker())
-      .then(() => this.classList.remove('rendering'));
+    await document.startViewTransition(() => this.append(...this.markerList)).finished;
+    this.#setRelativePositions();
+    this.#movingMarker();
+    this.classList.remove('rendering');
   }
 
   #setRelativePositions() {
@@ -116,7 +125,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
       [1, 1], // down-right
     ];
     const highlightMarker = (marker) => {
-      marker.dataset.n = this.#n++;
+      marker.dataset.n = ++this.#n;
       marker.classList.add('highlight');
       marker.animate([{ transform: 'scale(1.0)' }, { transform: 'scale(1.2)' }], { duration: INTERVAL });
     };
@@ -132,13 +141,13 @@ export class FlayMarkerPanel extends HTMLDivElement {
       }
     };
 
-    this.n = 0;
-
     const startMarker = this.markerList[getRandomInt(0, this.markerList.length)];
     let [x, y] = startMarker.dataset.xy.split(',').map(Number);
     highlightMarker(startMarker);
 
     this.#timerID = setInterval(() => {
+      if (this.#paused) return;
+
       const marker = getNextMarker(x, y);
       [x, y] = marker.dataset.xy.split(',').map(Number);
       highlightMarker(marker);

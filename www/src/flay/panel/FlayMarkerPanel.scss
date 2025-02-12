@@ -4,13 +4,6 @@
   flex-wrap: wrap;
   align-content: center;
 
-  &.rendering,
-  &:hover {
-    > label {
-      opacity: 0.05;
-    }
-  }
-
   > label {
     opacity: 0;
     transition: 0.3s;
@@ -27,6 +20,24 @@
       opacity: 1 !important;
       transform: scale(1.1);
       z-index: 1;
+    }
+  }
+
+  &.rendering,
+  &:hover {
+    > label {
+      opacity: 0.05;
+
+      &.highlight {
+        opacity: 0.3;
+      }
+    }
+  }
+
+  &.paused {
+    > label {
+      opacity: 1 !important;
+      font-size: 8px;
     }
   }
 }

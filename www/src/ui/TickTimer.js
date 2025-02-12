@@ -11,7 +11,7 @@ export const EVENT_TIMER_RESUME = 'timer-resume';
 export class TickTimer extends HTMLElement {
   #seconds = 0;
   #intervalId = null;
-  #isPaused = false;
+  #paused = false;
 
   constructor() {
     super();
@@ -50,31 +50,19 @@ export class TickTimer extends HTMLElement {
   start(seconds) {
     clearInterval(this.#intervalId);
     this.#seconds = seconds;
-    this.#isPaused = false;
+    this.#paused = false;
     this.render();
     this.#intervalId = setInterval(() => this.#tick(), 1000);
     this.dispatchEvent(new Event(EVENT_TIMER_START));
   }
 
   /**
-   * 타이머를 중지합니다.
-   */
-  stop() {
-    if (this.#intervalId !== null) {
-      clearInterval(this.#intervalId);
-      this.#intervalId = null;
-      this.dispatchEvent(new Event(EVENT_TIMER_END));
-    }
-    this.#isPaused = false;
-  }
-
-  /**
    * 타이머를 일시정지합니다.
    */
   pause() {
-    if (this.#intervalId !== null && !this.#isPaused) {
+    if (this.#intervalId !== null && !this.#paused) {
       clearInterval(this.#intervalId);
-      this.#isPaused = true;
+      this.#paused = true;
       this.dispatchEvent(new Event(EVENT_TIMER_PAUSE));
     }
   }
@@ -83,9 +71,10 @@ export class TickTimer extends HTMLElement {
    * 타이머를 재개합니다
    */
   resume() {
-    if (this.#isPaused) {
+    if (this.#paused) {
+      this.#paused = false;
+      this.render();
       this.#intervalId = setInterval(() => this.#tick(), 1000);
-      this.#isPaused = false;
       this.dispatchEvent(new Event(EVENT_TIMER_RESUME));
     }
   }
@@ -95,12 +84,12 @@ export class TickTimer extends HTMLElement {
    * @returns {boolean} 상태. 재개 상태이면 true, 아니면 false
    */
   toggle() {
-    if (this.#isPaused) {
+    if (this.#paused) {
       this.resume();
     } else {
       this.pause();
     }
-    return !this.#isPaused;
+    return !this.#paused;
   }
 
   /**
@@ -113,6 +102,18 @@ export class TickTimer extends HTMLElement {
       this.dispatchEvent(new CustomEvent(EVENT_TIMER_TICK, { detail: { seconds: this.#seconds } }));
     } else {
       this.stop();
+    }
+  }
+
+  /**
+   * 타이머를 중지합니다.
+   */
+  stop() {
+    if (this.#intervalId !== null) {
+      clearInterval(this.#intervalId);
+      this.#intervalId = null;
+      this.#paused = false;
+      this.dispatchEvent(new Event(EVENT_TIMER_END));
     }
   }
 

@@ -11,21 +11,3 @@ body {
     padding: 8rem;
   }
 }
-
-@media (orientation: portrait) {
-  body {
-    > main {
-      padding-left: 2rem;
-      padding-right: 2rem;
-    }
-  }
-}
-
-@media (orientation: landscape) {
-  body {
-    > main {
-      padding-left: 28rem;
-      padding-right: 28rem;
-    }
-  }
-}

@@ -9,10 +9,23 @@ body {
     justify-content: center;
     flex-direction: column;
     padding: 8rem;
+  }
+}
 
-    .flay-marker.active {
-      background-color: transparent;
-      box-shadow: none;
+@media (orientation: portrait) {
+  body {
+    > main {
+      padding-left: 2rem;
+      padding-right: 2rem;
+    }
+  }
+}
+
+@media (orientation: landscape) {
+  body {
+    > main {
+      padding-left: 28rem;
+      padding-right: 28rem;
     }
   }
 }

@@ -16,10 +16,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
     super();
     this.classList.add('flay-marker-panel');
 
-    this.timer = new TickTimer();
-    this.timer.addEventListener(EVENT_TIMER_START, () => this.#render());
-    this.timer.addEventListener(EVENT_TIMER_END, () => this.#start());
-    this.timer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));
+    this.tickTimer = new TickTimer();
+    this.tickTimer.addEventListener(EVENT_TIMER_START, () => this.#render());
+    this.tickTimer.addEventListener(EVENT_TIMER_END, () => this.#start());
+    this.tickTimer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));
 
     addResizeListener(() => this.#setRelativePositions());
 
@@ -36,17 +36,17 @@ export class FlayMarkerPanel extends HTMLDivElement {
   }
 
   #start() {
-    this.timer.start(getRandomIntInclusive(50, 70) * 2);
+    this.tickTimer.start(getRandomIntInclusive(50, 70) * 2);
   }
 
   #togglePause() {
-    this.#paused = !this.timer.toggle(); // 일시정지, 재개
+    this.#paused = !this.tickTimer.toggle(); // 일시정지, 재개
     this.classList.toggle('paused', this.#paused);
   }
 
   async #render() {
     clearInterval(this.#timerID);
-    this.timer.pause();
+    this.tickTimer.pause();
     for (let i = this.#n; i >= 0; i--) {
       const marker = this.markerList.find((marker) => marker.dataset.n === String(i));
       if (marker) {
@@ -56,7 +56,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
       }
     }
     this.#n = -1;
-    this.timer.resume();
+    this.tickTimer.resume();
     this.classList.add('rendering');
 
     const ORDERs = ['studio', 'opus', 'title', 'actress', 'release', 'random', 'rank', 'shot', 'play', 'modified'];

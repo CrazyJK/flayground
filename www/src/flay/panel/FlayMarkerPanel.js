@@ -123,23 +123,78 @@ export class FlayMarkerPanel extends HTMLDivElement {
       /** up-right */ [1, -1],
       /** down-left */ [-1, 1],
       /** down-right */ [1, 1],
-    ];
+    ]; // 8방향
+    const DiagDirections = DIRECTIONs.filter((d) => d[0] !== 0 && d[1] !== 0); // 대각선 방향만
+    let currentDiagDirection = DiagDirections[getRandomInt(0, DiagDirections.length)]; // 대각선 방향 랜덤으로 결정
+
+    /**
+     * 마커에 하이라이트 효과를 주는 함수
+     * @param {FlayMarker} marker
+     */
     const highlightMarker = (marker) => {
       marker.dataset.n = ++this.#n;
       marker.classList.add('highlight');
       marker.animate([{ transform: 'scale(1.0)' }, { transform: 'scale(1.2)' }], { duration: INTERVAL });
     };
-    const getNextMarker = (x, y) => {
+
+    /**
+     * 현재 marker에서 가까운 마커 구하는 함수
+     * @param {number} x
+     * @param {number} y
+     * @returns
+     */
+    const getNextNearMarker = (x, y) => {
       const [dx, dy] = DIRECTIONs[getRandomInt(0, DIRECTIONs.length)];
       const nextX = Math.min(Math.max(x + dx, 0), this.#maxX);
       const nextY = Math.min(Math.max(y + dy, 0), this.#maxY);
       const nextMarker = this.markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
       if (!nextMarker || nextMarker.classList.contains('highlight')) {
-        return getNextMarker(nextX, nextY);
+        return getNextNearMarker(nextX, nextY);
       } else {
         return nextMarker;
       }
     };
+
+    /**
+     * 현재 marker에서 사선 방향으로 이동한 마커 구하는 함수
+     * @param {number} x
+     * @param {number} y
+     * @returns
+     */
+    const getNextDiagMarker = (x, y) => {
+      // Try to continue in the current direction
+      let nextX = x + currentDiagDirection[0];
+      let nextY = y + currentDiagDirection[1];
+      let candidate = this.markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
+      if (candidate) {
+        if (candidate.classList.contains('highlight')) {
+          console.debug('갈 곳이 이미 highlight되어 있음. 건너뛰기', candidate.dataset.xy.split(',').map(Number));
+          return getNextDiagMarker(nextX, nextY); // Try again in the same direction
+        }
+        return candidate;
+      }
+
+      // If no candidate in the current direction, try other diagonal directions
+      // Exclude the reverse of the current direction.
+      const reverse = [-currentDiagDirection[0], -currentDiagDirection[1]];
+      for (const dir of DiagDirections) {
+        if (dir[0] === reverse[0] && dir[1] === reverse[1]) continue;
+        nextX = x + dir[0];
+        nextY = y + dir[1];
+        candidate = this.markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
+        if (candidate) {
+          console.debug('방향전환', currentDiagDirection, '->', dir);
+          currentDiagDirection = dir;
+          return candidate;
+        }
+      }
+      // Fallback: Return candidate in current direction even if highlighted (should rarely happen)
+      candidate = this.markerList[getRandomInt(0, this.markerList.length)]; // Pick a random marker
+      console.log('갈 곳이 없어 다른 marker에서 다시 출발', candidate.dataset.xy.split(',').map(Number));
+      return candidate;
+    };
+
+    const getNextMarker = getRandomIntInclusive(0, 1) ? getNextNearMarker : getNextDiagMarker;
 
     const startMarker = this.markerList[getRandomInt(0, this.markerList.length)];
     let [x, y] = startMarker.dataset.xy.split(',').map(Number);

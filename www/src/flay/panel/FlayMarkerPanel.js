@@ -25,6 +25,7 @@ const DEFAULT_OPTIONS = {
   /** 스레드 개수 */ thread: [1, 3],
   /** 나타나는 시간 간격. ms */ interval: [200, 500],
   /** 모양. square, circle, star, heart */ shape: 'star',
+  /** marker 크기. 1부터 0.5step */ size: 1,
 };
 
 export class FlayMarkerPanel extends HTMLDivElement {
@@ -46,6 +47,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
     this.#opts = { ...DEFAULT_OPTIONS, ...options };
     this.classList.add('flay-marker-panel');
+    this.dataset.w = this.#opts.size;
 
     this.tickTimer = new TickTimer();
     this.tickTimer.addEventListener(EVENT_TIMER_START, () => this.#render());
@@ -56,6 +58,9 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
     this.addEventListener('click', (e) => {
       if (e.target === this) this.#togglePause();
+    });
+    this.addEventListener('wheel', (e) => {
+      this.dataset.w = this.#opts.size = e.deltaY < 0 ? Math.min(this.#opts.size + 0.5, 20) : Math.max(this.#opts.size - 0.5, 1);
     });
   }
 

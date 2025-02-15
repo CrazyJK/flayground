@@ -37,4 +37,14 @@
       opacity: 1 !important;
     }
   }
+
+  $size: 1;
+  @while $size <= 20 {
+    &[data-w='#{$size}'] {
+      label {
+        width: #{$size}rem;
+      }
+    }
+    $size: $size + 0.5;
+  }
 }

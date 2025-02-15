@@ -36,7 +36,9 @@ export class FlayMarkerPanel extends HTMLDivElement {
   }
 
   #start() {
-    this.tickTimer.start(getRandomIntInclusive(50, 70) * 2);
+    this.multifier = getRandomInt(3, 8);
+    this.tickTimer.start(getRandomIntInclusive(50, 70) * this.multifier);
+    this.dataset.multifier = this.multifier;
   }
 
   #togglePause() {
@@ -46,17 +48,20 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
   async #render() {
     clearInterval(this.#timerID);
+    console.time('disappear');
     this.tickTimer.pause();
     for (let i = this.#n; i >= 0; i--) {
       const marker = this.markerList.find((marker) => marker.dataset.n === String(i));
       if (marker) {
         marker.dataset.n = '';
         marker.classList.remove('highlight', 'active');
-        await new Promise((resolve) => setTimeout(resolve, i / 2)); // 점검 빨리 사라지도록
+        await new Promise((resolve) => setTimeout(resolve, i / this.multifier)); // 점검 빨리 사라지도록
       }
     }
     this.#n = -1;
     this.tickTimer.resume();
+    console.timeEnd('disappear');
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // 1초 대기
     this.classList.add('rendering');
 
     const ORDERs = ['studio', 'opus', 'title', 'actress', 'release', 'random', 'rank', 'shot', 'play', 'modified'];
@@ -113,7 +118,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
   }
 
   #movingMarker() {
-    const INTERVAL = 700;
+    const INTERVAL = getRandomIntInclusive(2, 5) * 100;
     const DIRECTIONs = [
       /** up */ [0, -1],
       /** down */ [0, 1],
@@ -125,7 +130,9 @@ export class FlayMarkerPanel extends HTMLDivElement {
       /** down-right */ [1, 1],
     ]; // 8방향
     const DiagDirections = DIRECTIONs.filter((d) => d[0] !== 0 && d[1] !== 0); // 대각선 방향만
-    let currentDiagDirection = DiagDirections[getRandomInt(0, DiagDirections.length)]; // 대각선 방향 랜덤으로 결정
+    let [dx, dy] = DiagDirections[getRandomInt(0, DiagDirections.length)]; // 대각선 방향 랜덤으로 결정
+    let highlightCount = 0; // 하이라이트 중복 개수
+    this.dataset.interval = INTERVAL;
 
     /**
      * 마커에 하이라이트 효과를 주는 함수
@@ -134,7 +141,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     const highlightMarker = (marker) => {
       marker.dataset.n = ++this.#n;
       marker.classList.add('highlight');
-      marker.animate([{ transform: 'scale(1.0)' }, { transform: 'scale(1.2)' }], { duration: INTERVAL });
+      marker.animate([{ transform: 'scale(0.8)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1.0)' }], { duration: INTERVAL - 100, easing: 'ease-in-out' });
     };
 
     /**
@@ -144,11 +151,13 @@ export class FlayMarkerPanel extends HTMLDivElement {
      * @returns
      */
     const getNextNearMarker = (x, y) => {
-      const [dx, dy] = DIRECTIONs[getRandomInt(0, DIRECTIONs.length)];
+      const nextDirection = DIRECTIONs.filter(([_x, _y]) => _x !== -dx && _y !== -dy);
+      [dx, dy] = nextDirection[getRandomInt(0, nextDirection.length)];
       const nextX = Math.min(Math.max(x + dx, 0), this.#maxX);
       const nextY = Math.min(Math.max(y + dy, 0), this.#maxY);
       const nextMarker = this.markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
       if (!nextMarker || nextMarker.classList.contains('highlight')) {
+        // console.debug('갈 곳이 없거나 이미 highlight되어 있음. 다른 방향으로 이동');
         return getNextNearMarker(nextX, nextY);
       } else {
         return nextMarker;
@@ -162,39 +171,80 @@ export class FlayMarkerPanel extends HTMLDivElement {
      * @returns
      */
     const getNextDiagMarker = (x, y) => {
+      if (highlightCount > 5) {
+        console.debug('하이라이트가 연속으로 중복이 5개 이상이면 랜덤으로 이동');
+        highlightCount = 0;
+        return getNextRandomMarker();
+      }
+
       // Try to continue in the current direction
-      let nextX = x + currentDiagDirection[0];
-      let nextY = y + currentDiagDirection[1];
+      let [nextX, nextY] = [x + dx, y + dy];
       let candidate = this.markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
       if (candidate) {
-        if (candidate.classList.contains('highlight')) {
-          console.debug('갈 곳이 이미 highlight되어 있음. 건너뛰기', candidate.dataset.xy.split(',').map(Number));
-          return getNextDiagMarker(nextX, nextY); // Try again in the same direction
-        }
+        if (candidate.classList.contains('highlight')) highlightCount++;
+        else highlightCount = 0;
         return candidate;
       }
 
       // If no candidate in the current direction, try other diagonal directions
       // Exclude the reverse of the current direction.
-      const reverse = [-currentDiagDirection[0], -currentDiagDirection[1]];
+      const reverse = [-dx, -dy];
       for (const dir of DiagDirections) {
         if (dir[0] === reverse[0] && dir[1] === reverse[1]) continue;
-        nextX = x + dir[0];
-        nextY = y + dir[1];
+        [nextX, nextY] = [x + dir[0], y + dir[1]];
         candidate = this.markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
         if (candidate) {
-          console.debug('방향전환', currentDiagDirection, '->', dir);
-          currentDiagDirection = dir;
+          // console.debug('방향전환', [dx, dy], '->', dir);
+          [dx, dy] = dir;
+          if (candidate.classList.contains('highlight')) highlightCount++;
+          else highlightCount = 0;
           return candidate;
         }
       }
       // Fallback: Return candidate in current direction even if highlighted (should rarely happen)
-      candidate = this.markerList[getRandomInt(0, this.markerList.length)]; // Pick a random marker
-      console.log('갈 곳이 없어 다른 marker에서 다시 출발', candidate.dataset.xy.split(',').map(Number));
-      return candidate;
+
+      // 바로 옆 주변에 갈수 있는지
+      for (const dir of DIRECTIONs) {
+        [nextX, nextY] = [x + dir[0], y + dir[1]];
+        candidate = this.markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
+        if (candidate) {
+          // console.debug('대각선으로 이동할 곳이 없어서 옆에 다른 방향으로 이동', dir);
+          [dx, dy] = [-dx, -dy]; // 역방향으로 변경
+          if (candidate.classList.contains('highlight')) highlightCount++;
+          else highlightCount = 0;
+          return candidate;
+        }
+      }
+
+      // 랜덤으로 선택
+      console.log('갈 곳이 없어 랜덤으로 다른 marker에서 다시 출발');
+      return getNextRandomMarker();
     };
 
-    const getNextMarker = getRandomIntInclusive(0, 1) ? getNextNearMarker : getNextDiagMarker;
+    const getNextRandomMarker = () => {
+      const notHighlight = this.querySelectorAll(':not(.highlight)');
+      if (notHighlight.length === 0) {
+        console.debug('모든 marker가 highlight되어 있음. stop');
+        return null;
+      }
+      return notHighlight[getRandomInt(0, notHighlight.length)];
+    };
+
+    let getNextMarker;
+    switch (getRandomIntInclusive(0, 2)) {
+      case 0:
+        getNextMarker = getNextNearMarker;
+        this.dataset.method = 'near';
+        break;
+      case 1:
+        getNextMarker = getNextDiagMarker;
+        this.dataset.method = 'diag';
+        break;
+      case 2:
+        getNextMarker = getNextRandomMarker;
+        this.dataset.method = 'random';
+        break;
+    }
 
     const startMarker = this.markerList[getRandomInt(0, this.markerList.length)];
     let [x, y] = startMarker.dataset.xy.split(',').map(Number);
@@ -202,10 +252,16 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
     this.#timerID = setInterval(() => {
       if (this.#paused) return;
+      if (this.querySelectorAll(':not(.highlight)') === 0) {
+        this.tickTimer.stop();
+        return;
+      }
 
       const marker = getNextMarker(x, y);
-      [x, y] = marker.dataset.xy.split(',').map(Number);
-      highlightMarker(marker);
+      if (marker) {
+        [x, y] = marker.dataset.xy.split(',').map(Number);
+        highlightMarker(marker);
+      }
     }, INTERVAL);
   }
 }

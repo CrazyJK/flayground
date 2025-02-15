@@ -24,6 +24,7 @@ const DEFAULT_OPTIONS = {
   /** 타이머 시간. s */ seconds: [50, 70],
   /** 스레드 개수 */ thread: [1, 3],
   /** 나타나는 시간 간격. ms */ interval: [200, 500],
+  /** 모양. square, circle, star, heart */ shape: 'star',
 };
 
 export class FlayMarkerPanel extends HTMLDivElement {
@@ -60,7 +61,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
   connectedCallback() {
     FlayFetch.getFlayList().then((list) => {
-      this.markerList = list.map((flay) => new FlayMarker(flay, { showTitle: false }));
+      this.markerList = list.map((flay) => new FlayMarker(flay, { showTitle: false, shape: this.#opts.shape }));
       this.#start();
     });
   }
@@ -140,7 +141,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.dataset.method = this.#methodIndex === 0 ? 'near' : this.#methodIndex === 1 ? 'diag' : 'random';
     this.dataset.threads = this.#threadCount;
 
-    console.log('[render]', 'multifier:', this.dataset.multifier, 'seconds:', this.tickTimer.seconds, 'order:', this.dataset.order, 'threads:', this.dataset.threads, 'method:', this.dataset.method);
+    const descriptionText = `multifier: ${this.dataset.multifier}, seconds: ${this.tickTimer.seconds}, order: ${this.dataset.order}, threads: ${this.dataset.threads}, method: ${this.dataset.method}`;
+    console.log('[render]', descriptionText);
 
     for (let i = 0; i < this.#threadCount; i++) {
       this.#movingMarker(i);

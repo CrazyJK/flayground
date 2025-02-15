@@ -26,4 +26,28 @@
       border-width: 2px;
     }
   }
+
+  &.circle {
+    border-radius: 50%;
+  }
+  &.square {
+    border-radius: 0.25rem;
+  }
+
+  &.heart,
+  &.star {
+    display: flex;
+    border: 0;
+    background-color: transparent;
+    svg {
+      width: 100%;
+      color: inherit;
+    }
+    &.shot {
+      box-shadow: none;
+      svg {
+        color: var(--color-red);
+      }
+    }
+  }
 }

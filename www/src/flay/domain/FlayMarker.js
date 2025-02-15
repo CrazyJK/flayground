@@ -1,10 +1,16 @@
 import { popupFlay } from '../../lib/FlaySearch';
+import favorite from '../../svg/favorite';
+import ranks from '../../svg/ranks';
 import './FlayMarker.scss';
 
-const DEFAULT_OPTIONS = { showTitle: true, showCover: false };
+const DEFAULT_OPTIONS = { showTitle: true, showCover: false, /** 모양. square, circle, star, heart */ shape: 'square' };
 
 export default class FlayMarker extends HTMLLabelElement {
-  constructor(flay, options = DEFAULT_OPTIONS) {
+  /**
+   * @param {Flay} flay
+   * @param {DEFAULT_OPTIONS} options
+   */
+  constructor(flay, options) {
     super();
 
     options = { ...DEFAULT_OPTIONS, ...options };
@@ -18,13 +24,12 @@ export default class FlayMarker extends HTMLLabelElement {
       this.classList.add('active');
     });
 
-    if (options.showCover) {
-      this.addEventListener('mouseover', () => this.showCover(), { once: true });
-    }
+    if (options.showCover) this.addEventListener('mouseover', () => this.showCover(), { once: true });
+    if (options.showTitle) this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}`;
 
-    if (options.showTitle) {
-      this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}`;
-    }
+    this.classList.add(options.shape);
+    if (options.shape === 'heart') this.innerHTML = favorite;
+    else if (options.shape === 'star') this.innerHTML = ranks[flay.video.rank + 1];
   }
 
   showCover() {

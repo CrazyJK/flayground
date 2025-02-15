@@ -67,7 +67,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
   }
 
   #start() {
-    const multifier = getRandomInt(this.#opts.multifier[0], this.#opts.multifier[0]);
+    const multifier = getRandomIntInclusive(this.#opts.multifier[0], this.#opts.multifier[0]);
     this.tickTimer.start(getRandomIntInclusive(this.#opts.seconds[0], this.#opts.seconds[1]) * multifier);
     this.dataset.multifier = multifier;
   }

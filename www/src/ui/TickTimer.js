@@ -117,6 +117,10 @@ export class TickTimer extends HTMLElement {
     }
   }
 
+  get seconds() {
+    return this.#seconds;
+  }
+
   /**
    * 화면을 렌더링합니다.
    */

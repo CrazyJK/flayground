@@ -36,7 +36,6 @@ export class FlayMarkerPanel extends HTMLDivElement {
   #threadCount = 1;
   #timerID = new Array(this.#threadCount);
   #opts = {};
-  #methodIndex = 0;
 
   /**
    *

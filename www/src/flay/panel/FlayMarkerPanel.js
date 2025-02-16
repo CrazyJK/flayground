@@ -86,7 +86,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
     if (this.#n > 0) {
       for (let i = 0; i < this.#threadCount; i++) {
         this.#cancelThread(i);
-        delete this.dataset[`intervalT${i}`];
+        delete this.dataset[`t${i}Interval`];
+        delete this.dataset[`t${i}Method`];
       }
       const consoleTimeName = `disappear-${this.#n}`;
       console.time(consoleTimeName);
@@ -139,14 +140,11 @@ export class FlayMarkerPanel extends HTMLDivElement {
     await document.startViewTransition(() => this.append(...this.markerList)).finished;
     this.#setRelativePositions();
 
-    this.#methodIndex = getRandomInt(0, 3);
     this.#threadCount = getRandomIntInclusive(this.#opts.thread[0], this.#opts.thread[1]);
     this.#timerID = new Array(this.#threadCount);
-
-    this.dataset.method = this.#methodIndex === 0 ? 'near' : this.#methodIndex === 1 ? 'diag' : 'random';
     this.dataset.threads = this.#threadCount;
 
-    const descriptionText = `multifier: ${this.dataset.multifier}, seconds: ${this.tickTimer.seconds}, order: ${this.dataset.order}, threads: ${this.dataset.threads}, method: ${this.dataset.method}`;
+    const descriptionText = `multifier: ${this.dataset.multifier}, seconds: ${this.tickTimer.seconds}, order: ${this.dataset.order}, threads: ${this.dataset.threads}`;
     console.log('[render]', descriptionText);
 
     for (let i = 0; i < this.#threadCount; i++) {
@@ -180,7 +178,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     const INTERVAL = getRandomIntInclusive(this.#opts.interval[0], this.#opts.interval[1]);
     let [dx, dy] = DiagonalDirections[getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정
     let duplicateHighlightCount = 0; // 하이라이트 중복 개수
-    this.dataset[`intervalT${threadNo}`] = INTERVAL;
+    this.dataset[`t${threadNo}Interval`] = INTERVAL;
 
     /**
      * 마커에 하이라이트 효과를 주는 함수
@@ -281,12 +279,15 @@ export class FlayMarkerPanel extends HTMLDivElement {
     };
 
     const getNextMarker = (() => {
-      switch (this.#methodIndex) {
+      switch (getRandomInt(0, 3)) {
         case 0:
+          this.dataset[`t${threadNo}Method`] = 'near';
           return getNextNearMarker;
         case 1:
+          this.dataset[`t${threadNo}Method`] = 'diag';
           return getNextDiagMarker;
         case 2:
+          this.dataset[`t${threadNo}Method`] = 'random';
           return getNextRandomMarker;
       }
     })();

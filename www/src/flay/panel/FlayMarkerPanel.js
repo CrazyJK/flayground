@@ -20,9 +20,9 @@ const AllDirections = [
 const DiagonalDirections = AllDirections.filter((d) => d[0] !== 0 && d[1] !== 0);
 /** 기본 옵션 */
 const DEFAULT_OPTIONS = {
-  /** 시간 배수 */ multifier: [1, 5],
+  /** 시간 배수 */ multifier: [1, 3],
   /** 타이머 시간. s */ seconds: [50, 70],
-  /** 스레드 개수 */ thread: [1, 4],
+  /** 스레드 개수 */ thread: [1, 3],
   /** 나타나는 시간 간격. ms */ interval: [200, 500],
   /** 모양. square, circle, star, heart */ shape: 'star',
   /** marker 크기. 1부터 0.5step */ size: 1,
@@ -58,8 +58,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
       if (e.target === this) this.#togglePause();
     });
     this.addEventListener('wheel', (e) => {
+      this.#togglePause();
       this.dataset.w = this.#opts.size = e.deltaY < 0 ? Math.min(this.#opts.size + 0.5, 20) : Math.max(this.#opts.size - 0.5, 1);
-      this.dispatchEvent(new CustomEvent('resize', { bubbles: true }));
+      this.#updateMarkerPositions();
+      this.#togglePause();
     });
   }
 
@@ -85,6 +87,32 @@ export class FlayMarkerPanel extends HTMLDivElement {
   #togglePause() {
     this.#paused = !this.tickTimer.toggle(); // 일시정지, 재개
     this.classList.toggle('paused', this.#paused);
+  }
+
+  /**
+   * 마커의 좌표 설정
+   * @returns
+   */
+  #updateMarkerPositions() {
+    if (this.#markerList.length === 0) return;
+
+    const firstMarker = this.#markerList[0];
+    const firstRect = firstMarker.getBoundingClientRect();
+    this.#markerList.forEach((marker, index) => {
+      if (index === 0) {
+        marker.dataset.xy = '0,0';
+      } else {
+        const rect = marker.getBoundingClientRect();
+        const relativeX = (rect.left - firstRect.left) / firstRect.width;
+        const relativeY = (rect.top - firstRect.top) / firstRect.height;
+        marker.dataset.xy = `${relativeX},${relativeY}`;
+      }
+    });
+
+    const xy = this.#markerList.map((marker) => marker.dataset.xy.split(',').map(Number));
+    const maxX = Math.max(...xy.map(([_x, _y]) => _x));
+    const maxY = Math.max(...xy.map(([_x, _y]) => _y));
+    console.log('[updateMarkerPositions] maxX:', maxX, 'maxY:', maxY);
   }
 
   /**
@@ -151,12 +179,11 @@ export class FlayMarkerPanel extends HTMLDivElement {
    * 스레드 취소, 타이머 일시정지, 모든 하이라이트 마커 사라질 때까지 대기
    */
   async #reset() {
-    for (let i = 0; i < this.#threadCount; i++) {
-      this.#cancelThread(i);
-      delete this.dataset[`t${i}Interval`];
-      delete this.dataset[`t${i}Method`];
-    }
-    const consoleTimeName = `disappear-${this.#lastNo}`;
+    this.#cancelAllThread();
+
+    await new Promise((resolve) => setTimeout(resolve, 3000)); // 3초 대기
+
+    const consoleTimeName = `disappear-${this.#lastNo}-${Date.now()}`;
     console.time(consoleTimeName);
     this.tickTimer.pause();
     for (let i = this.#lastNo; i >= 0; ) {
@@ -170,36 +197,14 @@ export class FlayMarkerPanel extends HTMLDivElement {
       }
       await new Promise((resolve) => setTimeout(resolve, 10));
     }
+    console.log(
+      '[reset] All markers disappeared.',
+      this.#markerList.filter((marker) => marker.classList.contains('highlight')).map((marker) => marker.dataset.n)
+    );
     this.#lastNo = -1;
     this.tickTimer.resume();
     console.timeEnd(consoleTimeName);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // 1초 대기
-  }
-
-  /**
-   * 마커의 좌표 설정
-   * @returns
-   */
-  #updateMarkerPositions() {
-    if (this.#markerList.length === 0) return;
-
-    const firstMarker = this.#markerList[0];
-    const firstRect = firstMarker.getBoundingClientRect();
-    this.#markerList.forEach((marker, index) => {
-      if (index === 0) {
-        marker.dataset.xy = '0,0';
-      } else {
-        const rect = marker.getBoundingClientRect();
-        const relativeX = (rect.left - firstRect.left) / firstRect.width;
-        const relativeY = (rect.top - firstRect.top) / firstRect.height;
-        marker.dataset.xy = `${relativeX},${relativeY}`;
-      }
-    });
-
-    const xy = this.#markerList.map((marker) => marker.dataset.xy.split(',').map(Number));
-    const maxX = Math.max(...xy.map(([_x, _y]) => _x));
-    const maxY = Math.max(...xy.map(([_x, _y]) => _y));
-    console.log('[updateMarkerPositions] maxX:', maxX, 'maxY:', maxY);
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // 1초 대기. 마지막 마커가 사라지는 애니메이션을 위해
   }
 
   /**
@@ -275,9 +280,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
         [nextX, nextY] = [x + dir[0], y + dir[1]];
         candidate = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
         if (candidate) {
-          [dx, dy] = dir;
+          [dx, dy] = dir; // 전환한 방향으로 변경
           if (candidate.classList.contains('highlight')) duplicateHighlightCount++;
           else duplicateHighlightCount = 0;
+          console.debug(`Thread ${threadNo} [findNextDiagonalMarker] 방향 전환해서 이동`, dir);
           return candidate;
         }
       }
@@ -288,9 +294,9 @@ export class FlayMarkerPanel extends HTMLDivElement {
         candidate = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
         if (candidate) {
           [dx, dy] = [-dx, -dy]; // 역방향으로 변경
-          console.debug(`Thread ${threadNo} [findNextDiagonalMarker] 대각선으로 이동할 곳이 없어서 옆에 다른 방향으로 이동`, dir);
           if (candidate.classList.contains('highlight')) duplicateHighlightCount++;
           else duplicateHighlightCount = 0;
+          console.debug(`Thread ${threadNo} [findNextDiagonalMarker] 대각선으로 이동할 곳이 없어서 옆에 다른 방향으로 이동`, dir);
           return candidate;
         }
       }
@@ -365,9 +371,18 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
     this.#timerID[threadNo] = undefined;
     if (this.#timerID.every((id) => id === undefined)) {
-      console.log('All threads are cancelled and the timer is stopped.');
+      console.log(`All ${this.#timerID.length} threads are cancelled and the timer is stopped.`);
       this.tickTimer.stop();
     }
+  }
+
+  #cancelAllThread() {
+    for (let i = 0; i < this.#threadCount; i++) {
+      clearInterval(this.#timerID[i]);
+      delete this.dataset[`t${i}Interval`];
+      delete this.dataset[`t${i}Method`];
+    }
+    console.log(`All ${this.#timerID.length} threads are cancelled and the timer is stopped.`);
   }
 }
 

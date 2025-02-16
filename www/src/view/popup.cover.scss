@@ -1,4 +1,9 @@
 body {
+  position: fixed;
+  inset: 0;
   background: var(--color-bg) no-repeat fixed center / contain;
   background-blend-mode: unset;
+  &.cover {
+    background-size: cover;
+  }
 }

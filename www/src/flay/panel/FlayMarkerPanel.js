@@ -52,13 +52,14 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.tickTimer.addEventListener(EVENT_TIMER_END, () => this.#start());
     this.tickTimer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));
 
-    addResizeListener(() => this.#setRelativePositions());
+    addResizeListener(() => this.#updateMarkerPositions());
 
     this.addEventListener('click', (e) => {
       if (e.target === this) this.#togglePause();
     });
     this.addEventListener('wheel', (e) => {
       this.dataset.w = this.#opts.size = e.deltaY < 0 ? Math.min(this.#opts.size + 0.5, 20) : Math.max(this.#opts.size - 0.5, 1);
+      this.dispatchEvent(new CustomEvent('resize', { bubbles: true }));
     });
   }
 
@@ -126,7 +127,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     // 다시 정렬된 마커를 화면에 적용
     await document.startViewTransition(() => this.append(...this.#markerList)).finished;
     // 마커의 좌표 설정
-    this.#setRelativePositions();
+    this.#updateMarkerPositions();
 
     // 스레드 개수 랜덤으로 설정
     this.#threadCount = getRandomIntInclusive(...this.#opts.thread);
@@ -179,7 +180,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
    * 마커의 좌표 설정
    * @returns
    */
-  #setRelativePositions() {
+  #updateMarkerPositions() {
     if (this.#markerList.length === 0) return;
 
     const firstMarker = this.#markerList[0];
@@ -194,6 +195,11 @@ export class FlayMarkerPanel extends HTMLDivElement {
         marker.dataset.xy = `${relativeX},${relativeY}`;
       }
     });
+
+    const xy = this.#markerList.map((marker) => marker.dataset.xy.split(',').map(Number));
+    const maxX = Math.max(...xy.map(([_x, _y]) => _x));
+    const maxY = Math.max(...xy.map(([_x, _y]) => _y));
+    console.log('[updateMarkerPositions] maxX:', maxX, 'maxY:', maxY);
   }
 
   /**
@@ -356,6 +362,12 @@ export class FlayMarkerPanel extends HTMLDivElement {
     if (this.#timerID[threadNo] === undefined) return;
     clearInterval(this.#timerID[threadNo]);
     console.log(`Thread ${threadNo} cancelled`, this.#timerID[threadNo]);
+
+    this.#timerID[threadNo] = undefined;
+    if (this.#timerID.every((id) => id === undefined)) {
+      console.log('All threads are cancelled and the timer is stopped.');
+      this.tickTimer.stop();
+    }
   }
 }
 

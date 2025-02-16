@@ -70,17 +70,26 @@ export class FlayMarkerPanel extends HTMLDivElement {
     });
   }
 
+  /**
+   * 타이머가 종료되면 호출되서, 다시 시작
+   */
   #start() {
     const multifier = getRandomIntInclusive(this.#opts.multifier[0], this.#opts.multifier[0]);
     this.tickTimer.start(getRandomIntInclusive(this.#opts.seconds[0], this.#opts.seconds[1]) * multifier);
     this.dataset.multifier = multifier;
   }
 
+  /**
+   * 일시정지, 재개
+   */
   #togglePause() {
     this.#paused = !this.tickTimer.toggle(); // 일시정지, 재개
     this.classList.toggle('paused', this.#paused);
   }
 
+  /**
+   * 타이머가 사적되면 호출되서, 마커를 렌더링
+   */
   async #render() {
     if (this.#n > 0) {
       for (let i = 0; i < this.#threadCount; i++) {
@@ -153,6 +162,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.classList.remove('rendering');
   }
 
+  /**
+   * 마커의 상대 위치 설정
+   * @returns
+   */
   #setRelativePositions() {
     if (!this.markerList) return;
 
@@ -173,6 +186,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
     });
   }
 
+  /**
+   * 마커 이동
+   * @param {number} threadNo 스레드 번호
+   */
   async #movingMarker(threadNo) {
     const INTERVAL = getRandomIntInclusive(this.#opts.interval[0], this.#opts.interval[1]);
     let [dx, dy] = DiagonalDirections[getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정

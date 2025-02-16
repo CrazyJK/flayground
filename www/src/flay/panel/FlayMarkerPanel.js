@@ -235,10 +235,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
      * @returns {FlayMarker?}
      */
     const findNextSpreadMarker = (x, y) => {
-      const nextDirection = AllDirections.filter(([_x, _y]) => _x !== -dx && _y !== -dy);
+      const nextDirection = AllDirections.filter(([_x, _y]) => _x !== -dx && _y !== -dy); // 현재 방향을 제외한 방향
       do {
-        [dx, dy] = nextDirection.splice(getRandomInt(0, nextDirection.length), 1)[0];
-        const [nextX, nextY] = [x + dx, y + dy]; // [Math.min(Math.max(x + dx, 0), this.#maxX), Math.min(Math.max(y + dy, 0), this.#maxY)];
+        [dx, dy] = nextDirection.splice(getRandomInt(0, nextDirection.length), 1)[0]; // 랜덤으로 방향 선택
+        const [nextX, nextY] = [x + dx, y + dy];
         const nextMarker = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
         if (nextMarker) {
           if (!nextMarker.classList.contains('highlight')) {
@@ -246,8 +246,15 @@ export class FlayMarkerPanel extends HTMLDivElement {
           }
         }
       } while (nextDirection.length > 0);
-      console.debug(`Thread ${threadNo} [findNextSpreadMarker] 주변에 갈 곳이 없어 랜덤으로 이동`);
-      return findNextRandomMarker();
+
+      if (duplicatedCount > 5) {
+        duplicatedCount = 0;
+        console.debug(`Thread ${threadNo} [findNextSpreadMarker] 하이라이트가 연속으로 중복이 5개 이상이라서 랜덤으로 이동`);
+        return findNextRandomMarker();
+      } else {
+        ++duplicatedCount;
+        return findNextSpreadMarker(x + dx, y + dy);
+      }
     };
 
     /**
@@ -257,9 +264,9 @@ export class FlayMarkerPanel extends HTMLDivElement {
      * @returns {FlayMarker?}
      */
     const findNextDiagonalMarker = (x, y) => {
-      if (duplicateHighlightCount > 5) {
+      if (duplicatedCount > 5) {
         console.debug(`Thread ${threadNo} [findNextDiagonalMarker] 하이라이트가 연속으로 중복이 5개 이상이라서 랜덤으로 이동`);
-        duplicateHighlightCount = 0;
+        duplicatedCount = 0;
         return findNextRandomMarker();
       }
 
@@ -267,8 +274,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
       let [nextX, nextY] = [x + dx, y + dy];
       let candidate = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
       if (candidate) {
-        if (candidate.classList.contains('highlight')) duplicateHighlightCount++;
-        else duplicateHighlightCount = 0;
+        if (candidate.classList.contains('highlight')) duplicatedCount++;
+        else duplicatedCount = 0;
         return candidate;
       }
 
@@ -281,8 +288,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
         candidate = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
         if (candidate) {
           [dx, dy] = dir; // 전환한 방향으로 변경
-          if (candidate.classList.contains('highlight')) duplicateHighlightCount++;
-          else duplicateHighlightCount = 0;
+          if (candidate.classList.contains('highlight')) duplicatedCount++;
+          else duplicatedCount = 0;
           console.debug(`Thread ${threadNo} [findNextDiagonalMarker] 방향 전환해서 이동`, dir);
           return candidate;
         }
@@ -294,8 +301,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
         candidate = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
         if (candidate) {
           [dx, dy] = [-dx, -dy]; // 역방향으로 변경
-          if (candidate.classList.contains('highlight')) duplicateHighlightCount++;
-          else duplicateHighlightCount = 0;
+          if (candidate.classList.contains('highlight')) duplicatedCount++;
+          else duplicatedCount = 0;
           console.debug(`Thread ${threadNo} [findNextDiagonalMarker] 대각선으로 이동할 곳이 없어서 옆에 다른 방향으로 이동`, dir);
           return candidate;
         }
@@ -323,7 +330,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.dataset[`t${threadNo}Interval`] = INTERVAL;
 
     let [dx, dy] = DiagonalDirections[getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정
-    let duplicateHighlightCount = 0; // 하이라이트 중복 개수
+    let duplicatedCount = 0; // 중복 개수
 
     const findNextMarker = (() => {
       switch (getRandomInt(0, 3)) {

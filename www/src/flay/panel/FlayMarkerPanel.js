@@ -339,14 +339,14 @@ export class FlayMarkerPanel extends HTMLDivElement {
       }
     })();
 
-    const startMarker = this.#markerList[getRandomInt(0, this.#markerList.length)];
-    let [x, y] = startMarker.dataset.xy.split(',').map(Number);
-    highlightMarker(startMarker);
+    let marker = findNextRandomMarker();
+    let [x, y] = marker.dataset.xy.split(',').map(Number);
+    highlightMarker(marker);
 
     this.#timerID[threadNo] = setInterval(() => {
       if (this.#paused) return;
 
-      const marker = findNextMarker(x, y);
+      marker = findNextMarker(x, y);
       if (marker) {
         [x, y] = marker.dataset.xy.split(',').map(Number);
         highlightMarker(marker);

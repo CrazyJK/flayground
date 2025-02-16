@@ -74,8 +74,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
    * 타이머가 종료되면 호출되서, 다시 시작
    */
   #start() {
-    const multifier = getRandomIntInclusive(this.#opts.multifier[0], this.#opts.multifier[0]);
-    this.tickTimer.start(getRandomIntInclusive(this.#opts.seconds[0], this.#opts.seconds[1]) * multifier);
+    const multifier = getRandomIntInclusive(...this.#opts.multifier);
+    this.tickTimer.start(getRandomIntInclusive(...this.#opts.seconds) * multifier);
     this.dataset.multifier = multifier;
   }
 
@@ -130,7 +130,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.#setRelativePositions();
 
     // 스레드 개수 랜덤으로 설정
-    this.#threadCount = getRandomIntInclusive(this.#opts.thread[0], this.#opts.thread[1]);
+    this.#threadCount = getRandomIntInclusive(...this.#opts.thread);
     this.#timerID = new Array(this.#threadCount);
     this.dataset.threads = this.#threadCount;
 
@@ -205,11 +205,6 @@ export class FlayMarkerPanel extends HTMLDivElement {
    * @param {number} threadNo 스레드 번호
    */
   async #movingMarker(threadNo) {
-    const INTERVAL = getRandomIntInclusive(this.#opts.interval[0], this.#opts.interval[1]);
-    let [dx, dy] = DiagonalDirections[getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정
-    let duplicateHighlightCount = 0; // 하이라이트 중복 개수
-    this.dataset[`t${threadNo}Interval`] = INTERVAL;
-
     /**
      * 마커에 하이라이트 효과를 주는 함수
      * @param {FlayMarker} marker
@@ -312,6 +307,12 @@ export class FlayMarkerPanel extends HTMLDivElement {
       const notHighlight = this.markerList.filter((marker) => !marker.classList.contains('highlight'));
       return notHighlight[getRandomInt(0, notHighlight.length)];
     };
+
+    const INTERVAL = getRandomIntInclusive(...this.#opts.interval);
+    this.dataset[`t${threadNo}Interval`] = INTERVAL;
+
+    let [dx, dy] = DiagonalDirections[getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정
+    let duplicateHighlightCount = 0; // 하이라이트 중복 개수
 
     const getNextMarker = (() => {
       switch (getRandomInt(0, 3)) {

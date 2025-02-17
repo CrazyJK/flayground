@@ -3,7 +3,7 @@ import favorite from '../../svg/favorite';
 import ranks from '../../svg/ranks';
 import './FlayMarker.scss';
 
-const DEFAULT_OPTIONS = { showTitle: true, showCover: false, /** 모양. square, circle, star, heart */ shape: 'square' };
+const DEFAULT_OPTIONS = { showTitle: true, showCover: false, /** 모양. square, circle, star, heart, rhombus */ shape: 'square' };
 
 export default class FlayMarker extends HTMLLabelElement {
   /**

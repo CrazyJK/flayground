@@ -63,6 +63,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
       this.#updateMarkerPositions();
       this.#togglePause();
     });
+    this.addEventListener('contextmenu', (e) => e.preventDefault());
   }
 
   connectedCallback() {

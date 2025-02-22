@@ -165,7 +165,7 @@ class Page {
 
       div.querySelector('.opus label').addEventListener('click', (e) => this.#copyToClipboard(e.target));
       div.querySelector('.title label').addEventListener('click', (e) => this.#copyToClipboard(e.target));
-      div.querySelectorAll('.download-list label').forEach((label) => label.addEventListener('click', (e) => this.#copyToClipboard(e.target, DOMAIN + e.target.dataset.href)));
+      div.querySelectorAll('.download-list label').forEach((label) => label.addEventListener('click', (e) => this.#download(e.target, DOMAIN + e.target.dataset.href)));
       div.querySelectorAll('.actress-list label span').forEach((span) => span.addEventListener('click', (e) => popupActress(e.target.textContent)));
       div.querySelectorAll('.video label').forEach((label) => label.addEventListener('click', (e) => popupFlay(div.dataset.opus)));
 
@@ -181,6 +181,29 @@ class Page {
     window.navigator.clipboard.writeText(StringUtils.isBlank(text) ? this.#getText(target) : text).then(() => {
       target.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
     });
+  }
+
+  #download(target, text) {
+    const url = StringUtils.isBlank(text) ? this.#getText(target) : text;
+    const formData = new FormData();
+    formData.append('url', url);
+    fetch('/download', {
+      method: 'POST',
+      body: formData,
+    })
+      .then(async (res) => {
+        // 헤더에서 파일명을 가져옴
+        const filename = res.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        return res.blob().then((blob) => ({ blob, filename }));
+      })
+      .then(({ blob, filename }) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        window.URL.revokeObjectURL(url); // free memory
+      });
   }
 
   #getText(element) {

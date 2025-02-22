@@ -3,7 +3,7 @@ import { OpusProvider } from '../../lib/OpusProvider';
 import { getRandomInt } from '../../lib/randomNumber';
 import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '../../ui/Countdown';
 
-export default class PopoutCover extends HTMLDivElement {
+export default class CoverPopout extends HTMLDivElement {
   #품번제공기;
   #최소초;
   #최대초;
@@ -20,7 +20,7 @@ export default class PopoutCover extends HTMLDivElement {
     this.#최대초 = 최대초;
     this.#품번제공기 = new OpusProvider();
 
-    this.classList.add('popout-cover', 'flay-div');
+    this.classList.add('cover-popout', 'flay-div');
     this.style.cssText = `position: relative; width: 100%; height: 100%; overflow: hidden;`;
 
     this.countdown = this.appendChild(new Countdown());
@@ -83,4 +83,4 @@ export default class PopoutCover extends HTMLDivElement {
   }
 }
 
-customElements.define('popout-cover', PopoutCover, { extends: 'div' });
+customElements.define('cover-popout', CoverPopout, { extends: 'div' });

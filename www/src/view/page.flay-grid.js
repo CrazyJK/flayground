@@ -4,7 +4,6 @@ import './page.flay-grid.scss';
 import FlayArticle from '../flay/domain/FlayArticle';
 import FlayCondition from '../flay/panel/FlayCondition';
 import FlayFetch from '../lib/FlayFetch';
-import { getRandomInt } from '../lib/randomNumber';
 import { addResizeListener } from '../lib/windowAddEventListener';
 import GridControl from '../ui/GridControl';
 
@@ -50,7 +49,8 @@ class Page {
       const lastArticleTop = document.querySelector('main > div:last-child')?.getBoundingClientRect().top || 0;
       if (lastArticleTop > window.innerHeight) break;
 
-      const opus = Math.random() > 0.5 ? this.#opusList.shift() : this.#opusList.splice(getRandomInt(0, this.#opusList.length), 1)[0];
+      // const opus = Math.random() > 0.5 ? this.#opusList.shift() : this.#opusList.splice(getRandomInt(0, this.#opusList.length), 1)[0];
+      const opus = this.#opusList.shift();
       document
         .querySelector('main')
         .appendChild(new FlayArticle({ mode: 'cover' }))

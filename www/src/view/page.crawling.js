@@ -124,9 +124,10 @@ class Page {
           jap = name;
         }
         const actressList = await FlayFetch.getActressListByLocalname(jap);
-        actress['eng'] = eng || actressList[0]?.name || ' ';
+        const latestActress = actressList?.pop();
+        actress['eng'] = eng || latestActress?.name || ' ';
         actress['jap'] = jap;
-        actress['fav'] = actressList[0]?.favorite ? '💛' : '';
+        actress['fav'] = latestActress?.favorite ? '💛' : '';
       }
 
       const div = this.itemRepository.appendChild(document.createElement('div'));

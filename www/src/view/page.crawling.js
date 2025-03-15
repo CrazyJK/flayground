@@ -133,7 +133,7 @@ class Page {
       const div = this.itemRepository.appendChild(document.createElement('div'));
       div.dataset.opus = data.opus.text;
       div.dataset.itemIndex = this.#paging.itemIndex;
-      div.classList.toggle('already-view', !video.error);
+      div.classList.toggle('has-video', !video.error); // 비디오가 있다
       div.innerHTML = `
         <div class="cover">
           <img src="${data.cover}">
@@ -172,8 +172,14 @@ class Page {
 
       const record = await nanoStore.select(data.opus.text);
       if (record) {
-        div.classList.add('already-view');
-        div.querySelector('.posted').appendChild(document.createElement('label')).innerHTML = `${DateUtils.format(record.date, 'yyyy-MM-dd HH:mm')}<sub>view</sub>`;
+        const viewDate = DateUtils.format(record.date, 'yyyy-MM-dd HH:mm');
+        div.querySelector('.posted').appendChild(document.createElement('label')).innerHTML = `${viewDate}<sub>view</sub>`;
+
+        if (data.posted.text < viewDate) {
+          div.classList.add('record-viewed'); // 이미 본 것으로 표시
+        } else {
+          div.classList.add('record-updated'); // 레코드가 갱신됬다
+        }
       }
     }
   }

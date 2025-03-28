@@ -1,21 +1,29 @@
 import './inc/Page';
 import './index.scss';
 
-import { FlayMarkerPanel } from '../flay/panel/FlayMarkerPanel';
-
 class Page {
-  constructor() {}
+  #mainElement;
+
+  constructor() {
+    this.#mainElement = document.querySelector('body > main');
+  }
 
   async start() {
-    const mainElement = document.querySelector('body > main');
-    mainElement.appendChild(new FlayMarkerPanel());
-    mainElement.addEventListener('click', (e) => {
-      if (e.target !== mainElement) return;
-      const flayMarkers = document.querySelectorAll('.flay-marker-panel .flay-marker');
-      const inputNumber = e.clientX * e.clientY;
-      const randomIndex = inputNumber % flayMarkers.length;
-      flayMarkers[randomIndex].click();
-    });
+    this.#mainElement.addEventListener('click', () => this.#showMarkerPanel(), { once: true });
+  }
+
+  #showMarkerPanel() {
+    import(/* webpackChunkName: "FlayMarkerPanel" */ '../flay/panel/FlayMarkerPanel')
+      .then(({ FlayMarkerPanel }) => this.#mainElement.appendChild(new FlayMarkerPanel()))
+      .then((flayMarkerPanel) => {
+        this.#mainElement.addEventListener('click', (e) => {
+          if (e.target !== this.#mainElement) return;
+          const inputNumber = e.clientX * e.clientY;
+          const flayMarkers = flayMarkerPanel.childNodes;
+          const randomIndex = inputNumber % flayMarkers.length;
+          flayMarkers[randomIndex].click();
+        });
+      });
   }
 }
 

@@ -110,7 +110,7 @@ export default class SideNavBar extends HTMLDivElement {
       }
     });
 
-    this.addEventListener('wheel', (e) => e.stopPropagation());
+    this.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
 
     addResizeListener(() => {
       const [width, height] = [window.innerWidth, window.innerHeight];

@@ -13,16 +13,26 @@ body {
 
 #wrapper {
   padding: 0;
+  min-width: unset;
 }
 
 #top-nav-container,
 #sidebar,
-#live-search-container {
+#live-search-container,
+#main-footer,
+.toaster-container {
   display: none;
 }
 
 #main-container {
   margin: 0;
+}
+
+#main-container > div > div {
+  padding: 0;
+}
+#live-container > ul > li {
+  padding: 8px;
 }
 
 /* **** 방송 **** */

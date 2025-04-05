@@ -52,65 +52,51 @@ body {
   display: none;
 }
 
-/* 방 제목 */
-#player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > h2 > div {
+/* 공통 */
+#player-area > div:nth-child(2) > section > div > div.relative.cursor-pointer.rounded-full > div > img,
+#player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > h2 > div,
+#player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.flex.items-center.gap-1 > div > span,
+#player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.video_information_live_data > div > span:nth-child(1),
+#player-area > div:nth-child(2) > section > div > div.relative.flex.shrink-0.items-center {
   position: fixed;
   top: 0;
   left: 0;
   z-index: 1112;
   background-color: #0009;
   color: #ffffff;
-  padding: 4px 8px;
-  border-bottom-right-radius: 4px;
-}
-/* BJ */
-#player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.flex.items-center.gap-1 > div > span {
-  position: fixed;
-  top: 35px;
-  left: 48px;
-  z-index: 1114;
-  background-color: #0009;
-  color: #ffffff;
-  padding: 4px 8px;
+  margin: 0;
   border-radius: 0 0 4px 0;
+  padding: 4px 8px;
+  height: 32px;
+}
+
+/* BJ 사진 */
+#player-area > div:nth-child(2) > section > div > div.relative.cursor-pointer.rounded-full > div > img {
+  border-radius: 0;
+  padding: 0;
+  height: 64px;
+  width: 64px;
+}
+/* 방 제목 */
+#player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > h2 > div {
+  left: 64px;
+}
+/* BJ 이름 */
+#player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.flex.items-center.gap-1 > div > span {
+  top: 32px;
+  left: 64px;
 }
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.flex.items-center.gap-1 > div > span > span {
   color: #ffffff;
 }
-/* profile image */
-#player-area > div:nth-child(2) > section > div > div.relative.cursor-pointer.rounded-full > div > img {
-  position: fixed;
-  top: 35px;
-  left: 0;
-  z-index: 1112;
-  background-color: #0009;
-  color: #ffffff;
-  padding: 4px;
-  border-radius: 0 0 4px;
-}
-
 /* 시청자수 */
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.video_information_live_data > div > span:nth-child(1) {
-  position: fixed;
-  top: 0;
-  right: 88px;
-  z-index: 1114;
-  background-color: #0009;
-  color: #ffffff;
-  padding: 4px 8px;
-  border-radius: 0 0 0 4px;
-  height: 32px;
+  top: 64px;
 }
 /* 추천, 즐겨찾기 */
 #player-area > div:nth-child(2) > section > div > div.relative.flex.shrink-0.items-center {
-  position: fixed;
-  top: 0;
-  right: 0;
-  z-index: 1113;
-  background-color: #0009;
+  top: 96px;
   padding: 4px 2px;
-  border-radius: 0;
-  height: 32px;
 }
 
 #video-section > div.relative.h-full.w-full.bg-black {

@@ -181,7 +181,7 @@ async function action(url, requestInit, callback = () => {}, failCallback = () =
       throw new Error('정의 안된 status code');
   }
 
-  const messageBar = document.querySelector('body').appendChild(document.createElement('label'));
+  const messageBar = document.body.appendChild(document.createElement('label'));
   messageBar.classList.add('message-bar');
   messageBar.style.cssText = `
     position: fixed;

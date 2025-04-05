@@ -3,7 +3,7 @@ import { getRandomInt } from '../lib/randomNumber';
 import './popup.image.scss';
 
 const urlParams = new URL(location.href).searchParams;
-const flayImage = document.querySelector('body').appendChild(new FlayImage());
+const flayImage = document.body.appendChild(new FlayImage());
 
 flayImage.addEventListener('loaded', (e) => {
   console.debug('Event: ', e.type, e);

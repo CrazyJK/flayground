@@ -388,7 +388,7 @@ export const playInLayer = async (opus) => {
 
   let layer = document.querySelector('#playInLayer');
   if (layer === null) {
-    layer = document.querySelector('body').appendChild(document.createElement('div'));
+    layer = document.body.appendChild(document.createElement('div'));
     layer.id = 'playInLayer';
     layer.appendChild(document.createElement('article')).appendChild(new FlayVideoPlayer({ info: false, poster: false, volume: 0.05 }));
     layer.addEventListener('click', (e) => {

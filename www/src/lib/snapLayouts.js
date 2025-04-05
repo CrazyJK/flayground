@@ -63,7 +63,7 @@ export default () => {
     console.debug('window.screen.onchange', window.screen);
 
     document.querySelector('.snap-layouts')?.remove();
-    const snapLayouts = document.querySelector('body').appendChild(document.createElement('div'));
+    const snapLayouts = document.body.appendChild(document.createElement('div'));
     snapLayouts.classList.add('snap-layouts', window.screen.orientation.type);
     snapLayouts.innerHTML = LAYOUTs[window.screen.width]
       .map(

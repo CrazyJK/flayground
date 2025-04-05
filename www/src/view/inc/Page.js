@@ -3,5 +3,5 @@ import '../../lib/SseConnector';
 import '../../lib/UpdateMyPosition';
 import './Page.scss';
 
-document.querySelector('body').style.backgroundImage = 'url(./svg/flayground-circle.svg)';
-document.querySelector('body').prepend(new SideNavBar());
+document.body.style.backgroundImage = 'url(./svg/flayground-circle.svg)';
+document.body.prepend(new SideNavBar());

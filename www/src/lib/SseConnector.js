@@ -92,7 +92,7 @@ window.emitNotice = (data, warn = false) => {
   console.log('emitNotice', data);
   let noticeWrapper = document.querySelector('#notice-wrapper');
   if (noticeWrapper === null) {
-    noticeWrapper = document.querySelector('body').appendChild(document.createElement('div'));
+    noticeWrapper = document.body.appendChild(document.createElement('div'));
     noticeWrapper.id = 'notice-wrapper';
   }
   let notice = noticeWrapper.appendChild(document.createElement('div'));
@@ -115,7 +115,7 @@ window.emitMessage = (...datas) => {
 
   let messageWrapper = document.querySelector('#message-wrapper');
   if (messageWrapper === null) {
-    messageWrapper = document.querySelector('body').appendChild(document.createElement('div'));
+    messageWrapper = document.body.appendChild(document.createElement('div'));
     messageWrapper.id = 'message-wrapper';
     messageWrapper.appendChild(document.createElement('div')).id = 'message';
     messageWrapper.addEventListener('click', (e) => {

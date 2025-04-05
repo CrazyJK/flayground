@@ -10,14 +10,14 @@ const popupNo = urlParams.get('popupNo');
 
 document.title = opus;
 
-const flayPage = document.querySelector('body').appendChild(new FlayPage());
+const flayPage = document.body.appendChild(new FlayPage());
 flayPage.classList.add('popup');
 flayPage.set(opus);
 
 if (popupNo) {
   document.title += ` [${popupNo}]`;
 
-  const popupMarker = document.querySelector('body').appendChild(document.createElement('label'));
+  const popupMarker = document.body.appendChild(document.createElement('label'));
   popupMarker.classList.add('marker');
   popupMarker.innerHTML = popupNo;
 
@@ -26,9 +26,9 @@ if (popupNo) {
     (e) => {
       console.log('message', e);
       if (e.data === 'over') {
-        document.querySelector('body').setAttribute('style', 'background-color: var(--color-bg-focus)');
+        document.body.setAttribute('style', 'background-color: var(--color-bg-focus)');
       } else {
-        document.querySelector('body').removeAttribute('style');
+        document.body.removeAttribute('style');
       }
     },
     false

@@ -134,7 +134,7 @@ class Page {
   }
 
   #countdown() {
-    const header = document.querySelector('body').appendChild(document.createElement('header'));
+    const header = document.body.appendChild(document.createElement('header'));
 
     const countdown = header.appendChild(new Countdown());
     const time = header.appendChild(document.createElement('input'));
@@ -168,7 +168,7 @@ class Page {
   }
 
   #tickTimer() {
-    const header = document.querySelector('body').appendChild(document.createElement('header'));
+    const header = document.body.appendChild(document.createElement('header'));
 
     const timer = header.appendChild(new TickTimer());
     const time = header.appendChild(document.createElement('input'));

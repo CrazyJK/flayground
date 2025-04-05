@@ -150,6 +150,7 @@ export default class FlayRegister extends HTMLDivElement {
             .then((foundStudio) => (studio.value = foundStudio.name));
           // searching Arzon
           // FlaySearch.opus.Arzon(inOpus);
+          FlaySearch.opus.Dondeth(inOpus);
           // set opus
           opus.value = inOpus;
         }

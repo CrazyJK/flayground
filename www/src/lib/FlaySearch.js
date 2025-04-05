@@ -13,6 +13,7 @@ export const URL_NONOJAV_PAGE = 'https://www.nanojav.com/jav/?order=new&page=1';
 export const URL_NONOJAV_SEARCH = 'https://www.nanojav.com/jav/search/?q=';
 export const URL_IJAV_PAGE = 'https://ijavtorrent.com/';
 export const URL_IJAV_SEARCH = 'https://ijavtorrent.com/?searchTerm=';
+export const URL_DONDETH = 'http://www.dondetch.com/dvd/database2.cgi?index=';
 
 export default {
   google(keyword) {
@@ -24,6 +25,9 @@ export default {
   opus: {
     Arzon(keyword) {
       popupOpen(URL_ARZON + keyword, 'arzonSearch', 1500, 1000);
+    },
+    Dondeth(keyword) {
+      popupOpen(URL_DONDETH + keyword, 'dondethSearch', 1500, 1000);
     },
   },
   actress: {

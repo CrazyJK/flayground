@@ -114,3 +114,5 @@ addResizeListener(() => {
     flayTagInfo.querySelector('.name').style.fontSize = isHugeScreen ? `calc(var(--size-normal) + ${Math.floor(Number(flayTagInfo.dataset.flayCount) / 5)}px)` : '';
   });
 });
+
+window.dispatchEvent(new Event('resize')); // 초기화 시점에 resize 이벤트 발생

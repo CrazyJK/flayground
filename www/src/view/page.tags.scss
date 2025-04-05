@@ -77,9 +77,8 @@ body {
         }
 
         &.dropzone {
-          // box-shadow: 0 0 8px 4px var(--color-border);
           box-shadow: none;
-          padding: 1rem;
+          padding: 0;
 
           .flay-tag-info[draggable='true'] {
             width: auto !important;

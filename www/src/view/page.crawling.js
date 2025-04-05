@@ -123,9 +123,10 @@ class Page {
         } else {
           jap = name;
         }
+        console.log('actress.text', actress.text, 'eng', eng, 'jap', jap);
         const actressList = await FlayFetch.getActressListByLocalname(jap);
         const latestActress = actressList?.pop();
-        actress['eng'] = eng || latestActress?.name || ' ';
+        actress['eng'] = latestActress?.name || eng || ' ';
         actress['jap'] = jap;
         actress['fav'] = latestActress?.favorite ? '💛' : '';
       }

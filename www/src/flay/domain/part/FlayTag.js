@@ -15,6 +15,8 @@ export default class FlayTag extends FlayHTMLElement {
 
   connectedCallback() {
     this.classList.add('flay-tag');
+
+    this.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
   }
 
   /**

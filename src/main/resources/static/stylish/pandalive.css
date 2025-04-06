@@ -52,6 +52,18 @@ body {
   display: none;
 }
 
+/* 화면 가림 무쓸모 처리 */
+.hidden > #video-section {
+  position: relative;
+  z-index: -1;
+}
+.hidden > #video-section > div > div {
+  height: 0;
+}
+.hidden > #video-section > div > div > div {
+  background-image: none;
+}
+
 /* 공통 */
 #player-area > div:nth-child(2) > section > div > div.relative.cursor-pointer.rounded-full > div > img,
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > h2 > div,

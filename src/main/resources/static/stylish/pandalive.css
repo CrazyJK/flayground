@@ -47,8 +47,7 @@ body {
 #video-section > img,
 #watermark,
 #video-section > div > div > button,
-#video-section > div > div > div.pzp-pc__bottom > div.pzp-pc__bottom-buttons > div.pzp-pc__bottom-buttons-right > div,
-#player-area > section > div > div.relative.flex.items-end > .text-baseFg {
+#video-section > div > div > div.pzp-pc__bottom > div.pzp-pc__bottom-buttons > div.pzp-pc__bottom-buttons-right > div {
   display: none;
 }
 
@@ -106,9 +105,17 @@ body {
   top: 64px;
 }
 /* 추천, 즐겨찾기 */
+#player-area > section > div > div.relative.flex.items-end > button:nth-child(2),
+#player-area > section > div > div.relative.flex.items-end > button:nth-child(3),
+#player-area > section > div > div.relative.flex.items-end > button:nth-child(5),
+#player-area > section > div > div.relative.flex.items-end > button:nth-child(6) {
+  display: none;
+}
 #player-area > section > div > div.relative.flex.items-end {
   top: 96px;
-  padding: 4px 2px;
+  padding: 0;
+  display: flex;
+  align-items: center;
 }
 
 #video-section > div.relative.h-full.w-full.bg-black {

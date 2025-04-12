@@ -48,7 +48,7 @@ body {
 #watermark,
 #video-section > div > div > button,
 #video-section > div > div > div.pzp-pc__bottom > div.pzp-pc__bottom-buttons > div.pzp-pc__bottom-buttons-right > div,
-#player-area > div:nth-child(2) > section > div > div.relative.flex.shrink-0.items-center > .text-baseFg {
+#player-area > section > div > div.relative.flex.items-end > .text-baseFg {
   display: none;
 }
 
@@ -69,7 +69,7 @@ body {
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > h2 > div,
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.flex.items-center.gap-1 > div > span,
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.video_information_live_data > div > span:nth-child(1),
-#player-area > div:nth-child(2) > section > div > div.relative.flex.shrink-0.items-center {
+#player-area > section > div > div.relative.flex.items-end {
   position: fixed;
   top: 0;
   left: 0;
@@ -106,7 +106,7 @@ body {
   top: 64px;
 }
 /* 추천, 즐겨찾기 */
-#player-area > div:nth-child(2) > section > div > div.relative.flex.shrink-0.items-center {
+#player-area > section > div > div.relative.flex.items-end {
   top: 96px;
   padding: 4px 2px;
 }

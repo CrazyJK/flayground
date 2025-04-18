@@ -24,8 +24,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.Ground;
+import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.base.web.sse.LogAndSse;
 import jk.kamoru.ground.flay.FlayBatchException;
 import jk.kamoru.ground.flay.FlayNotfoundException;
@@ -273,7 +273,8 @@ public class BatchExecutor extends LogAndSse {
         List<File> value = entry.getValue();
         for (File file : value) {
           if (!delegatePath.equals(file.getParentFile())) {
-            final String message = String.format("move [%-10s r%s %7s] %-20s => %s / %s", flay.getOpus(), flay.getVideo().getRank(), flayFileHandler.prettyFileLength(file.length()), file.getParent(), delegatePath, file.getName());
+            final String message = String.format("move [%-10s r%s %7s] %-20s => %s / %s", flay.getOpus(), flay.getVideo().getRank(),
+                flayFileHandler.prettyFileLength(file.length()), file.getParent(), delegatePath, file.getName());
             batchLogger(message);
             flayFileHandler.moveFileToDirectory(file, delegatePath);
           }
@@ -378,7 +379,7 @@ public class BatchExecutor extends LogAndSse {
       String key = entry.getKey();
       for (File file : entry.getValue()) {
         if (Flay.COVER.equals(key) || Flay.SUBTI.equals(key)) {
-          batchLogger("will be move %s to %s", file, archiveDir);
+          batchLogger("will be move   %s to %s", file, archiveDir);
           flayFileHandler.moveFileToDirectory(file, archiveDir);
         } else {
           batchLogger("will be delete %s", file);
@@ -429,7 +430,8 @@ public class BatchExecutor extends LogAndSse {
     batchLogger(message);
     instanceCsvDataList.add(CSV_HEADER);
     for (Flay flay : instanceFlayList) {
-      instanceCsvDataList.add(String.format(CSV_FORMAT, flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), flay.getVideo().getRank(), flay.getFullname()));
+      instanceCsvDataList.add(
+          String.format(CSV_FORMAT, flay.getStudio(), flay.getOpus(), flay.getTitle(), flay.getActressName(), flay.getRelease(), flay.getVideo().getRank(), flay.getFullname()));
     }
     writeFileWithUTF8BOM(new File(backupRootPath, BACKUP_INSTANCE_CSV_FILENAME), instanceCsvDataList);
 

@@ -52,14 +52,14 @@ body {
 }
 
 /* 화면 가림 무쓸모 처리 */
-.hidden > #video-section {
+#player-area > div > div:nth-child(2) > #video-section {
   position: relative;
   z-index: -1;
 }
-.hidden > #video-section > div > div {
+#player-area > div > div:nth-child(2) > #video-section > div > div {
   height: 0;
 }
-.hidden > #video-section > div > div > div {
+#player-area > div > div:nth-child(2) > #video-section > div > div > div {
   background-image: none;
 }
 

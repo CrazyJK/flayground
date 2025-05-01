@@ -259,7 +259,7 @@ class FlayBasketItem extends HTMLDivElement {
    */
   #initializeElements(flay) {
     // 삭제 버튼
-    this.querySelector('.empty-this').addEventListener('click', () => this.#delete(flay.opus));
+    this.querySelector('.empty-this').addEventListener('click', () => this.#fadeOut(flay.opus));
 
     // 코멘트와 제목
     this.querySelector('.comment').textContent = flay.video.comment || '';
@@ -361,39 +361,96 @@ class FlayBasketItem extends HTMLDivElement {
   }
 
   /**
-   * 아이템 삭제 및 애니메이션 처리
+   * 아이템 삭제 (자연스럽게 사라지는 애니메이션)
    * @param {String} opus Flay opus
    */
-  async #delete(opus) {
+  async #fadeOut(opus) {
     try {
-      // 삭제 애니메이션
+      // 자연스럽게 사라지는 애니메이션
       await this.animate(
         [
           { transform: 'scale(1)', opacity: 1 },
-          { transform: 'scale(1.1)', opacity: 0.8 },
+          { transform: 'scale(0.95)', opacity: 0.8 },
+          { transform: 'scale(0.9)', opacity: 0.6 },
+          { transform: 'scale(0.85)', opacity: 0.4 },
+          { transform: 'scale(0.8)', opacity: 0.2 },
           { transform: 'scale(0)', opacity: 0 },
         ],
         {
           duration: 800,
-          easing: 'cubic-bezier(0.42, 0, 0.58, 1)',
+          easing: 'ease-out',
           fill: 'forwards',
         }
       ).finished;
 
-      // 바스켓에서 제거
-      FlayBasket.remove(opus);
+      // 공통 삭제 로직 호출
+      this.#removeFromBasket(opus);
+    } catch (error) {
+      console.error(`Failed to fade out ${opus}:`, error);
+    }
+  }
 
-      // 삭제 이벤트 발생
-      this.dispatchEvent(
-        new CustomEvent('delete', {
-          bubbles: true,
-          composed: true,
-          detail: { opus },
-        })
-      );
+  /**
+   * 아이템 삭제 및 팝업 애니메이션 처리
+   * @param {String} opus Flay opus
+   */
+  async #delete(opus) {
+    try {
+      // 요소를 다른 요소 위에 표시하기 위해 z-index 설정
+      const originalPosition = this.style.position;
+      const originalZIndex = this.style.zIndex;
+
+      this.style.position = 'relative';
+      this.style.zIndex = '10000';
+
+      // 단순화된 애니메이션: 제자리에서 커지다가 사라짐
+      await this.animate(
+        [
+          // 시작: 원래 크기
+          { transform: 'scale(1)', opacity: 1 },
+          // 약간 커짐
+          { transform: 'scale(1.3)', opacity: 0.9 },
+          // 더 커지면서 투명해지기 시작
+          { transform: 'scale(1.8)', opacity: 0.7 },
+          // 크게 확대되면서 투명해짐
+          { transform: 'scale(2.5)', opacity: 0.3 },
+          // 완전히 커지고 사라짐
+          { transform: 'scale(3)', opacity: 0 },
+        ],
+        {
+          duration: 600,
+          easing: 'ease-in-out',
+          fill: 'forwards',
+        }
+      ).finished;
+
+      // 원래 스타일 복원
+      this.style.position = originalPosition;
+      this.style.zIndex = originalZIndex;
+
+      // 공통 삭제 로직 호출
+      this.#removeFromBasket(opus);
     } catch (error) {
       console.error(`Failed to delete ${opus}:`, error);
     }
+  }
+
+  /**
+   * 바스켓에서 항목 제거 및 이벤트 발생 (공통 로직)
+   * @param {String} opus Flay opus
+   */
+  #removeFromBasket(opus) {
+    // 바스켓에서 제거
+    FlayBasket.remove(opus);
+
+    // 삭제 이벤트 발생
+    this.dispatchEvent(
+      new CustomEvent('delete', {
+        bubbles: true,
+        composed: true,
+        detail: { opus },
+      })
+    );
   }
 
   /**

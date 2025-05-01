@@ -3,7 +3,7 @@ import './page.girls.scss';
 
 import FlayFetch from '../lib/FlayFetch';
 import { popupActress, popupFlay } from '../lib/FlaySearch';
-import { addLazyLoadBackgrungImage } from '../lib/ImageLazyLoad';
+import { addLazyLoadBackgroundImage } from '../lib/ImageLazyLoad';
 import { sortable } from '../lib/TableUtils';
 import favoriteSVG from '../svg/favorite';
 
@@ -70,7 +70,7 @@ class PageGirls {
         LI.querySelector('.cover').addEventListener('click', () => popupFlay(topFlay.opus));
         LI.querySelector('.name a').addEventListener('click', () => popupActress(name));
 
-        addLazyLoadBackgrungImage(LI);
+        addLazyLoadBackgroundImage(LI);
       });
 
     sortable(UL, { noSort: [0], initSortIndex: 6 });

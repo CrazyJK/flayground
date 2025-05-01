@@ -1,7 +1,7 @@
 import '../image/part/ImageFrame';
 import DateUtils from '../lib/DateUtils';
 import FileUtils from '../lib/FileUtils';
-import { lazyLoadBackgrungImage } from '../lib/ImageLazyLoad';
+import { lazyLoadBackgroundImage } from '../lib/ImageLazyLoad';
 import './ImagePage.scss';
 
 export class ImagePage extends HTMLDivElement {
@@ -205,7 +205,7 @@ export class ImagePage extends HTMLDivElement {
     if (article.firstChild) {
       article.firstChild.scrollIntoView(false);
     }
-    lazyLoadBackgrungImage();
+    lazyLoadBackgroundImage();
   }
 }
 

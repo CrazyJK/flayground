@@ -33,7 +33,7 @@ class Page {
         </div>
         <div class="time">${toTime(recode.time)}</div>
         <div class="duration">${toTime(recode.duration)}</div>
-        <div class="lastPlayed">${DateUtils.format(recode.lastPlayed, 'MM/dd HH:mm')}</div>
+        <div class="lastPlayed">${DateUtils.format(recode.lastPlayed, 'yy.MM.dd HH:mm')}</div>
       `;
     }
 

@@ -3,7 +3,8 @@ body {
     position: fixed;
     inset: 0;
     display: grid;
-    grid-template-rows: 3rem 1fr 2rem;
+    grid-template-rows: 1fr 2rem;
+    will-change: transform; /* Hint to browser to optimize performance */
 
     > header {
       display: flex;
@@ -18,6 +19,7 @@ body {
 
     > article {
       overflow-y: auto;
+      contain: content; /* Performance optimization - isolates this content */
 
       > div {
         margin: 2rem;
@@ -25,6 +27,8 @@ body {
         border-radius: 0.125rem;
         padding: 1rem;
         box-shadow: var(--box-shadow) inset;
+        will-change: opacity, transform; /* Performance hint for animations */
+        contain: layout style; /* Improve layout performance */
 
         &.has-video {
           border-color: var(--color-orange);
@@ -55,10 +59,13 @@ body {
             font-size: var(--size-normal);
             font-weight: 400;
             padding: 0.25rem;
+            /* Use transform for hover effect instead of background-color for better performance */
+            transition: transform 0.15s ease-out;
 
             &:hover {
               border-radius: 0.25rem;
               background-color: var(--color-bg-transparent);
+              transform: scale(1.05);
             }
           }
 
@@ -67,6 +74,9 @@ body {
             max-width: 1000px;
             width: 100%;
             height: auto;
+            /* Add loading="lazy" attribute in JS for better performance */
+            /* Add property to improve rendering performance */
+            contain: paint;
           }
           &.opus > label {
             font-size: var(--size-large);
@@ -104,6 +114,8 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
+    /* Fix for Safari GPU acceleration */
+    transform: translateZ(0);
 
     > div {
       display: flex;
@@ -113,6 +125,20 @@ body {
       border-radius: 0.25rem;
       padding: 1rem;
       box-shadow: var(--box-shadow);
+      /* Optimize rendering */
+      will-change: transform, opacity;
     }
   }
+  #notice {
+    right: auto;
+    bottom: auto;
+  }
+}
+
+/* Hide elements with better performance than display: none */
+.hide {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  pointer-events: none;
 }

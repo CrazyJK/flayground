@@ -40,6 +40,9 @@ export class ModalWindow extends HTMLDivElement {
   #edgeBottomLeft_; // 창의 하단 좌측 엣지
   #edgeBottomRight; // 창의 하단 우측 엣지
 
+  #rafId = null; // requestAnimationFrame ID
+  #needsUpdate = false; // 업데이트가 필요한지 여부
+
   /**
    *
    * @param {string} title 창제목
@@ -124,7 +127,6 @@ export class ModalWindow extends HTMLDivElement {
     this.#edgeBottomLeft_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     this.#edgeBottomRight.addEventListener('mouseup', (e) => this.#stoptHandler(e));
 
-    // document.addEventListener('mouseup', (e) => this.#stoptHandler(e));
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
     _inner.querySelector('.' + MODAL_MODE.MINIMIZE).addEventListener('click', () => this.#minimizeHandler());
@@ -136,13 +138,26 @@ export class ModalWindow extends HTMLDivElement {
     this.addEventListener('wheel', (e) => e.stopPropagation());
     this.addEventListener('keyup', (e) => e.stopPropagation());
 
+    // 애니메이션 프레임 시작
+    this.#startRenderLoop();
+
     addResizeListener(() => this.#resizeWindowHandler());
   }
 
   connectedCallback() {
     this.#decideViewportInWindow();
-    this.#setViewport();
+    this.#needsUpdate = true;
     this.#buttons.querySelector('.' + this.#initialMode)?.click();
+  }
+
+  /**
+   * 컴포넌트가 DOM에서 제거될 때 정리
+   */
+  disconnectedCallback() {
+    if (this.#rafId) {
+      cancelAnimationFrame(this.#rafId);
+      this.#rafId = null;
+    }
   }
 
   appendChild(element) {
@@ -157,6 +172,20 @@ export class ModalWindow extends HTMLDivElement {
 
   get windowTitle() {
     return this.#titleSpan.textContent;
+  }
+
+  /**
+   * 렌더링 루프 시작
+   */
+  #startRenderLoop() {
+    const render = () => {
+      if (this.#needsUpdate) {
+        this.#setViewport();
+        this.#needsUpdate = false;
+      }
+      this.#rafId = requestAnimationFrame(render);
+    };
+    this.#rafId = requestAnimationFrame(render);
   }
 
   #minimizeHandler() {
@@ -184,6 +213,12 @@ export class ModalWindow extends HTMLDivElement {
   }
 
   #terminateHandler() {
+    // 렌더링 루프 정리
+    if (this.#rafId) {
+      cancelAnimationFrame(this.#rafId);
+      this.#rafId = null;
+    }
+
     while (this.firstChild) {
       this.removeChild(this.firstChild);
     }
@@ -192,7 +227,7 @@ export class ModalWindow extends HTMLDivElement {
 
   #resizeWindowHandler() {
     this.#decideViewportInWindow();
-    this.#setViewport();
+    this.#needsUpdate = true;
   }
 
   #startHandler(e, mode) {
@@ -207,7 +242,7 @@ export class ModalWindow extends HTMLDivElement {
     this.#active = false;
     this.#mode = null;
     this.#decideViewportInWindow();
-    this.#setViewport();
+    this.#needsUpdate = true;
     this.classList.remove('floating');
   }
 
@@ -215,31 +250,37 @@ export class ModalWindow extends HTMLDivElement {
     if (e.buttons !== 1) return;
     if (!this.#active) return;
 
+    const dx = e.clientX - this.#prevClientX;
+    const dy = e.clientY - this.#prevClientY;
+
+    // 최소 변화량 임계값 (0.5px) - 너무 작은 움직임은 무시
+    if (Math.abs(dx) < 0.5 && Math.abs(dy) < 0.5) return;
+
     this.#mode.split('-').forEach((mode) => {
       switch (mode) {
         case 'move':
-          this.#top += e.clientY - this.#prevClientY;
-          this.#left += e.clientX - this.#prevClientX;
+          this.#top += dy;
+          this.#left += dx;
           break;
         case MODAL_EDGE.TOP:
-          this.#top += e.clientY - this.#prevClientY;
-          this.#height -= e.clientY - this.#prevClientY;
+          this.#top += dy;
+          this.#height -= dy;
           break;
         case MODAL_EDGE.BOTTOM:
-          this.#height += e.clientY - this.#prevClientY;
+          this.#height += dy;
           break;
         case MODAL_EDGE.LEFT:
-          this.#left += e.clientX - this.#prevClientX;
-          this.#width -= e.clientX - this.#prevClientX;
+          this.#left += dx;
+          this.#width -= dx;
           break;
         case MODAL_EDGE.RIGHT:
-          this.#width += e.clientX - this.#prevClientX;
+          this.#width += dx;
           break;
       }
     });
 
     this.#edges = []; // 움직였으면 엣지 해제
-    this.#setViewport();
+    this.#needsUpdate = true;
 
     this.#prevClientX = e.clientX;
     this.#prevClientY = e.clientY;
@@ -304,19 +345,50 @@ export class ModalWindow extends HTMLDivElement {
    * 정해진 위치와 크기로 창 조정
    */
   #setViewport() {
-    this.style.top = this.#top + 'px';
-    this.style.left = this.#left + 'px';
-    this.style.width = this.#width + 'px';
-    this.style.height = this.#height + 'px';
+    // 정수 값으로 반올림하여 선명한 렌더링 보장
+    const top = Math.round(this.#top);
+    const left = Math.round(this.#left);
+    const width = Math.round(this.#width);
+    const height = Math.round(this.#height);
 
-    this.#edgeTopLine____.style.cssText = `top: ${this.#top - OFFSET}px;                left: ${this.#left}px;                          width: ${this.#width}px;`;
-    this.#edgeBottomLine_.style.cssText = `top: ${this.#top + this.#height - OFFSET}px; left: ${this.#left}px;                          width: ${this.#width}px;`;
-    this.#edgeLeftLine___.style.cssText = `top: ${this.#top}px;                         left: ${this.#left - OFFSET}px;                        height: ${this.#height}px;`;
-    this.#edgeRightLine__.style.cssText = `top: ${this.#top}px;                         left: ${this.#left + this.#width - OFFSET}px;          height: ${this.#height}px;`;
-    this.#edgeTopLeft____.style.cssText = `top: ${this.#top - OFFSET}px;                left: ${this.#left - OFFSET}px;`;
-    this.#edgeTopRight___.style.cssText = `top: ${this.#top - OFFSET}px;                left: ${this.#left + this.#width - OFFSET}px;`;
-    this.#edgeBottomLeft_.style.cssText = `top: ${this.#top + this.#height - OFFSET}px; left: ${this.#left - OFFSET}px;`;
-    this.#edgeBottomRight.style.cssText = `top: ${this.#top + this.#height - OFFSET}px; left: ${this.#left + this.#width - OFFSET}px;`;
+    // 하드웨어 가속을 이용한 위치 설정 (transform 사용)
+    this.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+    this.style.top = '0px';
+    this.style.left = '0px';
+    this.style.width = width + 'px';
+    this.style.height = height + 'px';
+
+    // CSS 속성 직접 설정보다 더 효율적인 방법으로 엣지 위치 업데이트
+    this.#updateEdgePosition(this.#edgeTopLine____, -OFFSET, 0, width, null);
+    this.#updateEdgePosition(this.#edgeBottomLine_, height - OFFSET, 0, width, null);
+    this.#updateEdgePosition(this.#edgeLeftLine___, 0, -OFFSET, null, height);
+    this.#updateEdgePosition(this.#edgeRightLine__, 0, width - OFFSET, null, height);
+    this.#updateEdgePosition(this.#edgeTopLeft____, -OFFSET, -OFFSET, null, null);
+    this.#updateEdgePosition(this.#edgeTopRight___, -OFFSET, width - OFFSET, null, null);
+    this.#updateEdgePosition(this.#edgeBottomLeft_, height - OFFSET, -OFFSET, null, null);
+    this.#updateEdgePosition(this.#edgeBottomRight, height - OFFSET, width - OFFSET, null, null);
+  }
+
+  /**
+   * 엣지 요소의 위치 업데이트
+   * @param {HTMLElement} element 엣지 요소
+   * @param {number} top 상단 위치
+   * @param {number} left 좌측 위치
+   * @param {number|null} width 너비 (null이면 설정 안함)
+   * @param {number|null} height 높이 (null이면 설정 안함)
+   */
+  #updateEdgePosition(element, top, left, width, height) {
+    element.style.transform = `translate3d(${left}px, ${top}px, 0)`;
+    element.style.top = '0px';
+    element.style.left = '0px';
+
+    if (width !== null) {
+      element.style.width = width + 'px';
+    }
+
+    if (height !== null) {
+      element.style.height = height + 'px';
+    }
   }
 }
 

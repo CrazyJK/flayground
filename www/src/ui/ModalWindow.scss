@@ -7,6 +7,7 @@
   border-radius: 4px;
   box-shadow: var(--box-shadow-smallest);
   transition: box-shadow 0.4s;
+  user-select: none;
 
   .edges {
     position: fixed;

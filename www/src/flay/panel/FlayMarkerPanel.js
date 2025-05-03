@@ -35,6 +35,10 @@ export class FlayMarkerPanel extends HTMLDivElement {
   #paused = false; // 일시정지 여부
   #lastNo = -1; // 하이라이트 마커 마지막 번호
   #opts = {}; // 옵션
+  #highlightedCount = 0; // 하이라이트된 마커 수 (성능 최적화용)
+  #animationFrames = []; // requestAnimationFrame 식별자 배열
+  #threadIntervals = []; // 각 스레드별 인터벌 값
+  #lastFrameTime = []; // 각 스레드별 마지막 프레임 시간
 
   /**
    *
@@ -181,31 +185,34 @@ export class FlayMarkerPanel extends HTMLDivElement {
    */
   async #reset() {
     this.#cancelAllThread();
+    this.#highlightedCount = 0; // 하이라이트된 마커 수 재설정
 
     await new Promise((resolve) => setTimeout(resolve, 3000)); // 3초 대기
 
     const consoleTimeName = `disappear-${this.#lastNo}-${Date.now()}`;
     console.time(consoleTimeName);
     this.tickTimer.pause();
-    for (let i = this.#lastNo; i >= 0; ) {
-      for (let j = 0; j < this.#threadCount; j++) {
-        const marker = this.#markerList.find((marker) => marker.dataset.n === String(i));
-        if (marker) {
-          marker.dataset.n = '';
-          marker.classList.remove('highlight', 'active');
-        }
-        i--;
-      }
+
+    // 하이라이트된 마커만 미리 찾아두기
+    const highlightedMarkers = this.#markerList.filter((marker) => marker.classList.contains('highlight'));
+    const batchSize = Math.ceil(highlightedMarkers.length / this.#threadCount);
+
+    for (let i = 0; i < highlightedMarkers.length; i += batchSize) {
+      const batch = highlightedMarkers.slice(i, i + batchSize);
+
+      batch.forEach((marker) => {
+        marker.dataset.n = '';
+        marker.classList.remove('highlight', 'active');
+      });
+
       await new Promise((resolve) => setTimeout(resolve, 10));
     }
-    console.log(
-      '[reset] All markers disappeared.',
-      this.#markerList.filter((marker) => marker.classList.contains('highlight')).map((marker) => marker.dataset.n)
-    );
+
+    console.log('[reset] All markers disappeared.');
     this.#lastNo = -1;
     this.tickTimer.resume();
     console.timeEnd(consoleTimeName);
-    await new Promise((resolve) => setTimeout(resolve, 1000)); // 1초 대기. 마지막 마커가 사라지는 애니메이션을 위해
+    await new Promise((resolve) => setTimeout(resolve, 1000)); // 1초 대기
   }
 
   /**
@@ -218,16 +225,19 @@ export class FlayMarkerPanel extends HTMLDivElement {
      * @param {FlayMarker} marker
      */
     const highlightMarker = (marker) => {
-      marker.dataset.n = ++this.#lastNo;
-      marker.classList.add('highlight');
-      marker.animate([{ transform: 'scale(0.8)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1.0)' }], { duration: INTERVAL - this.#opts.interval[0] / 2, easing: 'ease-in-out' });
+      if (!marker.classList.contains('highlight')) {
+        marker.dataset.n = ++this.#lastNo;
+        marker.classList.add('highlight');
+        this.#highlightedCount++; // 하이라이트된 마커 수 증가
+        marker.animate([{ transform: 'scale(0.8)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1.0)' }], { duration: INTERVAL - this.#opts.interval[0] / 2, easing: 'ease-in-out' });
+      }
     };
 
     /**
      * 모든 마커가 하이라이트되었는지 여부
      * @returns {boolean}
      */
-    const isAllMarkerHighlighted = () => !this.#markerList.some((marker) => !marker.classList.contains('highlight'));
+    const isAllMarkerHighlighted = () => this.#highlightedCount >= this.#markerList.length;
 
     /**
      * 현재 marker에서 주변으로 퍼져나가는 마커 구하는 함수
@@ -329,6 +339,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
     const INTERVAL = getRandomIntInclusive(...this.#opts.interval);
     this.dataset[`t${threadNo}Interval`] = INTERVAL;
+    this.#threadIntervals[threadNo] = INTERVAL;
+    this.#lastFrameTime[threadNo] = performance.now();
 
     let [dx, dy] = DiagonalDirections[getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정
     let duplicatedCount = 0; // 중복 개수
@@ -351,21 +363,35 @@ export class FlayMarkerPanel extends HTMLDivElement {
     let [x, y] = marker.dataset.xy.split(',').map(Number);
     highlightMarker(marker);
 
-    this.#timerID[threadNo] = setInterval(() => {
-      if (this.#paused) return;
-
-      marker = findNextMarker(x, y);
-      if (marker) {
-        [x, y] = marker.dataset.xy.split(',').map(Number);
-        highlightMarker(marker);
-      }
-
-      if (isAllMarkerHighlighted()) {
-        this.#cancelThread(threadNo);
+    // requestAnimationFrame을 사용한 타이머 대체
+    const animate = (timestamp) => {
+      if (this.#paused) {
+        this.#animationFrames[threadNo] = requestAnimationFrame(animate);
         return;
       }
-    }, INTERVAL);
-    console.log(`Thread ${threadNo} started.`, 'timerID:', this.#timerID[threadNo], 'interval:', INTERVAL, 'method:', this.dataset[`t${threadNo}Method`]);
+
+      const elapsed = timestamp - this.#lastFrameTime[threadNo];
+
+      if (elapsed >= INTERVAL) {
+        this.#lastFrameTime[threadNo] = timestamp;
+
+        marker = findNextMarker(x, y);
+        if (marker) {
+          [x, y] = marker.dataset.xy.split(',').map(Number);
+          highlightMarker(marker);
+        }
+
+        if (isAllMarkerHighlighted()) {
+          this.#cancelThread(threadNo);
+          return;
+        }
+      }
+
+      this.#animationFrames[threadNo] = requestAnimationFrame(animate);
+    };
+
+    this.#animationFrames[threadNo] = requestAnimationFrame(animate);
+    console.log(`Thread ${threadNo} started.`, 'animationFrame:', this.#animationFrames[threadNo], 'interval:', INTERVAL, 'method:', this.dataset[`t${threadNo}Method`]);
   }
 
   /**
@@ -373,24 +399,28 @@ export class FlayMarkerPanel extends HTMLDivElement {
    * @param {number} threadNo
    */
   #cancelThread(threadNo) {
-    if (this.#timerID[threadNo] === undefined) return;
-    clearInterval(this.#timerID[threadNo]);
-    console.log(`Thread ${threadNo} cancelled`, this.#timerID[threadNo]);
+    if (this.#animationFrames[threadNo] === undefined) return;
 
-    this.#timerID[threadNo] = undefined;
-    if (this.#timerID.every((id) => id === undefined)) {
-      console.log(`All ${this.#timerID.length} threads are cancelled and the timer is stopped.`);
+    cancelAnimationFrame(this.#animationFrames[threadNo]);
+    console.log(`Thread ${threadNo} cancelled`, this.#animationFrames[threadNo]);
+
+    this.#animationFrames[threadNo] = undefined;
+    if (this.#animationFrames.every((id) => id === undefined)) {
+      console.log(`All ${this.#animationFrames.length} threads are cancelled and the timer is stopped.`);
       this.tickTimer.stop();
     }
   }
 
   #cancelAllThread() {
     for (let i = 0; i < this.#threadCount; i++) {
-      clearInterval(this.#timerID[i]);
+      if (this.#animationFrames[i] !== undefined) {
+        cancelAnimationFrame(this.#animationFrames[i]);
+        this.#animationFrames[i] = undefined;
+      }
       delete this.dataset[`t${i}Interval`];
       delete this.dataset[`t${i}Method`];
     }
-    console.log(`All ${this.#timerID.length} threads are cancelled and the timer is stopped.`);
+    console.log(`All threads are cancelled and the timer is stopped.`);
   }
 }
 

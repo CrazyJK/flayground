@@ -2,9 +2,9 @@ import './inc/Page';
 import './page.flay-play-record.scss';
 
 import PlayTimeDB from '../flay/idb/PlayTimeDB';
-import { toTime } from '../flay/panel/FlayVideoPlayer';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
+import TimeUtils from '../lib/TimeUtils';
 
 class Page {
   db;
@@ -57,13 +57,13 @@ class Page {
       li.innerHTML = `
         <div class="opus">${record.opus}</div>
         <div class="progress-container">
-          <div class="progress" title="마지막 재생 위치: ${toTime(record.time)}">
+          <div class="progress" title="마지막 재생 위치: ${TimeUtils.toTime(record.time)}">
             <div class="progress-bar" style="width: ${percentage}%"></div>
             <div class="progress-marker" style="left: ${percentage}%"></div>
           </div>
           <div class="progress-label">
-            <span class="duration">${toTime(record.duration)}</span>
-            <span class="current-time" style="left: ${percentage}%">${toTime(record.time)}</span>
+            <span class="duration">${TimeUtils.toTime(record.duration)}</span>
+            <span class="current-time" style="left: ${percentage}%">${TimeUtils.toTime(record.time)}</span>
           </div>
         </div>
         <div class="lastPlayed">${DateUtils.format(record.lastPlayed, 'yy.MM.dd HH:mm')}</div>

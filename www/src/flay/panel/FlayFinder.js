@@ -4,7 +4,7 @@ import './FlayFinder.scss';
 
 const HTML = `
 <div class="search-wrapper">
-  <input type="search" id="search" placeholder="Search..." spellcheck="false">
+  <input type="search" id="search" placeholder="Search..." spellcheck="false" autocomplete="off" autocorrect="off" autocapitalize="none" />
 </div>
 <div class="result-wrapper">
   <h2>Instance</h2>

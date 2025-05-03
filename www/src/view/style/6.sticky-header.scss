@@ -1,3 +1,9 @@
+/*
+ * 6. Sticky Header Settings
+ * - 상단에 고정되는 헤더 요소의 스타일 정의
+ * - 반응형 디자인 지원
+ */
+
 body {
   > header.sticky {
     position: sticky;
@@ -11,6 +17,12 @@ body {
     margin: 0;
     padding: 1rem;
     background-color: var(--color-bg);
+    box-shadow: var(--box-shadow-smallest);
+    transition: box-shadow 0.3s ease;
+
+    &:hover {
+      box-shadow: var(--box-shadow-small);
+    }
 
     & > * {
       flex: 1 0 auto;
@@ -38,6 +50,13 @@ body {
       button,
       textarea {
         border: 1px dashed chocolate;
+        border-radius: var(--border-radius);
+        transition: all 0.2s ease;
+
+        &:focus {
+          border-color: var(--color-border-active);
+          box-shadow: 0 0 0 2px var(--color-bg-focus);
+        }
       }
       label,
       input[type='text'] {
@@ -50,11 +69,40 @@ body {
       button {
         padding-left: 0.5rem;
         padding-right: 0.5rem;
+
+        &:hover {
+          background-color: var(--color-bg-hover);
+        }
       }
     }
   }
 }
 
+/* 태블릿 이상 화면에서의 스타일 */
+@media screen and (min-width: 768px) {
+  body {
+    > header.sticky {
+      padding: 0.75rem 1rem;
+
+      & > * {
+        max-width: 768px;
+      }
+    }
+  }
+}
+
+/* 데스크탑 화면에서의 스타일 */
+@media screen and (min-width: 992px) {
+  body {
+    > header.sticky {
+      & > * {
+        max-width: 992px;
+      }
+    }
+  }
+}
+
+/* 큰 데스크탑 화면에서의 스타일 */
 @media screen and (min-width: 1200px) {
   body {
     > header.sticky {

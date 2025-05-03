@@ -1,5 +1,12 @@
+/*
+ * 5. Scrollbar Settings
+ * - 스크롤바 커스터마이징
+ * - 다양한 브라우저에서의 호환성 고려
+ */
+
 $scroll-unit: 0.25rem;
 
+/* 웹킷 기반 브라우저 스크롤바 (Chrome, Safari, Edge) */
 /* 스크롤 바 영역 전체 */
 ::-webkit-scrollbar {
   background-color: transparent;
@@ -7,19 +14,18 @@ $scroll-unit: 0.25rem;
   width: $scroll-unit;
   height: $scroll-unit;
 }
+
 /* 상하, 좌우 화살표가 포함된 부분 */
 ::-webkit-scrollbar-button:start:decrement,
 ::-webkit-scrollbar-button:end:increment {
-  // background-color: transparent;
-  // display: block;
-  // width: $scroll-unit;
-  // height: $scroll-unit;
   display: none;
 }
+
 /* 화살표를 제외한 몸통 부분 */
 ::-webkit-scrollbar-track {
   background-color: transparent;
 }
+
 /* 몸통 부분에서 실제 움직이는 부분 */
 ::-webkit-scrollbar-thumb {
   background-color: rgba(0, 0, 0, 0.5);
@@ -30,7 +36,29 @@ $scroll-unit: 0.25rem;
     border-radius: calc($scroll-unit / 4);
   }
 }
+
 /* 가로와 세로가 만나는 코너 부분 */
 ::-webkit-scrollbar-corner {
   background-color: transparent;
+}
+
+/* Firefox 스크롤바 */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0, 0, 0, 0.5) transparent;
+}
+
+/* 다크 테마에서의 스크롤바 색상 조정 */
+[theme='dark'] {
+  ::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.5);
+    }
+  }
+
+  * {
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+  }
 }

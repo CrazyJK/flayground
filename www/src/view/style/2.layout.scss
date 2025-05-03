@@ -1,7 +1,15 @@
+/*
+ * 2. Layout Settings
+ * - 반응형 디자인을 위한 레이아웃 관련 스타일
+ * - 화면 크기에 따른 기본 폰트 크기 조정
+ */
+
+/* 기본 폰트 크기 */
 html {
   font-size: 14px;
 }
 
+/* 화면 높이에 따른 폰트 크기 조정 */
 @media screen and (min-height: 1081px) {
   html {
     font-size: 16px;
@@ -23,18 +31,47 @@ html {
   }
 }
 
+/* 너비 기반 반응형 레이아웃 */
 /* Mobile - Landscape */
 @media (min-width: 576px) {
+  .container {
+    max-width: 540px;
+  }
 }
 
 /* Tablet */
 @media (min-width: 768px) {
+  .container {
+    max-width: 720px;
+  }
+
+  .hide-on-tablet-up {
+    display: none !important;
+  }
 }
 
 /* Desktop */
 @media (min-width: 992px) {
+  .container {
+    max-width: 960px;
+  }
+
+  .hide-on-desktop-up {
+    display: none !important;
+  }
+
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  }
 }
 
 /* Desktop (Large) */
 @media (min-width: 1200px) {
+  .container {
+    max-width: 1140px;
+  }
+
+  .grid-container {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  }
 }

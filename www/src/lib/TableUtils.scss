@@ -1,10 +1,42 @@
-[data-sort='1'] {
-  background: linear-gradient(180deg, var(--color-text), var(--color-text) 50%, #f00);
+.sortable {
+  cursor: pointer;
+  position: relative;
   background-clip: text;
-  -webkit-text-fill-color: transparent;
+  &::after {
+    content: '↕';
+    font-size: 0.8em;
+    margin-left: 4px;
+    opacity: 0.4;
+  }
 }
-[data-sort='2'] {
-  background: linear-gradient(0deg, var(--color-text), var(--color-text) 30%, #f00);
-  background-clip: text;
+
+// 내림차순 정렬
+.sortable[data-sort='1'] {
+  background-image: linear-gradient(180deg, var(--color-text), var(--color-text) 50%, #f00);
   -webkit-text-fill-color: transparent;
+  &::after {
+    opacity: 1;
+  }
+}
+
+// 오름차순 정렬
+.sortable[data-sort='2'] {
+  background-image: linear-gradient(0deg, var(--color-text), var(--color-text) 30%, #f00);
+  -webkit-text-fill-color: transparent;
+  &::after {
+    opacity: 1;
+  }
+}
+
+/* 정렬 진행 중 시각적 표시 */
+.sorting {
+  background-color: rgba(0, 0, 0, 0.05);
+  transition: background-color 0.3s ease;
+}
+
+/* 다크 모드 지원 */
+@media (prefers-color-scheme: dark) {
+  .sorting {
+    background-color: rgba(255, 255, 255, 0.1);
+  }
 }

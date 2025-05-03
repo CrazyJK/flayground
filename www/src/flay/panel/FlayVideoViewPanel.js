@@ -2,9 +2,10 @@ import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '../../GroundConstant';
 import { FlayProvider } from '../../lib/FlayProvider';
 import FlayStorage from '../../lib/FlayStorage';
 import { getRandomInt } from '../../lib/randomNumber';
+import TimeUtils from '../../lib/TimeUtils';
 import basketSVG from '../../svg/basket';
 import controlsSVG from '../../svg/controls';
-import { FlayVideoPlayer, toTime } from './FlayVideoPlayer';
+import { FlayVideoPlayer } from './FlayVideoPlayer';
 import './FlayVideoViewPanel.scss';
 
 /** 최소 플레이 초 */
@@ -168,7 +169,7 @@ export class FlayVideoViewPanel extends HTMLDivElement {
 
   #displayTime() {
     this.progressBar.style.width = (this.sec / MaxPlayTime) * 100 + '%';
-    this.remainingTime.innerHTML = toTime(this.sec);
+    this.remainingTime.innerHTML = TimeUtils.toTime(this.sec);
   }
 
   async play() {
@@ -181,10 +182,10 @@ export class FlayVideoViewPanel extends HTMLDivElement {
       console.log('videoPlayer is loaded', opus);
 
       const seekTime = await this.videoPlayer.playRandomSeekOrContinuously(MaxPlayTime);
-      console.log('videoPlayer is seeked', toTime(this.videoPlayer.currentTime));
+      console.log('videoPlayer is seeked', TimeUtils.toTime(this.videoPlayer.currentTime));
 
       this.sec = getRandomInt(MinPlayTime, Math.min(this.videoPlayer.duration - seekTime, MaxPlayTime));
-      console.log('videoPlayer will be played for', toTime(this.sec));
+      console.log('videoPlayer will be played for', TimeUtils.toTime(this.sec));
 
       this.#displayTime();
 

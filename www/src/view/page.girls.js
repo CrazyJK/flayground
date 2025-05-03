@@ -27,7 +27,7 @@ class PageGirls {
   }
 
   async start() {
-    const UL = document.querySelector('ul');
+    const fragment = document.createDocumentFragment();
 
     Array.from(await FlayFetch.getFullyFlayList())
       .reduce((map, { flay, actress: actressList }) => {
@@ -44,8 +44,15 @@ class PageGirls {
         const age = new Date().getFullYear() - parseInt(actress.birth?.substring(0, 4) || new Date().getFullYear() + 1) + 1;
         const flayCount = flayList.length;
         const shotFlayCount = flayList.filter((flay) => flay.video.likes?.length > 0).length;
-        const shotTotalCount = flayList.reduce((sum, flay) => sum + (flay.video.likes?.length > 0 ? flay.video.likes.length : 0), 0);
-        const score = flayList.reduce((sum, flay) => sum + flay.score, 0);
+        const { shotTotalCount, score } = flayList.reduce(
+          (acc, flay) => {
+            return {
+              shotTotalCount: acc.shotTotalCount + (flay.video.likes?.length > 0 ? flay.video.likes.length : 0),
+              score: acc.score + flay.score,
+            };
+          },
+          { shotTotalCount: 0, score: 0 }
+        );
         const topFlay = flayList.sort((f1, f2) => {
           let ret = f1.actressList.length - f2.actressList.length;
           if (ret === 0) {
@@ -57,7 +64,7 @@ class PageGirls {
           return ret;
         })[0];
 
-        const LI = UL.appendChild(document.createElement('li'));
+        const LI = fragment.appendChild(document.createElement('li'));
         LI.innerHTML = `
           <label class="cover" title="${topFlay.opus} ${topFlay.title}" data-lazy-background-image-url="/static/cover/${topFlay.opus}">&nbsp;</label>
           <label class="name"><span class="${actress.favorite ? 'fav' : ''}">${favoriteSVG}</span><a>${name}</a></label>
@@ -69,10 +76,11 @@ class PageGirls {
         `;
         LI.querySelector('.cover').addEventListener('click', () => popupFlay(topFlay.opus));
         LI.querySelector('.name a').addEventListener('click', () => popupActress(name));
-
-        addLazyLoadBackgroundImage(LI);
       });
 
+    const UL = document.querySelector('ul');
+    UL.appendChild(fragment);
+    addLazyLoadBackgroundImage(UL);
     sortable(UL, { noSort: [0], initSortIndex: 6 });
   }
 }

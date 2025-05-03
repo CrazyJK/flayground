@@ -4,6 +4,7 @@ body {
     flex-direction: row;
     flex-wrap: wrap;
     justify-content: space-between;
+    gap: 0.5rem 0.125rem;
 
     .flay-studio {
       &.found {

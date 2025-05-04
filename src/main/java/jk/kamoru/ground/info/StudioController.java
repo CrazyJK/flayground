@@ -15,12 +15,13 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.info.domain.Studio;
 import jk.kamoru.ground.info.service.StudioInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Studio")
 @RestController
-@RequestMapping("/info/studio")
+@RequestMapping(Ground.API_PREFIX + "/info/studio")
 public class StudioController {
 
   @Autowired

@@ -9,9 +9,11 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import jk.kamoru.ground.Ground;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,6 +27,7 @@ import lombok.extern.slf4j.Slf4j;
  * </pre>
  */
 @Controller
+@RequestMapping(Ground.API_PREFIX)
 @Slf4j
 @io.swagger.v3.oas.annotations.tags.Tag(name = "UrlDownloader")
 public class UrlDownloader {

@@ -26,6 +26,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.flay.FlayNotfoundException;
 import jk.kamoru.ground.flay.domain.Flay;
 import jk.kamoru.ground.flay.service.FlayArchiveService;
@@ -36,7 +37,7 @@ import jk.kamoru.ground.info.source.ActressInfoSource;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "ImageRequestHandler")
 @Controller
-@RequestMapping("/static")
+@RequestMapping(Ground.API_PREFIX + "/static")
 public class ImageRequestHandler {
 
   @Autowired

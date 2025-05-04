@@ -12,11 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.diary.Diary.Meta;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Diary")
 @RestController
-@RequestMapping("/diary")
+@RequestMapping(Ground.API_PREFIX + "/diary")
 public class DiaryController {
 
   @Autowired

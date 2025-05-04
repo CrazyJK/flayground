@@ -20,13 +20,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.info.domain.Actress;
 import jk.kamoru.ground.info.service.ActressInfoService;
 import jk.kamoru.ground.info.service.NameDistanceChecker.CheckResult;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Actress")
 @RestController
-@RequestMapping("/info/actress")
+@RequestMapping(Ground.API_PREFIX + "/info/actress")
 public class ActressController {
 
   @Autowired

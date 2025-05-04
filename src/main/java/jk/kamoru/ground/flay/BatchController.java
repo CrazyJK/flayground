@@ -12,12 +12,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.flay.domain.Flay;
 import jk.kamoru.ground.flay.service.BatchExecutor;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Batch")
 @RestController
-@RequestMapping("/batch")
+@RequestMapping(Ground.API_PREFIX + "/batch")
 public class BatchController {
 
   @Autowired

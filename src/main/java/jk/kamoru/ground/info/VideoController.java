@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.info.domain.Tag;
 import jk.kamoru.ground.info.domain.Video;
 import jk.kamoru.ground.info.service.TagInfoService;
@@ -23,7 +24,7 @@ import jk.kamoru.ground.info.service.VideoInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Video")
 @RestController
-@RequestMapping("/info/video")
+@RequestMapping(Ground.API_PREFIX + "/info/video")
 public class VideoController {
 
   @Autowired

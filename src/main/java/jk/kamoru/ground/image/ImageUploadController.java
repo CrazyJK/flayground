@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.image.domain.Image;
 import lombok.extern.slf4j.Slf4j;
@@ -23,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @io.swagger.v3.oas.annotations.tags.Tag(name = "ImageUpload")
 @Controller
-@RequestMapping("/image")
+@RequestMapping(Ground.API_PREFIX + "/image")
 public class ImageUploadController {
 
   @Autowired

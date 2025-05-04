@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.flay.domain.Flay;
 import jk.kamoru.ground.flay.service.FlayService;
 import jk.kamoru.ground.stream.MovieStreamHandler;
@@ -22,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @io.swagger.v3.oas.annotations.tags.Tag(name = "FlayStream")
 @Controller
-@RequestMapping("/stream")
+@RequestMapping(Ground.API_PREFIX + "/stream")
 public class FlayStreamController {
 
   @Autowired

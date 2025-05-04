@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.image.banner.AnsiColors.BitDepth;
 import jk.kamoru.ground.image.banner.ImageBannerPrinter;
@@ -27,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @io.swagger.v3.oas.annotations.tags.Tag(name = "ImageBannerHandler")
 @RestController
-@RequestMapping("/banner")
+@RequestMapping(Ground.API_PREFIX + "/banner")
 public class ImageBannerHandler {
 
   @Autowired
@@ -42,7 +43,8 @@ public class ImageBannerHandler {
   AtomicInteger counter = new AtomicInteger();
 
   @GetMapping("/{idx}/{width}/{height}")
-  public String getBannerImage(@PathVariable int idx, @PathVariable int width, @PathVariable int height, @RequestParam(required = false, defaultValue = "false") boolean invert, @RequestParam(required = false, defaultValue = "FOUR") BitDepth bitDepth, @RequestParam(required = false, defaultValue = "TEXT") PixelMode pixelMode) {
+  public String getBannerImage(@PathVariable int idx, @PathVariable int width, @PathVariable int height, @RequestParam(required = false, defaultValue = "false") boolean invert,
+      @RequestParam(required = false, defaultValue = "FOUR") BitDepth bitDepth, @RequestParam(required = false, defaultValue = "TEXT") PixelMode pixelMode) {
     Image image = imageService.get(idx);
     return imageBannerPrinter.get(image.getFile(), width, height, 0, invert, bitDepth, pixelMode);
   }

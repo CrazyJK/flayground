@@ -29,7 +29,7 @@ import jk.kamoru.ground.Ground;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Attach")
 @RestController
-@RequestMapping("/attach")
+@RequestMapping(Ground.API_PREFIX + "/attach")
 public class AttachController {
 
   @Autowired
@@ -57,8 +57,7 @@ public class AttachController {
       throw new IllegalStateException("inputStream from attachFile is null");
     Resource resource = new InputStreamResource(inputStream);
     HttpHeaders headers = new HttpHeaders();
-    headers.setContentDisposition(ContentDisposition.builder("attachment")
-        .filename(URLEncoder.encode(attachFile.getName(), Ground.CHARSET)).build());
+    headers.setContentDisposition(ContentDisposition.builder("attachment").filename(URLEncoder.encode(attachFile.getName(), Ground.CHARSET)).build());
 
     return new ResponseEntity<Object>(resource, headers, HttpStatus.OK);
   }

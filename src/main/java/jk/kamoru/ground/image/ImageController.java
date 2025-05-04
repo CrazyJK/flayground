@@ -12,13 +12,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.flay.service.FlayActionHandler;
 import jk.kamoru.ground.image.domain.Image;
 import jk.kamoru.ground.image.service.ImageService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Image")
 @RestController
-@RequestMapping("/image")
+@RequestMapping(Ground.API_PREFIX + "/image")
 public class ImageController {
 
   @Autowired

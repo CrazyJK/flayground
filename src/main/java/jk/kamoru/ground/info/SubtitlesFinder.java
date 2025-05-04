@@ -18,17 +18,19 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.Ground;
+import jk.kamoru.ground.GroundProperties;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @io.swagger.v3.oas.annotations.tags.Tag(name = "SubtitlesFinder")
 @RestController
+@RequestMapping(Ground.API_PREFIX)
 public class SubtitlesFinder {
 
   @Autowired

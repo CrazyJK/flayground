@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.flay.domain.Flay;
 import jk.kamoru.ground.flay.domain.FlayCondition;
 import jk.kamoru.ground.flay.service.FlayArchiveService;
@@ -32,7 +33,7 @@ import jk.kamoru.ground.info.service.ActressInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Flay")
 @RestController
-@RequestMapping("/flay")
+@RequestMapping(Ground.API_PREFIX + "/flay")
 public class FlayController {
 
   @Autowired

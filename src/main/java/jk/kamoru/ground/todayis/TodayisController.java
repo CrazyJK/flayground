@@ -17,13 +17,14 @@ import org.springframework.web.bind.annotation.RestController;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.stream.MovieStreamHandler;
 import jk.kamoru.ground.todayis.domain.Todayis;
 import jk.kamoru.ground.todayis.service.TodayisService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Todayis")
 @RestController
-@RequestMapping("/todayis")
+@RequestMapping(Ground.API_PREFIX + "/todayis")
 public class TodayisController {
 
   @Autowired

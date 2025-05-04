@@ -15,13 +15,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.flay.service.FlayService;
 import jk.kamoru.ground.info.domain.TagGroup;
 import jk.kamoru.ground.info.service.TagGroupInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "TagGroup")
 @RestController
-@RequestMapping("/info/tagGroup")
+@RequestMapping(Ground.API_PREFIX + "/info/tagGroup")
 public class TagGroupController {
 
   @Autowired

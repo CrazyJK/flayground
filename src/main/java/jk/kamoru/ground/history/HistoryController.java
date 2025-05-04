@@ -8,13 +8,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.history.domain.History;
 import jk.kamoru.ground.history.domain.History.Action;
 import jk.kamoru.ground.history.service.HistoryService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "History")
 @RestController
-@RequestMapping("/info/history")
+@RequestMapping(Ground.API_PREFIX + "/info/history")
 public class HistoryController {
 
   @Autowired

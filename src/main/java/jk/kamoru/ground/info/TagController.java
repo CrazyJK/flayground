@@ -19,13 +19,14 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jk.kamoru.ground.Ground;
 import jk.kamoru.ground.flay.service.FlayService;
 import jk.kamoru.ground.info.domain.Tag;
 import jk.kamoru.ground.info.service.TagInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Tag")
 @RestController
-@RequestMapping("/info/tag")
+@RequestMapping(Ground.API_PREFIX + "/info/tag")
 public class TagController {
 
   @Autowired

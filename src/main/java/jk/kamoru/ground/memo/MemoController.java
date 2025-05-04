@@ -8,10 +8,11 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.v3.oas.annotations.Operation;
+import jk.kamoru.ground.Ground;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Memo")
 @RestController
-@RequestMapping("/memo")
+@RequestMapping(Ground.API_PREFIX + "/memo")
 public class MemoController {
 
   @Autowired

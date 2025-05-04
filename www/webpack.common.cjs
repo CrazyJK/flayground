@@ -45,8 +45,6 @@ module.exports = {
   },
   devtool: 'source-map',
   output: {
-    // filename: '[name].[contenthash].js',
-    // filename: '[name].[chunkhash].js',
     filename: '[name].js',
     path: path.resolve(__dirname, '../src/main/resources/static/dist'),
     publicPath: '',
@@ -56,13 +54,6 @@ module.exports = {
     // MiniCssExtractPlugin은 환경별 설정 파일로 이동
     new CopyWebpackPlugin({
       patterns: [
-        // HTML 파일은 HtmlWebpackPlugin에서 처리하므로 제외
-        // {
-        //   from: 'src/view/*.html',
-        //   to({ context, absoluteFilename }) {
-        //     return '[name][ext]';
-        //   },
-        // },
         {
           from: 'src/view/img/favicon/*',
           to: 'favicon/[name][ext]',

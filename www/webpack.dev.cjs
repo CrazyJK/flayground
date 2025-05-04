@@ -28,13 +28,13 @@ function getEntryHtmlPlugins() {
 module.exports = {
   mode: 'development',
   devtool: 'source-map',
-  performance: {
-    hints: 'warning',
-  },
   plugins: [
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
     ...getEntryHtmlPlugins(),
   ],
+  performance: {
+    hints: 'warning',
+  },
 };

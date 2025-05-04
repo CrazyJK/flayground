@@ -156,7 +156,7 @@ module.exports = {
           minChunks: 3,
           priority: -30,
           reuseExistingChunk: true,
-          name: 'bundled-commons', // common 파일 이름 변경
+          name: 'bundled-commons',
           chunks: 'all',
         },
         styles: {
@@ -165,7 +165,6 @@ module.exports = {
           chunks: 'all',
           enforce: true,
         },
-        // common 캐시 그룹 제거 (default로 병합)
       },
     },
     // 런타임 코드 분리
@@ -175,5 +174,9 @@ module.exports = {
     hints: 'warning',
     maxAssetSize: 690000,
     maxEntrypointSize: 690000,
+    assetFilter: function (assetFilename) {
+      // dependencies-viewer.json 파일에 대한 경고 무시
+      return !assetFilename.endsWith('dependencies-viewer.json') && !/\.(map|LICENSE|woff|woff2|ttf|eot)$/.test(assetFilename);
+    },
   },
 };

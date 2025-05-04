@@ -194,17 +194,6 @@ module.exports = {
     moduleIds: 'deterministic', // 모듈 ID가 더 예측 가능하게 변경, 캐싱 개선
     chunkIds: 'deterministic',
   },
-  performance: {
-    assetFilter: function (assetFilename) {
-      const lastIndex = assetFilename.lastIndexOf('.');
-      const name = assetFilename.substring(0, lastIndex);
-      const suffix = assetFilename.substring(lastIndex + 1);
-      return !['json', 'map', 'ico'].includes(suffix) && !name.startsWith('vendors');
-    },
-    maxAssetSize: 500000,
-    maxEntrypointSize: 500000,
-    hints: false,
-  },
   stats: {
     colors: true,
     modules: false,

@@ -50,8 +50,8 @@ module.exports = {
     static: {
       directory: path.join(__dirname, '../src/main/resources/static'),
     },
+    host: 'localhost',
     hot: true, // 핫 모듈 교체 활성화
-    port: 9000,
     historyApiFallback: true,
     compress: true,
     open: true,
@@ -65,15 +65,9 @@ module.exports = {
         hostname: 'localhost',
       },
     },
-    https: {
-      // 프로젝트 내 인증서 파일 사용
-      key: fs.readFileSync(path.resolve(__dirname, '../src/main/resources/cert/server.key')),
-      cert: fs.readFileSync(path.resolve(__dirname, '../src/main/resources/cert/server.crt')),
-      ca: fs.readFileSync(path.resolve(__dirname, '../src/main/resources/cert/rootCA.crt')),
-    },
     proxy: [
       {
-        context: ['/info', '/flay', '/actress', '/studio', '/tag', '/code', '/image', '/file', '/search', '/actuator', '/sse', '/static'],
+        context: ['/api'],
         target: 'https://flay.kamoru.jk',
         changeOrigin: true,
         secure: false, // 자체 서명 인증서 허용

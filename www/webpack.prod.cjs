@@ -138,49 +138,34 @@ module.exports = {
     // 청크 분할 최적화
     splitChunks: {
       chunks: 'all',
-      minSize: 20000, // 최소 크기 (바이트)
-      maxSize: 250000, // 최대 크기 (바이트)
-      minChunks: 1, // 최소 청크 수
-      maxAsyncRequests: 30, // 최대 비동기 요청 수
-      maxInitialRequests: 30, // 최대 초기 요청 수
-      automaticNameDelimiter: '~',
+      minSize: 100000, // 최소 크기를 100KB로 증가
+      minChunks: 3, // 최소 3번 이상 사용되는 모듈만 분할
+      maxAsyncRequests: 5, // 최대 비동기 요청 수 감소
+      maxInitialRequests: 3, // 최대 초기 요청 수 감소
+      automaticNameDelimiter: '-',
+      enforceSizeThreshold: 150000, // 강제 분할 임계값 설정
       cacheGroups: {
         defaultVendors: {
           test: /[\\/]node_modules[\\/]/,
           priority: -10,
           reuseExistingChunk: true,
-          name(module) {
-            // node_modules 패키지명 추출 - 안전한 추출 방식으로 변경
-            try {
-              // module.context가 존재하는지 확인
-              if (module.context) {
-                const matchResult = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/);
-                if (matchResult) {
-                  return `vendor.${matchResult[1].replace('@', '')}`;
-                }
-              }
-
-              // _identifier의 마지막 파일의 확장자를 뺀 이름 구하기
-              const lastFileName = module._identifier
-                .split(/[\\/]/)
-                .pop()
-                .replace(/\.[^/.]+$/, '');
-              if (lastFileName) {
-                return `vendor.${lastFileName}`;
-              }
-
-              return 'vendors'; // 패턴 매치 실패시 기본 이름 사용
-            } catch (e) {
-              return 'vendors'; // 오류 발생시 기본 이름 사용
-            }
-          },
+          name: 'vendors',
+          chunks: 'all',
         },
-        common: {
-          minChunks: 2,
-          priority: -20,
+        default: {
+          minChunks: 3,
+          priority: -30,
           reuseExistingChunk: true,
-          name: 'common',
+          name: 'bundled-commons', // common 파일 이름 변경
+          chunks: 'all',
         },
+        styles: {
+          name: 'styles',
+          test: /\.css$/,
+          chunks: 'all',
+          enforce: true,
+        },
+        // common 캐시 그룹 제거 (default로 병합)
       },
     },
     // 런타임 코드 분리

@@ -119,7 +119,7 @@ module.exports = {
             ],
           ],
           // 필요한 경우 console.log 제거
-          plugins: process.env.NODE_ENV === 'production' ? [['transform-remove-console', { exclude: ['error', 'warn'] }]] : [],
+          plugins: process.env.NODE_ENV === 'production' ? [['transform-remove-console', { exclude: ['error', 'warn', 'info'] }]] : [],
         },
       },
       {

@@ -9,10 +9,9 @@
     "start": "webpack serve --env=dev",
     "build": "webpack --env=prod",
     "build:dev": "webpack --env=dev",
-    "build:analyze": "webpack --env=prod --analyze",
     "watch": "webpack --env=dev -w",
     "lint": "eslint --fix --ext .js src/",
-    "analyze": "webpack --env=prod --analyze --verbose"
+    "analyze": "webpack --env=prod --analyze"
   },
   "dependencies": {
     "@toast-ui/editor": "^3.2.1",

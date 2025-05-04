@@ -1,3 +1,4 @@
+@use 'sass:list';
 $columns: (
   1: 100%,
   2: 50%,
@@ -58,7 +59,7 @@ $columns: (
     transition: none;
   }
 
-  @for $i from 2 to length($columns) + 1 {
+  @for $i from 2 to list.length($columns) + 1 {
     &[data-max='#{$i}'] {
       input[type='range'] {
         width: calc($range-size * $i);

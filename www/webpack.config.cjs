@@ -18,11 +18,25 @@ const argv = require('yargs')
       default: 9000,
       type: 'number',
     },
+    verbose: {
+      describe: '상세 로그 출력 여부',
+      default: false,
+      type: 'boolean',
+    },
   })
   .help().argv;
 
 module.exports = () => {
   console.log(`🚀 Building for ${argv.env} environment...`);
+
+  if (argv.verbose) {
+    console.log('📋 Configuration options:', {
+      env: argv.env,
+      analyze: argv.analyze,
+      port: argv.port,
+      verbose: argv.verbose,
+    });
+  }
 
   const envConfig = require(`./webpack.${argv.env}.cjs`);
   let config = merge(commonConfig, envConfig);
@@ -39,9 +53,13 @@ module.exports = () => {
       new BundleAnalyzerPlugin({
         analyzerMode: 'server',
         openAnalyzer: true,
+        // 더 상세한 설정 추가
+        defaultSizes: 'gzip', // gzip 크기 표시
+        generateStatsFile: true, // 통계 파일 생성
+        statsFilename: 'stats.json', // 통계 파일 이름
       })
     );
-    console.log('📊 Bundle analyzer enabled');
+    console.log('📊 Bundle analyzer enabled with enhanced options');
   }
 
   return config;

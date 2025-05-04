@@ -1,4 +1,4 @@
-const WebpackManifestPlugin = require('webpack-manifest-plugin').WebpackManifestPlugin;
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { exec } = require('child_process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -30,6 +30,7 @@ function getEntryHtmlPlugins() {
   const { entry } = require('./webpack.common.cjs');
   const plugins = [];
 
+  // 각 엔트리 포인트에 대해 HTML 파일 생성
   Object.keys(entry).forEach((entryName) => {
     const templatePath = path.resolve(__dirname, `src/view/${entryName}.html`);
     if (fs.existsSync(templatePath)) {
@@ -37,7 +38,7 @@ function getEntryHtmlPlugins() {
         new HtmlWebpackPlugin({
           filename: `${entryName}.html`,
           template: `src/view/${entryName}.html`,
-          chunks: [entryName],
+          chunks: ['runtime', 'vendors', 'bundled-commons', entryName], // 런타임, 벤더, 공통 청크 및 엔트리 포인트 청크 포함
           inject: true, // JS와 CSS 자동 주입 활성화
           minify: {
             collapseWhitespace: true,

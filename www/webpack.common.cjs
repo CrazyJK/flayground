@@ -3,12 +3,15 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
-module.exports = {
-  entry: {
+// 엔트리 포인트 그룹화
+const entryPoints = {
+  core: {
     index: './src/view/index.js',
     style: './src/view/style.js',
     test: './src/view/test.js',
     'dependencies-viewer': './src/view/dependencies-viewer.js',
+  },
+  pages: {
     'page.archive': './src/view/page.archive.js',
     'page.flay-page': './src/view/page.flay-page.js',
     'page.flay-one': './src/view/page.flay-one.js',
@@ -26,12 +29,18 @@ module.exports = {
     'page.history-shot': './src/view/page.history-shot.js',
     'page.history-play': './src/view/page.history-play.js',
     'page.statistics': './src/view/page.statistics.js',
+  },
+  images: {
     'page.image-page': './src/view/page.image-page.js',
     'page.image-one': './src/view/page.image-one.js',
     'page.image-fall': './src/view/page.image-fall.js',
     'page.image-download': './src/view/page.image-download.js',
+  },
+  misc: {
     'page.kamoru-diary': './src/view/page.kamoru-diary.js',
     'page.crawling': './src/view/page.crawling.js',
+  },
+  popups: {
     'popup.cover': './src/view/popup.cover.js',
     'popup.flay': './src/view/popup.flay.js',
     'popup.flay-card': './src/view/popup.flay-card.js',
@@ -41,6 +50,15 @@ module.exports = {
     'popup.monitor': './src/view/popup.monitor.js',
     'popup.image': './src/view/popup.image.js',
   },
+};
+
+// 모든 엔트리 포인트를 하나의 객체로 병합
+const entry = Object.values(entryPoints).reduce((acc, group) => {
+  return { ...acc, ...group };
+}, {});
+
+module.exports = {
+  entry,
   output: {
     path: path.resolve(__dirname, '../src/main/resources/static/dist'),
     publicPath: '',
@@ -91,9 +109,17 @@ module.exports = {
               {
                 useBuiltIns: 'usage',
                 corejs: 3,
+                // 트리 쉐이킹 개선을 위한 모듈 설정
+                modules: false,
+                // 대상 브라우저 명시
+                targets: {
+                  browsers: ['last 2 Chrome versions', 'last 2 Firefox versions', 'last 2 Safari versions', 'last 2 Edge versions'],
+                },
               },
             ],
           ],
+          // 필요한 경우 console.log 제거
+          plugins: process.env.NODE_ENV === 'production' ? [['transform-remove-console', { exclude: ['error', 'warn'] }]] : [],
         },
       },
       {
@@ -133,6 +159,13 @@ module.exports = {
             loader: 'sass-loader',
             options: {
               sourceMap: true,
+              sassOptions: {
+                // Dart Sass 2.0.0 호환성을 위한 설정
+                outputStyle: 'compressed',
+                includePaths: [path.resolve(__dirname, 'src')],
+              },
+              // 새로운 API 사용
+              api: 'modern',
             },
           },
         ],

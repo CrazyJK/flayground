@@ -10,6 +10,7 @@ function getEntryHtmlPlugins() {
   const { entry } = require('./webpack.common.cjs');
   const plugins = [];
 
+  // 각 엔트리 포인트에 대해 HTML 파일 생성
   Object.keys(entry).forEach((entryName) => {
     const templatePath = path.resolve(__dirname, `src/view/${entryName}.html`);
     if (fs.existsSync(templatePath)) {
@@ -17,7 +18,7 @@ function getEntryHtmlPlugins() {
         new HtmlWebpackPlugin({
           filename: `${entryName}.html`,
           template: `src/view/${entryName}.html`,
-          chunks: [entryName],
+          chunks: ['runtime', 'vendors', entryName], // 런타임, 벤더 청크 및 엔트리 포인트 청크 포함
           inject: true, // JS와 CSS 자동 주입 활성화
         })
       );
@@ -90,6 +91,13 @@ module.exports = {
         hostname: 'localhost',
       },
     },
+    // 개발 서버 속도 최적화
+    devMiddleware: {
+      writeToDisk: false, // 메모리에서만 번들 유지
+      stats: 'minimal', // 필요한 정보만 표시
+    },
+    // HTTPS 사용하려면 아래 주석 해제
+    // https: true,
     proxy: [
       {
         context: ['/api'],

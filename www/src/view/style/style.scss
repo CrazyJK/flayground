@@ -1,6 +1,6 @@
-@import '1.theme.scss';
-@import '2.layout.scss';
-@import '3.elements.scss';
-@import '4.component.scss';
-@import '5.scrollbar.scss';
-@import '6.sticky-header.scss';
+@forward '1.theme.scss';
+@forward '2.layout.scss';
+@forward '3.elements.scss';
+@forward '4.component.scss';
+@forward '5.scrollbar.scss';
+@forward '6.sticky-header.scss';

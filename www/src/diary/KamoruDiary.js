@@ -1,4 +1,5 @@
 import FlayAttach from '../attach/FlayAttach';
+import ApiClient from '../lib/ApiClient';
 import DateUtils from '../lib/DateUtils';
 import weatherSVG from '../svg/weathers';
 import windowButton from '../svg/windowButton';
@@ -81,7 +82,7 @@ export class KamoruDiary extends HTMLDivElement {
   }
 
   async start() {
-    this.#diaryList = await fetch('/diary/meta').then((res) => res.json());
+    this.#diaryList = await ApiClient.get('/diary/meta');
     console.debug('fetched #diaryList', this.#diaryList);
 
     this.#renderCalendar();
@@ -227,9 +228,7 @@ export class KamoruDiary extends HTMLDivElement {
 
         const date = clickedDate.id.substring(2);
         if (clickedDate.classList.contains('written')) {
-          fetch('/diary/date/' + date)
-            .then((response) => response.json())
-            .then((diary) => this.loadDiary(diary));
+          ApiClient.get('/diary/date/' + date).then((diary) => this.loadDiary(diary));
         } else {
           defaultDiaryRecord.meta.date = date;
           defaultDiaryRecord.meta.weather = 'sunny';
@@ -308,17 +307,11 @@ export class KamoruDiary extends HTMLDivElement {
     this.#currentDiary.meta.title = title;
     this.#currentDiary.content = content;
 
-    fetch('/diary', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(this.#currentDiary),
-    })
-      .then((res) => res.json())
-      .then((diary) => {
-        console.log('saved Diary', diary);
-        this.#currentDiary = diary;
-        this.#markDiaryDates();
-      });
+    ApiClient.post('/diary', { data: this.#currentDiary }).then((diary) => {
+      console.log('saved Diary', diary);
+      this.#currentDiary = diary;
+      this.#markDiaryDates();
+    });
   }
 }
 

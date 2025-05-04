@@ -1,4 +1,5 @@
 import FlayAction from '../../lib/FlayAction';
+import FlayFetch from '../../lib/FlayFetch';
 import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '../../lib/FlaySearch';
 import FlayStorage from '../../lib/FlayStorage';
 import favoriteSVG from '../../svg/favorite';
@@ -128,8 +129,8 @@ export default class FlayRegister extends HTMLDivElement {
           // find Flay
           foundFlayEl.innerHTML = '';
 
-          let flay = await fetch('/flay/' + inOpus).then((res) => (res.ok ? res.json() : false));
-          if (!flay) flay = await fetch('/archive/' + inOpus).then((res) => (res.ok ? res.json() : false));
+          let flay = await FlayFetch.getFlay(inOpus);
+          if (!flay) flay = await FlayFetch.getArchive(inOpus);
           if (flay) {
             foundFlayEl.innerHTML = `
               <label>${flay.studio}</label>
@@ -145,9 +146,7 @@ export default class FlayRegister extends HTMLDivElement {
           }
 
           // find Studio
-          fetch('/info/studio/findOneByOpus/' + inOpus)
-            .then((res) => res.json())
-            .then((foundStudio) => (studio.value = foundStudio.name));
+          FlayFetch.getStudioFindOneByOpus(inOpus).then((foundStudio) => (studio.value = foundStudio.name));
           // searching Arzon
           // FlaySearch.opus.Arzon(inOpus);
           FlaySearch.opus.Dondeth(inOpus);
@@ -157,24 +156,22 @@ export default class FlayRegister extends HTMLDivElement {
         // find actress
         if (inputActress.value !== '') {
           inputActress.value.split(' ').forEach((localname) => {
-            fetch('/info/actress/find/byLocalname/' + localname)
-              .then((res) => res.json())
-              .then((list) => {
-                console.log('find actress', list);
-                if (list.length === 1) {
-                  actress.value += (actress.value !== '' ? ',' : '') + list[0].name;
-                  actressFavorite.checked = list[0].favorite;
-                  actressName.value = list[0].name;
-                  actressLocalname.value = list[0].localName;
-                  actressBirth.value = list[0].birth;
-                  actressBody.value = list[0].body;
-                  actressHeight.value = list[0].height;
-                  actressDebut.value = list[0].debut;
-                } else {
-                  actressLocalname.value = localname;
-                  FlaySearch.actress.Minnano(localname);
-                }
-              });
+            FlayFetch.getActressListByLocalname(localname).then((list) => {
+              console.log('find actress', list);
+              if (list.length === 1) {
+                actress.value += (actress.value !== '' ? ',' : '') + list[0].name;
+                actressFavorite.checked = list[0].favorite;
+                actressName.value = list[0].name;
+                actressLocalname.value = list[0].localName;
+                actressBirth.value = list[0].birth;
+                actressBody.value = list[0].body;
+                actressHeight.value = list[0].height;
+                actressDebut.value = list[0].debut;
+              } else {
+                actressLocalname.value = localname;
+                FlaySearch.actress.Minnano(localname);
+              }
+            });
           });
         }
         // call translate

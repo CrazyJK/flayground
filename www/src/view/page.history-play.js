@@ -2,13 +2,14 @@ import './inc/Page';
 import './page.history-play.scss';
 
 import DateUtils from '../lib/DateUtils';
+import FlayFetch from '../lib/FlayFetch';
 
 class Page {
   constructor() {}
 
   async start() {
     // 데이터 가져오기
-    const playHistories = await fetch('/info/history/find/action/PLAY').then((res) => res.json());
+    const playHistories = await FlayFetch.getHistoryListByAction('PLAY');
 
     // 데이터 처리 - Map 대신 객체 사용을 고려하여 성능 개선
     const dateMap = this.#processHistoryData(playHistories);

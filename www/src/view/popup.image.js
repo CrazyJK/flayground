@@ -1,4 +1,5 @@
 import FlayImage from '../image/part/FlayImage';
+import FlayFetch from '../lib/FlayFetch';
 import { getRandomInt } from '../lib/randomNumber';
 import './popup.image.scss';
 
@@ -46,7 +47,7 @@ flayImage.addEventListener('click', (e) => {
     },
   };
 
-  let max = Number(urlParams.get('max')) || (await fetch('/image/size').then((res) => res.json()));
+  let max = Number(urlParams.get('max')) || (await FlayFetch.getImageSize());
   let idx = Number(urlParams.get('idx')) || getRandomInt(0, max);
   console.debug('params: idx', idx, 'max', max);
 

@@ -3,6 +3,7 @@ import './popup.studio.scss';
 
 import FlayCard from '../flay/domain/FlayCard';
 import flayAction from '../lib/FlayAction';
+import FlayFetch from '../lib/FlayFetch';
 import GridControl from '../ui/GridControl';
 
 class PopupStudio {
@@ -65,18 +66,16 @@ class PopupStudio {
   }
 
   #fetchStudio() {
-    fetch('/info/studio/' + this.name)
-      .then((res) => res.json())
-      .then((studio) => {
-        this.studioName.value = studio.name;
-        this.studioCompany.value = studio.company;
-        this.studioHomepage.value = studio.homepage;
-      });
+    FlayFetch.getStudio(this.name).then((studio) => {
+      this.studioName.value = studio.name;
+      this.studioCompany.value = studio.company;
+      this.studioHomepage.value = studio.homepage;
+    });
   }
 
   async #fetchFlay() {
-    const instanceFlayList = await fetch('/flay/find/studio/' + this.name).then((res) => res.json());
-    const archiveFlayList = await fetch('/archive/find/studio/' + this.name).then((res) => res.json());
+    const instanceFlayList = await FlayFetch.getFlayListByStudio(this.name);
+    const archiveFlayList = await FlayFetch.getArchiveListByStudio(this.name);
 
     this.allFlayList = Array.from(instanceFlayList);
     archiveFlayList.forEach((archiveFlay) => {

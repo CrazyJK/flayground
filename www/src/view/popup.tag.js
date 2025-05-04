@@ -3,6 +3,7 @@ import './popup.tag.scss';
 
 import FlayCard from '../flay/domain/FlayCard';
 import FlayAction from '../lib/FlayAction';
+import FlayFetch from '../lib/FlayFetch';
 import GridControl from '../ui/GridControl';
 
 window.tagList = [];
@@ -24,25 +25,21 @@ const flayRank = document.querySelector('#flayRank');
 document.querySelector('body > footer').appendChild(new GridControl('body > article'));
 
 function fetchTag() {
-  fetch('/info/tag/' + id)
-    .then((res) => res.json())
-    .then((tag) => {
-      tagId.innerHTML = tag.id;
-      tagGroup.value = tag.group;
-      tagName.value = tag.name;
-      tagDesc.value = tag.description;
+  FlayFetch.getTag(id).then((tag) => {
+    tagId.innerHTML = tag.id;
+    tagGroup.value = tag.group;
+    tagName.value = tag.name;
+    tagDesc.value = tag.description;
 
-      document.title = `${tag.group}: ${tag.name} tag`;
-    });
+    document.title = `${tag.group}: ${tag.name} tag`;
+  });
 
-  fetch('/flay/find/tag/' + id)
-    .then((res) => res.json())
-    .then((list) => {
-      let opusList = Array.from(list).map((flay) => flay.opus);
-      renderFlayCardList(opusList).then(() => {
-        countFlaySizeByRank();
-      });
+  FlayFetch.getFlayListByTagId(id).then((list) => {
+    let opusList = Array.from(list).map((flay) => flay.opus);
+    renderFlayCardList(opusList).then(() => {
+      countFlaySizeByRank();
     });
+  });
 }
 
 fetchTag();

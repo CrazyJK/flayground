@@ -1,5 +1,7 @@
+import ApiClient from '../../lib/ApiClient';
 import DateUtils from '../../lib/DateUtils';
 import FileUtils from '../../lib/FileUtils';
+import FlayFetch from '../../lib/FlayFetch';
 
 export default class FlayImage extends HTMLImageElement {
   constructor() {
@@ -14,7 +16,7 @@ export default class FlayImage extends HTMLImageElement {
     // console.debug('attributeChangedCallback', name, oldValue, newValue);
     switch (name) {
       case 'data-idx':
-        this.src = '/static/image/' + newValue;
+        this.src = ApiClient.buildUrl('/static/image/' + newValue);
         break;
       case 'src':
         this.#loadInfo();
@@ -38,24 +40,22 @@ export default class FlayImage extends HTMLImageElement {
     }
 
     this.decode().then(() =>
-      fetch('/image/' + idx)
-        .then((res) => res.json())
-        .then((info) => {
-          info['width'] = this.naturalWidth;
-          info['height'] = this.naturalHeight;
-          // console.debug('image info', info);
+      FlayFetch.getImage(idx).then((info) => {
+        info['width'] = this.naturalWidth;
+        info['height'] = this.naturalHeight;
+        // console.debug('image info', info);
 
-          this.dataset.name = info.name;
-          this.dataset.path = info.path;
-          this.dataset.file = info.file;
-          this.dataset.fileSize = FileUtils.prettySize(info.length).join('');
-          this.dataset.modified = DateUtils.format(info.modified, 'yyyy-MM-dd');
-          this.dataset.width = info.width;
-          this.dataset.height = info.height;
-          this.alt = `※ Idx: ${info.idx}\n※ Path: ${info.path}\n※ Name: ${info.name}\n※ Size: ${info.width} x ${info.height}`;
+        this.dataset.name = info.name;
+        this.dataset.path = info.path;
+        this.dataset.file = info.file;
+        this.dataset.fileSize = FileUtils.prettySize(info.length).join('');
+        this.dataset.modified = DateUtils.format(info.modified, 'yyyy-MM-dd');
+        this.dataset.width = info.width;
+        this.dataset.height = info.height;
+        this.alt = `※ Idx: ${info.idx}\n※ Path: ${info.path}\n※ Name: ${info.name}\n※ Size: ${info.width} x ${info.height}`;
 
-          this.dispatchEvent(new CustomEvent('loaded', { detail: { info: info } }));
-        })
+        this.dispatchEvent(new CustomEvent('loaded', { detail: { info: info } }));
+      })
     );
   }
 }

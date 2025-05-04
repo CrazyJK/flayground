@@ -1,3 +1,5 @@
+import ApiClient from './ApiClient';
+
 export default {
   play: (opus, time = -1, callback, failCallback) => {
     return action('/flay/play/' + opus + '?seekTime=' + time, { method: 'PATCH' }, callback, failCallback);
@@ -157,7 +159,7 @@ export default {
  * @param {function} failCallback
  */
 async function action(url, requestInit, callback = () => {}, failCallback = () => {}) {
-  const response = await fetch(url, requestInit);
+  const response = await ApiClient.getResponse(url, requestInit);
   console.debug(url, response.ok, response.status, response);
 
   switch (response.status) {

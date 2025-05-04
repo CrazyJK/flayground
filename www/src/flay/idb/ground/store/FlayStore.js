@@ -1,3 +1,4 @@
+import FlayFetch from '../../../../lib/FlayFetch';
 import FlayGroundDB from '../db/FlayGroundDB';
 
 const storeName = 'Flay';
@@ -93,12 +94,5 @@ export const loadFlayDB = async () => {
 
   await flayDB.removeAll();
 
-  await Promise.all([
-    fetch('/flay')
-      .then((res) => res.json())
-      .then((list) => flayDB.update(...list)),
-    fetch('/archive')
-      .then((res) => res.json())
-      .then((list) => flayDB.update(...list)),
-  ]);
+  await Promise.all([FlayFetch.getFlayAll().then((list) => flayDB.update(...list)), FlayFetch.getArchiveAll().then((list) => flayDB.update(...list))]);
 };

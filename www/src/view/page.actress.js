@@ -1,6 +1,7 @@
 import './inc/Page';
 import './page.actress.scss';
 
+import FlayFetch from '../lib/FlayFetch';
 import { popupActress, popupActressInfo } from '../lib/FlaySearch';
 import StringUtils from '../lib/StringUtils';
 import favoriteSVG from '../svg/favorite';
@@ -18,7 +19,7 @@ class Page {
   async start() {
     try {
       // 데이터 로딩 중에 표시할 로딩 인디케이터를 추가할 수 있습니다
-      const actressList = await fetch('/info/actress').then((res) => res.json());
+      const actressList = await FlayFetch.getActressAll();
       this.actressList = actressList.sort((a, b) => a.name.localeCompare(b.name));
 
       // 검색을 위한 인덱스 구축

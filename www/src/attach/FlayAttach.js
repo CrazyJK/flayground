@@ -1,3 +1,4 @@
+import ApiClient from '../lib/ApiClient';
 import windowButton from '../svg/windowButton';
 import './FlayAttach.scss';
 
@@ -119,8 +120,7 @@ export default class FlayAttach extends HTMLDivElement {
 
     if (id) {
       // 기존 첨부 가져오기
-      fetch('/attach/' + id)
-        .then((response) => response.json())
+      ApiClient.get('/attach/' + id)
         .then((attach) => this.changeCallback(attach))
         .catch((error) => console.error('get fetch attach', id, error));
     } else {
@@ -129,11 +129,7 @@ export default class FlayAttach extends HTMLDivElement {
       formData.append('name', name);
       formData.append('type', type);
 
-      fetch('/attach', {
-        method: 'POST',
-        body: formData,
-      })
-        .then((response) => response.json())
+      ApiClient.postFormData('/attach', formData)
         .then((attach) => this.changeCallback(attach))
         .catch((error) => console.error('create', error));
     }
@@ -293,11 +289,7 @@ export default class FlayAttach extends HTMLDivElement {
       formData.append('file', file);
     }
 
-    fetch('/attach', {
-      method: 'PUT',
-      body: formData,
-    })
-      .then((response) => response.json())
+    ApiClient.putFormData('/attach', formData)
       .then((attach) => this.changeCallback(attach))
       .catch((error) => console.error('upload', error));
   }
@@ -311,11 +303,7 @@ export default class FlayAttach extends HTMLDivElement {
     formData.append('id', this.attach.id);
     formData.append('attachFileId', attachFileId);
 
-    fetch('/attach', {
-      method: 'DELETE',
-      body: formData,
-    })
-      .then((response) => response.json())
+    ApiClient.delete('/attach', { data: formData })
       .then((attach) => this.changeCallback(attach))
       .catch((error) => console.error('remove', error));
   }

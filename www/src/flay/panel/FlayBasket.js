@@ -340,7 +340,7 @@ class FlayBasketItem extends HTMLDivElement {
    */
   async #loadCoverImage(opus) {
     try {
-      const url = await FlayFetch.getCover(opus);
+      const url = await FlayFetch.getCoverURL(opus);
       const coverEl = this.querySelector('.cover');
 
       // 이미지 미리 로드 후 배경으로 설정

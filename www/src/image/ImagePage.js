@@ -1,6 +1,8 @@
 import '../image/part/ImageFrame';
+import ApiClient from '../lib/ApiClient';
 import DateUtils from '../lib/DateUtils';
 import FileUtils from '../lib/FileUtils';
+import FlayFetch from '../lib/FlayFetch';
 import { lazyLoadBackgroundImage } from '../lib/ImageLazyLoad';
 import './ImagePage.scss';
 
@@ -40,15 +42,11 @@ export class ImagePage extends HTMLDivElement {
   }
 
   loadImages() {
-    fetch('/image')
-      .then((res) => res.json())
-      .then((list) => {
-        console.debug(list);
-        const imagePathMap = this.groupImagesByPath(list);
-        console.debug(imagePathMap);
-        this.buildFolderTree(imagePathMap);
-        this.addCollapseBehavior();
-      });
+    FlayFetch.getImageAll().then((list) => {
+      const imagePathMap = this.groupImagesByPath(list);
+      this.buildFolderTree(imagePathMap);
+      this.addCollapseBehavior();
+    });
   }
 
   groupImagesByPath(list) {
@@ -194,7 +192,7 @@ export class ImagePage extends HTMLDivElement {
 
     images.forEach((image) => {
       const item = article.appendChild(document.createElement('div'));
-      item.dataset.lazyBackgroundImageUrl = `/static/image/${image.idx}`;
+      item.dataset.lazyBackgroundImageUrl = ApiClient.buildUrl(`/static/image/${image.idx}`);
       item.title = `#${image.idx} - ${image.name} - ${FileUtils.prettySize(image.length).join(' ')} - ${DateUtils.format(image.modified, 'yyyy-MM-dd')}`;
       item.addEventListener('click', () => {
         imageFrame.set(image.idx);

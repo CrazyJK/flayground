@@ -1,6 +1,7 @@
 import './FlayMemoEditor.scss';
 
 import { EVENT_CHANGE_TITLE } from '../../GroundConstant';
+import ApiClient from '../../lib/ApiClient';
 import DateUtils from '../../lib/DateUtils';
 import FileUtils from '../../lib/FileUtils';
 import FlayStorage from '../../lib/FlayStorage';
@@ -33,7 +34,7 @@ export class FlayMemoEditor extends HTMLDivElement {
    * Load memo
    */
   async load() {
-    const memo = await fetch('/memo').then((res) => res.json());
+    const memo = await ApiClient.get('/memo');
     this.htmlEditor.setHTML(memo.html);
     this.#successCallback(memo);
   }
@@ -44,7 +45,7 @@ export class FlayMemoEditor extends HTMLDivElement {
   async save() {
     const formData = new FormData();
     formData.set('html', this.htmlEditor.getHTML());
-    const memo = await fetch('/memo', { method: 'POST', body: formData }).then((res) => res.json());
+    const memo = await ApiClient.post('/memo', formData);
     FlayStorage.local.set(MEMO_STORAGE_KEY, memo.date); // Save memo date
     this.#successCallback(memo);
   }

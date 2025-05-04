@@ -12,6 +12,7 @@ import CoverStore from '../idb/ground/store/CoverStore';
 import FlayStore from '../idb/ground/store/FlayStore';
 import HistoryStore from '../idb/ground/store/HistoryStore';
 import ScoreStore from '../idb/ground/store/ScoreStore';
+import FlayFetch from './FlayFetch';
 
 const flayStore = new FlayStore();
 const coverStore = new CoverStore();
@@ -45,7 +46,10 @@ export default class FlayDBCache {
   static async getFlay(opus) {
     let flay = await flayStore.select(opus);
     if (!flay) {
-      flay = await fetch(`/flay/${opus}`).then((res) => res.json());
+      flay = await FlayFetch.getFlay(opus);
+      if (!flay) {
+        throw new Error(`Flay not found: ${opus}`);
+      }
       if (flay.error) {
         throw new Error(flay.message);
       }
@@ -63,7 +67,10 @@ export default class FlayDBCache {
   static async getActress(name) {
     let actress = await actressStore.select(name);
     if (!actress) {
-      actress = await fetch(`/info/actress/${name}`).then((res) => res.json());
+      actress = await FlayFetch.getActress(name);
+      if (!actress) {
+        throw new Error(`Actress not found: ${name}`);
+      }
       if (actress.error) {
         throw new Error(actress.message);
       }
@@ -76,7 +83,7 @@ export default class FlayDBCache {
   static async getScore(opus) {
     let record = await scoreStore.select(opus);
     if (!record) {
-      const score = await fetch(`/flay/${opus}/score`).then((res) => res.text());
+      const score = await FlayFetch.getScore(opus);
       if (score.error) {
         throw new Error(score.message);
       }
@@ -95,7 +102,7 @@ export default class FlayDBCache {
     if (!coverObjectURLMap.has(opus)) {
       let cover = await coverStore.select(opus);
       if (!cover) {
-        const blob = await fetch(`/static/cover/${opus}`).then((res) => res.blob());
+        const blob = await FlayFetch.getCover(opus);
         cover = await coverStore.update(opus, blob);
         console.debug('[FlayDBCache] update cover', opus);
       }
@@ -112,7 +119,7 @@ export default class FlayDBCache {
   static async getHistories(opus) {
     let record = await historyStore.select(opus);
     if (!record) {
-      const histories = await fetch(`/info/history/find/${opus}`).then((res) => res.json());
+      const histories = await FlayFetch.getHistories(opus);
       record = await historyStore.update(opus, histories);
       console.debug('[FlayDBCache] update history', opus);
     }
@@ -127,7 +134,7 @@ export default class FlayDBCache {
   static async getCountOfFlay(name) {
     let record = await actressFlayCountStore.select(name);
     if (!record) {
-      const flayCount = await fetch(`/flay/count/actress/${name}`).then((res) => res.text());
+      const flayCount = await FlayFetch.getCountOfFlay(name);
       record = await actressFlayCountStore.update(name, flayCount);
       console.debug('[FlayDBCache] update actressFlayCount', name);
     }

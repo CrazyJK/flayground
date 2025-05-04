@@ -1,3 +1,4 @@
+import ApiClient from '../lib/ApiClient';
 import FlayAction from '../lib/FlayAction';
 import './inc/Page';
 import './page.image-download.scss';
@@ -12,7 +13,6 @@ class Page {
   }
 
   async runDownload() {
-    const downloadUrl = 'https://flay.kamoru.jk/image/pageImageDownload';
     const searchParams = new URLSearchParams({
       pageUrl: document.querySelector('#pageUrl').value,
       downloadDir: document.querySelector('#downloadDir').value,
@@ -22,7 +22,7 @@ class Page {
       minimumKbSize: document.querySelector('#minimumKbSize').value,
     });
 
-    const { imageFiles, imageUrls, localPath, message, pageUrl, result } = await fetch(downloadUrl + '?' + searchParams.toString()).then((res) => res.json());
+    const { imageFiles, imageUrls, localPath, message, pageUrl, result } = await ApiClient.get('/image/pageImageDownload?' + searchParams.toString());
     if (result) {
       document.querySelector('#openFolderBtn').innerHTML = localPath;
       document.querySelector('#fileList').innerHTML = imageFiles

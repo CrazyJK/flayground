@@ -1,3 +1,4 @@
+import ApiClient from '../../lib/ApiClient';
 import { popupFlay } from '../../lib/FlaySearch';
 import { OpusProvider } from '../../lib/OpusProvider';
 import { getRandomInt } from '../../lib/randomNumber';
@@ -65,7 +66,7 @@ export default class CoverPopout extends HTMLDivElement {
       border-radius: 0.25rem;
       transform: rotate(${기울기각도}deg);
       transition: 0.4s`;
-    커버.src = `/static/cover/${품번}`;
+    커버.src = ApiClient.buildUrl(`/static/cover/${품번}`);
     커버.onclick = () => popupFlay(품번);
     커버.onload = async () => {
       this.appendChild(커버);

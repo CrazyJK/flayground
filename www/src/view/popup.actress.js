@@ -3,6 +3,7 @@ import './popup.actress.scss';
 
 import FlayCard from '../flay/domain/FlayCard';
 import FlayAction from '../lib/FlayAction';
+import FlayFetch from '../lib/FlayFetch';
 import FlaySearch from '../lib/FlaySearch';
 import favoriteSVG from '../svg/favorite';
 import GridControl from '../ui/GridControl';
@@ -102,7 +103,7 @@ class PopupActress {
   }
 
   async #fetchActress() {
-    this.actress = await fetch('/info/actress/' + this.name).then((res) => res.json());
+    this.actress = await FlayFetch.getActress(this.name);
     console.log('actress', this.actress);
 
     this.favorite.checked = this.actress.favorite;
@@ -121,8 +122,8 @@ class PopupActress {
     this.allFlayList = [];
 
     for (const name of [this.name, ...this.actress.otherNames]) {
-      const instanceFlayList = await fetch('/flay/find/actress/' + name).then((res) => res.json());
-      const archiveFlayList = await fetch('/archive/find/actress/' + name).then((res) => res.json());
+      const instanceFlayList = await FlayFetch.getFlayListByActress(name);
+      const archiveFlayList = await FlayFetch.getArchiveListByActress(name);
 
       this.allFlayList.push(...instanceFlayList);
       archiveFlayList.forEach((archiveFlay) => {

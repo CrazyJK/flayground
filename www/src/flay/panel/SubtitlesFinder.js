@@ -1,4 +1,5 @@
 import FlayAction from '../../lib/FlayAction';
+import FlayFetch from '../../lib/FlayFetch';
 import { popupFlayCard } from '../../lib/FlaySearch';
 import './SubtitlesFinder.scss';
 
@@ -213,11 +214,8 @@ export default class SubtitlesFinder extends HTMLDivElement {
 
     this.querySelectorAll("input[name='rank']").forEach((rank) => rank.addEventListener('change', displayList));
 
-    fetch('/flay')
-      .then((res) => res.json())
-      .then((list) => {
-        flayList = list;
-      })
+    FlayFetch.getFlayAll()
+      .then((list) => (flayList = list))
       .then(displayList);
   }
 }

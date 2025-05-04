@@ -1,4 +1,5 @@
 import { EventCode } from '../GroundConstant';
+import FlayFetch from '../lib/FlayFetch';
 import { getRandomInt } from '../lib/randomNumber';
 import { Countdown, EVENT_COUNTDOWN_END } from '../ui/Countdown';
 import './part/FlayImage';
@@ -153,12 +154,10 @@ export class ImageOne extends HTMLElement {
   }
 
   connectedCallback() {
-    fetch('/image/size')
-      .then((res) => res.text())
-      .then((text) => {
-        this.imageSize = Number(text);
-        this.#navigator('Space');
-      });
+    FlayFetch.getImageSize().then((text) => {
+      this.imageSize = Number(text);
+      this.#navigator('Space');
+    });
   }
 
   #navigateOnWheel(e) {

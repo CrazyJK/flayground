@@ -64,7 +64,7 @@ export default class FlayArticle extends HTMLDivElement {
     this.querySelector('.last-modified span').innerHTML = flay.video.lastModified > 0 ? DateUtils.format(flay.video.lastModified, 'yy.MM.dd') + '<small>modified</small>' : '';
     this.querySelector('.last-play     span').innerHTML = flay.video.lastPlay > 0 ? DateUtils.format(flay.video.lastPlay, 'yy.MM.dd') + '<small>played</small>' : '';
 
-    FlayFetch.getCover(flay.opus).then((url) => {
+    FlayFetch.getCoverURL(flay.opus).then((url) => {
       this.querySelector('.cover').style.backgroundImage = `url(${url})`;
     });
   }

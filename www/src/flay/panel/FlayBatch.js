@@ -1,3 +1,4 @@
+import ApiClient from '../../lib/ApiClient';
 import FlayAction from '../../lib/FlayAction';
 import FlayFetch from '../../lib/FlayFetch';
 import { popupActress, popupFlay } from '../../lib/FlaySearch';
@@ -105,12 +106,10 @@ export default class FlayBatch extends HTMLDivElement {
       }
     });
     // orderbyScoreDesc, lowScore
-    fetch(`/flay/list/lowScore`)
-      .then((res) => res.json())
-      .then((list) => {
-        ol.querySelectorAll('li:not(.head)').forEach((li) => li.remove());
-        list.reverse().forEach((flay) => {
-          ol.appendChild(document.createElement('li')).innerHTML = `
+    FlayFetch.getFlayListLowScore().then((list) => {
+      ol.querySelectorAll('li:not(.head)').forEach((li) => li.remove());
+      list.reverse().forEach((flay) => {
+        ol.appendChild(document.createElement('li')).innerHTML = `
             <label class="studio" >${flay.studio}</label>
             <label class="opus"   ><a>${flay.opus}</a></label>
             <label class="title"  >${flay.title}</label>
@@ -121,52 +120,50 @@ export default class FlayBatch extends HTMLDivElement {
             <label class="sub"    >${flay.files.subtitles.length}</label>
             <label class="score"  >${flay.score}</label>
           `;
-          ol.appendChild(document.createElement('li')).innerHTML = `<img loading="lazy" src="/static/cover/${flay.opus}" style="width:600px">`;
-        });
+        ol.appendChild(document.createElement('li')).innerHTML = `<img loading="lazy" src="${ApiClient.buildUrl(`/static/cover/${flay.opus}`)}" style="width:600px">`;
+      });
+    });
+
+    FlayFetch.getFlayListOrderByScoreDesc().then((list) => {
+      const scoreMap = new Map();
+      list.forEach((flay) => {
+        const key = 'S' + flay.score;
+        if (!scoreMap.has(key)) {
+          scoreMap.set(key, new Array());
+        }
+        scoreMap.get(key).push(flay);
+      });
+      console.log('scoreMap', scoreMap);
+
+      const chartWrap = this.querySelector('#lowerScoreFlayChart');
+      chartWrap.textContent = null;
+      scoreMap.forEach((list, key) => {
+        const score = key.substring(1);
+        console.log(score, list.length);
       });
 
-    fetch(`/flay/list/orderbyScoreDesc`)
-      .then((res) => res.json())
-      .then((list) => {
-        const scoreMap = new Map();
-        list.forEach((flay) => {
-          const key = 'S' + flay.score;
-          if (!scoreMap.has(key)) {
-            scoreMap.set(key, new Array());
-          }
-          scoreMap.get(key).push(flay);
-        });
-        console.log('scoreMap', scoreMap);
-
-        const chartWrap = this.querySelector('#lowerScoreFlayChart');
-        chartWrap.textContent = null;
-        scoreMap.forEach((list, key) => {
-          const score = key.substring(1);
-          console.log(score, list.length);
-        });
-
-        const scoreList = Array.from(scoreMap.keys()).sort((s1, s2) => parseInt(s2.substring(1)) - parseInt(s1.substring(1)));
-        console.log('scoreList', scoreList);
-        scoreList.forEach((key) => {
-          const scoreWrap = chartWrap.appendChild(document.createElement('div'));
-          scoreWrap.appendChild(document.createElement('div')).innerHTML = `<label>${key.substring(1)}</label>`;
-          scoreWrap.appendChild(document.createElement('div')).append(
-            ...scoreMap.get(key).map((flay) => {
-              return new FlayMarker(flay, { showTitle: true, shape: 'star' });
-              // const flayLabel = document.createElement('label');
-              // flayLabel.title = flay.opus;
-              // flayLabel.classList.add('flay');
-              // flayLabel.classList.toggle('archive', flay.archive);
-              // flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
-              // flayLabel.addEventListener('click', () => {
-              //   flayLabel.classList.add('active');
-              //   popupFlay(flay.opus);
-              // });
-              // return flayLabel;
-            })
-          );
-        });
+      const scoreList = Array.from(scoreMap.keys()).sort((s1, s2) => parseInt(s2.substring(1)) - parseInt(s1.substring(1)));
+      console.log('scoreList', scoreList);
+      scoreList.forEach((key) => {
+        const scoreWrap = chartWrap.appendChild(document.createElement('div'));
+        scoreWrap.appendChild(document.createElement('div')).innerHTML = `<label>${key.substring(1)}</label>`;
+        scoreWrap.appendChild(document.createElement('div')).append(
+          ...scoreMap.get(key).map((flay) => {
+            return new FlayMarker(flay, { showTitle: true, shape: 'star' });
+            // const flayLabel = document.createElement('label');
+            // flayLabel.title = flay.opus;
+            // flayLabel.classList.add('flay');
+            // flayLabel.classList.toggle('archive', flay.archive);
+            // flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
+            // flayLabel.addEventListener('click', () => {
+            //   flayLabel.classList.add('active');
+            //   popupFlay(flay.opus);
+            // });
+            // return flayLabel;
+          })
+        );
       });
+    });
   }
 }
 

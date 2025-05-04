@@ -353,7 +353,7 @@ export default class FlayPagination extends HTMLDivElement {
           const coverWidth = domRect.width * 6;
 
           this.coverThumbnail.classList.add('show');
-          FlayFetch.getCover(opus).then((url) => {
+          FlayFetch.getCoverURL(opus).then((url) => {
             this.coverThumbnail.style.backgroundImage = `url(${url})`;
           });
           this.coverThumbnail.style.width = `${coverWidth}px`;

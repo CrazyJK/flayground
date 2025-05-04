@@ -1,3 +1,4 @@
+import ApiClient from '../../lib/ApiClient';
 import FlayFetch from '../../lib/FlayFetch';
 import { getRandomInt } from '../../lib/randomNumber';
 import { addResizeListener } from '../../lib/windowAddEventListener';
@@ -260,7 +261,7 @@ class FlayVideoPoster extends HTMLDivElement {
   }
 
   set(flay) {
-    this.style.backgroundImage = `url(/static/cover/${flay.opus})`;
+    this.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
   }
 }
 

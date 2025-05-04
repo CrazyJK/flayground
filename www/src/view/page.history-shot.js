@@ -3,6 +3,7 @@ import './page.history-shot.scss';
 
 import FlayCard from '../flay/domain/FlayCard';
 import DateUtils from '../lib/DateUtils';
+import FlayFetch from '../lib/FlayFetch';
 
 class Page {
   prevDay;
@@ -15,7 +16,7 @@ class Page {
 
   async #fetchPlayHistories() {
     console.time('fetchPlayHistories');
-    const playHistoryList = await fetch('/info/history/find/action/PLAY').then((res) => res.json());
+    const playHistoryList = await FlayFetch.getHistoryListByAction('PLAY');
     Array.from(playHistoryList).forEach((history) => {
       const refDate = this.#getRefDate(history.date);
       if (!this.shotDateOpusMap.has(refDate)) {

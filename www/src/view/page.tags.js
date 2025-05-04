@@ -3,6 +3,7 @@ import './page.tags.scss';
 
 import * as DragDrop from '../lib/Drag&Drop';
 import FlayAction from '../lib/FlayAction';
+import FlayFetch from '../lib/FlayFetch';
 import { popupTag } from '../lib/FlaySearch';
 import { addResizeListener } from '../lib/windowAddEventListener';
 import tagSVG from '../svg/tag';
@@ -59,7 +60,7 @@ renderTagList();
 async function renderTagList() {
   document.querySelector('body > main').textContent = null;
 
-  const tagGroupList = await fetch('/info/tagGroup').then((res) => res.json());
+  const tagGroupList = await FlayFetch.getTagGroups();
   Array.from(tagGroupList).forEach(({ id, name, desc }) => {
     const groupDiv = document.querySelector('body > main').appendChild(document.createElement('fieldset'));
     groupDiv.innerHTML = `<legend>${id}: ${name} ${desc}</legend><div id="${id}"></div>`;
@@ -78,33 +79,31 @@ async function renderTagList() {
     }
   });
 
-  fetch('/info/tag/withCount')
-    .then((res) => res.json())
-    .then((tagList) => {
-      Array.from(tagList)
-        .sort((t1, t2) => t1.name.localeCompare(t2.name))
-        .forEach((tag) => {
-          const flayTagInfo = new FlayTagInfo(tag);
-          flayTagInfo.addEventListener('drop', async (e) => {
-            const dropzone = e.target.closest('.dropzone');
-            const newGroup = dropzone.id;
-            if (tag.group !== newGroup) {
-              tag.group = newGroup;
-              await FlayAction.updateTag(tag);
-            }
-            // 해당 드롭존에 태그 다시 정렬
-            const sorted = Array.from(dropzone.querySelectorAll('.flay-tag-info')).sort((t1, t2) => t1.tag.name.localeCompare(t2.tag.name));
-            for (const flayTagInfo of sorted) {
-              dropzone.insertBefore(flayTagInfo, null);
-            }
-          });
-
-          document.querySelector('#etc').append(flayTagInfo);
-          if (tag.group) document.querySelector('#' + tag.group)?.append(flayTagInfo);
-
-          DragDrop.setMoveable(flayTagInfo);
+  FlayFetch.getTagListWithCount().then((tagList) => {
+    Array.from(tagList)
+      .sort((t1, t2) => t1.name.localeCompare(t2.name))
+      .forEach((tag) => {
+        const flayTagInfo = new FlayTagInfo(tag);
+        flayTagInfo.addEventListener('drop', async (e) => {
+          const dropzone = e.target.closest('.dropzone');
+          const newGroup = dropzone.id;
+          if (tag.group !== newGroup) {
+            tag.group = newGroup;
+            await FlayAction.updateTag(tag);
+          }
+          // 해당 드롭존에 태그 다시 정렬
+          const sorted = Array.from(dropzone.querySelectorAll('.flay-tag-info')).sort((t1, t2) => t1.tag.name.localeCompare(t2.tag.name));
+          for (const flayTagInfo of sorted) {
+            dropzone.insertBefore(flayTagInfo, null);
+          }
         });
-    });
+
+        document.querySelector('#etc').append(flayTagInfo);
+        if (tag.group) document.querySelector('#' + tag.group)?.append(flayTagInfo);
+
+        DragDrop.setMoveable(flayTagInfo);
+      });
+  });
 }
 
 addResizeListener(() => {

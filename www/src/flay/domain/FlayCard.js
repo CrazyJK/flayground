@@ -1,3 +1,4 @@
+import FlayFetch from '../../lib/FlayFetch';
 import { addResizeListener } from '../../lib/windowAddEventListener';
 import './FlayCard.scss';
 import FlayActress from './part/FlayActress';
@@ -93,11 +94,11 @@ export default class FlayCard extends HTMLDivElement {
     this.setAttribute('opus', opus);
 
     if (!fullyFlay) {
-      const res = await fetch('/flay/' + opus + '/fully');
-      if (res.status === 404) {
+      try {
+        fullyFlay = await FlayFetch.getFullyFlay(opus);
+      } catch (error) {
         this.notfound(opus);
-      } else {
-        fullyFlay = await res.json();
+        return;
       }
     }
     this.#render(fullyFlay);

@@ -67,7 +67,7 @@ export default class FlayCover extends FlayHTMLElement {
       }
     };
 
-    FlayFetch.getCover(this.flay.opus).then((objectURL) => {
+    FlayFetch.getCoverURL(this.flay.opus).then((objectURL) => {
       this.#coverImage.src = objectURL;
     });
   }

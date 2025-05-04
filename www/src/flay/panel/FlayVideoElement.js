@@ -1,3 +1,4 @@
+import ApiClient from '../../lib/ApiClient';
 import PlayTimeDB from '../idb/PlayTimeDB';
 
 // 싱글톤 패턴으로 변경하여 메모리 사용 최적화
@@ -58,7 +59,7 @@ export default class FlayVideo extends HTMLVideoElement {
     this.loaded = false;
     this.playing = false;
     this.#recoveryAttempts = 0;
-    this.poster = `/static/cover/${opus}`;
+    this.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
     this.src = `/stream/flay/movie/${opus}/0`;
     this.load();
   }

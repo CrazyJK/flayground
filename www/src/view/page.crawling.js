@@ -2,6 +2,7 @@ import './inc/Page';
 import './page.crawling.scss';
 
 import NanoStore from '../flay/idb/nano/store/NanoStore';
+import ApiClient from '../lib/ApiClient';
 import DateUtils from '../lib/DateUtils';
 import FlayFetch from '../lib/FlayFetch';
 import { popupActress, popupFlay } from '../lib/FlaySearch';
@@ -299,10 +300,7 @@ class Page {
     const url = StringUtils.isBlank(text) ? this.#getText(target) : text;
     const formData = new FormData();
     formData.append('url', url);
-    fetch('/download', {
-      method: 'POST',
-      body: formData,
-    })
+    ApiClient.postFormData('/download', formData)
       .then(async (res) => {
         // 헤더에서 파일명을 가져옴
         const filename = res.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
@@ -382,7 +380,7 @@ class Page {
 
   #callCrawling() {
     const url = LIST_URL + this.#paging.srcPageNo;
-    fetch(`/crawling/curl?url=${encodeURIComponent(url)}`);
+    ApiClient.get(`/crawling/curl?url=${encodeURIComponent(url)}`);
     this.#notice(this.#paging.srcPageNo + '페이지 크롤링 중...');
     document.querySelector('#srcPageURL').href = url;
   }

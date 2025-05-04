@@ -1,6 +1,7 @@
 import './inc/Page';
 import './page.girls.scss';
 
+import ApiClient from '../lib/ApiClient';
 import FlayFetch from '../lib/FlayFetch';
 import { popupActress, popupFlay } from '../lib/FlaySearch';
 import { addLazyLoadBackgroundImage } from '../lib/ImageLazyLoad';
@@ -66,7 +67,7 @@ class PageGirls {
 
         const LI = fragment.appendChild(document.createElement('li'));
         LI.innerHTML = `
-          <label class="cover" title="${topFlay.opus} ${topFlay.title}" data-lazy-background-image-url="/static/cover/${topFlay.opus}">&nbsp;</label>
+          <label class="cover" title="${topFlay.opus} ${topFlay.title}" data-lazy-background-image-url="${ApiClient.buildUrl(`/static/cover/${topFlay.opus}`)}">&nbsp;</label>
           <label class="name"><span class="${actress.favorite ? 'fav' : ''}">${favoriteSVG}</span><a>${name}</a></label>
           <label class="age" title="나이">${age}</label>
           <label class="flay-count" title="Flay 수">${flayCount}</label>

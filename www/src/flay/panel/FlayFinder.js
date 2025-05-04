@@ -1,3 +1,4 @@
+import ApiClient from '../../lib/ApiClient';
 import DateUtils from '../../lib/DateUtils';
 import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '../../lib/FlaySearch';
 import './FlayFinder.scss';
@@ -78,15 +79,13 @@ export default class FlayFinder extends HTMLDivElement {
 }
 
 function fetchAndRender(url, keyword, wrapper, callback) {
-  fetch(url + keyword)
-    .then((res) => res.json())
-    .then((list) => {
-      callback(
-        Array.from(list).sort((t1, t2) => t2.release?.localeCompare(t1.release)),
-        keyword,
-        wrapper
-      );
-    });
+  ApiClient.get(url + keyword).then((list) => {
+    callback(
+      Array.from(list).sort((t1, t2) => t2.release?.localeCompare(t1.release)),
+      keyword,
+      wrapper
+    );
+  });
 }
 
 function renderInstance(list, keyword, wrapper) {

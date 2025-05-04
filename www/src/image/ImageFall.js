@@ -1,3 +1,4 @@
+import FlayFetch from '../lib/FlayFetch';
 import { getRandomInt } from '../lib/randomNumber';
 import { addResizeListener } from '../lib/windowAddEventListener';
 import './ImageFall.scss';
@@ -44,8 +45,7 @@ export class ImageFall extends HTMLDivElement {
       }
     });
 
-    fetch('/image/size')
-      .then((res) => res.text())
+    FlayFetch.getImageSize()
       .then((text) => (this.imageLength = Number(text)))
       .then(() => this.#resizeDiv())
       .then(() => this.#render());
@@ -85,16 +85,11 @@ export class ImageFall extends HTMLDivElement {
     const imageWrap = document.createElement('div');
     divList[divIndex].prepend(imageWrap);
 
-    const imageURL = '/static/image/' + imageIndex;
-    const res = await fetch(imageURL);
-    const idx = res.headers.get('Idx');
-    const name = decodeURIComponent(res.headers.get('Name').replace(/\+/g, ' '));
-    const path = decodeURIComponent(res.headers.get('Path').replace(/\+/g, ' '));
+    const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(imageIndex);
 
-    const imageBlob = await res.blob();
     const image = new Image();
     image.src = URL.createObjectURL(imageBlob);
-    image.title = `Idx: ${idx}\nName: ${name}\nPath: ${path}`;
+    image.title = `Idx: ${imageIndex}\nName: ${name}\nPath: ${path}`;
     image.addEventListener('click', () => {
       window.open(`popup.image.html?idx=${imageIndex}&max=${this.imageLength}`, `image${imageIndex}`, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
     });

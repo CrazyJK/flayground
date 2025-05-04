@@ -28,7 +28,7 @@ let filteredList = [];
 let startDate;
 let endDate;
 
-Promise.all([fetch('/flay').then((res) => res.json()), fetch('/archive').then((res) => res.json())]).then(([instances, archives]) => {
+Promise.all([FlayFetch.getFlayAll(), FlayFetch.getArchiveAll()]).then(([instances, archives]) => {
   instanceList = instances;
   archiveList = archives;
 
@@ -302,16 +302,13 @@ async function startActressAge() {
   //
   async function getActressInfo(name) {
     if (!actressMap.has(name)) {
-      const actress = await fetch(`/info/actress/${name}`).then((res) => res.json());
+      const actress = await FlayFetch.getActress(name);
       actressMap.set(name, actress);
     }
     return actressMap.get(name);
   }
 
   for (const flay of filteredList) {
-    // if (flay.archive) {
-    //   continue;
-    // }
     const releaseYear = flay.release.substring(0, 4);
     for (const actressName of flay.actressList) {
       const actress = await getActressInfo(actressName);
@@ -409,7 +406,7 @@ async function startShotFlay() {
     const item = wrapper.appendChild(document.createElement('li'));
     item.dataset.filter = `${flay.studio} ${flay.actressList.join(' ')} ${flay.release.substring(0, 4)}`;
     item.innerHTML = `
-      <div style="background-image: url(${await FlayFetch.getCover(flay.opus)})">
+      <div style="background-image: url(${await FlayFetch.getCoverURL(flay.opus)})">
         <label class="title"><span>${flay.title}</span></label>
         <label class="actress"><span>${flay.actressList.join(', ')}</span></label>
         <label class="shot"><span>${flay.video.likes.length}</span></label>

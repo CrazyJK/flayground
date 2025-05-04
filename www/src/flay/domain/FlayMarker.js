@@ -1,3 +1,4 @@
+import ApiClient from '../../lib/ApiClient';
 import { popupFlay } from '../../lib/FlaySearch';
 import favorite from '../../svg/favorite';
 import ranks from '../../svg/ranks';
@@ -34,7 +35,7 @@ export default class FlayMarker extends HTMLLabelElement {
 
   showCover() {
     this.classList.add('cover');
-    this.style.backgroundImage = `url(/static/cover/${this.flay.opus})`;
+    this.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${this.flay.opus}`)})`;
   }
 }
 

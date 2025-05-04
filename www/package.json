@@ -6,7 +6,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "cross-env NODE_TLS_REJECT_UNAUTHORIZED=0 webpack serve --env=dev",
+    "start": "webpack serve --env=dev",
     "build": "webpack --env=prod",
     "build:dev": "webpack --env=dev",
     "build:analyze": "webpack --env=prod --analyze",
@@ -28,7 +28,6 @@
     "compression-webpack-plugin": "^10.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "core-js": "^3.33.3",
-    "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
     "css-minimizer-webpack-plugin": "^5.0.1",
     "cssnano": "^6.0.1",

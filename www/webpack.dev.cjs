@@ -39,10 +39,6 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('development'),
-      'process.env.DEBUG': JSON.stringify(process.env.DEBUG || 'false'),
-    }),
     new ESLintPlugin({
       extensions: ['js'],
       emitWarning: true,

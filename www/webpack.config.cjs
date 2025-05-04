@@ -1,28 +1,14 @@
 const commonConfig = require('./webpack.common.cjs');
 const { merge } = require('webpack-merge');
-const argv = require('yargs')
-  .options({
-    env: {
-      alias: 'e',
-      describe: '빌드 환경(dev 또는 prod)',
-      default: 'dev',
-      type: 'string',
-    },
-    analyze: {
-      describe: '번들 분석 보고서 생성 여부',
-      default: false,
-      type: 'boolean',
-    },
-    port: {
-      describe: '개발 서버 포트',
-      default: 9000,
-      type: 'number',
-    },
-  })
-  .help().argv;
 
 module.exports = () => {
-  console.log(`🚀 Building for ${argv.env} environment...`);
+  console.log(`🚀 Building for ${process.env.NODE_ENV} environment...`);
+
+  const argv = {
+    env: process.env.NODE_ENV === 'production' ? 'prod' : 'dev',
+    port: process.env.PORT || 9000,
+    analyze: process.env.ANALYZE || false,
+  };
 
   const envConfig = require(`./webpack.${argv.env}.cjs`);
   let config = merge(commonConfig, envConfig);
@@ -45,7 +31,7 @@ module.exports = () => {
         statsFilename: 'stats.json', // 통계 파일 이름
       })
     );
-    console.log('📊 Bundle analyzer enabled with enhanced options');
+    console.log('\n📊 Bundle analyzer enabled with enhanced options');
   }
 
   return config;

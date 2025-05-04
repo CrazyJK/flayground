@@ -13,7 +13,7 @@ const webpack = require('webpack');
 class MadgePlugin {
   apply(compiler) {
     compiler.hooks.afterEmit.tap('MadgePlugin', () => {
-      console.log('\n🔍 Running madge to generate dependency diagrams...');
+      console.log('\n🔍 Running madge to generate dependency diagrams...\n');
       exec('node madge.cjs', { cwd: __dirname }, (error, stdout) => {
         if (error) {
           console.error(`Error running madge: ${error}`);
@@ -67,11 +67,6 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash:8].css',
       chunkFilename: '[id].[contenthash:8].css',
-    }),
-    // 환경 변수 정의
-    new webpack.DefinePlugin({
-      'process.env.NODE_ENV': JSON.stringify('production'),
-      'process.env.VERSION': JSON.stringify(require('./package.json').version || '1.0.0'),
     }),
     // Gzip 압축 적용
     new CompressionPlugin({

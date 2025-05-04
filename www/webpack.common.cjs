@@ -1,4 +1,5 @@
 const path = require('path');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
@@ -93,6 +94,11 @@ module.exports = {
           to: '[name][ext]',
         },
       ],
+    }),
+    // 환경 변수 정의. src 폴더 내의 모든 JS 파일에서 사용 가능
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV),
+      'process.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
     }),
   ],
   module: {

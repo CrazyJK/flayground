@@ -28,3 +28,5 @@ class Page {
 }
 
 new Page().start();
+
+console.info('NODE_ENV', process.env.NODE_ENV, 'BUILD_TIME', process.env.BUILD_TIME);

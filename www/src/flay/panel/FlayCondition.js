@@ -25,7 +25,7 @@ export default class FlayCondition extends HTMLDivElement {
   constructor() {
     super();
 
-    const condition = FlayStorage.local.getObject(CONDITION_KEY, JSON.stringify(CONDITION_VALUE_DEFAULT));
+    const condition = FlayStorage.local.getObject(CONDITION_KEY, CONDITION_VALUE_DEFAULT);
 
     this.classList.add('flay-condition', 'flay-div');
     this.innerHTML = `

@@ -6,11 +6,9 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "deploy": "node ./madge.cjs && webpack --env=prod && node ./appendChunkhash.cjs",
-    "build": "webpack --env=prod && node ./appendChunkhash.cjs",
+    "deploy": "webpack --env=prod",
     "buildDev": "webpack --env=dev",
-    "watch": "webpack --env=dev -w",
-    "madge": "node ./madge.cjs"
+    "watch": "webpack --env=dev -w"
   },
   "dependencies": {
     "@toast-ui/editor": "^3.2.1",

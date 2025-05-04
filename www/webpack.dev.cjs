@@ -30,6 +30,9 @@ function getEntryHtmlPlugins() {
 module.exports = {
   mode: 'development',
   devtool: 'eval-source-map', // 개발 시 더 빠른 소스맵
+  output: {
+    filename: '[name].js',
+  },
   plugins: [
     new webpack.HotModuleReplacementPlugin(), // HMR 활성화
     new MiniCssExtractPlugin({
@@ -46,6 +49,28 @@ module.exports = {
     }),
     ...getEntryHtmlPlugins(),
   ],
+  optimization: {
+    runtimeChunk: 'single', // 런타임 코드를 단일 청크로 분리하여 캐싱 개선
+    splitChunks: {
+      chunks: 'all', // 모든 유형의 청크에 대해 분할 적용
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name: 'vendors',
+          chunks: 'all',
+        },
+      },
+    },
+  },
+  performance: {
+    hints: false, // 개발 환경에서는 성능 경고 비활성화
+  },
+  cache: {
+    type: 'filesystem', // 파일시스템 캐시로 빌드 성능 향상
+    buildDependencies: {
+      config: [__filename], // 설정이 변경되면 캐시 무효화
+    },
+  },
   devServer: {
     static: {
       directory: path.join(__dirname, '../src/main/resources/static'),
@@ -78,27 +103,5 @@ module.exports = {
         logLevel: 'debug',
       },
     ],
-  },
-  performance: {
-    hints: false, // 개발 환경에서는 성능 경고 비활성화
-  },
-  cache: {
-    type: 'filesystem', // 파일시스템 캐시로 빌드 성능 향상
-    buildDependencies: {
-      config: [__filename], // 설정이 변경되면 캐시 무효화
-    },
-  },
-  optimization: {
-    runtimeChunk: 'single', // 런타임 코드를 단일 청크로 분리하여 캐싱 개선
-    splitChunks: {
-      chunks: 'all', // 모든 유형의 청크에 대해 분할 적용
-      cacheGroups: {
-        vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendors',
-          chunks: 'all',
-        },
-      },
-    },
   },
 };

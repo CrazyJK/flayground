@@ -81,18 +81,6 @@ module.exports = {
     }),
     ...getEntryHtmlPlugins(),
   ],
-  module: {
-    rules: [
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        options: {
-          cacheDirectory: true, // 캐시 활성화로 재빌드 성능 향상
-        },
-      },
-    ],
-  },
   optimization: {
     minimize: true,
     minimizer: [

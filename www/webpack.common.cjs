@@ -1,13 +1,9 @@
 const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
-const TerserPlugin = require('terser-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
-  /* mode: development, production, none */
-  mode: 'none',
   entry: {
     index: './src/view/index.js',
     style: './src/view/style.js',
@@ -45,9 +41,7 @@ module.exports = {
     'popup.monitor': './src/view/popup.monitor.js',
     'popup.image': './src/view/popup.image.js',
   },
-  devtool: 'source-map',
   output: {
-    filename: '[name].js',
     path: path.resolve(__dirname, '../src/main/resources/static/dist'),
     publicPath: '',
     clean: true,
@@ -66,7 +60,6 @@ module.exports = {
     new CleanWebpackPlugin({
       verbose: false,
     }),
-    // MiniCssExtractPlugin은 환경별 설정 파일로 이동
     new CopyWebpackPlugin({
       patterns: [
         {
@@ -87,6 +80,23 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        options: {
+          cacheDirectory: true, // 캐시 활성화로 재빌드 성능 향상
+          presets: [
+            [
+              '@babel/preset-env',
+              {
+                useBuiltIns: 'usage',
+                corejs: 3,
+              },
+            ],
+          ],
+        },
+      },
+      {
         test: /\.(scss)$/,
         use: [
           {
@@ -106,10 +116,7 @@ module.exports = {
           {
             loader: 'postcss-loader',
             options: {
-              // `postcssOptions` is needed for postcss 8.x;
-              // if you use postcss 7.x skip the key
               postcssOptions: {
-                // postcss plugins, can be exported to postcss.config.js
                 plugins: function () {
                   return [
                     require('autoprefixer'),
@@ -156,43 +163,7 @@ module.exports = {
           filename: 'fonts/[name][ext][query]',
         },
       },
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        use: {
-          loader: 'babel-loader',
-          options: {
-            cacheDirectory: true,
-            presets: [
-              [
-                '@babel/preset-env',
-                {
-                  useBuiltIns: 'usage',
-                  corejs: 3,
-                },
-              ],
-            ],
-          },
-        },
-      },
     ],
-  },
-  optimization: {
-    minimizer: [
-      new TerserPlugin({
-        terserOptions: {
-          format: {
-            comments: false,
-          },
-          compress: {
-            drop_console: false,
-          },
-        },
-        extractComments: false,
-      }),
-    ],
-    moduleIds: 'deterministic', // 모듈 ID가 더 예측 가능하게 변경, 캐싱 개선
-    chunkIds: 'deterministic',
   },
   stats: {
     colors: true,

@@ -1,6 +1,5 @@
 const madge = require('madge');
 const fs = require('fs');
-const path = require('path');
 
 const madgeConfig = {
   includeNpm: true,
@@ -22,7 +21,7 @@ const madgeConfig = {
   console.log('\n⚙️ madge for dependencies');
 
   for (const [name, path] of Object.entries(entry)) {
-    console.log('process...', name);
+    // console.log('process...', name);
 
     const res = await madge(path, madgeConfig);
     const output = await res.svg();
@@ -32,8 +31,6 @@ const madgeConfig = {
   }
 
   const filePath = './data/dependencies-viewer.json';
-  fs.writeFile(filePath, JSON.stringify(dependenciesSvgJson), 'utf8', () => {
-    console.log('write', filePath);
-    console.log('');
-  });
+  fs.writeFileSync(filePath, JSON.stringify(dependenciesSvgJson), 'utf8');
+  console.log('write', filePath);
 })();

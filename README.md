@@ -40,7 +40,14 @@ mvn clean package
 # 프론트엔드 빌드
 cd www
 yarn install
-yarn build
+
+# 스크립트 명령어 (package.json)
+yarn start # 개발 서버 실행
+yarn build # 프로덕션 빌드
+yarn build:dev # 개발용 빌드
+yarn build:analyze # 번들 분석 보고서와 함께 빌드
+yarn watch # 파일 변경 감시 모드
+yarn lint # ESLint를 통한 코드 검사 및 수정
 
 # 애플리케이션 실행
 # Windows
@@ -104,7 +111,7 @@ Spring Boot 기반의 RESTful API를 제공합니다. 주요 패키지는 다음
 ## 연락처
 
 - 개발자: kamoru
-- 이메일: Crazy.4.JK@gmail.com
+- 이메일: [Crazy.4.JK@gmail.com](Crazy.4.JK@gmail.com)
 - GitHub: [https://github.com/kamoru/flayground](https://github.com/kamoru/flayground)
 
 ## 기여 방법

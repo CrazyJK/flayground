@@ -45,7 +45,7 @@ echo ---------------------------------------------------------------------------
 cd www
 start /wait /b cmd /c yarn install
 echo.
-start /wait /b cmd /c yarn run deploy
+start /wait /b cmd /c yarn run build
 
 title FLAY_GROUND Build maven
 echo.

@@ -2,6 +2,8 @@ const path = require('path');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
+const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 module.exports = {
   /* mode: development, production, none */
@@ -50,7 +52,20 @@ module.exports = {
     publicPath: '',
     clean: true,
   },
+  resolve: {
+    extensions: ['.js', '.json', '.scss', '.css'],
+    alias: {
+      '@': path.resolve(__dirname, 'src'),
+      '@lib': path.resolve(__dirname, 'src/lib'),
+      '@ui': path.resolve(__dirname, 'src/ui'),
+      '@flay': path.resolve(__dirname, 'src/flay'),
+      '@image': path.resolve(__dirname, 'src/image'),
+    },
+  },
   plugins: [
+    new CleanWebpackPlugin({
+      verbose: false,
+    }),
     // MiniCssExtractPlugin은 환경별 설정 파일로 이동
     new CopyWebpackPlugin({
       patterns: [
@@ -68,12 +83,6 @@ module.exports = {
         },
       ],
     }),
-    new BundleAnalyzerPlugin({
-      analyzerMode: 'static',
-      reportFilename: 'bundle-report.html',
-      openAnalyzer: false,
-      // excludeAssets: [/node_modules/],
-    }),
   ],
   module: {
     rules: [
@@ -82,9 +91,17 @@ module.exports = {
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
+            options: {
+              esModule: false,
+              // ignoreOrder: true, // CSS 순서 충돌 경고 무시 옵션 추가
+            },
           },
           {
             loader: 'css-loader',
+            options: {
+              sourceMap: true,
+              importLoaders: 2,
+            },
           },
           {
             loader: 'postcss-loader',
@@ -94,19 +111,36 @@ module.exports = {
               postcssOptions: {
                 // postcss plugins, can be exported to postcss.config.js
                 plugins: function () {
-                  return [require('autoprefixer')];
+                  return [
+                    require('autoprefixer'),
+                    require('cssnano')({
+                      preset: ['default', { discardComments: { removeAll: true } }],
+                    }),
+                  ];
                 },
               },
+              sourceMap: true,
             },
           },
           {
             loader: 'sass-loader',
+            options: {
+              sourceMap: true,
+            },
           },
         ],
       },
       {
         test: /\.(png|jpg|jpeg|gif)$/i,
         type: 'asset/resource',
+        generator: {
+          filename: 'images/[name][ext][query]',
+        },
+        parser: {
+          dataUrlCondition: {
+            maxSize: 10 * 1024, // 10kb 이하는 인라인화
+          },
+        },
       },
       {
         test: /\.svg/,
@@ -118,8 +152,47 @@ module.exports = {
       {
         test: /\.(woff|woff2|eot|ttf|otf)$/i,
         type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext][query]',
+        },
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        use: {
+          loader: 'babel-loader',
+          options: {
+            cacheDirectory: true,
+            presets: [
+              [
+                '@babel/preset-env',
+                {
+                  useBuiltIns: 'usage',
+                  corejs: 3,
+                },
+              ],
+            ],
+          },
+        },
       },
     ],
+  },
+  optimization: {
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          format: {
+            comments: false,
+          },
+          compress: {
+            drop_console: false,
+          },
+        },
+        extractComments: false,
+      }),
+    ],
+    moduleIds: 'deterministic', // 모듈 ID가 더 예측 가능하게 변경, 캐싱 개선
+    chunkIds: 'deterministic',
   },
   performance: {
     assetFilter: function (assetFilename) {
@@ -131,5 +204,12 @@ module.exports = {
     maxAssetSize: 500000,
     maxEntrypointSize: 500000,
     hints: false,
+  },
+  stats: {
+    colors: true,
+    modules: false,
+    children: false,
+    chunks: false,
+    chunkModules: false,
   },
 };

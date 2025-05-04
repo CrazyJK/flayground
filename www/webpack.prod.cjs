@@ -96,7 +96,6 @@ module.exports = {
             warnings: false,
             comparisons: false,
             inline: 2,
-            drop_console: true, // 콘솔 로그 제거
           },
           mangle: {
             safari10: true,

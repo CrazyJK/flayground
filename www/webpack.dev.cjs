@@ -62,48 +62,15 @@ module.exports = {
   },
   cache: {
     type: 'filesystem', // 파일시스템 캐시로 빌드 성능 향상
+    allowCollectingMemory: true,
     buildDependencies: {
       config: [__filename], // 설정이 변경되면 캐시 무효화
     },
   },
-  devServer: {
-    static: {
-      directory: path.join(__dirname, '../src/main/resources/static'),
-    },
-    host: 'localhost',
-    hot: true, // 핫 모듈 교체 활성화
-    historyApiFallback: true,
-    compress: true,
-    open: true,
-    client: {
-      overlay: {
-        errors: true,
-        warnings: false,
-      },
-      progress: true,
-      webSocketURL: {
-        hostname: 'localhost',
-      },
-    },
-    // 개발 서버 속도 최적화
-    devMiddleware: {
-      writeToDisk: false, // 메모리에서만 번들 유지
-      stats: 'minimal', // 필요한 정보만 표시
-    },
-    // HTTPS 사용하려면 아래 주석 해제
-    // https: true,
-    proxy: [
-      {
-        context: ['/api'],
-        target: 'https://flay.kamoru.jk',
-        changeOrigin: true,
-        secure: false, // 자체 서명 인증서 허용
-        headers: {
-          Host: 'flay.kamoru.jk',
-          Origin: 'https://flay.kamoru.jk',
-        },
-        logLevel: 'debug',
-      },
-    ],
+  // watch 모드 최적화 설정
+  watchOptions: {
+    ignored: /node_modules/,
+    aggregateTimeout: 300, // 여러 변경 사항을 모아서 한 번에 처리 (ms)
+    poll: 1000, // 폴링 간격 (ms) - 특정 환경에서 필요한 경우 사용
   },
 };

@@ -6,16 +6,16 @@ module.exports = () => {
 
   const argv = {
     env: process.env.NODE_ENV === 'production' ? 'prod' : 'dev',
-    port: process.env.PORT || 9000,
     analyze: process.env.ANALYZE || false,
   };
 
   const envConfig = require(`./webpack.${argv.env}.cjs`);
   let config = merge(commonConfig, envConfig);
 
-  // 포트 덮어쓰기
-  if (argv.port && config.devServer) {
-    config.devServer.port = argv.port;
+  // watch 모드인지 감지하기 위한 플래그
+  const isWatchMode = process.argv.includes('-w') || process.argv.includes('--watch');
+  if (isWatchMode) {
+    console.log('📝 Watch mode enabled - monitoring for changes...');
   }
 
   // 번들 분석기 활성화 여부

@@ -2,7 +2,6 @@ const path = require('path');
 const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const webpack = require('webpack');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
 // 엔트리 포인트에 해당하는 HTML 파일이 있는지 확인
@@ -35,7 +34,6 @@ module.exports = {
     filename: '[name].js',
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(), // HMR 활성화
     new MiniCssExtractPlugin({
       filename: '[name].css',
     }),

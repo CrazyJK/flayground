@@ -101,27 +101,6 @@ module.exports = {
       'process.env.BUILD_TIME': JSON.stringify(new Date().toISOString()),
       'process.env.WATCH_MODE': JSON.stringify(process.argv.includes('-w') || process.argv.includes('--watch')),
     }),
-    // watch 모드 알림 플러그인
-    {
-      apply: (compiler) => {
-        // 파일 변경 감지
-        compiler.hooks.watchRun.tap('WatchRunPlugin', (comp) => {
-          console.log(`\n✨ Changes detected, rebuilding... 🕒 ${new Date().toLocaleTimeString()}`);
-          comp.modifiedFiles &&
-            console.log(
-              `\tmodifiedFiles : ${Array.from(comp.modifiedFiles)
-                .map((file) => file.replace(/\\/g, '/').split('/').pop())
-                .join(', ')}`
-            );
-          comp.removedFiles &&
-            console.log(
-              `\tremovedFiles  : ${Array.from(comp.removedFiles)
-                .map((file) => file.replace(/\\/g, '/').split('/').pop())
-                .join(', ')}`
-            );
-        });
-      },
-    },
   ],
   module: {
     rules: [

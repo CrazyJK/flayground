@@ -1,13 +1,12 @@
+const path = require('path');
+const fs = require('fs');
 const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
 const { exec } = require('child_process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const path = require('path');
-const fs = require('fs');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
-const webpack = require('webpack');
 
 // 의존성 다이어그램을 생성하는 플러그인
 class MadgePlugin {

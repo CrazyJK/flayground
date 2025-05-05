@@ -15,6 +15,7 @@ class Page {
   }
 
   #showMarkerPanel() {
+    this.#mainElement.textContent = null;
     import(/* webpackChunkName: "FlayMarkerPanel" */ '../flay/panel/FlayMarkerPanel')
       .then(({ FlayMarkerPanel }) => this.#mainElement.appendChild(new FlayMarkerPanel()))
       .then((flayMarkerPanel) => {

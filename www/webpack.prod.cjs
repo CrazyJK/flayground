@@ -66,6 +66,7 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash:8].css',
       chunkFilename: '[id].[contenthash:8].css',
+      ignoreOrder: true, // CSS 순서 충돌 경고 무시 옵션 추가
     }),
     // Gzip 압축 적용
     new CompressionPlugin({
@@ -117,9 +118,9 @@ module.exports = {
         parallel: true,
       }),
     ],
-    // 청크 분할 최적화
+    runtimeChunk: 'single', // 런타임 코드를 단일 청크로 분리하여 캐싱 개선
     splitChunks: {
-      chunks: 'all',
+      chunks: 'all', // 모든 유형의 청크에 대해 분할 적용
       minSize: 100000, // 최소 크기를 100KB로 증가
       minChunks: 3, // 최소 3번 이상 사용되는 모듈만 분할
       maxAsyncRequests: 5, // 최대 비동기 요청 수 감소
@@ -149,8 +150,6 @@ module.exports = {
         },
       },
     },
-    // 런타임 코드 분리
-    runtimeChunk: 'single',
   },
   performance: {
     hints: 'warning',

@@ -137,7 +137,6 @@ module.exports = {
             loader: MiniCssExtractPlugin.loader,
             options: {
               esModule: false,
-              // ignoreOrder: true, // CSS 순서 충돌 경고 무시 옵션 추가
             },
           },
           {

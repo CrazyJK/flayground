@@ -1,7 +1,6 @@
+import DateUtils from '@lib/DateUtils';
 import './inc/Page';
 import './index.scss';
-
-import DateUtils from '../lib/DateUtils';
 
 class Page {
   #mainElement;

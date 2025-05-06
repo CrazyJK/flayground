@@ -1,12 +1,11 @@
+import NanoStore from '@flay/idb/nano/store/NanoStore';
+import ApiClient from '@lib/ApiClient';
+import DateUtils from '@lib/DateUtils';
+import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupFlay } from '@lib/FlaySearch';
+import StringUtils from '@lib/StringUtils';
 import './inc/Page';
 import './page.crawling.scss';
-
-import NanoStore from '../flay/idb/nano/store/NanoStore';
-import ApiClient from '../lib/ApiClient';
-import DateUtils from '../lib/DateUtils';
-import FlayFetch from '../lib/FlayFetch';
-import { popupActress, popupFlay } from '../lib/FlaySearch';
-import StringUtils from '../lib/StringUtils';
 
 const DOMAIN = 'https://www.nanojav.com';
 const LIST_URL = DOMAIN + '/jav/?order=new&page=';

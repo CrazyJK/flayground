@@ -1,8 +1,8 @@
-import ApiClient from '../../lib/ApiClient';
-import { popupFlay } from '../../lib/FlaySearch';
-import { OpusProvider } from '../../lib/OpusProvider';
-import { getRandomInt } from '../../lib/randomNumber';
-import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '../../ui/Countdown';
+import ApiClient from '@lib/ApiClient';
+import { popupFlay } from '@lib/FlaySearch';
+import { OpusProvider } from '@lib/OpusProvider';
+import { getRandomInt } from '@lib/randomNumber';
+import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '@ui/Countdown';
 
 export default class CoverPopout extends HTMLDivElement {
   #품번제공기;

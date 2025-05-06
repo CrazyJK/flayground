@@ -1,12 +1,11 @@
+import FlayCard from '@flay/domain/FlayCard';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import FlaySearch from '@lib/FlaySearch';
+import favoriteSVG from '@svg/favorite';
+import GridControl from '@ui/GridControl';
 import './inc/Popup';
 import './popup.actress.scss';
-
-import FlayCard from '../flay/domain/FlayCard';
-import FlayAction from '../lib/FlayAction';
-import FlayFetch from '../lib/FlayFetch';
-import FlaySearch from '../lib/FlaySearch';
-import favoriteSVG from '../svg/favorite';
-import GridControl from '../ui/GridControl';
 
 class PopupActress {
   constructor() {

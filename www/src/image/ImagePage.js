@@ -1,9 +1,9 @@
-import '../image/part/ImageFrame';
-import ApiClient from '../lib/ApiClient';
-import DateUtils from '../lib/DateUtils';
-import FileUtils from '../lib/FileUtils';
-import FlayFetch from '../lib/FlayFetch';
-import { lazyLoadBackgroundImage } from '../lib/ImageLazyLoad';
+import '@image/part/ImageFrame';
+import ApiClient from '@lib/ApiClient';
+import DateUtils from '@lib/DateUtils';
+import FileUtils from '@lib/FileUtils';
+import FlayFetch from '@lib/FlayFetch';
+import { lazyLoadBackgroundImage } from '@lib/ImageLazyLoad';
 import './ImagePage.scss';
 
 export class ImagePage extends HTMLDivElement {

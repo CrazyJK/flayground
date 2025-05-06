@@ -1,4 +1,4 @@
-import ApiClient from './ApiClient';
+import ApiClient from '@lib/ApiClient';
 
 export default {
   play: (opus, time = -1, callback, failCallback) => {

@@ -1,10 +1,9 @@
+import FlayCard from '@flay/domain/FlayCard';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import GridControl from '@ui/GridControl';
 import './inc/Popup';
 import './popup.tag.scss';
-
-import FlayCard from '../flay/domain/FlayCard';
-import FlayAction from '../lib/FlayAction';
-import FlayFetch from '../lib/FlayFetch';
-import GridControl from '../ui/GridControl';
 
 window.tagList = [];
 window.actressMap = new Map();

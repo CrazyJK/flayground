@@ -1,12 +1,11 @@
+import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
+import FlayPage from '@flay/domain/FlayPage';
+import FlayCondition from '@flay/panel/FlayCondition';
+import { FlayMemoEditor } from '@flay/panel/FlayMemoEditor';
+import FlayPagination from '@flay/panel/FlayPagination';
+import { ModalWindow } from '@ui/ModalWindow';
 import './inc/Page';
 import './page.flay-page.scss';
-
-import FlayPage from '../flay/domain/FlayPage';
-import FlayCondition from '../flay/panel/FlayCondition';
-import { FlayMemoEditor } from '../flay/panel/FlayMemoEditor';
-import FlayPagination from '../flay/panel/FlayPagination';
-import { MODAL_EDGE, MODAL_MODE } from '../GroundConstant';
-import { ModalWindow } from '../ui/ModalWindow';
 
 const flayCondition = document.querySelector('body > main > header').appendChild(new FlayCondition());
 const flayPagination = document.querySelector('body > main > footer').appendChild(new FlayPagination());

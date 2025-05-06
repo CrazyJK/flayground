@@ -1,7 +1,7 @@
-import ApiClient from '../../lib/ApiClient';
-import DateUtils from '../../lib/DateUtils';
-import FileUtils from '../../lib/FileUtils';
-import FlayFetch from '../../lib/FlayFetch';
+import ApiClient from '@lib/ApiClient';
+import DateUtils from '@lib/DateUtils';
+import FileUtils from '@lib/FileUtils';
+import FlayFetch from '@lib/FlayFetch';
 
 export default class FlayImage extends HTMLImageElement {
   constructor() {

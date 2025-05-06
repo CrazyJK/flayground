@@ -1,4 +1,4 @@
-import FlayFetch from '../../../../lib/FlayFetch';
+import FlayFetch from '@lib/FlayFetch';
 import FlayGroundDB from '../db/FlayGroundDB';
 
 const storeName = 'Flay';

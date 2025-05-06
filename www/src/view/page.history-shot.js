@@ -1,9 +1,8 @@
+import FlayCard from '@flay/domain/FlayCard';
+import DateUtils from '@lib/DateUtils';
+import FlayFetch from '@lib/FlayFetch';
 import './inc/Page';
 import './page.history-shot.scss';
-
-import FlayCard from '../flay/domain/FlayCard';
-import DateUtils from '../lib/DateUtils';
-import FlayFetch from '../lib/FlayFetch';
 
 class Page {
   prevDay;

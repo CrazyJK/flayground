@@ -1,5 +1,5 @@
-import ApiClient from '../../lib/ApiClient';
-import PlayTimeDB from '../idb/PlayTimeDB';
+import PlayTimeDB from '@flay/idb/PlayTimeDB';
+import ApiClient from '@lib/ApiClient';
 
 // 싱글톤 패턴으로 변경하여 메모리 사용 최적화
 let dbInstance = null;

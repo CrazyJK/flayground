@@ -1,10 +1,9 @@
+import PlayTimeDB from '@flay/idb/PlayTimeDB';
+import DateUtils from '@lib/DateUtils';
+import FlayFetch from '@lib/FlayFetch';
+import TimeUtils from '@lib/TimeUtils';
 import './inc/Page';
 import './page.flay-play-record.scss';
-
-import PlayTimeDB from '../flay/idb/PlayTimeDB';
-import DateUtils from '../lib/DateUtils';
-import FlayFetch from '../lib/FlayFetch';
-import TimeUtils from '../lib/TimeUtils';
 
 class Page {
   db;

@@ -1,8 +1,8 @@
-import ApiClient from '../../lib/ApiClient';
-import FlayAction from '../../lib/FlayAction';
-import FlayFetch from '../../lib/FlayFetch';
-import { popupActress, popupFlay } from '../../lib/FlaySearch';
-import FlayMarker from '../domain/FlayMarker';
+import FlayMarker from '@flay/domain/FlayMarker';
+import ApiClient from '@lib/ApiClient';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupFlay } from '@lib/FlaySearch';
 import './FlayBatch.scss';
 
 const HTML = `

@@ -1,8 +1,8 @@
-import FlayAction from '../../../lib/FlayAction';
-import FlayFetch from '../../../lib/FlayFetch';
-import { popupActress, popupActressInfo } from '../../../lib/FlaySearch';
-import StringUtils from '../../../lib/StringUtils';
-import favoriteSVG from '../../../svg/favorite';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupActressInfo } from '@lib/FlaySearch';
+import StringUtils from '@lib/StringUtils';
+import favoriteSVG from '@svg/favorite';
 import './FlayActress.scss';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 

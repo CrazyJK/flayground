@@ -1,8 +1,7 @@
+import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '@/GroundConstant';
+import { addResizeListener } from '@lib/windowAddEventListener';
+import windowButton from '@svg/windowButton';
 import './ModalWindow.scss';
-
-import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '../GroundConstant';
-import { addResizeListener } from '../lib/windowAddEventListener';
-import windowButton from '../svg/windowButton';
 
 const OFFSET = 4; // 창의 가장자리 여백
 const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: [], initialMode: MODAL_MODE.NORMAL }; // 창의 기본 옵션

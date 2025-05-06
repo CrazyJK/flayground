@@ -73,6 +73,7 @@ module.exports = {
       '@ui': path.resolve(__dirname, 'src/ui'),
       '@flay': path.resolve(__dirname, 'src/flay'),
       '@image': path.resolve(__dirname, 'src/image'),
+      '@svg': path.resolve(__dirname, 'src/svg'),
     },
   },
   plugins: [

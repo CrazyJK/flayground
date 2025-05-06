@@ -1,8 +1,8 @@
-import FlayAction from '../../lib/FlayAction';
-import FlayFetch from '../../lib/FlayFetch';
-import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '../../lib/FlaySearch';
-import FlayStorage from '../../lib/FlayStorage';
-import favoriteSVG from '../../svg/favorite';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '@lib/FlaySearch';
+import FlayStorage from '@lib/FlayStorage';
+import favoriteSVG from '@svg/favorite';
 import './FlayRegister.scss';
 
 const HTML = `

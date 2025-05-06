@@ -1,8 +1,8 @@
-import FlayAttach from '../attach/FlayAttach';
-import ApiClient from '../lib/ApiClient';
-import DateUtils from '../lib/DateUtils';
-import weatherSVG from '../svg/weathers';
-import windowButton from '../svg/windowButton';
+import FlayAttach from '@/attach/FlayAttach';
+import ApiClient from '@lib/ApiClient';
+import DateUtils from '@lib/DateUtils';
+import weatherSVG from '@svg/weathers';
+import windowButton from '@svg/windowButton';
 import './KamoruDiary.scss';
 
 const GB = 1024 * 1024 * 1024;

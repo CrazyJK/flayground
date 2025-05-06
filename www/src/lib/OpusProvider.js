@@ -1,5 +1,5 @@
-import FlayFetch from './FlayFetch';
-import { getRandomInt } from './randomNumber';
+import FlayFetch from '@lib/FlayFetch';
+import { getRandomInt } from '@lib/randomNumber';
 
 const DEFAULT_CONDITION = {
   search: '',

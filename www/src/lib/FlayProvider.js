@@ -1,5 +1,5 @@
-import FlayFetch from './FlayFetch';
-import { OpusProvider } from './OpusProvider';
+import FlayFetch from '@lib/FlayFetch';
+import { OpusProvider } from '@lib/OpusProvider';
 
 export class FlayProvider extends OpusProvider {
   opus;

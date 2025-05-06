@@ -1,12 +1,11 @@
+import ApiClient from '@lib/ApiClient';
+import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupFlay } from '@lib/FlaySearch';
+import { addLazyLoadBackgroundImage } from '@lib/ImageLazyLoad';
+import { sortable } from '@lib/TableUtils';
+import favoriteSVG from '@svg/favorite';
 import './inc/Page';
 import './page.girls.scss';
-
-import ApiClient from '../lib/ApiClient';
-import FlayFetch from '../lib/FlayFetch';
-import { popupActress, popupFlay } from '../lib/FlaySearch';
-import { addLazyLoadBackgroundImage } from '../lib/ImageLazyLoad';
-import { sortable } from '../lib/TableUtils';
-import favoriteSVG from '../svg/favorite';
 
 class PageGirls {
   constructor() {

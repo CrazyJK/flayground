@@ -1,4 +1,4 @@
-import FlayStorage from '../../lib/FlayStorage';
+import FlayStorage from '@lib/FlayStorage';
 import './FlayMonitor.scss';
 
 const MonitorBackgroundColor = 'lightgray';

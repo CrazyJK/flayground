@@ -1,14 +1,12 @@
+import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
+import fetchJsonp from '@lib/fetchJsonp';
+import { getRandomInt } from '@lib/randomNumber';
+import { Countdown } from '@ui/Countdown';
+import { ModalShadowWindow } from '@ui/ModalShadowWindow';
+import { ModalWindow } from '@ui/ModalWindow';
+import { TickTimer } from '@ui/TickTimer';
 import './inc/Page';
 import './test.scss';
-
-import { ModalShadowWindow } from '../ui/ModalShadowWindow';
-import { ModalWindow } from '../ui/ModalWindow';
-
-import { MODAL_EDGE, MODAL_MODE } from '../GroundConstant';
-import fetchJsonp from '../lib/fetchJsonp';
-import { getRandomInt } from '../lib/randomNumber';
-import { Countdown } from '../ui/Countdown';
-import { TickTimer } from '../ui/TickTimer';
 
 class Page {
   constructor() {}
@@ -31,7 +29,7 @@ class Page {
   }
 
   #videoWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "FlayVideoViewPanel" */ '../flay/panel/FlayVideoViewPanel').then(({ FlayVideoViewPanel }) => {
+    import(/* webpackChunkName: "FlayVideoViewPanel" */ '@flay/panel/FlayVideoViewPanel').then(({ FlayVideoViewPanel }) => {
       document
         .querySelector('body > main')
         .appendChild(
@@ -48,7 +46,7 @@ class Page {
   }
 
   #basketWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "FlayBasket" */ '../flay/panel/FlayBasket').then(({ FlayBasket }) => {
+    import(/* webpackChunkName: "FlayBasket" */ '@flay/panel/FlayBasket').then(({ FlayBasket }) => {
       document
         .querySelector('body > main')
         .appendChild(
@@ -65,7 +63,7 @@ class Page {
   }
 
   #memoWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "FlayMemoEditor" */ '../flay/panel/FlayMemoEditor').then(({ FlayMemoEditor }) => {
+    import(/* webpackChunkName: "FlayMemoEditor" */ '@flay/panel/FlayMemoEditor').then(({ FlayMemoEditor }) => {
       document
         .querySelector('body > main')
         .appendChild(
@@ -82,7 +80,7 @@ class Page {
   }
 
   #imageFallWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "ImageFall" */ '../image/ImageFall').then(({ ImageFall }) => {
+    import(/* webpackChunkName: "ImageFall" */ '@image/ImageFall').then(({ ImageFall }) => {
       document
         .querySelector('body > main')
         .appendChild(
@@ -99,7 +97,7 @@ class Page {
   }
 
   #imageOneWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "ImageOne" */ '../image/ImageOne').then(({ ImageOne }) => {
+    import(/* webpackChunkName: "ImageOne" */ '@image/ImageOne').then(({ ImageOne }) => {
       document
         .querySelector('body > main')
         .appendChild(
@@ -116,7 +114,7 @@ class Page {
   }
 
   #browserWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "BrowserPanel" */ '../ui/BrowserPanel').then(({ BrowserPanel }) => {
+    import(/* webpackChunkName: "BrowserPanel" */ '@ui/BrowserPanel').then(({ BrowserPanel }) => {
       document
         .querySelector('body > main')
         .appendChild(

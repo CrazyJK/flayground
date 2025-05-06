@@ -1,6 +1,6 @@
-import FlayAction from '../../../lib/FlayAction';
-import FlayFetch from '../../../lib/FlayFetch';
-import rankSVG from '../../../svg/ranks';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import rankSVG from '@svg/ranks';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayRank.scss';
 

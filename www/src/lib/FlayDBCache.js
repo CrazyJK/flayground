@@ -6,12 +6,12 @@
  * - flay count of actress
  */
 
-import ActressFlayCountStore from '../idb/ground/store/ActressFlayCountStore';
-import ActressStore from '../idb/ground/store/ActressStore';
-import CoverStore from '../idb/ground/store/CoverStore';
-import FlayStore from '../idb/ground/store/FlayStore';
-import HistoryStore from '../idb/ground/store/HistoryStore';
-import ScoreStore from '../idb/ground/store/ScoreStore';
+import ActressFlayCountStore from '@flay/idb/ground/store/ActressFlayCountStore';
+import ActressStore from '@flay/idb/ground/store/ActressStore';
+import CoverStore from '@flay/idb/ground/store/CoverStore';
+import FlayStore from '@flay/idb/ground/store/FlayStore';
+import HistoryStore from '@flay/idb/ground/store/HistoryStore';
+import ScoreStore from '@flay/idb/ground/store/ScoreStore';
 import FlayFetch from './FlayFetch';
 
 const flayStore = new FlayStore();

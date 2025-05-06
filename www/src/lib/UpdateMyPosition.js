@@ -1,5 +1,5 @@
-import { updatePosition } from '../flay/panel/FlayMonitor';
-import { addBeforeunloadListener, addLoadListener, addMouseoutToNullListener, addResizeListener, addVisibilitychangeListener } from './windowAddEventListener';
+import { updatePosition } from '@flay/panel/FlayMonitor';
+import { addBeforeunloadListener, addLoadListener, addMouseoutToNullListener, addResizeListener, addVisibilitychangeListener } from '@lib/windowAddEventListener';
 
 addLoadListener(() => update());
 

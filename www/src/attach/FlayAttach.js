@@ -1,5 +1,5 @@
-import ApiClient from '../lib/ApiClient';
-import windowButton from '../svg/windowButton';
+import ApiClient from '@lib/ApiClient';
+import windowButton from '@svg/windowButton';
 import './FlayAttach.scss';
 
 const File = {

@@ -1,6 +1,6 @@
-import FlayImage from '../image/part/FlayImage';
-import FlayFetch from '../lib/FlayFetch';
-import { getRandomInt } from '../lib/randomNumber';
+import FlayImage from '@image/part/FlayImage';
+import FlayFetch from '@lib/FlayFetch';
+import { getRandomInt } from '@lib/randomNumber';
 import './popup.image.scss';
 
 const urlParams = new URL(location.href).searchParams;

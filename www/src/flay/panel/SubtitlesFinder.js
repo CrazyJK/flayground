@@ -1,6 +1,6 @@
-import FlayAction from '../../lib/FlayAction';
-import FlayFetch from '../../lib/FlayFetch';
-import { popupFlayCard } from '../../lib/FlaySearch';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import { popupFlayCard } from '@lib/FlaySearch';
 import './SubtitlesFinder.scss';
 
 const HTML = `

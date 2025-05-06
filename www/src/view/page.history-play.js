@@ -1,8 +1,7 @@
+import DateUtils from '@lib/DateUtils';
+import FlayFetch from '@lib/FlayFetch';
 import './inc/Page';
 import './page.history-play.scss';
-
-import DateUtils from '../lib/DateUtils';
-import FlayFetch from '../lib/FlayFetch';
 
 class Page {
   constructor() {}

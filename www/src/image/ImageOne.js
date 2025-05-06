@@ -1,7 +1,7 @@
-import { EventCode } from '../GroundConstant';
-import FlayFetch from '../lib/FlayFetch';
-import { getRandomInt } from '../lib/randomNumber';
-import { Countdown, EVENT_COUNTDOWN_END } from '../ui/Countdown';
+import { EventCode } from '@/GroundConstant';
+import FlayFetch from '@lib/FlayFetch';
+import { getRandomInt } from '@lib/randomNumber';
+import { Countdown, EVENT_COUNTDOWN_END } from '@ui/Countdown';
 import './part/FlayImage';
 
 const cssText = `

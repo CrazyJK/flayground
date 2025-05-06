@@ -1,10 +1,9 @@
+import FlayCard from '@flay/domain/FlayCard';
+import flayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import GridControl from '@ui/GridControl';
 import './inc/Popup';
 import './popup.studio.scss';
-
-import FlayCard from '../flay/domain/FlayCard';
-import flayAction from '../lib/FlayAction';
-import FlayFetch from '../lib/FlayFetch';
-import GridControl from '../ui/GridControl';
 
 class PopupStudio {
   constructor() {

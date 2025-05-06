@@ -1,7 +1,7 @@
-import ApiClient from './ApiClient';
-import FlayFetch from './FlayFetch';
-import './SseConnector.scss';
-import { addBeforeunloadListener } from './windowAddEventListener';
+import ApiClient from '@lib/ApiClient';
+import FlayFetch from '@lib/FlayFetch';
+import '@lib/SseConnector.scss';
+import { addBeforeunloadListener } from '@lib/windowAddEventListener';
 
 /*
  * ref. https://developer.mozilla.org/ko/docs/Web/API/Server-sent_events

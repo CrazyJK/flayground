@@ -1,14 +1,13 @@
+import FlayMarker from '@flay/domain/FlayMarker';
+import VideoDatePanel from '@flay/panel/VideoDatePanel';
+import FileUtils from '@lib/FileUtils';
+import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupFlay, popupStudio } from '@lib/FlaySearch';
+import StringUtils from '@lib/StringUtils';
+import { tabUI } from '@lib/TabUI';
+import { sortable } from '@lib/TableUtils';
 import './inc/Page';
 import './page.statistics.scss';
-
-import FlayMarker from '../flay/domain/FlayMarker';
-import VideoDatePanel from '../flay/panel/VideoDatePanel';
-import FileUtils from '../lib/FileUtils';
-import FlayFetch from '../lib/FlayFetch';
-import { popupActress, popupFlay, popupStudio } from '../lib/FlaySearch';
-import StringUtils from '../lib/StringUtils';
-import { tabUI } from '../lib/TabUI';
-import { sortable } from '../lib/TableUtils';
 
 tabUI(document);
 

@@ -1,6 +1,6 @@
-import { EVENT_CHANGE_TITLE } from '../GroundConstant';
-import FlayStorage from '../lib/FlayStorage';
-import windowButton from '../svg/windowButton';
+import { EVENT_CHANGE_TITLE } from '@/GroundConstant';
+import FlayStorage from '@lib/FlayStorage';
+import windowButton from '@svg/windowButton';
 
 export class BrowserPanel extends HTMLElement {
   #input;

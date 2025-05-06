@@ -1,11 +1,11 @@
-import { EVENT_BASKET_ADD } from '../../GroundConstant';
-import FlayFetch from '../../lib/FlayFetch';
-import { popupActress, popupFlay, popupTag } from '../../lib/FlaySearch';
-import FlayStorage from '../../lib/FlayStorage';
-import { getRandomInt } from '../../lib/randomNumber';
-import trashBinSVG from '../../svg/trashBin';
-import vaginaSVG from '../../svg/vagina';
-import GridControl from '../../ui/GridControl';
+import { EVENT_BASKET_ADD } from '@/GroundConstant';
+import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
+import FlayStorage from '@lib/FlayStorage';
+import { getRandomInt } from '@lib/randomNumber';
+import trashBinSVG from '@svg/trashBin';
+import vaginaSVG from '@svg/vagina';
+import GridControl from '@ui/GridControl';
 import './FlayBasket.scss';
 
 const BASKET_KEY = 'flay-basket';

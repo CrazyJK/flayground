@@ -1,26 +1,25 @@
+import basketSVG from '@svg/basket';
+import cloudDownSVG from '@svg/cloudDown';
+import controlsSVG from '@svg/controls';
+import editSVG from '@svg/edit';
+import favoriteSVG from '@svg/favorite';
+import folderSVG from '@svg/folder';
+import jsonSVG from '@svg/json';
+import newWindowSVG from '@svg/newWindow';
+import noFavoriteSVG from '@svg/noFavorite';
+import playSVG from '@svg/play';
+import rankSVG from '@svg/ranks';
+import subtitlesSVG from '@svg/subtitles';
+import tagSVG from '@svg/tag';
+import themeSVG from '@svg/themes';
+import torrentSVG from '@svg/torrent';
+import trashBinSVG from '@svg/trashBin';
+import vaginaSVG from '@svg/vagina';
+import weatherSVG from '@svg/weathers';
+import windowButton from '@svg/windowButton';
+import youtubeSVG from '@svg/youtube';
 import './inc/Page';
 import './style.scss';
-
-import basketSVG from '../svg/basket';
-import cloudDownSVG from '../svg/cloudDown';
-import controlsSVG from '../svg/controls';
-import editSVG from '../svg/edit';
-import favoriteSVG from '../svg/favorite';
-import folderSVG from '../svg/folder';
-import jsonSVG from '../svg/json';
-import newWindowSVG from '../svg/newWindow';
-import noFavoriteSVG from '../svg/noFavorite';
-import playSVG from '../svg/play';
-import rankSVG from '../svg/ranks';
-import subtitlesSVG from '../svg/subtitles';
-import tagSVG from '../svg/tag';
-import themeSVG from '../svg/themes';
-import torrentSVG from '../svg/torrent';
-import trashBinSVG from '../svg/trashBin';
-import vaginaSVG from '../svg/vagina';
-import weatherSVG from '../svg/weathers';
-import windowButton from '../svg/windowButton';
-import youtubeSVG from '../svg/youtube';
 
 Element.prototype.appendSVG = function (svg) {
   this.appendChild(document.createElement('label')).innerHTML = svg;

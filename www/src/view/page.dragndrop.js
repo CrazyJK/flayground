@@ -1,11 +1,10 @@
+import FlayCard from '@flay/domain/FlayCard';
+import * as DragDrop from '@lib/Drag&Drop';
+import { FlayProvider } from '@lib/FlayProvider';
+import { getRandomInt } from '@lib/randomNumber';
+import { addResizeListener } from '@lib/windowAddEventListener';
 import './inc/Page';
 import './page.dragndrop.scss';
-
-import FlayCard from '../flay/domain/FlayCard';
-import * as DragDrop from '../lib/Drag&Drop';
-import { FlayProvider } from '../lib/FlayProvider';
-import { getRandomInt } from '../lib/randomNumber';
-import { addResizeListener } from '../lib/windowAddEventListener';
 
 class Page extends FlayProvider {
   constructor() {

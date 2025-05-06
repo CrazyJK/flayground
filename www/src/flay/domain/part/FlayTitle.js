@@ -1,4 +1,4 @@
-import { popupFlay } from '../../../lib/FlaySearch';
+import { popupFlay } from '@lib/FlaySearch';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayTitle.scss';
 

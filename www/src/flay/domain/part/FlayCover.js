@@ -1,9 +1,9 @@
-import { getDominatedColors } from '../../../lib/dominatedColor';
-import FlayFetch from '../../../lib/FlayFetch';
-import { popupCover } from '../../../lib/FlaySearch';
-import FlayStorage from '../../../lib/FlayStorage';
-import { getRandomInt } from '../../../lib/randomNumber';
-import newWindowSVG from '../../../svg/newWindow';
+import { getDominatedColors } from '@lib/dominatedColor';
+import FlayFetch from '@lib/FlayFetch';
+import { popupCover } from '@lib/FlaySearch';
+import FlayStorage from '@lib/FlayStorage';
+import { getRandomInt } from '@lib/randomNumber';
+import newWindowSVG from '@svg/newWindow';
 import './FlayCover.scss';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 

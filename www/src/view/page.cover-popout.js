@@ -1,4 +1,4 @@
-import CoverPopout from '../flay/panel/CoverPopout';
+import CoverPopout from '@flay/panel/CoverPopout';
 import './inc/Page';
 import './page.cover-popout.scss';
 

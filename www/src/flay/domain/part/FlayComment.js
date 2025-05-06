@@ -1,6 +1,6 @@
-import FlayAction from '../../../lib/FlayAction';
-import FlaySearch from '../../../lib/FlaySearch';
-import StringUtils from '../../../lib/StringUtils';
+import FlayAction from '@lib/FlayAction';
+import FlaySearch from '@lib/FlaySearch';
+import StringUtils from '@lib/StringUtils';
 import './FlayComment.scss';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 

@@ -3,9 +3,9 @@
  */
 import './ToastHtmlEditor.scss';
 
+import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@/GroundConstant';
 import Editor from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
-import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '../../GroundConstant';
 
 const DEFAULT_CALLBACK = { load: () => {}, blur: () => {}, change: () => {} };
 

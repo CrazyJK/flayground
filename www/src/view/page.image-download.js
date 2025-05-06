@@ -1,5 +1,5 @@
-import ApiClient from '../lib/ApiClient';
-import FlayAction from '../lib/FlayAction';
+import ApiClient from '@lib/ApiClient';
+import FlayAction from '@lib/FlayAction';
 import './inc/Page';
 import './page.image-download.scss';
 

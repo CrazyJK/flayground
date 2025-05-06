@@ -1,6 +1,6 @@
-import FlayFetch from '../lib/FlayFetch';
-import { getRandomInt } from '../lib/randomNumber';
-import { addResizeListener } from '../lib/windowAddEventListener';
+import FlayFetch from '@lib/FlayFetch';
+import { getRandomInt } from '@lib/randomNumber';
+import { addResizeListener } from '@lib/windowAddEventListener';
 import './ImageFall.scss';
 
 const PANE_WIDTH = 360;

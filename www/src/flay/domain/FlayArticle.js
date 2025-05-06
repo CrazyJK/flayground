@@ -1,7 +1,7 @@
-import DateUtils from '../../lib/DateUtils';
-import FlayFetch from '../../lib/FlayFetch';
-import { popupActress, popupFlay, popupFlayInfo } from '../../lib/FlaySearch';
-import StringUtils from '../../lib/StringUtils';
+import DateUtils from '@lib/DateUtils';
+import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupFlay, popupFlayInfo } from '@lib/FlaySearch';
+import StringUtils from '@lib/StringUtils';
 import './FlayArticle.scss';
 
 export default class FlayArticle extends HTMLDivElement {

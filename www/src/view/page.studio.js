@@ -1,9 +1,8 @@
+import FlayStudio from '@flay/domain/part/FlayStudio';
+import FlayFetch from '@lib/FlayFetch';
+import StringUtils from '@lib/StringUtils';
 import './inc/Page';
 import './page.studio.scss';
-
-import FlayStudio from '../flay/domain/part/FlayStudio';
-import FlayFetch from '../lib/FlayFetch';
-import StringUtils from '../lib/StringUtils';
 
 class Page {
   constructor() {

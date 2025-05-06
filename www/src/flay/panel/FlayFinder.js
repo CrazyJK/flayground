@@ -1,6 +1,6 @@
-import ApiClient from '../../lib/ApiClient';
-import DateUtils from '../../lib/DateUtils';
-import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '../../lib/FlaySearch';
+import ApiClient from '@lib/ApiClient';
+import DateUtils from '@lib/DateUtils';
+import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '@lib/FlaySearch';
 import './FlayFinder.scss';
 
 const HTML = `

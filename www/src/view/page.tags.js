@@ -1,12 +1,11 @@
+import * as DragDrop from '@lib/Drag&Drop';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
+import { popupTag } from '@lib/FlaySearch';
+import { addResizeListener } from '@lib/windowAddEventListener';
+import tagSVG from '@svg/tag';
 import './inc/Page';
 import './page.tags.scss';
-
-import * as DragDrop from '../lib/Drag&Drop';
-import FlayAction from '../lib/FlayAction';
-import FlayFetch from '../lib/FlayFetch';
-import { popupTag } from '../lib/FlaySearch';
-import { addResizeListener } from '../lib/windowAddEventListener';
-import tagSVG from '../svg/tag';
 
 class FlayTagInfo extends HTMLDListElement {
   constructor(tag) {

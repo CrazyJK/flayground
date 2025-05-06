@@ -1,6 +1,6 @@
-import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '../GroundConstant';
-import { addResizeListener } from '../lib/windowAddEventListener';
-import windowButton from '../svg/windowButton';
+import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '@/GroundConstant';
+import { addResizeListener } from '@lib/windowAddEventListener';
+import windowButton from '@svg/windowButton';
 
 const cssText = `
   :host {

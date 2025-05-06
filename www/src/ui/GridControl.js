@@ -1,6 +1,5 @@
+import FlayStorage from '@lib/FlayStorage';
 import './GridControl.scss';
-
-import FlayStorage from '../lib/FlayStorage';
 
 const MAX = 7;
 const MIN = 1;

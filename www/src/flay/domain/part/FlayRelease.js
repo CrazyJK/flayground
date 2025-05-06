@@ -1,4 +1,4 @@
-import DateUtils from '../../../lib/DateUtils';
+import DateUtils from '@lib/DateUtils';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayRelease.scss';
 

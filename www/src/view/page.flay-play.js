@@ -1,8 +1,7 @@
+import FlayArticle from '@flay/domain/FlayArticle';
+import { FlayVideoViewPanel } from '@flay/panel/FlayVideoViewPanel';
 import './inc/Page';
 import './page.flay-play.scss';
-
-import FlayArticle from '../flay/domain/FlayArticle';
-import { FlayVideoViewPanel } from '../flay/panel/FlayVideoViewPanel';
 
 const flayArticle = document.querySelector('body > header').appendChild(new FlayArticle({ mode: 'card' }));
 

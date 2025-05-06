@@ -1,6 +1,6 @@
-import { toggleDebug } from '../../lib/DebugOutline';
-import { addResizeListener } from '../../lib/windowAddEventListener';
-import '../panel/FlayMonitor';
+import '@flay/panel/FlayMonitor';
+import { toggleDebug } from '@lib/DebugOutline';
+import { addResizeListener } from '@lib/windowAddEventListener';
 import './part/ThemeController';
 import './SideNavBar.scss';
 

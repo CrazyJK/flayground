@@ -6,7 +6,7 @@
  * - flay count of actress
  */
 
-import ApiClient from './ApiClient';
+import ApiClient from '@lib/ApiClient';
 
 const coverObjectURLMap = new Map();
 let tagGroupList = null;

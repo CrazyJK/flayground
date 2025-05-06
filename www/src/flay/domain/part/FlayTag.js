@@ -1,5 +1,5 @@
-import FlayAction from '../../../lib/FlayAction';
-import FlayFetch from '../../../lib/FlayFetch';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayTag.scss';
 

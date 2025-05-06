@@ -1,7 +1,6 @@
+import FlayFetch from '@lib/FlayFetch';
 import './inc/Popup';
 import './popup.cover.scss';
-
-import FlayFetch from '../lib/FlayFetch';
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');

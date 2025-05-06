@@ -1,10 +1,10 @@
-import FileUtils from '../../../lib/FileUtils';
-import FlayAction from '../../../lib/FlayAction';
-import FlaySearch from '../../../lib/FlaySearch';
-import folderSVG from '../../../svg/folder';
-import torrentSVG from '../../../svg/torrent';
-import youtubeSVG from '../../../svg/youtube';
-// import PlayTimeDB from '../../idb/PlayTimeDB';
+import FileUtils from '@lib/FileUtils';
+import FlayAction from '@lib/FlayAction';
+import FlaySearch from '@lib/FlaySearch';
+import folderSVG from '@svg/folder';
+import torrentSVG from '@svg/torrent';
+import youtubeSVG from '@svg/youtube';
+// import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import './FlayFiles.scss';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 

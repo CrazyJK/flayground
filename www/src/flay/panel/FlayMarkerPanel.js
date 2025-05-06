@@ -1,8 +1,8 @@
-import FlayFetch from '../../lib/FlayFetch';
-import { getRandomInt, getRandomIntInclusive } from '../../lib/randomNumber';
-import { addResizeListener } from '../../lib/windowAddEventListener';
-import { EVENT_TIMER_END, EVENT_TIMER_START, EVENT_TIMER_TICK, TickTimer } from '../../ui/TickTimer';
-import FlayMarker from '../domain/FlayMarker';
+import FlayMarker from '@flay/domain/FlayMarker';
+import FlayFetch from '@lib/FlayFetch';
+import { getRandomInt, getRandomIntInclusive } from '@lib/randomNumber';
+import { addResizeListener } from '@lib/windowAddEventListener';
+import { EVENT_TIMER_END, EVENT_TIMER_START, EVENT_TIMER_TICK, TickTimer } from '@ui/TickTimer';
 import './FlayMarkerPanel.scss';
 
 /** 8방향 */

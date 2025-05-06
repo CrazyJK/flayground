@@ -1,7 +1,7 @@
-import ApiClient from '../../lib/ApiClient';
-import { popupFlay } from '../../lib/FlaySearch';
-import favorite from '../../svg/favorite';
-import ranks from '../../svg/ranks';
+import ApiClient from '@lib/ApiClient';
+import { popupFlay } from '@lib/FlaySearch';
+import favorite from '@svg/favorite';
+import ranks from '@svg/ranks';
 import './FlayMarker.scss';
 
 const DEFAULT_OPTIONS = { showTitle: true, showCover: false, /** 모양. square, circle, star, heart, rhombus */ shape: 'square' };

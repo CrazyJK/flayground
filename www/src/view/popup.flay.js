@@ -1,8 +1,7 @@
+import FlayPage from '@flay/domain/FlayPage';
+import snapLayouts from '@lib/snapLayouts';
 import './inc/Popup';
 import './popup.flay.scss';
-
-import FlayPage from '../flay/domain/FlayPage';
-import snapLayouts from '../lib/snapLayouts';
 
 const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');

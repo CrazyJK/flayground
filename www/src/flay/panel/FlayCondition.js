@@ -1,9 +1,9 @@
-import FlayFetch from '../../lib/FlayFetch';
-import FlayStorage from '../../lib/FlayStorage';
-import favoriteSVG from '../../svg/favorite';
-import noFavoriteSVG from '../../svg/noFavorite';
-import rankSVG from '../../svg/ranks';
-import subtitlesSVG from '../../svg/subtitles';
+import FlayFetch from '@lib/FlayFetch';
+import FlayStorage from '@lib/FlayStorage';
+import favoriteSVG from '@svg/favorite';
+import noFavoriteSVG from '@svg/noFavorite';
+import rankSVG from '@svg/ranks';
+import subtitlesSVG from '@svg/subtitles';
 import './FlayCondition.scss';
 
 const CONDITION_KEY = 'FlayCondition.condition';

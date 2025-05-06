@@ -1,5 +1,5 @@
-import { getDominatedColors } from '../../lib/dominatedColor';
-import FlayFetch from '../../lib/FlayFetch';
+import { getDominatedColors } from '@lib/dominatedColor';
+import FlayFetch from '@lib/FlayFetch';
 import './ImageFrame.scss';
 
 export default class ImageFrame extends HTMLDivElement {

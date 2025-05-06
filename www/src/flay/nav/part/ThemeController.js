@@ -1,5 +1,5 @@
-import FlayStorage from '../../../lib/FlayStorage';
-import themeSVG from '../../../svg/themes';
+import FlayStorage from '@lib/FlayStorage';
+import themeSVG from '@svg/themes';
 import './ThemeController.scss';
 
 const THEME_KEY = 'FlayNav.theme';

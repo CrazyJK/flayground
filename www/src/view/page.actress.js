@@ -1,11 +1,10 @@
+import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupActressInfo } from '@lib/FlaySearch';
+import StringUtils from '@lib/StringUtils';
+import favoriteSVG from '@svg/favorite';
+import noFavoriteSVG from '@svg/noFavorite';
 import './inc/Page';
 import './page.actress.scss';
-
-import FlayFetch from '../lib/FlayFetch';
-import { popupActress, popupActressInfo } from '../lib/FlaySearch';
-import StringUtils from '../lib/StringUtils';
-import favoriteSVG from '../svg/favorite';
-import noFavoriteSVG from '../svg/noFavorite';
 
 class Page {
   constructor() {

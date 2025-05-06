@@ -1,9 +1,8 @@
+import FlayArticle from '@flay/domain/FlayArticle';
+import FlayPagination from '@flay/panel/FlayPagination';
+import FlayFetch from '@lib/FlayFetch';
 import './inc/Page';
 import './page.archive.scss';
-
-import FlayArticle from '../flay/domain/FlayArticle';
-import FlayPagination from '../flay/panel/FlayPagination';
-import FlayFetch from '../lib/FlayFetch';
 
 class Page {
   async start() {

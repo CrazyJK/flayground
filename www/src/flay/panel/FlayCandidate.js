@@ -1,6 +1,6 @@
-import FlayAction from '../../lib/FlayAction';
-import FlayFetch from '../../lib/FlayFetch';
-import FlayArticle from '../domain/FlayArticle';
+import FlayArticle from '@flay/domain/FlayArticle';
+import FlayAction from '@lib/FlayAction';
+import FlayFetch from '@lib/FlayFetch';
 import './FlayCandidate.scss';
 
 /**

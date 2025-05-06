@@ -1,10 +1,10 @@
-import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '../../GroundConstant';
-import { FlayProvider } from '../../lib/FlayProvider';
-import FlayStorage from '../../lib/FlayStorage';
-import { getRandomInt } from '../../lib/randomNumber';
-import TimeUtils from '../../lib/TimeUtils';
-import basketSVG from '../../svg/basket';
-import controlsSVG from '../../svg/controls';
+import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '@/GroundConstant';
+import { FlayProvider } from '@lib/FlayProvider';
+import FlayStorage from '@lib/FlayStorage';
+import { getRandomInt } from '@lib/randomNumber';
+import TimeUtils from '@lib/TimeUtils';
+import basketSVG from '@svg/basket';
+import controlsSVG from '@svg/controls';
 import { FlayVideoPlayer } from './FlayVideoPlayer';
 import './FlayVideoViewPanel.scss';
 

@@ -1,4 +1,4 @@
-import FlayStorage from './FlayStorage';
+import FlayStorage from '@lib/FlayStorage';
 
 // 테마 상수 정의
 const THEME_KEY = 'FlayNav.theme';

@@ -1,10 +1,9 @@
+import FlayArticle from '@flay/domain/FlayArticle';
+import FlayCondition from '@flay/panel/FlayCondition';
+import FlayFetch from '@lib/FlayFetch';
+import { getRandomInt } from '@lib/randomNumber';
 import './inc/Page';
 import './page.flay-one.scss';
-
-import FlayArticle from '../flay/domain/FlayArticle';
-import FlayCondition from '../flay/panel/FlayCondition';
-import FlayFetch from '../lib/FlayFetch';
-import { getRandomInt } from '../lib/randomNumber';
 
 class Page {
   opusList;

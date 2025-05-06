@@ -53,7 +53,7 @@ function getEntryHtmlPlugins() {
 
 module.exports = {
   mode: 'production',
-  devtool: 'source-map', // 프로덕션에서는 소스맵 파일 생성
+  devtool: 'source-map',
   output: {
     filename: '[name].[contenthash:8].js', // 더 짧은 해시 값 사용
     chunkFilename: '[name].[contenthash:8].chunk.js',
@@ -65,7 +65,7 @@ module.exports = {
     new MadgePlugin(), // madge.cjs 스크립트를 실행하는 플러그인
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash:8].css',
-      chunkFilename: '[id].[contenthash:8].css',
+      chunkFilename: '[name].[contenthash:8].css', // [id] 대신 [name] 사용
       ignoreOrder: true, // CSS 순서 충돌 경고 무시 옵션 추가
     }),
     // Gzip 압축 적용
@@ -119,24 +119,37 @@ module.exports = {
       }),
     ],
     runtimeChunk: 'single', // 런타임 코드를 단일 청크로 분리하여 캐싱 개선
+    moduleIds: 'deterministic', // 빌드 간에 변경되지 않는 짧은 숫자 ID를 사용합니다. 장기 캐싱에 유용하며, 프로덕션 모드에서 기본으로 활성화됩니다.
+    chunkIds: 'deterministic', // 컴파일 간에 변경되지 않는 짧은 숫자 ID입니다. 장기 캐싱에 유용하며, 프로덕션 모드에서 기본으로 활성화됩니다.
     splitChunks: {
       chunks: 'all', // 모든 유형의 청크에 대해 분할 적용
-      minSize: 100000, // 최소 크기를 100KB로 증가
-      minChunks: 3, // 최소 3번 이상 사용되는 모듈만 분할
-      maxAsyncRequests: 5, // 최대 비동기 요청 수 감소
-      maxInitialRequests: 3, // 최대 초기 요청 수 감소
+      minSize: 50000, // 최소 크기 50KB
+      minChunks: 2, // 최소 2번 이상 사용되는 모듈만 분할
+      maxAsyncRequests: 10, // 최대 비동기 요청 수 감소
+      maxInitialRequests: 6, // 최대 초기 요청 수 감소
       automaticNameDelimiter: '-',
       enforceSizeThreshold: 150000, // 강제 분할 임계값 설정
       cacheGroups: {
         defaultVendors: {
-          test: /[\\/]node_modules[\\/]/,
+          test: /[\\/]node_modules[\\/](?!@toast-ui)/,
           priority: -10,
           reuseExistingChunk: true,
           name: 'vendors',
           chunks: 'all',
         },
+        toastUI: {
+          test: /[\\/]node_modules[\\/]@toast-ui/,
+          priority: 10, // 더 높은 우선순위 부여
+          name(module) {
+            // @toast-ui/{모듈명} 형태로 청크 이름 생성
+            const packageName = module.context.match(/[\\/]node_modules[\\/]@toast-ui[\\/](.*?)(?:[\\/]|$)/)[1];
+            return `toast-ui.${packageName}`;
+          },
+          minChunks: 1,
+          reuseExistingChunk: true,
+        },
         default: {
-          minChunks: 3,
+          minChunks: 2,
           priority: -30,
           reuseExistingChunk: true,
           name: 'bundled-commons',

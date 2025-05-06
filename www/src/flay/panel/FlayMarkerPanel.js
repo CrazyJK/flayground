@@ -31,7 +31,6 @@ const DEFAULT_OPTIONS = {
 export class FlayMarkerPanel extends HTMLDivElement {
   #markerList = []; // 마커 리스트
   #threadCount = 1; // 스레드 개수
-  #timerID = new Array(this.#threadCount); // 타이머 ID
   #paused = false; // 일시정지 여부
   #lastNo = -1; // 하이라이트 마커 마지막 번호
   #opts = {}; // 옵션
@@ -164,7 +163,6 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
     // 스레드 개수 랜덤으로 설정
     this.#threadCount = getRandomIntInclusive(...this.#opts.thread);
-    this.#timerID = new Array(this.#threadCount);
     this.dataset.threads = this.#threadCount;
 
     const descriptionText = `multifier: ${this.dataset.multifier}, seconds: ${this.tickTimer.seconds}, order: ${this.dataset.order}, threads: ${this.dataset.threads}`;

@@ -41,6 +41,9 @@ module.exports = {
       extensions: ['js'],
       emitWarning: true,
       failOnError: false,
+      // ESLint 8 버전 호환성을 위한 설정
+      useEslintrc: true, // .eslintrc.js 파일 사용
+      fix: true, // 자동 수정 활성화
     }),
     {
       // watch 모드 알림 플러그인

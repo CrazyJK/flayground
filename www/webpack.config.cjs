@@ -1,25 +1,16 @@
-const commonConfig = require('./webpack.common.cjs');
-const { merge } = require('webpack-merge');
-
 module.exports = () => {
   console.log(`🚀 Building for ${process.env.NODE_ENV} environment...`);
 
-  const argv = {
-    env: process.env.NODE_ENV === 'production' ? 'prod' : 'dev',
-    analyze: process.env.ANALYZE || false,
-  };
-
-  const envConfig = require(`./webpack.${argv.env}.cjs`);
-  let config = merge(commonConfig, envConfig);
-
-  // watch 모드인지 감지하기 위한 플래그
+  const envText = process.env.NODE_ENV === 'production' ? 'prod' : 'dev';
+  const withAnalyze = process.env.ANALYZE || false;
   const isWatchMode = process.argv.includes('-w') || process.argv.includes('--watch');
-  if (isWatchMode) {
-    console.log('📝 Watch mode enabled - monitoring for changes...');
-  }
+
+  const commonConfig = require('./webpack.common.cjs');
+  const envConfig = require(`./webpack.${envText}.cjs`);
+  const config = require('webpack-merge').merge(commonConfig, envConfig);
 
   // 번들 분석기 활성화 여부
-  if (argv.analyze) {
+  if (withAnalyze) {
     const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
     config.plugins.push(
       new BundleAnalyzerPlugin({
@@ -32,6 +23,10 @@ module.exports = () => {
       })
     );
     console.log('\n📊 Bundle analyzer enabled with enhanced options');
+  }
+
+  if (isWatchMode) {
+    console.log('\n📝 Watch mode enabled - monitoring for changes...'); // watch 모드인지 감지
   }
 
   return config;

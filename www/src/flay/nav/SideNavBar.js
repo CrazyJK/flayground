@@ -1,3 +1,6 @@
+import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
+import { ModalWindow } from '@/ui/ModalWindow';
+import { FlayMemoEditor } from '@flay/panel/FlayMemoEditor';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -45,6 +48,8 @@ const menuList = [
 ];
 
 export default class SideNavBar extends HTMLDivElement {
+  #currentMenuName = null; // 현재 메뉴
+
   constructor() {
     super();
     this.classList.add('side-nav-bar', 'flay-div');
@@ -70,6 +75,7 @@ export default class SideNavBar extends HTMLDivElement {
     <footer>
       <div class="flay-monitor" is="flay-monitor"></div>
       <div class="window-size"></div>
+      <div><a id="memo">memo</a></div>
       <div><a id="debug">debug</a></div>
       <div><a id="swagger">swagger</a></div>
       <div><a id="dependencies">dependencies</a></div>
@@ -82,6 +88,7 @@ export default class SideNavBar extends HTMLDivElement {
     this.querySelectorAll('a').forEach((anker) => {
       if (anker.href.indexOf(location.pathname) > -1) {
         anker.parentElement.classList.add('active');
+        this.#currentMenuName = anker.textContent.replace(/\s+/g, '');
       }
     });
 
@@ -102,6 +109,9 @@ export default class SideNavBar extends HTMLDivElement {
           case 'bundleReport':
             window.open('bundle-report.html', 'bundle-report', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
             break;
+          case 'memo':
+            this.#toggleMemoEditor();
+            break;
         }
       } else if (e.target.closest('.flay-monitor')) {
         window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
@@ -117,7 +127,29 @@ export default class SideNavBar extends HTMLDivElement {
       this.querySelector('.window-size').innerHTML = `${width} x ${height}`;
     });
   }
+
+  #toggleMemoEditor() {
+    const memoEditor = document.querySelector('#memo-editor');
+    if (memoEditor) {
+      memoEditor.remove();
+      return;
+    }
+
+    document
+      .querySelector('body')
+      .appendChild(
+        new ModalWindow('Memo', {
+          id: 'memo-editor-' + this.#currentMenuName,
+          top: 60,
+          left: 0,
+          width: 300,
+          height: 200,
+          edges: [MODAL_EDGE.RIGHT],
+          initialMode: MODAL_MODE.NORMAL,
+        })
+      )
+      .appendChild(new FlayMemoEditor());
+  }
 }
 
-// Define the new element
 customElements.define('side-nav-bar', SideNavBar, { extends: 'div' });

@@ -1,9 +1,6 @@
-import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
 import FlayPage from '@flay/domain/FlayPage';
 import FlayCondition from '@flay/panel/FlayCondition';
-import { FlayMemoEditor } from '@flay/panel/FlayMemoEditor';
 import FlayPagination from '@flay/panel/FlayPagination';
-import { ModalWindow } from '@ui/ModalWindow';
 import './inc/Page';
 import './page.flay-page.scss';
 
@@ -26,17 +23,3 @@ flayPagination.addEventListener('change', async () => {
     flayPage.classList.toggle('hide', true);
   }
 });
-
-document
-  .querySelector('body')
-  .appendChild(
-    new ModalWindow('Memo', {
-      top: 60,
-      left: 0,
-      width: 300,
-      height: 200,
-      edges: [MODAL_EDGE.RIGHT],
-      initialMode: MODAL_MODE.MINIMIZE,
-    })
-  )
-  .appendChild(new FlayMemoEditor());

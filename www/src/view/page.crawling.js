@@ -299,7 +299,7 @@ class Page {
     const url = StringUtils.isBlank(text) ? this.#getText(target) : text;
     const formData = new FormData();
     formData.append('url', url);
-    ApiClient.postFormData('/download', formData)
+    ApiClient.getResponse('/download', { method: 'post', body: formData })
       .then(async (res) => {
         // 헤더에서 파일명을 가져옴
         const filename = res.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');

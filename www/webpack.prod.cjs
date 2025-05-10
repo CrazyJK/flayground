@@ -1,19 +1,16 @@
-const path = require('path');
-const fs = require('fs');
-const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
-const { exec } = require('child_process');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
 const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
+const { WebpackManifestPlugin } = require('webpack-manifest-plugin');
+const { exec } = require('child_process');
 
 // 의존성 다이어그램을 생성하는 플러그인
 class MadgePlugin {
   apply(compiler) {
     compiler.hooks.afterEmit.tap('MadgePlugin', () => {
-      console.log('\n🔍 Running madge to generate dependency diagrams...\n');
       exec('node madge.cjs', { cwd: __dirname }, (error, stdout) => {
         if (error) {
           console.error(`Error running madge: ${error}`);
@@ -57,7 +54,6 @@ module.exports = {
     new WebpackManifestPlugin({
       filter: (file) => file.name.endsWith('.js') || file.name.endsWith('.css'),
     }),
-    new MadgePlugin(), // madge.cjs 스크립트를 실행하는 플러그인
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash:8].css',
       chunkFilename: '[name].[contenthash:8].css', // [id] 대신 [name] 사용
@@ -70,6 +66,7 @@ module.exports = {
       threshold: 10240, // 10KB 이상만 압축
       minRatio: 0.8,
     }),
+    new MadgePlugin(), // madge.cjs 스크립트를 실행하는 플러그인
     new BundleAnalyzerPlugin({
       analyzerMode: 'static', // 정적 HTML 파일로 분석 결과 생성
       reportFilename: 'bundle-report.html', // 분석 결과 파일 이름

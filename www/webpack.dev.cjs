@@ -1,29 +1,71 @@
 const path = require('path');
-const fs = require('fs');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 
-// 엔트리 포인트에 해당하는 HTML 파일이 있는지 확인
+// watch 모드 알림 및 성능 개선 플러그인
+class WatchPlugin {
+  apply(compiler) {
+    // 파일 변경 감지
+    compiler.hooks.watchRun.tap('WatchRunPlugin', (comp) => {
+      console.log(`\n✨ Changes detected, rebuilding... 🕒 ${new Date().toLocaleTimeString()}`);
+      comp.modifiedFiles &&
+        console.log(
+          `\tmodifiedFiles : ${Array.from(comp.modifiedFiles)
+            .map((file) => file.replace(/\\/g, '/').split('/').pop())
+            .join(', ')}`
+        );
+      comp.removedFiles &&
+        console.log(
+          `\tremovedFiles  : ${Array.from(comp.removedFiles)
+            .map((file) => file.replace(/\\/g, '/').split('/').pop())
+            .join(', ')}`
+        );
+    });
+
+    // 빌드 완료 시 성능 측정
+    compiler.hooks.done.tap('WatchDonePlugin', (stats) => {
+      const time = stats.endTime - stats.startTime;
+      console.log(`🚀 Build completed in ${time}ms`);
+
+      // 큰 모듈 경고 (최적화 대상 식별 도움)
+      const bigModules = [];
+      stats.compilation.modules.forEach((module) => {
+        if (module.resource && module.resource.includes('node_modules')) return; // node_modules 제외
+        if (module.size() > 250000) {
+          // 250KB 이상 모듈
+          bigModules.push({
+            name: module.resource || '(generated)',
+            size: (module.size() / 1024).toFixed(2) + ' KB',
+          });
+        }
+      });
+
+      if (bigModules.length > 0) {
+        console.log('⚠️ Large modules detected (potential optimization targets):');
+        bigModules.forEach((mod) => {
+          console.log(`\t${mod.name}: ${mod.size}`);
+        });
+      }
+      console.log('');
+    });
+  }
+}
+
+// HTML 템플릿을 기반으로 엔트리 포인트에 대한 HTML 파일에 js 및 css를 자동으로 주입하는 플러그인
 function getEntryHtmlPlugins() {
   const { entry } = require('./webpack.common.cjs');
   const plugins = [];
-
-  // 각 엔트리 포인트에 대해 HTML 파일 생성
   Object.keys(entry).forEach((entryName) => {
-    const templatePath = path.resolve(__dirname, `src/view/${entryName}.html`);
-    if (fs.existsSync(templatePath)) {
-      plugins.push(
-        new HtmlWebpackPlugin({
-          filename: `${entryName}.html`,
-          template: `src/view/${entryName}.html`,
-          chunks: ['runtime', 'vendors', entryName], // 런타임, 벤더 청크 및 엔트리 포인트 청크 포함
-          inject: true, // JS와 CSS 자동 주입 활성화
-        })
-      );
-    }
+    plugins.push(
+      new HtmlWebpackPlugin({
+        filename: `${entryName}.html`,
+        template: `src/view/${entryName}.html`,
+        chunks: ['runtime', 'vendors', entryName], // 런타임, 벤더 청크 및 엔트리 포인트 청크 포함
+        inject: true, // JS와 CSS 자동 주입 활성화
+      })
+    );
   });
-
   return plugins;
 }
 
@@ -46,52 +88,7 @@ module.exports = {
       useEslintrc: true, // .eslintrc.js 파일 사용
       fix: true, // 자동 수정 활성화
     }),
-    {
-      // watch 모드 알림 및 성능 개선 플러그인
-      apply: (compiler) => {
-        // 파일 변경 감지
-        compiler.hooks.watchRun.tap('WatchRunPlugin', (comp) => {
-          console.log(`\n✨ Changes detected, rebuilding... 🕒 ${new Date().toLocaleTimeString()}`);
-          comp.modifiedFiles &&
-            console.log(
-              `\tmodifiedFiles : ${Array.from(comp.modifiedFiles)
-                .map((file) => file.replace(/\\/g, '/').split('/').pop())
-                .join(', ')}`
-            );
-          comp.removedFiles &&
-            console.log(
-              `\tremovedFiles  : ${Array.from(comp.removedFiles)
-                .map((file) => file.replace(/\\/g, '/').split('/').pop())
-                .join(', ')}`
-            );
-        });
-
-        // 빌드 완료 시 성능 측정
-        compiler.hooks.done.tap('WatchDonePlugin', (stats) => {
-          const time = stats.endTime - stats.startTime;
-          console.log(`\n🚀 Build completed in ${time}ms\n`);
-
-          // 큰 모듈 경고 (최적화 대상 식별 도움)
-          const bigModules = [];
-          stats.compilation.modules.forEach((module) => {
-            if (module.size() > 500000) {
-              // 500KB 이상 모듈
-              bigModules.push({
-                name: module.resource || '(generated)',
-                size: (module.size() / 1024).toFixed(2) + ' KB',
-              });
-            }
-          });
-
-          if (bigModules.length > 0) {
-            console.log('⚠️ Large modules detected (potential optimization targets):');
-            bigModules.forEach((mod) => {
-              console.log(`\t${mod.name}: ${mod.size}`);
-            });
-          }
-        });
-      },
-    },
+    new WatchPlugin(), // watch 모드 알림 및 성능 개선 플러그인
     ...getEntryHtmlPlugins(),
   ],
   optimization: {

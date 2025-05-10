@@ -1,10 +1,9 @@
-import './FlayMemoEditor.scss';
-
 import { EVENT_CHANGE_TITLE } from '@/GroundConstant';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
 import FlayStorage from '@lib/FlayStorage';
+import './FlayMemoEditor.scss';
 
 const MEMO_STORAGE_KEY = 'flay-memo';
 

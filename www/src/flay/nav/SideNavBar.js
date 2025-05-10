@@ -1,5 +1,4 @@
 import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
-import { FlayMemoEditor } from '@flay/panel/FlayMemoEditor';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -129,26 +128,29 @@ export class SideNavBar extends HTMLDivElement {
   }
 
   #toggleMemoEditor() {
-    const memoEditor = document.querySelector('#memo-editor');
+    const id = 'memo-editor-' + this.#currentMenuName;
+    const memoEditor = document.querySelector('#' + id);
     if (memoEditor) {
       memoEditor.remove();
       return;
     }
 
-    document
-      .querySelector('body')
-      .appendChild(
-        new ModalWindow('Memo', {
-          id: 'memo-editor-' + this.#currentMenuName,
-          top: 60,
-          left: 0,
-          width: 300,
-          height: 200,
-          edges: [MODAL_EDGE.RIGHT],
-          initialMode: MODAL_MODE.NORMAL,
-        })
-      )
-      .appendChild(new FlayMemoEditor());
+    import(/* webpackChunkName: "FlayMemoEditor" */ '@flay/panel/FlayMemoEditor').then(({ FlayMemoEditor }) => {
+      document
+        .querySelector('body')
+        .appendChild(
+          new ModalWindow('Memo', {
+            id: id,
+            top: 60,
+            left: 0,
+            width: 300,
+            height: 200,
+            edges: [MODAL_EDGE.RIGHT],
+            initialMode: MODAL_MODE.NORMAL,
+          })
+        )
+        .appendChild(new FlayMemoEditor());
+    });
   }
 }
 

@@ -1,5 +1,5 @@
 import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '@/GroundConstant';
-import FlayStorage from '@/lib/FlayStorage';
+import FlayStorage from '@lib/FlayStorage';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import windowButton from '@svg/windowButton';
 import './ModalWindow.scss';

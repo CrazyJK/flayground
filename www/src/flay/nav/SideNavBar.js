@@ -1,9 +1,9 @@
 import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
-import { ModalWindow } from '@/ui/ModalWindow';
 import { FlayMemoEditor } from '@flay/panel/FlayMemoEditor';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import { addResizeListener } from '@lib/windowAddEventListener';
+import { ModalWindow } from '@ui/ModalWindow';
 import './part/ThemeController';
 import './SideNavBar.scss';
 

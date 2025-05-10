@@ -1,6 +1,6 @@
-import FlayMarker from '@/flay/domain/FlayMarker';
-import FlayFetch from '@/lib/FlayFetch';
+import FlayMarker from '@flay/domain/FlayMarker';
 import DateUtils from '@lib/DateUtils';
+import FlayFetch from '@lib/FlayFetch';
 import './inc/Page';
 import './index.scss';
 

@@ -3,7 +3,6 @@ import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch from '@lib/FlayFetch';
 import { popupActress, popupFlay } from '@lib/FlaySearch';
-import StringUtils from '@lib/StringUtils';
 import './inc/Page';
 import './page.crawling.scss';
 
@@ -14,6 +13,7 @@ const nanoStore = new NanoStore();
 
 class Page {
   #itemList = [];
+  #startPageNo = 0;
   #paging = {
     srcPageNo: 0,
     itemIndex: 0,
@@ -29,7 +29,8 @@ class Page {
 
   constructor() {
     document.querySelector('#startBtn').addEventListener('click', () => {
-      this.#paging.srcPageNo = parseInt(document.querySelector('#srcPageNo').value);
+      this.#startPageNo = parseInt(document.querySelector('#srcPageNo').value);
+      this.#paging.srcPageNo = this.#startPageNo;
       this.#callCrawling();
       document.querySelector('#starter').classList.add('hide');
     });
@@ -240,7 +241,7 @@ class Page {
       const record = this.#recordCache.get(data.opus.text);
       if (record) {
         const viewDate = DateUtils.format(record.date, 'yyyy-MM-dd HH:mm');
-        div.querySelector('.posted').appendChild(document.createElement('label')).innerHTML = `${viewDate}<sub>view</sub>`;
+        div.querySelector('.posted').appendChild(document.createElement('label')).innerHTML = `${viewDate}<sub> view</sub>`;
 
         if (data.posted.text < viewDate) {
           div.classList.add('record-viewed');
@@ -284,19 +285,19 @@ class Page {
         ${data.downloadList.map((download) => `<label data-href="${download.href}">${download.type} ${download.text}</label>`).join('')}
       </div>
       <div class="posted" title="posted">
-        <label data-href="${data.posted.href}">${data.posted.text}<sub>posted</sub></label>
+        <label data-href="${data.posted.href}">${data.posted.text}<sub> posted</sub></label>
       </div>
     `;
   }
 
   #copyToClipboard(target, text) {
-    window.navigator.clipboard.writeText(StringUtils.isBlank(text) ? this.#getText(target) : text).then(() => {
+    window.navigator.clipboard.writeText(text || this.#getText(target)).then(() => {
       target.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
     });
   }
 
   #download(target, text) {
-    const url = StringUtils.isBlank(text) ? this.#getText(target) : text;
+    const url = text || this.#getText(target);
     const formData = new FormData();
     formData.append('url', url);
     ApiClient.getResponse('/download', { method: 'post', body: formData })
@@ -392,7 +393,7 @@ class Page {
   }
 
   #updateFootMessage() {
-    document.querySelector('#currentPageNo').innerHTML = Math.ceil((this.#paging.itemIndex + 1) / 15);
+    document.querySelector('#currentPageNo').innerHTML = Math.ceil((this.#paging.itemIndex + 1) / 15) + this.#startPageNo - 1;
     document.querySelector('#loadedPageNo').innerHTML = this.#paging.srcPageNo;
     document.querySelector('#currentItemNo').innerHTML = this.#paging.itemIndex + 1;
     document.querySelector('#totalItemNo').innerHTML = this.#paging.itemLength;

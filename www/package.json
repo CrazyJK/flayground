@@ -6,7 +6,6 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "analyze": "  cross-env NODE_ENV=production  ANALYZE=true webpack",
     "build": "    cross-env NODE_ENV=production  webpack",
     "build:dev": "cross-env NODE_ENV=development webpack",
     "watch": "    cross-env NODE_ENV=development webpack -w",

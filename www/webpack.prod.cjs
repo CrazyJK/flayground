@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const CompressionPlugin = require('compression-webpack-plugin');
+const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
 
 // 의존성 다이어그램을 생성하는 플러그인
 class MadgePlugin {
@@ -24,30 +25,24 @@ class MadgePlugin {
   }
 }
 
-// 엔트리 포인트에 해당하는 HTML 파일이 있는지 확인
+// HTML 템플릿을 기반으로 엔트리 포인트에 대한 HTML 파일에 js 및 css를 자동으로 주입하는 플러그인
 function getEntryHtmlPlugins() {
   const { entry } = require('./webpack.common.cjs');
   const plugins = [];
-
-  // 각 엔트리 포인트에 대해 HTML 파일 생성
   Object.keys(entry).forEach((entryName) => {
-    const templatePath = path.resolve(__dirname, `src/view/${entryName}.html`);
-    if (fs.existsSync(templatePath)) {
-      plugins.push(
-        new HtmlWebpackPlugin({
-          filename: `${entryName}.html`,
-          template: `src/view/${entryName}.html`,
-          chunks: ['runtime', 'vendors', 'bundled-commons', entryName], // 런타임, 벤더, 공통 청크 및 엔트리 포인트 청크 포함
-          inject: true, // JS와 CSS 자동 주입 활성화
-          minify: {
-            collapseWhitespace: true,
-            removeComments: true,
-          },
-        })
-      );
-    }
+    plugins.push(
+      new HtmlWebpackPlugin({
+        filename: `${entryName}.html`,
+        template: `src/view/${entryName}.html`,
+        chunks: ['runtime', 'vendors', 'bundled-commons', entryName], // 런타임, 벤더, 공통 청크 및 엔트리 포인트 청크 포함
+        inject: true, // JS와 CSS 자동 주입 활성화
+        minify: {
+          collapseWhitespace: true,
+          removeComments: true,
+        },
+      })
+    );
   });
-
   return plugins;
 }
 
@@ -74,6 +69,12 @@ module.exports = {
       test: /\.(js|css|html|svg)$/,
       threshold: 10240, // 10KB 이상만 압축
       minRatio: 0.8,
+    }),
+    new BundleAnalyzerPlugin({
+      analyzerMode: 'static', // 정적 HTML 파일로 분석 결과 생성
+      reportFilename: 'bundle-report.html', // 분석 결과 파일 이름
+      openAnalyzer: false, // 분석 결과 자동 열기 비활성화
+      defaultSizes: 'gzip', // gzip 크기 표시
     }),
     ...getEntryHtmlPlugins(),
   ],

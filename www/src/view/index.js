@@ -15,7 +15,7 @@ class Page {
 
   #showMarkerPanel() {
     this.#mainElement.textContent = null;
-    import(/* webpackChunkName: "FlayMarkerPanel" */ '../flay/panel/FlayMarkerPanel')
+    import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')
       .then(({ FlayMarkerPanel }) => this.#mainElement.appendChild(new FlayMarkerPanel()))
       .then((flayMarkerPanel) => {
         this.#mainElement.addEventListener('click', (e) => {

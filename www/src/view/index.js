@@ -1,4 +1,3 @@
-import FlayMarker from '@flay/domain/FlayMarker';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch from '@lib/FlayFetch';
 import './inc/Page';
@@ -33,26 +32,28 @@ class Page {
           });
         });
     } else {
-      FlayFetch.getFlayAll().then(async (list) => {
-        const [min, max] = [20, 50];
-        const mainElement = document.querySelector('body > main');
+      import(/* webpackChunkName: "FlayMarker" */ '@flay/domain/FlayMarker').then(({ default: FlayMarker }) => {
+        FlayFetch.getFlayAll().then(async (list) => {
+          const [min, max] = [20, 50];
+          const mainElement = document.querySelector('body > main');
 
-        for (const flay of list) {
-          const x = Math.floor(Math.random() * (window.innerWidth - (min + max))) + min;
-          const y = Math.floor(Math.random() * (window.innerHeight - (min + max))) + min;
-          const randomWidth = Math.floor(Math.random() * (max - min)) + min;
+          for (const flay of list) {
+            const x = Math.floor(Math.random() * (window.innerWidth - (min + max))) + min;
+            const y = Math.floor(Math.random() * (window.innerHeight - (min + max))) + min;
+            const randomWidth = Math.floor(Math.random() * (max - min)) + min;
 
-          const flayMarker = new FlayMarker(flay, { showTitle: false, shape: 'star' });
-          flayMarker.style.position = 'absolute';
-          flayMarker.style.zIndex = 1000;
-          flayMarker.style.left = `${x}px`;
-          flayMarker.style.top = `${y}px`;
-          flayMarker.style.width = `${randomWidth}px`;
-          flayMarker.animate([{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 500, easing: 'ease-in-out' });
-          mainElement.appendChild(flayMarker);
+            const flayMarker = new FlayMarker(flay, { showTitle: false, shape: 'star' });
+            flayMarker.style.position = 'absolute';
+            flayMarker.style.zIndex = 1000;
+            flayMarker.style.left = `${x}px`;
+            flayMarker.style.top = `${y}px`;
+            flayMarker.style.width = `${randomWidth}px`;
+            flayMarker.animate([{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 500, easing: 'ease-in-out' });
+            mainElement.appendChild(flayMarker);
 
-          await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 700) + 300)); // 300ms~1000ms 대기
-        }
+            await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 700) + 300)); // 300ms~1000ms 대기
+          }
+        });
       });
     }
   }

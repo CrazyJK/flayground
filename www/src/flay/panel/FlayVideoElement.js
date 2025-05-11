@@ -60,7 +60,7 @@ export default class FlayVideo extends HTMLVideoElement {
     this.playing = false;
     this.#recoveryAttempts = 0;
     this.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
-    this.src = `/stream/flay/movie/${opus}/0`;
+    this.src = ApiClient.buildUrl(`/stream/flay/movie/${opus}/0`);
     this.load();
   }
 
@@ -166,7 +166,7 @@ export default class FlayVideo extends HTMLVideoElement {
       }
 
       // 새 소스 설정 및 로드
-      this.src = newSource;
+      this.src = ApiClient.buildUrl(newSource);
       this.load();
 
       // 이전에 재생 중이었다면 재생 시도

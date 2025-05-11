@@ -1,3 +1,5 @@
+import ApiClient from './ApiClient';
+
 export const URL_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';
 export const URL_AVDBS = 'https://www.avdbs.com/menu/search.php?kwd=';
 export const URL_NEXTJAV = 'https://nextjav.com/torrent/detail/';
@@ -87,6 +89,6 @@ export const popupStudio = (name, startDate = '', endDate = '') => popupOpen('po
 export const popupActress = (name, startDate = '', endDate = '') => popupOpen('popup.actress.html?name=' + name + '&s=' + startDate + '&e=' + endDate, 'actress.' + name, 1080, 1200);
 export const popupTag = (tagId) => popupOpen('popup.tag.html?id=' + tagId, 'tag.' + tagId, 1080, 1200);
 
-export const popupFlayInfo = (opus) => popupOpen('/flay/' + opus, 'flay.json.' + opus, 800, 1200);
-export const popupVideoInfo = (opus) => popupOpen('/info/video/' + opus, 'video.json.' + opus, 400, 600);
-export const popupActressInfo = (name) => popupOpen('/info/actress/' + name, 'actress.json.' + name, 640, 800);
+export const popupFlayInfo = (opus) => popupOpen(ApiClient.buildUrl('/flay/' + opus), 'flay.json.' + opus, 800, 1200);
+export const popupVideoInfo = (opus) => popupOpen(ApiClient.buildUrl('/info/video/' + opus), 'video.json.' + opus, 400, 600);
+export const popupActressInfo = (name) => popupOpen(ApiClient.buildUrl('/info/actress/' + name), 'actress.json.' + name, 640, 800);

@@ -31,8 +31,8 @@ function getEntryHtmlPlugins() {
       new HtmlWebpackPlugin({
         filename: `${entryName}.html`,
         template: `src/view/${entryName}.html`,
-        chunks: ['runtime', 'vendors', 'flay-commons', entryName], // 런타임, 벤더, 공통 청크 및 엔트리 포인트 청크 포함
-        inject: true, // JS와 CSS 자동 주입 활성화
+        chunks: [entryName],
+        inject: true,
         minify: {
           collapseWhitespace: true,
           removeComments: true,
@@ -47,7 +47,7 @@ module.exports = {
   mode: 'production',
   devtool: 'source-map',
   output: {
-    filename: '[name].[contenthash:8].js', // 더 짧은 해시 값 사용
+    filename: '[name].[contenthash:8].js',
     chunkFilename: '[name].[contenthash:8].chunk.js',
   },
   plugins: [
@@ -56,8 +56,8 @@ module.exports = {
     }),
     new MiniCssExtractPlugin({
       filename: '[name].[contenthash:8].css',
-      chunkFilename: '[name].[contenthash:8].css', // [id] 대신 [name] 사용
-      ignoreOrder: true, // CSS 순서 충돌 경고 무시 옵션 추가
+      chunkFilename: '[name].[contenthash:8].css',
+      ignoreOrder: true,
     }),
     // Gzip 압축 적용
     new CompressionPlugin({
@@ -120,51 +120,59 @@ module.exports = {
     moduleIds: 'deterministic', // 빌드 간에 변경되지 않는 짧은 숫자 ID를 사용합니다. 장기 캐싱에 유용하며, 프로덕션 모드에서 기본으로 활성화됩니다.
     chunkIds: 'deterministic', // 컴파일 간에 변경되지 않는 짧은 숫자 ID입니다. 장기 캐싱에 유용하며, 프로덕션 모드에서 기본으로 활성화됩니다.
     splitChunks: {
-      chunks: 'all', // 모든 유형의 청크에 대해 분할 적용
-      minSize: 50000, // 최소 크기 50KB
-      minChunks: 2, // 최소 2번 이상 사용되는 모듈만 분할
-      maxAsyncRequests: 10, // 최대 비동기 요청 수 감소
-      maxInitialRequests: 6, // 최대 초기 요청 수 감소
-      automaticNameDelimiter: '-',
-      enforceSizeThreshold: 150000, // 강제 분할 임계값 설정
+      chunks: 'all',
+      minSize: 20000,
+      maxSize: 244000,
+      minChunks: 2,
+      maxAsyncRequests: 10,
+      maxInitialRequests: 6,
+      enforceSizeThreshold: 50000,
       cacheGroups: {
-        defaultVendors: {
+        // 외부 라이브러리 분리
+        vendors: {
           test: /[\\/]node_modules[\\/]/,
-          priority: -10,
-          reuseExistingChunk: true, // 기존 청크 재사용
           name: 'vendors',
-          chunks: 'all',
-        },
-        // defaultVendors: {
-        //   test: /[\\/]node_modules[\\/](?!@toast-ui)/,
-        //   priority: -10,
-        //   reuseExistingChunk: true, // 기존 청크 재사용
-        //   name: 'vendors',
-        //   chunks: 'all',
-        // },
-        // toastUI: {
-        //   test: /[\\/]node_modules[\\/]@toast-ui/,
-        //   priority: 10, // 더 높은 우선순위 부여
-        //   name(module) {
-        //     // @toast-ui/{모듈명} 형태로 청크 이름 생성
-        //     const packageName = module.context.match(/[\\/]node_modules[\\/]@toast-ui[\\/](.*?)(?:[\\/]|$)/)[1];
-        //     return `toast-ui.${packageName}`;
-        //   },
-        //   minChunks: 1,
-        //   reuseExistingChunk: true,
-        // },
-        default: {
-          minChunks: 3,
-          priority: -30,
+          priority: -10,
           reuseExistingChunk: true,
-          name: 'flay-commons',
-          chunks: 'all',
+        }, // 주요 라이브러리 개별 청크로 분리
+        defaultVendors: {
+          test: /[\\/]node_modules[\\/](prosemirror-.*|@toast-ui|tui-color-picker)[\\/]/,
+          name(module) {
+            // 라이브러리 이름에 따라 개별 청크 이름 생성
+            const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
+            return `vendor.${packageName.replace('@', '')}`;
+          },
+          priority: 10, // vendor보다 높은 우선순위
+          reuseExistingChunk: true,
         },
-        styles: {
-          name: 'styles',
-          test: /\.css$/,
-          chunks: 'all',
-          enforce: true,
+        // 내부 유틸리티 라이브러리 분리
+        lib: {
+          test: /[\\/]src[\\/]lib[\\/]/,
+          name: 'ground-lib',
+          priority: 20,
+          reuseExistingChunk: true,
+          minChunks: 2,
+        },
+        // Flay 컴포넌트 분리
+        flayDomain: {
+          test: /[\\/]src[\\/]flay[\\/]/,
+          name: 'ground-flay',
+          priority: 20,
+          reuseExistingChunk: true,
+          minChunks: 2,
+        },
+        // 공통 코드 분리
+        commons: {
+          name: 'ground-commons',
+          minChunks: 3,
+          priority: -10,
+          reuseExistingChunk: true,
+        },
+        // 기본 분할 그룹
+        default: {
+          minChunks: 2,
+          priority: -20,
+          reuseExistingChunk: true,
         },
       },
     },

@@ -31,7 +31,7 @@ function getEntryHtmlPlugins() {
       new HtmlWebpackPlugin({
         filename: `${entryName}.html`,
         template: `src/view/${entryName}.html`,
-        chunks: ['runtime', 'vendors', 'bundled-commons', entryName], // 런타임, 벤더, 공통 청크 및 엔트리 포인트 청크 포함
+        chunks: ['runtime', 'vendors', 'flay-commons', entryName], // 런타임, 벤더, 공통 청크 및 엔트리 포인트 청크 포함
         inject: true, // JS와 CSS 자동 주입 활성화
         minify: {
           collapseWhitespace: true,
@@ -129,28 +129,35 @@ module.exports = {
       enforceSizeThreshold: 150000, // 강제 분할 임계값 설정
       cacheGroups: {
         defaultVendors: {
-          test: /[\\/]node_modules[\\/](?!@toast-ui)/,
+          test: /[\\/]node_modules[\\/]/,
           priority: -10,
-          reuseExistingChunk: true,
+          reuseExistingChunk: true, // 기존 청크 재사용
           name: 'vendors',
           chunks: 'all',
         },
-        toastUI: {
-          test: /[\\/]node_modules[\\/]@toast-ui/,
-          priority: 10, // 더 높은 우선순위 부여
-          name(module) {
-            // @toast-ui/{모듈명} 형태로 청크 이름 생성
-            const packageName = module.context.match(/[\\/]node_modules[\\/]@toast-ui[\\/](.*?)(?:[\\/]|$)/)[1];
-            return `toast-ui.${packageName}`;
-          },
-          minChunks: 1,
-          reuseExistingChunk: true,
-        },
+        // defaultVendors: {
+        //   test: /[\\/]node_modules[\\/](?!@toast-ui)/,
+        //   priority: -10,
+        //   reuseExistingChunk: true, // 기존 청크 재사용
+        //   name: 'vendors',
+        //   chunks: 'all',
+        // },
+        // toastUI: {
+        //   test: /[\\/]node_modules[\\/]@toast-ui/,
+        //   priority: 10, // 더 높은 우선순위 부여
+        //   name(module) {
+        //     // @toast-ui/{모듈명} 형태로 청크 이름 생성
+        //     const packageName = module.context.match(/[\\/]node_modules[\\/]@toast-ui[\\/](.*?)(?:[\\/]|$)/)[1];
+        //     return `toast-ui.${packageName}`;
+        //   },
+        //   minChunks: 1,
+        //   reuseExistingChunk: true,
+        // },
         default: {
-          minChunks: 2,
+          minChunks: 3,
           priority: -30,
           reuseExistingChunk: true,
-          name: 'bundled-commons',
+          name: 'flay-commons',
           chunks: 'all',
         },
         styles: {

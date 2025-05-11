@@ -7,7 +7,8 @@
       "@ui/*": ["src/ui/*"],
       "@flay/*": ["src/flay/*"],
       "@image/*": ["src/image/*"],
-      "@svg/*": ["src/svg/*"]
+      "@svg/*": ["src/svg/*"],
+      "@nav/*": ["src/nav/*"]
     },
     "strict": false,
     "target": "ESNext",

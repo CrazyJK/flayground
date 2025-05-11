@@ -3,6 +3,7 @@ import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
 import FlayStorage from '@lib/FlayStorage';
+import { ToastHtmlEditor } from '@ui/editor/ToastHtmlEditor';
 import './FlayMemoEditor.scss';
 
 const MEMO_STORAGE_KEY = 'flay-memo';
@@ -25,7 +26,6 @@ export class FlayMemoEditor extends HTMLDivElement {
   }
 
   async connectedCallback() {
-    const { ToastHtmlEditor } = await import(/* webpackChunkName: "ToastHtmlEditor" */ '../../ui/editor/ToastHtmlEditor'); // ToastHtmlEditor import
     this.htmlEditor = this.appendChild(new ToastHtmlEditor({ load: async () => await this.load(), blur: async () => await this.save() })); // ToastHtmlEditor instance
   }
 

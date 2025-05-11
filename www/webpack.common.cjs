@@ -74,6 +74,7 @@ module.exports = {
       '@flay': path.resolve(__dirname, 'src/flay'),
       '@image': path.resolve(__dirname, 'src/image'),
       '@svg': path.resolve(__dirname, 'src/svg'),
+      '@nav': path.resolve(__dirname, 'src/nav'),
     },
   },
   plugins: [

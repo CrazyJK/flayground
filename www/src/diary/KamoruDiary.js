@@ -3,6 +3,8 @@ import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import weatherSVG from '@svg/weathers';
 import windowButton from '@svg/windowButton';
+import { ToastHtmlEditor } from '@ui/editor/ToastHtmlEditor';
+import { ToastHtmlViewer } from '@ui/editor/ToastHtmlViewer';
 import './KamoruDiary.scss';
 
 const GB = 1024 * 1024 * 1024;
@@ -57,7 +59,6 @@ export class KamoruDiary extends HTMLDivElement {
   }
 
   async connectedCallback() {
-    const { ToastHtmlEditor } = await import(/* webpackChunkName: "ToastHtmlEditor" */ '../ui/editor/ToastHtmlEditor');
     this.#diaryEditor = this.querySelector('#diaryBody').appendChild(new ToastHtmlEditor({ blur: () => this.saveDiary() }));
     this.#diaryEditor.hide();
 
@@ -259,7 +260,6 @@ export class KamoruDiary extends HTMLDivElement {
     this.querySelector('#diaryViewerShow').addEventListener('click', async (e) => {
       let htmlViewer = this.querySelector('#diaryViewerInner .toast-html-viewer');
       if (htmlViewer === null) {
-        const { ToastHtmlViewer } = await import(/* webpackChunkName: "ToastHtmlViewer" */ '../ui/editor/ToastHtmlViewer');
         htmlViewer = this.querySelector('#diaryViewerInner').appendChild(new ToastHtmlViewer());
       }
       htmlViewer.setHTML(this.#diaryEditor.getHTML());

@@ -1,6 +1,5 @@
-import './ToastHtmlViewer.scss';
-
 import Editor from '@toast-ui/editor';
+import './ToastHtmlViewer.scss';
 
 export class ToastHtmlViewer extends HTMLDivElement {
   #viewer;

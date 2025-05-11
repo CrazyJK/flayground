@@ -1,11 +1,10 @@
 import FlayStorage from '@lib/FlayStorage';
+import { STORAGE_KEY } from '@lib/UpdateMyPosition';
 import './FlayMonitor.scss';
 
 const MonitorBackgroundColor = 'lightgray';
 const FlayBackgroundColor = 'orange';
 const FlayBorderColor = 'orangered';
-
-const STORAGE_KEY = 'flay.position.info';
 
 // 왼쪽부터 모니터 좌표
 const Monitors = [
@@ -148,20 +147,3 @@ export default class FlayMonitor extends HTMLDivElement {
 }
 
 customElements.define('flay-monitor', FlayMonitor, { extends: 'div' });
-
-/**
- * 위치 정보 업데이트
- * @param {string} name
- * @param {number} left
- * @param {number} top
- * @param {number} width
- * @param {number} height
- */
-export const updatePosition = (name, left, top, width = 0, height) => {
-  const positionInfo = FlayStorage.local.getObject(STORAGE_KEY);
-  delete positionInfo[name];
-  if (width > 0) {
-    positionInfo[name] = { left: left, top: top, width: width, height: height };
-  }
-  FlayStorage.local.setObject(STORAGE_KEY, positionInfo);
-};

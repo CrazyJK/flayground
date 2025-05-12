@@ -131,13 +131,20 @@
       width: 10%;
     }
   }
-
   .loading-indicator {
     display: none;
-    padding: 20px;
+    padding: 12px 20px;
     text-align: center;
     font-size: 14px;
     color: var(--color-primary, #4285f4);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: 4px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    z-index: 50;
 
     &.active {
       display: block;
@@ -147,8 +154,8 @@
   #scroll-observer {
     height: 10px;
     width: 100%;
+    margin-bottom: 40px; // 페이지네이션 푸터를 위한 여백
   }
-
   // Footer 페이지네이션
   .pagination-footer {
     position: fixed;
@@ -164,22 +171,24 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       font-size: 14px;
 
       button {
-        padding: 4px 12px;
+        padding: 5px 14px;
         background-color: var(--color-primary, #4285f4);
         color: white;
         border: none;
-        border-radius: 3px;
+        border-radius: 4px;
         cursor: pointer;
         font-size: 13px;
         transition: all 0.2s;
+        min-width: 70px;
 
         &:disabled {
-          opacity: 0.5;
+          opacity: 0.4;
           cursor: not-allowed;
+          background-color: var(--color-bg-secondary, #777);
         }
 
         &:hover:not(:disabled) {
@@ -189,6 +198,12 @@
 
       #total-count {
         color: var(--color-primary, #4285f4);
+        font-weight: 600;
+      }
+
+      #page-info {
+        min-width: 100px;
+        text-align: center;
       }
     }
   }

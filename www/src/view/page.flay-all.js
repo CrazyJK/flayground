@@ -48,12 +48,13 @@ function initializeTable() {
         <button id="next-page">다음</button>
       </div>
     </footer>`;
-
   // 이벤트 리스너 등록
   wrapper.querySelector('#prev-page').addEventListener('click', () => {
     if (currentPage > 0) {
       currentPage--;
       renderPage();
+      // 페이지 이동 후 스크롤을 테이블 상단으로 이동
+      wrapper.querySelector('.flay-list').scrollIntoView({ behavior: 'smooth' });
     }
   });
 
@@ -61,6 +62,8 @@ function initializeTable() {
     if ((currentPage + 1) * PAGE_SIZE < sortedFlayList.length) {
       currentPage++;
       renderPage();
+      // 페이지 이동 후 스크롤을 테이블 상단으로 이동
+      wrapper.querySelector('.flay-list').scrollIntoView({ behavior: 'smooth' });
     }
   });
 
@@ -95,11 +98,11 @@ function initializeTable() {
 
   // 초기 정렬 표시
   headers[sortColumn].classList.add(sortDirection === 1 ? 'sort-asc' : 'sort-desc');
-
   // 스크롤 감지를 위한 IntersectionObserver 설정
   const observer = new IntersectionObserver(
     (entries) => {
-      if (entries[0].isIntersecting && !document.querySelector('.loading-indicator').classList.contains('active')) {
+      if (entries[0].isIntersecting && !document.querySelector('.loading-indicator').classList.contains('active') && window.enableInfiniteScroll) {
+        // 무한 스크롤 활성화 상태 확인
         if ((currentPage + 1) * PAGE_SIZE < sortedFlayList.length) {
           loadMoreItems();
         }
@@ -193,7 +196,8 @@ function renderPage() {
   loadingIndicator.classList.add('active');
 
   // 페이지 정보 업데이트
-  document.getElementById('page-info').textContent = `페이지 ${currentPage + 1} / ${Math.ceil(sortedFlayList.length / PAGE_SIZE)}`;
+  const totalPages = Math.ceil(sortedFlayList.length / PAGE_SIZE);
+  document.getElementById('page-info').textContent = `페이지 ${currentPage + 1} / ${Math.max(1, totalPages)}`;
 
   // DOM 조작 최소화를 위해 DocumentFragment 사용
   const fragment = document.createDocumentFragment();
@@ -253,13 +257,26 @@ function loadMoreItems() {
 function updatePaginationButtons() {
   const prevButton = document.getElementById('prev-page');
   const nextButton = document.getElementById('next-page');
+  const totalPages = Math.ceil(sortedFlayList.length / PAGE_SIZE);
 
+  // 이전 버튼 상태 설정
   prevButton.disabled = currentPage === 0;
-  nextButton.disabled = (currentPage + 1) * PAGE_SIZE >= sortedFlayList.length;
+
+  // 다음 버튼 상태 설정
+  nextButton.disabled = currentPage >= totalPages - 1 || sortedFlayList.length === 0;
+
+  // 페이지 정보 업데이트 (이미 renderPage에서 처리되지만 여기서 한번 더 확인)
+  const pageInfo = document.getElementById('page-info');
+  if (pageInfo) {
+    pageInfo.textContent = `페이지 ${currentPage + 1} / ${Math.max(1, totalPages)}`;
+  }
 }
 
 // 메인 실행 코드
 const wrapper = initializeTable();
+
+// 초기 기능 설정
+window.enableInfiniteScroll = false; // 무한 스크롤 기본 비활성화
 
 // 데이터 로딩 표시
 document.querySelector('.loading-indicator').classList.add('active');

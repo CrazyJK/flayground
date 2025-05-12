@@ -30,6 +30,7 @@ const entryPoints = {
     'page.history-shot': './src/view/page.history-shot.js',
     'page.history-play': './src/view/page.history-play.js',
     'page.statistics': './src/view/page.statistics.js',
+    'page.flay-all': './src/view/page.flay-all.js',
   },
   images: {
     'page.image-page': './src/view/page.image-page.js',

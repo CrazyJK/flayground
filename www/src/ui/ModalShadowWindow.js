@@ -1,4 +1,5 @@
 import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '@/GroundConstant';
+import FlayStorage from '@/lib/FlayStorage';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import windowButton from '@svg/windowButton';
 
@@ -180,7 +181,7 @@ const cssText = `
 `;
 
 const OFFSET = 4; // 창의 가장자리 여백
-const DEFAULT_OPTS = { top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: [], initialMode: MODAL_MODE.NORMAL }; // 창의 기본 옵션
+const DEFAULT_OPTS = { id: '', top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: [], initialMode: MODAL_MODE.NORMAL }; // 창의 기본 옵션
 
 export class ModalShadowWindow extends HTMLElement {
   #top = 0; // 창의 상단 위치
@@ -228,7 +229,22 @@ export class ModalShadowWindow extends HTMLElement {
 
     this.attachShadow({ mode: 'open' });
 
-    const { top, left, width, height, minWidth, minHeight, edges, initialMode } = { ...DEFAULT_OPTS, ...opts };
+    let { id, top, left, width, height, minWidth, minHeight, edges, initialMode } = { ...DEFAULT_OPTS, ...opts };
+    if (id) {
+      this.id = id;
+      // id가 있으면 id로 storage에 저장된 위치와 크기를 가져옴
+      const storageData = FlayStorage.local.getObject('modalWindow-' + id, null);
+      if (storageData) {
+        top = storageData.top || top;
+        left = storageData.left || left;
+        width = storageData.width || width;
+        height = storageData.height || height;
+        minWidth = storageData.minWidth || minWidth;
+        minHeight = storageData.minHeight || minHeight;
+        edges = storageData.edges || edges;
+        initialMode = storageData.initialMode || initialMode;
+      }
+    }
     this.#top = top;
     this.#left = left;
     this.#width = width;
@@ -367,7 +383,8 @@ export class ModalShadowWindow extends HTMLElement {
   }
 
   #minimizeHandler() {
-    if (this.classList.toggle(MODAL_MODE.MINIMIZE)) {
+    const toggled = this.classList.toggle(MODAL_MODE.MINIMIZE);
+    if (toggled) {
       this.#prevHeight = this.#height;
       this.#height = this.clientHeight;
       this.#prevMinHeight = this.#minHeight;
@@ -377,17 +394,20 @@ export class ModalShadowWindow extends HTMLElement {
         this.#containsEdgesCenter = true;
         this.#edges = this.#edges.filter((edge) => edge !== MODAL_EDGE.CENTER);
       }
+      this.#initialMode = MODAL_MODE.MINIMIZE;
     } else {
       this.#height = this.#prevHeight;
       this.#minHeight = this.#prevMinHeight;
       if (this.#containsEdgesCenter) this.#edges.push(MODAL_EDGE.CENTER);
+      this.#initialMode = MODAL_MODE.NORMAL;
     }
     this.dispatchEvent(new Event('resize', { bubbles: true }));
   }
 
   #maximizeHandler() {
-    this.classList.toggle(MODAL_MODE.MAXIMIZE);
+    const toggled = this.classList.toggle(MODAL_MODE.MAXIMIZE);
     this.dispatchEvent(new Event('resize', { bubbles: true }));
+    this.#initialMode = toggled ? MODAL_MODE.MAXIMIZE : MODAL_MODE.NORMAL;
   }
 
   #terminateHandler() {
@@ -545,6 +565,20 @@ export class ModalShadowWindow extends HTMLElement {
     this.#updateEdgePosition(this.#edgeTopRight___, -OFFSET, width - OFFSET, null, null);
     this.#updateEdgePosition(this.#edgeBottomLeft_, height - OFFSET, -OFFSET, null, null);
     this.#updateEdgePosition(this.#edgeBottomRight, height - OFFSET, width - OFFSET, null, null);
+
+    // 위치 저장
+    if (this.id) {
+      FlayStorage.local.setObject('modalWindow-' + this.id, {
+        top: this.#top,
+        left: this.#left,
+        width: this.#width,
+        height: this.#initialMode === MODAL_MODE.NORMAL ? this.#height : this.#prevHeight,
+        minWidth: this.#minWidth,
+        minHeight: this.#minHeight,
+        edges: this.#edges,
+        initialMode: this.#initialMode,
+      });
+    }
   }
 
   /**

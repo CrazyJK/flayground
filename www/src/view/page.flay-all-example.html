@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Flay-All 컴포넌트 확장 예제</title>
+    <style>
+      body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #4285f4;
+        text-align: center;
+        margin-bottom: 30px;
+      }
+
+      .section {
+        margin-bottom: 30px;
+        border: 1px solid #eee;
+        padding: 20px;
+        border-radius: 8px;
+      }
+
+      .section h2 {
+        margin-top: 0;
+        color: #333;
+      }
+
+      code {
+        background-color: #f5f5f5;
+        padding: 2px 5px;
+        border-radius: 3px;
+        font-family: Consolas, monospace;
+      }
+
+      /* 커스텀 슬롯 스타일 예제 */
+      .custom-filter {
+        display: flex;
+        gap: 10px;
+        background-color: #f0f8ff;
+        padding: 12px;
+        border-radius: 5px;
+      }
+
+      .custom-search {
+        padding: 8px 15px;
+        border: 2px solid #4285f4;
+        border-radius: 20px;
+        width: 250px;
+        font-size: 16px;
+      }
+
+      .custom-display {
+        background-color: #4285f4;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 20px;
+        font-weight: bold;
+      }
+
+      .custom-pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .custom-pagination button {
+        background-color: #4285f4;
+        color: white;
+        border: none;
+        padding: 8px 20px;
+        border-radius: 20px;
+        cursor: pointer;
+        font-weight: bold;
+        transition: all 0.2s;
+      }
+
+      .custom-pagination button:hover {
+        background-color: #3367d6;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Flay-All 컴포넌트 활용 예제</h1>
+
+    <div class="section">
+      <h2>기본 사용법</h2>
+      <p>기본적인 사용법은 단순히 <code>&lt;flay-all&gt;&lt;/flay-all&gt;</code> 태그를 사용하는 것입니다.</p>
+      <flay-all></flay-all>
+    </div>
+
+    <div class="section">
+      <h2>슬롯을 활용한 커스터마이즈</h2>
+      <p>슬롯을 사용하여 컴포넌트의 특정 부분을 커스터마이징할 수 있습니다.</p>
+
+      <flay-all id="customized-flay">
+        <!-- 커스텀 필터 컨트롤 -->
+        <div slot="filter-controls" class="custom-filter">
+          <input type="text" id="custom-search" class="custom-search" placeholder="고급 검색..." />
+          <label><input type="checkbox" id="custom-archive" checked /> 아카이브 포함</label>
+        </div>
+
+        <!-- 커스텀 총계 표시 -->
+        <div slot="total-display" class="custom-display">현재 <span id="custom-count">0</span>개 항목</div>
+
+        <!-- 커스텀 페이지네이션 -->
+        <div slot="pagination" class="custom-pagination">
+          <button id="custom-prev">◀ 이전</button>
+          <span id="custom-page-info">페이지 1</span>
+          <button id="custom-next">다음 ▶</button>
+        </div>
+      </flay-all>
+    </div>
+
+    <script type="module">
+      // 모듈 가져오기
+      import './page.flay-all.js';
+
+      // 페이지가 로드되면 실행
+      document.addEventListener('DOMContentLoaded', () => {
+        // 커스터마이징된 flay-all 요소 가져오기
+        const customFlay = document.getElementById('customized-flay');
+
+        // 데이터 로드 이벤트 처리
+        customFlay.addEventListener('data-loaded', (e) => {
+          document.getElementById('custom-count').textContent = e.detail.count;
+        });
+
+        // 페이지 변경 이벤트 처리
+        customFlay.addEventListener('page-changed', (e) => {
+          document.getElementById('custom-page-info').textContent = `페이지 ${e.detail.currentPage} / ${e.detail.totalPages}`;
+        });
+
+        // 커스텀 버튼 이벤트 연결
+        document.getElementById('custom-prev').addEventListener('click', () => {
+          const prevBtn = customFlay.shadowRoot.querySelector('#prev-page');
+          if (!prevBtn.disabled) {
+            prevBtn.click();
+          }
+        });
+
+        document.getElementById('custom-next').addEventListener('click', () => {
+          const nextBtn = customFlay.shadowRoot.querySelector('#next-page');
+          if (!nextBtn.disabled) {
+            nextBtn.click();
+          }
+        });
+
+        // 커스텀 검색창 이벤트 연결
+        document.getElementById('custom-search').addEventListener('input', (e) => {
+          const searchInput = customFlay.shadowRoot.querySelector('#search-input');
+          searchInput.value = e.target.value;
+
+          // 입력 이벤트 발생시키기
+          searchInput.dispatchEvent(new Event('input'));
+        });
+
+        // 커스텀 아카이브 체크박스 이벤트 연결
+        document.getElementById('custom-archive').addEventListener('change', (e) => {
+          const archiveCheckbox = customFlay.shadowRoot.querySelector('#show-archive');
+          archiveCheckbox.checked = e.target.checked;
+
+          // 변경 이벤트 발생시키기
+          archiveCheckbox.dispatchEvent(new Event('change'));
+        });
+      });
+    </script>
+  </body>
+</html>

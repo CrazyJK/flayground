@@ -2,13 +2,24 @@ import FlayFetch from '@lib/FlayFetch';
 import './inc/Page';
 
 /**
- * FlayListComponent - 플레이 목록을 표시하는 커스텀 엘리먼트
+ * FlayAll - 플레이 목록을 표시하는 커스텀 엘리먼트
  * 20,000개 이상의 레코드를 효율적으로 표시하고 필터링, 정렬, 페이지네이션 기능을 제공합니다.
  *
  * @example
  * <flay-all></flay-all>
  *
+ * @example 슬롯을 활용한 확장 방법
+ * <flay-all>
+ *   <div slot="filter-controls">커스텀 필터 컨트롤</div>
+ *   <div slot="total-display">커스텀 총계 표시</div>
+ *   <div slot="pagination">커스텀 페이지네이션</div>
+ * </flay-all>
+ *
  * @customElement flay-all
+ * @slot filter-controls - 필터 컨트롤 영역을 커스터마이징할 수 있습니다.
+ * @slot total-display - 총 항목 수 표시 영역을 커스터마이징할 수 있습니다.
+ * @slot table - 테이블 영역을 커스터마이징할 수 있습니다.
+ * @slot pagination - 페이지네이션 컨트롤 영역을 커스터마이징할 수 있습니다.
  * @fires data-loaded - 데이터 로드가 완료되었을 때 발생
  * @fires data-error - 데이터 로드 중 오류가 발생했을 때 발생
  * @fires page-changed - 페이지가 변경되었을 때 발생
@@ -80,14 +91,65 @@ class FlayAll extends HTMLElement {
     this.#removeEventListeners();
   }
 
+  // 템플릿 생성 - 컴포넌트의 HTML 구조를 정의합니다
+  static #createTemplate() {
+    const template = document.createElement('template');
+    template.innerHTML = `
+      <div class="flay-list-wrapper">
+        <div class="control-panel">
+          <slot name="filter-controls">
+            <div class="filter">
+              <input type="text" id="search-input" placeholder="검색어 입력..." />
+              <label><input type="checkbox" id="show-archive" checked /> 아카이브 포함</label>
+            </div>
+          </slot>
+          <slot name="total-display">
+            <div class="total-display">
+              총 <strong id="total-count">0</strong>개
+            </div>
+          </slot>
+        </div>
+
+        <slot name="table">
+          <table class="flay-list">
+            <thead>
+              <tr>
+                <th data-sort="studio">제작사</th>
+                <th data-sort="opus">작품번호</th>
+                <th data-sort="title">제목</th>
+                <th data-sort="actressList">배우</th>
+                <th data-sort="release">발매일</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </slot>
+
+        <div class="loading-indicator">데이터를 불러오는 중입니다...</div>
+        <div id="scroll-observer"></div>
+
+        <footer class="pagination-footer">
+          <slot name="pagination">
+            <div class="pagination">
+              <button id="prev-page" disabled>이전</button>
+              <div class="page-numbers" id="page-numbers"></div>
+              <button id="next-page">다음</button>
+            </div>
+          </slot>
+        </footer>
+      </div>
+    `;
+    return template;
+  }
+
   /**
    * 초기 렌더링
    */
   #render() {
-    // 스타일 가져오기 (Shadow DOM 내부에 스타일 직접 포함시키기)
+    // 스타일 설정
     this.#styleSheet = document.createElement('style');
 
-    // SCSS에서 컴파일된 CSS를 직접 포함
+    // 스타일 정의
     this.#styleSheet.textContent = `
       :host {
         display: block;
@@ -361,46 +423,14 @@ class FlayAll extends HTMLElement {
           background-color: var(--color-bg-primary, #1e1e1e);
           box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
         }
-      }
-    `; // 구조 생성
-    this.shadowRoot.innerHTML = `
-      <div class="flay-list-wrapper">
-        <div class="control-panel">
-          <div class="filter">
-            <input type="text" id="search-input" placeholder="검색어 입력..." />
-            <label><input type="checkbox" id="show-archive" checked /> 아카이브 포함</label>
-          </div>
-          <div class="total-display">
-            총 <strong id="total-count">0</strong>개
-          </div>
-        </div>        <table class="flay-list">
-          <thead>
-            <tr>
-              <th data-sort="studio">제작사</th>
-              <th data-sort="opus">작품번호</th>
-              <th data-sort="title">제목</th>
-              <th data-sort="actressList">배우</th>
-              <th data-sort="release">발매일</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      }    `;
 
-        <div class="loading-indicator">데이터를 불러오는 중입니다...</div>
-        <div id="scroll-observer"></div>
+    // Shadow DOM에 스타일 추가
+    this.shadowRoot.appendChild(this.#styleSheet);
 
-        <footer class="pagination-footer">
-          <div class="pagination">
-            <button id="prev-page" disabled>이전</button>
-            <div class="page-numbers" id="page-numbers"></div>
-            <button id="next-page">다음</button>
-          </div>
-        </footer>
-      </div>
-    `;
-
-    // 스타일 추가
-    this.shadowRoot.prepend(this.#styleSheet);
+    // 템플릿 사용하여 컴포넌트 내용 추가
+    const template = FlayAll.#createTemplate();
+    this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     // 초기 로딩 상태 표시
     this.showLoading(true);

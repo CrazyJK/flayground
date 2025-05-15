@@ -198,27 +198,58 @@ class FlayAll extends HTMLElement {
       th:nth-child(2), td:nth-child(2) { width: 15%; }
       th:nth-child(3), td:nth-child(3) { width: 35%; }
       th:nth-child(4), td:nth-child(4) { width: 25%; }
-      th:nth-child(5), td:nth-child(5) { width: 10%; }
-      .loading-indicator {
+      th:nth-child(5), td:nth-child(5) { width: 10%; }      .loading-indicator {
         display: none;
-        padding: 12px 20px;
+        padding: 20px 30px;
         text-align: center;
-        font-size: 14px;
+        font-size: 18px;
+        font-weight: 500;
         color: var(--color-primary, #4285f4);
-        position: absolute;
+        position: fixed;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        background-color: rgba(255, 255, 255, 0.9);
-        border-radius: 4px;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        z-index: 50;
+        background-color: rgba(255, 255, 255, 0.95);
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        z-index: 1000;
+        min-width: 180px;
+        animation: pulse 1.5s infinite ease-in-out;
+      }
+      @keyframes pulse {
+        0% { opacity: 0.8; }
+        50% { opacity: 1; }
+        100% { opacity: 0.8; }
       }
       .loading-indicator.active {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
+      .loading-indicator::before {
+        content: "";
         display: block;
+        width: 40px;
+        height: 40px;
+        margin-bottom: 10px;
+        border-radius: 50%;
+        border: 4px solid var(--color-primary, #4285f4);
+        border-top-color: transparent;
+        animation: spinner 1s infinite linear;
+      }
+      @keyframes spinner {
+        to { transform: rotate(360deg); }
       }
       .loading-indicator.error {
         color: var(--color-error, #d32f2f);
+        animation: none;
+      }
+      .loading-indicator.error::before {
+        content: "⚠️";
+        border: none;
+        font-size: 24px;
+        animation: none;
       }
       #scroll-observer {
         height: 10px;
@@ -342,9 +373,7 @@ class FlayAll extends HTMLElement {
           <div class="total-display">
             총 <strong id="total-count">0</strong>개
           </div>
-        </div>
-
-        <table class="flay-list">
+        </div>        <table class="flay-list">
           <thead>
             <tr>
               <th data-sort="studio">제작사</th>
@@ -357,7 +386,7 @@ class FlayAll extends HTMLElement {
           <tbody></tbody>
         </table>
 
-        <div class="loading-indicator">데이터 로딩 중...</div>
+        <div class="loading-indicator">데이터를 불러오는 중입니다...</div>
         <div id="scroll-observer"></div>
 
         <footer class="pagination-footer">
@@ -851,7 +880,7 @@ class FlayAll extends HTMLElement {
     } catch (error) {
       console.error('데이터 로딩 중 오류 발생:', error);
       const loadingIndicator = this.shadowRoot.querySelector('.loading-indicator');
-      loadingIndicator.textContent = '데이터 로딩 중 오류가 발생했습니다.';
+      loadingIndicator.textContent = '데이터를 불러오는 중 오류가 발생했습니다.';
       loadingIndicator.classList.add('error');
 
       // 에러 이벤트 발생

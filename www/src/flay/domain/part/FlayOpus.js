@@ -19,7 +19,7 @@ export default class FlayOpus extends FlayHTMLElement {
       </div>
     `;
 
-    this.querySelector('a').addEventListener('click', () => FlaySearch.opus.Arzon(this.flay.opus));
+    this.querySelector('a').addEventListener('click', () => FlaySearch.Avdbs(this.flay.opus));
     this.querySelector('#jsonViewBtn').addEventListener('click', () => popupFlayInfo(this.flay.opus));
     this.querySelector('#keepBasketBtn').addEventListener('click', async () => {
       const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '../../panel/FlayBasket');

@@ -48,19 +48,6 @@ class Page {
           flayMarkerSky.style.width = '100%';
           flayMarkerSky.style.height = '100%';
 
-          // 화면 클릭 이벤트 처리
-          this.#mainElement.addEventListener('click', (e) => {
-            if (e.target === this.#mainElement || e.target === flayMarkerSky) {
-              // 빈 공간 클릭 시 랜덤한 별 선택
-              const flayMarkers = flayMarkerSky.querySelectorAll('.flay-marker');
-              if (flayMarkers.length > 0) {
-                const inputNumber = e.clientX * e.clientY;
-                const randomIndex = inputNumber % flayMarkers.length;
-                flayMarkers[randomIndex].click();
-              }
-            }
-          });
-
           // 콘솔에 로그 출력
           console.log('FlayMarkerSky 컴포넌트가 초기화되었습니다.');
         })

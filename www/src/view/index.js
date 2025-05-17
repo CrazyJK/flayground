@@ -1,3 +1,4 @@
+import { addResizeListener } from '@/lib/windowAddEventListener';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch from '@lib/FlayFetch';
 import './inc/Page';
@@ -32,15 +33,20 @@ class Page {
           });
         });
     } else {
+      const getRandomPosition = () => {
+        const [min, max] = [20, 50];
+        const x = Math.floor(Math.random() * (window.innerWidth - (min + max))) + min;
+        const y = Math.floor(Math.random() * (window.innerHeight - (min + max))) + min;
+        const randomWidth = Math.floor(Math.random() * (max - min)) + min;
+        return { x, y, randomWidth };
+      };
+
       import(/* webpackChunkName: "FlayMarker" */ '@flay/domain/FlayMarker').then(({ default: FlayMarker }) => {
         FlayFetch.getFlayAll().then(async (list) => {
-          const [min, max] = [20, 50];
           const mainElement = document.querySelector('body > main');
 
           for (const flay of list) {
-            const x = Math.floor(Math.random() * (window.innerWidth - (min + max))) + min;
-            const y = Math.floor(Math.random() * (window.innerHeight - (min + max))) + min;
-            const randomWidth = Math.floor(Math.random() * (max - min)) + min;
+            const { x, y, randomWidth } = getRandomPosition();
 
             const flayMarker = new FlayMarker(flay, { showTitle: false, shape: 'star' });
             flayMarker.style.position = 'absolute';
@@ -53,6 +59,18 @@ class Page {
 
             await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 700) + 300)); // 300ms~1000ms 대기
           }
+        });
+        addResizeListener(() => {
+          // 리사이즈 시 모든 마커를 위치를 window에 맞게 새로고침 처리
+          requestAnimationFrame(() => {
+            document.querySelectorAll('body > main > .flay-marker').forEach((flayMarker) => {
+              const { x, y, randomWidth } = getRandomPosition();
+              flayMarker.style.left = `${x}px`;
+              flayMarker.style.top = `${y}px`;
+              flayMarker.style.width = `${randomWidth}px`;
+              flayMarker.animate([{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 500, easing: 'ease-in-out' });
+            });
+          });
         });
       });
     }

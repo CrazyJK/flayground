@@ -1,6 +1,4 @@
-import { addResizeListener } from '@/lib/windowAddEventListener';
 import DateUtils from '@lib/DateUtils';
-import FlayFetch from '@lib/FlayFetch';
 import './inc/Page';
 import './index.scss';
 
@@ -21,6 +19,7 @@ class Page {
     // 랜덤 boolean
     const randomBoolean = Math.random() < 0.5;
     if (randomBoolean) {
+      // FlayMarkerPanel 사용
       import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')
         .then(({ FlayMarkerPanel }) => this.#mainElement.appendChild(new FlayMarkerPanel()))
         .then((flayMarkerPanel) => {
@@ -33,46 +32,47 @@ class Page {
           });
         });
     } else {
-      const getRandomPosition = () => {
-        const [min, max] = [20, 50];
-        const x = Math.floor(Math.random() * (window.innerWidth - (min + max))) + min;
-        const y = Math.floor(Math.random() * (window.innerHeight - (min + max))) + min;
-        const randomWidth = Math.floor(Math.random() * (max - min)) + min;
-        return { x, y, randomWidth };
-      };
+      // FlayMarkerSky 커스텀 엘리먼트 사용
+      import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky')
+        .then(({ FlayMarkerSky }) => {
+          // FlayMarkerSky 커스텀 엘리먼트 생성 및 추가
+          const flayMarkerSky = new FlayMarkerSky();
 
-      import(/* webpackChunkName: "FlayMarker" */ '@flay/domain/FlayMarker').then(({ default: FlayMarker }) => {
-        FlayFetch.getFlayAll().then(async (list) => {
-          const mainElement = document.querySelector('body > main');
+          // 화면에 FlayMarkerSky 추가
+          this.#mainElement.appendChild(flayMarkerSky);
 
-          for (const flay of list) {
-            const { x, y, randomWidth } = getRandomPosition();
+          // 화면 전체를 커버하도록 스타일 설정
+          flayMarkerSky.style.position = 'absolute';
+          flayMarkerSky.style.top = '0';
+          flayMarkerSky.style.left = '0';
+          flayMarkerSky.style.width = '100%';
+          flayMarkerSky.style.height = '100%';
 
-            const flayMarker = new FlayMarker(flay, { showTitle: false, shape: 'star' });
-            flayMarker.style.position = 'absolute';
-            flayMarker.style.zIndex = 1000;
-            flayMarker.style.left = `${x}px`;
-            flayMarker.style.top = `${y}px`;
-            flayMarker.style.width = `${randomWidth}px`;
-            flayMarker.animate([{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 500, easing: 'ease-in-out' });
-            mainElement.appendChild(flayMarker);
-
-            await new Promise((resolve) => setTimeout(resolve, Math.floor(Math.random() * 700) + 300)); // 300ms~1000ms 대기
-          }
-        });
-        addResizeListener(() => {
-          // 리사이즈 시 모든 마커를 위치를 window에 맞게 새로고침 처리
-          requestAnimationFrame(() => {
-            document.querySelectorAll('body > main > .flay-marker').forEach((flayMarker) => {
-              const { x, y, randomWidth } = getRandomPosition();
-              flayMarker.style.left = `${x}px`;
-              flayMarker.style.top = `${y}px`;
-              flayMarker.style.width = `${randomWidth}px`;
-              flayMarker.animate([{ transform: 'scale(0)' }, { transform: 'scale(1)' }], { duration: 500, easing: 'ease-in-out' });
-            });
+          // 화면 클릭 이벤트 처리
+          this.#mainElement.addEventListener('click', (e) => {
+            if (e.target === this.#mainElement || e.target === flayMarkerSky) {
+              // 빈 공간 클릭 시 랜덤한 별 선택
+              const flayMarkers = flayMarkerSky.querySelectorAll('.flay-marker');
+              if (flayMarkers.length > 0) {
+                const inputNumber = e.clientX * e.clientY;
+                const randomIndex = inputNumber % flayMarkers.length;
+                flayMarkers[randomIndex].click();
+              }
+            }
           });
+
+          // 콘솔에 로그 출력
+          console.log('FlayMarkerSky 컴포넌트가 초기화되었습니다.');
+        })
+        .catch((error) => {
+          console.error('FlayMarkerSky 로딩 실패:', error);
+
+          // 에러 메시지 표시
+          const errorMsg = document.createElement('div');
+          errorMsg.className = 'error-message';
+          errorMsg.textContent = 'FlayMarkerSky 컴포넌트 로딩에 실패했습니다';
+          this.#mainElement.appendChild(errorMsg);
         });
-      });
     }
   }
 }

@@ -189,6 +189,7 @@ export class FlayAll extends HTMLElement {
       }
       #search-input {
         padding: 6px 12px;
+        background-color: var(--color-transparent);
         border: 1px solid var(--color-border, #ddd);
         border-radius: 4px;
         width: 180px;

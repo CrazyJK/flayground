@@ -166,7 +166,6 @@ export class FlayAll extends HTMLElement {
         margin: 0 auto;
         padding: 10px;
         gap: 10px;
-        font-family: var(--font-family, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif);
       }
       .control-panel {
         display: flex;
@@ -429,7 +428,8 @@ export class FlayAll extends HTMLElement {
           background-color: var(--color-bg-primary, #1e1e1e);
           box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
         }
-      }    `;
+      }
+    `;
 
     // Shadow DOM에 스타일 추가
     this.shadowRoot.appendChild(this.#styleSheet);

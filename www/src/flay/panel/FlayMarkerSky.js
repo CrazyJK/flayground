@@ -41,8 +41,8 @@ export class FlayMarkerSky extends HTMLElement {
     Object.assign(this.style, { position: 'relative', width: '100%', height: '100%', overflow: 'hidden' });
 
     // 초기 화면 크기 저장
-    this.#resizeState.originalWidth = window.innerWidth;
-    this.#resizeState.originalHeight = window.innerHeight;
+    this.#resizeState.originalWidth = this.offsetWidth;
+    this.#resizeState.originalHeight = this.offsetHeight;
 
     // 리사이즈 이벤트 처리
     this.#setupResizeHandler();
@@ -194,10 +194,11 @@ export class FlayMarkerSky extends HTMLElement {
       debounce(() => {
         const oldW = this.#resizeState.originalWidth,
           oldH = this.#resizeState.originalHeight;
-        const newW = window.innerWidth,
-          newH = window.innerHeight;
+        const newW = this.offsetWidth, // 변경
+          newH = this.offsetHeight; // 변경
         const areaRatio = (newW / oldW) * (newH / oldH);
-        if (areaRatio > 1.2 || areaRatio < 0.8) {
+        if (areaRatio > 1.2 || areaRatio < 0.8 || oldW !== newW || oldH !== newH) {
+          // 크기 변경 감지 조건 강화
           this.#resizeState.originalWidth = newW;
           this.#resizeState.originalHeight = newH;
         }
@@ -214,8 +215,8 @@ export class FlayMarkerSky extends HTMLElement {
    * @returns {number} 계산된 초기 마커 개수.
    */
   #calculateInitialMarkerCount() {
-    const area = window.innerWidth * window.innerHeight;
-    const base = 1920 * 1080;
+    const area = this.offsetWidth * this.offsetHeight; // 변경
+    const base = 1920 * 1080; // 기준 해상도 (예시)
     return Math.max(10, Math.floor(20 * Math.max(0.5, Math.min(2, area / base))));
   }
 
@@ -248,8 +249,8 @@ export class FlayMarkerSky extends HTMLElement {
       maxAttempts = 50;
     for (let i = 0; i < maxAttempts; i++) {
       const w = Math.floor(Math.random() * (max - min)) + min;
-      const x = Math.floor(Math.random() * (window.innerWidth - w));
-      const y = Math.floor(Math.random() * (window.innerHeight - w));
+      const x = Math.floor(Math.random() * (this.offsetWidth - w)); // 변경
+      const y = Math.floor(Math.random() * (this.offsetHeight - w)); // 변경
       if (!this.#isOverlapping(x, y, w, markerElement)) return { x, y, randomWidth: w };
     }
     return null;
@@ -267,16 +268,19 @@ export class FlayMarkerSky extends HTMLElement {
   #locateFlayMarker(flayMarker, isResize = false, positionInfo = null) {
     if (isResize && this.#resizeState.markerPositions.has(flayMarker)) {
       const info = this.#resizeState.markerPositions.get(flayMarker);
-      const widthRatio = window.innerWidth / this.#resizeState.originalWidth;
-      const heightRatio = window.innerHeight / this.#resizeState.originalHeight;
+      const widthRatio = this.offsetWidth / this.#resizeState.originalWidth; // 변경
+      const heightRatio = this.offsetHeight / this.#resizeState.originalHeight; // 변경
       const newX = Math.round(info.x * widthRatio);
       const newY = Math.round(info.y * heightRatio);
       const width = parseInt(flayMarker.style.width);
-      const safeX = Math.min(Math.max(width / 2, newX), window.innerWidth - width / 2);
-      const safeY = Math.min(Math.max(width / 2, newY), window.innerHeight - width / 2);
+      // 마커가 컴포넌트 경계 내에 있도록 보정
+      const safeX = Math.min(Math.max(0, newX), this.offsetWidth - width); // 변경 (경계값 및 width 고려)
+      const safeY = Math.min(Math.max(0, newY), this.offsetHeight - width); // 변경 (경계값 및 width 고려)
       flayMarker.style.left = `${safeX}px`;
       flayMarker.style.top = `${safeY}px`;
-      flayMarker.animate([{ transform: `scale(${1 / Math.max(0.8, Math.min(1.2, (widthRatio + heightRatio) / 2))})` }, { transform: `scale(${Math.max(0.8, Math.min(1.2, (widthRatio + heightRatio) / 2))})` }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
+      // 스케일 애니메이션 비율 조정 (컴포넌트 크기 변경에 더 민감하게 반응하도록)
+      const scaleChange = Math.sqrt(widthRatio * heightRatio);
+      flayMarker.animate([{ transform: `scale(${1 / Math.max(0.5, Math.min(1.5, scaleChange))})` }, { transform: `scale(${Math.max(0.5, Math.min(1.5, scaleChange))})` }, { transform: 'scale(1)' }], { duration: 300, easing: 'ease-out' });
       return flayMarker;
     }
     if (positionInfo) {

@@ -179,7 +179,7 @@ export class FlayAll extends HTMLElement {
         align-items: center;
       }
       .total-display {
-        font-size: 14px;
+        font-size: var(--size-normal);
         padding: 6px 0;
       }
       .total-display strong {
@@ -192,7 +192,7 @@ export class FlayAll extends HTMLElement {
         border: 1px solid var(--color-border, #ddd);
         border-radius: 4px;
         width: 180px;
-        font-size: 14px;
+        font-size: var(--size-normal);
       }
       #search-input:focus {
         outline: none;
@@ -204,7 +204,7 @@ export class FlayAll extends HTMLElement {
         align-items: center;
         gap: 5px;
         cursor: pointer;
-        font-size: 14px;
+        font-size: var(--size-normal);
       }
       input[type='checkbox'] {
         cursor: pointer;
@@ -213,7 +213,7 @@ export class FlayAll extends HTMLElement {
         width: 100%;
         border-collapse: collapse;
         table-layout: fixed;
-        font-size: 14px;
+        font-size: var(--size-normal);
       }
       th, td {
         padding: 8px 10px;
@@ -269,7 +269,7 @@ export class FlayAll extends HTMLElement {
         display: none;
         padding: 20px 30px;
         text-align: center;
-        font-size: 18px;
+        font-size: var(--size-large);
         font-weight: 500;
         color: var(--color-primary, #4285f4);
         position: fixed;
@@ -315,7 +315,7 @@ export class FlayAll extends HTMLElement {
       .loading-indicator.error::before {
         content: "⚠️";
         border: none;
-        font-size: 24px;
+        font-size: var(--size-largest);
         animation: none;
       }
       #scroll-observer {
@@ -338,7 +338,7 @@ export class FlayAll extends HTMLElement {
         justify-content: center;
         align-items: center;
         gap: 12px;
-        font-size: 14px;
+        font-size: var(--size-normal);
       }
       .page-numbers {
         display: flex;
@@ -382,7 +382,7 @@ export class FlayAll extends HTMLElement {
         border: none;
         border-radius: 4px;
         cursor: pointer;
-        font-size: 13px;
+        font-size: var(--size-normal);
         transition: all 0.2s;
         min-width: 70px;
       }
@@ -415,7 +415,7 @@ export class FlayAll extends HTMLElement {
           width: 100%;
         }
         .flay-list {
-          font-size: 13px;
+          font-size: var(--size-normal);
         }
         th, td {
           padding: 6px 8px;

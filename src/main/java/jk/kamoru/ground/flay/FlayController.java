@@ -53,24 +53,19 @@ public class FlayController {
 
   @GetMapping("/{opus}")
   public Flay get(@PathVariable String opus) {
-    return flayService.get(opus);
+    return getFlay(opus);
   }
 
   @GetMapping("/{opus}/score")
   public int getScore(@PathVariable String opus) {
-    Flay flay = flayService.get(opus);
+    Flay flay = getFlay(opus);
     scoreCalculator.calcScore(flay);
     return flay.getScore();
   }
 
   @GetMapping("/{opus}/fully")
   public Map<String, Object> getFullyFlay(@PathVariable String opus) {
-    Flay flay = null;
-    try {
-      flay = flayService.get(opus);
-    } catch (FlayNotfoundException e) {
-      flay = flayArchiveService.get(opus);
-    }
+    Flay flay = getFlay(opus);
     scoreCalculator.calcScore(flay);
     List<Actress> actressList = flay.getActressList().stream().map(name -> actressInfoService.get(name)).toList();
 
@@ -221,6 +216,16 @@ public class FlayController {
   @PostMapping("/exists")
   public Map<String, Boolean> exists(@RequestBody Collection<String> opusList) {
     return flayService.exists(opusList);
+  }
+
+  private Flay getFlay(String opus) {
+    Flay flay = null;
+    try {
+      flay = flayService.get(opus);
+    } catch (FlayNotfoundException e) {
+      flay = flayArchiveService.get(opus);
+    }
+    return flay;
   }
 
 }

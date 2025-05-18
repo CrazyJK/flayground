@@ -32,34 +32,9 @@ class Page {
           });
         });
     } else {
-      // FlayMarkerSky 커스텀 엘리먼트 사용
-      import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky')
-        .then(({ FlayMarkerSky }) => {
-          // FlayMarkerSky 커스텀 엘리먼트 생성 및 추가
-          const flayMarkerSky = new FlayMarkerSky();
-
-          // 화면에 FlayMarkerSky 추가
-          this.#mainElement.appendChild(flayMarkerSky);
-
-          // 화면 전체를 커버하도록 스타일 설정
-          flayMarkerSky.style.position = 'absolute';
-          flayMarkerSky.style.top = '0';
-          flayMarkerSky.style.left = '0';
-          flayMarkerSky.style.width = '100%';
-          flayMarkerSky.style.height = '100%';
-
-          // 콘솔에 로그 출력
-          console.log('FlayMarkerSky 컴포넌트가 초기화되었습니다.');
-        })
-        .catch((error) => {
-          console.error('FlayMarkerSky 로딩 실패:', error);
-
-          // 에러 메시지 표시
-          const errorMsg = document.createElement('div');
-          errorMsg.className = 'error-message';
-          errorMsg.textContent = 'FlayMarkerSky 컴포넌트 로딩에 실패했습니다';
-          this.#mainElement.appendChild(errorMsg);
-        });
+      import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky').then(({ FlayMarkerSky }) => {
+        this.#mainElement.appendChild(new FlayMarkerSky());
+      });
     }
   }
 }

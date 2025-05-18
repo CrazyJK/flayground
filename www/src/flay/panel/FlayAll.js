@@ -1,4 +1,5 @@
 import FlayFetch from '@lib/FlayFetch';
+import { popupActress, popupFlay } from '../../lib/FlaySearch.js';
 
 /**
  * FlayAll - 플레이 목록을 표시하는 커스텀 엘리먼트
@@ -712,64 +713,86 @@ export class FlayAll extends HTMLElement {
     const endIndex = Math.min(startIndex + FlayAll.PAGE_SIZE, this.#sortedFlayList.length);
     const pageItems = this.#sortedFlayList.slice(startIndex, endIndex);
 
-    // 로딩 인디케이터 표시
     this.showLoading(true);
 
-    // DOM 조작 최소화를 위해 DocumentFragment 사용
     const fragment = document.createDocumentFragment();
 
-    // 렌더링 최적화를 위해 requestAnimationFrame 사용
     requestAnimationFrame(() => {
       try {
-        // 기존 내용 지우기
         tbody.innerHTML = '';
 
-        // 새 항목 추가
         pageItems.forEach((flay) => {
           const tr = document.createElement('tr');
           tr.classList.toggle('archive', flay.archive);
           tr.dataset.opus = flay.opus;
+          tr.tabIndex = 0; // Ensure tabIndex for keyboard navigation
 
-          // 셀 생성
-          const cells = [
-            { content: flay.studio || '' },
-            { content: flay.opus || '' },
-            { content: flay.title || '' },
-            { content: flay.actressList?.join(',') || '' },
-            { content: flay.release || '' },
-            { content: flay.video?.rank ?? '' }, // rank 데이터 표시
+          const columnDefinitions = [
+            { key: 'studio', data: flay.studio || '' },
+            { key: 'opus', data: flay.opus || '', originalOpus: flay.opus },
+            { key: 'title', data: flay.title || '' },
+            { key: 'actressList', data: flay.actressList || [] },
+            { key: 'release', data: flay.release || '' },
+            { key: 'rank', data: flay.video?.rank ?? '' },
           ];
 
-          cells.forEach((cell) => {
+          columnDefinitions.forEach((colDef) => {
             const td = document.createElement('td');
-            td.textContent = cell.content;
+            if (colDef.key === 'opus') {
+              td.textContent = colDef.data;
+              if (colDef.originalOpus) {
+                td.style.cursor = 'pointer';
+                td.addEventListener('click', (e) => {
+                  e.stopPropagation(); // Prevent row click event from firing
+                  popupFlay(colDef.originalOpus);
+                });
+              }
+            } else if (colDef.key === 'actressList') {
+              const actresses = Array.isArray(colDef.data) ? colDef.data : [];
+              if (actresses.length > 0) {
+                actresses.forEach((actressName, i) => {
+                  const span = document.createElement('span');
+                  span.textContent = actressName;
+                  span.style.cursor = 'pointer';
+                  span.addEventListener('click', (e) => {
+                    e.stopPropagation(); // Prevent row click event from firing
+                    popupActress(actressName);
+                  });
+                  td.appendChild(span);
+                  if (i < actresses.length - 1) {
+                    td.appendChild(document.createTextNode(', '));
+                  }
+                });
+              } else {
+                td.textContent = ''; // Handle empty actress list
+              }
+            } else {
+              td.textContent = colDef.data;
+            }
             tr.appendChild(td);
           });
 
           // Score 셀 추가 (비동기 로딩)
           const scoreTd = document.createElement('td');
-          tr.appendChild(scoreTd); // TD를 TR에 먼저 추가
-
+          tr.appendChild(scoreTd);
           if (flay.opus) {
-            // flay.archive 조건 제거
             scoreTd.textContent = '...'; // 로딩 중 표시
             FlayFetch.getScore(flay.opus)
               .then((score) => {
-                scoreTd.textContent = score ?? ''; // score가 null 또는 undefined이면 빈 문자열로 표시
-                flay.score = score; // 실제 점수 또는 null/undefined 저장
+                scoreTd.textContent = score ?? '';
+                flay.score = score;
               })
               .catch((error) => {
                 console.error(`Error fetching score for ${flay.opus}:`, error);
                 scoreTd.textContent = 'N/A';
-                // flay.score는 설정되지 않으므로 정렬 시 undefined ?? -1 로 처리됩니다.
               });
           } else {
-            scoreTd.textContent = 'N/A'; // opus가 없는 경우
-            // flay.score는 설정되지 않으므로 정렬 시 undefined ?? -1 로 처리됩니다.
+            scoreTd.textContent = 'N/A';
           }
 
-          // 행에 클릭 이벤트 추가
+          // 행에 클릭 이벤트 추가 (flay-selected 이벤트 발생용)
           tr.addEventListener('click', (e) => {
+            // This event is for general row selection, specific clicks on opus/actress are handled above.
             this.dispatchEvent(
               new CustomEvent('flay-selected', {
                 detail: { opus: flay.opus, flay: flay },
@@ -784,10 +807,8 @@ export class FlayAll extends HTMLElement {
 
         tbody.appendChild(fragment);
 
-        // 페이지네이션 버튼 상태 업데이트
         this.#updatePaginationButtons();
 
-        // 페이지 변경 이벤트 발생
         const totalPages = Math.ceil(this.#sortedFlayList.length / FlayAll.PAGE_SIZE);
         this.dispatchEvent(
           new CustomEvent('page-changed', {
@@ -802,7 +823,6 @@ export class FlayAll extends HTMLElement {
           })
         );
       } finally {
-        // 로딩 인디케이터 숨기기 (항상 실행되도록 finally 블록으로 이동)
         this.showLoading(false);
       }
     });

@@ -19,10 +19,10 @@ class Page {
     // 랜덤 boolean
     const randomBoolean = Math.random() < 0.5;
     if (randomBoolean) {
-      // FlayMarkerPanel 사용
       import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')
         .then(({ FlayMarkerPanel }) => this.#mainElement.appendChild(new FlayMarkerPanel()))
         .then((flayMarkerPanel) => {
+          // FlayMarkerPanel 사용
           this.#mainElement.addEventListener('click', (e) => {
             if (e.target !== this.#mainElement) return;
             const inputNumber = e.clientX * e.clientY;
@@ -32,9 +32,11 @@ class Page {
           });
         });
     } else {
-      import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky').then(({ FlayMarkerSky }) => {
-        this.#mainElement.appendChild(new FlayMarkerSky());
-      });
+      import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky')
+        .then(({ FlayMarkerSky }) => this.#mainElement.appendChild(new FlayMarkerSky()))
+        .then((flayMarkerSky) => {
+          // FlayMarkerSky 사용
+        });
     }
   }
 }

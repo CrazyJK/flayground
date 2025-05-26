@@ -9,31 +9,56 @@ import(/* webpackChunkName: "SideNavBar" */ '@nav/SideNavBar').then(({ SideNavBa
 
 document.body.style.backgroundImage = 'url(./svg/flayground-circle.svg)';
 
-FlayFetch.getImageSize().then((imageLength) => {
-  // imageLength 만큼 배열 생성
-  const imageIndices = Array.from({ length: imageLength }, (_, i) => i);
+const IMAGE_CHANGE_INTERVAL = 10000; // 이미지 변경 간격 (10초)
 
-  const imagePanel = document.body.appendChild(document.createElement('div'));
-  imagePanel.className = 'image-panel';
-
-  const showImage = () => {
-    URL.revokeObjectURL(imageURL);
-
-    // imageIndices에서 랜덤하게 하나 제거
-    if (imageIndices.length === 0) {
-      imageIndices.push(...Array.from({ length: imageLength }, (_, i) => i)); // 모든 이미지가 표시되었으면 초기화
+FlayFetch.getImageSize()
+  .then((imageLength) => {
+    if (imageLength === 0) {
+      console.warn('표시할 이미지가 없습니다.');
+      return;
     }
-    const randomIndex = Math.floor(Math.random() * imageIndices.length);
-    const idx = imageIndices.splice(randomIndex, 1)[0];
+    // imageLength 만큼 배열 생성
+    let imageIndices = Array.from({ length: imageLength }, (_, i) => i);
+    let originalImageIndices = [...imageIndices]; // 초기 인덱스 배열 복사본
 
-    FlayFetch.getStaticImage(idx).then(({ name, path, modified, imageBlob }) => {
-      imageURL = URL.createObjectURL(imageBlob);
-      imagePanel.title = name;
-      imagePanel.style.backgroundImage = `url(${imageURL})`;
-      imagePanel.animate([{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 2000, easing: 'ease-in-out' });
-    });
-  };
+    const imagePanel = document.body.appendChild(document.createElement('div'));
+    imagePanel.className = 'image-panel';
 
-  let imageURL;
-  setInterval(() => showImage(), 10000);
-});
+    let imageURL; // 이전 이미지 URL을 저장하기 위한 변수
+
+    const showImage = () => {
+      if (imageURL) {
+        // 이전 imageURL이 있다면 해제
+        URL.revokeObjectURL(imageURL);
+      }
+
+      if (imageIndices.length === 0) {
+        imageIndices = [...originalImageIndices]; // 모든 이미지가 표시되었으면 원본 복사본으로 초기화
+        console.log('모든 이미지를 표시하여 목록을 초기화합니다.');
+      }
+      const randomIndex = Math.floor(Math.random() * imageIndices.length);
+      const idx = imageIndices.splice(randomIndex, 1)[0];
+
+      FlayFetch.getStaticImage(idx)
+        .then(({ name, path, modified, imageBlob }) => {
+          imageURL = URL.createObjectURL(imageBlob);
+          imagePanel.title = `${name} (modified: ${modified}, path: ${path})`; // title에 추가 정보 제공
+          imagePanel.style.backgroundImage = `url(${imageURL})`;
+          imagePanel.animate([{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 2000, easing: 'ease-in-out' });
+        })
+        .catch((error) => {
+          console.error(`이미지(idx: ${idx})를 가져오는 중 오류 발생:`, error);
+          // 오류 발생 시 다음 이미지 시도 또는 특정 오류 처리 로직 추가 가능
+          if (imageIndices.length > 0) {
+            // 아직 보여줄 이미지가 남았다면
+            showImage(); // 다음 이미지 즉시 시도
+          }
+        });
+    };
+
+    showImage(); // 페이지 로드 시 첫 이미지 즉시 표시
+    setInterval(showImage, IMAGE_CHANGE_INTERVAL);
+  })
+  .catch((error) => {
+    console.error('이미지 갯수를 가져오는 중 오류 발생:', error);
+  });

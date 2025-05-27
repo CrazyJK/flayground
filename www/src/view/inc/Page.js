@@ -9,8 +9,6 @@ import(/* webpackChunkName: "SideNavBar" */ '@nav/SideNavBar').then(({ SideNavBa
 
 document.body.style.backgroundImage = 'url(./svg/flayground-circle.svg)';
 
-const IMAGE_CHANGE_INTERVAL = 10000; // 이미지 변경 간격 (10초)
-
 FlayFetch.getImageSize()
   .then(async (imageLength) => {
     if (imageLength === 0) {

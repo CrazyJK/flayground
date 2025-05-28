@@ -1,4 +1,4 @@
-import FlayFetch from '@/lib/FlayFetch';
+import FlayFetch from '@lib/FlayFetch';
 import '@lib/SseConnector';
 import '@lib/UpdateMyPosition';
 import './Page.scss';

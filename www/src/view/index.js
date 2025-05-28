@@ -56,8 +56,8 @@ FlayFetch.getImageSize()
     let imageIndices = Array.from({ length: imageLength }, (_, i) => i);
     let originalImageIndices = [...imageIndices]; // 초기 인덱스 배열 복사본
 
-    const imagePanel = document.body.appendChild(document.createElement('div'));
-    imagePanel.className = 'image-panel';
+    const imageCircle = document.body.appendChild(document.createElement('div'));
+    imageCircle.className = 'image-circle';
 
     let imageURL; // 이전 이미지 URL을 저장하기 위한 변수
 
@@ -77,13 +77,13 @@ FlayFetch.getImageSize()
       FlayFetch.getStaticImage(idx)
         .then(({ name, path, modified, imageBlob }) => {
           imageURL = URL.createObjectURL(imageBlob);
-          imagePanel.dataset.size = randomSize;
-          imagePanel.title = `${name}\n${modified}\n${path}`; // title에 추가 정보 제공
-          imagePanel.style.backgroundImage = `url(${imageURL})`;
-          imagePanel.style.width = randomSize + 'rem';
-          imagePanel.style.height = randomSize + 'rem';
-          imagePanel.style.margin = (10 - randomSize) / 2 + 'rem';
-          imagePanel.animate([{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 2000, easing: 'ease-in-out' });
+          imageCircle.dataset.size = randomSize;
+          imageCircle.title = `${name}\n${modified}\n${path}`; // title에 추가 정보 제공
+          imageCircle.style.backgroundImage = `url(${imageURL})`;
+          imageCircle.style.width = randomSize + 'rem';
+          imageCircle.style.height = randomSize + 'rem';
+          imageCircle.style.margin = (10 - randomSize) / 2 + 'rem';
+          imageCircle.animate([{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 2000, easing: 'ease-in-out' });
         })
         .catch((error) => {
           console.error(`이미지(idx: ${idx})를 가져오는 중 오류 발생:`, error);

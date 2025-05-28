@@ -7,8 +7,6 @@ import(/* webpackChunkName: "SideNavBar" */ '@nav/SideNavBar').then(({ SideNavBa
   document.body.prepend(new SideNavBar());
 });
 
-document.body.style.backgroundImage = 'url(./svg/flayground-circle.svg)';
-
 FlayFetch.getImageSize()
   .then(async (imageLength) => {
     if (imageLength === 0) {

@@ -91,6 +91,7 @@ body {
 /* 방 제목 */
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > h2 > div {
   left: 64px;
+  width: auto;
 }
 /* BJ 이름 */
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.flex.items-center.gap-1 > div > span {

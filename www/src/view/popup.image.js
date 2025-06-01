@@ -10,7 +10,41 @@ flayImage.addEventListener('loaded', (e) => {
   console.debug('Event: ', e.type, e);
   const { idx, name, width, height } = e.detail.info;
   document.title = `${idx} - ${name}`;
-  window.resizeTo(width, height);
+  // Animate window resize
+  const animateResize = (targetWidth, targetHeight, duration = 300) => {
+    const startWidth = window.outerWidth;
+    const startHeight = window.outerHeight;
+    const widthDiff = targetWidth - startWidth;
+    const heightDiff = targetHeight - startHeight;
+    const startLeft = window.screenX;
+    const startTop = window.screenY;
+    const startTime = performance.now();
+
+    const animate = (currentTime) => {
+      const elapsed = currentTime - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      const easeProgress = 0.5 - Math.cos(progress * Math.PI) / 2; // Smooth easing
+
+      const currentWidth = Math.round(startWidth + widthDiff * easeProgress);
+      const currentHeight = Math.round(startHeight + heightDiff * easeProgress);
+
+      // Calculate new position to keep window centered
+      const newLeft = startLeft - (widthDiff * easeProgress) / 2;
+      const newTop = startTop - (heightDiff * easeProgress) / 2;
+
+      window.resizeTo(currentWidth, currentHeight);
+      window.moveTo(newLeft, newTop);
+
+      if (progress < 1) {
+        requestAnimationFrame(animate);
+      }
+    };
+
+    requestAnimationFrame(animate);
+  };
+
+  animateResize(width, height);
+  // window.resizeTo(width, height);
 });
 
 let clickCount = 0;

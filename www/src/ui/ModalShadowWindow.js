@@ -13,6 +13,7 @@ const cssText = `
     border-radius: 4px;
     box-shadow: var(--box-shadow-smallest);
     transition: box-shadow 0.4s;
+    -webkit-user-select: none;
     user-select: none;
   }
   :host:hover {

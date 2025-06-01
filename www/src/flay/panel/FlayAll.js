@@ -231,6 +231,7 @@ export class FlayAll extends HTMLElement {
         top: 0;
         z-index: 10;
         cursor: pointer;
+        -webkit-user-select: none;
         user-select: none;
       }
       th:hover {
@@ -354,6 +355,7 @@ export class FlayAll extends HTMLElement {
         border-radius: 4px;
         cursor: pointer;
         margin: 0 2px;
+        -webkit-user-select: none;
         user-select: none;
         transition: all 0.2s;
       }

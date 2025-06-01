@@ -18,8 +18,8 @@
 }
 
 [draggable='true'] {
-  user-select: none;
   -webkit-user-select: none;
+  user-select: none;
 
   &.dragging {
     opacity: 0.5;

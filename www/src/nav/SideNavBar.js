@@ -1,9 +1,8 @@
 import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
-import '@flay/panel/FlayMonitor';
+import FlayMonitor from '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
-import { addResizeListener } from '@lib/windowAddEventListener';
 import { ModalWindow } from '@ui/ModalWindow';
-import './part/ThemeController';
+import ThemeController from './part/ThemeController';
 import './SideNavBar.scss';
 
 const menuList = [
@@ -71,16 +70,15 @@ export class SideNavBar extends HTMLDivElement {
         .join('')}
     </article>
     <footer>
-      <div class="flay-monitor" is="flay-monitor"></div>
-      <div class="window-size"></div>
       <div><a id="memo">memo</a></div>
       <div><a id="debug">debug</a></div>
       <div><a id="swagger">swagger</a></div>
       <div><a id="dependencies">dependencies</a></div>
       <div><a id="bundleReport">bundle report</a></div>
-      <div class="theme-controller" is="theme-controller" style="margin-top: 1rem;"></div>
     </footer>
     `;
+    this.querySelector('footer').prepend(new FlayMonitor());
+    this.querySelector('footer').appendChild(new ThemeController()).style.marginTop = '1rem';
 
     /** active 메뉴 표시 */
     this.querySelectorAll('a').forEach((anker) => {
@@ -96,20 +94,15 @@ export class SideNavBar extends HTMLDivElement {
       if (tagName === 'A') {
         switch (e.target.id) {
           case 'debug':
-            toggleDebug();
-            break;
+            return toggleDebug();
           case 'dependencies':
-            window.open('dependencies-viewer.html', 'dependencies-viewer', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
-            break;
+            return window.open('dependencies-viewer.html', 'dependencies-viewer', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
           case 'swagger':
-            window.open('/swagger-ui/index.html', 'swagger', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
-            break;
+            return window.open('/swagger-ui/index.html', 'swagger', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
           case 'bundleReport':
-            window.open('bundle-report.html', 'bundle-report', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
-            break;
+            return window.open('bundle-report.html', 'bundle-report', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
           case 'memo':
-            this.#toggleMemoEditor();
-            break;
+            return this.#toggleMemoEditor();
         }
       } else if (e.target.closest('.flay-monitor')) {
         window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
@@ -119,11 +112,8 @@ export class SideNavBar extends HTMLDivElement {
     });
 
     this.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
-
-    addResizeListener(() => {
-      const [width, height] = [window.innerWidth, window.innerHeight];
-      this.querySelector('.window-size').innerHTML = `${width} x ${height}`;
-    });
+    this.addEventListener('resize', () => this.#setWindowSize());
+    this.#setWindowSize();
   }
 
   #toggleMemoEditor() {
@@ -150,6 +140,13 @@ export class SideNavBar extends HTMLDivElement {
         )
         .appendChild(new FlayMemoEditor());
     });
+  }
+
+  #setWindowSize() {
+    const debugLink = this.querySelector('#debug');
+    if (debugLink) {
+      debugLink.title = `${window.innerWidth} x ${window.innerHeight}`;
+    }
   }
 }
 

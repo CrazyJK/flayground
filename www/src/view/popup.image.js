@@ -44,7 +44,6 @@ flayImage.addEventListener('loaded', (e) => {
   };
 
   animateResize(width, height);
-  // window.resizeTo(width, height);
 });
 
 let clickCount = 0;

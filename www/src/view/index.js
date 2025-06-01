@@ -13,7 +13,7 @@ class Page {
   async start() {
     this.#mainElement.addEventListener('click', () => this.#showMarkerPanel(), { once: true });
 
-    const imageCircle = document.body.appendChild(new ImageCircle({ effect: 'engrave' }));
+    const imageCircle = document.body.appendChild(new ImageCircle({ effect: 'engrave', eventAllow: true }));
     imageCircle.style.position = 'fixed';
     imageCircle.style.right = 0;
     imageCircle.style.bottom = 0;

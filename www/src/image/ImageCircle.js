@@ -3,7 +3,7 @@ import './imageCircle.scss';
 
 const shapeClasses = { circle: 'circle', square: 'square', rounded: 'rounded' }; // 모양 클래스
 const effectClasses = { emboss: 'emboss', engrave: 'engrave' }; // 효과 클래스
-const DEFAULT_OPTIONS = { rem: 10, shape: shapeClasses.circle, effect: effectClasses.emboss, duration: 2000, eventAllow: true }; // 기본 옵션
+const DEFAULT_OPTIONS = { rem: 10, shape: shapeClasses.circle, effect: effectClasses.emboss, duration: 2000, eventAllow: false }; // 기본 옵션
 
 export class ImageCircle extends HTMLDivElement {
   #rem = DEFAULT_OPTIONS.rem; // rem 단위 크기

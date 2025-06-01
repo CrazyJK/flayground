@@ -80,4 +80,8 @@
   &.engrave > div {
     animation-name: breathe-engrave;
   }
+  &.event-allow > div {
+    pointer-events: all;
+    z-index: auto;
+  }
 }

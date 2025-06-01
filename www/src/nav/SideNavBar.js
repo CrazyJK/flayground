@@ -54,7 +54,7 @@ export class SideNavBar extends HTMLDivElement {
   }
 
   connectedCallback() {
-    this.parentElement.insertBefore(document.createElement('label'), this).classList.add('nav-open');
+    this.parentElement.insertBefore(document.createElement('div'), this).classList.add('nav-open');
 
     this.innerHTML = `
     <header>

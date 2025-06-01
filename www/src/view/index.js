@@ -56,7 +56,7 @@ FlayFetch.getImageSize()
     let imageIndices = Array.from({ length: imageLength }, (_, i) => i);
     let originalImageIndices = [...imageIndices]; // 초기 인덱스 배열 복사본
 
-    const imageCircle = document.body.appendChild(document.createElement('div'));
+    const imageCircle = document.querySelector('body > footer').appendChild(document.createElement('div'));
     imageCircle.className = 'image-circle';
 
     let imageURL; // 이전 이미지 URL을 저장하기 위한 변수
@@ -95,7 +95,7 @@ FlayFetch.getImageSize()
         });
     };
 
-    const condition = true; // 조건을 true로 설정하여 무한 루프를 방지
+    const condition = true;
     do {
       const randomSize = 5 + Math.floor(Math.random() * 9) * 0.5; // 5rem에서 9rem 사이의 크기
       showImage(randomSize);

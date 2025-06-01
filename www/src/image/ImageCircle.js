@@ -1,19 +1,26 @@
-import FlayFetch from '@/lib/FlayFetch';
+import FlayFetch from '@lib/FlayFetch';
 import './imageCircle.scss';
+
+const shapeClasses = { circle: 'circle', square: 'square', rounded: 'rounded' }; // 모양 클래스
+const effectClasses = { emboss: 'emboss', engrave: 'engrave' }; // 효과 클래스
+const DEFAULT_OPTIONS = { rem: 10, shape: shapeClasses.circle, effect: effectClasses.emboss, duration: 2000 };
 
 export class ImageCircle extends HTMLDivElement {
   #imageURL;
+  rem;
 
-  constructor(size = 10) {
+  constructor(options = DEFAULT_OPTIONS) {
     super();
     this.classList.add('image-circle', 'flay-div');
-    this.size = size;
-    this.style.width = size + 'rem';
-    this.style.height = size + 'rem';
     this.image = this.appendChild(document.createElement('div'));
+    this.options = { ...DEFAULT_OPTIONS, ...options };
   }
 
   connectedCallback() {
+    this.start();
+  }
+
+  start() {
     FlayFetch.getImageSize()
       .then(async (imageLength) => {
         if (imageLength === 0) {
@@ -45,8 +52,8 @@ export class ImageCircle extends HTMLDivElement {
               this.image.style.backgroundImage = `url(${this.#imageURL})`;
               this.image.style.width = randomSize + 'rem';
               this.image.style.height = randomSize + 'rem';
-              this.image.style.margin = (this.size - randomSize) / 2 + 'rem';
-              this.image.animate([{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: 2000, easing: 'ease-in-out' });
+              this.image.style.margin = (this.rem - randomSize) / 2 + 'rem';
+              this.image.animate([{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: this.duration, easing: 'ease-in-out' });
             })
             .catch((error) => {
               console.error(`이미지(idx: ${idx})를 가져오는 중 오류 발생:`, error);
@@ -60,7 +67,7 @@ export class ImageCircle extends HTMLDivElement {
 
         const condition = true; // 무한 루프를 위한 조건, 필요에 따라 변경 가능
         do {
-          const randomSize = this.size / 2 + Math.floor(Math.random() * (this.size - 1)) * 0.5;
+          const randomSize = this.rem / 2 + Math.floor(Math.random() * (this.rem - 1)) / 2;
           showImage(randomSize);
           await new Promise((resolve) => setTimeout(resolve, randomSize * 1000)); // 이미지 변경 간격만큼 대기
         } while (condition);
@@ -68,6 +75,20 @@ export class ImageCircle extends HTMLDivElement {
       .catch((error) => {
         console.error('이미지 갯수를 가져오는 중 오류 발생:', error);
       });
+  }
+
+  /**
+   * @param {{ rem: string; shape: string; effect: string; duration: number; }} opts
+   */
+  set options(opts) {
+    this.rem = opts.rem;
+    this.duration = opts.duration;
+    this.style.width = opts.rem + 'rem';
+    this.style.height = opts.rem + 'rem';
+
+    this.classList.remove(...Object.values(shapeClasses), ...Object.values(effectClasses));
+    if (shapeClasses[opts.shape]) this.classList.add(shapeClasses[opts.shape]);
+    if (effectClasses[opts.effect]) this.classList.add(effectClasses[opts.effect]);
   }
 }
 

@@ -1,4 +1,4 @@
-import { ImageCircle } from '@/image/ImageCircle';
+import { ImageCircle } from '@image/ImageCircle';
 import DateUtils from '@lib/DateUtils';
 import './inc/Page';
 import './index.scss';
@@ -13,7 +13,7 @@ class Page {
   async start() {
     this.#mainElement.addEventListener('click', () => this.#showMarkerPanel(), { once: true });
 
-    const imageCircle = document.body.appendChild(new ImageCircle(10));
+    const imageCircle = document.body.appendChild(new ImageCircle({ effect: 'engrave' }));
     imageCircle.style.position = 'fixed';
     imageCircle.style.right = 0;
     imageCircle.style.bottom = 0;

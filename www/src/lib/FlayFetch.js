@@ -235,7 +235,7 @@ export default class FlayFetch {
   }
 
   static async getImageSize() {
-    return await ApiClient.get('/image/size');
+    return Number(await ApiClient.get('/image/size'));
   }
 
   static async getStaticImage(idx) {

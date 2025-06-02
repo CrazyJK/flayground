@@ -3,7 +3,6 @@ import FlayFetch from '@lib/FlayFetch';
 import { getRandomInt } from '@lib/randomNumber';
 import './popup.image.scss';
 
-const urlParams = new URL(location.href).searchParams;
 const flayImage = document.body.appendChild(new FlayImage());
 
 let [idx, max] = [0, 0];
@@ -93,14 +92,12 @@ const handleKeyup = (e) => {
 };
 
 (async () => {
-  const imageSize = await FlayFetch.getImageSize();
-  if (!imageSize) {
-    console.error('Failed to fetch image size.');
-    return;
-  }
+  const urlParams = new URL(location.href).searchParams;
+  const paramIdx = urlParams.get('idx');
+  const paramMax = urlParams.get('max');
 
-  max = Number(urlParams.get('max') ?? imageSize);
-  idx = Number(urlParams.get('idx') ?? getRandomInt(0, max));
+  max = isNaN(paramMax) ? await FlayFetch.getImageSize() : Number(paramMax);
+  idx = isNaN(paramIdx) ? getRandomInt(0, max) : Number(paramIdx);
 
   window.addEventListener('wheel', handleWheel, { passive: false });
   window.addEventListener('keyup', handleKeyup, { passive: true });

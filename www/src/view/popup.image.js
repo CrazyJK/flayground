@@ -6,109 +6,105 @@ import './popup.image.scss';
 const urlParams = new URL(location.href).searchParams;
 const flayImage = document.body.appendChild(new FlayImage());
 
-flayImage.addEventListener('loaded', (e) => {
-  console.debug('Event: ', e.type, e);
+let [idx, max] = [0, 0];
+
+const setImageIdx = (idx) => (flayImage.dataset.idx = idx);
+
+const handleLoad = (e) => {
   const { idx, name, width, height } = e.detail.info;
   document.title = `${idx} - ${name}`;
-  // Animate window resize
-  const animateResize = (targetWidth, targetHeight, duration = 300) => {
-    const startWidth = window.outerWidth;
-    const startHeight = window.outerHeight;
-    const widthDiff = targetWidth - startWidth;
-    const heightDiff = targetHeight - startHeight;
-    const startLeft = window.screenX;
-    const startTop = window.screenY;
-    const startTime = performance.now();
+  animateResize(width, height);
+};
 
-    const animate = (currentTime) => {
-      const elapsed = currentTime - startTime;
-      const progress = Math.min(elapsed / duration, 1);
-      const easeProgress = 0.5 - Math.cos(progress * Math.PI) / 2; // Smooth easing
+const Go = {
+  prev: () => {
+    if (--idx < 0) idx = max - 1;
+    setImageIdx(idx);
+  },
+  next: () => {
+    if (++idx >= max) idx = 0;
+    setImageIdx(idx);
+  },
+  random: () => {
+    idx = getRandomInt(0, max);
+    setImageIdx(idx);
+  },
+};
 
-      const currentWidth = Math.round(startWidth + widthDiff * easeProgress);
-      const currentHeight = Math.round(startHeight + heightDiff * easeProgress);
+// Animate window resize
+const animateResize = (targetWidth, targetHeight, duration = 100) => {
+  const startWidth = window.outerWidth;
+  const startHeight = window.outerHeight;
+  const widthDiff = targetWidth - startWidth;
+  const heightDiff = targetHeight - startHeight;
+  const startLeft = window.screenX;
+  const startTop = window.screenY;
+  const startTime = performance.now();
 
-      // Calculate new position to keep window centered
-      const newLeft = startLeft - (widthDiff * easeProgress) / 2;
-      const newTop = startTop - (heightDiff * easeProgress) / 2;
+  const animate = (currentTime) => {
+    const elapsed = currentTime - startTime;
+    const progress = Math.min(elapsed / duration, 1);
+    const easeProgress = 0.5 - Math.cos(progress * Math.PI) / 2; // Smooth easing
 
-      window.resizeTo(currentWidth, currentHeight);
-      window.moveTo(newLeft, newTop);
+    const currentWidth = Math.round(startWidth + widthDiff * easeProgress);
+    const currentHeight = Math.round(startHeight + heightDiff * easeProgress);
 
-      if (progress < 1) {
-        requestAnimationFrame(animate);
-      }
-    };
+    // Calculate new position to keep window centered
+    const newLeft = startLeft - (widthDiff * easeProgress) / 2;
+    const newTop = startTop - (heightDiff * easeProgress) / 2;
 
-    requestAnimationFrame(animate);
+    window.resizeTo(currentWidth, currentHeight);
+    window.moveTo(newLeft, newTop);
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    }
   };
 
-  animateResize(width, height);
-});
+  requestAnimationFrame(animate);
+};
 
-let clickCount = 0;
-flayImage.addEventListener('click', (e) => {
-  switch (++clickCount % 3) {
-    case 0:
-      // e.target.style.cssText = '';
+const handleWheel = (e) => {
+  e.preventDefault();
+  if (e.deltaY > 0) {
+    Go.prev();
+  } else {
+    Go.next();
+  }
+};
+
+const handleKeyup = (e) => {
+  switch (e.code) {
+    case 'Space':
+      Go.random();
       break;
-    case 1:
-      // e.target.style.cssText = 'height: 100%'; // 가로
+    case 'ArrowUp':
+    case 'ArrowLeft':
+      Go.prev();
       break;
-    case 2:
-      // e.target.style.cssText = 'width: 100%'; // 세로
+    case 'ArrowRight':
+    case 'ArrowDown':
+      Go.next();
+      break;
+    case 'Escape':
+      window.close();
       break;
   }
-  console.debug('clickCount', clickCount);
-});
+};
 
 (async () => {
-  const setImage = (idx) => (flayImage.dataset.idx = idx);
+  const imageSize = await FlayFetch.getImageSize();
+  if (!imageSize) {
+    console.error('Failed to fetch image size.');
+    return;
+  }
 
-  const Go = {
-    prev: () => {
-      if (--idx < 0) idx = max - 1;
-      setImage(idx);
-    },
-    next: () => {
-      if (++idx >= max) idx = 0;
-      setImage(idx);
-    },
-    random: () => {
-      idx = getRandomInt(0, max);
-      setImage(idx);
-    },
-  };
+  max = Number(urlParams.get('max') ?? imageSize);
+  idx = Number(urlParams.get('idx') ?? getRandomInt(0, max));
 
-  let max = Number(urlParams.get('max')) || (await FlayFetch.getImageSize());
-  let idx = Number(urlParams.get('idx')) || getRandomInt(0, max);
-  console.debug('params: idx', idx, 'max', max);
+  window.addEventListener('wheel', handleWheel, { passive: false });
+  window.addEventListener('keyup', handleKeyup, { passive: true });
+  flayImage.addEventListener('loaded', handleLoad);
 
-  setImage(idx);
-
-  window.addEventListener('wheel', (e) => {
-    console.debug('Event: ', e.type, e);
-    if (e.wheelDelta > 0) {
-      Go.prev();
-    } else {
-      Go.next();
-    }
-  });
-
-  window.addEventListener('keyup', (e) => {
-    console.debug('Event: ', e.type, e.code);
-    switch (e.code) {
-      case 'Space':
-        Go.random();
-        break;
-      case 'ArrowUp':
-      case 'ArrowLeft':
-        Go.prev();
-        break;
-      case 'ArrowRight':
-      case 'ArrowDown':
-        Go.next();
-        break;
-    }
-  });
+  setImageIdx(idx);
 })();

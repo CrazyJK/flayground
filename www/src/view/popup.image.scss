@@ -20,6 +20,7 @@ body {
 @media (orientation: landscape) {
   body {
     img {
+      width: auto;
       height: 100%;
     }
   }
@@ -29,6 +30,7 @@ body {
   body {
     img {
       width: 100%;
+      height: auto;
     }
   }
 }

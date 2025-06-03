@@ -26,9 +26,9 @@ class Page {
     const randomBoolean = Math.random() < 0.5;
     if (randomBoolean) {
       import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')
-        .then(({ FlayMarkerPanel }) => this.#mainElement.appendChild(new FlayMarkerPanel()))
+        .then(({ FlayMarkerPanel }) => new FlayMarkerPanel())
         .then((flayMarkerPanel) => {
-          // FlayMarkerPanel 사용
+          this.#mainElement.appendChild(flayMarkerPanel);
           this.#mainElement.addEventListener('click', (e) => {
             if (e.target !== this.#mainElement) return;
             const inputNumber = e.clientX * e.clientY;
@@ -39,9 +39,9 @@ class Page {
         });
     } else {
       import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky')
-        .then(({ FlayMarkerSky }) => this.#mainElement.appendChild(new FlayMarkerSky()))
+        .then(({ FlayMarkerSky }) => new FlayMarkerSky())
         .then((flayMarkerSky) => {
-          // FlayMarkerSky 사용
+          this.#mainElement.appendChild(flayMarkerSky);
         });
     }
   }

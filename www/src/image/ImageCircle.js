@@ -49,9 +49,9 @@ export class ImageCircle extends HTMLDivElement {
           FlayFetch.getStaticImage(idx)
             .then(({ name, path, modified, imageBlob }) => {
               imageURL = URL.createObjectURL(imageBlob);
-              this.title = `${name}\n${modified}\n${path}`; // title에 추가 정보 제공
               this.dataset.idx = idx; // 현재 이미지 인덱스 저장
               this.dataset.size = randomSize;
+              this.image.title = `${name}\n${modified}\n${path}`; // title에 추가 정보 제공
               this.image.style.backgroundImage = `url(${imageURL})`;
               this.image.style.width = randomSize + 'rem';
               this.image.style.height = randomSize + 'rem';

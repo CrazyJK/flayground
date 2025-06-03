@@ -26,7 +26,7 @@ export class ImageCircle extends HTMLDivElement {
       const centerY = window.screenY + window.innerHeight / 2 - h / 2;
       const idx = this.dataset.idx || 0; // 현재 이미지 인덱스
 
-      window.open(`popup.image.html?idx=${idx}`, `image${idx}`, `top=${centerY},left=${centerX},width=${w}px,height=${h}px`);
+      window.open(`popup.image.html#${idx}`, `image${idx}`, `top=${centerY},left=${centerX},width=${w}px,height=${h}px`);
     });
   }
 

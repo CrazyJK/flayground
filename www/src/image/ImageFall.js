@@ -91,7 +91,7 @@ export class ImageFall extends HTMLDivElement {
     image.src = URL.createObjectURL(imageBlob);
     image.title = `Idx: ${imageIndex}\nName: ${name}\nPath: ${path}`;
     image.addEventListener('click', () => {
-      window.open(`popup.image.html?idx=${imageIndex}&max=${this.imageLength}`, `image${imageIndex}`, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
+      window.open(`popup.image.html#${imageIndex}`, `image${imageIndex}`, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
     });
     imageWrap.append(image);
 

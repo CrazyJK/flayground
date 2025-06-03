@@ -7,7 +7,10 @@ const flayImage = document.body.appendChild(new FlayImage());
 
 let [idx, max] = [0, 0];
 
-const setImageIdx = (idx) => (flayImage.dataset.idx = idx);
+const setImageIdx = (idx) => {
+  flayImage.dataset.idx = idx;
+  window.location.hash = `#${idx}`;
+};
 
 const handleLoad = (e) => {
   const { idx, name, width, height } = e.detail.info;
@@ -66,9 +69,9 @@ const animateResize = (targetWidth, targetHeight, duration = 100) => {
 const handleWheel = (e) => {
   e.preventDefault();
   if (e.deltaY > 0) {
-    Go.prev();
-  } else {
     Go.next();
+  } else {
+    Go.prev();
   }
 };
 
@@ -92,12 +95,10 @@ const handleKeyup = (e) => {
 };
 
 (async () => {
-  const urlParams = new URL(location.href).searchParams;
-  const paramIdx = urlParams.get('idx');
-  const paramMax = urlParams.get('max');
+  const hashIdx = new URL(location.href).hash.substring(1);
 
-  max = isNaN(paramMax) ? await FlayFetch.getImageSize() : Number(paramMax);
-  idx = isNaN(paramIdx) ? getRandomInt(0, max) : Number(paramIdx);
+  max = await FlayFetch.getImageSize();
+  idx = parseInt(hashIdx) || getRandomInt(0, max);
 
   window.addEventListener('wheel', handleWheel, { passive: false });
   window.addEventListener('keyup', handleKeyup, { passive: true });

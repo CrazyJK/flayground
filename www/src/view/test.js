@@ -20,7 +20,7 @@ class Page {
     mainElement.style.justifyContent = 'center';
     mainElement.style.alignItems = 'center';
     mainElement.style.height = '100vh';
-    mainElement.appendChild(new ImageCircle({ rem: 50, shape: 'circle', effect: 'emboss', duration: 2000 }));
+    mainElement.appendChild(new ImageCircle({ rem: 50, shape: 'circle', effect: 'emboss', duration: 2000, eventAllow: false }));
 
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Video', () => this.#videoWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Basket', () => this.#basketWindow(wUnit, hUnit)));

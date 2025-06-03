@@ -23,9 +23,6 @@ class Page {
   }
 
   #showMarkerPanel() {
-    this.#mainElement.textContent = null;
-
-    // 랜덤 boolean
     const randomBoolean = Math.random() < 0.5;
     if (randomBoolean) {
       import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')

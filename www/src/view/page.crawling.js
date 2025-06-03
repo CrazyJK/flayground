@@ -2,7 +2,7 @@ import NanoStore from '@flay/idb/nano/store/NanoStore';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch from '@lib/FlayFetch';
-import { popupActress, popupFlay } from '@lib/FlaySearch';
+import FlaySearch, { popupActress, popupFlay } from '@lib/FlaySearch';
 import './inc/Page';
 import './page.crawling.scss';
 
@@ -84,9 +84,10 @@ class Page {
       popupActress(target.textContent);
     } else if (target.closest('.video label')) {
       const div = target.closest('div[data-opus]');
-      if (div) {
-        popupFlay(div.dataset.opus);
-      }
+      if (div) popupFlay(div.dataset.opus);
+    } else if (target.closest('.posted label')) {
+      const div = target.closest('div[data-opus]');
+      if (div) FlaySearch.torrent.Nonojav(div.dataset.opus);
     }
   }
 
@@ -267,7 +268,13 @@ class Page {
         <label data-href="${data.opus.href}">${data.opus.text}</label>
       </div>
       <div class="video" title="video info">
-        ${video.error ? '' : `<label>${video.rank}<sub>rank</sub></label><label>${video.play}<sub>play</sub></label><label>${DateUtils.format(video.lastModified, 'yyyy-MM-dd')}<sub>modified</sub></label>`}
+        ${
+          video.error
+            ? ''
+            : ` <label>${video.rank}<sub>rank</sub></label>
+                <label>${video.play}<sub>play</sub></label>
+                <label>${DateUtils.format(video.lastModified, 'yyyy-MM-dd')}<sub>modi.</sub></label>`
+        }
       </div>
       <div class="release" title="release">
         <label>${data.release}</label>
@@ -285,7 +292,7 @@ class Page {
         ${data.downloadList.map((download) => `<label data-href="${download.href}">${download.type} ${download.text}</label>`).join('')}
       </div>
       <div class="posted" title="posted">
-        <label data-href="${data.posted.href}">${data.posted.text}<sub> posted</sub></label>
+        <label data-href="${data.posted.href}">${data.posted.text} <sub>posted</sub></label>
       </div>
     `;
   }

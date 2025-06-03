@@ -21,10 +21,12 @@ export class ImageCircle extends HTMLDivElement {
 
     this.image.addEventListener('click', (e) => {
       // Calculate center position of the current window
-      const centerX = window.screenX + window.innerWidth / 2 - 50; // 50 is half of popup width
-      const centerY = window.screenY + window.innerHeight / 2 - 50; // 50 is half of popup height
+      const [w, h] = [100, 100]; // 팝업 크기 (100px x 100px)
+      const centerX = window.screenX + window.innerWidth / 2 - w / 2;
+      const centerY = window.screenY + window.innerHeight / 2 - h / 2;
+      const idx = this.dataset.idx || 0; // 현재 이미지 인덱스
 
-      window.open(`popup.image.html?idx=${this.dataset.idx}&max=${this.imageLength}`, `image${this.dataset.idx}`, `top=${centerY},left=${centerX},width=100px,height=100px`);
+      window.open(`popup.image.html?idx=${idx}`, `image${idx}`, `top=${centerY},left=${centerX},width=${w}px,height=${h}px`);
     });
   }
 

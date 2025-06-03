@@ -1,5 +1,4 @@
 import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
-import { ImageCircle } from '@image/ImageCircle';
 import fetchJsonp from '@lib/fetchJsonp';
 import { getRandomInt } from '@lib/randomNumber';
 import { Countdown } from '@ui/Countdown';
@@ -15,12 +14,16 @@ class Page {
   async start() {
     const [wUnit, hUnit] = [window.innerWidth / 12, window.innerHeight / 12];
 
-    const mainElement = document.querySelector('body > main');
-    mainElement.style.display = 'flex';
-    mainElement.style.justifyContent = 'center';
-    mainElement.style.alignItems = 'center';
-    mainElement.style.height = '100vh';
-    mainElement.appendChild(new ImageCircle({ rem: 50, shape: 'circle', effect: 'emboss', duration: 2000, eventAllow: false }));
+    import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
+      .then(({ ImageCircle }) => new ImageCircle({ rem: 50, shape: 'circle', effect: 'emboss', duration: 2000, eventAllow: false }))
+      .then((imageCircle) => {
+        const mainElement = document.querySelector('body > main');
+        mainElement.style.display = 'flex';
+        mainElement.style.justifyContent = 'center';
+        mainElement.style.alignItems = 'center';
+        mainElement.style.height = '100vh';
+        mainElement.append(imageCircle);
+      });
 
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Video', () => this.#videoWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Basket', () => this.#basketWindow(wUnit, hUnit)));

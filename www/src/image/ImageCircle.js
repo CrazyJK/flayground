@@ -72,7 +72,7 @@ export class ImageCircle extends HTMLDivElement {
         do {
           const randomSize = this.#rem / 2 + Math.floor(Math.random() * (this.#rem - 1)) / 2;
           showImage(randomSize);
-          await new Promise((resolve) => setTimeout(resolve, randomSize * 1000)); // 이미지 변경 간격만큼 대기
+          await new Promise((resolve) => setTimeout(resolve, (5 + (randomSize % 10)) * 1000)); // 이미지 변경 간격만큼 대기
         } while (condition);
       })
       .catch((error) => {

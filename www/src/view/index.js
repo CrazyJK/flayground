@@ -1,4 +1,3 @@
-import { ImageCircle } from '@image/ImageCircle';
 import DateUtils from '@lib/DateUtils';
 import './inc/Page';
 import './index.scss';
@@ -13,10 +12,14 @@ class Page {
   async start() {
     this.#mainElement.addEventListener('click', () => this.#showMarkerPanel(), { once: true });
 
-    const imageCircle = document.body.appendChild(new ImageCircle({ effect: 'engrave', eventAllow: true }));
-    imageCircle.style.position = 'fixed';
-    imageCircle.style.right = 0;
-    imageCircle.style.bottom = 0;
+    import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
+      .then(({ ImageCircle }) => new ImageCircle({ effect: 'engrave', eventAllow: true }))
+      .then((imageCircle) => {
+        imageCircle.style.position = 'fixed';
+        imageCircle.style.right = 0;
+        imageCircle.style.bottom = 0;
+        this.#mainElement.appendChild(imageCircle);
+      });
   }
 
   #showMarkerPanel() {

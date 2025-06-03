@@ -20,6 +20,7 @@ export class ImageCircle extends HTMLDivElement {
     this.start();
 
     this.image.addEventListener('click', (e) => {
+      e.stopPropagation(); // 이벤트 전파 방지
       // Calculate center position of the current window
       const [w, h] = [100, 100]; // 팝업 크기 (100px x 100px)
       const centerX = window.screenX + window.innerWidth / 2 - w / 2;

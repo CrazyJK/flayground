@@ -12,12 +12,6 @@ const setImageIdx = (idx) => {
   window.location.hash = `#${idx}`;
 };
 
-const handleLoad = (e) => {
-  const { idx, name, width, height } = e.detail.info;
-  document.title = `${idx} - ${name}`;
-  animateResize(width, height);
-};
-
 const Go = {
   prev: () => {
     if (--idx < 0) idx = max - 1;
@@ -64,6 +58,12 @@ const animateResize = (targetWidth, targetHeight, duration = 100) => {
   };
 
   requestAnimationFrame(animate);
+};
+
+const handleLoad = (e) => {
+  const { idx, name, width, height } = e.detail.info;
+  document.title = `${idx} - ${name}`;
+  animateResize(width, height);
 };
 
 const handleWheel = (e) => {

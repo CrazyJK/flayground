@@ -18,9 +18,9 @@ const ANIMATION = {
 };
 
 const TIMING = {
-  minDelay: 5000, // 최소 지연 시간 (ms)
-  delayMultiplier: 1000, // 지연 시간 배수
-  resumeMinDelay: 100, // 애니메이션 재개 최소 지연 시간 (ms)
+  minDelay: 5000, // Minimum delay time (ms)
+  delayMultiplier: 1000, // Delay multiplier
+  resumeMinDelay: 100, // Minimum delay time for resuming animation (ms)
 };
 
 const DEFAULT_OPTIONS = {
@@ -61,10 +61,6 @@ export class ImageCircle extends HTMLDivElement {
   /** 이미지 요소 */
   image = null;
 
-  /**
-   * 생성자
-   * @param {DEFAULT_OPTIONS} options - 컴포넌트 옵션
-   */
   constructor(options = DEFAULT_OPTIONS) {
     super();
 
@@ -73,17 +69,11 @@ export class ImageCircle extends HTMLDivElement {
     this.setOptions(options);
   }
 
-  /**
-   * DOM 연결 시 호출되는 라이프사이클 메서드
-   */
   connectedCallback() {
     this.#initializeEventHandlers();
     this.start();
   }
 
-  /**
-   * 이벤트 핸들러 초기화
-   */
   #initializeEventHandlers() {
     this.image.addEventListener('click', (e) => {
       e.stopPropagation(); // 이벤트 전파 방지
@@ -113,12 +103,12 @@ export class ImageCircle extends HTMLDivElement {
 
     clearTimeout(this.#timeoutId);
 
-    const elapsedTime = Date.now() - this.#pauseStartTime; // 현재 타이머의 남은 시간 계산
+    const elapsedTime = Date.now() - this.#pauseStartTime; // Calculate the remaining time of current timer
     this.#pausedDelay = Math.max(0, this.#pausedDelay - elapsedTime);
     this.#timeoutId = null;
     this.#isPaused = true;
 
-    console.debug(`[ImageCircle] 애니메이션 일시정지 - 남은 시간: ${this.#pausedDelay}ms`);
+    console.debug(`[ImageCircle] Animation paused - Remaining time: ${this.#pausedDelay}ms`);
   }
 
   /**
@@ -127,13 +117,13 @@ export class ImageCircle extends HTMLDivElement {
   #resumeAnimation() {
     if (!this.#isPaused) return;
 
-    const resumeDelay = this.#pausedDelay > 0 ? this.#pausedDelay : TIMING.resumeMinDelay; // 남은 시간이 있으면 그 시간만큼 기다린 후 다음 이미지 표시
+    const resumeDelay = this.#pausedDelay > 0 ? this.#pausedDelay : TIMING.resumeMinDelay; // Wait for remaining time or minimum delay before showing next image
     this.#pauseStartTime = Date.now();
-    this.#pausedDelay = resumeDelay; // 남은 시간으로 업데이트
+    this.#pausedDelay = resumeDelay; // Update with remaining time
     this.#timeoutId = setTimeout(() => this.#scheduleNextImage(), resumeDelay);
     this.#isPaused = false;
 
-    console.debug(`[ImageCircle] 애니메이션 재개 - ${resumeDelay}ms 후 다음 이미지 표시`);
+    console.debug(`[ImageCircle] Animation resumed - Next image will be displayed after ${resumeDelay}ms`);
   }
 
   async start() {
@@ -142,14 +132,14 @@ export class ImageCircle extends HTMLDivElement {
 
     try {
       this.#imageLength = await FlayFetch.getImageSize();
-      if (this.#imageLength === 0) throw new Error('표시할 이미지가 없습니다.');
-      console.debug(`[ImageCircle] 표시할 이미지 ${this.#imageLength}개 발견`);
+      if (this.#imageLength === 0) throw new Error('No images to display.');
+      console.debug(`[ImageCircle] Found ${this.#imageLength} images to display`);
 
       this.#imageIndices = Array.from({ length: this.#imageLength }, (_, i) => i);
 
       this.#scheduleNextImage();
     } catch (error) {
-      console.error('이미지 갯수를 가져오는 중 오류 발생:', error);
+      console.error('Error while fetching image count:', error);
       this.#isActive = false;
     }
   }
@@ -184,16 +174,16 @@ export class ImageCircle extends HTMLDivElement {
       }
 
       if (this.#imageIndices.length === 0) {
-        console.debug('reset imageIndices');
+        console.debug('Resetting image indices');
         this.#imageIndices = Array.from({ length: this.#imageLength }, (_, i) => i);
       }
 
       const randomIndex = Math.floor(Math.random() * this.#imageIndices.length);
       const idx = this.#imageIndices.splice(randomIndex, 1)[0];
-      console.debug(`idx: ${idx}, left: ${this.#imageIndices.length}`);
+      console.debug(`Image index: ${idx}, Remaining indices: ${this.#imageIndices.length}`);
 
       const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(idx);
-      console.debug(`infomation \n\tname: ${name} \n\tpath: ${path} \n\tdate: ${modified} \n\tsize: ${randomSize}rem`);
+      console.debug(`Image information: \n\tName: ${name} \n\tPath: ${path} \n\tDate: ${modified} \n\tSize: ${randomSize}rem`);
 
       this.#currentImageURL = URL.createObjectURL(imageBlob);
 
@@ -201,7 +191,7 @@ export class ImageCircle extends HTMLDivElement {
       this.dataset.size = randomSize;
       this.image.title = `${name}\n${modified}\n${path}`;
 
-      // DOM 업데이트를 배치로 처리하여 리플로우 최소화
+      // Batch DOM updates to minimize reflow
       requestAnimationFrame(() => {
         Object.assign(this.image.style, {
           backgroundImage: `url(${this.#currentImageURL})`,
@@ -213,8 +203,8 @@ export class ImageCircle extends HTMLDivElement {
         this.image.animate(ANIMATION.keyframes, { duration: this.#opts.duration, ...ANIMATION.options });
       });
     } catch (error) {
-      console.error('[ImageCircle] 이미지 표시 중 오류 발생:', error);
-      this.#isActive = false; // 오류 발생 시 활성 상태 해제
+      console.error('[ImageCircle] Error while displaying image:', error);
+      this.#isActive = false; // Deactivate on error
       if (this.#timeoutId) {
         clearTimeout(this.#timeoutId);
         this.#timeoutId = null;
@@ -225,14 +215,14 @@ export class ImageCircle extends HTMLDivElement {
   }
 
   /**
-   * 옵션 설정
+   * Set options
    * @param {DEFAULT_OPTIONS} opts
    */
   setOptions(opts) {
-    console.debug('[ImageCircle] 옵션 설정 중:', opts);
-    this.#opts = { ...this.#opts, ...opts }; // 기본 옵션과 병합
+    console.debug('[ImageCircle] Setting options:', opts);
+    this.#opts = { ...this.#opts, ...opts }; // Merge with default options
 
-    // 스타일 업데이트를 배치로 처리
+    // Batch style updates
     requestAnimationFrame(() => {
       Object.assign(this.style, {
         width: this.#opts.rem + 'rem',
@@ -244,7 +234,7 @@ export class ImageCircle extends HTMLDivElement {
         height: this.#opts.rem - 1 + 'rem',
       });
 
-      // 클래스 업데이트 최적화
+      // Optimize class updates
       const currentClasses = [...this.classList];
       const classesToRemove = currentClasses.filter((cls) => Object.values(CSS_CLASSES.shapes).includes(cls) || Object.values(CSS_CLASSES.effects).includes(cls));
       if (classesToRemove.length > 0) {
@@ -255,7 +245,7 @@ export class ImageCircle extends HTMLDivElement {
       if (CSS_CLASSES.effects[this.#opts.effect]) this.classList.add(CSS_CLASSES.effects[this.#opts.effect]);
       this.classList.toggle('event-allow', this.#opts.eventAllow);
 
-      console.debug(`[ImageCircle] 스타일 적용 완료 - rem: ${this.#opts.rem}, 모양: ${this.#opts.shape}, 효과: ${this.#opts.effect}, 이벤트허용: ${this.#opts.eventAllow}`);
+      console.debug(`[ImageCircle] Style applied - rem: ${this.#opts.rem}, shape: ${this.#opts.shape}, effect: ${this.#opts.effect}, event allowed: ${this.#opts.eventAllow}`);
     });
   }
 }

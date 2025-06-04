@@ -14,17 +14,6 @@ class Page {
   async start() {
     const [wUnit, hUnit] = [window.innerWidth / 12, window.innerHeight / 12];
 
-    import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
-      .then(({ ImageCircle }) => new ImageCircle({ rem: 50, shape: 'circle', effect: 'emboss', duration: 2000, eventAllow: false }))
-      .then((imageCircle) => {
-        const mainElement = document.querySelector('body > main');
-        mainElement.style.display = 'flex';
-        mainElement.style.justifyContent = 'center';
-        mainElement.style.alignItems = 'center';
-        mainElement.style.height = '100vh';
-        mainElement.append(imageCircle);
-      });
-
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Video', () => this.#videoWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Basket', () => this.#basketWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Memo', () => this.#memoWindow(wUnit, hUnit)));
@@ -33,6 +22,9 @@ class Page {
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Browser', () => this.#browserWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Countdown', () => this.#countdown()));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'TickTimer', () => this.#tickTimer()));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'FlayMarkerPanel', () => this.#flayMarkerPanel()));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'FlayMarkerSky', () => this.#flayMarkerSky()));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageCircle', () => this.#imageCircle()));
 
     fetchJsonp('https://api.github.com/users')
       .then((data) => console.log('users', data))
@@ -208,6 +200,44 @@ class Page {
     stopBtn.addEventListener('click', () => timer.stop());
     pauseBtn.addEventListener('click', () => timer.pause());
     resumeBtn.addEventListener('click', () => timer.resume());
+  }
+
+  #flayMarkerPanel() {
+    const mainElement = document.querySelector('body > main');
+    import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')
+      .then(({ FlayMarkerPanel }) => new FlayMarkerPanel())
+      .then((flayMarkerPanel) => {
+        mainElement.appendChild(flayMarkerPanel);
+        mainElement.addEventListener('click', (e) => {
+          if (e.target !== mainElement) return;
+          const inputNumber = e.clientX * e.clientY;
+          const flayMarkers = flayMarkerPanel.childNodes;
+          const randomIndex = inputNumber % flayMarkers.length;
+          flayMarkers[randomIndex].click();
+        });
+      });
+  }
+
+  #flayMarkerSky() {
+    const mainElement = document.querySelector('body > main');
+    import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky')
+      .then(({ FlayMarkerSky }) => new FlayMarkerSky())
+      .then((flayMarkerSky) => {
+        mainElement.appendChild(flayMarkerSky);
+      });
+  }
+
+  #imageCircle() {
+    const mainElement = document.querySelector('body > main');
+    mainElement.style.display = 'flex';
+    mainElement.style.justifyContent = 'center';
+    mainElement.style.alignItems = 'center';
+    mainElement.style.height = '100vh';
+    import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
+      .then(({ ImageCircle }) => new ImageCircle({ rem: 50, shape: 'circle', effect: 'emboss', duration: 2000, eventAllow: false }))
+      .then((imageCircle) => {
+        mainElement.appendChild(imageCircle);
+      });
   }
 }
 

@@ -8,7 +8,7 @@ class Page {
   async start() {
     const mainElement = document.querySelector('body > main');
     import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
-      .then(({ ImageCircle }) => new ImageCircle({ effect: 'engrave' }))
+      .then(({ ImageCircle }) => new ImageCircle({ rem: 10, effect: 'engrave' }))
       .then((imageCircle) => {
         imageCircle.style.position = 'fixed';
         imageCircle.style.right = 0;

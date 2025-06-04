@@ -170,43 +170,58 @@ export class ImageCircle extends HTMLDivElement {
 
     this.#showImage(randomSize);
 
-    this.#pausedDelay = delay;
     this.#pauseStartTime = Date.now();
+    this.#pausedDelay = delay;
     this.#timeoutId = setTimeout(() => this.#scheduleNextImage(), delay);
   }
 
   async #showImage(randomSize) {
-    if (this.#currentImageURL) {
-      URL.revokeObjectURL(this.#currentImageURL);
-      this.#currentImageURL = null;
-    }
+    console.group('[ImageCircle] show image');
+    try {
+      if (this.#currentImageURL) {
+        URL.revokeObjectURL(this.#currentImageURL);
+        this.#currentImageURL = null;
+      }
 
-    if (this.#imageIndices.length === 0) {
-      console.debug('[ImageCircle] 이미지 인덱스 배열 재초기화');
-      this.#imageIndices = Array.from({ length: this.#imageLength }, (_, i) => i);
-    }
+      if (this.#imageIndices.length === 0) {
+        console.debug('reset imageIndices');
+        this.#imageIndices = Array.from({ length: this.#imageLength }, (_, i) => i);
+      }
 
-    const randomIndex = Math.floor(Math.random() * this.#imageIndices.length);
-    const idx = this.#imageIndices.splice(randomIndex, 1)[0];
+      const randomIndex = Math.floor(Math.random() * this.#imageIndices.length);
+      const idx = this.#imageIndices.splice(randomIndex, 1)[0];
+      console.debug(`idx: ${idx}, left: ${this.#imageIndices.length}`);
 
-    const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(idx);
-    this.#currentImageURL = URL.createObjectURL(imageBlob);
+      const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(idx);
+      console.debug(`infomation \n\tname: ${name} \n\tpath: ${path} \n\tdate: ${modified} \n\tsize: ${randomSize}rem`);
 
-    this.dataset.idx = idx;
-    this.dataset.size = randomSize;
-    this.image.title = `${name}\n${modified}\n${path}`;
+      this.#currentImageURL = URL.createObjectURL(imageBlob);
 
-    // DOM 업데이트를 배치로 처리하여 리플로우 최소화
-    requestAnimationFrame(() => {
-      Object.assign(this.image.style, {
-        backgroundImage: `url(${this.#currentImageURL})`,
-        width: randomSize + 'rem',
-        height: randomSize + 'rem',
-        margin: (this.#opts.rem - randomSize) / 2 + 'rem',
+      this.dataset.idx = idx;
+      this.dataset.size = randomSize;
+      this.image.title = `${name}\n${modified}\n${path}`;
+
+      // DOM 업데이트를 배치로 처리하여 리플로우 최소화
+      requestAnimationFrame(() => {
+        Object.assign(this.image.style, {
+          backgroundImage: `url(${this.#currentImageURL})`,
+          width: randomSize + 'rem',
+          height: randomSize + 'rem',
+          margin: (this.#opts.rem - randomSize) / 2 + 'rem',
+        });
+
+        this.image.animate(ANIMATION.keyframes, { duration: this.#opts.duration, ...ANIMATION.options });
       });
-
-      this.image.animate(ANIMATION.keyframes, { duration: this.#opts.duration, ...ANIMATION.options });
-    });
+    } catch (error) {
+      console.error('[ImageCircle] 이미지 표시 중 오류 발생:', error);
+      this.#isActive = false; // 오류 발생 시 활성 상태 해제
+      if (this.#timeoutId) {
+        clearTimeout(this.#timeoutId);
+        this.#timeoutId = null;
+      }
+    } finally {
+      console.groupEnd();
+    }
   }
 
   /**

@@ -225,13 +225,13 @@ export class ImageCircle extends HTMLDivElement {
     // Batch style updates
     requestAnimationFrame(() => {
       Object.assign(this.style, {
-        width: this.#opts.rem + 'rem',
-        height: this.#opts.rem + 'rem',
+        width: `${this.#opts.rem}rem`,
+        height: `${this.#opts.rem}rem`,
       });
 
       Object.assign(this.image.style, {
-        width: this.#opts.rem - 1 + 'rem',
-        height: this.#opts.rem - 1 + 'rem',
+        width: `${this.#opts.rem - 1}rem`,
+        height: `${this.#opts.rem - 1}rem`,
       });
 
       // Optimize class updates
@@ -245,7 +245,7 @@ export class ImageCircle extends HTMLDivElement {
       if (CSS_CLASSES.effects[this.#opts.effect]) this.classList.add(CSS_CLASSES.effects[this.#opts.effect]);
       this.classList.toggle('event-allow', this.#opts.eventAllow);
 
-      console.debug(`[ImageCircle] Style applied - rem: ${this.#opts.rem}, shape: ${this.#opts.shape}, effect: ${this.#opts.effect}, event allowed: ${this.#opts.eventAllow}`);
+      console.debug(`[ImageCircle] Style applied \n\trem: ${this.#opts.rem} \n\tshape: ${this.#opts.shape} \n\teffect: ${this.#opts.effect} \n\tevent allowed: ${this.#opts.eventAllow} \n\tduration: ${this.#opts.duration}ms`);
     });
   }
 }

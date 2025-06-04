@@ -3,20 +3,17 @@ import './inc/Page';
 import './index.scss';
 
 class Page {
-  #mainElement;
-
-  constructor() {
-    this.#mainElement = document.querySelector('body > main');
-  }
+  constructor() {}
 
   async start() {
+    const mainElement = document.querySelector('body > main');
     import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
       .then(({ ImageCircle }) => new ImageCircle({ effect: 'engrave', eventAllow: true }))
       .then((imageCircle) => {
         imageCircle.style.position = 'fixed';
         imageCircle.style.right = 0;
         imageCircle.style.bottom = 0;
-        this.#mainElement.appendChild(imageCircle);
+        mainElement.appendChild(imageCircle);
       });
   }
 }

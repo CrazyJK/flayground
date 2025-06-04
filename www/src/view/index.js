@@ -15,12 +15,16 @@ class Page {
         imageCircle.style.bottom = 0;
         mainElement.appendChild(imageCircle);
 
-        imageCircle.addEventListener('click', () => {
-          imageCircle.style.position = 'relative';
-          imageCircle.style.right = 'unset';
-          imageCircle.style.bottom = 'unset';
-          window.dispatchEvent(new Event('resize'));
-        });
+        imageCircle.addEventListener(
+          'click',
+          () => {
+            imageCircle.style.position = 'relative';
+            imageCircle.style.right = 'unset';
+            imageCircle.style.bottom = 'unset';
+            window.dispatchEvent(new Event('resize'));
+          },
+          { once: true }
+        );
         window.addEventListener('resize', () => {
           if (imageCircle.style.position === 'fixed') return; // 고정 위치일 때는 무시
           const rem = getAvailableRemSize(mainElement);

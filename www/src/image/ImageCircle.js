@@ -173,8 +173,6 @@ export class ImageCircle extends HTMLDivElement {
     this.#pausedDelay = delay;
     this.#pauseStartTime = Date.now();
     this.#timeoutId = setTimeout(() => this.#scheduleNextImage(), delay);
-
-    console.debug(`[ImageCircle] 다음 이미지 ${delay}ms 후 표시 예정`);
   }
 
   async #showImage(randomSize) {
@@ -190,8 +188,6 @@ export class ImageCircle extends HTMLDivElement {
 
     const randomIndex = Math.floor(Math.random() * this.#imageIndices.length);
     const idx = this.#imageIndices.splice(randomIndex, 1)[0];
-
-    console.debug(`[ImageCircle] 🎯 이미지 선택 - idx: ${idx} (남은 개수: ${this.#imageIndices.length})`);
 
     const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(idx);
     this.#currentImageURL = URL.createObjectURL(imageBlob);

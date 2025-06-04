@@ -35,6 +35,9 @@ export class ImageCircle extends HTMLDivElement {
   #clickHandler = null; // 클릭 핸들러
   #cachedRemValues = new Map(); // rem 값 캐시
   #preloadedImages = new Map(); // 프리로드된 이미지 캐시 (최대 3개)
+  #isPaused = false; // 마우스 오버로 인한 일시정지 상태
+  #pausedDelay = 0; // 일시정지 시 남은 지연 시간
+  #pauseStartTime = 0; // 일시정지 시작 시간
 
   constructor(options = DEFAULT_OPTIONS) {
     super();
@@ -45,6 +48,7 @@ export class ImageCircle extends HTMLDivElement {
 
   connectedCallback() {
     console.debug('[ImageCircle] DOM에 연결됨');
+    this.#setupMouseEvents();
     this.#setupClickHandler();
     this.start();
   }
@@ -68,6 +72,57 @@ export class ImageCircle extends HTMLDivElement {
       window.open(`popup.image.html#${idx}`, `image${idx}`, `top=${centerY},left=${centerX},width=${w}px,height=${h}px`);
     };
     this.image.addEventListener('click', this.#clickHandler);
+  }
+
+  #setupMouseEvents() {
+    console.debug('[ImageCircle] 마우스 이벤트 핸들러 설정 중');
+
+    this.image.addEventListener('mouseenter', () => {
+      if (!this.#isActive || this.#isPaused) return;
+
+      console.debug('[ImageCircle] 🎬 마우스 오버 - 애니메이션 일시정지');
+      this.#pauseAnimation();
+    });
+
+    this.image.addEventListener('mouseleave', () => {
+      if (!this.#isActive || !this.#isPaused) return;
+
+      console.debug('[ImageCircle] 🎬 마우스 아웃 - 애니메이션 재개');
+      this.#resumeAnimation();
+    });
+  }
+
+  #pauseAnimation() {
+    if (this.#timeoutId) {
+      // 현재 타이머의 남은 시간 계산
+      const elapsedTime = Date.now() - this.#pauseStartTime;
+      this.#pausedDelay = Math.max(0, this.#pausedDelay - elapsedTime);
+
+      clearTimeout(this.#timeoutId);
+      this.#timeoutId = null;
+      this.#isPaused = true;
+
+      console.debug(`[ImageCircle] 애니메이션 일시정지 - 남은 시간: ${this.#pausedDelay}ms`);
+    }
+  }
+
+  #resumeAnimation() {
+    if (this.#isPaused) {
+      this.#isPaused = false;
+
+      // 남은 시간이 있으면 그 시간만큼 기다린 후 다음 이미지 표시
+      const resumeDelay = this.#pausedDelay > 0 ? this.#pausedDelay : 100;
+
+      console.debug(`[ImageCircle] 애니메이션 재개 - ${resumeDelay}ms 후 다음 이미지 표시`);
+
+      // 재개를 위한 새로운 시작시간 설정
+      this.#pauseStartTime = Date.now();
+      this.#pausedDelay = resumeDelay; // 남은 시간으로 업데이트
+
+      this.#timeoutId = setTimeout(() => {
+        this.#scheduleNextImage();
+      }, resumeDelay);
+    }
   }
 
   start() {
@@ -105,6 +160,11 @@ export class ImageCircle extends HTMLDivElement {
       this.#timeoutId = null;
       console.debug('[ImageCircle] 애니메이션 타이머 정리 완료');
     }
+
+    // 일시정지 상태 초기화
+    this.#isPaused = false;
+    this.#pausedDelay = 0;
+    this.#pauseStartTime = 0;
 
     // 이미지 URL 정리
     this.#cleanupImageURL();
@@ -149,6 +209,11 @@ export class ImageCircle extends HTMLDivElement {
 
     const delay = MIN_DELAY + (randomSize % 10) * DELAY_MULTIPLIER;
     console.debug(`[ImageCircle] 다음 이미지 ${delay}ms 후 표시 예정`);
+
+    // 일시정지 기능을 위해 지연시간과 시작시간 저장
+    this.#pausedDelay = delay;
+    this.#pauseStartTime = Date.now();
+
     this.#timeoutId = setTimeout(() => {
       this.#scheduleNextImage();
     }, delay);
@@ -228,6 +293,11 @@ export class ImageCircle extends HTMLDivElement {
         if (this.#isActive && this.#imageIndices.length > 0) {
           // 오류 발생 시 다음 이미지 즉시 시도 (재귀 호출 대신 스케줄링 사용)
           console.debug(`[ImageCircle] ${ERROR_RETRY_DELAY}ms 후 다른 이미지로 재시도`);
+
+          // 재시도를 위한 지연시간과 시작시간 저장
+          this.#pausedDelay = ERROR_RETRY_DELAY;
+          this.#pauseStartTime = Date.now();
+
           this.#timeoutId = setTimeout(() => {
             this.#showImage(randomSize);
           }, ERROR_RETRY_DELAY); // 짧은 지연 후 재시도

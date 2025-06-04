@@ -144,7 +144,7 @@ export class ImageCircle extends HTMLDivElement {
     if (!this.#isActive) return;
 
     const randomSize = this.#getRandomSize();
-    console.debug(`%c[ImageCircle] 다음 이미지 스케줄링 - 크기: ${randomSize}rem`, 'color: #2196F3; font-weight: bold;');
+    console.debug(`[ImageCircle] 다음 이미지 스케줄링 - 크기: ${randomSize}rem`);
     this.#showImage(randomSize);
 
     const delay = MIN_DELAY + (randomSize % 10) * DELAY_MULTIPLIER;
@@ -175,6 +175,7 @@ export class ImageCircle extends HTMLDivElement {
     console.debug(`[ImageCircle] 랜덤 크기 생성: ${size}rem (캐시 사용: ${this.#cachedRemValues.has(cacheKey)})`);
     return size;
   }
+
   #showImage(randomSize) {
     if (!this.#isActive) return;
 
@@ -189,9 +190,11 @@ export class ImageCircle extends HTMLDivElement {
       const randomPreloadedIndex = Math.floor(Math.random() * preloadedIndices.length);
       idx = preloadedIndices[randomPreloadedIndex];
 
-      console.debug(`%c[ImageCircle] 🎯 프리로드된 이미지 선택 - idx: ${idx} (프리로드 캐시: ${this.#preloadedImages.size}개)`, 'color: #FF9800; font-weight: bold; padding: 2px 4px; border-radius: 3px;');
+      console.group(`🎯 이미지 표시 - idx: ${idx} (프리로드됨)`);
+      console.debug(`[ImageCircle] 🎯 프리로드된 이미지 선택 - idx: ${idx} (프리로드 캐시: ${this.#preloadedImages.size}개)`);
       this.#usePreloadedImage(idx, randomSize);
       this.#preloadNextImages(); // 다음 이미지들 프리로드
+      console.groupEnd();
       return;
     }
 
@@ -202,28 +205,37 @@ export class ImageCircle extends HTMLDivElement {
     }
     const randomIndex = Math.floor(Math.random() * this.#imageIndices.length);
     idx = this.#imageIndices.splice(randomIndex, 1)[0];
-    console.debug(`%c[ImageCircle] 🎯 이미지 선택 - idx: ${idx} (남은 개수: ${this.#imageIndices.length})`, 'color: #FF9800; font-weight: bold; padding: 2px 4px; border-radius: 3px;');
 
-    console.debug(`%c[ImageCircle] 📥 이미지 가져오는 중 - idx: ${idx}`, 'color:rgb(158, 141, 161); font-style: italic;');
+    console.group(`🎯 이미지 표시 - idx: ${idx}`);
+    console.debug(`[ImageCircle] 🎯 이미지 선택 - idx: ${idx} (남은 개수: ${this.#imageIndices.length})`);
+
+    console.debug(`[ImageCircle] 📥 이미지 가져오는 중 - idx: ${idx}`);
     FlayFetch.getStaticImage(idx)
       .then(({ name, path, modified, imageBlob }) => {
-        if (!this.#isActive) return; // 비활성화된 경우 처리 중단
+        if (!this.#isActive) {
+          console.groupEnd();
+          return; // 비활성화된 경우 처리 중단
+        }
 
         this.#currentImageURL = URL.createObjectURL(imageBlob);
-        console.debug(`%c[ImageCircle] ✅ 이미지 로딩 성공: ${name}`, 'color: #4CAF50; font-weight: bold;');
+        console.debug(`[ImageCircle] ✅ 이미지 로딩 성공: ${name}`);
         this.#displayImage(idx, randomSize, name, path, modified);
         this.#preloadNextImages(); // 다음 이미지들 프리로드
+        console.groupEnd();
       })
       .catch((error) => {
-        console.error(`이미지(idx: ${idx})를 가져오는 중 오류 발생:`, error);
+        console.error(`[ImageCircle] 이미지(idx: ${idx})를 가져오는 중 오류 발생:`, error);
         if (this.#isActive && this.#imageIndices.length > 0) {
-          // 오류 발생 시 다음 이미지 즉시 시도 (재귀 호출 대신 스케줄링 사용)          console.debug(`[ImageCircle] ${ERROR_RETRY_DELAY}ms 후 다른 이미지로 재시도`);
+          // 오류 발생 시 다음 이미지 즉시 시도 (재귀 호출 대신 스케줄링 사용)
+          console.debug(`[ImageCircle] ${ERROR_RETRY_DELAY}ms 후 다른 이미지로 재시도`);
           this.#timeoutId = setTimeout(() => {
             this.#showImage(randomSize);
           }, ERROR_RETRY_DELAY); // 짧은 지연 후 재시도
         }
+        console.groupEnd();
       });
   }
+
   /**
    * 프리로드된 이미지 사용
    * @param {number} idx 이미지 인덱스
@@ -275,6 +287,8 @@ export class ImageCircle extends HTMLDivElement {
     requestAnimationFrame(() => {
       if (!this.#isActive) return;
 
+      console.group(`🎨 DOM 업데이트 - idx: ${idx}`);
+
       this.dataset.idx = idx;
       this.dataset.size = randomSize;
       this.image.title = `${name}\n${modified}\n${path}`;
@@ -296,8 +310,10 @@ export class ImageCircle extends HTMLDivElement {
         ...ANIMATION_OPTIONS,
       });
       console.debug(`[ImageCircle] 애니메이션 시작 - idx: ${idx}, 지속시간: ${this.#opts.duration}ms`);
+      console.groupEnd();
     });
   }
+
   /**
    * 다음 이미지들 프리로드 (최대 3개)
    */
@@ -315,6 +331,7 @@ export class ImageCircle extends HTMLDivElement {
       const randomIndex = Math.floor(Math.random() * availableIndices.length);
       const idx = availableIndices[randomIndex];
 
+      console.group(`📦 프리로드 - idx: ${idx}`);
       console.debug(`[ImageCircle] 이미지 프리로드 시작 - idx: ${idx}`);
       FlayFetch.getStaticImage(idx)
         .then(({ imageBlob }) => {
@@ -322,10 +339,12 @@ export class ImageCircle extends HTMLDivElement {
             this.#preloadedImages.set(idx, URL.createObjectURL(imageBlob));
             console.debug(`[ImageCircle] 이미지 프리로드 성공 - idx: ${idx} (캐시 크기: ${this.#preloadedImages.size})`);
           }
+          console.groupEnd();
         })
         .catch(() => {
           console.debug(`[ImageCircle] 이미지 프리로드 실패 - idx: ${idx}`);
           // 프리로드 실패는 조용히 처리
+          console.groupEnd();
         });
     }
   }

@@ -1,61 +1,119 @@
 /**
- * 이미지 원형 표시 컴포넌트 - 성능 최적화 버전
+ * 이미지 원형 표시 컴포넌트
  *
- * 주요 성능 최적화 기능:
- * - 이미지 프리로딩 (최대 3개)
- * - rem 값 계산 캐싱
- * - DOM 업데이트 배치 처리 (requestAnimationFrame)
- * - 메모리 효율적인 리소스 관리
- * - 애니메이션 키프레임 재사용
- *
- * @author ImageCircle Performance Team
- * @version 2.0.0
+ * @version 2.1.0
  */
 import FlayFetch from '@lib/FlayFetch';
 import './imageCircle.scss';
 
-const shapeClasses = { circle: 'circle', square: 'square', rounded: 'rounded' }; // 모양 클래스
-const effectClasses = { emboss: 'emboss', engrave: 'engrave' }; // 효과 클래스
-const DEFAULT_OPTIONS = { rem: 10, shape: shapeClasses.circle, effect: effectClasses.emboss, duration: 2000, eventAllow: false }; // 기본 옵션
+// 상수들을 명확한 구조로 그룹화
+const CSS_CLASSES = {
+  base: ['image-circle', 'flay-div'],
+  shapes: { circle: 'circle', square: 'square', rounded: 'rounded' },
+  effects: { emboss: 'emboss', engrave: 'engrave' },
+};
 
-// 성능 최적화 상수
-const ANIMATION_KEYFRAMES = [{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }];
-const ANIMATION_OPTIONS = { easing: 'ease-in-out' };
-const MIN_DELAY = 5000; // 최소 지연 시간 (ms)
-const DELAY_MULTIPLIER = 1000; // 지연 시간 배수
-const ERROR_RETRY_DELAY = 100; // 오류 시 재시도 지연 시간 (ms)
+const ANIMATION = {
+  keyframes: [{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }],
+  options: { easing: 'ease-in-out' },
+};
 
+const TIMING = {
+  minDelay: 5000, // 최소 지연 시간 (ms)
+  delayMultiplier: 1000, // 지연 시간 배수
+  errorRetryDelay: 100, // 오류 시 재시도 지연 시간 (ms)
+  resumeMinDelay: 100, // 애니메이션 재개 최소 지연 시간 (ms)
+};
+
+const CACHE = {
+  maxPreloadedImages: 3, // 최대 프리로드 이미지 수
+};
+
+const DEFAULT_OPTIONS = {
+  rem: 10,
+  shape: CSS_CLASSES.shapes.circle,
+  effect: CSS_CLASSES.effects.emboss,
+  duration: 2000,
+  eventAllow: false,
+};
+
+/**
+ * 이미지 원형 표시 웹 컴포넌트
+ * - 설정 가능한 모양과 효과를 가진 순환 이미지 표시
+ * - 성능 최적화된 프리로딩 및 캐싱 기능
+ * - 마우스 인터랙션 지원 (일시정지/재개)
+ *
+ * @class ImageCircle
+ * @extends {HTMLDivElement}
+ */
 export class ImageCircle extends HTMLDivElement {
-  #opts = DEFAULT_OPTIONS; // 옵션
-  #isActive = false; // 활성 상태
-  #timeoutId = null; // 타이머 ID
-  #currentImageURL = null; // 현재 이미지 URL
-  #imageIndices = []; // 이미지 인덱스 배열
-  #originalImageIndices = []; // 원본 인덱스 배열
-  #clickHandler = null; // 클릭 핸들러
-  #cachedRemValues = new Map(); // rem 값 캐시
-  #preloadedImages = new Map(); // 프리로드된 이미지 캐시 (최대 3개)
-  #isPaused = false; // 마우스 오버로 인한 일시정지 상태
-  #pausedDelay = 0; // 일시정지 시 남은 지연 시간
-  #pauseStartTime = 0; // 일시정지 시작 시간
+  /** @private 옵션 설정 */
+  #opts = DEFAULT_OPTIONS;
+  /** @private 컴포넌트 활성 상태 */
+  #isActive = false;
+  /** @private 타이머 ID */
+  #timeoutId = null;
+  /** @private 현재 이미지 URL */
+  #currentImageURL = null;
+  /** @private 이미지 인덱스 배열 */
+  #imageIndices = [];
+  /** @private 원본 인덱스 배열 (초기화용) */
+  #originalImageIndices = [];
+  /** @private 클릭 이벤트 핸들러 */
+  #clickHandler = null;
+  /** @private rem 값에 대한 크기 계산 캐시 */
+  #cachedRemValues = new Map();
+  /** @private 프리로드된 이미지 캐시 */
+  #preloadedImages = new Map();
+  /** @private 마우스 오버로 인한 일시정지 상태 */
+  #isPaused = false;
+  /** @private 일시정지 시 남은 지연 시간 */
+  #pausedDelay = 0;
+  /** @private 타이머 시작 시간 */
+  #pauseStartTime = 0;
 
+  /**
+   * 생성자
+   * @param {Object} options - 컴포넌트 옵션
+   * @param {number} options.rem - 컴포넌트 크기 (rem 단위)
+   * @param {string} options.shape - 모양 ('circle'|'square'|'rounded')
+   * @param {string} options.effect - 효과 ('emboss'|'engrave')
+   * @param {number} options.duration - 애니메이션 지속시간 (ms)
+   * @param {boolean} options.eventAllow - 클릭 이벤트 허용 여부
+   */
   constructor(options = DEFAULT_OPTIONS) {
     super();
-    this.classList.add('image-circle', 'flay-div');
+    this.classList.add(...CSS_CLASSES.base);
     this.image = this.appendChild(document.createElement('div'));
     this.setOptions(options);
   }
 
+  /**
+   * DOM 연결 시 호출되는 라이프사이클 메서드
+   * @protected
+   */
   connectedCallback() {
     console.debug('[ImageCircle] DOM에 연결됨');
-    this.#setupMouseEvents();
-    this.#setupClickHandler();
+    this.#initializeEventHandlers();
     this.start();
   }
 
+  /**
+   * DOM 분리 시 호출되는 라이프사이클 메서드
+   * @protected
+   */
   disconnectedCallback() {
     console.debug('[ImageCircle] DOM에서 분리됨');
     this.stop();
+  }
+
+  /**
+   * 이벤트 핸들러 초기화
+   * @private
+   */
+  #initializeEventHandlers() {
+    this.#setupMouseEvents();
+    this.#setupClickHandler();
   }
 
   #setupClickHandler() {
@@ -92,37 +150,45 @@ export class ImageCircle extends HTMLDivElement {
     });
   }
 
+  /**
+   * 애니메이션 일시정지
+   * @private
+   */
   #pauseAnimation() {
-    if (this.#timeoutId) {
-      // 현재 타이머의 남은 시간 계산
-      const elapsedTime = Date.now() - this.#pauseStartTime;
-      this.#pausedDelay = Math.max(0, this.#pausedDelay - elapsedTime);
+    if (!this.#timeoutId) return;
 
-      clearTimeout(this.#timeoutId);
-      this.#timeoutId = null;
-      this.#isPaused = true;
+    // 현재 타이머의 남은 시간 계산
+    const elapsedTime = Date.now() - this.#pauseStartTime;
+    this.#pausedDelay = Math.max(0, this.#pausedDelay - elapsedTime);
 
-      console.debug(`[ImageCircle] 애니메이션 일시정지 - 남은 시간: ${this.#pausedDelay}ms`);
-    }
+    clearTimeout(this.#timeoutId);
+    this.#timeoutId = null;
+    this.#isPaused = true;
+
+    console.debug(`[ImageCircle] 애니메이션 일시정지 - 남은 시간: ${this.#pausedDelay}ms`);
   }
 
+  /**
+   * 애니메이션 재개
+   * @private
+   */
   #resumeAnimation() {
-    if (this.#isPaused) {
-      this.#isPaused = false;
+    if (!this.#isPaused) return;
 
-      // 남은 시간이 있으면 그 시간만큼 기다린 후 다음 이미지 표시
-      const resumeDelay = this.#pausedDelay > 0 ? this.#pausedDelay : 100;
+    this.#isPaused = false;
 
-      console.debug(`[ImageCircle] 애니메이션 재개 - ${resumeDelay}ms 후 다음 이미지 표시`);
+    // 남은 시간이 있으면 그 시간만큼 기다린 후 다음 이미지 표시
+    const resumeDelay = this.#pausedDelay > 0 ? this.#pausedDelay : TIMING.resumeMinDelay;
 
-      // 재개를 위한 새로운 시작시간 설정
-      this.#pauseStartTime = Date.now();
-      this.#pausedDelay = resumeDelay; // 남은 시간으로 업데이트
+    console.debug(`[ImageCircle] 애니메이션 재개 - ${resumeDelay}ms 후 다음 이미지 표시`);
 
-      this.#timeoutId = setTimeout(() => {
-        this.#scheduleNextImage();
-      }, resumeDelay);
-    }
+    // 재개를 위한 새로운 시작시간 설정
+    this.#pauseStartTime = Date.now();
+    this.#pausedDelay = resumeDelay; // 남은 시간으로 업데이트
+
+    this.#timeoutId = setTimeout(() => {
+      this.#scheduleNextImage();
+    }, resumeDelay);
   }
 
   start() {
@@ -200,6 +266,10 @@ export class ImageCircle extends HTMLDivElement {
     console.debug(`[ImageCircle] 프리로드된 이미지 ${preloadedCount}개 정리 완료`);
   }
 
+  /**
+   * 다음 이미지 표시 스케줄링
+   * @private
+   */
   #scheduleNextImage() {
     if (!this.#isActive) return;
 
@@ -207,7 +277,7 @@ export class ImageCircle extends HTMLDivElement {
     console.debug(`[ImageCircle] 다음 이미지 스케줄링 - 크기: ${randomSize}rem`);
     this.#showImage(randomSize);
 
-    const delay = MIN_DELAY + (randomSize % 10) * DELAY_MULTIPLIER;
+    const delay = TIMING.minDelay + (randomSize % 10) * TIMING.delayMultiplier;
     console.debug(`[ImageCircle] 다음 이미지 ${delay}ms 후 표시 예정`);
 
     // 일시정지 기능을 위해 지연시간과 시작시간 저장
@@ -291,16 +361,15 @@ export class ImageCircle extends HTMLDivElement {
       .catch((error) => {
         console.error(`[ImageCircle] 이미지(idx: ${idx})를 가져오는 중 오류 발생:`, error);
         if (this.#isActive && this.#imageIndices.length > 0) {
-          // 오류 발생 시 다음 이미지 즉시 시도 (재귀 호출 대신 스케줄링 사용)
-          console.debug(`[ImageCircle] ${ERROR_RETRY_DELAY}ms 후 다른 이미지로 재시도`);
+          // 오류 발생 시 다음 이미지 즉시 시도 (재귀 호출 대신 스케줄링 사용)          console.debug(`[ImageCircle] ${TIMING.errorRetryDelay}ms 후 다른 이미지로 재시도`);
 
           // 재시도를 위한 지연시간과 시작시간 저장
-          this.#pausedDelay = ERROR_RETRY_DELAY;
+          this.#pausedDelay = TIMING.errorRetryDelay;
           this.#pauseStartTime = Date.now();
 
           this.#timeoutId = setTimeout(() => {
             this.#showImage(randomSize);
-          }, ERROR_RETRY_DELAY); // 짧은 지연 후 재시도
+          }, TIMING.errorRetryDelay); // 짧은 지연 후 재시도
         }
         console.groupEnd();
       });
@@ -372,12 +441,10 @@ export class ImageCircle extends HTMLDivElement {
         width: sizeValue,
         height: sizeValue,
         margin: marginValue,
-      });
-
-      // 애니메이션 옵션을 동적으로 생성하지 않고 상수 사용
-      this.image.animate(ANIMATION_KEYFRAMES, {
+      }); // 애니메이션 옵션을 동적으로 생성하지 않고 상수 사용
+      this.image.animate(ANIMATION.keyframes, {
         duration: this.#opts.duration,
-        ...ANIMATION_OPTIONS,
+        ...ANIMATION.options,
       });
       console.debug(`[ImageCircle] 애니메이션 시작 - idx: ${idx}, 지속시간: ${this.#opts.duration}ms`);
       console.groupEnd();
@@ -386,12 +453,15 @@ export class ImageCircle extends HTMLDivElement {
 
   /**
    * 다음 이미지들 프리로드 (최대 3개)
+   */ /**
+   * 다음 이미지들 프리로드
+   * @private
    */
   #preloadNextImages() {
-    if (this.#preloadedImages.size >= 3 || this.#originalImageIndices.length === 0) return;
+    if (this.#preloadedImages.size >= CACHE.maxPreloadedImages || this.#originalImageIndices.length === 0) return;
 
-    const preloadCount = Math.min(3 - this.#preloadedImages.size, 3);
-    console.debug(`[ImageCircle] 이미지 프리로딩 중 - ${preloadCount}개 (현재 캐시: ${this.#preloadedImages.size}/3)`);
+    const preloadCount = Math.min(CACHE.maxPreloadedImages - this.#preloadedImages.size, CACHE.maxPreloadedImages);
+    console.debug(`[ImageCircle] 이미지 프리로딩 중 - ${preloadCount}개 (현재 캐시: ${this.#preloadedImages.size}/${CACHE.maxPreloadedImages})`);
 
     for (let i = 0; i < preloadCount; i++) {
       // 전체 이미지 인덱스에서 랜덤 선택 (아직 프리로드되지 않은 것만)
@@ -447,19 +517,17 @@ export class ImageCircle extends HTMLDivElement {
       Object.assign(this.image.style, {
         width: imageRemValue + 'rem',
         height: imageRemValue + 'rem',
-      });
-
-      // 클래스 업데이트 최적화
+      }); // 클래스 업데이트 최적화
       const currentClasses = [...this.classList];
-      const classesToRemove = currentClasses.filter((cls) => Object.values(shapeClasses).includes(cls) || Object.values(effectClasses).includes(cls));
+      const classesToRemove = currentClasses.filter((cls) => Object.values(CSS_CLASSES.shapes).includes(cls) || Object.values(CSS_CLASSES.effects).includes(cls));
 
       if (classesToRemove.length > 0) {
         this.classList.remove(...classesToRemove);
         console.debug(`[ImageCircle] 클래스 제거: ${classesToRemove.join(', ')}`);
       }
 
-      if (shapeClasses[this.#opts.shape]) this.classList.add(shapeClasses[this.#opts.shape]);
-      if (effectClasses[this.#opts.effect]) this.classList.add(effectClasses[this.#opts.effect]);
+      if (CSS_CLASSES.shapes[this.#opts.shape]) this.classList.add(CSS_CLASSES.shapes[this.#opts.shape]);
+      if (CSS_CLASSES.effects[this.#opts.effect]) this.classList.add(CSS_CLASSES.effects[this.#opts.effect]);
       this.classList.toggle('event-allow', this.#opts.eventAllow);
 
       console.debug(`[ImageCircle] 스타일 적용 완료 - rem: ${remValue}, 모양: ${this.#opts.shape}, 효과: ${this.#opts.effect}, 이벤트허용: ${this.#opts.eventAllow}`);

@@ -6,14 +6,14 @@ const effectClasses = { emboss: 'emboss', engrave: 'engrave' }; // 효과 클래
 const DEFAULT_OPTIONS = { rem: 10, shape: shapeClasses.circle, effect: effectClasses.emboss, duration: 2000, eventAllow: false }; // 기본 옵션
 
 export class ImageCircle extends HTMLDivElement {
-  #rem = DEFAULT_OPTIONS.rem; // rem 단위 크기
-  #duration = DEFAULT_OPTIONS.duration; // 애니메이션 지속 시간
+  #opts = DEFAULT_OPTIONS; // 옵션
 
   constructor(options = DEFAULT_OPTIONS) {
     super();
     this.classList.add('image-circle', 'flay-div');
     this.image = this.appendChild(document.createElement('div'));
-    this.options = { ...DEFAULT_OPTIONS, ...options };
+
+    this.setOptions(options);
   }
 
   connectedCallback() {
@@ -56,8 +56,8 @@ export class ImageCircle extends HTMLDivElement {
               this.image.style.backgroundImage = `url(${imageURL})`;
               this.image.style.width = randomSize + 'rem';
               this.image.style.height = randomSize + 'rem';
-              this.image.style.margin = (this.#rem - randomSize) / 2 + 'rem';
-              this.image.animate([{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: this.#duration, easing: 'ease-in-out' });
+              this.image.style.margin = (this.#opts.rem - randomSize) / 2 + 'rem';
+              this.image.animate([{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }], { duration: this.#opts.duration, easing: 'ease-in-out' });
             })
             .catch((error) => {
               console.error(`이미지(idx: ${idx})를 가져오는 중 오류 발생:`, error);
@@ -71,7 +71,7 @@ export class ImageCircle extends HTMLDivElement {
 
         const condition = true; // 무한 루프를 위한 조건, 필요에 따라 변경 가능
         do {
-          const randomSize = this.#rem / 2 + Math.floor(Math.random() * (this.#rem - 1)) / 2;
+          const randomSize = this.#opts.rem / 2 + Math.floor(Math.random() * (this.#opts.rem - 1)) / 2;
           showImage(randomSize);
           await new Promise((resolve) => setTimeout(resolve, (5 + (randomSize % 10)) * 1000)); // 이미지 변경 간격만큼 대기
         } while (condition);
@@ -84,16 +84,18 @@ export class ImageCircle extends HTMLDivElement {
   /**
    * @param {{ rem: string; shape: string; effect: string; duration: number; }} opts
    */
-  set options(opts) {
-    this.#rem = opts.rem;
-    this.#duration = opts.duration;
-    this.style.width = opts.rem + 'rem';
-    this.style.height = opts.rem + 'rem';
+  setOptions(opts) {
+    this.#opts = { ...this.#opts, ...opts }; // 기본 옵션과 병합
+
+    this.style.width = this.#opts.rem + 'rem';
+    this.style.height = this.#opts.rem + 'rem';
+    this.image.style.width = this.#opts.rem - 1 + 'rem';
+    this.image.style.height = this.#opts.rem - 1 + 'rem';
 
     this.classList.remove(...Object.values(shapeClasses), ...Object.values(effectClasses));
-    if (shapeClasses[opts.shape]) this.classList.add(shapeClasses[opts.shape]);
-    if (effectClasses[opts.effect]) this.classList.add(effectClasses[opts.effect]);
-    this.classList.toggle('event-allow', opts.eventAllow);
+    if (shapeClasses[this.#opts.shape]) this.classList.add(shapeClasses[this.#opts.shape]);
+    if (effectClasses[this.#opts.effect]) this.classList.add(effectClasses[this.#opts.effect]);
+    this.classList.toggle('event-allow', this.#opts.eventAllow);
   }
 }
 

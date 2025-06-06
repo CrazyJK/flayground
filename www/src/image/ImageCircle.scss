@@ -1,10 +1,6 @@
 :root {
-  --start-color: #fffa;
+  --start-color: var(--color-bg);
   --breathe-color: #f004;
-}
-
-[theme='dark'] {
-  --start-color: #000a;
 }
 
 @keyframes breathe-emboss {

@@ -188,7 +188,7 @@ export class ImageCircle extends HTMLDivElement {
       this.#currentImageURL = URL.createObjectURL(imageBlob);
 
       this.image.dataset.idx = idx;
-      this.image.title = `${name}\n${modified}\n${path}`;
+      this.image.title = `${name}\n${path}\n${modified}`;
 
       // Batch DOM updates to minimize reflow
       requestAnimationFrame(() => {

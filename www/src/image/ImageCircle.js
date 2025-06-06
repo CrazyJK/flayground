@@ -187,8 +187,7 @@ export class ImageCircle extends HTMLDivElement {
 
       this.#currentImageURL = URL.createObjectURL(imageBlob);
 
-      this.dataset.idx = idx;
-      this.dataset.size = randomSize;
+      this.image.dataset.idx = idx;
       this.image.title = `${name}\n${modified}\n${path}`;
 
       // Batch DOM updates to minimize reflow
@@ -197,7 +196,6 @@ export class ImageCircle extends HTMLDivElement {
           backgroundImage: `url(${this.#currentImageURL})`,
           width: randomSize + 'rem',
           height: randomSize + 'rem',
-          margin: (this.#opts.rem - randomSize) / 2 + 'rem',
         });
 
         this.image.animate(ANIMATION.keyframes, { duration: this.#opts.duration, ...ANIMATION.options });

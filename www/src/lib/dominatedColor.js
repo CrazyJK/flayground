@@ -82,8 +82,7 @@ const getRGBAs = (data, ignoreRGBs, offset) => {
  */
 const getContext = (img, width, height) => {
   // 이미지 부모에 존재하는 캔버스를 재사용하거나 새로 생성
-  let canvas = img.parentNode?.querySelector('.dominated-color-canvas');
-
+  let canvas = img.parentNode?.querySelector('.dominated-color-canvas') ?? document.querySelector('.dominated-color-canvas');
   if (!canvas) {
     canvas = document.createElement('canvas');
     canvas.classList.add('dominated-color-canvas');

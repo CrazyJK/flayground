@@ -3,45 +3,37 @@
   --breathe-color: #f004;
 }
 
+/*
+ * Performance optimized animations:
+ * 1. Using will-change to tell browser about properties that will change
+ */
 @keyframes breathe-emboss {
-  0% {
+  0%,
+  100% {
     box-shadow:
       0 0 0.5rem 0.25rem var(--start-color),
       inset 0 0 1rem 0.5rem var(--start-color);
-    opacity: 0.75;
+    border-color: var(--start-color);
   }
   50% {
     box-shadow:
       0 0 0.7rem 0.4rem var(--breathe-color),
       inset 0 0 1.2rem 0.7rem var(--breathe-color);
-    opacity: 0.85;
-  }
-  100% {
-    box-shadow:
-      0 0 0.5rem 0.25rem var(--start-color),
-      inset 0 0 1rem 0.5rem var(--start-color);
-    opacity: 0.75;
+    border-color: var(--breathe-color);
   }
 }
 
 @keyframes breathe-engrave {
-  0% {
-    box-shadow:
-      inset 0 0 0.5rem 0.25rem var(--start-color),
-      inset 0 0 1rem 0.5rem var(--start-color);
-    opacity: 0.75;
-  }
-  50% {
-    box-shadow:
-      inset 0 0 0.7rem 0.4rem var(--start-color),
-      inset 0 0 1.2rem 0.7rem var(--breathe-color);
-    opacity: 0.85;
-  }
+  0%,
   100% {
     box-shadow:
       inset 0 0 0.5rem 0.25rem var(--start-color),
       inset 0 0 1rem 0.5rem var(--start-color);
-    opacity: 0.75;
+  }
+  50% {
+    box-shadow:
+      inset 0 0 0.5rem 0.25rem var(--start-color),
+      inset 0 0 1.2rem 0.7rem var(--breathe-color);
   }
 }
 
@@ -51,13 +43,19 @@
   justify-content: center;
   align-items: center;
 
+  contain: layout style; /* Improve performance by telling browser what will change 렌더링 영역 제한 */
+
   > div {
     animation: breathe-engrave 3s ease-out infinite;
     background: transparent no-repeat center / cover;
+    border: 2px solid var(--start-color);
     border-radius: 50%;
     opacity: 0.75;
     pointer-events: none;
     z-index: -1;
+
+    will-change: box-shadow, border-color; /* Improve animation performance 변경될 속성 미리 알림 */
+    transform: translateZ(0); /* Use hardware acceleration without triggering repaints GPU 가속 활성화 */
   }
 
   &.circle > div {

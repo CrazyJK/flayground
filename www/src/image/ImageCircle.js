@@ -187,15 +187,10 @@ export class ImageCircle extends HTMLDivElement {
       console.debug(`Image information: \n\tName: ${name} \n\tPath: ${path} \n\tDate: ${modified} \n\tSize: ${randomSize}rem`);
 
       this.#currentImageURL = URL.createObjectURL(imageBlob);
-      getDominatedColors(this.#currentImageURL, { scale: 0.5, offset: 16, limit: 1 })
-        .then((colors) => {
-          const rgba = colors.length > 0 ? colors[0].rgba : [255, 0, 0, 0.25];
-          document.documentElement.style.setProperty('--breathe-color', `rgba(${rgba.join(',')})`);
-        })
-        .catch((error) => {
-          console.error('Error fetching dominated colors:', error);
-          this.image.style.backgroundColor = 'transparent'; // 기본 색상 설정
-        });
+      getDominatedColors(this.#currentImageURL, { scale: 0.5, offset: 16, limit: 1 }).then((colors) => {
+        const rgba = colors.length > 0 ? colors[0].rgba : [255, 0, 0, 0.25];
+        document.documentElement.style.setProperty('--breathe-color', `rgba(${rgba.join(',')})`);
+      });
 
       this.dataset.idx = idx;
       this.image.title = `${name}\n${path}\n${modified}`;

@@ -1,4 +1,5 @@
 import { EventCode } from '@/GroundConstant';
+import { getDominatedColors } from '@/lib/dominatedColor';
 import FlayFetch from '@lib/FlayFetch';
 import { getRandomInt } from '@lib/randomNumber';
 import { Countdown, EVENT_COUNTDOWN_END } from '@ui/Countdown';
@@ -28,7 +29,9 @@ img {
   height: auto;
   max-width: 100%;
   max-height: 100%;
-  box-shadow: var(--box-shadow);
+  border-radius: 1px;
+  box-shadow: 0 0 0.5rem 0.25rem var(--dominated-color);
+  transition: box-shadow 0.4s;
 }
 
 footer {
@@ -157,6 +160,8 @@ export class ImageOne extends HTMLElement {
     FlayFetch.getImageSize().then((text) => {
       this.imageSize = Number(text);
       this.#navigator('Space');
+      this.#flowMode.click();
+      this.#countdown.click();
     });
   }
 
@@ -228,6 +233,12 @@ export class ImageOne extends HTMLElement {
     this.#imgPath.textContent = info.path;
     this.#imgName.textContent = info.name;
     this.#imgSize.textContent = `${info.width} x ${info.height}`;
+
+    // dominated color
+    getDominatedColors(this.#flayImage, { scale: 0.5, offset: 16, limit: 1 }).then((colors) => {
+      const rgba = colors.length > 0 ? colors[0].rgba : [255, 0, 0, 0.25];
+      document.documentElement.style.setProperty('--dominated-color', `rgba(${rgba.join(',')})`);
+    });
   }
 }
 

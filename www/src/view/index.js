@@ -10,25 +10,29 @@ class Page {
     import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
       .then(({ ImageCircle }) => new ImageCircle({ rem: 10, effect: 'engrave' }))
       .then((imageCircle) => {
-        imageCircle.style.position = 'fixed';
-        imageCircle.style.right = 0;
-        imageCircle.style.bottom = 0;
+        imageCircle.classList.toggle('right-bottom');
         mainElement.appendChild(imageCircle);
 
-        imageCircle.addEventListener(
-          'click',
-          () => {
-            imageCircle.style.position = 'relative';
-            imageCircle.style.right = 'unset';
-            imageCircle.style.bottom = 'unset';
-            window.dispatchEvent(new Event('resize'));
-          },
-          { once: true }
-        );
+        window.addEventListener('keydown', (e) => {
+          imageCircle.classList.toggle('right-bottom', e.key === 'ArrowDown');
+          window.dispatchEvent(new Event('resize'));
+        });
         window.addEventListener('resize', () => {
-          if (imageCircle.style.position === 'fixed') return; // 고정 위치일 때는 무시
-          const rem = getAvailableRemSize(mainElement);
-          imageCircle.setOptions({ rem: rem, effect: 'emboss', duration: 3000, eventAllow: true });
+          imageCircle.setOptions(
+            imageCircle.classList.contains('right-bottom')
+              ? {
+                  rem: 10,
+                  effect: 'engrave',
+                  duration: 2000,
+                  eventAllow: false,
+                }
+              : {
+                  rem: getAvailableRemSize(mainElement),
+                  effect: 'emboss',
+                  duration: 3000,
+                  eventAllow: true,
+                }
+          );
         });
       });
   }

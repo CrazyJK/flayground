@@ -238,6 +238,10 @@ export default class FlayFetch {
     return Number(await ApiClient.get('/image/size'));
   }
 
+  static async removeImage(idx) {
+    return await ApiClient.delete(`/image/${idx}`);
+  }
+
   static async getStaticImage(idx) {
     const res = await ApiClient.getResponse(`/static/image/${idx}`);
     const name = decodeURIComponent(res.headers.get('Name').replace(/\+/g, ' '));

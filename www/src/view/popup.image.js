@@ -64,13 +64,13 @@ const animateResize = (targetWidth, targetHeight, duration = 100) => {
   requestAnimationFrame(animate);
 };
 
-const handleLoad = (e) => {
+const imageLoadHandler = (e) => {
   const { idx, name, width, height } = e.detail.info;
   document.title = `${idx} - ${name}`;
   animateResize(width, height);
 };
 
-const handleWheel = (e) => {
+const wheelNavigationHandler = (e) => {
   e.preventDefault();
   if (e.deltaY > 0) {
     Go.next();
@@ -79,7 +79,7 @@ const handleWheel = (e) => {
   }
 };
 
-const handleKeyup = (e) => {
+const keyNavigationHandler = (e) => {
   switch (e.code) {
     case 'Space':
       Go.random();
@@ -117,9 +117,9 @@ const imageRemover = async () => {
   max = await FlayFetch.getImageSize();
   idx = parseInt(hashIdx) || getRandomInt(0, max);
 
-  window.addEventListener('wheel', handleWheel, { passive: false });
-  window.addEventListener('keyup', handleKeyup, { passive: true });
-  flayImage.addEventListener('loaded', handleLoad);
+  window.addEventListener('wheel', wheelNavigationHandler, { passive: false });
+  window.addEventListener('keyup', keyNavigationHandler, { passive: true });
+  flayImage.addEventListener('loaded', imageLoadHandler);
   trashBtn.addEventListener('click', imageRemover);
 
   setImageIdx(idx);

@@ -9,6 +9,29 @@ body {
   margin: 0;
   padding: 0;
   overflow: clip;
+
+  .trash-button {
+    position: absolute;
+    top: 0;
+    right: 0;
+    display: none;
+    background-color: transparent;
+    border-radius: 0 0 0 5px;
+    padding: 4px;
+    transition: 0.4s;
+    opacity: 0;
+  }
+
+  &:hover {
+    .trash-button {
+      display: inline-flex;
+      &:hover {
+        background-color: var(--color-bg);
+        color: #951a1a;
+        opacity: 1;
+      }
+    }
+  }
 }
 
 @media (prefers-color-scheme: dark) {

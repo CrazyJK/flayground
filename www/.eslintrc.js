@@ -23,5 +23,30 @@ module.exports = {
       },
     ],
   },
+  overrides: [
+    {
+      files: ['*.ts', '*.tsx'],
+      parser: '@typescript-eslint/parser',
+      plugins: ['@typescript-eslint', 'prettier'],
+      parserOptions: {
+        ecmaVersion: 'latest',
+        sourceType: 'module',
+      },
+      rules: {
+        // Basic TypeScript rules without extending recommended config
+        '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
+        '@typescript-eslint/no-explicit-any': 'warn',
+        '@typescript-eslint/no-inferrable-types': 'off',
+        'no-unused-vars': 'off',
+        // Prettier rules
+        'prettier/prettier': [
+          'error',
+          {
+            endOfLine: 'auto',
+          },
+        ],
+      },
+    },
+  ],
   ignorePatterns: ['node_modules/', 'dist/'],
 };

@@ -9,7 +9,8 @@
     "build": "    cross-env NODE_ENV=production  webpack",
     "build:dev": "cross-env NODE_ENV=development webpack",
     "watch": "    cross-env NODE_ENV=development webpack -w",
-    "lint": "eslint --fix --ext .js src/"
+    "lint": "eslint --fix --ext .js,.ts src/",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@toast-ui/editor": "^3.2.1",
@@ -19,6 +20,9 @@
     "@babel/core": "^7.23.5",
     "@babel/plugin-syntax-dynamic-import": "^7.8.3",
     "@babel/preset-env": "^7.23.5",
+    "@babel/preset-typescript": "^7.23.3",
+    "@typescript-eslint/eslint-plugin": "^6.13.0",
+    "@typescript-eslint/parser": "^6.13.0",
     "autoprefixer": "^10.4.16",
     "babel-loader": "^10.0.0",
     "babel-plugin-transform-remove-console": "^6.9.4",
@@ -44,6 +48,7 @@
     "sass": "^1.51.0",
     "sass-loader": "^16.0.5",
     "terser-webpack-plugin": "^5.3.9",
+    "typescript": "^5.3.2",
     "webpack": "^5.72.0",
     "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^6.0.1",

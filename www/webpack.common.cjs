@@ -67,7 +67,7 @@ module.exports = {
     clean: true,
   },
   resolve: {
-    extensions: ['.js', '.json', '.scss', '.css'],
+    extensions: ['.ts', '.js', '.json', '.scss', '.css'], // .ts 확장자 추가
     alias: {
       '@': path.resolve(__dirname, 'src'),
       '@lib': path.resolve(__dirname, 'src/lib'),
@@ -107,6 +107,35 @@ module.exports = {
   ],
   module: {
     rules: [
+      // TypeScript 파일 처리 규칙 (JavaScript와 병행 사용)
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              cacheDirectory: true,
+              presets: [
+                [
+                  '@babel/preset-env',
+                  {
+                    useBuiltIns: 'usage',
+                    corejs: 3,
+                    modules: false,
+                    targets: {
+                      browsers: ['last 2 Chrome versions', 'last 2 Firefox versions', 'last 2 Safari versions', 'last 2 Edge versions'],
+                    },
+                  },
+                ],
+                '@babel/preset-typescript', // TypeScript 지원 추가
+              ],
+              plugins: process.env.NODE_ENV === 'production' ? [['transform-remove-console', { exclude: ['error', 'warn', 'info'] }]] : [],
+            },
+          },
+        ],
+      },
+      // JavaScript 파일 처리 규칙 (기존 유지)
       {
         test: /\.js$/,
         exclude: /node_modules/,

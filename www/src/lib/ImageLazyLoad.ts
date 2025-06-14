@@ -5,11 +5,11 @@
  */
 
 // 이미지 지연 로딩을 위한 IntersectionObserver 설정
-const backgroundImageObserver = new IntersectionObserver((entries, observer) => {
+const backgroundImageObserver = new IntersectionObserver((entries: IntersectionObserverEntry[], observer: IntersectionObserver) => {
   // entries: 뷰포트에 들어온 요소들의 배열
   entries.forEach((entry) => {
     if (entry.isIntersecting) {
-      const entryTarget = entry.target;
+      const entryTarget: HTMLElement = entry.target as HTMLElement;
       try {
         // 화면에 보이는 요소에 배경 이미지 설정
         entryTarget.style.backgroundImage = `url('${entryTarget.dataset.lazyBackgroundImageUrl}')`;
@@ -28,7 +28,7 @@ const backgroundImageObserver = new IntersectionObserver((entries, observer) => 
 /**
  * 문서 내의 모든 지연 로딩 대상 이미지를 관찰 시작
  */
-export const lazyLoadBackgroundImage = () => {
+export const lazyLoadBackgroundImage = (): void => {
   // 기존 모든 관찰 중단 후 새로 시작
   backgroundImageObserver.disconnect();
 
@@ -42,9 +42,9 @@ export const lazyLoadBackgroundImage = () => {
 
 /**
  * 특정 요소 내의 지연 로딩 대상 이미지를 관찰 시작
- * @param {HTMLElement} element - 이미지를 포함하는 부모 요소
+ * @param element - 이미지를 포함하는 부모 요소
  */
-export const addLazyLoadBackgroundImage = (element) => {
+export const addLazyLoadBackgroundImage = (element: HTMLElement): void => {
   if (!element) {
     console.warn('지연 로딩을 적용할 요소가 없습니다.');
     return;

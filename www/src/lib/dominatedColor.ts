@@ -1,21 +1,63 @@
 /**
- * 회색 RGB 배열 (0-255까지의 모든 회색 색상)
- * @type {Array<Array<number>>}
+ * 이미지에서 주요 색상을 추출하는 유틸리티
+ *
+ * Canvas API를 사용하여 이미지의 픽셀 데이터를 분석하고,
+ * 가장 많이 사용된 색상들을 빈도순으로 반환합니다.
+ *
+ * 특징:
+ * - 성능 최적화를 위한 이미지 스케일링
+ * - 특정 색상(회색 등) 무시 기능
+ * - 색상 그룹화를 통한 유사 색상 병합
+ * - Promise 기반 비동기 처리
+ * - 투명도(알파) 지원
+ *
+ * @author kamoru
+ * @since 2024
  */
-const GREY_RGB_ARRAY = Array.from({ length: 256 }).map((_, i) => [i, i, i]);
+
+/** RGB 색상 타입 (0-255 범위의 세 개 값) */
+type RGBColor = [number, number, number];
+
+/** RGBA 색상 타입 (RGB + 0-1 범위의 알파값) */
+type RGBAColor = [number, number, number, number];
+
+/** 색상 빈도 정보 인터페이스 */
+interface ColorFrequency {
+  /** RGBA 색상 값 */
+  rgba: RGBAColor;
+  /** 해당 색상의 출현 빈도 */
+  count: number;
+}
+
+/** 주요 색상 추출 옵션 인터페이스 */
+interface DominatedColorOptions {
+  /** 이미지 스케일 (0-1 사이, 성능 최적화에 사용) */
+  scale?: number;
+  /** 무시할 RGB 색상 배열 */
+  ignore?: RGBColor[];
+  /** 색상 값 그룹화를 위한 오프셋 */
+  offset?: number;
+  /** 반환할 주요 색상 수 */
+  limit?: number;
+}
+
+/**
+ * 회색 RGB 배열 (0-255까지의 모든 회색 색상)
+ */
+const GREY_RGB_ARRAY: RGBColor[] = Array.from({ length: 256 }).map((_, i) => [i, i, i] as RGBColor);
 
 /**
  * 이미지 데이터에서 RGBA 색상 분포를 추출하는 함수
- * @param {Uint8ClampedArray} data - 이미지 픽셀 데이터
- * @param {Array<Array<number>>} ignoreRGBs - 무시할 RGB 색상 배열
- * @param {number} offset - 색상 값 그룹화를 위한 오프셋
- * @returns {Array<{rgba: Array<number>, count: number}>} - 사용 빈도별로 정렬된 RGBA 색상 배열
+ * @param data 이미지 픽셀 데이터
+ * @param ignoreRGBs 무시할 RGB 색상 배열
+ * @param offset 색상 값 그룹화를 위한 오프셋
+ * @returns 사용 빈도별로 정렬된 RGBA 색상 배열
  */
-const getRGBAs = (data, ignoreRGBs, offset) => {
+const getRGBAs = (data: Uint8ClampedArray, ignoreRGBs: RGBColor[], offset: number): ColorFrequency[] => {
   // 미리 문자열 변환하여 성능 최적화
   const ignoreRgbStrings = new Set(ignoreRGBs.map((i) => i.join(',')));
 
-  const countMap = {};
+  const countMap: Record<string, ColorFrequency> = {};
   const dataLength = data.length;
 
   for (let i = 0; i < dataLength; i += 4) {
@@ -64,7 +106,7 @@ const getRGBAs = (data, ignoreRGBs, offset) => {
       countMap[key].count++;
     } else {
       countMap[key] = {
-        rgba: [finalR, finalG, finalB, normalizedAlpha],
+        rgba: [finalR, finalG, finalB, normalizedAlpha] as RGBAColor,
         count: 1,
       };
     }
@@ -75,14 +117,14 @@ const getRGBAs = (data, ignoreRGBs, offset) => {
 
 /**
  * 이미지용 캔버스 컨텍스트를 가져오는 함수
- * @param {HTMLImageElement} img - 이미지 요소
- * @param {number} width - 캔버스 너비
- * @param {number} height - 캔버스 높이
- * @returns {CanvasRenderingContext2D} - 2D 캔버스 컨텍스트
+ * @param img 이미지 요소
+ * @param width 캔버스 너비
+ * @param height 캔버스 높이
+ * @returns 2D 캔버스 컨텍스트
  */
-const getContext = (img, width, height) => {
+const getContext = (img: HTMLImageElement, width: number, height: number): CanvasRenderingContext2D => {
   // 이미지 부모에 존재하는 캔버스를 재사용하거나 새로 생성
-  let canvas = img.parentNode?.querySelector('.dominated-color-canvas') ?? document.querySelector('.dominated-color-canvas');
+  let canvas = (img.parentNode?.querySelector('.dominated-color-canvas') as HTMLCanvasElement | null) ?? (document.querySelector('.dominated-color-canvas') as HTMLCanvasElement | null);
   if (!canvas) {
     canvas = document.createElement('canvas');
     canvas.classList.add('dominated-color-canvas');
@@ -99,16 +141,21 @@ const getContext = (img, width, height) => {
   canvas.width = width; // 속성 직접 설정이 더 효율적
   canvas.height = height;
 
-  return canvas.getContext('2d', { willReadFrequently: true });
+  const context = canvas.getContext('2d', { willReadFrequently: true });
+  if (!context) {
+    throw new Error('2D 캔버스 컨텍스트를 생성할 수 없습니다');
+  }
+
+  return context;
 };
 
 /**
  * 이미지에서 컨텍스트 이미지 데이터를 추출하는 함수
- * @param {HTMLImageElement} img - 이미지 요소
- * @param {number} scale - 이미지 스케일 (0-1 사이)
- * @returns {Uint8ClampedArray} - 이미지 픽셀 데이터
+ * @param img 이미지 요소
+ * @param scale 이미지 스케일 (0-1 사이)
+ * @returns 이미지 픽셀 데이터
  */
-const getContextImageData = (img, scale) => {
+const getContextImageData = (img: HTMLImageElement, scale: number): Uint8ClampedArray => {
   const width = Math.round(img.width * scale);
   const height = Math.round(img.height * scale);
   const context = getContext(img, width, height);
@@ -118,11 +165,11 @@ const getContextImageData = (img, scale) => {
 
 /**
  * 이미지 URL에서 이미지 데이터를 로드하는 함수
- * @param {string} src - 이미지 URL 또는 데이터 URL
- * @param {number} scale - 이미지 스케일 (0-1 사이)
- * @returns {Promise<Uint8ClampedArray>} - 이미지 픽셀 데이터를 담은 Promise
+ * @param src 이미지 URL 또는 데이터 URL
+ * @param scale 이미지 스케일 (0-1 사이)
+ * @returns 이미지 픽셀 데이터를 담은 Promise
  */
-function getImageData(src, scale) {
+function getImageData(src: string, scale: number): Promise<Uint8ClampedArray> {
   const img = new Image();
 
   // 데이터 URL이 아닌 경우에만 CORS 설정 (data URL에는 설정할 수 없음)
@@ -132,14 +179,14 @@ function getImageData(src, scale) {
   }
 
   return new Promise((resolve, reject) => {
-    const errorHandler = () => reject(new Error('이미지 로드 중 오류가 발생했습니다'));
+    const errorHandler = (): void => reject(new Error('이미지 로드 중 오류가 발생했습니다'));
 
-    img.onload = () => {
+    img.onload = (): void => {
       try {
         const data = getContextImageData(img, scale);
         resolve(data);
       } catch (error) {
-        reject(new Error(`이미지 데이터 추출 중 오류: ${error.message}`));
+        reject(new Error(`이미지 데이터 추출 중 오류: ${(error as Error).message}`));
       }
     };
 
@@ -151,28 +198,18 @@ function getImageData(src, scale) {
 
 /**
  * 이미지에서 주요 색상을 추출하는 함수
- * @param {string|HTMLImageElement} src - 이미지 URL 또는 Image 객체
- * @param {Object} [opts] - 옵션 객체
- * @param {number} [opts.scale=0.5] - 이미지 스케일 (0-1 사이, 성능 최적화에 사용)
- * @param {Array<Array<number>>} [opts.ignore=GREY_RGB_ARRAY] - 무시할 RGB 색상 배열
- * @param {number} [opts.offset=10] - 색상 값 그룹화를 위한 오프셋
- * @param {number} [opts.limit=10] - 반환할 주요 색상 수
- * @returns {Promise<Array<{rgba: Array<number>, count: number}>>} - 주요 색상 배열 (빈도 내림차순)
- * @throws {Error} 입력 오류 또는 처리 오류 시 발생
+ * @param src 이미지 URL 또는 Image 객체
+ * @param opts 옵션 객체
+ * @returns 주요 색상 배열 (빈도 내림차순)
+ * @throws 입력 오류 또는 처리 오류 시 발생
  */
-export async function getDominatedColors(src, opts = {}) {
+export async function getDominatedColors(src: string | HTMLImageElement, opts: DominatedColorOptions = {}): Promise<ColorFrequency[]> {
   if (!src) {
     throw new Error('이미지 소스(src)를 지정해야 합니다');
   }
 
   // 기본 옵션과 사용자 지정 옵션 병합
-  const { scale, ignore, offset, limit } = {
-    scale: 0.5,
-    offset: 10,
-    limit: 10,
-    ignore: GREY_RGB_ARRAY,
-    ...opts,
-  };
+  const { scale = 0.5, ignore = GREY_RGB_ARRAY, offset = 10, limit = 10 } = opts;
 
   // 유효성 검사
   if (scale > 1 || scale <= 0) {
@@ -181,7 +218,7 @@ export async function getDominatedColors(src, opts = {}) {
 
   try {
     // 이미지 데이터 가져오기
-    let imageData;
+    let imageData: Uint8ClampedArray;
     if (typeof src === 'string') {
       imageData = await getImageData(src, scale);
     } else if (src instanceof HTMLImageElement) {

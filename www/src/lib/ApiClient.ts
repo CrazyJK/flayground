@@ -1,3 +1,12 @@
+// Type definitions
+export interface ApiClientOptions {
+  responseType?: 'json' | 'text' | 'blob' | 'arrayBuffer';
+  headers?: Record<string, string>;
+  method?: string;
+  body?: string | FormData | Blob | ArrayBuffer | URLSearchParams | null;
+  [key: string]: unknown;
+}
+
 /**
  * API 요청을 처리하는 유틸리티 클래스
  * 서버에 요청 시 /api/v1 접두어가 자동으로 적용됨
@@ -105,7 +114,16 @@
 export default class ApiClient {
   static #API_URL = '/api/v1'; // API 기본 URL
 
-  static buildUrl(url) {
+  /**
+   * API URL을 완성해주는 헬퍼 메서드
+   *
+   * 주어진 URL이 절대 경로인 경우 API_URL을 붙이지 않음
+   * 상대 경로인 경우 API_URL을 접두어로 붙임
+   * @param url - API 엔드포인트
+   * @param options - fetch 옵션
+   * @returns
+   */
+  static buildUrl(url: string): string {
     // URL이 절대 경로인 경우 API_URL을 붙이지 않음
     if (url.startsWith('http://') || url.startsWith('https://')) {
       return url;
@@ -116,36 +134,36 @@ export default class ApiClient {
   /**
    * GET 요청 보내기
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} options fetch 옵션
-   * @returns {Promise} 응답 Promise
+   * @param url - API 엔드포인트
+   * @param options - fetch 옵션
+   * @returns 응답 Promise
    */
-  static async get(url, options = {}) {
-    return this.#request(url, { method: 'GET', ...options });
+  static async get<T>(url: string, options: ApiClientOptions = {}): Promise<T> {
+    return this.#request<T>(url, { method: 'GET', ...options });
   }
 
   /**
    * GET 요청 보내기 (Response 객체 반환)
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} options fetch 옵션
-   * @returns {Promise<Response>} Response 객체 (헤더 정보 포함)
+   * @param url - API 엔드포인트
+   * @param options - fetch 옵션
+   * @returns Response 객체 (헤더 정보 포함)
    */
-  static async getResponse(url, options = {}) {
-    // Response 객체 자체를 반환
-    return this.#requestAndResponse(url, options);
+  static async getResponse(url: string, options: ApiClientOptions = {}): Promise<Response> {
+    return this.#requestAndResponse(url, options); // Response 객체 자체를 반환
   }
 
   /**
    * HEAD 요청 보내기
+   *
    * 본문 없이 응답 헤더만 반환 (GET과 동일하나 응답 본문이 없음)
    * 리소스의 존재 여부, 크기, 수정 날짜 등 메타데이터 확인 용도
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} options fetch 옵션
-   * @returns {Promise<Response>} Response 객체 (헤더 정보만 포함)
+   * @param url - API 엔드포인트
+   * @param options - fetch 옵션
+   * @returns Response 객체 (헤더 정보만 포함)
    */
-  static async head(url, options = {}) {
+  static async head(url: string, options: ApiClientOptions = {}): Promise<Response> {
     const fetchOptions = {
       method: 'HEAD',
       ...options,
@@ -157,110 +175,110 @@ export default class ApiClient {
   /**
    * POST 요청 보내기
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} data 요청 본문 데이터
-   * @param {Object} options fetch 옵션
-   * @returns {Promise} 응답 Promise
+   * @param url - API 엔드포인트
+   * @param data - 요청 본문 데이터
+   * @param options - fetch 옵션
+   * @returns 응답 Promise
    */
-  static async post(url, data, options = {}) {
+  static async post<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T> {
     const fetchOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
       ...options,
     };
-    return this.#request(url, fetchOptions);
+    return this.#request<T>(url, fetchOptions);
   }
 
   /**
    * PUT 요청 보내기
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} data 요청 본문 데이터
-   * @param {Object} options fetch 옵션
-   * @returns {Promise} 응답 Promise
+   * @param url - API 엔드포인트
+   * @param data - 요청 본문 데이터
+   * @param options - fetch 옵션
+   * @returns 응답 Promise
    */
-  static async put(url, data, options = {}) {
+  static async put<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T> {
     const fetchOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
       ...options,
     };
-    return this.#request(url, fetchOptions);
+    return this.#request<T>(url, fetchOptions);
   }
 
   /**
    * PATCH 요청 보내기
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} data 요청 본문 데이터
-   * @param {Object} options fetch 옵션
-   * @returns {Promise} 응답 Promise
+   * @param url - API 엔드포인트
+   * @param data - 요청 본문 데이터
+   * @param options - fetch 옵션
+   * @returns 응답 Promise
    */
-  static async patch(url, data, options = {}) {
+  static async patch<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T> {
     const fetchOptions = {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
       ...options,
     };
-    return this.#request(url, fetchOptions);
+    return this.#request<T>(url, fetchOptions);
   }
 
   /**
    * DELETE 요청 보내기
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} options fetch 옵션
-   * @returns {Promise} 응답 Promise
+   * @param url - API 엔드포인트
+   * @param options - fetch 옵션
+   * @returns 응답 Promise
    */
-  static async delete(url, options = {}) {
-    return this.#request(url, { method: 'DELETE', ...options });
+  static async delete<T>(url: string, options: ApiClientOptions = {}): Promise<T> {
+    return this.#request<T>(url, { method: 'DELETE', ...options });
   }
 
   /**
    * FormData를 전송하는 POST 요청
    *
-   * @param {string} url API 엔드포인트
-   * @param {FormData} formData FormData 객체
-   * @param {Object} options fetch 옵션
-   * @returns {Promise} 응답 Promise
+   * @param url - API 엔드포인트
+   * @param formData - FormData 객체
+   * @param options - fetch 옵션
+   * @returns 응답 Promise
    */
-  static async postFormData(url, formData, options = {}) {
+  static async postFormData<T>(url: string, formData: FormData, options: ApiClientOptions = {}): Promise<T> {
     const fetchOptions = {
       method: 'POST',
       body: formData,
       ...options,
     };
-    return this.#request(url, fetchOptions);
+    return this.#request<T>(url, fetchOptions);
   }
 
   /**
    * FormData를 전송하는 PUT 요청
    *
-   * @param {string} url API 엔드포인트
-   * @param {FormData} formData FormData 객체
-   * @param {Object} options fetch 옵션
-   * @returns {Promise} 응답 Promise
+   * @param url - API 엔드포인트
+   * @param formData - FormData 객체
+   * @param options - fetch 옵션
+   * @returns 응답 Promise
    */
-  static async putFormData(url, formData, options = {}) {
+  static async putFormData<T>(url: string, formData: FormData, options: ApiClientOptions = {}): Promise<T> {
     const fetchOptions = {
       method: 'PUT',
       body: formData,
       ...options,
     };
-    return this.#request(url, fetchOptions);
+    return this.#request<T>(url, fetchOptions);
   }
 
   /**
    * 공통 요청 처리 메서드
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} options fetch 옵션
-   * @returns {Promise} 응답 Promise
+   * @param url - API 엔드포인트
+   * @param options - fetch 옵션
+   * @returns 응답 Promise
    */
-  static async #request(url, options = {}) {
+  static async #request<T>(url: string, options: ApiClientOptions = {}): Promise<T> {
     const response = await fetch(this.buildUrl(url), options);
 
     // 상태 코드에 따른 처리
@@ -286,25 +304,25 @@ export default class ApiClient {
     const contentType = response.headers.get('Content-Type');
     if (contentType) {
       if (contentType.includes('application/json')) {
-        return await response.json();
+        return (await response.json()) as T;
       } else if (contentType.includes('application/octet-stream') || contentType.includes('image/') || contentType.includes('video/') || options.responseType === 'blob') {
-        return await response.blob();
+        return (await response.blob()) as T;
       }
     }
 
     // 기본값으로 텍스트 반환
-    return await response.text();
+    return (await response.text()) as T;
   }
 
   /**
    * HEAD 요청 전용 처리 메서드
    * 일반 #request와 달리 Response 객체 자체를 반환
    *
-   * @param {string} url API 엔드포인트
-   * @param {Object} options fetch 옵션
-   * @returns {Promise<Response>} Response 객체
+   * @param url - API 엔드포인트
+   * @param options - fetch 옵션
+   * @returns Response 객체
    */
-  static async #requestAndResponse(url, options = {}) {
+  static async #requestAndResponse(url: string, options: ApiClientOptions = {}): Promise<Response> {
     const response = await fetch(this.buildUrl(url), options);
 
     // 상태 코드에 따른 처리

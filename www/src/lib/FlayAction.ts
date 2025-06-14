@@ -1,28 +1,32 @@
-import ApiClient from '@lib/ApiClient';
+import ApiClient, { ApiClientOptions } from '@lib/ApiClient';
+
+// 콜백 함수 타입 정의
+type SuccessCallback<T = unknown> = (data?: T) => void;
+type ErrorCallback = (error?: { message: string; [key: string]: unknown }) => void;
 
 export default {
-  play: (opus, time = -1, callback, failCallback) => {
+  play: (opus: string, time = -1, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/flay/play/' + opus + '?seekTime=' + time, { method: 'PATCH' }, callback, failCallback);
   },
-  editSubtitles: (opus, callback, failCallback) => {
+  editSubtitles: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/flay/edit/' + opus, { method: 'PATCH' }, callback, failCallback);
   },
-  explore: (filepath, callback, failCallback) => {
+  explore: (filepath: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/flay/open/folder', { method: 'PUT', body: filepath }, callback, failCallback);
   },
-  setFavorite: (name, checked, callback, failCallback) => {
+  setFavorite: (name: string, checked: boolean, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/actress/favorite/' + name + '/' + checked, { method: 'PUT' }, callback, failCallback);
   },
-  setRank: (opus, rank, callback, failCallback) => {
+  setRank: (opus: string, rank: number, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/video/rank/' + opus + '/' + rank, { method: 'PUT' }, callback, failCallback);
   },
-  setLike: (opus, callback, failCallback) => {
+  setLike: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/video/like/' + opus, { method: 'PUT' }, callback, failCallback);
   },
-  toggleTag: (opus, tagId, checked, callback, failCallback) => {
+  toggleTag: (opus: string, tagId: number, checked: boolean, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/video/tag/' + opus + '/' + tagId + '/' + checked, { method: 'PUT' }, callback, failCallback);
   },
-  newTag: (tagName, callback, failCallback) => {
+  newTag: (tagName: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/info/tag',
       {
@@ -34,7 +38,7 @@ export default {
       failCallback
     );
   },
-  newTagOnOpus: (tagName, opus, callback, failCallback) => {
+  newTagOnOpus: (tagName: string, opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/info/tag/' + opus,
       {
@@ -46,7 +50,7 @@ export default {
       failCallback
     );
   },
-  updateTag: (tag, callback, failCallback) => {
+  updateTag: (tag: { id: number; name: string; description: string }, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/info/tag',
       {
@@ -58,7 +62,7 @@ export default {
       failCallback
     );
   },
-  putTag: (id, group, name, desc, callback, failCallback) => {
+  putTag: (id: number, group: string, name: string, desc: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/info/tag',
       {
@@ -70,7 +74,7 @@ export default {
       failCallback
     );
   },
-  deleteTag: (id, name, desc, callback, failCallback) => {
+  deleteTag: (id: number, name: string, desc: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/info/tag',
       {
@@ -82,10 +86,10 @@ export default {
       failCallback
     );
   },
-  setComment: (opus, comment, callback, failCallback) => {
+  setComment: (opus: string, comment: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/video/comment/' + opus, { method: 'PUT', body: comment + ' ' }, callback, failCallback);
   },
-  renameFlay: (studio, opus, title, actress, release, callback, failCallback) => {
+  renameFlay: (studio: string, opus: string, title: string, actress: string, release: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/flay/rename/' + opus,
       {
@@ -97,7 +101,7 @@ export default {
       failCallback
     );
   },
-  putActress: (actress, callback, failCallback) => {
+  putActress: (actress: { name: string; localName?: string; birth?: string; debut?: string; height?: number; cup?: string }, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/info/actress',
       {
@@ -109,7 +113,7 @@ export default {
       failCallback
     );
   },
-  putStudio: (studio, callback, failCallback) => {
+  putStudio: (studio: { name: string; homepage?: string }, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/info/studio',
       {
@@ -121,31 +125,31 @@ export default {
       failCallback
     );
   },
-  listOfStudio: (callback, failCallback) => {
+  listOfStudio: (callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/flay/list/studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: 'STUDIO' }) }, callback, failCallback);
   },
-  putVideo: (video, callback, failCallback) => {
+  putVideo: (video: { opus: string; rank?: number; comment?: string }, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/video', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(video) }, callback, failCallback);
   },
-  reload: (callback, failCallback) => {
+  reload: (callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/batch/reload', { method: 'PUT' }, callback, failCallback);
   },
-  batch: (operation, callback, failCallback) => {
+  batch: (operation: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/batch/start/' + operation, { method: 'PUT' }, callback, failCallback);
   },
-  batchSetOption: (option, callback, failCallback) => {
+  batchSetOption: (option: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/batch/option/' + option, { method: 'PUT' }, callback, failCallback);
   },
-  batchGetOption: (type, callback, failCallback) => {
+  batchGetOption: (type: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/batch/option/' + type, { method: 'GET' }, callback, failCallback);
   },
-  acceptCandidates: (opus, callback, failCallback) => {
+  acceptCandidates: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/flay/candidates/' + opus, { method: 'PATCH' }, callback, failCallback);
   },
-  updateActress: (actress, callback, failCallback) => {
+  updateActress: (actress: { name: string; localName?: string; birth?: string; debut?: string; height?: number; cup?: string }, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/actress', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(actress) }, callback, failCallback);
   },
-  subtitlesUrlIfFound: (opus, callback, failCallback) => {
+  subtitlesUrlIfFound: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/file/find/exists/subtitles?opus=' + opus, {}, callback, failCallback);
   },
 };
@@ -153,12 +157,12 @@ export default {
 /**
  * fetch action
  *
- * @param {RequestInfo | URL} url
- * @param {RequestInit} requestInit
- * @param {function} callback
- * @param {function} failCallback
+ * @param url - API 엔드포인트 URL
+ * @param requestInit - fetch 요청 옵션
+ * @param callback - 성공 시 콜백 함수
+ * @param failCallback - 실패 시 콜백 함수
  */
-async function action(url, requestInit, callback = () => {}, failCallback = () => {}) {
+async function action(url: string, requestInit: ApiClientOptions, callback: SuccessCallback = () => {}, failCallback: ErrorCallback = () => {}): Promise<void> {
   const response = await ApiClient.getResponse(url, requestInit);
   console.debug(url, response.ok, response.status, response);
 

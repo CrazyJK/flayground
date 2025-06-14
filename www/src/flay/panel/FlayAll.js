@@ -1,5 +1,5 @@
 import FlayFetch from '@lib/FlayFetch';
-import { popupActress, popupFlay } from '../../lib/FlaySearch.js';
+import { popupActress, popupFlay } from '@lib/FlaySearch';
 
 /**
  * FlayAll - 플레이 목록을 표시하는 커스텀 엘리먼트

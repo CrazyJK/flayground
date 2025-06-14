@@ -74,6 +74,9 @@
   &.engrave > div {
     animation-name: breathe-engrave;
   }
+  &.breathe-stop > div {
+    animation-play-state: paused;
+  }
   &.event-allow > div {
     pointer-events: all;
     z-index: auto;

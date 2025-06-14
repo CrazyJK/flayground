@@ -83,6 +83,7 @@ export class ImageCircle extends HTMLDivElement {
       const centerY = window.screenY + window.innerHeight / 2 - h / 2;
       const idx = this.dataset.idx || 0; // 현재 이미지 인덱스
       window.open(`popup.image.html#${idx}`, `image${idx}`, `top=${centerY},left=${centerX},width=${w}px,height=${h}px`);
+      this.#resumeAnimation();
     });
 
     this.image.addEventListener('mouseenter', () => {
@@ -102,6 +103,7 @@ export class ImageCircle extends HTMLDivElement {
   #pauseAnimation() {
     if (!this.#timeoutId) return;
 
+    this.classList.add('breathe-stop');
     clearTimeout(this.#timeoutId);
 
     const elapsedTime = Date.now() - this.#pauseStartTime; // Calculate the remaining time of current timer
@@ -117,6 +119,8 @@ export class ImageCircle extends HTMLDivElement {
    */
   #resumeAnimation() {
     if (!this.#isPaused) return;
+
+    this.classList.remove('breathe-stop');
 
     const resumeDelay = this.#pausedDelay > 0 ? this.#pausedDelay : TIMING.resumeMinDelay; // Wait for remaining time or minimum delay before showing next image
     this.#pauseStartTime = Date.now();

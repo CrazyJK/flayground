@@ -193,7 +193,7 @@ export class ImagePage extends HTMLDivElement {
     images.forEach((image) => {
       const item = article.appendChild(document.createElement('div'));
       item.dataset.lazyBackgroundImageUrl = ApiClient.buildUrl(`/static/image/${image.idx}`);
-      item.title = `#${image.idx} - ${image.name} - ${FileUtils.prettySize(image.length).join(' ')} - ${DateUtils.format(image.modified, 'yyyy-MM-dd')}`;
+      item.title = `#${image.idx} - ${image.name} - ${FileUtils.formatSize(image.length)} - ${DateUtils.format(image.modified, 'yyyy-MM-dd')}`;
       item.addEventListener('click', () => {
         imageFrame.set(image.idx);
         previewLayer && previewLayer.classList.add('show');

@@ -22,7 +22,7 @@ type RGBColor = [number, number, number];
 type RGBAColor = [number, number, number, number];
 
 /** 색상 빈도 정보 인터페이스 */
-interface ColorFrequency {
+export interface ColorFrequency {
   /** RGBA 색상 값 */
   rgba: RGBAColor;
   /** 해당 색상의 출현 빈도 */

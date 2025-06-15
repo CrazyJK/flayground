@@ -7,7 +7,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 // 엔트리 포인트 그룹화
 const entryPoints = {
   core: {
-    index: './src/view/index.js',
+    index: './src/view/index.ts',
     style: './src/view/style.js',
     test: './src/view/test.js',
     'dependencies-viewer': './src/view/dependencies-viewer.js',

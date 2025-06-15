@@ -3,28 +3,49 @@
  *
  * @version 2.1.0
  */
-import { getDominatedColors } from '@/lib/dominatedColor';
-import FlayFetch from '@lib/FlayFetch';
+import { ColorFrequency, getDominatedColors } from '@/lib/dominatedColor';
+import FlayFetch, { ImageInfo } from '@lib/FlayFetch';
 import './imageCircle.scss';
 
+// 타입 정의
+export type ShapeType = 'circle' | 'square' | 'rounded';
+export type EffectType = 'emboss' | 'engrave';
+
+/**
+ *  이미지 원형 표시 옵션 인터페이스
+ * - rem: 이미지 크기 (rem 단위)
+ * - shape: 이미지 모양 (circle, square, rounded 중 하나)
+ * - effect: 이미지 효과 (emboss, engrave 중 하나)
+ * - duration: 애니메이션 지속 시간 (ms)
+ * - eventAllow: 이벤트 허용 여부
+ */
+export interface ImageCircleOptions {
+  rem: number;
+  shape: ShapeType;
+  effect: EffectType;
+  duration: number;
+  eventAllow: boolean;
+}
+
 const CSS_CLASSES = {
-  base: ['image-circle', 'flay-div'],
-  shapes: { circle: 'circle', square: 'square', rounded: 'rounded' },
-  effects: { emboss: 'emboss', engrave: 'engrave' },
-};
+  base: ['image-circle', 'flay-div'] as const,
+  shapes: { circle: 'circle', square: 'square', rounded: 'rounded' } as const,
+  effects: { emboss: 'emboss', engrave: 'engrave' } as const,
+  event: 'event-allow' as const,
+} as const;
 
 const ANIMATION = {
   keyframes: [{ transform: 'scale(0.1)' }, { transform: 'scale(1.05)' }, { transform: 'scale(1)' }],
   options: { easing: 'ease-in-out' },
-};
+} as const;
 
 const TIMING = {
   minDelay: 5000, // Minimum delay time (ms)
   delayMultiplier: 1000, // Delay multiplier
   resumeMinDelay: 100, // Minimum delay time for resuming animation (ms)
-};
+} as const;
 
-const DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS: ImageCircleOptions = {
   rem: 10,
   shape: CSS_CLASSES.shapes.circle,
   effect: CSS_CLASSES.effects.emboss,
@@ -62,7 +83,10 @@ export class ImageCircle extends HTMLDivElement {
   /** 이미지 요소 */
   image: HTMLDivElement | null = null;
 
-  constructor(options = DEFAULT_OPTIONS) {
+  static shapeTypes = CSS_CLASSES.shapes;
+  static effectTypes = CSS_CLASSES.effects;
+
+  constructor(options: Partial<ImageCircleOptions> = {}) {
     super();
 
     this.classList.add(...CSS_CLASSES.base);
@@ -187,11 +211,11 @@ export class ImageCircle extends HTMLDivElement {
       const idx = this.#imageIndices.splice(randomIndex, 1)[0];
       console.debug(`Image index: ${idx}, Remaining indices: ${this.#imageIndices.length}`);
 
-      const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(idx);
+      const { name, path, modified, imageBlob }: ImageInfo = await FlayFetch.getStaticImage(idx);
       console.debug(`Image information: \n\tName: ${name} \n\tPath: ${path} \n\tDate: ${modified} \n\tSize: ${randomSize}rem`);
 
       this.#currentImageURL = URL.createObjectURL(imageBlob);
-      getDominatedColors(this.#currentImageURL, { scale: 0.5, offset: 16, limit: 1 }).then((colors) => {
+      getDominatedColors(this.#currentImageURL, { scale: 0.5, offset: 16, limit: 1 }).then((colors: ColorFrequency[]) => {
         const rgba = colors.length > 0 ? colors[0].rgba : [255, 0, 0, 0.25];
         document.documentElement.style.setProperty('--breathe-color', `rgba(${rgba.join(',')})`);
       });
@@ -207,7 +231,7 @@ export class ImageCircle extends HTMLDivElement {
           height: randomSize + 'rem',
         });
 
-        this.image.animate(ANIMATION.keyframes, { duration: this.#opts.duration, ...ANIMATION.options });
+        this.image.animate([...ANIMATION.keyframes], { duration: this.#opts.duration, ...ANIMATION.options });
       });
     } catch (error) {
       console.error('[ImageCircle] Error while displaying image:', error);
@@ -223,9 +247,9 @@ export class ImageCircle extends HTMLDivElement {
 
   /**
    * Set options
-   * @param {DEFAULT_OPTIONS} opts
+   * @param opts - 설정할 옵션들
    */
-  setOptions(opts: Partial<typeof DEFAULT_OPTIONS> = {}): void {
+  setOptions(opts: Partial<ImageCircleOptions> = {}): void {
     console.debug('[ImageCircle] Setting options:', opts);
     this.#opts = { ...this.#opts, ...opts }; // Merge with default options
 
@@ -243,14 +267,16 @@ export class ImageCircle extends HTMLDivElement {
 
       // Optimize class updates
       const currentClasses = [...this.classList];
-      const classesToRemove = currentClasses.filter((cls) => Object.values(CSS_CLASSES.shapes).includes(cls) || Object.values(CSS_CLASSES.effects).includes(cls));
+      const shapeClasses = Object.values(CSS_CLASSES.shapes) as string[];
+      const effectClasses = Object.values(CSS_CLASSES.effects) as string[];
+      const classesToRemove = currentClasses.filter((cls) => shapeClasses.includes(cls) || effectClasses.includes(cls));
       if (classesToRemove.length > 0) {
         this.classList.remove(...classesToRemove);
       }
 
-      if (CSS_CLASSES.shapes[this.#opts.shape]) this.classList.add(CSS_CLASSES.shapes[this.#opts.shape]);
-      if (CSS_CLASSES.effects[this.#opts.effect]) this.classList.add(CSS_CLASSES.effects[this.#opts.effect]);
-      this.classList.toggle('event-allow', this.#opts.eventAllow);
+      this.classList.add(CSS_CLASSES.shapes[this.#opts.shape]);
+      this.classList.add(CSS_CLASSES.effects[this.#opts.effect]);
+      this.classList.toggle(CSS_CLASSES.event, this.#opts.eventAllow);
 
       console.debug(`[ImageCircle] Style applied \n\trem: ${this.#opts.rem} \n\tshape: ${this.#opts.shape} \n\teffect: ${this.#opts.effect} \n\tevent allowed: ${this.#opts.eventAllow} \n\tduration: ${this.#opts.duration}ms`);
     });

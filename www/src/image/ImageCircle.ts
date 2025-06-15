@@ -44,23 +44,23 @@ export class ImageCircle extends HTMLDivElement {
   /** 옵션 설정 */
   #opts = DEFAULT_OPTIONS;
   /** 컴포넌트 활성 상태 */
-  #isActive = false;
+  #isActive: boolean = false;
   /** 타이머 ID */
-  #timeoutId = null;
+  #timeoutId: ReturnType<typeof setTimeout> | null = null;
   /** 현재 이미지 URL */
-  #currentImageURL = null;
+  #currentImageURL: string | null = null;
   /** 이미지 인덱스 배열 */
-  #imageIndices = [];
+  #imageIndices: number[] = [];
   /** 마우스 오버로 인한 일시정지 상태 */
-  #isPaused = false;
+  #isPaused: boolean = false;
   /** 일시정지 시 남은 지연 시간 */
-  #pausedDelay = 0;
+  #pausedDelay: number = 0;
   /** 타이머 시작 시간 */
-  #pauseStartTime = 0;
+  #pauseStartTime: number = 0;
   /** image length */
-  #imageLength = 0;
+  #imageLength: number = 0;
   /** 이미지 요소 */
-  image = null;
+  image: HTMLDivElement | null = null;
 
   constructor(options = DEFAULT_OPTIONS) {
     super();
@@ -70,18 +70,18 @@ export class ImageCircle extends HTMLDivElement {
     this.setOptions(options);
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     this.#initializeEventHandlers();
     this.start();
   }
 
-  #initializeEventHandlers() {
-    this.image.addEventListener('click', (e) => {
+  #initializeEventHandlers(): void {
+    this.image.addEventListener('click', (e: MouseEvent) => {
       e.stopPropagation(); // 이벤트 전파 방지
       const [w, h] = [100, 100]; // 팝업 크기 (100px x 100px)
       const centerX = window.screenX + window.innerWidth / 2 - w / 2;
       const centerY = window.screenY + window.innerHeight / 2 - h / 2;
-      const idx = this.dataset.idx || 0; // 현재 이미지 인덱스
+      const idx = parseInt(this.dataset.idx || '0', 10); // 현재 이미지 인덱스
       window.open(`popup.image.html#${idx}`, `image${idx}`, `top=${centerY},left=${centerX},width=${w}px,height=${h}px`);
       this.#resumeAnimation();
     });
@@ -100,7 +100,7 @@ export class ImageCircle extends HTMLDivElement {
   /**
    * 애니메이션 일시정지
    */
-  #pauseAnimation() {
+  #pauseAnimation(): void {
     if (!this.#timeoutId) return;
 
     this.classList.add('breathe-stop');
@@ -117,7 +117,7 @@ export class ImageCircle extends HTMLDivElement {
   /**
    * 애니메이션 재개
    */
-  #resumeAnimation() {
+  #resumeAnimation(): void {
     if (!this.#isPaused) return;
 
     this.classList.remove('breathe-stop');
@@ -131,7 +131,7 @@ export class ImageCircle extends HTMLDivElement {
     console.debug(`[ImageCircle] Animation resumed - Next image will be displayed after ${resumeDelay}ms`);
   }
 
-  async start() {
+  async start(): Promise<void> {
     if (this.#isActive) return; // 이미 활성화된 경우 중복 실행 방지
     this.#isActive = true;
 
@@ -152,7 +152,7 @@ export class ImageCircle extends HTMLDivElement {
   /**
    * 다음 이미지 표시
    */
-  #scheduleNextImage() {
+  #scheduleNextImage(): void {
     if (!this.#isActive) return;
 
     const getRandomSize = () => {
@@ -170,7 +170,7 @@ export class ImageCircle extends HTMLDivElement {
     this.#timeoutId = setTimeout(() => this.#scheduleNextImage(), delay);
   }
 
-  async #showImage(randomSize) {
+  async #showImage(randomSize: number): Promise<void> {
     console.group('[ImageCircle] show image');
     try {
       if (this.#currentImageURL) {
@@ -196,7 +196,7 @@ export class ImageCircle extends HTMLDivElement {
         document.documentElement.style.setProperty('--breathe-color', `rgba(${rgba.join(',')})`);
       });
 
-      this.dataset.idx = idx;
+      this.dataset.idx = String(idx);
       this.image.title = `${name}\n${path}\n${modified}`;
 
       // Batch DOM updates to minimize reflow
@@ -225,7 +225,7 @@ export class ImageCircle extends HTMLDivElement {
    * Set options
    * @param {DEFAULT_OPTIONS} opts
    */
-  setOptions(opts) {
+  setOptions(opts: Partial<typeof DEFAULT_OPTIONS> = {}): void {
     console.debug('[ImageCircle] Setting options:', opts);
     this.#opts = { ...this.#opts, ...opts }; // Merge with default options
 

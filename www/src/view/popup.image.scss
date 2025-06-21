@@ -17,17 +17,31 @@ body {
     display: none;
     background-color: transparent;
     border-radius: 0 0 0 5px;
+    color: #951a1a;
+    padding: 4px;
+    transition: 0.4s;
+    opacity: 0;
+  }
+
+  .open-button {
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: none;
+    background-color: transparent;
+    border-radius: 0 0 0 5px;
+    color: var(--color-orange);
     padding: 4px;
     transition: 0.4s;
     opacity: 0;
   }
 
   &:hover {
-    .trash-button {
+    .trash-button,
+    .open-button {
       display: inline-flex;
       &:hover {
         background-color: var(--color-bg);
-        color: #951a1a;
         opacity: 1;
       }
     }

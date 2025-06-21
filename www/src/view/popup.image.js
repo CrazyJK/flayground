@@ -1,6 +1,8 @@
+import FlayAction from '@/lib/FlayAction';
 import FlayImage from '@image/part/FlayImage';
 import FlayFetch from '@lib/FlayFetch';
 import { getRandomInt } from '@lib/randomNumber';
+import folderSVG from '@svg/folder';
 import trashBin from '@svg/trashBin';
 import './popup.image.scss';
 
@@ -8,6 +10,10 @@ const flayImage = document.body.appendChild(new FlayImage());
 const trashBtn = document.body.appendChild(document.createElement('button'));
 trashBtn.classList.add('trash-button');
 trashBtn.innerHTML = trashBin;
+
+const openBtn = document.body.appendChild(document.createElement('button'));
+openBtn.classList.add('open-button');
+openBtn.innerHTML = folderSVG;
 
 let [idx, max] = [0, 0];
 
@@ -111,6 +117,10 @@ const imageRemover = async () => {
   }
 };
 
+const folderOpener = () => {
+  FlayAction.explore(flayImage.dataset.path);
+};
+
 (async () => {
   const hashIdx = new URL(location.href).hash.substring(1);
 
@@ -121,6 +131,7 @@ const imageRemover = async () => {
   window.addEventListener('keyup', keyNavigationHandler, { passive: true });
   flayImage.addEventListener('loaded', imageLoadHandler);
   trashBtn.addEventListener('click', imageRemover);
+  openBtn.addEventListener('click', folderOpener);
 
   setImageIdx(idx);
 })();

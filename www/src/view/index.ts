@@ -8,7 +8,6 @@ import './index.scss';
  * ImageCircle 컴포넌트를 관리하고 키보드 및 윈도우 이벤트를 처리합니다.
  */
 class Page {
-  constructor() {}
   /**
    * 페이지 초기화 및 ImageCircle 컴포넌트 설정
    */

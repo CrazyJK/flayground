@@ -1,5 +1,5 @@
-import FlayAction from '@/lib/FlayAction';
 import FlayImage from '@image/part/FlayImage';
+import FlayAction from '@lib/FlayAction';
 import FlayFetch from '@lib/FlayFetch';
 import { getRandomInt } from '@lib/randomNumber';
 import folderSVG from '@svg/folder';

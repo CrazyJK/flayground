@@ -3,7 +3,7 @@
  *
  * @version 2.1.0
  */
-import { ColorFrequency, getDominatedColors } from '@/lib/dominatedColor';
+import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageInfo } from '@lib/FlayFetch';
 import './imageCircle.scss';
 

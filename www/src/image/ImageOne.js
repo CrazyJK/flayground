@@ -1,5 +1,5 @@
 import { EventCode } from '@/GroundConstant';
-import { getDominatedColors } from '@/lib/dominatedColor';
+import { getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch from '@lib/FlayFetch';
 import { getRandomInt } from '@lib/randomNumber';
 import { Countdown, EVENT_COUNTDOWN_END } from '@ui/Countdown';

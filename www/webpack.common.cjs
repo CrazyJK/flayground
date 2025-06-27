@@ -8,7 +8,7 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const entryPoints = {
   core: {
     index: './src/view/index.ts',
-    style: './src/view/style.js',
+    style: './src/view/style.ts',
     test: './src/view/test.js',
     'dependencies-viewer': './src/view/dependencies-viewer.js',
   },

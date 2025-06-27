@@ -16,7 +16,7 @@ export interface FullyFlay {
 
 export interface FlayFiles {
   cover: string[];
-  subtitle: string[];
+  subtitles: string[];
   candidate: string[];
   movie: string[];
 }

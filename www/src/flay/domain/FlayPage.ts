@@ -8,13 +8,24 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Actress, Flay, FullyFlay } from '@lib/FlayFetch';
 import './FlayPage.scss';
 
 export default class FlayPage extends HTMLDivElement {
-  opus = null;
-  flay = null;
-  actress = null;
+  flayStudio: FlayStudio;
+  flayOpus: FlayOpus;
+  flayComment: FlayComment;
+  flayTitle: FlayTitle;
+  flayCover: FlayCover;
+  flayActress: FlayActress;
+  flayRelease: FlayRelease;
+  flayRank: FlayRank;
+  flayFiles: FlayFiles;
+  flayTag: FlayTag;
+
+  opus: string;
+  flay: Flay;
+  actress: Actress[];
 
   constructor() {
     super();
@@ -35,12 +46,12 @@ export default class FlayPage extends HTMLDivElement {
   }
 
   /**
-   *
-   * @param {string} opus
-   * @param {boolean} reload
-   * @returns
+   * Flay 데이터를 설정하고 각 컴포넌트에 적용합니다.
+   * @param opus 작품 번호
+   * @param reload 데이터 재로드 여부
+   * @returns Promise<FullyFlay> Flay와 Actress 데이터
    */
-  async set(opus, reload) {
+  async set(opus: string, reload: boolean): Promise<FullyFlay> {
     this.opus = opus;
     this.setAttribute('opus', opus);
 
@@ -48,25 +59,27 @@ export default class FlayPage extends HTMLDivElement {
     this.flay = flay;
     this.actress = actress;
 
-    this.flayStudio.set(flay, reload);
-    this.flayOpus.set(flay, reload);
-    this.flayComment.set(flay, reload);
-    this.flayTitle.set(flay, reload);
-    this.flayCover.set(flay, reload);
-    this.flayActress.set(flay, actress, reload);
-    this.flayRelease.set(flay, reload);
-    this.flayRank.set(flay, reload);
-    this.flayFiles.set(flay, reload);
+    this.flayStudio.set(flay);
+    this.flayOpus.set(flay);
+    this.flayComment.set(flay);
+    this.flayTitle.set(flay);
+    this.flayCover.set(flay);
+    this.flayActress.set(flay, actress);
+    this.flayRelease.set(flay);
+    this.flayRank.set(flay);
+    this.flayFiles.set(flay);
     this.flayTag.set(flay, reload);
 
     return { flay, actress };
   }
 
   /**
-   * reload data
+   * 현재 설정된 작품 데이터를 다시 로드합니다.
    */
-  reload() {
-    this.set(this.opus, true);
+  reload(): void {
+    if (this.opus) {
+      this.set(this.opus, true);
+    }
   }
 }
 

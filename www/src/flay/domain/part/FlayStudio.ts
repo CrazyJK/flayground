@@ -1,3 +1,4 @@
+import { Flay } from '@lib/FlayFetch';
 import { popupStudio } from '@lib/FlaySearch';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayStudio.scss';
@@ -22,7 +23,7 @@ export default class FlayStudio extends FlayHTMLElement {
    *
    * @param {Flay} flay
    */
-  set(flay) {
+  set(flay: Flay): void {
     this.setFlay(flay);
 
     this.querySelector('a').textContent = flay.studio;

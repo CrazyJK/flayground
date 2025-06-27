@@ -1,4 +1,5 @@
 import DateUtils from '@lib/DateUtils';
+import { Flay } from '@lib/FlayFetch';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayRelease.scss';
 
@@ -24,9 +25,9 @@ export default class FlayRelease extends FlayHTMLElement {
 
   /**
    *
-   * @param {Flay} flay
+   * @param flay
    */
-  set(flay) {
+  set(flay: Flay): void {
     this.setFlay(flay);
 
     const shotLength = flay.video.likes?.length || 0;

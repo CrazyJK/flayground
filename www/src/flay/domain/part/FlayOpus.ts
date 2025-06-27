@@ -1,3 +1,4 @@
+import { Flay } from '@lib/FlayFetch';
 import FlaySearch, { popupFlayInfo } from '@lib/FlaySearch';
 import basketSVG from '@svg/basket';
 import jsonSVG from '@svg/json';
@@ -33,9 +34,9 @@ export default class FlayOpus extends FlayHTMLElement {
 
   /**
    *
-   * @param {Flay} flay
+   * @param flay
    */
-  set(flay) {
+  set(flay: Flay): void {
     this.setFlay(flay);
 
     this.querySelector('a').innerHTML = flay.opus;

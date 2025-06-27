@@ -1,5 +1,5 @@
 import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
 import rankSVG from '@svg/ranks';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayRank.scss';
@@ -24,8 +24,13 @@ export default class FlayRank extends FlayHTMLElement {
       <label class="score-label notyet"><span>Score</span><i class="badge score">0</i></label>
     `;
 
-    this.querySelectorAll('.rank-group input').forEach((rankRadio) => rankRadio.addEventListener('change', (e) => FlayAction.setRank(this.flay.opus, e.target.value)));
-    this.querySelector('.like-btn').addEventListener('click', (e) => FlayAction.setLike(this.flay.opus));
+    this.querySelectorAll('.rank-group input').forEach((rankRadio) =>
+      rankRadio.addEventListener('change', (e) => {
+        const target = e.target as HTMLInputElement;
+        FlayAction.setRank(this.flay.opus, parseInt(target.value));
+      })
+    );
+    this.querySelector('.like-btn').addEventListener('click', () => FlayAction.setLike(this.flay.opus));
   }
 
   connectedCallback() {
@@ -34,39 +39,44 @@ export default class FlayRank extends FlayHTMLElement {
 
   /**
    *
-   * @param {Flay} flay
+   * @param flay
    */
-  set(flay) {
+  set(flay: Flay): void {
     this.setFlay(flay);
 
-    this.querySelector('#flay-rank' + flay.video.rank).checked = true;
-    this.querySelector('.rank-label').classList.toggle('notyet', flay.video.rank < 1);
-    this.querySelector('.rank').innerHTML = flay.video.rank;
-
+    const flayRank = this.querySelector('#flay-rank' + flay.video.rank) as HTMLInputElement;
+    const playLabel = this.querySelector('.play-label') as HTMLLabelElement;
+    const rankLabel = this.querySelector('.rank-label') as HTMLLabelElement;
+    const scoreLabel = this.querySelector('.score-label') as HTMLLabelElement;
+    const likeBtn = this.querySelector('.like-btn') as HTMLButtonElement;
     const likeCount = flay.video.likes?.length || 0;
-    const likeHistories =
+
+    flayRank.checked = true;
+
+    rankLabel.classList.toggle('notyet', flay.video.rank < 1);
+    rankLabel.querySelector('.rank').innerHTML = String(flay.video.rank);
+
+    likeBtn.querySelector('.shot').innerHTML = String(likeCount);
+    likeBtn.classList.toggle('notyet', likeCount === 0);
+    likeBtn.title =
       flay.video.likes
         ?.reverse()
         .map((like) => like.substring(0, 16).replace(/T/, ' '))
         .join(`\n`) || '';
 
-    this.querySelector('.shot').innerHTML = likeCount;
-    this.querySelector('.like-btn').classList.toggle('notyet', likeCount === 0);
-    this.querySelector('.like-btn').title = likeHistories;
-
-    this.querySelector('.play').innerHTML = flay.video.play;
-    this.querySelector('.play-label').classList.toggle('notyet', flay.video.play === 0);
+    playLabel.querySelector('.play').innerHTML = String(flay.video.play);
+    playLabel.classList.toggle('notyet', flay.video.play === 0);
     FlayFetch.getHistories(this.flay.opus).then((histories) => {
-      this.querySelector('.play-label').title = Array.from(histories)
+      playLabel.title = Array.from(histories)
         .filter((history) => history.action === 'PLAY')
         .map((history) => history.date.substring(0, 16))
         .join(`\n`);
     });
 
-    if (!flay.archive)
+    !flay.archive &&
       FlayFetch.getScore(flay.opus).then((score) => {
-        this.querySelector('.score').innerHTML = score;
-        this.querySelector('.score-label').classList.toggle('notyet', score === 0);
+        scoreLabel.querySelector('.score').innerHTML = String(score);
+        scoreLabel.classList.toggle('notyet', score === 0);
       });
   }
 }

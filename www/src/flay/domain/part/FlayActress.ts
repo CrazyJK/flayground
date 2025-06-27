@@ -1,5 +1,5 @@
 import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
 import { popupActress, popupActressInfo } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import favoriteSVG from '@svg/favorite';
@@ -20,10 +20,10 @@ export default class FlayActress extends FlayHTMLElement {
 
   /**
    *
-   * @param {Flay} flay
-   * @param {Actress[]} actressList
+   * @param flay
+   * @param actressList
    */
-  async set(flay, actressList) {
+  async set(flay: Flay, actressList: Actress[]): Promise<void> {
     this.setFlay(flay);
 
     this.textContent = null;
@@ -39,8 +39,9 @@ export default class FlayActress extends FlayHTMLElement {
         input.type = 'checkbox';
         input.checked = actress.favorite;
         input.addEventListener('change', (e) => {
-          console.log('favoriteChange', e.target.checked, actress.name);
-          FlayAction.setFavorite(actress.name, e.target.checked);
+          const target = e.target as HTMLInputElement;
+          console.log('favoriteChange', target.checked, actress.name);
+          FlayAction.setFavorite(actress.name, target.checked);
         });
         const label = favoriteElement.appendChild(document.createElement('label'));
         label.setAttribute('for', 'fav' + index);
@@ -103,7 +104,7 @@ export default class FlayActress extends FlayHTMLElement {
 
 defineCustomElements('flay-actress', FlayActress);
 
-function toInchBody(body) {
+function toInchBody(body: string | null): string {
   if (body === null || body.trim() === '') {
     return '';
   }
@@ -113,5 +114,5 @@ function toInchBody(body) {
   let w = parts[1]?.trim();
   let h = parts[2]?.trim();
 
-  return Math.round(b / 2.54) + c + '-' + Math.round(w / 2.54) + '-' + Math.round(h / 2.54);
+  return Math.round(parseInt(b) / 2.54) + c + '-' + Math.round(parseInt(w) / 2.54) + '-' + Math.round(parseInt(h) / 2.54);
 }

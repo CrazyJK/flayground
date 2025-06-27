@@ -1,12 +1,14 @@
-export default class FlayHTMLElement extends HTMLDivElement {
-  flay = null;
-  inCard = false;
+import { Flay } from '@lib/FlayFetch';
 
-  static get observedAttributes() {
+export default class FlayHTMLElement extends HTMLDivElement {
+  flay: Flay | null = null;
+  inCard: boolean = false;
+
+  static get observedAttributes(): string[] {
     return ['mode'];
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name: string, oldValue: string, newValue: string): void {
     console.debug('attributeChangedCallback', name, oldValue, newValue);
     if (newValue === 'card') {
       this.setCard();
@@ -18,13 +20,13 @@ export default class FlayHTMLElement extends HTMLDivElement {
     this.classList.add('flay-div');
   }
 
-  setFlay(flay) {
+  setFlay(flay: Flay): void {
     this.flay = flay;
     this.dataset.opus = flay.opus;
     this.classList.toggle('archive', flay.archive);
   }
 
-  setCard() {
+  setCard(): this {
     this.classList.add('card');
     this.inCard = true;
     return this;
@@ -32,18 +34,18 @@ export default class FlayHTMLElement extends HTMLDivElement {
 
   /**
    * 크기 조정. toggle 'small' class
-   * @param {DOMRect} parentDOMRect
+   * @param parentDOMRect 부모 요소의 DOMRect
    */
-  resize(parentDOMRect) {
+  resize(parentDOMRect: DOMRect): void {
     this.classList.toggle('small', parentDOMRect.width <= 400);
   }
 }
 
 /**
  * Define the new element
- * @param {string} name
- * @param {CustomElementConstructor} constructor
+ * @param name 커스텀 엘리먼트 이름
+ * @param constructor 커스텀 엘리먼트 생성자
  */
-export const defineCustomElements = (name, constructor) => {
+export const defineCustomElements = (name: string, constructor: new () => HTMLElement): void => {
   customElements.define(name, constructor, { extends: 'div' });
 };

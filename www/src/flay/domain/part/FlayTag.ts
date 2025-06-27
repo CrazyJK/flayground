@@ -1,5 +1,5 @@
 import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayTag.scss';
 
@@ -21,16 +21,16 @@ export default class FlayTag extends FlayHTMLElement {
 
   /**
    *
-   * @param {Flay} flay
-   * @param {boolean} reload
+   * @param flay
+   * @param reload
    */
-  set(flay, reload) {
+  set(flay: Flay, reload: boolean = false): void {
     this.setFlay(flay);
 
     this.#displayTag(reload);
   }
 
-  async #renderTag() {
+  async #renderTag(): Promise<void> {
     const tagGroupList = await FlayFetch.getTagGroups();
     this.innerHTML = tagGroupList.map(({ id, name, desc }) => `<div class="tag-list" id="${id}" title="${name} ${desc}"></div>`).join('');
 
@@ -41,8 +41,11 @@ export default class FlayTag extends FlayHTMLElement {
         const input = document.createElement('input');
         input.type = 'checkbox';
         input.id = 'tag' + tag.id;
-        input.value = tag.id;
-        input.addEventListener('change', (e) => FlayAction.toggleTag(this.flay.opus, e.target.value, e.target.checked));
+        input.value = String(tag.id);
+        input.addEventListener('change', (e) => {
+          const target = e.target as HTMLInputElement;
+          FlayAction.toggleTag(this.flay.opus, parseInt(target.value), target.checked);
+        });
 
         const label = document.createElement('label');
         label.setAttribute('for', 'tag' + tag.id);
@@ -54,7 +57,7 @@ export default class FlayTag extends FlayHTMLElement {
       });
   }
 
-  async #displayTag(reload) {
+  async #displayTag(reload: boolean = false): Promise<void> {
     if (!this.#rendered || reload) {
       await this.#renderTag();
       this.#rendered = true;

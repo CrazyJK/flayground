@@ -5,6 +5,7 @@ import folderSVG from '@svg/folder';
 import torrentSVG from '@svg/torrent';
 import youtubeSVG from '@svg/youtube';
 // import PlayTimeDB from '@flay/idb/PlayTimeDB';
+import { Flay } from '@lib/FlayFetch';
 import './FlayFiles.scss';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
@@ -12,6 +13,12 @@ import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
  * Custom element of File
  */
 export default class FlayFiles extends FlayHTMLElement {
+  #studioInput: HTMLInputElement;
+  #opusInput: HTMLInputElement;
+  #titleInput: HTMLInputElement;
+  #actressInput: HTMLInputElement;
+  #releaseInput: HTMLInputElement;
+
   constructor() {
     super();
 
@@ -32,6 +39,12 @@ export default class FlayFiles extends FlayHTMLElement {
         </div>
       </div>
     `;
+
+    this.#studioInput = this.querySelector('[name="studio"]');
+    this.#opusInput = this.querySelector('[name="opus"]');
+    this.#titleInput = this.querySelector('[name="title"]');
+    this.#actressInput = this.querySelector('[name="actress"]');
+    this.#releaseInput = this.querySelector('[name="release"]');
 
     this.querySelector('.flay-play').addEventListener('click', async () => {
       const { playInLayer } = await import(/* webpackChunkName: "FlayVideoPlayer" */ '../../panel/FlayVideoPlayer');
@@ -73,13 +86,14 @@ export default class FlayFiles extends FlayHTMLElement {
     });
 
     this.querySelector('.list ol').addEventListener('click', (e) => {
-      FlayAction.explore(e.target.textContent);
+      const target = e.target as HTMLElement;
+      FlayAction.explore(target.textContent);
     });
 
     this.querySelectorAll('.rename-flay input').forEach((input) => input.addEventListener('keyup', (e) => e.stopPropagation()));
 
     this.querySelector('#renameBtn').addEventListener('click', () => {
-      const [studio, opus, title, actress, release] = Array.from(this.querySelectorAll('.rename-flay input')).map((input) => input.value.trim());
+      const [studio, opus, title, actress, release] = Array.from(this.querySelectorAll('.rename-flay input')).map((input: HTMLInputElement) => input.value.trim());
       console.log('renameClick', studio, opus, title, actress, release);
       FlayAction.renameFlay(studio, opus, title, actress, release);
     });
@@ -91,20 +105,20 @@ export default class FlayFiles extends FlayHTMLElement {
 
   /**
    *
-   * @param {Flay} flay
+   * @param flay
    */
-  set(flay) {
+  set(flay: Flay): void {
     this.setFlay(flay);
 
-    this.querySelector('.movie-length').innerHTML = flay.files.movie.length;
+    this.querySelector('.movie-length').innerHTML = String(flay.files.movie.length);
     this.querySelector('.flay-movie').classList.toggle('disable', flay.files.movie.length === 0);
 
-    this.querySelector('.sub-length').innerHTML = flay.files.subtitles.length;
+    this.querySelector('.sub-length').innerHTML = String(flay.files.subtitles.length);
     this.querySelector('.sub-btn').classList.toggle('disable', flay.files.subtitles.length === 0);
 
     const [size, unit] = FileUtils.prettySize(flay.length);
-    this.querySelector('.size-num').innerHTML = size;
-    this.querySelector('.size-unit').innerHTML = unit;
+    this.querySelector('.size-num').innerHTML = String(size);
+    this.querySelector('.size-unit').innerHTML = String(unit);
 
     const fileList = this.querySelector('.list ol');
     fileList.textContent = null;
@@ -121,11 +135,11 @@ export default class FlayFiles extends FlayHTMLElement {
       fileList.appendChild(document.createElement('li')).textContent = path;
     });
 
-    this.querySelector('[name="studio"]').value = flay.studio;
-    this.querySelector('[name="opus"]').value = flay.opus;
-    this.querySelector('[name="title"]').value = flay.title;
-    this.querySelector('[name="actress"]').value = flay.actressList.join(', ');
-    this.querySelector('[name="release"]').value = flay.release;
+    this.#studioInput.value = flay.studio;
+    this.#opusInput.value = flay.opus;
+    this.#titleInput.value = flay.title;
+    this.#actressInput.value = flay.actressList.join(', ');
+    this.#releaseInput.value = flay.release;
   }
 }
 

@@ -4,7 +4,7 @@
  * @version 2.1.0
  */
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
-import FlayFetch, { ImageInfo } from '@lib/FlayFetch';
+import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import './imageCircle.scss';
 
 // 타입 정의
@@ -211,7 +211,7 @@ export class ImageCircle extends HTMLDivElement {
       const idx = this.#imageIndices.splice(randomIndex, 1)[0];
       console.debug(`Image index: ${idx}, Remaining indices: ${this.#imageIndices.length}`);
 
-      const { name, path, modified, imageBlob }: ImageInfo = await FlayFetch.getStaticImage(idx);
+      const { name, path, modified, imageBlob }: ImageData = await FlayFetch.getStaticImage(idx);
       console.debug(`Image information: \n\tName: ${name} \n\tPath: ${path} \n\tDate: ${modified} \n\tSize: ${randomSize}rem`);
 
       this.#currentImageURL = URL.createObjectURL(imageBlob);

@@ -95,7 +95,7 @@ export interface TagGroup {
   desc: string;
 }
 
-export interface ImageInfo {
+export interface ImageData {
   name: string;
   path: string;
   modified: Date;
@@ -357,7 +357,7 @@ export default class FlayFetch {
     await ApiClient.delete(`/image/${idx}`);
   }
 
-  static async getStaticImage(idx: number): Promise<ImageInfo> {
+  static async getStaticImage(idx: number): Promise<ImageData> {
     const res = await ApiClient.getResponse(`/static/image/${idx}`);
     const name = decodeURIComponent(res.headers.get('Name')?.replace(/\+/g, ' ') || '');
     const path = decodeURIComponent(res.headers.get('Path')?.replace(/\+/g, ' ') || '');

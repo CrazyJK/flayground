@@ -117,6 +117,17 @@ export interface SearchCondition {
   withNoFavorite: boolean;
 }
 
+export interface ImageDomain {
+  idx: number;
+  length: number;
+  modified: number;
+  name: string;
+  path: string;
+  file: string;
+  width: number;
+  height: number;
+}
+
 const coverObjectURLMap = new Map<string, string>();
 let tagGroupList: TagGroup[] | null = null;
 let tagList: Tag[] | null = null;
@@ -330,20 +341,20 @@ export default class FlayFetch {
   }
   /* ######################## Image ######################## */
 
-  static async getImage(idx: number): Promise<unknown> {
+  static async getImage(idx: number): Promise<ImageDomain> {
     return await ApiClient.get(`/image/${idx}`);
   }
 
-  static async getImageAll(): Promise<unknown[]> {
-    return await ApiClient.get<unknown[]>('/image');
+  static async getImageAll(): Promise<ImageDomain[]> {
+    return await ApiClient.get<ImageDomain[]>('/image');
   }
 
   static async getImageSize(): Promise<number> {
     return Number(await ApiClient.get<number | string>('/image/size'));
   }
 
-  static async removeImage(idx: number): Promise<unknown> {
-    return await ApiClient.delete(`/image/${idx}`);
+  static async removeImage(idx: number): Promise<void> {
+    await ApiClient.delete(`/image/${idx}`);
   }
 
   static async getStaticImage(idx: number): Promise<ImageInfo> {

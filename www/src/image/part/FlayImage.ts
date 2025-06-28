@@ -1,26 +1,32 @@
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { ImageDomain } from '@lib/FlayFetch';
 
+/**
+ * 이미지 확대 돋보기 기능을 제공하는 커스텀 이미지 엘리먼트
+ * - 마우스 호버 시 돋보기 표시
+ * - 이미지가 원본보다 클 때 자동 비활성화
+ * - 성능 최적화된 requestAnimationFrame 기반 애니메이션
+ */
 export default class FlayImage extends HTMLImageElement {
-  #magnifier = null;
-  #magnifierSize = 300;
-  #zoomLevel = 2;
-  #rafId = null;
-  #isEnlarged = false;
-  #lastCheckTime = 0;
-  #resizeHandler = null;
+  #magnifier: HTMLDivElement | null = null;
+  #magnifierSize: number = 300;
+  #zoomLevel: number = 2;
+  #rafId: number | null = null;
+  #isEnlarged: boolean = false;
+  #lastCheckTime: number = 0;
+  #resizeHandler: ((event: Event) => void) | null = null;
 
   constructor() {
     super();
   }
 
-  static get observedAttributes() {
+  static get observedAttributes(): string[] {
     return ['data-idx', 'src'];
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
     switch (name) {
       case 'data-idx':
         this.src = ApiClient.buildUrl('/static/image/' + newValue);
@@ -32,11 +38,11 @@ export default class FlayImage extends HTMLImageElement {
     }
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     this.#initMagnifier();
   }
 
-  disconnectedCallback() {
+  disconnectedCallback(): void {
     // requestAnimationFrame 취소
     if (this.#rafId) {
       cancelAnimationFrame(this.#rafId);
@@ -53,7 +59,7 @@ export default class FlayImage extends HTMLImageElement {
     this.#cleanupResizeListener();
   }
 
-  #cleanupResizeListener() {
+  #cleanupResizeListener(): void {
     // 기존 바인딩된 핸들러가 있다면 제거
     if (this.#resizeHandler) {
       window.removeEventListener('resize', this.#resizeHandler);
@@ -61,7 +67,7 @@ export default class FlayImage extends HTMLImageElement {
     }
   }
 
-  #loadInfo() {
+  #loadInfo(): void {
     const idx = Number(this.src?.split('/').pop());
     if (idx < 0) {
       this.removeAttribute('alt');
@@ -69,25 +75,25 @@ export default class FlayImage extends HTMLImageElement {
     }
 
     this.decode().then(() =>
-      FlayFetch.getImage(idx).then((info) => {
-        info['width'] = this.naturalWidth;
-        info['height'] = this.naturalHeight;
+      FlayFetch.getImage(idx).then((domain: ImageDomain) => {
+        domain['width'] = this.naturalWidth;
+        domain['height'] = this.naturalHeight;
 
-        this.dataset.name = info.name;
-        this.dataset.path = info.path;
-        this.dataset.file = info.file;
-        this.dataset.fileSize = FileUtils.prettySize(info.length).join('');
-        this.dataset.modified = DateUtils.format(info.modified, 'yyyy-MM-dd');
-        this.dataset.width = info.width;
-        this.dataset.height = info.height;
-        this.alt = `※ Idx: ${info.idx}\n※ Path: ${info.path}\n※ Name: ${info.name}\n※ Size: ${info.width} x ${info.height}`;
+        this.dataset.name = domain.name;
+        this.dataset.path = domain.path;
+        this.dataset.file = domain.file;
+        this.dataset.fileSize = FileUtils.prettySize(domain.length).join('');
+        this.dataset.modified = DateUtils.format(domain.modified, 'yyyy-MM-dd');
+        this.dataset.width = String(domain.width);
+        this.dataset.height = String(domain.height);
+        this.alt = `※ Idx: ${domain.idx}\n※ Path: ${domain.path}\n※ Name: ${domain.name}\n※ Size: ${domain.width} x ${domain.height}`;
 
-        this.dispatchEvent(new CustomEvent('loaded', { detail: { info: info } }));
+        this.dispatchEvent(new CustomEvent<{ info: ImageDomain }>('loaded', { detail: { info: domain } }));
       })
     );
   }
 
-  #initMagnifier() {
+  #initMagnifier(): void {
     this.style.position = 'relative';
 
     this.addEventListener('mouseenter', this.#handleMouseEnter.bind(this));
@@ -99,7 +105,7 @@ export default class FlayImage extends HTMLImageElement {
     window.addEventListener('resize', this.#resizeHandler);
   }
 
-  #handleMouseMove(e) {
+  #handleMouseMove(e: MouseEvent): void {
     // requestAnimationFrame으로 성능 최적화
     if (this.#rafId) {
       cancelAnimationFrame(this.#rafId);
@@ -111,7 +117,7 @@ export default class FlayImage extends HTMLImageElement {
     });
   }
 
-  #handleMouseEnter() {
+  #handleMouseEnter(): void {
     // 크기 체크를 캐시하여 성능 개선
     this.#updateEnlargedState();
     if (this.#isEnlarged) {
@@ -120,7 +126,7 @@ export default class FlayImage extends HTMLImageElement {
     this.#showMagnifier();
   }
 
-  #updateEnlargedState() {
+  #updateEnlargedState(): void {
     const now = performance.now();
     // 100ms마다만 크기 체크 (성능 최적화)
     if (now - this.#lastCheckTime > 100) {
@@ -129,34 +135,36 @@ export default class FlayImage extends HTMLImageElement {
     }
   }
 
-  #isImageEnlarged() {
+  #isImageEnlarged(): boolean {
     this.#updateEnlargedState();
     return this.#isEnlarged;
   }
 
-  #handleResize() {
+  #handleResize(): void {
     // 리사이즈 시 이미지가 확대되었다면 돋보기 숨기기
     if (this.#isImageEnlarged() && this.#magnifier) {
       this.#hideMagnifier();
     }
   }
 
-  #showMagnifier() {
+  #showMagnifier(): void {
     if (!this.#magnifier) {
       this.#createMagnifier();
     }
-    this.#magnifier.style.display = 'block';
+    if (this.#magnifier) {
+      this.#magnifier.style.display = 'block';
+    }
     this.style.cursor = 'none';
   }
 
-  #hideMagnifier() {
+  #hideMagnifier(): void {
     if (this.#magnifier) {
       this.#magnifier.style.display = 'none';
       this.style.cursor = 'initial'; // 기본 커서로 되돌리기
     }
   }
 
-  #createMagnifier() {
+  #createMagnifier(): void {
     this.#magnifier = document.createElement('div');
     this.#magnifier.style.cssText = `
       position: absolute;
@@ -177,7 +185,7 @@ export default class FlayImage extends HTMLImageElement {
     parent.appendChild(this.#magnifier);
   }
 
-  #updateMagnifier(e) {
+  #updateMagnifier(e: MouseEvent): void {
     if (!this.#magnifier) return;
 
     // 이미지가 원본보다 크게 표시되고 있으면 돋보기 숨기기
@@ -208,7 +216,7 @@ export default class FlayImage extends HTMLImageElement {
     `;
   }
 
-  #updateMagnifierImage() {
+  #updateMagnifierImage(): void {
     // 돋보기가 존재하고 src가 있을 때만 업데이트
     if (this.#magnifier && this.src) {
       this.#magnifier.style.backgroundImage = `url('${this.src}')`;

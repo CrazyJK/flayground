@@ -1,10 +1,10 @@
-import { getDominatedColors } from '@lib/dominatedColor';
-import FlayFetch from '@lib/FlayFetch';
+import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
+import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import './ImageFrame.scss';
 
 export default class ImageFrame extends HTMLDivElement {
-  img;
-  info;
+  img: HTMLImageElement;
+  info: { idx: number; name: string; path: string; modified: Date; width: number; height: number; colors: ColorFrequency[] };
 
   constructor() {
     super();
@@ -23,8 +23,8 @@ export default class ImageFrame extends HTMLDivElement {
     this.img = this.querySelector('img');
   }
 
-  async set(imageIdx) {
-    const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(imageIdx);
+  async set(imageIdx: number): Promise<void> {
+    const { name, path, modified, imageBlob }: ImageData = await FlayFetch.getStaticImage(imageIdx);
 
     URL.revokeObjectURL(this.img.src);
     this.img.src = URL.createObjectURL(imageBlob);

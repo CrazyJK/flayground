@@ -31,6 +31,7 @@ const DEFAULT_OPTIONS: FlayMarkerOptions = {
 export default class FlayMarker extends HTMLLabelElement {
   /** Flay 데이터 */
   flay: Flay;
+
   /**
    * FlayMarker 생성자
    * @param flay Flay 데이터

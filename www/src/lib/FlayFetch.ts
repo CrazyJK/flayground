@@ -158,7 +158,7 @@ export default class FlayFetch {
     return await ApiClient.post<Flay[]>('/flay', opus);
   }
 
-  static async getOpusList(condition: SearchCondition): Promise<string[]> {
+  static async getOpusList(condition: Partial<SearchCondition>): Promise<string[]> {
     return await ApiClient.post<string[]>('/flay/list/opus', condition, { cache: 'no-cache' });
   }
   static async getFlayListLowScore(): Promise<Flay[]> {

@@ -3,27 +3,43 @@ import { getRandomInt } from '@lib/randomNumber';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import './FlayPagination.scss';
 
-const NEXT = 'NEXT';
-const PREV = 'PREV';
-const RANDOM = 'RANDOM';
-const FIRST = 'FIRST';
-const LAST = 'LAST';
-const PAGEUP = 'PAGEUP';
-const PAGEDOWN = 'PAGEDOWN';
-const BACK = 'BACK';
+const NEXT = 'NEXT' as const;
+const PREV = 'PREV' as const;
+const RANDOM = 'RANDOM' as const;
+const FIRST = 'FIRST' as const;
+const LAST = 'LAST' as const;
+const PAGEUP = 'PAGEUP' as const;
+const PAGEDOWN = 'PAGEDOWN' as const;
+const BACK = 'BACK' as const;
+
+type NavigationDirection = typeof NEXT | typeof PREV | typeof RANDOM | typeof FIRST | typeof LAST | typeof PAGEUP | typeof PAGEDOWN | typeof BACK;
 
 /**
  * 페이지 표현
  */
 export default class FlayPagination extends HTMLDivElement {
-  opus = null;
-  opusIndex = -1;
-  opusList = [];
-  active = true;
-  history = [];
-  pageRange = 0;
-  randomEnd = 6;
-  lastTypedTime = -1;
+  /** 현재 선택된 opus */
+  opus: string | null = null;
+  /** 현재 opus의 인덱스 */
+  opusIndex: number = -1;
+  /** opus 목록 */
+  opusList: string[] = [];
+  /** 활성화 상태 */
+  active: boolean = true;
+  /** 히스토리 */
+  history: number[] = [];
+  /** 페이지 범위 */
+  pageRange: number = 0;
+  /** 랜덤 팝업 개수 */
+  randomEnd: number = 6;
+  /** 마지막 타이핑 시간 */
+  lastTypedTime: number = -1;
+  /** 페이징 컨테이너 */
+  paging: HTMLDivElement;
+  /** 진행바 */
+  progressBar: HTMLDivElement;
+  /** 커버 썸네일 */
+  coverThumbnail: HTMLDivElement;
 
   constructor() {
     super();
@@ -42,27 +58,31 @@ export default class FlayPagination extends HTMLDivElement {
       <button type="button" class="side-btn random-flow-button" title="flow random">F</button>
     `;
 
-    this.paging = this.querySelector('.paging');
-    this.progressBar = this.querySelector('.progress-bar');
-    this.coverThumbnail = this.querySelector('.cover-thumbnail');
+    this.paging = this.querySelector('.paging') as HTMLDivElement;
+    this.progressBar = this.querySelector('.progress-bar') as HTMLDivElement;
+    this.coverThumbnail = this.querySelector('.cover-thumbnail') as HTMLDivElement;
+
+    if (!this.paging || !this.progressBar || !this.coverThumbnail) {
+      throw new Error('Required DOM elements not found');
+    }
   }
 
   connectedCallback() {
-    const randomPopupButton = this.querySelector('.random-popup-button');
-    const randomFlowButton = this.querySelector('.random-flow-button');
+    const randomPopupButton = this.querySelector('.random-popup-button') as HTMLButtonElement;
+    const randomFlowButton = this.querySelector('.random-flow-button') as HTMLButtonElement;
 
-    document.addEventListener('videoPlayer', (e) => (this.active = !e.detail.isPlay));
+    document.addEventListener('videoPlayer', (e: CustomEvent) => (this.active = !e.detail.isPlay));
 
-    window.addEventListener('wheel', (e) => {
+    window.addEventListener('wheel', (e: WheelEvent) => {
       if (!this.active) return false;
       if (e.ctrlKey) return false;
-      if (e.target.closest('#layer')) return false;
-      if (e.target.closest('.side-nav-bar')) return false;
+      if ((e.target as Element)?.closest('#layer')) return false;
+      if ((e.target as Element)?.closest('.side-nav-bar')) return false;
 
       return this.#navigator(e.deltaY > 0 ? NEXT : PREV);
     });
 
-    window.addEventListener('keyup', (e) => {
+    window.addEventListener('keyup', (e: KeyboardEvent) => {
       e.stopPropagation();
       if (!this.active) return false;
 
@@ -101,7 +121,7 @@ export default class FlayPagination extends HTMLDivElement {
       return false;
     });
 
-    window.addEventListener('mouseup', (e) => {
+    window.addEventListener('mouseup', (e: MouseEvent) => {
       e.preventDefault();
       if (!this.active) return false;
 
@@ -137,11 +157,11 @@ export default class FlayPagination extends HTMLDivElement {
         this.#decideOpus(RANDOM);
         let randomPopup = window.open(`popup.flay.html?opus=${this.opus}&popupNo=${i + 1}`, `randomPopup.${i}`, 'width=800px,height=1280px');
 
-        randomPopupButton.innerHTML = randomCount - i;
+        randomPopupButton.innerHTML = String(randomCount - i);
         randomPopupButton.animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
 
         const popupIndicator = popupIndicators.appendChild(document.createElement('button'));
-        popupIndicator.innerHTML = i + 1;
+        popupIndicator.innerHTML = String(i + 1);
         popupIndicator.addEventListener('mouseover', () => randomPopup.postMessage('over'));
         popupIndicator.addEventListener('mouseout', () => randomPopup.postMessage('out'));
         popupIndicator.addEventListener('click', () => {
@@ -154,18 +174,18 @@ export default class FlayPagination extends HTMLDivElement {
         await new Promise((resolve) => setTimeout(resolve, 1000));
       }
 
-      randomPopupButton.innerHTML = randomCount;
+      randomPopupButton.innerHTML = String(randomCount);
       this.opusIndex = currOpusIndex;
     });
 
     const INTERVAL = 10;
-    let randomFlowInterval;
+    let randomFlowInterval: ReturnType<typeof setInterval> | undefined;
     randomFlowButton.addEventListener('click', () => {
       randomFlowButton.animate([{ transform: 'scale(1.5)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
       if (randomFlowButton.toggleAttribute('start')) {
         let countDown = INTERVAL;
         randomFlowInterval = setInterval(() => {
-          randomFlowButton.innerHTML = --countDown;
+          randomFlowButton.innerHTML = String(--countDown);
           if (countDown === 0) {
             randomFlowButton.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 400, iterations: 1 });
             this.#navigator(RANDOM);
@@ -183,41 +203,56 @@ export default class FlayPagination extends HTMLDivElement {
    * set opus list
    * @param {string[]} list of opus
    */
-  set(list) {
+  set(list: string[]): void {
     this.opusList = list;
     this.history = [];
     this.#navigator(this.opus || RANDOM);
   }
 
-  get(offset) {
+  /**
+   * opus 가져오기
+   * @param offset 현재 위치로부터의 오프셋
+   * @returns opus 문자열 또는 null
+   */
+  get(offset?: number): string | null {
     if (offset) {
-      return this.opusList[this.opusIndex + offset];
+      return this.opusList[this.opusIndex + offset] || null;
     } else {
       return this.opus;
     }
   }
 
-  on() {
+  /**
+   * 활성화
+   */
+  on(): void {
     this.active = true;
   }
 
-  off() {
+  /**
+   * 비활성화
+   */
+  off(): void {
     this.active = false;
   }
 
   /**
    * 페이지 이동을 결정하고, 이벤트 발생
-   * @param {*} direction 방향 또는 인덱스
-   * @returns
+   * @param direction 방향 또는 인덱스
+   * @returns 성공 여부
    */
-  #navigator(direction) {
+  #navigator(direction: NavigationDirection | string | number): boolean {
     this.#decideOpus(direction);
     this.dispatchEvent(new Event('change'));
     this.#display();
     return true;
   }
 
-  #decideOpus(direction) {
+  /**
+   * opus 위치 결정
+   * @param direction 방향 또는 인덱스
+   */
+  #decideOpus(direction: NavigationDirection | string | number): void {
     if (typeof direction === 'string') {
       switch (direction) {
         case NEXT:
@@ -277,10 +312,10 @@ export default class FlayPagination extends HTMLDivElement {
 
   /**
    * 히스토리 관리
-   * @param {number} index
+   * @param index 인덱스
    * @returns 추가되면 true
    */
-  #putHistory(index) {
+  #putHistory(index: number): boolean {
     if (this.history.length === this.opusList.length) {
       this.history = [];
     }
@@ -293,15 +328,14 @@ export default class FlayPagination extends HTMLDivElement {
 
   /**
    * 페이징 화면 렌더링
-   * @returns
    */
-  #display() {
+  #display(): void {
     if (!this.opusList) {
       throw new Error('opusList is not valid');
     }
 
     if (this.opusList.length === 0) {
-      this.progressBar.style.width = 0;
+      this.progressBar.style.width = String(0);
       this.paging.textContent = null;
       return;
     }
@@ -332,8 +366,8 @@ export default class FlayPagination extends HTMLDivElement {
     console.debug(`page: ${currPageNo} / ${lastPageNo}`);
 
     this.paging.textContent = null;
-    for (let i of pageRange) {
-      const page = this.paging.appendChild(document.createElement('label'));
+    for (const i of pageRange) {
+      const page = this.paging.appendChild(document.createElement('label')) as HTMLLabelElement;
       page.classList.add('page');
       page.classList.toggle('disable', i > lastIndex);
       page.classList.toggle('active', i === this.opusIndex);
@@ -349,13 +383,21 @@ export default class FlayPagination extends HTMLDivElement {
             return;
           }
           const opus = this.opusList[i];
+          if (!opus) return;
+
           const domRect = page.getBoundingClientRect();
           const coverWidth = domRect.width * 6;
 
           this.coverThumbnail.classList.add('show');
-          FlayFetch.getCoverURL(opus).then((url) => {
-            this.coverThumbnail.style.backgroundImage = `url(${url})`;
-          });
+          FlayFetch.getCoverURL(opus)
+            .then((url: string) => {
+              if (url) {
+                this.coverThumbnail.style.backgroundImage = `url(${url})`;
+              }
+            })
+            .catch((error) => {
+              console.error('Failed to load cover image:', error);
+            });
           this.coverThumbnail.style.width = `${coverWidth}px`;
           this.coverThumbnail.style.bottom = `${window.innerHeight - domRect.y}px`;
           this.coverThumbnail.style.left = `${domRect.x + domRect.width / 2 - coverWidth / 2}px`;

@@ -1,16 +1,9 @@
 body {
-  > main {
+  .flay-circle-mask {
     position: fixed;
     inset: 0;
-    margin: 0;
-    padding: 0;
-
-    background: transparent repeat center / contain;
-
-    // 클립 패스 전환 애니메이션
-    transition: clip-path 0.1s ease-out;
-
-    // 커서 스타일
-    cursor: none;
+    margin: 9rem;
+    width: calc(100% - 9rem * 2);
+    height: calc(100% - 9rem * 2);
   }
 }

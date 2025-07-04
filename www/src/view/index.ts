@@ -1,4 +1,5 @@
 import DateUtils from '@lib/DateUtils';
+import FlayFetch, { ImageData } from '../lib/FlayFetch';
 import './inc/Page';
 import './index.scss';
 
@@ -8,6 +9,12 @@ import './index.scss';
 class Page {
   async start(): Promise<void> {
     const mainElement = document.querySelector('body > main') as HTMLElement;
+
+    const length = await FlayFetch.getImageSize();
+    const randomIndex = Math.floor(Math.random() * length);
+    const imageData: ImageData = await FlayFetch.getStaticImage(randomIndex);
+    const imageUrl = URL.createObjectURL(imageData.imageBlob);
+    mainElement.style.backgroundImage = `url(${imageUrl})`;
   }
 }
 

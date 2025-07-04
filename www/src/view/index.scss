@@ -12,5 +12,11 @@ body {
     margin: 9rem;
 
     background: transparent repeat center / contain;
+
+    // 클립 패스 전환 애니메이션
+    transition: clip-path 0.1s ease-out;
+
+    // 커서 스타일
+    cursor: none;
   }
 }

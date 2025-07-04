@@ -36,6 +36,7 @@ const entryPoints = {
     'page.image-page': './src/view/page.image-page.js',
     'page.image-one': './src/view/page.image-one.js',
     'page.image-fall': './src/view/page.image-fall.js',
+    'page.image-circle': './src/view/page.image-circle.ts',
     'page.image-download': './src/view/page.image-download.js',
   },
   misc: {

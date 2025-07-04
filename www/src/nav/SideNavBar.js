@@ -34,6 +34,7 @@ const menuList = [
   { url: 'page.image-one.html', name: 'image one' },
   { url: 'page.image-page.html', name: 'image page' },
   { url: 'page.image-fall.html', name: 'image fall' },
+  { url: 'page.image-circle.html', name: 'image circle' },
   { url: 'popup.image.html', name: 'image pop' },
   { url: 'page.image-download.html', name: 'pic download' },
   {},

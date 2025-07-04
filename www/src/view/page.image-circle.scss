@@ -1,0 +1,20 @@
+body {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+
+  > main {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 6rem;
+  }
+}
+
+.right-bottom {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+}

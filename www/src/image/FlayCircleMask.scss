@@ -1,4 +1,7 @@
 .flay-circle-mask {
+  position: fixed;
+  inset: 0;
+
   contain: layout style;
   will-change: clip-path;
   transform: translateZ(0);

@@ -72,6 +72,13 @@ export class FlayCircleMask extends HTMLDivElement {
       this.classList.toggle('full-mask'); // 클릭 시 전체 화면 마스크 토글
     });
 
+    this.addEventListener('wheel', (e: WheelEvent) => {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? 1 : -1; // 휠 스크롤 방향에 따라 반지름 조정
+      this.radius = Math.max(0, this.radius + delta * 10);
+      this.updateClipPath(this.lastMouseX, this.lastMouseY); // 현재 마우스 위치에서 클립 패스 업데이트
+    });
+
     window.addEventListener('resize', () => this.decideOffsetXY()); // 윈도우 크기 조정 시 오프셋 업데이트
     this.decideOffsetXY(); // 초기 오프셋 계산
   }

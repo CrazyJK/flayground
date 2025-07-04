@@ -1,0 +1,28 @@
+.flay-circle-mask {
+  contain: layout style;
+  will-change: clip-path;
+  transform: translateZ(0);
+
+  background: transparent repeat center / contain;
+  box-shadow: inset 0 0 1rem 1rem var(--color-bg);
+
+  cursor: none;
+  clip-path: circle(0px at 50% 50%); // 초기에는 배경을 완전히 숨김
+  transition:
+    background-image 0.4s ease-out,
+    clip-path 0.5s ease-in;
+
+  &.mouse-move {
+    transition:
+      background-image 0.4s ease-out,
+      clip-path 0.05s linear; // 마우스 이동 시에는 빠른 transition
+  }
+
+  &.full-mask {
+    cursor: pointer;
+    clip-path: circle(100% at 50% 50%) !important; // 전체 화면을 덮는 원형 마스크
+    transition:
+      background-image 0.4s ease-out,
+      clip-path 0.5s linear; // 마우스 이동 시에는 빠른 transition
+  }
+}

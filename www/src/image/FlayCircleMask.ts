@@ -29,14 +29,15 @@ export class FlayCircleMask extends HTMLDivElement {
 
         const index = indices.splice(Math.floor(Math.random() * indices.length), 1)[0];
         FlayFetch.getStaticImage(index).then((imageData: ImageData) => {
-          imageUrl = URL.createObjectURL(imageData.imageBlob);
-          this.style.backgroundImage = `url(${imageUrl})`; // 이미지 URL 설정
+          imageUrl = URL.createObjectURL(imageData.imageBlob); // 이미지 Blob을 URL로 변환
+          this.style.backgroundImage = `url(${imageUrl})`;
         });
 
-        // 10 ~ 20초 사이의 랜덤 시간 대기
-        const waitTime = Math.floor(Math.random() * 10000) + 10000;
+        const waitTime = Math.floor(Math.random() * 10000) + 10000; // 10 ~ 20초 사이의 랜덤 시간 대기
         await new Promise((resolve) => setTimeout(resolve, waitTime));
       } while (indices.length > 0);
+
+      console.info('All images have been displayed in FlayCircleMask.');
     });
   }
 

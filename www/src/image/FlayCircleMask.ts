@@ -56,6 +56,7 @@ export class FlayCircleMask extends HTMLDivElement {
 
     // 마우스 움직임에 따라 원형 마스크 업데이트 (requestAnimationFrame으로 최적화)
     document.addEventListener('mousemove', (e: MouseEvent) => {
+      this.classList.add('mouse-move');
       if (animationId) cancelAnimationFrame(animationId);
       animationId = requestAnimationFrame(() => this.updateClipPath(e.clientX, e.clientY));
       this.updateLastMousePosition(e.clientX, e.clientY); // 마지막 마우스 위치 저장

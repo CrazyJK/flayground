@@ -95,6 +95,13 @@ export interface TagGroup {
   desc: string;
 }
 
+/**
+ * 이미지 데이터 인터페이스
+ * - name: 이미지 파일 이름
+ * - path: 이미지 파일 경로
+ * - modified: 이미지 파일 수정 날짜
+ * - imageBlob: 이미지 Blob 데이터
+ */
 export interface ImageData {
   name: string;
   path: string;

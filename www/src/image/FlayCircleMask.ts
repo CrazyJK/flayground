@@ -1,5 +1,8 @@
+import DateUtils from '../lib/DateUtils';
 import FlayFetch, { ImageData } from '../lib/FlayFetch';
 import './FlayCircleMask.scss';
+
+const SECOND = 1000;
 
 /**
  * FlayCircleMask
@@ -8,6 +11,14 @@ export class FlayCircleMask extends HTMLDivElement {
   constructor() {
     super();
     this.classList.add('flay-circle-mask');
+    this.innerHTML = `
+      <div class="image-info">
+        <span class="image-index"></span>
+        <span class="image-name"></span>
+        <span class="image-path"></span>
+        <span class="image-date"></span>
+      </div>
+    `;
   }
 
   connectedCallback(): void {
@@ -15,8 +26,7 @@ export class FlayCircleMask extends HTMLDivElement {
     this.start();
   }
 
-  private start(): void {
-    let imageUrl: string = ''; // 현재 표시 중인 이미지 URL
+  private start(minTime: number = 10, maxTime: number = 20): void {
     FlayFetch.getImageSize().then(async (size: number) => {
       if (size <= 0) {
         console.warn('No images available for FlayCircleMask.');
@@ -24,17 +34,22 @@ export class FlayCircleMask extends HTMLDivElement {
       }
       const indices = Array.from({ length: size }, (_, i) => i); // 0부터 length-1까지의 베열 생성
 
+      let imageUrl: string = null; // 현재 표시 중인 이미지 URL
       do {
         if (imageUrl) URL.revokeObjectURL(imageUrl); // 이전 이미지 URL 해제
 
-        const index = indices.splice(Math.floor(Math.random() * indices.length), 1)[0];
+        const index = indices.splice(Math.floor(Math.random() * indices.length), 1)[0]; // 랜덤으로 인덱스 선택 후 배열에서 제거
         FlayFetch.getStaticImage(index).then((imageData: ImageData) => {
           imageUrl = URL.createObjectURL(imageData.imageBlob); // 이미지 Blob을 URL로 변환
           this.style.backgroundImage = `url(${imageUrl})`;
+          this.querySelector('.image-index').innerHTML = `${index} / ${indices.length}`;
+          this.querySelector('.image-name').innerHTML = imageData.name;
+          this.querySelector('.image-path').innerHTML = imageData.path;
+          this.querySelector('.image-date').innerHTML = DateUtils.format(imageData.modified, 'yyyy-MM-dd');
         });
 
-        const waitTime = Math.floor(Math.random() * 10000) + 10000; // 10 ~ 20초 사이의 랜덤 시간 대기
-        await new Promise((resolve) => setTimeout(resolve, waitTime));
+        const waitTime = Math.floor(Math.random() * (maxTime - minTime)) + minTime; // minTime ~ maxTime 사이의 랜덤 시간 대기
+        await new Promise((resolve) => setTimeout(resolve, waitTime * SECOND));
       } while (indices.length > 0);
 
       console.info('All images have been displayed in FlayCircleMask.');
@@ -88,7 +103,7 @@ export class FlayCircleMask extends HTMLDivElement {
     this.addEventListener('wheel', (e: WheelEvent) => {
       e.preventDefault();
       const delta = e.deltaY > 0 ? 1 : -1; // 휠 스크롤 방향에 따라 반지름 조정
-      radius = Math.max(0, radius + delta * 10);
+      radius = Math.max(10, radius + delta * 10);
       updateClipPathProperties(200, lastMouseX, lastMouseY); // 현재 마우스 위치에서 클립 패스 업데이트
     });
 

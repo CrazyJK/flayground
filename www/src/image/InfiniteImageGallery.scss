@@ -1,0 +1,211 @@
+// 무한 이미지 갤러리 스타일
+infinite-image-gallery {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+
+  // 초기에는 숨김 상태, 페이드인 효과
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
+
+  // 키보드 포커스 스타일
+  &:focus {
+    outline: 2px solid rgba(0, 122, 204, 0.6);
+    outline-offset: -2px;
+  }
+
+  &.show {
+    opacity: 1;
+  }
+
+  .image-container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    height: 100%;
+    overflow-x: auto;
+    overflow-y: hidden;
+    scroll-behavior: smooth;
+    cursor: grab;
+    user-select: none;
+    gap: 1rem;
+    padding: 2rem;
+
+    // 스크롤바 숨기기
+    scrollbar-width: none; // Firefox
+    -ms-overflow-style: none; // IE/Edge
+    &::-webkit-scrollbar {
+      display: none; // Chrome/Safari
+    }
+
+    &.dragging {
+      cursor: grabbing;
+      scroll-behavior: auto;
+    }
+
+    img {
+      flex-shrink: 0;
+      width: 20rem;
+      height: 25rem;
+      object-fit: cover;
+      border-radius: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      transition:
+        transform 0.3s ease,
+        box-shadow 0.3s ease;
+      cursor: pointer;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+      }
+
+      &:active {
+        transform: scale(0.98);
+      }
+    }
+  }
+
+  // 좌우 그라디언트 페이드 효과
+  &::before,
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3rem;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  &::before {
+    left: 0;
+    background: linear-gradient(to right, var(--color-bg), transparent);
+  }
+
+  &::after {
+    right: 0;
+    background: linear-gradient(to left, var(--color-bg), transparent);
+  }
+
+  // 미니맵 스타일
+  .mini-map-container {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+
+    background: var(--color-black-alpha-light);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1rem;
+    min-width: 20rem;
+    max-width: 90vw;
+
+    .thumbnail-strip {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;
+      overflow-x: auto;
+      overflow-y: hidden;
+      scroll-behavior: smooth;
+      padding: 0.5rem;
+
+      // 스크롤바 숨기기
+      scrollbar-width: none; // Firefox
+      -ms-overflow-style: none; // IE/Edge
+      &::-webkit-scrollbar {
+        display: none; // Chrome/Safari
+      }
+
+      .mini-thumbnail-item {
+        flex-shrink: 0;
+        width: 3rem;
+        height: 4rem;
+        border-radius: 0.5rem;
+        overflow: hidden;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+
+        &:hover {
+          transform: scale(1.05);
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        &.active {
+          border-color: #007acc;
+          box-shadow: 0 0 8px rgba(0, 122, 204, 0.5);
+          transform: scale(1.1);
+        }
+
+        img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+        }
+      }
+    }
+  }
+
+  // 좌우 로딩 인디케이터 스타일
+  .loading-indicator {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 1001;
+
+    display: none;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+
+    // 부드러운 애니메이션을 위한 기본 상태
+    opacity: 0;
+    transform: translateY(-50%) scale(0.8);
+    transition: all 0.3s ease;
+
+    &.show {
+      opacity: 1;
+      transform: translateY(-50%) scale(1);
+    }
+
+    &.left {
+      left: 2rem;
+    }
+
+    &.right {
+      right: 2rem;
+    }
+
+    .loading-spinner {
+      width: 1.5rem;
+      height: 1.5rem;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      border-top: 2px solid white;
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+
+    .loading-text {
+      font-size: 1.25rem;
+      color: white;
+      font-weight: bold;
+    }
+  }
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

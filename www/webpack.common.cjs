@@ -38,6 +38,7 @@ const entryPoints = {
     'page.image-fall': './src/view/page.image-fall.js',
     'page.image-circle': './src/view/page.image-circle.ts',
     'page.image-download': './src/view/page.image-download.js',
+    'page.image-mask': './src/view/page.image-mask.ts',
   },
   misc: {
     'page.kamoru-diary': './src/view/page.kamoru-diary.js',

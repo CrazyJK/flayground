@@ -37,6 +37,15 @@ body {
 
 /* **** 방송 **** */
 
+/* 검열 화면 */
+#player-area > div:nth-child(2) > div > div.hidden {
+  display: none;
+}
+
+.bg-bg-no-signal {
+  background-image: none;
+}
+
 #video-section {
   position: fixed;
   inset: 0;
@@ -68,7 +77,7 @@ body {
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > h2 > div,
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.flex.items-center.gap-1 > div > span,
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.video_information_live_data > div > span:nth-child(1),
-#player-area > section > div > div.relative.flex.items-end {
+[data-sentry-component='PlayerItemListContainer'] {
   position: fixed;
   top: 0;
   left: 0;
@@ -105,24 +114,21 @@ body {
 #player-area > div:nth-child(2) > section > div > div.ml-2.flex.flex-1.flex-col.self-center > div.video_information_live_data > div > span:nth-child(1) {
   top: 64px;
 }
-/* 추천, 즐겨찾기 */
-#player-area > section > div > div.relative.flex.items-end > button:nth-child(2),
-#player-area > section > div > div.relative.flex.items-end > button:nth-child(3),
-#player-area > section > div > div.relative.flex.items-end > button:nth-child(5),
-#player-area > section > div > div.relative.flex.items-end > button:nth-child(6) {
+/* 추천, 즐겨찾기 제외한 다른 버튼 제거 */
+[data-sentry-component='PlayerItemListContainer'] > button:nth-child(2),
+[data-sentry-component='PlayerItemListContainer'] > button:nth-child(3),
+[data-sentry-component='PlayerItemListContainer'] > button:nth-child(5),
+[data-sentry-component='PlayerItemListContainer'] > button:nth-child(6) {
   display: none;
 }
-#player-area > section > div > div.relative.flex.items-end {
+/* #player-area > section > div > div.relative.flex.items-end, */
+[data-sentry-component='PlayerItemListContainer'] {
   top: 96px;
-  padding: 0;
+  padding: 10px 0;
   display: flex;
   align-items: center;
 }
 
 #video-section > div.relative.h-full.w-full.bg-black {
   padding-top: 1%;
-}
-/* 검열 화면 */
-#player-area > div:nth-child(2) > div > div.hidden {
-  display: none !important;
 }

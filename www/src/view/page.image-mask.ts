@@ -1,4 +1,4 @@
-import { FlayCircleMask } from '@/image/FlayCircleMask';
+import { FlayCircleMask } from '@image/FlayCircleMask';
 import './inc/Page';
 import './page.image-mask.scss';
 

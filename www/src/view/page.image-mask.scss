@@ -1,0 +1,10 @@
+$margin: 1rem;
+body {
+  .flay-circle-mask {
+    position: fixed;
+    inset: 0;
+    margin: $margin;
+    width: calc(100% - #{$margin} * 2);
+    height: calc(100% - #{$margin} * 2);
+  }
+}

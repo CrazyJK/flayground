@@ -30,9 +30,7 @@ export default class FlayPage extends HTMLDivElement {
   constructor() {
     super();
     this.classList.add('flay-page', 'flay-div');
-  }
 
-  connectedCallback() {
     this.flayStudio = this.appendChild(new FlayStudio());
     this.flayOpus = this.appendChild(new FlayOpus());
     this.flayComment = this.appendChild(new FlayComment());
@@ -51,26 +49,32 @@ export default class FlayPage extends HTMLDivElement {
    * @param reload 데이터 재로드 여부
    * @returns Promise<FullyFlay> Flay와 Actress 데이터
    */
-  async set(opus: string, reload: boolean): Promise<FullyFlay> {
-    this.opus = opus;
-    this.setAttribute('opus', opus);
+  async set(data: string | FullyFlay, reload: boolean = false): Promise<FullyFlay> {
+    if (typeof data === 'string') {
+      this.opus = data;
+      const { flay, actress } = await FlayFetch.getFullyFlay(this.opus);
+      this.flay = flay;
+      this.actress = actress;
+    } else {
+      this.opus = data.flay.opus;
+      this.flay = data.flay;
+      this.actress = data.actress;
+    }
 
-    const { flay, actress } = await FlayFetch.getFullyFlay(opus);
-    this.flay = flay;
-    this.actress = actress;
+    this.setAttribute('opus', this.opus);
 
-    this.flayStudio.set(flay);
-    this.flayOpus.set(flay);
-    this.flayComment.set(flay);
-    this.flayTitle.set(flay);
-    this.flayCover.set(flay);
-    this.flayActress.set(flay, actress);
-    this.flayRelease.set(flay);
-    this.flayRank.set(flay);
-    this.flayFiles.set(flay);
-    this.flayTag.set(flay, reload);
+    this.flayStudio.set(this.flay);
+    this.flayOpus.set(this.flay);
+    this.flayComment.set(this.flay);
+    this.flayTitle.set(this.flay);
+    this.flayCover.set(this.flay);
+    this.flayActress.set(this.flay, this.actress);
+    this.flayRelease.set(this.flay);
+    this.flayRank.set(this.flay);
+    this.flayFiles.set(this.flay);
+    this.flayTag.set(this.flay, reload);
 
-    return { flay, actress };
+    return { flay: this.flay, actress: this.actress };
   }
 
   /**

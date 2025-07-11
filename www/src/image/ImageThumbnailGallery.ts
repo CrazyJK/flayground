@@ -9,6 +9,8 @@ export class ImageThumbnailGallery extends HTMLElement {
   private rowCount: number = 0;
   private totalImages: number = 0;
   private currentImageIndex: number = 0;
+  private keydownListener: (event: KeyboardEvent) => void;
+  private removeResizeListener: () => void;
 
   constructor() {
     super();
@@ -36,6 +38,11 @@ export class ImageThumbnailGallery extends HTMLElement {
           display: inline-block;
           margin: 0;
           padding: 0;
+          transition: transform 0.3s ease-in-out;
+        }
+        img:hover {
+          transform: scale(1.2);
+          z-index: 1;
         }
       </style>
     `;
@@ -43,6 +50,11 @@ export class ImageThumbnailGallery extends HTMLElement {
 
   connectedCallback() {
     this.start();
+  }
+
+  disconnectedCallback() {
+    window.removeEventListener('keydown', this.keydownListener);
+    this.removeResizeListener();
   }
 
   private async start() {
@@ -55,12 +67,6 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private initializeEventListeners() {
-    addResizeListener(() => {
-      this.currentImageIndex -= this.totalImages;
-      this.setupThumbnailGallery();
-      this.renderGalleryThumbnails();
-    });
-
     this.shadowRoot!.addEventListener('wheel', (event: WheelEvent) => {
       event.preventDefault();
       if (event.deltaY < 0) {
@@ -70,7 +76,13 @@ export class ImageThumbnailGallery extends HTMLElement {
       }
     });
 
-    window.addEventListener('keydown', (event: KeyboardEvent) => {
+    this.removeResizeListener = addResizeListener(() => {
+      this.currentImageIndex -= this.totalImages;
+      this.setupThumbnailGallery();
+      this.renderGalleryThumbnails();
+    });
+
+    this.keydownListener = (event: KeyboardEvent) => {
       console.log(`Key pressed: ${event.key}`);
       if (event.key === 'ArrowLeft') {
         this.previous();
@@ -79,7 +91,8 @@ export class ImageThumbnailGallery extends HTMLElement {
       } else if (event.key === ' ') {
         this.random();
       }
-    });
+    };
+    window.addEventListener('keydown', this.keydownListener);
   }
 
   private next() {
@@ -105,8 +118,10 @@ export class ImageThumbnailGallery extends HTMLElement {
   private async renderGalleryThumbnails() {
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < this.totalImages; i++) {
-      const imageData = await FlayFetch.getStaticImage(this.currentImageIndex);
-      fragment.appendChild(document.createElement('img')).src = URL.createObjectURL(imageData.imageBlob);
+      const img = fragment.appendChild(document.createElement('img'));
+      img.src = FlayFetch.getImageURL(this.currentImageIndex);
+      img.alt = `Image ${this.currentImageIndex}`;
+
       this.currentImageIndex = (this.currentImageIndex + 1) % this.imageLength;
     }
     this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());

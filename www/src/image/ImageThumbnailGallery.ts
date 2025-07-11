@@ -67,7 +67,7 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private initializeEventListeners() {
-    this.shadowRoot!.addEventListener('wheel', (event: WheelEvent) => {
+    this.parentElement!.addEventListener('wheel', (event: WheelEvent) => {
       event.preventDefault();
       if (event.deltaY < 0) {
         this.previous();

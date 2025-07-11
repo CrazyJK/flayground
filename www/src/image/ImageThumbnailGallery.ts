@@ -1,5 +1,6 @@
-import FlayFetch from '../lib/FlayFetch';
-import StyleUtils from '../lib/StyleUtils';
+import FlayFetch from '@lib/FlayFetch';
+import StyleUtils from '@lib/StyleUtils';
+import { addResizeListener } from '@lib/windowAddEventListener';
 
 export class ImageThumbnailGallery extends HTMLElement {
   private static readonly ThumbnailSize = 18; // in rem
@@ -41,16 +42,19 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   async connectedCallback() {
-    await this.setupEvents();
-    await this.initializeGallery();
-    await this.render();
+    this.imageLength = await FlayFetch.getImageSize();
+    this.currentImageIndex = Math.floor(Math.random() * this.imageLength);
+
+    this.initializeEventListeners();
+    this.setupThumbnailGallery();
+    this.renderGalleryThumbnails();
   }
 
-  private async setupEvents() {
-    window.addEventListener('resize', () => {
-      this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
-      this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
-      this.totalImages = this.columnCount * this.rowCount;
+  private initializeEventListeners() {
+    addResizeListener(() => {
+      this.currentImageIndex -= this.totalImages;
+      this.setupThumbnailGallery();
+      this.renderGalleryThumbnails();
     });
 
     this.shadowRoot!.addEventListener('wheel', (event: WheelEvent) => {
@@ -58,21 +62,20 @@ export class ImageThumbnailGallery extends HTMLElement {
       if (event.deltaY < 0) {
         this.currentImageIndex = (this.currentImageIndex - this.totalImages * 2) % this.imageLength;
       }
-      this.render();
+      this.renderGalleryThumbnails();
     });
   }
 
-  private async initializeGallery() {
+  private setupThumbnailGallery() {
     // Initialize the gallery thumbnails here
-    this.imageLength = await FlayFetch.getImageSize();
     this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
     this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
     this.totalImages = this.columnCount * this.rowCount;
-    this.currentImageIndex = Math.floor(Math.random() * this.imageLength);
+    console.log(`Gallery initialized with ${this.columnCount} columns and ${this.rowCount} rows, total images: ${this.totalImages}`);
   }
 
-  private async render() {
-    console.log(`Rendering ${this.totalImages} images with current index: ${this.currentImageIndex}`);
+  private async renderGalleryThumbnails() {
+    console.log(`Rendering gallery with currentImageIndex: ${this.currentImageIndex}, totalImages: ${this.totalImages}`);
 
     // Clear previous content
     this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());
@@ -97,4 +100,5 @@ export class ImageThumbnailGallery extends HTMLElement {
     this.shadowRoot!.appendChild(fragment);
   }
 }
+
 customElements.define('image-thumbnail-gallery', ImageThumbnailGallery);

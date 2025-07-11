@@ -41,13 +41,17 @@ export class ImageThumbnailGallery extends HTMLElement {
     `;
   }
 
-  async connectedCallback() {
+  connectedCallback() {
+    this.start();
+  }
+
+  private async start() {
     this.imageLength = await FlayFetch.getImageSize();
-    this.currentImageIndex = Math.floor(Math.random() * this.imageLength);
 
     this.initializeEventListeners();
     this.setupThumbnailGallery();
-    this.renderGalleryThumbnails();
+
+    this.random();
   }
 
   private initializeEventListeners() {
@@ -60,43 +64,52 @@ export class ImageThumbnailGallery extends HTMLElement {
     this.shadowRoot!.addEventListener('wheel', (event: WheelEvent) => {
       event.preventDefault();
       if (event.deltaY < 0) {
-        this.currentImageIndex = (this.currentImageIndex - this.totalImages * 2) % this.imageLength;
+        this.previous();
+      } else {
+        this.next();
       }
-      this.renderGalleryThumbnails();
+    });
+
+    window.addEventListener('keydown', (event: KeyboardEvent) => {
+      console.log(`Key pressed: ${event.key}`);
+      if (event.key === 'ArrowLeft') {
+        this.previous();
+      } else if (event.key === 'ArrowRight') {
+        this.next();
+      } else if (event.key === ' ') {
+        this.random();
+      }
     });
   }
 
+  private next() {
+    this.renderGalleryThumbnails();
+  }
+
+  private previous() {
+    this.currentImageIndex = (this.currentImageIndex - this.totalImages * 2) % this.imageLength;
+    this.renderGalleryThumbnails();
+  }
+
+  private random() {
+    this.currentImageIndex = Math.floor(Math.random() * this.imageLength);
+    this.renderGalleryThumbnails();
+  }
+
   private setupThumbnailGallery() {
-    // Initialize the gallery thumbnails here
     this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
     this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
     this.totalImages = this.columnCount * this.rowCount;
-    console.log(`Gallery initialized with ${this.columnCount} columns and ${this.rowCount} rows, total images: ${this.totalImages}`);
   }
 
   private async renderGalleryThumbnails() {
-    console.log(`Rendering gallery with currentImageIndex: ${this.currentImageIndex}, totalImages: ${this.totalImages}`);
-
-    // Clear previous content
-    this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());
-
-    // Render the gallery thumbnails here
     const fragment = document.createDocumentFragment();
     for (let i = 0; i < this.totalImages; i++) {
       const imageData = await FlayFetch.getStaticImage(this.currentImageIndex);
-      // console.log(`Image data: ${JSON.stringify(imageData)}`);
-
-      const imageUrl = URL.createObjectURL(imageData.imageBlob);
-      // console.log(`Image URL: ${imageUrl}`);
-
-      const imageElement = document.createElement('img');
-      imageElement.src = imageUrl;
-      // await imageElement.decode(); // Ensure the image is loaded before appending
-
-      fragment.appendChild(imageElement);
-
+      fragment.appendChild(document.createElement('img')).src = URL.createObjectURL(imageData.imageBlob);
       this.currentImageIndex = (this.currentImageIndex + 1) % this.imageLength;
     }
+    this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());
     this.shadowRoot!.appendChild(fragment);
   }
 }

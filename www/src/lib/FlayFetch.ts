@@ -373,6 +373,10 @@ export default class FlayFetch {
     return { name, path, modified, imageBlob };
   }
 
+  static getImageURL(idx: number): string {
+    return ApiClient.buildUrl(`/static/image/${idx}`);
+  }
+
   /* ######################## etc ######################## */
 
   /**

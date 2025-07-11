@@ -113,19 +113,22 @@ export class ImageThumbnailGallery extends HTMLElement {
     this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
     this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
     this.totalImages = this.columnCount * this.rowCount;
+
+    this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());
+    for (let i = 0; i < this.totalImages; i++) {
+      const img = this.shadowRoot!.appendChild(document.createElement('img'));
+      img.id = `thumbnail-${i}`;
+    }
   }
 
   private async renderGalleryThumbnails() {
-    const fragment = document.createDocumentFragment();
     for (let i = 0; i < this.totalImages; i++) {
-      const img = fragment.appendChild(document.createElement('img'));
+      const img = this.shadowRoot!.querySelector(`#thumbnail-${i}`) as HTMLImageElement;
       img.src = FlayFetch.getImageURL(this.currentImageIndex);
       img.alt = `Image ${this.currentImageIndex}`;
 
       this.currentImageIndex = (this.currentImageIndex + 1) % this.imageLength;
     }
-    this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());
-    this.shadowRoot!.appendChild(fragment);
   }
 }
 

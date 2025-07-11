@@ -1,4 +1,5 @@
 import { ImageCircle, type EffectType, type ImageCircleOptions } from '@image/ImageCircle';
+import StyleUtils from '../lib/StyleUtils';
 import './inc/Page';
 import './page.image-circle.scss';
 
@@ -52,43 +53,7 @@ new Page().start();
  * @returns rem 단위로 계산된 사용 가능한 최소 크기
  */
 function getAvailableRemSize(element: Element): number {
-  /**
-   * 요소의 사용 가능한 너비를 계산합니다.
-   * @param element - 너비를 계산할 요소
-   * @returns 패딩을 제외한 사용 가능한 너비 (px)
-   */
-  function getAvailableWidth(element: Element): number {
-    const computedStyle = getComputedStyle(element);
-    const paddingLeft = parseFloat(computedStyle.paddingLeft);
-    const paddingRight = parseFloat(computedStyle.paddingRight);
-
-    return window.innerWidth - paddingLeft - paddingRight;
-  }
-
-  /**
-   * 요소의 사용 가능한 높이를 계산합니다.
-   * @param element - 높이를 계산할 요소
-   * @returns 패딩을 제외한 사용 가능한 높이 (px)
-   */
-  function getAvailableHeight(element: Element): number {
-    const computedStyle = getComputedStyle(element);
-    const paddingTop = parseFloat(computedStyle.paddingTop);
-    const paddingBottom = parseFloat(computedStyle.paddingBottom);
-
-    return window.innerHeight - paddingTop - paddingBottom;
-  }
-
-  /**
-   * px 값을 rem 값으로 변환합니다.
-   * @param px - 변환할 픽셀 값
-   * @returns rem 단위로 변환된 값
-   */
-  function pxToRem(px: number): number {
-    const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
-    return Math.floor(px / rem);
-  }
-
-  const width = getAvailableWidth(element);
-  const height = getAvailableHeight(element);
-  return Math.min(pxToRem(width), pxToRem(height));
+  const width = StyleUtils.getAvailableRemSize(element);
+  const height = StyleUtils.getAvailableHeight(element);
+  return Math.min(Math.floor(StyleUtils.pxToRem(width)), Math.floor(StyleUtils.pxToRem(height)));
 }

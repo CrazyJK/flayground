@@ -55,7 +55,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.tickTimer.addEventListener(EVENT_TIMER_END, () => this.#start());
     this.tickTimer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));
 
-    addResizeListener(() => this.#updateMarkerPositions());
+    addResizeListener(() => this.#updateMarkerPositions(), true);
 
     this.addEventListener('click', (e) => {
       if (e.target === this) this.#togglePause();

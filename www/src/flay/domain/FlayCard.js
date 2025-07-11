@@ -51,8 +51,7 @@ export default class FlayCard extends HTMLDivElement {
 
     addResizeListener(() => {
       this.#resize();
-    });
-    this.#resize();
+    }, true);
   }
 
   #resize() {

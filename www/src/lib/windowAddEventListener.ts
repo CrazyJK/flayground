@@ -119,15 +119,18 @@ export const addMouseoutToNullListener = (listener: EventListener): (() => void)
  * window resize 이벤트 핸들러를 등록한다.
  * - 등록 즉시 1회 수행한다
  * @param listener 등록할 이벤트 리스너 함수
+ * @param immediate 즉시 실행 여부 (기본값: false)
  * @returns 리스너 제거 함수
  */
-export const addResizeListener = (listener: EventListener): (() => void) => {
+export const addResizeListener = (listener: EventListener, immediate: boolean = false): (() => void) => {
   if (typeof listener !== 'function') {
     console.error('리스너는 함수여야 합니다');
     return () => {};
   }
   eventListeners.resize.push(listener);
-  listener(new Event('resize'));
+  if (immediate) {
+    listener(new Event('resize'));
+  }
   return () => removeListener('resize', listener);
 };
 

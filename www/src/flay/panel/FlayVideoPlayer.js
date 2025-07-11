@@ -302,7 +302,7 @@ export const playInLayer = async (opus) => {
     });
   }
 
-  addResizeListener(() => setPlayerPosition());
+  addResizeListener(() => setPlayerPosition(), true);
 
   layer.classList.remove('hide');
 

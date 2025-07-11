@@ -143,7 +143,7 @@ export default class FlayPagination extends HTMLDivElement {
 
     addResizeListener(() => {
       this.#display();
-    });
+    }, true);
 
     randomPopupButton.addEventListener('mouseover', () => randomPopupButton.classList.add('input-mode'));
     randomPopupButton.addEventListener('mouseout', () => randomPopupButton.classList.remove('input-mode'));

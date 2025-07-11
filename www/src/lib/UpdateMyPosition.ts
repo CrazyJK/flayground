@@ -64,7 +64,7 @@ addLoadListener(() => update());
 
 addBeforeunloadListener(() => update());
 
-addResizeListener(() => update());
+addResizeListener(() => update(), true);
 
 addMouseoutToNullListener(() => update());
 

@@ -59,7 +59,7 @@ class Page extends FlayProvider {
   async start() {
     addResizeListener(() => {
       this.fillDropzone();
-    });
+    }, true);
 
     document.querySelector('.movezone').addEventListener('wheel', async () => {
       await this.appendFlayCard();

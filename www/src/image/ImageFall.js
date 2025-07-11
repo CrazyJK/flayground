@@ -29,7 +29,7 @@ export class ImageFall extends HTMLDivElement {
   }
 
   connectedCallback() {
-    addResizeListener(() => this.#resizeDiv());
+    addResizeListener(() => this.#resizeDiv(), true);
 
     window.addEventListener('keyup', (e) => {
       switch (e.code) {

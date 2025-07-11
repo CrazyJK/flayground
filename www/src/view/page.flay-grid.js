@@ -39,7 +39,7 @@ class Page {
       }
     });
 
-    addResizeListener(() => this.#append());
+    addResizeListener(() => this.#append(), true);
   }
 
   async #append() {

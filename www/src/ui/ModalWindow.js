@@ -156,7 +156,7 @@ export class ModalWindow extends HTMLDivElement {
     // 애니메이션 프레임 시작
     this.#startRenderLoop();
 
-    addResizeListener(() => this.#resizeWindowHandler());
+    addResizeListener(() => this.#resizeWindowHandler(), true);
   }
 
   connectedCallback() {

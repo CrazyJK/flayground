@@ -87,6 +87,7 @@ export class ImageThumbnailGallery extends HTMLElement {
     });
 
     this.keydownListener = (event: KeyboardEvent) => {
+      console.debug(`Key pressed: ${event.key} ${event.code}`);
       switch (event.code) {
         case EventCode.ARROW_LEFT:
           this.previous();
@@ -94,8 +95,10 @@ export class ImageThumbnailGallery extends HTMLElement {
         case EventCode.ARROW_RIGHT:
           this.next();
           break;
-        case EventCode.SPACE:
+        case EventCode.KEY_R:
           this.random();
+          break;
+        case EventCode.SPACE:
           break;
       }
     };

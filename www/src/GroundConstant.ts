@@ -78,6 +78,7 @@ export const EventCode = {
   PAGE_UP: 'PageUp',
   SPACE: 'Space',
   TAB: 'Tab',
+  KEY_R: 'KeyR',
   WHEEL_DOWN: 'WheelDown',
   WHEEL_UP: 'WheelUp',
 } as const;

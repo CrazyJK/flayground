@@ -1,3 +1,4 @@
+import { EventCode } from '@/GroundConstant';
 import FlayFetch from '@lib/FlayFetch';
 import StyleUtils from '@lib/StyleUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -69,21 +70,15 @@ export class ImageThumbnailGallery extends HTMLElement {
 
   private async start() {
     this.imageLength = await FlayFetch.getImageSize();
-
     this.initializeEventListeners();
     this.setupThumbnailGallery();
-
     this.random();
   }
 
   private initializeEventListeners() {
     this.parentElement!.addEventListener('wheel', (event: WheelEvent) => {
       event.preventDefault();
-      if (event.deltaY < 0) {
-        this.previous();
-      } else {
-        this.next();
-      }
+      event.deltaY < 0 ? this.previous() : this.next();
     });
 
     this.removeResizeListener = addResizeListener(() => {
@@ -92,13 +87,16 @@ export class ImageThumbnailGallery extends HTMLElement {
     });
 
     this.keydownListener = (event: KeyboardEvent) => {
-      console.log(`Key pressed: ${event.key}`);
-      if (event.key === 'ArrowLeft') {
-        this.previous();
-      } else if (event.key === 'ArrowRight') {
-        this.next();
-      } else if (event.key === ' ') {
-        this.random();
+      switch (event.code) {
+        case EventCode.ARROW_LEFT:
+          this.previous();
+          break;
+        case EventCode.ARROW_RIGHT:
+          this.next();
+          break;
+        case EventCode.SPACE:
+          this.random();
+          break;
       }
     };
     window.addEventListener('keydown', this.keydownListener);

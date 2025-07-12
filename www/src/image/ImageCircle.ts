@@ -5,7 +5,7 @@
  */
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
-import StyleUtils from '../lib/StyleUtils';
+import StyleUtils from '@lib/StyleUtils';
 import './imageCircle.scss';
 
 // 타입 정의

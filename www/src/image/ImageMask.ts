@@ -1,5 +1,5 @@
-import DateUtils from '../lib/DateUtils';
-import FlayFetch, { ImageData } from '../lib/FlayFetch';
+import DateUtils from '@lib/DateUtils';
+import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import './ImageMask.scss';
 
 const SECOND = 1000;

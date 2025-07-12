@@ -45,6 +45,8 @@ echo ---------------------------------------------------------------------------
 cd www
 start /wait /b cmd /c yarn install
 echo.
+start /wait /b cmd /c node madge.cjs
+echo.
 start /wait /b cmd /c yarn run build
 
 title FLAY_GROUND Build maven

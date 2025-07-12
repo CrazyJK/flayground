@@ -4,27 +4,34 @@ import { addResizeListener } from '@lib/windowAddEventListener';
 import './ImageFall.scss';
 
 const PANE_WIDTH = 360;
-const DEFAULT_OPTS = { mode: 'serial', auto: true };
+
+// 옵션 타입 정의
+interface ImageFallOptions {
+  mode: 'serial' | 'random';
+  auto: boolean;
+}
+
+const DEFAULT_OPTS: ImageFallOptions = { mode: 'serial', auto: true };
 
 export class ImageFall extends HTMLDivElement {
-  timer = -1;
-  contunue = true;
-  willRandom = false;
+  private timer: number = -1;
+  private contunue: boolean = true;
+  private willRandom: boolean = false;
 
-  imageLength = -1;
+  private imageLength: number = -1;
 
-  imageIndexArray = [];
-  iamgeIndex = -1;
+  private imageIndexArray: number[] = [];
+  private iamgeIndex: number = -1;
 
-  divIndexArray = [];
-  divIndex = -1;
+  private divIndexArray: number[] = [];
+  private divIndex: number = -1;
 
   // 이벤트 리스너와 리소스 정리를 위한 변수들
-  keyupHandler = null;
-  removeResizeListener = null;
-  imageUrls = new Set(); // 생성된 이미지 URL들을 추적
+  private keyupHandler: ((e: KeyboardEvent) => void) | null = null;
+  private removeResizeListener: (() => void) | null = null;
+  private imageUrls: Set<string> = new Set(); // 생성된 이미지 URL들을 추적
 
-  constructor(opts = DEFAULT_OPTS) {
+  constructor(opts: Partial<ImageFallOptions> = DEFAULT_OPTS) {
     super();
     this.classList.add('image-fall', 'flay-div');
 
@@ -33,10 +40,10 @@ export class ImageFall extends HTMLDivElement {
     this.willRandom = mode === 'random';
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     this.removeResizeListener = addResizeListener(() => this.#resizeDiv(), true);
 
-    this.keyupHandler = (e) => {
+    this.keyupHandler = (e: KeyboardEvent) => {
       switch (e.code) {
         case 'Space':
           this.contunue = !this.contunue;
@@ -52,12 +59,12 @@ export class ImageFall extends HTMLDivElement {
     window.addEventListener('keyup', this.keyupHandler);
 
     FlayFetch.getImageSize()
-      .then((text) => (this.imageLength = Number(text)))
+      .then((size: number) => (this.imageLength = size))
       .then(() => this.#resizeDiv())
       .then(() => this.#render());
   }
 
-  disconnectedCallback() {
+  disconnectedCallback(): void {
     // 타이머 정리
     if (this.timer !== -1) {
       clearInterval(this.timer);
@@ -77,13 +84,13 @@ export class ImageFall extends HTMLDivElement {
     }
 
     // 모든 이미지 URL 정리
-    this.imageUrls.forEach((url) => {
+    this.imageUrls.forEach((url: string) => {
       URL.revokeObjectURL(url);
     });
     this.imageUrls.clear();
 
     // 기존 이미지들의 URL 정리
-    this.querySelectorAll('img').forEach((img) => {
+    this.querySelectorAll('img').forEach((img: HTMLImageElement) => {
       if (img.src && img.src.startsWith('blob:')) {
         URL.revokeObjectURL(img.src);
       }
@@ -103,7 +110,7 @@ export class ImageFall extends HTMLDivElement {
     console.debug('[ImageFall] Component disconnected and cleaned up');
   }
 
-  #resizeDiv() {
+  #resizeDiv(): void {
     const paneCount = Math.round(this.clientWidth / PANE_WIDTH);
     const imageWrapList = this.querySelectorAll('.row > div');
 
@@ -113,27 +120,30 @@ export class ImageFall extends HTMLDivElement {
     }
 
     const divList = this.querySelectorAll('.row');
-    imageWrapList.forEach((imageWrap, index) => {
-      divList[index % divList.length]?.append(imageWrap);
-      imageWrap.style.height = 'auto';
+    imageWrapList.forEach((imageWrap: Element, index: number) => {
+      const targetDiv = divList[index % divList.length];
+      if (targetDiv && imageWrap instanceof HTMLElement) {
+        targetDiv.append(imageWrap);
+        imageWrap.style.height = 'auto';
+      }
     });
   }
 
-  #render() {
-    this.timer = setInterval(() => {
+  #render(): void {
+    this.timer = window.setInterval(() => {
       if (this.contunue) this.#addImage();
     }, 1000 * 3);
   }
 
-  async #addImage() {
+  async #addImage(): Promise<void> {
     const divList = this.querySelectorAll('.row');
     const divIndex = this.#getDivIdx(divList.length);
     const imageIndex = this.#getImageIdx();
 
     const imageWrap = document.createElement('div');
-    divList[divIndex].prepend(imageWrap);
+    divList[divIndex]?.prepend(imageWrap);
 
-    const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(imageIndex);
+    const { name, path, imageBlob } = await FlayFetch.getStaticImage(imageIndex);
 
     const image = new Image();
     const imageUrl = URL.createObjectURL(imageBlob);
@@ -159,27 +169,27 @@ export class ImageFall extends HTMLDivElement {
     }
 
     imageWrap.style.height = `calc(${image.height}px + 1rem)`;
-    imageWrap.style.top = 0;
+    imageWrap.style.top = '0';
 
-    divList.forEach((div) => {
+    divList.forEach((div: Element) => {
       const images = div.querySelectorAll('div');
       if (images.length > 9) {
         const lastImage = div.querySelector('div:last-child');
-        const lastImageElement = lastImage.querySelector('img');
+        const lastImageElement = lastImage?.querySelector('img') as HTMLImageElement;
         if (lastImageElement && lastImageElement.src) {
           URL.revokeObjectURL(lastImageElement.src);
           this.imageUrls.delete(lastImageElement.src);
         }
-        lastImage.remove();
+        lastImage?.remove();
       }
     });
 
     // console.debug(`div[${divIndex + 1}/${divList.length}] ${imageIndex} - ${name}`);
   }
 
-  #getDivIdx(divLength) {
+  #getDivIdx(divLength: number): number {
     if (0 === this.divIndexArray.length || divLength < this.divIndexArray.length) {
-      this.divIndexArray = Array.from({ length: divLength }, (v, i) => i);
+      this.divIndexArray = Array.from({ length: divLength }, (_, i) => i);
       this.divIndex = 0;
     }
 
@@ -194,9 +204,9 @@ export class ImageFall extends HTMLDivElement {
     return this.divIndexArray.splice(this.divIndex, 1)[0];
   }
 
-  #getImageIdx() {
+  #getImageIdx(): number {
     if (this.imageIndexArray.length === 0) {
-      this.imageIndexArray = Array.from({ length: this.imageLength }, (v, i) => i);
+      this.imageIndexArray = Array.from({ length: this.imageLength }, (_, i) => i);
       this.iamgeIndex = getRandomInt(0, this.imageIndexArray.length);
     }
 
@@ -204,7 +214,7 @@ export class ImageFall extends HTMLDivElement {
       this.iamgeIndex = getRandomInt(0, this.imageIndexArray.length);
     } else {
       if (this.iamgeIndex >= this.imageIndexArray.length) {
-        this.currentIndex = 0;
+        this.iamgeIndex = 0;
       }
     }
 

@@ -5,6 +5,15 @@ import { getRandomInt } from '@lib/randomNumber';
 import { Countdown, EVENT_COUNTDOWN_END } from '@ui/Countdown';
 import './part/FlayImage';
 
+// 이미지 정보 인터페이스
+interface ImageInfo {
+  idx: string;
+  path: string;
+  name: string;
+  width: number;
+  height: number;
+}
+
 const cssText = `
 :host {
   position: absolute;
@@ -96,37 +105,37 @@ const PLAY = 'play';
 const TIMER = 10;
 
 export class ImageOne extends HTMLElement {
-  #flayImage;
-  #imgIdx;
-  #imgPath;
-  #imgName;
-  #imgSize;
-  #viewMode;
-  #flowMode;
-  #progressBar;
-  #countdown;
+  #flayImage: HTMLImageElement;
+  #imgIdx: HTMLLabelElement;
+  #imgPath: HTMLLabelElement;
+  #imgName: HTMLLabelElement;
+  #imgSize: HTMLLabelElement;
+  #viewMode: HTMLButtonElement;
+  #flowMode: HTMLButtonElement;
+  #progressBar: HTMLDivElement;
+  #countdown: Countdown;
 
   // 이벤트 핸들러들
-  #drawInfoHandler;
-  #viewTogglerHandler;
-  #flowTogglerHandler;
-  #playTogglerHandler;
-  #onCountdownEndHandler;
-  #playTogglerClickHandler;
-  #navigateOnWheelHandler;
-  #navigateOnKeyupHandler;
+  #drawInfoHandler: (e: CustomEvent) => void;
+  #viewTogglerHandler: (e: MouseEvent) => void;
+  #flowTogglerHandler: (e: MouseEvent) => void;
+  #playTogglerHandler: (e: MouseEvent) => void;
+  #onCountdownEndHandler: () => void;
+  #playTogglerClickHandler: (e: MouseEvent) => void;
+  #navigateOnWheelHandler: (e: WheelEvent) => void;
+  #navigateOnKeyupHandler: (e: KeyboardEvent) => void;
+
+  public imageIdx: number = 0;
+  public imageSize: number = 0;
 
   constructor() {
     super();
 
     this.attachShadow({ mode: 'open' });
 
-    this.imageIdx = 0;
-    this.imageSize = 0;
-
     this.setAttribute('tabindex', '0'); // 포커스를 받을 수 있도록 tabindex 속성 추가
     this.classList.add('image-one', 'flay-div');
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
       <style>${cssText}</style>
       <img is="flay-image">
       <footer>
@@ -144,25 +153,25 @@ export class ImageOne extends HTMLElement {
       </footer>
     `;
 
-    this.#flayImage = this.shadowRoot.querySelector('img');
-    this.#imgIdx = this.shadowRoot.querySelector('#imgIdx');
-    this.#imgPath = this.shadowRoot.querySelector('#imgPath');
-    this.#imgName = this.shadowRoot.querySelector('#imgName');
-    this.#imgSize = this.shadowRoot.querySelector('#imgSize');
-    this.#progressBar = this.shadowRoot.querySelector('.progress-bar');
-    this.#viewMode = this.shadowRoot.querySelector('#viewMode');
-    this.#flowMode = this.shadowRoot.querySelector('#flowMode');
-    this.#countdown = this.shadowRoot.querySelector('.info').appendChild(new Countdown());
+    this.#flayImage = this.shadowRoot!.querySelector('img')!;
+    this.#imgIdx = this.shadowRoot!.querySelector('#imgIdx')!;
+    this.#imgPath = this.shadowRoot!.querySelector('#imgPath')!;
+    this.#imgName = this.shadowRoot!.querySelector('#imgName')!;
+    this.#imgSize = this.shadowRoot!.querySelector('#imgSize')!;
+    this.#progressBar = this.shadowRoot!.querySelector('.progress-bar')!;
+    this.#viewMode = this.shadowRoot!.querySelector('#viewMode')!;
+    this.#flowMode = this.shadowRoot!.querySelector('#flowMode')!;
+    this.#countdown = this.shadowRoot!.querySelector('.info')!.appendChild(new Countdown());
 
     // 이벤트 핸들러 바인딩
-    this.#drawInfoHandler = (e) => this.#drawInfo(e.detail.info);
-    this.#viewTogglerHandler = (e) => this.#viewToggler(e);
-    this.#flowTogglerHandler = (e) => this.#flowToggler(e);
-    this.#playTogglerHandler = (e) => this.#playToggler(e);
+    this.#drawInfoHandler = (e: CustomEvent) => this.#drawInfo(e.detail.info);
+    this.#viewTogglerHandler = (e: MouseEvent) => this.#viewToggler(e);
+    this.#flowTogglerHandler = (e: MouseEvent) => this.#flowToggler(e);
+    this.#playTogglerHandler = (e: MouseEvent) => this.#playToggler(e, true);
     this.#onCountdownEndHandler = () => this.#onCountdownEnd();
-    this.#playTogglerClickHandler = (e) => this.#playToggler(e, false);
-    this.#navigateOnWheelHandler = (e) => this.#navigateOnWheel(e);
-    this.#navigateOnKeyupHandler = (e) => this.#navigateOnKeyup(e);
+    this.#playTogglerClickHandler = (e: MouseEvent) => this.#playToggler(e, false);
+    this.#navigateOnWheelHandler = (e: WheelEvent) => this.#navigateOnWheel(e);
+    this.#navigateOnKeyupHandler = (e: KeyboardEvent) => this.#navigateOnKeyup(e);
 
     // 이벤트 리스너 등록
     this.#flayImage.addEventListener('loaded', this.#drawInfoHandler);
@@ -175,16 +184,16 @@ export class ImageOne extends HTMLElement {
     this.addEventListener('keyup', this.#navigateOnKeyupHandler);
   }
 
-  connectedCallback() {
-    FlayFetch.getImageSize().then((text) => {
-      this.imageSize = Number(text);
+  connectedCallback(): void {
+    FlayFetch.getImageSize().then((size: number) => {
+      this.imageSize = size;
       this.#navigator('Space');
       this.#flowMode.click();
       this.#countdown.click();
     });
   }
 
-  disconnectedCallback() {
+  disconnectedCallback(): void {
     // 카운트다운 정리
     this.#countdown.reset();
 
@@ -222,29 +231,29 @@ export class ImageOne extends HTMLElement {
     console.debug('[ImageOne] Component disconnected and cleaned up');
   }
 
-  #navigateOnWheel(e) {
-    this.#navigator(e.wheelDelta > 0 ? EventCode.WHEEL_UP : EventCode.WHEEL_DOWN);
+  #navigateOnWheel(e: WheelEvent): void {
+    this.#navigator(e.deltaY > 0 ? EventCode.WHEEL_DOWN : EventCode.WHEEL_UP);
   }
 
-  #navigateOnKeyup(e) {
+  #navigateOnKeyup(e: KeyboardEvent): void {
     this.#navigator(e.code);
   }
 
-  #navigateByFlowMode() {
+  #navigateByFlowMode(): void {
     this.#navigator(this.classList.contains(RANDOM) ? EventCode.SPACE : EventCode.ARROW_RIGHT);
   }
 
-  #viewToggler(e) {
+  #viewToggler(e: MouseEvent): void {
     e.stopPropagation();
     this.#viewMode.innerHTML = this.classList.toggle(FULLSIZE) ? FULLSIZE : ORIGINAL;
   }
 
-  #flowToggler(e) {
+  #flowToggler(e: MouseEvent): void {
     e.stopPropagation();
     this.#flowMode.innerHTML = this.classList.toggle(RANDOM) ? RANDOM : FORWARD;
   }
 
-  #playToggler(e, force) {
+  #playToggler(e: MouseEvent, force?: boolean): void {
     e.stopPropagation();
     if (this.classList.toggle(PLAY, force)) {
       this.#countdown.start(TIMER);
@@ -253,12 +262,12 @@ export class ImageOne extends HTMLElement {
     }
   }
 
-  #onCountdownEnd() {
+  #onCountdownEnd(): void {
     this.#navigateByFlowMode();
     this.#countdown.start(TIMER);
   }
 
-  #navigator(code) {
+  #navigator(code: string): void {
     switch (code) {
       case EventCode.SPACE:
         this.imageIdx = getRandomInt(0, this.imageSize);
@@ -281,11 +290,11 @@ export class ImageOne extends HTMLElement {
         break;
     }
 
-    this.#flayImage.dataset.idx = this.imageIdx;
+    this.#flayImage.dataset.idx = String(this.imageIdx);
     this.#progressBar.style.width = `${((this.imageIdx + 1) / this.imageSize) * 100}%`;
   }
 
-  #drawInfo(info) {
+  #drawInfo(info: ImageInfo): void {
     this.#imgIdx.textContent = info.idx;
     this.#imgPath.textContent = info.path;
     this.#imgName.textContent = info.name;

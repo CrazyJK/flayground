@@ -1,23 +1,45 @@
 import '@image/part/ImageFrame';
+import ImageFrame from '@image/part/ImageFrame';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { ImageDomain } from '@lib/FlayFetch';
 import { lazyLoadBackgroundImage } from '@lib/ImageLazyLoad';
 import './ImagePage.scss';
 
+// 이미지 정보 타입 정의 (사용하지 않음 - ImageDomain 사용)
+// interface ImageInfo {
+//   idx: number;
+//   name: string;
+//   path: string;
+//   length: number;
+//   modified: number;
+// }
+
+// 이벤트 리스너 추적 타입
+interface EventListenerInfo {
+  element: Element;
+  event: string;
+  handler: (event: Event) => void;
+}
+
+interface DocumentEventListenerInfo {
+  event: string;
+  handler: (event: Event) => void;
+}
+
 export class ImagePage extends HTMLDivElement {
+  // 이벤트 리스너들을 추적하기 위한 변수들
+  private eventListeners: EventListenerInfo[] = [];
+  private documentEventListeners: DocumentEventListenerInfo[] = [];
+
   constructor() {
     super();
     this.classList.add('image-page');
     this.innerHTML = this.template();
-
-    // 이벤트 리스너들을 추적하기 위한 변수들
-    this.eventListeners = [];
-    this.documentEventListeners = [];
   }
 
-  template() {
+  template(): string {
     return `
       <header>
         <label id="path">Image path</label>
@@ -39,13 +61,13 @@ export class ImagePage extends HTMLDivElement {
       </div>`;
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     this.loadImages();
     this.registerUIEvents();
     this.registerResizeEvents();
   }
 
-  disconnectedCallback() {
+  disconnectedCallback(): void {
     // 등록된 이벤트 리스너들 정리
     this.eventListeners.forEach(({ element, event, handler }) => {
       element.removeEventListener(event, handler);
@@ -77,16 +99,16 @@ export class ImagePage extends HTMLDivElement {
     console.debug('[ImagePage] Component disconnected and cleaned up');
   }
 
-  loadImages() {
-    FlayFetch.getImageAll().then((list) => {
+  loadImages(): void {
+    FlayFetch.getImageAll().then((list: ImageDomain[]) => {
       const imagePathMap = this.groupImagesByPath(list);
       this.buildFolderTree(imagePathMap);
       this.addCollapseBehavior();
     });
   }
 
-  groupImagesByPath(list) {
-    const map = new Map();
+  groupImagesByPath(list: ImageDomain[]): Map<string, ImageDomain[]> {
+    const map = new Map<string, ImageDomain[]>();
     list.forEach((image) => {
       const group = map.get(image.path) || [];
       group.push(image);
@@ -95,26 +117,26 @@ export class ImagePage extends HTMLDivElement {
     return map;
   }
 
-  static encodeID(s) {
+  static encodeID(s: string): string {
     return s.replace(/:/gi, '：').replace(/ /gi, '□').replace(/#/gi, '＃');
   }
 
-  static decodeID(s) {
+  static decodeID(s: string): string {
     return s.replace(/：/gi, ':').replace(/□/gi, ' ').replace(/＃/gi, '#');
   }
 
   // 이벤트 리스너 등록 헬퍼 메서드
-  addEventListenerTracked(element, event, handler) {
+  addEventListenerTracked(element: Element, event: string, handler: (event: Event) => void): void {
     element.addEventListener(event, handler);
     this.eventListeners.push({ element, event, handler });
   }
 
-  addDocumentEventListenerTracked(event, handler) {
+  addDocumentEventListenerTracked(event: string, handler: (event: Event) => void): void {
     document.addEventListener(event, handler);
     this.documentEventListeners.push({ event, handler });
   }
 
-  buildFolderTree(imagePathMap) {
+  buildFolderTree(imagePathMap: Map<string, ImageDomain[]>): void {
     const sortedEntries = [...imagePathMap.entries()].sort();
     sortedEntries.forEach(([imagePath, images]) => {
       const idArray = imagePath.split('\\').map(ImagePage.encodeID);
@@ -123,7 +145,7 @@ export class ImagePage extends HTMLDivElement {
 
       idArray.forEach((idPart, idx) => {
         currentId = idx === 0 ? idPart : `${currentId}_${idPart}`;
-        let folderDiv = this.querySelector('#' + currentId);
+        let folderDiv = this.querySelector('#' + currentId) as HTMLDivElement;
         if (!folderDiv) {
           const parentElement = this.querySelector('#' + parentId) || this;
           folderDiv = parentElement.appendChild(document.createElement('div'));
@@ -149,29 +171,29 @@ export class ImagePage extends HTMLDivElement {
     });
   }
 
-  deactivateActiveLinks() {
+  deactivateActiveLinks(): void {
     this.querySelectorAll('a.active').forEach((a) => a.classList.remove('active'));
   }
 
-  addCollapseBehavior() {
+  addCollapseBehavior(): void {
     this.querySelectorAll('.folder-tree div:not(#root)').forEach((div) => {
       const span = div.querySelector('span');
       if (div.querySelectorAll('div').length > 0) {
-        const clickHandler = (e) => {
-          e.target.closest('div').classList.toggle('fold');
+        const clickHandler = (e: Event) => {
+          (e.target as HTMLElement).closest('div')?.classList.toggle('fold');
         };
-        this.addEventListenerTracked(span, 'click', clickHandler);
+        this.addEventListenerTracked(span!, 'click', clickHandler);
       } else {
-        span.classList.add('no-child');
+        span!.classList.add('no-child');
       }
     });
   }
 
-  registerUIEvents() {
+  registerUIEvents(): void {
     // Adjust article size on click.
     this.querySelectorAll('main header button').forEach((button) => {
-      const clickHandler = (e) => {
-        this.adjustArticleSize(e.target.getAttribute('role'));
+      const clickHandler = (e: Event) => {
+        this.adjustArticleSize((e.target as HTMLElement).getAttribute('role')!);
       };
       this.addEventListenerTracked(button, 'click', clickHandler);
     });
@@ -179,21 +201,21 @@ export class ImagePage extends HTMLDivElement {
     // Hide preview layer when clicked.
     const previewLayer = this.querySelector('.preview');
     if (previewLayer) {
-      const clickHandler = (e) => {
-        e.target.classList.remove('show');
+      const clickHandler = (e: Event) => {
+        (e.target as HTMLElement).classList.remove('show');
       };
       this.addEventListenerTracked(previewLayer, 'click', clickHandler);
     }
   }
 
-  registerResizeEvents() {
-    const resizableContainer = this.querySelector('.resizable-container');
-    const resizer = this.querySelector('.resizer');
-    const folderTree = this.querySelector('.folder-tree');
+  registerResizeEvents(): void {
+    const resizableContainer = this.querySelector('.resizable-container') as HTMLElement;
+    const resizer = this.querySelector('.resizer') as HTMLElement;
+    const folderTree = this.querySelector('.folder-tree') as HTMLElement;
     let startX = 0;
     let startWidth = 0;
 
-    const onMouseMove = (e) => {
+    const onMouseMove = (e: MouseEvent) => {
       const newWidth = Math.max(100, startWidth - (e.clientX - startX) + 4);
       resizableContainer.style.gridTemplateColumns = `1fr 5px ${newWidth}px`;
     };
@@ -205,7 +227,7 @@ export class ImagePage extends HTMLDivElement {
       document.removeEventListener('mouseup', onMouseUp);
     };
 
-    const mouseDownHandler = (e) => {
+    const mouseDownHandler = (e: MouseEvent) => {
       resizer.classList.add('resizing');
       startX = e.clientX;
       startWidth = folderTree.clientWidth;
@@ -217,8 +239,8 @@ export class ImagePage extends HTMLDivElement {
     this.addEventListenerTracked(resizer, 'mousedown', mouseDownHandler);
   }
 
-  adjustArticleSize(action) {
-    const article = this.querySelector('article');
+  adjustArticleSize(action: string): void {
+    const article = this.querySelector('article') as HTMLElement;
     if (!article) return;
     const currentClass = article.className;
     const maxSize = Math.ceil(article.clientWidth / 50) * 50;
@@ -228,7 +250,7 @@ export class ImagePage extends HTMLDivElement {
     article.classList.replace(currentClass, 'size-' + size);
   }
 
-  renderImage(images) {
+  renderImage(images: ImageDomain[]): void {
     console.debug(images);
     const pathLabel = this.querySelector('#path');
     if (pathLabel) pathLabel.innerHTML = images[0].path;
@@ -239,12 +261,12 @@ export class ImagePage extends HTMLDivElement {
     const previewLayer = this.querySelector('.preview');
     previewLayer && previewLayer.classList.remove('show');
 
-    const imageFrame = this.querySelector('.image-frame');
+    const imageFrame = this.querySelector('.image-frame') as ImageFrame;
     const article = this.querySelector('article');
     if (article) article.textContent = '';
 
     images.forEach((image) => {
-      const item = article.appendChild(document.createElement('div'));
+      const item = article!.appendChild(document.createElement('div'));
       item.dataset.lazyBackgroundImageUrl = ApiClient.buildUrl(`/static/image/${image.idx}`);
       item.title = `#${image.idx} - ${image.name} - ${FileUtils.formatSize(image.length)} - ${DateUtils.format(image.modified, 'yyyy-MM-dd')}`;
       const clickHandler = () => {
@@ -254,8 +276,8 @@ export class ImagePage extends HTMLDivElement {
       this.addEventListenerTracked(item, 'click', clickHandler);
     });
 
-    if (article.firstChild) {
-      article.firstChild.scrollIntoView(false);
+    if (article!.firstChild) {
+      (article!.firstChild as Element).scrollIntoView(false);
     }
     lazyLoadBackgroundImage();
   }

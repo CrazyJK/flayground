@@ -1,3 +1,4 @@
+import FlayStorage from '@lib/FlayStorage';
 import { tabUI } from '@lib/TabUI';
 import './inc/Page';
 import './page.image-page.scss';
@@ -12,7 +13,7 @@ Promise.all([
 ]).then(([{ ImageOne }, { ImagePage }, { ImageFall }, { ImageCircle }, { ImageMask }, { ImageThumbnail }]) => {
   const componentClasses = [ImageOne, ImagePage, ImageFall, ImageCircle, ImageMask, ImageThumbnail];
   const componentInstances = componentClasses.map((Component) => new Component());
-  const activeIndex = 0;
+  const activeIndex = FlayStorage.local.getNumber('imagePageActiveIndex', 0);
 
   document.body.innerHTML += `
   <header>
@@ -39,6 +40,8 @@ Promise.all([
     const main = document.querySelector('main');
     main.innerHTML = '';
     main.appendChild(componentInstances[index]);
+
+    FlayStorage.local.set('imagePageActiveIndex', String(index));
   });
 
   tabUI(document.body);

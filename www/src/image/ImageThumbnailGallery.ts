@@ -133,13 +133,7 @@ export class ImageThumbnailGallery extends HTMLElement {
 
   private async renderGalleryThumbnails() {
     // 모든 이미지를 먼저 페이드 아웃
-    const images = this.shadowRoot!.querySelectorAll('img');
-    images.forEach((img) => {
-      img.classList.remove('loaded');
-      // 인라인 스타일 초기화
-      img.style.removeProperty('opacity');
-      img.style.removeProperty('transform');
-    });
+    this.shadowRoot!.querySelectorAll('img').forEach((img) => img.classList.remove('loaded'));
 
     // 짧은 지연 후 새 이미지들을 순차적으로 로드
     await new Promise((resolve) => setTimeout(resolve, 150));

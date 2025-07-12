@@ -22,7 +22,6 @@ export class ImageThumbnailGallery extends HTMLElement {
           position: absolute;
           width: 100%;
           height: 100%;
-
           display: flex;
           flex-direction: row;
           flex-wrap: wrap;
@@ -38,11 +37,18 @@ export class ImageThumbnailGallery extends HTMLElement {
           display: inline-block;
           margin: 0;
           padding: 0;
-          transition: transform 0.3s ease-in-out;
+          opacity: 0;
+          transform: scale(0.8);
+          transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        img.loaded {
+          opacity: 1;
+          transform: scale(1);
         }
         img:hover {
           transform: scale(1.2);
           z-index: 1;
+          transition: all 0.2s ease-out;
         }
       </style>
     `;
@@ -122,13 +128,40 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private async renderGalleryThumbnails() {
+    // 모든 이미지를 먼저 페이드 아웃
+    const images = this.shadowRoot!.querySelectorAll('img');
+    images.forEach((img) => {
+      img.classList.remove('loaded');
+      // 인라인 스타일 초기화
+      img.style.removeProperty('opacity');
+      img.style.removeProperty('transform');
+    });
+
+    // 짧은 지연 후 새 이미지들을 순차적으로 로드
+    await new Promise((resolve) => setTimeout(resolve, 150));
+
     for (let i = 0; i < this.totalImages; i++) {
       const img = this.shadowRoot!.querySelector(`#thumbnail-${i}`) as HTMLImageElement;
-      img.src = FlayFetch.getImageURL(this.currentImageIndex);
-      img.alt = `Image ${this.currentImageIndex}`;
 
-      this.currentImageIndex = (this.currentImageIndex + 1) % this.imageLength;
+      // 이미지 로드 전에 약간의 지연을 추가하여 순차적 효과 생성
+      setTimeout(() => {
+        img.src = FlayFetch.getImageURL(this.currentImageIndex + i);
+        img.alt = `Image ${this.currentImageIndex + i}`;
+
+        // 이미지 로드 완료 시 페이드 인 효과
+        img.onload = () => {
+          img.classList.add('loaded');
+        };
+
+        // 이미지 로드 실패 시에도 페이드 인 (빈 이미지라도 보이도록)
+        img.onerror = () => {
+          img.classList.add('loaded');
+        };
+      }, i * 50); // 각 이미지마다 50ms씩 지연
     }
+
+    // 인덱스 업데이트
+    this.currentImageIndex = (this.currentImageIndex + this.totalImages) % this.imageLength;
   }
 }
 

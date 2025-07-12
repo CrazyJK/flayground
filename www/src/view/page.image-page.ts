@@ -8,14 +8,14 @@ import { tabUI } from '@lib/TabUI';
 import './inc/Page';
 import './page.image-page.scss';
 
-const components = [ImageOne, ImagePage, ImageFall, ImageCircle, ImageMask, ImageThumbnail];
-const componentInstances = components.map((Component) => new Component());
+const componentClasses = [ImageOne, ImagePage, ImageFall, ImageCircle, ImageMask, ImageThumbnail];
+const componentInstances = componentClasses.map((Component) => new Component());
 const activeIndex = 0;
 
 document.body.innerHTML += `
 <header>
   <div role="tablist">
-    ${components
+    ${componentClasses
       .map((component, index) => {
         return `
           <button role="tab" data-idx=${index} target="#panel${index}" ${index === activeIndex ? 'active' : ''}>

@@ -305,12 +305,13 @@ export class ImageThumbnailGallery extends HTMLElement {
   private animateImage(imageIndex: number) {
     const img = this.shadowRoot!.querySelector(`#thumbnail-${imageIndex}`) as HTMLImageElement;
     const actualImageIndex = (this.currentImageIndex + imageIndex) % this.imageLength;
+    const [animationClassName, loadedClassName] = ['blurring', 'loaded'];
 
     // 이미지 로드 전 클래스 제거
-    img.classList.remove('loaded');
+    img.classList.remove(loadedClassName);
 
     // 블러 페이드 효과 적용
-    img.classList.add('blurring');
+    img.classList.add(animationClassName);
 
     // 애니메이션 중간 지점에서 이미지 변경
     setTimeout(() => {
@@ -319,18 +320,18 @@ export class ImageThumbnailGallery extends HTMLElement {
 
       // 이미지 로드 완료 시 효과
       img.onload = () => {
-        img.classList.add('loaded');
+        img.classList.add(loadedClassName);
         // 애니메이션 완료 후 클래스 제거
         setTimeout(() => {
-          img.classList.remove('blurring');
+          img.classList.remove(animationClassName);
         }, ImageThumbnailGallery.RemoveClassDelay);
       };
 
       // 이미지 로드 실패 시에도 효과 적용
       img.onerror = () => {
-        img.classList.add('loaded');
+        img.classList.add(loadedClassName);
         setTimeout(() => {
-          img.classList.remove('blurring');
+          img.classList.remove(animationClassName);
         }, ImageThumbnailGallery.RemoveClassDelay);
       };
     }, ImageThumbnailGallery.ChangeImageDelay);

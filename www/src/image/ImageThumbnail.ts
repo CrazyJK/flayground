@@ -172,9 +172,10 @@ export class ImageThumbnail extends HTMLElement {
 
   private async start() {
     this.imageLength = await FlayFetch.getImageSize();
+    this.currentImageIndex = Math.floor(Math.random() * this.imageLength);
     this.initializeEventListeners();
     this.setupThumbnailGallery();
-    this.random();
+    this.startSlideshow();
   }
 
   private initializeEventListeners() {

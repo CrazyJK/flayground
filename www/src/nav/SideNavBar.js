@@ -32,7 +32,6 @@ const menuList = [
   {},
   { url: 'page.image-page.html', name: 'image page' },
   { url: 'page.image-download.html', name: 'pic download' },
-  { url: 'popup.image.html', name: 'image pop' },
   {},
   { url: 'page.kamoru-diary.html', name: 'diary' },
   {},

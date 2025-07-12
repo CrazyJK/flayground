@@ -106,6 +106,16 @@ export class ImageOne extends HTMLElement {
   #progressBar;
   #countdown;
 
+  // 이벤트 핸들러들
+  #drawInfoHandler;
+  #viewTogglerHandler;
+  #flowTogglerHandler;
+  #playTogglerHandler;
+  #onCountdownEndHandler;
+  #playTogglerClickHandler;
+  #navigateOnWheelHandler;
+  #navigateOnKeyupHandler;
+
   constructor() {
     super();
 
@@ -144,16 +154,25 @@ export class ImageOne extends HTMLElement {
     this.#flowMode = this.shadowRoot.querySelector('#flowMode');
     this.#countdown = this.shadowRoot.querySelector('.info').appendChild(new Countdown());
 
-    this.#flayImage.addEventListener('loaded', (e) => this.#drawInfo(e.detail.info));
+    // 이벤트 핸들러 바인딩
+    this.#drawInfoHandler = (e) => this.#drawInfo(e.detail.info);
+    this.#viewTogglerHandler = (e) => this.#viewToggler(e);
+    this.#flowTogglerHandler = (e) => this.#flowToggler(e);
+    this.#playTogglerHandler = (e) => this.#playToggler(e);
+    this.#onCountdownEndHandler = () => this.#onCountdownEnd();
+    this.#playTogglerClickHandler = (e) => this.#playToggler(e, false);
+    this.#navigateOnWheelHandler = (e) => this.#navigateOnWheel(e);
+    this.#navigateOnKeyupHandler = (e) => this.#navigateOnKeyup(e);
 
-    this.#viewMode.addEventListener('click', (e) => this.#viewToggler(e));
-    this.#flowMode.addEventListener('click', (e) => this.#flowToggler(e));
-    this.#countdown.addEventListener('click', (e) => this.#playToggler(e));
-    this.#countdown.addEventListener(EVENT_COUNTDOWN_END, () => this.#onCountdownEnd());
-
-    this.addEventListener('click', (e) => this.#playToggler(e, false));
-    this.addEventListener('wheel', (e) => this.#navigateOnWheel(e));
-    this.addEventListener('keyup', (e) => this.#navigateOnKeyup(e));
+    // 이벤트 리스너 등록
+    this.#flayImage.addEventListener('loaded', this.#drawInfoHandler);
+    this.#viewMode.addEventListener('click', this.#viewTogglerHandler);
+    this.#flowMode.addEventListener('click', this.#flowTogglerHandler);
+    this.#countdown.addEventListener('click', this.#playTogglerHandler);
+    this.#countdown.addEventListener(EVENT_COUNTDOWN_END, this.#onCountdownEndHandler);
+    this.addEventListener('click', this.#playTogglerClickHandler);
+    this.addEventListener('wheel', this.#navigateOnWheelHandler);
+    this.addEventListener('keyup', this.#navigateOnKeyupHandler);
   }
 
   connectedCallback() {
@@ -163,6 +182,44 @@ export class ImageOne extends HTMLElement {
       this.#flowMode.click();
       this.#countdown.click();
     });
+  }
+
+  disconnectedCallback() {
+    // 카운트다운 정리
+    this.#countdown.reset();
+
+    // 이벤트 리스너 제거
+    this.#flayImage.removeEventListener('loaded', this.#drawInfoHandler);
+    this.#viewMode.removeEventListener('click', this.#viewTogglerHandler);
+    this.#flowMode.removeEventListener('click', this.#flowTogglerHandler);
+    this.#countdown.removeEventListener('click', this.#playTogglerHandler);
+    this.#countdown.removeEventListener(EVENT_COUNTDOWN_END, this.#onCountdownEndHandler);
+    this.removeEventListener('click', this.#playTogglerClickHandler);
+    this.removeEventListener('wheel', this.#navigateOnWheelHandler);
+    this.removeEventListener('keyup', this.#navigateOnKeyupHandler);
+
+    // CSS 변수 정리
+    document.documentElement.style.removeProperty('--dominated-color');
+
+    // 프로그레스 바 스타일 정리
+    this.#progressBar.style.width = '';
+
+    // 컴포넌트 상태 정리
+    this.imageIdx = 0;
+    this.imageSize = 0;
+
+    // 이미지 데이터 정리
+    if (this.#flayImage) {
+      this.#flayImage.dataset.idx = '';
+    }
+
+    // 정보 표시 정리
+    this.#imgIdx.textContent = '';
+    this.#imgPath.textContent = '';
+    this.#imgName.textContent = '';
+    this.#imgSize.textContent = '';
+
+    console.debug('[ImageOne] Component disconnected and cleaned up');
   }
 
   #navigateOnWheel(e) {

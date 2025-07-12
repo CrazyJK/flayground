@@ -19,6 +19,11 @@ export class ImageFall extends HTMLDivElement {
   divIndexArray = [];
   divIndex = -1;
 
+  // 이벤트 리스너와 리소스 정리를 위한 변수들
+  keyupHandler = null;
+  removeResizeListener = null;
+  imageUrls = new Set(); // 생성된 이미지 URL들을 추적
+
   constructor(opts = DEFAULT_OPTS) {
     super();
     this.classList.add('image-fall', 'flay-div');
@@ -29,9 +34,9 @@ export class ImageFall extends HTMLDivElement {
   }
 
   connectedCallback() {
-    addResizeListener(() => this.#resizeDiv(), true);
+    this.removeResizeListener = addResizeListener(() => this.#resizeDiv(), true);
 
-    window.addEventListener('keyup', (e) => {
+    this.keyupHandler = (e) => {
       switch (e.code) {
         case 'Space':
           this.contunue = !this.contunue;
@@ -43,7 +48,8 @@ export class ImageFall extends HTMLDivElement {
           this.willRandom = false;
           break;
       }
-    });
+    };
+    window.addEventListener('keyup', this.keyupHandler);
 
     FlayFetch.getImageSize()
       .then((text) => (this.imageLength = Number(text)))
@@ -52,7 +58,49 @@ export class ImageFall extends HTMLDivElement {
   }
 
   disconnectedCallback() {
-    clearInterval(this.timer);
+    // 타이머 정리
+    if (this.timer !== -1) {
+      clearInterval(this.timer);
+      this.timer = -1;
+    }
+
+    // 이벤트 리스너 정리
+    if (this.keyupHandler) {
+      window.removeEventListener('keyup', this.keyupHandler);
+      this.keyupHandler = null;
+    }
+
+    // 리사이즈 리스너 정리
+    if (this.removeResizeListener) {
+      this.removeResizeListener();
+      this.removeResizeListener = null;
+    }
+
+    // 모든 이미지 URL 정리
+    this.imageUrls.forEach((url) => {
+      URL.revokeObjectURL(url);
+    });
+    this.imageUrls.clear();
+
+    // 기존 이미지들의 URL 정리
+    this.querySelectorAll('img').forEach((img) => {
+      if (img.src && img.src.startsWith('blob:')) {
+        URL.revokeObjectURL(img.src);
+      }
+    });
+
+    // 상태 초기화
+    this.contunue = false;
+    this.imageLength = -1;
+    this.imageIndexArray = [];
+    this.iamgeIndex = -1;
+    this.divIndexArray = [];
+    this.divIndex = -1;
+
+    // DOM 정리
+    this.innerHTML = '';
+
+    console.debug('[ImageFall] Component disconnected and cleaned up');
   }
 
   #resizeDiv() {
@@ -88,7 +136,12 @@ export class ImageFall extends HTMLDivElement {
     const { name, path, modified, imageBlob } = await FlayFetch.getStaticImage(imageIndex);
 
     const image = new Image();
-    image.src = URL.createObjectURL(imageBlob);
+    const imageUrl = URL.createObjectURL(imageBlob);
+    image.src = imageUrl;
+
+    // 생성된 URL을 추적
+    this.imageUrls.add(imageUrl);
+
     image.title = `Idx: ${imageIndex}\nName: ${name}\nPath: ${path}`;
     image.addEventListener('click', () => {
       window.open(`popup.image.html#${imageIndex}`, `image${imageIndex}`, `width=${image.naturalWidth}px,height=${image.naturalHeight}px`);
@@ -98,7 +151,8 @@ export class ImageFall extends HTMLDivElement {
     try {
       await image.decode();
     } catch (error) {
-      URL.revokeObjectURL(image.src);
+      URL.revokeObjectURL(imageUrl);
+      this.imageUrls.delete(imageUrl);
       image.remove();
       imageWrap.remove();
       return;
@@ -111,7 +165,11 @@ export class ImageFall extends HTMLDivElement {
       const images = div.querySelectorAll('div');
       if (images.length > 9) {
         const lastImage = div.querySelector('div:last-child');
-        URL.revokeObjectURL(lastImage.querySelector('img').src);
+        const lastImageElement = lastImage.querySelector('img');
+        if (lastImageElement && lastImageElement.src) {
+          URL.revokeObjectURL(lastImageElement.src);
+          this.imageUrls.delete(lastImageElement.src);
+        }
         lastImage.remove();
       }
     });

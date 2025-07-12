@@ -3,16 +3,16 @@ import FlayFetch from '@lib/FlayFetch';
 import StyleUtils from '@lib/StyleUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 
-export class ImageThumbnailGallery extends HTMLElement {
+export class ImageThumbnail extends HTMLElement {
   private static readonly ThumbnailDimensions = [3, 4];
   private static readonly ThumbnailScalingFactor = 5;
 
-  private static readonly ThumbnailWidth = ImageThumbnailGallery.ThumbnailDimensions[0] * ImageThumbnailGallery.ThumbnailScalingFactor; // in rem
-  private static readonly ThumbnailHeight = ImageThumbnailGallery.ThumbnailDimensions[1] * ImageThumbnailGallery.ThumbnailScalingFactor; // in rem
+  private static readonly ThumbnailWidth = ImageThumbnail.ThumbnailDimensions[0] * ImageThumbnail.ThumbnailScalingFactor; // in rem
+  private static readonly ThumbnailHeight = ImageThumbnail.ThumbnailDimensions[1] * ImageThumbnail.ThumbnailScalingFactor; // in rem
 
   private static readonly AnimationDuration = 1200; // 1.2 seconds for all animations
-  private static readonly ChangeImageDelay = Math.floor(ImageThumbnailGallery.AnimationDuration * 0.5);
-  private static readonly RemoveClassDelay = Math.floor(ImageThumbnailGallery.AnimationDuration * 0.5);
+  private static readonly ChangeImageDelay = Math.floor(ImageThumbnail.AnimationDuration * 0.5);
+  private static readonly RemoveClassDelay = Math.floor(ImageThumbnail.AnimationDuration * 0.5);
 
   private imageLength: number = 0;
   private columnCount: number = 0;
@@ -43,8 +43,8 @@ export class ImageThumbnailGallery extends HTMLElement {
           transform-style: preserve-3d;
         }
         img {
-          width: ${ImageThumbnailGallery.ThumbnailWidth}rem;
-          height: ${ImageThumbnailGallery.ThumbnailHeight}rem;
+          width: ${ImageThumbnail.ThumbnailWidth}rem;
+          height: ${ImageThumbnail.ThumbnailHeight}rem;
           object-fit: cover;
           clip-path: inset(0.5rem round 10%);
           display: inline-block;
@@ -69,17 +69,17 @@ export class ImageThumbnailGallery extends HTMLElement {
 
         /* 다양한 자연스러운 애니메이션 효과 */
         img.fading {
-          animation: fade-transition ${ImageThumbnailGallery.AnimationDuration}ms ease-in-out;
+          animation: fade-transition ${ImageThumbnail.AnimationDuration}ms ease-in-out;
           will-change: opacity, transform;
         }
 
         img.morphing {
-          animation: morph-scale ${ImageThumbnailGallery.AnimationDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          animation: morph-scale ${ImageThumbnail.AnimationDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
           will-change: transform, opacity;
         }
 
         img.blurring {
-          animation: blur-fade ${ImageThumbnailGallery.AnimationDuration}ms ease-in-out;
+          animation: blur-fade ${ImageThumbnail.AnimationDuration}ms ease-in-out;
           will-change: filter, opacity, transform;
         }
 
@@ -239,8 +239,8 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private setupThumbnailGallery() {
-    this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailWidth));
-    this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailHeight));
+    this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnail.ThumbnailWidth));
+    this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnail.ThumbnailHeight));
     this.maximumThumbnailCount = this.columnCount * this.rowCount;
 
     this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());
@@ -324,7 +324,7 @@ export class ImageThumbnailGallery extends HTMLElement {
         // 애니메이션 완료 후 클래스 제거
         setTimeout(() => {
           img.classList.remove(animationClassName);
-        }, ImageThumbnailGallery.RemoveClassDelay);
+        }, ImageThumbnail.RemoveClassDelay);
       };
 
       // 이미지 로드 실패 시에도 효과 적용
@@ -332,9 +332,9 @@ export class ImageThumbnailGallery extends HTMLElement {
         img.classList.add(loadedClassName);
         setTimeout(() => {
           img.classList.remove(animationClassName);
-        }, ImageThumbnailGallery.RemoveClassDelay);
+        }, ImageThumbnail.RemoveClassDelay);
       };
-    }, ImageThumbnailGallery.ChangeImageDelay);
+    }, ImageThumbnail.ChangeImageDelay);
   }
 
   private startSlideshow() {
@@ -371,4 +371,4 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 }
 
-customElements.define('image-thumbnail-gallery', ImageThumbnailGallery);
+customElements.define('image-thumbnail', ImageThumbnail);

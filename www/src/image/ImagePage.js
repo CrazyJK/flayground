@@ -11,6 +11,10 @@ export class ImagePage extends HTMLDivElement {
     super();
     this.classList.add('image-page');
     this.innerHTML = this.template();
+
+    // 이벤트 리스너들을 추적하기 위한 변수들
+    this.eventListeners = [];
+    this.documentEventListeners = [];
   }
 
   template() {
@@ -41,6 +45,38 @@ export class ImagePage extends HTMLDivElement {
     this.registerResizeEvents();
   }
 
+  disconnectedCallback() {
+    // 등록된 이벤트 리스너들 정리
+    this.eventListeners.forEach(({ element, event, handler }) => {
+      element.removeEventListener(event, handler);
+    });
+    this.eventListeners = [];
+
+    // document에 등록된 이벤트 리스너들 정리
+    this.documentEventListeners.forEach(({ event, handler }) => {
+      document.removeEventListener(event, handler);
+    });
+    this.documentEventListeners = [];
+
+    // CSS 스타일 정리
+    document.documentElement.style.cursor = '';
+
+    // 동적으로 생성된 요소들의 이벤트 리스너 정리
+    this.querySelectorAll('a').forEach((link) => {
+      link.replaceWith(link.cloneNode(true)); // 이벤트 리스너 제거
+    });
+
+    this.querySelectorAll('.folder-tree div:not(#root) span').forEach((span) => {
+      span.replaceWith(span.cloneNode(true)); // 이벤트 리스너 제거
+    });
+
+    this.querySelectorAll('article div').forEach((item) => {
+      item.replaceWith(item.cloneNode(true)); // 이벤트 리스너 제거
+    });
+
+    console.debug('[ImagePage] Component disconnected and cleaned up');
+  }
+
   loadImages() {
     FlayFetch.getImageAll().then((list) => {
       const imagePathMap = this.groupImagesByPath(list);
@@ -67,6 +103,17 @@ export class ImagePage extends HTMLDivElement {
     return s.replace(/：/gi, ':').replace(/□/gi, ' ').replace(/＃/gi, '#');
   }
 
+  // 이벤트 리스너 등록 헬퍼 메서드
+  addEventListenerTracked(element, event, handler) {
+    element.addEventListener(event, handler);
+    this.eventListeners.push({ element, event, handler });
+  }
+
+  addDocumentEventListenerTracked(event, handler) {
+    document.addEventListener(event, handler);
+    this.documentEventListeners.push({ event, handler });
+  }
+
   buildFolderTree(imagePathMap) {
     const sortedEntries = [...imagePathMap.entries()].sort();
     sortedEntries.forEach(([imagePath, images]) => {
@@ -89,11 +136,12 @@ export class ImagePage extends HTMLDivElement {
 
           if (idx === idArray.length - 1) {
             nameLabel.innerHTML += ` <i>(${images.length})</i>`;
-            nameLabel.addEventListener('click', () => {
+            const clickHandler = () => {
               this.renderImage(images);
               this.deactivateActiveLinks();
               nameLabel.classList.add('active');
-            });
+            };
+            this.addEventListenerTracked(nameLabel, 'click', clickHandler);
           }
         }
         parentId = currentId;
@@ -109,9 +157,10 @@ export class ImagePage extends HTMLDivElement {
     this.querySelectorAll('.folder-tree div:not(#root)').forEach((div) => {
       const span = div.querySelector('span');
       if (div.querySelectorAll('div').length > 0) {
-        span.addEventListener('click', (e) => {
+        const clickHandler = (e) => {
           e.target.closest('div').classList.toggle('fold');
-        });
+        };
+        this.addEventListenerTracked(span, 'click', clickHandler);
       } else {
         span.classList.add('no-child');
       }
@@ -120,18 +169,20 @@ export class ImagePage extends HTMLDivElement {
 
   registerUIEvents() {
     // Adjust article size on click.
-    this.querySelectorAll('main header button').forEach((button) =>
-      button.addEventListener('click', (e) => {
+    this.querySelectorAll('main header button').forEach((button) => {
+      const clickHandler = (e) => {
         this.adjustArticleSize(e.target.getAttribute('role'));
-      })
-    );
+      };
+      this.addEventListenerTracked(button, 'click', clickHandler);
+    });
 
     // Hide preview layer when clicked.
     const previewLayer = this.querySelector('.preview');
     if (previewLayer) {
-      previewLayer.addEventListener('click', (e) => {
+      const clickHandler = (e) => {
         e.target.classList.remove('show');
-      });
+      };
+      this.addEventListenerTracked(previewLayer, 'click', clickHandler);
     }
   }
 
@@ -154,14 +205,16 @@ export class ImagePage extends HTMLDivElement {
       document.removeEventListener('mouseup', onMouseUp);
     };
 
-    resizer.addEventListener('mousedown', (e) => {
+    const mouseDownHandler = (e) => {
       resizer.classList.add('resizing');
       startX = e.clientX;
       startWidth = folderTree.clientWidth;
       document.documentElement.style.cursor = 'col-resize';
-      document.addEventListener('mousemove', onMouseMove);
-      document.addEventListener('mouseup', onMouseUp);
-    });
+      this.addDocumentEventListenerTracked('mousemove', onMouseMove);
+      this.addDocumentEventListenerTracked('mouseup', onMouseUp);
+    };
+
+    this.addEventListenerTracked(resizer, 'mousedown', mouseDownHandler);
   }
 
   adjustArticleSize(action) {
@@ -194,10 +247,11 @@ export class ImagePage extends HTMLDivElement {
       const item = article.appendChild(document.createElement('div'));
       item.dataset.lazyBackgroundImageUrl = ApiClient.buildUrl(`/static/image/${image.idx}`);
       item.title = `#${image.idx} - ${image.name} - ${FileUtils.formatSize(image.length)} - ${DateUtils.format(image.modified, 'yyyy-MM-dd')}`;
-      item.addEventListener('click', () => {
+      const clickHandler = () => {
         imageFrame.set(image.idx);
         previewLayer && previewLayer.classList.add('show');
-      });
+      };
+      this.addEventListenerTracked(item, 'click', clickHandler);
     });
 
     if (article.firstChild) {

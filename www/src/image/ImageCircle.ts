@@ -5,6 +5,7 @@
  */
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
+import StyleUtils from '../lib/StyleUtils';
 import './imageCircle.scss';
 
 // 타입 정의
@@ -45,14 +46,6 @@ const TIMING = {
   resumeMinDelay: 100, // Minimum delay time for resuming animation (ms)
 } as const;
 
-const DEFAULT_OPTIONS: ImageCircleOptions = {
-  rem: 10,
-  shape: CSS_CLASSES.shapes.circle,
-  effect: CSS_CLASSES.effects.emboss,
-  duration: 2000,
-  eventAllow: false,
-};
-
 /**
  * 이미지 원형 표시 웹 컴포넌트
  * - 설정 가능한 모양과 효과를 가진 순환 이미지 표시
@@ -62,8 +55,22 @@ const DEFAULT_OPTIONS: ImageCircleOptions = {
  * @extends {HTMLDivElement}
  */
 export class ImageCircle extends HTMLDivElement {
+  static readonly DEFAULT_OPTIONS: ImageCircleOptions = {
+    rem: 10,
+    shape: CSS_CLASSES.shapes.circle,
+    effect: CSS_CLASSES.effects.emboss,
+    duration: 2000,
+    eventAllow: false,
+  };
+  static readonly FULL_MODE_OPTIONS = (element: HTMLElement): Partial<ImageCircleOptions> => ({
+    rem: getAvailableRemSize(element),
+    effect: ImageCircle.effectTypes.emboss as EffectType,
+    duration: 3000,
+    eventAllow: true,
+  });
+
   /** 옵션 설정 */
-  #opts = DEFAULT_OPTIONS;
+  #opts = ImageCircle.FULL_MODE_OPTIONS(this.ownerDocument.documentElement as HTMLElement);
   /** 컴포넌트 활성 상태 */
   #isActive: boolean = false;
   /** 타이머 ID */
@@ -97,6 +104,50 @@ export class ImageCircle extends HTMLDivElement {
   connectedCallback(): void {
     this.#initializeEventHandlers();
     this.start();
+  }
+
+  disconnectedCallback(): void {
+    // 타이머 정리
+    if (this.#timeoutId) {
+      clearTimeout(this.#timeoutId);
+      this.#timeoutId = null;
+    }
+
+    // 현재 이미지 URL 정리
+    if (this.#currentImageURL) {
+      URL.revokeObjectURL(this.#currentImageURL);
+      this.#currentImageURL = null;
+    }
+
+    // 상태 초기화
+    this.#isActive = false;
+    this.#isPaused = false;
+    this.#imageIndices = [];
+    this.#pausedDelay = 0;
+    this.#pauseStartTime = 0;
+    this.#imageLength = 0;
+
+    // CSS 변수 정리
+    document.documentElement.style.removeProperty('--breathe-color');
+
+    // 이벤트 리스너 정리 (이미지 요소가 존재하는 경우)
+    if (this.image) {
+      // 이미지 요소의 스타일 정리
+      Object.assign(this.image.style, {
+        backgroundImage: '',
+        width: '',
+        height: '',
+      });
+
+      // 데이터 속성 정리
+      delete this.dataset.idx;
+      this.image.title = '';
+    }
+
+    // 클래스 정리
+    this.classList.remove('breathe-stop');
+
+    console.debug('[ImageCircle] Component disconnected and cleaned up');
   }
 
   #initializeEventHandlers(): void {
@@ -284,3 +335,14 @@ export class ImageCircle extends HTMLDivElement {
 }
 
 customElements.define('image-circle', ImageCircle, { extends: 'div' });
+
+/**
+ * 주어진 요소에서 사용 가능한 rem 크기를 계산합니다.
+ * @param element - 크기를 계산할 HTML 요소
+ * @returns rem 단위로 계산된 사용 가능한 최소 크기
+ */
+function getAvailableRemSize(element: Element): number {
+  const width = StyleUtils.getAvailableWidthInRem(element);
+  const height = StyleUtils.getAvailableHeightInRem(element);
+  return Math.floor(Math.min(width, height));
+}

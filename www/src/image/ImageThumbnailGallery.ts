@@ -12,7 +12,7 @@ export class ImageThumbnailGallery extends HTMLElement {
   private imageLength: number = 0;
   private columnCount: number = 0;
   private rowCount: number = 0;
-  private totalImages: number = 0;
+  private maximumThumbnailCount: number = 0;
   private currentImageIndex: number = 0;
   private keydownListener: (event: KeyboardEvent) => void;
   private removeResizeListener: () => void;
@@ -105,12 +105,12 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private next() {
-    this.currentImageIndex = (this.currentImageIndex + this.totalImages) % this.imageLength;
+    this.currentImageIndex = (this.currentImageIndex + this.maximumThumbnailCount) % this.imageLength;
     this.renderGalleryThumbnails();
   }
 
   private previous() {
-    this.currentImageIndex = (this.currentImageIndex - this.totalImages) % this.imageLength;
+    this.currentImageIndex = (this.currentImageIndex - this.maximumThumbnailCount) % this.imageLength;
     this.renderGalleryThumbnails();
   }
 
@@ -122,10 +122,10 @@ export class ImageThumbnailGallery extends HTMLElement {
   private setupThumbnailGallery() {
     this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailWidth));
     this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailHeight));
-    this.totalImages = this.columnCount * this.rowCount;
+    this.maximumThumbnailCount = this.columnCount * this.rowCount;
 
     this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());
-    for (let i = 0; i < this.totalImages; i++) {
+    for (let i = 0; i < this.maximumThumbnailCount; i++) {
       const img = this.shadowRoot!.appendChild(document.createElement('img'));
       img.id = `thumbnail-${i}`;
     }
@@ -144,13 +144,14 @@ export class ImageThumbnailGallery extends HTMLElement {
     // 짧은 지연 후 새 이미지들을 순차적으로 로드
     await new Promise((resolve) => setTimeout(resolve, 150));
 
-    for (let i = 0; i < this.totalImages; i++) {
+    for (let i = 0; i < this.maximumThumbnailCount; i++) {
       const img = this.shadowRoot!.querySelector(`#thumbnail-${i}`) as HTMLImageElement;
+      const imageIndex = (this.currentImageIndex + i) % this.imageLength;
 
       // 이미지 로드 전에 약간의 지연을 추가하여 순차적 효과 생성
       setTimeout(() => {
-        img.src = FlayFetch.getImageURL(this.currentImageIndex + i);
-        img.alt = `Image ${this.currentImageIndex + i}`;
+        img.src = FlayFetch.getImageURL(imageIndex);
+        img.alt = `Image ${imageIndex}`;
 
         // 이미지 로드 완료 시 페이드 인 효과
         img.onload = () => {

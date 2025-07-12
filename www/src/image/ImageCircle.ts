@@ -64,6 +64,7 @@ export class ImageCircle extends HTMLDivElement {
   };
   static readonly FULL_MODE_OPTIONS = (element: HTMLElement): Partial<ImageCircleOptions> => ({
     rem: getAvailableRemSize(element),
+    shape: ImageCircle.shapeTypes.circle as ShapeType,
     effect: ImageCircle.effectTypes.emboss as EffectType,
     duration: 3000,
     eventAllow: true,

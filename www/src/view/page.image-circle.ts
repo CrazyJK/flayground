@@ -53,7 +53,7 @@ new Page().start();
  * @returns rem 단위로 계산된 사용 가능한 최소 크기
  */
 function getAvailableRemSize(element: Element): number {
-  const width = StyleUtils.getAvailableRemSize(element);
-  const height = StyleUtils.getAvailableHeight(element);
-  return Math.min(Math.floor(StyleUtils.pxToRem(width)), Math.floor(StyleUtils.pxToRem(height)));
+  const width = StyleUtils.getAvailableWidthInRem(element);
+  const height = StyleUtils.getAvailableHeightInRem(element);
+  return Math.floor(Math.min(width, height));
 }

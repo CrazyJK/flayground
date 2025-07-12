@@ -21,6 +21,7 @@ export class ImageThumbnail extends HTMLElement {
   private currentImageIndex: number = 0;
   private keydownListener: (event: KeyboardEvent) => void;
   private removeResizeListener: () => void;
+  private clickListener: (event: MouseEvent) => void;
   private slideshowInterval: number | null = null;
   private isSlideshowActive: boolean = false;
 
@@ -166,6 +167,7 @@ export class ImageThumbnail extends HTMLElement {
 
   disconnectedCallback() {
     window.removeEventListener('keydown', this.keydownListener);
+    this.shadowRoot!.removeEventListener('click', this.clickListener);
     this.removeResizeListener();
     this.stopSlideshow();
   }
@@ -222,6 +224,19 @@ export class ImageThumbnail extends HTMLElement {
       }
     };
     window.addEventListener('keydown', this.keydownListener);
+
+    this.clickListener = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      console.debug(`Click event on: ${target.tagName}`);
+      if (target.tagName === 'IMG') {
+        const imageIndex = parseInt(target.dataset.index || '0', 10);
+        const [w, h] = [100, 100]; // 팝업 크기 (100px x 100px)
+        const centerX = window.screenX + window.innerWidth / 2 - w / 2;
+        const centerY = window.screenY + window.innerHeight / 2 - h / 2;
+        window.open(`popup.image.html#${imageIndex}`, `image${imageIndex}`, `top=${centerY},left=${centerX},width=${w}px,height=${h}px`);
+      }
+    };
+    this.shadowRoot!.addEventListener('click', this.clickListener);
   }
 
   private next() {

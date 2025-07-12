@@ -87,7 +87,7 @@ export class ImageThumbnailGallery extends HTMLElement {
     this.parentElement!.addEventListener('wheel', (event: WheelEvent) => {
       event.preventDefault();
 
-      // 휠 이벤트가 발생하면 슬라이드쇼를 중지하고 이전/다음 이미지로 이동
+      // 휠 이벤트가 발생하면 슬라이드쇼를 중지
       if (this.isSlideshowActive) {
         this.stopSlideshow();
       }
@@ -101,7 +101,9 @@ export class ImageThumbnailGallery extends HTMLElement {
       // 슬라이드쇼가 진행 중일 때는 아무 키나 누르면 정지
       if (this.isSlideshowActive) {
         this.stopSlideshow();
-        return;
+        if (event.code === EventCode.SPACE) {
+          return;
+        }
       }
 
       switch (event.code) {

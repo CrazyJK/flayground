@@ -32,6 +32,17 @@ export const tabUI = (root: HTMLElement): void => {
           if (targetSelector) {
             const targetPanel = root.querySelector(targetSelector);
             targetPanel?.toggleAttribute('active', isEquals);
+            if (isEquals) {
+              // 패널이 활성화되면 스크롤 위치를 최상단으로 이동
+              targetPanel?.scrollTo({ top: 0, behavior: 'smooth' });
+              // 이벤트 전파
+              root.dispatchEvent(
+                new CustomEvent('tabActivated', {
+                  bubbles: true,
+                  detail: { tab: thisTab, panel: targetPanel },
+                })
+              );
+            }
           }
         });
       });

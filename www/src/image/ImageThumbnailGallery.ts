@@ -283,11 +283,6 @@ export class ImageThumbnailGallery extends HTMLElement {
         const delayTime = orderIndex * 50; // 50ms씩 지연
 
         setTimeout(() => {
-          if (imageIndex >= this.maximumThumbnailCount) {
-            console.warn(`Image index ${imageIndex} exceeds maximum thumbnail count ${this.maximumThumbnailCount}`, direction);
-            return;
-          }
-
           this.animateImage(imageIndex);
         }, delayTime);
       });
@@ -300,12 +295,6 @@ export class ImageThumbnailGallery extends HTMLElement {
           // 현재 행의 모든 컬럼을 동시에 처리
           for (let col = 0; col < this.columnCount; col++) {
             const imageIndex = row * this.columnCount + col;
-
-            if (imageIndex >= this.maximumThumbnailCount) {
-              console.warn(`Image index ${imageIndex} exceeds maximum thumbnail count ${this.maximumThumbnailCount}`, direction);
-              break;
-            }
-
             this.animateImage(imageIndex);
           }
         }, delayTime);

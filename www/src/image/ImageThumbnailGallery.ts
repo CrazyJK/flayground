@@ -3,7 +3,12 @@ import StyleUtils from '@lib/StyleUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 
 export class ImageThumbnailGallery extends HTMLElement {
-  private static readonly ThumbnailSize = 18; // in rem
+  private static readonly ThumbnailDimensions = [3, 4];
+  private static readonly ThumbnailScalingFactor = 4;
+
+  private static readonly ThumbnailWidth = ImageThumbnailGallery.ThumbnailDimensions[0] * ImageThumbnailGallery.ThumbnailScalingFactor; // in rem
+  private static readonly ThumbnailHeight = ImageThumbnailGallery.ThumbnailDimensions[1] * ImageThumbnailGallery.ThumbnailScalingFactor; // in rem
+
   private imageLength: number = 0;
   private columnCount: number = 0;
   private rowCount: number = 0;
@@ -29,11 +34,10 @@ export class ImageThumbnailGallery extends HTMLElement {
           justify-content: space-around;
         }
         img {
-          width: ${ImageThumbnailGallery.ThumbnailSize}rem;
-          height: ${ImageThumbnailGallery.ThumbnailSize}rem;
+          width: ${ImageThumbnailGallery.ThumbnailWidth}rem;
+          height: ${ImageThumbnailGallery.ThumbnailHeight}rem;
           object-fit: cover;
-          aspect-ratio: 1/1;
-          clip-path: circle(50%);
+          clip-path: inset(0.5rem round 10%);
           display: inline-block;
           margin: 0;
           padding: 0;
@@ -83,7 +87,6 @@ export class ImageThumbnailGallery extends HTMLElement {
     });
 
     this.removeResizeListener = addResizeListener(() => {
-      this.currentImageIndex -= this.totalImages;
       this.setupThumbnailGallery();
       this.renderGalleryThumbnails();
     });
@@ -102,11 +105,12 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private next() {
+    this.currentImageIndex = (this.currentImageIndex + this.totalImages) % this.imageLength;
     this.renderGalleryThumbnails();
   }
 
   private previous() {
-    this.currentImageIndex = (this.currentImageIndex - this.totalImages * 2) % this.imageLength;
+    this.currentImageIndex = (this.currentImageIndex - this.totalImages) % this.imageLength;
     this.renderGalleryThumbnails();
   }
 
@@ -116,8 +120,8 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private setupThumbnailGallery() {
-    this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
-    this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailSize));
+    this.columnCount = Math.floor(this.clientWidth / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailWidth));
+    this.rowCount = Math.floor(this.clientHeight / StyleUtils.remToPx(ImageThumbnailGallery.ThumbnailHeight));
     this.totalImages = this.columnCount * this.rowCount;
 
     this.shadowRoot!.querySelectorAll('img').forEach((img) => img.remove());
@@ -159,9 +163,6 @@ export class ImageThumbnailGallery extends HTMLElement {
         };
       }, i * 50); // 각 이미지마다 50ms씩 지연
     }
-
-    // 인덱스 업데이트
-    this.currentImageIndex = (this.currentImageIndex + this.totalImages) % this.imageLength;
   }
 }
 

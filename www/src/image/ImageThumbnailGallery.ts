@@ -10,6 +10,10 @@ export class ImageThumbnailGallery extends HTMLElement {
   private static readonly ThumbnailWidth = ImageThumbnailGallery.ThumbnailDimensions[0] * ImageThumbnailGallery.ThumbnailScalingFactor; // in rem
   private static readonly ThumbnailHeight = ImageThumbnailGallery.ThumbnailDimensions[1] * ImageThumbnailGallery.ThumbnailScalingFactor; // in rem
 
+  private static readonly AnimationDuration = 1200; // 1.2 seconds for all animations
+  private static readonly ChangeImageDelay = Math.floor(ImageThumbnailGallery.AnimationDuration * 0.5);
+  private static readonly RemoveClassDelay = Math.floor(ImageThumbnailGallery.AnimationDuration * 0.5);
+
   private imageLength: number = 0;
   private columnCount: number = 0;
   private rowCount: number = 0;
@@ -63,10 +67,20 @@ export class ImageThumbnailGallery extends HTMLElement {
           transition: all 0.2s ease-out;
         }
 
-        /* 자연스러운 페이드 애니메이션 */
+        /* 다양한 자연스러운 애니메이션 효과 */
         img.fading {
-          animation: fade-transition 1.2s ease-in-out;
+          animation: fade-transition ${ImageThumbnailGallery.AnimationDuration}ms ease-in-out;
           will-change: opacity, transform;
+        }
+
+        img.morphing {
+          animation: morph-scale ${ImageThumbnailGallery.AnimationDuration}ms cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          will-change: transform, opacity;
+        }
+
+        img.blurring {
+          animation: blur-fade ${ImageThumbnailGallery.AnimationDuration}ms ease-in-out;
+          will-change: filter, opacity, transform;
         }
 
         @keyframes fade-transition {
@@ -87,6 +101,57 @@ export class ImageThumbnailGallery extends HTMLElement {
             transform: scale(1.01) translateZ(0);
           }
           100% {
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+          }
+        }
+
+        @keyframes morph-scale {
+          0% {
+            transform: scale(1) translateZ(0);
+            opacity: 1;
+          }
+          25% {
+            transform: scale(0.9) translateZ(0);
+            opacity: 0.9;
+          }
+          50% {
+            transform: scale(0.7) translateZ(0);
+            opacity: 0.3;
+          }
+          75% {
+            transform: scale(0.9) translateZ(0);
+            opacity: 0.9;
+          }
+          100% {
+            transform: scale(1) translateZ(0);
+            opacity: 1;
+          }
+        }
+
+        @keyframes blur-fade {
+          0% {
+            filter: blur(0px);
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+          }
+          30% {
+            filter: blur(2px);
+            opacity: 0.7;
+            transform: scale(1.01) translateZ(0);
+          }
+          50% {
+            filter: blur(5px);
+            opacity: 0.2;
+            transform: scale(1.02) translateZ(0);
+          }
+          70% {
+            filter: blur(2px);
+            opacity: 0.7;
+            transform: scale(1.01) translateZ(0);
+          }
+          100% {
+            filter: blur(0px);
             opacity: 1;
             transform: scale(1) translateZ(0);
           }
@@ -115,7 +180,7 @@ export class ImageThumbnailGallery extends HTMLElement {
   private initializeEventListeners() {
     this.removeResizeListener = addResizeListener(() => {
       this.setupThumbnailGallery();
-      this.renderGalleryThumbnails();
+      this.renderGalleryThumbnails('next');
     });
 
     this.parentElement!.addEventListener('wheel', (event: WheelEvent) => {
@@ -160,17 +225,17 @@ export class ImageThumbnailGallery extends HTMLElement {
 
   private next() {
     this.currentImageIndex = (this.currentImageIndex + this.maximumThumbnailCount) % this.imageLength;
-    this.renderGalleryThumbnails();
+    this.renderGalleryThumbnails('next');
   }
 
   private previous() {
     this.currentImageIndex = (this.currentImageIndex - this.maximumThumbnailCount) % this.imageLength;
-    this.renderGalleryThumbnails();
+    this.renderGalleryThumbnails('previous');
   }
 
   private random() {
     this.currentImageIndex = Math.floor(Math.random() * this.imageLength);
-    this.renderGalleryThumbnails();
+    this.renderGalleryThumbnails('random');
   }
 
   private setupThumbnailGallery() {
@@ -185,53 +250,101 @@ export class ImageThumbnailGallery extends HTMLElement {
     }
   }
 
-  private async renderGalleryThumbnails() {
-    // 컬럼별로 순차적으로 처리 (각 컬럼 내의 모든 행은 동시에)
-    for (let col = 0; col < this.columnCount; col++) {
-      const delayTime = col * 200; // 각 컬럼마다 200ms씩 지연
+  private async renderGalleryThumbnails(direction: 'next' | 'previous' | 'random' = 'next') {
+    // 애니메이션 순서 결정
+    const animationOrder: number[] = [];
 
-      setTimeout(() => {
-        // 현재 컬럼의 모든 행을 동시에 처리
-        for (let row = 0; row < this.rowCount; row++) {
-          const imageIndex = row * this.columnCount + col;
-
-          // 최대 썸네일 수를 초과하지 않도록 체크
-          if (imageIndex >= this.maximumThumbnailCount) break;
-
-          const img = this.shadowRoot!.querySelector(`#thumbnail-${imageIndex}`) as HTMLImageElement;
-          const actualImageIndex = (this.currentImageIndex + imageIndex) % this.imageLength;
-
-          // 이미지 로드 전 클래스 제거
-          img.classList.remove('loaded');
-
-          // 자연스러운 페이드 애니메이션 시작
-          img.classList.add('fading');
-
-          // 페이드 애니메이션 중간 지점에서 이미지 변경
-          setTimeout(() => {
-            img.src = FlayFetch.getImageURL(actualImageIndex);
-            img.alt = `Image ${actualImageIndex}`;
-
-            // 이미지 로드 완료 시 효과
-            img.onload = () => {
-              img.classList.add('loaded');
-              // 페이드 애니메이션 완료 후 클래스 제거
-              setTimeout(() => {
-                img.classList.remove('fading');
-              }, 600);
-            };
-
-            // 이미지 로드 실패 시에도 효과 적용
-            img.onerror = () => {
-              img.classList.add('loaded');
-              setTimeout(() => {
-                img.classList.remove('fading');
-              }, 600);
-            };
-          }, 600); // 페이드 애니메이션의 50% 지점에서 이미지 변경 (1.2s의 50% = 600ms)
-        }
-      }, delayTime);
+    if (direction === 'next') {
+      // 1행, 2행, 3행... 순서로 애니메이션
+      for (let row = 0; row < this.rowCount; row++) {
+        animationOrder.push(row);
+      }
+    } else if (direction === 'previous') {
+      // n행, n-1행, n-2행... 순서로 애니메이션
+      for (let row = this.rowCount - 1; row >= 0; row--) {
+        animationOrder.push(row);
+      }
+    } else {
+      // random - 모든 이미지를 랜덤 순서로 애니메이션
+      for (let i = 0; i < this.maximumThumbnailCount; i++) {
+        animationOrder.push(i);
+      }
+      // Fisher-Yates shuffle 알고리즘
+      for (let i = animationOrder.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [animationOrder[i], animationOrder[j]] = [animationOrder[j], animationOrder[i]];
+      }
     }
+
+    // 애니메이션 적용
+    if (direction === 'random') {
+      // 랜덤 모드: 각 이미지마다 개별적으로 애니메이션
+      animationOrder.forEach((imageIndex, orderIndex) => {
+        const delayTime = orderIndex * 50; // 50ms씩 지연
+
+        setTimeout(() => {
+          if (imageIndex >= this.maximumThumbnailCount) {
+            console.warn(`Image index ${imageIndex} exceeds maximum thumbnail count ${this.maximumThumbnailCount}`, direction);
+            return;
+          }
+
+          this.animateImage(imageIndex);
+        }, delayTime);
+      });
+    } else {
+      // next/previous 모드: 행 단위로 애니메이션
+      animationOrder.forEach((row, orderIndex) => {
+        const delayTime = orderIndex * 200; // 각 행마다 200ms씩 지연
+
+        setTimeout(() => {
+          // 현재 행의 모든 컬럼을 동시에 처리
+          for (let col = 0; col < this.columnCount; col++) {
+            const imageIndex = row * this.columnCount + col;
+
+            if (imageIndex >= this.maximumThumbnailCount) {
+              console.warn(`Image index ${imageIndex} exceeds maximum thumbnail count ${this.maximumThumbnailCount}`, direction);
+              break;
+            }
+
+            this.animateImage(imageIndex);
+          }
+        }, delayTime);
+      });
+    }
+  }
+
+  private animateImage(imageIndex: number) {
+    const img = this.shadowRoot!.querySelector(`#thumbnail-${imageIndex}`) as HTMLImageElement;
+    const actualImageIndex = (this.currentImageIndex + imageIndex) % this.imageLength;
+
+    // 이미지 로드 전 클래스 제거
+    img.classList.remove('loaded');
+
+    // 블러 페이드 효과 적용
+    img.classList.add('blurring');
+
+    // 애니메이션 중간 지점에서 이미지 변경
+    setTimeout(() => {
+      img.src = FlayFetch.getImageURL(actualImageIndex);
+      img.alt = `Image ${actualImageIndex}`;
+
+      // 이미지 로드 완료 시 효과
+      img.onload = () => {
+        img.classList.add('loaded');
+        // 애니메이션 완료 후 클래스 제거
+        setTimeout(() => {
+          img.classList.remove('blurring');
+        }, ImageThumbnailGallery.RemoveClassDelay);
+      };
+
+      // 이미지 로드 실패 시에도 효과 적용
+      img.onerror = () => {
+        img.classList.add('loaded');
+        setTimeout(() => {
+          img.classList.remove('blurring');
+        }, ImageThumbnailGallery.RemoveClassDelay);
+      };
+    }, ImageThumbnailGallery.ChangeImageDelay);
   }
 
   private startSlideshow() {

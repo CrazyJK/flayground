@@ -5,7 +5,7 @@ import { addResizeListener } from '@lib/windowAddEventListener';
 
 export class ImageThumbnailGallery extends HTMLElement {
   private static readonly ThumbnailDimensions = [3, 4];
-  private static readonly ThumbnailScalingFactor = 4;
+  private static readonly ThumbnailScalingFactor = 5;
 
   private static readonly ThumbnailWidth = ImageThumbnailGallery.ThumbnailDimensions[0] * ImageThumbnailGallery.ThumbnailScalingFactor; // in rem
   private static readonly ThumbnailHeight = ImageThumbnailGallery.ThumbnailDimensions[1] * ImageThumbnailGallery.ThumbnailScalingFactor; // in rem
@@ -35,6 +35,8 @@ export class ImageThumbnailGallery extends HTMLElement {
           flex-wrap: wrap;
           align-content: space-around;
           justify-content: space-around;
+          perspective: 1000px;
+          transform-style: preserve-3d;
         }
         img {
           width: ${ImageThumbnailGallery.ThumbnailWidth}rem;
@@ -45,17 +47,49 @@ export class ImageThumbnailGallery extends HTMLElement {
           margin: 0;
           padding: 0;
           opacity: 0;
-          transform: scale(0.8);
+          transform: scale(1) translateZ(0);
           transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+          transform-style: preserve-3d;
+          backface-visibility: hidden;
+          will-change: transform, opacity;
+          contain: layout;
         }
         img.loaded {
           opacity: 1;
-          transform: scale(1);
         }
         img:hover {
-          transform: scale(1.2);
+          transform: scale(1.2) translateZ(0);
           z-index: 1;
           transition: all 0.2s ease-out;
+        }
+
+        /* 자연스러운 페이드 애니메이션 */
+        img.fading {
+          animation: fade-transition 1.2s ease-in-out;
+          will-change: opacity, transform;
+        }
+
+        @keyframes fade-transition {
+          0% {
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+          }
+          20% {
+            opacity: 0.8;
+            transform: scale(1.01) translateZ(0);
+          }
+          50% {
+            opacity: 0;
+            transform: scale(1.02) translateZ(0);
+          }
+          80% {
+            opacity: 0.8;
+            transform: scale(1.01) translateZ(0);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateZ(0);
+          }
         }
       </style>
     `;
@@ -152,31 +186,51 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private async renderGalleryThumbnails() {
-    // 모든 이미지를 먼저 페이드 아웃
-    this.shadowRoot!.querySelectorAll('img').forEach((img) => img.classList.remove('loaded'));
+    // 컬럼별로 순차적으로 처리 (각 컬럼 내의 모든 행은 동시에)
+    for (let col = 0; col < this.columnCount; col++) {
+      const delayTime = col * 200; // 각 컬럼마다 200ms씩 지연
 
-    // 짧은 지연 후 새 이미지들을 순차적으로 로드
-    await new Promise((resolve) => setTimeout(resolve, 150));
-
-    for (let i = 0; i < this.maximumThumbnailCount; i++) {
-      const img = this.shadowRoot!.querySelector(`#thumbnail-${i}`) as HTMLImageElement;
-      const imageIndex = (this.currentImageIndex + i) % this.imageLength;
-
-      // 이미지 로드 전에 약간의 지연을 추가하여 순차적 효과 생성
       setTimeout(() => {
-        img.src = FlayFetch.getImageURL(imageIndex);
-        img.alt = `Image ${imageIndex}`;
+        // 현재 컬럼의 모든 행을 동시에 처리
+        for (let row = 0; row < this.rowCount; row++) {
+          const imageIndex = row * this.columnCount + col;
 
-        // 이미지 로드 완료 시 페이드 인 효과
-        img.onload = () => {
-          img.classList.add('loaded');
-        };
+          // 최대 썸네일 수를 초과하지 않도록 체크
+          if (imageIndex >= this.maximumThumbnailCount) break;
 
-        // 이미지 로드 실패 시에도 페이드 인 (빈 이미지라도 보이도록)
-        img.onerror = () => {
-          img.classList.add('loaded');
-        };
-      }, i * 50); // 각 이미지마다 50ms씩 지연
+          const img = this.shadowRoot!.querySelector(`#thumbnail-${imageIndex}`) as HTMLImageElement;
+          const actualImageIndex = (this.currentImageIndex + imageIndex) % this.imageLength;
+
+          // 이미지 로드 전 클래스 제거
+          img.classList.remove('loaded');
+
+          // 자연스러운 페이드 애니메이션 시작
+          img.classList.add('fading');
+
+          // 페이드 애니메이션 중간 지점에서 이미지 변경
+          setTimeout(() => {
+            img.src = FlayFetch.getImageURL(actualImageIndex);
+            img.alt = `Image ${actualImageIndex}`;
+
+            // 이미지 로드 완료 시 효과
+            img.onload = () => {
+              img.classList.add('loaded');
+              // 페이드 애니메이션 완료 후 클래스 제거
+              setTimeout(() => {
+                img.classList.remove('fading');
+              }, 600);
+            };
+
+            // 이미지 로드 실패 시에도 효과 적용
+            img.onerror = () => {
+              img.classList.add('loaded');
+              setTimeout(() => {
+                img.classList.remove('fading');
+              }, 600);
+            };
+          }, 600); // 페이드 애니메이션의 50% 지점에서 이미지 변경 (1.2s의 50% = 600ms)
+        }
+      }, delayTime);
     }
   }
 

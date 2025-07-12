@@ -17,6 +17,8 @@ export class ImageThumbnailGallery extends HTMLElement {
   private currentImageIndex: number = 0;
   private keydownListener: (event: KeyboardEvent) => void;
   private removeResizeListener: () => void;
+  private slideshowInterval: number | null = null;
+  private isSlideshowActive: boolean = false;
 
   constructor() {
     super();
@@ -66,6 +68,7 @@ export class ImageThumbnailGallery extends HTMLElement {
   disconnectedCallback() {
     window.removeEventListener('keydown', this.keydownListener);
     this.removeResizeListener();
+    this.stopSlideshow();
   }
 
   private async start() {
@@ -76,18 +79,31 @@ export class ImageThumbnailGallery extends HTMLElement {
   }
 
   private initializeEventListeners() {
-    this.parentElement!.addEventListener('wheel', (event: WheelEvent) => {
-      event.preventDefault();
-      event.deltaY < 0 ? this.previous() : this.next();
-    });
-
     this.removeResizeListener = addResizeListener(() => {
       this.setupThumbnailGallery();
       this.renderGalleryThumbnails();
     });
 
+    this.parentElement!.addEventListener('wheel', (event: WheelEvent) => {
+      event.preventDefault();
+
+      // 휠 이벤트가 발생하면 슬라이드쇼를 중지하고 이전/다음 이미지로 이동
+      if (this.isSlideshowActive) {
+        this.stopSlideshow();
+      }
+
+      event.deltaY < 0 ? this.previous() : this.next();
+    });
+
     this.keydownListener = (event: KeyboardEvent) => {
       console.debug(`Key pressed: ${event.key} ${event.code}`);
+
+      // 슬라이드쇼가 진행 중일 때는 아무 키나 누르면 정지
+      if (this.isSlideshowActive) {
+        this.stopSlideshow();
+        return;
+      }
+
       switch (event.code) {
         case EventCode.ARROW_LEFT:
           this.previous();
@@ -99,6 +115,7 @@ export class ImageThumbnailGallery extends HTMLElement {
           this.random();
           break;
         case EventCode.SPACE:
+          this.startSlideshow();
           break;
       }
     };
@@ -159,6 +176,39 @@ export class ImageThumbnailGallery extends HTMLElement {
         };
       }, i * 50); // 각 이미지마다 50ms씩 지연
     }
+  }
+
+  private startSlideshow() {
+    if (this.isSlideshowActive) return;
+
+    this.isSlideshowActive = true;
+    console.debug('Slideshow started');
+
+    const nextSlide = () => {
+      if (!this.isSlideshowActive) return;
+
+      this.next();
+
+      // 다음 슬라이드를 위한 랜덤 간격 설정 (10-20초)
+      const randomInterval = Math.random() * 10000 + 10000; // 10000ms ~ 20000ms
+      this.slideshowInterval = window.setTimeout(nextSlide, randomInterval);
+    };
+
+    // 첫 번째 슬라이드 시작
+    nextSlide();
+  }
+
+  private stopSlideshow() {
+    if (!this.isSlideshowActive) return;
+
+    this.isSlideshowActive = false;
+
+    if (this.slideshowInterval) {
+      window.clearTimeout(this.slideshowInterval);
+      this.slideshowInterval = null;
+    }
+
+    console.debug('Slideshow stopped');
   }
 }
 

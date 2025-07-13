@@ -6,12 +6,14 @@ body {
       flex-wrap: nowrap;
       justify-content: space-between;
       align-items: flex-end;
+      gap: 1px;
 
       border-bottom: 2px solid var(--color-border);
       height: 16rem;
       overflow: hidden;
 
       > div {
+        flex: 1 1 auto;
         background-color: var(--color-orange);
         min-width: 1px;
         height: 0;

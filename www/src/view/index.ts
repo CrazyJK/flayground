@@ -7,5 +7,15 @@ import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
     imageCircle.style.position = 'fixed';
     imageCircle.style.right = '0';
     imageCircle.style.bottom = '0';
-    document.querySelector('body > main').appendChild(imageCircle);
+
+    document.head.appendChild(document.createElement('style')).textContent = `
+      .image-circle {
+        opacity: 0.5;
+        transition: opacity 0.3s ease-in-out;
+      }
+      .image-circle:hover {
+        opacity: 1;
+      }
+    `;
+    document.body.appendChild(imageCircle);
   });

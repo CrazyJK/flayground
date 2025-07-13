@@ -46,7 +46,9 @@
   }
 
   .batch-lower-list {
+    margin: 0 auto;
     padding: 0.5rem 1rem;
+    max-width: 1080px;
 
     div {
       display: flex;
@@ -120,15 +122,18 @@
 
   #lowerScoreFlayChart {
     display: flex;
+    flex-wrap: wrap;
     flex-direction: row;
-    justify-content: space-evenly;
+    justify-content: center;
+    align-content: flex-start;
+    gap: 1rem;
+    padding: 0.5rem 1rem;
 
     & > div {
-      display: flex;
+      display: inline-flex;
+      flex-wrap: wrap;
       flex-direction: column;
       align-items: center;
-      flex-wrap: wrap;
-      width: 100%;
 
       label {
         font-size: var(--size-normal);

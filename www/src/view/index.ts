@@ -2,7 +2,7 @@ import './inc/Page';
 import './index.scss';
 
 import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
-  .then(({ ImageCircle }) => new ImageCircle(ImageCircle.DEFAULT_OPTIONS))
+  .then(({ ImageCircle }) => new ImageCircle({ rem: 10, duration: 2000, eventAllow: true }))
   .then((imageCircle) => {
     imageCircle.style.position = 'fixed';
     imageCircle.style.right = '0';
@@ -15,7 +15,6 @@ import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
       }
       .image-circle:hover {
         opacity: 1;
-      }
-    `;
+      }`;
     document.body.appendChild(imageCircle);
   });

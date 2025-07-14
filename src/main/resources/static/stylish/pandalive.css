@@ -37,9 +37,14 @@ body {
 
 /* **** 방송 **** */
 
+/* 채팅 */
+#chatting_zone {
+  display: none;
+}
+
 /* 검열 화면 */
 #player-area > div:nth-child(2) > div > div.hidden {
-  display: none;
+  display: block;
 }
 
 .bg-bg-no-signal {

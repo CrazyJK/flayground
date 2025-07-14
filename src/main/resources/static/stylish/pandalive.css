@@ -38,11 +38,16 @@ body {
 /* **** 방송 **** */
 
 /* 채팅 */
+#top-nav-container,
+#sidebar,
 #chatting_zone {
   display: none;
 }
 
 /* 검열 화면 */
+.hidden {
+  display: block;
+}
 #player-area > div:nth-child(2) > div > div.hidden {
   display: block;
 }

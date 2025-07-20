@@ -49,3 +49,6 @@ src/main/resources/static/dist*
 #diablo4
 doc/diablo4
 dependencies-viewer.json
+
+# res webm
+**/res/*.webm

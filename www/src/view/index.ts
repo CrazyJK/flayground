@@ -1,4 +1,3 @@
-import { FacadeWebMovie } from '../movie/FacadeWebMovie';
 import './inc/Page';
 import './index.scss';
 
@@ -20,4 +19,8 @@ import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
     document.body.appendChild(imageCircle);
   });
 
-document.querySelector('body > main').appendChild(new FacadeWebMovie());
+import(/* webpackChunkName: "FacadeWebMovie" */ '../movie/FacadeWebMovie')
+  .then(({ FacadeWebMovie }) => new FacadeWebMovie())
+  .then((facadeWebMovie) => {
+    document.querySelector('body > main').appendChild(facadeWebMovie);
+  });

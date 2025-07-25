@@ -73,6 +73,17 @@ export class FacadeWebMovie extends HTMLVideoElement {
   private handleLoadStart(): void {
     this.style.opacity = '1';
   }
+
+  // 재생이 끝나는지 알리기
+  async isEnded(): Promise<boolean> {
+    return new Promise((resolve) => {
+      setInterval(() => {
+        if (this.ended) {
+          resolve(true);
+        }
+      }, 100); // 100ms 마다 확인
+    });
+  }
 }
 
 customElements.define('facade-web-movie', FacadeWebMovie, { extends: 'video' });

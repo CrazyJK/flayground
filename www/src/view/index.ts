@@ -32,13 +32,56 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
         img.src = `/api/v1/static/image/${index}`;
         return img;
       };
+      const imageAnimate = (image: HTMLImageElement, duration: number): void => {
+        image.animate([{ opacity: 0.25 }, { opacity: 1 }], { duration, easing: 'ease-in-out' });
+      };
+
       const startIndex = Math.floor(Math.random() * imageLength);
 
-      for (let i = 0; i < 10; i++) {
-        document.querySelector('body > header').prepend(getImage(startIndex - i));
-        document.querySelector('body > footer').append(getImage(startIndex + i));
+      let i = 0;
+      let showCondition = true;
+      do {
+        const headerIndex = startIndex - i >= 0 ? startIndex - i : startIndex + i;
+        const footerIndex = startIndex + i < imageLength ? startIndex + i : startIndex - i;
+
+        const headerImage = getImage(headerIndex);
+        const footerImage = getImage(footerIndex);
+        document.querySelector('body > header').prepend(headerImage);
+        document.querySelector('body > footer').append(footerImage);
+
+        imageAnimate(headerImage, 500);
+        imageAnimate(footerImage, 500);
 
         await new Promise((resolve) => setTimeout(resolve, 1000)); // 1000ms 대기
-      }
+        i++;
+
+        const rect = footerImage.getBoundingClientRect();
+        if (window.innerWidth <= rect.right) {
+          showCondition = false;
+        }
+      } while (showCondition);
+
+      const headerImages = Array.from(document.querySelectorAll('body > header > img'));
+      const footerImages = Array.from(document.querySelectorAll('body > footer > img'));
+      const columnCount = headerImages.length;
+
+      let columnIndex = 0;
+      let loopCondition = columnCount > 0;
+      do {
+        const index = columnIndex++ % columnCount;
+        const backIndex = columnCount - index - 1;
+
+        const headerImage = headerImages[backIndex] as HTMLImageElement;
+        const footerImage = footerImages[index] as HTMLImageElement;
+
+        imageAnimate(headerImage, 500);
+        imageAnimate(footerImage, 500);
+
+        headerImage.src = `/api/v1/static/image/${startIndex - i}`;
+        footerImage.src = `/api/v1/static/image/${startIndex + i}`;
+
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // 1000ms 대기
+        i++;
+      } while (loopCondition);
     });
   });

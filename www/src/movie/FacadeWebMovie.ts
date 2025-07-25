@@ -22,7 +22,7 @@ export class FacadeWebMovie extends HTMLVideoElement {
     // 비디오 속성 설정
     this.autoplay = true;
     this.loop = false;
-    this.muted = true; // 자동 재생을 위해 음소거 설정
+    // this.muted = true; // 자동 재생을 위해 음소거 설정
     this.volume = 0.5;
     this.playsInline = true; // 모바일에서 인라인 재생
 

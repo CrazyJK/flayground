@@ -19,7 +19,7 @@ import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
     document.body.appendChild(imageCircle);
   });
 
-import(/* webpackChunkName: "FacadeWebMovie" */ '../movie/FacadeWebMovie')
+import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
   .then(({ FacadeWebMovie }) => new FacadeWebMovie())
   .then((facadeWebMovie) => {
     document.querySelector('body > main').appendChild(facadeWebMovie);

@@ -15,7 +15,29 @@ body {
     height: 100%;
 
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
     align-items: center;
     justify-content: center;
+  }
+
+  > header,
+  > footer {
+    display: flex;
+    justify-content: flex-end;
+
+    > img {
+      display: inline-block;
+      width: 9rem;
+      height: 16rem;
+      margin: 0px;
+      border-radius: 1.5rem;
+      padding: 0.25rem;
+      object-fit: cover;
+    }
+  }
+  > footer {
+    justify-content: flex-start;
   }
 }

@@ -1,3 +1,4 @@
+import FlayFetch from '../lib/FlayFetch';
 import './inc/Page';
 import './index.scss';
 
@@ -21,6 +22,23 @@ import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
 
 import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
   .then(({ FacadeWebMovie }) => new FacadeWebMovie())
-  .then((facadeWebMovie) => {
+  .then(async (facadeWebMovie) => {
     document.querySelector('body > main').appendChild(facadeWebMovie);
+    await facadeWebMovie.isEnded();
+
+    FlayFetch.getImageSize().then(async (imageLength) => {
+      const getImage = (index: number): HTMLImageElement => {
+        const img = document.createElement('img');
+        img.src = `/api/v1/static/image/${index}`;
+        return img;
+      };
+      const startIndex = Math.floor(Math.random() * imageLength);
+
+      for (let i = 0; i < 10; i++) {
+        document.querySelector('body > header').prepend(getImage(startIndex - i));
+        document.querySelector('body > footer').append(getImage(startIndex + i));
+
+        await new Promise((resolve) => setTimeout(resolve, 1000)); // 1000ms 대기
+      }
+    });
   });

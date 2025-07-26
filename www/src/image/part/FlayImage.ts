@@ -3,6 +3,10 @@ import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
 import FlayFetch, { ImageDomain } from '@lib/FlayFetch';
 
+export interface FlayImageOptions {
+  magnifier: boolean;
+}
+
 /**
  * 이미지 확대 돋보기 기능을 제공하는 커스텀 이미지 엘리먼트
  * - 마우스 호버 시 돋보기 표시
@@ -17,9 +21,14 @@ export default class FlayImage extends HTMLImageElement {
   #isEnlarged: boolean = false;
   #lastCheckTime: number = 0;
   #resizeHandler: ((event: Event) => void) | null = null;
+  #opts: FlayImageOptions = {
+    magnifier: true,
+  };
 
-  constructor() {
+  constructor(options: Partial<FlayImageOptions> = {}) {
     super();
+
+    this.#opts = { ...this.#opts, ...options };
   }
 
   static get observedAttributes(): string[] {
@@ -39,7 +48,9 @@ export default class FlayImage extends HTMLImageElement {
   }
 
   connectedCallback(): void {
-    this.#initMagnifier();
+    if (this.#opts.magnifier) {
+      this.#initMagnifier();
+    }
   }
 
   disconnectedCallback(): void {

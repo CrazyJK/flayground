@@ -33,19 +33,11 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
         img.dataset.idx = index.toString();
         return img;
       };
-      const hideOpacity = 0.25;
-      const imageShowAnimate = (image: HTMLImageElement, duration: number = 1000): Promise<void> => {
+      const imageAnimate = (image: HTMLImageElement, toggle: boolean, duration: number = 1000): Promise<void> => {
+        const hideOpacity = 0.25;
+        const keyframes = toggle ? [{ opacity: hideOpacity }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: hideOpacity }];
         return new Promise((resolve) => {
-          image.animate([{ opacity: hideOpacity }, { opacity: 1 }], { duration, easing: 'ease-in-out' }).onfinish = () => {
-            resolve();
-          };
-        });
-      };
-      const imageHideAnimate = (image: HTMLImageElement, duration: number = 1000): Promise<void> => {
-        return new Promise((resolve) => {
-          image.animate([{ opacity: 1 }, { opacity: hideOpacity }], { duration, easing: 'ease-in-out' }).onfinish = () => {
-            resolve();
-          };
+          image.animate(keyframes, { duration, easing: 'ease-in-out' }).onfinish = () => resolve();
         });
       };
 
@@ -57,14 +49,14 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
         const headerIndex = startIndex - offset >= 0 ? startIndex - offset : startIndex + offset;
         const footerIndex = startIndex + offset < imageLength ? startIndex + offset : startIndex - offset;
 
-        const headerImage = getImage(headerIndex);
-        const footerImage = getImage(footerIndex);
-        document.querySelector('body > header').prepend(headerImage);
-        document.querySelector('body > footer').append(footerImage);
+        const imageOfHeader = getImage(headerIndex);
+        const imageOfFooter = getImage(footerIndex);
+        document.querySelector('body > header').prepend(imageOfHeader);
+        document.querySelector('body > footer').append(imageOfFooter);
 
-        await Promise.all([imageShowAnimate(headerImage), imageShowAnimate(footerImage)]);
+        await Promise.all([imageAnimate(imageOfHeader, true), imageAnimate(imageOfFooter, true)]);
 
-        const { right } = footerImage.getBoundingClientRect();
+        const { right } = imageOfFooter.getBoundingClientRect();
         showCondition = window.innerWidth > right;
 
         offset++;
@@ -80,13 +72,13 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
         const index = columnIndex++ % columnCount;
         const backIndex = columnCount - index - 1;
 
-        const headerImage = headerImages[backIndex];
-        const footerImage = footerImages[index];
+        const imageOfHeader = headerImages[backIndex];
+        const imageOfFooter = footerImages[index];
 
-        await Promise.all([imageHideAnimate(headerImage, 300), imageHideAnimate(footerImage, 300)]);
-        headerImage.dataset.idx = (startIndex - offset).toString();
-        footerImage.dataset.idx = (startIndex + offset).toString();
-        await Promise.all([imageShowAnimate(headerImage, 700), imageShowAnimate(footerImage, 700)]);
+        await Promise.all([imageAnimate(imageOfHeader, false, 300), imageAnimate(imageOfFooter, false, 300)]);
+        imageOfHeader.dataset.idx = (startIndex - offset).toString();
+        imageOfFooter.dataset.idx = (startIndex + offset).toString();
+        await Promise.all([imageAnimate(imageOfHeader, true, 700), imageAnimate(imageOfFooter, true, 700)]);
 
         await new Promise((resolve) => setTimeout(resolve, 1000)); // 1000ms 대기
         offset++;

@@ -1,4 +1,4 @@
-import ApiClient from '../lib/ApiClient';
+import FlayImage from '../image/part/FlayImage';
 import FlayFetch from '../lib/FlayFetch';
 import './inc/Page';
 import './index.scss';
@@ -25,15 +25,12 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
   .then(({ FacadeWebMovie }) => new FacadeWebMovie())
   .then(async (facadeWebMovie) => {
     document.querySelector('body > main').appendChild(facadeWebMovie);
-    await facadeWebMovie.isEnded();
+    // await facadeWebMovie.isEnded();
 
     FlayFetch.getImageSize().then(async (imageLength) => {
-      const getImageURL = (index: number): string => {
-        return ApiClient.buildUrl(`/static/image/${index}`);
-      };
-      const getImage = (index: number): HTMLImageElement => {
-        const img = document.createElement('img');
-        img.src = getImageURL(index);
+      const getImage = (index: number): FlayImage => {
+        const img = new FlayImage({ magnifier: false });
+        img.dataset.idx = index.toString();
         return img;
       };
       const hideOpacity = 0.25;
@@ -87,8 +84,8 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
         const footerImage = footerImages[index];
 
         await Promise.all([imageHideAnimate(headerImage, 300), imageHideAnimate(footerImage, 300)]);
-        headerImage.src = getImageURL(startIndex - offset);
-        footerImage.src = getImageURL(startIndex + offset);
+        headerImage.dataset.idx = (startIndex - offset).toString();
+        footerImage.dataset.idx = (startIndex + offset).toString();
         await Promise.all([imageShowAnimate(headerImage, 700), imageShowAnimate(footerImage, 700)]);
 
         await new Promise((resolve) => setTimeout(resolve, 1000)); // 1000ms 대기

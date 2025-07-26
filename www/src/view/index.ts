@@ -25,7 +25,7 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
   .then(({ FacadeWebMovie }) => new FacadeWebMovie())
   .then(async (facadeWebMovie) => {
     document.querySelector('body > main').appendChild(facadeWebMovie);
-    // await facadeWebMovie.isEnded();
+    await facadeWebMovie.isEnded();
 
     FlayFetch.getImageSize().then(async (imageLength) => {
       const getImage = (index: number): FlayImage => {

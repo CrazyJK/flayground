@@ -29,8 +29,9 @@ body {
 
     > img {
       display: inline-block;
+      aspect-ratio: 9 / 16;
       width: 9rem;
-      height: 16rem;
+      height: auto;
       margin: 0px;
       border-radius: 1.5rem;
       padding: 0.25rem;

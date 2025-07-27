@@ -61,6 +61,7 @@ export class ImageSequence extends HTMLElement {
   }
 
   connectedCallback(): void {
+    this.isActive = true;
     this.start();
     window.addEventListener('resize', this.resizeHandler.bind(this));
   }

@@ -21,35 +21,4 @@ body {
     align-items: center;
     justify-content: center;
   }
-
-  > header,
-  > footer {
-    display: flex;
-    justify-content: flex-end;
-
-    contain: layout style;
-
-    > img {
-      display: inline-block;
-      aspect-ratio: 9 / 16;
-      width: 9rem;
-      height: auto;
-      margin: 0px;
-      border: 1px solid transparent;
-      border-radius: 1.5rem;
-      padding: 0.25rem;
-      object-fit: cover;
-      transition: 0.5s ease-in-out;
-
-      transform: translateZ(0);
-      will-change: transform, opacity;
-
-      &.current {
-        z-index: 1;
-      }
-    }
-  }
-  > footer {
-    justify-content: flex-start;
-  }
 }

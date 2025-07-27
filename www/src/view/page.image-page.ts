@@ -10,9 +10,10 @@ Promise.all([
   import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle'),
   import(/* webpackChunkName: "ImageMask" */ '@image/ImageMask'),
   import(/* webpackChunkName: "ImageThumbnail" */ '@image/ImageThumbnail'),
-]).then(([{ ImageOne }, { ImagePage }, { ImageFall }, { ImageCircle }, { ImageMask }, { ImageThumbnail }]) => {
-  const componentNames = ['One', 'Page', 'Fall', 'Circle', 'Mask', 'Thumbnail'];
-  const componentClasses = [ImageOne, ImagePage, ImageFall, ImageCircle, ImageMask, ImageThumbnail];
+  import(/* webpackChunkName: "ImageSequence" */ '@image/ImageSequence'),
+]).then(([{ ImageOne }, { ImagePage }, { ImageFall }, { ImageCircle }, { ImageMask }, { ImageThumbnail }, { ImageSequence }]) => {
+  const componentNames = ['One', 'Page', 'Fall', 'Circle', 'Mask', 'Thumbnail', 'Sequence'];
+  const componentClasses = [ImageOne, ImagePage, ImageFall, ImageCircle, ImageMask, ImageThumbnail, ImageSequence];
   const componentInstances = componentClasses.map((Component) => new Component());
   const activeIndex = FlayStorage.local.getNumber('imagePageActiveIndex', 0);
 

@@ -346,6 +346,7 @@ export default class FlayFetch {
     }
     return coverObjectURLMap.get(opus)!;
   }
+
   /* ######################## Image ######################## */
 
   static async getImage(idx: number): Promise<ImageDomain> {

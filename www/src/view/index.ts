@@ -66,8 +66,8 @@ FlayFetch.getImageSize().then(async (imageLength) => {
   const headerImages = Array.from(document.querySelectorAll('body > header > img')) as HTMLImageElement[];
   const footerImages = Array.from(document.querySelectorAll('body > footer > img')) as HTMLImageElement[];
   const columnCount = footerImages.length;
-
   let columnIndex = 0;
+
   let loopCondition = columnCount > 0;
   do {
     const index = columnIndex++ % columnCount;

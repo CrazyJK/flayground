@@ -29,6 +29,40 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
   });
 
 FlayFetch.getImageSize().then(async (imageLength) => {
+  const style = document.createElement('style');
+  style.textContent = `
+    body > header, 
+    body > footer {
+      display: flex;
+      justify-content: flex-end;
+      contain: layout style;
+    }
+    body > footer {
+      justify-content: flex-start;
+    }
+    body > header > img,
+    body > footer > img {
+      display: inline-block;
+      aspect-ratio: 9 / 16;
+      width: 9rem;
+      height: auto;
+      margin: 0px;
+      border: 1px solid transparent;
+      border-radius: 1.5rem;
+      padding: 0.25rem;
+      object-fit: cover;
+      transition: 0.5s ease-in-out;
+
+      transform: translateZ(0);
+      will-change: transform, opacity;
+    }
+    body > header > img.current,
+    body > footer > img.current {      
+      z-index: 1;
+    }
+  `;
+  document.head.appendChild(style);
+
   const getImage = (index: number): FlayImage => {
     const img = new FlayImage({ magnifier: false });
     img.dataset.idx = index.toString();
@@ -42,6 +76,9 @@ FlayFetch.getImageSize().then(async (imageLength) => {
     });
   };
 
+  const header = (document.querySelector('body > header') ?? document.body.appendChild(document.createElement('header'))) as HTMLDivElement;
+  const footer = (document.querySelector('body > footer') ?? document.body.appendChild(document.createElement('footer'))) as HTMLDivElement;
+
   const startIndex = Math.floor(Math.random() * imageLength);
   let offset = 0;
 
@@ -52,8 +89,8 @@ FlayFetch.getImageSize().then(async (imageLength) => {
 
     const imageOfHeader = getImage(headerIndex);
     const imageOfFooter = getImage(footerIndex);
-    document.querySelector('body > header').prepend(imageOfHeader);
-    document.querySelector('body > footer').append(imageOfFooter);
+    header.prepend(imageOfHeader);
+    footer.append(imageOfFooter);
 
     await Promise.all([imageAnimate(imageOfHeader, true), imageAnimate(imageOfFooter, true)]);
 

@@ -22,7 +22,6 @@ import './index.scss';
         }
       `;
       imageCircle.classList.add('right-bottom');
-
       document.body.appendChild(imageCircle);
     });
 })();

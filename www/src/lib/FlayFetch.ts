@@ -238,6 +238,7 @@ export default class FlayFetch {
   static async getArchiveListByActress(name: string): Promise<Archive[]> {
     return await ApiClient.get<Archive[]>(`/archive/find/actress/${name}`);
   }
+
   /* ######################## Studio ######################## */
 
   static async getStudioAll(): Promise<Studio[]> {
@@ -291,6 +292,7 @@ export default class FlayFetch {
   static async getVideo(opus: string): Promise<Video> {
     return await ApiClient.get<Video>(`/info/video/${opus}`);
   }
+
   /* ######################## Tag ######################## */
 
   static async getTag(id: number): Promise<Tag> {

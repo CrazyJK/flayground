@@ -13,14 +13,8 @@ import './index.scss';
     .then(({ ImageCircle }) => new ImageCircle({ rem: 10, duration: 2000, eventAllow: true }))
     .then((imageCircle) => {
       document.head.appendChild(document.createElement('style')).textContent = `
-        .image-circle {
-          opacity: 0.5;
-          transition: opacity 0.3s ease-in-out;
-        }
-        .image-circle:hover {
-          opacity: 1;
-        }
-      `;
+        .image-circle { opacity: 0.5; transition: opacity 0.3s ease-in-out; }
+        .image-circle:hover { opacity: 1; }`;
       imageCircle.classList.add('right-bottom');
       document.body.appendChild(imageCircle);
     });

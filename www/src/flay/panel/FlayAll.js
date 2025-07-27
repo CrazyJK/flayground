@@ -259,13 +259,13 @@ export class FlayAll extends HTMLElement {
       tbody tr.archive:hover {
         background-color: var(--color-bg-hover, #f5f5f5);
       }
-      th:nth-child(1), td:nth-child(1) { width: 15%; }
-      th:nth-child(2), td:nth-child(2) { width: 15%; }
-      th:nth-child(3), td:nth-child(3) { width: 30%; }
-      th:nth-child(4), td:nth-child(4) { width: 20%; }
-      th:nth-child(5), td:nth-child(5) { width: 10%; }
-      th:nth-child(6), td:nth-child(6) { width: 5%; }
-      th:nth-child(7), td:nth-child(7) { width: 5%; }
+      th:nth-child(1), td:nth-child(1) { width: 6rem } /* 제작사 */
+      th:nth-child(2), td:nth-child(2) { width: 6rem } /* 작품번호 */ 
+      th:nth-child(3), td:nth-child(3) { width: auto; } /* 제목 */ 
+      th:nth-child(4), td:nth-child(4) { width: 8rem; } /* 배우 */ 
+      th:nth-child(5), td:nth-child(5) { width: 5rem; } /* 발매일 */
+      th:nth-child(6), td:nth-child(6) { width: 2rem; text-align: right; padding-right: 15px; } /* 랭크 */ 
+      th:nth-child(7), td:nth-child(7) { width: 3rem; text-align: right; padding-right: 15px; } /* 스코어 */
       .loading-indicator {
         display: none;
         padding: 20px 30px;

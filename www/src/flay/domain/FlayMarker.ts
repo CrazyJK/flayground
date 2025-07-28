@@ -5,6 +5,8 @@ import favorite from '@svg/favorite';
 import ranks from '@svg/ranks';
 import './FlayMarker.scss';
 
+export type ShapeType = 'square' | 'circle' | 'star' | 'heart' | 'rhombus';
+
 /** FlayMarker 컴포넌트 옵션 */
 export interface FlayMarkerOptions {
   /** 제목 툴팁 표시 여부 */
@@ -12,7 +14,7 @@ export interface FlayMarkerOptions {
   /** 커버 이미지 표시 여부 */
   showCover: boolean;
   /** 마커 모양 */
-  shape: 'square' | 'circle' | 'star' | 'heart' | 'rhombus';
+  shape: ShapeType;
 }
 
 /** 기본 옵션 */
@@ -55,7 +57,7 @@ export default class FlayMarker extends HTMLLabelElement {
       this.addEventListener('mouseover', () => this.showCover(), { once: true });
     }
     if (mergedOptions.showTitle) {
-      this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}`;
+      this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}\n${flay.video.rank}R`;
     }
 
     this.classList.add(mergedOptions.shape);

@@ -1,0 +1,70 @@
+import FlayMarker, { ShapeType } from '@flay/domain/FlayMarker';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
+import StyleUtils from '@lib/StyleUtils';
+import './FlayMarkerFloat.scss';
+
+export class FlayMarkerFloat extends HTMLDivElement {
+  private flayMarker: FlayMarker | null = null;
+  private opusList: string[] = [];
+  private active: boolean = false;
+
+  constructor() {
+    super();
+    this.classList.add('flay-marker-float');
+  }
+
+  connectedCallback(): void {
+    this.start();
+  }
+
+  disconnectedCallback(): void {
+    this.active = false;
+    this.querySelectorAll('.flay-marker').forEach((marker) => marker.remove());
+  }
+
+  private async start(): Promise<void> {
+    this.active = true;
+    this.opusList = await FlayFetch.getOpusList({});
+
+    this.flayMarker = new FlayMarker(null, {});
+    this.appendChild(this.flayMarker);
+
+    await this.updateMarker();
+    const intervalId = setInterval(() => {
+      if (!this.active) {
+        clearInterval(intervalId);
+      }
+      this.updateMarker();
+    }, 1000 * 60); // Refresh every 1 minute
+  }
+
+  private async updateMarker(): Promise<void> {
+    const { randomFlay, randomRem, randomX, randomY, shape } = await this.getRandomInfo();
+    this.flayMarker.set(randomFlay, { showTitle: true, showCover: false, shape: shape });
+    this.flayMarker.style.left = `${randomX}px`;
+    this.flayMarker.style.top = `${randomY}px`;
+    this.flayMarker.style.width = `${randomRem}rem`;
+    this.flayMarker.style.height = `${randomRem}rem`;
+  }
+
+  private async getRandomInfo(): Promise<{ randomFlay: Flay; randomRem: number; randomX: number; randomY: number; shape: ShapeType }> {
+    const randomIndex = Math.floor(Math.random() * this.opusList.length);
+    const randomOpus = this.opusList[randomIndex];
+    const randomFlay = await FlayFetch.getFlay(randomOpus);
+    const randomRem = Math.floor(Math.random() * 3) + 2; // 2 ~ 4 randomly select a size
+    const [randomX, randomY] = this.randomPosition(randomRem);
+    const shape = ['square', 'circle', 'star', 'heart', 'rhombus'][Math.floor(Math.random() * 5)] as ShapeType;
+
+    return { randomFlay, randomRem, randomX, randomY, shape };
+  }
+
+  private randomPosition(rem: number): [number, number] {
+    const widthPx = StyleUtils.remToPx(rem); // Marker width
+    const excludesPx = StyleUtils.remToPx(10); // 10rem in pixels
+    const randomX = Math.random() * (this.clientWidth - excludesPx * 2) + excludesPx;
+    const randomY = Math.random() * (this.clientHeight - excludesPx * 2) + excludesPx;
+    return [Math.round(randomX - widthPx / 2), Math.round(randomY - widthPx / 2)]; // Center the marker
+  }
+}
+
+customElements.define('flay-marker-float', FlayMarkerFloat, { extends: 'div' });

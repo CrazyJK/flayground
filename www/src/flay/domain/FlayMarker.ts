@@ -54,6 +54,10 @@ export default class FlayMarker extends HTMLLabelElement {
   }
 
   set(flay: Flay, options: Partial<FlayMarkerOptions> = {}): void {
+    if (!flay) {
+      console.warn('FlayMarker: Flay data is required');
+      return;
+    }
     const mergedOptions: FlayMarkerOptions = { ...DEFAULT_OPTIONS, ...options };
 
     this.flay = flay;

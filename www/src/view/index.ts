@@ -22,8 +22,8 @@ import './index.scss';
       document.body.appendChild(imageCircle);
     });
 
-  FlayFetch.getOpusList({}).then((opusList) => {
-    const showMarker = async () => {
+  FlayFetch.getOpusList({}).then(async (opusList) => {
+    const getRandomInfo = async () => {
       const randomPosition = (rem: number) => {
         const widthPx = StyleUtils.remToPx(rem); // Marker width
         const excludesPx = StyleUtils.remToPx(10); // 10rem in pixels
@@ -31,43 +31,39 @@ import './index.scss';
         const randomY = Math.random() * (window.innerHeight - excludesPx * 2) + excludesPx;
         return [Math.round(randomX - widthPx / 2), Math.round(randomY - widthPx / 2)]; // Center the marker
       };
-      const markerAnimate = (marker: Element, toggle: boolean, duration: number = 300) => {
-        marker.animate(
-          {
-            transform: toggle ? ['scale(0.1)', 'scale(0.3)', 'scale(0.5)', 'scale(0.9)', 'scale(1.1)', 'scale(1)'] : ['scale(1)', 'scale(0.1)'],
-            opacity: toggle ? [0, 1] : [1, 0],
-          },
-          {
-            duration: duration,
-            easing: 'ease-in-out',
-            fill: 'forwards',
-          }
-        ).onfinish = () => (toggle ? null : marker.remove());
-      };
 
       const randomIndex = Math.floor(Math.random() * opusList.length);
       const randomOpus = opusList[randomIndex];
       const randomFlay = await FlayFetch.getFlay(randomOpus);
       const randomRem = Math.floor(Math.random() * 3) + 2; // 2 ~ 4 randomly select a size
       const [randomX, randomY] = randomPosition(randomRem);
-
       const shape = ['square', 'circle', 'star', 'heart', 'rhombus'][Math.floor(Math.random() * 5)] as ShapeType;
-      const flayMarker = new FlayMarker(randomFlay, { showTitle: true, showCover: false, shape: shape });
-      flayMarker.style.cssText = `
-          position: fixed;
-          left: ${randomX}px;
-          top: ${randomY}px;
-          width: ${randomRem}rem;
-          height: ${randomRem}rem;
-          transform: scale(0.1);
-        `;
 
-      document.querySelectorAll('.flay-marker').forEach((marker) => markerAnimate(marker, false));
-      document.body.appendChild(flayMarker);
-      markerAnimate(flayMarker, true);
+      return { randomFlay, randomRem, randomX, randomY, shape };
     };
 
-    setInterval(showMarker, 1000 * 60); // Refresh every 1 minute
-    showMarker();
+    const { randomFlay, randomRem, randomX, randomY, shape } = await getRandomInfo();
+    const flayMarker = new FlayMarker(randomFlay, { showTitle: true, showCover: false, shape: shape });
+    flayMarker.style.position = 'fixed';
+    flayMarker.style.transition = '0.3s ease-in-out';
+    flayMarker.style.contain = 'layout style paint';
+    flayMarker.style.willChange = 'top, left, width, height';
+    flayMarker.style.transform = 'translate3d(0, 0, 0)';
+    flayMarker.style.left = `${randomX}px`;
+    flayMarker.style.top = `${randomY}px`;
+    flayMarker.style.width = `${randomRem}rem`;
+    flayMarker.style.height = `${randomRem}rem`;
+
+    document.body.appendChild(flayMarker);
+
+    setInterval(() => {
+      getRandomInfo().then(({ randomFlay, randomRem, randomX, randomY, shape }) => {
+        flayMarker.set(randomFlay, { showTitle: true, showCover: false, shape: shape });
+        flayMarker.style.left = `${randomX}px`;
+        flayMarker.style.top = `${randomY}px`;
+        flayMarker.style.width = `${randomRem}rem`;
+        flayMarker.style.height = `${randomRem}rem`;
+      });
+    }, 1000 * 60); // Refresh every 1 minute
   });
 })();

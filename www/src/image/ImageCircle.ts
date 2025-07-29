@@ -129,7 +129,7 @@ export class ImageCircle extends HTMLDivElement {
     this.#imageLength = 0;
 
     // CSS 변수 정리
-    document.documentElement.style.removeProperty('--breathe-color');
+    this.style.removeProperty('--breathe-color');
 
     // 이벤트 리스너 정리 (이미지 요소가 존재하는 경우)
     if (this.image) {
@@ -269,7 +269,7 @@ export class ImageCircle extends HTMLDivElement {
       this.#currentImageURL = URL.createObjectURL(imageBlob);
       getDominatedColors(this.#currentImageURL, { scale: 0.5, offset: 16, limit: 1 }).then((colors: ColorFrequency[]) => {
         const rgba = colors.length > 0 ? colors[0].rgba : [255, 0, 0, 0.25];
-        document.documentElement.style.setProperty('--breathe-color', `rgba(${rgba.join(',')})`);
+        this.style.setProperty('--breathe-color', `rgba(${rgba.join(',')})`);
       });
 
       this.dataset.idx = String(idx);

@@ -100,7 +100,7 @@ export default class FlayMarker extends HTMLLabelElement {
   #showTooltipHandler(): Promise<void> {
     if (!this.#options.tooltip) return;
 
-    const tooltipWidth = StyleUtils.remToPx(10);
+    const tooltipWidth = StyleUtils.remToPx(20);
     const { x, y, width, height } = this.getBoundingClientRect();
     const tooltipX = x + width / 2; // Center the tooltip horizontally
     const tooltipY = y + height / 2; // Center the tooltip vertically

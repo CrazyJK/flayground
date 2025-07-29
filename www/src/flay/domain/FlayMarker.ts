@@ -108,7 +108,7 @@ export default class FlayMarker extends HTMLLabelElement {
     const tooltip = (document.querySelector('.flay-tooltip') || document.body.appendChild(new FlayTooltip(tooltipWidth))) as FlayTooltip;
     tooltip.show(this.flay, tooltipX, tooltipY);
 
-    // this.addEventListener('mouseleave', () => tooltip.hide(), { once: true });
+    this.addEventListener('mouseleave', () => tooltip.hide(), { once: true });
   }
 }
 

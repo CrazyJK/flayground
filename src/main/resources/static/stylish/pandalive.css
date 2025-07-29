@@ -41,7 +41,9 @@ body {
 #player-area > div:nth-child(2) > div > div.hidden {
   display: none;
 }
-
+#video-section .shadow-pipmode {
+  display: none;
+}
 .bg-bg-no-signal {
   background-image: none;
 }
@@ -59,14 +61,20 @@ body {
 #video-section > div > div > div.pzp-pc__bottom > div.pzp-pc__bottom-buttons > div.pzp-pc__bottom-buttons-right > div {
   display: none;
 }
+.pzp-pc__bottom {
+  opacity: 1;
+  z-index: 1111;
+}
+
+/* 채팅 */
+#chatting_zone {
+  display: none;
+}
 
 /* 화면 가림 무쓸모 처리 */
 #player-area > div > div:nth-child(2) > #video-section {
   position: relative;
   z-index: -1;
-}
-#player-area > div:nth-child(2) > div > div.hidden {
-  display: block;
 }
 #player-area > div:nth-child(2) > div > div.hidden > #video-section > div > div {
   height: 0;

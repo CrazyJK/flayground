@@ -1,0 +1,32 @@
+.flay-tooltip {
+  position: fixed;
+  left: 0;
+  top: 100%;
+  background-color: var(--color-bg-hover);
+  border: 1px solid var(--color-border);
+  border-radius: 0.25rem;
+  box-shadow: var(--box-shadow);
+  padding: 0.5rem;
+  pointer-events: none; /* Prevent tooltip from blocking marker clicks */
+  z-index: 10;
+
+  img {
+    aspect-ratio: var(--cover-aspect-ratio);
+    object-fit: cover;
+  }
+
+  .info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    padding-top: 0.25rem;
+
+    div {
+      color: var(--color-text);
+      font-size: 0.75rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+}

@@ -68,6 +68,9 @@ body {
 #player-area > div:nth-child(2) > div > div.hidden {
   display: block;
 }
+#player-area > div:nth-child(2) > div > div.hidden > #video-section > div > div {
+  height: 0;
+}
 #player-area > div > div:nth-child(2) > #video-section > div > div {
   height: 0;
 }

@@ -6,7 +6,8 @@ import './FlayMarkerFloat.scss';
 export class FlayMarkerFloat extends HTMLDivElement {
   #flayMarker: FlayMarker | null = null;
   #opusList: string[] = [];
-  #active: boolean = false;
+  #intervalIdOfNewMarker: number | null = null;
+  #intervalIdOfShape: number | null = null;
 
   constructor() {
     super();
@@ -18,25 +19,22 @@ export class FlayMarkerFloat extends HTMLDivElement {
   }
 
   disconnectedCallback(): void {
-    this.#active = false;
+    clearInterval(this.#intervalIdOfNewMarker);
+    clearInterval(this.#intervalIdOfShape);
     this.querySelectorAll('.flay-marker').forEach((marker) => marker.remove());
   }
 
   async start(): Promise<void> {
-    this.#active = true;
     this.#opusList = await FlayFetch.getOpusList({});
-
     this.#flayMarker = new FlayMarker(null, {});
     this.appendChild(this.#flayMarker);
 
     await this.#updateMarker();
-    const intervalId = setInterval(() => {
-      if (!this.#active) clearInterval(intervalId);
+    this.#intervalIdOfNewMarker = window.setInterval(() => {
       this.#updateMarker();
     }, 1000 * 60); // Refresh every 1 minute
 
-    const intervalIdOfShape = setInterval(() => {
-      if (!this.#active) clearInterval(intervalIdOfShape);
+    this.#intervalIdOfShape = window.setInterval(() => {
       this.#flayMarker.setShape(this.#randomShape());
     }, 1000 * 10); // Change shape every 10 seconds
   }
@@ -57,7 +55,6 @@ export class FlayMarkerFloat extends HTMLDivElement {
     const randomRem = Math.floor(Math.random() * 3) + 2; // 2 ~ 4 randomly select a size
     const [randomX, randomY] = this.#randomPosition(randomRem);
     const shape = this.#randomShape();
-
     return { randomFlay, randomRem, randomX, randomY, shape };
   }
 

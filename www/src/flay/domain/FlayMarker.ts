@@ -40,6 +40,8 @@ export default class FlayMarker extends HTMLLabelElement {
    */
   constructor(flay: Flay, options: Partial<FlayMarkerOptions> = {}) {
     super();
+
+    this.classList.add('flay-marker');
     this.set(flay, options);
   }
 
@@ -56,31 +58,39 @@ export default class FlayMarker extends HTMLLabelElement {
   set(flay: Flay, options: Partial<FlayMarkerOptions> = {}): void {
     document.querySelector('.flay-tooltip')?.remove(); // Remove existing tooltip
     this.classList.remove('square', 'circle', 'star', 'heart', 'rhombus');
-    this.innerHTML = ''; // Clear previous content
     this.title = '';
     if (!flay) {
       console.warn('FlayMarker: Flay data is required');
       return;
     }
-    this.#options = { ...DEFAULT_OPTIONS, ...options };
 
     this.flay = flay;
-    this.classList.add('flay-marker');
+    this.#options = { ...DEFAULT_OPTIONS, ...options };
+
     this.classList.toggle('shot', flay.video.likes?.length > 0);
     this.classList.toggle('archive', flay.archive);
+    this.setShape(this.#options.shape);
+    if (!this.#options.tooltip) {
+      this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}\n${flay.video.rank}R`;
+    }
+  }
 
-    this.classList.add(this.#options.shape);
-    switch (this.#options.shape) {
+  setShape(shape: ShapeType): void {
+    if (!['square', 'circle', 'star', 'heart', 'rhombus'].includes(shape)) {
+      console.warn(`FlayMarker: Invalid shape type "${shape}"`);
+      return;
+    }
+    this.#options.shape = shape;
+    this.classList.remove('square', 'circle', 'star', 'heart', 'rhombus');
+    this.classList.add(shape);
+    this.innerHTML = ''; // Clear content for other shapes
+    switch (shape) {
       case 'heart':
         this.innerHTML = favorite;
         break;
       case 'star':
-        this.innerHTML = ranks[flay.video.rank + 1];
+        this.innerHTML = ranks[this.flay.video.rank + 1];
         break;
-    }
-
-    if (!this.#options.tooltip) {
-      this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}\n${flay.video.rank}R`;
     }
   }
 

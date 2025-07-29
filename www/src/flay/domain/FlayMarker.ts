@@ -8,6 +8,8 @@ import StyleUtils from '../../lib/StyleUtils';
 
 export type ShapeType = 'square' | 'circle' | 'star' | 'heart' | 'rhombus';
 
+export const SHAPES: ShapeType[] = ['square', 'circle', 'star', 'heart', 'rhombus'];
+
 /** FlayMarker 컴포넌트 옵션 */
 export interface FlayMarkerOptions {
   /** Flay 툴팁 표시 여부 */
@@ -53,12 +55,20 @@ export default class FlayMarker extends HTMLLabelElement {
   disconnectedCallback(): void {
     this.removeEventListener('click', this.#popupFlayHandler.bind(this));
     this.removeEventListener('mouseover', this.#showTooltipHandler.bind(this));
+    this.clear();
+  }
+
+  clear(): void {
+    this.flay = null;
+    this.#options = { ...DEFAULT_OPTIONS };
+    this.classList.remove(...SHAPES);
+    this.classList.remove('active', 'shot', 'archive');
+    this.title = '';
+    document.querySelector('.flay-tooltip')?.remove(); // Remove existing tooltip
   }
 
   set(flay: Flay, options: Partial<FlayMarkerOptions> = {}): void {
-    document.querySelector('.flay-tooltip')?.remove(); // Remove existing tooltip
-    this.classList.remove('square', 'circle', 'star', 'heart', 'rhombus', 'active');
-    this.title = '';
+    this.clear();
     if (!flay) {
       console.warn('FlayMarker: Flay data is required');
       return;
@@ -76,12 +86,12 @@ export default class FlayMarker extends HTMLLabelElement {
   }
 
   setShape(shape: ShapeType): void {
-    if (!['square', 'circle', 'star', 'heart', 'rhombus'].includes(shape)) {
+    if (!SHAPES.includes(shape)) {
       console.warn(`FlayMarker: Invalid shape type "${shape}"`);
       return;
     }
     this.#options.shape = shape;
-    this.classList.remove('square', 'circle', 'star', 'heart', 'rhombus');
+    this.classList.remove(...SHAPES);
     this.classList.add(shape);
     this.innerHTML = ''; // Clear content for other shapes
     switch (shape) {

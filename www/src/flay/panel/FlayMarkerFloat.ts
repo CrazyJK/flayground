@@ -6,7 +6,7 @@ import './FlayMarkerFloat.scss';
 export class FlayMarkerFloat extends HTMLDivElement {
   #flayMarker: FlayMarker | null = null;
   #opusList: string[] = [];
-  #intervalIdOfNewMarker: number | null = null;
+  #intervalIdOfMarker: number | null = null;
   #intervalIdOfShape: number | null = null;
 
   constructor() {
@@ -15,28 +15,22 @@ export class FlayMarkerFloat extends HTMLDivElement {
   }
 
   connectedCallback(): void {
-    this.start();
+    this.#start();
   }
 
   disconnectedCallback(): void {
-    clearInterval(this.#intervalIdOfNewMarker);
+    clearInterval(this.#intervalIdOfMarker);
     clearInterval(this.#intervalIdOfShape);
     this.querySelectorAll('.flay-marker').forEach((marker) => marker.remove());
   }
 
-  async start(): Promise<void> {
+  async #start(): Promise<void> {
     this.#opusList = await FlayFetch.getOpusList({});
     this.#flayMarker = new FlayMarker(null, {});
     this.appendChild(this.#flayMarker);
-
     await this.#updateMarker();
-    this.#intervalIdOfNewMarker = window.setInterval(() => {
-      this.#updateMarker();
-    }, 1000 * 60); // Refresh every 1 minute
-
-    this.#intervalIdOfShape = window.setInterval(() => {
-      this.#flayMarker.setShape(this.#randomShape());
-    }, 1000 * 10); // Change shape every 10 seconds
+    this.#intervalIdOfMarker = window.setInterval(() => this.#updateMarker(), 1000 * 60); // Refresh every 1 minute
+    this.#intervalIdOfShape = window.setInterval(() => this.#updateShape(), 1000 * 10); // Change shape every 10 seconds
   }
 
   async #updateMarker(): Promise<void> {
@@ -46,6 +40,10 @@ export class FlayMarkerFloat extends HTMLDivElement {
     this.#flayMarker.style.top = `${randomY}px`;
     this.#flayMarker.style.width = `${randomRem}rem`;
     this.#flayMarker.style.height = `${randomRem}rem`;
+  }
+
+  #updateShape(): void {
+    this.#flayMarker.setShape(this.#randomShape());
   }
 
   async #getRandomInfo(): Promise<{ randomFlay: Flay; randomRem: number; randomX: number; randomY: number; shape: ShapeType }> {

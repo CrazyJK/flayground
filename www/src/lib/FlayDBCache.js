@@ -102,7 +102,7 @@ export default class FlayDBCache {
     if (!coverObjectURLMap.has(opus)) {
       let cover = await coverStore.select(opus);
       if (!cover) {
-        const blob = await FlayFetch.getCover(opus);
+        const blob = await FlayFetch.getCoverBlob(opus);
         cover = await coverStore.update(opus, blob);
         console.debug('[FlayDBCache] update cover', opus);
       }

@@ -332,7 +332,7 @@ export default class FlayFetch {
    * @param opus - opus 번호
    * @returns 커버 이미지 Blob
    */
-  static async getCover(opus: string): Promise<Blob> {
+  static async getCoverBlob(opus: string): Promise<Blob> {
     return await ApiClient.get<Blob>(`/static/cover/${opus}`, { responseType: 'blob' });
   }
 
@@ -343,7 +343,7 @@ export default class FlayFetch {
    */
   static async getCoverURL(opus: string): Promise<string> {
     if (!coverObjectURLMap.has(opus)) {
-      const blob = await ApiClient.get<Blob>(`/static/cover/${opus}`, { responseType: 'blob' });
+      const blob = await FlayFetch.getCoverBlob(opus);
       coverObjectURLMap.set(opus, URL.createObjectURL(blob));
     }
     return coverObjectURLMap.get(opus)!;

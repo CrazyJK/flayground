@@ -71,7 +71,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
   connectedCallback() {
     FlayFetch.getFlayList().then((list) => {
-      this.#markerList = list.map((flay) => new FlayMarker(flay, { showTitle: false, shape: this.#opts.shape }));
+      this.#markerList = list.map((flay) => new FlayMarker(flay, { tooltip: false, shape: this.#opts.shape }));
       this.#start();
     });
   }

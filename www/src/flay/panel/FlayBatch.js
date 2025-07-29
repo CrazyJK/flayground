@@ -149,17 +149,7 @@ export default class FlayBatch extends HTMLDivElement {
         scoreWrap.appendChild(document.createElement('div')).innerHTML = `<label>${key.substring(1)}</label>`;
         scoreWrap.appendChild(document.createElement('div')).append(
           ...scoreMap.get(key).map((flay) => {
-            return new FlayMarker(flay, { showTitle: true, shape: 'star' });
-            // const flayLabel = document.createElement('label');
-            // flayLabel.title = flay.opus;
-            // flayLabel.classList.add('flay');
-            // flayLabel.classList.toggle('archive', flay.archive);
-            // flayLabel.classList.toggle('shot', flay.video.likes?.length > 0);
-            // flayLabel.addEventListener('click', () => {
-            //   flayLabel.classList.add('active');
-            //   popupFlay(flay.opus);
-            // });
-            // return flayLabel;
+            return new FlayMarker(flay, { tooltip: true, shape: 'star' });
           })
         );
       });

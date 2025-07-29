@@ -144,7 +144,7 @@ export class FlayMarkerSky extends HTMLElement {
     }
     let FlayMarker = FlayMarkerComponent;
     if (!FlayMarker) ({ default: FlayMarker } = await import('@flay/domain/FlayMarker'));
-    const marker = new FlayMarker(flayData, { showTitle: false, shape: 'star' });
+    const marker = new FlayMarker(flayData, { showTooltip: false, shape: 'star' });
     if (flayData.opus) marker.dataset.opus = flayData.opus;
     const positionInfo = this.#getRandomPosition(marker);
     if (positionInfo) {

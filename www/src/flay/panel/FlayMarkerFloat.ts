@@ -35,11 +35,14 @@ export class FlayMarkerFloat extends HTMLDivElement {
 
   async #updateMarker(): Promise<void> {
     const { randomFlay, randomRem, randomX, randomY, shape } = await this.#getRandomInfo();
+    this.style.setProperty('--marker-size', `${randomRem}rem`);
+    this.style.setProperty('--shot-blur', `${randomRem * 0.75}rem`);
+    this.style.setProperty('--shot-spread', `${randomRem * 0.5}rem`);
+    this.style.setProperty('--square-radius', `${randomRem * 0.25}rem`);
+
     this.#flayMarker.set(randomFlay, { tooltip: true, shape: shape });
     this.#flayMarker.style.left = `${randomX}px`;
     this.#flayMarker.style.top = `${randomY}px`;
-    this.#flayMarker.style.width = `${randomRem}rem`;
-    this.#flayMarker.style.height = `${randomRem}rem`;
   }
 
   #updateShape(): void {

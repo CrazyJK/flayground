@@ -57,7 +57,7 @@ export default class FlayMarker extends HTMLLabelElement {
 
   set(flay: Flay, options: Partial<FlayMarkerOptions> = {}): void {
     document.querySelector('.flay-tooltip')?.remove(); // Remove existing tooltip
-    this.classList.remove('square', 'circle', 'star', 'heart', 'rhombus');
+    this.classList.remove('square', 'circle', 'star', 'heart', 'rhombus', 'active');
     this.title = '';
     if (!flay) {
       console.warn('FlayMarker: Flay data is required');

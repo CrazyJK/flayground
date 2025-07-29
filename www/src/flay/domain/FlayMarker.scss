@@ -1,9 +1,8 @@
 .flay-marker {
   display: inline-block;
-  width: 1rem;
   aspect-ratio: 1/1;
-  background: no-repeat center right / cover;
-  background-color: var(--color-text);
+  width: 1rem;
+  background: var(--color-text) no-repeat center right / cover;
   border: 1px solid var(--color-border);
   border-radius: 0.125rem;
   cursor: pointer;
@@ -16,15 +15,6 @@
   }
   &.active {
     border-color: var(--color-border-active);
-  }
-
-  &.cover {
-    border-width: 0;
-    &.shot {
-      box-shadow: none;
-      border-color: var(--color-red);
-      border-width: 2px;
-    }
   }
 
   &.circle {

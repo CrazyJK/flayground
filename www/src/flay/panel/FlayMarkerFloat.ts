@@ -31,18 +31,13 @@ export class FlayMarkerFloat extends HTMLDivElement {
 
     await this.#updateMarker();
     const intervalId = setInterval(() => {
-      if (!this.#active) {
-        clearInterval(intervalId);
-      }
+      if (!this.#active) clearInterval(intervalId);
       this.#updateMarker();
     }, 1000 * 60); // Refresh every 1 minute
 
     const intervalIdOfShape = setInterval(() => {
-      if (!this.#active) {
-        clearInterval(intervalIdOfShape);
-      }
-      const shape = this.#randomShape();
-      this.#flayMarker.setShape(shape);
+      if (!this.#active) clearInterval(intervalIdOfShape);
+      this.#flayMarker.setShape(this.#randomShape());
     }, 1000 * 10); // Change shape every 10 seconds
   }
 

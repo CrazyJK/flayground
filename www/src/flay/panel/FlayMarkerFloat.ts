@@ -39,9 +39,11 @@ export class FlayMarkerFloat extends HTMLDivElement {
       this.style.setProperty('--shot-spread', `${randomRem * 0.5}rem`);
       this.style.setProperty('--square-radius', `${randomRem * 0.25}rem`);
 
-      this.#flayMarker.set(randomFlay, { tooltip: true, shape: shape });
-      this.#flayMarker.style.left = `${randomX}px`;
-      this.#flayMarker.style.top = `${randomY}px`;
+      requestAnimationFrame(() => {
+        this.#flayMarker.set(randomFlay, { tooltip: true, shape: shape });
+        this.#flayMarker.style.left = `${randomX}px`;
+        this.#flayMarker.style.top = `${randomY}px`;
+      });
     });
   }
 

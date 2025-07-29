@@ -90,18 +90,29 @@ export default class FlayMarker extends HTMLLabelElement {
       console.warn(`FlayMarker: Invalid shape type "${shape}"`);
       return;
     }
-    this.#options.shape = shape;
-    this.classList.remove(...SHAPES);
-    this.classList.add(shape);
-    this.innerHTML = ''; // Clear content for other shapes
-    switch (shape) {
-      case 'heart':
-        this.innerHTML = favorite;
-        break;
-      case 'star':
-        this.innerHTML = ranks[this.flay.video.rank + 1];
-        break;
-    }
+    requestAnimationFrame(() => {
+      try {
+        this.#options.shape = shape;
+        this.classList.remove(...SHAPES);
+        this.classList.add(shape);
+        this.innerHTML = ''; // Clear content for other shapes
+        switch (shape) {
+          case 'heart':
+            this.innerHTML = favorite;
+            break;
+          case 'star':
+            if (this.flay?.video?.rank !== undefined) {
+              const rankIndex = this.flay.video.rank + 1;
+              if (rankIndex >= 0 && rankIndex < ranks.length) {
+                this.innerHTML = ranks[rankIndex];
+              }
+            }
+            break;
+        }
+      } catch (error) {
+        console.error('FlayMarker: Error updating shape:', error);
+      }
+    });
   }
 
   /**

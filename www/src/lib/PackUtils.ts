@@ -16,6 +16,7 @@ const defaultPackOptions: PackOptions = {
 
 export default class PackUtils {
   private packOptions: PackOptions;
+  private resizeObservers: ResizeObserver[] = [];
 
   /**
    * PackUtils 생성자
@@ -25,12 +26,28 @@ export default class PackUtils {
   constructor(packOptions: Partial<PackOptions> = {}) {
     this.packOptions = { ...defaultPackOptions, ...packOptions };
   }
+
+  release(): void {
+    // 현재 PackUtils 인스턴스의 리소스를 해제합니다.
+    this.resizeObservers.forEach((observer) => observer.disconnect());
+  }
+
+  pack(container: HTMLElement): void {
+    const resizeObserver = new ResizeObserver(() => {
+      this.packElements(container);
+    });
+    resizeObserver.observe(container);
+    this.resizeObservers.push(resizeObserver);
+
+    this.packElements(container);
+  }
+
   /**
    * 요소들을 패킹합니다.
    */
-  pack(container: HTMLElement): void {
+  private packElements(container: HTMLElement): void {
     const { gap, padding, maxHeight, strategy } = this.packOptions;
-    console.debug('PackUtils.pack', container, { gap, padding, maxHeight, strategy });
+    console.debug('PackUtils.packElements', container, { gap, padding, maxHeight, strategy });
 
     const elements = Array.from(container.children) as HTMLElement[];
     if (elements.length === 0) return;

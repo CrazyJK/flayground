@@ -1,8 +1,8 @@
 import FlayFetch from '@lib/FlayFetch';
 import PackUtils from '@lib/PackUtils';
+import ApiClient from '@lib/ApiClient';
 import FlayMarker from '@flay/domain/FlayMarker';
 import './FlayPackPanel.scss';
-import ApiClient from '../../lib/ApiClient';
 
 export class FlayPackPanel extends HTMLDivElement {
   private packUtils: PackUtils;
@@ -13,7 +13,7 @@ export class FlayPackPanel extends HTMLDivElement {
   }
 
   connectedCallback() {
-    this.packUtils = new PackUtils({ strategy: 'bottomLeft', fixedContainer: true });
+    this.packUtils = new PackUtils({ padding: 5, strategy: 'bottomLeft', fixedContainer: true });
     this.initializePanel();
   }
 
@@ -31,8 +31,8 @@ export class FlayPackPanel extends HTMLDivElement {
     flayList
       .sort((a, b) => a.release.localeCompare(b.release))
       .forEach((flay) => {
-        const flayMarker = new FlayMarker(flay, {});
         const shotCount = flay.video.likes?.length || 0;
+        const flayMarker = new FlayMarker(flay, { shape: 'square' });
         flayMarker.style.width = `${(shotCount * 2 || 1) * 15}px`;
         if (shotCount > 1) {
           flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;

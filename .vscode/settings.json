@@ -1,30 +1,43 @@
 {
+  "java.format.settings.url": ".vscode/java-formatter.xml",
   "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable",
   "java.compile.nullAnalysis.mode": "automatic",
   "java.configuration.updateBuildConfiguration": "automatic",
-  "files.exclude": {
-    "**/node_modules": true,
-    "**/target": true
-  },
   "java.inlayHints.parameterNames.enabled": "none",
-  "editor.minimap.enabled": false,
   "search.exclude": {
     "**/dependencies-viewer.json": true
   },
-  "java.format.settings.url": ".vscode/java-formatter.xml",
-  "typescript.preferences.includePackageJsonAutoImports": "on",
-  "typescript.suggest.autoImports": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.preferences.importModuleSpecifier": "relative",
-  "editor.formatOnSave": true,
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+  "files.exclude": {
+    "**/node_modules": true,
+    "**/target": true
   },
   "files.associations": {
     "*.js": "javascript",
     "*.ts": "typescript"
   },
+  "editor.minimap.enabled": false,
+  "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
   "emmet.includeLanguages": {
     "typescript": "html"
+  },
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.expand": false,
+  "explorer.fileNesting.patterns": {
+    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.scss, ${capture}.html",
+    "*.ts": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.scss, ${capture}.html",
+    "webpack.common.cjs": "webpack.*.cjs"
+  },
+  "typescript.preferences.includePackageJsonAutoImports": "on",
+  "typescript.suggest.autoImports": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
   }
 }

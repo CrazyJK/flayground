@@ -35,11 +35,13 @@ export class FlayPackPanel extends HTMLDivElement {
         if (shotCount < -1) return;
 
         const flayMarker = new FlayMarker(flay, { shape: 'square' });
-        flayMarker.style.width = `${(shotCount * 2 || 1) * 15}px`;
-        if (shotCount > 1) {
+        if (shotCount > 0) {
           flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
-          flayMarker.classList.remove('shot');
+        } else {
+          flayMarker.style.opacity = `${(flay.video.rank + 1) * 0.125}`;
         }
+        flayMarker.style.width = `${(shotCount + 1) * 20}px`;
+        flayMarker.classList.remove('shot');
         fragment.appendChild(flayMarker);
       });
     this.appendChild(fragment);

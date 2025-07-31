@@ -10,10 +10,15 @@
   <body>
     <header class="sticky">
       <h2>Shot History</h2>
+      <div role="tablist" aria-label="Shot history tabs">
+        <button role="tab" target="#dailyPanel" active>Daily</button>
+        <button role="tab" target="#releasePanel">Release</button>
+      </div>
     </header>
 
-    <main></main>
-
-    <button id="next">Next</button>
+    <main>
+      <div role="tabpanel" id="dailyPanel"></div>
+      <div role="tabpanel" id="releasePanel"></div>
+    </main>
   </body>
 </html>

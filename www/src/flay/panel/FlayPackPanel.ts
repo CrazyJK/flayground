@@ -3,6 +3,7 @@ import PackUtils from '@lib/PackUtils';
 import ApiClient from '@lib/ApiClient';
 import FlayMarker from '@flay/domain/FlayMarker';
 import './FlayPackPanel.scss';
+import StyleUtils from '../../lib/StyleUtils';
 
 export class FlayPackPanel extends HTMLDivElement {
   private packUtils: PackUtils;
@@ -40,7 +41,7 @@ export class FlayPackPanel extends HTMLDivElement {
         } else {
           flayMarker.style.opacity = `${(flay.video.rank + 1) * 0.125}`;
         }
-        flayMarker.style.width = `${(shotCount + 1) * 20}px`;
+        flayMarker.style.width = `${StyleUtils.remToPx(shotCount + 1)}px`;
         flayMarker.classList.remove('shot');
         fragment.appendChild(flayMarker);
       });

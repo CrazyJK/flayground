@@ -32,6 +32,8 @@ export class FlayPackPanel extends HTMLDivElement {
       .sort((a, b) => a.release.localeCompare(b.release))
       .forEach((flay) => {
         const shotCount = flay.video.likes?.length || 0;
+        if (shotCount < -1) return;
+
         const flayMarker = new FlayMarker(flay, { shape: 'square' });
         flayMarker.style.width = `${(shotCount * 2 || 1) * 15}px`;
         if (shotCount > 1) {

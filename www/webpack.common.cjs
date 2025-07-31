@@ -27,7 +27,7 @@ const entryPoints = {
     'page.studio': './src/view/page.studio.js',
     'page.tags': './src/view/page.tags.js',
     'page.control': './src/view/page.control.js',
-    'page.history-shot': './src/view/page.history-shot.js',
+    'page.history-shot': './src/view/page.history-shot.ts',
     'page.history-play': './src/view/page.history-play.js',
     'page.statistics': './src/view/page.statistics.js',
     'page.flay-all': './src/view/page.flay-all.js',

@@ -39,13 +39,16 @@ export default class PackUtils {
    * - resize 이벤트 핸들러를 등록하여 창 크기 변경 시 자동으로 패킹을 다시 수행합니다.
    * @param container - 패킹할 요소들이 포함된 컨테이너
    */
-  pack(container: HTMLElement): void {
-    this.packElements(container);
+  async pack(container: HTMLElement): Promise<void> {
+    await this.packElements(container);
     this.registerResizeHandler(container);
   }
 
   private registerResizeHandler(container: HTMLElement): void {
-    const handleResize = () => this.packElements(container);
+    const handleResize = async () => {
+      await this.packElements(container);
+    };
+
     window.addEventListener('resize', handleResize);
     this.resizeHandlers.push(handleResize);
   }
@@ -54,13 +57,13 @@ export default class PackUtils {
    * 요소들을 패킹합니다.
    * @param container - 패킹할 요소들이 포함된 컨테이너
    */
-  private packElements(container: HTMLElement): void {
+  private async packElements(container: HTMLElement): Promise<void> {
     const { gap, padding, maxHeight: userMaxHeight, strategy, fixedContainer } = this.packOptions;
 
     // maxHeight 자동 계산: 사용자 지정값 또는 컨테이너의 현재 높이
     const maxHeight = userMaxHeight || container.offsetHeight || 2000;
 
-    console.debug('PackUtils.packElements', container, { gap, padding, maxHeight, strategy, fixedContainer });
+    console.debug('PackUtils.packElements', container);
 
     const elements = Array.from(container.children) as HTMLElement[];
     if (elements.length === 0) return;
@@ -73,13 +76,10 @@ export default class PackUtils {
       element.style.display = 'block';
       element.style.position = 'absolute';
       element.style.visibility = 'hidden';
-      element.style.left = '0';
-      element.style.top = '0';
+      element.style.left = '50%';
+      element.style.top = strategy === 'bottomLeft' ? '0' : container.offsetHeight + 'px'; // topLeft 전략은 컨테이너의 높이로 초기화
 
       const { width, height } = element.getBoundingClientRect();
-
-      // 원래 스타일 복원하지 않고 absolute로 유지
-      element.style.visibility = 'visible';
 
       return {
         element,
@@ -92,8 +92,8 @@ export default class PackUtils {
     const containerWidth = container.offsetWidth - padding * 2;
     const occupiedAreas: { x: number; y: number; width: number; height: number }[] = [];
 
-    elementData.forEach((data, index) => {
-      const { element, width, height } = data;
+    for (let index = 0; index < elementData.length; index++) {
+      const { element, width, height, originalDisplay } = elementData[index];
 
       let bestX = padding;
       let bestY = padding;
@@ -114,9 +114,9 @@ export default class PackUtils {
         element.dataset.candidates = candidates.length.toString();
 
         for (const candidate of candidates) {
-          if (candidate.y + height > maxHeight) continue;
-          if (candidate.y < padding) continue;
-          if (candidate.x + width > containerWidth + padding) continue;
+          if (candidate.y + height > maxHeight) continue; // 높이 초과
+          if (candidate.y < padding) continue; // 패딩 미만
+          if (candidate.x + width > containerWidth + padding) continue; // 너비 초과
 
           if (!this.hasOverlap(candidate.x, candidate.y, width, height, occupiedAreas)) {
             const score = this.calculatePositionScore(candidate.x, candidate.y, strategy, maxHeight);
@@ -130,8 +130,11 @@ export default class PackUtils {
       }
 
       // 요소 위치 설정
+      element.style.display = originalDisplay;
       element.style.left = `${bestX}px`;
       element.style.top = `${bestY}px`;
+      element.style.visibility = 'visible';
+      element.style.transition = 'left 300ms ease, top 300ms ease'; // 300ms 부드러운 애니메이션
 
       // 점유 영역 기록
       occupiedAreas.push({
@@ -140,7 +143,10 @@ export default class PackUtils {
         width,
         height,
       });
-    });
+
+      // 잠시 대기 (애니메이션을 위해)
+      await new Promise((resolve) => setTimeout(resolve, 100));
+    }
 
     if (strategy === 'bottomLeft') {
       if (!fixedContainer) {
@@ -179,7 +185,7 @@ export default class PackUtils {
     }
 
     // 기존 요소들의 모서리 기반 후보 생성
-    occupiedAreas.forEach((area) => {
+    occupiedAreas.slice(-400).forEach((area) => {
       if (strategy === 'bottomLeft') {
         // bottomLeft 전략: 아래쪽과 왼쪽을 우선시
         candidates.push({ x: area.x + area.width, y: area.y }); // 오른쪽 (같은 높이)

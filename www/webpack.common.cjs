@@ -72,6 +72,7 @@ module.exports = {
       '@ui': path.resolve(__dirname, 'src/ui'),
       '@flay': path.resolve(__dirname, 'src/flay'),
       '@image': path.resolve(__dirname, 'src/image'),
+      '@movie': path.resolve(__dirname, 'src/movie'),
       '@svg': path.resolve(__dirname, 'src/svg'),
       '@nav': path.resolve(__dirname, 'src/nav'),
     },

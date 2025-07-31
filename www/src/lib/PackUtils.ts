@@ -34,6 +34,11 @@ export default class PackUtils {
     this.resizeHandlers.forEach((handler) => window.removeEventListener('resize', handler));
   }
 
+  /**
+   * 패킹을 수행합니다.
+   * - resize 이벤트 핸들러를 등록하여 창 크기 변경 시 자동으로 패킹을 다시 수행합니다.
+   * @param container - 패킹할 요소들이 포함된 컨테이너
+   */
   pack(container: HTMLElement): void {
     this.packElements(container);
     this.registerResizeHandler(container);
@@ -47,6 +52,7 @@ export default class PackUtils {
 
   /**
    * 요소들을 패킹합니다.
+   * @param container - 패킹할 요소들이 포함된 컨테이너
    */
   private packElements(container: HTMLElement): void {
     const { gap, padding, maxHeight: userMaxHeight, strategy, fixedContainer } = this.packOptions;
@@ -105,6 +111,7 @@ export default class PackUtils {
       } else {
         // 효율적인 위치 찾기 알고리즘
         const candidates = this.generatePositionCandidates(occupiedAreas, containerWidth, width, height, padding, maxHeight, strategy);
+        element.dataset.candidates = candidates.length.toString();
 
         for (const candidate of candidates) {
           if (candidate.y + height > maxHeight) continue;
@@ -142,16 +149,6 @@ export default class PackUtils {
         const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height));
         const actualHeight = maxY - minY + padding * 2;
         container.style.height = `${actualHeight}px`;
-
-        // 요소들을 위쪽으로 이동시켜 컨테이너 상단에 맞춤
-        const adjustY = minY - padding;
-        if (adjustY > 0) {
-          occupiedAreas.forEach((area, index) => {
-            const element = elementData[index].element;
-            const newY = area.y - adjustY;
-            element.style.top = `${newY}px`;
-          });
-        }
       }
     } else {
       // topLeft 전략: 가장 아래쪽 요소를 기준으로 높이 설정
@@ -162,6 +159,14 @@ export default class PackUtils {
 
   /**
    * 위치 후보들을 생성합니다.
+   * @param occupiedAreas - 이미 점유된 영역들
+   * @param containerWidth - 컨테이너의 너비
+   * @param elementWidth - 요소의 너비
+   * @param elementHeight - 요소의 높이
+   * @param padding - 컨테이너의 패딩
+   * @param maxHeight - 컨테이너의 최대 높이
+   * @param strategy - 배치 전략
+   * @returns 위치 후보들의 배열
    */
   private generatePositionCandidates(occupiedAreas: { x: number; y: number; width: number; height: number }[], containerWidth: number, elementWidth: number, elementHeight: number, padding: number, maxHeight: number, strategy: string): { x: number; y: number }[] {
     const candidates: { x: number; y: number }[] = [];
@@ -169,11 +174,6 @@ export default class PackUtils {
     // 기본 후보: 전략에 따라 다른 시작점
     if (strategy === 'bottomLeft') {
       candidates.push({ x: padding, y: maxHeight - elementHeight - padding });
-    } else if (strategy === 'compact') {
-      // compact: 바닥 중심점 기준으로 후보 생성 (반원형)
-      const bottomCenterX = (containerWidth + padding * 2) / 2;
-      const bottomY = maxHeight - padding;
-      candidates.push({ x: Math.max(padding, bottomCenterX - elementWidth / 2), y: Math.max(padding, bottomY - elementHeight) });
     } else {
       candidates.push({ x: padding, y: padding });
     }
@@ -217,6 +217,12 @@ export default class PackUtils {
 
   /**
    * 겹침 여부를 확인합니다.
+   * @param x - 요소의 X 좌표
+   * @param y - 요소의 Y 좌표
+   * @param width - 요소의 너비
+   * @param height - 요소의 높이
+   * @param occupiedAreas - 이미 점유된 영역들
+   * @return true if there is an overlap, false otherwise
    */
   private hasOverlap(x: number, y: number, width: number, height: number, occupiedAreas: { x: number; y: number; width: number; height: number }[]): boolean {
     return occupiedAreas.some((area) => x < area.x + area.width && x + width > area.x && y < area.y + area.height && y + height > area.y);
@@ -224,6 +230,10 @@ export default class PackUtils {
 
   /**
    * 위치의 점수를 계산합니다 (낮을수록 좋음).
+   * @param x - 요소의 X 좌표
+   * @param y - 요소의 Y 좌표
+   * @param strategy - 배치 전략
+   * @param maxHeight - 컨테이너의 최대 높이
    */
   private calculatePositionScore(x: number, y: number, strategy: string, maxHeight: number): number {
     switch (strategy) {
@@ -235,8 +245,6 @@ export default class PackUtils {
         const distanceFromBottom = maxHeight - y;
         return distanceFromBottom * 1000 + x;
       }
-      default:
-        return y * 1000 + x;
     }
   }
 }

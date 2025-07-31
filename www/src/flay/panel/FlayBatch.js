@@ -149,7 +149,7 @@ export default class FlayBatch extends HTMLDivElement {
         scoreWrap.appendChild(document.createElement('div')).innerHTML = `<label>${key.substring(1)}</label>`;
         scoreWrap.appendChild(document.createElement('div')).append(
           ...scoreMap.get(key).map((flay) => {
-            return new FlayMarker(flay, { tooltip: true, shape: 'star' });
+            return new FlayMarker(flay, { tooltip: false, shape: 'star' });
           })
         );
       });

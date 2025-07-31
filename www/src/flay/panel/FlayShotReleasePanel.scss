@@ -18,14 +18,6 @@
       position: relative; // 명시적 설정
       width: 100%;
 
-      &.flex {
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
-        align-items: flex-end;
-        justify-content: center;
-      }
-
       .flay-marker {
         background: var(--color-text) no-repeat top right / 212%;
       }

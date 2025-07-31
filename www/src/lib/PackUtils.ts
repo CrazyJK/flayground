@@ -3,20 +3,22 @@ export const PackStrategies: PackStrategy[] = ['topLeft', 'bottomLeft'];
 export interface PackOptions {
   gap?: number; // 요소 간의 간격 (기본값: 4px)
   padding?: number; // 컨테이너의 패딩 (기본값: 0px)
-  maxHeight?: number; // 컨테이너의 최대 높이 (기본값: 2000px)
+  maxHeight?: number; // 컨테이너의 최대 높이 (기본값: 자동 계산)
   strategy?: PackStrategy; // 배치 전략 (기본값: 'topLeft')
+  fixedContainer?: boolean; // 고정 크기 컨테이너 여부 (기본값: false)
 }
 
 const defaultPackOptions: PackOptions = {
   gap: 0,
   padding: 0,
-  maxHeight: 2000,
+  maxHeight: undefined, // 자동 계산
   strategy: 'topLeft',
+  fixedContainer: false,
 };
 
 export default class PackUtils {
   private packOptions: PackOptions;
-  private resizeObservers: ResizeObserver[] = [];
+  resizeHandlers: (() => void)[] = [];
 
   /**
    * PackUtils 생성자
@@ -29,31 +31,33 @@ export default class PackUtils {
 
   release(): void {
     // 현재 PackUtils 인스턴스의 리소스를 해제합니다.
-    this.resizeObservers.forEach((observer) => observer.disconnect());
+    this.resizeHandlers.forEach((handler) => window.removeEventListener('resize', handler));
   }
 
   pack(container: HTMLElement): void {
-    const resizeObserver = new ResizeObserver(() => {
-      this.packElements(container);
-    });
-    resizeObserver.observe(container);
-    this.resizeObservers.push(resizeObserver);
-
     this.packElements(container);
+    this.registerResizeHandler(container);
+  }
+
+  private registerResizeHandler(container: HTMLElement): void {
+    const handleResize = () => this.packElements(container);
+    window.addEventListener('resize', handleResize);
+    this.resizeHandlers.push(handleResize);
   }
 
   /**
    * 요소들을 패킹합니다.
    */
   private packElements(container: HTMLElement): void {
-    const { gap, padding, maxHeight, strategy } = this.packOptions;
-    console.debug('PackUtils.packElements', container, { gap, padding, maxHeight, strategy });
+    const { gap, padding, maxHeight: userMaxHeight, strategy, fixedContainer } = this.packOptions;
+
+    // maxHeight 자동 계산: 사용자 지정값 또는 컨테이너의 현재 높이
+    const maxHeight = userMaxHeight || container.offsetHeight || 2000;
+
+    console.debug('PackUtils.packElements', container, { gap, padding, maxHeight, strategy, fixedContainer });
 
     const elements = Array.from(container.children) as HTMLElement[];
     if (elements.length === 0) return;
-
-    // 컨테이너 스타일 설정
-    container.style.position = 'relative';
 
     // 요소들의 크기 정보를 미리 계산 (DOM 접근 최소화)
     const elementData = elements.map((element) => {
@@ -131,22 +135,23 @@ export default class PackUtils {
       });
     });
 
-    // 컨테이너 높이 업데이트
     if (strategy === 'bottomLeft') {
-      // bottomLeft 전략: 가장 위쪽 요소부터 가장 아래쪽 요소까지의 실제 사용 높이
-      const minY = Math.min(...occupiedAreas.map((area) => area.y));
-      const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height));
-      const actualHeight = maxY - minY + padding * 2;
-      container.style.height = `${actualHeight}px`;
+      if (!fixedContainer) {
+        // fixedContainer = false: 기존 로직 - 컨테이너 크기를 내용에 맞게 조정
+        const minY = Math.min(...occupiedAreas.map((area) => area.y));
+        const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height));
+        const actualHeight = maxY - minY + padding * 2;
+        container.style.height = `${actualHeight}px`;
 
-      // 요소들을 위쪽으로 이동시켜 컨테이너 상단에 맞춤
-      const adjustY = minY - padding;
-      if (adjustY > 0) {
-        occupiedAreas.forEach((area, index) => {
-          const element = elementData[index].element;
-          const newY = area.y - adjustY;
-          element.style.top = `${newY}px`;
-        });
+        // 요소들을 위쪽으로 이동시켜 컨테이너 상단에 맞춤
+        const adjustY = minY - padding;
+        if (adjustY > 0) {
+          occupiedAreas.forEach((area, index) => {
+            const element = elementData[index].element;
+            const newY = area.y - adjustY;
+            element.style.top = `${newY}px`;
+          });
+        }
       }
     } else {
       // topLeft 전략: 가장 아래쪽 요소를 기준으로 높이 설정
@@ -227,7 +232,7 @@ export default class PackUtils {
       case 'bottomLeft': {
         // bottomLeft: 아래쪽일수록 좋음, 왼쪽일수록 좋음
         // maxHeight에서 y를 뺀 값이 작을수록 아래쪽에 가까움
-        const distanceFromBottom = maxHeight - (y + 100); // 100은 임시 높이로 bottom 기준 계산
+        const distanceFromBottom = maxHeight - y;
         return distanceFromBottom * 1000 + x;
       }
       default:

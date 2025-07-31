@@ -13,7 +13,7 @@ export class FlayPackPanel extends HTMLDivElement {
   }
 
   connectedCallback() {
-    this.packUtils = new PackUtils({ gap: 0, padding: 10, strategy: 'bottomLeft' });
+    this.packUtils = new PackUtils({ strategy: 'bottomLeft', fixedContainer: true });
     this.initializePanel();
   }
 
@@ -26,6 +26,7 @@ export class FlayPackPanel extends HTMLDivElement {
   }
 
   private async packContent(): Promise<void> {
+    const fragment = document.createDocumentFragment();
     const flayList = await FlayFetch.getFlayAll();
     flayList.forEach((flay) => {
       const flayMarker = new FlayMarker(flay, {});
@@ -34,8 +35,9 @@ export class FlayPackPanel extends HTMLDivElement {
         flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
         flayMarker.classList.remove('shot');
       }
-      this.appendChild(flayMarker);
+      fragment.appendChild(flayMarker);
     });
+    this.appendChild(fragment);
 
     // PackUtils를 사용하여 패킹
     this.packUtils.pack(this as HTMLElement);

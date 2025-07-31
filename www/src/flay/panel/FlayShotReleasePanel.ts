@@ -48,7 +48,7 @@ export class FlayShotReleasePanel extends HTMLDivElement {
       yearPanel.classList.add('year-panel');
       yearPanel.innerHTML = `
         <h3>${year}</h3>
-        <div class="year-shot-list flex"></div>
+        <div class="year-shot-list"></div>
       `;
       const yearShotList = yearPanel.querySelector('.year-shot-list') as HTMLDivElement;
 
@@ -69,48 +69,10 @@ export class FlayShotReleasePanel extends HTMLDivElement {
 
       this.appendChild(yearPanel);
 
-      // Pack elements to minimize overlap
-      this.#observer(yearShotList, yearPanel);
-    });
-  }
-
-  /**
-   * window resize 이벤트와 연도 패널의 크기 변경을 관찰하여
-   * yearShotList의 요소들을 재배치합니다.
-   *
-   * @param yearShotList
-   * @param yearPanel
-   */
-  #observer(yearShotList: HTMLDivElement, yearPanel: HTMLDivElement): void {
-    yearPanel.classList.remove('flex');
-
-    const packOptions: Partial<PackOptions> = {
-      gap: 0,
-      padding: 0,
-      strategy: 'bottomLeft',
-    };
-    const packUtils = new PackUtils(packOptions);
-
-    // Add resize event listener for this year panel
-    const resizeObserver = new ResizeObserver(() => {
+      const packOptions: Partial<PackOptions> = { strategy: 'bottomLeft' };
+      const packUtils = new PackUtils(packOptions);
       packUtils.pack(yearShotList);
     });
-    resizeObserver.observe(yearPanel);
-
-    // Also listen for window resize
-    const handleResize = () => packUtils.pack(yearShotList);
-    window.addEventListener('resize', handleResize);
-
-    // Store references for cleanup
-    if (!this.resizeObservers) {
-      this.resizeObservers = [];
-      this.resizeHandlers = [];
-    }
-    this.resizeObservers.push(resizeObserver);
-    this.resizeHandlers.push(handleResize);
-
-    // Pack elements to minimize overlap with improved algorithm
-    packUtils.pack(yearShotList);
   }
 }
 

@@ -1,7 +1,8 @@
 import FlayFetch from '@lib/FlayFetch';
 import FlayMarker from '@flay/domain/FlayMarker';
+import ApiClient from '@lib/ApiClient';
+import PackUtils, { PackOptions } from '@lib/PackUtils';
 import './FlayShotReleasePanel.scss';
-import ApiClient from '../../lib/ApiClient';
 
 export class FlayShotReleasePanel extends HTMLDivElement {
   resizeObservers: ResizeObserver[] = [];
@@ -73,15 +74,31 @@ export class FlayShotReleasePanel extends HTMLDivElement {
     });
   }
 
+  /**
+   * window resize 이벤트와 연도 패널의 크기 변경을 관찰하여
+   * yearShotList의 요소들을 재배치합니다.
+   *
+   * @param yearShotList
+   * @param yearPanel
+   */
   #observer(yearShotList: HTMLDivElement, yearPanel: HTMLDivElement): void {
+    yearPanel.classList.remove('flex');
+
+    const packOptions: Partial<PackOptions> = {
+      gap: 0,
+      padding: 0,
+      strategy: 'bottomLeft',
+    };
+    const packUtils = new PackUtils(packOptions);
+
     // Add resize event listener for this year panel
     const resizeObserver = new ResizeObserver(() => {
-      packElements(yearShotList);
+      packUtils.pack(yearShotList);
     });
     resizeObserver.observe(yearPanel);
 
     // Also listen for window resize
-    const handleResize = () => packElements(yearShotList);
+    const handleResize = () => packUtils.pack(yearShotList);
     window.addEventListener('resize', handleResize);
 
     // Store references for cleanup
@@ -91,74 +108,10 @@ export class FlayShotReleasePanel extends HTMLDivElement {
     }
     this.resizeObservers.push(resizeObserver);
     this.resizeHandlers.push(handleResize);
-    // Pack elements to minimize overlap
-    packElements(yearShotList);
+
+    // Pack elements to minimize overlap with improved algorithm
+    packUtils.pack(yearShotList);
   }
 }
 
 customElements.define('flay-shot-release-panel', FlayShotReleasePanel, { extends: 'div' });
-
-/**
- * Packs elements within a container to minimize overlap and optimize layout.
- * @param {HTMLElement} container - The container element to pack.
- */
-function packElements(container: HTMLElement): void {
-  container.classList.remove('flex');
-  const elements = Array.from(container.children) as HTMLElement[];
-  if (elements.length === 0) return;
-
-  // Reset positions
-  elements.forEach((el) => {
-    el.style.position = 'absolute';
-    el.style.left = '0';
-    el.style.top = '0';
-  });
-
-  const containerWidth = container.offsetWidth;
-  const positions: { x: number; y: number; width: number; height: number }[] = [];
-
-  elements.forEach((element, index) => {
-    const rect = element.getBoundingClientRect();
-    const width = rect.width;
-    const height = rect.height;
-
-    const offset = 10;
-
-    let bestX = 0;
-    let bestY = 0;
-
-    if (index === 0) {
-      bestX = 0;
-      bestY = 0;
-    } else {
-      // Find the best position that doesn't overlap
-      let found = false;
-      for (let y = 0; y < 2000 && !found; y += offset) {
-        for (let x = 0; x <= containerWidth - width && !found; x += offset) {
-          const hasOverlap = positions.some((pos) => x < pos.x + pos.width && x + width > pos.x && y < pos.y + pos.height && y + height > pos.y);
-
-          if (!hasOverlap) {
-            bestX = x;
-            bestY = y;
-            found = true;
-          }
-        }
-      }
-    }
-
-    element.style.left = `${bestX}px`;
-    element.style.top = `${bestY}px`;
-
-    positions.push({
-      x: bestX,
-      y: bestY,
-      width,
-      height,
-    });
-  });
-
-  // Update container height
-  const maxY = Math.max(...positions.map((pos) => pos.y + pos.height));
-  container.style.height = `${maxY}px`;
-  container.style.position = 'relative';
-}

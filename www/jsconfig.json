@@ -7,6 +7,7 @@
       "@ui/*": ["src/ui/*"],
       "@flay/*": ["src/flay/*"],
       "@image/*": ["src/image/*"],
+      "@movie/*": ["src/movie/*"],
       "@svg/*": ["src/svg/*"],
       "@nav/*": ["src/nav/*"]
     },

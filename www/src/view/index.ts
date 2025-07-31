@@ -1,7 +1,7 @@
 import './inc/Page';
 import './index.scss';
 
-await import(/* webpackChunkName: "FacadeWebMovie" */ '@/movie/FacadeWebMovie')
+await import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
   .then(({ FacadeWebMovie }) => new FacadeWebMovie())
   .then(async (facadeWebMovie) => {
     document.querySelector('body > main').appendChild(facadeWebMovie);

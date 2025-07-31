@@ -1,0 +1,9 @@
+.flay-pack-panel {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+
+  .flay-marker {
+    background: var(--color-text) no-repeat top right / 212%;
+  }
+}

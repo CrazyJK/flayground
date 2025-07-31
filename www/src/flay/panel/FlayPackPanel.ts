@@ -28,15 +28,18 @@ export class FlayPackPanel extends HTMLDivElement {
   private async packContent(): Promise<void> {
     const fragment = document.createDocumentFragment();
     const flayList = await FlayFetch.getFlayAll();
-    flayList.forEach((flay) => {
-      const flayMarker = new FlayMarker(flay, {});
-      flayMarker.style.width = `${(flay.video.likes?.length * 2 || 1) * 15}px`;
-      if (flay.video.likes?.length > 2) {
-        flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
-        flayMarker.classList.remove('shot');
-      }
-      fragment.appendChild(flayMarker);
-    });
+    flayList
+      .sort((a, b) => a.release.localeCompare(b.release))
+      .forEach((flay) => {
+        const flayMarker = new FlayMarker(flay, {});
+        const shotCount = flay.video.likes?.length || 0;
+        flayMarker.style.width = `${(shotCount * 2 || 1) * 15}px`;
+        if (shotCount > 1) {
+          flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
+          flayMarker.classList.remove('shot');
+        }
+        fragment.appendChild(flayMarker);
+      });
     this.appendChild(fragment);
 
     // PackUtils를 사용하여 패킹

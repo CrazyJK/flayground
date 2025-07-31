@@ -68,14 +68,18 @@ export default class PackUtils {
     const elements = Array.from(container.children) as HTMLElement[];
     if (elements.length === 0) return;
 
+    // container.style.contain = 'layout style paint';
+
     // 요소들의 크기 정보를 미리 계산 (DOM 접근 최소화)
     const elementData = elements.map((element) => {
       // 임시로 보이게 만들어서 크기 측정
       const originalDisplay = element.style.display;
 
-      element.style.display = 'block';
       element.style.position = 'absolute';
+      element.style.display = 'block';
       element.style.visibility = 'hidden';
+      element.style.transition = 'none'; // 애니메이션 비활성화
+      element.style.contain = 'layout style paint'; // 레이아웃과 스타일을 포함하도록 contain 설정
       element.style.left = '50%';
       element.style.top = strategy === 'bottomLeft' ? '0' : container.offsetHeight + 'px'; // topLeft 전략은 컨테이너의 높이로 초기화
 
@@ -131,10 +135,12 @@ export default class PackUtils {
 
       // 요소 위치 설정
       element.style.display = originalDisplay;
-      element.style.left = `${bestX}px`;
-      element.style.top = `${bestY}px`;
       element.style.visibility = 'visible';
       element.style.transition = 'left 300ms ease, top 300ms ease'; // 300ms 부드러운 애니메이션
+      element.style.transform = 'translate3d(0, 0, 0)'; // GPU 가속을 위한 transform 사용
+      element.style.willChange = 'left, top'; // will-change 속성 추가
+      element.style.left = `${bestX}px`;
+      element.style.top = `${bestY}px`;
 
       // 점유 영역 기록
       occupiedAreas.push({

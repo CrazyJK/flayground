@@ -17,6 +17,7 @@ const menuList = [
   { url: 'page.flay-play.html', name: 'flay play' },
   { url: 'page.flay-play-record.html', name: 'play record' },
   { url: 'page.flay-basket.html', name: 'basket' },
+  { url: 'page.flay-pack.html', name: 'pack' },
   {},
   { url: 'page.girls.html', name: 'girls' },
   { url: 'page.statistics.html', name: 'statistics' },

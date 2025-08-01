@@ -9,7 +9,6 @@
   display: inline-block;
   aspect-ratio: 1/1;
   width: var(--marker-size);
-  background: var(--color-text) no-repeat center right / cover;
   border: 1px solid var(--color-border);
   border-radius: 0.125rem;
   opacity: 0;
@@ -23,6 +22,9 @@
   }
   &.active {
     border-color: var(--color-border-active);
+  }
+  &.cover {
+    background: var(--color-text) no-repeat top right / 212%;
   }
 
   &.circle,

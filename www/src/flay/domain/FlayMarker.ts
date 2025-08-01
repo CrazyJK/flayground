@@ -1,4 +1,5 @@
 import { FlayTooltip } from '@flay/domain/FlayTooltip';
+import ApiClient from '@lib/ApiClient';
 import { Flay } from '@lib/FlayFetch';
 import { popupFlay } from '@lib/FlaySearch';
 import StyleUtils from '@lib/StyleUtils';
@@ -16,12 +17,15 @@ export interface FlayMarkerOptions {
   tooltip: boolean;
   /** 마커 모양 */
   shape: ShapeType;
+  /** Cover 표시 여부 */
+  cover?: boolean; // show cover image
 }
 
 /** 기본 옵션 */
 const DEFAULT_OPTIONS: FlayMarkerOptions = {
   tooltip: false,
   shape: 'square',
+  cover: false,
 };
 
 /**
@@ -82,6 +86,10 @@ export default class FlayMarker extends HTMLLabelElement {
     this.setShape(this.#options.shape);
     if (!this.#options.tooltip) {
       this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}\n${flay.video.rank}R (${flay.video.likes?.length || 0} likes)`;
+    }
+    if (this.#options.cover) {
+      this.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
+      this.classList.add('cover');
     }
   }
 

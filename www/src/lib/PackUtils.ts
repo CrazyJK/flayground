@@ -151,7 +151,7 @@ export default class PackUtils {
       });
 
       // 잠시 대기 (애니메이션을 위해)
-      await new Promise((resolve) => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 10));
     }
 
     if (strategy === 'bottomLeft') {

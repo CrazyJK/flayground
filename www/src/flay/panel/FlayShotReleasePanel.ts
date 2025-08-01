@@ -1,6 +1,5 @@
-import FlayFetch from '@lib/FlayFetch';
 import FlayMarker from '@flay/domain/FlayMarker';
-import ApiClient from '@lib/ApiClient';
+import FlayFetch from '@lib/FlayFetch';
 import PackUtils, { PackOptions } from '@lib/PackUtils';
 import './FlayShotReleasePanel.scss';
 
@@ -29,6 +28,9 @@ export class FlayShotReleasePanel extends HTMLDivElement {
     // release를 년도별로 그룹화
     const releaseByYear = allFlaysList.reduce(
       (acc, flay) => {
+        const shotCount = flay.video.likes?.length || 0;
+        if (shotCount < 1) return acc;
+
         const year = new Date(flay.release).getFullYear();
         if (!acc[year]) {
           acc[year] = [];
@@ -41,14 +43,17 @@ export class FlayShotReleasePanel extends HTMLDivElement {
     // 연도 역순 정렬
     const sortedYears = Object.keys(releaseByYear).sort((a, b) => parseInt(b) - parseInt(a));
 
+    const packOptions: Partial<PackOptions> = { strategy: 'topLeft' };
+    const packUtils = new PackUtils(packOptions);
+
     // 년도별로 패널 생성
-    sortedYears.forEach((year) => {
+    for (const year of sortedYears) {
       const yearPanel = document.createElement('div');
       yearPanel.id = `year-${year}`;
       yearPanel.classList.add('year-panel');
       yearPanel.innerHTML = `
         <h3>${year}</h3>
-        <div class="year-shot-list"></div>
+        <div class="year-shot-list" id="year-shot-list-${year}"></div>
       `;
       const yearShotList = yearPanel.querySelector('.year-shot-list') as HTMLDivElement;
 
@@ -57,22 +62,18 @@ export class FlayShotReleasePanel extends HTMLDivElement {
       flayList
         .sort((a, b) => a.release.localeCompare(b.release))
         .forEach((flay) => {
-          const markerSize = (flay.video.likes?.length * 2 || 1) * 20;
-          const flayMarker = new FlayMarker(flay);
+          const shotCount = flay.video.likes?.length || 0;
+          const markerSize = (shotCount * 2 || 1) * 20;
+          const flayMarker = new FlayMarker(flay, { shape: 'square', cover: true });
           flayMarker.style.width = `${markerSize}px`;
-          if (flay.video.likes?.length >= 2) {
-            flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
-            flayMarker.classList.remove('shot');
-          }
+          flayMarker.classList.remove('shot');
           yearShotList.appendChild(flayMarker);
         });
 
       this.appendChild(yearPanel);
 
-      const packOptions: Partial<PackOptions> = { strategy: 'bottomLeft' };
-      const packUtils = new PackUtils(packOptions);
-      packUtils.pack(yearShotList);
-    });
+      await packUtils.pack(yearShotList);
+    }
   }
 }
 

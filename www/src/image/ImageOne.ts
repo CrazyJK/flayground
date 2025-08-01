@@ -1,7 +1,7 @@
 import { EventCode } from '@/GroundConstant';
 import { getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch from '@lib/FlayFetch';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import { Countdown, EVENT_COUNTDOWN_END } from '@ui/Countdown';
 import './part/FlayImage';
 
@@ -270,7 +270,7 @@ export class ImageOne extends HTMLElement {
   #navigator(code: string): void {
     switch (code) {
       case EventCode.SPACE:
-        this.imageIdx = getRandomInt(0, this.imageSize);
+        this.imageIdx = RandomUtils.getRandomInt(0, this.imageSize);
         break;
       case EventCode.HOME:
         this.imageIdx = 0;

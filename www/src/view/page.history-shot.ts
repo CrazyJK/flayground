@@ -1,8 +1,8 @@
+import { FlayShotDailyPanel } from '@flay/panel/FlayShotDailyPanel';
+import { FlayShotReleasePanel } from '@flay/panel/FlayShotReleasePanel';
 import { tabUI } from '@lib/TabUI';
 import './inc/Page';
 import './page.history-shot.scss';
-import { FlayShotDailyPanel } from '../flay/panel/FlayShotDailyPanel';
-import { FlayShotReleasePanel } from '../flay/panel/FlayShotReleasePanel';
 
 class Page {
   constructor() {}

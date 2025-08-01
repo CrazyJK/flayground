@@ -5,6 +5,7 @@
  */
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
+import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';
 import './imageCircle.scss';
 
@@ -234,7 +235,7 @@ export class ImageCircle extends HTMLDivElement {
     const getRandomSize = () => {
       const min = this.#opts.rem / 2;
       const range = this.#opts.rem - 1;
-      return min + Math.floor(Math.random() * range) / 2;
+      return min + RandomUtils.getRandomInt(0, range) / 2;
     };
     const randomSize = getRandomSize();
     const delay = TIMING.minDelay + (randomSize % 10) * TIMING.delayMultiplier;
@@ -259,7 +260,7 @@ export class ImageCircle extends HTMLDivElement {
         this.#imageIndices = Array.from({ length: this.#imageLength }, (_, i) => i);
       }
 
-      const randomIndex = Math.floor(Math.random() * this.#imageIndices.length);
+      const randomIndex = RandomUtils.getRandomInt(0, this.#imageIndices.length);
       const idx = this.#imageIndices.splice(randomIndex, 1)[0];
       console.debug(`Image index: ${idx}, Remaining indices: ${this.#imageIndices.length}`);
 

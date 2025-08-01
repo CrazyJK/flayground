@@ -1,4 +1,5 @@
 import FlayFetch from '@lib/FlayFetch';
+import RandomUtils from '@lib/RandomUtils';
 import FlayImage from './part/FlayImage';
 
 export class ImageSequence extends HTMLElement {
@@ -75,7 +76,7 @@ export class ImageSequence extends HTMLElement {
 
   async start(): Promise<void> {
     this.imageLength = await FlayFetch.getImageSize();
-    this.startIndex = Math.floor(Math.random() * this.imageLength);
+    this.startIndex = RandomUtils.getRandomInt(0, this.imageLength);
     this.offset = 0;
 
     await this.addImage();
@@ -179,7 +180,7 @@ export class ImageSequence extends HTMLElement {
       // offset이 너무 커지면 리셋 (메모리 효율성)
       if (this.offset >= this.imageLength) {
         this.offset = 0;
-        this.startIndex = Math.floor(Math.random() * this.imageLength);
+        this.startIndex = RandomUtils.getRandomInt(0, this.imageLength);
       }
     } while (loopCondition && this.isActive);
   }

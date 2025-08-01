@@ -1,5 +1,5 @@
 import FlayFetch from '@lib/FlayFetch';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import './ImageFall.scss';
 
@@ -194,7 +194,7 @@ export class ImageFall extends HTMLDivElement {
     }
 
     if (this.willRandom) {
-      this.divIndex = getRandomInt(0, this.divIndexArray.length);
+      this.divIndex = RandomUtils.getRandomInt(0, this.divIndexArray.length);
     } else {
       if (this.divIndex >= this.divIndexArray.length) {
         this.divIndex = 0;
@@ -207,11 +207,11 @@ export class ImageFall extends HTMLDivElement {
   #getImageIdx(): number {
     if (this.imageIndexArray.length === 0) {
       this.imageIndexArray = Array.from({ length: this.imageLength }, (_, i) => i);
-      this.iamgeIndex = getRandomInt(0, this.imageIndexArray.length);
+      this.iamgeIndex = RandomUtils.getRandomInt(0, this.imageIndexArray.length);
     }
 
     if (this.willRandom) {
-      this.iamgeIndex = getRandomInt(0, this.imageIndexArray.length);
+      this.iamgeIndex = RandomUtils.getRandomInt(0, this.imageIndexArray.length);
     } else {
       if (this.iamgeIndex >= this.imageIndexArray.length) {
         this.iamgeIndex = 0;

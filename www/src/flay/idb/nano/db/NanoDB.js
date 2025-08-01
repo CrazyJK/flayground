@@ -1,4 +1,4 @@
-import FlayIndexedDB from '../../FlayIndexedDB';
+import FlayIndexedDB from '@flay/idb/FlayIndexedDB';
 
 const dbName = 'nano-db';
 const dbVersion = 1;

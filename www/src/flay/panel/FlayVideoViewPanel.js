@@ -1,7 +1,7 @@
 import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '@/GroundConstant';
 import { FlayProvider } from '@lib/FlayProvider';
 import FlayStorage from '@lib/FlayStorage';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import TimeUtils from '@lib/TimeUtils';
 import basketSVG from '@svg/basket';
 import controlsSVG from '@svg/controls';
@@ -184,7 +184,7 @@ export class FlayVideoViewPanel extends HTMLDivElement {
       const seekTime = await this.videoPlayer.playRandomSeekOrContinuously(MaxPlayTime);
       console.log('videoPlayer is seeked', TimeUtils.toTime(this.videoPlayer.currentTime));
 
-      this.sec = getRandomInt(MinPlayTime, Math.min(this.videoPlayer.duration - seekTime, MaxPlayTime));
+      this.sec = RandomUtils.getRandomInt(MinPlayTime, Math.min(this.videoPlayer.duration - seekTime, MaxPlayTime));
       console.log('videoPlayer will be played for', TimeUtils.toTime(this.sec));
 
       this.#displayTime();

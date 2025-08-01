@@ -47,7 +47,7 @@ export default class FlayFiles extends FlayHTMLElement {
     this.#releaseInput = this.querySelector('[name="release"]');
 
     this.querySelector('.flay-play').addEventListener('click', async () => {
-      const { playInLayer } = await import(/* webpackChunkName: "FlayVideoPlayer" */ '../../panel/FlayVideoPlayer');
+      const { playInLayer } = await import(/* webpackChunkName: "FlayVideoPlayer" */ '@flay/panel/FlayVideoPlayer');
       await playInLayer(this.flay.opus);
     });
 
@@ -61,7 +61,7 @@ export default class FlayFiles extends FlayHTMLElement {
         const seekTime = -1;
 
         FlayAction.play(this.flay.opus, seekTime).then(async () => {
-          const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '../../panel/FlayBasket');
+          const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '@flay/panel/FlayBasket');
           FlayBasket.remove(this.flay.opus);
         });
       } else {

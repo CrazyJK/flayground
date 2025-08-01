@@ -1,5 +1,6 @@
 import { EventCode } from '@/GroundConstant';
 import FlayFetch from '@lib/FlayFetch';
+import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 
@@ -174,7 +175,7 @@ export class ImageThumbnail extends HTMLElement {
 
   private async start() {
     this.imageLength = await FlayFetch.getImageSize();
-    this.currentImageIndex = Math.floor(Math.random() * this.imageLength);
+    this.currentImageIndex = RandomUtils.getRandomInt(0, this.imageLength);
     this.initializeEventListeners();
     this.setupThumbnailGallery();
     this.startSlideshow();
@@ -250,7 +251,7 @@ export class ImageThumbnail extends HTMLElement {
   }
 
   private random() {
-    this.currentImageIndex = Math.floor(Math.random() * this.imageLength);
+    this.currentImageIndex = RandomUtils.getRandomInt(0, this.imageLength);
     this.renderGalleryThumbnails('random');
   }
 
@@ -287,7 +288,7 @@ export class ImageThumbnail extends HTMLElement {
       }
       // Fisher-Yates shuffle 알고리즘
       for (let i = animationOrder.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
+        const j = RandomUtils.getRandomIntInclusive(0, i);
         [animationOrder[i], animationOrder[j]] = [animationOrder[j], animationOrder[i]];
       }
     }
@@ -365,7 +366,7 @@ export class ImageThumbnail extends HTMLElement {
       this.next();
 
       // 다음 슬라이드를 위한 랜덤 간격 설정 (10-20초)
-      const randomInterval = Math.random() * 10000 + 10000; // 10000ms ~ 20000ms
+      const randomInterval = RandomUtils.getRandomInt(10000, 20000); // 10000ms ~ 20000ms
       this.slideshowInterval = window.setTimeout(nextSlide, randomInterval);
     };
 

@@ -1,4 +1,4 @@
-import NanoDB from '../db/NanoDB';
+import NanoDB from '@flay/idb/nano/db/NanoDB';
 
 const storeName = 'Nano';
 

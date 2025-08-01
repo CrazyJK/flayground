@@ -1,4 +1,4 @@
-import FlayGroundDB from '../db/FlayGroundDB';
+import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
 
 const storeName = 'Actress';
 

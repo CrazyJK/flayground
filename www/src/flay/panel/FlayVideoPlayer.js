@@ -9,7 +9,7 @@ import '@flay/domain/part/FlayTitle';
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
 import FlayFetch from '@lib/FlayFetch';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import FlayVideo from './FlayVideoElement';
 import './FlayVideoPlayer.scss';
@@ -176,7 +176,7 @@ export class FlayVideoPlayer extends HTMLDivElement {
     const endTime = this.flayVideo.duration;
     const lastTime = endTime - lastOffsetTime;
     const prevTime = dbFlayPlayTime?.time || endTime + 1;
-    const seekTime = lastTime < prevTime ? getRandomInt(1, lastTime) : prevTime;
+    const seekTime = lastTime < prevTime ? RandomUtils.getRandomInt(1, lastTime) : prevTime;
 
     await this.seek(seekTime);
 

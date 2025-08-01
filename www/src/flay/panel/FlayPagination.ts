@@ -1,5 +1,5 @@
 import FlayFetch from '@lib/FlayFetch';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import './FlayPagination.scss';
 
@@ -264,7 +264,7 @@ export default class FlayPagination extends HTMLDivElement {
           this.#putHistory(this.opusIndex);
           break;
         case RANDOM:
-          this.opusIndex = getRandomInt(0, this.opusList.length);
+          this.opusIndex = RandomUtils.getRandomInt(0, this.opusList.length);
           if (!this.#putHistory(this.opusIndex)) {
             this.#decideOpus(direction);
           }

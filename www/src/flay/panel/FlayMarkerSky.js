@@ -1,4 +1,5 @@
 import FlayFetch from '@lib/FlayFetch';
+import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 
 /**
@@ -91,17 +92,17 @@ export class FlayMarkerSky extends HTMLElement {
       const { default: FlayMarker } = await import('@flay/domain/FlayMarker');
       for (let i = 0, n = Math.min(this.#calculateInitialMarkerCount(), this.#allFlayData.length); i < n; i++) {
         if (!this.#allFlayData.length) break;
-        await this.#addSingleMarker(this.#allFlayData[Math.floor(Math.random() * this.#allFlayData.length)], FlayMarker);
-        await new Promise((r) => setTimeout(r, Math.random() * 200 + 50));
+        await this.#addSingleMarker(this.#allFlayData[RandomUtils.getRandomInt(0, this.#allFlayData.length)], FlayMarker);
+        await new Promise((r) => setTimeout(r, RandomUtils.getRandomInt(50, 250)));
       }
       if (this.#markerGeneratorInterval) clearInterval(this.#markerGeneratorInterval);
       this.#markerGeneratorInterval = setInterval(
         async () => {
           if (!this.#isPaused && this.#allFlayData.length > 0) {
-            await this.#addSingleMarker(this.#allFlayData[Math.floor(Math.random() * this.#allFlayData.length)], FlayMarker);
+            await this.#addSingleMarker(this.#allFlayData[RandomUtils.getRandomInt(0, this.#allFlayData.length)], FlayMarker);
           }
         },
-        Math.random() * 500 + 300
+        RandomUtils.getRandomInt(300, 800)
       );
     } catch (e) {
       const errorMsg = document.createElement('div');
@@ -136,7 +137,7 @@ export class FlayMarkerSky extends HTMLElement {
    */
   async #addSingleMarker(flayData, FlayMarkerComponent) {
     if (!flayData) {
-      if (this.#allFlayData.length > 0) flayData = this.#allFlayData[Math.floor(Math.random() * this.#allFlayData.length)];
+      if (this.#allFlayData.length > 0) flayData = this.#allFlayData[RandomUtils.getRandomInt(0, this.#allFlayData.length)];
       else {
         if (this.#markerGeneratorInterval) clearInterval(this.#markerGeneratorInterval);
         return null;
@@ -249,9 +250,9 @@ export class FlayMarkerSky extends HTMLElement {
     const [min, max] = [20, 50],
       maxAttempts = 50;
     for (let i = 0; i < maxAttempts; i++) {
-      const w = Math.floor(Math.random() * (max - min)) + min;
-      const x = Math.floor(Math.random() * (this.offsetWidth - w)); // 변경
-      const y = Math.floor(Math.random() * (this.offsetHeight - w)); // 변경
+      const w = RandomUtils.getRandomInt(min, max);
+      const x = RandomUtils.getRandomInt(0, this.offsetWidth - w);
+      const y = RandomUtils.getRandomInt(0, this.offsetHeight - w);
       if (!this.#isOverlapping(x, y, w, markerElement)) return { x, y, randomWidth: w };
     }
     return null;

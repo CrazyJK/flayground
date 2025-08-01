@@ -2,7 +2,7 @@ import { EVENT_BASKET_ADD } from '@/GroundConstant';
 import FlayFetch from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import trashBinSVG from '@svg/trashBin';
 import vaginaSVG from '@svg/vagina';
 import GridControl from '@ui/GridControl';
@@ -90,7 +90,7 @@ export class FlayBasket extends HTMLDivElement {
 
   #pickRandomFlay() {
     const shownFlayList = Array.from(this.flayListEl.children).filter((item) => !item.classList.contains('hide'));
-    const randomIndex = getRandomInt(0, shownFlayList.length);
+    const randomIndex = RandomUtils.getRandomInt(0, shownFlayList.length);
     shownFlayList[randomIndex]?.popup();
   }
 

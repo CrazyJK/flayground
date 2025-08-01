@@ -1,15 +1,16 @@
+import FlayMarker from '@flay/domain/FlayMarker';
+import ApiClient from '@lib/ApiClient';
 import FlayFetch from '@lib/FlayFetch';
 import PackUtils from '@lib/PackUtils';
-import ApiClient from '@lib/ApiClient';
-import FlayMarker from '@flay/domain/FlayMarker';
+import RandomUtils from '@lib/RandomUtils';
+import StyleUtils from '@lib/StyleUtils';
 import './FlayPackPanel.scss';
-import StyleUtils from '../../lib/StyleUtils';
 
 export class FlayPackPanel extends HTMLDivElement {
   private packUtils: PackUtils;
   private isUpDown: boolean; // 패널이 위로 올라가는지 여부
 
-  constructor(isUpDown: boolean = Math.random() < 0.5) {
+  constructor(isUpDown: boolean = RandomUtils.getRandomBoolean()) {
     super();
     this.classList.add('flay-pack-panel');
     this.isUpDown = isUpDown;
@@ -33,7 +34,7 @@ export class FlayPackPanel extends HTMLDivElement {
     const flayList = await FlayFetch.getFlayAll();
     flayList
       .sort((f1, f2) => {
-        if (Math.random() < 0.5) {
+        if (RandomUtils.getRandomBoolean()) {
           return (f2.video.likes?.length || 0) - (f1.video.likes?.length || 0);
         } else {
           return f1.release.localeCompare(f2.release) * (this.isUpDown ? 1 : -1);

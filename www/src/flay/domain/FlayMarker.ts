@@ -1,10 +1,10 @@
+import { FlayTooltip } from '@flay/domain/FlayTooltip';
+import { Flay } from '@lib/FlayFetch';
 import { popupFlay } from '@lib/FlaySearch';
+import StyleUtils from '@lib/StyleUtils';
 import favorite from '@svg/favorite';
 import ranks from '@svg/ranks';
 import './FlayMarker.scss';
-import { FlayTooltip } from '@flay/domain/FlayTooltip';
-import { Flay } from '@lib/FlayFetch';
-import StyleUtils from '../../lib/StyleUtils';
 
 export type ShapeType = 'square' | 'circle' | 'star' | 'heart' | 'rhombus';
 

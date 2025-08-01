@@ -1,7 +1,7 @@
 import FlayArticle from '@flay/domain/FlayArticle';
 import FlayCondition from '@flay/panel/FlayCondition';
 import FlayFetch from '@lib/FlayFetch';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import './inc/Page';
 import './page.flay-one.scss';
 
@@ -40,7 +40,7 @@ class Page {
     if (this.opusIndexes.length === 0) {
       this.opusIndexes.push(...Array.from({ length: this.opusList.length }, (v, i) => i));
     }
-    const opusIndex = this.opusIndexes.splice(getRandomInt(0, this.opusIndexes.length), 1)[0];
+    const opusIndex = this.opusIndexes.splice(RandomUtils.getRandomInt(0, this.opusIndexes.length), 1)[0];
     return this.opusList[opusIndex];
   }
 }

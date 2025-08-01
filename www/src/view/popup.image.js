@@ -1,7 +1,7 @@
 import FlayImage from '@image/part/FlayImage';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch from '@lib/FlayFetch';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import folderSVG from '@svg/folder';
 import trashBin from '@svg/trashBin';
 import './popup.image.scss';
@@ -32,7 +32,7 @@ const Go = {
     setImageIdx(idx);
   },
   random: () => {
-    idx = getRandomInt(0, max);
+    idx = RandomUtils.getRandomInt(0, max);
     setImageIdx(idx);
   },
 };
@@ -125,7 +125,7 @@ const folderOpener = () => {
   const hashIdx = new URL(location.href).hash.substring(1);
 
   max = await FlayFetch.getImageSize();
-  idx = parseInt(hashIdx) || getRandomInt(0, max);
+  idx = parseInt(hashIdx) || RandomUtils.getRandomInt(0, max);
 
   window.addEventListener('wheel', wheelNavigationHandler, { passive: false });
   window.addEventListener('keyup', keyNavigationHandler, { passive: true });

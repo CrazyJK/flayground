@@ -2,7 +2,7 @@ import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupCover } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import newWindowSVG from '@svg/newWindow';
 import './FlayCover.scss';
 import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
@@ -69,7 +69,7 @@ export default class FlayCover extends FlayHTMLElement {
   }
 
   #applyDominatedColor(dominatedColors: ColorFrequency[]): void {
-    const [r, g, b] = dominatedColors[getRandomInt(0, colorLabelLength)].rgba;
+    const [r, g, b] = dominatedColors[RandomUtils.getRandomInt(0, colorLabelLength)].rgba;
     this.style.backgroundColor = `rgba(${r},${g},${b},0.5)`;
     this.#colorLabels.forEach((label, i) => (label.style.backgroundColor = `rgba(${dominatedColors[i].rgba.join(',')})`));
   }

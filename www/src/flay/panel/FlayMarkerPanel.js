@@ -1,6 +1,6 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch from '@lib/FlayFetch';
-import { getRandomInt, getRandomIntInclusive } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import { EVENT_TIMER_END, EVENT_TIMER_START, EVENT_TIMER_TICK, TickTimer } from '@ui/TickTimer';
 import './FlayMarkerPanel.scss';
@@ -80,8 +80,8 @@ export class FlayMarkerPanel extends HTMLDivElement {
    * 타이머가 종료되면 호출되서, 다시 시작
    */
   #start() {
-    const multifier = getRandomIntInclusive(...this.#opts.multifier);
-    this.tickTimer.start(getRandomIntInclusive(...this.#opts.seconds) * multifier);
+    const multifier = RandomUtils.getRandomIntInclusive(...this.#opts.multifier);
+    this.tickTimer.start(RandomUtils.getRandomIntInclusive(...this.#opts.seconds) * multifier);
     this.dataset.multifier = multifier;
   }
 
@@ -130,7 +130,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
 
     // 정렬 방식을 랜덤으로 정렬
     const ORDERs = ['studio', 'opus', 'title', 'actress', 'release', 'random', 'rank', 'shot', 'play', 'modified'];
-    this.dataset.order = ORDERs[getRandomInt(0, ORDERs.length)];
+    this.dataset.order = ORDERs[RandomUtils.getRandomInt(0, ORDERs.length)];
     this.#markerList.sort((m1, m2) => {
       switch (this.dataset.order) {
         case ORDERs[0]:
@@ -144,7 +144,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
         case ORDERs[4]:
           return m2.flay.release.localeCompare(m1.flay.release);
         case ORDERs[5]:
-          return getRandomIntInclusive(-1, 1);
+          return RandomUtils.getRandomIntInclusive(-1, 1);
         case ORDERs[6]:
           return m2.flay.video.rank - m1.flay.video.rank;
         case ORDERs[7]:
@@ -162,7 +162,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     this.#updateMarkerPositions();
 
     // 스레드 개수 랜덤으로 설정
-    this.#threadCount = getRandomIntInclusive(...this.#opts.thread);
+    this.#threadCount = RandomUtils.getRandomIntInclusive(...this.#opts.thread);
     this.dataset.threads = this.#threadCount;
 
     const descriptionText = `multifier: ${this.dataset.multifier}, seconds: ${this.tickTimer.seconds}, order: ${this.dataset.order}, threads: ${this.dataset.threads}`;
@@ -246,7 +246,7 @@ export class FlayMarkerPanel extends HTMLDivElement {
     const findNextSpreadMarker = (x, y) => {
       const nextDirection = AllDirections.filter(([_x, _y]) => _x !== -dx && _y !== -dy); // 현재 방향을 제외한 방향
       do {
-        [dx, dy] = nextDirection.splice(getRandomInt(0, nextDirection.length), 1)[0]; // 랜덤으로 방향 선택
+        [dx, dy] = nextDirection.splice(RandomUtils.getRandomInt(0, nextDirection.length), 1)[0]; // 랜덤으로 방향 선택
         const [nextX, nextY] = [x + dx, y + dy];
         const nextMarker = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
         if (nextMarker) {
@@ -332,19 +332,19 @@ export class FlayMarkerPanel extends HTMLDivElement {
         return null;
       }
       const notHighlight = this.#markerList.filter((marker) => !marker.classList.contains('highlight'));
-      return notHighlight[getRandomInt(0, notHighlight.length)];
+      return notHighlight[RandomUtils.getRandomInt(0, notHighlight.length)];
     };
 
-    const INTERVAL = getRandomIntInclusive(...this.#opts.interval);
+    const INTERVAL = RandomUtils.getRandomIntInclusive(...this.#opts.interval);
     this.dataset[`t${threadNo}Interval`] = INTERVAL;
     this.#threadIntervals[threadNo] = INTERVAL;
     this.#lastFrameTime[threadNo] = performance.now();
 
-    let [dx, dy] = DiagonalDirections[getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정
+    let [dx, dy] = DiagonalDirections[RandomUtils.getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정
     let duplicatedCount = 0; // 중복 개수
 
     const findNextMarker = (() => {
-      switch (getRandomInt(0, 3)) {
+      switch (RandomUtils.getRandomInt(0, 3)) {
         case 0:
           this.dataset[`t${threadNo}Method`] = 'spread';
           return findNextSpreadMarker;

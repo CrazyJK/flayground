@@ -1,7 +1,7 @@
 import FlayCard from '@flay/domain/FlayCard';
 import * as DragDrop from '@lib/Drag&Drop';
 import { FlayProvider } from '@lib/FlayProvider';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import './inc/Page';
 import './page.dragndrop.scss';
@@ -20,8 +20,8 @@ class Page extends FlayProvider {
     const width = 400;
     const height = parseInt((width * 269) / 400);
 
-    const left = getRandomInt(0, article.offsetWidth - width);
-    const top = getRandomInt(0, article.offsetHeight - height);
+    const left = RandomUtils.getRandomInt(0, article.offsetWidth - width);
+    const top = RandomUtils.getRandomInt(0, article.offsetHeight - height);
 
     flayCard.style.position = 'absolute';
     flayCard.style.width = width + 'px';

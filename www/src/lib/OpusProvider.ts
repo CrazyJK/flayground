@@ -1,5 +1,5 @@
 import FlayFetch, { type SearchCondition } from '@lib/FlayFetch';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 
 // Type definitions
 export interface OpusProviderOptions extends Partial<SearchCondition> {}
@@ -76,7 +76,7 @@ export class OpusProvider {
     if (this.opusIndexes.length === 0) {
       this.opusIndexes.push(...Array.from({ length: this.opusList!.length }, (_, i) => i));
     }
-    this.opusIndex = this.opusIndexes.splice(getRandomInt(0, this.opusIndexes.length), 1)[0];
+    this.opusIndex = this.opusIndexes.splice(RandomUtils.getRandomInt(0, this.opusIndexes.length), 1)[0];
     return this.opusList![this.opusIndex];
   }
 

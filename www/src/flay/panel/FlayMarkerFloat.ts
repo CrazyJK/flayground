@@ -1,8 +1,9 @@
 import FlayMarker, { SHAPES, ShapeType } from '@flay/domain/FlayMarker';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
+import { OpusProvider } from '@lib/OpusProvider';
+import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';
 import './FlayMarkerFloat.scss';
-import { OpusProvider } from '../../lib/OpusProvider';
 
 export class FlayMarkerFloat extends HTMLDivElement {
   #intervalIdOfMarker: number | null = null;
@@ -52,7 +53,7 @@ export class FlayMarkerFloat extends HTMLDivElement {
   async #getRandomInfo(): Promise<{ randomFlay: Flay; randomRem: number; randomX: number; randomY: number; shape: ShapeType }> {
     const randomOpus = await this.#opusProvider.getRandomOpus();
     const randomFlay = await FlayFetch.getFlay(randomOpus);
-    const randomRem = Math.floor(Math.random() * 3) + 2; // 2 ~ 4 randomly select a size
+    const randomRem = RandomUtils.getRandomIntInclusive(2, 4); // 2 ~ 4 randomly select a size
     const [randomX, randomY] = this.#randomPosition(randomRem);
     const shape = this.#randomShape();
     return { randomFlay, randomRem, randomX, randomY, shape };
@@ -60,13 +61,13 @@ export class FlayMarkerFloat extends HTMLDivElement {
 
   #randomPosition(rem: number): [number, number] {
     const [markerSize, edgeSize] = [StyleUtils.remToPx(rem), StyleUtils.remToPx(10)];
-    const randomX = Math.random() * (this.clientWidth - edgeSize * 2) + edgeSize;
-    const randomY = Math.random() * (this.clientHeight - edgeSize * 2) + edgeSize;
+    const randomX = RandomUtils.getRandomInt(edgeSize, this.clientWidth - edgeSize * 2);
+    const randomY = RandomUtils.getRandomInt(edgeSize, this.clientHeight - edgeSize * 2);
     return [Math.round(randomX - markerSize / 2), Math.round(randomY - markerSize / 2)]; // Center the marker
   }
 
   #randomShape(): ShapeType {
-    return SHAPES[Math.floor(Math.random() * SHAPES.length)];
+    return SHAPES[RandomUtils.getRandomInt(0, SHAPES.length)];
   }
 }
 

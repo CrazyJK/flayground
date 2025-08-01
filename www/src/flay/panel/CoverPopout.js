@@ -1,7 +1,7 @@
 import ApiClient from '@lib/ApiClient';
 import { popupFlay } from '@lib/FlaySearch';
 import { OpusProvider } from '@lib/OpusProvider';
-import { getRandomInt } from '@lib/randomNumber';
+import RandomUtils from '@lib/RandomUtils';
 import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '@ui/Countdown';
 
 export default class CoverPopout extends HTMLDivElement {
@@ -27,11 +27,11 @@ export default class CoverPopout extends HTMLDivElement {
     this.countdown = this.appendChild(new Countdown());
     this.countdown.style.cssText = `position: absolute; right: 0; bottom: 0;`;
     this.countdown.addEventListener(EVENT_COUNTDOWN_START, async (e) => await this.하나나오기());
-    this.countdown.addEventListener(EVENT_COUNTDOWN_END, () => this.countdown.start(getRandomInt(this.#최소초, this.#최대초)));
+    this.countdown.addEventListener(EVENT_COUNTDOWN_END, () => this.countdown.start(RandomUtils.getRandomInt(this.#최소초, this.#최대초)));
   }
 
   connectedCallback() {
-    this.countdown.start(getRandomInt(this.#최소초, this.#최대초));
+    this.countdown.start(RandomUtils.getRandomInt(this.#최소초, this.#최대초));
   }
 
   /**
@@ -49,11 +49,11 @@ export default class CoverPopout extends HTMLDivElement {
     const 커버비율 = 269 / 400;
     const 여유공간 = 100;
     const { width: 판때기너비, height: 판때기높이 } = this.parentElement.getBoundingClientRect();
-    const 너비 = Math.min(1000, 판때기너비 / 2) + getRandomInt(0, 여유공간 * 2);
+    const 너비 = Math.min(1000, 판때기너비 / 2) + RandomUtils.getRandomInt(0, 여유공간 * 2);
     const 높이 = 너비 * 커버비율;
-    const 왼쪽 = 이벤트 ? 이벤트.x - 너비 / 2 : getRandomInt(여유공간, 판때기너비 - 너비 - 여유공간);
-    const 위 = 이벤트 ? 이벤트.y - 높이 / 2 : getRandomInt(여유공간, 판때기높이 - 높이 - 여유공간);
-    const 기울기각도 = getRandomInt(-10, 10);
+    const 왼쪽 = 이벤트 ? 이벤트.x - 너비 / 2 : RandomUtils.getRandomInt(여유공간, 판때기너비 - 너비 - 여유공간);
+    const 위 = 이벤트 ? 이벤트.y - 높이 / 2 : RandomUtils.getRandomInt(여유공간, 판때기높이 - 높이 - 여유공간);
+    const 기울기각도 = RandomUtils.getRandomInt(-10, 10);
     const 품번 = await this.#품번제공기.getRandomOpus();
     const 커버 = new Image();
     커버.style.cssText = `

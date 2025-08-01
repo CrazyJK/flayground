@@ -1,6 +1,6 @@
 import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
+import RandomUtils from '@lib/RandomUtils';
 import fetchJsonp from '@lib/fetchJsonp';
-import { getRandomInt } from '@lib/randomNumber';
 import { Countdown } from '@ui/Countdown';
 import { ModalShadowWindow } from '@ui/ModalShadowWindow';
 import { ModalWindow } from '@ui/ModalWindow';
@@ -39,8 +39,8 @@ class Page {
           new ModalWindow('Video', {
             top: 0,
             left: 0,
-            width: getRandomInt(0, wUnit) + wUnit * 6,
-            height: getRandomInt(0, hUnit) + hUnit * 7,
+            width: RandomUtils.getRandomInt(0, wUnit) + wUnit * 6,
+            height: RandomUtils.getRandomInt(0, hUnit) + hUnit * 7,
             edges: [MODAL_EDGE.TOP, MODAL_EDGE.LEFT],
           })
         )
@@ -56,8 +56,8 @@ class Page {
           new ModalWindow('Basket', {
             top: 0,
             left: 0,
-            width: getRandomInt(0, wUnit) + wUnit * 4,
-            height: getRandomInt(0, hUnit) + hUnit * 3,
+            width: RandomUtils.getRandomInt(0, wUnit) + wUnit * 4,
+            height: RandomUtils.getRandomInt(0, hUnit) + hUnit * 3,
             edges: [MODAL_EDGE.BOTTOM, MODAL_EDGE.LEFT],
           })
         )
@@ -73,8 +73,8 @@ class Page {
           new ModalWindow('Memo', {
             top: 0,
             left: 0,
-            width: getRandomInt(0, wUnit) + wUnit * 1,
-            height: getRandomInt(0, hUnit) + hUnit * 2,
+            width: RandomUtils.getRandomInt(0, wUnit) + wUnit * 1,
+            height: RandomUtils.getRandomInt(0, hUnit) + hUnit * 2,
             edges: [MODAL_EDGE.BOTTOM, MODAL_EDGE.RIGHT],
           })
         )
@@ -90,8 +90,8 @@ class Page {
           new ModalWindow('Image Fallen', {
             top: 0,
             left: 0,
-            width: getRandomInt(0, wUnit) + wUnit * 1,
-            height: getRandomInt(0, hUnit) + hUnit * 8,
+            width: RandomUtils.getRandomInt(0, wUnit) + wUnit * 1,
+            height: RandomUtils.getRandomInt(0, hUnit) + hUnit * 8,
             edges: [MODAL_EDGE.TOP, MODAL_EDGE.RIGHT],
           })
         )
@@ -107,8 +107,8 @@ class Page {
           new ModalShadowWindow('Image One', {
             top: 0,
             left: 0,
-            width: getRandomInt(0, wUnit) + wUnit * 8,
-            height: getRandomInt(0, hUnit) + hUnit * 6,
+            width: RandomUtils.getRandomInt(0, wUnit) + wUnit * 8,
+            height: RandomUtils.getRandomInt(0, hUnit) + hUnit * 6,
             edges: [MODAL_EDGE.TOP, MODAL_EDGE.RIGHT],
           })
         )
@@ -123,7 +123,7 @@ class Page {
         .appendChild(
           new ModalShadowWindow('Browser Panel', {
             top: 0,
-            left: getRandomInt(0, wUnit) + wUnit * 6,
+            left: RandomUtils.getRandomInt(0, wUnit) + wUnit * 6,
             width: 730,
             height: 1326,
             initialMode: MODAL_MODE.NORMAL,

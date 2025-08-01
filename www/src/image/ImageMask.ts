@@ -1,5 +1,6 @@
 import DateUtils from '@lib/DateUtils';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
+import RandomUtils from '@lib/RandomUtils';
 import './ImageMask.scss';
 
 const SECOND = 1000;
@@ -107,7 +108,7 @@ export class ImageMask extends HTMLDivElement {
           this.currentImageUrl = null;
         }
 
-        const index = indices.splice(Math.floor(Math.random() * indices.length), 1)[0]; // 랜덤으로 인덱스 선택 후 배열에서 제거
+        const index = indices.splice(RandomUtils.getRandomInt(0, indices.length), 1)[0]; // 랜덤으로 인덱스 선택 후 배열에서 제거
 
         try {
           const imageData: ImageData = await FlayFetch.getStaticImage(index);
@@ -124,7 +125,7 @@ export class ImageMask extends HTMLDivElement {
           continue;
         }
 
-        const waitTime = Math.floor(Math.random() * (maxTime - minTime)) + minTime; // minTime ~ maxTime 사이의 랜덤 시간 대기
+        const waitTime = RandomUtils.getRandomInt(minTime, maxTime); // minTime ~ maxTime 사이의 랜덤 시간 대기
         await new Promise((resolve) => setTimeout(resolve, waitTime * SECOND));
       } while (indices.length > 0 && this.isLoopRunning);
 

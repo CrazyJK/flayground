@@ -18,7 +18,8 @@
   "editor.minimap.enabled": false,
   "editor.formatOnSave": true,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": "explicit"
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
   },
   "emmet.includeLanguages": {
     "typescript": "html"

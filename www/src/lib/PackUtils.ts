@@ -6,6 +6,7 @@ export interface PackOptions {
   maxHeight?: number; // 컨테이너의 최대 높이 (기본값: 자동 계산)
   strategy?: PackStrategy; // 배치 전략 (기본값: 'topLeft')
   fixedContainer?: boolean; // 고정 크기 컨테이너 여부 (기본값: false)
+  animate?: boolean; // 애니메이션 여부 (기본값: false)
 }
 
 const defaultPackOptions: PackOptions = {
@@ -14,6 +15,7 @@ const defaultPackOptions: PackOptions = {
   maxHeight: undefined, // 자동 계산
   strategy: 'topLeft',
   fixedContainer: false,
+  animate: false, // 애니메이션 기본값은 false
 };
 
 export default class PackUtils {
@@ -58,18 +60,15 @@ export default class PackUtils {
    * @param container - 패킹할 요소들이 포함된 컨테이너
    */
   private async packElements(container: HTMLElement): Promise<void> {
-    const { gap, padding, maxHeight: userMaxHeight, strategy, fixedContainer } = this.packOptions;
-
-    // maxHeight 자동 계산: 사용자 지정값 또는 컨테이너의 현재 높이
-    const maxHeight = userMaxHeight || container.offsetHeight || 2000;
-
-    console.debug('PackUtils.packElements', container);
-
     const elements = Array.from(container.children) as HTMLElement[];
     if (elements.length === 0) return;
 
-    // container.style.contain = 'layout style paint';
+    const { gap, padding, maxHeight: userMaxHeight, strategy, fixedContainer, animate } = this.packOptions;
+    const maxHeight = userMaxHeight || container.offsetHeight || 2000; // maxHeight 자동 계산: 사용자 지정값 또는 컨테이너의 현재 높이
 
+    console.group('PackUtils.packElements', container.id || container.className, `${elements.length} elements with strategy: ${strategy}, maxHeight: ${maxHeight}px, padding: ${padding}px, gap: ${gap}px, animate: ${animate}`);
+
+    console.time('요소들의 크기 계산');
     // 요소들의 크기 정보를 미리 계산 (DOM 접근 최소화)
     const elementData = elements.map((element) => {
       // 임시로 보이게 만들어서 크기 측정
@@ -94,10 +93,12 @@ export default class PackUtils {
         originalDisplay,
       };
     });
+    console.timeEnd('요소들의 크기 계산');
 
     const containerWidth = container.offsetWidth - padding * 2;
     const occupiedAreas: { x: number; y: number; width: number; height: number }[] = [];
 
+    console.time('요소 packed');
     for (let index = 0; index < elementData.length; index++) {
       const { element, width, height, originalDisplay } = elementData[index];
 
@@ -138,7 +139,9 @@ export default class PackUtils {
       // 요소 위치 설정
       element.style.display = originalDisplay;
       element.style.visibility = 'visible';
-      element.style.transition = 'left 300ms ease, top 300ms ease'; // 300ms 부드러운 애니메이션
+      if (animate) {
+        element.style.transition = 'left 300ms ease, top 300ms ease'; // 300ms 부드러운 애니메이션
+      }
       element.style.left = `${bestX}px`;
       element.style.top = `${bestY}px`;
 
@@ -150,9 +153,11 @@ export default class PackUtils {
         height,
       });
 
-      // 잠시 대기 (애니메이션을 위해)
-      await new Promise((resolve) => setTimeout(resolve, 10));
+      if (animate) {
+        await new Promise((resolve) => setTimeout(resolve, 10)); // 잠시 대기 (애니메이션을 위해)
+      }
     }
+    console.timeEnd('요소 packed');
 
     if (strategy === 'bottomLeft') {
       if (!fixedContainer) {
@@ -167,6 +172,8 @@ export default class PackUtils {
       const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height), 0);
       container.style.height = `${maxY + padding}px`;
     }
+
+    console.groupEnd();
   }
 
   /**

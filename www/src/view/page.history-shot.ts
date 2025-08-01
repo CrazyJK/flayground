@@ -8,25 +8,26 @@ class Page {
   constructor() {}
 
   async start(): Promise<void> {
-    this.#initDailyPanel();
-    this.#initReleasePanel();
+    document.body.addEventListener('tabActivated', (e: CustomEvent) => {
+      const { tab } = e.detail;
+
+      if (tab.getAttribute('target') === '#dailyPanel') {
+        this.#initDailyPanel();
+      } else if (tab.getAttribute('target') === '#releasePanel') {
+        this.#initReleasePanel();
+      }
+    });
+
+    tabUI(document.body); // tabActivated
   }
 
   #initDailyPanel(): void {
-    const dailyPanel = document.getElementById('dailyPanel');
-    if (dailyPanel) {
-      dailyPanel.appendChild(new FlayShotDailyPanel());
-    }
+    if (!document.querySelector('.flay-shot-daily-panel')) document.getElementById('dailyPanel')!.appendChild(new FlayShotDailyPanel());
   }
 
   #initReleasePanel(): void {
-    const releasePanel = document.getElementById('releasePanel');
-    if (releasePanel) {
-      releasePanel.appendChild(new FlayShotReleasePanel());
-    }
+    if (!document.querySelector('.flay-shot-release-panel')) document.getElementById('releasePanel')!.appendChild(new FlayShotReleasePanel());
   }
 }
 
-new Page().start().then(() => {
-  tabUI(document.body);
-});
+new Page().start();

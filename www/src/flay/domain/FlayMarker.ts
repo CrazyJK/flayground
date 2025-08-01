@@ -81,7 +81,7 @@ export default class FlayMarker extends HTMLLabelElement {
     this.classList.toggle('archive', flay.archive);
     this.setShape(this.#options.shape);
     if (!this.#options.tooltip) {
-      this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}\n${flay.video.rank}R`;
+      this.title = `${flay.studio}\n${flay.opus}\n${flay.title}\n${flay.actressList.join(', ')}\n${flay.release}\n${flay.video.rank}R (${flay.video.likes?.length || 0} likes)`;
     }
   }
 

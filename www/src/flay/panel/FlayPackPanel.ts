@@ -14,7 +14,7 @@ export class FlayPackPanel extends HTMLDivElement {
   }
 
   connectedCallback() {
-    this.packUtils = new PackUtils({ padding: 5, strategy: 'bottomLeft', fixedContainer: true });
+    this.packUtils = new PackUtils({ strategy: 'bottomLeft', fixedContainer: true });
     this.initializePanel();
   }
 
@@ -31,17 +31,20 @@ export class FlayPackPanel extends HTMLDivElement {
     const flayList = await FlayFetch.getFlayAll();
     flayList
       .sort((a, b) => a.release.localeCompare(b.release))
+      // .sort((a, b) => b.release.localeCompare(a.release))
+      // .sort((a, b) => (b.video.likes?.length || 0) - (a.video.likes?.length || 0))
       .forEach((flay) => {
         const shotCount = flay.video.likes?.length || 0;
         if (shotCount < -1) return;
 
         const flayMarker = new FlayMarker(flay, { shape: 'square' });
-        if (shotCount > 0) {
-          flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
-        } else {
-          flayMarker.style.opacity = `${(flay.video.rank + 1) * 0.125}`;
-        }
+        flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
         flayMarker.style.width = `${StyleUtils.remToPx(shotCount + 1)}px`;
+        if (shotCount < 3) {
+          flayMarker.style.opacity = `${(flay.video.rank || 8) * 0.125}`;
+          // 백그라운드 이미지 흐리게 처리
+          flayMarker.style.filter = `blur(${6 - (flay.video.rank || 5)}px)`;
+        }
         flayMarker.classList.remove('shot');
         fragment.appendChild(flayMarker);
       });

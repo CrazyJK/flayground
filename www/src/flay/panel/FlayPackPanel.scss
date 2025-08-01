@@ -5,5 +5,10 @@
 
   .flay-marker {
     background: var(--color-text) no-repeat top right / 212%;
+
+    &:hover {
+      opacity: 1 !important;
+      filter: none !important;
+    }
   }
 }

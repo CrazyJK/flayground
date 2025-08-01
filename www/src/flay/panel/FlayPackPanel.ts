@@ -1,5 +1,4 @@
 import FlayMarker from '@flay/domain/FlayMarker';
-import ApiClient from '@lib/ApiClient';
 import FlayFetch from '@lib/FlayFetch';
 import PackUtils from '@lib/PackUtils';
 import RandomUtils from '@lib/RandomUtils';
@@ -17,7 +16,7 @@ export class FlayPackPanel extends HTMLDivElement {
   }
 
   connectedCallback() {
-    this.packUtils = new PackUtils({ strategy: this.isUpDown ? 'topLeft' : 'bottomLeft', fixedContainer: true });
+    this.packUtils = new PackUtils({ strategy: this.isUpDown ? 'topLeft' : 'bottomLeft', fixedContainer: true, animate: true });
     this.initializePanel();
   }
 
@@ -44,9 +43,8 @@ export class FlayPackPanel extends HTMLDivElement {
         const shotCount = flay.video.likes?.length || 0;
         if (shotCount < 0) return;
 
-        const flayMarker = new FlayMarker(flay, { shape: 'square' });
+        const flayMarker = new FlayMarker(flay, { shape: 'square', cover: true });
         flayMarker.classList.remove('shot');
-        flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
         flayMarker.style.width = `${StyleUtils.remToPx(shotCount + 1)}px`;
         if ([0, 1].includes(shotCount)) {
           flayMarker.style.opacity = `${(flay.video.rank || 8) * 0.125}`;

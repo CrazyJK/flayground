@@ -32,21 +32,27 @@ export class FlayPackPanel extends HTMLDivElement {
     const fragment = document.createDocumentFragment();
     const flayList = await FlayFetch.getFlayAll();
     flayList
-      .sort((a, b) => (this.isUpDown ? b.release.localeCompare(a.release) : a.release.localeCompare(b.release)))
-      // .sort((a, b) => (b.video.likes?.length || 0) - (a.video.likes?.length || 0))
+      .sort((f1, f2) => {
+        if (Math.random() < 0.5) {
+          return (f2.video.likes?.length || 0) - (f1.video.likes?.length || 0);
+        } else {
+          return f1.release.localeCompare(f2.release) * (this.isUpDown ? 1 : -1);
+        }
+      })
       .forEach((flay) => {
         const shotCount = flay.video.likes?.length || 0;
-        if (shotCount < -1) return;
+        if (shotCount < 0) return;
 
         const flayMarker = new FlayMarker(flay, { shape: 'square' });
+        flayMarker.classList.remove('shot');
         flayMarker.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
         flayMarker.style.width = `${StyleUtils.remToPx(shotCount + 1)}px`;
-        if (shotCount < 3) {
-          // 백그라운드 이미지 흐리게 처리
+        if ([0, 1].includes(shotCount)) {
           flayMarker.style.opacity = `${(flay.video.rank || 8) * 0.125}`;
-          flayMarker.style.filter = `blur(${6 - (flay.video.rank || 5)}px)`;
         }
-        flayMarker.classList.remove('shot');
+        if ([0].includes(shotCount)) {
+          flayMarker.style.filter = `blur(${6 - (flay.video.rank || 5)}px)`; // 백그라운드 이미지 흐리게 처리
+        }
         fragment.appendChild(flayMarker);
       });
     this.appendChild(fragment);

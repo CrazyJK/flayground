@@ -18,6 +18,5 @@
     "^[./]"
   ],
   "importOrderSeparation": true,
-  "importOrderSortSpecifiers": true,
-  "importOrderCaseInsensitive": true
+  "importOrderSortSpecifiers": true
 }

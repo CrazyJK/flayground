@@ -16,7 +16,6 @@ export class FlayPackPanel extends HTMLDivElement {
   }
 
   connectedCallback() {
-    this.strategy = 'circle'; // 기본 전략을 'cloud'로 설정
     this.packUtils = new PackUtils({ strategy: this.strategy, fixedContainer: true, animate: true });
     this.initializePanel();
   }

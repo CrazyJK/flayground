@@ -1,22 +1,23 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch from '@lib/FlayFetch';
-import PackUtils from '@lib/PackUtils';
+import PackUtils, { PackStrategies, PackStrategy } from '@lib/PackUtils';
 import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';
 import './FlayPackPanel.scss';
 
 export class FlayPackPanel extends HTMLDivElement {
   private packUtils: PackUtils;
-  private isUpDown: boolean; // 패널이 위로 올라가는지 여부
+  private strategy: PackStrategy; // 패널의 배치 전략
 
-  constructor(isUpDown: boolean = RandomUtils.getRandomBoolean()) {
+  constructor(strategy: PackStrategy = RandomUtils.getRandomElementFromArray(PackStrategies)) {
     super();
     this.classList.add('flay-pack-panel');
-    this.isUpDown = isUpDown;
+    this.strategy = strategy;
   }
 
   connectedCallback() {
-    this.packUtils = new PackUtils({ strategy: this.isUpDown ? 'topLeft' : 'bottomLeft', fixedContainer: true, animate: true });
+    this.strategy = 'circle'; // 기본 전략을 'cloud'로 설정
+    this.packUtils = new PackUtils({ strategy: this.strategy, fixedContainer: true, animate: true });
     this.initializePanel();
   }
 
@@ -33,10 +34,13 @@ export class FlayPackPanel extends HTMLDivElement {
     const flayList = await FlayFetch.getFlayAll();
     flayList
       .sort((f1, f2) => {
-        if (RandomUtils.getRandomBoolean()) {
-          return (f2.video.likes?.length || 0) - (f1.video.likes?.length || 0);
-        } else {
-          return f1.release.localeCompare(f2.release) * (this.isUpDown ? 1 : -1);
+        switch (this.strategy) {
+          case 'circle':
+            return (f2.video.likes?.length || 0) - (f1.video.likes?.length || 0);
+          case 'bottomLeft':
+            return f2.release.localeCompare(f1.release);
+          default:
+            return f1.release.localeCompare(f2.release); // topLeft 전략
         }
       })
       .forEach((flay) => {

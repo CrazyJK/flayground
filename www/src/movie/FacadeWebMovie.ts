@@ -1,3 +1,6 @@
+import ApiClient from '@lib/ApiClient';
+import RandomUtils from '../lib/RandomUtils';
+
 /**
  * FacadeWebMovie.ts
  *
@@ -22,7 +25,7 @@ export class FacadeWebMovie extends HTMLVideoElement {
     // 비디오 속성 설정
     this.autoplay = true;
     this.loop = false;
-    this.muted = true; // 자동 재생을 위해 음소거 설정
+    // this.muted = true; // 자동 재생을 위해 음소거 설정
     this.volume = 0.5;
     this.playsInline = true; // 모바일에서 인라인 재생
 
@@ -43,7 +46,12 @@ export class FacadeWebMovie extends HTMLVideoElement {
    * 비디오가 DOM에 연결될 때 실행
    */
   connectedCallback() {
-    this.src = '/res/Cocks_not_standing.webm';
+    ApiClient.get('/todayis').then((todayList: Array<{ name: string; uuid: string }>) => {
+      if (todayList.length > 0) {
+        const randomToday = RandomUtils.getRandomElementFromArray(todayList);
+        this.src = ApiClient.buildUrl(`/todayis/stream/${randomToday.uuid}`);
+      }
+    });
   }
 
   /**

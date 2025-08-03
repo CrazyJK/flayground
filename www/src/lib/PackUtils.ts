@@ -13,7 +13,7 @@ const defaultPackOptions: PackOptions = {
   gap: 0,
   padding: 0,
   maxHeight: undefined, // 자동 계산
-  strategy: 'topLeft',
+  strategy: 'bottomLeft', // 기본 전략은 'bottomLeft'
   fixedContainer: false,
   animate: false, // 애니메이션 기본값은 false
 };
@@ -81,14 +81,17 @@ export default class PackUtils {
       element.style.contain = 'layout style paint'; // 레이아웃과 스타일을 포함하도록 contain 설정
       element.style.transform = 'translate3d(0, 0, 0)'; // GPU 가속을 위한 transform 사용
       element.style.willChange = 'left, top'; // will-change 속성 추가
-      element.style.left = '50%';
-      if (strategy === 'bottomLeft') {
-        element.style.top = `${maxHeight - padding}px`; // bottomLeft 전략은 컨테이너의 하단에 배치
-      } else if (strategy === 'circle') {
-        element.style.top = `${maxHeight / 2}px`; // circle 전략은 컨테이너의 중간에 배치
-      } else {
-        element.style.top = '0'; // 기본적으로 topLeft 전략은 컨테이너의 상단에 배치
-      }
+      element.style.left = `calc(50% - ${element.offsetWidth / 2}px)`; // 초기 위치 설정 (중앙 정렬)
+      element.style.top = (() => {
+        switch (strategy) {
+          case 'circle':
+            return `${maxHeight / 2}px`; // circle 전략은 컨테이너의 중간에 배치
+          case 'topLeft':
+            return `${maxHeight - padding}px`; // topLeft 전략은 컨테이너의 하단에 배치
+          default:
+            return `${padding}px`; // bottomLeft 전략은 컨테이너의 상단에 배치
+        }
+      })();
 
       const { width, height } = element.getBoundingClientRect();
 
@@ -124,44 +127,54 @@ export default class PackUtils {
 
       if (index === 0) {
         // 첫 번째 요소의 초기 위치를 전략에 따라 결정
-        if (strategy === 'bottomLeft') {
-          bestX = padding;
-          bestY = maxHeight - height - padding;
-        } else if (strategy === 'circle') {
-          // circle 전략: 가장 큰 요소(첫 번째)를 중앙에 배치
-          bestX = (containerWidth + padding * 2 - width) / 2;
-          bestY = (maxHeight - height) / 2;
-        } else {
-          bestX = padding;
-          bestY = padding;
+        switch (strategy) {
+          case 'circle': // circle 전략: 가장 큰 요소(첫 번째)를 중앙에 배치
+            bestX = (containerWidth + padding * 2 - width) / 2;
+            bestY = (maxHeight - height) / 2;
+            break;
+          case 'topLeft':
+            bestX = padding;
+            bestY = padding;
+            break;
+          default: // bottomLeft 전략: 왼쪽 아래에 배치
+            bestX = padding;
+            bestY = maxHeight - height - padding;
+            break;
         }
       } else {
         // 효율적인 위치 찾기 알고리즘
-        if (strategy === 'circle') {
-          // circle 전략: 원형 배치
-          const centerX = (containerWidth + padding * 2) / 2;
-          const centerY = maxHeight / 2;
-          const position = this.generateCirclePosition(occupiedAreas, centerX, centerY, width, height, index, sortedElementData.length, containerWidth, maxHeight, padding);
-          bestX = position.x;
-          bestY = position.y;
-        } else {
-          const candidates = this.generatePositionCandidates(occupiedAreas, containerWidth, width, height, padding, maxHeight, strategy);
-          element.dataset.candidates = candidates.length.toString();
+        switch (strategy) {
+          case 'circle': // circle 전략: 원형 배치
+            {
+              const centerX = (containerWidth + padding * 2) / 2;
+              const centerY = maxHeight / 2;
+              const position = this.generateCirclePosition(occupiedAreas, centerX, centerY, width, height, index, sortedElementData.length, containerWidth, maxHeight, padding);
+              bestX = position.x;
+              bestY = position.y;
+            }
+            break;
+          default:
+            {
+              // bottomLeft 또는 topLeft 전략: 기존 요소들의 모서리를 기준으로 위치 후보 생성
+              const candidates = this.generatePositionCandidates(occupiedAreas, containerWidth, width, height, padding, maxHeight, strategy);
+              element.dataset.candidates = candidates.length.toString();
 
-          for (const candidate of candidates) {
-            if (candidate.y + height > maxHeight) continue; // 높이 초과
-            if (candidate.y < padding) continue; // 패딩 미만
-            if (candidate.x + width > containerWidth + padding) continue; // 너비 초과
+              for (const candidate of candidates) {
+                if (candidate.y + height > maxHeight) continue; // 높이 초과
+                if (candidate.y < padding) continue; // 패딩 미만
+                if (candidate.x + width > containerWidth + padding) continue; // 너비 초과
 
-            if (!this.hasOverlap(candidate.x, candidate.y, width, height, occupiedAreas)) {
-              const score = this.calculatePositionScore(candidate.x, candidate.y, strategy, maxHeight);
-              if (score < bestScore) {
-                bestScore = score;
-                bestX = candidate.x;
-                bestY = candidate.y;
+                if (!this.hasOverlap(candidate.x, candidate.y, width, height, occupiedAreas)) {
+                  const score = this.calculatePositionScore(candidate.x, candidate.y, strategy, maxHeight);
+                  if (score < bestScore) {
+                    bestScore = score;
+                    bestX = candidate.x;
+                    bestY = candidate.y;
+                  }
+                }
               }
             }
-          }
+            break;
         }
       }
 
@@ -188,25 +201,31 @@ export default class PackUtils {
     }
     console.timeEnd('요소 packed');
 
-    if (strategy === 'bottomLeft') {
-      if (!fixedContainer) {
-        // fixedContainer = false: 기존 로직 - 컨테이너 크기를 내용에 맞게 조정
-        const minY = Math.min(...occupiedAreas.map((area) => area.y));
-        const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height));
-        const actualHeight = maxY - minY + padding * 2;
-        container.style.height = `${actualHeight}px`;
-      }
-    } else if (strategy === 'circle') {
-      // circle 전략: 원형 배치에 맞는 높이 설정
-      if (!fixedContainer) {
-        const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height), 0);
-        const actualHeight = Math.max(maxY + padding, maxHeight);
-        container.style.height = `${actualHeight}px`;
-      }
-    } else {
-      // topLeft 전략: 가장 아래쪽 요소를 기준으로 높이 설정
-      const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height), 0);
-      container.style.height = `${maxY + padding}px`;
+    switch (strategy) {
+      case 'circle':
+        // circle 전략: 원형 배치에 맞는 높이 설정
+        if (!fixedContainer) {
+          const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height), 0);
+          const actualHeight = Math.max(maxY + padding, maxHeight);
+          container.style.height = `${actualHeight}px`;
+        }
+        break;
+      case 'topLeft':
+        {
+          // topLeft 전략: 가장 아래쪽 요소를 기준으로 높이 설정
+          const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height), 0);
+          container.style.height = `${maxY + padding}px`;
+        }
+        break;
+      default:
+        if (!fixedContainer) {
+          // fixedContainer = false: 기존 로직 - 컨테이너 크기를 내용에 맞게 조정
+          const minY = Math.min(...occupiedAreas.map((area) => area.y));
+          const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height));
+          const actualHeight = maxY - minY + padding * 2;
+          container.style.height = `${actualHeight}px`;
+        }
+        break;
     }
 
     console.groupEnd();
@@ -363,23 +382,26 @@ export default class PackUtils {
 
     // 기존 요소들의 모서리 기반 후보 생성
     occupiedAreas.slice(-400).forEach((area) => {
-      if (strategy === 'bottomLeft') {
-        // bottomLeft 전략: 아래쪽과 왼쪽을 우선시
-        candidates.push({ x: area.x + area.width, y: area.y }); // 오른쪽 (같은 높이)
-        candidates.push({ x: area.x, y: area.y - elementHeight }); // 위쪽 (현재 요소의 top을 기준)
-        candidates.push({ x: area.x + area.width, y: area.y - elementHeight }); // 대각선 위
+      switch (strategy) {
+        case 'topLeft':
+          // topLeft 전략: 기존 로직
+          candidates.push({ x: area.x + area.width, y: area.y }); // 오른쪽
+          candidates.push({ x: area.x, y: area.y + area.height }); // 아래쪽
+          candidates.push({ x: area.x + area.width, y: area.y + area.height }); // 대각선 아래
+          break;
+        default: {
+          // bottomLeft 전략: 아래쪽과 왼쪽을 우선시
+          candidates.push({ x: area.x + area.width, y: area.y }); // 오른쪽 (같은 높이)
+          candidates.push({ x: area.x, y: area.y - elementHeight }); // 위쪽 (현재 요소의 top을 기준)
+          candidates.push({ x: area.x + area.width, y: area.y - elementHeight }); // 대각선 위
 
-        // 작은 요소가 큰 요소 위에 올 때: 기존 요소의 bottom을 기준으로 위쪽에 배치
-        const bottomBasedY = area.y + area.height - elementHeight;
-        if (bottomBasedY >= padding && bottomBasedY !== area.y - elementHeight) {
-          candidates.push({ x: area.x, y: bottomBasedY }); // 기존 요소의 bottom 기준 위쪽
-          candidates.push({ x: area.x + area.width, y: bottomBasedY }); // 기존 요소의 bottom 기준 오른쪽 위
+          // 작은 요소가 큰 요소 위에 올 때: 기존 요소의 bottom을 기준으로 위쪽에 배치
+          const bottomBasedY = area.y + area.height - elementHeight;
+          if (bottomBasedY >= padding && bottomBasedY !== area.y - elementHeight) {
+            candidates.push({ x: area.x, y: bottomBasedY }); // 기존 요소의 bottom 기준 위쪽
+            candidates.push({ x: area.x + area.width, y: bottomBasedY }); // 기존 요소의 bottom 기준 오른쪽 위
+          }
         }
-      } else {
-        // topLeft 전략: 기존 로직
-        candidates.push({ x: area.x + area.width, y: area.y }); // 오른쪽
-        candidates.push({ x: area.x, y: area.y + area.height }); // 아래쪽
-        candidates.push({ x: area.x + area.width, y: area.y + area.height }); // 대각선 아래
       }
     });
 
@@ -389,12 +411,13 @@ export default class PackUtils {
     });
 
     // 전략에 따른 정렬
-    if (strategy === 'bottomLeft') {
-      // bottomLeft: Y 좌표 내림차순 (아래쪽부터), X 좌표 오름차순 (왼쪽부터)
-      return uniqueCandidates.sort((a, b) => b.y - a.y || a.x - b.x);
-    } else {
-      // 기존 로직: Y 좌표, X 좌표 순으로 정렬
-      return uniqueCandidates.sort((a, b) => a.y - b.y || a.x - b.x);
+    switch (strategy) {
+      case 'topLeft':
+        // 기존 로직: Y 좌표, X 좌표 순으로 정렬
+        return uniqueCandidates.sort((a, b) => a.y - b.y || a.x - b.x);
+      default:
+        // bottomLeft: Y 좌표 내림차순 (아래쪽부터), X 좌표 오름차순 (왼쪽부터)
+        return uniqueCandidates.sort((a, b) => b.y - a.y || a.x - b.x);
     }
   }
 
@@ -420,14 +443,6 @@ export default class PackUtils {
    */
   private calculatePositionScore(x: number, y: number, strategy: string, maxHeight: number): number {
     switch (strategy) {
-      case 'topLeft':
-        return y * 1000 + x;
-      case 'bottomLeft': {
-        // bottomLeft: 아래쪽일수록 좋음, 왼쪽일수록 좋음
-        // maxHeight에서 y를 뺀 값이 작을수록 아래쪽에 가까움
-        const distanceFromBottom = maxHeight - y;
-        return distanceFromBottom * 1000 + x;
-      }
       case 'circle': {
         // circle: 중심에서 가까울수록 좋음
         const centerX = maxHeight / 2; // 임시로 maxHeight 사용
@@ -435,8 +450,15 @@ export default class PackUtils {
         const distanceFromCenter = Math.sqrt((x - centerX) ** 2 + (y - centerY) ** 2);
         return distanceFromCenter;
       }
-      default:
+      case 'topLeft': {
         return y * 1000 + x;
+      }
+      default: {
+        // bottomLeft: 아래쪽일수록 좋음, 왼쪽일수록 좋음
+        // maxHeight에서 y를 뺀 값이 작을수록 아래쪽에 가까움
+        const distanceFromBottom = maxHeight - y;
+        return distanceFromBottom * 1000 + x;
+      }
     }
   }
 }

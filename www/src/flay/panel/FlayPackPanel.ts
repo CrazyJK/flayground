@@ -36,10 +36,10 @@ export class FlayPackPanel extends HTMLDivElement {
         switch (this.strategy) {
           case 'circle':
             return (f2.video.likes?.length || 0) - (f1.video.likes?.length || 0);
-          case 'bottomLeft':
+          case 'topLeft':
             return f2.release.localeCompare(f1.release);
           default:
-            return f1.release.localeCompare(f2.release); // topLeft 전략
+            return f1.release.localeCompare(f2.release);
         }
       })
       .forEach((flay) => {

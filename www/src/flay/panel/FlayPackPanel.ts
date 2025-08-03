@@ -50,8 +50,6 @@ export class FlayPackPanel extends HTMLDivElement {
       })
       .forEach((flay) => {
         const shotCount = flay.video.likes?.length || 0;
-        if (shotCount < 0) return;
-
         const flayMarker = new FlayMarker(flay, { shape: 'square', cover: true });
         flayMarker.classList.remove('shot');
         flayMarker.style.width = `${(shotCount + 1) * areaMultiplier}px`;

@@ -33,7 +33,7 @@ export class FlayPackPanel extends HTMLDivElement {
     const flayList = await FlayFetch.getFlayAll();
 
     const totalShotSquared = flayList.reduce((acc, flay) => acc + ((flay.video.likes?.length || 0) + 1) ** 2, 0);
-    const areaPercentage = this.#strategy === 'circle' ? 0.3 : 0.7; // 전체 화면의 70%를 사용
+    const areaPercentage = this.#strategy === 'circle' ? 0.3 : 0.8; // 원형일 때는 30%, 나머지는 80%의 영역을 사용
     const areaMultiplier = Math.round(Math.sqrt((window.innerWidth * window.innerHeight * areaPercentage) / totalShotSquared));
 
     const fragment = document.createDocumentFragment();

@@ -83,7 +83,7 @@ export default class PackUtils {
       element.style.willChange = 'left, top, opacity, z-index'; // will-change 속성 추가
       element.style.opacity = '0';
       element.style.zIndex = '-1'; // z-index를 -1로 설정하여 다른 요소 위에 표시되지 않도록 함
-      const [left, top] = (() => {
+      [element.style.left, element.style.top] = (() => {
         switch (strategy) {
           case 'circle': // circle 전략은 컨테이너의 중간에 배치
             return [`calc(50% - ${element.offsetWidth / 2}px)`, `${maxHeight / 2}px`];
@@ -93,8 +93,6 @@ export default class PackUtils {
             return [`${(element.offsetWidth * index) % container.offsetWidth}px`, `${padding}px`];
         }
       })();
-      element.style.left = left;
-      element.style.top = top;
 
       const { width, height } = element.getBoundingClientRect();
 
@@ -182,13 +180,13 @@ export default class PackUtils {
       }
 
       // 요소 위치 설정
-      element.style.display = originalDisplay;
-      element.style.visibility = 'visible';
       if (animate) {
         const duration = 300; // 애니메이션 지속 시간 (ms)
         const timingFunction = 'ease-out'; // 애니메이션 타이밍 함수
         element.style.transition = `left ${duration}ms ${timingFunction}, top ${duration}ms ${timingFunction}, opacity ${duration}ms ${timingFunction}, z-index ${duration}ms ${timingFunction}`; // 300ms 부드러운 애니메이션
       }
+      element.style.display = originalDisplay;
+      element.style.visibility = 'visible';
       element.style.left = `${bestX}px`;
       element.style.top = `${bestY}px`;
       element.style.opacity = '1'; // 요소 보이기

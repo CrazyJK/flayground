@@ -70,7 +70,7 @@ export default class PackUtils {
 
     console.time('요소들의 크기 계산');
     // 요소들의 크기 정보를 미리 계산 (DOM 접근 최소화)
-    const elementData = elements.map((element) => {
+    const elementData = elements.map((element, index) => {
       // 임시로 보이게 만들어서 크기 측정
       const originalDisplay = element.style.display;
 
@@ -80,18 +80,21 @@ export default class PackUtils {
       element.style.transition = 'none'; // 애니메이션 비활성화
       element.style.contain = 'layout style paint'; // 레이아웃과 스타일을 포함하도록 contain 설정
       element.style.transform = 'translate3d(0, 0, 0)'; // GPU 가속을 위한 transform 사용
-      element.style.willChange = 'left, top'; // will-change 속성 추가
-      element.style.left = `calc(50% - ${element.offsetWidth / 2}px)`; // 초기 위치 설정 (중앙 정렬)
-      element.style.top = (() => {
+      element.style.willChange = 'left, top, opacity, z-index'; // will-change 속성 추가
+      element.style.opacity = '0';
+      element.style.zIndex = '-1'; // z-index를 -1로 설정하여 다른 요소 위에 표시되지 않도록 함
+      const [left, top] = (() => {
         switch (strategy) {
-          case 'circle':
-            return `${maxHeight / 2}px`; // circle 전략은 컨테이너의 중간에 배치
-          case 'topLeft':
-            return `${maxHeight - padding}px`; // topLeft 전략은 컨테이너의 하단에 배치
-          default:
-            return `${padding}px`; // bottomLeft 전략은 컨테이너의 상단에 배치
+          case 'circle': // circle 전략은 컨테이너의 중간에 배치
+            return [`calc(50% - ${element.offsetWidth / 2}px)`, `${maxHeight / 2}px`];
+          case 'topLeft': // topLeft 전략은 컨테이너의 하단에 배치
+            return [`${(element.offsetWidth * index) % container.offsetWidth}px`, `${maxHeight - padding}px`];
+          default: // bottomLeft 전략은 컨테이너의 상단에 배치
+            return [`${(element.offsetWidth * index) % container.offsetWidth}px`, `${padding}px`];
         }
       })();
+      element.style.left = left;
+      element.style.top = top;
 
       const { width, height } = element.getBoundingClientRect();
 
@@ -182,10 +185,14 @@ export default class PackUtils {
       element.style.display = originalDisplay;
       element.style.visibility = 'visible';
       if (animate) {
-        element.style.transition = 'left 300ms ease, top 300ms ease'; // 300ms 부드러운 애니메이션
+        const duration = 300; // 애니메이션 지속 시간 (ms)
+        const timingFunction = 'ease-out'; // 애니메이션 타이밍 함수
+        element.style.transition = `left ${duration}ms ${timingFunction}, top ${duration}ms ${timingFunction}, opacity ${duration}ms ${timingFunction}, z-index ${duration}ms ${timingFunction}`; // 300ms 부드러운 애니메이션
       }
       element.style.left = `${bestX}px`;
       element.style.top = `${bestY}px`;
+      element.style.opacity = '1'; // 요소 보이기
+      element.style.zIndex = '0'; // z-index를 0으로 설정하여 정상적으로 표시되도록 함
 
       // 점유 영역 기록
       occupiedAreas.push({

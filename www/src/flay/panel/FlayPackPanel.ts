@@ -2,38 +2,44 @@ import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch from '@lib/FlayFetch';
 import PackUtils, { PackStrategies, PackStrategy } from '@lib/PackUtils';
 import RandomUtils from '@lib/RandomUtils';
-import StyleUtils from '@lib/StyleUtils';
 import './FlayPackPanel.scss';
 
 export class FlayPackPanel extends HTMLDivElement {
-  private packUtils: PackUtils;
-  private strategy: PackStrategy; // 패널의 배치 전략
+  #packUtils: PackUtils;
+  #strategy: PackStrategy; // 패널의 배치 전략
+  #animate: boolean; // 애니메이션 여부
 
-  constructor(strategy: PackStrategy = RandomUtils.getRandomElementFromArray(PackStrategies)) {
+  constructor(strategy: PackStrategy = RandomUtils.getRandomElementFromArray(PackStrategies), animate: boolean = true) {
     super();
     this.classList.add('flay-pack-panel');
-    this.strategy = strategy;
+    this.#strategy = strategy;
+    this.#animate = animate;
   }
 
   connectedCallback() {
-    this.packUtils = new PackUtils({ strategy: this.strategy, fixedContainer: true, animate: true });
-    this.initializePanel();
+    this.#packUtils = new PackUtils({ strategy: this.#strategy, fixedContainer: true, animate: this.#animate });
+    this.#initializePanel();
   }
 
   disconnectedCallback() {
-    this.packUtils.release();
+    this.#packUtils.release();
   }
 
-  private initializePanel(): void {
-    this.packContent();
+  #initializePanel(): void {
+    this.#packContent();
   }
 
-  private async packContent(): Promise<void> {
-    const fragment = document.createDocumentFragment();
+  async #packContent(): Promise<void> {
     const flayList = await FlayFetch.getFlayAll();
+
+    const totalShotSquared = flayList.reduce((acc, flay) => acc + ((flay.video.likes?.length || 0) + 1) ** 2, 0);
+    const areaPercentage = this.#strategy === 'circle' ? 0.3 : 0.7; // 전체 화면의 70%를 사용
+    const areaMultiplier = Math.round(Math.sqrt((window.innerWidth * window.innerHeight * areaPercentage) / totalShotSquared));
+
+    const fragment = document.createDocumentFragment();
     flayList
       .sort((f1, f2) => {
-        switch (this.strategy) {
+        switch (this.#strategy) {
           case 'circle':
             return (f2.video.likes?.length || 0) - (f1.video.likes?.length || 0);
           case 'topLeft':
@@ -48,7 +54,7 @@ export class FlayPackPanel extends HTMLDivElement {
 
         const flayMarker = new FlayMarker(flay, { shape: 'square', cover: true });
         flayMarker.classList.remove('shot');
-        flayMarker.style.width = `${StyleUtils.remToPx(shotCount + 1)}px`;
+        flayMarker.style.width = `${(shotCount + 1) * areaMultiplier}px`;
         if ([0, 1].includes(shotCount)) {
           flayMarker.style.opacity = `${(flay.video.rank || 8) * 0.125}`;
         }
@@ -60,7 +66,7 @@ export class FlayPackPanel extends HTMLDivElement {
     this.appendChild(fragment);
 
     // PackUtils를 사용하여 패킹
-    await this.packUtils.pack(this as HTMLElement);
+    await this.#packUtils.pack(this as HTMLElement);
 
     this.childNodes.forEach((child) => {
       if (child instanceof HTMLElement) {

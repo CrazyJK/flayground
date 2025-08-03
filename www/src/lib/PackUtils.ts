@@ -202,24 +202,21 @@ export default class PackUtils {
     console.timeEnd('요소 packed');
 
     switch (strategy) {
-      case 'circle':
-        // circle 전략: 원형 배치에 맞는 높이 설정
+      case 'circle': // circle 전략: 원형 배치에 맞는 높이 설정
         if (!fixedContainer) {
           const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height), 0);
           const actualHeight = Math.max(maxY + padding, maxHeight);
           container.style.height = `${actualHeight}px`;
         }
         break;
-      case 'topLeft':
+      case 'topLeft': // topLeft 전략: 가장 아래쪽 요소를 기준으로 높이 설정
         {
-          // topLeft 전략: 가장 아래쪽 요소를 기준으로 높이 설정
           const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height), 0);
           container.style.height = `${maxY + padding}px`;
         }
         break;
-      default:
+      default: // bottomLeft 전략: 기존 로직 - 컨테이너 크기를 내용에 맞게 조정
         if (!fixedContainer) {
-          // fixedContainer = false: 기존 로직 - 컨테이너 크기를 내용에 맞게 조정
           const minY = Math.min(...occupiedAreas.map((area) => area.y));
           const maxY = Math.max(...occupiedAreas.map((area) => area.y + area.height));
           const actualHeight = maxY - minY + padding * 2;
@@ -374,34 +371,37 @@ export default class PackUtils {
     const candidates: { x: number; y: number }[] = [];
 
     // 기본 후보: 전략에 따라 다른 시작점
-    if (strategy === 'bottomLeft') {
-      candidates.push({ x: padding, y: maxHeight - elementHeight - padding });
-    } else {
-      candidates.push({ x: padding, y: padding });
+    switch (strategy) {
+      case 'topLeft': // topLeft 전략: 왼쪽 위에 배치
+        candidates.push({ x: padding, y: padding });
+        break;
+      default: // bottomLeft 전략: 왼쪽 아래에 배치
+        candidates.push({ x: padding, y: maxHeight - elementHeight - padding });
+        break;
     }
-
     // 기존 요소들의 모서리 기반 후보 생성
     occupiedAreas.slice(-400).forEach((area) => {
       switch (strategy) {
-        case 'topLeft':
-          // topLeft 전략: 기존 로직
+        case 'topLeft': // topLeft 전략: 기존 로직
           candidates.push({ x: area.x + area.width, y: area.y }); // 오른쪽
           candidates.push({ x: area.x, y: area.y + area.height }); // 아래쪽
           candidates.push({ x: area.x + area.width, y: area.y + area.height }); // 대각선 아래
           break;
-        default: {
-          // bottomLeft 전략: 아래쪽과 왼쪽을 우선시
-          candidates.push({ x: area.x + area.width, y: area.y }); // 오른쪽 (같은 높이)
-          candidates.push({ x: area.x, y: area.y - elementHeight }); // 위쪽 (현재 요소의 top을 기준)
-          candidates.push({ x: area.x + area.width, y: area.y - elementHeight }); // 대각선 위
+        default:
+          {
+            // bottomLeft 전략: 아래쪽과 왼쪽을 우선시
+            candidates.push({ x: area.x + area.width, y: area.y }); // 오른쪽 (같은 높이)
+            candidates.push({ x: area.x, y: area.y - elementHeight }); // 위쪽 (현재 요소의 top을 기준)
+            candidates.push({ x: area.x + area.width, y: area.y - elementHeight }); // 대각선 위
 
-          // 작은 요소가 큰 요소 위에 올 때: 기존 요소의 bottom을 기준으로 위쪽에 배치
-          const bottomBasedY = area.y + area.height - elementHeight;
-          if (bottomBasedY >= padding && bottomBasedY !== area.y - elementHeight) {
-            candidates.push({ x: area.x, y: bottomBasedY }); // 기존 요소의 bottom 기준 위쪽
-            candidates.push({ x: area.x + area.width, y: bottomBasedY }); // 기존 요소의 bottom 기준 오른쪽 위
+            // 작은 요소가 큰 요소 위에 올 때: 기존 요소의 bottom을 기준으로 위쪽에 배치
+            const bottomBasedY = area.y + area.height - elementHeight;
+            if (bottomBasedY >= padding && bottomBasedY !== area.y - elementHeight) {
+              candidates.push({ x: area.x, y: bottomBasedY }); // 기존 요소의 bottom 기준 위쪽
+              candidates.push({ x: area.x + area.width, y: bottomBasedY }); // 기존 요소의 bottom 기준 오른쪽 위
+            }
           }
-        }
+          break;
       }
     });
 
@@ -412,11 +412,9 @@ export default class PackUtils {
 
     // 전략에 따른 정렬
     switch (strategy) {
-      case 'topLeft':
-        // 기존 로직: Y 좌표, X 좌표 순으로 정렬
+      case 'topLeft': // 기존 로직: Y 좌표, X 좌표 순으로 정렬
         return uniqueCandidates.sort((a, b) => a.y - b.y || a.x - b.x);
-      default:
-        // bottomLeft: Y 좌표 내림차순 (아래쪽부터), X 좌표 오름차순 (왼쪽부터)
+      default: // bottomLeft: Y 좌표 내림차순 (아래쪽부터), X 좌표 오름차순 (왼쪽부터)
         return uniqueCandidates.sort((a, b) => b.y - a.y || a.x - b.x);
     }
   }

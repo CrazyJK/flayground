@@ -286,16 +286,23 @@ export default class PackUtils {
     // 여러 위치 후보 생성
     const candidates: { x: number; y: number; score: number }[] = [];
 
+    // 성능 최적화: 자주 사용되는 값들 미리 계산
+    const halfElementWidth = elementWidth / 2;
+    const halfElementHeight = elementHeight / 2;
+
     // 1. 기본 원형 위치들
     for (let attempt = 0; attempt < 12; attempt++) {
       const radiusVariation = ringRadius + attempt * currentElementRadius * 0.1;
       const angleVariation = baseAngle + attempt * angleStep * 0.1;
 
-      const x = centerX + Math.cos(angleVariation) * radiusVariation - elementWidth / 2;
-      const y = centerY + Math.sin(angleVariation) * radiusVariation - elementHeight / 2;
+      const cosAngle = Math.cos(angleVariation);
+      const sinAngle = Math.sin(angleVariation);
+
+      const x = centerX + cosAngle * radiusVariation - halfElementWidth;
+      const y = centerY + sinAngle * radiusVariation - halfElementHeight;
 
       if (this.isValidPosition(x, y, elementWidth, elementHeight, containerWidth, maxHeight, padding)) {
-        const distanceFromCenter = Math.sqrt((x + elementWidth / 2 - centerX) ** 2 + (y + elementHeight / 2 - centerY) ** 2);
+        const distanceFromCenter = Math.sqrt((x + halfElementWidth - centerX) ** 2 + (y + halfElementHeight - centerY) ** 2);
         candidates.push({ x, y, score: distanceFromCenter });
       }
     }
@@ -313,11 +320,14 @@ export default class PackUtils {
           const angle = (i * Math.PI * 2) / 8;
           const distance = Math.max(element.width, element.height) / 2 + currentElementRadius;
 
-          const x = elementCenterX + Math.cos(angle) * distance - elementWidth / 2;
-          const y = elementCenterY + Math.sin(angle) * distance - elementHeight / 2;
+          const cosAngle = Math.cos(angle);
+          const sinAngle = Math.sin(angle);
+
+          const x = elementCenterX + cosAngle * distance - halfElementWidth;
+          const y = elementCenterY + sinAngle * distance - halfElementHeight;
 
           if (this.isValidPosition(x, y, elementWidth, elementHeight, containerWidth, maxHeight, padding)) {
-            const distanceFromCenter = Math.sqrt((x + elementWidth / 2 - centerX) ** 2 + (y + elementHeight / 2 - centerY) ** 2);
+            const distanceFromCenter = Math.sqrt((x + halfElementWidth - centerX) ** 2 + (y + halfElementHeight - centerY) ** 2);
             candidates.push({ x, y, score: distanceFromCenter });
           }
         }
@@ -327,18 +337,34 @@ export default class PackUtils {
     // 중심에서 가까운 순서로 정렬
     candidates.sort((a, b) => a.score - b.score);
 
-    // 겹치지 않는 최적 위치 찾기
+    // 겹치지 않는 최적 위치 찾기 (성능 최적화: 충분히 좋은 위치를 찾으면 조기 종료)
+    let bestCandidate = null;
+    const acceptableScore = ringRadius * 0.8; // 허용 가능한 점수 임계값
+
     for (const candidate of candidates) {
       if (!this.hasOverlap(candidate.x, candidate.y, elementWidth, elementHeight, occupiedAreas)) {
-        return { x: candidate.x, y: candidate.y };
+        if (candidate.score <= acceptableScore) {
+          // 충분히 좋은 위치를 찾았으면 즉시 반환 (조기 종료)
+          return { x: candidate.x, y: candidate.y };
+        }
+        if (!bestCandidate) {
+          bestCandidate = candidate;
+        }
       }
     }
 
-    // 모든 후보가 실패하면 외곽에 안전하게 배치 - 더 촘촘하게
+    // 허용 가능한 점수를 못 찾았지만 유효한 위치가 있으면 반환
+    if (bestCandidate) {
+      return { x: bestCandidate.x, y: bestCandidate.y };
+    }
+
+    // 모든 후보가 실패하면 외곽에 안전하게 배치 - 더 촘촘하게 (수학 계산 최적화)
     const fallbackRadius = ringRadius + currentElementRadius * 1.5;
     const fallbackAngle = (elementIndex * Math.PI * 2) / totalElements;
-    const fallbackX = centerX + Math.cos(fallbackAngle) * fallbackRadius - elementWidth / 2;
-    const fallbackY = centerY + Math.sin(fallbackAngle) * fallbackRadius - elementHeight / 2;
+    const fallbackCos = Math.cos(fallbackAngle);
+    const fallbackSin = Math.sin(fallbackAngle);
+    const fallbackX = centerX + fallbackCos * fallbackRadius - halfElementWidth;
+    const fallbackY = centerY + fallbackSin * fallbackRadius - halfElementHeight;
 
     return {
       x: Math.max(padding, Math.min(fallbackX, containerWidth + padding - elementWidth)),

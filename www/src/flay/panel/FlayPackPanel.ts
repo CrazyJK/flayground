@@ -64,7 +64,10 @@ export class FlayPackPanel extends HTMLDivElement {
 
     this.childNodes.forEach((child) => {
       if (child instanceof HTMLElement) {
-        child.style.transition += ', opacity 0.5s ease-in-out, filter 0.5s ease-in-out';
+        // transitions에 opacity와 filter 이 있으면 제거
+        const transitions = child.style.transition.split(',').filter((transition) => !transition.includes('opacity') && !transition.includes('filter'));
+        transitions.push('opacity 0.5s ease-in-out', 'filter 0.5s ease-in-out');
+        child.style.transition = transitions.join(',');
       }
     });
   }

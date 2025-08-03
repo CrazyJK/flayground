@@ -265,12 +265,12 @@ export default class PackUtils {
     const ringIndex = Math.floor(adjustedIndex / elementsPerRing);
     const positionInRing = adjustedIndex % elementsPerRing;
 
-    // 링별 반지름 계산 (점진적으로 증가)
+    // 링별 반지름 계산 (점진적으로 증가) - 더 촘촘하게 조정
     let ringRadius = baseRadius;
     if (ringIndex > 0) {
-      // 이전 링의 요소들과 겹치지 않도록 반지름 조정
+      // 이전 링의 요소들과 겹치지 않도록 반지름 조정 (1.5 -> 1.2로 감소)
       const averageElementSize = Math.sqrt(elementWidth * elementHeight);
-      ringRadius = baseRadius + ringIndex * averageElementSize * 1.5;
+      ringRadius = baseRadius + ringIndex * averageElementSize * 1.1;
     }
 
     // 각 링에서 요소 간격 계산
@@ -283,7 +283,7 @@ export default class PackUtils {
 
     // 1. 기본 원형 위치들
     for (let attempt = 0; attempt < 12; attempt++) {
-      const radiusVariation = ringRadius + attempt * currentElementRadius * 0.2;
+      const radiusVariation = ringRadius + attempt * currentElementRadius * 0.1;
       const angleVariation = baseAngle + attempt * angleStep * 0.1;
 
       const x = centerX + Math.cos(angleVariation) * radiusVariation - elementWidth / 2;
@@ -303,10 +303,10 @@ export default class PackUtils {
         const elementCenterX = element.x + element.width / 2;
         const elementCenterY = element.y + element.height / 2;
 
-        // 기존 요소 주변의 빈 공간 탐색
+        // 기존 요소 주변의 빈 공간 탐색 - 간격을 더 촘촘하게
         for (let i = 0; i < 8; i++) {
           const angle = (i * Math.PI * 2) / 8;
-          const distance = Math.max(element.width, element.height) / 2 + currentElementRadius + 10; // 약간의 간격
+          const distance = Math.max(element.width, element.height) / 2 + currentElementRadius;
 
           const x = elementCenterX + Math.cos(angle) * distance - elementWidth / 2;
           const y = elementCenterY + Math.sin(angle) * distance - elementHeight / 2;
@@ -329,8 +329,8 @@ export default class PackUtils {
       }
     }
 
-    // 모든 후보가 실패하면 외곽에 안전하게 배치
-    const fallbackRadius = ringRadius + currentElementRadius * 2;
+    // 모든 후보가 실패하면 외곽에 안전하게 배치 - 더 촘촘하게
+    const fallbackRadius = ringRadius + currentElementRadius * 1.5;
     const fallbackAngle = (elementIndex * Math.PI * 2) / totalElements;
     const fallbackX = centerX + Math.cos(fallbackAngle) * fallbackRadius - elementWidth / 2;
     const fallbackY = centerY + Math.sin(fallbackAngle) * fallbackRadius - elementHeight / 2;

@@ -8,7 +8,7 @@
   z-index: 69;
 }
 
-.side-nav-bar {
+side-nav-bar {
   position: fixed;
   top: 0;
   left: -10rem;
@@ -81,9 +81,9 @@
   }
 }
 
-.nav-open:hover + .side-nav-bar,
-.side-nav-bar:hover,
-.side-nav-bar.open {
+.nav-open:hover + side-nav-bar,
+side-nav-bar:hover,
+side-nav-bar.open {
   left: 0;
   transition:
     left 0.4s,

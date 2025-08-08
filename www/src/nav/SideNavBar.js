@@ -46,7 +46,7 @@ export class SideNavBar extends HTMLElement {
 
   constructor() {
     super();
-    this.classList.add('side-nav-bar', 'flay-div');
+    this.classList.add('flay-div');
   }
 
   connectedCallback() {

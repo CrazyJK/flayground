@@ -229,27 +229,27 @@ class FlayVideoInfo extends HTMLElement {
     this.classList.add('flay-video-info', 'flay-div');
     this.innerHTML = `
       <div class="header">
-        <div class="flay-title" is="flay-title" mode="card"></div>
+        <flay-title mode="card"></flay-title>
       </div>
       <div class="footer">
-        <div class="flay-studio"  is="flay-studio"  mode="card"></div>
-        <div class="flay-opus"    is="flay-opus"    mode="card"></div>
-        <div class="flay-actress" is="flay-actress" mode="card"></div>
-        <div class="flay-release" is="flay-release" mode="card"></div>
-        <div class="flay-rank"    is="flay-rank"    mode="card"></div>
-        <div class="flay-tag"     is="flay-tag"     mode="card"></div>
+        <flay-studio  mode="card"></flay-studio>
+        <flay-opus    mode="card"></flay-opus>
+        <flay-actress mode="card"></flay-actress>
+        <flay-release mode="card"></flay-release>
+        <flay-rank    mode="card"></flay-rank>
+        <flay-tag     mode="card"></flay-tag>
       </div>
     `;
   }
 
   set(flay, actress, reload = false) {
-    this.querySelector('.flay-studio').set(flay, reload);
-    this.querySelector('.flay-opus').set(flay, reload);
-    this.querySelector('.flay-title').set(flay, reload);
-    this.querySelector('.flay-actress').set(flay, actress, reload);
-    this.querySelector('.flay-release').set(flay, reload);
-    this.querySelector('.flay-rank').set(flay, reload);
-    this.querySelector('.flay-tag').set(flay, reload);
+    this.querySelector('flay-studio').set(flay, reload);
+    this.querySelector('flay-opus').set(flay, reload);
+    this.querySelector('flay-title').set(flay, reload);
+    this.querySelector('flay-actress').set(flay, actress, reload);
+    this.querySelector('flay-release').set(flay, reload);
+    this.querySelector('flay-rank').set(flay, reload);
+    this.querySelector('flay-tag').set(flay, reload);
   }
 }
 
@@ -278,7 +278,7 @@ let prevOpus = null;
 export const playInLayer = async (opus) => {
   const dispatchPlayEvent = (isPlay) => document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: isPlay } }));
   const setPlayerPosition = () => {
-    const flayCoverRect = document.querySelector('.flay-page')?.querySelector('.flay-cover').getBoundingClientRect();
+    const flayCoverRect = document.querySelector('flay-page')?.querySelector('flay-cover').getBoundingClientRect();
     if (flayCoverRect) {
       const { top, left, width, height } = flayCoverRect;
       layer.querySelector('article').style.cssText = `position: fixed; top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px;`;
@@ -306,7 +306,7 @@ export const playInLayer = async (opus) => {
 
   layer.classList.remove('hide');
 
-  const videoPlayer = layer.querySelector('.flay-video-player');
+  const videoPlayer = layer.querySelector('flay-video-player');
   if (prevOpus !== opus) {
     await videoPlayer.load(opus);
     await videoPlayer.playRandomSeekOrContinuously();

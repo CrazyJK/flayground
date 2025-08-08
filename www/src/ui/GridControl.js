@@ -17,7 +17,7 @@ export default class GridControl extends HTMLElement {
     this.storageKey = null;
 
     this.dataset.max = this.max;
-    this.classList.add('grid-control', 'flay-div');
+    this.classList.add('flay-div');
     this.innerHTML = this.#createTemplate();
   }
 

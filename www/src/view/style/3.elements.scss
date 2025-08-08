@@ -5,34 +5,16 @@
  */
 
 /* 플레이 관련 컴포넌트의 기본 스타일 */
-.flay-studio,
-.flay-opus,
-.flay-comment,
-.flay-title,
-.flay-actress,
-.flay-release,
-.flay-rank,
-.flay-files,
-.flay-tag {
+flay-actress,
+flay-studio,
+flay-opus,
+flay-comment,
+flay-title,
+flay-release,
+flay-rank,
+flay-files,
+flay-tag {
   min-height: 2rem;
   padding: 0 0.5rem;
   transition: background-color 0.2s ease;
-}
-
-/* 플레이 컴포넌트 상태 스타일 */
-.flay-component {
-  &:hover {
-    background-color: var(--color-bg-hover);
-  }
-
-  &.active {
-    border-left: 3px solid var(--color-border-active);
-  }
-}
-
-/* 그리드 레이아웃 컨테이너 */
-.grid-container {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 0;
 }

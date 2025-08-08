@@ -59,19 +59,11 @@ html {
   .hide-on-desktop-up {
     display: none !important;
   }
-
-  .grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-  }
 }
 
 /* Desktop (Large) */
 @media (min-width: 1200px) {
   .container {
     max-width: 1140px;
-  }
-
-  .grid-container {
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   }
 }

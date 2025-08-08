@@ -23,7 +23,7 @@ export default class FlayCard extends HTMLElement {
   constructor(options) {
     super();
 
-    this.classList.add('flay-card', 'flay-div');
+    this.classList.add('flay-div');
 
     if (options && options.excludes) {
       this.excludes = options.excludes;

@@ -99,9 +99,7 @@ export default class FlayFiles extends FlayHTMLElement {
     });
   }
 
-  connectedCallback() {
-    this.classList.add('flay-files');
-  }
+  connectedCallback() {}
 
   /**
    *

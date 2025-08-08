@@ -33,9 +33,7 @@ export default class FlayRank extends FlayHTMLElement {
     this.querySelector('.like-btn').addEventListener('click', () => FlayAction.setLike(this.flay.opus));
   }
 
-  connectedCallback() {
-    this.classList.add('flay-rank');
-  }
+  connectedCallback() {}
 
   /**
    *

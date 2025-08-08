@@ -1,4 +1,5 @@
-.flay-cover {
+flay-cover {
+  position: relative;
   aspect-ratio: var(--cover-aspect-ratio);
   background: transparent no-repeat center / cover;
   border-radius: var(--border-radius);

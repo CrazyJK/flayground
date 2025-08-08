@@ -15,9 +15,7 @@ export default class FlayStudio extends FlayHTMLElement {
     this.querySelector('a').addEventListener('click', () => popupStudio(this.flay.studio));
   }
 
-  connectedCallback() {
-    this.classList.add('flay-studio');
-  }
+  connectedCallback() {}
 
   /**
    *

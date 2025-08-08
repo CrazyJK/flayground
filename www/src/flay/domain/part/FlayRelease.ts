@@ -19,9 +19,7 @@ export default class FlayRelease extends FlayHTMLElement {
     `;
   }
 
-  connectedCallback() {
-    this.classList.add('flay-release');
-  }
+  connectedCallback() {}
 
   /**
    *

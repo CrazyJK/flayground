@@ -14,9 +14,7 @@ export default class FlayActress extends FlayHTMLElement {
     super();
   }
 
-  connectedCallback() {
-    this.classList.add('flay-actress');
-  }
+  connectedCallback() {}
 
   /**
    *

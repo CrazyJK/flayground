@@ -1,4 +1,5 @@
-.flay-page {
+flay-page {
+  position: relative;
   display: flex;
   flex-direction: column;
   flex-wrap: nowrap;
@@ -15,37 +16,37 @@
     width: 100%;
   }
 
-  .flay-cover {
+  flay-cover {
     margin: 0.5rem auto;
   }
 
-  .flay-cover,
-  .flay-actress {
+  flay-cover,
+  flay-actress {
     max-width: 900px;
   }
 
-  .flay-cover,
-  .flay-actress,
-  .flay-files {
+  flay-cover,
+  flay-actress,
+  flay-files {
     flex: 1 0 auto;
   }
 
-  .flay-tag {
+  flay-tag {
     overflow: auto;
   }
 }
 
 // FHD 세로보다 클때 크기 조정
 @media screen and (min-width: 1080px) {
-  .flay-page {
+  flay-page {
     max-width: 90%;
   }
 }
 
 // 팝업시 세로 높이에 따라 간단히 보이기
 @media screen and (max-height: 989px) {
-  .flay-page.popup {
-    .flay-tag {
+  flay-page.popup {
+    flay-tag {
       .tag-list {
         input[type='checkbox']:not(:checked) + label {
           display: none;
@@ -55,16 +56,16 @@
   }
 }
 @media screen and (max-height: 750px) {
-  .flay-page.popup {
-    .flay-studio,
-    .flay-comment {
+  flay-page.popup {
+    flay-studio,
+    flay-comment {
       display: none;
     }
   }
 }
 @media screen and (max-height: 600px) {
-  .flay-page.popup {
-    .flay-opus {
+  flay-page.popup {
+    flay-opus {
       display: none;
     }
   }

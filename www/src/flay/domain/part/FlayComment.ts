@@ -35,9 +35,7 @@ export default class FlayComment extends FlayHTMLElement {
     this.#input.addEventListener('keyup', (e) => this.#handlerCommentSave(e));
   }
 
-  connectedCallback() {
-    this.classList.add('flay-comment');
-  }
+  connectedCallback() {}
 
   /**
    *

@@ -17,9 +17,7 @@ export default class FlayTitle extends FlayHTMLElement {
     }
   }
 
-  connectedCallback() {
-    this.classList.add('flay-title');
-  }
+  connectedCallback() {}
 
   /**
    *

@@ -79,7 +79,7 @@ class PopupActress {
     });
     this.toggleArchive.addEventListener('click', () => {
       const isArchive = this.toggleArchive.dataset.archive === 'on';
-      Array.from(document.querySelectorAll('.flay-card'))
+      Array.from(document.querySelectorAll('flay-card'))
         .filter((flayCard) => flayCard.hasAttribute('archive'))
         .filter((flayCard) => flayCard.dataset.show === 'true')
         .forEach((flayCard) => {

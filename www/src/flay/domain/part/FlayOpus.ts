@@ -28,9 +28,7 @@ export default class FlayOpus extends FlayHTMLElement {
     });
   }
 
-  connectedCallback() {
-    this.classList.add('flay-opus');
-  }
+  connectedCallback() {}
 
   /**
    *

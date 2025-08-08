@@ -29,7 +29,7 @@ export default class FlayPage extends HTMLElement {
 
   constructor() {
     super();
-    this.classList.add('flay-page', 'flay-div');
+    this.classList.add('flay-div');
 
     this.flayStudio = this.appendChild(new FlayStudio());
     this.flayOpus = this.appendChild(new FlayOpus());

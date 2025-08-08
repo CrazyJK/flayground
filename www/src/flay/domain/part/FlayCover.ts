@@ -34,9 +34,7 @@ export default class FlayCover extends FlayHTMLElement {
     this.querySelector('svg').addEventListener('click', (e) => this.#handlerPopupCover(e));
   }
 
-  connectedCallback() {
-    this.classList.add('flay-cover');
-  }
+  connectedCallback() {}
 
   /**
    *

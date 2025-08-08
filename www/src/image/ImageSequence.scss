@@ -1,0 +1,42 @@
+image-sequence {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  grid-template-rows: auto 1fr auto;
+
+  > header,
+  > footer {
+    display: flex;
+    justify-content: flex-end;
+
+    > flay-image {
+      display: inline-block;
+      aspect-ratio: 9 / 16;
+      width: 9rem;
+      height: auto;
+      margin: 0px;
+      border: 1px solid transparent;
+      border-radius: 1.5rem;
+      padding: 0.25rem;
+      transition: 0.5s ease-in-out;
+
+      transform: translate3d(0, 0, 0); /* GPU 가속 활용 */
+      will-change: transform, opacity;
+      contain: layout style paint; /* 렌더링 최적화 */
+
+      img {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+      }
+
+      &.current {
+        z-index: 1;
+      }
+    }
+  }
+  > footer {
+    justify-content: flex-start;
+  }
+}

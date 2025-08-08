@@ -137,7 +137,7 @@ export class ImageOne extends HTMLElement {
     this.classList.add('image-one', 'flay-div');
     this.shadowRoot!.innerHTML = `
       <style>${cssText}</style>
-      <img is="flay-image">
+      <flay-image></flay-image>
       <footer>
         <div class="info">
           <label id="imgIdx"></label>
@@ -153,7 +153,7 @@ export class ImageOne extends HTMLElement {
       </footer>
     `;
 
-    this.#flayImage = this.shadowRoot!.querySelector('img')!;
+    this.#flayImage = this.shadowRoot!.querySelector('flay-image')!;
     this.#imgIdx = this.shadowRoot!.querySelector('#imgIdx')!;
     this.#imgPath = this.shadowRoot!.querySelector('#imgPath')!;
     this.#imgName = this.shadowRoot!.querySelector('#imgName')!;

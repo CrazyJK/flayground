@@ -51,7 +51,7 @@ export class ImagePage extends HTMLElement {
         <main>
           <article class="size-200"></article>
           <div class="preview">
-            <div is="image-frame" class="image-frame"></div>
+            <image-frame class="image-frame"></image-frame>
           </div>
         </main>
         <div class="resizer"></div>

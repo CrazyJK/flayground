@@ -2,6 +2,7 @@ import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
 import FlayFetch, { ImageDomain } from '@lib/FlayFetch';
+import './FlayImage.scss';
 
 export interface FlayImageOptions {
   magnifier: boolean;
@@ -13,7 +14,8 @@ export interface FlayImageOptions {
  * - 이미지가 원본보다 클 때 자동 비활성화
  * - 성능 최적화된 requestAnimationFrame 기반 애니메이션
  */
-export default class FlayImage extends HTMLImageElement {
+export default class FlayImage extends HTMLElement {
+  #image: HTMLImageElement;
   #magnifier: HTMLDivElement | null = null;
   #magnifierSize: number = 300;
   #zoomLevel: number = 2;
@@ -28,6 +30,7 @@ export default class FlayImage extends HTMLImageElement {
   constructor(options: Partial<FlayImageOptions> = {}) {
     super();
 
+    this.#image = this.appendChild(document.createElement('img'));
     this.#opts = { ...this.#opts, ...options };
   }
 
@@ -38,7 +41,7 @@ export default class FlayImage extends HTMLImageElement {
   attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
     switch (name) {
       case 'data-idx':
-        this.src = ApiClient.buildUrl('/static/image/' + newValue);
+        this.#image.src = ApiClient.buildUrl('/static/image/' + newValue);
         break;
       case 'src':
         this.#loadInfo();
@@ -79,16 +82,16 @@ export default class FlayImage extends HTMLImageElement {
   }
 
   #loadInfo(): void {
-    const idx = Number(this.src?.split('/').pop());
+    const idx = Number(this.#image.src?.split('/').pop());
     if (idx < 0) {
       this.removeAttribute('alt');
       return;
     }
 
-    this.decode().then(() =>
+    this.#image.decode().then(() =>
       FlayFetch.getImage(idx).then((domain: ImageDomain) => {
-        domain['width'] = this.naturalWidth;
-        domain['height'] = this.naturalHeight;
+        domain['width'] = this.#image.naturalWidth;
+        domain['height'] = this.#image.naturalHeight;
 
         this.dataset.name = domain.name;
         this.dataset.path = domain.path;
@@ -97,7 +100,7 @@ export default class FlayImage extends HTMLImageElement {
         this.dataset.modified = DateUtils.format(domain.modified, 'yyyy-MM-dd');
         this.dataset.width = String(domain.width);
         this.dataset.height = String(domain.height);
-        this.alt = `※ Idx: ${domain.idx}\n※ Path: ${domain.path}\n※ Name: ${domain.name}\n※ Size: ${domain.width} x ${domain.height}`;
+        this.#image.alt = `※ Idx: ${domain.idx}\n※ Path: ${domain.path}\n※ Name: ${domain.name}\n※ Size: ${domain.width} x ${domain.height}`;
 
         this.dispatchEvent(new CustomEvent<{ info: ImageDomain }>('loaded', { detail: { info: domain } }));
       })
@@ -141,7 +144,7 @@ export default class FlayImage extends HTMLImageElement {
     const now = performance.now();
     // 100ms마다만 크기 체크 (성능 최적화)
     if (now - this.#lastCheckTime > 100) {
-      this.#isEnlarged = this.offsetWidth > this.naturalWidth || this.offsetHeight > this.naturalHeight;
+      this.#isEnlarged = this.offsetWidth > this.#image.naturalWidth || this.offsetHeight > this.#image.naturalHeight;
       this.#lastCheckTime = now;
     }
   }
@@ -184,7 +187,7 @@ export default class FlayImage extends HTMLImageElement {
       border: 3px solid var(--dominated-color);
       border-radius: 50%;
       background-repeat: no-repeat;
-      background-image: url('${this.src}');
+      background-image: url('${this.#image.src}');
       box-shadow: 0 0 10px var(--dominated-color);
       pointer-events: none;
       z-index: 1000;
@@ -229,10 +232,10 @@ export default class FlayImage extends HTMLImageElement {
 
   #updateMagnifierImage(): void {
     // 돋보기가 존재하고 src가 있을 때만 업데이트
-    if (this.#magnifier && this.src) {
-      this.#magnifier.style.backgroundImage = `url('${this.src}')`;
+    if (this.#magnifier && this.#image.src) {
+      this.#magnifier.style.backgroundImage = `url('${this.#image.src}')`;
     }
   }
 }
 
-customElements.define('flay-image', FlayImage, { extends: 'img' });
+customElements.define('flay-image', FlayImage);

@@ -1,5 +1,6 @@
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
+import './ImageSequence.scss';
 import FlayImage from './part/FlayImage';
 
 export class ImageSequence extends HTMLElement {
@@ -12,53 +13,15 @@ export class ImageSequence extends HTMLElement {
 
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
 
-    this.shadowRoot!.innerHTML = `
-      <style>
-        :host {
-          position: absolute;
-          inset: 0;
-          display: grid;
-          grid-template-rows: auto 1fr auto;
-        }
-        header, 
-        footer {
-          display: flex;
-          justify-content: flex-end;
-        }
-        footer {
-          justify-content: flex-start;
-        }
-        header > img,
-        footer > img {
-          display: inline-block;
-          aspect-ratio: 9 / 16;
-          width: 9rem;
-          height: auto;
-          margin: 0px;
-          border: 1px solid transparent;
-          border-radius: 1.5rem;
-          padding: 0.25rem;
-          object-fit: cover;
-          transition: 0.5s ease-in-out;
-    
-          transform: translate3d(0, 0, 0); /* GPU 가속 활용 */
-          will-change: transform, opacity;
-          contain: layout style paint; /* 렌더링 최적화 */
-        }
-        header > img.current,
-        footer > img.current {      
-          z-index: 1;
-        }
-      </style>
+    this.innerHTML = `
       <header></header>
       <main></main>
       <footer></footer>
     `;
 
-    this.header = this.shadowRoot!.querySelector('header') as HTMLDivElement;
-    this.footer = this.shadowRoot!.querySelector('footer') as HTMLDivElement;
+    this.header = this.querySelector('header') as HTMLDivElement;
+    this.footer = this.querySelector('footer') as HTMLDivElement;
   }
 
   connectedCallback(): void {
@@ -96,7 +59,7 @@ export class ImageSequence extends HTMLElement {
     return img;
   }
 
-  private imageAnimate(image: HTMLImageElement, toggle: boolean, duration: number = 1000): Promise<void> {
+  private imageAnimate(image: FlayImage, toggle: boolean, duration: number = 1000): Promise<void> {
     const hideOpacity = 0.25;
     const keyframes = toggle ? [{ opacity: hideOpacity }, { opacity: 1 }] : [{ opacity: 1 }, { opacity: hideOpacity }];
 
@@ -141,15 +104,15 @@ export class ImageSequence extends HTMLElement {
       await Promise.all([this.imageAnimate(imageOfHeader, true), this.imageAnimate(imageOfFooter, true)]);
 
       const { right } = imageOfFooter.getBoundingClientRect();
-      showCondition = this.shadowRoot!.host.clientWidth > right;
+      showCondition = this.clientWidth > right;
 
       this.offset++;
     } while (showCondition && this.isActive);
   }
 
   private async changeImage(): Promise<void> {
-    const headerImages = Array.from(this.shadowRoot.querySelectorAll('header > img')) as HTMLImageElement[];
-    const footerImages = Array.from(this.shadowRoot.querySelectorAll('footer > img')) as HTMLImageElement[];
+    const headerImages = Array.from(this.querySelectorAll('header > flay-image')) as FlayImage[];
+    const footerImages = Array.from(this.querySelectorAll('footer > flay-image')) as FlayImage[];
     const columnCount = footerImages.length;
     let columnIndex = 0;
 

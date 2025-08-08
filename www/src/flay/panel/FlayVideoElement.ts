@@ -125,6 +125,10 @@ export default class FlayVideo extends HTMLElement {
     await this.video.play();
   }
 
+  pause() {
+    this.video.pause();
+  }
+
   /**
    * 쓰로틀링된 데이터베이스 업데이트 함수
    *

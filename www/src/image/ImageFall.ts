@@ -13,7 +13,7 @@ interface ImageFallOptions {
 
 const DEFAULT_OPTS: ImageFallOptions = { mode: 'serial', auto: true };
 
-export class ImageFall extends HTMLDivElement {
+export class ImageFall extends HTMLElement {
   private timer: number = -1;
   private contunue: boolean = true;
   private willRandom: boolean = false;
@@ -222,4 +222,4 @@ export class ImageFall extends HTMLDivElement {
   }
 }
 
-customElements.define('image-fall', ImageFall, { extends: 'div' });
+customElements.define('image-fall', ImageFall);

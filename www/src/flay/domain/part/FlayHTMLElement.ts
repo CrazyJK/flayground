@@ -1,6 +1,6 @@
 import { Flay } from '@lib/FlayFetch';
 
-export default class FlayHTMLElement extends HTMLDivElement {
+export default class FlayHTMLElement extends HTMLElement {
   flay: Flay | null = null;
   inCard: boolean = false;
 
@@ -47,5 +47,5 @@ export default class FlayHTMLElement extends HTMLDivElement {
  * @param constructor 커스텀 엘리먼트 생성자
  */
 export const defineCustomElements = (name: string, constructor: new () => HTMLElement): void => {
-  customElements.define(name, constructor, { extends: 'div' });
+  customElements.define(name, constructor);
 };

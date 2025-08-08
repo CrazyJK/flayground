@@ -2,7 +2,7 @@ import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import './ImageFrame.scss';
 
-export default class ImageFrame extends HTMLDivElement {
+export default class ImageFrame extends HTMLElement {
   img: HTMLImageElement;
   info: { idx: number; name: string; path: string; modified: Date; width: number; height: number; colors: ColorFrequency[] };
 
@@ -40,4 +40,4 @@ export default class ImageFrame extends HTMLDivElement {
   }
 }
 
-customElements.define('image-frame', ImageFrame, { extends: 'div' });
+customElements.define('image-frame', ImageFrame);

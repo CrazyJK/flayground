@@ -1,9 +1,9 @@
 import FlayCard from '@flay/domain/FlayCard';
-import FlayFetch, { History } from '@lib/FlayFetch';
 import DateUtils from '@lib/DateUtils';
+import FlayFetch, { History } from '@lib/FlayFetch';
 import './FlayShotDailyPanel.scss';
 
-export class FlayShotDailyPanel extends HTMLDivElement {
+export class FlayShotDailyPanel extends HTMLElement {
   #playHistoryList: History[];
   #prevDay: number = 0;
   #shotDateOpusMap: Map<string, string[]> = new Map();
@@ -100,4 +100,4 @@ export class FlayShotDailyPanel extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-shot-daily-panel', FlayShotDailyPanel, { extends: 'div' });
+customElements.define('flay-shot-daily-panel', FlayShotDailyPanel);

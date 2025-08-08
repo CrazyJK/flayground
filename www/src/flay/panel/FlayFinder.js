@@ -21,7 +21,7 @@ const HTML = `
 </div>
 `;
 
-export default class FlayFinder extends HTMLDivElement {
+export default class FlayFinder extends HTMLElement {
   constructor() {
     super();
 
@@ -213,4 +213,4 @@ function renderActress(list, keyword, wrapper) {
 }
 
 // Define the new element
-customElements.define('flay-finder', FlayFinder, { extends: 'div' });
+customElements.define('flay-finder', FlayFinder);

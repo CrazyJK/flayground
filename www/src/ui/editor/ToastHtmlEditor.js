@@ -8,7 +8,7 @@ import './ToastHtmlEditor.scss';
 
 const DEFAULT_CALLBACK = { load: () => {}, blur: () => {}, change: () => {} };
 
-export class ToastHtmlEditor extends HTMLDivElement {
+export class ToastHtmlEditor extends HTMLElement {
   #editor;
   #loadCallback;
   #blurCallback;
@@ -75,4 +75,4 @@ export class ToastHtmlEditor extends HTMLDivElement {
   }
 }
 
-customElements.define('toast-html-editor', ToastHtmlEditor, { extends: 'div' });
+customElements.define('toast-html-editor', ToastHtmlEditor);

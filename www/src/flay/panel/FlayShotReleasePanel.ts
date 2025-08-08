@@ -3,7 +3,7 @@ import FlayFetch from '@lib/FlayFetch';
 import PackUtils, { PackOptions } from '@lib/PackUtils';
 import './FlayShotReleasePanel.scss';
 
-export class FlayShotReleasePanel extends HTMLDivElement {
+export class FlayShotReleasePanel extends HTMLElement {
   resizeObservers: ResizeObserver[] = [];
   resizeHandlers: (() => void)[] = [];
 
@@ -77,4 +77,4 @@ export class FlayShotReleasePanel extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-shot-release-panel', FlayShotReleasePanel, { extends: 'div' });
+customElements.define('flay-shot-release-panel', FlayShotReleasePanel);

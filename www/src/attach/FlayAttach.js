@@ -32,7 +32,7 @@ const OPT_DEFAULT = {
 /**
  * 커스텀 파일 첨부 박스
  */
-export default class FlayAttach extends HTMLDivElement {
+export default class FlayAttach extends HTMLElement {
   constructor(opts) {
     super();
 
@@ -310,7 +310,7 @@ export default class FlayAttach extends HTMLDivElement {
 }
 
 // Define the new element
-customElements.define('flay-attach', FlayAttach, { extends: 'div' });
+customElements.define('flay-attach', FlayAttach);
 
 function getFileIcon(file) {
   function getFileType(fileExt, fileType) {

@@ -10,7 +10,7 @@ import './FlayBasket.scss';
 
 const BASKET_KEY = 'flay-basket';
 
-export class FlayBasket extends HTMLDivElement {
+export class FlayBasket extends HTMLElement {
   constructor() {
     super();
     this.classList.add('flay-basket', 'flay-div');
@@ -223,9 +223,9 @@ export class FlayBasket extends HTMLDivElement {
     window.emitNotice('clear Basket');
   }
 }
-customElements.define('flay-basket', FlayBasket, { extends: 'div' });
+customElements.define('flay-basket', FlayBasket);
 
-class FlayBasketItem extends HTMLDivElement {
+class FlayBasketItem extends HTMLElement {
   constructor(flay) {
     super();
 
@@ -482,7 +482,7 @@ class FlayBasketItem extends HTMLDivElement {
     return Array.from(this.querySelectorAll('.actress a')).map((a) => a.textContent);
   }
 }
-customElements.define('flay-basket-item', FlayBasketItem, { extends: 'div' });
+customElements.define('flay-basket-item', FlayBasketItem);
 
 /**
  *

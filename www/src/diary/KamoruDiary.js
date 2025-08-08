@@ -10,7 +10,7 @@ import './KamoruDiary.scss';
 const GB = 1024 * 1024 * 1024;
 const defaultDiaryRecord = { meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null }, content: '' };
 
-export class KamoruDiary extends HTMLDivElement {
+export class KamoruDiary extends HTMLElement {
   #currentDiary = defaultDiaryRecord;
   #diaryList = [];
 
@@ -315,4 +315,4 @@ export class KamoruDiary extends HTMLDivElement {
   }
 }
 
-customElements.define('kamoru-diary', KamoruDiary, { extends: 'div' });
+customElements.define('kamoru-diary', KamoruDiary);

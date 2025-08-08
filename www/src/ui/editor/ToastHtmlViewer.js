@@ -1,7 +1,7 @@
 import Editor from '@toast-ui/editor';
 import './ToastHtmlViewer.scss';
 
-export class ToastHtmlViewer extends HTMLDivElement {
+export class ToastHtmlViewer extends HTMLElement {
   #viewer;
   #htmlContent;
 
@@ -26,4 +26,4 @@ export class ToastHtmlViewer extends HTMLDivElement {
   }
 }
 
-customElements.define('toast-html-viewer', ToastHtmlViewer, { extends: 'div' });
+customElements.define('toast-html-viewer', ToastHtmlViewer);

@@ -6,7 +6,7 @@ import './FlayCandidate.scss';
 /**
  * accept candidate
  */
-export default class FlayCandidate extends HTMLDivElement {
+export default class FlayCandidate extends HTMLElement {
   constructor() {
     super();
 
@@ -50,4 +50,4 @@ export default class FlayCandidate extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-candidate', FlayCandidate, { extends: 'div' });
+customElements.define('flay-candidate', FlayCandidate);

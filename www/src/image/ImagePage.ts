@@ -28,7 +28,7 @@ interface DocumentEventListenerInfo {
   handler: (event: Event) => void;
 }
 
-export class ImagePage extends HTMLDivElement {
+export class ImagePage extends HTMLElement {
   // 이벤트 리스너들을 추적하기 위한 변수들
   private eventListeners: EventListenerInfo[] = [];
   private documentEventListeners: DocumentEventListenerInfo[] = [];
@@ -284,4 +284,4 @@ export class ImagePage extends HTMLDivElement {
 }
 
 // Register the custom element (extending a built-in div element).
-customElements.define('image-page', ImagePage, { extends: 'div' });
+customElements.define('image-page', ImagePage);

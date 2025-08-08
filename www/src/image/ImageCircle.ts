@@ -55,7 +55,7 @@ const TIMING = {
  * @class ImageCircle
  * @extends {HTMLDivElement}
  */
-export class ImageCircle extends HTMLDivElement {
+export class ImageCircle extends HTMLElement {
   static readonly DEFAULT_OPTIONS: ImageCircleOptions = {
     rem: 10,
     shape: CSS_CLASSES.shapes.circle,
@@ -336,7 +336,7 @@ export class ImageCircle extends HTMLDivElement {
   }
 }
 
-customElements.define('image-circle', ImageCircle, { extends: 'div' });
+customElements.define('image-circle', ImageCircle);
 
 /**
  * 주어진 요소에서 사용 가능한 rem 크기를 계산합니다.

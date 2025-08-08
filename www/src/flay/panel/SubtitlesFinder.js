@@ -27,7 +27,7 @@ const HTML = `
 <div id="flayList"></div>
 `;
 
-export default class SubtitlesFinder extends HTMLDivElement {
+export default class SubtitlesFinder extends HTMLElement {
   constructor() {
     super();
 
@@ -221,4 +221,4 @@ export default class SubtitlesFinder extends HTMLDivElement {
 }
 
 // Define the new element
-customElements.define('subtitles-finder', SubtitlesFinder, { extends: 'div' });
+customElements.define('subtitles-finder', SubtitlesFinder);

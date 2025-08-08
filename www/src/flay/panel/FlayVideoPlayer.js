@@ -21,7 +21,7 @@ const getFlayPlayTime = async (opus) => await db.select(opus);
 /**
  * Flay Video Player implements HTMLVideoElement
  */
-export class FlayVideoPlayer extends HTMLDivElement {
+export class FlayVideoPlayer extends HTMLElement {
   opus;
 
   static get observedAttributes() {
@@ -222,7 +222,7 @@ export class FlayVideoPlayer extends HTMLDivElement {
   }
 }
 
-class FlayVideoInfo extends HTMLDivElement {
+class FlayVideoInfo extends HTMLElement {
   constructor() {
     super();
 
@@ -253,7 +253,7 @@ class FlayVideoInfo extends HTMLDivElement {
   }
 }
 
-class FlayVideoPoster extends HTMLDivElement {
+class FlayVideoPoster extends HTMLElement {
   constructor() {
     super();
 
@@ -265,9 +265,9 @@ class FlayVideoPoster extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-video-player', FlayVideoPlayer, { extends: 'div' });
-customElements.define('flay-video-info', FlayVideoInfo, { extends: 'div' });
-customElements.define('flay-video-poster', FlayVideoPoster, { extends: 'div' });
+customElements.define('flay-video-player', FlayVideoPlayer);
+customElements.define('flay-video-info', FlayVideoInfo);
+customElements.define('flay-video-poster', FlayVideoPoster);
 
 let prevOpus = null;
 

@@ -71,7 +71,7 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 /**
  *
  */
-export default class FlayRegister extends HTMLDivElement {
+export default class FlayRegister extends HTMLElement {
   constructor() {
     super();
 
@@ -277,4 +277,4 @@ export default class FlayRegister extends HTMLDivElement {
 }
 
 // Define the new element
-customElements.define('flay-register', FlayRegister, { extends: 'div' });
+customElements.define('flay-register', FlayRegister);

@@ -17,7 +17,7 @@ type NavigationDirection = typeof NEXT | typeof PREV | typeof RANDOM | typeof FI
 /**
  * 페이지 표현
  */
-export default class FlayPagination extends HTMLDivElement {
+export default class FlayPagination extends HTMLElement {
   /** 현재 선택된 opus */
   opus: string | null = null;
   /** 현재 opus의 인덱스 */
@@ -407,4 +407,4 @@ export default class FlayPagination extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-pagination', FlayPagination, { extends: 'div' });
+customElements.define('flay-pagination', FlayPagination);

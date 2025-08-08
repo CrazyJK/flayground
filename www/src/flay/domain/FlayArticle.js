@@ -4,7 +4,7 @@ import { popupActress, popupFlay, popupFlayInfo } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import './FlayArticle.scss';
 
-export default class FlayArticle extends HTMLDivElement {
+export default class FlayArticle extends HTMLElement {
   constructor(args) {
     super();
     if (args) {
@@ -70,4 +70,4 @@ export default class FlayArticle extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-article', FlayArticle, { extends: 'div' });
+customElements.define('flay-article', FlayArticle);

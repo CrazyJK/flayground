@@ -40,7 +40,7 @@ const HTML = `
 /**
  *
  */
-export default class FlayBatch extends HTMLDivElement {
+export default class FlayBatch extends HTMLElement {
   constructor() {
     super();
 
@@ -158,4 +158,4 @@ export default class FlayBatch extends HTMLDivElement {
 }
 
 // Define the new element
-customElements.define('flay-batch', FlayBatch, { extends: 'div' });
+customElements.define('flay-batch', FlayBatch);

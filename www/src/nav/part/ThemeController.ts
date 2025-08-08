@@ -16,7 +16,7 @@ const DARK: ThemeType = 'dark';
  * - 로컬 스토리지에 테마 설정 저장
  * - 시스템 테마 변경 감지
  */
-export default class ThemeController extends HTMLDivElement {
+export default class ThemeController extends HTMLElement {
   /** 현재 테마 */
   theme: ThemeType = OS;
   /** 다크 모드 여부 */
@@ -104,4 +104,4 @@ export default class ThemeController extends HTMLDivElement {
 }
 
 // Define the new element
-customElements.define('theme-controller', ThemeController, { extends: 'div' });
+customElements.define('theme-controller', ThemeController);

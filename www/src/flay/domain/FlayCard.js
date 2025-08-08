@@ -15,7 +15,7 @@ import './FlayCard.scss';
 /**
  * Custom element of Card
  */
-export default class FlayCard extends HTMLDivElement {
+export default class FlayCard extends HTMLElement {
   opus;
   flay;
   actress;
@@ -170,4 +170,4 @@ export default class FlayCard extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-card', FlayCard, { extends: 'div' });
+customElements.define('flay-card', FlayCard);

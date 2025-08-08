@@ -2,7 +2,7 @@ import FlayMarker from '@flay/domain/FlayMarker';
 import DateUtils from '@lib/DateUtils';
 import './VideoDatePanel.scss';
 
-export default class VideoDatePanel extends HTMLDivElement {
+export default class VideoDatePanel extends HTMLElement {
   constructor(flayList) {
     super();
 
@@ -63,4 +63,4 @@ export default class VideoDatePanel extends HTMLDivElement {
   }
 }
 
-customElements.define('video-date-panel', VideoDatePanel, { extends: 'div' });
+customElements.define('video-date-panel', VideoDatePanel);

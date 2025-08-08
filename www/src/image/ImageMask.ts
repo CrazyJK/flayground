@@ -8,7 +8,7 @@ const SECOND = 1000;
 /**
  * ImageMask
  */
-export class ImageMask extends HTMLDivElement {
+export class ImageMask extends HTMLElement {
   private currentImageUrl: string | null = null;
   private imageLoop: Promise<void> | null = null;
   private isLoopRunning: boolean = false;
@@ -195,4 +195,4 @@ export class ImageMask extends HTMLDivElement {
   }
 }
 
-customElements.define('image-mask', ImageMask, { extends: 'div' });
+customElements.define('image-mask', ImageMask);

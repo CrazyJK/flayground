@@ -17,7 +17,7 @@ const Monitors = [
 /**
  * 모니터에 창의 위치 모아 보기
  */
-export default class FlayMonitor extends HTMLDivElement {
+export default class FlayMonitor extends HTMLElement {
   constructor() {
     super();
 
@@ -146,4 +146,4 @@ export default class FlayMonitor extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-monitor', FlayMonitor, { extends: 'div' });
+customElements.define('flay-monitor', FlayMonitor);

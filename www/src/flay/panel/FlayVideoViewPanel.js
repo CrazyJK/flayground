@@ -13,7 +13,7 @@ const MinPlayTime = 60 * 2;
 /** 최대 플레이 초 */
 const MaxPlayTime = 60 * 5;
 
-export class FlayVideoViewPanel extends HTMLDivElement {
+export class FlayVideoViewPanel extends HTMLElement {
   #timer = -1;
 
   constructor() {
@@ -219,4 +219,4 @@ export class FlayVideoViewPanel extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-video-view-panel', FlayVideoViewPanel, { extends: 'div' });
+customElements.define('flay-video-view-panel', FlayVideoViewPanel);

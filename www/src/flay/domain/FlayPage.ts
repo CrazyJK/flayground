@@ -11,7 +11,7 @@ import FlayTitle from '@flay/domain/part/FlayTitle';
 import FlayFetch, { Actress, Flay, FullyFlay } from '@lib/FlayFetch';
 import './FlayPage.scss';
 
-export default class FlayPage extends HTMLDivElement {
+export default class FlayPage extends HTMLElement {
   flayStudio: FlayStudio;
   flayOpus: FlayOpus;
   flayComment: FlayComment;
@@ -87,4 +87,4 @@ export default class FlayPage extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-page', FlayPage, { extends: 'div' });
+customElements.define('flay-page', FlayPage);

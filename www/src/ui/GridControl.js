@@ -4,7 +4,7 @@ import './GridControl.scss';
 const MAX = 7;
 const MIN = 1;
 
-export default class GridControl extends HTMLDivElement {
+export default class GridControl extends HTMLElement {
   constructor(selecters, max = MAX) {
     super();
 
@@ -94,4 +94,4 @@ export default class GridControl extends HTMLDivElement {
   }
 }
 
-customElements.define('grid-control', GridControl, { extends: 'div' });
+customElements.define('grid-control', GridControl);

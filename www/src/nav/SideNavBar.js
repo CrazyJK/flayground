@@ -41,7 +41,7 @@ const menuList = [
   { url: 'test.html', name: 'test' },
 ];
 
-export class SideNavBar extends HTMLDivElement {
+export class SideNavBar extends HTMLElement {
   #currentMenuName = null; // 현재 메뉴
 
   constructor() {
@@ -147,4 +147,4 @@ export class SideNavBar extends HTMLDivElement {
   }
 }
 
-customElements.define('side-nav-bar', SideNavBar, { extends: 'div' });
+customElements.define('side-nav-bar', SideNavBar);

@@ -7,7 +7,7 @@ import tagSVG from '@svg/tag';
 import './inc/Page';
 import './page.tags.scss';
 
-class FlayTagInfo extends HTMLDListElement {
+class FlayTagInfo extends HTMLElement {
   constructor(tag) {
     super();
     this.tag = tag;
@@ -32,7 +32,7 @@ class FlayTagInfo extends HTMLDListElement {
   }
 }
 
-customElements.define('flay-tag-info', FlayTagInfo, { extends: 'dl' });
+customElements.define('flay-tag-info', FlayTagInfo);
 
 // header
 const TAG_ID = document.querySelector('#tagId');

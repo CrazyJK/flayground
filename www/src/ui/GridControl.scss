@@ -22,7 +22,8 @@ $columns: (
   }
 }
 
-.grid-control {
+grid-control {
+  position: relative;
   display: flex;
   align-items: center;
 

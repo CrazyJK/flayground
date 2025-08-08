@@ -182,7 +182,7 @@ function popupOpen(url: string, target: string, width: number, height: number): 
 export default FlaySearch;
 
 // 팝업 유틸리티 함수들
-export const popupFlay = (opus: string): Window | null => popupOpen('popup.flay.html?opus=' + opus, 'flay.' + opus, 800, 1350);
+export const popupFlay = (opus: string): Window | null => popupOpen('popup.flay.html?opus=' + opus, 'flay.' + opus, 800, 1400);
 
 export const popupFlayCard = (opus: string): Window | null => popupOpen('popup.flay-card.html?opus=' + opus, 'flay.card.' + opus, 800, 536);
 

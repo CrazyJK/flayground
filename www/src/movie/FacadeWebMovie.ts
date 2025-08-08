@@ -1,5 +1,6 @@
 import ApiClient from '@lib/ApiClient';
 import RandomUtils from '../lib/RandomUtils';
+import './FacadeWebMovie.scss';
 
 /**
  * FacadeWebMovie.ts
@@ -8,11 +9,14 @@ import RandomUtils from '../lib/RandomUtils';
  * 이 비디오는 자동 재생되며, 끝나면 서서히 사라집니다.
  * 스타일링을 통해 원형 모양으로 표시되며, 크기와 위치가 조정됩니다.
  */
-export class FacadeWebMovie extends HTMLVideoElement {
+export class FacadeWebMovie extends HTMLElement {
   private fadeOutDuration = 1000; // 페이드 아웃 지속 시간 (ms)
+  private video: HTMLVideoElement;
 
   constructor() {
     super();
+
+    this.video = this.appendChild(document.createElement('video'));
 
     // 원형 모양으로 클리핑
     this.style.clipPath = 'circle(50% at 50% 50%)';
@@ -23,23 +27,23 @@ export class FacadeWebMovie extends HTMLVideoElement {
     this.style.margin = '0 auto'; // 중앙 정렬
 
     // 비디오 속성 설정
-    this.autoplay = true;
-    this.loop = false;
-    // this.muted = true; // 자동 재생을 위해 음소거 설정
-    this.volume = 0.5;
-    this.playsInline = true; // 모바일에서 인라인 재생
+    this.video.autoplay = true;
+    this.video.loop = false;
+    // this.video.muted = true; // 자동 재생을 위해 음소거 설정
+    this.video.volume = 0.5;
+    this.video.playsInline = true; // 모바일에서 인라인 재생
 
     // 비디오 종료 시 서서히 사라지는 이벤트 리스너
-    this.addEventListener('ended', this.handleVideoEnded.bind(this));
+    this.video.addEventListener('ended', this.handleVideoEnded.bind(this));
 
     // 에러 처리
-    this.addEventListener('error', this.handleVideoError.bind(this));
+    this.video.addEventListener('error', this.handleVideoError.bind(this));
 
     // 로딩 시작 시 스타일 설정
-    this.addEventListener('loadstart', this.handleLoadStart.bind(this));
+    this.video.addEventListener('loadstart', this.handleLoadStart.bind(this));
 
     // 클릭시 muted 설정 해제
-    this.addEventListener('click', () => (this.muted = !this.muted));
+    this.video.addEventListener('click', () => (this.video.muted = !this.video.muted));
   }
 
   /**
@@ -49,7 +53,7 @@ export class FacadeWebMovie extends HTMLVideoElement {
     ApiClient.get('/todayis').then((todayList: Array<{ name: string; uuid: string }>) => {
       if (todayList.length > 0) {
         const randomToday = RandomUtils.getRandomElementFromArray(todayList);
-        this.src = ApiClient.buildUrl(`/todayis/stream/${randomToday.uuid}`);
+        this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomToday.uuid}`);
       }
     });
   }
@@ -86,7 +90,7 @@ export class FacadeWebMovie extends HTMLVideoElement {
   async isEnded(): Promise<boolean> {
     return new Promise((resolve) => {
       setInterval(() => {
-        if (this.ended) {
+        if (this.video.ended) {
           resolve(true);
         }
       }, 100); // 100ms 마다 확인
@@ -94,4 +98,4 @@ export class FacadeWebMovie extends HTMLVideoElement {
   }
 }
 
-customElements.define('facade-web-movie', FacadeWebMovie, { extends: 'video' });
+customElements.define('facade-web-movie', FacadeWebMovie);

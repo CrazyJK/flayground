@@ -1,5 +1,6 @@
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
+import './FlayVideoElement.scss';
 
 // 싱글톤 패턴으로 변경하여 메모리 사용 최적화
 let dbInstance = null;
@@ -14,7 +15,8 @@ function getDB() {
 const THROTTLE_DELAY = 5000; // 5초마다 DB 업데이트
 const MAX_RECOVERY_ATTEMPTS = 2; // 최대 복구 시도 횟수
 
-export default class FlayVideo extends HTMLVideoElement {
+export default class FlayVideo extends HTMLElement {
+  video;
   opus;
   loaded = false;
   playing = false;
@@ -29,6 +31,7 @@ export default class FlayVideo extends HTMLVideoElement {
   constructor() {
     super();
     this.preload = 'auto';
+    this.video = this.appendChild(document.createElement('video'));
   }
 
   connectedCallback() {
@@ -44,14 +47,14 @@ export default class FlayVideo extends HTMLVideoElement {
     this.#eventListeners = [];
 
     // 현재 상태 저장 (페이지 이동 등으로 인한 연결 해제 시)
-    if (this.opus && this.currentTime > 0) {
+    if (this.opus && this.video.currentTime > 0) {
       this.#throttledDbUpdate(true);
     }
   }
 
   set(opus) {
     // 이전 재생 상태 정리
-    if (this.opus && this.currentTime > 0) {
+    if (this.opus && this.video.currentTime > 0) {
       this.#throttledDbUpdate(true);
     }
 
@@ -59,9 +62,13 @@ export default class FlayVideo extends HTMLVideoElement {
     this.loaded = false;
     this.playing = false;
     this.#recoveryAttempts = 0;
-    this.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
-    this.src = ApiClient.buildUrl(`/stream/flay/movie/${opus}/0`);
-    this.load();
+    this.video.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
+    this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${opus}/0`);
+    this.video.load();
+  }
+
+  play() {
+    this.video.play();
   }
 
   /**
@@ -69,7 +76,7 @@ export default class FlayVideo extends HTMLVideoElement {
    * @param {boolean} force 강제 업데이트 여부
    */
   #throttledDbUpdate(force = false) {
-    if (!this.opus || this.currentTime <= 0 || !this.duration) {
+    if (!this.opus || this.video.currentTime <= 0 || !this.duration) {
       return; // 유효한 데이터가 없으면 업데이트하지 않음
     }
 
@@ -80,7 +87,7 @@ export default class FlayVideo extends HTMLVideoElement {
       // 비동기 작업을 큐에 추가하여 순차적으로 처리
       this.#dbUpdateQueue = this.#dbUpdateQueue.then(() => {
         return getDB()
-          .update(this.opus, this.currentTime, this.duration)
+          .update(this.opus, this.video.currentTime, this.duration)
           .catch((err) => {
             // DB 업데이트 실패 시 조용히 오류 처리
             console.error('Failed to update play time:', err);
@@ -116,7 +123,7 @@ export default class FlayVideo extends HTMLVideoElement {
           type,
           message,
           opus: this.opus,
-          time: this.currentTime,
+          time: this.video.currentTime,
           duration: this.duration,
           attempts: this.#recoveryAttempts,
         },
@@ -255,7 +262,7 @@ export default class FlayVideo extends HTMLVideoElement {
    * @param {Function} listener 이벤트 리스너
    */
   #addEventListenerWithTracking(type, listener) {
-    this.addEventListener(type, listener);
+    this.video.addEventListener(type, listener);
     this.#eventListeners.push({ type, listener });
   }
 
@@ -277,18 +284,38 @@ export default class FlayVideo extends HTMLVideoElement {
 
   #handleVolumeChange(e) {
     // 볼륨이 실제로 변경된 경우에만 이벤트 발생
-    if (this.volume !== this.#prevVolume) {
-      this.#prevVolume = this.volume;
+    if (this.video.volume !== this.#prevVolume) {
+      this.#prevVolume = this.video.volume;
 
       this.dispatchEvent(
         new CustomEvent('volume', {
           bubbles: false,
           composed: false,
-          detail: { volume: this.volume },
+          detail: { volume: this.video.volume },
         })
       );
     }
   }
+
+  get currentTime() {
+    return this.video.currentTime;
+  }
+
+  set currentTime(value) {
+    this.video.currentTime = value;
+  }
+
+  get duration() {
+    return this.video.duration;
+  }
+
+  get volume() {
+    return this.video.volume;
+  }
+
+  set volume(value) {
+    this.video.volume = value;
+  }
 }
 
-customElements.define('flay-video', FlayVideo, { extends: 'video' });
+customElements.define('flay-video', FlayVideo);

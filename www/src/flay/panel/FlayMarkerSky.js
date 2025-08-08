@@ -204,7 +204,7 @@ export class FlayMarkerSky extends HTMLElement {
           this.#resizeState.originalHeight = newH;
         }
         requestAnimationFrame(() => {
-          this.querySelectorAll('.flay-marker').forEach((marker) => this.#locateFlayMarker(marker, true));
+          this.querySelectorAll('flay-marker').forEach((marker) => this.#locateFlayMarker(marker, true));
         });
       }, 250),
       true

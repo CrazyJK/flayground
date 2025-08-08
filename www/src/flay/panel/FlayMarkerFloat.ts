@@ -5,7 +5,7 @@ import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';
 import './FlayMarkerFloat.scss';
 
-export class FlayMarkerFloat extends HTMLDivElement {
+export class FlayMarkerFloat extends HTMLElement {
   #intervalIdOfMarker: number | null = null;
   #intervalIdOfShape: number | null = null;
   #flayMarker = new FlayMarker(null, {});
@@ -13,7 +13,6 @@ export class FlayMarkerFloat extends HTMLDivElement {
 
   constructor() {
     super();
-    this.classList.add('flay-marker-float');
   }
 
   connectedCallback(): void {
@@ -71,4 +70,4 @@ export class FlayMarkerFloat extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-marker-float', FlayMarkerFloat, { extends: 'div' });
+customElements.define('flay-marker-float', FlayMarkerFloat);

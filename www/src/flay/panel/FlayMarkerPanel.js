@@ -28,7 +28,7 @@ const DEFAULT_OPTIONS = {
   /** marker 크기. 1부터 0.5step */ size: 1,
 };
 
-export class FlayMarkerPanel extends HTMLDivElement {
+export class FlayMarkerPanel extends HTMLElement {
   #markerList = []; // 마커 리스트
   #threadCount = 1; // 스레드 개수
   #paused = false; // 일시정지 여부
@@ -47,7 +47,6 @@ export class FlayMarkerPanel extends HTMLDivElement {
     super();
 
     this.#opts = { ...DEFAULT_OPTIONS, ...options };
-    this.classList.add('flay-marker-panel');
     this.dataset.w = this.#opts.size;
 
     this.tickTimer = new TickTimer();
@@ -422,4 +421,4 @@ export class FlayMarkerPanel extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-marker-panel', FlayMarkerPanel, { extends: 'div' });
+customElements.define('flay-marker-panel', FlayMarkerPanel);

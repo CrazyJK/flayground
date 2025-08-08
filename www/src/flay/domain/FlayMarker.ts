@@ -34,7 +34,7 @@ const DEFAULT_OPTIONS: FlayMarkerOptions = {
  * - 클릭 시 Flay 팝업 표시
  * - 호버 시 툴팁 표시 옵션
  */
-export default class FlayMarker extends HTMLLabelElement {
+export default class FlayMarker extends HTMLElement {
   /** Flay 데이터 */
   flay: Flay;
   #options: FlayMarkerOptions;
@@ -47,7 +47,6 @@ export default class FlayMarker extends HTMLLabelElement {
   constructor(flay: Flay, options: Partial<FlayMarkerOptions> = {}) {
     super();
 
-    this.classList.add('flay-marker');
     this.set(flay, options);
   }
 
@@ -151,4 +150,4 @@ export default class FlayMarker extends HTMLLabelElement {
   }
 }
 
-customElements.define('flay-marker', FlayMarker, { extends: 'label' });
+customElements.define('flay-marker', FlayMarker);

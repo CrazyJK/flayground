@@ -5,7 +5,8 @@
   --square-radius: 0.25rem;
 }
 
-.flay-marker {
+flay-marker {
+  position: relative;
   display: inline-block;
   aspect-ratio: 1/1;
   width: var(--marker-size);

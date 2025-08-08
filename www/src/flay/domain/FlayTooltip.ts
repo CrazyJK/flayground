@@ -1,13 +1,12 @@
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import './FlayTooltip.scss';
 
-export class FlayTooltip extends HTMLDivElement {
+export class FlayTooltip extends HTMLElement {
   #width: number;
   #height: number;
 
   constructor(width: number = 300) {
     super();
-    this.classList.add('flay-tooltip');
     this.#width = width;
   }
 
@@ -53,4 +52,4 @@ export class FlayTooltip extends HTMLDivElement {
   }
 }
 
-customElements.define('flay-tooltip', FlayTooltip, { extends: 'div' });
+customElements.define('flay-tooltip', FlayTooltip);

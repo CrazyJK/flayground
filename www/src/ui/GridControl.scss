@@ -13,7 +13,11 @@ $columns: (
   display: grid;
   justify-content: space-evenly;
 
-  $base-width: 348px;
+  flay-card {
+    margin: 0.5rem;
+  }
+
+  $base-width: 340px;
 
   @each $key, $val in $columns {
     &[data-column='#{$key}'] {

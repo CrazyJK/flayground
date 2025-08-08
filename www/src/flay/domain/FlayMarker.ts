@@ -143,7 +143,7 @@ export default class FlayMarker extends HTMLElement {
     const tooltipX = x + width / 2; // Center the tooltip horizontally
     const tooltipY = y + height / 2; // Center the tooltip vertically
 
-    const tooltip = (document.querySelector('.flay-tooltip') || document.body.appendChild(new FlayTooltip(tooltipWidth))) as FlayTooltip;
+    const tooltip = (document.querySelector('flay-tooltip') || document.body.appendChild(new FlayTooltip(tooltipWidth))) as FlayTooltip;
     tooltip.show(this.flay, tooltipX, tooltipY);
 
     this.addEventListener('mouseleave', () => tooltip.hide(), { once: true });

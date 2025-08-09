@@ -8,7 +8,7 @@ export default class HistoryStore extends FlayGroundDB {
     super();
   }
 
-  async select(opus: string) {
+  async select(opus: string): Promise<{ opus: string; histories: History[] } | undefined> {
     await this.init();
     return await this.get(storeName, opus);
   }

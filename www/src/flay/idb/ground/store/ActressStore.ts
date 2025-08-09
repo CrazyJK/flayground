@@ -8,7 +8,7 @@ export default class ActressStore extends FlayGroundDB {
     super();
   }
 
-  async select(name: string) {
+  async select(name: string): Promise<Actress | undefined> {
     await this.init();
     return await this.get(storeName, name);
   }

@@ -7,7 +7,7 @@ export default class CoverStore extends FlayGroundDB {
     super();
   }
 
-  async select(opus: string) {
+  async select(opus: string): Promise<{ opus: string; blob: Blob } | undefined> {
     await this.init();
     return await this.get(storeName, opus);
   }

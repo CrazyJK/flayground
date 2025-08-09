@@ -7,7 +7,7 @@ export default class ScoreStore extends FlayGroundDB {
     super();
   }
 
-  async select(opus: string) {
+  async select(opus: string): Promise<{ opus: string; score: number } | undefined> {
     await this.init();
     return await this.get(storeName, opus);
   }

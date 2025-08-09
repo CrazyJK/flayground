@@ -28,7 +28,7 @@ export default class FlayStore extends FlayGroundDB {
     await this.clear(storeName);
   }
 
-  async select(opus: string) {
+  async select(opus: string): Promise<Flay | undefined> {
     await this.init();
     return await this.get(storeName, opus);
   }

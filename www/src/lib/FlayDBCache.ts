@@ -12,7 +12,7 @@ import CoverStore from '@flay/idb/ground/store/CoverStore';
 import FlayStore from '@flay/idb/ground/store/FlayStore';
 import HistoryStore from '@flay/idb/ground/store/HistoryStore';
 import ScoreStore from '@flay/idb/ground/store/ScoreStore';
-import FlayFetch from './FlayFetch';
+import FlayFetch, { Actress } from './FlayFetch';
 
 const flayStore = new FlayStore();
 const coverStore = new CoverStore();
@@ -29,7 +29,7 @@ export default class FlayDBCache {
    * @param {string} opus
    * @returns
    */
-  static async getFlayActress(opus) {
+  static async getFlayActress(opus: string) {
     const flay = await FlayDBCache.getFlay(opus);
     const actressList = [];
     for (const name of flay.actressList) {
@@ -40,18 +40,15 @@ export default class FlayDBCache {
 
   /**
    *
-   * @param {string} opus
+   * @param opus
    * @returns
    */
-  static async getFlay(opus) {
+  static async getFlay(opus: string) {
     let flay = await flayStore.select(opus);
     if (!flay) {
       flay = await FlayFetch.getFlay(opus);
       if (!flay) {
         throw new Error(`Flay not found: ${opus}`);
-      }
-      if (flay.error) {
-        throw new Error(flay.message);
       }
       await flayStore.update(flay);
       console.debug('[FlayDBCache] update flay', opus);
@@ -61,18 +58,15 @@ export default class FlayDBCache {
 
   /**
    *
-   * @param {string} name
+   * @param name
    * @returns
    */
-  static async getActress(name) {
+  static async getActress(name: string): Promise<Actress | undefined> {
     let actress = await actressStore.select(name);
     if (!actress) {
       actress = await FlayFetch.getActress(name);
       if (!actress) {
         throw new Error(`Actress not found: ${name}`);
-      }
-      if (actress.error) {
-        throw new Error(actress.message);
       }
       await actressStore.update(actress);
       console.debug('[FlayDBCache] update actress', name);
@@ -80,13 +74,10 @@ export default class FlayDBCache {
     return actress;
   }
 
-  static async getScore(opus) {
+  static async getScore(opus: string) {
     let record = await scoreStore.select(opus);
     if (!record) {
       const score = await FlayFetch.getScore(opus);
-      if (score.error) {
-        throw new Error(score.message);
-      }
       record = await scoreStore.update(opus, score);
       console.debug('[FlayDBCache] update score', opus);
     }
@@ -95,10 +86,10 @@ export default class FlayDBCache {
 
   /**
    *
-   * @param {string} opus
+   * @param opus
    * @returns
    */
-  static async getCover(opus) {
+  static async getCover(opus: string) {
     if (!coverObjectURLMap.has(opus)) {
       let cover = await coverStore.select(opus);
       if (!cover) {
@@ -113,10 +104,10 @@ export default class FlayDBCache {
 
   /**
    *
-   * @param {string} opus
+   * @param opus
    * @returns
    */
-  static async getHistories(opus) {
+  static async getHistories(opus: string) {
     let record = await historyStore.select(opus);
     if (!record) {
       const histories = await FlayFetch.getHistories(opus);
@@ -128,10 +119,10 @@ export default class FlayDBCache {
 
   /**
    *
-   * @param {string} name
+   * @param name
    * @returns
    */
-  static async getCountOfFlay(name) {
+  static async getCountOfFlay(name: string) {
     let record = await actressFlayCountStore.select(name);
     if (!record) {
       const flayCount = await FlayFetch.getCountOfFlay(name);
@@ -143,9 +134,9 @@ export default class FlayDBCache {
 
   /**
    *
-   * @param {string} opus
+   * @param opus
    */
-  static async clear(opus) {
+  static async clear(opus: string) {
     let flay = await flayStore.select(opus);
     if (flay)
       for (let name of flay.actressList) {

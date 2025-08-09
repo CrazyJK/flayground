@@ -3,10 +3,10 @@ import FlayStorage from '@lib/FlayStorage';
 import windowButton from '@svg/windowButton';
 
 export class BrowserPanel extends HTMLElement {
-  #input;
-  #datalist;
-  #iframe;
-  #reload;
+  #input: HTMLInputElement;
+  #datalist: HTMLDataListElement;
+  #iframe: HTMLIFrameElement;
+  #reload: HTMLButtonElement;
 
   constructor() {
     super();
@@ -112,7 +112,7 @@ export class BrowserPanel extends HTMLElement {
     this.#saveDatalist();
   }
 
-  #addDatalist(url) {
+  #addDatalist(url: string) {
     this.#datalist.querySelectorAll(`option[value="${url}"]`).forEach((option) => option.remove());
     this.#datalist.prepend(new Option(url, url));
     this.#datalist.querySelectorAll('option').forEach((option, i) => i > 30 && option.remove());

@@ -22,7 +22,7 @@ export default class FlayCandidate extends HTMLElement {
   connectedCallback() {
     this.querySelector('#getCadidate').addEventListener('click', () => {
       FlayFetch.getFlayCandidates().then((list) => {
-        this.querySelector('#candidateLength').innerHTML = list.length;
+        (this.querySelector('#candidateLength') as HTMLSpanElement).innerHTML = String(list.length);
 
         const LIST = this.querySelector('#candidatesFlay');
         LIST.textContent = null;

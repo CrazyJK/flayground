@@ -1,4 +1,4 @@
-import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '@/GroundConstant';
+import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, ModalEdge, ModalMode, nextWindowzIndex } from '@/GroundConstant';
 import FlayStorage from '@lib/FlayStorage';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import windowButton from '@svg/windowButton';
@@ -15,7 +15,7 @@ export class ModalWindow extends HTMLElement {
   #minWidth = 0; // 창의 최소 너비
   #minHeight = 0; // 창의 최소 높이
   #edges = []; // 창의 위치를 고정시킬 엣지
-  #initialMode = MODAL_MODE.NORMAL; // 창의 초기 모드
+  #initialMode: ModalMode = MODAL_MODE.NORMAL; // 창의 초기 모드
 
   #prevHeight = 0; // 창의 이전 높이
   #prevMinHeight = 0; // 창의 이전 최소 높이
@@ -26,27 +26,27 @@ export class ModalWindow extends HTMLElement {
   #mode = ''; // 창의 동작 모드. 'move', 'top', 'left', 'right', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'
   #active = false; // 창의 동작 여부
 
-  #titleSpan; // 창의 제목
-  #bodyPanel; // 창의 내용. 여기에 appendChild로 추가된 요소가 들어감
-  #buttons; // 창의 버튼
+  #titleSpan: HTMLSpanElement; // 창의 제목
+  #bodyPanel: HTMLElement; // 창의 내용. 여기에 appendChild로 추가된 요소가 들어감
+  #buttons: HTMLElement; // 창의 버튼
 
-  #titleBar_______; // 창의 타이틀
-  #edgeTopLine____; // 창의 상단 엣지
-  #edgeLeftLine___; // 창의 좌측 엣지
-  #edgeRightLine__; // 창의 우측 엣지
-  #edgeBottomLine_; // 창의 하단 엣지
-  #edgeTopLeft____; // 창의 상단 좌측 엣지
-  #edgeTopRight___; // 창의 상단 우측 엣지
-  #edgeBottomLeft_; // 창의 하단 좌측 엣지
-  #edgeBottomRight; // 창의 하단 우측 엣지
+  #titleBar_______: HTMLElement; // 창의 타이틀
+  #edgeTopLine____: HTMLElement; // 창의 상단 엣지
+  #edgeLeftLine___: HTMLElement; // 창의 좌측 엣지
+  #edgeRightLine__: HTMLElement; // 창의 우측 엣지
+  #edgeBottomLine_: HTMLElement; // 창의 하단 엣지
+  #edgeTopLeft____: HTMLElement; // 창의 상단 좌측 엣지
+  #edgeTopRight___: HTMLElement; // 창의 상단 우측 엣지
+  #edgeBottomLeft_: HTMLElement; // 창의 하단 좌측 엣지
+  #edgeBottomRight: HTMLElement; // 창의 하단 우측 엣지
 
   #rafId = null; // requestAnimationFrame ID
   #needsUpdate = false; // 업데이트가 필요한지 여부
 
   /**
    *
-   * @param {string} title 창제목
-   * @param {DEFAULT_OPTS} opts 옵션.
+   * @param title 창제목
+   * @param opts 옵션.
    */
   constructor(title = '', opts = {}) {
     super();
@@ -132,15 +132,15 @@ export class ModalWindow extends HTMLElement {
     this.#edgeBottomLeft_.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM_LEFT));
     this.#edgeBottomRight.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM_RIGHT));
 
-    this.#titleBar_______.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeTopLine____.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeLeftLine___.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeRightLine__.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeBottomLine_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeTopLeft____.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeTopRight___.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeBottomLeft_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeBottomRight.addEventListener('mouseup', (e) => this.#stoptHandler(e));
+    this.#titleBar_______.addEventListener('mouseup', () => this.#stopHandler());
+    this.#edgeTopLine____.addEventListener('mouseup', () => this.#stopHandler());
+    this.#edgeLeftLine___.addEventListener('mouseup', () => this.#stopHandler());
+    this.#edgeRightLine__.addEventListener('mouseup', () => this.#stopHandler());
+    this.#edgeBottomLine_.addEventListener('mouseup', () => this.#stopHandler());
+    this.#edgeTopLeft____.addEventListener('mouseup', () => this.#stopHandler());
+    this.#edgeTopRight___.addEventListener('mouseup', () => this.#stopHandler());
+    this.#edgeBottomLeft_.addEventListener('mouseup', () => this.#stopHandler());
+    this.#edgeBottomRight.addEventListener('mouseup', () => this.#stopHandler());
 
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
@@ -148,7 +148,7 @@ export class ModalWindow extends HTMLElement {
     _inner.querySelector('.' + MODAL_MODE.MAXIMIZE).addEventListener('click', () => this.#maximizeHandler());
     _inner.querySelector('.' + MODAL_MODE.TERMINATE).addEventListener('click', () => this.#terminateHandler());
 
-    this.addEventListener('mousedown', () => (this.style.zIndex = nextWindowzIndex()));
+    this.addEventListener('mousedown', () => (this.style.zIndex = String(nextWindowzIndex())));
 
     this.addEventListener('wheel', (e) => e.stopPropagation());
     this.addEventListener('keyup', (e) => e.stopPropagation());
@@ -162,7 +162,7 @@ export class ModalWindow extends HTMLElement {
   connectedCallback() {
     this.#decideViewportInWindow();
     this.#needsUpdate = true;
-    this.#buttons.querySelector('.' + this.#initialMode)?.click();
+    (this.#buttons.querySelector('.' + this.#initialMode) as HTMLButtonElement)?.click();
   }
 
   /**
@@ -249,7 +249,7 @@ export class ModalWindow extends HTMLElement {
     this.#needsUpdate = true;
   }
 
-  #startHandler(e, mode) {
+  #startHandler(e: MouseEvent, mode: ModalEdge | string) {
     this.#active = true;
     this.#mode = mode;
     this.#prevClientX = e.clientX;
@@ -257,7 +257,7 @@ export class ModalWindow extends HTMLElement {
     this.classList.add('floating');
   }
 
-  #stoptHandler(e) {
+  #stopHandler() {
     this.#active = false;
     this.#mode = null;
     this.#decideViewportInWindow();
@@ -265,7 +265,7 @@ export class ModalWindow extends HTMLElement {
     this.classList.remove('floating');
   }
 
-  #moveHandler(e) {
+  #moveHandler(e: MouseEvent) {
     if (e.buttons !== 1) return;
     if (!this.#active) return;
 
@@ -404,13 +404,13 @@ export class ModalWindow extends HTMLElement {
 
   /**
    * 엣지 요소의 위치 업데이트
-   * @param {HTMLElement} element 엣지 요소
-   * @param {number} top 상단 위치
-   * @param {number} left 좌측 위치
-   * @param {number|null} width 너비 (null이면 설정 안함)
-   * @param {number|null} height 높이 (null이면 설정 안함)
+   * @param element 엣지 요소
+   * @param top 상단 위치
+   * @param left 좌측 위치
+   * @param width 너비 (null이면 설정 안함)
+   * @param height 높이 (null이면 설정 안함)
    */
-  #updateEdgePosition(element, top, left, width, height) {
+  #updateEdgePosition(element: HTMLElement, top: number, left: number, width: number | null, height: number | null) {
     element.style.transform = `translate3d(${left}px, ${top}px, 0)`;
     element.style.top = '0px';
     element.style.left = '0px';

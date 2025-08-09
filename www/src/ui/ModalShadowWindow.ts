@@ -1,4 +1,4 @@
-import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, nextWindowzIndex } from '@/GroundConstant';
+import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, ModalMode, nextWindowzIndex } from '@/GroundConstant';
 import FlayStorage from '@lib/FlayStorage';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import windowButton from '@svg/windowButton';
@@ -192,7 +192,7 @@ export class ModalShadowWindow extends HTMLElement {
   #minWidth = 0; // 창의 최소 너비
   #minHeight = 0; // 창의 최소 높이
   #edges = []; // 창의 위치를 고정시킬 엣지
-  #initialMode = MODAL_MODE.NORMAL; // 창의 초기 모드
+  #initialMode: ModalMode = MODAL_MODE.NORMAL; // 창의 초기 모드
 
   #prevHeight = 0; // 창의 이전 높이
   #prevMinHeight = 0; // 창의 이전 최소 높이
@@ -312,15 +312,15 @@ export class ModalShadowWindow extends HTMLElement {
     this.#edgeBottomLeft_.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM_LEFT));
     this.#edgeBottomRight.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM_RIGHT));
 
-    this.#titleBar_______.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeTopLine____.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeLeftLine___.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeRightLine__.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeBottomLine_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeTopLeft____.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeTopRight___.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeBottomLeft_.addEventListener('mouseup', (e) => this.#stoptHandler(e));
-    this.#edgeBottomRight.addEventListener('mouseup', (e) => this.#stoptHandler(e));
+    this.#titleBar_______.addEventListener('mouseup', () => this.#stoptHandler());
+    this.#edgeTopLine____.addEventListener('mouseup', () => this.#stoptHandler());
+    this.#edgeLeftLine___.addEventListener('mouseup', () => this.#stoptHandler());
+    this.#edgeRightLine__.addEventListener('mouseup', () => this.#stoptHandler());
+    this.#edgeBottomLine_.addEventListener('mouseup', () => this.#stoptHandler());
+    this.#edgeTopLeft____.addEventListener('mouseup', () => this.#stoptHandler());
+    this.#edgeTopRight___.addEventListener('mouseup', () => this.#stoptHandler());
+    this.#edgeBottomLeft_.addEventListener('mouseup', () => this.#stoptHandler());
+    this.#edgeBottomRight.addEventListener('mouseup', () => this.#stoptHandler());
 
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
@@ -328,7 +328,7 @@ export class ModalShadowWindow extends HTMLElement {
     _inner.querySelector('.' + MODAL_MODE.MAXIMIZE).addEventListener('click', () => this.#maximizeHandler());
     _inner.querySelector('.' + MODAL_MODE.TERMINATE).addEventListener('click', () => this.#terminateHandler());
 
-    this.addEventListener('mousedown', () => (this.style.zIndex = nextWindowzIndex()));
+    this.addEventListener('mousedown', () => (this.style.zIndex = String(nextWindowzIndex())));
 
     this.addEventListener('wheel', (e) => e.stopPropagation());
     this.addEventListener('keyup', (e) => e.stopPropagation());
@@ -437,7 +437,7 @@ export class ModalShadowWindow extends HTMLElement {
     this.classList.add('floating');
   }
 
-  #stoptHandler(e) {
+  #stoptHandler() {
     this.#active = false;
     this.#mode = null;
     this.#decideViewportInWindow();

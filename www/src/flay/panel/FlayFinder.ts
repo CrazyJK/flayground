@@ -1,6 +1,7 @@
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '@lib/FlaySearch';
+import { Actress, Flay, History, Video } from '../../lib/FlayFetch';
 import './FlayFinder.scss';
 
 const HTML = `
@@ -30,17 +31,17 @@ export default class FlayFinder extends HTMLElement {
   }
 
   connectedCallback() {
-    const SearchInput = this.querySelector('#search');
-    const Instance = this.querySelector('.instance-list');
-    const Archive = this.querySelector('.archive-list');
-    const Actress = this.querySelector('.actress-list');
-    const Info = this.querySelector('.info-list');
-    const History = this.querySelector('.history-list');
+    const SearchInput = this.querySelector('#search') as HTMLInputElement;
+    const Instance = this.querySelector('.instance-list') as HTMLElement;
+    const Archive = this.querySelector('.archive-list') as HTMLElement;
+    const Actress = this.querySelector('.actress-list') as HTMLElement;
+    const Info = this.querySelector('.info-list') as HTMLElement;
+    const History = this.querySelector('.history-list') as HTMLElement;
 
     let keyword = '';
 
-    SearchInput.addEventListener('change', (e) => {
-      keyword = e.target.value.trim();
+    SearchInput.addEventListener('change', (e: KeyboardEvent) => {
+      keyword = (e.target as HTMLInputElement).value.trim();
       console.log('keyword', keyword);
       if (keyword === '') {
         console.log('clean');
@@ -60,28 +61,29 @@ export default class FlayFinder extends HTMLElement {
     });
 
     this.addEventListener('click', (e) => {
-      let action = e.target.dataset.action;
-      let opus = e.target.dataset.opus;
-      console.debug('click', e.target, action, opus);
+      const target = e.target as HTMLElement;
+      let action = target.dataset.action;
+      let opus = target.dataset.opus;
+      console.debug('click', target, action, opus);
       if (action === 'flay') {
         popupFlay(opus);
       } else if (action === 'info') {
         popupVideoInfo(opus);
       } else if (action === 'actressName') {
-        let actressName = e.target.closest('li').dataset.actressName;
+        let actressName = target.closest('li').dataset.actressName;
         popupActress(actressName);
       } else if (action === 'actressLocalName') {
-        let actressName = e.target.closest('li').dataset.actressName;
+        let actressName = target.closest('li').dataset.actressName;
         popupActressInfo(actressName);
       }
     });
   }
 }
 
-function fetchAndRender(url, keyword, wrapper, callback) {
-  ApiClient.get(url + keyword).then((list) => {
+function fetchAndRender(url: string, keyword: string, wrapper: HTMLElement, callback: Function) {
+  ApiClient.get(url + keyword).then((list: unknown[]) => {
     callback(
-      Array.from(list).sort((t1, t2) => t2.release?.localeCompare(t1.release)),
+      Array.from(list).sort((t1, t2) => t2['release']?.localeCompare(t1['release'])),
       keyword,
       wrapper
     );
@@ -94,7 +96,7 @@ function renderInstance(list, keyword, wrapper) {
     wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
-    Array.from(list).forEach((flay) => {
+    Array.from(list).forEach((flay: Flay) => {
       const ITEM = document.createElement('li');
       ITEM.classList.add('flay-item', 'item');
       ITEM.innerHTML = `
@@ -106,8 +108,8 @@ function renderInstance(list, keyword, wrapper) {
       `;
       wrapper.append(ITEM);
       for (const child of ITEM.children) {
-        child.title = child.innerHTML;
-        child.dataset.opus = flay.opus;
+        (child as HTMLLabelElement).title = child.innerHTML;
+        (child as HTMLLabelElement).dataset.opus = flay.opus;
       }
     });
   }
@@ -119,7 +121,7 @@ function renderArchive(list, keyword, wrapper) {
     wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
-    Array.from(list).forEach((flay) => {
+    Array.from(list).forEach((flay: Flay) => {
       const ITEM = document.createElement('li');
       ITEM.classList.add('flay-item', 'item');
       ITEM.innerHTML = `
@@ -131,8 +133,8 @@ function renderArchive(list, keyword, wrapper) {
       `;
       wrapper.append(ITEM);
       for (const child of ITEM.children) {
-        child.title = child.innerHTML;
-        child.dataset.opus = flay.opus;
+        (child as HTMLLabelElement).title = child.innerHTML;
+        (child as HTMLLabelElement).dataset.opus = flay.opus;
       }
     });
   }
@@ -144,7 +146,7 @@ function renderHistory(list, keyword, wrapper) {
     wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
-    Array.from(list).forEach((history) => {
+    Array.from(list).forEach((history: History) => {
       const ITEM = document.createElement('li');
       ITEM.classList.add('history-item', 'item');
       ITEM.innerHTML = `
@@ -155,8 +157,8 @@ function renderHistory(list, keyword, wrapper) {
       `;
       wrapper.append(ITEM);
       for (const child of ITEM.children) {
-        child.title = child.innerHTML;
-        child.dataset.opus = history.opus;
+        (child as HTMLLabelElement).title = child.innerHTML;
+        (child as HTMLLabelElement).dataset.opus = history.opus;
       }
     });
   }
@@ -168,7 +170,7 @@ function renderInfo(list, keyword, wrapper) {
     wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
-    Array.from(list).forEach((info) => {
+    Array.from(list).forEach((info: Video) => {
       const ITEM = document.createElement('li');
       ITEM.classList.add('info-item', 'item');
       ITEM.innerHTML = `
@@ -180,8 +182,8 @@ function renderInfo(list, keyword, wrapper) {
       `;
       wrapper.append(ITEM);
       for (const child of ITEM.children) {
-        child.title = child.innerHTML;
-        child.dataset.opus = info.opus;
+        (child as HTMLLabelElement).title = child.innerHTML;
+        (child as HTMLLabelElement).dataset.opus = info.opus;
       }
     });
   }
@@ -193,7 +195,7 @@ function renderActress(list, keyword, wrapper) {
     wrapper.innerHTML = `<label class="notfound">Not found ${keyword}</label>`;
   } else {
     wrapper.textContent = null;
-    Array.from(list).forEach((actress) => {
+    Array.from(list).forEach((actress: Actress) => {
       const ITEM = document.createElement('li');
       ITEM.classList.add('actress-item', 'item');
       ITEM.innerHTML = `

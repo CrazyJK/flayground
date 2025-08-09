@@ -13,6 +13,8 @@ const MEMO_STORAGE_KEY = 'flay-memo';
  * @extends {HTMLDivElement}
  */
 export class FlayMemoEditor extends HTMLElement {
+  private htmlEditor: ToastHtmlEditor;
+
   constructor() {
     super();
     this.classList.add('flay-memo-editor', 'flay-div');
@@ -33,7 +35,7 @@ export class FlayMemoEditor extends HTMLElement {
    * Load memo
    */
   async load() {
-    const memo = await ApiClient.get('/memo');
+    const memo = (await ApiClient.get('/memo')) as { html: string };
     this.htmlEditor.setHTML(memo.html);
     this.#successCallback(memo);
   }
@@ -44,7 +46,7 @@ export class FlayMemoEditor extends HTMLElement {
   async save() {
     const formData = new FormData();
     formData.set('html', this.htmlEditor.getHTML());
-    const memo = await ApiClient.post('/memo', formData);
+    const memo = (await ApiClient.post('/memo', formData)) as { html: string; date: string; size: number };
     FlayStorage.local.set(MEMO_STORAGE_KEY, memo.date); // Save memo date
     this.#successCallback(memo);
   }

@@ -2,25 +2,25 @@
  * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
 import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@/GroundConstant';
-import Editor from '@toast-ui/editor';
+import Editor, { EditorType } from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import './ToastHtmlEditor.scss';
 
-const DEFAULT_CALLBACK = { load: () => {}, blur: () => {}, change: () => {} };
+export const DEFAULT_CALLBACK = { load: () => {}, blur: () => {}, change: () => {} };
 
 export class ToastHtmlEditor extends HTMLElement {
-  #editor;
-  #loadCallback;
-  #blurCallback;
-  #changeCallback;
+  #editor: Editor;
+  #loadCallback: () => void;
+  #blurCallback: () => void;
+  #changeCallback: () => void;
 
   /**
    *
    * @param {DEFAULT_CALLBACK} callbackFunctions
    */
-  constructor(callbackFunctions) {
+  constructor(callbackFunctions: Partial<typeof DEFAULT_CALLBACK> = {}) {
     super();
-    this.classList.add('toast-html-editor', 'flay-div');
+    this.classList.add('flay-div');
 
     const { load, blur, change } = { ...DEFAULT_CALLBACK, ...callbackFunctions };
     this.#loadCallback = load;
@@ -40,36 +40,36 @@ export class ToastHtmlEditor extends HTMLElement {
       autofocus: false,
       plugins: [colorSyntax],
       events: {
-        load: (editor) => {
+        load: (editor: Editor) => {
           this.#loadCallback();
-          this.dispatchEvent(new Event(EVENT_EDITOR_LOAD));
+          this.dispatchEvent(new CustomEvent(EVENT_EDITOR_LOAD, { detail: { editor } }));
         },
-        change: (mode) => {
+        change: (mode: EditorType) => {
           this.#changeCallback();
-          this.dispatchEvent(new Event(EVENT_EDITOR_CHANGE));
+          this.dispatchEvent(new CustomEvent(EVENT_EDITOR_CHANGE, { detail: { mode } }));
         },
-        blur: (mode) => {
+        blur: (mode: EditorType) => {
           this.#blurCallback();
-          this.dispatchEvent(new Event(EVENT_EDITOR_BLUR));
+          this.dispatchEvent(new CustomEvent(EVENT_EDITOR_BLUR, { detail: { mode } }));
         },
       },
     });
   }
 
-  getHTML() {
+  getHTML(): string {
     return this.#editor.getHTML();
   }
 
-  setHTML(html) {
-    this.#editor.setHTML(html, false);
+  setHTML(html: string, isAppend: boolean = false): void {
+    this.#editor.setHTML(html, isAppend);
   }
 
-  hide() {
+  hide(): void {
     this.#editor.hide();
     this.classList.add('hide');
   }
 
-  show() {
+  show(): void {
     this.#editor.show();
     this.classList.remove('hide');
   }

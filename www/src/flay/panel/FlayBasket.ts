@@ -1,5 +1,5 @@
 import { EVENT_BASKET_ADD } from '@/GroundConstant';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';
 import RandomUtils from '@lib/RandomUtils';
@@ -11,6 +11,14 @@ import './FlayBasket.scss';
 const BASKET_KEY = 'flay-basket';
 
 export class FlayBasket extends HTMLElement {
+  flayListEl: HTMLElement;
+  flayCountEl: HTMLElement;
+  actressListEl: HTMLElement;
+  actressCountEl: HTMLElement;
+  pickUpRandomFlayEl: HTMLElement;
+  toggleActressNameEl: HTMLElement;
+  emptyAllEl: HTMLElement;
+
   constructor() {
     super();
     this.classList.add('flay-basket', 'flay-div');
@@ -80,16 +88,16 @@ export class FlayBasket extends HTMLElement {
 
     itemList.forEach((item) => item.classList.toggle('hide', checkedList.length > 0));
     checkedList.forEach((checkbox) => {
-      itemList.forEach((item) => {
+      itemList.forEach((item: FlayBasketItem) => {
         if (item.hasActress(checkbox.value)) item.classList.remove('hide');
       });
     });
 
-    this.flayCountEl.innerHTML = itemList.filter((item) => !item.classList.contains('hide')).length;
+    this.flayCountEl.innerHTML = String(itemList.filter((item) => !item.classList.contains('hide')).length);
   }
 
   #pickRandomFlay() {
-    const shownFlayList = Array.from(this.flayListEl.children).filter((item) => !item.classList.contains('hide'));
+    const shownFlayList = Array.from(this.flayListEl.children).filter((item) => !item.classList.contains('hide')) as FlayBasketItem[];
     const randomIndex = RandomUtils.getRandomInt(0, shownFlayList.length);
     shownFlayList[randomIndex]?.popup();
   }
@@ -129,7 +137,7 @@ export class FlayBasket extends HTMLElement {
   }
 
   #removeNonExistingItems(basket) {
-    Array.from(this.flayListEl.children).forEach((item) => {
+    Array.from(this.flayListEl.children).forEach((item: FlayBasketItem) => {
       if (!basket.has(item.opus)) item.remove();
     });
   }
@@ -176,7 +184,7 @@ export class FlayBasket extends HTMLElement {
     this.actressListEl.textContent = null;
 
     // 배우 출연 횟수 계산
-    const actressMap = Array.from(this.flayListEl.children).reduce((map, item) => {
+    const actressMap = Array.from(this.flayListEl.children).reduce((map, item: FlayBasketItem) => {
       item.actressList.forEach((name) => {
         if (!map.has(name)) map.set(name, { size: 0 });
         map.get(name).size += 1;
@@ -197,8 +205,8 @@ export class FlayBasket extends HTMLElement {
   }
 
   updateCounters() {
-    this.flayCountEl.innerHTML = this.flayListEl.children.length;
-    this.actressCountEl.innerHTML = this.actressListEl.children.length;
+    this.flayCountEl.innerHTML = String(this.flayListEl.children.length);
+    this.actressCountEl.innerHTML = String(this.actressListEl.children.length);
   }
 
   static add(opus) {
@@ -226,7 +234,9 @@ export class FlayBasket extends HTMLElement {
 customElements.define('flay-basket', FlayBasket);
 
 class FlayBasketItem extends HTMLElement {
-  constructor(flay) {
+  opus: string;
+
+  constructor(flay: Flay) {
     super();
 
     this.id = flay.opus;
@@ -341,7 +351,7 @@ class FlayBasketItem extends HTMLElement {
   async #loadCoverImage(opus) {
     try {
       const url = await FlayFetch.getCoverURL(opus);
-      const coverEl = this.querySelector('.cover');
+      const coverEl = this.querySelector('.cover') as HTMLElement;
 
       // 이미지 미리 로드 후 배경으로 설정
       const img = new Image();

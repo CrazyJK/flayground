@@ -19,7 +19,7 @@ const AllDirections = [
 /** 대각선 방향 */
 const DiagonalDirections = AllDirections.filter((d) => d[0] !== 0 && d[1] !== 0);
 /** 기본 옵션 */
-const DEFAULT_OPTIONS = {
+const DEFAULT_OPTIONS: PanelOptions = {
   /** 시간 배수 */ multifier: [1, 3],
   /** 타이머 시간. s */ seconds: [50, 70],
   /** 스레드 개수 */ thread: [1, 3],
@@ -28,26 +28,36 @@ const DEFAULT_OPTIONS = {
   /** marker 크기. 1부터 0.5step */ size: 1,
 };
 
+interface PanelOptions {
+  multifier: [number, number];
+  seconds: [number, number];
+  thread: [number, number];
+  interval: [number, number];
+  shape: 'square' | 'circle' | 'star' | 'heart';
+  size: number;
+}
+
 export class FlayMarkerPanel extends HTMLElement {
   #markerList = []; // 마커 리스트
   #threadCount = 1; // 스레드 개수
   #paused = false; // 일시정지 여부
   #lastNo = -1; // 하이라이트 마커 마지막 번호
-  #opts = {}; // 옵션
+  #opts: PanelOptions; // 옵션
   #highlightedCount = 0; // 하이라이트된 마커 수 (성능 최적화용)
   #animationFrames = []; // requestAnimationFrame 식별자 배열
   #threadIntervals = []; // 각 스레드별 인터벌 값
   #lastFrameTime = []; // 각 스레드별 마지막 프레임 시간
+  tickTimer = null; // 타이머 인스턴스
 
   /**
    *
    * @param {DEFAULT_OPTIONS} options 배열은 항목의 [min, max] 값
    */
-  constructor(options) {
+  constructor(options: Partial<PanelOptions>) {
     super();
 
     this.#opts = { ...DEFAULT_OPTIONS, ...options };
-    this.dataset.w = this.#opts.size;
+    this.dataset.w = String(this.#opts.size);
 
     this.tickTimer = new TickTimer();
     this.tickTimer.addEventListener(EVENT_TIMER_START, () => this.#render());
@@ -61,7 +71,7 @@ export class FlayMarkerPanel extends HTMLElement {
     });
     this.addEventListener('wheel', (e) => {
       this.#togglePause();
-      this.dataset.w = this.#opts.size = e.deltaY < 0 ? Math.min(this.#opts.size + 0.5, 20) : Math.max(this.#opts.size - 0.5, 1);
+      this.dataset.w = String((this.#opts.size = e.deltaY < 0 ? Math.min(this.#opts.size + 0.5, 20) : Math.max(this.#opts.size - 0.5, 1)));
       this.#updateMarkerPositions();
       this.#togglePause();
     });
@@ -81,7 +91,7 @@ export class FlayMarkerPanel extends HTMLElement {
   #start() {
     const multifier = RandomUtils.getRandomIntInclusive(...this.#opts.multifier);
     this.tickTimer.start(RandomUtils.getRandomIntInclusive(...this.#opts.seconds) * multifier);
-    this.dataset.multifier = multifier;
+    this.dataset.multifier = String(multifier);
   }
 
   /**
@@ -162,7 +172,7 @@ export class FlayMarkerPanel extends HTMLElement {
 
     // 스레드 개수 랜덤으로 설정
     this.#threadCount = RandomUtils.getRandomIntInclusive(...this.#opts.thread);
-    this.dataset.threads = this.#threadCount;
+    this.dataset.threads = String(this.#threadCount);
 
     const descriptionText = `multifier: ${this.dataset.multifier}, seconds: ${this.tickTimer.seconds}, order: ${this.dataset.order}, threads: ${this.dataset.threads}`;
     console.log('[render]', descriptionText);
@@ -335,7 +345,7 @@ export class FlayMarkerPanel extends HTMLElement {
     };
 
     const INTERVAL = RandomUtils.getRandomIntInclusive(...this.#opts.interval);
-    this.dataset[`t${threadNo}Interval`] = INTERVAL;
+    this.dataset[`t${threadNo}Interval`] = String(INTERVAL);
     this.#threadIntervals[threadNo] = INTERVAL;
     this.#lastFrameTime[threadNo] = performance.now();
 

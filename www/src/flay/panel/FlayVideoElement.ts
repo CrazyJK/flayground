@@ -454,6 +454,26 @@ export default class FlayVideo extends HTMLElement {
   set volume(value: number) {
     this.video.volume = value;
   }
+
+  set controls(value: boolean) {
+    this.video.controls = value;
+  }
+
+  set autoplay(value: boolean) {
+    this.video.autoplay = value;
+  }
+
+  get error(): MediaError | null {
+    return this.video.error;
+  }
+
+  get poster(): string {
+    return this.video.poster;
+  }
+
+  get currentSrc() {
+    return this.video.currentSrc;
+  }
 }
 
 customElements.define('flay-video', FlayVideo);

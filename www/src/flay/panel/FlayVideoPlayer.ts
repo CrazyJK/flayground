@@ -1,14 +1,21 @@
 import '@flay/domain/part/FlayActress';
+import FlayActress from '@flay/domain/part/FlayActress';
 import '@flay/domain/part/FlayCover';
 import '@flay/domain/part/FlayOpus';
+import FlayOpus from '@flay/domain/part/FlayOpus';
 import '@flay/domain/part/FlayRank';
+import FlayRank from '@flay/domain/part/FlayRank';
 import '@flay/domain/part/FlayRelease';
+import FlayRelease from '@flay/domain/part/FlayRelease';
 import '@flay/domain/part/FlayStudio';
+import FlayStudio from '@flay/domain/part/FlayStudio';
 import '@flay/domain/part/FlayTag';
+import FlayTag from '@flay/domain/part/FlayTag';
 import '@flay/domain/part/FlayTitle';
+import FlayTitle from '@flay/domain/part/FlayTitle';
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import FlayVideo from './FlayVideoElement';
@@ -18,11 +25,23 @@ const db = new PlayTimeDB();
 
 const getFlayPlayTime = async (opus) => await db.select(opus);
 
+interface PlayerOptions {
+  controls: boolean;
+  volume: number;
+  autoplay: boolean;
+  info: boolean;
+  poster: boolean;
+}
+
 /**
  * Flay Video Player implements HTMLVideoElement
  */
 export class FlayVideoPlayer extends HTMLElement {
-  opus;
+  options: PlayerOptions;
+  opus: string;
+  flayVideo: FlayVideo;
+  flayVideoInfo: FlayVideoInfo;
+  flayVideoPoster: FlayVideoPoster;
 
   static get observedAttributes() {
     return ['controls', 'volume', 'autoplay', 'info', 'poster'];
@@ -49,7 +68,7 @@ export class FlayVideoPlayer extends HTMLElement {
     }
   }
 
-  constructor(opts) {
+  constructor(opts: Partial<PlayerOptions>) {
     super();
 
     this.options = {
@@ -74,11 +93,11 @@ export class FlayVideoPlayer extends HTMLElement {
   #setOptions() {
     console.log('FlayVideoPlayer #setOptions', this.options);
 
-    this.setAttribute('controls', this.options.controls);
-    this.setAttribute('volume', this.options.volume);
-    this.setAttribute('autoplay', this.options.autoplay);
-    this.setAttribute('info', this.options.info);
-    this.setAttribute('poster', this.options.poster);
+    this.setAttribute('controls', String(this.options.controls));
+    this.setAttribute('volume', String(this.options.volume));
+    this.setAttribute('autoplay', String(this.options.autoplay));
+    this.setAttribute('info', String(this.options.info));
+    this.setAttribute('poster', String(this.options.poster));
   }
 
   /**
@@ -175,7 +194,7 @@ export class FlayVideoPlayer extends HTMLElement {
 
     const endTime = this.flayVideo.duration;
     const lastTime = endTime - lastOffsetTime;
-    const prevTime = dbFlayPlayTime?.time || endTime + 1;
+    const prevTime = dbFlayPlayTime['time'] || endTime + 1;
     const seekTime = lastTime < prevTime ? RandomUtils.getRandomInt(1, lastTime) : prevTime;
 
     await this.seek(seekTime);
@@ -242,14 +261,14 @@ class FlayVideoInfo extends HTMLElement {
     `;
   }
 
-  set(flay, actress, reload = false) {
-    this.querySelector('flay-studio').set(flay, reload);
-    this.querySelector('flay-opus').set(flay, reload);
-    this.querySelector('flay-title').set(flay, reload);
-    this.querySelector('flay-actress').set(flay, actress, reload);
-    this.querySelector('flay-release').set(flay, reload);
-    this.querySelector('flay-rank').set(flay, reload);
-    this.querySelector('flay-tag').set(flay, reload);
+  set(flay: Flay, actress: Actress[], reload = false) {
+    (this.querySelector('flay-studio') as FlayStudio).set(flay);
+    (this.querySelector('flay-opus') as FlayOpus).set(flay);
+    (this.querySelector('flay-title') as FlayTitle).set(flay);
+    (this.querySelector('flay-actress') as FlayActress).set(flay, actress);
+    (this.querySelector('flay-release') as FlayRelease).set(flay);
+    (this.querySelector('flay-rank') as FlayRank).set(flay);
+    (this.querySelector('flay-tag') as FlayTag).set(flay, reload);
   }
 }
 
@@ -293,8 +312,9 @@ export const playInLayer = async (opus) => {
     layer.id = 'playInLayer';
     layer.appendChild(document.createElement('article')).appendChild(new FlayVideoPlayer({ info: false, poster: false, volume: 0.05 }));
     layer.addEventListener('click', (e) => {
-      console.debug('layer click', e.target.tagName);
-      if (e.target.tagName !== 'FLAY-VIDEO-PLAYER') {
+      const target = e.target as HTMLElement;
+      console.debug('layer click', target.tagName);
+      if (target.tagName !== 'FLAY-VIDEO-PLAYER') {
         layer.classList.add('hide');
         videoPlayer.pause();
         dispatchPlayEvent(false);
@@ -306,9 +326,9 @@ export const playInLayer = async (opus) => {
 
   layer.classList.remove('hide');
 
-  const videoPlayer = layer.querySelector('flay-video-player');
+  const videoPlayer = layer.querySelector('flay-video-player') as FlayVideoPlayer;
   if (prevOpus !== opus) {
-    await videoPlayer.load(opus);
+    await videoPlayer.load(opus, null, null);
     await videoPlayer.playRandomSeekOrContinuously();
   } else {
     await videoPlayer.play();

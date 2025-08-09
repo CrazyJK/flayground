@@ -1,4 +1,5 @@
 import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
+import { History } from '../../../../lib/FlayFetch';
 
 const storeName = 'History';
 
@@ -7,12 +8,12 @@ export default class HistoryStore extends FlayGroundDB {
     super();
   }
 
-  async select(opus) {
+  async select(opus: string) {
     await this.init();
     return await this.get(storeName, opus);
   }
 
-  async update(opus, histories) {
+  async update(opus: string, histories: History[]) {
     await this.init();
     const record = {
       opus: opus,
@@ -22,7 +23,7 @@ export default class HistoryStore extends FlayGroundDB {
     return record;
   }
 
-  async remove(opus) {
+  async remove(opus: string) {
     await this.init();
     await this.delete(storeName, opus);
   }

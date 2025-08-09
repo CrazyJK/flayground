@@ -1,28 +1,28 @@
 import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
 
-const storeName = 'Score';
+const storeName = 'Cover';
 
-export default class ScoreStore extends FlayGroundDB {
+export default class CoverStore extends FlayGroundDB {
   constructor() {
     super();
   }
 
-  async select(opus) {
+  async select(opus: string) {
     await this.init();
     return await this.get(storeName, opus);
   }
 
-  async update(opus, score) {
+  async update(opus: string, blob: Blob) {
     await this.init();
     const record = {
       opus: opus,
-      score: score,
+      blob: blob,
     };
     await this.put(storeName, record);
     return record;
   }
 
-  async remove(opus) {
+  async remove(opus: string) {
     await this.init();
     await this.delete(storeName, opus);
   }

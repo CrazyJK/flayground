@@ -1,30 +1,30 @@
 import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
 
-const storeName = 'ActressFlayCount';
+const storeName = 'Score';
 
-export default class ActressFlayCountStore extends FlayGroundDB {
+export default class ScoreStore extends FlayGroundDB {
   constructor() {
     super();
   }
 
-  async select(name) {
+  async select(opus: string) {
     await this.init();
-    return await this.get(storeName, name);
+    return await this.get(storeName, opus);
   }
 
-  async update(name, flayCount) {
+  async update(opus: string, score: number) {
     await this.init();
     const record = {
-      name: name,
-      flayCount: flayCount,
+      opus: opus,
+      score: score,
     };
     await this.put(storeName, record);
     return record;
   }
 
-  async remove(name) {
+  async remove(opus: string) {
     await this.init();
-    await this.delete(storeName, name);
+    await this.delete(storeName, opus);
   }
 
   async removeAll() {

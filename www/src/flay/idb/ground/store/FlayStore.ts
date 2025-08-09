@@ -1,5 +1,5 @@
 import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay, Tag } from '@lib/FlayFetch';
 
 const storeName = 'Flay';
 
@@ -8,17 +8,17 @@ export default class FlayStore extends FlayGroundDB {
     super();
   }
 
-  async insert(...flayList) {
+  async insert(...flayList: Flay[]) {
     await this.init();
     for (const flay of flayList) await this.add(storeName, flay);
   }
 
-  async update(...flayList) {
+  async update(...flayList: Flay[]) {
     await this.init();
     for (const flay of flayList) await this.put(storeName, flay);
   }
 
-  async remove(...opusList) {
+  async remove(...opusList: string[]) {
     await this.init();
     for (const opus of opusList) await this.delete(storeName, opus);
   }
@@ -28,7 +28,7 @@ export default class FlayStore extends FlayGroundDB {
     await this.clear(storeName);
   }
 
-  async select(opus) {
+  async select(opus: string) {
     await this.init();
     return await this.get(storeName, opus);
   }
@@ -38,54 +38,54 @@ export default class FlayStore extends FlayGroundDB {
     return await this.getAll(storeName);
   }
 
-  async findByStudio(name) {
+  async findByStudio(name: string) {
     await this.init();
     return await this.find(storeName, 'studio', name);
   }
 
-  async findLikeTitle(title) {
+  async findLikeTitle(title: string) {
     await this.init();
     return await this.findLike(storeName, 'title', title);
   }
 
-  async findIncludeActress(name) {
+  async findIncludeActress(name: string) {
     await this.init();
     return await this.findLike(storeName, 'actressList', name);
   }
 
-  async findByRelease(release) {
+  async findByRelease(release: string) {
     await this.init();
     return await this.find(storeName, 'release', release);
   }
 
-  async findByArchive(isArchive) {
+  async findByArchive(isArchive: boolean) {
     await this.init();
-    return (await this.selectAll()).filter((flay) => flay.archive === isArchive);
+    return (await this.selectAll()).filter((flay: Flay) => flay.archive === isArchive);
   }
 
-  async findByRank(rank) {
+  async findByRank(rank: number) {
     await this.init();
     return await this.find(storeName, 'video.rank', rank);
   }
 
-  async findByPlay(play) {
+  async findByPlay(play: number) {
     await this.init();
     return await this.find(storeName, 'video.play', play);
   }
 
-  async findByTagId(id) {
+  async findByTagId(id: number) {
     await this.init();
-    return (await this.selectAll()).filter((flay) => flay.video.tags?.filter((tag) => tag.id === id).length > 0);
+    return (await this.selectAll()).filter((flay: Flay) => flay.video.tags?.filter((tag: Tag) => tag.id === id).length > 0);
   }
 
-  async findByTagName(name) {
+  async findByTagName(name: string) {
     await this.init();
-    return (await this.selectAll()).filter((flay) => flay.video.tags?.filter((tag) => tag.name === name).length > 0);
+    return (await this.selectAll()).filter((flay: Flay) => flay.video.tags?.filter((tag) => tag.name === name).length > 0);
   }
 
   async findByLikesLength(n = 0) {
     await this.init();
-    return (await this.selectAll()).filter((flay) => flay.video.likes?.length > n);
+    return (await this.selectAll()).filter((flay: Flay) => flay.video.likes?.length > n);
   }
 }
 

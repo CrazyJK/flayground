@@ -24,12 +24,12 @@ export default class PlayTimeDB extends FlayIndexedDB {
     await this.open(dbName, dbVersion, dbSchema);
   }
 
-  async select(opus) {
+  async select(opus: string) {
     await this.#init();
     return await this.get(storeName, opus);
   }
 
-  async update(opus, time, duration) {
+  async update(opus: string, time: number, duration: number) {
     await this.#init();
     const record = {
       opus: opus,
@@ -40,7 +40,7 @@ export default class PlayTimeDB extends FlayIndexedDB {
     await this.put(storeName, record);
   }
 
-  async remove(opus) {
+  async remove(opus: string) {
     await this.#init();
     await this.delete(storeName, opus);
   }

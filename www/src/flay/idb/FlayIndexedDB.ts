@@ -1,35 +1,47 @@
 // https://developer.mozilla.org/ko/docs/Web/API/IndexedDB_API/Using_IndexedDB
 
-export default class FlayIndexedDB {
-  #db;
-  isDebug = false;
+interface IndexSchema {
+  key: string;
+  unique: boolean;
+}
 
-  constructor(isDebug) {
+interface StoreSchema {
+  name: string;
+  keyPath: string;
+  index?: IndexSchema[];
+}
+
+export default class FlayIndexedDB {
+  #db: IDBDatabase | null = null;
+  isDebug: boolean = false;
+
+  constructor(isDebug: boolean = false) {
     this.isDebug = isDebug;
   }
 
-  open(dbName, dbVersion, dbSchema) {
-    if (this.#db) return;
-    return new Promise((resolve, reject) => {
+  open(dbName: string, dbVersion: number, dbSchema: StoreSchema[]): Promise<void> {
+    if (this.#db) return Promise.resolve();
+    return new Promise<void>((resolve, reject) => {
       const req = indexedDB.open(dbName, dbVersion);
       req.onsuccess = (e) => {
-        this.#db = e.target.result;
+        this.#db = (e.target as IDBRequest).result;
         console.debug('[FlayIndexedDB] open', dbName, dbVersion, e);
         resolve();
       };
       req.onerror = (e) => {
         console.error('[FlayIndexedDB] open Error', dbName, dbVersion, e);
-        reject(e.target.error);
+        reject((e.target as IDBRequest).error);
       };
       req.onupgradeneeded = (e) => {
         console.log('[FlayIndexedDB] open onupgradeneeded', dbName, dbVersion, e);
-        Array.from(e.currentTarget.result.objectStoreNames).forEach((storeName) => {
-          e.currentTarget.result.deleteObjectStore(storeName);
+        const db = (e.currentTarget as IDBRequest).result as IDBDatabase;
+        Array.from(db.objectStoreNames).forEach((storeName) => {
+          db.deleteObjectStore(storeName);
         });
-        Array.from(dbSchema).forEach((schema) => {
-          const store = e.currentTarget.result.createObjectStore(schema.name, { keyPath: schema.keyPath });
+        dbSchema.forEach((schema) => {
+          const store = db.createObjectStore(schema.name, { keyPath: schema.keyPath });
           schema.index &&
-            Array.from(schema.index).forEach((index) => {
+            schema.index.forEach((index) => {
               store.createIndex(index.key, index.key, { unique: index.unique });
             });
         });
@@ -37,25 +49,25 @@ export default class FlayIndexedDB {
     });
   }
 
-  #getStore(storeName, mode = 'readonly') {
-    return this.#db.transaction(storeName, mode).objectStore(storeName);
+  #getStore(storeName: string, mode: 'readonly' | 'readwrite' = 'readonly'): IDBObjectStore {
+    return this.#db!.transaction(storeName, mode).objectStore(storeName);
   }
 
-  #reqSuccessVoidHandler(resolve, storeName, command, e, ...args) {
+  #reqSuccessVoidHandler(resolve: () => void, storeName: string, command: string, e: Event, ...args: unknown[]): void {
     this.isDebug && console.debug('[FlayIndexedDB]', storeName, command, e, ...args);
     resolve();
   }
 
-  #reqErrorHandler(reject, storeName, command, e, ...args) {
-    console.error('[FlayIndexedDB]', storeName, command, e.target.error, e, ...args);
-    reject(e.target.error);
+  #reqErrorHandler(reject: (error: unknown) => void, storeName: string, command: string, e: Event, ...args: unknown[]): void {
+    console.error('[FlayIndexedDB]', storeName, command, (e.target as IDBRequest).error, e, ...args);
+    reject((e.target as IDBRequest).error);
   }
 
-  get(storeName, key) {
-    return new Promise((resolve, reject) => {
+  get<T = unknown>(storeName: string, key: string | number): Promise<T | undefined> {
+    return new Promise<T | undefined>((resolve, reject) => {
       const req = this.#getStore(storeName).get(key);
       req.onsuccess = (e) => {
-        const record = e.target.result;
+        const record = (e.target as IDBRequest<T>).result;
         this.isDebug && console.debug('[FlayIndexedDB]', storeName, 'get', key, record, e);
         resolve(record);
       };
@@ -63,12 +75,12 @@ export default class FlayIndexedDB {
     });
   }
 
-  getAll(storeName) {
-    return new Promise((resolve, reject) => {
-      const list = [];
+  getAll<T = unknown>(storeName: string): Promise<T[]> {
+    return new Promise<T[]>((resolve, reject) => {
+      const list: T[] = [];
       const req = this.#getStore(storeName).openCursor();
       req.onsuccess = (e) => {
-        const cursor = e.target.result;
+        const cursor = (e.target as IDBRequest<IDBCursorWithValue | null>).result;
         if (cursor) {
           list.push(cursor.value);
           cursor.continue();
@@ -81,14 +93,14 @@ export default class FlayIndexedDB {
     });
   }
 
-  getAllByIndex(storeName, indexName, ascending = true) {
-    return new Promise((resolve, reject) => {
-      const list = [];
+  getAllByIndex<T = unknown>(storeName: string, indexName: string, ascending: boolean = true): Promise<T[]> {
+    return new Promise<T[]>((resolve, reject) => {
+      const list: T[] = [];
       const req = this.#getStore(storeName)
         .index(indexName)
         .openCursor(null, ascending ? 'next' : 'prev');
       req.onsuccess = (e) => {
-        const cursor = e.target.result;
+        const cursor = (e.target as IDBRequest<IDBCursorWithValue | null>).result;
         if (cursor) {
           list.push(cursor.value);
           cursor.continue();
@@ -101,12 +113,12 @@ export default class FlayIndexedDB {
     });
   }
 
-  find(storeName, key, value) {
-    return new Promise((resolve, reject) => {
-      const flayList = [];
+  find<T = unknown>(storeName: string, key: string, value: string | number): Promise<T[]> {
+    return new Promise<T[]>((resolve, reject) => {
+      const flayList: T[] = [];
       const req = this.#getStore(storeName).index(key).openCursor(IDBKeyRange.only(value));
       req.onsuccess = (e) => {
-        const cursor = e.target.result;
+        const cursor = (e.target as IDBRequest<IDBCursorWithValue | null>).result;
         if (cursor) {
           flayList.push(cursor.value);
           cursor.continue();
@@ -119,15 +131,16 @@ export default class FlayIndexedDB {
     });
   }
 
-  findLike(storeName, key, value) {
-    return new Promise((resolve, reject) => {
-      const flayList = [];
+  findLike<T = Record<string, unknown>>(storeName: string, key: string, value: string): Promise<T[]> {
+    return new Promise<T[]>((resolve, reject) => {
+      const flayList: T[] = [];
       const req = this.#getStore(storeName).index(key).openCursor();
       req.onsuccess = (e) => {
-        const cursor = e.target.result;
+        const cursor = (e.target as IDBRequest<IDBCursorWithValue | null>).result;
         if (cursor) {
-          if (cursor.value[key].includes(value)) {
-            flayList.push(cursor.value);
+          const record = cursor.value as T;
+          if (record[key] && typeof record[key] === 'string' && record[key].includes(value)) {
+            flayList.push(record);
           }
           cursor.continue();
         } else {
@@ -139,32 +152,32 @@ export default class FlayIndexedDB {
     });
   }
 
-  add(storeName, record) {
-    return new Promise((resolve, reject) => {
+  add<T = unknown>(storeName: string, record: T): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       const req = this.#getStore(storeName, 'readwrite').add(record);
       req.onsuccess = (e) => this.#reqSuccessVoidHandler(resolve, storeName, 'add', e, record);
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'add', e, record);
     });
   }
 
-  put(storeName, record) {
-    return new Promise((resolve, reject) => {
+  put<T = unknown>(storeName: string, record: T): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       const req = this.#getStore(storeName, 'readwrite').put(record);
       req.onsuccess = (e) => this.#reqSuccessVoidHandler(resolve, storeName, 'put', e, record);
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'put', e, record);
     });
   }
 
-  delete(storeName, key) {
-    return new Promise((resolve, reject) => {
+  delete(storeName: string, key: string | number): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       const req = this.#getStore(storeName, 'readwrite').delete(key);
       req.onsuccess = (e) => this.#reqSuccessVoidHandler(resolve, storeName, 'delete', e, key);
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'delete', e, key);
     });
   }
 
-  clear(storeName) {
-    return new Promise((resolve, reject) => {
+  clear(storeName: string): Promise<void> {
+    return new Promise<void>((resolve, reject) => {
       const req = this.#getStore(storeName, 'readwrite').clear();
       req.onsuccess = (e) => this.#reqSuccessVoidHandler(resolve, storeName, 'clear', e);
       req.onerror = (e) => this.#reqErrorHandler(reject, storeName, 'clear', e);

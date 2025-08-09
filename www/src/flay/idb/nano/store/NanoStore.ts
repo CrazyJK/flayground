@@ -1,28 +1,28 @@
-import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
+import NanoDB from '@flay/idb/nano/db/NanoDB';
 
-const storeName = 'Cover';
+const storeName = 'Nano';
 
-export default class CoverStore extends FlayGroundDB {
+export default class NanoStore extends NanoDB {
   constructor() {
     super();
   }
 
-  async select(opus) {
+  async select(opus: string) {
     await this.init();
     return await this.get(storeName, opus);
   }
 
-  async update(opus, blob) {
+  async update(opus: string, date: number) {
     await this.init();
     const record = {
       opus: opus,
-      blob: blob,
+      date: date,
     };
     await this.put(storeName, record);
     return record;
   }
 
-  async remove(opus) {
+  async remove(opus: string) {
     await this.init();
     await this.delete(storeName, opus);
   }

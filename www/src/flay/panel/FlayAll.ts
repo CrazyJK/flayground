@@ -450,10 +450,11 @@ export class FlayAll extends HTMLElement {
   #initializeEventListeners() {
     // 페이지네이션 버튼 및 이벤트 위임 설정
     const paginationControl = this.shadowRoot.querySelector('.pagination');
-    paginationControl.addEventListener('click', (e) => {
-      if (e.target.id === 'prev-page') {
+    paginationControl.addEventListener('click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.id === 'prev-page') {
         this.#handlePrevPage();
-      } else if (e.target.id === 'next-page') {
+      } else if (target.id === 'next-page') {
         this.#handleNextPage();
       }
     });
@@ -482,7 +483,7 @@ export class FlayAll extends HTMLElement {
 
     // 아카이브 체크박스
     const archiveCheckbox = this.shadowRoot.querySelector('#show-archive');
-    archiveCheckbox.addEventListener('change', (e) => {
+    archiveCheckbox.addEventListener('change', (e: Event) => {
       this.#filterAndSort();
       this.showLoading(false);
 
@@ -490,7 +491,7 @@ export class FlayAll extends HTMLElement {
       this.dispatchEvent(
         new CustomEvent('filter-changed', {
           detail: {
-            showArchive: e.target.checked,
+            showArchive: (e.target as HTMLInputElement).checked,
             filteredCount: this.#sortedFlayList.length,
             totalCount: this.#flayMap.size,
           },
@@ -531,9 +532,10 @@ export class FlayAll extends HTMLElement {
 
     // 테이블 행 선택을 위한 이벤트 위임
     const table = this.shadowRoot.querySelector('.flay-list');
-    table.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter' && e.target.tagName === 'TR') {
-        const opus = e.target.dataset.opus;
+    table.addEventListener('keydown', (e: KeyboardEvent) => {
+      const target = e.target as HTMLElement;
+      if (e.key === 'Enter' && target.tagName === 'TR') {
+        const opus = target.dataset.opus;
         if (opus) {
           this.dispatchEvent(
             new CustomEvent('flay-selected', {
@@ -634,8 +636,8 @@ export class FlayAll extends HTMLElement {
    * 데이터 필터링 및 정렬
    */
   #filterAndSort() {
-    const searchValue = this.shadowRoot.querySelector('#search-input').value.toLowerCase().trim();
-    const showArchive = this.shadowRoot.querySelector('#show-archive').checked;
+    const searchValue = (this.shadowRoot.querySelector('#search-input') as HTMLInputElement).value.toLowerCase().trim();
+    const showArchive = (this.shadowRoot.querySelector('#show-archive') as HTMLInputElement).checked;
 
     // 시작 시간 측정 (성능 모니터링)
     const startTime = performance.now();
@@ -697,7 +699,7 @@ export class FlayAll extends HTMLElement {
     console.debug(`필터링 및 정렬 완료: ${endTime - startTime}ms, ${filtered.length}개 항목`);
 
     // 카운트 업데이트 및 페이지 리셋
-    this.shadowRoot.querySelector('#total-count').textContent = this.#sortedFlayList.length;
+    this.shadowRoot.querySelector('#total-count').textContent = String(this.#sortedFlayList.length);
     this.#currentPage = 0;
 
     // 페이지네이션 버튼 상태 업데이트
@@ -782,7 +784,7 @@ export class FlayAll extends HTMLElement {
             scoreTd.textContent = '...'; // 로딩 중 표시
             FlayFetch.getScore(flay.opus)
               .then((score) => {
-                scoreTd.textContent = score ?? '';
+                scoreTd.textContent = String(score ?? '');
                 flay.score = score;
               })
               .catch((error) => {
@@ -794,7 +796,7 @@ export class FlayAll extends HTMLElement {
           }
 
           // 행에 클릭 이벤트 추가 (flay-selected 이벤트 발생용)
-          tr.addEventListener('click', (e) => {
+          tr.addEventListener('click', () => {
             // This event is for general row selection, specific clicks on opus/actress are handled above.
             this.dispatchEvent(
               new CustomEvent('flay-selected', {
@@ -843,8 +845,8 @@ export class FlayAll extends HTMLElement {
    * 페이지네이션 버튼 상태 업데이트
    */
   #updatePaginationButtons() {
-    const prevButton = this.shadowRoot.querySelector('#prev-page');
-    const nextButton = this.shadowRoot.querySelector('#next-page');
+    const prevButton = this.shadowRoot.querySelector('#prev-page') as HTMLButtonElement;
+    const nextButton = this.shadowRoot.querySelector('#next-page') as HTMLButtonElement;
     const pageNumbersContainer = this.shadowRoot.querySelector('#page-numbers');
     const totalPages = Math.ceil(this.#sortedFlayList.length / FlayAll.PAGE_SIZE);
     const currentPage = this.#currentPage + 1; // 1-based for display
@@ -1044,7 +1046,7 @@ export class FlayAll extends HTMLElement {
 
     // 해당 행 강조 표시
     requestAnimationFrame(() => {
-      const rows = this.shadowRoot.querySelectorAll('tbody tr');
+      const rows = Array.from(this.shadowRoot.querySelectorAll('tbody tr')) as HTMLElement[];
       for (const row of rows) {
         row.classList.remove('highlight');
         if (row.dataset.opus === opus) {

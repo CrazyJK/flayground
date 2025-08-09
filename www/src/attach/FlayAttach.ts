@@ -3,7 +3,7 @@ import windowButton from '@svg/windowButton';
 import './FlayAttach.scss';
 
 const File = {
-  formatSize: (length) => {
+  formatSize: (length: number) => {
     const KB = 1024;
     const MB = KB * 1024;
     const GB = MB * 1024;
@@ -22,6 +22,13 @@ const MULTIPART = {
   maxRequestSize: MB * 100, // max-request-size=100MB
 };
 
+interface Options {
+  id: string;
+  attachChangeCallback: Function | null;
+  totalFileCount: number;
+  totalFileLength: number;
+}
+
 const OPT_DEFAULT = {
   id: 'flayAttach',
   attachChangeCallback: null,
@@ -33,7 +40,17 @@ const OPT_DEFAULT = {
  * 커스텀 파일 첨부 박스
  */
 export default class FlayAttach extends HTMLElement {
-  constructor(opts) {
+  private options: Options;
+  private attach: any;
+  private fileCount: number;
+  private fileLength: number;
+
+  private fileBox: HTMLDivElement;
+  private fileList: HTMLOListElement;
+  private fileSummary: HTMLDivElement;
+  private fileInput: HTMLInputElement;
+
+  constructor(opts: Partial<Options>) {
     super();
 
     this.options = { ...OPT_DEFAULT, ...opts };
@@ -74,9 +91,9 @@ export default class FlayAttach extends HTMLElement {
       this.classList.add('file-dragover');
     });
 
-    this.fileList.addEventListener('dragenter', (e) => {});
+    this.fileList.addEventListener('dragenter', () => {});
 
-    this.fileList.addEventListener('dragleave', (e) => {
+    this.fileList.addEventListener('dragleave', () => {
       this.classList.remove('file-dragover');
     });
 
@@ -92,9 +109,10 @@ export default class FlayAttach extends HTMLElement {
    * 파일 제거 이벤트
    */
   addFileRemoveEventListener() {
-    this.fileList.addEventListener('click', (e) => {
-      if (e.target.className !== 'file-remove') return;
-      this.removeFile(e.target.dataset.attachfileid);
+    this.fileList.addEventListener('click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.className !== 'file-remove') return;
+      this.removeFile(target.dataset.attachfileid);
     });
   }
 
@@ -102,12 +120,13 @@ export default class FlayAttach extends HTMLElement {
    * 파일박스 클릭 이밴트
    */
   addFileFinderClickEventListener() {
-    this.fileSummary.addEventListener('click', (e) => {
-      if (e.target.id !== 'fileSelector') return;
+    this.fileSummary.addEventListener('click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.id !== 'fileSelector') return;
       this.fileInput.click();
     });
-    this.fileInput.addEventListener('change', (e) => {
-      this.insertFile(e.target.files);
+    this.fileInput.addEventListener('change', (e: Event) => {
+      this.insertFile((e.target as HTMLInputElement).files);
     });
   }
 
@@ -156,10 +175,10 @@ export default class FlayAttach extends HTMLElement {
   /**
    * 파일 추가
    * 중복 파일, 제한 크기 초과 체크 후 서버로 전송
-   * @param {FileList} dataTransferFiles
+   * @param dataTransferFiles
    * @returns
    */
-  insertFile(dataTransferFiles) {
+  insertFile(dataTransferFiles: FileList) {
     let drapedFileArray = [];
     let drapedFileLength = 0;
     let duplicatedText = [];
@@ -179,11 +198,11 @@ export default class FlayAttach extends HTMLElement {
     // 단일 파일 최대 크기 초과 했는지
     Array.from(dataTransferFiles).forEach((file) => {
       if (0 < MULTIPART.maxFileSize && MULTIPART.maxFileSize < file.size) {
-        overflowText.push(`${file.name}: ${File.formatSize(file.size, 'MB', 0)}`);
+        overflowText.push(`${file.name}: ${File.formatSize(file.size)}`);
       }
     });
     if (overflowText.length > 0) {
-      alert(`제한 크기(${File.formatSize(MULTIPART.maxFileSize, 'MB', 0)})를 초과한 파일이 있습니다.\n\t${overflowText.join('\n\t')}`);
+      alert(`제한 크기(${File.formatSize(MULTIPART.maxFileSize)})를 초과한 파일이 있습니다.\n\t${overflowText.join('\n\t')}`);
       return;
     }
 
@@ -194,8 +213,8 @@ export default class FlayAttach extends HTMLElement {
 
     // 단일 요청의 최대 크기 초과 했는지
     if (0 < MULTIPART.maxRequestSize && MULTIPART.maxRequestSize < drapedFileLength) {
-      alert(`단일 요청의 최대 크기(${File.formatSize(MULTIPART.maxRequestSize, 'MB', 0)})를 초과했습니다.
-        현재 첨부한 파일의 전체 크기: ${File.formatSize(drapedFileLength, 'MB', 0)}`);
+      alert(`단일 요청의 최대 크기(${File.formatSize(MULTIPART.maxRequestSize)})를 초과했습니다.
+        현재 첨부한 파일의 전체 크기: ${File.formatSize(drapedFileLength)}`);
       return;
     }
 
@@ -208,8 +227,8 @@ export default class FlayAttach extends HTMLElement {
 
     // 전체 파일 크기를 초과 했는지
     if (0 < this.options.totalFileLength && this.options.totalFileLength < drapedFileLength + this.fileLength) {
-      alert(`첨부 가능한 전체 파일 크기(${File.formatSize(this.options.totalFileLength, 'MB', 0)})를 초과했습니다.
-        현재 크기: ${File.formatSize(this.fileLength, 'MB', 0)}, 추가한 크기: ${File.formatSize(drapedFileLength, 'MB', 0)}`);
+      alert(`첨부 가능한 전체 파일 크기(${File.formatSize(this.options.totalFileLength)})를 초과했습니다.
+        현재 크기: ${File.formatSize(this.fileLength)}, 추가한 크기: ${File.formatSize(drapedFileLength)}`);
       return;
     }
 
@@ -236,11 +255,11 @@ export default class FlayAttach extends HTMLElement {
 
   /**
    * 동일 파일이 있는지. 파일 이름으로 체크
-   * @param {File} newFile
+   * @param newFile
    * @returns
    */
-  containsFile(newFile) {
-    return Array.from(this.getFiles()).filter((file) => file.name === newFile.name).length > 0;
+  containsFile(newFile: File) {
+    return Array.from(this.getFiles()).filter((file) => file['name'] === newFile['name']).length > 0;
   }
 
   /**
@@ -261,15 +280,15 @@ export default class FlayAttach extends HTMLElement {
     this.fileList.innerHTML = '';
     Array.from(this.getFiles()).forEach((attachFile) => {
       this.fileList.innerHTML += `
-          <li id="${attachFile.id}">
+          <li id="${attachFile['id']}">
             <label class="file-icon"><i class="fa fa-${getFileIcon(attachFile)}"></i></label>
-            <label class="file-name"><a href="/attach/${this.attach.id}/${attachFile.id}/download">${attachFile.name}</a></label>
-            <label class="file-size">${File.formatSize(attachFile.size)}</label>
-            <button class="file-remove" data-attachfileid="${attachFile.id}">${windowButton.terminate}</button>
+            <label class="file-name"><a href="/attach/${this.attach.id}/${attachFile['id']}/download">${attachFile['name']}</a></label>
+            <label class="file-size">${File.formatSize(attachFile['size'])}</label>
+            <button class="file-remove" data-attachfileid="${attachFile['id']}">${windowButton.terminate}</button>
           </li>`;
 
       this.fileCount++;
-      this.fileLength += attachFile.size;
+      this.fileLength += attachFile['size'];
     });
     // summary render
     this.fileSummary.innerHTML = `

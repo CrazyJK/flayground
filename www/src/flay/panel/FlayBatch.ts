@@ -55,15 +55,15 @@ export default class FlayBatch extends HTMLElement {
         FlayFetch.clearAll();
       });
     });
-    const lowerScore = this.querySelector('#lowerScore');
-    lowerScore.addEventListener('change', (e) => {
+    const lowerScore = this.querySelector('#lowerScore') as HTMLInputElement;
+    lowerScore.addEventListener('change', () => {
       FlayAction.batchSetOption('S');
       if (lowerScore.checked) {
         this.#showLowerScoreFlay();
       }
     });
     FlayAction.batchGetOption('S', (booleanOptionValue) => {
-      lowerScore.checked = booleanOptionValue;
+      lowerScore.checked = Boolean(booleanOptionValue);
       if (lowerScore.checked) {
         this.#showLowerScoreFlay();
       }
@@ -95,13 +95,14 @@ export default class FlayBatch extends HTMLElement {
 
   #showLowerScoreFlay() {
     const ol = this.querySelector('#lowerScoreFlayList ol');
-    ol.addEventListener('click', (e) => {
-      if (e.target.tagName !== 'A') return;
-      if (e.target.closest('label').classList.contains('opus')) {
-        const opus = e.target.innerHTML;
+    ol.addEventListener('click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      if (target.tagName !== 'A') return;
+      if (target.closest('label').classList.contains('opus')) {
+        const opus = target.innerHTML;
         popupFlay(opus);
-      } else if (e.target.closest('label').classList.contains('actress')) {
-        const name = e.target.innerHTML;
+      } else if (target.closest('label').classList.contains('actress')) {
+        const name = target.innerHTML;
         popupActress(name);
       }
     });

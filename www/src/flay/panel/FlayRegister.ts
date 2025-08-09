@@ -1,5 +1,5 @@
 import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Actress, Studio } from '@lib/FlayFetch';
 import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';
 import favoriteSVG from '@svg/favorite';
@@ -84,40 +84,40 @@ export default class FlayRegister extends HTMLElement {
     const copyBtn = this.querySelector('#copyBtn');
     const saveBtn = this.querySelector('#saveBtn');
 
-    const inputOpus = this.querySelector('#inputOpus');
-    const inputTitle = this.querySelector('#inputTitle');
-    const inputActress = this.querySelector('#inputActress');
-    const inputDesc = this.querySelector('#inputDesc');
-    const inputTemp = this.querySelector('#inputTemp');
+    const inputOpus = this.querySelector('#inputOpus') as HTMLInputElement;
+    const inputTitle = this.querySelector('#inputTitle') as HTMLInputElement;
+    const inputActress = this.querySelector('#inputActress') as HTMLInputElement;
+    const inputDesc = this.querySelector('#inputDesc') as HTMLInputElement;
 
-    const studio = this.querySelector('#studio');
-    const studioList = this.querySelector('#studio-list');
-    const opus = this.querySelector('#opus');
-    const title = this.querySelector('#title');
-    const actress = this.querySelector('#actress');
-    const release = this.querySelector('#release');
-    const flayFullname = this.querySelector('#flayFullname');
+    const studio = this.querySelector('#studio') as HTMLInputElement;
+    const studioList = this.querySelector('#studio-list') as HTMLDataListElement;
+    const opus = this.querySelector('#opus') as HTMLInputElement;
+    const title = this.querySelector('#title') as HTMLInputElement;
+    const actress = this.querySelector('#actress') as HTMLInputElement;
+    const release = this.querySelector('#release') as HTMLInputElement;
+    const flayFullname = this.querySelector('#flayFullname') as HTMLInputElement;
 
-    const actressFavorite = this.querySelector('#actressFavorite');
-    const actressName = this.querySelector('#actressName');
-    const actressLocalname = this.querySelector('#actressLocalname');
-    const actressBirth = this.querySelector('#actressBirth');
-    const actressBody = this.querySelector('#actressBody');
-    const actressHeight = this.querySelector('#actressHeight');
-    const actressDebut = this.querySelector('#actressDebut');
-    const actressRowData = this.querySelector('#actressRowData');
+    const actressFavorite = this.querySelector('#actressFavorite') as HTMLInputElement;
+    const actressName = this.querySelector('#actressName') as HTMLInputElement;
+    const actressLocalname = this.querySelector('#actressLocalname') as HTMLInputElement;
+    const actressBirth = this.querySelector('#actressBirth') as HTMLInputElement;
+    const actressBody = this.querySelector('#actressBody') as HTMLInputElement;
+    const actressHeight = this.querySelector('#actressHeight') as HTMLInputElement;
+    const actressDebut = this.querySelector('#actressDebut') as HTMLInputElement;
+    const actressRowData = this.querySelector('#actressRowData') as HTMLTextAreaElement;
 
     // 키 이벤트 전파 방지
     this.addEventListener('keyup', (e) => e.stopPropagation());
     //  spellcheck="false"
     this.querySelectorAll('input, textarea').forEach((element) => {
-      element.setAttribute('spellcheck', false);
+      element.setAttribute('spellcheck', 'false');
     });
 
     // 기초 데이터 입력
     [inputOpus, inputTitle, inputActress, inputDesc].forEach((input) => {
-      input.addEventListener('keyup', async (e) => {
-        e.target.value = e.target.value.trim().toUpperCase();
+      input.addEventListener('keyup', async (e: KeyboardEvent) => {
+        const target = e.target as HTMLInputElement;
+        target.value = target.value.trim().toUpperCase();
         if (e.keyCode !== 13) {
           return;
         }
@@ -165,8 +165,8 @@ export default class FlayRegister extends HTMLElement {
                 actressLocalname.value = list[0].localName;
                 actressBirth.value = list[0].birth;
                 actressBody.value = list[0].body;
-                actressHeight.value = list[0].height;
-                actressDebut.value = list[0].debut;
+                actressHeight.value = '' + list[0].height;
+                actressDebut.value = '' + list[0].debut;
               } else {
                 actressLocalname.value = localname;
                 FlaySearch.actress.Minnano(localname);
@@ -183,24 +183,25 @@ export default class FlayRegister extends HTMLElement {
     });
     emptyBtn.addEventListener('click', () => {
       console.log('emptyBtnClick');
-      this.querySelectorAll('input:not(#lastSearchOpus)').forEach((input) => (input.value = ''));
-      this.querySelectorAll('input[type="checkbox"]').forEach((input) => (input.checked = false));
-      this.querySelectorAll('textarea').forEach((textarea) => (textarea.value = ''));
-      this.querySelectorAll('.input-invalid').forEach((input) => input.classList.remove('input-invalid'));
+      this.querySelectorAll('input:not(#lastSearchOpus)').forEach((input: HTMLInputElement) => (input.value = ''));
+      this.querySelectorAll('input[type="checkbox"]').forEach((input: HTMLInputElement) => (input.checked = false));
+      this.querySelectorAll('textarea').forEach((textarea: HTMLTextAreaElement) => (textarea.value = ''));
+      this.querySelectorAll('.input-invalid').forEach((input: HTMLInputElement) => input.classList.remove('input-invalid'));
     });
 
     // 요소 이벤트
     [studio, opus, title, actress, release].forEach((input) => {
-      input.addEventListener('keyup', (e) => {
-        if (e.target.id === 'title') {
-          e.target.value = e.target.value.trim().replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：').replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂').replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
-        } else if (e.target.id === 'actress') {
-          actressName.value = e.target.value.trim();
-        } else if (e.target.id === 'release') {
+      input.addEventListener('keyup', (e: KeyboardEvent) => {
+        const target = e.target as HTMLInputElement;
+        if (target.id === 'title') {
+          target.value = target.value.trim().replace(/[\\]/gi, '＼').replace(/[/]/gi, '／').replace(/[:]/gi, '：').replace(/[*]/gi, '＊').replace(/[?]/gi, '？').replace(/["]/gi, '＂').replace(/[<]/gi, '＜').replace(/[>]/gi, '＞').replace(/[|]/gi, '｜');
+        } else if (target.id === 'actress') {
+          actressName.value = target.value.trim();
+        } else if (target.id === 'release') {
           const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
-          e.target.value = release.value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
-          let isValid = DATE_PATTERN.test(e.target.value);
-          e.target.classList.toggle('input-invalid', !isValid);
+          target.value = release.value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
+          let isValid = DATE_PATTERN.test(target.value);
+          target.classList.toggle('input-invalid', !isValid);
         }
 
         let fullName = `[${studio.value}][${opus.value}][${title.value}][${actress.value}][${release.value}]`;
@@ -221,22 +222,23 @@ export default class FlayRegister extends HTMLElement {
     // 배우 이벤트
     // actressName, actressLocalname, actressBirth, actressBody, actressHeight, actressDebut
     saveBtn.addEventListener('click', () => {
-      let actress = { favorite: actressFavorite.checked, name: actressName.value, localName: actressLocalname.value, birth: actressBirth.value, body: actressBody.value, height: actressHeight.value, debut: actressDebut.value };
+      let actress: Partial<Actress> = { favorite: actressFavorite.checked, name: actressName.value, localName: actressLocalname.value, birth: actressBirth.value, body: actressBody.value, height: parseInt(actressHeight.value), debut: parseInt(actressDebut.value) };
       console.log('saveBtnClick', actress);
       FlayAction.putActress(actress);
     });
-    actressRowData.addEventListener('keyup', (e) => {
+    actressRowData.addEventListener('keyup', (e: KeyboardEvent) => {
       e.stopPropagation();
       if (e.keyCode === 17) {
         // Control key ignored
         return;
       }
-      e.target.value.split('\n').forEach((line) => {
+      const target = e.target as HTMLTextAreaElement;
+      target.value.split('\n').forEach((line) => {
         console.log('actressRowData line', line);
         const birthRegExp = /^(19[0-9][0-9]|20\d{2})年(0[0-9]|1[0-2])月(0[1-9]|[1-2][0-9]|3[0-1])日$/;
         const bodyRegExp = /^(7[0-9]|8[0-9]|9[0-9]|1\d{2})[A-J]? - (5[0-9]|6[0-9]) - (7[0-9]|8[0-9]|9[0-9]|1\d{2})$/;
         const heightRegExp = /^(1[4-7][0-9])$/;
-        const debutRegExp = /^(199[0-9]|20[0-2][0-9])$/;
+        // const debutRegExp = /^(199[0-9]|20[0-2][0-9])$/;
         if (/[0-9]年/.test(line)) {
           // 1987年09月07日 （現在 34歳）おとめ座
           const birth = line.split(' ')[0];
@@ -259,16 +261,16 @@ export default class FlayRegister extends HTMLElement {
     });
 
     // update lastSearchOpus
-    this.querySelector('#lastSearchOpus').addEventListener('change', (e) => {
-      FlayStorage.local.set('flay.search.lastSearchOpus', e.target.value);
+    this.querySelector('#lastSearchOpus').addEventListener('change', (e: Event) => {
+      FlayStorage.local.set('flay.search.lastSearchOpus', (e.target as HTMLInputElement).value);
     });
-    this.querySelector('#lastSearchOpus').value = FlayStorage.local.get('flay.search.lastSearchOpus', '');
+    (this.querySelector('#lastSearchOpus') as HTMLInputElement).value = FlayStorage.local.get('flay.search.lastSearchOpus', '');
     // open Torrent download
     this.querySelector('#dnNonoTorrent').addEventListener('click', () => FlaySearch.torrent.Nonojav(inputOpus.value));
     this.querySelector('#dnIjavTorrent').addEventListener('click', () => FlaySearch.torrent.Ijav(inputOpus.value));
 
     // studio-list
-    FlayAction.listOfStudio((list) => {
+    FlayAction.listOfStudio((list: Studio[]) => {
       studioList.innerHTML = Array.from(list)
         .map((studio) => `<option value="${studio}">`)
         .join('');

@@ -61,7 +61,7 @@ export interface Studio {
 }
 
 export interface Actress {
-  favorite: true;
+  favorite: boolean;
   name: string;
   localName: string;
   otherNames: string[];

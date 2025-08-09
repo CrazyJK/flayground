@@ -1,9 +1,12 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import DateUtils from '@lib/DateUtils';
+import { Flay } from '../../lib/FlayFetch';
 import './VideoDatePanel.scss';
 
 export default class VideoDatePanel extends HTMLElement {
-  constructor(flayList) {
+  flayList: Flay[];
+
+  constructor(flayList: Flay[]) {
     super();
 
     this.flayList = flayList;
@@ -23,7 +26,7 @@ export default class VideoDatePanel extends HTMLElement {
 
   #show(e) {
     const mode = e.target.value;
-    const getDate = (flay) => {
+    const getDate = (flay: Flay) => {
       switch (mode) {
         case 'P':
           return flay.video.lastPlay;
@@ -36,7 +39,7 @@ export default class VideoDatePanel extends HTMLElement {
       }
     };
 
-    const mmList = Array.from({ length: 12 }).map((v, i) => String(i + 1).padStart(2, 0));
+    const mmList = Array.from({ length: 12 }).map((v, i) => String(i + 1).padStart(2, '0'));
     const displayWrap = this.querySelector('.display-wrap');
     displayWrap.textContent = null;
 

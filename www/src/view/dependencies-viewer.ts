@@ -3,8 +3,8 @@ import './inc/Popup';
 
 fetch('./dependencies-viewer.json')
   .then((res) => res.json())
-  .then((json) => {
-    const dependenciesMap = Array.from(json).reduce((map, obj) => {
+  .then((json: { entry: string; svg: string }[]) => {
+    const dependenciesMap = Array.from(json).reduce((map: Map<string, string>, obj: { entry: string; svg: string }) => {
       map.set(obj.entry, obj.svg);
       return map;
     }, new Map());
@@ -15,12 +15,13 @@ fetch('./dependencies-viewer.json')
       option.innerHTML = entry;
     });
 
-    document.querySelector('select').addEventListener('change', (e) => {
-      console.log('Event', e.target.tagName, e.type, e.target.value);
+    document.querySelector('select').addEventListener('change', (e: Event) => {
+      const target = e.target as HTMLSelectElement;
+      console.log('Event', target.tagName, e.type, target.value);
       //
-      let entry = e.target.value;
+      let entry = target.value;
       if (entry) {
-        document.querySelector('main').innerHTML = dependenciesMap.get(e.target.value);
+        document.querySelector('main').innerHTML = dependenciesMap.get(entry);
         document.querySelector('main > svg > g > title').remove();
 
         // node에 id 재설정
@@ -40,7 +41,7 @@ fetch('./dependencies-viewer.json')
           node.querySelector('text').setAttribute('fill', 'currentColor');
         });
 
-        document.querySelectorAll('main svg g.edge').forEach((edge) => {
+        document.querySelectorAll('main svg g.edge').forEach((edge: SVGGElement) => {
           // edge에 from, to 설정
           let edgeTitle = edge.querySelector('title').textContent;
           const [from, to] = edgeTitle.split('->');
@@ -53,8 +54,9 @@ fetch('./dependencies-viewer.json')
       }
     });
 
-    document.querySelector('main').addEventListener('click', (e) => {
-      let clickedNode = e.target.closest('.node');
+    document.querySelector('main').addEventListener('click', (e: MouseEvent) => {
+      const target = e.target as HTMLElement;
+      let clickedNode = target.closest('.node');
       if (clickedNode !== null) {
         // 선택 노드
         let id = clickedNode.id;
@@ -64,7 +66,7 @@ fetch('./dependencies-viewer.json')
         // node
         clickedNode.classList.add('active');
         // edge
-        document.querySelectorAll('main svg g.edge').forEach((edge) => {
+        document.querySelectorAll('main svg g.edge').forEach((edge: SVGGElement) => {
           if (edge.dataset.from === id) {
             edge.classList.add('from', 'active');
             console.info('edge to', edge.dataset.to);
@@ -89,7 +91,7 @@ fetch('./dependencies-viewer.json')
     // js만 보기 토글
     let toggleJS = false;
     document.querySelector('#onlyJS').addEventListener('click', () => {
-      document.querySelectorAll('svg > g > g').forEach((g) => {
+      document.querySelectorAll('svg > g > g').forEach((g: SVGGElement) => {
         let containsJS = null;
         if (g.classList.contains('node')) {
           containsJS = g.classList.contains('js'); // 노드
@@ -107,6 +109,10 @@ class DragMove {
   offsetX = 0;
   offsetY = 0;
   scale = 100;
+
+  moveContainer: HTMLElement;
+  movingObject: HTMLElement;
+  zoomIndicator: HTMLElement | null;
 
   constructor(containerSelector, objectSelector, zoomIndicatorSelector) {
     this.moveContainer = document.querySelector(containerSelector);
@@ -151,9 +157,9 @@ class DragMove {
   async start() {
     this.movingObject.addEventListener('wheel', (e) => this.#zoom(e));
     this.movingObject.addEventListener('mousedown', (e) => this.#moveStart(e));
-    this.moveContainer.addEventListener('mouseup', (e) => this.#moveStop(e));
+    this.moveContainer.addEventListener('mouseup', () => this.#moveStop());
     this.moveContainer.addEventListener('mousemove', (e) => this.#moving(e));
-    if (this.zoomIndicator) this.zoomIndicator.addEventListener('click', (e) => this.#reset(e));
+    if (this.zoomIndicator) this.zoomIndicator.addEventListener('click', () => this.#reset());
   }
 }
 

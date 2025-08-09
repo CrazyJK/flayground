@@ -1,31 +1,39 @@
 import FlayCard from '@flay/domain/FlayCard';
 import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Actress, Tag } from '@lib/FlayFetch';
 import GridControl from '@ui/GridControl';
 import './inc/Popup';
 import './popup.tag.scss';
+
+// Window 객체 확장
+declare global {
+  interface Window {
+    tagList?: Tag[];
+    actressMap?: Map<number, Actress>;
+  }
+}
 
 window.tagList = [];
 window.actressMap = new Map();
 
 const urlParams = new URL(location.href).searchParams;
-const id = urlParams.get('id');
+const id = parseInt(urlParams.get('id'));
 
 const flayMap = new Map();
 
-const tagId = document.querySelector('#tagId');
-const tagGroup = document.querySelector('#tagGroup');
-const tagName = document.querySelector('#tagName');
-const tagDesc = document.querySelector('#tagDesc');
-const saveBtn = document.querySelector('#saveBtn');
-const delBtn = document.querySelector('#delBtn');
-const flayRank = document.querySelector('#flayRank');
+const tagId = document.querySelector('#tagId') as HTMLSpanElement;
+const tagGroup = document.querySelector('#tagGroup') as HTMLInputElement;
+const tagName = document.querySelector('#tagName') as HTMLInputElement;
+const tagDesc = document.querySelector('#tagDesc') as HTMLInputElement;
+const saveBtn = document.querySelector('#saveBtn') as HTMLButtonElement;
+const delBtn = document.querySelector('#delBtn') as HTMLButtonElement;
+const flayRank = document.querySelector('#flayRank') as HTMLSelectElement;
 
 document.querySelector('body > footer').appendChild(new GridControl('body > article'));
 
 function fetchTag() {
   FlayFetch.getTag(id).then((tag) => {
-    tagId.innerHTML = tag.id;
+    tagId.innerHTML = String(tag.id);
     tagGroup.value = tag.group;
     tagName.value = tag.name;
     tagDesc.value = tag.description;
@@ -44,17 +52,16 @@ function fetchTag() {
 fetchTag();
 
 flayRank.addEventListener('change', (e) => {
-  console.log('rank change', e.target.value);
-  toggleByRank(e.target.value);
+  toggleByRank((e.target as HTMLSelectElement).value);
 });
 
 saveBtn.addEventListener('click', () => {
-  FlayAction.putTag(tagId.textContent, tagGroup.value, tagName.value, tagDesc.value);
+  FlayAction.putTag(parseInt(tagId.textContent), tagGroup.value, tagName.value, tagDesc.value);
 });
 
 delBtn.addEventListener('click', () => {
   if (confirm('A U sure?')) {
-    FlayAction.deleteTag(tagId.textContent, tagName.value, tagDesc.value);
+    FlayAction.deleteTag(parseInt(tagId.textContent), tagName.value, tagDesc.value);
   }
 });
 
@@ -72,7 +79,7 @@ async function renderFlayCardList(opusList) {
 }
 
 function toggleByRank(selectedRank) {
-  document.querySelectorAll('.flay-card').forEach((flayCard) => {
+  document.querySelectorAll('.flay-card').forEach((flayCard: FlayCard) => {
     if (selectedRank === '') {
       flayCard.style.display = 'block';
     } else {
@@ -90,7 +97,7 @@ function countFlaySizeByRank() {
   let flaySizeByRank = [0, 0, 0, 0, 0, 0];
   let sumRank = 0;
   let totalFlay = 0;
-  document.querySelectorAll('.flay-card').forEach((flayCard, key, parent) => {
+  document.querySelectorAll('.flay-card').forEach((flayCard: FlayCard) => {
     let rank = parseInt(flayCard.getAttribute('rank'));
     flaySizeByRank[rank] += 1;
     if (rank !== 0) {

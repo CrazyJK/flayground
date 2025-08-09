@@ -16,9 +16,9 @@ class Page extends FlayProvider {
     const flayCard = new FlayCard({ excludes: ['FlayComment', 'FlayFiles', 'FlayTag'] });
     flayCard.set(opus);
 
-    const article = document.querySelector('body > article');
+    const article = document.querySelector('body > article') as HTMLElement;
     const width = 400;
-    const height = parseInt((width * 269) / 400);
+    const height = Math.round((width * 269) / 400);
 
     const left = RandomUtils.getRandomInt(0, article.offsetWidth - width);
     const top = RandomUtils.getRandomInt(0, article.offsetHeight - height);

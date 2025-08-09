@@ -1,10 +1,17 @@
 import FlayStudio from '@flay/domain/part/FlayStudio';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay, Studio } from '@lib/FlayFetch';
 import StringUtils from '@lib/StringUtils';
 import './inc/Page';
 import './page.studio.scss';
 
 class Page {
+  studioList: Studio[];
+  debounceTimer;
+  studioElements: Map<string, FlayStudio>;
+
+  searchInput: HTMLInputElement;
+  main: HTMLElement;
+
   constructor() {
     this.studioList = [];
     this.debounceTimer = null;
@@ -37,13 +44,30 @@ class Page {
     const fragment = document.createDocumentFragment();
 
     this.studioList.forEach((studio) => {
-      const studioElement = new FlayStudio();
-      studioElement.set({ studio: studio.name, archive: false });
+      const flayStudio = new FlayStudio();
+
+      const flay: Flay = {
+        studio: studio.name,
+        opus: '',
+        title: '',
+        actressList: [],
+        release: '',
+        score: 0,
+        actressPoint: 0,
+        studioPoint: 0,
+        archive: false,
+        video: null,
+        files: null,
+        length: 0,
+        lastModified: 0,
+      };
+
+      flayStudio.set(flay);
 
       // 캐시에 DOM 요소 저장 (나중에 검색에서 사용)
-      this.studioElements.set(studio.name, studioElement);
+      this.studioElements.set(studio.name, flayStudio);
 
-      fragment.appendChild(studioElement);
+      fragment.appendChild(flayStudio);
     });
 
     this.main.appendChild(fragment);

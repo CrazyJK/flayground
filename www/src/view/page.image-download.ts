@@ -7,22 +7,30 @@ class Page {
   constructor() {}
 
   async start() {
-    document.querySelector('#openFolderBtn').addEventListener('click', (e) => FlayAction.explore(e.target.textContent));
+    document.querySelector('#openFolderBtn').addEventListener('click', (e) => FlayAction.explore((e.target as HTMLElement).textContent));
 
     document.querySelector('#pageUrl').addEventListener('change', () => this.runDownload());
   }
 
   async runDownload() {
     const searchParams = new URLSearchParams({
-      pageUrl: document.querySelector('#pageUrl').value,
-      downloadDir: document.querySelector('#downloadDir').value,
-      folderName: document.querySelector('#folderName').value,
-      titlePrefix: document.querySelector('#titlePrefix').value,
-      titleCssQuery: document.querySelector('#titleCssQuery').value,
-      minimumKbSize: document.querySelector('#minimumKbSize').value,
+      pageUrl: (document.querySelector('#pageUrl') as HTMLInputElement).value,
+      downloadDir: (document.querySelector('#downloadDir') as HTMLInputElement).value,
+      folderName: (document.querySelector('#folderName') as HTMLInputElement).value,
+      titlePrefix: (document.querySelector('#titlePrefix') as HTMLInputElement).value,
+      titleCssQuery: (document.querySelector('#titleCssQuery') as HTMLInputElement).value,
+      minimumKbSize: (document.querySelector('#minimumKbSize') as HTMLInputElement).value,
     });
 
-    const { imageFiles, imageUrls, localPath, message, pageUrl, result } = await ApiClient.get('/image/pageImageDownload?' + searchParams.toString());
+    const imageInfo = await ApiClient.get('/image/pageImageDownload?' + searchParams.toString());
+    const { imageFiles, imageUrls, localPath, message, result } = imageInfo as {
+      imageFiles: string[];
+      imageUrls: string[];
+      localPath: string;
+      message: string;
+      pageUrl: string;
+      result: boolean;
+    };
     if (result) {
       document.querySelector('#openFolderBtn').innerHTML = localPath;
       document.querySelector('#fileList').innerHTML = imageFiles

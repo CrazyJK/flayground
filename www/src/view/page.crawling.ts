@@ -27,9 +27,13 @@ class Page {
   #actressCache = new Map(); // Cache for actress data
   #recordCache = new Map(); // Cache for NanoStore records
 
+  article: HTMLElement;
+  retryBtn: HTMLButtonElement;
+  itemRepository: HTMLElement;
+
   constructor() {
     document.querySelector('#startBtn').addEventListener('click', () => {
-      this.#startPageNo = parseInt(document.querySelector('#srcPageNo').value);
+      this.#startPageNo = parseInt((document.querySelector('#srcPageNo') as HTMLInputElement).value);
       this.#paging.srcPageNo = this.#startPageNo;
       this.#callCrawling();
       document.querySelector('#starter').classList.add('hide');
@@ -232,7 +236,7 @@ class Page {
 
       const div = document.createElement('div');
       div.dataset.opus = data.opus.text;
-      div.dataset.itemIndex = this.#paging.itemIndex + count++;
+      div.dataset.itemIndex = String(this.#paging.itemIndex + count++);
       div.classList.toggle('has-video', !video.error);
 
       // Use template literals for HTML generation
@@ -297,7 +301,7 @@ class Page {
     `;
   }
 
-  #copyToClipboard(target, text) {
+  #copyToClipboard(target, text: string = '') {
     window.navigator.clipboard.writeText(text || this.#getText(target)).then(() => {
       target.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
     });
@@ -343,8 +347,8 @@ class Page {
       return;
     }
 
-    const itemList = postList.map((div, i) => {
-      const elementOfImg = div.querySelector('img.cover');
+    const itemList = postList.map((div) => {
+      const elementOfImg = div.querySelector('img.cover') as HTMLImageElement;
       const elementOfOpus = div.querySelector('.card-content h3.title a');
       const elementOfPost = div.querySelector('.card-content p.subtitle a');
       const nodeListOfTags = div.querySelectorAll('.tags a');
@@ -365,7 +369,7 @@ class Page {
           text: this.#getText(a),
           href: this.#getHref(a),
           type: Array.from(a.querySelectorAll('.tooltip'))
-            ?.map((tip) => tip.dataset.tooltip)
+            ?.map((tip: HTMLElement) => tip.dataset.tooltip)
             .join(','),
         })),
         tagList: Array.from(nodeListOfTags).map((a) => ({ text: this.#getText(a), href: this.#getHref(a) })),
@@ -389,7 +393,7 @@ class Page {
     const url = LIST_URL + this.#paging.srcPageNo;
     ApiClient.get(`/crawling/curl?url=${encodeURIComponent(url)}`);
     this.#notice(this.#paging.srcPageNo + '페이지 크롤링 중...');
-    document.querySelector('#srcPageURL').href = url;
+    (document.querySelector('#srcPageURL') as HTMLAnchorElement).href = url;
   }
 
   #notice(message, hide = false, isError = false) {
@@ -400,10 +404,10 @@ class Page {
   }
 
   #updateFootMessage() {
-    document.querySelector('#currentPageNo').innerHTML = Math.ceil((this.#paging.itemIndex + 1) / 15) + this.#startPageNo - 1;
-    document.querySelector('#loadedPageNo').innerHTML = this.#paging.srcPageNo;
-    document.querySelector('#currentItemNo').innerHTML = this.#paging.itemIndex + 1;
-    document.querySelector('#totalItemNo').innerHTML = this.#paging.itemLength;
+    document.querySelector('#currentPageNo').innerHTML = String(Math.ceil((this.#paging.itemIndex + 1) / 15) + this.#startPageNo - 1);
+    document.querySelector('#loadedPageNo').innerHTML = String(this.#paging.srcPageNo);
+    document.querySelector('#currentItemNo').innerHTML = String(this.#paging.itemIndex + 1);
+    document.querySelector('#totalItemNo').innerHTML = String(this.#paging.itemLength);
   }
 }
 

@@ -1,7 +1,7 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import VideoDatePanel from '@flay/panel/VideoDatePanel';
 import FileUtils from '@lib/FileUtils';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupStudio } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import { tabUI } from '@lib/TabUI';
@@ -9,12 +9,12 @@ import { sortable } from '@lib/TableUtils';
 import './inc/Page';
 import './page.statistics.scss';
 
-tabUI(document);
+tabUI(document.parentElement);
 
-const to2 = (n) => (n < 10 ? '0' + n : n);
-const startDateInput = document.querySelector('#startDate');
-const endDateInput = document.querySelector('#endDate');
-const withArchiveData = document.querySelector('#withArchiveData');
+// const to2 = (n) => (n < 10 ? '0' + n : n);
+const startDateInput = document.querySelector('#startDate') as HTMLInputElement;
+const endDateInput = document.querySelector('#endDate') as HTMLInputElement;
+const withArchiveData = document.querySelector('#withArchiveData') as HTMLInputElement;
 
 startDateInput.addEventListener('change', start);
 endDateInput.addEventListener('change', start);
@@ -36,12 +36,12 @@ Promise.all([FlayFetch.getFlayAll(), FlayFetch.getArchiveAll()]).then(([instance
 
 // setInitialValue();
 
-function setInitialValue() {
-  const today = new Date();
-  const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
-  startDateInput.value = `${today.getFullYear() - 3}-${to2(lastDayOfMonth.getMonth() + 1)}-01`;
-  endDateInput.value = `${today.getFullYear()}-${to2(lastDayOfMonth.getMonth() + 2)}-${to2(lastDayOfMonth.getDate())}`;
-}
+// function setInitialValue() {
+//   const today = new Date();
+//   const lastDayOfMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+//   startDateInput.value = `${today.getFullYear() - 3}-${to2(lastDayOfMonth.getMonth() + 1)}-01`;
+//   endDateInput.value = `${today.getFullYear()}-${to2(lastDayOfMonth.getMonth() + 2)}-${to2(lastDayOfMonth.getDate())}`;
+// }
 
 function start() {
   startDate = startDateInput.value.replace(/-/g, '.');
@@ -64,7 +64,7 @@ function start() {
   if (StringUtils.isBlank(startDate) || StringUtils.isBlank(endDate)) {
     filteredList = rawList;
   } else {
-    rawList.forEach((flay) => {
+    rawList.forEach((flay: Flay) => {
       if (startDate < flay.release && flay.release < endDate) {
         filteredList.push(flay);
       }
@@ -95,7 +95,7 @@ function startStudioActress() {
 
   function analyzeActress() {
     const rawMap = new Map();
-    Array.from(filteredList).forEach((flay) => {
+    Array.from(filteredList).forEach((flay: Flay) => {
       Array.from(flay.actressList).forEach((actress) => {
         fillMap(rawMap, actress, flay);
       });
@@ -124,11 +124,11 @@ function startStudioActress() {
   }
 
   function calculateRank(rawMap) {
-    rawMap.forEach((value, key, map) => {
+    rawMap.forEach((value) => {
       // sum
       let sum = 0;
       let shotLength = 0;
-      value.list.forEach((flay) => {
+      value.list.forEach((flay: Flay) => {
         sum += flay.video.rank;
         if (flay.video.likes?.length > 0) {
           ++shotLength;
@@ -260,7 +260,7 @@ function startTimeline() {
   timelineMap.forEach((flayList, key) => {
     const rankMap = new Map();
     Array.from({ length: 7 }, (v, i) => i).forEach((r) => rankMap.set(r - 1, []));
-    Array.from(flayList).forEach((flay) => rankMap.get(flay.video.rank).push(flay));
+    Array.from(flayList).forEach((flay: Flay) => rankMap.get(flay.video.rank).push(flay));
 
     const time = wrapper.appendChild(document.createElement('div'));
     time.classList.add('grid-data', 'time');
@@ -331,7 +331,7 @@ async function startActressAge() {
   sortedAgeFlayMap.forEach((flayList, key) => {
     const rankMap = new Map();
     Array.from({ length: 7 }, (v, i) => i).forEach((r) => rankMap.set(r - 1, []));
-    Array.from(flayList).forEach((flay) => rankMap.get(flay.video.rank).push(flay));
+    Array.from(flayList).forEach((flay: Flay) => rankMap.get(flay.video.rank).push(flay));
 
     const time = wrapper.appendChild(document.createElement('div'));
     time.classList.add('grid-data', 'time');
@@ -416,7 +416,7 @@ async function startShotFlay() {
     `;
     item.querySelector('.title').addEventListener('click', () => popupFlay(flay.opus));
   }
-  document.querySelector('#shotFlayCount').innerHTML = shotFlayList.length;
+  document.querySelector('#shotFlayCount').innerHTML = String(shotFlayList.length);
   console.log(studioMap, actressMap, releaseMap);
 
   document.querySelector('.statistics-studio').textContent = null;
@@ -469,13 +469,12 @@ async function startShotFlay() {
   });
 
   document.querySelectorAll('.statistics input').forEach((checkbox) => {
-    checkbox.addEventListener('change', (e) => {
-      console.log('checkbox change', e.target.checked, e.target.value, document.querySelectorAll('.statistics input:checked').length);
+    checkbox.addEventListener('change', () => {
       if (document.querySelectorAll('.statistics input:checked').length === 0) {
         wrapper.querySelectorAll('li').forEach((li) => li.classList.remove('hide'));
-        document.querySelectorAll('.statistics input').forEach((input) => (input.disabled = false));
+        document.querySelectorAll('.statistics input').forEach((input: HTMLInputElement) => (input.disabled = false));
       } else {
-        const checkedFilterWords = Array.from(document.querySelectorAll('.statistics input:checked')).map((checkbox) => checkbox.value);
+        const checkedFilterWords = Array.from(document.querySelectorAll('.statistics input:checked')).map((checkbox: HTMLInputElement) => checkbox.value);
         wrapper.querySelectorAll('li').forEach((li) => {
           let found = true;
           checkedFilterWords.forEach((word) => {
@@ -496,18 +495,18 @@ async function startShotFlay() {
         });
         console.log(filteredStudio, filteredActress, filteredRelease);
 
-        document.querySelectorAll('.statistics-studio input').forEach((input) => {
+        document.querySelectorAll('.statistics-studio input').forEach((input: HTMLInputElement) => {
           input.disabled = !filteredStudio.has(input.value);
         });
-        document.querySelectorAll('.statistics-actress input').forEach((input) => {
+        document.querySelectorAll('.statistics-actress input').forEach((input: HTMLInputElement) => {
           input.disabled = !filteredActress.has(input.value);
         });
-        document.querySelectorAll('.statistics-release input').forEach((input) => {
+        document.querySelectorAll('.statistics-release input').forEach((input: HTMLInputElement) => {
           input.disabled = !filteredRelease.has(input.value);
         });
       }
 
-      document.querySelector('#shotFlayCount').innerHTML = wrapper.querySelectorAll('li:not(.hide)').length;
+      document.querySelector('#shotFlayCount').innerHTML = String(wrapper.querySelectorAll('li:not(.hide)').length);
     });
   });
 }

@@ -10,7 +10,7 @@ import './page.girls.scss';
 class PageGirls {
   constructor() {
     document.querySelector('.thead .cover .list-simple').addEventListener('click', () => {
-      document.querySelectorAll('ul li:not(.thead)').forEach((li) => {
+      document.querySelectorAll('ul li:not(.thead)').forEach((li: HTMLElement) => {
         if (li.style.height === 'auto') {
           li.removeAttribute('style');
         } else {
@@ -21,7 +21,7 @@ class PageGirls {
 
     document.querySelector('.thead .cover .view-mode').addEventListener('click', (e) => {
       const viewMode = document.querySelector('ul').classList.toggle('box');
-      e.target.innerHTML = viewMode ? 'Box' : 'List';
+      (e.target as HTMLElement).innerHTML = viewMode ? 'Box' : 'List';
       document.querySelector('.thead .cover .list-simple').innerHTML = viewMode ? '' : 'simple';
     });
   }

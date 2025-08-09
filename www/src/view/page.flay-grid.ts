@@ -19,7 +19,7 @@ class Page {
       .querySelector('body > header')
       .appendChild(new FlayCondition())
       .addEventListener('fetch', async (e) => {
-        this.#opusList = e.target.opusList;
+        this.#opusList = (e.target as FlayCondition).opusList;
 
         document.querySelector('#flayTotal').innerHTML = this.#opusList.length;
         document.querySelector('main').textContent = null;

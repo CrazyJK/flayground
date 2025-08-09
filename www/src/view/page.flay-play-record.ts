@@ -138,7 +138,7 @@ class Page {
     const items = document.querySelectorAll('body > main > ol > li');
 
     // 각 항목에 지연된 등장 애니메이션 추가
-    items.forEach((item, index) => {
+    items.forEach((item: HTMLElement, index) => {
       item.style.opacity = '0';
       item.style.transform = 'translateY(20px)';
       item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
@@ -154,7 +154,7 @@ class Page {
     const searchTerm = e.target.value.toLowerCase();
     const items = document.querySelectorAll('body > main > ol > li');
 
-    items.forEach((item) => {
+    items.forEach((item: HTMLElement) => {
       const opus = item.querySelector('.opus').textContent.toLowerCase();
       if (opus.includes(searchTerm)) {
         item.style.display = '';
@@ -179,8 +179,8 @@ class Page {
     } else if (type === 'progress') {
       // 진행률(마지막 재생 위치) 기준 정렬
       items.sort((a, b) => {
-        const progressA = parseInt(a.querySelector('.progress-bar').style.width);
-        const progressB = parseInt(b.querySelector('.progress-bar').style.width);
+        const progressA = parseInt((a.querySelector('.progress-bar') as HTMLElement).style.width);
+        const progressB = parseInt((b.querySelector('.progress-bar') as HTMLElement).style.width);
         return progressB - progressA;
       });
 
@@ -194,7 +194,7 @@ class Page {
 
   handleRecordClick(record) {
     // 클릭 효과 추가
-    const clickedItem = document.querySelector(`li[data-opus="${record.opus}"]`);
+    const clickedItem = document.querySelector(`li[data-opus="${record.opus}"]`) as HTMLElement;
     clickedItem.style.transform = 'scale(0.98)';
     setTimeout(() => {
       clickedItem.style.transform = '';
@@ -208,8 +208,8 @@ class Page {
     const containers = document.querySelectorAll('.progress-container');
 
     containers.forEach((container) => {
-      const currentTime = container.querySelector('.current-time');
-      const duration = container.querySelector('.duration');
+      const currentTime = container.querySelector('.current-time') as HTMLElement;
+      const duration = container.querySelector('.duration') as HTMLElement;
 
       // 현재 시간 요소와 전체 시간 요소의 위치 계산
       if (currentTime && duration) {

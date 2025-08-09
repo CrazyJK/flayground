@@ -1,4 +1,4 @@
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Actress } from '@lib/FlayFetch';
 import { popupActress, popupActressInfo } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import favoriteSVG from '@svg/favorite';
@@ -7,6 +7,13 @@ import './inc/Page';
 import './page.actress.scss';
 
 class Page {
+  actressList: Actress[]; // 전체 배우 목록
+  filteredActresses: Actress[]; // 검색 결과 목록
+  domCache: Map<string, HTMLElement>;
+  debounceTimer;
+  searchIndex;
+  main: HTMLElement;
+
   constructor() {
     this.actressList = [];
     this.filteredActresses = [];
@@ -46,7 +53,7 @@ class Page {
       // 각 배우의 모든 필드를 소문자로 변환하여 검색용 문자열 생성
       const searchText = Object.values(actress).join(' ').toLowerCase();
       // 인덱스에 저장
-      actress.searchText = searchText;
+      actress['searchText'] = searchText;
     });
   }
 
@@ -62,7 +69,7 @@ class Page {
       }
 
       // 필터링된 배우 목록
-      this.filteredActresses = this.actressList.filter((actress) => actress.searchText.includes(keyword));
+      this.filteredActresses = this.actressList.filter((actress) => actress['searchText'].includes(keyword));
 
       // 결과 렌더링
       this.renderActresses(this.filteredActresses);

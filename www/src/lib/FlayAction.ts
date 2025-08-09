@@ -1,5 +1,5 @@
 import ApiClient, { ApiClientOptions } from '@lib/ApiClient';
-import { Actress, Video } from './FlayFetch';
+import { Actress, Studio, Video } from './FlayFetch';
 
 // 콜백 함수 타입 정의
 type SuccessCallback<T = unknown> = (data?: T) => void;
@@ -114,7 +114,7 @@ export default {
       failCallback
     );
   },
-  putStudio: (studio: { name: string; homepage?: string }, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
+  putStudio: (studio: Partial<Studio>, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
       '/info/studio',
       {
@@ -147,7 +147,7 @@ export default {
   acceptCandidates: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/flay/candidates/' + opus, { method: 'PATCH' }, callback, failCallback);
   },
-  updateActress: (actress: { name: string; localName?: string; birth?: string; debut?: string; height?: number; cup?: string }, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
+  updateActress: (actress: Partial<Actress>, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/actress', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(actress) }, callback, failCallback);
   },
   subtitlesUrlIfFound: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {

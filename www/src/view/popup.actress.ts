@@ -1,6 +1,6 @@
 import FlayCard from '@flay/domain/FlayCard';
 import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
 import FlaySearch from '@lib/FlaySearch';
 import favoriteSVG from '@svg/favorite';
 import GridControl from '@ui/GridControl';
@@ -8,6 +8,34 @@ import './inc/Popup';
 import './popup.actress.scss';
 
 class PopupActress {
+  name: string;
+  flayCardMap: Map<string, FlayCard>;
+  startDate: string;
+  endDate: string;
+
+  favorite: HTMLInputElement;
+  favLabel: HTMLElement;
+  actressName: HTMLInputElement;
+  localName: HTMLInputElement;
+  otherNames: HTMLInputElement;
+  flayRank: HTMLInputElement;
+  birth: HTMLInputElement;
+  age: HTMLInputElement;
+  body: HTMLInputElement;
+  height: HTMLInputElement;
+  debut: HTMLInputElement;
+  comment: HTMLInputElement;
+  saveBtn: HTMLButtonElement;
+  studioList: HTMLSelectElement;
+  tagList: HTMLSelectElement;
+  toggleArchive: HTMLButtonElement;
+
+  searchAvdbsBtn: HTMLButtonElement;
+  searchMinnanoBtn: HTMLButtonElement;
+
+  actress: Actress;
+  allFlayList: Flay[];
+
   constructor() {
     this.flayCardMap = new Map();
 
@@ -58,8 +86,8 @@ class PopupActress {
       this.#toggleFlayCard();
     });
     // 검색 이벤트
-    this.searchAvdbsBtn.addEventListener('click', (e) => FlaySearch.Avdbs(this.localName.value));
-    this.searchMinnanoBtn.addEventListener('click', (e) => FlaySearch.actress.Minnano(this.localName.value));
+    this.searchAvdbsBtn.addEventListener('click', () => FlaySearch.Avdbs(this.localName.value));
+    this.searchMinnanoBtn.addEventListener('click', () => FlaySearch.actress.Minnano(this.localName.value));
     // 저장 이벤트
     this.saveBtn.addEventListener('click', () => {
       FlayAction.updateActress({
@@ -70,16 +98,16 @@ class PopupActress {
           .split(',')
           .filter((name) => name.trim() !== '')
           .map((name) => name.trim()),
-        debut: this.debut.value.trim(),
+        debut: parseInt(this.debut.value.trim()),
         birth: this.birth.value.trim(),
         body: this.body.value.trim(),
-        height: this.height.value.trim(),
+        height: parseInt(this.height.value.trim()),
         comment: this.comment.value.trim(),
       });
     });
     this.toggleArchive.addEventListener('click', () => {
       const isArchive = this.toggleArchive.dataset.archive === 'on';
-      Array.from(document.querySelectorAll('flay-card'))
+      (Array.from(document.querySelectorAll('flay-card')) as FlayCard[])
         .filter((flayCard) => flayCard.hasAttribute('archive'))
         .filter((flayCard) => flayCard.dataset.show === 'true')
         .forEach((flayCard) => {
@@ -112,8 +140,8 @@ class PopupActress {
     this.birth.value = this.actress.birth;
     this.age.value = calcAge(this.actress.birth) + 'y';
     this.body.value = this.actress.body;
-    this.height.value = this.actress.height;
-    this.debut.value = this.actress.debut;
+    this.height.value = String(this.actress.height);
+    this.debut.value = String(this.actress.debut);
     this.comment.value = this.actress.comment;
   }
 
@@ -160,7 +188,7 @@ class PopupActress {
     }
   }
 
-  #flayCardList() {
+  #flayCardList(): FlayCard[] {
     return Array.from(this.flayCardMap.values());
   }
 
@@ -242,8 +270,8 @@ class PopupActress {
    */
   #toggleFlayCard() {
     let rank = parseInt(this.flayRank.value);
-    let studios = Array.from(this.studioList.querySelectorAll('input:checked')).map((input) => input.value);
-    let tags = Array.from(this.tagList.querySelectorAll('input:checked')).map((input) => parseInt(input.value));
+    let studios = Array.from(this.studioList.querySelectorAll('input:checked')).map((input: HTMLInputElement) => input.value);
+    let tags = Array.from(this.tagList.querySelectorAll('input:checked')).map((input: HTMLInputElement) => parseInt(input.value));
 
     // console.log(`
     //   rank: ${rank}
@@ -282,7 +310,7 @@ class PopupActress {
         }
       }
 
-      flayCard.dataset.show = show;
+      flayCard.dataset.show = String(show);
       flayCard.style.display = show ? 'block' : 'none';
       if (show) {
         flayCard.hasAttribute('archive') && archiveCount++;

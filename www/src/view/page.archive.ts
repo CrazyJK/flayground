@@ -6,10 +6,13 @@ import './page.archive.scss';
 
 class Page {
   async start() {
-    const flayArticle = document.querySelector('body > main').appendChild(new FlayArticle());
+    const flayArticle = document.querySelector('body > main').appendChild(new FlayArticle({}));
     const flayPagination = document.querySelector('body > footer').appendChild(new FlayPagination());
 
-    flayPagination.addEventListener('change', async (e) => flayArticle.set(await FlayFetch.getArchive(e.target.opus)));
+    flayPagination.addEventListener('change', async (e) => {
+      const pagination = e.target as FlayPagination;
+      flayArticle.set(await FlayFetch.getArchive(pagination.opus));
+    });
     flayPagination.set(await FlayFetch.getArchiveOpusList());
   }
 }

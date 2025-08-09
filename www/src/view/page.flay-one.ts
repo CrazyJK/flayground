@@ -11,7 +11,7 @@ class Page {
 
   async start() {
     const flayCondition = document.querySelector('body > main > header').appendChild(new FlayCondition());
-    const flayArticle = document.querySelector('body > main > article').appendChild(new FlayArticle());
+    const flayArticle = document.querySelector('body > main > article').appendChild(new FlayArticle({}));
 
     flayCondition.addEventListener('fetch', async () => {
       this.opusList = flayCondition.opusList;

@@ -24,7 +24,7 @@ const entryPoints = {
     'page.cover-popout': './src/view/page.cover-popout.js',
     'page.dragndrop': './src/view/page.dragndrop.js',
     'page.girls': './src/view/page.girls.js',
-    'page.actress': './src/view/page.actress.js',
+    'page.actress': './src/view/page.actress.ts',
     'page.studio': './src/view/page.studio.js',
     'page.tags': './src/view/page.tags.js',
     'page.control': './src/view/page.control.js',
@@ -39,7 +39,7 @@ const entryPoints = {
   },
   misc: {
     'page.kamoru-diary': './src/view/page.kamoru-diary.js',
-    'page.crawling': './src/view/page.crawling.js',
+    'page.crawling': './src/view/page.crawling.ts',
   },
   popups: {
     'popup.cover': './src/view/popup.cover.js',

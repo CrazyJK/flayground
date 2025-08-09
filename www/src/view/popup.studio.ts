@@ -1,11 +1,26 @@
 import FlayCard from '@flay/domain/FlayCard';
 import flayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
 import GridControl from '@ui/GridControl';
 import './inc/Popup';
 import './popup.studio.scss';
 
 class PopupStudio {
+  name: string;
+  flayCardMap: Map<string, FlayCard>;
+  startDate: string;
+  endDate: string;
+
+  studioName: HTMLInputElement;
+  studioCompany: HTMLInputElement;
+  studioHomepage: HTMLInputElement;
+  flayRank: HTMLSelectElement;
+  saveBtn: HTMLButtonElement;
+  actressList: HTMLSelectElement;
+  tagList: HTMLSelectElement;
+
+  allFlayList: Flay[];
+
   constructor() {
     this.flayCardMap = new Map();
 
@@ -82,7 +97,7 @@ class PopupStudio {
         this.allFlayList.push(archiveFlay);
       }
     });
-    document.querySelector('#totalCount').value = this.allFlayList.length + ' F';
+    (document.querySelector('#totalCount') as HTMLInputElement).value = this.allFlayList.length + ' F';
 
     const opusList = instanceFlayList
       .sort((f1, f2) => f2.release.localeCompare(f1.release))
@@ -194,8 +209,8 @@ class PopupStudio {
    */
   #toggleFlayCard() {
     let rank = parseInt(this.flayRank.value);
-    let actressList = Array.from(this.actressList.querySelectorAll('input:checked')).map((input) => input.value);
-    let tags = Array.from(this.tagList.querySelectorAll('input:checked')).map((input) => parseInt(input.value));
+    let actressList = Array.from(this.actressList.querySelectorAll('input:checked')).map((input: HTMLInputElement) => input.value);
+    let tags = Array.from(this.tagList.querySelectorAll('input:checked')).map((input: HTMLInputElement) => parseInt(input.value));
 
     console.log(`
       rank: ${rank}

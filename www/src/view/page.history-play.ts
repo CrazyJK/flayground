@@ -43,7 +43,7 @@ class Page {
       // 연도 레전드 추가
       const legend = document.createElement('h2');
       legend.className = 'legend';
-      legend.textContent = year; // innerHTML 대신 textContent 사용
+      legend.textContent = String(year); // innerHTML 대신 textContent 사용
       fragment.appendChild(legend);
     }
 
@@ -96,9 +96,9 @@ class Page {
   }
 
   // 새로운 메소드: 캐싱된 DOM 참조를 이용해 데이터 적용
-  #applyDataToDayBars(dateMap, dateBarMap) {
+  #applyDataToDayBars(dateMap: Record<string, string[]>, dateBarMap: Record<string, HTMLElement>) {
     for (const [date, opusList] of Object.entries(dateMap)) {
-      const dayBar = dateBarMap[date];
+      const dayBar = dateBarMap[date] as HTMLElement;
       if (dayBar) {
         dayBar.style.height = opusList.length * 8 + 'px';
         dayBar.title = `[${date}] ${opusList.length} played\n\n${opusList.join(', ')}`;

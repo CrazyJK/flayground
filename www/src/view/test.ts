@@ -5,6 +5,7 @@ import { Countdown } from '@ui/Countdown';
 import { ModalShadowWindow } from '@ui/ModalShadowWindow';
 import { ModalWindow } from '@ui/ModalWindow';
 import { TickTimer } from '@ui/TickTimer';
+import FlayMarker from '../flay/domain/FlayMarker';
 import './inc/Page';
 import './test.scss';
 
@@ -19,7 +20,7 @@ class Page {
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Memo', () => this.#memoWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageFall', () => this.#imageFallWindow(wUnit, hUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageOne', () => this.#imageOneWindow(wUnit, hUnit)));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Browser', () => this.#browserWindow(wUnit, hUnit)));
+    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Browser', () => this.#browserWindow(wUnit)));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Countdown', () => this.#countdown()));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'TickTimer', () => this.#tickTimer()));
     document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'FlayMarkerPanel', () => this.#flayMarkerPanel()));
@@ -112,11 +113,11 @@ class Page {
             edges: [MODAL_EDGE.TOP, MODAL_EDGE.RIGHT],
           })
         )
-        .appendChild(new ImageOne({ mode: 'random' }));
+        .appendChild(new ImageOne());
     });
   }
 
-  #browserWindow(wUnit, hUnit) {
+  #browserWindow(wUnit) {
     import(/* webpackChunkName: "BrowserPanel" */ '@ui/BrowserPanel').then(({ BrowserPanel }) => {
       document
         .querySelector('body > main')
@@ -138,7 +139,7 @@ class Page {
     const header = document.body.appendChild(document.createElement('header'));
 
     const countdown = header.appendChild(new Countdown());
-    const time = header.appendChild(document.createElement('input'));
+    const time = header.appendChild(document.createElement('input')) as HTMLInputElement;
     const startBtn = header.appendChild(document.createElement('button'));
     const pauseBtn = header.appendChild(document.createElement('button'));
     const resumeBtn = header.appendChild(document.createElement('button'));
@@ -150,9 +151,9 @@ class Page {
     resetBtn.innerHTML = 'Reset';
 
     time.type = 'number';
-    time.min = 1;
-    time.step = 1;
-    time.value = 10;
+    time.min = String(1);
+    time.step = String(1);
+    time.value = String(10);
 
     header.style.cssText = 'position: absolute; top: 10rem; left: 10rem; display: flex; flex-direction: column; align-items: center;';
     countdown.style.cssText = 'padding: 1rem; border: 1px solid var(--color-orange); width: 12rem; height: 12rem';
@@ -162,7 +163,7 @@ class Page {
     resumeBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
     resetBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
 
-    startBtn.addEventListener('click', () => countdown.start(time.value));
+    startBtn.addEventListener('click', () => countdown.start(Number(time.value)));
     pauseBtn.addEventListener('click', () => countdown.pause());
     resumeBtn.addEventListener('click', () => countdown.resume());
     resetBtn.addEventListener('click', () => countdown.reset());
@@ -184,9 +185,9 @@ class Page {
     stopBtn.textContent = 'Stop';
 
     time.type = 'number';
-    time.min = 1;
-    time.step = 1;
-    time.value = 10;
+    time.min = String(1);
+    time.step = String(1);
+    time.value = String(10);
 
     header.style.cssText = 'position: absolute; top: 10rem; left: 24rem; display: flex; flex-direction: column; align-items: center;';
     timer.style.cssText = 'padding: 1rem; border: 1px solid var(--color-orange); width: 12rem; height: 12rem; font-size: 8rem;';
@@ -196,7 +197,7 @@ class Page {
     resumeBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
     stopBtn.style.cssText = 'width: 6rem; margin: 1rem; padding: 0.25rem 0.5rem; border: 1px solid var(--color-orange)';
 
-    startBtn.addEventListener('click', () => timer.start(time.value));
+    startBtn.addEventListener('click', () => timer.start(Number(time.value)));
     stopBtn.addEventListener('click', () => timer.stop());
     pauseBtn.addEventListener('click', () => timer.pause());
     resumeBtn.addEventListener('click', () => timer.resume());
@@ -205,13 +206,13 @@ class Page {
   #flayMarkerPanel() {
     const mainElement = document.querySelector('body > main');
     import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')
-      .then(({ FlayMarkerPanel }) => new FlayMarkerPanel())
+      .then(({ FlayMarkerPanel }) => new FlayMarkerPanel({}))
       .then((flayMarkerPanel) => {
         mainElement.appendChild(flayMarkerPanel);
-        mainElement.addEventListener('click', (e) => {
+        mainElement.addEventListener('click', (e: MouseEvent) => {
           if (e.target !== mainElement) return;
           const inputNumber = e.clientX * e.clientY;
-          const flayMarkers = flayMarkerPanel.childNodes;
+          const flayMarkers = Array.from(flayMarkerPanel.childNodes) as FlayMarker[];
           const randomIndex = inputNumber % flayMarkers.length;
           flayMarkers[randomIndex].click();
         });
@@ -228,7 +229,7 @@ class Page {
   }
 
   #imageCircle() {
-    const mainElement = document.querySelector('body > main');
+    const mainElement = document.querySelector('body > main') as HTMLElement;
     mainElement.style.display = 'flex';
     mainElement.style.justifyContent = 'center';
     mainElement.style.alignItems = 'center';

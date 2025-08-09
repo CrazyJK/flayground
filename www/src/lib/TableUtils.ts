@@ -1,10 +1,23 @@
 import './TableUtils.scss';
 
+type CellData = {
+  text: string;
+  isNumber: boolean;
+  value: number;
+};
+
 const NO_SORT = 0;
 const ASCENDING = 1;
 const DESCENDING = 2;
 
-const DefaultOptions = {
+interface SortOptions {
+  sort: number[];
+  noSort: number[];
+  initSortIndex: number;
+  useWorker: boolean;
+}
+
+const DefaultOptions: SortOptions = {
   sort: [],
   noSort: [],
   initSortIndex: -1, // 초기 정렬할 컬럼 인덱스 (기본값: -1, 정렬 없음)
@@ -13,13 +26,13 @@ const DefaultOptions = {
 
 /**
  * 스로틀링 함수: 주어진 시간(delay) 동안 함수 호출을 한 번만 실행하도록 제한
- * @param {Function} func 실행할 함수
- * @param {number} delay 제한 시간 (ms)
- * @returns {Function} 스로틀링이 적용된 함수
+ * @param func 실행할 함수
+ * @param delay 제한 시간 (ms)
+ * @returns 스로틀링이 적용된 함수
  */
-function throttle(func, delay) {
+function throttle(func: Function, delay: number) {
   let lastCall = 0;
-  let timeoutId = null;
+  let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
   return function (...args) {
     const now = Date.now();
@@ -42,14 +55,14 @@ function throttle(func, delay) {
 
 /**
  * 테이블 구조에 정렬 기능 추가
- * @param {Element} table
- * @param {DefaultOptions} options
+ * @param table
+ * @param options
  */
-export const sortable = (table, options) => {
+export const sortable = (table: HTMLElement, options: Partial<SortOptions>) => {
   const opts = Object.assign({}, DefaultOptions, options);
 
   // Web Worker 초기화
-  let sortWorker = null;
+  let sortWorker: Worker | null = null;
 
   // Web Worker 지원 확인 및 초기화
   if (opts.useWorker && typeof Worker !== 'undefined') {
@@ -63,7 +76,7 @@ export const sortable = (table, options) => {
   }
 
   // thead
-  let theadTr;
+  let theadTr: HTMLElement | null;
   if (table.querySelector('thead') !== null) {
     theadTr = table.querySelector('thead tr');
   } else {
@@ -71,7 +84,7 @@ export const sortable = (table, options) => {
   }
 
   // tfoot
-  let tfootTr;
+  let tfootTr: HTMLElement;
   if (table.querySelector('tfoot') !== null) {
     tfootTr = table.querySelector('tfoot tr');
   } else {
@@ -82,10 +95,10 @@ export const sortable = (table, options) => {
   const isTbody = table.querySelector('tbody') !== null;
   let tbodyList = null;
   if (isTbody) {
-    tbodyList = Array.from(table.querySelectorAll('tbody tr'));
+    tbodyList = Array.from(table.querySelectorAll('tbody tr')) as HTMLTableRowElement[];
     tbodyList.forEach((tr, i) => (tr.dataset.no = i + 1));
   } else {
-    tbodyList = Array.from(table.children).filter((tr) => !tr.classList.contains('thead') && !tr.classList.contains('foot'));
+    tbodyList = Array.from(table.children).filter((tr: HTMLElement) => !tr.classList.contains('thead') && !tr.classList.contains('foot'));
     tbodyList.forEach((tr, i) => (tr.dataset.no = i + 1));
   }
 
@@ -93,16 +106,16 @@ export const sortable = (table, options) => {
   console.debug(theadTr, tbodyList, tfootTr);
 
   // 데이터 캐싱을 위한 저장소
-  const cellDataCache = new Map();
+  const cellDataCache: Map<HTMLElement, Map<number, CellData>> = new Map();
 
   // 초기 데이터 캐싱 - 모든 셀의 컨텐츠와 데이터 타입 캐싱
   const cacheTableData = () => {
-    tbodyList.forEach((tr) => {
-      const rowCache = new Map();
+    tbodyList.forEach((tr: HTMLElement) => {
+      const rowCache: Map<number, CellData> = new Map();
       Array.from(tr.children).forEach((td, colIndex) => {
         const textContent = td.textContent.trim();
-        const isNumber = !isNaN(textContent) && textContent !== '';
-        const value = isNumber ? parseFloat(textContent) : textContent;
+        const isNumber = !isNaN(Number(textContent)) && textContent !== '';
+        const value = isNumber ? parseFloat(textContent) : 0;
 
         // 각 셀의 데이터와 타입을 캐싱
         rowCache.set(colIndex, {
@@ -121,11 +134,11 @@ export const sortable = (table, options) => {
 
   // Worker에 전송하기 위한 형태로 셀 데이터 변환
   const prepareCellDataForWorker = () => {
-    const workerCellData = {};
+    const workerCellData: Record<string, Record<number, CellData>> = {};
 
-    tbodyList.forEach((tr, index) => {
+    tbodyList.forEach((tr: HTMLElement, index: number) => {
       const rowId = `row-${index}`;
-      tr._rowId = rowId; // 원본 tr 요소에 ID 참조 저장
+      tr['_rowId'] = rowId; // 원본 tr 요소에 ID 참조 저장
 
       workerCellData[rowId] = {};
 
@@ -139,9 +152,9 @@ export const sortable = (table, options) => {
   };
 
   // Worker용 행 데이터 준비
-  const prepareRowsForWorker = () => {
-    return tbodyList.map((tr, index) => ({
-      id: tr._rowId,
+  const prepareRowsForWorker = (): Array<{ id: string; originalIndex: string }> => {
+    return tbodyList.map((tr: HTMLElement) => ({
+      id: tr['_rowId'],
       originalIndex: tr.dataset.no,
     }));
   };
@@ -150,7 +163,7 @@ export const sortable = (table, options) => {
   const applyWorkerSortResult = (sortedRows) => {
     // 행 ID로 원래 tr 요소 매핑
     const rowMap = new Map();
-    tbodyList.forEach((tr) => rowMap.set(tr._rowId, tr));
+    tbodyList.forEach((tr: HTMLElement) => rowMap.set(tr['_rowId'], tr));
 
     // 정렬된 순서대로 새 배열 생성
     const newOrder = sortedRows.map((row) => rowMap.get(row.id));
@@ -167,7 +180,7 @@ export const sortable = (table, options) => {
     } else {
       // thead와 tfoot을 제외한 모든 행 제거 후 정렬된 행 추가
       Array.from(table.children)
-        .filter((tr) => !tr.classList.contains('thead') && !tr.classList.contains('foot'))
+        .filter((tr: HTMLElement) => !tr.classList.contains('thead') && !tr.classList.contains('foot'))
         .forEach((tr) => table.removeChild(tr));
 
       // tfoot 앞에 정렬된 행 삽입
@@ -183,20 +196,20 @@ export const sortable = (table, options) => {
   };
 
   // 정렬 실행 함수
-  const performSort = (th, index) => {
+  const performSort = (th: HTMLElement, index: number) => {
     // 프로덕션에서는 로그 제거 고려
     console.log('thead', th, index);
 
     // 다른 컬럼의 정렬 상태 초기화
     Array.from(theadTr.children)
       .filter((td) => td !== th)
-      .forEach((td) => (td.dataset.sort = 0));
+      .forEach((td: HTMLElement) => (td.dataset.sort = '0'));
 
     // 정렬 상태 순환 (없음 -> 오름차순 -> 내림차순 -> 없음)
     if (!th.dataset.sort) {
-      th.dataset.sort = ASCENDING;
+      th.dataset.sort = String(ASCENDING);
     }
-    th.dataset.sort = (parseInt(th.dataset.sort) + 1) % 3;
+    th.dataset.sort = String((parseInt(th.dataset.sort) + 1) % 3);
     const sort = parseInt(th.dataset.sort);
 
     // 시각적 피드백 - 정렬 중임을 표시
@@ -239,7 +252,7 @@ export const sortable = (table, options) => {
     // Worker가 없을 경우 메인 스레드에서 처리
     else {
       // 메인 스레드에서 정렬 실행 - 캐시된 데이터 사용
-      tbodyList.sort((tr1, tr2) => {
+      tbodyList.sort((tr1: HTMLElement, tr2: HTMLElement) => {
         // 원래 순서로 돌아가기
         if (sort === NO_SORT) {
           return parseInt(tr1.dataset.no) - parseInt(tr2.dataset.no);
@@ -271,7 +284,7 @@ export const sortable = (table, options) => {
       } else {
         // thead와 tfoot을 제외한 모든 행 제거 후 정렬된 행 추가
         Array.from(table.children)
-          .filter((tr) => !tr.classList.contains('thead') && !tr.classList.contains('foot'))
+          .filter((tr: HTMLElement) => !tr.classList.contains('thead') && !tr.classList.contains('foot'))
           .forEach((tr) => table.removeChild(tr));
 
         // tfoot 앞에 정렬된 행 삽입
@@ -288,7 +301,7 @@ export const sortable = (table, options) => {
   };
 
   // add sort event with throttling (300ms)
-  Array.from(theadTr.children).forEach((th, index) => {
+  Array.from(theadTr.children).forEach((th: HTMLElement, index) => {
     // noSort
     if (opts.noSort.length > 0 && opts.noSort.includes(index)) {
       return;
@@ -302,7 +315,7 @@ export const sortable = (table, options) => {
     th.classList.add('sortable');
 
     // 스로틀링을 적용한 정렬 이벤트 핸들러 생성
-    const throttledSort = throttle((e) => performSort(th, index), 300);
+    const throttledSort = throttle(() => performSort(th, index), 300);
 
     // 정렬 이벤트 리스너 추가
     th.addEventListener('click', throttledSort);

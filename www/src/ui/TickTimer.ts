@@ -45,9 +45,9 @@ export class TickTimer extends HTMLElement {
 
   /**
    * 타이머를 시작합니다.
-   * @param {number} seconds 시작할 초
+   * @param seconds 시작할 초
    */
-  start(seconds) {
+  start(seconds: number) {
     clearInterval(this.#intervalId);
     this.#seconds = seconds;
     this.#paused = false;
@@ -81,7 +81,7 @@ export class TickTimer extends HTMLElement {
 
   /**
    * 타이머를 일시정지 또는 재개합니다.
-   * @returns {boolean} 상태. 재개 상태이면 true, 아니면 false
+   * @returns 상태. 재개 상태이면 true, 아니면 false
    */
   toggle() {
     if (this.#paused) {
@@ -125,7 +125,7 @@ export class TickTimer extends HTMLElement {
    * 화면을 렌더링합니다.
    */
   render() {
-    this.shadowRoot.getElementById('time').textContent = this.#seconds;
+    this.shadowRoot.getElementById('time').textContent = String(this.#seconds);
   }
 }
 

@@ -14,7 +14,18 @@ const MinPlayTime = 60 * 2;
 const MaxPlayTime = 60 * 5;
 
 export class FlayVideoViewPanel extends HTMLElement {
-  #timer = -1;
+  #timer;
+  flayProvider: FlayProvider;
+  videoPlayer: FlayVideoPlayer;
+
+  progressBar: HTMLElement;
+  remainingTimeCheck: HTMLInputElement;
+  remainingTime: HTMLElement;
+  pauseVideo: HTMLInputElement;
+  videoVolume: HTMLInputElement;
+
+  isPaused: boolean;
+  sec: number;
 
   constructor() {
     super();
@@ -70,7 +81,7 @@ export class FlayVideoViewPanel extends HTMLElement {
     this.querySelector('[for="pause-video"]').innerHTML = controlsSVG.pause;
     this.querySelector('[for="video-volume"]').innerHTML = controlsSVG.volume;
 
-    this.videoPlayer = this.querySelector('main > article').appendChild(new FlayVideoPlayer());
+    this.videoPlayer = this.querySelector('main > article').appendChild(new FlayVideoPlayer({}));
 
     this.progressBar = this.querySelector('.progress-bar');
     this.remainingTimeCheck = this.querySelector('#toggle-remaining-time');
@@ -87,15 +98,15 @@ export class FlayVideoViewPanel extends HTMLElement {
     this.#initVolume(); // 볼륨 조정
     this.#initKeepFlay(); // Flay 보관
 
-    this.videoPlayer.addEventListener('play', (e) => {
+    this.videoPlayer.addEventListener('play', (e: CustomEvent) => {
       console.debug(e.type, e.detail.isPlay);
       this.pauseVideo.checked = !e.detail.isPlay;
     });
 
-    this.videoPlayer.addEventListener('volume', (e) => {
+    this.videoPlayer.addEventListener('volume', (e: CustomEvent) => {
       console.debug(e.type, e.detail.volume);
-      this.videoVolume.value = e.detail.volume * 100;
-      FlayStorage.local.set('flay-play-video-volume', e.detail.volume * 100);
+      this.videoVolume.value = String(e.detail.volume * 100);
+      FlayStorage.local.set('flay-play-video-volume', String(e.detail.volume * 100));
     });
   }
 
@@ -108,37 +119,43 @@ export class FlayVideoViewPanel extends HTMLElement {
   }
 
   #initControl() {
-    const videoControlsToggler = this.querySelector('#toggle-video-controls');
+    const videoControlsToggler = this.querySelector('#toggle-video-controls') as HTMLInputElement;
     videoControlsToggler.addEventListener('change', (e) => {
-      this.videoPlayer.setAttribute('controls', e.target.checked);
-      FlayStorage.local.set('flay-play-video-control', e.target.checked);
+      const target = e.target as HTMLInputElement;
+      const checked = String(target.checked);
+      this.videoPlayer.setAttribute('controls', checked);
+      FlayStorage.local.set('flay-play-video-control', checked);
     });
     videoControlsToggler.checked = FlayStorage.local.getBoolean('flay-play-video-control', false);
     videoControlsToggler.dispatchEvent(new Event('change'));
   }
 
   #initInfo() {
-    const videoInfoToggler = this.querySelector('#toggle-video-info');
+    const videoInfoToggler = this.querySelector('#toggle-video-info') as HTMLInputElement;
     videoInfoToggler.addEventListener('change', (e) => {
-      this.videoPlayer.setAttribute('info', e.target.checked);
-      FlayStorage.local.set('flay-play-video-info', e.target.checked);
+      const target = e.target as HTMLInputElement;
+      const checked = String(target.checked);
+      this.videoPlayer.setAttribute('info', checked);
+      FlayStorage.local.set('flay-play-video-info', checked);
     });
     videoInfoToggler.checked = FlayStorage.local.getBoolean('flay-play-video-info', false);
     videoInfoToggler.dispatchEvent(new Event('change'));
   }
 
   #initCover() {
-    const videoPosterToggler = this.querySelector('#toggle-video-poster');
+    const videoPosterToggler = this.querySelector('#toggle-video-poster') as HTMLInputElement;
     videoPosterToggler.addEventListener('change', (e) => {
-      this.videoPlayer.setAttribute('poster', e.target.checked);
-      FlayStorage.local.set('flay-play-video-poster', e.target.checked);
+      const target = e.target as HTMLInputElement;
+      const checked = String(target.checked);
+      this.videoPlayer.setAttribute('poster', checked);
+      FlayStorage.local.set('flay-play-video-poster', checked);
     });
     videoPosterToggler.checked = FlayStorage.local.getBoolean('flay-play-video-poster', false);
     videoPosterToggler.dispatchEvent(new Event('change'));
   }
 
   #initRemainingTime() {
-    this.remainingTimeCheck.addEventListener('change', (e) => (this.isPaused = !e.target.checked));
+    this.remainingTimeCheck.addEventListener('change', (e) => (this.isPaused = !(e.target as HTMLInputElement).checked));
   }
 
   #initNextFlay() {
@@ -146,15 +163,15 @@ export class FlayVideoViewPanel extends HTMLElement {
   }
 
   #initPause() {
-    this.pauseVideo.addEventListener('change', (e) => (e.target.checked ? this.videoPlayer.pause() : this.videoPlayer.play()));
+    this.pauseVideo.addEventListener('change', (e) => ((e.target as HTMLInputElement).checked ? this.videoPlayer.pause() : this.videoPlayer.play()));
   }
 
   #initVolume() {
     this.videoVolume.addEventListener('change', (e) => {
-      this.videoPlayer.setAttribute('volume', parseInt(e.target.value) / 100);
-      FlayStorage.local.set('flay-play-video-volume', e.target.value);
+      this.videoPlayer.setAttribute('volume', String(parseInt((e.target as HTMLInputElement).value) / 100));
+      FlayStorage.local.set('flay-play-video-volume', (e.target as HTMLInputElement).value);
     });
-    this.videoVolume.value = FlayStorage.local.getNumber('flay-play-video-volume', 10);
+    this.videoVolume.value = FlayStorage.local.get('flay-play-video-volume', '10');
     this.videoVolume.dispatchEvent(new Event('change'));
   }
 

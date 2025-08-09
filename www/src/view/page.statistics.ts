@@ -9,7 +9,7 @@ import { sortable } from '@lib/TableUtils';
 import './inc/Page';
 import './page.statistics.scss';
 
-tabUI(document.parentElement);
+tabUI(document.body);
 
 // const to2 = (n) => (n < 10 ? '0' + n : n);
 const startDateInput = document.querySelector('#startDate') as HTMLInputElement;

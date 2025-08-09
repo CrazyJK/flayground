@@ -7,4 +7,4 @@ import { tabUI } from '@lib/TabUI';
 import './inc/Page';
 import './page.control.scss';
 
-tabUI(document.parentElement);
+tabUI(document.body);

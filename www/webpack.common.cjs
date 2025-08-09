@@ -48,7 +48,7 @@ const entryPoints = {
     'popup.studio': './src/view/popup.studio.js',
     'popup.actress': './src/view/popup.actress.js',
     'popup.tag': './src/view/popup.tag.js',
-    'popup.monitor': './src/view/popup.monitor.js',
+    'popup.monitor': './src/view/popup.monitor.ts',
     'popup.image': './src/view/popup.image.js',
   },
 };

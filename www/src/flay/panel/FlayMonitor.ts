@@ -14,10 +14,24 @@ const Monitors = [
   { left: 3640, top: -520, right: 5079, bottom: 2039, width: 1440, height: 2560 },
 ];
 
+interface FlayPosition {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+}
+
 /**
  * 모니터에 창의 위치 모아 보기
  */
 export default class FlayMonitor extends HTMLElement {
+  left: number;
+  top: number;
+  right: number;
+  bottom: number;
+  width: number;
+  height: number;
+
   constructor() {
     super();
 
@@ -65,7 +79,7 @@ export default class FlayMonitor extends HTMLElement {
    * 창들의 위치 그리기
    * @param {object} positionInfo
    */
-  #renderPosition(positionInfo) {
+  #renderPosition(positionInfo: Record<string, FlayPosition>) {
     console.debug('renderPosition', positionInfo);
     this.#renderForeground();
     Object.entries(positionInfo).forEach(([key, position]) => this.#drawFlay(key, position));
@@ -89,7 +103,7 @@ export default class FlayMonitor extends HTMLElement {
   }
 
   getImageURL() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.querySelector('canvas').toBlob((blob) => resolve(URL.createObjectURL(blob)), 'image/jpeg', 0.95);
     });
   }
@@ -107,7 +121,7 @@ export default class FlayMonitor extends HTMLElement {
    * @param {string} name
    * @param {object} position
    */
-  #drawFlay(name, { left, top, width, height }) {
+  #drawFlay(name: string, { left, top, width, height }: FlayPosition) {
     const ctx = this.querySelector('canvas').getContext('2d');
     const lineWidth = 20;
     const margin = 30;

@@ -9,6 +9,8 @@ export default class CoverPopout extends HTMLElement {
   #최소초;
   #최대초;
 
+  countdown: Countdown;
+
   /**
    *
    * @param {number} 최소초. 기본값 10초
@@ -26,7 +28,7 @@ export default class CoverPopout extends HTMLElement {
 
     this.countdown = this.appendChild(new Countdown());
     this.countdown.style.cssText = `position: absolute; right: 0; bottom: 0;`;
-    this.countdown.addEventListener(EVENT_COUNTDOWN_START, async (e) => await this.하나나오기());
+    this.countdown.addEventListener(EVENT_COUNTDOWN_START, async () => await this.하나나오기());
     this.countdown.addEventListener(EVENT_COUNTDOWN_END, () => this.countdown.start(RandomUtils.getRandomInt(this.#최소초, this.#최대초)));
   }
 

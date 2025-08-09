@@ -8,7 +8,7 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Actress, Flay, FullyFlay } from '@lib/FlayFetch';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import './FlayCard.scss';
 
@@ -16,9 +16,22 @@ import './FlayCard.scss';
  * Custom element of Card
  */
 export default class FlayCard extends HTMLElement {
-  opus;
-  flay;
-  actress;
+  opus: string;
+  flay: Flay;
+  actress: Actress[];
+  excludes: string[];
+
+  flayCover: FlayCover;
+  flayInfo: HTMLElement;
+  flayTitle: FlayTitle;
+  flayStudio: FlayStudio;
+  flayOpus: FlayOpus;
+  flayComment: FlayComment;
+  flayActress: FlayActress;
+  flayFiles: FlayFiles;
+  flayRank: FlayRank;
+  flayRelease: FlayRelease;
+  flayTag: FlayTag;
 
   constructor(options) {
     super();
@@ -83,7 +96,7 @@ export default class FlayCard extends HTMLElement {
    * @param {{flay, actress}} fullyFlay
    * @returns
    */
-  async set(opus, fullyFlay) {
+  async set(opus: string, fullyFlay: FullyFlay = null) {
     if (!opus) {
       this.style.display = 'none';
       return;
@@ -105,14 +118,14 @@ export default class FlayCard extends HTMLElement {
     return fullyFlay;
   }
 
-  #render(fullyFlay) {
+  #render(fullyFlay: FullyFlay) {
     const { actress, flay } = fullyFlay;
     this.flay = flay;
     this.actress = actress;
 
-    this.setAttribute('rank', flay.video.rank);
+    this.setAttribute('rank', String(flay.video.rank));
     if (flay.archive) {
-      this.setAttribute('archive', true);
+      this.setAttribute('archive', 'true');
       this.classList.add('archive');
     }
 
@@ -162,10 +175,26 @@ export default class FlayCard extends HTMLElement {
     return this.actress;
   }
 
-  notfound(opus) {
+  notfound(opus: string) {
     this.flayInfo.classList.add('notfound');
-    this.flayOpus.set({ opus: opus });
-    // throw new Error('notfound ' + opus);
+
+    const notFoundFlay: Flay = {
+      studio: '',
+      opus: opus,
+      title: '',
+      actressList: [],
+      release: '',
+      score: 0,
+      actressPoint: 0,
+      studioPoint: 0,
+      archive: false,
+      video: null,
+      files: null,
+      length: 0,
+      lastModified: 0,
+    };
+
+    this.flayOpus.set(notFoundFlay);
     console.warn('notfound ' + opus);
   }
 }

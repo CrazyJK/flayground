@@ -6,6 +6,13 @@ import rankSVG from '@svg/ranks';
 import subtitlesSVG from '@svg/subtitles';
 import './FlayCondition.scss';
 
+// 타입 정의 추가
+declare global {
+  interface Window {
+    emitMessage?: (message: string) => void;
+  }
+}
+
 const CONDITION_KEY = 'FlayCondition.condition';
 const CONDITION_VALUE_DEFAULT = {
   search: '',
@@ -14,7 +21,7 @@ const CONDITION_VALUE_DEFAULT = {
   withNoFavorite: false,
   rank: [0],
   sort: 'RELEASE',
-} as Partial<SearchCondition>;
+} as SearchCondition;
 
 const RANKs = [0, 1, 2, 3, 4, 5] as const;
 const SORTs = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'] as const;
@@ -57,7 +64,9 @@ export default class FlayCondition extends HTMLElement {
   }
 
   connectedCallback() {
-    this.#fetch();
+    this.#fetch().catch((error: unknown) => {
+      console.error('Error fetching conditions:', error);
+    });
   }
 
   /**
@@ -68,16 +77,21 @@ export default class FlayCondition extends HTMLElement {
     const subtitlesInput = this.querySelector('#withSubtitles') as HTMLInputElement;
     const favoriteInput = this.querySelector('#withFavorite') as HTMLInputElement;
     const noFavoriteInput = this.querySelector('#withNoFavorite') as HTMLInputElement;
-    const rankInputs = Array.from(this.querySelectorAll('[name="rank"]:checked')) as HTMLInputElement[];
+    const rankInputs = Array.from(this.querySelectorAll('input[name="rank"]:checked'));
     const sortSelect = this.querySelector('#sort') as HTMLSelectElement;
 
+    if (!searchInput || !subtitlesInput || !favoriteInput || !noFavoriteInput || !sortSelect) {
+      console.error('Required form elements not found');
+      return;
+    }
+
     const condition: Partial<SearchCondition> = {
-      search: searchInput?.value || '',
-      withSubtitles: subtitlesInput?.checked || false,
-      withFavorite: favoriteInput?.checked || false,
-      withNoFavorite: noFavoriteInput?.checked || false,
-      rank: rankInputs.map((rank: HTMLInputElement) => Number(rank.value)),
-      sort: sortSelect?.value || 'RELEASE',
+      search: searchInput.value || '',
+      withSubtitles: subtitlesInput.checked || false,
+      withFavorite: favoriteInput.checked || false,
+      withNoFavorite: noFavoriteInput.checked || false,
+      rank: rankInputs.map((rank) => Number((rank as HTMLInputElement).value)),
+      sort: sortSelect.value || 'RELEASE',
     };
 
     this.opusList = await FlayFetch.getOpusList(condition);
@@ -85,7 +99,11 @@ export default class FlayCondition extends HTMLElement {
     if (this.opusList.length === 0) {
       // not found flay
       this.animate([{ backgroundColor: '#f00' }, { backgroundColor: 'transparent' }], { duration: 1000, iterations: 1 });
-      window.emitMessage('검색 결과가 없습니다.');
+      if (window.emitMessage) {
+        window.emitMessage('검색 결과가 없습니다.');
+      } else {
+        console.warn('검색 결과가 없습니다.');
+      }
     }
 
     FlayStorage.local.set(CONDITION_KEY, JSON.stringify(condition));
@@ -132,7 +150,7 @@ export default class FlayCondition extends HTMLElement {
     const searchItems = this.querySelector('#search-items') as HTMLDataListElement;
     searchItems?.prepend(option);
 
-    const options = Array.from(this.querySelectorAll('#search-items option')) as HTMLOptionElement[];
+    const options = Array.from(this.querySelectorAll('#search-items option'));
     options.forEach((option, i) => i > 30 && option.remove());
   }
 }

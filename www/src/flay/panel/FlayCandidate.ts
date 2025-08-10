@@ -20,11 +20,11 @@ export default class FlayCandidate extends HTMLElement {
   }
 
   connectedCallback() {
-    this.querySelector('#getCadidate').addEventListener('click', () => {
-      FlayFetch.getFlayCandidates().then((list) => {
+    this.querySelector('#getCadidate')!.addEventListener('click', () => {
+      void FlayFetch.getFlayCandidates().then((list) => {
         (this.querySelector('#candidateLength') as HTMLSpanElement).innerHTML = String(list.length);
 
-        const LIST = this.querySelector('#candidatesFlay');
+        const LIST = this.querySelector('#candidatesFlay')!;
         LIST.textContent = null;
         list.forEach((flay) => {
           const ITEM = LIST.appendChild(document.createElement('li'));
@@ -33,7 +33,7 @@ export default class FlayCandidate extends HTMLElement {
           BTN.addEventListener(
             'click',
             () => {
-              FlayAction.acceptCandidates(flay.opus, () => {
+              void FlayAction.acceptCandidates(flay.opus, () => {
                 console.log('accept', flay.files.candidate);
                 flayArticle.remove();
                 LIST.insertBefore(ITEM, null);

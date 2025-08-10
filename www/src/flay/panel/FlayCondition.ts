@@ -9,7 +9,7 @@ import './FlayCondition.scss';
 // 타입 정의 추가
 declare global {
   interface Window {
-    emitMessage?: (message: string) => void;
+    emitMessage?: (...datas: unknown[]) => void;
   }
 }
 

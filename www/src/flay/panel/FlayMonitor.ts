@@ -6,7 +6,7 @@ const MonitorBackgroundColor = 'lightgray';
 const FlayBackgroundColor = 'orange';
 const FlayBorderColor = 'orangered';
 
-// 왼쪽부터 모니터 좌표
+/** 왼쪽부터 모니터 좌표 */
 const Monitors = [
   { left: -2560, top: 71, right: -1, bottom: 1510, width: 2560, height: 1440 },
   { left: 0, top: 0, right: 1079, bottom: 1919, width: 1080, height: 1920 },
@@ -14,6 +14,7 @@ const Monitors = [
   { left: 3640, top: -520, right: 5079, bottom: 2039, width: 1440, height: 2560 },
 ];
 
+/** Flay 창의 위치 정보 */
 interface FlayPosition {
   left: number;
   top: number;
@@ -22,14 +23,23 @@ interface FlayPosition {
 }
 
 /**
- * 모니터에 창의 위치 모아 보기
+ * 모니터에 창의 위치를 시각화하는 컴포넌트
+ *
+ * 여러 모니터에 분산된 창들의 위치를 캔버스에 그려서
+ * 전체적인 레이아웃을 한눈에 볼 수 있게 해줍니다.
  */
 export default class FlayMonitor extends HTMLElement {
+  /** 전체 화면 영역의 왼쪽 좌표 */
   left: number;
+  /** 전체 화면 영역의 위쪽 좌표 */
   top: number;
+  /** 전체 화면 영역의 오른쪽 좌표 */
   right: number;
+  /** 전체 화면 영역의 아래쪽 좌표 */
   bottom: number;
+  /** 전체 화면 영역의 너비 */
   width: number;
+  /** 전체 화면 영역의 높이 */
   height: number;
 
   constructor() {
@@ -59,7 +69,7 @@ export default class FlayMonitor extends HTMLElement {
   }
 
   connectedCallback() {
-    // initial draw
+    // 초기 위치 정보 그리기
     this.#renderPosition(FlayStorage.local.getObject(STORAGE_KEY));
 
     /** 클릭되면 fixed 클래스 추가 */
@@ -69,15 +79,15 @@ export default class FlayMonitor extends HTMLElement {
     // });
 
     /** 스토리지를 통해서 창들의 위치를 그린다 */
-    window.addEventListener('storage', (e) => {
+    window.addEventListener('storage', (e: StorageEvent) => {
       if (e.key !== STORAGE_KEY) return;
-      this.#renderPosition(JSON.parse(e.newValue));
+      this.#renderPosition(JSON.parse(e.newValue!));
     });
   }
 
   /**
-   * 창들의 위치 그리기
-   * @param {object} positionInfo
+   * 창들의 위치를 캔버스에 그립니다.
+   * @param positionInfo 창 이름을 키로 하고 위치 정보를 값으로 하는 객체
    */
   #renderPosition(positionInfo: Record<string, FlayPosition>) {
     console.debug('renderPosition', positionInfo);
@@ -86,30 +96,34 @@ export default class FlayMonitor extends HTMLElement {
     this.#removeBackground();
   }
 
-  /** 모니터를 그린다 */
+  /** 모니터 배경을 그립니다. */
   #renderForeground() {
-    const ctx = this.querySelector('canvas').getContext('2d');
+    const ctx = this.querySelector('canvas')!.getContext('2d')!;
     ctx.fillStyle = MonitorBackgroundColor;
     Monitors.forEach((monitor) => ctx.fillRect(this.#toX(monitor.left), this.#toY(monitor.top), monitor.width, monitor.height));
   }
 
-  /** 모니터 밖의 영역을 지운다 */
+  /** 모니터 영역 밖의 배경을 지웁니다. */
   #removeBackground() {
-    const ctx = this.querySelector('canvas').getContext('2d');
+    const ctx = this.querySelector('canvas')!.getContext('2d')!;
     Monitors.forEach((monitor) => {
       ctx.clearRect(this.#toX(monitor.left), this.#toY(this.top), monitor.width, monitor.top - this.top);
       ctx.clearRect(this.#toX(monitor.left), this.#toY(monitor.bottom), monitor.width, this.bottom - monitor.bottom);
     });
   }
 
+  /**
+   * 캔버스를 이미지로 변환하여 URL을 반환합니다.
+   * @returns 이미지 URL Promise
+   */
   getImageURL() {
     return new Promise((resolve) => {
-      this.querySelector('canvas').toBlob((blob) => resolve(URL.createObjectURL(blob)), 'image/jpeg', 0.95);
+      this.querySelector('canvas')!.toBlob((blob) => resolve(URL.createObjectURL(blob!)), 'image/jpeg', 0.95);
     });
   }
 
   /**
-   * storage clear, re-draw
+   * 저장된 위치 정보를 모두 지우고 캔버스를 다시 그립니다.
    */
   clear() {
     // storage clear
@@ -118,11 +132,12 @@ export default class FlayMonitor extends HTMLElement {
   }
 
   /**
-   * @param {string} name
-   * @param {object} position
+   * 개별 Flay 창을 캔버스에 그립니다.
+   * @param name 창의 이름
+   * @param position 창의 위치와 크기 정보
    */
   #drawFlay(name: string, { left, top, width, height }: FlayPosition) {
-    const ctx = this.querySelector('canvas').getContext('2d');
+    const ctx = this.querySelector('canvas')!.getContext('2d')!;
     const lineWidth = 20;
     const margin = 30;
     const [x, y] = [this.#toX(left), this.#toY(top)];
@@ -151,11 +166,21 @@ export default class FlayMonitor extends HTMLElement {
     ctx.fillText(name, x + width / 2, y + height / 2, width - margin * 2);
   }
 
-  #toX(left) {
+  /**
+   * 전역 좌표를 캔버스 X 좌표로 변환합니다.
+   * @param left 전역 X 좌표
+   * @returns 캔버스 X 좌표
+   */
+  #toX(left: number) {
     return left - this.left;
   }
 
-  #toY(top) {
+  /**
+   * 전역 좌표를 캔버스 Y 좌표로 변환합니다.
+   * @param top 전역 Y 좌표
+   * @returns 캔버스 Y 좌표
+   */
+  #toY(top: number) {
     return top - this.top;
   }
 }

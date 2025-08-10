@@ -3,24 +3,30 @@ import FlayFetch, { Actress, Flay, Studio, Tag, Video } from '@lib/FlayFetch';
 import '@lib/SseConnector.scss';
 import { addBeforeunloadListener } from '@lib/windowAddEventListener';
 
-/*
- * ref. https://developer.mozilla.org/ko/docs/Web/API/Server-sent_events
+/**
+ * Server-Sent Events를 통한 실시간 데이터 동기화 모듈
+ *
+ * 서버에서 발생하는 Flay, Studio, Video, Actress, Tag 등의 변경사항을
+ * 실시간으로 수신하여 클라이언트 UI를 업데이트합니다.
+ *
+ * @see https://developer.mozilla.org/ko/docs/Web/API/Server-sent_events
  */
 
-// Server-Sent Events 관련 타입 정의
+/** Server-Sent Events 메시지 데이터 타입 */
 interface SseMessageData {
   type: 'Batch' | 'Notice' | 'CURL' | string;
   message?: string;
   [key: string]: unknown;
 }
 
+/** Flay 요소 인터페이스 */
 interface FlayElement extends HTMLElement {
   opus: string;
   flay: Flay;
   reload(): void;
 }
 
-// Window 객체 확장
+/** Window 객체에 글로벌 이벤트 핸들러 추가 */
 declare global {
   interface Window {
     emitFlay?: (flay: Flay) => void;
@@ -29,12 +35,13 @@ declare global {
     emitActress?: (actress: Actress) => void;
     emitTag?: (tag: Tag) => void;
     emitBatch?: (data: SseMessageData) => void;
-    emitNotice?: (data: SseMessageData | string, warn?: boolean) => void;
+    emitNotice?: (data: string, warn?: boolean) => void;
     emitCurl?: (data: SseMessageData) => void;
     emitMessage?: (...datas: unknown[]) => void;
   }
 }
 
+/** EventSource 인스턴스 생성 및 기본 이벤트 핸들러 설정 */
 const sse = new EventSource(ApiClient.buildUrl('/sse'));
 
 addBeforeunloadListener(() => sse.close());
@@ -60,10 +67,10 @@ sse.addEventListener('CONNECT', (e: MessageEvent) => {
   console.debug('<< connected', receivedConnectData);
 });
 
-sse.addEventListener('FLAY', async (e: MessageEvent) => {
+sse.addEventListener('FLAY', (e: MessageEvent) => {
   console.debug(e.type, e.data);
   const flay: Flay = JSON.parse(e.data);
-  await FlayFetch.clear(flay.opus);
+  FlayFetch.clear(flay.opus);
   emitFlay(flay);
   if (typeof window.emitFlay === 'function') window.emitFlay(flay);
 });
@@ -75,10 +82,10 @@ sse.addEventListener('STUDIO', (e: MessageEvent) => {
   if (typeof window.emitStudio === 'function') window.emitStudio(studio);
 });
 
-sse.addEventListener('VIDEO', async (e: MessageEvent) => {
+sse.addEventListener('VIDEO', (e: MessageEvent) => {
   console.debug(e.type, e.data);
   const video: Video = JSON.parse(e.data);
-  await FlayFetch.clear(video.opus);
+  FlayFetch.clear(video.opus);
   emitVideo(video);
   if (typeof window.emitVideo === 'function') window.emitVideo(video);
 });
@@ -106,7 +113,9 @@ sse.addEventListener('MESSAGE', (e: MessageEvent) => {
       if (typeof window.emitBatch === 'function') window.emitBatch(data);
       break;
     case 'Notice':
-      if (typeof window.emitNotice === 'function') window.emitNotice(data);
+      if (typeof window.emitNotice === 'function') {
+        window.emitNotice(typeof data === 'object' ? (data.message ?? '') : String(data));
+      }
       break;
     case 'CURL':
       if (typeof window.emitCurl === 'function') window.emitCurl(data);
@@ -118,11 +127,11 @@ sse.addEventListener('MESSAGE', (e: MessageEvent) => {
 });
 
 /**
- * 알림 메시지를 화면에 표시
- * @param data - 메시지 데이터 또는 문자열
- * @param warn - 경고 스타일 여부
+ * 알림 메시지를 화면에 표시합니다.
+ * @param data 메시지 문자열
+ * @param warn 경고 스타일 여부
  */
-window.emitNotice = (data: SseMessageData | string, warn: boolean = false): void => {
+window.emitNotice = (data: string, warn: boolean = false): void => {
   console.log('emitNotice', data);
   let noticeWrapper = document.querySelector('#notice-wrapper') as HTMLElement;
   if (noticeWrapper === null) {
@@ -130,7 +139,7 @@ window.emitNotice = (data: SseMessageData | string, warn: boolean = false): void
     noticeWrapper.id = 'notice-wrapper';
   }
   const notice = noticeWrapper.appendChild(document.createElement('div'));
-  notice.innerHTML = `<label>${typeof data === 'object' ? data.message || '' : data}</label>`;
+  notice.innerHTML = `<label>${data}</label>`;
   notice.classList.toggle('warn', warn);
   setTimeout(async () => {
     await notice.animate(
@@ -145,8 +154,8 @@ window.emitNotice = (data: SseMessageData | string, warn: boolean = false): void
 };
 
 /**
- * 메시지를 화면에 표시
- * @param datas - 표시할 데이터들
+ * 메시지를 화면에 표시합니다.
+ * @param datas 표시할 데이터들
  */
 window.emitMessage = (...datas: unknown[]): void => {
   const messages = datas.map((data) => JSON.stringify(data).replace(/"/g, '')).join('<br>');
@@ -174,8 +183,8 @@ window.emitMessage = (...datas: unknown[]): void => {
 };
 
 /**
- * Flay 업데이트 이벤트를 처리
- * @param flay - 업데이트된 Flay 객체
+ * Flay 업데이트 이벤트를 처리합니다.
+ * @param flay 업데이트된 Flay 객체
  */
 function emitFlay(flay: Flay): void {
   document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
@@ -187,8 +196,8 @@ function emitFlay(flay: Flay): void {
 }
 
 /**
- * Video 업데이트 이벤트를 처리
- * @param video - 업데이트된 Video 객체
+ * Video 업데이트 이벤트를 처리합니다.
+ * @param video 업데이트된 Video 객체
  */
 function emitVideo(video: Video): void {
   document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
@@ -200,8 +209,8 @@ function emitVideo(video: Video): void {
 }
 
 /**
- * Studio 업데이트 이벤트를 처리
- * @param studio - 업데이트된 Studio 객체
+ * Studio 업데이트 이벤트를 처리합니다.
+ * @param studio 업데이트된 Studio 객체
  */
 function emitStudio(studio: Studio): void {
   document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
@@ -213,8 +222,8 @@ function emitStudio(studio: Studio): void {
 }
 
 /**
- * Actress 업데이트 이벤트를 처리
- * @param actress - 업데이트된 Actress 객체
+ * Actress 업데이트 이벤트를 처리합니다.
+ * @param actress 업데이트된 Actress 객체
  */
 function emitActress(actress: Actress): void {
   document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
@@ -226,8 +235,8 @@ function emitActress(actress: Actress): void {
 }
 
 /**
- * Tag 업데이트 이벤트를 처리
- * @param tag - 업데이트된 Tag 객체
+ * Tag 업데이트 이벤트를 처리합니다.
+ * @param _tag 업데이트된 Tag 객체 (사용되지 않음)
  */
 function emitTag(_tag: Tag): void {
   document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
@@ -236,4 +245,8 @@ function emitTag(_tag: Tag): void {
   });
 }
 
+/**
+ * Server-Sent Events 커넥터 모듈을 내보냅니다.
+ * @default EventSource 인스턴스
+ */
 export default sse;

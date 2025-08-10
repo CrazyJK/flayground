@@ -1,5 +1,5 @@
 import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Actress, Studio } from '@lib/FlayFetch';
+import FlayFetch, { Actress } from '@lib/FlayFetch';
 import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';
 import favoriteSVG from '@svg/favorite';
@@ -69,7 +69,10 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
 `;
 
 /**
+ * Flay 콘텐츠 등록 및 관리를 위한 폼 컴포넌트
  *
+ * 새로운 Flay 정보를 입력하고, 검색하며, 배우 정보를 관리할 수 있는
+ * 통합 등록 인터페이스를 제공합니다.
  */
 export default class FlayRegister extends HTMLElement {
   constructor() {
@@ -108,7 +111,7 @@ export default class FlayRegister extends HTMLElement {
 
     // 키 이벤트 전파 방지
     this.addEventListener('keyup', (e) => e.stopPropagation());
-    //  spellcheck="false"
+    // 맞춤법 검사 비활성화
     this.querySelectorAll('input, textarea').forEach((element) => {
       element.setAttribute('spellcheck', 'false');
     });
@@ -125,12 +128,11 @@ export default class FlayRegister extends HTMLElement {
         // find opus
         if (inputOpus.value !== '') {
           const inOpus = inputOpus.value;
-          const foundFlayEl = this.querySelector('#found-flay');
-          // find Flay
+          const foundFlayEl = this.querySelector('#found-flay')!;
+          // Flay 찾기
           foundFlayEl.innerHTML = '';
 
-          let flay = await FlayFetch.getFlay(inOpus);
-          if (!flay) flay = await FlayFetch.getArchive(inOpus);
+          const flay = (await FlayFetch.getFlay(inOpus)) || (await FlayFetch.getArchive(inOpus));
           if (flay) {
             foundFlayEl.innerHTML = `
               <label>${flay.studio}</label>
@@ -140,33 +142,34 @@ export default class FlayRegister extends HTMLElement {
               <label>${flay.release}</label>
             `;
             foundFlayEl.classList.toggle('archive', flay.archive);
-            foundFlayEl.querySelector('label:nth-child(2)').addEventListener('click', () => popupFlay(flay.opus));
+            foundFlayEl.querySelector('label:nth-child(2)')?.addEventListener('click', () => popupFlay(flay.opus));
           } else {
             console.log('notfound: ' + inOpus);
           }
 
-          // find Studio
-          FlayFetch.getStudioFindOneByOpus(inOpus).then((foundStudio) => (studio.value = foundStudio.name));
-          // searching Arzon
+          // Studio 찾기
+          void FlayFetch.getStudioFindOneByOpus(inOpus).then((foundStudio) => (studio.value = foundStudio.name));
+          // Arzon 검색
           // FlaySearch.opus.Arzon(inOpus);
           FlaySearch.opus.Dondeth(inOpus);
-          // set opus
+          // opus 설정
           opus.value = inOpus;
         }
-        // find actress
+        // 배우 찾기
         if (inputActress.value !== '') {
           inputActress.value.split(' ').forEach((localname) => {
-            FlayFetch.getActressListByLocalname(localname).then((list) => {
+            void FlayFetch.getActressListByLocalname(localname).then((list) => {
               console.log('find actress', list);
               if (list.length === 1) {
-                actress.value += (actress.value !== '' ? ',' : '') + list[0].name;
-                actressFavorite.checked = list[0].favorite;
-                actressName.value = list[0].name;
-                actressLocalname.value = list[0].localName;
-                actressBirth.value = list[0].birth;
-                actressBody.value = list[0].body;
-                actressHeight.value = '' + list[0].height;
-                actressDebut.value = '' + list[0].debut;
+                const firstActress = list[0]!;
+                actress.value += (actress.value !== '' ? ',' : '') + firstActress.name;
+                actressFavorite.checked = firstActress.favorite;
+                actressName.value = firstActress.name;
+                actressLocalname.value = firstActress.localName;
+                actressBirth.value = firstActress.birth;
+                actressBody.value = firstActress.body;
+                actressHeight.value = '' + firstActress.height;
+                actressDebut.value = '' + firstActress.debut;
               } else {
                 actressLocalname.value = localname;
                 FlaySearch.actress.Minnano(localname);
@@ -174,22 +177,22 @@ export default class FlayRegister extends HTMLElement {
             });
           });
         }
-        // call translate
+        // 번역 호출
         if (inputTitle.value !== '' || inputDesc.value !== '') {
           FlaySearch.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
           FlaySearch.translate.DeepL(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
         }
       });
     });
-    emptyBtn.addEventListener('click', () => {
+    emptyBtn?.addEventListener('click', () => {
       console.log('emptyBtnClick');
-      this.querySelectorAll('input:not(#lastSearchOpus)').forEach((input: HTMLInputElement) => (input.value = ''));
-      this.querySelectorAll('input[type="checkbox"]').forEach((input: HTMLInputElement) => (input.checked = false));
-      this.querySelectorAll('textarea').forEach((textarea: HTMLTextAreaElement) => (textarea.value = ''));
-      this.querySelectorAll('.input-invalid').forEach((input: HTMLInputElement) => input.classList.remove('input-invalid'));
+      this.querySelectorAll('input:not(#lastSearchOpus)').forEach((input) => ((input as HTMLInputElement).value = ''));
+      this.querySelectorAll('input[type="checkbox"]').forEach((input) => ((input as HTMLInputElement).checked = false));
+      this.querySelectorAll('textarea').forEach((textarea) => (textarea.value = ''));
+      this.querySelectorAll('.input-invalid').forEach((input) => input.classList.remove('input-invalid'));
     });
 
-    // 요소 이벤트
+    // 요소별 이벤트 처리
     [studio, opus, title, actress, release].forEach((input) => {
       input.addEventListener('keyup', (e: KeyboardEvent) => {
         const target = e.target as HTMLInputElement;
@@ -200,18 +203,18 @@ export default class FlayRegister extends HTMLElement {
         } else if (target.id === 'release') {
           const DATE_PATTERN = /^(19|20)\d{2}.(0[1-9]|1[012]).(0[1-9]|[12][0-9]|3[0-1])$/;
           target.value = release.value.replace(/(\d{4})(\d{2})(\d{2})/g, '$1.$2.$3');
-          let isValid = DATE_PATTERN.test(target.value);
+          const isValid = DATE_PATTERN.test(target.value);
           target.classList.toggle('input-invalid', !isValid);
         }
 
-        let fullName = `[${studio.value}][${opus.value}][${title.value}][${actress.value}][${release.value}]`;
+        const fullName = `[${studio.value}][${opus.value}][${title.value}][${actress.value}][${release.value}]`;
         flayFullname.value = fullName;
       });
     });
-    copyBtn.addEventListener('click', () => {
+    copyBtn?.addEventListener('click', () => {
       console.log('copyBtnClick', flayFullname.value);
-      window.navigator.clipboard.writeText(flayFullname.value).then(() => {
-        FlayAction.putVideo({
+      void window.navigator.clipboard.writeText(flayFullname.value).then(() => {
+        void FlayAction.putVideo({
           opus: opus.value,
           title: inputTitle.value,
           desc: inputDesc.value,
@@ -219,17 +222,17 @@ export default class FlayRegister extends HTMLElement {
       });
     });
 
-    // 배우 이벤트
+    // 배우 정보 저장 이벤트
     // actressName, actressLocalname, actressBirth, actressBody, actressHeight, actressDebut
-    saveBtn.addEventListener('click', () => {
-      let actress: Partial<Actress> = { favorite: actressFavorite.checked, name: actressName.value, localName: actressLocalname.value, birth: actressBirth.value, body: actressBody.value, height: parseInt(actressHeight.value), debut: parseInt(actressDebut.value) };
+    saveBtn?.addEventListener('click', () => {
+      const actress: Partial<Actress> = { favorite: actressFavorite.checked, name: actressName.value, localName: actressLocalname.value, birth: actressBirth.value, body: actressBody.value, height: parseInt(actressHeight.value), debut: parseInt(actressDebut.value) };
       console.log('saveBtnClick', actress);
-      FlayAction.putActress(actress);
+      void FlayAction.putActress(actress);
     });
     actressRowData.addEventListener('keyup', (e: KeyboardEvent) => {
       e.stopPropagation();
       if (e.keyCode === 17) {
-        // Control key ignored
+        // Control 키 무시
         return;
       }
       const target = e.target as HTMLTextAreaElement;
@@ -242,41 +245,43 @@ export default class FlayRegister extends HTMLElement {
         if (/[0-9]年/.test(line)) {
           // 1987年09月07日 （現在 34歳）おとめ座
           const birth = line.split(' ')[0];
-          actressBirth.value = birth;
+          actressBirth.value = birth!;
           actressBirth.classList.toggle('input-invalid', !birthRegExp.test(actressBirth.value));
-        } else if (line.indexOf('T') > -1) {
+        } else if (line.includes('T')) {
           // T161 / B83(Eカップ) / W58 / H82 / S
           const splitText = line.split(' / ');
-          const height = splitText[0].substring(1);
+          const height = splitText[0]?.substring(1);
           const body = splitText[1] + ' / ' + splitText[2] + ' / ' + splitText[3];
           actressBody.value = body
             .trim()
             .replace(/^[A-Z]|\(|カップ\)/gi, '')
             .replace(/\/ [A-Z]/gi, '- ');
           actressBody.classList.toggle('input-invalid', !bodyRegExp.test(actressBody.value));
-          actressHeight.value = height;
+          actressHeight.value = String(height);
           actressHeight.classList.toggle('input-invalid', !heightRegExp.test(actressHeight.value));
         }
       });
     });
 
-    // update lastSearchOpus
-    this.querySelector('#lastSearchOpus').addEventListener('change', (e: Event) => {
+    // 마지막 검색 Opus 업데이트
+    this.querySelector('#lastSearchOpus')?.addEventListener('change', (e: Event) => {
       FlayStorage.local.set('flay.search.lastSearchOpus', (e.target as HTMLInputElement).value);
     });
     (this.querySelector('#lastSearchOpus') as HTMLInputElement).value = FlayStorage.local.get('flay.search.lastSearchOpus', '');
-    // open Torrent download
-    this.querySelector('#dnNonoTorrent').addEventListener('click', () => FlaySearch.torrent.Nonojav(inputOpus.value));
-    this.querySelector('#dnIjavTorrent').addEventListener('click', () => FlaySearch.torrent.Ijav(inputOpus.value));
+    // 토렌트 다운로드 열기
+    this.querySelector('#dnNonoTorrent')?.addEventListener('click', () => FlaySearch.torrent.Nonojav(inputOpus.value));
+    this.querySelector('#dnIjavTorrent')?.addEventListener('click', () => FlaySearch.torrent.Ijav(inputOpus.value));
 
-    // studio-list
-    FlayAction.listOfStudio((list: Studio[]) => {
-      studioList.innerHTML = Array.from(list)
-        .map((studio) => `<option value="${studio}">`)
-        .join('');
+    // 스튜디오 목록
+    void FlayAction.listOfStudio((list?: string[]) => {
+      if (list) {
+        studioList.innerHTML = Array.from(list)
+          .map((studio) => `<option value="${studio}">`)
+          .join('');
+      }
     });
   }
 }
 
-// Define the new element
+/** 커스텀 엘리먼트 등록 */
 customElements.define('flay-register', FlayRegister);

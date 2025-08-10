@@ -13,7 +13,7 @@ export class FlayShotReleasePanel extends HTMLElement {
   }
 
   connectedCallback() {
-    this.showRelease();
+    void this.showRelease();
   }
 
   disconnectedCallback() {
@@ -57,7 +57,7 @@ export class FlayShotReleasePanel extends HTMLElement {
       `;
       const yearShotList = yearPanel.querySelector('.year-shot-list') as HTMLDivElement;
 
-      const flayList = releaseByYear[year] as typeof allFlaysList;
+      const flayList = releaseByYear[parseInt(year)] as typeof allFlaysList;
 
       flayList
         .sort((a, b) => a.release.localeCompare(b.release))

@@ -3,10 +3,20 @@ import DateUtils from '@lib/DateUtils';
 import FlayFetch, { History } from '@lib/FlayFetch';
 import './FlayShotDailyPanel.scss';
 
+/**
+ * 일별 플레이 기록과 샷(좋아요) 정보를 표시하는 패널 컴포넌트
+ *
+ * 과거 날짜별로 플레이된 Flay들을 시간 순으로 표시하며,
+ * 각 Flay에 샷(좋아요)이 있었는지 시각적으로 구분하여 보여줍니다.
+ */
 export class FlayShotDailyPanel extends HTMLElement {
-  #playHistoryList: History[];
+  /** 플레이 기록 목록 */
+  #playHistoryList: History[] = [];
+  /** 현재 표시 중인 이전 일수 */
   #prevDay: number = 0;
+  /** 날짜별 opus 매핑 */
   #shotDateOpusMap: Map<string, string[]> = new Map();
+  /** 다음 버튼 요소 */
   #nextButton: HTMLButtonElement;
 
   constructor() {
@@ -20,14 +30,16 @@ export class FlayShotDailyPanel extends HTMLElement {
   }
 
   connectedCallback() {
-    this.showDaily();
+    void this.showDaily();
   }
 
+  /** 일별 데이터를 표시합니다. */
   async showDaily(): Promise<void> {
     await this.#fetchPlayHistories();
     await this.#showHistory();
   }
 
+  /** 플레이 기록을 가져와서 날짜별로 정리합니다. */
   async #fetchPlayHistories(): Promise<void> {
     console.time('fetchPlayHistories');
     this.#playHistoryList = await FlayFetch.getHistoryListByAction('PLAY');
@@ -36,16 +48,18 @@ export class FlayShotDailyPanel extends HTMLElement {
       if (!this.#shotDateOpusMap.has(refDate)) {
         this.#shotDateOpusMap.set(refDate, []);
       }
-      if (!this.#shotDateOpusMap.get(refDate).includes(history.opus)) {
-        this.#shotDateOpusMap.get(refDate).push(history.opus);
+      const dateOpusList = this.#shotDateOpusMap.get(refDate);
+      if (dateOpusList && !dateOpusList.includes(history.opus)) {
+        dateOpusList.push(history.opus);
       }
     });
     console.timeEnd('fetchPlayHistories');
     console.debug('shotDateOpusMap', this.#shotDateOpusMap);
   }
 
+  /** 10일씩 기록을 표시합니다. */
   async #showHistory(): Promise<void> {
-    let end = this.#prevDay + 10;
+    const end = this.#prevDay + 10;
     for (; this.#prevDay < end; this.#prevDay++) {
       const date = this.#getDate(this.#prevDay);
       const shotOpusList = this.#shotDateOpusMap.get(date);
@@ -56,9 +70,9 @@ export class FlayShotDailyPanel extends HTMLElement {
   }
 
   /**
-   *
-   * @param {number} priorDay 오늘에서 n번째 전 날
-   * @returns yyyy-mm-dd 날짜
+   * 오늘에서 n번째 이전 날짜를 구합니다.
+   * @param priorDay 오늘에서 n번째 전 날
+   * @returns yyyy-mm-dd 형식의 날짜
    */
   #getDate(priorDay: number): string {
     const date = new Date(new Date().setDate(new Date().getDate() - priorDay));
@@ -66,10 +80,10 @@ export class FlayShotDailyPanel extends HTMLElement {
   }
 
   /**
-   * shot의 기준 날짜 구하기.
-   * - 오전 9시까지를 같은 날짜로 본다
-   * @param {string} date
-   * @returns
+   * 샷의 기준 날짜를 구합니다.
+   * 오전 9시까지를 같은 날짜로 간주합니다.
+   * @param date 원본 날짜
+   * @returns 기준 날짜 (yyyy-mm-dd)
    */
   #getRefDate(date: string): string {
     const refDate = new Date(date);
@@ -78,9 +92,9 @@ export class FlayShotDailyPanel extends HTMLElement {
   }
 
   /**
-   * 기준 날짜의 flay 표시
-   * @param {string} refDate 기준 날자
-   * @param {string[]} opusList 품번 배열
+   * 기준 날짜의 Flay들을 화면에 렌더링합니다.
+   * @param refDate 기준 날짜
+   * @param opusList 품번 배열
    */
   async #render(refDate: string, opusList: string[] = []): Promise<void> {
     console.debug('#render', refDate, opusList);
@@ -91,13 +105,17 @@ export class FlayShotDailyPanel extends HTMLElement {
         <div class="card-list"></div>
       `;
     const cardList = div.querySelector('.card-list');
+    if (!cardList) return;
+
     for (const opus of opusList) {
       const flayCard = new FlayCard({ excludes: ['FlayTag', 'FlayComment', 'FlayFiles'] });
-      const fullyFlay = await flayCard.set(opus, null);
-      flayCard.classList.toggle('shot', fullyFlay?.flay.video.likes?.filter((likeDate) => this.#getRefDate(likeDate) === refDate).length > 0);
+      const fullyFlay = await flayCard.set(opus, undefined);
+      const likeCount = fullyFlay?.flay.video.likes?.filter((likeDate) => this.#getRefDate(likeDate) === refDate).length ?? 0;
+      flayCard.classList.toggle('shot', likeCount > 0);
       cardList.appendChild(flayCard);
     }
   }
 }
 
+/** 커스텀 엘리먼트 등록 */
 customElements.define('flay-shot-daily-panel', FlayShotDailyPanel);

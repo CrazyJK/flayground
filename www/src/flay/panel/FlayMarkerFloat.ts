@@ -6,14 +6,10 @@ import StyleUtils from '@lib/StyleUtils';
 import './FlayMarkerFloat.scss';
 
 export class FlayMarkerFloat extends HTMLElement {
-  #intervalIdOfMarker: number | null = null;
-  #intervalIdOfShape: number | null = null;
-  #flayMarker = new FlayMarker(null, {});
+  #intervalIdOfMarker: number | undefined = undefined;
+  #intervalIdOfShape: number | undefined = undefined;
+  #flayMarker = new FlayMarker({} as Flay);
   #opusProvider = new OpusProvider();
-
-  constructor() {
-    super();
-  }
 
   connectedCallback(): void {
     this.appendChild(this.#flayMarker);
@@ -33,7 +29,7 @@ export class FlayMarkerFloat extends HTMLElement {
   }
 
   #updateMarker(): void {
-    this.#getRandomInfo().then(({ randomFlay, randomRem, randomX, randomY, shape }) => {
+    void this.#getRandomInfo().then(({ randomFlay, randomRem, randomX, randomY, shape }) => {
       this.style.setProperty('--marker-size', `${randomRem}rem`);
       this.style.setProperty('--shot-blur', `${randomRem * 0.75}rem`);
       this.style.setProperty('--shot-spread', `${randomRem * 0.5}rem`);
@@ -66,7 +62,7 @@ export class FlayMarkerFloat extends HTMLElement {
   }
 
   #randomShape(): ShapeType {
-    return SHAPES[RandomUtils.getRandomInt(0, SHAPES.length)];
+    return RandomUtils.getRandomElementFromArray(SHAPES);
   }
 }
 

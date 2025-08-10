@@ -3,7 +3,7 @@ import ApiClient from '@lib/ApiClient';
 import './FlayVideoElement.scss';
 
 // 싱글톤 패턴으로 변경하여 메모리 사용 최적화
-let dbInstance = null;
+let dbInstance: PlayTimeDB | null = null;
 function getDB() {
   if (!dbInstance) {
     dbInstance = new PlayTimeDB();
@@ -42,7 +42,7 @@ const MAX_RECOVERY_ATTEMPTS = 2; // 최대 복구 시도 횟수
  */
 export default class FlayVideo extends HTMLElement {
   video: HTMLVideoElement;
-  opus: string | null;
+  opus: string | null = null;
   loaded = false;
   playing = false;
   #eventListeners: Array<{ type: string; listener: () => void }> = []; // 이벤트 리스너 참조 저장
@@ -149,7 +149,7 @@ export default class FlayVideo extends HTMLElement {
       // 비동기 작업을 큐에 추가하여 순차적으로 처리
       this.#dbUpdateQueue = this.#dbUpdateQueue.then(() => {
         return getDB()
-          .update(this.opus, this.video.currentTime, this.duration)
+          .update(this.opus!, this.video.currentTime, this.duration)
           .catch((err) => {
             // DB 업데이트 실패 시 조용히 오류 처리
             console.error('Failed to update play time:', err);
@@ -289,7 +289,7 @@ export default class FlayVideo extends HTMLElement {
 
     // 오류 관련 이벤트 핸들링
     this.#addEventListenerWithTracking('error', () => {
-      this.#handleError('error', this.video.error?.message || '비디오 로드 오류');
+      this.#handleError('error', this.video.error?.message ?? '비디오 로드 오류');
     });
 
     this.#addEventListenerWithTracking('abort', () => {

@@ -20,7 +20,7 @@ const AllDirections = [
 const DiagonalDirections = AllDirections.filter((d) => d[0] !== 0 && d[1] !== 0);
 /** 기본 옵션 */
 const DEFAULT_OPTIONS: PanelOptions = {
-  /** 시간 배수 */ multifier: [1, 3],
+  /** 시간 배수 */ timeMultiplier: [1, 3],
   /** 타이머 시간. s */ seconds: [50, 70],
   /** 스레드 개수 */ thread: [1, 3],
   /** 나타나는 시간 간격. ms */ interval: [200, 500],
@@ -29,7 +29,7 @@ const DEFAULT_OPTIONS: PanelOptions = {
 };
 
 interface PanelOptions {
-  multifier: [number, number];
+  timeMultiplier: [number, number];
   seconds: [number, number];
   thread: [number, number];
   interval: [number, number];
@@ -38,16 +38,16 @@ interface PanelOptions {
 }
 
 export class FlayMarkerPanel extends HTMLElement {
-  #markerList = []; // 마커 리스트
+  #markerList: FlayMarker[] = []; // 마커 리스트
   #threadCount = 1; // 스레드 개수
   #paused = false; // 일시정지 여부
   #lastNo = -1; // 하이라이트 마커 마지막 번호
   #opts: PanelOptions; // 옵션
   #highlightedCount = 0; // 하이라이트된 마커 수 (성능 최적화용)
-  #animationFrames = []; // requestAnimationFrame 식별자 배열
-  #threadIntervals = []; // 각 스레드별 인터벌 값
-  #lastFrameTime = []; // 각 스레드별 마지막 프레임 시간
-  tickTimer = null; // 타이머 인스턴스
+  #animationFrames: (number | undefined)[] = []; // requestAnimationFrame 식별자 배열
+  #threadIntervals: number[] = []; // 각 스레드별 인터벌 값
+  #lastFrameTime: number[] = []; // 각 스레드별 마지막 프레임 시간
+  tickTimer: TickTimer; // 타이머 인스턴스
 
   /**
    *
@@ -62,7 +62,10 @@ export class FlayMarkerPanel extends HTMLElement {
     this.tickTimer = new TickTimer();
     this.tickTimer.addEventListener(EVENT_TIMER_START, () => this.#render());
     this.tickTimer.addEventListener(EVENT_TIMER_END, () => this.#start());
-    this.tickTimer.addEventListener(EVENT_TIMER_TICK, (e) => (this.dataset.seconds = e.detail.seconds));
+    this.tickTimer.addEventListener(EVENT_TIMER_TICK, (e: Event) => {
+      const customEvent = e as CustomEvent;
+      this.dataset.seconds = customEvent.detail.seconds;
+    });
 
     addResizeListener(() => this.#updateMarkerPositions(), true);
 
@@ -79,7 +82,7 @@ export class FlayMarkerPanel extends HTMLElement {
   }
 
   connectedCallback() {
-    FlayFetch.getFlayList().then((list) => {
+    void FlayFetch.getFlayList().then((list) => {
       this.#markerList = list.map((flay) => new FlayMarker(flay, { tooltip: false, shape: this.#opts.shape }));
       this.#start();
     });
@@ -89,9 +92,9 @@ export class FlayMarkerPanel extends HTMLElement {
    * 타이머가 종료되면 호출되서, 다시 시작
    */
   #start() {
-    const multifier = RandomUtils.getRandomIntInclusive(...this.#opts.multifier);
-    this.tickTimer.start(RandomUtils.getRandomIntInclusive(...this.#opts.seconds) * multifier);
-    this.dataset.multifier = String(multifier);
+    const multiplier = RandomUtils.getRandomIntInclusive(...this.#opts.timeMultiplier);
+    this.tickTimer.start(RandomUtils.getRandomIntInclusive(...this.#opts.seconds) * multiplier);
+    this.dataset.multiplier = String(multiplier);
   }
 
   /**
@@ -110,7 +113,7 @@ export class FlayMarkerPanel extends HTMLElement {
     if (this.#markerList.length === 0) return;
 
     const firstMarker = this.#markerList[0];
-    const firstRect = firstMarker.getBoundingClientRect();
+    const firstRect = firstMarker!.getBoundingClientRect();
     this.#markerList.forEach((marker, index) => {
       if (index === 0) {
         marker.dataset.xy = '0,0';
@@ -122,9 +125,9 @@ export class FlayMarkerPanel extends HTMLElement {
       }
     });
 
-    const xy = this.#markerList.map((marker) => marker.dataset.xy.split(',').map(Number));
-    const maxX = Math.max(...xy.map(([_x, _y]) => _x));
-    const maxY = Math.max(...xy.map(([_x, _y]) => _y));
+    const xy = this.#markerList.map((marker) => marker.dataset.xy?.split(',').map(Number));
+    const maxX = Math.max(...(xy.flat() as number[]));
+    const maxY = Math.max(...(xy.flat() as number[]));
     console.log('[updateMarkerPositions] maxX:', maxX, 'maxY:', maxY);
   }
 
@@ -141,7 +144,7 @@ export class FlayMarkerPanel extends HTMLElement {
     const ORDERs = ['studio', 'opus', 'title', 'actress', 'release', 'random', 'rank', 'shot', 'play', 'modified'];
     this.dataset.order = ORDERs[RandomUtils.getRandomInt(0, ORDERs.length)];
     this.#markerList.sort((m1, m2) => {
-      switch (this.dataset.order) {
+      switch (this.dataset.order!) {
         case ORDERs[0]:
           return m2.flay.studio.localeCompare(m1.flay.studio);
         case ORDERs[1]:
@@ -162,6 +165,8 @@ export class FlayMarkerPanel extends HTMLElement {
           return m2.flay.video.play - m1.flay.video.play;
         case ORDERs[9]:
           return m2.flay.lastModified - m1.flay.lastModified;
+        default:
+          return 0;
       }
     });
 
@@ -174,7 +179,7 @@ export class FlayMarkerPanel extends HTMLElement {
     this.#threadCount = RandomUtils.getRandomIntInclusive(...this.#opts.thread);
     this.dataset.threads = String(this.#threadCount);
 
-    const descriptionText = `multifier: ${this.dataset.multifier}, seconds: ${this.tickTimer.seconds}, order: ${this.dataset.order}, threads: ${this.dataset.threads}`;
+    const descriptionText = `multiplier: ${this.dataset.multiplier}, seconds: ${this.tickTimer.seconds}, order: ${this.dataset.order}, threads: ${this.dataset.threads}`;
     console.log('[render]', descriptionText);
 
     // 스레드 개수만큼 마커 이동
@@ -224,16 +229,16 @@ export class FlayMarkerPanel extends HTMLElement {
 
   /**
    * 마커 이동
-   * @param {number} threadNo 스레드 번호
+   * @param threadNo 스레드 번호
    */
-  async #movingMarker(threadNo) {
+  #movingMarker(threadNo: number) {
     /**
      * 마커에 하이라이트 효과를 주는 함수
-     * @param {FlayMarker} marker
+     * @param marker
      */
-    const highlightMarker = (marker) => {
+    const highlightMarker = (marker: FlayMarker) => {
       if (!marker.classList.contains('highlight')) {
-        marker.dataset.n = ++this.#lastNo;
+        marker.dataset.n = String(++this.#lastNo);
         marker.classList.add('highlight');
         this.#highlightedCount++; // 하이라이트된 마커 수 증가
         marker.animate([{ transform: 'scale(0.8)' }, { transform: 'scale(1.5)' }, { transform: 'scale(1.0)' }], { duration: INTERVAL - this.#opts.interval[0] / 2, easing: 'ease-in-out' });
@@ -252,12 +257,13 @@ export class FlayMarkerPanel extends HTMLElement {
      * @param {number} y 현재 y 좌표
      * @returns {FlayMarker?}
      */
-    const findNextSpreadMarker = (x, y) => {
+    const findNextSpreadMarker = (x: number, y: number): FlayMarker | null => {
       const nextDirection = AllDirections.filter(([_x, _y]) => _x !== -dx && _y !== -dy); // 현재 방향을 제외한 방향
       do {
-        [dx, dy] = nextDirection.splice(RandomUtils.getRandomInt(0, nextDirection.length), 1)[0]; // 랜덤으로 방향 선택
+        const selectedDirection = nextDirection.splice(RandomUtils.getRandomInt(0, nextDirection.length), 1)[0]!;
+        [dx, dy] = [selectedDirection[0]!, selectedDirection[1]!]; // 랜덤으로 방향 선택
         const [nextX, nextY] = [x + dx, y + dy];
-        const nextMarker = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
+        const nextMarker = this.#markerList.find((marker) => marker.dataset['xy'] === `${nextX},${nextY}`);
         if (nextMarker) {
           if (!nextMarker.classList.contains('highlight')) {
             return nextMarker;
@@ -281,7 +287,7 @@ export class FlayMarkerPanel extends HTMLElement {
      * @param {number} y 현재 y 좌표
      * @returns {FlayMarker?}
      */
-    const findNextDiagonalMarker = (x, y) => {
+    const findNextDiagonalMarker = (x: number, y: number): FlayMarker | null => {
       if (duplicatedCount > 5) {
         console.debug(`Thread ${threadNo} [findNextDiagonalMarker] 하이라이트가 연속으로 중복이 5개 이상이라서 랜덤으로 이동`);
         duplicatedCount = 0;
@@ -290,7 +296,7 @@ export class FlayMarkerPanel extends HTMLElement {
 
       // Try to continue in the current direction
       let [nextX, nextY] = [x + dx, y + dy];
-      let candidate = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
+      let candidate = this.#markerList.find((marker) => marker.dataset['xy'] === `${nextX},${nextY}`);
       if (candidate) {
         if (candidate.classList.contains('highlight')) duplicatedCount++;
         else duplicatedCount = 0;
@@ -302,10 +308,10 @@ export class FlayMarkerPanel extends HTMLElement {
       const reverse = [-dx, -dy];
       for (const dir of DiagonalDirections) {
         if (dir[0] === reverse[0] && dir[1] === reverse[1]) continue;
-        [nextX, nextY] = [x + dir[0], y + dir[1]];
-        candidate = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
+        [nextX, nextY] = [x + dir[0]!, y + dir[1]!];
+        candidate = this.#markerList.find((marker) => marker.dataset['xy'] === `${nextX},${nextY}`);
         if (candidate) {
-          [dx, dy] = dir; // 전환한 방향으로 변경
+          [dx, dy] = [dir[0]!, dir[1]!]; // 전환한 방향으로 변경
           if (candidate.classList.contains('highlight')) duplicatedCount++;
           else duplicatedCount = 0;
           console.debug(`Thread ${threadNo} [findNextDiagonalMarker] 방향 전환해서 이동`, dir);
@@ -315,8 +321,8 @@ export class FlayMarkerPanel extends HTMLElement {
 
       // 바로 옆 주변에 갈수 있는지
       for (const dir of AllDirections) {
-        [nextX, nextY] = [x + dir[0], y + dir[1]];
-        candidate = this.#markerList.find((marker) => marker.dataset.xy === `${nextX},${nextY}`);
+        [nextX, nextY] = [x + dir[0]!, y + dir[1]!];
+        candidate = this.#markerList.find((marker) => marker.dataset['xy'] === `${nextX},${nextY}`);
         if (candidate) {
           [dx, dy] = [-dx, -dy]; // 역방향으로 변경
           if (candidate.classList.contains('highlight')) duplicatedCount++;
@@ -335,13 +341,13 @@ export class FlayMarkerPanel extends HTMLElement {
      * 현재 marker에서 랜덤으로 이동한 마커 구하는 함수
      * @returns {FlayMarker?}
      */
-    const findNextRandomMarker = () => {
+    const findNextRandomMarker = (): FlayMarker | null => {
       if (isAllMarkerHighlighted()) {
         console.debug(`Thread ${threadNo} [findNextRandomMarker] 모든 marker가 highlight되어 있음`);
         return null;
       }
       const notHighlight = this.#markerList.filter((marker) => !marker.classList.contains('highlight'));
-      return notHighlight[RandomUtils.getRandomInt(0, notHighlight.length)];
+      return notHighlight[RandomUtils.getRandomInt(0, notHighlight.length)] ?? null;
     };
 
     const INTERVAL = RandomUtils.getRandomIntInclusive(...this.#opts.interval);
@@ -349,7 +355,8 @@ export class FlayMarkerPanel extends HTMLElement {
     this.#threadIntervals[threadNo] = INTERVAL;
     this.#lastFrameTime[threadNo] = performance.now();
 
-    let [dx, dy] = DiagonalDirections[RandomUtils.getRandomInt(0, DiagonalDirections.length)]; // 대각선 방향 랜덤으로 결정
+    const initialDirection = RandomUtils.getRandomElementFromArray(DiagonalDirections);
+    let [dx, dy] = [initialDirection[0]!, initialDirection[1]!]; // 대각선 방향 랜덤으로 결정
     let duplicatedCount = 0; // 중복 개수
 
     const findNextMarker = (() => {
@@ -363,29 +370,48 @@ export class FlayMarkerPanel extends HTMLElement {
         case 2:
           this.dataset[`t${threadNo}Method`] = 'random';
           return findNextRandomMarker;
+        default:
+          this.dataset[`t${threadNo}Method`] = 'random';
+          return findNextRandomMarker;
       }
     })();
 
     let marker = findNextRandomMarker();
-    let [x, y] = marker.dataset.xy.split(',').map(Number);
+    if (!marker) {
+      console.log(`Thread ${threadNo} could not find initial marker`);
+      return;
+    }
+
+    const xy = marker.dataset['xy']?.split(',').map(Number);
+    if (!xy || xy.length !== 2) {
+      console.log(`Thread ${threadNo} invalid marker coordinates`);
+      return;
+    }
+
+    let [x, y]: [number, number] = [xy[0]!, xy[1]!];
     highlightMarker(marker);
 
     // requestAnimationFrame을 사용한 타이머 대체
-    const animate = (timestamp) => {
+    const animate = (timestamp: number) => {
       if (this.#paused) {
         this.#animationFrames[threadNo] = requestAnimationFrame(animate);
         return;
       }
 
-      const elapsed = timestamp - this.#lastFrameTime[threadNo];
+      const elapsed = timestamp - (this.#lastFrameTime[threadNo] ?? 0);
 
       if (elapsed >= INTERVAL) {
         this.#lastFrameTime[threadNo] = timestamp;
 
-        marker = findNextMarker(x, y);
-        if (marker) {
-          [x, y] = marker.dataset.xy.split(',').map(Number);
-          highlightMarker(marker);
+        const nextMarker = findNextMarker(x, y);
+        if (nextMarker) {
+          marker = nextMarker;
+          const nextXy = marker.dataset['xy']?.split(',').map(Number);
+          if (nextXy && nextXy.length === 2) {
+            x = nextXy[0]!;
+            y = nextXy[1]!;
+            highlightMarker(marker);
+          }
         }
 
         if (isAllMarkerHighlighted()) {
@@ -405,11 +431,12 @@ export class FlayMarkerPanel extends HTMLElement {
    * 스레드 취소
    * @param {number} threadNo
    */
-  #cancelThread(threadNo) {
-    if (this.#animationFrames[threadNo] === undefined) return;
+  #cancelThread(threadNo: number) {
+    const frameId = this.#animationFrames[threadNo];
+    if (frameId === undefined) return;
 
-    cancelAnimationFrame(this.#animationFrames[threadNo]);
-    console.log(`Thread ${threadNo} cancelled`, this.#animationFrames[threadNo]);
+    cancelAnimationFrame(frameId);
+    console.log(`Thread ${threadNo} cancelled`, frameId);
 
     this.#animationFrames[threadNo] = undefined;
     if (this.#animationFrames.every((id) => id === undefined)) {
@@ -420,8 +447,9 @@ export class FlayMarkerPanel extends HTMLElement {
 
   #cancelAllThread() {
     for (let i = 0; i < this.#threadCount; i++) {
-      if (this.#animationFrames[i] !== undefined) {
-        cancelAnimationFrame(this.#animationFrames[i]);
+      const frameId = this.#animationFrames[i];
+      if (frameId !== undefined) {
+        cancelAnimationFrame(frameId);
         this.#animationFrames[i] = undefined;
       }
       delete this.dataset[`t${i}Interval`];

@@ -126,8 +126,8 @@ export default {
       failCallback
     );
   },
-  listOfStudio: (callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/flay/list/studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: 'STUDIO' }) }, callback, failCallback);
+  listOfStudio: (callback?: SuccessCallback<string[]>, failCallback?: ErrorCallback) => {
+    return action<string[]>('/flay/list/studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: 'STUDIO' }) }, callback, failCallback);
   },
   putVideo: (video: Partial<Video>, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/video', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(video) }, callback, failCallback);
@@ -150,7 +150,7 @@ export default {
   updateActress: (actress: Partial<Actress>, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/actress', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(actress) }, callback, failCallback);
   },
-  subtitlesUrlIfFound: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
+  subtitlesUrlIfFound: (opus: string, callback?: SuccessCallback<{ error: string; url: string }>, failCallback?: ErrorCallback) => {
     return action('/file/find/exists/subtitles?opus=' + opus, {}, callback, failCallback);
   },
 };
@@ -163,7 +163,7 @@ export default {
  * @param callback - 성공 시 콜백 함수
  * @param failCallback - 실패 시 콜백 함수
  */
-async function action(url: string, requestInit: ApiClientOptions, callback: SuccessCallback = () => {}, failCallback: ErrorCallback = () => {}): Promise<void> {
+async function action<T = unknown>(url: string, requestInit: ApiClientOptions, callback: SuccessCallback<T> = () => {}, failCallback: ErrorCallback = () => {}): Promise<void> {
   const response = await ApiClient.getResponse(url, requestInit);
   console.debug(url, response.ok, response.status, response);
 

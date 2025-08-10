@@ -36,17 +36,17 @@ export class FlayBasket extends HTMLElement {
       </div>
     `;
 
-    this.querySelector('.control').prepend(new GridControl('#basketList'));
+    this.querySelector('.control')!.prepend(new GridControl('#basketList'));
 
-    this.flayListEl = this.querySelector('#basketList');
-    this.flayCountEl = this.querySelector('#flayCount');
+    this.flayListEl = this.querySelector('#basketList')!;
+    this.flayCountEl = this.querySelector('#flayCount')!;
 
-    this.actressListEl = this.querySelector('#actressList');
-    this.actressCountEl = this.querySelector('#actressCount');
+    this.actressListEl = this.querySelector('#actressList')!;
+    this.actressCountEl = this.querySelector('#actressCount')!;
 
-    this.pickUpRandomFlayEl = this.querySelector('#pickUpRandomFlay');
-    this.toggleActressNameEl = this.querySelector('#toggleActressName');
-    this.emptyAllEl = this.querySelector('#emptyAll');
+    this.pickUpRandomFlayEl = this.querySelector('#pickUpRandomFlay')!;
+    this.toggleActressNameEl = this.querySelector('#toggleActressName')!;
+    this.emptyAllEl = this.querySelector('#emptyAll')!;
   }
 
   connectedCallback() {
@@ -77,19 +77,23 @@ export class FlayBasket extends HTMLElement {
     });
 
     // 초기 렌더링
-    this.render();
+    this.render().catch((error) => {
+      console.error('Error during initial render:', error);
+    });
   }
 
   #handleActressFilter() {
     const itemList = Array.from(this.flayListEl.children);
     const checkedList = Array.from(this.actressListEl.children)
       .map((span) => span.querySelector('input'))
-      .filter((input) => input.checked);
+      .filter((input) => input?.checked);
 
     itemList.forEach((item) => item.classList.toggle('hide', checkedList.length > 0));
     checkedList.forEach((checkbox) => {
-      itemList.forEach((item: FlayBasketItem) => {
-        if (item.hasActress(checkbox.value)) item.classList.remove('hide');
+      if (!checkbox) return;
+      itemList.forEach((item) => {
+        const basketItem = item as FlayBasketItem;
+        if (basketItem.hasActress(checkbox.value)) item.classList.remove('hide');
       });
     });
 
@@ -99,7 +103,7 @@ export class FlayBasket extends HTMLElement {
   #pickRandomFlay() {
     const shownFlayList = Array.from(this.flayListEl.children).filter((item) => !item.classList.contains('hide')) as FlayBasketItem[];
     const randomIndex = RandomUtils.getRandomInt(0, shownFlayList.length);
-    shownFlayList[randomIndex]?.popup();
+    void shownFlayList[randomIndex]?.popup();
   }
 
   async render() {
@@ -124,7 +128,7 @@ export class FlayBasket extends HTMLElement {
 
       // Flay 리스트 가져오기 및 렌더링
       const flayList = await FlayFetch.getFlayList(...basket);
-      await this.#renderFlayItems(flayList);
+      this.#renderFlayItems(flayList);
 
       // 배우 리스트 렌더링
       this.#renderActressList();
@@ -136,13 +140,14 @@ export class FlayBasket extends HTMLElement {
     }
   }
 
-  #removeNonExistingItems(basket) {
-    Array.from(this.flayListEl.children).forEach((item: FlayBasketItem) => {
-      if (!basket.has(item.opus)) item.remove();
+  #removeNonExistingItems(basket: Set<string>) {
+    Array.from(this.flayListEl.children).forEach((item) => {
+      const basketItem = item as FlayBasketItem;
+      if (!basket.has(basketItem.opus)) item.remove();
     });
   }
 
-  async #renderFlayItems(flayList) {
+  #renderFlayItems(flayList: Flay[]) {
     const fragment = document.createDocumentFragment();
     const existingItems = new Set(Array.from(this.flayListEl.children).map((item) => item.id));
 
@@ -161,11 +166,11 @@ export class FlayBasket extends HTMLElement {
 
       // 새 아이템 애니메이션 적용
       const newItems = Array.from(this.flayListEl.children).filter((item) => !existingItems.has(item.id));
-      this.#animateNewItems(newItems);
+      void this.#animateNewItems(newItems);
     }
   }
 
-  async #animateNewItems(items) {
+  async #animateNewItems(items: Element[]) {
     const animation = [
       { transform: 'scale(0.9)', opacity: 0.5 },
       { transform: 'scale(1.1)', opacity: 0.3 },
@@ -175,7 +180,7 @@ export class FlayBasket extends HTMLElement {
 
     for (const item of items) {
       item.scrollIntoView(false);
-      item.animate(animation, timing);
+      (item as HTMLElement).animate(animation, timing);
       await new Promise((resolve) => setTimeout(resolve, 30));
     }
   }
@@ -184,16 +189,18 @@ export class FlayBasket extends HTMLElement {
     this.actressListEl.textContent = null;
 
     // 배우 출연 횟수 계산
-    const actressMap = Array.from(this.flayListEl.children).reduce((map, item: FlayBasketItem) => {
-      item.actressList.forEach((name) => {
+    const actressMap = Array.from(this.flayListEl.children).reduce((map, item) => {
+      const basketItem = item as FlayBasketItem;
+      basketItem.actressList.forEach((name: string) => {
         if (!map.has(name)) map.set(name, { size: 0 });
-        map.get(name).size += 1;
+        const entry = map.get(name)!;
+        entry.size += 1;
       });
       return map;
-    }, new Map());
+    }, new Map<string, { size: number }>());
 
     // 배우 목록 렌더링
-    actressMap.forEach((obj, name) => {
+    actressMap.forEach((obj: { size: number }, name: string) => {
       const key = name.replace(/ /g, '');
       const span = document.createElement('span');
       span.innerHTML = `
@@ -209,26 +216,26 @@ export class FlayBasket extends HTMLElement {
     this.actressCountEl.innerHTML = String(this.actressListEl.children.length);
   }
 
-  static add(opus) {
+  static add(opus: string) {
     const basket = getBasket();
     basket.delete(opus);
     basket.add(opus);
     setBasket(basket);
-    window.emitNotice(`add Basket: ${opus} ${basket.size} flay`);
+    (window as unknown as { emitNotice?: (message: string) => void }).emitNotice?.(`add Basket: ${opus} ${basket.size} flay`);
   }
 
-  static remove(opus) {
+  static remove(opus: string) {
     const basket = getBasket();
     basket.delete(opus);
     setBasket(basket);
-    window.emitNotice(`remove Basket: ${opus} ${basket.size} flay`);
+    (window as unknown as { emitNotice?: (message: string) => void }).emitNotice?.(`remove Basket: ${opus} ${basket.size} flay`);
   }
 
   static clear() {
     const basket = getBasket();
     basket.clear();
     setBasket(basket);
-    window.emitNotice('clear Basket');
+    (window as unknown as { emitNotice?: (message: string) => void }).emitNotice?.('clear Basket');
   }
 }
 customElements.define('flay-basket', FlayBasket);
@@ -260,22 +267,27 @@ class FlayBasketItem extends HTMLElement {
     this.#initializeElements(flay);
 
     // 커버 이미지 로드
-    this.#loadCoverImage(flay.opus);
+    void this.#loadCoverImage(flay.opus);
   }
 
   /**
    * 요소 초기화 및 이벤트 핸들러 설정
    * @param {Object} flay Flay 객체
    */
-  #initializeElements(flay) {
+  #initializeElements(flay: Flay) {
     // 삭제 버튼
-    this.querySelector('.empty-this').addEventListener('click', () => this.#fadeOut(flay.opus));
+    const emptyThis = this.querySelector('.empty-this');
+    emptyThis?.addEventListener('click', () => this.#fadeOut(flay.opus));
 
     // 코멘트와 제목
-    this.querySelector('.comment').textContent = flay.video.comment || '';
+    const commentEl = this.querySelector('.comment');
+    if (commentEl) commentEl.textContent = flay.video.comment || '';
+
     const titleEl = this.querySelector('.popup-flay');
-    titleEl.textContent = flay.title;
-    titleEl.addEventListener('click', () => this.popup());
+    if (titleEl) {
+      titleEl.textContent = flay.title;
+      titleEl.addEventListener('click', () => this.popup());
+    }
 
     // 배우 목록
     this.#renderActressList(flay.actressList || []);
@@ -288,8 +300,9 @@ class FlayBasketItem extends HTMLElement {
    * 배우 목록 렌더링
    * @param {Array} actressList 배우 목록
    */
-  #renderActressList(actressList) {
+  #renderActressList(actressList: string[]) {
     const actressEl = this.querySelector('.actress');
+    if (!actressEl) return;
 
     if (!actressList.length) {
       actressEl.textContent = 'No actress';
@@ -299,7 +312,7 @@ class FlayBasketItem extends HTMLElement {
     // 배우 요소 생성
     const fragment = document.createDocumentFragment();
 
-    actressList.forEach((name) => {
+    actressList.forEach((name: string) => {
       const a = document.createElement('a');
       a.textContent = name;
       a.title = `View actress: ${name}`;
@@ -317,20 +330,21 @@ class FlayBasketItem extends HTMLElement {
    * 태그 목록 렌더링
    * @param {Array} tags 태그 목록
    */
-  #renderTags(tags) {
+  #renderTags(tags: Array<{ id: number; name: string }>) {
     const tagsEl = this.querySelector('.tags');
+    if (!tagsEl) return;
 
     if (!tags.length) return;
 
     // 등급 관련 태그 필터링 (50, 63, 64, 65, 66)
-    const filteredTags = tags.filter((tag) => ![50, 63, 64, 65, 66].includes(tag.id));
+    const filteredTags = tags.filter((tag: { id: number; name: string }) => ![50, 63, 64, 65, 66].includes(tag.id));
 
     if (!filteredTags.length) return;
 
     // 태그 요소 생성
     const fragment = document.createDocumentFragment();
 
-    filteredTags.forEach((tag) => {
+    filteredTags.forEach((tag: { id: number; name: string }) => {
       const a = document.createElement('a');
       a.textContent = tag.name;
       a.title = `View tag: ${tag.name}`;
@@ -348,7 +362,7 @@ class FlayBasketItem extends HTMLElement {
    * 커버 이미지 로드
    * @param {String} opus Flay opus
    */
-  async #loadCoverImage(opus) {
+  async #loadCoverImage(opus: string) {
     try {
       const url = await FlayFetch.getCoverURL(opus);
       const coverEl = this.querySelector('.cover') as HTMLElement;
@@ -366,7 +380,8 @@ class FlayBasketItem extends HTMLElement {
       img.src = url;
     } catch (error) {
       console.error(`Failed to load cover for ${opus}:`, error);
-      this.querySelector('.cover').classList.add('error');
+      const coverEl = this.querySelector('.cover');
+      coverEl?.classList.add('error');
     }
   }
 
@@ -374,7 +389,7 @@ class FlayBasketItem extends HTMLElement {
    * 아이템 삭제 (자연스럽게 사라지는 애니메이션)
    * @param {String} opus Flay opus
    */
-  async #fadeOut(opus) {
+  async #fadeOut(opus: string) {
     try {
       // 자연스럽게 사라지는 애니메이션
       await this.animate(
@@ -404,7 +419,7 @@ class FlayBasketItem extends HTMLElement {
    * 아이템 삭제 및 팝업 애니메이션 처리
    * @param {String} opus Flay opus
    */
-  async #delete(opus) {
+  async #delete(opus: string) {
     try {
       // 요소를 다른 요소 위에 표시하기 위해 z-index 설정
       const originalPosition = this.style.position;
@@ -449,7 +464,7 @@ class FlayBasketItem extends HTMLElement {
    * 바스켓에서 항목 제거 및 이벤트 발생 (공통 로직)
    * @param {String} opus Flay opus
    */
-  #removeFromBasket(opus) {
+  #removeFromBasket(opus: string) {
     // 바스켓에서 제거
     FlayBasket.remove(opus);
 
@@ -480,7 +495,7 @@ class FlayBasketItem extends HTMLElement {
    * @param {String} name 배우 이름
    * @returns {Boolean} 포함 여부
    */
-  hasActress(name) {
+  hasActress(name: string): boolean {
     return this.actressList.includes(name);
   }
 
@@ -488,8 +503,8 @@ class FlayBasketItem extends HTMLElement {
    * 배우 목록 가져오기
    * @returns {Array} 배우 목록
    */
-  get actressList() {
-    return Array.from(this.querySelectorAll('.actress a')).map((a) => a.textContent);
+  get actressList(): string[] {
+    return Array.from(this.querySelectorAll('.actress a')).map((a) => a.textContent ?? '');
   }
 }
 customElements.define('flay-basket-item', FlayBasketItem);
@@ -506,6 +521,6 @@ function getBasket() {
  *
  * @param {Set<string>} basket
  */
-function setBasket(basket) {
+function setBasket(basket: Set<string>) {
   FlayStorage.local.setArray(BASKET_KEY, Array.from(basket));
 }

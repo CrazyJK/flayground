@@ -23,7 +23,12 @@ import './FlayVideoPlayer.scss';
 
 const db = new PlayTimeDB();
 
-const getFlayPlayTime = async (opus) => await db.select(opus);
+interface FlayPlayTime {
+  opus: string;
+  time: number;
+}
+
+const getFlayPlayTime = async (opus: string) => await db.select(opus);
 
 interface PlayerOptions {
   controls: boolean;
@@ -38,7 +43,7 @@ interface PlayerOptions {
  */
 export class FlayVideoPlayer extends HTMLElement {
   options: PlayerOptions;
-  opus: string;
+  opus: string | null = null;
   flayVideo: FlayVideo;
   flayVideoInfo: FlayVideoInfo;
   flayVideoPoster: FlayVideoPoster;
@@ -47,7 +52,7 @@ export class FlayVideoPlayer extends HTMLElement {
     return ['controls', 'volume', 'autoplay', 'info', 'poster'];
   }
 
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name: string, oldValue: string | null, newValue: string) {
     console.debug('attributeChangedCallback', name, oldValue, newValue);
     switch (name) {
       case 'controls':
@@ -102,12 +107,12 @@ export class FlayVideoPlayer extends HTMLElement {
 
   /**
    * flay 로드. 로딩까지 대기
-   * @param {string} opus
-   * @param {Flay} flay
-   * @param {Actress[]} actress
+   * @param opus
+   * @param flay
+   * @param actress
    * @returns
    */
-  load(opus, flay, actress) {
+  load(opus: string, flay: Flay, actress: Actress[]) {
     this.classList.toggle('load', false);
     this.opus = opus;
     this.flayVideo.set(opus);
@@ -137,17 +142,19 @@ export class FlayVideoPlayer extends HTMLElement {
    */
   async reload() {
     if (this.options.info) {
-      const { flay, actress } = await FlayFetch.getFullyFlay(this.opus);
-      this.flayVideoInfo.set(flay, actress, true);
+      if (!this.opus && this.opus !== null) {
+        const { flay, actress } = await FlayFetch.getFullyFlay(this.opus);
+        this.flayVideoInfo.set(flay, actress, true);
+      }
     }
   }
 
   /**
    * playing의 상태 변화를 기다린다
-   * @param {boolean} isPlay
+   * @param isPlay
    * @returns
    */
-  #wait(isPlay) {
+  #wait(isPlay: boolean) {
     return new Promise((resolve, reject) => {
       const timer = setInterval(() => {
         if (this.flayVideo.playing === isPlay) {
@@ -174,9 +181,9 @@ export class FlayVideoPlayer extends HTMLElement {
 
   /**
    * video seek and play
-   * @param {number} seekTime
+   * @param seekTime
    */
-  async seek(seekTime) {
+  async seek(seekTime: number) {
     this.flayVideo.currentTime = seekTime;
     await this.play();
   }
@@ -186,11 +193,11 @@ export class FlayVideoPlayer extends HTMLElement {
    *
    * [ 1 ] ---- [ seekTime ] ---- [ lastTime = totalTime - lastOffsetTime ] -- [ endTime ]
    *
-   * @param {number} lastOffsetTime 랜덤 타임 구할때, 총 플레이 시간에서 마이너스 할 초
+   * @param lastOffsetTime 랜덤 타임 구할때, 총 플레이 시간에서 마이너스 할 초
    * @returns
    */
   async playRandomSeekOrContinuously(lastOffsetTime = 0) {
-    const dbFlayPlayTime = await getFlayPlayTime(this.opus);
+    const dbFlayPlayTime = (await getFlayPlayTime(this.opus!)) as FlayPlayTime;
 
     const endTime = this.flayVideo.duration;
     const lastTime = endTime - lastOffsetTime;
@@ -212,10 +219,6 @@ export class FlayVideoPlayer extends HTMLElement {
     await this.#wait(false);
   }
 
-  /**
-   * the total duration of the media in seconds
-   * @returns {number}
-   */
   get duration() {
     return this.flayVideo.duration;
   }
@@ -279,7 +282,7 @@ class FlayVideoPoster extends HTMLElement {
     this.classList.add('flay-video-poster', 'flay-div');
   }
 
-  set(flay) {
+  set(flay: Flay) {
     this.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
   }
 }
@@ -288,19 +291,22 @@ customElements.define('flay-video-player', FlayVideoPlayer);
 customElements.define('flay-video-info', FlayVideoInfo);
 customElements.define('flay-video-poster', FlayVideoPoster);
 
-let prevOpus = null;
+let prevOpus: string | null = null;
 
 /**
  * 현재 창에 플레이어를 레이어로 띄운다
- * @param {string} opus
+ * @param opus
  */
-export const playInLayer = async (opus) => {
-  const dispatchPlayEvent = (isPlay) => document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: isPlay } }));
+export const playInLayer = async (opus: string) => {
+  const dispatchPlayEvent = (isPlay: boolean) => document.dispatchEvent(new CustomEvent('videoPlayer', { composed: true, bubbles: true, detail: { isPlay: isPlay } }));
   const setPlayerPosition = () => {
-    const flayCoverRect = document.querySelector('flay-page')?.querySelector('flay-cover').getBoundingClientRect();
+    const flayCoverRect = document.querySelector('flay-page flay-cover')?.getBoundingClientRect();
     if (flayCoverRect) {
       const { top, left, width, height } = flayCoverRect;
-      layer.querySelector('article').style.cssText = `position: fixed; top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px;`;
+      const article = layer!.querySelector('article');
+      if (article) {
+        article.style.cssText = `position: fixed; top: ${top}px; left: ${left}px; width: ${width}px; height: ${height}px;`;
+      }
     }
   };
 
@@ -315,8 +321,8 @@ export const playInLayer = async (opus) => {
       const target = e.target as HTMLElement;
       console.debug('layer click', target.tagName);
       if (target.tagName !== 'FLAY-VIDEO-PLAYER') {
-        layer.classList.add('hide');
-        videoPlayer.pause();
+        layer!.classList.add('hide');
+        void videoPlayer.pause();
         dispatchPlayEvent(false);
       }
     });
@@ -328,7 +334,7 @@ export const playInLayer = async (opus) => {
 
   const videoPlayer = layer.querySelector('flay-video-player') as FlayVideoPlayer;
   if (prevOpus !== opus) {
-    await videoPlayer.load(opus, null, null);
+    await videoPlayer.load(opus, {} as Flay, [] as Actress[]);
     await videoPlayer.playRandomSeekOrContinuously();
   } else {
     await videoPlayer.play();

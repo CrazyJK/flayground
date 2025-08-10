@@ -43,18 +43,22 @@ export default class CoverPopout extends HTMLElement {
    */
   async 하나나오기(이벤트 = null) {
     this.querySelectorAll('img').forEach((커버) => {
-      커버.animate([{ transform: 'none' }, { transform: 'scale(0)' }], { duration: 400, iterations: 1 }).finished.then(() => {
-        커버.remove();
-      });
+      커버.animate([{ transform: 'none' }, { transform: 'scale(0)' }], { duration: 400, iterations: 1 })
+        .finished.then(() => {
+          커버.remove();
+        })
+        .catch((error) => {
+          console.error('Error animating cover:', error);
+        });
     });
 
     const 커버비율 = 269 / 400;
     const 여유공간 = 100;
-    const { width: 판때기너비, height: 판때기높이 } = this.parentElement.getBoundingClientRect();
+    const { width: 판때기너비, height: 판때기높이 } = this.parentElement!.getBoundingClientRect();
     const 너비 = Math.min(1000, 판때기너비 / 2) + RandomUtils.getRandomInt(0, 여유공간 * 2);
     const 높이 = 너비 * 커버비율;
-    const 왼쪽 = 이벤트 ? 이벤트.x - 너비 / 2 : RandomUtils.getRandomInt(여유공간, 판때기너비 - 너비 - 여유공간);
-    const 위 = 이벤트 ? 이벤트.y - 높이 / 2 : RandomUtils.getRandomInt(여유공간, 판때기높이 - 높이 - 여유공간);
+    const 왼쪽 = 이벤트 ? 이벤트['x'] - 너비 / 2 : RandomUtils.getRandomInt(여유공간, 판때기너비 - 너비 - 여유공간);
+    const 위 = 이벤트 ? 이벤트['y'] - 높이 / 2 : RandomUtils.getRandomInt(여유공간, 판때기높이 - 높이 - 여유공간);
     const 기울기각도 = RandomUtils.getRandomInt(-10, 10);
     const 품번 = await this.#품번제공기.getRandomOpus();
     const 커버 = new Image();

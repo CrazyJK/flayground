@@ -1,7 +1,7 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import ApiClient from '@lib/ApiClient';
 import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay } from '@lib/FlaySearch';
 import './FlayBatch.scss';
 
@@ -50,64 +50,74 @@ export default class FlayBatch extends HTMLElement {
 
   connectedCallback() {
     const reload = this.querySelector('#reload');
-    reload.addEventListener('click', () => {
-      FlayAction.reload(() => {
+    reload?.addEventListener('click', () => {
+      void FlayAction.reload(() => {
         FlayFetch.clearAll();
       });
     });
     const lowerScore = this.querySelector('#lowerScore') as HTMLInputElement;
     lowerScore.addEventListener('change', () => {
-      FlayAction.batchSetOption('S');
+      void FlayAction.batchSetOption('S');
       if (lowerScore.checked) {
         this.#showLowerScoreFlay();
       }
     });
-    FlayAction.batchGetOption('S', (booleanOptionValue) => {
+    void FlayAction.batchGetOption('S', (booleanOptionValue) => {
       lowerScore.checked = Boolean(booleanOptionValue);
       if (lowerScore.checked) {
         this.#showLowerScoreFlay();
       }
     });
     const instanceBatch = this.querySelector('#instanceBatch');
-    instanceBatch.addEventListener('click', () => {
-      FlayAction.batch('I', () => {
+    instanceBatch?.addEventListener('click', () => {
+      void FlayAction.batch('I', () => {
         FlayFetch.clearAll();
       });
     });
     const archiveBatch = this.querySelector('#archiveBatch');
-    archiveBatch.addEventListener('click', () => {
-      FlayAction.batch('A', () => {
+    archiveBatch?.addEventListener('click', () => {
+      void FlayAction.batch('A', () => {
         FlayFetch.clearAll();
       });
     });
     const backup = this.querySelector('#backup');
-    backup.addEventListener('click', () => {
-      FlayAction.batch('B');
+    backup?.addEventListener('click', () => {
+      void FlayAction.batch('B');
     });
 
     const batchLog = this.querySelector('#batchLog');
-    window.emitBatch = (data) => {
+    (window as unknown as { emitBatch?: (data: { message?: string }) => void }).emitBatch = (data: { message?: string }) => {
+      if (!batchLog) return;
       const div = batchLog.appendChild(document.createElement('div'));
-      div.innerHTML = data.message;
+      div.innerHTML = data.message ?? '';
       div.scrollIntoView(true);
     };
   }
 
   #showLowerScoreFlay() {
     const ol = this.querySelector('#lowerScoreFlayList ol');
-    ol.addEventListener('click', (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
+    if (!ol) return;
+
+    ol.addEventListener('click', (e: Event) => {
+      const mouseEvent = e as MouseEvent;
+      const target = mouseEvent.target as HTMLElement;
       if (target.tagName !== 'A') return;
-      if (target.closest('label').classList.contains('opus')) {
+
+      const closestLabel = target.closest('label');
+      if (!closestLabel) return;
+
+      if (closestLabel.classList.contains('opus')) {
         const opus = target.innerHTML;
         popupFlay(opus);
-      } else if (target.closest('label').classList.contains('actress')) {
+      } else if (closestLabel.classList.contains('actress')) {
         const name = target.innerHTML;
         popupActress(name);
       }
     });
+
     // orderbyScoreDesc, lowScore
-    FlayFetch.getFlayListLowScore().then((list) => {
+    void FlayFetch.getFlayListLowScore().then((list) => {
+      if (!ol) return;
       ol.querySelectorAll('li:not(.head)').forEach((li) => li.remove());
       list.reverse().forEach((flay) => {
         ol.appendChild(document.createElement('li')).innerHTML = `
@@ -125,7 +135,7 @@ export default class FlayBatch extends HTMLElement {
       });
     });
 
-    FlayFetch.getFlayListOrderByScoreDesc().then((list) => {
+    void FlayFetch.getFlayListOrderByScoreDesc().then((list) => {
       const scoreMap = new Map();
       list.forEach((flay) => {
         const key = 'S' + flay.score;
@@ -137,6 +147,8 @@ export default class FlayBatch extends HTMLElement {
       console.log('scoreMap', scoreMap);
 
       const chartWrap = this.querySelector('#lowerScoreFlayChart');
+      if (!chartWrap) return;
+
       chartWrap.textContent = null;
       scoreMap.forEach((list, key) => {
         const score = key.substring(1);
@@ -146,10 +158,11 @@ export default class FlayBatch extends HTMLElement {
       const scoreList = Array.from(scoreMap.keys()).sort((s1, s2) => parseInt(s2.substring(1)) - parseInt(s1.substring(1)));
       console.log('scoreList', scoreList);
       scoreList.forEach((key) => {
+        if (!chartWrap) return;
         const scoreWrap = chartWrap.appendChild(document.createElement('div'));
         scoreWrap.appendChild(document.createElement('div')).innerHTML = `<label>${key.substring(1)}</label>`;
         scoreWrap.appendChild(document.createElement('div')).append(
-          ...scoreMap.get(key).map((flay) => {
+          ...scoreMap.get(key).map((flay: Flay) => {
             return new FlayMarker(flay, { tooltip: false, shape: 'star' });
           })
         );

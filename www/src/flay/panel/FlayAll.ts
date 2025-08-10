@@ -1,4 +1,4 @@
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay } from '@lib/FlaySearch';
 
 /**
@@ -32,13 +32,13 @@ export class FlayAll extends HTMLElement {
 
   // 클래스 필드 정의
   #currentPage = 0;
-  #sortedFlayList = [];
+  #sortedFlayList: Flay[] = [];
   #sortColumn = 4; // 기본 정렬 컬럼 (발매일)
   #sortDirection = -1; // 기본 내림차순
-  #observer = null;
+  #observer: IntersectionObserver | null = null;
   #enableInfiniteScroll = false;
-  #flayMap = new Map();
-  #styleSheet = null;
+  #flayMap = new Map<string, Flay>();
+  #styleSheet: HTMLStyleElement | null = null;
 
   /**
    * FlayListComponent 생성자
@@ -54,17 +54,19 @@ export class FlayAll extends HTMLElement {
   connectedCallback() {
     this.#render();
     this.#initializeEventListeners();
-    this.#loadData();
+    this.#loadData().catch((error) => {
+      console.error('Error loading data:', error);
+    });
   }
 
   /**
    * 요소의 속성이 변경되었을 때 호출됩니다.
    *
-   * @param {string} name 변경된 속성 이름
-   * @param {string} oldValue 이전 값
-   * @param {string} newValue 새 값
+   * @param name 변경된 속성 이름
+   * @param oldValue 이전 값
+   * @param newValue 새 값
    */
-  attributeChangedCallback(name, oldValue, newValue) {
+  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === 'page-size' && oldValue !== newValue) {
       const pageSize = parseInt(newValue, 10);
       if (!isNaN(pageSize) && pageSize > 0) {
@@ -260,11 +262,11 @@ export class FlayAll extends HTMLElement {
         background-color: var(--color-bg-hover, #f5f5f5);
       }
       th:nth-child(1), td:nth-child(1) { width: 6rem } /* 제작사 */
-      th:nth-child(2), td:nth-child(2) { width: 6rem } /* 작품번호 */ 
-      th:nth-child(3), td:nth-child(3) { width: auto; } /* 제목 */ 
-      th:nth-child(4), td:nth-child(4) { width: 8rem; } /* 배우 */ 
+      th:nth-child(2), td:nth-child(2) { width: 6rem } /* 작품번호 */
+      th:nth-child(3), td:nth-child(3) { width: auto; } /* 제목 */
+      th:nth-child(4), td:nth-child(4) { width: 8rem; } /* 배우 */
       th:nth-child(5), td:nth-child(5) { width: 5rem; } /* 발매일 */
-      th:nth-child(6), td:nth-child(6) { width: 2rem; text-align: right; padding-right: 15px; } /* 랭크 */ 
+      th:nth-child(6), td:nth-child(6) { width: 2rem; text-align: right; padding-right: 15px; } /* 랭크 */
       th:nth-child(7), td:nth-child(7) { width: 3rem; text-align: right; padding-right: 15px; } /* 스코어 */
       .loading-indicator {
         display: none;
@@ -434,11 +436,11 @@ export class FlayAll extends HTMLElement {
     `;
 
     // Shadow DOM에 스타일 추가
-    this.shadowRoot.appendChild(this.#styleSheet);
+    this.shadowRoot!.appendChild(this.#styleSheet);
 
     // 템플릿 사용하여 컴포넌트 내용 추가
     const template = FlayAll.#createTemplate();
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.shadowRoot!.appendChild(template.content.cloneNode(true));
 
     // 초기 로딩 상태 표시
     this.showLoading(true);
@@ -449,8 +451,8 @@ export class FlayAll extends HTMLElement {
    */
   #initializeEventListeners() {
     // 페이지네이션 버튼 및 이벤트 위임 설정
-    const paginationControl = this.shadowRoot.querySelector('.pagination');
-    paginationControl.addEventListener('click', (e: MouseEvent) => {
+    const paginationControl = this.shadowRoot!.querySelector('.pagination')!;
+    paginationControl.addEventListener('click', (e: Event) => {
       const target = e.target as HTMLElement;
       if (target.id === 'prev-page') {
         this.#handlePrevPage();
@@ -460,17 +462,17 @@ export class FlayAll extends HTMLElement {
     });
 
     // 검색 입력 (디바운스 적용)
-    const searchInput = this.shadowRoot.querySelector('#search-input');
+    const searchInput = this.shadowRoot!.querySelector('#search-input')!;
     searchInput.addEventListener(
       'input',
-      this.#debounce((e) => {
+      this.#debounce((e: Event) => {
         this.#filterAndSort();
 
         // 검색 이벤트 발생
         this.dispatchEvent(
           new CustomEvent('filter-changed', {
             detail: {
-              searchTerm: e.target.value,
+              searchTerm: (e.target as HTMLInputElement).value,
               filteredCount: this.#sortedFlayList.length,
               totalCount: this.#flayMap.size,
             },
@@ -482,7 +484,7 @@ export class FlayAll extends HTMLElement {
     );
 
     // 아카이브 체크박스
-    const archiveCheckbox = this.shadowRoot.querySelector('#show-archive');
+    const archiveCheckbox = this.shadowRoot!.querySelector('#show-archive')!;
     archiveCheckbox.addEventListener('change', (e: Event) => {
       this.#filterAndSort();
       this.showLoading(false);
@@ -502,13 +504,13 @@ export class FlayAll extends HTMLElement {
     });
 
     // 정렬 헤더
-    const headers = this.shadowRoot.querySelectorAll('th[data-sort]');
+    const headers = this.shadowRoot!.querySelectorAll('th[data-sort]');
     headers.forEach((header, index) => {
       header.addEventListener('click', () => {
         const oldSortField = this.#sortColumn;
         const oldSortDirection = this.#sortDirection;
 
-        this.#handleSort(header, index);
+        this.#handleSort(header as HTMLElement, index);
 
         // 정렬 변경 이벤트 발생
         const sortFields = ['studio', 'opus', 'title', 'actressList', 'release', 'rank', 'score'];
@@ -528,14 +530,15 @@ export class FlayAll extends HTMLElement {
     });
 
     // 초기 정렬 표시
-    headers[this.#sortColumn].classList.add(this.#sortDirection === 1 ? 'sort-asc' : 'sort-desc');
+    headers[this.#sortColumn]!.classList.add(this.#sortDirection === 1 ? 'sort-asc' : 'sort-desc');
 
     // 테이블 행 선택을 위한 이벤트 위임
-    const table = this.shadowRoot.querySelector('.flay-list');
-    table.addEventListener('keydown', (e: KeyboardEvent) => {
-      const target = e.target as HTMLElement;
-      if (e.key === 'Enter' && target.tagName === 'TR') {
-        const opus = target.dataset.opus;
+    const table = this.shadowRoot!.querySelector('.flay-list')!;
+    table.addEventListener('keydown', (e: Event) => {
+      const keyboardEvent = e as KeyboardEvent;
+      const target = keyboardEvent.target as HTMLElement;
+      if (keyboardEvent.key === 'Enter' && target.tagName === 'TR') {
+        const opus = (target as HTMLTableRowElement).dataset['opus'];
         if (opus) {
           this.dispatchEvent(
             new CustomEvent('flay-selected', {
@@ -570,11 +573,12 @@ export class FlayAll extends HTMLElement {
    * 무한 스크롤 설정
    */
   #setupInfiniteScroll() {
-    const observerTarget = this.shadowRoot.querySelector('#scroll-observer');
+    const observerTarget = this.shadowRoot!.querySelector('#scroll-observer');
+    if (!observerTarget) return;
 
     this.#observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && !this.shadowRoot.querySelector('.loading-indicator').classList.contains('active') && this.#enableInfiniteScroll) {
+        if (entries[0]?.isIntersecting && !this.shadowRoot!.querySelector('.loading-indicator')!.classList.contains('active') && this.#enableInfiniteScroll) {
           if ((this.#currentPage + 1) * FlayAll.PAGE_SIZE < this.#sortedFlayList.length) {
             this.#loadMoreItems();
           }
@@ -594,7 +598,7 @@ export class FlayAll extends HTMLElement {
       this.#currentPage--;
       this.#renderPage();
       // 페이지 이동 후 스크롤을 테이블 상단으로 이동
-      this.shadowRoot.querySelector('.flay-list').scrollIntoView({ behavior: 'smooth' });
+      this.shadowRoot!.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
@@ -606,15 +610,15 @@ export class FlayAll extends HTMLElement {
       this.#currentPage++;
       this.#renderPage();
       // 페이지 이동 후 스크롤을 테이블 상단으로 이동
-      this.shadowRoot.querySelector('.flay-list').scrollIntoView({ behavior: 'smooth' });
+      this.shadowRoot!.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
   /**
    * 정렬 헤더 클릭 핸들러
    */
-  #handleSort(header, index) {
-    const headers = this.shadowRoot.querySelectorAll('th[data-sort]');
+  #handleSort(header: HTMLElement, index: number) {
+    const headers = this.shadowRoot!.querySelectorAll('th[data-sort]');
     headers.forEach((h) => h.classList.remove('sort-asc', 'sort-desc'));
 
     if (this.#sortColumn === index) {
@@ -636,14 +640,14 @@ export class FlayAll extends HTMLElement {
    * 데이터 필터링 및 정렬
    */
   #filterAndSort() {
-    const searchValue = (this.shadowRoot.querySelector('#search-input') as HTMLInputElement).value.toLowerCase().trim();
-    const showArchive = (this.shadowRoot.querySelector('#show-archive') as HTMLInputElement).checked;
+    const searchValue = (this.shadowRoot!.querySelector('#search-input') as HTMLInputElement).value.toLowerCase().trim();
+    const showArchive = (this.shadowRoot!.querySelector('#show-archive') as HTMLInputElement).checked;
 
     // 시작 시간 측정 (성능 모니터링)
     const startTime = performance.now();
 
     // 필터링
-    let filtered = Array.from(this.#flayMap.values()).filter((flay) => {
+    const filtered = Array.from(this.#flayMap.values()).filter((flay) => {
       if (!showArchive && flay.archive) return false;
 
       if (searchValue) {
@@ -655,11 +659,7 @@ export class FlayAll extends HTMLElement {
 
         // 그 외 각 필드별 검색어 포함 여부 확인
         return (
-          (flay.studio && flay.studio.toLowerCase().includes(searchValue)) ||
-          (flay.opus && flay.opus.toLowerCase().includes(searchValue)) ||
-          (flay.title && flay.title.toLowerCase().includes(searchValue)) ||
-          (flay.actressList && flay.actressList.some((actress) => actress.toLowerCase().includes(searchValue))) ||
-          (flay.video && flay.video.rank && String(flay.video.rank).toLowerCase().includes(searchValue)) // rank 검색 추가
+          flay.studio?.toLowerCase().includes(searchValue) || flay.opus?.toLowerCase().includes(searchValue) || flay.title?.toLowerCase().includes(searchValue) || flay.actressList?.some((actress) => actress.toLowerCase().includes(searchValue)) || (flay.video?.rank && String(flay.video.rank).toLowerCase().includes(searchValue)) // rank 검색 추가
           // score는 비동기 로딩이므로, 클라이언트 측 필터링에 포함하기 어려움. 필요시 서버사이드 필터링 고려.
         );
       }
@@ -671,16 +671,16 @@ export class FlayAll extends HTMLElement {
     const field = sortFields[this.#sortColumn];
 
     filtered.sort((a, b) => {
-      let valueA = field === 'rank' ? a.video?.rank : a[field];
-      let valueB = field === 'rank' ? b.video?.rank : b[field];
+      let valueA: unknown = field === 'rank' ? a.video?.rank : (a as unknown as Record<string, unknown>)[field!];
+      let valueB: unknown = field === 'rank' ? b.video?.rank : (b as unknown as Record<string, unknown>)[field!];
 
       // score 필드는 비동기 로딩되므로, 초기 정렬 시점에는 flay 객체에 없을 수 있음.
       // score 정렬을 위해서는 score 데이터가 로드된 후에 정렬 로직이 다시 실행되거나,
       // score 데이터를 미리 가져와서 flay 객체에 포함시켜야 함.
       // 여기서는 score가 로드되었다고 가정하고, 없다면 기본값 처리.
       if (field === 'score') {
-        valueA = a.score !== undefined ? a.score : -1; // score가 없으면 -1로 간주 (정렬 시 뒤로)
-        valueB = b.score !== undefined ? b.score : -1;
+        valueA = (a as unknown as Record<string, unknown>)['score'] ?? -1; // score가 없으면 -1로 간주 (정렬 시 뒤로)
+        valueB = (b as unknown as Record<string, unknown>)['score'] ?? -1;
       }
 
       // 문자열 비교
@@ -689,7 +689,12 @@ export class FlayAll extends HTMLElement {
       }
 
       // 숫자 비교
-      return this.#sortDirection * (valueA - valueB);
+      if (typeof valueA === 'number' && typeof valueB === 'number') {
+        return this.#sortDirection * (valueA - valueB);
+      }
+
+      // 기본값 처리
+      return 0;
     });
 
     this.#sortedFlayList = filtered;
@@ -699,7 +704,7 @@ export class FlayAll extends HTMLElement {
     console.debug(`필터링 및 정렬 완료: ${endTime - startTime}ms, ${filtered.length}개 항목`);
 
     // 카운트 업데이트 및 페이지 리셋
-    this.shadowRoot.querySelector('#total-count').textContent = String(this.#sortedFlayList.length);
+    this.shadowRoot!.querySelector('#total-count')!.textContent = String(this.#sortedFlayList.length);
     this.#currentPage = 0;
 
     // 페이지네이션 버튼 상태 업데이트
@@ -713,7 +718,6 @@ export class FlayAll extends HTMLElement {
    * 페이지 렌더링
    */
   #renderPage() {
-    const tbody = this.shadowRoot.querySelector('.flay-list tbody');
     const startIndex = this.#currentPage * FlayAll.PAGE_SIZE;
     const endIndex = Math.min(startIndex + FlayAll.PAGE_SIZE, this.#sortedFlayList.length);
     const pageItems = this.#sortedFlayList.slice(startIndex, endIndex);
@@ -724,12 +728,15 @@ export class FlayAll extends HTMLElement {
 
     requestAnimationFrame(() => {
       try {
+        const tbody = this.shadowRoot!.querySelector('.flay-list tbody');
+        if (!tbody) return;
+
         tbody.innerHTML = '';
 
         pageItems.forEach((flay) => {
           const tr = document.createElement('tr');
           tr.classList.toggle('archive', flay.archive);
-          tr.dataset.opus = flay.opus;
+          tr.dataset['opus'] = flay['opus'];
           tr.tabIndex = 0; // Ensure tabIndex for keyboard navigation
 
           const columnDefinitions = [
@@ -744,7 +751,7 @@ export class FlayAll extends HTMLElement {
           columnDefinitions.forEach((colDef) => {
             const td = document.createElement('td');
             if (colDef.key === 'opus') {
-              td.textContent = colDef.data;
+              td.textContent = String(colDef.data);
               if (colDef.originalOpus) {
                 td.style.cursor = 'pointer';
                 td.addEventListener('click', (e) => {
@@ -772,7 +779,7 @@ export class FlayAll extends HTMLElement {
                 td.textContent = ''; // Handle empty actress list
               }
             } else {
-              td.textContent = colDef.data;
+              td.textContent = String(colDef.data);
             }
             tr.appendChild(td);
           });
@@ -785,7 +792,7 @@ export class FlayAll extends HTMLElement {
             FlayFetch.getScore(flay.opus)
               .then((score) => {
                 scoreTd.textContent = String(score ?? '');
-                flay.score = score;
+                (flay as unknown as Record<string, unknown>)['score'] = score;
               })
               .catch((error) => {
                 console.error(`Error fetching score for ${flay.opus}:`, error);
@@ -845,9 +852,8 @@ export class FlayAll extends HTMLElement {
    * 페이지네이션 버튼 상태 업데이트
    */
   #updatePaginationButtons() {
-    const prevButton = this.shadowRoot.querySelector('#prev-page') as HTMLButtonElement;
-    const nextButton = this.shadowRoot.querySelector('#next-page') as HTMLButtonElement;
-    const pageNumbersContainer = this.shadowRoot.querySelector('#page-numbers');
+    const prevButton = this.shadowRoot!.querySelector('#prev-page') as HTMLButtonElement;
+    const nextButton = this.shadowRoot!.querySelector('#next-page') as HTMLButtonElement;
     const totalPages = Math.ceil(this.#sortedFlayList.length / FlayAll.PAGE_SIZE);
     const currentPage = this.#currentPage + 1; // 1-based for display
 
@@ -858,6 +864,9 @@ export class FlayAll extends HTMLElement {
     nextButton.disabled = this.#currentPage >= totalPages - 1 || this.#sortedFlayList.length === 0;
 
     // 페이지 번호 생성
+    const pageNumbersContainer = this.shadowRoot!.querySelector('#page-numbers') as HTMLElement;
+    if (!pageNumbersContainer) return;
+
     pageNumbersContainer.innerHTML = '';
 
     // 최대 표시할 페이지 번호 수
@@ -912,10 +921,10 @@ export class FlayAll extends HTMLElement {
    * @param {number} pageNumber - 페이지 번호
    * @param {number} currentPage - 현재 페이지
    */
-  #createPageNumberButton(container, pageNumber, currentPage) {
+  #createPageNumberButton(container: HTMLElement, pageNumber: number, currentPage: number) {
     const pageButton = document.createElement('div');
     pageButton.className = 'page-number';
-    pageButton.textContent = pageNumber;
+    pageButton.textContent = String(pageNumber);
 
     if (pageNumber === currentPage) {
       pageButton.classList.add('active');
@@ -976,7 +985,7 @@ export class FlayAll extends HTMLElement {
       );
     } catch (error) {
       console.error('데이터 로딩 중 오류 발생:', error);
-      const loadingIndicator = this.shadowRoot.querySelector('.loading-indicator');
+      const loadingIndicator = this.shadowRoot!.querySelector('.loading-indicator');
       if (loadingIndicator) {
         loadingIndicator.textContent = '데이터를 불러오는 중 오류가 발생했습니다.';
         loadingIndicator.classList.add('error');
@@ -1001,26 +1010,26 @@ export class FlayAll extends HTMLElement {
    * 무한 스크롤 활성화/비활성화
    * @param {boolean} enabled - 무한 스크롤 활성화 여부
    */
-  setInfiniteScroll(enabled) {
+  setInfiniteScroll(enabled: boolean) {
     this.#enableInfiniteScroll = enabled;
   }
 
   /**
    * 데이터 다시 로드
-   * @returns {Promise<void>}
+   * @returns
    */
-  async refresh() {
+  refresh() {
     // 캐시 비우기
-    await FlayFetch.clearAll();
+    FlayFetch.clearAll();
     // 데이터 다시 로드
     return this.#loadData();
   }
 
   /**
    * 지정된 페이지로 이동
-   * @param {number} pageNumber - 이동할 페이지 번호 (1부터 시작)
+   * @param pageNumber - 이동할 페이지 번호 (1부터 시작)
    */
-  goToPage(pageNumber) {
+  goToPage(pageNumber: number) {
     if (pageNumber < 1) pageNumber = 1;
 
     const totalPages = Math.ceil(this.#sortedFlayList.length / FlayAll.PAGE_SIZE);
@@ -1029,15 +1038,15 @@ export class FlayAll extends HTMLElement {
     this.#currentPage = pageNumber - 1;
     this.#renderPage();
     // 스크롤을 테이블 상단으로 이동
-    this.shadowRoot.querySelector('.flay-list').scrollIntoView({ behavior: 'smooth' });
+    this.shadowRoot!.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   /**
    * 특정 Opus로 검색하고 해당 항목이 있는 페이지로 이동
-   * @param {string} opus - 검색할 Opus 번호
-   * @returns {boolean} - 검색 성공 여부
+   * @param opus - 검색할 Opus 번호
+   * @returns - 검색 성공 여부
    */
-  findByOpus(opus) {
+  findByOpus(opus: string) {
     const index = this.#sortedFlayList.findIndex((flay) => flay.opus === opus);
     if (index === -1) return false;
 
@@ -1046,10 +1055,11 @@ export class FlayAll extends HTMLElement {
 
     // 해당 행 강조 표시
     requestAnimationFrame(() => {
-      const rows = Array.from(this.shadowRoot.querySelectorAll('tbody tr')) as HTMLElement[];
+      const rows = Array.from(this.shadowRoot!.querySelectorAll('tbody tr'));
       for (const row of rows) {
         row.classList.remove('highlight');
-        if (row.dataset.opus === opus) {
+        const htmlRow = row as HTMLTableRowElement;
+        if (htmlRow.dataset['opus'] === opus) {
           row.classList.add('highlight');
           row.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }
@@ -1061,10 +1071,10 @@ export class FlayAll extends HTMLElement {
 
   /**
    * 로딩 인디케이터 표시/숨김
-   * @param {boolean} isLoading - 로딩 중 여부
+   * @param isLoading - 로딩 중 여부
    */
-  showLoading(isLoading) {
-    const loadingIndicator = this.shadowRoot.querySelector('.loading-indicator');
+  showLoading(isLoading: boolean) {
+    const loadingIndicator = this.shadowRoot!.querySelector('.loading-indicator');
     if (loadingIndicator) {
       if (isLoading) {
         loadingIndicator.classList.add('active');
@@ -1078,13 +1088,13 @@ export class FlayAll extends HTMLElement {
 
   /**
    * 디바운스 함수: 연속적인 이벤트 호출 제한
-   * @param {Function} func - 실행할 함수
-   * @param {number} wait - 지연 시간 (ms)
-   * @returns {Function}
+   * @param func - 실행할 함수
+   * @param wait - 지연 시간 (ms)
+   * @returns
    */
-  #debounce(func, wait) {
-    let timeout;
-    return function () {
+  #debounce(func: Function, wait: number) {
+    let timeout: NodeJS.Timeout;
+    return function (this: unknown) {
       const context = this,
         args = arguments;
       clearTimeout(timeout);

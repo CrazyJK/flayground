@@ -8,6 +8,12 @@ import './FlayMemoEditor.scss';
 
 const MEMO_STORAGE_KEY = 'flay-memo';
 
+interface Memo {
+  html: string;
+  date: string;
+  size: number;
+}
+
 /**
  * Memo editor
  * @extends {HTMLDivElement}
@@ -25,9 +31,6 @@ export class FlayMemoEditor extends HTMLElement {
         await this.load();
       }
     };
-  }
-
-  async connectedCallback() {
     this.htmlEditor = this.appendChild(new ToastHtmlEditor({ load: async () => await this.load(), blur: async () => await this.save() })); // ToastHtmlEditor instance
   }
 
@@ -35,7 +38,7 @@ export class FlayMemoEditor extends HTMLElement {
    * Load memo
    */
   async load() {
-    const memo = (await ApiClient.get('/memo')) as { html: string };
+    const memo: Memo = await ApiClient.get('/memo');
     this.htmlEditor.setHTML(memo.html);
     this.#successCallback(memo);
   }
@@ -46,16 +49,16 @@ export class FlayMemoEditor extends HTMLElement {
   async save() {
     const formData = new FormData();
     formData.set('html', this.htmlEditor.getHTML());
-    const memo = (await ApiClient.post('/memo', formData)) as { html: string; date: string; size: number };
+    const memo: Memo = await ApiClient.post('/memo', formData);
     FlayStorage.local.set(MEMO_STORAGE_KEY, memo.date); // Save memo date
     this.#successCallback(memo);
   }
 
   /**
    * Success callback. Dispatch event to change title.
-   * @param {object} memo
+   * @param memo
    */
-  #successCallback(memo) {
+  #successCallback(memo: Memo) {
     this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'M/d HH:mm')} ${FileUtils.prettySize(memo.size).join('')}</span>` } }));
   }
 }

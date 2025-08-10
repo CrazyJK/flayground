@@ -2,14 +2,25 @@
  * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
 import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@const/GroundConstant';
-import Editor, { EditorType } from '@toast-ui/editor';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import Editor from '@toast-ui/editor';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import './ToastHtmlEditor.scss';
+
+interface ToastEditor {
+  getHTML(): string;
+  setHTML(html: string, isAppend?: boolean): void;
+  hide(): void;
+  show(): void;
+}
 
 export const DEFAULT_CALLBACK = { load: () => {}, blur: () => {}, change: () => {} };
 
 export class ToastHtmlEditor extends HTMLElement {
-  #editor: Editor;
+  #editor!: ToastEditor; // Editor type from @toast-ui/editor
   #loadCallback: () => void;
   #blurCallback: () => void;
   #changeCallback: () => void;
@@ -35,32 +46,32 @@ export class ToastHtmlEditor extends HTMLElement {
       minHeight: '300px',
       initialEditType: 'wysiwyg',
       previewStyle: 'vertical',
-      theme: document.querySelector('html').getAttribute('theme'),
+      theme: document.querySelector('html')!.getAttribute('theme'),
       hideModeSwitch: true,
       autofocus: false,
       plugins: [colorSyntax],
       events: {
-        load: (editor: Editor) => {
+        load: (editor: unknown) => {
           this.#loadCallback();
           this.dispatchEvent(new CustomEvent(EVENT_EDITOR_LOAD, { detail: { editor } }));
         },
-        change: (mode: EditorType) => {
+        change: (mode: string) => {
           this.#changeCallback();
           this.dispatchEvent(new CustomEvent(EVENT_EDITOR_CHANGE, { detail: { mode } }));
         },
-        blur: (mode: EditorType) => {
+        blur: (mode: string) => {
           this.#blurCallback();
           this.dispatchEvent(new CustomEvent(EVENT_EDITOR_BLUR, { detail: { mode } }));
         },
       },
-    });
+    }) as ToastEditor;
   }
 
-  getHTML(): string {
+  getEditorHTML(): string {
     return this.#editor.getHTML();
   }
 
-  setHTML(html: string, isAppend: boolean = false): void {
+  setEditorHTML(html: string, isAppend: boolean = false): void {
     this.#editor.setHTML(html, isAppend);
   }
 

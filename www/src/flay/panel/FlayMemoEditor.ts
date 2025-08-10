@@ -39,7 +39,7 @@ export class FlayMemoEditor extends HTMLElement {
    */
   async load() {
     const memo: Memo = (await ApiClient.get('/memo'))!;
-    this.htmlEditor.setHTML(memo.html);
+    this.htmlEditor.setEditorHTML(memo.html);
     this.#successCallback(memo);
   }
 

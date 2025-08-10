@@ -2,6 +2,18 @@ import ApiClient from '@lib/ApiClient';
 import windowButton from '@svg/windowButton';
 import './FlayAttach.scss';
 
+interface AttachFile {
+  id: string;
+  name: string;
+  size: number;
+}
+
+interface Attach {
+  id: string;
+  name: string;
+  attachFiles: AttachFile[];
+}
+
 const File = {
   formatSize: (length: number) => {
     const KB = 1024;
@@ -16,6 +28,7 @@ const File = {
     }
   },
 };
+
 const MB = 1024 * 1024;
 const MULTIPART = {
   maxFileSize: MB * 30, // max-file-size=30MB
@@ -41,16 +54,16 @@ const OPT_DEFAULT = {
  */
 export default class FlayAttach extends HTMLElement {
   private options: Options;
-  private attach: any;
+  private attach: Attach | null;
   private fileCount: number;
   private fileLength: number;
 
-  private fileBox: HTMLDivElement;
-  private fileList: HTMLOListElement;
-  private fileSummary: HTMLDivElement;
-  private fileInput: HTMLInputElement;
+  private fileBox!: HTMLDivElement;
+  private fileList!: HTMLOListElement;
+  private fileSummary!: HTMLDivElement;
+  private fileInput!: HTMLInputElement;
 
-  constructor(opts: Partial<Options>) {
+  constructor(opts: Partial<Options> = {}) {
     super();
 
     this.options = { ...OPT_DEFAULT, ...opts };
@@ -101,7 +114,9 @@ export default class FlayAttach extends HTMLElement {
       e.preventDefault();
       e.stopPropagation();
       this.classList.remove('file-dragover');
-      this.insertFile(e.dataTransfer.files);
+      if (e.dataTransfer) {
+        this.insertFile(e.dataTransfer.files);
+      }
     });
   }
 
@@ -112,7 +127,9 @@ export default class FlayAttach extends HTMLElement {
     this.fileList.addEventListener('click', (e: MouseEvent) => {
       const target = e.target as HTMLElement;
       if (target.className !== 'file-remove') return;
-      this.removeFile(target.dataset.attachfileid);
+      if (target.dataset.attachfileid) {
+        this.removeFile(target.dataset.attachfileid);
+      }
     });
   }
 
@@ -122,254 +139,214 @@ export default class FlayAttach extends HTMLElement {
   addFileFinderClickEventListener() {
     this.fileSummary.addEventListener('click', (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.id !== 'fileSelector') return;
-      this.fileInput.click();
+      if (target.className === 'file-finder') {
+        this.fileInput.click();
+      }
     });
-    this.fileInput.addEventListener('change', (e: Event) => {
-      this.insertFile((e.target as HTMLInputElement).files);
+
+    this.fileInput.addEventListener('change', () => {
+      if (this.fileInput.files) {
+        this.insertFile(this.fileInput.files);
+      }
     });
   }
 
   /**
-   * 첨부 초기화
-   * @param {*} files
+   * 초기화
+   * @param {string} id
+   * @param {string} name
+   * @param {string} desc
    */
-  initiate(id, type, name) {
-    console.log('initiate', id, type, name);
+  initiate(id: string, name?: string, _desc?: string) {
+    this.attach = {
+      id: id,
+      name: name ?? 'attach',
+      attachFiles: [],
+    };
+    this.setFile();
+  }
 
-    if (id) {
-      // 기존 첨부 가져오기
-      ApiClient.get('/attach/' + id)
-        .then((attach) => this.changeCallback(attach))
-        .catch((error) => console.error('get fetch attach', id, error));
+  /**
+   * 파일 삽입
+   * @param {FileList | File[]} fileList
+   */
+  insertFile(fileList: FileList | File[]) {
+    const maxFileSize = MULTIPART.maxFileSize;
+    const maxRequestSize = MULTIPART.maxRequestSize;
+
+    let exceedingSizeIndex = -1;
+    const exceedingSizeFileArray: string[] = [];
+    const drapedFileArray: string[] = [];
+    const duplicatedText = '';
+    let overflowText = '';
+
+    Array.from(fileList).forEach((file, index) => {
+      if (file.size === 0) {
+        return; // bypass 빈파일
+      }
+
+      if (file.size > maxFileSize) {
+        exceedingSizeIndex = index;
+        exceedingSizeFileArray.push(file.name);
+        return;
+      }
+
+      const totalLength = this.fileLength + file.size;
+      if (totalLength > maxRequestSize) {
+        if (exceedingSizeIndex === -1) {
+          exceedingSizeIndex = index;
+        }
+        overflowText = File.formatSize(totalLength) + ' / ' + File.formatSize(maxRequestSize);
+        return;
+      }
+
+      drapedFileArray.push(file.name);
+    });
+
+    if (exceedingSizeFileArray.length > 0) {
+      console.warn('exceeding size', exceedingSizeFileArray);
+    }
+
+    if (overflowText) {
+      console.warn('overflow', overflowText);
+    }
+
+    if (duplicatedText) {
+      console.warn('duplicated', duplicatedText);
+    }
+
+    if (exceedingSizeIndex > -1) {
+      Array.from(fileList)
+        .slice(0, exceedingSizeIndex)
+        .forEach((file) => this.uploadToServer(file));
     } else {
-      // 신규 첨부 생성
-      const formData = new FormData();
-      formData.append('name', name);
-      formData.append('type', type);
-
-      ApiClient.postFormData('/attach', formData)
-        .then((attach) => this.changeCallback(attach))
-        .catch((error) => console.error('create', error));
+      Array.from(fileList).forEach((file) => this.uploadToServer(file));
     }
   }
 
   /**
-   * 첨부가 변경될때 콜백
+   * 첨부파일 변경시 이벤트
+   * @param {Attach} attach
    */
-  changeCallback(attach) {
-    console.log('changeCallback', attach);
+  changeCallback(attach: Attach) {
     this.attach = attach;
-    this.renderFileList();
-    this.dispatchEvent(new CustomEvent('attachChange', { detail: { files: this.attach }, cancelable: true, composed: false, bubbles: false }));
-    this.setAttribute('length', this.getFiles().length);
+    this.setFile();
 
     if (this.options.attachChangeCallback) {
-      this.options.attachChangeCallback(this.attach);
+      this.options.attachChangeCallback(attach);
     }
-
-    this.classList.remove('file-transfer');
-    this.classList.toggle('file-empty', attach.attachFiles.length === 0);
   }
 
   /**
-   * 파일 추가
-   * 중복 파일, 제한 크기 초과 체크 후 서버로 전송
-   * @param dataTransferFiles
-   * @returns
+   * 파일 정보 설정
    */
-  insertFile(dataTransferFiles: FileList) {
-    let drapedFileArray = [];
-    let drapedFileLength = 0;
-    let duplicatedText = [];
-    let overflowText = [];
+  setFile() {
+    if (!this.attach) return;
 
-    // 중복 파일이 있는지
-    Array.from(dataTransferFiles).forEach((file) => {
-      if (this.containsFile(file)) {
-        duplicatedText.push(file.name);
-      }
-    });
-    if (duplicatedText.length > 0) {
-      alert(`중복 파일이 있습니다.\n\t${duplicatedText.join('\n\t')}`);
-      return;
-    }
+    this.classList.toggle('file-empty', this.attach.attachFiles.length === 0);
 
-    // 단일 파일 최대 크기 초과 했는지
-    Array.from(dataTransferFiles).forEach((file) => {
-      if (0 < MULTIPART.maxFileSize && MULTIPART.maxFileSize < file.size) {
-        overflowText.push(`${file.name}: ${File.formatSize(file.size)}`);
-      }
-    });
-    if (overflowText.length > 0) {
-      alert(`제한 크기(${File.formatSize(MULTIPART.maxFileSize)})를 초과한 파일이 있습니다.\n\t${overflowText.join('\n\t')}`);
-      return;
-    }
+    this.fileCount = this.attach.attachFiles.length;
+    this.fileLength = this.attach.attachFiles.reduce((previousValue, attachFile) => {
+      return previousValue + (attachFile.size || 0);
+    }, 0);
 
-    Array.from(dataTransferFiles).forEach((file) => {
-      drapedFileArray.push(file);
-      drapedFileLength += file.size;
-    });
-
-    // 단일 요청의 최대 크기 초과 했는지
-    if (0 < MULTIPART.maxRequestSize && MULTIPART.maxRequestSize < drapedFileLength) {
-      alert(`단일 요청의 최대 크기(${File.formatSize(MULTIPART.maxRequestSize)})를 초과했습니다.
-        현재 첨부한 파일의 전체 크기: ${File.formatSize(drapedFileLength)}`);
-      return;
-    }
-
-    // 파일 갯수를 초과 했는지
-    if (0 < this.options.totalFileCount && this.options.totalFileCount < drapedFileArray.length + this.fileCount) {
-      alert(`첨부 가능한 파일 갯수(${this.options.totalFileCount})를 초과했습니다.
-        현재 개수: ${this.fileCount}, 추가한 갯수: ${drapedFileArray.length}`);
-      return;
-    }
-
-    // 전체 파일 크기를 초과 했는지
-    if (0 < this.options.totalFileLength && this.options.totalFileLength < drapedFileLength + this.fileLength) {
-      alert(`첨부 가능한 전체 파일 크기(${File.formatSize(this.options.totalFileLength)})를 초과했습니다.
-        현재 크기: ${File.formatSize(this.fileLength)}, 추가한 크기: ${File.formatSize(drapedFileLength)}`);
-      return;
-    }
-
-    this.classList.add('file-transfer');
-
-    // 체크가 완료된 파일
-    const dataTransfer = new DataTransfer();
-    Array.from(drapedFileArray).forEach((file) => dataTransfer.items.add(file));
-
-    // 서버로 업로드 호출
-    this.uploadToServer(dataTransfer);
+    this.displayFile();
+    this.displaySummary();
   }
 
   /**
-   * 파일 제거
-   * @param {Number} uniqueKey 클릭된 파일 인덱스
+   * 파일 목록 표시
    */
-  removeFile(attachfileid) {
-    this.classList.add('file-transfer');
+  displayFile() {
+    if (!this.attach) return;
 
-    // 서버로 파일 제거 호출
-    this.removeToServer(attachfileid);
+    this.fileList.innerHTML = this.attach.attachFiles.length === 0 ? '' : this.attach.attachFiles.map((file) => this.makeFileElement(file)).join('');
   }
 
   /**
-   * 동일 파일이 있는지. 파일 이름으로 체크
-   * @param newFile
-   * @returns
+   * 파일 아이템 생성
+   * @param {AttachFile} file
+   * @return {string}
    */
-  containsFile(newFile: File) {
-    return Array.from(this.getFiles()).filter((file) => file['name'] === newFile['name']).length > 0;
+  makeFileElement(file: AttachFile): string {
+    return `
+      <li class="file-item">
+        <span class="file-left">
+          <label class="file-name">
+            ${file.name}
+          </label>
+          <label class="file-size">
+            ${File.formatSize(file.size)}
+          </label>
+        </span>
+        <span class="file-right">
+          <label class="file-remove" data-attachfileid="${file.id}">${windowButton.terminate}</label>
+        </span>
+      </li>`;
   }
 
-  /**
-   * 첨부된 파일 목록
-   * @returns
-   */
-  getFiles() {
-    return this.attach.attachFiles;
-  }
-
-  /**
-   * 첨부된 파일 목록 렌더링
-   */
-  renderFileList() {
-    this.fileCount = 0;
-    this.fileLength = 0;
-
-    this.fileList.innerHTML = '';
-    Array.from(this.getFiles()).forEach((attachFile) => {
-      this.fileList.innerHTML += `
-          <li id="${attachFile['id']}">
-            <label class="file-icon"><i class="fa fa-${getFileIcon(attachFile)}"></i></label>
-            <label class="file-name"><a href="/attach/${this.attach.id}/${attachFile['id']}/download">${attachFile['name']}</a></label>
-            <label class="file-size">${File.formatSize(attachFile['size'])}</label>
-            <button class="file-remove" data-attachfileid="${attachFile['id']}">${windowButton.terminate}</button>
-          </li>`;
-
-      this.fileCount++;
-      this.fileLength += attachFile['size'];
-    });
-    // summary render
+  displaySummary() {
     this.fileSummary.innerHTML = `
-      <label>${this.fileCount} <small>${this.options.totalFileCount > 0 ? `/ ${this.options.totalFileCount} ` : ''}files</small></label>
-      <label id="fileSelector">Select</label>
-      <label>${File.formatSize(this.fileLength)} ${this.options.totalFileLength > 0 ? `/ ${File.formatSize(this.options.totalFileLength)}` : ''}</label>`;
+      <label class="file-count" title="파일개수">${this.fileCount}</label>
+      <label class="file-length" title="용량">${File.formatSize(this.fileLength)}</label>
+      <label class="file-finder">파일 추가</label>
+    `;
   }
 
   /**
-   * 드랍된 파일을 서버로 전송한다
-   * @param {DataTransfer} dataTransfer
+   * 서버 파일 검색
+   * @param {string} id
    */
-  uploadToServer(dataTransfer) {
+  searchFile(id: string) {
+    ApiClient.get(`/attach/${id}`)
+      .then((attach) => this.changeCallback(attach as Attach))
+      .catch((error) => console.error('searchFile', error));
+  }
+
+  /**
+   * 현재 파일 삭제
+   * @param {string} attachFileId
+   */
+  removeFile(attachFileId: string) {
+    this.removeToServer(attachFileId);
+  }
+
+  get files(): AttachFile[] {
+    return this.attach?.attachFiles ?? [];
+  }
+
+  /**
+   * 파일 업로드
+   * @param {File} file
+   */
+  uploadToServer(file: File) {
+    if (!this.attach) return;
+
     const formData = new FormData();
     formData.append('id', this.attach.id);
-    for (const file of dataTransfer.files) {
-      formData.append('file', file);
-    }
+    formData.append('file', file);
 
     ApiClient.putFormData('/attach', formData)
-      .then((attach) => this.changeCallback(attach))
+      .then((attach) => this.changeCallback(attach as Attach))
       .catch((error) => console.error('upload', error));
   }
 
   /**
    * 서버에 임시 저장된 파일 삭제
-   * @param {String} attachFileId
+   * @param {string} attachFileId
    */
-  removeToServer(attachFileId) {
+  removeToServer(attachFileId: string) {
+    if (!this.attach) return;
+
     const formData = new FormData();
     formData.append('id', this.attach.id);
     formData.append('attachFileId', attachFileId);
 
     ApiClient.delete('/attach', { data: formData })
-      .then((attach) => this.changeCallback(attach))
+      .then((attach) => this.changeCallback(attach as Attach))
       .catch((error) => console.error('remove', error));
   }
 }
 
 // Define the new element
 customElements.define('flay-attach', FlayAttach);
-
-function getFileIcon(file) {
-  function getFileType(fileExt, fileType) {
-    let type0 = fileType.split('/')[0];
-    if (type0 === 'video') return 'video';
-    if (type0 === 'audio') return 'audio';
-    if (type0 === 'image') return 'image';
-    if (['java', 'js', 'cjs', 'css', 'scss', 'json', 'html', 'xml', 'json', 'properties', 'md'].includes(fileExt)) return 'code';
-    if (type0 === 'text') return 'text';
-    if (['jar', 'tar', 'gz', 'cab', 'zip'].includes(fileExt)) return 'archive';
-    if (['ppt', 'pptx'].includes(fileExt)) return 'powerpoint';
-    if (['xls', 'xlsx'].includes(fileExt)) return 'excel';
-    if (['doc', 'docx'].includes(fileExt)) return 'word';
-    if (['pdf'].includes(fileExt)) return 'pdf';
-
-    return 'etc';
-  }
-
-  switch (getFileType(file.name.split('.').pop(), file.type)) {
-    case 'video':
-      return 'file-video-o';
-    case 'audio':
-      return 'file-audio-o';
-    case 'image':
-      return 'file-image-o';
-    case 'code':
-      return 'file-code-o';
-    case 'text':
-      return 'file-text-o';
-    case 'archive':
-      return 'file-archive-o';
-    case 'powerpoint':
-      return 'file-powerpoint-o';
-    case 'excel':
-      return 'file-excel-o';
-    case 'word':
-      return 'file-word-o';
-    case 'pdf':
-      return 'file-pdf-o';
-    default:
-      return 'file-o';
-  }
-}

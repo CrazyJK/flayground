@@ -1,9 +1,17 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
 import Editor from '@toast-ui/editor';
 import './ToastHtmlViewer.scss';
 
+interface ToastViewer {
+  preview: {
+    setHTML(html: string): void;
+  };
+}
+
 export class ToastHtmlViewer extends HTMLElement {
-  #viewer;
-  #htmlContent;
+  #viewer!: ToastViewer;
+  #htmlContent: string;
 
   constructor(htmlContent = '') {
     super();
@@ -16,12 +24,12 @@ export class ToastHtmlViewer extends HTMLElement {
       el: this,
       viewer: true,
       height: '100%',
-      theme: document.querySelector('html').getAttribute('theme'),
+      theme: document.querySelector('html')!.getAttribute('theme'),
       initialValue: this.#htmlContent,
-    });
+    }) as ToastViewer;
   }
 
-  setHTML(html) {
+  setHTML(html: string): void {
     this.#viewer.preview.setHTML(html);
   }
 }

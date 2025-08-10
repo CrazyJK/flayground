@@ -8,31 +8,39 @@ import { ToastHtmlViewer } from '@ui/editor/ToastHtmlViewer';
 import './KamoruDiary.scss';
 
 const GB = 1024 * 1024 * 1024;
-const defaultDiaryRecord = { meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null }, content: '' };
 
 interface DiaryRecord {
   meta: {
     date: string;
     weather: string;
     title: string;
-    created: Date | null;
-    lastModified: Date | null;
+    created: string | null;
+    lastModified: string | null;
     attachId: string | null;
   };
   content: string;
+  date: string; // date 속성 추가
+  title: string; // title 속성 추가
 }
+
+const defaultDiaryRecord: DiaryRecord = {
+  meta: { date: '', weather: '', title: '', created: null, lastModified: null, attachId: null },
+  content: '',
+  date: '',
+  title: '',
+};
 
 export class KamoruDiary extends HTMLElement {
   #currentDiary: DiaryRecord = defaultDiaryRecord;
-  #diaryList = [];
+  #diaryList: DiaryRecord[] = [];
 
-  #diaryWriteContainer;
-  #diaryTitle;
-  #diaryDay;
-  #diaryDate;
+  #diaryWriteContainer!: HTMLElement;
+  #diaryTitle!: HTMLInputElement;
+  #diaryDay!: HTMLLabelElement;
+  #diaryDate!: HTMLInputElement;
 
-  #diaryEditor;
-  #flayAttach;
+  #diaryEditor!: ToastHtmlEditor;
+  #flayAttach!: FlayAttach;
 
   constructor() {
     super();
@@ -61,7 +69,7 @@ export class KamoruDiary extends HTMLElement {
             <button type="button" id="diaryViewerShow">View</button>
           </div>
           <div id="diaryBody"></div>
-          <div id="diaryAttch"></div>
+          <div id="diaryAttach"></div>
         </div>
       </div>
       <div id="diaryReadContainer">
@@ -71,31 +79,32 @@ export class KamoruDiary extends HTMLElement {
   }
 
   async connectedCallback() {
-    this.#diaryEditor = this.querySelector('#diaryBody').appendChild(new ToastHtmlEditor({ blur: () => this.saveDiary() }));
+    this.#diaryEditor = this.querySelector('#diaryBody')!.appendChild(new ToastHtmlEditor({ blur: () => this.saveDiary() }));
     this.#diaryEditor.hide();
 
-    this.#flayAttach = this.querySelector('#diaryAttch').appendChild(
+    this.#flayAttach = this.querySelector('#diaryAttach')!.appendChild(
       new FlayAttach({
         id: 'diaryAttach',
         totalFileCount: 0,
         totalFileLength: GB * 1,
-        attachChangeCallback: (attach) => {
+        attachChangeCallback: (attach: { id: string }) => {
           console.debug('attachChangeCallback', attach);
           this.#currentDiary.meta.attachId = attach.id;
         },
       })
     );
 
-    this.#diaryWriteContainer = this.querySelector('#diaryWriteContainer');
-    this.#diaryTitle = this.querySelector('#diaryTitle');
-    this.#diaryDay = this.querySelector('#diaryDay');
-    this.#diaryDate = this.querySelector('#diaryDate');
+    this.#diaryWriteContainer = this.querySelector('#diaryWriteContainer')!;
+    this.#diaryTitle = this.querySelector('#diaryTitle')!;
+    this.#diaryDay = this.querySelector('#diaryDay')!;
+    this.#diaryDate = this.querySelector('#diaryDate')!;
 
-    this.start();
+    await this.start();
   }
 
   async start() {
-    this.#diaryList = await ApiClient.get('/diary/meta');
+    const diaryListResult = await ApiClient.get('/diary/meta');
+    this.#diaryList = (diaryListResult as DiaryRecord[]) ?? [];
     console.debug('fetched #diaryList', this.#diaryList);
 
     this.#renderCalendar();
@@ -107,29 +116,33 @@ export class KamoruDiary extends HTMLElement {
   }
 
   #renderCalendar() {
+    if (this.#diaryList.length === 0) return;
+
     const dates = this.#diaryList.map((diary) => diary.date);
-    const startStr = dates.reduce((min, d) => (d < min ? d : min), dates[0]);
+    if (dates.length === 0) return;
+
+    const startStr = dates.reduce((min: string, d: string) => (d < min ? d : min), dates[0]!);
     const endStr = DateUtils.format(new Date(), 'yyyy-MM-dd');
 
-    const container = this.querySelector('#calendarContainer');
+    const container = this.querySelector('#calendarContainer')!;
     container.innerHTML = '';
 
     // 파싱: 시작 날짜와 종료 날짜 (형식: YYYY-MM-DD)
     const [startYear, startMonth] = startStr.split('-').map(Number);
     const [endYear, endMonth] = endStr.split('-').map(Number);
-    const startDate = new Date(startYear, startMonth - 1, 1);
-    const endDate = new Date(endYear, endMonth - 1, 1);
+    const startDate = new Date(startYear!, startMonth! - 1, 1);
+    const endDate = new Date(endYear!, endMonth! - 1, 1);
 
     // 시작부터 종료까지 월별 배열 (월은 오름차순)
     let current = new Date(startDate);
-    const monthList = [];
+    const monthList: Date[] = [];
     while (current <= endDate) {
       monthList.push(new Date(current));
       current = new Date(current.getFullYear(), current.getMonth() + 1, 1);
     }
 
     // 연도별로 그룹핑 (연도는 시간 역순)
-    const yearGroups = {};
+    const yearGroups: Record<number, Date[]> = {};
     monthList.forEach((monthDate) => {
       const year = monthDate.getFullYear();
       if (!yearGroups[year]) {
@@ -145,7 +158,7 @@ export class KamoruDiary extends HTMLElement {
 
     sortedYears.forEach((year) => {
       // 해당 연도의 월은 오름차순으로 정렬합니다.
-      const monthsForYear = yearGroups[year].sort((a, b) => a.getMonth() - b.getMonth());
+      const monthsForYear = yearGroups[year]?.sort((a: Date, b: Date) => a.getMonth() - b.getMonth()) ?? [];
       const yearContainer = document.createElement('div');
       yearContainer.classList.add('year-group');
 
@@ -153,7 +166,7 @@ export class KamoruDiary extends HTMLElement {
       yearHeader.textContent = String(year);
       yearContainer.appendChild(yearHeader);
 
-      monthsForYear.forEach((monthDate) => {
+      monthsForYear.forEach((monthDate: Date) => {
         const y = monthDate.getFullYear();
         const m = monthDate.getMonth(); // 0-indexed
         const firstOfMonth = new Date(y, m, 1);
@@ -203,7 +216,7 @@ export class KamoruDiary extends HTMLElement {
           // dateDiv.setAttribute('title', date.toLocaleDateString());
 
           const span = document.createElement('span');
-          span.textContent = date.getDate();
+          span.textContent = String(date.getDate());
           dateDiv.appendChild(span);
           datesDiv.appendChild(dateDiv);
         });
@@ -215,14 +228,14 @@ export class KamoruDiary extends HTMLElement {
     });
 
     // 오늘날짜(endStr)에 today 클래스 추가
-    this.querySelector(`#d-${endStr}`).classList.add('today');
+    this.querySelector(`#d-${endStr}`)?.classList.add('today');
   }
 
   #markDiaryDates() {
     this.#diaryList.forEach((diary) => {
       const dateElement = this.querySelector('#d-' + diary.date);
-      dateElement.classList.add('written');
-      dateElement.setAttribute('title', diary.title);
+      dateElement?.classList.add('written');
+      dateElement?.setAttribute('title', diary.title);
     });
   }
 
@@ -233,6 +246,8 @@ export class KamoruDiary extends HTMLElement {
         const clickedDate = target.closest('.date');
         console.debug('click Calendar date', clickedDate);
 
+        if (!clickedDate) return;
+
         // 중복 클릭 방지
         if (clickedDate.classList.contains('active')) return;
 
@@ -242,16 +257,22 @@ export class KamoruDiary extends HTMLElement {
 
         const date = clickedDate.id.substring(2);
         if (clickedDate.classList.contains('written')) {
-          ApiClient.get('/diary/date/' + date).then((diary) => this.loadDiary(diary));
+          void ApiClient.get('/diary/date/' + date).then((diary) => this.loadDiary(diary as DiaryRecord));
         } else {
-          defaultDiaryRecord.meta.date = date;
-          defaultDiaryRecord.meta.weather = 'sunny';
-          defaultDiaryRecord.meta.title = '';
-          defaultDiaryRecord.meta.created = null;
-          defaultDiaryRecord.meta.lastModified = null;
-          defaultDiaryRecord.meta.attachId = null;
-          defaultDiaryRecord.content = '';
-          this.loadDiary(defaultDiaryRecord);
+          const newDiaryRecord: DiaryRecord = {
+            meta: {
+              date,
+              weather: 'sunny',
+              title: '',
+              created: null,
+              lastModified: null,
+              attachId: null,
+            },
+            content: '',
+            date,
+            title: '',
+          };
+          this.loadDiary(newDiaryRecord);
         }
       });
     });
@@ -266,21 +287,21 @@ export class KamoruDiary extends HTMLElement {
   #addDiaryViewEvent() {
     const diaryReadContainer = this.querySelector('#diaryReadContainer') as HTMLElement;
     // diary Viewer Close
-    this.querySelector('#diaryViewerClose').addEventListener('click', () => {
+    this.querySelector('#diaryViewerClose')!.addEventListener('click', () => {
       diaryReadContainer.style.display = 'none';
     });
     // diary Viewer Show
-    this.querySelector('#diaryViewerShow').addEventListener('click', async () => {
+    this.querySelector('#diaryViewerShow')!.addEventListener('click', () => {
       let htmlViewer = this.querySelector('#diaryViewerInner .toast-html-viewer') as ToastHtmlViewer;
       if (htmlViewer === null) {
-        htmlViewer = this.querySelector('#diaryViewerInner').appendChild(new ToastHtmlViewer());
+        htmlViewer = this.querySelector('#diaryViewerInner')!.appendChild(new ToastHtmlViewer());
       }
       htmlViewer.setHTML(this.#diaryEditor.getHTML());
       diaryReadContainer.style.display = 'block';
     });
   }
 
-  loadDiary(diary) {
+  loadDiary(diary: DiaryRecord) {
     console.log('loadDiary', diary);
 
     this.#currentDiary = diary;
@@ -290,9 +311,9 @@ export class KamoruDiary extends HTMLElement {
     (this.querySelector('[name="diaryWeather"][value="' + diary.meta.weather + '"]') as HTMLInputElement).checked = true; // weather
     this.#diaryDay.innerHTML = DateUtils.getDayOfWeek(diary.meta.date); // day of week
     this.#diaryDate.value = diary.meta.date; // date
-    this.#diaryEditor.setHTML(diary.content); // content
+    this.#diaryEditor.setEditorHTML(diary.content); // content
     this.#diaryEditor.show();
-    this.#flayAttach.initiate(diary.meta.attachId, 'DIARY', diary.meta.date); // attach
+    this.#flayAttach.initiate(diary.meta.attachId ?? '', 'DIARY', diary.meta.date); // attach
   }
 
   saveDiary() {
@@ -320,9 +341,10 @@ export class KamoruDiary extends HTMLElement {
     this.#currentDiary.meta.title = title;
     this.#currentDiary.content = content;
 
-    ApiClient.post('/diary', { data: this.#currentDiary }).then((diary: DiaryRecord) => {
-      console.log('saved Diary', diary);
-      this.#currentDiary = diary;
+    void ApiClient.post('/diary', { data: this.#currentDiary }).then((diary: unknown) => {
+      const savedDiary = diary as DiaryRecord;
+      console.log('saved Diary', savedDiary);
+      this.#currentDiary = savedDiary;
       this.#markDiaryDates();
     });
   }

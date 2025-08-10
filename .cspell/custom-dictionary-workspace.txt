@@ -34,3 +34,4 @@ Windowz
 attachfileid
 FULLSIZE
 resizer
+normalscreen

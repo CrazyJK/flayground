@@ -82,7 +82,7 @@ export class SideNavBar extends HTMLElement {
     this.querySelectorAll('a').forEach((anchor) => {
       if (anchor.href.includes(location.pathname)) {
         anchor.parentElement!.classList.add('active');
-        this.#currentMenuName = anchor.textContent.replace(/\s+/g, '');
+        this.#currentMenuName = anchor.textContent!.replace(/\s+/g, '');
       }
     });
 

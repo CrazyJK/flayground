@@ -8,7 +8,7 @@ import './inc/Page';
 import './page.tags.scss';
 
 class FlayTagInfo extends HTMLElement {
-  tag: Tag;
+  tag!: Tag;
 
   constructor(tag: Tag) {
     super();
@@ -16,7 +16,7 @@ class FlayTagInfo extends HTMLElement {
 
     this.draggable = true;
     this.dataset.id = String(this.tag.id);
-    this.dataset.flayCount = this.tag['count'];
+    this.dataset.flayCount = String(this.tag['count']);
     this.classList.add('flay-tag-info');
     this.innerHTML = `
       <dt>
@@ -30,7 +30,7 @@ class FlayTagInfo extends HTMLElement {
     `;
 
     this.addEventListener('click', () => ([TAG_ID.value, TAG_GROUP.value, TAG_NAME.value, TAG_DESC.value] = [String(this.tag.id), this.tag.group, this.tag.name, this.tag.description]));
-    this.querySelector('.name').addEventListener('click', () => popupTag(this.tag.id));
+    this.querySelector('.name')!.addEventListener('click', () => popupTag(this.tag.id));
   }
 }
 
@@ -49,24 +49,24 @@ let [tagId, tagGroup, tagName, tagDesc] = ['', '', '', ''];
 TAG_ID.addEventListener('click', () => ([TAG_ID.value, TAG_NAME.value, TAG_DESC.value] = ['', '', '']));
 TAG_APPLY.addEventListener('click', () => {
   [tagId, tagGroup, tagName, tagDesc] = [TAG_ID.value, TAG_GROUP.value, TAG_NAME.value, TAG_DESC.value];
-  if (tagName !== '') FlayAction.putTag(tagId === '' ? -1 : parseInt(tagId), tagGroup, tagName, tagDesc, renderTagList);
+  if (tagName !== '') void FlayAction.putTag(tagId === '' ? -1 : parseInt(tagId), tagGroup, tagName, tagDesc, renderTagList);
 });
 TAG_DEL.addEventListener('click', () => {
   [tagId, tagName, tagDesc] = [TAG_ID.value, TAG_NAME.value, TAG_DESC.value];
-  if (tagId !== '') if (confirm('A U sure?')) FlayAction.deleteTag(parseInt(tagId), tagName, tagDesc, renderTagList);
+  if (tagId !== '') if (confirm('A U sure?')) void FlayAction.deleteTag(parseInt(tagId), tagName, tagDesc, renderTagList);
 });
 
-renderTagList();
+void renderTagList();
 
 async function renderTagList() {
-  document.querySelector('body > main').textContent = null;
+  document.querySelector('body > main')!.textContent = null;
 
   const tagGroupList = await FlayFetch.getTagGroups();
   Array.from(tagGroupList).forEach(({ id, name, desc }) => {
-    const groupDiv = document.querySelector('body > main').appendChild(document.createElement('fieldset'));
+    const groupDiv = document.querySelector('body > main')!.appendChild(document.createElement('fieldset'));
     groupDiv.innerHTML = `<legend>${id}: ${name} ${desc}</legend><div id="${id}"></div>`;
 
-    const dropzone = groupDiv.querySelector('div');
+    const dropzone = groupDiv.querySelector('div')!;
     dropzone.classList.add('dropzone');
     DragDrop.setDropzone(dropzone);
 
@@ -80,26 +80,26 @@ async function renderTagList() {
     }
   });
 
-  FlayFetch.getTagListWithCount().then((tagList: Tag[]) => {
+  void FlayFetch.getTagListWithCount().then((tagList: Tag[]) => {
     Array.from(tagList)
       .sort((t1, t2) => t1.name.localeCompare(t2.name))
       .forEach((tag) => {
         const flayTagInfo = new FlayTagInfo(tag);
         flayTagInfo.addEventListener('drop', async (e) => {
-          const dropzone = (e.target as HTMLElement).closest('.dropzone');
+          const dropzone = (e.target as HTMLElement).closest('.dropzone')!;
           const newGroup = dropzone.id;
           if (tag.group !== newGroup) {
             tag.group = newGroup;
             await FlayAction.updateTag(tag);
           }
           // 해당 드롭존에 태그 다시 정렬
-          const sorted = Array.from(dropzone.querySelectorAll('.flay-tag-info')).sort((t1: FlayTagInfo, t2: FlayTagInfo) => t1.tag.name.localeCompare(t2.tag.name));
+          const sorted = Array.from(dropzone.querySelectorAll('.flay-tag-info')).sort((t1, t2) => (t1 as FlayTagInfo).tag.name.localeCompare((t2 as FlayTagInfo).tag.name));
           for (const flayTagInfo of sorted) {
             dropzone.insertBefore(flayTagInfo, null);
           }
         });
 
-        document.querySelector('#etc').append(flayTagInfo);
+        document.querySelector('#etc')!.append(flayTagInfo);
         if (tag.group) document.querySelector('#' + tag.group)?.append(flayTagInfo);
 
         DragDrop.setMoveable(flayTagInfo);
@@ -110,7 +110,8 @@ async function renderTagList() {
 addResizeListener(() => {
   // FHD 해상도 면적 이상이면, flay 갯수에 비례하여 폰트 크기 설정
   const isHugeScreen = window.innerWidth * window.innerHeight > 1080 * 1920;
-  document.querySelectorAll('.flay-tag-info').forEach((flayTagInfo: HTMLElement) => {
+  document.querySelectorAll('.flay-tag-info').forEach((element) => {
+    const flayTagInfo = element as FlayTagInfo;
     (flayTagInfo.querySelector('.name') as HTMLElement).style.fontSize = isHugeScreen ? `calc(var(--size-normal) + ${Math.floor(Number(flayTagInfo.dataset.flayCount) / 5)}px)` : '';
   });
 }, true);

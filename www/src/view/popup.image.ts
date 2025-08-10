@@ -17,8 +17,8 @@ openBtn.innerHTML = folderSVG;
 
 let [idx, max] = [0, 0];
 
-const setImageIdx = (idx) => {
-  flayImage.dataset.idx = idx;
+const setImageIdx = (idx: number) => {
+  flayImage.dataset.idx = idx.toString();
   window.location.hash = `#${idx}`;
 };
 
@@ -38,7 +38,7 @@ const Go = {
 };
 
 // Animate window resize
-const animateResize = (targetWidth, targetHeight, duration = 100) => {
+const animateResize = (targetWidth: number, targetHeight: number, duration = 100) => {
   const startWidth = window.outerWidth;
   const startHeight = window.outerHeight;
   const widthDiff = targetWidth - startWidth;
@@ -47,7 +47,7 @@ const animateResize = (targetWidth, targetHeight, duration = 100) => {
   const startTop = window.screenY;
   const startTime = performance.now();
 
-  const animate = (currentTime) => {
+  const animate = (currentTime: number) => {
     const elapsed = currentTime - startTime;
     const progress = Math.min(elapsed / duration, 1);
     const easeProgress = 0.5 - Math.cos(progress * Math.PI) / 2; // Smooth easing
@@ -70,13 +70,13 @@ const animateResize = (targetWidth, targetHeight, duration = 100) => {
   requestAnimationFrame(animate);
 };
 
-const imageLoadHandler = (e) => {
-  const { idx, name, width, height } = e.detail.info;
+const imageLoadHandler = (e: Event) => {
+  const { idx, name, width, height } = (e as CustomEvent).detail.info;
   document.title = `${idx} - ${name}`;
   animateResize(width, height);
 };
 
-const wheelNavigationHandler = (e) => {
+const wheelNavigationHandler = (e: WheelEvent) => {
   e.preventDefault();
   if (e.deltaY > 0) {
     Go.next();
@@ -85,7 +85,7 @@ const wheelNavigationHandler = (e) => {
   }
 };
 
-const keyNavigationHandler = (e) => {
+const keyNavigationHandler = (e: KeyboardEvent) => {
   switch (e.code) {
     case 'Space':
       Go.random();
@@ -118,10 +118,10 @@ const imageRemover = async () => {
 };
 
 const folderOpener = () => {
-  FlayAction.explore(flayImage.dataset.path);
+  void FlayAction.explore(flayImage.dataset.path!);
 };
 
-(async () => {
+void (async () => {
   const hashIdx = new URL(location.href).hash.substring(1);
 
   max = await FlayFetch.getImageSize();

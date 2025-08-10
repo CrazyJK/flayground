@@ -1,13 +1,22 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import VideoDatePanel from '@flay/panel/VideoDatePanel';
 import FileUtils from '@lib/FileUtils';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
+import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupStudio } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import { tabUI } from '@lib/TabUI';
 import { sortable } from '@lib/TableUtils';
 import './inc/Page';
 import './page.statistics.scss';
+
+interface RowMapValue {
+  list: Flay[];
+  rank: {
+    avg: number;
+    sum: number;
+  };
+  shotLength: number;
+}
 
 tabUI(document.body);
 
@@ -20,14 +29,14 @@ startDateInput.addEventListener('change', start);
 endDateInput.addEventListener('change', start);
 withArchiveData.addEventListener('change', start);
 
-let instanceList = [];
-let archiveList = [];
-let rawList = [];
-let filteredList = [];
-let startDate;
-let endDate;
+let instanceList: Flay[] = [];
+let archiveList: Flay[] = [];
+let rawList: Flay[] = [];
+let filteredList: Flay[] = [];
+let startDate: string;
+let endDate: string;
 
-Promise.all([FlayFetch.getFlayAll(), FlayFetch.getArchiveAll()]).then(([instances, archives]) => {
+void Promise.all([FlayFetch.getFlayAll(), FlayFetch.getArchiveAll()]).then(([instances, archives]) => {
   instanceList = instances;
   archiveList = archives;
 
@@ -72,14 +81,14 @@ function start() {
   }
   console.log('filteredList length', filteredList.length);
 
-  document.querySelector('#info').innerHTML = filteredList.length + ' Flay';
+  document.querySelector('#info')!.innerHTML = filteredList.length + ' Flay';
 
   startStudioActress();
   startRankGroup();
   startTimeline();
   startLastDate();
-  startActressAge();
-  startShotFlay();
+  void startActressAge();
+  void startShotFlay();
 }
 
 function startStudioActress() {
@@ -106,7 +115,7 @@ function startStudioActress() {
     console.debug('actress raw map', rawMap);
   }
 
-  function fillMap(rawMap, key, flay) {
+  function fillMap(rawMap: Map<string, RowMapValue>, key: string, flay: Flay) {
     const value = rawMap.get(key);
     if (!value) {
       const list = [flay];
@@ -123,7 +132,7 @@ function startStudioActress() {
     }
   }
 
-  function calculateRank(rawMap) {
+  function calculateRank(rawMap: Map<string, RowMapValue>) {
     rawMap.forEach((value) => {
       // sum
       let sum = 0;
@@ -135,7 +144,7 @@ function startStudioActress() {
         }
       });
       // avg
-      let avg = sum / value.list.length;
+      const avg = sum / value.list.length;
       // set
       value.rank.sum = sum;
       value.rank.avg = avg;
@@ -143,8 +152,8 @@ function startStudioActress() {
     });
   }
 
-  function renderTable(selector, rawMap) {
-    const wrap = document.querySelector(selector);
+  function renderTable(selector: string, rawMap: Map<string, RowMapValue>) {
+    const wrap = document.querySelector(selector) as HTMLElement;
     if (!wrap) {
       return;
     }
@@ -153,9 +162,9 @@ function startStudioActress() {
     // sort
     const mapToArray = [...rawMap];
     mapToArray.sort((a, b) => {
-      const avgCompage = b[1].rank.avg - a[1].rank.avg;
-      const sumCompate = b[1].rank.sum - a[1].rank.sum;
-      return avgCompage === 0 ? sumCompate : avgCompage;
+      const avgCompare = b[1].rank.avg - a[1].rank.avg;
+      const sumCompare = b[1].rank.sum - a[1].rank.sum;
+      return avgCompare === 0 ? sumCompare : avgCompare;
     });
 
     mapToArray.forEach((element) => {
@@ -181,15 +190,15 @@ function startStudioActress() {
 
       const size = item.appendChild(document.createElement('label'));
       size.classList.add('size');
-      size.innerHTML = value.list.length;
+      size.innerHTML = String(value.list.length);
 
       const shot = item.appendChild(document.createElement('label'));
       shot.classList.add('shot');
-      shot.innerHTML = value.shotLength;
+      shot.innerHTML = String(value.shotLength);
 
       const avg = item.appendChild(document.createElement('label'));
       avg.classList.add('avg');
-      avg.innerHTML = value.rank.avg.toFixed(2);
+      avg.innerHTML = String(value.rank.avg.toFixed(2));
     });
     sortable(wrap, { initSortIndex: 2 });
   }
@@ -199,15 +208,15 @@ function startStudioActress() {
 }
 
 function startRankGroup() {
-  const rankMap = new Map();
-  Array.from({ length: 7 }, (v, i) => i).forEach((r) => rankMap.set(r - 1, []));
+  const rankMap: Map<number, Flay[]> = new Map();
+  Array.from({ length: 7 }, (_, i) => i).forEach((r) => rankMap.set(r - 1, []));
 
-  Array.from(filteredList).forEach((flay) => rankMap.get(flay.video.rank).push(flay));
+  Array.from(filteredList).forEach((flay) => rankMap.get(flay.video.rank)!.push(flay));
 
   rankMap.forEach((flayList, key) => {
-    const rankList = document.querySelector(`#rank${key} .list`);
-    const countLabel = document.querySelector(`#rank${key} .count`);
-    const lengthLabel = document.querySelector(`#rank${key} .length`);
+    const rankList = document.querySelector(`#rank${key} .list`) as HTMLElement;
+    const countLabel = document.querySelector(`#rank${key} .count`) as HTMLElement;
+    const lengthLabel = document.querySelector(`#rank${key} .length`) as HTMLElement;
 
     rankList.textContent = null;
 
@@ -226,8 +235,8 @@ function startRankGroup() {
 }
 
 function startTimeline() {
-  const firstDate = new Date(filteredList[0].release);
-  const lastDate = new Date(filteredList[filteredList.length - 1].release);
+  const firstDate = new Date(filteredList[0]!.release);
+  const lastDate = new Date(filteredList[filteredList.length - 1]!.release);
   lastDate.setMonth(lastDate.getMonth() + 1);
   lastDate.setDate(1);
   console.log('date', firstDate.toISOString(), lastDate.toISOString());
@@ -239,7 +248,7 @@ function startTimeline() {
   }
   // console.log('dates', dates);
 
-  const timelineMap = new Map();
+  const timelineMap: Map<string, Flay[]> = new Map();
   dates.sort((d1, d2) => d2.localeCompare(d1)).forEach((d) => timelineMap.set(d, []));
   filteredList.forEach((flay) => {
     const key = flay.release.substring(0, 7);
@@ -250,17 +259,17 @@ function startTimeline() {
       console.warn('timelineMap key notfound', key);
       timelineMap.set(key, []);
     }
-    timelineMap.get(key).push(flay);
+    timelineMap.get(key)!.push(flay);
   });
   console.debug(timelineMap);
 
-  const wrapper = document.querySelector('.timeline-grid');
+  const wrapper = document.querySelector('.timeline-grid')!;
   wrapper.querySelectorAll('div:not(.grid-head)').forEach((div) => div.remove());
 
   timelineMap.forEach((flayList, key) => {
-    const rankMap = new Map();
-    Array.from({ length: 7 }, (v, i) => i).forEach((r) => rankMap.set(r - 1, []));
-    Array.from(flayList).forEach((flay: Flay) => rankMap.get(flay.video.rank).push(flay));
+    const rankMap: Map<number, Flay[]> = new Map();
+    Array.from({ length: 7 }, (_, i) => i).forEach((r) => rankMap.set(r - 1, []));
+    Array.from(flayList).forEach((flay: Flay) => rankMap.get(flay.video.rank)!.push(flay));
 
     const time = wrapper.appendChild(document.createElement('div'));
     time.classList.add('grid-data', 'time');
@@ -273,7 +282,7 @@ function startTimeline() {
       let count = 0;
       let shot = 0;
       let length = 0;
-      rankMap.get(i).forEach((flay) => {
+      rankMap.get(i)!.forEach((flay) => {
         count++;
         if (flay.video.likes?.length > 0) {
           shot++;
@@ -284,7 +293,7 @@ function startTimeline() {
         const [size, unit] = FileUtils.prettySize(length);
         rank.title = `${count} Flay, ${size} ${unit}`;
       }
-      rank.append(...rankMap.get(i).map((flay) => new FlayMarker(flay)));
+      rank.append(...rankMap.get(i)!.map((flay) => new FlayMarker(flay)));
       flayCount += count;
       shotCount += shot;
     }
@@ -298,8 +307,8 @@ function startTimeline() {
 async function startActressAge() {
   const actressMap = new Map();
   const ageFlayMap = new Map();
-  //
-  async function getActressInfo(name) {
+
+  async function getActressInfo(name: string): Promise<Actress> {
     if (!actressMap.has(name)) {
       const actress = await FlayFetch.getActress(name);
       actressMap.set(name, actress);
@@ -323,19 +332,19 @@ async function startActressAge() {
     }
   }
 
-  const wrapper = document.querySelector('.actressAge-grid');
+  const wrapper = document.querySelector('.actressAge-grid')!;
   wrapper.querySelectorAll('div:not(.grid-head)').forEach((div) => div.remove());
 
-  const sortedAgeFlayMap = new Map(Array.from(ageFlayMap).sort((a, b) => a[0] - b[0]));
+  const sortedAgeFlayMap: Map<number, Flay[]> = new Map(Array.from(ageFlayMap).sort((a, b) => a[0] - b[0]));
 
   sortedAgeFlayMap.forEach((flayList, key) => {
-    const rankMap = new Map();
-    Array.from({ length: 7 }, (v, i) => i).forEach((r) => rankMap.set(r - 1, []));
-    Array.from(flayList).forEach((flay: Flay) => rankMap.get(flay.video.rank).push(flay));
+    const rankMap: Map<number, Flay[]> = new Map();
+    Array.from({ length: 7 }, (_, i) => i).forEach((r) => rankMap.set(r - 1, []));
+    Array.from(flayList).forEach((flay: Flay) => rankMap.get(flay.video.rank)!.push(flay));
 
     const time = wrapper.appendChild(document.createElement('div'));
     time.classList.add('grid-data', 'time');
-    time.innerHTML = key;
+    time.innerHTML = String(key);
     let flayCount = 0;
     let shotCount = 0;
     for (let i = -1; i <= 5; i++) {
@@ -344,7 +353,7 @@ async function startActressAge() {
       let count = 0;
       let shot = 0;
       let length = 0;
-      rankMap.get(i).forEach((flay) => {
+      rankMap.get(i)!.forEach((flay) => {
         count++;
         if (flay.video.likes?.length > 0) {
           shot++;
@@ -356,7 +365,7 @@ async function startActressAge() {
         rank.title = `${count} Flay, ${size} ${unit}`;
       }
 
-      rank.append(...rankMap.get(i).map((flay) => new FlayMarker(flay)));
+      rank.append(...rankMap.get(i)!.map((flay) => new FlayMarker(flay)));
       flayCount += count;
       shotCount += shot;
     }
@@ -388,7 +397,7 @@ async function startShotFlay() {
         actressValue.shotSum += flay.video.likes.length;
       });
 
-      var releaseKey = flay.release.substring(0, 4);
+      const releaseKey = flay.release.substring(0, 4);
       if (!releaseMap.has(releaseKey)) releaseMap.set(releaseKey, { shotLength: 0, shotSum: 0 });
       const releaseValue = releaseMap.get(releaseKey);
       releaseValue.shotLength += 1;
@@ -398,7 +407,7 @@ async function startShotFlay() {
   shotFlayList.sort((a, b) => b.video.likes.length - a.video.likes.length);
   console.log('shot flay list', shotFlayList);
 
-  const wrapper = document.querySelector('.shot-flay-list');
+  const wrapper = document.querySelector('.shot-flay-list')!;
   wrapper.textContent = null;
 
   for (const flay of shotFlayList) {
@@ -414,12 +423,12 @@ async function startShotFlay() {
         <label class="release"><span>${flay.release}</span></label>
       </div>
     `;
-    item.querySelector('.title').addEventListener('click', () => popupFlay(flay.opus));
+    item.querySelector('.title')!.addEventListener('click', () => popupFlay(flay.opus));
   }
-  document.querySelector('#shotFlayCount').innerHTML = String(shotFlayList.length);
+  document.querySelector('#shotFlayCount')!.innerHTML = String(shotFlayList.length);
   console.log(studioMap, actressMap, releaseMap);
 
-  document.querySelector('.statistics-studio').textContent = null;
+  document.querySelector('.statistics-studio')!.textContent = null;
   Array.from(studioMap)
     .sort((a, b) => b[1].shotLength - a[1].shotLength)
     .forEach(([key, value], i) => {
@@ -433,10 +442,10 @@ async function startShotFlay() {
       label.setAttribute('for', 'studio' + i);
       label.innerHTML = `<span>${key}</span> <span>${value.shotSum}</span> <span>${value.shotLength}</span>`;
 
-      document.querySelector('.statistics-studio').append(input, label);
+      document.querySelector('.statistics-studio')!.append(input, label);
     });
 
-  document.querySelector('.statistics-actress').textContent = null;
+  document.querySelector('.statistics-actress')!.textContent = null;
   Array.from(actressMap)
     .sort((a, b) => b[1].shotLength - a[1].shotLength)
     .forEach(([key, value], i) => {
@@ -450,10 +459,10 @@ async function startShotFlay() {
       label.setAttribute('for', 'actress' + i);
       label.innerHTML = `<span>${key}</span> <span>${value.shotSum}</span> <span>${value.shotLength}</span>`;
 
-      document.querySelector('.statistics-actress').append(input, label);
+      document.querySelector('.statistics-actress')!.append(input, label);
     });
 
-  document.querySelector('.statistics-release').textContent = null;
+  document.querySelector('.statistics-release')!.textContent = null;
   releaseMap.forEach((value, key) => {
     const input = document.createElement('input');
     input.type = 'checkbox';
@@ -465,20 +474,20 @@ async function startShotFlay() {
     label.setAttribute('for', 'release' + key);
     label.innerHTML = `<span>${key}</span> <span>${value.shotSum}</span> <span>${value.shotLength}</span>`;
 
-    document.querySelector('.statistics-release').append(input, label);
+    document.querySelector('.statistics-release')!.append(input, label);
   });
 
   document.querySelectorAll('.statistics input').forEach((checkbox) => {
     checkbox.addEventListener('change', () => {
       if (document.querySelectorAll('.statistics input:checked').length === 0) {
         wrapper.querySelectorAll('li').forEach((li) => li.classList.remove('hide'));
-        document.querySelectorAll('.statistics input').forEach((input: HTMLInputElement) => (input.disabled = false));
+        document.querySelectorAll('.statistics input').forEach((input) => ((input as HTMLInputElement).disabled = false));
       } else {
-        const checkedFilterWords = Array.from(document.querySelectorAll('.statistics input:checked')).map((checkbox: HTMLInputElement) => checkbox.value);
+        const checkedFilterWords = Array.from(document.querySelectorAll('.statistics input:checked')).map((checkbox) => (checkbox as HTMLInputElement).value);
         wrapper.querySelectorAll('li').forEach((li) => {
           let found = true;
           checkedFilterWords.forEach((word) => {
-            found = found && li.dataset.filter.includes(word);
+            found = found && li.dataset.filter!.includes(word);
           });
           li.classList.toggle('hide', !found);
         });
@@ -487,31 +496,34 @@ async function startShotFlay() {
         const filteredActress = new Set();
         const filteredRelease = new Set();
         wrapper.querySelectorAll('li:not(.hide)').forEach((li) => {
-          filteredStudio.add(li.querySelector('.studio').textContent);
-          li.querySelector('.actress')
-            .textContent.split(', ')
+          filteredStudio.add(li.querySelector('.studio')!.textContent);
+          li.querySelector('.actress')!
+            .textContent!.split(', ')
             .forEach((name) => filteredActress.add(name));
-          filteredRelease.add(li.querySelector('.release').textContent.substring(0, 4));
+          filteredRelease.add(li.querySelector('.release')!.textContent!.substring(0, 4));
         });
         console.log(filteredStudio, filteredActress, filteredRelease);
 
-        document.querySelectorAll('.statistics-studio input').forEach((input: HTMLInputElement) => {
+        document.querySelectorAll('.statistics-studio input').forEach((element) => {
+          const input = element as HTMLInputElement;
           input.disabled = !filteredStudio.has(input.value);
         });
-        document.querySelectorAll('.statistics-actress input').forEach((input: HTMLInputElement) => {
+        document.querySelectorAll('.statistics-actress input').forEach((element) => {
+          const input = element as HTMLInputElement;
           input.disabled = !filteredActress.has(input.value);
         });
-        document.querySelectorAll('.statistics-release input').forEach((input: HTMLInputElement) => {
+        document.querySelectorAll('.statistics-release input').forEach((element) => {
+          const input = element as HTMLInputElement;
           input.disabled = !filteredRelease.has(input.value);
         });
       }
 
-      document.querySelector('#shotFlayCount').innerHTML = String(wrapper.querySelectorAll('li:not(.hide)').length);
+      document.querySelector('#shotFlayCount')!.innerHTML = String(wrapper.querySelectorAll('li:not(.hide)').length);
     });
   });
 }
 
 function startLastDate() {
-  document.querySelector('#lastDate').textContent = null;
-  document.querySelector('#lastDate').appendChild(new VideoDatePanel(filteredList));
+  document.querySelector('#lastDate')!.textContent = null;
+  document.querySelector('#lastDate')!.appendChild(new VideoDatePanel(filteredList));
 }

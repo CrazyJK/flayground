@@ -1,11 +1,9 @@
 import DateUtils from '@lib/DateUtils';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { History } from '@lib/FlayFetch';
 import './inc/Page';
 import './page.history-play.scss';
 
 class Page {
-  constructor() {}
-
   async start() {
     // 데이터 가져오기
     const playHistories = await FlayFetch.getHistoryListByAction('PLAY');
@@ -15,11 +13,11 @@ class Page {
 
     // 날짜 범위 계산
     const dates = Object.keys(dateMap).sort();
-    const [minYear, maxYear] = [Number(dates[0].substring(0, 4)), Number(dates[dates.length - 1].substring(0, 4))];
+    const [minYear, maxYear] = [Number(dates[0]!.substring(0, 4)), Number(dates[dates.length - 1]!.substring(0, 4))];
 
     // DOM 생성 최적화 - DocumentFragment 사용
     const fragment = document.createDocumentFragment();
-    const dateBarMap = {};
+    const dateBarMap: Record<string, HTMLElement> = {};
 
     // 년도별 렌더링 (최신 년도부터)
     for (let year = maxYear; year >= minYear; year--) {
@@ -48,7 +46,7 @@ class Page {
     }
 
     // 한 번에 DOM에 추가
-    const main = document.querySelector('body > main');
+    const main = document.querySelector('body > main')!;
     main.appendChild(fragment);
 
     // 데이터 적용 - 미리 캐싱된 DOM 참조 사용
@@ -56,8 +54,8 @@ class Page {
   }
 
   // 새로운 메소드: 히스토리 데이터 처리를 최적화
-  #processHistoryData(playHistories) {
-    const dateMap = {};
+  #processHistoryData(playHistories: History[]) {
+    const dateMap: Record<string, string[]> = {};
 
     for (const history of playHistories) {
       const date = this.#getRefDate(history.date);
@@ -76,8 +74,8 @@ class Page {
   }
 
   // 새로운 메소드: 연도의 모든 날짜를 문자열 형식으로 미리 계산
-  #getDaysInYear(year) {
-    const result = [];
+  #getDaysInYear(year: number) {
+    const result: string[] = [];
     const isLeapYear = new Date(year, 1, 29).getMonth() === 1; // 윤년 체크
     const daysCount = isLeapYear ? 366 : 365;
 
@@ -106,11 +104,11 @@ class Page {
     }
   }
 
-  #getRefDate(date) {
+  #getRefDate(date: string) {
     const refDate = new Date(date);
     refDate.setHours(refDate.getHours() - 9);
     return refDate.toISOString().substring(0, 10);
   }
 }
 
-new Page().start();
+void new Page().start();

@@ -8,7 +8,7 @@ import { addResizeListener } from '@lib/windowAddEventListener';
 import GridControl from '@ui/GridControl';
 
 class Page {
-  #opusList;
+  #opusList: string[];
 
   constructor() {
     this.#opusList = [];
@@ -16,18 +16,18 @@ class Page {
 
   start() {
     document
-      .querySelector('body > header')
+      .querySelector('body > header')!
       .appendChild(new FlayCondition())
       .addEventListener('fetch', async (e) => {
         this.#opusList = (e.target as FlayCondition).opusList;
 
-        document.querySelector('#flayTotal').innerHTML = this.#opusList.length;
-        document.querySelector('main').textContent = null;
+        document.querySelector('#flayTotal')!.innerHTML = String(this.#opusList.length);
+        document.querySelector('main')!.textContent = null;
         await this.#append();
       });
 
     document
-      .querySelector('body > footer')
+      .querySelector('body > footer')!
       .appendChild(new GridControl('main'))
       .addEventListener('change', () => this.#append());
 
@@ -35,7 +35,7 @@ class Page {
       const isScrollAtBottom = window.innerHeight + window.scrollY >= document.body.offsetHeight;
       if (isScrollAtBottom) {
         console.log('scroll at bottom');
-        this.#append();
+        void this.#append();
       }
     });
 
@@ -46,16 +46,21 @@ class Page {
     for (let i = 0; i < Number.MAX_SAFE_INTEGER; i++) {
       if (this.#opusList.length < 1) break;
 
-      const lastArticleTop = document.querySelector('main > div:last-child')?.getBoundingClientRect().top || 0;
+      const lastArticleTop = document.querySelector('main > div:last-child')?.getBoundingClientRect().top ?? 0;
       if (lastArticleTop > window.innerHeight) break;
 
       const opus = this.#opusList.shift();
+      const flay = await FlayFetch.getFlay(opus!);
+      if (!flay) {
+        console.warn(`Failed to fetch flay for opus: ${opus}`);
+        continue;
+      }
       document
-        .querySelector('main')
+        .querySelector('main')!
         .appendChild(new FlayArticle({ mode: 'cover' }))
-        .set(await FlayFetch.getFlay(opus));
+        .set(flay);
 
-      document.querySelector('#flayCount').innerHTML = this.#opusList.length;
+      document.querySelector('#flayCount')!.innerHTML = String(this.#opusList.length);
     }
   }
 }

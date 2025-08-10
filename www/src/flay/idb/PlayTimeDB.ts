@@ -15,6 +15,13 @@ const dbSchema = [
   },
 ];
 
+export interface PlayTimeRecord {
+  opus: string;
+  time: number;
+  duration: number;
+  lastPlayed: number;
+}
+
 export default class PlayTimeDB extends FlayIndexedDB {
   async #init() {
     await this.open(dbName, dbVersion, dbSchema);
@@ -43,6 +50,6 @@ export default class PlayTimeDB extends FlayIndexedDB {
 
   async listByLastPlayed() {
     await this.#init();
-    return await this.getAllByIndex(storeName, 'lastPlayed', false);
+    return await this.getAllByIndex<PlayTimeRecord>(storeName, 'lastPlayed', false);
   }
 }

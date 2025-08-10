@@ -66,7 +66,7 @@ export default class FlayTag extends FlayHTMLElement {
         'candidate',
         [label.textContent, ...label.title.split(',')]
           .filter((keyword) => keyword !== '')
-          .map((keyword) => keyword.trim())
+          .map((keyword) => keyword!.trim())
           .some((keyword) => (this.flay.title + this.flay.video.comment).includes(keyword))
       )
     );

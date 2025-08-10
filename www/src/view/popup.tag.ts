@@ -17,7 +17,9 @@ window.tagList = [];
 window.actressMap = new Map();
 
 const urlParams = new URL(location.href).searchParams;
-const id = parseInt(urlParams.get('id'));
+const param = urlParams.get('param');
+
+const id = parseInt(param!);
 
 const flayMap = new Map();
 
@@ -29,10 +31,14 @@ const saveBtn = document.querySelector('#saveBtn') as HTMLButtonElement;
 const delBtn = document.querySelector('#delBtn') as HTMLButtonElement;
 const flayRank = document.querySelector('#flayRank') as HTMLSelectElement;
 
-document.querySelector('body > footer').appendChild(new GridControl('body > article'));
+document.querySelector('body > footer')!.appendChild(new GridControl('body > article'));
 
 function fetchTag() {
-  FlayFetch.getTag(id).then((tag) => {
+  void FlayFetch.getTag(id).then((tag) => {
+    if (!tag) {
+      console.warn(`Tag with ID ${id} not found`);
+      return;
+    }
     tagId.innerHTML = String(tag.id);
     tagGroup.value = tag.group;
     tagName.value = tag.name;
@@ -41,9 +47,9 @@ function fetchTag() {
     document.title = `${tag.group}: ${tag.name} tag`;
   });
 
-  FlayFetch.getFlayListByTagId(id).then((list) => {
-    let opusList = Array.from(list).map((flay) => flay.opus);
-    renderFlayCardList(opusList).then(() => {
+  void FlayFetch.getFlayListByTagId(id).then((list) => {
+    const opusList = Array.from(list).map((flay) => flay.opus);
+    void renderFlayCardList(opusList).then(() => {
       countFlaySizeByRank();
     });
   });
@@ -56,34 +62,36 @@ flayRank.addEventListener('change', (e) => {
 });
 
 saveBtn.addEventListener('click', () => {
-  FlayAction.putTag(parseInt(tagId.textContent), tagGroup.value, tagName.value, tagDesc.value);
+  void FlayAction.putTag(parseInt(tagId.textContent!), tagGroup.value, tagName.value, tagDesc.value);
 });
 
 delBtn.addEventListener('click', () => {
   if (confirm('A U sure?')) {
-    FlayAction.deleteTag(parseInt(tagId.textContent), tagName.value, tagDesc.value);
+    void FlayAction.deleteTag(parseInt(tagId.textContent!), tagName.value, tagDesc.value);
   }
 });
 
-async function renderFlayCardList(opusList) {
-  document.querySelector('article').textContent = null;
+async function renderFlayCardList(opusList: string[]) {
+  document.querySelector('article')!.textContent = null;
   flayMap.clear();
-  for (let opus of opusList) {
-    let flayCard = new FlayCard({ excludes: [] });
+  for (const opus of opusList) {
+    const flayCard = new FlayCard({ excludes: [] });
     flayMap.set(opus, flayCard);
-    document.querySelector('article').appendChild(flayCard);
+    document.querySelector('article')!.appendChild(flayCard);
     await flayCard.set(opus);
 
     await new Promise((resolve) => setTimeout(resolve, 10));
   }
 }
 
-function toggleByRank(selectedRank) {
-  document.querySelectorAll('.flay-card').forEach((flayCard: FlayCard) => {
+function toggleByRank(selectedRank: string) {
+  document.querySelectorAll('.flay-card').forEach((element) => {
+    const flayCard = element as FlayCard;
+
     if (selectedRank === '') {
       flayCard.style.display = 'block';
     } else {
-      let rank = flayCard.getAttribute('rank');
+      const rank = flayCard.getAttribute('rank');
       if (rank === selectedRank) {
         flayCard.style.display = 'block';
       } else {
@@ -94,20 +102,21 @@ function toggleByRank(selectedRank) {
 }
 
 function countFlaySizeByRank() {
-  let flaySizeByRank = [0, 0, 0, 0, 0, 0];
+  const flaySizeByRank = [0, 0, 0, 0, 0, 0];
   let sumRank = 0;
   let totalFlay = 0;
-  document.querySelectorAll('.flay-card').forEach((flayCard: FlayCard) => {
-    let rank = parseInt(flayCard.getAttribute('rank'));
-    flaySizeByRank[rank] += 1;
+  document.querySelectorAll('.flay-card').forEach((element) => {
+    const flayCard = element as FlayCard;
+    const rank = parseInt(flayCard.getAttribute('rank')!);
+    flaySizeByRank[rank]! += 1;
     if (rank !== 0) {
       sumRank += rank;
       totalFlay++;
     }
     flaySizeByRank.forEach((flaySize, r) => {
-      document.querySelector(`#flayRank option[value="${r}"]`).innerHTML = `Rank ${r} : ${flaySize}`;
+      document.querySelector(`#flayRank option[value="${r}"]`)!.innerHTML = `Rank ${r} : ${flaySize}`;
     });
-    document.querySelector(`#flayRank option:first-child`).innerHTML = `Rank ${(sumRank / totalFlay).toFixed(1)} : ${totalFlay} F`;
+    document.querySelector(`#flayRank option:first-child`)!.innerHTML = `Rank ${(sumRank / totalFlay).toFixed(1)} : ${totalFlay} F`;
   });
 }
 

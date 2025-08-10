@@ -1,4 +1,4 @@
-import PlayTimeDB from '@flay/idb/PlayTimeDB';
+import PlayTimeDB, { PlayTimeRecord } from '@flay/idb/PlayTimeDB';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch from '@lib/FlayFetch';
 import TimeUtils from '@lib/TimeUtils';
@@ -19,7 +19,7 @@ class Page {
     // 헤더 컨트롤 영역 추가
     this.renderHeader();
 
-    const LIST = document.querySelector('body > main > ol');
+    const LIST = document.querySelector('body > main > ol')!;
     const records = await this.db.listByLastPlayed();
 
     const existsResult = await FlayFetch.existsFlayList(...records.map((record) => record.opus));
@@ -74,7 +74,7 @@ class Page {
       LIST.appendChild(li);
     });
 
-    document.querySelector('.length').innerHTML = ` (${LIST.querySelectorAll('li').length})`;
+    document.querySelector('.length')!.innerHTML = ` (${LIST.querySelectorAll('li').length})`;
 
     // 목록 항목에 애니메이션 효과 추가
     this.animateListItems();
@@ -89,7 +89,7 @@ class Page {
   }
 
   renderHeader() {
-    const header = document.querySelector('body > header');
+    const header = document.querySelector('body > header')!;
     const headerControls = document.createElement('div');
     headerControls.className = 'header-controls';
     headerControls.innerHTML = `
@@ -105,16 +105,16 @@ class Page {
     header.appendChild(headerControls);
 
     // 검색 기능 추가
-    const searchInput = document.getElementById('search-input');
+    const searchInput = document.getElementById('search-input')!;
     searchInput.addEventListener('input', this.handleSearch.bind(this));
 
     // 정렬 기능 추가
-    document.getElementById('sort-by-date').addEventListener('click', (e) => this.handleSort(e, 'date'));
-    document.getElementById('sort-by-progress').addEventListener('click', (e) => this.handleSort(e, 'progress'));
+    document.getElementById('sort-by-date')!.addEventListener('click', (e) => this.handleSort(e, 'date'));
+    document.getElementById('sort-by-progress')!.addEventListener('click', (e) => this.handleSort(e, 'progress'));
   }
 
   setupScrollButton() {
-    const scrollButton = document.getElementById('scroll-to-top');
+    const scrollButton = document.getElementById('scroll-to-top')!;
 
     // 스크롤 위치에 따라 버튼 표시/숨김
     window.addEventListener('scroll', () => {
@@ -138,39 +138,41 @@ class Page {
     const items = document.querySelectorAll('body > main > ol > li');
 
     // 각 항목에 지연된 등장 애니메이션 추가
-    items.forEach((item: HTMLElement, index) => {
-      item.style.opacity = '0';
-      item.style.transform = 'translateY(20px)';
-      item.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
+    items.forEach((item, index) => {
+      const itemElement = item as HTMLElement;
+      itemElement.style.opacity = '0';
+      itemElement.style.transform = 'translateY(20px)';
+      itemElement.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
 
       setTimeout(() => {
-        item.style.opacity = '1';
-        item.style.transform = 'translateY(0)';
+        itemElement.style.opacity = '1';
+        itemElement.style.transform = 'translateY(0)';
       }, 50 * index); // 각 항목마다 지연 시간 추가
     });
   }
 
-  handleSearch(e) {
-    const searchTerm = e.target.value.toLowerCase();
+  handleSearch(e: Event) {
+    const searchTerm = (e.target as HTMLInputElement).value.toLowerCase();
     const items = document.querySelectorAll('body > main > ol > li');
 
-    items.forEach((item: HTMLElement) => {
-      const opus = item.querySelector('.opus').textContent.toLowerCase();
+    items.forEach((item) => {
+      const itemElement = item as HTMLElement;
+      const opus = itemElement.querySelector('.opus')!.textContent!.toLowerCase();
       if (opus.includes(searchTerm)) {
-        item.style.display = '';
+        itemElement.style.display = '';
       } else {
-        item.style.display = 'none';
+        itemElement.style.display = 'none';
       }
     });
   }
 
-  handleSort(e, type) {
+  handleSort(e: Event, type: string) {
     // 버튼 스타일 업데이트
     const buttons = document.querySelectorAll('.view-options button');
     buttons.forEach((btn) => btn.classList.remove('active'));
-    e.target.classList.add('active');
+    (e.target as HTMLElement).classList.add('active');
 
-    const list = document.querySelector('body > main > ol');
+    const list = document.querySelector('body > main > ol')!;
     const items = Array.from(list.querySelectorAll('li'));
 
     if (type === 'date') {
@@ -192,7 +194,7 @@ class Page {
     }
   }
 
-  handleRecordClick(record) {
+  handleRecordClick(record: PlayTimeRecord) {
     // 클릭 효과 추가
     const clickedItem = document.querySelector(`li[data-opus="${record.opus}"]`) as HTMLElement;
     clickedItem.style.transform = 'scale(0.98)';
@@ -246,4 +248,4 @@ class Page {
   }
 }
 
-new Page().start();
+void new Page().start();

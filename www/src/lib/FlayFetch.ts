@@ -87,6 +87,7 @@ export interface Tag {
   group: string;
   description: string;
   lastModified: number;
+  count?: number;
 }
 
 export interface TagGroup {

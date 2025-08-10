@@ -1,5 +1,5 @@
 import ApiClient from '@lib/ApiClient';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay } from '@lib/FlaySearch';
 import { addLazyLoadBackgroundImage } from '@lib/ImageLazyLoad';
 import { sortable } from '@lib/TableUtils';
@@ -9,8 +9,9 @@ import './page.girls.scss';
 
 class PageGirls {
   constructor() {
-    document.querySelector('.thead .cover .list-simple').addEventListener('click', () => {
-      document.querySelectorAll('ul li:not(.thead)').forEach((li: HTMLElement) => {
+    document.querySelector('.thead .cover .list-simple')!.addEventListener('click', () => {
+      document.querySelectorAll('ul li:not(.thead)').forEach((element) => {
+        const li = element as HTMLElement;
         if (li.style.height === 'auto') {
           li.removeAttribute('style');
         } else {
@@ -19,10 +20,10 @@ class PageGirls {
       });
     });
 
-    document.querySelector('.thead .cover .view-mode').addEventListener('click', (e) => {
-      const viewMode = document.querySelector('ul').classList.toggle('box');
+    document.querySelector('.thead .cover .view-mode')!.addEventListener('click', (e) => {
+      const viewMode = document.querySelector('ul')!.classList.toggle('box');
       (e.target as HTMLElement).innerHTML = viewMode ? 'Box' : 'List';
-      document.querySelector('.thead .cover .list-simple').innerHTML = viewMode ? '' : 'simple';
+      document.querySelector('.thead .cover .list-simple')!.innerHTML = viewMode ? '' : 'simple';
     });
   }
 
@@ -43,9 +44,9 @@ class PageGirls {
       .forEach(({ actress, flayList }, name) => {
         const age = new Date().getFullYear() - parseInt(actress.birth?.substring(0, 4) || new Date().getFullYear() + 1) + 1;
         const flayCount = flayList.length;
-        const shotFlayCount = flayList.filter((flay) => flay.video.likes?.length > 0).length;
+        const shotFlayCount = flayList.filter((flay: Flay) => flay.video.likes?.length > 0).length;
         const { shotTotalCount, score } = flayList.reduce(
-          (acc, flay) => {
+          (acc: { shotTotalCount: number; score: number }, flay: Flay) => {
             return {
               shotTotalCount: acc.shotTotalCount + (flay.video.likes?.length > 0 ? flay.video.likes.length : 0),
               score: acc.score + flay.score,
@@ -53,7 +54,7 @@ class PageGirls {
           },
           { shotTotalCount: 0, score: 0 }
         );
-        const topFlay = flayList.sort((f1, f2) => {
+        const topFlay = flayList.sort((f1: Flay, f2: Flay) => {
           let ret = f1.actressList.length - f2.actressList.length;
           if (ret === 0) {
             ret = f2.video.rank - f1.video.rank;
@@ -74,15 +75,15 @@ class PageGirls {
           <label class="shot-total-count" title="전체 샷 수">${shotTotalCount}</label>
           <label class="total-score" title="스코어 합계">${score}</label>
         `;
-        LI.querySelector('.cover').addEventListener('click', () => popupFlay(topFlay.opus));
-        LI.querySelector('.name a').addEventListener('click', () => popupActress(name));
+        LI.querySelector('.cover')!.addEventListener('click', () => popupFlay(topFlay.opus));
+        LI.querySelector('.name a')!.addEventListener('click', () => popupActress(name));
       });
 
-    const UL = document.querySelector('ul');
+    const UL = document.querySelector('ul')!;
     UL.appendChild(fragment);
     addLazyLoadBackgroundImage(UL);
     sortable(UL, { noSort: [0], initSortIndex: 6 });
   }
 }
 
-new PageGirls().start();
+void new PageGirls().start();

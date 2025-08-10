@@ -49,7 +49,7 @@ export default class FlayArticle extends HTMLElement {
     });
     this.querySelector('.actress')!.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      if (target.tagName === 'SPAN') popupActress(target.textContent);
+      if (target.tagName === 'SPAN') popupActress(target.textContent!);
     });
   }
 

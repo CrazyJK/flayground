@@ -8,63 +8,67 @@ import './inc/Popup';
 import './popup.actress.scss';
 
 class PopupActress {
-  name: string;
   flayCardMap: Map<string, FlayCard>;
-  startDate: string;
-  endDate: string;
+  name!: string;
+  startDate?: string | null;
+  endDate?: string | null;
 
-  favorite: HTMLInputElement;
-  favLabel: HTMLElement;
-  actressName: HTMLInputElement;
-  localName: HTMLInputElement;
-  otherNames: HTMLInputElement;
-  flayRank: HTMLInputElement;
-  birth: HTMLInputElement;
-  age: HTMLInputElement;
-  body: HTMLInputElement;
-  height: HTMLInputElement;
-  debut: HTMLInputElement;
-  comment: HTMLInputElement;
-  saveBtn: HTMLButtonElement;
-  studioList: HTMLSelectElement;
-  tagList: HTMLSelectElement;
-  toggleArchive: HTMLButtonElement;
+  favorite!: HTMLInputElement;
+  favLabel!: HTMLElement;
+  actressName!: HTMLInputElement;
+  localName!: HTMLInputElement;
+  otherNames!: HTMLInputElement;
+  flayRank!: HTMLInputElement;
+  birth!: HTMLInputElement;
+  age!: HTMLInputElement;
+  body!: HTMLInputElement;
+  height!: HTMLInputElement;
+  debut!: HTMLInputElement;
+  comment!: HTMLInputElement;
+  saveBtn!: HTMLButtonElement;
+  studioList!: HTMLSelectElement;
+  tagList!: HTMLSelectElement;
+  toggleArchive!: HTMLButtonElement;
 
-  searchAvdbsBtn: HTMLButtonElement;
-  searchMinnanoBtn: HTMLButtonElement;
+  searchAvdbsBtn!: HTMLButtonElement;
+  searchMinnanoBtn!: HTMLButtonElement;
 
-  actress: Actress;
-  allFlayList: Flay[];
+  actress!: Actress;
+  allFlayList!: Flay[];
 
   constructor() {
     this.flayCardMap = new Map();
 
     // get Parameter
     const urlParams = new URL(location.href).searchParams;
-    this.name = urlParams.get('name');
+    const name = urlParams.get('name');
+    if (!name) {
+      console.error('Name parameter is missing');
+      return;
+    }
     this.startDate = urlParams.get('s');
     this.endDate = urlParams.get('e');
 
     // 주요 엘리먼트
-    this.favorite = document.querySelector('#favorite');
-    this.favLabel = document.querySelector('#favorite + label');
-    this.actressName = document.querySelector('#name');
-    this.localName = document.querySelector('#localName');
-    this.otherNames = document.querySelector('#otherNames');
-    this.flayRank = document.querySelector('#flayRank');
-    this.birth = document.querySelector('#birth');
-    this.age = document.querySelector('#age');
-    this.body = document.querySelector('#body');
-    this.height = document.querySelector('#height');
-    this.debut = document.querySelector('#debut');
-    this.comment = document.querySelector('#comment');
-    this.saveBtn = document.querySelector('#saveBtn');
-    this.studioList = document.querySelector('.studio-list');
-    this.tagList = document.querySelector('.tag-list');
-    this.toggleArchive = document.querySelector('#toggleArchive');
+    this.favorite = document.querySelector('#favorite')!;
+    this.favLabel = document.querySelector('#favorite + label')!;
+    this.actressName = document.querySelector('#name')!;
+    this.localName = document.querySelector('#localName')!;
+    this.otherNames = document.querySelector('#otherNames')!;
+    this.flayRank = document.querySelector('#flayRank')!;
+    this.birth = document.querySelector('#birth')!;
+    this.age = document.querySelector('#age')!;
+    this.body = document.querySelector('#body')!;
+    this.height = document.querySelector('#height')!;
+    this.debut = document.querySelector('#debut')!;
+    this.comment = document.querySelector('#comment')!;
+    this.saveBtn = document.querySelector('#saveBtn')!;
+    this.studioList = document.querySelector('.studio-list')!;
+    this.tagList = document.querySelector('.tag-list')!;
+    this.toggleArchive = document.querySelector('#toggleArchive')!;
 
-    this.searchAvdbsBtn = document.querySelector('#searchAvdbsBtn');
-    this.searchMinnanoBtn = document.querySelector('#searchMinnanoBtn');
+    this.searchAvdbsBtn = document.querySelector('#searchAvdbsBtn')!;
+    this.searchMinnanoBtn = document.querySelector('#searchMinnanoBtn')!;
 
     this.favLabel.innerHTML = favoriteSVG;
     document.title = this.name;
@@ -90,7 +94,7 @@ class PopupActress {
     this.searchMinnanoBtn.addEventListener('click', () => FlaySearch.actress.Minnano(this.localName.value));
     // 저장 이벤트
     this.saveBtn.addEventListener('click', () => {
-      FlayAction.updateActress({
+      void FlayAction.updateActress({
         favorite: this.favorite.checked,
         name: this.actressName.value.trim(),
         localName: this.localName.value.trim(),
@@ -107,9 +111,9 @@ class PopupActress {
     });
     this.toggleArchive.addEventListener('click', () => {
       const isArchive = this.toggleArchive.dataset.archive === 'on';
-      (Array.from(document.querySelectorAll('flay-card')) as FlayCard[])
+      Array.from(document.querySelectorAll('flay-card'))
         .filter((flayCard) => flayCard.hasAttribute('archive'))
-        .filter((flayCard) => flayCard.dataset.show === 'true')
+        .filter((flayCard) => (flayCard as HTMLElement).dataset.show === 'true')
         .forEach((flayCard) => {
           flayCard.classList.toggle('hide', isArchive);
         });
@@ -118,19 +122,24 @@ class PopupActress {
 
     // sse 수신 이벤트
     window.emitActress = (actress) => {
-      if (this.name === actress.name) this.#fetchActress();
+      if (this.name === actress.name) void this.#fetchActress();
     };
   }
 
   async start() {
     await this.#fetchActress();
-    this.#fetchFlay();
+    await this.#fetchFlay();
 
-    document.querySelector('body > footer').appendChild(new GridControl('body > article'));
+    document.querySelector('body > footer')!.appendChild(new GridControl('body > article'));
   }
 
   async #fetchActress() {
-    this.actress = await FlayFetch.getActress(this.name);
+    const actress = await FlayFetch.getActress(this.name);
+    if (!actress) {
+      console.error('Actress not found');
+      return;
+    }
+    this.actress = actress;
     console.log('actress', this.actress);
 
     this.favorite.checked = this.actress.favorite;
@@ -171,15 +180,15 @@ class PopupActress {
       })
       .map((flay) => flay.opus);
 
-    this.#renderFlayCardList(opusList)
+    void this.#renderFlayCardList(opusList)
       .then(() => this.#renderRankSelectOption())
       .then(() => this.flayRank.dispatchEvent(new Event('change')))
       .then(() => this.toggleArchive.dispatchEvent(new Event('click')));
   }
 
-  async #renderFlayCardList(opusList) {
-    for (let opus of opusList) {
-      let flayCard = document.querySelector('article').appendChild(new FlayCard({ excludes: ['FlayActress'] }));
+  async #renderFlayCardList(opusList: string[]) {
+    for (const opus of opusList) {
+      const flayCard = document.querySelector('article')!.appendChild(new FlayCard({ excludes: ['FlayActress'] }));
       this.flayCardMap.set(opus, flayCard);
 
       await flayCard.set(opus).then(() => {
@@ -193,7 +202,7 @@ class PopupActress {
   }
 
   #renderRankSelectOption() {
-    let flayCountMap = new Map();
+    const flayCountMap = new Map();
     for (let i = -1; i <= 5; i++) {
       flayCountMap.set(i, { instance: 0, archive: 0 });
     }
@@ -201,7 +210,7 @@ class PopupActress {
     let [instanceTotal, archiveTotal] = [0, 0];
     let [sum, count] = [0, 0];
     this.allFlayList.forEach((flay) => {
-      let rank = flay.video.rank;
+      const rank = flay.video.rank;
       const countObj = flayCountMap.get(rank);
       if (flay.archive) {
         countObj.archive++;
@@ -216,22 +225,22 @@ class PopupActress {
       }
     });
     flayCountMap.forEach((countObj, rank) => {
-      document.querySelector(`#flayRank option[value="${rank}"]`).innerHTML = `Rank ${rank} : ${countObj.instance} ${countObj.archive > 0 ? ' 🆚 ' + countObj.archive : ''}`; // 🔺🔻⛔⭕🚫🆚
+      document.querySelector(`#flayRank option[value="${rank}"]`)!.innerHTML = `Rank ${rank} : ${countObj.instance} ${countObj.archive > 0 ? ' 🆚 ' + countObj.archive : ''}`; // 🔺🔻⛔⭕🚫🆚
     });
-    let avg = count > 0 ? (sum / count).toFixed(1) : 0;
-    document.querySelector(`#flayRank option:first-child`).innerHTML = `Rank ${avg} : ${instanceTotal} 🆚 ${archiveTotal}`;
+    const avg = count > 0 ? (sum / count).toFixed(1) : 0;
+    document.querySelector(`#flayRank option:first-child`)!.innerHTML = `Rank ${avg} : ${instanceTotal} 🆚 ${archiveTotal}`;
   }
 
   #resetStudioList() {
-    document.querySelector('.studio-list').textContent = null;
+    document.querySelector('.studio-list')!.textContent = null;
   }
 
   #resetTagList() {
-    document.querySelector('.tag-list').textContent = null;
+    document.querySelector('.tag-list')!.textContent = null;
   }
 
   #renderStudioList() {
-    const list = [];
+    const list: string[] = [];
     this.#flayCardList().forEach((flayCard) => {
       if (flayCard.style.display === 'none') {
         return;
@@ -241,7 +250,7 @@ class PopupActress {
         list.push(studio);
       }
     });
-    document.querySelector('.studio-list').innerHTML = list
+    document.querySelector('.studio-list')!.innerHTML = list
       .sort((n1, n2) => n1.localeCompare(n2))
       .map((name) => `<input type="checkbox" id="${name}" value="${name}"><label for="${name}">${name}</label>`)
       .join('');
@@ -259,7 +268,7 @@ class PopupActress {
         }
       });
     });
-    document.querySelector('.tag-list').innerHTML = Array.from(tagMap.values())
+    document.querySelector('.tag-list')!.innerHTML = Array.from(tagMap.values())
       .sort((t1, t2) => t1.name.localeCompare(t2.name))
       .map((tag) => `<input type="checkbox" id="tagId_${tag.id}" value="${tag.id}"><label for="tagId_${tag.id}" title=${tag.description}>${tag.name}</label>`)
       .join('');
@@ -269,9 +278,9 @@ class PopupActress {
    * 선택된 rank, 선택된 studio, 선택된 tag로 flayCard toggle 이벤트
    */
   #toggleFlayCard() {
-    let rank = parseInt(this.flayRank.value);
-    let studios = Array.from(this.studioList.querySelectorAll('input:checked')).map((input: HTMLInputElement) => input.value);
-    let tags = Array.from(this.tagList.querySelectorAll('input:checked')).map((input: HTMLInputElement) => parseInt(input.value));
+    const rank = parseInt(this.flayRank.value);
+    const studios = Array.from(this.studioList.querySelectorAll('input:checked')).map((input) => (input as HTMLInputElement).value);
+    const tags = Array.from(this.tagList.querySelectorAll('input:checked')).map((input) => parseInt((input as HTMLInputElement).value));
 
     // console.log(`
     //   rank: ${rank}
@@ -321,14 +330,14 @@ class PopupActress {
   }
 }
 
-function calcAge(birth) {
+function calcAge(birth: string | null) {
   if (birth === null || birth.trim().length === 0) {
     return '';
   }
-  let birthYear = parseInt(birth.substring(0, 4));
-  let todayYear = new Date().getFullYear();
+  const birthYear = parseInt(birth.substring(0, 4));
+  const todayYear = new Date().getFullYear();
   return todayYear - birthYear + 1;
 }
 
 const popupActress = new PopupActress();
-popupActress.start();
+void popupActress.start();

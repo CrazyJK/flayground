@@ -234,12 +234,12 @@ export class ModalWindow extends HTMLElement {
     return element;
   }
 
-  set windowTitle(title) {
+  set windowTitle(title: string) {
     this.#titleSpan.innerHTML = title;
   }
 
   get windowTitle() {
-    return this.#titleSpan.textContent;
+    return this.#titleSpan.textContent!;
   }
 
   /**

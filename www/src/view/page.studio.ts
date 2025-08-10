@@ -6,11 +6,11 @@ import './page.studio.scss';
 
 class Page {
   studioList: Studio[];
-  debounceTimer;
+  debounceTimer: ReturnType<typeof setTimeout> | null;
   studioElements: Map<string, FlayStudio>;
 
-  searchInput: HTMLInputElement;
-  main: HTMLElement;
+  searchInput!: HTMLInputElement;
+  main!: HTMLElement;
 
   constructor() {
     this.studioList = [];
@@ -23,8 +23,8 @@ class Page {
       // 데이터 로딩
       this.studioList = await FlayFetch.getStudioAll();
 
-      this.searchInput = document.querySelector('body > header input');
-      this.main = document.querySelector('body > main');
+      this.searchInput = document.querySelector('body > header input')!;
+      this.main = document.querySelector('body > main')!;
 
       // 검색 기능 설정
       this.searchInput.setAttribute('placeholder', `${this.studioList.length} Studio. Enter a keyword to search`);
@@ -56,8 +56,25 @@ class Page {
         actressPoint: 0,
         studioPoint: 0,
         archive: false,
-        video: null,
-        files: null,
+        video: {
+          opus: '',
+          play: 0,
+          rank: 0,
+          lastPlay: 0,
+          lastAccess: 0,
+          lastModified: 0,
+          comment: '',
+          title: '',
+          desc: '',
+          tags: [],
+          likes: [],
+        },
+        files: {
+          cover: [],
+          subtitles: [],
+          candidate: [],
+          movie: [],
+        },
         length: 0,
         lastModified: 0,
       };
@@ -74,10 +91,13 @@ class Page {
   }
 
   // 디바운싱을 적용한 검색 처리
-  handleSearch(e) {
-    clearTimeout(this.debounceTimer);
+  handleSearch(e: Event) {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
     this.debounceTimer = setTimeout(() => {
-      const keyword = e.target.value.trim().toLowerCase();
+      const target = e.target as HTMLInputElement;
+      const keyword = target.value.trim().toLowerCase();
 
       if (StringUtils.isBlank(keyword)) {
         // 키워드가 비어있을 때는 모든 'found' 클래스 제거
@@ -93,4 +113,4 @@ class Page {
   }
 }
 
-new Page().start();
+void new Page().start();

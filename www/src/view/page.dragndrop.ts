@@ -7,14 +7,10 @@ import './inc/Page';
 import './page.dragndrop.scss';
 
 class Page extends FlayProvider {
-  constructor() {
-    super();
-  }
-
   async appendFlayCard() {
     const opus = await this.getRandomOpus();
     const flayCard = new FlayCard({ excludes: ['FlayComment', 'FlayFiles', 'FlayTag'] });
-    flayCard.set(opus);
+    await flayCard.set(opus);
 
     const article = document.querySelector('body > article') as HTMLElement;
     const width = 400;
@@ -34,14 +30,14 @@ class Page extends FlayProvider {
   }
 
   removeFlayCard() {
-    const flayCardList = document.querySelector('.movezone').querySelectorAll('.flay-card');
+    const flayCardList = document.querySelector('.movezone')!.querySelectorAll('.flay-card');
     for (let i = 0; i < flayCardList.length - 5; i++) {
-      flayCardList[i].remove();
+      flayCardList[i]?.remove();
     }
   }
 
   fillDropzone() {
-    const wrapper = document.querySelector('.dropzone-wrapper');
+    const wrapper = document.querySelector('.dropzone-wrapper')!;
 
     const cardWidth = 350;
     const cardHeight = (cardWidth * 269) / 400;
@@ -56,12 +52,12 @@ class Page extends FlayProvider {
     }
   }
 
-  async start() {
+  start() {
     addResizeListener(() => {
       this.fillDropzone();
     }, true);
 
-    document.querySelector('.movezone').addEventListener('wheel', async () => {
+    document.querySelector('.movezone')!.addEventListener('wheel', async () => {
       await this.appendFlayCard();
       this.removeFlayCard();
     });

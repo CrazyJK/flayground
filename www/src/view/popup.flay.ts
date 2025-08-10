@@ -7,11 +7,15 @@ const urlParams = new URL(location.href).searchParams;
 const opus = urlParams.get('opus');
 const popupNo = urlParams.get('popupNo');
 
+if (!opus) {
+  throw new Error('Opus parameter is required');
+}
+
 document.title = opus;
 
 const flayPage = document.body.appendChild(new FlayPage());
 flayPage.classList.add('popup');
-flayPage.set(opus);
+void flayPage.set(opus);
 
 if (popupNo) {
   document.title += ` [${popupNo}]`;

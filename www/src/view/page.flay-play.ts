@@ -3,12 +3,13 @@ import { FlayVideoViewPanel } from '@flay/panel/FlayVideoViewPanel';
 import './inc/Page';
 import './page.flay-play.scss';
 
-const flayArticle = document.querySelector('body > header').appendChild(new FlayArticle({ mode: 'card' }));
+const flayArticle = document.querySelector('body > header')!.appendChild(new FlayArticle({ mode: 'card' }));
 
 document
-  .querySelector('body > main')
+  .querySelector('body > main')!
   .appendChild(new FlayVideoViewPanel())
-  .addEventListener('flay-load', (event: CustomEvent) => {
-    console.log('flay-play event', event.detail.opus, event.detail.flay, event.detail.actress);
-    flayArticle.set(event.detail.flay);
+  .addEventListener('flay-load', (event: Event) => {
+    const detail = (event as CustomEvent).detail;
+    console.log('flay-play event', detail.opus, detail.flay, detail.actress);
+    flayArticle.set(detail.flay);
   });

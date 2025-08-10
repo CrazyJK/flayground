@@ -5,11 +5,9 @@ import './inc/Page';
 import './page.history-shot.scss';
 
 class Page {
-  constructor() {}
-
-  async start(): Promise<void> {
-    document.body.addEventListener('tabActivated', (e: CustomEvent) => {
-      const { tab } = e.detail;
+  start(): void {
+    document.body.addEventListener('tabActivated', (e: Event) => {
+      const { tab } = (e as CustomEvent).detail;
 
       if (tab.getAttribute('target') === '#dailyPanel') {
         this.#initDailyPanel();

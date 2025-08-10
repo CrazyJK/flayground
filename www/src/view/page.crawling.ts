@@ -6,13 +6,46 @@ import FlaySearch, { popupActress, popupFlay } from '@lib/FlaySearch';
 import './inc/Page';
 import './page.crawling.scss';
 
+interface LinkItem {
+  text: string;
+  href: string;
+}
+
+interface DownloadItem extends LinkItem {
+  type: string;
+}
+
+interface VideoInfo {
+  error?: boolean;
+  rank?: number;
+  play?: number;
+  lastModified?: string;
+}
+
+interface ActressItem extends LinkItem {
+  eng?: string;
+  jap?: string;
+  fav?: string;
+}
+
+interface CrawlingItem {
+  opus: LinkItem;
+  cover: string;
+  release: string;
+  posted: LinkItem;
+  title: string;
+  actressList: ActressItem[];
+  downloadList: DownloadItem[];
+  tagList: LinkItem[];
+}
+
 const DOMAIN = 'https://www.nanojav.com';
 const LIST_URL = DOMAIN + '/jav/?order=new&page=';
 const domParser = new DOMParser();
 const nanoStore = new NanoStore();
 
 class Page {
-  #itemList = [];
+  #itemList: CrawlingItem[] = [];
   #startPageNo = 0;
   #paging = {
     srcPageNo: 0,
@@ -32,29 +65,29 @@ class Page {
   itemRepository: HTMLElement;
 
   constructor() {
-    document.querySelector('#startBtn').addEventListener('click', () => {
+    document.querySelector('#startBtn')!.addEventListener('click', () => {
       this.#startPageNo = parseInt((document.querySelector('#srcPageNo') as HTMLInputElement).value);
       this.#paging.srcPageNo = this.#startPageNo;
       this.#callCrawling();
-      document.querySelector('#starter').classList.add('hide');
+      document.querySelector('#starter')!.classList.add('hide');
     });
 
-    this.article = document.querySelector('body > main > article');
+    this.article = document.querySelector('body > main > article')!;
     // Use passive event listeners for performance
     this.article.addEventListener('wheel', this.#handleWheel.bind(this), { passive: true });
     window.addEventListener('keyup', this.#handleKeyUp.bind(this));
 
-    this.retryBtn = document.querySelector('body > main > footer > #retryBtn');
+    this.retryBtn = document.querySelector('body > main > footer > #retryBtn')!;
     this.retryBtn.addEventListener('click', () => this.#callCrawling());
 
-    this.itemRepository = document.querySelector('#itemRepository');
+    this.itemRepository = document.querySelector('#itemRepository')!;
 
     // Delegate event listeners for better performance
     this.article.addEventListener('click', this.#handleRepositoryClick.bind(this));
   }
 
   // Throttled wheel event handler
-  #handleWheel(e) {
+  #handleWheel(e: WheelEvent) {
     if (e.deltaY > 0) {
       this.#next();
     } else {
@@ -63,7 +96,7 @@ class Page {
   }
 
   // Handle keyboard events
-  #handleKeyUp(e) {
+  #handleKeyUp(e: KeyboardEvent) {
     switch (e.code) {
       case 'ArrowRight':
         this.#next();
@@ -75,23 +108,23 @@ class Page {
   }
 
   // Event delegation for all item repository clicks
-  #handleRepositoryClick(e) {
-    const target = e.target;
+  #handleRepositoryClick(e: Event) {
+    const target = e.target as HTMLElement;
 
     // Handle different click targets
     if (target.closest('.opus label, .title label')) {
       this.#copyToClipboard(target);
     } else if (target.closest('.download-list label')) {
-      const label = target.closest('.download-list label');
+      const label = target.closest('.download-list label') as HTMLElement;
       this.#download(label, DOMAIN + label.dataset.href);
     } else if (target.closest('.actress-list label span')) {
-      popupActress(target.textContent);
+      popupActress(target.textContent!);
     } else if (target.closest('.video label')) {
-      const div = target.closest('div[data-opus]');
-      if (div) popupFlay(div.dataset.opus);
+      const div = target.closest('div[data-opus]') as HTMLElement;
+      if (div?.dataset.opus) popupFlay(div.dataset.opus);
     } else if (target.closest('.posted label')) {
-      const div = target.closest('div[data-opus]');
-      if (div) FlaySearch.torrent.Nonojav(div.dataset.opus);
+      const div = target.closest('div[data-opus]') as HTMLElement;
+      if (div?.dataset.opus) FlaySearch.torrent.Nonojav(div.dataset.opus);
     }
   }
 
@@ -139,18 +172,18 @@ class Page {
   }
 
   // Pre-fetch data for better performance
-  async #prefetchData(itemList) {
-    const opusList = itemList.map((data) => data.opus.text);
-    const japNameList = itemList.flatMap((data) =>
-      data.actressList.map((actress) => {
+  async #prefetchData(itemList: CrawlingItem[]) {
+    const opusList = itemList.map((data: CrawlingItem) => data.opus.text);
+    const japNameList = itemList.flatMap((data: CrawlingItem) =>
+      data.actressList.map((actress: LinkItem) => {
         let jap = '';
         const name = actress.text;
         if (name.includes('(')) {
           const parts = name
             .substring(0, name.length - 1)
             .split('(')
-            .map((s) => s.trim());
-          jap = parts[1] || '';
+            .map((s: string) => s.trim());
+          jap = parts[1] ?? '';
         } else {
           jap = name;
         }
@@ -159,7 +192,7 @@ class Page {
     );
 
     // Batch fetch videos
-    const videoPromises = opusList.map(async (opus) => {
+    const videoPromises = opusList.map(async (opus: string) => {
       if (!this.#videoCache.has(opus)) {
         try {
           const video = await FlayFetch.getVideo(opus);
@@ -171,11 +204,11 @@ class Page {
     });
 
     // Batch fetch actress data
-    const actressPromises = japNameList.map(async (jap) => {
+    const actressPromises = japNameList.map(async (jap: string) => {
       if (jap && !this.#actressCache.has(jap)) {
         try {
           const actressList = await FlayFetch.getActressListByLocalname(jap);
-          this.#actressCache.set(jap, actressList || []);
+          this.#actressCache.set(jap, actressList ?? []);
         } catch (err) {
           this.#actressCache.set(jap, []);
         }
@@ -183,7 +216,7 @@ class Page {
     });
 
     // Batch fetch records
-    const recordPromises = opusList.map(async (opus) => {
+    const recordPromises = opusList.map(async (opus: string) => {
       if (!this.#recordCache.has(opus)) {
         try {
           const record = await nanoStore.select(opus);
@@ -198,7 +231,7 @@ class Page {
     await Promise.all([Promise.all(videoPromises), Promise.all(actressPromises), Promise.all(recordPromises)]);
   }
 
-  async #renderItemList(itemList) {
+  async #renderItemList(itemList: CrawlingItem[]) {
     // Prefetch all data in parallel before rendering
     await this.#prefetchData(itemList);
 
@@ -212,15 +245,17 @@ class Page {
 
       // Process actress data using cache
       for (const actress of data.actressList) {
-        let [eng, jap] = ['', ''];
+        let eng = '';
+        let jap = '';
 
         const name = actress.text;
         if (name.includes('(')) {
-          [eng, jap] = name
+          const parts = name
             .substring(0, name.length - 1)
             .split('(')
-            .map((s) => s.trim());
-          eng = eng.split(' ').reverse().join(' ');
+            .map((s: string) => s.trim());
+          eng = parts[0] ? parts[0].split(' ').reverse().join(' ') : '';
+          jap = parts[1] ?? '';
         } else {
           jap = name;
         }
@@ -246,7 +281,7 @@ class Page {
       const record = this.#recordCache.get(data.opus.text);
       if (record) {
         const viewDate = DateUtils.format(record.date, 'yyyy-MM-dd HH:mm');
-        div.querySelector('.posted').appendChild(document.createElement('label')).innerHTML = `${viewDate}<sub> view</sub>`;
+        div.querySelector('.posted')!.appendChild(document.createElement('label')).innerHTML = `${viewDate}<sub> view</sub>`;
 
         if (data.posted.text < viewDate) {
           div.classList.add('record-viewed');
@@ -263,7 +298,7 @@ class Page {
   }
 
   // Generate HTML string for each item
-  #generateItemHTML(data, video) {
+  #generateItemHTML(data: CrawlingItem, video: VideoInfo | null) {
     return `
       <div class="cover">
         <img src="${data.cover}">
@@ -273,11 +308,11 @@ class Page {
       </div>
       <div class="video" title="video info">
         ${
-          video.error
+          !video || video.error
             ? ''
             : ` <label>${video.rank}<sub>rank</sub></label>
                 <label>${video.play}<sub>play</sub></label>
-                <label>${DateUtils.format(video.lastModified, 'yyyy-MM-dd')}<sub>modi.</sub></label>`
+                <label>${DateUtils.format(video.lastModified ?? '', 'yyyy-MM-dd')}<sub>modi.</sub></label>`
         }
       </div>
       <div class="release" title="release">
@@ -287,13 +322,13 @@ class Page {
         <label>${data.title}</label>
       </div>
       <div class="tags" title="tags">
-        ${data.tagList.map((tag) => `<label data-href="${tag.href}">${tag.text}</label>`).join('')}
+        ${data.tagList.map((tag: LinkItem) => `<label data-href="${tag.href}">${tag.text}</label>`).join('')}
       </div>
       <div class="actress-list" title="actress">
-        ${data.actressList.map((actress) => `<label data-href="${actress.href}" title="${actress.text}">${actress.fav}<span title="english name">${actress.eng}</span> <span title="japannes name">${actress.jap}</span></label>`).join('')}
+        ${data.actressList.map((actress: ActressItem) => `<label data-href="${actress.href}" title="${actress.text}">${actress.fav}<span title="english name">${actress.eng}</span> <span title="japanese name">${actress.jap}</span></label>`).join('')}
       </div>
       <div class="download-list" title="download. click to copy">
-        ${data.downloadList.map((download) => `<label data-href="${download.href}">${download.type} ${download.text}</label>`).join('')}
+        ${data.downloadList.map((download: DownloadItem) => `<label data-href="${download.href}">${download.type} ${download.text}</label>`).join('')}
       </div>
       <div class="posted" title="posted">
         <label data-href="${data.posted.href}">${data.posted.text} <sub>posted</sub></label>
@@ -301,20 +336,22 @@ class Page {
     `;
   }
 
-  #copyToClipboard(target, text: string = '') {
-    window.navigator.clipboard.writeText(text || this.#getText(target)).then(() => {
-      target.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
+  #copyToClipboard(target: HTMLElement | null, text: string = '') {
+    void window.navigator.clipboard.writeText(text || this.#getText(target)!).then(() => {
+      target?.animate([{ transform: 'scale(1.25)' }, { transform: 'none' }], { duration: 500, iterations: 1 });
     });
   }
 
-  #download(target, text) {
+  #download(target: HTMLElement | null, text: string = '') {
     const url = text || this.#getText(target);
+    if (!url) return;
+
     const formData = new FormData();
     formData.append('url', url);
-    ApiClient.getResponse('/download', { method: 'post', body: formData })
+    void ApiClient.getResponse('/download', { method: 'post', body: formData })
       .then(async (res) => {
         // 헤더에서 파일명을 가져옴
-        const filename = res.headers.get('Content-Disposition').split('filename=')[1].replace(/"/g, '');
+        const filename = res.headers.get('Content-Disposition')!.split('filename=')[1]!.replace(/"/g, '');
         return res.blob().then((blob) => ({ blob, filename }));
       })
       .then(({ blob, filename }) => {
@@ -327,15 +364,17 @@ class Page {
       });
   }
 
-  #getText(element) {
-    return element?.textContent.trim();
+  #getText(element: HTMLElement | null) {
+    return element?.textContent!.trim();
   }
 
-  #getHref(element) {
+  #getHref(element: HTMLElement | null) {
     return element?.getAttribute('href');
   }
 
-  async parseOfNanojav(data) {
+  async parseOfNanojav(data: { message?: string }) {
+    if (!data.message) return;
+
     const doc = domParser.parseFromString(data.message, 'text/html');
 
     const postList = Array.from(doc.querySelectorAll('#content > div > div > div:nth-child(2) > div > div'));
@@ -349,30 +388,36 @@ class Page {
 
     const itemList = postList.map((div) => {
       const elementOfImg = div.querySelector('img.cover') as HTMLImageElement;
-      const elementOfOpus = div.querySelector('.card-content h3.title a');
-      const elementOfPost = div.querySelector('.card-content p.subtitle a');
+      const elementOfOpus = div.querySelector('.card-content h3.title a') as HTMLAnchorElement;
+      const elementOfPost = div.querySelector('.card-content p.subtitle a') as HTMLAnchorElement;
       const nodeListOfTags = div.querySelectorAll('.tags a');
       const existsTag = div.querySelector('.tag') !== null;
-      const elementOfSubtitle = div.querySelector(`.card-content > p:nth-child(${existsTag ? 4 : 3})`);
-      const elementOfRelease = div.querySelector(`.card-content > p:nth-child(${existsTag ? 5 : 4})`);
+      const elementOfSubtitle = div.querySelector(`.card-content > p:nth-child(${existsTag ? 4 : 3})`) as HTMLAnchorElement;
+      const elementOfRelease = div.querySelector(`.card-content > p:nth-child(${existsTag ? 5 : 4})`) as HTMLParagraphElement;
       const nodeListOfActress = div.querySelectorAll('.card-content > div.mb-2.buttons.are-small > a');
       const nodeListOfDownload = div.querySelectorAll('.card-content > div.is-uppercase.has-text-weight-bold.buttons > a');
 
       return {
-        opus: { text: this.#getText(elementOfOpus), href: this.#getHref(elementOfOpus) },
-        cover: elementOfImg.src,
-        release: DateUtils.format(this.#getText(elementOfRelease).replace('Release date:', ''), 'yyyy.MM.dd'),
-        posted: { text: DateUtils.format(this.#getText(elementOfPost), 'yyyy-MM-dd'), href: this.#getHref(elementOfPost) },
-        title: this.#getText(elementOfSubtitle),
-        actressList: Array.from(nodeListOfActress).map((a) => ({ text: this.#getText(a), href: this.#getHref(a) })),
-        downloadList: Array.from(nodeListOfDownload).map((a) => ({
-          text: this.#getText(a),
-          href: this.#getHref(a),
-          type: Array.from(a.querySelectorAll('.tooltip'))
-            ?.map((tip: HTMLElement) => tip.dataset.tooltip)
-            .join(','),
-        })),
-        tagList: Array.from(nodeListOfTags).map((a) => ({ text: this.#getText(a), href: this.#getHref(a) })),
+        opus: { text: this.#getText(elementOfOpus) ?? '', href: this.#getHref(elementOfOpus) ?? '' },
+        cover: elementOfImg?.src ?? '',
+        release: DateUtils.format(this.#getText(elementOfRelease)?.replace('Release date:', '') ?? '', 'yyyy.MM.dd'),
+        posted: { text: DateUtils.format(this.#getText(elementOfPost) ?? '', 'yyyy-MM-dd'), href: this.#getHref(elementOfPost) ?? '' },
+        title: this.#getText(elementOfSubtitle) ?? '',
+        actressList: Array.from(nodeListOfActress).map((element) => {
+          const a = element as HTMLAnchorElement;
+          return { text: this.#getText(a) ?? '', href: this.#getHref(a) ?? '' };
+        }),
+        downloadList: Array.from(nodeListOfDownload).map((element) => {
+          const a = element as HTMLAnchorElement;
+          return {
+            text: this.#getText(a) ?? '',
+            href: this.#getHref(a) ?? '',
+            type: Array.from(a.querySelectorAll('.tooltip'))
+              ?.map((tip) => (tip as HTMLElement).dataset.tooltip)
+              .join(','),
+          };
+        }),
+        tagList: Array.from(nodeListOfTags).map((a: Element) => ({ text: this.#getText(a as HTMLElement) ?? '', href: this.#getHref(a as HTMLElement) ?? '' })),
       };
     });
 
@@ -391,23 +436,23 @@ class Page {
 
   #callCrawling() {
     const url = LIST_URL + this.#paging.srcPageNo;
-    ApiClient.get(`/crawling/curl?url=${encodeURIComponent(url)}`);
+    void ApiClient.get(`/crawling/curl?url=${encodeURIComponent(url)}`);
     this.#notice(this.#paging.srcPageNo + '페이지 크롤링 중...');
     (document.querySelector('#srcPageURL') as HTMLAnchorElement).href = url;
   }
 
-  #notice(message, hide = false, isError = false) {
-    const noticeEl = document.querySelector('#notice');
-    noticeEl.querySelector('#noticeMessage').innerHTML = message;
+  #notice(message: string, hide = false, isError = false) {
+    const noticeEl = document.querySelector('#notice')!;
+    noticeEl.querySelector('#noticeMessage')!.innerHTML = message;
     noticeEl.classList.toggle('hide', hide);
     noticeEl.classList.toggle('error', isError);
   }
 
   #updateFootMessage() {
-    document.querySelector('#currentPageNo').innerHTML = String(Math.ceil((this.#paging.itemIndex + 1) / 15) + this.#startPageNo - 1);
-    document.querySelector('#loadedPageNo').innerHTML = String(this.#paging.srcPageNo);
-    document.querySelector('#currentItemNo').innerHTML = String(this.#paging.itemIndex + 1);
-    document.querySelector('#totalItemNo').innerHTML = String(this.#paging.itemLength);
+    document.querySelector('#currentPageNo')!.innerHTML = String(Math.ceil((this.#paging.itemIndex + 1) / 15) + this.#startPageNo - 1);
+    document.querySelector('#loadedPageNo')!.innerHTML = String(this.#paging.srcPageNo);
+    document.querySelector('#currentItemNo')!.innerHTML = String(this.#paging.itemIndex + 1);
+    document.querySelector('#totalItemNo')!.innerHTML = String(this.#paging.itemLength);
   }
 }
 

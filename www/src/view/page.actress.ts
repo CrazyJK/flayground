@@ -6,13 +6,17 @@ import noFavoriteSVG from '@svg/noFavorite';
 import './inc/Page';
 import './page.actress.scss';
 
+interface SearchableActress extends Actress {
+  searchText?: string;
+}
+
 class Page {
-  actressList: Actress[]; // 전체 배우 목록
-  filteredActresses: Actress[]; // 검색 결과 목록
+  actressList: SearchableActress[]; // 전체 배우 목록
+  filteredActresses: SearchableActress[]; // 검색 결과 목록
   domCache: Map<string, HTMLElement>;
-  debounceTimer;
-  searchIndex;
-  main: HTMLElement;
+  debounceTimer: ReturnType<typeof setTimeout> | null;
+  searchIndex: Record<string, string>;
+  main!: HTMLElement;
 
   constructor() {
     this.actressList = [];
@@ -31,8 +35,8 @@ class Page {
       // 검색을 위한 인덱스 구축
       this.buildSearchIndex();
 
-      const searchInput = document.querySelector('body > header input');
-      this.main = document.querySelector('body > main');
+      const searchInput = document.querySelector('body > header input')!;
+      this.main = document.querySelector('body > main')!;
 
       searchInput.setAttribute('placeholder', `${this.actressList.length} Actresses. Enter a keyword to search`);
       searchInput.addEventListener('input', this.handleSearch.bind(this));
@@ -53,15 +57,18 @@ class Page {
       // 각 배우의 모든 필드를 소문자로 변환하여 검색용 문자열 생성
       const searchText = Object.values(actress).join(' ').toLowerCase();
       // 인덱스에 저장
-      actress['searchText'] = searchText;
+      actress.searchText = searchText;
     });
   }
 
   // 디바운싱을 적용한 검색 처리
-  handleSearch(e) {
-    clearTimeout(this.debounceTimer);
+  handleSearch(e: Event) {
+    if (this.debounceTimer) {
+      clearTimeout(this.debounceTimer);
+    }
     this.debounceTimer = setTimeout(() => {
-      const keyword = e.target.value.trim().toLowerCase();
+      const target = e.target as HTMLInputElement;
+      const keyword = target.value.trim().toLowerCase();
       if (StringUtils.isBlank(keyword)) {
         // 키워드가 비어있을 때 처리 (옵션)
         this.main.textContent = '';
@@ -69,7 +76,7 @@ class Page {
       }
 
       // 필터링된 배우 목록
-      this.filteredActresses = this.actressList.filter((actress) => actress['searchText'].includes(keyword));
+      this.filteredActresses = this.actressList.filter((actress) => actress.searchText?.includes(keyword) ?? false);
 
       // 결과 렌더링
       this.renderActresses(this.filteredActresses);
@@ -82,7 +89,7 @@ class Page {
   }
 
   // DOM 재사용을 활용한 효율적인 렌더링
-  renderActresses(actresses) {
+  renderActresses(actresses: SearchableActress[]) {
     // 기존 콘텐츠 지우기
     this.main.textContent = '';
 
@@ -122,12 +129,13 @@ class Page {
     this.main.appendChild(fragment);
   }
 
-  handleClick(e) {
-    const actressName = e.target.closest('div')?.dataset.name;
+  handleClick(e: MouseEvent) {
+    const target = e.target as HTMLElement;
+    const actressName = target.closest('div')?.dataset.name!;
     if (StringUtils.isBlank(actressName)) return;
 
     // 데이터 속성이나 더 안정적인 식별자를 사용하는 것이 좋습니다
-    switch (e.target.className) {
+    switch (target.className) {
       case 'name':
         popupActress(actressName);
         break;
@@ -138,4 +146,4 @@ class Page {
   }
 }
 
-new Page().start();
+void new Page().start();

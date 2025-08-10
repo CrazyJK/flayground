@@ -4,12 +4,10 @@ import './inc/Page';
 import './page.image-download.scss';
 
 class Page {
-  constructor() {}
+  start() {
+    document.querySelector('#openFolderBtn')!.addEventListener('click', (e) => FlayAction.explore((e.target as HTMLElement).textContent!));
 
-  async start() {
-    document.querySelector('#openFolderBtn').addEventListener('click', (e) => FlayAction.explore((e.target as HTMLElement).textContent));
-
-    document.querySelector('#pageUrl').addEventListener('change', () => this.runDownload());
+    document.querySelector('#pageUrl')!.addEventListener('change', () => this.runDownload());
   }
 
   async runDownload() {
@@ -32,20 +30,20 @@ class Page {
       result: boolean;
     };
     if (result) {
-      document.querySelector('#openFolderBtn').innerHTML = localPath;
-      document.querySelector('#fileList').innerHTML = imageFiles
+      document.querySelector('#openFolderBtn')!.innerHTML = localPath;
+      document.querySelector('#fileList')!.innerHTML = imageFiles
         .map((file) => {
           return `<li>${file.split('\\').pop()}</li>`;
         })
         .join('');
-      document.querySelector('#images').innerHTML = imageUrls
+      document.querySelector('#images')!.innerHTML = imageUrls
         .map((url) => {
           return `<li><img src="${url}" title="${url.split('/').pop()}"></li>`;
         })
         .join('');
-      document.querySelector('main > footer').innerHTML = `<label>${imageFiles.length} downloaded. ${imageUrls.length} images</label>`;
+      document.querySelector('main > footer')!.innerHTML = `<label>${imageFiles.length} downloaded. ${imageUrls.length} images</label>`;
     } else {
-      document.querySelector('main > footer').innerHTML = `<label style="color:red">${message}</label>`;
+      document.querySelector('main > footer')!.innerHTML = `<label style="color:red">${message}</label>`;
     }
   }
 }

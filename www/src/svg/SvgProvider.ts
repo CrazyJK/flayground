@@ -38,13 +38,13 @@ export const svgMap = new Map<string, string>([
   ['nextTrack', controlsSVG.nextTrack],
   ['pause', controlsSVG.pause],
   ['volume', controlsSVG.volume],
-  ['rank-1', rankSVG[0]],
-  ['rank0', rankSVG[1]],
-  ['rank1', rankSVG[2]],
-  ['rank2', rankSVG[3]],
-  ['rank3', rankSVG[4]],
-  ['rank4', rankSVG[5]],
-  ['rank5', rankSVG[6]],
+  ['rank-1', rankSVG[0]!],
+  ['rank0', rankSVG[1]!],
+  ['rank1', rankSVG[2]!],
+  ['rank2', rankSVG[3]!],
+  ['rank3', rankSVG[4]!],
+  ['rank4', rankSVG[5]!],
+  ['rank5', rankSVG[6]!],
   ['os', themeSVG.os],
   ['light', themeSVG.light],
   ['dark', themeSVG.dark],
@@ -113,5 +113,6 @@ export class SvgProvider {
     if (svgNames.includes(name)) {
       return `/svg/${name}.svg`;
     }
+    return undefined;
   }
 }

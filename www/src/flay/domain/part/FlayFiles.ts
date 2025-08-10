@@ -93,7 +93,7 @@ export default class FlayFiles extends FlayHTMLElement {
 
     this.querySelector('.list ol')!.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      FlayAction.explore(target.textContent).catch((error: unknown) => {
+      FlayAction.explore(target.textContent!).catch((error: unknown) => {
         console.error('Error exploring file:', error);
       });
     });

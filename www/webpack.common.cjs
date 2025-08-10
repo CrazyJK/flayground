@@ -66,7 +66,7 @@ module.exports = {
     clean: true,
   },
   resolve: {
-    extensions: ['.ts', '.js', '.json', '.scss', '.css'], // .ts 확장자 추가
+    extensions: ['.ts', '.json', '.scss', '.css'],
     alias: {
       '@attach': path.resolve(__dirname, 'src/attach'),
       '@const': path.resolve(__dirname, 'src/const'),
@@ -136,32 +136,6 @@ module.exports = {
             },
           },
         ],
-      },
-      // JavaScript 파일 처리 규칙 (기존 유지)
-      {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        options: {
-          cacheDirectory: true, // 캐시 활성화로 재빌드 성능 향상
-          presets: [
-            [
-              '@babel/preset-env',
-              {
-                useBuiltIns: 'usage',
-                corejs: 3,
-                // 트리 쉐이킹 개선을 위한 모듈 설정
-                modules: false,
-                // 대상 브라우저 명시
-                targets: {
-                  browsers: ['last 2 Chrome versions', 'last 2 Firefox versions', 'last 2 Safari versions', 'last 2 Edge versions'],
-                },
-              },
-            ],
-          ],
-          // 필요한 경우 console.log 제거
-          plugins: process.env.NODE_ENV === 'production' ? [['transform-remove-console', { exclude: ['error', 'warn', 'info'] }]] : [],
-        },
       },
       {
         test: /\.(scss)$/,

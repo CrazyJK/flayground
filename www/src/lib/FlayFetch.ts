@@ -369,8 +369,8 @@ export default class FlayFetch {
 
   static async getStaticImage(idx: number): Promise<ImageData> {
     const res = await ApiClient.getResponse(`/static/image/${idx}`);
-    const name = decodeURIComponent(res.headers.get('Name')?.replace(/\+/g, ' ') || '');
-    const path = decodeURIComponent(res.headers.get('Path')?.replace(/\+/g, ' ') || '');
+    const name = decodeURIComponent(res.headers.get('Name')?.replace(/\+/g, ' ') ?? '');
+    const path = decodeURIComponent(res.headers.get('Path')?.replace(/\+/g, ' ') ?? '');
     const modified = new Date(Number(res.headers.get('Modified')));
     const imageBlob = await res.blob();
     return { name, path, modified, imageBlob };
@@ -386,15 +386,15 @@ export default class FlayFetch {
    * 특정 opus의 캐시 정리
    * @param opus - opus 번호
    */
-  static async clear(opus: string): Promise<void> {
+  static clear(opus: string): void {
     coverObjectURLMap.delete(opus);
   }
 
-  static async clearAll(): Promise<void> {
+  static clearAll(): void {
     coverObjectURLMap.clear();
   }
 
-  static async clearTag(): Promise<void> {
+  static clearTag(): void {
     tagGroupList = null;
     tagList = null;
   }

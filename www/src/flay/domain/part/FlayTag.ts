@@ -9,10 +9,6 @@ import './FlayTag.scss';
 export default class FlayTag extends FlayHTMLElement {
   #rendered = false;
 
-  constructor() {
-    super();
-  }
-
   connectedCallback() {
     this.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
   }
@@ -25,7 +21,7 @@ export default class FlayTag extends FlayHTMLElement {
   set(flay: Flay, reload: boolean = false): void {
     this.setFlay(flay);
 
-    this.#displayTag(reload);
+    this.#displayTag(reload).catch((error: unknown) => console.error('Error displaying tags:', error));
   }
 
   async #renderTag(): Promise<void> {
@@ -42,7 +38,7 @@ export default class FlayTag extends FlayHTMLElement {
         input.value = String(tag.id);
         input.addEventListener('change', (e) => {
           const target = e.target as HTMLInputElement;
-          FlayAction.toggleTag(this.flay.opus, parseInt(target.value), target.checked);
+          FlayAction.toggleTag(this.flay.opus, parseInt(target.value), target.checked).catch((error: unknown) => console.error('Error toggling tag:', error));
         });
 
         const label = document.createElement('label');
@@ -50,7 +46,7 @@ export default class FlayTag extends FlayHTMLElement {
         label.title = tag.description;
         label.innerHTML = tag.name;
 
-        this.querySelector(`#etc`).append(input, label);
+        this.querySelector(`#etc`)!.append(input, label);
         if (tag.group) this.querySelector('#' + tag.group)?.append(input, label);
       });
   }

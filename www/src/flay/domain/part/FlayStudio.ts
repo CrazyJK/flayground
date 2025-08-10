@@ -12,7 +12,7 @@ export default class FlayStudio extends FlayHTMLElement {
 
     this.innerHTML = `<label><a>Studio</a></label>`;
 
-    this.querySelector('a').addEventListener('click', () => popupStudio(this.flay.studio));
+    this.querySelector('a')!.addEventListener('click', () => popupStudio(this.flay.studio));
   }
 
   connectedCallback() {}
@@ -24,7 +24,7 @@ export default class FlayStudio extends FlayHTMLElement {
   set(flay: Flay): void {
     this.setFlay(flay);
 
-    this.querySelector('a').textContent = flay.studio;
+    this.querySelector('a')!.textContent = flay.studio;
   }
 }
 

@@ -40,62 +40,72 @@ export default class FlayFiles extends FlayHTMLElement {
       </div>
     `;
 
-    this.#studioInput = this.querySelector('[name="studio"]');
-    this.#opusInput = this.querySelector('[name="opus"]');
-    this.#titleInput = this.querySelector('[name="title"]');
-    this.#actressInput = this.querySelector('[name="actress"]');
-    this.#releaseInput = this.querySelector('[name="release"]');
+    this.#studioInput = this.querySelector('[name="studio"]')!;
+    this.#opusInput = this.querySelector('[name="opus"]')!;
+    this.#titleInput = this.querySelector('[name="title"]')!;
+    this.#actressInput = this.querySelector('[name="actress"]')!;
+    this.#releaseInput = this.querySelector('[name="release"]')!;
 
-    this.querySelector('.flay-play').addEventListener('click', async () => {
+    this.querySelector('.flay-play')!.addEventListener('click', async () => {
       const { playInLayer } = await import(/* webpackChunkName: "FlayVideoPlayer" */ '@flay/panel/FlayVideoPlayer');
       await playInLayer(this.flay.opus);
     });
 
     // const playTimeDB = new PlayTimeDB();
 
-    this.querySelector('.flay-movie').addEventListener('click', async () => {
+    this.querySelector('.flay-movie')!.addEventListener('click', () => {
       if (this.flay.files.movie.length > 0) {
         // const record = await playTimeDB.select(this.flay.opus);
         // console.log('record', record);
         // const seekTime = record.time;
         const seekTime = -1;
 
-        FlayAction.play(this.flay.opus, seekTime).then(async () => {
-          const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '@flay/panel/FlayBasket');
-          FlayBasket.remove(this.flay.opus);
-        });
+        FlayAction.play(this.flay.opus, seekTime)
+          .then(async () => {
+            const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '@flay/panel/FlayBasket');
+            FlayBasket.remove(this.flay.opus);
+          })
+          .catch((error: unknown) => {
+            console.error('Error playing movie:', error);
+          });
       } else {
         FlaySearch.torrent.Download(this.flay.opus);
       }
     });
 
-    this.querySelector('.sub-btn').addEventListener('click', () => {
+    this.querySelector('.sub-btn')!.addEventListener('click', () => {
       if (this.flay.files.subtitles.length > 0) {
-        FlayAction.editSubtitles(this.flay.opus);
+        FlayAction.editSubtitles(this.flay.opus).catch((error: unknown) => {
+          console.error('Error editing subtitles:', error);
+        });
       } else {
         FlaySearch.subtitles.Subtitlecat(this.flay.opus);
       }
     });
 
-    this.querySelector('.files-btn').addEventListener('click', () => {
-      this.querySelector('.list').classList.toggle('show');
+    this.querySelector('.files-btn')!.addEventListener('click', () => {
+      this.querySelector('.list')!.classList.toggle('show');
     });
 
-    this.querySelector('.search-torrent').addEventListener('click', () => {
+    this.querySelector('.search-torrent')!.addEventListener('click', () => {
       FlaySearch.torrent.Ijav(this.flay.opus);
     });
 
-    this.querySelector('.list ol').addEventListener('click', (e) => {
+    this.querySelector('.list ol')!.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
-      FlayAction.explore(target.textContent);
+      FlayAction.explore(target.textContent).catch((error: unknown) => {
+        console.error('Error exploring file:', error);
+      });
     });
 
     this.querySelectorAll('.rename-flay input').forEach((input) => input.addEventListener('keyup', (e) => e.stopPropagation()));
 
-    this.querySelector('#renameBtn').addEventListener('click', () => {
-      const [studio, opus, title, actress, release] = Array.from(this.querySelectorAll('.rename-flay input')).map((input: HTMLInputElement) => input.value.trim());
+    this.querySelector('#renameBtn')!.addEventListener('click', () => {
+      const [studio, opus, title, actress, release] = Array.from(this.querySelectorAll('.rename-flay input')).map((input) => (input as HTMLInputElement).value.trim());
       console.log('renameClick', studio, opus, title, actress, release);
-      FlayAction.renameFlay(studio, opus, title, actress, release);
+      FlayAction.renameFlay(studio!, opus!, title!, actress!, release!).catch((error: unknown) => {
+        console.error('Error renaming flay:', error);
+      });
     });
   }
 
@@ -108,17 +118,17 @@ export default class FlayFiles extends FlayHTMLElement {
   set(flay: Flay): void {
     this.setFlay(flay);
 
-    this.querySelector('.movie-length').innerHTML = String(flay.files.movie.length);
-    this.querySelector('.flay-movie').classList.toggle('disable', flay.files.movie.length === 0);
+    this.querySelector('.movie-length')!.innerHTML = String(flay.files.movie.length);
+    this.querySelector('.flay-movie')!.classList.toggle('disable', flay.files.movie.length === 0);
 
-    this.querySelector('.sub-length').innerHTML = String(flay.files.subtitles.length);
-    this.querySelector('.sub-btn').classList.toggle('disable', flay.files.subtitles.length === 0);
+    this.querySelector('.sub-length')!.innerHTML = String(flay.files.subtitles.length);
+    this.querySelector('.sub-btn')!.classList.toggle('disable', flay.files.subtitles.length === 0);
 
     const [size, unit] = FileUtils.prettySize(flay.length);
-    this.querySelector('.size-num').innerHTML = String(size);
-    this.querySelector('.size-unit').innerHTML = String(unit);
+    this.querySelector('.size-num')!.innerHTML = String(size);
+    this.querySelector('.size-unit')!.innerHTML = String(unit);
 
-    const fileList = this.querySelector('.list ol');
+    const fileList = this.querySelector('.list ol')!;
     fileList.textContent = null;
 
     Array.from(flay.files.cover).forEach((path) => {

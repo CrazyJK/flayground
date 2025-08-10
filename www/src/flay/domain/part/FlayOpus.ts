@@ -20,9 +20,9 @@ export default class FlayOpus extends FlayHTMLElement {
       </div>
     `;
 
-    this.querySelector('a').addEventListener('click', () => FlaySearch.Avdbs(this.flay.opus));
-    this.querySelector('#jsonViewBtn').addEventListener('click', () => popupFlayInfo(this.flay.opus));
-    this.querySelector('#keepBasketBtn').addEventListener('click', async () => {
+    this.querySelector('a')!.addEventListener('click', () => FlaySearch.Avdbs(this.flay.opus));
+    this.querySelector('#jsonViewBtn')!.addEventListener('click', () => popupFlayInfo(this.flay.opus));
+    this.querySelector('#keepBasketBtn')!.addEventListener('click', async () => {
       const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ '@flay/panel/FlayBasket');
       FlayBasket.add(this.flay.opus);
     });
@@ -37,7 +37,7 @@ export default class FlayOpus extends FlayHTMLElement {
   set(flay: Flay): void {
     this.setFlay(flay);
 
-    this.querySelector('a').innerHTML = flay.opus;
+    this.querySelector('a')!.innerHTML = flay.opus;
   }
 }
 

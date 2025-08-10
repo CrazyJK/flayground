@@ -12,8 +12,8 @@ export default class FlayTitle extends FlayHTMLElement {
 
     this.innerHTML = `<label><a>Title</a></label>`;
 
-    if (location.pathname.indexOf('popup.flay.html') < 0) {
-      this.querySelector('a').addEventListener('click', () => this.#handlerPopupFlay());
+    if (!location.pathname.includes('popup.flay.html')) {
+      this.querySelector('a')!.addEventListener('click', () => this.#handlerPopupFlay());
     }
   }
 
@@ -26,8 +26,8 @@ export default class FlayTitle extends FlayHTMLElement {
   set(flay: Flay): void {
     this.setFlay(flay);
 
-    this.querySelector('a').title = flay.title;
-    this.querySelector('a').textContent = flay.title;
+    this.querySelector('a')!.title = flay.title;
+    this.querySelector('a')!.textContent = flay.title;
   }
 
   #handlerPopupFlay(): void {

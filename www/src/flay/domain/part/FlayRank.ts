@@ -14,7 +14,7 @@ export default class FlayRank extends FlayHTMLElement {
     this.innerHTML = `
       <div class="rank-group">
         ${Array.from({ length: 7 })
-          .map((v, i) => i - 1)
+          .map((_, i) => i - 1)
           .map((rank, i) => `<input type="radio" name="rank" value="${rank}" id="flay-rank${rank}"><label for="flay-rank${rank}" title="rank ${rank}">${rankSVG[i]}</label>`)
           .join('')}
       </div>
@@ -27,10 +27,12 @@ export default class FlayRank extends FlayHTMLElement {
     this.querySelectorAll('.rank-group input').forEach((rankRadio) =>
       rankRadio.addEventListener('change', (e) => {
         const target = e.target as HTMLInputElement;
-        FlayAction.setRank(this.flay.opus, parseInt(target.value));
+        FlayAction.setRank(this.flay.opus, parseInt(target.value)).catch((error: unknown) => {
+          console.error('Error setting rank:', error);
+        });
       })
     );
-    this.querySelector('.like-btn').addEventListener('click', () => FlayAction.setLike(this.flay.opus));
+    this.querySelector('.like-btn')!.addEventListener('click', () => FlayAction.setLike(this.flay.opus));
   }
 
   connectedCallback() {}
@@ -52,9 +54,9 @@ export default class FlayRank extends FlayHTMLElement {
     flayRank.checked = true;
 
     rankLabel.classList.toggle('notyet', flay.video.rank < 1);
-    rankLabel.querySelector('.rank').innerHTML = String(flay.video.rank);
+    rankLabel.querySelector('.rank')!.innerHTML = String(flay.video.rank);
 
-    likeBtn.querySelector('.shot').innerHTML = String(likeCount);
+    likeBtn.querySelector('.shot')!.innerHTML = String(likeCount);
     likeBtn.classList.toggle('notyet', likeCount === 0);
     likeBtn.title =
       flay.video.likes
@@ -62,20 +64,28 @@ export default class FlayRank extends FlayHTMLElement {
         .map((like) => like.substring(0, 16).replace(/T/, ' '))
         .join(`\n`) || '';
 
-    playLabel.querySelector('.play').innerHTML = String(flay.video.play);
+    playLabel.querySelector('.play')!.innerHTML = String(flay.video.play);
     playLabel.classList.toggle('notyet', flay.video.play === 0);
-    FlayFetch.getHistories(this.flay.opus).then((histories) => {
-      playLabel.title = Array.from(histories)
-        .filter((history) => history.action === 'PLAY')
-        .map((history) => history.date.substring(0, 16))
-        .join(`\n`);
-    });
+    FlayFetch.getHistories(this.flay.opus)
+      .then((histories) => {
+        playLabel.title = Array.from(histories)
+          .filter((history) => history.action === 'PLAY')
+          .map((history) => history.date.substring(0, 16))
+          .join(`\n`);
+      })
+      .catch((error: unknown) => {
+        console.error('Error fetching play history:', error);
+      });
 
     !flay.archive &&
-      FlayFetch.getScore(flay.opus).then((score) => {
-        scoreLabel.querySelector('.score').innerHTML = String(score);
-        scoreLabel.classList.toggle('notyet', score === 0);
-      });
+      FlayFetch.getScore(flay.opus)
+        .then((score) => {
+          scoreLabel.querySelector('.score')!.innerHTML = String(score);
+          scoreLabel.classList.toggle('notyet', score === 0);
+        })
+        .catch((error: unknown) => {
+          console.error('Error fetching score:', error);
+        });
   }
 }
 

@@ -13,7 +13,7 @@ const colorLabelLength = 5;
  * Custom element of Cover
  */
 export default class FlayCover extends FlayHTMLElement {
-  #coverImage: HTMLImageElement | null;
+  #coverImage!: HTMLImageElement;
   #colorLabels: HTMLLabelElement[];
 
   constructor() {
@@ -27,11 +27,11 @@ export default class FlayCover extends FlayHTMLElement {
       <div class="popup-cover-wrapper">${newWindowSVG}</div>
     `;
 
-    this.#coverImage = this.querySelector('img');
+    this.#coverImage = this.querySelector('img')!;
     this.#colorLabels = Array.from(this.querySelectorAll('.color-wrapper > label'));
 
     this.addEventListener('click', () => this.#handlerToggleClass());
-    this.querySelector('svg').addEventListener('click', (e) => this.#handlerPopupCover(e));
+    this.querySelector('svg')?.addEventListener('click', (e) => this.#handlerPopupCover(e));
   }
 
   connectedCallback() {}
@@ -46,7 +46,11 @@ export default class FlayCover extends FlayHTMLElement {
     this.classList.remove('visible');
 
     this.#coverImage.onload = () => this.#handlerOnloadCover();
-    FlayFetch.getCoverURL(this.flay.opus).then((objectURL) => (this.#coverImage.src = objectURL));
+    FlayFetch.getCoverURL(this.flay.opus)
+      .then((objectURL) => (this.#coverImage.src = objectURL))
+      .catch((error: unknown) => {
+        console.error('Error fetching cover URL:', error);
+      });
   }
 
   #handlerOnloadCover(): void {
@@ -55,21 +59,43 @@ export default class FlayCover extends FlayHTMLElement {
 
     // 대표색상 추출
     const KEY_DOMINATED_COLOR = `dominatedColor_${this.flay.opus}`;
-    const savedDominatedColors = FlayStorage.session.getObject(KEY_DOMINATED_COLOR, null);
-    if (savedDominatedColors == null) {
-      getDominatedColors(this.#coverImage, { scale: 0.2, offset: 16, limit: colorLabelLength }).then((dominatedColors) => {
-        FlayStorage.session.set(KEY_DOMINATED_COLOR, JSON.stringify(dominatedColors));
-        this.#applyDominatedColor(dominatedColors);
-      });
+    const savedDominatedColors = FlayStorage.session.getObject(KEY_DOMINATED_COLOR, null) as ColorFrequency[] | null;
+    if (savedDominatedColors === null) {
+      getDominatedColors(this.#coverImage, { scale: 0.2, offset: 16, limit: colorLabelLength })
+        .then((dominatedColors) => {
+          FlayStorage.session.set(KEY_DOMINATED_COLOR, JSON.stringify(dominatedColors));
+          this.#applyDominatedColor(dominatedColors);
+        })
+        .catch((error: unknown) => {
+          console.error('Error fetching dominated colors:', error);
+        });
     } else {
       this.#applyDominatedColor(savedDominatedColors);
     }
   }
 
   #applyDominatedColor(dominatedColors: ColorFrequency[]): void {
-    const [r, g, b] = dominatedColors[RandomUtils.getRandomInt(0, colorLabelLength)].rgba;
-    this.style.backgroundColor = `rgba(${r},${g},${b},0.5)`;
-    this.#colorLabels.forEach((label, i) => (label.style.backgroundColor = `rgba(${dominatedColors[i].rgba.join(',')})`));
+    if (!dominatedColors || dominatedColors.length === 0) {
+      console.warn('No dominated colors available');
+      return;
+    }
+
+    // 안전한 랜덤 인덱스 선택
+    const randomIndex = RandomUtils.getRandomInt(0, Math.min(dominatedColors.length, colorLabelLength));
+    const selectedColor = dominatedColors[randomIndex];
+
+    if (selectedColor) {
+      const [r, g, b] = selectedColor.rgba;
+      this.style.backgroundColor = `rgba(${r},${g},${b},0.5)`;
+    }
+
+    // 안전한 색상 라벨 적용
+    this.#colorLabels.forEach((label, i) => {
+      const color = dominatedColors[i];
+      if (color) {
+        label.style.backgroundColor = `rgba(${color.rgba.join(',')})`;
+      }
+    });
   }
 
   #handlerToggleClass(): void {

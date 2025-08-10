@@ -26,9 +26,9 @@ export default class FlayComment extends FlayHTMLElement {
       <input type="text" placeholder="${COMMENT}" style="display: none;">
     `;
 
-    this.#japanese = this.querySelector('.japanese');
-    this.#comment = this.querySelector('.comment');
-    this.#input = this.querySelector('input');
+    this.#japanese = this.querySelector('.japanese')!;
+    this.#comment = this.querySelector('.comment')!;
+    this.#input = this.querySelector('input')!;
 
     this.#japanese.addEventListener('click', () => this.#handleTranslate());
     this.#comment.addEventListener('click', () => this.#handleCommentInput());
@@ -72,8 +72,10 @@ export default class FlayComment extends FlayHTMLElement {
     console.log('commentInputKeyup', this.flay.opus, '[' + this.#input.value + ']');
     FlayAction.setComment(this.flay.opus, this.#input.value, () => {
       this.#comment.innerHTML = this.#input.value;
-      this.#comment.parentElement.style.display = 'block';
+      this.#comment.parentElement!.style.display = 'block';
       this.#input.style.display = 'none';
+    }).catch((error: unknown) => {
+      console.error('Error setting comment:', error);
     });
   }
 }

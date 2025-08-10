@@ -1,7 +1,7 @@
 import { Flay } from '@lib/FlayFetch';
 
 export default class FlayHTMLElement extends HTMLElement {
-  flay: Flay | null = null;
+  flay: Flay = {} as Flay;
   inCard: boolean = false;
 
   static get observedAttributes(): string[] {
@@ -22,7 +22,7 @@ export default class FlayHTMLElement extends HTMLElement {
 
   setFlay(flay: Flay): void {
     this.flay = flay;
-    this.dataset.opus = flay.opus;
+    this.dataset['opus'] = flay.opus;
     this.classList.toggle('archive', flay.archive);
   }
 

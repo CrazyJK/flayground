@@ -10,18 +10,12 @@ import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
  * Custom element of Actress
  */
 export default class FlayActress extends FlayHTMLElement {
-  constructor() {
-    super();
-  }
-
-  connectedCallback() {}
-
   /**
    *
    * @param flay
    * @param actressList
    */
-  async set(flay: Flay, actressList: Actress[]): Promise<void> {
+  set(flay: Flay, actressList: Actress[]): void {
     this.setFlay(flay);
 
     this.textContent = null;
@@ -39,7 +33,9 @@ export default class FlayActress extends FlayHTMLElement {
         input.addEventListener('change', (e) => {
           const target = e.target as HTMLInputElement;
           console.log('favoriteChange', target.checked, actress.name);
-          FlayAction.setFavorite(actress.name, target.checked);
+          FlayAction.setFavorite(actress.name, target.checked).catch((error) => {
+            console.error('Error setting favorite:', error);
+          });
         });
         const label = favoriteElement.appendChild(document.createElement('label'));
         label.setAttribute('for', 'fav' + index);
@@ -63,16 +59,20 @@ export default class FlayActress extends FlayHTMLElement {
         const flaySize = actressDiv.appendChild(document.createElement('label'));
         flaySize.classList.add('flaySize');
         if (flaySize.checkVisibility()) {
-          FlayFetch.getCountOfFlay(actress.name).then((flayCount) => (flaySize.innerHTML = flayCount + '<small>f</small>'));
+          FlayFetch.getCountOfFlay(actress.name)
+            .then((flayCount) => (flaySize.innerHTML = flayCount + '<small>f</small>'))
+            .catch((error: unknown) => {
+              console.error('Error fetching flay count:', error);
+            });
         }
 
         // age
         const ageElement = actressDiv.appendChild(document.createElement('label'));
         ageElement.classList.add('age');
         ageElement.setAttribute('title', actress.birth);
-        let currentYear = new Date().getFullYear();
-        let releaseYear = Number(flay.release.substring(0, 4));
-        let birthYear = Number(actress.birth.substring(0, 4));
+        const currentYear = new Date().getFullYear();
+        const releaseYear = Number(flay.release.substring(0, 4));
+        const birthYear = Number(actress.birth.substring(0, 4));
         ageElement.innerHTML = actress.birth ? `${releaseYear - birthYear + 1}<small>${releaseYear !== currentYear ? '/' + (currentYear - birthYear + 1) : ''}y</small>` : '';
 
         // birth
@@ -106,11 +106,11 @@ function toInchBody(body: string | null): string {
   if (body === null || body.trim() === '') {
     return '';
   }
-  let parts = body.split('-');
-  let b = parts[0]?.replace(/[^0-9]/g, '').trim();
-  let c = parts[0]?.replace(/[0-9]/g, '').trim();
-  let w = parts[1]?.trim();
-  let h = parts[2]?.trim();
+  const parts = body.split('-');
+  const b = parts[0]?.replace(/[^0-9]/g, '').trim() ?? '0';
+  const c = parts[0]?.replace(/[0-9]/g, '').trim() ?? '';
+  const w = parts[1]?.trim() ?? '';
+  const h = parts[2]?.trim() ?? '';
 
   return Math.round(parseInt(b) / 2.54) + c + '-' + Math.round(parseInt(w) / 2.54) + '-' + Math.round(parseInt(h) / 2.54);
 }

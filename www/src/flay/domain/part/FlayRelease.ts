@@ -31,11 +31,11 @@ export default class FlayRelease extends FlayHTMLElement {
     const shotLength = flay.video.likes?.length || 0;
     const lastShoted = shotLength > 0 ? flay.video.likes[shotLength - 1] : -1;
 
-    this.querySelector('#release').innerHTML = flay.release;
-    this.querySelector('#modified').innerHTML = DateUtils.format(flay.lastModified, 'yy/MM/dd');
-    this.querySelector('#access').innerHTML = DateUtils.format(flay.video.lastAccess, 'yy/MM/dd');
-    this.querySelector('#played').innerHTML = DateUtils.format(flay.video.lastPlay, 'yy/MM/dd');
-    this.querySelector('#shoted').innerHTML = DateUtils.format(lastShoted, 'yy/MM/dd');
+    this.querySelector('#release')!.innerHTML = flay.release;
+    this.querySelector('#modified')!.innerHTML = DateUtils.format(flay.lastModified, 'yy/MM/dd');
+    this.querySelector('#access')!.innerHTML = DateUtils.format(flay.video.lastAccess, 'yy/MM/dd');
+    this.querySelector('#played')!.innerHTML = DateUtils.format(flay.video.lastPlay, 'yy/MM/dd');
+    this.querySelector('#shoted')!.innerHTML = DateUtils.format(lastShoted, 'yy/MM/dd');
   }
 }
 

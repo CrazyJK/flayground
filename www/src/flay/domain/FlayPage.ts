@@ -72,9 +72,7 @@ export default class FlayPage extends HTMLElement {
     this.flayComment.set(this.flay);
     this.flayTitle.set(this.flay);
     this.flayCover.set(this.flay);
-    this.flayActress.set(this.flay, this.actress).catch((error: unknown) => {
-      console.error('Error setting FlayActress:', error);
-    });
+    this.flayActress.set(this.flay, this.actress);
     this.flayRelease.set(this.flay);
     this.flayRank.set(this.flay);
     this.flayFiles.set(this.flay);

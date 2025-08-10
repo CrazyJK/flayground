@@ -169,9 +169,14 @@ async function action(url: string, requestInit: ApiClientOptions, callback: Succ
 
   switch (response.status) {
     case 200:
-      response.json().then((data) => {
-        callback(data);
-      });
+      response
+        .json()
+        .then((data) => {
+          callback(data);
+        })
+        .catch((error: unknown) => {
+          console.error('Error parsing JSON:', error);
+        });
       break;
     case 204:
       callback();
@@ -179,10 +184,15 @@ async function action(url: string, requestInit: ApiClientOptions, callback: Succ
     case 400:
     case 404:
     case 500:
-      response.json().then((data) => {
-        console.error(response.status, data.message);
-        failCallback(data);
-      });
+      response
+        .json()
+        .then((data) => {
+          console.error(response.status, data.message);
+          failCallback(data);
+        })
+        .catch((error: unknown) => {
+          console.error('Error parsing JSON:', error);
+        });
       break;
     default:
       throw new Error('정의 안된 status code');
@@ -200,7 +210,7 @@ async function action(url: string, requestInit: ApiClientOptions, callback: Succ
     font-weight: 400;
     z-index: 999;
   `;
-  messageBar.innerHTML = `[${requestInit.method || 'GET'}] ${url} - ${response.status}`;
+  messageBar.innerHTML = `[${requestInit.method ?? 'GET'}] ${url} - ${response.status}`;
 
   if ([200, 204].includes(response.status)) {
     // show success message

@@ -14,12 +14,16 @@ const BACK = 'BACK' as const;
 
 type NavigationDirection = typeof NEXT | typeof PREV | typeof RANDOM | typeof FIRST | typeof LAST | typeof PAGEUP | typeof PAGEDOWN | typeof BACK;
 
+interface VideoPlayerEventDetail {
+  isPlay: boolean;
+}
+
 /**
  * 페이지 표현
  */
 export default class FlayPagination extends HTMLElement {
   /** 현재 선택된 opus */
-  opus: string | null = null;
+  opus: string | null | undefined = null;
   /** 현재 opus의 인덱스 */
   opusIndex: number = -1;
   /** opus 목록 */
@@ -67,11 +71,18 @@ export default class FlayPagination extends HTMLElement {
     }
   }
 
-  connectedCallback() {
+  connectedCallback(): void {
     const randomPopupButton = this.querySelector('.random-popup-button') as HTMLButtonElement;
     const randomFlowButton = this.querySelector('.random-flow-button') as HTMLButtonElement;
 
-    document.addEventListener('videoPlayer', (e: CustomEvent) => (this.active = !e.detail.isPlay));
+    if (!randomPopupButton || !randomFlowButton) {
+      throw new Error('Required button elements not found');
+    }
+
+    document.addEventListener('videoPlayer', (e: Event) => {
+      const customEvent = e as CustomEvent<VideoPlayerEventDetail>;
+      this.active = !customEvent.detail.isPlay;
+    });
 
     window.addEventListener('wheel', (e: WheelEvent) => {
       if (!this.active) return false;
@@ -162,8 +173,8 @@ export default class FlayPagination extends HTMLElement {
 
         const popupIndicator = popupIndicators.appendChild(document.createElement('button'));
         popupIndicator.innerHTML = String(i + 1);
-        popupIndicator.addEventListener('mouseover', () => randomPopup.postMessage('over'));
-        popupIndicator.addEventListener('mouseout', () => randomPopup.postMessage('out'));
+        popupIndicator.addEventListener('mouseover', () => randomPopup?.postMessage('over'));
+        popupIndicator.addEventListener('mouseout', () => randomPopup?.postMessage('out'));
         popupIndicator.addEventListener('click', () => {
           this.#decideOpus(RANDOM);
           randomPopup = window.open(`popup.flay.html?opus=${this.opus}&popupNo=${i + 1}`, `randomPopup.${i}`, 'width=800px,height=1280px');
@@ -206,7 +217,7 @@ export default class FlayPagination extends HTMLElement {
   set(list: string[]): void {
     this.opusList = list;
     this.history = [];
-    this.#navigator(this.opus || RANDOM);
+    this.#navigator(this.opus ?? RANDOM);
   }
 
   /**
@@ -214,9 +225,9 @@ export default class FlayPagination extends HTMLElement {
    * @param offset 현재 위치로부터의 오프셋
    * @returns opus 문자열 또는 null
    */
-  get(offset?: number): string | null {
+  get(offset?: number): string | null | undefined {
     if (offset) {
-      return this.opusList[this.opusIndex + offset] || null;
+      return this.opusList[this.opusIndex + offset] ?? null;
     } else {
       return this.opus;
     }
@@ -367,7 +378,7 @@ export default class FlayPagination extends HTMLElement {
 
     this.paging.textContent = null;
     for (const i of pageRange) {
-      const page = this.paging.appendChild(document.createElement('label')) as HTMLLabelElement;
+      const page = this.paging.appendChild(document.createElement('label'));
       page.classList.add('page');
       page.classList.toggle('disable', i > lastIndex);
       page.classList.toggle('active', i === this.opusIndex);
@@ -395,7 +406,7 @@ export default class FlayPagination extends HTMLElement {
                 this.coverThumbnail.style.backgroundImage = `url(${url})`;
               }
             })
-            .catch((error) => {
+            .catch((error: unknown) => {
               console.error('Failed to load cover image:', error);
             });
           this.coverThumbnail.style.width = `${coverWidth}px`;

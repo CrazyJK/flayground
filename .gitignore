@@ -42,6 +42,10 @@ node_modules
 # yarn
 yarn.lock
 
+# TypeScript
+*.tsbuildinfo
+.tscache/
+
 # webpack dist
 www/dist
 src/main/resources/static/dist*

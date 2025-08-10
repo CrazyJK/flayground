@@ -1,17 +1,45 @@
 {
   "compilerOptions": {
-    "target": "ES2020",
+    // 최신 타겟으로 업데이트
+    "target": "ES2022",
     "module": "ESNext",
-    "moduleResolution": "node",
-    "strict": false,
+    "moduleResolution": "bundler",
+
+    // 엄격한 타입 체크 활성화
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": true,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    // 추가 타입 체크
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "exactOptionalPropertyTypes": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedIndexedAccess": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+
+    // 모듈 관련
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
-    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "allowJs": false,
+    "checkJs": false,
+
+    // 출력 설정
     "noEmit": true,
     "declaration": false,
+    "skipLibCheck": true,
+
+    // 경로 별칭
     "baseUrl": ".",
     "paths": {
       "@attach/*": ["src/attach/*"],
@@ -25,8 +53,10 @@
       "@svg/*": ["src/svg/*"],
       "@ui/*": ["src/ui/*"]
     },
-    "lib": ["DOM", "DOM.Iterable", "ES2020"]
+
+    // 라이브러리
+    "lib": ["DOM", "DOM.Iterable", "ES2022", "WebWorker"]
   },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "dist", "../src"]
+  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "exclude": ["node_modules", "dist", "../src", "**/*.js", "**/*.jsx"]
 }

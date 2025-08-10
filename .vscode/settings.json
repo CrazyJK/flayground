@@ -5,14 +5,18 @@
   "java.configuration.updateBuildConfiguration": "automatic",
   "java.inlayHints.parameterNames.enabled": "none",
   "search.exclude": {
-    "**/dependencies-viewer.json": true
+    "**/dependencies-viewer.json": true,
+    "**/node_modules": true,
+    "**/dist": true,
+    "**/*.log": true
   },
   "files.exclude": {
     "**/node_modules": true,
-    "**/target": true
+    "**/target": true,
+    "**/*.js.map": true,
+    "**/dist": true
   },
   "files.associations": {
-    "*.js": "javascript",
     "*.ts": "typescript"
   },
   "editor.minimap.enabled": false,
@@ -33,6 +37,16 @@
   },
   "typescript.preferences.includePackageJsonAutoImports": "on",
   "typescript.suggest.autoImports": true,
+  "typescript.suggest.paths": true,
   "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.preferences.importModuleSpecifier": "relative"
+  "typescript.preferences.importModuleSpecifier": "relative",
+  "typescript.format.enable": false,
+  "eslint.validate": ["typescript"],
+  "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }

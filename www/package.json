@@ -9,8 +9,13 @@
     "build": "    cross-env NODE_ENV=production  webpack",
     "build:dev": "cross-env NODE_ENV=development webpack",
     "watch": "    cross-env NODE_ENV=development webpack -w",
-    "lint": "eslint --fix --ext .ts src/",
-    "type-check": "tsc --noEmit"
+    "lint": "eslint --fix src/**/*.ts",
+    "lint:check": "eslint src/**/*.ts",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "tsc --noEmit --watch",
+    "check": "npm run type-check && npm run lint:check",
+    "format": "prettier --write src/**/*.{ts,scss,css}",
+    "format:check": "prettier --check src/**/*.{ts,scss,css}"
   },
   "dependencies": {
     "@toast-ui/editor": "^3.2.1",
@@ -22,6 +27,7 @@
     "@babel/preset-env": "^7.23.5",
     "@babel/preset-typescript": "^7.23.3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/node": "^24.2.1",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "autoprefixer": "^10.4.16",

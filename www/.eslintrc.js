@@ -1,21 +1,53 @@
 module.exports = {
+  root: true,
   env: {
     browser: true,
     node: true,
-    es2021: true,
+    es2022: true,
   },
-  extends: ['eslint:recommended', 'prettier'],
+  parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 'latest',
+    ecmaVersion: 2022,
     sourceType: 'module',
+    project: './tsconfig.json',
   },
-  plugins: ['prettier'],
+  extends: ['eslint:recommended', '@typescript-eslint/recommended', '@typescript-eslint/recommended-requiring-type-checking', 'prettier'],
+  plugins: ['@typescript-eslint', 'prettier'],
   rules: {
-    // 사용하지 않는 변수 규칙 비활성화
+    // TypeScript specific rules
+    '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
+    '@typescript-eslint/no-explicit-any': 'error',
+    '@typescript-eslint/no-inferrable-types': 'off',
+    '@typescript-eslint/explicit-function-return-type': 'warn',
+    '@typescript-eslint/explicit-module-boundary-types': 'warn',
+    '@typescript-eslint/no-non-null-assertion': 'warn',
+    '@typescript-eslint/prefer-nullish-coalescing': 'error',
+    '@typescript-eslint/prefer-optional-chain': 'error',
+    '@typescript-eslint/prefer-as-const': 'error',
+    '@typescript-eslint/no-unnecessary-type-assertion': 'error',
+    '@typescript-eslint/no-floating-promises': 'error',
+    '@typescript-eslint/await-thenable': 'error',
+    '@typescript-eslint/no-misused-promises': 'error',
+    '@typescript-eslint/require-await': 'error',
+    '@typescript-eslint/prefer-readonly': 'warn',
+    '@typescript-eslint/prefer-string-starts-ends-with': 'error',
+    '@typescript-eslint/prefer-includes': 'error',
+    '@typescript-eslint/no-useless-constructor': 'error',
+    '@typescript-eslint/switch-exhaustiveness-check': 'error',
+
+    // Disable JS rules that are covered by TypeScript
     'no-unused-vars': 'off',
-    // 사용하지 않는 private 클래스 멤버에 대해 경고로 설정
-    'no-unused-private-class-members': ['warn'],
-    // prettier 규칙 설정
+    'no-undef': 'off',
+    'no-redeclare': 'off',
+    'no-dupe-class-members': 'off',
+
+    // General rules
+    'no-console': 'warn',
+    'no-debugger': 'error',
+    'prefer-const': 'error',
+    'no-var': 'error',
+
+    // Prettier rules
     'prettier/prettier': [
       'error',
       {
@@ -23,30 +55,5 @@ module.exports = {
       },
     ],
   },
-  overrides: [
-    {
-      files: ['*.ts', '*.tsx'],
-      parser: '@typescript-eslint/parser',
-      plugins: ['@typescript-eslint', 'prettier'],
-      parserOptions: {
-        ecmaVersion: 'latest',
-        sourceType: 'module',
-      },
-      rules: {
-        // Basic TypeScript rules without extending recommended config
-        '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
-        '@typescript-eslint/no-explicit-any': 'warn',
-        '@typescript-eslint/no-inferrable-types': 'off',
-        'no-unused-vars': 'off',
-        // Prettier rules
-        'prettier/prettier': [
-          'error',
-          {
-            endOfLine: 'auto',
-          },
-        ],
-      },
-    },
-  ],
-  ignorePatterns: ['node_modules/', 'dist/'],
+  ignorePatterns: ['node_modules/', 'dist/', '**/*.js', '**/*.jsx', 'webpack.*.cjs', 'madge.cjs'],
 };

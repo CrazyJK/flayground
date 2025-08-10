@@ -3,8 +3,12 @@ import '@lib/SseConnector';
 import '@lib/UpdateMyPosition';
 import './Page.scss';
 
-import(/* webpackChunkName: "SideNavBar" */ '@nav/SideNavBar').then(({ SideNavBar }) => {
-  document.body.prepend(new SideNavBar());
-});
+import(/* webpackChunkName: "SideNavBar" */ '@nav/SideNavBar')
+  .then(({ SideNavBar }) => {
+    document.body.prepend(new SideNavBar());
+  })
+  .catch((error: unknown) => {
+    console.error('Error loading SideNavBar:', error);
+  });
 
-console.info(`%c\n\tFlayground : ${process.env.NODE_ENV} : ${process.env.WATCH_MODE === 'true' ? 'Watch mode' : ''} 🕒 ${DateUtils.format(process.env.BUILD_TIME)}\n`, 'color: orange; font-size: 20px; font-weight: bold;');
+console.info(`%c\n\tFlayground : ${process.env['NODE_ENV']} : ${process.env['WATCH_MODE'] === 'true' ? 'Watch mode' : ''} 🕒 ${DateUtils.format(process.env['BUILD_TIME'])}\n`, 'color: orange; font-size: 20px; font-weight: bold;');

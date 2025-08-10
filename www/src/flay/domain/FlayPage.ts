@@ -31,6 +31,10 @@ export default class FlayPage extends HTMLElement {
     super();
     this.classList.add('flay-div');
 
+    this.opus = '';
+    this.flay = {} as Flay;
+    this.actress = [];
+
     this.flayStudio = this.appendChild(new FlayStudio());
     this.flayOpus = this.appendChild(new FlayOpus());
     this.flayComment = this.appendChild(new FlayComment());
@@ -68,7 +72,9 @@ export default class FlayPage extends HTMLElement {
     this.flayComment.set(this.flay);
     this.flayTitle.set(this.flay);
     this.flayCover.set(this.flay);
-    this.flayActress.set(this.flay, this.actress);
+    this.flayActress.set(this.flay, this.actress).catch((error: unknown) => {
+      console.error('Error setting FlayActress:', error);
+    });
     this.flayRelease.set(this.flay);
     this.flayRank.set(this.flay);
     this.flayFiles.set(this.flay);
@@ -82,7 +88,9 @@ export default class FlayPage extends HTMLElement {
    */
   reload(): void {
     if (this.opus) {
-      this.set(this.opus, true);
+      this.set(this.opus, true).catch((error: unknown) => {
+        console.error('Error reloading FlayPage:', error);
+      });
     }
   }
 }

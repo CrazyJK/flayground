@@ -26,10 +26,6 @@ const dbSchema = [
 ];
 
 export default class FlayGroundDB extends FlayIndexedDB {
-  constructor() {
-    super();
-  }
-
   async init() {
     await this.open(dbName, dbVersion, dbSchema);
   }

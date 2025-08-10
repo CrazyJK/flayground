@@ -3,10 +3,6 @@ import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
 const storeName = 'Score';
 
 export default class ScoreStore extends FlayGroundDB {
-  constructor() {
-    super();
-  }
-
   async select(opus: string): Promise<{ opus: string; score: number } | undefined> {
     await this.init();
     return await this.get(storeName, opus);

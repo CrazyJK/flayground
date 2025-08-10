@@ -3,10 +3,6 @@ import NanoDB from '@flay/idb/nano/db/NanoDB';
 const storeName = 'Nano';
 
 export default class NanoStore extends NanoDB {
-  constructor() {
-    super();
-  }
-
   async select(opus: string) {
     await this.init();
     return await this.get(storeName, opus);

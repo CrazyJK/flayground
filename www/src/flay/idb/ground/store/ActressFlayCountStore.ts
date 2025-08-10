@@ -3,10 +3,6 @@ import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
 const storeName = 'ActressFlayCount';
 
 export default class ActressFlayCountStore extends FlayGroundDB {
-  constructor() {
-    super();
-  }
-
   async select(name: string): Promise<{ name: string; flayCount: number } | undefined> {
     await this.init();
     return await this.get(storeName, name);

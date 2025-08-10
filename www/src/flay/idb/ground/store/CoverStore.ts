@@ -3,10 +3,6 @@ import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
 const storeName = 'Cover';
 
 export default class CoverStore extends FlayGroundDB {
-  constructor() {
-    super();
-  }
-
   async select(opus: string): Promise<{ opus: string; blob: Blob } | undefined> {
     await this.init();
     return await this.get(storeName, opus);

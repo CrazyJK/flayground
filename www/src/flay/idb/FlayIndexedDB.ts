@@ -139,7 +139,8 @@ export default class FlayIndexedDB {
         const cursor = (e.target as IDBRequest<IDBCursorWithValue | null>).result;
         if (cursor) {
           const record = cursor.value as T;
-          if (record[key] && typeof record[key] === 'string' && record[key].includes(value)) {
+          const recordValue = (record as Record<string, unknown>)[key];
+          if (recordValue && typeof recordValue === 'string' && recordValue.includes(value)) {
             flayList.push(record);
           }
           cursor.continue();

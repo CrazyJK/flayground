@@ -4,10 +4,6 @@ import { Actress } from '../../../../lib/FlayFetch';
 const storeName = 'Actress';
 
 export default class ActressStore extends FlayGroundDB {
-  constructor() {
-    super();
-  }
-
   async select(name: string): Promise<Actress | undefined> {
     await this.init();
     return await this.get(storeName, name);

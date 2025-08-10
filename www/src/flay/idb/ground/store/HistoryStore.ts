@@ -4,10 +4,6 @@ import { History } from '../../../../lib/FlayFetch';
 const storeName = 'History';
 
 export default class HistoryStore extends FlayGroundDB {
-  constructor() {
-    super();
-  }
-
   async select(opus: string): Promise<{ opus: string; histories: History[] } | undefined> {
     await this.init();
     return await this.get(storeName, opus);

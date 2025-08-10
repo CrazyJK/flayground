@@ -4,10 +4,6 @@ import FlayFetch, { Flay, Tag } from '@lib/FlayFetch';
 const storeName = 'Flay';
 
 export default class FlayStore extends FlayGroundDB {
-  constructor() {
-    super();
-  }
-
   async insert(...flayList: Flay[]) {
     await this.init();
     for (const flay of flayList) await this.add(storeName, flay);
@@ -60,7 +56,7 @@ export default class FlayStore extends FlayGroundDB {
 
   async findByArchive(isArchive: boolean) {
     await this.init();
-    return (await this.selectAll()).filter((flay: Flay) => flay.archive === isArchive);
+    return (await this.selectAll()).filter((flay) => (flay as Flay).archive === isArchive);
   }
 
   async findByRank(rank: number) {
@@ -75,17 +71,17 @@ export default class FlayStore extends FlayGroundDB {
 
   async findByTagId(id: number) {
     await this.init();
-    return (await this.selectAll()).filter((flay: Flay) => flay.video.tags?.filter((tag: Tag) => tag.id === id).length > 0);
+    return (await this.selectAll()).filter((flay) => (flay as Flay).video.tags?.filter((tag: Tag) => tag.id === id).length > 0);
   }
 
   async findByTagName(name: string) {
     await this.init();
-    return (await this.selectAll()).filter((flay: Flay) => flay.video.tags?.filter((tag) => tag.name === name).length > 0);
+    return (await this.selectAll()).filter((flay) => (flay as Flay).video.tags?.filter((tag) => tag.name === name).length > 0);
   }
 
   async findByLikesLength(n = 0) {
     await this.init();
-    return (await this.selectAll()).filter((flay: Flay) => flay.video.likes?.length > n);
+    return (await this.selectAll()).filter((flay) => (flay as Flay).video.likes?.length > n);
   }
 }
 

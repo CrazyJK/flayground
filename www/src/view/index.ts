@@ -4,8 +4,13 @@ import './index.scss';
 import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
   .then(({ FacadeWebMovie }) => new FacadeWebMovie())
   .then(async (facadeWebMovie) => {
-    document.querySelector('body > main').appendChild(facadeWebMovie);
-    await facadeWebMovie.isEnded();
+    const mainElement = document.querySelector('body > main');
+    if (mainElement) {
+      mainElement.appendChild(facadeWebMovie);
+      await facadeWebMovie.isEnded();
+    } else {
+      console.warn('Main element not found');
+    }
   })
   .then(() => {
     import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
@@ -16,11 +21,20 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
         .image-circle:hover { opacity: 1; }`;
         imageCircle.classList.add('right-bottom');
         document.body.appendChild(imageCircle);
+      })
+      .catch((error: unknown) => {
+        console.error('ImageCircle 로딩 실패:', error);
       });
 
     import(/* webpackChunkName: "FlayMarkerFloat" */ '@flay/panel/FlayMarkerFloat')
       .then(({ FlayMarkerFloat }) => new FlayMarkerFloat())
       .then((flayMarkerFloat) => {
         document.body.appendChild(flayMarkerFloat);
+      })
+      .catch((error: unknown) => {
+        console.error('FlayMarkerFloat 로딩 실패:', error);
       });
+  })
+  .catch((error: unknown) => {
+    console.error('초기화 중 오류 발생:', error);
   });

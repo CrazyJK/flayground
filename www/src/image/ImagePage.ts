@@ -100,7 +100,7 @@ export class ImagePage extends HTMLElement {
   }
 
   loadImages(): void {
-    FlayFetch.getImageAll().then((list: ImageDomain[]) => {
+    void FlayFetch.getImageAll().then((list: ImageDomain[]) => {
       const imagePathMap = this.groupImagesByPath(list);
       this.buildFolderTree(imagePathMap);
       this.addCollapseBehavior();
@@ -110,7 +110,7 @@ export class ImagePage extends HTMLElement {
   groupImagesByPath(list: ImageDomain[]): Map<string, ImageDomain[]> {
     const map = new Map<string, ImageDomain[]>();
     list.forEach((image) => {
-      const group = map.get(image.path) || [];
+      const group = map.get(image.path) ?? [];
       group.push(image);
       map.set(image.path, group);
     });
@@ -147,7 +147,7 @@ export class ImagePage extends HTMLElement {
         currentId = idx === 0 ? idPart : `${currentId}_${idPart}`;
         let folderDiv = this.querySelector('#' + currentId) as HTMLDivElement;
         if (!folderDiv) {
-          const parentElement = this.querySelector('#' + parentId) || this;
+          const parentElement = this.querySelector('#' + parentId) ?? this;
           folderDiv = parentElement.appendChild(document.createElement('div'));
           folderDiv.id = currentId;
           folderDiv.title = imagePath;
@@ -215,8 +215,9 @@ export class ImagePage extends HTMLElement {
     let startX = 0;
     let startWidth = 0;
 
-    const onMouseMove = (e: MouseEvent) => {
-      const newWidth = Math.max(100, startWidth - (e.clientX - startX) + 4);
+    const onMouseMove = (e: Event) => {
+      const mouseEvent = e as MouseEvent;
+      const newWidth = Math.max(100, startWidth - (mouseEvent.clientX - startX) + 4);
       resizableContainer.style.gridTemplateColumns = `1fr 5px ${newWidth}px`;
     };
 
@@ -227,9 +228,10 @@ export class ImagePage extends HTMLElement {
       document.removeEventListener('mouseup', onMouseUp);
     };
 
-    const mouseDownHandler = (e: MouseEvent) => {
+    const mouseDownHandler = (e: Event) => {
+      const mouseEvent = e as MouseEvent;
       resizer.classList.add('resizing');
-      startX = e.clientX;
+      startX = mouseEvent.clientX;
       startWidth = folderTree.clientWidth;
       document.documentElement.style.cursor = 'col-resize';
       this.addDocumentEventListenerTracked('mousemove', onMouseMove);
@@ -253,7 +255,7 @@ export class ImagePage extends HTMLElement {
   renderImage(images: ImageDomain[]): void {
     console.debug(images);
     const pathLabel = this.querySelector('#path');
-    if (pathLabel) pathLabel.innerHTML = images[0].path;
+    if (pathLabel) pathLabel.innerHTML = images[0]!.path;
 
     const countLabel = this.querySelector('#count');
     if (countLabel) countLabel.innerHTML = `${images.length} <small>images</small>`;
@@ -270,7 +272,7 @@ export class ImagePage extends HTMLElement {
       item.dataset.lazyBackgroundImageUrl = ApiClient.buildUrl(`/static/image/${image.idx}`);
       item.title = `#${image.idx} - ${image.name} - ${FileUtils.formatSize(image.length)} - ${DateUtils.format(image.modified, 'yyyy-MM-dd')}`;
       const clickHandler = () => {
-        imageFrame.set(image.idx);
+        void imageFrame.set(image.idx);
         previewLayer && previewLayer.classList.add('show');
       };
       this.addEventListenerTracked(item, 'click', clickHandler);

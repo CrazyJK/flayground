@@ -8,8 +8,8 @@ export class ImageThumbnail extends HTMLElement {
   private static readonly ThumbnailDimensions = [3, 4];
   private static readonly ThumbnailScalingFactor = 5;
 
-  private static readonly ThumbnailWidth = ImageThumbnail.ThumbnailDimensions[0] * ImageThumbnail.ThumbnailScalingFactor; // in rem
-  private static readonly ThumbnailHeight = ImageThumbnail.ThumbnailDimensions[1] * ImageThumbnail.ThumbnailScalingFactor; // in rem
+  private static readonly ThumbnailWidth = ImageThumbnail.ThumbnailDimensions[0]! * ImageThumbnail.ThumbnailScalingFactor; // in rem
+  private static readonly ThumbnailHeight = ImageThumbnail.ThumbnailDimensions[1]! * ImageThumbnail.ThumbnailScalingFactor; // in rem
 
   private static readonly AnimationDuration = 1200; // 1.2 seconds for all animations
   private static readonly ChangeImageDelay = Math.floor(ImageThumbnail.AnimationDuration * 0.5);
@@ -20,9 +20,9 @@ export class ImageThumbnail extends HTMLElement {
   private rowCount: number = 0;
   private maximumThumbnailCount: number = 0;
   private currentImageIndex: number = 0;
-  private keydownListener: (event: KeyboardEvent) => void;
-  private removeResizeListener: () => void;
-  private clickListener: (event: MouseEvent) => void;
+  private keydownListener!: (event: Event) => void;
+  private removeResizeListener!: () => void;
+  private clickListener!: (event: Event) => void;
   private slideshowInterval: number | null = null;
   private isSlideshowActive: boolean = false;
 
@@ -163,7 +163,7 @@ export class ImageThumbnail extends HTMLElement {
   }
 
   connectedCallback() {
-    this.start();
+    void this.start();
   }
 
   disconnectedCallback() {
@@ -198,18 +198,19 @@ export class ImageThumbnail extends HTMLElement {
       event.deltaY < 0 ? this.previous() : this.next();
     });
 
-    this.keydownListener = (event: KeyboardEvent) => {
-      console.debug(`Key pressed: ${event.key} ${event.code}`);
+    this.keydownListener = (event: Event) => {
+      const keyboardEvent = event as KeyboardEvent;
+      console.debug(`Key pressed: ${keyboardEvent.key} ${keyboardEvent.code}`);
 
       // 슬라이드쇼가 진행 중일 때는 아무 키나 누르면 정지
       if (this.isSlideshowActive) {
         this.stopSlideshow();
-        if (event.code === EventCode.SPACE) {
+        if (keyboardEvent.code === EventCode.SPACE) {
           return;
         }
       }
 
-      switch (event.code) {
+      switch (keyboardEvent.code) {
         case EventCode.ARROW_LEFT:
           this.previous();
           break;
@@ -226,11 +227,12 @@ export class ImageThumbnail extends HTMLElement {
     };
     window.addEventListener('keydown', this.keydownListener);
 
-    this.clickListener = (event: MouseEvent) => {
-      const target = event.target as HTMLElement;
+    this.clickListener = (event: Event) => {
+      const mouseEvent = event as MouseEvent;
+      const target = mouseEvent.target as HTMLElement;
       console.debug(`Click event on: ${target.tagName}`);
       if (target.tagName === 'IMG') {
-        const imageIndex = parseInt(target.dataset.index || '0', 10);
+        const imageIndex = parseInt(target.dataset.index ?? '0', 10);
         const [w, h] = [100, 100]; // 팝업 크기 (100px x 100px)
         const centerX = window.screenX + window.innerWidth / 2 - w / 2;
         const centerY = window.screenY + window.innerHeight / 2 - h / 2;
@@ -267,7 +269,7 @@ export class ImageThumbnail extends HTMLElement {
     }
   }
 
-  private async renderGalleryThumbnails(direction: 'next' | 'previous' | 'random' = 'next') {
+  private renderGalleryThumbnails(direction: 'next' | 'previous' | 'random' = 'next') {
     // 애니메이션 순서 결정
     const animationOrder: number[] = [];
 
@@ -289,7 +291,7 @@ export class ImageThumbnail extends HTMLElement {
       // Fisher-Yates shuffle 알고리즘
       for (let i = animationOrder.length - 1; i > 0; i--) {
         const j = RandomUtils.getRandomIntInclusive(0, i);
-        [animationOrder[i], animationOrder[j]] = [animationOrder[j], animationOrder[i]];
+        [animationOrder[i], animationOrder[j]] = [animationOrder[j]!, animationOrder[i]!];
       }
     }
 

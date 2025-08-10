@@ -26,7 +26,7 @@ export class ImageSequence extends HTMLElement {
 
   connectedCallback(): void {
     this.isActive = true;
-    this.start();
+    void this.start();
     window.addEventListener('resize', this.resizeHandler.bind(this));
   }
 
@@ -111,20 +111,20 @@ export class ImageSequence extends HTMLElement {
   }
 
   private async changeImage(): Promise<void> {
-    const headerImages = Array.from(this.querySelectorAll('header > flay-image')) as FlayImage[];
-    const footerImages = Array.from(this.querySelectorAll('footer > flay-image')) as FlayImage[];
+    const headerImages = Array.from(this.querySelectorAll('header > flay-image'));
+    const footerImages = Array.from(this.querySelectorAll('footer > flay-image'));
     const columnCount = footerImages.length;
     let columnIndex = 0;
 
-    let loopCondition = columnCount > 0 && this.isActive;
+    const loopCondition = columnCount > 0 && this.isActive;
     do {
       if (!this.isActive) break; // 컴포넌트가 비활성화되면 중지
 
       const index = columnIndex++ % columnCount;
       const backIndex = columnCount - index - 1;
 
-      const imageOfHeader = headerImages[backIndex];
-      const imageOfFooter = footerImages[index];
+      const imageOfHeader = headerImages[backIndex] as FlayImage;
+      const imageOfFooter = footerImages[index] as FlayImage;
 
       imageOfHeader.classList.add('current');
       imageOfFooter.classList.add('current');

@@ -10,7 +10,6 @@ const SECOND = 1000;
  */
 export class ImageMask extends HTMLElement {
   private currentImageUrl: string | null = null;
-  private imageLoop: Promise<void> | null = null;
   private isLoopRunning: boolean = false;
   private animationId: number | null = null;
   private lastMouseX: number = 0;
@@ -20,12 +19,12 @@ export class ImageMask extends HTMLElement {
   private radius: number = 0;
 
   // 이벤트 리스너들을 추적하기 위한 변수들
-  private mouseenterListener: (e: MouseEvent) => void;
-  private mousemoveListener: (e: MouseEvent) => void;
-  private mouseleaveListener: () => void;
-  private clickListener: () => void;
-  private wheelListener: (e: WheelEvent) => void;
-  private resizeListener: () => void;
+  private mouseenterListener!: (e: MouseEvent) => void;
+  private mousemoveListener!: (e: MouseEvent) => void;
+  private mouseleaveListener!: () => void;
+  private clickListener!: () => void;
+  private wheelListener!: (e: WheelEvent) => void;
+  private resizeListener!: () => void;
 
   constructor() {
     super();
@@ -93,7 +92,7 @@ export class ImageMask extends HTMLElement {
   private start(minTime: number = 10, maxTime: number = 20): void {
     this.isLoopRunning = true;
 
-    FlayFetch.getImageSize().then(async (size: number) => {
+    void FlayFetch.getImageSize().then(async (size: number) => {
       if (size <= 0) {
         console.warn('No images available for ImageMask.');
         return;
@@ -111,7 +110,7 @@ export class ImageMask extends HTMLElement {
         const index = indices.splice(RandomUtils.getRandomInt(0, indices.length), 1)[0]; // 랜덤으로 인덱스 선택 후 배열에서 제거
 
         try {
-          const imageData: ImageData = await FlayFetch.getStaticImage(index);
+          const imageData: ImageData = await FlayFetch.getStaticImage(index!);
           if (!this.isLoopRunning) break; // 이미지 로드 중에 중지되었는지 확인
 
           this.currentImageUrl = URL.createObjectURL(imageData.imageBlob); // 이미지 Blob을 URL로 변환

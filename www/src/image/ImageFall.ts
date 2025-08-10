@@ -15,13 +15,13 @@ const DEFAULT_OPTS: ImageFallOptions = { mode: 'serial', auto: true };
 
 export class ImageFall extends HTMLElement {
   private timer: number = -1;
-  private contunue: boolean = true;
+  private continue: boolean = true;
   private willRandom: boolean = false;
 
   private imageLength: number = -1;
 
   private imageIndexArray: number[] = [];
-  private iamgeIndex: number = -1;
+  private imageIndex: number = -1;
 
   private divIndexArray: number[] = [];
   private divIndex: number = -1;
@@ -36,7 +36,7 @@ export class ImageFall extends HTMLElement {
     this.classList.add('image-fall', 'flay-div');
 
     const { mode, auto } = { ...DEFAULT_OPTS, ...opts };
-    this.contunue = auto;
+    this.continue = auto;
     this.willRandom = mode === 'random';
   }
 
@@ -46,7 +46,7 @@ export class ImageFall extends HTMLElement {
     this.keyupHandler = (e: KeyboardEvent) => {
       switch (e.code) {
         case 'Space':
-          this.contunue = !this.contunue;
+          this.continue = !this.continue;
           break;
         case 'KeyR':
           this.willRandom = true;
@@ -58,7 +58,7 @@ export class ImageFall extends HTMLElement {
     };
     window.addEventListener('keyup', this.keyupHandler);
 
-    FlayFetch.getImageSize()
+    void FlayFetch.getImageSize()
       .then((size: number) => (this.imageLength = size))
       .then(() => this.#resizeDiv())
       .then(() => this.#render());
@@ -97,10 +97,10 @@ export class ImageFall extends HTMLElement {
     });
 
     // 상태 초기화
-    this.contunue = false;
+    this.continue = false;
     this.imageLength = -1;
     this.imageIndexArray = [];
-    this.iamgeIndex = -1;
+    this.imageIndex = -1;
     this.divIndexArray = [];
     this.divIndex = -1;
 
@@ -131,7 +131,7 @@ export class ImageFall extends HTMLElement {
 
   #render(): void {
     this.timer = window.setInterval(() => {
-      if (this.contunue) this.#addImage();
+      if (this.continue) void this.#addImage();
     }, 1000 * 3);
   }
 
@@ -176,7 +176,7 @@ export class ImageFall extends HTMLElement {
       if (images.length > 9) {
         const lastImage = div.querySelector('div:last-child');
         const lastImageElement = lastImage?.querySelector('img') as HTMLImageElement;
-        if (lastImageElement && lastImageElement.src) {
+        if (lastImageElement?.src) {
           URL.revokeObjectURL(lastImageElement.src);
           this.imageUrls.delete(lastImageElement.src);
         }
@@ -201,24 +201,24 @@ export class ImageFall extends HTMLElement {
       }
     }
 
-    return this.divIndexArray.splice(this.divIndex, 1)[0];
+    return this.divIndexArray.splice(this.divIndex, 1)[0]!;
   }
 
   #getImageIdx(): number {
     if (this.imageIndexArray.length === 0) {
       this.imageIndexArray = Array.from({ length: this.imageLength }, (_, i) => i);
-      this.iamgeIndex = RandomUtils.getRandomInt(0, this.imageIndexArray.length);
+      this.imageIndex = RandomUtils.getRandomInt(0, this.imageIndexArray.length);
     }
 
     if (this.willRandom) {
-      this.iamgeIndex = RandomUtils.getRandomInt(0, this.imageIndexArray.length);
+      this.imageIndex = RandomUtils.getRandomInt(0, this.imageIndexArray.length);
     } else {
-      if (this.iamgeIndex >= this.imageIndexArray.length) {
-        this.iamgeIndex = 0;
+      if (this.imageIndex >= this.imageIndexArray.length) {
+        this.imageIndex = 0;
       }
     }
 
-    return this.imageIndexArray.splice(this.iamgeIndex, 1)[0];
+    return this.imageIndexArray.splice(this.imageIndex, 1)[0]!;
   }
 }
 

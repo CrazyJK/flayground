@@ -116,7 +116,7 @@ export class ImageOne extends HTMLElement {
   #countdown: Countdown;
 
   // 이벤트 핸들러들
-  #drawInfoHandler: (e: CustomEvent) => void;
+  #drawInfoHandler: (e: Event) => void;
   #viewTogglerHandler: (e: MouseEvent) => void;
   #flowTogglerHandler: (e: MouseEvent) => void;
   #playTogglerHandler: (e: MouseEvent) => void;
@@ -164,7 +164,7 @@ export class ImageOne extends HTMLElement {
     this.#countdown = this.shadowRoot!.querySelector('.info')!.appendChild(new Countdown());
 
     // 이벤트 핸들러 바인딩
-    this.#drawInfoHandler = (e: CustomEvent) => this.#drawInfo(e.detail.info);
+    this.#drawInfoHandler = (e: Event) => this.#drawInfo((e as CustomEvent).detail.info);
     this.#viewTogglerHandler = (e: MouseEvent) => this.#viewToggler(e);
     this.#flowTogglerHandler = (e: MouseEvent) => this.#flowToggler(e);
     this.#playTogglerHandler = (e: MouseEvent) => this.#playToggler(e, true);
@@ -185,7 +185,7 @@ export class ImageOne extends HTMLElement {
   }
 
   connectedCallback(): void {
-    FlayFetch.getImageSize().then((size: number) => {
+    void FlayFetch.getImageSize().then((size: number) => {
       this.imageSize = size;
       this.#navigator('Space');
       this.#flowMode.click();
@@ -301,8 +301,8 @@ export class ImageOne extends HTMLElement {
     this.#imgSize.textContent = `${info.width} x ${info.height}`;
 
     // dominated color
-    getDominatedColors(this.#flayImage, { scale: 0.5, offset: 16, limit: 1 }).then((colors) => {
-      const rgba = colors.length > 0 ? colors[0].rgba : [255, 0, 0, 0.25];
+    void getDominatedColors(this.#flayImage, { scale: 0.5, offset: 16, limit: 1 }).then((colors) => {
+      const rgba = colors.length > 0 ? colors[0]!.rgba : [255, 0, 0, 0.25];
       document.documentElement.style.setProperty('--dominated-color', `rgba(${rgba.join(',')})`);
     });
   }

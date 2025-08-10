@@ -38,7 +38,7 @@ export default class FlayImage extends HTMLElement {
     return ['data-idx', 'src'];
   }
 
-  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
+  attributeChangedCallback(name: string, _: string | null, newValue: string | null): void {
     switch (name) {
       case 'data-idx':
         this.#image.src = ApiClient.buildUrl('/static/image/' + newValue);
@@ -88,22 +88,31 @@ export default class FlayImage extends HTMLElement {
       return;
     }
 
-    this.#image.decode().then(() =>
-      FlayFetch.getImage(idx).then((domain: ImageDomain) => {
-        domain['width'] = this.#image.naturalWidth;
-        domain['height'] = this.#image.naturalHeight;
+    void this.#image.decode().then(() =>
+      FlayFetch.getImage(idx)
+        .then((domain) => {
+          if (domain === null) {
+            this.removeAttribute('alt');
+            return;
+          }
+          domain['width'] = this.#image.naturalWidth;
+          domain['height'] = this.#image.naturalHeight;
 
-        this.dataset.name = domain.name;
-        this.dataset.path = domain.path;
-        this.dataset.file = domain.file;
-        this.dataset.fileSize = FileUtils.prettySize(domain.length).join('');
-        this.dataset.modified = DateUtils.format(domain.modified, 'yyyy-MM-dd');
-        this.dataset.width = String(domain.width);
-        this.dataset.height = String(domain.height);
-        this.#image.alt = `※ Idx: ${domain.idx}\n※ Path: ${domain.path}\n※ Name: ${domain.name}\n※ Size: ${domain.width} x ${domain.height}`;
+          this.dataset.name = domain.name;
+          this.dataset.path = domain.path;
+          this.dataset.file = domain.file;
+          this.dataset.fileSize = FileUtils.prettySize(domain.length).join('');
+          this.dataset.modified = DateUtils.format(domain.modified, 'yyyy-MM-dd');
+          this.dataset.width = String(domain.width);
+          this.dataset.height = String(domain.height);
+          this.#image.alt = `※ Idx: ${domain.idx}\n※ Path: ${domain.path}\n※ Name: ${domain.name}\n※ Size: ${domain.width} x ${domain.height}`;
 
-        this.dispatchEvent(new CustomEvent<{ info: ImageDomain }>('loaded', { detail: { info: domain } }));
-      })
+          this.dispatchEvent(new CustomEvent<{ info: ImageDomain }>('loaded', { detail: { info: domain } }));
+        })
+        .catch((error: unknown) => {
+          console.error('Error loading image info:', error);
+          this.removeAttribute('alt');
+        })
     );
   }
 
@@ -195,7 +204,7 @@ export default class FlayImage extends HTMLElement {
     `;
 
     // 이미지의 부모 요소에 추가 (relative positioning을 위해)
-    const parent = this.parentElement || document.body;
+    const parent = this.parentElement ?? document.body;
     parent.appendChild(this.#magnifier);
   }
 

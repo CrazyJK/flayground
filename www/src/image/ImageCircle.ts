@@ -72,7 +72,7 @@ export class ImageCircle extends HTMLElement {
   });
 
   /** 옵션 설정 */
-  #opts = ImageCircle.FULL_MODE_OPTIONS(this.ownerDocument.documentElement as HTMLElement);
+  #opts!: ImageCircleOptions;
   /** 컴포넌트 활성 상태 */
   #isActive: boolean = false;
   /** 타이머 ID */
@@ -90,7 +90,7 @@ export class ImageCircle extends HTMLElement {
   /** image length */
   #imageLength: number = 0;
   /** 이미지 요소 */
-  image: HTMLDivElement | null = null;
+  image!: HTMLDivElement;
 
   static shapeTypes = CSS_CLASSES.shapes;
   static effectTypes = CSS_CLASSES.effects;
@@ -105,7 +105,7 @@ export class ImageCircle extends HTMLElement {
 
   connectedCallback(): void {
     this.#initializeEventHandlers();
-    this.start();
+    void this.start();
   }
 
   disconnectedCallback(): void {
@@ -158,7 +158,7 @@ export class ImageCircle extends HTMLElement {
       const [w, h] = [100, 100]; // 팝업 크기 (100px x 100px)
       const centerX = window.screenX + window.innerWidth / 2 - w / 2;
       const centerY = window.screenY + window.innerHeight / 2 - h / 2;
-      const idx = parseInt(this.dataset.idx || '0', 10); // 현재 이미지 인덱스
+      const idx = parseInt(this.dataset.idx ?? '0', 10); // 현재 이미지 인덱스
       window.open(`popup.image.html#${idx}`, `image${idx}`, `top=${centerY},left=${centerX},width=${w}px,height=${h}px`);
       this.#resumeAnimation();
     });
@@ -240,7 +240,7 @@ export class ImageCircle extends HTMLElement {
     const randomSize = getRandomSize();
     const delay = TIMING.minDelay + (randomSize % 10) * TIMING.delayMultiplier;
 
-    this.#showImage(randomSize);
+    void this.#showImage(randomSize);
 
     this.#pauseStartTime = Date.now();
     this.#pausedDelay = delay;
@@ -261,15 +261,15 @@ export class ImageCircle extends HTMLElement {
       }
 
       const randomIndex = RandomUtils.getRandomInt(0, this.#imageIndices.length);
-      const idx = this.#imageIndices.splice(randomIndex, 1)[0];
+      const idx = this.#imageIndices.splice(randomIndex, 1)[0]!;
       console.debug(`Image index: ${idx}, Remaining indices: ${this.#imageIndices.length}`);
 
       const { name, path, modified, imageBlob }: ImageData = await FlayFetch.getStaticImage(idx);
       console.debug(`Image information: \n\tName: ${name} \n\tPath: ${path} \n\tDate: ${modified} \n\tSize: ${randomSize}rem`);
 
       this.#currentImageURL = URL.createObjectURL(imageBlob);
-      getDominatedColors(this.#currentImageURL, { scale: 0.5, offset: 16, limit: 1 }).then((colors: ColorFrequency[]) => {
-        const rgba = colors.length > 0 ? colors[0].rgba : [255, 0, 0, 0.25];
+      void getDominatedColors(this.#currentImageURL, { scale: 0.5, offset: 16, limit: 1 }).then((colors: ColorFrequency[]) => {
+        const rgba = colors.length > 0 ? colors[0]!.rgba : [255, 0, 0, 0.25];
         this.style.setProperty('--breathe-color', `rgba(${rgba.join(',')})`);
       });
 

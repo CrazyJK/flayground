@@ -67,7 +67,7 @@ export const sortable = (table: HTMLElement, options: Partial<SortOptions>) => {
   // Web Worker 지원 확인 및 초기화
   if (opts.useWorker && typeof Worker !== 'undefined') {
     try {
-      sortWorker = new Worker(new URL('./TableSortWorker.js', import.meta.url));
+      sortWorker = new Worker(new URL('./TableSortWorker.ts', import.meta.url));
       console.debug('Table Sort Web Worker initialized');
     } catch (err) {
       console.warn('Failed to initialize Web Worker for table sorting:', err);

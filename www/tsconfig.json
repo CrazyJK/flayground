@@ -1,0 +1,32 @@
+{
+  "compilerOptions": {
+    "target": "ES2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "declaration": false,
+    "baseUrl": ".",
+    "paths": {
+      "@attach/*": ["src/attach/*"],
+      "@const/*": ["src/const/*"],
+      "@diary/*": ["src/diary/*"],
+      "@flay/*": ["src/flay/*"],
+      "@image/*": ["src/image/*"],
+      "@lib/*": ["src/lib/*"],
+      "@movie/*": ["src/movie/*"],
+      "@nav/*": ["src/nav/*"],
+      "@svg/*": ["src/svg/*"],
+      "@ui/*": ["src/ui/*"]
+    },
+    "lib": ["DOM", "DOM.Iterable", "ES2020"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "../src"]
+}

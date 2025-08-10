@@ -9,7 +9,7 @@
     "build": "    cross-env NODE_ENV=production  webpack",
     "build:dev": "cross-env NODE_ENV=development webpack",
     "watch": "    cross-env NODE_ENV=development webpack -w",
-    "lint": "eslint --fix --ext .js,.ts src/",
+    "lint": "eslint --fix --ext .ts src/",
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
@@ -22,8 +22,8 @@
     "@babel/preset-env": "^7.23.5",
     "@babel/preset-typescript": "^7.23.3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
-    "@typescript-eslint/eslint-plugin": "^6.13.0",
-    "@typescript-eslint/parser": "^6.13.0",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
     "autoprefixer": "^10.4.16",
     "babel-loader": "^10.0.0",
     "babel-plugin-transform-remove-console": "^6.9.4",

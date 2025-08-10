@@ -45,14 +45,20 @@ module.exports = {
         '@typescript-eslint/no-inferrable-types': 'off',
         '@typescript-eslint/explicit-function-return-type': 'off', // 너무 엄격함
         '@typescript-eslint/explicit-module-boundary-types': 'off', // 너무 엄격함
-        '@typescript-eslint/no-non-null-assertion': 'warn',
+        '@typescript-eslint/no-non-null-assertion': 'off',
         '@typescript-eslint/prefer-nullish-coalescing': 'warn', // error에서 warn으로
         '@typescript-eslint/prefer-optional-chain': 'warn',
         '@typescript-eslint/prefer-as-const': 'error',
         '@typescript-eslint/no-unnecessary-type-assertion': 'warn', // error에서 warn으로
         '@typescript-eslint/no-floating-promises': 'warn', // error에서 warn으로 (개발 중엔 유연하게)
         '@typescript-eslint/await-thenable': 'error',
-        '@typescript-eslint/no-misused-promises': 'warn', // error에서 warn으로
+        '@typescript-eslint/no-misused-promises': [
+          'warn',
+          {
+            checksVoidReturn: false, // 이벤트 핸들러에서 완화
+            checksConditionals: true, // 조건문에서는 유지
+          },
+        ],
         '@typescript-eslint/require-await': 'warn', // error에서 warn으로
         '@typescript-eslint/prefer-readonly': 'off', // 너무 많은 경고 발생
         '@typescript-eslint/prefer-string-starts-ends-with': 'warn',

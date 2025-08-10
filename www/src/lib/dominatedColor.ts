@@ -64,7 +64,7 @@ const getRGBAs = (data: Uint8ClampedArray, ignoreRGBs: RGBColor[], offset: numbe
     const alpha = data[i + 3];
 
     // 완전히 투명한 픽셀은 건너뜀
-    if (alpha === 0) {
+    if (!alpha || alpha === 0) {
       continue;
     }
 
@@ -124,7 +124,7 @@ const getRGBAs = (data: Uint8ClampedArray, ignoreRGBs: RGBColor[], offset: numbe
  */
 const getContext = (img: HTMLImageElement, width: number, height: number): CanvasRenderingContext2D => {
   // 이미지 부모에 존재하는 캔버스를 재사용하거나 새로 생성
-  let canvas = (img.parentNode?.querySelector('.dominated-color-canvas') as HTMLCanvasElement | null) ?? (document.querySelector('.dominated-color-canvas') as HTMLCanvasElement | null);
+  let canvas = (img.parentNode?.querySelector('.dominated-color-canvas') as HTMLCanvasElement | null) ?? document.querySelector('.dominated-color-canvas');
   if (!canvas) {
     canvas = document.createElement('canvas');
     canvas.classList.add('dominated-color-canvas');
@@ -228,8 +228,8 @@ export async function getDominatedColors(src: string | HTMLImageElement, opts: D
     }
 
     // 색상 분석 및 결과 반환
-    const rgbas = getRGBAs(imageData, ignore, offset);
-    return rgbas.slice(0, limit);
+    const rgbaList = getRGBAs(imageData, ignore, offset);
+    return rgbaList.slice(0, limit);
   } catch (error) {
     console.error('주요 색상 추출 중 오류:', error);
     throw error;

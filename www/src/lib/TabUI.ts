@@ -17,7 +17,7 @@ export const tabUI = (root: HTMLElement): void => {
   root.querySelectorAll('[role="tablist"]').forEach((tablist) => {
     // 탭 버튼들을 찾아서 이벤트 리스너 등록
     const tabs = tablist.querySelectorAll('[role="tab"]');
-    tabs.forEach((thisTab, i, tabsNodeList) => {
+    tabs.forEach((thisTab, _, tabsNodeList) => {
       // 클릭 이벤트 리스너 등록
       thisTab.addEventListener('click', () => {
         // 모든 탭의 활성 상태 업데이트

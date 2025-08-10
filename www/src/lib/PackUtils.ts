@@ -1,12 +1,12 @@
 export type PackStrategy = 'bottomLeft' | 'topLeft' | 'circle';
 export const PackStrategies: PackStrategy[] = ['bottomLeft', 'topLeft', 'circle'];
 export interface PackOptions {
-  gap?: number; // 요소 간의 간격 (기본값: 4px)
-  padding?: number; // 컨테이너의 패딩 (기본값: 0px)
-  maxHeight?: number; // 컨테이너의 최대 높이 (기본값: 자동 계산)
-  strategy?: PackStrategy; // 배치 전략 (기본값: 'topLeft')
-  fixedContainer?: boolean; // 고정 크기 컨테이너 여부 (기본값: false)
-  animate?: boolean; // 애니메이션 여부 (기본값: false)
+  gap: number; // 요소 간의 간격 (기본값: 4px)
+  padding: number; // 컨테이너의 패딩 (기본값: 0px)
+  maxHeight: number | undefined; // 컨테이너의 최대 높이 (기본값: 자동 계산)
+  strategy: PackStrategy; // 배치 전략 (기본값: 'topLeft')
+  fixedContainer: boolean; // 고정 크기 컨테이너 여부 (기본값: false)
+  animate: boolean; // 애니메이션 여부 (기본값: false)
 }
 
 const defaultPackOptions: PackOptions = {
@@ -64,7 +64,7 @@ export default class PackUtils {
     if (elements.length === 0) return;
 
     const { gap, padding, maxHeight: userMaxHeight, strategy, fixedContainer, animate } = this.packOptions;
-    const maxHeight = userMaxHeight || container.offsetHeight || 2000; // maxHeight 자동 계산: 사용자 지정값 또는 컨테이너의 현재 높이
+    const maxHeight = userMaxHeight ?? (container.offsetHeight || 2000); // maxHeight 자동 계산: 사용자 지정값 또는 컨테이너의 현재 높이
 
     console.group('PackUtils.packElements', container.id || container.className, `${elements.length} elements with strategy: ${strategy}, maxHeight: ${maxHeight}px, padding: ${padding}px, gap: ${gap}px, animate: ${animate}`);
 
@@ -120,7 +120,10 @@ export default class PackUtils {
 
     console.time('요소 packed');
     for (let index = 0; index < sortedElementData.length; index++) {
-      const { element, width, height, originalDisplay } = sortedElementData[index];
+      const elementDataItem = sortedElementData[index];
+      if (!elementDataItem) continue; // undefined 체크
+
+      const { element, width, height, originalDisplay } = elementDataItem;
 
       let bestX = padding;
       let bestY = padding;
@@ -256,6 +259,11 @@ export default class PackUtils {
 
     // 중심 요소 정보
     const centerElement = occupiedAreas[0];
+    if (!centerElement) {
+      // 중심 요소가 없으면 안전한 기본값 반환
+      return { x: centerX - elementWidth / 2, y: centerY - elementHeight / 2 };
+    }
+
     const centerElementRadius = Math.max(centerElement.width, centerElement.height) / 2;
 
     // 현재 요소의 반지름 (외접원 기준)

@@ -31,7 +31,7 @@ const createStorageUtil = (storageType: StorageType): StorageUtil => {
     },
     get: (name: string, defaultValue: string = ''): string => {
       const value = storage.getItem(name);
-      return value !== null ? value : defaultValue;
+      return value ?? defaultValue;
     },
     getObject: <T = unknown>(name: string, defaultValue: T = {} as T): T => {
       try {

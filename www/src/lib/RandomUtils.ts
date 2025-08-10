@@ -48,6 +48,6 @@ export default class RandomUtils {
       throw new Error('Array must not be empty');
     }
     const randomIndex = this.getRandomInt(0, array.length);
-    return array[randomIndex];
+    return array[randomIndex]!;
   }
 }

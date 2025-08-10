@@ -99,7 +99,7 @@ export const getPosition = (name?: string): WindowPosition | PositionStorage | n
     const positionInfo: PositionStorage = FlayStorage.local.getObject(STORAGE_KEY) || {};
 
     if (name) {
-      return positionInfo[name] || null;
+      return positionInfo[name] ?? null;
     }
 
     return positionInfo;
@@ -107,6 +107,15 @@ export const getPosition = (name?: string): WindowPosition | PositionStorage | n
     console.error('위치 정보 조회 중 오류 발생:', error);
     return null;
   }
+};
+
+/**
+ * 특정 창의 위치 정보를 가져옵니다.
+ * @param name 창 이름
+ * @returns 위치 정보 객체 또는 null
+ */
+export const getPositionByName = (name: string): WindowPosition | null => {
+  return getPosition(name) as WindowPosition | null;
 };
 
 /**

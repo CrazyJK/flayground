@@ -37,7 +37,7 @@ const LAYOUTs: LayoutConfigs = {
   ],
 };
 
-const numbers = (n: number): number[] => Array.from({ length: n }).map((v, i) => i + 1);
+const numbers = (n: number): number[] => Array.from({ length: n }).map((_, i) => i + 1);
 
 const moveToSnapPosition = ([COL, ROW]: LayoutConfig, [col, row]: [number, number]): [number, number, number, number] => {
   const screen = window.screen as ExtendedScreen;
@@ -84,9 +84,8 @@ export default (): void => {
       document.querySelector('.snap-layouts')?.remove();
       const snapLayouts = document.body.appendChild(document.createElement('div'));
       snapLayouts.classList.add('snap-layouts', window.screen.orientation.type);
-      snapLayouts.innerHTML = LAYOUTs[window.screen.width]
-        .map(
-          ([COL, ROW]) => `
+      snapLayouts.innerHTML = LAYOUTs[window.screen.width]!.map(
+        ([COL, ROW]) => `
             <div class="layout" data-col-row="${COL},${ROW}">
               ${numbers(ROW)
                 .map(
@@ -99,8 +98,7 @@ export default (): void => {
                 )
                 .join('')}
             </div>`
-        )
-        .join('');
+      ).join('');
 
       snapLayouts.addEventListener('click', (e: Event) => {
         const target = e.target as HTMLElement;
@@ -113,8 +111,8 @@ export default (): void => {
         const [col, row] = snap.dataset.colRow.split(',').map((n: string) => parseInt(n));
         const [COL, ROW] = layout.dataset.colRow.split(',').map((n: string) => parseInt(n));
 
-        const [w, h] = moveToSnapPosition([COL, ROW], [col, row]);
-        displaySnapPosition([COL, ROW], [col, row], [w, h]);
+        const [w, h] = moveToSnapPosition([COL!, ROW!], [col!, row!]);
+        displaySnapPosition([COL!, ROW!], [col!, row!], [w, h]);
         snapLayouts.querySelectorAll('label').forEach((label) => label.classList.toggle('active', label === snap));
       });
     };

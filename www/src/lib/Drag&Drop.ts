@@ -48,8 +48,11 @@ export const setMoveable = (element: HTMLElement): void => {
     clientX = e.clientX;
     clientY = e.clientY;
 
-    const moveZone = element.closest('.movezone') as HTMLElement | null;
-    zoneRect = moveZone?.getBoundingClientRect();
+    const moveZone = element.closest('.movezone');
+    if (!moveZone) {
+      return;
+    }
+    zoneRect = moveZone.getBoundingClientRect();
     let position: PositionType = 'absolute';
     if (!zoneRect) {
       zoneRect = { left: 0, top: 0 };

@@ -54,8 +54,21 @@ function sortRows(rows: RowData[], columnIndex: number, sortType: number, cellDa
 
   // 정렬 로직 수행
   return rows.sort((a, b) => {
-    const dataA = cellData[a.id][columnIndex];
-    const dataB = cellData[b.id][columnIndex];
+    const cellDataA = cellData[a.id];
+    const cellDataB = cellData[b.id];
+
+    // 셀 데이터가 없는 경우 처리
+    if (!cellDataA || !cellDataB) {
+      return 0; // 동일한 순서 유지
+    }
+
+    const dataA = cellDataA[columnIndex];
+    const dataB = cellDataB[columnIndex];
+
+    // 컬럼 데이터가 없는 경우 처리
+    if (!dataA || !dataB) {
+      return 0; // 동일한 순서 유지
+    }
 
     if (dataA.isNumber && dataB.isNumber) {
       // 숫자 데이터 정렬

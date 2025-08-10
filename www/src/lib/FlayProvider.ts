@@ -1,4 +1,4 @@
-import FlayFetch, { type Actress, type Flay, type FullyFlay } from '@lib/FlayFetch';
+import FlayFetch, { type Actress, type Flay } from '@lib/FlayFetch';
 import { OpusProvider, type OpusProviderOptions } from '@lib/OpusProvider';
 
 // Type definitions
@@ -31,12 +31,15 @@ export class FlayProvider extends OpusProvider {
       throw new Error('No opus selected');
     }
 
-    const fullyFlay: FullyFlay = await FlayFetch.getFullyFlay(this.opus);
+    const fullyFlay = await FlayFetch.getFullyFlay(this.opus);
+    if (!fullyFlay) {
+      throw new Error(`Failed to fetch fullyFlay for opus: ${this.opus}`);
+    }
     const { flay, actress } = fullyFlay;
 
     return {
       index: this.opusIndex,
-      total: this.opusList?.length || 0,
+      total: this.opusList?.length ?? 0,
       opus: this.opus,
       flay: flay,
       actress: actress,

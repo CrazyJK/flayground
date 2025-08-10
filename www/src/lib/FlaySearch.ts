@@ -82,7 +82,7 @@ const FlaySearch = {
      */
     Download(opus: string): Window | null {
       const url = URL_NEXTJAV_DOWNLOAD.replace(/{}/gi, opus);
-      window.navigator.clipboard.writeText(url);
+      void window.navigator.clipboard.writeText(url);
       return popupOpen(url, 'nextjavDownload', 800, 100);
     },
 
@@ -147,7 +147,7 @@ const FlaySearch = {
      * @param h - 팝업 창 높이 (기본값: 950)
      */
     Subtitlecat(keyword: string, w?: number, h?: number): Window | null {
-      return popupOpen(URL_SUBTITLECAT + keyword, 'Subtitlecat', w || 900, h || 950);
+      return popupOpen(URL_SUBTITLECAT + keyword, 'Subtitlecat', w ?? 900, h ?? 950);
     },
   },
 };
@@ -168,10 +168,10 @@ function popupOpen(url: string, target: string, width: number, height: number): 
   }
 
   const screen = window.screen as ExtendedScreen;
-  const availTop = screen.availTop || 0;
-  const availLeft = screen.availLeft || 0;
-  const availHeight = screen.availHeight || window.screen.height;
-  const availWidth = screen.availWidth || window.screen.width;
+  const availTop = screen.availTop ?? 0;
+  const availLeft = screen.availLeft ?? 0;
+  const availHeight = screen.availHeight ?? window.screen.height;
+  const availWidth = screen.availWidth ?? window.screen.width;
 
   const top = availTop + (availHeight - height) / 2;
   const left = availLeft + (availWidth - width) / 2;

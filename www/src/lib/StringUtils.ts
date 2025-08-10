@@ -33,8 +33,8 @@ export default class StringUtils {
    */
   static truncate(text: NullableString, maxLength: number, ellipsis: string = '...'): string {
     if (this.isBlank(text)) return '';
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength - ellipsis.length) + ellipsis;
+    if (text!.length <= maxLength) return text!;
+    return text!.substring(0, maxLength - ellipsis.length) + ellipsis;
   }
 
   /**
@@ -44,7 +44,7 @@ export default class StringUtils {
    */
   static capitalize(text: NullableString): string {
     if (this.isBlank(text)) return '';
-    return text.charAt(0).toUpperCase() + text.slice(1);
+    return text!.charAt(0).toUpperCase() + text!.slice(1);
   }
 
   /**
@@ -55,7 +55,7 @@ export default class StringUtils {
    */
   static countOccurrences(text: NullableString, char: NullableString): number {
     if (this.isBlank(text) || this.isBlank(char)) return 0;
-    return text.split(char).length - 1;
+    return text!.split(char!).length - 1;
   }
 
   /**
@@ -65,7 +65,7 @@ export default class StringUtils {
    */
   static stripHtml(html: NullableString): string {
     if (this.isBlank(html)) return '';
-    return html.replace(/<[^>]*>/g, '');
+    return html!.replace(/<[^>]*>/g, '');
   }
 
   /**

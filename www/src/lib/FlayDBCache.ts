@@ -46,7 +46,7 @@ export default class FlayDBCache {
   static async getFlay(opus: string) {
     let flay = await flayStore.select(opus);
     if (!flay) {
-      flay = await FlayFetch.getFlay(opus);
+      flay = (await FlayFetch.getFlay(opus)) ?? undefined;
       if (!flay) {
         throw new Error(`Flay not found: ${opus}`);
       }
@@ -64,7 +64,7 @@ export default class FlayDBCache {
   static async getActress(name: string): Promise<Actress | undefined> {
     let actress = await actressStore.select(name);
     if (!actress) {
-      actress = await FlayFetch.getActress(name);
+      actress = (await FlayFetch.getActress(name)) ?? undefined;
       if (!actress) {
         throw new Error(`Actress not found: ${name}`);
       }
@@ -94,6 +94,9 @@ export default class FlayDBCache {
       let cover = await coverStore.select(opus);
       if (!cover) {
         const blob = await FlayFetch.getCoverBlob(opus);
+        if (!blob) {
+          throw new Error(`Cover not found for opus: ${opus}`);
+        }
         cover = await coverStore.update(opus, blob);
         console.debug('[FlayDBCache] update cover', opus);
       }
@@ -137,16 +140,16 @@ export default class FlayDBCache {
    * @param opus
    */
   static async clear(opus: string) {
-    let flay = await flayStore.select(opus);
+    const flay = await flayStore.select(opus);
     if (flay)
-      for (let name of flay.actressList) {
-        actressFlayCountStore.remove(name);
-        actressStore.remove(name);
+      for (const name of flay.actressList) {
+        void actressFlayCountStore.remove(name);
+        void actressStore.remove(name);
       }
-    flayStore.remove(opus);
-    coverStore.remove(opus);
-    historyStore.remove(opus);
-    console.log('[FlayDBCache] cleae', opus);
+    void flayStore.remove(opus);
+    void coverStore.remove(opus);
+    void historyStore.remove(opus);
+    console.log('[FlayDBCache] clear', opus);
   }
 
   static async clearAll() {

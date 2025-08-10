@@ -27,14 +27,14 @@ export class OpusProvider {
   protected opusList: string[] | null = null;
   protected opusIndex: number = -1;
   private opusIndexes: number[] = [];
-  private condition: SearchCondition;
+  private condition: SearchCondition = DEFAULT_CONDITION;
 
   /**
    * OpusProvider 생성자
    * @param opts - 검색 조건 옵션
    */
   constructor(opts?: OpusProviderOptions) {
-    this.setCondition(opts || {});
+    this.setCondition(opts ?? {});
   }
 
   /**
@@ -73,11 +73,23 @@ export class OpusProvider {
    */
   async getRandomOpus(): Promise<string> {
     await this.fetchOpusList();
-    if (this.opusIndexes.length === 0) {
-      this.opusIndexes.push(...Array.from({ length: this.opusList!.length }, (_, i) => i));
+    if (!this.opusList || this.opusList.length === 0) {
+      throw new Error('Opus list is empty');
     }
-    this.opusIndex = this.opusIndexes.splice(RandomUtils.getRandomInt(0, this.opusIndexes.length), 1)[0];
-    return this.opusList![this.opusIndex];
+
+    if (this.opusIndexes.length === 0) {
+      this.opusIndexes.push(...Array.from({ length: this.opusList.length }, (_, i) => i));
+    }
+
+    const randomIndexIndex = RandomUtils.getRandomInt(0, this.opusIndexes.length);
+    const removedIndex = this.opusIndexes.splice(randomIndexIndex, 1)[0];
+
+    if (removedIndex === undefined) {
+      throw new Error('Failed to get random index');
+    }
+
+    this.opusIndex = removedIndex;
+    return this.opusList[this.opusIndex]!;
   }
 
   /**
@@ -86,14 +98,18 @@ export class OpusProvider {
    */
   async getNextOpus(): Promise<string> {
     await this.fetchOpusList();
+    if (!this.opusList || this.opusList.length === 0) {
+      throw new Error('Opus list is empty');
+    }
+
     ++this.opusIndex;
-    if (this.opusIndex === this.opusList!.length) {
+    if (this.opusIndex === this.opusList.length) {
       this.opusIndex = 0;
     }
     if (this.opusIndexes.includes(this.opusIndex)) {
       this.opusIndexes.splice(this.opusIndexes.indexOf(this.opusIndex), 1);
     }
-    return this.opusList![this.opusIndex];
+    return this.opusList[this.opusIndex]!;
   }
 
   /**
@@ -102,14 +118,18 @@ export class OpusProvider {
    */
   async getPrevOpus(): Promise<string> {
     await this.fetchOpusList();
+    if (!this.opusList || this.opusList.length === 0) {
+      throw new Error('Opus list is empty');
+    }
+
     --this.opusIndex;
     if (this.opusIndex === -1) {
-      this.opusIndex = this.opusList!.length - 1;
+      this.opusIndex = this.opusList.length - 1;
     }
     if (this.opusIndexes.includes(this.opusIndex)) {
       this.opusIndexes.splice(this.opusIndexes.indexOf(this.opusIndex), 1);
     }
-    return this.opusList![this.opusIndex];
+    return this.opusList[this.opusIndex]!;
   }
 
   /**
@@ -118,7 +138,13 @@ export class OpusProvider {
    */
   async getCurrentOpus(): Promise<string> {
     await this.fetchOpusList();
-    return this.opusList![this.opusIndex];
+    if (!this.opusList || this.opusList.length === 0) {
+      throw new Error('Opus list is empty');
+    }
+    if (this.opusIndex === -1) {
+      throw new Error('No opus selected');
+    }
+    return this.opusList[this.opusIndex]!;
   }
 
   /**
@@ -128,9 +154,13 @@ export class OpusProvider {
    */
   async getOpus(index: number): Promise<string> {
     await this.fetchOpusList();
+    if (!this.opusList || this.opusList.length === 0) {
+      throw new Error('Opus list is empty');
+    }
+
     this.opusIndex = Math.max(index, 0);
-    this.opusIndex = Math.min(index, this.opusList!.length - 1);
-    return this.opusList![this.opusIndex];
+    this.opusIndex = Math.min(this.opusIndex, this.opusList.length - 1);
+    return this.opusList[this.opusIndex]!;
   }
 
   /**
@@ -140,8 +170,12 @@ export class OpusProvider {
    */
   async getIndex(opus: string): Promise<number> {
     await this.fetchOpusList();
-    if (this.opusList!.includes(opus)) {
-      this.opusIndex = this.opusList!.indexOf(opus);
+    if (!this.opusList) {
+      return -1;
+    }
+
+    if (this.opusList.includes(opus)) {
+      this.opusIndex = this.opusList.indexOf(opus);
       return this.opusIndex;
     } else {
       return -1;
@@ -153,6 +187,6 @@ export class OpusProvider {
    * @returns 목록 크기
    */
   get size(): number {
-    return this.opusList?.length || 0;
+    return this.opusList?.length ?? 0;
   }
 }

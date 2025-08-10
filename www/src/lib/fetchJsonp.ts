@@ -31,7 +31,7 @@ interface JsonpOptions {
 /** 확장된 Window 인터페이스 */
 declare global {
   interface Window {
-    [key: string]: JsonpCallback | undefined;
+    [key: string]: JsonpCallback<unknown> | undefined;
   }
 }
 
@@ -47,7 +47,7 @@ function fetchJsonp<T = unknown>(url: string, options: JsonpOptions = {}): Promi
     const { callbackName, timeout = 10000, callbackParam = 'callback' } = options;
 
     const script = document.createElement('script');
-    const callbackFunctionName = callbackName || `jsonp_callback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+    const callbackFunctionName = callbackName ?? `jsonp_callback_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
     // 정리 함수
@@ -65,10 +65,10 @@ function fetchJsonp<T = unknown>(url: string, options: JsonpOptions = {}): Promi
     };
 
     // 콜백 함수 등록
-    window[callbackFunctionName] = (data: T): void => {
+    window[callbackFunctionName] = ((data: T): void => {
       cleanup();
       resolve(data);
-    };
+    }) as JsonpCallback<unknown>;
 
     // 스크립트 로드 실패 처리
     script.onerror = (): void => {

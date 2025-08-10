@@ -140,44 +140,44 @@ let tagGroupList: TagGroup[] | null = null;
 let tagList: Tag[] | null = null;
 
 export default class FlayFetch {
-  static async getFullyFlay(opus: string): Promise<FullyFlay> {
+  static async getFullyFlay(opus: string): Promise<FullyFlay | null> {
     return await ApiClient.get<FullyFlay>(`/flay/${opus}/fully`);
   }
 
   static async getFullyFlayList(): Promise<FullyFlay[]> {
-    return await ApiClient.get<FullyFlay[]>('/flay/list/fully');
+    return (await ApiClient.get<FullyFlay[]>('/flay/list/fully')) ?? [];
   }
 
   /**
    * Flay 정보 조회
    * @param opus - opus 번호
-   * @returns Flay 객체
+   * @returns Flay 객체 또는 null
    */
-  static async getFlay(opus: string): Promise<Flay> {
+  static async getFlay(opus: string): Promise<Flay | null> {
     return await ApiClient.get<Flay>(`/flay/${opus}`);
   }
 
   static async getFlayAll(): Promise<Flay[]> {
-    return await ApiClient.get<Flay[]>('/flay');
+    return (await ApiClient.get<Flay[]>('/flay')) ?? [];
   }
 
   static async getFlayList(...opus: string[]): Promise<Flay[]> {
-    return await ApiClient.post<Flay[]>('/flay', opus);
+    return (await ApiClient.post<Flay[]>('/flay', opus)) ?? [];
   }
 
   static async getOpusList(condition: Partial<SearchCondition>): Promise<string[]> {
-    return await ApiClient.post<string[]>('/flay/list/opus', condition, { cache: 'no-cache' });
+    return (await ApiClient.post<string[]>('/flay/list/opus', condition, { cache: 'no-cache' })) ?? [];
   }
   static async getFlayListLowScore(): Promise<Flay[]> {
-    return await ApiClient.get<Flay[]>('/flay/list/lowScore');
+    return (await ApiClient.get<Flay[]>('/flay/list/lowScore')) ?? [];
   }
 
   static async getFlayListOrderByScoreDesc(): Promise<Flay[]> {
-    return await ApiClient.get<Flay[]>('/flay/list/orderbyScoreDesc');
+    return (await ApiClient.get<Flay[]>('/flay/list/orderbyScoreDesc')) ?? [];
   }
 
   static async getFlayCandidates(): Promise<Flay[]> {
-    return await ApiClient.get<Flay[]>('/flay/candidates');
+    return (await ApiClient.get<Flay[]>('/flay/candidates')) ?? [];
   }
 
   static async existsFlay(opus: string): Promise<boolean> {
@@ -190,11 +190,11 @@ export default class FlayFetch {
   }
 
   static async existsFlayList(...opus: string[]): Promise<Record<string, boolean>> {
-    return await ApiClient.post<Record<string, boolean>>('/flay/exists', opus);
+    return (await ApiClient.post<Record<string, boolean>>('/flay/exists', opus)) ?? {};
   }
 
   static async getScore(opus: string): Promise<number> {
-    return Number((await ApiClient.get<number | string>(`/flay/${opus}/score`)) || 0);
+    return Number((await ApiClient.get<number | string>(`/flay/${opus}/score`)) ?? 0);
   }
 
   /**
@@ -203,73 +203,73 @@ export default class FlayFetch {
    * @returns 플레이 수량
    */
   static async getCountOfFlay(name: string): Promise<number> {
-    return await ApiClient.get<number>(`/flay/count/actress/${name}`);
+    return (await ApiClient.get<number>(`/flay/count/actress/${name}`)) ?? 0;
   }
   static async getFlayListByTagId(tagId: number): Promise<Flay[]> {
-    return await ApiClient.get<Flay[]>(`/flay/find/tag/${tagId}`);
+    return (await ApiClient.get<Flay[]>(`/flay/find/tag/${tagId}`)) ?? [];
   }
 
   static async getFlayListByStudio(name: string): Promise<Flay[]> {
-    return await ApiClient.get<Flay[]>(`/flay/find/studio/${name}`);
+    return (await ApiClient.get<Flay[]>(`/flay/find/studio/${name}`)) ?? [];
   }
 
   static async getFlayListByActress(name: string): Promise<Flay[]> {
-    return await ApiClient.get<Flay[]>(`/flay/find/actress/${name}`);
+    return (await ApiClient.get<Flay[]>(`/flay/find/actress/${name}`)) ?? [];
   }
 
   /* ######################## Archive ######################## */
 
-  static async getArchive(opus: string): Promise<Archive> {
+  static async getArchive(opus: string): Promise<Archive | null> {
     return await ApiClient.get<Archive>(`/archive/${opus}`);
   }
 
   static async getArchiveAll(): Promise<Archive[]> {
-    return await ApiClient.get<Archive[]>('/archive');
+    return (await ApiClient.get<Archive[]>('/archive')) ?? [];
   }
 
   static async getArchiveOpusList(): Promise<string[]> {
-    return await ApiClient.get<string[]>('/archive/list/opus');
+    return (await ApiClient.get<string[]>('/archive/list/opus')) ?? [];
   }
 
   static async getArchiveListByStudio(name: string): Promise<Archive[]> {
-    return await ApiClient.get<Archive[]>(`/archive/find/studio/${name}`);
+    return (await ApiClient.get<Archive[]>(`/archive/find/studio/${name}`)) ?? [];
   }
 
   static async getArchiveListByActress(name: string): Promise<Archive[]> {
-    return await ApiClient.get<Archive[]>(`/archive/find/actress/${name}`);
+    return (await ApiClient.get<Archive[]>(`/archive/find/actress/${name}`)) ?? [];
   }
 
   /* ######################## Studio ######################## */
 
   static async getStudioAll(): Promise<Studio[]> {
-    return await ApiClient.get<Studio[]>('/info/studio');
+    return (await ApiClient.get<Studio[]>('/info/studio')) ?? [];
   }
 
-  static async getStudio(name: string): Promise<Studio> {
+  static async getStudio(name: string): Promise<Studio | null> {
     return await ApiClient.get<Studio>(`/info/studio/${name}`);
   }
 
-  static async getStudioFindOneByOpus(opus: string): Promise<Studio> {
+  static async getStudioFindOneByOpus(opus: string): Promise<Studio | null> {
     return await ApiClient.get<Studio>(`/info/studio/findOneByOpus/${opus}`);
   }
 
   /* ######################## Actress ######################## */
 
   static async getActressAll(): Promise<Actress[]> {
-    return await ApiClient.get<Actress[]>('/info/actress');
+    return (await ApiClient.get<Actress[]>('/info/actress')) ?? [];
   }
 
   /**
    * 배우 정보 조회
    * @param name - 배우 이름
-   * @returns 배우 정보
+   * @returns 배우 정보 또는 null
    */
-  static async getActress(name: string): Promise<Actress> {
+  static async getActress(name: string): Promise<Actress | null> {
     return await ApiClient.get<Actress>(`/info/actress/${name}`);
   }
 
   static async getActressListByLocalname(localName: string): Promise<Actress[]> {
-    return await ApiClient.get<Actress[]>(`/info/actress/find/byLocalname/${localName}`);
+    return (await ApiClient.get<Actress[]>(`/info/actress/find/byLocalname/${localName}`)) ?? [];
   }
 
   /* ######################## History ######################## */
@@ -280,27 +280,27 @@ export default class FlayFetch {
    * @returns 히스토리 목록
    */
   static async getHistories(opus: string): Promise<History[]> {
-    return await ApiClient.get<History[]>(`/info/history/find/${opus}`);
+    return (await ApiClient.get<History[]>(`/info/history/find/${opus}`)) ?? [];
   }
 
   static async getHistoryListByAction(action: string): Promise<History[]> {
-    return await ApiClient.get<History[]>(`/info/history/find/action/${action}`);
+    return (await ApiClient.get<History[]>(`/info/history/find/action/${action}`)) ?? [];
   }
 
   /* ######################## Video ######################## */
 
-  static async getVideo(opus: string): Promise<Video> {
+  static async getVideo(opus: string): Promise<Video | null> {
     return await ApiClient.get<Video>(`/info/video/${opus}`);
   }
 
   /* ######################## Tag ######################## */
 
-  static async getTag(id: number): Promise<Tag> {
+  static async getTag(id: number): Promise<Tag | null> {
     return await ApiClient.get<Tag>(`/info/tag/${id}`);
   }
 
   static async getTagListWithCount(): Promise<Tag[]> {
-    return await ApiClient.get<Tag[]>('/info/tag/withCount');
+    return (await ApiClient.get<Tag[]>('/info/tag/withCount')) ?? [];
   }
 
   /**
@@ -309,7 +309,7 @@ export default class FlayFetch {
    */
   static async getTagGroups(): Promise<TagGroup[]> {
     if (tagGroupList === null) {
-      tagGroupList = await ApiClient.get<TagGroup[]>('/info/tagGroup');
+      tagGroupList = (await ApiClient.get<TagGroup[]>('/info/tagGroup')) ?? [];
     }
     return tagGroupList;
   }
@@ -320,7 +320,7 @@ export default class FlayFetch {
    */
   static async getTags(): Promise<Tag[]> {
     if (tagList === null) {
-      tagList = await ApiClient.get<Tag[]>('/info/tag');
+      tagList = (await ApiClient.get<Tag[]>('/info/tag')) ?? [];
     }
     return tagList;
   }
@@ -330,9 +330,9 @@ export default class FlayFetch {
   /**
    * 커버 이미지 조회
    * @param opus - opus 번호
-   * @returns 커버 이미지 Blob
+   * @returns 커버 이미지 Blob 또는 null
    */
-  static async getCoverBlob(opus: string): Promise<Blob> {
+  static async getCoverBlob(opus: string): Promise<Blob | null> {
     return await ApiClient.get<Blob>(`/static/cover/${opus}`, { responseType: 'blob' });
   }
 
@@ -344,23 +344,25 @@ export default class FlayFetch {
   static async getCoverURL(opus: string): Promise<string> {
     if (!coverObjectURLMap.has(opus)) {
       const blob = await FlayFetch.getCoverBlob(opus);
-      coverObjectURLMap.set(opus, URL.createObjectURL(blob));
+      if (blob) {
+        coverObjectURLMap.set(opus, URL.createObjectURL(blob));
+      }
     }
-    return coverObjectURLMap.get(opus)!;
+    return coverObjectURLMap.get(opus) ?? '';
   }
 
   /* ######################## Image ######################## */
 
-  static async getImage(idx: number): Promise<ImageDomain> {
+  static async getImage(idx: number): Promise<ImageDomain | null> {
     return await ApiClient.get(`/image/${idx}`);
   }
 
   static async getImageAll(): Promise<ImageDomain[]> {
-    return await ApiClient.get<ImageDomain[]>('/image');
+    return (await ApiClient.get<ImageDomain[]>('/image')) ?? [];
   }
 
   static async getImageSize(): Promise<number> {
-    return Number(await ApiClient.get<number | string>('/image/size'));
+    return Number((await ApiClient.get<number | string>('/image/size')) ?? 0);
   }
 
   static async removeImage(idx: number): Promise<void> {

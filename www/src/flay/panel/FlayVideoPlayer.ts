@@ -143,7 +143,11 @@ export class FlayVideoPlayer extends HTMLElement {
   async reload() {
     if (this.options.info) {
       if (!this.opus && this.opus !== null) {
-        const { flay, actress } = await FlayFetch.getFullyFlay(this.opus);
+        const fullyFlay = await FlayFetch.getFullyFlay(this.opus);
+        if (!fullyFlay) {
+          throw new Error(`Flay not found for opus: ${this.opus}`);
+        }
+        const { flay, actress } = fullyFlay;
         this.flayVideoInfo.set(flay, actress, true);
       }
     }

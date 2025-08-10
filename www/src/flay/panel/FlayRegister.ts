@@ -132,7 +132,7 @@ export default class FlayRegister extends HTMLElement {
           // Flay 찾기
           foundFlayEl.innerHTML = '';
 
-          const flay = (await FlayFetch.getFlay(inOpus)) || (await FlayFetch.getArchive(inOpus));
+          const flay = (await FlayFetch.getFlay(inOpus)) ?? (await FlayFetch.getArchive(inOpus));
           if (flay) {
             foundFlayEl.innerHTML = `
               <label>${flay.studio}</label>
@@ -148,7 +148,7 @@ export default class FlayRegister extends HTMLElement {
           }
 
           // Studio 찾기
-          void FlayFetch.getStudioFindOneByOpus(inOpus).then((foundStudio) => (studio.value = foundStudio.name));
+          void FlayFetch.getStudioFindOneByOpus(inOpus).then((foundStudio) => (studio.value = foundStudio!.name));
           // Arzon 검색
           // FlaySearch.opus.Arzon(inOpus);
           FlaySearch.opus.Dondeth(inOpus);

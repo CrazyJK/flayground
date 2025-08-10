@@ -56,7 +56,11 @@ export default class FlayPage extends HTMLElement {
   async set(data: string | FullyFlay, reload: boolean = false): Promise<FullyFlay> {
     if (typeof data === 'string') {
       this.opus = data;
-      const { flay, actress } = await FlayFetch.getFullyFlay(this.opus);
+      const fullFlay = await FlayFetch.getFullyFlay(data);
+      if (!fullFlay) {
+        throw new Error(`Flay not found for opus: ${data}`);
+      }
+      const { flay, actress } = fullFlay;
       this.flay = flay;
       this.actress = actress;
     } else {

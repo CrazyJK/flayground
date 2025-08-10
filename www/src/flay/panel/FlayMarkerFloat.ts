@@ -47,7 +47,7 @@ export class FlayMarkerFloat extends HTMLElement {
 
   async #getRandomInfo(): Promise<{ randomFlay: Flay; randomRem: number; randomX: number; randomY: number; shape: ShapeType }> {
     const randomOpus = await this.#opusProvider.getRandomOpus();
-    const randomFlay = await FlayFetch.getFlay(randomOpus);
+    const randomFlay = (await FlayFetch.getFlay(randomOpus))!;
     const randomRem = RandomUtils.getRandomIntInclusive(2, 4); // 2 ~ 4 randomly select a size
     const [randomX, randomY] = this.#randomPosition(randomRem);
     const shape = this.#randomShape();

@@ -88,11 +88,11 @@ export default class FlayCard extends HTMLElement {
 
   /**
    *
-   * @param {string} opus
-   * @param {{flay, actress}} fullyFlay
+   * @param opus
+   * @param fullyFlay
    * @returns
    */
-  async set(opus: string, fullyFlay: FullyFlay = {} as FullyFlay) {
+  async set(opus: string, fullyFlay?: FullyFlay) {
     if (!opus) {
       this.style.display = 'none';
       return;
@@ -102,10 +102,9 @@ export default class FlayCard extends HTMLElement {
     this.setAttribute('opus', opus);
 
     // if empty object
-    if (Object.keys(fullyFlay).length === 0) {
-      try {
-        fullyFlay = await FlayFetch.getFullyFlay(opus);
-      } catch (error) {
+    if (!fullyFlay) {
+      fullyFlay = (await FlayFetch.getFullyFlay(opus)) ?? undefined;
+      if (!fullyFlay) {
         this.notfound(opus);
         return;
       }

@@ -138,7 +138,7 @@ export default class ApiClient {
    * @param options - fetch 옵션
    * @returns 응답 Promise
    */
-  static async get<T>(url: string, options: ApiClientOptions = {}): Promise<T> {
+  static async get<T>(url: string, options: ApiClientOptions = {}): Promise<T | null> {
     return this.#request<T>(url, { method: 'GET', ...options });
   }
 
@@ -180,7 +180,7 @@ export default class ApiClient {
    * @param options - fetch 옵션
    * @returns 응답 Promise
    */
-  static async post<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T> {
+  static async post<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T | null> {
     const fetchOptions = {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -198,7 +198,7 @@ export default class ApiClient {
    * @param options - fetch 옵션
    * @returns 응답 Promise
    */
-  static async put<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T> {
+  static async put<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T | null> {
     const fetchOptions = {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
@@ -216,7 +216,7 @@ export default class ApiClient {
    * @param options - fetch 옵션
    * @returns 응답 Promise
    */
-  static async patch<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T> {
+  static async patch<T>(url: string, data: unknown, options: ApiClientOptions = {}): Promise<T | null> {
     const fetchOptions = {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
@@ -233,7 +233,7 @@ export default class ApiClient {
    * @param options - fetch 옵션
    * @returns 응답 Promise
    */
-  static async delete<T>(url: string, options: ApiClientOptions = {}): Promise<T> {
+  static async delete<T>(url: string, options: ApiClientOptions = {}): Promise<T | null> {
     return this.#request<T>(url, { method: 'DELETE', ...options });
   }
 
@@ -245,7 +245,7 @@ export default class ApiClient {
    * @param options - fetch 옵션
    * @returns 응답 Promise
    */
-  static async postFormData<T>(url: string, formData: FormData, options: ApiClientOptions = {}): Promise<T> {
+  static async postFormData<T>(url: string, formData: FormData, options: ApiClientOptions = {}): Promise<T | null> {
     const fetchOptions = {
       method: 'POST',
       body: formData,
@@ -262,7 +262,7 @@ export default class ApiClient {
    * @param options - fetch 옵션
    * @returns 응답 Promise
    */
-  static async putFormData<T>(url: string, formData: FormData, options: ApiClientOptions = {}): Promise<T> {
+  static async putFormData<T>(url: string, formData: FormData, options: ApiClientOptions = {}): Promise<T | null> {
     const fetchOptions = {
       method: 'PUT',
       body: formData,
@@ -278,7 +278,7 @@ export default class ApiClient {
    * @param options - fetch 옵션
    * @returns 응답 Promise
    */
-  static async #request<T>(url: string, options: ApiClientOptions = {}): Promise<T> {
+  static async #request<T>(url: string, options: ApiClientOptions = {}): Promise<T | null> {
     const response = await fetch(this.buildUrl(url), options);
 
     // 상태 코드에 따른 처리

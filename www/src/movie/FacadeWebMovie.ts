@@ -2,6 +2,11 @@ import ApiClient from '@lib/ApiClient';
 import RandomUtils from '../lib/RandomUtils';
 import './FacadeWebMovie.scss';
 
+interface TodayItem {
+  name: string;
+  uuid: string;
+}
+
 /**
  * FacadeWebMovie.ts
  *
@@ -43,19 +48,39 @@ export class FacadeWebMovie extends HTMLElement {
     this.video.addEventListener('loadstart', this.handleLoadStart.bind(this));
 
     // 클릭시 muted 설정 해제
-    this.video.addEventListener('click', () => (this.video.muted = !this.video.muted));
+    this.video.addEventListener('click', (): void => {
+      this.video.muted = !this.video.muted;
+    });
   }
 
   /**
    * 비디오가 DOM에 연결될 때 실행
    */
-  connectedCallback() {
-    ApiClient.get('/todayis').then((todayList: Array<{ name: string; uuid: string }>) => {
-      if (todayList.length > 0) {
-        const randomToday = RandomUtils.getRandomElementFromArray(todayList);
-        this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomToday.uuid}`);
-      }
-    });
+  connectedCallback(): void {
+    ApiClient.get('/todayis')
+      .then((response: unknown) => {
+        // 타입 가드를 사용하여 안전하게 타입 체크
+        if (this.isTodayListValid(response)) {
+          const todayList = response as TodayItem[];
+          if (todayList.length > 0) {
+            const randomToday = RandomUtils.getRandomElementFromArray(todayList);
+            this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomToday.uuid}`);
+          }
+        } else {
+          console.warn('FacadeWebMovie: API 응답 형식이 올바르지 않습니다.');
+        }
+      })
+      .catch((error: unknown) => {
+        console.error('FacadeWebMovie: API 호출 실패:', error);
+        this.handleVideoError();
+      });
+  }
+
+  /**
+   * API 응답이 유효한 TodayItem 배열인지 확인하는 타입 가드
+   */
+  private isTodayListValid(response: unknown): response is TodayItem[] {
+    return Array.isArray(response) && response.every((item: unknown) => typeof item === 'object' && item !== null && typeof (item as Record<string, unknown>)['name'] === 'string' && typeof (item as Record<string, unknown>)['uuid'] === 'string');
   }
 
   /**
@@ -86,14 +111,21 @@ export class FacadeWebMovie extends HTMLElement {
     this.style.opacity = '1';
   }
 
-  // 재생이 끝나는지 알리기
+  /**
+   * 재생이 끝나는지 확인하는 Promise를 반환
+   * 이미 끝났으면 즉시 resolve, 아니면 ended 이벤트를 기다림
+   */
   async isEnded(): Promise<boolean> {
-    return new Promise((resolve) => {
-      setInterval(() => {
-        if (this.video.ended) {
-          resolve(true);
-        }
-      }, 100); // 100ms 마다 확인
+    if (this.video.ended) {
+      return true;
+    }
+
+    return new Promise<boolean>((resolve) => {
+      const handleEnded = (): void => {
+        this.video.removeEventListener('ended', handleEnded);
+        resolve(true);
+      };
+      this.video.addEventListener('ended', handleEnded);
     });
   }
 }

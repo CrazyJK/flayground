@@ -5,9 +5,9 @@ import StringUtils from '@lib/StringUtils';
 import './FlayArticle.scss';
 
 export default class FlayArticle extends HTMLElement {
-  flay: Flay;
+  flay: Flay = {} as Flay;
 
-  constructor(args) {
+  constructor(args: { mode?: string }) {
     super();
     if (args) {
       if (args.mode) this.classList.add(args.mode);
@@ -37,12 +37,17 @@ export default class FlayArticle extends HTMLElement {
       </dl>
     `;
 
-    this.querySelector('.opus  span').addEventListener('click', () => popupFlayInfo(this.flay.opus));
-    this.querySelector('.title span').addEventListener('click', () => popupFlay(this.flay.opus));
-    this.querySelector('.cover').addEventListener('click', () => {
-      if (!this.flay.archive) import(/* webpackChunkName: "FlayVideoPlayer" */ '@flay/panel/FlayVideoPlayer').then((module) => module.playInLayer(this.flay.opus));
+    this.querySelector('.opus  span')!.addEventListener('click', () => popupFlayInfo(this.flay.opus));
+    this.querySelector('.title span')!.addEventListener('click', () => popupFlay(this.flay.opus));
+    this.querySelector('.cover')!.addEventListener('click', () => {
+      if (!this.flay.archive)
+        import(/* webpackChunkName: "FlayVideoPlayer" */ '@flay/panel/FlayVideoPlayer')
+          .then((module) => module.playInLayer(this.flay.opus))
+          .catch((err) => {
+            console.error(err);
+          });
     });
-    this.querySelector('.actress').addEventListener('click', (e) => {
+    this.querySelector('.actress')!.addEventListener('click', (e) => {
       const target = e.target as HTMLElement;
       if (target.tagName === 'SPAN') popupActress(target.textContent);
     });
@@ -51,26 +56,30 @@ export default class FlayArticle extends HTMLElement {
   set(flay: Flay): void {
     this.flay = flay;
 
-    this.querySelector('.studio        span').innerHTML = flay.studio;
-    this.querySelector('.opus          span').innerHTML = flay.opus;
-    this.querySelector('.title         span').innerHTML = flay.title;
-    this.querySelector('.actress           ').innerHTML = flay.actressList.map((name) => `<span>${name}</span>`).join('');
-    this.querySelector('.release       span').innerHTML = flay.release;
-    this.querySelector('.tags          span').innerHTML = toBlank(flay.video.tags?.map((tag) => tag.name).join(', '));
-    this.querySelector('.rank          span').innerHTML = toBlank(flay.video.rank) + '<small>rank</small>';
-    this.querySelector('.play          span').innerHTML = toBlank(flay.video.play) + '<small>play</small>';
-    this.querySelector('.shot          span').innerHTML = toBlank(flay.video.likes?.length) + '<small>shot</small>';
-    this.querySelector('.comment       span').innerHTML = toBlank(flay.video.comment);
-    this.querySelector('.jp-title      span').innerHTML = toBlank(flay.video.title);
-    this.querySelector('.jp-desc       span').innerHTML = toBlank(flay.video.desc);
-    this.querySelector('.last-access   span').innerHTML = flay.video.lastAccess > 0 ? DateUtils.format(flay.video.lastAccess, 'yy.MM.dd') + '<small>accessed</small>' : '';
-    this.querySelector('.last-modified span').innerHTML = flay.video.lastModified > 0 ? DateUtils.format(flay.video.lastModified, 'yy.MM.dd') + '<small>modified</small>' : '';
-    this.querySelector('.last-play     span').innerHTML = flay.video.lastPlay > 0 ? DateUtils.format(flay.video.lastPlay, 'yy.MM.dd') + '<small>played</small>' : '';
+    this.querySelector('.studio        span')!.innerHTML = flay.studio;
+    this.querySelector('.opus          span')!.innerHTML = flay.opus;
+    this.querySelector('.title         span')!.innerHTML = flay.title;
+    this.querySelector('.actress           ')!.innerHTML = flay.actressList.map((name) => `<span>${name}</span>`).join('');
+    this.querySelector('.release       span')!.innerHTML = flay.release;
+    this.querySelector('.tags          span')!.innerHTML = toBlank(flay.video.tags?.map((tag) => tag.name).join(', '));
+    this.querySelector('.rank          span')!.innerHTML = toBlank(flay.video.rank) + '<small>rank</small>';
+    this.querySelector('.play          span')!.innerHTML = toBlank(flay.video.play) + '<small>play</small>';
+    this.querySelector('.shot          span')!.innerHTML = toBlank(flay.video.likes?.length) + '<small>shot</small>';
+    this.querySelector('.comment       span')!.innerHTML = toBlank(flay.video.comment);
+    this.querySelector('.jp-title      span')!.innerHTML = toBlank(flay.video.title);
+    this.querySelector('.jp-desc       span')!.innerHTML = toBlank(flay.video.desc);
+    this.querySelector('.last-access   span')!.innerHTML = flay.video.lastAccess > 0 ? DateUtils.format(flay.video.lastAccess, 'yy.MM.dd') + '<small>accessed</small>' : '';
+    this.querySelector('.last-modified span')!.innerHTML = flay.video.lastModified > 0 ? DateUtils.format(flay.video.lastModified, 'yy.MM.dd') + '<small>modified</small>' : '';
+    this.querySelector('.last-play     span')!.innerHTML = flay.video.lastPlay > 0 ? DateUtils.format(flay.video.lastPlay, 'yy.MM.dd') + '<small>played</small>' : '';
 
-    FlayFetch.getCoverURL(flay.opus).then((url) => {
-      const cover = this.querySelector('.cover') as HTMLDivElement;
-      cover.style.backgroundImage = `url(${url})`;
-    });
+    FlayFetch.getCoverURL(flay.opus)
+      .then((url) => {
+        const cover = this.querySelector('.cover') as HTMLDivElement;
+        cover.style.backgroundImage = `url(${url})`;
+      })
+      .catch((error: unknown) => {
+        console.error(error);
+      });
   }
 }
 

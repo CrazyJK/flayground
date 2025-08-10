@@ -2,8 +2,8 @@ import FlayFetch, { Flay } from '@lib/FlayFetch';
 import './FlayTooltip.scss';
 
 export class FlayTooltip extends HTMLElement {
-  #width: number;
-  #height: number;
+  #width: number = 300;
+  #height: number = 200;
 
   constructor(width: number = 300) {
     super();
@@ -35,16 +35,20 @@ export class FlayTooltip extends HTMLElement {
     if (y + this.#height > window.innerHeight) {
       top = Math.max(0, y - this.#height);
     }
-    FlayFetch.getCoverURL(flay.opus).then((coverURL) => {
-      this.classList.remove('hide');
-      this.style.left = `${left}px`;
-      this.style.top = `${top}px`;
-      this.querySelector('img')!.src = coverURL;
-      this.querySelector('img')!.alt = flay.title;
-      this.querySelector('.title')!.textContent = flay.title;
-      this.querySelector('.actressList')!.textContent = flay.actressList.join(', ');
-      this.querySelector('.rank')!.textContent = `${flay.video.rank}R - ${flay.release}`;
-    });
+    FlayFetch.getCoverURL(flay.opus)
+      .then((coverURL) => {
+        this.classList.remove('hide');
+        this.style.left = `${left}px`;
+        this.style.top = `${top}px`;
+        this.querySelector('img')!.src = coverURL;
+        this.querySelector('img')!.alt = flay.title;
+        this.querySelector('.title')!.textContent = flay.title;
+        this.querySelector('.actressList')!.textContent = flay.actressList.join(', ');
+        this.querySelector('.rank')!.textContent = `${flay.video.rank}R - ${flay.release}`;
+      })
+      .catch((error) => {
+        console.error('FlayTooltip: Error fetching cover URL:', error);
+      });
   }
 
   hide(): void {

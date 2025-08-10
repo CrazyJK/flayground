@@ -8,7 +8,7 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import FlayFetch, { Actress, Flay, FullyFlay } from '@lib/FlayFetch';
+import FlayFetch, { Actress, Flay, FlayFiles as FlayFilesType, FullyFlay, Video } from '@lib/FlayFetch';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import './FlayCard.scss';
 
@@ -16,10 +16,10 @@ import './FlayCard.scss';
  * Custom element of Card
  */
 export default class FlayCard extends HTMLElement {
-  opus: string;
-  flay: Flay;
-  actress: Actress[];
-  excludes: string[];
+  opus: string = '';
+  flay: Flay = {} as Flay;
+  actress: Actress[] = [];
+  excludes: string[] = [];
 
   flayCover: FlayCover;
   flayInfo: HTMLElement;
@@ -33,21 +33,17 @@ export default class FlayCard extends HTMLElement {
   flayRelease: FlayRelease;
   flayTag: FlayTag;
 
-  constructor(options) {
+  constructor(options?: { excludes?: string[] }) {
     super();
 
     this.classList.add('flay-div');
 
-    if (options && options.excludes) {
+    if (options?.excludes) {
       this.excludes = options.excludes;
     } else {
       this.excludes = [];
     }
 
-    this.init();
-  }
-
-  init() {
     this.flayCover = this.appendChild(new FlayCover().setCard());
     this.flayInfo = this.appendChild(document.createElement('div'));
     this.flayInfo.classList.add('flay-info');
@@ -96,7 +92,7 @@ export default class FlayCard extends HTMLElement {
    * @param {{flay, actress}} fullyFlay
    * @returns
    */
-  async set(opus: string, fullyFlay: FullyFlay = null) {
+  async set(opus: string, fullyFlay: FullyFlay = {} as FullyFlay) {
     if (!opus) {
       this.style.display = 'none';
       return;
@@ -105,7 +101,8 @@ export default class FlayCard extends HTMLElement {
     this.opus = opus;
     this.setAttribute('opus', opus);
 
-    if (!fullyFlay) {
+    // if empty object
+    if (Object.keys(fullyFlay).length === 0) {
       try {
         fullyFlay = await FlayFetch.getFullyFlay(opus);
       } catch (error) {
@@ -188,8 +185,8 @@ export default class FlayCard extends HTMLElement {
       actressPoint: 0,
       studioPoint: 0,
       archive: false,
-      video: null,
-      files: null,
+      video: {} as Video,
+      files: {} as FlayFilesType,
       length: 0,
       lastModified: 0,
     };

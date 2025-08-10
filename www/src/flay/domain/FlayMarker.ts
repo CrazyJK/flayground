@@ -26,7 +26,7 @@ const DEFAULT_OPTIONS: FlayMarkerOptions = {
   tooltip: false,
   shape: 'square',
   cover: false,
-};
+} as const;
 
 /**
  * Flay 정보를 표시하는 마커 컴포넌트
@@ -36,8 +36,8 @@ const DEFAULT_OPTIONS: FlayMarkerOptions = {
  */
 export default class FlayMarker extends HTMLElement {
   /** Flay 데이터 */
-  flay: Flay;
-  #options: FlayMarkerOptions;
+  flay: Flay = {} as Flay;
+  #options: FlayMarkerOptions = { ...DEFAULT_OPTIONS };
 
   /**
    * FlayMarker 생성자
@@ -62,7 +62,7 @@ export default class FlayMarker extends HTMLElement {
   }
 
   clear(): void {
-    this.flay = null;
+    this.flay = {} as Flay;
     this.#options = { ...DEFAULT_OPTIONS };
     this.classList.remove(...SHAPES);
     this.classList.remove('active', 'shot', 'archive');
@@ -111,10 +111,12 @@ export default class FlayMarker extends HTMLElement {
             if (this.flay?.video?.rank !== undefined) {
               const rankIndex = this.flay.video.rank + 1;
               if (rankIndex >= 0 && rankIndex < ranks.length) {
-                this.innerHTML = ranks[rankIndex];
+                this.innerHTML = String(ranks[rankIndex]);
               }
             }
             break;
+          default:
+            break; // For square, circle, rhombus, no additional content
         }
       } catch (error) {
         console.error('FlayMarker: Error updating shape:', error);
@@ -135,7 +137,7 @@ export default class FlayMarker extends HTMLElement {
    * 툴팁을 표시합니다.
    * - 이미지와 주요 정보를 이 마커의 위치에 표시합니다.
    */
-  #showTooltipHandler(): Promise<void> {
+  #showTooltipHandler(): void {
     if (!this.#options.tooltip) return;
 
     const tooltipWidth = StyleUtils.remToPx(20);
@@ -143,7 +145,7 @@ export default class FlayMarker extends HTMLElement {
     const tooltipX = x + width / 2; // Center the tooltip horizontally
     const tooltipY = y + height / 2; // Center the tooltip vertically
 
-    const tooltip = (document.querySelector('flay-tooltip') || document.body.appendChild(new FlayTooltip(tooltipWidth))) as FlayTooltip;
+    const tooltip = (document.querySelector('flay-tooltip') as FlayTooltip) || document.body.appendChild(new FlayTooltip(tooltipWidth));
     tooltip.show(this.flay, tooltipX, tooltipY);
 
     this.addEventListener('mouseleave', () => tooltip.hide(), { once: true });

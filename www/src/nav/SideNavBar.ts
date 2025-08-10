@@ -42,7 +42,7 @@ const menuList = [
 ];
 
 export class SideNavBar extends HTMLElement {
-  #currentMenuName = null; // 현재 메뉴
+  #currentMenuName: string = ''; // 현재 메뉴
 
   constructor() {
     super();
@@ -51,7 +51,7 @@ export class SideNavBar extends HTMLElement {
   }
 
   connectedCallback() {
-    this.parentElement.insertBefore(document.createElement('div'), this).classList.add('nav-open');
+    this.parentElement!.insertBefore(document.createElement('div'), this).classList.add('nav-open');
 
     this.innerHTML = `
     <header>
@@ -75,14 +75,14 @@ export class SideNavBar extends HTMLElement {
       <div><a id="bundleReport">bundle report</a></div>
     </footer>
     `;
-    this.querySelector('footer').prepend(new FlayMonitor());
-    this.querySelector('footer').appendChild(new ThemeController()).style.marginTop = '1rem';
+    this.querySelector('footer')!.prepend(new FlayMonitor());
+    this.querySelector('footer')!.appendChild(new ThemeController()).style.marginTop = '1rem';
 
     /** active 메뉴 표시 */
-    this.querySelectorAll('a').forEach((anker) => {
-      if (anker.href.indexOf(location.pathname) > -1) {
-        anker.parentElement.classList.add('active');
-        this.#currentMenuName = anker.textContent.replace(/\s+/g, '');
+    this.querySelectorAll('a').forEach((anchor) => {
+      if (anchor.href.includes(location.pathname)) {
+        anchor.parentElement!.classList.add('active');
+        this.#currentMenuName = anchor.textContent.replace(/\s+/g, '');
       }
     });
 
@@ -123,9 +123,8 @@ export class SideNavBar extends HTMLElement {
       return;
     }
 
-    import(/* webpackChunkName: "FlayMemoEditor" */ '@flay/panel/FlayMemoEditor').then(({ FlayMemoEditor }) => {
-      document
-        .querySelector('body')
+    void import(/* webpackChunkName: "FlayMemoEditor" */ '@flay/panel/FlayMemoEditor').then(({ FlayMemoEditor }) => {
+      document.body
         .appendChild(
           new ModalWindow('Memo', {
             id: id,

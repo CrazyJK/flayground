@@ -52,7 +52,7 @@ export default class ThemeController extends HTMLElement {
   }
 
   connectedCallback(): void {
-    const storedTheme = FlayStorage.local.get(THEME_KEY, OS) as string;
+    const storedTheme = FlayStorage.local.get(THEME_KEY, OS);
     this.theme = this.isValidTheme(storedTheme) ? storedTheme : OS;
     this.mediaQueryList = window.matchMedia('(prefers-color-scheme: dark)');
 

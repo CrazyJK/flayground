@@ -10,13 +10,13 @@ export const EVENT_TIMER_RESUME = 'timer-resume';
  */
 export class TickTimer extends HTMLElement {
   #seconds = 0;
-  #intervalId = null;
+  #intervalId: ReturnType<typeof setInterval> | null = null;
   #paused = false;
 
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
       <style>
         :host {
           position: relative;
@@ -48,7 +48,7 @@ export class TickTimer extends HTMLElement {
    * @param seconds 시작할 초
    */
   start(seconds: number) {
-    clearInterval(this.#intervalId);
+    if (this.#intervalId !== null) clearInterval(this.#intervalId);
     this.#seconds = seconds;
     this.#paused = false;
     this.render();
@@ -125,7 +125,7 @@ export class TickTimer extends HTMLElement {
    * 화면을 렌더링합니다.
    */
   render() {
-    this.shadowRoot.getElementById('time').textContent = String(this.#seconds);
+    this.shadowRoot!.getElementById('time')!.textContent = String(this.#seconds);
   }
 }
 

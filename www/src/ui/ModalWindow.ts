@@ -5,7 +5,47 @@ import windowButton from '@svg/windowButton';
 import './ModalWindow.scss';
 
 const OFFSET = 4; // 창의 가장자리 여백
-const DEFAULT_OPTS = { id: '', top: 0, left: 0, width: 0, height: 0, minWidth: 200, minHeight: 100, edges: [], initialMode: MODAL_MODE.NORMAL }; // 창의 기본 옵션
+
+interface ModalWindowOptions {
+  id?: string;
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  minWidth?: number;
+  minHeight?: number;
+  edges?: ModalEdge[];
+  initialMode?: ModalMode;
+}
+
+interface ModalWindowStorageData {
+  top?: number;
+  left?: number;
+  width?: number;
+  height?: number;
+  minWidth?: number;
+  minHeight?: number;
+  edges?: ModalEdge[];
+  initialMode?: ModalMode;
+}
+
+interface CustomTitleChangeEvent extends CustomEvent {
+  detail: {
+    title: string;
+  };
+}
+
+const DEFAULT_OPTS: Required<ModalWindowOptions> = {
+  id: '',
+  top: 0,
+  left: 0,
+  width: 0,
+  height: 0,
+  minWidth: 200,
+  minHeight: 100,
+  edges: [],
+  initialMode: MODAL_MODE.NORMAL,
+}; // 창의 기본 옵션
 
 export class ModalWindow extends HTMLElement {
   #top = 0; // 창의 상단 위치
@@ -14,7 +54,7 @@ export class ModalWindow extends HTMLElement {
   #height = 0; // 창의 높이
   #minWidth = 0; // 창의 최소 너비
   #minHeight = 0; // 창의 최소 높이
-  #edges = []; // 창의 위치를 고정시킬 엣지
+  #edges: ModalEdge[] = []; // 창의 위치를 고정시킬 엣지
   #initialMode: ModalMode = MODAL_MODE.NORMAL; // 창의 초기 모드
 
   #prevHeight = 0; // 창의 이전 높이
@@ -23,24 +63,24 @@ export class ModalWindow extends HTMLElement {
   #prevClientY = 0; // 이전 클릭 위치
   #containsEdgesCenter = false; // 엣지에 center가 포함되어 있는가
 
-  #mode = ''; // 창의 동작 모드. 'move', 'top', 'left', 'right', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'
+  #mode: string | null = ''; // 창의 동작 모드. 'move', 'top', 'left', 'right', 'bottom', 'top-left', 'top-right', 'bottom-left', 'bottom-right'
   #active = false; // 창의 동작 여부
 
-  #titleSpan: HTMLSpanElement; // 창의 제목
-  #bodyPanel: HTMLElement; // 창의 내용. 여기에 appendChild로 추가된 요소가 들어감
-  #buttons: HTMLElement; // 창의 버튼
+  #titleSpan!: HTMLSpanElement; // 창의 제목
+  #bodyPanel!: HTMLElement; // 창의 내용. 여기에 appendChild로 추가된 요소가 들어감
+  #buttons!: HTMLElement; // 창의 버튼
 
-  #titleBar_______: HTMLElement; // 창의 타이틀
-  #edgeTopLine____: HTMLElement; // 창의 상단 엣지
-  #edgeLeftLine___: HTMLElement; // 창의 좌측 엣지
-  #edgeRightLine__: HTMLElement; // 창의 우측 엣지
-  #edgeBottomLine_: HTMLElement; // 창의 하단 엣지
-  #edgeTopLeft____: HTMLElement; // 창의 상단 좌측 엣지
-  #edgeTopRight___: HTMLElement; // 창의 상단 우측 엣지
-  #edgeBottomLeft_: HTMLElement; // 창의 하단 좌측 엣지
-  #edgeBottomRight: HTMLElement; // 창의 하단 우측 엣지
+  #titleBar_______!: HTMLElement; // 창의 타이틀
+  #edgeTopLine____!: HTMLElement; // 창의 상단 엣지
+  #edgeLeftLine___!: HTMLElement; // 창의 좌측 엣지
+  #edgeRightLine__!: HTMLElement; // 창의 우측 엣지
+  #edgeBottomLine_!: HTMLElement; // 창의 하단 엣지
+  #edgeTopLeft____!: HTMLElement; // 창의 상단 좌측 엣지
+  #edgeTopRight___!: HTMLElement; // 창의 상단 우측 엣지
+  #edgeBottomLeft_!: HTMLElement; // 창의 하단 좌측 엣지
+  #edgeBottomRight!: HTMLElement; // 창의 하단 우측 엣지
 
-  #rafId = null; // requestAnimationFrame ID
+  #rafId: number | null = null; // requestAnimationFrame ID
   #needsUpdate = false; // 업데이트가 필요한지 여부
 
   /**
@@ -48,33 +88,43 @@ export class ModalWindow extends HTMLElement {
    * @param title 창제목
    * @param opts 옵션.
    */
-  constructor(title = '', opts = {}) {
+  constructor(title = '', opts: ModalWindowOptions = {}) {
     super();
 
-    let { id, top, left, width, height, minWidth, minHeight, edges, initialMode } = { ...DEFAULT_OPTS, ...opts };
+    const { id, top, left, width, height, minWidth, minHeight, edges, initialMode } = { ...DEFAULT_OPTS, ...opts };
     if (id) {
       this.id = id;
       // id가 있으면 id로 storage에 저장된 위치와 크기를 가져옴
-      const storageData = FlayStorage.local.getObject('modalWindow-' + id, null);
+      const storageData = FlayStorage.local.getObject('modalWindow-' + id, null) as ModalWindowStorageData | null;
       if (storageData) {
-        top = storageData.top || top;
-        left = storageData.left || left;
-        width = storageData.width || width;
-        height = storageData.height || height;
-        minWidth = storageData.minWidth || minWidth;
-        minHeight = storageData.minHeight || minHeight;
-        edges = storageData.edges || edges;
-        initialMode = storageData.initialMode || initialMode;
+        this.#top = storageData.top ?? top;
+        this.#left = storageData.left ?? left;
+        this.#width = storageData.width ?? width;
+        this.#height = storageData.height ?? height;
+        this.#minWidth = storageData.minWidth ?? minWidth;
+        this.#minHeight = storageData.minHeight ?? minHeight;
+        this.#edges = storageData.edges ?? edges;
+        this.#initialMode = storageData.initialMode ?? initialMode;
+      } else {
+        this.#top = top;
+        this.#left = left;
+        this.#width = width;
+        this.#height = height;
+        this.#minWidth = minWidth;
+        this.#minHeight = minHeight;
+        this.#edges = edges;
+        this.#initialMode = initialMode;
       }
+    } else {
+      this.#top = top;
+      this.#left = left;
+      this.#width = width;
+      this.#height = height;
+      this.#minWidth = minWidth;
+      this.#minHeight = minHeight;
+      this.#edges = edges;
+      this.#initialMode = initialMode;
     }
-    this.#top = top;
-    this.#left = left;
-    this.#width = width;
-    this.#height = height;
-    this.#minWidth = minWidth;
-    this.#minHeight = minHeight;
-    this.#edges = edges;
-    this.#initialMode = initialMode;
 
     this.classList.add('modal-window', 'flay-div');
     this.innerHTML = `
@@ -105,22 +155,22 @@ export class ModalWindow extends HTMLElement {
       <div class="outer"></div>
     `;
 
-    const _edges = this.querySelector('.edges');
-    const _inner = this.querySelector('.inner');
+    const _edges = this.querySelector('.edges')!;
+    const _inner = this.querySelector('.inner')!;
 
-    this.#titleSpan = _inner.querySelector('.title span');
-    this.#bodyPanel = _inner.querySelector('.body-panel');
-    this.#buttons = _inner.querySelector('.buttons');
+    this.#titleSpan = _inner.querySelector('.title span')!;
+    this.#bodyPanel = _inner.querySelector('.body-panel')!;
+    this.#buttons = _inner.querySelector('.buttons')!;
 
-    this.#titleBar_______ = _inner.querySelector('.title');
-    this.#edgeTopLine____ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP);
-    this.#edgeLeftLine___ = _edges.querySelector('.edge.' + MODAL_EDGE.LEFT);
-    this.#edgeRightLine__ = _edges.querySelector('.edge.' + MODAL_EDGE.RIGHT);
-    this.#edgeBottomLine_ = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM);
-    this.#edgeTopLeft____ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP_LEFT);
-    this.#edgeTopRight___ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP_RIGHT);
-    this.#edgeBottomLeft_ = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM_LEFT);
-    this.#edgeBottomRight = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM_RIGHT);
+    this.#titleBar_______ = _inner.querySelector('.title')!;
+    this.#edgeTopLine____ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP)!;
+    this.#edgeLeftLine___ = _edges.querySelector('.edge.' + MODAL_EDGE.LEFT)!;
+    this.#edgeRightLine__ = _edges.querySelector('.edge.' + MODAL_EDGE.RIGHT)!;
+    this.#edgeBottomLine_ = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM)!;
+    this.#edgeTopLeft____ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP_LEFT)!;
+    this.#edgeTopRight___ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP_RIGHT)!;
+    this.#edgeBottomLeft_ = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM_LEFT)!;
+    this.#edgeBottomRight = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM_RIGHT)!;
 
     this.#titleBar_______.addEventListener('mousedown', (e) => this.#startHandler(e, 'move'));
     this.#edgeTopLine____.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.TOP));
@@ -144,9 +194,9 @@ export class ModalWindow extends HTMLElement {
 
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
-    _inner.querySelector('.' + MODAL_MODE.MINIMIZE).addEventListener('click', () => this.#minimizeHandler());
-    _inner.querySelector('.' + MODAL_MODE.MAXIMIZE).addEventListener('click', () => this.#maximizeHandler());
-    _inner.querySelector('.' + MODAL_MODE.TERMINATE).addEventListener('click', () => this.#terminateHandler());
+    _inner.querySelector('.' + MODAL_MODE.MINIMIZE)!.addEventListener('click', () => this.#minimizeHandler());
+    _inner.querySelector('.' + MODAL_MODE.MAXIMIZE)!.addEventListener('click', () => this.#maximizeHandler());
+    _inner.querySelector('.' + MODAL_MODE.TERMINATE)!.addEventListener('click', () => this.#terminateHandler());
 
     this.addEventListener('mousedown', () => (this.style.zIndex = String(nextWindowzIndex())));
 
@@ -175,8 +225,11 @@ export class ModalWindow extends HTMLElement {
     }
   }
 
-  appendChild(element) {
-    element.addEventListener(EVENT_CHANGE_TITLE, (e) => (this.windowTitle = e.detail.title));
+  override appendChild<T extends Node>(element: T): T {
+    element.addEventListener(EVENT_CHANGE_TITLE, (e: Event) => {
+      const customEvent = e as CustomTitleChangeEvent;
+      this.windowTitle = customEvent.detail.title;
+    });
     this.#bodyPanel.appendChild(element);
     return element;
   }
@@ -268,6 +321,7 @@ export class ModalWindow extends HTMLElement {
   #moveHandler(e: MouseEvent) {
     if (e.buttons !== 1) return;
     if (!this.#active) return;
+    if (!this.#mode) return;
 
     const dx = e.clientX - this.#prevClientX;
     const dy = e.clientY - this.#prevClientY;
@@ -355,6 +409,12 @@ export class ModalWindow extends HTMLElement {
         case MODAL_EDGE.CENTER:
           this.#top = (window.innerHeight - this.#height) / 2;
           this.#left = (window.innerWidth - this.#width) / 2;
+          break;
+        case MODAL_EDGE.TOP_LEFT:
+        case MODAL_EDGE.TOP_RIGHT:
+        case MODAL_EDGE.BOTTOM_LEFT:
+        case MODAL_EDGE.BOTTOM_RIGHT:
+          // 복합 엣지는 개별 TOP, LEFT, RIGHT, BOTTOM 케이스에서 처리됨
           break;
       }
     });

@@ -57,11 +57,11 @@ export const EVENT_COUNTDOWN_CHANGE = 'countdown-change';
  */
 export class Countdown extends HTMLElement {
   #circle: HTMLDivElement;
-  #startTime: number;
-  #duration: number;
-  #elapsedTime: number;
+  #startTime: number = -1;
+  #duration: number = -1;
+  #elapsedTime: number = -1;
   #animationFrame: number | null = null;
-  #isPaused: boolean;
+  #isPaused: boolean = false;
   #prevSeconds: number = -1;
   #state: CountdownState = CountdownState.IDLE;
   #options: CountdownOptions;

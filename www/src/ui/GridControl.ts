@@ -11,7 +11,7 @@ export default class GridControl extends HTMLElement {
   private range: HTMLInputElement;
   private rangeMark: HTMLLabelElement;
   private rangeHandler: (e: Event) => void;
-  private containers: HTMLElement[];
+  private containers: HTMLElement[] = [];
 
   constructor(selectors: string, max = MAX) {
     super();
@@ -36,8 +36,8 @@ export default class GridControl extends HTMLElement {
       <label class="range-mark" data-value="${this.max}">${this.max}</label>
     `;
 
-    this.range = this.querySelector('input[type="range"]');
-    this.rangeMark = this.querySelector('.range-mark');
+    this.range = this.querySelector('input[type="range"]')!;
+    this.rangeMark = this.querySelector('.range-mark')!;
     this.rangeHandler = () => {
       this.containers.forEach((container) => (container.dataset.column = this.range.value));
       this.rangeMark.innerHTML = this.range.value;

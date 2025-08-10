@@ -11,7 +11,7 @@ export class BrowserPanel extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.innerHTML = `
+    this.shadowRoot!.innerHTML = `
       <style>
         :host {
           position: absolute;
@@ -78,10 +78,10 @@ export class BrowserPanel extends HTMLElement {
       </div>
     `;
 
-    this.#reload = this.shadowRoot.querySelector('#reload');
-    this.#input = this.shadowRoot.querySelector('input');
-    this.#datalist = this.shadowRoot.querySelector('#url-list');
-    this.#iframe = this.shadowRoot.querySelector('iframe');
+    this.#reload = this.shadowRoot!.querySelector('#reload')!;
+    this.#input = this.shadowRoot!.querySelector('input')!;
+    this.#datalist = this.shadowRoot!.querySelector('#url-list')!;
+    this.#iframe = this.shadowRoot!.querySelector('iframe')!;
 
     this.#input.addEventListener('keyup', (e) => {
       if (e.key !== 'Enter') return;

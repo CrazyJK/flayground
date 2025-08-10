@@ -2,7 +2,6 @@ import { MODAL_EDGE, MODAL_MODE } from '@const/GroundConstant';
 import RandomUtils from '@lib/RandomUtils';
 import fetchJsonp from '@lib/fetchJsonp';
 import { Countdown } from '@ui/Countdown';
-import { ModalShadowWindow } from '@ui/ModalShadowWindow';
 import { ModalWindow } from '@ui/ModalWindow';
 import { TickTimer } from '@ui/TickTimer';
 import FlayMarker from '../flay/domain/FlayMarker';
@@ -10,32 +9,30 @@ import './inc/Page';
 import './test.scss';
 
 class Page {
-  constructor() {}
-
-  async start() {
+  start() {
     const [wUnit, hUnit] = [window.innerWidth / 12, window.innerHeight / 12];
 
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Video', () => this.#videoWindow(wUnit, hUnit)));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Basket', () => this.#basketWindow(wUnit, hUnit)));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Memo', () => this.#memoWindow(wUnit, hUnit)));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageFall', () => this.#imageFallWindow(wUnit, hUnit)));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageOne', () => this.#imageOneWindow(wUnit, hUnit)));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Browser', () => this.#browserWindow(wUnit)));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'Countdown', () => this.#countdown()));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'TickTimer', () => this.#tickTimer()));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'FlayMarkerPanel', () => this.#flayMarkerPanel()));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'FlayMarkerSky', () => this.#flayMarkerSky()));
-    document.querySelector('body > footer').appendChild(newHTMLButtonElement('button', 'ImageCircle', () => this.#imageCircle()));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'Video', () => this.#videoWindow(wUnit, hUnit)));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'Basket', () => this.#basketWindow(wUnit, hUnit)));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'Memo', () => this.#memoWindow(wUnit, hUnit)));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'ImageFall', () => this.#imageFallWindow(wUnit, hUnit)));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'ImageOne', () => this.#imageOneWindow(wUnit, hUnit)));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'Browser', () => this.#browserWindow(wUnit)));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'Countdown', () => this.#countdown()));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'TickTimer', () => this.#tickTimer()));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'FlayMarkerPanel', () => this.#flayMarkerPanel()));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'FlayMarkerSky', () => this.#flayMarkerSky()));
+    document.querySelector('body > footer')!.appendChild(newHTMLButtonElement('button', 'ImageCircle', () => this.#imageCircle()));
 
     fetchJsonp('https://api.github.com/users')
       .then((data) => console.log('users', data))
       .catch((error) => console.error(error));
   }
 
-  #videoWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "FlayVideoViewPanel" */ '@flay/panel/FlayVideoViewPanel').then(({ FlayVideoViewPanel }) => {
+  #videoWindow(wUnit: number, hUnit: number) {
+    void import(/* webpackChunkName: "FlayVideoViewPanel" */ '@flay/panel/FlayVideoViewPanel').then(({ FlayVideoViewPanel }) => {
       document
-        .querySelector('body > main')
+        .querySelector('body > main')!
         .appendChild(
           new ModalWindow('Video', {
             top: 0,
@@ -49,10 +46,10 @@ class Page {
     });
   }
 
-  #basketWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "FlayBasket" */ '@flay/panel/FlayBasket').then(({ FlayBasket }) => {
+  #basketWindow(wUnit: number, hUnit: number) {
+    void import(/* webpackChunkName: "FlayBasket" */ '@flay/panel/FlayBasket').then(({ FlayBasket }) => {
       document
-        .querySelector('body > main')
+        .querySelector('body > main')!
         .appendChild(
           new ModalWindow('Basket', {
             top: 0,
@@ -66,10 +63,10 @@ class Page {
     });
   }
 
-  #memoWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "FlayMemoEditor" */ '@flay/panel/FlayMemoEditor').then(({ FlayMemoEditor }) => {
+  #memoWindow(wUnit: number, hUnit: number) {
+    void import(/* webpackChunkName: "FlayMemoEditor" */ '@flay/panel/FlayMemoEditor').then(({ FlayMemoEditor }) => {
       document
-        .querySelector('body > main')
+        .querySelector('body > main')!
         .appendChild(
           new ModalWindow('Memo', {
             top: 0,
@@ -83,10 +80,10 @@ class Page {
     });
   }
 
-  #imageFallWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "ImageFall" */ '@image/ImageFall').then(({ ImageFall }) => {
+  #imageFallWindow(wUnit: number, hUnit: number) {
+    void import(/* webpackChunkName: "ImageFall" */ '@image/ImageFall').then(({ ImageFall }) => {
       document
-        .querySelector('body > main')
+        .querySelector('body > main')!
         .appendChild(
           new ModalWindow('Image Fallen', {
             top: 0,
@@ -100,12 +97,12 @@ class Page {
     });
   }
 
-  #imageOneWindow(wUnit, hUnit) {
-    import(/* webpackChunkName: "ImageOne" */ '@image/ImageOne').then(({ ImageOne }) => {
+  #imageOneWindow(wUnit: number, hUnit: number) {
+    void import(/* webpackChunkName: "ImageOne" */ '@image/ImageOne').then(({ ImageOne }) => {
       document
-        .querySelector('body > main')
+        .querySelector('body > main')!
         .appendChild(
-          new ModalShadowWindow('Image One', {
+          new ModalWindow('Image One', {
             top: 0,
             left: 0,
             width: RandomUtils.getRandomInt(0, wUnit) + wUnit * 8,
@@ -117,12 +114,12 @@ class Page {
     });
   }
 
-  #browserWindow(wUnit) {
-    import(/* webpackChunkName: "BrowserPanel" */ '@ui/BrowserPanel').then(({ BrowserPanel }) => {
+  #browserWindow(wUnit: number) {
+    void import(/* webpackChunkName: "BrowserPanel" */ '@ui/BrowserPanel').then(({ BrowserPanel }) => {
       document
-        .querySelector('body > main')
+        .querySelector('body > main')!
         .appendChild(
-          new ModalShadowWindow('Browser Panel', {
+          new ModalWindow('Browser Panel', {
             top: 0,
             left: RandomUtils.getRandomInt(0, wUnit) + wUnit * 6,
             width: 730,
@@ -139,7 +136,7 @@ class Page {
     const header = document.body.appendChild(document.createElement('header'));
 
     const countdown = header.appendChild(new Countdown());
-    const time = header.appendChild(document.createElement('input')) as HTMLInputElement;
+    const time = header.appendChild(document.createElement('input'));
     const startBtn = header.appendChild(document.createElement('button'));
     const pauseBtn = header.appendChild(document.createElement('button'));
     const resumeBtn = header.appendChild(document.createElement('button'));
@@ -204,24 +201,25 @@ class Page {
   }
 
   #flayMarkerPanel() {
-    const mainElement = document.querySelector('body > main');
-    import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')
+    const mainElement = document.querySelector('body > main')!;
+    void import(/* webpackChunkName: "FlayMarkerPanel" */ '@flay/panel/FlayMarkerPanel')
       .then(({ FlayMarkerPanel }) => new FlayMarkerPanel({}))
       .then((flayMarkerPanel) => {
         mainElement.appendChild(flayMarkerPanel);
-        mainElement.addEventListener('click', (e: MouseEvent) => {
-          if (e.target !== mainElement) return;
-          const inputNumber = e.clientX * e.clientY;
+        mainElement.addEventListener('click', (e: Event) => {
+          const mouseEvent = e as MouseEvent;
+          if (mouseEvent.target !== mainElement) return;
+          const inputNumber = mouseEvent.clientX * mouseEvent.clientY;
           const flayMarkers = Array.from(flayMarkerPanel.childNodes) as FlayMarker[];
           const randomIndex = inputNumber % flayMarkers.length;
-          flayMarkers[randomIndex].click();
+          flayMarkers[randomIndex]?.click();
         });
       });
   }
 
   #flayMarkerSky() {
-    const mainElement = document.querySelector('body > main');
-    import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky')
+    const mainElement = document.querySelector('body > main')!;
+    void import(/* webpackChunkName: "FlayMarkerSky" */ '@flay/panel/FlayMarkerSky')
       .then(({ FlayMarkerSky }) => new FlayMarkerSky())
       .then((flayMarkerSky) => {
         mainElement.appendChild(flayMarkerSky);
@@ -234,7 +232,7 @@ class Page {
     mainElement.style.justifyContent = 'center';
     mainElement.style.alignItems = 'center';
     mainElement.style.height = '100vh';
-    import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
+    void import(/* webpackChunkName: "ImageCircle" */ '@image/ImageCircle')
       .then(({ ImageCircle }) => new ImageCircle({ rem: 50, shape: 'circle', effect: 'emboss', duration: 2000, eventAllow: false }))
       .then((imageCircle) => {
         mainElement.appendChild(imageCircle);
@@ -244,7 +242,7 @@ class Page {
 
 new Page().start();
 
-function newHTMLButtonElement(type, text, callback) {
+function newHTMLButtonElement(type: 'button' | 'submit' | 'reset', text: string, callback: () => void): HTMLButtonElement {
   const button = document.createElement('button');
   button.textContent = text;
   button.type = type;

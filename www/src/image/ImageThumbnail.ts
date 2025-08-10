@@ -1,4 +1,4 @@
-import { EventCode } from '@/GroundConstant';
+import { EventCode } from '@const/GroundConstant';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';

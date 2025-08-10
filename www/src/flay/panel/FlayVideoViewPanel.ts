@@ -1,4 +1,4 @@
-import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '@/GroundConstant';
+import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '@const/GroundConstant';
 import { FlayProvider } from '@lib/FlayProvider';
 import FlayStorage from '@lib/FlayStorage';
 import RandomUtils from '@lib/RandomUtils';

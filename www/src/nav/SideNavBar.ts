@@ -1,4 +1,4 @@
-import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
+import { MODAL_EDGE, MODAL_MODE } from '@const/GroundConstant';
 import FlayMonitor from '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import { ModalWindow } from '@ui/ModalWindow';

@@ -2,14 +2,16 @@
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"],
-      "@lib/*": ["src/lib/*"],
-      "@ui/*": ["src/ui/*"],
+      "@attach/*": ["src/attach/*"],
+      "@const/*": ["src/const/*"],
+      "@diary/*": ["src/diary/*"],
       "@flay/*": ["src/flay/*"],
       "@image/*": ["src/image/*"],
+      "@lib/*": ["src/lib/*"],
       "@movie/*": ["src/movie/*"],
+      "@nav/*": ["src/nav/*"],
       "@svg/*": ["src/svg/*"],
-      "@nav/*": ["src/nav/*"]
+      "@ui/*": ["src/ui/*"]
     },
     "strict": false,
     "target": "ESNext",

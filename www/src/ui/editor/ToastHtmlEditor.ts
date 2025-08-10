@@ -1,7 +1,7 @@
 /**
  * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
-import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@/GroundConstant';
+import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@const/GroundConstant';
 import Editor, { EditorType } from '@toast-ui/editor';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import './ToastHtmlEditor.scss';

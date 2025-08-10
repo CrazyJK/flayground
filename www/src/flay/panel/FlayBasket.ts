@@ -1,4 +1,4 @@
-import { EVENT_BASKET_ADD } from '@/GroundConstant';
+import { EVENT_BASKET_ADD } from '@const/GroundConstant';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';

@@ -1,4 +1,4 @@
-import FlayAttach from '@/attach/FlayAttach';
+import FlayAttach from '@attach/FlayAttach';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import weatherSVG from '@svg/weathers';

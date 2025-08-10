@@ -1,4 +1,4 @@
-import { EVENT_CHANGE_TITLE } from '@/GroundConstant';
+import { EVENT_CHANGE_TITLE } from '@const/GroundConstant';
 import FlayStorage from '@lib/FlayStorage';
 import windowButton from '@svg/windowButton';
 

@@ -68,14 +68,16 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.js', '.json', '.scss', '.css'], // .ts 확장자 추가
     alias: {
-      '@': path.resolve(__dirname, 'src'),
-      '@lib': path.resolve(__dirname, 'src/lib'),
-      '@ui': path.resolve(__dirname, 'src/ui'),
+      '@attach': path.resolve(__dirname, 'src/attach'),
+      '@const': path.resolve(__dirname, 'src/const'),
+      '@diary': path.resolve(__dirname, 'src/diary'),
       '@flay': path.resolve(__dirname, 'src/flay'),
       '@image': path.resolve(__dirname, 'src/image'),
+      '@lib': path.resolve(__dirname, 'src/lib'),
       '@movie': path.resolve(__dirname, 'src/movie'),
-      '@svg': path.resolve(__dirname, 'src/svg'),
       '@nav': path.resolve(__dirname, 'src/nav'),
+      '@svg': path.resolve(__dirname, 'src/svg'),
+      '@ui': path.resolve(__dirname, 'src/ui'),
     },
   },
   plugins: [

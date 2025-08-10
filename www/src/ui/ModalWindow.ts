@@ -1,4 +1,4 @@
-import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, ModalEdge, ModalMode, nextWindowzIndex } from '@/GroundConstant';
+import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, ModalEdge, ModalMode, nextWindowzIndex } from '@const/GroundConstant';
 import FlayStorage from '@lib/FlayStorage';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import windowButton from '@svg/windowButton';

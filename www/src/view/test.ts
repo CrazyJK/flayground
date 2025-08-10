@@ -1,4 +1,4 @@
-import { MODAL_EDGE, MODAL_MODE } from '@/GroundConstant';
+import { MODAL_EDGE, MODAL_MODE } from '@const/GroundConstant';
 import RandomUtils from '@lib/RandomUtils';
 import fetchJsonp from '@lib/fetchJsonp';
 import { Countdown } from '@ui/Countdown';

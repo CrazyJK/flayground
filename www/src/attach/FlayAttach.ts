@@ -1,5 +1,6 @@
 import ApiClient from '@lib/ApiClient';
 import windowButton from '@svg/windowButton';
+import StringUtils from '../lib/StringUtils';
 import './FlayAttach.scss';
 
 interface AttachFile {
@@ -163,7 +164,18 @@ export default class FlayAttach extends HTMLElement {
       name: name ?? 'attach',
       attachFiles: [],
     };
-    this.setFile();
+    if (!StringUtils.isBlank(this.attach.id)) {
+      void fetch('/api/v1/attach/' + this.attach.id).then((response) => {
+        if (response.ok) {
+          void response.json().then((attach: Attach) => {
+            this.changeCallback(attach);
+          });
+        }
+      });
+    } else {
+      // ID가 없는 경우 처리
+      this.changeCallback(this.attach);
+    }
   }
 
   /**

@@ -53,7 +53,7 @@ export class FlayPackPanel extends HTMLElement {
     const flayList = await FlayFetch.getFlayAll();
 
     const totalShotSquared = flayList.reduce((acc, flay) => acc + ((flay.video.likes?.length || 0) + 1) ** 2, 0);
-    const areaPercentage = this.#strategy === 'circle' ? 0.3 : 0.7; // 사용할 화면 영역 비율
+    const areaPercentage = this.#strategy === 'circle' ? 0.33 : 0.75; // 사용할 화면 영역 비율
     const areaMultiplier = Math.round(Math.sqrt((window.innerWidth * window.innerHeight * areaPercentage) / totalShotSquared));
     const fieldToSortBy = RandomUtils.getRandomElementFromArray(['studio', 'actress', 'release', 'likes']);
 

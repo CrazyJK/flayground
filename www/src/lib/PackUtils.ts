@@ -1,6 +1,5 @@
-export const PackStrategies = ['bottomLeft', 'topLeft', 'circle'] as const;
-export type PackStrategy = (typeof PackStrategies)[number];
-
+export const PackStrategies: PackStrategy[] = ['bottomLeft', 'topLeft', 'circle'];
+export type PackStrategy = 'bottomLeft' | 'topLeft' | 'circle';
 export interface PackOptions {
   gap: number; // 요소 간의 간격 (기본값: 4px)
   padding: number; // 컨테이너의 패딩 (기본값: 0px)

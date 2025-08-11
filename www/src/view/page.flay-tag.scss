@@ -3,6 +3,7 @@ body {
     > div {
       flex-wrap: wrap;
       gap: 0;
+
       > label {
         font-size: 16px;
         margin: 0;
@@ -12,8 +13,11 @@ body {
     }
   }
   > main {
+    padding-bottom: 3rem;
+
     flay-marker {
       width: 100%;
+      margin: 0.25rem auto;
     }
   }
 

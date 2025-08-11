@@ -26,6 +26,9 @@ body {
     right: 0;
     bottom: 0;
 
+    display: flex;
+    gap: 8px;
+
     background-color: var(--color-bg-transparent);
     border-top-left-radius: 1rem;
     padding: 0.5rem;

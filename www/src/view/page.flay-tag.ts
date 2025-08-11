@@ -24,6 +24,8 @@ tagContainer.addEventListener('change', () => {
       // flays 중복 제거
       const uniqueFlays = Array.from(new Set(flays.map((flay) => flay.opus))).map((opus) => flays.find((flay) => flay.opus === opus)!);
 
+      document.querySelector('#flayCount')!.innerHTML = uniqueFlays.length.toString();
+
       markerContainer.innerHTML = ''; // 기존 콘텐츠 제거
       markerContainer.append(...uniqueFlays.map((flay) => new FlayMarker(flay, { cover: true })));
     })

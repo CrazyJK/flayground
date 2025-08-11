@@ -44,7 +44,7 @@ export default class FlayMarker extends HTMLElement {
    * @param flay Flay 데이터
    * @param options 마커 옵션
    */
-  constructor(flay: Flay, options: Partial<FlayMarkerOptions> = {}) {
+  constructor(flay?: Flay, options: Partial<FlayMarkerOptions> = {}) {
     super();
 
     this.set(flay, options);
@@ -70,7 +70,7 @@ export default class FlayMarker extends HTMLElement {
     document.querySelector('.flay-tooltip')?.remove(); // Remove existing tooltip
   }
 
-  set(flay: Flay, options: Partial<FlayMarkerOptions> = {}): void {
+  set(flay?: Flay, options: Partial<FlayMarkerOptions> = {}): void {
     this.clear();
     if (!flay) {
       console.warn('FlayMarker: Flay data is required');

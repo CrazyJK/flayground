@@ -8,7 +8,7 @@ import './FlayMarkerFloat.scss';
 export class FlayMarkerFloat extends HTMLElement {
   #intervalIdOfMarker: number | undefined = undefined;
   #intervalIdOfShape: number | undefined = undefined;
-  #flayMarker = new FlayMarker({} as Flay);
+  #flayMarker = new FlayMarker();
   #opusProvider = new OpusProvider();
 
   connectedCallback(): void {

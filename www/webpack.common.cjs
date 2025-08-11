@@ -21,6 +21,7 @@ const entryPoints = {
     'page.flay-play-record': './src/view/page.flay-play-record.ts',
     'page.flay-basket': './src/view/page.flay-basket.ts',
     'page.flay-pack': './src/view/page.flay-pack.ts',
+    'page.flay-tag': './src/view/page.flay-tag.ts',
     'page.cover-popout': './src/view/page.cover-popout.ts',
     'page.dragndrop': './src/view/page.dragndrop.ts',
     'page.girls': './src/view/page.girls.ts',

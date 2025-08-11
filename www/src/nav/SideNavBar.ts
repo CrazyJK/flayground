@@ -14,6 +14,7 @@ const menuList = [
   { url: 'page.flay-all.html', name: 'flay all' },
   { url: 'page.flay-pack.html', name: 'flay pack' },
   { url: 'page.cover-popout.html', name: 'cover pop' },
+  { url: 'page.flay-tag.html', name: 'flay tag' },
   {},
   { url: 'page.flay-play.html', name: 'flay play' },
   { url: 'page.flay-play-record.html', name: 'play record' },

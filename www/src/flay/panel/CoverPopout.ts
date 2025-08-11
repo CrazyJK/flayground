@@ -24,7 +24,7 @@ export default class CoverPopout extends HTMLElement {
     this.#품번제공기 = new OpusProvider();
 
     this.classList.add('cover-popout', 'flay-div');
-    this.style.cssText = `position: relative; width: 100%; height: 100%; overflow: hidden;`;
+    this.style.cssText = `position: relative; display: block; width: 100%; height: 100%; overflow: hidden;`;
 
     this.countdown = this.appendChild(new Countdown());
     this.countdown.style.cssText = `position: absolute; right: 0; bottom: 0;`;

@@ -35,3 +35,4 @@ attachfileid
 FULLSIZE
 resizer
 normalscreen
+namjk

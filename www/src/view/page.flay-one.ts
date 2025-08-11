@@ -13,14 +13,14 @@ class Page {
     const flayCondition = document.querySelector('body > main > header')!.appendChild(new FlayCondition());
     const flayArticle = document.querySelector('body > main > article')!.appendChild(new FlayArticle({}));
 
-    flayCondition.addEventListener('fetch', async () => {
+    flayCondition.addEventListener('fetch', () => {
       this.opusList = flayCondition.opusList;
       this.opusIndexes = [];
-      await this.#show(flayArticle);
+      void this.#show(flayArticle);
     });
 
-    window.addEventListener('wheel', async (e) => {
-      if (e.deltaY > 0) await this.#show(flayArticle);
+    window.addEventListener('wheel', (e: WheelEvent) => {
+      if (e.deltaY > 0) void this.#show(flayArticle);
     });
   }
 

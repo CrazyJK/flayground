@@ -1,9 +1,11 @@
 $borderRadius: 0.5rem;
 
-.flay-article {
+flay-article {
   position: relative;
+  display: block;
 
   max-width: 900px;
+  width: 100%;
 
   margin: auto;
   border: 0;
@@ -112,7 +114,7 @@ $borderRadius: 0.5rem;
 }
 
 @media (prefers-color-scheme: dark) {
-  .flay-article {
+  flay-article {
     dl {
       dt,
       dd {

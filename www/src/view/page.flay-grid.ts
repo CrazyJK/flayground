@@ -46,7 +46,7 @@ class Page {
     for (let i = 0; i < Number.MAX_SAFE_INTEGER; i++) {
       if (this.#opusList.length < 1) break;
 
-      const lastArticleTop = document.querySelector('main > div:last-child')?.getBoundingClientRect().top ?? 0;
+      const lastArticleTop = document.querySelector('main > flay-article:last-child')?.getBoundingClientRect().top ?? 0;
       if (lastArticleTop > window.innerHeight) break;
 
       const opus = this.#opusList.shift();

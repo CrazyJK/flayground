@@ -30,7 +30,7 @@ export interface ImageCircleOptions {
 }
 
 const CSS_CLASSES = {
-  base: ['image-circle', 'flay-div'] as const,
+  base: ['flay-div'] as const,
   shapes: { circle: 'circle', square: 'square', rounded: 'rounded' } as const,
   effects: { emboss: 'emboss', engrave: 'engrave' } as const,
   event: 'event-allow' as const,
@@ -95,7 +95,7 @@ export class ImageCircle extends HTMLElement {
   static shapeTypes = CSS_CLASSES.shapes;
   static effectTypes = CSS_CLASSES.effects;
 
-  constructor(options: Partial<ImageCircleOptions> = {}) {
+  constructor(options: Partial<ImageCircleOptions> = ImageCircle.FULL_MODE_OPTIONS(document.body)) {
     super();
 
     this.classList.add(...CSS_CLASSES.base);

@@ -13,7 +13,7 @@ import '@flay/domain/part/FlayTag';
 import FlayTag from '@flay/domain/part/FlayTag';
 import '@flay/domain/part/FlayTitle';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import PlayTimeDB from '@flay/idb/PlayTimeDB';
+import PlayTimeDB, { PlayTimeRecord } from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
 import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
@@ -23,12 +23,9 @@ import './FlayVideoPlayer.scss';
 
 const db = new PlayTimeDB();
 
-interface FlayPlayTime {
-  opus: string;
-  time: number;
-}
-
-const getFlayPlayTime = async (opus: string) => await db.select(opus);
+const getFlayPlayTime = async (opus: string) => {
+  return (await db.select(opus)) as PlayTimeRecord;
+};
 
 interface PlayerOptions {
   controls: boolean;
@@ -201,11 +198,11 @@ export class FlayVideoPlayer extends HTMLElement {
    * @returns
    */
   async playRandomSeekOrContinuously(lastOffsetTime = 0) {
-    const dbFlayPlayTime = (await getFlayPlayTime(this.opus!)) as FlayPlayTime;
+    const dbFlayPlayTime = await getFlayPlayTime(this.opus!);
 
     const endTime = this.flayVideo.duration;
     const lastTime = endTime - lastOffsetTime;
-    const prevTime = dbFlayPlayTime['time'] || endTime + 1;
+    const prevTime = dbFlayPlayTime?.time || endTime + 1;
     const seekTime = lastTime < prevTime ? RandomUtils.getRandomInt(1, lastTime) : prevTime;
 
     await this.seek(seekTime);

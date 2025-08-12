@@ -38,7 +38,7 @@ export class FacadeWebMovie extends HTMLElement {
     this.video.volume = 0.5;
     this.video.playsInline = true; // 모바일에서 인라인 재생
 
-    // 비디오 종료 시 서서히 사라지는 이벤트 리스너
+    // 비디오 종료 시 페이드 아웃 애니메이션
     this.video.addEventListener('ended', this.handleVideoEnded.bind(this));
 
     // 에러 처리
@@ -111,11 +111,7 @@ export class FacadeWebMovie extends HTMLElement {
     }
 
     return new Promise<boolean>((resolve) => {
-      const handleEnded = (): void => {
-        this.video.removeEventListener('ended', handleEnded);
-        resolve(true);
-      };
-      this.video.addEventListener('ended', handleEnded);
+      this.video.addEventListener('ended', () => resolve(true), { once: true });
     });
   }
 }

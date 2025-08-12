@@ -37,8 +37,7 @@
     "DotJoshJohnson.xml",
     "github.copilot-chat",
     "ms-vscode.vscode-typescript-next",
-    "ms-vscode.vscode-json",
-    "usernamehw.errorlens"
+    "ms-vscode.vscode-json"
   ],
   "unwantedRecommendations": ["ms-vscode.vscode-javascript"]
 }

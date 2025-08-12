@@ -85,7 +85,7 @@ async function renderFlayCardList(opusList: string[]) {
 }
 
 function toggleByRank(selectedRank: string) {
-  document.querySelectorAll('.flay-card').forEach((element) => {
+  document.querySelectorAll('flay-card').forEach((element) => {
     const flayCard = element as FlayCard;
 
     if (selectedRank === '') {
@@ -105,7 +105,7 @@ function countFlaySizeByRank() {
   const flaySizeByRank = [0, 0, 0, 0, 0, 0];
   let sumRank = 0;
   let totalFlay = 0;
-  document.querySelectorAll('.flay-card').forEach((element) => {
+  document.querySelectorAll('flay-card').forEach((element) => {
     const flayCard = element as FlayCard;
     const rank = parseInt(flayCard.getAttribute('rank')!);
     flaySizeByRank[rank]! += 1;

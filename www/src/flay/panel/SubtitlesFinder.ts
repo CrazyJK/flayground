@@ -50,7 +50,6 @@ export default class SubtitlesFinder extends HTMLElement {
         const subtitles = this.querySelector('#opus_' + opus + ' > .subtitles')!;
         subtitles.innerHTML = 'finding...';
 
-        // const $sub = $('#' + opus + ' > .flay-subtitles').html('finding...'); // mark current active
         void FlayAction.subtitlesUrlIfFound(
           opus!,
           (result) => {

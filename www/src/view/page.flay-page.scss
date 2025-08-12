@@ -23,9 +23,9 @@ body {
 }
 
 @media screen and (min-width: 1440px) {
-  body > main > article > .flay-page {
-    .flay-cover,
-    .flay-actress {
+  body > main > article > flay-page {
+    flay-cover,
+    flay-actress {
       max-width: 70rem;
     }
   }

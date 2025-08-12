@@ -187,7 +187,7 @@ window.emitMessage = (...datas: unknown[]): void => {
  * @param flay 업데이트된 Flay 객체
  */
 function emitFlay(flay: Flay): void {
-  document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     const element = flayElement as FlayElement;
     if (element.opus === flay.opus) {
       element.reload();
@@ -200,7 +200,7 @@ function emitFlay(flay: Flay): void {
  * @param video 업데이트된 Video 객체
  */
 function emitVideo(video: Video): void {
-  document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     const element = flayElement as FlayElement;
     if (element.opus === video.opus) {
       element.reload();
@@ -213,7 +213,7 @@ function emitVideo(video: Video): void {
  * @param studio 업데이트된 Studio 객체
  */
 function emitStudio(studio: Studio): void {
-  document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     const element = flayElement as FlayElement;
     if (element.flay.studio === studio.name) {
       element.reload();
@@ -226,7 +226,7 @@ function emitStudio(studio: Studio): void {
  * @param actress 업데이트된 Actress 객체
  */
 function emitActress(actress: Actress): void {
-  document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     const element = flayElement as FlayElement;
     if (element.flay.actressList.includes(actress.name)) {
       element.reload();
@@ -239,7 +239,7 @@ function emitActress(actress: Actress): void {
  * @param _tag 업데이트된 Tag 객체 (사용되지 않음)
  */
 function emitTag(_tag: Tag): void {
-  document.querySelectorAll('.flay-page, .flay-card, .flay-video-player').forEach((flayElement) => {
+  document.querySelectorAll('flay-page, flay-card, flay-video-player').forEach((flayElement) => {
     const element = flayElement as FlayElement;
     element.reload();
   });

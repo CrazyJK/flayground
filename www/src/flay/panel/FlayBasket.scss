@@ -1,4 +1,4 @@
-.flay-basket {
+flay-basket {
   position: absolute;
   inset: 0;
   overflow: hidden;
@@ -45,7 +45,7 @@
   }
 
   #basketList {
-    .flay-basket-item {
+    flay-basket-item {
       background-color: var(--color-bg-transparent);
       border: 1px solid var(--color-border);
       border-radius: 0.25rem;

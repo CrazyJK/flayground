@@ -15,7 +15,7 @@ import '@flay/domain/part/FlayTitle';
 import FlayTitle from '@flay/domain/part/FlayTitle';
 import PlayTimeDB, { PlayTimeRecord } from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
-import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
+import FlayFetch, { Actress, BlankFlay, Flay } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import FlayVideo from './FlayVideoElement';
@@ -335,7 +335,7 @@ export const playInLayer = async (opus: string) => {
 
   const videoPlayer = layer.querySelector('flay-video-player') as FlayVideoPlayer;
   if (prevOpus !== opus) {
-    await videoPlayer.load(opus, {} as Flay, [] as Actress[]);
+    await videoPlayer.load(opus, BlankFlay, [] as Actress[]);
     await videoPlayer.playRandomSeekOrContinuously();
   } else {
     await videoPlayer.play();

@@ -1,7 +1,7 @@
-import { Flay } from '@lib/FlayFetch';
+import { BlankFlay, Flay } from '@lib/FlayFetch';
 
 export default class FlayHTMLElement extends HTMLElement {
-  flay: Flay = {} as Flay;
+  flay: Flay = BlankFlay;
   inCard: boolean = false;
 
   static get observedAttributes(): string[] {

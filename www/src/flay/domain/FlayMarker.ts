@@ -1,6 +1,6 @@
 import { FlayTooltip } from '@flay/domain/FlayTooltip';
 import ApiClient from '@lib/ApiClient';
-import { Flay } from '@lib/FlayFetch';
+import { BlankFlay, Flay } from '@lib/FlayFetch';
 import { popupFlay } from '@lib/FlaySearch';
 import StyleUtils from '@lib/StyleUtils';
 import favorite from '@svg/favorite';
@@ -36,7 +36,7 @@ const DEFAULT_OPTIONS: FlayMarkerOptions = {
  */
 export default class FlayMarker extends HTMLElement {
   /** Flay 데이터 */
-  flay: Flay = {} as Flay;
+  flay: Flay = BlankFlay;
   #options: FlayMarkerOptions = { ...DEFAULT_OPTIONS };
 
   /**
@@ -62,7 +62,7 @@ export default class FlayMarker extends HTMLElement {
   }
 
   clear(): void {
-    this.flay = {} as Flay;
+    this.flay = BlankFlay;
     this.#options = { ...DEFAULT_OPTIONS };
     this.classList.remove(...SHAPES);
     this.classList.remove('active', 'shot', 'archive');

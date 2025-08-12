@@ -46,6 +46,7 @@ class PopupActress {
       console.error('Name parameter is missing');
       return;
     }
+    this.name = name;
     this.startDate = urlParams.get('s');
     this.endDate = urlParams.get('e');
 

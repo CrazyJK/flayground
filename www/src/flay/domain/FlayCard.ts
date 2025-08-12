@@ -8,7 +8,7 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import FlayFetch, { Actress, Flay, FlayFiles as FlayFilesType, FullyFlay, Video } from '@lib/FlayFetch';
+import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/FlayFetch';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import './FlayCard.scss';
 
@@ -17,7 +17,7 @@ import './FlayCard.scss';
  */
 export default class FlayCard extends HTMLElement {
   opus: string = '';
-  flay: Flay = {} as Flay;
+  flay: Flay = BlankFlay;
   actress: Actress[] = [];
   excludes: string[] = [];
 
@@ -184,8 +184,8 @@ export default class FlayCard extends HTMLElement {
       actressPoint: 0,
       studioPoint: 0,
       archive: false,
-      video: {} as Video,
-      files: {} as FlayFilesType,
+      video: BlankFlay.video,
+      files: BlankFlay.files,
       length: 0,
       lastModified: 0,
     };

@@ -1,11 +1,11 @@
 import DateUtils from '@lib/DateUtils';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
+import FlayFetch, { BlankFlay, Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupFlayInfo } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import './FlayArticle.scss';
 
 export default class FlayArticle extends HTMLElement {
-  flay: Flay = {} as Flay;
+  flay: Flay = BlankFlay;
 
   constructor(args: { mode?: string }) {
     super();

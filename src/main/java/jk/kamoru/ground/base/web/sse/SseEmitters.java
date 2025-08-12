@@ -1,9 +1,11 @@
 package jk.kamoru.ground.base.web.sse;
 
 import java.io.IOException;
-import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -26,14 +28,26 @@ public class SseEmitters {
   private final List<SseEmitter> sseEmitters = new CopyOnWriteArrayList<>();
 
   protected SseEmitter create() {
-    final Long TIMEOUT = Duration.ofHours(6).toMillis();
-    SseEmitter sseEmitter = new SseEmitter(TIMEOUT);
+    SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+
+    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
+    executor.scheduleAtFixedRate(() -> {
+      try {
+        sseEmitter.send(SseEmitter.event().name("heartbeat").data("ping"));
+      } catch (Exception e) {
+        sseEmitter.completeWithError(e);
+        executor.shutdown();
+      }
+    }, 0, 5, TimeUnit.MINUTES);
+
     sseEmitter.onCompletion(() -> {
       log.debug("{} onCompletion", sseEmitter);
+      executor.shutdown();
       remove(sseEmitter);
     });
     sseEmitter.onTimeout(() -> {
       log.debug("{} onTimeout", sseEmitter);
+      executor.shutdown();
       sseEmitter.complete();
     });
     sseEmitter.onError((e) -> {

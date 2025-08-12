@@ -62,6 +62,11 @@ sse.onmessage = (e: MessageEvent) => {
  * Event name: CONNECT, FLAY, STUDIO, VIDEO, ACTRESS, TAG, MESSAGE
  */
 
+sse.addEventListener('heartbeat', (e: MessageEvent) => {
+  // 하트비트 무시 (연결 유지용)
+  console.debug('<< Heartbeat received', e);
+});
+
 sse.addEventListener('CONNECT', (e: MessageEvent) => {
   const { data: receivedConnectData } = e;
   console.debug('<< connected', receivedConnectData);

@@ -1,4 +1,4 @@
-.flay-video-player {
+flay-video-player {
   position: relative;
   display: flex;
   opacity: 0;
@@ -21,7 +21,7 @@
     }
   }
 
-  .flay-video-info {
+  flay-video-info {
     position: absolute;
     top: 0;
     width: 100%;
@@ -36,6 +36,11 @@
       display: flex;
       justify-content: center;
       width: 100%;
+
+      .flay-div {
+        margin: auto 0.25rem;
+        padding: 0.25rem;
+      }
     }
 
     .header {
@@ -46,7 +51,7 @@
     }
   }
 
-  .flay-video-poster {
+  flay-video-poster {
     position: absolute;
     top: 0;
     left: 0;
@@ -68,12 +73,12 @@
   }
 
   &:hover {
-    .flay-video-info {
+    flay-video-info {
       opacity: 1;
       z-index: 2;
     }
   }
-  .flay-video-info:hover + .flay-video-poster {
+  flay-video-info:hover + flay-video-poster {
     opacity: 1;
     z-index: 1;
     transition: 0.4s 0.2s;

@@ -1,4 +1,12 @@
 facade-web-movie {
+  position: relative;
+  display: block;
+  width: 30rem;
+  max-width: 50%;
+  margin: 0 auto;
+  object-fit: cover;
+  clip-path: circle(50% at 50% 50%);
+
   video {
     width: 100%;
     height: 100%;

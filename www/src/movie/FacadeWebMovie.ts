@@ -23,34 +23,17 @@ export class FacadeWebMovie extends HTMLElement {
 
     this.video = this.appendChild(document.createElement('video'));
 
-    // 원형 모양으로 클리핑
-    this.style.clipPath = 'circle(50% at 50% 50%)';
-    this.style.width = '30rem';
-    this.style.maxWidth = '50%';
-    this.style.objectFit = 'cover'; // 비디오가 컨테이너에 맞게 조정
-    this.style.display = 'block'; // 블록 요소로 표시
-    this.style.margin = '0 auto'; // 중앙 정렬
-
     // 비디오 속성 설정
     this.video.autoplay = true;
     this.video.loop = false;
-    // this.video.muted = true; // 자동 재생을 위해 음소거 설정
-    this.video.volume = 0.5;
     this.video.playsInline = true; // 모바일에서 인라인 재생
+    this.video.volume = 0.5;
+    // this.video.muted = true; // 자동 재생을 위해 음소거 설정
 
-    // 비디오 종료 시 페이드 아웃 애니메이션
-    this.video.addEventListener('ended', this.handleVideoEnded.bind(this));
-
-    // 에러 처리
-    this.video.addEventListener('error', this.handleVideoError.bind(this));
-
-    // 로딩 시작 시 스타일 설정
-    this.video.addEventListener('loadstart', this.handleLoadStart.bind(this));
-
-    // 클릭시 muted 설정 해제
-    this.video.addEventListener('click', (): void => {
-      this.video.muted = !this.video.muted;
-    });
+    this.video.addEventListener('loadstart', this.handleLoadStart.bind(this)); // 로딩 시작 시 스타일 설정
+    this.video.addEventListener('error', this.handleVideoError.bind(this)); // 에러 처리
+    this.video.addEventListener('ended', this.handleVideoEnded.bind(this)); // 비디오 종료 시 페이드 아웃 애니메이션
+    this.video.addEventListener('click', this.toggleMute.bind(this));
   }
 
   /**
@@ -71,6 +54,22 @@ export class FacadeWebMovie extends HTMLElement {
         console.error('FacadeWebMovie: API 호출 실패:', error);
         this.handleVideoError();
       });
+  }
+
+  disconnectedCallback(): void {
+    this.video.pause();
+    this.video.src = ''; // 비디오 소스 초기화
+    this.video.removeEventListener('loadstart', this.handleLoadStart.bind(this));
+    this.video.removeEventListener('error', this.handleVideoError.bind(this));
+    this.video.removeEventListener('ended', this.handleVideoEnded.bind(this));
+    this.video.removeEventListener('click', this.toggleMute.bind(this));
+  }
+
+  /**
+   * 음소거 토글
+   */
+  private toggleMute(): void {
+    this.video.muted = !this.video.muted;
   }
 
   /**

@@ -57,15 +57,12 @@ export class FacadeWebMovie extends HTMLElement {
    * 비디오가 DOM에 연결될 때 실행
    */
   connectedCallback(): void {
-    ApiClient.get('/todayis')
-      .then((response: unknown) => {
-        // 타입 가드를 사용하여 안전하게 타입 체크
-        if (this.isTodayListValid(response)) {
-          // 타입 가드로 이미 TodayItem[]로 타입이 좁혀졌으므로 타입 단언 불필요
-          if (response.length > 0) {
-            const randomToday = RandomUtils.getRandomElementFromArray(response);
-            this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomToday.uuid}`);
-          }
+    ApiClient.get<TodayItem[]>('/todayis')
+      .then((todayItems) => {
+        if (todayItems !== null && todayItems.length > 0) {
+          const randomTodayItem = RandomUtils.getRandomElementFromArray(todayItems);
+          console.log('FacadeWebMovie: 선택된 오늘의 아이템', randomTodayItem);
+          this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomTodayItem.uuid}`);
         } else {
           console.warn('FacadeWebMovie: API 응답 형식이 올바르지 않습니다.');
         }
@@ -74,20 +71,6 @@ export class FacadeWebMovie extends HTMLElement {
         console.error('FacadeWebMovie: API 호출 실패:', error);
         this.handleVideoError();
       });
-  }
-
-  /**
-   * 개별 아이템이 TodayItem 타입인지 확인
-   */
-  private isTodayItem(item: unknown): item is TodayItem {
-    return typeof item === 'object' && item !== null && typeof (item as Record<string, unknown>)['name'] === 'string' && typeof (item as Record<string, unknown>)['uuid'] === 'string';
-  }
-
-  /**
-   * API 응답이 유효한 TodayItem 배열인지 확인하는 타입 가드
-   */
-  private isTodayListValid(response: unknown): response is TodayItem[] {
-    return Array.isArray(response) && response.every((item: unknown) => this.isTodayItem(item));
   }
 
   /**

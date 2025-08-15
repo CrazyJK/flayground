@@ -9,7 +9,7 @@ flay-page {
   max-width: 800px;
   max-height: 100%;
 
-  & > .flay-div:not(flay-cover) {
+  & > .ground-flay:not(flay-cover) {
     margin: 0.125rem auto;
     padding: 0 0.5rem;
     min-height: 2rem;

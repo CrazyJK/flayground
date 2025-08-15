@@ -36,19 +36,15 @@ export default class FlayImage extends GroundImage {
   }
 
   static get observedAttributes(): string[] {
-    return ['data-idx', 'src'];
+    return ['data-idx'];
   }
 
   attributeChangedCallback(name: string, _: string | null, newValue: string | null): void {
-    switch (name) {
-      case 'data-idx':
-        this.#image.src = ApiClient.buildUrl('/static/image/' + newValue);
-        break;
-      case 'src':
-        this.#loadInfo();
-        this.#updateMagnifierImage();
-        break;
-    }
+    if (name !== 'data-idx') return;
+
+    this.#image.src = ApiClient.buildUrl('/static/image/' + newValue);
+    this.#loadInfo();
+    this.#updateMagnifierImage();
   }
 
   connectedCallback(): void {
@@ -83,38 +79,44 @@ export default class FlayImage extends GroundImage {
   }
 
   #loadInfo(): void {
-    const idx = Number(this.#image.src?.split('/').pop());
+    const idx = this.dataset.idx ? parseInt(this.dataset.idx, 10) : -1;
     if (idx < 0) {
       this.removeAttribute('alt');
       return;
     }
 
-    void this.#image.decode().then(() =>
-      FlayFetch.getImage(idx)
-        .then((domain) => {
-          if (domain === null) {
+    void this.#image
+      .decode()
+      .then(() => {
+        FlayFetch.getImage(idx)
+          .then((domain) => {
+            if (domain === null) {
+              this.removeAttribute('alt');
+              return;
+            }
+            domain['width'] = this.#image.naturalWidth;
+            domain['height'] = this.#image.naturalHeight;
+
+            this.dataset.name = domain.name;
+            this.dataset.path = domain.path;
+            this.dataset.file = domain.file;
+            this.dataset.fileSize = FileUtils.prettySize(domain.length).join('');
+            this.dataset.modified = DateUtils.format(domain.modified, 'yyyy-MM-dd');
+            this.dataset.width = String(domain.width);
+            this.dataset.height = String(domain.height);
+            this.#image.alt = `※ Idx: ${domain.idx}\n※ Path: ${domain.path}\n※ Name: ${domain.name}\n※ Size: ${domain.width} x ${domain.height}`;
+
+            this.dispatchEvent(new CustomEvent<{ info: ImageDomain }>('loaded', { detail: { info: domain } }));
+          })
+          .catch((error: unknown) => {
+            console.error('Error loading image info:', error);
             this.removeAttribute('alt');
-            return;
-          }
-          domain['width'] = this.#image.naturalWidth;
-          domain['height'] = this.#image.naturalHeight;
-
-          this.dataset.name = domain.name;
-          this.dataset.path = domain.path;
-          this.dataset.file = domain.file;
-          this.dataset.fileSize = FileUtils.prettySize(domain.length).join('');
-          this.dataset.modified = DateUtils.format(domain.modified, 'yyyy-MM-dd');
-          this.dataset.width = String(domain.width);
-          this.dataset.height = String(domain.height);
-          this.#image.alt = `※ Idx: ${domain.idx}\n※ Path: ${domain.path}\n※ Name: ${domain.name}\n※ Size: ${domain.width} x ${domain.height}`;
-
-          this.dispatchEvent(new CustomEvent<{ info: ImageDomain }>('loaded', { detail: { info: domain } }));
-        })
-        .catch((error: unknown) => {
-          console.error('Error loading image info:', error);
-          this.removeAttribute('alt');
-        })
-    );
+          });
+      })
+      .catch((error: unknown) => {
+        console.error('Error loading image info:', error);
+        this.removeAttribute('alt');
+      });
   }
 
   #initMagnifier(): void {

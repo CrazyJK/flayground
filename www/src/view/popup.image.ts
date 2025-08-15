@@ -1,6 +1,6 @@
 import FlayImage from '@image/part/FlayImage';
 import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch, { ImageDomain } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import folderSVG from '@svg/folder';
 import trashBin from '@svg/trashBin';
@@ -71,7 +71,9 @@ const animateResize = (targetWidth: number, targetHeight: number, duration = 100
 };
 
 const imageLoadHandler = (e: Event) => {
-  const { idx, name, width, height } = (e as CustomEvent).detail.info;
+  const detail = (e as CustomEvent<{ info: ImageDomain }>).detail;
+  console.log('Image loaded:', detail);
+  const { idx, name, width, height } = detail.info;
   document.title = `${idx} - ${name}`;
   animateResize(width, height);
 };

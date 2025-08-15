@@ -1,4 +1,3 @@
-import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '@base/GroundConstant';
 import GroundFlay from '@base/GroundFlay';
 import { FlayVideoPlayer } from '@flay/panel/FlayVideoPlayer';
 import { FlayProvider } from '@lib/FlayProvider';
@@ -7,6 +6,7 @@ import RandomUtils from '@lib/RandomUtils';
 import TimeUtils from '@lib/TimeUtils';
 import basketSVG from '@svg/basket';
 import controlsSVG from '@svg/controls';
+import { ModalWindow } from '@ui/ModalWindow';
 import './FlayVideoViewPanel.scss';
 
 /** Window 객체에 알림 함수 추가 */
@@ -214,7 +214,7 @@ export class FlayVideoViewPanel extends GroundFlay {
     this.querySelector('#keepFlay')!.addEventListener('click', async () => {
       const { FlayBasket } = await import(/* webpackChunkName: "FlayBasket" */ './FlayBasket');
       FlayBasket.add(this.videoPlayer.opus!);
-      this.dispatchEvent(new CustomEvent(EVENT_BASKET_ADD, { bubbles: true }));
+      this.dispatchEvent(new CustomEvent(FlayBasket.EVENT_BASKET_ADD, { bubbles: true }));
     });
   }
 
@@ -227,7 +227,7 @@ export class FlayVideoViewPanel extends GroundFlay {
   /** 랜덤한 Flay를 선택하여 재생을 시작합니다. */
   async play() {
     const { opus, flay, actress } = await this.flayProvider.random();
-    this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `[${flay.opus}] ${flay.actressList.join(',')} - ${flay.title}` } }));
+    this.dispatchEvent(new CustomEvent(ModalWindow.EVENT_CHANGE_TITLE, { detail: { title: `[${flay.opus}] ${flay.actressList.join(',')} - ${flay.title}` } }));
     this.dispatchEvent(new CustomEvent('flay-load', { detail: { opus, flay, actress } }));
 
     try {

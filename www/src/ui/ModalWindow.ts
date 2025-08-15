@@ -1,4 +1,4 @@
-import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, ModalEdge, ModalMode, nextWindowzIndex } from '@base/GroundConstant';
+import { nextWindowzIndex } from '@base/GroundConstant';
 import GroundUI from '@base/GroundUI';
 import FlayStorage from '@lib/FlayStorage';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -6,6 +6,12 @@ import windowButton from '@svg/windowButton';
 import './ModalWindow.scss';
 
 const OFFSET = 4; // 창의 가장자리 여백
+
+/** 모달 윈도우 모드 타입 */
+export type ModalMode = (typeof ModalWindow.MODE)[keyof typeof ModalWindow.MODE];
+
+/** 모달 윈도우 가장자리 타입 */
+export type ModalEdge = (typeof ModalWindow.EDGE)[keyof typeof ModalWindow.EDGE];
 
 interface ModalWindowOptions {
   id?: string;
@@ -36,19 +42,41 @@ interface CustomTitleChangeEvent extends CustomEvent {
   };
 }
 
-const DEFAULT_OPTS: Required<ModalWindowOptions> = {
-  id: '',
-  top: 0,
-  left: 0,
-  width: 0,
-  height: 0,
-  minWidth: 200,
-  minHeight: 100,
-  edges: [],
-  initialMode: MODAL_MODE.NORMAL,
-}; // 창의 기본 옵션
-
 export class ModalWindow extends GroundUI {
+  static readonly MODE = {
+    NORMAL: 'normal',
+    MINIMIZE: 'minimize',
+    MAXIMIZE: 'maximize',
+    TERMINATE: 'terminate',
+  } as const;
+
+  static readonly EDGE = {
+    TOP: 'top',
+    LEFT: 'left',
+    RIGHT: 'right',
+    BOTTOM: 'bottom',
+    CENTER: 'center',
+    TOP_LEFT: 'top-left',
+    TOP_RIGHT: 'top-right',
+    BOTTOM_LEFT: 'bottom-left',
+    BOTTOM_RIGHT: 'bottom-right',
+  } as const;
+
+  static readonly DEFAULT_OPTS: Required<ModalWindowOptions> = {
+    id: '',
+    top: 0,
+    left: 0,
+    width: 0,
+    height: 0,
+    minWidth: 200,
+    minHeight: 100,
+    edges: [],
+    initialMode: ModalWindow.MODE.NORMAL,
+  } as const;
+
+  /** 타이틀 변경 요청 이벤트 */
+  static readonly EVENT_CHANGE_TITLE = 'changeTitle';
+
   #top = 0; // 창의 상단 위치
   #left = 0; // 창의 좌측 위치
   #width = 0; // 창의 너비
@@ -56,7 +84,7 @@ export class ModalWindow extends GroundUI {
   #minWidth = 0; // 창의 최소 너비
   #minHeight = 0; // 창의 최소 높이
   #edges: ModalEdge[] = []; // 창의 위치를 고정시킬 엣지
-  #initialMode: ModalMode = MODAL_MODE.NORMAL; // 창의 초기 모드
+  #initialMode: ModalMode = ModalWindow.MODE.NORMAL; // 창의 초기 모드
 
   #prevHeight = 0; // 창의 이전 높이
   #prevMinHeight = 0; // 창의 이전 최소 높이
@@ -92,7 +120,7 @@ export class ModalWindow extends GroundUI {
   constructor(title = '', opts: ModalWindowOptions = {}) {
     super();
 
-    const { id, top, left, width, height, minWidth, minHeight, edges, initialMode } = { ...DEFAULT_OPTS, ...opts };
+    const { id, top, left, width, height, minWidth, minHeight, edges, initialMode } = { ...ModalWindow.DEFAULT_OPTS, ...opts };
     if (id) {
       this.id = id;
       // id가 있으면 id로 storage에 저장된 위치와 크기를 가져옴
@@ -129,14 +157,14 @@ export class ModalWindow extends GroundUI {
 
     this.innerHTML = `
       <div class="edges">
-        <div class="edge ${MODAL_EDGE.TOP}"></div>
-        <div class="edge ${MODAL_EDGE.LEFT}"></div>
-        <div class="edge ${MODAL_EDGE.RIGHT}"></div>
-        <div class="edge ${MODAL_EDGE.BOTTOM}"></div>
-        <div class="edge ${MODAL_EDGE.TOP_LEFT}"></div>
-        <div class="edge ${MODAL_EDGE.TOP_RIGHT}"></div>
-        <div class="edge ${MODAL_EDGE.BOTTOM_LEFT}"></div>
-        <div class="edge ${MODAL_EDGE.BOTTOM_RIGHT}"></div>
+        <div class="edge ${ModalWindow.EDGE.TOP}"></div>
+        <div class="edge ${ModalWindow.EDGE.LEFT}"></div>
+        <div class="edge ${ModalWindow.EDGE.RIGHT}"></div>
+        <div class="edge ${ModalWindow.EDGE.BOTTOM}"></div>
+        <div class="edge ${ModalWindow.EDGE.TOP_LEFT}"></div>
+        <div class="edge ${ModalWindow.EDGE.TOP_RIGHT}"></div>
+        <div class="edge ${ModalWindow.EDGE.BOTTOM_LEFT}"></div>
+        <div class="edge ${ModalWindow.EDGE.BOTTOM_RIGHT}"></div>
       </div>
       <div class="inner">
         <div class="title-panel">
@@ -144,9 +172,9 @@ export class ModalWindow extends GroundUI {
             <span>${title}</span>
           </div>
           <div class="buttons">
-            <button type="button" class="btn ${MODAL_MODE.MINIMIZE}" title="말기">${windowButton.minimize}</button>
-            <button type="button" class="btn ${MODAL_MODE.MAXIMIZE}" title="최대화">${windowButton.maximize}</button>
-            <button type="button" class="btn ${MODAL_MODE.TERMINATE}" title="닫기">${windowButton.terminate}</button>
+            <button type="button" class="btn ${ModalWindow.MODE.MINIMIZE}" title="말기">${windowButton.minimize}</button>
+            <button type="button" class="btn ${ModalWindow.MODE.MAXIMIZE}" title="최대화">${windowButton.maximize}</button>
+            <button type="button" class="btn ${ModalWindow.MODE.TERMINATE}" title="닫기">${windowButton.terminate}</button>
           </div>
         </div>
         <div class="body-panel">
@@ -163,24 +191,24 @@ export class ModalWindow extends GroundUI {
     this.#buttons = _inner.querySelector('.buttons')!;
 
     this.#titleBar_______ = _inner.querySelector('.title')!;
-    this.#edgeTopLine____ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP)!;
-    this.#edgeLeftLine___ = _edges.querySelector('.edge.' + MODAL_EDGE.LEFT)!;
-    this.#edgeRightLine__ = _edges.querySelector('.edge.' + MODAL_EDGE.RIGHT)!;
-    this.#edgeBottomLine_ = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM)!;
-    this.#edgeTopLeft____ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP_LEFT)!;
-    this.#edgeTopRight___ = _edges.querySelector('.edge.' + MODAL_EDGE.TOP_RIGHT)!;
-    this.#edgeBottomLeft_ = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM_LEFT)!;
-    this.#edgeBottomRight = _edges.querySelector('.edge.' + MODAL_EDGE.BOTTOM_RIGHT)!;
+    this.#edgeTopLine____ = _edges.querySelector('.edge.' + ModalWindow.EDGE.TOP)!;
+    this.#edgeLeftLine___ = _edges.querySelector('.edge.' + ModalWindow.EDGE.LEFT)!;
+    this.#edgeRightLine__ = _edges.querySelector('.edge.' + ModalWindow.EDGE.RIGHT)!;
+    this.#edgeBottomLine_ = _edges.querySelector('.edge.' + ModalWindow.EDGE.BOTTOM)!;
+    this.#edgeTopLeft____ = _edges.querySelector('.edge.' + ModalWindow.EDGE.TOP_LEFT)!;
+    this.#edgeTopRight___ = _edges.querySelector('.edge.' + ModalWindow.EDGE.TOP_RIGHT)!;
+    this.#edgeBottomLeft_ = _edges.querySelector('.edge.' + ModalWindow.EDGE.BOTTOM_LEFT)!;
+    this.#edgeBottomRight = _edges.querySelector('.edge.' + ModalWindow.EDGE.BOTTOM_RIGHT)!;
 
     this.#titleBar_______.addEventListener('mousedown', (e) => this.#startHandler(e, 'move'));
-    this.#edgeTopLine____.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.TOP));
-    this.#edgeLeftLine___.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.LEFT));
-    this.#edgeRightLine__.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.RIGHT));
-    this.#edgeBottomLine_.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM));
-    this.#edgeTopLeft____.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.TOP_LEFT));
-    this.#edgeTopRight___.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.TOP_RIGHT));
-    this.#edgeBottomLeft_.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM_LEFT));
-    this.#edgeBottomRight.addEventListener('mousedown', (e) => this.#startHandler(e, MODAL_EDGE.BOTTOM_RIGHT));
+    this.#edgeTopLine____.addEventListener('mousedown', (e) => this.#startHandler(e, ModalWindow.EDGE.TOP));
+    this.#edgeLeftLine___.addEventListener('mousedown', (e) => this.#startHandler(e, ModalWindow.EDGE.LEFT));
+    this.#edgeRightLine__.addEventListener('mousedown', (e) => this.#startHandler(e, ModalWindow.EDGE.RIGHT));
+    this.#edgeBottomLine_.addEventListener('mousedown', (e) => this.#startHandler(e, ModalWindow.EDGE.BOTTOM));
+    this.#edgeTopLeft____.addEventListener('mousedown', (e) => this.#startHandler(e, ModalWindow.EDGE.TOP_LEFT));
+    this.#edgeTopRight___.addEventListener('mousedown', (e) => this.#startHandler(e, ModalWindow.EDGE.TOP_RIGHT));
+    this.#edgeBottomLeft_.addEventListener('mousedown', (e) => this.#startHandler(e, ModalWindow.EDGE.BOTTOM_LEFT));
+    this.#edgeBottomRight.addEventListener('mousedown', (e) => this.#startHandler(e, ModalWindow.EDGE.BOTTOM_RIGHT));
 
     this.#titleBar_______.addEventListener('mouseup', () => this.#stopHandler());
     this.#edgeTopLine____.addEventListener('mouseup', () => this.#stopHandler());
@@ -194,9 +222,9 @@ export class ModalWindow extends GroundUI {
 
     document.addEventListener('mousemove', (e) => this.#moveHandler(e));
 
-    _inner.querySelector('.' + MODAL_MODE.MINIMIZE)!.addEventListener('click', () => this.#minimizeHandler());
-    _inner.querySelector('.' + MODAL_MODE.MAXIMIZE)!.addEventListener('click', () => this.#maximizeHandler());
-    _inner.querySelector('.' + MODAL_MODE.TERMINATE)!.addEventListener('click', () => this.#terminateHandler());
+    _inner.querySelector('.' + ModalWindow.MODE.MINIMIZE)!.addEventListener('click', () => this.#minimizeHandler());
+    _inner.querySelector('.' + ModalWindow.MODE.MAXIMIZE)!.addEventListener('click', () => this.#maximizeHandler());
+    _inner.querySelector('.' + ModalWindow.MODE.TERMINATE)!.addEventListener('click', () => this.#terminateHandler());
 
     this.addEventListener('mousedown', () => (this.style.zIndex = String(nextWindowzIndex())));
 
@@ -226,7 +254,7 @@ export class ModalWindow extends GroundUI {
   }
 
   override appendChild<T extends Node>(element: T): T {
-    element.addEventListener(EVENT_CHANGE_TITLE, (e: Event) => {
+    element.addEventListener(ModalWindow.EVENT_CHANGE_TITLE, (e: Event) => {
       const customEvent = e as CustomTitleChangeEvent;
       this.windowTitle = customEvent.detail.title;
     });
@@ -257,31 +285,31 @@ export class ModalWindow extends GroundUI {
   }
 
   #minimizeHandler() {
-    const toggled = this.classList.toggle(MODAL_MODE.MINIMIZE);
+    const toggled = this.classList.toggle(ModalWindow.MODE.MINIMIZE);
     if (toggled) {
       this.#prevHeight = this.#height;
       this.#height = this.clientHeight;
       this.#prevMinHeight = this.#minHeight;
       this.#minHeight = this.clientHeight;
 
-      if (this.#edges.includes(MODAL_EDGE.CENTER)) {
+      if (this.#edges.includes(ModalWindow.EDGE.CENTER)) {
         this.#containsEdgesCenter = true;
-        this.#edges = this.#edges.filter((edge) => edge !== MODAL_EDGE.CENTER);
+        this.#edges = this.#edges.filter((edge) => edge !== ModalWindow.EDGE.CENTER);
       }
-      this.#initialMode = MODAL_MODE.MINIMIZE;
+      this.#initialMode = ModalWindow.MODE.MINIMIZE;
     } else {
       this.#height = this.#prevHeight;
       this.#minHeight = this.#prevMinHeight;
-      if (this.#containsEdgesCenter) this.#edges.push(MODAL_EDGE.CENTER);
-      this.#initialMode = MODAL_MODE.NORMAL;
+      if (this.#containsEdgesCenter) this.#edges.push(ModalWindow.EDGE.CENTER);
+      this.#initialMode = ModalWindow.MODE.NORMAL;
     }
     this.dispatchEvent(new Event('resize', { bubbles: true }));
   }
 
   #maximizeHandler() {
-    const toggled = this.classList.toggle(MODAL_MODE.MAXIMIZE);
+    const toggled = this.classList.toggle(ModalWindow.MODE.MAXIMIZE);
     this.dispatchEvent(new Event('resize', { bubbles: true }));
-    this.#initialMode = toggled ? MODAL_MODE.MAXIMIZE : MODAL_MODE.NORMAL;
+    this.#initialMode = toggled ? ModalWindow.MODE.MAXIMIZE : ModalWindow.MODE.NORMAL;
   }
 
   #terminateHandler() {
@@ -335,18 +363,18 @@ export class ModalWindow extends GroundUI {
           this.#top += dy;
           this.#left += dx;
           break;
-        case MODAL_EDGE.TOP:
+        case ModalWindow.EDGE.TOP:
           this.#top += dy;
           this.#height -= dy;
           break;
-        case MODAL_EDGE.BOTTOM:
+        case ModalWindow.EDGE.BOTTOM:
           this.#height += dy;
           break;
-        case MODAL_EDGE.LEFT:
+        case ModalWindow.EDGE.LEFT:
           this.#left += dx;
           this.#width -= dx;
           break;
-        case MODAL_EDGE.RIGHT:
+        case ModalWindow.EDGE.RIGHT:
           this.#width += dx;
           break;
       }
@@ -382,38 +410,38 @@ export class ModalWindow extends GroundUI {
 
     // 코너에 붙어있는지 결정
     if (this.#edges.length === 0) {
-      if (this.#top === OFFSET) this.#edges.push(MODAL_EDGE.TOP);
-      if (this.#left === OFFSET) this.#edges.push(MODAL_EDGE.LEFT);
-      if (this.#left === window.innerWidth - this.#width - OFFSET) this.#edges.push(MODAL_EDGE.RIGHT);
-      if (this.#top === window.innerHeight - this.#height - OFFSET) this.#edges.push(MODAL_EDGE.BOTTOM);
+      if (this.#top === OFFSET) this.#edges.push(ModalWindow.EDGE.TOP);
+      if (this.#left === OFFSET) this.#edges.push(ModalWindow.EDGE.LEFT);
+      if (this.#left === window.innerWidth - this.#width - OFFSET) this.#edges.push(ModalWindow.EDGE.RIGHT);
+      if (this.#top === window.innerHeight - this.#height - OFFSET) this.#edges.push(ModalWindow.EDGE.BOTTOM);
     }
 
     this.#edges.forEach((edge) => {
       switch (edge) {
-        case MODAL_EDGE.TOP:
+        case ModalWindow.EDGE.TOP:
           this.#top = OFFSET;
-          if (this.#edges.includes(MODAL_EDGE.BOTTOM)) this.#height = window.innerHeight - OFFSET * 2;
+          if (this.#edges.includes(ModalWindow.EDGE.BOTTOM)) this.#height = window.innerHeight - OFFSET * 2;
           break;
-        case MODAL_EDGE.BOTTOM:
+        case ModalWindow.EDGE.BOTTOM:
           this.#top = window.innerHeight - this.#height - OFFSET;
-          if (this.#edges.includes(MODAL_EDGE.TOP)) this.#height = window.innerHeight - OFFSET * 2;
+          if (this.#edges.includes(ModalWindow.EDGE.TOP)) this.#height = window.innerHeight - OFFSET * 2;
           break;
-        case MODAL_EDGE.LEFT:
+        case ModalWindow.EDGE.LEFT:
           this.#left = OFFSET;
-          if (this.#edges.includes(MODAL_EDGE.RIGHT)) this.#width = window.innerWidth - OFFSET * 2;
+          if (this.#edges.includes(ModalWindow.EDGE.RIGHT)) this.#width = window.innerWidth - OFFSET * 2;
           break;
-        case MODAL_EDGE.RIGHT:
+        case ModalWindow.EDGE.RIGHT:
           this.#left = window.innerWidth - this.#width - OFFSET;
-          if (this.#edges.includes(MODAL_EDGE.LEFT)) this.#width = window.innerWidth - OFFSET * 2;
+          if (this.#edges.includes(ModalWindow.EDGE.LEFT)) this.#width = window.innerWidth - OFFSET * 2;
           break;
-        case MODAL_EDGE.CENTER:
+        case ModalWindow.EDGE.CENTER:
           this.#top = (window.innerHeight - this.#height) / 2;
           this.#left = (window.innerWidth - this.#width) / 2;
           break;
-        case MODAL_EDGE.TOP_LEFT:
-        case MODAL_EDGE.TOP_RIGHT:
-        case MODAL_EDGE.BOTTOM_LEFT:
-        case MODAL_EDGE.BOTTOM_RIGHT:
+        case ModalWindow.EDGE.TOP_LEFT:
+        case ModalWindow.EDGE.TOP_RIGHT:
+        case ModalWindow.EDGE.BOTTOM_LEFT:
+        case ModalWindow.EDGE.BOTTOM_RIGHT:
           // 복합 엣지는 개별 TOP, LEFT, RIGHT, BOTTOM 케이스에서 처리됨
           break;
       }
@@ -453,7 +481,7 @@ export class ModalWindow extends GroundUI {
         top: this.#top,
         left: this.#left,
         width: this.#width,
-        height: this.#initialMode === MODAL_MODE.NORMAL ? this.#height : this.#prevHeight,
+        height: this.#initialMode === ModalWindow.MODE.NORMAL ? this.#height : this.#prevHeight,
         minWidth: this.#minWidth,
         minHeight: this.#minHeight,
         edges: this.#edges,

@@ -1,7 +1,7 @@
-import { EVENT_CHANGE_TITLE } from '@base/GroundConstant';
 import GroundUI from '@base/GroundUI';
 import FlayStorage from '@lib/FlayStorage';
 import windowButton from '@svg/windowButton';
+import { ModalWindow } from '@ui/ModalWindow';
 
 export class BrowserPanel extends GroundUI {
   #input: HTMLInputElement;
@@ -94,7 +94,7 @@ export class BrowserPanel extends GroundUI {
     this.#iframe.addEventListener('load', () => {
       try {
         const title = new URL(this.#iframe.src).host + ' ' + this.#iframe.src.split('/').pop();
-        this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: title } }));
+        this.dispatchEvent(new CustomEvent(ModalWindow.EVENT_CHANGE_TITLE, { detail: { title: title } }));
       } catch (error) {
         console.warn(error);
       }

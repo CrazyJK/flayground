@@ -1,4 +1,3 @@
-import { EVENT_BASKET_ADD } from '@base/GroundConstant';
 import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
@@ -12,6 +11,9 @@ import './FlayBasket.scss';
 const BASKET_KEY = 'flay-basket';
 
 export class FlayBasket extends GroundFlay {
+  /** 바스켓에 flay 추가 이벤트 */
+  static readonly EVENT_BASKET_ADD = 'basket-add';
+
   flayListEl: HTMLElement;
   flayCountEl: HTMLElement;
   actressListEl: HTMLElement;
@@ -57,7 +59,7 @@ export class FlayBasket extends GroundFlay {
     });
 
     // 바스켓 아이템 추가 이벤트 리스너
-    document.addEventListener(EVENT_BASKET_ADD, () => this.render());
+    document.addEventListener(FlayBasket.EVENT_BASKET_ADD, () => this.render());
 
     // 배우 필터링 이벤트
     this.actressListEl.addEventListener('change', this.#handleActressFilter.bind(this));

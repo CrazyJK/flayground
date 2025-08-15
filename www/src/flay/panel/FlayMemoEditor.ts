@@ -1,10 +1,10 @@
-import { EVENT_CHANGE_TITLE } from '@base/GroundConstant';
 import GroundFlay from '@base/GroundFlay';
 import { ToastHtmlEditor } from '@editor/ToastHtmlEditor';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
 import FlayStorage from '@lib/FlayStorage';
+import { ModalWindow } from '@ui/ModalWindow';
 import './FlayMemoEditor.scss';
 
 const MEMO_STORAGE_KEY = 'flay-memo';
@@ -59,7 +59,7 @@ export class FlayMemoEditor extends GroundFlay {
    * @param memo
    */
   #successCallback(memo: Memo) {
-    this.dispatchEvent(new CustomEvent(EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'M/d HH:mm')} ${FileUtils.prettySize(memo.size).join('')}</span>` } }));
+    this.dispatchEvent(new CustomEvent(ModalWindow.EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'M/d HH:mm')} ${FileUtils.prettySize(memo.size).join('')}</span>` } }));
   }
 }
 

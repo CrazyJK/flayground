@@ -1,4 +1,3 @@
-import { MODAL_EDGE, MODAL_MODE } from '@base/GroundConstant';
 import GroundNav from '@base/GroundNav';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
@@ -212,8 +211,8 @@ export class SideNavBar extends GroundNav {
             left: 0,
             width: 300,
             height: 200,
-            edges: [MODAL_EDGE.RIGHT],
-            initialMode: MODAL_MODE.NORMAL,
+            edges: [ModalWindow.EDGE.RIGHT],
+            initialMode: ModalWindow.MODE.NORMAL,
           })
         )
         .appendChild(new FlayMemoEditor());

@@ -1,7 +1,6 @@
 /**
  * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
-import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@base/GroundConstant';
 import GroundEditor from '@base/GroundEditor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
@@ -21,6 +20,13 @@ interface ToastEditor {
 export const DEFAULT_CALLBACK = { load: () => {}, blur: () => {}, change: () => {} };
 
 export class ToastHtmlEditor extends GroundEditor {
+  /** 에디터 로드 이벤트 */
+  static readonly EVENT_EDITOR_LOAD = 'editor-load';
+  /** 에디터를 벗어나는 이벤트 */
+  static readonly EVENT_EDITOR_BLUR = 'editor-blur';
+  /** 에디터 내용이 변결되는 이벤트 */
+  static readonly EVENT_EDITOR_CHANGE = 'editor-change';
+
   #editor!: ToastEditor; // Editor type from @toast-ui/editor
   #loadCallback: () => void;
   #blurCallback: () => void;
@@ -53,15 +59,15 @@ export class ToastHtmlEditor extends GroundEditor {
       events: {
         load: (editor: unknown) => {
           this.#loadCallback();
-          this.dispatchEvent(new CustomEvent(EVENT_EDITOR_LOAD, { detail: { editor } }));
+          this.dispatchEvent(new CustomEvent(ToastHtmlEditor.EVENT_EDITOR_LOAD, { detail: { editor } }));
         },
         change: (mode: string) => {
           this.#changeCallback();
-          this.dispatchEvent(new CustomEvent(EVENT_EDITOR_CHANGE, { detail: { mode } }));
+          this.dispatchEvent(new CustomEvent(ToastHtmlEditor.EVENT_EDITOR_CHANGE, { detail: { mode } }));
         },
         blur: (mode: string) => {
           this.#blurCallback();
-          this.dispatchEvent(new CustomEvent(EVENT_EDITOR_BLUR, { detail: { mode } }));
+          this.dispatchEvent(new CustomEvent(ToastHtmlEditor.EVENT_EDITOR_BLUR, { detail: { mode } }));
         },
       },
     }) as ToastEditor;

@@ -1,13 +1,13 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import rankSVG from '@svg/ranks';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayRank.scss';
 
 /**
  * Custom element of Rank
  */
-export default class FlayRank extends FlayHTMLElement {
+export default class FlayRank extends FlayPartElement {
   constructor() {
     super();
 
@@ -89,4 +89,4 @@ export default class FlayRank extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-rank', FlayRank);
+customElements.define('flay-rank', FlayRank);

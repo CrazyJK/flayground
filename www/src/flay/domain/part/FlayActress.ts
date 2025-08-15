@@ -1,15 +1,15 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
 import { popupActress, popupActressInfo } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import favoriteSVG from '@svg/favorite';
 import './FlayActress.scss';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
 /**
  * Custom element of Actress
  */
-export default class FlayActress extends FlayHTMLElement {
+export default class FlayActress extends FlayPartElement {
   /**
    *
    * @param flay
@@ -100,7 +100,7 @@ export default class FlayActress extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-actress', FlayActress);
+customElements.define('flay-actress', FlayActress);
 
 function toInchBody(body: string | null): string {
   if (body === null || body.trim() === '') {

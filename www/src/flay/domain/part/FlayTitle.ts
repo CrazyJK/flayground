@@ -1,12 +1,12 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import { Flay } from '@lib/FlayFetch';
 import { popupFlay } from '@lib/FlaySearch';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayTitle.scss';
 
 /**
  * Custom element of Title
  */
-export default class FlayTitle extends FlayHTMLElement {
+export default class FlayTitle extends FlayPartElement {
   constructor() {
     super();
 
@@ -36,4 +36,4 @@ export default class FlayTitle extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-title', FlayTitle);
+customElements.define('flay-title', FlayTitle);

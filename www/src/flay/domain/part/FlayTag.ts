@@ -1,12 +1,12 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayTag.scss';
 
 /**
  * Custom element of Tag
  */
-export default class FlayTag extends FlayHTMLElement {
+export default class FlayTag extends FlayPartElement {
   #rendered = false;
 
   connectedCallback() {
@@ -73,4 +73,4 @@ export default class FlayTag extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-tag', FlayTag);
+customElements.define('flay-tag', FlayTag);

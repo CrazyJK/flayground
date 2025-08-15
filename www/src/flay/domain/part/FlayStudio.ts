@@ -1,12 +1,12 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import { Flay } from '@lib/FlayFetch';
 import { popupStudio } from '@lib/FlaySearch';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayStudio.scss';
 
 /**
  * Custom element of Studio
  */
-export default class FlayStudio extends FlayHTMLElement {
+export default class FlayStudio extends FlayPartElement {
   constructor() {
     super();
 
@@ -28,4 +28,4 @@ export default class FlayStudio extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-studio', FlayStudio);
+customElements.define('flay-studio', FlayStudio);

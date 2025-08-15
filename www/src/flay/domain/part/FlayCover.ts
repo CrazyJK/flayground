@@ -1,3 +1,4 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupCover } from '@lib/FlaySearch';
@@ -5,14 +6,13 @@ import FlayStorage from '@lib/FlayStorage';
 import RandomUtils from '@lib/RandomUtils';
 import newWindowSVG from '@svg/newWindow';
 import './FlayCover.scss';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
 const colorLabelLength = 5;
 
 /**
  * Custom element of Cover
  */
-export default class FlayCover extends FlayHTMLElement {
+export default class FlayCover extends FlayPartElement {
   #coverImage!: HTMLImageElement;
   #colorLabels: HTMLLabelElement[];
 
@@ -108,4 +108,4 @@ export default class FlayCover extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-cover', FlayCover);
+customElements.define('flay-cover', FlayCover);

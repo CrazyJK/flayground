@@ -1,14 +1,14 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import { Flay } from '@lib/FlayFetch';
 import FlaySearch, { popupFlayInfo } from '@lib/FlaySearch';
 import basketSVG from '@svg/basket';
 import jsonSVG from '@svg/json';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayOpus.scss';
 
 /**
  * Custom element of Opus
  */
-export default class FlayOpus extends FlayHTMLElement {
+export default class FlayOpus extends FlayPartElement {
   constructor() {
     super();
 
@@ -41,4 +41,4 @@ export default class FlayOpus extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-opus', FlayOpus);
+customElements.define('flay-opus', FlayOpus);

@@ -1,7 +1,7 @@
 import FlayDiv from '@flay/FlayDiv';
 import { BlankFlay, Flay } from '@lib/FlayFetch';
 
-export default class FlayHTMLElement extends FlayDiv {
+export default class FlayPartElement extends FlayDiv {
   flay: Flay = BlankFlay;
   inCard: boolean = false;
 
@@ -36,12 +36,3 @@ export default class FlayHTMLElement extends FlayDiv {
     this.classList.toggle('small', parentDOMRect.width <= 400);
   }
 }
-
-/**
- * Define the new element
- * @param name 커스텀 엘리먼트 이름
- * @param constructor 커스텀 엘리먼트 생성자
- */
-export const defineCustomElements = (name: string, constructor: new () => HTMLElement): void => {
-  customElements.define(name, constructor);
-};

@@ -1,12 +1,12 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import DateUtils from '@lib/DateUtils';
 import { Flay } from '@lib/FlayFetch';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 import './FlayRelease.scss';
 
 /**
  * Custom element of Release
  */
-export default class FlayRelease extends FlayHTMLElement {
+export default class FlayRelease extends FlayPartElement {
   constructor() {
     super();
 
@@ -39,4 +39,4 @@ export default class FlayRelease extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-release', FlayRelease);
+customElements.define('flay-release', FlayRelease);

@@ -1,16 +1,16 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import FlayAction from '@lib/FlayAction';
 import { Flay } from '@lib/FlayFetch';
 import FlaySearch from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import './FlayComment.scss';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
 const COMMENT = 'Comment';
 
 /**
  * Custom element of Comment
  */
-export default class FlayComment extends FlayHTMLElement {
+export default class FlayComment extends FlayPartElement {
   #japanese: HTMLAnchorElement;
   #comment: HTMLAnchorElement;
   #input: HTMLInputElement;
@@ -80,4 +80,4 @@ export default class FlayComment extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-comment', FlayComment);
+customElements.define('flay-comment', FlayComment);

@@ -1,18 +1,17 @@
+import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import FileUtils from '@lib/FileUtils';
 import FlayAction from '@lib/FlayAction';
+import { Flay } from '@lib/FlayFetch';
 import FlaySearch from '@lib/FlaySearch';
 import folderSVG from '@svg/folder';
 import torrentSVG from '@svg/torrent';
 import youtubeSVG from '@svg/youtube';
-// import PlayTimeDB from '@flay/idb/PlayTimeDB';
-import { Flay } from '@lib/FlayFetch';
 import './FlayFiles.scss';
-import FlayHTMLElement, { defineCustomElements } from './FlayHTMLElement';
 
 /**
  * Custom element of File
  */
-export default class FlayFiles extends FlayHTMLElement {
+export default class FlayFiles extends FlayPartElement {
   #studioInput: HTMLInputElement;
   #opusInput: HTMLInputElement;
   #titleInput: HTMLInputElement;
@@ -151,4 +150,4 @@ export default class FlayFiles extends FlayHTMLElement {
   }
 }
 
-defineCustomElements('flay-files', FlayFiles);
+customElements.define('flay-files', FlayFiles);

@@ -55,8 +55,6 @@ export class SideNavBar extends FlayDiv {
     { url: 'test.html', name: 'test' },
   ];
 
-  #currentMenuName: string = ''; // 현재 메뉴
-
   /**
    * 메뉴 아이템이 유효한 메뉴인지 확인하는 타입 가드
    */
@@ -69,8 +67,8 @@ export class SideNavBar extends FlayDiv {
   #boundWheelHandler: (e: WheelEvent) => void;
   #boundSetWindowSize: () => void;
 
-  // DOM 요소 캐싱
-  #debugLink: HTMLAnchorElement | null = null;
+  #currentMenuName: string = ''; // 현재 메뉴
+  #windowSizeIndicator: HTMLElement; // DOM 요소 캐싱
 
   constructor() {
     super();
@@ -79,10 +77,6 @@ export class SideNavBar extends FlayDiv {
     this.#boundMenuClickHandler = this.#menuClickHandler.bind(this);
     this.#boundWheelHandler = this.#wheelHandler.bind(this);
     this.#boundSetWindowSize = this.#setWindowSize.bind(this);
-  }
-
-  connectedCallback() {
-    this.parentElement!.insertBefore(document.createElement('div'), this).classList.add('nav-open');
 
     // 메뉴 HTML을 미리 생성하여 캐싱
     const menuHTML = this.#generateMenuHTML();
@@ -97,7 +91,7 @@ export class SideNavBar extends FlayDiv {
     <footer>
       <div><flay-monitor></flay-monitor></div>
       <div><a id="memo">memo</a></div>
-      <div><a id="debug">debug</a></div>
+      <div><a id="debug">debug</a><sub></sub></div>
       <div><a id="swagger">swagger</a></div>
       <div><a id="dependencies">dependencies</a></div>
       <div><a id="bundleReport">bundle report</a></div>
@@ -106,13 +100,15 @@ export class SideNavBar extends FlayDiv {
     `;
 
     // DOM 요소 캐싱
-    this.#debugLink = this.querySelector('#debug') as HTMLAnchorElement;
+    this.#windowSizeIndicator = this.querySelector('#debug + sub')!;
+  }
 
-    /** active 메뉴 표시 */
+  connectedCallback() {
+    this.parentElement!.insertBefore(document.createElement('div'), this).classList.add('nav-open');
+
     this.#setActiveMenu();
-
-    this.classList.toggle('open', FlayStorage.local.getBoolean(SideNavBar.OPEN_STORAGE_KEY, false));
     this.#setWindowSize();
+    this.classList.toggle('open', FlayStorage.local.getBoolean(SideNavBar.OPEN_STORAGE_KEY, false));
 
     this.addEventListener('click', this.#boundMenuClickHandler);
     this.addEventListener('wheel', this.#boundWheelHandler, { passive: true });
@@ -153,6 +149,10 @@ export class SideNavBar extends FlayDiv {
     }
   }
 
+  /**
+   * footer 메뉴 클릭 핸들러
+   * @param e 클릭 이벤트
+   */
   #menuClickHandler(e: MouseEvent) {
     e.stopPropagation();
     const target = e.target as HTMLElement;
@@ -181,10 +181,17 @@ export class SideNavBar extends FlayDiv {
     }
   }
 
+  /**
+   * 휠 이벤트 핸들러
+   * @param e 휠 이벤트
+   */
   #wheelHandler(e: WheelEvent) {
     e.stopPropagation();
   }
 
+  /**
+   * 메모 편집기 토글
+   */
   #toggleMemoEditor() {
     const editorId = `memo-editor-${this.#currentMenuName}`;
     const memoEditor = document.getElementById(editorId);
@@ -210,10 +217,11 @@ export class SideNavBar extends FlayDiv {
     });
   }
 
+  /**
+   * 윈도우 크기 설정
+   */
   #setWindowSize() {
-    if (this.#debugLink) {
-      this.#debugLink.title = `${window.innerWidth} x ${window.innerHeight}`;
-    }
+    this.#windowSizeIndicator.innerHTML = ` ${window.innerWidth}x${window.innerHeight}`;
   }
 }
 

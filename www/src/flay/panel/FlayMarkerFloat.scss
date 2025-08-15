@@ -14,5 +14,9 @@ flay-marker-float {
     will-change: top, left, width, height;
     transform: translate3d(0, 0, 0);
     pointer-events: auto;
+
+    &.shot {
+      box-shadow: 0 0 var(--shot-blur) var(--shot-spread) var(--color-red);
+    }
   }
 }

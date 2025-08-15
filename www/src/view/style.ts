@@ -1,3 +1,4 @@
+import arrow from '@svg/arrow';
 import basketSVG from '@svg/basket';
 import cloudDownSVG from '@svg/cloudDown';
 import controlsSVG from '@svg/controls';
@@ -93,6 +94,24 @@ if (svgContainer) {
     .appendSVG(windowButton.reload)
     .appendSVG(windowButton.fullscreen)
     .appendSVG(windowButton.normalscreen)
+    .appendSVG(windowButton.expand)
+    .appendSVG(windowButton.compress)
+    .appendSVG(arrow.square.Up)
+    .appendSVG(arrow.square.Down)
+    .appendSVG(arrow.square.Left)
+    .appendSVG(arrow.square.Right)
+    .appendSVG(arrow.square.UpLeft)
+    .appendSVG(arrow.square.UpRight)
+    .appendSVG(arrow.square.DownLeft)
+    .appendSVG(arrow.square.DownRight)
+    .appendSVG(arrow.circle.Up)
+    .appendSVG(arrow.circle.Down)
+    .appendSVG(arrow.circle.Left)
+    .appendSVG(arrow.circle.Right)
+    .appendSVG(arrow.circle.UpLeft)
+    .appendSVG(arrow.circle.UpRight)
+    .appendSVG(arrow.circle.DownLeft)
+    .appendSVG(arrow.circle.DownRight)
     .appendIMG('./svg/flayground-text.svg')
     .appendIMG('./svg/flayground-circle.svg')
     .appendIMG('./svg/flayground-circle-t.svg');

@@ -1,4 +1,5 @@
 import FlayArticle from '@flay/domain/FlayArticle';
+import FlayDiv from '@flay/FlayDiv';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch from '@lib/FlayFetch';
 import './FlayCandidate.scss';
@@ -6,11 +7,10 @@ import './FlayCandidate.scss';
 /**
  * accept candidate
  */
-export default class FlayCandidate extends HTMLElement {
+export default class FlayCandidate extends FlayDiv {
   constructor() {
     super();
 
-    this.classList.add('flay-candidate', 'flay-div');
     this.innerHTML = `
       <div>
         <button id="getCadidate"><span id="candidateLength">0</span> Candidates</button>

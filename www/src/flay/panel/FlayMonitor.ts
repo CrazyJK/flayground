@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayStorage from '@lib/FlayStorage';
 import { STORAGE_KEY } from '@lib/UpdateMyPosition';
 import './FlayMonitor.scss';
@@ -28,7 +29,7 @@ interface FlayPosition {
  * 여러 모니터에 분산된 창들의 위치를 캔버스에 그려서
  * 전체적인 레이아웃을 한눈에 볼 수 있게 해줍니다.
  */
-export default class FlayMonitor extends HTMLElement {
+export default class FlayMonitor extends FlayDiv {
   /** 전체 화면 영역의 왼쪽 좌표 */
   left: number;
   /** 전체 화면 영역의 위쪽 좌표 */
@@ -44,8 +45,6 @@ export default class FlayMonitor extends HTMLElement {
 
   constructor() {
     super();
-
-    this.classList.add('flay-monitor', 'flay-div');
 
     // 0,0을 기준으로 상하좌우 제일 먼거
     this.left = Math.min(...Monitors.map((monitor) => monitor.left));

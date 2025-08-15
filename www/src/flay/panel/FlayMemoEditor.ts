@@ -1,4 +1,5 @@
 import { EVENT_CHANGE_TITLE } from '@const/GroundConstant';
+import FlayDiv from '@flay/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
@@ -18,12 +19,11 @@ interface Memo {
  * Memo editor
  * @extends {HTMLDivElement}
  */
-export class FlayMemoEditor extends HTMLElement {
+export class FlayMemoEditor extends FlayDiv {
   private htmlEditor: ToastHtmlEditor;
 
   constructor() {
     super();
-    this.classList.add('flay-memo-editor', 'flay-div');
 
     onstorage = async (e) => {
       // Load memo when memo storage key is changed

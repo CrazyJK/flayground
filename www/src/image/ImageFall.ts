@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -13,7 +14,7 @@ interface ImageFallOptions {
 
 const DEFAULT_OPTS: ImageFallOptions = { mode: 'serial', auto: true };
 
-export class ImageFall extends HTMLElement {
+export class ImageFall extends FlayDiv {
   private timer: number = -1;
   private continue: boolean = true;
   private willRandom: boolean = false;
@@ -33,7 +34,6 @@ export class ImageFall extends HTMLElement {
 
   constructor(opts: Partial<ImageFallOptions> = DEFAULT_OPTS) {
     super();
-    this.classList.add('image-fall', 'flay-div');
 
     const { mode, auto } = { ...DEFAULT_OPTS, ...opts };
     this.continue = auto;

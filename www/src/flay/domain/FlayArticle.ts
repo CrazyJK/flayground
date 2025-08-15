@@ -1,10 +1,11 @@
+import FlayDiv from '@flay/FlayDiv';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch, { BlankFlay, Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupFlayInfo } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import './FlayArticle.scss';
 
-export default class FlayArticle extends HTMLElement {
+export default class FlayArticle extends FlayDiv {
   flay: Flay = BlankFlay;
 
   constructor(args: { mode?: string }) {
@@ -15,7 +16,6 @@ export default class FlayArticle extends HTMLElement {
   }
 
   connectedCallback() {
-    this.classList.add('flay-div');
     this.innerHTML = `
       <div class="cover"></div>
       <dl>

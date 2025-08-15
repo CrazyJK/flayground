@@ -8,6 +8,7 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/FlayFetch';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import './FlayCard.scss';
@@ -15,7 +16,7 @@ import './FlayCard.scss';
 /**
  * Custom element of Card
  */
-export default class FlayCard extends HTMLElement {
+export default class FlayCard extends FlayDiv {
   opus: string = '';
   flay: Flay = BlankFlay;
   actress: Actress[] = [];
@@ -35,8 +36,6 @@ export default class FlayCard extends HTMLElement {
 
   constructor(options?: { excludes?: string[] }) {
     super();
-
-    this.classList.add('flay-div');
 
     if (options?.excludes) {
       this.excludes = options.excludes;

@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -21,7 +22,7 @@ interface VideoPlayerEventDetail {
 /**
  * 페이지 표현
  */
-export default class FlayPagination extends HTMLElement {
+export default class FlayPagination extends FlayDiv {
   /** 현재 선택된 opus */
   opus: string | null | undefined = null;
   /** 현재 opus의 인덱스 */
@@ -48,7 +49,6 @@ export default class FlayPagination extends HTMLElement {
   constructor() {
     super();
 
-    this.classList.add('flay-pagination', 'flay-div');
     this.innerHTML = `
       <div class="paging"></div>
       <div class="progress">

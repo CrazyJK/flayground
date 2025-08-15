@@ -1,4 +1,5 @@
 import { EVENT_BASKET_ADD } from '@const/GroundConstant';
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';
@@ -10,7 +11,7 @@ import './FlayBasket.scss';
 
 const BASKET_KEY = 'flay-basket';
 
-export class FlayBasket extends HTMLElement {
+export class FlayBasket extends FlayDiv {
   flayListEl: HTMLElement;
   flayCountEl: HTMLElement;
   actressListEl: HTMLElement;
@@ -21,7 +22,6 @@ export class FlayBasket extends HTMLElement {
 
   constructor() {
     super();
-    this.classList.add('flay-basket', 'flay-div');
     this.innerHTML = `
       <div class="body">
         <div id="actressList" class="hide"></div>
@@ -240,7 +240,7 @@ export class FlayBasket extends HTMLElement {
 }
 customElements.define('flay-basket', FlayBasket);
 
-class FlayBasketItem extends HTMLElement {
+class FlayBasketItem extends FlayDiv {
   opus: string;
 
   constructor(flay: Flay) {
@@ -248,7 +248,6 @@ class FlayBasketItem extends HTMLElement {
 
     this.id = flay.opus;
     this.opus = flay.opus;
-    this.classList.add('flay-basket-item', 'flay-div');
     this.innerHTML = `
       <div class="cover">
         <label class="comment"></label>

@@ -8,10 +8,11 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/FlayFetch';
 import './FlayPage.scss';
 
-export default class FlayPage extends HTMLElement {
+export default class FlayPage extends FlayDiv {
   flayStudio: FlayStudio;
   flayOpus: FlayOpus;
   flayComment: FlayComment;
@@ -29,7 +30,6 @@ export default class FlayPage extends HTMLElement {
 
   constructor() {
     super();
-    this.classList.add('flay-div');
 
     this.opus = '';
     this.flay = BlankFlay;

@@ -1,6 +1,7 @@
+import FlayDiv from '@flay/FlayDiv';
 import { BlankFlay, Flay } from '@lib/FlayFetch';
 
-export default class FlayHTMLElement extends HTMLElement {
+export default class FlayHTMLElement extends FlayDiv {
   flay: Flay = BlankFlay;
   inCard: boolean = false;
 
@@ -13,11 +14,6 @@ export default class FlayHTMLElement extends HTMLElement {
     if (newValue === 'card') {
       this.setCard();
     }
-  }
-
-  constructor() {
-    super();
-    this.classList.add('flay-div');
   }
 
   setFlay(flay: Flay): void {

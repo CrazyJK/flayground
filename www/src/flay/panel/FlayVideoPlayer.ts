@@ -1,18 +1,11 @@
-import '@flay/domain/part/FlayActress';
 import FlayActress from '@flay/domain/part/FlayActress';
-import '@flay/domain/part/FlayCover';
-import '@flay/domain/part/FlayOpus';
 import FlayOpus from '@flay/domain/part/FlayOpus';
-import '@flay/domain/part/FlayRank';
 import FlayRank from '@flay/domain/part/FlayRank';
-import '@flay/domain/part/FlayRelease';
 import FlayRelease from '@flay/domain/part/FlayRelease';
-import '@flay/domain/part/FlayStudio';
 import FlayStudio from '@flay/domain/part/FlayStudio';
-import '@flay/domain/part/FlayTag';
 import FlayTag from '@flay/domain/part/FlayTag';
-import '@flay/domain/part/FlayTitle';
 import FlayTitle from '@flay/domain/part/FlayTitle';
+import FlayDiv from '@flay/FlayDiv';
 import PlayTimeDB, { PlayTimeRecord } from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
 import FlayFetch, { Actress, BlankFlay, Flay } from '@lib/FlayFetch';
@@ -38,7 +31,7 @@ interface PlayerOptions {
 /**
  * Flay Video Player implements HTMLVideoElement
  */
-export class FlayVideoPlayer extends HTMLElement {
+export class FlayVideoPlayer extends FlayDiv {
   options: PlayerOptions;
   opus: string | null = null;
   flayVideo: FlayVideo;
@@ -84,7 +77,6 @@ export class FlayVideoPlayer extends HTMLElement {
       ...opts,
     };
 
-    this.classList.add('flay-video-player', 'flay-div');
     this.flayVideo = this.appendChild(new FlayVideo());
     this.flayVideoInfo = this.appendChild(new FlayVideoInfo());
     this.flayVideoPoster = this.appendChild(new FlayVideoPoster());
@@ -245,44 +237,52 @@ export class FlayVideoPlayer extends HTMLElement {
   }
 }
 
-class FlayVideoInfo extends HTMLElement {
+class FlayVideoInfo extends FlayDiv {
+  private flayTitle: FlayTitle;
+  private flayStudio: FlayStudio;
+  private flayOpus: FlayOpus;
+  private flayActress: FlayActress;
+  private flayRelease: FlayRelease;
+  private flayRank: FlayRank;
+  private flayTag: FlayTag;
+
   constructor() {
     super();
 
-    this.classList.add('flay-video-info', 'flay-div');
-    this.innerHTML = `
-      <div class="header">
-        <flay-title mode="card"></flay-title>
-      </div>
-      <div class="footer">
-        <flay-studio  mode="card"></flay-studio>
-        <flay-opus    mode="card"></flay-opus>
-        <flay-actress mode="card"></flay-actress>
-        <flay-release mode="card"></flay-release>
-        <flay-rank    mode="card"></flay-rank>
-        <flay-tag     mode="card"></flay-tag>
-      </div>
-    `;
+    const header = this.appendChild(document.createElement('div'));
+    const footer = this.appendChild(document.createElement('div'));
+    header.classList.add('header');
+    footer.classList.add('footer');
+
+    this.flayTitle = header.appendChild(new FlayTitle());
+    this.flayStudio = footer.appendChild(new FlayStudio());
+    this.flayOpus = footer.appendChild(new FlayOpus());
+    this.flayActress = footer.appendChild(new FlayActress());
+    this.flayRelease = footer.appendChild(new FlayRelease());
+    this.flayRank = footer.appendChild(new FlayRank());
+    this.flayTag = footer.appendChild(new FlayTag());
+
+    this.flayTitle.setCard();
+    this.flayStudio.setCard();
+    this.flayOpus.setCard();
+    this.flayActress.setCard();
+    this.flayRelease.setCard();
+    this.flayRank.setCard();
+    this.flayTag.setCard();
   }
 
   set(flay: Flay, actress: Actress[], reload = false) {
-    (this.querySelector('flay-studio') as FlayStudio).set(flay);
-    (this.querySelector('flay-opus') as FlayOpus).set(flay);
-    (this.querySelector('flay-title') as FlayTitle).set(flay);
-    (this.querySelector('flay-actress') as FlayActress).set(flay, actress);
-    (this.querySelector('flay-release') as FlayRelease).set(flay);
-    (this.querySelector('flay-rank') as FlayRank).set(flay);
-    (this.querySelector('flay-tag') as FlayTag).set(flay, reload);
+    this.flayStudio.set(flay);
+    this.flayOpus.set(flay);
+    this.flayTitle.set(flay);
+    this.flayActress.set(flay, actress);
+    this.flayRelease.set(flay);
+    this.flayRank.set(flay);
+    this.flayTag.set(flay, reload);
   }
 }
 
-class FlayVideoPoster extends HTMLElement {
-  constructor() {
-    super();
-
-    this.classList.add('flay-video-poster', 'flay-div');
-  }
-
+class FlayVideoPoster extends FlayDiv {
   set(flay: Flay) {
     this.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
   }

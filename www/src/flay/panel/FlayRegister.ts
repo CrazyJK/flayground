@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Actress } from '@lib/FlayFetch';
 import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '@lib/FlaySearch';
@@ -74,11 +75,10 @@ T163 / B92(Hカップ) / W62 / H89"></textarea>
  * 새로운 Flay 정보를 입력하고, 검색하며, 배우 정보를 관리할 수 있는
  * 통합 등록 인터페이스를 제공합니다.
  */
-export default class FlayRegister extends HTMLElement {
+export default class FlayRegister extends FlayDiv {
   constructor() {
     super();
 
-    this.classList.add('flay-register', 'flay-div');
     this.innerHTML = HTML;
   }
 

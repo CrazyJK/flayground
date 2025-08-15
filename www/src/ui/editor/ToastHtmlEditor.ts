@@ -7,6 +7,7 @@ import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@cons
 import Editor from '@toast-ui/editor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
+import FlayDiv from '@flay/FlayDiv';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import './ToastHtmlEditor.scss';
 
@@ -19,7 +20,7 @@ interface ToastEditor {
 
 export const DEFAULT_CALLBACK = { load: () => {}, blur: () => {}, change: () => {} };
 
-export class ToastHtmlEditor extends HTMLElement {
+export class ToastHtmlEditor extends FlayDiv {
   #editor!: ToastEditor; // Editor type from @toast-ui/editor
   #loadCallback: () => void;
   #blurCallback: () => void;
@@ -31,7 +32,6 @@ export class ToastHtmlEditor extends HTMLElement {
    */
   constructor(callbackFunctions: Partial<typeof DEFAULT_CALLBACK> = {}) {
     super();
-    this.classList.add('flay-div');
 
     const { load, blur, change } = { ...DEFAULT_CALLBACK, ...callbackFunctions };
     this.#loadCallback = load;

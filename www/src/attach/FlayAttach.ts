@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import windowButton from '@svg/windowButton';
 import StringUtils from '../lib/StringUtils';
@@ -53,7 +54,7 @@ const OPT_DEFAULT = {
 /**
  * 커스텀 파일 첨부 박스
  */
-export default class FlayAttach extends HTMLElement {
+export default class FlayAttach extends FlayDiv {
   private options: Options;
   private attach: Attach | null;
   private fileCount: number;
@@ -74,7 +75,6 @@ export default class FlayAttach extends HTMLElement {
     this.fileLength = 0;
 
     this.id = this.options.id;
-    this.classList.add('flay-attach', 'flay-div');
 
     this.fileBox = this.appendChild(document.createElement('div'));
     this.fileBox.setAttribute('class', 'file-box');

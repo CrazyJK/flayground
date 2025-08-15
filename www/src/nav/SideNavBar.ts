@@ -1,105 +1,156 @@
 import { MODAL_EDGE, MODAL_MODE } from '@const/GroundConstant';
-import FlayMonitor from '@flay/panel/FlayMonitor';
+import FlayDiv from '@flay/FlayDiv';
+import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
+import FlayStorage from '@lib/FlayStorage';
 import { ModalWindow } from '@ui/ModalWindow';
-import FlayStorage from '../lib/FlayStorage';
-import ThemeController from './part/ThemeController';
+import './part/ThemeController';
 import './SideNavBar.scss';
 
-const menuList = [
-  { url: 'page.flay-page.html', name: 'flay page' },
-  {},
-  { url: 'page.flay-one.html', name: 'flay one' },
-  { url: 'page.flay-grid.html', name: 'flay grid' },
-  { url: 'page.archive.html', name: 'flay archive' },
-  { url: 'page.flay-all.html', name: 'flay all' },
-  { url: 'page.flay-pack.html', name: 'flay pack' },
-  { url: 'page.cover-popout.html', name: 'cover pop' },
-  { url: 'page.flay-tag.html', name: 'flay tag' },
-  {},
-  { url: 'page.flay-play.html', name: 'flay play' },
-  { url: 'page.flay-play-record.html', name: 'play record' },
-  { url: 'page.flay-basket.html', name: 'basket' },
-  {},
-  { url: 'page.girls.html', name: 'girls' },
-  { url: 'page.statistics.html', name: 'statistics' },
-  { url: 'page.history-shot.html', name: 'shot history' },
-  { url: 'page.history-play.html', name: 'play history' },
-  {},
-  { url: 'page.studio.html', name: 'studio' },
-  { url: 'page.actress.html', name: 'actress' },
-  { url: 'page.tags.html', name: 'tags' },
-  {},
-  { url: 'page.control.html', name: 'control' },
-  { url: 'page.crawling.html', name: 'crawling' },
-  {},
-  { url: 'page.image-page.html', name: 'image page' },
-  { url: 'page.image-download.html', name: 'pic download' },
-  {},
-  { url: 'page.kamoru-diary.html', name: 'diary' },
-  {},
-  { url: 'page.dragndrop.html', name: 'drag & drop' },
-  { url: 'style.html', name: 'style' },
-  { url: 'test.html', name: 'test' },
-];
+type MenuItemType =
+  | {
+      url: string;
+      name: string;
+    }
+  | {};
 
-export class SideNavBar extends HTMLElement {
+export class SideNavBar extends FlayDiv {
   static readonly OPEN_STORAGE_KEY = 'SideNavBar.open';
+
+  // 정적 메뉴 리스트를 클래스 속성으로 이동
+  static readonly #MENU_LIST: readonly MenuItemType[] = [
+    { url: 'page.flay-page.html', name: 'flay page' },
+    {},
+    { url: 'page.flay-one.html', name: 'flay one' },
+    { url: 'page.flay-grid.html', name: 'flay grid' },
+    { url: 'page.archive.html', name: 'flay archive' },
+    { url: 'page.flay-all.html', name: 'flay all' },
+    { url: 'page.flay-pack.html', name: 'flay pack' },
+    { url: 'page.cover-popout.html', name: 'cover pop' },
+    { url: 'page.flay-tag.html', name: 'flay tag' },
+    {},
+    { url: 'page.flay-play.html', name: 'flay play' },
+    { url: 'page.flay-play-record.html', name: 'play record' },
+    { url: 'page.flay-basket.html', name: 'basket' },
+    {},
+    { url: 'page.girls.html', name: 'girls' },
+    { url: 'page.statistics.html', name: 'statistics' },
+    { url: 'page.history-shot.html', name: 'shot history' },
+    { url: 'page.history-play.html', name: 'play history' },
+    {},
+    { url: 'page.studio.html', name: 'studio' },
+    { url: 'page.actress.html', name: 'actress' },
+    { url: 'page.tags.html', name: 'tags' },
+    {},
+    { url: 'page.control.html', name: 'control' },
+    { url: 'page.crawling.html', name: 'crawling' },
+    {},
+    { url: 'page.image-page.html', name: 'image page' },
+    { url: 'page.image-download.html', name: 'pic download' },
+    {},
+    { url: 'page.kamoru-diary.html', name: 'diary' },
+    {},
+    { url: 'page.dragndrop.html', name: 'drag & drop' },
+    { url: 'style.html', name: 'style' },
+    { url: 'test.html', name: 'test' },
+  ];
+
   #currentMenuName: string = ''; // 현재 메뉴
+
+  /**
+   * 메뉴 아이템이 유효한 메뉴인지 확인하는 타입 가드
+   */
+  static #isValidMenuItem(menu: MenuItemType): menu is { url: string; name: string } {
+    return 'url' in menu && 'name' in menu;
+  }
+
+  // 이벤트 핸들러들을 바인딩된 형태로 저장
+  #boundMenuClickHandler: (e: MouseEvent) => void;
+  #boundWheelHandler: (e: WheelEvent) => void;
+  #boundSetWindowSize: () => void;
+
+  // DOM 요소 캐싱
+  #debugLink: HTMLAnchorElement | null = null;
 
   constructor() {
     super();
 
-    this.classList.add('flay-div');
+    // 이벤트 핸들러 바인딩을 생성자에서 한 번만 수행
+    this.#boundMenuClickHandler = this.#menuClickHandler.bind(this);
+    this.#boundWheelHandler = this.#wheelHandler.bind(this);
+    this.#boundSetWindowSize = this.#setWindowSize.bind(this);
   }
 
   connectedCallback() {
     this.parentElement!.insertBefore(document.createElement('div'), this).classList.add('nav-open');
+
+    // 메뉴 HTML을 미리 생성하여 캐싱
+    const menuHTML = this.#generateMenuHTML();
 
     this.innerHTML = `
     <header>
       <div><a href="index.html">flay ground</a></div>
     </header>
     <article>
-      ${menuList
-        .map((menu) => {
-          if (menu.url) {
-            return `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>`;
-          }
-          return '<div></div>';
-        })
-        .join('')}
+      ${menuHTML}
     </article>
     <footer>
+      <div><flay-monitor></flay-monitor></div>
       <div><a id="memo">memo</a></div>
       <div><a id="debug">debug</a></div>
       <div><a id="swagger">swagger</a></div>
       <div><a id="dependencies">dependencies</a></div>
       <div><a id="bundleReport">bundle report</a></div>
+      <div><theme-controller style="margin-top: 1rem;"></theme-controller></div>
     </footer>
     `;
-    this.querySelector('footer')!.prepend(new FlayMonitor());
-    this.querySelector('footer')!.appendChild(new ThemeController()).style.marginTop = '1rem';
+
+    // DOM 요소 캐싱
+    this.#debugLink = this.querySelector('#debug') as HTMLAnchorElement;
 
     /** active 메뉴 표시 */
-    this.querySelectorAll('a').forEach((anchor) => {
-      if (anchor.href.includes(location.pathname)) {
-        anchor.parentElement!.classList.add('active');
-        this.#currentMenuName = anchor.textContent!.replace(/\s+/g, '');
-      }
-    });
+    this.#setActiveMenu();
+
     this.classList.toggle('open', FlayStorage.local.getBoolean(SideNavBar.OPEN_STORAGE_KEY, false));
     this.#setWindowSize();
 
-    this.addEventListener('click', this.#menuClickHandler.bind(this));
-    this.addEventListener('wheel', this.#wheelHandler.bind(this), { passive: true });
-    this.addEventListener('resize', this.#setWindowSize.bind(this));
+    this.addEventListener('click', this.#boundMenuClickHandler);
+    this.addEventListener('wheel', this.#boundWheelHandler, { passive: true });
+    window.addEventListener('resize', this.#boundSetWindowSize);
   }
 
   disconnectedCallback() {
-    this.removeEventListener('click', this.#menuClickHandler.bind(this));
-    this.removeEventListener('wheel', this.#wheelHandler.bind(this));
-    this.removeEventListener('resize', this.#setWindowSize.bind(this));
+    this.removeEventListener('click', this.#boundMenuClickHandler);
+    this.removeEventListener('wheel', this.#boundWheelHandler);
+    window.removeEventListener('resize', this.#boundSetWindowSize);
+  }
+
+  /**
+   * 메뉴 HTML 템플릿 생성
+   */
+  #generateMenuHTML(): string {
+    return SideNavBar.#MENU_LIST
+      .map((menu) => {
+        if (SideNavBar.#isValidMenuItem(menu)) {
+          return `<div class="menu"><a href="${menu.url}">${menu.name}</a><a onclick="window.open('${menu.url}', '${menu.name}', 'width=800,height=1000')">↗</a></div>`;
+        }
+        return '<div class="gap"></div>';
+      })
+      .join('');
+  }
+
+  /**
+   * 활성 메뉴 설정 (성능을 위해 분리)
+   */
+  #setActiveMenu(): void {
+    const anchors = this.querySelectorAll('a');
+    for (const anchor of anchors) {
+      if (anchor.href.includes(location.pathname)) {
+        anchor.parentElement!.classList.add('active');
+        this.#currentMenuName = anchor.textContent!.replace(/\s+/g, '');
+        break; // 첫 번째 매치에서 중단
+      }
+    }
   }
 
   #menuClickHandler(e: MouseEvent) {
@@ -160,9 +211,8 @@ export class SideNavBar extends HTMLElement {
   }
 
   #setWindowSize() {
-    const debugLink = this.querySelector('#debug') as HTMLAnchorElement;
-    if (debugLink) {
-      debugLink.title = `${window.innerWidth} x ${window.innerHeight}`;
+    if (this.#debugLink) {
+      this.#debugLink.title = `${window.innerWidth} x ${window.innerHeight}`;
     }
   }
 }

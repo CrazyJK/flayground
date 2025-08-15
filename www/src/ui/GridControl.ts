@@ -1,10 +1,11 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayStorage from '@lib/FlayStorage';
 import './GridControl.scss';
 
 const MAX = 7;
 const MIN = 1;
 
-export default class GridControl extends HTMLElement {
+export default class GridControl extends FlayDiv {
   private readonly selectors: string;
   private readonly max: number;
   private readonly storageKey: string;
@@ -25,7 +26,6 @@ export default class GridControl extends HTMLElement {
     this.storageKey = 'grid-control' + location.pathname.replace(/\//g, '_');
 
     this.dataset.max = this.max.toString();
-    this.classList.add('flay-div');
     this.innerHTML = `
       <input type="range"
         min="${MIN}"

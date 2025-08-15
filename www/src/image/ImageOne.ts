@@ -1,4 +1,5 @@
 import { EventCode } from '@const/GroundConstant';
+import FlayDiv from '@flay/FlayDiv';
 import { getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
@@ -20,7 +21,7 @@ const [ORIGINAL, FULLSIZE] = ['original', 'fullsize'];
 const PLAY = 'play';
 const TIMER = 10;
 
-export class ImageOne extends HTMLElement {
+export class ImageOne extends FlayDiv {
   #flayImage: HTMLImageElement;
   #imgIdx: HTMLLabelElement;
   #imgPath: HTMLLabelElement;
@@ -48,7 +49,6 @@ export class ImageOne extends HTMLElement {
     super();
 
     this.setAttribute('tabindex', '0'); // 포커스를 받을 수 있도록 tabindex 속성 추가
-    this.classList.add('image-one', 'flay-div');
     this.innerHTML = `
       <flay-image></flay-image>
       <footer>

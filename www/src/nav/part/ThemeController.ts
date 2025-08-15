@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayStorage from '@lib/FlayStorage';
 import themeSVG from '@svg/themes';
 import './ThemeController.scss';
@@ -16,7 +17,7 @@ const DARK: ThemeType = 'dark';
  * - 로컬 스토리지에 테마 설정 저장
  * - 시스템 테마 변경 감지
  */
-export default class ThemeController extends HTMLElement {
+export default class ThemeController extends FlayDiv {
   /** 현재 테마 */
   theme: ThemeType = OS;
   /** 다크 모드 여부 */
@@ -26,7 +27,6 @@ export default class ThemeController extends HTMLElement {
 
   constructor() {
     super();
-    this.classList.add('theme-controller', 'flay-div');
 
     const themeGroup = this.appendChild(document.createElement('div'));
     themeGroup.classList.add('theme-group');

@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupFlayCard } from '@lib/FlaySearch';
@@ -27,11 +28,10 @@ const HTML = `
 <div id="flayList"></div>
 `;
 
-export default class SubtitlesFinder extends HTMLElement {
+export default class SubtitlesFinder extends FlayDiv {
   constructor() {
     super();
 
-    this.classList.add('subtitles-finder', 'flay-div');
     this.innerHTML = HTML;
   }
 

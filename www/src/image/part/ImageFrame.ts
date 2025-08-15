@@ -1,15 +1,11 @@
+import FlayDiv from '@flay/FlayDiv';
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import './ImageFrame.scss';
 
-export default class ImageFrame extends HTMLElement {
+export default class ImageFrame extends FlayDiv {
   img!: HTMLImageElement;
   info?: { idx: number; name: string; path: string; modified: Date; width: number; height: number; colors: ColorFrequency[] };
-
-  constructor() {
-    super();
-    this.classList.add('image-frame', 'flay-div');
-  }
 
   connectedCallback() {
     this.innerHTML = `

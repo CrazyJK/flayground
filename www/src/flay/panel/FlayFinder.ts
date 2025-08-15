@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '@lib/FlaySearch';
@@ -22,11 +23,10 @@ const HTML = `
 </div>
 `;
 
-export default class FlayFinder extends HTMLElement {
+export default class FlayFinder extends FlayDiv {
   constructor() {
     super();
 
-    this.classList.add('flay-finder', 'flay-div');
     this.innerHTML = HTML;
   }
 

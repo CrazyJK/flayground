@@ -1,4 +1,5 @@
 import FlayMarker from '@flay/domain/FlayMarker';
+import FlayDiv from '@flay/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
@@ -40,11 +41,10 @@ const HTML = `
 /**
  *
  */
-export default class FlayBatch extends HTMLElement {
+export default class FlayBatch extends FlayDiv {
   constructor() {
     super();
 
-    this.classList.add('flay-batch', 'flay-div');
     this.innerHTML = HTML;
   }
 

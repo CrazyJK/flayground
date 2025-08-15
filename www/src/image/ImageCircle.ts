@@ -3,6 +3,7 @@
  *
  * @version 2.1.0
  */
+import FlayDiv from '@flay/FlayDiv';
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
@@ -30,7 +31,6 @@ export interface ImageCircleOptions {
 }
 
 const CSS_CLASSES = {
-  base: ['flay-div'] as const,
   shapes: { circle: 'circle', square: 'square', rounded: 'rounded' } as const,
   effects: { emboss: 'emboss', engrave: 'engrave' } as const,
   event: 'event-allow' as const,
@@ -55,7 +55,7 @@ const TIMING = {
  * @class ImageCircle
  * @extends {HTMLDivElement}
  */
-export class ImageCircle extends HTMLElement {
+export class ImageCircle extends FlayDiv {
   static readonly DEFAULT_OPTIONS: ImageCircleOptions = {
     rem: 10,
     shape: CSS_CLASSES.shapes.circle,
@@ -98,7 +98,6 @@ export class ImageCircle extends HTMLElement {
   constructor(options: Partial<ImageCircleOptions> = ImageCircle.FULL_MODE_OPTIONS(document.body)) {
     super();
 
-    this.classList.add(...CSS_CLASSES.base);
     this.image = this.appendChild(document.createElement('div'));
     this.setOptions(options);
   }

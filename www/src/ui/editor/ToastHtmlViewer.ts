@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Editor from '@toast-ui/editor';
@@ -9,13 +10,12 @@ interface ToastViewer {
   };
 }
 
-export class ToastHtmlViewer extends HTMLElement {
+export class ToastHtmlViewer extends FlayDiv {
   #viewer!: ToastViewer;
   #htmlContent: string;
 
   constructor(htmlContent = '') {
     super();
-    this.classList.add('toast-html-viewer', 'flay-div');
     this.#htmlContent = htmlContent;
   }
 

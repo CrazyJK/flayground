@@ -2,6 +2,7 @@ import { MODAL_EDGE, MODAL_MODE } from '@const/GroundConstant';
 import FlayMonitor from '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import { ModalWindow } from '@ui/ModalWindow';
+import FlayStorage from '../lib/FlayStorage';
 import ThemeController from './part/ThemeController';
 import './SideNavBar.scss';
 
@@ -43,6 +44,7 @@ const menuList = [
 ];
 
 export class SideNavBar extends HTMLElement {
+  static readonly OPEN_STORAGE_KEY = 'SideNavBar.open';
   #currentMenuName: string = ''; // 현재 메뉴
 
   constructor() {
@@ -86,39 +88,55 @@ export class SideNavBar extends HTMLElement {
         this.#currentMenuName = anchor.textContent!.replace(/\s+/g, '');
       }
     });
-
-    this.addEventListener('click', (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      const tagName = target.tagName;
-      console.debug('click', tagName);
-      if (tagName === 'A') {
-        switch (target.id) {
-          case 'debug':
-            return toggleDebug();
-          case 'dependencies':
-            return window.open('dependencies-viewer.html', 'dependencies-viewer', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
-          case 'swagger':
-            return window.open('/swagger-ui/index.html', 'swagger', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
-          case 'bundleReport':
-            return window.open('bundle-report.html', 'bundle-report', `width=${window.innerWidth}px,height=${window.innerHeight}px'`);
-          case 'memo':
-            return this.#toggleMemoEditor();
-        }
-      } else if (target.closest('.flay-monitor')) {
-        window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
-      } else {
-        this.classList.toggle('open');
-      }
-    });
-
-    this.addEventListener('wheel', (e) => e.stopPropagation(), { passive: true });
-    this.addEventListener('resize', () => this.#setWindowSize());
+    this.classList.toggle('open', FlayStorage.local.getBoolean(SideNavBar.OPEN_STORAGE_KEY, false));
     this.#setWindowSize();
+
+    this.addEventListener('click', this.#menuClickHandler.bind(this));
+    this.addEventListener('wheel', this.#wheelHandler.bind(this), { passive: true });
+    this.addEventListener('resize', this.#setWindowSize.bind(this));
+  }
+
+  disconnectedCallback() {
+    this.removeEventListener('click', this.#menuClickHandler.bind(this));
+    this.removeEventListener('wheel', this.#wheelHandler.bind(this));
+    this.removeEventListener('resize', this.#setWindowSize.bind(this));
+  }
+
+  #menuClickHandler(e: MouseEvent) {
+    e.stopPropagation();
+    const target = e.target as HTMLElement;
+    const tagName = target.tagName;
+    if (tagName === 'A') {
+      const features = `width=${window.innerWidth}px,height=${window.innerHeight}px`;
+      switch (target.id) {
+        case 'memo':
+          return this.#toggleMemoEditor();
+        case 'debug':
+          return toggleDebug();
+        case 'swagger':
+          return window.open('/swagger-ui/index.html', target.id, features);
+        case 'dependencies':
+          return window.open('dependencies-viewer.html', target.id, features);
+        case 'bundleReport':
+          return window.open('bundle-report.html', target.id, features);
+        default:
+          break;
+      }
+    } else if (target.closest('flay-monitor')) {
+      window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
+    } else {
+      const toggleState = this.classList.toggle('open');
+      FlayStorage.local.set(SideNavBar.OPEN_STORAGE_KEY, toggleState.toString());
+    }
+  }
+
+  #wheelHandler(e: WheelEvent) {
+    e.stopPropagation();
   }
 
   #toggleMemoEditor() {
-    const id = 'memo-editor-' + this.#currentMenuName;
-    const memoEditor = document.querySelector('#' + id);
+    const editorId = `memo-editor-${this.#currentMenuName}`;
+    const memoEditor = document.getElementById(editorId);
     if (memoEditor) {
       memoEditor.remove();
       return;
@@ -128,7 +146,7 @@ export class SideNavBar extends HTMLElement {
       document.body
         .appendChild(
           new ModalWindow('Memo', {
-            id: id,
+            id: editorId,
             top: 60,
             left: 0,
             width: 300,

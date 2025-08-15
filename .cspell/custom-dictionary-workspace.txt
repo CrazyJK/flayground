@@ -36,3 +36,4 @@ FULLSIZE
 resizer
 normalscreen
 namjk
+corejs

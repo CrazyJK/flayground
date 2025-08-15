@@ -15,7 +15,7 @@ window.__zIndex__ = 13;
 
 /**
  * 모달 윈도우의 z-index를 증가하여 반환한다.
- * @returns {number} 증가된 z-index
+ * @returns 증가된 z-index
  */
 export const nextWindowzIndex = (): number => ++window.__zIndex__;
 

@@ -14,6 +14,9 @@ type MenuItemType =
     }
   | {};
 
+class SideNavOpener extends FlayDiv {}
+customElements.define('side-nav-opener', SideNavOpener);
+
 export class SideNavBar extends FlayDiv {
   static readonly OPEN_STORAGE_KEY = 'SideNavBar.open';
 
@@ -91,7 +94,7 @@ export class SideNavBar extends FlayDiv {
     <footer>
       <div><flay-monitor></flay-monitor></div>
       <div><a id="memo">memo</a></div>
-      <div><a id="debug">debug</a><sub></sub></div>
+      <div><a id="debug">debug</a><i></i></div>
       <div><a id="swagger">swagger</a></div>
       <div><a id="dependencies">dependencies</a></div>
       <div><a id="bundleReport">bundle report</a></div>
@@ -100,11 +103,11 @@ export class SideNavBar extends FlayDiv {
     `;
 
     // DOM 요소 캐싱
-    this.#windowSizeIndicator = this.querySelector('#debug + sub')!;
+    this.#windowSizeIndicator = this.querySelector('#debug + i')!;
   }
 
   connectedCallback() {
-    this.parentElement!.insertBefore(document.createElement('div'), this).classList.add('nav-open');
+    this.parentElement!.insertBefore(new SideNavOpener(), this);
 
     this.#setActiveMenu();
     this.#setWindowSize();
@@ -221,7 +224,7 @@ export class SideNavBar extends FlayDiv {
    * 윈도우 크기 설정
    */
   #setWindowSize() {
-    this.#windowSizeIndicator.innerHTML = ` ${window.innerWidth}x${window.innerHeight}`;
+    this.#windowSizeIndicator.innerHTML = ` ${window.innerWidth} x ${window.innerHeight}`;
   }
 }
 

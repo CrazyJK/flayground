@@ -16,7 +16,7 @@ flay-marker-float {
     pointer-events: auto;
 
     &.shot {
-      box-shadow: 0 0 var(--shot-blur) var(--shot-spread) var(--color-red);
+      box-shadow: inset 0 2px 16px 4px var(--color-red);
     }
   }
 }

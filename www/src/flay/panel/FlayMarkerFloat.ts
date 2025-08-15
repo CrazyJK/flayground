@@ -8,12 +8,19 @@ import './FlayMarkerFloat.scss';
 
 export class FlayMarkerFloat extends GroundFlay {
   #intervalIdOfMarker: number | undefined = undefined;
-  #flayMarker = new FlayMarker();
-  #opusProvider = new OpusProvider();
+  #flayMarker: FlayMarker;
+  #opusProvider: OpusProvider;
+
+  constructor() {
+    super();
+    this.#flayMarker = new FlayMarker();
+    this.#opusProvider = new OpusProvider();
+  }
 
   connectedCallback(): void {
     this.appendChild(this.#flayMarker);
-    this.#start();
+    this.#updateMarker();
+    this.#intervalIdOfMarker = window.setInterval(() => this.#updateMarker(), 1000 * 60); // Refresh every 1 minute
   }
 
   disconnectedCallback(): void {
@@ -21,17 +28,10 @@ export class FlayMarkerFloat extends GroundFlay {
     clearInterval(this.#intervalIdOfMarker);
   }
 
-  #start(): void {
-    this.#updateMarker();
-    this.#intervalIdOfMarker = window.setInterval(() => this.#updateMarker(), 1000 * 60); // Refresh every 1 minute
-  }
-
   #updateMarker(): void {
     void this.#getRandomInfo().then(({ randomFlay, randomRem, randomX, randomY }) => {
       this.style.setProperty('--marker-size', `${randomRem}rem`);
       this.style.setProperty('--square-radius', `${randomRem * 0.25}rem`);
-      this.style.setProperty('--shot-blur', `${randomRem * 3}rem`);
-      this.style.setProperty('--shot-spread', `${randomRem * 0.25}rem`);
 
       this.#flayMarker.set(randomFlay, { tooltip: true, shape: 'square', cover: true });
       this.#flayMarker.style.left = `${randomX}px`;
@@ -42,8 +42,9 @@ export class FlayMarkerFloat extends GroundFlay {
   async #getRandomInfo(): Promise<{ randomFlay: Flay; randomRem: number; randomX: number; randomY: number }> {
     const randomOpus = await this.#opusProvider.getRandomOpus();
     const randomFlay = (await FlayFetch.getFlay(randomOpus))!;
-    const maxRem = Math.max(6, randomFlay.video.likes?.length ?? 0); // Limit to 6 rems
-    const randomRem = RandomUtils.getRandomIntInclusive(4, maxRem);
+    const rank = Math.max(0, randomFlay.video.rank) || 5;
+    const shot = randomFlay.video.likes?.length ?? 0;
+    const randomRem = rank + RandomUtils.getRandomIntInclusive(0, shot);
     const [randomX, randomY] = this.#randomPosition(randomRem);
     return { randomFlay, randomRem, randomX, randomY };
   }

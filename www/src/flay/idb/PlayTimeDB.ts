@@ -1,4 +1,4 @@
-import FlayIndexedDB from './FlayIndexedDB';
+import FlayIndexedDB from '@flay/idb/FlayIndexedDB';
 
 const dbName = 'flay-play-time-db';
 const dbVersion = 5;

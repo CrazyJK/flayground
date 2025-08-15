@@ -1,12 +1,12 @@
 import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '@base/GroundConstant';
 import GroundFlay from '@base/GroundFlay';
+import { FlayVideoPlayer } from '@flay/panel/FlayVideoPlayer';
 import { FlayProvider } from '@lib/FlayProvider';
 import FlayStorage from '@lib/FlayStorage';
 import RandomUtils from '@lib/RandomUtils';
 import TimeUtils from '@lib/TimeUtils';
 import basketSVG from '@svg/basket';
 import controlsSVG from '@svg/controls';
-import { FlayVideoPlayer } from './FlayVideoPlayer';
 import './FlayVideoViewPanel.scss';
 
 /** Window 객체에 알림 함수 추가 */

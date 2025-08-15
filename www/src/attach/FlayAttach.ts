@@ -1,6 +1,6 @@
 import ApiClient from '@lib/ApiClient';
+import StringUtils from '@lib/StringUtils';
 import windowButton from '@svg/windowButton';
-import StringUtils from '../lib/StringUtils';
 import './FlayAttach.scss';
 
 interface AttachFile {

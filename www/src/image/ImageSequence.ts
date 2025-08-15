@@ -1,8 +1,8 @@
 import GroundImage from '@base/GroundImage';
+import FlayImage from '@image/part/FlayImage';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import './ImageSequence.scss';
-import FlayImage from './part/FlayImage';
 
 export class ImageSequence extends GroundImage {
   private header: HTMLDivElement;

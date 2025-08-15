@@ -1,5 +1,5 @@
 import ApiClient, { ApiClientOptions } from '@lib/ApiClient';
-import { Actress, Studio, Video } from './FlayFetch';
+import { Actress, Studio, Video } from '@lib/FlayFetch';
 
 // 콜백 함수 타입 정의
 type SuccessCallback<T = unknown> = (data?: T) => void;

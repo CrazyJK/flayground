@@ -12,7 +12,7 @@ import CoverStore from '@flay/idb/ground/store/CoverStore';
 import FlayStore from '@flay/idb/ground/store/FlayStore';
 import HistoryStore from '@flay/idb/ground/store/HistoryStore';
 import ScoreStore from '@flay/idb/ground/store/ScoreStore';
-import FlayFetch, { Actress } from './FlayFetch';
+import FlayFetch, { Actress } from '@lib/FlayFetch';
 
 const flayStore = new FlayStore();
 const coverStore = new CoverStore();

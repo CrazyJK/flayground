@@ -1,10 +1,10 @@
 import { MODAL_EDGE, MODAL_MODE } from '@base/GroundConstant';
+import FlayMarker from '@flay/domain/FlayMarker';
 import RandomUtils from '@lib/RandomUtils';
 import fetchJsonp from '@lib/fetchJsonp';
 import { Countdown } from '@ui/Countdown';
 import { ModalWindow } from '@ui/ModalWindow';
 import { TickTimer } from '@ui/TickTimer';
-import FlayMarker from '../flay/domain/FlayMarker';
 import './inc/Page';
 import './test.scss';
 

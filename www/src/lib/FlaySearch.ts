@@ -1,4 +1,4 @@
-import ApiClient from './ApiClient';
+import ApiClient from '@lib/ApiClient';
 
 // URL constants for various search services
 export const URL_ARZON = 'https://www.arzon.jp/itemlist.html?t=&m=all&s=&q=';

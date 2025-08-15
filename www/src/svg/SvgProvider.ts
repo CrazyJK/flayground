@@ -1,3 +1,4 @@
+import arrow from '@svg/arrow';
 import basketSVG from '@svg/basket';
 import cloudDownSVG from '@svg/cloudDown';
 import controlsSVG from '@svg/controls';
@@ -58,6 +59,24 @@ export const svgMap = new Map<string, string>([
   ['reload', windowButton.reload],
   ['fullscreen', windowButton.fullscreen],
   ['normalscreen', windowButton.normalscreen],
+  ['expand', windowButton.expand],
+  ['compress', windowButton.compress],
+  ['arrow.square.Up', arrow.square.Up],
+  ['arrow.square.Down', arrow.square.Down],
+  ['arrow.square.Left', arrow.square.Left],
+  ['arrow.square.Right', arrow.square.Right],
+  ['arrow.square.UpLeft', arrow.square.UpLeft],
+  ['arrow.square.UpRight', arrow.square.UpRight],
+  ['arrow.square.DownLeft', arrow.square.DownLeft],
+  ['arrow.square.DownRight', arrow.square.DownRight],
+  ['arrow.circle.Up', arrow.circle.Up],
+  ['arrow.circle.Down', arrow.circle.Down],
+  ['arrow.circle.Left', arrow.circle.Left],
+  ['arrow.circle.Right', arrow.circle.Right],
+  ['arrow.circle.UpLeft', arrow.circle.UpLeft],
+  ['arrow.circle.UpRight', arrow.circle.UpRight],
+  ['arrow.circle.DownLeft', arrow.circle.DownLeft],
+  ['arrow.circle.DownRight', arrow.circle.DownRight],
 ]);
 
 export const svgNames = new Array<string>(
@@ -101,7 +120,25 @@ export const svgNames = new Array<string>(
   'windowButton.normalscreen',
   'windowButton.reload',
   'windowButton.terminate',
-  'youtube'
+  'windowButton.expand',
+  'windowButton.compress',
+  'youtube',
+  'arrow.square.Up',
+  'arrow.square.Down',
+  'arrow.square.Left',
+  'arrow.square.Right',
+  'arrow.square.UpLeft',
+  'arrow.square.UpRight',
+  'arrow.square.DownLeft',
+  'arrow.square.DownRight',
+  'arrow.circle.Up',
+  'arrow.circle.Down',
+  'arrow.circle.Left',
+  'arrow.circle.Right',
+  'arrow.circle.UpLeft',
+  'arrow.circle.UpRight',
+  'arrow.circle.DownLeft',
+  'arrow.circle.DownRight'
 );
 
 export class SvgProvider {

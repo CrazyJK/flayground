@@ -8,6 +8,14 @@ interface TodayItem {
   uuid: string;
 }
 
+interface FacadeWebMovieOptions {
+  volume: number;
+  /**
+   * 비디오가 끝나면 다음 비디오로 넘어갑니다.
+   */
+  next: boolean;
+}
+
 /**
  * FacadeWebMovie.ts
  *
@@ -17,43 +25,48 @@ interface TodayItem {
  */
 export class FacadeWebMovie extends GroundMovie {
   private readonly fadeOutDuration = 1000; // 페이드 아웃 지속 시간 (ms)
+  private readonly options: FacadeWebMovieOptions = {
+    volume: 0.5,
+    next: false,
+  };
   private video: HTMLVideoElement;
+  private todayItems: TodayItem[] = [];
 
   #boundLoadHandler: EventListener;
   #boundErrorHandler: EventListener;
   #boundEndedHandler: EventListener;
   #boundClickHandler: EventListener;
 
-  constructor() {
+  constructor(options: Partial<FacadeWebMovieOptions> = {}) {
     super();
+
+    this.options = { ...this.options, ...options };
 
     this.video = this.appendChild(document.createElement('video'));
 
     // 비디오 속성 설정
     this.video.autoplay = true;
-    this.video.loop = false;
     this.video.playsInline = true; // 모바일에서 인라인 재생
-    this.video.volume = 0.5;
-    // this.video.muted = true; // 자동 재생을 위해 음소거 설정
+    this.video.loop = false;
+    this.video.volume = this.options.volume;
 
     this.#boundLoadHandler = this.handleVideoLoad.bind(this);
-    this.#boundErrorHandler = this.handleVideoError.bind(this);
     this.#boundEndedHandler = this.handleVideoEnded.bind(this);
+    this.#boundErrorHandler = this.handleVideoError.bind(this);
     this.#boundClickHandler = this.handleVideoClick.bind(this);
   }
 
   connectedCallback(): void {
     this.video.addEventListener('loadstart', this.#boundLoadHandler); // 로딩 시작 시 스타일 설정
-    this.video.addEventListener('error', this.#boundErrorHandler); // 에러 처리
     this.video.addEventListener('ended', this.#boundEndedHandler); // 비디오 종료 시 페이드 아웃 애니메이션
+    this.video.addEventListener('error', this.#boundErrorHandler); // 에러 처리
     this.video.addEventListener('click', this.#boundClickHandler);
 
     ApiClient.get<TodayItem[]>('/todayis')
       .then((todayItems) => {
         if (todayItems !== null && todayItems.length > 0) {
-          const randomTodayItem = RandomUtils.getRandomElementFromArray(todayItems);
-          console.log('FacadeWebMovie: 선택된 오늘의 아이템', randomTodayItem);
-          this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomTodayItem.uuid}`);
+          this.todayItems = todayItems;
+          this.playNext(); // 첫 비디오 재생
         } else {
           console.warn('FacadeWebMovie: API 응답 형식이 올바르지 않습니다.');
         }
@@ -66,19 +79,25 @@ export class FacadeWebMovie extends GroundMovie {
 
   disconnectedCallback(): void {
     this.video.removeEventListener('loadstart', this.#boundLoadHandler);
-    this.video.removeEventListener('error', this.#boundErrorHandler);
     this.video.removeEventListener('ended', this.#boundEndedHandler);
+    this.video.removeEventListener('error', this.#boundErrorHandler);
     this.video.removeEventListener('click', this.#boundClickHandler);
     this.video.pause();
     this.video.src = ''; // 비디오 소스 초기화
   }
 
+  private playNext(): void {
+    const randomTodayItem = RandomUtils.getRandomElementFromArray(this.todayItems);
+    this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomTodayItem.uuid}`);
+    console.log('FacadeWebMovie: 선택된 다음 아이템', randomTodayItem);
+  }
+
   /**
-   * 비디오 클릭 이벤트 처리
-   * - 음소거 토글
+   * 비디오 로딩 시작 이벤트 처리
+   * - 로딩 시작 시 스타일 설정
    */
-  private handleVideoClick(): void {
-    this.video.muted = !this.video.muted;
+  private handleVideoLoad(): void {
+    this.style.opacity = '1';
   }
 
   /**
@@ -86,13 +105,17 @@ export class FacadeWebMovie extends GroundMovie {
    * - 페이드 아웃 애니메이션 처리
    */
   private handleVideoEnded(): void {
-    this.animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration: this.fadeOutDuration,
-      fill: 'forwards',
-      easing: 'ease-out',
-    }).onfinish = () => {
-      this.remove();
-    };
+    if (this.options.next) {
+      this.playNext(); // 다음 비디오로 교체
+    } else {
+      this.animate([{ opacity: 1 }, { opacity: 0 }], {
+        duration: this.fadeOutDuration,
+        fill: 'forwards',
+        easing: 'ease-out',
+      }).onfinish = () => {
+        this.remove();
+      };
+    }
   }
 
   /**
@@ -105,11 +128,11 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   /**
-   * 비디오 로딩 시작 이벤트 처리
-   * - 로딩 시작 시 스타일 설정
+   * 비디오 클릭 이벤트 처리
+   * - 음소거 토글
    */
-  private handleVideoLoad(): void {
-    this.style.opacity = '1';
+  private handleVideoClick(): void {
+    this.video.muted = !this.video.muted;
   }
 
   /**

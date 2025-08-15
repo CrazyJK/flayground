@@ -466,10 +466,14 @@ export default class FlayFetch {
    * @param opus - opus 번호
    */
   static clear(opus: string): void {
+    if (coverObjectURLMap.has(opus)) {
+      URL.revokeObjectURL(coverObjectURLMap.get(opus)!);
+    }
     coverObjectURLMap.delete(opus);
   }
 
   static clearAll(): void {
+    coverObjectURLMap.forEach((url) => URL.revokeObjectURL(url));
     coverObjectURLMap.clear();
   }
 

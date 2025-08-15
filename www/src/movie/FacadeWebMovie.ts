@@ -14,6 +14,8 @@ interface FacadeWebMovieOptions {
    * 비디오가 끝나면 다음 비디오로 넘어갑니다.
    */
   next: boolean;
+  width?: string;
+  maxWidth?: string;
 }
 
 /**
@@ -54,6 +56,9 @@ export class FacadeWebMovie extends GroundMovie {
     this.#boundEndedHandler = this.handleVideoEnded.bind(this);
     this.#boundErrorHandler = this.handleVideoError.bind(this);
     this.#boundClickHandler = this.handleVideoClick.bind(this);
+
+    if (this.options.width) this.video.style.width = this.options.width;
+    if (this.options.maxWidth) this.video.style.maxWidth = this.options.maxWidth;
   }
 
   connectedCallback(): void {

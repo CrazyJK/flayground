@@ -35,4 +35,20 @@ export default {
           <path d="M192,288H32c-17.672,0-32,14.328-32,32s14.328,32,32,32h128v64c0,17.672,14.328,32,32,32s32-14.328,32-32v-96 C224,302.328,209.672,288,192,288z"></path>
         </g>
       </svg>`,
+  expand: `<svg width="2rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g>
+          <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 9L5 5M5 5L5 9M5 5L9 5"></path>
+          <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 9L19 5M19 5L15 5M19 5L19 9"></path>
+          <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M9 15L5 19M5 19L9 19M5 19L5 15"></path>
+          <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M15 15L19 19M19 19L19 15M19 19L15 19"></path>
+        </g>
+      </svg>`,
+  compress: `<svg width="2rem" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <g>
+          <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 5L9 9M9 9V5M9 9H5"></path>
+          <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19 5L15 9M15 9L19 9M15 9L15 5"></path>
+          <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M5 19L9 15M9 15L5 15M9 15L9 19"></path>
+          <path stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19 19L15 15M15 15L15 19M15 15L19 15"></path>
+        </g>
+      </svg>`,
 };

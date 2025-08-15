@@ -70,7 +70,7 @@ module.exports = {
     extensions: ['.ts', '.json', '.scss', '.css'],
     alias: {
       '@attach': path.resolve(__dirname, 'src/attach'),
-      '@const': path.resolve(__dirname, 'src/const'),
+      '@base': path.resolve(__dirname, 'src/base'),
       '@diary': path.resolve(__dirname, 'src/diary'),
       '@flay': path.resolve(__dirname, 'src/flay'),
       '@image': path.resolve(__dirname, 'src/image'),

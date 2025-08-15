@@ -1,4 +1,4 @@
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 import FlayFetch, { Flay, SearchCondition } from '@lib/FlayFetch';
 import FlayStorage from '@lib/FlayStorage';
 import favoriteSVG from '@svg/favorite';

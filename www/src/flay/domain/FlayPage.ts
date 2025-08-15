@@ -1,4 +1,4 @@
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 import FlayActress from '@flay/domain/part/FlayActress';
 import FlayComment from '@flay/domain/part/FlayComment';
 import FlayCover from '@flay/domain/part/FlayCover';

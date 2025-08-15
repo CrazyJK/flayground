@@ -1,4 +1,4 @@
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 import FlayMarker, { SHAPES, ShapeType } from '@flay/domain/FlayMarker';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { OpusProvider } from '@lib/OpusProvider';

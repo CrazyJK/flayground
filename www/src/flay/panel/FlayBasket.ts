@@ -1,5 +1,5 @@
-import FlayDiv from '@const/FlayDiv';
-import { EVENT_BASKET_ADD } from '@const/GroundConstant';
+import FlayDiv from '@base/FlayDiv';
+import { EVENT_BASKET_ADD } from '@base/GroundConstant';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';

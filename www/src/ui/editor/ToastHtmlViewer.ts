@@ -1,4 +1,4 @@
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Editor from '@toast-ui/editor';

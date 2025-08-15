@@ -1,13 +1,13 @@
 /**
  * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
-import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@const/GroundConstant';
+import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@base/GroundConstant';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Editor from '@toast-ui/editor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import './ToastHtmlEditor.scss';
 

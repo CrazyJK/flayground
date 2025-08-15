@@ -1,5 +1,5 @@
-import FlayDiv from '@const/FlayDiv';
-import { EVENT_CHANGE_TITLE } from '@const/GroundConstant';
+import FlayDiv from '@base/FlayDiv';
+import { EVENT_CHANGE_TITLE } from '@base/GroundConstant';
 import FlayStorage from '@lib/FlayStorage';
 import windowButton from '@svg/windowButton';
 

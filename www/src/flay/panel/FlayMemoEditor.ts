@@ -1,5 +1,5 @@
-import FlayDiv from '@const/FlayDiv';
-import { EVENT_CHANGE_TITLE } from '@const/GroundConstant';
+import FlayDiv from '@base/FlayDiv';
+import { EVENT_CHANGE_TITLE } from '@base/GroundConstant';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';

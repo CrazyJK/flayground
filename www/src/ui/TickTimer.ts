@@ -1,4 +1,4 @@
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 
 export const EVENT_TIMER_START = 'timer-start';
 export const EVENT_TIMER_END = 'timer-end';

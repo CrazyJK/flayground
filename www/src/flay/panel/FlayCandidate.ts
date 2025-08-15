@@ -1,4 +1,4 @@
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 import FlayArticle from '@flay/domain/FlayArticle';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch from '@lib/FlayFetch';

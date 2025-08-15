@@ -1,4 +1,4 @@
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '@lib/FlaySearch';

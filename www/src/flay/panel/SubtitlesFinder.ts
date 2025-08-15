@@ -1,4 +1,4 @@
-import FlayDiv from '@const/FlayDiv';
+import FlayDiv from '@base/FlayDiv';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupFlayCard } from '@lib/FlaySearch';

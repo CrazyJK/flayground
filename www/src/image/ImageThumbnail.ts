@@ -1,5 +1,5 @@
-import FlayDiv from '@const/FlayDiv';
-import { EventCode } from '@const/GroundConstant';
+import FlayDiv from '@base/FlayDiv';
+import { EventCode } from '@base/GroundConstant';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';

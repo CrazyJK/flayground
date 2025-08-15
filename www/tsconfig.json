@@ -43,7 +43,7 @@
     "baseUrl": ".",
     "paths": {
       "@attach/*": ["src/attach/*"],
-      "@const/*": ["src/const/*"],
+      "@base/*": ["src/base/*"],
       "@diary/*": ["src/diary/*"],
       "@flay/*": ["src/flay/*"],
       "@image/*": ["src/image/*"],

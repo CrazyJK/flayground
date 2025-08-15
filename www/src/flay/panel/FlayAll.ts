@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay } from '@lib/FlaySearch';
 
@@ -26,7 +27,7 @@ import { popupActress, popupFlay } from '@lib/FlaySearch';
  * @fires sort-changed - 정렬이 변경되었을 때 발생
  * @fires filter-changed - 필터가 변경되었을 때 발생
  */
-export class FlayAll extends HTMLElement {
+export class FlayAll extends FlayDiv {
   // 상수 및 클래스 변수 정의
   static PAGE_SIZE = 100; // 한 번에 표시할 항목 수
 

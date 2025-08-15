@@ -1,3 +1,5 @@
+import FlayDiv from '@flay/FlayDiv';
+
 export const EVENT_TIMER_START = 'timer-start';
 export const EVENT_TIMER_END = 'timer-end';
 export const EVENT_TIMER_TICK = 'timer-tick';
@@ -6,9 +8,8 @@ export const EVENT_TIMER_RESUME = 'timer-resume';
 
 /**
  * 타이머 컴포넌트
- * @extends HTMLElement
  */
-export class TickTimer extends HTMLElement {
+export class TickTimer extends FlayDiv {
   #seconds = 0;
   #intervalId: ReturnType<typeof setInterval> | null = null;
   #paused = false;

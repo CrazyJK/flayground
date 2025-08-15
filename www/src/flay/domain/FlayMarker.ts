@@ -1,4 +1,5 @@
 import { FlayTooltip } from '@flay/domain/FlayTooltip';
+import FlayDiv from '@flay/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import { BlankFlay, Flay } from '@lib/FlayFetch';
 import { popupFlay } from '@lib/FlaySearch';
@@ -34,7 +35,7 @@ const DEFAULT_OPTIONS: FlayMarkerOptions = {
  * - 클릭 시 Flay 팝업 표시
  * - 호버 시 툴팁 표시 옵션
  */
-export default class FlayMarker extends HTMLElement {
+export default class FlayMarker extends FlayDiv {
   /** Flay 데이터 */
   flay: Flay = BlankFlay;
   #options: FlayMarkerOptions = { ...DEFAULT_OPTIONS };

@@ -1,9 +1,10 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import './ImageSequence.scss';
 import FlayImage from './part/FlayImage';
 
-export class ImageSequence extends HTMLElement {
+export class ImageSequence extends FlayDiv {
   private header: HTMLDivElement;
   private footer: HTMLDivElement;
   private imageLength: number = 0;

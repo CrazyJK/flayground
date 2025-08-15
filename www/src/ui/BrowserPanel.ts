@@ -1,8 +1,9 @@
 import { EVENT_CHANGE_TITLE } from '@const/GroundConstant';
+import FlayDiv from '@flay/FlayDiv';
 import FlayStorage from '@lib/FlayStorage';
 import windowButton from '@svg/windowButton';
 
-export class BrowserPanel extends HTMLElement {
+export class BrowserPanel extends FlayDiv {
   #input: HTMLInputElement;
   #datalist: HTMLDataListElement;
   #iframe: HTMLIFrameElement;

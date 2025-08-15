@@ -1,11 +1,12 @@
 import FlayMarker, { SHAPES, ShapeType } from '@flay/domain/FlayMarker';
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { OpusProvider } from '@lib/OpusProvider';
 import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';
 import './FlayMarkerFloat.scss';
 
-export class FlayMarkerFloat extends HTMLElement {
+export class FlayMarkerFloat extends FlayDiv {
   #intervalIdOfMarker: number | undefined = undefined;
   #intervalIdOfShape: number | undefined = undefined;
   #flayMarker = new FlayMarker();

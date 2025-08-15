@@ -1,3 +1,4 @@
+import FlayDiv from '@flay/FlayDiv';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
@@ -8,7 +9,7 @@ const SECOND = 1000;
 /**
  * ImageMask
  */
-export class ImageMask extends HTMLElement {
+export class ImageMask extends FlayDiv {
   private currentImageUrl: string | null = null;
   private isLoopRunning: boolean = false;
   private animationId: number | null = null;

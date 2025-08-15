@@ -1,4 +1,5 @@
 import FlayMarker from '@flay/domain/FlayMarker';
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import PackUtils, { PackStrategies, PackStrategy } from '@lib/PackUtils';
 import RandomUtils from '@lib/RandomUtils';
@@ -10,7 +11,7 @@ import './FlayPackPanel.scss';
  * 각 Flay의 좋아요 수에 따라 크기를 조절하고,
  * 선택된 전략(circle, grid, spiral 등)에 따라 레이아웃을 구성합니다.
  */
-export class FlayPackPanel extends HTMLElement {
+export class FlayPackPanel extends FlayDiv {
   /** 패킹 유틸리티 인스턴스 */
   #packUtils: PackUtils;
   /** 패널의 배치 전략 */

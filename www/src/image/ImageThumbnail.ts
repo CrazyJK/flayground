@@ -1,10 +1,11 @@
 import { EventCode } from '@const/GroundConstant';
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import StyleUtils from '@lib/StyleUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
 
-export class ImageThumbnail extends HTMLElement {
+export class ImageThumbnail extends FlayDiv {
   private static readonly ThumbnailDimensions = [3, 4];
   private static readonly ThumbnailScalingFactor = 5;
 

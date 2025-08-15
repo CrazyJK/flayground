@@ -1,3 +1,5 @@
+import FlayDiv from '@flay/FlayDiv';
+
 // 카운트다운 이벤트 상수 정의
 
 /** 카운트다운이 시작될 때 발생하는 이벤트 타입 */
@@ -55,7 +57,7 @@ export const EVENT_COUNTDOWN_CHANGE = 'countdown-change';
  * @fires Countdown#countdown-resume - 카운트다운이 재개될 때 발생
  * @fires Countdown#countdown-change - 카운트다운 초가 변경될 때 발생
  */
-export class Countdown extends HTMLElement {
+export class Countdown extends FlayDiv {
   #circle: HTMLDivElement;
   #startTime: number = -1;
   #duration: number = -1;

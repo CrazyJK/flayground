@@ -1,9 +1,10 @@
 import FlayMarker from '@flay/domain/FlayMarker';
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch from '@lib/FlayFetch';
 import PackUtils, { PackOptions } from '@lib/PackUtils';
 import './FlayShotReleasePanel.scss';
 
-export class FlayShotReleasePanel extends HTMLElement {
+export class FlayShotReleasePanel extends FlayDiv {
   resizeObservers: ResizeObserver[] = [];
   resizeHandlers: (() => void)[] = [];
 

@@ -1,7 +1,8 @@
+import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import './FlayTooltip.scss';
 
-export class FlayTooltip extends HTMLElement {
+export class FlayTooltip extends FlayDiv {
   #width: number = 300;
   #height: number = 200;
 

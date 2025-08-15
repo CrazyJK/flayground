@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import { popupFlay } from '@lib/FlaySearch';
 import { OpusProvider } from '@lib/OpusProvider';

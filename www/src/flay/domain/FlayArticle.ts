@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch, { BlankFlay, Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupFlayInfo } from '@lib/FlaySearch';

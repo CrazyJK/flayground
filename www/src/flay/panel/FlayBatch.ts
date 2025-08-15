@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayMarker from '@flay/domain/FlayMarker';
-import FlayDiv from '@flay/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Flay } from '@lib/FlayFetch';

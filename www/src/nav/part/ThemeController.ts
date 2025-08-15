@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import FlayStorage from '@lib/FlayStorage';
 import themeSVG from '@svg/themes';
 import './ThemeController.scss';

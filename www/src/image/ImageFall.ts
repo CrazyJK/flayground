@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';

@@ -7,7 +7,7 @@ import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@cons
 import Editor from '@toast-ui/editor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import './ToastHtmlEditor.scss';
 

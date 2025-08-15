@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import './FlayTooltip.scss';
 

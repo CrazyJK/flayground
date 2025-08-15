@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';

@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import { EventCode } from '@const/GroundConstant';
-import FlayDiv from '@flay/FlayDiv';
 import { getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';

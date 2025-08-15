@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, ModalEdge, ModalMode, nextWindowzIndex } from '@const/GroundConstant';
-import FlayDiv from '@flay/FlayDiv';
 import FlayStorage from '@lib/FlayStorage';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import windowButton from '@svg/windowButton';

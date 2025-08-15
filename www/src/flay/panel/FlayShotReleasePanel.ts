@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayMarker from '@flay/domain/FlayMarker';
-import FlayDiv from '@flay/FlayDiv';
 import FlayFetch from '@lib/FlayFetch';
 import PackUtils, { PackOptions } from '@lib/PackUtils';
 import './FlayShotReleasePanel.scss';

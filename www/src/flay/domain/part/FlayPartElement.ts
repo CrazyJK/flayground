@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import { BlankFlay, Flay } from '@lib/FlayFetch';
 
 export default class FlayPartElement extends FlayDiv {

@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Actress } from '@lib/FlayFetch';
 import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '@lib/FlaySearch';

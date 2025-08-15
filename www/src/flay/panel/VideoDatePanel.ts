@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayMarker from '@flay/domain/FlayMarker';
-import FlayDiv from '@flay/FlayDiv';
 import DateUtils from '@lib/DateUtils';
 import { Flay } from '../../lib/FlayFetch';
 import './VideoDatePanel.scss';

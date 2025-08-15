@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
 import './FlayVideoElement.scss';

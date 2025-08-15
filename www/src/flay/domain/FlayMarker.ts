@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import { FlayTooltip } from '@flay/domain/FlayTooltip';
-import FlayDiv from '@flay/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import { BlankFlay, Flay } from '@lib/FlayFetch';
 import { popupFlay } from '@lib/FlaySearch';

@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayCard from '@flay/domain/FlayCard';
-import FlayDiv from '@flay/FlayDiv';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch, { History } from '@lib/FlayFetch';
 import './FlayShotDailyPanel.scss';

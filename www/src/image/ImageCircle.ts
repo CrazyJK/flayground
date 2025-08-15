@@ -3,7 +3,7 @@
  *
  * @version 2.1.0
  */
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';

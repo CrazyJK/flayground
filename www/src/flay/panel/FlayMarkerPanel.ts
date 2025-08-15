@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayMarker from '@flay/domain/FlayMarker';
-import FlayDiv from '@flay/FlayDiv';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';

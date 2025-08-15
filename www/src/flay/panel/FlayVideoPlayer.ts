@@ -1,3 +1,4 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayActress from '@flay/domain/part/FlayActress';
 import FlayOpus from '@flay/domain/part/FlayOpus';
 import FlayRank from '@flay/domain/part/FlayRank';
@@ -5,7 +6,6 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import FlayDiv from '@flay/FlayDiv';
 import PlayTimeDB, { PlayTimeRecord } from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
 import FlayFetch, { Actress, BlankFlay, Flay } from '@lib/FlayFetch';

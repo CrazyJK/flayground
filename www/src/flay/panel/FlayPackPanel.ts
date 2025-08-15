@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayMarker from '@flay/domain/FlayMarker';
-import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import PackUtils, { PackStrategies, PackStrategy } from '@lib/PackUtils';
 import RandomUtils from '@lib/RandomUtils';

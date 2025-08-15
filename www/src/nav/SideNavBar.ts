@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import { MODAL_EDGE, MODAL_MODE } from '@const/GroundConstant';
-import FlayDiv from '@flay/FlayDiv';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import FlayStorage from '@lib/FlayStorage';

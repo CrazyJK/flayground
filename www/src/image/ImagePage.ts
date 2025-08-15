@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import '@image/part/ImageFrame';
 import ImageFrame from '@image/part/ImageFrame';
 import ApiClient from '@lib/ApiClient';

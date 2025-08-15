@@ -1,5 +1,5 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayArticle from '@flay/domain/FlayArticle';
-import FlayDiv from '@flay/FlayDiv';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch from '@lib/FlayFetch';
 import './FlayCandidate.scss';

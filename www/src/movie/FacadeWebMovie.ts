@@ -1,4 +1,4 @@
-import FlayDiv from '@flay/FlayDiv';
+import FlayDiv from '@const/FlayDiv';
 import ApiClient from '@lib/ApiClient';
 import RandomUtils from '../lib/RandomUtils';
 import './FacadeWebMovie.scss';

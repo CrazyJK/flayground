@@ -1,3 +1,4 @@
+import FlayDiv from '@const/FlayDiv';
 import FlayActress from '@flay/domain/part/FlayActress';
 import FlayComment from '@flay/domain/part/FlayComment';
 import FlayCover from '@flay/domain/part/FlayCover';
@@ -8,7 +9,6 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import FlayDiv from '@flay/FlayDiv';
 import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/FlayFetch';
 import './FlayPage.scss';
 

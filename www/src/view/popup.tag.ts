@@ -17,7 +17,7 @@ window.tagList = [];
 window.actressMap = new Map();
 
 const urlParams = new URL(location.href).searchParams;
-const param = urlParams.get('param');
+const param = urlParams.get('id');
 
 const id = parseInt(param!);
 

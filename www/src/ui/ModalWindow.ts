@@ -1,5 +1,5 @@
-import FlayDiv from '@base/FlayDiv';
 import { EVENT_CHANGE_TITLE, MODAL_EDGE, MODAL_MODE, ModalEdge, ModalMode, nextWindowzIndex } from '@base/GroundConstant';
+import GroundUI from '@base/GroundUI';
 import FlayStorage from '@lib/FlayStorage';
 import { addResizeListener } from '@lib/windowAddEventListener';
 import windowButton from '@svg/windowButton';
@@ -48,7 +48,7 @@ const DEFAULT_OPTS: Required<ModalWindowOptions> = {
   initialMode: MODAL_MODE.NORMAL,
 }; // 창의 기본 옵션
 
-export class ModalWindow extends FlayDiv {
+export class ModalWindow extends GroundUI {
   #top = 0; // 창의 상단 위치
   #left = 0; // 창의 좌측 위치
   #width = 0; // 창의 너비

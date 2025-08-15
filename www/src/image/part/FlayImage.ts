@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundImage from '@base/GroundImage';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
@@ -15,7 +15,7 @@ export interface FlayImageOptions {
  * - 이미지가 원본보다 클 때 자동 비활성화
  * - 성능 최적화된 requestAnimationFrame 기반 애니메이션
  */
-export default class FlayImage extends FlayDiv {
+export default class FlayImage extends GroundImage {
   #image: HTMLImageElement;
   #magnifier: HTMLDivElement | null = null;
   #magnifierSize: number = 300;

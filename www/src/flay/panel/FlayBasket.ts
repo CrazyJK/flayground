@@ -1,5 +1,5 @@
-import FlayDiv from '@base/FlayDiv';
 import { EVENT_BASKET_ADD } from '@base/GroundConstant';
+import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';
@@ -11,7 +11,7 @@ import './FlayBasket.scss';
 
 const BASKET_KEY = 'flay-basket';
 
-export class FlayBasket extends FlayDiv {
+export class FlayBasket extends GroundFlay {
   flayListEl: HTMLElement;
   flayCountEl: HTMLElement;
   actressListEl: HTMLElement;
@@ -240,7 +240,7 @@ export class FlayBasket extends FlayDiv {
 }
 customElements.define('flay-basket', FlayBasket);
 
-class FlayBasketItem extends FlayDiv {
+class FlayBasketItem extends GroundFlay {
   opus: string;
 
   constructor(flay: Flay) {

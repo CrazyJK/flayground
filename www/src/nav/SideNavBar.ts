@@ -1,5 +1,5 @@
-import FlayDiv from '@base/FlayDiv';
 import { MODAL_EDGE, MODAL_MODE } from '@base/GroundConstant';
+import GroundNav from '@base/GroundNav';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import FlayStorage from '@lib/FlayStorage';
@@ -14,10 +14,10 @@ type MenuItemType =
     }
   | {};
 
-class SideNavOpener extends FlayDiv {}
+class SideNavOpener extends GroundNav {}
 customElements.define('side-nav-opener', SideNavOpener);
 
-export class SideNavBar extends FlayDiv {
+export class SideNavBar extends GroundNav {
   static readonly OPEN_STORAGE_KEY = 'SideNavBar.open';
 
   // 정적 메뉴 리스트를 클래스 속성으로 이동

@@ -1,9 +1,9 @@
-import FlayDiv from '@base/FlayDiv';
 import { EVENT_CHANGE_TITLE } from '@base/GroundConstant';
+import GroundUI from '@base/GroundUI';
 import FlayStorage from '@lib/FlayStorage';
 import windowButton from '@svg/windowButton';
 
-export class BrowserPanel extends FlayDiv {
+export class BrowserPanel extends GroundUI {
   #input: HTMLInputElement;
   #datalist: HTMLDataListElement;
   #iframe: HTMLIFrameElement;

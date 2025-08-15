@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayActress from '@flay/domain/part/FlayActress';
 import FlayComment from '@flay/domain/part/FlayComment';
 import FlayCover from '@flay/domain/part/FlayCover';
@@ -16,7 +16,7 @@ import './FlayCard.scss';
 /**
  * Custom element of Card
  */
-export default class FlayCard extends FlayDiv {
+export default class FlayCard extends GroundFlay {
   opus: string = '';
   flay: Flay = BlankFlay;
   actress: Actress[] = [];

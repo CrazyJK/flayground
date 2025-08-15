@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import ApiClient from '@lib/ApiClient';
 import './FlayVideoElement.scss';
@@ -41,7 +41,7 @@ const MAX_RECOVERY_ATTEMPTS = 2; // 최대 복구 시도 횟수
  * video.play();
  * ```
  */
-export default class FlayVideo extends FlayDiv {
+export default class FlayVideo extends GroundFlay {
   video: HTMLVideoElement;
   opus: string | null = null;
   loaded = false;

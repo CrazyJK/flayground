@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayCard from '@flay/domain/FlayCard';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch, { History } from '@lib/FlayFetch';
@@ -10,7 +10,7 @@ import './FlayShotDailyPanel.scss';
  * 과거 날짜별로 플레이된 Flay들을 시간 순으로 표시하며,
  * 각 Flay에 샷(좋아요)이 있었는지 시각적으로 구분하여 보여줍니다.
  */
-export class FlayShotDailyPanel extends FlayDiv {
+export class FlayShotDailyPanel extends GroundFlay {
   /** 플레이 기록 목록 */
   #playHistoryList: History[] = [];
   /** 현재 표시 중인 이전 일수 */

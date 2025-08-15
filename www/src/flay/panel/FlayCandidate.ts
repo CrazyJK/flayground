@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayArticle from '@flay/domain/FlayArticle';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch from '@lib/FlayFetch';
@@ -7,7 +7,7 @@ import './FlayCandidate.scss';
 /**
  * accept candidate
  */
-export default class FlayCandidate extends FlayDiv {
+export default class FlayCandidate extends GroundFlay {
   constructor() {
     super();
 

@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundUI from '@base/GroundUI';
 
 // 카운트다운 이벤트 상수 정의
 
@@ -57,7 +57,7 @@ export const EVENT_COUNTDOWN_CHANGE = 'countdown-change';
  * @fires Countdown#countdown-resume - 카운트다운이 재개될 때 발생
  * @fires Countdown#countdown-change - 카운트다운 초가 변경될 때 발생
  */
-export class Countdown extends FlayDiv {
+export class Countdown extends GroundUI {
   #circle: HTMLDivElement;
   #startTime: number = -1;
   #duration: number = -1;

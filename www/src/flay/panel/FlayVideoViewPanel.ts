@@ -1,5 +1,5 @@
-import FlayDiv from '@base/FlayDiv';
 import { EVENT_BASKET_ADD, EVENT_CHANGE_TITLE } from '@base/GroundConstant';
+import GroundFlay from '@base/GroundFlay';
 import { FlayProvider } from '@lib/FlayProvider';
 import FlayStorage from '@lib/FlayStorage';
 import RandomUtils from '@lib/RandomUtils';
@@ -27,7 +27,7 @@ const MaxPlayTime = 60 * 5;
  * 랜덤한 Flay 비디오를 자동으로 재생하고, 재생 시간, 볼륨,
  * 일시정지 등을 제어할 수 있는 인터페이스를 제공합니다.
  */
-export class FlayVideoViewPanel extends FlayDiv {
+export class FlayVideoViewPanel extends GroundFlay {
   /** 타이머 ID */
   #timer: ReturnType<typeof setInterval> | undefined;
   /** Flay 데이터 제공자 */

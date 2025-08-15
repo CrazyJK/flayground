@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
 import DateUtils from '@lib/DateUtils';
 import { Flay } from '../../lib/FlayFetch';
@@ -10,7 +10,7 @@ import './VideoDatePanel.scss';
  * 플레이, 접근, 수정 날짜 기준으로 비디오 목록을 년/월별로 그룹화하여 표시하는 웹 컴포넌트입니다.
  * 다양한 날짜 모드를 지원하며, 각 모드에 따라 정렬 및 필터링된 결과를 보여줍니다.
  */
-export default class VideoDatePanel extends FlayDiv {
+export default class VideoDatePanel extends GroundFlay {
   /** 표시할 Flay 목록 */
   flayList: Flay[];
 

@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
 import ApiClient from '@lib/ApiClient';
 import FlayAction from '@lib/FlayAction';
@@ -41,7 +41,7 @@ const HTML = `
 /**
  *
  */
-export default class FlayBatch extends FlayDiv {
+export default class FlayBatch extends GroundFlay {
   constructor() {
     super();
 

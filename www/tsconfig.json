@@ -45,6 +45,7 @@
       "@attach/*": ["src/attach/*"],
       "@base/*": ["src/base/*"],
       "@diary/*": ["src/diary/*"],
+      "@editor/*": ["src/editor/*"],
       "@flay/*": ["src/flay/*"],
       "@image/*": ["src/image/*"],
       "@lib/*": ["src/lib/*"],

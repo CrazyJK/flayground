@@ -1,7 +1,7 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import { BlankFlay, Flay } from '@lib/FlayFetch';
 
-export default class FlayPartElement extends FlayDiv {
+export default class FlayPartElement extends GroundFlay {
   flay: Flay = BlankFlay;
   inCard: boolean = false;
 

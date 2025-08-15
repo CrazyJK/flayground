@@ -1,9 +1,9 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundImage from '@base/GroundImage';
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import './ImageFrame.scss';
 
-export default class ImageFrame extends FlayDiv {
+export default class ImageFrame extends GroundImage {
   img!: HTMLImageElement;
   info?: { idx: number; name: string; path: string; modified: Date; width: number; height: number; colors: ColorFrequency[] };
 

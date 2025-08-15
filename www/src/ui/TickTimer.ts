@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundUI from '@base/GroundUI';
 
 export const EVENT_TIMER_START = 'timer-start';
 export const EVENT_TIMER_END = 'timer-end';
@@ -9,7 +9,7 @@ export const EVENT_TIMER_RESUME = 'timer-resume';
 /**
  * 타이머 컴포넌트
  */
-export class TickTimer extends FlayDiv {
+export class TickTimer extends GroundUI {
   #seconds = 0;
   #intervalId: ReturnType<typeof setInterval> | null = null;
   #paused = false;

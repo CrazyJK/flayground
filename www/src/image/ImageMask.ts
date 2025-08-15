@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundImage from '@base/GroundImage';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
@@ -9,7 +9,7 @@ const SECOND = 1000;
 /**
  * ImageMask
  */
-export class ImageMask extends FlayDiv {
+export class ImageMask extends GroundImage {
   private currentImageUrl: string | null = null;
   private isLoopRunning: boolean = false;
   private animationId: number | null = null;

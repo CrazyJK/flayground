@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
@@ -38,7 +38,7 @@ interface PanelOptions {
   size: number;
 }
 
-export class FlayMarkerPanel extends FlayDiv {
+export class FlayMarkerPanel extends GroundFlay {
   #markerList: FlayMarker[] = []; // 마커 리스트
   #threadCount = 1; // 스레드 개수
   #paused = false; // 일시정지 여부

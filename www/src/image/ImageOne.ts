@@ -1,5 +1,5 @@
-import FlayDiv from '@base/FlayDiv';
 import { EventCode } from '@base/GroundConstant';
+import GroundImage from '@base/GroundImage';
 import { getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
@@ -21,7 +21,7 @@ const [ORIGINAL, FULLSIZE] = ['original', 'fullsize'];
 const PLAY = 'play';
 const TIMER = 10;
 
-export class ImageOne extends FlayDiv {
+export class ImageOne extends GroundImage {
   #flayImage: HTMLImageElement;
   #imgIdx: HTMLLabelElement;
   #imgPath: HTMLLabelElement;

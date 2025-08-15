@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundImage from '@base/GroundImage';
 import '@image/part/ImageFrame';
 import ImageFrame from '@image/part/ImageFrame';
 import ApiClient from '@lib/ApiClient';
@@ -29,7 +29,7 @@ interface DocumentEventListenerInfo {
   handler: (event: Event) => void;
 }
 
-export class ImagePage extends FlayDiv {
+export class ImagePage extends GroundImage {
   // 이벤트 리스너들을 추적하기 위한 변수들
   private eventListeners: EventListenerInfo[] = [];
   private documentEventListeners: DocumentEventListenerInfo[] = [];

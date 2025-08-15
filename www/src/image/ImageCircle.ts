@@ -1,9 +1,7 @@
 /**
  * 이미지 원형 표시 컴포넌트
- *
- * @version 2.1.0
  */
-import FlayDiv from '@base/FlayDiv';
+import GroundImage from '@base/GroundImage';
 import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
 import FlayFetch, { ImageData } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
@@ -55,7 +53,7 @@ const TIMING = {
  * @class ImageCircle
  * @extends {HTMLDivElement}
  */
-export class ImageCircle extends FlayDiv {
+export class ImageCircle extends GroundImage {
   static readonly DEFAULT_OPTIONS: ImageCircleOptions = {
     rem: 10,
     shape: CSS_CLASSES.shapes.circle,

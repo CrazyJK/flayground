@@ -72,6 +72,7 @@ module.exports = {
       '@attach': path.resolve(__dirname, 'src/attach'),
       '@base': path.resolve(__dirname, 'src/base'),
       '@diary': path.resolve(__dirname, 'src/diary'),
+      '@editor': path.resolve(__dirname, 'src/editor'),
       '@flay': path.resolve(__dirname, 'src/flay'),
       '@image': path.resolve(__dirname, 'src/image'),
       '@lib': path.resolve(__dirname, 'src/lib'),

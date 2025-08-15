@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayActress from '@flay/domain/part/FlayActress';
 import FlayComment from '@flay/domain/part/FlayComment';
 import FlayCover from '@flay/domain/part/FlayCover';
@@ -12,7 +12,7 @@ import FlayTitle from '@flay/domain/part/FlayTitle';
 import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/FlayFetch';
 import './FlayPage.scss';
 
-export default class FlayPage extends FlayDiv {
+export default class FlayPage extends GroundFlay {
   flayStudio: FlayStudio;
   flayOpus: FlayOpus;
   flayComment: FlayComment;

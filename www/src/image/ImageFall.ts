@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundImage from '@base/GroundImage';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -14,7 +14,7 @@ interface ImageFallOptions {
 
 const DEFAULT_OPTS: ImageFallOptions = { mode: 'serial', auto: true };
 
-export class ImageFall extends FlayDiv {
+export class ImageFall extends GroundImage {
   private timer: number = -1;
   private continue: boolean = true;
   private willRandom: boolean = false;

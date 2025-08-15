@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupFlayCard } from '@lib/FlaySearch';
@@ -28,7 +28,7 @@ const HTML = `
 <div id="flayList"></div>
 `;
 
-export default class SubtitlesFinder extends FlayDiv {
+export default class SubtitlesFinder extends GroundFlay {
   constructor() {
     super();
 

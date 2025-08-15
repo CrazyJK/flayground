@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundNav from '@base/GroundNav';
 import FlayStorage from '@lib/FlayStorage';
 import themeSVG from '@svg/themes';
 import './ThemeController.scss';
@@ -17,7 +17,7 @@ const DARK: ThemeType = 'dark';
  * - 로컬 스토리지에 테마 설정 저장
  * - 시스템 테마 변경 감지
  */
-export default class ThemeController extends FlayDiv {
+export default class ThemeController extends GroundNav {
   /** 현재 테마 */
   theme: ThemeType = OS;
   /** 다크 모드 여부 */

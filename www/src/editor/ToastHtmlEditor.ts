@@ -2,12 +2,12 @@
  * ref) toast-ui/editor. https://nhn.github.io/tui.editor/latest/
  */
 import { EVENT_EDITOR_BLUR, EVENT_EDITOR_CHANGE, EVENT_EDITOR_LOAD } from '@base/GroundConstant';
+import GroundEditor from '@base/GroundEditor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Editor from '@toast-ui/editor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
-import FlayDiv from '@base/FlayDiv';
 import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import './ToastHtmlEditor.scss';
 
@@ -20,7 +20,7 @@ interface ToastEditor {
 
 export const DEFAULT_CALLBACK = { load: () => {}, blur: () => {}, change: () => {} };
 
-export class ToastHtmlEditor extends FlayDiv {
+export class ToastHtmlEditor extends GroundEditor {
   #editor!: ToastEditor; // Editor type from @toast-ui/editor
   #loadCallback: () => void;
   #blurCallback: () => void;

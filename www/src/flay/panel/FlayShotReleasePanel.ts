@@ -1,10 +1,10 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch from '@lib/FlayFetch';
 import PackUtils, { PackOptions } from '@lib/PackUtils';
 import './FlayShotReleasePanel.scss';
 
-export class FlayShotReleasePanel extends FlayDiv {
+export class FlayShotReleasePanel extends GroundFlay {
   resizeObservers: ResizeObserver[] = [];
   resizeHandlers: (() => void)[] = [];
 

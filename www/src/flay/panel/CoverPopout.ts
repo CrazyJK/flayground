@@ -1,11 +1,11 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import ApiClient from '@lib/ApiClient';
 import { popupFlay } from '@lib/FlaySearch';
 import { OpusProvider } from '@lib/OpusProvider';
 import RandomUtils from '@lib/RandomUtils';
 import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '@ui/Countdown';
 
-export default class CoverPopout extends FlayDiv {
+export default class CoverPopout extends GroundFlay {
   #품번제공기;
   #최소초;
   #최대초;

@@ -1,6 +1,6 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundMovie from '@base/GroundMovie';
 import ApiClient from '@lib/ApiClient';
-import RandomUtils from '../lib/RandomUtils';
+import RandomUtils from '@lib/RandomUtils';
 import './FacadeWebMovie.scss';
 
 interface TodayItem {
@@ -15,7 +15,7 @@ interface TodayItem {
  * 이 비디오는 자동 재생되며, 끝나면 서서히 사라집니다.
  * 스타일링을 통해 원형 모양으로 표시되며, 크기와 위치가 조정됩니다.
  */
-export class FacadeWebMovie extends FlayDiv {
+export class FacadeWebMovie extends GroundMovie {
   private fadeOutDuration = 1000; // 페이드 아웃 지속 시간 (ms)
   private video: HTMLVideoElement;
 

@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundEditor from '@base/GroundEditor';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import Editor from '@toast-ui/editor';
@@ -10,7 +10,7 @@ interface ToastViewer {
   };
 }
 
-export class ToastHtmlViewer extends FlayDiv {
+export class ToastHtmlViewer extends GroundEditor {
   #viewer!: ToastViewer;
   #htmlContent: string;
 

@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -32,7 +32,7 @@ interface PositionInfo {
  * 지속적으로 새로운 별을 생성하고, 공간이 부족할 경우 가장 오래된 별을 제거합니다.
  * 클릭을 통해 별 생성을 일시정지/재개할 수 있습니다.
  */
-export class FlayMarkerSky extends FlayDiv {
+export class FlayMarkerSky extends GroundFlay {
   /** 리사이즈 상태 정보 */
   #resizeState = { originalWidth: window.innerWidth, originalHeight: window.innerHeight, markerPositions: new Map<HTMLElement, { x: number; y: number; width: number }>() };
   /** 현재 화면에 표시된 마커들의 정보 배열 */

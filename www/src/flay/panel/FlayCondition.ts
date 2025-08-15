@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { Flay, SearchCondition } from '@lib/FlayFetch';
 import FlayStorage from '@lib/FlayStorage';
 import favoriteSVG from '@svg/favorite';
@@ -28,7 +28,7 @@ const RANKs = [0, 1, 2, 3, 4, 5] as const;
 const SORTs = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'] as const;
 const ifTrue = (condition: boolean, text: string): string => (condition ? text : '');
 
-export default class FlayCondition extends FlayDiv {
+export default class FlayCondition extends GroundFlay {
   /** 조건에 맞는 opus 목록 */
   opusList: string[] = [];
 

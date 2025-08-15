@@ -1,11 +1,11 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import DateUtils from '@lib/DateUtils';
 import FlayFetch, { BlankFlay, Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupFlayInfo } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import './FlayArticle.scss';
 
-export default class FlayArticle extends FlayDiv {
+export default class FlayArticle extends GroundFlay {
   flay: Flay = BlankFlay;
 
   constructor(args: { mode?: string }) {

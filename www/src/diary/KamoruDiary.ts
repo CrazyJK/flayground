@@ -1,10 +1,10 @@
 import FlayAttach from '@attach/FlayAttach';
+import { ToastHtmlEditor } from '@editor/ToastHtmlEditor';
+import { ToastHtmlViewer } from '@editor/ToastHtmlViewer';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import weatherSVG from '@svg/weathers';
 import windowButton from '@svg/windowButton';
-import { ToastHtmlEditor } from '@ui/editor/ToastHtmlEditor';
-import { ToastHtmlViewer } from '@ui/editor/ToastHtmlViewer';
 import './KamoruDiary.scss';
 
 const GB = 1024 * 1024 * 1024;

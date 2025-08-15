@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayActress from '@flay/domain/part/FlayActress';
 import FlayOpus from '@flay/domain/part/FlayOpus';
 import FlayRank from '@flay/domain/part/FlayRank';
@@ -31,7 +31,7 @@ interface PlayerOptions {
 /**
  * Flay Video Player implements HTMLVideoElement
  */
-export class FlayVideoPlayer extends FlayDiv {
+export class FlayVideoPlayer extends GroundFlay {
   options: PlayerOptions;
   opus: string | null = null;
   flayVideo: FlayVideo;
@@ -237,7 +237,7 @@ export class FlayVideoPlayer extends FlayDiv {
   }
 }
 
-class FlayVideoInfo extends FlayDiv {
+class FlayVideoInfo extends GroundFlay {
   private flayTitle: FlayTitle;
   private flayStudio: FlayStudio;
   private flayOpus: FlayOpus;
@@ -282,7 +282,7 @@ class FlayVideoInfo extends FlayDiv {
   }
 }
 
-class FlayVideoPoster extends FlayDiv {
+class FlayVideoPoster extends GroundFlay {
   set(flay: Flay) {
     this.style.backgroundImage = `url(${ApiClient.buildUrl(`/static/cover/${flay.opus}`)})`;
   }

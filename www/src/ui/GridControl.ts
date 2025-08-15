@@ -1,11 +1,11 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundUI from '@base/GroundUI';
 import FlayStorage from '@lib/FlayStorage';
 import './GridControl.scss';
 
 const MAX = 7;
 const MIN = 1;
 
-export default class GridControl extends FlayDiv {
+export default class GridControl extends GroundUI {
   private readonly selectors: string;
   private readonly max: number;
   private readonly storageKey: string;

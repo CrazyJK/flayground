@@ -1,10 +1,10 @@
-import FlayDiv from '@base/FlayDiv';
 import { EVENT_CHANGE_TITLE } from '@base/GroundConstant';
+import GroundFlay from '@base/GroundFlay';
+import { ToastHtmlEditor } from '@editor/ToastHtmlEditor';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
 import FlayStorage from '@lib/FlayStorage';
-import { ToastHtmlEditor } from '@ui/editor/ToastHtmlEditor';
 import './FlayMemoEditor.scss';
 
 const MEMO_STORAGE_KEY = 'flay-memo';
@@ -19,7 +19,7 @@ interface Memo {
  * Memo editor
  * @extends {HTMLDivElement}
  */
-export class FlayMemoEditor extends FlayDiv {
+export class FlayMemoEditor extends GroundFlay {
   private htmlEditor: ToastHtmlEditor;
 
   constructor() {

@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayFetch from '@lib/FlayFetch';
 import RandomUtils from '@lib/RandomUtils';
 import { addResizeListener } from '@lib/windowAddEventListener';
@@ -22,7 +22,7 @@ interface VideoPlayerEventDetail {
 /**
  * 페이지 표현
  */
-export default class FlayPagination extends FlayDiv {
+export default class FlayPagination extends GroundFlay {
   /** 현재 선택된 opus */
   opus: string | null | undefined = null;
   /** 현재 opus의 인덱스 */

@@ -1,4 +1,4 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
 import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '@lib/FlaySearch';
@@ -23,7 +23,7 @@ const HTML = `
 </div>
 `;
 
-export default class FlayFinder extends FlayDiv {
+export default class FlayFinder extends GroundFlay {
   constructor() {
     super();
 

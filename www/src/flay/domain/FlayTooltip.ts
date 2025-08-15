@@ -1,8 +1,8 @@
-import FlayDiv from '@base/FlayDiv';
+import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import './FlayTooltip.scss';
 
-export class FlayTooltip extends FlayDiv {
+export class FlayTooltip extends GroundFlay {
   #width: number = 300;
   #height: number = 200;
 

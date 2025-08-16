@@ -8,9 +8,7 @@ import favorite from '@svg/favorite';
 import ranks from '@svg/ranks';
 import './FlayMarker.scss';
 
-export type ShapeType = 'square' | 'circle' | 'star' | 'heart' | 'rhombus';
-
-export const SHAPES: ShapeType[] = ['square', 'circle', 'star', 'heart', 'rhombus'];
+export type ShapeType = (typeof FlayMarker.SHAPE)[keyof typeof FlayMarker.SHAPE];
 
 /** FlayMarker 컴포넌트 옵션 */
 export interface FlayMarkerOptions {
@@ -36,44 +34,64 @@ const DEFAULT_OPTIONS: FlayMarkerOptions = {
  * - 호버 시 툴팁 표시 옵션
  */
 export default class FlayMarker extends GroundFlay {
+  static readonly SHAPE = {
+    SQUARE: 'square',
+    CIRCLE: 'circle',
+    STAR: 'star',
+    HEART: 'heart',
+    RHOMBUS: 'rhombus',
+  } as const;
+
   /** Flay 데이터 */
   flay: Flay = BlankFlay;
   #options: FlayMarkerOptions = { ...DEFAULT_OPTIONS };
+
+  #boundClickHandler: EventListener;
+  #boundMouseoverHandler: EventListener;
 
   /**
    * FlayMarker 생성자
    * @param flay Flay 데이터
    * @param options 마커 옵션
    */
-  constructor(flay?: Flay, options: Partial<FlayMarkerOptions> = {}) {
+  constructor(flay: Flay = BlankFlay, options: Partial<FlayMarkerOptions> = {}) {
     super();
 
     this.set(flay, options);
+    this.#boundClickHandler = this.#popupFlayHandler.bind(this);
+    this.#boundMouseoverHandler = this.#showTooltipHandler.bind(this);
   }
 
   connectedCallback(): void {
-    this.addEventListener('click', this.#popupFlayHandler.bind(this));
-    this.addEventListener('mouseover', this.#showTooltipHandler.bind(this));
+    this.addEventListener('click', this.#boundClickHandler);
+    this.addEventListener('mouseover', this.#boundMouseoverHandler);
   }
 
   disconnectedCallback(): void {
-    this.removeEventListener('click', this.#popupFlayHandler.bind(this));
-    this.removeEventListener('mouseover', this.#showTooltipHandler.bind(this));
+    this.removeEventListener('click', this.#boundClickHandler);
+    this.removeEventListener('mouseover', this.#boundMouseoverHandler);
     this.clear();
   }
 
+  /**
+   * Clears the FlayMarker.
+   */
   clear(): void {
-    this.flay = BlankFlay;
-    this.#options = { ...DEFAULT_OPTIONS };
-    this.classList.remove(...SHAPES);
+    this.classList.remove(...Object.values(FlayMarker.SHAPE));
     this.classList.remove('active', 'shot', 'archive');
     this.title = '';
     document.querySelector('.flay-tooltip')?.remove(); // Remove existing tooltip
   }
 
-  set(flay?: Flay, options: Partial<FlayMarkerOptions> = {}): void {
+  /**
+   * Sets the FlayMarker.
+   * @param flay The Flay data.
+   * @param options The options for the FlayMarker.
+   * @returns
+   */
+  set(flay: Flay, options: Partial<FlayMarkerOptions> = {}): void {
     this.clear();
-    if (!flay) {
+    if (!flay.opus) {
       console.warn('FlayMarker: Flay data is required');
       return;
     }
@@ -93,34 +111,26 @@ export default class FlayMarker extends GroundFlay {
     }
   }
 
+  /**
+   * Sets the shape of the FlayMarker.
+   * @param shape The shape to set.
+   * @returns
+   */
   setShape(shape: ShapeType): void {
-    if (!SHAPES.includes(shape)) {
-      console.warn(`FlayMarker: Invalid shape type "${shape}"`);
-      return;
-    }
     requestAnimationFrame(() => {
-      try {
-        this.#options.shape = shape;
-        this.classList.remove(...SHAPES);
-        this.classList.add(shape);
-        this.innerHTML = ''; // Clear content for other shapes
-        switch (shape) {
-          case 'heart':
-            this.innerHTML = favorite;
-            break;
-          case 'star':
-            if (this.flay?.video?.rank !== undefined) {
-              const rankIndex = this.flay.video.rank + 1;
-              if (rankIndex >= 0 && rankIndex < ranks.length) {
-                this.innerHTML = String(ranks[rankIndex]);
-              }
-            }
-            break;
-          default:
-            break; // For square, circle, rhombus, no additional content
-        }
-      } catch (error) {
-        console.error('FlayMarker: Error updating shape:', error);
+      this.#options.shape = shape;
+      this.classList.remove(...Object.values(FlayMarker.SHAPE));
+      this.classList.add(shape);
+      this.innerHTML = ''; // Clear content for other shapes
+      switch (shape) {
+        case FlayMarker.SHAPE.HEART:
+          this.innerHTML = favorite;
+          break;
+        case FlayMarker.SHAPE.STAR:
+          this.innerHTML = ranks[this.flay.video.rank + 1]!;
+          break;
+        default:
+          break; // For square, circle, rhombus, no additional content
       }
     });
   }

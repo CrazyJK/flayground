@@ -164,7 +164,7 @@ export class FlayMarkerSky extends GroundFlay {
     let FlayMarker = FlayMarkerComponent;
     if (!FlayMarker) ({ default: FlayMarker } = await import('@flay/domain/FlayMarker'));
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const marker = new FlayMarker(currentFlayData, { showTooltip: false, shape: 'star' });
+    const marker = new FlayMarker(currentFlayData, { showTooltip: false, shape: FlayMarker.SHAPE.STAR });
     if (currentFlayData.opus) marker.dataset['opus'] = currentFlayData.opus;
     const positionInfo = this.#getRandomPosition(marker);
     if (positionInfo) {

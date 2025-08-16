@@ -65,7 +65,7 @@ export class FlayShotReleasePanel extends GroundFlay {
         .forEach((flay) => {
           const shotCount = flay.video.likes?.length || 0;
           const markerSize = (shotCount * 2 || 1) * 20;
-          const flayMarker = new FlayMarker(flay, { shape: 'square', cover: true });
+          const flayMarker = new FlayMarker(flay, { shape: FlayMarker.SHAPE.SQUARE, cover: true });
           flayMarker.style.width = `${markerSize}px`;
           flayMarker.classList.remove('shot');
           yearShotList.appendChild(flayMarker);

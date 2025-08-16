@@ -163,7 +163,7 @@ export default class FlayBatch extends GroundFlay {
         scoreWrap.appendChild(document.createElement('div')).innerHTML = `<label>${key.substring(1)}</label>`;
         scoreWrap.appendChild(document.createElement('div')).append(
           ...scoreMap.get(key).map((flay: Flay) => {
-            return new FlayMarker(flay, { tooltip: false, shape: 'star' });
+            return new FlayMarker(flay, { tooltip: false, shape: FlayMarker.SHAPE.STAR });
           })
         );
       });

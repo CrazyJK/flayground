@@ -65,7 +65,7 @@ export class FlayPackPanel extends GroundFlay {
     const fragment = document.createDocumentFragment();
     flayList.sort(this.#compareFlay.bind(this)).forEach((flay) => {
       const shotCount = flay.video.likes?.length || 0;
-      const flayMarker = new FlayMarker(flay, { shape: 'square', cover: true });
+      const flayMarker = new FlayMarker(flay, { shape: FlayMarker.SHAPE.SQUARE, cover: true });
       flayMarker.classList.remove('shot');
       flayMarker.style.width = `${(shotCount + 1) * areaMultiplier}px`;
       if ([0, 1].includes(shotCount)) {

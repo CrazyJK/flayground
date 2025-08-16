@@ -33,7 +33,7 @@ export class FlayMarkerFloat extends GroundFlay {
       this.style.setProperty('--marker-size', `${randomRem}rem`);
       this.style.setProperty('--square-radius', `${randomRem * 0.25}rem`);
 
-      this.#flayMarker.set(randomFlay, { tooltip: true, shape: 'square', cover: true });
+      this.#flayMarker.set(randomFlay, { tooltip: true, shape: FlayMarker.SHAPE.SQUARE, cover: true });
       this.#flayMarker.style.left = `${randomX}px`;
       this.#flayMarker.style.top = `${randomY}px`;
     });

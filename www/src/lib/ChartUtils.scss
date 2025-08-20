@@ -1,0 +1,88 @@
+.chart-container {
+  background: var(--color-bg);
+  margin: 0;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 20px;
+  width: 100%;
+
+  .chart-header {
+    h3 {
+      margin: 0 0 10px 0;
+      color: var(--color-text);
+    }
+    p {
+      margin: 0 0 20px 0;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+    }
+  }
+
+  .histogram-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-end;
+    gap: 4px;
+
+    .bar-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+
+      &:hover {
+        .bar {
+          opacity: 1;
+
+          .value-label {
+            opacity: 1;
+          }
+        }
+      }
+
+      .bar {
+        position: relative;
+        background: linear-gradient(to top, #4285f4, #34a853);
+        border-radius: 4px 4px 0 0;
+        opacity: 0.8;
+        width: 100%;
+        cursor: pointer;
+        transition: opacity 0.2s;
+
+        &.zero {
+          background: linear-gradient(to top, #e0e0e0, #f5f5f5);
+          border-radius: 0;
+          opacity: 0.5;
+        }
+
+        .value-label {
+          position: absolute;
+          top: -24px;
+          left: 50%;
+          transform: translateX(-50%);
+          font-size: 12px;
+          font-weight: bold;
+          color: var(--color-text);
+          background: var(--color-bg);
+          padding: 2px 4px;
+          border-radius: 2px;
+          white-space: nowrap;
+          box-shadow: var(--box-shadow);
+          opacity: 0;
+        }
+      }
+
+      .x-axis-label {
+        margin-top: 5px;
+        font-size: 12px;
+        color: var(--color-text);
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}

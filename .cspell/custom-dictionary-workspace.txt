@@ -37,3 +37,10 @@ resizer
 normalscreen
 namjk
 corejs
+springframework
+springdoc
+webmvc
+httpcomponents
+httpclient
+jsoup
+projectlombok

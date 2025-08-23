@@ -331,6 +331,10 @@ export class ImageCircle extends GroundImage {
       console.debug(`[ImageCircle] Style applied \n\trem: ${this.#opts.rem} \n\tshape: ${this.#opts.shape} \n\teffect: ${this.#opts.effect} \n\tevent allowed: ${this.#opts.eventAllow} \n\tduration: ${this.#opts.duration}ms`);
     });
   }
+
+  addExtraStyles(styles: string): void {
+    StyleUtils.addStyles(styles);
+  }
 }
 
 customElements.define('image-circle', ImageCircle);

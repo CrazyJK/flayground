@@ -9,6 +9,7 @@ flay-tooltip {
   padding: 0.5rem;
   pointer-events: none; /* Prevent tooltip from blocking marker clicks */
   z-index: 10;
+  opacity: 0.1;
 
   img {
     aspect-ratio: var(--cover-aspect-ratio);

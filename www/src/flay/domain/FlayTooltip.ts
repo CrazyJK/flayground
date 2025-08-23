@@ -47,6 +47,8 @@ export class FlayTooltip extends GroundFlay {
    * @param y
    */
   show(flay: Flay, x: number, y: number): void {
+    if (this.#prevOpus !== null) FlayFetch.clear(this.#prevOpus);
+
     let [left, top] = [x, y];
     // 화면 오른쪽에 넘치면, 왼쪽으로 이동
     if (x + this.#width > window.innerWidth) {
@@ -57,7 +59,6 @@ export class FlayTooltip extends GroundFlay {
       top = Math.max(0, y - this.#height);
     }
 
-    if (this.#prevOpus !== null) FlayFetch.clear(this.#prevOpus);
     FlayFetch.getCoverURL(flay.opus)
       .then((coverURL) => {
         this.classList.remove('hide');
@@ -68,6 +69,7 @@ export class FlayTooltip extends GroundFlay {
         this.#title.innerHTML = flay.title;
         this.#actress.innerHTML = flay.actressList.join(', ');
         this.#etc.innerHTML = `${flay.video.rank}R - ${flay.release} - ${flay.video.likes?.length || 0}S`;
+        this.animate({ opacity: [0.1, 1] }, { duration: 300, fill: 'forwards' });
       })
       .then(() => {
         this.#prevOpus = flay.opus;
@@ -78,7 +80,9 @@ export class FlayTooltip extends GroundFlay {
   }
 
   hide(): void {
-    this.classList.add('hide');
+    this.animate({ opacity: [1, 0.1] }, { duration: 200, fill: 'forwards' }).onfinish = () => {
+      this.classList.add('hide');
+    };
   }
 }
 

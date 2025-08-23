@@ -101,4 +101,14 @@ export default class StyleUtils {
       paddingBottom: parseFloat(computedStyle.paddingBottom),
     };
   }
+
+  /**
+   * CSS 스타일을 동적으로 추가하는 유틸리티 함수
+   * @param styles - 추가할 CSS 스타일 문자열
+   */
+  static addStyles(styles: string): void {
+    const styleElement = document.createElement('style');
+    styleElement.textContent = styles;
+    document.head.appendChild(styleElement);
+  }
 }

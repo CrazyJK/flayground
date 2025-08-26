@@ -30,3 +30,58 @@ body {
     bottom: 0;
   }
 }
+
+#likesList {
+  overflow-x: hidden;
+  overflow-y: auto;
+  max-height: 80%;
+  margin: 1rem;
+  padding-right: 0.5rem;
+  background-color: var(--color-bg);
+  box-shadow: var(--box-shadow-large);
+
+  ul {
+    width: 100%;
+
+    li {
+      display: grid;
+      grid-template-columns: 2rem 5rem auto 8rem 2.5rem 2.5rem 2.5rem;
+      gap: 0.5rem;
+
+      &.header {
+        font-weight: bold;
+        position: sticky;
+        top: 0;
+        background-color: var(--color-bg-notice);
+        z-index: 1;
+      }
+
+      &.highlight {
+        background-color: var(--color-bg-focus);
+      }
+
+      &:not(.header) {
+        cursor: pointer;
+
+        &:hover {
+          background-color: var(--color-bg-hover);
+        }
+      }
+
+      span {
+        font-size: var(--size-small);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+
+        &.no,
+        &.rank,
+        &.likes,
+        &.plays,
+        &.ratio {
+          text-align: right;
+        }
+      }
+    }
+  }
+}

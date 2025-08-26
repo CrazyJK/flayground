@@ -36,6 +36,8 @@ export class FlayMarkerFloat extends GroundFlay {
       this.#flayMarker.set(randomFlay, { tooltip: true, shape: FlayMarker.SHAPE.SQUARE, cover: true });
       this.#flayMarker.style.left = `${randomX}px`;
       this.#flayMarker.style.top = `${randomY}px`;
+
+      this.dispatchEvent(new CustomEvent('changeFlay', { detail: { randomFlay, randomRem, randomX, randomY }, composed: true }));
     });
   }
 

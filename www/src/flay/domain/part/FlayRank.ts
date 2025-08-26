@@ -8,15 +8,22 @@ import './FlayRank.scss';
  * Custom element of Rank
  */
 export default class FlayRank extends FlayPartElement {
+  static readonly RANKs = [
+    { rank: -1, title: `별루` },
+    { rank: 0, title: '' },
+    { rank: 1, title: `아쉽다` },
+    { rank: 2, title: `그럭저럭` },
+    { rank: 3, title: `처음보면 한번 정도 싼다` },
+    { rank: 4, title: `상황따라 쌀 수 있다` },
+    { rank: 5, title: `보면 무조건 싼다` },
+  ];
+
   constructor() {
     super();
 
     this.innerHTML = `
       <div class="rank-group">
-        ${Array.from({ length: 7 })
-          .map((_, i) => i - 1)
-          .map((rank, i) => `<input type="radio" name="rank" value="${rank}" id="flay-rank${rank}"><label for="flay-rank${rank}" title="rank ${rank}">${rankSVG[i]}</label>`)
-          .join('')}
+        ${FlayRank.RANKs.map((rank) => `<input type="radio" name="rank" value="${rank.rank}" id="flay-rank${rank.rank}"><label for="flay-rank${rank.rank}" title="${rank.title}">${rankSVG[rank.rank + 1]}</label>`).join('')}
       </div>
       <label class="rank-label notyet"><span class="rank">0</span><small>R</small></label>
       <button type="button" class="like-btn notyet" title=""><span>Shot</span><i class="badge shot">0</i></button>

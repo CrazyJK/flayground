@@ -6,9 +6,9 @@ import './index.scss';
 void import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
   .then(({ FacadeWebMovie }) => new FacadeWebMovie())
   .then((facadeWebMovie) => document.querySelector('body > main')!.appendChild(facadeWebMovie))
-  .then(async (facadeWebMovie) => {
-    await facadeWebMovie.isEnded();
-
+  .then((facadeWebMovie) => facadeWebMovie.isEnded())
+  .then(() => showLikesList())
+  .then(() => {
     void import(/* webpackChunkName: "FlayMarkerFloat" */ '@flay/panel/FlayMarkerFloat')
       .then(({ FlayMarkerFloat }) => new FlayMarkerFloat())
       .then((flayMarkerFloat) => document.body.appendChild(flayMarkerFloat))
@@ -17,8 +17,8 @@ void import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
           const { randomFlay } = (event as CustomEvent).detail;
           const element = document.body.querySelector('[data-opus="' + randomFlay.opus + '"]');
           if (element) {
-            element?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            element?.classList.add('highlight');
+            element.classList.add('highlight');
+            element.scrollIntoView({ behavior: 'smooth', block: 'center' });
           }
         });
       });
@@ -28,18 +28,12 @@ void import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
       .then((imageCircle) => document.body.appendChild(imageCircle))
       .then((imageCircle) => {
         imageCircle.classList.add('right-bottom');
-        imageCircle.addExtraStyles(
-          `image-circle { opacity: 0.5; transition: opacity 0.3s ease-in-out; }
-          image-circle:hover { opacity: 1; }`
-        );
+        imageCircle.addExtraStyles(`image-circle { opacity: 0.5; transition: opacity 0.3s ease-in-out; } image-circle:hover { opacity: 1; }`);
       });
-  })
-  .then(() => {
-    setTimeout(showLikesList, 1000);
   });
 
-const showLikesList = () => {
-  void FlayFetch.getFlayAll()
+const showLikesList = async () => {
+  return FlayFetch.getFlayAll()
     .then((flays) => {
       return flays
         .filter((flay) => flay.video.rank > 0 && flay.video.likes?.length > 0)
@@ -54,23 +48,20 @@ const showLikesList = () => {
         });
     })
     .then((flays) => {
-      const makeLi = (no: number | string, opus: string, title: string, actress: string[], rank: number | string, likes: number | string, plays: number | string) => {
-        return `
-          <span class="no">${no}</span>
-          <span class="opus">${opus}</span>
-          <span class="title">${title}</span>
-          <span class="actress">${actress.join(', ')}</span>
-          <span class="rank">${rank}</span>
-          <span class="likes">${likes}</span>
-          <span class="plays">${plays}</span>
-        `;
-      };
+      const createItem = (no: number | string, opus: string, title: string, actress: string[], rank: number | string, likes: number | string, plays: number | string) => `
+        <span class="no">${no}</span>
+        <span class="opus">${opus}</span>
+        <span class="title">${title}</span>
+        <span class="actress">${actress.join(', ')}</span>
+        <span class="rank">${rank}</span>
+        <span class="likes">${likes}</span>
+        <span class="plays">${plays}</span>`;
 
       const fragment = document.createDocumentFragment();
       const ul = document.querySelector('body > main > #likesList')!.appendChild(document.createElement('ul'));
 
       const li = document.createElement('li');
-      li.innerHTML = makeLi('No', 'Opus', 'Title', ['Actress'], 'Rank', 'Likes', 'Plays');
+      li.innerHTML = createItem('No', 'Opus', 'Title', ['Actress'], 'Rank', 'Likes', 'Plays');
       li.classList.add('header');
       fragment.appendChild(li);
 
@@ -80,13 +71,9 @@ const showLikesList = () => {
         const likeCount = flay.video.likes.length;
 
         const li = document.createElement('li');
-        li.innerHTML = makeLi(++idx, flay.opus, flay.title, flay.actressList, flay.video.rank, likeCount, playCount);
+        li.innerHTML = createItem(++idx, flay.opus, flay.title, flay.actressList, flay.video.rank, likeCount, playCount);
         li.dataset.opus = flay.opus;
         fragment.appendChild(li);
-
-        // if (likeCount === 1) {
-        //   await FlayAction.setRank(flay.opus, flay.video.rank - 1);
-        // }
       }
       ul.appendChild(fragment);
 

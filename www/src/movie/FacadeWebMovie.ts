@@ -146,11 +146,19 @@ export class FacadeWebMovie extends GroundMovie {
    */
   async isEnded(): Promise<boolean> {
     if (this.video.ended) {
+      await new Promise((resolve) => setTimeout(resolve, 1000));
       return true;
     }
 
     return new Promise<boolean>((resolve) => {
-      this.video.addEventListener('ended', () => resolve(true), { once: true });
+      this.video.addEventListener(
+        'ended',
+        async () => {
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          resolve(true);
+        },
+        { once: true }
+      );
     });
   }
 }

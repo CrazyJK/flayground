@@ -176,7 +176,7 @@ export class SideNavBar extends GroundNav {
           break;
       }
     } else if (target.closest('flay-monitor')) {
-      window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=320');
+      window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=410');
     } else {
       const toggleState = this.classList.toggle('open');
       FlayStorage.local.set(SideNavBar.OPEN_STORAGE_KEY, toggleState.toString());

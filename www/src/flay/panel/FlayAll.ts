@@ -96,7 +96,7 @@ export class FlayAll extends GroundFlay {
           <slot name="filter-controls">
             <div class="filter">
               <input type="text" id="search-input" placeholder="Enter search term..." />
-              <input type="checkbox" id="show-archive" /><label for="show-archive">Include archive</label>
+              <input type="checkbox" id="show-archive" /><label for="show-archive">Archive</label>
             </div>
           </slot>
           <slot name="total-display">
@@ -130,7 +130,7 @@ export class FlayAll extends GroundFlay {
         <footer class="pagination-footer">
           <slot name="pagination">
             <div class="pagination">
-              <button id="prev-page" disabled>Previous</button>
+              <button id="prev-page" disabled>Prev</button>
               <div class="page-numbers" id="page-numbers"></div>
               <button id="next-page">Next</button>
             </div>
@@ -388,6 +388,18 @@ export class FlayAll extends GroundFlay {
       if (field === 'score') {
         valueA = (a as unknown as Record<string, unknown>)['score'] ?? -1; // score가 없으면 -1로 간주 (정렬 시 뒤로)
         valueB = (b as unknown as Record<string, unknown>)['score'] ?? -1;
+      }
+
+      // actressList 배열 정렬 처리
+      if (field === 'actressList') {
+        const arrayA = Array.isArray(valueA) ? valueA : [];
+        const arrayB = Array.isArray(valueB) ? valueB : [];
+
+        // 첫 번째 배우 이름으로 정렬, 배열이 비어있으면 빈 문자열로 처리
+        const firstActressA = arrayA.length > 0 ? String(arrayA[0]).toLowerCase() : '';
+        const firstActressB = arrayB.length > 0 ? String(arrayB[0]).toLowerCase() : '';
+
+        return this.#sortDirection * firstActressA.localeCompare(firstActressB);
       }
 
       // 문자열 비교

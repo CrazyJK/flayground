@@ -8,11 +8,14 @@ import './FlayMarkerFloat.scss';
 
 export class FlayMarkerFloat extends GroundFlay {
   #intervalIdOfMarker: number | undefined = undefined;
+  #intervalSeconds: number;
   #flayMarker: FlayMarker;
   #opusProvider: OpusProvider;
 
-  constructor() {
+  constructor(intervalSeconds = 60) {
     super();
+
+    this.#intervalSeconds = intervalSeconds;
     this.#flayMarker = new FlayMarker();
     this.#opusProvider = new OpusProvider();
   }
@@ -20,7 +23,7 @@ export class FlayMarkerFloat extends GroundFlay {
   connectedCallback(): void {
     this.appendChild(this.#flayMarker);
     this.#updateMarker();
-    this.#intervalIdOfMarker = window.setInterval(() => this.#updateMarker(), 1000 * 60); // Refresh every 1 minute
+    this.#intervalIdOfMarker = window.setInterval(() => this.#updateMarker(), 1000 * this.#intervalSeconds);
   }
 
   disconnectedCallback(): void {
@@ -46,7 +49,7 @@ export class FlayMarkerFloat extends GroundFlay {
     const randomFlay = (await FlayFetch.getFlay(randomOpus))!;
     const rank = Math.max(0, randomFlay.video.rank) || 5;
     const shot = randomFlay.video.likes?.length ?? 0;
-    const randomRem = rank + RandomUtils.getRandomIntInclusive(0, shot);
+    const randomRem = rank + RandomUtils.getRandomIntInclusive(0, shot) + 4;
     const [randomX, randomY] = this.#randomPosition(randomRem);
     return { randomFlay, randomRem, randomX, randomY };
   }

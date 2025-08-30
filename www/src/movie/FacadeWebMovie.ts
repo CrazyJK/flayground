@@ -13,7 +13,7 @@ interface FacadeWebMovieOptions {
   /**
    * 비디오가 끝나면 다음 비디오로 넘어갑니다.
    */
-  next: boolean;
+  continue: boolean;
   width?: string;
   maxWidth?: string;
 }
@@ -29,10 +29,11 @@ export class FacadeWebMovie extends GroundMovie {
   private readonly fadeOutDuration = 1000; // 페이드 아웃 지속 시간 (ms)
   private readonly options: FacadeWebMovieOptions = {
     volume: 0.5,
-    next: false,
+    continue: false,
   };
   private video: HTMLVideoElement;
   private todayItems: TodayItem[] = [];
+  private movieIndex = -1;
 
   #boundLoadHandler: EventListener;
   #boundErrorHandler: EventListener;
@@ -71,6 +72,7 @@ export class FacadeWebMovie extends GroundMovie {
       .then((todayItems) => {
         if (todayItems !== null && todayItems.length > 0) {
           this.todayItems = todayItems;
+          this.movieIndex = RandomUtils.getRandomInt(0, todayItems.length - 1);
           this.playNext(); // 첫 비디오 재생
         } else {
           console.warn('FacadeWebMovie: API 응답 형식이 올바르지 않습니다.');
@@ -92,7 +94,8 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   private playNext(): void {
-    const randomTodayItem = RandomUtils.getRandomElementFromArray(this.todayItems);
+    this.movieIndex = (this.movieIndex + 1) % this.todayItems.length;
+    const randomTodayItem = this.todayItems[this.movieIndex]!;
     this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomTodayItem.uuid}`);
     console.log('FacadeWebMovie: 선택된 다음 아이템', randomTodayItem);
   }
@@ -110,7 +113,7 @@ export class FacadeWebMovie extends GroundMovie {
    * - 페이드 아웃 애니메이션 처리
    */
   private handleVideoEnded(): void {
-    if (this.options.next) {
+    if (this.options.continue) {
       this.playNext(); // 다음 비디오로 교체
     } else {
       this.animate([{ opacity: 1 }, { opacity: 0 }], {

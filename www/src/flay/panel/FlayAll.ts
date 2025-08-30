@@ -1,6 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay } from '@lib/FlaySearch';
+import './FlayAll.scss';
 
 /**
  * FlayAll - 플레이 목록을 표시하는 커스텀 엘리먼트
@@ -39,18 +40,9 @@ export class FlayAll extends GroundFlay {
   #observer: IntersectionObserver | null = null;
   #enableInfiniteScroll = false;
   #flayMap = new Map<string, Flay>();
-  #styleSheet: HTMLStyleElement | null = null;
 
   /**
-   * FlayListComponent 생성자
-   */
-  constructor() {
-    super();
-    this.attachShadow({ mode: 'open' });
-  }
-
-  /**
-   * 요소가 DOM에 연결되었을 때 호출됩니다.
+   * Called when the element is connected to the DOM.
    */
   connectedCallback() {
     this.#render();
@@ -61,11 +53,11 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 요소의 속성이 변경되었을 때 호출됩니다.
+   * Called when the element's attributes are changed.
    *
-   * @param name 변경된 속성 이름
-   * @param oldValue 이전 값
-   * @param newValue 새 값
+   * @param name Name of the changed attribute
+   * @param oldValue Previous value
+   * @param newValue New value
    */
   attributeChangedCallback(name: string, oldValue: string, newValue: string) {
     if (name === 'page-size' && oldValue !== newValue) {
@@ -79,22 +71,22 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 관찰할 속성 목록을 반환합니다.
+   * Returns the list of attributes to observe.
    *
-   * @returns {string[]} 관찰할 속성 배열
+   * @returns {string[]} Array of attributes to observe
    */
   static get observedAttributes() {
     return ['page-size'];
   }
 
   /**
-   * 요소가 DOM에서 제거되었을 때 호출됩니다.
+   * Called when the element is removed from the DOM.
    */
   disconnectedCallback() {
     this.#removeEventListeners();
   }
 
-  // 템플릿 생성 - 컴포넌트의 HTML 구조를 정의합니다
+  // Template creation - defines the HTML structure of the component
   static #createTemplate() {
     const template = document.createElement('template');
     template.innerHTML = `
@@ -102,13 +94,13 @@ export class FlayAll extends GroundFlay {
         <div class="control-panel">
           <slot name="filter-controls">
             <div class="filter">
-              <input type="text" id="search-input" placeholder="검색어 입력..." />
-              <label><input type="checkbox" id="show-archive" checked /> 아카이브 포함</label>
+              <input type="text" id="search-input" placeholder="Enter search term..." />
+              <input type="checkbox" id="show-archive" checked /><label for="show-archive">Include archive</label>
             </div>
           </slot>
           <slot name="total-display">
             <div class="total-display">
-              총 <strong id="total-count">0</strong>개
+              Total <strong id="total-count">0</strong> items
             </div>
           </slot>
         </div>
@@ -117,28 +109,29 @@ export class FlayAll extends GroundFlay {
           <table class="flay-list">
             <thead>
               <tr>
-                <th data-sort="studio">제작사</th>
-                <th data-sort="opus">작품번호</th>
-                <th data-sort="title">제목</th>
-                <th data-sort="actressList">배우</th>
-                <th data-sort="release">발매일</th>
-                <th data-sort="rank">랭크</th>
-                <th data-sort="score">스코어</th>
+                <th data-sort="studio">Studio</th>
+                <th data-sort="opus">Opus</th>
+                <th data-sort="title">Title</th>
+                <th data-sort="actressList">Actress</th>
+                <th data-sort="release">Release</th>
+                <th data-sort="rank">Rank</th>
+                <th data-sort="likes">Likes</th>
+                <th data-sort="score">Score</th>
               </tr>
             </thead>
             <tbody></tbody>
           </table>
         </slot>
 
-        <div class="loading-indicator">데이터를 불러오는 중입니다...</div>
+        <div class="loading-indicator">Loading data...</div>
         <div id="scroll-observer"></div>
 
         <footer class="pagination-footer">
           <slot name="pagination">
             <div class="pagination">
-              <button id="prev-page" disabled>이전</button>
+              <button id="prev-page" disabled>Previous</button>
               <div class="page-numbers" id="page-numbers"></div>
-              <button id="next-page">다음</button>
+              <button id="next-page">Next</button>
             </div>
           </slot>
         </footer>
@@ -148,300 +141,12 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 초기 렌더링
+   * Initial rendering
    */
   #render() {
-    // 스타일 설정
-    this.#styleSheet = document.createElement('style');
-
-    // 스타일 정의
-    this.#styleSheet.textContent = `
-      :host {
-        display: block;
-        width: 100%;
-        height: 100%;
-      }
-      .flay-list-wrapper {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 10px;
-        gap: 10px;
-      }
-      .control-panel {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 8px 0;
-      }
-      .filter {
-        display: flex;
-        gap: 15px;
-        align-items: center;
-      }
-      .total-display {
-        font-size: var(--size-normal);
-        padding: 6px 0;
-      }
-      .total-display strong {
-        color: var(--color-primary, #4285f4);
-        font-weight: 600;
-      }
-      #search-input {
-        padding: 6px 12px;
-        background-color: var(--color-transparent);
-        border: 1px solid var(--color-border, #ddd);
-        border-radius: 4px;
-        width: 180px;
-        font-size: var(--size-normal);
-      }
-      #search-input:focus {
-        outline: none;
-        border-color: var(--color-primary, #4285f4);
-        box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
-      }
-      label {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        cursor: pointer;
-        font-size: var(--size-normal);
-      }
-      input[type='checkbox'] {
-        cursor: pointer;
-      }
-      .flay-list {
-        width: 100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-        font-size: var(--size-normal);
-      }
-      th, td {
-        padding: 8px 10px;
-        text-align: left;
-        border-bottom: 1px solid var(--color-border, #eee);
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      th {
-        background-color: var(--color-bg-secondary, #413535);
-        color: var(--color-text-secondary, #fff);
-        font-weight: 500;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        cursor: pointer;
-        -webkit-user-select: none;
-        user-select: none;
-      }
-      th:hover {
-        background-color: var(--color-bg-tertiary, #472e2e);
-      }
-      th.sort-asc::after {
-        content: ' ▲';
-        font-size: 0.7em;
-        opacity: 0.6;
-      }
-      th.sort-desc::after {
-        content: ' ▼';
-        font-size: 0.7em;
-        opacity: 0.6;
-      }
-      tbody tr {
-        transition: background-color 0.15s;
-      }
-      tbody tr:hover {
-        background-color: var(--color-bg-hover, #f5f5f5);
-      }
-      tbody tr.archive {
-        color: var(--color-text-secondary, #777);
-      }
-      tbody tr.archive:hover {
-        background-color: var(--color-bg-hover, #f5f5f5);
-      }
-      th:nth-child(1), td:nth-child(1) { width: 6rem } /* 제작사 */
-      th:nth-child(2), td:nth-child(2) { width: 6rem } /* 작품번호 */
-      th:nth-child(3), td:nth-child(3) { width: auto; } /* 제목 */
-      th:nth-child(4), td:nth-child(4) { width: 8rem; } /* 배우 */
-      th:nth-child(5), td:nth-child(5) { width: 5rem; } /* 발매일 */
-      th:nth-child(6), td:nth-child(6) { width: 2rem; text-align: right; padding-right: 15px; } /* 랭크 */
-      th:nth-child(7), td:nth-child(7) { width: 3rem; text-align: right; padding-right: 15px; } /* 스코어 */
-      .loading-indicator {
-        display: none;
-        padding: 20px 30px;
-        text-align: center;
-        font-size: var(--size-large);
-        font-weight: 500;
-        color: var(--color-primary, #4285f4);
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background-color: rgba(255, 255, 255, 0.95);
-        border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-        z-index: 1000;
-        min-width: 180px;
-        animation: pulse 1.5s infinite ease-in-out;
-      }
-      @keyframes pulse {
-        0% { opacity: 0.8; }
-        50% { opacity: 1; }
-        100% { opacity: 0.8; }
-      }
-      .loading-indicator.active {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
-      .loading-indicator::before {
-        content: "";
-        display: block;
-        width: 40px;
-        height: 40px;
-        margin-bottom: 10px;
-        border-radius: 50%;
-        border: 4px solid var(--color-primary, #4285f4);
-        border-top-color: transparent;
-        animation: spinner 1s infinite linear;
-      }
-      @keyframes spinner {
-        to { transform: rotate(360deg); }
-      }
-      .loading-indicator.error {
-        color: var(--color-error, #d32f2f);
-        animation: none;
-      }
-      .loading-indicator.error::before {
-        content: "⚠️";
-        border: none;
-        font-size: var(--size-largest);
-        animation: none;
-      }
-      #scroll-observer {
-        height: 10px;
-        width: 100%;
-        margin-bottom: 40px;
-      }
-      .pagination-footer {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        background-color: var(--color-bg-primary, #fff);
-        box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
-        padding: 8px 0;
-        z-index: 100;
-      }
-      .pagination {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 12px;
-        font-size: var(--size-normal);
-      }
-      .page-numbers {
-        display: flex;
-        gap: 5px;
-        margin: 0 8px;
-      }
-      .page-number {
-        display: inline-block;
-        min-width: 30px;
-        height: 30px;
-        line-height: 30px;
-        text-align: center;
-        border-radius: 4px;
-        cursor: pointer;
-        margin: 0 2px;
-        -webkit-user-select: none;
-        user-select: none;
-        transition: all 0.2s;
-      }
-      .page-number:hover {
-        background-color: var(--color-bg-hover, #f5f5f5);
-      }
-      .page-number.active {
-        background-color: var(--color-primary, #4285f4);
-        color: white;
-        font-weight: bold;
-      }
-      .page-number.disabled {
-        cursor: default;
-        opacity: 0.5;
-      }
-      .page-number.ellipsis {
-        cursor: default;
-      }
-      .page-number.ellipsis:hover {
-        background-color: transparent;
-      }
-      button {
-        padding: 5px 14px;
-        background-color: var(--color-primary, #4285f4);
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: var(--size-normal);
-        transition: all 0.2s;
-        min-width: 70px;
-      }
-      button:disabled {
-        opacity: 0.4;
-        cursor: not-allowed;
-        background-color: var(--color-bg-secondary, #777);
-      }
-      button:hover:not(:disabled) {
-        background-color: var(--color-primary-dark, #3367d6);
-      }
-      #total-count {
-        color: var(--color-primary, #4285f4);
-        font-weight: 600;
-      }
-      #page-info {
-        min-width: 100px;
-        text-align: center;
-      }
-      @media (max-width: 768px) {
-        .flay-list-wrapper {
-          padding: 5px;
-        }
-        .control-panel .filter {
-          flex-direction: column;
-          align-items: flex-start;
-          gap: 5px;
-        }
-        .control-panel .filter #search-input {
-          width: 100%;
-        }
-        .flay-list {
-          font-size: var(--size-normal);
-        }
-        th, td {
-          padding: 6px 8px;
-        }
-        th:nth-child(3), td:nth-child(3) { width: 40%; }
-        th:nth-child(4), td:nth-child(4) { width: 15%; }
-      }
-      @media (prefers-color-scheme: dark) {
-        .pagination-footer {
-          background-color: var(--color-bg-primary, #1e1e1e);
-          box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.3);
-        }
-      }
-    `;
-
-    // Shadow DOM에 스타일 추가
-    this.shadowRoot!.appendChild(this.#styleSheet);
-
     // 템플릿 사용하여 컴포넌트 내용 추가
     const template = FlayAll.#createTemplate();
-    this.shadowRoot!.appendChild(template.content.cloneNode(true));
+    this.appendChild(template.content.cloneNode(true));
 
     // 초기 로딩 상태 표시
     this.showLoading(true);
@@ -452,7 +157,7 @@ export class FlayAll extends GroundFlay {
    */
   #initializeEventListeners() {
     // 페이지네이션 버튼 및 이벤트 위임 설정
-    const paginationControl = this.shadowRoot!.querySelector('.pagination')!;
+    const paginationControl = this.querySelector('.pagination')!;
     paginationControl.addEventListener('click', (e: Event) => {
       const target = e.target as HTMLElement;
       if (target.id === 'prev-page') {
@@ -463,7 +168,7 @@ export class FlayAll extends GroundFlay {
     });
 
     // 검색 입력 (디바운스 적용)
-    const searchInput = this.shadowRoot!.querySelector('#search-input')!;
+    const searchInput = this.querySelector('#search-input')!;
     searchInput.addEventListener(
       'input',
       this.#debounce((e: Event) => {
@@ -485,7 +190,7 @@ export class FlayAll extends GroundFlay {
     );
 
     // 아카이브 체크박스
-    const archiveCheckbox = this.shadowRoot!.querySelector('#show-archive')!;
+    const archiveCheckbox = this.querySelector('#show-archive')!;
     archiveCheckbox.addEventListener('change', (e: Event) => {
       this.#filterAndSort();
       this.showLoading(false);
@@ -505,7 +210,7 @@ export class FlayAll extends GroundFlay {
     });
 
     // 정렬 헤더
-    const headers = this.shadowRoot!.querySelectorAll('th[data-sort]');
+    const headers = this.querySelectorAll('th[data-sort]');
     headers.forEach((header, index) => {
       header.addEventListener('click', () => {
         const oldSortField = this.#sortColumn;
@@ -514,7 +219,7 @@ export class FlayAll extends GroundFlay {
         this.#handleSort(header as HTMLElement, index);
 
         // 정렬 변경 이벤트 발생
-        const sortFields = ['studio', 'opus', 'title', 'actressList', 'release', 'rank', 'score'];
+        const sortFields = ['studio', 'opus', 'title', 'actressList', 'release', 'rank', 'likes', 'score'];
         this.dispatchEvent(
           new CustomEvent('sort-changed', {
             detail: {
@@ -534,7 +239,7 @@ export class FlayAll extends GroundFlay {
     headers[this.#sortColumn]!.classList.add(this.#sortDirection === 1 ? 'sort-asc' : 'sort-desc');
 
     // 테이블 행 선택을 위한 이벤트 위임
-    const table = this.shadowRoot!.querySelector('.flay-list')!;
+    const table = this.querySelector('.flay-list')!;
     table.addEventListener('keydown', (e: Event) => {
       const keyboardEvent = e as KeyboardEvent;
       const target = keyboardEvent.target as HTMLElement;
@@ -574,12 +279,12 @@ export class FlayAll extends GroundFlay {
    * 무한 스크롤 설정
    */
   #setupInfiniteScroll() {
-    const observerTarget = this.shadowRoot!.querySelector('#scroll-observer');
+    const observerTarget = this.querySelector('#scroll-observer');
     if (!observerTarget) return;
 
     this.#observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0]?.isIntersecting && !this.shadowRoot!.querySelector('.loading-indicator')!.classList.contains('active') && this.#enableInfiniteScroll) {
+        if (entries[0]?.isIntersecting && !this.querySelector('.loading-indicator')!.classList.contains('active') && this.#enableInfiniteScroll) {
           if ((this.#currentPage + 1) * FlayAll.PAGE_SIZE < this.#sortedFlayList.length) {
             this.#loadMoreItems();
           }
@@ -599,7 +304,7 @@ export class FlayAll extends GroundFlay {
       this.#currentPage--;
       this.#renderPage();
       // 페이지 이동 후 스크롤을 테이블 상단으로 이동
-      this.shadowRoot!.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
+      this.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
@@ -611,7 +316,7 @@ export class FlayAll extends GroundFlay {
       this.#currentPage++;
       this.#renderPage();
       // 페이지 이동 후 스크롤을 테이블 상단으로 이동
-      this.shadowRoot!.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
+      this.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
     }
   }
 
@@ -619,7 +324,7 @@ export class FlayAll extends GroundFlay {
    * 정렬 헤더 클릭 핸들러
    */
   #handleSort(header: HTMLElement, index: number) {
-    const headers = this.shadowRoot!.querySelectorAll('th[data-sort]');
+    const headers = this.querySelectorAll('th[data-sort]');
     headers.forEach((h) => h.classList.remove('sort-asc', 'sort-desc'));
 
     if (this.#sortColumn === index) {
@@ -641,8 +346,8 @@ export class FlayAll extends GroundFlay {
    * 데이터 필터링 및 정렬
    */
   #filterAndSort() {
-    const searchValue = (this.shadowRoot!.querySelector('#search-input') as HTMLInputElement).value.toLowerCase().trim();
-    const showArchive = (this.shadowRoot!.querySelector('#show-archive') as HTMLInputElement).checked;
+    const searchValue = (this.querySelector('#search-input') as HTMLInputElement).value.toLowerCase().trim();
+    const showArchive = (this.querySelector('#show-archive') as HTMLInputElement).checked;
 
     // 시작 시간 측정 (성능 모니터링)
     const startTime = performance.now();
@@ -668,12 +373,12 @@ export class FlayAll extends GroundFlay {
     });
 
     // 정렬
-    const sortFields = ['studio', 'opus', 'title', 'actressList', 'release', 'rank', 'score'];
+    const sortFields = ['studio', 'opus', 'title', 'actressList', 'release', 'rank', 'likes', 'score'];
     const field = sortFields[this.#sortColumn];
 
     filtered.sort((a, b) => {
-      let valueA: unknown = field === 'rank' ? a.video?.rank : (a as unknown as Record<string, unknown>)[field!];
-      let valueB: unknown = field === 'rank' ? b.video?.rank : (b as unknown as Record<string, unknown>)[field!];
+      let valueA: unknown = field === 'rank' ? a.video?.rank : field === 'likes' ? a.video?.likes?.length || 0 : (a as unknown as Record<string, unknown>)[field!];
+      let valueB: unknown = field === 'rank' ? b.video?.rank : field === 'likes' ? b.video?.likes?.length || 0 : (b as unknown as Record<string, unknown>)[field!];
 
       // score 필드는 비동기 로딩되므로, 초기 정렬 시점에는 flay 객체에 없을 수 있음.
       // score 정렬을 위해서는 score 데이터가 로드된 후에 정렬 로직이 다시 실행되거나,
@@ -702,10 +407,10 @@ export class FlayAll extends GroundFlay {
 
     // 종료 시간 측정
     const endTime = performance.now();
-    console.debug(`필터링 및 정렬 완료: ${endTime - startTime}ms, ${filtered.length}개 항목`);
+    console.debug(`Filtering and sorting completed: ${endTime - startTime}ms, ${filtered.length} items`);
 
     // 카운트 업데이트 및 페이지 리셋
-    this.shadowRoot!.querySelector('#total-count')!.textContent = String(this.#sortedFlayList.length);
+    this.querySelector('#total-count')!.textContent = String(this.#sortedFlayList.length);
     this.#currentPage = 0;
 
     // 페이지네이션 버튼 상태 업데이트
@@ -729,7 +434,7 @@ export class FlayAll extends GroundFlay {
 
     requestAnimationFrame(() => {
       try {
-        const tbody = this.shadowRoot!.querySelector('.flay-list tbody');
+        const tbody = this.querySelector('.flay-list tbody');
         if (!tbody) return;
 
         tbody.innerHTML = '';
@@ -747,6 +452,7 @@ export class FlayAll extends GroundFlay {
             { key: 'actressList', data: flay.actressList || [] },
             { key: 'release', data: flay.release || '' },
             { key: 'rank', data: flay.video?.rank ?? '' },
+            { key: 'likes', data: flay.video?.likes?.length ?? 0 },
           ];
 
           columnDefinitions.forEach((colDef) => {
@@ -789,7 +495,7 @@ export class FlayAll extends GroundFlay {
           const scoreTd = document.createElement('td');
           tr.appendChild(scoreTd);
           if (flay.opus) {
-            scoreTd.textContent = '...'; // 로딩 중 표시
+            scoreTd.textContent = '...'; // Loading indicator
             FlayFetch.getScore(flay.opus)
               .then((score) => {
                 scoreTd.textContent = String(score ?? '');
@@ -853,8 +559,8 @@ export class FlayAll extends GroundFlay {
    * 페이지네이션 버튼 상태 업데이트
    */
   #updatePaginationButtons() {
-    const prevButton = this.shadowRoot!.querySelector('#prev-page') as HTMLButtonElement;
-    const nextButton = this.shadowRoot!.querySelector('#next-page') as HTMLButtonElement;
+    const prevButton = this.querySelector('#prev-page') as HTMLButtonElement;
+    const nextButton = this.querySelector('#next-page') as HTMLButtonElement;
     const totalPages = Math.ceil(this.#sortedFlayList.length / FlayAll.PAGE_SIZE);
     const currentPage = this.#currentPage + 1; // 1-based for display
 
@@ -865,7 +571,7 @@ export class FlayAll extends GroundFlay {
     nextButton.disabled = this.#currentPage >= totalPages - 1 || this.#sortedFlayList.length === 0;
 
     // 페이지 번호 생성
-    const pageNumbersContainer = this.shadowRoot!.querySelector('#page-numbers') as HTMLElement;
+    const pageNumbersContainer = this.querySelector('#page-numbers') as HTMLElement;
     if (!pageNumbersContainer) return;
 
     pageNumbersContainer.innerHTML = '';
@@ -955,14 +661,14 @@ export class FlayAll extends GroundFlay {
       archiveAll.forEach((archive) => {
         if (this.#flayMap.has(archive.opus)) {
           duplicateCount++;
-          console.log(`%c중복된 opus 발견: ${archive.opus}`, 'color: red;');
+          console.log(`%cDuplicate opus found: ${archive.opus}`, 'color: red;');
         } else {
           this.#flayMap.set(archive.opus, archive);
         }
       });
 
       if (duplicateCount > 0) {
-        console.warn(`총 ${duplicateCount}개의 중복 항목이 발견되었습니다.`);
+        console.warn(`Total ${duplicateCount} duplicate items found.`);
       }
 
       // 초기 필터링 및 정렬
@@ -985,12 +691,12 @@ export class FlayAll extends GroundFlay {
         })
       );
     } catch (error) {
-      console.error('데이터 로딩 중 오류 발생:', error);
-      const loadingIndicator = this.shadowRoot!.querySelector('.loading-indicator');
+      console.error('Error loading data:', error);
+      const loadingIndicator = this.querySelector('.loading-indicator');
       if (loadingIndicator) {
-        loadingIndicator.textContent = '데이터를 불러오는 중 오류가 발생했습니다.';
+        loadingIndicator.textContent = 'Error occurred while loading data.';
         loadingIndicator.classList.add('error');
-        loadingIndicator.classList.remove('active'); // 'active' 클래스 제거 추가
+        loadingIndicator.classList.remove('active'); // Remove 'active' class
       }
 
       // 에러 이벤트 발생
@@ -1039,7 +745,7 @@ export class FlayAll extends GroundFlay {
     this.#currentPage = pageNumber - 1;
     this.#renderPage();
     // 스크롤을 테이블 상단으로 이동
-    this.shadowRoot!.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
+    this.querySelector('.flay-list')?.scrollIntoView({ behavior: 'smooth' });
   }
 
   /**
@@ -1056,7 +762,7 @@ export class FlayAll extends GroundFlay {
 
     // 해당 행 강조 표시
     requestAnimationFrame(() => {
-      const rows = Array.from(this.shadowRoot!.querySelectorAll('tbody tr'));
+      const rows = Array.from(this.querySelectorAll('tbody tr'));
       for (const row of rows) {
         row.classList.remove('highlight');
         const htmlRow = row as HTMLTableRowElement;
@@ -1075,7 +781,7 @@ export class FlayAll extends GroundFlay {
    * @param isLoading - 로딩 중 여부
    */
   showLoading(isLoading: boolean) {
-    const loadingIndicator = this.shadowRoot!.querySelector('.loading-indicator');
+    const loadingIndicator = this.querySelector('.loading-indicator');
     if (loadingIndicator) {
       if (isLoading) {
         loadingIndicator.classList.add('active');

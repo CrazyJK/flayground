@@ -64,6 +64,7 @@ export class FlayAll extends GroundFlay {
       const pageSize = parseInt(newValue, 10);
       if (!isNaN(pageSize) && pageSize > 0) {
         // pageSize 변경 처리
+        FlayAll.PAGE_SIZE = pageSize;
         this.#currentPage = 0;
         this.#renderPage();
       }
@@ -95,7 +96,7 @@ export class FlayAll extends GroundFlay {
           <slot name="filter-controls">
             <div class="filter">
               <input type="text" id="search-input" placeholder="Enter search term..." />
-              <input type="checkbox" id="show-archive" checked /><label for="show-archive">Include archive</label>
+              <input type="checkbox" id="show-archive" /><label for="show-archive">Include archive</label>
             </div>
           </slot>
           <slot name="total-display">

@@ -90,6 +90,8 @@ export class ImageCircle extends GroundImage {
   /** 이미지 요소 */
   image!: HTMLDivElement;
 
+  private styleIdNumber: number = 0;
+
   static shapeTypes = CSS_CLASSES.shapes;
   static effectTypes = CSS_CLASSES.effects;
 
@@ -145,6 +147,8 @@ export class ImageCircle extends GroundImage {
 
     // 클래스 정리
     this.classList.remove('breathe-stop');
+
+    this.removeExtraStyles();
 
     console.debug('[ImageCircle] Component disconnected and cleaned up');
   }
@@ -332,8 +336,21 @@ export class ImageCircle extends GroundImage {
     });
   }
 
-  addExtraStyles(styles: string): void {
-    StyleUtils.addStyles(styles);
+  addClass(className: string): this {
+    this.classList.add(className);
+    return this;
+  }
+
+  addExtraStyle(styles: string): this {
+    StyleUtils.addStyle(styles, `image-circle-${this.styleIdNumber++}`);
+    return this;
+  }
+
+  removeExtraStyles(): this {
+    for (let i = 0; i < this.styleIdNumber; i++) {
+      StyleUtils.removeStyle(`image-circle-${i}`);
+    }
+    return this;
   }
 }
 

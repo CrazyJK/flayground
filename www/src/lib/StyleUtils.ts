@@ -105,10 +105,23 @@ export default class StyleUtils {
   /**
    * CSS 스타일을 동적으로 추가하는 유틸리티 함수
    * @param styles - 추가할 CSS 스타일 문자열
+   * @param id - 스타일 요소의 고유 ID
    */
-  static addStyles(styles: string): void {
+  static addStyle(styles: string, id: string): void {
     const styleElement = document.createElement('style');
     styleElement.textContent = styles;
+    styleElement.id = id;
     document.head.appendChild(styleElement);
+  }
+
+  /**
+   *  CSS 스타일을 동적으로 제거하는 유틸리티 함수
+   * @param id - 스타일 요소의 고유 ID
+   */
+  static removeStyle(id: string): void {
+    const styleElements = document.head.querySelectorAll(`style#${id}`);
+    for (const styleElement of styleElements) {
+      document.head.removeChild(styleElement);
+    }
   }
 }

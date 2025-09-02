@@ -96,7 +96,18 @@ export class FlayAll extends GroundFlay {
           <slot name="filter-controls">
             <div class="filter">
               <input type="text" id="search-input" placeholder="Enter search term..." />
-              <input type="checkbox" id="show-archive" /><label for="show-archive">Archive</label>
+              <div class="filter-group">
+                <label>Rank:</label>
+                <input type="checkbox" id="rank-0" value="0" /><label for="rank-0">0</label>
+                <input type="checkbox" id="rank-1" value="1" /><label for="rank-1">1</label>
+                <input type="checkbox" id="rank-2" value="2" /><label for="rank-2">2</label>
+                <input type="checkbox" id="rank-3" value="3" /><label for="rank-3">3</label>
+                <input type="checkbox" id="rank-4" value="4" /><label for="rank-4">4</label>
+                <input type="checkbox" id="rank-5" value="5" /><label for="rank-5">5</label>
+              </div>
+              <div class="filter-group">
+                <input type="checkbox" id="show-archive"><label for="show-archive">Archive</label>
+              </div>
             </div>
           </slot>
           <slot name="total-display">
@@ -208,6 +219,36 @@ export class FlayAll extends GroundFlay {
           composed: true,
         })
       );
+    });
+
+    // rank 필터 체크박스들
+    const rankCheckboxes = this.querySelectorAll('input[id^="rank-"]');
+    rankCheckboxes.forEach((checkbox) => {
+      checkbox.addEventListener('change', () => {
+        this.#filterAndSort();
+
+        // 선택된 rank 값들 수집
+        const selectedRanks: number[] = [];
+        rankCheckboxes.forEach((cb) => {
+          const cbElement = cb as HTMLInputElement;
+          if (cbElement.checked) {
+            selectedRanks.push(parseInt(cbElement.value, 10));
+          }
+        });
+
+        // 필터 변경 이벤트 발생
+        this.dispatchEvent(
+          new CustomEvent('filter-changed', {
+            detail: {
+              selectedRanks: selectedRanks,
+              filteredCount: this.#sortedFlayList.length,
+              totalCount: this.#flayMap.size,
+            },
+            bubbles: true,
+            composed: true,
+          })
+        );
+      });
     });
 
     // 정렬 헤더
@@ -350,12 +391,28 @@ export class FlayAll extends GroundFlay {
     const searchValue = (this.querySelector('#search-input') as HTMLInputElement).value.toLowerCase().trim();
     const showArchive = (this.querySelector('#show-archive') as HTMLInputElement).checked;
 
+    // 선택된 rank 값들 수집
+    const selectedRanks: number[] = [];
+    const rankCheckboxes = this.querySelectorAll('input[id^="rank-"]');
+    rankCheckboxes.forEach((checkbox) => {
+      const cbElement = checkbox as HTMLInputElement;
+      if (cbElement.checked) {
+        selectedRanks.push(parseInt(cbElement.value, 10));
+      }
+    });
+
     // 시작 시간 측정 (성능 모니터링)
     const startTime = performance.now();
 
     // 필터링
     const filtered = Array.from(this.#flayMap.values()).filter((flay) => {
       if (!showArchive && flay.archive) return false;
+
+      // rank 필터 적용 - 선택된 rank가 있을 때만 필터링
+      if (selectedRanks.length > 0) {
+        const flayRank = flay.video?.rank ?? null;
+        if (flayRank === null || !selectedRanks.includes(flayRank)) return false;
+      }
 
       if (searchValue) {
         // 개선된 검색: 정확한 일치, 스타트윗, 각 필드별 검색 등을 구분

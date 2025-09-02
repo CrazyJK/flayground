@@ -32,12 +32,45 @@ flay-all {
           border: 1px solid var(--color-border, #ddd);
           border-radius: 4px;
           width: 280px;
-          font-size: var(--size-normal);
+          font-size: var(--size-small);
 
           &:focus {
             outline: none;
             border-color: var(--color-primary, #4285f4);
             box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.1);
+          }
+        }
+
+        .filter-group {
+          display: flex;
+          gap: 8px;
+          align-items: center;
+          padding: 4px 8px;
+          border: 1px solid var(--color-border, #ddd);
+          border-radius: 4px;
+          background-color: var(--color-transparent, #f8f9fa);
+
+          > label:first-child {
+            font-weight: 500;
+            margin-right: 5px;
+          }
+
+          input[type='checkbox'] {
+            cursor: pointer;
+            margin-right: 3px;
+          }
+
+          label {
+            cursor: pointer;
+            font-size: var(--size-small);
+            margin-right: 8px;
+            display: flex;
+            align-items: center;
+            gap: 2px;
+
+            &:last-child {
+              margin-right: 0;
+            }
           }
         }
 
@@ -47,13 +80,13 @@ flay-all {
 
         label {
           cursor: pointer;
-          font-size: var(--size-normal);
+          font-size: var(--size-small);
         }
       }
 
       // Total display
       .total-display {
-        font-size: var(--size-normal);
+        font-size: var(--size-small);
         padding: 6px 0;
 
         #total-count {
@@ -68,12 +101,12 @@ flay-all {
       width: 100%;
       border-collapse: collapse;
       table-layout: fixed;
-      font-size: var(--size-normal);
+      font-size: var(--size-small);
 
       // Table headers
       thead {
         th {
-          padding: 0.25rem 0.5rem;
+          padding: 0.25rem;
           text-align: left;
           border-bottom: 1px solid var(--color-border);
           white-space: nowrap;
@@ -108,38 +141,6 @@ flay-all {
             font-size: 0.7em;
             opacity: 0.6;
           }
-
-          // Column-specific styles
-          &:nth-child(1) {
-            width: 6rem;
-          } /* Studio */
-          &:nth-child(2) {
-            width: 6rem;
-          } /* Opus */
-          &:nth-child(3) {
-            width: auto;
-          } /* Title */
-          &:nth-child(4) {
-            width: 8rem;
-          } /* Actress */
-          &:nth-child(5) {
-            width: 6rem;
-          } /* Release */
-          &:nth-child(6) {
-            width: 4rem;
-            text-align: right;
-            padding-right: 15px;
-          } /* Rank */
-          &:nth-child(7) {
-            width: 4rem;
-            text-align: right;
-            padding-right: 15px;
-          } /* Likes */
-          &:nth-child(8) {
-            width: 4rem;
-            text-align: right;
-            padding-right: 15px;
-          } /* Score */
         }
       }
 
@@ -162,44 +163,61 @@ flay-all {
 
           // Table cells
           td {
-            padding: 8px 10px;
+            padding: 0.25rem;
             text-align: left;
             border-bottom: 1px solid var(--color-border, #eee);
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+          }
+        }
+      }
 
-            // Column-specific styles
+      // column size
+      thead,
+      tbody {
+        tr {
+          td,
+          th {
+            /* Studio */
             &:nth-child(1) {
-              width: 6rem;
-            } /* Studio */
+              width: 5rem;
+            }
+            /* Opus */
             &:nth-child(2) {
-              width: 6rem;
-            } /* Opus */
+              width: 5rem;
+            }
+            /* Title */
             &:nth-child(3) {
               width: auto;
-            } /* Title */
+            }
+            /* Actress */
             &:nth-child(4) {
               width: 8rem;
-            } /* Actress */
+            }
+            /* Release */
             &:nth-child(5) {
-              width: 6rem;
-            } /* Release */
+              width: 5rem;
+            }
+            /* Rank */
             &:nth-child(6) {
-              width: 4rem;
+              width: 3.5rem;
               text-align: right;
-              padding-right: 15px;
-            } /* Rank */
+            }
+            /* Likes */
             &:nth-child(7) {
-              width: 4rem;
+              width: 3.5rem;
               text-align: right;
-              padding-right: 15px;
-            } /* Likes */
+            }
+            /* Score */
             &:nth-child(8) {
               width: 4rem;
               text-align: right;
-              padding-right: 15px;
-            } /* Score */
+            }
+            /* last child */
+            &:last-child {
+              padding-right: 0.7em;
+            }
           }
         }
       }
@@ -210,7 +228,7 @@ flay-all {
       display: none;
       padding: 20px 30px;
       text-align: center;
-      font-size: var(--size-large);
+      font-size: var(--size-normal);
       font-weight: 500;
       color: var(--color-primary, #4285f4);
       position: fixed;
@@ -250,7 +268,7 @@ flay-all {
         &::before {
           content: '⚠️';
           border: none;
-          font-size: var(--size-largest);
+          font-size: var(--size-normalst);
           animation: none;
         }
       }
@@ -280,7 +298,7 @@ flay-all {
         justify-content: center;
         align-items: center;
         gap: 12px;
-        font-size: var(--size-normal);
+        font-size: var(--size-small);
 
         // Navigation buttons
         button {
@@ -290,7 +308,7 @@ flay-all {
           border: none;
           border-radius: 4px;
           cursor: pointer;
-          font-size: var(--size-normal);
+          font-size: var(--size-small);
           transition: all 0.2s;
           min-width: 70px;
 
@@ -372,11 +390,21 @@ flay-all {
           #search-input {
             width: 100%;
           }
+
+          .filter-group {
+            gap: 5px;
+            padding: 6px;
+
+            > label:first-child {
+              width: 100%;
+              margin-bottom: 3px;
+            }
+          }
         }
       }
 
       .flay-list {
-        font-size: var(--size-normal);
+        font-size: var(--size-small);
 
         thead th,
         tbody td {

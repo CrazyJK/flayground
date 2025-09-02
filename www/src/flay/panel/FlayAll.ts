@@ -706,7 +706,6 @@ export class FlayAll extends GroundFlay {
       // 데이터 불러오기
       const [flayAll, archiveAll, flayScores] = await Promise.all([FlayFetch.getFlayAll(), FlayFetch.getArchiveAll(), FlayFetch.getFlayScores()]);
       console.log(`FlayAll: Loaded ${flayAll.length} flay items, ${archiveAll.length} archive items, ${flayScores.size} score entries.`);
-      console.log(flayScores);
 
       // 중복 검사하여 합치기
       this.#flayMap = new Map(flayAll.map((flay) => [flay.opus, flay]));
@@ -726,7 +725,7 @@ export class FlayAll extends GroundFlay {
       }
 
       this.#flayMap.forEach((flay) => {
-        flay.score = flayScores.get(flay.opus) ?? 0;
+        flay.score = flayScores.get(flay.opus) ?? -1;
       });
 
       // 초기 필터링 및 정렬

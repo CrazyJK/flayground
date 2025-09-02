@@ -245,6 +245,11 @@ export default class FlayFetch {
     return flays.map((flay) => deepMerge(BlankFlay, flay));
   }
 
+  static async getFlayScores(): Promise<Map<string, number>> {
+    const scores = (await ApiClient.get<Object>('/flay/list/score')) ?? {};
+    return new Map(Object.entries(scores));
+  }
+
   static async getFlayCandidates(): Promise<Flay[]> {
     const flays = (await ApiClient.get<Flay[]>('/flay/candidates')) ?? [];
     return flays.map((flay) => deepMerge(BlankFlay, flay));

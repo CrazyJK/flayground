@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -61,6 +62,14 @@ public class FlayController {
     Flay flay = getFlay(opus);
     scoreCalculator.calcScore(flay);
     return flay.getScore();
+  }
+
+  @GetMapping("/list/score")
+  public Map<String, Integer> getScoreList() {
+    return flayService.list().stream().map(flay -> {
+      scoreCalculator.calcScore(flay);
+      return flay;
+    }).collect(Collectors.toMap(Flay::getOpus, Flay::getScore));
   }
 
   @GetMapping("/{opus}/fully")

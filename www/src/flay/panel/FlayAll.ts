@@ -423,8 +423,12 @@ export class FlayAll extends GroundFlay {
 
         // 그 외 각 필드별 검색어 포함 여부 확인
         return (
-          flay.studio?.toLowerCase().includes(searchValue) || flay.opus?.toLowerCase().includes(searchValue) || flay.title?.toLowerCase().includes(searchValue) || flay.actressList?.some((actress) => actress.toLowerCase().includes(searchValue)) || (flay.video?.rank && String(flay.video.rank).toLowerCase().includes(searchValue)) // rank 검색 추가
-          // score는 비동기 로딩이므로, 클라이언트 측 필터링에 포함하기 어려움. 필요시 서버사이드 필터링 고려.
+          flay.studio?.toLowerCase().includes(searchValue) ||
+          flay.opus?.toLowerCase().includes(searchValue) ||
+          flay.title?.toLowerCase().includes(searchValue) ||
+          flay.actressList?.some((actress) => actress.toLowerCase().includes(searchValue)) ||
+          (flay.video?.rank && String(flay.video.rank).toLowerCase().includes(searchValue)) || // rank 검색 추가
+          (flay.score && String(flay.score).toLowerCase().includes(searchValue)) // score 검색 추가
         );
       }
       return true;
@@ -435,17 +439,8 @@ export class FlayAll extends GroundFlay {
     const field = sortFields[this.#sortColumn];
 
     filtered.sort((a, b) => {
-      let valueA: unknown = field === 'rank' ? a.video?.rank : field === 'likes' ? a.video?.likes?.length || 0 : (a as unknown as Record<string, unknown>)[field!];
-      let valueB: unknown = field === 'rank' ? b.video?.rank : field === 'likes' ? b.video?.likes?.length || 0 : (b as unknown as Record<string, unknown>)[field!];
-
-      // score 필드는 비동기 로딩되므로, 초기 정렬 시점에는 flay 객체에 없을 수 있음.
-      // score 정렬을 위해서는 score 데이터가 로드된 후에 정렬 로직이 다시 실행되거나,
-      // score 데이터를 미리 가져와서 flay 객체에 포함시켜야 함.
-      // 여기서는 score가 로드되었다고 가정하고, 없다면 기본값 처리.
-      if (field === 'score') {
-        valueA = (a as unknown as Record<string, unknown>)['score'] ?? -1; // score가 없으면 -1로 간주 (정렬 시 뒤로)
-        valueB = (b as unknown as Record<string, unknown>)['score'] ?? -1;
-      }
+      const valueA: unknown = field === 'rank' ? a.video?.rank : field === 'likes' ? a.video?.likes?.length || 0 : field === 'score' ? a.score : (a as unknown as Record<string, unknown>)[field!];
+      const valueB: unknown = field === 'rank' ? b.video?.rank : field === 'likes' ? b.video?.likes?.length || 0 : field === 'score' ? b.score : (b as unknown as Record<string, unknown>)[field!];
 
       // actressList 배열 정렬 처리
       if (field === 'actressList') {
@@ -561,23 +556,10 @@ export class FlayAll extends GroundFlay {
             tr.appendChild(td);
           });
 
-          // Score 셀 추가 (비동기 로딩)
+          // Score 셀 추가 (이미 로드된 score 사용)
           const scoreTd = document.createElement('td');
+          scoreTd.textContent = String(flay.score ?? '');
           tr.appendChild(scoreTd);
-          if (flay.opus) {
-            scoreTd.textContent = '...'; // Loading indicator
-            FlayFetch.getScore(flay.opus)
-              .then((score) => {
-                scoreTd.textContent = String(score ?? '');
-                (flay as unknown as Record<string, unknown>)['score'] = score;
-              })
-              .catch((error) => {
-                console.error(`Error fetching score for ${flay.opus}:`, error);
-                scoreTd.textContent = 'N/A';
-              });
-          } else {
-            scoreTd.textContent = 'N/A';
-          }
 
           // 행에 클릭 이벤트 추가 (flay-selected 이벤트 발생용)
           tr.addEventListener('click', () => {
@@ -722,7 +704,9 @@ export class FlayAll extends GroundFlay {
       this.showLoading(true);
 
       // 데이터 불러오기
-      const [flayAll, archiveAll] = await Promise.all([FlayFetch.getFlayAll(), FlayFetch.getArchiveAll()]);
+      const [flayAll, archiveAll, flayScores] = await Promise.all([FlayFetch.getFlayAll(), FlayFetch.getArchiveAll(), FlayFetch.getFlayScores()]);
+      console.log(`FlayAll: Loaded ${flayAll.length} flay items, ${archiveAll.length} archive items, ${flayScores.size} score entries.`);
+      console.log(flayScores);
 
       // 중복 검사하여 합치기
       this.#flayMap = new Map(flayAll.map((flay) => [flay.opus, flay]));
@@ -740,6 +724,10 @@ export class FlayAll extends GroundFlay {
       if (duplicateCount > 0) {
         console.warn(`Total ${duplicateCount} duplicate items found.`);
       }
+
+      this.#flayMap.forEach((flay) => {
+        flay.score = flayScores.get(flay.opus) ?? 0;
+      });
 
       // 초기 필터링 및 정렬
       this.#filterAndSort();

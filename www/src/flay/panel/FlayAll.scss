@@ -155,9 +155,8 @@ flay-all {
 
           &.archive {
             color: var(--color-text-secondary, #777);
-
-            &:hover {
-              background-color: var(--color-bg-hover, #f5f5f5);
+            * {
+              color: var(--color-text-secondary, #777);
             }
           }
 

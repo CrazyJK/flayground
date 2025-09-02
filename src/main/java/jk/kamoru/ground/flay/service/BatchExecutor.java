@@ -261,7 +261,7 @@ public class BatchExecutor extends LogAndSse {
             List<File> subtitlesFiles = archiveFlay.getFiles().get(Flay.SUBTI);
             if (subtitlesFiles != null && subtitlesFiles.size() > 0) {
               flay.getFiles().get(Flay.SUBTI).addAll(subtitlesFiles);
-              batchLogger("add subtiles %s", subtitlesFiles);
+              batchLogger("add subtitles %s", subtitlesFiles);
             }
           } catch (FlayNotfoundException ignore) {
           }

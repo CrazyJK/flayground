@@ -95,7 +95,9 @@ export class FlayAll extends GroundFlay {
         <div class="control-panel">
           <slot name="filter-controls">
             <div class="filter">
-              <input type="text" id="search-input" placeholder="Enter search term..." />
+              <div class="filter-group">
+                <input type="text" id="search-input" placeholder="Enter search term..." />
+              </div>
               <div class="filter-group">
                 <label>Rank:</label>
                 <input type="checkbox" id="rank-0" value="0" /><label for="rank-0">0</label>

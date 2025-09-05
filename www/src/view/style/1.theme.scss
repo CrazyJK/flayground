@@ -52,7 +52,29 @@
   --color-gray-b3: #3c3c3c;
   --color-gray-b4: #4a4a4a;
 
-  /* 라이트 테마 (기본) */
+  --color-primary: #4285f4;
+  --color-primary-dark: #3367d6;
+  --color-secondary: #777;
+
+  --color-text-secondary: var(--color-gray);
+  --color-text-danger: var(--color-red);
+  --color-text-warn: orangered;
+
+  --color-checked: var(--color-orange);
+  --color-border-active: var(--color-orange);
+
+  --color-tab-active: var(--color-orange);
+
+  --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
+  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
+  --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
+  --box-shadow-smallest: 0 2px 8px 0 var(--color-black-alpha-light);
+
+  --text-shadow-active: 1px 1px 1px var(--color-orange);
+}
+
+/* 라이트 테마 (기본) */
+:root {
   --color-bg: var(--color-white);
   --color-bg-notice: var(--color-gray-light);
   --color-bg-cover: var(--color-gray-light);
@@ -66,29 +88,15 @@
   --color-bg-window: #eee;
 
   --color-text: var(--color-dark);
-  --color-text-secondary: var(--color-gray);
   --color-text-placeholder: var(--color-dark-light);
-  --color-text-danger: var(--color-red);
-  --color-text-warn: orangered;
   --color-text-window: #918b8b;
 
-  --color-checked: var(--color-orange);
-
   --color-border: var(--color-light-dark);
-  --color-border-active: var(--color-orange);
   --color-border-reversed: var(--color-black-alpha-dark);
   --color-border-window: #d3cece;
 
-  --color-tab-active: var(--color-orange);
-
-  --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
-  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
-  --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
-  --box-shadow-smallest: 0 2px 8px 0 var(--color-black-alpha-light);
-
   --text-shadow: 1px 1px 1px var(--color-gray-dark);
   --text-shadow-hover: 1px 1px 1px var(--color-blue);
-  --text-shadow-active: 1px 1px 1px var(--color-orange);
 
   --color-layer-bg: #f3f3f3;
   --color-layer-bg-hover: #00000032;
@@ -107,7 +115,7 @@
   --color-bg-input-focus: #00000081;
   --color-bg-side-nav: #202020;
   --color-bg-focus: #333a41;
-  --color-bg-active: #333a41; /* 다크 테마에서 누락된 변수 추가 */
+  --color-bg-active: #333a41;
   --color-bg-window: #333;
 
   --color-text: var(--color-light);

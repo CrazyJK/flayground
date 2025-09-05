@@ -1,11 +1,13 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay } from '@lib/FlaySearch';
+import FlayStorage from '@lib/FlayStorage';
 import './FlayAll.scss';
 
 /**
  * FlayAll - 플레이 목록을 표시하는 커스텀 엘리먼트
  * 20,000개 이상의 레코드를 효율적으로 표시하고 필터링, 정렬, 페이지네이션 기능을 제공합니다.
+ * 필터 및 정렬 상태는 localStorage에 자동으로 저장되어 페이지를 새로고침해도 유지됩니다.
  *
  * @example
  * <flay-all></flay-all>
@@ -32,6 +34,15 @@ export class FlayAll extends GroundFlay {
   // 상수 및 클래스 변수 정의
   static PAGE_SIZE = 100; // 한 번에 표시할 항목 수
 
+  // localStorage 키 상수
+  static STORAGE_KEYS = {
+    SEARCH_TERM: 'flayAll.filter.searchTerm',
+    SELECTED_RANKS: 'flayAll.filter.selectedRanks',
+    SHOW_ARCHIVE: 'flayAll.filter.showArchive',
+    SORT_COLUMN: 'flayAll.sort.column',
+    SORT_DIRECTION: 'flayAll.sort.direction',
+  } as const;
+
   // 클래스 필드 정의
   #currentPage = 0;
   #sortedFlayList: Flay[] = [];
@@ -46,6 +57,7 @@ export class FlayAll extends GroundFlay {
    */
   connectedCallback() {
     this.#render();
+    this.#restoreFilterState();
     this.#initializeEventListeners();
     this.#loadData().catch((error) => {
       console.error('Error loading data:', error);
@@ -186,6 +198,7 @@ export class FlayAll extends GroundFlay {
     searchInput.addEventListener(
       'input',
       this.#debounce((e: Event) => {
+        this.#saveFilterState(); // 필터 상태 저장
         this.#filterAndSort();
 
         // 검색 이벤트 발생
@@ -206,6 +219,7 @@ export class FlayAll extends GroundFlay {
     // 아카이브 체크박스
     const archiveCheckbox = this.querySelector('#show-archive')!;
     archiveCheckbox.addEventListener('change', (e: Event) => {
+      this.#saveFilterState(); // 필터 상태 저장
       this.#filterAndSort();
       this.showLoading(false);
 
@@ -227,6 +241,7 @@ export class FlayAll extends GroundFlay {
     const rankCheckboxes = this.querySelectorAll('input[id^="rank-"]');
     rankCheckboxes.forEach((checkbox) => {
       checkbox.addEventListener('change', () => {
+        this.#saveFilterState(); // 필터 상태 저장
         this.#filterAndSort();
 
         // 선택된 rank 값들 수집
@@ -279,7 +294,7 @@ export class FlayAll extends GroundFlay {
       });
     });
 
-    // 초기 정렬 표시
+    // 초기 정렬 표시 (복원된 상태 반영)
     headers[this.#sortColumn]!.classList.add(this.#sortDirection === 1 ? 'sort-asc' : 'sort-desc');
 
     // 테이블 행 선택을 위한 이벤트 위임
@@ -383,6 +398,7 @@ export class FlayAll extends GroundFlay {
     // 포커스 관리 추가
     header.setAttribute('aria-sort', this.#sortDirection === 1 ? 'ascending' : 'descending');
 
+    this.#saveFilterState(); // 정렬 상태 저장
     this.#filterAndSort();
   }
 
@@ -769,7 +785,7 @@ export class FlayAll extends GroundFlay {
     }
   }
   /**
-   * 다음과 같은 공개 API 메서드 추가
+   * 다음과 같은 공개 API 메서드 제공
    */
 
   /**
@@ -782,7 +798,7 @@ export class FlayAll extends GroundFlay {
 
   /**
    * 데이터 다시 로드
-   * @returns
+   * @returns {Promise<void>} 데이터 로드 완료 Promise
    */
   refresh() {
     // 캐시 비우기
@@ -793,7 +809,7 @@ export class FlayAll extends GroundFlay {
 
   /**
    * 지정된 페이지로 이동
-   * @param pageNumber - 이동할 페이지 번호 (1부터 시작)
+   * @param {number} pageNumber - 이동할 페이지 번호 (1부터 시작)
    */
   goToPage(pageNumber: number) {
     if (pageNumber < 1) pageNumber = 1;
@@ -808,11 +824,49 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
+   * 필터 상태를 초기화합니다.
+   * UI 상태와 localStorage에 저장된 필터 정보를 모두 초기화합니다.
+   */
+  clearFilters() {
+    // UI 상태 초기화
+    const searchInput = this.querySelector('#search-input') as HTMLInputElement;
+    if (searchInput) {
+      searchInput.value = '';
+    }
+
+    const rankCheckboxes = this.querySelectorAll('input[id^="rank-"]');
+    rankCheckboxes.forEach((checkbox) => {
+      (checkbox as HTMLInputElement).checked = false;
+    });
+
+    const archiveCheckbox = this.querySelector('#show-archive') as HTMLInputElement;
+    if (archiveCheckbox) {
+      archiveCheckbox.checked = false;
+    }
+
+    // 정렬 상태 초기화
+    this.#sortColumn = 4; // 기본값으로 복원
+    this.#sortDirection = -1; // 기본값으로 복원
+
+    const headers = this.querySelectorAll('th[data-sort]');
+    headers.forEach((h) => h.classList.remove('sort-asc', 'sort-desc'));
+    headers[this.#sortColumn]!.classList.add('sort-desc');
+
+    // localStorage에서 필터 상태 제거
+    Object.values(FlayAll.STORAGE_KEYS).forEach((key) => {
+      FlayStorage.local.remove(key);
+    });
+
+    // 필터링 및 정렬 다시 실행
+    this.#filterAndSort();
+  }
+
+  /**
    * 특정 Opus로 검색하고 해당 항목이 있는 페이지로 이동
    * @param opus - 검색할 Opus 번호
-   * @returns - 검색 성공 여부
+   * @returns 검색 성공 여부
    */
-  findByOpus(opus: string) {
+  findByOpus(opus: string): boolean {
     const index = this.#sortedFlayList.findIndex((flay) => flay.opus === opus);
     if (index === -1) return false;
 
@@ -839,7 +893,7 @@ export class FlayAll extends GroundFlay {
    * 로딩 인디케이터 표시/숨김
    * @param isLoading - 로딩 중 여부
    */
-  showLoading(isLoading: boolean) {
+  showLoading(isLoading: boolean): void {
     const loadingIndicator = this.querySelector('.loading-indicator');
     if (loadingIndicator) {
       if (isLoading) {
@@ -853,12 +907,80 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
+   * 필터 상태를 localStorage에서 복원합니다.
+   */
+  #restoreFilterState() {
+    // 검색어 복원
+    const searchTerm = FlayStorage.local.get(FlayAll.STORAGE_KEYS.SEARCH_TERM);
+    if (searchTerm) {
+      const searchInput = this.querySelector('#search-input') as HTMLInputElement;
+      if (searchInput) {
+        searchInput.value = searchTerm;
+      }
+    }
+
+    // 선택된 rank 복원
+    const selectedRanks = FlayStorage.local.getArray(FlayAll.STORAGE_KEYS.SELECTED_RANKS);
+    selectedRanks.forEach((rank) => {
+      const checkbox = this.querySelector(`#rank-${rank}`) as HTMLInputElement;
+      if (checkbox) {
+        checkbox.checked = true;
+      }
+    });
+
+    // archive 체크박스 상태 복원
+    const showArchive = FlayStorage.local.getBoolean(FlayAll.STORAGE_KEYS.SHOW_ARCHIVE);
+    const archiveCheckbox = this.querySelector('#show-archive') as HTMLInputElement;
+    if (archiveCheckbox) {
+      archiveCheckbox.checked = showArchive;
+    }
+
+    // 정렬 상태 복원
+    const sortColumn = FlayStorage.local.getNumber(FlayAll.STORAGE_KEYS.SORT_COLUMN, 4);
+    const sortDirection = FlayStorage.local.getNumber(FlayAll.STORAGE_KEYS.SORT_DIRECTION, -1);
+    this.#sortColumn = sortColumn;
+    this.#sortDirection = sortDirection;
+  }
+
+  /**
+   * 필터 상태를 localStorage에 저장합니다.
+   */
+  #saveFilterState() {
+    // 검색어 저장
+    const searchInput = this.querySelector('#search-input') as HTMLInputElement;
+    if (searchInput) {
+      FlayStorage.local.set(FlayAll.STORAGE_KEYS.SEARCH_TERM, searchInput.value);
+    }
+
+    // 선택된 rank 저장
+    const selectedRanks: string[] = [];
+    const rankCheckboxes = this.querySelectorAll('input[id^="rank-"]');
+    rankCheckboxes.forEach((checkbox) => {
+      const cbElement = checkbox as HTMLInputElement;
+      if (cbElement.checked) {
+        selectedRanks.push(cbElement.value);
+      }
+    });
+    FlayStorage.local.setArray(FlayAll.STORAGE_KEYS.SELECTED_RANKS, selectedRanks);
+
+    // archive 체크박스 상태 저장
+    const archiveCheckbox = this.querySelector('#show-archive') as HTMLInputElement;
+    if (archiveCheckbox) {
+      FlayStorage.local.set(FlayAll.STORAGE_KEYS.SHOW_ARCHIVE, archiveCheckbox.checked ? 'true' : 'false');
+    }
+
+    // 정렬 상태 저장
+    FlayStorage.local.set(FlayAll.STORAGE_KEYS.SORT_COLUMN, String(this.#sortColumn));
+    FlayStorage.local.set(FlayAll.STORAGE_KEYS.SORT_DIRECTION, String(this.#sortDirection));
+  }
+
+  /**
    * 디바운스 함수: 연속적인 이벤트 호출 제한
    * @param func - 실행할 함수
    * @param wait - 지연 시간 (ms)
-   * @returns
+   * @returns 디바운스된 함수
    */
-  #debounce(func: Function, wait: number) {
+  #debounce(func: Function, wait: number): (...args: unknown[]) => void {
     let timeout: NodeJS.Timeout;
     return function (this: unknown) {
       const context = this,

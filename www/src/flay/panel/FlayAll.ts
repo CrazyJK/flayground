@@ -5,36 +5,65 @@ import FlayStorage from '@lib/FlayStorage';
 import './FlayAll.scss';
 
 /**
- * FlayAll - 플레이 목록을 표시하는 커스텀 엘리먼트
- * 20,000개 이상의 레코드를 효율적으로 표시하고 필터링, 정렬, 페이지네이션 기능을 제공합니다.
- * 필터 및 정렬 상태는 localStorage에 자동으로 저장되어 페이지를 새로고침해도 유지됩니다.
+ * FlayAll 커스텀 엘리먼트 - 대용량 플레이 목록 관리 컴포넌트
  *
- * @example
+ * 20,000개 이상의 Flay 레코드를 효율적으로 표시하고 관리하는 고성능 웹 컴포넌트입니다.
+ * 가상화된 페이지네이션, 실시간 필터링/정렬, 무한 스크롤 기능을 제공하며,
+ * 사용자의 필터 및 정렬 설정을 localStorage에 자동으로 저장하여 세션 간 지속성을 보장합니다.
+ *
+ * @class FlayAll
+ * @extends {GroundFlay}
+ *
+ * @features
+ * - 대용량 데이터 처리를 위한 가상화된 렌더링
+ * - 실시간 검색, 랭크 필터링, 아카이브 필터링
+ * - 다중 컬럼 정렬 (Studio, Opus, Title, Actress, Release, Rank, Likes, Score)
+ * - 페이지네이션과 무한 스크롤 모드 지원
+ * - localStorage를 통한 필터/정렬 상태 자동 저장/복원
+ * - 키보드 네비게이션 및 접근성 지원
+ * - 커스텀 이벤트를 통한 외부 통신
+ *
+ * @example 기본 사용법
+ * ```html
  * <flay-all></flay-all>
+ * ```
  *
- * @example 슬롯을 활용한 확장 방법
+ * @example 슬롯을 활용한 커스터마이징
+ * ```html
  * <flay-all>
- *   <div slot="filter-controls">커스텀 필터 컨트롤</div>
- *   <div slot="total-display">커스텀 총계 표시</div>
- *   <div slot="pagination">커스텀 페이지네이션</div>
+ *   <div slot="filter-controls">
+ *     <input type="text" placeholder="Custom search..." />
+ *   </div>
+ *   <div slot="total-display">
+ *     <span>Total: <strong id="count">0</strong> items</span>
+ *   </div>
  * </flay-all>
+ * ```
  *
  * @customElement flay-all
- * @slot filter-controls - 필터 컨트롤 영역을 커스터마이징할 수 있습니다.
- * @slot total-display - 총 항목 수 표시 영역을 커스터마이징할 수 있습니다.
- * @slot table - 테이블 영역을 커스터마이징할 수 있습니다.
- * @slot pagination - 페이지네이션 컨트롤 영역을 커스터마이징할 수 있습니다.
- * @fires data-loaded - 데이터 로드가 완료되었을 때 발생
- * @fires data-error - 데이터 로드 중 오류가 발생했을 때 발생
- * @fires page-changed - 페이지가 변경되었을 때 발생
- * @fires sort-changed - 정렬이 변경되었을 때 발생
- * @fires filter-changed - 필터가 변경되었을 때 발생
+ *
+ * @slot filter-controls - 필터 컨트롤 영역 (검색, 랭크 필터, 아카이브 토글)
+ * @slot total-display - 총 항목 수 표시 영역
+ * @slot table - 데이터 테이블 영역
+ * @slot pagination - 페이지네이션 컨트롤 영역
+ *
+ * @fires data-loaded - 데이터 로드 완료 시 발생 ({count, flayCount, archiveCount, duplicateCount})
+ * @fires data-error - 데이터 로드 오류 시 발생 ({error})
+ * @fires page-changed - 페이지 변경 시 발생 ({currentPage, totalPages, itemCount, totalItems})
+ * @fires sort-changed - 정렬 변경 시 발생 ({field, direction, oldField, oldDirection})
+ * @fires filter-changed - 필터 변경 시 발생 ({searchTerm?, selectedRanks?, showArchive?, filteredCount, totalCount})
+ * @fires flay-selected - 항목 선택 시 발생 ({opus, flay})
+ *
+ * @since 2024
+ * @author CrazyJK
+ * @version 1.0.0
  */
 export class FlayAll extends GroundFlay {
-  // 상수 및 클래스 변수 정의
-  static PAGE_SIZE = 100; // 한 번에 표시할 항목 수
+  // ===== 정적 상수 및 설정 =====
+  /** 한 페이지에 표시할 항목 수 */
+  static PAGE_SIZE = 100;
 
-  // localStorage 키 상수
+  /** localStorage 저장 키 상수 */
   static STORAGE_KEYS = {
     SEARCH_TERM: 'flayAll.filter.searchTerm',
     SELECTED_RANKS: 'flayAll.filter.selectedRanks',
@@ -43,19 +72,32 @@ export class FlayAll extends GroundFlay {
     SORT_DIRECTION: 'flayAll.sort.direction',
   } as const;
 
-  // 클래스 필드 정의
+  // ===== 인스턴스 필드 =====
+  /** 현재 페이지 번호 (0-based) */
   #currentPage = 0;
+  /** 필터링/정렬된 Flay 목록 */
   #sortedFlayList: Flay[] = [];
-  #sortColumn = 4; // 기본 정렬 컬럼 (발매일)
-  #sortDirection = -1; // 기본 내림차순
+  /** 현재 정렬 컬럼 인덱스 (기본: 4 = 발매일) */
+  #sortColumn = 4;
+  /** 정렬 방향 (1: 오름차순, -1: 내림차순) */
+  #sortDirection = -1;
+  /** 무한 스크롤용 IntersectionObserver */
   #observer: IntersectionObserver | null = null;
+  /** 무한 스크롤 활성화 여부 */
   #enableInfiniteScroll = false;
+  /** 전체 Flay 데이터 맵 (키: opus, 값: Flay) */
   #flayMap = new Map<string, Flay>();
 
+  // ===== Web Component 라이프사이클 =====
+
   /**
-   * Called when the element is connected to the DOM.
+   * DOM에 연결될 때 호출되는 Web Component 라이프사이클 메서드
+   * 컴포넌트 초기화, 필터 상태 복원, 이벤트 리스너 등록, 데이터 로드를 순차적으로 실행합니다.
+   *
+   * @override
+   * @memberof FlayAll
    */
-  connectedCallback() {
+  connectedCallback(): void {
     this.#render();
     this.#restoreFilterState();
     this.#initializeEventListeners();
@@ -65,17 +107,19 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * Called when the element's attributes are changed.
+   * 속성 변경 시 호출되는 Web Component 라이프사이클 메서드
+   * 현재 'page-size' 속성 변경을 감지하여 페이지 크기를 동적으로 조정합니다.
    *
-   * @param name Name of the changed attribute
-   * @param oldValue Previous value
-   * @param newValue New value
+   * @override
+   * @memberof FlayAll
+   * @param {string} name - 변경된 속성명
+   * @param {string | null} oldValue - 이전 값
+   * @param {string | null} newValue - 새로운 값
    */
-  attributeChangedCallback(name: string, oldValue: string, newValue: string) {
-    if (name === 'page-size' && oldValue !== newValue) {
+  attributeChangedCallback(name: string, oldValue: string | null, newValue: string | null): void {
+    if (name === 'page-size' && oldValue !== newValue && newValue) {
       const pageSize = parseInt(newValue, 10);
       if (!isNaN(pageSize) && pageSize > 0) {
-        // pageSize 변경 처리
         FlayAll.PAGE_SIZE = pageSize;
         this.#currentPage = 0;
         this.#renderPage();
@@ -84,23 +128,34 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * Returns the list of attributes to observe.
+   * 관찰할 속성 목록을 반환하는 정적 getter
+   * Web Component가 감지할 속성들을 정의합니다.
    *
-   * @returns {string[]} Array of attributes to observe
+   * @static
+   * @memberof FlayAll
+   * @returns {string[]} 관찰할 속성명 배열
    */
-  static get observedAttributes() {
+  static get observedAttributes(): string[] {
     return ['page-size'];
   }
 
   /**
-   * Called when the element is removed from the DOM.
+   * DOM에서 제거될 때 호출되는 Web Component 라이프사이클 메서드
+   * 메모리 누수 방지를 위해 이벤트 리스너와 옵저버를 정리합니다.
+   *
+   * @override
+   * @memberof FlayAll
    */
-  disconnectedCallback() {
+  disconnectedCallback(): void {
     this.#removeEventListeners();
   }
 
-  // Template creation - defines the HTML structure of the component
-  static #createTemplate() {
+  /**
+   * HTML 템플릿을 생성하는 정적 메서드
+   * 컴포넌트의 DOM 구조를 정의합니다.
+   * @returns {HTMLTemplateElement} 생성된 템플릿 엘리먼트
+   */
+  static #createTemplate(): HTMLTemplateElement {
     const template = document.createElement('template');
     template.innerHTML = `
       <div class="flay-list-wrapper">
@@ -167,9 +222,11 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * Initial rendering
+   * 컴포넌트의 초기 렌더링을 수행합니다.
+   * 템플릿을 DOM에 추가하고 로딩 상태를 표시합니다.
+   * @private
    */
-  #render() {
+  #render(): void {
     // 템플릿 사용하여 컴포넌트 내용 추가
     const template = FlayAll.#createTemplate();
     this.appendChild(template.content.cloneNode(true));
@@ -179,9 +236,11 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 이벤트 리스너 초기화
+   * 모든 이벤트 리스너를 초기화합니다.
+   * 페이지네이션, 검색, 필터링, 정렬, 테이블 상호작용 등의 이벤트를 등록합니다.
+   * @private
    */
-  #initializeEventListeners() {
+  #initializeEventListeners(): void {
     // 페이지네이션 버튼 및 이벤트 위임 설정
     const paginationControl = this.querySelector('.pagination')!;
     paginationControl.addEventListener('click', (e: Event) => {
@@ -197,7 +256,8 @@ export class FlayAll extends GroundFlay {
     const searchInput = this.querySelector('#search-input')!;
     searchInput.addEventListener(
       'input',
-      this.#debounce((e: Event) => {
+      this.#debounce((...args: unknown[]) => {
+        const e = args[0] as Event;
         this.#saveFilterState(); // 필터 상태 저장
         this.#filterAndSort();
 
@@ -324,9 +384,10 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 이벤트 리스너 제거
+   * 등록된 이벤트 리스너와 옵저버를 정리합니다.
+   * @private
    */
-  #removeEventListeners() {
+  #removeEventListeners(): void {
     // IntersectionObserver 정리
     if (this.#observer) {
       this.#observer.disconnect();
@@ -335,9 +396,11 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 무한 스크롤 설정
+   * 무한 스크롤 기능을 설정합니다.
+   * IntersectionObserver를 사용하여 스크롤 하단 감지 시 추가 아이템을 로드합니다.
+   * @private
    */
-  #setupInfiniteScroll() {
+  #setupInfiniteScroll(): void {
     const observerTarget = this.querySelector('#scroll-observer');
     if (!observerTarget) return;
 
@@ -357,8 +420,9 @@ export class FlayAll extends GroundFlay {
 
   /**
    * 이전 페이지 버튼 핸들러
+   * @private
    */
-  #handlePrevPage() {
+  #handlePrevPage(): void {
     if (this.#currentPage > 0) {
       this.#currentPage--;
       this.#renderPage();
@@ -369,8 +433,9 @@ export class FlayAll extends GroundFlay {
 
   /**
    * 다음 페이지 버튼 핸들러
+   * @private
    */
-  #handleNextPage() {
+  #handleNextPage(): void {
     if ((this.#currentPage + 1) * FlayAll.PAGE_SIZE < this.#sortedFlayList.length) {
       this.#currentPage++;
       this.#renderPage();
@@ -381,8 +446,11 @@ export class FlayAll extends GroundFlay {
 
   /**
    * 정렬 헤더 클릭 핸들러
+   * @param {HTMLElement} header - 클릭된 헤더 엘리먼트
+   * @param {number} index - 헤더 인덱스
+   * @private
    */
-  #handleSort(header: HTMLElement, index: number) {
+  #handleSort(header: HTMLElement, index: number): void {
     const headers = this.querySelectorAll('th[data-sort]');
     headers.forEach((h) => h.classList.remove('sort-asc', 'sort-desc'));
 
@@ -403,9 +471,10 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 데이터 필터링 및 정렬
+   * 데이터 필터링 및 정렬을 수행합니다.
+   * @private
    */
-  #filterAndSort() {
+  #filterAndSort(): void {
     const searchValue = (this.querySelector('#search-input') as HTMLInputElement).value.toLowerCase().trim();
     const showArchive = (this.querySelector('#show-archive') as HTMLInputElement).checked;
 
@@ -504,9 +573,10 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 페이지 렌더링
+   * 현재 페이지의 데이터를 렌더링합니다.
+   * @private
    */
-  #renderPage() {
+  #renderPage(): void {
     const startIndex = this.#currentPage * FlayAll.PAGE_SIZE;
     const endIndex = Math.min(startIndex + FlayAll.PAGE_SIZE, this.#sortedFlayList.length);
     const pageItems = this.#sortedFlayList.slice(startIndex, endIndex);
@@ -618,17 +688,23 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 추가 아이템 로드 (무한 스크롤)
+   * 추가 아이템 로드 (무한 스크롤용)
+   * @private
    */
-  #loadMoreItems() {
+  #loadMoreItems(): void {
     this.#currentPage++;
     this.#renderPage();
   }
 
   /**
-   * 페이지네이션 버튼 상태 업데이트
+   * 페이지네이션 버튼 상태를 업데이트합니다.
+   * 현재 페이지, 전체 페이지 수에 따라 이전/다음 버튼의 활성화 상태를 조정하고,
+   * 페이지 번호 버튼들을 동적으로 생성합니다.
+   *
+   * @private
+   * @memberof FlayAll
    */
-  #updatePaginationButtons() {
+  #updatePaginationButtons(): void {
     const prevButton = this.querySelector('#prev-page') as HTMLButtonElement;
     const nextButton = this.querySelector('#next-page') as HTMLButtonElement;
     const totalPages = Math.ceil(this.#sortedFlayList.length / FlayAll.PAGE_SIZE);
@@ -693,12 +769,16 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 페이지 번호 버튼 생성 헬퍼 함수
-   * @param {HTMLElement} container - 페이지 번호를 추가할 컨테이너
-   * @param {number} pageNumber - 페이지 번호
-   * @param {number} currentPage - 현재 페이지
+   * 페이지 번호 버튼을 생성하는 헬퍼 함수
+   * 클릭 가능한 페이지 번호 버튼을 생성하고 현재 페이지에 따라 활성 상태를 설정합니다.
+   *
+   * @private
+   * @memberof FlayAll
+   * @param {HTMLElement} container - 페이지 번호 버튼을 추가할 컨테이너 엘리먼트
+   * @param {number} pageNumber - 생성할 페이지 번호 (1-based)
+   * @param {number} currentPage - 현재 활성 페이지 번호 (1-based)
    */
-  #createPageNumberButton(container: HTMLElement, pageNumber: number, currentPage: number) {
+  #createPageNumberButton(container: HTMLElement, pageNumber: number, currentPage: number): void {
     const pageButton = document.createElement('div');
     pageButton.className = 'page-number';
     pageButton.textContent = String(pageNumber);
@@ -715,9 +795,16 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 데이터 로드
+   * 서버에서 데이터를 비동기적으로 로드합니다.
+   * Flay 데이터, Archive 데이터, Score 데이터를 병렬로 가져와서 병합하고,
+   * 중복 검사 및 초기 필터링/정렬을 수행합니다.
+   *
+   * @private
+   * @async
+   * @memberof FlayAll
+   * @throws {Error} 데이터 로드 실패 시
    */
-  async #loadData() {
+  async #loadData(): Promise<void> {
     try {
       this.showLoading(true);
 
@@ -784,23 +871,41 @@ export class FlayAll extends GroundFlay {
       );
     }
   }
-  /**
-   * 다음과 같은 공개 API 메서드 제공
-   */
+
+  // ===== Public API 메서드 =====
 
   /**
-   * 무한 스크롤 활성화/비활성화
-   * @param {boolean} enabled - 무한 스크롤 활성화 여부
+   * 무한 스크롤 기능의 활성화/비활성화를 설정합니다.
+   * 활성화 시 사용자가 페이지 하단에 도달하면 자동으로 다음 항목들을 로드합니다.
+   *
+   * @public
+   * @memberof FlayAll
+   * @param {boolean} enabled - true: 무한 스크롤 활성화, false: 비활성화
+   * @example
+   * ```javascript
+   * const flayAll = document.querySelector('flay-all');
+   * flayAll.setInfiniteScroll(true); // 무한 스크롤 활성화
+   * ```
    */
-  setInfiniteScroll(enabled: boolean) {
+  setInfiniteScroll(enabled: boolean): void {
     this.#enableInfiniteScroll = enabled;
   }
 
   /**
-   * 데이터 다시 로드
-   * @returns {Promise<void>} 데이터 로드 완료 Promise
+   * 모든 캐시를 지우고 데이터를 다시 로드합니다.
+   * 서버에서 최신 데이터를 가져와 현재 화면을 새로 고칩니다.
+   *
+   * @public
+   * @async
+   * @memberof FlayAll
+   * @returns {Promise<void>} 데이터 로드 완료를 나타내는 Promise
+   * @example
+   * ```javascript
+   * const flayAll = document.querySelector('flay-all');
+   * await flayAll.refresh();
+   * ```
    */
-  refresh() {
+  refresh(): Promise<void> {
     // 캐시 비우기
     FlayFetch.clearAll();
     // 데이터 다시 로드
@@ -808,10 +913,19 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 지정된 페이지로 이동
+   * 지정된 페이지로 이동합니다.
+   * 페이지 번호가 범위를 벗어나면 유효한 범위로 자동 조정됩니다.
+   *
+   * @public
+   * @memberof FlayAll
    * @param {number} pageNumber - 이동할 페이지 번호 (1부터 시작)
+   * @example
+   * ```javascript
+   * const flayAll = document.querySelector('flay-all');
+   * flayAll.goToPage(5); // 5페이지로 이동
+   * ```
    */
-  goToPage(pageNumber: number) {
+  goToPage(pageNumber: number): void {
     if (pageNumber < 1) pageNumber = 1;
 
     const totalPages = Math.ceil(this.#sortedFlayList.length / FlayAll.PAGE_SIZE);
@@ -824,10 +938,18 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 필터 상태를 초기화합니다.
-   * UI 상태와 localStorage에 저장된 필터 정보를 모두 초기화합니다.
+   * 모든 필터와 정렬 상태를 초기화합니다.
+   * UI 컨트롤을 기본 상태로 되돌리고, localStorage에 저장된 설정을 삭제합니다.
+   *
+   * @public
+   * @memberof FlayAll
+   * @example
+   * ```javascript
+   * const flayAll = document.querySelector('flay-all');
+   * flayAll.clearFilters(); // 모든 필터 초기화
+   * ```
    */
-  clearFilters() {
+  clearFilters(): void {
     // UI 상태 초기화
     const searchInput = this.querySelector('#search-input') as HTMLInputElement;
     if (searchInput) {
@@ -862,9 +984,21 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 특정 Opus로 검색하고 해당 항목이 있는 페이지로 이동
-   * @param opus - 검색할 Opus 번호
-   * @returns 검색 성공 여부
+   * 특정 Opus로 항목을 검색하고 해당 페이지로 이동합니다.
+   * 검색에 성공하면 해당 항목을 하이라이트하고 화면 중앙으로 스크롤합니다.
+   *
+   * @public
+   * @memberof FlayAll
+   * @param {string} opus - 검색할 Opus 번호
+   * @returns {boolean} 검색 성공 여부 (true: 찾음, false: 못찾음)
+   * @example
+   * ```javascript
+   * const flayAll = document.querySelector('flay-all');
+   * const found = flayAll.findByOpus('ABC-123');
+   * if (!found) {
+   *   console.log('해당 Opus를 찾을 수 없습니다.');
+   * }
+   * ```
    */
   findByOpus(opus: string): boolean {
     const index = this.#sortedFlayList.findIndex((flay) => flay.opus === opus);
@@ -890,8 +1024,19 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 로딩 인디케이터 표시/숨김
-   * @param isLoading - 로딩 중 여부
+   * 로딩 인디케이터의 표시/숨김 상태를 제어합니다.
+   * 데이터 로딩 중임을 사용자에게 시각적으로 알려줍니다.
+   *
+   * @public
+   * @memberof FlayAll
+   * @param {boolean} isLoading - true: 로딩 표시, false: 로딩 숨김
+   * @example
+   * ```javascript
+   * const flayAll = document.querySelector('flay-all');
+   * flayAll.showLoading(true); // 로딩 시작
+   * // ... 비동기 작업 수행
+   * flayAll.showLoading(false); // 로딩 완료
+   * ```
    */
   showLoading(isLoading: boolean): void {
     const loadingIndicator = this.querySelector('.loading-indicator');
@@ -906,10 +1051,16 @@ export class FlayAll extends GroundFlay {
     }
   }
 
+  // ===== Private 헬퍼 메서드 =====
+
   /**
-   * 필터 상태를 localStorage에서 복원합니다.
+   * 사용자의 필터 상태를 localStorage에서 복원합니다.
+   * 검색어, 선택된 랭크, 아카이브 표시 여부, 정렬 설정을 이전 세션에서 복원합니다.
+   *
+   * @private
+   * @memberof FlayAll
    */
-  #restoreFilterState() {
+  #restoreFilterState(): void {
     // 검색어 복원
     const searchTerm = FlayStorage.local.get(FlayAll.STORAGE_KEYS.SEARCH_TERM);
     if (searchTerm) {
@@ -943,9 +1094,14 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 필터 상태를 localStorage에 저장합니다.
+   * 현재 필터 상태를 localStorage에 저장합니다.
+   * 검색어, 선택된 랭크, 아카이브 표시 여부, 정렬 설정을 저장하여
+   * 다음 세션에서 동일한 상태를 유지할 수 있도록 합니다.
+   *
+   * @private
+   * @memberof FlayAll
    */
-  #saveFilterState() {
+  #saveFilterState(): void {
     // 검색어 저장
     const searchInput = this.querySelector('#search-input') as HTMLInputElement;
     if (searchInput) {
@@ -975,18 +1131,25 @@ export class FlayAll extends GroundFlay {
   }
 
   /**
-   * 디바운스 함수: 연속적인 이벤트 호출 제한
-   * @param func - 실행할 함수
-   * @param wait - 지연 시간 (ms)
-   * @returns 디바운스된 함수
+   * 연속적인 이벤트 호출을 제한하는 디바운스 함수를 생성합니다.
+   * 사용자 입력이 빈번한 검색 기능에서 성능 최적화를 위해 사용됩니다.
+   *
+   * @private
+   * @memberof FlayAll
+   * @param {(...args: unknown[]) => void} func - 디바운스할 함수
+   * @param {number} wait - 지연 시간 (밀리초)
+   * @returns {(...args: unknown[]) => void} 디바운스된 함수
+   * @example
+   * ```javascript
+   * const debouncedSearch = this.#debounce(this.#performSearch, 300);
+   * ```
    */
-  #debounce(func: Function, wait: number): (...args: unknown[]) => void {
-    let timeout: NodeJS.Timeout;
-    return function (this: unknown) {
-      const context = this,
-        args = arguments;
+  #debounce(func: (...args: unknown[]) => void, wait: number): (...args: unknown[]) => void {
+    let timeout: number;
+    return function (this: unknown, ...args: unknown[]) {
+      const context = this;
       clearTimeout(timeout);
-      timeout = setTimeout(() => {
+      timeout = window.setTimeout(() => {
         func.apply(context, args);
       }, wait);
     };

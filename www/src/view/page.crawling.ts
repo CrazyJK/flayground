@@ -59,6 +59,7 @@ class Page {
   #videoCache = new Map(); // Cache for video data
   #actressCache = new Map(); // Cache for actress data
   #recordCache = new Map(); // Cache for NanoStore records
+  #crawlingStartTime: number = 0; // 크롤링 시작 시간
 
   article: HTMLElement;
   retryBtn: HTMLButtonElement;
@@ -373,6 +374,14 @@ class Page {
   }
 
   async parseOfNanojav(data: { message?: string }) {
+    // 크롤링 완료 시간 측정 및 소요시간 계산
+    const crawlingEndTime = performance.now();
+    const crawlingDuration = this.#crawlingStartTime > 0 ? crawlingEndTime - this.#crawlingStartTime : 0;
+
+    if (crawlingDuration > 0) {
+      console.log(`🚀 크롤링 소요시간: ${crawlingDuration.toFixed(2)}ms (${(crawlingDuration / 1000).toFixed(2)}초)`);
+    }
+
     if (!data.message) return;
 
     const doc = domParser.parseFromString(data.message, 'text/html');
@@ -435,8 +444,18 @@ class Page {
   }
 
   #callCrawling() {
+    this.#crawlingStartTime = performance.now();
+
     const url = LIST_URL + this.#paging.srcPageNo;
-    void ApiClient.get(`/crawling/curl?url=${encodeURIComponent(url)}`);
+    /*
+      /crawling/curl은 async로 동작함.
+      크롤링 결과는 SSE를 통해 받아서 emitCurl로 전달됨.
+     */
+    void ApiClient.get(`/crawling/curl?url=${encodeURIComponent(url)}`).catch((err) => {
+      console.error(err);
+      this.#notice('데이터를 구하지 못함', true, true);
+      this.retryBtn.disabled = false; // 수동으로 다시 요청하도록 버튼 노출
+    });
     this.#notice(this.#paging.srcPageNo + '페이지 크롤링 중...');
     (document.querySelector('#srcPageURL') as HTMLAnchorElement).href = url;
   }

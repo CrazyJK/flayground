@@ -34,6 +34,8 @@ public class CurlResponser extends LogAndSse {
         String html = Files.readString(contentFile.toPath());
         curlLogger(html);
         FileUtils.deleteQuietly(contentFile);
+      } else {
+        throw new FlayException("curl error, exit code: " + process.exitValue());
       }
     } catch (Exception e) {
       log.error("error", e);

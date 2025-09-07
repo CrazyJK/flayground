@@ -41,36 +41,93 @@ declare global {
   }
 }
 
+/**
+ * SSE 연결 상태 관리자
+ */
+class SseConnectionManager {
+  private reconnectAttempts = 0;
+  private lastErrorTime = 0;
+  private errorCount = 0;
+
+  handleError(sse: EventSource): void {
+    const now = Date.now();
+
+    // 1분 내에 연속으로 오류가 발생하는지 체크
+    if (now - this.lastErrorTime < 60000) {
+      this.errorCount++;
+    } else {
+      this.errorCount = 1; // 리셋
+    }
+
+    this.lastErrorTime = now;
+
+    console.warn(`SSE 연결 오류 발생 (${this.errorCount}회 연속)`, {
+      readyState: sse.readyState,
+      url: sse.url,
+      reconnectAttempts: this.reconnectAttempts,
+    });
+
+    // 너무 많은 연속 오류 발생 시 경고
+    if (this.errorCount > 10) {
+      console.error('⚠️ SSE 연결 오류가 10회 이상 연속 발생했습니다. 네트워크나 서버 상태를 확인하세요.');
+      window.emitNotice?.('SSE 연결이 불안정합니다. 페이지를 새로고침해주세요.', true);
+    }
+  }
+
+  handleOpen(): void {
+    // 연결 성공 시 카운터 리셋
+    this.reconnectAttempts = 0;
+    this.errorCount = 0;
+    console.info('✅ SSE 연결이 정상적으로 설정되었습니다.');
+  }
+}
+
+const connectionManager = new SseConnectionManager();
+
 /** EventSource 인스턴스 생성 및 기본 이벤트 핸들러 설정 */
 const sse = new EventSource(ApiClient.buildUrl('/sse'));
 
 addBeforeunloadListener(() => sse.close());
 
 sse.onopen = (e: Event) => {
-  console.debug('<< onopen', e);
+  console.debug('<< SSE onopen', e, 'readyState:', sse.readyState);
+  connectionManager.handleOpen();
 };
 
 sse.onerror = (e: Event) => {
-  console.debug('<< onerror', e);
+  console.error('<< SSE onerror', {
+    event: e,
+    readyState: sse.readyState,
+    url: sse.url,
+    withCredentials: sse.withCredentials,
+    timestamp: new Date().toISOString(),
+  });
+
+  connectionManager.handleError(sse);
+
+  // ReadyState 분석
+  switch (sse.readyState) {
+    case EventSource.CONNECTING:
+      console.warn('SSE: 연결 시도 중...');
+      break;
+    case EventSource.OPEN:
+      console.warn('SSE: 연결 중이지만 오류 발생');
+      break;
+    case EventSource.CLOSED:
+      console.warn('SSE: 연결 닫힌 상태에서 오류 발생');
+      break;
+    default:
+      console.warn('SSE: 알 수 없는 상태:', sse.readyState);
+  }
 };
 
 sse.onmessage = (e: MessageEvent) => {
-  console.debug('<< onmessage', e);
+  console.debug('<< SSE onmessage', e.type, e.data?.substring(0, 100) + '...');
 };
 
 /*
- * Event name: CONNECT, FLAY, STUDIO, VIDEO, ACTRESS, TAG, MESSAGE
+ * Event name: FLAY, STUDIO, VIDEO, ACTRESS, TAG, MESSAGE
  */
-
-sse.addEventListener('heartbeat', (e: MessageEvent) => {
-  // 하트비트 무시 (연결 유지용)
-  console.debug('<< Heartbeat received', e);
-});
-
-sse.addEventListener('CONNECT', (e: MessageEvent) => {
-  const { data: receivedConnectData } = e;
-  console.debug('<< connected', receivedConnectData);
-});
 
 sse.addEventListener('FLAY', (e: MessageEvent) => {
   console.debug(e.type, e.data);
@@ -111,7 +168,7 @@ sse.addEventListener('TAG', (e: MessageEvent) => {
 });
 
 sse.addEventListener('MESSAGE', (e: MessageEvent) => {
-  console.debug(e.type, e.data);
+  console.debug(e.type, e.data?.substring(0, 100) + '...');
   const data: SseMessageData = JSON.parse(e.data);
   switch (data.type) {
     case 'Batch':

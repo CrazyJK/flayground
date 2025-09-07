@@ -1,6 +1,7 @@
 package jk.kamoru.ground.base.web.sse;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -23,25 +24,28 @@ public class SseEmitters {
   }
 
   private final List<SseEmitter> sseEmitters = new CopyOnWriteArrayList<>();
+  private final Long TIMEOUT = Duration.ofHours(6).toMillis();
 
   protected SseEmitter create() {
-    SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
+    SseEmitter sseEmitter = new SseEmitter(TIMEOUT);
 
     sseEmitter.onCompletion(() -> {
-      log.info("{} onCompletion - 클라이언트가 정상적으로 연결을 종료했습니다", sseEmitter);
+      log.info("{} onCompletion", sseEmitter);
       remove(sseEmitter);
     });
     sseEmitter.onTimeout(() -> {
-      log.warn("{} onTimeout - SSE 연결이 타임아웃되었습니다", sseEmitter);
+      log.warn("{} onTimeout", sseEmitter);
       sseEmitter.complete();
     });
     sseEmitter.onError((e) -> {
-      log.error("{} onError - SSE 연결 중 오류 발생: {} ({})", sseEmitter, e.getMessage(), e.getClass().getSimpleName());
-      // remove(sseEmitter); // 오류 발생 시 즉시 제거
+      log.error("{} onError: {} ({})", sseEmitter, e.getMessage(), e.getClass().getSimpleName());
+      remove(sseEmitter);
     });
 
     sseEmitters.add(sseEmitter);
     log.info("{} created. total {} sseEmitters", sseEmitter, sseEmitters.size());
+
+    send(sseEmitter, EVENT.CONNECT, "connected");
 
     return sseEmitter;
   }

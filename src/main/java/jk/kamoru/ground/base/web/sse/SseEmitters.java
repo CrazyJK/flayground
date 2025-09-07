@@ -3,9 +3,6 @@ package jk.kamoru.ground.base.web.sse;
 import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
@@ -30,35 +27,21 @@ public class SseEmitters {
   protected SseEmitter create() {
     SseEmitter sseEmitter = new SseEmitter(Long.MAX_VALUE);
 
-    ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-    executor.scheduleAtFixedRate(() -> {
-      try {
-        sseEmitter.send(SseEmitter.event().name("heartbeat").data("ping"));
-      } catch (Exception e) {
-        sseEmitter.completeWithError(e);
-        executor.shutdown();
-      }
-    }, 0, 5, TimeUnit.MINUTES);
-
     sseEmitter.onCompletion(() -> {
-      log.debug("{} onCompletion", sseEmitter);
-      executor.shutdown();
+      log.info("{} onCompletion - 클라이언트가 정상적으로 연결을 종료했습니다", sseEmitter);
       remove(sseEmitter);
     });
     sseEmitter.onTimeout(() -> {
-      log.debug("{} onTimeout", sseEmitter);
-      executor.shutdown();
+      log.warn("{} onTimeout - SSE 연결이 타임아웃되었습니다", sseEmitter);
       sseEmitter.complete();
     });
     sseEmitter.onError((e) -> {
-      log.error("{} onError: {}", sseEmitter, e.getMessage());
-      sseEmitter.complete();
+      log.error("{} onError - SSE 연결 중 오류 발생: {} ({})", sseEmitter, e.getMessage(), e.getClass().getSimpleName());
+      // remove(sseEmitter); // 오류 발생 시 즉시 제거
     });
 
     sseEmitters.add(sseEmitter);
-    log.debug("{} created. total {} sseEmitters", sseEmitter, sseEmitters.size());
-
-    send(sseEmitter, EVENT.CONNECT, "connected");
+    log.info("{} created. total {} sseEmitters", sseEmitter, sseEmitters.size());
 
     return sseEmitter;
   }
@@ -71,17 +54,21 @@ public class SseEmitters {
   private void send(SseEmitter sseEmitter, EVENT event, Object payload) {
     final String name = event.name();
     if (name == null)
-      throw new IllegalArgumentException("null is null");
+      throw new IllegalArgumentException("event name is null");
     if (payload == null)
       throw new IllegalArgumentException("payload is null");
+
     try {
       sseEmitter.send(SseEmitter.event().name(name).data(payload));
       log.debug("{} send {} - {}", sseEmitter, event, payload);
     } catch (IOException e) {
-      log.debug("{} send error: {}", sseEmitter, e.getMessage());
+      log.warn("{} IOException during send: {} - 클라이언트 연결 끊김으로 추정", sseEmitter, e.getMessage());
+      remove(sseEmitter);
+    } catch (IllegalStateException e) {
+      log.warn("{} IllegalStateException during send: {} - SSE 연결 상태 이상", sseEmitter, e.getMessage());
       remove(sseEmitter);
     } catch (Exception e) {
-      log.debug("{} send error: {}", sseEmitter, e.getMessage());
+      log.error("{} Unexpected error during send: {} ({})", sseEmitter, e.getMessage(), e.getClass().getSimpleName(), e);
       remove(sseEmitter);
     }
   }

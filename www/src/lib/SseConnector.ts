@@ -41,69 +41,23 @@ declare global {
   }
 }
 
-/**
- * SSE 연결 상태 관리자
- */
-class SseConnectionManager {
-  private reconnectAttempts = 0;
-  private lastErrorTime = 0;
-  private errorCount = 0;
-
-  handleError(sse: EventSource): void {
-    const now = Date.now();
-
-    // 1분 내에 연속으로 오류가 발생하는지 체크
-    if (now - this.lastErrorTime < 60000) {
-      this.errorCount++;
-    } else {
-      this.errorCount = 1; // 리셋
-    }
-
-    this.lastErrorTime = now;
-
-    console.warn(`SSE 연결 오류 발생 (${this.errorCount}회 연속)`, {
-      readyState: sse.readyState,
-      url: sse.url,
-      reconnectAttempts: this.reconnectAttempts,
-    });
-
-    // 너무 많은 연속 오류 발생 시 경고
-    if (this.errorCount > 10) {
-      console.error('⚠️ SSE 연결 오류가 10회 이상 연속 발생했습니다. 네트워크나 서버 상태를 확인하세요.');
-      window.emitNotice?.('SSE 연결이 불안정합니다. 페이지를 새로고침해주세요.', true);
-    }
-  }
-
-  handleOpen(): void {
-    // 연결 성공 시 카운터 리셋
-    this.reconnectAttempts = 0;
-    this.errorCount = 0;
-    console.info('✅ SSE 연결이 정상적으로 설정되었습니다.');
-  }
-}
-
-const connectionManager = new SseConnectionManager();
-
 /** EventSource 인스턴스 생성 및 기본 이벤트 핸들러 설정 */
 const sse = new EventSource(ApiClient.buildUrl('/sse'));
 
 addBeforeunloadListener(() => sse.close());
 
-sse.onopen = (e: Event) => {
-  console.debug('<< SSE onopen', e, 'readyState:', sse.readyState);
-  connectionManager.handleOpen();
+sse.onopen = () => {
+  console.debug(`%c<< SSE onopen`, 'color: orange');
 };
 
 sse.onerror = (e: Event) => {
-  console.error('<< SSE onerror', {
+  console.error(`%c<< SSE onerror`, 'color: red', {
     event: e,
     readyState: sse.readyState,
     url: sse.url,
     withCredentials: sse.withCredentials,
     timestamp: new Date().toISOString(),
   });
-
-  connectionManager.handleError(sse);
 
   // ReadyState 분석
   switch (sse.readyState) {
@@ -122,12 +76,16 @@ sse.onerror = (e: Event) => {
 };
 
 sse.onmessage = (e: MessageEvent) => {
-  console.debug('<< SSE onmessage', e.type, e.data?.substring(0, 100) + '...');
+  console.debug(`%c<< SSE onmessage`, 'color: blue', e.type, e.data?.substring(0, 100) + '...');
 };
 
 /*
- * Event name: FLAY, STUDIO, VIDEO, ACTRESS, TAG, MESSAGE
+ * Event name: CONNECT, FLAY, STUDIO, VIDEO, ACTRESS, TAG, MESSAGE
  */
+
+sse.addEventListener('CONNECT', (e: MessageEvent) => {
+  console.debug(e.type, e.data);
+});
 
 sse.addEventListener('FLAY', (e: MessageEvent) => {
   console.debug(e.type, e.data);

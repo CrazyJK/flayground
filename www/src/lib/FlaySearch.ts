@@ -135,7 +135,7 @@ const FlaySearch = {
      * @param message - 번역할 텍스트
      */
     DeepL(message: string): Window | null {
-      return popupOpen(URL_TRANSLATE_DEEPL + message, 'translateByDeepL', 1000, 700);
+      return popupOpen(URL_TRANSLATE_DEEPL + message, 'translateByDeepL', 1000, 500);
     },
   },
 

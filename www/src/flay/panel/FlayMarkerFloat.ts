@@ -35,10 +35,10 @@ export class FlayMarkerFloat extends GroundFlay {
     void this.#getRandomInfo().then(({ randomFlay, randomRem, randomX, randomY }) => {
       this.style.setProperty('--marker-size', `${randomRem}rem`);
       this.style.setProperty('--square-radius', `${randomRem * 0.25}rem`);
+      this.style.setProperty('--marker-x', `${randomX}%`);
+      this.style.setProperty('--marker-y', `${randomY}%`);
 
       this.#flayMarker.set(randomFlay, { tooltip: true, shape: FlayMarker.SHAPE.SQUARE, cover: true });
-      this.#flayMarker.style.left = `${randomX}px`;
-      this.#flayMarker.style.top = `${randomY}px`;
 
       this.dispatchEvent(new CustomEvent('changeFlay', { detail: { randomFlay, randomRem, randomX, randomY }, composed: true }));
     });
@@ -56,9 +56,12 @@ export class FlayMarkerFloat extends GroundFlay {
 
   #randomPosition(rem: number): [number, number] {
     const [markerSize, edgeSize] = [StyleUtils.remToPx(rem), StyleUtils.remToPx(10)];
-    const randomX = RandomUtils.getRandomInt(edgeSize, this.clientWidth - edgeSize * 2);
-    const randomY = RandomUtils.getRandomInt(edgeSize, this.clientHeight - edgeSize * 2);
-    return [Math.round(randomX - markerSize / 2), Math.round(randomY - markerSize / 2)]; // Center the marker
+    const markerSizePercent = (markerSize / this.clientWidth) * 100;
+    const edgeSizePercent = (edgeSize / this.clientWidth) * 100;
+
+    const randomX = RandomUtils.getRandomInt(edgeSizePercent, 100 - edgeSizePercent - markerSizePercent);
+    const randomY = RandomUtils.getRandomInt(edgeSizePercent, 100 - edgeSizePercent - markerSizePercent);
+    return [randomX, randomY];
   }
 }
 

@@ -6,6 +6,10 @@ flay-marker-float {
   height: 100%;
   pointer-events: none;
   z-index: 1000;
+  --marker-x: 50%;
+  --marker-y: 50%;
+  --marker-size: 8rem;
+  --square-radius: 2rem;
 
   flay-marker {
     position: absolute;
@@ -14,6 +18,8 @@ flay-marker-float {
     will-change: top, left, width, height;
     transform: translate3d(0, 0, 0);
     pointer-events: auto;
+    left: var(--marker-x);
+    top: var(--marker-y);
 
     box-shadow: var(--box-shadow);
     &.shot {

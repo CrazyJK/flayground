@@ -2,7 +2,7 @@
   --marker-size: 1rem;
   --shot-blur: 0.75rem;
   --shot-spread: 0.5rem;
-  --square-radius: 0.25rem;
+  --square-radius: calc(var(--marker-size) / 4);
 }
 
 flay-marker {

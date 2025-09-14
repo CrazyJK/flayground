@@ -34,7 +34,6 @@ export class FlayMarkerFloat extends GroundFlay {
   #updateMarker(): void {
     void this.#getRandomInfo().then(({ randomFlay, randomRem, randomX, randomY }) => {
       this.style.setProperty('--marker-size', `${randomRem}rem`);
-      this.style.setProperty('--square-radius', `${randomRem * 0.25}rem`);
       this.style.setProperty('--marker-x', `${randomX}%`);
       this.style.setProperty('--marker-y', `${randomY}%`);
 

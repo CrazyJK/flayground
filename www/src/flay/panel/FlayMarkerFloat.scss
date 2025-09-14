@@ -9,7 +9,7 @@ flay-marker-float {
   --marker-x: 50%;
   --marker-y: 50%;
   --marker-size: 8rem;
-  --square-radius: 2rem;
+  --square-radius: calc(var(--marker-size) / 4);
 
   flay-marker {
     position: absolute;
@@ -23,7 +23,7 @@ flay-marker-float {
 
     box-shadow: var(--box-shadow);
     &.shot {
-      box-shadow: 0 2px 16px 4px var(--color-red);
+      box-shadow: calc(var(--marker-size) / 32) calc(var(--marker-size) / 32) calc(var(--marker-size) / 4) calc(var(--marker-size) / 16) var(--color-red);
     }
   }
 }

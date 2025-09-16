@@ -4,11 +4,24 @@ body {
       flex-wrap: wrap;
       gap: 0;
 
-      > label {
-        font-size: 16px;
-        margin: 0;
-        padding: 2px 8px !important;
-        border: 0 !important;
+      > .tag-group {
+        display: inline-flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 4px;
+        margin: 0 0 4px 0;
+        padding: 0 4px;
+        border-radius: 8px;
+        &:hover {
+          background-color: var(--color-bg-transparent);
+        }
+
+        label {
+          font-size: 16px;
+          margin: 0;
+          padding: 2px 8px !important;
+          border: 0 !important;
+        }
       }
     }
   }

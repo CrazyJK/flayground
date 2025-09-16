@@ -34,14 +34,23 @@ tagContainer.addEventListener('change', () => {
     });
 });
 
-FlayFetch.getTags()
-  .then((tags) => {
+Promise.all([FlayFetch.getTags(), FlayFetch.getTagGroups()])
+  .then(([tags, groups]) => {
     const excludeTagGroup = ['grade', 'screen', 'etc'];
 
-    const fragment = document.createDocumentFragment();
+    groups
+      .filter((group) => !excludeTagGroup.includes(group.id))
+      .forEach((group) => {
+        const tagGroup = document.createElement('div');
+        tagGroup.title = group.name;
+        tagGroup.className = 'tag-group';
+        tagGroup.id = `tag-group-${group.id}`;
+        tagContainer.appendChild(tagGroup);
+      });
+
     tags
       .filter((tag) => tag.group && !excludeTagGroup.includes(tag.group))
-      .sort((t1, t2) => t1.group.localeCompare(t2.group))
+      .sort((t1, t2) => t1.name.localeCompare(t2.name))
       .forEach((tag) => {
         const checkbox = document.createElement('input');
         checkbox.id = `tag-${tag.id}`;
@@ -52,11 +61,11 @@ FlayFetch.getTags()
         label.htmlFor = checkbox.id;
         label.textContent = tag.name;
 
-        fragment.append(checkbox, label);
+        const tagGroup = tagContainer.querySelector(`#tag-group-${tag.group}`);
+        if (tagGroup instanceof HTMLElement) {
+          tagGroup.appendChild(checkbox);
+          tagGroup.appendChild(label);
+        }
       });
-
-    tagContainer.appendChild(fragment);
   })
-  .catch((error) => {
-    console.error(error);
-  });
+  .catch(console.error);

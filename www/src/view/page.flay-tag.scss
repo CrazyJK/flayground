@@ -1,11 +1,12 @@
 body {
   > header {
     > div {
+      display: inline-flex;
       flex-wrap: wrap;
       gap: 0;
 
       > .tag-group {
-        display: inline-flex;
+        display: flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: 4px;

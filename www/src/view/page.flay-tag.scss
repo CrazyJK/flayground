@@ -1,17 +1,19 @@
 body {
-  > header {
+  > header.sticky {
     > div {
       display: inline-flex;
       flex-wrap: wrap;
       gap: 0;
+      margin: 0;
+      max-width: fit-content;
 
       > .tag-group {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 4px;
-        margin: 0 0 4px 0;
-        padding: 0 4px;
+        gap: 2px;
+        margin: 0 0 4px;
+        padding: 0;
         border-radius: 8px;
         &:hover {
           background-color: var(--color-bg-transparent);

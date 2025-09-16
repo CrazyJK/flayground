@@ -4,7 +4,7 @@ import GridControl from '@ui/GridControl';
 import './inc/Page';
 import './page.flay-tag.scss';
 
-const tagContainer = document.querySelector('body > header > div')!;
+const tagContainer = document.querySelector('body > header.sticky > div')!;
 const markerContainer = document.querySelector('body > main')!;
 const gridContainer = document.querySelector('body > footer')!;
 

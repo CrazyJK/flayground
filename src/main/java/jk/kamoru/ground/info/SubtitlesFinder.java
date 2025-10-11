@@ -3,6 +3,7 @@ package jk.kamoru.ground.info;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -42,7 +43,7 @@ public class SubtitlesFinder {
 
   @GetMapping("/file/find/exists/subtitles")
   @ResponseBody
-  public Map<String, Object> findSubtitls(@RequestParam("opus") String opus) {
+  public Map<String, Object> findSubtitles(@RequestParam("opus") String opus) {
     Map<String, Object> result = new HashMap<>();
 
     try {
@@ -60,13 +61,13 @@ public class SubtitlesFinder {
             log.debug("        found kor page : {}", href);
 
             // file download link
-            URL pageUrl = new URL(siteUrl + href);
+            URL pageUrl = URI.create(siteUrl + href).toURL();
             Document pageDocument = getDocument(pageUrl.toString());
-            Element anker = pageDocument.selectFirst("#download_ko");
-            String downloadLink = anker.attr("href");
+            Element anchor = pageDocument.selectFirst("#download_ko");
+            String downloadLink = anchor.attr("href");
             log.debug("              download link : {}", downloadLink);
 
-            foundUrlList.add(new URL(siteUrl + downloadLink));
+            foundUrlList.add(URI.create(siteUrl + downloadLink).toURL());
           }
         }
       }

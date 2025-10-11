@@ -1,6 +1,7 @@
 package jk.kamoru.ground.image.download;
 
 import java.io.File;
+import java.net.URI;
 import java.net.URL;
 import java.text.NumberFormat;
 import java.util.ArrayList;
@@ -77,7 +78,7 @@ public class PageImageDownloader {
   public DownloadResult download() {
     log.info("Image download start - [{}]", imagePageUrl);
     try {
-      final URL url = new URL(imagePageUrl);
+      final URL url = URI.create(imagePageUrl).toURL();
       final String domain = String.format("%s://%s%s", url.getProtocol(), url.getHost(), (url.getPort() > 0 ? ":" + url.getPort() : ""));
 
       // connect and get image page by jsoup HTML parser
@@ -185,8 +186,8 @@ public class PageImageDownloader {
     List<File> imageFiles;
     List<String> imageUrls;
 
-    public static DownloadResult success(String url, String downloadeddPath, List<File> imageFiles, List<String> imageUrls) {
-      return new DownloadResult(url, downloadeddPath, "", true, imageFiles, imageUrls);
+    public static DownloadResult success(String url, String downloadedPath, List<File> imageFiles, List<String> imageUrls) {
+      return new DownloadResult(url, downloadedPath, "", true, imageFiles, imageUrls);
     }
 
     public static DownloadResult fail(String url, Exception error) {

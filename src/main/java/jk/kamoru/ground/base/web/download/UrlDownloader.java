@@ -3,6 +3,7 @@ package jk.kamoru.ground.base.web.download;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
+import java.net.URI;
 import java.net.URL;
 
 import org.springframework.http.HttpEntity;
@@ -36,7 +37,7 @@ public class UrlDownloader {
   @ResponseBody
   public HttpEntity<byte[]> download(@RequestParam String url) {
     try {
-      URL downloadUrl = new URL(url);
+      URL downloadUrl = URI.create(url).toURL();
       HttpURLConnection connection = (HttpURLConnection) downloadUrl.openConnection();
       connection.setRequestMethod("GET");
       connection.connect();
@@ -58,16 +59,16 @@ public class UrlDownloader {
       log.info("Downloaded file name: {}", fileName);
 
       // Read the downloaded data into a byte array
-      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
       InputStream inputStream = connection.getInputStream();
       byte[] buffer = new byte[4096];
       int bytesRead;
       while ((bytesRead = inputStream.read(buffer)) != -1) {
-        baos.write(buffer, 0, bytesRead);
+        byteArrayOutputStream.write(buffer, 0, bytesRead);
       }
       inputStream.close();
       connection.disconnect();
-      byte[] fileBytes = baos.toByteArray();
+      byte[] fileBytes = byteArrayOutputStream.toByteArray();
       log.info("Downloaded file size: {}", fileBytes.length);
 
       // Prepare response headers with file download information

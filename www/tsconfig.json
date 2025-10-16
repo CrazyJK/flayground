@@ -1,5 +1,8 @@
 {
   "compilerOptions": {
+    // Deprecated 경고 무시
+    "ignoreDeprecations": "6.0",
+
     // 최신 타겟으로 업데이트
     "target": "ES2022",
     "module": "ESNext",
@@ -58,6 +61,6 @@
     // 라이브러리
     "lib": ["DOM", "DOM.Iterable", "ES2022", "WebWorker"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
   "exclude": ["node_modules", "dist", "../src", "**/*.js", "**/*.jsx"]
 }

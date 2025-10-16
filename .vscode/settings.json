@@ -56,5 +56,7 @@
       "addWords": true,
       "scope": "workspace"
     }
-  }
+  },
+  "github.copilot.chat.enableMCPServers": false,
+  "github.copilot.chat.autoStartMCPServers": false
 }

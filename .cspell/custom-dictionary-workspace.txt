@@ -48,3 +48,4 @@ SUBTI
 factorypath
 tscache
 ctxt
+Segoe

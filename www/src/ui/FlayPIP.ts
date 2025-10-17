@@ -348,6 +348,31 @@ export class FlayPIP {
       console.error('Failed to set PIP HTML content:', error);
     }
   }
+
+  /**
+   * PIP 창에 요소 추가
+   * @param element 추가할 HTML 요소
+   * @param clone 요소를 복제할지 여부 (기본값: true)
+   * @returns
+   */
+  public addContent(element: HTMLElement, clone: boolean = true): void {
+    if (!this.isOpen() || !this.pipDocument) {
+      console.warn('PIP window is not open');
+      return;
+    }
+
+    try {
+      if (clone) {
+        const clonedElement = element.cloneNode(true) as HTMLElement;
+        this.pipDocument.body.appendChild(clonedElement);
+      } else {
+        this.pipDocument.body.appendChild(element);
+      }
+      console.log('PIP content added');
+    } catch (error) {
+      console.error('Failed to add PIP content:', error);
+    }
+  }
 }
 
 /**

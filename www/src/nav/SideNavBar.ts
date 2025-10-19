@@ -2,6 +2,7 @@ import GroundNav from '@base/GroundNav';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import FlayStorage from '@lib/FlayStorage';
+import { FlayPIP } from '@ui/FlayPIP';
 import { ModalWindow } from '@ui/ModalWindow';
 import './part/ThemeController';
 import './SideNavBar.scss';
@@ -92,6 +93,7 @@ export class SideNavBar extends GroundNav {
     </article>
     <footer>
       <div><flay-monitor></flay-monitor></div>
+      <div><a id="pip">PIP</a></div>
       <div><a id="memo">memo</a></div>
       <div><a id="debug">debug</a><i></i></div>
       <div><a id="swagger">swagger</a></div>
@@ -162,6 +164,16 @@ export class SideNavBar extends GroundNav {
     if (tagName === 'A') {
       const features = `width=${window.innerWidth}px,height=${window.innerHeight}px`;
       switch (target.id) {
+        case 'pip': {
+          const pipInfo = FlayPIP.getGlobalPIPInfo();
+          console.log('현재 PIP 상태:', pipInfo);
+
+          const element = document.createElement('div');
+          element.innerHTML = '<h1>PIP Content</h1><p>This is a sample PIP window.</p>';
+          const pip = new FlayPIP();
+          void pip.openPIP(element);
+          return;
+        }
         case 'memo':
           return this.#toggleMemoEditor();
         case 'debug':

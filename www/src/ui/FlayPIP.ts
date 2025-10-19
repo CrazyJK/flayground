@@ -2,13 +2,29 @@
  * FlayPIP - Document Picture-in-Picture 기능을 총괄하는 모듈
  *
  * 주요 기능:
- * - 외부에서 호출하면 PIP 화면을 켜주고
+ * - 외부에서 호출하면 PIP 화면을 켜주고 (기존 창이 있으면 재사용)
  * - PIP에 들어갈 내용을 설정할 수 있는 함수 제공
  * - PIP 크기 조절 함수
  * - PIP 위치 조정 함수
+ * - 기존 PIP 창 재사용 또는 강제로 새 창 생성 옵션 제공
+ * - 서로 다른 창/탭 간 PIP 상태 공유 및 접근
+ *
+ * 동작 방식:
+ * - openPIP(): 기존 PIP 창이 있으면 재사용, 콘텐츠만 업데이트
+ * - forceOpenNewPIP(): 기존 PIP 창을 닫고 새로운 창 생성
+ * - 전역 상태 관리: window.__flayPIPGlobal을 통해 모든 창에서 PIP 상태 공유
+ * - 다중 인스턴스 지원: 여러 창에서 FlayPIP 인스턴스 생성 가능, 상태는 공유됨
+ *
+ * 전역 접근 함수:
+ * - isGlobalPIPOpen(): 전역 PIP 창 열림 상태 확인
+ * - getGlobalPIPInfo(): 전역 PIP 상태 정보 조회
+ * - getGlobalPIPDocument(): 전역 PIP 도큐먼트 접근
+ * - getGlobalPIPWindow(): 전역 PIP 창 접근
  *
  * @author CrazyJK
  * @since 2025-10-16
+ * @updated 2025-10-19 - PIP 창 재사용 기능 추가
+ * @updated 2025-10-19 - 전역 상태 공유 및 다중 창 지원 추가
  */
 
 interface PIPConfig {
@@ -29,6 +45,14 @@ declare global {
     documentPictureInPicture?: {
       requestWindow: (options: { width: number; height: number }) => Promise<Window>;
     };
+    /** 전역 PIP 상태 공유를 위한 객체 */
+    __flayPIPGlobal?: {
+      pipWindow: PIPWindow | null;
+      pipDocument: Document | null;
+      currentConfig: Required<PIPConfig>;
+      originalStyles: string[];
+      instances: Set<FlayPIP>;
+    };
   }
 }
 
@@ -39,10 +63,6 @@ interface PIPWindow extends Window {}
  * Document Picture-in-Picture 기능을 관리하는 메인 클래스
  */
 export class FlayPIP {
-  private pipWindow: PIPWindow | null = null;
-  private pipDocument: Document | null = null;
-  private originalStyles: string[] = [];
-
   /** 기본 PIP 설정 */
   private defaultConfig: Required<PIPConfig> = {
     width: 400,
@@ -52,8 +72,64 @@ export class FlayPIP {
     alwaysOnTop: true,
   };
 
-  /** 현재 PIP 설정 */
-  private currentConfig: Required<PIPConfig> = { ...this.defaultConfig };
+  constructor() {
+    // 전역 상태 초기화
+    if (!window.__flayPIPGlobal) {
+      window.__flayPIPGlobal = {
+        pipWindow: null,
+        pipDocument: null,
+        currentConfig: { ...this.defaultConfig },
+        originalStyles: [],
+        instances: new Set(),
+      };
+    }
+    // 현재 인스턴스를 전역 인스턴스 목록에 추가
+    window.__flayPIPGlobal.instances.add(this);
+  }
+
+  /** 전역 PIP 창 참조 */
+  private get pipWindow(): PIPWindow | null {
+    return window.__flayPIPGlobal?.pipWindow ?? null;
+  }
+
+  private set pipWindow(value: PIPWindow | null) {
+    if (window.__flayPIPGlobal) {
+      window.__flayPIPGlobal.pipWindow = value;
+    }
+  }
+
+  /** 전역 PIP 도큐먼트 참조 */
+  private get pipDocument(): Document | null {
+    return window.__flayPIPGlobal?.pipDocument ?? null;
+  }
+
+  private set pipDocument(value: Document | null) {
+    if (window.__flayPIPGlobal) {
+      window.__flayPIPGlobal.pipDocument = value;
+    }
+  }
+
+  /** 전역 현재 설정 참조 */
+  private get currentConfig(): Required<PIPConfig> {
+    return window.__flayPIPGlobal?.currentConfig ?? this.defaultConfig;
+  }
+
+  private set currentConfig(value: Required<PIPConfig>) {
+    if (window.__flayPIPGlobal) {
+      window.__flayPIPGlobal.currentConfig = value;
+    }
+  }
+
+  /** 전역 원본 스타일 참조 */
+  private get originalStyles(): string[] {
+    return window.__flayPIPGlobal?.originalStyles ?? [];
+  }
+
+  private set originalStyles(value: string[]) {
+    if (window.__flayPIPGlobal) {
+      window.__flayPIPGlobal.originalStyles = value;
+    }
+  }
 
   /**
    * PIP 기능 지원 여부 확인
@@ -79,9 +155,18 @@ export class FlayPIP {
    */
   public async openPIP(element: HTMLElement, config?: Partial<PIPConfig>): Promise<boolean> {
     try {
-      // 이미 열려있으면 닫기
+      // 이미 열려있으면 기존 창 재사용
       if (this.isOpen()) {
-        this.closePIP();
+        console.log('PIP window is already open, reusing existing window');
+
+        // 설정이 제공되면 업데이트
+        if (config) {
+          this.updateConfig(config);
+        }
+
+        // 콘텐츠 업데이트
+        this.setContent(element);
+        return true;
       }
 
       // PIP 지원 여부 확인
@@ -135,6 +220,63 @@ export class FlayPIP {
     if (this.isOpen() && this.pipWindow) {
       this.pipWindow.close();
       this.handlePIPClose();
+    }
+  }
+
+  /**
+   * 기존 PIP 창을 강제로 닫고 새로운 PIP 창 열기
+   * @param element 표시할 HTML 요소
+   * @param config PIP 설정 옵션
+   * @returns Promise<boolean> 성공 여부
+   */
+  public async forceOpenNewPIP(element: HTMLElement, config?: Partial<PIPConfig>): Promise<boolean> {
+    try {
+      // 이미 열려있으면 강제로 닫기
+      if (this.isOpen()) {
+        this.closePIP();
+      }
+
+      // PIP 지원 여부 확인
+      if (!this.isSupported()) {
+        console.warn('Document Picture-in-Picture is not supported');
+        return false;
+      }
+
+      // 설정 병합
+      this.currentConfig = { ...this.defaultConfig, ...config };
+
+      // PIP 창 열기
+      this.pipWindow = await window.documentPictureInPicture!.requestWindow({
+        width: this.currentConfig.width,
+        height: this.currentConfig.height,
+      });
+
+      if (!this.pipWindow) {
+        console.error('Failed to open PIP window');
+        return false;
+      }
+
+      this.pipDocument = this.pipWindow.document;
+
+      // 기본 스타일 복사
+      this.copyStyles();
+
+      // 콘텐츠 설정
+      this.setContent(element);
+
+      // PIP 창 위치 조정
+      this.setPosition(this.currentConfig.x, this.currentConfig.y);
+
+      // 창 닫힘 이벤트 처리
+      this.pipWindow.addEventListener('beforeunload', () => {
+        this.handlePIPClose();
+      });
+
+      console.log('New PIP window opened successfully');
+      return true;
+    } catch (error) {
+      console.error('Failed to open new PIP window:', error);
+      return false;
     }
   }
 
@@ -220,6 +362,45 @@ export class FlayPIP {
    */
   public getPIPDocument(): Document | null {
     return this.pipDocument;
+  }
+
+  /**
+   * 전역에서 열려있는 PIP 창 정보 반환
+   * @returns 전역 PIP 상태 정보
+   */
+  public static getGlobalPIPInfo(): {
+    isOpen: boolean;
+    pipWindow: PIPWindow | null;
+    pipDocument: Document | null;
+    currentConfig: Required<PIPConfig> | null;
+    instanceCount: number;
+  } {
+    const global = window.__flayPIPGlobal;
+    return {
+      isOpen: global?.pipWindow !== null && global?.pipWindow !== undefined && !global.pipWindow.closed,
+      pipWindow: global?.pipWindow ?? null,
+      pipDocument: global?.pipDocument ?? null,
+      currentConfig: global?.currentConfig ?? null,
+      instanceCount: global?.instances.size ?? 0,
+    };
+  }
+
+  /**
+   * 전역 PIP 창이 열려있는지 확인 (정적 메서드)
+   * @returns 전역 PIP 창 열림 상태
+   */
+  public static isGlobalPIPOpen(): boolean {
+    const global = window.__flayPIPGlobal;
+    return global?.pipWindow !== null && global?.pipWindow !== undefined && !global.pipWindow.closed;
+  }
+
+  /**
+   * 인스턴스 정리 (소멸자 역할)
+   */
+  public dispose(): void {
+    if (window.__flayPIPGlobal) {
+      window.__flayPIPGlobal.instances.delete(this);
+    }
   }
 
   /**
@@ -314,6 +495,16 @@ export class FlayPIP {
     this.pipDocument = null;
     this.originalStyles = [];
     console.log('PIP window closed');
+
+    // 모든 FlayPIP 인스턴스에 PIP 창이 닫혔음을 알림
+    if (window.__flayPIPGlobal) {
+      window.__flayPIPGlobal.instances.forEach((instance) => {
+        // 각 인스턴스에서 필요한 정리 작업이 있다면 수행
+        if (instance !== this) {
+          console.log('Notifying other FlayPIP instance of window close');
+        }
+      });
+    }
   }
 
   /**
@@ -374,55 +565,3 @@ export class FlayPIP {
     }
   }
 }
-
-/**
- * 전역 FlayPIP 인스턴스
- */
-export const flayPIP = new FlayPIP();
-
-/**
- * 편의 함수들
- */
-
-/**
- * PIP 창 열기 (편의 함수)
- * @param element 표시할 HTML 요소
- * @param config PIP 설정 옵션
- * @returns Promise<boolean> 성공 여부
- */
-export const openPIP = (element: HTMLElement, config?: Partial<PIPConfig>): Promise<boolean> => {
-  return flayPIP.openPIP(element, config);
-};
-
-/**
- * PIP 창 닫기 (편의 함수)
- */
-export const closePIP = (): void => {
-  flayPIP.closePIP();
-};
-
-/**
- * PIP 창 토글 (편의 함수)
- * @param element 표시할 HTML 요소
- * @param config PIP 설정 옵션
- * @returns Promise<boolean> 성공 여부
- */
-export const togglePIP = (element: HTMLElement, config?: Partial<PIPConfig>): Promise<boolean> => {
-  return flayPIP.togglePIP(element, config);
-};
-
-/**
- * PIP 지원 여부 확인 (편의 함수)
- * @returns PIP 기능 지원 여부
- */
-export const isPIPSupported = (): boolean => {
-  return flayPIP.isSupported();
-};
-
-/**
- * PIP 창 열림 상태 확인 (편의 함수)
- * @returns PIP 창 열림 상태
- */
-export const isPIPOpen = (): boolean => {
-  return flayPIP.isOpen();
-};

@@ -181,7 +181,6 @@ export default class FlayRegister extends GroundFlay {
         if (inputTitle.value !== '' || inputDesc.value !== '') {
           FlaySearch.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
           FlaySearch.translate.DeepL(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
-          FlaySearch.translate.Google(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
         }
       });
     });

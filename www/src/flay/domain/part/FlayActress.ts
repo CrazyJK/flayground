@@ -1,7 +1,7 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
-import { popupActress, popupActressInfo } from '@lib/FlaySearch';
+import { popupActress } from '@lib/FlaySearch';
 import StringUtils from '@lib/StringUtils';
 import favoriteSVG from '@svg/favorite';
 import './FlayActress.scss';
@@ -53,7 +53,11 @@ export default class FlayActress extends FlayPartElement {
         const localNameElement = actressDiv.appendChild(document.createElement('label'));
         localNameElement.classList.add('localName');
         localNameElement.innerHTML = actress.localName;
-        localNameElement.addEventListener('click', () => popupActressInfo(actress.name));
+        localNameElement.addEventListener('click', () => {
+          // popupActressInfo(actress.name);
+          // call crawl popup
+          window.open('page.crawling.html?q=' + encodeURIComponent(actress.localName), 'crawl.actress.' + actress.localName, `width=${window.innerWidth},height=${window.innerHeight}`);
+        });
 
         // flay size
         const flaySize = actressDiv.appendChild(document.createElement('label'));

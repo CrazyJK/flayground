@@ -19,7 +19,7 @@ interface VideoInfo {
   error?: boolean;
   rank?: number;
   play?: number;
-  lastModified?: string;
+  lastModified?: number;
 }
 
 interface ActressItem extends LinkItem {
@@ -61,6 +61,7 @@ const CONFIG = {
 } as const;
 
 const LIST_URL = CONFIG.DOMAIN + '/jav/?order=new&page=';
+const SEARCH_URL = CONFIG.DOMAIN + '/jav/search/?opr=AND&sort=release_date&q='; // release_date | new
 const domParser = new DOMParser();
 const nanoStore = new NanoStore();
 
@@ -203,6 +204,8 @@ class Page {
     },
   };
   #crawlingStartTime = 0; // 크롤링 시작 시간
+  #isSearchMode = false; // 검색 모드 여부
+  #searchQuery = ''; // 검색어
 
   // 의존성 주입을 통한 유틸리티 클래스 사용
   private domManager = new DOMManager();
@@ -213,25 +216,51 @@ class Page {
   itemRepository: HTMLElement;
 
   constructor() {
+    console.log(`🚀 [Init] 크롤링 페이지 초기화 시작`);
+
+    // URL 파라미터 확인
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchQuery = urlParams.get('q');
+
+    if (searchQuery) {
+      console.log(`🔍 [Init] 검색 모드로 초기화 - 검색어: "${searchQuery}"`);
+    } else {
+      console.log(`📄 [Init] 일반 모드로 초기화`);
+    }
+
     document.querySelector('#startBtn')!.addEventListener('click', () => {
+      console.log(`▶️ [Start] 수동 크롤링 시작 버튼 클릭`);
       this.#startPageNo = parseInt((document.querySelector('#srcPageNo') as HTMLInputElement).value);
       this.#paging.srcPageNo = this.#startPageNo;
+      console.log(`📄 [Start] 시작 페이지: ${this.#startPageNo}`);
       this.#callCrawling();
       document.querySelector('#starter')!.classList.add('hide');
     });
 
+    console.log(`🎛️ [Init] 이벤트 리스너 등록 중...`);
     this.article = document.querySelector('body > main > article')!;
     // Use passive event listeners for performance
     this.article.addEventListener('wheel', this.#handleWheel.bind(this), { passive: true });
     window.addEventListener('keyup', this.#handleKeyUp.bind(this));
 
     this.retryBtn = document.querySelector('body > main > footer > #retryBtn')!;
-    this.retryBtn.addEventListener('click', () => this.#callCrawling());
+    this.retryBtn.addEventListener('click', () => {
+      console.log(`🔄 [Retry] 재시도 버튼 클릭`);
+      this.#callCrawling();
+    });
 
     this.itemRepository = document.querySelector('#itemRepository')!;
 
     // Delegate event listeners for better performance
     this.article.addEventListener('click', this.#handleRepositoryClick.bind(this));
+
+    console.log(`✅ [Init] 페이지 초기화 완료`);
+
+    // q 파라미터가 있으면 자동으로 검색 크롤링 시작
+    if (searchQuery) {
+      console.log(`🚀 [Auto] 자동 검색 크롤링 시작`);
+      this.#startSearchCrawling(searchQuery);
+    }
   }
 
   // Throttled wheel event handler
@@ -277,44 +306,70 @@ class Page {
   }
 
   #next() {
+    console.group(`🔄 [Next] 다음 아이템으로 이동: ${this.#paging.itemIndex} → ${this.#paging.itemIndex + 1}`);
     ++this.#paging.itemIndex;
 
     this.#showItem();
+    console.groupEnd();
 
+    // 추가 크롤링이 필요한 경우
     if (this.#paging.needCrawling()) {
-      ++this.#paging.srcPageNo;
+      console.log(`🚀 [Crawling] 추가 크롤링 필요 - 남은 아이템: ${this.#paging.itemLength - this.#paging.itemIndex}개`);
+      if (this.#isSearchMode) {
+        // 검색 모드에서는 페이지 번호를 포함한 검색 URL로 크롤링
+        ++this.#paging.srcPageNo;
+        console.log(`🔍 [Search] 검색 모드 - 다음 페이지: ${this.#paging.srcPageNo}`);
+      } else {
+        // 일반 모드에서는 페이지 번호만 증가
+        ++this.#paging.srcPageNo;
+        console.log(`📄 [Page] 일반 모드 - 다음 페이지: ${this.#paging.srcPageNo}`);
+      }
       this.#callCrawling();
     }
   }
 
   #prev() {
+    console.group(`⬅️ [Prev] 이전 아이템으로 이동: ${this.#paging.itemIndex} → ${this.#paging.itemIndex - 1}`);
     --this.#paging.itemIndex;
 
     if (this.#paging.itemIndex < 0) {
+      console.log(`🚫 [Prev] 첫 번째 아이템입니다 - 인덱스를 0으로 리셋`);
       this.#paging.itemIndex = 0;
       return;
     }
     this.#showItem();
+    console.groupEnd();
   }
 
   #showItem() {
     const data = this.#itemList[this.#paging.itemIndex];
-    if (!data) return;
+    if (!data) {
+      console.warn(`⚠️ [ShowItem] 데이터가 없습니다 - 인덱스: ${this.#paging.itemIndex}`);
+      this.#notice('데이터가 없습니다.', false, true);
+      return;
+    }
+
+    console.log(`📺 [ShowItem] 아이템 표시: ${data.opus.text} (${this.#paging.itemIndex + 1}/${this.#paging.itemLength})`);
 
     // Move previous item to repository using DocumentFragment for better performance
     const prevDiv = this.article.querySelector('div');
     if (prevDiv) {
+      const prevOpus = prevDiv.getAttribute('data-opus');
+      console.log(`🗂️ [Repository] 이전 아이템을 저장소로 이동: ${prevOpus}`);
       this.itemRepository.appendChild(prevDiv);
     }
 
     // Get the new item
     const currentDiv = this.itemRepository.querySelector(`div[data-opus="${data.opus.text}"]`);
     if (currentDiv) {
+      console.log(`✅ [Display] 현재 아이템을 화면에 표시: ${data.opus.text}`);
       this.article.appendChild(currentDiv);
+    } else {
+      console.error(`❌ [Display] 아이템을 찾을 수 없습니다: ${data.opus.text}`);
     }
 
     // Update store in background, don't wait for it
-    nanoStore.update(data.opus.text, Date.now()).catch((err) => console.error('Error updating store:', err));
+    nanoStore.update(data.opus.text, Date.now()).catch((err) => console.error('❌ [Store] 저장소 업데이트 실패:', err));
 
     this.#updateFootMessage();
   }
@@ -350,7 +405,7 @@ class Page {
             ? {
                 rank: video.rank,
                 play: video.play,
-                lastModified: video.lastModified?.toString(),
+                lastModified: video.lastModified,
                 error: false,
               }
             : { error: true };
@@ -550,22 +605,32 @@ class Page {
    * 파싱 완료 후 DOM 업데이트 및 상태 관리
    */
   async parseOfNanojav(data: { message?: string }): Promise<void> {
+    console.log(`📥 [Parse] 크롤링 데이터 수신 시작`);
+
     // 크롤링 완료 시간 측정 및 소요시간 계산
     const crawlingEndTime = performance.now();
     const crawlingDuration = this.#crawlingStartTime > 0 ? crawlingEndTime - this.#crawlingStartTime : 0;
 
     if (crawlingDuration > 0) {
-      console.log(`🚀 크롤링 소요시간: ${crawlingDuration.toFixed(2)}ms (${(crawlingDuration / 1000).toFixed(2)}초)`);
+      console.log(`⏱️ [Performance] 크롤링 소요시간: ${crawlingDuration.toFixed(2)}ms (${(crawlingDuration / 1000).toFixed(2)}초)`);
     }
 
-    if (!data.message) return;
+    if (!data.message) {
+      console.warn(`⚠️ [Parse] 데이터 메시지가 없습니다`);
+      return;
+    }
 
+    console.log(`🔍 [Parse] HTML 파싱 시작 - 데이터 크기: ${data.message.length}자`);
     const doc = domParser.parseFromString(data.message, 'text/html');
 
     const postList = Array.from(doc.querySelectorAll('#content > div > div > div:nth-child(2) > div > div'));
+    console.log(`📊 [Parse] 파싱된 아이템 수: ${postList.length}개`);
+
     if (postList.length > 0) {
+      console.log(`✅ [Parse] 아이템 파싱 성공 - ${postList.length}개 아이템 발견`);
       this.#notice(postList.length + '개 아이템 구함');
     } else {
+      console.error(`❌ [Parse] 아이템을 찾을 수 없습니다`);
       this.#notice('데이터를 구하지 못함', true, true);
       this.retryBtn.disabled = false; // 수동으로 다시 요청하도록 버튼 노출
       return;
@@ -609,34 +674,86 @@ class Page {
       };
     });
 
+    console.log(`📝 [Data] 아이템 리스트에 추가: ${itemList.length}개`);
     this.#itemList.push(...itemList);
     this.#paging.itemLength += postList.length;
 
+    console.log(`📊 [Status] 현재 상태 - 전체 아이템: ${this.#paging.itemLength}개, 현재 인덱스: ${this.#paging.itemIndex}`);
+
+    console.log(`🎨 [Render] DOM 렌더링 시작`);
     await this.#renderItemList(itemList);
 
+    console.log(`✅ [Complete] 크롤링 및 렌더링 완료`);
     this.#notice('', true); // Hide notice
     this.#updateFootMessage();
 
     if (this.#paging.itemIndex === 0) {
+      console.log(`🏠 [Init] 첫 번째 아이템 표시`);
       this.#showItem();
     }
   }
 
+  /**
+   * 검색어로 크롤링 시작
+   * @param query 검색어
+   */
+  #startSearchCrawling(query: string) {
+    this.#startPageNo = 1;
+    this.#paging.srcPageNo = 1;
+    this.#isSearchMode = true;
+    this.#searchQuery = query;
+    this.#callCrawling();
+    document.querySelector('#starter')!.classList.add('hide');
+
+    // 검색 모드임을 표시
+    this.#notice(`"${query}" 검색 중...`);
+  }
+
   #callCrawling() {
+    console.group(`🚀 [Crawling] 크롤링 시작 - 모드: ${this.#isSearchMode ? '검색' : '일반'}, 페이지: ${this.#paging.srcPageNo}`);
     this.#crawlingStartTime = performance.now();
 
-    const url = LIST_URL + this.#paging.srcPageNo;
+    let url: string;
+    if (this.#isSearchMode && this.#searchQuery) {
+      // 검색 모드인 경우 - 페이지 번호 포함
+      if (this.#paging.srcPageNo === 1) {
+        url = SEARCH_URL + encodeURIComponent(this.#searchQuery);
+        console.log(`🔍 [Search] 첫 검색 페이지: "${this.#searchQuery}"`);
+      } else {
+        url = SEARCH_URL + encodeURIComponent(this.#searchQuery) + `&page=${this.#paging.srcPageNo}`;
+        console.log(`🔍 [Search] 추가 검색 페이지: "${this.#searchQuery}" - ${this.#paging.srcPageNo}페이지`);
+      }
+    } else {
+      // 일반 페이지 크롤링
+      url = LIST_URL + this.#paging.srcPageNo;
+      console.log(`📄 [Page] 일반 페이지 크롤링: ${this.#paging.srcPageNo}페이지`);
+    }
+
+    console.log(`🌐 [URL] 크롤링 대상: ${url}`);
+
     /*
       /crawling/curl은 async로 동작함.
       크롤링 결과는 SSE를 통해 받아서 emitCurl로 전달됨.
      */
     void ApiClient.get(`/crawling/curl?url=${encodeURIComponent(url)}`).catch((err) => {
-      console.error(err);
+      console.error(`❌ [Crawling] 크롤링 실패:`, err);
       this.#notice('데이터를 구하지 못함', true, true);
       this.retryBtn.disabled = false; // 수동으로 다시 요청하도록 버튼 노출
     });
-    this.#notice(this.#paging.srcPageNo + '페이지 크롤링 중...');
+
+    if (this.#isSearchMode && this.#searchQuery) {
+      if (this.#paging.srcPageNo === 1) {
+        this.#notice(`"${this.#searchQuery}" 검색 중...`);
+      } else {
+        this.#notice(`"${this.#searchQuery}" 검색 중... (${this.#paging.srcPageNo}페이지)`);
+      }
+    } else {
+      this.#notice(this.#paging.srcPageNo + '페이지 크롤링 중...');
+    }
+
     (document.querySelector('#srcPageURL') as HTMLAnchorElement).href = url;
+
+    console.groupEnd();
   }
 
   #notice(message: string, hide = false, isError = false) {
@@ -647,13 +764,23 @@ class Page {
   }
 
   #updateFootMessage() {
-    document.querySelector('#currentPageNo')!.innerHTML = String(Math.ceil((this.#paging.itemIndex + 1) / 15) + this.#startPageNo - 1);
+    const currentPageNo = Math.ceil((this.#paging.itemIndex + 1) / 15) + this.#startPageNo - 1;
+    const currentItemNo = this.#paging.itemIndex + 1;
+    const totalItemNo = this.#paging.itemLength;
+
+    console.log(`📊 [Footer] 상태 업데이트 - 현재: ${currentItemNo}/${totalItemNo} (페이지: ${currentPageNo}/${this.#paging.srcPageNo})`);
+
+    document.querySelector('#currentPageNo')!.innerHTML = String(currentPageNo);
     document.querySelector('#loadedPageNo')!.innerHTML = String(this.#paging.srcPageNo);
-    document.querySelector('#currentItemNo')!.innerHTML = String(this.#paging.itemIndex + 1);
-    document.querySelector('#totalItemNo')!.innerHTML = String(this.#paging.itemLength);
+    document.querySelector('#currentItemNo')!.innerHTML = String(currentItemNo);
+    document.querySelector('#totalItemNo')!.innerHTML = String(totalItemNo);
   }
 }
 
 const page = new Page();
 
-window.emitCurl = (data) => page.parseOfNanojav(data);
+window.emitCurl = async (data) => {
+  console.group(`📡 [SSE] 서버에서 크롤링 데이터 수신`);
+  await page.parseOfNanojav(data);
+  console.groupEnd();
+};

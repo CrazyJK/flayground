@@ -13,9 +13,8 @@ flayPagination.addEventListener('change', async () => {
   flayPagination.off();
   if (flayPagination.opus) {
     const viewTransition = document.startViewTransition(async () => {
-      const { flay } = await flayPage.set(flayPagination.opus!);
+      await flayPage.set(flayPagination.opus!);
       flayPage.classList.toggle('hide', false);
-      flayCondition.updateSearchItem(flay);
     });
     await viewTransition.updateCallbackDone;
     flayPagination.on();

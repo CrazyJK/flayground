@@ -19,6 +19,9 @@ flay-condition {
       option {
         font-size: var(--size-small);
         width: 16rem;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
       }
     }
     label {

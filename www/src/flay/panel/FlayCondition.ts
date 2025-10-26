@@ -108,50 +108,74 @@ export default class FlayCondition extends GroundFlay {
 
     FlayStorage.local.set(CONDITION_KEY, JSON.stringify(condition));
     this.dispatchEvent(new CustomEvent('fetch'));
+    this.#setDatalist();
   }
 
   /**
-   * 검색을 위한 datalist option 추가
-   * @param {Flay} flay
+   * 검색 자동완성을 위한 datalist 설정
    */
-  updateSearchItem(flay: Flay): void {
-    if (!flay) return;
-
-    flay.video?.tags?.forEach((tag) => this.#addSearchItem(tag.name));
-    flay.actressList?.forEach((name) => this.#addSearchItem(name));
-
-    if (flay.release) {
-      this.#addSearchItem(flay.release.substring(0, 4));
-    }
-
-    if (flay.opus) {
-      const studioCode = flay.opus.split('-').shift();
-      if (studioCode) {
-        this.#addSearchItem(studioCode);
-      }
-    }
-
-    if (flay.studio) {
-      this.#addSearchItem(flay.studio);
-    }
-  }
-
-  /**
-   * datalist에 option 채우기
-   * @param {string} item
-   */
-  #addSearchItem(item: string): void {
-    if (!item || item.trim() === '') return;
-
-    this.querySelector(`#search-items option[value="${item}"]`)?.remove();
-
-    const option = document.createElement('option');
-    option.value = item;
+  #setDatalist(): void {
     const searchItems = this.querySelector('#search-items') as HTMLDataListElement;
-    searchItems?.prepend(option);
+    if (!searchItems) return;
+    searchItems.textContent = '';
 
-    const options = Array.from(this.querySelectorAll('#search-items option'));
-    options.forEach((option, i) => i > 30 && option.remove());
+    FlayFetch.getFlayList(...this.opusList)
+      .then((flayList) => {
+        const actressCount = this.#extractActressCount(flayList);
+        const tagCount = this.#extractTagCount(flayList);
+
+        this.#populateDatalistOptions(searchItems, actressCount);
+        this.#populateDatalistOptions(searchItems, tagCount);
+      })
+      .catch(console.error);
+  }
+
+  /**
+   * Flay 목록에서 배우별 작품 수를 추출
+   * @param flayList - Flay 목록
+   * @returns 배우별 작품 수 객체
+   */
+  #extractActressCount(flayList: Flay[]): Record<string, number> {
+    return flayList.reduce(
+      (actressCount, flay) => {
+        flay.actressList?.forEach((actress) => {
+          actressCount[actress] = (actressCount[actress] ?? 0) + 1;
+        });
+        return actressCount;
+      },
+      {} as Record<string, number>
+    );
+  }
+
+  /**
+   * Flay 목록에서 태그별 작품 수를 추출
+   * @param flayList - Flay 목록
+   * @returns 태그별 작품 수 객체
+   */
+  #extractTagCount(flayList: Flay[]): Record<string, number> {
+    return flayList.reduce(
+      (tagCount, flay) => {
+        flay.video?.tags?.forEach((tag) => {
+          tagCount[tag.name] = (tagCount[tag.name] ?? 0) + 1;
+        });
+        return tagCount;
+      },
+      {} as Record<string, number>
+    );
+  }
+
+  /**
+   * datalist에 옵션을 추가
+   * @param searchItems - datalist 요소
+   * @param itemCount - 아이템별 개수 객체
+   */
+  #populateDatalistOptions(searchItems: HTMLDataListElement, itemCount: Record<string, number>): void {
+    Object.entries(itemCount).forEach(([name, _count]) => {
+      const option = document.createElement('option');
+      option.value = name;
+      // option.label = `${name} (${count})`;
+      searchItems.appendChild(option);
+    });
   }
 }
 

@@ -49,3 +49,9 @@ factorypath
 tscache
 ctxt
 Segoe
+chcp
+setlocal
+Dfile
+Djava
+Dlogging
+Dspring

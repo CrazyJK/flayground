@@ -11,8 +11,8 @@ import org.springframework.stereotype.Repository;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 
-import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.Ground;
+import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.image.domain.Image;
 import jk.kamoru.ground.image.service.ImageService;
 import jk.kamoru.ground.info.domain.Actress;
@@ -37,8 +37,8 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
   }
 
   @Override
-  Actress newInstance(String actressname) {
-    return new Actress(actressname);
+  Actress newInstance(String actressName) {
+    return new Actress(actressName);
   }
 
   @Override
@@ -51,7 +51,7 @@ public class ActressInfoSource extends InfoSourceJsonAdapter<Actress, String> {
 
   private List<File> findCoverFile(String name) {
     Supplier<Stream<Image>> supplier = () -> imageService.list().stream().filter(image -> image.getName().startsWith(name));
-    
+
     long count = supplier.get().count();
     if (count == 0) {
       return null;

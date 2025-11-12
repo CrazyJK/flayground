@@ -72,6 +72,8 @@ export default class FlayArticle extends GroundFlay {
     this.querySelector('.last-modified span')!.innerHTML = flay.video.lastModified > 0 ? DateUtils.format(flay.video.lastModified, 'yy.MM.dd') + '<small>modified</small>' : '';
     this.querySelector('.last-play     span')!.innerHTML = flay.video.lastPlay > 0 ? DateUtils.format(flay.video.lastPlay, 'yy.MM.dd') + '<small>played</small>' : '';
 
+    this.classList.toggle('shot', flay.video.likes?.length > 0);
+
     FlayFetch.getCoverURL(flay.opus)
       .then((url) => {
         const cover = this.querySelector('.cover') as HTMLDivElement;

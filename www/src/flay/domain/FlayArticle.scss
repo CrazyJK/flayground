@@ -111,6 +111,10 @@ flay-article {
       }
     }
   }
+
+  &.shot {
+    box-shadow: 0 0 0.25rem 0.125rem #f00;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

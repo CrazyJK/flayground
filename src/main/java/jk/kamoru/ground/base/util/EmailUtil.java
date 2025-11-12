@@ -17,9 +17,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailUtil {
 
-  // ReDoS 방지를 위해 간단하고 명확한 패턴 사용
-  // 로컬 파트와 도메인 파트를 명확히 구분하여 백트래킹 최소화
-  private static final Pattern EMAIL_PATTERN = Pattern.compile("[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}");
+  // ReDoS 방지를 위한 간단한 이메일 패턴
+  // 각 부분의 반복을 제한하여 백트래킹 최소화
+  private static final Pattern EMAIL_PATTERN = Pattern.compile("[a-zA-Z0-9._%-]{1,64}@[a-zA-Z0-9.-]{1,253}\\.[a-zA-Z]{2,}");
   
   // 최대 텍스트 길이 제한 (DoS 공격 방지)
   private static final int MAX_TEXT_LENGTH = 100000;

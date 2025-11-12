@@ -17,7 +17,12 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class EmailUtil {
 
-  private static final Pattern EMAIL_PATTERN = Pattern.compile("[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}");
+  // ReDoS 방지를 위해 간단하고 명확한 패턴 사용
+  // 로컬 파트와 도메인 파트를 명확히 구분하여 백트래킹 최소화
+  private static final Pattern EMAIL_PATTERN = Pattern.compile("[a-zA-Z0-9._%-]+@[a-zA-Z0-9-]+(?:\\.[a-zA-Z0-9-]+)*\\.[a-zA-Z]{2,}");
+  
+  // 최대 텍스트 길이 제한 (DoS 공격 방지)
+  private static final int MAX_TEXT_LENGTH = 100000;
 
   /**
    * 텍스트에서 이메일 주소를 추출합니다.
@@ -30,6 +35,12 @@ public class EmailUtil {
     
     if (text == null || text.trim().isEmpty()) {
       return emails;
+    }
+
+    // 너무 긴 텍스트는 처리하지 않음 (DoS 방지)
+    if (text.length() > MAX_TEXT_LENGTH) {
+      log.warn("Text is too long ({} characters), truncating to {}", text.length(), MAX_TEXT_LENGTH);
+      text = text.substring(0, MAX_TEXT_LENGTH);
     }
 
     Matcher matcher = EMAIL_PATTERN.matcher(text);

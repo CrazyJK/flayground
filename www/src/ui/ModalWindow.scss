@@ -58,7 +58,7 @@ modal-window {
     border: 2px solid var(--color-border-window);
     border-radius: 4px;
     display: grid;
-    grid-template-rows: 2rem 1fr;
+    grid-template-rows: minmax(2rem, auto) 1fr;
 
     .title-panel {
       position: relative;

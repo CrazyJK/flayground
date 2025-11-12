@@ -3,7 +3,7 @@ body {
     position: fixed;
     inset: 0;
     display: grid;
-    grid-template-rows: 1fr 2rem;
+    grid-template-rows: 1fr minmax(2rem, auto);
     will-change: transform; /* Hint to browser to optimize performance */
 
     > header {

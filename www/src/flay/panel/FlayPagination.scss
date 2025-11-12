@@ -78,7 +78,7 @@ flay-pagination {
     &.show {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      grid-template-rows: 1fr 1rem;
+      grid-template-rows: 1fr minmax(1rem, auto);
     }
   }
 

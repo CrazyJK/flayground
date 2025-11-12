@@ -4,7 +4,7 @@ body {
     inset: 0;
 
     display: grid;
-    grid-template-rows: 7rem 1fr 3rem;
+    grid-template-rows: minmax(7rem, auto) 1fr minmax(3rem, auto);
 
     > header {
       display: flex;

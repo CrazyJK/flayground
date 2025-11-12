@@ -1,6 +1,6 @@
 flay-candidate {
   display: grid;
-  grid-template-rows: 3rem 1fr;
+  grid-template-rows: minmax(3rem, auto) 1fr;
   height: 100%;
 
   & > div {

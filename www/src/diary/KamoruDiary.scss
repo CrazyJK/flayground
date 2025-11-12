@@ -2,7 +2,7 @@
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-rows: 18rem 1fr;
+  grid-template-rows: minmax(18rem, auto) 1fr;
 
   #calendarContainer {
     overflow: scroll;
@@ -86,7 +86,7 @@
       height: 100%;
 
       display: grid;
-      grid-template-rows: 3rem 1fr 9rem;
+      grid-template-rows: minmax(3rem, auto) 1fr minmax(9rem, auto);
       border: 1px solid var(--color-border-window);
       background-color: var(--color-bg-transparent);
 

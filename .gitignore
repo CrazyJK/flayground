@@ -58,5 +58,5 @@ dependencies-viewer.json
 **/res/*.webm
 
 # playwright test result
-playwright-test-results/
+test-results
 screenshots

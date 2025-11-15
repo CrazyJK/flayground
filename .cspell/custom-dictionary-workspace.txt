@@ -64,3 +64,5 @@ geolocation
 framesent
 framereceived
 serviceworker
+requestfinished
+requestfailed

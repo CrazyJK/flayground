@@ -24,6 +24,12 @@ tagContainer.addEventListener('change', () => {
       // flays 중복 제거
       const uniqueFlays = Array.from(new Set(flays.map((flay) => flay.opus))).map((opus) => flays.find((flay) => flay.opus === opus)!);
 
+      // selectedTags 모두 가지고 있는 flay만 필터링
+      selectedTags.forEach((checkbox) => {
+        const tagId = parseInt((checkbox as HTMLInputElement).value);
+        uniqueFlays.splice(0, uniqueFlays.length, ...uniqueFlays.filter((flay) => flay.video.tags.some((tag) => tag.id === tagId)));
+      });
+
       document.querySelector('#flayCount')!.innerHTML = uniqueFlays.length.toString();
 
       markerContainer.innerHTML = ''; // 기존 콘텐츠 제거

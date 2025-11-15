@@ -3,12 +3,12 @@ body {
     > div {
       display: inline-flex;
       flex-wrap: wrap;
-      gap: 0;
+      gap: 0 2px;
       margin: 0;
       max-width: fit-content;
 
       > .tag-group {
-        display: flex;
+        display: inline-flex;
         flex-wrap: wrap;
         justify-content: center;
         gap: 2px;

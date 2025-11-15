@@ -3,7 +3,7 @@
  * 테스트 프레임워크 없이 순수 Playwright API 사용
  */
 
-const { chromium } = require('playwright');
+const { chromium } = require("playwright");
 
 /**
  * 메인 자동화 함수
@@ -17,42 +17,50 @@ async function main() {
 
   // 새 페이지 생성
   const context = await browser.newContext({
-    viewport: { width: 1920, height: 1080 },
-    userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+    viewport: { width: 1080, height: 1920 },
+    userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
   });
   const page = await context.newPage();
 
   try {
-    console.log('페이지 접속 중...');
-    await page.goto('https://flay.kamoru.jk/dist/page.flay-page.html');
+    console.log("페이지 접속 중...");
+    await page.goto("https://flay.kamoru.jk/dist/page.flay-page.html");
 
-    console.log('데이터 로딩 대기 중...');
-    await page.waitForSelector('flay-title', { state: 'visible' });
+    const flayTitle = page.locator("flay-title");
+    console.log("초기 제목 가져오는 중...", flayTitle);
 
-    console.log('Space 키 입력...');
-    await page.keyboard.press('Space');
+    console.log("데이터 로딩 대기 중...");
+    await page.waitForSelector("flay-title", { state: "visible" });
 
-    console.log('다음 데이터 로딩 대기 중...');
+    let titleText = await flayTitle.textContent();
+    console.log(`현재 제목: ${titleText}`);
+
+    console.log("Space 키 입력...");
+    await page.keyboard.press("Space");
+
+    console.log("다음 데이터 로딩 대기 중...");
     await page.waitForTimeout(1000); // 또는 특정 조건 대기
 
-    const flayTitle = await page.locator('flay-title');
-    const titleText = await flayTitle.textContent();
+    titleText = await flayTitle.textContent();
     console.log(`현재 제목: ${titleText}`);
 
     // 스크린샷 저장
-    await page.screenshot({ path: './playwright/screenshots/automation.png', fullPage: true });
-    console.log('스크린샷 저장 완료');
+    await page.screenshot({
+      path: "./screenshots/automation.png",
+      fullPage: true,
+    });
+    console.log("스크린샷 저장 완료");
 
     // 추가 작업...
     // await page.click('button#next');
     // const data = await page.evaluate(() => window.someData);
   } catch (error) {
-    console.error('자동화 실행 중 오류:', error);
-    await page.screenshot({ path: './playwright/screenshots/error.png' });
+    console.error("자동화 실행 중 오류:", error);
+    await page.screenshot({ path: "./screenshots/error.png" });
   } finally {
     // 브라우저 종료
     await browser.close();
-    console.log('자동화 완료');
+    console.log("자동화 완료");
   }
 }
 

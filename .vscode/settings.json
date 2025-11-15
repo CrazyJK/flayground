@@ -56,8 +56,5 @@
       "addWords": true,
       "scope": "workspace"
     }
-  },
-  // markitdown 활성화
-  "github.copilot.chat.attachContext": true,
-  "github.copilot.chat.enableFileAttachments": true
+  }
 }

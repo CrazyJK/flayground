@@ -415,12 +415,6 @@ const test = base.extend({
 });
 ```
 
-## 참고 자료
-
-- [Playwright 공식 문서](https://playwright.dev)
-- [API 레퍼런스](https://playwright.dev/docs/api/class-playwright)
-- [Best Practices](https://playwright.dev/docs/best-practices)
-
 ## 자동화 스크립트로 사용하기
 
 테스트가 아닌 자동화 작업(데이터 수집, 반복 작업 등)을 위해 사용:
@@ -463,13 +457,16 @@ main().catch(console.error);
 
 ```sh
 # 일반 Node.js 스크립트로 실행
-node automation-example.cjs
+node automation/automation-example.cjs
 
 # 인자와 함께 실행
-node automation-advanced.cjs collect
+node automation/automation-advanced.cjs collect
+node automation/automation-advanced.cjs process
+node automation/automation-advanced.cjs login
+node automation/automation-advanced.cjs monitor
 
 # 크론 작업 (Linux/WSL)
-0 */6 * * * cd /path/to/project && node automation.cjs
+0 */6 * * * cd /path/to/project && node automation/automation-example.cjs
 
 # 윈도우 작업 스케줄러
 schtasks /create /tn "Playwright Automation" /tr "node C:\path\to\automation.cjs" /sc daily /st 09:00
@@ -522,4 +519,307 @@ page.on('request', (req) => {
 });
 ```
 
-예제 파일: `automation-example.cjs`, `automation-advanced.cjs` 참고
+예제 파일: `automation/automation-example.cjs`, `automation/automation-advanced.cjs` 참고
+
+## 웹 크롤링 (Web Scraping)
+
+Playwright를 사용한 웹 크롤링 예제:
+
+### 기본 크롤링
+
+```js
+const { chromium } = require('playwright');
+const fs = require('fs').promises;
+
+async function crawlWebsite() {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.goto('https://example.com/products');
+    await page.waitForLoadState('networkidle');
+
+    // 데이터 추출
+    const products = await page.$$eval('.product-item', (items) =>
+      items.map((item) => ({
+        name: item.querySelector('.product-name')?.textContent.trim(),
+        price: item.querySelector('.product-price')?.textContent.trim(),
+        image: item.querySelector('img')?.src,
+        link: item.querySelector('a')?.href,
+      }))
+    );
+
+    console.log(`크롤링된 제품 수: ${products.length}`);
+    await fs.writeFile('products.json', JSON.stringify(products, null, 2));
+
+    return products;
+  } finally {
+    await browser.close();
+  }
+}
+
+crawlWebsite().catch(console.error);
+```
+
+### 페이지네이션 크롤링
+
+```js
+async function crawlWithPagination() {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+  const allData = [];
+
+  try {
+    let currentPage = 1;
+    const maxPages = 10;
+
+    while (currentPage <= maxPages) {
+      console.log(`크롤링 중: 페이지 ${currentPage}`);
+      await page.goto(`https://example.com/list?page=${currentPage}`);
+      await page.waitForLoadState('networkidle');
+
+      // 데이터 추출
+      const items = await page.$$eval('.item', (elements) =>
+        elements.map((el) => ({
+          title: el.querySelector('.title')?.textContent,
+          content: el.querySelector('.content')?.textContent,
+        }))
+      );
+
+      if (items.length === 0) break; // 더 이상 데이터가 없으면 중단
+
+      allData.push(...items);
+
+      // 다음 페이지 버튼 확인
+      const hasNextPage = await page.$('.next-page:not([disabled])');
+      if (!hasNextPage) break;
+
+      currentPage++;
+    }
+
+    console.log(`총 크롤링된 항목: ${allData.length}`);
+    await fs.writeFile('crawled-data.json', JSON.stringify(allData, null, 2));
+
+    return allData;
+  } finally {
+    await browser.close();
+  }
+}
+```
+
+### 무한 스크롤 크롤링
+
+```js
+async function crawlInfiniteScroll() {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.goto('https://example.com/infinite-scroll');
+
+    let previousHeight = 0;
+    const allItems = [];
+
+    while (true) {
+      // 스크롤 전 높이
+      previousHeight = await page.evaluate(() => document.body.scrollHeight);
+
+      // 페이지 끝까지 스크롤
+      await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+
+      // 새 콘텐츠 로드 대기
+      await page.waitForTimeout(2000);
+
+      // 새로운 높이
+      const newHeight = await page.evaluate(() => document.body.scrollHeight);
+
+      // 데이터 추출
+      const items = await page.$$eval('.item', (elements) =>
+        elements.map((el) => el.textContent.trim())
+      );
+
+      allItems.push(...items);
+
+      // 더 이상 스크롤할 수 없으면 종료
+      if (newHeight === previousHeight) break;
+    }
+
+    // 중복 제거
+    const uniqueItems = [...new Set(allItems)];
+    console.log(`크롤링된 항목: ${uniqueItems.length}`);
+
+    return uniqueItems;
+  } finally {
+    await browser.close();
+  }
+}
+```
+
+### 동적 콘텐츠 크롤링 (AJAX/Fetch)
+
+```js
+async function crawlDynamicContent() {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    await page.goto('https://example.com');
+
+    // 버튼 클릭 후 동적 로딩 대기
+    await page.click('#load-more-button');
+
+    // AJAX 요청 완료 대기
+    await page.waitForResponse(
+      (response) => response.url().includes('/api/data') && response.status() === 200,
+      { timeout: 10000 }
+    );
+
+    // 또는 특정 요소가 나타날 때까지 대기
+    await page.waitForSelector('.dynamic-content', { state: 'visible' });
+
+    // 데이터 추출
+    const data = await page.$$eval('.dynamic-content .item', (items) =>
+      items.map((item) => ({
+        text: item.textContent.trim(),
+        href: item.querySelector('a')?.href,
+      }))
+    );
+
+    return data;
+  } finally {
+    await browser.close();
+  }
+}
+```
+
+### 여러 URL 동시 크롤링
+
+```js
+async function crawlMultipleUrls() {
+  const browser = await chromium.launch({ headless: true });
+  const urls = [
+    'https://example.com/page1',
+    'https://example.com/page2',
+    'https://example.com/page3',
+  ];
+
+  try {
+    // 여러 페이지를 동시에 크롤링
+    const results = await Promise.all(
+      urls.map(async (url) => {
+        const page = await browser.newPage();
+        try {
+          await page.goto(url);
+          await page.waitForLoadState('networkidle');
+
+          const data = await page.evaluate(() => ({
+            title: document.title,
+            content: document.querySelector('.content')?.textContent,
+          }));
+
+          return { url, ...data };
+        } finally {
+          await page.close();
+        }
+      })
+    );
+
+    console.log(`크롤링 완료: ${results.length}개 페이지`);
+    return results;
+  } finally {
+    await browser.close();
+  }
+}
+```
+
+### 크롤링 시 주의사항
+
+```js
+async function crawlWithBestPractices() {
+  const browser = await chromium.launch({
+    headless: true,
+    // User-Agent 설정
+    args: ['--user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) ...'],
+  });
+
+  const context = await browser.newContext({
+    // 타임아웃 설정
+    timeout: 30000,
+
+    // User-Agent 설정
+    userAgent:
+      'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+
+    // 뷰포트 설정
+    viewport: { width: 1920, height: 1080 },
+  });
+
+  const page = await context.newPage();
+
+  try {
+    // 요청 간 딜레이 추가 (서버 부하 방지)
+    await page.waitForTimeout(1000);
+
+    // 이미지 차단으로 속도 향상
+    await page.route('**/*.{png,jpg,jpeg,gif,svg,webp}', (route) => route.abort());
+
+    // 불필요한 리소스 차단
+    await page.route('**/*.{css,woff,woff2}', (route) => route.abort());
+
+    await page.goto('https://example.com', { waitUntil: 'domcontentloaded' });
+
+    // 크롤링 로직...
+  } catch (error) {
+    console.error('크롤링 오류:', error);
+
+    // 오류 스크린샷
+    await page.screenshot({ path: 'error.png' });
+  } finally {
+    await browser.close();
+  }
+}
+```
+
+### robots.txt 확인
+
+```js
+async function checkRobotsTxt(baseUrl) {
+  const browser = await chromium.launch({ headless: true });
+  const page = await browser.newPage();
+
+  try {
+    const robotsUrl = `${baseUrl}/robots.txt`;
+    const response = await page.goto(robotsUrl);
+
+    if (response.status() === 200) {
+      const content = await page.textContent('body');
+      console.log('robots.txt 내용:');
+      console.log(content);
+
+      // User-agent와 Disallow 규칙 확인
+      if (content.includes('Disallow: /')) {
+        console.warn('⚠️  크롤링이 제한될 수 있습니다.');
+      }
+    }
+  } finally {
+    await browser.close();
+  }
+}
+```
+
+**크롤링 윤리 지침:**
+
+1. `robots.txt` 확인 및 준수
+2. 요청 간 적절한 딜레이 설정 (서버 부하 방지)
+3. User-Agent 명시
+4. 사이트 이용약관 확인
+5. 과도한 요청 지양
+6. 개인정보 수집 금지
+
+예제 파일: `automation/crawler-example.cjs` 참고
+
+## 참고 자료
+
+- [Playwright 공식 문서](https://playwright.dev)
+- [API 레퍼런스](https://playwright.dev/docs/api/class-playwright)
+- [Best Practices](https://playwright.dev/docs/best-practices)

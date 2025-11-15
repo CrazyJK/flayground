@@ -77,7 +77,7 @@ ul {
       grid-template-areas:
         'cover cover cover cover cover'
         'name name name name name'
-        'age flaycount shotflay shottotal totalscore';
+        'age flayCount shotFlay shotTotal totalScore';
       grid-template-rows: 10rem 2rem 2rem;
       grid-template-columns: 3rem 3rem 3rem 3rem 3rem;
       align-items: center;
@@ -101,16 +101,16 @@ ul {
         grid-area: age;
       }
       .flay-count {
-        grid-area: flaycount;
+        grid-area: flayCount;
       }
       .shot-flay-count {
-        grid-area: shotflay;
+        grid-area: shotFlay;
       }
       .shot-total-count {
-        grid-area: shottotal;
+        grid-area: shotTotal;
       }
       &.total-score {
-        grid-area: totalscore;
+        grid-area: totalScore;
       }
     }
   }

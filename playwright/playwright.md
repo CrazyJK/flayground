@@ -249,6 +249,235 @@ await page.locator('flay-title').waitFor({ state: 'attached' });
 await expect(page.locator('flay-title')).not.toBeEmpty({ timeout: 10000 });
 ```
 
+### 비동기 액션 완료 대기 방법
+
+클릭 등의 액션 후 비동기 처리가 완료될 때까지 대기하는 방법:
+
+#### 1. 네트워크 응답 대기 (가장 정확)
+
+```js
+// 클릭 후 특정 API 응답 대기
+const [response] = await Promise.all([
+  page.waitForResponse((resp) => resp.url().includes('/api/update') && resp.status() === 200),
+  page.click('#rank5'),
+]);
+
+console.log('응답 상태:', response.status());
+const data = await response.json();
+console.log('응답 데이터:', data);
+```
+
+#### 2. 요소 상태 변경 대기
+
+```js
+// 클릭 후 특정 요소가 나타날 때까지
+await page.click('#rank5');
+await page.waitForSelector('.success-message', { state: 'visible' });
+
+// 로딩 인디케이터가 사라질 때까지
+await page.click('#rank5');
+await page.waitForSelector('.loading-spinner', { state: 'hidden' });
+
+// 요소의 텍스트가 변경될 때까지
+await page.click('#rank5');
+await page.waitForFunction(
+  () => document.querySelector('.status').textContent === '완료',
+  { timeout: 10000 }
+);
+```
+
+#### 3. DOM 변경 대기
+
+```js
+// 특정 속성이 변경될 때까지
+await page.click('#rank5');
+await page.waitForFunction(
+  () => document.querySelector('#rank5').checked === true,
+  { timeout: 5000 }
+);
+
+// 클래스가 추가/제거될 때까지
+await page.click('#rank5');
+await page.waitForFunction(
+  () => document.querySelector('#rank5').classList.contains('active'),
+  { timeout: 5000 }
+);
+
+// 요소 개수가 변경될 때까지
+const initialCount = await page.locator('.item').count();
+await page.click('#load-more');
+await page.waitForFunction(
+  (count) => document.querySelectorAll('.item').length > count,
+  initialCount
+);
+```
+
+#### 4. 네트워크 idle 상태 대기
+
+```js
+// 모든 네트워크 요청이 완료될 때까지
+await page.click('#rank5');
+await page.waitForLoadState('networkidle');
+
+// 또는 Promise.all 사용
+await Promise.all([page.waitForLoadState('networkidle'), page.click('#rank5')]);
+```
+
+#### 5. 페이지 전역 변수/플래그 확인
+
+```js
+// 페이지가 설정하는 전역 변수 체크
+await page.click('#rank5');
+await page.waitForFunction(() => window.ajaxComplete === true, { timeout: 10000 });
+
+// jQuery가 있는 경우
+await page.click('#rank5');
+await page.waitForFunction(() => jQuery.active === 0);
+
+// 진행 중인 fetch 개수 체크
+await page.click('#rank5');
+await page.waitForFunction(() => window.pendingRequests === 0);
+```
+
+#### 6. URL 변경 대기
+
+```js
+// URL이 변경될 때까지
+await Promise.all([page.waitForURL('**/success'), page.click('#submit')]);
+
+// 특정 URL 패턴으로 변경될 때까지
+await Promise.all([page.waitForURL(/\/dashboard\?.*updated/), page.click('#save')]);
+```
+
+#### 7. 이벤트 리스너 활용
+
+```js
+// 커스텀 이벤트 대기
+await page.click('#rank5');
+await page.evaluate(() => {
+  return new Promise((resolve) => {
+    window.addEventListener('dataUpdated', resolve, { once: true });
+  });
+});
+
+// 애니메이션 완료 대기
+await page.click('#rank5');
+await page.waitForFunction(() => {
+  const el = document.querySelector('#rank5');
+  return window.getComputedStyle(el).animationName === 'none';
+});
+```
+
+#### 8. 요청 추적 및 대기
+
+```js
+// 모든 진행 중인 요청 추적
+const pendingRequests = new Set();
+
+page.on('request', (request) => {
+  if (request.url().includes('/api/')) {
+    pendingRequests.add(request);
+  }
+});
+
+page.on('requestfinished', (request) => {
+  pendingRequests.delete(request);
+});
+
+page.on('requestfailed', (request) => {
+  pendingRequests.delete(request);
+});
+
+await page.click('#rank5');
+
+// 모든 요청이 완료될 때까지 폴링
+await page.waitForFunction(() => pendingRequests.size === 0, { timeout: 10000 });
+```
+
+#### 9. 복합 조건 대기
+
+```js
+// 여러 조건을 모두 만족할 때까지
+await page.click('#rank5');
+await page.waitForFunction(() => {
+  const loading = document.querySelector('.loading');
+  const data = document.querySelector('.data-container');
+  const checkbox = document.querySelector('#rank5');
+
+  return (
+    (!loading || loading.style.display === 'none') && // 로딩 숨김
+    data && data.children.length > 0 && // 데이터 존재
+    checkbox.checked === true // 체크박스 체크됨
+  );
+}, { timeout: 15000 });
+```
+
+#### 10. 타임아웃과 재시도
+
+```js
+// 타임아웃 설정
+try {
+  await page.click('#rank5');
+  await page.waitForSelector('.result', { state: 'visible', timeout: 5000 });
+} catch (error) {
+  console.log('타임아웃 발생, 재시도...');
+  await page.click('#rank5', { force: true });
+  await page.waitForSelector('.result', { state: 'visible', timeout: 10000 });
+}
+
+// 또는 폴링으로 대기
+async function waitForCondition(page, condition, timeout = 10000) {
+  const startTime = Date.now();
+  while (Date.now() - startTime < timeout) {
+    const result = await page.evaluate(condition);
+    if (result) return true;
+    await page.waitForTimeout(100);
+  }
+  throw new Error('조건 충족 타임아웃');
+}
+
+await page.click('#rank5');
+await waitForCondition(page, () => document.querySelector('#rank5').checked);
+```
+
+#### 실전 예제
+
+```js
+// 체크박스 클릭 후 데이터 업데이트 완료까지 대기
+async function clickAndWaitForUpdate(page, selector) {
+  // 1. API 응답 대기
+  const responsePromise = page.waitForResponse(
+    (resp) => resp.url().includes('/api/update') && resp.status() === 200,
+    { timeout: 10000 }
+  );
+
+  // 2. 클릭
+  await page.click(selector, { force: true });
+
+  // 3. 응답 완료 대기
+  const response = await responsePromise;
+
+  // 4. UI 업데이트 대기 (추가 안전장치)
+  await page.waitForFunction(
+    (sel) => document.querySelector(sel).classList.contains('updated'),
+    selector,
+    { timeout: 2000 }
+  );
+
+  console.log('업데이트 완료:', await response.json());
+}
+
+await clickAndWaitForUpdate(page, '#rank5');
+```
+
+**권장 순서:**
+
+1. 네트워크 응답 대기 (가장 정확)
+2. 요소 상태 변경 대기
+3. 페이지 전역 변수 체크
+4. 네트워크 idle 대기 (SSE가 없을 때)
+5. 고정 타임아웃 (최후의 수단)
+
 ### 데이터 추출
 
 ```js
@@ -379,6 +608,19 @@ test.use({ slowMo: 1000 });
 
 // 상세 로그
 DEBUG=pw:api yarn playwright test
+```
+
+자동화 스크립트에서 개발자 도구 열기:
+
+```js
+const browser = await chromium.launch({
+  headless: false,
+  devtools: true, // 개발자 도구 자동 열기
+  slowMo: 100, // 느린 실행으로 동작 확인
+});
+
+// 또는 코드에서 브레이크포인트
+await page.pause(); // Playwright Inspector 실행
 ```
 
 ## 유용한 패턴

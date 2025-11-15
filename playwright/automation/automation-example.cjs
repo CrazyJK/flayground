@@ -9,12 +9,29 @@ const { chromium } = require("playwright");
  * 메인 자동화 함수
  */
 async function main() {
+  /**
+   * 페이지 대기 및 캡처 함수
+   */
+  async function waitAndCapture() {
+    await page.waitForTimeout(1000);
+    await page
+      .locator("flay-title")
+      .textContent()
+      .then((text) => console.log(`  ${screenshotCount}. 제목: ${text}`));
+    await page.screenshot({
+      path: `./screenshots/automation_${screenshotCount}.png`,
+      fullPage: true,
+    });
+    screenshotCount++;
+  }
+  let screenshotCount = 1;
+
   // 브라우저 실행
   const browser = await chromium.launch({
     headless: false, // true: 백그라운드 실행, false: 브라우저 UI 표시
     slowMo: 100, // 각 액션 사이 지연 시간 (ms)
+    devtools: true, // 개발자 도구 자동 열기
   });
-
   // 새 페이지 생성
   const context = await browser.newContext({
     viewport: { width: 1080, height: 1920 },
@@ -23,37 +40,18 @@ async function main() {
   const page = await context.newPage();
 
   try {
-    console.log("페이지 접속 중...");
+    console.log("✨ 페이지 접속 중...");
     await page.goto("https://flay.kamoru.jk/dist/page.flay-page.html");
+    await waitAndCapture();
 
-    const flayTitle = page.locator("flay-title");
-    console.log("초기 제목 가져오는 중...", flayTitle);
-
-    console.log("데이터 로딩 대기 중...");
-    await page.waitForSelector("flay-title", { state: "visible" });
-
-    let titleText = await flayTitle.textContent();
-    console.log(`현재 제목: ${titleText}`);
-
-    console.log("Space 키 입력...");
+    console.log("✨ space로 페이지 변경");
     await page.keyboard.press("Space");
+    await waitAndCapture();
 
-    console.log("다음 데이터 로딩 대기 중...");
-    await page.waitForTimeout(1000); // 또는 특정 조건 대기
-
-    titleText = await flayTitle.textContent();
-    console.log(`현재 제목: ${titleText}`);
-
-    // 스크린샷 저장
-    await page.screenshot({
-      path: "./screenshots/automation.png",
-      fullPage: true,
-    });
-    console.log("스크린샷 저장 완료");
-
-    // 추가 작업...
-    // await page.click('button#next');
-    // const data = await page.evaluate(() => window.someData);
+    console.log("✨ rank 변경");
+    await page.evaluate(() => document.querySelector("#rank5").click());
+    await page.evaluate(() => document.querySelector("#rank0").click());
+    await waitAndCapture();
   } catch (error) {
     console.error("자동화 실행 중 오류:", error);
     await page.screenshot({ path: "./screenshots/error.png" });

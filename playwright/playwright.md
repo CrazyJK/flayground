@@ -818,6 +818,491 @@ async function checkRobotsTxt(baseUrl) {
 
 예제 파일: `automation/crawler-example.cjs` 참고
 
+## 고급 기능
+
+### 1. 모바일 디바이스 에뮬레이션
+
+```js
+const { devices } = require('playwright');
+
+// iPhone 13 Pro 에뮬레이션
+const iPhone13 = devices['iPhone 13 Pro'];
+const context = await browser.newContext({
+  ...iPhone13,
+});
+
+// 다양한 디바이스
+const iPad = devices['iPad Pro'];
+const pixel5 = devices['Pixel 5'];
+const galaxyS9 = devices['Galaxy S9+'];
+
+// 커스텀 디바이스
+const context = await browser.newContext({
+  userAgent: 'Custom User Agent',
+  viewport: { width: 375, height: 667 },
+  deviceScaleFactor: 2,
+  isMobile: true,
+  hasTouch: true,
+});
+```
+
+### 2. 지오로케이션 (GPS)
+
+```js
+// 위치 권한 부여 및 좌표 설정
+const context = await browser.newContext({
+  geolocation: { longitude: 126.9780, latitude: 37.5665 }, // 서울
+  permissions: ['geolocation'],
+});
+
+const page = await context.newPage();
+await page.goto('https://maps.google.com');
+
+// 위치 변경
+await context.setGeolocation({ longitude: 127.0276, latitude: 37.4979 }); // 강남
+```
+
+### 3. 파일 다운로드
+
+```js
+// 다운로드 대기
+const [download] = await Promise.all([
+  page.waitForEvent('download'),
+  page.click('a#download-link'),
+]);
+
+// 다운로드 정보
+console.log(download.suggestedFilename());
+
+// 파일 저장
+await download.saveAs('./downloads/' + download.suggestedFilename());
+
+// 다운로드 스트림 읽기
+const stream = await download.createReadStream();
+```
+
+### 4. 파일 업로드
+
+```js
+// 단일 파일 업로드
+await page.setInputFiles('input[type="file"]', './path/to/file.pdf');
+
+// 여러 파일 업로드
+await page.setInputFiles('input[type="file"]', [
+  './file1.jpg',
+  './file2.jpg',
+  './file3.jpg',
+]);
+
+// 파일 선택 해제
+await page.setInputFiles('input[type="file"]', []);
+
+// Buffer로 파일 업로드
+await page.setInputFiles('input[type="file"]', {
+  name: 'test.txt',
+  mimeType: 'text/plain',
+  buffer: Buffer.from('file content'),
+});
+```
+
+### 5. 다이얼로그 처리 (alert, confirm, prompt)
+
+```js
+// 다이얼로그 이벤트 리스너
+page.on('dialog', async (dialog) => {
+  console.log(`다이얼로그 타입: ${dialog.type()}`);
+  console.log(`메시지: ${dialog.message()}`);
+
+  // alert, confirm 수락
+  await dialog.accept();
+
+  // confirm 거부
+  // await dialog.dismiss();
+
+  // prompt 입력
+  // await dialog.accept('사용자 입력값');
+});
+
+// 다이얼로그를 발생시키는 액션
+await page.click('button#show-alert');
+```
+
+### 6. 여러 탭/창 관리
+
+```js
+// 새 탭 열기
+const [newPage] = await Promise.all([
+  context.waitForEvent('page'),
+  page.click('a[target="_blank"]'), // 새 탭으로 여는 링크
+]);
+
+await newPage.waitForLoadState();
+console.log(await newPage.title());
+
+// 모든 페이지 가져오기
+const pages = context.pages();
+console.log(`열린 탭 수: ${pages.length}`);
+
+// 특정 페이지로 전환
+await pages[1].bringToFront();
+
+// 팝업 처리
+page.on('popup', async (popup) => {
+  await popup.waitForLoadState();
+  console.log(await popup.title());
+  await popup.close();
+});
+```
+
+### 7. iframe 작업
+
+```js
+// iframe 선택
+const frame = page.frameLocator('iframe#my-frame');
+await frame.locator('button').click();
+
+// 또는
+const frameElement = await page.frame({ name: 'frame-name' });
+await frameElement.click('button');
+
+// 모든 프레임 가져오기
+const frames = page.frames();
+console.log(`프레임 수: ${frames.length}`);
+
+// 특정 프레임 찾기
+const specificFrame = page.frames().find((f) => f.name() === 'my-frame');
+await specificFrame.fill('input', 'text');
+```
+
+### 8. 쿠키 관리
+
+```js
+// 쿠키 설정
+await context.addCookies([
+  {
+    name: 'session',
+    value: 'abc123',
+    domain: 'example.com',
+    path: '/',
+    expires: Date.now() / 1000 + 86400, // 1일 후
+    httpOnly: true,
+    secure: true,
+  },
+]);
+
+// 쿠키 가져오기
+const cookies = await context.cookies();
+console.log(cookies);
+
+// 특정 URL의 쿠키
+const urlCookies = await context.cookies('https://example.com');
+
+// 쿠키 삭제
+await context.clearCookies();
+```
+
+### 9. 로컬 스토리지 / 세션 스토리지
+
+```js
+// 로컬 스토리지 설정
+await page.evaluate(() => {
+  localStorage.setItem('token', 'abc123');
+  sessionStorage.setItem('user', JSON.stringify({ id: 1, name: 'User' }));
+});
+
+// 로컬 스토리지 읽기
+const token = await page.evaluate(() => localStorage.getItem('token'));
+
+// 상태 저장
+const state = await context.storageState();
+await fs.writeFile('auth-state.json', JSON.stringify(state));
+
+// 상태 복원
+const context = await browser.newContext({
+  storageState: 'auth-state.json',
+});
+```
+
+### 10. 네트워크 조작 (Mock, Intercept)
+
+```js
+// API 응답 모킹
+await page.route('**/api/users', (route) => {
+  route.fulfill({
+    status: 200,
+    contentType: 'application/json',
+    body: JSON.stringify([
+      { id: 1, name: 'User 1' },
+      { id: 2, name: 'User 2' },
+    ]),
+  });
+});
+
+// 요청 수정
+await page.route('**/api/data', (route) => {
+  const request = route.request();
+  route.continue({
+    headers: {
+      ...request.headers(),
+      'X-Custom-Header': 'custom-value',
+    },
+  });
+});
+
+// 응답 수정
+await page.route('**/api/config', async (route) => {
+  const response = await route.fetch();
+  const json = await response.json();
+  json.modified = true;
+
+  route.fulfill({
+    response,
+    json: json,
+  });
+});
+
+// 특정 요청 차단
+await page.route('**/ads/**', (route) => route.abort());
+```
+
+### 11. HAR (HTTP Archive) 기록
+
+```js
+// HAR 기록 시작
+const context = await browser.newContext({
+  recordHar: { path: './network.har' },
+});
+
+// 페이지 작업 수행
+const page = await context.newPage();
+await page.goto('https://example.com');
+
+// HAR 기록 종료 및 저장
+await context.close();
+```
+
+### 12. 성능 메트릭 수집
+
+```js
+// Performance API 사용
+const metrics = await page.evaluate(() => {
+  const nav = performance.getEntriesByType('navigation')[0];
+  return {
+    domContentLoaded: nav.domContentLoadedEventEnd - nav.domContentLoadedEventStart,
+    loadComplete: nav.loadEventEnd - nav.loadEventStart,
+    domInteractive: nav.domInteractive,
+    transferSize: nav.transferSize,
+  };
+});
+
+console.log('성능 메트릭:', metrics);
+
+// Lighthouse 스타일 메트릭
+const performanceTiming = await page.evaluate(() => JSON.stringify(window.performance.timing));
+const timing = JSON.parse(performanceTiming);
+
+const pageLoadTime = timing.loadEventEnd - timing.navigationStart;
+console.log(`페이지 로드 시간: ${pageLoadTime}ms`);
+```
+
+### 13. 접근성 (Accessibility) 테스트
+
+```js
+// 접근성 스냅샷
+const snapshot = await page.accessibility.snapshot();
+console.log(JSON.stringify(snapshot, null, 2));
+
+// 특정 요소의 접근성 정보
+const button = page.locator('button');
+const accessibilitySnapshot = await page.accessibility.snapshot({
+  root: await button.elementHandle(),
+});
+```
+
+### 14. 코드 커버리지 (Coverage)
+
+```js
+// JavaScript 커버리지 시작
+await page.coverage.startJSCoverage();
+
+// CSS 커버리지 시작
+await page.coverage.startCSSCoverage();
+
+// 페이지 탐색
+await page.goto('https://example.com');
+
+// 커버리지 수집
+const jsCoverage = await page.coverage.stopJSCoverage();
+const cssCoverage = await page.coverage.stopCSSCoverage();
+
+// 사용되지 않은 바이트 계산
+let totalBytes = 0;
+let usedBytes = 0;
+for (const entry of jsCoverage) {
+  totalBytes += entry.text.length;
+  for (const range of entry.ranges) {
+    usedBytes += range.end - range.start;
+  }
+}
+console.log(`JS 사용률: ${((usedBytes / totalBytes) * 100).toFixed(2)}%`);
+```
+
+### 15. 비디오 녹화
+
+```js
+// 설정에서 비디오 녹화
+const context = await browser.newContext({
+  recordVideo: {
+    dir: './videos/',
+    size: { width: 1280, height: 720 },
+  },
+});
+
+const page = await context.newPage();
+await page.goto('https://example.com');
+
+// 비디오 경로 가져오기
+const videoPath = await page.video().path();
+console.log(`비디오 저장됨: ${videoPath}`);
+
+await context.close();
+```
+
+### 16. 타임존 변경
+
+```js
+// 특정 타임존으로 설정
+const context = await browser.newContext({
+  timezoneId: 'America/New_York',
+});
+
+// 또는
+const context = await browser.newContext({
+  timezoneId: 'Asia/Seoul',
+});
+
+// 페이지에서 확인
+const timezone = await page.evaluate(() => Intl.DateTimeFormat().resolvedOptions().timeZone);
+console.log(`현재 타임존: ${timezone}`);
+```
+
+### 17. 권한 관리
+
+```js
+// 특정 권한 부여
+const context = await browser.newContext({
+  permissions: ['geolocation', 'notifications', 'camera', 'microphone'],
+});
+
+// 런타임에 권한 부여
+await context.grantPermissions(['clipboard-read', 'clipboard-write']);
+
+// 특정 origin에만 권한 부여
+await context.grantPermissions(['camera'], { origin: 'https://example.com' });
+
+// 권한 취소
+await context.clearPermissions();
+```
+
+### 18. 요청 인터셉트 및 속도 제한
+
+```js
+// 느린 네트워크 시뮬레이션
+const context = await browser.newContext({
+  offline: false,
+  // 네트워크 속도 제한은 Chrome DevTools Protocol을 통해
+});
+
+// 오프라인 모드
+await context.setOffline(true);
+
+// 다시 온라인
+await context.setOffline(false);
+```
+
+### 19. 클립보드 작업
+
+```js
+// 클립보드에 복사
+await page.evaluate(() => navigator.clipboard.writeText('복사할 텍스트'));
+
+// 클립보드 읽기
+const clipboardText = await page.evaluate(() => navigator.clipboard.readText());
+console.log(`클립보드 내용: ${clipboardText}`);
+```
+
+### 20. 웹소켓 모니터링
+
+```js
+// 웹소켓 연결 감지
+page.on('websocket', (ws) => {
+  console.log(`웹소켓 연결: ${ws.url()}`);
+
+  ws.on('framesent', (event) => console.log('전송:', event.payload));
+  ws.on('framereceived', (event) => console.log('수신:', event.payload));
+  ws.on('close', () => console.log('웹소켓 종료'));
+});
+```
+
+### 21. 서비스 워커 (Service Worker)
+
+```js
+// 서비스 워커 감지
+context.on('serviceworker', (worker) => {
+  console.log(`서비스 워커 등록: ${worker.url()}`);
+});
+
+// 모든 서비스 워커 가져오기
+const workers = context.serviceWorkers();
+```
+
+### 22. 브라우저 컨텍스트 격리
+
+```js
+// 각 테스트마다 독립적인 환경
+const context1 = await browser.newContext();
+const context2 = await browser.newContext();
+
+// 쿠키, 로컬스토리지 등이 완전히 분리됨
+const page1 = await context1.newPage();
+const page2 = await context2.newPage();
+
+await context1.close();
+await context2.close();
+```
+
+### 23. Trace 기록 (디버깅)
+
+```js
+// Trace 시작
+await context.tracing.start({
+  screenshots: true,
+  snapshots: true,
+});
+
+// 페이지 작업
+await page.goto('https://example.com');
+await page.click('button');
+
+// Trace 저장
+await context.tracing.stop({ path: 'trace.zip' });
+
+// trace.zip을 Playwright Trace Viewer로 확인
+// yarn playwright show-trace trace.zip
+```
+
+**주요 활용 사례:**
+
+- 📱 모바일 앱 웹뷰 테스트
+- 🌍 다국어/타임존 테스트
+- 🔒 인증/권한 테스트
+- 📊 성능 모니터링
+- ♿ 접근성 검증
+- 🎥 사용자 행동 녹화
+- 🧪 A/B 테스트 자동화
+- 📡 실시간 통신 (WebSocket, SSE) 모니터링
+- 🔄 Progressive Web App (PWA) 테스트
+
 ## 참고 자료
 
 - [Playwright 공식 문서](https://playwright.dev)

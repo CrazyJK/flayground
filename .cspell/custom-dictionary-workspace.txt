@@ -59,3 +59,8 @@ dblclick
 networkidle
 domcontentloaded
 schtasks
+KHTML
+geolocation
+framesent
+framereceived
+serviceworker

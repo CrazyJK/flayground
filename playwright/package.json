@@ -1,0 +1,23 @@
+{
+  "name": "playwright",
+  "version": "1.0.0",
+  "license": "MIT",
+  "scripts": {
+    "test": "playwright test",
+    "test:debug": "playwright test --debug",
+    "test:headed": "playwright test --headed",
+    "test:report": "playwright show-report",
+    "test:grep": "playwright test -g \"interact.*page\"",
+    "test:trace": "playwright test --trace on",
+    "test:ci": "playwright test --reporter=dot",
+    "test:ci:report": "playwright show-report",
+    "test:ci:grep": "playwright test -g \"interact.*page\" --reporter=dot",
+    "test:ci:trace": "playwright test -g \"interact.*page\" --trace on",
+    "install:browsers": "playwright install --with-deps",
+    "automation:example": "node playwright/automation-example.cjs",
+    "automation:advanced:collect": "node playwright/automation-advanced.cjs collect"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1"
+  }
+}

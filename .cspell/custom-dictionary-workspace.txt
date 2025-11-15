@@ -55,3 +55,7 @@ Dfile
 Djava
 Dlogging
 Dspring
+dblclick
+networkidle
+domcontentloaded
+schtasks

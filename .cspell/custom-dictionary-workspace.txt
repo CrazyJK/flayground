@@ -66,3 +66,4 @@ framereceived
 serviceworker
 requestfinished
 requestfailed
+toastui

@@ -2,7 +2,7 @@
   position: absolute;
   inset: 0;
   display: grid;
-  grid-template-rows: minmax(18rem, auto) 1fr;
+  grid-template-rows: 18rem 1fr;
 
   #calendarContainer {
     overflow: scroll;
@@ -144,6 +144,7 @@
 
       .toastui-editor-contents {
         padding: 1rem;
+        height: 100%;
 
         img {
           margin-left: auto;

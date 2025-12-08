@@ -292,7 +292,7 @@ export class KamoruDiary extends HTMLElement {
     });
     // diary Viewer Show
     this.querySelector('#diaryViewerShow')!.addEventListener('click', () => {
-      let htmlViewer = this.querySelector('#diaryViewerInner .toast-html-viewer') as ToastHtmlViewer;
+      let htmlViewer = this.querySelector('#diaryViewerInner toast-html-viewer') as ToastHtmlViewer;
       if (htmlViewer === null) {
         htmlViewer = this.querySelector('#diaryViewerInner')!.appendChild(new ToastHtmlViewer());
       }
@@ -322,7 +322,7 @@ export class KamoruDiary extends HTMLElement {
     const date = this.#diaryDate.value;
     const title = this.#diaryTitle.value;
     const weather = (this.querySelector('[name="diaryWeather"]:checked') as HTMLInputElement)?.value;
-    const content = this.#diaryEditor.getHTML();
+    const content = this.#diaryEditor.getEditorHTML();
 
     if (date === '' || title === '' || typeof weather === 'undefined') {
       console.debug('diary date is empty');
@@ -341,7 +341,7 @@ export class KamoruDiary extends HTMLElement {
     this.#currentDiary.meta.title = title;
     this.#currentDiary.content = content;
 
-    void ApiClient.post('/diary', { data: this.#currentDiary }).then((diary: unknown) => {
+    void ApiClient.post('/diary', this.#currentDiary).then((diary: unknown) => {
       const savedDiary = diary as DiaryRecord;
       console.log('saved Diary', savedDiary);
       this.#currentDiary = savedDiary;

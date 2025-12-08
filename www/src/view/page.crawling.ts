@@ -60,7 +60,7 @@ const CONFIG = {
   },
 } as const;
 
-const LIST_URL = CONFIG.DOMAIN + '/jav/?order=new&page=';
+const LIST_URL = CONFIG.DOMAIN + '/jav/?order=new&type=jav&page=';
 const SEARCH_URL = CONFIG.DOMAIN + '/jav/search/?opr=AND&sort=release_date&q='; // release_date | new
 const domParser = new DOMParser();
 const nanoStore = new NanoStore();

@@ -56,6 +56,7 @@ export class SideNavBar extends GroundNav {
     { url: 'page.dragndrop.html', name: 'drag & drop' },
     { url: 'style.html', name: 'style' },
     { url: 'test.html', name: 'test' },
+    { url: 'spa.flay.html', name: 'spa' },
   ];
 
   /**

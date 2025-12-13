@@ -33,14 +33,14 @@ const entryPoints = {
     'page.history-play': './src/view/page.history-play.ts',
     'page.statistics': './src/view/page.statistics.ts',
     'page.flay-all': './src/view/page.flay-all.ts',
+    'page.crawling': './src/view/page.crawling.ts',
   },
   images: {
     'page.image-page': './src/view/page.image-page.ts',
     'page.image-download': './src/view/page.image-download.ts',
   },
-  misc: {
+  diary: {
     'page.kamoru-diary': './src/view/page.kamoru-diary.ts',
-    'page.crawling': './src/view/page.crawling.ts',
   },
   popups: {
     'popup.cover': './src/view/popup.cover.ts',
@@ -51,6 +51,9 @@ const entryPoints = {
     'popup.tag': './src/view/popup.tag.ts',
     'popup.monitor': './src/view/popup.monitor.ts',
     'popup.image': './src/view/popup.image.ts',
+  },
+  spa: {
+    'spa.flay': './src/view/spa.flay.ts',
   },
 };
 

@@ -83,6 +83,7 @@ module.exports = {
       '@nav': path.resolve(__dirname, 'src/nav'),
       '@svg': path.resolve(__dirname, 'src/svg'),
       '@ui': path.resolve(__dirname, 'src/ui'),
+      '@spa': path.resolve(__dirname, 'src/spa'),
     },
   },
   plugins: [

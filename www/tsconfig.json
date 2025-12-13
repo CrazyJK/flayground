@@ -55,7 +55,8 @@
       "@movie/*": ["src/movie/*"],
       "@nav/*": ["src/nav/*"],
       "@svg/*": ["src/svg/*"],
-      "@ui/*": ["src/ui/*"]
+      "@ui/*": ["src/ui/*"],
+      "@spa/*": ["src/spa/*"]
     },
 
     // 라이브러리

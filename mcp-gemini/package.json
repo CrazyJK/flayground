@@ -5,10 +5,10 @@
   "main": "src/index.ts",
   "type": "module",
   "scripts": {
-    "start": "node --loader ts-node/esm src/index.ts",
-    "dev": "node --watch --loader ts-node/esm src/index.ts",
-    "http": "node --loader ts-node/esm src/http-server.ts",
-    "http:dev": "node --watch --loader ts-node/esm src/http-server.ts",
+    "start": "tsx src/index.ts",
+    "dev": "tsx watch src/index.ts",
+    "http": "tsx src/http-server.ts",
+    "http:dev": "tsx watch src/http-server.ts",
     "build": "tsc",
     "build:watch": "tsc --watch"
   },
@@ -32,6 +32,7 @@
     "@types/express": "^5.0.6",
     "@types/node": "^25.0.2",
     "ts-node": "^10.9.2",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   }
 }

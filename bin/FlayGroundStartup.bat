@@ -57,7 +57,8 @@ echo ---------------------------------------------------------------------------
 
 cd ..\mcp-gemini
 start /wait /b cmd /c yarn install
-start /b cmd /c yarn http
+start /b cmd /c "yarn http > %FLAY_GROUND_HOME%\logs\mcp-gemini.log 2>&1"
+echo MCP-Gemini logs: %FLAY_GROUND_HOME%\logs\mcp-gemini.log
 
 title FLAY_GROUND Build maven
 echo.

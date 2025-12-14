@@ -49,6 +49,16 @@ start /wait /b cmd /c node madge.cjs
 echo.
 start /wait /b cmd /c yarn run build
 
+title FLAY_GROUND Start MCP-Gemini HTTP Server
+echo.
+echo ====================================================================================================================
+echo MCP-Gemini HTTP Server started in background
+echo --------------------------------------------------------------------------------------------------------------------
+
+cd ..\mcp-gemini
+start /wait /b cmd /c yarn install
+start /b cmd /c yarn http
+
 title FLAY_GROUND Build maven
 echo.
 echo ====================================================================================================================

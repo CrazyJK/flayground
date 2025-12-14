@@ -5,13 +5,13 @@ import { MCPServer } from "./mcp-server.js";
 /**
  * 메인 함수
  */
-async function main() {
+async function main(): Promise<void> {
   try {
     // 설정 검증
     validateConfig();
 
     // Gemini 클라이언트 초기화
-    const geminiClient = new GeminiClient(config.geminiApiKey);
+    const geminiClient = new GeminiClient(config.geminiApiKey!);
 
     // MCP 서버 초기화 및 실행
     const mcpServer = new MCPServer(geminiClient);

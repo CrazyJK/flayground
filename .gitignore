@@ -61,4 +61,6 @@ dependencies-viewer.json
 test-results
 screenshots
 
+# mcp-gemini
 .env
+dist/

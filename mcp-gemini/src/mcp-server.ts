@@ -1,20 +1,38 @@
+import { ChatSession } from "@google/generative-ai";
 import { Server } from "@modelcontextprotocol/sdk/server/index.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {
   CallToolRequestSchema,
+  CallToolResult,
   ListToolsRequestSchema,
 } from "@modelcontextprotocol/sdk/types.js";
 import { config } from "./config.js";
 import { GeminiClient } from "./gemini-client.js";
 
 /**
+ * 도구 인자 인터페이스
+ */
+interface GenerateTextArgs {
+  prompt: string;
+  temperature?: number;
+}
+
+interface ChatArgs {
+  message: string;
+}
+
+/**
  * MCP 서버
  */
 export class MCPServer {
+  private geminiClient: GeminiClient;
+  private server: Server;
+  private chatSession?: ChatSession;
+
   /**
-   * @param {GeminiClient} geminiClient - Gemini 클라이언트
+   * @param geminiClient - Gemini 클라이언트
    */
-  constructor(geminiClient) {
+  constructor(geminiClient: GeminiClient) {
     this.geminiClient = geminiClient;
     this.server = new Server(
       {
@@ -34,7 +52,7 @@ export class MCPServer {
   /**
    * 핸들러 설정
    */
-  setupHandlers() {
+  private setupHandlers(): void {
     // 도구 목록 요청 처리
     this.server.setRequestHandler(ListToolsRequestSchema, async () => ({
       tools: [
@@ -78,15 +96,32 @@ export class MCPServer {
     // 도구 호출 요청 처리
     this.server.setRequestHandler(CallToolRequestSchema, async (request) => {
       try {
+        const args = request.params.arguments as Record<string, unknown>;
+
         switch (request.params.name) {
-          case "generate_text":
-            return await this.handleGenerateText(request.params.arguments);
-          case "chat":
-            return await this.handleChat(request.params.arguments);
+          case "generate_text": {
+            if (!args || typeof args.prompt !== "string") {
+              throw new Error("prompt is required");
+            }
+            const temperature =
+              typeof args.temperature === "number"
+                ? args.temperature
+                : undefined;
+            return await this.handleGenerateText({
+              prompt: args.prompt,
+              temperature,
+            });
+          }
+          case "chat": {
+            if (!args || typeof args.message !== "string") {
+              throw new Error("message is required");
+            }
+            return await this.handleChat({ message: args.message });
+          }
           default:
             throw new Error(`알 수 없는 도구: ${request.params.name}`);
         }
-      } catch (error) {
+      } catch (error: any) {
         return {
           content: [
             {
@@ -102,10 +137,12 @@ export class MCPServer {
 
   /**
    * 텍스트 생성 처리
-   * @param {Object} args - 인자
-   * @returns {Promise<Object>} 응답
+   * @param args - 인자
+   * @returns 응답
    */
-  async handleGenerateText(args) {
+  private async handleGenerateText(
+    args: GenerateTextArgs
+  ): Promise<CallToolResult> {
     const { prompt, temperature } = args;
     const text = await this.geminiClient.generateText(prompt, { temperature });
 
@@ -121,10 +158,10 @@ export class MCPServer {
 
   /**
    * 채팅 처리
-   * @param {Object} args - 인자
-   * @returns {Promise<Object>} 응답
+   * @param args - 인자
+   * @returns 응답
    */
-  async handleChat(args) {
+  private async handleChat(args: ChatArgs): Promise<CallToolResult> {
     const { message } = args;
 
     if (!this.chatSession) {
@@ -146,9 +183,8 @@ export class MCPServer {
 
   /**
    * 서버 실행
-   * @returns {Promise<void>}
    */
-  async run() {
+  async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
     console.error("MCP Gemini 서버가 시작되었습니다.");

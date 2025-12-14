@@ -1,18 +1,75 @@
+import { ChatSession } from "@google/generative-ai";
 import cors from "cors";
-import express from "express";
+import express, { Application, NextFunction, Request, Response } from "express";
+import { Server } from "http";
 import { config, validateConfig } from "./config.js";
 import { GeminiClient } from "./gemini-client.js";
+
+/**
+ * 채팅 세션 정보
+ */
+interface ChatSessionInfo {
+  chat: ChatSession;
+  createdAt: string;
+  messageCount: number;
+}
+
+/**
+ * 생성 요청 본문
+ */
+interface GenerateRequestBody {
+  prompt: string;
+  temperature?: number;
+}
+
+/**
+ * 채팅 요청 본문
+ */
+interface ChatRequestBody {
+  message: string;
+}
+
+/**
+ * 번역 요청 본문
+ */
+interface TranslateRequestBody {
+  text: string;
+}
+
+/**
+ * API 응답
+ */
+interface ApiResponse<T = any> {
+  success: boolean;
+  error?: string;
+  [key: string]: any;
+}
+
+/**
+ * 모델 정보
+ */
+interface ModelInfo {
+  name: string;
+  displayName: string;
+  description: string;
+  supportedGenerationMethods: string[];
+}
 
 /**
  * HTTP API 서버
  */
 class HTTPServer {
+  private geminiClient: GeminiClient;
+  private chatSessions: Map<string, ChatSessionInfo>;
+  private app: Application;
+  private server?: Server;
+
   /**
-   * @param {GeminiClient} geminiClient - Gemini 클라이언트
+   * @param geminiClient - Gemini 클라이언트
    */
-  constructor(geminiClient) {
+  constructor(geminiClient: GeminiClient) {
     this.geminiClient = geminiClient;
-    this.chatSessions = new Map(); // 세션 ID별 채팅 세션 저장
+    this.chatSessions = new Map<string, ChatSessionInfo>();
     this.app = express();
 
     this.setupMiddleware();
@@ -22,12 +79,12 @@ class HTTPServer {
   /**
    * 미들웨어 설정
    */
-  setupMiddleware() {
+  private setupMiddleware(): void {
     // CORS 설정
     this.app.use(
       cors({
         origin: "*",
-        methods: ["GET", "POST", "OPTIONS"],
+        methods: ["GET", "POST", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
       })
     );
@@ -36,7 +93,7 @@ class HTTPServer {
     this.app.use(express.json({ limit: "10mb" }));
 
     // 로깅 미들웨어
-    this.app.use((req, res, next) => {
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
       console.error(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
       next();
     });
@@ -45,9 +102,9 @@ class HTTPServer {
   /**
    * 라우트 설정
    */
-  setupRoutes() {
+  private setupRoutes(): void {
     // 서버 상태 확인
-    this.app.get("/health", (req, res) => {
+    this.app.get("/health", (req: Request, res: Response) => {
       res.json({
         status: "ok",
         timestamp: new Date().toISOString(),
@@ -56,7 +113,7 @@ class HTTPServer {
     });
 
     // API 정보 엔드포인트
-    this.app.get("/api/info", (req, res) => {
+    this.app.get("/api/info", (req: Request, res: Response) => {
       res.json({
         name: "MCP Gemini HTTP Server",
         version: "1.0.0",
@@ -74,7 +131,7 @@ class HTTPServer {
     });
 
     // 사용 가능한 모델 목록
-    this.app.get("/api/models", async (req, res) => {
+    this.app.get("/api/models", async (req: Request, res: Response) => {
       try {
         const response = await fetch(
           `https://generativelanguage.googleapis.com/v1beta/models?key=${config.geminiApiKey}`
@@ -86,12 +143,12 @@ class HTTPServer {
           );
         }
 
-        const data = await response.json();
-        const availableModels = data.models
-          .filter((model) =>
+        const data = (await response.json()) as { models: any[] };
+        const availableModels: ModelInfo[] = data.models
+          .filter((model: any) =>
             model.supportedGenerationMethods?.includes("generateContent")
           )
-          .map((model) => ({
+          .map((model: any) => ({
             name: model.name.replace("models/", ""),
             displayName: model.displayName,
             description: model.description,
@@ -107,15 +164,15 @@ class HTTPServer {
         console.error("모델 목록 조회 오류:", error);
         res.status(500).json({
           success: false,
-          error: error.message,
+          error: (error as Error).message,
         });
       }
     });
 
     // 텍스트 생성
-    this.app.post("/api/generate", async (req, res) => {
+    this.app.post("/api/generate", async (req: Request, res: Response) => {
       try {
-        const { prompt, temperature } = req.body;
+        const { prompt, temperature } = req.body as GenerateRequestBody;
 
         if (!prompt) {
           return res.status(400).json({
@@ -154,25 +211,28 @@ class HTTPServer {
         console.error("텍스트 생성 오류:", error);
         res.status(500).json({
           success: false,
-          error: error.message,
+          error: (error as Error).message,
         });
       }
     });
 
     // 대화형 채팅 (기본 세션)
-    this.app.post("/api/chat", async (req, res) => {
+    this.app.post("/api/chat", async (req: Request, res: Response) => {
       return this.handleChat(req, res, "default");
     });
 
     // 특정 세션으로 채팅
-    this.app.post("/api/chat/:sessionId", async (req, res) => {
-      return this.handleChat(req, res, req.params.sessionId);
-    });
+    this.app.post(
+      "/api/chat/:sessionId",
+      async (req: Request, res: Response) => {
+        return this.handleChat(req, res, req.params.sessionId);
+      }
+    );
 
     // 일본어→한국어 번역
-    this.app.post("/api/translate", async (req, res) => {
+    this.app.post("/api/translate", async (req: Request, res: Response) => {
       try {
-        const { text } = req.body;
+        const { text } = req.body as TranslateRequestBody;
 
         if (!text) {
           return res.status(400).json({
@@ -210,13 +270,13 @@ class HTTPServer {
         console.error("번역 오류:", error);
         res.status(500).json({
           success: false,
-          error: error.message,
+          error: (error as Error).message,
         });
       }
     });
 
     // 채팅 세션 삭제
-    this.app.delete("/api/chat/:sessionId", (req, res) => {
+    this.app.delete("/api/chat/:sessionId", (req: Request, res: Response) => {
       const sessionId = req.params.sessionId;
 
       if (this.chatSessions.has(sessionId)) {
@@ -235,11 +295,11 @@ class HTTPServer {
     });
 
     // 활성 세션 목록
-    this.app.get("/api/sessions", (req, res) => {
+    this.app.get("/api/sessions", (req: Request, res: Response) => {
       const sessions = Array.from(this.chatSessions.keys()).map(
         (sessionId) => ({
           sessionId,
-          createdAt: this.chatSessions.get(sessionId).createdAt,
+          createdAt: this.chatSessions.get(sessionId)!.createdAt,
         })
       );
 
@@ -251,7 +311,7 @@ class HTTPServer {
     });
 
     // 404 핸들러
-    this.app.use((req, res, next) => {
+    this.app.use((req: Request, res: Response, next: NextFunction) => {
       res.status(404).json({
         success: false,
         error: "엔드포인트를 찾을 수 없습니다",
@@ -269,30 +329,37 @@ class HTTPServer {
     });
 
     // 에러 핸들러
-    this.app.use((error, req, res, next) => {
-      console.error("서버 오류:", error);
-      res.status(500).json({
-        success: false,
-        error: "Internal Server Error",
-      });
-    });
+    this.app.use(
+      (error: Error, req: Request, res: Response, next: NextFunction) => {
+        console.error("서버 오류:", error);
+        res.status(500).json({
+          success: false,
+          error: "Internal Server Error",
+        });
+      }
+    );
   }
 
   /**
    * 채팅 요청 처리
-   * @param {Object} req - Express 요청 객체
-   * @param {Object} res - Express 응답 객체
-   * @param {string} sessionId - 세션 ID
+   * @param req - Express 요청 객체
+   * @param res - Express 응답 객체
+   * @param sessionId - 세션 ID
    */
-  async handleChat(req, res, sessionId) {
+  private async handleChat(
+    req: Request,
+    res: Response,
+    sessionId: string
+  ): Promise<void> {
     try {
-      const { message } = req.body;
+      const { message } = req.body as ChatRequestBody;
 
       if (!message) {
-        return res.status(400).json({
+        res.status(400).json({
           success: false,
           error: "message는 필수 파라미터입니다",
         });
+        return;
       }
 
       // 세션이 없으면 새로 생성
@@ -306,7 +373,7 @@ class HTTPServer {
         console.error(`새 채팅 세션 생성: ${sessionId}`);
       }
 
-      const session = this.chatSessions.get(sessionId);
+      const session = this.chatSessions.get(sessionId)!;
       const startTime = Date.now();
 
       const result = await session.chat.sendMessage(message);
@@ -336,16 +403,16 @@ class HTTPServer {
       console.error(`채팅 오류 [${sessionId}]:`, error);
       res.status(500).json({
         success: false,
-        error: error.message,
+        error: (error as Error).message,
       });
     }
   }
 
   /**
    * 서버 시작
-   * @param {number} port - 포트 번호
+   * @param port - 포트 번호
    */
-  start(port = 3000) {
+  start(port: number = 3000): Promise<void> {
     return new Promise((resolve) => {
       this.server = this.app.listen(port, () => {
         console.error(
@@ -361,7 +428,7 @@ class HTTPServer {
   /**
    * 서버 종료
    */
-  stop() {
+  stop(): void {
     if (this.server) {
       this.server.close();
       console.error("HTTP 서버가 종료되었습니다");
@@ -372,18 +439,18 @@ class HTTPServer {
 /**
  * 메인 함수
  */
-async function main() {
+async function main(): Promise<void> {
   try {
     // 설정 검증
     validateConfig();
 
     // Gemini 클라이언트 초기화
-    const geminiClient = new GeminiClient(config.geminiApiKey);
+    const geminiClient = new GeminiClient(config.geminiApiKey!);
 
     // HTTP 서버 초기화 및 실행
     const httpServer = new HTTPServer(geminiClient);
 
-    const port = process.env.PORT || 3000;
+    const port = parseInt(process.env.PORT || "3000", 10);
     await httpServer.start(port);
 
     // 우아한 종료 처리
@@ -405,7 +472,10 @@ async function main() {
 }
 
 // 직접 실행 시에만 서버 시작
-if (import.meta.url.endsWith("http-server.js")) {
+if (
+  import.meta.url.endsWith("http-server.ts") ||
+  import.meta.url.endsWith("http-server.js")
+) {
   main();
 }
 

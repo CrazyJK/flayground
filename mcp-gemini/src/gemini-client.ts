@@ -1,14 +1,29 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import {
+  ChatSession,
+  GenerativeModel,
+  GoogleGenerativeAI,
+} from "@google/generative-ai";
 import { config } from "./config.js";
+
+/**
+ * 생성 옵션 인터페이스
+ */
+export interface GenerateOptions {
+  temperature?: number;
+  maxOutputTokens?: number;
+}
 
 /**
  * Gemini API 클라이언트
  */
 export class GeminiClient {
+  public genAI: GoogleGenerativeAI;
+  public model: GenerativeModel;
+
   /**
-   * @param {string} apiKey - Gemini API 키
+   * @param apiKey - Gemini API 키
    */
-  constructor(apiKey) {
+  constructor(apiKey: string) {
     this.genAI = new GoogleGenerativeAI(apiKey);
     this.model = this.genAI.getGenerativeModel({
       model: config.gemini.model,
@@ -17,11 +32,14 @@ export class GeminiClient {
 
   /**
    * 텍스트 생성
-   * @param {string} prompt - 입력 프롬프트
-   * @param {Object} options - 생성 옵션
-   * @returns {Promise<string>} 생성된 텍스트
+   * @param prompt - 입력 프롬프트
+   * @param options - 생성 옵션
+   * @returns 생성된 텍스트
    */
-  async generateText(prompt, options = {}) {
+  async generateText(
+    prompt: string,
+    options: GenerateOptions = {}
+  ): Promise<string> {
     try {
       const generationConfig = {
         temperature: options.temperature || config.gemini.temperature,
@@ -36,7 +54,7 @@ export class GeminiClient {
 
       const response = result.response;
       return response.text();
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gemini API 오류:", error);
       throw new Error(`텍스트 생성 실패: ${error.message}`);
     }
@@ -44,11 +62,13 @@ export class GeminiClient {
 
   /**
    * 스트리밍 텍스트 생성
-   * @param {string} prompt - 입력 프롬프트
-   * @param {Function} onChunk - 청크 수신 콜백
-   * @returns {Promise<void>}
+   * @param prompt - 입력 프롬프트
+   * @param onChunk - 청크 수신 콜백
    */
-  async generateTextStream(prompt, onChunk) {
+  async generateTextStream(
+    prompt: string,
+    onChunk: (text: string) => void
+  ): Promise<void> {
     try {
       const result = await this.model.generateContentStream({
         contents: [{ role: "user", parts: [{ text: prompt }] }],
@@ -60,7 +80,7 @@ export class GeminiClient {
           onChunk(chunkText);
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Gemini 스트리밍 오류:", error);
       throw new Error(`스트리밍 생성 실패: ${error.message}`);
     }
@@ -68,9 +88,9 @@ export class GeminiClient {
 
   /**
    * 대화형 채팅 시작
-   * @returns {Object} 채팅 세션
+   * @returns 채팅 세션
    */
-  startChat() {
+  startChat(): ChatSession {
     return this.model.startChat({
       generationConfig: {
         temperature: config.gemini.temperature,

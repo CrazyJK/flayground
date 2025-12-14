@@ -33,18 +33,21 @@ MCP Gemini Server는 Google의 Gemini AI 모델을 Model Context Protocol(MCP) �
 ```
 mcp-gemini/
 ├── src/
-│   ├── index.js           # 애플리케이션 진입점
-│   ├── config.js          # 환경 설정 관리 (API 키, 모델 설정)
-│   ├── gemini-client.js   # Gemini API 클라이언트 래퍼
-│   └── mcp-server.js      # MCP 프로토콜 서버 구현
+│   ├── index.ts           # 애플리케이션 진입점 (TypeScript)
+│   ├── config.ts          # 환경 설정 관리 (API 키, 모델 설정)
+│   ├── gemini-client.ts   # Gemini API 클라이언트 래퍼
+│   ├── mcp-server.ts      # MCP 프로토콜 서버 구현
+│   └── http-server.ts     # HTTP REST API 서버 구현
+├── dist/                  # TypeScript 컴파일 결과물 (생성됨)
 ├── .env.example           # 환경 변수 템플릿
+├── tsconfig.json          # TypeScript 설정
 ├── package.json           # 프로젝트 의존성
 └── README.md              # 프로젝트 문서 (이 파일)
 ```
 
 ### 핵심 모듈
 
-#### 1. `index.js` - 메인 엔트리포인트
+#### 1. `index.ts` - 메인 엔트리포인트 (TypeScript)
 
 ```javascript
 // 서버 초기화 및 실행

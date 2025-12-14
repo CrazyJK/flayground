@@ -20,6 +20,9 @@ const HTML = `
 </div>
 <div class="search-group">
   <div>
+    <textarea id="translateResult" placeholder="Translation result"></textarea>
+  </div>
+  <div>
     <input type="text" id="inputTemp" />
   </div>
   <div>
@@ -179,8 +182,23 @@ export default class FlayRegister extends GroundFlay {
         }
         // 번역 호출
         if (inputTitle.value !== '' || inputDesc.value !== '') {
-          FlaySearch.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
+          // FlaySearch.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
           FlaySearch.translate.DeepL(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
+          fetch('http://localhost:3000/api/translate', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              text: inputTitle.value + ' ■ ' + inputDesc.value,
+            }),
+          })
+            .then((response) => response.json())
+            .then((data) => {
+              (this.querySelector('#translateResult') as HTMLInputElement).value = data.success ? data.translation : 'Error: ' + data.error;
+              console.debug('MyMCP translate', data);
+            })
+            .catch(console.error);
         }
       });
     });

@@ -1,3 +1,4 @@
+import { translate, type AIResponse } from '@ai/index-proxy';
 import GroundFlay from '@base/GroundFlay';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Actress } from '@lib/FlayFetch';
@@ -184,21 +185,15 @@ export default class FlayRegister extends GroundFlay {
         if (inputTitle.value !== '' || inputDesc.value !== '') {
           // FlaySearch.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
           FlaySearch.translate.DeepL(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
-          fetch('http://localhost:3000/api/translate', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              text: inputTitle.value + ' ■ ' + inputDesc.value,
-            }),
-          })
-            .then((response) => response.json())
-            .then((data) => {
-              (this.querySelector('#translateResult') as HTMLInputElement).value = data.success ? data.translation : 'Error: ' + data.error;
-              console.debug('MyMCP translate', data);
+          translate(inputTitle.value + ' ■ ' + inputDesc.value, 'ja', 'ko')
+            .then((response: AIResponse) => {
+              (this.querySelector('#translateResult') as HTMLInputElement).value = response.text;
+              console.debug('MyMCP translate', response);
             })
-            .catch(console.error);
+            .catch((error: Error) => {
+              (this.querySelector('#translateResult') as HTMLInputElement).value = 'Error: ' + error.message;
+              console.error('Translation error:', error);
+            });
         }
       });
     });

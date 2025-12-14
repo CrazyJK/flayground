@@ -68,3 +68,4 @@ requestfinished
 requestfailed
 toastui
 modelcontextprotocol
+VITE

@@ -60,3 +60,5 @@ dependencies-viewer.json
 # playwright test result
 test-results
 screenshots
+
+.env

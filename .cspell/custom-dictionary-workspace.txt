@@ -67,3 +67,4 @@ serviceworker
 requestfinished
 requestfailed
 toastui
+modelcontextprotocol

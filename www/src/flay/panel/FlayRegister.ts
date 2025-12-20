@@ -185,12 +185,25 @@ export default class FlayRegister extends GroundFlay {
         if (inputTitle.value !== '' || inputDesc.value !== '') {
           // FlaySearch.translate.Papago(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
           FlaySearch.translate.DeepL(inputTitle.value + ' ■■■■■■■■■■■■■■■■■■■■■■■ ' + inputDesc.value);
+
+          // #translateResult 에 ... 애니메이션 표시해서 번역 중임을 알림
+          const translateResultEl = this.querySelector('#translateResult') as HTMLInputElement;
+          let dotCount = 0;
+          translateResultEl.value = '';
+          const dotInterval = setInterval(() => {
+            dotCount = (dotCount + 1) % 4;
+            translateResultEl.value = 'Translating' + '.'.repeat(dotCount);
+          }, 500);
+
+          // MyMCP 번역 호출
           translate(inputTitle.value + ' ■ ' + inputDesc.value, 'ja', 'ko')
             .then((response: AIResponse) => {
+              clearInterval(dotInterval);
               (this.querySelector('#translateResult') as HTMLInputElement).value = response.text;
               console.debug('MyMCP translate', response);
             })
             .catch((error: Error) => {
+              clearInterval(dotInterval);
               (this.querySelector('#translateResult') as HTMLInputElement).value = 'Error: ' + error.message;
               console.error('Translation error:', error);
             });

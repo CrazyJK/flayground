@@ -25,11 +25,9 @@ export interface NotificationOptions {
  * Push 알림 관리 클래스
  */
 export default class PushNotification {
-  // VAPID 공개키 (서버 application.properties의 webpush.vapid.public-key와 동일)
-  private static readonly VAPID_PUBLIC_KEY = 'BFffI3DQ4gemRBWy7lULPPrrP2Fy1v-HCIlLEmMsiRI1YHR1g06Grzdm4r_OK7W1lkgwo5un2HpPoLxfLvWd5NQ';
-
   private static instance: PushNotification | null = null;
   private registration: ServiceWorkerRegistration | null = null;
+  private vapidPublicKey: string | null = null;
 
   /**
    * 싱글톤 인스턴스 반환
@@ -57,6 +55,28 @@ export default class PushNotification {
 
     this.registration = await navigator.serviceWorker.ready;
     console.log('[PushNotification] Initialized with registration:', this.registration);
+  }
+
+  /**
+   * 서버에서 VAPID 공개키 가져오기
+   */
+  private async fetchVapidPublicKey(): Promise<string> {
+    if (this.vapidPublicKey) {
+      return this.vapidPublicKey;
+    }
+
+    try {
+      const response = await fetch('/api/push/vapid-public-key');
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      this.vapidPublicKey = await response.text();
+      console.log('[PushNotification] VAPID public key fetched from server');
+      return this.vapidPublicKey;
+    } catch (error) {
+      console.error('[PushNotification] Failed to fetch VAPID public key:', error);
+      throw error;
+    }
   }
 
   /**
@@ -95,10 +115,9 @@ export default class PushNotification {
 
   /**
    * Push 구독 생성
-   * @param vapidPublicKey - VAPID 공개키 (Base64 URL-safe 형식). 생략 시 기본값 사용
    * @returns 구독 정보
    */
-  async subscribe(vapidPublicKey: string = PushNotification.VAPID_PUBLIC_KEY): Promise<PushSubscriptionData | null> {
+  async subscribe(): Promise<PushSubscriptionData | null> {
     if (!this.registration) {
       await this.initialize();
     }
@@ -113,6 +132,8 @@ export default class PushNotification {
 
       // 구독이 없으면 새로 생성
       if (!subscription) {
+        // 서버에서 VAPID 공개키 가져오기
+        const vapidPublicKey = await this.fetchVapidPublicKey();
         const convertedKey = this.urlBase64ToUint8Array(vapidPublicKey);
         subscription = await this.registration.pushManager.subscribe({
           userVisibleOnly: true,

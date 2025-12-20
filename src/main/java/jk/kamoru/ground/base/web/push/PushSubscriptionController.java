@@ -1,6 +1,7 @@
 package jk.kamoru.ground.base.web.push;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,8 +19,20 @@ import lombok.extern.slf4j.Slf4j;
 @RequestMapping("/api/push")
 public class PushSubscriptionController {
 
+  @Value("${webpush.vapid.public-key}")
+  private String vapidPublicKey;
+
   @Autowired
   private PushSubscriptionService pushService;
+
+  /**
+   * VAPID 공개키 조회
+   */
+  @GetMapping("/vapid-public-key")
+  public ResponseEntity<String> getVapidPublicKey() {
+    log.debug("VAPID public key requested");
+    return ResponseEntity.ok(vapidPublicKey);
+  }
 
   /**
    * Push 구독 등록

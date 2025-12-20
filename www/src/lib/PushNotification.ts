@@ -299,7 +299,9 @@ export default class PushNotification {
       icon: options.icon ?? '/dist/favicon/flay.png',
       badge: options.badge ?? '/dist/favicon/flay.png',
       data: options.data,
-      requireInteraction: false,
+      requireInteraction: true, // 사용자가 클릭할 때까지 유지
+      silent: false, // 소리 활성화
+      tag: 'flayground-notification', // 알림 그룹화
       vibrate: [200, 100, 200],
     } as unknown as NotificationOptions);
   }

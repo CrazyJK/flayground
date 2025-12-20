@@ -118,3 +118,33 @@ export async function getServiceWorkerStatus(): Promise<{
 
   return { supported, registered, controller };
 }
+
+if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  // 서비스 워커로부터 메시지 수신
+  navigator.serviceWorker.addEventListener('message', (event) => {
+    console.log('📬 [Service Worker] Message received:', event.data);
+
+    if (event.data && event.data.type === 'NOTIFICATION_CLICK') {
+      const data = event.data.data || {};
+      console.log('🔔 [Service Worker] Notification clicked:', data);
+
+      // 알림 클릭 시 업무 팝업 실행 (커스텀 이벤트 발생)
+      if (data.action) {
+        window.dispatchEvent(
+          new CustomEvent('serviceWorkerNotification', {
+            detail: data,
+          })
+        );
+      }
+    }
+  });
+
+  // SPA 페이지 (dist/index.html 등)에서
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    // 백그라운드 업데이트 감지 시
+    if (!confirm('앱이 업데이트되었습니다. 새로고침하시겠습니까?')) {
+      return;
+    }
+    location.reload();
+  });
+}

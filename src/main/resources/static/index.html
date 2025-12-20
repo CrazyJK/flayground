@@ -77,12 +77,6 @@
               checkStartParameter();
             });
 
-          // 서비스 워커 컨트롤러 변경 감지
-          navigator.serviceWorker.addEventListener("controllerchange", () => {
-            console.log("🔄 [Service Worker] Controller changed");
-            window.location.reload();
-          });
-
           // 서비스 워커로부터 메시지 수신
           navigator.serviceWorker.addEventListener("message", (event) => {
             console.log("📬 [Service Worker] Message received:", event.data);

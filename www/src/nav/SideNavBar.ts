@@ -3,6 +3,7 @@ import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import FlayStorage from '@lib/FlayStorage';
 import PushNotification from '@lib/PushNotification';
+import { getServiceWorkerStatus } from '@lib/ServiceWorkerManager';
 import { FlayPIP } from '@ui/FlayPIP';
 import { ModalWindow } from '@ui/ModalWindow';
 import './part/ThemeController';
@@ -264,6 +265,9 @@ export class SideNavBar extends GroundNav {
     } catch (error) {
       console.error('[SideNavBar] Failed to get push subscription status:', error);
     }
+
+    const { supported, registered, controller } = await getServiceWorkerStatus();
+    console.log(`[SideNavBar] Service Worker Status - Supported: ${supported}, Registered: ${registered}, Controller: ${controller}`);
   }
 
   /**

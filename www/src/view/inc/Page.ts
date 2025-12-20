@@ -12,3 +12,10 @@ import(/* webpackChunkName: "SideNavBar" */ '@nav/SideNavBar')
   });
 
 console.info(`%c\n\tFlayground : ${process.env['NODE_ENV']} : ${process.env['WATCH_MODE'] === 'true' ? 'Watch mode' : ''} 🕒 ${DateUtils.format(process.env['BUILD_TIME'])}\n`, 'color: orange; font-size: 20px; font-weight: bold;');
+
+// import(/* webpackChunkName: "NotificationPermission" */ '@ui/NotificationPermission')
+//   .then(({ NotificationPermission }) => {
+//     const notificationPermission = new NotificationPermission();
+//     document.body.appendChild(notificationPermission);
+//   })
+//   .catch(console.error);

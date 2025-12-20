@@ -1,0 +1,154 @@
+/**
+ * NotificationPermission 컴포넌트 스타일
+ */
+
+.notification-permission {
+  max-width: 500px;
+  margin: 20px auto;
+  padding: 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  color: white;
+
+  &__header {
+    margin-bottom: 15px;
+
+    h3 {
+      margin: 0;
+      font-size: 1.5rem;
+      font-weight: 600;
+      text-align: center;
+    }
+  }
+
+  &__content {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 15px;
+    border-radius: 8px;
+    backdrop-filter: blur(10px);
+  }
+
+  &__description {
+    margin: 0 0 15px 0;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    text-align: center;
+  }
+
+  &__status {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+  }
+
+  &__status-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+  }
+
+  &__status-value {
+    font-size: 0.9rem;
+    padding: 4px 12px;
+    border-radius: 12px;
+    font-weight: 500;
+
+    &--granted {
+      background: rgba(76, 175, 80, 0.3);
+    }
+
+    &--denied {
+      background: rgba(244, 67, 54, 0.3);
+    }
+
+    &--default {
+      background: rgba(158, 158, 158, 0.3);
+    }
+
+    &--error {
+      background: rgba(255, 152, 0, 0.3);
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  &__button {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    outline: none;
+
+    &:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    }
+
+    &:active {
+      transform: translateY(0);
+    }
+
+    &--enable {
+      background: linear-gradient(135deg, #4caf50 0%, #45a049 100%);
+      color: white;
+    }
+
+    &--disable {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      color: white;
+    }
+
+    &--test {
+      background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+      color: white;
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+
+      &:hover {
+        transform: none;
+        box-shadow: none;
+      }
+    }
+  }
+}
+
+// 다크 모드 지원
+@media (prefers-color-scheme: dark) {
+  .notification-permission {
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+  }
+}
+
+// 모바일 대응
+@media (max-width: 600px) {
+  .notification-permission {
+    margin: 10px;
+    padding: 15px;
+
+    &__header h3 {
+      font-size: 1.3rem;
+    }
+
+    &__button {
+      font-size: 0.85rem;
+      padding: 8px 16px;
+    }
+  }
+}

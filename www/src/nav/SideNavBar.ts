@@ -2,6 +2,7 @@ import GroundNav from '@base/GroundNav';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/DebugOutline';
 import FlayStorage from '@lib/FlayStorage';
+import PushNotification from '@lib/PushNotification';
 import { FlayPIP } from '@ui/FlayPIP';
 import { ModalWindow } from '@ui/ModalWindow';
 import './part/ThemeController';
@@ -73,9 +74,13 @@ export class SideNavBar extends GroundNav {
 
   #currentMenuName: string = ''; // 현재 메뉴
   #windowSizeIndicator: HTMLElement; // DOM 요소 캐싱
+  #pushNotification: PushNotification; // Push 알림 관리
 
   constructor() {
     super();
+
+    // Push 알림 인스턴스 초기화
+    this.#pushNotification = PushNotification.getInstance();
 
     // 이벤트 핸들러 바인딩을 생성자에서 한 번만 수행
     this.#boundMenuClickHandler = this.#menuClickHandler.bind(this);
@@ -94,6 +99,7 @@ export class SideNavBar extends GroundNav {
     </article>
     <footer>
       <div><flay-monitor></flay-monitor></div>
+      <div><input type="checkbox" id="push"><label for="push">Push</label></div>
       <div><a id="pip">PIP</a></div>
       <div><a id="memo">memo</a></div>
       <div><a id="debug">debug</a><i></i></div>
@@ -110,10 +116,11 @@ export class SideNavBar extends GroundNav {
 
   connectedCallback() {
     this.parentElement!.insertBefore(new SideNavOpener(), this);
+    this.classList.toggle('open', FlayStorage.local.getBoolean(SideNavBar.OPEN_STORAGE_KEY, false));
 
     this.#setActiveMenu();
     this.#setWindowSize();
-    this.classList.toggle('open', FlayStorage.local.getBoolean(SideNavBar.OPEN_STORAGE_KEY, false));
+    void this.#setWebPushCheckboxState();
 
     this.addEventListener('click', this.#boundMenuClickHandler);
     this.addEventListener('wheel', this.#boundWheelHandler, { passive: true });
@@ -188,6 +195,8 @@ export class SideNavBar extends GroundNav {
         default:
           break;
       }
+    } else if (tagName === 'LABEL' && (target as HTMLLabelElement).htmlFor === 'push') {
+      void this.#togglePush();
     } else if (target.closest('flay-monitor')) {
       window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=410');
     } else {
@@ -237,6 +246,69 @@ export class SideNavBar extends GroundNav {
    */
   #setWindowSize() {
     this.#windowSizeIndicator.innerHTML = ` ${window.innerWidth} x ${window.innerHeight}`;
+  }
+
+  /**
+   * Web Push 구독 상태를 체크박스에 표시
+   */
+  async #setWebPushCheckboxState() {
+    try {
+      await this.#pushNotification.initialize();
+      const subscription = await this.#pushNotification.getSubscription();
+      const checkbox = this.querySelector('#push') as HTMLInputElement;
+
+      if (checkbox) {
+        checkbox.checked = subscription !== null;
+        console.log('[SideNavBar] Push subscription status:', subscription ? '✅ 구독됨' : '❌ 구독 안 됨');
+      }
+    } catch (error) {
+      console.error('[SideNavBar] Failed to get push subscription status:', error);
+    }
+  }
+
+  /**
+   * Push 알림 토글 (구독/해제)
+   */
+  async #togglePush() {
+    const checkbox = this.querySelector('#push') as HTMLInputElement;
+    if (!checkbox) return;
+
+    try {
+      await this.#pushNotification.initialize();
+      const currentSubscription = await this.#pushNotification.getSubscription();
+
+      if (currentSubscription) {
+        // 현재 구독 중 → 해제
+        const success = await this.#pushNotification.unsubscribe();
+        if (success) {
+          checkbox.checked = false;
+          console.log('[SideNavBar] Push unsubscribed');
+        }
+      } else {
+        // 구독 안 됨 → 구독
+        const granted = await this.#pushNotification.requestPermission();
+        if (!granted) {
+          checkbox.checked = false;
+          alert('알림 권한이 거부되었습니다.');
+          return;
+        }
+
+        // VAPID 공개키는 PushNotification 클래스 내부에서 자동으로 사용
+        const subscription = await this.#pushNotification.subscribe();
+
+        if (subscription) {
+          checkbox.checked = true;
+          console.log('[SideNavBar] Push subscribed');
+        } else {
+          checkbox.checked = false;
+          alert('Push 알림 구독에 실패했습니다.');
+        }
+      }
+    } catch (error) {
+      console.error('[SideNavBar] Failed to toggle push:', error);
+      checkbox.checked = false;
+      alert('알림 설정 중 오류가 발생했습니다.');
+    }
   }
 }
 

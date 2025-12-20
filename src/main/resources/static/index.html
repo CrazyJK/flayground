@@ -24,13 +24,6 @@
       }
     </style>
     <script>
-      const urlParams = new URL(location.href).searchParams;
-      const start = urlParams.get("start");
-      if (start) {
-        location.href = start;
-      }
-    </script>
-    <script>
       // 서비스 워커 등록
       if ("serviceWorker" in navigator) {
         window.addEventListener("load", () => {
@@ -41,6 +34,15 @@
                 "✅ [Service Worker] Registered:",
                 registration.scope
               );
+
+              // 즉시 업데이트 상태 체크
+              if (registration.installing || registration.waiting) {
+                // 이미 업데이트가 진행 중이거나 대기 중
+                console.log("🔄 [Service Worker] Update in progress");
+              } else {
+                // 업데이트 없음 - start 파라미터 처리
+                checkStartParameter();
+              }
 
               // 서비스 워커 업데이트 체크
               registration.addEventListener("updatefound", () => {
@@ -60,6 +62,9 @@
                       ) {
                         newWorker.postMessage({ type: "SKIP_WAITING" });
                         window.location.reload();
+                      } else {
+                        // 업데이트 거부 시 start 파라미터 체크
+                        checkStartParameter();
                       }
                     }
                   });
@@ -68,6 +73,8 @@
             })
             .catch((error) => {
               console.error("❌ [Service Worker] Registration failed:", error);
+              // 등록 실패 시에도 start 파라미터는 처리
+              checkStartParameter();
             });
 
           // 서비스 워커 컨트롤러 변경 감지
@@ -95,6 +102,19 @@
             }
           });
         });
+      } else {
+        // Service Worker 미지원 브라우저는 바로 리다이렉션
+        checkStartParameter();
+      }
+
+      // start 파라미터 체크 함수
+      function checkStartParameter() {
+        const urlParams = new URL(location.href).searchParams;
+        const start = urlParams.get("start");
+        if (start) {
+          console.log("🔗 [Navigation] Redirecting to:", start);
+          location.href = start;
+        }
       }
     </script>
   </head>

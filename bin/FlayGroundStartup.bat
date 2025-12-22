@@ -38,10 +38,10 @@ goto execCmd
 
 :execCmd
 title FLAY_GROUND Build WWW
+echo.
 echo ====================================================================================================================
 echo Build WWW
 echo --------------------------------------------------------------------------------------------------------------------
-
 cd www
 start /wait /b cmd /c yarn install
 echo.
@@ -49,25 +49,23 @@ start /wait /b cmd /c node madge.cjs
 echo.
 start /wait /b cmd /c yarn run build
 
-title FLAY_GROUND Start MCP-Gemini HTTP Server
-echo.
-echo ====================================================================================================================
-echo MCP-Gemini HTTP Server started in background
-echo --------------------------------------------------------------------------------------------------------------------
-
-cd ..\mcp-gemini
-start /wait /b cmd /c yarn install
-start /b cmd /c "yarn http > %FLAY_GROUND_HOME%\logs\mcp-gemini.log 2>&1"
-echo MCP-Gemini logs: %FLAY_GROUND_HOME%\logs\mcp-gemini.log
-
 title FLAY_GROUND Build maven
 echo.
 echo ====================================================================================================================
 echo Build maven
 echo --------------------------------------------------------------------------------------------------------------------
-
 cd ..
 start /wait /b cmd /c mvn clean package
+
+title FLAY_GROUND Start MCP-Gemini HTTP Server
+echo.
+echo ====================================================================================================================
+echo MCP-Gemini HTTP Server started in background
+echo --------------------------------------------------------------------------------------------------------------------
+cd ..\mcp-gemini
+start /wait /b cmd /c yarn install
+start /b cmd /c "yarn http > %FLAY_GROUND_HOME%\logs\mcp-gemini.log 2>&1"
+echo MCP-Gemini logs: %FLAY_GROUND_HOME%\logs\mcp-gemini.log
 
 title FLAY_GROUND
 echo.
@@ -78,7 +76,6 @@ echo Using FLAY_GROUND: %FLAY_GROUND_HOME%
 echo Using JAVA_HOME:   %JAVA_HOME%
 echo Using JAVA_OPTS:   %JAVA_OPTS%
 echo --------------------------------------------------------------------------------------------------------------------
-
 "%JAVA_HOME%\bin\java.exe" %JAVA_OPTS% -jar "%FLAY_GROUND_HOME%\target\Flay-Ground.jar"
 
 :end

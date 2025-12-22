@@ -104,11 +104,11 @@ public class SseEmitters {
     } else if (object instanceof SseMessage) {
       SseMessage message = (SseMessage) object;
 
-      // Notice, CURL 타입은 Web Push로 전송
-      if (message.getType() == SseMessage.Type.Notice || message.getType() == SseMessage.Type.CURL) {
+      // Notice 타입은 Web Push로 전송
+      if (message.getType() == SseMessage.Type.Notice) {
         sendMessageViaPush(message);
       } else {
-        // Batch 등 나머지는 SSE로 전송
+        // Batch, CURL 등 나머지는 SSE로 전송
         send(EVENT.MESSAGE, object);
       }
     } else {

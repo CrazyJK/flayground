@@ -4,7 +4,7 @@
       "type": "java",
       "name": "Ground",
       "request": "launch",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/server",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
       "vmArgs": "-Dspring.profiles.active=ground-home,env-dev"
@@ -13,7 +13,7 @@
       "type": "java",
       "name": "Ground test",
       "request": "launch",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/server",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
       "vmArgs": "-Dspring.profiles.active=ground-test,env-dev"
@@ -22,7 +22,7 @@
       "type": "java",
       "name": "Ground SSL",
       "request": "launch",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/server",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
       "vmArgs": "-Dspring.profiles.active=ground-home,env-dev,env-ssl"
@@ -31,7 +31,7 @@
       "type": "java",
       "name": "Ground SSL test",
       "request": "launch",
-      "cwd": "${workspaceFolder}",
+      "cwd": "${workspaceFolder}/server",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
       "vmArgs": "-Dspring.profiles.active=ground-test,env-dev,env-ssl"

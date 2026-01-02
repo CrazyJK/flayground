@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <script>
+      async function load() {
+        await new Promise((resolve) => setTimeout(resolve, 2000));
+
+        document.querySelector('#message').innerHTML = 'loaded';
+        console.log(new Date(), '[inFrame.html] load');
+
+        parent.iframeLoaded();
+      }
+
+      window.addEventListener('DOMContentLoaded', (e) => {
+        console.log(new Date(), '[inFrame.html] DOMContentLoaded', e);
+      });
+    </script>
+  </head>
+  <body>
+    in frame content
+    <div id="message"></div>
+    <script>
+      load();
+    </script>
+  </body>
+</html>

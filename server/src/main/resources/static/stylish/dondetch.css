@@ -1,0 +1,23 @@
+@charset "UTF-8";
+
+/*
+	URLs starting with: http://www.dondetch.com/
+ */
+
+body > center:nth-child(12) > table > tbody > tr > td:nth-child(1),
+body > center:nth-child(12) > table > tbody > tr > td:nth-child(2),
+body > center:nth-child(12) > table > tbody > tr > td:nth-child(3) {
+  display: none;
+}
+
+/* 제목 강조 */
+body > center:nth-child(12) > table > tbody > tr > td:nth-child(4) > center > table > tbody > tr > td > h1,
+body > center:nth-child(12) > table > tbody > tr > td:nth-child(4) > table:nth-child(6) > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(1) > td:nth-child(2),
+body > center:nth-child(12) > table > tbody > tr > td:nth-child(4) > table:nth-child(6) > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(5) > td:nth-child(2),
+body > center:nth-child(12) > table > tbody > tr > td:nth-child(4) > table:nth-child(6) > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(6) > td:nth-child(2),
+body > center:nth-child(12) > table > tbody > tr > td:nth-child(4) > table:nth-child(6) > tbody > tr > td:nth-child(2) > table > tbody > tr:nth-child(1) > td > table > tbody > tr:nth-child(8) > td:nth-child(2) > font:nth-child(8) > a {
+  font-weight: 700;
+  font-size: 20px;
+  background-color: #ff08;
+  color: #000;
+}

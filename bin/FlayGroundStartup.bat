@@ -8,18 +8,18 @@ title FLAY_GROUND
 @REM Guess FLAY_GROUND_HOME
 set "CURRENT_DIR=%cd%"
 set "FLAY_GROUND_HOME=%CURRENT_DIR%"
-if exist "%FLAY_GROUND_HOME%\target" goto setEnv
+if exist "%FLAY_GROUND_HOME%\server\target" goto setJavaEnv
 cd ..
 set "FLAY_GROUND_HOME=%cd%"
-if exist "%FLAY_GROUND_HOME%\target" goto setEnv
+if exist "%FLAY_GROUND_HOME%\server\target" goto setJavaEnv
 echo invalid FLAY_GROUND_HOME: %FLAY_GROUND_HOME%
 goto end
 
-:setEnv
+:setJavaEnv
 set "JAVA_OPTS=%JAVA_OPTS% -Dfile.encoding=UTF-8"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.awt.headless=true"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.net.preferIPv4Stack=true"
-set "JAVA_OPTS=%JAVA_OPTS% -Dlogging.file.name=%FLAY_GROUND_HOME%\logs\flay-ground.log"
+set "JAVA_OPTS=%JAVA_OPTS% -Dlogging.file.name=%FLAY_GROUND_HOME%\server\logs\flay-ground.log"
 set "JAVA_OPTS=%JAVA_OPTS% -XX:+UseG1GC -XX:+DisableExplicitGC -XX:+UseStringDeduplication"
 
 if ""%1"" == """" goto setHTTP
@@ -64,8 +64,8 @@ echo MCP-Gemini HTTP Server started in background
 echo --------------------------------------------------------------------------------------------------------------------
 cd ..\mcp-gemini
 start /wait /b cmd /c yarn install
-start /b cmd /c "yarn http > %FLAY_GROUND_HOME%\logs\mcp-gemini.log 2>&1"
-echo MCP-Gemini logs: %FLAY_GROUND_HOME%\logs\mcp-gemini.log
+start /b cmd /c "yarn http > %FLAY_GROUND_HOME%\mcp-gemini\logs\mcp-gemini.log 2>&1"
+echo MCP-Gemini logs: %FLAY_GROUND_HOME%\mcp-gemini\logs\mcp-gemini.log
 
 title FLAY_GROUND
 echo.
@@ -76,6 +76,6 @@ echo Using FLAY_GROUND: %FLAY_GROUND_HOME%
 echo Using JAVA_HOME:   %JAVA_HOME%
 echo Using JAVA_OPTS:   %JAVA_OPTS%
 echo --------------------------------------------------------------------------------------------------------------------
-"%JAVA_HOME%\bin\java.exe" %JAVA_OPTS% -jar "%FLAY_GROUND_HOME%\target\Flay-Ground.jar"
+"%JAVA_HOME%\bin\java.exe" %JAVA_OPTS% -jar "%FLAY_GROUND_HOME%\server\target\Flay-Ground.jar"
 
 :end

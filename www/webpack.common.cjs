@@ -65,7 +65,7 @@ const entry = Object.values(entryPoints).reduce((acc, group) => {
 module.exports = {
   entry,
   output: {
-    path: path.resolve(__dirname, '../src/main/resources/static/dist'),
+    path: path.resolve(__dirname, '../server/src/main/resources/static/dist'),
     publicPath: '',
     clean: true,
   },

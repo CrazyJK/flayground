@@ -21,7 +21,7 @@ body {
 
         label {
           cursor: grab;
-          font-size: 0.8rem;
+          font-size: max(0.8rem, 16px); // 0.8rem과 16px 중 큰거로 설정
           margin: 0;
           padding: 0.1rem 0.4rem !important;
           border: 0 !important;
@@ -44,10 +44,8 @@ body {
 
       > .zone {
         flex: 1 1 auto;
-        font-size: 0.7rem;
         padding: 0.4rem;
         border-radius: 0.4rem;
-        // background-color: var(--color-bg-transparent);
         border: 0.1rem dashed rgba(128, 128, 128, 0.3);
         min-height: 2rem;
         display: flex;
@@ -63,13 +61,17 @@ body {
           background-color: transparent;
           border: 0;
           cursor: pointer;
-          font-size: 0.75rem;
-          opacity: 0.7;
-          transition: opacity 0.2s;
+          font-size: 0.7rem;
+          margin: 0 0.3rem 0 0;
+          padding: 0;
           z-index: 10;
-
+          opacity: 0.7;
+          transition:
+            opacity 0.2s,
+            color 0.2s;
           &:hover {
             opacity: 1;
+            color: red;
           }
         }
 
@@ -90,14 +92,13 @@ body {
             right: 0.2rem;
             transform: translateY(-50%);
             cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            line-height: 1;
             opacity: 0.7;
-            transition: opacity 0.2s;
-
+            transition:
+              opacity 0.2s,
+              color 0.2s;
             &:hover {
               opacity: 1;
+              color: red;
             }
           }
         }
@@ -119,7 +120,7 @@ body {
 
       > .add-zone-buttons {
         position: absolute;
-        top: calc(-1rem - 0.4rem);
+        top: -1.4rem;
         right: 0;
         display: flex;
         gap: 0.2rem;
@@ -129,8 +130,6 @@ body {
 
         button {
           font-size: 0.75rem;
-          display: flex;
-          justify-content: flex-start;
         }
       }
     }

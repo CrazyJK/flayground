@@ -232,8 +232,8 @@ class FlayTagPage {
     removeBtn.setAttribute('width', '16');
     removeBtn.setAttribute('height', '16');
     removeBtn.innerHTML = `
-      <line x1="5" y1="5" x2="11" y2="11" stroke="white" stroke-width="2" stroke-linecap="round" />
-      <line x1="11" y1="5" x2="5" y2="11" stroke="white" stroke-width="2" stroke-linecap="round" />
+      <line x1="5" y1="5" x2="11" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
+      <line x1="11" y1="5" x2="5" y2="11" stroke="currentColor" stroke-width="2" stroke-linecap="round" />
     `;
 
     removeBtn.addEventListener('click', (e) => {

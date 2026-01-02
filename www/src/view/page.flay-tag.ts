@@ -1,5 +1,6 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
+import FlayStorage from '@lib/FlayStorage';
 import GridControl from '@ui/GridControl';
 import './inc/Page';
 import './page.flay-tag.scss';
@@ -10,6 +11,7 @@ import './page.flay-tag.scss';
 class FlayTagPage {
   private static readonly EXCLUDE_TAG_GROUPS = ['grade', 'screen', 'etc'] as const;
   private static readonly DRAG_HIGHLIGHT_COLOR = 'var(--color-bg-transparent)';
+  private static readonly STORAGE_KEY = 'flay-tag-zones';
 
   private readonly tagContainer: HTMLDivElement;
   private readonly markerContainer: HTMLDivElement;
@@ -42,13 +44,22 @@ class FlayTagPage {
    * 초기 태그 존 설정
    */
   private setupInitialZones(): void {
-    const existingZone = document.querySelector('div.zone') as HTMLDivElement;
+    // 저장된 데이터 복원 시도
+    const savedZones = FlayStorage.local.getObject<{ type: 'and' | 'or'; tags: number[] }[]>(FlayTagPage.STORAGE_KEY, []);
 
-    if (existingZone) {
-      this.andTypeZones.push(existingZone);
-      this.setupDropZone(existingZone, 'and');
+    if (savedZones.length > 0) {
+      // 저장된 데이터가 있으면 복원
+      this.restoreZones(savedZones);
     } else {
-      this.addTagZone('and');
+      // 저장된 데이터가 없으면 기본 존 1개 생성
+      const existingZone = document.querySelector('div.zone') as HTMLDivElement;
+
+      if (existingZone) {
+        this.andTypeZones.push(existingZone);
+        this.setupDropZone(existingZone, 'and');
+      } else {
+        this.addTagZone('and');
+      }
     }
   }
 
@@ -129,6 +140,7 @@ class FlayTagPage {
     }
 
     this.updateFlayList();
+    this.saveZones();
   }
 
   /**
@@ -245,6 +257,7 @@ class FlayTagPage {
       originalLabel.draggable = true;
       originalLabel.classList.remove('selected-tag');
       this.updateFlayList();
+      this.saveZones();
     });
 
     clonedLabel.appendChild(removeBtn);
@@ -300,6 +313,7 @@ class FlayTagPage {
 
       zone.appendChild(clonedLabel);
       this.updateFlayList();
+      this.saveZones();
     });
   }
 
@@ -354,8 +368,62 @@ class FlayTagPage {
               tagGroup.appendChild(tagLabel);
             }
           });
+
+        // 태그 로드 후 저장된 존에 태그 복원
+        this.restoreTagsToZones();
       })
       .catch(console.error);
+  }
+
+  /**
+   * 현재 태그 존 상태를 저장
+   */
+  private saveZones(): void {
+    const allZones = [...this.andTypeZones, ...this.orTypeZones];
+    const zonesData = allZones.map((zone) => ({
+      type: zone.dataset.type as 'and' | 'or',
+      tags: this.getTagIds(zone),
+    }));
+    FlayStorage.local.setObject(FlayTagPage.STORAGE_KEY, zonesData);
+  }
+
+  /**
+   * 저장된 데이터로 태그 존 복원
+   */
+  private restoreZones(savedZones: { type: 'and' | 'or'; tags: number[] }[]): void {
+    savedZones.forEach((zoneData) => {
+      const zone = this.addTagZone(zoneData.type);
+      // 태그는 loadTagsAndGroups 이후에 복원
+      zone.dataset.savedTags = JSON.stringify(zoneData.tags);
+    });
+  }
+
+  /**
+   * 존에 태그 복원 (태그 로드 후 호출)
+   */
+  private restoreTagsToZones(): void {
+    const allZones = [...this.andTypeZones, ...this.orTypeZones];
+
+    allZones.forEach((zone) => {
+      const savedTagsStr = zone.dataset.savedTags;
+      if (savedTagsStr) {
+        const savedTags: number[] = JSON.parse(savedTagsStr);
+        delete zone.dataset.savedTags;
+
+        savedTags.forEach((tagId) => {
+          const originalLabel = this.tagContainer.querySelector(`label[data-id="${tagId}"]`) as HTMLLabelElement;
+          if (originalLabel) {
+            const clonedLabel = this.createDroppedTagLabel(originalLabel);
+            originalLabel.draggable = false;
+            originalLabel.classList.add('selected-tag');
+            zone.appendChild(clonedLabel);
+          }
+        });
+      }
+    });
+
+    // 복원 후 필터링 실행
+    this.updateFlayList();
   }
 }
 

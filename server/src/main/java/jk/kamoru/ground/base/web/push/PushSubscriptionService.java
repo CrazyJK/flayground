@@ -61,9 +61,14 @@ public class PushSubscriptionService {
   public void unsubscribe(String userId, PushSubscriptionDTO subscriptionDTO) {
     Optional<PushSubscription> subscription = subscriptionRepository.findByEndpoint(subscriptionDTO.getEndpoint());
 
-    if (subscription.isPresent() && subscription.get().getUserId().equals(userId)) {
-      subscriptionRepository.delete(subscription.get());
-      log.info("Deleted push subscription for user: {}", userId);
+    if (subscription.isPresent()) {
+      PushSubscription sub = subscription.get();
+      if (sub.getUserId().equals(userId)) {
+        subscriptionRepository.delete(sub);
+        log.info("Deleted push subscription for user: {}", userId);
+      } else {
+        log.warn("User ID mismatch for endpoint: {}", subscriptionDTO.getEndpoint());
+      }
     } else {
       log.warn("Push subscription not found for user: {} with endpoint: {}", userId, subscriptionDTO.getEndpoint());
     }
@@ -112,7 +117,11 @@ public class PushSubscriptionService {
    * @param subscription 구독 정보
    */
   public void deleteExpiredSubscription(PushSubscription subscription) {
-    subscriptionRepository.delete(subscription);
-    log.info("Deleted expired push subscription: {}", subscription.getId());
+    if (subscription != null) {
+      subscriptionRepository.delete(subscription);
+      log.info("Deleted expired push subscription: {}", subscription.getId());
+    } else {
+      log.warn("Attempted to delete null subscription");
+    }
   }
 }

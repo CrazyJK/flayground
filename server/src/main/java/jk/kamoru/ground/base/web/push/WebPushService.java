@@ -114,6 +114,11 @@ public class WebPushService {
   @Async("webPushExecutor")
   public CompletableFuture<Void> sendPushMessageAsync(PushSubscription subscription, String title, String body, Map<String, Object> data) {
     return CompletableFuture.runAsync(() -> {
+      if (subscription == null) {
+        log.warn("Attempted to send push to null subscription");
+        return;
+      }
+
       try {
         sendPushMessage(subscription, title, body, data);
       } catch (Exception e) {

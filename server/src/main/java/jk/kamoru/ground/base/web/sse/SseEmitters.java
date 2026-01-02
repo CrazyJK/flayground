@@ -28,7 +28,7 @@ public class SseEmitters {
   }
 
   private final List<SseEmitter> sseEmitters = new CopyOnWriteArrayList<>();
-  private final Long TIMEOUT = Duration.ofHours(6).toMillis();
+  private final long TIMEOUT = Duration.ofHours(6).toMillis();
 
   @Autowired(required = false)
   private WebPushService webPushService;

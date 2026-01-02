@@ -170,6 +170,7 @@ export const BlankFlay: Flay = {
 };
 
 const coverObjectURLMap = new Map<string, string>();
+const flaysByTagIdMap = new Map<number, Flay[]>();
 let tagGroupList: TagGroup[] | null = null;
 let tagList: Tag[] | null = null;
 
@@ -280,9 +281,20 @@ export default class FlayFetch {
   static async getCountOfFlay(name: string): Promise<number> {
     return (await ApiClient.get<number>(`/flay/count/actress/${name}`)) ?? 0;
   }
+  /**
+   * 태그 ID로 Flay 목록 조회 (캐싱)
+   * @param tagId - 태그 ID
+   * @returns Flay 목록
+   */
   static async getFlayListByTagId(tagId: number): Promise<Flay[]> {
-    const flays = (await ApiClient.get<Flay[]>(`/flay/find/tag/${tagId}`)) ?? [];
-    return flays.map((flay) => deepMerge(BlankFlay, flay));
+    if (!flaysByTagIdMap.has(tagId)) {
+      const flays = (await ApiClient.get<Flay[]>(`/flay/find/tag/${tagId}`)) ?? [];
+      flaysByTagIdMap.set(
+        tagId,
+        flays.map((flay) => deepMerge(BlankFlay, flay))
+      );
+    }
+    return flaysByTagIdMap.get(tagId)!;
   }
 
   static async getFlayListByStudio(name: string): Promise<Flay[]> {
@@ -485,5 +497,6 @@ export default class FlayFetch {
   static clearTag(): void {
     tagGroupList = null;
     tagList = null;
+    flaysByTagIdMap.clear();
   }
 }

@@ -14,22 +14,19 @@ class FlayTagPage {
   private readonly tagContainer: HTMLDivElement;
   private readonly markerContainer: HTMLDivElement;
   private readonly flayCountElement: HTMLSpanElement;
-  private readonly andTagZone: HTMLDivElement;
-  private readonly orTagZone: HTMLDivElement;
+  private readonly andOrContainer: HTMLDivElement;
+  private readonly andTagZones: HTMLDivElement[] = [];
+  private readonly orTagZones: HTMLDivElement[] = [];
 
   constructor() {
-    this.tagContainer = document.querySelector('body > header.sticky > div') as HTMLDivElement;
+    this.tagContainer = document.querySelector('body > header.sticky > div.tags') as HTMLDivElement;
     this.markerContainer = document.querySelector('body > main') as HTMLDivElement;
     this.flayCountElement = document.querySelector('#flayCount') as HTMLSpanElement;
-
-    this.andTagZone = document.querySelector('div.andTag') as HTMLDivElement;
-    this.andTagZone.dataset.type = 'and';
-
-    this.orTagZone = document.querySelector('div.orTag') as HTMLDivElement;
-    this.orTagZone.dataset.type = 'or';
+    this.andOrContainer = document.querySelector('div.zone-container') as HTMLDivElement;
 
     this.initializeGridControl();
-    this.setupDropZones();
+    this.setupInitialZones();
+    this.setupAddButtons();
     this.loadTagsAndGroups();
   }
 
@@ -42,12 +39,105 @@ class FlayTagPage {
   }
 
   /**
+   * 초기 태그 존 설정
+   */
+  private setupInitialZones(): void {
+    const existingZone = document.querySelector('div.zone') as HTMLDivElement;
+
+    if (existingZone) {
+      this.andTagZones.push(existingZone);
+      this.setupDropZone(existingZone, 'and');
+    } else {
+      this.addTagZone('and');
+    }
+  }
+
+  /**
+   * 태그 존 추가 버튼 설정
+   */
+  private setupAddButtons(): void {
+    const buttonContainer = document.createElement('div');
+    buttonContainer.className = 'add-zone-buttons';
+
+    ['and', 'or'].forEach((type) => {
+      const addZoneButton = document.createElement('button');
+      addZoneButton.textContent = type.toUpperCase();
+      addZoneButton.className = 'add-zone-btn';
+      addZoneButton.addEventListener('click', () => this.addTagZone(type as 'and' | 'or'));
+      buttonContainer.appendChild(addZoneButton);
+    });
+
+    this.andOrContainer.appendChild(buttonContainer);
+  }
+
+  /**
+   * 새로운 태그 존 추가
+   */
+  private addTagZone(type: 'and' | 'or'): HTMLDivElement {
+    const zone = document.createElement('div');
+    zone.className = 'zone';
+    zone.dataset.type = type;
+
+    // 제거 버튼 추가
+    const removeZoneBtn = document.createElement('button');
+    removeZoneBtn.textContent = '✕';
+    removeZoneBtn.className = 'remove-zone-btn';
+    removeZoneBtn.addEventListener('click', () => this.removeTagZone(zone, type));
+
+    zone.insertBefore(removeZoneBtn, zone.firstChild);
+
+    this.setupDropZone(zone, type);
+
+    if (type === 'and') {
+      this.andTagZones.push(zone);
+    } else {
+      this.orTagZones.push(zone);
+    }
+
+    // 버튼 컨테이너 바로 앞에 삽입
+    const buttonContainer = this.andOrContainer.querySelector('.add-zone-buttons');
+    this.andOrContainer.insertBefore(zone, buttonContainer);
+
+    return zone;
+  }
+
+  /**
+   * 태그 존 제거
+   */
+  private removeTagZone(zone: HTMLDivElement, type: 'and' | 'or'): void {
+    // 존 내의 모든 태그 원본으로 복구
+    const labels = zone.querySelectorAll('label[data-id]');
+    labels.forEach((label) => {
+      const tagId = label.getAttribute('data-id');
+      const originalLabel = this.tagContainer.querySelector(`label[data-id="${tagId}"]`) as HTMLLabelElement;
+      if (originalLabel) {
+        originalLabel.draggable = true;
+        originalLabel.classList.remove('selected-tag');
+      }
+    });
+
+    // 존 제거
+    zone.remove();
+
+    // 배열에서 제거
+    if (type === 'and') {
+      const index = this.andTagZones.indexOf(zone);
+      if (index > -1) this.andTagZones.splice(index, 1);
+    } else {
+      const index = this.orTagZones.indexOf(zone);
+      if (index > -1) this.orTagZones.splice(index, 1);
+    }
+
+    this.updateFlayList();
+  }
+
+  /**
    * 태그 ID 목록 추출
    */
   private getTagIds(zone: HTMLElement): number[] {
-    return Array.from(zone.querySelectorAll('label'))
-      .map((label) => label.dataset.id)
-      .filter((id): id is string => id !== undefined)
+    return Array.from(zone.querySelectorAll('label[data-id]'))
+      .map((label) => label.getAttribute('data-id'))
+      .filter((id): id is string => id !== null)
       .map((id) => parseInt(id, 10));
   }
 
@@ -55,18 +145,25 @@ class FlayTagPage {
    * Flay 목록을 필터링하여 표시
    */
   private updateFlayList(): void {
-    const andTags = this.getTagIds(this.andTagZone);
-    const orTags = this.getTagIds(this.orTagZone);
+    // 모든 존이 비어있으면 초기화
+    const hasAnyTags = this.andTagZones.some((zone) => this.getTagIds(zone).length > 0) || this.orTagZones.some((zone) => this.getTagIds(zone).length > 0);
 
-    if (andTags.length === 0 && orTags.length === 0) {
+    if (!hasAnyTags) {
       this.markerContainer.innerHTML = '';
       this.flayCountElement.innerHTML = '0';
       return;
     }
 
-    const allTagIds = [...andTags, ...orTags];
-    Promise.all(allTagIds.map((tagId) => FlayFetch.getFlayListByTagId(tagId)))
+    // 모든 태그 ID 수집 (캐시된 데이터 활용)
+    const allTagIds = new Set<number>();
+    this.andTagZones.forEach((zone) => this.getTagIds(zone).forEach((id) => allTagIds.add(id)));
+    this.orTagZones.forEach((zone) => this.getTagIds(zone).forEach((id) => allTagIds.add(id)));
+
+    Promise.all(Array.from(allTagIds).map((tagId) => FlayFetch.getFlayListByTagId(tagId)))
       .then((results) => {
+        console.log('=== Flay 필터링 시작 ===');
+        console.log('로드된 태그 ID:', Array.from(allTagIds));
+
         const flaysMap = new Map<string, Flay>();
         results.forEach((flays) => {
           flays.forEach((flay) => {
@@ -77,16 +174,31 @@ class FlayTagPage {
         });
 
         let filteredFlays = Array.from(flaysMap.values());
+        console.log(`초기 Flay 개수: ${filteredFlays.length}개`);
 
-        // AND 조건: 모든 andTags를 포함하는 flay만 필터링
-        if (andTags.length > 0) {
-          filteredFlays = filteredFlays.filter((flay) => andTags.every((tagId) => flay.video.tags.some((tag) => tag.id === tagId)));
-        }
+        // 각 AND 존별로 필터링 (존 내부의 모든 태그를 포함해야 함)
+        this.andTagZones.forEach((zone, index) => {
+          const zoneTags = this.getTagIds(zone);
+          if (zoneTags.length > 0) {
+            const beforeCount = filteredFlays.length;
+            filteredFlays = filteredFlays.filter((flay) => zoneTags.every((tagId) => flay.video.tags.some((tag) => tag.id === tagId)));
+            console.log(`AND 존 ${index + 1} [태그 ID: ${zoneTags.join(', ')}] 필터링: ${beforeCount}개 → ${filteredFlays.length}개 (${beforeCount - filteredFlays.length}개 제거)`);
+          }
+        });
 
-        // OR 조건: orTags 중 하나 이상을 포함하는 flay만 필터링
-        if (orTags.length > 0) {
-          filteredFlays = filteredFlays.filter((flay) => orTags.some((tagId) => flay.video.tags.some((tag) => tag.id === tagId)));
-        }
+        // 각 OR 존별로 필터링 (존 내부의 최소 1개 태그를 포함해야 함)
+        this.orTagZones.forEach((zone, index) => {
+          const zoneTags = this.getTagIds(zone);
+          if (zoneTags.length > 0) {
+            const beforeCount = filteredFlays.length;
+            filteredFlays = filteredFlays.filter((flay) => zoneTags.some((tagId) => flay.video.tags.some((tag) => tag.id === tagId)));
+            console.log(`OR 존 ${index + 1} [태그 ID: ${zoneTags.join(', ')}] 필터링: ${beforeCount}개 → ${filteredFlays.length}개 (${beforeCount - filteredFlays.length}개 제거)`);
+          }
+        });
+
+        console.log(`최종 필터링 결과: ${filteredFlays.length}개`);
+        console.log('필터링된 Flay opus:', filteredFlays.map((f) => f.opus).join(', '));
+        console.log('=== Flay 필터링 완료 ===\n');
 
         this.flayCountElement.innerHTML = filteredFlays.length.toString();
 
@@ -142,52 +254,52 @@ class FlayTagPage {
   /**
    * 드롭 영역 이벤트 설정
    */
-  private setupDropZones(): void {
-    [this.andTagZone, this.orTagZone].forEach((zone) => {
-      zone.addEventListener('dragover', (e) => {
-        e.preventDefault();
-        zone.style.backgroundColor = FlayTagPage.DRAG_HIGHLIGHT_COLOR;
-      });
+  private setupDropZone(zone: HTMLDivElement, _type: 'and' | 'or'): void {
+    zone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      zone.style.backgroundColor = FlayTagPage.DRAG_HIGHLIGHT_COLOR;
+    });
 
-      zone.addEventListener('dragleave', () => {
-        zone.style.backgroundColor = '';
-      });
+    zone.addEventListener('dragleave', () => {
+      zone.style.backgroundColor = '';
+    });
 
-      zone.addEventListener('drop', (e) => {
-        e.preventDefault();
-        zone.style.backgroundColor = '';
+    zone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      zone.style.backgroundColor = '';
 
-        const tagId = e.dataTransfer?.getData('text/plain');
-        if (!tagId) return;
+      const tagId = e.dataTransfer?.getData('text/plain');
+      if (!tagId) return;
 
-        // 원본 label 찾기
-        const originalLabel = this.tagContainer.querySelector(`label[data-id="${tagId}"]`) as HTMLLabelElement;
-        if (!originalLabel) return;
+      // 원본 label 찾기
+      const originalLabel = this.tagContainer.querySelector(`label[data-id="${tagId}"]`) as HTMLLabelElement;
+      if (!originalLabel) return;
 
-        // 이미 드롭된 태그인지 확인 (다른 영역에 있을 수 있음)
-        const existingInAnd = this.andTagZone.querySelector(`label[data-id="${tagId}"]`);
-        const existingInOr = this.orTagZone.querySelector(`label[data-id="${tagId}"]`);
+      // 이미 드롭된 태그인지 확인 (모든 존에서)
+      const allZones = [...this.andTagZones, ...this.orTagZones];
+      const existingInZones = allZones.map((z) => ({ zone: z, label: z.querySelector(`label[data-id="${tagId}"]`) })).filter((item) => item.label !== null);
 
-        // 다른 영역에 있으면 제거
-        if (existingInAnd && zone !== this.andTagZone) existingInAnd.remove();
-        if (existingInOr && zone !== this.orTagZone) existingInOr.remove();
-
-        // 같은 영역에 이미 있으면 무시
-        // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
-        if ((zone === this.andTagZone && existingInAnd) || (zone === this.orTagZone && existingInOr)) {
-          return;
+      // 다른 존에 있으면 제거
+      existingInZones.forEach((item) => {
+        if (item.zone !== zone) {
+          item.label!.remove();
         }
-
-        // 태그 복사본 생성
-        const clonedLabel = this.createDroppedTagLabel(originalLabel);
-
-        // 원본 태그 비활성화
-        originalLabel.draggable = false;
-        originalLabel.classList.add('selected-tag');
-
-        zone.appendChild(clonedLabel);
-        this.updateFlayList();
       });
+
+      // 같은 존에 이미 있으면 무시
+      if (existingInZones.some((item) => item.zone === zone)) {
+        return;
+      }
+
+      // 태그 복사본 생성
+      const clonedLabel = this.createDroppedTagLabel(originalLabel);
+
+      // 원본 태그 비활성화
+      originalLabel.draggable = false;
+      originalLabel.classList.add('selected-tag');
+
+      zone.appendChild(clonedLabel);
+      this.updateFlayList();
     });
   }
 

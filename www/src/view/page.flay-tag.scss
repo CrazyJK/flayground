@@ -20,11 +20,18 @@ body {
         }
 
         label {
-          cursor: pointer;
+          cursor: grab;
           font-size: 16px;
           margin: 0;
           padding: 2px 8px !important;
           border: 0 !important;
+
+          &.dragging-tag {
+            cursor: grabbing;
+          }
+          &.selected-tag {
+            opacity: 0.2;
+          }
         }
       }
     }
@@ -40,7 +47,7 @@ body {
         font-size: 14px;
         padding: 8px;
         border-radius: 8px;
-        background-color: var(--color-bg-transparent);
+        // background-color: var(--color-bg-transparent);
         border: 2px dashed rgba(128, 128, 128, 0.3);
         min-height: 40px;
         display: flex;
@@ -49,17 +56,14 @@ body {
         align-items: flex-start;
         transition: all 0.3s ease;
 
-        &:hover {
-          border-color: var(--color-primary);
-        }
-
         label {
-          cursor: move;
+          position: relative;
+          cursor: default;
           font-size: 14px;
           margin: 0;
-          padding: 4px 8px;
+          padding: 4px 24px 4px 8px;
+          border: 0;
           border-radius: 4px;
-          background-color: var(--color-primary);
           color: white;
           user-select: none;
 

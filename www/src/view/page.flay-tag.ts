@@ -1,7 +1,7 @@
-import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import FlayStorage from '@lib/FlayStorage';
 import GridControl from '@ui/GridControl';
+import FlayMarker from '../flay/domain/FlayMarker';
 import './inc/Page';
 import './page.flay-tag.scss';
 
@@ -14,7 +14,7 @@ class FlayTagPage {
   private static readonly STORAGE_KEY = 'flay-tag-zones';
 
   private readonly tagContainer: HTMLDivElement;
-  private readonly markerContainer: HTMLDivElement;
+  private readonly flayContainer: HTMLDivElement;
   private readonly flayCountElement: HTMLSpanElement;
   private readonly zoneContainer: HTMLDivElement;
   private readonly andTypeZones: HTMLDivElement[] = [];
@@ -22,7 +22,7 @@ class FlayTagPage {
 
   constructor() {
     this.tagContainer = document.querySelector('body > header.sticky > div.tags') as HTMLDivElement;
-    this.markerContainer = document.querySelector('body > main') as HTMLDivElement;
+    this.flayContainer = document.querySelector('body > main') as HTMLDivElement;
     this.flayCountElement = document.querySelector('#flayCount') as HTMLSpanElement;
     this.zoneContainer = document.querySelector('div.zone-container') as HTMLDivElement;
 
@@ -161,7 +161,7 @@ class FlayTagPage {
     const hasAnyTags = this.andTypeZones.some((zone) => this.getTagIds(zone).length > 0) || this.orTypeZones.some((zone) => this.getTagIds(zone).length > 0);
 
     if (!hasAnyTags) {
-      this.markerContainer.innerHTML = '';
+      this.flayContainer.innerHTML = '';
       this.flayCountElement.innerHTML = '0';
       return;
     }
@@ -214,8 +214,8 @@ class FlayTagPage {
 
         this.flayCountElement.innerHTML = filteredFlays.length.toString();
 
-        this.markerContainer.innerHTML = '';
-        this.markerContainer.append(...filteredFlays.map((flay) => new FlayMarker(flay, { cover: true })));
+        this.flayContainer.innerHTML = '';
+        this.flayContainer.append(...filteredFlays.map((flay) => new FlayMarker(flay, { cover: true })));
       })
       .catch((error) => {
         console.error(error);

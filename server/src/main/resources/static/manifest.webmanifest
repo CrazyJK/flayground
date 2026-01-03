@@ -1,12 +1,17 @@
 {
   "name": "Flayground",
   "short_name": "Flay",
+  "lang": "en-US, ja-JP, ko-KR",
   "start_url": "/?start=/dist/index.html",
+  "scope": "/",
   "display": "minimal-ui",
+  "orientation": "portrait-primary",
   "icons": [
     {
       "src": "/dist/favicon/flay.png",
-      "sizes": "256x256"
+      "sizes": "256x256",
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [

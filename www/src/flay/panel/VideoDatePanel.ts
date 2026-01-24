@@ -25,6 +25,7 @@ export default class VideoDatePanel extends GroundFlay {
     this.classList.add('video-date-panel');
     this.innerHTML = `
       <div class="mode-select">
+        <button type="button" value="S" id="lastShot">Shot</button>
         <button type="button" value="P" id="lastPlay">Play</button>
         <button type="button" value="A" id="lastAccess">Access</button>
         <button type="button" value="VM" id="lastModified">Modified(V)</button>
@@ -45,6 +46,8 @@ export default class VideoDatePanel extends GroundFlay {
     const mode = target.value;
     const getDate = (flay: Flay): number => {
       switch (mode) {
+        case 'S':
+          return flay.video.likes ? new Date(flay.video.likes[0] ?? 0).getTime() : 0;
         case 'P':
           return flay.video.lastPlay;
         case 'A':

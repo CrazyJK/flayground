@@ -117,7 +117,7 @@ class FlayTagPage {
    */
   private addTagZone(type: 'and' | 'or'): HTMLDivElement {
     const zone = document.createElement('div');
-    zone.className = 'zone';
+    zone.className = 'zone head-row';
     zone.dataset.type = type;
 
     // 제거 버튼 추가
@@ -389,7 +389,7 @@ class FlayTagPage {
           .forEach((group) => {
             const tagGroup = document.createElement('div');
             tagGroup.title = group.name;
-            tagGroup.className = 'tag-group';
+            tagGroup.className = 'tag-group head-row';
             tagGroup.id = `tag-group-${group.id}`;
             this.tagContainer.appendChild(tagGroup);
           });
@@ -506,14 +506,12 @@ class FlayTagPage {
    * 랭크 통계 렌더링
    */
   private renderRankStats(sortedRanks: [number, number][]): void {
+    const shouldHide = sortedRanks.length < FlayTagPage.MIN_ITEMS_TO_SHOW;
     this.rankStatsContainer.innerHTML = '';
-
-    if (sortedRanks.length < FlayTagPage.MIN_ITEMS_TO_SHOW) {
-      this.rankStatsContainer.style.display = 'none';
+    this.rankStatsContainer.classList.toggle('hide', shouldHide);
+    if (shouldHide) {
       return;
     }
-
-    this.rankStatsContainer.style.display = 'flex';
     sortedRanks.forEach(([rank, count]) => {
       const button = this.createStatsButton(`Rank ${rank}`, count, String(rank), this.selectedRank === rank, () => this.handleRankClick(rank));
       this.rankStatsContainer.appendChild(button);
@@ -524,14 +522,12 @@ class FlayTagPage {
    * 배우 통계 렌더링
    */
   private renderActressStats(sortedActresses: [string, number][]): void {
+    const shouldHide = sortedActresses.length < FlayTagPage.MIN_ITEMS_TO_SHOW;
     this.actressStatsContainer.innerHTML = '';
-
-    if (sortedActresses.length < FlayTagPage.MIN_ITEMS_TO_SHOW) {
-      this.actressStatsContainer.style.display = 'none';
+    this.actressStatsContainer.classList.toggle('hide', shouldHide);
+    if (shouldHide) {
       return;
     }
-
-    this.actressStatsContainer.style.display = 'flex';
     sortedActresses.forEach(([actress, count]) => {
       const button = this.createStatsButton(actress, count, actress, this.selectedActress === actress, () => this.handleActressClick(actress));
       this.actressStatsContainer.appendChild(button);
@@ -586,7 +582,7 @@ class FlayTagPage {
    */
   private updateStatsContainerVisibility(rankCount: number, actressCount: number): void {
     const shouldHide = rankCount < FlayTagPage.MIN_ITEMS_TO_SHOW && actressCount < FlayTagPage.MIN_ITEMS_TO_SHOW;
-    this.statsContainer.style.display = shouldHide ? 'none' : 'flex';
+    this.statsContainer.classList.toggle('hide', shouldHide);
   }
 
   /**

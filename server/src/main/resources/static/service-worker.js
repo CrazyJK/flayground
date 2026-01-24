@@ -1,98 +1,24 @@
 /**
  * Flayground Service Worker
  * - Web Push 알림 처리
- * - 정적 리소스 캐싱
- * - 오프라인 지원
  */
-
-const CACHE_VERSION = "flayground-v1";
-const CACHE_NAME = `${CACHE_VERSION}-static`;
 
 /**
  * 서비스 워커 설치 이벤트
- * 정적 리소스를 사전 캐싱
  */
 self.addEventListener("install", (event) => {
   console.log("[Service Worker] Installing...");
-
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log("[Service Worker] Precaching static assets");
-      // 기본 리소스만 캐싱 (나중에 확장)
-      return cache.addAll([
-        "/manifest.webmanifest",
-        "/favicon.ico",
-        "/error/400.html",
-        "/error/404.html",
-        "/dist/favicon/flay.ico",
-        "/dist/favicon/flay.png",
-        "/dist/favicon/flay_0.png",
-        "/dist/favicon/flay_1.png",
-        "/dist/favicon/flay_2.png",
-      ]);
-    })
-  );
-
   // 새 서비스 워커 즉시 활성화
   self.skipWaiting();
 });
 
 /**
  * 서비스 워커 활성화 이벤트
- * 이전 버전 캐시 정리
  */
 self.addEventListener("activate", (event) => {
   console.log("[Service Worker] Activating...");
-
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log("[Service Worker] Deleting old cache:", cacheName);
-            return caches.delete(cacheName);
-          }
-          return Promise.resolve();
-        })
-      );
-    })
-  );
-
   // 모든 클라이언트 즉시 제어
   return self.clients.claim();
-});
-
-/**
- * Fetch 이벤트 핸들러
- * Network-first 전략 (나중에 최적화)
- */
-self.addEventListener("fetch", (event) => {
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        // 정적 리소스는 캐시에 저장
-        if (event.request.method === "GET" && response.status === 200) {
-          const responseClone = response.clone();
-          caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseClone);
-          });
-        }
-        return response;
-      })
-      .catch(() => {
-        // 네트워크 실패 시 캐시에서 반환
-        return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse;
-          }
-          // 오프라인 폴백 페이지 (나중에 추가)
-          return new Response("Offline", {
-            status: 503,
-            statusText: "Service Unavailable",
-          });
-        });
-      })
-  );
 });
 
 /**
@@ -150,11 +76,11 @@ self.addEventListener("push", (event) => {
     self.registration
       .showNotification(notificationData.title, notificationData)
       .then(() =>
-        console.log("[Service Worker] Notification shown successfully")
+        console.log("[Service Worker] Notification shown successfully"),
       )
       .catch((error) =>
-        console.error("[Service Worker] Failed to show notification:", error)
-      )
+        console.error("[Service Worker] Failed to show notification:", error),
+      ),
   );
 });
 
@@ -189,7 +115,7 @@ self.addEventListener("notificationclick", (event) => {
         if (self.clients.openWindow) {
           await self.clients.openWindow(urlToOpen);
         }
-      })
+      }),
   );
 });
 
@@ -203,7 +129,7 @@ self.addEventListener("sync", (event) => {
   if (event.tag === "sync-data") {
     event.waitUntil(
       // 동기화 로직 (나중에 구현)
-      Promise.resolve()
+      Promise.resolve(),
     );
   }
 });
@@ -217,15 +143,5 @@ self.addEventListener("message", (event) => {
 
   if (event.data?.type === "SKIP_WAITING") {
     self.skipWaiting();
-  }
-
-  if (event.data?.type === "CLEAR_CACHE") {
-    event.waitUntil(
-      caches.keys().then((cacheNames) => {
-        return Promise.all(
-          cacheNames.map((cacheName) => caches.delete(cacheName))
-        );
-      })
-    );
   }
 });

@@ -208,6 +208,9 @@ class FlayTagPage {
           }
         });
 
+        // 정렬
+        filteredFlays.sort((a, b) => b.release.localeCompare(a.release));
+
         console.log(`최종 필터링 결과: ${filteredFlays.length}개`);
         console.log('필터링된 Flay opus:', filteredFlays.map((f) => f.opus).join(', '));
         console.log('=== Flay 필터링 완료 ===\n');

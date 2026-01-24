@@ -12,6 +12,28 @@ class FlayTagPage {
   private static readonly EXCLUDE_TAG_GROUPS = ['grade', 'screen', 'etc'] as const;
   private static readonly DRAG_HIGHLIGHT_COLOR = 'var(--color-bg-transparent)';
   private static readonly STORAGE_KEY = 'flay-tag-zones';
+  private static readonly MIN_ITEMS_TO_SHOW = 2;
+
+  // CSS 클래스명
+  private static readonly CLASS_NAMES = {
+    STATS_ITEM: 'stats-item',
+    ACTIVE: 'active',
+    DROPPED_TAG: 'dropped-tag',
+    SELECTED_TAG: 'selected-tag',
+    DRAGGING_TAG: 'dragging-tag',
+  } as const;
+
+  // DOM 셀렉터
+  private static readonly SELECTORS = {
+    TAG_CONTAINER: 'body > header.sticky > div.tags',
+    FLAY_CONTAINER: 'body > main',
+    FLAY_COUNT: '#flayCount',
+    ZONE_CONTAINER: 'div.zone-container',
+    STATS_CONTAINER: '.stats-container',
+    RANK_STATS: '.rank-stats',
+    ACTRESS_STATS: '.actress-stats',
+    FOOTER: 'body > footer',
+  } as const;
 
   private readonly tagContainer: HTMLDivElement;
   private readonly flayContainer: HTMLDivElement;
@@ -27,13 +49,13 @@ class FlayTagPage {
   private selectedActress: string | null = null;
 
   constructor() {
-    this.tagContainer = document.querySelector('body > header.sticky > div.tags') as HTMLDivElement;
-    this.flayContainer = document.querySelector('body > main') as HTMLDivElement;
-    this.flayCountElement = document.querySelector('#flayCount') as HTMLSpanElement;
-    this.zoneContainer = document.querySelector('div.zone-container') as HTMLDivElement;
-    this.statsContainer = document.querySelector('.stats-container') as HTMLDivElement;
-    this.rankStatsContainer = document.querySelector('.rank-stats') as HTMLDivElement;
-    this.actressStatsContainer = document.querySelector('.actress-stats') as HTMLDivElement;
+    this.tagContainer = document.querySelector(FlayTagPage.SELECTORS.TAG_CONTAINER) as HTMLDivElement;
+    this.flayContainer = document.querySelector(FlayTagPage.SELECTORS.FLAY_CONTAINER) as HTMLDivElement;
+    this.flayCountElement = document.querySelector(FlayTagPage.SELECTORS.FLAY_COUNT) as HTMLSpanElement;
+    this.zoneContainer = document.querySelector(FlayTagPage.SELECTORS.ZONE_CONTAINER) as HTMLDivElement;
+    this.statsContainer = document.querySelector(FlayTagPage.SELECTORS.STATS_CONTAINER) as HTMLDivElement;
+    this.rankStatsContainer = document.querySelector(FlayTagPage.SELECTORS.RANK_STATS) as HTMLDivElement;
+    this.actressStatsContainer = document.querySelector(FlayTagPage.SELECTORS.ACTRESS_STATS) as HTMLDivElement;
 
     this.initializeGridControl();
     this.setupInitialZones();
@@ -45,8 +67,8 @@ class FlayTagPage {
    * Grid Control 초기화
    */
   private initializeGridControl(): void {
-    const gridContainer = document.querySelector('body > footer')!;
-    gridContainer.appendChild(new GridControl('body > main'));
+    const gridContainer = document.querySelector(FlayTagPage.SELECTORS.FOOTER)!;
+    gridContainer.appendChild(new GridControl(FlayTagPage.SELECTORS.FLAY_CONTAINER));
   }
 
   /**
@@ -172,6 +194,7 @@ class FlayTagPage {
     if (!hasAnyTags) {
       this.flayContainer.innerHTML = '';
       this.flayCountElement.innerHTML = '0';
+      this.statsContainer.style.display = 'none';
       return;
     }
 
@@ -263,12 +286,12 @@ class FlayTagPage {
   private createDroppedTagLabel(originalLabel: HTMLLabelElement): HTMLLabelElement {
     const clonedLabel = originalLabel.cloneNode(true) as HTMLLabelElement;
     clonedLabel.draggable = false;
-    clonedLabel.className = 'dropped-tag';
+    clonedLabel.className = FlayTagPage.CLASS_NAMES.DROPPED_TAG;
 
     const removeBtn = this.createRemoveButton(() => {
       clonedLabel.remove();
       originalLabel.draggable = true;
-      originalLabel.classList.remove('selected-tag');
+      originalLabel.classList.remove(FlayTagPage.CLASS_NAMES.SELECTED_TAG);
       this.updateFlayList();
       this.saveZones();
     });
@@ -322,7 +345,7 @@ class FlayTagPage {
 
       // 원본 태그 비활성화
       originalLabel.draggable = false;
-      originalLabel.classList.add('selected-tag');
+      originalLabel.classList.add(FlayTagPage.CLASS_NAMES.SELECTED_TAG);
 
       zone.appendChild(clonedLabel);
       this.updateFlayList();
@@ -345,11 +368,11 @@ class FlayTagPage {
     tagLabel.addEventListener('dragstart', (e) => {
       e.dataTransfer!.effectAllowed = 'copy';
       e.dataTransfer!.setData('text/plain', tag.id.toString());
-      tagLabel.classList.add('dragging-tag');
+      tagLabel.classList.add(FlayTagPage.CLASS_NAMES.DRAGGING_TAG);
     });
 
     tagLabel.addEventListener('dragend', () => {
-      tagLabel.classList.remove('dragging-tag');
+      tagLabel.classList.remove(FlayTagPage.CLASS_NAMES.DRAGGING_TAG);
     });
 
     return tagLabel;
@@ -443,100 +466,127 @@ class FlayTagPage {
    * 랭크와 배우 통계 표시
    */
   private updateStatsDisplay(): void {
-    // 랭크 통계
+    const rankMap = this.buildRankMap();
+    const actressMap = this.buildActressMap();
+
+    const sortedRanks = Array.from(rankMap.entries()).sort((a, b) => a[0] - b[0]);
+    const sortedActresses = Array.from(actressMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+    this.renderRankStats(sortedRanks);
+    this.renderActressStats(sortedActresses);
+    this.updateStatsContainerVisibility(sortedRanks.length, sortedActresses.length);
+  }
+
+  /**
+   * 랭크 맵 생성
+   */
+  private buildRankMap(): Map<number, number> {
     const rankMap = new Map<number, number>();
     this.filteredFlays.forEach((flay) => {
       const rank = flay.video.rank || 0;
       rankMap.set(rank, (rankMap.get(rank) ?? 0) + 1);
     });
+    return rankMap;
+  }
 
-    // 배우 통계
+  /**
+   * 배우 맵 생성
+   */
+  private buildActressMap(): Map<string, number> {
     const actressMap = new Map<string, number>();
     this.filteredFlays.forEach((flay) => {
       flay.actressList.forEach((actress) => {
         actressMap.set(actress, (actressMap.get(actress) ?? 0) + 1);
       });
     });
+    return actressMap;
+  }
 
-    // 랭크 표시
+  /**
+   * 랭크 통계 렌더링
+   */
+  private renderRankStats(sortedRanks: [number, number][]): void {
     this.rankStatsContainer.innerHTML = '';
-    const sortedRanks = Array.from(rankMap.entries()).sort((a, b) => a[0] - b[0]);
 
-    // 랭크가 1개 이하면 숨김
-    if (sortedRanks.length <= 1) {
+    if (sortedRanks.length < FlayTagPage.MIN_ITEMS_TO_SHOW) {
       this.rankStatsContainer.style.display = 'none';
-    } else {
-      this.rankStatsContainer.style.display = 'flex';
-      sortedRanks.forEach(([rank, count]) => {
-        const button = document.createElement('button');
-        button.className = 'stats-item';
-        button.dataset.value = String(rank);
-        button.innerHTML = `Rank ${rank} <span class="count">${count}</span>`;
-
-        if (this.selectedRank === rank) {
-          button.classList.add('active');
-        }
-
-        button.addEventListener('click', () => {
-          if (this.selectedRank === rank) {
-            this.selectedRank = 0;
-            button.classList.remove('active');
-          } else {
-            this.rankStatsContainer.querySelectorAll('.stats-item').forEach((btn) => btn.classList.remove('active'));
-            this.selectedRank = rank;
-            button.classList.add('active');
-          }
-          this.displayFlays();
-        });
-
-        this.rankStatsContainer.appendChild(button);
-      });
+      return;
     }
 
-    // 배우 표시 (이름 순으로 정렬)
+    this.rankStatsContainer.style.display = 'flex';
+    sortedRanks.forEach(([rank, count]) => {
+      const button = this.createStatsButton(`Rank ${rank}`, count, String(rank), this.selectedRank === rank, () => this.handleRankClick(rank));
+      this.rankStatsContainer.appendChild(button);
+    });
+  }
+
+  /**
+   * 배우 통계 렌더링
+   */
+  private renderActressStats(sortedActresses: [string, number][]): void {
     this.actressStatsContainer.innerHTML = '';
-    const sortedActresses = Array.from(actressMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
 
-    // 배우가 1명 이하면 숨김
-    if (sortedActresses.length <= 1) {
+    if (sortedActresses.length < FlayTagPage.MIN_ITEMS_TO_SHOW) {
       this.actressStatsContainer.style.display = 'none';
-    } else {
-      this.actressStatsContainer.style.display = 'flex';
-      sortedActresses.forEach(([actress, count]) => {
-        const button = document.createElement('button');
-        button.className = 'stats-item';
-        button.dataset.value = actress;
-        button.innerHTML = `${actress} <span class="count">${count}</span>`;
-
-        if (this.selectedActress === actress) {
-          button.classList.add('active');
-        }
-
-        button.addEventListener('click', () => {
-          if (this.selectedActress === actress) {
-            this.selectedActress = null;
-            button.classList.remove('active');
-          } else {
-            this.actressStatsContainer.querySelectorAll('.stats-item').forEach((btn) => btn.classList.remove('active'));
-            this.selectedActress = actress;
-            button.classList.add('active');
-          }
-          this.displayFlays();
-        });
-
-        this.actressStatsContainer.appendChild(button);
-      });
+      return;
     }
 
-    // 랭크와 배우가 모두 숨겨졌으면 stats-container도 숨김
-    const isRankHidden = sortedRanks.length <= 1;
-    const isActressHidden = sortedActresses.length <= 1;
+    this.actressStatsContainer.style.display = 'flex';
+    sortedActresses.forEach(([actress, count]) => {
+      const button = this.createStatsButton(actress, count, actress, this.selectedActress === actress, () => this.handleActressClick(actress));
+      this.actressStatsContainer.appendChild(button);
+    });
+  }
 
-    if (isRankHidden && isActressHidden) {
-      this.statsContainer.style.display = 'none';
-    } else {
-      this.statsContainer.style.display = 'flex';
+  /**
+   * 통계 버튼 생성 (공통 로직)
+   */
+  private createStatsButton(label: string, count: number, value: string, isActive: boolean, onClick: () => void): HTMLButtonElement {
+    const button = document.createElement('button');
+    button.className = FlayTagPage.CLASS_NAMES.STATS_ITEM;
+    button.dataset.value = value;
+    button.innerHTML = `${label} <span class="count">${count}</span>`;
+
+    if (isActive) {
+      button.classList.add(FlayTagPage.CLASS_NAMES.ACTIVE);
     }
+
+    button.addEventListener('click', onClick);
+    return button;
+  }
+
+  /**
+   * 랭크 클릭 핸들러
+   */
+  private handleRankClick(rank: number): void {
+    if (this.selectedRank === rank) {
+      this.selectedRank = 0;
+    } else {
+      this.selectedRank = rank;
+    }
+    this.renderRankStats(Array.from(this.buildRankMap().entries()).sort((a, b) => a[0] - b[0]));
+    this.displayFlays();
+  }
+
+  /**
+   * 배우 클릭 핸들러
+   */
+  private handleActressClick(actress: string): void {
+    if (this.selectedActress === actress) {
+      this.selectedActress = null;
+    } else {
+      this.selectedActress = actress;
+    }
+    this.renderActressStats(Array.from(this.buildActressMap().entries()).sort((a, b) => a[0].localeCompare(b[0])));
+    this.displayFlays();
+  }
+
+  /**
+   * 통계 컨테이너 표시/숨김 업데이트
+   */
+  private updateStatsContainerVisibility(rankCount: number, actressCount: number): void {
+    const shouldHide = rankCount < FlayTagPage.MIN_ITEMS_TO_SHOW && actressCount < FlayTagPage.MIN_ITEMS_TO_SHOW;
+    this.statsContainer.style.display = shouldHide ? 'none' : 'flex';
   }
 
   /**

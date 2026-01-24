@@ -17,14 +17,23 @@ class FlayTagPage {
   private readonly flayContainer: HTMLDivElement;
   private readonly flayCountElement: HTMLSpanElement;
   private readonly zoneContainer: HTMLDivElement;
+  private readonly statsContainer: HTMLDivElement;
+  private readonly rankStatsContainer: HTMLDivElement;
+  private readonly actressStatsContainer: HTMLDivElement;
   private readonly andTypeZones: HTMLDivElement[] = [];
   private readonly orTypeZones: HTMLDivElement[] = [];
+  private filteredFlays: Flay[] = [];
+  private selectedRank: number = 0;
+  private selectedActress: string | null = null;
 
   constructor() {
     this.tagContainer = document.querySelector('body > header.sticky > div.tags') as HTMLDivElement;
     this.flayContainer = document.querySelector('body > main') as HTMLDivElement;
     this.flayCountElement = document.querySelector('#flayCount') as HTMLSpanElement;
     this.zoneContainer = document.querySelector('div.zone-container') as HTMLDivElement;
+    this.statsContainer = document.querySelector('.stats-container') as HTMLDivElement;
+    this.rankStatsContainer = document.querySelector('.rank-stats') as HTMLDivElement;
+    this.actressStatsContainer = document.querySelector('.actress-stats') as HTMLDivElement;
 
     this.initializeGridControl();
     this.setupInitialZones();
@@ -215,10 +224,11 @@ class FlayTagPage {
         console.log('필터링된 Flay opus:', filteredFlays.map((f) => f.opus).join(', '));
         console.log('=== Flay 필터링 완료 ===\n');
 
-        this.flayCountElement.innerHTML = filteredFlays.length.toString();
-
-        this.flayContainer.innerHTML = '';
-        this.flayContainer.append(...filteredFlays.map((flay) => new FlayMarker(flay, { cover: true })));
+        this.filteredFlays = filteredFlays;
+        this.selectedRank = 0;
+        this.selectedActress = null;
+        this.updateStatsDisplay();
+        this.displayFlays();
       })
       .catch((error) => {
         console.error(error);
@@ -427,6 +437,127 @@ class FlayTagPage {
 
     // 복원 후 필터링 실행
     this.updateFlayList();
+  }
+
+  /**
+   * 랭크와 배우 통계 표시
+   */
+  private updateStatsDisplay(): void {
+    // 랭크 통계
+    const rankMap = new Map<number, number>();
+    this.filteredFlays.forEach((flay) => {
+      const rank = flay.video.rank || 0;
+      rankMap.set(rank, (rankMap.get(rank) ?? 0) + 1);
+    });
+
+    // 배우 통계
+    const actressMap = new Map<string, number>();
+    this.filteredFlays.forEach((flay) => {
+      flay.actressList.forEach((actress) => {
+        actressMap.set(actress, (actressMap.get(actress) ?? 0) + 1);
+      });
+    });
+
+    // 랭크 표시
+    this.rankStatsContainer.innerHTML = '';
+    const sortedRanks = Array.from(rankMap.entries()).sort((a, b) => a[0] - b[0]);
+
+    // 랭크가 1개 이하면 숨김
+    if (sortedRanks.length <= 1) {
+      this.rankStatsContainer.style.display = 'none';
+    } else {
+      this.rankStatsContainer.style.display = 'flex';
+      sortedRanks.forEach(([rank, count]) => {
+        const button = document.createElement('button');
+        button.className = 'stats-item';
+        button.dataset.value = String(rank);
+        button.innerHTML = `Rank ${rank} <span class="count">${count}</span>`;
+
+        if (this.selectedRank === rank) {
+          button.classList.add('active');
+        }
+
+        button.addEventListener('click', () => {
+          if (this.selectedRank === rank) {
+            this.selectedRank = 0;
+            button.classList.remove('active');
+          } else {
+            this.rankStatsContainer.querySelectorAll('.stats-item').forEach((btn) => btn.classList.remove('active'));
+            this.selectedRank = rank;
+            button.classList.add('active');
+          }
+          this.displayFlays();
+        });
+
+        this.rankStatsContainer.appendChild(button);
+      });
+    }
+
+    // 배우 표시 (이름 순으로 정렬)
+    this.actressStatsContainer.innerHTML = '';
+    const sortedActresses = Array.from(actressMap.entries()).sort((a, b) => a[0].localeCompare(b[0]));
+
+    // 배우가 1명 이하면 숨김
+    if (sortedActresses.length <= 1) {
+      this.actressStatsContainer.style.display = 'none';
+    } else {
+      this.actressStatsContainer.style.display = 'flex';
+      sortedActresses.forEach(([actress, count]) => {
+        const button = document.createElement('button');
+        button.className = 'stats-item';
+        button.dataset.value = actress;
+        button.innerHTML = `${actress} <span class="count">${count}</span>`;
+
+        if (this.selectedActress === actress) {
+          button.classList.add('active');
+        }
+
+        button.addEventListener('click', () => {
+          if (this.selectedActress === actress) {
+            this.selectedActress = null;
+            button.classList.remove('active');
+          } else {
+            this.actressStatsContainer.querySelectorAll('.stats-item').forEach((btn) => btn.classList.remove('active'));
+            this.selectedActress = actress;
+            button.classList.add('active');
+          }
+          this.displayFlays();
+        });
+
+        this.actressStatsContainer.appendChild(button);
+      });
+    }
+
+    // 랭크와 배우가 모두 숨겨졌으면 stats-container도 숨김
+    const isRankHidden = sortedRanks.length <= 1;
+    const isActressHidden = sortedActresses.length <= 1;
+
+    if (isRankHidden && isActressHidden) {
+      this.statsContainer.style.display = 'none';
+    } else {
+      this.statsContainer.style.display = 'flex';
+    }
+  }
+
+  /**
+   * 선택된 랭크/배우에 따라 Flay 표시
+   */
+  private displayFlays(): void {
+    let displayFlays = this.filteredFlays;
+
+    // 랭크 필터링
+    if (this.selectedRank) {
+      displayFlays = displayFlays.filter((flay) => (flay.video.rank || 0) === this.selectedRank);
+    }
+
+    // 배우 필터링
+    if (this.selectedActress) {
+      displayFlays = displayFlays.filter((flay) => flay.actressList.some((actress) => actress === this.selectedActress));
+    }
+
+    this.flayCountElement.innerHTML = displayFlays.length.toString();
+    this.flayContainer.innerHTML = '';
+    this.flayContainer.append(...displayFlays.map((flay) => new FlayMarker(flay, { cover: true })));
   }
 }
 

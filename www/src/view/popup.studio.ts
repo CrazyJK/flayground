@@ -26,8 +26,8 @@ class PopupStudio {
 
     // get Parameter
     const urlParams = new URL(location.href).searchParams;
-    const name = urlParams.get('name');
-    if (!name) {
+    this.name = urlParams.get('name')!;
+    if (!this.name) {
       console.error('Name parameter is missing');
       return;
     }

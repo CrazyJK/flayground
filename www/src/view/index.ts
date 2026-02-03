@@ -1,7 +1,4 @@
-import FlayMarker from '@flay/domain/FlayMarker';
-import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
-import { popupActress } from '@lib/FlaySearch';
-import favoriteSVG from '@svg/favorite';
+import type { Actress, Flay } from '@lib/FlayFetch';
 import './inc/Page';
 import './index.scss';
 
@@ -13,10 +10,13 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
   .finally(() => {
     // Application is initialized
 
-    FlayFetch.getFullyFlayList()
-      .then((fullyFlayList) => {
+    Promise.all([import(/* webpackChunkName: "FlayMarker" */ '@flay/domain/FlayMarker'), import(/* webpackChunkName: "FlayFetch" */ '@lib/FlayFetch'), import(/* webpackChunkName: "FlaySearch" */ '@lib/FlaySearch'), import(/* webpackChunkName: "favorite" */ '@svg/favorite')])
+      .then(async ([{ default: FlayMarker }, { default: FlayFetch }, { popupActress }, { default: favoriteSVG }]) => {
+        return FlayFetch.getFullyFlayList().then((fullyFlayList) => ({ fullyFlayList, FlayMarker, FlayFetch, popupActress, favoriteSVG }));
+      })
+      .then(({ fullyFlayList, FlayMarker, popupActress, favoriteSVG }) => {
         const style = document.createElement('style');
-        document.head.appendChild(style);
+        style.id = 'actress-flay-summary-style';
         style.textContent = `
           main {
             height: 100%;
@@ -26,9 +26,9 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
             position: sticky;
             top: 0;
             background-color: var(--color-bg);
-            z-index: 10;
             margin: 0;
             padding: 1rem;
+            z-index: 10;
           }
           main > table {
             border-collapse: collapse;
@@ -64,11 +64,10 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
           }
           main > table svg {
             height: 1.5rem;
-          }
-        `;
+          }`;
+        document.head.appendChild(style);
 
         const main = document.createElement('main');
-        document.body.appendChild(main);
         main.innerHTML = `<h1>Actress Flay Summary</h1>
           <table>
             <thead>
@@ -83,6 +82,7 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
             <tbody>
             </tbody>
           </table>`;
+        document.body.appendChild(main);
 
         const h1Height = main.querySelector('h1')!.offsetHeight;
         main.querySelector('thead')!.style.top = `${h1Height - 1}px`;
@@ -112,15 +112,9 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
         )
           .sort((a, b) => {
             let diff = b.flayLikesCount - a.flayLikesCount;
-            if (diff === 0) {
-              diff = b.flayTotalCount - a.flayTotalCount;
-            }
-            if (diff === 0) {
-              diff = Number(b.favorite) - Number(a.favorite);
-            }
-            if (diff === 0) {
-              diff = a.name.localeCompare(b.name);
-            }
+            if (diff === 0) diff = b.flayTotalCount - a.flayTotalCount;
+            if (diff === 0) diff = Number(b.favorite) - Number(a.favorite);
+            if (diff === 0) diff = a.name.localeCompare(b.name);
             return diff;
           })
           .forEach(({ name, favorite, flayTotalCount, flayLikesCount, flayList }) => {
@@ -130,8 +124,7 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
               <td style="${favorite ? 'color: var(--color-checked)' : ''}">${favoriteSVG}</td>
               <td>${flayTotalCount}</td>
               <td>${flayLikesCount}</td>
-              <td></td>
-            `;
+              <td></td>`;
             tr.querySelector('td:last-child')!.append(...flayList.sort((a, b) => (b.video.likes?.length || 0) - (a.video.likes?.length || 0)).map((flay) => new FlayMarker(flay)));
             tr.querySelector('td:first-child')!.addEventListener('click', () => popupActress(name));
           });

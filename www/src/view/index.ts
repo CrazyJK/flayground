@@ -1,4 +1,5 @@
 import type { Actress, Flay } from '@lib/FlayFetch';
+import NumberUtils from '../lib/NumberUtils';
 import './inc/Page';
 import './index.scss';
 
@@ -26,6 +27,7 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
             position: sticky;
             top: 0;
             background-color: var(--color-bg);
+            min-height: 5rem;
             margin: 0;
             padding: 1rem;
             z-index: 10;
@@ -34,32 +36,35 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
             border-collapse: collapse;
             width: 100%;
           }
-          main > table th, main > table td {
+          main > table > thead {
+            position: sticky;
+            top: calc(5rem - 1px);
+            background-color: var(--color-bg);
+            z-index: 9;
+          }
+          main > table th,
+          main > table td {
             border: 1px solid var(--color-border);
             padding: 0.5rem;
             text-align: left;
           }
-          main > table > thead {
-            position: sticky;
-            top: 0;
-            background-color: var(--color-bg);
-            z-index: 9;
-          }
-          main > table th:nth-child(1), main > table td:nth-child(1) {
+          main > table td.name {
             cursor: pointer;
             white-space: nowrap;
           }
-          main > table td:nth-child(1):hover {
+          main > table td.name:hover {
             text-shadow: var(--text-shadow-hover);
           }
-          main > table th:nth-child(2), main > table td:nth-child(2) {
+          main > table td.favorite {
             text-align: center;
           }
-          main > table th:nth-child(3), main > table td:nth-child(3),
-          main > table th:nth-child(4), main > table td:nth-child(4) {
+          main > table td.count,
+          main > table td.likes,
+          main > table td.likes-sum,
+          main > table td.score {
             text-align: right;
           }
-          main > table th:nth-child(5), main > table td:nth-child(5) {
+          main > table td.flay-marker {
             width: auto;
           }
           main > table svg {
@@ -72,20 +77,19 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
           <table>
             <thead>
               <tr>
-                <th>Actress</th>
-                <th>Favorite</th>
-                <th>Total</th>
-                <th>Likes</th>
-                <th>Flay Marker</th>
+                <th class="name">Actress</th>
+                <th class="favorite">Fav.</th>
+                <th class="count">Total</th>
+                <th class="likes">Shot</th>
+                <th class="likes-sum">Shots</th>
+                <th class="score">Score</th>
+                <th class="flay-marker">Flay</th>
               </tr>
             </thead>
             <tbody>
             </tbody>
           </table>`;
         document.body.appendChild(main);
-
-        const h1Height = main.querySelector('h1')!.offsetHeight;
-        main.querySelector('thead')!.style.top = `${h1Height - 1}px`;
 
         const tbody = main.querySelector('tbody')!;
 
@@ -107,26 +111,33 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
             favorite: actress.favorite,
             flayTotalCount: flayList.length,
             flayLikesCount: flayList.filter((flay) => flay.video.likes?.length > 0).length,
+            flayLikesSum: flayList.reduce((sum, flay) => sum + (flay.video.likes?.length || 0), 0),
+            flayScoreSum: flayList.reduce((sum, flay) => sum + (flay.score || 0), 0),
             flayList,
           })
         )
           .sort((a, b) => {
-            let diff = b.flayLikesCount - a.flayLikesCount;
+            let diff = 0;
+            if (diff === 0) diff = b.flayScoreSum - a.flayScoreSum;
+            if (diff === 0) diff = b.flayLikesSum - a.flayLikesSum;
+            if (diff === 0) diff = b.flayLikesCount - a.flayLikesCount;
             if (diff === 0) diff = b.flayTotalCount - a.flayTotalCount;
             if (diff === 0) diff = Number(b.favorite) - Number(a.favorite);
             if (diff === 0) diff = a.name.localeCompare(b.name);
             return diff;
           })
-          .forEach(({ name, favorite, flayTotalCount, flayLikesCount, flayList }) => {
+          .forEach(({ name, favorite, flayTotalCount, flayLikesCount, flayLikesSum, flayScoreSum, flayList }) => {
             const tr = tbody.appendChild(document.createElement('tr'));
             tr.innerHTML = `
-              <td>${name}</td>
-              <td style="${favorite ? 'color: var(--color-checked)' : ''}">${favoriteSVG}</td>
-              <td>${flayTotalCount}</td>
-              <td>${flayLikesCount}</td>
-              <td></td>`;
-            tr.querySelector('td:last-child')!.append(...flayList.sort((a, b) => (b.video.likes?.length || 0) - (a.video.likes?.length || 0)).map((flay) => new FlayMarker(flay)));
-            tr.querySelector('td:first-child')!.addEventListener('click', () => popupActress(name));
+              <td class="name">${name}</td>
+              <td class="favorite" style="${favorite ? 'color: var(--color-checked)' : ''}">${favoriteSVG}</td>
+              <td class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</td>
+              <td class="likes">${NumberUtils.formatWithCommas(flayLikesCount)}</td>
+              <td class="likes-sum">${NumberUtils.formatWithCommas(flayLikesSum)}</td>
+              <td class="score">${NumberUtils.formatWithCommas(flayScoreSum)}</td>
+              <td class="flay-marker"></td>`;
+            tr.querySelector('.flay-marker')!.append(...flayList.sort((a, b) => (b.video.likes?.length || 0) - (a.video.likes?.length || 0)).map((flay) => new FlayMarker(flay)));
+            tr.querySelector('.name')!.addEventListener('click', () => popupActress(name));
           });
       })
       .catch(console.error);

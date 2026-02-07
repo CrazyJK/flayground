@@ -78,7 +78,7 @@ body {
             > img {
               /* Add property to improve rendering performance */
               contain: paint;
-              max-height: fit-content;
+              // max-height: fit-content;
             }
           }
           &.opus > label {

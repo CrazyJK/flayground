@@ -93,6 +93,7 @@ export class ActressFlaySummary extends GroundFlay {
           <span class="count">Total</span>
           <span class="likes">Shot</span>
           <span class="likes-sum">Shots</span>
+          <span class="rank">Rank</span>
           <span class="score">Score</span>
           <span class="flay-marker">Flay</span>
         </li>
@@ -125,6 +126,7 @@ export class ActressFlaySummary extends GroundFlay {
         flayLikesCount: flayList.filter((flay) => flay.video.likes?.length > 0).length,
         flayLikesSum: flayList.reduce((sum, flay) => sum + (flay.video.likes?.length || 0), 0),
         flayScoreSum: flayList.reduce((sum, flay) => sum + (flay.score || 0), 0),
+        flayRankAvg: (flayList.reduce((sum, flay) => sum + (flay.video.rank || 0), 0) / flayList.length).toFixed(1),
         flayList,
       })
     );
@@ -145,7 +147,7 @@ export class ActressFlaySummary extends GroundFlay {
     const fragment = document.createDocumentFragment();
 
     // 테이블 행 생성
-    actressFlayData.forEach(({ name, favorite, age, flayTotalCount, flayLikesCount, flayLikesSum, flayScoreSum, flayList }) => {
+    actressFlayData.forEach(({ name, favorite, age, flayTotalCount, flayLikesCount, flayLikesSum, flayScoreSum, flayRankAvg, flayList }) => {
       // Flay 정렬
       const sortedFlayList = flayList.sort((a, b) => {
         let diff = 0;
@@ -171,6 +173,7 @@ export class ActressFlaySummary extends GroundFlay {
         <span class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</span>
         <span class="likes">${NumberUtils.formatWithCommas(flayLikesCount)}</span>
         <span class="likes-sum">${NumberUtils.formatWithCommas(flayLikesSum)}</span>
+        <span class="rank">${flayRankAvg}</span>
         <span class="score">${NumberUtils.formatWithCommas(flayScoreSum)}</span>
         <span class="flay-marker"></span>`;
 

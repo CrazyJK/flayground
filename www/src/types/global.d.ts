@@ -23,3 +23,21 @@ declare module '*.svg' {
   const content: string;
   export default content;
 }
+
+/**
+ * webpack DefinePlugin으로 정의된 환경 변수 타입 선언
+ */
+declare namespace NodeJS {
+  interface ProcessEnv {
+    /** 빌드 환경 (development | production) */
+    readonly NODE_ENV: 'development' | 'production';
+    /** 빌드 시간 (ISO 8601 형식) */
+    readonly BUILD_TIME: string;
+    /** watch 모드 여부 */
+    readonly WATCH_MODE: string;
+  }
+}
+
+declare const process: {
+  env: NodeJS.ProcessEnv;
+};

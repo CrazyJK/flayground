@@ -2,6 +2,7 @@ import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch, { type Actress, type Flay } from '@lib/FlayFetch';
 import { popupActress } from '@lib/FlaySearch';
+import FlayStorage from '@lib/FlayStorage';
 import NumberUtils from '@lib/NumberUtils';
 import favoriteSVG from '@svg/favorite';
 import ApiClient from '../../lib/ApiClient';
@@ -51,6 +52,11 @@ const UNKNOWN_ACTRESS: Actress = {
 const DEFAULT_SORT_BY: SortBy = 'count';
 
 /**
+ * 스토리지 키
+ */
+const STORAGE_KEY_SORT_BY = 'actress-flay-summary.sortBy';
+
+/**
  * 에러 메시지
  */
 const ERROR_MESSAGE = '데이터를 불러오는데 실패했습니다.';
@@ -94,7 +100,7 @@ export class ActressFlaySummary extends GroundFlay {
    */
   connectedCallback(): void {
     this.#createMainContainer();
-    void this.#prepareData();
+    void this.#start();
   }
 
   /**
@@ -117,7 +123,7 @@ export class ActressFlaySummary extends GroundFlay {
             <input type="radio" name="sorting" id="age" value="age" title="나이 기준 정렬" /><label for="age">Age</label>
           </span>
           <span class="count">
-            <input type="radio" name="sorting" id="count" value="count" title="총 개수 기준 정렬" checked /><label for="count">Total</label>
+            <input type="radio" name="sorting" id="count" value="count" title="총 개수 기준 정렬" /><label for="count">Total</label>
           </span>
           <span class="likes">
             <input type="radio" name="sorting" id="likes" value="likes" title="좋아요 개수 기준 정렬" /><label for="likes">Shot</label>
@@ -142,12 +148,24 @@ export class ActressFlaySummary extends GroundFlay {
 
     // 소팅 라디오 이벤트
     this.querySelectorAll<HTMLInputElement>('input[name="sorting"]').forEach((radio) => {
-      radio.addEventListener('change', () => {
-        if (radio.checked) {
-          this.#sortAndRender(radio.value as SortBy);
-        }
-      });
+      radio.addEventListener('change', () => this.#sortAndRender());
     });
+  }
+
+  /**
+   * 데이터 준비 및 초기화 시작
+   *
+   * @private
+   */
+  async #start(): Promise<void> {
+    await this.#prepareData();
+
+    // 저장된 정렬 기준 복원
+    const savedSortBy = FlayStorage.local.get(STORAGE_KEY_SORT_BY, DEFAULT_SORT_BY) as SortBy;
+    // 정렬 기준 라디오 버튼 선택
+    const radio = this.querySelector<HTMLInputElement>(`input[name="sorting"][value="${savedSortBy}"]`)!;
+    radio.checked = true;
+    radio.dispatchEvent(new Event('change'));
   }
 
   /**
@@ -210,8 +228,6 @@ export class ActressFlaySummary extends GroundFlay {
           firstFlay: sortedFlayList[0]!,
         };
       });
-
-      this.#sortAndRender(DEFAULT_SORT_BY);
     } catch (error) {
       console.error('Failed to prepare data:', error);
       this.#showError(ERROR_MESSAGE);
@@ -222,9 +238,11 @@ export class ActressFlaySummary extends GroundFlay {
    * 정렬 기준에 따라 데이터를 정렬하고 렌더링
    *
    * @private
-   * @param {SortBy} sortBy - 정렬 기준
    */
-  #sortAndRender(sortBy: SortBy): void {
+  #sortAndRender(): void {
+    // 현재 선택된 정렬 기준
+    const sortBy = this.querySelector<HTMLInputElement>('input[name="sorting"]:checked')!.value as SortBy;
+
     // 배우 데이터 정렬
     this.#actressFlayData.sort((a, b) => {
       // 선택된 기준을 최우선으로
@@ -269,6 +287,9 @@ export class ActressFlaySummary extends GroundFlay {
     });
 
     this.#renderList();
+
+    // 정렬 기준 저장
+    FlayStorage.local.set(STORAGE_KEY_SORT_BY, sortBy);
   }
 
   /**

@@ -22,6 +22,12 @@ actress-flay-summary {
         background-color: var(--color-bg);
         z-index: 9;
         font-weight: bold;
+
+        label {
+          cursor: pointer;
+          margin-left: 0.25rem;
+          font-size: 0.75rem;
+        }
       }
 
       &:not(.header) {
@@ -33,6 +39,12 @@ actress-flay-summary {
           &:hover {
             text-shadow: var(--text-shadow-hover);
           }
+        }
+
+        span.flay-marker {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
         }
       }
 
@@ -74,9 +86,6 @@ actress-flay-summary {
 
       span.flay-marker {
         flex: 1 1 auto;
-        display: flex;
-        flex-direction: row;
-        flex-wrap: wrap;
       }
     }
 

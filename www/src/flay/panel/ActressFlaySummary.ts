@@ -35,6 +35,19 @@ import './ActressFlaySummary.scss';
  * @version 1.0.0
  */
 export class ActressFlaySummary extends GroundFlay {
+  /** 배우별 Flay 집계 데이터 */
+  #actressFlayData: Array<{
+    name: string;
+    favorite: boolean;
+    age: number;
+    flayTotalCount: number;
+    flayLikesCount: number;
+    flayLikesSum: number;
+    flayScoreSum: number;
+    flayRankAvg: number;
+    flayList: Flay[];
+  }> = [];
+
   /**
    * DOM에 연결될 때 호출되는 Web Component 라이프사이클 메서드
    * 컴포넌트 초기화, 데이터 로드 및 렌더링을 순차적으로 실행합니다.
@@ -43,7 +56,50 @@ export class ActressFlaySummary extends GroundFlay {
    * @memberof ActressFlaySummary
    */
   connectedCallback(): void {
+    this.#createMainContainer();
     void this.#initialize();
+  }
+
+  /**
+   * 메인 컨테이너 생성
+   *
+   * @private
+   */
+  #createMainContainer(): void {
+    this.innerHTML = `
+      <ul>
+        <li class="header">
+          <span class="name">Actress <span id="toggleCover">Cover</span></span>
+          <span class="favorite">Fav.</span>
+          <span class="age">Age</span>
+          <span class="count">Total</span>
+          <span class="likes">Shot</span>
+          <span class="likes-sum">Shots</span>
+          <span class="rank">Rank</span>
+          <span class="score">Score</span>
+          <span class="flay-marker">Flay
+            <input type="radio" name="sorting" id="count" value="count" title="총 개수 기준 정렬" checked /><label for="count">Total</label>
+            <input type="radio" name="sorting" id="likes" value="likes" title="좋아요 개수 기준 정렬" /><label for="likes">Shot</label>
+            <input type="radio" name="sorting" id="likes-sum" value="likes-sum" title="좋아요 합계 기준 정렬" /><label for="likes-sum">Shots</label>
+            <input type="radio" name="sorting" id="rank" value="rank" title="평균 랭크 기준 정렬" /><label for="rank">Rank</label>
+            <input type="radio" name="sorting" id="score" value="score" title="점수 합계 기준 정렬" /><label for="score">Score</label>
+          </span>
+        </li>
+      </ul>`;
+
+    // Cover 토글 이벤트
+    this.querySelector('#toggleCover')!.addEventListener('click', () => {
+      this.querySelector('ul')!.classList.toggle('cover');
+    });
+
+    // 소팅 라디오 이벤트
+    this.querySelectorAll<HTMLInputElement>('input[name="sorting"]').forEach((radio) => {
+      radio.addEventListener('change', () => {
+        if (radio.checked) {
+          this.#sortAndRender(radio.value as 'count' | 'likes' | 'likes-sum' | 'rank' | 'score');
+        }
+      });
+    });
   }
 
   /**
@@ -54,20 +110,21 @@ export class ActressFlaySummary extends GroundFlay {
   async #initialize(): Promise<void> {
     try {
       const fullyFlayList = await FlayFetch.getFullyFlayList();
-      this.#render(fullyFlayList);
+      this.#prepareData(fullyFlayList);
+      this.#sortAndRender('count'); // 기본 정렬 기준
     } catch (error) {
       console.error('Failed to load flay list:', error);
-      this.innerHTML = '<div class="error">데이터를 불러오는데 실패했습니다.</div>';
+      this.querySelector('ul')!.innerHTML = '<li class="error">데이터를 불러오는데 실패했습니다.</li>';
     }
   }
 
   /**
-   * ActressFlaySummary 렌더링
+   * 배우별 Flay 데이터 집계
    *
    * @private
    * @param {Array<{actress: Actress[], flay: Flay}>} fullyFlayList - 배우와 Flay 정보를 포함한 전체 목록
    */
-  #render(fullyFlayList: Array<{ actress: Actress[]; flay: Flay }>): void {
+  #prepareData(fullyFlayList: Array<{ actress: Actress[]; flay: Flay }>): void {
     // Unknown 배우 정의
     const unknownActress: Actress = {
       name: 'Unknown',
@@ -83,29 +140,8 @@ export class ActressFlaySummary extends GroundFlay {
       coverSize: 0,
     };
 
-    // 메인 컨테이너 생성
-    this.innerHTML = `
-      <ul>
-        <li class="header">
-          <span class="name">Actress <span id="toggleCover">Cover</span></span>
-          <span class="favorite">Fav.</span>
-          <span class="age">Age</span>
-          <span class="count">Total</span>
-          <span class="likes">Shot</span>
-          <span class="likes-sum">Shots</span>
-          <span class="rank">Rank</span>
-          <span class="score">Score</span>
-          <span class="flay-marker">Flay</span>
-        </li>
-      </ul>`;
-
-    // Cover 토글 이벤트
-    this.querySelector('#toggleCover')!.addEventListener('click', () => {
-      this.querySelector('ul')!.classList.toggle('cover');
-    });
-
     // 배우별로 Flay 집계
-    const actressFlayData = Array.from(
+    this.#actressFlayData = Array.from(
       fullyFlayList
         .flatMap(({ actress, flay }) => (actress.length > 0 ? actress.map((a) => ({ actress: a, flay })) : [{ actress: unknownActress, flay }]))
         .reduce((map, { actress, flay }) => {
@@ -118,50 +154,98 @@ export class ActressFlaySummary extends GroundFlay {
           return map;
         }, new Map<string, { actress: Actress; flayList: Flay[] }>())
         .entries(),
-      ([name, { actress, flayList }]) => ({
-        name,
-        favorite: actress.favorite,
-        age: new Date().getFullYear() - parseInt((actress.birth || String(new Date().getFullYear())).substring(0, 4)),
-        flayTotalCount: flayList.length,
-        flayLikesCount: flayList.filter((flay) => flay.video.likes?.length > 0).length,
-        flayLikesSum: flayList.reduce((sum, flay) => sum + (flay.video.likes?.length || 0), 0),
-        flayScoreSum: flayList.reduce((sum, flay) => sum + (flay.score || 0), 0),
-        flayRankAvg: flayList.reduce((sum, flay) => sum + (flay.video.rank || 0), 0) / flayList.length,
-        flayList,
-      })
-    );
+      ([name, { actress, flayList }]) => {
+        // Flay 정렬 (한 번만 수행)
+        const sortedFlayList = flayList.sort((a, b) => {
+          let diff = 0;
+          if (diff === 0) diff = (b.video.likes?.length > 0 ? 1 : 0) - (a.video.likes?.length > 0 ? 1 : 0);
+          if (diff === 0) diff = a.actressList.length - b.actressList.length;
+          if (diff === 0) diff = b.score - a.score;
+          if (diff === 0) diff = (b.video.likes?.length || 0) - (a.video.likes?.length || 0);
+          if (diff === 0) diff = a.release.localeCompare(b.release);
+          return diff;
+        });
 
-    // 정렬: 점수 합계 > 좋아요 합계 > 좋아요 개수 > 총 개수 > 즐겨찾기 > 이름
-    actressFlayData.sort((a, b) => {
+        return {
+          name,
+          favorite: actress.favorite,
+          age: new Date().getFullYear() - parseInt((actress.birth || String(new Date().getFullYear())).substring(0, 4)),
+          flayTotalCount: sortedFlayList.length,
+          flayLikesCount: sortedFlayList.filter((flay) => flay.video.likes?.length > 0).length,
+          flayLikesSum: sortedFlayList.reduce((sum, flay) => sum + (flay.video.likes?.length || 0), 0),
+          flayScoreSum: sortedFlayList.reduce((sum, flay) => sum + (flay.score || 0), 0),
+          flayRankAvg: sortedFlayList.reduce((sum, flay) => sum + (flay.video.rank || 0), 0) / sortedFlayList.length,
+          flayList: sortedFlayList,
+        };
+      }
+    );
+  }
+
+  /**
+   * 정렬 기준에 따라 데이터를 정렬하고 렌더링
+   *
+   * @private
+   * @param {'count' | 'likes' | 'likes-sum' | 'rank' | 'score'} sortBy - 정렬 기준
+   */
+  #sortAndRender(sortBy: 'count' | 'likes' | 'likes-sum' | 'rank' | 'score'): void {
+    // 정렬
+    this.#actressFlayData.sort((a, b) => {
       let diff = 0;
-      if (diff === 0) diff = b.flayLikesCount - a.flayLikesCount;
-      if (diff === 0) diff = b.flayLikesSum - a.flayLikesSum;
+
+      // 선택된 기준을 최우선으로
+      switch (sortBy) {
+        case 'count':
+          diff = b.flayTotalCount - a.flayTotalCount;
+          break;
+        case 'likes':
+          diff = b.flayLikesCount - a.flayLikesCount;
+          break;
+        case 'likes-sum':
+          diff = b.flayLikesSum - a.flayLikesSum;
+          break;
+        case 'rank':
+          diff = b.flayRankAvg - a.flayRankAvg;
+          break;
+        case 'score':
+          diff = b.flayScoreSum - a.flayScoreSum;
+          break;
+      }
+
+      // 나머지 기준들로 2차 정렬
       if (diff === 0) diff = b.flayScoreSum - a.flayScoreSum;
+      if (diff === 0) diff = b.flayLikesSum - a.flayLikesSum;
+      if (diff === 0) diff = b.flayLikesCount - a.flayLikesCount;
       if (diff === 0) diff = b.flayRankAvg - a.flayRankAvg;
       if (diff === 0) diff = b.flayTotalCount - a.flayTotalCount;
       if (diff === 0) diff = Number(b.favorite) - Number(a.favorite);
       if (diff === 0) diff = a.name.localeCompare(b.name);
+
       return diff;
     });
+
+    this.#renderList();
+  }
+
+  /**
+   * 배우 목록 렌더링
+   *
+   * @private
+   */
+  #renderList(): void {
+    // 기존 리스트 항목 제거 (헤더 제외)
+    const ul = this.querySelector('ul')!;
+    const items = ul.querySelectorAll('li:not(.header)');
+    items.forEach((item) => item.remove());
 
     // DocumentFragment 생성
     const fragment = document.createDocumentFragment();
 
     // 테이블 행 생성
-    actressFlayData.forEach(({ name, favorite, age, flayTotalCount, flayLikesCount, flayLikesSum, flayScoreSum, flayRankAvg, flayList }) => {
-      // Flay 정렬
-      const sortedFlayList = flayList.sort((a, b) => {
-        let diff = 0;
-        if (diff === 0) diff = (b.video.likes?.length > 0 ? 1 : 0) - (a.video.likes?.length > 0 ? 1 : 0);
-        if (diff === 0) diff = a.actressList.length - b.actressList.length;
-        if (diff === 0) diff = b.score - a.score;
-        if (diff === 0) diff = (b.video.likes?.length || 0) - (a.video.likes?.length || 0);
-        if (diff === 0) diff = a.release.localeCompare(b.release);
-        return diff;
-      });
-      const firstFlay = sortedFlayList[0]!;
+    this.#actressFlayData.forEach(({ name, favorite, age, flayTotalCount, flayLikesCount, flayLikesSum, flayScoreSum, flayRankAvg, flayList }) => {
+      // 대표 Flay 선택
+      const firstFlay = flayList[0]!;
       // FlayMarker 생성
-      const flayMarkers = sortedFlayList.map((flay) => new FlayMarker(flay));
+      const flayMarkers = flayList.map((flay) => new FlayMarker(flay));
 
       // 테이블 행 생성
       const row = document.createElement('li');
@@ -188,8 +272,8 @@ export class ActressFlaySummary extends GroundFlay {
       fragment.appendChild(row);
     });
 
-    // tbody에 DocumentFragment 추가
-    this.querySelector('ul')!.appendChild(fragment);
+    // ul에 DocumentFragment 추가
+    ul.appendChild(fragment);
   }
 }
 

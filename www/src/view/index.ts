@@ -8,9 +8,4 @@ import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
   .catch(console.error)
   .finally(() => {
     // Application is initialized
-
-    import(/* webpackChunkName: "ActressFlaySummary" */ '@flay/panel/ActressFlaySummary')
-      .then(({ ActressFlaySummary }) => new ActressFlaySummary())
-      .then((actressFlaySummary) => document.body.appendChild(actressFlaySummary))
-      .catch(console.error);
   });

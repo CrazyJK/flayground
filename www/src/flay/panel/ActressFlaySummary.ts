@@ -84,12 +84,12 @@ export class ActressFlaySummary extends GroundFlay {
 
     // 메인 컨테이너 생성
     this.innerHTML = `
-      <h1>Actress Flay Summary</h1>
       <table>
         <thead>
           <tr>
             <th class="name">Actress</th>
             <th class="favorite">Fav.</th>
+            <th class="age">Age</th>
             <th class="count">Total</th>
             <th class="likes">Shot</th>
             <th class="likes-sum">Shots</th>
@@ -118,6 +118,7 @@ export class ActressFlaySummary extends GroundFlay {
       ([name, { actress, flayList }]) => ({
         name,
         favorite: actress.favorite,
+        age: new Date().getFullYear() - parseInt((actress.birth || String(new Date().getFullYear())).substring(0, 4)),
         flayTotalCount: flayList.length,
         flayLikesCount: flayList.filter((flay) => flay.video.likes?.length > 0).length,
         flayLikesSum: flayList.reduce((sum, flay) => sum + (flay.video.likes?.length || 0), 0),
@@ -142,7 +143,7 @@ export class ActressFlaySummary extends GroundFlay {
     const fragment = document.createDocumentFragment();
 
     // 테이블 행 생성
-    actressFlayData.forEach(({ name, favorite, flayTotalCount, flayLikesCount, flayLikesSum, flayScoreSum, flayList }) => {
+    actressFlayData.forEach(({ name, favorite, age, flayTotalCount, flayLikesCount, flayLikesSum, flayScoreSum, flayList }) => {
       // Flay 정렬
       const sortedFlayList = flayList.sort((a, b) => {
         let diff = 0;
@@ -162,6 +163,7 @@ export class ActressFlaySummary extends GroundFlay {
       tr.innerHTML = `
         <td class="name">${name}</td>
         <td class="favorite" style="${favorite ? 'color: var(--color-checked)' : ''}">${favoriteSVG}</td>
+        <td class="age">${age}</td>
         <td class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</td>
         <td class="likes">${NumberUtils.formatWithCommas(flayLikesCount)}</td>
         <td class="likes-sum">${NumberUtils.formatWithCommas(flayLikesSum)}</td>

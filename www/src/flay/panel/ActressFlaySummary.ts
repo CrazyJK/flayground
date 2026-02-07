@@ -4,6 +4,7 @@ import FlayFetch, { type Actress, type Flay } from '@lib/FlayFetch';
 import { popupActress } from '@lib/FlaySearch';
 import NumberUtils from '@lib/NumberUtils';
 import favoriteSVG from '@svg/favorite';
+import ApiClient from '../../lib/ApiClient';
 import './ActressFlaySummary.scss';
 
 /**
@@ -86,7 +87,7 @@ export class ActressFlaySummary extends GroundFlay {
     this.innerHTML = `
       <ul>
         <li class="header">
-          <span class="name">Actress</span>
+          <span class="name">Actress <span id="toggleCover">Cover</span></span>
           <span class="favorite">Fav.</span>
           <span class="age">Age</span>
           <span class="count">Total</span>
@@ -96,6 +97,11 @@ export class ActressFlaySummary extends GroundFlay {
           <span class="flay-marker">Flay</span>
         </li>
       </ul>`;
+
+    // Cover 토글 이벤트
+    this.querySelector('#toggleCover')!.addEventListener('click', () => {
+      this.querySelector('ul')!.classList.toggle('cover');
+    });
 
     // 배우별로 Flay 집계
     const actressFlayData = Array.from(
@@ -150,14 +156,16 @@ export class ActressFlaySummary extends GroundFlay {
         if (diff === 0) diff = a.release.localeCompare(b.release);
         return diff;
       });
-
+      const firstFlay = sortedFlayList[0]!;
       // FlayMarker 생성
       const flayMarkers = sortedFlayList.map((flay) => new FlayMarker(flay));
 
       // 테이블 행 생성
       const row = document.createElement('li');
       row.innerHTML = `
-        <span class="name">${name}</span>
+        <span class="name">${name}
+          <img class="actress-cover" src="${ApiClient.buildUrl('/static/cover/' + firstFlay.opus)}" alt="${name} Cover" loading="lazy" />
+        </span>
         <span class="favorite ${favorite ? 'favorite-true' : ''}">${favoriteSVG}</span>
         <span class="age">${age}</span>
         <span class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</span>

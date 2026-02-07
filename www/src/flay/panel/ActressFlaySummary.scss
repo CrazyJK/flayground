@@ -24,16 +24,24 @@ actress-flay-summary {
         font-weight: bold;
       }
 
-      &:not(.header):hover {
-        background-color: var(--color-bg-transparent);
+      &:not(.header) {
+        &:hover {
+          background-color: var(--color-bg-transparent);
+        }
+
+        span.name {
+          &:hover {
+            text-shadow: var(--text-shadow-hover);
+          }
+        }
       }
 
       span.name {
         flex: 0 0 9rem;
         cursor: pointer;
 
-        &:hover {
-          text-shadow: var(--text-shadow-hover);
+        img {
+          display: none;
         }
       }
 
@@ -69,6 +77,32 @@ actress-flay-summary {
         flex-direction: row;
         flex-wrap: wrap;
       }
+    }
+
+    &.cover {
+      > li {
+        span.name {
+          max-height: 150px;
+          overflow: hidden;
+
+          img {
+            display: block;
+            width: auto;
+            transform: scale(2.4);
+            transform-origin: top right;
+          }
+        }
+      }
+    }
+  }
+
+  #toggleCover {
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: var(--color-link);
+
+    &:hover {
+      text-shadow: var(--text-shadow-hover);
     }
   }
 

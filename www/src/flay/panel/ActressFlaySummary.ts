@@ -158,7 +158,7 @@ export class ActressFlaySummary extends GroundFlay {
       const row = document.createElement('li');
       row.innerHTML = `
         <span class="name">${name}</span>
-        <span class="favorite" style="${favorite ? 'color: var(--color-checked)' : ''}">${favoriteSVG}</span>
+        <span class="favorite ${favorite ? 'favorite-true' : ''}">${favoriteSVG}</span>
         <span class="age">${age}</span>
         <span class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</span>
         <span class="likes">${NumberUtils.formatWithCommas(flayLikesCount)}</span>

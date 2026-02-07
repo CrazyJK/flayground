@@ -42,6 +42,9 @@ actress-flay-summary {
         display: flex;
         justify-content: center;
 
+        &.favorite-true {
+          color: var(--color-checked);
+        }
         svg {
           height: 1.25rem;
         }

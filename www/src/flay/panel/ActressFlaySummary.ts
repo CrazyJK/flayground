@@ -26,7 +26,7 @@ interface ActressFlayData {
 /**
  * 정렬 기준 타입
  */
-type SortBy = 'count' | 'likes' | 'likes-sum' | 'rank' | 'score' | 'name' | 'age';
+type SortBy = 'count' | 'likes' | 'likes-sum' | 'rank' | 'score' | 'name' | 'age' | 'favorite';
 
 /**
  * Unknown 배우 상수
@@ -121,7 +121,9 @@ export class ActressFlaySummary extends GroundFlay {
             <input type="radio" name="sorting" id="name" value="name" title="이름 기준 정렬" /><label for="name">Name</label>
             <span id="toggleCover">Cover</span>
           </span>
-          <span class="favorite">Fav.</span>
+          <span class="favorite">
+            <input type="radio" name="sorting" id="favorite" value="favorite" title="즐겨찾기 기준 정렬" /><label for="favorite">Fav.</label>
+          </span>
           <span class="age">
             <input type="radio" name="sorting" id="age" value="age" title="나이 기준 정렬" /><label for="age">Age</label>
           </span>
@@ -338,6 +340,8 @@ export class ActressFlaySummary extends GroundFlay {
         return a.name.localeCompare(b.name);
       case 'age':
         return b.age - a.age;
+      case 'favorite':
+        return Number(b.favorite) - Number(a.favorite);
       default:
         return 0;
     }

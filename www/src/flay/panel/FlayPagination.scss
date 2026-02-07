@@ -83,7 +83,7 @@ flay-pagination {
   }
 
   & > button.side-btn {
-    position: fixed;
+    position: absolute;
     right: 0;
     bottom: 0;
     font-family: 'Ink free';
@@ -97,7 +97,7 @@ flay-pagination {
     z-index: 1;
 
     &.random-popup-button ~ aside {
-      position: fixed;
+      position: absolute;
       right: 0;
       bottom: 3rem;
       display: flex;

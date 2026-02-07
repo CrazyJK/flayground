@@ -126,7 +126,7 @@ export class ActressFlaySummary extends GroundFlay {
         flayLikesCount: flayList.filter((flay) => flay.video.likes?.length > 0).length,
         flayLikesSum: flayList.reduce((sum, flay) => sum + (flay.video.likes?.length || 0), 0),
         flayScoreSum: flayList.reduce((sum, flay) => sum + (flay.score || 0), 0),
-        flayRankAvg: (flayList.reduce((sum, flay) => sum + (flay.video.rank || 0), 0) / flayList.length).toFixed(1),
+        flayRankAvg: flayList.reduce((sum, flay) => sum + (flay.video.rank || 0), 0) / flayList.length,
         flayList,
       })
     );
@@ -134,9 +134,10 @@ export class ActressFlaySummary extends GroundFlay {
     // 정렬: 점수 합계 > 좋아요 합계 > 좋아요 개수 > 총 개수 > 즐겨찾기 > 이름
     actressFlayData.sort((a, b) => {
       let diff = 0;
-      if (diff === 0) diff = b.flayScoreSum - a.flayScoreSum;
-      if (diff === 0) diff = b.flayLikesSum - a.flayLikesSum;
       if (diff === 0) diff = b.flayLikesCount - a.flayLikesCount;
+      if (diff === 0) diff = b.flayLikesSum - a.flayLikesSum;
+      if (diff === 0) diff = b.flayScoreSum - a.flayScoreSum;
+      if (diff === 0) diff = b.flayRankAvg - a.flayRankAvg;
       if (diff === 0) diff = b.flayTotalCount - a.flayTotalCount;
       if (diff === 0) diff = Number(b.favorite) - Number(a.favorite);
       if (diff === 0) diff = a.name.localeCompare(b.name);
@@ -173,7 +174,7 @@ export class ActressFlaySummary extends GroundFlay {
         <span class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</span>
         <span class="likes">${NumberUtils.formatWithCommas(flayLikesCount)}</span>
         <span class="likes-sum">${NumberUtils.formatWithCommas(flayLikesSum)}</span>
-        <span class="rank">${flayRankAvg}</span>
+        <span class="rank">${flayRankAvg.toFixed(1)}</span>
         <span class="score">${NumberUtils.formatWithCommas(flayScoreSum)}</span>
         <span class="flay-marker"></span>`;
 

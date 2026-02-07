@@ -1,53 +1,71 @@
 actress-flay-summary {
   position: relative;
   display: block;
+  max-width: 100%;
 
-  > table {
+  > ul {
     position: relative;
-    border-collapse: collapse;
+    display: block;
     width: 100%;
 
-    > thead {
-      position: sticky;
-      top: -1px;
-      background-color: var(--color-bg);
-      z-index: 9;
-    }
+    > li {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      gap: 0 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+      padding: 0.25rem;
 
-    th,
-    td {
-      border: 1px solid var(--color-border);
-      padding: 0.5rem;
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    td.name {
-      cursor: pointer;
-
-      &:hover {
-        text-shadow: var(--text-shadow-hover);
+      &.header {
+        position: sticky;
+        top: 0;
+        background-color: var(--color-bg);
+        z-index: 9;
+        font-weight: bold;
       }
-    }
 
-    td.favorite {
-      text-align: center;
-
-      svg {
-        height: 1.5rem;
+      &:not(.header):hover {
+        background-color: var(--color-bg-transparent);
       }
-    }
 
-    td.age,
-    td.count,
-    td.likes,
-    td.likes-sum,
-    td.score {
-      text-align: right;
-    }
+      span.name {
+        flex: 0 0 9rem;
+        cursor: pointer;
 
-    td.flay-marker {
-      width: auto;
+        &:hover {
+          text-shadow: var(--text-shadow-hover);
+        }
+      }
+
+      span.favorite {
+        flex: 0 0 2rem;
+        display: flex;
+        justify-content: center;
+
+        svg {
+          height: 1.25rem;
+        }
+      }
+
+      span.age,
+      span.count,
+      span.likes,
+      span.likes-sum,
+      span.score {
+        flex: 0 0 3rem;
+        text-align: right;
+      }
+
+      span.score {
+        flex: 0 0 3.5rem;
+      }
+
+      span.flay-marker {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+      }
     }
   }
 

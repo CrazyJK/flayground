@@ -84,22 +84,18 @@ export class ActressFlaySummary extends GroundFlay {
 
     // 메인 컨테이너 생성
     this.innerHTML = `
-      <table>
-        <thead>
-          <tr>
-            <th class="name">Actress</th>
-            <th class="favorite">Fav.</th>
-            <th class="age">Age</th>
-            <th class="count">Total</th>
-            <th class="likes">Shot</th>
-            <th class="likes-sum">Shots</th>
-            <th class="score">Score</th>
-            <th class="flay-marker">Flay</th>
-          </tr>
-        </thead>
-        <tbody>
-        </tbody>
-      </table>`;
+      <ul>
+        <li class="header">
+          <span class="name">Actress</span>
+          <span class="favorite">Fav.</span>
+          <span class="age">Age</span>
+          <span class="count">Total</span>
+          <span class="likes">Shot</span>
+          <span class="likes-sum">Shots</span>
+          <span class="score">Score</span>
+          <span class="flay-marker">Flay</span>
+        </li>
+      </ul>`;
 
     // 배우별로 Flay 집계
     const actressFlayData = Array.from(
@@ -159,29 +155,29 @@ export class ActressFlaySummary extends GroundFlay {
       const flayMarkers = sortedFlayList.map((flay) => new FlayMarker(flay));
 
       // 테이블 행 생성
-      const tr = document.createElement('tr');
-      tr.innerHTML = `
-        <td class="name">${name}</td>
-        <td class="favorite" style="${favorite ? 'color: var(--color-checked)' : ''}">${favoriteSVG}</td>
-        <td class="age">${age}</td>
-        <td class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</td>
-        <td class="likes">${NumberUtils.formatWithCommas(flayLikesCount)}</td>
-        <td class="likes-sum">${NumberUtils.formatWithCommas(flayLikesSum)}</td>
-        <td class="score">${NumberUtils.formatWithCommas(flayScoreSum)}</td>
-        <td class="flay-marker"></td>`;
+      const row = document.createElement('li');
+      row.innerHTML = `
+        <span class="name">${name}</span>
+        <span class="favorite" style="${favorite ? 'color: var(--color-checked)' : ''}">${favoriteSVG}</span>
+        <span class="age">${age}</span>
+        <span class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</span>
+        <span class="likes">${NumberUtils.formatWithCommas(flayLikesCount)}</span>
+        <span class="likes-sum">${NumberUtils.formatWithCommas(flayLikesSum)}</span>
+        <span class="score">${NumberUtils.formatWithCommas(flayScoreSum)}</span>
+        <span class="flay-marker"></span>`;
 
       // FlayMarker 추가
-      tr.querySelector('.flay-marker')!.append(...flayMarkers);
+      row.querySelector('.flay-marker')!.append(...flayMarkers);
 
       // 배우 이름 클릭 이벤트
-      tr.querySelector('.name')!.addEventListener('click', () => popupActress(name));
+      row.querySelector('.name')!.addEventListener('click', () => popupActress(name));
 
       // DocumentFragment에 행 추가
-      fragment.appendChild(tr);
+      fragment.appendChild(row);
     });
 
     // tbody에 DocumentFragment 추가
-    this.querySelector('tbody')!.appendChild(fragment);
+    this.querySelector('ul')!.appendChild(fragment);
   }
 }
 

@@ -19,7 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MovieStreamHandler {
 
   /**
-   * 동영상 파일 stream. video tag에서 사용
+   * 동영상 파일 stream. html <video> 태그의 source로 사용됨.
    *
    * @param request
    * @param response

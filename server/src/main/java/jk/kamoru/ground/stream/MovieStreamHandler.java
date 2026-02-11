@@ -78,13 +78,20 @@ public class MovieStreamHandler {
         }
 
         out.write(buffer, 0, bytesRead);
+        out.flush(); // 버퍼 데이터를 즉시 클라이언트로 전송하여 Undertow 대기 시간 방지
         remainingSize -= bytesRead;
       }
 
     } catch (AsyncRequestNotUsableException e) {
       // 클라이언트가 연결을 끊은 경우 - 정상적인 상황으로 로그 불필요
     } catch (IOException e) {
-      log.error("동영상 스트리밍 실패 - 파일: {}, 범위: {}-{}, 오류: {}", file.getAbsolutePath(), rangeInfo.start(), rangeInfo.end(), e.getMessage(), e);
+      // 클라이언트 측 연결 문제는 디버그 레벨, 서버 측 문제는 에러 레벨로 로깅
+      String message = e.getMessage();
+      if (message != null && (message.contains("Broken pipe") || message.contains("Connection reset") || message.contains("Connection closed"))) {
+        log.debug("클라이언트 연결 끊김 - 파일: {}, 오류: {}", file.getName(), message);
+      } else {
+        log.error("동영상 스트리밍 실패 - 파일: {}, 범위: {}-{}, 오류: {}", file.getAbsolutePath(), rangeInfo.start(), rangeInfo.end(), e.getMessage(), e);
+      }
     }
   }
 

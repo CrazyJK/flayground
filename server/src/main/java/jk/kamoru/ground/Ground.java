@@ -15,6 +15,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -72,6 +73,40 @@ public class Ground implements AsyncConfigurer {
         GB_Format.setMaximumFractionDigits(1);
         MB_Format.setMaximumFractionDigits(0);
         KB_Format.setMaximumFractionDigits(0);
+      }
+
+      /**
+       * 파일 크기를 보기좋게 변환
+       * 
+       * @param length 파일 크기 (byte)
+       * @return 보기좋은 파일 크기 문자열
+       */
+      public static String prettyFileLength(long length) {
+        if (length > FileUtils.ONE_TB) {
+          return Ground.Format.Number.TB_Format.format((double) length / FileUtils.ONE_TB) + " TB";
+        } else if (length > FileUtils.ONE_GB) {
+          return Ground.Format.Number.GB_Format.format((double) length / FileUtils.ONE_GB) + " GB";
+        } else if (length > FileUtils.ONE_MB) {
+          return Ground.Format.Number.MB_Format.format((double) length / FileUtils.ONE_MB) + " MB";
+        } else if (length > FileUtils.ONE_KB) {
+          return Ground.Format.Number.KB_Format.format((double) length / FileUtils.ONE_KB) + " KB";
+        } else {
+          return length + " bytes";
+        }
+      }
+
+      /**
+       * 퍼센트를 표시
+       * 
+       * @param total            전체 크기
+       * @param current          현재 크기
+       * @param percentPrecision 소수점 자리수
+       * @return 퍼센트 문자열 (예: 12.3%)
+       */
+      public static String percent(long total, long current, int percentPrecision) {
+        if (total == 0)
+          return "0%";
+        return String.format("%." + percentPrecision + "f%%", (current * 100.0 / total));
       }
     }
   }

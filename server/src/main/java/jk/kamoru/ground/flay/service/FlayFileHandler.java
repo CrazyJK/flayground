@@ -19,8 +19,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.Ground;
+import jk.kamoru.ground.GroundProperties;
 import jk.kamoru.ground.flay.FlayException;
 import jk.kamoru.ground.flay.domain.Flay;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +29,8 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class FlayFileHandler {
 
-  @Autowired GroundProperties properties;
+  @Autowired
+  GroundProperties properties;
 
   public void rename(Flay flay, List<String> actressList) {
     flay.setActressList(actressList);
@@ -139,7 +140,8 @@ public class FlayFileHandler {
           willCopy = true;
         }
 
-        log.info(String.format("%4s/%-4s %5s %14s bytes %s", loopCount, totalSize, willCopy ? "Copy!" : "Pass~", Ground.Format.Number.Comma_Format.format(srcFileLength), childPath));
+        log.info(
+            String.format("%4s/%-4s %5s %14s bytes %s", loopCount, totalSize, willCopy ? "Copy!" : "Pass~", Ground.Format.Number.Comma_Format.format(srcFileLength), childPath));
         if (willCopy) {
           try {
             Files.copy(srcFile.toPath(), destFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
@@ -187,7 +189,8 @@ public class FlayFileHandler {
   public void checkDiskSpace(File disk, long length) throws IOException {
     long freeSpace = disk.getFreeSpace();
     if (0 < freeSpace && freeSpace < length) {
-      throw new IOException("Disk free space is too small. " + disk + ": " + prettyFileLength(freeSpace) + " < " + prettyFileLength(length));
+      throw new IOException(
+          "Disk free space is too small. " + disk + ": " + Ground.Format.Number.prettyFileLength(freeSpace) + " < " + Ground.Format.Number.prettyFileLength(length));
     }
   }
 
@@ -196,29 +199,15 @@ public class FlayFileHandler {
       throw new FlayException("fail to delete file. it is directory: " + file);
     }
     if (properties.isRecyclebinUse()) {
-      File recyclebin = new File(file.toPath().getRoot().toFile(), properties.getRecyclebin());
-      moveFileToDirectory(file, recyclebin);
-      log.warn("deleted File, but actually moved to recycle bin. {} -> {}", file, recyclebin);
+      File recycleBin = new File(file.toPath().getRoot().toFile(), properties.getRecyclebin());
+      moveFileToDirectory(file, recycleBin);
+      log.warn("deleted File, but actually moved to recycle bin. {} -> {}", file, recycleBin);
     } else {
       boolean result = FileUtils.deleteQuietly(file);
       log.warn("deleted File {}", file);
       if (!result) {
         throw new FlayException("fail to deleteFile " + file);
       }
-    }
-  }
-
-  public String prettyFileLength(long length) {
-    if (length > FileUtils.ONE_TB) {
-      return Ground.Format.Number.TB_Format.format((double) length / FileUtils.ONE_TB) + " TB";
-    } else if (length > FileUtils.ONE_GB) {
-      return Ground.Format.Number.GB_Format.format((double) length / FileUtils.ONE_GB) + " GB";
-    } else if (length > FileUtils.ONE_MB) {
-      return Ground.Format.Number.MB_Format.format((double) length / FileUtils.ONE_MB) + " MB";
-    } else if (length > FileUtils.ONE_KB) {
-      return Ground.Format.Number.KB_Format.format((double) length / FileUtils.ONE_KB) + " KB";
-    } else {
-      return length + "bytes";
     }
   }
 

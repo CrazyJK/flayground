@@ -274,7 +274,7 @@ public class BatchExecutor extends LogAndSse {
         for (File file : value) {
           if (!delegatePath.equals(file.getParentFile())) {
             final String message = String.format("move [%-10s r%s %7s] %-20s => %s / %s", flay.getOpus(), flay.getVideo().getRank(),
-                flayFileHandler.prettyFileLength(file.length()), file.getParent(), delegatePath, file.getName());
+                Ground.Format.Number.prettyFileLength(file.length()), file.getParent(), delegatePath, file.getName());
             batchLogger(message);
             flayFileHandler.moveFileToDirectory(file, delegatePath);
           }
@@ -521,7 +521,7 @@ public class BatchExecutor extends LogAndSse {
       Process process = builder.start();
       process.waitFor();
 
-      message = "         completed " + flayFileHandler.prettyFileLength(destJarFile.length());
+      message = "         completed " + Ground.Format.Number.prettyFileLength(destJarFile.length());
       batchLogger(message);
     } catch (IOException | InterruptedException e) {
       throw new FlayBatchException("Fail to jar", e);

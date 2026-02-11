@@ -46,9 +46,9 @@ public class MovieStreamHandler {
       if (range.endsWith("-")) {
         range = range + (movieSize - 1);
       }
-      final int idxm = range.trim().indexOf("-");
-      rangeStart = Long.parseLong(range.substring(6, idxm));
-      rangeEnd = Long.parseLong(range.substring(idxm + 1));
+      final int idx = range.trim().indexOf("-");
+      rangeStart = Long.parseLong(range.substring(6, idx));
+      rangeEnd = Long.parseLong(range.substring(idx + 1));
       if (rangeStart > 0) {
         isPart = true;
       }
@@ -76,11 +76,9 @@ public class MovieStreamHandler {
 
       final long onePercentSize = movieSize / 100;
       long loopStreamSize = onePercentSize;
-      long currentStreamSize = rangeStart;
 
       do {
         if (loopStreamSize >= onePercentSize) {
-          log.debug("streaming {} {}%", file.getName(), (int) ((float) currentStreamSize / movieSize * 100));
           loopStreamSize -= onePercentSize;
         }
 
@@ -90,7 +88,6 @@ public class MovieStreamHandler {
         partSize -= len;
 
         loopStreamSize += total;
-        currentStreamSize += total;
       } while (partSize > 0);
     } catch (AsyncRequestNotUsableException e) {
       // do nothing

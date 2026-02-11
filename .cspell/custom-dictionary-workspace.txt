@@ -83,3 +83,11 @@ rollingpolicy
 Pceyevu
 Ctks
 Fplj
+quicktime
+msvideo
+matroska
+Configurer
+FEFF
+rmvb
+jfif
+smil

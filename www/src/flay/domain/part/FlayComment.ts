@@ -20,7 +20,7 @@ export default class FlayComment extends FlayPartElement {
 
     this.innerHTML = `
       <div>
-        <a class="japanese" title="번역보기">原語</a>
+        <a class="japanese" title="번역보기">あ</a>
         <a class="comment">${COMMENT}</a>
       </div>
       <input type="text" placeholder="${COMMENT}" style="display: none;">

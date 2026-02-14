@@ -1,11 +1,11 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
+import ApiClient from '@lib/ApiClient';
 import FlayFetch, { type Actress, type Flay } from '@lib/FlayFetch';
-import { popupActress } from '@lib/FlaySearch';
+import { popupActress, popupFlay } from '@lib/FlaySearch';
 import FlayStorage from '@lib/FlayStorage';
 import NumberUtils from '@lib/NumberUtils';
 import favoriteSVG from '@svg/favorite';
-import ApiClient from '../../lib/ApiClient';
 import './ActressFlaySummary.scss';
 
 /**
@@ -310,7 +310,8 @@ export class ActressFlaySummary extends GroundFlay {
 
       const row = document.createElement('li');
       row.innerHTML = `
-        <span class="name">${name}
+        <span class="name">
+          <span class="name-text">${name}</span>
           <img class="actress-cover" src="${ApiClient.buildUrl('/static/cover/' + firstFlay.opus)}" alt="${name} Cover" loading="lazy" />
         </span>
         <span class="favorite ${favorite ? 'favorite-true' : ''}">${favoriteSVG}</span>
@@ -327,7 +328,9 @@ export class ActressFlaySummary extends GroundFlay {
       row.querySelector('.flay-marker')!.append(...flayMarkers);
 
       // 배우 이름 클릭 이벤트
-      row.querySelector('.name')!.addEventListener('click', () => popupActress(name));
+      row.querySelector('.name-text')!.addEventListener('click', () => popupActress(name));
+      // 커버 이미지 클릭 이벤트
+      row.querySelector('.actress-cover')!.addEventListener('click', () => popupFlay(firstFlay.opus));
 
       fragment.appendChild(row);
     });

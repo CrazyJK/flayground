@@ -59,7 +59,7 @@ public class SseEmitters {
 
   private void remove(SseEmitter sseEmitter) {
     boolean removed = sseEmitters.remove(sseEmitter);
-    log.debug("{} removed [{}]. total {} sseEmitters", sseEmitter, removed, sseEmitters.size());
+    log.info("{} removed [{}]. total {} sseEmitters", sseEmitter, removed, sseEmitters.size());
   }
 
   private void send(SseEmitter sseEmitter, EVENT event, Object payload) {

@@ -151,6 +151,7 @@ export class FacadeWebMovie extends GroundMovie {
   private handleVideoLoad(): void {
     this.style.opacity = '1';
     this.video.muted = false; // 로딩이 시작되면 음소거 해제
+    this.video.loop = false;
   }
 
   /**
@@ -230,19 +231,18 @@ export class FacadeWebMovie extends GroundMovie {
   private handleVideoWheel(accumulatedDeltaX: number, accumulatedDeltaY: number): void {
     const deltaX = Math.sign(accumulatedDeltaX);
     const deltaY = Math.sign(accumulatedDeltaY);
-    if (deltaX !== 0) {
+    if (deltaX > 0) {
       // 다음 비디오
       this.playNext();
-      return;
-    }
-    if (!this.video.ended) {
-      if (deltaY < 0) {
-        // 휠을 위로 올릴 때 볼륨 증가
-        this.video.volume = Math.min(1, this.video.volume + 0.1);
-      } else if (deltaY > 0) {
-        // 휠을 아래로 내릴 때 볼륨 감소
-        this.video.volume = Math.max(0, this.video.volume - 0.1);
-      }
+    } else if (deltaX < 0) {
+      // 반복 재생
+      this.video.loop = true;
+    } else if (deltaY < 0) {
+      // 휠을 위로 올릴 때 볼륨 증가
+      this.video.volume = Math.min(1, this.video.volume + 0.1);
+    } else if (deltaY > 0) {
+      // 휠을 아래로 내릴 때 볼륨 감소
+      this.video.volume = Math.max(0, this.video.volume - 0.1);
     }
   }
 

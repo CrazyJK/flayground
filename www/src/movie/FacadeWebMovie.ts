@@ -9,13 +9,22 @@ interface TodayItem {
 }
 
 interface FacadeWebMovieOptions {
+  /**
+   * 비디오 볼륨 (0.0 ~ 1.0)
+   */
   volume: number;
   /**
-   * 비디오가 끝나면 다음 비디오로 넘어갑니다.
+   * 비디오 너비 (예: '100%', '300px' 등)
    */
-  continue: boolean;
   width?: string;
+  /**
+   * 최대 너비 (예: '100%', '300px' 등)
+   */
   maxWidth?: string;
+  /**
+   * 재생이 끝난 후 할 행동. 사라지기, 다음 비디오 재생, 멈추고 사용자 조작 대기 등
+   */
+  stopBehavior?: 'fadeOut' | 'next' | 'pause';
 }
 
 /**
@@ -29,16 +38,21 @@ export class FacadeWebMovie extends GroundMovie {
   private readonly fadeOutDuration = 1000; // 페이드 아웃 지속 시간 (ms)
   private readonly options: FacadeWebMovieOptions = {
     volume: 0.5,
-    continue: false,
+    stopBehavior: 'pause',
   };
+
   private video: HTMLVideoElement;
   private todayItems: TodayItem[] = [];
-  private movieIndex = -1;
+  private remainingItems: TodayItem[] = []; // 아직 선택되지 않은 아이템 목록
 
   #boundLoadHandler: EventListener;
   #boundErrorHandler: EventListener;
   #boundEndedHandler: EventListener;
-  #boundClickHandler: EventListener;
+  #boundClickHandler: (event: MouseEvent) => void;
+  #boundWheelHandler: (event: WheelEvent) => void;
+  #wheelTimer: ReturnType<typeof setTimeout> | null = null;
+  #wheelAccumulatedDeltaY = 0;
+  #wheelAccumulatedDeltaX = 0;
 
   constructor(options: Partial<FacadeWebMovieOptions> = {}) {
     super();
@@ -58,21 +72,36 @@ export class FacadeWebMovie extends GroundMovie {
     this.#boundErrorHandler = this.handleVideoError.bind(this);
     this.#boundClickHandler = this.handleVideoClick.bind(this);
 
+    // 연속 휠 이벤트의 deltaY를 누적하다가 마지막 이벤트 후 한 번에 처리
+    const wheelHandler = this.handleVideoWheel.bind(this);
+    this.#boundWheelHandler = (event: WheelEvent) => {
+      event.preventDefault();
+      this.#wheelAccumulatedDeltaX += event.deltaX;
+      this.#wheelAccumulatedDeltaY += event.deltaY;
+      if (this.#wheelTimer !== null) clearTimeout(this.#wheelTimer);
+      this.#wheelTimer = setTimeout(() => {
+        this.#wheelTimer = null;
+        wheelHandler(event, this.#wheelAccumulatedDeltaX, this.#wheelAccumulatedDeltaY);
+        this.#wheelAccumulatedDeltaX = 0;
+        this.#wheelAccumulatedDeltaY = 0;
+      }, 300);
+    };
+
     if (this.options.width) this.video.style.width = this.options.width;
     if (this.options.maxWidth) this.video.style.maxWidth = this.options.maxWidth;
   }
 
   connectedCallback(): void {
     this.video.addEventListener('loadstart', this.#boundLoadHandler); // 로딩 시작 시 스타일 설정
-    this.video.addEventListener('ended', this.#boundEndedHandler); // 비디오 종료 시 페이드 아웃 애니메이션
+    this.video.addEventListener('ended', this.#boundEndedHandler); // 비디오 종료 처리
     this.video.addEventListener('error', this.#boundErrorHandler); // 에러 처리
-    this.video.addEventListener('click', this.#boundClickHandler);
+    this.video.addEventListener('click', this.#boundClickHandler); // 클릭 시 음소거 토글 또는 다음 비디오 재생
+    this.video.addEventListener('wheel', this.#boundWheelHandler); // 휠 이벤트로 볼륨 조절
 
     ApiClient.get<TodayItem[]>('/todayis')
       .then((todayItems) => {
         if (todayItems !== null && todayItems.length > 0) {
           this.todayItems = todayItems;
-          this.movieIndex = RandomUtils.getRandomInt(0, todayItems.length - 1);
           this.playNext(); // 첫 비디오 재생
         } else {
           console.warn('FacadeWebMovie: API 응답 형식이 올바르지 않습니다.');
@@ -93,11 +122,50 @@ export class FacadeWebMovie extends GroundMovie {
     this.video.src = ''; // 비디오 소스 초기화
   }
 
+  /**
+   * 무작위로 TodayItem 선택
+   * - todayItems 배열에서 무작위로 하나의 아이템을 선택하여 반환합니다.
+   * - 다음 수행시는 이전 선택된 아이템 제외하고 랜덤 선택
+   * - 더 선택할 아이템이 없으면 todayItems 배열 전체에서 다시 선택
+   * @returns 선택된 TodayItem
+   */
+  private pickRandomTodayItem(): TodayItem {
+    if (this.todayItems.length === 0) {
+      throw new Error('Today items are not loaded yet.');
+    }
+    // 복제된 배열이 없거나 비어있으면 todayItems로 다시 채움
+    if (!this.remainingItems || this.remainingItems.length === 0) {
+      this.remainingItems = [...this.todayItems];
+    }
+
+    const randomIndex = RandomUtils.getRandomInt(0, this.remainingItems.length);
+    const selectedItem = this.remainingItems[randomIndex]!;
+
+    // 선택된 아이템을 배열에서 제거
+    this.remainingItems.splice(randomIndex, 1);
+
+    return selectedItem;
+  }
+
+  /**
+   * 다음 비디오 재생
+   */
   private playNext(): void {
-    this.movieIndex = (this.movieIndex + 1) % this.todayItems.length;
-    const randomTodayItem = this.todayItems[this.movieIndex]!;
-    this.video.src = ApiClient.buildUrl(`/todayis/stream/${randomTodayItem.uuid}`);
-    console.log('FacadeWebMovie: 선택된 다음 아이템', randomTodayItem);
+    const todayItem = this.pickRandomTodayItem();
+    this.video.src = ApiClient.buildUrl(`/todayis/stream/${todayItem.uuid}`);
+  }
+
+  /**
+   * 페이드 아웃 애니메이션 후 요소 제거
+   */
+  private fadeOutAndRemove(): void {
+    this.animate([{ opacity: 1 }, { opacity: 0 }], {
+      duration: this.fadeOutDuration,
+      fill: 'forwards',
+      easing: 'ease-out',
+    }).onfinish = () => {
+      this.remove();
+    };
   }
 
   /**
@@ -106,6 +174,7 @@ export class FacadeWebMovie extends GroundMovie {
    */
   private handleVideoLoad(): void {
     this.style.opacity = '1';
+    this.video.muted = false; // 로딩이 시작되면 음소거 해제
   }
 
   /**
@@ -113,16 +182,16 @@ export class FacadeWebMovie extends GroundMovie {
    * - 페이드 아웃 애니메이션 처리
    */
   private handleVideoEnded(): void {
-    if (this.options.continue) {
-      this.playNext(); // 다음 비디오로 교체
-    } else {
-      this.animate([{ opacity: 1 }, { opacity: 0 }], {
-        duration: this.fadeOutDuration,
-        fill: 'forwards',
-        easing: 'ease-out',
-      }).onfinish = () => {
-        this.remove();
-      };
+    switch (this.options.stopBehavior) {
+      case 'next':
+        this.playNext();
+        break;
+      case 'pause':
+        // 재생이 종료되었으므로, 추가로 할게 없다.
+        break;
+      default:
+        this.fadeOutAndRemove();
+        break;
     }
   }
 
@@ -141,6 +210,29 @@ export class FacadeWebMovie extends GroundMovie {
    */
   private handleVideoClick(): void {
     this.video.muted = !this.video.muted;
+  }
+
+  /**
+   * 비디오 휠 이벤트 처리
+   * @param event
+   */
+  private handleVideoWheel(event: WheelEvent, accumulatedDeltaX = event.deltaX, accumulatedDeltaY = event.deltaY): void {
+    const deltaX = Math.sign(accumulatedDeltaX);
+    const deltaY = Math.sign(accumulatedDeltaY);
+    if (deltaX !== 0) {
+      // 다음 비디오
+      this.playNext();
+      return;
+    }
+    if (!this.video.ended) {
+      if (deltaY < 0) {
+        // 휠을 위로 올릴 때 볼륨 증가
+        this.video.volume = Math.min(1, this.video.volume + 0.1);
+      } else if (deltaY > 0) {
+        // 휠을 아래로 내릴 때 볼륨 감소
+        this.video.volume = Math.max(0, this.video.volume - 0.1);
+      }
+    }
   }
 
   /**

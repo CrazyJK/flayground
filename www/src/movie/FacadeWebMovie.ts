@@ -51,7 +51,7 @@ export class FacadeWebMovie extends GroundMovie {
   constructor(options: Partial<FacadeWebMovieOptions> = {}) {
     super();
 
-    this.options = { volume: 0.5, endedBehavior: 'pause', size: '80%', ...options };
+    this.options = { volume: 0.5, size: '50%', endedBehavior: 'fadeOut', ...options };
 
     this.video = this.appendChild(document.createElement('video'));
     this.description = this.appendChild(document.createElement('div'));
@@ -169,7 +169,7 @@ export class FacadeWebMovie extends GroundMovie {
         this.playNext();
         break;
       case 'pause':
-        // 재생이 종료되었으므로, 추가로 할게 없다.
+        this.style.opacity = '0';
         break;
       default:
         this.fadeOutAndRemove();
@@ -188,7 +188,6 @@ export class FacadeWebMovie extends GroundMovie {
     // API 에러 또는 로직 에러 (Error 인스턴스)
     if (error instanceof Error) {
       console.error('FacadeWebMovie:', error.message);
-      this.style.display = 'none';
       return;
     }
 
@@ -197,7 +196,6 @@ export class FacadeWebMovie extends GroundMovie {
 
     if (!mediaError) {
       console.warn('FacadeWebMovie: 알 수 없는 비디오 에러');
-      this.style.display = 'none';
       return;
     }
 
@@ -212,12 +210,10 @@ export class FacadeWebMovie extends GroundMovie {
       case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
         console.warn(`FacadeWebMovie: 비디오 에러 (code: ${mediaError.code}) → 다음 비디오로 이동`);
         if (this.todayItems.length > 0) this.playNext();
-        else this.style.display = 'none';
         break;
 
       default:
         console.warn(`FacadeWebMovie: 비디오 에러 (code: ${mediaError.code}): ${mediaError.message}`);
-        this.style.display = 'none';
     }
   }
 
@@ -232,7 +228,8 @@ export class FacadeWebMovie extends GroundMovie {
 
   /**
    * 비디오 휠 이벤트 처리
-   * @param event
+   * @param accumulatedDeltaX 연속된 휠 이벤트의 누적 deltaX
+   * @param accumulatedDeltaY 연속된 휠 이벤트의 누적 deltaY
    */
   private handleVideoWheel(accumulatedDeltaX: number, accumulatedDeltaY: number): void {
     const deltaX = Math.sign(accumulatedDeltaX);
@@ -244,7 +241,10 @@ export class FacadeWebMovie extends GroundMovie {
     } else if (deltaX < 0) {
       // 반복 재생
       this.video.loop = !this.video.loop;
-      if (this.video.paused) this.video.play();
+      if (this.video.paused) {
+        this.style.opacity = '1';
+        this.video.play();
+      }
     } else if (deltaY < 0) {
       // 휠을 위로 올릴 때 볼륨 증가
       this.video.volume = Math.min(1, this.video.volume + 0.1);

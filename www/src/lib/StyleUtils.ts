@@ -124,4 +124,12 @@ export default class StyleUtils {
       document.head.removeChild(styleElement);
     }
   }
+
+  /**
+   * 요소의 크기가 landscape, portrait 중 어떤 방향에 맞춰져 있는지 판단
+   */
+  static getOrientation(element: Element): 'landscape' | 'portrait' {
+    const { width, height } = this.getElementSize(element);
+    return width >= height ? 'landscape' : 'portrait';
+  }
 }

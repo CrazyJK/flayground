@@ -218,8 +218,15 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   /**
-   * 비디오 클릭 이벤트 처리
-   * - 음소거 토글
+   * 사용자 이벤트 처리 일람
+   *
+   * | 이벤트         | 동작                        | 결과                          |
+   * |---------------|----------------------------|-------------------------------|
+   * | click         | 음소거 토글                  | muted on/off                  |
+   * | wheel ←       | 반복 재생 토글               | loop on/off, 일시정지 시 재개   |
+   * | wheel →       | 다음 비디오                  | playNext, isEnded resolve      |
+   * | wheel ↑       | 볼륨 증가 (+10%)             | volume 0.0 ~ 1.0              |
+   * | wheel ↓       | 볼륨 감소 (-10%)             | volume 0.0 ~ 1.0              |
    */
   private handleVideoClick(): void {
     this.video.muted = !this.video.muted;
@@ -227,31 +234,32 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   /**
-   * 비디오 휠 이벤트 처리
    * @param accumulatedDeltaX 연속된 휠 이벤트의 누적 deltaX
    * @param accumulatedDeltaY 연속된 휠 이벤트의 누적 deltaY
    */
   private handleVideoWheel(accumulatedDeltaX: number, accumulatedDeltaY: number): void {
     const deltaX = Math.sign(accumulatedDeltaX);
     const deltaY = Math.sign(accumulatedDeltaY);
+
     if (deltaX > 0) {
-      // 사용자가 다음 비디오로 이동 - isEnded() 대기 중이면 resolve
+      // 오른쪽 → 다음 비디오
       this.endedResolve?.();
       this.playNext();
     } else if (deltaX < 0) {
-      // 반복 재생
+      // 왼쪽 ← 반복 재생 토글 (일시정지 상태면 재개)
       this.video.loop = !this.video.loop;
       if (this.video.paused) {
         this.style.opacity = '1';
         this.video.play();
       }
     } else if (deltaY < 0) {
-      // 휠을 위로 올릴 때 볼륨 증가
+      // 위 ↑ 볼륨 증가
       this.video.volume = Math.min(1, this.video.volume + 0.1);
     } else if (deltaY > 0) {
-      // 휠을 아래로 내릴 때 볼륨 감소
+      // 아래 ↓ 볼륨 감소
       this.video.volume = Math.max(0, this.video.volume - 0.1);
     }
+
     this.setDescription();
   }
 
@@ -277,18 +285,26 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   /**
-   * 설명 설정
-   * - name, volume, muted, loop 상태를 설명하는 텍스트 설정
+   * 현재 비디오 상태를 설명 텍스트로 표시
+   * - currentItem이 없으면 무시
+   * - name, volume, muted, loop 상태를 표시하고 3초 후 자동 숨김
    */
-  private setDescription() {
-    this.description.innerHTML = `${this.currentItem!.name}<br>Vol.
-      ${Math.round(this.video.volume * 100)}${this.video.muted ? ', muted' : ''}${this.video.loop ? ', loop' : ''}`;
+  private setDescription(): void {
+    if (!this.currentItem) return;
+
+    const status = [
+      `Vol. ${Math.round(this.video.volume * 100)}`,
+      this.video.muted ? 'muted' : null,
+      this.video.loop ? 'loop' : null,
+    ]
+      .filter(Boolean)
+      .join(', ');
+
+    this.description.innerHTML = `${this.currentItem.name}<br>${status}`;
     this.description.style.opacity = '1';
 
-    // 3초 안에 다시 설명이 설정되면 기존 타이머는 취소되고 새로 설정된 설명이 3초 후에 사라집니다.
-    if (this.descriptionTimeout) {
-      clearTimeout(this.descriptionTimeout);
-    }
+    // 3초 안에 다시 호출되면 기존 타이머를 취소하고 새로 시작
+    clearTimeout(this.descriptionTimeout ?? undefined);
     this.descriptionTimeout = setTimeout(() => {
       this.description.style.opacity = '0';
     }, 3000);

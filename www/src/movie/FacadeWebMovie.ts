@@ -48,6 +48,7 @@ export class FacadeWebMovie extends GroundMovie {
   private boundClickHandler: (event: MouseEvent) => void;
   private boundWheelHandler: (event: WheelEvent) => void;
   private wheelState = { timer: null as ReturnType<typeof setTimeout> | null, deltaX: 0, deltaY: 0 };
+  private endedResolve: (() => void) | null = null; // isEnded() 대기 중인 resolver
 
   constructor(options: Partial<FacadeWebMovieOptions> = {}) {
     super();
@@ -120,6 +121,9 @@ export class FacadeWebMovie extends GroundMovie {
    * - 모두 선택되면 todayItems 전체에서 다시 선택
    */
   private playNext(): void {
+    // isEnded()가 대기 중이면 resolve (사용자 액션으로 다음 비디오 이동)
+    this.endedResolve?.();
+
     // 복제된 배열이 없거나 비어있으면 todayItems로 다시 채움
     if (this.remainingItems.length === 0) {
       this.remainingItems = [...this.todayItems];
@@ -129,6 +133,7 @@ export class FacadeWebMovie extends GroundMovie {
     const todayItem = this.remainingItems.splice(randomIndex, 1)[0]!;
 
     this.video.src = ApiClient.buildUrl(`/todayis/stream/${todayItem.uuid}`);
+    this.video.title = todayItem.name;
   }
 
   /**
@@ -247,24 +252,23 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   /**
-   * 재생이 끝나는지 확인
-   * - 이미 끝났으면 즉시 resolve, 아니면 ended 이벤트를 기다림
+   * 비디오 재생이 끝나는지 확인
+   * - 이미 종료되었으면 즉시 resolve
+   * - 비디오 자연 종료(ended 이벤트) 또는 사용자가 다음 비디오로 넘김(playNext 호출) 시 resolve
    */
   async isEnded(): Promise<boolean> {
-    if (this.video.ended) {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return true;
-    }
+    if (this.video.ended) return true;
 
     return new Promise<boolean>((resolve) => {
-      this.video.addEventListener(
-        'ended',
-        async () => {
-          await new Promise((waitResolve) => setTimeout(waitResolve, 1000));
-          resolve(true);
-        },
-        { once: true }
-      );
+      const done = () => {
+        this.endedResolve = null;
+        this.video.removeEventListener('ended', onEnded);
+        resolve(true);
+      };
+      const onEnded = () => done();
+
+      this.endedResolve = done;
+      this.video.addEventListener('ended', onEnded, { once: true });
     });
   }
 }

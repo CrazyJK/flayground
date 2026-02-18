@@ -2,7 +2,6 @@ facade-web-movie {
   position: relative;
   display: flex;
   width: 30rem;
-  max-width: 50%;
   margin: 0 auto;
   object-fit: cover;
   clip-path: circle(50% at 50% 50%);
@@ -11,5 +10,19 @@ facade-web-movie {
     width: 100%;
     aspect-ratio: 1 / 1;
     object-fit: cover;
+  }
+}
+
+// landscape orientation
+@media (min-aspect-ratio: 1/1) {
+  facade-web-movie {
+    width: auto !important;
+  }
+}
+
+// portrait orientation
+@media (max-aspect-ratio: 1/1) {
+  facade-web-movie {
+    height: auto !important;
   }
 }

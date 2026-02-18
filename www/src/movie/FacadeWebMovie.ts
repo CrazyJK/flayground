@@ -14,13 +14,9 @@ interface FacadeWebMovieOptions {
    */
   volume: number;
   /**
-   * 비디오 너비 (예: '100%', '300px' 등)
+   * 비디오 크기. 화면 대비 너비 %. landscape, portrait 중에 꽉 차는 쪽으로 자동 조정됩니다. (예: '50%')
    */
-  width?: string;
-  /**
-   * 최대 너비 (예: '100%', '300px' 등)
-   */
-  maxWidth?: string;
+  size?: string;
   /**
    * 재생이 끝난 후 할 행동. 사라지기, 다음 비디오 재생, 멈추고 사용자 조작 대기 등
    */
@@ -53,7 +49,7 @@ export class FacadeWebMovie extends GroundMovie {
   constructor(options: Partial<FacadeWebMovieOptions> = {}) {
     super();
 
-    this.options = { volume: 0.5, endedBehavior: 'pause', ...options };
+    this.options = { volume: 0.5, endedBehavior: 'pause', size: '80%', ...options };
 
     this.video = this.appendChild(document.createElement('video'));
 
@@ -81,8 +77,10 @@ export class FacadeWebMovie extends GroundMovie {
       }, 300);
     };
 
-    if (this.options.width) this.video.style.width = this.options.width;
-    if (this.options.maxWidth) this.video.style.maxWidth = this.options.maxWidth;
+    if (this.options.size) {
+      this.style.height = this.options.size;
+      this.style.width = this.options.size;
+    }
   }
 
   connectedCallback(): void {

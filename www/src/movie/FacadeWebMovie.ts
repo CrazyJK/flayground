@@ -128,10 +128,10 @@ export class FacadeWebMovie extends GroundMovie {
     }
 
     const randomIndex = RandomUtils.getRandomInt(0, this.remainingItems.length);
-    const todayItem = this.remainingItems.splice(randomIndex, 1)[0]!;
+    const { name, uuid } = this.remainingItems.splice(randomIndex, 1)[0]!;
 
-    this.video.src = ApiClient.buildUrl(`/todayis/stream/${todayItem.uuid}`);
-    this.video.title = todayItem.name;
+    this.ariaLabel = name; // 접근성 향상을 위해 aria-label 설정
+    this.video.src = ApiClient.buildUrl(`/todayis/stream/${uuid}`);
   }
 
   /**
@@ -153,7 +153,6 @@ export class FacadeWebMovie extends GroundMovie {
    */
   private handleVideoLoad(): void {
     this.style.opacity = '1';
-    this.video.muted = false; // 로딩이 시작되면 음소거 해제
     this.video.loop = false;
   }
 
@@ -240,6 +239,7 @@ export class FacadeWebMovie extends GroundMovie {
     } else if (deltaX < 0) {
       // 반복 재생
       this.video.loop = true;
+      if (this.video.paused) this.video.play();
     } else if (deltaY < 0) {
       // 휠을 위로 올릴 때 볼륨 증가
       this.video.volume = Math.min(1, this.video.volume + 0.1);

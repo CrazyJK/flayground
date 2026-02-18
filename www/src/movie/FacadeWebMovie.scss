@@ -5,6 +5,8 @@ facade-web-movie {
   margin: 0 auto;
   object-fit: cover;
   clip-path: circle(50% at 50% 50%);
+  opacity: 0;
+  transition: opacity 0.5s ease-in-out;
 
   video {
     width: 100%;

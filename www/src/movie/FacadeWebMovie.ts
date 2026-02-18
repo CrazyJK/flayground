@@ -31,7 +31,6 @@ interface FacadeWebMovieOptions {
  * 스타일링을 통해 원형 모양으로 표시되며, 크기와 위치가 조정됩니다.
  */
 export class FacadeWebMovie extends GroundMovie {
-  private readonly fadeOutDuration = 1000; // 페이드 아웃 지속 시간 (ms)
   private readonly options: FacadeWebMovieOptions;
 
   private video: HTMLVideoElement;
@@ -139,7 +138,7 @@ export class FacadeWebMovie extends GroundMovie {
    */
   private fadeOutAndRemove(): void {
     this.animate([{ opacity: 1 }, { opacity: 0 }], {
-      duration: this.fadeOutDuration,
+      duration: 1000,
       fill: 'forwards',
       easing: 'ease-out',
     }).onfinish = () => {

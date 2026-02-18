@@ -242,7 +242,7 @@ export class FacadeWebMovie extends GroundMovie {
       this.playNext();
     } else if (deltaX < 0) {
       // 반복 재생
-      this.video.loop = true;
+      this.video.loop = !this.video.loop;
       if (this.video.paused) this.video.play();
     } else if (deltaY < 0) {
       // 휠을 위로 올릴 때 볼륨 증가

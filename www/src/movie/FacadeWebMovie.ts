@@ -122,9 +122,6 @@ export class FacadeWebMovie extends GroundMovie {
    * - 모두 선택되면 todayItems 전체에서 다시 선택
    */
   private playNext(): void {
-    // isEnded()가 대기 중이면 resolve (사용자 액션으로 다음 비디오 이동)
-    this.endedResolve?.();
-
     // 복제된 배열이 없거나 비어있으면 todayItems로 다시 채움
     if (this.remainingItems.length === 0) {
       this.remainingItems = [...this.todayItems];
@@ -164,6 +161,9 @@ export class FacadeWebMovie extends GroundMovie {
    * - 페이드 아웃 애니메이션 처리
    */
   private handleVideoEnded(): void {
+    // 비디오가 자연 종료됨 - isEnded() 대기 중이면 resolve
+    this.endedResolve?.();
+
     switch (this.options.endedBehavior) {
       case 'next':
         this.playNext();
@@ -238,7 +238,8 @@ export class FacadeWebMovie extends GroundMovie {
     const deltaX = Math.sign(accumulatedDeltaX);
     const deltaY = Math.sign(accumulatedDeltaY);
     if (deltaX > 0) {
-      // 다음 비디오
+      // 사용자가 다음 비디오로 이동 - isEnded() 대기 중이면 resolve
+      this.endedResolve?.();
       this.playNext();
     } else if (deltaX < 0) {
       // 반복 재생

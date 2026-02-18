@@ -34,8 +34,11 @@ export class FacadeWebMovie extends GroundMovie {
   private readonly options: FacadeWebMovieOptions;
 
   private video: HTMLVideoElement;
+  private description: HTMLDivElement;
   private todayItems: TodayItem[] = [];
   private remainingItems: TodayItem[] = []; // 아직 선택되지 않은 아이템 목록
+  private currentItem: TodayItem | null = null; // 현재 재생 중인 아이템
+  private descriptionTimeout: ReturnType<typeof setTimeout> | null = null; // 설명 표시 타이머
 
   private boundLoadHandler: EventListener;
   private boundEndedHandler: EventListener;
@@ -51,6 +54,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.options = { volume: 0.5, endedBehavior: 'pause', size: '80%', ...options };
 
     this.video = this.appendChild(document.createElement('video'));
+    this.description = this.appendChild(document.createElement('div'));
 
     // 비디오 속성 설정
     this.video.autoplay = true;
@@ -127,10 +131,9 @@ export class FacadeWebMovie extends GroundMovie {
     }
 
     const randomIndex = RandomUtils.getRandomInt(0, this.remainingItems.length);
-    const { name, uuid } = this.remainingItems.splice(randomIndex, 1)[0]!;
+    this.currentItem = this.remainingItems.splice(randomIndex, 1)[0]!;
 
-    this.ariaLabel = name; // 접근성 향상을 위해 aria-label 설정
-    this.video.src = ApiClient.buildUrl(`/todayis/stream/${uuid}`);
+    this.video.src = ApiClient.buildUrl(`/todayis/stream/${this.currentItem.uuid}`);
   }
 
   /**
@@ -153,6 +156,7 @@ export class FacadeWebMovie extends GroundMovie {
   private handleVideoLoad(): void {
     this.style.opacity = '1';
     this.video.loop = false;
+    this.setDescription();
   }
 
   /**
@@ -223,6 +227,7 @@ export class FacadeWebMovie extends GroundMovie {
    */
   private handleVideoClick(): void {
     this.video.muted = !this.video.muted;
+    this.setDescription();
   }
 
   /**
@@ -246,6 +251,7 @@ export class FacadeWebMovie extends GroundMovie {
       // 휠을 아래로 내릴 때 볼륨 감소
       this.video.volume = Math.max(0, this.video.volume - 0.1);
     }
+    this.setDescription();
   }
 
   /**
@@ -267,6 +273,24 @@ export class FacadeWebMovie extends GroundMovie {
       this.endedResolve = done;
       this.video.addEventListener('ended', onEnded, { once: true });
     });
+  }
+
+  /**
+   * 설명 설정
+   * - name, volume, muted, loop 상태를 설명하는 텍스트 설정
+   */
+  private setDescription() {
+    this.description.innerHTML = `${this.currentItem!.name}<br>Vol.
+      ${Math.round(this.video.volume * 100)}${this.video.muted ? ', muted' : ''}${this.video.loop ? ', loop' : ''}`;
+    this.description.style.opacity = '1';
+
+    // 3초 안에 다시 설명이 설정되면 기존 타이머는 취소되고 새로 설정된 설명이 3초 후에 사라집니다.
+    if (this.descriptionTimeout) {
+      clearTimeout(this.descriptionTimeout);
+    }
+    this.descriptionTimeout = setTimeout(() => {
+      this.description.style.opacity = '0';
+    }, 3000);
   }
 }
 

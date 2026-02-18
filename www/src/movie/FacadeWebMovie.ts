@@ -9,26 +9,32 @@ interface TodayItem {
 }
 
 interface FacadeWebMovieOptions {
-  /**
-   * 비디오 볼륨 (0.0 ~ 1.0)
-   */
+  /** 비디오 볼륨 (0.0 ~ 1.0) */
   volume: number;
-  /**
-   * 비디오 크기. 화면 대비 너비 %. landscape, portrait 중에 꽉 차는 쪽으로 자동 조정됩니다. (예: '50%')
-   */
+  /** 화면 대비 크기. landscape, portrait 중에 꽉 차는 쪽으로 자동 조정. */
   size?: string;
-  /**
-   * 재생이 끝난 후 할 행동. 사라지기, 다음 비디오 재생, 멈추고 사용자 조작 대기 등
-   */
+  /** 재생이 끝난 후 할 행동. 사라지기, 다음 비디오 재생, 멈추고 사용자 조작 대기 */
   endedBehavior?: 'fadeOut' | 'next' | 'pause';
 }
 
 /**
- * FacadeWebMovie.ts
+ * 첫 페이지에 원형으로 표시되는 커스텀 비디오 Web Component입니다.
  *
- * 첫페이지에서 짧은 동영상을 보여주는 커스텀 비디오 엘리먼트입니다.
- * 이 비디오는 자동 재생되며, 끝나면 서서히 사라집니다.
- * 스타일링을 통해 원형 모양으로 표시되며, 크기와 위치가 조정됩니다.
+ * - `/todayis` API에서 목록을 가져와 랜덤 순서로 순차 재생
+ * - 모든 아이템을 소진하면 전체 목록에서 다시 랜덤 선택
+ * - 재생 종료 후 동작은 `endedBehavior` 옵션으로 제어 (fadeOut / next / pause)
+ *
+ * 사용자 인터랙션:
+ * - click       : 음소거 토글
+ * - wheel →     : 다음 비디오
+ * - wheel ←     : 반복 재생 토글 (일시정지 상태면 재개)
+ * - wheel ↑     : 볼륨 증가 (+10%)
+ * - wheel ↓     : 볼륨 감소 (-10%)
+ *
+ * @example
+ * const movie = new FacadeWebMovie({ volume: 0.3, endedBehavior: 'next' });
+ * document.body.appendChild(movie);
+ * await movie.isEnded(); // 첫 번째 비디오가 끝나거나 다음으로 넘어갈 때까지 대기
  */
 export class FacadeWebMovie extends GroundMovie {
   private readonly options: FacadeWebMovieOptions;

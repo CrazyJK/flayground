@@ -36,28 +36,23 @@ interface FacadeWebMovieOptions {
  */
 export class FacadeWebMovie extends GroundMovie {
   private readonly fadeOutDuration = 1000; // 페이드 아웃 지속 시간 (ms)
-  private readonly options: FacadeWebMovieOptions = {
-    volume: 0.5,
-    stopBehavior: 'pause',
-  };
+  private readonly options: FacadeWebMovieOptions;
 
   private video: HTMLVideoElement;
   private todayItems: TodayItem[] = [];
   private remainingItems: TodayItem[] = []; // 아직 선택되지 않은 아이템 목록
 
-  #boundLoadHandler: EventListener;
-  #boundErrorHandler: EventListener;
-  #boundEndedHandler: EventListener;
-  #boundClickHandler: (event: MouseEvent) => void;
-  #boundWheelHandler: (event: WheelEvent) => void;
-  #wheelTimer: ReturnType<typeof setTimeout> | null = null;
-  #wheelAccumulatedDeltaY = 0;
-  #wheelAccumulatedDeltaX = 0;
+  private boundLoadHandler: EventListener;
+  private boundEndedHandler: EventListener;
+  private boundErrorHandler: (error?: unknown) => void;
+  private boundClickHandler: (event: MouseEvent) => void;
+  private boundWheelHandler: (event: WheelEvent) => void;
+  private wheelState = { timer: null as ReturnType<typeof setTimeout> | null, deltaX: 0, deltaY: 0 };
 
   constructor(options: Partial<FacadeWebMovieOptions> = {}) {
     super();
 
-    this.options = { ...this.options, ...options };
+    this.options = { volume: 0.5, stopBehavior: 'pause', ...options };
 
     this.video = this.appendChild(document.createElement('video'));
 
@@ -67,23 +62,21 @@ export class FacadeWebMovie extends GroundMovie {
     this.video.loop = false;
     this.video.volume = this.options.volume;
 
-    this.#boundLoadHandler = this.handleVideoLoad.bind(this);
-    this.#boundEndedHandler = this.handleVideoEnded.bind(this);
-    this.#boundErrorHandler = this.handleVideoError.bind(this);
-    this.#boundClickHandler = this.handleVideoClick.bind(this);
+    this.boundLoadHandler = this.handleVideoLoad.bind(this);
+    this.boundEndedHandler = this.handleVideoEnded.bind(this);
+    this.boundErrorHandler = this.handleVideoError.bind(this);
+    this.boundClickHandler = this.handleVideoClick.bind(this);
 
-    // 연속 휠 이벤트의 deltaY를 누적하다가 마지막 이벤트 후 한 번에 처리
-    const wheelHandler = this.handleVideoWheel.bind(this);
-    this.#boundWheelHandler = (event: WheelEvent) => {
+    // 연속 휠 이벤트의 deltaX/Y를 누적하다가 마지막 이벤트 후 한 번에 처리
+    this.boundWheelHandler = (event: WheelEvent) => {
       event.preventDefault();
-      this.#wheelAccumulatedDeltaX += event.deltaX;
-      this.#wheelAccumulatedDeltaY += event.deltaY;
-      if (this.#wheelTimer !== null) clearTimeout(this.#wheelTimer);
-      this.#wheelTimer = setTimeout(() => {
-        this.#wheelTimer = null;
-        wheelHandler(event, this.#wheelAccumulatedDeltaX, this.#wheelAccumulatedDeltaY);
-        this.#wheelAccumulatedDeltaX = 0;
-        this.#wheelAccumulatedDeltaY = 0;
+      this.wheelState.deltaX += event.deltaX;
+      this.wheelState.deltaY += event.deltaY;
+      if (this.wheelState.timer !== null) clearTimeout(this.wheelState.timer);
+      this.wheelState.timer = setTimeout(() => {
+        const { deltaX, deltaY } = this.wheelState;
+        this.wheelState = { timer: null, deltaX: 0, deltaY: 0 };
+        this.handleVideoWheel(deltaX, deltaY);
       }, 300);
     };
 
@@ -92,66 +85,49 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   connectedCallback(): void {
-    this.video.addEventListener('loadstart', this.#boundLoadHandler); // 로딩 시작 시 스타일 설정
-    this.video.addEventListener('ended', this.#boundEndedHandler); // 비디오 종료 처리
-    this.video.addEventListener('error', this.#boundErrorHandler); // 에러 처리
-    this.video.addEventListener('click', this.#boundClickHandler); // 클릭 시 음소거 토글 또는 다음 비디오 재생
-    this.video.addEventListener('wheel', this.#boundWheelHandler); // 휠 이벤트로 볼륨 조절
+    this.video.addEventListener('loadstart', this.boundLoadHandler); // 로딩 시작 시 스타일 설정
+    this.video.addEventListener('ended', this.boundEndedHandler); // 비디오 종료 처리
+    this.video.addEventListener('error', this.boundErrorHandler as EventListener); // 에러 처리
+    this.video.addEventListener('click', this.boundClickHandler); // 클릭 시 음소거 토글 또는 다음 비디오 재생
+    this.video.addEventListener('wheel', this.boundWheelHandler); // 휠 이벤트로 볼륨 조절
 
     ApiClient.get<TodayItem[]>('/todayis')
       .then((todayItems) => {
-        if (todayItems !== null && todayItems.length > 0) {
-          this.todayItems = todayItems;
-          this.playNext(); // 첫 비디오 재생
-        } else {
-          console.warn('FacadeWebMovie: API 응답 형식이 올바르지 않습니다.');
+        if (todayItems === null || todayItems.length === 0) {
+          throw new Error('FacadeWebMovie: API 응답 형식이 올바르지 않습니다.');
         }
+        this.todayItems = todayItems;
+        this.playNext(); // 첫 비디오 재생
       })
-      .catch((error: unknown) => {
-        console.error('FacadeWebMovie: API 호출 실패:', error);
-        this.handleVideoError();
-      });
+      .catch(this.boundErrorHandler);
   }
 
   disconnectedCallback(): void {
-    this.video.removeEventListener('loadstart', this.#boundLoadHandler);
-    this.video.removeEventListener('ended', this.#boundEndedHandler);
-    this.video.removeEventListener('error', this.#boundErrorHandler);
-    this.video.removeEventListener('click', this.#boundClickHandler);
+    this.video.removeEventListener('loadstart', this.boundLoadHandler);
+    this.video.removeEventListener('ended', this.boundEndedHandler);
+    this.video.removeEventListener('error', this.boundErrorHandler as EventListener);
+    this.video.removeEventListener('click', this.boundClickHandler);
+    this.video.removeEventListener('wheel', this.boundWheelHandler);
+    if (this.wheelState.timer !== null) clearTimeout(this.wheelState.timer);
     this.video.pause();
     this.video.src = ''; // 비디오 소스 초기화
   }
 
   /**
-   * 무작위로 TodayItem 선택
-   * - todayItems 배열에서 무작위로 하나의 아이템을 선택하여 반환합니다.
-   * - 다음 수행시는 이전 선택된 아이템 제외하고 랜덤 선택
-   * - 더 선택할 아이템이 없으면 todayItems 배열 전체에서 다시 선택
-   * @returns 선택된 TodayItem
+   * 다음 비디오 재생
+   * - todayItems에서 랜덤으로 아이템을 선택하여 재생
+   * - 이전에 선택된 아이템은 remainingItems에서 제외하고 선택
+   * - 모두 선택되면 todayItems 전체에서 다시 선택
    */
-  private pickRandomTodayItem(): TodayItem {
-    if (this.todayItems.length === 0) {
-      throw new Error('Today items are not loaded yet.');
-    }
+  private playNext(): void {
     // 복제된 배열이 없거나 비어있으면 todayItems로 다시 채움
-    if (!this.remainingItems || this.remainingItems.length === 0) {
+    if (this.remainingItems.length === 0) {
       this.remainingItems = [...this.todayItems];
     }
 
     const randomIndex = RandomUtils.getRandomInt(0, this.remainingItems.length);
-    const selectedItem = this.remainingItems[randomIndex]!;
+    const todayItem = this.remainingItems.splice(randomIndex, 1)[0]!;
 
-    // 선택된 아이템을 배열에서 제거
-    this.remainingItems.splice(randomIndex, 1);
-
-    return selectedItem;
-  }
-
-  /**
-   * 다음 비디오 재생
-   */
-  private playNext(): void {
-    const todayItem = this.pickRandomTodayItem();
     this.video.src = ApiClient.buildUrl(`/todayis/stream/${todayItem.uuid}`);
   }
 
@@ -196,12 +172,47 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   /**
-   * 비디오 에러 이벤트 처리
-   * - 에러 메시지 출력 및 요소 숨기기
+   * 비디오 에러 및 API 에러 통합 처리
+   * - error가 Error 인스턴스면 API/로직 에러로 처리 → 요소 숨기기
+   * - 그 외(미지정 또는 Event)는 MediaError 코드에 따라 분기
+   *   - MEDIA_ERR_ABORTED(1): 사용자 중단 시 무시
+   *   - MEDIA_ERR_NETWORK(2), MEDIA_ERR_DECODE(3), MEDIA_ERR_SRC_NOT_SUPPORTED(4): 다음 비디오로 이동
    */
-  private handleVideoError(): void {
-    console.warn('FacadeWebMovie: 비디오 로딩에 실패했습니다.');
-    this.style.display = 'none';
+  private handleVideoError(error?: unknown): void {
+    // API 에러 또는 로직 에러 (Error 인스턴스)
+    if (error instanceof Error) {
+      console.error('FacadeWebMovie:', error.message);
+      this.style.display = 'none';
+      return;
+    }
+
+    // video MediaError 처리
+    const mediaError = this.video.error;
+
+    if (!mediaError) {
+      console.warn('FacadeWebMovie: 알 수 없는 비디오 에러');
+      this.style.display = 'none';
+      return;
+    }
+
+    switch (mediaError.code) {
+      case MediaError.MEDIA_ERR_ABORTED:
+        // 사용자에 의한 중단 - 무시
+        console.info('FacadeWebMovie: 비디오 재생이 중단되었습니다.');
+        break;
+
+      case MediaError.MEDIA_ERR_NETWORK:
+      case MediaError.MEDIA_ERR_DECODE:
+      case MediaError.MEDIA_ERR_SRC_NOT_SUPPORTED:
+        console.warn(`FacadeWebMovie: 비디오 에러 (code: ${mediaError.code}) → 다음 비디오로 이동`);
+        if (this.todayItems.length > 0) this.playNext();
+        else this.style.display = 'none';
+        break;
+
+      default:
+        console.warn(`FacadeWebMovie: 비디오 에러 (code: ${mediaError.code}): ${mediaError.message}`);
+        this.style.display = 'none';
+    }
   }
 
   /**
@@ -216,7 +227,7 @@ export class FacadeWebMovie extends GroundMovie {
    * 비디오 휠 이벤트 처리
    * @param event
    */
-  private handleVideoWheel(event: WheelEvent, accumulatedDeltaX = event.deltaX, accumulatedDeltaY = event.deltaY): void {
+  private handleVideoWheel(accumulatedDeltaX: number, accumulatedDeltaY: number): void {
     const deltaX = Math.sign(accumulatedDeltaX);
     const deltaY = Math.sign(accumulatedDeltaY);
     if (deltaX !== 0) {
@@ -249,7 +260,7 @@ export class FacadeWebMovie extends GroundMovie {
       this.video.addEventListener(
         'ended',
         async () => {
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((waitResolve) => setTimeout(waitResolve, 1000));
           resolve(true);
         },
         { once: true }

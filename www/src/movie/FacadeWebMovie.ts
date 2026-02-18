@@ -24,7 +24,7 @@ interface FacadeWebMovieOptions {
   /**
    * 재생이 끝난 후 할 행동. 사라지기, 다음 비디오 재생, 멈추고 사용자 조작 대기 등
    */
-  stopBehavior?: 'fadeOut' | 'next' | 'pause';
+  endedBehavior?: 'fadeOut' | 'next' | 'pause';
 }
 
 /**
@@ -52,7 +52,7 @@ export class FacadeWebMovie extends GroundMovie {
   constructor(options: Partial<FacadeWebMovieOptions> = {}) {
     super();
 
-    this.options = { volume: 0.5, stopBehavior: 'pause', ...options };
+    this.options = { volume: 0.5, endedBehavior: 'pause', ...options };
 
     this.video = this.appendChild(document.createElement('video'));
 
@@ -159,7 +159,7 @@ export class FacadeWebMovie extends GroundMovie {
    * - 페이드 아웃 애니메이션 처리
    */
   private handleVideoEnded(): void {
-    switch (this.options.stopBehavior) {
+    switch (this.options.endedBehavior) {
       case 'next':
         this.playNext();
         break;

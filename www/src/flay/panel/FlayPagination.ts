@@ -103,6 +103,7 @@ export default class FlayPagination extends GroundFlay {
         } else if (deltaX < 0) {
           return this.#navigator(PREV);
         }
+        return false;
       } else {
         // 상하 스크롤
         return this.#navigator(deltaY > 0 ? NEXT : PREV);

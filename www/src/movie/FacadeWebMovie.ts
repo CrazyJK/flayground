@@ -14,7 +14,7 @@ interface FacadeWebMovieOptions {
   /** 화면 대비 크기. landscape, portrait 중에 꽉 차는 쪽으로 자동 조정. */
   size?: string;
   /** 재생이 끝난 후 할 행동. 사라지기, 다음 비디오 재생, 멈추고 사용자 조작 대기 */
-  endedBehavior?: 'fadeOut' | 'next' | 'pause';
+  endedBehavior?: 'remove' | 'next' | 'pause';
 }
 
 /**
@@ -22,7 +22,7 @@ interface FacadeWebMovieOptions {
  *
  * - `/todayis` API에서 목록을 가져와 랜덤 순서로 순차 재생
  * - 모든 아이템을 소진하면 전체 목록에서 다시 랜덤 선택
- * - 재생 종료 후 동작은 `endedBehavior` 옵션으로 제어 (fadeOut / next / pause)
+ * - 재생 종료 후 동작은 `endedBehavior` 옵션으로 제어 (remove / next / pause)
  *
  * 사용자 인터랙션:
  * - click       : 음소거 토글
@@ -61,7 +61,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.video = this.appendChild(document.createElement('video'));
     this.description = this.appendChild(document.createElement('div'));
 
-    this.options = { volume: 0.5, size: '50%', endedBehavior: 'fadeOut', ...options };
+    this.options = { volume: 0.5, size: '50%', endedBehavior: 'remove', ...options };
 
     // 비디오 속성 설정
     this.video.autoplay = true;
@@ -119,7 +119,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.video.removeEventListener('wheel', this.boundWheelHandler);
     if (this.wheelState.timer !== null) clearTimeout(this.wheelState.timer);
     this.video.pause();
-    this.video.src = ''; // 비디오 소스 초기화
+    this.video.src = '';
   }
 
   /**
@@ -155,7 +155,6 @@ export class FacadeWebMovie extends GroundMovie {
 
     const randomIndex = RandomUtils.getRandomInt(0, this.remainingItems.length);
     this.currentItem = this.remainingItems.splice(randomIndex, 1)[0]!;
-
     this.video.src = ApiClient.buildUrl(`/todayis/stream/${this.currentItem.uuid}`);
   }
 
@@ -164,35 +163,27 @@ export class FacadeWebMovie extends GroundMovie {
    * - 로딩 시작 시 스타일 설정
    */
   private handleVideoLoad(): void {
-    this.style.opacity = '1';
     this.video.loop = false;
+    this.show();
     this.setDescription();
   }
 
   /**
    * 비디오 플레이 종료 이벤트 처리
-   * - 페이드 아웃 애니메이션 처리
    */
   private handleVideoEnded(): void {
-    // 비디오가 자연 종료됨 - isEnded() 대기 중이면 resolve
-    this.endedResolve?.();
+    this.endedResolve?.(); // 비디오가 자연 종료됨 - isEnded() 대기 중이면 resolve
 
     switch (this.options.endedBehavior) {
       case 'next':
         this.playNext();
         break;
-      case 'pause':
-        this.style.opacity = '0';
+      case 'remove':
+        this.show(false);
+        this.remove();
         break;
-      default:
-        // 페이드 아웃 애니메이션 후 요소 제거
-        this.animate([{ opacity: 1 }, { opacity: 0 }], {
-          duration: 1000,
-          fill: 'forwards',
-          easing: 'ease-out',
-        }).onfinish = () => {
-          this.remove();
-        };
+      default: // pause
+        this.show(false);
         break;
     }
   }
@@ -223,7 +214,7 @@ export class FacadeWebMovie extends GroundMovie {
       // 왼쪽 ← 반복 재생 토글 (일시정지 상태면 재개)
       this.video.loop = !this.video.loop;
       if (this.video.paused) {
-        this.style.opacity = '1';
+        this.show();
         this.video.play();
       }
     } else if (deltaY < 0) {
@@ -238,25 +229,8 @@ export class FacadeWebMovie extends GroundMovie {
   }
 
   /**
-   * 현재 비디오 상태를 설명 텍스트로 표시
-   * - currentItem이 없으면 무시
-   * - name, volume, muted, loop 상태를 표시하고 3초 후 자동 숨김
-   */
-  private setDescription(): void {
-    if (!this.currentItem) return;
-
-    const flags = [this.video.muted && 'muted', this.video.loop && 'loop'].filter(Boolean).join(', ');
-    const status = `Vol. ${Math.round(this.video.volume * 100)}${flags ? `, ${flags}` : ''}`;
-
-    this.description.innerHTML = `${this.currentItem.name}<br>${status}`;
-    this.description.style.opacity = '1';
-
-    clearTimeout(this.descriptionTimeout ?? undefined);
-    this.descriptionTimeout = setTimeout(() => (this.description.style.opacity = '0'), 3000);
-  }
-
-  /**
    * 비디오 에러 및 API 에러 통합 처리
+   * @param error 발생한 에러 객체 또는 MediaError 코드 정보
    */
   private handleVideoError(error?: unknown): void {
     if (error instanceof Error) {
@@ -267,6 +241,30 @@ export class FacadeWebMovie extends GroundMovie {
         console.warn(`FacadeWebMovie: 비디오 에러 (code: ${code})`);
       }
     }
+  }
+
+  /**
+   * 현재 비디오 상태를 설명 텍스트로 표시
+   * - name, volume, muted, loop 상태를 표시하고 3초 후 자동 숨김
+   */
+  private setDescription(): void {
+    if (!this.currentItem) return;
+
+    const flags = [this.video.muted && 'muted', this.video.loop && 'loop'].filter(Boolean).join(', ');
+    const status = `Vol. ${Math.round(this.video.volume * 100)}${flags ? `, ${flags}` : ''}`;
+    this.description.innerHTML = `${this.currentItem.name}<br>${status}`;
+    this.show(true, this.description);
+    clearTimeout(this.descriptionTimeout ?? undefined);
+    this.descriptionTimeout = setTimeout(() => this.show(false, this.description), 3000);
+  }
+
+  /**
+   * 요소의 표시 상태를 토글
+   * @param show 표시 여부 (기본값: true)
+   * @param el 대상 요소 (기본값: this)
+   */
+  private show(show: boolean = true, el: HTMLElement = this): void {
+    el.classList.toggle('show', show);
   }
 }
 

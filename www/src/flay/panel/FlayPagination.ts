@@ -90,7 +90,23 @@ export default class FlayPagination extends GroundFlay {
       if ((e.target as Element)?.closest('#layer')) return false;
       if ((e.target as Element)?.closest('.side-nav-bar')) return false;
 
-      return this.#navigator(e.deltaY > 0 ? NEXT : PREV);
+      const [deltaX, deltaY] = [e.deltaX, e.deltaY];
+
+      // 좌우 스크롤 디바운스 처리
+      if (Math.abs(deltaX) > Math.abs(deltaY)) {
+        const now = Date.now();
+        if (now - this.lastTypedTime < 150) return false;
+        this.lastTypedTime = now;
+
+        if (deltaX > 0) {
+          return this.#navigator(NEXT);
+        } else if (deltaX < 0) {
+          return this.#navigator(PREV);
+        }
+      } else {
+        // 상하 스크롤
+        return this.#navigator(deltaY > 0 ? NEXT : PREV);
+      }
     });
 
     window.addEventListener('keyup', (e: KeyboardEvent) => {

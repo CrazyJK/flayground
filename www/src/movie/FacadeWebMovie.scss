@@ -19,11 +19,11 @@ facade-web-movie {
     bottom: 0;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.5);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.9rem;
+    background: var(--color-bg-transparent);
+    color: var(--color-text);
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: var(--size-small);
     text-align: center;
     opacity: 0;
     transition: opacity 0.3s ease-in-out;

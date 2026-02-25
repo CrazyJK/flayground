@@ -1,9 +1,9 @@
 facade-web-movie {
   position: relative;
   display: flex;
+  background-color: var(--color-bg-transparent);
   width: 30rem;
   margin: 0 auto;
-  object-fit: cover;
   clip-path: circle(50% at 50% 50%);
   opacity: 0;
   transition: opacity 0.5s ease-in-out;
@@ -11,7 +11,7 @@ facade-web-movie {
   video {
     width: 100%;
     aspect-ratio: 1 / 1;
-    object-fit: cover;
+    object-fit: contain;
   }
 
   div {

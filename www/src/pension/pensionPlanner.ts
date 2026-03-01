@@ -22,6 +22,15 @@ interface PlanRow {
   ratio: number;
 }
 
+/** FlayStorage 저장 데이터 구조 */
+interface PlannerStorageData {
+  cash: string;
+  currentRisk: CurrentAssetRow[];
+  currentSafe: CurrentAssetRow[];
+  planRisk: PlanRow[];
+  planSafe: PlanRow[];
+}
+
 /** 행 추가 시 기본값 옵션 */
 interface AssetDefaults {
   name?: string;
@@ -53,6 +62,9 @@ const pv = (v: string | number): number => {
  * 인라인 이벤트 핸들러(onclick, oninput)를 위해 필요한 메서드를 window에 전역 등록합니다.
  */
 export class PensionPlanner {
+  /** localStorage 저장 키 */
+  private static readonly STORAGE_KEY = 'pensionPlanner';
+
   private currentRiskId = 0;
   private currentSafeId = 0;
   private planRiskId = 0;
@@ -585,6 +597,9 @@ export class PensionPlanner {
     } else {
       balanceWarningEl.style.display = 'none';
     }
+
+    // 계산 완료 후 현재 입력 데이터 저장
+    this.saveData();
   }
 
   /* ========== calculate 내부 헬퍼 ========== */
@@ -656,13 +671,100 @@ export class PensionPlanner {
 
   /* ========== 초기 데이터 ========== */
 
-  /** 기본 보유자산 및 투자 계획 데이터로 초기화 */
+  /**
+   * 현재 입력 데이터를 FlayStorage에 저장.
+   * calculate() 완료 시마다 자동 호출되어 세션 간 데이터 유지
+   */
+  private saveData(): void {
+    const cash = (document.getElementById('i-cash') as HTMLInputElement)?.value || '';
+    const data: PlannerStorageData = {
+      cash,
+      currentRisk: this.getCurrentRows('current-risk-body'),
+      currentSafe: this.getCurrentRows('current-safe-body'),
+      planRisk: this.getPlanRows('plan-risk-body'),
+      planSafe: this.getPlanRows('plan-safe-body'),
+    };
+    try {
+      localStorage.setItem(PensionPlanner.STORAGE_KEY, JSON.stringify(data));
+    } catch (e) {
+      console.warn('PensionPlanner: 데이터 저장 실패', e);
+    }
+  }
+
+  /**
+   * 저장된 비율을 계획 행 DOM에 직접 복원.
+   * addPlanRow의 자동 재분배로 틀어진 비율을 덮어씀
+   * @param type - 'risk' 또는 'safe'
+   * @param rows - 복원할 비율 데이터
+   */
+  private restorePlanRatios(type: 'risk' | 'safe', rows: PlanRow[]): void {
+    const bodyId = type === 'risk' ? 'plan-risk-body' : 'plan-safe-body';
+    const trows = Array.from(document.querySelectorAll<HTMLTableRowElement>(`#${bodyId} tr`));
+    rows.forEach((r, i) => {
+      const tr = trows[i];
+      if (!tr) return;
+      tr.dataset.ratio = String(r.ratio);
+      const input = tr.querySelector('input[type="number"]') as HTMLInputElement | null;
+      if (input) input.value = String(r.ratio);
+    });
+  }
+
+  /** 기본 보유자산 및 투자 계획 데이터로 초기화. 저장된 데이터가 있으면 복원, 없으면 샘플 데이터 사용 */
   private initDefaults(): void {
-    this.addCurrentRiskRow({ name: 'TIGER 반도체TOP10', eval: 63590580 });
-    this.addCurrentRiskRow({ name: 'TIGER 200', eval: 9404500 });
-    this.addCurrentRiskRow({ name: 'KODEX 증권', eval: 3181165 });
-    this.addCurrentSafeRow({ name: '미래에셋 TDF2050 혼합', eval: 759759 });
-    this.addPlanRiskRow({ name: 'TIGER 200', ratio: 100 });
-    this.addPlanSafeRow({ name: 'RISE 삼성전자SK하이닉스채권혼합50', ratio: 100 });
+    let saved: PlannerStorageData | null = null;
+    try {
+      const raw = localStorage.getItem(PensionPlanner.STORAGE_KEY);
+      saved = raw ? (JSON.parse(raw) as PlannerStorageData) : null;
+    } catch (e) {
+      console.warn('PensionPlanner: 저장 데이터 로드 실패', e);
+    }
+
+    if (saved && (saved.currentRisk?.length || saved.currentSafe?.length || saved.planRisk?.length)) {
+      // 저장된 데이터 복원
+      const cashEl = document.getElementById('i-cash') as HTMLInputElement;
+      if (cashEl && saved.cash) cashEl.value = saved.cash;
+
+      saved.currentRisk?.forEach((d) => this.addCurrentRiskRow(d));
+      saved.currentSafe?.forEach((d) => this.addCurrentSafeRow(d));
+
+      // 계획 행: 이름만 먼저 추가한 후 비율 직접 복원 (addPlanRow의 자동 재분배 무력화)
+      saved.planRisk?.forEach((d) => this.addPlanRowNameOnly('risk', d.name));
+      this.restorePlanRatios('risk', saved.planRisk ?? []);
+
+      saved.planSafe?.forEach((d) => this.addPlanRowNameOnly('safe', d.name));
+      this.restorePlanRatios('safe', saved.planSafe ?? []);
+    } else {
+      // 저장된 데이터 없음 → 샘플 데이터로 초기화
+      this.addCurrentRiskRow({ name: 'TIGER 반도체TOP10', eval: 63590580 });
+      this.addCurrentRiskRow({ name: 'TIGER 200', eval: 9404500 });
+      this.addCurrentRiskRow({ name: 'KODEX 증권', eval: 3181165 });
+      this.addCurrentSafeRow({ name: '미래에셋 TDF2050 혼합', eval: 759759 });
+      this.addPlanRiskRow({ name: 'TIGER 200', ratio: 100 });
+      this.addPlanSafeRow({ name: 'RISE 삼성전자SK하이닉스채권혼합50', ratio: 100 });
+    }
+  }
+
+  /**
+   * 계획 행을 비율 재분배 없이 이름만 직접 추가하는 내부 전용 헬퍼.
+   * initDefaults에서 저장된 비율을 복원할 때만 사용
+   * @param type - 'risk' 또는 'safe'
+   * @param name - 상품명
+   */
+  private addPlanRowNameOnly(type: 'risk' | 'safe', name: string): void {
+    const isRisk = type === 'risk';
+    const id = isRisk ? ++this.planRiskId : ++this.planSafeId;
+    const prefix = isRisk ? 'pr' : 'ps';
+    const planBody = document.getElementById(isRisk ? 'plan-risk-body' : 'plan-safe-body')!;
+    const placeholder = isRisk ? 'KOSPI 추종 ETF' : '안전자산 상품명';
+    const ratioClass = isRisk ? 'risk-ratio-input' : 'safe-ratio-input';
+    const tr = document.createElement('tr');
+    tr.id = `${prefix}-${id}`;
+    tr.dataset.ratio = '0';
+    tr.innerHTML = `
+      <td><input type="text" value="${name}" placeholder="${placeholder}" onchange="updateRatioBars('${type}');calculate();"></td>
+      <td><input type="number" class="${ratioClass} ratio-input" min="1" max="100" value="0" style="width:60px;font-size:13px;text-align:right;"></td>
+      <td style="text-align:right;font-weight:600;" class="alloc-amount">—</td>
+      <td style="text-align:center"><button class="btn-del" onclick="delPlanRow('${prefix}-${id}')">×</button></td>`;
+    planBody.appendChild(tr);
   }
 }

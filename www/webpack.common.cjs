@@ -54,6 +54,7 @@ const entryPoints = {
   },
   spa: {
     'spa.flay': './src/view/spa.flay.ts',
+    'pension.planner': './src/view/pension.planner.ts',
   },
 };
 

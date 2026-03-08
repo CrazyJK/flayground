@@ -43,6 +43,12 @@ facade-web-movie {
       opacity: 1;
     }
   }
+
+  &.cover {
+    video {
+      object-fit: cover;
+    }
+  }
 }
 
 // landscape orientation

@@ -51,8 +51,10 @@ export class FacadeWebMovie extends GroundMovie {
   private boundEndedHandler: EventListener;
   private boundErrorHandler: (error?: unknown) => void;
   private boundClickHandler: (event: MouseEvent) => void;
+  private boundDoubleClickHandler: (event: MouseEvent) => void;
   private boundWheelHandler: (event: WheelEvent) => void;
   private wheelState = { timer: null as ReturnType<typeof setTimeout> | null, deltaX: 0, deltaY: 0 };
+  private clickTimer: ReturnType<typeof setTimeout> | null = null; // 더블클릭 판별을 위한 클릭 딜레이 타이머
   private endedResolve: (() => void) | null = null; // isEnded() 대기 중인 resolver
 
   constructor(options: Partial<FacadeWebMovieOptions> = {}) {
@@ -73,6 +75,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.boundEndedHandler = this.handleVideoEnded.bind(this);
     this.boundErrorHandler = this.handleVideoError.bind(this);
     this.boundClickHandler = this.handleVideoClick.bind(this);
+    this.boundDoubleClickHandler = this.handleVideoDoubleClick.bind(this);
 
     // 연속 휠 이벤트의 deltaX/Y를 누적하다가 마지막 이벤트 후 한 번에 처리
     this.boundWheelHandler = (event: WheelEvent) => {
@@ -98,6 +101,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.video.addEventListener('ended', this.boundEndedHandler); // 비디오 종료 처리
     this.video.addEventListener('error', this.boundErrorHandler as EventListener); // 에러 처리
     this.video.addEventListener('click', this.boundClickHandler); // 클릭 시 음소거 토글 또는 다음 비디오 재생
+    this.video.addEventListener('dblclick', this.boundDoubleClickHandler); // 더블 클릭 시 .cover 클래스 토글
     this.video.addEventListener('wheel', this.boundWheelHandler); // 휠 이벤트로 볼륨 조절
 
     ApiClient.get<TodayItem[]>('/todayis')
@@ -116,8 +120,10 @@ export class FacadeWebMovie extends GroundMovie {
     this.video.removeEventListener('ended', this.boundEndedHandler);
     this.video.removeEventListener('error', this.boundErrorHandler as EventListener);
     this.video.removeEventListener('click', this.boundClickHandler);
+    this.video.removeEventListener('dblclick', this.boundDoubleClickHandler);
     this.video.removeEventListener('wheel', this.boundWheelHandler);
     if (this.wheelState.timer !== null) clearTimeout(this.wheelState.timer);
+    if (this.clickTimer !== null) clearTimeout(this.clickTimer);
     this.video.pause();
     this.video.src = '';
   }
@@ -190,11 +196,26 @@ export class FacadeWebMovie extends GroundMovie {
 
   /**
    * 비디오 클릭 이벤트 처리
+   * - 더블클릭 판별을 위해 250ms 딜레이 후 실행 (dblclick 이벤트가 오면 취소)
    */
   private handleVideoClick(): void {
-    // 클릭 시 음소거 토글
-    this.video.muted = !this.video.muted;
-    this.setDescription();
+    if (this.clickTimer !== null) return; // 이미 타이머 대기 중이면 무시
+    this.clickTimer = setTimeout(() => {
+      this.clickTimer = null;
+      // 클릭 시 음소거 토글
+      this.video.muted = !this.video.muted;
+      this.setDescription();
+    }, 250);
+  }
+
+  private handleVideoDoubleClick(): void {
+    // 더블클릭 시 pending 중인 클릭 타이머 취소
+    if (this.clickTimer !== null) {
+      clearTimeout(this.clickTimer);
+      this.clickTimer = null;
+    }
+    // 더블 클릭 시 .cover 클래스 토글하여 object-fit: cover 스타일 적용/해제
+    this.classList.toggle('cover');
   }
 
   /**

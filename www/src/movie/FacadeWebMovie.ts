@@ -26,6 +26,7 @@ interface FacadeWebMovieOptions {
  *
  * 사용자 인터랙션:
  * - click       : 음소거 토글
+ * - F           : 전체화면 토글
  * - wheel →     : 다음 비디오
  * - wheel ←     : 반복 재생 토글 (일시정지 상태면 재개)
  * - wheel ↑     : 볼륨 증가 (+10%)
@@ -53,6 +54,7 @@ export class FacadeWebMovie extends GroundMovie {
   private boundClickHandler: (event: MouseEvent) => void;
   private boundDoubleClickHandler: (event: MouseEvent) => void;
   private boundWheelHandler: (event: WheelEvent) => void;
+  private boundKeydownHandler: (event: KeyboardEvent) => void;
   private wheelState = { timer: null as ReturnType<typeof setTimeout> | null, deltaX: 0, deltaY: 0 };
   private clickTimer: ReturnType<typeof setTimeout> | null = null; // 더블클릭 판별을 위한 클릭 딜레이 타이머
   private endedResolve: (() => void) | null = null; // isEnded() 대기 중인 resolver
@@ -76,6 +78,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.boundErrorHandler = this.handleVideoError.bind(this);
     this.boundClickHandler = this.handleVideoClick.bind(this);
     this.boundDoubleClickHandler = this.handleVideoDoubleClick.bind(this);
+    this.boundKeydownHandler = this.handleKeydown.bind(this);
 
     // 연속 휠 이벤트의 deltaX/Y를 누적하다가 마지막 이벤트 후 한 번에 처리
     this.boundWheelHandler = (event: WheelEvent) => {
@@ -103,6 +106,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.video.addEventListener('click', this.boundClickHandler); // 클릭 시 음소거 토글 또는 다음 비디오 재생
     this.video.addEventListener('dblclick', this.boundDoubleClickHandler); // 더블 클릭 시 .cover 클래스 토글
     this.video.addEventListener('wheel', this.boundWheelHandler); // 휠 이벤트로 볼륨 조절
+    document.addEventListener('keydown', this.boundKeydownHandler); // F키로 전체화면 토글
 
     ApiClient.get<TodayItem[]>('/todayis')
       .then((todayItems) => {
@@ -122,6 +126,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.video.removeEventListener('click', this.boundClickHandler);
     this.video.removeEventListener('dblclick', this.boundDoubleClickHandler);
     this.video.removeEventListener('wheel', this.boundWheelHandler);
+    document.removeEventListener('keydown', this.boundKeydownHandler);
     if (this.wheelState.timer !== null) clearTimeout(this.wheelState.timer);
     if (this.clickTimer !== null) clearTimeout(this.clickTimer);
     this.video.pause();
@@ -217,7 +222,18 @@ export class FacadeWebMovie extends GroundMovie {
     // 더블 클릭 시 .cover 클래스 토글하여 object-fit: cover 스타일 적용/해제
     this.classList.toggle('cover');
   }
-
+  /**
+   * 키보드 이벤트 처리
+   * - F : 전체화면 토글
+   */
+  private handleKeydown(event: KeyboardEvent): void {
+    if (event.key !== 'f' && event.key !== 'F') return;
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      this.video.requestFullscreen();
+    }
+  }
   /**
    * 비디오 휠 이벤트 처리
    * @param accumulatedDeltaX 연속된 휠 이벤트의 누적 deltaX

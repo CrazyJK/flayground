@@ -54,6 +54,7 @@ export class SideNavBar extends GroundNav {
     { url: 'page.image-download.html', name: 'pic download' },
     {},
     { url: 'page.kamoru-diary.html', name: 'diary' },
+    { url: 'pension.planner.html', name: 'pension' },
     {},
     { url: 'page.dragndrop.html', name: 'drag & drop' },
     { url: 'style.html', name: 'style' },

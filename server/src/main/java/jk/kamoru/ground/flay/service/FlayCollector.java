@@ -2,6 +2,7 @@ package jk.kamoru.ground.flay.service;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -149,6 +150,8 @@ public class FlayCollector {
         return thenSortByOpus(NumberUtils.compare(f1.getVideo().getRank(), f2.getVideo().getRank()), f1, f2);
       case LASTPLAY:
         return thenSortByOpus(NumberUtils.compare(f1.getVideo().getLastPlay(), f2.getVideo().getLastPlay()), f1, f2);
+      case LASTSHOT:
+        return thenSortByOpus(dateCompare(getLastLike(f1), getLastLike(f2)), f1, f2);
       case LASTACCESS:
         return thenSortByOpus(NumberUtils.compare(f1.getVideo().getLastAccess(), f2.getVideo().getLastAccess()), f1, f2);
       case LASTMODIFIED:
@@ -175,6 +178,26 @@ public class FlayCollector {
 
   private int getLikeCount(Flay flay) {
     return flay.getVideo().getLikes() == null ? 0 : flay.getVideo().getLikes().size();
+  }
+
+  private Date getLastLike(Flay flay) {
+    return flay.getVideo().getLikes() == null || flay.getVideo().getLikes().isEmpty() ? null : flay.getVideo().getLikes().get(flay.getVideo().getLikes().size() - 1);
+  }
+
+  private int dateCompare(Date d1, Date d2) {
+    if (d1 == null && d2 == null) {
+      return 0;
+    } else if (d1 == null) {
+      return -1;
+    } else if (d2 == null) {
+      return 1;
+    } else if (d1 == d2) {
+      return 0;
+    } else if (d1.before(d2)) {
+      return -1;
+    } else {
+      return 1;
+    }
   }
 
 }

@@ -25,7 +25,7 @@ const CONDITION_VALUE_DEFAULT = {
 } as SearchCondition;
 
 const RANKs = [0, 1, 2, 3, 4, 5] as const;
-const SORTs = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'] as const;
+const SORTs = ['STUDIO', 'OPUS', 'TITLE', 'ACTRESS', 'RELEASE', 'PLAY', 'RANK', 'LASTPLAY', 'LASTSHOT', 'LASTACCESS', 'LASTMODIFIED', 'SCORE', 'LENGTH', 'SHOT'] as const;
 const ifTrue = (condition: boolean, text: string): string => (condition ? text : '');
 
 export default class FlayCondition extends GroundFlay {

@@ -213,27 +213,53 @@ export class FacadeWebMovie extends GroundMovie {
     }, 250);
   }
 
+  /**
+   * 비디오 더블클릭 이벤트 처리
+   */
   private handleVideoDoubleClick(): void {
     // 더블클릭 시 pending 중인 클릭 타이머 취소
     if (this.clickTimer !== null) {
       clearTimeout(this.clickTimer);
       this.clickTimer = null;
     }
-    // 더블 클릭 시 .cover 클래스 토글하여 object-fit: cover 스타일 적용/해제
-    this.classList.toggle('cover');
+    this.toggleFullscreen();
   }
+
   /**
    * 키보드 이벤트 처리
    * - F : 전체화면 토글
+   * - M : 음소거 토글
+   * - C : .cover 클래스 토글
    */
   private handleKeydown(event: KeyboardEvent): void {
-    if (event.key !== 'f' && event.key !== 'F') return;
+    switch (event.key) {
+      case 'f':
+      case 'F':
+        // F 키로 전체화면 토글
+        this.toggleFullscreen();
+        break;
+      case 'm':
+      case 'M':
+        // M 키로도 음소거 토글
+        this.video.muted = !this.video.muted;
+        this.setDescription();
+        break;
+      case 'c':
+      case 'C':
+        // C 키로 .cover 클래스 토글 (더블클릭과 동일한 기능)
+        this.classList.toggle('cover');
+        break;
+    }
+  }
+
+  private toggleFullscreen(): void {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     } else {
       this.video.requestFullscreen();
     }
   }
+
   /**
    * 비디오 휠 이벤트 처리
    * @param accumulatedDeltaX 연속된 휠 이벤트의 누적 deltaX

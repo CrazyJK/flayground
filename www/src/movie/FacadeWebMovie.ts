@@ -252,6 +252,9 @@ export class FacadeWebMovie extends GroundMovie {
     }
   }
 
+  /**
+   * 전체화면 토글
+   */
   private toggleFullscreen(): void {
     if (document.fullscreenElement) {
       document.exitFullscreen();

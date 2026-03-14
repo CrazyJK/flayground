@@ -1,9 +1,9 @@
 import type { AIResponse, AIVendor, GenerateOptions } from './types';
 
 /**
- * MCP Gemini HTTP 서버 기반 AI 서비스
+ * MCP HTTP 서버 기반 AI 서비스
  *
- * 별도 Node.js 서버(http-server.ts)를 통해 AI 호출
+ * 별도 Node.js 서버를 통해 AI 호출
  * API 키가 서버에서만 관리되어 안전
  *
  * @example
@@ -15,8 +15,10 @@ import type { AIResponse, AIVendor, GenerateOptions } from './types';
  * ```
  */
 
-// mcp-gemini HTTP 서버 주소
-const API_BASE = 'http://localhost:3000/api';
+// AI 서비스 선택: 'gemini' (port 3000) | 'github' (port 3001)
+const AI_PROVIDER = 'github' as 'gemini' | 'github';
+
+const API_BASE = AI_PROVIDER === 'github' ? 'http://localhost:3001/api' : 'http://localhost:3000/api';
 
 /**
  * AI 텍스트 생성

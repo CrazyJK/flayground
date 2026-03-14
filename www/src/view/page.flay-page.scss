@@ -40,7 +40,7 @@ body {
   flex-direction: column;
 
   &:hover {
-    background: rgba(60, 120, 200, 0.8);
+    background: var(--color-bg-transparent);
   }
 }
 

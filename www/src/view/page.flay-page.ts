@@ -34,23 +34,13 @@ flayPagination.addEventListener('change', async () => {
  * @param opusList - 전체 opus 목록
  */
 async function suggestOpusByAI(opusList: string[]) {
-  const prompt = `다음 비디오 목록에서 오늘의 추천 opus 하나를 선택하고, 선택 이유를 간략하게 설명하세요.
-    반드시 아래 형식으로만 답하세요:
-    OPUS: <opus 코드>
-    REASON: <선택 이유>
+  const prompt = `다음 목록에서 하나를 선택하세요. opus 코드만 답하세요. ${opusList.join(',')}`;
 
-    ${JSON.stringify(opusList)}`;
-
-  generate(prompt, { maxTokens: 100 })
+  generate(prompt, { maxTokens: 20, temperature: 0.7 })
     .then((response) => {
-      const text = response.text.trim();
-      const opusMatch = text.match(/OPUS:\s*(\S+)/);
-      const reasonMatch = text.match(/REASON:\s*(.+)/);
+      const selectedOpus = response.text.trim();
 
-      const selectedOpus = opusMatch?.[1]?.trim() ?? '';
-      const reason = reasonMatch?.[1]?.trim() ?? '';
-
-      console.log('AI 추천 opus:', selectedOpus, '/', reason);
+      console.log(`AI 추천 opus: ${selectedOpus}`);
 
       if (!opusList.includes(selectedOpus)) {
         console.warn('AI가 선택한 opus가 목록에 없습니다:', selectedOpus);
@@ -64,7 +54,7 @@ async function suggestOpusByAI(opusList: string[]) {
       const suggestion = document.createElement('button');
       suggestion.className = 'ai-opus-suggestion';
       suggestion.title = `${selectedOpus} - 클릭하여 이동`;
-      suggestion.innerHTML = `<strong>${selectedOpus}</strong>${reason}`;
+      suggestion.innerHTML = `<strong>${selectedOpus}</strong>`;
       document.body.appendChild(suggestion);
 
       // 클릭 시 해당 opus로 이동

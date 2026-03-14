@@ -92,3 +92,4 @@ rmvb
 jfif
 smil
 LASTSHOT
+benq

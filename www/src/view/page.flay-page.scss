@@ -20,6 +20,30 @@ body {
   }
 }
 
+.ai-opus-suggestion {
+  position: fixed;
+  bottom: 4rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+
+  padding: 0.4rem 0.8rem;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  border-radius: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+  transition: background 0.2s;
+
+  flex-direction: column;
+
+  &:hover {
+    background: rgba(60, 120, 200, 0.8);
+  }
+}
+
 @media screen and (min-width: 1440px) {
   body > main > article > flay-page {
     flay-cover,

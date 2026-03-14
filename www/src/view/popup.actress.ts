@@ -33,6 +33,7 @@ class PopupActress {
 
   searchAvdbsBtn!: HTMLButtonElement;
   searchMinnanoBtn!: HTMLButtonElement;
+  searchAIBtn!: HTMLButtonElement;
 
   actress!: Actress;
   allFlayList!: Flay[];
@@ -71,6 +72,7 @@ class PopupActress {
 
     this.searchAvdbsBtn = document.querySelector('#searchAvdbsBtn')!;
     this.searchMinnanoBtn = document.querySelector('#searchMinnanoBtn')!;
+    this.searchAIBtn = document.querySelector('#searchAI')!;
 
     this.favLabel.innerHTML = favoriteSVG;
     document.title = this.name;
@@ -94,6 +96,8 @@ class PopupActress {
     // 검색 이벤트
     this.searchAvdbsBtn.addEventListener('click', () => FlaySearch.Avdbs(this.localName.value));
     this.searchMinnanoBtn.addEventListener('click', () => FlaySearch.actress.Minnano(this.localName.value));
+    this.searchAIBtn.addEventListener('click', () => this.showSummary());
+
     // 저장 이벤트
     this.saveBtn.addEventListener('click', () => {
       void FlayAction.updateActress({
@@ -154,8 +158,6 @@ class PopupActress {
     this.height.value = String(this.actress.height);
     this.debut.value = String(this.actress.debut);
     this.comment.value = this.actress.comment;
-
-    this.showSummary();
   }
 
   private async showSummary() {

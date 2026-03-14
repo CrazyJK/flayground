@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -30,12 +30,12 @@ export const config: Config = {
   geminiApiKey: process.env.GEMINI_API_KEY,
 
   mcp: {
-    serverName: process.env.MCP_SERVER_NAME || "gemini-server",
-    serverVersion: process.env.MCP_SERVER_VERSION || "1.0.0",
+    serverName: process.env.MCP_SERVER_NAME || 'gemini-server',
+    serverVersion: process.env.MCP_SERVER_VERSION || '1.0.0',
   },
 
   gemini: {
-    model: "gemini-2.5-flash",
+    model: 'gemini-2.5-flash',
     maxOutputTokens: 8192,
     temperature: 0.7,
   },
@@ -47,8 +47,6 @@ export const config: Config = {
  */
 export function validateConfig(): void {
   if (!config.geminiApiKey) {
-    throw new Error(
-      "GEMINI_API_KEY가 설정되지 않았습니다. .env 파일을 확인하세요."
-    );
+    throw new Error('GEMINI_API_KEY가 설정되지 않았습니다. .env 파일을 확인하세요.');
   }
 }

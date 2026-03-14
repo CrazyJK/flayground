@@ -4,6 +4,7 @@ import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
 import FlaySearch from '@lib/FlaySearch';
 import favoriteSVG from '@svg/favorite';
 import GridControl from '@ui/GridControl';
+import { generate } from '../ai/index-proxy';
 import './inc/Popup';
 import './popup.actress.scss';
 
@@ -153,6 +154,32 @@ class PopupActress {
     this.height.value = String(this.actress.height);
     this.debut.value = String(this.actress.debut);
     this.comment.value = this.actress.comment;
+
+    this.showSummary();
+  }
+
+  private async showSummary() {
+    const prompt = `다음 배우에 대한 최근 소식을 알려주세요.
+    이름: ${this.actress.name}
+    현지 이름: ${this.actress.localName}
+    다른 이름: ${this.actress.otherNames.join(', ')}
+    생년월일: ${this.actress.birth}
+    신체 정보: ${this.actress.body}, ${this.actress.height}cm
+    데뷔 연도: ${this.actress.debut}
+
+    답변은 한국어로 자유 형식으로 작성하되, 사실에 기초한 구체적이고 흥미로운 정보 위주로 작성해주세요.`;
+
+    const responseText = await generate(prompt, { maxTokens: 1000, temperature: 0.7 })
+      .then((response) => response.text.trim())
+      .catch((error) => 'AI 정보 생성 실패: ' + (error instanceof Error ? error.message : String(error)));
+    console.log('AI response', responseText);
+
+    document.querySelector('#summary')!.textContent = responseText;
+    const floatingPanel = document.querySelector('#floating-panel')!;
+    floatingPanel.classList.toggle('show', true);
+    floatingPanel.querySelector('.close-btn')!.addEventListener('click', () => {
+      floatingPanel.classList.toggle('show', false);
+    });
   }
 
   async #fetchFlay() {

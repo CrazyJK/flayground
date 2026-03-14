@@ -2,7 +2,6 @@ import FlayPage from '@flay/domain/FlayPage';
 import FlayCondition from '@flay/panel/FlayCondition';
 import FlayPagination from '@flay/panel/FlayPagination';
 import { generate } from '../ai/index-proxy';
-import FlayFetch from '../lib/FlayFetch';
 import './inc/Page';
 import './page.flay-page.scss';
 
@@ -35,26 +34,12 @@ flayPagination.addEventListener('change', async () => {
  * @param opusList - 전체 opus 목록
  */
 async function suggestOpusByAI(opusList: string[]) {
-  const flayList = await FlayFetch.getFlayList(...opusList);
-  const flayData = flayList.map((flay) => {
-    return {
-      opus: flay.opus,
-      title: flay.title,
-      release: flay.release,
-      actress: flay.actressList.join(', '),
-      lastPlayed: flay.video.lastPlay,
-      rank: flay.video.rank,
-      tags: flay.video.tags?.map((tag) => tag.name).join(', '),
-    };
-  });
-  console.log('AI 추천을 위한 Flay 데이터:', flayData);
-
-  const prompt = `다음 목록에서 opus 하나를 선택하고, 선택 이유를 간략하게 설명하세요.
+  const prompt = `다음 비디오 목록에서 오늘의 추천 opus 하나를 선택하고, 선택 이유를 간략하게 설명하세요.
     반드시 아래 형식으로만 답하세요:
     OPUS: <opus 코드>
     REASON: <선택 이유>
 
-    ${JSON.stringify(flayData)}`;
+    ${JSON.stringify(opusList)}`;
 
   generate(prompt, { maxTokens: 100 })
     .then((response) => {

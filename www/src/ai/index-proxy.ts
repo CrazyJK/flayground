@@ -50,9 +50,11 @@ export async function generate(prompt: string, options?: GenerateOptions): Promi
     const data = await response.json();
     const duration = Date.now() - startTime;
 
+    const model = data.metadata?.model as string | undefined;
     return {
       text: data.text,
       vendor: data.vendor || ('unknown' as AIVendor),
+      ...(model !== undefined && { model }),
       duration,
     };
   } catch (error) {

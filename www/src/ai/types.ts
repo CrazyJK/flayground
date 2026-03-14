@@ -23,6 +23,8 @@ export interface AIResponse {
   text: string;
   /** 사용된 벤더 */
   vendor: AIVendor;
+  /** 사용된 모델명 */
+  model?: string;
   /** 응답 시간 (ms) */
   duration: number;
   /** 사용된 토큰 수 (선택적) */

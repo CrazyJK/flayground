@@ -169,12 +169,11 @@ class PopupActress {
 
     답변은 한국어로 자유 형식으로 작성하되, 사실에 기초한 구체적이고 흥미로운 정보 위주로 작성해주세요.`;
 
-    const responseText = await generate(prompt, { maxTokens: 1000, temperature: 0.7 })
-      .then((response) => response.text.trim())
-      .catch((error) => 'AI 정보 생성 실패: ' + (error instanceof Error ? error.message : String(error)));
-    console.log('AI response', responseText);
+    const response = await generate(prompt, { maxTokens: 1000, temperature: 0.7 }).catch((error: unknown) => ({ text: 'AI 정보 생성 실패: ' + (error instanceof Error ? error.message : String(error)), vendor: 'github' as const, duration: 0 }));
+    console.log('AI response', response);
 
-    document.querySelector('#summary')!.textContent = responseText;
+    document.querySelector('#summary')!.textContent = response.text.trim();
+    document.querySelector('.ai-meta')!.textContent = `${'model' in response && response.model ? response.model : response.vendor} · ${response.duration.toLocaleString()}ms`;
     const floatingPanel = document.querySelector('#floating-panel')!;
     floatingPanel.classList.toggle('show', true);
     floatingPanel.querySelector('.close-btn')!.addEventListener('click', () => {

@@ -172,7 +172,7 @@ class PopupActress {
     const response = await generate(prompt, { maxTokens: 1000, temperature: 0.7 }).catch((error: unknown) => ({ text: 'AI 정보 생성 실패: ' + (error instanceof Error ? error.message : String(error)), vendor: 'github' as const, duration: 0 }));
     console.log('AI response', response);
 
-    document.querySelector('#summary')!.textContent = response.text.trim();
+    document.querySelector('#summary')!.innerHTML = response.text.trim();
     document.querySelector('.ai-meta')!.textContent = `${'model' in response && response.model ? response.model : response.vendor} · ${response.duration.toLocaleString()}ms`;
     const floatingPanel = document.querySelector('#floating-panel')!;
     floatingPanel.classList.toggle('show', true);

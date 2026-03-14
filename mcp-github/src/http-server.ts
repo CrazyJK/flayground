@@ -129,10 +129,10 @@ class HTTPServer {
         }
 
         const startTime = Date.now();
-        const text = await this.aiClient.generateText(prompt, { temperature, maxOutputTokens: maxTokens });
+        const { text, model } = await this.aiClient.generateText(prompt, { temperature, maxOutputTokens: maxTokens });
         const duration = Date.now() - startTime;
 
-        console.error(`텍스트 생성 완료: ${duration}ms, ${text.length}자`);
+        console.error(`텍스트 생성 완료: ${duration}ms, ${text.length}자, 모델: ${model}`);
 
         res.json({
           success: true,
@@ -142,7 +142,7 @@ class HTTPServer {
             promptLength: prompt.length,
             responseLength: text.length,
             duration: `${duration}ms`,
-            model: config.ai.model,
+            model,
             temperature: temperature ?? config.ai.temperature,
           },
         });
@@ -173,7 +173,7 @@ class HTTPServer {
 
         const startTime = Date.now();
         const prompt = `다음 일본어 텍스트를 자연스러운 한국어로 번역해주세요. 번역문만 출력하고 다른 설명은 하지 마세요:\n\n${text}`;
-        const translation = await this.aiClient.generateText(prompt, { temperature: 0.3 });
+        const { text: translation, model } = await this.aiClient.generateText(prompt, { temperature: 0.3 });
         const duration = Date.now() - startTime;
 
         console.error(`번역 완료: ${duration}ms, ${text.length}자 → ${translation.length}자`);
@@ -187,7 +187,7 @@ class HTTPServer {
             originalLength: text.length,
             translationLength: translation.length,
             duration: `${duration}ms`,
-            model: config.ai.model,
+            model,
             sourceLanguage: 'ja',
             targetLanguage: 'ko',
           },

@@ -79,18 +79,19 @@ export class GitHubModelsClient {
    * 텍스트 생성
    * @param prompt - 입력 프롬프트
    * @param options - 생성 옵션
-   * @returns 생성된 텍스트
+   * @returns 생성된 텍스트와 사용된 모델명
    */
-  async generateText(prompt: string, options: GenerateOptions = {}): Promise<string> {
+  async generateText(prompt: string, options: GenerateOptions = {}): Promise<{ text: string; model: string }> {
     try {
+      const model = pickRandomModel();
       const completion = await this.client.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
-        model: pickRandomModel(),
+        model,
         max_tokens: options.maxOutputTokens ?? config.ai.maxOutputTokens,
         temperature: options.temperature ?? config.ai.temperature,
       });
 
-      return completion.choices[0]?.message?.content ?? '';
+      return { text: completion.choices[0]?.message?.content ?? '', model };
     } catch (error: any) {
       console.error('GitHub Models API 오류:', error);
       throw new Error(`텍스트 생성 실패: ${error.message}`);

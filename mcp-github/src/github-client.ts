@@ -2,13 +2,19 @@ import OpenAI from 'openai';
 import { config } from './config.js';
 
 /**
- * availableModels 중 하나를 랜덤으로 선택
- * @returns 선택된 모델 이름
+ * 셔플 백(Shuffle Bag): 가방에서 랜덤으로 꺼내고, 모두 소진되면 다시 채움
  */
+const modelBag: string[] = [];
+
 function pickRandomModel(): string {
-  const models = config.ai.availableModels;
-  const selected = models[Math.floor(Math.random() * models.length)];
-  console.log(`[AI] 선택된 모델: ${selected}`);
+  if (modelBag.length === 0) {
+    modelBag.push(...config.ai.availableModels);
+    console.log(`[AI] 모델 가방 재충전: [${modelBag.join(', ')}]`);
+  }
+  // 가방에서 랜덤 위치의 모델을 꺼냄
+  const index = Math.floor(Math.random() * modelBag.length);
+  const [selected] = modelBag.splice(index, 1);
+  console.log(`[AI] 선택된 모델: ${selected} (남은 ${modelBag.length}개)`);
   return selected;
 }
 

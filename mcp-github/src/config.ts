@@ -18,7 +18,10 @@ export interface Config {
   /** AI 모델 설정 */
   ai: {
     endpoint: string;
+    /** 기본 모델 (환경변수 미설정 시 사용) */
     model: string;
+    /** 랜덤 선택 대상 모델 목록 */
+    availableModels: string[];
     maxOutputTokens: number;
     temperature: number;
   };
@@ -38,6 +41,13 @@ export const config: Config = {
   ai: {
     endpoint: 'https://models.inference.ai.azure.com',
     model: process.env.GITHUB_MODELS_MODEL || 'gpt-4o-mini',
+    availableModels: [
+      'gpt-4o-mini', // OpenAI GPT-4o mini
+      'gpt-4o', // OpenAI GPT-4o
+      'Phi-4', // Microsoft Phi-4
+      'Llama-3.3-70B-Instruct', // Meta Llama 3.3 70B
+      'Mistral-small-2503', // Mistral Small 3.1
+    ],
     maxOutputTokens: 8192,
     temperature: 0.7,
   },

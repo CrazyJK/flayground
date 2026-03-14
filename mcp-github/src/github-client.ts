@@ -2,6 +2,17 @@ import OpenAI from 'openai';
 import { config } from './config.js';
 
 /**
+ * availableModels 중 하나를 랜덤으로 선택
+ * @returns 선택된 모델 이름
+ */
+function pickRandomModel(): string {
+  const models = config.ai.availableModels;
+  const selected = models[Math.floor(Math.random() * models.length)];
+  console.log(`[AI] 선택된 모델: ${selected}`);
+  return selected;
+}
+
+/**
  * 생성 옵션 인터페이스
  */
 export interface GenerateOptions {
@@ -30,7 +41,7 @@ export class ChatSession {
 
     const completion = await this.client.chat.completions.create({
       messages: this.history,
-      model: config.ai.model,
+      model: pickRandomModel(),
       max_tokens: config.ai.maxOutputTokens,
       temperature: config.ai.temperature,
     });
@@ -68,7 +79,7 @@ export class GitHubModelsClient {
     try {
       const completion = await this.client.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
-        model: config.ai.model,
+        model: pickRandomModel(),
         max_tokens: options.maxOutputTokens ?? config.ai.maxOutputTokens,
         temperature: options.temperature ?? config.ai.temperature,
       });
@@ -89,7 +100,7 @@ export class GitHubModelsClient {
     try {
       const stream = await this.client.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
-        model: config.ai.model,
+        model: pickRandomModel(),
         stream: true,
       });
 

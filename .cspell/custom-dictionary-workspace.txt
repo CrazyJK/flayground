@@ -93,3 +93,4 @@ jfif
 smil
 LASTSHOT
 benq
+screenschange

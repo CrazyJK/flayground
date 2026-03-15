@@ -64,3 +64,6 @@ screenshots
 # mcp-gemini
 .env
 dist/
+
+# playwright test result
+.playwright-mcp

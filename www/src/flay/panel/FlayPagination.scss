@@ -86,7 +86,6 @@ flay-pagination {
     position: absolute;
     right: 0;
     bottom: 0;
-    font-family: 'Ink free';
     border-radius: 25%;
     border: 2px solid var(--color-border-active);
     background-color: var(--color-bg);
@@ -104,7 +103,6 @@ flay-pagination {
       flex-direction: column;
 
       button {
-        font-family: 'Ink free';
         border-radius: 50%;
         border: 2px solid var(--color-border-active);
         background-color: var(--color-bg);

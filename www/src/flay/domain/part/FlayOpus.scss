@@ -7,7 +7,7 @@ flay-opus {
     gap: 1rem;
 
     button {
-      display: none;
+      opacity: 0;
       svg {
         width: 1.4rem;
       }
@@ -16,7 +16,7 @@ flay-opus {
 
   & > div:hover {
     button {
-      display: flex;
+      opacity: 1;
     }
   }
 

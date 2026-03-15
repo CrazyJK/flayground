@@ -4,6 +4,9 @@
  * - 사이즈, 색상, 테마 등의 변수 설정
  */
 
+// 손글씨 느낌의 다국어 폰트 (한글+영어: Poor Story, 일본어+영어: Hachi Maru Pop)
+@import url('https://fonts.googleapis.com/css2?family=Poor+Story&family=Hachi+Maru+Pop&display=swap');
+
 :root {
   /* 크기 변수 */
   --size-hugest: 4rem;
@@ -20,6 +23,12 @@
   --border-radius-largest: 0.5rem;
   --border-radius-large: 0.25rem;
   --border-radius: 0.125rem;
+
+  /* 폰트 */
+  /* Ink Free와 유사한 손글씨 느낌. Poor Story(한글+영어) → Hachi Maru Pop(일본어+영어) 순 fallback */
+  --font-family: 'Ink Free', 'Poor Story', 'Hachi Maru Pop', cursive, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  // 고정폭 폰트 (코드, 테이블 등에서 사용)
+  --font-family-monospace: D2Coding, 'Courier New', Courier, monospace;
 
   /* 커스텀 정의 */
   --cover-aspect-ratio: 400 / 269 auto;

@@ -10,6 +10,7 @@ flay-files {
 
   .list {
     display: none;
+    font-family: var(--font-family-monospace);
 
     ol {
       margin: 0;
@@ -20,7 +21,6 @@ flay-files {
       border-bottom: 0;
       li {
         font-size: var(--size-smallest);
-        font-family: D2Coding;
         margin-bottom: 0.25rem;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -42,7 +42,6 @@ flay-files {
       input,
       button {
         font-size: var(--size-smallest);
-        font-family: D2Coding;
         border: 2px dashed purple;
         border-right: 0;
         padding: 4px;

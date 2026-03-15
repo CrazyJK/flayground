@@ -33,7 +33,6 @@ header.sticky {
 
       &::before {
         content: '\f002';
-        font-family: 'Font Awesome 6 Free';
         font-weight: 900;
         position: absolute;
         left: 0.625rem;
@@ -87,7 +86,6 @@ header.sticky {
 
 body > main {
   padding: 1.25rem;
-  font-family: 'Arial', sans-serif;
 
   .loading {
     text-align: center;

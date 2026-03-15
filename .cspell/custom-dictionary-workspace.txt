@@ -94,3 +94,5 @@ smil
 LASTSHOT
 benq
 screenschange
+Hachi
+Maru

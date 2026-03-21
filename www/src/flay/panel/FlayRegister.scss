@@ -34,7 +34,10 @@ flay-register {
   textarea {
     cursor: initial !important;
     &:hover {
-      background-color: var(--color-bg-input-focus);
+      background-color: var(--color-bg-input-hover) !important;
+    }
+    &:focus {
+      background-color: var(--color-bg-input-focus) !important;
     }
   }
 
@@ -76,7 +79,7 @@ flay-register {
   }
   #actress {
     flex: 0 0 auto;
-    width: 8rem;
+    width: 10rem;
   }
   #release {
     flex: 0 0 auto;

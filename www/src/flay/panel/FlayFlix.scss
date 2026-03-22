@@ -1,0 +1,18 @@
+flay-flix {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+
+  .flays {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    gap: 0.125rem;
+    width: fit-content;
+    img {
+      width: 10rem;
+      aspect-ratio: var(--flay-aspect-ratio);
+    }
+  }
+}

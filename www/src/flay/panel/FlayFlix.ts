@@ -22,7 +22,10 @@ export class FlayFlix extends HTMLElement {
 
   private video: HTMLVideoElement;
   private flayTitle: HTMLDivElement;
+  private flayOpus: HTMLSpanElement;
   private flayActress: HTMLDivElement;
+  private flayRelease: HTMLSpanElement;
+  private flayTags: HTMLSpanElement;
 
   constructor() {
     super();
@@ -32,7 +35,12 @@ export class FlayFlix extends HTMLElement {
         <video autoplay muted loop class="background-video" style="width: 100%; height: 100%; object-fit: cover;"></video>
         <div class="info">
           <div class="flay-title"></div>
-          <div class="flay-actress"></div>
+          <div class="flay-desc">
+            <span class="flay-opus"></span>
+            <span class="flay-actress"></span>
+            <span class="flay-release"></span>
+            <span class="flay-tags"></span>
+          </div>
         </div>
       </div>
       <div class="tag-container">
@@ -41,7 +49,10 @@ export class FlayFlix extends HTMLElement {
 
     this.video = this.querySelector('video') as HTMLVideoElement;
     this.flayTitle = this.querySelector('.flay-title') as HTMLDivElement;
+    this.flayOpus = this.querySelector('.flay-opus') as HTMLSpanElement;
     this.flayActress = this.querySelector('.flay-actress') as HTMLDivElement;
+    this.flayRelease = this.querySelector('.flay-release') as HTMLSpanElement;
+    this.flayTags = this.querySelector('.flay-tags') as HTMLSpanElement;
   }
 
   async connectedCallback() {
@@ -103,12 +114,23 @@ export class FlayFlix extends HTMLElement {
     }
   }
 
-  private getTagsByGroup(groupId: string) {
-    return this.tags.filter((tag) => tag.group === groupId);
-  }
-
   private async getFlaysByTag(tagId: number) {
     return await FlayFetch.getFlayListByTagId(tagId);
+  }
+
+  private playOpus() {
+    this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${this.opus}/0`);
+    FlayFetch.getFlay(this.opus!).then((flay) => {
+      if (!flay) {
+        console.warn('Flay 정보를 가져올 수 없습니다:', this.opus);
+        return;
+      }
+      this.flayTitle.textContent = flay.title;
+      this.flayActress.textContent = flay.actressList.join(', ');
+      this.flayOpus.textContent = flay.opus;
+      this.flayRelease.textContent = flay.release;
+      this.flayTags.textContent = flay.video.tags.map((tag) => tag.name).join(', ');
+    });
   }
 
   /**
@@ -118,64 +140,55 @@ export class FlayFlix extends HTMLElement {
    */
   private render() {
     if (this.opus) {
-      this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${this.opus}/0`);
-      FlayFetch.getFlay(this.opus).then((flay) => {
-        if (!flay) {
-          console.warn('Flay 정보를 가져올 수 없습니다:', this.opus);
-          return;
-        }
-        this.flayTitle.textContent = flay.title;
-        this.flayActress.textContent = flay.actressList.join(', ');
-      });
+      this.playOpus();
     }
 
     const fragment = document.createDocumentFragment();
 
-    // 태그 그룹과 태그를 렌더링하는 로직을 여기에 추가
+    // 태그 컨테이너 초기화
     const tagContainer = this.querySelector('.tag-container') as HTMLElement;
     tagContainer.innerHTML = '';
 
-    this.tagGroups.forEach((group) => {
-      const groupElement = document.createElement('div');
-      groupElement.id = `tag-group-${group.id}`;
-      groupElement.className = 'tag-group';
-      groupElement.innerHTML = `<h2>${group.name}: ${group.desc}</h2><div class="tags"></div>`;
+    // 그룹 ID → 그룹명 맵
+    const groupNameMap = new Map(this.tagGroups.map((g) => [g.id, g.name]));
 
-      const tags = this.getTagsByGroup(group.id);
-      const tagsContainer = groupElement.querySelector('.tags') as HTMLElement;
-      tags.forEach((tag) => {
-        const tagElement = document.createElement('div');
-        tagElement.id = `tag-${tag.id}`;
-        tagElement.className = 'tag';
-        tagElement.innerHTML = `<span>${tag.name} (${tag.count})</span><div class="flays"></div>`;
+    // recentTags 횟수 기준 내림차순 정렬
+    const sortedTags = [...this.tags].sort((a, b) => (this.recentTags.get(b.id) || 0) - (this.recentTags.get(a.id) || 0));
 
-        const flays = this.getFlaysByTag(tag.id);
-        const flaysContainer = tagElement.querySelector('.flays') as HTMLElement;
-        flays.then((flayList) => {
-          flayList.forEach((flay) => {
-            const cover = document.createElement('img');
-            cover.className = 'flay-cover';
-            cover.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
-            cover.alt = flay.title;
-            cover.loading = 'lazy';
-            cover.addEventListener('click', () => {
-              this.opus = flay.opus;
-              this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${flay.opus}/0`);
-              this.flayTitle.textContent = flay.title;
-              this.flayActress.textContent = flay.actressList.join(', ');
-            });
+    sortedTags.forEach((tag) => {
+      const groupName = groupNameMap.get(tag.group) || '';
+      const tagElement = document.createElement('div');
+      tagElement.id = `tag-${tag.id}`;
+      tagElement.className = 'tag';
+      tagElement.innerHTML = `
+        <span>${tag.name}
+          <small class="tag-group-label">${groupName}</small>
+          <small class="tag-count">(${tag.count})</small>
+        </span>
+        <div class="flays"></div>`;
 
-            flaysContainer.appendChild(cover);
+      const flays = this.getFlaysByTag(tag.id);
+      const flaysContainer = tagElement.querySelector('.flays') as HTMLElement;
+      flays.then((flayList) => {
+        flayList.forEach((flay) => {
+          const cover = document.createElement('img');
+          cover.className = 'flay-cover';
+          cover.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
+          cover.alt = flay.title;
+          cover.loading = 'lazy';
+          cover.addEventListener('click', () => {
+            this.opus = flay.opus;
+            this.playOpus();
           });
 
-          // 마우스 드래그 수평 스크롤 바인딩
-          this.enableDragScroll(flaysContainer);
+          flaysContainer.appendChild(cover);
         });
 
-        tagsContainer.appendChild(tagElement);
+        // 마우스 드래그 수평 스크롤 바인딩
+        this.enableDragScroll(flaysContainer);
       });
 
-      fragment.appendChild(groupElement);
+      fragment.appendChild(tagElement);
     });
 
     tagContainer.appendChild(fragment);

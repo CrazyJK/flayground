@@ -3,8 +3,8 @@ flay-flix {
   flex-direction: column;
   height: 100vh;
   width: 100%;
-  background-color: var(--color-dark-dark);
-  color: var(--color-light);
+  background-color: var(--color-bg);
+  color: var(--color-text);
   overflow: hidden;
 
   /* 상단 비디오 영역 - 스크롤과 무관하게 고정 */
@@ -28,15 +28,18 @@ flay-flix {
         font-size: var(--size-huge);
         font-weight: 700;
         color: var(--color-white);
-        text-shadow: 0 2px 8px rgba(0, 0, 0, 0.9);
+        text-shadow: 0 2px 8px var(--color-black-alpha-dark);
         margin: 0 0 0.125rem;
         letter-spacing: -0.02em;
       }
 
-      .flay-actress {
+      .flay-desc {
+        display: flex;
+        gap: 1rem;
+
         font-size: var(--size-normal);
-        color: var(--color-gray-light);
-        text-shadow: 0 1px 4px rgba(0, 0, 0, 0.8);
+        color: var(--color-text);
+        text-shadow: 0 1px 4px var(--color-black-alpha-dark);
         margin: 0;
         opacity: 0.85;
       }
@@ -50,7 +53,7 @@ flay-flix {
       left: 0;
       right: 0;
       height: 12rem;
-      background: linear-gradient(transparent, var(--color-dark-dark));
+      background: linear-gradient(transparent, var(--color-bg));
       pointer-events: none;
     }
   }
@@ -62,32 +65,24 @@ flay-flix {
     overflow-x: hidden;
     padding: 0 0 2rem;
 
-    .tag-group {
+    .tag {
       margin-bottom: 0.5rem;
 
-      h2 {
-        font-size: var(--size-normal);
-        color: var(--color-light);
-        margin: 0;
-        padding: 0.75rem 2.5rem 0.25rem;
-        font-weight: 700;
-        letter-spacing: 0.01em;
-      }
-
-      .tags {
-        display: flex;
-        flex-direction: column;
-        gap: 0.75rem;
-      }
-    }
-
-    .tag {
       > span {
         display: inline-block;
-        font-size: var(--size-smallest);
-        color: var(--color-gray-dark);
+        font-size: var(--size-normal);
+        color: var(--color-text);
         margin: 0 0 0.125rem 2.5rem;
-        opacity: 0.7;
+
+        .tag-group-label,
+        .tag-count {
+          color: var(--color-text-secondary);
+          font-size: var(--size-normal);
+          margin-left: 0.25rem;
+        }
+        .tag-count {
+          font-size: var(--size-small);
+        }
       }
 
       .flays {
@@ -118,7 +113,7 @@ flay-flix {
 
         .flay-cover {
           flex-shrink: 0;
-          width: 8.5rem;
+          width: 11rem;
           height: auto;
           margin: 0;
           aspect-ratio: var(--cover-aspect-ratio);
@@ -128,11 +123,11 @@ flay-flix {
           transition:
             transform 0.25s ease,
             box-shadow 0.25s ease;
-          background-color: var(--color-gray-b2);
+          background-color: var(--color-bg-cover);
 
           &:hover {
             transform: scale(1.1);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.6);
+            box-shadow: var(--box-shadow-small);
             z-index: 1;
           }
         }

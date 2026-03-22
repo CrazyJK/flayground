@@ -68,6 +68,11 @@ export class FlayFlix extends HTMLElement {
       if (this.opus) popupFlay(this.opus);
     });
 
+    this.video.addEventListener('click', () => {
+      if (this.video.paused) this.video.play();
+      else this.video.pause();
+    });
+
     // 뷰포트 진입 시 태그 행의 flay를 로드하는 IntersectionObserver
     this.lazyObserver = new IntersectionObserver(
       (entries) => {
@@ -318,18 +323,20 @@ export class FlayFlix extends HTMLElement {
   /** 마우스 드래그로 좌우 스크롤 가능하게 하는 이벤트 바인딩 */
   private enableDragScroll(container: HTMLElement) {
     let isDown = false;
+    let isDragging = false;
     let startX = 0;
     let scrollLeft = 0;
 
     container.addEventListener('mousedown', (e) => {
       isDown = true;
-      container.classList.add('dragging');
+      isDragging = false;
       startX = e.pageX - container.offsetLeft;
       scrollLeft = container.scrollLeft;
     });
 
     container.addEventListener('mouseleave', () => {
       isDown = false;
+      isDragging = false;
       container.classList.remove('dragging');
     });
 
@@ -338,12 +345,30 @@ export class FlayFlix extends HTMLElement {
       container.classList.remove('dragging');
     });
 
+    // 드래그 중 클릭 방지: 실제 드래그 후 click 이벤트를 한 번 무시
+    container.addEventListener(
+      'click',
+      (e) => {
+        if (isDragging) {
+          e.stopPropagation();
+          isDragging = false;
+        }
+      },
+      true
+    );
+
     container.addEventListener('mousemove', (e) => {
       if (!isDown) return;
-      e.preventDefault();
       const x = e.pageX - container.offsetLeft;
-      const walk = (x - startX) * 1.5;
-      container.scrollLeft = scrollLeft - walk;
+      const diff = Math.abs(x - startX);
+      // 5px 이상 움직여야 드래그로 판정
+      if (diff > 5) {
+        isDragging = true;
+        container.classList.add('dragging');
+        e.preventDefault();
+        const walk = (x - startX) * 1.5;
+        container.scrollLeft = scrollLeft - walk;
+      }
     });
   }
 }

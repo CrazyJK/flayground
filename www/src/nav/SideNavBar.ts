@@ -102,6 +102,7 @@ export class SideNavBar extends GroundNav {
     <footer>
       <div><flay-monitor></flay-monitor></div>
       <div><input type="checkbox" id="push"><label for="push">Push</label></div>
+      <div><a id="facade">Facade</a></div>
       <div><a id="pip">PIP</a></div>
       <div><a id="memo">memo</a></div>
       <div><a id="debug">debug</a><i></i></div>
@@ -184,6 +185,8 @@ export class SideNavBar extends GroundNav {
           void pip.openPIP(element);
           return;
         }
+        case 'facade':
+          return this.#toggleFacade();
         case 'memo':
           return this.#toggleMemoEditor();
         case 'debug':
@@ -314,6 +317,21 @@ export class SideNavBar extends GroundNav {
       checkbox.checked = false;
       alert('알림 설정 중 오류가 발생했습니다.');
     }
+  }
+
+  #toggleFacade() {
+    const playingFacade = document.querySelector('facade-web-movie');
+    if (playingFacade) {
+      return;
+    }
+    import(/* webpackChunkName: "FacadeWebMovie" */ '@movie/FacadeWebMovie')
+      .then(({ FacadeWebMovie }) => new FacadeWebMovie({ volume: 0.3, size: '75%', endedBehavior: 'remove' }))
+      .then((facadeWebMovie) => document.body.appendChild(facadeWebMovie))
+      .then((facadeWebMovie) => facadeWebMovie.isEnded())
+      .catch(console.error)
+      .finally(() => {
+        // Application is initialized
+      });
   }
 }
 

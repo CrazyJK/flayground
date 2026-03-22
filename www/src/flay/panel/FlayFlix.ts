@@ -1,7 +1,11 @@
+import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import { generate } from '../../ai/index-proxy';
 import ApiClient from '../../lib/ApiClient';
 import FlayFetch, { Flay, Tag, TagGroup } from '../../lib/FlayFetch';
 import './FlayFlix.scss';
+
+/** 재생 시간 저장 주기 (ms) */
+const PLAY_TIME_SAVE_INTERVAL = 60_000;
 
 /** 스켈레톤 행 수 */
 const SKELETON_COUNT = 5;
@@ -22,6 +26,8 @@ export class FlayFlix extends HTMLElement {
   /** 최근 재생된 태그와 그 횟수를 저장하는 맵 */
   private recentTags: Map<number, number> = new Map();
   private lazyObserver!: IntersectionObserver;
+  private playTimeDB = new PlayTimeDB();
+  private playTimeTimer: ReturnType<typeof setInterval> | null = null;
 
   private video!: HTMLVideoElement;
   private flayTitle!: HTMLDivElement;
@@ -196,8 +202,24 @@ export class FlayFlix extends HTMLElement {
   }
 
   private playOpus() {
-    this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${this.opus}/0`);
-    FlayFetch.getFlay(this.opus!).then((flay) => {
+    // 이전 타이머 정리
+    this.stopPlayTimeTracking();
+
+    const opus = this.opus!;
+    this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${opus}/0`);
+
+    // 저장된 재생 위치가 있으면 이어재생
+    this.playTimeDB.select(opus).then((record) => {
+      console.log('저장된 재생 위치', opus, record);
+      if (record && record.time > 0 && record.duration > 0 && record.time < record.duration - 5) {
+        this.video.currentTime = record.time;
+      }
+    });
+
+    // 1분 주기 재생 시간 저장 시작
+    this.startPlayTimeTracking(opus);
+
+    FlayFetch.getFlay(opus).then((flay) => {
       if (!flay) return;
       this.flayTitle.textContent = flay.title;
       this.flayActress.textContent = flay.actressList.join(', ');
@@ -205,6 +227,26 @@ export class FlayFlix extends HTMLElement {
       this.flayRelease.textContent = flay.release;
       this.flayTags.textContent = flay.video.tags.map((tag) => tag.name).join(', ');
     });
+  }
+
+  /** 1분 주기로 PlayTimeDB에 재생 위치 저장 */
+  private startPlayTimeTracking(opus: string) {
+    this.playTimeTimer = setInterval(() => {
+      if (this.video.paused || this.video.ended) return;
+      void this.playTimeDB.update(opus, this.video.currentTime, this.video.duration);
+    }, PLAY_TIME_SAVE_INTERVAL);
+  }
+
+  /** 재생 시간 추적 타이머 정리 및 최종 저장 */
+  private stopPlayTimeTracking() {
+    if (this.playTimeTimer) {
+      clearInterval(this.playTimeTimer);
+      this.playTimeTimer = null;
+    }
+    // 이전 opus의 마지막 재생 위치 저장
+    if (this.opus && this.video.currentTime > 0) {
+      void this.playTimeDB.update(this.opus, this.video.currentTime, this.video.duration);
+    }
   }
 
   /** 태그를 순차적으로 fade-in하며 렌더링. flay 로드는 IntersectionObserver로 지연 */

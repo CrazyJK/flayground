@@ -29,7 +29,7 @@ export default class PlayTimeDB extends FlayIndexedDB {
 
   async select(opus: string) {
     await this.#init();
-    return await this.get(storeName, opus);
+    return await this.get<PlayTimeRecord>(storeName, opus);
   }
 
   async update(opus: string, time: number, duration: number) {

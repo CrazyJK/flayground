@@ -17,6 +17,8 @@ export class FlayFlix extends HTMLElement {
   private tagGroups: TagGroup[] = [];
   private tags: Tag[] = [];
   private opus: string | null = null;
+  /** 최근 재생된 태그와 그 횟수를 저장하는 맵 */
+  private recentTags: Map<number, number> = new Map();
 
   private video: HTMLVideoElement;
   private flayTitle: HTMLDivElement;
@@ -47,15 +49,26 @@ export class FlayFlix extends HTMLElement {
   }
 
   private async fetchData() {
-    Promise.all([FlayFetch.getOpusList({}), FlayFetch.getTagGroups(), FlayFetch.getTagListWithCount()])
-      .then(async ([opusList, tagGroups, tags]) => {
+    Promise.all([FlayFetch.getOpusList({}), FlayFetch.getTagGroups(), FlayFetch.getTagListWithCount(), FlayFetch.getHistoryListByAction('PLAY', 30)])
+      .then(async ([opusList, tagGroups, tags, histories]) => {
         this.opusList = opusList;
         this.tagGroups = tagGroups;
         this.tags = tags.filter((tag) => (tag.count || 0) > 0);
+        this.recentTags = new Map<number, number>();
+
+        const playedOpusList = histories.map((history) => history.opus).filter((opus) => this.opusList.includes(opus));
+        const playedFlays = await FlayFetch.getFlayList(...playedOpusList);
+        // playedFlays에서 태그 추출. 노출 누적 갯수 정보 포함하여 recentTags에 저장
+        playedFlays.forEach((flay) => {
+          flay.video.tags.forEach((tag) => {
+            this.recentTags.set(tag.id, (this.recentTags.get(tag.id) || 0) + 1);
+          });
+        });
 
         console.log('Opus List:', this.opusList);
         console.log('Tag Groups:', this.tagGroups);
         console.log('Tags:', this.tags);
+        console.log('Recent Tags:', this.recentTags);
 
         this.opus = await this.suggestOpusByAI();
         // this.opus가 null이면 3번 이내에 다시 시도

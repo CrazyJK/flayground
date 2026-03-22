@@ -2,6 +2,7 @@ import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import { generate } from '../../ai/index-proxy';
 import ApiClient from '../../lib/ApiClient';
 import FlayFetch, { Flay, Tag, TagGroup } from '../../lib/FlayFetch';
+import { popupFlay } from '../../lib/FlaySearch';
 import './FlayFlix.scss';
 
 /** 재생 시간 저장 주기 (ms) */
@@ -61,6 +62,11 @@ export class FlayFlix extends HTMLElement {
     this.flayActress = this.querySelector('.flay-actress') as HTMLDivElement;
     this.flayRelease = this.querySelector('.flay-release') as HTMLSpanElement;
     this.flayTags = this.querySelector('.flay-tags') as HTMLSpanElement;
+
+    this.flayTitle.style.cursor = 'pointer';
+    this.flayTitle.addEventListener('click', () => {
+      if (this.opus) popupFlay(this.opus);
+    });
 
     // 뷰포트 진입 시 태그 행의 flay를 로드하는 IntersectionObserver
     this.lazyObserver = new IntersectionObserver(
@@ -206,6 +212,7 @@ export class FlayFlix extends HTMLElement {
     this.stopPlayTimeTracking();
 
     const opus = this.opus!;
+    this.video.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
     this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${opus}/0`);
 
     // 저장된 재생 위치가 있으면 이어재생

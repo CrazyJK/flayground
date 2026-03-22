@@ -68,6 +68,18 @@ flay-flix {
     .tag {
       margin-bottom: 0.5rem;
 
+      // fade-in 애니메이션
+      &.fade-in {
+        opacity: 0;
+        transform: translateY(1rem);
+        animation: tagFadeIn 0.4s ease forwards;
+      }
+
+      // AI 추천 행 강조
+      &.tag-ai > span {
+        color: var(--color-orange);
+      }
+
       > span {
         display: inline-block;
         font-size: var(--size-normal);
@@ -133,5 +145,12 @@ flay-flix {
         }
       }
     }
+  }
+}
+
+@keyframes tagFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

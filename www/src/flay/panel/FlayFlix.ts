@@ -56,61 +56,94 @@ export class FlayFlix extends HTMLElement {
   }
 
   async connectedCallback() {
+    // 1단계: 랜덤 opus로 즉시 비디오 재생
+    FlayFetch.getOpusList({}).then((opusList) => {
+      this.opusList = opusList;
+      this.opus = opusList[Math.floor(Math.random() * opusList.length)] || null;
+      if (this.opus) this.playOpus();
+    });
+
+    // 2단계: 데이터 로드 후 태그 순차 렌더링 + AI 추천
     void this.fetchData();
   }
 
   private async fetchData() {
-    Promise.all([FlayFetch.getOpusList({}), FlayFetch.getTagGroups(), FlayFetch.getTagListWithCount(), FlayFetch.getHistoryListByAction('PLAY', 30)])
-      .then(async ([opusList, tagGroups, tags, histories]) => {
-        this.opusList = opusList;
-        this.tagGroups = tagGroups;
-        this.tags = tags.filter((tag) => (tag.count || 0) > 0);
-        this.recentTags = new Map<number, number>();
+    try {
+      const [opusList, tagGroups, tags, histories] = await Promise.all([FlayFetch.getOpusList({}), FlayFetch.getTagGroups(), FlayFetch.getTagListWithCount(), FlayFetch.getHistoryListByAction('PLAY', 30)]);
+      this.opusList = opusList;
+      this.tagGroups = tagGroups;
+      this.tags = tags.filter((tag) => (tag.count || 0) > 0);
+      this.recentTags = new Map<number, number>();
 
-        const playedOpusList = histories.map((history) => history.opus).filter((opus) => this.opusList.includes(opus));
-        const playedFlays = await FlayFetch.getFlayList(...playedOpusList);
-        // playedFlays에서 태그 추출. 노출 누적 갯수 정보 포함하여 recentTags에 저장
-        playedFlays.forEach((flay) => {
-          flay.video.tags.forEach((tag) => {
-            this.recentTags.set(tag.id, (this.recentTags.get(tag.id) || 0) + 1);
-          });
+      const playedOpusList = histories.map((history) => history.opus).filter((opus) => this.opusList.includes(opus));
+      const playedFlays = await FlayFetch.getFlayList(...playedOpusList);
+      playedFlays.forEach((flay) => {
+        flay.video.tags.forEach((tag) => {
+          this.recentTags.set(tag.id, (this.recentTags.get(tag.id) || 0) + 1);
         });
-
-        console.log('Opus List:', this.opusList);
-        console.log('Tag Groups:', this.tagGroups);
-        console.log('Tags:', this.tags);
-        console.log('Recent Tags:', this.recentTags);
-
-        this.opus = await this.suggestOpusByAI();
-        // this.opus가 null이면 3번 이내에 다시 시도
-        let attempts = 0;
-        while (!this.opus && attempts < 3) {
-          console.warn('AI가 유효한 opus를 추천하지 않았습니다. 다시 시도합니다...');
-          this.opus = await this.suggestOpusByAI();
-          attempts++;
-        }
-        this.render();
-      })
-      .catch((error) => {
-        console.error('데이터 로드 오류:', error);
-        this.innerHTML = `<h1>Welcome to Flay</h1><p>데이터 로드 실패</p>`;
       });
+
+      // 태그 순차 렌더링 시작 (AI 추천과 병렬)
+      this.renderTags();
+
+      // AI 추천 행을 비동기로 태그 맨 위에 삽입
+      this.renderAIRecommendations();
+    } catch (error) {
+      console.error('데이터 로드 오류:', error);
+      this.innerHTML = `<h1>Welcome to Flay</h1><p>데이터 로드 실패</p>`;
+    }
   }
 
-  private async suggestOpusByAI() {
-    const prompt = `다음 목록에서 하나를 선택하세요. opus 코드만 답하세요. ${this.opusList.join(',')}`;
+  /**
+   * AI에게 화면 한 줄에 찰 만큼의 opus를 추천받아 태그 컨테이너 맨 위에 삽입
+   */
+  private async renderAIRecommendations() {
+    // 커버 너비(11rem) + gap(0.375rem) + padding(2.5rem*2) 기준으로 한 줄 갯수 계산
+    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
+    const coverWidth = 11 * remPx + 0.375 * remPx;
+    const availableWidth = this.clientWidth - 5 * remPx; // padding 양쪽 2.5rem
+    const count = Math.max(3, Math.floor(availableWidth / coverWidth));
+
+    const prompt = `다음 목록에서 ${count}개를 추천하세요. opus 코드만 쉼표로 구분하여 답하세요.\n${this.opusList.join(',')}`;
     try {
-      const response = await generate(prompt, { maxTokens: 20, temperature: 0.7 });
-      const selectedOpus = response.text.trim();
-      console.log(`AI 추천 opus: ${selectedOpus}`);
-      if (!this.opusList.includes(selectedOpus)) {
-        console.warn('AI가 선택한 opus가 목록에 없습니다:', selectedOpus);
-        return null;
-      }
-      return selectedOpus;
+      const response = await generate(prompt, { maxTokens: 200, temperature: 0.7 });
+      const recommended = response.text
+        .trim()
+        .split(/[,\s]+/)
+        .filter((opus) => this.opusList.includes(opus))
+        .slice(0, count);
+      if (recommended.length === 0) return;
+
+      const flays = await FlayFetch.getFlayList(...recommended);
+      const tagContainer = this.querySelector('.tag-container') as HTMLElement;
+
+      const aiRow = document.createElement('div');
+      aiRow.className = 'tag tag-ai fade-in';
+      aiRow.innerHTML = `
+        <span>AI 추천
+          <small class="tag-count">(${flays.length})</small>
+        </span>
+        <div class="flays"></div>`;
+
+      const flaysContainer = aiRow.querySelector('.flays') as HTMLElement;
+      flays.forEach((flay) => {
+        const cover = document.createElement('img');
+        cover.className = 'flay-cover';
+        cover.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
+        cover.alt = flay.title;
+        cover.loading = 'lazy';
+        cover.addEventListener('click', () => {
+          this.opus = flay.opus;
+          this.playOpus();
+        });
+        flaysContainer.appendChild(cover);
+      });
+      this.enableDragScroll(flaysContainer);
+
+      // 태그 컨테이너 맨 앞에 삽입
+      tagContainer.prepend(aiRow);
     } catch (error) {
-      console.error('AI opus 추천 오류:', error);
-      return null;
+      console.error('AI 추천 오류:', error);
     }
   }
 
@@ -134,32 +167,21 @@ export class FlayFlix extends HTMLElement {
   }
 
   /**
-   * 태그 그룹과 태그를 렌더링하는 로직
-   * - 각 태그 그룹마다 제목과 설명을 표시
-   * - 각 태그마다 이름과 개수를 표시
+   * 태그를 순차적으로 fade-in하며 렌더링
    */
-  private render() {
-    if (this.opus) {
-      this.playOpus();
-    }
-
-    const fragment = document.createDocumentFragment();
-
-    // 태그 컨테이너 초기화
+  private renderTags() {
     const tagContainer = this.querySelector('.tag-container') as HTMLElement;
     tagContainer.innerHTML = '';
 
-    // 그룹 ID → 그룹명 맵
     const groupNameMap = new Map(this.tagGroups.map((g) => [g.id, g.name]));
-
-    // recentTags 횟수 기준 내림차순 정렬
     const sortedTags = [...this.tags].sort((a, b) => (this.recentTags.get(b.id) || 0) - (this.recentTags.get(a.id) || 0));
 
-    sortedTags.forEach((tag) => {
+    sortedTags.forEach((tag, index) => {
       const groupName = groupNameMap.get(tag.group) || '';
       const tagElement = document.createElement('div');
       tagElement.id = `tag-${tag.id}`;
-      tagElement.className = 'tag';
+      tagElement.className = 'tag fade-in';
+      tagElement.style.animationDelay = `${index * 80}ms`;
       tagElement.innerHTML = `
         <span>${tag.name}
           <small class="tag-group-label">${groupName}</small>
@@ -168,8 +190,7 @@ export class FlayFlix extends HTMLElement {
         <div class="flays"></div>`;
 
       const flaysContainer = tagElement.querySelector('.flays') as HTMLElement;
-      const flays = this.getFlaysByTag(tag.id);
-      flays.then((flayList) => {
+      this.getFlaysByTag(tag.id).then((flayList) => {
         // 현재 태그 제외 점수 + 가중 랜덤 셔플: 현재 행의 태그를 제외한 recentTags 합산을 가중치로 사용
         const weighted = flayList.map((flay) => {
           const score = flay.video.tags.reduce((sum, t) => sum + (t.id !== tag.id ? this.recentTags.get(t.id) || 0 : 0), 0);
@@ -205,10 +226,8 @@ export class FlayFlix extends HTMLElement {
         this.enableDragScroll(flaysContainer);
       });
 
-      fragment.appendChild(tagElement);
+      tagContainer.appendChild(tagElement);
     });
-
-    tagContainer.appendChild(fragment);
   }
 
   /**

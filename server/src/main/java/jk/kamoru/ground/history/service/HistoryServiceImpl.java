@@ -1,5 +1,7 @@
 package jk.kamoru.ground.history.service;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -41,8 +43,16 @@ public class HistoryServiceImpl implements HistoryService {
   }
 
   @Override
+  public List<History> findByAction(Action action, int days) {
+    String sinceDate = LocalDate.now().minusDays(days).format(DateTimeFormatter.ISO_LOCAL_DATE);
+    return historyRepository.list().stream().filter(h -> h.getAction() == action && h.getDate().compareTo(sinceDate) >= 0)
+        .sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate())).toList();
+  }
+
+  @Override
   public History findLastPlay(String opus) {
-    return historyRepository.list().stream().filter(h -> h.getOpus().equals(opus) && h.getAction() == History.Action.PLAY).sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate())).findFirst().orElse(null);
+    return historyRepository.list().stream().filter(h -> h.getOpus().equals(opus) && h.getAction() == History.Action.PLAY)
+        .sorted((h1, h2) -> StringUtils.compare(h2.getDate(), h1.getDate())).findFirst().orElse(null);
   }
 
   @Override

@@ -377,8 +377,14 @@ export default class FlayFetch {
     return (await ApiClient.get<History[]>(`/info/history/find/${opus}`)) ?? [];
   }
 
-  static async getHistoryListByAction(action: string): Promise<History[]> {
-    return (await ApiClient.get<History[]>(`/info/history/find/action/${action}`)) ?? [];
+  /**
+   * 히스토리 목록 조회 (액션별)
+   * @param action - 히스토리 액션
+   * @param days - 최근 일수 (0이면 전체)
+   * @returns 히스토리 목록
+   */
+  static async getHistoryListByAction(action: string, days: number = 0): Promise<History[]> {
+    return (await ApiClient.get<History[]>(`/info/history/find/action/${action}${days === 0 ? '' : `/${days}`}`)) ?? [];
   }
 
   /* ######################## Video ######################## */

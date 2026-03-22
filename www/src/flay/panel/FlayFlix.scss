@@ -143,6 +143,31 @@ flay-flix {
             z-index: 1;
           }
         }
+
+        /* 스켈레톤 커버 자리표시자: 실제 커버 크기와 동일, 쉬머 애니메이션 */
+        .skeleton-cover {
+          flex-shrink: 0;
+          width: 11rem;
+          aspect-ratio: var(--cover-aspect-ratio);
+          border-radius: var(--border-radius-large);
+          background: linear-gradient(90deg, var(--color-bg-cover) 25%, var(--color-text-placeholder) 50%, var(--color-bg-cover) 75%);
+          background-size: 200% 100%;
+          animation: shimmer 1.5s ease-in-out infinite;
+        }
+      }
+
+      /* 스켈레톤 태그 행: 텍스트 자리표시자 */
+      &.skeleton {
+        .skeleton-text {
+          display: inline-block;
+          width: 6rem;
+          height: 1rem;
+          margin: 0 0 0.125rem 2.5rem;
+          border-radius: 0.25rem;
+          background: linear-gradient(90deg, var(--color-bg-cover) 25%, var(--color-text-placeholder) 50%, var(--color-bg-cover) 75%);
+          background-size: 200% 100%;
+          animation: shimmer 1.5s ease-in-out infinite;
+        }
       }
     }
   }
@@ -152,5 +177,14 @@ flay-flix {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
   }
 }

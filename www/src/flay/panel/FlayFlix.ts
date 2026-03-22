@@ -29,8 +29,8 @@ export class FlayFlix extends HTMLElement {
       <div class="video-container">
         <video autoplay muted loop class="background-video" style="width: 100%; height: 100%; object-fit: cover;"></video>
         <div class="info">
-          <div class="flay-title">Welcome to FlayFlix</div>
-          <div class="flay-actress">Actress: N/A</div>
+          <div class="flay-title"></div>
+          <div class="flay-actress"></div>
         </div>
       </div>
       <div class="tag-container">
@@ -144,14 +144,19 @@ export class FlayFlix extends HTMLElement {
             cover.className = 'flay-cover';
             cover.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
             cover.alt = flay.title;
-            cover.loading = 'lazy'; // Lazy loading for better performance
+            cover.loading = 'lazy';
             cover.addEventListener('click', () => {
               this.opus = flay.opus;
               this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${flay.opus}/0`);
+              this.flayTitle.textContent = flay.title;
+              this.flayActress.textContent = flay.actressList.join(', ');
             });
 
             flaysContainer.appendChild(cover);
           });
+
+          // 마우스 드래그 수평 스크롤 바인딩
+          this.enableDragScroll(flaysContainer);
         });
 
         tagsContainer.appendChild(tagElement);
@@ -161,6 +166,41 @@ export class FlayFlix extends HTMLElement {
     });
 
     tagContainer.appendChild(fragment);
+  }
+
+  /**
+   * 마우스 드래그로 좌우 스크롤 가능하게 하는 이벤트 바인딩
+   * @param container 드래그 스크롤을 적용할 요소
+   */
+  private enableDragScroll(container: HTMLElement) {
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    container.addEventListener('mousedown', (e) => {
+      isDown = true;
+      container.classList.add('dragging');
+      startX = e.pageX - container.offsetLeft;
+      scrollLeft = container.scrollLeft;
+    });
+
+    container.addEventListener('mouseleave', () => {
+      isDown = false;
+      container.classList.remove('dragging');
+    });
+
+    container.addEventListener('mouseup', () => {
+      isDown = false;
+      container.classList.remove('dragging');
+    });
+
+    container.addEventListener('mousemove', (e) => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - container.offsetLeft;
+      const walk = (x - startX) * 1.5;
+      container.scrollLeft = scrollLeft - walk;
+    });
   }
 }
 

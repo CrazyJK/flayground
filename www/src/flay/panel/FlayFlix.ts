@@ -167,10 +167,27 @@ export class FlayFlix extends HTMLElement {
         </span>
         <div class="flays"></div>`;
 
-      const flays = this.getFlaysByTag(tag.id);
       const flaysContainer = tagElement.querySelector('.flays') as HTMLElement;
+      const flays = this.getFlaysByTag(tag.id);
       flays.then((flayList) => {
-        flayList.forEach((flay) => {
+        // 현재 태그 제외 점수 + 가중 랜덤 셔플: 현재 행의 태그를 제외한 recentTags 합산을 가중치로 사용
+        const weighted = flayList.map((flay) => {
+          const score = flay.video.tags.reduce((sum, t) => sum + (t.id !== tag.id ? this.recentTags.get(t.id) || 0 : 0), 0);
+          return { flay, weight: score + 1 }; // +1로 점수 0인 flay도 노출 기회 부여
+        });
+        // 가중 랜덤 셔플: weight가 높을수록 앞에 올 확률이 높음
+        for (let i = weighted.length - 1; i > 0; i--) {
+          const totalWeight = weighted.slice(0, i + 1).reduce((s, w) => s + w.weight, 0);
+          let rand = Math.random() * totalWeight;
+          let j = 0;
+          while (j < i && rand > weighted[j]!.weight) {
+            rand -= weighted[j]!.weight;
+            j++;
+          }
+          [weighted[i], weighted[j]] = [weighted[j]!, weighted[i]!];
+        }
+
+        weighted.forEach(({ flay }) => {
           const cover = document.createElement('img');
           cover.className = 'flay-cover';
           cover.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);

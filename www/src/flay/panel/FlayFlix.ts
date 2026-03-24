@@ -70,7 +70,11 @@ export class FlayFlix extends HTMLElement {
 
     this.flayTitle.style.cursor = 'pointer';
     this.flayTitle.addEventListener('click', () => {
-      if (this.opus) popupFlay(this.opus);
+      if (this.opus) {
+        this.video.pause();
+        this.stopPlayTimeTracking();
+        popupFlay(this.opus);
+      }
     });
 
     this.video.addEventListener('click', () => {

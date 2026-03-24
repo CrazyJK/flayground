@@ -20,7 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 public class MovieStreamHandler {
 
   // 상수 정의
-  private static final int BUFFER_SIZE = 64 * 1024; // 64KB - 성능 최적화를 위한 버퍼 크기
+  private static final int BUFFER_SIZE = 256 * 1024; // 256KB - 고비트레이트 영상 스트리밍 최적화
   private static final String RANGE_PREFIX = "bytes=";
   private static final String HEADER_RANGE = "range";
   private static final String HEADER_ACCEPT_RANGES = "Accept-Ranges";

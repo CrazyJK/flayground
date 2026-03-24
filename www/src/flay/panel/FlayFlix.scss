@@ -75,9 +75,14 @@ flay-flix {
         animation: tagFadeIn 0.4s ease forwards;
       }
 
-      // AI 추천 행 강조
+      // AI 추천/Basket 행 강조
       &.tag-ai > span {
         color: var(--color-orange);
+      }
+
+      // AI 추천/Basket 행 전용 부드러운 진입 애니메이션
+      &.tag-ai {
+        animation: tagSlideIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
       }
 
       > span {
@@ -94,6 +99,47 @@ flay-flix {
         }
         .tag-count {
           font-size: var(--size-small);
+        }
+      }
+
+      .flays-wrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+
+        .scroll-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 3;
+          background: var(--color-black-alpha-dark);
+          color: var(--color-white);
+          border: none;
+          border-radius: 50%;
+          width: 2rem;
+          height: 2rem;
+          font-size: var(--size-normal);
+          cursor: pointer;
+          opacity: 0;
+          transition: opacity 0.2s ease;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+
+          &.scroll-left {
+            left: 0.5rem;
+          }
+          &.scroll-right {
+            right: 0.5rem;
+          }
+        }
+
+        &:hover .scroll-btn {
+          opacity: 0.7;
+
+          &:hover {
+            opacity: 1;
+          }
         }
       }
 
@@ -137,6 +183,11 @@ flay-flix {
             box-shadow 0.25s ease;
           background-color: var(--color-bg-cover);
 
+          &.cover-fade-in {
+            opacity: 0;
+            animation: coverFadeIn 0.4s ease forwards;
+          }
+
           &:hover {
             transform: scale(1.1);
             box-shadow: var(--box-shadow-small);
@@ -177,6 +228,28 @@ flay-flix {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes tagSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-2rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes coverFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
   }
 }
 

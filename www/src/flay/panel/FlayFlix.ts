@@ -28,6 +28,8 @@ export class FlayFlix extends HTMLElement {
   /** 최근 재생된 태그와 그 횟수를 저장하는 맵 */
   private recentTags: Map<number, number> = new Map();
   private lazyObserver!: IntersectionObserver;
+  /** 커버 이미지 lazy load 용 IntersectionObserver */
+  private coverObserver!: IntersectionObserver;
   private playTimeDB = new PlayTimeDB();
   private playTimeTimer: ReturnType<typeof setInterval> | null = null;
   /** opus → Flay 캐시 */
@@ -87,6 +89,22 @@ export class FlayFlix extends HTMLElement {
         });
       },
       { root: this.querySelector('.tag-container'), rootMargin: '200px 0px' }
+    );
+
+    // 커버 이미지 lazy load IntersectionObserver
+    this.coverObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          const img = entry.target as HTMLImageElement;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            delete img.dataset.src;
+          }
+          this.coverObserver.unobserve(img);
+        });
+      },
+      { root: this.querySelector('.tag-container'), rootMargin: '100px 300px' }
     );
   }
 
@@ -203,11 +221,24 @@ export class FlayFlix extends HTMLElement {
     row.className = `tag fade-in${prepend ? ' tag-ai' : ''}`;
     const groupHtml = groupLabel ? `<small class="tag-group-label">${groupLabel}</small>` : '';
     const countHtml = count != null ? `<small class="tag-count">(${count})</small>` : `<small class="tag-count">(${flays.length})</small>`;
-    row.innerHTML = `<span>${label} ${groupHtml} ${countHtml}</span><div class="flays"></div>`;
+    row.innerHTML = `<span>${label} ${groupHtml} ${countHtml}</span><div class="flays-wrapper"><button type="button" class="scroll-btn scroll-left" title="처음으로">&#x276E;</button><div class="flays"></div><button type="button" class="scroll-btn scroll-right" title="끝으로">&#x276F;</button></div>`;
 
     const flaysContainer = row.querySelector('.flays') as HTMLElement;
-    flays.forEach((flay) => flaysContainer.appendChild(this.createCoverElement(flay)));
+    flays.forEach((flay, i) => {
+      const cover = this.createCoverElement(flay);
+      if (prepend) {
+        cover.style.animationDelay = `${i * 60}ms`;
+        cover.classList.add('cover-fade-in');
+      }
+      flaysContainer.appendChild(cover);
+    });
     this.enableDragScroll(flaysContainer);
+
+    // 좌우 끝 이동 버튼
+    const scrollLeft = row.querySelector('.scroll-left') as HTMLButtonElement;
+    const scrollRight = row.querySelector('.scroll-right') as HTMLButtonElement;
+    scrollLeft.addEventListener('click', () => flaysContainer.scrollTo({ left: 0, behavior: 'smooth' }));
+    scrollRight.addEventListener('click', () => flaysContainer.scrollTo({ left: flaysContainer.scrollWidth, behavior: 'smooth' }));
 
     if (prepend) {
       tagContainer.prepend(row);
@@ -230,18 +261,20 @@ export class FlayFlix extends HTMLElement {
     return opusList.map((opus) => this.flayCache.get(opus)).filter((flay): flay is Flay => flay != null);
   }
 
-  /** flay-cover 이미지 요소 생성 (공통) */
+  /** flay-cover 이미지 요소 생성 (공통, IntersectionObserver lazy load) */
   private createCoverElement(flay: Flay): HTMLImageElement {
     const cover = document.createElement('img');
     cover.className = 'flay-cover';
-    cover.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
+    cover.dataset.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
     cover.alt = flay.title;
-    cover.loading = 'lazy';
     cover.decoding = 'async';
     cover.addEventListener('click', () => {
       this.opus = flay.opus;
       this.playOpus();
     });
+
+    // 뷰포트 진입 시 실제 src 설정
+    this.coverObserver.observe(cover);
     return cover;
   }
 
@@ -314,8 +347,12 @@ export class FlayFlix extends HTMLElement {
           <small class="tag-group-label">${groupName}</small>
           <small class="tag-count">(${tag.count})</small>
         </span>
-        <div class="flays">
-          ${'<div class="flay-cover skeleton-cover"></div>'.repeat(SKELETON_COVER_COUNT)}
+        <div class="flays-wrapper">
+          <button type="button" class="scroll-btn scroll-left" title="처음으로">&#x276E;</button>
+          <div class="flays">
+            ${'<div class="flay-cover skeleton-cover"></div>'.repeat(SKELETON_COVER_COUNT)}
+          </div>
+          <button type="button" class="scroll-btn scroll-right" title="끝으로">&#x276F;</button>
         </div>`;
 
       tagContainer.appendChild(tagElement);
@@ -328,6 +365,12 @@ export class FlayFlix extends HTMLElement {
   private async loadTagFlays(tagElement: HTMLElement) {
     const tagId = Number(tagElement.dataset.tagId);
     const flaysContainer = tagElement.querySelector('.flays') as HTMLElement;
+
+    // 좌우 끝 이동 버튼 연결
+    const scrollLeftBtn = tagElement.querySelector('.scroll-left') as HTMLButtonElement;
+    const scrollRightBtn = tagElement.querySelector('.scroll-right') as HTMLButtonElement;
+    scrollLeftBtn?.addEventListener('click', () => flaysContainer.scrollTo({ left: 0, behavior: 'smooth' }));
+    scrollRightBtn?.addEventListener('click', () => flaysContainer.scrollTo({ left: flaysContainer.scrollWidth, behavior: 'smooth' }));
 
     const flayList = await FlayFetch.getFlayListByTagId(tagId);
 

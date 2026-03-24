@@ -297,7 +297,10 @@ export class FlayFlix extends HTMLElement {
     // 1분 주기 재생 시간 저장 시작
     this.startPlayTimeTracking(opus);
 
-    FlayFetch.getFlay(opus).then((flay) => {
+    // 캐시에서 먼저 찾고, 없으면 서버에서 조회
+    const cached = this.flayCache.get(opus);
+    const flayPromise = cached ? Promise.resolve(cached) : FlayFetch.getFlay(opus);
+    flayPromise.then((flay) => {
       if (!flay) return;
       this.flayTitle.textContent = flay.title;
       this.flayActress.textContent = flay.actressList.join(', ');

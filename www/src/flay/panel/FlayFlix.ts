@@ -3,6 +3,7 @@ import { generate } from '../../ai/index-proxy';
 import ApiClient from '../../lib/ApiClient';
 import FlayFetch, { Flay, Tag, TagGroup } from '../../lib/FlayFetch';
 import { popupFlay } from '../../lib/FlaySearch';
+import { FlayBasket } from './FlayBasket';
 import './FlayFlix.scss';
 
 /** 재생 시간 저장 주기 (ms) */
@@ -133,12 +134,28 @@ export class FlayFlix extends HTMLElement {
       // 스켈레톤 제거 후 태그 순차 렌더링
       this.renderTags();
 
+      // 바스켓 행을 태그 맨 위에 삽입
+      void this.renderBasketRow();
+
       // AI 추천 행을 비동기로 태그 맨 위에 삽입
       void this.renderAIRecommendations();
     } catch (error) {
       console.error('데이터 로드 오류:', error);
       this.innerHTML = `<h1>Welcome to Flay</h1><p>데이터 로드 실패</p>`;
     }
+  }
+
+  /**
+   * 바스켓에 담긴 flay 목록을 태그 컨테이너 맨 위에 행으로 삽입
+   */
+  private async renderBasketRow() {
+    const basket = FlayBasket.getAll();
+    if (basket.size === 0) return;
+
+    const flays = await FlayFetch.getFlayList(...basket);
+    if (flays.length === 0) return;
+
+    this.renderTagRow('Basket', flays, true);
   }
 
   /**

@@ -218,6 +218,14 @@ export class FlayBasket extends GroundFlay {
     this.actressCountEl.innerHTML = String(this.actressListEl.children.length);
   }
 
+  /**
+   * 바스켓에 있는 모든 opus를 가져옵니다.
+   * @returns opus list. ,(컴마)로 구분
+   */
+  static getAll() {
+    return getBasket();
+  }
+
   static add(opus: string) {
     const basket = getBasket();
     basket.delete(opus);

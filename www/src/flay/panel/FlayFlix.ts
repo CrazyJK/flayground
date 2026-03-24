@@ -30,6 +30,8 @@ export class FlayFlix extends HTMLElement {
   private lazyObserver!: IntersectionObserver;
   private playTimeDB = new PlayTimeDB();
   private playTimeTimer: ReturnType<typeof setInterval> | null = null;
+  /** opus → Flay 캐시 */
+  private flayCache = new Map<string, Flay>();
 
   private video!: HTMLVideoElement;
   private flayTitle!: HTMLDivElement;
@@ -123,7 +125,7 @@ export class FlayFlix extends HTMLElement {
 
       const playedOpusList = histories.map((h) => h.opus).filter((opus) => this.opusList.includes(opus));
       if (playedOpusList.length > 0) {
-        const playedFlays = await FlayFetch.getFlayList(...playedOpusList);
+        const playedFlays = await this.cachedGetFlayList(...playedOpusList);
         playedFlays.forEach((flay) => {
           flay.video.tags.forEach((tag) => {
             this.recentTags.set(tag.id, (this.recentTags.get(tag.id) || 0) + 1);
@@ -152,7 +154,7 @@ export class FlayFlix extends HTMLElement {
     const basket = FlayBasket.getAll();
     if (basket.size === 0) return;
 
-    const flays = await FlayFetch.getFlayList(...basket);
+    const flays = await this.cachedGetFlayList(...basket);
     if (flays.length === 0) return;
 
     this.renderTagRow('Basket', flays, true);
@@ -180,7 +182,7 @@ export class FlayFlix extends HTMLElement {
       const unique = [...new Set(recommended)].slice(0, lineCount + 2);
       if (unique.length === 0) return;
 
-      const flays = await FlayFetch.getFlayList(...unique);
+      const flays = await this.cachedGetFlayList(...unique);
       this.renderTagRow('AI 추천', flays, true);
     } catch (error) {
       console.error('AI 추천 오류:', error);
@@ -212,6 +214,20 @@ export class FlayFlix extends HTMLElement {
     } else {
       tagContainer.appendChild(row);
     }
+  }
+
+  /**
+   * 캐시를 활용하여 Flay 목록을 가져옴. 캐시에 없는 opus만 서버에서 조회
+   * @param opusList 조회할 opus 목록
+   * @returns Flay 배열
+   */
+  private async cachedGetFlayList(...opusList: string[]): Promise<Flay[]> {
+    const uncached = opusList.filter((opus) => !this.flayCache.has(opus));
+    if (uncached.length > 0) {
+      const fetched = await FlayFetch.getFlayList(...uncached);
+      fetched.forEach((flay) => this.flayCache.set(flay.opus, flay));
+    }
+    return opusList.map((opus) => this.flayCache.get(opus)).filter((flay): flay is Flay => flay != null);
   }
 
   /** flay-cover 이미지 요소 생성 (공통) */

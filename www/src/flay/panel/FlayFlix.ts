@@ -183,25 +183,63 @@ export class FlayFlix extends HTMLElement {
   }
 
   /**
-   * AI에게 한 줄보다 약간 많은 opus를 추천받아 태그 컨테이너 맨 위에 삽입
+   * AI에게 추천받아 태그 컨테이너 맨 위에 삽입.
+   * 매번 다른 결과를 위해 랜덤 샘플링, opus+title+tags 정보를 토큰 제한에 맞게 전송
    */
   private async renderAIRecommendations() {
     const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
     const coverWidth = 11 * remPx + 0.375 * remPx;
     const availableWidth = this.clientWidth - 5 * remPx;
     const lineCount = Math.max(3, Math.floor(availableWidth / coverWidth));
-    // 한 줄보다 50% 더 요청 (AI가 유효하지 않은 opus를 줄 수 있으므로 여유분)
-    const requestCount = Math.ceil(lineCount * 1.5);
+    const requestCount = Math.ceil(lineCount * 2);
 
-    const prompt = `다음 목록에서 ${requestCount}개를 추천하세요. opus 코드만 쉼표로 구분하여 답하세요.\n${this.opusList.join(',')}`;
+    // 프롬프트 고정 부분 (약 80토큰 여유)
+    const systemPrompt = `다음 목록에서 ${requestCount}개를 추천하세요. opus 코드만 쉼표로 구분하여 답하세요.\n`;
+    const MODEL_TOKEN_LIMIT = 8000; // 모델 컨텍스트 한계 (고정)
+    const COMPLETION_TOKENS = 300; // 응답용 토큰
+    const PROMPT_OVERHEAD = 500; // 시스템 프롬프트 + 프록시 메시지 래핑 토큰
+    const availableTokens = MODEL_TOKEN_LIMIT - COMPLETION_TOKENS - PROMPT_OVERHEAD;
+
+    // 전체 목록 랜덤 셔플
+    const shuffled = [...this.opusList].sort(() => Math.random() - 0.5);
+
+    // 캐시 사전 로드: 토큰 예산을 채울 수 있을 만큼만 미리 조회
+    const prefetchCount = Math.min(shuffled.length, 500);
+    await this.cachedGetFlayList(...shuffled.slice(0, prefetchCount));
+
+    // opus별 정보 문자열 생성 + 토큰 예산 내에서 최대한 채우기
+    const items: string[] = [];
+    let estimatedTokens = 0;
+
+    for (const opus of shuffled) {
+      const flay = this.flayCache.get(opus);
+      let item: string;
+      if (flay) {
+        const tags = flay.video.tags.map((t) => t.name).join(',');
+        item = `${opus}|${tags}`;
+      } else {
+        item = opus;
+      }
+      // 토큰 추정: 한글 1자 ≈ 2토큰, 영문/숫자/특수문자 2자 ≈ 1토큰, +1 (줄바꿈)
+      const tokenEstimate = Math.ceil(item.replace(/[가-힣]/g, '..').length / 2) + 1;
+      if (estimatedTokens + tokenEstimate > availableTokens) break;
+      estimatedTokens += tokenEstimate;
+      items.push(item);
+    }
+
+    const prompt = `${systemPrompt}${items.join('\n')}`;
+    console.log('AI 추천 프롬프트:', `${items.length}건, ~${estimatedTokens}토큰`);
     try {
-      const response = await generate(prompt, { maxTokens: 300, temperature: 0.7 });
+      const response = await generate(prompt, { maxTokens: 300, temperature: 1.0 });
       const recommended = response.text
+        .replace(/[^a-zA-Z0-9\-,\s]/g, '')
         .trim()
         .split(/[,\s]+/)
         .filter((opus) => this.opusList.includes(opus));
+      console.log('AI 추천 원본:', response.text);
       // 중복 제거 후 lineCount + 여유분으로 제한
-      const unique = [...new Set(recommended)].slice(0, lineCount + 2);
+      const unique = [...new Set(recommended)];
+      console.log('AI 추천 최종:', unique);
       if (unique.length === 0) return;
 
       const flays = await this.cachedGetFlayList(...unique);

@@ -1,4 +1,7 @@
 flay-flix {
+  --flix-cover-width: 16rem;
+  --flix-cover-gap: 0.375rem;
+
   display: flex;
   flex-direction: column;
   height: 100vh;
@@ -31,6 +34,9 @@ flay-flix {
         text-shadow: 0 2px 8px var(--color-black-alpha-dark);
         margin: 0 0 0.125rem;
         letter-spacing: -0.02em;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
 
       .flay-desc {
@@ -149,7 +155,7 @@ flay-flix {
         flex-wrap: nowrap;
         justify-content: flex-start;
         align-items: center;
-        gap: 0.375rem;
+        gap: var(--flix-cover-gap);
         overflow-x: auto;
         overflow-y: hidden;
         padding: 0.25rem 2.5rem;
@@ -171,7 +177,7 @@ flay-flix {
 
         .flay-cover {
           flex-shrink: 0;
-          width: 11rem;
+          width: var(--flix-cover-width);
           height: auto;
           margin: 0;
           aspect-ratio: var(--cover-aspect-ratio);
@@ -198,7 +204,7 @@ flay-flix {
         /* 스켈레톤 커버 자리표시자: 실제 커버 크기와 동일, 쉬머 애니메이션 */
         .skeleton-cover {
           flex-shrink: 0;
-          width: 11rem;
+          width: var(--flix-cover-width);
           aspect-ratio: var(--cover-aspect-ratio);
           border-radius: var(--border-radius-large);
           background: linear-gradient(90deg, var(--color-bg-cover) 25%, var(--color-text-placeholder) 50%, var(--color-bg-cover) 75%);
@@ -245,11 +251,9 @@ flay-flix {
 @keyframes coverFadeIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
   }
   to {
     opacity: 1;
-    transform: scale(1);
   }
 }
 

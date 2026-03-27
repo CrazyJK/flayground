@@ -187,10 +187,12 @@ export class FlayFlix extends HTMLElement {
    * 매번 다른 결과를 위해 랜덤 샘플링, opus+title+tags 정보를 토큰 제한에 맞게 전송
    */
   private async renderAIRecommendations() {
-    const remPx = parseFloat(getComputedStyle(document.documentElement).fontSize) || 16;
-    const coverWidth = 11 * remPx + 0.375 * remPx;
+    const styles = getComputedStyle(this);
+    const coverWidth = parseFloat(styles.getPropertyValue('--flix-cover-width')) * (parseFloat(styles.fontSize) || 16);
+    const coverGap = parseFloat(styles.getPropertyValue('--flix-cover-gap')) * (parseFloat(styles.fontSize) || 16);
+    const remPx = parseFloat(styles.fontSize) || 16;
     const availableWidth = this.clientWidth - 5 * remPx;
-    const lineCount = Math.max(3, Math.floor(availableWidth / coverWidth));
+    const lineCount = Math.max(3, Math.floor(availableWidth / (coverWidth + coverGap)));
     const requestCount = Math.ceil(lineCount * 2);
 
     // 프롬프트 고정 부분 (약 80토큰 여유)

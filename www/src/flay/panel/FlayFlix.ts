@@ -310,6 +310,7 @@ export class FlayFlix extends HTMLElement {
     cover.dataset.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
     cover.alt = flay.title;
     cover.decoding = 'async';
+    cover.draggable = false;
     cover.addEventListener('click', () => {
       this.opus = flay.opus;
       this.playOpus();
@@ -453,6 +454,7 @@ export class FlayFlix extends HTMLElement {
       isDragging = false;
       startX = e.pageX - container.offsetLeft;
       scrollLeft = container.scrollLeft;
+      e.preventDefault();
     });
 
     container.addEventListener('mouseleave', () => {

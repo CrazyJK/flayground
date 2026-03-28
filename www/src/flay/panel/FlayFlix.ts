@@ -175,8 +175,10 @@ export class FlayFlix extends HTMLElement {
   private async renderBasketRow() {
     const basket = FlayBasket.getAll();
     if (basket.size === 0) return;
+    // 역순 정렬
+    const reversedBasket = Array.from(basket).reverse();
 
-    const flays = await this.cachedGetFlayList(...basket);
+    const flays = await this.cachedGetFlayList(...reversedBasket);
     if (flays.length === 0) return;
 
     this.renderTagRow('Basket', flays, true);

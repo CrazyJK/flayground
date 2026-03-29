@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 public class GroundApplicationTests {
 
   @Test
-  public void contextLoads() {}
+  public void contextLoads() {
+  }
 
 }

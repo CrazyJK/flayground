@@ -3,6 +3,7 @@ import { generate } from '../../ai/index-proxy';
 import ApiClient from '../../lib/ApiClient';
 import FlayFetch, { Flay, Tag, TagGroup } from '../../lib/FlayFetch';
 import { popupFlay } from '../../lib/FlaySearch';
+import controlsSVG from '../../svg/controls';
 import { FlayBasket } from './FlayBasket';
 import './FlayFlix.scss';
 
@@ -41,6 +42,12 @@ export class FlayFlix extends HTMLElement {
   private flayActress!: HTMLDivElement;
   private flayRelease!: HTMLSpanElement;
   private flayTags!: HTMLSpanElement;
+  private seekBar!: HTMLInputElement;
+  private timeDisplay!: HTMLSpanElement;
+  private volumeBar!: HTMLInputElement;
+  private muteBtn!: HTMLButtonElement;
+  private playPauseBtn!: HTMLButtonElement;
+  private nextBtn!: HTMLButtonElement;
 
   constructor() {
     super();
@@ -56,6 +63,18 @@ export class FlayFlix extends HTMLElement {
             <span class="flay-release"></span>
             <span class="flay-tags"></span>
           </div>
+          <div class="flay-controls">
+            <div class="seek-bar-wrapper"><input type="range" class="seek-bar" min="0" max="1000" value="0" step="1" /></div>
+            <div class="controls-row">
+              <button type="button" class="play-pause-btn" title="일시정지">${controlsSVG.pause}</button>
+              <button type="button" class="next-btn" title="다음 랜덤 재생">${controlsSVG.nextTrack}</button>
+              <div class="volume-control">
+                <button type="button" class="mute-btn" title="음소거">${controlsSVG.volume}</button>
+                <input type="range" class="volume-bar" min="0" max="100" value="0" step="1" />
+              </div>
+              <span class="time-display">0:00:00 / 0:00:00</span>
+            </div>
+          </div>
         </div>
       </div>
       <div class="tag-container"></div>
@@ -67,6 +86,12 @@ export class FlayFlix extends HTMLElement {
     this.flayActress = this.querySelector('.flay-actress') as HTMLDivElement;
     this.flayRelease = this.querySelector('.flay-release') as HTMLSpanElement;
     this.flayTags = this.querySelector('.flay-tags') as HTMLSpanElement;
+    this.seekBar = this.querySelector('.seek-bar') as HTMLInputElement;
+    this.timeDisplay = this.querySelector('.time-display') as HTMLSpanElement;
+    this.volumeBar = this.querySelector('.volume-bar') as HTMLInputElement;
+    this.muteBtn = this.querySelector('.mute-btn') as HTMLButtonElement;
+    this.playPauseBtn = this.querySelector('.play-pause-btn') as HTMLButtonElement;
+    this.nextBtn = this.querySelector('.next-btn') as HTMLButtonElement;
 
     this.flayTitle.style.cursor = 'pointer';
     this.flayTitle.addEventListener('click', () => {
@@ -78,8 +103,48 @@ export class FlayFlix extends HTMLElement {
     });
 
     this.video.addEventListener('click', () => {
-      if (this.video.paused) this.video.play();
-      else this.video.pause();
+      this.togglePlayPause();
+    });
+
+    // 재생/일시정지 버튼
+    this.playPauseBtn.addEventListener('click', () => {
+      this.togglePlayPause();
+    });
+
+    // 다음 랜덤 opus 재생
+    this.nextBtn.addEventListener('click', () => {
+      this.playRandomOpus();
+    });
+
+    // 재생 시간 업데이트 (1초 주기 throttle)
+    let lastTimeUpdate = 0;
+    this.video.addEventListener('timeupdate', () => {
+      const now = Date.now();
+      if (now - lastTimeUpdate < 1000) return;
+      lastTimeUpdate = now;
+      if (!this.video.duration) return;
+      const pos = (this.video.currentTime / this.video.duration) * 1000;
+      this.seekBar.value = String(Math.floor(pos));
+      this.timeDisplay.textContent = `${this.formatTime(this.video.currentTime)} / ${this.formatTime(this.video.duration)}`;
+    });
+
+    // seek bar 조작
+    this.seekBar.addEventListener('input', () => {
+      if (!this.video.duration) return;
+      this.video.currentTime = (Number(this.seekBar.value) / 1000) * this.video.duration;
+    });
+
+    // 볼륨 조절
+    this.volumeBar.addEventListener('input', () => {
+      this.video.volume = Number(this.volumeBar.value) / 100;
+      this.video.muted = false;
+      this.muteBtn.innerHTML = this.video.volume === 0 ? controlsSVG.volumeMuted : controlsSVG.volume;
+    });
+
+    // 음소거 토글
+    this.muteBtn.addEventListener('click', () => {
+      this.video.muted = !this.video.muted;
+      this.muteBtn.innerHTML = this.video.muted ? controlsSVG.volumeMuted : controlsSVG.volume;
     });
 
     // 뷰포트 진입 시 태그 행의 flay를 로드하는 IntersectionObserver
@@ -374,6 +439,39 @@ export class FlayFlix extends HTMLElement {
     // 이전 opus의 마지막 재생 위치 저장
     if (this.opus && this.video.currentTime > 0) {
       void this.playTimeDB.update(this.opus, this.video.currentTime, this.video.duration);
+    }
+  }
+
+  /**
+   * 초를 h:mm:ss 형식 문자열로 변환
+   * @param seconds 변환할 초
+   * @returns h:mm:ss 형식 문자열
+   */
+  private formatTime(seconds: number): string {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
+
+  /** 재생/일시정지 토글 */
+  private togglePlayPause() {
+    if (this.video.paused) {
+      this.video.play();
+      this.playPauseBtn.innerHTML = controlsSVG.pause;
+    } else {
+      this.video.pause();
+      this.playPauseBtn.innerHTML = controlsSVG.play;
+    }
+  }
+
+  /** 랜덤 opus를 선택하여 재생 */
+  private playRandomOpus() {
+    if (this.opusList.length === 0) return;
+    this.opus = this.opusList[Math.floor(Math.random() * this.opusList.length)] || null;
+    if (this.opus) {
+      this.playOpus();
+      this.playPauseBtn.innerHTML = controlsSVG.pause;
     }
   }
 

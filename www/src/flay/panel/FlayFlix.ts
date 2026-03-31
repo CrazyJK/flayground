@@ -195,7 +195,7 @@ export class FlayFlix extends HTMLElement {
     const remPx = parseFloat(styles.fontSize) || 16;
     const availableWidth = this.clientWidth - 5 * remPx;
     const lineCount = Math.max(3, Math.floor(availableWidth / (coverWidth + coverGap)));
-    const requestCount = Math.ceil(lineCount * 2);
+    const requestCount = Math.ceil((lineCount * 2) / 10) * 10;
 
     // 프롬프트 고정 부분 (약 80토큰 여유)
     const systemPrompt = `다음 목록에서 ${requestCount}개를 추천하세요. opus 코드만 쉼표로 구분하여 답하세요.\n`;

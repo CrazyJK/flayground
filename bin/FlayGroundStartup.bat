@@ -16,6 +16,7 @@ echo invalid FLAY_GROUND_HOME: %FLAY_GROUND_HOME%
 goto end
 
 :setJavaEnv
+set "JAVA_HOME=C:\Program Files\Java\jdk-25"
 set "JAVA_OPTS=%JAVA_OPTS% -Dfile.encoding=UTF-8"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.awt.headless=true"
 set "JAVA_OPTS=%JAVA_OPTS% -Djava.net.preferIPv4Stack=true"
@@ -55,7 +56,7 @@ echo ===========================================================================
 echo Build maven
 echo --------------------------------------------------------------------------------------------------------------------
 cd ../server
-start /wait /b cmd /c mvn clean package
+start /wait /b cmd /c mvnw.cmd clean package
 
 title FLAY_GROUND Start MCP-Gemini HTTP Server
 echo.

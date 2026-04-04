@@ -71,7 +71,7 @@ module.exports = {
     clean: true,
   },
   resolve: {
-    extensions: ['.ts', '.json', '.scss', '.css'],
+    extensions: ['.ts', '.js', '.json', '.scss', '.css'],
     alias: {
       '@attach': path.resolve(__dirname, 'src/attach'),
       '@base': path.resolve(__dirname, 'src/base'),

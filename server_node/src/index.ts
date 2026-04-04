@@ -30,6 +30,7 @@ import imageRoutes from './routes/image.routes';
 import memoRoutes from './routes/memo.routes';
 import pushRoutes from './routes/push.routes';
 import sseRoutes from './routes/sse.routes';
+import staticFileRoutes from './routes/static-file.routes';
 import streamRoutes from './routes/stream.routes';
 import studioRoutes from './routes/studio.routes';
 import tagGroupRoutes from './routes/tag-group.routes';
@@ -78,6 +79,7 @@ function createApp(): express.Application {
   app.use(API_PREFIX, historyRoutes);
   app.use(API_PREFIX, diaryRoutes);
   app.use(API_PREFIX, imageRoutes);
+  app.use(API_PREFIX, staticFileRoutes);
   app.use(API_PREFIX, sseRoutes);
   app.use(API_PREFIX, groundRoutes);
   app.use(API_PREFIX, todayisRoutes);

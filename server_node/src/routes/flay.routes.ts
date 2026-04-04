@@ -52,11 +52,11 @@ router.get('/flays', (req, res) => {
   // fields, expand, sort, order, search, tag, match, count는 예약어이므로 제외
   const reservedKeys = new Set(['fields', 'expand', 'sort', 'order', 'search', 'tag', 'match', 'count']);
 
-  const fieldParam = req.query.field as string | undefined;
+  const fieldParam = (req.query.field || req.query.key) as string | undefined;
   const valueParam = req.query.value as string | undefined;
 
   if (fieldParam && valueParam) {
-    // ?field=actress&value=Ashida Noa 형식
+    // ?field=actress&value=xxx 또는 ?key=actress&value=xxx 형식
     const result = flayService.findByField(fieldParam, valueParam);
     if (count === 'true') {
       return res.json(result.length);
@@ -64,7 +64,7 @@ router.get('/flays', (req, res) => {
     return res.json(result);
   }
 
-  const fieldEntry = Object.entries(req.query).find(([key]) => !reservedKeys.has(key) && key !== 'field' && key !== 'value');
+  const fieldEntry = Object.entries(req.query).find(([key]) => !reservedKeys.has(key) && key !== 'field' && key !== 'key' && key !== 'value');
   if (fieldEntry) {
     const [field, value] = fieldEntry;
     const result = flayService.findByField(field, value as string);
@@ -139,14 +139,18 @@ router.delete('/flays/files', (req, res) => {
 
 /** GET /flays/:opus - Flay 조회 (?expand=actress) */
 router.get('/flays/:opus', (req, res) => {
-  const flay = flayService.getFlay(req.params.opus);
-  if (req.query.expand === 'actress') {
-    calcScore(flay);
-    const actress = flay.actressList.map((name) => actressInfoService.get(name));
-    const result: FullyFlay = { flay, actress };
-    return res.json(result);
+  try {
+    const flay = flayService.getFlay(req.params.opus);
+    if (req.query.expand === 'actress') {
+      calcScore(flay);
+      const actress = flay.actressList.map((name) => actressInfoService.get(name));
+      const result: FullyFlay = { flay, actress };
+      return res.json(result);
+    }
+    res.json(flay);
+  } catch {
+    res.status(404).json(null);
   }
-  res.json(flay);
 });
 
 /** GET /flays/:opus/score - Flay score 조회 */

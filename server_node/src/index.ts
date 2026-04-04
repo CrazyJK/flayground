@@ -20,7 +20,9 @@ import { pushSubscriptionRepo } from './sources/push-subscription-repo';
 import actressRoutes from './routes/actress.routes';
 import attachRoutes from './routes/attach.routes';
 import batchRoutes from './routes/batch.routes';
+import crawlingRoutes from './routes/crawling.routes';
 import diaryRoutes from './routes/diary.routes';
+import downloadRoutes from './routes/download.routes';
 import flayArchiveRoutes from './routes/flay-archive.routes';
 import flayRoutes from './routes/flay.routes';
 import groundRoutes from './routes/ground.routes';
@@ -85,6 +87,8 @@ function createApp(): express.Application {
   app.use(API_PREFIX, batchRoutes);
   app.use(API_PREFIX, memoRoutes);
   app.use(API_PREFIX, attachRoutes);
+  app.use(API_PREFIX, crawlingRoutes);
+  app.use(API_PREFIX, downloadRoutes);
 
   // Push 구독은 별도 prefix (/api/push)
   app.use('/api/push', pushRoutes);

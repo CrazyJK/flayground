@@ -16,7 +16,11 @@ router.get('/info/videos', (req, res) => {
 
 /** GET /info/videos/:opus - Video 조회 */
 router.get('/info/videos/:opus', (req, res) => {
-  res.json(videoService.get(req.params.opus));
+  try {
+    res.json(videoService.get(req.params.opus));
+  } catch {
+    res.status(404).json(null);
+  }
 });
 
 /** POST /info/videos - 신규 생성 */

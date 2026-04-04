@@ -48,10 +48,23 @@ router.get('/flays', (req, res) => {
     return res.json(flayService.findByQuery(search as string));
   }
 
-  // 필드별 검색: 단일 파라미터를 field=value로 처리
+  // 필드별 검색: ?field=actress&value=xxx 또는 ?actress=xxx 형식 지원
   // fields, expand, sort, order, search, tag, match, count는 예약어이므로 제외
   const reservedKeys = new Set(['fields', 'expand', 'sort', 'order', 'search', 'tag', 'match', 'count']);
-  const fieldEntry = Object.entries(req.query).find(([key]) => !reservedKeys.has(key));
+
+  const fieldParam = req.query.field as string | undefined;
+  const valueParam = req.query.value as string | undefined;
+
+  if (fieldParam && valueParam) {
+    // ?field=actress&value=Ashida Noa 형식
+    const result = flayService.findByField(fieldParam, valueParam);
+    if (count === 'true') {
+      return res.json(result.length);
+    }
+    return res.json(result);
+  }
+
+  const fieldEntry = Object.entries(req.query).find(([key]) => !reservedKeys.has(key) && key !== 'field' && key !== 'value');
   if (fieldEntry) {
     const [field, value] = fieldEntry;
     const result = flayService.findByField(field, value as string);

@@ -1,7 +1,6 @@
 import cors from 'cors';
 import express from 'express';
 import fs from 'fs';
-import http2 from 'http2';
 import https from 'https';
 import path from 'path';
 
@@ -122,10 +121,10 @@ function startServer(app: express.Application): void {
     };
 
     if (useHttp2) {
-      // HTTP/2 + TLS
-      const server = http2.createSecureServer(sslOptions, app as any);
+      // HTTPS + TLS (Express 4는 http2 모듈과 호환되지 않으므로 https 사용)
+      const server = https.createServer(sslOptions, app);
       server.listen(port, () => {
-        console.log(`[Flay Ground] HTTP/2 서버 시작: https://flay.kamoru.jk${port === 443 ? '' : ':' + port}`);
+        console.log(`[Flay Ground] HTTPS 서버 시작: https://flay.kamoru.jk${port === 443 ? '' : ':' + port}`);
         console.log(`[Flay Ground] API: https://flay.kamoru.jk${port === 443 ? '' : ':' + port}${API_PREFIX}`);
       });
     } else {

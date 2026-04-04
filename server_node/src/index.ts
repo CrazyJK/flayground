@@ -125,21 +125,21 @@ function startServer(app: express.Application): void {
       // HTTP/2 + TLS
       const server = http2.createSecureServer(sslOptions, app as any);
       server.listen(port, () => {
-        console.log(`[Flay Ground] HTTP/2 서버 시작: https://localhost:${port}`);
-        console.log(`[Flay Ground] API: https://localhost:${port}${API_PREFIX}`);
+        console.log(`[Flay Ground] HTTP/2 서버 시작: https://flay.kamoru.jk${port === 443 ? '' : ':' + port}`);
+        console.log(`[Flay Ground] API: https://flay.kamoru.jk${port === 443 ? '' : ':' + port}${API_PREFIX}`);
       });
     } else {
       // HTTPS (HTTP/1.1)
       const server = https.createServer(sslOptions, app);
       server.listen(port, () => {
-        console.log(`[Flay Ground] HTTPS 서버 시작: https://localhost:${port}`);
+        console.log(`[Flay Ground] HTTPS 서버 시작: https://flay.kamoru.jk${port === 443 ? '' : ':' + port}`);
       });
     }
   } else {
     // HTTP 폴백 (인증서 없을 때)
     console.warn('[Flay Ground] 인증서를 찾을 수 없습니다. HTTP 모드로 시작합니다.');
     app.listen(port, () => {
-      console.log(`[Flay Ground] HTTP 서버 시작: http://localhost:${port}`);
+      console.log(`[Flay Ground] HTTP 서버 시작: http://flay.kamoru.jk${port === 80 ? '' : ':' + port}`);
     });
   }
 }

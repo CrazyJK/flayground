@@ -1,6 +1,6 @@
 {
   "server": {
-    "port": 6974,
+    "port": 443,
     "http2": true
   },
   "flay": {

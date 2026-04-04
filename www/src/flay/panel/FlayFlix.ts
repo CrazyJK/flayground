@@ -298,23 +298,31 @@ export class FlayFlix extends HTMLElement {
 
     const prompt = `${systemPrompt}${items.join('\n')}`;
     console.log('AI 추천 프롬프트:', `${items.length}건, ~${estimatedTokens}토큰`);
-    try {
-      const response = await generate(prompt, { maxTokens: 300, temperature: 1.0 });
-      const recommended = response.text
-        .replace(/[^a-zA-Z0-9\-,\s]/g, '')
-        .trim()
-        .split(/[,\s]+/)
-        .filter((opus) => this.opusList.includes(opus));
-      console.log('AI 추천 원본:', response.text);
-      // 중복 제거 후 lineCount + 여유분으로 제한
-      const unique = [...new Set(recommended)];
-      console.log('AI 추천 최종:', unique);
-      if (unique.length === 0) return;
 
-      const flays = await this.cachedGetFlayList(...unique);
-      this.renderTagRow('AI 추천', flays, true);
-    } catch (error) {
-      console.error('AI 추천 오류:', error);
+    const maxRetries = 3;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const response = await generate(prompt, { maxTokens: 300, temperature: 1.0 });
+        const recommended = response.text
+          .replace(/[^a-zA-Z0-9\-,\s]/g, '')
+          .trim()
+          .split(/[,\s]+/)
+          .filter((opus) => this.opusList.includes(opus));
+        console.log('AI 추천 원본:', response.text);
+        // 중복 제거 후 lineCount + 여유분으로 제한
+        const unique = [...new Set(recommended)];
+        console.log('AI 추천 최종:', unique);
+        if (unique.length === 0) return;
+
+        const flays = await this.cachedGetFlayList(...unique);
+        this.renderTagRow('AI 추천', flays, true);
+        return;
+      } catch (error) {
+        console.error(`AI 추천 오류 (${attempt}/${maxRetries}):`, error);
+        if (attempt < maxRetries) {
+          await new Promise((r) => setTimeout(r, 1000 * attempt));
+        }
+      }
     }
   }
 

@@ -210,8 +210,8 @@ function loadFlaySource(paths: string[], isArchive: boolean, flayMap: Map<string
 export function loadAllFlaySources(): void {
   console.log('[FlaySource] 로드 시작...');
 
-  // Instance: storage + stage 경로
-  const instancePaths = [config.flay.storagePath, ...config.flay.stagePaths];
+  // Instance: storage + stage + cover 경로
+  const instancePaths = [config.flay.storagePath, ...config.flay.stagePaths, config.flay.coverPath];
   loadFlaySource(instancePaths, false, instanceFlayMap);
 
   // Archive
@@ -256,7 +256,7 @@ export function getArchiveFlayMap(): Map<string, Flay> {
 
 /** Instance Flay 맵을 다시 로드한다 */
 export function reloadInstanceFlaySources(): void {
-  const instancePaths = [config.flay.storagePath, ...config.flay.stagePaths];
+  const instancePaths = [config.flay.storagePath, ...config.flay.stagePaths, config.flay.coverPath];
   loadFlaySource(instancePaths, false, instanceFlayMap);
 }
 

@@ -3,11 +3,11 @@ import path from 'path';
 import { config } from '../config';
 import { Flay } from '../domain/flay';
 import { createHistory } from '../domain/history';
-import { getArchiveFlay, getArchiveFlayList, getInstanceFlayList, loadAllFlaySources, reloadInstanceFlaySources } from '../sources/flay-source';
+import { getArchiveFlay, getArchiveFlayList, getInstanceFlayList, reloadArchiveFlaySources, reloadInstanceFlaySources } from '../sources/flay-source';
 import { historyRepository } from '../sources/history-repository';
 import { deleteFile, isEmptyDirectory, moveFileToDirectory } from './flay-file-handler';
 import { listOrderByScoreDesc } from './score-calculator';
-import { SseMessage, sseSend } from './sse-emitters';
+import { sseSend } from './sse-emitters';
 
 /**
  * 배치 서비스.
@@ -23,22 +23,35 @@ export type BatchOperation = 'I' | 'A' | 'B';
 /** 런타임 옵션 상태 */
 let deleteLowerScore = config.flay.deleteLowerScore;
 
+/** 이벤트 루프 양보 - SSE 버퍼 플러시를 위해 필요 */
+function yieldEventLoop(): Promise<void> {
+  return new Promise((resolve) => setImmediate(resolve));
+}
+
 /**
- * SSE를 통해 배치 로그를 전송한다.
+ * SSE를 통해 배치 로그를 전송한다. (비동기 - 이벤트 루프 양보)
  */
-function batchLogger(message: string): void {
+async function batchLogger(message: string): Promise<void> {
   console.log(`[Batch] ${message}`);
-  const msg: SseMessage = { type: 'Batch', message };
-  sseSend(msg);
+  sseSend({ type: 'Batch', message });
+  await yieldEventLoop();
+}
+
+/**
+ * SSE를 통해 배치 로그를 전송한다. (동기 - FlaySourceLogger 콜백용)
+ */
+function batchLoggerSync(message: string): void {
+  console.log(`[Batch] ${message}`);
+  sseSend({ type: 'Batch', message });
 }
 
 /**
  * SSE를 통해 공지 알림을 전송한다.
  */
-function noticeLogger(message: string): void {
+async function noticeLogger(message: string): Promise<void> {
   console.log(`[Batch] ${message}`);
-  const msg: SseMessage = { type: 'Notice', message };
-  sseSend(msg);
+  sseSend({ type: 'Notice', message });
+  await yieldEventLoop();
 }
 
 /** 배치 옵션 조회 */
@@ -64,27 +77,27 @@ export function toggleOption(option: BatchOption): boolean {
 
 /** 배치 실행 (비동기) */
 export function startBatch(operation: BatchOperation): void {
-  // 비동기로 실행 (Node.js에서는 setImmediate로 메인 스레드 해제)
-  setImmediate(() => {
+  // 비동기로 실행
+  (async () => {
     try {
       switch (operation) {
         case 'I':
-          instanceBatch();
+          await instanceBatch();
           break;
         case 'A':
-          archiveBatch();
+          await archiveBatch();
           break;
         case 'B':
-          backup();
+          await backup();
           break;
         default:
           throw new Error(`알 수 없는 배치 오퍼레이션: ${operation}`);
       }
     } catch (err: any) {
       console.error(`[Batch] 오류: ${err.message}`);
-      batchLogger(`오류: ${err.message}`);
+      await batchLogger(`오류: ${err.message}`);
     }
-  });
+  })();
 }
 
 /** 배치 사전 검사 */
@@ -99,10 +112,12 @@ export function checkBatch(operation: BatchOperation): Record<string, Flay[]> {
 
 /** 소스 리로드 */
 export function reload(): void {
-  batchLogger('[reload] Start');
-  reloadInstanceFlaySources(batchLogger);
-  batchLogger('[reload] End');
-  noticeLogger('reload Completed');
+  (async () => {
+    await batchLogger('[reload] Start');
+    reloadInstanceFlaySources(batchLoggerSync);
+    await batchLogger('[reload] End');
+    await noticeLogger('reload Completed');
+  })();
 }
 
 // ─── 내부 구현 ───
@@ -138,41 +153,41 @@ function instanceCheck(): Record<string, Flay[]> {
 }
 
 /** 인스턴스 배치 실행 */
-function instanceBatch(): void {
-  batchLogger('[instanceBatch] Start');
+async function instanceBatch(): Promise<void> {
+  await batchLogger('[instanceBatch] Start');
 
   // rank < 0 삭제
-  batchLogger('[deleteLowerRank]');
+  await batchLogger('[deleteLowerRank]');
   for (const flay of listLowerRank()) {
-    archiving(flay, 'delete Lower Rank Video');
+    await archiving(flay, 'delete Lower Rank Video');
   }
 
   // low score 삭제
   if (deleteLowerScore) {
-    batchLogger('[deleteLowerScore]');
+    await batchLogger('[deleteLowerScore]');
     for (const flay of listLowerScore()) {
-      archiving(flay, 'delete Lower Score Video');
+      await archiving(flay, 'delete Lower Score Video');
     }
   }
 
   // 파일 재배치
-  assembleFlay();
+  await assembleFlay();
 
   // 빈 폴더 삭제
   const pathsToClean = [...config.flay.stagePaths, config.flay.coverPath, config.flay.storagePath];
-  deleteEmptyFolders(pathsToClean);
+  await deleteEmptyFolders(pathsToClean);
 
   // 소스 리로드
-  reloadInstanceFlaySources();
+  reloadInstanceFlaySources(batchLoggerSync);
 
-  batchLogger('[instanceBatch] End');
-  noticeLogger('instanceBatch Completed');
+  await batchLogger('[instanceBatch] End');
+  await noticeLogger('instanceBatch Completed');
 }
 
 /** 아카이브 배치 실행 */
-function archiveBatch(): void {
-  batchLogger('[archiveBatch] Start');
-  batchLogger('[relocateArchiveFile]');
+async function archiveBatch(): Promise<void> {
+  await batchLogger('[archiveBatch] Start');
+  await batchLogger('[relocateArchiveFile]');
 
   for (const flay of getArchiveFlayList()) {
     const yyyyMM = getArchiveFolderName(flay);
@@ -182,32 +197,32 @@ function archiveBatch(): void {
       for (const filePath of fileList) {
         const parentName = path.basename(path.dirname(filePath));
         if (parentName !== yyyyMM) {
-          batchLogger(`move ${filePath} to ${destDir}`);
+          await batchLogger(`move ${filePath} to ${destDir}`);
           moveFileToDirectory(filePath, destDir);
         }
       }
     }
   }
 
-  deleteEmptyFolders([config.flay.archivePath]);
-  loadAllFlaySources();
+  await deleteEmptyFolders([config.flay.archivePath]);
+  reloadArchiveFlaySources(batchLoggerSync);
 
-  batchLogger('[archiveBatch] End');
-  noticeLogger('archiveBatch Completed');
+  await batchLogger('[archiveBatch] End');
+  await noticeLogger('archiveBatch Completed');
 }
 
 /**
  * Flay 파일을 적절한 위치로 재배치한다.
  * Java BatchExecutor.assembleFlay() 대응
  */
-function assembleFlay(): void {
-  batchLogger('[assembleFlay]');
+async function assembleFlay(): Promise<void> {
+  await batchLogger('[assembleFlay]');
 
   for (const flay of getInstanceFlayList()) {
     if (flay.archive) continue;
 
     // 커버/자막이 없으면 아카이브에서 찾기
-    recoverFromArchive(flay);
+    await recoverFromArchive(flay);
 
     const delegatePath = getDelegatePath(flay);
 
@@ -215,7 +230,7 @@ function assembleFlay(): void {
       for (const filePath of fileList) {
         const parentDir = path.dirname(filePath);
         if (path.resolve(parentDir) !== path.resolve(delegatePath)) {
-          batchLogger(`move ${path.basename(filePath)} => ${delegatePath}`);
+          await batchLogger(`move ${path.basename(filePath)} => ${delegatePath}`);
           moveFileToDirectory(filePath, delegatePath);
         }
       }
@@ -226,14 +241,14 @@ function assembleFlay(): void {
 /**
  * 아카이브에서 커버/자막 파일을 복원한다.
  */
-function recoverFromArchive(flay: Flay): void {
+async function recoverFromArchive(flay: Flay): Promise<void> {
   // 커버 파일이 없으면 아카이브에서 찾기
   if (!flay.files.cover || flay.files.cover.length === 0) {
     try {
       const archiveFlay = getArchiveFlay(flay.opus);
       if (archiveFlay.files.cover && archiveFlay.files.cover.length > 0) {
         flay.files.cover.push(archiveFlay.files.cover[0]);
-        batchLogger(`add Cover ${archiveFlay.files.cover[0]}`);
+        await batchLogger(`add Cover ${archiveFlay.files.cover[0]}`);
       }
     } catch {
       // 아카이브에도 없으면 무시
@@ -246,7 +261,7 @@ function recoverFromArchive(flay: Flay): void {
       const archiveFlay = getArchiveFlay(flay.opus);
       if (archiveFlay.files.subtitles && archiveFlay.files.subtitles.length > 0) {
         flay.files.subtitles.push(...archiveFlay.files.subtitles);
-        batchLogger(`add subtitles ${archiveFlay.files.subtitles.join(', ')}`);
+        await batchLogger(`add subtitles ${archiveFlay.files.subtitles.join(', ')}`);
       }
     } catch {
       // 무시
@@ -282,7 +297,7 @@ function getDelegatePath(flay: Flay): string {
     return path.join(config.flay.coverPath, flay.release.substring(0, 4));
   }
 
-  batchLogger(`Not determine delegate path, return to Queue path. ${flay.opus}`);
+  batchLoggerSync(`Not determine delegate path, return to Queue path. ${flay.opus}`);
   return config.flay.queuePath;
 }
 
@@ -290,17 +305,17 @@ function getDelegatePath(flay: Flay): string {
  * 아카이빙: cover/subtitles는 아카이브로 이동, 나머지는 삭제
  * Java BatchExecutor.archiving() 대응
  */
-function archiving(flay: Flay, reason: string): void {
+async function archiving(flay: Flay, reason: string): Promise<void> {
   const yyyyMM = getArchiveFolderName(flay);
   const archiveDir = path.join(config.flay.archivePath, yyyyMM);
 
   for (const [key, fileList] of Object.entries(flay.files)) {
     for (const filePath of fileList) {
       if (key === 'cover' || key === 'subtitles') {
-        batchLogger(`will be move   ${filePath} to ${archiveDir}`);
+        await batchLogger(`will be move   ${filePath} to ${archiveDir}`);
         moveFileToDirectory(filePath, archiveDir);
       } else if (key !== 'candidate') {
-        batchLogger(`will be delete ${filePath}`);
+        await batchLogger(`will be delete ${filePath}`);
         deleteFile(filePath);
       }
     }
@@ -316,27 +331,27 @@ function getArchiveFolderName(flay: Flay): string {
 }
 
 /** 빈 폴더 삭제 */
-function deleteEmptyFolders(dirs: string[]): void {
-  batchLogger('[deleteEmptyFolder]');
+async function deleteEmptyFolders(dirs: string[]): Promise<void> {
+  await batchLogger('[deleteEmptyFolder]');
   for (const dir of dirs) {
     if (!fs.existsSync(dir)) continue;
-    batchLogger(`  scanning...   ${dir}`);
-    cleanEmptySubdirs(dir, dir);
+    await batchLogger(`  scanning...   ${dir}`);
+    await cleanEmptySubdirs(dir, dir);
   }
 }
 
 /** 재귀적으로 빈 하위 디렉토리를 삭제한다 */
-function cleanEmptySubdirs(rootDir: string, currentDir: string): void {
+async function cleanEmptySubdirs(rootDir: string, currentDir: string): Promise<void> {
   if (!fs.existsSync(currentDir)) return;
   const entries = fs.readdirSync(currentDir, { withFileTypes: true });
 
   for (const entry of entries) {
     if (entry.isDirectory()) {
       const subDir = path.join(currentDir, entry.name);
-      cleanEmptySubdirs(rootDir, subDir);
+      await cleanEmptySubdirs(rootDir, subDir);
 
       if (isEmptyDirectory(subDir)) {
-        batchLogger(`    empty directory delete ${subDir}`);
+        await batchLogger(`    empty directory delete ${subDir}`);
         fs.rmdirSync(subDir);
       }
     }
@@ -348,14 +363,14 @@ function cleanEmptySubdirs(rootDir: string, currentDir: string): void {
  * Java BatchExecutor.backup() 대응
  * instance/archive CSV와 Info 폴더를 백업한다.
  */
-function backup(): void {
+async function backup(): Promise<void> {
   const backupPath = config.flay.backupPath;
   if (!fs.existsSync(backupPath)) {
     console.warn('[Batch] 백업 경로가 존재하지 않습니다.');
     return;
   }
 
-  batchLogger(`[Backup] START ${backupPath}`);
+  await batchLogger(`[Backup] START ${backupPath}`);
 
   const CSV_HEADER = 'Studio,Opus,Title,Actress,Released,Rank,Fullname';
   const instanceFlayList = getInstanceFlayList();
@@ -371,7 +386,7 @@ function backup(): void {
     instanceLines.push(`"${flay.studio}","${flay.opus}","${flay.title}","${actress}","${flay.release}",${flay.video.rank},"${fullname}"`);
   }
   writeFileWithUtf8Bom(instanceCsvPath, instanceLines);
-  batchLogger(`[Backup] Write instance csv ${instanceCsvFilename}`);
+  await batchLogger(`[Backup] Write instance csv ${instanceCsvFilename}`);
 
   // Archive CSV
   const archiveCsvFilename = config.flay.backup.archiveCsvFilename;
@@ -383,18 +398,18 @@ function backup(): void {
     archiveLines.push(`"${flay.studio}","${flay.opus}","${flay.title}","${actress}","${flay.release}",,"${fullname}"`);
   }
   writeFileWithUtf8Bom(archiveCsvPath, archiveLines);
-  batchLogger(`[Backup] Write archive csv ${archiveCsvFilename}`);
+  await batchLogger(`[Backup] Write archive csv ${archiveCsvFilename}`);
 
   // Info 폴더 복사
   const infoSrc = config.flay.infoPath;
   const infoDest = path.join(backupPath, 'Info');
   if (fs.existsSync(infoSrc)) {
     copyDirectoryRecursive(infoSrc, infoDest);
-    batchLogger(`[Backup] Copy Info folder ${infoSrc} to ${infoDest}`);
+    await batchLogger(`[Backup] Copy Info folder ${infoSrc} to ${infoDest}`);
   }
 
-  batchLogger('[Backup] END');
-  noticeLogger('backup Completed');
+  await batchLogger('[Backup] END');
+  await noticeLogger('backup Completed');
 }
 
 /** UTF-8 BOM 포함 파일 쓰기 */

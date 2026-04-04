@@ -98,8 +98,17 @@ export function moveFileToDirectory(filePath: string, destDir: string): void {
     }
   }
 
-  fs.copyFileSync(filePath, destPath);
-  fs.unlinkSync(filePath);
+  try {
+    fs.renameSync(filePath, destPath);
+  } catch (err: any) {
+    if (err.code === 'EXDEV') {
+      // 크로스 드라이브 이동은 복사 후 삭제
+      fs.copyFileSync(filePath, destPath);
+      fs.unlinkSync(filePath);
+    } else {
+      throw err;
+    }
+  }
 }
 
 /**

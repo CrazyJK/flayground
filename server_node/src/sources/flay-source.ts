@@ -267,6 +267,6 @@ export function reloadInstanceFlaySources(logger?: FlaySourceLogger): void {
 }
 
 /** Archive Flay 맵을 다시 로드한다 */
-export function reloadArchiveFlaySources(): void {
-  loadFlaySource([config.flay.archivePath], true, archiveFlayMap);
+export function reloadArchiveFlaySources(logger?: FlaySourceLogger): void {
+  loadFlaySource([config.flay.archivePath], true, archiveFlayMap, logger);
 }

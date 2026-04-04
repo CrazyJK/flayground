@@ -6,7 +6,7 @@ import path from 'path';
 
 import { config } from './config';
 import { errorHandler } from './middleware/error-handler';
-import { consoleLogger, createFileLogger } from './middleware/logger';
+import { createFileLogger } from './middleware/logger';
 import { startDirectoryWatcher } from './services/directory-watcher';
 import { initWebPush } from './services/web-push.service';
 import { diarySource } from './sources/diary-source';
@@ -51,7 +51,6 @@ function createApp(): express.Application {
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-  app.use(consoleLogger);
   app.use(createFileLogger());
 
   // 정적 파일 서빙

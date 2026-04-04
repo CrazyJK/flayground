@@ -3,13 +3,8 @@ import morgan from 'morgan';
 import path from 'path';
 
 /**
- * 콘솔 로깅 미들웨어 (개발용)
- */
-export const consoleLogger = morgan('dev');
-
-/**
- * 파일 로깅 미들웨어 (운영용).
- * logs/ 디렉토리에 access.log를 기록한다.
+ * 파일 로깅 미들웨어.
+ * 기동 시 기존 access.log를 삭제하고 새로 기록한다.
  */
 export function createFileLogger() {
   const logDir = path.resolve(__dirname, '..', '..', 'logs');
@@ -17,6 +12,11 @@ export function createFileLogger() {
     fs.mkdirSync(logDir, { recursive: true });
   }
 
-  const accessLogStream = fs.createWriteStream(path.join(logDir, 'access.log'), { flags: 'a' });
+  const logFile = path.join(logDir, 'access.log');
+  if (fs.existsSync(logFile)) {
+    fs.unlinkSync(logFile);
+  }
+
+  const accessLogStream = fs.createWriteStream(logFile, { flags: 'a' });
   return morgan('combined', { stream: accessLogStream });
 }

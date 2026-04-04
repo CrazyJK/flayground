@@ -67,3 +67,7 @@ dist/
 
 # playwright test result
 .playwright-mcp
+
+# server_node
+server_node/cert/
+server_node/data/

@@ -100,7 +100,7 @@ export function checkBatch(operation: BatchOperation): Record<string, Flay[]> {
 /** 소스 리로드 */
 export function reload(): void {
   batchLogger('[reload] Start');
-  reloadInstanceFlaySources();
+  reloadInstanceFlaySources(batchLogger);
   batchLogger('[reload] End');
   noticeLogger('reload Completed');
 }

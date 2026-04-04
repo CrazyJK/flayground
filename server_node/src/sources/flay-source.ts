@@ -161,16 +161,22 @@ const instanceFlayMap = new Map<string, Flay>();
 /** Archive Flay 맵 */
 const archiveFlayMap = new Map<string, Flay>();
 
+/** 로그 콜백 타입 */
+export type FlaySourceLogger = (message: string) => void;
+
+/** 기본 로거 (console.log) */
+const defaultLogger: FlaySourceLogger = (message) => console.log(message);
+
 /**
  * 지정된 경로들에서 파일을 스캔하여 Flay 맵을 구성한다.
  */
-function loadFlaySource(paths: string[], isArchive: boolean, flayMap: Map<string, Flay>): void {
+function loadFlaySource(paths: string[], isArchive: boolean, flayMap: Map<string, Flay>, logger: FlaySourceLogger = defaultLogger): void {
   const label = isArchive ? 'Archive' : 'Instance';
   const allFiles: string[] = [];
 
   for (const dir of paths) {
     const files = listFilesRecursive(dir);
-    console.log(`[FlaySource] [Load ${label}] ${String(files.length).padStart(5)} 파일 - ${dir}`);
+    logger(`[FlaySource] [Load ${label}] ${String(files.length).padStart(5)} 파일 - ${dir}`);
     allFiles.push(...files);
   }
 
@@ -200,7 +206,7 @@ function loadFlaySource(paths: string[], isArchive: boolean, flayMap: Map<string
     computeFlayMeta(flay);
   }
 
-  console.log(`[FlaySource] [Load ${label}] ${String(flayMap.size).padStart(5)} Flay`);
+  logger(`[FlaySource] [Load ${label}] ${String(flayMap.size).padStart(5)} Flay`);
 }
 
 /**
@@ -255,9 +261,9 @@ export function getArchiveFlayMap(): Map<string, Flay> {
 }
 
 /** Instance Flay 맵을 다시 로드한다 */
-export function reloadInstanceFlaySources(): void {
+export function reloadInstanceFlaySources(logger?: FlaySourceLogger): void {
   const instancePaths = [config.flay.storagePath, ...config.flay.stagePaths, config.flay.coverPath];
-  loadFlaySource(instancePaths, false, instanceFlayMap);
+  loadFlaySource(instancePaths, false, instanceFlayMap, logger);
 }
 
 /** Archive Flay 맵을 다시 로드한다 */

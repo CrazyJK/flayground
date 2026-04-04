@@ -24,10 +24,18 @@ export function list(): Flay[] {
   return getInstanceFlayList();
 }
 
-/** opus 목록으로 Flay 조회 */
+/** opus 목록으로 Flay 조회. 찾을 수 없는 opus는 제외한다. */
 export function listByOpus(opusList: string[]): Flay[] {
   if (!opusList || opusList.length === 0) return getInstanceFlayList();
-  return opusList.map((opus) => getInstanceFlay(opus));
+  return opusList
+    .map((opus) => {
+      try {
+        return getInstanceFlay(opus);
+      } catch {
+        return null;
+      }
+    })
+    .filter((flay): flay is Flay => flay !== null);
 }
 
 /** score 내림차순 정렬 목록 */

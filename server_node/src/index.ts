@@ -52,8 +52,16 @@ function createApp(): express.Application {
   app.use(consoleLogger);
   app.use(createFileLogger());
 
-  // 정적 파일 서빙 (www/dist)
+  // 정적 파일 서빙
   const wwwDistPath = path.resolve(__dirname, '..', '..', 'www', 'dist');
+  const wwwPublicPath = path.resolve(__dirname, '..', '..', 'www', 'public');
+
+  // 루트 정적 파일 (index.html, manifest.webmanifest, service-worker.js 등)
+  if (fs.existsSync(wwwPublicPath)) {
+    app.use(express.static(wwwPublicPath));
+  }
+
+  // webpack 빌드 결과 (/dist/*)
   if (fs.existsSync(wwwDistPath)) {
     app.use('/dist', express.static(wwwDistPath));
   }

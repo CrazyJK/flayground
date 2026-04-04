@@ -159,4 +159,23 @@ module.exports = {
     followSymlinks: false, // 성능 향상을 위해 심볼릭 링크 사용 안함
     stdin: true, // CTRL+C로 watch 모드 종료 가능
   },
+  // webpack-dev-server 설정 (yarn dev로 실행)
+  devServer: {
+    port: 8080,
+    hot: true, // HMR (Hot Module Replacement) 활성화
+    open: ['/dist/index.html'], // 브라우저 자동 열기
+    static: {
+      directory: path.resolve(__dirname, 'public'), // 루트 정적 파일 (index.html, manifest 등)
+      publicPath: '/',
+    },
+    historyApiFallback: false, // MPA이므로 SPA fallback 불필요
+    proxy: [
+      {
+        context: ['/api'],
+        target: 'https://localhost:6974',
+        secure: false, // 자체 서명 인증서 허용
+        changeOrigin: true,
+      },
+    ],
+  },
 };

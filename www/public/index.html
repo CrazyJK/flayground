@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <title>Facade</title>
+    <style type="text/css">
+      body {
+        position: fixed;
+        inset: 0;
+        margin: 0;
+        border: 0;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #202020 url(dist/svg/flayground-text.svg) no-repeat fixed
+          center / 300px;
+      }
+      a {
+        width: 300px;
+        height: 100px;
+      }
+    </style>
+    <script>
+      // 서비스 워커 등록
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/service-worker.js")
+            .then((registration) => {
+              console.log(
+                "✅ [Service Worker] Registered:",
+                registration.scope
+              );
+
+              // 즉시 업데이트 상태 체크
+              if (registration.installing || registration.waiting) {
+                // 이미 업데이트가 진행 중이거나 대기 중
+                console.log("🔄 [Service Worker] Update in progress");
+              } else {
+                // 업데이트 없음 - start 파라미터 처리
+                checkStartParameter();
+              }
+
+              // 서비스 워커 업데이트 체크
+              registration.addEventListener("updatefound", () => {
+                const newWorker = registration.installing;
+                if (newWorker) {
+                  newWorker.addEventListener("statechange", () => {
+                    if (
+                      newWorker.state === "installed" &&
+                      navigator.serviceWorker.controller
+                    ) {
+                      console.log("🔄 [Service Worker] New version available");
+                      // 사용자에게 업데이트 알림
+                      if (
+                        confirm(
+                          "새로운 버전이 있습니다. 페이지를 새로고침하시겠습니까?"
+                        )
+                      ) {
+                        newWorker.postMessage({ type: "SKIP_WAITING" });
+                        window.location.reload();
+                      } else {
+                        // 업데이트 거부 시 start 파라미터 체크
+                        checkStartParameter();
+                      }
+                    }
+                  });
+                }
+              });
+            })
+            .catch((error) => {
+              console.error("❌ [Service Worker] Registration failed:", error);
+              // 등록 실패 시에도 start 파라미터는 처리
+              checkStartParameter();
+            });
+
+          // 서비스 워커로부터 메시지 수신
+          navigator.serviceWorker.addEventListener("message", (event) => {
+            console.log("📬 [Service Worker] Message received:", event.data);
+
+            if (event.data && event.data.type === "NOTIFICATION_CLICK") {
+              const data = event.data.data || {};
+              console.log("🔔 [Service Worker] Notification clicked:", data);
+
+              // 알림 클릭 시 업무 팝업 실행 (커스텀 이벤트 발생)
+              if (data.action) {
+                window.dispatchEvent(
+                  new CustomEvent("serviceWorkerNotification", {
+                    detail: data,
+                  })
+                );
+              }
+            }
+          });
+        });
+      } else {
+        // Service Worker 미지원 브라우저는 바로 리다이렉션
+        checkStartParameter();
+      }
+
+      // start 파라미터 체크 함수
+      function checkStartParameter() {
+        const urlParams = new URL(location.href).searchParams;
+        const start = urlParams.get("start");
+        if (start) {
+          console.log("🔗 [Navigation] Redirecting to:", start);
+          location.href = start;
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <a href="dist/index.html"></a>
+  </body>
+</html>

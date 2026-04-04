@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>panda-tv</title>
+    <style>
+      body {
+        background-color: #000;
+      }
+      main {
+        position: fixed;
+        inset: 0;
+        padding: 3rem;
+      }
+      iframe {
+        position: relative;
+        border: 0;
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <iframe id="login"></iframe>
+    </main>
+    <script>
+      const [id, pw] = ['jkcrazy', 'crazyjk588'];
+      const loginURL = `https://api.pandalive.co.kr/v1/member/login?id=${id}&pw=${pw}%21&idSave=Y`;
+      const listURL = `https://www.pandalive.co.kr/live#user`;
+
+      const loginFrame = document.querySelector('iframe#login');
+      loginFrame.src = loginURL;
+      loginFrame.onload = () => {
+        loginFrame.parentElement.classList.add('loaded');
+        location.href = listURL;
+      };
+    </script>
+  </body>
+</html>

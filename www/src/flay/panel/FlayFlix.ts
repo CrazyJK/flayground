@@ -269,39 +269,30 @@ export class FlayFlix extends HTMLElement {
     const PROMPT_OVERHEAD = 500; // 시스템 프롬프트 + 프록시 메시지 래핑 토큰
     const availableTokens = MODEL_TOKEN_LIMIT - COMPLETION_TOKENS - PROMPT_OVERHEAD;
 
-    // 전체 목록 랜덤 셔플
-    const shuffled = [...this.opusList].sort(() => Math.random() - 0.5);
+    /** 랜덤 셔플 후 토큰 예산 내에서 프롬프트를 생성한다 */
+    const buildPrompt = async () => {
+      const shuffled = [...this.opusList].sort(() => Math.random() - 0.5);
+      const prefetchCount = Math.min(shuffled.length, 500);
+      await this.cachedGetFlayList(...shuffled.slice(0, prefetchCount));
 
-    // 캐시 사전 로드: 토큰 예산을 채울 수 있을 만큼만 미리 조회
-    const prefetchCount = Math.min(shuffled.length, 500);
-    await this.cachedGetFlayList(...shuffled.slice(0, prefetchCount));
-
-    // opus별 정보 문자열 생성 + 토큰 예산 내에서 최대한 채우기
-    const items: string[] = [];
-    let estimatedTokens = 0;
-
-    for (const opus of shuffled) {
-      const flay = this.flayCache.get(opus);
-      let item: string;
-      if (flay) {
-        const tags = flay.video.tags.map((t) => t.name).join(',');
-        item = `${opus}|${tags}`;
-      } else {
-        item = opus;
+      const items: string[] = [];
+      let estimatedTokens = 0;
+      for (const opus of shuffled) {
+        const flay = this.flayCache.get(opus);
+        const item = flay ? `${opus}|${flay.video.tags.map((t) => t.name).join(',')}` : opus;
+        const tokenEstimate = Math.ceil(item.replace(/[가-힣]/g, '..').length / 2) + 1;
+        if (estimatedTokens + tokenEstimate > availableTokens) break;
+        estimatedTokens += tokenEstimate;
+        items.push(item);
       }
-      // 토큰 추정: 한글 1자 ≈ 2토큰, 영문/숫자/특수문자 2자 ≈ 1토큰, +1 (줄바꿈)
-      const tokenEstimate = Math.ceil(item.replace(/[가-힣]/g, '..').length / 2) + 1;
-      if (estimatedTokens + tokenEstimate > availableTokens) break;
-      estimatedTokens += tokenEstimate;
-      items.push(item);
-    }
-
-    const prompt = `${systemPrompt}${items.join('\n')}`;
-    console.log('AI 추천 프롬프트:', `${items.length}건, ~${estimatedTokens}토큰`);
+      console.log('AI 추천 프롬프트:', `${items.length}건, ~${estimatedTokens}토큰`);
+      return `${systemPrompt}${items.join('\n')}`;
+    };
 
     const maxRetries = 3;
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
+        const prompt = await buildPrompt();
         const response = await generate(prompt, { maxTokens: 300, temperature: 1.0 });
         const recommended = response.text
           .replace(/[^a-zA-Z0-9\-,\s]/g, '')

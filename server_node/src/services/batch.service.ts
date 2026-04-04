@@ -1,3 +1,4 @@
+import { spawnSync } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config';
@@ -361,7 +362,7 @@ async function cleanEmptySubdirs(rootDir: string, currentDir: string): Promise<v
 /**
  * 백업 실행.
  * Java BatchExecutor.backup() 대응
- * instance/archive CSV와 Info 폴더를 백업한다.
+ * 임시 폴더에 CSV/Info/Instance 파일을 모은 뒤 jar로 압축한다.
  */
 async function backup(): Promise<void> {
   const backupPath = config.flay.backupPath;
@@ -373,43 +374,119 @@ async function backup(): Promise<void> {
   await batchLogger(`[Backup] START ${backupPath}`);
 
   const CSV_HEADER = 'Studio,Opus,Title,Actress,Released,Rank,Fullname';
+  const CSV_FORMAT = (studio: string, opus: string, title: string, actress: string, release: string, rank: string, fullname: string) => `"${studio}","${opus}","${title}","${actress}","${release}",${rank},"${fullname}"`;
+
+  const instanceJarFilename = config.flay.backup.instanceJarFilename;
+  const archiveJarFilename = config.flay.backup.archiveJarFilename;
+  const instanceCsvFilename = config.flay.backup.instanceCsvFilename;
+  const archiveCsvFilename = config.flay.backup.archiveCsvFilename;
+
+  const backupInstanceJarPath = path.join(backupPath, instanceJarFilename);
+  const backupArchiveJarPath = path.join(backupPath, archiveJarFilename);
+  const backupRootPath = path.join(config.flay.queuePath, 'InstanceBackupTemp');
+  const backupInstanceFilePath = path.join(backupRootPath, 'instanceFiles');
+
+  // 임시 폴더 생성/정리
+  if (fs.existsSync(backupRootPath)) {
+    fs.rmSync(backupRootPath, { recursive: true, force: true });
+  }
+  fs.mkdirSync(backupRootPath, { recursive: true });
+  fs.mkdirSync(backupInstanceFilePath, { recursive: true });
+
   const instanceFlayList = getInstanceFlayList();
   const archiveFlayList = getArchiveFlayList();
+  const historyList = historyRepository.list();
 
   // Instance CSV
-  const instanceCsvFilename = config.flay.backup.instanceCsvFilename;
-  const instanceCsvPath = path.join(backupPath, instanceCsvFilename);
+  await batchLogger(`[Backup] Write instance csv ${instanceCsvFilename} to ${backupRootPath}`);
   const instanceLines = [CSV_HEADER];
   for (const flay of instanceFlayList) {
     const actress = flay.actressList.join(',');
     const fullname = `[${flay.studio}][${flay.opus}][${flay.title}][${actress}][${flay.release}]`;
-    instanceLines.push(`"${flay.studio}","${flay.opus}","${flay.title}","${actress}","${flay.release}",${flay.video.rank},"${fullname}"`);
+    instanceLines.push(CSV_FORMAT(flay.studio, flay.opus, flay.title, actress, flay.release, String(flay.video.rank), fullname));
   }
-  writeFileWithUtf8Bom(instanceCsvPath, instanceLines);
-  await batchLogger(`[Backup] Write instance csv ${instanceCsvFilename}`);
+  writeFileWithUtf8Bom(path.join(backupRootPath, instanceCsvFilename), instanceLines);
 
-  // Archive CSV
-  const archiveCsvFilename = config.flay.backup.archiveCsvFilename;
-  const archiveCsvPath = path.join(backupPath, archiveCsvFilename);
+  // Archive CSV (히스토리에만 있고 아카이브에 없는 opus도 포함)
+  await batchLogger(`[Backup] Write archive  csv ${archiveCsvFilename}  to ${backupRootPath}`);
   const archiveLines = [CSV_HEADER];
+  const archiveOpusSet = new Set<string>();
   for (const flay of archiveFlayList) {
+    archiveOpusSet.add(flay.opus);
     const actress = flay.actressList.join(',');
     const fullname = `[${flay.studio}][${flay.opus}][${flay.title}][${actress}][${flay.release}]`;
-    archiveLines.push(`"${flay.studio}","${flay.opus}","${flay.title}","${actress}","${flay.release}",,"${fullname}"`);
+    archiveLines.push(CSV_FORMAT(flay.studio, flay.opus, flay.title, actress, flay.release, '', fullname));
   }
-  writeFileWithUtf8Bom(archiveCsvPath, archiveLines);
-  await batchLogger(`[Backup] Write archive csv ${archiveCsvFilename}`);
+  for (const history of historyList) {
+    if (!archiveOpusSet.has(history.opus)) {
+      archiveLines.push(CSV_FORMAT('', history.opus, '', '', '', '', history.desc));
+    }
+  }
+  writeFileWithUtf8Bom(path.join(backupRootPath, archiveCsvFilename), archiveLines);
 
   // Info 폴더 복사
   const infoSrc = config.flay.infoPath;
-  const infoDest = path.join(backupPath, 'Info');
   if (fs.existsSync(infoSrc)) {
-    copyDirectoryRecursive(infoSrc, infoDest);
-    await batchLogger(`[Backup] Copy Info folder ${infoSrc} to ${infoDest}`);
+    await batchLogger(`[Backup] Copy Info folder ${infoSrc} to ${backupRootPath}`);
+    copyDirectoryRecursive(infoSrc, path.join(backupRootPath, 'Info'));
   }
+
+  // Instance cover/subtitles 파일 복사
+  await batchLogger(`[Backup] Copy Instance file to ${backupInstanceFilePath}`);
+  for (const flay of instanceFlayList) {
+    for (const file of flay.files.cover) {
+      if (fs.existsSync(file)) {
+        fs.copyFileSync(file, path.join(backupInstanceFilePath, path.basename(file)));
+      }
+    }
+    for (const file of flay.files.subtitles) {
+      if (fs.existsSync(file)) {
+        fs.copyFileSync(file, path.join(backupInstanceFilePath, path.basename(file)));
+      }
+    }
+  }
+
+  // Instance jar 압축
+  await batchLogger('[Backup] Compress Instance folder');
+  await compress(backupInstanceJarPath, backupRootPath);
+
+  // Archive jar 압축
+  await batchLogger('[Backup] Compress Archive folder');
+  await compress(backupArchiveJarPath, config.flay.archivePath);
+
+  // 임시 폴더 삭제
+  await batchLogger(`[Backup] Delete Instance Backup Temp folder ${backupRootPath}`);
+  fs.rmSync(backupRootPath, { recursive: true, force: true });
 
   await batchLogger('[Backup] END');
   await noticeLogger('backup Completed');
+}
+
+/**
+ * jar 명령어로 폴더를 압축한다.
+ * Java BatchExecutor.compress() 대응
+ */
+async function compress(destJarPath: string, targetFolder: string): Promise<void> {
+  const jarFileName = path.basename(destJarPath);
+  const logFileName = `${jarFileName}.${new Date().toISOString().slice(0, 10)}.log`;
+  const logFilePath = path.join(config.flay.queuePath, logFileName);
+  await batchLogger(`         jar cf0M "${destJarPath}" -C "${targetFolder}" .`);
+  try {
+    const logFd = fs.openSync(logFilePath, 'w');
+    try {
+      const result = spawnSync('jar', ['cf0M', destJarPath, '-C', targetFolder, '.'], { stdio: ['ignore', logFd, logFd] });
+      if (result.status !== 0) {
+        throw new Error(`jar 프로세스 종료 코드: ${result.status}`);
+      }
+    } finally {
+      fs.closeSync(logFd);
+    }
+    const size = fs.statSync(destJarPath).size;
+    const prettySize = size > 1024 * 1024 * 1024 ? `${(size / (1024 * 1024 * 1024)).toFixed(1)} GB` : size > 1024 * 1024 ? `${(size / (1024 * 1024)).toFixed(1)} MB` : `${(size / 1024).toFixed(1)} KB`;
+    await batchLogger(`         completed ${prettySize}`);
+  } catch (err: any) {
+    await batchLogger(`         jar 압축 실패: ${err.message}`);
+  }
 }
 
 /** UTF-8 BOM 포함 파일 쓰기 */

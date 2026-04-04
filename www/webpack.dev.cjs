@@ -1,4 +1,3 @@
-const fs = require('fs');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -159,31 +158,5 @@ module.exports = {
     poll: false, // 폴링 대신 파일 시스템 이벤트 사용 (Windows에서 더 효율적)
     followSymlinks: false, // 성능 향상을 위해 심볼릭 링크 사용 안함
     stdin: true, // CTRL+C로 watch 모드 종료 가능
-  },
-  // webpack-dev-server 설정 (yarn dev로 실행)
-  devServer: {
-    port: 443,
-    server: {
-      type: 'https',
-      options: {
-        key: fs.readFileSync(path.resolve(__dirname, '..', 'server_node', 'cert', 'kamoru.jk.key')),
-        cert: fs.readFileSync(path.resolve(__dirname, '..', 'server_node', 'cert', 'kamoru.jk.pem')),
-      },
-    },
-    hot: true, // HMR (Hot Module Replacement) 활성화
-    open: ['/dist/index.html'], // 브라우저 자동 열기
-    static: {
-      directory: path.resolve(__dirname, 'public'), // 루트 정적 파일 (index.html, manifest 등)
-      publicPath: '/',
-    },
-    historyApiFallback: false, // MPA이므로 SPA fallback 불필요
-    proxy: [
-      {
-        context: ['/api'],
-        target: 'https://flay.kamoru.jk:6974',
-        secure: false, // 자체 서명 인증서 허용
-        changeOrigin: true,
-      },
-    ],
   },
 };

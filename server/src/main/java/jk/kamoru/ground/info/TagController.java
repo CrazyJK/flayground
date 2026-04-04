@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -26,7 +27,7 @@ import jk.kamoru.ground.info.service.TagInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Tag")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/info/tag")
+@RequestMapping(Ground.API_PREFIX + "/info/tags")
 public class TagController {
 
   @Autowired
@@ -40,7 +41,7 @@ public class TagController {
     return tagInfoService.get(id);
   }
 
-  @GetMapping("/withCount")
+  @GetMapping(params = "include=count")
   public List<Map<String, Object>> listWidthCount() {
     return tagInfoService.list().stream().map((tag) -> {
       Map<String, Object> tagMap = new HashMap<>();
@@ -58,9 +59,9 @@ public class TagController {
     return tagInfoService.list();
   }
 
-  @GetMapping("/find/{query}")
-  public Collection<Tag> find(@PathVariable String query) {
-    return tagInfoService.find(query);
+  @GetMapping(params = "search")
+  public Collection<Tag> find(@RequestParam String search) {
+    return tagInfoService.find(search);
   }
 
   @Operation(summary = "신규 생성")
@@ -70,8 +71,8 @@ public class TagController {
   }
 
   @Operation(summary = "신규 생성 후 opus에 추가")
-  @PostMapping("/{opus}")
-  public Tag createAndToggle(@RequestBody Tag tag, @PathVariable String opus) {
+  @PostMapping(params = "opus")
+  public Tag createAndToggle(@RequestBody Tag tag, @RequestParam String opus) {
     Tag createdTag = tagInfoService.create(tag);
     flayService.get(opus).getVideo().getTags().add(createdTag);
     return createdTag;

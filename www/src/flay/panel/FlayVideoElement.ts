@@ -110,7 +110,7 @@ export default class FlayVideo extends GroundFlay {
     this.playing = false;
     this.#recoveryAttempts = 0;
     this.video.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
-    this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${opus}/0`);
+    this.video.src = ApiClient.buildUrl(`/flays/${opus}/stream/movie/0`);
     this.video.load();
   }
 
@@ -250,12 +250,12 @@ export default class FlayVideo extends GroundFlay {
       let newSource: string;
 
       if (currentSource.includes('/0')) {
-        newSource = `/stream/flay/movie/${this.opus}/1`;
+        newSource = `/flays/${this.opus}/stream/movie/1`;
       } else if (currentSource.includes('/1')) {
-        newSource = `/stream/flay/movie/${this.opus}/2`;
+        newSource = `/flays/${this.opus}/stream/movie/2`;
       } else {
         // 모든 스트림 소스 시도 실패시 재시도
-        newSource = `/stream/flay/movie/${this.opus}/0?retry=${Date.now()}`;
+        newSource = `/flays/${this.opus}/stream/movie/0?retry=${Date.now()}`;
       }
 
       // 새 소스 설정 및 로드

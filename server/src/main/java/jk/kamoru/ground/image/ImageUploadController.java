@@ -24,7 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @io.swagger.v3.oas.annotations.tags.Tag(name = "ImageUpload")
 @Controller
-@RequestMapping(Ground.API_PREFIX + "/image")
+@RequestMapping(Ground.API_PREFIX + "/images")
 public class ImageUploadController {
 
   @Autowired
@@ -32,7 +32,7 @@ public class ImageUploadController {
 
   AtomicInteger counter = new AtomicInteger();
 
-  @PostMapping("/upload")
+  @PostMapping
   @ResponseBody
   public List<Image> upload(@RequestParam("file") MultipartFile[] multipartFiles) {
     if (multipartFiles == null) {

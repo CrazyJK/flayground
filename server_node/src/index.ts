@@ -21,7 +21,6 @@ import { pushSubscriptionRepo } from './sources/push-subscription-repo';
 import actressRoutes from './routes/actress.routes';
 import attachRoutes from './routes/attach.routes';
 import batchRoutes from './routes/batch.routes';
-import candidatesRoutes from './routes/candidates.routes';
 import diaryRoutes from './routes/diary.routes';
 import flayArchiveRoutes from './routes/flay-archive.routes';
 import flayRoutes from './routes/flay.routes';
@@ -62,6 +61,7 @@ function createApp(): express.Application {
   // API 라우트 등록
   app.use(API_PREFIX, flayRoutes);
   app.use(API_PREFIX, flayArchiveRoutes);
+  app.use(API_PREFIX, streamRoutes);
   app.use(API_PREFIX, videoRoutes);
   app.use(API_PREFIX, actressRoutes);
   app.use(API_PREFIX, tagRoutes);
@@ -72,8 +72,6 @@ function createApp(): express.Application {
   app.use(API_PREFIX, imageRoutes);
   app.use(API_PREFIX, sseRoutes);
   app.use(API_PREFIX, groundRoutes);
-  app.use(API_PREFIX, candidatesRoutes);
-  app.use(API_PREFIX, streamRoutes);
   app.use(API_PREFIX, todayisRoutes);
   app.use(API_PREFIX, batchRoutes);
   app.use(API_PREFIX, memoRoutes);

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -21,7 +22,7 @@ import jk.kamoru.ground.info.service.StudioInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Studio")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/info/studio")
+@RequestMapping(Ground.API_PREFIX + "/info/studios")
 public class StudioController {
 
   @Autowired
@@ -37,13 +38,13 @@ public class StudioController {
     return studioInfoService.list();
   }
 
-  @GetMapping("/find/{query}")
-  public Collection<Studio> find(@PathVariable String query) {
-    return studioInfoService.find(query);
+  @GetMapping(params = "search")
+  public Collection<Studio> find(@RequestParam String search) {
+    return studioInfoService.find(search);
   }
 
-  @GetMapping("/findOneByOpus/{opus}")
-  public Studio findOneByOpus(@PathVariable String opus) {
+  @GetMapping(params = "opus")
+  public Studio findOneByOpus(@RequestParam String opus) {
     return studioInfoService.findOneByOpus(opus);
   }
 

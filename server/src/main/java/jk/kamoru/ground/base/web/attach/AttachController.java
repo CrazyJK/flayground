@@ -29,7 +29,7 @@ import jk.kamoru.ground.Ground;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Attach")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/attach")
+@RequestMapping(Ground.API_PREFIX + "/attachments")
 public class AttachController {
 
   @Autowired
@@ -41,13 +41,13 @@ public class AttachController {
     return attachService.get(id);
   }
 
-  @GetMapping("/{id}/{attachFileId}")
+  @GetMapping("/{id}/files/{attachFileId}")
   @ResponseBody
   public AttachFile getAttachFile(@PathVariable String id, @PathVariable String attachFileId) {
     return attachService.get(id).getAttachFile(attachFileId);
   }
 
-  @GetMapping("/{id}/{attachFileId}/download")
+  @GetMapping(value = "/{id}/files/{attachFileId}", params = "download=true")
   public ResponseEntity<Object> getFile(@PathVariable String id, @PathVariable String attachFileId) throws IOException {
     AttachFile attachFile = attachService.get(id).getAttachFile(attachFileId);
     File file = attachFile.getFile();
@@ -70,16 +70,16 @@ public class AttachController {
   }
 
   @Operation(summary = "파일 추가")
-  @PutMapping
+  @PutMapping("/{id}/files")
   @ResponseBody
-  public Attach upload(@RequestParam("id") String id, @RequestParam("file") MultipartFile[] multipartFiles) {
+  public Attach upload(@PathVariable String id, @RequestParam("file") MultipartFile[] multipartFiles) {
     return attachService.upload(id, multipartFiles);
   }
 
   @Operation(summary = "파일 제거")
-  @DeleteMapping
+  @DeleteMapping("/{id}/files/{attachFileId}")
   @ResponseBody
-  public Attach remove(@RequestParam("id") String id, @RequestParam("attachFileId") String attachFileId) {
+  public Attach remove(@PathVariable String id, @PathVariable String attachFileId) {
     return attachService.remove(id, attachFileId);
   }
 

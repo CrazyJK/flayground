@@ -23,7 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @io.swagger.v3.oas.annotations.tags.Tag(name = "FlayStream")
 @Controller
-@RequestMapping(Ground.API_PREFIX + "/stream")
+@RequestMapping(Ground.API_PREFIX + "/flays")
 public class FlayStreamController {
 
   @Autowired
@@ -32,13 +32,13 @@ public class FlayStreamController {
   @Autowired
   MovieStreamHandler movieStreamHandler;
 
-  @GetMapping("/flay/movie/{opus}/{fileIndex}")
+  @GetMapping("/{opus}/stream/movie/{fileIndex}")
   public void streamFlayMovie(@PathVariable String opus, @PathVariable int fileIndex, HttpServletRequest request, HttpServletResponse response) {
     File file = flayService.get(opus).getFiles().get(Flay.MOVIE).get(fileIndex);
     movieStreamHandler.streamFile(request, response, file);
   }
 
-  @GetMapping("/flay/subtitles/{opus}/{fileIndex}")
+  @GetMapping("/{opus}/stream/subtitles/{fileIndex}")
   public void streamFlaySubtitles(@PathVariable String opus, @PathVariable int fileIndex, HttpServletRequest request, HttpServletResponse response) throws IOException {
     File file = flayService.get(opus).getFiles().get(Flay.SUBTI).get(fileIndex);
     response.reset();

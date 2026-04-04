@@ -22,7 +22,7 @@ import jk.kamoru.ground.info.service.TagGroupInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "TagGroup")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/info/tagGroup")
+@RequestMapping(Ground.API_PREFIX + "/info/tag-groups")
 public class TagGroupController {
 
   @Autowired

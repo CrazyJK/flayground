@@ -103,7 +103,7 @@ export class KamoruDiary extends HTMLElement {
   }
 
   async start() {
-    const diaryListResult = await ApiClient.get('/diary/meta');
+    const diaryListResult = await ApiClient.get('/diaries/meta');
     this.#diaryList = (diaryListResult as DiaryRecord[]) ?? [];
     console.debug('fetched #diaryList', this.#diaryList);
 
@@ -257,7 +257,7 @@ export class KamoruDiary extends HTMLElement {
 
         const date = clickedDate.id.substring(2);
         if (clickedDate.classList.contains('written')) {
-          void ApiClient.get('/diary/date/' + date).then((diary) => this.loadDiary(diary as DiaryRecord));
+          void ApiClient.get('/diaries/' + date).then((diary) => this.loadDiary(diary as DiaryRecord));
         } else {
           const newDiaryRecord: DiaryRecord = {
             meta: {
@@ -341,7 +341,7 @@ export class KamoruDiary extends HTMLElement {
     this.#currentDiary.meta.title = title;
     this.#currentDiary.content = content;
 
-    void ApiClient.post('/diary', this.#currentDiary).then((diary: unknown) => {
+    void ApiClient.post('/diaries', this.#currentDiary).then((diary: unknown) => {
       const savedDiary = diary as DiaryRecord;
       console.log('saved Diary', savedDiary);
       this.#currentDiary = savedDiary;

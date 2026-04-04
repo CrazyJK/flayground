@@ -38,7 +38,7 @@ export class FlayMemoEditor extends GroundFlay {
    * Load memo
    */
   async load() {
-    const memo: Memo = (await ApiClient.get('/memo'))!;
+    const memo: Memo = (await ApiClient.get('/memos'))!;
     this.htmlEditor.setEditorHTML(memo.html);
     this.#successCallback(memo);
   }
@@ -49,7 +49,7 @@ export class FlayMemoEditor extends GroundFlay {
   async save() {
     const formData = new FormData();
     formData.set('html', this.htmlEditor.getHTML());
-    const memo: Memo = (await ApiClient.post('/memo', formData))!;
+    const memo: Memo = (await ApiClient.post('/memos', formData))!;
     FlayStorage.local.set(MEMO_STORAGE_KEY, memo.date); // Save memo date
     this.#successCallback(memo);
   }

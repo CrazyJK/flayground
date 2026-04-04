@@ -20,7 +20,7 @@ class Page {
       minimumKbSize: (document.querySelector('#minimumKbSize') as HTMLInputElement).value,
     });
 
-    const imageInfo = await ApiClient.get('/image/pageImageDownload?' + searchParams.toString());
+    const imageInfo = await ApiClient.get('/images/page-download?' + searchParams.toString());
     const { imageFiles, imageUrls, localPath, message, result } = imageInfo as {
       imageFiles: string[];
       imageUrls: string[];

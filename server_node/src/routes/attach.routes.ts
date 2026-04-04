@@ -46,8 +46,8 @@ function saveAttachMeta(attach: Attach): void {
   fs.writeFileSync(path.join(dir, 'attach.json'), JSON.stringify(attach, null, 2), 'utf-8');
 }
 
-/** GET /attach/:id - 첨부 정보 조회 */
-router.get('/attach/:id', (req, res) => {
+/** GET /attachments/:id - 첨부 정보 조회 */
+router.get('/attachments/:id', (req, res) => {
   const attach = loadAttachMeta(req.params.id);
   if (!attach) {
     res.status(404).json({ message: `Attach not found: ${req.params.id}` });
@@ -56,8 +56,8 @@ router.get('/attach/:id', (req, res) => {
   res.json(attach);
 });
 
-/** GET /attach/:id/:attachFileId - 첨부 파일 정보 조회 */
-router.get('/attach/:id/:attachFileId', (req, res) => {
+/** GET /attachments/:id/files/:attachFileId - 첨부 파일 정보 조회 */
+router.get('/attachments/:id/files/:attachFileId', (req, res) => {
   const attach = loadAttachMeta(req.params.id);
   if (!attach) {
     res.status(404).json({ message: `Attach not found: ${req.params.id}` });
@@ -71,8 +71,8 @@ router.get('/attach/:id/:attachFileId', (req, res) => {
   res.json(file);
 });
 
-/** GET /attach/:id/:attachFileId/download - 첨부 파일 다운로드 */
-router.get('/attach/:id/:attachFileId/download', (req, res) => {
+/** GET /attachments/:id/files/:attachFileId/download - 첨부 파일 다운로드 */
+router.get('/attachments/:id/files/:attachFileId/download', (req, res) => {
   const attach = loadAttachMeta(req.params.id);
   if (!attach) {
     res.status(404).json({ message: `Attach not found: ${req.params.id}` });
@@ -86,8 +86,8 @@ router.get('/attach/:id/:attachFileId/download', (req, res) => {
   res.download(file.filePath, file.name);
 });
 
-/** POST /attach - 새 첨부 생성 */
-router.post('/attach', (req, res) => {
+/** POST /attachments - 새 첨부 생성 */
+router.post('/attachments', (req, res) => {
   const { name, type } = req.body;
   const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
   const attach: Attach = { id, name, type, files: [] };
@@ -95,8 +95,8 @@ router.post('/attach', (req, res) => {
   res.json(attach);
 });
 
-/** PUT /attach - 첨부에 파일 추가 (multer) */
-router.put('/attach', attachUpload.array('file'), (req, res) => {
+/** PUT /attachments - 첨부에 파일 추가 (multer) */
+router.put('/attachments', attachUpload.array('file'), (req, res) => {
   const { id } = req.body;
   const attach = loadAttachMeta(id);
   if (!attach) {
@@ -126,8 +126,8 @@ router.put('/attach', attachUpload.array('file'), (req, res) => {
   res.json(attach);
 });
 
-/** DELETE /attach - 첨부 파일 제거 */
-router.delete('/attach', (req, res) => {
+/** DELETE /attachments - 첨부 파일 제거 */
+router.delete('/attachments', (req, res) => {
   const { id, attachFileId } = req.body;
   const attach = loadAttachMeta(id);
   if (!attach) {

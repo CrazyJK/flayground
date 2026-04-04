@@ -396,7 +396,7 @@ export class FlayFlix extends HTMLElement {
 
     const opus = this.opus!;
     this.video.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
-    this.video.src = ApiClient.buildUrl(`/stream/flay/movie/${opus}/0`);
+    this.video.src = ApiClient.buildUrl(`/flays/${opus}/stream/movie/0`);
 
     // 저장된 재생 위치가 있으면 이어재생
     this.playTimeDB.select(opus).then((record) => {

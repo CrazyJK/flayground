@@ -61,8 +61,8 @@ function listFilesRecursive(dir: string): string[] {
 /** uuid -> filePath 매핑 (스트리밍용) */
 const todayisMap = new Map<string, Todayis>();
 
-/** GET /todayis - 목록 조회 */
-router.get('/todayis', (_req, res) => {
+/** GET /today-picks - 목록 조회 */
+router.get('/today-picks', (_req, res) => {
   const list = listTodayisFiles();
   todayisMap.clear();
   for (const t of list) {
@@ -71,8 +71,8 @@ router.get('/todayis', (_req, res) => {
   res.json(list);
 });
 
-/** PATCH /todayis/play - 영상 재생 */
-router.patch('/todayis/play', (req, res) => {
+/** POST /today-picks/play - 영상 재생 */
+router.post('/today-picks/play', (req, res) => {
   const todayis: Todayis = req.body;
   if (!todayis.filePath || !fs.existsSync(todayis.filePath)) {
     res.status(404).json({ message: '파일을 찾을 수 없습니다' });
@@ -86,8 +86,8 @@ router.patch('/todayis/play', (req, res) => {
   res.status(204).end();
 });
 
-/** DELETE /todayis - 영상 삭제 */
-router.delete('/todayis', (req, res) => {
+/** DELETE /today-picks - 영상 삭제 */
+router.delete('/today-picks', (req, res) => {
   const todayis: Todayis = req.body;
   if (!todayis.filePath || !fs.existsSync(todayis.filePath)) {
     res.status(404).json({ message: '파일을 찾을 수 없습니다' });
@@ -107,7 +107,7 @@ router.delete('/todayis', (req, res) => {
  * GET /todayis/stream/:uuid - 영상 스트리밍
  * Java TodayisController.stream() 대응
  */
-router.get('/todayis/stream/:uuid', (req: Request, res: Response) => {
+router.get('/today-picks/stream/:uuid', (req: Request, res: Response) => {
   const todayis = todayisMap.get(req.params.uuid as string);
   if (!todayis || !fs.existsSync(todayis.filePath)) {
     res.status(404).json({ message: '파일을 찾을 수 없습니다' });

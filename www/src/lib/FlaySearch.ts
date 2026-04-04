@@ -194,8 +194,8 @@ export const popupActress = (name: string, startDate = '', endDate = ''): Window
 
 export const popupTag = (tagId: number): Window | null => popupOpen('popup.tag.html?id=' + tagId, 'tag.' + tagId, 1080, 1200);
 
-export const popupFlayInfo = (opus: string): Window | null => popupOpen(ApiClient.buildUrl('/flay/' + opus), 'flay.json.' + opus, 800, 1200);
+export const popupFlayInfo = (opus: string): Window | null => popupOpen(ApiClient.buildUrl('/flays/' + opus), 'flay.json.' + opus, 800, 1200);
 
-export const popupVideoInfo = (opus: string): Window | null => popupOpen(ApiClient.buildUrl('/info/video/' + opus), 'video.json.' + opus, 400, 600);
+export const popupVideoInfo = (opus: string): Window | null => popupOpen(ApiClient.buildUrl('/info/videos/' + opus), 'video.json.' + opus, 400, 600);
 
-export const popupActressInfo = (name: string): Window | null => popupOpen(ApiClient.buildUrl('/info/actress/' + name), 'actress.json.' + name, 640, 800);
+export const popupActressInfo = (name: string): Window | null => popupOpen(ApiClient.buildUrl('/info/actresses/' + name), 'actress.json.' + name, 640, 800);

@@ -26,17 +26,15 @@ function getUserId(req: any): string {
 
 /**
  * GET /vapid-public-key - VAPID 공개키 반환
- * Java PushSubscriptionController.getVapidPublicKey() 대응
  */
 router.get('/vapid-public-key', (_req, res) => {
   res.send(getVapidPublicKey());
 });
 
 /**
- * POST /subscribe - Push 구독 등록
- * Java PushSubscriptionController.subscribe() 대응
+ * POST /subscriptions - Push 구독 등록
  */
-router.post('/subscribe', (req, res) => {
+router.post('/subscriptions', (req, res) => {
   const userId = getUserId(req);
   const dto: PushSubscriptionDTO = req.body;
   pushSubscriptionRepo.subscribe(userId, dto);
@@ -44,20 +42,18 @@ router.post('/subscribe', (req, res) => {
 });
 
 /**
- * DELETE /unsubscribe - Push 구독 해제
- * Java PushSubscriptionController.unsubscribe() 대응
+ * DELETE /subscriptions - Push 구독 해제
  */
-router.delete('/unsubscribe', (req, res) => {
+router.delete('/subscriptions', (req, res) => {
   const dto: PushSubscriptionDTO = req.body;
   pushSubscriptionRepo.deleteByEndpoint(dto.endpoint);
   res.status(200).end();
 });
 
 /**
- * GET /subscription - 사용자의 구독 정보 조회
- * Java PushSubscriptionController.getSubscription() 대응
+ * GET /subscriptions - 사용자의 구독 정보 조회
  */
-router.get('/subscription', (req, res) => {
+router.get('/subscriptions', (req, res) => {
   const userId = getUserId(req);
   const subs = pushSubscriptionRepo.findByUserId(userId);
   if (subs.length === 0) {

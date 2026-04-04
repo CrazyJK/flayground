@@ -6,8 +6,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,7 +19,7 @@ import jk.kamoru.ground.image.service.ImageService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Image")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/image")
+@RequestMapping(Ground.API_PREFIX + "/images")
 public class ImageController {
 
   @Autowired
@@ -32,12 +32,12 @@ public class ImageController {
     return imageService.list();
   }
 
-  @GetMapping("/size")
+  @GetMapping(params = "count=true")
   public int size() {
     return imageService.size();
   }
 
-  @GetMapping("/random")
+  @GetMapping(params = "random=true")
   public Image random() {
     return imageService.random();
   }
@@ -53,7 +53,7 @@ public class ImageController {
     imageService.delete(idx);
   }
 
-  @PatchMapping("/paint/{idx}")
+  @PostMapping("/{idx}/paint")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void paint(@PathVariable int idx) {
     flayActionHandler.paint(imageService.get(idx));

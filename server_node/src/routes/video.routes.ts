@@ -5,69 +5,69 @@ import { tagInfoSource } from '../sources/info-sources';
 
 const router = Router();
 
-/** GET /info/video - 전체 Video 목록 */
-router.get('/info/video', (_req, res) => {
+/** GET /info/videos - 전체 Video 목록 (?search= 검색) */
+router.get('/info/videos', (req, res) => {
+  const { search } = req.query;
+  if (search) {
+    return res.json(videoService.find(search as string));
+  }
   res.json(videoService.list());
 });
 
-/** GET /info/video/find/:query - 검색 */
-router.get('/info/video/find/:query', (req, res) => {
-  res.json(videoService.find(req.params.query));
-});
-
-/** GET /info/video/:opus - Video 조회 */
-router.get('/info/video/:opus', (req, res) => {
+/** GET /info/videos/:opus - Video 조회 */
+router.get('/info/videos/:opus', (req, res) => {
   res.json(videoService.get(req.params.opus));
 });
 
-/** POST /info/video - 신규 생성 */
-router.post('/info/video', (req, res) => {
+/** POST /info/videos - 신규 생성 */
+router.post('/info/videos', (req, res) => {
   const video: Video = req.body;
   res.json(videoService.create(video));
 });
 
-/** PUT /info/video - 없으면 신규, 있으면 수정 */
-router.put('/info/video', (req, res) => {
+/** PUT /info/videos - 없으면 신규, 있으면 수정 */
+router.put('/info/videos', (req, res) => {
   const video: Video = req.body;
   res.json(videoService.put(video));
 });
 
-/** PATCH /info/video - 수정 */
-router.patch('/info/video', (req, res) => {
+/** PATCH /info/videos - 수정 */
+router.patch('/info/videos', (req, res) => {
   const video: Video = req.body;
   videoService.update(video);
   res.sendStatus(204);
 });
 
-/** DELETE /info/video - 삭제 */
-router.delete('/info/video', (req, res) => {
+/** DELETE /info/videos - 삭제 */
+router.delete('/info/videos', (req, res) => {
   const video: Video = req.body;
   videoService.deleteVideo(video);
   res.sendStatus(204);
 });
 
-/** PUT /info/video/rank/:opus/:rank - rank 설정 */
-router.put('/info/video/rank/:opus/:rank', (req, res) => {
-  videoService.setRank(req.params.opus, parseInt(req.params.rank, 10));
+/** PUT /info/videos/:opus/rank - rank 설정 (body: { rank }) */
+router.put('/info/videos/:opus/rank', (req, res) => {
+  const rank = req.body.rank ?? parseInt(req.body as string, 10);
+  videoService.setRank(req.params.opus, rank);
   res.sendStatus(204);
 });
 
-/** PUT /info/video/like/:opus - like 추가 */
-router.put('/info/video/like/:opus', (req, res) => {
+/** PUT /info/videos/:opus/like - like 추가 */
+router.put('/info/videos/:opus/like', (req, res) => {
   videoService.setLike(req.params.opus);
   res.sendStatus(204);
 });
 
-/** PUT /info/video/tag/:opus/:tagId/:checked - 태그 토글 */
-router.put('/info/video/tag/:opus/:tagId/:checked', (req, res) => {
+/** PUT /info/videos/:opus/tags/:tagId - 태그 토글 (body: { checked }) */
+router.put('/info/videos/:opus/tags/:tagId', (req, res) => {
   const tag = tagInfoSource.get(parseInt(req.params.tagId, 10));
-  const checked = req.params.checked === 'true';
+  const checked = req.body.checked === true || req.body.checked === 'true';
   videoService.toggleTag(req.params.opus, tag, checked);
   res.sendStatus(204);
 });
 
-/** PUT /info/video/comment/:opus - 코멘트 설정 */
-router.put('/info/video/comment/:opus', (req, res) => {
+/** PUT /info/videos/:opus/comment - 코멘트 설정 */
+router.put('/info/videos/:opus/comment', (req, res) => {
   videoService.setComment(req.params.opus, req.body);
   res.sendStatus(204);
 });

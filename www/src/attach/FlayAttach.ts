@@ -164,7 +164,7 @@ export default class FlayAttach extends HTMLElement {
       attachFiles: [],
     };
     if (!StringUtils.isBlank(this.attach.id)) {
-      void fetch('/api/v1/attach/' + this.attach.id).then((response) => {
+      void fetch('/api/v1/attachments/' + this.attach.id).then((response) => {
         if (response.ok) {
           void response.json().then((attach: Attach) => {
             this.changeCallback(attach);
@@ -309,7 +309,7 @@ export default class FlayAttach extends HTMLElement {
    * @param {string} id
    */
   searchFile(id: string) {
-    ApiClient.get(`/attach/${id}`)
+    ApiClient.get(`/attachments/${id}`)
       .then((attach) => this.changeCallback(attach as Attach))
       .catch((error) => console.error('searchFile', error));
   }
@@ -337,7 +337,7 @@ export default class FlayAttach extends HTMLElement {
     formData.append('id', this.attach.id);
     formData.append('file', file);
 
-    ApiClient.putFormData('/attach', formData)
+    ApiClient.putFormData(`/attachments/${this.attach.id}/files`, formData)
       .then((attach) => this.changeCallback(attach as Attach))
       .catch((error) => console.error('upload', error));
   }
@@ -349,11 +349,7 @@ export default class FlayAttach extends HTMLElement {
   removeToServer(attachFileId: string) {
     if (!this.attach) return;
 
-    const formData = new FormData();
-    formData.append('id', this.attach.id);
-    formData.append('attachFileId', attachFileId);
-
-    ApiClient.delete('/attach', { data: formData })
+    ApiClient.delete(`/attachments/${this.attach.id}/files/${attachFileId}`)
       .then((attach) => this.changeCallback(attach as Attach))
       .catch((error) => console.error('remove', error));
   }

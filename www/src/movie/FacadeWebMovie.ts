@@ -20,7 +20,7 @@ interface FacadeWebMovieOptions {
 /**
  * 첫 페이지에 원형으로 표시되는 커스텀 비디오 Web Component입니다.
  *
- * - `/todayis` API에서 목록을 가져와 랜덤 순서로 순차 재생
+ * - `/today-picks` API에서 목록을 가져와 랜덤 순서로 순차 재생
  * - 모든 아이템을 소진하면 전체 목록에서 다시 랜덤 선택
  * - 재생 종료 후 동작은 `endedBehavior` 옵션으로 제어 (remove / next / pause)
  *
@@ -108,7 +108,7 @@ export class FacadeWebMovie extends GroundMovie {
     this.video.addEventListener('wheel', this.boundWheelHandler); // 휠 이벤트로 볼륨 조절
     document.addEventListener('keydown', this.boundKeydownHandler); // F키로 전체화면 토글
 
-    ApiClient.get<TodayItem[]>('/todayis')
+    ApiClient.get<TodayItem[]>('/today-picks')
       .then((todayItems) => {
         if (todayItems === null || todayItems.length === 0) {
           throw new Error('FacadeWebMovie: API 응답 형식이 올바르지 않습니다.');
@@ -166,7 +166,7 @@ export class FacadeWebMovie extends GroundMovie {
 
     const randomIndex = RandomUtils.getRandomInt(0, this.remainingItems.length);
     this.currentItem = this.remainingItems.splice(randomIndex, 1)[0]!;
-    this.video.src = ApiClient.buildUrl(`/todayis/stream/${this.currentItem.uuid}`);
+    this.video.src = ApiClient.buildUrl(`/today-picks/stream/${this.currentItem.uuid}`);
   }
 
   /**

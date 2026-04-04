@@ -17,7 +17,7 @@ import jk.kamoru.ground.diary.Diary.Meta;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Diary")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/diary")
+@RequestMapping(Ground.API_PREFIX + "/diaries")
 public class DiaryController {
 
   @Autowired
@@ -38,7 +38,7 @@ public class DiaryController {
     return diaryService.meta();
   }
 
-  @GetMapping("/date/{date}")
+  @GetMapping("/{date}")
   public Diary date(@PathVariable String date) {
     return diaryService.findByDate(date);
   }

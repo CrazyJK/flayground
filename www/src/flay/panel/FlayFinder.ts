@@ -52,11 +52,11 @@ export default class FlayFinder extends GroundFlay {
         History.textContent = null;
       } else {
         console.log('search');
-        fetchAndRender('/flay/find/', keyword, Instance, renderInstance);
-        fetchAndRender('/archive/find/', keyword, Archive, renderArchive);
-        fetchAndRender('/info/actress/find/', keyword, Actress, renderActress);
-        fetchAndRender('/info/video/find/', keyword, Info, renderInfo);
-        fetchAndRender('/info/history/find/', keyword, History, renderHistory);
+        fetchAndRender('/flays?search=', keyword, Instance, renderInstance);
+        fetchAndRender('/archives?search=', keyword, Archive, renderArchive);
+        fetchAndRender('/info/actresses?search=', keyword, Actress, renderActress);
+        fetchAndRender('/info/videos?search=', keyword, Info, renderInfo);
+        fetchAndRender('/info/histories?search=', keyword, History, renderHistory);
       }
     });
 

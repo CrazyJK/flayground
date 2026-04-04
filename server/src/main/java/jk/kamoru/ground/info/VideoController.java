@@ -1,6 +1,7 @@
 package jk.kamoru.ground.info;
 
 import java.util.Collection;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,7 +26,7 @@ import jk.kamoru.ground.info.service.VideoInfoService;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Video")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/info/video")
+@RequestMapping(Ground.API_PREFIX + "/info/videos")
 public class VideoController {
 
   @Autowired
@@ -43,9 +45,9 @@ public class VideoController {
     return videoInfoService.list();
   }
 
-  @GetMapping("/find/{query}")
-  public Collection<Video> find(@PathVariable String query) {
-    return videoInfoService.find(query);
+  @GetMapping(params = "search")
+  public Collection<Video> find(@RequestParam String search) {
+    return videoInfoService.find(search);
   }
 
   @Operation(summary = "신규 생성")
@@ -73,26 +75,26 @@ public class VideoController {
     videoInfoService.delete(video);
   }
 
-  @PutMapping("/rank/{opus}/{rank}")
+  @PutMapping("/{opus}/rank")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void setRank(@PathVariable String opus, @PathVariable int rank) {
-    videoInfoService.setRank(opus, rank);
+  public void setRank(@PathVariable String opus, @RequestBody Map<String, Integer> body) {
+    videoInfoService.setRank(opus, body.get("rank"));
   }
 
-  @PutMapping("/like/{opus}")
+  @PutMapping("/{opus}/like")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void setLike(@PathVariable String opus) {
     videoInfoService.setLike(opus);
   }
 
-  @PutMapping("/tag/{opus}/{tagId}/{checked}")
+  @PutMapping("/{opus}/tags/{tagId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void toggleTag(@PathVariable String opus, @PathVariable Integer tagId, @PathVariable boolean checked) {
+  public void toggleTag(@PathVariable String opus, @PathVariable Integer tagId, @RequestBody Map<String, Boolean> body) {
     Tag tag = tagInfoService.get(tagId);
-    videoInfoService.toggleTag(opus, tag, checked);
+    videoInfoService.toggleTag(opus, tag, body.get("checked"));
   }
 
-  @PutMapping("/comment/{opus}")
+  @PutMapping("/{opus}/comment")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void setComment(@PathVariable String opus, @RequestBody String comment) {
     videoInfoService.setComment(opus, comment);

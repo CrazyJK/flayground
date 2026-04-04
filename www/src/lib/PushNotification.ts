@@ -252,7 +252,7 @@ export default class PushNotification {
    */
   private async sendSubscriptionToServer(subscription: PushSubscriptionData): Promise<void> {
     try {
-      const response = await fetch('/api/push/subscribe', {
+      const response = await fetch('/api/push/subscriptions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -276,7 +276,7 @@ export default class PushNotification {
    */
   private async removeSubscriptionFromServer(subscription: PushSubscriptionData): Promise<void> {
     try {
-      const response = await fetch('/api/push/unsubscribe', {
+      const response = await fetch('/api/push/subscriptions', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

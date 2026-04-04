@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -27,7 +28,7 @@ import jk.kamoru.ground.info.service.NameDistanceChecker.CheckResult;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Actress")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/info/actress")
+@RequestMapping(Ground.API_PREFIX + "/info/actresses")
 public class ActressController {
 
   @Autowired
@@ -43,24 +44,24 @@ public class ActressController {
     return actressInfoService.list();
   }
 
-  @GetMapping("/map")
+  @GetMapping(params = "format=map")
   public Map<String, Actress> map() {
     return actressInfoService.list().stream().collect(Collectors.toMap(Actress::getName, Function.identity()));
   }
 
-  @GetMapping("/find/{query}")
-  public Collection<Actress> find(@PathVariable String query) {
-    return actressInfoService.find(query);
+  @GetMapping(params = "search")
+  public Collection<Actress> find(@RequestParam String search) {
+    return actressInfoService.find(search);
   }
 
-  @GetMapping("/find/byLocalname/{localname}")
-  public Collection<Actress> findByLocalname(@PathVariable String localname) {
+  @GetMapping(params = "localname")
+  public Collection<Actress> findByLocalname(@RequestParam String localname) {
     return actressInfoService.findByLocalname(localname);
   }
 
-  @GetMapping("/func/nameCheck/{limit}")
-  public List<CheckResult> funcNameCheck(@PathVariable double limit) {
-    return actressInfoService.funcNameCheck(limit);
+  @GetMapping("/name-check")
+  public List<CheckResult> funcNameCheck(@RequestParam(defaultValue = "0.0") double threshold) {
+    return actressInfoService.funcNameCheck(threshold);
   }
 
   @Operation(summary = "신규 생성")
@@ -84,16 +85,16 @@ public class ActressController {
   }
 
   @Operation(summary = "이름 변경")
-  @PutMapping("/rename/{name}")
+  @PutMapping("/{name}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void rename(@PathVariable String name, @RequestBody Actress actress) {
     actressInfoService.rename(actress, name);
   }
 
-  @PutMapping("/favorite/{name}/{checked}")
+  @PatchMapping("/{name}/favorite")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void setFavorite(@PathVariable String name, @PathVariable boolean checked) {
-    actressInfoService.setFavorite(name, checked);
+  public void setFavorite(@PathVariable String name, @RequestBody Map<String, Boolean> body) {
+    actressInfoService.setFavorite(name, body.get("checked"));
   }
 
   @DeleteMapping

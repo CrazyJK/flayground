@@ -12,7 +12,7 @@ import jk.kamoru.ground.Ground;
 
 @io.swagger.v3.oas.annotations.tags.Tag(name = "Memo")
 @RestController
-@RequestMapping(Ground.API_PREFIX + "/memo")
+@RequestMapping(Ground.API_PREFIX + "/memos")
 public class MemoController {
 
   @Autowired

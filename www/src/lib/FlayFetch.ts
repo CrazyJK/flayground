@@ -198,7 +198,7 @@ function deepMerge<T>(target: T, source: Partial<T>): T {
 
 export default class FlayFetch {
   static async getFullyFlay(opus: string): Promise<FullyFlay | null> {
-    const fullyFlay = await ApiClient.get<FullyFlay>(`/flay/${opus}/fully`);
+    const fullyFlay = await ApiClient.get<FullyFlay>(`/flays/${opus}?expand=actress`);
     if (fullyFlay) {
       fullyFlay.flay = deepMerge(BlankFlay, fullyFlay.flay);
     }
@@ -206,7 +206,7 @@ export default class FlayFetch {
   }
 
   static async getFullyFlayList(): Promise<FullyFlay[]> {
-    const fullyFlays = (await ApiClient.get<FullyFlay[]>('/flay/list/fully')) ?? [];
+    const fullyFlays = (await ApiClient.get<FullyFlay[]>('/flays?expand=actress')) ?? [];
     return fullyFlays.map((fullyFlay) => ({
       ...fullyFlay,
       flay: deepMerge(BlankFlay, fullyFlay.flay),
@@ -219,46 +219,46 @@ export default class FlayFetch {
    * @returns Flay 객체 또는 null
    */
   static async getFlay(opus: string): Promise<Flay | null> {
-    const flay = await ApiClient.get<Flay>(`/flay/${opus}`);
+    const flay = await ApiClient.get<Flay>(`/flays/${opus}`);
     return flay ? deepMerge(BlankFlay, flay) : null;
   }
 
   static async getFlayAll(): Promise<Flay[]> {
-    const flays = (await ApiClient.get<Flay[]>('/flay')) ?? [];
+    const flays = (await ApiClient.get<Flay[]>('/flays')) ?? [];
     return flays.map((flay) => deepMerge(BlankFlay, flay));
   }
 
   static async getFlayList(...opus: string[]): Promise<Flay[]> {
-    const flays = (await ApiClient.post<Flay[]>('/flay', opus)) ?? [];
+    const flays = (await ApiClient.post<Flay[]>('/flays', opus)) ?? [];
     return flays.map((flay) => deepMerge(BlankFlay, flay));
   }
 
   static async getOpusList(condition: Partial<SearchCondition>): Promise<string[]> {
-    return (await ApiClient.post<string[]>('/flay/list/opus', condition, { cache: 'no-cache' })) ?? [];
+    return (await ApiClient.post<string[]>('/flays/search?groupBy=opus', condition, { cache: 'no-cache' })) ?? [];
   }
   static async getFlayListLowScore(): Promise<Flay[]> {
-    const flays = (await ApiClient.get<Flay[]>('/flay/list/lowScore')) ?? [];
+    const flays = (await ApiClient.get<Flay[]>('/flays?sort=score&order=asc')) ?? [];
     return flays.map((flay) => deepMerge(BlankFlay, flay));
   }
 
   static async getFlayListOrderByScoreDesc(): Promise<Flay[]> {
-    const flays = (await ApiClient.get<Flay[]>('/flay/list/orderbyScoreDesc')) ?? [];
+    const flays = (await ApiClient.get<Flay[]>('/flays?sort=score&order=desc')) ?? [];
     return flays.map((flay) => deepMerge(BlankFlay, flay));
   }
 
   static async getFlayScores(): Promise<Map<string, number>> {
-    const scores = (await ApiClient.get<Object>('/flay/list/score')) ?? {};
+    const scores = (await ApiClient.get<Object>('/flays?fields=score')) ?? {};
     return new Map(Object.entries(scores));
   }
 
   static async getFlayCandidates(): Promise<Flay[]> {
-    const flays = (await ApiClient.get<Flay[]>('/flay/candidates')) ?? [];
+    const flays = (await ApiClient.get<Flay[]>('/flays/candidates')) ?? [];
     return flays.map((flay) => deepMerge(BlankFlay, flay));
   }
 
   static async existsFlay(opus: string): Promise<boolean> {
     try {
-      const res = await ApiClient.head(`/flay/${opus}`);
+      const res = await ApiClient.head(`/flays/${opus}`);
       return res.status === 200;
     } catch (error) {
       return false;
@@ -266,11 +266,11 @@ export default class FlayFetch {
   }
 
   static async existsFlayList(...opus: string[]): Promise<Record<string, boolean>> {
-    return (await ApiClient.post<Record<string, boolean>>('/flay/exists', opus)) ?? {};
+    return (await ApiClient.post<Record<string, boolean>>('/flays/exists', opus)) ?? {};
   }
 
   static async getScore(opus: string): Promise<number> {
-    return Number((await ApiClient.get<number | string>(`/flay/${opus}/score`)) ?? 0);
+    return Number((await ApiClient.get<number | string>(`/flays/${opus}/score`)) ?? 0);
   }
 
   /**
@@ -279,7 +279,7 @@ export default class FlayFetch {
    * @returns 플레이 수량
    */
   static async getCountOfFlay(name: string): Promise<number> {
-    return (await ApiClient.get<number>(`/flay/count/actress/${name}`)) ?? 0;
+    return (await ApiClient.get<number>(`/flays?field=actress&value=${name}&count=true`)) ?? 0;
   }
   /**
    * 태그 ID로 Flay 목록 조회 (캐싱)
@@ -288,7 +288,7 @@ export default class FlayFetch {
    */
   static async getFlayListByTagId(tagId: number): Promise<Flay[]> {
     if (!flaysByTagIdMap.has(tagId)) {
-      const flays = (await ApiClient.get<Flay[]>(`/flay/find/tag/${tagId}`)) ?? [];
+      const flays = (await ApiClient.get<Flay[]>(`/flays?tag=${tagId}&match=similar`)) ?? [];
       flaysByTagIdMap.set(
         tagId,
         flays.map((flay) => deepMerge(BlankFlay, flay))
@@ -298,59 +298,59 @@ export default class FlayFetch {
   }
 
   static async getFlayListByStudio(name: string): Promise<Flay[]> {
-    const flays = (await ApiClient.get<Flay[]>(`/flay/find/studio/${name}`)) ?? [];
+    const flays = (await ApiClient.get<Flay[]>(`/flays?field=studio&value=${name}`)) ?? [];
     return flays.map((flay) => deepMerge(BlankFlay, flay));
   }
 
   static async getFlayListByActress(name: string): Promise<Flay[]> {
-    const flays = (await ApiClient.get<Flay[]>(`/flay/find/actress/${name}`)) ?? [];
+    const flays = (await ApiClient.get<Flay[]>(`/flays?field=actress&value=${name}`)) ?? [];
     return flays.map((flay) => deepMerge(BlankFlay, flay));
   }
 
   /* ######################## Archive ######################## */
 
   static async getArchive(opus: string): Promise<Archive | null> {
-    const archive = await ApiClient.get<Archive>(`/archive/${opus}`);
+    const archive = await ApiClient.get<Archive>(`/archives/${opus}`);
     return archive ? deepMerge(BlankFlay, archive) : null;
   }
 
   static async getArchiveAll(): Promise<Archive[]> {
-    const archives = (await ApiClient.get<Archive[]>('/archive')) ?? [];
+    const archives = (await ApiClient.get<Archive[]>('/archives')) ?? [];
     return archives.map((archive) => deepMerge(BlankFlay, archive));
   }
 
   static async getArchiveOpusList(): Promise<string[]> {
-    return (await ApiClient.get<string[]>('/archive/list/opus')) ?? [];
+    return (await ApiClient.get<string[]>('/archives?fields=opus')) ?? [];
   }
 
   static async getArchiveListByStudio(name: string): Promise<Archive[]> {
-    const archives = (await ApiClient.get<Archive[]>(`/archive/find/studio/${name}`)) ?? [];
+    const archives = (await ApiClient.get<Archive[]>(`/archives?key=studio&value=${name}`)) ?? [];
     return archives.map((archive) => deepMerge(BlankFlay, archive));
   }
 
   static async getArchiveListByActress(name: string): Promise<Archive[]> {
-    const archives = (await ApiClient.get<Archive[]>(`/archive/find/actress/${name}`)) ?? [];
+    const archives = (await ApiClient.get<Archive[]>(`/archives?key=actress&value=${name}`)) ?? [];
     return archives.map((archive) => deepMerge(BlankFlay, archive));
   }
 
   /* ######################## Studio ######################## */
 
   static async getStudioAll(): Promise<Studio[]> {
-    return (await ApiClient.get<Studio[]>('/info/studio')) ?? [];
+    return (await ApiClient.get<Studio[]>('/info/studios')) ?? [];
   }
 
   static async getStudio(name: string): Promise<Studio | null> {
-    return await ApiClient.get<Studio>(`/info/studio/${name}`);
+    return await ApiClient.get<Studio>(`/info/studios/${name}`);
   }
 
   static async getStudioFindOneByOpus(opus: string): Promise<Studio | null> {
-    return await ApiClient.get<Studio>(`/info/studio/findOneByOpus/${opus}`);
+    return await ApiClient.get<Studio>(`/info/studios?opus=${opus}`);
   }
 
   /* ######################## Actress ######################## */
 
   static async getActressAll(): Promise<Actress[]> {
-    return (await ApiClient.get<Actress[]>('/info/actress')) ?? [];
+    return (await ApiClient.get<Actress[]>('/info/actresses')) ?? [];
   }
 
   /**
@@ -359,11 +359,11 @@ export default class FlayFetch {
    * @returns 배우 정보 또는 null
    */
   static async getActress(name: string): Promise<Actress | null> {
-    return await ApiClient.get<Actress>(`/info/actress/${name}`);
+    return await ApiClient.get<Actress>(`/info/actresses/${name}`);
   }
 
   static async getActressListByLocalname(localName: string): Promise<Actress[]> {
-    return (await ApiClient.get<Actress[]>(`/info/actress/find/byLocalname/${localName}`)) ?? [];
+    return (await ApiClient.get<Actress[]>(`/info/actresses?localname=${localName}`)) ?? [];
   }
 
   /* ######################## History ######################## */
@@ -374,7 +374,7 @@ export default class FlayFetch {
    * @returns 히스토리 목록
    */
   static async getHistories(opus: string): Promise<History[]> {
-    return (await ApiClient.get<History[]>(`/info/history/find/${opus}`)) ?? [];
+    return (await ApiClient.get<History[]>(`/info/histories?search=${opus}`)) ?? [];
   }
 
   /**
@@ -384,23 +384,23 @@ export default class FlayFetch {
    * @returns 히스토리 목록
    */
   static async getHistoryListByAction(action: string, days: number = 0): Promise<History[]> {
-    return (await ApiClient.get<History[]>(`/info/history/find/action/${action}${days === 0 ? '' : `/${days}`}`)) ?? [];
+    return (await ApiClient.get<History[]>(`/info/histories?action=${action}${days === 0 ? '' : `&days=${days}`}`)) ?? [];
   }
 
   /* ######################## Video ######################## */
 
   static async getVideo(opus: string): Promise<Video | null> {
-    return await ApiClient.get<Video>(`/info/video/${opus}`);
+    return await ApiClient.get<Video>(`/info/videos/${opus}`);
   }
 
   /* ######################## Tag ######################## */
 
   static async getTag(id: number): Promise<Tag | null> {
-    return await ApiClient.get<Tag>(`/info/tag/${id}`);
+    return await ApiClient.get<Tag>(`/info/tags/${id}`);
   }
 
   static async getTagListWithCount(): Promise<Tag[]> {
-    return (await ApiClient.get<Tag[]>('/info/tag/withCount')) ?? [];
+    return (await ApiClient.get<Tag[]>('/info/tags?include=count')) ?? [];
   }
 
   /**
@@ -409,7 +409,7 @@ export default class FlayFetch {
    */
   static async getTagGroups(): Promise<TagGroup[]> {
     if (tagGroupList === null) {
-      tagGroupList = (await ApiClient.get<TagGroup[]>('/info/tagGroup')) ?? [];
+      tagGroupList = (await ApiClient.get<TagGroup[]>('/info/tag-groups')) ?? [];
     }
     return tagGroupList;
   }
@@ -420,7 +420,7 @@ export default class FlayFetch {
    */
   static async getTags(): Promise<Tag[]> {
     if (tagList === null) {
-      tagList = (await ApiClient.get<Tag[]>('/info/tag')) ?? [];
+      tagList = (await ApiClient.get<Tag[]>('/info/tags')) ?? [];
     }
     return tagList;
   }
@@ -454,19 +454,19 @@ export default class FlayFetch {
   /* ######################## Image ######################## */
 
   static async getImage(idx: number): Promise<ImageDomain | null> {
-    return await ApiClient.get(`/image/${idx}`);
+    return await ApiClient.get(`/images/${idx}`);
   }
 
   static async getImageAll(): Promise<ImageDomain[]> {
-    return (await ApiClient.get<ImageDomain[]>('/image')) ?? [];
+    return (await ApiClient.get<ImageDomain[]>('/images')) ?? [];
   }
 
   static async getImageSize(): Promise<number> {
-    return Number((await ApiClient.get<number | string>('/image/size')) ?? 0);
+    return Number((await ApiClient.get<number | string>('/images?count=true')) ?? 0);
   }
 
   static async removeImage(idx: number): Promise<void> {
-    await ApiClient.delete(`/image/${idx}`);
+    await ApiClient.delete(`/images/${idx}`);
   }
 
   static async getStaticImage(idx: number): Promise<ImageData> {

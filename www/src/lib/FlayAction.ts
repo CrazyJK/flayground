@@ -7,29 +7,29 @@ type ErrorCallback = (error?: { message: string; [key: string]: unknown }) => vo
 
 export default {
   play: (opus: string, time = -1, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/flay/play/' + opus + '?seekTime=' + time, { method: 'PATCH' }, callback, failCallback);
+    return action('/flays/' + opus + '/play?seekTime=' + time, { method: 'POST' }, callback, failCallback);
   },
   editSubtitles: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/flay/edit/' + opus, { method: 'PATCH' }, callback, failCallback);
+    return action('/flays/' + opus + '/edit', { method: 'POST' }, callback, failCallback);
   },
   explore: (filepath: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/flay/open/folder', { method: 'PUT', body: filepath }, callback, failCallback);
+    return action('/flays/open-folder', { method: 'POST', body: filepath }, callback, failCallback);
   },
   setFavorite: (name: string, checked: boolean, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/info/actress/favorite/' + name + '/' + checked, { method: 'PUT' }, callback, failCallback);
+    return action('/info/actresses/' + name + '/favorite', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ checked }) }, callback, failCallback);
   },
   setRank: (opus: string, rank: number, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/info/video/rank/' + opus + '/' + rank, { method: 'PUT' }, callback, failCallback);
+    return action('/info/videos/' + opus + '/rank', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ rank }) }, callback, failCallback);
   },
   setLike: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/info/video/like/' + opus, { method: 'PUT' }, callback, failCallback);
+    return action('/info/videos/' + opus + '/like', { method: 'PUT' }, callback, failCallback);
   },
   toggleTag: (opus: string, tagId: number, checked: boolean, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/info/video/tag/' + opus + '/' + tagId + '/' + checked, { method: 'PUT' }, callback, failCallback);
+    return action('/info/videos/' + opus + '/tags/' + tagId, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ checked }) }, callback, failCallback);
   },
   newTag: (tagName: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
-      '/info/tag',
+      '/info/tags',
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -41,7 +41,7 @@ export default {
   },
   newTagOnOpus: (tagName: string, opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
-      '/info/tag/' + opus,
+      '/info/tags?opus=' + opus,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -53,7 +53,7 @@ export default {
   },
   updateTag: (tag: { id: number; name: string; description: string }, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
-      '/info/tag',
+      '/info/tags',
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -65,7 +65,7 @@ export default {
   },
   putTag: (id: number, group: string, name: string, desc: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
-      '/info/tag',
+      '/info/tags',
       {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -77,7 +77,7 @@ export default {
   },
   deleteTag: (id: number, name: string, desc: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
-      '/info/tag',
+      '/info/tags',
       {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
@@ -88,11 +88,11 @@ export default {
     );
   },
   setComment: (opus: string, comment: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/info/video/comment/' + opus, { method: 'PUT', body: comment + ' ' }, callback, failCallback);
+    return action('/info/videos/' + opus + '/comment', { method: 'PUT', body: comment + ' ' }, callback, failCallback);
   },
   renameFlay: (studio: string, opus: string, title: string, actress: string, release: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
-      '/flay/rename/' + opus,
+      '/flays/' + opus,
       {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -104,7 +104,7 @@ export default {
   },
   putActress: (actress: Partial<Actress>, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
-      '/info/actress',
+      '/info/actresses',
       {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -116,7 +116,7 @@ export default {
   },
   putStudio: (studio: Partial<Studio>, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(
-      '/info/studio',
+      '/info/studios',
       {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -127,28 +127,28 @@ export default {
     );
   },
   listOfStudio: (callback?: SuccessCallback<string[]>, failCallback?: ErrorCallback) => {
-    return action<string[]>('/flay/list/studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: 'STUDIO' }) }, callback, failCallback);
+    return action<string[]>('/flays/search?groupBy=studio', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ sort: 'STUDIO' }) }, callback, failCallback);
   },
   putVideo: (video: Partial<Video>, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/info/video', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(video) }, callback, failCallback);
+    return action('/info/videos', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(video) }, callback, failCallback);
   },
   reload: (callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/batch/reload', { method: 'PUT' }, callback, failCallback);
+    return action('/batches/reload', { method: 'POST' }, callback, failCallback);
   },
   batch: (operation: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/batch/start/' + operation, { method: 'PUT' }, callback, failCallback);
+    return action('/batches/operations/' + operation, { method: 'POST' }, callback, failCallback);
   },
   batchSetOption: (option: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/batch/option/' + option, { method: 'PUT' }, callback, failCallback);
+    return action('/batches/options/' + option, { method: 'PUT' }, callback, failCallback);
   },
   batchGetOption: (type: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/batch/option/' + type, { method: 'GET' }, callback, failCallback);
+    return action('/batches/options/' + type, { method: 'GET' }, callback, failCallback);
   },
   acceptCandidates: (opus: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/flay/candidates/' + opus, { method: 'PATCH' }, callback, failCallback);
+    return action('/flays/' + opus + '/candidates/accept', { method: 'PATCH' }, callback, failCallback);
   },
   updateActress: (actress: Partial<Actress>, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/info/actress', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(actress) }, callback, failCallback);
+    return action('/info/actresses', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(actress) }, callback, failCallback);
   },
   subtitlesUrlIfFound: (opus: string, callback?: SuccessCallback<{ error: string; url: string }>, failCallback?: ErrorCallback) => {
     return action('/file/find/exists/subtitles?opus=' + opus, {}, callback, failCallback);

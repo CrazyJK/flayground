@@ -37,7 +37,7 @@ public class PushSubscriptionController {
   /**
    * Push 구독 등록
    */
-  @PostMapping("/subscribe")
+  @PostMapping("/subscriptions")
   public ResponseEntity<Void> subscribe(@RequestBody PushSubscriptionDTO subscription, HttpServletRequest request) {
     String userId = getUserIdFromSession(request);
     pushService.subscribe(userId, subscription);
@@ -47,7 +47,7 @@ public class PushSubscriptionController {
   /**
    * Push 구독 해제
    */
-  @DeleteMapping("/unsubscribe")
+  @DeleteMapping("/subscriptions")
   public ResponseEntity<Void> unsubscribe(@RequestBody PushSubscriptionDTO subscription, HttpServletRequest request) {
     String userId = getUserIdFromSession(request);
     pushService.unsubscribe(userId, subscription);
@@ -57,7 +57,7 @@ public class PushSubscriptionController {
   /**
    * 사용자의 구독 정보 조회
    */
-  @GetMapping("/subscription")
+  @GetMapping("/subscriptions")
   public ResponseEntity<PushSubscriptionDTO> getSubscription(HttpServletRequest request) {
     String userId = getUserIdFromSession(request);
     PushSubscriptionDTO subscription = pushService.getSubscription(userId);

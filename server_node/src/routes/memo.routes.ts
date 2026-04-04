@@ -20,8 +20,8 @@ function getMemoPath(): string {
   return path.join(config.flay.infoPath, MEMO_FILE);
 }
 
-/** GET /memo - 메모 읽기 */
-router.get('/memo', (_req, res) => {
+/** GET /memos - 메모 읽기 */
+router.get('/memos', (_req, res) => {
   const memoPath = getMemoPath();
   if (!fs.existsSync(memoPath)) {
     res.json({ html: '', lastModified: '' });
@@ -33,8 +33,8 @@ router.get('/memo', (_req, res) => {
   res.json({ html, lastModified: stat.mtime.toISOString() });
 });
 
-/** POST /memo - 메모 저장 */
-router.post('/memo', (req, res) => {
+/** POST /memos - 메모 저장 */
+router.post('/memos', (req, res) => {
   const { html } = req.body;
   const memoPath = getMemoPath();
 

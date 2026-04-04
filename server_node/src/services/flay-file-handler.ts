@@ -98,7 +98,8 @@ export function moveFileToDirectory(filePath: string, destDir: string): void {
     }
   }
 
-  fs.renameSync(filePath, destPath);
+  fs.copyFileSync(filePath, destPath);
+  fs.unlinkSync(filePath);
 }
 
 /**

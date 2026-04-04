@@ -1,0 +1,153 @@
+import { Router } from 'express';
+import fs from 'fs';
+import path from 'path';
+import { config } from '../config';
+import { attachUpload } from '../middleware/upload';
+
+const router = Router();
+
+/** Attach (첨부) 도메인 */
+interface AttachFile {
+  id: string;
+  name: string;
+  size: number;
+  filePath: string;
+}
+
+interface Attach {
+  id: string;
+  name: string;
+  type: string;
+  files: AttachFile[];
+}
+
+/**
+ * Attach 디렉토리 경로를 반환한다.
+ */
+function getAttachDir(): string {
+  return config.flay.attachPath;
+}
+
+/**
+ * attach.json 메타 파일을 로드한다.
+ */
+function loadAttachMeta(id: string): Attach | null {
+  const metaPath = path.join(getAttachDir(), id, 'attach.json');
+  if (!fs.existsSync(metaPath)) return null;
+  return JSON.parse(fs.readFileSync(metaPath, 'utf-8'));
+}
+
+/**
+ * attach.json 메타 파일을 저장한다.
+ */
+function saveAttachMeta(attach: Attach): void {
+  const dir = path.join(getAttachDir(), attach.id);
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+  fs.writeFileSync(path.join(dir, 'attach.json'), JSON.stringify(attach, null, 2), 'utf-8');
+}
+
+/** GET /attach/:id - 첨부 정보 조회 */
+router.get('/attach/:id', (req, res) => {
+  const attach = loadAttachMeta(req.params.id);
+  if (!attach) {
+    res.status(404).json({ message: `Attach not found: ${req.params.id}` });
+    return;
+  }
+  res.json(attach);
+});
+
+/** GET /attach/:id/:attachFileId - 첨부 파일 정보 조회 */
+router.get('/attach/:id/:attachFileId', (req, res) => {
+  const attach = loadAttachMeta(req.params.id);
+  if (!attach) {
+    res.status(404).json({ message: `Attach not found: ${req.params.id}` });
+    return;
+  }
+  const file = attach.files.find((f) => f.id === req.params.attachFileId);
+  if (!file) {
+    res.status(404).json({ message: `AttachFile not found: ${req.params.attachFileId}` });
+    return;
+  }
+  res.json(file);
+});
+
+/** GET /attach/:id/:attachFileId/download - 첨부 파일 다운로드 */
+router.get('/attach/:id/:attachFileId/download', (req, res) => {
+  const attach = loadAttachMeta(req.params.id);
+  if (!attach) {
+    res.status(404).json({ message: `Attach not found: ${req.params.id}` });
+    return;
+  }
+  const file = attach.files.find((f) => f.id === req.params.attachFileId);
+  if (!file || !fs.existsSync(file.filePath)) {
+    res.status(404).json({ message: `AttachFile not found` });
+    return;
+  }
+  res.download(file.filePath, file.name);
+});
+
+/** POST /attach - 새 첨부 생성 */
+router.post('/attach', (req, res) => {
+  const { name, type } = req.body;
+  const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+  const attach: Attach = { id, name, type, files: [] };
+  saveAttachMeta(attach);
+  res.json(attach);
+});
+
+/** PUT /attach - 첨부에 파일 추가 (multer) */
+router.put('/attach', attachUpload.array('file'), (req, res) => {
+  const { id } = req.body;
+  const attach = loadAttachMeta(id);
+  if (!attach) {
+    res.status(404).json({ message: `Attach not found: ${id}` });
+    return;
+  }
+
+  const files = req.files as Express.Multer.File[] | undefined;
+  if (!files || files.length === 0) {
+    res.status(400).json({ message: '파일이 없습니다' });
+    return;
+  }
+
+  for (const file of files) {
+    const attachFileId = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
+    const destPath = path.join(getAttachDir(), id, file.originalname);
+    fs.copyFileSync(file.path, destPath);
+    attach.files.push({
+      id: attachFileId,
+      name: file.originalname,
+      size: file.size,
+      filePath: destPath,
+    });
+  }
+
+  saveAttachMeta(attach);
+  res.json(attach);
+});
+
+/** DELETE /attach - 첨부 파일 제거 */
+router.delete('/attach', (req, res) => {
+  const { id, attachFileId } = req.body;
+  const attach = loadAttachMeta(id);
+  if (!attach) {
+    res.status(404).json({ message: `Attach not found: ${id}` });
+    return;
+  }
+
+  const fileIdx = attach.files.findIndex((f) => f.id === attachFileId);
+  if (fileIdx === -1) {
+    res.status(404).json({ message: `AttachFile not found: ${attachFileId}` });
+    return;
+  }
+
+  const [removed] = attach.files.splice(fileIdx, 1);
+  if (fs.existsSync(removed.filePath)) {
+    fs.unlinkSync(removed.filePath);
+  }
+
+  saveAttachMeta(attach);
+  res.json(attach);
+});
+
+export default router;

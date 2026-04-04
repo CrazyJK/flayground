@@ -1,0 +1,54 @@
+{
+  "server": {
+    "port": 6974,
+    "http2": true
+  },
+  "flay": {
+    "archivePath": "K:/Crazy/Archive",
+    "storagePath": "K:/Crazy/Storage",
+    "stagePaths": ["J:/Crazy/Stage", "K:/Crazy/Stage"],
+    "coverPath": "K:/Crazy/Cover",
+    "queuePath": "K:/Crazy/Queue",
+    "candidatePath": "J:/Torrents/Completed",
+    "subtitlesPath": "K:/Crazy/Subtitles",
+    "infoPath": "K:/Crazy/Info",
+    "todayisPaths": ["J:/Todayis/Films"],
+    "imagePaths": ["C:/kamoru/Pictures/Girls", "C:/Users/namjk/Pictures/Screenshots", "C:/Users/namjk/AppData/Roaming/PotPlayer64/Capture"],
+    "backupPath": "C:/kamoru/Flay/Backup",
+    "attachPath": "K:/Crazy/Attach",
+    "diaryPath": "K:/Crazy/Diary",
+
+    "playerApp": "C:/Program Files/DAUM/PotPlayer/PotPlayerMini64.exe",
+    "editorApp": "C:/Program Files/WindowsApps/Microsoft.WindowsNotepad_11.2405.13.0_x64__8wekyb3d8bbwe/Notepad/Notepad.exe",
+    "paintApp": "C:/Program Files/WindowsApps/Microsoft.Paint_11.2404.1020.0_x64__8wekyb3d8bbwe/PaintApp/mspaint.exe",
+
+    "recyclebin": "FLAY_RECYCLEBIN",
+    "recyclebinUse": true,
+    "deleteLowerScore": false,
+    "storageLimit": 6700,
+
+    "score": {
+      "rankPoint": 20,
+      "playPoint": 1,
+      "subtitlesPoint": 20,
+      "favoritePoint": 50,
+      "likePoint": 100
+    },
+
+    "backup": {
+      "instanceJarFilename": "flay-instance.jar",
+      "archiveJarFilename": "flay-archive.jar",
+      "instanceCsvFilename": "flay-instance.csv",
+      "archiveCsvFilename": "flay-archive.csv"
+    },
+
+    "automaticallyCertificatedIp": ["localhost", "127.0.0.1", "0:0:0:0:0:0:0:1", "192.168.0.156"],
+    "useTorProxy": false,
+    "jsoupTimeout": 60
+  },
+  "webPush": {
+    "publicKey": "BFffI3DQ4gemRBWy7lULPPrrP2Fy1v-HCIlLEmMsiRI1YHR1g06Grzdm4r_OK7W1lkgwo5un2HpPoLxfLvWd5NQ",
+    "privateKey": "8xHWiB_10JVHPceyevu5KSjCtksHdgFFplj58AC5CsU",
+    "subject": "mailto:namjk24@gmail.com"
+  }
+}

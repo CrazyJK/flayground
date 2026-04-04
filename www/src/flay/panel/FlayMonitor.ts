@@ -115,17 +115,21 @@ export default class FlayMonitor extends GroundFlay {
               },
               { once: true }
             );
+            this.#applyMonitors(this.#monitors);
+          } else {
+            // denied면 fallback으로 유지
+            this.#applyMonitors(this.#monitors);
           }
-          // denied면 fallback으로 유지
         })
         .catch(() => {
           // Permissions API 미지원 시 클릭으로 시도
           this.addEventListener('click', () => this.#initScreenDetails(), { once: true });
+          this.#applyMonitors(this.#monitors);
         });
+    } else {
+      // getScreenDetails 미지원 시 fallback
+      this.#applyMonitors(this.#monitors);
     }
-
-    // fallback 모니터로 초기 렌더링
-    this.#applyMonitors(this.#monitors);
 
     /** 스토리지를 통해서 창들의 위치를 그린다 */
     window.addEventListener('storage', (e: StorageEvent) => {

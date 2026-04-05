@@ -6,8 +6,8 @@
 /**
  * 서비스 워커 설치 이벤트
  */
-self.addEventListener("install", (event) => {
-  console.log("[Service Worker] Installing...");
+self.addEventListener('install', (event) => {
+  console.log('[Service Worker] Installing...');
   // 새 서비스 워커 즉시 활성화
   self.skipWaiting();
 });
@@ -15,8 +15,8 @@ self.addEventListener("install", (event) => {
 /**
  * 서비스 워커 활성화 이벤트
  */
-self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activating...");
+self.addEventListener('activate', (event) => {
+  console.log('[Service Worker] Activating...');
   // 모든 클라이언트 즉시 제어
   return self.clients.claim();
 });
@@ -25,22 +25,22 @@ self.addEventListener("activate", (event) => {
  * Push 알림 수신 이벤트
  * FCM에서 전송된 알림 표시
  */
-self.addEventListener("push", (event) => {
-  console.log("[Service Worker] Push received:", event);
-  console.log("[Service Worker] Push data:", event.data);
+self.addEventListener('push', (event) => {
+  console.log('[Service Worker] Push received:', event);
+  console.log('[Service Worker] Push data:', event.data);
 
   const defaultOptions = {
-    icon: "/dist/favicon/flay.png",
-    badge: "/dist/favicon/flay.png",
+    icon: '/dist/favicon/flay.png',
+    badge: '/dist/favicon/flay.png',
     vibrate: [200, 100, 200],
-    requireInteraction: true, // 사용자가 클릭할 때까지 유지
+    requireInteraction: false, // 일정 시간 후 자동 닫힘
     silent: false, // 소리 활성화
-    tag: "flayground-notification", // 알림 그룹화 및 센터에 기록
+    tag: 'flayground-notification', // 알림 그룹화 및 센터에 기록
   };
 
   let notificationData = {
-    title: "Flayground 알림",
-    body: "새로운 알림이 도착했습니다.",
+    title: 'Flayground 알림',
+    body: '새로운 알림이 도착했습니다.',
     ...defaultOptions,
   };
 
@@ -48,7 +48,7 @@ self.addEventListener("push", (event) => {
   if (event.data) {
     try {
       const data = event.data.json();
-      console.log("[Service Worker] Parsed push data:", data);
+      console.log('[Service Worker] Parsed push data:', data);
 
       notificationData = {
         ...defaultOptions,
@@ -62,25 +62,29 @@ self.addEventListener("push", (event) => {
         notificationData.data = data.data;
       }
     } catch (error) {
-      console.error("[Service Worker] Failed to parse push data:", error);
-      console.log("[Service Worker] Raw push data text:", event.data.text());
+      console.error('[Service Worker] Failed to parse push data:', error);
+      console.log('[Service Worker] Raw push data text:', event.data.text());
       notificationData.body = event.data.text();
     }
   } else {
-    console.warn("[Service Worker] No push data received");
+    console.warn('[Service Worker] No push data received');
   }
 
-  console.log("[Service Worker] Showing notification:", notificationData);
+  console.log('[Service Worker] Showing notification:', notificationData);
+
+  const AUTO_CLOSE_MS = 5000;
 
   event.waitUntil(
     self.registration
       .showNotification(notificationData.title, notificationData)
-      .then(() =>
-        console.log("[Service Worker] Notification shown successfully"),
-      )
-      .catch((error) =>
-        console.error("[Service Worker] Failed to show notification:", error),
-      ),
+      .then(() => {
+        console.log('[Service Worker] Notification shown successfully');
+        // 5초 후 알림 자동 닫기
+        return new Promise((resolve) => setTimeout(resolve, AUTO_CLOSE_MS));
+      })
+      .then(() => self.registration.getNotifications({ tag: notificationData.tag }))
+      .then((notifications) => notifications.forEach((n) => n.close()))
+      .catch((error) => console.error('[Service Worker] Failed to show notification:', error))
   );
 });
 
@@ -88,34 +92,32 @@ self.addEventListener("push", (event) => {
  * 알림 클릭 이벤트
  * 알림 클릭 시 적절한 페이지로 이동
  */
-self.addEventListener("notificationclick", (event) => {
-  console.log("[Service Worker] Notification clicked:", event);
+self.addEventListener('notificationclick', (event) => {
+  console.log('[Service Worker] Notification clicked:', event);
 
   event.notification.close();
 
-  const urlToOpen = event.notification.data?.url || "/dist/index.html";
+  const urlToOpen = event.notification.data?.url || '/dist/index.html';
 
   event.waitUntil(
-    self.clients
-      .matchAll({ type: "window", includeUncontrolled: true })
-      .then(async (clientList) => {
-        // 이미 열린 창이 있으면 포커스
-        for (const client of clientList) {
-          if (client.url.includes("/dist/") && "focus" in client) {
-            await client.focus();
-            // 페이지에 메시지 전송
-            client.postMessage({
-              type: "NOTIFICATION_CLICK",
-              data: event.notification.data,
-            });
-            return;
-          }
+    self.clients.matchAll({ type: 'window', includeUncontrolled: true }).then(async (clientList) => {
+      // 이미 열린 창이 있으면 포커스
+      for (const client of clientList) {
+        if (client.url.includes('/dist/') && 'focus' in client) {
+          await client.focus();
+          // 페이지에 메시지 전송
+          client.postMessage({
+            type: 'NOTIFICATION_CLICK',
+            data: event.notification.data,
+          });
+          return;
         }
-        // 열린 창이 없으면 새 창 열기
-        if (self.clients.openWindow) {
-          await self.clients.openWindow(urlToOpen);
-        }
-      }),
+      }
+      // 열린 창이 없으면 새 창 열기
+      if (self.clients.openWindow) {
+        await self.clients.openWindow(urlToOpen);
+      }
+    })
   );
 });
 
@@ -123,13 +125,13 @@ self.addEventListener("notificationclick", (event) => {
  * Background Sync 이벤트
  * 네트워크 복구 시 자동 재시도
  */
-self.addEventListener("sync", (event) => {
-  console.log("[Service Worker] Background sync:", event.tag);
+self.addEventListener('sync', (event) => {
+  console.log('[Service Worker] Background sync:', event.tag);
 
-  if (event.tag === "sync-data") {
+  if (event.tag === 'sync-data') {
     event.waitUntil(
       // 동기화 로직 (나중에 구현)
-      Promise.resolve(),
+      Promise.resolve()
     );
   }
 });
@@ -138,10 +140,10 @@ self.addEventListener("sync", (event) => {
  * 메시지 수신 이벤트
  * 클라이언트(페이지)로부터 메시지 처리
  */
-self.addEventListener("message", (event) => {
-  console.log("[Service Worker] Message received:", event.data);
+self.addEventListener('message', (event) => {
+  console.log('[Service Worker] Message received:', event.data);
 
-  if (event.data?.type === "SKIP_WAITING") {
+  if (event.data?.type === 'SKIP_WAITING') {
     self.skipWaiting();
   }
 });

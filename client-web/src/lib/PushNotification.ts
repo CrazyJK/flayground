@@ -320,7 +320,7 @@ export default class PushNotification {
       icon: options.icon ?? '/dist/favicon/flay.png',
       badge: options.badge ?? '/dist/favicon/flay.png',
       data: options.data,
-      requireInteraction: true, // 사용자가 클릭할 때까지 유지
+      requireInteraction: false, // 일정 시간 후 자동 닫힘
       silent: false, // 소리 활성화
       tag: 'flayground-notification', // 알림 그룹화
       vibrate: [200, 100, 200],

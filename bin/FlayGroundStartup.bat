@@ -37,6 +37,8 @@ echo ---------------------------------------------------------------------------
 cd "%FLAY_GROUND_HOME%\server_node"
 start /wait /b cmd /c yarn install
 echo.
+start /wait /b cmd /c yarn build:schema
+echo.
 start /wait /b cmd /c yarn build
 
 title FLAY_GROUND Start MCP-Gemini HTTP Server

@@ -31,6 +31,7 @@ echo "Build server_node"
 echo "--------------------------------------------------------------------------------------------------------------------"
 cd "$FLAY_GROUND_HOME/server_node"
 yarn install
+yarn build:schema
 yarn build
 
 # Start MCP-Gemini HTTP Server

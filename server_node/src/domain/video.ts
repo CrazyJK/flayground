@@ -14,8 +14,8 @@ export interface Video {
   title: string;
   desc: string;
   tags: Tag[];
-  /** ISO date 문자열 배열 (Java List<Date> -> JSON ISO string[]) */
-  likes: string[];
+  /** Like 타임스탬프 배열 (epoch ms) */
+  likes: number[];
 }
 
 /**

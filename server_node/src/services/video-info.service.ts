@@ -92,9 +92,9 @@ export function setLike(opus: string): void {
   const SIX_HOURS = 6 * 60 * 60 * 1000;
 
   // likes가 없거나, 6시간 이내 like가 없으면 추가
-  if (!video.likes || video.likes.filter((dateStr) => new Date(dateStr).getTime() + SIX_HOURS > now).length === 0) {
+  if (!video.likes || video.likes.filter((timestamp) => timestamp + SIX_HOURS > now).length === 0) {
     if (!video.likes) video.likes = [];
-    video.likes.push(new Date().toISOString());
+    video.likes.push(now);
     update(video);
   }
 }

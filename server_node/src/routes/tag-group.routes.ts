@@ -13,6 +13,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/TagGroup'
  */
 router.get('/info/tag-groups', (_req, res) => {
   res.json(tagGroupInfoSource.getList());
@@ -32,6 +38,10 @@ router.get('/info/tag-groups', (_req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TagGroup'
  */
 router.get('/info/tag-groups/:id', (req, res) => {
   res.json(tagGroupInfoSource.get(req.params.id));
@@ -47,10 +57,15 @@ router.get('/info/tag-groups/:id', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/TagGroup'
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TagGroup'
  */
 router.post('/info/tag-groups', (req, res) => {
   const tagGroup: TagGroup = req.body;
@@ -68,12 +83,9 @@ router.post('/info/tag-groups', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/TagGroup'
  *     responses:
- *       204:
- *         description: 성공
- */
-router.patch('/info/tag-groups', (req, res) => {
   const tagGroup: TagGroup = req.body;
   tagGroupInfoSource.update(tagGroup);
   res.sendStatus(204);
@@ -88,7 +100,8 @@ router.patch('/info/tag-groups', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/TagGroup'
  *     responses:
  *       204:
  *         description: 성공

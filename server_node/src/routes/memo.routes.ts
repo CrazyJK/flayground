@@ -5,6 +5,17 @@ import { config } from '../config';
 
 const MEMO_FILE = 'memo.html';
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Memo:
+ *       type: object
+ *       properties:
+ *         html: { type: string }
+ *         lastModified: { type: string, format: date-time }
+ */
+
 /** Memo 도메인 */
 interface Memo {
   html: string;
@@ -29,6 +40,10 @@ function getMemoPath(): string {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Memo'
  */
 router.get('/memos', (_req, res) => {
   const memoPath = getMemoPath();

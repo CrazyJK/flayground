@@ -2,6 +2,21 @@ import { Router } from 'express';
 import { getVapidPublicKey } from '../services/web-push.service';
 import { PushSubscriptionDTO, pushSubscriptionRepo } from '../sources/push-subscription-repo';
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     PushSubscription:
+ *       type: object
+ *       properties:
+ *         endpoint: { type: string }
+ *         keys:
+ *           type: object
+ *           properties:
+ *             p256dh: { type: string }
+ *             auth: { type: string }
+ */
+
 const router = Router();
 
 /**
@@ -50,7 +65,8 @@ router.get('/push/vapid-public-key', (_req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/PushSubscription'
  *     responses:
  *       200:
  *         description: 성공
@@ -72,7 +88,8 @@ router.post('/push/subscriptions', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/PushSubscription'
  *     responses:
  *       200:
  *         description: 성공
@@ -92,6 +109,10 @@ router.delete('/push/subscriptions', (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PushSubscription'
  */
 router.get('/push/subscriptions', (req, res) => {
   const userId = getUserId(req);

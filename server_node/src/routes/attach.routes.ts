@@ -6,6 +6,27 @@ import { attachUpload } from '../middleware/upload';
 
 const router = Router();
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Attach:
+ *       type: object
+ *       properties:
+ *         id: { type: string }
+ *         name: { type: string }
+ *         type: { type: string }
+ *         files:
+ *           type: array
+ *           items:
+ *             type: object
+ *             properties:
+ *               id: { type: string }
+ *               name: { type: string }
+ *               size: { type: integer }
+ *               filePath: { type: string }
+ */
+
 /** Attach (첨부) 도메인 */
 interface AttachFile {
   id: string;

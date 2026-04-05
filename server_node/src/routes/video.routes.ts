@@ -18,6 +18,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Video'
  */
 router.get('/info/videos', (req, res) => {
   const { search } = req.query;
@@ -41,6 +47,10 @@ router.get('/info/videos', (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Video'
  *       404:
  *         description: 찾을 수 없음
  */
@@ -62,10 +72,15 @@ router.get('/info/videos/:opus', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Video'
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Video'
  */
 router.post('/info/videos', (req, res) => {
   const video: Video = req.body;
@@ -82,10 +97,15 @@ router.post('/info/videos', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Video'
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Video'
  */
 router.put('/info/videos', (req, res) => {
   const video: Video = req.body;
@@ -102,7 +122,8 @@ router.put('/info/videos', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Video'
  *     responses:
  *       204:
  *         description: 성공
@@ -122,7 +143,8 @@ router.patch('/info/videos', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Video'
  *     responses:
  *       204:
  *         description: 성공
@@ -228,7 +250,10 @@ router.put('/info/videos/:opus/tags/:tagId', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             type: object
+ *             properties:
+ *               comment: { type: string }
  *     responses:
  *       204:
  *         description: 성공

@@ -22,6 +22,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Studio'
  */
 router.get('/info/studios', (req, res) => {
   const { search, opus } = req.query;
@@ -63,6 +69,10 @@ router.get('/info/studios', (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Studio'
  *       404:
  *         description: 찾을 수 없음
  */
@@ -85,10 +95,15 @@ router.get('/info/studios/:name', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Studio'
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Studio'
  */
 router.post('/info/studios', (req, res) => {
   const studio: Studio = req.body;
@@ -107,12 +122,9 @@ router.post('/info/studios', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Studio'
  *     responses:
- *       204:
- *         description: 성공
- */
-router.patch('/info/studios', (req, res) => {
   const studio: Studio = req.body;
   studioInfoSource.update(studio);
   sseSend(studio);
@@ -128,7 +140,8 @@ router.patch('/info/studios', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Studio'
  *     responses:
  *       204:
  *         description: 성공

@@ -46,6 +46,19 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Flay'
+ *                 - type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/FullyFlay'
+ *                 - type: object
+ *                   additionalProperties: { type: number }
+ *                   description: score 맵 (fields=score)
  */
 router.get('/flays', (req, res) => {
   const { fields, expand, sort, order, search, tag, match, count } = req.query;
@@ -126,9 +139,16 @@ router.get('/flays', (req, res) => {
  *           schema:
  *             type: array
  *             items: { type: string }
+ *             example: ['ABC-001', 'DEF-002']
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Flay'
  */
 router.post('/flays', (req, res) => {
   const opusList: string[] = req.body;
@@ -149,10 +169,17 @@ router.post('/flays', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/FlayCondition'
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Flay'
  */
 router.post('/flays/search', (req, res) => {
   const condition: FlayCondition = req.body;
@@ -187,6 +214,12 @@ router.post('/flays/search', (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Flay'
  */
 router.get('/flays/candidates', (req, res) => {
   const keyword = req.query.keyword as string | undefined;
@@ -211,10 +244,18 @@ router.get('/flays/candidates', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             type: array
+ *             items: { type: string }
+ *             example: ['ABC-001', 'DEF-002']
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               additionalProperties: { type: boolean }
  */
 router.post('/flays/exists', (req, res) => {
   res.json(flayService.exists(req.body));
@@ -229,7 +270,10 @@ router.post('/flays/exists', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             type: object
+ *             properties:
+ *               path: { type: string }
  *     responses:
  *       204:
  *         description: 성공
@@ -248,7 +292,8 @@ router.post('/flays/open-folder', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/FlayFiles'
  *     responses:
  *       204:
  *         description: 성공
@@ -277,6 +322,12 @@ router.delete('/flays/files', (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               oneOf:
+ *                 - $ref: '#/components/schemas/Flay'
+ *                 - $ref: '#/components/schemas/FullyFlay'
  *       404:
  *         description: 찾을 수 없음
  */
@@ -309,6 +360,10 @@ router.get('/flays/:opus', (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: number
  */
 router.get('/flays/:opus/score', (req, res) => {
   res.json(flayService.getScore(req.params.opus));
@@ -393,7 +448,8 @@ router.post('/flays/:opus/edit', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Flay'
  *     responses:
  *       204:
  *         description: 성공
@@ -418,7 +474,8 @@ router.put('/flays/:opus', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/FlayFiles'
  *     responses:
  *       204:
  *         description: 성공

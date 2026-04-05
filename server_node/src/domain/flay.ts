@@ -1,3 +1,4 @@
+import { Actress } from './actress';
 import { Video } from './video';
 
 /** Flay 파일 맵 (프론트엔드 FlayFiles 대응) */
@@ -36,7 +37,7 @@ export interface Flay {
 /** Flay + Actress 정보 (FullyFlay 대응) */
 export interface FullyFlay {
   flay: Flay;
-  actress: import('./actress').Actress[];
+  actress: Actress[];
 }
 
 /**

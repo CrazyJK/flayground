@@ -13,6 +13,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Diary'
  */
 router.get('/diaries', (_req, res) => {
   res.json(diarySource.list());
@@ -27,6 +33,11 @@ router.get('/diaries', (_req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items: { type: string }
  */
 router.get('/diaries/dates', (_req, res) => {
   res.json(diarySource.dates());
@@ -41,6 +52,12 @@ router.get('/diaries/dates', (_req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/DiaryMeta'
  */
 router.get('/diaries/meta', (_req, res) => {
   res.json(diarySource.metaList());
@@ -60,6 +77,10 @@ router.get('/diaries/meta', (_req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Diary'
  *       404:
  *         description: 찾을 수 없음
  */
@@ -82,10 +103,15 @@ router.get('/diaries/:date', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Diary'
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Diary'
  */
 router.post('/diaries', (req, res) => {
   const diary: Diary = req.body;

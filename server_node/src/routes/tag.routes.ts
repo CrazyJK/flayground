@@ -23,6 +23,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Tag'
  */
 router.get('/info/tags', (req, res) => {
   const { include, search } = req.query;
@@ -57,6 +63,10 @@ router.get('/info/tags', (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Tag'
  */
 router.get('/info/tags/:id', (req, res) => {
   res.json(tagInfoSource.get(parseInt(req.params.id, 10)));
@@ -77,10 +87,15 @@ router.get('/info/tags/:id', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Tag'
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Tag'
  */
 router.post('/info/tags', (req, res) => {
   const tag: Tag = req.body;
@@ -112,12 +127,9 @@ router.post('/info/tags', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Tag'
  *     responses:
- *       204:
- *         description: 성공
- */
-router.patch('/info/tags', (req, res) => {
   const tag: Tag = req.body;
   tagInfoSource.update(tag);
   sseSend(tag);
@@ -134,7 +146,8 @@ router.patch('/info/tags', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Tag'
  *     responses:
  *       204:
  *         description: 성공
@@ -161,7 +174,8 @@ router.put('/info/tags', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Tag'
  *     responses:
  *       204:
  *         description: 성공

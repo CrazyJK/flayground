@@ -1,9 +1,11 @@
 import swaggerJsdoc from 'swagger-jsdoc';
 import { config } from './config';
+import swaggerSchemas from './swagger-schemas.json';
 
 /**
  * Swagger(OpenAPI 3.0) 스펙 옵션을 생성한다.
- * swagger-jsdoc이 각 라우트 파일의 JSDoc @openapi 주석을 수집하여 스펙을 자동 생성한다.
+ * - 도메인 스키마: ts-json-schema-generator로 TypeScript 인터페이스에서 자동 생성 (yarn build:schema)
+ * - 라우트 문서: 각 라우트 파일의 JSDoc @openapi 주석에서 수집
  */
 const options: swaggerJsdoc.Options = {
   definition: {
@@ -51,6 +53,9 @@ const options: swaggerJsdoc.Options = {
       { name: 'Download', description: 'URL 프록시 다운로드' },
       { name: 'Push', description: 'Web Push 구독' },
     ],
+    components: {
+      schemas: swaggerSchemas,
+    },
   },
   apis: ['./src/routes/*.ts'],
 };

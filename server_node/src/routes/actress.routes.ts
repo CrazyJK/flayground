@@ -23,6 +23,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Actress'
  */
 router.get('/info/actresses', (req, res) => {
   const { format, localname, search } = req.query;
@@ -76,6 +82,10 @@ router.get('/info/actresses/name-check', (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Actress'
  */
 router.get('/info/actresses/:name', (req, res) => {
   res.json(actressService.get(req.params.name));
@@ -91,10 +101,15 @@ router.get('/info/actresses/:name', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Actress'
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Actress'
  */
 router.post('/info/actresses', (req, res) => {
   const actress: Actress = req.body;
@@ -111,12 +126,9 @@ router.post('/info/actresses', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Actress'
  *     responses:
- *       204:
- *         description: 성공
- */
-router.patch('/info/actresses', (req, res) => {
   const actress: Actress = req.body;
   actressService.update(actress);
   res.sendStatus(204);
@@ -132,7 +144,8 @@ router.patch('/info/actresses', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Actress'
  *     responses:
  *       204:
  *         description: 성공
@@ -158,7 +171,8 @@ router.put('/info/actresses', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Actress'
  *     responses:
  *       204:
  *         description: 성공
@@ -206,7 +220,8 @@ router.patch('/info/actresses/:name/favorite', (req, res) => {
  *     requestBody:
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Actress'
  *     responses:
  *       204:
  *         description: 성공

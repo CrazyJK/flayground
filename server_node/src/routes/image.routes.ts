@@ -22,6 +22,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/ImageInfo'
  */
 router.get('/images', (req, res) => {
   const { count, random } = req.query;
@@ -95,6 +101,10 @@ router.post('/images', imageUpload.array('file'), (req, res) => {
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ImageInfo'
  *       404:
  *         description: 찾을 수 없음
  */

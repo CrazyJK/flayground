@@ -1,0 +1,511 @@
+{
+  "Tag": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      },
+      "group": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "lastModified": {
+        "type": "number"
+      },
+      "count": {
+        "type": "number",
+        "description": "조회 시 집계된 사용 횟수 (선택적)"
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "group",
+      "description",
+      "lastModified"
+    ],
+    "description": "Tag 도메인 (Info<Integer> 대응)"
+  },
+  "Video": {
+    "type": "object",
+    "properties": {
+      "opus": {
+        "type": "string"
+      },
+      "play": {
+        "type": "number"
+      },
+      "rank": {
+        "type": "number"
+      },
+      "lastPlay": {
+        "type": "number",
+        "description": "마지막 재생 시각 (epoch ms)"
+      },
+      "lastAccess": {
+        "type": "number",
+        "description": "마지막 접근 시각 (epoch ms)"
+      },
+      "lastModified": {
+        "type": "number"
+      },
+      "comment": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "desc": {
+        "type": "string"
+      },
+      "tags": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Tag"
+        }
+      },
+      "likes": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "description": "ISO date 문자열 배열 (Java List<Date> -> JSON ISO string[])"
+      }
+    },
+    "required": [
+      "opus",
+      "play",
+      "rank",
+      "lastPlay",
+      "lastAccess",
+      "lastModified",
+      "comment",
+      "title",
+      "desc",
+      "tags",
+      "likes"
+    ],
+    "description": "Video 도메인 (Info<String> 대응)"
+  },
+  "Flay": {
+    "type": "object",
+    "properties": {
+      "studio": {
+        "type": "string"
+      },
+      "opus": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "actressList": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "release": {
+        "type": "string"
+      },
+      "score": {
+        "type": "number"
+      },
+      "actressPoint": {
+        "type": "number"
+      },
+      "studioPoint": {
+        "type": "number"
+      },
+      "archive": {
+        "type": "boolean"
+      },
+      "video": {
+        "$ref": "#/components/schemas/Video"
+      },
+      "files": {
+        "$ref": "#/components/schemas/FlayFiles",
+        "description": "파일 경로 맵 (Java Map<String, List<File>> → 경로 문자열 배열)"
+      },
+      "length": {
+        "type": "number",
+        "description": "전체 파일 크기 합계 (bytes)"
+      },
+      "lastModified": {
+        "type": "number",
+        "description": "가장 최근 수정 시각 (epoch ms)"
+      }
+    },
+    "required": [
+      "studio",
+      "opus",
+      "title",
+      "actressList",
+      "release",
+      "score",
+      "actressPoint",
+      "studioPoint",
+      "archive",
+      "video",
+      "files",
+      "length",
+      "lastModified"
+    ],
+    "description": "Flay 도메인"
+  },
+  "FlayFiles": {
+    "type": "object",
+    "properties": {
+      "movie": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "subtitles": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "cover": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "candidate": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      }
+    },
+    "required": [
+      "movie",
+      "subtitles",
+      "cover",
+      "candidate"
+    ],
+    "description": "Flay 파일 맵 (프론트엔드 FlayFiles 대응)"
+  },
+  "FullyFlay": {
+    "type": "object",
+    "properties": {
+      "flay": {
+        "$ref": "#/components/schemas/Flay"
+      },
+      "actress": {
+        "type": "array",
+        "items": {
+          "$ref": "#/components/schemas/Actress"
+        }
+      }
+    },
+    "required": [
+      "flay",
+      "actress"
+    ],
+    "description": "Flay + Actress 정보 (FullyFlay 대응)"
+  },
+  "Actress": {
+    "type": "object",
+    "properties": {
+      "favorite": {
+        "type": "boolean"
+      },
+      "name": {
+        "type": "string"
+      },
+      "localName": {
+        "type": "string"
+      },
+      "otherNames": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        }
+      },
+      "birth": {
+        "type": "string"
+      },
+      "body": {
+        "type": "string"
+      },
+      "height": {
+        "type": "number"
+      },
+      "debut": {
+        "type": "number"
+      },
+      "comment": {
+        "type": "string"
+      },
+      "lastModified": {
+        "type": "number"
+      },
+      "coverSize": {
+        "type": "number",
+        "description": "커버 이미지 파일 수 (getCoverSize() 대응)"
+      }
+    },
+    "required": [
+      "favorite",
+      "name",
+      "localName",
+      "otherNames",
+      "birth",
+      "body",
+      "height",
+      "debut",
+      "comment",
+      "lastModified",
+      "coverSize"
+    ],
+    "description": "Actress 도메인 (Info<String> 대응)"
+  },
+  "FlayCondition": {
+    "type": "object",
+    "properties": {
+      "sort": {
+        "$ref": "#/components/schemas/FlaySort"
+      },
+      "reverse": {
+        "type": "boolean"
+      },
+      "studio": {
+        "type": "string"
+      },
+      "opus": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "actress": {
+        "type": "string"
+      },
+      "release": {
+        "type": "string"
+      },
+      "rank": {
+        "type": "array",
+        "items": {
+          "type": "number"
+        }
+      },
+      "search": {
+        "type": "string"
+      },
+      "withSubtitles": {
+        "type": "boolean"
+      },
+      "withFavorite": {
+        "type": "boolean"
+      },
+      "withNoFavorite": {
+        "type": "boolean"
+      }
+    },
+    "required": [
+      "sort",
+      "reverse",
+      "rank",
+      "withSubtitles",
+      "withFavorite",
+      "withNoFavorite"
+    ],
+    "description": "Flay 검색/필터 조건 (FlayCondition 대응)"
+  },
+  "FlaySort": {
+    "type": "string",
+    "enum": [
+      "STUDIO",
+      "OPUS",
+      "TITLE",
+      "ACTRESS",
+      "RELEASE",
+      "PLAY",
+      "RANK",
+      "LASTPLAY",
+      "LASTSHOT",
+      "LASTACCESS",
+      "LASTMODIFIED",
+      "SCORE",
+      "LENGTH",
+      "SHOT"
+    ],
+    "description": "FlayCondition 정렬 기준 (Java Sort enum 대응)"
+  },
+  "TagGroup": {
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string"
+      },
+      "name": {
+        "type": "string"
+      },
+      "desc": {
+        "type": "string"
+      },
+      "lastModified": {
+        "type": "number",
+        "description": "JSON 직렬화에서 제외 (@JsonIgnore 대응), 내부 용도"
+      }
+    },
+    "required": [
+      "id",
+      "name",
+      "desc",
+      "lastModified"
+    ],
+    "description": "TagGroup 도메인 (Info<String> 대응)"
+  },
+  "Studio": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string"
+      },
+      "company": {
+        "type": "string"
+      },
+      "homepage": {
+        "type": "string",
+        "description": "홈페이지 URL 문자열 (Java URL -> string)"
+      },
+      "lastModified": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "name",
+      "company",
+      "homepage",
+      "lastModified"
+    ],
+    "description": "Studio 도메인 (Info<String> 대응)"
+  },
+  "History": {
+    "type": "object",
+    "properties": {
+      "date": {
+        "type": "string",
+        "description": "\"yyyy-MM-dd HH:mm:ss\" 형식"
+      },
+      "opus": {
+        "type": "string"
+      },
+      "action": {
+        "type": "string"
+      },
+      "desc": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "date",
+      "opus",
+      "action",
+      "desc"
+    ],
+    "description": "History 도메인"
+  },
+  "Diary": {
+    "type": "object",
+    "properties": {
+      "meta": {
+        "$ref": "#/components/schemas/DiaryMeta"
+      },
+      "content": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "meta",
+      "content"
+    ],
+    "description": "Diary 도메인"
+  },
+  "DiaryMeta": {
+    "type": "object",
+    "properties": {
+      "date": {
+        "type": "string"
+      },
+      "weather": {
+        "type": "string"
+      },
+      "title": {
+        "type": "string"
+      },
+      "created": {
+        "type": "string"
+      },
+      "lastModified": {
+        "type": [
+          "string",
+          "null"
+        ]
+      },
+      "attachId": {
+        "type": "string"
+      }
+    },
+    "required": [
+      "date",
+      "weather",
+      "title",
+      "created",
+      "lastModified",
+      "attachId"
+    ],
+    "description": "Diary 메타 정보"
+  },
+  "ImageInfo": {
+    "type": "object",
+    "properties": {
+      "idx": {
+        "type": "number"
+      },
+      "length": {
+        "type": "number"
+      },
+      "modified": {
+        "type": "number"
+      },
+      "name": {
+        "type": "string"
+      },
+      "path": {
+        "type": "string"
+      },
+      "file": {
+        "type": "string"
+      },
+      "width": {
+        "type": "number"
+      },
+      "height": {
+        "type": "number"
+      }
+    },
+    "required": [
+      "idx",
+      "length",
+      "modified",
+      "name",
+      "path",
+      "file",
+      "width",
+      "height"
+    ],
+    "description": "이미지 도메인"
+  }
+}

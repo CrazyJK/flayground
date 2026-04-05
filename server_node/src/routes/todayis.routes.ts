@@ -4,6 +4,19 @@ import fs from 'fs';
 import path from 'path';
 import { config } from '../config';
 
+/**
+ * @openapi
+ * components:
+ *   schemas:
+ *     Todayis:
+ *       type: object
+ *       properties:
+ *         uuid: { type: string }
+ *         fileName: { type: string }
+ *         filePath: { type: string }
+ *         fileLength: { type: integer, format: int64 }
+ */
+
 /** Todayis 도메인 */
 interface Todayis {
   uuid: string;
@@ -70,6 +83,12 @@ const todayisMap = new Map<string, Todayis>();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Todayis'
  */
 router.get('/today-picks', (_req, res) => {
   const list = listTodayisFiles();
@@ -90,7 +109,8 @@ router.get('/today-picks', (_req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Todayis'
  *     responses:
  *       204:
  *         description: 성공
@@ -121,7 +141,8 @@ router.post('/today-picks/play', (req, res) => {
  *       required: true
  *       content:
  *         application/json:
- *           schema: { type: object }
+ *           schema:
+ *             $ref: '#/components/schemas/Todayis'
  *     responses:
  *       204:
  *         description: 성공

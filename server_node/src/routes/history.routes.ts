@@ -22,6 +22,12 @@ const router = Router();
  *     responses:
  *       200:
  *         description: 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/History'
  */
 router.get('/info/histories', (req, res) => {
   const { action, days, search } = req.query;

@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en" theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Shot history</title>
+    <link rel="icon" type="image/png" href="./favicon/flay_1.png" />
+    <!-- HtmlWebpackPlugin이 자동으로 CSS와 JS를 주입합니다 -->
+  </head>
+  <body>
+    <header class="sticky">
+      <h2>Shot History</h2>
+      <div role="tablist" aria-label="Shot history tabs">
+        <button role="tab" target="#dailyPanel" active>Daily</button>
+        <button role="tab" target="#releasePanel">Release</button>
+      </div>
+    </header>
+
+    <main>
+      <div role="tabpanel" id="dailyPanel"></div>
+      <div role="tabpanel" id="releasePanel"></div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,52 @@
+body {
+  overflow: hidden;
+
+  header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    background-color: var(--color-bg-transparent);
+  }
+
+  main {
+    svg {
+      g {
+        .node {
+          cursor: pointer;
+          color: #c6c5fe;
+
+          // &.noDependency {
+          //   color: #cfffac;
+          // }
+          &.scss {
+            color: #f8acff;
+            path {
+              color: transparent;
+            }
+          }
+          &.svg {
+            color: #acf3ff;
+            path {
+              color: transparent;
+            }
+          }
+        }
+
+        .edge {
+          color: #757575;
+        }
+
+        &.active {
+          &.node {
+            color: red;
+          }
+
+          &.edge {
+            color: red;
+          }
+        }
+      }
+    }
+  }
+}

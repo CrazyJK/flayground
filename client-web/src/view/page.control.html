@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en" theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Control</title>
+    <link rel="icon" type="image/png" href="./favicon/flay_1.png" />
+    <!-- HtmlWebpackPlugin이 자동으로 CSS와 JS를 주입합니다 -->
+  </head>
+  <body>
+    <main>
+      <header class="tab-group" role="tablist">
+        <button type="button" class="tab-button" role="tab" target="#searchPanel" active>Search</button>
+        <button type="button" class="tab-button" role="tab" target="#registPanel">Regist</button>
+        <button type="button" class="tab-button" role="tab" target="#batchPanel">Batch</button>
+        <button type="button" class="tab-button" role="tab" target="#subtitlesPanel">Subtitles</button>
+        <button type="button" class="tab-button" role="tab" target="#candidatesPanel">Candidates</button>
+      </header>
+      <article>
+        <flay-finder class="tab-content flay-finder" role="tabpanel" id="searchPanel"></flay-finder>
+        <flay-register class="tab-content flay-register" role="tabpanel" id="registPanel"></flay-register>
+        <flay-batch class="tab-content flay-batch" role="tabpanel" id="batchPanel"></flay-batch>
+        <subtitles-finder class="tab-content subtitles-finder" role="tabpanel" id="subtitlesPanel"></subtitles-finder>
+        <flay-candidate class="tab-content flay-candidate" role="tabpanel" id="candidatesPanel"></flay-candidate>
+      </article>
+    </main>
+  </body>
+</html>

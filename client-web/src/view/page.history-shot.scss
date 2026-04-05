@@ -1,0 +1,11 @@
+body {
+  > header.sticky {
+    flex-direction: row;
+    > h2,
+    > div {
+      display: inline-flex;
+      max-width: none;
+      width: unset;
+    }
+  }
+}

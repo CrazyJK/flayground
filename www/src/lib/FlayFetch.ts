@@ -8,93 +8,26 @@
 
 import ApiClient from '@lib/ApiClient';
 
-// Type definitions
-export interface FullyFlay {
-  flay: Flay;
-  actress: Actress[];
-}
+// server_node 도메인에서 공유 타입 import & re-export
+export type { Actress } from '@domain/actress';
+export type { Flay, FlayFiles, FullyFlay } from '@domain/flay';
+export type { History } from '@domain/history';
+export type { ImageDomain } from '@domain/image';
+export type { Studio } from '@domain/studio';
+export type { Tag } from '@domain/tag';
+export type { TagGroup } from '@domain/tag-group';
+export type { Video } from '@domain/video';
 
-export interface FlayFiles {
-  cover: string[];
-  subtitles: string[];
-  candidate: string[];
-  movie: string[];
-}
+import type { Actress } from '@domain/actress';
+import type { Flay, FullyFlay } from '@domain/flay';
+import type { ImageDomain } from '@domain/image';
+import type { Studio } from '@domain/studio';
+import type { Tag } from '@domain/tag';
+import type { TagGroup } from '@domain/tag-group';
+import type { Video } from '@domain/video';
 
-export interface Flay {
-  studio: string;
-  opus: string;
-  title: string;
-  actressList: string[];
-  release: string;
-  score: number;
-  actressPoint: number;
-  studioPoint: number;
-  archive: boolean;
-  video: Video;
-  files: FlayFiles;
-  length: number;
-  lastModified: number;
-}
-
-export interface Video {
-  opus: string;
-  play: number;
-  rank: number;
-  lastPlay: number;
-  lastAccess: number;
-  lastModified: number;
-  comment: string;
-  title: string;
-  desc: string;
-  tags: Tag[];
-  likes: number[];
-}
-
+/** www 전용 타입 */
 export interface Archive extends Flay {}
-
-export interface Studio {
-  name: string;
-  company: string;
-  homepage: string;
-  lastModified: number;
-}
-
-export interface Actress {
-  favorite: boolean;
-  name: string;
-  localName: string;
-  otherNames: string[];
-  birth: string;
-  body: string;
-  height: number;
-  debut: number;
-  comment: string;
-  lastModified: number;
-  coverSize: number;
-}
-
-export interface History {
-  date: string;
-  opus: string;
-  action: string;
-  desc: string;
-}
-
-export interface Tag {
-  id: number;
-  name: string;
-  group: string;
-  description: string;
-  lastModified: number;
-  count?: number;
-}
-
-export interface TagGroup {
-  id: string;
-  name: string;
-  desc: string;
-}
 
 /**
  * 이미지 데이터 인터페이스
@@ -123,17 +56,6 @@ export interface SearchCondition {
   withSubtitles: boolean;
   withFavorite: boolean;
   withNoFavorite: boolean;
-}
-
-export interface ImageDomain {
-  idx: number;
-  length: number;
-  modified: number;
-  name: string;
-  path: string;
-  file: string;
-  width: number;
-  height: number;
 }
 
 export const BlankFlay: Flay = {

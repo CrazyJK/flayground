@@ -86,6 +86,7 @@ module.exports = {
       '@ui': path.resolve(__dirname, 'src/ui'),
       '@spa': path.resolve(__dirname, 'src/spa'),
       '@ai': path.resolve(__dirname, 'src/ai'),
+      '@domain': path.resolve(__dirname, '../server_node/src/domain'),
     },
   },
   plugins: [

@@ -161,28 +161,35 @@ const instanceFlayMap = new Map<string, Flay>();
 /** Archive Flay 맵 */
 const archiveFlayMap = new Map<string, Flay>();
 
-/** 로그 콜백 타입 */
-export type FlaySourceLogger = (message: string) => void;
+/** 로그 콜백 타입 (비동기) */
+export type FlaySourceLogger = (message: string) => Promise<void>;
 
 /** 기본 로거 (console.log) */
-const defaultLogger: FlaySourceLogger = (message) => console.log(message);
+const defaultLogger: FlaySourceLogger = async (message) => console.log(message);
+
+/** 이벤트 루프 양보 */
+function yieldEventLoop(): Promise<void> {
+  return new Promise((resolve) => setImmediate(resolve));
+}
 
 /**
  * 지정된 경로들에서 파일을 스캔하여 Flay 맵을 구성한다.
  */
-function loadFlaySource(paths: string[], isArchive: boolean, flayMap: Map<string, Flay>, logger: FlaySourceLogger = defaultLogger): void {
+async function loadFlaySource(paths: string[], isArchive: boolean, flayMap: Map<string, Flay>, logger: FlaySourceLogger = defaultLogger): Promise<void> {
   const label = isArchive ? 'Archive' : 'Instance';
   const allFiles: string[] = [];
 
   for (const dir of paths) {
     const files = listFilesRecursive(dir);
-    logger(`[FlaySource] [Load ${label}] ${String(files.length).padStart(5)} 파일 - ${dir}`);
+    await logger(`[FlaySource] [Load ${label}] ${String(files.length).padStart(5)} 파일 - ${dir}`);
+    await yieldEventLoop();
     allFiles.push(...files);
   }
 
   flayMap.clear();
 
-  for (const filePath of allFiles) {
+  for (let i = 0; i < allFiles.length; i++) {
+    const filePath = allFiles[i];
     const ext = getFileExt(filePath);
     if (IGNORE_EXTS.has(ext)) continue;
 
@@ -199,6 +206,9 @@ function loadFlaySource(paths: string[], isArchive: boolean, flayMap: Map<string
     }
 
     addFileToFlay(flay, result.filePath);
+
+    // 1000개마다 이벤트 루프 양보
+    if (i % 1000 === 999) await yieldEventLoop();
   }
 
   // 메타 정보 계산
@@ -206,7 +216,7 @@ function loadFlaySource(paths: string[], isArchive: boolean, flayMap: Map<string
     computeFlayMeta(flay);
   }
 
-  logger(`[FlaySource] [Load ${label}] ${String(flayMap.size).padStart(5)} Flay`);
+  await logger(`[FlaySource] [Load ${label}] ${String(flayMap.size).padStart(5)} Flay`);
 }
 
 /**
@@ -261,12 +271,12 @@ export function getArchiveFlayMap(): Map<string, Flay> {
 }
 
 /** Instance Flay 맵을 다시 로드한다 */
-export function reloadInstanceFlaySources(logger?: FlaySourceLogger): void {
+export async function reloadInstanceFlaySources(logger?: FlaySourceLogger): Promise<void> {
   const instancePaths = [config.flay.storagePath, ...config.flay.stagePaths, config.flay.coverPath];
-  loadFlaySource(instancePaths, false, instanceFlayMap, logger);
+  await loadFlaySource(instancePaths, false, instanceFlayMap, logger);
 }
 
 /** Archive Flay 맵을 다시 로드한다 */
-export function reloadArchiveFlaySources(logger?: FlaySourceLogger): void {
-  loadFlaySource([config.flay.archivePath], true, archiveFlayMap, logger);
+export async function reloadArchiveFlaySources(logger?: FlaySourceLogger): Promise<void> {
+  await loadFlaySource([config.flay.archivePath], true, archiveFlayMap, logger);
 }

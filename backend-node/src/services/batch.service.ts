@@ -1,4 +1,4 @@
-import { spawnSync } from 'child_process';
+import { spawn } from 'child_process';
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config';
@@ -36,14 +36,6 @@ async function batchLogger(message: string): Promise<void> {
   console.log(`[Batch] ${message}`);
   sseSend({ type: 'Batch', message });
   await yieldEventLoop();
-}
-
-/**
- * SSE를 통해 배치 로그를 전송한다. (동기 - FlaySourceLogger 콜백용)
- */
-function batchLoggerSync(message: string): void {
-  console.log(`[Batch] ${message}`);
-  sseSend({ type: 'Batch', message });
 }
 
 /**
@@ -115,7 +107,7 @@ export function checkBatch(operation: BatchOperation): Record<string, Flay[]> {
 export function reload(): void {
   (async () => {
     await batchLogger('[reload] Start');
-    reloadInstanceFlaySources(batchLoggerSync);
+    await reloadInstanceFlaySources(batchLogger);
     await batchLogger('[reload] End');
     await noticeLogger('reload Completed');
   })();
@@ -179,7 +171,7 @@ async function instanceBatch(): Promise<void> {
   await deleteEmptyFolders(pathsToClean);
 
   // 소스 리로드
-  reloadInstanceFlaySources(batchLoggerSync);
+  await reloadInstanceFlaySources(batchLogger);
 
   await batchLogger('[instanceBatch] End');
   await noticeLogger('instanceBatch Completed');
@@ -206,7 +198,7 @@ async function archiveBatch(): Promise<void> {
   }
 
   await deleteEmptyFolders([config.flay.archivePath]);
-  reloadArchiveFlaySources(batchLoggerSync);
+  await reloadArchiveFlaySources(batchLogger);
 
   await batchLogger('[archiveBatch] End');
   await noticeLogger('archiveBatch Completed');
@@ -298,7 +290,8 @@ function getDelegatePath(flay: Flay): string {
     return path.join(config.flay.coverPath, flay.release.substring(0, 4));
   }
 
-  batchLoggerSync(`Not determine delegate path, return to Queue path. ${flay.opus}`);
+  console.log(`[Batch] Not determine delegate path, return to Queue path. ${flay.opus}`);
+  sseSend({ type: 'Batch', message: `Not determine delegate path, return to Queue path. ${flay.opus}` });
   return config.flay.queuePath;
 }
 
@@ -474,10 +467,17 @@ async function compress(destJarPath: string, targetFolder: string): Promise<void
   try {
     const logFd = fs.openSync(logFilePath, 'w');
     try {
-      const result = spawnSync('jar', ['cf0M', destJarPath, '-C', targetFolder, '.'], { stdio: ['ignore', logFd, logFd] });
-      if (result.status !== 0) {
-        throw new Error(`jar 프로세스 종료 코드: ${result.status}`);
-      }
+      await new Promise<void>((resolve, reject) => {
+        const proc = spawn('jar', ['cf0M', destJarPath, '-C', targetFolder, '.'], { stdio: ['ignore', logFd, logFd] });
+        proc.on('close', (code) => {
+          if (code !== 0) {
+            reject(new Error(`jar 프로세스 종료 코드: ${code}`));
+          } else {
+            resolve();
+          }
+        });
+        proc.on('error', reject);
+      });
     } finally {
       fs.closeSync(logFd);
     }

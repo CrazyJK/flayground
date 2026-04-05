@@ -1,5 +1,5 @@
 import DateUtils from '@lib/DateUtils';
-import FlayFetch, { History } from '@lib/FlayFetch';
+import FlayFetch, { FlayHistory } from '@lib/FlayFetch';
 import './inc/Page';
 import './page.history-play.scss';
 
@@ -54,7 +54,7 @@ class Page {
   }
 
   // 새로운 메소드: 히스토리 데이터 처리를 최적화
-  #processHistoryData(playHistories: History[]) {
+  #processHistoryData(playHistories: FlayHistory[]) {
     const dateMap: Record<string, string[]> = {};
 
     for (const history of playHistories) {

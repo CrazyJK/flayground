@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
 import ApiClient from '@lib/ApiClient';
 import DateUtils from '@lib/DateUtils';
-import { Actress, Flay, History, Video } from '@lib/FlayFetch';
+import { Actress, Flay, FlayHistory, Video } from '@lib/FlayFetch';
 import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '@lib/FlaySearch';
 import './FlayFinder.scss';
 
@@ -158,7 +158,7 @@ function renderHistory(list: unknown[], keyword: string, wrapper: HTMLElement) {
   } else {
     wrapper.textContent = null;
     list.forEach((item: unknown) => {
-      const history = item as History;
+      const history = item as FlayHistory;
       const ITEM = document.createElement('li');
       ITEM.classList.add('history-item', 'item');
       ITEM.innerHTML = `

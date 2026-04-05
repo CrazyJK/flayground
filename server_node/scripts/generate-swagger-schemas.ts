@@ -13,10 +13,11 @@ import { createGenerator } from 'ts-json-schema-generator';
 /** 도메인 타입명 → OpenAPI 스키마명 매핑 (이름이 다른 경우만 명시) */
 const RENAME_MAP: Record<string, string> = {
   ImageDomain: 'ImageInfo',
+  FlayHistory: 'History',
 };
 
 /** 생성 대상 도메인 타입 목록 */
-const TARGET_TYPES = ['Tag', 'Video', 'Flay', 'FlayFiles', 'FullyFlay', 'FlayCondition', 'Actress', 'TagGroup', 'Studio', 'History', 'Diary', 'DiaryMeta', 'ImageDomain'];
+const TARGET_TYPES = ['Tag', 'Video', 'Flay', 'FlayFiles', 'FullyFlay', 'FlayCondition', 'Actress', 'TagGroup', 'Studio', 'FlayHistory', 'Diary', 'DiaryMeta', 'ImageDomain'];
 
 const generator = createGenerator({
   path: path.resolve(__dirname, '../src/domain/index.ts'),

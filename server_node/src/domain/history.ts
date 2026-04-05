@@ -1,8 +1,8 @@
-/** History 액션 타입 */
+/** FlayHistory 액션 타입 */
 export type HistoryAction = 'PLAY' | 'DELETE' | 'UPDATE';
 
-/** History 도메인 */
-export interface History {
+/** FlayHistory 도메인 */
+export interface FlayHistory {
   /** "yyyy-MM-dd HH:mm:ss" 형식 */
   date: string;
   opus: string;
@@ -22,11 +22,11 @@ export function formatDateTime(d: Date = new Date()): string {
 }
 
 /**
- * 새 History 생성
+ * 새 FlayHistory 생성
  * @param opus 대상 opus
  * @param action 액션 종류
  * @param desc 설명
  */
-export function createHistory(opus: string, action: HistoryAction, desc: string): History {
+export function createHistory(opus: string, action: HistoryAction, desc: string): FlayHistory {
   return { date: formatDateTime(), opus, action, desc };
 }

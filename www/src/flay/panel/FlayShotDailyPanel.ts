@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayCard from '@flay/domain/FlayCard';
 import DateUtils from '@lib/DateUtils';
-import FlayFetch, { History } from '@lib/FlayFetch';
+import FlayFetch, { FlayHistory } from '@lib/FlayFetch';
 import './FlayShotDailyPanel.scss';
 
 /**
@@ -12,7 +12,7 @@ import './FlayShotDailyPanel.scss';
  */
 export class FlayShotDailyPanel extends GroundFlay {
   /** 플레이 기록 목록 */
-  #playHistoryList: History[] = [];
+  #playHistoryList: FlayHistory[] = [];
   /** 현재 표시 중인 이전 일수 */
   #prevDay: number = 0;
   /** 날짜별 opus 매핑 */

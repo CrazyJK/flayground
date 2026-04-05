@@ -1,14 +1,14 @@
 import fs from 'fs';
 import path from 'path';
 import { config } from '../config';
-import { History } from '../domain/history';
+import { FlayHistory } from '../domain/history';
 
 const LINE = '\r\n';
 const UTF8_BOM = '\uFEFF';
 const HISTORY_FILENAME = 'history.csv';
 
-/** History 목록 (메모리) */
-let historyList: History[] = [];
+/** FlayHistory 목록 (메모리) */
+let historyList: FlayHistory[] = [];
 
 /**
  * CSV 파일에서 History를 로드한다.
@@ -37,7 +37,7 @@ function load(): void {
 
     // CSV: date, opus, action, desc (최대 4분할)
     const parts = line.split(',').map((s) => s.trim());
-    const history: History = {
+    const history: FlayHistory = {
       date: parts[0] || '',
       opus: parts[1] || '',
       action: parts[2] || '',
@@ -57,12 +57,12 @@ function getFilePath(): string {
 /**
  * History를 CSV 형식 문자열로 변환
  */
-function toFileSaveString(h: History): string {
+function toFileSaveString(h: FlayHistory): string {
   return `${h.date}, ${h.opus}, ${h.action}, ${h.desc || ''}${LINE}`;
 }
 
 /** 전체 목록 반환 */
-function list(): History[] {
+function list(): FlayHistory[] {
   return historyList;
 }
 
@@ -70,7 +70,7 @@ function list(): History[] {
  * 새 History를 저장한다.
  * 메모리에 추가 + 파일에 append
  */
-function save(history: History): void {
+function save(history: FlayHistory): void {
   historyList.push(history);
   fs.appendFileSync(getFilePath(), toFileSaveString(history), 'utf-8');
 }
@@ -78,7 +78,7 @@ function save(history: History): void {
 /**
  * opus에 대한 마지막 PLAY 기록을 찾는다.
  */
-function findLastPlay(opus: string): History | null {
+function findLastPlay(opus: string): FlayHistory | null {
   for (let i = historyList.length - 1; i >= 0; i--) {
     const h = historyList[i];
     if (h.opus === opus && h.action === 'PLAY') {
@@ -91,7 +91,7 @@ function findLastPlay(opus: string): History | null {
 /**
  * 검색어로 History를 필터링한다.
  */
-function search(query: string): History[] {
+function search(query: string): FlayHistory[] {
   return historyList.filter((h) => h.date.includes(query) || h.opus === query || h.action === query || h.desc.includes(query));
 }
 

@@ -11,7 +11,7 @@ import ApiClient from '@lib/ApiClient';
 // server_node 도메인에서 공유 타입 import & re-export
 export type { Actress } from '@domain/actress';
 export type { Flay, FlayFiles, FullyFlay } from '@domain/flay';
-export type { History } from '@domain/history';
+export type { FlayHistory } from '@domain/history';
 export type { ImageDomain } from '@domain/image';
 export type { Studio } from '@domain/studio';
 export type { Tag } from '@domain/tag';
@@ -20,6 +20,7 @@ export type { Video } from '@domain/video';
 
 import type { Actress } from '@domain/actress';
 import type { Flay, FullyFlay } from '@domain/flay';
+import type { FlayHistory } from '@domain/history';
 import type { ImageDomain } from '@domain/image';
 import type { Studio } from '@domain/studio';
 import type { Tag } from '@domain/tag';
@@ -295,8 +296,8 @@ export default class FlayFetch {
    * @param opus - opus 번호
    * @returns 히스토리 목록
    */
-  static async getHistories(opus: string): Promise<History[]> {
-    return (await ApiClient.get<History[]>(`/info/histories?search=${opus}`)) ?? [];
+  static async getHistories(opus: string): Promise<FlayHistory[]> {
+    return (await ApiClient.get<FlayHistory[]>(`/info/histories?search=${opus}`)) ?? [];
   }
 
   /**
@@ -305,8 +306,8 @@ export default class FlayFetch {
    * @param days - 최근 일수 (0이면 전체)
    * @returns 히스토리 목록
    */
-  static async getHistoryListByAction(action: string, days: number = 0): Promise<History[]> {
-    return (await ApiClient.get<History[]>(`/info/histories?action=${action}${days === 0 ? '' : `&days=${days}`}`)) ?? [];
+  static async getHistoryListByAction(action: string, days: number = 0): Promise<FlayHistory[]> {
+    return (await ApiClient.get<FlayHistory[]>(`/info/histories?action=${action}${days === 0 ? '' : `&days=${days}`}`)) ?? [];
   }
 
   /* ######################## Video ######################## */

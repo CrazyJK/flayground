@@ -1,15 +1,15 @@
 import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
-import { History } from '@lib/FlayFetch';
+import { FlayHistory } from '@lib/FlayFetch';
 
 const storeName = 'History';
 
 export default class HistoryStore extends FlayGroundDB {
-  async select(opus: string): Promise<{ opus: string; histories: History[] } | undefined> {
+  async select(opus: string): Promise<{ opus: string; histories: FlayHistory[] } | undefined> {
     await this.init();
     return await this.get(storeName, opus);
   }
 
-  async update(opus: string, histories: History[]) {
+  async update(opus: string, histories: FlayHistory[]) {
     await this.init();
     const record = {
       opus: opus,

@@ -4,8 +4,14 @@ import { config } from '../config';
 const router = Router();
 
 /**
- * GET /config - 서버 설정 정보를 Map 형태로 반환한다.
- * Java GroundController.config() 대응 - GroundProperties의 getter/is 메서드를 reflection으로 읽어 반환
+ * @openapi
+ * /config:
+ *   get:
+ *     tags: [Config]
+ *     summary: 서버 설정 정보
+ *     responses:
+ *       200:
+ *         description: 성공
  */
 router.get('/config', (_req, res) => {
   const flay = config.flay;

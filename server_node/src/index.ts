@@ -3,6 +3,7 @@ import express from 'express';
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
+import swaggerUi from 'swagger-ui-express';
 
 import { config } from './config';
 import { errorHandler } from './middleware/error-handler';
@@ -15,6 +16,7 @@ import { historyRepository } from './sources/history-repository';
 import { imageSource } from './sources/image-source';
 import { loadAllInfoSources } from './sources/info-sources';
 import { pushSubscriptionRepo } from './sources/push-subscription-repo';
+import { swaggerSpec } from './swagger';
 
 // 라우트
 import actressRoutes from './routes/actress.routes';
@@ -69,6 +71,10 @@ function createApp(): express.Application {
 
   // API 라우트 등록
   app.use(API_PREFIX, flayRoutes);
+
+  // Swagger UI
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+  app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
   app.use(API_PREFIX, flayArchiveRoutes);
   app.use(API_PREFIX, streamRoutes);
   app.use(API_PREFIX, videoRoutes);
@@ -88,9 +94,7 @@ function createApp(): express.Application {
   app.use(API_PREFIX, attachRoutes);
   app.use(API_PREFIX, crawlingRoutes);
   app.use(API_PREFIX, downloadRoutes);
-
-  // Push 구독은 별도 prefix (/api/push)
-  app.use('/api/push', pushRoutes);
+  app.use(API_PREFIX, pushRoutes);
 
   // 헬스체크
   app.get(`${API_PREFIX}/health`, (_req, res) => {

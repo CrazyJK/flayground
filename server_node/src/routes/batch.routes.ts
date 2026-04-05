@@ -8,32 +8,97 @@ const router = Router();
  * Java BatchController 대응
  */
 
-/** GET /batches/options/:option - 옵션 조회 */
+/**
+ * @openapi
+ * /batches/options/{option}:
+ *   get:
+ *     tags: [Batch]
+ *     summary: 옵션 조회
+ *     parameters:
+ *       - in: path
+ *         name: option
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/batches/options/:option', (req, res) => {
   const option = req.params.option as BatchOption;
   res.json(getOption(option));
 });
 
-/** PUT /batches/options/:option - 옵션 토글 */
+/**
+ * @openapi
+ * /batches/options/{option}:
+ *   put:
+ *     tags: [Batch]
+ *     summary: 옵션 토글
+ *     parameters:
+ *       - in: path
+ *         name: option
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.put('/batches/options/:option', (req, res) => {
   const option = req.params.option as BatchOption;
   res.json(toggleOption(option));
 });
 
-/** POST /batches/operations/:operation - 배치 실행 */
+/**
+ * @openapi
+ * /batches/operations/{operation}:
+ *   post:
+ *     tags: [Batch]
+ *     summary: 배치 실행
+ *     parameters:
+ *       - in: path
+ *         name: operation
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.post('/batches/operations/:operation', (req, res) => {
   const operation = req.params.operation as BatchOperation;
   startBatch(operation);
   res.status(204).end();
 });
 
-/** GET /batches/operations/:operation/status - 배치 사전 검사 */
+/**
+ * @openapi
+ * /batches/operations/{operation}/status:
+ *   get:
+ *     tags: [Batch]
+ *     summary: 배치 사전 검사
+ *     parameters:
+ *       - in: path
+ *         name: operation
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/batches/operations/:operation/status', (req, res) => {
   const operation = req.params.operation as BatchOperation;
   res.json(checkBatch(operation));
 });
 
-/** POST /batches/reload - 소스 리로드 */
+/**
+ * @openapi
+ * /batches/reload:
+ *   post:
+ *     tags: [Batch]
+ *     summary: 소스 리로드
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.post('/batches/reload', (_req, res) => {
   reload();
   res.status(204).end();

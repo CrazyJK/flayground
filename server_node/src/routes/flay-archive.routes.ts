@@ -3,7 +3,23 @@ import * as archiveService from '../services/flay-archive.service';
 
 const router = Router();
 
-/** GET /archives - 전체 Archive 목록 (?fields=opus, ?search=, ?{key}={value}) */
+/**
+ * @openapi
+ * /archives:
+ *   get:
+ *     tags: [Archive]
+ *     summary: 전체 Archive 목록
+ *     parameters:
+ *       - in: query
+ *         name: fields
+ *         schema: { type: string, enum: [opus] }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/archives', (req, res) => {
   const { fields, search } = req.query;
 
@@ -33,7 +49,23 @@ router.get('/archives', (req, res) => {
   res.json(archiveService.list());
 });
 
-/** GET /archives/:opus - Archive Flay 조회 */
+/**
+ * @openapi
+ * /archives/{opus}:
+ *   get:
+ *     tags: [Archive]
+ *     summary: Archive Flay 조회
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.get('/archives/:opus', (req, res) => {
   try {
     res.json(archiveService.get(req.params.opus));
@@ -42,7 +74,21 @@ router.get('/archives/:opus', (req, res) => {
   }
 });
 
-/** POST /archives/:opus/to-instance - Archive -> Instance 이동 */
+/**
+ * @openapi
+ * /archives/{opus}/to-instance:
+ *   post:
+ *     tags: [Archive]
+ *     summary: Archive -> Instance 이동
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.post('/archives/:opus/to-instance', (req, res) => {
   archiveService.toInstance(req.params.opus);
   res.sendStatus(204);

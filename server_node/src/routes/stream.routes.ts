@@ -67,8 +67,29 @@ function getContentType(ext: string): string {
 }
 
 /**
- * GET /flays/:opus/stream/movie/:fileIndex - Flay 영상 스트리밍
- * Java FlayStreamController.streamFlayMovie() 대응
+ * @openapi
+ * /flays/{opus}/stream/movie/{fileIndex}:
+ *   get:
+ *     tags: [Stream]
+ *     summary: Flay 영상 스트리밍
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: fileIndex
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: 영상 스트림
+ *         content:
+ *           video/*: {}
+ *       206:
+ *         description: Range 요청 응답
+ *       404:
+ *         description: 찾을 수 없음
  */
 router.get('/flays/:opus/stream/movie/:fileIndex', (req, res) => {
   const { opus, fileIndex } = req.params;
@@ -87,8 +108,25 @@ router.get('/flays/:opus/stream/movie/:fileIndex', (req, res) => {
 });
 
 /**
- * GET /flays/:opus/stream/subtitles/:fileIndex - Flay 자막 스트리밍
- * Java FlayStreamController.streamFlaySubtitles() 대응
+ * @openapi
+ * /flays/{opus}/stream/subtitles/{fileIndex}:
+ *   get:
+ *     tags: [Stream]
+ *     summary: Flay 자막 스트리밍
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: fileIndex
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: 자막 내용
+ *       404:
+ *         description: 찾을 수 없음
  */
 router.get('/flays/:opus/stream/subtitles/:fileIndex', (req, res) => {
   const { opus, fileIndex } = req.params;

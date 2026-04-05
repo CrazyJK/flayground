@@ -46,7 +46,23 @@ function saveAttachMeta(attach: Attach): void {
   fs.writeFileSync(path.join(dir, 'attach.json'), JSON.stringify(attach, null, 2), 'utf-8');
 }
 
-/** GET /attachments/:id - 첨부 정보 조회 */
+/**
+ * @openapi
+ * /attachments/{id}:
+ *   get:
+ *     tags: [Attach]
+ *     summary: 첨부 정보 조회
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.get('/attachments/:id', (req, res) => {
   const attach = loadAttachMeta(req.params.id);
   if (!attach) {
@@ -56,7 +72,27 @@ router.get('/attachments/:id', (req, res) => {
   res.json(attach);
 });
 
-/** GET /attachments/:id/files/:attachFileId - 첨부 파일 정보 조회 */
+/**
+ * @openapi
+ * /attachments/{id}/files/{attachFileId}:
+ *   get:
+ *     tags: [Attach]
+ *     summary: 첨부 파일 정보 조회
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: attachFileId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.get('/attachments/:id/files/:attachFileId', (req, res) => {
   const attach = loadAttachMeta(req.params.id);
   if (!attach) {
@@ -71,7 +107,27 @@ router.get('/attachments/:id/files/:attachFileId', (req, res) => {
   res.json(file);
 });
 
-/** GET /attachments/:id/files/:attachFileId/download - 첨부 파일 다운로드 */
+/**
+ * @openapi
+ * /attachments/{id}/files/{attachFileId}/download:
+ *   get:
+ *     tags: [Attach]
+ *     summary: 첨부 파일 다운로드
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: attachFileId
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 파일 다운로드
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.get('/attachments/:id/files/:attachFileId/download', (req, res) => {
   const attach = loadAttachMeta(req.params.id);
   if (!attach) {
@@ -86,7 +142,25 @@ router.get('/attachments/:id/files/:attachFileId/download', (req, res) => {
   res.download(file.filePath, file.name);
 });
 
-/** POST /attachments - 새 첨부 생성 */
+/**
+ * @openapi
+ * /attachments:
+ *   post:
+ *     tags: [Attach]
+ *     summary: 새 첨부 생성
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               name: { type: string }
+ *               type: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/attachments', (req, res) => {
   const { name, type } = req.body;
   const id = Date.now().toString(36) + Math.random().toString(36).substring(2, 8);
@@ -95,7 +169,27 @@ router.post('/attachments', (req, res) => {
   res.json(attach);
 });
 
-/** PUT /attachments - 첨부에 파일 추가 (multer) */
+/**
+ * @openapi
+ * /attachments:
+ *   put:
+ *     tags: [Attach]
+ *     summary: 첨부에 파일 추가
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               id: { type: string }
+ *               file:
+ *                 type: array
+ *                 items: { type: string, format: binary }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.put('/attachments', attachUpload.array('file'), (req, res) => {
   const { id } = req.body;
   const attach = loadAttachMeta(id);

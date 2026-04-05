@@ -20,7 +20,16 @@ function getMemoPath(): string {
   return path.join(config.flay.infoPath, MEMO_FILE);
 }
 
-/** GET /memos - 메모 읽기 */
+/**
+ * @openapi
+ * /memos:
+ *   get:
+ *     tags: [Memo]
+ *     summary: 메모 읽기
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/memos', (_req, res) => {
   const memoPath = getMemoPath();
   if (!fs.existsSync(memoPath)) {
@@ -33,7 +42,24 @@ router.get('/memos', (_req, res) => {
   res.json({ html, lastModified: stat.mtime.toISOString() });
 });
 
-/** POST /memos - 메모 저장 */
+/**
+ * @openapi
+ * /memos:
+ *   post:
+ *     tags: [Memo]
+ *     summary: 메모 저장
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               html: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/memos', (req, res) => {
   const { html } = req.body;
   const memoPath = getMemoPath();

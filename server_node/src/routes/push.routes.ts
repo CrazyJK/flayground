@@ -25,16 +25,37 @@ function getUserId(req: any): string {
 }
 
 /**
- * GET /vapid-public-key - VAPID 공개키 반환
+ * @openapi
+ * /push/vapid-public-key:
+ *   get:
+ *     tags: [Push]
+ *     summary: VAPID 공개키 반환
+ *     responses:
+ *       200:
+ *         description: 성공
+ *         content:
+ *           text/plain: {}
  */
-router.get('/vapid-public-key', (_req, res) => {
+router.get('/push/vapid-public-key', (_req, res) => {
   res.send(getVapidPublicKey());
 });
 
 /**
- * POST /subscriptions - Push 구독 등록
+ * @openapi
+ * /push/subscriptions:
+ *   post:
+ *     tags: [Push]
+ *     summary: Push 구독 등록
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
  */
-router.post('/subscriptions', (req, res) => {
+router.post('/push/subscriptions', (req, res) => {
   const userId = getUserId(req);
   const dto: PushSubscriptionDTO = req.body;
   pushSubscriptionRepo.subscribe(userId, dto);
@@ -42,18 +63,37 @@ router.post('/subscriptions', (req, res) => {
 });
 
 /**
- * DELETE /subscriptions - Push 구독 해제
+ * @openapi
+ * /push/subscriptions:
+ *   delete:
+ *     tags: [Push]
+ *     summary: Push 구독 해제
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
  */
-router.delete('/subscriptions', (req, res) => {
+router.delete('/push/subscriptions', (req, res) => {
   const dto: PushSubscriptionDTO = req.body;
   pushSubscriptionRepo.deleteByEndpoint(dto.endpoint);
   res.status(200).end();
 });
 
 /**
- * GET /subscriptions - 사용자의 구독 정보 조회
+ * @openapi
+ * /push/subscriptions:
+ *   get:
+ *     tags: [Push]
+ *     summary: 사용자의 구독 정보 조회
+ *     responses:
+ *       200:
+ *         description: 성공
  */
-router.get('/subscriptions', (req, res) => {
+router.get('/push/subscriptions', (req, res) => {
   const userId = getUserId(req);
   const subs = pushSubscriptionRepo.findByUserId(userId);
   if (subs.length === 0) {

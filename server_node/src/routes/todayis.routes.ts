@@ -61,7 +61,16 @@ function listFilesRecursive(dir: string): string[] {
 /** uuid -> filePath 매핑 (스트리밍용) */
 const todayisMap = new Map<string, Todayis>();
 
-/** GET /today-picks - 목록 조회 */
+/**
+ * @openapi
+ * /today-picks:
+ *   get:
+ *     tags: [Todayis]
+ *     summary: 목록 조회
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/today-picks', (_req, res) => {
   const list = listTodayisFiles();
   todayisMap.clear();
@@ -71,7 +80,23 @@ router.get('/today-picks', (_req, res) => {
   res.json(list);
 });
 
-/** POST /today-picks/play - 영상 재생 */
+/**
+ * @openapi
+ * /today-picks/play:
+ *   post:
+ *     tags: [Todayis]
+ *     summary: 영상 재생
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ *       404:
+ *         description: 파일 없음
+ */
 router.post('/today-picks/play', (req, res) => {
   const todayis: Todayis = req.body;
   if (!todayis.filePath || !fs.existsSync(todayis.filePath)) {
@@ -86,7 +111,23 @@ router.post('/today-picks/play', (req, res) => {
   res.status(204).end();
 });
 
-/** DELETE /today-picks - 영상 삭제 */
+/**
+ * @openapi
+ * /today-picks:
+ *   delete:
+ *     tags: [Todayis]
+ *     summary: 영상 삭제
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ *       404:
+ *         description: 파일 없음
+ */
 router.delete('/today-picks', (req, res) => {
   const todayis: Todayis = req.body;
   if (!todayis.filePath || !fs.existsSync(todayis.filePath)) {

@@ -5,9 +5,23 @@ const router = Router();
 const upload = multer();
 
 /**
- * POST /download - URL 프록시 다운로드
- * Java UrlDownloader.download() 대응
- * CORS 이슈로 서버에서 대신 다운로드하여 클라이언트에 전달
+ * @openapi
+ * /download:
+ *   post:
+ *     tags: [Download]
+ *     summary: URL 프록시 다운로드
+ *     requestBody:
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               url: { type: string }
+ *     responses:
+ *       200:
+ *         description: 파일 다운로드
+ *       400:
+ *         description: url 파라미터 누락
  */
 router.post('/download', upload.none(), async (req, res, next) => {
   const url = req.body.url || req.query.url;

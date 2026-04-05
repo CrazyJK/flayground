@@ -7,7 +7,23 @@ import { tagInfoSource } from '../sources/info-sources';
 
 const router = Router();
 
-/** GET /info/tags - 전체 Tag 목록 (?include=count, ?search=) */
+/**
+ * @openapi
+ * /info/tags:
+ *   get:
+ *     tags: [Tag]
+ *     summary: 전체 Tag 목록
+ *     parameters:
+ *       - in: query
+ *         name: include
+ *         schema: { type: string, enum: [count] }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/tags', (req, res) => {
   const { include, search } = req.query;
 
@@ -27,12 +43,45 @@ router.get('/info/tags', (req, res) => {
   res.json(tagInfoSource.getList());
 });
 
-/** GET /info/tags/:id - Tag 조회 */
+/**
+ * @openapi
+ * /info/tags/{id}:
+ *   get:
+ *     tags: [Tag]
+ *     summary: Tag 조회
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/tags/:id', (req, res) => {
   res.json(tagInfoSource.get(parseInt(req.params.id, 10)));
 });
 
-/** POST /info/tags - 신규 생성 (?opus= 지정 시 해당 opus에도 추가) */
+/**
+ * @openapi
+ * /info/tags:
+ *   post:
+ *     tags: [Tag]
+ *     summary: 신규 생성
+ *     parameters:
+ *       - in: query
+ *         name: opus
+ *         schema: { type: string }
+ *         description: 지정 시 해당 opus에도 태그 추가
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/info/tags', (req, res) => {
   const tag: Tag = req.body;
   // 새 ID 할당
@@ -53,7 +102,21 @@ router.post('/info/tags', (req, res) => {
   res.json(created);
 });
 
-/** PATCH /info/tags - 수정 */
+/**
+ * @openapi
+ * /info/tags:
+ *   patch:
+ *     tags: [Tag]
+ *     summary: 수정
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.patch('/info/tags', (req, res) => {
   const tag: Tag = req.body;
   tagInfoSource.update(tag);
@@ -61,7 +124,21 @@ router.patch('/info/tags', (req, res) => {
   res.sendStatus(204);
 });
 
-/** PUT /info/tags - id > 0 수정, else 신규 */
+/**
+ * @openapi
+ * /info/tags:
+ *   put:
+ *     tags: [Tag]
+ *     summary: id > 0 수정, else 신규
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.put('/info/tags', (req, res) => {
   const tag: Tag = req.body;
   if (tag.id > 0) {
@@ -75,7 +152,20 @@ router.put('/info/tags', (req, res) => {
   res.sendStatus(204);
 });
 
-/** DELETE /info/tags - 삭제 */
+/**
+ * @openapi
+ * /info/tags:
+ *   delete:
+ *     tags: [Tag]
+ *     summary: 삭제
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.delete('/info/tags', (req, res) => {
   const tag: Tag = req.body;
   // 모든 Video에서 해당 태그 제거

@@ -6,7 +6,23 @@ import { studioInfoSource } from '../sources/info-sources';
 
 const router = Router();
 
-/** GET /info/studios - 전체 Studio 목록 (?search=, ?opus=) */
+/**
+ * @openapi
+ * /info/studios:
+ *   get:
+ *     tags: [Studio]
+ *     summary: 전체 Studio 목록
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *       - in: query
+ *         name: opus
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/studios', (req, res) => {
   const { search, opus } = req.query;
 
@@ -33,7 +49,23 @@ router.get('/info/studios', (req, res) => {
   res.json(studioInfoSource.getList());
 });
 
-/** GET /info/studios/:name - 이름으로 Studio 조회 */
+/**
+ * @openapi
+ * /info/studios/{name}:
+ *   get:
+ *     tags: [Studio]
+ *     summary: Studio 조회
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.get('/info/studios/:name', (req, res) => {
   const studio = studioInfoSource.get(req.params.name);
   if (!studio) {
@@ -43,7 +75,21 @@ router.get('/info/studios/:name', (req, res) => {
   res.json(studio);
 });
 
-/** POST /info/studios - 신규 생성 */
+/**
+ * @openapi
+ * /info/studios:
+ *   post:
+ *     tags: [Studio]
+ *     summary: 신규 생성
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/info/studios', (req, res) => {
   const studio: Studio = req.body;
   const created = studioInfoSource.create(studio);
@@ -51,7 +97,21 @@ router.post('/info/studios', (req, res) => {
   res.json(created);
 });
 
-/** PATCH /info/studios - 수정 */
+/**
+ * @openapi
+ * /info/studios:
+ *   patch:
+ *     tags: [Studio]
+ *     summary: 수정
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.patch('/info/studios', (req, res) => {
   const studio: Studio = req.body;
   studioInfoSource.update(studio);
@@ -59,7 +119,20 @@ router.patch('/info/studios', (req, res) => {
   res.sendStatus(204);
 });
 
-/** DELETE /info/studios - 삭제 */
+/**
+ * @openapi
+ * /info/studios:
+ *   delete:
+ *     tags: [Studio]
+ *     summary: 삭제
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.delete('/info/studios', (req, res) => {
   const studio: Studio = req.body;
   studioInfoSource.delete(studio.name);

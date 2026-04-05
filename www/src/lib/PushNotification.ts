@@ -66,7 +66,7 @@ export default class PushNotification {
     }
 
     try {
-      const response = await fetch('/api/push/vapid-public-key');
+      const response = await fetch('/api/v1/push/vapid-public-key');
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -252,7 +252,7 @@ export default class PushNotification {
    */
   private async sendSubscriptionToServer(subscription: PushSubscriptionData): Promise<void> {
     try {
-      const response = await fetch('/api/push/subscriptions', {
+      const response = await fetch('/api/v1/push/subscriptions', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -276,7 +276,7 @@ export default class PushNotification {
    */
   private async removeSubscriptionFromServer(subscription: PushSubscriptionData): Promise<void> {
     try {
-      const response = await fetch('/api/push/subscriptions', {
+      const response = await fetch('/api/v1/push/subscriptions', {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',

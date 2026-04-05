@@ -4,7 +4,26 @@ import * as actressService from '../services/actress-info.service';
 
 const router = Router();
 
-/** GET /info/actresses - 전체 목록 (format=map 이면 name->Actress 맵) */
+/**
+ * @openapi
+ * /info/actresses:
+ *   get:
+ *     tags: [Actress]
+ *     summary: 전체 Actress 목록
+ *     parameters:
+ *       - in: query
+ *         name: format
+ *         schema: { type: string, enum: [map] }
+ *       - in: query
+ *         name: localname
+ *         schema: { type: string }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/actresses', (req, res) => {
   const { format, localname, search } = req.query;
 
@@ -24,52 +43,174 @@ router.get('/info/actresses', (req, res) => {
   res.json(actressService.list());
 });
 
-/** GET /info/actresses/name-check - 이름 유사도 체크 (?threshold=) */
+/**
+ * @openapi
+ * /info/actresses/name-check:
+ *   get:
+ *     tags: [Actress]
+ *     summary: 이름 유사도 체크
+ *     parameters:
+ *       - in: query
+ *         name: threshold
+ *         schema: { type: number }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/actresses/name-check', (req, res) => {
   const threshold = parseFloat(req.query.threshold as string) || 0;
   res.json(actressService.funcNameCheck(threshold));
 });
 
-/** GET /info/actresses/:name - Actress 조회 */
+/**
+ * @openapi
+ * /info/actresses/{name}:
+ *   get:
+ *     tags: [Actress]
+ *     summary: Actress 조회
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/actresses/:name', (req, res) => {
   res.json(actressService.get(req.params.name));
 });
 
-/** POST /info/actresses - 신규 생성 */
+/**
+ * @openapi
+ * /info/actresses:
+ *   post:
+ *     tags: [Actress]
+ *     summary: 신규 생성
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/info/actresses', (req, res) => {
   const actress: Actress = req.body;
   res.json(actressService.create(actress));
 });
 
-/** PATCH /info/actresses - 수정 */
+/**
+ * @openapi
+ * /info/actresses:
+ *   patch:
+ *     tags: [Actress]
+ *     summary: 수정
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.patch('/info/actresses', (req, res) => {
   const actress: Actress = req.body;
   actressService.update(actress);
   res.sendStatus(204);
 });
 
-/** PUT /info/actresses - 병합 */
+/**
+ * @openapi
+ * /info/actresses:
+ *   put:
+ *     tags: [Actress]
+ *     summary: 병합
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.put('/info/actresses', (req, res) => {
   const actress: Actress = req.body;
   actressService.persist(actress);
   res.sendStatus(204);
 });
 
-/** PUT /info/actresses/:name - 이름 변경 (body: Actress with newName) */
+/**
+ * @openapi
+ * /info/actresses/{name}:
+ *   put:
+ *     tags: [Actress]
+ *     summary: 이름 변경
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.put('/info/actresses/:name', (req, res) => {
   const actress: Actress = req.body;
   actressService.rename(actress, req.params.name);
   res.sendStatus(204);
 });
 
-/** PATCH /info/actresses/:name/favorite - 즐겨찾기 설정 (body: { checked }) */
+/**
+ * @openapi
+ * /info/actresses/{name}/favorite:
+ *   patch:
+ *     tags: [Actress]
+ *     summary: 즐겨찾기 설정
+ *     parameters:
+ *       - in: path
+ *         name: name
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               checked: { type: boolean }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.patch('/info/actresses/:name/favorite', (req, res) => {
   const { checked } = req.body;
   actressService.setFavorite(req.params.name, checked === true || checked === 'true');
   res.sendStatus(204);
 });
 
-/** DELETE /info/actresses - 삭제 */
+/**
+ * @openapi
+ * /info/actresses:
+ *   delete:
+ *     tags: [Actress]
+ *     summary: 삭제
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.delete('/info/actresses', (req, res) => {
   const actress: Actress = req.body;
   actressService.deleteActress(actress);

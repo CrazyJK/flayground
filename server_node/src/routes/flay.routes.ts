@@ -10,7 +10,43 @@ const router = Router();
 
 // ── 정적 라우트 (파라미터 라우트보다 먼저 등록해야 함) ──
 
-/** GET /flays - 전체 Instance Flay 목록 (?fields=score, ?expand=actress, ?sort=score&order=asc|desc, ?search=, ?tag=&match=similar, ?{field}={value}, ?count=true) */
+/**
+ * @openapi
+ * /flays:
+ *   get:
+ *     tags: [Flay]
+ *     summary: 전체 Instance Flay 목록
+ *     parameters:
+ *       - in: query
+ *         name: fields
+ *         schema: { type: string, enum: [score] }
+ *         description: score 맵 반환
+ *       - in: query
+ *         name: expand
+ *         schema: { type: string, enum: [actress] }
+ *         description: Actress 포함 확장
+ *       - in: query
+ *         name: sort
+ *         schema: { type: string, enum: [score] }
+ *       - in: query
+ *         name: order
+ *         schema: { type: string, enum: [asc, desc] }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *       - in: query
+ *         name: tag
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: match
+ *         schema: { type: string, enum: [similar] }
+ *       - in: query
+ *         name: count
+ *         schema: { type: string, enum: ['true'] }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/flays', (req, res) => {
   const { fields, expand, sort, order, search, tag, match, count } = req.query;
 
@@ -77,13 +113,47 @@ router.get('/flays', (req, res) => {
   res.json(flayService.list());
 });
 
-/** POST /flays - opus 목록으로 Flay 조회 */
+/**
+ * @openapi
+ * /flays:
+ *   post:
+ *     tags: [Flay]
+ *     summary: opus 목록으로 Flay 조회
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: array
+ *             items: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/flays', (req, res) => {
   const opusList: string[] = req.body;
   res.json(flayService.listByOpus(opusList));
 });
 
-/** POST /flays/search - FlayCondition으로 필터링 (?groupBy=flay|studio|opus|title|actress|release) */
+/**
+ * @openapi
+ * /flays/search:
+ *   post:
+ *     tags: [Flay]
+ *     summary: FlayCondition으로 필터링
+ *     parameters:
+ *       - in: query
+ *         name: groupBy
+ *         schema: { type: string, enum: [flay, studio, opus, title, actress, release] }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/flays/search', (req, res) => {
   const condition: FlayCondition = req.body;
   const groupBy = (req.query.groupBy as string) || 'flay';
@@ -104,7 +174,20 @@ router.post('/flays/search', (req, res) => {
   }
 });
 
-/** GET /flays/candidates - 후보 파일 목록 (?keyword= 필터링) */
+/**
+ * @openapi
+ * /flays/candidates:
+ *   get:
+ *     tags: [Flay]
+ *     summary: 후보 파일 목록
+ *     parameters:
+ *       - in: query
+ *         name: keyword
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/flays/candidates', (req, res) => {
   const keyword = req.query.keyword as string | undefined;
   if (keyword) {
@@ -118,18 +201,58 @@ router.get('/flays/candidates', (req, res) => {
   res.json(flayService.findCandidates());
 });
 
-/** POST /flays/exists - opus 존재 여부 확인 */
+/**
+ * @openapi
+ * /flays/exists:
+ *   post:
+ *     tags: [Flay]
+ *     summary: opus 존재 여부 확인
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/flays/exists', (req, res) => {
   res.json(flayService.exists(req.body));
 });
 
-/** POST /flays/open-folder - 폴더 열기 */
+/**
+ * @openapi
+ * /flays/open-folder:
+ *   post:
+ *     tags: [Flay]
+ *     summary: 폴더 열기
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.post('/flays/open-folder', (req, res) => {
   flayService.openFolderSvc(req.body);
   res.sendStatus(204);
 });
 
-/** DELETE /flays/files - 파일 삭제 */
+/**
+ * @openapi
+ * /flays/files:
+ *   delete:
+ *     tags: [Flay]
+ *     summary: 파일 삭제
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.delete('/flays/files', (req, res) => {
   flayService.deleteFileSvc(req.body);
   res.sendStatus(204);
@@ -137,7 +260,26 @@ router.delete('/flays/files', (req, res) => {
 
 // ── 파라미터 라우트 (정적 라우트 뒤에 등록) ──
 
-/** GET /flays/:opus - Flay 조회 (?expand=actress) */
+/**
+ * @openapi
+ * /flays/{opus}:
+ *   get:
+ *     tags: [Flay]
+ *     summary: Flay 조회
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: expand
+ *         schema: { type: string, enum: [actress] }
+ *     responses:
+ *       200:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.get('/flays/:opus', (req, res) => {
   try {
     const flay = flayService.getFlay(req.params.opus);
@@ -153,38 +295,134 @@ router.get('/flays/:opus', (req, res) => {
   }
 });
 
-/** GET /flays/:opus/score - Flay score 조회 */
+/**
+ * @openapi
+ * /flays/{opus}/score:
+ *   get:
+ *     tags: [Flay]
+ *     summary: Flay score 조회
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/flays/:opus/score', (req, res) => {
   res.json(flayService.getScore(req.params.opus));
 });
 
-/** PATCH /flays/:opus/candidates/accept - 후보 수락 */
+/**
+ * @openapi
+ * /flays/{opus}/candidates/accept:
+ *   patch:
+ *     tags: [Flay]
+ *     summary: 후보 수락
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.patch('/flays/:opus/candidates/accept', (req, res) => {
   flayService.acceptCandidates(req.params.opus);
   res.sendStatus(204);
 });
 
-/** POST /flays/:opus/play - 영상 재생 (?seekTime=) */
+/**
+ * @openapi
+ * /flays/{opus}/play:
+ *   post:
+ *     tags: [Flay]
+ *     summary: 영상 재생
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: seekTime
+ *         schema: { type: number }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.post('/flays/:opus/play', (req, res) => {
   const seekTime = parseFloat(req.query.seekTime as string) || 0;
   flayService.playFlay(req.params.opus, seekTime);
   res.sendStatus(204);
 });
 
-/** POST /flays/:opus/edit - 자막 편집 */
+/**
+ * @openapi
+ * /flays/{opus}/edit:
+ *   post:
+ *     tags: [Flay]
+ *     summary: 자막 편집
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.post('/flays/:opus/edit', (req, res) => {
   flayService.editFlay(req.params.opus);
   res.sendStatus(204);
 });
 
-/** PUT /flays/:opus - 이름 변경 (body: Flay) */
+/**
+ * @openapi
+ * /flays/{opus}:
+ *   put:
+ *     tags: [Flay]
+ *     summary: 이름 변경
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.put('/flays/:opus', (req, res) => {
   const newFlay: Flay = req.body;
   flayService.renameFlaySvc(req.params.opus, newFlay);
   res.sendStatus(204);
 });
 
-/** DELETE /flays/:opus/files - Flay에 속한 파일 삭제 */
+/**
+ * @openapi
+ * /flays/{opus}/files:
+ *   delete:
+ *     tags: [Flay]
+ *     summary: Flay에 속한 파일 삭제
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.delete('/flays/:opus/files', (req, res) => {
   flayService.deleteFileOnFlay(req.params.opus, req.body);
   res.sendStatus(204);

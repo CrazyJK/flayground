@@ -6,7 +6,23 @@ import { imageSource } from '../sources/image-source';
 
 const router = Router();
 
-/** GET /images - 전체 이미지 목록 (?count=true, ?random=true) */
+/**
+ * @openapi
+ * /images:
+ *   get:
+ *     tags: [Image]
+ *     summary: 전체 이미지 목록
+ *     parameters:
+ *       - in: query
+ *         name: count
+ *         schema: { type: string, enum: ['true'] }
+ *       - in: query
+ *         name: random
+ *         schema: { type: string, enum: ['true'] }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/images', (req, res) => {
   const { count, random } = req.query;
 
@@ -24,7 +40,26 @@ router.get('/images', (req, res) => {
   res.json(imageSource.list());
 });
 
-/** POST /images - 이미지 업로드 (multer) */
+/**
+ * @openapi
+ * /images:
+ *   post:
+ *     tags: [Image]
+ *     summary: 이미지 업로드
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               file:
+ *                 type: array
+ *                 items: { type: string, format: binary }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/images', imageUpload.array('file'), (req, res) => {
   const files = req.files as Express.Multer.File[] | undefined;
   if (!files || files.length === 0) {
@@ -46,7 +81,23 @@ router.post('/images', imageUpload.array('file'), (req, res) => {
   res.json(images);
 });
 
-/** GET /images/:idx - 인덱스로 이미지 조회 */
+/**
+ * @openapi
+ * /images/{idx}:
+ *   get:
+ *     tags: [Image]
+ *     summary: 인덱스로 이미지 조회
+ *     parameters:
+ *       - in: path
+ *         name: idx
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.get('/images/:idx', (req, res) => {
   const idx = parseInt(req.params.idx, 10);
   try {
@@ -56,7 +107,23 @@ router.get('/images/:idx', (req, res) => {
   }
 });
 
-/** DELETE /images/:idx - 이미지 삭제 */
+/**
+ * @openapi
+ * /images/{idx}:
+ *   delete:
+ *     tags: [Image]
+ *     summary: 이미지 삭제
+ *     parameters:
+ *       - in: path
+ *         name: idx
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       204:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.delete('/images/:idx', (req, res) => {
   const idx = parseInt(req.params.idx, 10);
   try {
@@ -67,7 +134,23 @@ router.delete('/images/:idx', (req, res) => {
   }
 });
 
-/** POST /images/:idx/paint - 이미지 그림판에서 열기 */
+/**
+ * @openapi
+ * /images/{idx}/paint:
+ *   post:
+ *     tags: [Image]
+ *     summary: 이미지 그림판에서 열기
+ *     parameters:
+ *       - in: path
+ *         name: idx
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       204:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.post('/images/:idx/paint', (req, res) => {
   const idx = parseInt(req.params.idx, 10);
   try {
@@ -79,7 +162,38 @@ router.post('/images/:idx/paint', (req, res) => {
   }
 });
 
-/** POST /images/page-download - 페이지 이미지 다운로드 */
+/**
+ * @openapi
+ * /images/page-download:
+ *   post:
+ *     tags: [Image]
+ *     summary: 페이지 이미지 다운로드
+ *     parameters:
+ *       - in: query
+ *         name: pageUrl
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: downloadDir
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: folderName
+ *         required: true
+ *         schema: { type: string }
+ *       - in: query
+ *         name: titlePrefix
+ *         schema: { type: string }
+ *       - in: query
+ *         name: titleCssQuery
+ *         schema: { type: string }
+ *       - in: query
+ *         name: minimumKbSize
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/images/page-download', async (req, res) => {
   const { pageUrl, downloadDir, folderName, titlePrefix, titleCssQuery, minimumKbSize } = req.query;
   if (!pageUrl || !downloadDir || !folderName) {

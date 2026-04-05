@@ -5,7 +5,20 @@ import { tagInfoSource } from '../sources/info-sources';
 
 const router = Router();
 
-/** GET /info/videos - 전체 Video 목록 (?search= 검색) */
+/**
+ * @openapi
+ * /info/videos:
+ *   get:
+ *     tags: [Video]
+ *     summary: 전체 Video 목록
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/videos', (req, res) => {
   const { search } = req.query;
   if (search) {
@@ -14,7 +27,23 @@ router.get('/info/videos', (req, res) => {
   res.json(videoService.list());
 });
 
-/** GET /info/videos/:opus - Video 조회 */
+/**
+ * @openapi
+ * /info/videos/{opus}:
+ *   get:
+ *     tags: [Video]
+ *     summary: Video 조회
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ *       404:
+ *         description: 찾을 수 없음
+ */
 router.get('/info/videos/:opus', (req, res) => {
   try {
     res.json(videoService.get(req.params.opus));
@@ -23,46 +52,161 @@ router.get('/info/videos/:opus', (req, res) => {
   }
 });
 
-/** POST /info/videos - 신규 생성 */
+/**
+ * @openapi
+ * /info/videos:
+ *   post:
+ *     tags: [Video]
+ *     summary: 신규 생성
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/info/videos', (req, res) => {
   const video: Video = req.body;
   res.json(videoService.create(video));
 });
 
-/** PUT /info/videos - 없으면 신규, 있으면 수정 */
+/**
+ * @openapi
+ * /info/videos:
+ *   put:
+ *     tags: [Video]
+ *     summary: 없으면 신규, 있으면 수정
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.put('/info/videos', (req, res) => {
   const video: Video = req.body;
   res.json(videoService.put(video));
 });
 
-/** PATCH /info/videos - 수정 */
+/**
+ * @openapi
+ * /info/videos:
+ *   patch:
+ *     tags: [Video]
+ *     summary: 수정
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.patch('/info/videos', (req, res) => {
   const video: Video = req.body;
   videoService.update(video);
   res.sendStatus(204);
 });
 
-/** DELETE /info/videos - 삭제 */
+/**
+ * @openapi
+ * /info/videos:
+ *   delete:
+ *     tags: [Video]
+ *     summary: 삭제
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.delete('/info/videos', (req, res) => {
   const video: Video = req.body;
   videoService.deleteVideo(video);
   res.sendStatus(204);
 });
 
-/** PUT /info/videos/:opus/rank - rank 설정 (body: { rank }) */
+/**
+ * @openapi
+ * /info/videos/{opus}/rank:
+ *   put:
+ *     tags: [Video]
+ *     summary: rank 설정
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               rank: { type: integer }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.put('/info/videos/:opus/rank', (req, res) => {
   const rank = req.body.rank ?? parseInt(req.body as string, 10);
   videoService.setRank(req.params.opus, rank);
   res.sendStatus(204);
 });
 
-/** PUT /info/videos/:opus/like - like 추가 */
+/**
+ * @openapi
+ * /info/videos/{opus}/like:
+ *   put:
+ *     tags: [Video]
+ *     summary: like 추가
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.put('/info/videos/:opus/like', (req, res) => {
   videoService.setLike(req.params.opus);
   res.sendStatus(204);
 });
 
-/** PUT /info/videos/:opus/tags/:tagId - 태그 토글 (body: { checked }) */
+/**
+ * @openapi
+ * /info/videos/{opus}/tags/{tagId}:
+ *   put:
+ *     tags: [Video]
+ *     summary: 태그 토글
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *       - in: path
+ *         name: tagId
+ *         required: true
+ *         schema: { type: integer }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               checked: { type: boolean }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.put('/info/videos/:opus/tags/:tagId', (req, res) => {
   const tag = tagInfoSource.get(parseInt(req.params.tagId, 10));
   const checked = req.body.checked === true || req.body.checked === 'true';
@@ -70,7 +214,25 @@ router.put('/info/videos/:opus/tags/:tagId', (req, res) => {
   res.sendStatus(204);
 });
 
-/** PUT /info/videos/:opus/comment - 코멘트 설정 */
+/**
+ * @openapi
+ * /info/videos/{opus}/comment:
+ *   put:
+ *     tags: [Video]
+ *     summary: 코멘트 설정
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.put('/info/videos/:opus/comment', (req, res) => {
   videoService.setComment(req.params.opus, req.body);
   res.sendStatus(204);

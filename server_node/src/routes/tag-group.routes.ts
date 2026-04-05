@@ -4,31 +4,95 @@ import { tagGroupInfoSource } from '../sources/info-sources';
 
 const router = Router();
 
-/** GET /info/tag-groups - 전체 TagGroup 목록 */
+/**
+ * @openapi
+ * /info/tag-groups:
+ *   get:
+ *     tags: [TagGroup]
+ *     summary: 전체 TagGroup 목록
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/tag-groups', (_req, res) => {
   res.json(tagGroupInfoSource.getList());
 });
 
-/** GET /info/tag-groups/:id - TagGroup 조회 */
+/**
+ * @openapi
+ * /info/tag-groups/{id}:
+ *   get:
+ *     tags: [TagGroup]
+ *     summary: TagGroup 조회
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/tag-groups/:id', (req, res) => {
   res.json(tagGroupInfoSource.get(req.params.id));
 });
 
-/** POST /info/tag-groups - 신규 생성 */
+/**
+ * @openapi
+ * /info/tag-groups:
+ *   post:
+ *     tags: [TagGroup]
+ *     summary: 신규 생성
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.post('/info/tag-groups', (req, res) => {
   const tagGroup: TagGroup = req.body;
   const created = tagGroupInfoSource.create(tagGroup);
   res.json(created);
 });
 
-/** PATCH /info/tag-groups - 수정 */
+/**
+ * @openapi
+ * /info/tag-groups:
+ *   patch:
+ *     tags: [TagGroup]
+ *     summary: 수정
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.patch('/info/tag-groups', (req, res) => {
   const tagGroup: TagGroup = req.body;
   tagGroupInfoSource.update(tagGroup);
   res.sendStatus(204);
 });
 
-/** DELETE /info/tag-groups - 삭제 */
+/**
+ * @openapi
+ * /info/tag-groups:
+ *   delete:
+ *     tags: [TagGroup]
+ *     summary: 삭제
+ *     requestBody:
+ *       content:
+ *         application/json:
+ *           schema: { type: object }
+ *     responses:
+ *       204:
+ *         description: 성공
+ */
 router.delete('/info/tag-groups', (req, res) => {
   const tagGroup: TagGroup = req.body;
   tagGroupInfoSource.delete(tagGroup.id);

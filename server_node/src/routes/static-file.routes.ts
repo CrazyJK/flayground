@@ -7,8 +7,23 @@ import { imageSource } from '../sources/image-source';
 const router = Router();
 
 /**
- * GET /static/cover/:opus - Flay 커버 이미지 바이너리 응답
- * Java ImageRequestHandler.getCover() 대응
+ * @openapi
+ * /static/cover/{opus}:
+ *   get:
+ *     tags: [StaticFile]
+ *     summary: Flay 커버 이미지
+ *     parameters:
+ *       - in: path
+ *         name: opus
+ *         required: true
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 이미지 바이너리
+ *         content:
+ *           image/*: {}
+ *       404:
+ *         description: 찾을 수 없음
  */
 router.get('/static/cover/:opus', (req, res) => {
   const { opus } = req.params;
@@ -37,8 +52,23 @@ router.get('/static/cover/:opus', (req, res) => {
 });
 
 /**
- * GET /static/image/:idx - 이미지 바이너리 응답
- * Java ImageRequestHandler.getImage() 대응
+ * @openapi
+ * /static/image/{idx}:
+ *   get:
+ *     tags: [StaticFile]
+ *     summary: 이미지 바이너리
+ *     parameters:
+ *       - in: path
+ *         name: idx
+ *         required: true
+ *         schema: { type: integer }
+ *     responses:
+ *       200:
+ *         description: 이미지 바이너리
+ *         content:
+ *           image/*: {}
+ *       404:
+ *         description: 찾을 수 없음
  */
 router.get('/static/image/:idx', (req, res) => {
   const idx = parseInt(req.params.idx, 10);

@@ -3,7 +3,26 @@ import { historyRepository } from '../sources/history-repository';
 
 const router = Router();
 
-/** GET /info/histories - 전체 History 목록 (?action=, ?days=, ?search=) */
+/**
+ * @openapi
+ * /info/histories:
+ *   get:
+ *     tags: [History]
+ *     summary: 전체 History 목록
+ *     parameters:
+ *       - in: query
+ *         name: action
+ *         schema: { type: string }
+ *       - in: query
+ *         name: days
+ *         schema: { type: integer }
+ *       - in: query
+ *         name: search
+ *         schema: { type: string }
+ *     responses:
+ *       200:
+ *         description: 성공
+ */
 router.get('/info/histories', (req, res) => {
   const { action, days, search } = req.query;
 

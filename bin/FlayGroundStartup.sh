@@ -3,33 +3,33 @@
 CURRENT_DIR=${PWD}
 FLAY_GROUND_HOME="$CURRENT_DIR"
 
-if [ ! -d "$FLAY_GROUND_HOME/server_node/src" ]; then
+if [ ! -d "$FLAY_GROUND_HOME/backend-node/src" ]; then
   FLAY_GROUND_HOME="$(cd .. && pwd)"
 fi
 
-if [ ! -d "$FLAY_GROUND_HOME/server_node/src" ]; then
+if [ ! -d "$FLAY_GROUND_HOME/backend-node/src" ]; then
   echo "invalid FLAY_GROUND_HOME: $FLAY_GROUND_HOME"
   exit 1
 fi
 
 echo "Using FLAY_GROUND: $FLAY_GROUND_HOME"
 
-# Build WWW
+# Build client-web
 echo ""
 echo "===================================================================================================================="
-echo "Build WWW"
+echo "Build client-web"
 echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/www"
+cd "$FLAY_GROUND_HOME/client-web"
 yarn install
 node madge.cjs
 yarn run build
 
-# Build server_node
+# Build backend-node
 echo ""
 echo "===================================================================================================================="
-echo "Build server_node"
+echo "Build backend-node"
 echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/server_node"
+cd "$FLAY_GROUND_HOME/backend-node"
 yarn install
 yarn build:schema
 yarn build
@@ -54,10 +54,10 @@ yarn install
 nohup yarn http > "$FLAY_GROUND_HOME/mcp-github/logs/mcp-github.log" 2>&1 &
 echo "MCP-Github logs: $FLAY_GROUND_HOME/mcp-github/logs/mcp-github.log"
 
-# Start server_node
+# Start backend-node
 echo ""
 echo "===================================================================================================================="
-echo "Start FLAY_GROUND (server_node)"
+echo "Start FLAY_GROUND (backend-node)"
 echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/server_node"
+cd "$FLAY_GROUND_HOME/backend-node"
 node dist/index.js

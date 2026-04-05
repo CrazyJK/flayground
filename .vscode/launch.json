@@ -4,7 +4,7 @@
       "type": "java",
       "name": "Ground",
       "request": "launch",
-      "cwd": "${workspaceFolder}/server",
+      "cwd": "${workspaceFolder}/backend-java",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
       "vmArgs": "-Dspring.profiles.active=ground-home,env-dev"
@@ -13,7 +13,7 @@
       "type": "java",
       "name": "Ground test",
       "request": "launch",
-      "cwd": "${workspaceFolder}/server",
+      "cwd": "${workspaceFolder}/backend-java",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
       "vmArgs": "-Dspring.profiles.active=ground-test,env-dev"
@@ -22,7 +22,7 @@
       "type": "java",
       "name": "Ground SSL",
       "request": "launch",
-      "cwd": "${workspaceFolder}/server",
+      "cwd": "${workspaceFolder}/backend-java",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
       "vmArgs": "-Dspring.profiles.active=ground-home,env-dev,env-ssl"
@@ -31,7 +31,7 @@
       "type": "java",
       "name": "Ground SSL test",
       "request": "launch",
-      "cwd": "${workspaceFolder}/server",
+      "cwd": "${workspaceFolder}/backend-java",
       "console": "internalConsole",
       "mainClass": "jk.kamoru.ground.GroundApplication",
       "vmArgs": "-Dspring.profiles.active=ground-test,env-dev,env-ssl"
@@ -56,18 +56,18 @@
     },
     {
       "type": "node",
-      "name": "[Ground] www dev",
+      "name": "[Ground] client-web dev",
       "request": "launch",
-      "cwd": "${workspaceFolder}/www",
+      "cwd": "${workspaceFolder}/client-web",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"
     },
     {
       "type": "node",
-      "name": "[Ground] server_node dev",
+      "name": "[Ground] backend-node dev",
       "request": "launch",
-      "cwd": "${workspaceFolder}/server_node",
+      "cwd": "${workspaceFolder}/backend-node",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"

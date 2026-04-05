@@ -47,7 +47,7 @@ yarn.lock
 .tscache/
 
 # webpack dist
-www/dist
+client-web/dist
 src/main/resources/static/dist*
 
 #diablo4
@@ -69,5 +69,5 @@ dist/
 .playwright-mcp
 
 # server_node
-server_node/cert/
-server_node/data/
+backend-node/cert/
+backend-node/data/

@@ -56,8 +56,8 @@ function createApp(): express.Application {
   app.use(createFileLogger());
 
   // 정적 파일 서빙
-  const wwwDistPath = path.resolve(__dirname, '..', '..', 'www', 'dist');
-  const wwwPublicPath = path.resolve(__dirname, '..', '..', 'www', 'public');
+  const wwwDistPath = path.resolve(__dirname, '..', '..', 'client-web', 'dist');
+  const wwwPublicPath = path.resolve(__dirname, '..', '..', 'client-web', 'public');
 
   // 루트 정적 파일 (index.html, manifest.webmanifest, service-worker.js 등)
   if (fs.existsSync(wwwPublicPath)) {

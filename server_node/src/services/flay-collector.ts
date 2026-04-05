@@ -169,14 +169,14 @@ function getLikeCount(flay: Flay): number {
   return flay.video.likes ? flay.video.likes.length : 0;
 }
 
-function getLastLike(flay: Flay): string | null {
+function getLastLike(flay: Flay): number | null {
   if (!flay.video.likes || flay.video.likes.length === 0) return null;
-  return flay.video.likes[flay.video.likes.length - 1];
+  return flay.video.likes[flay.video.likes.length - 1]!;
 }
 
-function dateCompare(d1: string | null, d2: string | null): number {
+function dateCompare(d1: number | null, d2: number | null): number {
   if (d1 === null && d2 === null) return 0;
   if (d1 === null) return -1;
   if (d2 === null) return 1;
-  return d1.localeCompare(d2);
+  return d1 - d2;
 }

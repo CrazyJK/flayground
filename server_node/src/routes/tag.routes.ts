@@ -130,6 +130,10 @@ router.post('/info/tags', (req, res) => {
  *           schema:
  *             $ref: '#/components/schemas/Tag'
  *     responses:
+ *       204:
+ *         description: 성공
+ */
+router.patch('/info/tags', (req, res) => {
   const tag: Tag = req.body;
   tagInfoSource.update(tag);
   sseSend(tag);

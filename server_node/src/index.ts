@@ -128,7 +128,7 @@ function startServer(app: express.Application): void {
     };
 
     if (useHttp2) {
-      // HTTPS + TLS (Express 4는 http2 모듈과 호환되지 않으므로 https 사용)
+      // HTTPS + TLS (Express는 http2 모듈과 호환되지 않으므로 https로 서빙, HTTP/2는 리버스 프록시에서 처리)
       const server = https.createServer(sslOptions, app);
       server.listen(port, () => {
         console.log(`[Flay Ground] HTTPS 서버 시작: https://flay.kamoru.jk${port === 443 ? '' : ':' + port}`);

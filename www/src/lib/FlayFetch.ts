@@ -48,7 +48,7 @@ export interface Video {
   title: string;
   desc: string;
   tags: Tag[];
-  likes: string[];
+  likes: number[];
 }
 
 export interface Archive extends Flay {}

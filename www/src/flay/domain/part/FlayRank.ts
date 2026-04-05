@@ -1,4 +1,5 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
+import DateUtils from '@lib/DateUtils';
 import FlayAction from '@lib/FlayAction';
 import FlayFetch, { Flay } from '@lib/FlayFetch';
 import rankSVG from '@svg/ranks';
@@ -68,7 +69,7 @@ export default class FlayRank extends FlayPartElement {
     likeBtn.title =
       flay.video.likes
         ?.reverse()
-        .map((like) => like.substring(0, 16).replace(/T/, ' '))
+        .map((like) => DateUtils.format(like, 'yyyy-MM-dd HH:mm'))
         .join(`\n`) || '';
 
     playLabel.querySelector('.play')!.innerHTML = String(flay.video.play);

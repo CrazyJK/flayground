@@ -86,7 +86,7 @@ export class FlayShotDailyPanel extends GroundFlay {
    * @param date 원본 날짜
    * @returns 기준 날짜 (yyyy-mm-dd)
    */
-  #getRefDate(date: string): string {
+  #getRefDate(date: string | number): string {
     const refDate = new Date(date);
     refDate.setHours(refDate.getHours() - 9);
     return refDate.toISOString().substring(0, 10);

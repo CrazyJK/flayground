@@ -129,6 +129,10 @@ router.post('/info/actresses', (req, res) => {
  *           schema:
  *             $ref: '#/components/schemas/Actress'
  *     responses:
+ *       204:
+ *         description: 성공
+ */
+router.patch('/info/actresses', (req, res) => {
   const actress: Actress = req.body;
   actressService.update(actress);
   res.sendStatus(204);

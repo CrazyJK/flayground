@@ -125,6 +125,10 @@ router.post('/info/studios', (req, res) => {
  *           schema:
  *             $ref: '#/components/schemas/Studio'
  *     responses:
+ *       204:
+ *         description: 성공
+ */
+router.patch('/info/studios', (req, res) => {
   const studio: Studio = req.body;
   studioInfoSource.update(studio);
   sseSend(studio);

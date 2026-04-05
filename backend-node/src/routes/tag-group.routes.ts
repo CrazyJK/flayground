@@ -86,6 +86,10 @@ router.post('/info/tag-groups', (req, res) => {
  *           schema:
  *             $ref: '#/components/schemas/TagGroup'
  *     responses:
+ *       204:
+ *         description: 성공
+ */
+router.patch('/info/tag-groups', (req, res) => {
   const tagGroup: TagGroup = req.body;
   tagGroupInfoSource.update(tagGroup);
   res.sendStatus(204);

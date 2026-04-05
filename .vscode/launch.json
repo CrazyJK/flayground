@@ -38,7 +38,7 @@
     },
     {
       "type": "node",
-      "name": "mcp-gemini dev:http",
+      "name": "Ground mcp-gemini dev:http",
       "request": "launch",
       "cwd": "${workspaceFolder}/mcp-gemini",
       "runtimeExecutable": "yarn",
@@ -47,7 +47,7 @@
     },
     {
       "type": "node",
-      "name": "mcp-github dev:http",
+      "name": "Ground mcp-github dev:http",
       "request": "launch",
       "cwd": "${workspaceFolder}/mcp-github",
       "runtimeExecutable": "yarn",
@@ -56,7 +56,7 @@
     },
     {
       "type": "node",
-      "name": "www dev",
+      "name": "Ground www dev",
       "request": "launch",
       "cwd": "${workspaceFolder}/www",
       "runtimeExecutable": "yarn",
@@ -65,7 +65,7 @@
     },
     {
       "type": "node",
-      "name": "server_node dev",
+      "name": "Ground server_node dev",
       "request": "launch",
       "cwd": "${workspaceFolder}/server_node",
       "runtimeExecutable": "yarn",

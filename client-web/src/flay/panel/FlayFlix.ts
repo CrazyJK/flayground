@@ -250,19 +250,9 @@ export class FlayFlix extends HTMLElement {
     void this.fetchData();
   }
 
-  /** 로딩 중 스켈레톤 표시 */
-  private showSkeleton() {
-    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
-    for (let i = 0; i < SKELETON_COUNT; i++) {
-      const skeleton = document.createElement('div');
-      skeleton.className = 'tag skeleton';
-      skeleton.innerHTML = `
-        <span class="skeleton-text"></span>
-        <div class="flays">${'<div class="flay-cover skeleton-cover"></div>'.repeat(SKELETON_COVER_COUNT)}</div>`;
-      tagContainer.appendChild(skeleton);
-    }
-  }
+  // ── 데이터 로드 ──────────────────────────────────────────────
 
+  /** 태그 그룹, 태그 목록, 최근 재생 이력을 로드하고 렌더링을 시작한다 */
   private async fetchData() {
     try {
       const [tagGroups, tags, histories] = await Promise.all([FlayFetch.getTagGroups(), FlayFetch.getTagListWithCount(), FlayFetch.getHistoryListByAction('PLAY', 30)]);
@@ -270,6 +260,7 @@ export class FlayFlix extends HTMLElement {
       this.tags = tags.filter((tag) => (tag.count || 0) > 0);
       this.recentTags = new Map<number, number>();
 
+      // 최근 재생 이력에서 태그별 빈도 집계
       const playedOpusList = histories.map((h) => h.opus).filter((opus) => this.opusList.includes(opus));
       if (playedOpusList.length > 0) {
         const playedFlays = await this.cachedGetFlayList(...playedOpusList);
@@ -282,11 +273,7 @@ export class FlayFlix extends HTMLElement {
 
       // 스켈레톤 제거 후 태그 순차 렌더링
       this.renderTags();
-
-      // 바스켓 행을 태그 맨 위에 삽입
       void this.renderBasketRow();
-
-      // AI 추천 행을 비동기로 태그 맨 위에 삽입
       void this.renderAIRecommendations();
     } catch (error) {
       console.error('데이터 로드 오류:', error);
@@ -295,145 +282,159 @@ export class FlayFlix extends HTMLElement {
   }
 
   /**
-   * 바스켓에 담긴 flay 목록을 태그 컨테이너 맨 위에 행으로 삽입
+   * 캐시를 활용하여 Flay 목록을 가져온다. 캐시에 없는 opus만 서버에서 조회
+   * @param opusList 조회할 opus 목록
+   * @returns Flay 배열
    */
-  private async renderBasketRow() {
-    const basket = FlayBasket.getAll();
-    if (basket.size === 0) return;
-    const shuffledBasket = Array.from(basket).sort(() => Math.random() - 0.5);
-
-    const flays = await this.cachedGetFlayList(...shuffledBasket);
-    if (flays.length === 0) return;
-
-    this.renderTagRow('Basket', flays, true);
-    // basket 행에 식별 클래스 부여
-    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
-    const basketRow = tagContainer.firstElementChild as HTMLElement | null;
-    if (basketRow) basketRow.classList.add('tag-basket');
+  private async cachedGetFlayList(...opusList: string[]): Promise<Flay[]> {
+    const uncached = opusList.filter((opus) => !this.flayCache.has(opus));
+    if (uncached.length > 0) {
+      const fetched = await FlayFetch.getFlayList(...uncached);
+      fetched.forEach((flay) => this.flayCache.set(flay.opus, flay));
+    }
+    return opusList.map((opus) => this.flayCache.get(opus)).filter((flay): flay is Flay => flay != null);
   }
 
-  /**
-   * 바스켓 변경 시 Basket 행을 실시간으로 갱신한다.
-   * 기존 행이 있으면 커버만 업데이트, 없으면 새로 생성
-   */
-  private async refreshBasketRow() {
-    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
-    if (!tagContainer) return;
+  // ── 비디오 재생 ──────────────────────────────────────────────
 
-    const basket = FlayBasket.getAll();
-    const existingRow = tagContainer.querySelector('.tag-basket') as HTMLElement | null;
+  /** 현재 선택된 opus의 비디오를 재생하고 정보를 표시한다 */
+  private playOpus() {
+    this.stopPlayTimeTracking();
 
-    if (basket.size === 0) {
-      existingRow?.remove();
-      return;
-    }
+    const opus = this.opus!;
+    this.video.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
+    this.video.src = ApiClient.buildUrl(`/flays/${opus}/stream/movie/0`);
 
-    const basketArray = Array.from(basket);
-    const flays = await this.cachedGetFlayList(...basketArray);
-    if (flays.length === 0) {
-      existingRow?.remove();
-      return;
-    }
-
-    if (existingRow) {
-      // 기존 행의 커버 목록 갱신
-      const flaysContainer = existingRow.querySelector('.flays') as HTMLElement;
-      const existingOpusSet = new Set(Array.from(flaysContainer.querySelectorAll<FlixCover>('flix-cover')).map((el) => el.dataset.opus));
-
-      // 새로 추가된 flay를 앞에 삽입
-      for (const flay of flays) {
-        if (existingOpusSet.has(flay.opus)) continue;
-        const cover = this.createCoverElement(flay);
-        cover.classList.add('cover-fade-in');
-        flaysContainer.prepend(cover);
+    // 저장된 재생 위치가 있으면 이어재생
+    this.playTimeDB.select(opus).then((record) => {
+      console.log('저장된 재생 위치', opus, record);
+      if (record && record.time > 0 && record.duration > 0 && record.time < record.duration - 5) {
+        this.video.currentTime = record.time;
       }
+    });
 
-      // 카운트 업데이트
-      const countEl = existingRow.querySelector('.tag-count');
-      if (countEl) countEl.textContent = `(${flays.length})`;
+    this.startPlayTimeTracking(opus);
+
+    // 캐시에서 먼저 찾고, 없으면 서버에서 조회
+    const cached = this.flayCache.get(opus);
+    const flayPromise = cached ? Promise.resolve(cached) : FlayFetch.getFlay(opus);
+    flayPromise.then((flay) => {
+      if (!flay) return;
+      this.flayTitle.textContent = flay.title;
+      this.flayActress.textContent = flay.actressList.join(', ');
+      this.flayOpus.textContent = flay.opus;
+      this.flayRelease.textContent = flay.release;
+      this.flayTags.textContent = flay.video.tags.map((tag) => tag.name).join(', ');
+    });
+  }
+
+  /** 랜덤 opus를 선택하여 재생한다 */
+  private playRandomOpus() {
+    if (this.opusList.length === 0) return;
+    this.opus = this.opusList[Math.floor(Math.random() * this.opusList.length)] || null;
+    if (this.opus) {
+      this.playOpus();
+      this.playPauseBtn.innerHTML = controlsSVG.pause;
+    }
+  }
+
+  /** 재생/일시정지를 토글한다 */
+  private togglePlayPause() {
+    if (this.video.paused) {
+      this.video.play();
+      this.playPauseBtn.innerHTML = controlsSVG.pause;
     } else {
-      // 행이 없으면 새로 생성
-      this.renderTagRow('Basket', flays, true);
-      const basketRow = tagContainer.firstElementChild as HTMLElement | null;
-      if (basketRow) basketRow.classList.add('tag-basket');
+      this.video.pause();
+      this.playPauseBtn.innerHTML = controlsSVG.play;
+    }
+  }
+
+  /** 1분 주기로 PlayTimeDB에 재생 위치를 저장한다 */
+  private startPlayTimeTracking(opus: string) {
+    this.playTimeTimer = setInterval(() => {
+      if (this.video.paused || this.video.ended) return;
+      void this.playTimeDB.update(opus, this.video.currentTime, this.video.duration);
+    }, PLAY_TIME_SAVE_INTERVAL);
+  }
+
+  /** 재생 시간 추적 타이머를 정리하고 마지막 위치를 저장한다 */
+  private stopPlayTimeTracking() {
+    if (this.playTimeTimer) {
+      clearInterval(this.playTimeTimer);
+      this.playTimeTimer = null;
+    }
+    if (this.opus && this.video.currentTime > 0) {
+      void this.playTimeDB.update(this.opus, this.video.currentTime, this.video.duration);
     }
   }
 
   /**
-   * AI에게 추천받아 태그 컨테이너 맨 위에 삽입.
-   * 매번 다른 결과를 위해 랜덤 샘플링, opus+title+tags 정보를 토큰 제한에 맞게 전송
+   * 초를 h:mm:ss 형식으로 변환한다
+   * @param seconds 변환할 초
+   * @returns h:mm:ss 형식 문자열
    */
-  private async renderAIRecommendations() {
-    const styles = getComputedStyle(this);
-    const coverWidth = parseFloat(styles.getPropertyValue('--flix-cover-width')) * (parseFloat(styles.fontSize) || 16);
-    const coverGap = parseFloat(styles.getPropertyValue('--flix-cover-gap')) * (parseFloat(styles.fontSize) || 16);
-    const remPx = parseFloat(styles.fontSize) || 16;
-    const availableWidth = this.clientWidth - 5 * remPx;
-    const lineCount = Math.max(3, Math.floor(availableWidth / (coverWidth + coverGap)));
-    const requestCount = Math.ceil((lineCount * 2) / 10) * 10;
+  private formatTime(seconds: number): string {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+  }
 
-    // 프롬프트 고정 부분 (약 80토큰 여유)
-    const systemPrompt = `다음 목록에서 ${requestCount}개를 추천하세요. opus 코드만 쉼표로 구분하여 답하세요.\n`;
-    const MODEL_TOKEN_LIMIT = 8000; // 모델 컨텍스트 한계 (고정)
-    const COMPLETION_TOKENS = 300; // 응답용 토큰
-    const PROMPT_OVERHEAD = 500; // 시스템 프롬프트 + 프록시 메시지 래핑 토큰
-    const availableTokens = MODEL_TOKEN_LIMIT - COMPLETION_TOKENS - PROMPT_OVERHEAD;
+  // ── 태그 렌더링 ──────────────────────────────────────────────
 
-    /** 랜덤 셔플 후 토큰 예산 내에서 프롬프트를 생성한다 */
-    const buildPrompt = async () => {
-      const shuffled = [...this.opusList].sort(() => Math.random() - 0.5);
-      const prefetchCount = Math.min(shuffled.length, 500);
-      await this.cachedGetFlayList(...shuffled.slice(0, prefetchCount));
-
-      const items: string[] = [];
-      let estimatedTokens = 0;
-      for (const opus of shuffled) {
-        const flay = this.flayCache.get(opus);
-        const item = flay ? `${opus}|${flay.video.tags.map((t) => t.name).join(',')}` : opus;
-        const tokenEstimate = Math.ceil(item.replace(/[가-힣]/g, '..').length / 2) + 1;
-        if (estimatedTokens + tokenEstimate > availableTokens) break;
-        estimatedTokens += tokenEstimate;
-        items.push(item);
-      }
-      console.log('AI 추천 프롬프트:', `${items.length}건, ~${estimatedTokens}토큰`);
-      return `${systemPrompt}${items.join('\n')}`;
-    };
-
-    const maxRetries = 3;
-    for (let attempt = 1; attempt <= maxRetries; attempt++) {
-      try {
-        const prompt = await buildPrompt();
-        const response = await generate(prompt, { maxTokens: 300, temperature: 1.0 });
-        const recommended = response.text
-          .replace(/[^a-zA-Z0-9\-,\s]/g, '')
-          .trim()
-          .split(/[,\s]+/)
-          .filter((opus) => this.opusList.includes(opus));
-        console.log('AI 추천 원본:', response.text);
-        // 중복 제거 후 lineCount + 여유분으로 제한
-        const unique = [...new Set(recommended)];
-        console.log('AI 추천 최종:', unique);
-        if (unique.length === 0) return;
-
-        const flays = await this.cachedGetFlayList(...unique);
-        this.renderTagRow('AI 추천', flays, true);
-        return;
-      } catch (error) {
-        console.error(`AI 추천 오류 (${attempt}/${maxRetries}):`, error);
-        if (attempt < maxRetries) {
-          await new Promise((r) => setTimeout(r, 1000 * attempt));
-        }
-      }
+  /** 로딩 중 스켈레톤 UI를 태그 컨테이너에 표시한다 */
+  private showSkeleton() {
+    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
+    for (let i = 0; i < SKELETON_COUNT; i++) {
+      const skeleton = document.createElement('div');
+      skeleton.className = 'tag skeleton';
+      skeleton.innerHTML = `
+        <span class="skeleton-text"></span>
+        <div class="flays">${'<div class="flay-cover skeleton-cover"></div>'.repeat(SKELETON_COVER_COUNT)}</div>`;
+      tagContainer.appendChild(skeleton);
     }
   }
 
+  /** 태그를 최근 재생 빈도순으로 정렬하여 순차 fade-in 렌더링한다 */
+  private renderTags() {
+    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
+    tagContainer.innerHTML = '';
+
+    const groupNameMap = new Map(this.tagGroups.map((g) => [g.id, g.name]));
+    const sortedTags = [...this.tags].sort((a, b) => (this.recentTags.get(b.id) || 0) - (this.recentTags.get(a.id) || 0));
+
+    sortedTags.forEach((tag, index) => {
+      const groupName = groupNameMap.get(tag.group) || '';
+      const tagElement = document.createElement('div');
+      tagElement.id = `tag-${tag.id}`;
+      tagElement.className = 'tag fade-in';
+      tagElement.style.animationDelay = `${index * 80}ms`;
+      tagElement.dataset.tagId = String(tag.id);
+      tagElement.innerHTML = `
+        <span>${tag.name}
+          <small class="tag-group-label">${groupName}</small>
+          <small class="tag-count">(${tag.count})</small>
+        </span>
+        <div class="flays-wrapper">
+          <button type="button" class="scroll-btn scroll-left" title="처음으로">&#x276E;</button>
+          <div class="flays">
+            ${'<div class="flay-cover skeleton-cover"></div>'.repeat(SKELETON_COVER_COUNT)}
+          </div>
+          <button type="button" class="scroll-btn scroll-right" title="끝으로">&#x276F;</button>
+        </div>`;
+
+      tagContainer.appendChild(tagElement);
+      this.lazyObserver.observe(tagElement);
+    });
+  }
+
   /**
-   * 태그 행 하나를 생성하여 tagContainer에 삽입
+   * 태그 행 하나를 생성하여 tagContainer에 삽입한다
    * @param label 행 제목
    * @param flays 표시할 flay 목록
    * @param prepend true면 맨 앞에 삽입
-   * @param groupLabel 태그 그룹명 (선택)
-   * @param count 태그 카운트 (선택)
+   * @param groupLabel 태그 그룹명
+   * @param count 태그 카운트
    */
   private renderTagRow(label: string, flays: Flay[], prepend = false, groupLabel?: string, count?: number) {
     const tagContainer = this.querySelector('.tag-container') as HTMLElement;
@@ -467,154 +468,7 @@ export class FlayFlix extends HTMLElement {
     }
   }
 
-  /**
-   * 캐시를 활용하여 Flay 목록을 가져옴. 캐시에 없는 opus만 서버에서 조회
-   * @param opusList 조회할 opus 목록
-   * @returns Flay 배열
-   */
-  private async cachedGetFlayList(...opusList: string[]): Promise<Flay[]> {
-    const uncached = opusList.filter((opus) => !this.flayCache.has(opus));
-    if (uncached.length > 0) {
-      const fetched = await FlayFetch.getFlayList(...uncached);
-      fetched.forEach((flay) => this.flayCache.set(flay.opus, flay));
-    }
-    return opusList.map((opus) => this.flayCache.get(opus)).filter((flay): flay is Flay => flay != null);
-  }
-
-  /** flay-cover 커스텀 엘리먼트 생성 (공통, IntersectionObserver lazy load) */
-  private createCoverElement(flay: Flay): FlixCover {
-    const cover = new FlixCover();
-    cover.setFlay(flay);
-    cover.addEventListener('click', () => {
-      this.opus = flay.opus;
-      this.playOpus();
-    });
-
-    // 뷰포트 진입 시 실제 src 설정
-    this.coverObserver.observe(cover.getImg());
-    return cover;
-  }
-
-  private playOpus() {
-    // 이전 타이머 정리
-    this.stopPlayTimeTracking();
-
-    const opus = this.opus!;
-    this.video.poster = ApiClient.buildUrl(`/static/cover/${opus}`);
-    this.video.src = ApiClient.buildUrl(`/flays/${opus}/stream/movie/0`);
-
-    // 저장된 재생 위치가 있으면 이어재생
-    this.playTimeDB.select(opus).then((record) => {
-      console.log('저장된 재생 위치', opus, record);
-      if (record && record.time > 0 && record.duration > 0 && record.time < record.duration - 5) {
-        this.video.currentTime = record.time;
-      }
-    });
-
-    // 1분 주기 재생 시간 저장 시작
-    this.startPlayTimeTracking(opus);
-
-    // 캐시에서 먼저 찾고, 없으면 서버에서 조회
-    const cached = this.flayCache.get(opus);
-    const flayPromise = cached ? Promise.resolve(cached) : FlayFetch.getFlay(opus);
-    flayPromise.then((flay) => {
-      if (!flay) return;
-      this.flayTitle.textContent = flay.title;
-      this.flayActress.textContent = flay.actressList.join(', ');
-      this.flayOpus.textContent = flay.opus;
-      this.flayRelease.textContent = flay.release;
-      this.flayTags.textContent = flay.video.tags.map((tag) => tag.name).join(', ');
-    });
-  }
-
-  /** 1분 주기로 PlayTimeDB에 재생 위치 저장 */
-  private startPlayTimeTracking(opus: string) {
-    this.playTimeTimer = setInterval(() => {
-      if (this.video.paused || this.video.ended) return;
-      void this.playTimeDB.update(opus, this.video.currentTime, this.video.duration);
-    }, PLAY_TIME_SAVE_INTERVAL);
-  }
-
-  /** 재생 시간 추적 타이머 정리 및 최종 저장 */
-  private stopPlayTimeTracking() {
-    if (this.playTimeTimer) {
-      clearInterval(this.playTimeTimer);
-      this.playTimeTimer = null;
-    }
-    // 이전 opus의 마지막 재생 위치 저장
-    if (this.opus && this.video.currentTime > 0) {
-      void this.playTimeDB.update(this.opus, this.video.currentTime, this.video.duration);
-    }
-  }
-
-  /**
-   * 초를 h:mm:ss 형식 문자열로 변환
-   * @param seconds 변환할 초
-   * @returns h:mm:ss 형식 문자열
-   */
-  private formatTime(seconds: number): string {
-    const h = Math.floor(seconds / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    const s = Math.floor(seconds % 60);
-    return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-  }
-
-  /** 재생/일시정지 토글 */
-  private togglePlayPause() {
-    if (this.video.paused) {
-      this.video.play();
-      this.playPauseBtn.innerHTML = controlsSVG.pause;
-    } else {
-      this.video.pause();
-      this.playPauseBtn.innerHTML = controlsSVG.play;
-    }
-  }
-
-  /** 랜덤 opus를 선택하여 재생 */
-  private playRandomOpus() {
-    if (this.opusList.length === 0) return;
-    this.opus = this.opusList[Math.floor(Math.random() * this.opusList.length)] || null;
-    if (this.opus) {
-      this.playOpus();
-      this.playPauseBtn.innerHTML = controlsSVG.pause;
-    }
-  }
-
-  /** 태그를 순차적으로 fade-in하며 렌더링. flay 로드는 IntersectionObserver로 지연 */
-  private renderTags() {
-    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
-    tagContainer.innerHTML = '';
-
-    const groupNameMap = new Map(this.tagGroups.map((g) => [g.id, g.name]));
-    const sortedTags = [...this.tags].sort((a, b) => (this.recentTags.get(b.id) || 0) - (this.recentTags.get(a.id) || 0));
-
-    sortedTags.forEach((tag, index) => {
-      const groupName = groupNameMap.get(tag.group) || '';
-      const tagElement = document.createElement('div');
-      tagElement.id = `tag-${tag.id}`;
-      tagElement.className = 'tag fade-in';
-      tagElement.style.animationDelay = `${index * 80}ms`;
-      tagElement.dataset.tagId = String(tag.id);
-      tagElement.innerHTML = `
-        <span>${tag.name}
-          <small class="tag-group-label">${groupName}</small>
-          <small class="tag-count">(${tag.count})</small>
-        </span>
-        <div class="flays-wrapper">
-          <button type="button" class="scroll-btn scroll-left" title="처음으로">&#x276E;</button>
-          <div class="flays">
-            ${'<div class="flay-cover skeleton-cover"></div>'.repeat(SKELETON_COVER_COUNT)}
-          </div>
-          <button type="button" class="scroll-btn scroll-right" title="끝으로">&#x276F;</button>
-        </div>`;
-
-      tagContainer.appendChild(tagElement);
-      // 뷰포트 진입 시에만 flay 로드
-      this.lazyObserver.observe(tagElement);
-    });
-  }
-
-  /** IntersectionObserver 콜백: 태그 행이 뷰포트에 진입하면 flay를 로드 */
+  /** 태그 행이 뷰포트에 진입하면 서버에서 flay 목록을 로드하여 가중 셔플 후 커버로 교체한다 */
   private async loadTagFlays(tagElement: HTMLElement) {
     const tagId = Number(tagElement.dataset.tagId);
     const flaysContainer = tagElement.querySelector('.flays') as HTMLElement;
@@ -649,7 +503,145 @@ export class FlayFlix extends HTMLElement {
     this.enableDragScroll(flaysContainer);
   }
 
-  /** 마우스 드래그로 좌우 스크롤 가능하게 하는 이벤트 바인딩 */
+  /**
+   * FlixCover 엘리먼트를 생성한다. 클릭 핸들러와 이미지 lazy load를 등록
+   * @param flay Flay 데이터
+   * @returns FlixCover 엘리먼트
+   */
+  private createCoverElement(flay: Flay): FlixCover {
+    const cover = new FlixCover();
+    cover.setFlay(flay);
+    cover.addEventListener('click', () => {
+      this.opus = flay.opus;
+      this.playOpus();
+    });
+    this.coverObserver.observe(cover.getImg());
+    return cover;
+  }
+
+  // ── 특수 행 (Basket / AI 추천) ────────────────────────────────
+
+  /** 바스켓에 담긴 flay 목록을 태그 컨테이너 맨 위에 행으로 삽입한다 */
+  private async renderBasketRow() {
+    const basket = FlayBasket.getAll();
+    if (basket.size === 0) return;
+    const shuffledBasket = Array.from(basket).sort(() => Math.random() - 0.5);
+
+    const flays = await this.cachedGetFlayList(...shuffledBasket);
+    if (flays.length === 0) return;
+
+    this.renderTagRow('Basket', flays, true);
+    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
+    const basketRow = tagContainer.firstElementChild as HTMLElement | null;
+    if (basketRow) basketRow.classList.add('tag-basket');
+  }
+
+  /** 바스켓 변경 시 Basket 행을 실시간으로 갱신한다. 기존 행이 있으면 커버만 업데이트 */
+  private async refreshBasketRow() {
+    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
+    if (!tagContainer) return;
+
+    const basket = FlayBasket.getAll();
+    const existingRow = tagContainer.querySelector('.tag-basket') as HTMLElement | null;
+
+    if (basket.size === 0) {
+      existingRow?.remove();
+      return;
+    }
+
+    const basketArray = Array.from(basket);
+    const flays = await this.cachedGetFlayList(...basketArray);
+    if (flays.length === 0) {
+      existingRow?.remove();
+      return;
+    }
+
+    if (existingRow) {
+      const flaysContainer = existingRow.querySelector('.flays') as HTMLElement;
+      const existingOpusSet = new Set(Array.from(flaysContainer.querySelectorAll<FlixCover>('flix-cover')).map((el) => el.dataset.opus));
+
+      for (const flay of flays) {
+        if (existingOpusSet.has(flay.opus)) continue;
+        const cover = this.createCoverElement(flay);
+        cover.classList.add('cover-fade-in');
+        flaysContainer.prepend(cover);
+      }
+
+      const countEl = existingRow.querySelector('.tag-count');
+      if (countEl) countEl.textContent = `(${flays.length})`;
+    } else {
+      this.renderTagRow('Basket', flays, true);
+      const basketRow = tagContainer.firstElementChild as HTMLElement | null;
+      if (basketRow) basketRow.classList.add('tag-basket');
+    }
+  }
+
+  /** AI에게 추천받아 태그 컨테이너 맨 위에 삽입한다. 랜덤 샘플링으로 매번 다른 결과를 생성 */
+  private async renderAIRecommendations() {
+    const styles = getComputedStyle(this);
+    const remPx = parseFloat(styles.fontSize) || 16;
+    const coverWidth = parseFloat(styles.getPropertyValue('--flix-cover-width')) * remPx;
+    const coverGap = parseFloat(styles.getPropertyValue('--flix-cover-gap')) * remPx;
+    const availableWidth = this.clientWidth - 5 * remPx;
+    const lineCount = Math.max(3, Math.floor(availableWidth / (coverWidth + coverGap)));
+    const requestCount = Math.ceil((lineCount * 2) / 10) * 10;
+
+    const systemPrompt = `다음 목록에서 ${requestCount}개를 추천하세요. opus 코드만 쉼표로 구분하여 답하세요.\n`;
+    const MODEL_TOKEN_LIMIT = 8000;
+    const COMPLETION_TOKENS = 300;
+    const PROMPT_OVERHEAD = 500;
+    const availableTokens = MODEL_TOKEN_LIMIT - COMPLETION_TOKENS - PROMPT_OVERHEAD;
+
+    /** 랜덤 셔플 후 토큰 예산 내에서 프롬프트를 생성한다 */
+    const buildPrompt = async () => {
+      const shuffled = [...this.opusList].sort(() => Math.random() - 0.5);
+      const prefetchCount = Math.min(shuffled.length, 500);
+      await this.cachedGetFlayList(...shuffled.slice(0, prefetchCount));
+
+      const items: string[] = [];
+      let estimatedTokens = 0;
+      for (const opus of shuffled) {
+        const flay = this.flayCache.get(opus);
+        const item = flay ? `${opus}|${flay.video.tags.map((t) => t.name).join(',')}` : opus;
+        const tokenEstimate = Math.ceil(item.replace(/[가-힣]/g, '..').length / 2) + 1;
+        if (estimatedTokens + tokenEstimate > availableTokens) break;
+        estimatedTokens += tokenEstimate;
+        items.push(item);
+      }
+      console.log('AI 추천 프롬프트:', `${items.length}건, ~${estimatedTokens}토큰`);
+      return `${systemPrompt}${items.join('\n')}`;
+    };
+
+    const maxRetries = 3;
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        const prompt = await buildPrompt();
+        const response = await generate(prompt, { maxTokens: 300, temperature: 1.0 });
+        const recommended = response.text
+          .replace(/[^a-zA-Z0-9\-,\s]/g, '')
+          .trim()
+          .split(/[,\s]+/)
+          .filter((opus) => this.opusList.includes(opus));
+        console.log('AI 추천 원본:', response.text);
+        const unique = [...new Set(recommended)];
+        console.log('AI 추천 최종:', unique);
+        if (unique.length === 0) return;
+
+        const flays = await this.cachedGetFlayList(...unique);
+        this.renderTagRow('AI 추천', flays, true);
+        return;
+      } catch (error) {
+        console.error(`AI 추천 오류 (${attempt}/${maxRetries}):`, error);
+        if (attempt < maxRetries) {
+          await new Promise((r) => setTimeout(r, 1000 * attempt));
+        }
+      }
+    }
+  }
+
+  // ── UI 유틸리티 ──────────────────────────────────────────────
+
+  /** 컨테이너에 마우스 드래그 좌우 스크롤을 활성화한다 */
   private enableDragScroll(container: HTMLElement) {
     let isDown = false;
     let isDragging = false;
@@ -691,7 +683,6 @@ export class FlayFlix extends HTMLElement {
       if (!isDown) return;
       const x = e.pageX - container.offsetLeft;
       const diff = Math.abs(x - startX);
-      // 5px 이상 움직여야 드래그로 판정
       if (diff > 5) {
         isDragging = true;
         container.classList.add('dragging');

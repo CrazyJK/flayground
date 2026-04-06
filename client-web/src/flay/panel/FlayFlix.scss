@@ -50,6 +50,10 @@ flay-flix {
       height: 100%;
       object-fit: cover;
       display: block;
+
+      @media (orientation: landscape) {
+        object-fit: contain;
+      }
     }
 
     .info {

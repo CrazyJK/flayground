@@ -98,7 +98,7 @@ export class FlayFlix extends HTMLElement {
     this.className = 'welcome-page';
     this.innerHTML = `
       <div class="video-container">
-        <video autoplay muted loop class="background-video" style="width: 100%; height: 100%; object-fit: cover;"></video>
+        <video autoplay muted loop class="background-video"></video>
         <div class="info">
           <div class="flay-title"></div>
           <div class="flay-desc">

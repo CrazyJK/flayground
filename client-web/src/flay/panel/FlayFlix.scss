@@ -340,34 +340,8 @@ flay-flix {
           cursor: grabbing;
           user-select: none;
 
-          .flay-cover {
+          flix-cover {
             pointer-events: none;
-          }
-        }
-
-        .flay-cover {
-          flex-shrink: 0;
-          width: var(--flix-cover-width);
-          height: auto;
-          margin: 0;
-          aspect-ratio: var(--cover-aspect-ratio);
-          object-fit: cover;
-          border-radius: var(--border-radius-large);
-          cursor: pointer;
-          transition:
-            transform 0.25s ease,
-            box-shadow 0.25s ease;
-          background-color: var(--color-bg-cover);
-
-          &.cover-fade-in {
-            opacity: 0;
-            animation: coverFadeIn 0.4s ease forwards;
-          }
-
-          &:hover {
-            transform: scale(1.1);
-            box-shadow: var(--box-shadow-small);
-            z-index: 1;
           }
         }
 
@@ -433,5 +407,65 @@ flay-flix {
   }
   100% {
     background-position: -200% 0;
+  }
+}
+
+flix-cover {
+  position: relative;
+  flex-shrink: 0;
+  width: var(--flix-cover-width);
+  cursor: pointer;
+  border-radius: var(--border-radius-large);
+  overflow: hidden;
+  background-color: var(--color-bg-cover);
+
+  img {
+    width: 100%;
+    aspect-ratio: var(--cover-aspect-ratio);
+    object-fit: cover;
+    display: block;
+  }
+
+  .flix-cover-info {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 1.5rem 0.375rem 0.25rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.85));
+    font-size: var(--size-small);
+    line-height: 1.35;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8);
+    opacity: 0;
+    transform: translateY(0.5rem);
+    transition:
+      opacity 0.25s ease,
+      transform 0.25s ease;
+
+    .flix-cover-title {
+      color: var(--color-white);
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .flix-cover-desc {
+      color: var(--color-white);
+      opacity: 0.85;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  }
+
+  &.cover-fade-in {
+    opacity: 0;
+    animation: coverFadeIn 0.4s ease forwards;
+  }
+
+  &:hover .flix-cover-info {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

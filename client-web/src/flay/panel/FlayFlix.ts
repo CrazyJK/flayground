@@ -8,6 +8,48 @@ import controlsSVG from '../../svg/controls';
 import { FlayBasket } from './FlayBasket';
 import './FlayFlix.scss';
 
+/**
+ * FlayFlix용 커버 커스텀 엘리먼트.
+ * 이미지 + 호버 시 하단에 겹쳐 보이는 정보 패널 (title, opus, actress)
+ */
+class FlixCover extends HTMLElement {
+  private img!: HTMLImageElement;
+
+  constructor() {
+    super();
+    this.innerHTML = `
+      <img decoding="async" draggable="false" />
+      <div class="flix-cover-info">
+        <div class="flix-cover-title"></div>
+        <div class="flix-cover-desc"></div>
+      </div>
+    `;
+    this.img = this.querySelector('img') as HTMLImageElement;
+  }
+
+  /**
+   * Flay 데이터로 커버를 설정한다
+   * @param flay Flay 객체
+   */
+  setFlay(flay: Flay) {
+    this.dataset.opus = flay.opus;
+    this.img.dataset.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
+    this.img.alt = flay.title;
+
+    const titleEl = this.querySelector('.flix-cover-title') as HTMLElement;
+    const descEl = this.querySelector('.flix-cover-desc') as HTMLElement;
+    titleEl.textContent = flay.title;
+    descEl.textContent = `${flay.opus}  ${flay.actressList.join(', ')}`;
+  }
+
+  /** lazy load용 img 요소 반환 */
+  getImg(): HTMLImageElement {
+    return this.img;
+  }
+}
+
+customElements.define('flix-cover', FlixCover);
+
 /** 재생 시간 저장 주기 (ms) */
 const PLAY_TIME_SAVE_INTERVAL = 60_000;
 
@@ -296,11 +338,11 @@ export class FlayFlix extends HTMLElement {
     if (existingRow) {
       // 기존 행의 커버 목록 갱신
       const flaysContainer = existingRow.querySelector('.flays') as HTMLElement;
-      const existingOpusSet = new Set(Array.from(flaysContainer.querySelectorAll<HTMLImageElement>('.flay-cover')).map((img) => img.alt));
+      const existingOpusSet = new Set(Array.from(flaysContainer.querySelectorAll<FlixCover>('flix-cover')).map((el) => el.dataset.opus));
 
       // 새로 추가된 flay를 앞에 삽입
       for (const flay of flays) {
-        if (existingOpusSet.has(flay.title)) continue;
+        if (existingOpusSet.has(flay.opus)) continue;
         const cover = this.createCoverElement(flay);
         cover.classList.add('cover-fade-in');
         flaysContainer.prepend(cover);
@@ -439,22 +481,17 @@ export class FlayFlix extends HTMLElement {
     return opusList.map((opus) => this.flayCache.get(opus)).filter((flay): flay is Flay => flay != null);
   }
 
-  /** flay-cover 이미지 요소 생성 (공통, IntersectionObserver lazy load) */
-  private createCoverElement(flay: Flay): HTMLImageElement {
-    const cover = document.createElement('img');
-    cover.className = 'flay-cover';
-    cover.dataset.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
-    cover.alt = flay.title;
-    cover.title = `${flay.opus} ${flay.title}\n${flay.actressList.join(', ')}`;
-    cover.decoding = 'async';
-    cover.draggable = false;
+  /** flay-cover 커스텀 엘리먼트 생성 (공통, IntersectionObserver lazy load) */
+  private createCoverElement(flay: Flay): FlixCover {
+    const cover = new FlixCover();
+    cover.setFlay(flay);
     cover.addEventListener('click', () => {
       this.opus = flay.opus;
       this.playOpus();
     });
 
     // 뷰포트 진입 시 실제 src 설정
-    this.coverObserver.observe(cover);
+    this.coverObserver.observe(cover.getImg());
     return cover;
   }
 

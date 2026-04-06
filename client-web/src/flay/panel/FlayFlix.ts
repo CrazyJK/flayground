@@ -3,6 +3,7 @@ import { generate } from '../../ai/index-proxy';
 import ApiClient from '../../lib/ApiClient';
 import FlayFetch, { Flay, Tag, TagGroup } from '../../lib/FlayFetch';
 import { popupFlay } from '../../lib/FlaySearch';
+import basketSVG from '../../svg/basket';
 import controlsSVG from '../../svg/controls';
 import { FlayBasket } from './FlayBasket';
 import './FlayFlix.scss';
@@ -48,6 +49,7 @@ export class FlayFlix extends HTMLElement {
   private muteBtn!: HTMLButtonElement;
   private playPauseBtn!: HTMLButtonElement;
   private nextBtn!: HTMLButtonElement;
+  private basketBtn!: HTMLButtonElement;
 
   constructor() {
     super();
@@ -59,6 +61,7 @@ export class FlayFlix extends HTMLElement {
           <div class="flay-title"></div>
           <div class="flay-desc">
             <span class="flay-opus"></span>
+            <button type="button" class="basket-btn" title="바스켓에 추가">${basketSVG}</button>
             <span class="flay-actress"></span>
             <span class="flay-release"></span>
             <span class="flay-tags"></span>
@@ -92,6 +95,21 @@ export class FlayFlix extends HTMLElement {
     this.muteBtn = this.querySelector('.mute-btn') as HTMLButtonElement;
     this.playPauseBtn = this.querySelector('.play-pause-btn') as HTMLButtonElement;
     this.nextBtn = this.querySelector('.next-btn') as HTMLButtonElement;
+    this.basketBtn = this.querySelector('.basket-btn') as HTMLButtonElement;
+
+    // 바스켓 추가 버튼
+    this.basketBtn.addEventListener('click', () => {
+      if (this.opus) {
+        FlayBasket.add(this.opus);
+        document.dispatchEvent(new CustomEvent(FlayBasket.EVENT_BASKET_ADD));
+      }
+    });
+
+    // 바스켓 변경 감지 → Basket 행 실시간 업데이트
+    document.addEventListener(FlayBasket.EVENT_BASKET_ADD, () => this.refreshBasketRow());
+    window.addEventListener('storage', (e) => {
+      if (e.key === 'flay-basket') this.refreshBasketRow();
+    });
 
     this.flayTitle.style.cursor = 'pointer';
     this.flayTitle.addEventListener('click', () => {
@@ -240,13 +258,63 @@ export class FlayFlix extends HTMLElement {
   private async renderBasketRow() {
     const basket = FlayBasket.getAll();
     if (basket.size === 0) return;
-    // 셔플
     const shuffledBasket = Array.from(basket).sort(() => Math.random() - 0.5);
 
     const flays = await this.cachedGetFlayList(...shuffledBasket);
     if (flays.length === 0) return;
 
     this.renderTagRow('Basket', flays, true);
+    // basket 행에 식별 클래스 부여
+    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
+    const basketRow = tagContainer.firstElementChild as HTMLElement | null;
+    if (basketRow) basketRow.classList.add('tag-basket');
+  }
+
+  /**
+   * 바스켓 변경 시 Basket 행을 실시간으로 갱신한다.
+   * 기존 행이 있으면 커버만 업데이트, 없으면 새로 생성
+   */
+  private async refreshBasketRow() {
+    const tagContainer = this.querySelector('.tag-container') as HTMLElement;
+    if (!tagContainer) return;
+
+    const basket = FlayBasket.getAll();
+    const existingRow = tagContainer.querySelector('.tag-basket') as HTMLElement | null;
+
+    if (basket.size === 0) {
+      existingRow?.remove();
+      return;
+    }
+
+    const basketArray = Array.from(basket);
+    const flays = await this.cachedGetFlayList(...basketArray);
+    if (flays.length === 0) {
+      existingRow?.remove();
+      return;
+    }
+
+    if (existingRow) {
+      // 기존 행의 커버 목록 갱신
+      const flaysContainer = existingRow.querySelector('.flays') as HTMLElement;
+      const existingOpusSet = new Set(Array.from(flaysContainer.querySelectorAll<HTMLImageElement>('.flay-cover')).map((img) => img.alt));
+
+      // 새로 추가된 flay를 앞에 삽입
+      for (const flay of flays) {
+        if (existingOpusSet.has(flay.title)) continue;
+        const cover = this.createCoverElement(flay);
+        cover.classList.add('cover-fade-in');
+        flaysContainer.prepend(cover);
+      }
+
+      // 카운트 업데이트
+      const countEl = existingRow.querySelector('.tag-count');
+      if (countEl) countEl.textContent = `(${flays.length})`;
+    } else {
+      // 행이 없으면 새로 생성
+      this.renderTagRow('Basket', flays, true);
+      const basketRow = tagContainer.firstElementChild as HTMLElement | null;
+      if (basketRow) basketRow.classList.add('tag-basket');
+    }
   }
 
   /**
@@ -377,6 +445,7 @@ export class FlayFlix extends HTMLElement {
     cover.className = 'flay-cover';
     cover.dataset.src = ApiClient.buildUrl(`/static/cover/${flay.opus}`);
     cover.alt = flay.title;
+    cover.title = `${flay.opus} ${flay.title}\n${flay.actressList.join(', ')}`;
     cover.decoding = 'async';
     cover.draggable = false;
     cover.addEventListener('click', () => {

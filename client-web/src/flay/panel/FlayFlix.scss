@@ -43,12 +43,37 @@ flay-flix {
       .flay-desc {
         display: flex;
         gap: 1rem;
+        align-items: center;
 
         font-size: var(--size-normal);
         color: var(--color-text);
         text-shadow: 0 1px 4px var(--color-black-alpha-dark);
         margin: 0;
         opacity: 0.85;
+
+        .basket-btn {
+          background: none;
+          border: none;
+          color: var(--color-white);
+          cursor: pointer;
+          padding: 0;
+          display: flex;
+          align-items: center;
+          opacity: 0.7;
+          transition:
+            opacity 0.15s ease,
+            transform 0.15s ease;
+
+          svg {
+            width: 1.25rem;
+            height: 1.25rem;
+          }
+
+          &:hover {
+            opacity: 1;
+            transform: scale(1.15);
+          }
+        }
       }
 
       .flay-controls {

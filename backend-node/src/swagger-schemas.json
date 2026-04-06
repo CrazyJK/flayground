@@ -72,9 +72,9 @@
       "likes": {
         "type": "array",
         "items": {
-          "type": "string"
+          "type": "number"
         },
-        "description": "ISO date 문자열 배열 (Java List<Date> -> JSON ISO string[])"
+        "description": "Like 타임스탬프 배열 (epoch ms)"
       }
     },
     "required": [
@@ -415,7 +415,7 @@
       "action",
       "desc"
     ],
-    "description": "History 도메인"
+    "description": "FlayHistory 도메인"
   },
   "Diary": {
     "type": "object",

@@ -1,5 +1,5 @@
-import { FlayFlix } from '../flay/panel/FlayFlix';
+import { FlayHotTag } from '../flay/panel/FlayHotTag';
 import './inc/Page';
 import './index.scss';
 
-document.body.appendChild(new FlayFlix());
+document.body.appendChild(new FlayHotTag());

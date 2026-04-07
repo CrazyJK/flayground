@@ -33,118 +33,176 @@
   /* 커스텀 정의 */
   --cover-aspect-ratio: 400 / 269 auto;
 
-  /* 기본 색상 정의 */
-  --color-transparent: #0000;
-  --color-orange: #ffa500;
-  --color-red: #ff0000;
-  --color-blue: #0000ff;
-  --color-green: #00ff00;
-  --color-pink: #ffc0cb;
-  --color-white: #ffffff;
-  --color-white-alpha: #ffffff44;
-  --color-black: #000000;
-  --color-black-alpha-light: #00000044;
-  --color-black-alpha-dark: #00000088;
+  /* ── 색상 원시값 ── */
 
+  /* 무채색 - 라이트 계열 (밝은 → 어두운) */
+  --color-white: #ffffff;
   --color-light: #f1f1f1;
+  --color-light-smoke: #f3f3f3;
+  --color-light-mist: #eeeeee;
   --color-light-dark: #dddddd;
 
-  --color-dark: #202020;
-  --color-dark-light: #555555;
-  --color-dark-dark: #111111;
-
-  --color-gray: #808080;
+  /* 무채색 - 그레이 계열 (밝은 → 어두운) */
   --color-gray-light: #cccccc;
   --color-gray-dark: #aaaaaa;
+  --color-gray-medium: #999999;
+  --color-gray: #808080;
+  --color-gray-dim: #777777;
 
-  --color-gray-b1: #121212;
-  --color-gray-b2: #282828;
-  --color-gray-b3: #3c3c3c;
+  /* 무채색 - 다크 계열 (밝은 → 어두운) */
+  --color-dark-light: #555555;
+  --color-dark-charcoal: #333333;
+  --color-dark-steel: #333a41;
+  --color-dark: #202020;
+  --color-dark-dark: #111111;
+  --color-black: #000000;
+
+  /* 무채색 - 다크 배경 단계 (밝은 → 어두운) */
   --color-gray-b4: #4a4a4a;
+  --color-gray-b3: #3c3c3c;
+  --color-gray-b2: #282828;
+  --color-gray-b1: #121212;
 
+  /* 알파 채널 - 흰색 */
+  --color-transparent: #0000;
+  --color-white-alpha: #ffffff44;
+  --color-white-alpha-dim: #ffffff32;
+
+  /* 알파 채널 - 검정 (투명 → 불투명) */
+  --color-black-alpha-thin: #00000018;
+  --color-black-alpha-medium: #00000032;
+  --color-black-alpha-light: #00000044;
+  --color-black-alpha-dark: #00000088;
+  --color-black-alpha-heavy: #000000cc;
+  --color-black-alpha-deep: #000000cf;
+
+  /* 알파 채널 - 오버레이 */
+  --color-light-overlay: #eeec;
+  --color-dark-overlay: #000a;
+  --color-gray-alpha: #99999940;
+
+  /* 액센트 - 따뜻한 계열 */
+  --color-orange: #ffa500;
+  --color-orangered: #ff4500;
+  --color-orange-soft: #ff8c42;
+  --color-red: #ff0000;
+  --color-red-soft: #ff6b6b;
+  --color-pink: #ffc0cb;
+
+  /* 핑크 알파 (입력/포커스) */
+  --color-pink-ghost: #ffc0cb18;
+  --color-pink-light: #ffc0cb40;
+  --color-pink-medium: #ffc0cb83;
+
+  /* 액센트 - 차가운 계열 */
+  --color-blue: #0000ff;
+  --color-green: #00ff00;
+
+  /* 브랜드/기능 */
   --color-primary: #4285f4;
   --color-primary-dark: #3367d6;
-  --color-secondary: #777;
 
-  --color-text-secondary: var(--color-gray);
-  --color-text-danger: var(--color-red);
-  --color-text-warn: orangered;
+  /* 따뜻한 회색 (윈도우 UI) */
+  --color-warm-gray: #918b8b;
+  --color-warm-gray-light: #d3cece;
 
+  /* 테마 공통 (라이트/다크 동일) */
   --color-checked: var(--color-orange);
   --color-border-active: var(--color-orange);
-
   --color-tab-active: var(--color-orange);
-
-  --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
-  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
-  --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
-  --box-shadow-smallest: 0 2px 8px 0 var(--color-black-alpha-light);
-
   --text-shadow-active: 1px 1px 1px var(--color-orange);
 }
 
 /* 라이트 테마 (기본) */
 :root {
+  /* 배경 */
   --color-bg: var(--color-white);
+  --color-bg-elevated: var(--color-white);
   --color-bg-notice: var(--color-gray-light);
   --color-bg-cover: var(--color-gray-light);
   --color-bg-hover: var(--color-gray-dark);
-  --color-bg-transparent: #eeec;
-  --color-bg-input: #ffc0cb18;
-  --color-bg-input-focus: #ffc0cb83;
-  --color-bg-input-hover: #ffc0cb40;
-  --color-bg-side-nav: #f3f3f3;
-  --color-bg-focus: #ffc0cb83;
-  --color-bg-active: #ffc0cb83;
-  --color-bg-window: #eee;
+  --color-bg-transparent: var(--color-light-overlay);
+  --color-bg-input: var(--color-pink-ghost);
+  --color-bg-input-focus: var(--color-pink-medium);
+  --color-bg-input-hover: var(--color-pink-light);
+  --color-bg-side-nav: var(--color-light-smoke);
+  --color-bg-focus: var(--color-pink-medium);
+  --color-bg-active: var(--color-pink-medium);
+  --color-bg-window: var(--color-light-mist);
 
+  /* 텍스트 */
   --color-text: var(--color-dark);
+  --color-text-secondary: var(--color-gray);
   --color-text-placeholder: var(--color-dark-light);
-  --color-text-window: #918b8b;
+  --color-text-danger: var(--color-red);
+  --color-text-warn: var(--color-orangered);
+  --color-text-window: var(--color-warm-gray);
+  --color-secondary: var(--color-gray-dim);
 
+  /* 테두리 */
   --color-border: var(--color-light-dark);
   --color-border-reversed: var(--color-black-alpha-dark);
-  --color-border-window: #d3cece;
+  --color-border-window: var(--color-warm-gray-light);
 
+  /* 그림자 */
+  --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-light);
+  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-light);
+  --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-dark);
+  --box-shadow-smallest: 0 2px 8px 0 var(--color-black-alpha-light);
   --text-shadow: 1px 1px 1px var(--color-gray-dark);
   --text-shadow-hover: 1px 1px 1px var(--color-blue);
 
-  --color-layer-bg: #f3f3f3;
-  --color-layer-bg-hover: #00000032;
-  --color-layer-border: #00000032;
-  --color-layer-box-shadow: #000;
+  /* 레이어 */
+  --color-layer-bg: var(--color-light-smoke);
+  --color-layer-bg-hover: var(--color-black-alpha-medium);
+  --color-layer-border: var(--color-black-alpha-medium);
+  --color-layer-box-shadow: var(--color-black);
 }
 
 /* 다크 테마 */
 [theme='dark'] {
+  /* 배경 */
   --color-bg: var(--color-dark);
+  --color-bg-elevated: var(--color-gray-b2);
   --color-bg-notice: var(--color-dark-dark);
   --color-bg-cover: var(--color-dark-dark);
   --color-bg-hover: var(--color-dark-light);
-  --color-bg-transparent: #000a;
-  --color-bg-input: #00000018;
-  --color-bg-input-focus: #000000cf;
-  --color-bg-input-hover: #99999940;
-  --color-bg-side-nav: #202020;
-  --color-bg-focus: #333a41;
-  --color-bg-active: #333a41;
-  --color-bg-window: #333;
+  --color-bg-transparent: var(--color-dark-overlay);
+  --color-bg-input: var(--color-black-alpha-thin);
+  --color-bg-input-focus: var(--color-black-alpha-deep);
+  --color-bg-input-hover: var(--color-gray-alpha);
+  --color-bg-side-nav: var(--color-dark);
+  --color-bg-focus: var(--color-dark-steel);
+  --color-bg-active: var(--color-dark-steel);
+  --color-bg-window: var(--color-dark-charcoal);
 
+  /* 텍스트 */
   --color-text: var(--color-light);
+  --color-text-secondary: var(--color-gray-dark);
   --color-text-placeholder: var(--color-gray-dark);
+  --color-text-danger: var(--color-red-soft);
+  --color-text-warn: var(--color-orange-soft);
   --color-text-window: var(--color-light);
+  --color-secondary: var(--color-gray-medium);
 
+  /* 테두리 */
   --color-border: var(--color-dark-dark);
   --color-border-reversed: var(--color-light-dark);
-  --color-border-window: #4b4b4b;
+  --color-border-window: var(--color-gray-b4);
 
+  /* 그림자 */
+  --box-shadow-large: 0 8px 32px 8px var(--color-black-alpha-dark);
+  --box-shadow: 0 2px 16px 4px var(--color-black-alpha-dark);
+  --box-shadow-small: 0 2px 8px 2px var(--color-black-alpha-heavy);
+  --box-shadow-smallest: 0 2px 8px 0 var(--color-black-alpha-dark);
   --text-shadow: 1px 1px 2px var(--color-dark-light);
   --text-shadow-hover: 1px 1px 2px var(--color-orange);
 
-  --color-layer-bg: #202020;
-  --color-layer-bg-hover: #ffffff32;
-  --color-layer-border: #ffffff32;
-  --color-layer-box-shadow: gray;
+  /* 레이어 */
+  --color-layer-bg: var(--color-dark);
+  --color-layer-bg-hover: var(--color-white-alpha-dim);
+  --color-layer-border: var(--color-white-alpha-dim);
+  --color-layer-box-shadow: var(--color-gray);
 }
 
 /* 디버그 모드 설정 */

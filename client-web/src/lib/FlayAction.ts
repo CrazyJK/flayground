@@ -13,7 +13,7 @@ export default {
     return action('/flays/' + opus + '/edit', { method: 'POST' }, callback, failCallback);
   },
   explore: (filepath: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/flays/open-folder', { method: 'POST', body: filepath }, callback, failCallback);
+    return action('/flays/open-folder', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ path: filepath }) }, callback, failCallback);
   },
   setFavorite: (name: string, checked: boolean, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action('/info/actresses/' + name + '/favorite', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ checked }) }, callback, failCallback);
@@ -88,7 +88,7 @@ export default {
     );
   },
   setComment: (opus: string, comment: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
-    return action('/info/videos/' + opus + '/comment', { method: 'PUT', body: comment + ' ' }, callback, failCallback);
+    return action('/info/videos/' + opus + '/comment', { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ comment: comment + ' ' }) }, callback, failCallback);
   },
   renameFlay: (studio: string, opus: string, title: string, actress: string, release: string, callback?: SuccessCallback, failCallback?: ErrorCallback) => {
     return action(

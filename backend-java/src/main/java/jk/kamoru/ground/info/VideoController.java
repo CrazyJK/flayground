@@ -96,8 +96,8 @@ public class VideoController {
 
   @PutMapping("/{opus}/comment")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void setComment(@PathVariable String opus, @RequestBody String comment) {
-    videoInfoService.setComment(opus, comment);
+  public void setComment(@PathVariable String opus, @RequestBody Map<String, String> body) {
+    videoInfoService.setComment(opus, body.get("comment"));
   }
 
 }

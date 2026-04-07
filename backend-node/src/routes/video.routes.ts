@@ -259,7 +259,7 @@ router.put('/info/videos/:opus/tags/:tagId', (req, res) => {
  *         description: 성공
  */
 router.put('/info/videos/:opus/comment', (req, res) => {
-  videoService.setComment(req.params.opus, req.body);
+  videoService.setComment(req.params.opus, req.body.comment);
   res.sendStatus(204);
 });
 

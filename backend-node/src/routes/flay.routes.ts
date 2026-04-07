@@ -279,7 +279,7 @@ router.post('/flays/exists', (req, res) => {
  *         description: 성공
  */
 router.post('/flays/open-folder', (req, res) => {
-  flayService.openFolderSvc(req.body);
+  flayService.openFolderSvc(req.body.path);
   res.sendStatus(204);
 });
 

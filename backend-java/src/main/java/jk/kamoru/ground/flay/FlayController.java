@@ -201,8 +201,8 @@ public class FlayController {
 
   @PostMapping("/open-folder")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void openFolder(@RequestBody String folder) {
-    flayService.openFolder(folder);
+  public void openFolder(@RequestBody Map<String, String> body) {
+    flayService.openFolder(body.get("path"));
   }
 
   @DeleteMapping("/files")

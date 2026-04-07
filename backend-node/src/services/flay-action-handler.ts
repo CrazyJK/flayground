@@ -8,14 +8,18 @@ import { sseSend } from './sse-emitters';
 /**
  * 외부 프로세스를 비동기로 실행한다.
  * Java FlayAsyncExecutor 대응
+ *
+ * @param app - 실행할 프로그램
+ * @param args - 프로그램 인자
+ * @param shell - CMD 경유 여부 (특수문자 경로 처리 등)
  */
-function execAsync(app: string, ...args: string[]): void {
-  const cmd = [app, ...args];
-  console.log(`[ActionHandler] 실행: ${cmd.join(' ')}`);
+function execAsync(app: string, args: string[], shell = false): void {
+  console.log(`[ActionHandler] 실행: ${[app, ...args].join(' ')}`);
 
   const child = spawn(app, args, {
-    detached: true,
+    detached: !shell,
     stdio: 'ignore',
+    shell,
   });
   child.unref();
 
@@ -48,7 +52,7 @@ export function play(flay: Flay, seekTime: number): void {
   const args = [flay.files.movie[0]];
   if (seekOption) args.push(seekOption);
 
-  execAsync(config.flay.playerApp, ...args);
+  execAsync(config.flay.playerApp, args);
   sseSend(flay);
 }
 
@@ -61,7 +65,7 @@ export function edit(flay: Flay): void {
     throw new Error('자막 파일이 없습니다');
   }
 
-  execAsync(config.flay.editorApp, flay.files.subtitles[0]);
+  execAsync(config.flay.editorApp, [flay.files.subtitles[0]]);
   sseSend(flay);
 }
 
@@ -70,7 +74,7 @@ export function edit(flay: Flay): void {
  * Java FlayActionHandler.paint() 대응
  */
 export function paint(imagePath: string): void {
-  execAsync(config.flay.paintApp, imagePath);
+  execAsync(config.flay.paintApp, [imagePath]);
 }
 
 /**
@@ -95,7 +99,11 @@ export function openFolder(folder: string): void {
       throw new Error(`지원하지 않는 OS: ${platform}`);
   }
 
-  // 디렉토리가 아니면 부모 폴더를 연다
   const targetPath = path.resolve(folder);
-  execAsync(explorer, targetPath);
+  // Windows: /select, 옵션으로 탐색기에서 해당 파일을 선택 표시. shell: true로 CMD 경유하여 특수문자 경로 처리
+  if (platform === 'win32') {
+    execAsync(explorer, [`/select,"${targetPath}"`], true);
+  } else {
+    execAsync(explorer, [targetPath]);
+  }
 }

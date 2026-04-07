@@ -1,11 +1,11 @@
+import { generate } from '@ai/index-proxy';
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
-import { generate } from '../../ai/index-proxy';
-import ApiClient from '../../lib/ApiClient';
-import FlayFetch, { Flay, Tag, TagGroup } from '../../lib/FlayFetch';
-import { popupFlay } from '../../lib/FlaySearch';
-import basketSVG from '../../svg/basket';
-import controlsSVG from '../../svg/controls';
-import { FlayBasket } from './FlayBasket';
+import { FlayBasket } from '@flay/panel/FlayBasket';
+import ApiClient from '@lib/ApiClient';
+import FlayFetch, { Flay, Tag, TagGroup } from '@lib/FlayFetch';
+import { popupFlay } from '@lib/FlaySearch';
+import basketSVG from '@svg/basket';
+import controlsSVG from '@svg/controls';
 import './FlayFlix.scss';
 
 /**

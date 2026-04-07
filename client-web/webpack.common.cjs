@@ -15,6 +15,7 @@ const entryPoints = {
   pages: {
     'page.archive': './src/view/page.archive.ts',
     'page.flay-page': './src/view/page.flay-page.ts',
+    'page.flay-flix': './src/view/page.flay-flix.ts',
     'page.flay-one': './src/view/page.flay-one.ts',
     'page.flay-grid': './src/view/page.flay-grid.ts',
     'page.flay-play': './src/view/page.flay-play.ts',

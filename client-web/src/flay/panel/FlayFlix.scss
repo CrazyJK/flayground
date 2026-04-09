@@ -279,6 +279,22 @@ flay-flix {
         .tag-count {
           font-size: var(--size-small);
         }
+        .tag-liked {
+          color: var(--color-text-warn);
+          font-size: var(--size-small);
+          margin-left: 0.25rem;
+        }
+        .tag-rate {
+          color: var(--color-text-secondary);
+          font-size: var(--size-small);
+          margin-left: 0.25rem;
+        }
+        .tag-score {
+          color: var(--color-primary);
+          font-size: var(--size-small);
+          font-weight: bold;
+          margin-left: 0.25rem;
+        }
       }
 
       .flays-wrapper {

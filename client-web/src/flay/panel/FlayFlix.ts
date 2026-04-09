@@ -78,6 +78,8 @@ export class FlayFlix extends HTMLElement {
   private playTimeTimer: ReturnType<typeof setInterval> | null = null;
   /** opus → Flay 캐시 */
   private flayCache = new Map<string, Flay>();
+  /** tag별 전체/liked 집계 */
+  private tagStats = new Map<number, { totalCount: number; likedCount: number; hotScore: number }>();
 
   private video!: HTMLVideoElement;
   private flayTitle!: HTMLDivElement;
@@ -255,10 +257,33 @@ export class FlayFlix extends HTMLElement {
   /** 태그 그룹, 태그 목록, 최근 재생 이력을 로드하고 렌더링을 시작한다 */
   private async fetchData() {
     try {
-      const [tagGroups, tags, histories] = await Promise.all([FlayFetch.getTagGroups(), FlayFetch.getTagListWithCount(), FlayFetch.getHistoryListByAction('PLAY', 30)]);
+      const [tagGroups, tags, histories, allFlays] = await Promise.all([FlayFetch.getTagGroups(), FlayFetch.getTagListWithCount(), FlayFetch.getHistoryListByAction('PLAY', 30), FlayFetch.getFlayAll()]);
       this.tagGroups = tagGroups;
       this.tags = tags.filter((tag) => (tag.count || 0) > 0);
       this.recentTags = new Map<number, number>();
+
+      // 모든 flay를 캐시에 저장 (이후 중복 요청 방지)
+      allFlays.forEach((flay) => this.flayCache.set(flay.opus, flay));
+
+      // tag별 전체 Flay 수 및 liked Flay 수 집계 → 로그 가중 점수 계산
+      this.tagStats = new Map();
+      for (const flay of allFlays) {
+        for (const tag of flay.video.tags) {
+          const entry = this.tagStats.get(tag.id);
+          const liked = flay.video.likes.length > 0 ? 1 : 0;
+          if (entry) {
+            entry.totalCount++;
+            entry.likedCount += liked;
+          } else {
+            this.tagStats.set(tag.id, { totalCount: 1, likedCount: liked, hotScore: 0 });
+          }
+        }
+      }
+      // hotScore = ln(1 + likedCount) × rate
+      for (const stat of this.tagStats.values()) {
+        const rate = stat.totalCount > 0 ? stat.likedCount / stat.totalCount : 0;
+        stat.hotScore = Math.log(1 + stat.likedCount) * rate;
+      }
 
       // 최근 재생 이력에서 태그별 빈도 집계
       const playedOpusList = histories.map((h) => h.opus).filter((opus) => this.opusList.includes(opus));
@@ -395,16 +420,26 @@ export class FlayFlix extends HTMLElement {
     }
   }
 
-  /** 태그를 최근 재생 빈도순으로 정렬하여 순차 fade-in 렌더링한다 */
+  /** 태그를 로그 가중 점수(hotScore) 내림차순으로 정렬하여 순차 fade-in 렌더링한다 */
   private renderTags() {
     const tagContainer = this.querySelector('.tag-container') as HTMLElement;
     tagContainer.innerHTML = '';
 
     const groupNameMap = new Map(this.tagGroups.map((g) => [g.id, g.name]));
-    const sortedTags = [...this.tags].sort((a, b) => (this.recentTags.get(b.id) || 0) - (this.recentTags.get(a.id) || 0));
+    const sortedTags = [...this.tags].sort((a, b) => {
+      const sa = this.tagStats.get(a.id);
+      const sb = this.tagStats.get(b.id);
+      return (sb?.hotScore || 0) - (sa?.hotScore || 0);
+    });
 
     sortedTags.forEach((tag, index) => {
       const groupName = groupNameMap.get(tag.group) || '';
+      const stat = this.tagStats.get(tag.id);
+      const totalCount = stat?.totalCount || 0;
+      const likedCount = stat?.likedCount || 0;
+      const rate = totalCount > 0 ? Math.round((likedCount / totalCount) * 100) : 0;
+      const hotScore = stat?.hotScore?.toFixed(2) || '0.00';
+
       const tagElement = document.createElement('div');
       tagElement.id = `tag-${tag.id}`;
       tagElement.className = 'tag fade-in';
@@ -413,7 +448,10 @@ export class FlayFlix extends HTMLElement {
       tagElement.innerHTML = `
         <span>${tag.name}
           <small class="tag-group-label">${groupName}</small>
-          <small class="tag-count">(${tag.count})</small>
+          <small class="tag-count">(${totalCount})</small>
+          <small class="tag-liked">♥${likedCount}</small>
+          <small class="tag-rate">${rate}%</small>
+          <small class="tag-score">🔥${hotScore}</small>
         </span>
         <div class="flays-wrapper">
           <button type="button" class="scroll-btn scroll-left" title="처음으로">&#x276E;</button>

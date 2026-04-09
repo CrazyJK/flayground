@@ -98,3 +98,5 @@ Hachi
 Maru
 Flix
 Subdirs
+AUTOINCREMENT
+localtime

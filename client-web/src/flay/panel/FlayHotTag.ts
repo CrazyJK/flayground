@@ -1,4 +1,5 @@
 import FlayFetch from '@lib/FlayFetch';
+import { popupTag } from '@lib/FlaySearch';
 import './FlayHotTag.scss';
 
 /**
@@ -50,7 +51,7 @@ export class FlayHotTag extends HTMLElement {
           .map(
             ({ tag, totalCount, likedCount, hotScore }) => `
           <li class="hot-tag-item">
-            <span class="tag-name">${tag.name}</span>
+            <span class="tag-name" data-tag-id="${tag.id}">${tag.name}</span>
             <span class="tag-group">${tag.group}</span>
             <span class="tag-desc">${tag.description}</span>
             <span class="tag-total">${totalCount}</span>
@@ -62,6 +63,11 @@ export class FlayHotTag extends HTMLElement {
           .join('')}
       </ul>
     `;
+
+    // tag-name 클릭 시 popupTag 팝업 열기
+    this.querySelectorAll<HTMLSpanElement>('.tag-name').forEach((el) => {
+      el.addEventListener('click', () => popupTag(Number(el.dataset.tagId)));
+    });
   }
 }
 

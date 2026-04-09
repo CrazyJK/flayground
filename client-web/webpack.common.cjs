@@ -29,6 +29,7 @@ const entryPoints = {
     'page.actress': './src/view/page.actress.ts',
     'page.studio': './src/view/page.studio.ts',
     'page.tags': './src/view/page.tags.ts',
+    'page.tag-manager': './src/view/page.tag-manager.ts',
     'page.control': './src/view/page.control.ts',
     'page.history-shot': './src/view/page.history-shot.ts',
     'page.history-play': './src/view/page.history-play.ts',

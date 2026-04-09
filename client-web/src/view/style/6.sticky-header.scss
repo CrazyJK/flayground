@@ -9,6 +9,7 @@ body {
     position: sticky;
     top: 0;
     z-index: 1;
+    align-self: stretch;
 
     display: flex;
     flex-direction: column;

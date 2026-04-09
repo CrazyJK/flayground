@@ -48,7 +48,6 @@ export class SideNavBar extends GroundNav {
     { url: 'page.actress.html', name: 'actress' },
     { url: 'page.tags.html', name: 'tags' },
     {},
-    { url: 'page.tag-manager.html', name: 'tag manager' },
     { url: 'page.control.html', name: 'control' },
     { url: 'page.crawling.html', name: 'crawling' },
     {},

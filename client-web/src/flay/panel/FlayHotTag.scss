@@ -100,6 +100,21 @@ flay-hot-tag {
         text-align: right;
         font-family: var(--font-family-monospace);
       }
+
+      .tag-score {
+        font-size: var(--size-small);
+        color: var(--color-primary);
+        font-weight: bold;
+        min-width: 3.5rem;
+        text-align: right;
+        font-family: var(--font-family-monospace);
+
+        &::before {
+          content: '🔥';
+          margin-right: 0.25rem;
+          font-family: var(--font-family);
+        }
+      }
     }
   }
 

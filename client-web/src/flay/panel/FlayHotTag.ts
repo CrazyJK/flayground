@@ -29,13 +29,15 @@ export class FlayHotTag extends HTMLElement {
       }
     }
 
-    // 모든 태그를 likedCount 내림차순 정렬
+    // 로그 가중 점수(ln(1 + likedCount) × rate)로 내림차순 정렬
     const sorted = allTags
       .map((tag) => {
-        const counts = tagMap.get(tag.id) || { totalCount: 0, likedCount: 0 };
-        return { tag, ...counts };
+        const { totalCount, likedCount } = tagMap.get(tag.id) || { totalCount: 0, likedCount: 0 };
+        const rate = totalCount > 0 ? likedCount / totalCount : 0;
+        const hotScore = Math.log(1 + likedCount) * rate;
+        return { tag, totalCount, likedCount, hotScore };
       })
-      .sort((a, b) => b.likedCount - a.likedCount);
+      .sort((a, b) => b.hotScore - a.hotScore);
 
     // 렌더링
     this.innerHTML = `
@@ -46,7 +48,7 @@ export class FlayHotTag extends HTMLElement {
       <ul class="hot-tag-list">
         ${sorted
           .map(
-            ({ tag, totalCount, likedCount }) => `
+            ({ tag, totalCount, likedCount, hotScore }) => `
           <li class="hot-tag-item">
             <span class="tag-name">${tag.name}</span>
             <span class="tag-group">${tag.group}</span>
@@ -54,6 +56,7 @@ export class FlayHotTag extends HTMLElement {
             <span class="tag-total">${totalCount}</span>
             <span class="tag-liked">${likedCount}</span>
             <span class="tag-rate">${totalCount > 0 ? Math.round((likedCount / totalCount) * 100) : 0}%</span>
+            <span class="tag-score">${hotScore.toFixed(2)}</span>
           </li>`
           )
           .join('')}

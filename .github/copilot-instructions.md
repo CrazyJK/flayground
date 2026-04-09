@@ -50,4 +50,5 @@
 
 ## playwright
 
-접속 주소: https://flay.kamoru.jk/dist/index.html
+이전 수행된 브라우저가 닫혀 있을 가능성이 높음.
+브라우저가 닫혀 있을 때는 새 브라우저를 열어서 테스트를 수행해야 합니다.

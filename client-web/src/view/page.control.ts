@@ -2,6 +2,7 @@ import '@flay/panel/FlayBatch';
 import '@flay/panel/FlayCandidate';
 import '@flay/panel/FlayFinder';
 import '@flay/panel/FlayRegister';
+import '@flay/panel/FlayTagManager';
 import '@flay/panel/SubtitlesFinder';
 import { tabUI } from '@lib/TabUI';
 import './inc/Page';

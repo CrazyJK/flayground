@@ -66,41 +66,36 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | 총 용량    | `Σ flay.length` → **TB** 단위 표시                              |
 | 자막 보유  | `instanceList.filter(f => f.files.subtitles.length > 0).length` |
 
-**Rank 분포** — 미니 수평 바 차트로 표시 (0~5 각 랭크별 건수)
-**상위 스튜디오** — studio별 count 상위 5개, 미니 바 차트
-**상위 배우** — flay 수 기준 상위 10명 (이름 없거나 'Amateur' 제외), 미니 바 차트
+**Rank 분포** — SVG 파이 차트로 표시 (0~5 각 랭크별 건수)
+**상위 스튜디오** — studio별 count 상위 10개 + 그외, SVG 파이 차트
+**상위 배우** — flay 수 기준 상위 10명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
 
 ### 3-2. Archive 카드
 
 삭제/이관된 과거 Flay 요약.
 
-| 항목          | 계산                                                     |
-| ------------- | -------------------------------------------------------- |
-| Total         | `archiveList.length`                                     |
-| Release 범위  | release 연도 최소 ~ 최대                                 |
-| 평균 재생     | `Σ flay.video.play / count` (아카이브 전 평균 재생 횟수) |
-| 상위 스튜디오 | studio별 count 상위 3개                                  |
+| 항목         | 계산                                                     |
+| ------------ | -------------------------------------------------------- |
+| Total        | `archiveList.length`                                     |
+| Release 범위 | release 연도 최소 ~ 최대                                 |
+| 평균 재생    | `Σ flay.video.play / count` (아카이브 전 평균 재생 횟수) |
 
-**상위 배우** — flay 수 기준 상위 10명 (이름 없거나 'Amateur' 제외), 미니 바 차트
+**Rank 분포** — SVG 파이 차트로 표시 (0~5 각 랭크별 건수)
+**상위 스튜디오** — studio별 count 상위 10개 + 그외, SVG 파이 차트
+**상위 배우** — flay 수 기준 상위 10명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
 
-#### Release 연도별 분포 (스파크라인)
+#### Release 월별 분포 (스파크라인)
 
-2008년~현재까지 release **연도별** 분포를 **인라인 바 차트**로 표시.
+instance + archive 합산 release를 **월별** 분포로 **인라인 바 차트** 표시.
 
 ```
-계산: instance + archive 합산 → release.substring(0, 4)로 연도 추출 → 연도별 count 집계
-시각화: CSS 바 차트 (height 비율), 연도별 라벨 표시
+계산: instance + archive 합산 → release.substring(0, 7)로 YYYY-MM 추출 → 월별 count 집계
+시각화: CSS 바 차트 (height 비율), p95 percentile 클램프 적용
 ```
 
-| 연도 | 건수 | 시각화 |
-| ---- | ---- | ------ |
-| 2008 | 12   | ▂      |
-| 2009 | 45   | ▅      |
-| ...  | ...  | ...    |
-| 2026 | 8    | ▁      |
-
-- 최대 건수 기준 정규화하여 8단계 Unicode 블록 문자 사용: `▁▂▃▄▅▆▇█`
-- 또는 CSS `<span>` width 비율로 간단 바 차트
+- p95 percentile 값으로 높이를 클램프하여 이상치 스케일 왜곡 방지
+- p95 초과 바에는 `.bar.over` 클래스 부여 → `var(--color-red)` 배경으로 이상치 표시
+- 시작/끝 연도 라벨 표시
 
 ### 3-3. Actress 카드
 
@@ -148,8 +143,8 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 [opus] [title] [배우] [플레이 일시]
 ```
 
-- `playHistory`에서 **중복 opus 제거** 후 최신 20건 추출
-- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 활성화)
+- `playHistory`에서 **중복 opus 제거** 후 최신 10건 추출
+- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 비활성화)
 
 ### 4-2. 최근 Like 목록 (최신 10건)
 
@@ -157,8 +152,8 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 [opus] [title] [배우] [like 일시]
 ```
 
-- 모든 instance의 `video.likes` 타임스탬프를 펼쳐서 최신 20건 정렬
-- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 활성화)
+- 모든 instance의 `video.likes` 타임스탬프를 펼쳐서 최신 10건 정렬
+- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 비활성화)
 - 데이터 구조: `{ opus, timestamp }` → timestamp 역순 정렬
 
 ### 4-3. 미평가 작품 (rank === 0, 최대 10건)
@@ -167,8 +162,8 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 [opus] [title] [배우] [release]
 ```
 
-- `instanceList.filter(f => f.video.rank === 0)` → release 최신순 최대 20건
-- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 활성화)
+- `instanceList.filter(f => f.video.rank === 0)` → release 최신순 최대 10건
+- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 비활성화)
 
 ---
 
@@ -187,7 +182,7 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 │   Actress      │    History     │
 │   (카드)        │    (카드)       │
 ├─────────────────────────────────┤
-│   Release 연도별 분포 (바 차트)     │
+│   Release 월별 분포 (바 차트)       │
 ├─────────────────────────────────┤
 │   최근 플레이 (FlayMarker 그리드)  │
 ├─────────────────────────────────┤
@@ -257,16 +252,22 @@ export class FlayDashboard extends GroundFlay {
   }
 
   #renderReleaseDist(): void {
-    // 연도별 release 집계 + 바 차트 렌더링
+    // 월별 release 집계 + p95 클램프 바 차트 렌더링
   }
 
   #renderMarkerSection(container: HTMLElement, title: string, flays: Flay[]): void {
-    // FlayMarker 카버 표시 그리드로 렌더링 (cover: true, 200px, tooltip)
+    // FlayMarker 카버 표시 그리드로 렌더링 (cover: true, 200px, tooltip: false)
   }
 
-  #renderMiniChart(title: string, data: [string, number][]): string {
-    // 수평 바 차트 HTML 생성 (카드 내 상위 항목 시각화)
+  #renderPieChart(container: Element, title: string, data: [string, number][]): void {
+    // SVG 파이 차트 렌더링 (title + pie svg + legend)
   }
+
+  #buildPieData(map: Map<string, number>, topN: number): [string, number][] {
+    // 상위 topN + '그외' 합산 데이터 생성
+  }
+
+  static #PIE_COLORS: string[] = [/* 11색 팔레트 */];
 
   #formatSince(epochMs: number): string {
     // epoch ms를 "N년 M개월 전" 형식으로 변환
@@ -292,8 +293,9 @@ interface DashboardStats {
     total: number;
     yearRange: string; // '2008 ~ 2026'
     avgPlay: number;
-    topStudios: [string, number][]; // 바 차트용
-    topActresses: [string, number][]; // 바 차트용, 10명
+    rankCounts: Map<number, number>; // 파이 차트용 (0~5)
+    studioPie: [string, number][]; // 파이 차트용, 상위 10 + 그외
+    actressPie: [string, number][]; // 파이 차트용, 상위 10 + 그외
   };
   actress: {
     total: number;
@@ -389,15 +391,19 @@ flay-dashboard {
     .spark-row {
       display: flex;
       align-items: flex-end;
-      gap: 2px;
+      gap: 1px;
       height: 3rem;
 
       .bar {
         flex: 1;
         background: var(--color-checked);
         border-radius: 2px 2px 0 0;
-        min-width: 4px;
+        min-width: 2px;
         transition: height 0.3s;
+
+        &.over {
+          background: var(--color-red); // p95 초과 이상치
+        }
       }
     }
 
@@ -431,31 +437,42 @@ flay-dashboard {
     }
   }
 
-  // 카드 내 미니 차트
-  .mini-chart {
+  // 카드 내 SVG 파이 차트
+  .pie-chart {
     margin-top: 0.5rem;
     border-top: 1px dashed var(--color-border);
 
-    .chart-bar-row {
+    .pie-title {
+      font-weight: 600;
+      font-size: 0.8rem;
+      margin-bottom: 0.25rem;
+    }
+    .pie-content {
       display: flex;
       align-items: center;
-      gap: 0.4rem;
-
-      .chart-label {
-        min-width: 1.5rem;
-        max-width: 6rem;
-      }
-      .chart-bar-track {
-        flex: 1;
-        height: 0.5rem;
-        background: var(--color-border);
-      }
-      .chart-bar-fill {
-        background: var(--color-checked);
-      }
-      .chart-value {
-        font-weight: 600;
-      }
+      gap: 0.75rem;
+    }
+    .pie-svg {
+      flex-shrink: 0;
+    }
+    .pie-legend {
+      font-size: 0.7rem;
+    }
+    .pie-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+    }
+    .pie-legend-color {
+      width: 0.6rem;
+      height: 0.6rem;
+      border-radius: 2px;
+    }
+    .pie-legend-label {
+      color: var(--color-text-secondary);
+    }
+    .pie-legend-value {
+      font-weight: 600;
     }
   }
 }

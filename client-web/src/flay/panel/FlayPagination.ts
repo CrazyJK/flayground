@@ -50,9 +50,10 @@ export default class FlayPagination extends GroundFlay {
     super();
 
     this.innerHTML = `
-      <div class="paging"></div>
-      <div class="progress">
-        <div class="progress-bar"></div>
+      <div class="paging">
+        <div class="progress">
+          <div class="progress-bar"></div>
+        </div>
       </div>
       <div class="cover-thumbnail">
         <div class="top-left"></div>   <div class="top-right"></div>
@@ -358,13 +359,15 @@ export default class FlayPagination extends GroundFlay {
    * 페이징 화면 렌더링
    */
   #display(): void {
+    const removePages = () => this.paging.querySelectorAll('.page').forEach((page) => page.remove());
+
     if (!this.opusList) {
       throw new Error('opusList is not valid');
     }
 
     if (this.opusList.length === 0) {
       this.progressBar.style.width = String(0);
-      this.paging.textContent = null;
+      removePages();
       return;
     }
 
@@ -393,7 +396,7 @@ export default class FlayPagination extends GroundFlay {
     console.debug('pageRange', pageRange);
     console.debug(`page: ${currPageNo} / ${lastPageNo}`);
 
-    this.paging.textContent = null;
+    removePages();
     for (const i of pageRange) {
       const page = this.paging.appendChild(document.createElement('label'));
       page.classList.add('page');

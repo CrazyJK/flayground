@@ -1,3 +1,4 @@
+import compression from 'compression';
 import cors from 'cors';
 import express from 'express';
 import fs from 'fs';
@@ -50,6 +51,7 @@ function createApp(): express.Application {
   const app = express();
 
   // 미들웨어
+  app.use(compression());
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

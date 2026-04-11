@@ -1,5 +1,6 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { type Actress, type Archive, type Flay } from '@lib/FlayFetch';
+import { popupActress, popupStudio } from '@lib/FlaySearch';
 import { BarChart, PieChart, TreemapChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import * as echarts from 'echarts/core';
@@ -138,8 +139,8 @@ export default class FlayDashboard extends GroundFlay {
       'Rank 분포',
       rankCounts.map((cnt, i) => ({ name: `${i}`, value: cnt }))
     );
-    this.#renderTreemap(pieRow, '상위 스튜디오', studioPie);
-    this.#renderTreemap(pieRow, '상위 배우', actressPie);
+    this.#renderTreemap(pieRow, '상위 스튜디오', studioPie, (name) => popupStudio(name));
+    this.#renderTreemap(pieRow, '상위 배우', actressPie, (name) => popupActress(name));
 
     this.#tryRenderDependentSections();
   }
@@ -199,8 +200,8 @@ export default class FlayDashboard extends GroundFlay {
       'Rank 분포',
       rankCounts.map((cnt, i) => ({ name: `${i}`, value: cnt }))
     );
-    this.#renderTreemap(pieRow, '상위 스튜디오', studioPie);
-    this.#renderTreemap(pieRow, '상위 배우', actressPie);
+    this.#renderTreemap(pieRow, '상위 스튜디오', studioPie, (name) => popupStudio(name));
+    this.#renderTreemap(pieRow, '상위 배우', actressPie, (name) => popupActress(name));
 
     this.#tryRenderDependentSections();
   }
@@ -441,8 +442,9 @@ export default class FlayDashboard extends GroundFlay {
    * @param container - 부모 엘리먼트
    * @param title - 차트 제목
    * @param data - {name, value} 배열
+   * @param onClick - 항목 클릭 시 콜백 (name 전달)
    */
-  #renderTreemap(container: Element, title: string, data: { name: string; value: number }[]): void {
+  #renderTreemap(container: Element, title: string, data: { name: string; value: number }[], onClick?: (name: string) => void): void {
     if (data.length === 0) return;
     const wrapper = document.createElement('div');
     wrapper.className = 'echart-cell';
@@ -473,7 +475,7 @@ export default class FlayDashboard extends GroundFlay {
           nodeClick: false,
           breadcrumb: { show: false },
           data,
-          label: { show: true, formatter: '{b}\n{c}', fontSize: 9, color: '#fff' },
+          label: { show: true, formatter: '{b}\n{c}', fontSize: 9, color: '#fff', cursor: onClick ? 'pointer' : 'default' },
           itemStyle: { borderWidth: 1, borderColor: '#fff' },
           levels: [
             {
@@ -483,6 +485,11 @@ export default class FlayDashboard extends GroundFlay {
         },
       ],
     });
+    if (onClick) {
+      chart.on('click', (params: any) => {
+        if (params.name) onClick(params.name);
+      });
+    }
   }
 
   /**

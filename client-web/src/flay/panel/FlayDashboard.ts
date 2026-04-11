@@ -71,12 +71,12 @@ export default class FlayDashboard extends GroundFlay {
       if (r >= 0 && r <= 5) rankCounts[r]!++;
     }
 
-    // 상위 스튜디오 (20개 + 그외)
+    // 상위 스튜디오 (비율 2% 이상, 최대 20개 + 그외)
     const studioMap = new Map<string, number>();
     for (const f of list) studioMap.set(f.studio, (studioMap.get(f.studio) || 0) + 1);
-    const studioPie = this.#buildPieData(studioMap, 20);
+    const studioPie = this.#buildPieData(studioMap);
 
-    // 상위 배우 (이름 없거나 Amateur 제외, 20개 + 그외)
+    // 상위 배우 (이름 없거나 Amateur 제외, 비율 2% 이상, 최대 20개 + 그외)
     const actressMap = new Map<string, number>();
     for (const f of list) {
       for (const name of f.actressList) {
@@ -84,7 +84,7 @@ export default class FlayDashboard extends GroundFlay {
         actressMap.set(name, (actressMap.get(name) || 0) + 1);
       }
     }
-    const actressPie = this.#buildPieData(actressMap, 20);
+    const actressPie = this.#buildPieData(actressMap);
 
     const card = this.querySelector('#card-instance')!;
     card.classList.remove('loading');
@@ -102,7 +102,8 @@ export default class FlayDashboard extends GroundFlay {
     this.#renderPieChart(
       pieRow,
       'Rank 분포',
-      rankCounts.map((cnt, i) => [`${i}`, cnt])
+      rankCounts.map((cnt, i) => [`${i}`, cnt]),
+      true
     );
     this.#renderPieChart(pieRow, '상위 스튜디오', studioPie);
     this.#renderPieChart(pieRow, '상위 배우', actressPie);
@@ -125,15 +126,15 @@ export default class FlayDashboard extends GroundFlay {
     const years = list.map((f) => parseInt(f.release.substring(0, 4), 10)).filter((y) => !isNaN(y));
     const yearRange = years.length > 0 ? `${Math.min(...years)} ~ ${Math.max(...years)}` : '-';
 
-    // 상위 스튜디오 (10개 + 그외)
+    // 상위 스튜디오 (비율 2% 이상, 최대 20개 + 그외)
     const studioMap = new Map<string, number>();
     for (const f of list) studioMap.set(f.studio, (studioMap.get(f.studio) || 0) + 1);
-    const studioPie = this.#buildPieData(studioMap, 10);
+    const studioPie = this.#buildPieData(studioMap);
 
     // 평균 플레이 횟수 (아카이브 전 얼마나 재생했는지)
     const avgPlay = total > 0 ? list.reduce((sum, f) => sum + f.video.play, 0) / total : 0;
 
-    // flay 수 기준 상위 배우 (이름 없거나 Amateur 제외, 20개 + 그외)
+    // flay 수 기준 상위 배우 (이름 없거나 Amateur 제외, 비율 2% 이상, 최대 20개 + 그외)
     const actressMap = new Map<string, number>();
     for (const f of list) {
       for (const name of f.actressList) {
@@ -141,7 +142,7 @@ export default class FlayDashboard extends GroundFlay {
         actressMap.set(name, (actressMap.get(name) || 0) + 1);
       }
     }
-    const actressPie = this.#buildPieData(actressMap, 20);
+    const actressPie = this.#buildPieData(actressMap);
 
     // Rank 분포 (0 ~ 5)
     const rankCounts = [0, 0, 0, 0, 0, 0];
@@ -163,7 +164,8 @@ export default class FlayDashboard extends GroundFlay {
     this.#renderPieChart(
       pieRow,
       'Rank 분포',
-      rankCounts.map((cnt, i) => [`${i}`, cnt])
+      rankCounts.map((cnt, i) => [`${i}`, cnt]),
+      true
     );
     this.#renderPieChart(pieRow, '상위 스튜디오', studioPie);
     this.#renderPieChart(pieRow, '상위 배우', actressPie);
@@ -335,15 +337,18 @@ export default class FlayDashboard extends GroundFlay {
 
   /**
    * Map 데이터를 파이 차트용 [label, count] 배열로 변환.
-   * 상위 topN 항목과 나머지를 "그외"로 합산.
+   * 전체 대비 비율이 minRatio 이상인 항목만 개별 표시하고, 나머지는 "그외"로 합산.
    * @param map - 이름→건수 Map
-   * @param topN - 상위 항목 수
+   * @param minRatio - 개별 표시 최소 비율 (기본 2%)
+   * @param maxItems - 최대 항목 수 (기본 20)
    * @returns [label, count] 배열
    */
-  #buildPieData(map: Map<string, number>, topN: number): [string, number][] {
+  #buildPieData(map: Map<string, number>, minRatio = 0.02, maxItems = 20): [string, number][] {
+    const total = Array.from(map.values()).reduce((s, v) => s + v, 0);
+    if (total === 0) return [];
     const sorted = Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
-    const top = sorted.slice(0, topN);
-    const rest = sorted.slice(topN).reduce((sum, [, v]) => sum + v, 0);
+    const top = sorted.filter(([, v]) => v / total >= minRatio).slice(0, maxItems);
+    const rest = total - top.reduce((s, [, v]) => s + v, 0);
     if (rest > 0) top.push(['그외', rest]);
     return top;
   }
@@ -354,7 +359,7 @@ export default class FlayDashboard extends GroundFlay {
    * @param title - 차트 제목
    * @param data - [label, count] 튜플 배열
    */
-  #renderPieChart(container: Element, title: string, data: [string, number][]): void {
+  #renderPieChart(container: Element, title: string, data: [string, number][], showLegend = false): void {
     if (data.length === 0) return;
     const total = data.reduce((sum, [, v]) => sum + v, 0);
     if (total === 0) return;
@@ -366,6 +371,8 @@ export default class FlayDashboard extends GroundFlay {
     let startAngle = -Math.PI / 2;
 
     let paths = '';
+    let labels = '';
+    const labelPositions: { x: number; y: number; text: string }[] = [];
     for (let i = 0; i < data.length; i++) {
       const [label, value] = data[i]!;
       const sliceAngle = (value / total) * 2 * Math.PI;
@@ -383,14 +390,52 @@ export default class FlayDashboard extends GroundFlay {
       } else {
         paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z" fill="${color}"><title>${titleText}</title></path>`;
       }
+
+      // showLegend: 라벨 위치 수집 (겹침 보정 후 렌더링)
+      if (showLegend && value > 0) {
+        const midAngle = startAngle + sliceAngle / 2;
+        const labelR = r * 0.6;
+        labelPositions.push({
+          x: cx + labelR * Math.cos(midAngle),
+          y: cy + labelR * Math.sin(midAngle),
+          text: `${label}: ${value.toLocaleString()}`,
+        });
+      }
+
       startAngle = endAngle;
+    }
+
+    // 라벨 Y축 겹침 보정: 다중 패스로 인접 라벨 간격 확보
+    if (labelPositions.length > 1) {
+      const minGap = 8;
+      labelPositions.sort((a, b) => a.y - b.y);
+      for (let pass = 0; pass < 10; pass++) {
+        let adjusted = false;
+        for (let i = 1; i < labelPositions.length; i++) {
+          const gap = labelPositions[i]!.y - labelPositions[i - 1]!.y;
+          if (gap < minGap) {
+            const shift = (minGap - gap) / 2;
+            labelPositions[i - 1]!.y -= shift;
+            labelPositions[i]!.y += shift;
+            adjusted = true;
+          }
+        }
+        if (!adjusted) break;
+      }
+      // SVG 영역 내 클램프
+      for (const lp of labelPositions) {
+        lp.y = Math.max(6, Math.min(size - 4, lp.y));
+      }
+    }
+    for (const lp of labelPositions) {
+      labels += `<text x="${lp.x}" y="${lp.y}" text-anchor="middle" dominant-baseline="central" class="pie-label">${lp.text}</text>`;
     }
 
     const wrapper = document.createElement('div');
     wrapper.className = 'pie-chart';
     wrapper.innerHTML = `
       <div class="pie-title">${title}</div>
-      <svg viewBox="0 0 ${size} ${size}" class="pie-svg">${paths}</svg>
+      <svg viewBox="0 0 ${size} ${size}" class="pie-svg">${paths}${labels}</svg>
     `;
     container.appendChild(wrapper);
   }

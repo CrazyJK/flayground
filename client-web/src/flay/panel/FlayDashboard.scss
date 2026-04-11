@@ -107,6 +107,13 @@ flay-dashboard {
       width: 100%;
       aspect-ratio: 1;
     }
+
+    .pie-label {
+      font-size: 6px;
+      font-weight: 600;
+      fill: #fff;
+      pointer-events: none;
+    }
   }
 
   // Release 분포 (전체 폭)

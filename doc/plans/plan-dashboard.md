@@ -41,12 +41,11 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 
 ### 사용 타입
 
-| 타입          | 주요 필드                                                                                                       |
-| ------------- | --------------------------------------------------------------------------------------------------------------- |
-| `Flay`        | opus, studio, actressList, release, score, video.rank, video.likes[], video.play, video.lastPlay, files, length |
-| `Archive`     | Flay와 동일 구조 (archive: true)                                                                                |
-| `Actress`     | name, favorite, birth, debut, lastModified, coverSize                                                           |
-| `FlayHistory` | date, opus, action('PLAY'), desc                                                                                |
+| 타입      | 주요 필드                                                                                                       |
+| --------- | --------------------------------------------------------------------------------------------------------------- |
+| `Flay`    | opus, studio, actressList, release, score, video.rank, video.likes[], video.play, video.lastPlay, files, length |
+| `Archive` | Flay와 동일 구조 (archive: true)                                                                                |
+| `Actress` | name, favorite, birth, debut, lastModified, coverSize                                                           |
 
 ---
 
@@ -65,12 +64,13 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | 총 용량    | `Σ flay.length` → **TB** 단위 표시                              |
 | 자막 보유  | `instanceList.filter(f => f.files.subtitles.length > 0).length` |
 
-**Rank 분포** — SVG 파이 차트로 표시 (0~5 각 랭크별 건수)
-**상위 스튜디오** — studio별 count 상위 20개 + 그외, SVG 파이 차트
-**상위 배우** — flay 수 기준 상위 20명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
+**Rank 분포** — SVG 파이 차트 (0~5 각 랭크별 건수, 각 슬라이스 중심에 `N: 건수` SVG 텍스트 라벨 표시)
+**상위 스튜디오** — studio별 count 전체 대비 2% 이상, 최대 20개 + 그외, SVG 파이 차트
+**상위 배우** — flay 수 기준 전체 대비 2% 이상, 최대 20명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
 
 → 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치 (title → SVG 세로 구조)
-→ 범례(레전드) 없이 SVG를 가용 폭 최대로 표시, 호버 툴팁으로 라벨/건수/퍼센트 확인
+→ Rank 분포: `showLegend=true`로 각 슬라이스 중심에 SVG `<text class="pie-label">` 라벨 배치
+→ 스튜디오/배우: 항목이 많아 라벨 없이 SVG를 가용 폭 최대로 표시, 호버 툴팁으로 확인
 
 ### 3-2. Archive 카드
 
@@ -82,9 +82,9 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | Release 범위 | release 연도 최소 ~ 최대                                 |
 | 평균 재생    | `Σ flay.video.play / count` (아카이브 전 평균 재생 횟수) |
 
-**Rank 분포** — SVG 파이 차트로 표시 (0~5 각 랭크별 건수)
-**상위 스튜디오** — studio별 count 상위 20개 + 그외, SVG 파이 차트
-**상위 배우** — flay 수 기준 상위 20명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
+**Rank 분포** — SVG 파이 차트 (0~5 각 랭크별 건수, 각 슬라이스 중심에 `N: 건수` SVG 텍스트 라벨 표시)
+**상위 스튜디오** — studio별 count 전체 대비 2% 이상, 최대 20개 + 그외, SVG 파이 차트
+**상위 배우** — flay 수 기준 전체 대비 2% 이상, 최대 20명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
 
 → 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치
 
@@ -219,12 +219,13 @@ export class FlayDashboard extends GroundFlay {
     // 월별 release 집계 + 고정 100건 기준 바 차트 렌더링
   }
 
-  #renderPieChart(container: Element, title: string, data: [string, number][]): void {
-    // SVG 파이 차트 렌더링 (title + pie svg + legend)
+  #renderPieChart(container: Element, title: string, data: [string, number][], showLegend = false): void {
+    // SVG 파이 차트 렌더링 (title + pie svg)
+    // showLegend=true 시 각 슬라이스 중심(midAngle, r*0.6)에 SVG <text class="pie-label"> 배치
   }
 
-  #buildPieData(map: Map<string, number>, topN: number): [string, number][] {
-    // 상위 topN + '그외' 합산 데이터 생성
+  #buildPieData(map: Map<string, number>, minRatio = 0.02, maxItems = 20): [string, number][] {
+    // 전체 대비 비율 >= minRatio인 항목만 개별 표시, 최대 maxItems개, 나머지 '그외'
   }
 
   static #PIE_COLORS: string[] = [/* 11색 팔레트 */];
@@ -254,8 +255,8 @@ interface DashboardStats {
     yearRange: string; // '2008 ~ 2026'
     avgPlay: number;
     rankCounts: Map<number, number>; // 파이 차트용 (0~5)
-    studioPie: [string, number][]; // 파이 차트용, 상위 10 + 그외
-    actressPie: [string, number][]; // 파이 차트용, 상위 10 + 그외
+    studioPie: [string, number][]; // 파이 차트용, 비율 2% 이상 + 그외
+    actressPie: [string, number][]; // 파이 차트용, 비율 2% 이상 + 그외
   };
   actress: {
     total: number;
@@ -402,7 +403,7 @@ flay-dashboard {
     }
   }
 
-  // 카드 내 SVG 파이 차트 (세로 배치: title → SVG, 레전드 없음)
+  // 카드 내 SVG 파이 차트 (세로 배치: title → SVG)
   .pie-chart {
     display: flex;
     flex-direction: column;
@@ -416,6 +417,13 @@ flay-dashboard {
     .pie-svg {
       width: 100%;
       aspect-ratio: 1;
+    }
+    // SVG 슬라이스 위 라벨 (showLegend=true 시 렌더링)
+    .pie-label {
+      font-size: 6px;
+      font-weight: 600;
+      fill: #fff;
+      pointer-events: none;
     }
   }
 }

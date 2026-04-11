@@ -1,6 +1,7 @@
 import DateUtils from '@lib/DateUtils';
 import '@lib/SseConnector';
 import '@lib/UpdateMyPosition';
+import '../style/style.scss';
 import './Page.scss';
 
 import(/* webpackChunkName: "SideNavBar" */ '@nav/SideNavBar')

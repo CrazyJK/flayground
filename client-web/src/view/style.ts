@@ -19,7 +19,6 @@ import vaginaSVG from '@svg/vagina';
 import weatherSVG from '@svg/weathers';
 import windowButton from '@svg/windowButton';
 import youtubeSVG from '@svg/youtube';
-import './inc/Page';
 import './style.scss';
 
 // Element prototype 확장을 위한 타입 선언

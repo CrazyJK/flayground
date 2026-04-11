@@ -54,7 +54,6 @@ const entryPoints = {
     'popup.image': './src/view/popup.image.ts',
   },
   spa: {
-    'spa.flay': './src/view/spa.flay.ts',
     'pension.planner': './src/view/pension.planner.ts',
   },
 };

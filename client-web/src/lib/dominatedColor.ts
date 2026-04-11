@@ -39,80 +39,137 @@ interface DominatedColorOptions {
   offset?: number;
   /** 반환할 주요 색상 수 */
   limit?: number;
+  /** 최소 채도 (0-1). 이 값 미만의 무채색 계열 색상을 제외 */
+  minSaturation?: number;
+  /** 최소 밝기 (0-1). 이 값 미만의 너무 어두운 색상을 제외 */
+  minLightness?: number;
+  /** 최대 밝기 (0-1). 이 값 초과의 너무 밝은 색상을 제외 */
+  maxLightness?: number;
+  /** 밝기 가중치 지수. 0이면 순수 빈도순, 높을수록 밝은 색에 높은 점수 부여 */
+  lightnessBoost?: number;
 }
 
 /**
  * 회색 RGB 배열 (0-255까지의 모든 회색 색상)
+ * @deprecated minSaturation 옵션으로 대체됨. 명시적으로 회색을 ignore에 지정할 때만 사용.
  */
-const GREY_RGB_ARRAY: RGBColor[] = Array.from({ length: 256 }).map((_, i) => [i, i, i] as RGBColor);
+export const GREY_RGB_ARRAY: RGBColor[] = Array.from({ length: 256 }).map((_, i) => [i, i, i] as RGBColor);
+
+/**
+ * RGB 값에서 HSL의 채도(S)와 밝기(L)를 계산하는 함수.
+ * getRGBAs 내부에서는 성능을 위해 인라인 처리하므로 외부 사용 시만 호출.
+ * @returns [채도(0-1), 밝기(0-1)]
+ */
+export const getSaturationLightness = (r: number, g: number, b: number): [number, number] => {
+  const rn = r / 255,
+    gn = g / 255,
+    bn = b / 255;
+  const max = Math.max(rn, gn, bn);
+  const min = Math.min(rn, gn, bn);
+  const l = (max + min) / 2;
+  if (max === min) return [0, l]; // 무채색
+  const d = max - min;
+  const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+  return [s, l];
+};
 
 /**
  * 이미지 데이터에서 RGBA 색상 분포를 추출하는 함수
  * @param data 이미지 픽셀 데이터
  * @param ignoreRGBs 무시할 RGB 색상 배열
  * @param offset 색상 값 그룹화를 위한 오프셋
- * @returns 사용 빈도별로 정렬된 RGBA 색상 배열
+ * @param minSaturation 최소 채도 (미만 제외)
+ * @param minLightness 최소 밝기 (미만 제외)
+ * @param maxLightness 최대 밝기 (초과 제외)
+ * @param lightnessBoost 밝기 가중치 지수 (0=빈도순, 높을수록 밝은 색 우선)
+ * @param limit 반환할 최대 색상 수
+ * @returns 밝기 가중 점수 내림차순으로 정렬된 상위 RGBA 색상 배열
  */
-const getRGBAs = (data: Uint8ClampedArray, ignoreRGBs: RGBColor[], offset: number): ColorFrequency[] => {
-  // 미리 문자열 변환하여 성능 최적화
-  const ignoreRgbStrings = new Set(ignoreRGBs.map((i) => i.join(',')));
+const getRGBAs = (data: Uint8ClampedArray, ignoreRGBs: RGBColor[], offset: number, minSaturation: number, minLightness: number, maxLightness: number, lightnessBoost: number, limit: number): ColorFrequency[] => {
+  // 무시 목록을 숫자 키 Set으로 변환 (문자열 비교 대신 비트 연산)
+  const ignoreSet = new Set(ignoreRGBs.map(([r, g, b]) => (r << 16) | (g << 8) | b));
+  const hasIgnore = ignoreSet.size > 0;
 
-  const countMap: Record<string, ColorFrequency> = {};
+  type ColorEntry = { r: number; g: number; b: number; alpha: number; count: number; lightness: number };
+  const countMap = new Map<number, ColorEntry>();
   const dataLength = data.length;
+  const invOffset = offset > 1 ? 1 / offset : 0;
+  const inv255 = 1 / 255;
 
   for (let i = 0; i < dataLength; i += 4) {
-    const alpha = data[i + 3];
+    const alpha = data[i + 3]!;
+    if (alpha === 0) continue;
 
-    // 완전히 투명한 픽셀은 건너뜀
-    if (!alpha || alpha === 0) {
-      continue;
-    }
-
-    // 메모리 효율을 위해 TypedArray.slice 대신 개별 요소 추출
-    const r = data[i];
-    const g = data[i + 1];
-    const b = data[i + 2];
-
-    // 유효하지 않은 색상 데이터는 건너뜀
-    if (r === undefined || g === undefined || b === undefined) {
-      console.error('유효하지 않은 RGB 컴포넌트', [r, g, b]);
-      continue;
-    }
-
-    // 오프셋 적용하여 색상 그룹화
-    let finalR = r;
-    let finalG = g;
-    let finalB = b;
-
-    if (offset > 1) {
-      finalR = Math.round(Math.floor(r / offset) * offset);
-      finalG = Math.round(Math.floor(g / offset) * offset);
-      finalB = Math.round(Math.floor(b / offset) * offset);
-    }
-
-    // 무시 목록에 있는 색상은 건너뜀
-    const rgbString = `${finalR},${finalG},${finalB}`;
-    if (ignoreRgbStrings.size > 0 && ignoreRgbStrings.has(rgbString)) {
-      continue;
-    }
-
-    // 알파 값을 0-1 범위로 정규화
-    const normalizedAlpha = Number((alpha / 255).toFixed(3));
-
-    // 고유 키 생성 (더 빠른 조회를 위해)
-    const key = `${rgbString},${normalizedAlpha}`;
-
-    if (countMap[key]) {
-      countMap[key].count++;
+    // 오프셋 적용 색상 그룹화
+    let fr: number, fg: number, fb: number;
+    if (invOffset > 0) {
+      fr = ((data[i]! * invOffset) | 0) * offset;
+      fg = ((data[i + 1]! * invOffset) | 0) * offset;
+      fb = ((data[i + 2]! * invOffset) | 0) * offset;
     } else {
-      countMap[key] = {
-        rgba: [finalR, finalG, finalB, normalizedAlpha] as RGBAColor,
-        count: 1,
-      };
+      fr = data[i]!;
+      fg = data[i + 1]!;
+      fb = data[i + 2]!;
+    }
+
+    // 정수 키로 채도/밝기 계산 전 무시 목록 확인 (더 가벼운 연산 먼저)
+    const intKey = (fr << 16) | (fg << 8) | fb;
+    if (hasIgnore && ignoreSet.has(intKey)) continue;
+
+    // 채도/밝기 필터링 (인라인 계산으로 함수 호출 오버헤드 제거)
+    const rn = fr * inv255,
+      gn = fg * inv255,
+      bn = fb * inv255;
+    const max = rn > gn ? (rn > bn ? rn : bn) : gn > bn ? gn : bn;
+    const min = rn < gn ? (rn < bn ? rn : bn) : gn < bn ? gn : bn;
+    const l = (max + min) * 0.5;
+    if (l < minLightness || l > maxLightness) continue;
+    if (max !== min) {
+      const d = max - min;
+      const s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+      if (s < minSaturation) continue;
+    } else if (minSaturation > 0) {
+      continue; // 무채색
+    }
+
+    // RGB 키로 그룹화 (대부분 불투명 이미지이므로 alpha 변화 무시해도 무방)
+    const entry = countMap.get(intKey);
+    if (entry) {
+      entry.count++;
+    } else {
+      countMap.set(intKey, { r: fr, g: fg, b: fb, alpha: Math.round(alpha * inv255 * 1000) / 1000, count: 1, lightness: l });
     }
   }
 
-  return Object.values(countMap).sort((a, b) => b.count - a.count);
+  // 부분 정렬: limit 개수만큼만 상위 추출 (전체 정렬 대신 선택 정렬)
+  const entries: ColorEntry[] = Array.from(countMap.values());
+  const resultLength = Math.min(limit, entries.length);
+  const result: ColorFrequency[] = [];
+
+  for (let n = 0; n < resultLength; n++) {
+    let bestIdx = n;
+    let bestScore = -1;
+    for (let j = n; j < entries.length; j++) {
+      const e = entries[j]!;
+      const score = Math.log(e.count + 1) * e.lightness ** lightnessBoost;
+      if (score > bestScore) {
+        bestScore = score;
+        bestIdx = j;
+      }
+    }
+    // swap
+    const temp = entries[n]!;
+    entries[n] = entries[bestIdx]!;
+    entries[bestIdx] = temp;
+
+    const best = entries[n]!;
+    result.push({
+      rgba: [best.r, best.g, best.b, best.alpha] as RGBAColor,
+      count: best.count,
+    });
+  }
+
+  return result;
 };
 
 /**
@@ -209,7 +266,10 @@ export async function getDominatedColors(src: string | HTMLImageElement, opts: D
   }
 
   // 기본 옵션과 사용자 지정 옵션 병합
-  const { scale = 0.5, ignore = GREY_RGB_ARRAY, offset = 10, limit = 10 } = opts;
+  // minSaturation 기본값 0.15: 채도 15% 미만의 회색 계열 제외 (GREY_RGB_ARRAY보다 정확)
+  // minLightness/maxLightness: 거의 검정(5% 미만), 거의 흰색(95% 초과) 제외
+  // lightnessBoost 기본값 1: 밝기에 비례한 선형 가중치 적용
+  const { scale = 0.5, ignore = [], offset = 10, limit = 10, minSaturation = 0.15, minLightness = 0.05, maxLightness = 0.95, lightnessBoost = 1 } = opts;
 
   // 유효성 검사
   if (scale > 1 || scale <= 0) {
@@ -227,9 +287,9 @@ export async function getDominatedColors(src: string | HTMLImageElement, opts: D
       throw new Error(`인식할 수 없는 소스 형식: ${typeof src}`);
     }
 
-    // 색상 분석 및 결과 반환
-    const rgbaList = getRGBAs(imageData, ignore, offset);
-    return rgbaList.slice(0, limit);
+    // 색상 분석 및 결과 반환 (limit을 getRGBAs에 전달하여 부분 정렬 최적화)
+    const rgbaList = getRGBAs(imageData, ignore, offset, minSaturation, minLightness, maxLightness, lightnessBoost, limit);
+    return rgbaList;
   } catch (error) {
     console.error('주요 색상 추출 중 오류:', error);
     throw error;

@@ -113,15 +113,3 @@ applyTheme();
 
 // 모듈 내보내기
 export { DARK, getCurrentTheme, getThemeSetting, isDarkMode, isSystemTheme, LIGHT, OS, setTheme, toggleTheme };
-
-export default {
-  OS,
-  LIGHT,
-  DARK,
-  setTheme,
-  getCurrentTheme,
-  getThemeSetting,
-  toggleTheme,
-  isDarkMode,
-  isSystemTheme,
-};

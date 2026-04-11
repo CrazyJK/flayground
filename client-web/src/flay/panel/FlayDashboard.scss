@@ -11,12 +11,20 @@ flay-dashboard {
     border-bottom: 2px solid var(--color-border);
   }
 
-  // 카드 그리드: 2열 (세로 모니터 1080px 기준)
+  // Instance, Archive: 1줄씩 전체 폭
+  .card-row-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+  }
+
+  // Actress, History: 2열 그리드
   .card-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
-    padding: 0.75rem 0;
+    padding: 0 0 0.75rem;
   }
 
   .card {
@@ -78,15 +86,20 @@ flay-dashboard {
     .spark-row {
       display: flex;
       align-items: flex-end;
-      gap: 2px;
+      gap: 1px;
       height: 3rem;
 
       .bar {
         flex: 1;
         background: var(--color-checked);
-        border-radius: 2px 2px 0 0;
-        min-width: 4px;
+        border-radius: 1px 1px 0 0;
+        min-width: 2px;
         transition: height 0.3s;
+
+        // p95 초과 이상치 표시
+        &.over {
+          background: var(--color-red);
+        }
       }
     }
 
@@ -99,54 +112,21 @@ flay-dashboard {
     }
   }
 
-  // 하단 리스트: 세로 배치
-  .list-section {
+  // 하단 마커 그리드 섹션
+  .marker-section {
     padding: 0.75rem 0;
     border-top: 1px solid var(--color-border);
 
-    .list-title {
+    .section-title {
       font-weight: 600;
       font-size: 0.95rem;
       margin-bottom: 0.5rem;
     }
 
-    .list-item {
+    .marker-grid {
       display: flex;
-      gap: 0.5rem;
-      padding: 0.25rem 0;
-      font-size: 0.8rem;
-      cursor: pointer;
-      border-radius: 0.25rem;
-
-      &:hover {
-        background-color: var(--color-bg-transparent);
-      }
-
-      .opus {
-        flex: 0 0 8rem;
-        font-weight: 600;
-      }
-
-      .title {
-        flex: 1 1 auto;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .actress {
-        flex: 0 0 6rem;
-        color: var(--color-text-secondary);
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-
-      .date {
-        flex: 0 0 5rem;
-        text-align: right;
-        color: var(--color-text-secondary);
-      }
+      flex-wrap: wrap;
+      gap: 0.25rem;
     }
   }
 }

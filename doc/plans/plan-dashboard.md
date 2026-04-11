@@ -64,7 +64,7 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | Likes 합계 | `Σ flay.video.likes.length`                                     |
 | 평균 Score | `Σ flay.score / count`                                          |
 | 평균 Rank  | `Σ flay.video.rank / count` (rank > 0인 것만)                   |
-| Rank 0 ~ 5 | 각 랭크별 flay 수 (6행)                                         |
+| Rank 분포  | `"0:n 1:n 2:n 3:n 4:n 5:n"` 한줄 요약                           |
 | 총 용량    | `Σ flay.length` → **TB** 단위 표시                              |
 | 자막 보유  | `instanceList.filter(f => f.files.subtitles.length > 0).length` |
 
@@ -78,15 +78,17 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | Release 범위  | release 연도 최소 ~ 최대                                 |
 | 평균 재생     | `Σ flay.video.play / count` (아카이브 전 평균 재생 횟수) |
 | 상위 스튜디오 | studio별 count 상위 3개                                  |
+| 상위 배우     | flay 수 기준 상위 5명 (`name(count)` 형식)               |
 
 #### Release 월별 분포 (스파크라인)
 
-2008년~현재까지 release 월 기준 분포를 **인라인 바 차트**로 표시.
-양이 많으므로 연도별로 축약하여 간결하게 표현한다.
+2008년~현재까지 release **월별** 분포를 **인라인 바 차트**로 표시.
+월별 데이터는 특정 월에 튀는 값이 있을 수 있으므로 **p95 클램프**로 이상치 억제.
 
 ```
-계산: instance + archive 합산 → release.substring(0, 4)로 연도 추출 → 연도별 count 집계
-표현: 가로 한 줄 바 차트 (CSS width 비율) 또는 ▁▂▃▅▇ Unicode 스파크라인
+계산: instance + archive 합산 → release.substring(0, 7)로 월 추출 → 월별 count 집계
+시각화: CSS 바 차트 (height 비율), p95 초과는 빨간색 바로 표시
+라벨: 매 1월에 연도 표시
 ```
 
 | 연도 | 건수 | 시각화 |
@@ -101,35 +103,23 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 
 ### 3-3. Actress 카드
 
-배우 통계. **1회 출현 배우는 제외**하고 집계.
+배우 통계. 전체 배우 대상 (출현 횟수 조건 없음).
 
-| 항목         | 계산                                                 |
-| ------------ | ---------------------------------------------------- |
-| 전체 배우 수 | `actressList.length` (1회 출현 제외 수도 병기)       |
-| 선호 배우    | `actressList.filter(a => a.favorite).length`         |
-| 보유 중      | instance에 등장하는 배우 (2회 이상 출현만)           |
-| 아카이브     | archive에만 등장하고 instance에 없는 배우 (2회 이상) |
+| 항목         | 계산                                         |
+| ------------ | -------------------------------------------- |
+| 전체 배우 수 | `actressList.length`                         |
+| 선호 배우    | `actressList.filter(a => a.favorite).length` |
+| 보유 중      | instance에 등장하는 배우                     |
+| 아카이브     | archive에만 등장하고 instance에 없는 배우    |
 
 **계산 방법:**
 
 ```typescript
-// instance + archive에서 배우별 출현 횟수 집계
-const allFlays = [...instanceList, ...archiveList];
-const actressCountMap = new Map<string, number>();
-for (const flay of allFlays) {
-  for (const name of flay.actressList) {
-    actressCountMap.set(name, (actressCountMap.get(name) || 0) + 1);
-  }
-}
-
-// 2회 이상 출현 배우만 필터
-const multiAppearActress = actressList.filter((a) => (actressCountMap.get(a.name) || 0) >= 2);
-
 const instanceActressSet = new Set(instanceList.flatMap((f) => f.actressList));
 const archiveActressSet = new Set(archiveList.flatMap((f) => f.actressList));
 
-const activeCount = multiAppearActress.filter((a) => instanceActressSet.has(a.name)).length;
-const archivedCount = multiAppearActress.filter((a) => !instanceActressSet.has(a.name) && archiveActressSet.has(a.name)).length;
+const activeCount = actressList.filter((a) => instanceActressSet.has(a.name)).length;
+const archivedCount = actressList.filter((a) => !instanceActressSet.has(a.name) && archiveActressSet.has(a.name)).length;
 ```
 
 > Actress 카드는 Instance + Archive 양쪽 데이터가 필요하므로,
@@ -160,8 +150,8 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 [opus] [title] [배우] [플레이 일시]
 ```
 
-- `playHistory`에서 **중복 opus 제거** 후 최신 10건 추출
-- opus 클릭 시 `popupFlay(opus)` 팝업
+- `playHistory`에서 **중복 opus 제거** 후 최신 20건 추출
+- **FlayMarker** 사각형 그리드로 표시 (tooltip 활성화)
 
 ### 4-2. 최근 Like 목록 (최신 10건)
 
@@ -169,7 +159,8 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 [opus] [title] [배우] [like 일시]
 ```
 
-- 모든 instance의 `video.likes` 타임스탬프를 펼쳐서 최신 10건 정렬
+- 모든 instance의 `video.likes` 타임스탬프를 펼쳐서 최신 20건 정렬
+- **FlayMarker** 사각형 그리드로 표시 (tooltip 활성화)
 - 데이터 구조: `{ opus, timestamp }` → timestamp 역순 정렬
 
 ### 4-3. 미평가 작품 (rank === 0, 최대 10건)
@@ -178,7 +169,8 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 [opus] [title] [배우] [release]
 ```
 
-- `instanceList.filter(f => f.video.rank === 0)` → release 최신순
+- `instanceList.filter(f => f.video.rank === 0)` → release 최신순 최대 20건
+- **FlayMarker** 사각형 그리드로 표시 (tooltip 활성화)
 
 ---
 
@@ -189,26 +181,28 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 ```
 ┌─────────────────────────────────┐  1080px
 │          Flay Dashboard         │
+├─────────────────────────────────┤
+│   Instance (카드, 전체 폭)        │
+├─────────────────────────────────┤
+│   Archive  (카드, 전체 폭)        │
 ├────────────────┬────────────────┤
-│   Instance     │    Archive     │
-│   (카드)        │    (카드)       │
-├────────────────┼────────────────┤
 │   Actress      │    History     │
 │   (카드)        │    (카드)       │
 ├─────────────────────────────────┤
-│   Release 연도별 분포 (스파크)    │
+│   Release 월별 분포 (바 차트)      │
 ├─────────────────────────────────┤
-│   최근 플레이 (10건)             │
+│   최근 플레이 (FlayMarker 그리드)  │
 ├─────────────────────────────────┤
-│   최근 Like (10건)              │
+│   최근 Like (FlayMarker 그리드)    │
 ├─────────────────────────────────┤
-│   미평가 작품 (10건)             │
+│   미평가 작품 (FlayMarker 그리드)  │
 └─────────────────────────────────┘
 ```
 
-- 카드: 2열 그리드 `grid-template-columns: repeat(2, 1fr)` — 1080px에서 카드당 ~530px
+- Instance, Archive 카드: 전체 폭 1열 세로 배치 (`.card-row-layout`)
+- Actress, History 카드: 2열 그리드 `grid-template-columns: repeat(2, 1fr)` (`.card-grid`)
 - 분포 차트: 전체 폭 1열
-- 하단 리스트: 전체 폭 1열 × 3섹션 세로 배치 (세로 모니터이므로 가로보다 세로 공간 활용)
+- 하단 리스트: FlayMarker 사각형 그리드 (`flex-wrap`) × 3섹션 세로 배치
 - 모바일/좁은 화면: 1열 스택
 
 ---
@@ -247,7 +241,7 @@ export class FlayDashboard extends GroundFlay {
   async #loadActressCard(): Promise<void> {
     // 1. FlayFetch.getActressAll()
     // 2. Instance + Archive 도착 대기 확인
-    // 3. 2회 이상 출현 필터 후 Actress 카드 렌더링
+    // 3. 전체 배우 대상 Actress 카드 렌더링
   }
 
   async #loadHistoryCard(): Promise<void> {
@@ -265,12 +259,11 @@ export class FlayDashboard extends GroundFlay {
   }
 
   #renderReleaseDist(): void {
-    // 연도별 release 집계 + 스파크라인 렌더링
+    // 월별 release 집계 + p95 클램프 + 바 차트 렌더링
   }
 
-  #renderLists(): void {
-    // 최근 플레이, 최근 Like, 미평가 작품
-    // opus 클릭 → popupFlay()
+  #renderMarkerSection(container: HTMLElement, flays: Flay[], title: string): void {
+    // FlayMarker 사각형 그리드로 렌더링 (tooltip 활성화)
   }
 }
 
@@ -295,10 +288,10 @@ interface DashboardStats {
     yearRange: string; // '2008 ~ 2026'
     avgPlay: number;
     topStudios: string; // 'Studio1(30), Studio2(25), Studio3(20)'
+    topActresses: string; // 'Name1(30), Name2(25), ..., Name5(20)'
   };
   actress: {
     total: number; // 전체 배우
-    multiAppear: number; // 2회 이상 출현 배우
     favorite: number; // 선호 배우
     active: number; // 보유 중
     archived: number; // 아카이브
@@ -336,12 +329,20 @@ flay-dashboard {
     border-bottom: 2px solid var(--color-border);
   }
 
-  // 카드 그리드: 2열 (세로 모니터 1080px 기준)
+  // Instance + Archive: 전체 폭 1열 세로 배치
+  .card-row-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+  }
+
+  // Actress + History: 2열 그리드
   .card-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 0.75rem;
-    padding: 0.75rem 0;
+    padding: 0 0 0.75rem;
   }
 
   .card {
@@ -393,8 +394,12 @@ flay-dashboard {
         flex: 1;
         background: var(--color-checked);
         border-radius: 2px 2px 0 0;
-        min-width: 4px;
+        min-width: 2px;
         transition: height 0.3s;
+
+        &.over {
+          background: var(--color-red); // p95 초과 이상치
+        }
       }
     }
 
@@ -406,48 +411,21 @@ flay-dashboard {
     }
   }
 
-  // 하단 리스트: 세로 배치
-  .list-section {
+  // 하단 FlayMarker 그리드 섹션
+  .marker-section {
     padding: 0.75rem 0;
     border-top: 1px solid var(--color-border);
 
-    .list-title {
+    .section-title {
       font-weight: 600;
       font-size: 0.95rem;
       margin-bottom: 0.5rem;
     }
 
-    .list-item {
+    .marker-grid {
       display: flex;
-      gap: 0.5rem;
-      padding: 0.25rem 0;
-      font-size: 0.8rem;
-      cursor: pointer;
-      border-radius: 0.25rem;
-
-      &:hover {
-        background-color: var(--color-bg-transparent);
-      }
-
-      .opus {
-        flex: 0 0 8rem;
-        font-weight: 600;
-      }
-      .title {
-        flex: 1 1 auto;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
-      .actress {
-        flex: 0 0 6rem;
-        color: var(--color-text-secondary);
-      }
-      .date {
-        flex: 0 0 5rem;
-        text-align: right;
-        color: var(--color-text-secondary);
-      }
+      flex-wrap: wrap;
+      gap: 0.25rem;
     }
   }
 }
@@ -478,8 +456,8 @@ document.querySelector('article')!.appendChild(new FlayDashboard());
 1. `FlayDashboard.ts` 파일 생성 — 클래스, connectedCallback, 스켈레톤 HTML
 2. 개별 비동기 API 호출 메서드 4개 구현 (`#loadInstanceCard` 등)
 3. 각 카드별 통계 계산 + 렌더링 구현
-4. Release 연도별 분포 바 차트 구현
+4. Release 월별 분포 바 차트 구현 (p95 클램프)
 5. 의존성 기반 렌더링 (Actress 카드 = Instance + Archive 대기, 리스트 = Instance + History 대기)
-6. 하단 리스트 3개 렌더링 + `popupFlay()` 이벤트 바인딩
+6. 하단 FlayMarker 그리드 3섹션 렌더링
 7. `FlayDashboard.scss` 스타일 작성
 8. 빌드 확인

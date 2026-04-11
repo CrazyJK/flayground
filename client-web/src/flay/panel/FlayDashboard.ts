@@ -1,6 +1,6 @@
 import GroundFlay from '@base/GroundFlay';
+import FlayMarker from '@flay/domain/FlayMarker';
 import FlayFetch, { type Actress, type Archive, type Flay, type FlayHistory } from '@lib/FlayFetch';
-import { popupFlay } from '@lib/FlaySearch';
 import './FlayDashboard.scss';
 
 /**
@@ -18,7 +18,7 @@ export default class FlayDashboard extends GroundFlay {
   connectedCallback(): void {
     this.innerHTML = /* html */ `
       <div class="dashboard-header">Flay Dashboard</div>
-      <div class="card-grid">
+      <div class="card-row-layout">
         <div class="card loading" id="card-instance">
           <div class="card-title">Instance</div>
           <div class="card-body"><span class="spinner"></span></div>
@@ -27,6 +27,8 @@ export default class FlayDashboard extends GroundFlay {
           <div class="card-title">Archive</div>
           <div class="card-body"><span class="spinner"></span></div>
         </div>
+      </div>
+      <div class="card-grid">
         <div class="card loading" id="card-actress">
           <div class="card-title">Actress</div>
           <div class="card-body"><span class="spinner"></span></div>
@@ -37,9 +39,9 @@ export default class FlayDashboard extends GroundFlay {
         </div>
       </div>
       <div class="release-dist" id="release-dist"></div>
-      <div class="list-section" id="list-recent-play"></div>
-      <div class="list-section" id="list-recent-like"></div>
-      <div class="list-section" id="list-unranked"></div>
+      <div class="marker-section" id="list-recent-play"></div>
+      <div class="marker-section" id="list-recent-like"></div>
+      <div class="marker-section" id="list-unranked"></div>
     `;
 
     // 개별 비동기 호출 — 도착 즉시 렌더링
@@ -75,6 +77,9 @@ export default class FlayDashboard extends GroundFlay {
       if (r >= 0 && r <= 5) rankCounts[r]!++;
     }
 
+    // Rank 한줄 요약: "0:12 1:34 2:56 3:78 4:90 5:23"
+    const rankSummary = rankCounts.map((cnt, i) => `${i}:${cnt}`).join(' ');
+
     const card = this.querySelector('#card-instance')!;
     card.classList.remove('loading');
     card.querySelector('.card-body')!.innerHTML = this.#renderCardRows([
@@ -83,7 +88,7 @@ export default class FlayDashboard extends GroundFlay {
       ['Likes 합계', likesSum.toLocaleString()],
       ['평균 Score', avgScore.toFixed(1)],
       ['평균 Rank', avgRank.toFixed(1)],
-      ...rankCounts.map((cnt, i) => [`Rank ${i}`, cnt.toLocaleString()] as [string, string]),
+      ['Rank 분포', rankSummary],
       ['총 용량', (totalSize / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'],
       ['자막 보유', withSubtitles.toLocaleString()],
     ]);
@@ -118,6 +123,19 @@ export default class FlayDashboard extends GroundFlay {
     // 평균 플레이 횟수 (아카이브 전 얼마나 재생했는지)
     const avgPlay = total > 0 ? list.reduce((sum, f) => sum + f.video.play, 0) / total : 0;
 
+    // flay 수 기준 상위 배우 5명
+    const actressMap = new Map<string, number>();
+    for (const f of list) {
+      for (const name of f.actressList) {
+        actressMap.set(name, (actressMap.get(name) || 0) + 1);
+      }
+    }
+    const topActresses = Array.from(actressMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([name, cnt]) => `${name}(${cnt})`)
+      .join(', ');
+
     const card = this.querySelector('#card-archive')!;
     card.classList.remove('loading');
     card.querySelector('.card-body')!.innerHTML = this.#renderCardRows([
@@ -125,6 +143,7 @@ export default class FlayDashboard extends GroundFlay {
       ['Release 범위', yearRange],
       ['평균 재생', avgPlay.toFixed(1) + '회'],
       ['상위 스튜디오', topStudios || '-'],
+      ['상위 배우', topActresses || '-'],
     ]);
 
     this.#tryRenderDependentSections();
@@ -147,28 +166,17 @@ export default class FlayDashboard extends GroundFlay {
   #tryRenderActressCard(): void {
     if (!this.#instanceList || !this.#archiveList || !this.#actressList) return;
 
-    const allFlays = [...this.#instanceList, ...this.#archiveList];
-    const actressCountMap = new Map<string, number>();
-    for (const flay of allFlays) {
-      for (const name of flay.actressList) {
-        actressCountMap.set(name, (actressCountMap.get(name) || 0) + 1);
-      }
-    }
-
-    // 2회 이상 출현 배우만 필터
-    const multiAppearActress = this.#actressList.filter((a) => (actressCountMap.get(a.name) || 0) >= 2);
     const instanceActressSet = new Set(this.#instanceList.flatMap((f) => f.actressList));
     const archiveActressSet = new Set(this.#archiveList.flatMap((f) => f.actressList));
 
-    const activeCount = multiAppearActress.filter((a) => instanceActressSet.has(a.name)).length;
-    const archivedCount = multiAppearActress.filter((a) => !instanceActressSet.has(a.name) && archiveActressSet.has(a.name)).length;
+    const activeCount = this.#actressList.filter((a) => instanceActressSet.has(a.name)).length;
+    const archivedCount = this.#actressList.filter((a) => !instanceActressSet.has(a.name) && archiveActressSet.has(a.name)).length;
 
     const card = this.querySelector('#card-actress')!;
     card.classList.remove('loading');
     card.querySelector('.card-body')!.innerHTML = this.#renderCardRows([
       ['전체 배우', this.#actressList.length.toLocaleString()],
-      ['2회+ 출현', multiAppearActress.length.toLocaleString()],
-      ['선호 배우', multiAppearActress.filter((a) => a.favorite).length.toLocaleString()],
+      ['선호 배우', this.#actressList.filter((a) => a.favorite).length.toLocaleString()],
       ['보유 중', activeCount.toLocaleString()],
       ['아카이브', archivedCount.toLocaleString()],
     ]);
@@ -239,41 +247,63 @@ export default class FlayDashboard extends GroundFlay {
    */
   #renderReleaseDist(): void {
     const container = this.querySelector('#release-dist')!;
-    if (container.children.length > 0) return; // 이미 렌더링됨
+    if (container.children.length > 0) return;
     if (!this.#instanceList || !this.#archiveList) return;
 
     const allFlays = [...this.#instanceList, ...this.#archiveList];
-    const yearCounts = new Map<number, number>();
+
+    // 월별 집계: "YYYY-MM" → count
+    const monthCounts = new Map<string, number>();
     for (const flay of allFlays) {
-      const year = parseInt(flay.release.substring(0, 4), 10);
-      if (!isNaN(year) && year >= 2000) {
-        yearCounts.set(year, (yearCounts.get(year) || 0) + 1);
+      const ym = flay.release.substring(0, 7); // "YYYY-MM"
+      if (ym.length === 7 && ym[4] === '-') {
+        monthCounts.set(ym, (monthCounts.get(ym) || 0) + 1);
       }
     }
+    if (monthCounts.size === 0) return;
 
-    if (yearCounts.size === 0) return;
+    // 연속 월 범위 생성
+    const sortedKeys = Array.from(monthCounts.keys()).sort();
+    const [startY, startM] = sortedKeys[0]!.split('-').map(Number) as [number, number];
+    const [endY, endM] = sortedKeys[sortedKeys.length - 1]!.split('-').map(Number) as [number, number];
 
-    // 연도 범위 계산
-    const years = Array.from(yearCounts.keys()).sort((a, b) => a - b);
-    const minYear = years[0]!;
-    const maxYear = years[years.length - 1]!;
-    const maxCount = Math.max(...yearCounts.values());
+    const months: { key: string; count: number }[] = [];
+    for (let y = startY, m = startM; y < endY || (y === endY && m <= endM); m++) {
+      if (m > 12) {
+        m = 1;
+        y++;
+      }
+      const key = `${y}-${String(m).padStart(2, '0')}`;
+      months.push({ key, count: monthCounts.get(key) || 0 });
+    }
+
+    // 이상치 억제: p95 percentile 기준 클램프
+    const counts = months
+      .map((m) => m.count)
+      .filter((c) => c > 0)
+      .sort((a, b) => a - b);
+    const p95 = counts[Math.floor(counts.length * 0.95)] || 1;
+    const maxDisplay = Math.max(p95, 1);
 
     // 바 차트 렌더링
     let barsHtml = '';
+    for (const { key, count } of months) {
+      const clamped = Math.min(count, maxDisplay);
+      const heightPercent = (clamped / maxDisplay) * 100;
+      const overClass = count > maxDisplay ? ' over' : '';
+      barsHtml += `<div class="bar${overClass}" style="height: ${heightPercent}%" title="${key}: ${count}건"></div>`;
+    }
+
+    // 연도 라벨: 매 1월에 표시
     let labelsHtml = '';
-    for (let y = minYear; y <= maxYear; y++) {
-      const count = yearCounts.get(y) || 0;
-      const heightPercent = maxCount > 0 ? (count / maxCount) * 100 : 0;
-      barsHtml += `<div class="bar" style="height: ${heightPercent}%" title="${y}: ${count}건"></div>`;
-      // 5년 간격으로 라벨 표시
-      if (y === minYear || y === maxYear || y % 5 === 0) {
-        labelsHtml += `<span>${y}</span>`;
+    for (const { key } of months) {
+      if (key.endsWith('-01')) {
+        labelsHtml += `<span>${key.substring(0, 4)}</span>`;
       }
     }
 
     container.innerHTML = `
-      <div class="dist-title">Release 연도별 분포</div>
+      <div class="dist-title">Release 월별 분포</div>
       <div class="spark-row">${barsHtml}</div>
       <div class="year-labels">${labelsHtml}</div>
     `;
@@ -293,30 +323,23 @@ export default class FlayDashboard extends GroundFlay {
       flayMap.set(flay.opus, flay);
     }
 
-    // 1. 최근 플레이 목록 (최신 10건, 중복 opus 제거)
+    // 1. 최근 플레이 (중복 opus 제거, 최신 20건)
     const recentPlayContainer = this.querySelector('#list-recent-play')!;
     if (recentPlayContainer.children.length === 0) {
       const seenOpus = new Set<string>();
-      const recentPlays = this.#historyList
+      const recentFlays = this.#historyList
         .filter((h) => {
           if (seenOpus.has(h.opus)) return false;
           seenOpus.add(h.opus);
           return true;
         })
-        .slice(0, 10);
-      recentPlayContainer.innerHTML = `
-        <div class="list-title">최근 플레이</div>
-        ${recentPlays
-          .map((h) => {
-            const flay = flayMap.get(h.opus);
-            return this.#renderListItem(h.opus, flay?.title || '', flay?.actressList.join(', ') || '', h.date.substring(0, 10));
-          })
-          .join('')}
-      `;
-      this.#bindListItemClicks(recentPlayContainer);
+        .slice(0, 20)
+        .map((h) => flayMap.get(h.opus))
+        .filter((f): f is Flay => f !== undefined);
+      this.#renderMarkerSection(recentPlayContainer, '최근 플레이', recentFlays);
     }
 
-    // 2. 최근 Like 목록 (최신 10건)
+    // 2. 최근 Like (최신 20건)
     const recentLikeContainer = this.querySelector('#list-recent-like')!;
     if (recentLikeContainer.children.length === 0) {
       const likeEntries: { opus: string; timestamp: number }[] = [];
@@ -326,35 +349,42 @@ export default class FlayDashboard extends GroundFlay {
         }
       }
       likeEntries.sort((a, b) => b.timestamp - a.timestamp);
-      const recentLikes = likeEntries.slice(0, 10);
-
-      recentLikeContainer.innerHTML = `
-        <div class="list-title">최근 Like</div>
-        ${recentLikes
-          .map((entry) => {
-            const flay = flayMap.get(entry.opus);
-            const dateStr = new Date(entry.timestamp).toISOString().substring(0, 10);
-            return this.#renderListItem(entry.opus, flay?.title || '', flay?.actressList.join(', ') || '', dateStr);
-          })
-          .join('')}
-      `;
-      this.#bindListItemClicks(recentLikeContainer);
+      const likeFlays = likeEntries
+        .slice(0, 20)
+        .map((e) => flayMap.get(e.opus))
+        .filter((f): f is Flay => f !== undefined);
+      this.#renderMarkerSection(recentLikeContainer, '최근 Like', likeFlays);
     }
 
-    // 3. 미평가 작품 (rank === 0, release 최신순, 최대 10건)
+    // 3. 미평가 작품 (rank === 0, release 최신순, 최대 20건)
     const unrankedContainer = this.querySelector('#list-unranked')!;
     if (unrankedContainer.children.length === 0) {
       const unranked = this.#instanceList
         .filter((f) => f.video.rank === 0)
         .sort((a, b) => b.release.localeCompare(a.release))
-        .slice(0, 10);
-
-      unrankedContainer.innerHTML = `
-        <div class="list-title">미평가 작품</div>
-        ${unranked.map((f) => this.#renderListItem(f.opus, f.title, f.actressList.join(', '), f.release.substring(0, 10))).join('')}
-      `;
-      this.#bindListItemClicks(unrankedContainer);
+        .slice(0, 20);
+      this.#renderMarkerSection(unrankedContainer, '미평가 작품', unranked);
     }
+  }
+
+  /**
+   * FlayMarker 사각형 그리드로 섹션을 렌더링
+   * @param container - 렌더링할 컨테이너 엘리먼트
+   * @param title - 섹션 제목
+   * @param flays - 표시할 Flay 목록
+   */
+  #renderMarkerSection(container: Element, title: string, flays: Flay[]): void {
+    const titleEl = document.createElement('div');
+    titleEl.className = 'section-title';
+    titleEl.textContent = title;
+    container.appendChild(titleEl);
+
+    const grid = document.createElement('div');
+    grid.className = 'marker-grid';
+    for (const flay of flays) {
+      grid.appendChild(new FlayMarker(flay, { tooltip: true, shape: 'square' }));
+    }
+    container.appendChild(grid);
   }
 
   // ─── 유틸리티 ──────────────────────────────────────────
@@ -375,38 +405,6 @@ export default class FlayDashboard extends GroundFlay {
     `
       )
       .join('');
-  }
-
-  /**
-   * 리스트 아이템 HTML을 생성
-   * @param opus - 작품 코드
-   * @param title - 제목
-   * @param actress - 배우명
-   * @param date - 날짜 문자열
-   * @returns 리스트 아이템 HTML 문자열
-   */
-  #renderListItem(opus: string, title: string, actress: string, date: string): string {
-    return `
-      <div class="list-item" data-opus="${opus}">
-        <span class="opus">${opus}</span>
-        <span class="title">${title}</span>
-        <span class="actress">${actress}</span>
-        <span class="date">${date}</span>
-      </div>
-    `;
-  }
-
-  /**
-   * 리스트 컨테이너 내 아이템 클릭 이벤트를 바인딩
-   * @param container - 리스트 컨테이너 엘리먼트
-   */
-  #bindListItemClicks(container: Element): void {
-    for (const item of container.querySelectorAll('.list-item')) {
-      item.addEventListener('click', () => {
-        const opus = (item as HTMLElement).dataset['opus'];
-        if (opus) popupFlay(opus);
-      });
-    }
   }
 }
 

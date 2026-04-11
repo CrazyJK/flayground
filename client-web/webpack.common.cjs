@@ -14,6 +14,7 @@ const entryPoints = {
   },
   pages: {
     'page.archive': './src/view/page.archive.ts',
+    'page.dashboard': './src/view/page.dashboard.ts',
     'page.flay-page': './src/view/page.flay-page.ts',
     'page.flay-flix': './src/view/page.flay-flix.ts',
     'page.flay-one': './src/view/page.flay-one.ts',

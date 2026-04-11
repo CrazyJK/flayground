@@ -24,6 +24,7 @@ export class SideNavBar extends GroundNav {
 
   // 정적 메뉴 리스트를 클래스 속성으로 이동
   static readonly #MENU_LIST: readonly MenuItemType[] = [
+    { url: 'page.dashboard.html', name: 'dashboard' },
     { url: 'page.flay-page.html', name: 'flay page' },
     { url: 'page.flay-flix.html', name: 'flay flix' },
     {},

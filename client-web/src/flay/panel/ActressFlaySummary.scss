@@ -2,6 +2,7 @@ actress-flay-summary {
   position: relative;
   display: block;
   max-width: 100%;
+  font-family: var(--font-monospace, 'Consolas', 'D2Coding', monospace);
 
   > ul {
     position: relative;
@@ -24,6 +25,7 @@ actress-flay-summary {
         font-weight: bold;
 
         label {
+          display: inline-flex;
           cursor: pointer;
           font-size: 1rem;
         }
@@ -74,7 +76,8 @@ actress-flay-summary {
       span.likes,
       span.likes-sum,
       span.rank,
-      span.score {
+      span.score,
+      span.hot-score {
         flex: 0 0 3rem;
         text-align: right;
       }
@@ -90,6 +93,7 @@ actress-flay-summary {
 
     &.cover {
       > li {
+        align-items: flex-start;
         span.name {
           max-height: 150px;
           overflow: hidden;

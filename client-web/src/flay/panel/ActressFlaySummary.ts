@@ -20,6 +20,7 @@ interface ActressFlayData {
   flayLikesSum: number;
   flayScoreSum: number;
   flayRankAvg: number;
+  hotScore: number;
   flayList: Flay[];
   firstFlay: Flay;
 }
@@ -27,7 +28,7 @@ interface ActressFlayData {
 /**
  * 정렬 기준 타입
  */
-type SortBy = 'count' | 'likes' | 'likes-sum' | 'rank' | 'score' | 'name' | 'age' | 'favorite';
+type SortBy = 'count' | 'likes' | 'likes-sum' | 'rank' | 'score' | 'hot-score' | 'name' | 'age' | 'favorite';
 
 /**
  * Unknown 배우 상수
@@ -112,30 +113,33 @@ export class ActressFlaySummary extends GroundFlay {
     this.innerHTML = `
       <ul>
         <li class="header">
-          <span class="name">
-            <input type="radio" name="sorting" id="name" value="name" title="이름 기준 정렬" /><label for="name">Name</label>
+          <span class="name" title="이름 기준 정렬">
+            <input type="radio" name="sorting" id="name" value="name" /><label for="name">Name</label>
             <span id="toggleCover">Cover</span>
           </span>
-          <span class="favorite">
-            <input type="radio" name="sorting" id="favorite" value="favorite" title="즐겨찾기 기준 정렬" /><label for="favorite">Fav.</label>
+          <span class="favorite" title="즐겨찾기 기준 정렬">
+            <input type="radio" name="sorting" id="favorite" value="favorite" /><label for="favorite">${favoriteSVG}</label>
           </span>
-          <span class="age">
-            <input type="radio" name="sorting" id="age" value="age" title="나이 기준 정렬" /><label for="age">Age</label>
+          <span class="age" title="나이 기준 정렬">
+            <input type="radio" name="sorting" id="age" value="age" /><label for="age">Age</label>
           </span>
-          <span class="count">
-            <input type="radio" name="sorting" id="count" value="count" title="총 개수 기준 정렬" /><label for="count">Total</label>
+          <span class="count" title="총 개수 기준 정렬">
+            <input type="radio" name="sorting" id="count" value="count" /><label for="count">Total</label>
           </span>
-          <span class="likes">
-            <input type="radio" name="sorting" id="likes" value="likes" title="좋아요 개수 기준 정렬" /><label for="likes">Shot</label>
+          <span class="likes" title="좋아요 개수 기준 정렬">
+            <input type="radio" name="sorting" id="likes" value="likes" /><label for="likes">Shot</label>
           </span>
-          <span class="likes-sum">
-            <input type="radio" name="sorting" id="likes-sum" value="likes-sum" title="좋아요 합계 기준 정렬" /><label for="likes-sum">Shots</label>
+          <span class="likes-sum" title="좋아요 합계 기준 정렬">
+            <input type="radio" name="sorting" id="likes-sum" value="likes-sum" /><label for="likes-sum">Shots</label>
           </span>
-          <span class="rank">
-            <input type="radio" name="sorting" id="rank" value="rank" title="평균 랭크 기준 정렬" /><label for="rank">Rank</label>
+          <span class="hot-score" title="로그 가중 점수 기준 정렬">
+            <input type="radio" name="sorting" id="hot-score" value="hot-score" /><label for="hot-score">Hot</label>
           </span>
-          <span class="score">
-            <input type="radio" name="sorting" id="score" value="score" title="점수 합계 기준 정렬" /><label for="score">Score</label>
+          <span class="rank" title="평균 랭크 기준 정렬">
+            <input type="radio" name="sorting" id="rank" value="rank" /><label for="rank">Rank</label>
+          </span>
+          <span class="score" title="점수 합계 기준 정렬">
+            <input type="radio" name="sorting" id="score" value="score" /><label for="score">Score</label>
           </span>
           <span class="flay-marker">Flay</span>
         </li>
@@ -224,6 +228,26 @@ export class ActressFlaySummary extends GroundFlay {
           flayLikesSum: sortedFlayList.reduce((sum, flay) => sum + (flay.video.likes?.length || 0), 0),
           flayScoreSum: sortedFlayList.reduce((sum, flay) => sum + (flay.score || 0), 0),
           flayRankAvg: sortedFlayList.reduce((sum, flay) => sum + (flay.video.rank || 0), 0) / sortedFlayList.length,
+          // ln(1 + shots) × (shot / total): shots(좋아요 합계)로 규모 반영, shot/total 비율로 보정
+          // Unknown 배우는 0점, 최근 like에 지수 감쇠 가중치 적용 (반감기 12개월)
+          hotScore: (() => {
+            if (name === 'Unknown') return 0;
+            const total = sortedFlayList.length;
+            const shot = sortedFlayList.filter((flay) => flay.video.likes?.length > 0).length;
+            const rate = total > 0 ? shot / total : 0;
+            // 각 like 타임스탬프에 최신도 가중치 적용: weight = exp(-ln2 / 12 × months)
+            const now = Date.now();
+            const weightedShots = sortedFlayList.reduce((sum, flay) => {
+              return (
+                sum +
+                flay.video.likes.reduce((w, ts) => {
+                  const months = (now - ts) / (30 * 24 * 60 * 60 * 1000);
+                  return w + Math.exp((-Math.LN2 / 12) * months);
+                }, 0)
+              );
+            }, 0);
+            return Math.log(1 + weightedShots) * rate;
+          })(),
           flayList: sortedFlayList,
           firstFlay: sortedFlayList[0]!,
         };
@@ -262,6 +286,9 @@ export class ActressFlaySummary extends GroundFlay {
           break;
         case 'score':
           diff = b.flayScoreSum - a.flayScoreSum;
+          break;
+        case 'hot-score':
+          diff = b.hotScore - a.hotScore;
           break;
         case 'name':
           diff = a.name.localeCompare(b.name);
@@ -306,7 +333,7 @@ export class ActressFlaySummary extends GroundFlay {
     // 배우 목록 렌더링
     const fragment = document.createDocumentFragment();
     this.#actressFlayData.forEach((data) => {
-      const { name, favorite, age, flayTotalCount, flayLikesCount, flayLikesSum, flayRankAvg, flayScoreSum, firstFlay, flayList } = data;
+      const { name, favorite, age, flayTotalCount, flayLikesCount, flayLikesSum, flayRankAvg, flayScoreSum, hotScore, firstFlay, flayList } = data;
 
       const row = document.createElement('li');
       row.innerHTML = `
@@ -315,12 +342,13 @@ export class ActressFlaySummary extends GroundFlay {
           <img class="actress-cover" src="${ApiClient.buildUrl('/static/cover/' + firstFlay.opus)}" alt="${name} Cover" loading="lazy" />
         </span>
         <span class="favorite ${favorite ? 'favorite-true' : ''}">${favoriteSVG}</span>
-        <span class="age">${age}</span>
-        <span class="count">${NumberUtils.formatWithCommas(flayTotalCount)}</span>
-        <span class="likes">${NumberUtils.formatWithCommas(flayLikesCount)}</span>
-        <span class="likes-sum">${NumberUtils.formatWithCommas(flayLikesSum)}</span>
-        <span class="rank">${flayRankAvg.toFixed(1)}</span>
-        <span class="score">${NumberUtils.formatWithCommas(flayScoreSum)}</span>
+        <span class="age">${age || ''}</span>
+        <span class="count">${flayTotalCount ? NumberUtils.formatWithCommas(flayTotalCount) : ''}</span>
+        <span class="likes">${flayLikesCount ? NumberUtils.formatWithCommas(flayLikesCount) : ''}</span>
+        <span class="likes-sum">${flayLikesSum ? NumberUtils.formatWithCommas(flayLikesSum) : ''}</span>
+        <span class="hot-score">${hotScore > 0 ? NumberUtils.formatWithCommas(Math.round(hotScore * 100)) : ''}</span>
+        <span class="rank">${flayRankAvg > 0 ? flayRankAvg.toFixed(1) : ''}</span>
+        <span class="score">${flayScoreSum ? NumberUtils.formatWithCommas(flayScoreSum) : ''}</span>
         <span class="flay-marker"></span>`;
 
       // FlayMarker 생성 및 추가

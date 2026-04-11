@@ -64,19 +64,20 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | Likes 합계 | `Σ flay.video.likes.length`                                     |
 | 평균 Score | `Σ flay.score / count`                                          |
 | 평균 Rank  | `Σ flay.video.rank / count` (rank > 0인 것만)                   |
-| 총 용량    | `Σ flay.length` → GB 단위 표시                                  |
+| Rank 0 ~ 5 | 각 랭크별 flay 수 (6행)                                         |
+| 총 용량    | `Σ flay.length` → **TB** 단위 표시                              |
 | 자막 보유  | `instanceList.filter(f => f.files.subtitles.length > 0).length` |
 
 ### 3-2. Archive 카드
 
 삭제/이관된 과거 Flay 요약.
 
-| 항목                            | 계산                                                       |
-| ------------------------------- | ---------------------------------------------------------- |
-| Total                           | `archiveList.length`                                       |
-| Liked                           | `archiveList.filter(f => f.video.likes.length > 0).length` |
-| 평균 Score                      | `Σ flay.score / count`                                     |
-| 누적 Total (instance + archive) | 두 리스트 합산                                             |
+| 항목          | 계산                                                     |
+| ------------- | -------------------------------------------------------- |
+| Total         | `archiveList.length`                                     |
+| Release 범위  | release 연도 최소 ~ 최대                                 |
+| 평균 재생     | `Σ flay.video.play / count` (아카이브 전 평균 재생 횟수) |
+| 상위 스튜디오 | studio별 count 상위 3개                                  |
 
 #### Release 월별 분포 (스파크라인)
 
@@ -102,13 +103,12 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 
 배우 통계. **1회 출현 배우는 제외**하고 집계.
 
-| 항목          | 계산                                                 |
-| ------------- | ---------------------------------------------------- |
-| 전체 배우 수  | `actressList.length` (1회 출현 제외 수도 병기)       |
-| 즐겨찾기 배우 | `actressList.filter(a => a.favorite).length`         |
-| 살아있는 배우 | instance에 등장하는 배우 (2회 이상 출현만)           |
-| 지나간 배우   | archive에만 등장하고 instance에 없는 배우 (2회 이상) |
-| 평균 나이     | `currentYear - birthYear` 평균 (birth 있는 배우만)   |
+| 항목         | 계산                                                 |
+| ------------ | ---------------------------------------------------- |
+| 전체 배우 수 | `actressList.length` (1회 출현 제외 수도 병기)       |
+| 선호 배우    | `actressList.filter(a => a.favorite).length`         |
+| 보유 중      | instance에 등장하는 배우 (2회 이상 출현만)           |
+| 아카이브     | archive에만 등장하고 instance에 없는 배우 (2회 이상) |
 
 **계산 방법:**
 
@@ -128,8 +128,8 @@ const multiAppearActress = actressList.filter((a) => (actressCountMap.get(a.name
 const instanceActressSet = new Set(instanceList.flatMap((f) => f.actressList));
 const archiveActressSet = new Set(archiveList.flatMap((f) => f.actressList));
 
-const aliveCount = multiAppearActress.filter((a) => instanceActressSet.has(a.name)).length;
-const goneCount = multiAppearActress.filter((a) => !instanceActressSet.has(a.name) && archiveActressSet.has(a.name)).length;
+const activeCount = multiAppearActress.filter((a) => instanceActressSet.has(a.name)).length;
+const archivedCount = multiAppearActress.filter((a) => !instanceActressSet.has(a.name) && archiveActressSet.has(a.name)).length;
 ```
 
 > Actress 카드는 Instance + Archive 양쪽 데이터가 필요하므로,
@@ -160,7 +160,7 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 [opus] [title] [배우] [플레이 일시]
 ```
 
-- `playHistory`에서 최신 10건 추출
+- `playHistory`에서 **중복 opus 제거** 후 최신 10건 추출
 - opus 클릭 시 `popupFlay(opus)` 팝업
 
 ### 4-2. 최근 Like 목록 (최신 10건)
@@ -292,17 +292,16 @@ interface DashboardStats {
   };
   archive: {
     total: number;
-    liked: number;
-    avgScore: number;
-    cumulative: number; // instance + archive
+    yearRange: string; // '2008 ~ 2026'
+    avgPlay: number;
+    topStudios: string; // 'Studio1(30), Studio2(25), Studio3(20)'
   };
   actress: {
     total: number; // 전체 배우
     multiAppear: number; // 2회 이상 출현 배우
-    favorite: number;
-    alive: number;
-    gone: number;
-    avgAge: number;
+    favorite: number; // 선호 배우
+    active: number; // 보유 중
+    archived: number; // 아카이브
   };
   history: {
     totalPlays: number;
@@ -484,30 +483,3 @@ document.querySelector('article')!.appendChild(new FlayDashboard());
 6. 하단 리스트 3개 렌더링 + `popupFlay()` 이벤트 바인딩
 7. `FlayDashboard.scss` 스타일 작성
 8. 빌드 확인
-
-## 개선 1 ✅ 반영 완료
-
-### Instance
-
-- [x] 총 용량 단위 TB로 변경
-- [x] 평균 Rank 아래에 Rank 0 ~ 5 각각의 flay 수 표시
-
-### Archive
-
-- [x] liked, score, 누적 total 제거 (의미 없음)
-- [x] 대체 항목: Release 범위(최소~최대 연도), 평균 재생 횟수, 상위 스튜디오 3개
-
-### Actress
-
-- [x] 평균 나이 제거 (의미 없음)
-- [x] `즐겨찾기` → `선호 배우`
-- [x] `살아있는 배우` → `보유 중` (instance에 등장)
-- [x] `지나간 배우` → `아카이브` (archive에만 등장)
-
-### 최근 플레이
-
-- [x] 중복 opus 제거 (같은 작품 여러 번 재생 시 최신 1건만)
-
-### etc
-
-- [x] `index.scss`: `position: fixed` → `min-height: 100dvh`로 변경하여 스크롤 가능하게 수정

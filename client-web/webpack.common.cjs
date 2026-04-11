@@ -24,7 +24,6 @@ const entryPoints = {
     'page.flay-pack': './src/view/page.flay-pack.ts',
     'page.flay-tag': './src/view/page.flay-tag.ts',
     'page.cover-popout': './src/view/page.cover-popout.ts',
-    'page.dragndrop': './src/view/page.dragndrop.ts',
     'page.girls': './src/view/page.girls.ts',
     'page.actress': './src/view/page.actress.ts',
     'page.studio': './src/view/page.studio.ts',

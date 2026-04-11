@@ -347,7 +347,9 @@ export default class FlayDashboard extends GroundFlay {
     const total = Array.from(map.values()).reduce((s, v) => s + v, 0);
     if (total === 0) return [];
     const sorted = Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
-    const top = sorted.filter(([, v]) => v / total >= minRatio).slice(0, maxItems);
+    let top = sorted.filter(([, v]) => v / total >= minRatio).slice(0, maxItems);
+    // 비율 필터 통과 항목이 없으면 상위 maxItems개를 fallback으로 표시
+    if (top.length === 0) top = sorted.slice(0, maxItems);
     const rest = total - top.reduce((s, [, v]) => s + v, 0);
     if (rest > 0) top.push(['그외', rest]);
     return top;

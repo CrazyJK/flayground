@@ -68,7 +68,7 @@ function createApp(): express.Application {
 
   // webpack 빌드 결과 (/dist/*)
   if (fs.existsSync(wwwDistPath)) {
-    app.use('/dist', express.static(wwwDistPath));
+    app.use('/dist', express.static(wwwDistPath, { etag: false, lastModified: false, cacheControl: false }));
   }
 
   // API 라우트 등록

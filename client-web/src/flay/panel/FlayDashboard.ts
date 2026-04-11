@@ -51,26 +51,47 @@ export default class FlayDashboard extends GroundFlay {
       <div class="card-row-layout">
         <div class="card loading" id="card-instance">
           <div class="card-title">Instance</div>
-          <div class="card-body"><span class="spinner"></span></div>
+          <div class="card-body">
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value short"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value short"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value short"></span></div>
+            <div class="skeleton-charts"><div class="skeleton-chart"></div><div class="skeleton-chart"></div><div class="skeleton-chart"></div></div>
+          </div>
         </div>
         <div class="card loading" id="card-archive">
           <div class="card-title">Archive</div>
-          <div class="card-body"><span class="spinner"></span></div>
+          <div class="card-body">
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value short"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value"></span></div>
+            <div class="skeleton-charts"><div class="skeleton-chart"></div><div class="skeleton-chart"></div><div class="skeleton-chart"></div></div>
+          </div>
         </div>
       </div>
       <div class="card-grid">
         <div class="card loading" id="card-actress">
           <div class="card-title">Actress</div>
-          <div class="card-body"><span class="spinner"></span></div>
+          <div class="card-body">
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value short"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value short"></span></div>
+          </div>
         </div>
         <div class="card loading" id="card-history">
           <div class="card-title">History</div>
-          <div class="card-body"><span class="spinner"></span></div>
+          <div class="card-body">
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value"></span></div>
+            <div class="skeleton-row"><span class="skeleton-label"></span><span class="skeleton-value short"></span></div>
+          </div>
         </div>
       </div>
       <div class="card loading" id="card-release">
         <div class="card-title">Release</div>
-        <div class="card-body"><span class="spinner"></span></div>
+        <div class="card-body"><div class="skeleton-bar"></div></div>
       </div>
     `;
 

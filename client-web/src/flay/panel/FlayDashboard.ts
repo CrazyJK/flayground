@@ -356,7 +356,7 @@ export default class FlayDashboard extends GroundFlay {
     card.classList.remove('loading');
     card.innerHTML = `
       <div class="card-title">Release <span class="release-total">${allFlays.length.toLocaleString()}건</span></div>
-      <div class="echart-bar echart-container" style="width:100%;height:200px"></div>
+      <div class="echart-bar echart-container"></div>
     `;
 
     const textColor = getComputedStyle(this).getPropertyValue('--color-text').trim() || '#333';

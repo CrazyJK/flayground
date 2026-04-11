@@ -35,14 +35,24 @@ export default class FlayDashboard extends GroundFlay {
    * 페이지 테마 CSS 변수를 읽어 ECharts tooltip 공통 스타일 옵션을 반환
    * @returns ECharts tooltip 스타일 옵션 객체
    */
-  #getTooltipStyle(): Record<string, unknown> {
+  #getTooltipStyle(chartEl?: HTMLElement | null): Record<string, unknown> {
     const s = getComputedStyle(this);
     return {
       backgroundColor: s.getPropertyValue('--color-bg').trim(),
       borderColor: s.getPropertyValue('--color-border').trim(),
-      textStyle: { color: s.getPropertyValue('--color-text').trim(), fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", fontSize: 12 },
+      textStyle: { color: s.getPropertyValue('--color-text').trim(), fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", fontSize: this.#getChartFontSize(chartEl) },
       extraCssText: `border-radius: ${s.getPropertyValue('--border-radius-hugest').trim()}; box-shadow: ${s.getPropertyValue('--box-shadow-smallest').trim()};`,
     };
+  }
+
+  /**
+   * 컨테이너의 computed font-size를 px 숫자로 반환
+   * @param el - 폰트 크기를 읽을 컨테이너 엘리먼트
+   * @returns 폰트 크기 (px)
+   */
+  #getChartFontSize(el?: HTMLElement | null): number {
+    const target = el ?? (this.querySelector('.echart-container') as HTMLElement | null);
+    return target ? parseFloat(getComputedStyle(target).fontSize) : 12;
   }
 
   connectedCallback(): void {
@@ -346,7 +356,7 @@ export default class FlayDashboard extends GroundFlay {
     card.classList.remove('loading');
     card.innerHTML = `
       <div class="card-title">Release <span class="release-total">${allFlays.length.toLocaleString()}건</span></div>
-      <div class="echart-bar" style="width:100%;height:200px"></div>
+      <div class="echart-bar echart-container" style="width:100%;height:200px"></div>
     `;
 
     const textColor = getComputedStyle(this).getPropertyValue('--color-text').trim() || '#333';
@@ -354,13 +364,13 @@ export default class FlayDashboard extends GroundFlay {
     const chart = echarts.init(chartEl);
     this.#registerChart(chart);
     chart.setOption({
-      tooltip: { trigger: 'axis', formatter: (params: any) => `${params[0].name}: ${params[0].value}건`, ...this.#getTooltipStyle() },
+      tooltip: { trigger: 'axis', formatter: (params: any) => `${params[0].name}: ${params[0].value}건`, ...this.#getTooltipStyle(chartEl) },
       grid: { left: 5, right: 5, top: 10, bottom: 10 },
       xAxis: {
         type: 'category',
         data: categories,
         axisLabel: {
-          fontSize: 9,
+          fontSize: this.#getChartFontSize(chartEl),
           color: textColor,
           interval: (index: number) => categories[index]!.endsWith('.01'),
           formatter: (v: string) => v.substring(0, 4),
@@ -440,7 +450,7 @@ export default class FlayDashboard extends GroundFlay {
     const chart = echarts.init(chartEl);
     this.#registerChart(chart);
     chart.setOption({
-      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)', ...this.#getTooltipStyle() },
+      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)', ...this.#getTooltipStyle(chartEl) },
       series: [
         {
           type: 'pie',
@@ -450,7 +460,7 @@ export default class FlayDashboard extends GroundFlay {
             ...d,
             label: d.value === 0 ? { show: false } : {},
           })),
-          label: { show: true, position: 'inside', formatter: '{b}\n{c}', fontSize: 10, color: '#fff', textShadowBlur: 2, textShadowColor: 'rgba(0,0,0,0.5)' },
+          label: { show: true, position: 'inside', formatter: '{b}\n{c}', fontSize: this.#getChartFontSize(chartEl), color: '#fff', textShadowBlur: 2, textShadowColor: 'rgba(0,0,0,0.5)' },
           labelLine: { show: false },
           emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)' } },
         },
@@ -483,7 +493,7 @@ export default class FlayDashboard extends GroundFlay {
           const pct = ((params.value / total) * 100).toFixed(1);
           return `${params.name}: ${params.value.toLocaleString()} (${pct}%)`;
         },
-        ...this.#getTooltipStyle(),
+        ...this.#getTooltipStyle(chartEl),
       },
       series: [
         {
@@ -496,7 +506,7 @@ export default class FlayDashboard extends GroundFlay {
           nodeClick: false,
           breadcrumb: { show: false },
           data,
-          label: { show: true, formatter: '{b}\n{c}', fontSize: 9, color: '#fff', cursor: onClick ? 'pointer' : 'default' },
+          label: { show: true, formatter: '{b}\n{c}', fontSize: this.#getChartFontSize(chartEl), color: '#fff', cursor: onClick ? 'pointer' : 'default' },
           itemStyle: { borderWidth: 1, borderColor: '#fff' },
           levels: [
             {

@@ -30,12 +30,14 @@ flay-files {
     display: none;
     font-family: var(--font-family-monospace);
 
+    $border-color: var(--color-border-reversed);
+
     ol {
       margin: 0;
       padding: 0.5rem;
       list-style: none;
       text-align: left;
-      border: 2px dashed purple;
+      border: 2px dashed $border-color;
       border-bottom: 0;
       li {
         font-size: var(--size-smallest);
@@ -60,17 +62,17 @@ flay-files {
       input,
       button {
         font-size: var(--size-smallest);
-        border: 2px dashed purple;
+        border: 2px dashed $border-color;
         border-right: 0;
         padding: 4px;
         transition: background-color 0.4s;
         &:hover {
-          background-color: #4a4a4a;
+          background-color: var(--color-bg-input-hover);
         }
       }
       button {
         font-size: var(--size-small);
-        border-right: 2px dashed purple;
+        border-right: 2px dashed $border-color;
       }
 
       [name='studio'] {
@@ -90,7 +92,7 @@ flay-files {
       }
       [name='release'] {
         flex: 0 0 auto;
-        width: 4rem;
+        width: 4.5rem;
       }
     }
 

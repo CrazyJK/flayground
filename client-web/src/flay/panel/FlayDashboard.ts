@@ -63,7 +63,6 @@ export default class FlayDashboard extends GroundFlay {
     // 통계 계산
     const total = list.length;
     const liked = list.filter((f) => f.video.likes.length > 0).length;
-    const likesSum = list.reduce((sum, f) => sum + f.video.likes.length, 0);
     const avgScore = total > 0 ? list.reduce((sum, f) => sum + f.score, 0) / total : 0;
     const rankedList = list.filter((f) => f.video.rank > 0);
     const avgRank = rankedList.length > 0 ? rankedList.reduce((sum, f) => sum + f.video.rank, 0) / rankedList.length : 0;
@@ -77,21 +76,42 @@ export default class FlayDashboard extends GroundFlay {
       if (r >= 0 && r <= 5) rankCounts[r]!++;
     }
 
-    // Rank 한줄 요약: "0:12 1:34 2:56 3:78 4:90 5:23"
-    const rankSummary = rankCounts.map((cnt, i) => `${i}:${cnt}`).join(' ');
+    // 상위 스튜디오 (최다 5개)
+    const studioMap = new Map<string, number>();
+    for (const f of list) studioMap.set(f.studio, (studioMap.get(f.studio) || 0) + 1);
+    const topStudios = Array.from(studioMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5);
+
+    // 상위 배우 (이름 없거나 Amateur 제외, 최다 10명)
+    const actressMap = new Map<string, number>();
+    for (const f of list) {
+      for (const name of f.actressList) {
+        if (!name || name === 'Amateur') continue;
+        actressMap.set(name, (actressMap.get(name) || 0) + 1);
+      }
+    }
+    const topActresses = Array.from(actressMap.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 10);
 
     const card = this.querySelector('#card-instance')!;
     card.classList.remove('loading');
-    card.querySelector('.card-body')!.innerHTML = this.#renderCardRows([
-      ['Total', total.toLocaleString()],
-      ['Liked', liked.toLocaleString()],
-      ['Likes 합계', likesSum.toLocaleString()],
-      ['평균 Score', avgScore.toFixed(1)],
-      ['평균 Rank', avgRank.toFixed(1)],
-      ['Rank 분포', rankSummary],
-      ['총 용량', (totalSize / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'],
-      ['자막 보유', withSubtitles.toLocaleString()],
-    ]);
+    card.querySelector('.card-body')!.innerHTML =
+      this.#renderCardRows([
+        ['Total', total.toLocaleString()],
+        ['Liked', liked.toLocaleString()],
+        ['평균 Score', avgScore.toFixed(1)],
+        ['평균 Rank', avgRank.toFixed(1)],
+        ['총 용량', (totalSize / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'],
+        ['자막 보유', withSubtitles.toLocaleString()],
+      ]) +
+      this.#renderMiniChart(
+        'Rank 분포',
+        rankCounts.map((cnt, i) => [`${i}`, cnt])
+      ) +
+      this.#renderMiniChart('상위 스튜디오', topStudios) +
+      this.#renderMiniChart('상위 배우', topActresses);
 
     this.#tryRenderDependentSections();
   }
@@ -123,28 +143,27 @@ export default class FlayDashboard extends GroundFlay {
     // 평균 플레이 횟수 (아카이브 전 얼마나 재생했는지)
     const avgPlay = total > 0 ? list.reduce((sum, f) => sum + f.video.play, 0) / total : 0;
 
-    // flay 수 기준 상위 배우 5명
+    // flay 수 기준 상위 배우 (이름 없거나 Amateur 제외, 10명)
     const actressMap = new Map<string, number>();
     for (const f of list) {
       for (const name of f.actressList) {
+        if (!name || name === 'Amateur') continue;
         actressMap.set(name, (actressMap.get(name) || 0) + 1);
       }
     }
     const topActresses = Array.from(actressMap.entries())
       .sort((a, b) => b[1] - a[1])
-      .slice(0, 5)
-      .map(([name, cnt]) => `${name}(${cnt})`)
-      .join(', ');
+      .slice(0, 10);
 
     const card = this.querySelector('#card-archive')!;
     card.classList.remove('loading');
-    card.querySelector('.card-body')!.innerHTML = this.#renderCardRows([
-      ['Total', total.toLocaleString()],
-      ['Release 범위', yearRange],
-      ['평균 재생', avgPlay.toFixed(1) + '회'],
-      ['상위 스튜디오', topStudios || '-'],
-      ['상위 배우', topActresses || '-'],
-    ]);
+    card.querySelector('.card-body')!.innerHTML =
+      this.#renderCardRows([
+        ['Total', total.toLocaleString()],
+        ['Release 범위', yearRange],
+        ['평균 재생', avgPlay.toFixed(1) + '회'],
+        ['상위 스튜디오', topStudios || '-'],
+      ]) + this.#renderMiniChart('상위 배우', topActresses);
 
     this.#tryRenderDependentSections();
   }
@@ -191,9 +210,6 @@ export default class FlayDashboard extends GroundFlay {
     const list = await FlayFetch.getHistoryListByAction('PLAY', 0);
     this.#historyList = list;
 
-    const now = Date.now();
-    const DAY_MS = 86_400_000;
-
     /**
      * 날짜 문자열(yyyy-MM-dd HH:mm:ss)을 epoch ms로 변환
      * @param dateStr - 날짜 문자열
@@ -201,20 +217,14 @@ export default class FlayDashboard extends GroundFlay {
      */
     const parseDate = (dateStr: string): number => new Date(dateStr.replace(' ', 'T')).getTime();
 
-    const totalPlays = list.length;
-    const last7days = list.filter((h) => now - parseDate(h.date) < 7 * DAY_MS).length;
-    const last30days = list.filter((h) => now - parseDate(h.date) < 30 * DAY_MS).length;
-    const lastPlayDate = list.length > 0 ? list[0]!.date : '-';
-    const uniqueOpus = new Set(list.map((h) => h.opus)).size;
+    const firstDate = list.length > 0 ? list[list.length - 1]!.date : null;
+    const lastDate = list.length > 0 ? list[0]!.date : null;
 
     const card = this.querySelector('#card-history')!;
     card.classList.remove('loading');
     card.querySelector('.card-body')!.innerHTML = this.#renderCardRows([
-      ['총 플레이', totalPlays.toLocaleString()],
-      ['최근 7일', last7days.toLocaleString()],
-      ['최근 30일', last30days.toLocaleString()],
-      ['마지막 플레이', lastPlayDate.substring(0, 16)],
-      ['고유 작품', uniqueOpus.toLocaleString()],
+      ['마지막 플레이', lastDate ? lastDate.substring(0, 16) : '-'],
+      ['히스토리 시작', firstDate ? this.#formatSince(parseDate(firstDate)) : '-'],
     ]);
 
     this.#tryRenderDependentSections();
@@ -252,58 +262,37 @@ export default class FlayDashboard extends GroundFlay {
 
     const allFlays = [...this.#instanceList, ...this.#archiveList];
 
-    // 월별 집계: "YYYY-MM" → count
-    const monthCounts = new Map<string, number>();
+    // 연도별 집계
+    const yearCounts = new Map<number, number>();
     for (const flay of allFlays) {
-      const ym = flay.release.substring(0, 7); // "YYYY-MM"
-      if (ym.length === 7 && ym[4] === '-') {
-        monthCounts.set(ym, (monthCounts.get(ym) || 0) + 1);
-      }
+      const y = parseInt(flay.release.substring(0, 4), 10);
+      if (!isNaN(y)) yearCounts.set(y, (yearCounts.get(y) || 0) + 1);
     }
-    if (monthCounts.size === 0) return;
+    if (yearCounts.size === 0) return;
 
-    // 연속 월 범위 생성
-    const sortedKeys = Array.from(monthCounts.keys()).sort();
-    const [startY, startM] = sortedKeys[0]!.split('-').map(Number) as [number, number];
-    const [endY, endM] = sortedKeys[sortedKeys.length - 1]!.split('-').map(Number) as [number, number];
-
-    const months: { key: string; count: number }[] = [];
-    for (let y = startY, m = startM; y < endY || (y === endY && m <= endM); m++) {
-      if (m > 12) {
-        m = 1;
-        y++;
-      }
-      const key = `${y}-${String(m).padStart(2, '0')}`;
-      months.push({ key, count: monthCounts.get(key) || 0 });
+    // 연속 연도 범위 생성
+    const years = Array.from(yearCounts.keys()).sort((a, b) => a - b);
+    const startY = years[0]!;
+    const endY = years[years.length - 1]!;
+    const entries: { year: number; count: number }[] = [];
+    for (let y = startY; y <= endY; y++) {
+      entries.push({ year: y, count: yearCounts.get(y) || 0 });
     }
 
-    // 이상치 억제: p95 percentile 기준 클램프
-    const counts = months
-      .map((m) => m.count)
-      .filter((c) => c > 0)
-      .sort((a, b) => a - b);
-    const p95 = counts[Math.floor(counts.length * 0.95)] || 1;
-    const maxDisplay = Math.max(p95, 1);
+    const maxCount = Math.max(...entries.map((e) => e.count), 1);
 
     // 바 차트 렌더링
     let barsHtml = '';
-    for (const { key, count } of months) {
-      const clamped = Math.min(count, maxDisplay);
-      const heightPercent = (clamped / maxDisplay) * 100;
-      const overClass = count > maxDisplay ? ' over' : '';
-      barsHtml += `<div class="bar${overClass}" style="height: ${heightPercent}%" title="${key}: ${count}건"></div>`;
+    for (const { year, count } of entries) {
+      const heightPercent = (count / maxCount) * 100;
+      barsHtml += `<div class="bar" style="height: ${heightPercent}%" title="${year}: ${count}건"></div>`;
     }
 
-    // 연도 라벨: 매 1월에 표시
-    let labelsHtml = '';
-    for (const { key } of months) {
-      if (key.endsWith('-01')) {
-        labelsHtml += `<span>${key.substring(0, 4)}</span>`;
-      }
-    }
+    // 연도 라벨
+    const labelsHtml = entries.map((e) => `<span>${e.year}</span>`).join('');
 
     container.innerHTML = `
-      <div class="dist-title">Release 월별 분포</div>
+      <div class="dist-title">Release 연도별 분포</div>
       <div class="spark-row">${barsHtml}</div>
       <div class="year-labels">${labelsHtml}</div>
     `;
@@ -382,7 +371,7 @@ export default class FlayDashboard extends GroundFlay {
     const grid = document.createElement('div');
     grid.className = 'marker-grid';
     for (const flay of flays) {
-      grid.appendChild(new FlayMarker(flay, { tooltip: true, shape: 'square' }));
+      grid.appendChild(new FlayMarker(flay, { tooltip: true, cover: true, shape: 'square' }));
     }
     container.appendChild(grid);
   }
@@ -405,6 +394,45 @@ export default class FlayDashboard extends GroundFlay {
     `
       )
       .join('');
+  }
+
+  /**
+   * 수평 바 차트 HTML을 생성
+   * @param title - 차트 제목
+   * @param data - [label, count] 튜플 배열
+   * @returns 차트 HTML 문자열
+   */
+  #renderMiniChart(title: string, data: [string, number][]): string {
+    if (data.length === 0) return '';
+    const maxVal = Math.max(...data.map(([, v]) => v), 1);
+    const bars = data
+      .map(
+        ([label, value]) => `
+      <div class="chart-bar-row">
+        <span class="chart-label">${label}</span>
+        <span class="chart-bar-track"><span class="chart-bar-fill" style="width: ${(value / maxVal) * 100}%"></span></span>
+        <span class="chart-value">${value}</span>
+      </div>`
+      )
+      .join('');
+    return `<div class="mini-chart"><div class="chart-title">${title}</div>${bars}</div>`;
+  }
+
+  /**
+   * epoch ms를 "since" 형식 문자열로 변환
+   * @param epochMs - 기준 시점 epoch ms
+   * @returns "N년 M개월 전" 형식 문자열
+   */
+  #formatSince(epochMs: number): string {
+    const diff = Date.now() - epochMs;
+    const days = Math.floor(diff / 86_400_000);
+    if (days < 1) return '오늘';
+    if (days < 30) return `${days}일 전`;
+    const months = Math.floor(days / 30);
+    if (months < 12) return `${months}개월 전`;
+    const years = Math.floor(months / 12);
+    const remainMonths = months % 12;
+    return remainMonths > 0 ? `${years}년 ${remainMonths}개월 전` : `${years}년 전`;
   }
 }
 

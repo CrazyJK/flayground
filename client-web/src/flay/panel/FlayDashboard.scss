@@ -86,20 +86,15 @@ flay-dashboard {
     .spark-row {
       display: flex;
       align-items: flex-end;
-      gap: 1px;
+      gap: 2px;
       height: 3rem;
 
       .bar {
         flex: 1;
         background: var(--color-checked);
         border-radius: 1px 1px 0 0;
-        min-width: 2px;
+        min-width: 4px;
         transition: height 0.3s;
-
-        // p95 초과 이상치 표시
-        &.over {
-          background: var(--color-red);
-        }
       }
     }
 
@@ -127,6 +122,66 @@ flay-dashboard {
       display: flex;
       flex-wrap: wrap;
       gap: 0.25rem;
+
+      flay-marker {
+        --marker-size: 200px;
+      }
+    }
+  }
+
+  // 카드 내 미니 차트
+  .mini-chart {
+    margin-top: 0.5rem;
+    padding-top: 0.3rem;
+    border-top: 1px dashed var(--color-border);
+
+    .chart-title {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.25rem;
+    }
+
+    .chart-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.1rem 0;
+      font-size: 0.8rem;
+    }
+
+    .chart-label {
+      flex: 0 0 auto;
+      min-width: 1.5rem;
+      color: var(--color-text-secondary);
+      text-align: right;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 6rem;
+    }
+
+    .chart-bar-track {
+      flex: 1;
+      height: 0.5rem;
+      background: var(--color-border);
+      border-radius: 0.25rem;
+      overflow: hidden;
+    }
+
+    .chart-bar-fill {
+      display: block;
+      height: 100%;
+      background: var(--color-checked);
+      border-radius: 0.25rem;
+      transition: width 0.3s;
+    }
+
+    .chart-value {
+      flex: 0 0 2rem;
+      text-align: right;
+      font-weight: 600;
+      font-variant-numeric: tabular-nums;
     }
   }
 }

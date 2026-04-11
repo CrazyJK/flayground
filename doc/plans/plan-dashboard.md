@@ -61,12 +61,14 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | ---------- | --------------------------------------------------------------- |
 | Total      | `instanceList.length`                                           |
 | Liked      | `instanceList.filter(f => f.video.likes.length > 0).length`     |
-| Likes 합계 | `Σ flay.video.likes.length`                                     |
 | 평균 Score | `Σ flay.score / count`                                          |
 | 평균 Rank  | `Σ flay.video.rank / count` (rank > 0인 것만)                   |
-| Rank 분포  | `"0:n 1:n 2:n 3:n 4:n 5:n"` 한줄 요약                           |
 | 총 용량    | `Σ flay.length` → **TB** 단위 표시                              |
 | 자막 보유  | `instanceList.filter(f => f.files.subtitles.length > 0).length` |
+
+**Rank 분포** — 미니 수평 바 차트로 표시 (0~5 각 랭크별 건수)
+**상위 스튜디오** — studio별 count 상위 5개, 미니 바 차트
+**상위 배우** — flay 수 기준 상위 10명 (이름 없거나 'Amateur' 제외), 미니 바 차트
 
 ### 3-2. Archive 카드
 
@@ -78,17 +80,16 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | Release 범위  | release 연도 최소 ~ 최대                                 |
 | 평균 재생     | `Σ flay.video.play / count` (아카이브 전 평균 재생 횟수) |
 | 상위 스튜디오 | studio별 count 상위 3개                                  |
-| 상위 배우     | flay 수 기준 상위 5명 (`name(count)` 형식)               |
 
-#### Release 월별 분포 (스파크라인)
+**상위 배우** — flay 수 기준 상위 10명 (이름 없거나 'Amateur' 제외), 미니 바 차트
 
-2008년~현재까지 release **월별** 분포를 **인라인 바 차트**로 표시.
-월별 데이터는 특정 월에 튀는 값이 있을 수 있으므로 **p95 클램프**로 이상치 억제.
+#### Release 연도별 분포 (스파크라인)
+
+2008년~현재까지 release **연도별** 분포를 **인라인 바 차트**로 표시.
 
 ```
-계산: instance + archive 합산 → release.substring(0, 7)로 월 추출 → 월별 count 집계
-시각화: CSS 바 차트 (height 비율), p95 초과는 빨간색 바로 표시
-라벨: 매 1월에 연도 표시
+계산: instance + archive 합산 → release.substring(0, 4)로 연도 추출 → 연도별 count 집계
+시각화: CSS 바 차트 (height 비율), 연도별 라벨 표시
 ```
 
 | 연도 | 건수 | 시각화 |
@@ -127,15 +128,12 @@ const archivedCount = actressList.filter((a) => !instanceActressSet.has(a.name) 
 
 ### 3-4. History 카드
 
-재생 이력 요약.
+재생 이력 요약. 날짜는 since 형식으로 표시.
 
-| 항목             | 계산                                                   |
-| ---------------- | ------------------------------------------------------ |
-| 총 플레이 횟수   | `playHistory.length`                                   |
-| 최근 7일 플레이  | `playHistory.filter(h => within7days(h.date)).length`  |
-| 최근 30일 플레이 | `playHistory.filter(h => within30days(h.date)).length` |
-| 최근 플레이 일시 | `playHistory[0].date` (최신순 정렬됨)                  |
-| 고유 작품 수     | `new Set(playHistory.map(h => h.opus)).size`           |
+| 항목          | 계산                                  |
+| ------------- | ------------------------------------- |
+| 마지막 플레이 | `playHistory[0].date` (최신순 정렬됨) |
+| 히스토리 시작 | `playHistory[마지막].date` since 형식 |
 
 ---
 
@@ -151,7 +149,7 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 ```
 
 - `playHistory`에서 **중복 opus 제거** 후 최신 20건 추출
-- **FlayMarker** 사각형 그리드로 표시 (tooltip 활성화)
+- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 활성화)
 
 ### 4-2. 최근 Like 목록 (최신 10건)
 
@@ -160,7 +158,7 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 ```
 
 - 모든 instance의 `video.likes` 타임스탬프를 펼쳐서 최신 20건 정렬
-- **FlayMarker** 사각형 그리드로 표시 (tooltip 활성화)
+- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 활성화)
 - 데이터 구조: `{ opus, timestamp }` → timestamp 역순 정렬
 
 ### 4-3. 미평가 작품 (rank === 0, 최대 10건)
@@ -170,7 +168,7 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 ```
 
 - `instanceList.filter(f => f.video.rank === 0)` → release 최신순 최대 20건
-- **FlayMarker** 사각형 그리드로 표시 (tooltip 활성화)
+- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 활성화)
 
 ---
 
@@ -189,7 +187,7 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 │   Actress      │    History     │
 │   (카드)        │    (카드)       │
 ├─────────────────────────────────┤
-│   Release 월별 분포 (바 차트)      │
+│   Release 연도별 분포 (바 차트)     │
 ├─────────────────────────────────┤
 │   최근 플레이 (FlayMarker 그리드)  │
 ├─────────────────────────────────┤
@@ -259,11 +257,19 @@ export class FlayDashboard extends GroundFlay {
   }
 
   #renderReleaseDist(): void {
-    // 월별 release 집계 + p95 클램프 + 바 차트 렌더링
+    // 연도별 release 집계 + 바 차트 렌더링
   }
 
-  #renderMarkerSection(container: HTMLElement, flays: Flay[], title: string): void {
-    // FlayMarker 사각형 그리드로 렌더링 (tooltip 활성화)
+  #renderMarkerSection(container: HTMLElement, title: string, flays: Flay[]): void {
+    // FlayMarker 카버 표시 그리드로 렌더링 (cover: true, 200px, tooltip)
+  }
+
+  #renderMiniChart(title: string, data: [string, number][]): string {
+    // 수평 바 차트 HTML 생성 (카드 내 상위 항목 시각화)
+  }
+
+  #formatSince(epochMs: number): string {
+    // epoch ms를 "N년 M개월 전" 형식으로 변환
   }
 }
 
@@ -277,7 +283,6 @@ interface DashboardStats {
   instance: {
     total: number;
     liked: number;
-    likesSum: number;
     avgScore: number;
     avgRank: number;
     totalSize: number; // bytes
@@ -287,21 +292,18 @@ interface DashboardStats {
     total: number;
     yearRange: string; // '2008 ~ 2026'
     avgPlay: number;
-    topStudios: string; // 'Studio1(30), Studio2(25), Studio3(20)'
-    topActresses: string; // 'Name1(30), Name2(25), ..., Name5(20)'
+    topStudios: [string, number][]; // 바 차트용
+    topActresses: [string, number][]; // 바 차트용, 10명
   };
   actress: {
-    total: number; // 전체 배우
-    favorite: number; // 선호 배우
-    active: number; // 보유 중
-    archived: number; // 아카이브
+    total: number;
+    favorite: number;
+    active: number;
+    archived: number;
   };
   history: {
-    totalPlays: number;
-    last7days: number;
-    last30days: number;
     lastPlayDate: string;
-    uniqueOpus: number;
+    since: string; // "N년 M개월 전" 형식
   };
 }
 ```
@@ -394,12 +396,8 @@ flay-dashboard {
         flex: 1;
         background: var(--color-checked);
         border-radius: 2px 2px 0 0;
-        min-width: 2px;
+        min-width: 4px;
         transition: height 0.3s;
-
-        &.over {
-          background: var(--color-red); // p95 초과 이상치
-        }
       }
     }
 
@@ -426,6 +424,38 @@ flay-dashboard {
       display: flex;
       flex-wrap: wrap;
       gap: 0.25rem;
+
+      flay-marker {
+        --marker-size: 200px;
+      }
+    }
+  }
+
+  // 카드 내 미니 차트
+  .mini-chart {
+    margin-top: 0.5rem;
+    border-top: 1px dashed var(--color-border);
+
+    .chart-bar-row {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+
+      .chart-label {
+        min-width: 1.5rem;
+        max-width: 6rem;
+      }
+      .chart-bar-track {
+        flex: 1;
+        height: 0.5rem;
+        background: var(--color-border);
+      }
+      .chart-bar-fill {
+        background: var(--color-checked);
+      }
+      .chart-value {
+        font-weight: 600;
+      }
     }
   }
 }

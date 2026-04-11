@@ -1,7 +1,7 @@
 flay-dashboard {
   display: block;
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  max-width: 1080px;
+  min-width: 1080px;
   padding: 0 0.75rem;
 
   .dashboard-header {
@@ -76,8 +76,8 @@ flay-dashboard {
     }
   }
 
-  // 파이 차트 3열 그리드
-  .pie-charts-row {
+  // ECharts 차트 3열 그리드
+  .charts-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
@@ -86,16 +86,13 @@ flay-dashboard {
     border-top: 1px dashed var(--color-border);
   }
 
-  // 카드 내 파이 차트 (세로 배치: title → SVG)
-  .pie-chart {
+  // ECharts 개별 차트 셀
+  .echart-cell {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border-top: none;
-    margin-top: 0;
-    padding-top: 0;
 
-    .pie-title {
+    .echart-title {
       font-size: 0.75rem;
       font-weight: 600;
       color: var(--color-text-secondary);
@@ -103,63 +100,18 @@ flay-dashboard {
       text-align: center;
     }
 
-    .pie-svg {
+    .echart-container {
       width: 100%;
-      aspect-ratio: 1;
-    }
-
-    .pie-label {
-      font-size: 6px;
-      font-weight: 600;
-      fill: #fff;
-      pointer-events: none;
+      height: 300px;
     }
   }
 
-  // Release 분포 (전체 폭)
-  .release-dist {
-    padding: 1rem 0;
-    border-top: 1px solid var(--color-border);
-
-    .dist-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 0.5rem;
-
-      .dist-total {
-        font-weight: 400;
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-        margin-left: 0.25rem;
-      }
-    }
-
-    .spark-row {
-      display: flex;
-      align-items: flex-end;
-      gap: 1px;
-      height: 5rem;
-
-      .bar {
-        flex: 1;
-        background: var(--color-checked);
-        border-radius: 1px 1px 0 0;
-        min-width: 2px;
-        transition: height 0.3s;
-
-        &.over {
-          background: var(--color-red);
-        }
-      }
-    }
-
-    .year-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.65rem;
-      color: var(--color-text-secondary);
-      margin-top: 0.25rem;
-    }
+  // Release 카드 total 표기
+  .release-total {
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    margin-left: 0.25rem;
   }
 }
 

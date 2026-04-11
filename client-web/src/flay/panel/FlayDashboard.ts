@@ -1,6 +1,12 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayFetch, { type Actress, type Archive, type Flay } from '@lib/FlayFetch';
+import { BarChart, PieChart, TreemapChart } from 'echarts/charts';
+import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
+import * as echarts from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
 import './FlayDashboard.scss';
+
+echarts.use([PieChart, BarChart, TreemapChart, TitleComponent, TooltipComponent, LegendComponent, GridComponent, CanvasRenderer]);
 
 /**
  * Flay 대시보드 커스텀 엘리먼트.
@@ -12,6 +18,17 @@ export default class FlayDashboard extends GroundFlay {
   #instanceList: Flay[] | null = null;
   #archiveList: Archive[] | null = null;
   #actressList: Actress[] | null = null;
+  /** ECharts 인스턴스 관리 (리사이즈 대응용) */
+  #charts: echarts.ECharts[] = [];
+
+  /**
+   * ECharts 인스턴스 등록 + 다음 프레임에 리사이즈 예약
+   * @param chart - 등록할 ECharts 인스턴스
+   */
+  #registerChart(chart: echarts.ECharts): void {
+    this.#charts.push(chart);
+    requestAnimationFrame(() => chart.resize());
+  }
 
   connectedCallback(): void {
     this.innerHTML = /* html */ `
@@ -36,7 +53,10 @@ export default class FlayDashboard extends GroundFlay {
           <div class="card-body"><span class="spinner"></span></div>
         </div>
       </div>
-      <div class="release-dist" id="release-dist"></div>
+      <div class="card loading" id="card-release">
+        <div class="card-title">Release</div>
+        <div class="card-body"><span class="spinner"></span></div>
+      </div>
     `;
 
     // 개별 비동기 호출 — 도착 즉시 렌더링
@@ -71,12 +91,12 @@ export default class FlayDashboard extends GroundFlay {
       if (r >= 0 && r <= 5) rankCounts[r]!++;
     }
 
-    // 상위 스튜디오 (비율 2% 이상, 최대 20개 + 그외)
+    // 상위 스튜디오 (비율 2% 이상, 최대 20개, 그외 제외)
     const studioMap = new Map<string, number>();
     for (const f of list) studioMap.set(f.studio, (studioMap.get(f.studio) || 0) + 1);
-    const studioPie = this.#buildPieData(studioMap);
+    const studioPie = this.#buildPieData(studioMap, 0.02, 20, false);
 
-    // 상위 배우 (이름 없거나 Amateur 제외, 비율 2% 이상, 최대 20개 + 그외)
+    // 상위 배우 (이름 없거나 Amateur 제외, 비율 2% 이상, 최대 20개, 그외 제외)
     const actressMap = new Map<string, number>();
     for (const f of list) {
       for (const name of f.actressList) {
@@ -84,7 +104,7 @@ export default class FlayDashboard extends GroundFlay {
         actressMap.set(name, (actressMap.get(name) || 0) + 1);
       }
     }
-    const actressPie = this.#buildPieData(actressMap);
+    const actressPie = this.#buildPieData(actressMap, 0.02, 20, false);
 
     const card = this.querySelector('#card-instance')!;
     card.classList.remove('loading');
@@ -97,16 +117,15 @@ export default class FlayDashboard extends GroundFlay {
       ['자막 보유', withSubtitles.toLocaleString()],
     ]);
     const pieRow = document.createElement('div');
-    pieRow.className = 'pie-charts-row';
+    pieRow.className = 'charts-row';
     card.querySelector('.card-body')!.appendChild(pieRow);
     this.#renderPieChart(
       pieRow,
       'Rank 분포',
-      rankCounts.map((cnt, i) => [`${i}`, cnt]),
-      true
+      rankCounts.map((cnt, i) => ({ name: `${i}`, value: cnt }))
     );
-    this.#renderPieChart(pieRow, '상위 스튜디오', studioPie);
-    this.#renderPieChart(pieRow, '상위 배우', actressPie);
+    this.#renderTreemap(pieRow, '상위 스튜디오', studioPie);
+    this.#renderTreemap(pieRow, '상위 배우', actressPie);
 
     this.#tryRenderDependentSections();
   }
@@ -126,10 +145,10 @@ export default class FlayDashboard extends GroundFlay {
     const years = list.map((f) => parseInt(f.release.substring(0, 4), 10)).filter((y) => !isNaN(y));
     const yearRange = years.length > 0 ? `${Math.min(...years)} ~ ${Math.max(...years)}` : '-';
 
-    // 상위 스튜디오 (비율 2% 이상, 최대 20개 + 그외)
+    // 상위 스튜디오 (비율 2% 이상, 최대 20개, 그외 제외)
     const studioMap = new Map<string, number>();
     for (const f of list) studioMap.set(f.studio, (studioMap.get(f.studio) || 0) + 1);
-    const studioPie = this.#buildPieData(studioMap);
+    const studioPie = this.#buildPieData(studioMap, 0.02, 20, false);
 
     // 평균 플레이 횟수 (아카이브 전 얼마나 재생했는지)
     const avgPlay = total > 0 ? list.reduce((sum, f) => sum + f.video.play, 0) / total : 0;
@@ -142,7 +161,7 @@ export default class FlayDashboard extends GroundFlay {
         actressMap.set(name, (actressMap.get(name) || 0) + 1);
       }
     }
-    const actressPie = this.#buildPieData(actressMap);
+    const actressPie = this.#buildPieData(actressMap, 0.02, 20, false);
 
     // Rank 분포 (0 ~ 5)
     const rankCounts = [0, 0, 0, 0, 0, 0];
@@ -159,16 +178,15 @@ export default class FlayDashboard extends GroundFlay {
       ['평균 재생', avgPlay.toFixed(1) + '회'],
     ]);
     const pieRow = document.createElement('div');
-    pieRow.className = 'pie-charts-row';
+    pieRow.className = 'charts-row';
     card.querySelector('.card-body')!.appendChild(pieRow);
     this.#renderPieChart(
       pieRow,
       'Rank 분포',
-      rankCounts.map((cnt, i) => [`${i}`, cnt]),
-      true
+      rankCounts.map((cnt, i) => ({ name: `${i}`, value: cnt }))
     );
-    this.#renderPieChart(pieRow, '상위 스튜디오', studioPie);
-    this.#renderPieChart(pieRow, '상위 배우', actressPie);
+    this.#renderTreemap(pieRow, '상위 스튜디오', studioPie);
+    this.#renderTreemap(pieRow, '상위 배우', actressPie);
 
     this.#tryRenderDependentSections();
   }
@@ -252,11 +270,11 @@ export default class FlayDashboard extends GroundFlay {
   // ─── Release 연도별 분포 ───────────────────────────────
 
   /**
-   * Instance + Archive 합산 연도별 release 분포를 바 차트로 렌더링
+   * Instance + Archive 합산 월별 release 분포를 ECharts 바 차트로 렌더링
    */
   #renderReleaseDist(): void {
-    const container = this.querySelector('#release-dist')!;
-    if (container.children.length > 0) return;
+    const card = this.querySelector('#card-release')!;
+    if (card.querySelector('.echart-bar')) return;
     if (!this.#instanceList || !this.#archiveList) return;
 
     const allFlays = [...this.#instanceList, ...this.#archiveList];
@@ -276,43 +294,60 @@ export default class FlayDashboard extends GroundFlay {
     const [startY, startM] = sortedKeys[0]!.split('.').map(Number) as [number, number];
     const [endY, endM] = sortedKeys[sortedKeys.length - 1]!.split('.').map(Number) as [number, number];
 
-    const months: { key: string; count: number }[] = [];
+    const categories: string[] = [];
+    const values: number[] = [];
     for (let y = startY, m = startM; y < endY || (y === endY && m <= endM); m++) {
       if (m > 12) {
         m = 1;
         y++;
       }
       const key = `${y}.${String(m).padStart(2, '0')}`;
-      months.push({ key, count: monthCounts.get(key) || 0 });
+      categories.push(key);
+      values.push(monthCounts.get(key) || 0);
     }
 
-    // 고정 최대값 100건 기준 높이 계산
-    const maxCount = 100;
-
-    // 바 차트 렌더링
-    let barsHtml = '';
-    for (const { key, count } of months) {
-      const heightPercent = Math.min((count / maxCount) * 100, 100);
-      const overClass = count > maxCount ? ' over' : '';
-      barsHtml += `<div class="bar${overClass}" style="height: ${heightPercent}%" title="${key}: ${count}건"></div>`;
-    }
-
-    // 연도 라벨: 매 1월에 표시
-    let labelsHtml = '';
-    for (const { key } of months) {
-      if (key.endsWith('.01')) {
-        labelsHtml += `<span>${key.substring(0, 4)}</span>`;
-      }
-    }
-
-    container.innerHTML = `
-      <div class="dist-title">Release 월별 분포 <span class="dist-total">${allFlays.length.toLocaleString()}건</span></div>
-      <div class="spark-row">${barsHtml}</div>
-      <div class="year-labels">${labelsHtml}</div>
+    // 카드 내부 렌더링
+    card.classList.remove('loading');
+    card.innerHTML = `
+      <div class="card-title">Release <span class="release-total">${allFlays.length.toLocaleString()}건</span></div>
+      <div class="echart-bar" style="width:100%;height:200px"></div>
     `;
+
+    const textColor = getComputedStyle(this).getPropertyValue('--color-text').trim() || '#333';
+    const chartEl = card.querySelector('.echart-bar') as HTMLElement;
+    const chart = echarts.init(chartEl);
+    this.#registerChart(chart);
+    chart.setOption({
+      tooltip: { trigger: 'axis', formatter: (params: any) => `${params[0].name}: ${params[0].value}건` },
+      grid: { left: 5, right: 5, top: 10, bottom: 10 },
+      xAxis: {
+        type: 'category',
+        data: categories,
+        axisLabel: {
+          fontSize: 9,
+          color: textColor,
+          interval: (index: number) => categories[index]!.endsWith('.01'),
+          formatter: (v: string) => v.substring(0, 4),
+        },
+        axisTick: { show: false },
+        axisLine: { show: false },
+      },
+      yAxis: { type: 'value', max: 100, show: false },
+      series: [
+        {
+          type: 'bar',
+          data: values.map((v) => ({
+            value: v,
+            itemStyle: v > 100 ? { color: '#e15759' } : {},
+          })),
+          barMaxWidth: 4,
+          itemStyle: { color: '#4e79a7' },
+        },
+      ],
+    });
   }
 
-  // ─── 유틸리티 ──────────────────────────────────────────
+  // ─── 유틸리티 + ECharts ────────────────────────────────
 
   /**
    * 카드 행(label + value) HTML을 생성
@@ -332,114 +367,107 @@ export default class FlayDashboard extends GroundFlay {
       .join('');
   }
 
-  /** 파이 차트용 색상 팔레트 */
-  static readonly #PIE_COLORS = ['#4e79a7', '#f28e2b', '#e15759', '#76b7b2', '#59a14f', '#edc948', '#b07aa1', '#ff9da7', '#9c755f', '#bab0ac', '#aaa'];
-
   /**
-   * Map 데이터를 파이 차트용 [label, count] 배열로 변환.
+   * Map 데이터를 차트용 {name, value} 배열로 변환.
    * 전체 대비 비율이 minRatio 이상인 항목만 개별 표시하고, 나머지는 "그외"로 합산.
    * @param map - 이름→건수 Map
    * @param minRatio - 개별 표시 최소 비율 (기본 2%)
    * @param maxItems - 최대 항목 수 (기본 20)
-   * @returns [label, count] 배열
+   * @returns {name, value} 배열
    */
-  #buildPieData(map: Map<string, number>, minRatio = 0.02, maxItems = 20): [string, number][] {
+  #buildPieData(map: Map<string, number>, minRatio = 0.02, maxItems = 20, includeRest = true): { name: string; value: number }[] {
     const total = Array.from(map.values()).reduce((s, v) => s + v, 0);
     if (total === 0) return [];
     const sorted = Array.from(map.entries()).sort((a, b) => b[1] - a[1]);
     let top = sorted.filter(([, v]) => v / total >= minRatio).slice(0, maxItems);
-    // 비율 필터 통과 항목이 없으면 상위 maxItems개를 fallback으로 표시
     if (top.length === 0) top = sorted.slice(0, maxItems);
     const rest = total - top.reduce((s, [, v]) => s + v, 0);
-    if (rest > 0) top.push(['그외', rest]);
-    return top;
+    const result = top.map(([name, value]) => ({ name, value }));
+    if (includeRest && rest > 0) result.push({ name: '그외', value: rest });
+    return result;
   }
 
   /**
-   * SVG 파이 차트를 DOM에 렌더링
-   * @param container - 렌더링할 컨테이너 엘리먼트
+   * ECharts 파이 차트 렌더링 (Rank 분포용)
+   * @param container - 부모 엘리먼트
    * @param title - 차트 제목
-   * @param data - [label, count] 튜플 배열
+   * @param data - {name, value} 배열
    */
-  #renderPieChart(container: Element, title: string, data: [string, number][], showLegend = false): void {
+  #renderPieChart(container: Element, title: string, data: { name: string; value: number }[]): void {
     if (data.length === 0) return;
-    const total = data.reduce((sum, [, v]) => sum + v, 0);
-    if (total === 0) return;
-
-    const size = 100;
-    const cx = size / 2,
-      cy = size / 2,
-      r = size / 2 - 1;
-    let startAngle = -Math.PI / 2;
-
-    let paths = '';
-    let labels = '';
-    const labelPositions: { x: number; y: number; text: string }[] = [];
-    for (let i = 0; i < data.length; i++) {
-      const [label, value] = data[i]!;
-      const sliceAngle = (value / total) * 2 * Math.PI;
-      const endAngle = startAngle + sliceAngle;
-      const largeArc = sliceAngle > Math.PI ? 1 : 0;
-      const x1 = cx + r * Math.cos(startAngle);
-      const y1 = cy + r * Math.sin(startAngle);
-      const x2 = cx + r * Math.cos(endAngle);
-      const y2 = cy + r * Math.sin(endAngle);
-      const color = FlayDashboard.#PIE_COLORS[i % FlayDashboard.#PIE_COLORS.length]!;
-      const titleText = `${label}: ${value.toLocaleString()} (${((value / total) * 100).toFixed(1)}%)`;
-
-      if (data.length === 1) {
-        paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}"><title>${titleText}</title></circle>`;
-      } else {
-        paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z" fill="${color}"><title>${titleText}</title></path>`;
-      }
-
-      // showLegend: 라벨 위치 수집 (겹침 보정 후 렌더링)
-      if (showLegend && value > 0) {
-        const midAngle = startAngle + sliceAngle / 2;
-        const labelR = r * 0.6;
-        labelPositions.push({
-          x: cx + labelR * Math.cos(midAngle),
-          y: cy + labelR * Math.sin(midAngle),
-          text: `${label}: ${value.toLocaleString()}`,
-        });
-      }
-
-      startAngle = endAngle;
-    }
-
-    // 라벨 Y축 겹침 보정: 다중 패스로 인접 라벨 간격 확보
-    if (labelPositions.length > 1) {
-      const minGap = 8;
-      labelPositions.sort((a, b) => a.y - b.y);
-      for (let pass = 0; pass < 10; pass++) {
-        let adjusted = false;
-        for (let i = 1; i < labelPositions.length; i++) {
-          const gap = labelPositions[i]!.y - labelPositions[i - 1]!.y;
-          if (gap < minGap) {
-            const shift = (minGap - gap) / 2;
-            labelPositions[i - 1]!.y -= shift;
-            labelPositions[i]!.y += shift;
-            adjusted = true;
-          }
-        }
-        if (!adjusted) break;
-      }
-      // SVG 영역 내 클램프
-      for (const lp of labelPositions) {
-        lp.y = Math.max(6, Math.min(size - 4, lp.y));
-      }
-    }
-    for (const lp of labelPositions) {
-      labels += `<text x="${lp.x}" y="${lp.y}" text-anchor="middle" dominant-baseline="central" class="pie-label">${lp.text}</text>`;
-    }
-
     const wrapper = document.createElement('div');
-    wrapper.className = 'pie-chart';
-    wrapper.innerHTML = `
-      <div class="pie-title">${title}</div>
-      <svg viewBox="0 0 ${size} ${size}" class="pie-svg">${paths}${labels}</svg>
-    `;
+    wrapper.className = 'echart-cell';
+    wrapper.innerHTML = `<div class="echart-title">${title}</div><div class="echart-container"></div>`;
     container.appendChild(wrapper);
+
+    const chartEl = wrapper.querySelector('.echart-container') as HTMLElement;
+    const chart = echarts.init(chartEl);
+    this.#registerChart(chart);
+    chart.setOption({
+      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+      series: [
+        {
+          type: 'pie',
+          radius: ['15%', '80%'],
+          center: ['50%', '50%'],
+          data: data.map((d) => ({
+            ...d,
+            label: d.value === 0 ? { show: false } : {},
+          })),
+          label: { show: true, position: 'inside', formatter: '{b}\n{c}', fontSize: 10, color: '#fff', textShadowBlur: 2, textShadowColor: 'rgba(0,0,0,0.5)' },
+          labelLine: { show: false },
+          emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)' } },
+        },
+      ],
+    });
+  }
+
+  /**
+   * ECharts 트리맵 렌더링 (스튜디오/배우용)
+   * @param container - 부모 엘리먼트
+   * @param title - 차트 제목
+   * @param data - {name, value} 배열
+   */
+  #renderTreemap(container: Element, title: string, data: { name: string; value: number }[]): void {
+    if (data.length === 0) return;
+    const wrapper = document.createElement('div');
+    wrapper.className = 'echart-cell';
+    wrapper.innerHTML = `<div class="echart-title">${title}</div><div class="echart-container"></div>`;
+    container.appendChild(wrapper);
+
+    const chartEl = wrapper.querySelector('.echart-container') as HTMLElement;
+    const chart = echarts.init(chartEl);
+    this.#registerChart(chart);
+    chart.setOption({
+      tooltip: {
+        trigger: 'item',
+        formatter: (params: any) => {
+          const total = data.reduce((s, d) => s + d.value, 0);
+          const pct = ((params.value / total) * 100).toFixed(1);
+          return `${params.name}: ${params.value.toLocaleString()} (${pct}%)`;
+        },
+      },
+      series: [
+        {
+          type: 'treemap',
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          roam: false,
+          nodeClick: false,
+          breadcrumb: { show: false },
+          data,
+          label: { show: true, formatter: '{b}\n{c}', fontSize: 9, color: '#fff' },
+          itemStyle: { borderWidth: 1, borderColor: '#fff' },
+          levels: [
+            {
+              itemStyle: { borderWidth: 1, borderColor: '#fff', gapWidth: 1 },
+            },
+          ],
+        },
+      ],
+    });
   }
 
   /**

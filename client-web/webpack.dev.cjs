@@ -61,7 +61,7 @@ function getEntryHtmlPlugins() {
       new HtmlWebpackPlugin({
         filename: `${entryName}.html`,
         template: `src/view/${entryName}.html`,
-        chunks: ['runtime', 'vendors', entryName], // 런타임, 벤더 청크 및 엔트리 포인트 청크 포함
+        chunks: ['runtime', 'vendors', 'vendor.echarts', 'vendor.toast-ui', 'common', entryName], // 런타임, 벤더 청크 및 엔트리 포인트 청크 포함
         inject: true, // JS와 CSS 자동 주입 활성화
       })
     );
@@ -119,6 +119,13 @@ module.exports = {
             return `vendor.${packageName.replace('@', '')}`;
           },
           priority: 10, // vendor보다 높은 우선순위
+          reuseExistingChunk: true,
+        },
+        echarts: {
+          test: /[\\/]node_modules[\\/](echarts|zrender)[\\/]/,
+          name: 'vendor.echarts',
+          chunks: 'all',
+          priority: 10,
           reuseExistingChunk: true,
         },
         common: {

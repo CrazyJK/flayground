@@ -145,6 +145,13 @@ module.exports = {
           priority: 10, // vendor보다 높은 우선순위
           reuseExistingChunk: true,
         },
+        echarts: {
+          test: /[\\/]node_modules[\\/](echarts|zrender)[\\/]/,
+          name: 'vendor.echarts',
+          chunks: 'all',
+          priority: 10,
+          reuseExistingChunk: true,
+        },
         // 내부 유틸리티 라이브러리 분리
         lib: {
           test: /[\\/]src[\\/]lib[\\/]/,

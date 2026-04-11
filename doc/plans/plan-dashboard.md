@@ -70,6 +70,9 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 **상위 스튜디오** — studio별 count 상위 10개 + 그외, SVG 파이 차트
 **상위 배우** — flay 수 기준 상위 10명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
 
+→ 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치 (title → SVG → legend 세로 구조)
+→ 범례에는 건수만 표시 (퍼센트는 SVG 툴팁으로 확인 가능)
+
 ### 3-2. Archive 카드
 
 삭제/이관된 과거 Flay 요약.
@@ -84,18 +87,23 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 **상위 스튜디오** — studio별 count 상위 10개 + 그외, SVG 파이 차트
 **상위 배우** — flay 수 기준 상위 10명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
 
+→ 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치
+
 #### Release 월별 분포 (스파크라인)
 
 instance + archive 합산 release를 **월별** 분포로 **인라인 바 차트** 표시.
 
 ```
-계산: instance + archive 합산 → release.substring(0, 7)로 YYYY-MM 추출 → 월별 count 집계
+계산: instance + archive 합산 → release.substring(0, 7)로 YYYY.MM 추출 → 월별 count 집계
 시각화: CSS 바 차트 (height 비율), p95 percentile 클램프 적용
 ```
 
 - p95 percentile 값으로 높이를 클램프하여 이상치 스케일 왜곡 방지
 - p95 초과 바에는 `.bar.over` 클래스 부여 → `var(--color-red)` 배경으로 이상치 표시
-- 시작/끝 연도 라벨 표시
+- 연도 라벨: 매 1월(`.01`)에 연도 표시
+- 바 차트 높이 **5rem**으로 월별 분포 시각적 강조
+- 제목 옥에 총 건수 표시 (`.dist-total`)
+- release 형식: `YYYY.MM.DD` (닷 구분자)
 
 ### 3-3. Actress 카드
 
@@ -325,12 +333,14 @@ flay-dashboard {
   display: block;
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
   max-width: 1080px;
+  padding: 0 0.75rem;
 
   .dashboard-header {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     font-weight: 700;
-    padding: 1rem 0;
-    border-bottom: 2px solid var(--color-border);
+    padding: 1rem 0 0.75rem;
+    letter-spacing: -0.02em;
+    border-bottom: 1px solid var(--color-border);
   }
 
   // Instance + Archive: 전체 폭 1열 세로 배치
@@ -351,9 +361,10 @@ flay-dashboard {
 
   .card {
     border: 1px solid var(--color-border);
-    border-radius: 0.75rem;
-    padding: 1rem 1.25rem;
+    border-radius: var(--border-radius-hugest);
+    padding: 1.25rem 1.5rem;
     background: var(--color-bg);
+    box-shadow: var(--box-shadow-smallest);
 
     &.loading {
       opacity: 0.5;
@@ -362,15 +373,16 @@ flay-dashboard {
 
     .card-title {
       font-weight: 700;
-      font-size: 1.1rem;
+      font-size: 1rem;
       margin-bottom: 0.5rem;
       color: var(--color-text);
+      letter-spacing: -0.01em;
     }
 
     .card-row {
       display: flex;
       justify-content: space-between;
-      padding: 0.2rem 0;
+      padding: 0.15rem 0;
       font-size: 0.85rem;
 
       .label {
@@ -378,31 +390,53 @@ flay-dashboard {
       }
       .value {
         font-weight: 600;
-        font-variant-numeric: tabular-nums; // 숫자 정렬
+        font-variant-numeric: tabular-nums;
       }
     }
   }
 
+  // 파이 차트 3열 그리드 (카드 내부)
+  .pie-charts-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.5rem;
+    border-top: 1px dashed var(--color-border);
+  }
+
   // Release 분포 (전체 폭)
   .release-dist {
-    padding: 0.75rem 0;
+    padding: 1rem 0;
     border-top: 1px solid var(--color-border);
+
+    .dist-title {
+      font-weight: 700;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+
+      .dist-total {
+        font-weight: 400;
+        font-size: 0.8rem;
+        color: var(--color-text-secondary);
+      }
+    }
 
     .spark-row {
       display: flex;
       align-items: flex-end;
       gap: 1px;
-      height: 3rem;
+      height: 5rem;
 
       .bar {
         flex: 1;
         background: var(--color-checked);
-        border-radius: 2px 2px 0 0;
+        border-radius: 1px 1px 0 0;
         min-width: 2px;
         transition: height 0.3s;
 
         &.over {
-          background: var(--color-red); // p95 초과 이상치
+          background: var(--color-red);
         }
       }
     }
@@ -412,16 +446,17 @@ flay-dashboard {
       justify-content: space-between;
       font-size: 0.65rem;
       color: var(--color-text-secondary);
+      margin-top: 0.25rem;
     }
   }
 
   // 하단 FlayMarker 그리드 섹션
   .marker-section {
-    padding: 0.75rem 0;
+    padding: 1rem 0;
     border-top: 1px solid var(--color-border);
 
     .section-title {
-      font-weight: 600;
+      font-weight: 700;
       font-size: 0.95rem;
       margin-bottom: 0.5rem;
     }
@@ -437,23 +472,26 @@ flay-dashboard {
     }
   }
 
-  // 카드 내 SVG 파이 차트
+  // 카드 내 SVG 파이 차트 (세로 배치: title → SVG → legend)
   .pie-chart {
-    margin-top: 0.5rem;
-    border-top: 1px dashed var(--color-border);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 
     .pie-title {
       font-weight: 600;
-      font-size: 0.8rem;
-      margin-bottom: 0.25rem;
+      font-size: 0.75rem;
+      text-align: center;
     }
     .pie-content {
       display: flex;
+      flex-direction: column;
       align-items: center;
-      gap: 0.75rem;
+      gap: 0.4rem;
     }
     .pie-svg {
-      flex-shrink: 0;
+      width: 80px;
+      height: 80px;
     }
     .pie-legend {
       font-size: 0.7rem;
@@ -461,18 +499,21 @@ flay-dashboard {
     .pie-legend-item {
       display: flex;
       align-items: center;
-      gap: 0.3rem;
+      gap: 0.25rem;
     }
     .pie-legend-color {
-      width: 0.6rem;
-      height: 0.6rem;
-      border-radius: 2px;
+      width: 0.5rem;
+      height: 0.5rem;
+      border-radius: 1px;
     }
     .pie-legend-label {
       color: var(--color-text-secondary);
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .pie-legend-value {
       font-weight: 600;
+      font-variant-numeric: tabular-nums;
     }
   }
 }

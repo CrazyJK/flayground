@@ -101,13 +101,16 @@ export default class FlayDashboard extends GroundFlay {
       ['총 용량', (totalSize / 1024 / 1024 / 1024 / 1024).toFixed(2) + ' TB'],
       ['자막 보유', withSubtitles.toLocaleString()],
     ]);
+    const pieRow = document.createElement('div');
+    pieRow.className = 'pie-charts-row';
+    card.querySelector('.card-body')!.appendChild(pieRow);
     this.#renderPieChart(
-      card.querySelector('.card-body')!,
+      pieRow,
       'Rank 분포',
       rankCounts.map((cnt, i) => [`${i}`, cnt])
     );
-    this.#renderPieChart(card.querySelector('.card-body')!, '상위 스튜디오', studioPie);
-    this.#renderPieChart(card.querySelector('.card-body')!, '상위 배우', actressPie);
+    this.#renderPieChart(pieRow, '상위 스튜디오', studioPie);
+    this.#renderPieChart(pieRow, '상위 배우', actressPie);
 
     this.#tryRenderDependentSections();
   }
@@ -159,13 +162,16 @@ export default class FlayDashboard extends GroundFlay {
       ['Release 범위', yearRange],
       ['평균 재생', avgPlay.toFixed(1) + '회'],
     ]);
+    const pieRow = document.createElement('div');
+    pieRow.className = 'pie-charts-row';
+    card.querySelector('.card-body')!.appendChild(pieRow);
     this.#renderPieChart(
-      card.querySelector('.card-body')!,
+      pieRow,
       'Rank 분포',
       rankCounts.map((cnt, i) => [`${i}`, cnt])
     );
-    this.#renderPieChart(card.querySelector('.card-body')!, '상위 스튜디오', studioPie);
-    this.#renderPieChart(card.querySelector('.card-body')!, '상위 배우', actressPie);
+    this.#renderPieChart(pieRow, '상위 스튜디오', studioPie);
+    this.#renderPieChart(pieRow, '상위 배우', actressPie);
 
     this.#tryRenderDependentSections();
   }
@@ -264,11 +270,11 @@ export default class FlayDashboard extends GroundFlay {
 
     const allFlays = [...this.#instanceList, ...this.#archiveList];
 
-    // 월별 집계: "YYYY-MM" → count
+    // 월별 집계: "YYYY.MM" → count
     const monthCounts = new Map<string, number>();
     for (const flay of allFlays) {
-      const ym = flay.release.substring(0, 7); // "YYYY-MM"
-      if (ym.length === 7 && ym[4] === '-') {
+      const ym = flay.release.substring(0, 7); // "YYYY.MM"
+      if (ym.length === 7 && /^\d{4}.\d{2}$/.test(ym)) {
         monthCounts.set(ym, (monthCounts.get(ym) || 0) + 1);
       }
     }
@@ -276,8 +282,8 @@ export default class FlayDashboard extends GroundFlay {
 
     // 연속 월 범위 생성
     const sortedKeys = Array.from(monthCounts.keys()).sort();
-    const [startY, startM] = sortedKeys[0]!.split('-').map(Number) as [number, number];
-    const [endY, endM] = sortedKeys[sortedKeys.length - 1]!.split('-').map(Number) as [number, number];
+    const [startY, startM] = sortedKeys[0]!.split('.').map(Number) as [number, number];
+    const [endY, endM] = sortedKeys[sortedKeys.length - 1]!.split('.').map(Number) as [number, number];
 
     const months: { key: string; count: number }[] = [];
     for (let y = startY, m = startM; y < endY || (y === endY && m <= endM); m++) {
@@ -285,7 +291,7 @@ export default class FlayDashboard extends GroundFlay {
         m = 1;
         y++;
       }
-      const key = `${y}-${String(m).padStart(2, '0')}`;
+      const key = `${y}.${String(m).padStart(2, '0')}`;
       months.push({ key, count: monthCounts.get(key) || 0 });
     }
 
@@ -309,13 +315,13 @@ export default class FlayDashboard extends GroundFlay {
     // 연도 라벨: 매 1월에 표시
     let labelsHtml = '';
     for (const { key } of months) {
-      if (key.endsWith('-01')) {
+      if (key.endsWith('.01')) {
         labelsHtml += `<span>${key.substring(0, 4)}</span>`;
       }
     }
 
     container.innerHTML = `
-      <div class="dist-title">Release 월별 분포</div>
+      <div class="dist-title">Release 월별 분포 <span class="dist-total">${allFlays.length.toLocaleString()}건</span></div>
       <div class="spark-row">${barsHtml}</div>
       <div class="year-labels">${labelsHtml}</div>
     `;
@@ -448,7 +454,7 @@ export default class FlayDashboard extends GroundFlay {
     const total = data.reduce((sum, [, v]) => sum + v, 0);
     if (total === 0) return;
 
-    const size = 120;
+    const size = 80;
     const cx = size / 2,
       cy = size / 2,
       r = size / 2 - 2;
@@ -467,9 +473,9 @@ export default class FlayDashboard extends GroundFlay {
       const color = FlayDashboard.#PIE_COLORS[i % FlayDashboard.#PIE_COLORS.length]!;
 
       if (data.length === 1) {
-        paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}"><title>${label}: ${value}</title></circle>`;
+        paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}"><title>${label}: ${value} (${((value / total) * 100).toFixed(1)}%)</title></circle>`;
       } else {
-        paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z" fill="${color}"><title>${label}: ${value}</title></path>`;
+        paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z" fill="${color}"><title>${label}: ${value} (${((value / total) * 100).toFixed(1)}%)</title></path>`;
       }
       startAngle = endAngle;
     }
@@ -477,8 +483,7 @@ export default class FlayDashboard extends GroundFlay {
     const legendItems = data
       .map(([label, value], i) => {
         const color = FlayDashboard.#PIE_COLORS[i % FlayDashboard.#PIE_COLORS.length]!;
-        const pct = ((value / total) * 100).toFixed(1);
-        return `<div class="pie-legend-item"><span class="pie-legend-color" style="background:${color}"></span><span class="pie-legend-label">${label}</span><span class="pie-legend-value">${value} (${pct}%)</span></div>`;
+        return `<div class="pie-legend-item"><span class="pie-legend-color" style="background:${color}"></span><span class="pie-legend-label">${label}</span><span class="pie-legend-value">${value.toLocaleString()}</span></div>`;
       })
       .join('');
 

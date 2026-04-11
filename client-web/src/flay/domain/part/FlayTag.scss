@@ -30,6 +30,7 @@ flay-tag {
       transition: box-shadow 0.4s 0.2s;
       border-radius: 0.25rem;
       border: 1px solid transparent;
+      color: var(--color-text-secondary);
 
       &.candidate {
         text-shadow: var(--text-shadow-active);

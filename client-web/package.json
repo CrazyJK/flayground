@@ -5,6 +5,10 @@
   "author": "kamoru",
   "license": "MIT",
   "private": true,
+  "sideEffects": [
+    "*.css",
+    "*.scss"
+  ],
   "scripts": {
     "build": "cross-env NODE_ENV=production webpack",
     "dev": "cross-env NODE_ENV=development webpack -w",

@@ -38,7 +38,6 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 
 - 호출 → 로딩 스피너 표시 → 데이터 도착 → 통계 계산 → 카드 렌더링
 - 한 섹션이 느려도 다른 섹션은 먼저 표시됨
-- 하단 리스트는 Instance + History 두 데이터가 모두 준비된 후 렌더링
 
 ### 사용 타입
 
@@ -95,11 +94,10 @@ instance + archive 합산 release를 **월별** 분포로 **인라인 바 차트
 
 ```
 계산: instance + archive 합산 → release.substring(0, 7)로 YYYY.MM 추출 → 월별 count 집계
-시각화: CSS 바 차트 (height 비율), p95 percentile 클램프 적용
+시각화: CSS 바 차트 (height 비율), 고정 최대값 100건 기준
 ```
 
-- p95 percentile 값으로 높이를 클램프하여 이상치 스케일 왜곡 방지
-- p95 초과 바에는 `.bar.over` 클래스 부여 → `var(--color-red)` 배경으로 이상치 표시
+- 고정 최대값 100건 기준으로 높이 계산, 100건 초과 시 클램프 + `.bar.over` 클래스로 이상치 표시
 - 연도 라벨: 매 1월(`.01`)에 연도 표시
 - 바 차트 높이 **5rem**으로 월별 분포 시각적 강조
 - 제목 옥에 총 건수 표시 (`.dist-total`)
@@ -140,42 +138,7 @@ const archivedCount = actressList.filter((a) => !instanceActressSet.has(a.name) 
 
 ---
 
-## 4. 하단 리스트 섹션
-
-카드 아래에 간결한 리스트를 배치한다.
-Instance + History 데이터가 모두 준비된 후 렌더링.
-
-### 4-1. 최근 플레이 목록 (최신 10건)
-
-```
-[opus] [title] [배우] [플레이 일시]
-```
-
-- `playHistory`에서 **중복 opus 제거** 후 최신 10건 추출
-- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 비활성화)
-
-### 4-2. 최근 Like 목록 (최신 10건)
-
-```
-[opus] [title] [배우] [like 일시]
-```
-
-- 모든 instance의 `video.likes` 타임스탬프를 펼쳐서 최신 10건 정렬
-- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 비활성화)
-- 데이터 구조: `{ opus, timestamp }` → timestamp 역순 정렬
-
-### 4-3. 미평가 작품 (rank === 0, 최대 10건)
-
-```
-[opus] [title] [배우] [release]
-```
-
-- `instanceList.filter(f => f.video.rank === 0)` → release 최신순 최대 10건
-- **FlayMarker** 카버 표시 그리드 (cover: true, 200px 크기, tooltip 비활성화)
-
----
-
-## 5. UI 레이아웃
+## 4. UI 레이아웃
 
 세로 모니터(1080 × 1846) 기준으로 설계. 1080px 폭에 최적화.
 
@@ -191,24 +154,18 @@ Instance + History 데이터가 모두 준비된 후 렌더링.
 │   (카드)        │    (카드)       │
 ├─────────────────────────────────┤
 │   Release 월별 분포 (바 차트)       │
-├─────────────────────────────────┤
-│   최근 플레이 (FlayMarker 그리드)  │
-├─────────────────────────────────┤
-│   최근 Like (FlayMarker 그리드)    │
-├─────────────────────────────────┤
-│   미평가 작품 (FlayMarker 그리드)  │
 └─────────────────────────────────┘
 ```
 
 - Instance, Archive 카드: 전체 폭 1열 세로 배치 (`.card-row-layout`)
 - Actress, History 카드: 2열 그리드 `grid-template-columns: repeat(2, 1fr)` (`.card-grid`)
 - 분포 차트: 전체 폭 1열
-- 하단 리스트: FlayMarker 사각형 그리드 (`flex-wrap`) × 3섹션 세로 배치
+
 - 모바일/좁은 화면: 1열 스택
 
 ---
 
-## 6. 컴포넌트 구조 (TypeScript)
+## 5. 컴포넌트 구조 (TypeScript)
 
 ```typescript
 export class FlayDashboard extends GroundFlay {
@@ -251,20 +208,15 @@ export class FlayDashboard extends GroundFlay {
     // 3. this.#tryRenderDependentSections()
   }
 
-  /** Instance + History 모두 준비됐을 때 하단 리스트 렌더링 */
+  /** Instance + Archive 모두 준비됐을 때 Release 분포 렌더링 */
   #tryRenderDependentSections(): void {
     if (this.#instanceList && this.#archiveList) {
       this.#renderReleaseDist();  // Release 분포
     }
-    // 리스트 렌더링 조건 확인...
   }
 
   #renderReleaseDist(): void {
-    // 월별 release 집계 + p95 클램프 바 차트 렌더링
-  }
-
-  #renderMarkerSection(container: HTMLElement, title: string, flays: Flay[]): void {
-    // FlayMarker 카버 표시 그리드로 렌더링 (cover: true, 200px, tooltip: false)
+    // 월별 release 집계 + 고정 100건 기준 바 차트 렌더링
   }
 
   #renderPieChart(container: Element, title: string, data: [string, number][]): void {
@@ -320,7 +272,7 @@ interface DashboardStats {
 
 ---
 
-## 7. 스타일 (SCSS)
+## 6. 스타일 (SCSS)
 
 모던하고 심플한 대시보드 스타일. 전용 폰트 사용.
 
@@ -450,28 +402,6 @@ flay-dashboard {
     }
   }
 
-  // 하단 FlayMarker 그리드 섹션
-  .marker-section {
-    padding: 1rem 0;
-    border-top: 1px solid var(--color-border);
-
-    .section-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .marker-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.25rem;
-
-      flay-marker {
-        --marker-size: 200px;
-      }
-    }
-  }
-
   // 카드 내 SVG 파이 차트 (세로 배치: title → SVG → legend)
   .pie-chart {
     display: flex;
@@ -527,7 +457,7 @@ flay-dashboard {
 
 ---
 
-## 8. 페이지 통합
+## 7. 페이지 통합
 
 기존 페이지에 컴포넌트로 추가. (페이지 통합은 수동 작업)
 
@@ -539,13 +469,12 @@ document.querySelector('article')!.appendChild(new FlayDashboard());
 
 ---
 
-## 9. 구현 순서
+## 8. 구현 순서
 
 1. `FlayDashboard.ts` 파일 생성 — 클래스, connectedCallback, 스켈레톤 HTML
 2. 개별 비동기 API 호출 메서드 4개 구현 (`#loadInstanceCard` 등)
 3. 각 카드별 통계 계산 + 렌더링 구현
-4. Release 월별 분포 바 차트 구현 (p95 클램프)
-5. 의존성 기반 렌더링 (Actress 카드 = Instance + Archive 대기, 리스트 = Instance + History 대기)
-6. 하단 FlayMarker 그리드 3섹션 렌더링
-7. `FlayDashboard.scss` 스타일 작성
-8. 빌드 확인
+4. Release 월별 분포 바 차트 구현 (고정 100건 기준)
+5. 의존성 기반 렌더링 (Actress 카드 = Instance + Archive 대기)
+6. `FlayDashboard.scss` 스타일 작성
+7. 빌드 확인

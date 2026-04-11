@@ -1,11 +1,10 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayMarker from '@flay/domain/FlayMarker';
-import FlayFetch, { type Actress, type Archive, type Flay, type FlayHistory } from '@lib/FlayFetch';
+import FlayFetch, { type Actress, type Archive, type Flay } from '@lib/FlayFetch';
 import './FlayDashboard.scss';
 
 /**
  * Flay 대시보드 커스텀 엘리먼트.
- * Instance, Archive, Actress, History 4개 카드와 하단 리스트를 표시한다.
+ * Instance, Archive, Actress, History 4개 카드와 Release 분포를 표시한다.
  * 각 API를 개별 비동기 호출하여 도착 즉시 렌더링.
  */
 export default class FlayDashboard extends GroundFlay {
@@ -13,7 +12,6 @@ export default class FlayDashboard extends GroundFlay {
   #instanceList: Flay[] | null = null;
   #archiveList: Archive[] | null = null;
   #actressList: Actress[] | null = null;
-  #historyList: FlayHistory[] | null = null;
 
   connectedCallback(): void {
     this.innerHTML = /* html */ `
@@ -39,9 +37,6 @@ export default class FlayDashboard extends GroundFlay {
         </div>
       </div>
       <div class="release-dist" id="release-dist"></div>
-      <div class="marker-section" id="list-recent-play"></div>
-      <div class="marker-section" id="list-recent-like"></div>
-      <div class="marker-section" id="list-unranked"></div>
     `;
 
     // 개별 비동기 호출 — 도착 즉시 렌더링
@@ -216,7 +211,6 @@ export default class FlayDashboard extends GroundFlay {
    */
   async #loadHistoryCard(): Promise<void> {
     const list = await FlayFetch.getHistoryListByAction('PLAY', 0);
-    this.#historyList = list;
 
     /**
      * 날짜 문자열(yyyy-MM-dd HH:mm:ss)을 epoch ms로 변환
@@ -250,11 +244,6 @@ export default class FlayDashboard extends GroundFlay {
     // Release 분포: Instance + Archive 필요
     if (this.#instanceList && this.#archiveList) {
       this.#renderReleaseDist();
-    }
-
-    // 하단 리스트: Instance + History 필요
-    if (this.#instanceList && this.#historyList) {
-      this.#renderLists();
     }
   }
 
@@ -319,84 +308,6 @@ export default class FlayDashboard extends GroundFlay {
       <div class="spark-row">${barsHtml}</div>
       <div class="year-labels">${labelsHtml}</div>
     `;
-  }
-
-  // ─── 하단 리스트 ────────────────────────────────────────
-
-  /**
-   * 최근 플레이, 최근 Like, 미평가 작품 리스트를 렌더링
-   */
-  #renderLists(): void {
-    if (!this.#instanceList || !this.#historyList) return;
-
-    // Flay를 opus 기준 Map으로 캐싱
-    const flayMap = new Map<string, Flay>();
-    for (const flay of this.#instanceList) {
-      flayMap.set(flay.opus, flay);
-    }
-
-    // 1. 최근 플레이 (중복 opus 제거, 최신 10건)
-    const recentPlayContainer = this.querySelector('#list-recent-play')!;
-    if (recentPlayContainer.children.length === 0) {
-      const seenOpus = new Set<string>();
-      const recentFlays = this.#historyList
-        .filter((h) => {
-          if (seenOpus.has(h.opus)) return false;
-          seenOpus.add(h.opus);
-          return true;
-        })
-        .slice(0, 10)
-        .map((h) => flayMap.get(h.opus))
-        .filter((f): f is Flay => f !== undefined);
-      this.#renderMarkerSection(recentPlayContainer, '최근 플레이', recentFlays);
-    }
-
-    // 2. 최근 Like (최신 10건)
-    const recentLikeContainer = this.querySelector('#list-recent-like')!;
-    if (recentLikeContainer.children.length === 0) {
-      const likeEntries: { opus: string; timestamp: number }[] = [];
-      for (const flay of this.#instanceList) {
-        for (const ts of flay.video.likes) {
-          likeEntries.push({ opus: flay.opus, timestamp: ts });
-        }
-      }
-      likeEntries.sort((a, b) => b.timestamp - a.timestamp);
-      const likeFlays = likeEntries
-        .slice(0, 10)
-        .map((e) => flayMap.get(e.opus))
-        .filter((f): f is Flay => f !== undefined);
-      this.#renderMarkerSection(recentLikeContainer, '최근 Like', likeFlays);
-    }
-
-    // 3. 미평가 작품 (rank === 0, release 최신순, 최대 10건)
-    const unrankedContainer = this.querySelector('#list-unranked')!;
-    if (unrankedContainer.children.length === 0) {
-      const unranked = this.#instanceList
-        .filter((f) => f.video.rank === 0)
-        .sort((a, b) => b.release.localeCompare(a.release))
-        .slice(0, 10);
-      this.#renderMarkerSection(unrankedContainer, '미평가 작품', unranked);
-    }
-  }
-
-  /**
-   * FlayMarker 사각형 그리드로 섹션을 렌더링
-   * @param container - 렌더링할 컨테이너 엘리먼트
-   * @param title - 섹션 제목
-   * @param flays - 표시할 Flay 목록
-   */
-  #renderMarkerSection(container: Element, title: string, flays: Flay[]): void {
-    const titleEl = document.createElement('div');
-    titleEl.className = 'section-title';
-    titleEl.textContent = title;
-    container.appendChild(titleEl);
-
-    const grid = document.createElement('div');
-    grid.className = 'marker-grid';
-    for (const flay of flays) {
-      grid.appendChild(new FlayMarker(flay, { tooltip: false, cover: true, shape: 'square' }));
-    }
-    container.appendChild(grid);
   }
 
   // ─── 유틸리티 ──────────────────────────────────────────

@@ -30,6 +30,20 @@ export default class FlayDashboard extends GroundFlay {
     requestAnimationFrame(() => chart.resize());
   }
 
+  /**
+   * 페이지 테마 CSS 변수를 읽어 ECharts tooltip 공통 스타일 옵션을 반환
+   * @returns ECharts tooltip 스타일 옵션 객체
+   */
+  #getTooltipStyle(): Record<string, unknown> {
+    const s = getComputedStyle(this);
+    return {
+      backgroundColor: s.getPropertyValue('--color-bg').trim(),
+      borderColor: s.getPropertyValue('--color-border').trim(),
+      textStyle: { color: s.getPropertyValue('--color-text').trim(), fontFamily: "'Inter', 'Segoe UI', system-ui, sans-serif", fontSize: 12 },
+      extraCssText: `border-radius: ${s.getPropertyValue('--border-radius-hugest').trim()}; box-shadow: ${s.getPropertyValue('--box-shadow-smallest').trim()};`,
+    };
+  }
+
   connectedCallback(): void {
     this.innerHTML = /* html */ `
       <div class="dashboard-header">Flay Dashboard</div>
@@ -318,7 +332,7 @@ export default class FlayDashboard extends GroundFlay {
     const chart = echarts.init(chartEl);
     this.#registerChart(chart);
     chart.setOption({
-      tooltip: { trigger: 'axis', formatter: (params: any) => `${params[0].name}: ${params[0].value}건` },
+      tooltip: { trigger: 'axis', formatter: (params: any) => `${params[0].name}: ${params[0].value}건`, ...this.#getTooltipStyle() },
       grid: { left: 5, right: 5, top: 10, bottom: 10 },
       xAxis: {
         type: 'category',
@@ -404,7 +418,7 @@ export default class FlayDashboard extends GroundFlay {
     const chart = echarts.init(chartEl);
     this.#registerChart(chart);
     chart.setOption({
-      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)' },
+      tooltip: { trigger: 'item', formatter: '{b}: {c} ({d}%)', ...this.#getTooltipStyle() },
       series: [
         {
           type: 'pie',
@@ -446,6 +460,7 @@ export default class FlayDashboard extends GroundFlay {
           const pct = ((params.value / total) * 100).toFixed(1);
           return `${params.name}: ${params.value.toLocaleString()} (${pct}%)`;
         },
+        ...this.#getTooltipStyle(),
       },
       series: [
         {

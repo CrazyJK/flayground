@@ -5,10 +5,12 @@ flay-release {
   justify-content: center;
   align-items: baseline;
 
+  > label {
+    min-width: 7rem;
+  }
   > label.extra {
     font-size: var(--size-normal);
-    min-width: 7rem;
-    text-align: center;
+    text-align: start;
   }
 
   &.card {

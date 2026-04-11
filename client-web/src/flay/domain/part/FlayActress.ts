@@ -25,8 +25,8 @@ export default class FlayActress extends FlayPartElement {
         const actressDiv = this.appendChild(document.createElement('div'));
 
         // favorite
-        const favoriteElement = actressDiv.appendChild(document.createElement('span'));
-        const input = favoriteElement.appendChild(document.createElement('input'));
+        // const favoriteElement = actressDiv.appendChild(document.createElement('span'));
+        const input = actressDiv.appendChild(document.createElement('input'));
         input.id = 'fav' + index;
         input.type = 'checkbox';
         input.checked = actress.favorite;
@@ -37,9 +37,10 @@ export default class FlayActress extends FlayPartElement {
             console.error('Error setting favorite:', error);
           });
         });
-        const label = favoriteElement.appendChild(document.createElement('label'));
+        const label = actressDiv.appendChild(document.createElement('label'));
         label.setAttribute('for', 'fav' + index);
         label.innerHTML = favoriteSVG;
+        label.classList.add('favorite');
 
         // name
         const nameLabel = actressDiv.appendChild(document.createElement('label'));

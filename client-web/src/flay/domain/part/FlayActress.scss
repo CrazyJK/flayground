@@ -14,6 +14,12 @@ flay-actress {
       white-space: nowrap;
     }
 
+    .favorite {
+      flex: 0 0 2rem;
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+    }
     .name {
       flex: 1 1 auto;
       white-space: nowrap;
@@ -23,22 +29,22 @@ flay-actress {
       flex: 0 1 auto;
     }
     .flaySize {
-      flex: 0 1 2rem;
+      flex: 0 0 3rem;
       text-align: right;
     }
     .age {
-      flex: 0 1 2rem;
+      flex: 0 0 4rem;
       text-align: right;
     }
     .body {
-      flex: 0 1 6.5rem;
+      flex: 0 0 7rem;
     }
     .height {
-      flex: 0 1 auto;
+      flex: 0 0 3.5rem;
       text-align: right;
     }
     .debut {
-      flex: 0 1 auto;
+      flex: 0 0 3.5rem;
       text-align: right;
     }
   }

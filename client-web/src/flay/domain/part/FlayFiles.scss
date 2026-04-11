@@ -5,7 +5,25 @@ flay-files {
     display: flex;
     gap: 1rem;
     justify-content: center;
-    align-items: flex-start;
+    align-items: center;
+
+    > .flay-movie,
+    > .sub-btn,
+    > .size-label {
+      min-width: 4rem;
+      display: inline-flex;
+      justify-content: start;
+    }
+    > .flay-movie {
+      min-width: 4.5rem;
+    }
+    > .sub-btn {
+      min-width: 3.5rem;
+    }
+    > .size-label {
+      align-items: baseline;
+      justify-content: flex-end;
+    }
   }
 
   .list {

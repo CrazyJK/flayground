@@ -295,20 +295,14 @@ export default class FlayDashboard extends GroundFlay {
       months.push({ key, count: monthCounts.get(key) || 0 });
     }
 
-    // 이상치 억제: p95 percentile 기준 클램프
-    const counts = months
-      .map((m) => m.count)
-      .filter((c) => c > 0)
-      .sort((a, b) => a - b);
-    const p95 = counts[Math.floor(counts.length * 0.95)] || 1;
-    const maxDisplay = Math.max(p95, 1);
+    // 고정 최대값 100건 기준 높이 계산
+    const maxCount = 100;
 
     // 바 차트 렌더링
     let barsHtml = '';
     for (const { key, count } of months) {
-      const clamped = Math.min(count, maxDisplay);
-      const heightPercent = (clamped / maxDisplay) * 100;
-      const overClass = count > maxDisplay ? ' over' : '';
+      const heightPercent = Math.min((count / maxCount) * 100, 100);
+      const overClass = count > maxCount ? ' over' : '';
       barsHtml += `<div class="bar${overClass}" style="height: ${heightPercent}%" title="${key}: ${count}건"></div>`;
     }
 

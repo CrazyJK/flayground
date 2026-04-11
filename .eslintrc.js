@@ -1,5 +1,5 @@
 const tsParser = require.resolve('@typescript-eslint/parser', {
-  paths: [require('path').join(__dirname, 'www')],
+  paths: [require('path').join(__dirname, 'client-web')],
 });
 
 const commonTsOverride = {
@@ -54,11 +54,11 @@ const tsRules = {
 
 module.exports = {
   root: true,
-  ignorePatterns: ['**/node_modules/**', '**/dist/**', '**/target/**', '**/*.js', '**/*.jsx', 'www/webpack.*.cjs', 'www/madge.cjs'],
+  ignorePatterns: ['**/node_modules/**', '**/dist/**', '**/target/**', '**/*.js', '**/*.jsx', 'client-web/webpack.*.cjs', 'client-web/madge.cjs'],
   overrides: [
     {
       ...commonTsOverride,
-      files: ['www/src/**/*.{ts,tsx}'],
+      files: ['client-web/src/**/*.{ts,tsx}'],
       env: {
         browser: true,
         node: true,
@@ -66,7 +66,7 @@ module.exports = {
       },
       parserOptions: {
         ...commonTsOverride.parserOptions,
-        project: './www/tsconfig.json',
+        project: './client-web/tsconfig.json',
       },
       rules: {
         ...baseRules,

@@ -32,13 +32,17 @@ router.get('/crawling/jsoup', async (req, res, next) => {
     return;
   }
 
+  console.log(`[Crawling] jsoup 시작: ${url}`);
+  const startTime = Date.now();
   try {
     const response = await fetch(url, {
       headers: { 'User-Agent': USER_AGENT },
     });
     const html = await response.text();
+    console.log(`[Crawling] jsoup 완료: ${url} (${html.length} bytes, ${Date.now() - startTime}ms)`);
     res.type('text/html').send(html);
   } catch (e: any) {
+    console.error(`[Crawling] jsoup 오류: ${url} - ${e.message} (${Date.now() - startTime}ms)`);
     next(e);
   }
 });
@@ -67,15 +71,17 @@ router.get('/crawling/curl', (req, res) => {
     return;
   }
 
-  console.log(`[Crawling] curl ${url}`);
+  console.log(`[Crawling] curl 시작: ${url}`);
+  const startTime = Date.now();
 
   // 비동기로 curl 실행, 즉시 204 응답
   exec(`curl -s "${url}"`, { maxBuffer: 10 * 1024 * 1024 }, (error, stdout) => {
     if (error) {
-      console.error(`[Crawling] curl 오류: ${error.message}`);
+      console.error(`[Crawling] curl 오류: ${url} - ${error.message} (${Date.now() - startTime}ms)`);
       sseSend({ type: 'CURL', message: `curl error: ${error.message}` });
       return;
     }
+    console.log(`[Crawling] curl 완료: ${url} (${stdout.length} bytes, ${Date.now() - startTime}ms)`);
     sseSend({ type: 'CURL', message: stdout });
   });
 

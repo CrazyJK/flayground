@@ -210,10 +210,14 @@ router.post('/images/page-download', async (req, res) => {
     res.status(400).json({ message: 'pageUrl, downloadDir, folderName은 필수입니다' });
     return;
   }
+  console.log(`[PageDownload] 요청: ${pageUrl} -> ${downloadDir}/${folderName}`);
+  const startTime = Date.now();
   try {
     const result = await downloadPageImages(pageUrl as string, downloadDir as string, folderName as string, (titlePrefix as string) || '', (titleCssQuery as string) || '', parseInt((minimumKbSize as string) || '0', 10));
+    console.log(`[PageDownload] 완료: ${result.message} (${Date.now() - startTime}ms)`);
     res.json(result);
   } catch (err: any) {
+    console.error(`[PageDownload] 오류: ${pageUrl} - ${err.message} (${Date.now() - startTime}ms)`);
     res.status(500).json({ message: err.message });
   }
 });

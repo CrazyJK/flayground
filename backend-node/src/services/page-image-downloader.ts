@@ -41,8 +41,10 @@ export async function downloadPageImages(pageUrl: string, downloadDir: string, f
 
   try {
     // 1. HTML 가져오기
+    console.log(`[PageDownload] HTML 가져오기: ${pageUrl}`);
     const html = await fetchHtml(pageUrl);
     const $ = cheerio.load(html);
+    console.log(`[PageDownload] HTML 로드 완료 (${html.length} bytes)`);
 
     // 2. 이미지 URL 추출
     const imageUrls: string[] = [];
@@ -54,6 +56,7 @@ export async function downloadPageImages(pageUrl: string, downloadDir: string, f
       }
     });
     result.imageUrls = imageUrls;
+    console.log(`[PageDownload] 이미지 ${imageUrls.length}개 발견`);
 
     // 3. 제목 결정
     let title = titlePrefix;
@@ -77,6 +80,7 @@ export async function downloadPageImages(pageUrl: string, downloadDir: string, f
     result.localPath = saveDir;
 
     // 5. 이미지 병렬 다운로드
+    console.log(`[PageDownload] 다운로드 시작: ${imageUrls.length}개, 최소 크기 ${minimumKbSize}KB, 저장 경로 ${saveDir}`);
     const minimumSize = minimumKbSize * 1024;
     const downloadPromises = imageUrls.map((url, idx) => {
       const paddedIdx = String(idx + 1).padStart(4, '0');
@@ -92,7 +96,9 @@ export async function downloadPageImages(pageUrl: string, downloadDir: string, f
 
     result.result = true;
     result.message = `${result.imageFiles.length}/${imageUrls.length} 이미지 다운로드 완료`;
+    console.log(`[PageDownload] ${result.message}`);
   } catch (err: any) {
+    console.error(`[PageDownload] 오류: ${err.message}`);
     result.message = err.message;
     result.result = false;
   }

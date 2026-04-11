@@ -140,27 +140,9 @@ module.exports = {
   performance: {
     hints: false, // 개발 환경에서는 성능 경고 비활성화
   },
-  cache: {
-    type: 'filesystem', // 파일시스템 캐시로 빌드 성능 향상
-    allowCollectingMemory: true,
-    buildDependencies: {
-      config: [__filename], // 설정이 변경되면 캐시 무효화
-    },
-    compression: 'gzip', // 캐시 파일 압축으로 디스크 공간 절약
-    name: 'development-cache', // 캐시 이름 지정
-    maxAge: 86400000, // 캐시 유효 기간 설정 (1일)
-    cacheLocation: path.resolve(__dirname, 'node_modules/.cache/webpack'), // 캐시 위치를 node_modules/.cache 폴더로 변경
-    idleTimeout: 60000, // 캐시 동작 사이의 유휴 시간 설정 (60초)
-    idleTimeoutForInitialStore: 0, // 초기 저장 시 지연 없음
-  },
   // watch 모드 최적화 설정
   watchOptions: {
-    ignored: [
-      '**/node_modules/**',
-      '**/dist/**',
-      '**/node_modules/.cache/**', // 업데이트된 캐시 경로 무시
-      '**/logs/**',
-    ],
+    ignored: ['**/node_modules/**', '**/dist/**', '**/logs/**'],
     aggregateTimeout: 200, // 변경 감지 후 재빌드 전 대기 시간 단축 (ms)
     poll: false, // 폴링 대신 파일 시스템 이벤트 사용 (Windows에서 더 효율적)
     followSymlinks: false, // 성능 향상을 위해 심볼릭 링크 사용 안함

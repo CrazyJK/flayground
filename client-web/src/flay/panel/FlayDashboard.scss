@@ -1,0 +1,158 @@
+flay-dashboard {
+  display: block;
+  font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  max-width: 1080px;
+  padding: 0 0.5rem;
+
+  .dashboard-header {
+    font-size: 1.5rem;
+    font-weight: 700;
+    padding: 1rem 0;
+    border-bottom: 2px solid var(--color-border);
+  }
+
+  // 카드 그리드: 2열 (세로 모니터 1080px 기준)
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+    padding: 0.75rem 0;
+  }
+
+  .card {
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    padding: 1rem 1.25rem;
+    background: var(--color-bg);
+    transition: opacity 0.3s;
+
+    &.loading {
+      opacity: 0.5;
+
+      .spinner {
+        display: inline-block;
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 2px solid var(--color-border);
+        border-top-color: var(--color-checked);
+        border-radius: 50%;
+        animation: spin 0.8s linear infinite;
+      }
+    }
+
+    .card-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      margin-bottom: 0.5rem;
+      color: var(--color-text);
+    }
+
+    .card-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.2rem 0;
+      font-size: 0.85rem;
+
+      .label {
+        color: var(--color-text-secondary);
+      }
+
+      .value {
+        font-weight: 600;
+        font-variant-numeric: tabular-nums;
+      }
+    }
+  }
+
+  // Release 분포 (전체 폭)
+  .release-dist {
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--color-border);
+
+    .dist-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .spark-row {
+      display: flex;
+      align-items: flex-end;
+      gap: 2px;
+      height: 3rem;
+
+      .bar {
+        flex: 1;
+        background: var(--color-checked);
+        border-radius: 2px 2px 0 0;
+        min-width: 4px;
+        transition: height 0.3s;
+      }
+    }
+
+    .year-labels {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.65rem;
+      color: var(--color-text-secondary);
+      margin-top: 0.25rem;
+    }
+  }
+
+  // 하단 리스트: 세로 배치
+  .list-section {
+    padding: 0.75rem 0;
+    border-top: 1px solid var(--color-border);
+
+    .list-title {
+      font-weight: 600;
+      font-size: 0.95rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .list-item {
+      display: flex;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border-radius: 0.25rem;
+
+      &:hover {
+        background-color: var(--color-bg-transparent);
+      }
+
+      .opus {
+        flex: 0 0 8rem;
+        font-weight: 600;
+      }
+
+      .title {
+        flex: 1 1 auto;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .actress {
+        flex: 0 0 6rem;
+        color: var(--color-text-secondary);
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .date {
+        flex: 0 0 5rem;
+        text-align: right;
+        color: var(--color-text-secondary);
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

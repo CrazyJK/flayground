@@ -484,3 +484,30 @@ document.querySelector('article')!.appendChild(new FlayDashboard());
 6. 하단 리스트 3개 렌더링 + `popupFlay()` 이벤트 바인딩
 7. `FlayDashboard.scss` 스타일 작성
 8. 빌드 확인
+
+## 개선 1 ✅ 반영 완료
+
+### Instance
+
+- [x] 총 용량 단위 TB로 변경
+- [x] 평균 Rank 아래에 Rank 0 ~ 5 각각의 flay 수 표시
+
+### Archive
+
+- [x] liked, score, 누적 total 제거 (의미 없음)
+- [x] 대체 항목: Release 범위(최소~최대 연도), 평균 재생 횟수, 상위 스튜디오 3개
+
+### Actress
+
+- [x] 평균 나이 제거 (의미 없음)
+- [x] `즐겨찾기` → `선호 배우`
+- [x] `살아있는 배우` → `보유 중` (instance에 등장)
+- [x] `지나간 배우` → `아카이브` (archive에만 등장)
+
+### 최근 플레이
+
+- [x] 중복 opus 제거 (같은 작품 여러 번 재생 시 최신 1건만)
+
+### etc
+
+- [x] `index.scss`: `position: fixed` → `min-height: 100dvh`로 변경하여 스크롤 가능하게 수정

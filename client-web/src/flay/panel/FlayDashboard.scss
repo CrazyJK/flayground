@@ -86,7 +86,7 @@ flay-dashboard {
     border-top: 1px dashed var(--color-border);
   }
 
-  // 카드 내 파이 차트 (세로 배치: title → SVG → legend)
+  // 카드 내 파이 차트 (세로 배치: title → SVG)
   .pie-chart {
     display: flex;
     flex-direction: column;
@@ -103,55 +103,9 @@ flay-dashboard {
       text-align: center;
     }
 
-    .pie-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.4rem;
-      width: 100%;
-    }
-
     .pie-svg {
-      width: 80px;
-      height: 80px;
-      flex-shrink: 0;
-    }
-
-    .pie-legend {
-      display: flex;
-      flex-direction: column;
-      gap: 0.05rem;
       width: 100%;
-    }
-
-    .pie-legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-      font-size: 0.7rem;
-      line-height: 1.4;
-    }
-
-    .pie-legend-color {
-      display: inline-block;
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 1px;
-      flex-shrink: 0;
-    }
-
-    .pie-legend-label {
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      color: var(--color-text-secondary);
-    }
-
-    .pie-legend-value {
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
-      white-space: nowrap;
+      aspect-ratio: 1;
     }
   }
 

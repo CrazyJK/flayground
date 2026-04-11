@@ -66,11 +66,11 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | 자막 보유  | `instanceList.filter(f => f.files.subtitles.length > 0).length` |
 
 **Rank 분포** — SVG 파이 차트로 표시 (0~5 각 랭크별 건수)
-**상위 스튜디오** — studio별 count 상위 10개 + 그외, SVG 파이 차트
-**상위 배우** — flay 수 기준 상위 10명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
+**상위 스튜디오** — studio별 count 상위 20개 + 그외, SVG 파이 차트
+**상위 배우** — flay 수 기준 상위 20명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
 
-→ 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치 (title → SVG → legend 세로 구조)
-→ 범례에는 건수만 표시 (퍼센트는 SVG 툴팁으로 확인 가능)
+→ 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치 (title → SVG 세로 구조)
+→ 범례(레전드) 없이 SVG를 가용 폭 최대로 표시, 호버 툴팁으로 라벨/건수/퍼센트 확인
 
 ### 3-2. Archive 카드
 
@@ -83,8 +83,8 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | 평균 재생    | `Σ flay.video.play / count` (아카이브 전 평균 재생 횟수) |
 
 **Rank 분포** — SVG 파이 차트로 표시 (0~5 각 랭크별 건수)
-**상위 스튜디오** — studio별 count 상위 10개 + 그외, SVG 파이 차트
-**상위 배우** — flay 수 기준 상위 10명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
+**상위 스튜디오** — studio별 count 상위 20개 + 그외, SVG 파이 차트
+**상위 배우** — flay 수 기준 상위 20명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
 
 → 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치
 
@@ -402,7 +402,7 @@ flay-dashboard {
     }
   }
 
-  // 카드 내 SVG 파이 차트 (세로 배치: title → SVG → legend)
+  // 카드 내 SVG 파이 차트 (세로 배치: title → SVG, 레전드 없음)
   .pie-chart {
     display: flex;
     flex-direction: column;
@@ -413,37 +413,9 @@ flay-dashboard {
       font-size: 0.75rem;
       text-align: center;
     }
-    .pie-content {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.4rem;
-    }
     .pie-svg {
-      width: 80px;
-      height: 80px;
-    }
-    .pie-legend {
-      font-size: 0.7rem;
-    }
-    .pie-legend-item {
-      display: flex;
-      align-items: center;
-      gap: 0.25rem;
-    }
-    .pie-legend-color {
-      width: 0.5rem;
-      height: 0.5rem;
-      border-radius: 1px;
-    }
-    .pie-legend-label {
-      color: var(--color-text-secondary);
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .pie-legend-value {
-      font-weight: 600;
-      font-variant-numeric: tabular-nums;
+      width: 100%;
+      aspect-ratio: 1;
     }
   }
 }

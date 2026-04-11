@@ -71,12 +71,12 @@ export default class FlayDashboard extends GroundFlay {
       if (r >= 0 && r <= 5) rankCounts[r]!++;
     }
 
-    // 상위 스튜디오 (10개 + 그외)
+    // 상위 스튜디오 (20개 + 그외)
     const studioMap = new Map<string, number>();
     for (const f of list) studioMap.set(f.studio, (studioMap.get(f.studio) || 0) + 1);
-    const studioPie = this.#buildPieData(studioMap, 10);
+    const studioPie = this.#buildPieData(studioMap, 20);
 
-    // 상위 배우 (이름 없거나 Amateur 제외, 10개 + 그외)
+    // 상위 배우 (이름 없거나 Amateur 제외, 20개 + 그외)
     const actressMap = new Map<string, number>();
     for (const f of list) {
       for (const name of f.actressList) {
@@ -84,7 +84,7 @@ export default class FlayDashboard extends GroundFlay {
         actressMap.set(name, (actressMap.get(name) || 0) + 1);
       }
     }
-    const actressPie = this.#buildPieData(actressMap, 10);
+    const actressPie = this.#buildPieData(actressMap, 20);
 
     const card = this.querySelector('#card-instance')!;
     card.classList.remove('loading');
@@ -133,7 +133,7 @@ export default class FlayDashboard extends GroundFlay {
     // 평균 플레이 횟수 (아카이브 전 얼마나 재생했는지)
     const avgPlay = total > 0 ? list.reduce((sum, f) => sum + f.video.play, 0) / total : 0;
 
-    // flay 수 기준 상위 배우 (이름 없거나 Amateur 제외, 10개 + 그외)
+    // flay 수 기준 상위 배우 (이름 없거나 Amateur 제외, 20개 + 그외)
     const actressMap = new Map<string, number>();
     for (const f of list) {
       for (const name of f.actressList) {
@@ -141,7 +141,7 @@ export default class FlayDashboard extends GroundFlay {
         actressMap.set(name, (actressMap.get(name) || 0) + 1);
       }
     }
-    const actressPie = this.#buildPieData(actressMap, 10);
+    const actressPie = this.#buildPieData(actressMap, 20);
 
     // Rank 분포 (0 ~ 5)
     const rankCounts = [0, 0, 0, 0, 0, 0];
@@ -359,10 +359,10 @@ export default class FlayDashboard extends GroundFlay {
     const total = data.reduce((sum, [, v]) => sum + v, 0);
     if (total === 0) return;
 
-    const size = 80;
+    const size = 100;
     const cx = size / 2,
       cy = size / 2,
-      r = size / 2 - 2;
+      r = size / 2 - 1;
     let startAngle = -Math.PI / 2;
 
     let paths = '';
@@ -376,30 +376,21 @@ export default class FlayDashboard extends GroundFlay {
       const x2 = cx + r * Math.cos(endAngle);
       const y2 = cy + r * Math.sin(endAngle);
       const color = FlayDashboard.#PIE_COLORS[i % FlayDashboard.#PIE_COLORS.length]!;
+      const titleText = `${label}: ${value.toLocaleString()} (${((value / total) * 100).toFixed(1)}%)`;
 
       if (data.length === 1) {
-        paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}"><title>${label}: ${value} (${((value / total) * 100).toFixed(1)}%)</title></circle>`;
+        paths += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${color}"><title>${titleText}</title></circle>`;
       } else {
-        paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z" fill="${color}"><title>${label}: ${value} (${((value / total) * 100).toFixed(1)}%)</title></path>`;
+        paths += `<path d="M${cx},${cy} L${x1},${y1} A${r},${r} 0 ${largeArc},1 ${x2},${y2} Z" fill="${color}"><title>${titleText}</title></path>`;
       }
       startAngle = endAngle;
     }
-
-    const legendItems = data
-      .map(([label, value], i) => {
-        const color = FlayDashboard.#PIE_COLORS[i % FlayDashboard.#PIE_COLORS.length]!;
-        return `<div class="pie-legend-item"><span class="pie-legend-color" style="background:${color}"></span><span class="pie-legend-label">${label}</span><span class="pie-legend-value">${value.toLocaleString()}</span></div>`;
-      })
-      .join('');
 
     const wrapper = document.createElement('div');
     wrapper.className = 'pie-chart';
     wrapper.innerHTML = `
       <div class="pie-title">${title}</div>
-      <div class="pie-content">
-        <svg viewBox="0 0 ${size} ${size}" class="pie-svg">${paths}</svg>
-        <div class="pie-legend">${legendItems}</div>
-      </div>
+      <svg viewBox="0 0 ${size} ${size}" class="pie-svg">${paths}</svg>
     `;
     container.appendChild(wrapper);
   }

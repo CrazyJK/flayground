@@ -4,7 +4,13 @@
 
 Flay 데이터를 한 눈에 파악할 수 있는 대시보드 커스텀 엘리먼트.
 Instance, Archive, 배우, 히스토리 4개 섹션의 핵심 수치를 카드 형태로 요약하고,
-주요 리스트를 간결하게 보여준다.
+ECharts 라이브러리를 활용한 파이/트리맵/바 차트로 분포 데이터를 시각화한다.
+
+### 사용 라이브러리
+
+- **ECharts 6.0.0** + zrender 6.0.0
+- Tree-shaking 모듈러 임포트: `PieChart`, `BarChart`, `TreemapChart` / `TitleComponent`, `TooltipComponent`, `LegendComponent`, `GridComponent` / `CanvasRenderer`
+- DataZoom 미사용 (Release 차트에서 줌 제거)
 
 ---
 
@@ -64,13 +70,14 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | 총 용량    | `Σ flay.length` → **TB** 단위 표시                              |
 | 자막 보유  | `instanceList.filter(f => f.files.subtitles.length > 0).length` |
 
-**Rank 분포** — SVG 파이 차트 (0~5 각 랭크별 건수, 각 슬라이스 중심에 `N: 건수` SVG 텍스트 라벨 표시)
-**상위 스튜디오** — studio별 count 전체 대비 2% 이상, 최대 20개 + 그외, SVG 파이 차트
-**상위 배우** — flay 수 기준 전체 대비 2% 이상, 최대 20명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
+**Rank 분포** — ECharts 파이 차트 (0~5 각 랭크별 건수, 슬라이스 내부에 `랭크\n건수` 라벨, 툴팁 지원)
+**상위 스튜디오** — ECharts 트리맵 (studio별 count 전체 대비 2% 이상, 최대 20개, 그외 제외)
+**상위 배우** — ECharts 트리맵 (flay 수 기준 전체 대비 2% 이상, 최대 20명, 그외 제외, 이름 없거나 'Amateur' 제외)
 
-→ 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치 (title → SVG 세로 구조)
-→ Rank 분포: `showLegend=true`로 각 슬라이스 중심에 SVG `<text class="pie-label">` 라벨 배치
-→ 스튜디오/배우: 항목이 많아 라벨 없이 SVG를 가용 폭 최대로 표시, 호버 툴팁으로 확인
+→ 3개 차트는 `.charts-row` 3열 그리드로 가로 배치 (`.echart-cell` > `.echart-title` + `.echart-container`)
+→ Rank 분포: 파이 차트, 슬라이스 내부 라벨 (value=0인 항목은 라벨 숨김)
+→ 스튜디오/배우: 트리맵으로 영역 비율 시각화, 라벨에 이름+건수 표시, 툴팁으로 상세 확인
+→ 트리맵 위치: `left/top/right/bottom: 0`으로 컨테이너 완전 채움 (width/height: 100% 대신)
 
 ### 3-2. Archive 카드
 
@@ -82,25 +89,30 @@ this.#loadHistoryCard(); // FlayFetch.getHistoryListByAction('PLAY', 0)
 | Release 범위 | release 연도 최소 ~ 최대                                 |
 | 평균 재생    | `Σ flay.video.play / count` (아카이브 전 평균 재생 횟수) |
 
-**Rank 분포** — SVG 파이 차트 (0~5 각 랭크별 건수, 각 슬라이스 중심에 `N: 건수` SVG 텍스트 라벨 표시)
-**상위 스튜디오** — studio별 count 전체 대비 2% 이상, 최대 20개 + 그외, SVG 파이 차트
-**상위 배우** — flay 수 기준 전체 대비 2% 이상, 최대 20명 + 그외 (이름 없거나 'Amateur' 제외), SVG 파이 차트
+**Rank 분포** — ECharts 파이 차트 (0~5 각 랭크별 건수, 슬라이스 내부 라벨, 툴팁 지원)
+**상위 스튜디오** — ECharts 트리맵 (studio별 count 전체 대비 2% 이상, 최대 20개, 그외 제외)
+**상위 배우** — ECharts 트리맵 (flay 수 기준 전체 대비 2% 이상, 최대 20명, 그외 제외, 이름 없거나 'Amateur' 제외)
 
-→ 3개 파이 차트는 `.pie-charts-row` 3열 그리드로 가로 배치
+→ 3개 차트는 `.charts-row` 3열 그리드로 가로 배치
 
-#### Release 월별 분포 (스파크라인)
+### 3-5. Release 카드
 
-instance + archive 합산 release를 **월별** 분포로 **인라인 바 차트** 표시.
+instance + archive 합산 release를 **월별** 분포로 **ECharts 바 차트** 표시.
+다른 섹션과 동일한 **카드 형태** (`<div class="card" id="card-release">`)로 표시.
+Instance + Archive 양쪽 데이터가 필요하므로 두 API 응답이 모두 도착한 후 렌더링.
 
 ```
-계산: instance + archive 합산 → release.substring(0, 7)로 YYYY.MM 추출 → 월별 count 집계
-시각화: CSS 바 차트 (height 비율), 고정 최대값 100건 기준
+계산: instance + archive 합산 → release.substring(0, 7)로 YYYY.MM 추출 → 연속 월 범위 생성 → 월별 count 집계
+시각화: ECharts BarChart, yAxis max 100, 100건 초과 시 빨간색 표시
 ```
 
-- 고정 최대값 100건 기준으로 높이 계산, 100건 초과 시 클램프 + `.bar.over` 클래스로 이상치 표시
-- 연도 라벨: 매 1월(`.01`)에 연도 표시
-- 바 차트 높이 **5rem**으로 월별 분포 시각적 강조
-- 제목 옥에 총 건수 표시 (`.dist-total`)
+- yAxis 최대값 100건 기준, 100 초과 시 `#e15759` 빨간색으로 이상치 표시
+- xAxis 라벨: 매 1월(`.01`)에만 연도 표시
+- 차트 높이 **200px** (`.echart-bar`), barMaxWidth 4
+- grid: `{ left: 5, right: 5, top: 10, bottom: 10 }` — 여백 최소화
+- DataZoom 미사용 (줌 제거)
+- 카드 제목 옆에 총 건수 표시 (`.release-total`)
+- 툴팁: axis 트리거, `YYYY.MM: N건` 형식
 - release 형식: `YYYY.MM.DD` (닷 구분자)
 
 ### 3-3. Actress 카드
@@ -143,7 +155,7 @@ const archivedCount = actressList.filter((a) => !instanceActressSet.has(a.name) 
 세로 모니터(1080 × 1846) 기준으로 설계. 1080px 폭에 최적화.
 
 ```
-┌─────────────────────────────────┐  1080px
+┌─────────────────────────────────┐  1080px (min-width)
 │          Flay Dashboard         │
 ├─────────────────────────────────┤
 │   Instance (카드, 전체 폭)        │
@@ -153,15 +165,13 @@ const archivedCount = actressList.filter((a) => !instanceActressSet.has(a.name) 
 │   Actress      │    History     │
 │   (카드)        │    (카드)       │
 ├─────────────────────────────────┤
-│   Release 월별 분포 (바 차트)       │
+│   Release (카드, 전체 폭)         │
 └─────────────────────────────────┘
 ```
 
 - Instance, Archive 카드: 전체 폭 1열 세로 배치 (`.card-row-layout`)
 - Actress, History 카드: 2열 그리드 `grid-template-columns: repeat(2, 1fr)` (`.card-grid`)
-- 분포 차트: 전체 폭 1열
-
-- 모바일/좁은 화면: 1열 스택
+- Release 카드: 전체 폭 1열, 다른 카드와 동일한 `.card` 스타일 적용
 
 ---
 
@@ -219,16 +229,30 @@ export class FlayDashboard extends GroundFlay {
     // 월별 release 집계 + 고정 100건 기준 바 차트 렌더링
   }
 
-  #renderPieChart(container: Element, title: string, data: [string, number][], showLegend = false): void {
-    // SVG 파이 차트 렌더링 (title + pie svg)
-    // showLegend=true 시 각 슬라이스 중심(midAngle, r*0.6)에 SVG <text class="pie-label"> 배치
+  /** ECharts 인스턴스 관리 (리사이즈 대응용) */
+  #charts: echarts.ECharts[] = [];
+
+  /** ECharts 인스턴스 등록 + 다음 프레임에 리사이즈 예약 */
+  #registerChart(chart: echarts.ECharts): void {
+    this.#charts.push(chart);
+    requestAnimationFrame(() => chart.resize());
   }
 
-  #buildPieData(map: Map<string, number>, minRatio = 0.02, maxItems = 20): [string, number][] {
-    // 전체 대비 비율 >= minRatio인 항목만 개별 표시, 최대 maxItems개, 나머지 '그외'
+  #renderPieChart(container: Element, title: string, data: { name: string; value: number }[]): void {
+    // ECharts 파이 차트 렌더링 (Rank 분포용)
+    // radius ['15%', '80%'], label position: 'inside', value=0인 항목은 라벨 숨김
   }
 
-  static #PIE_COLORS: string[] = [/* 11색 팔레트 */];
+  #renderTreemap(container: Element, title: string, data: { name: string; value: number }[]): void {
+    // ECharts 트리맵 렌더링 (스튜디오/배우용)
+    // roam: false, nodeClick: false, breadcrumb 숨김, 라벨에 이름+건수 표시
+  }
+
+  #buildPieData(map: Map<string, number>, minRatio = 0.02, maxItems = 20, includeRest = true): { name: string; value: number }[] {
+    // 전체 대비 비율 >= minRatio인 항목만 개별 표시, 최대 maxItems개
+    // includeRest=true시 나머지 '그외'로 합산, false시 그외 제외
+    // 비율 필터 결과가 0건이면 상위 maxItems개 fallback
+  }
 
   #formatSince(epochMs: number): string {
     // epoch ms를 "N년 M개월 전" 형식으로 변환
@@ -255,8 +279,8 @@ interface DashboardStats {
     yearRange: string; // '2008 ~ 2026'
     avgPlay: number;
     rankCounts: Map<number, number>; // 파이 차트용 (0~5)
-    studioPie: [string, number][]; // 파이 차트용, 비율 2% 이상 + 그외
-    actressPie: [string, number][]; // 파이 차트용, 비율 2% 이상 + 그외
+    studioPie: { name: string; value: number }[]; // 트리맵용, 비율 2% 이상, 그외 제외
+    actressPie: { name: string; value: number }[]; // 트리맵용, 비율 2% 이상, 그외 제외
   };
   actress: {
     total: number;
@@ -285,7 +309,7 @@ interface DashboardStats {
 flay-dashboard {
   display: block;
   font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-  max-width: 1080px;
+  min-width: 1080px;
   padding: 0 0.75rem;
 
   .dashboard-header {
@@ -348,8 +372,8 @@ flay-dashboard {
     }
   }
 
-  // 파이 차트 3열 그리드 (카드 내부)
-  .pie-charts-row {
+  // ECharts 차트 3열 그리드 (카드 내부)
+  .charts-row {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
@@ -358,73 +382,32 @@ flay-dashboard {
     border-top: 1px dashed var(--color-border);
   }
 
-  // Release 분포 (전체 폭)
-  .release-dist {
-    padding: 1rem 0;
-    border-top: 1px solid var(--color-border);
-
-    .dist-title {
-      font-weight: 700;
-      font-size: 0.95rem;
-      margin-bottom: 0.5rem;
-
-      .dist-total {
-        font-weight: 400;
-        font-size: 0.8rem;
-        color: var(--color-text-secondary);
-      }
-    }
-
-    .spark-row {
-      display: flex;
-      align-items: flex-end;
-      gap: 1px;
-      height: 5rem;
-
-      .bar {
-        flex: 1;
-        background: var(--color-checked);
-        border-radius: 1px 1px 0 0;
-        min-width: 2px;
-        transition: height 0.3s;
-
-        &.over {
-          background: var(--color-red);
-        }
-      }
-    }
-
-    .year-labels {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.65rem;
-      color: var(--color-text-secondary);
-      margin-top: 0.25rem;
-    }
-  }
-
-  // 카드 내 SVG 파이 차트 (세로 배치: title → SVG)
-  .pie-chart {
+  // ECharts 개별 차트 셀
+  .echart-cell {
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    .pie-title {
-      font-weight: 600;
+    .echart-title {
       font-size: 0.75rem;
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      margin-bottom: 0.35rem;
       text-align: center;
     }
-    .pie-svg {
+
+    .echart-container {
       width: 100%;
-      aspect-ratio: 1;
+      height: 300px;
     }
-    // SVG 슬라이스 위 라벨 (showLegend=true 시 렌더링)
-    .pie-label {
-      font-size: 6px;
-      font-weight: 600;
-      fill: #fff;
-      pointer-events: none;
-    }
+  }
+
+  // Release 카드 total 표기
+  .release-total {
+    font-weight: 400;
+    font-size: 0.8rem;
+    color: var(--color-text-secondary);
+    margin-left: 0.25rem;
   }
 }
 ```
@@ -451,10 +434,11 @@ document.querySelector('article')!.appendChild(new FlayDashboard());
 
 ## 8. 구현 순서
 
-1. `FlayDashboard.ts` 파일 생성 — 클래스, connectedCallback, 스켈레톤 HTML
-2. 개별 비동기 API 호출 메서드 4개 구현 (`#loadInstanceCard` 등)
-3. 각 카드별 통계 계산 + 렌더링 구현
-4. Release 월별 분포 바 차트 구현 (고정 100건 기준)
-5. 의존성 기반 렌더링 (Actress 카드 = Instance + Archive 대기)
-6. `FlayDashboard.scss` 스타일 작성
-7. 빌드 확인
+1. ~~`FlayDashboard.ts` 파일 생성 — 클래스, connectedCallback, 스켈레톤 HTML~~ ✅
+2. ~~개별 비동기 API 호출 메서드 4개 구현 (`#loadInstanceCard` 등)~~ ✅
+3. ~~각 카드별 통계 계산 + 렌더링 구현~~ ✅
+4. ~~Release 월별 분포 ECharts 바 차트 구현 (yAxis max 100, 초과 시 빨간색)~~ ✅
+5. ~~의존성 기반 렌더링 (Actress 카드 = Instance + Archive 대기)~~ ✅
+6. ~~`FlayDashboard.scss` 스타일 작성~~ ✅
+7. ~~ECharts 6.0.0 마이그레이션 — SVG 파이 차트 → ECharts 파이 + 트리맵~~ ✅
+8. ~~빌드 확인~~ ✅

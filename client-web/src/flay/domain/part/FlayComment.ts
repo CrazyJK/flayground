@@ -60,8 +60,9 @@ export default class FlayComment extends FlayPartElement {
   }
 
   #handleCommentInput(): void {
-    this.#input.style.display = 'block';
-    this.#input.focus();
+    const isVisible = this.#input.style.display !== 'none';
+    this.#input.style.display = isVisible ? 'none' : 'block';
+    if (!isVisible) this.#input.focus();
   }
 
   #handlerCommentSave(e: KeyboardEvent): void {

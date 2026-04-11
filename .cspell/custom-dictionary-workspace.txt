@@ -102,3 +102,6 @@ AUTOINCREMENT
 localtime
 unranked
 nums
+zrender
+Treemap
+echart

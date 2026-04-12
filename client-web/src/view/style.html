@@ -8,6 +8,24 @@
     <!-- HtmlWebpackPlugin이 자동으로 CSS와 JS를 주입합니다 -->
   </head>
   <body>
-    <div class="svg-wrap" id="svgContainer"></div>
+    <nav class="tab-bar" id="tabBar">
+      <button class="tab-btn active" data-tab="fonts">Fonts</button>
+      <button class="tab-btn" data-tab="svg">SVG Icons</button>
+    </nav>
+    <section class="tab-panel" id="tab-fonts">
+      <div class="font-controls">
+        <nav class="lang-tab-bar" id="langTabBar">
+          <button class="lang-tab-btn active" data-lang="all">전체</button>
+          <button class="lang-tab-btn" data-lang="en">English</button>
+          <button class="lang-tab-btn" data-lang="ko">한국어</button>
+          <button class="lang-tab-btn" data-lang="ja">日本語</button>
+          <button class="lang-tab-btn" data-lang="num">숫자 · 기호</button>
+        </nav>
+      </div>
+      <div class="font-preview" id="fontPreview"></div>
+    </section>
+    <section class="tab-panel hidden" id="tab-svg">
+      <div class="svg-wrap" id="svgContainer"></div>
+    </section>
   </body>
 </html>

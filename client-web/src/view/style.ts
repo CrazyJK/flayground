@@ -117,3 +117,78 @@ if (svgContainer) {
 } else {
   console.warn('SVG container element not found');
 }
+
+// 탭 전환 (Fonts / SVG)
+const tabBar = document.getElementById('tabBar');
+tabBar?.querySelectorAll<HTMLButtonElement>('.tab-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    tabBar.querySelectorAll('.tab-btn').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll<HTMLElement>('.tab-panel').forEach((panel) => panel.classList.add('hidden'));
+    document.getElementById(`tab-${btn.dataset.tab}`)?.classList.remove('hidden');
+  });
+});
+
+// 폰트 프리뷰 렌더링
+const FONTS = [
+  { name: 'Ink Free', note: 'Windows 시스템 폰트' },
+  { name: 'Poor Story', note: 'OFL 1.1 · YoonDesign Inc. · 한글' },
+  { name: 'Hachi Maru Pop', note: 'OFL 1.1 · Nonty · 日本語' },
+];
+
+const PREVIEW_TEXTS: Record<string, string> = {
+  en: 'The quick brown fox jumps over the lazy dog',
+  ko: '가나다라마바사아자차카타파하 — 손글씨 느낌의 한글 폰트',
+  ja: 'あいうえおかきくけこさしすせそたちつてとなにぬねの',
+  num: '0123456789  !@#$%^&*()  +-=[]{}|;:,./<>?',
+};
+
+const fontPreview = document.getElementById('fontPreview');
+if (fontPreview) {
+  FONTS.forEach(({ name, note }) => {
+    const card = fontPreview.appendChild(document.createElement('div'));
+    card.className = 'font-card';
+
+    const header = card.appendChild(document.createElement('div'));
+    header.className = 'font-card__header';
+
+    const title = header.appendChild(document.createElement('span'));
+    title.className = 'font-card__name';
+    title.textContent = name;
+
+    const noteEl = header.appendChild(document.createElement('span'));
+    noteEl.className = 'font-card__note';
+    noteEl.textContent = note;
+
+    Object.entries(PREVIEW_TEXTS).forEach(([lang, text]) => {
+      const p = card.appendChild(document.createElement('p'));
+      p.className = 'font-card__sample';
+      p.dataset.lang = lang;
+      p.style.fontFamily = `'${name}', cursive`;
+      p.textContent = text;
+    });
+  });
+}
+
+// 언어별 탭 전환
+const langTabBar = document.getElementById('langTabBar');
+
+function applyLangTab(lang: string) {
+  const isAll = lang === 'all';
+  fontPreview?.classList.toggle('font-preview--compact', !isAll);
+  document.querySelectorAll<HTMLElement>('.font-card__sample').forEach((p) => {
+    p.classList.toggle('hidden', !isAll && p.dataset.lang !== lang);
+  });
+}
+
+langTabBar?.querySelectorAll<HTMLButtonElement>('.lang-tab-btn').forEach((btn) => {
+  btn.addEventListener('click', () => {
+    langTabBar.querySelectorAll('.lang-tab-btn').forEach((b) => b.classList.remove('active'));
+    btn.classList.add('active');
+    applyLangTab(btn.dataset.lang ?? 'en');
+  });
+});
+
+// 초기 상태: 첫 번째 활성 탭 적용
+const initialLangBtn = langTabBar?.querySelector<HTMLButtonElement>('.lang-tab-btn.active');
+applyLangTab(initialLangBtn?.dataset.lang ?? 'all');

@@ -1,3 +1,141 @@
+.hidden {
+  display: none !important;
+}
+
+.tab-bar {
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.75rem 1rem 0;
+  border-bottom: 2px solid var(--color-border);
+
+  .tab-btn {
+    padding: 0.4rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+    background: var(--color-bg);
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: var(--size-normal);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+
+    &.active {
+      opacity: 1;
+      background: var(--color-bg-focus, var(--color-bg));
+      font-weight: bold;
+    }
+  }
+}
+
+.tab-panel {
+  padding: 1rem;
+}
+
+.font-controls {
+  margin-bottom: 1rem;
+}
+
+.lang-tab-bar {
+  display: flex;
+  gap: 0.25rem;
+
+  .lang-tab-btn {
+    padding: 0.3rem 1rem;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    background: var(--color-bg);
+    color: var(--color-text);
+    cursor: pointer;
+    font-size: var(--size-small);
+    opacity: 0.6;
+    transition: opacity 0.2s;
+
+    &.active {
+      opacity: 1;
+      background: var(--color-bg-focus, var(--color-bg));
+      font-weight: bold;
+      border-color: var(--color-primary, orange);
+    }
+  }
+}
+
+.font-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 1.5rem 1.5rem;
+
+  // 언어별 탭: header + sample 한 줄 compact 레이아웃
+  &--compact {
+    gap: 0.25rem;
+
+    .font-card {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+      padding: 0.5rem 1.25rem;
+
+      &__header {
+        flex: 0 0 260px;
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+      }
+
+      &__note {
+        display: block;
+      }
+
+      &__sample {
+        flex: 1;
+        margin: 0;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        font-size: var(--size-larger);
+      }
+    }
+  }
+
+  .font-card {
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    background-color: var(--color-bg);
+
+    &__header {
+      display: flex;
+      align-items: baseline;
+      gap: 0.75rem;
+      margin-bottom: 0.5rem;
+      border-bottom: 1px solid var(--color-border);
+      padding-bottom: 0.4rem;
+    }
+
+    &__name {
+      font-size: var(--size-large);
+      font-weight: bold;
+      color: var(--color-text);
+    }
+
+    &__note {
+      font-size: var(--size-smaller);
+      color: var(--color-text-muted, #888);
+    }
+
+    &__sample {
+      margin: 0.25rem 0;
+      font-size: var(--size-large);
+      color: var(--color-text);
+      line-height: 1.6;
+    }
+  }
+}
+
 .svg-wrap {
   display: flex;
   flex-direction: row;

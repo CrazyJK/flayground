@@ -1,6 +1,0 @@
-<svg viewBox="-30 -30 460 460" width="2rem" xmlns="http://www.w3.org/2000/svg">
-  <g>
-    <line stroke="currentColor" stroke-width="20%" stroke-linecap="round" x1="340" y1="340" x2="60" y2="60" />
-    <line stroke="currentColor" stroke-width="20%" stroke-linecap="round" x1="60" y1="340" x2="340" y2="60" />
-  </g>
-</svg>

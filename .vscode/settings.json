@@ -1,9 +1,4 @@
 {
-  "java.format.settings.url": ".vscode/java-formatter.xml",
-  "java.jdt.ls.vmargs": "-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx2G -Xms100m -Xlog:disable",
-  "java.compile.nullAnalysis.mode": "automatic",
-  "java.configuration.updateBuildConfiguration": "automatic",
-  "java.inlayHints.parameterNames.enabled": "none",
   "search.exclude": {
     "**/dependencies-viewer.json": true,
     "**/node_modules": true,
@@ -12,7 +7,6 @@
   },
   "files.exclude": {
     "**/node_modules": true,
-    "**/target": true,
     "**/*.js.map": true,
     "**/dist": true
   },
@@ -35,12 +29,12 @@
     "*.ts": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.scss, ${capture}.html, ${capture}.md",
     "webpack.common.cjs": "webpack.*.cjs"
   },
-  "typescript.preferences.includePackageJsonAutoImports": "on",
-  "typescript.suggest.autoImports": true,
-  "typescript.suggest.paths": true,
-  "typescript.updateImportsOnFileMove.enabled": "always",
-  "typescript.preferences.importModuleSpecifier": "relative",
-  "typescript.format.enable": false,
+  "js/ts.preferences.includePackageJsonAutoImports": "on",
+  "js/ts.suggest.autoImports": true,
+  "js/ts.suggest.paths": true,
+  "js/ts.updateImportsOnFileMove.enabled": "always",
+  "js/ts.preferences.importModuleSpecifier": "relative",
+  "js/ts.format.enabled": false,
   "eslint.validate": ["typescript"],
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",

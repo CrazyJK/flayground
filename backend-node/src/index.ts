@@ -50,8 +50,15 @@ const API_PREFIX = '/api/v1';
 function createApp(): express.Application {
   const app = express();
 
-  // 미들웨어
-  app.use(compression());
+  // 미들웨어 (SSE 경로는 compression 제외: 버퍼링으로 인해 이벤트가 전달되지 않음)
+  app.use(
+    compression({
+      filter: (req, res) => {
+        if (req.path === '/api/v1/sse') return false;
+        return compression.filter(req, res);
+      },
+    })
+  );
   app.use(cors());
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));

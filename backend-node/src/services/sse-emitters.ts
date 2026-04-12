@@ -80,6 +80,10 @@ function sendToClient(client: SseClient, event: SseEventType, data: unknown): vo
   try {
     const payload = typeof data === 'string' ? data : JSON.stringify(data);
     client.res.write(`event: ${event}\ndata: ${payload}\n\n`);
+    // compression 미들웨어 버퍼를 즉시 비워 클라이언트에 전달
+    if (typeof (client.res as any).flush === 'function') {
+      (client.res as any).flush();
+    }
   } catch (e: any) {
     console.warn(`[SSE] #${client.id} 전송 실패: ${e.message}`);
     removeClient(client);

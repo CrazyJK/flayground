@@ -100,6 +100,7 @@ export default class ThemeController extends GroundNav {
       radioInput.checked = true;
     }
     document.documentElement.setAttribute('theme', this.isDark ? DARK : LIGHT);
+    document.dispatchEvent(new CustomEvent('themeChange', { detail: { isDark: this.isDark } }));
   }
 }
 

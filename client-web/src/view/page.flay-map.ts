@@ -1,3 +1,4 @@
+import ApiClient from '@lib/ApiClient';
 import FlayFetch, { type Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupStudio, popupTag } from '@lib/FlaySearch';
 import { TreemapChart } from 'echarts/charts';
@@ -53,7 +54,7 @@ async function start() {
   // ── flay별 (score 기준, 상위 500개)
   const flayData: ChartItem[] = flayByScore
     .filter((f) => f.score > 0)
-    .slice(0, 50)
+    .slice(0, 100)
     .map((f) => ({ name: `${f.opus} ${f.title.length > 8 ? f.title.slice(0, 8) + '…' : f.title}`, value: f.score ** 2, flays: [f], opus: f.opus }));
 
   const tabData: Record<TabType, ChartItem[]> = { studio: studioData, actress: actressData, tag: tagData, flay: flayData };
@@ -76,10 +77,20 @@ async function start() {
       tooltip: {
         trigger: 'item',
         formatter: (params: any) => {
-          // flay 탭: 개별 flay 정보 표시
+          // flay 탭: 커버 이미지 + 오버레이 정보
           if (params.data?.opus) {
             const f: Flay = params.data.flays[0];
-            return `<b>${f.opus}</b> ${f.title}<br>score: ${f.score} | ${f.studio}<br>${f.actressList.join(', ')}`;
+            const coverUrl = ApiClient.buildUrl(`/static/cover/${f.opus}`);
+            const w = 400;
+            const h = 269;
+            return (
+              `<div style="position:relative;width:${w}px;height:${h}px;overflow:hidden">` +
+              `<img src="${coverUrl}" style="display:block;width:100%;height:100%;object-fit:cover" />` +
+              `<div style="position:absolute;bottom:0;left:0;right:0;padding:24px 8px 8px;background:linear-gradient(transparent,rgba(0,0,0,0.85));color:#fff;line-height:1.4;word-break:break-all;overflow-wrap:break-word">` +
+              `<div style="font-weight:bold;font-size:14px">${f.opus} ${f.title}</div>` +
+              `<div style="font-size:12px;opacity:0.85;margin-top:2px">${f.studio} · ${f.actressList.join(', ')} · ${f.release}</div>` +
+              `</div></div>`
+            );
           }
           // 나머지 탭: 집계 목록
           const flays: Flay[] = params.data?.flays ?? [];
@@ -90,11 +101,12 @@ async function start() {
             rows.push(`<tr>${cell(flays[i]!)}${right}</tr>`);
           }
           const more = flays.length > 20 ? `<tr><td colspan="2"><i>...외 ${flays.length - 20}개</i></td></tr>` : '';
-          return `<b>${params.name}: ${params.value}</b><table style="border-collapse:collapse;margin-top:4px">${rows.join('')}${more}</table>`;
+          return `<div style="padding:8px"><b>${params.name}: ${params.value}</b><table style="border-collapse:collapse;margin-top:4px">${rows.join('')}${more}</table></div>`;
         },
         backgroundColor: tooltipBg,
         borderColor: tooltipBorder,
         textStyle: { color: tooltipText },
+        padding: 0,
       },
       color: palette,
       animation: false,
@@ -154,7 +166,7 @@ async function start() {
   const updatePlaceholder = () => {
     const count = tabData[currentTab].length;
     const label = currentTab === 'studio' ? '스튜디오' : currentTab === 'actress' ? '배우' : currentTab === 'tag' ? '태그' : 'flay';
-    searchInput.placeholder = `${count} ${label} 검색...`;
+    searchInput.placeholder = currentTab === 'flay' ? `상위 ${count}개 검색...` : `${count} ${label} 검색...`;
   };
   updatePlaceholder();
 

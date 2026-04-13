@@ -55,6 +55,14 @@ export default class FlayDashboard extends GroundFlay {
     return target ? parseFloat(getComputedStyle(target).fontSize) : 12;
   }
 
+  /**
+   * 현재 테마에 맞는 트리맵 셀 경계선 색상을 반환
+   * @returns 경계선 색상 문자열
+   */
+  #getCellBorderColor(): string {
+    return document.documentElement.getAttribute('theme') === 'dark' ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.7)';
+  }
+
   connectedCallback(): void {
     this.innerHTML = /* html */ `
       <div class="dashboard-header">Flay Dashboard</div>
@@ -507,10 +515,10 @@ export default class FlayDashboard extends GroundFlay {
           breadcrumb: { show: false },
           data,
           label: { show: true, formatter: '{b}\n{c}', fontSize: this.#getChartFontSize(chartEl), color: '#fff', cursor: onClick ? 'pointer' : 'default' },
-          itemStyle: { borderWidth: 1, borderColor: '#fff' },
+          itemStyle: { borderWidth: 1, borderColor: this.#getCellBorderColor() },
           levels: [
             {
-              itemStyle: { borderWidth: 1, borderColor: '#fff', gapWidth: 1 },
+              itemStyle: { borderWidth: 1, borderColor: this.#getCellBorderColor(), gapWidth: 1 },
             },
           ],
         },

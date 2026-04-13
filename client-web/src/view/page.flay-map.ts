@@ -55,7 +55,7 @@ async function start() {
 
   /**
    * 트리맵 ECharts 옵션 생성 - 호출 시점의 CSS 변수를 읽어 테마 색상을 반영
-   * @param data - 표시할 스튜디오 데이터
+   * @param data - 표시할 데이터
    */
   const buildOption = (data: ChartItem[]) => {
     const s = getComputedStyle(document.documentElement);
@@ -64,7 +64,6 @@ async function start() {
     const tooltipBorder = s.getPropertyValue('--color-border').trim();
     const tooltipText = s.getPropertyValue('--color-text').trim();
     const cellBorder = isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.7)';
-    // 다크: 어두운 무채색(20~55%) / 라이트: 밝은 무채색(55~90%)
     const palette = isDark ? ['#333', '#3d3d3d', '#474747', '#515151', '#5a5a5a', '#636363', '#6e6e6e', '#777', '#555', '#444'] : ['#e8e8e8', '#d9d9d9', '#cccccc', '#bfbfbf', '#b3b3b3', '#a6a6a6', '#d0d0d0', '#c4c4c4', '#dadada', '#c8c8c8'];
 
     return {
@@ -86,6 +85,7 @@ async function start() {
         textStyle: { color: tooltipText },
       },
       color: palette,
+      animation: false,
       series: [
         {
           type: 'treemap',
@@ -97,11 +97,7 @@ async function start() {
           nodeClick: false,
           breadcrumb: { show: false },
           data,
-          label: {
-            show: true,
-            formatter: '{b}\n{c}',
-            color: isDark ? '#fff' : '#222',
-          },
+          label: { show: true, formatter: '{b}\n{c}', color: isDark ? '#fff' : '#222' },
           itemStyle: { borderWidth: 1, borderColor: cellBorder },
           levels: [{ itemStyle: { borderWidth: 1, borderColor: cellBorder, gapWidth: 1 } }],
         },
@@ -109,22 +105,38 @@ async function start() {
     };
   };
 
-  const container = document.querySelector<HTMLElement>('body > map')!;
-  const chart = echarts.init(container);
+  // ── 탭별 컨테이너 + 차트 인스턴스 생성
+  const tabs: TabType[] = ['studio', 'actress', 'tag'];
+  const containers = Object.fromEntries(tabs.map((t) => [t, document.querySelector<HTMLElement>(`#treemap-${t}`)!])) as Record<TabType, HTMLElement>;
+  const charts = Object.fromEntries(tabs.map((t) => [t, echarts.init(containers[t])])) as Record<TabType, echarts.ECharts>;
 
-  chart.setOption(buildOption(studioData));
-  chart.on('click', (params: any) => {
-    if (!params.name) return;
-    if (currentTab === 'studio') popupStudio(params.name);
-    else if (currentTab === 'actress') popupActress(params.name);
-    else if (currentTab === 'tag' && params.data?.tagId != null) popupTag(params.data.tagId as number);
+  // 각 차트 초기 렌더링 + 클릭 이벤트
+  for (const tab of tabs) {
+    charts[tab].setOption(buildOption(tabData[tab]));
+    charts[tab].on('click', (params: any) => {
+      if (!params.name) return;
+      if (tab === 'studio') popupStudio(params.name);
+      else if (tab === 'actress') popupActress(params.name);
+      else if (tab === 'tag' && params.data?.tagId != null) popupTag(params.data.tagId as number);
+    });
+  }
+
+  // 테마 변경 시 모든 차트 갱신
+  document.addEventListener('themeChange', () => {
+    for (const tab of tabs) {
+      const keyword = currentTab === tab ? searchInput.value.trim().toLowerCase() : '';
+      const source = tabData[tab];
+      const filtered = keyword ? source.filter((d) => d.name.toLowerCase().includes(keyword)) : source;
+      charts[tab].setOption(buildOption(filtered));
+    }
   });
 
-  document.addEventListener('themeChange', () => applyFilter());
-  window.addEventListener('resize', () => chart.resize());
+  // 리사이즈 시 모든 차트에 전파
+  window.addEventListener('resize', () => tabs.forEach((t) => charts[t].resize()));
 
   // ── 검색
   const searchInput = document.querySelector<HTMLInputElement>('#search')!;
+  const searchKeywords: Record<TabType, string> = { studio: '', actress: '', tag: '' };
 
   const updatePlaceholder = () => {
     const count = tabData[currentTab].length;
@@ -133,11 +145,13 @@ async function start() {
   };
   updatePlaceholder();
 
+  /** 현재 탭의 차트에 검색 필터 적용 */
   const applyFilter = () => {
     const keyword = searchInput.value.trim().toLowerCase();
+    searchKeywords[currentTab] = keyword;
     const source = tabData[currentTab];
     const filtered = keyword ? source.filter((d) => d.name.toLowerCase().includes(keyword)) : source;
-    chart.setOption(buildOption(filtered), true);
+    charts[currentTab].setOption(buildOption(filtered));
   };
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -146,15 +160,19 @@ async function start() {
     debounceTimer = setTimeout(applyFilter, 200);
   });
 
-  // ── 탭 전환
+  // ── 탭 전환 (CSS opacity 트랜지션으로 페이드 인/아웃)
   document.querySelectorAll<HTMLButtonElement>('#tabs .tab').forEach((btn) => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('#tabs .tab').forEach((b) => b.classList.remove('active'));
       btn.classList.add('active');
+      // 기존 탭 페이드 아웃
+      containers[currentTab].classList.remove('active');
       currentTab = btn.dataset['tab'] as TabType;
-      searchInput.value = '';
+      // 새 탭 페이드 인
+      containers[currentTab].classList.add('active');
+      charts[currentTab].resize();
+      searchInput.value = searchKeywords[currentTab];
       updatePlaceholder();
-      applyFilter();
     });
   });
 }

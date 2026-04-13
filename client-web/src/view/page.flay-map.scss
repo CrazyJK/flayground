@@ -14,6 +14,20 @@ body {
     height: 100%;
   }
 
+  > .treemap {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+
+    &.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+
   > #controls {
     position: fixed;
     top: 1.5rem;

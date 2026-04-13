@@ -1,5 +1,5 @@
 import FlayFetch, { type Flay } from '@lib/FlayFetch';
-import { popupActress, popupStudio, popupTag } from '@lib/FlaySearch';
+import { popupActress, popupFlay, popupStudio, popupTag } from '@lib/FlaySearch';
 import { TreemapChart } from 'echarts/charts';
 import { TooltipComponent } from 'echarts/components';
 import * as echarts from 'echarts/core';
@@ -9,11 +9,11 @@ import './page.flay-map.scss';
 
 echarts.use([TreemapChart, TooltipComponent, CanvasRenderer]);
 
-type TabType = 'studio' | 'actress' | 'tag';
-type ChartItem = { name: string; value: number; flays: Flay[]; tagId?: number };
+type TabType = 'studio' | 'actress' | 'tag' | 'flay';
+type ChartItem = { name: string; value: number; flays: Flay[]; tagId?: number; opus?: string };
 
 async function start() {
-  const flayAll = await FlayFetch.getFlayAll();
+  const [flayAll, flayByScore] = await Promise.all([FlayFetch.getFlayAll(), FlayFetch.getFlayListOrderByScoreDesc()]);
 
   // ── 스튜디오별 집계
   const studioMap = new Map<string, Flay[]>();
@@ -50,7 +50,13 @@ async function start() {
     .sort((a, b) => b[1].flays.length - a[1].flays.length)
     .map(([tagId, { name, flays }]) => ({ name, value: flays.length, flays, tagId }));
 
-  const tabData: Record<TabType, ChartItem[]> = { studio: studioData, actress: actressData, tag: tagData };
+  // ── flay별 (score 기준, 상위 500개)
+  const flayData: ChartItem[] = flayByScore
+    .filter((f) => f.score > 0)
+    .slice(0, 50)
+    .map((f) => ({ name: `${f.opus} ${f.title.length > 8 ? f.title.slice(0, 8) + '…' : f.title}`, value: f.score ** 2, flays: [f], opus: f.opus }));
+
+  const tabData: Record<TabType, ChartItem[]> = { studio: studioData, actress: actressData, tag: tagData, flay: flayData };
   let currentTab: TabType = 'studio';
 
   /**
@@ -70,6 +76,12 @@ async function start() {
       tooltip: {
         trigger: 'item',
         formatter: (params: any) => {
+          // flay 탭: 개별 flay 정보 표시
+          if (params.data?.opus) {
+            const f: Flay = params.data.flays[0];
+            return `<b>${f.opus}</b> ${f.title}<br>score: ${f.score} | ${f.studio}<br>${f.actressList.join(', ')}`;
+          }
+          // 나머지 탭: 집계 목록
           const flays: Flay[] = params.data?.flays ?? [];
           const cell = (f: Flay) => `<td style="padding-right:1em;font-family:monospace;white-space:nowrap">${f.opus}&nbsp;${f.title.length > 10 ? f.title.slice(0, 10) + '…' : f.title}</td>`;
           const rows: string[] = [];
@@ -97,7 +109,7 @@ async function start() {
           nodeClick: false,
           breadcrumb: { show: false },
           data,
-          label: { show: true, formatter: '{b}\n{c}', color: isDark ? '#fff' : '#222' },
+          label: { show: true, formatter: (p: any) => `${p.name}\n${p.data?.opus ? p.data.flays[0].score : p.value}`, color: isDark ? '#fff' : '#222' },
           itemStyle: { borderWidth: 1, borderColor: cellBorder },
           levels: [{ itemStyle: { borderWidth: 1, borderColor: cellBorder, gapWidth: 1 } }],
         },
@@ -106,7 +118,7 @@ async function start() {
   };
 
   // ── 탭별 컨테이너 + 차트 인스턴스 생성
-  const tabs: TabType[] = ['studio', 'actress', 'tag'];
+  const tabs: TabType[] = ['studio', 'actress', 'tag', 'flay'];
   const containers = Object.fromEntries(tabs.map((t) => [t, document.querySelector<HTMLElement>(`#treemap-${t}`)!])) as Record<TabType, HTMLElement>;
   const charts = Object.fromEntries(tabs.map((t) => [t, echarts.init(containers[t])])) as Record<TabType, echarts.ECharts>;
 
@@ -118,6 +130,7 @@ async function start() {
       if (tab === 'studio') popupStudio(params.name);
       else if (tab === 'actress') popupActress(params.name);
       else if (tab === 'tag' && params.data?.tagId != null) popupTag(params.data.tagId as number);
+      else if (tab === 'flay' && params.data?.opus) popupFlay(params.data.opus as string);
     });
   }
 
@@ -136,11 +149,11 @@ async function start() {
 
   // ── 검색
   const searchInput = document.querySelector<HTMLInputElement>('#search')!;
-  const searchKeywords: Record<TabType, string> = { studio: '', actress: '', tag: '' };
+  const searchKeywords: Record<TabType, string> = { studio: '', actress: '', tag: '', flay: '' };
 
   const updatePlaceholder = () => {
     const count = tabData[currentTab].length;
-    const label = currentTab === 'studio' ? '스튜디오' : currentTab === 'actress' ? '배우' : '태그';
+    const label = currentTab === 'studio' ? '스튜디오' : currentTab === 'actress' ? '배우' : currentTab === 'tag' ? '태그' : 'flay';
     searchInput.placeholder = `${count} ${label} 검색...`;
   };
   updatePlaceholder();

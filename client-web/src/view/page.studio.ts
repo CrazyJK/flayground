@@ -1,116 +1,99 @@
-import FlayStudio from '@flay/domain/part/FlayStudio';
-import FlayFetch, { Flay, Studio } from '@lib/FlayFetch';
-import StringUtils from '@lib/StringUtils';
+import FlayFetch from '@lib/FlayFetch';
+import { popupStudio } from '@lib/FlaySearch';
+import { TreemapChart } from 'echarts/charts';
+import { TooltipComponent } from 'echarts/components';
+import * as echarts from 'echarts/core';
+import { CanvasRenderer } from 'echarts/renderers';
 import './inc/Page';
 import './page.studio.scss';
 
-class Page {
-  studioList: Studio[];
-  debounceTimer: ReturnType<typeof setTimeout> | null;
-  studioElements: Map<string, FlayStudio>;
+echarts.use([TreemapChart, TooltipComponent, CanvasRenderer]);
 
-  searchInput!: HTMLInputElement;
-  main!: HTMLElement;
+async function start() {
+  const flayAll = await FlayFetch.getFlayAll();
 
-  constructor() {
-    this.studioList = [];
-    this.debounceTimer = null;
-    this.studioElements = new Map(); // DOM 요소 캐싱을 위한 맵
+  // studio별 flay 개수 집계
+  const studioMap = new Map<string, number>();
+  for (const flay of flayAll) {
+    studioMap.set(flay.studio, (studioMap.get(flay.studio) || 0) + 1);
   }
 
-  async start() {
-    try {
-      // 데이터 로딩
-      this.studioList = await FlayFetch.getStudioAll();
+  const allData = Array.from(studioMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .map(([name, value]) => ({ name, value }));
 
-      this.searchInput = document.querySelector('body > header input')!;
-      this.main = document.querySelector('body > main')!;
+  /**
+   * 트리맵 ECharts 옵션 생성 - 호출 시점의 CSS 변수를 읽어 테마 색상을 반영
+   * @param data - 표시할 스튜디오 데이터
+   */
+  const buildOption = (data: { name: string; value: number }[]) => {
+    const s = getComputedStyle(document.documentElement);
+    const isDark = document.documentElement.getAttribute('theme') === 'dark';
+    const tooltipBg = s.getPropertyValue('--color-bg').trim();
+    const tooltipBorder = s.getPropertyValue('--color-border').trim();
+    const tooltipText = s.getPropertyValue('--color-text').trim();
+    // 다크: 어두운 셀 경계, 라이트: 밝은 셀 경계
+    const cellBorder = isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.7)';
 
-      // 검색 기능 설정
-      this.searchInput.setAttribute('placeholder', `${this.studioList.length} Studio. Enter a keyword to search`);
-      this.searchInput.addEventListener('input', this.handleSearch.bind(this));
-
-      // 최적화된 렌더링
-      this.renderStudios();
-    } catch (error) {
-      console.error('Failed to load studio data:', error);
-      // 오류 처리 UI를 추가할 수 있습니다
-    }
-  }
-
-  // 스튜디오 목록 렌더링을 효율적으로 처리
-  renderStudios() {
-    // DocumentFragment 사용으로 DOM 리플로우 최소화
-    const fragment = document.createDocumentFragment();
-
-    this.studioList.forEach((studio) => {
-      const flayStudio = new FlayStudio();
-
-      const flay: Flay = {
-        studio: studio.name,
-        opus: '',
-        title: '',
-        actressList: [],
-        release: '',
-        score: 0,
-        actressPoint: 0,
-        studioPoint: 0,
-        archive: false,
-        video: {
-          opus: '',
-          play: 0,
-          rank: 0,
-          lastPlay: 0,
-          lastAccess: 0,
-          lastModified: 0,
-          comment: '',
-          title: '',
-          desc: '',
-          tags: [],
-          likes: [],
+    return {
+      tooltip: {
+        trigger: 'item',
+        formatter: (params: any) => `${params.name}: ${params.value}`,
+        backgroundColor: tooltipBg,
+        borderColor: tooltipBorder,
+        textStyle: { color: tooltipText },
+      },
+      series: [
+        {
+          type: 'treemap',
+          left: 0,
+          top: 0,
+          right: 0,
+          bottom: 0,
+          roam: false,
+          nodeClick: false,
+          breadcrumb: { show: false },
+          data,
+          label: {
+            show: true,
+            formatter: '{b}\n{c}',
+            color: '#fff',
+          },
+          itemStyle: { borderWidth: 1, borderColor: cellBorder },
+          levels: [{ itemStyle: { borderWidth: 1, borderColor: cellBorder, gapWidth: 1 } }],
         },
-        files: {
-          cover: [],
-          subtitles: [],
-          candidate: [],
-          movie: [],
-        },
-        length: 0,
-        lastModified: 0,
-      };
+      ],
+    };
+  };
 
-      flayStudio.set(flay);
+  const container = document.querySelector<HTMLElement>('body > map')!;
+  const chart = echarts.init(container);
 
-      // 캐시에 DOM 요소 저장 (나중에 검색에서 사용)
-      this.studioElements.set(studio.name, flayStudio);
+  chart.setOption(buildOption(allData));
+  chart.on('click', (params: any) => {
+    if (params.name) popupStudio(params.name);
+  });
 
-      fragment.appendChild(flayStudio);
-    });
+  // 테마 변경 시 현재 필터 상태로 차트 재렌더링 (buildOption이 CSS 변수를 동적으로 읽음)
+  document.addEventListener('themeChange', () => applyFilter());
 
-    this.main.appendChild(fragment);
-  }
+  window.addEventListener('resize', () => chart.resize());
 
-  // 디바운싱을 적용한 검색 처리
-  handleSearch(e: Event) {
-    if (this.debounceTimer) {
-      clearTimeout(this.debounceTimer);
-    }
-    this.debounceTimer = setTimeout(() => {
-      const target = e.target as HTMLInputElement;
-      const keyword = target.value.trim().toLowerCase();
+  // 검색: 스튜디오 이름 필터링 후 차트 업데이트
+  const searchInput = document.querySelector<HTMLInputElement>('#search')!;
+  searchInput.placeholder = `${allData.length} 스튜디오 검색...`;
 
-      if (StringUtils.isBlank(keyword)) {
-        // 키워드가 비어있을 때는 모든 'found' 클래스 제거
-        this.studioElements.forEach((studioElem) => studioElem.classList.remove('found'));
-      } else {
-        // 필터링 로직 최적화
-        this.studioElements.forEach((studioElem) => {
-          const isMatch = studioElem.flay.studio.toLowerCase().includes(keyword);
-          studioElem.classList.toggle('found', isMatch);
-        });
-      }
-    }, 300); // 300ms 디바운스
-  }
+  const applyFilter = () => {
+    const keyword = searchInput.value.trim().toLowerCase();
+    const filtered = keyword ? allData.filter((d) => d.name.toLowerCase().includes(keyword)) : allData;
+    chart.setOption(buildOption(filtered), true);
+  };
+
+  let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+  searchInput.addEventListener('input', () => {
+    if (debounceTimer) clearTimeout(debounceTimer);
+    debounceTimer = setTimeout(applyFilter, 200);
+  });
 }
 
-void new Page().start();
+void start();

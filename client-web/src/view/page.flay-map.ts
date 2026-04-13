@@ -5,7 +5,7 @@ import { TooltipComponent } from 'echarts/components';
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import './inc/Page';
-import './page.studio.scss';
+import './page.flay-map.scss';
 
 echarts.use([TreemapChart, TooltipComponent, CanvasRenderer]);
 

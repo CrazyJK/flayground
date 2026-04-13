@@ -45,7 +45,7 @@ export class SideNavBar extends GroundNav {
     { url: 'page.history-shot.html', name: 'shot history' },
     { url: 'page.history-play.html', name: 'play history' },
     {},
-    { url: 'page.studio.html', name: 'studio' },
+    { url: 'page.flay-map.html', name: 'flay map' },
     { url: 'page.actress.html', name: 'actress' },
     { url: 'page.tags.html', name: 'tags' },
     {},

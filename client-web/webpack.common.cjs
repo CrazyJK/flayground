@@ -27,7 +27,7 @@ const entryPoints = {
     'page.cover-popout': './src/view/page.cover-popout.ts',
     'page.girls': './src/view/page.girls.ts',
     'page.actress': './src/view/page.actress.ts',
-    'page.studio': './src/view/page.studio.ts',
+    'page.flay-map': './src/view/page.flay-map.ts',
     'page.tags': './src/view/page.tags.ts',
     'page.control': './src/view/page.control.ts',
     'page.history-shot': './src/view/page.history-shot.ts',

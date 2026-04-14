@@ -640,7 +640,12 @@ export class FlayFlix extends HTMLElement {
       let estimatedTokens = 0;
       for (const opus of shuffled) {
         const flay = this.flayCache.get(opus);
-        const item = flay ? `${opus}|${flay.video.tags.map((t) => t.name).join(',')}` : opus;
+        const item = flay
+          ? `${opus}|${flay.video.tags
+              .filter((t) => ![16, 39, 112, 122, 170, 77, 139].includes(t.id))
+              .map((t) => t.name)
+              .join(',')}`
+          : opus;
         const tokenEstimate = Math.ceil(item.replace(/[가-힣]/g, '..').length / 2) + 1;
         if (estimatedTokens + tokenEstimate > availableTokens) break;
         estimatedTokens += tokenEstimate;

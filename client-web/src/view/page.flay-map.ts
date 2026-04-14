@@ -1,14 +1,15 @@
 import ApiClient from '@lib/ApiClient';
 import FlayFetch, { type Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupStudio, popupTag } from '@lib/FlaySearch';
-import { TreemapChart } from 'echarts/charts';
+import { packEnclose, packSiblings } from 'd3-hierarchy';
+import { GraphChart } from 'echarts/charts';
 import { TooltipComponent } from 'echarts/components';
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import './inc/Page';
 import './page.flay-map.scss';
 
-echarts.use([TreemapChart, TooltipComponent, CanvasRenderer]);
+echarts.use([GraphChart, TooltipComponent, CanvasRenderer]);
 
 type TabType = 'studio' | 'actress' | 'tag' | 'flay';
 type ChartItem = { name: string; value: number; flays: Flay[]; tagId?: number; opus?: string };
@@ -55,36 +56,98 @@ async function start() {
   const flayData: ChartItem[] = flayByScore
     .filter((f) => f.score > 0)
     .slice(0, 100)
-    .map((f) => ({ name: `${f.opus} ${f.title.length > 8 ? f.title.slice(0, 8) + '…' : f.title}`, value: f.score ** 2, flays: [f], opus: f.opus }));
+    .map((f) => ({ name: `${f.opus} ${f.title.length > 8 ? f.title.slice(0, 8) + '…' : f.title}`, value: f.score ** 3, flays: [f], opus: f.opus }));
 
   const tabData: Record<TabType, ChartItem[]> = { studio: studioData, actress: actressData, tag: tagData, flay: flayData };
   let currentTab: TabType = 'studio';
 
+  // ── flay 커버 이미지를 원형으로 크롭한 data URL 생성
+  const circularCovers = new Map<string, string>();
+  await Promise.all(
+    flayData
+      .filter((d) => d.opus)
+      .map(
+        (d) =>
+          new Promise<void>((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+              const s = 200;
+              const canvas = document.createElement('canvas');
+              canvas.width = s;
+              canvas.height = s;
+              const ctx = canvas.getContext('2d')!;
+              ctx.beginPath();
+              ctx.arc(s / 2, s / 2, s / 2, 0, Math.PI * 2);
+              ctx.clip();
+              // center crop (object-fit: cover 방식)
+              const min = Math.min(img.width, img.height);
+              const sx = (img.width - min) / 2;
+              const sy = (img.height - min) / 2;
+              ctx.drawImage(img, sx, sy, min, min, 0, 0, s, s);
+              circularCovers.set(d.opus!, canvas.toDataURL('image/png'));
+              resolve();
+            };
+            img.onerror = () => resolve();
+            img.src = ApiClient.buildUrl(`/static/cover/${d.opus}`);
+          })
+      )
+  );
+
   /**
-   * 트리맵 ECharts 옵션 생성 - 호출 시점의 CSS 변수를 읽어 테마 색상을 반영
+   * Packed Bubble 옵션 생성 - d3 circle packing + ECharts graph 렌더링
    * @param data - 표시할 데이터
+   * @param container - 차트 컨테이너 (크기 참조)
+   * @param tab - 탭 타입 (툴팁 분기용)
    */
-  const buildOption = (data: ChartItem[]) => {
+  const buildBubbleOption = (data: ChartItem[], container: HTMLElement, tab: TabType) => {
     const s = getComputedStyle(document.documentElement);
     const isDark = document.documentElement.getAttribute('theme') === 'dark';
     const tooltipBg = s.getPropertyValue('--color-bg').trim();
     const tooltipBorder = s.getPropertyValue('--color-border').trim();
     const tooltipText = s.getPropertyValue('--color-text').trim();
-    const cellBorder = isDark ? 'rgba(0,0,0,0.4)' : 'rgba(255,255,255,0.7)';
-    const palette = isDark ? ['#333', '#3d3d3d', '#474747', '#515151', '#5a5a5a', '#636363', '#6e6e6e', '#777', '#555', '#444'] : ['#e8e8e8', '#d9d9d9', '#cccccc', '#bfbfbf', '#b3b3b3', '#a6a6a6', '#d0d0d0', '#c4c4c4', '#dadada', '#c8c8c8'];
+    const palette = isDark ? ['#444', '#4a4a4a', '#555', '#5a5a5a', '#666', '#6e6e6e', '#777', '#808080'] : ['#d9d9d9', '#cccccc', '#bfbfbf', '#b3b3b3', '#a6a6a6', '#c4c4c4', '#d0d0d0', '#c8c8c8'];
+
+    // d3 packSiblings로 형제 원 패킹 계산 (간격 확보를 위해 반지름에 padding 추가)
+    const w = container.clientWidth;
+    const h = container.clientHeight;
+    const maxVal = Math.max(...data.map((d) => d.value), 1);
+    const padding = 3;
+    const circles = data.map((d, i) => ({ ...d, r: 10 + Math.sqrt(d.value / maxVal) * 80 + padding, _i: i, _origR: 10 + Math.sqrt(d.value / maxVal) * 80 }));
+    packSiblings(circles as any);
+
+    // 패킹 결과의 바운딩 원 → 뷰포트에 맞게 스케일링
+    const enclosing = packEnclose(circles as any);
+    const scale = (Math.min(w, h) / (enclosing.r * 2)) * 0.92;
+    const cx = w / 2;
+    const cy = h / 2;
+
+    const nodes = circles.map((c: any, i: number) => {
+      const d = data[c._i]!;
+      const size = c._origR * 2 * scale;
+      const isFlay = tab === 'flay' && d.opus;
+      return {
+        ...d,
+        id: String(i),
+        x: cx + c.x * scale,
+        y: cy + c.y * scale,
+        symbolSize: size,
+        symbol: isFlay && circularCovers.has(d.opus!) ? `image://${circularCovers.get(d.opus!)}` : 'circle',
+        itemStyle: isFlay ? { borderColor: isDark ? 'rgba(255,255,255,0.2)' : 'rgba(0,0,0,0.15)', borderWidth: 1 } : { color: palette[i % palette.length], borderColor: isDark ? 'rgba(255,255,255,0.15)' : 'rgba(0,0,0,0.1)', borderWidth: 1 },
+      };
+    });
 
     return {
       tooltip: {
         trigger: 'item',
         formatter: (params: any) => {
           // flay 탭: 커버 이미지 + 오버레이 정보
-          if (params.data?.opus) {
+          if (tab === 'flay' && params.data?.opus) {
             const f: Flay = params.data.flays[0];
             const coverUrl = ApiClient.buildUrl(`/static/cover/${f.opus}`);
-            const w = 400;
-            const h = 269;
+            const tw = 400;
+            const th = 269;
             return (
-              `<div style="position:relative;width:${w}px;height:${h}px;overflow:hidden">` +
+              `<div style="position:relative;width:${tw}px;height:${th}px;overflow:hidden">` +
               `<img src="${coverUrl}" style="display:block;width:100%;height:100%;object-fit:cover" />` +
               `<div style="position:absolute;bottom:0;left:0;right:0;padding:24px 8px 8px;background:linear-gradient(transparent,rgba(0,0,0,0.85));color:#fff;line-height:1.4;word-break:break-all;overflow-wrap:break-word">` +
               `<div style="font-weight:bold;font-size:14px">${f.opus} ${f.title}</div>` +
@@ -101,33 +164,44 @@ async function start() {
             rows.push(`<tr>${cell(flays[i]!)}${right}</tr>`);
           }
           const more = flays.length > 20 ? `<tr><td colspan="2"><i>...외 ${flays.length - 20}개</i></td></tr>` : '';
-          return `<div style="padding:8px"><b>${params.name}: ${params.value}</b><table style="border-collapse:collapse;margin-top:4px">${rows.join('')}${more}</table></div>`;
+          return `<div style="padding:8px"><b>${params.data?.name}: ${params.data?.value}</b><table style="border-collapse:collapse;margin-top:4px">${rows.join('')}${more}</table></div>`;
         },
         backgroundColor: tooltipBg,
         borderColor: tooltipBorder,
         textStyle: { color: tooltipText },
         padding: 0,
       },
-      color: palette,
-      animation: false,
+      animation: true,
+      animationDuration: 800,
+      animationEasingUpdate: 'quinticInOut' as const,
+      stateAnimation: { duration: 300, easing: 'cubicOut' as const },
       series: [
         {
-          type: 'treemap',
-          left: 0,
-          top: 0,
-          right: 0,
-          bottom: 0,
-          roam: false,
-          nodeClick: false,
-          breadcrumb: { show: false },
-          data,
-          label: { show: true, formatter: (p: any) => `${p.name}\n${p.data?.opus ? p.data.flays[0].score : p.value}`, color: isDark ? '#fff' : '#222' },
-          itemStyle: { borderWidth: 1, borderColor: cellBorder },
-          levels: [{ itemStyle: { borderWidth: 1, borderColor: cellBorder, gapWidth: 1 } }],
+          type: 'graph',
+          layout: 'none',
+          roam: true,
+          data: nodes,
+          links: [] as any[],
+          label: {
+            show: true,
+            position: 'inside',
+            formatter: (p: any) => {
+              if (tab === 'flay' && p.data?.opus) return `${p.data.opus}`;
+              return `${p.data.name}\n${p.data.value}`;
+            },
+            fontSize: 10,
+            color: isDark ? '#fff' : '#222',
+          },
+          emphasis: { focus: 'self', blurScope: 'global', label: { fontSize: 13, fontWeight: 'bold' }, itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.3)' } },
+          blur: { itemStyle: { opacity: 0.15 }, label: { opacity: 0.15 } },
+          labelLayout: { hideOverlap: true },
         },
       ],
     };
   };
+
+  /** 탭 타입에 따라 적절한 옵션 빌더 선택 */
+  const buildOption = (tab: TabType, data: ChartItem[]) => buildBubbleOption(data, containers[tab], tab);
 
   // ── 탭별 컨테이너 + 차트 인스턴스 생성
   const tabs: TabType[] = ['studio', 'actress', 'tag', 'flay'];
@@ -136,7 +210,7 @@ async function start() {
 
   // 각 차트 초기 렌더링 + 클릭 이벤트
   for (const tab of tabs) {
-    charts[tab].setOption(buildOption(tabData[tab]));
+    charts[tab].setOption(buildOption(tab, tabData[tab]), { notMerge: true });
     charts[tab].on('click', (params: any) => {
       if (!params.name) return;
       if (tab === 'studio') popupStudio(params.name);
@@ -152,7 +226,7 @@ async function start() {
       const keyword = currentTab === tab ? searchInput.value.trim().toLowerCase() : '';
       const source = tabData[tab];
       const filtered = keyword ? source.filter((d) => d.name.toLowerCase().includes(keyword)) : source;
-      charts[tab].setOption(buildOption(filtered));
+      charts[tab].setOption(buildOption(tab, filtered), { notMerge: true });
     }
   });
 
@@ -176,7 +250,7 @@ async function start() {
     searchKeywords[currentTab] = keyword;
     const source = tabData[currentTab];
     const filtered = keyword ? source.filter((d) => d.name.toLowerCase().includes(keyword)) : source;
-    charts[currentTab].setOption(buildOption(filtered));
+    charts[currentTab].setOption(buildOption(currentTab, filtered), { notMerge: true });
   };
 
   let debounceTimer: ReturnType<typeof setTimeout> | null = null;

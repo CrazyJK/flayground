@@ -19,6 +19,7 @@
   "dependencies": {
     "@toast-ui/editor": "^3.2.1",
     "@toast-ui/editor-plugin-color-syntax": "^3.1.0",
+    "d3-hierarchy": "^3.1.2",
     "echarts": "^6.0.0"
   },
   "devDependencies": {
@@ -27,6 +28,7 @@
     "@babel/preset-env": "^7.23.5",
     "@babel/preset-typescript": "^7.23.3",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/d3-hierarchy": "^3.1.7",
     "@types/node": "^24.2.1",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",

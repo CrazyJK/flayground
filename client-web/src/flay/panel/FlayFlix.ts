@@ -410,6 +410,16 @@ export class FlayFlix extends HTMLElement {
   /** 로딩 중 스켈레톤 UI를 태그 컨테이너에 표시한다 */
   private showSkeleton() {
     const tagContainer = this.querySelector('.tag-container') as HTMLElement;
+
+    // AI 추천 전용 스켈레톤 (맨 위, AI 응답 후 제거)
+    const aiSkeleton = document.createElement('div');
+    aiSkeleton.className = 'tag skeleton skeleton-ai';
+    aiSkeleton.innerHTML = `
+      <span class="skeleton-text"></span>
+      <div class="flays">${'<div class="flay-cover skeleton-cover"></div>'.repeat(SKELETON_COVER_COUNT)}</div>`;
+    tagContainer.appendChild(aiSkeleton);
+
+    // 일반 스켈레톤
     for (let i = 0; i < SKELETON_COUNT; i++) {
       const skeleton = document.createElement('div');
       skeleton.className = 'tag skeleton';
@@ -423,7 +433,8 @@ export class FlayFlix extends HTMLElement {
   /** 태그를 로그 가중 점수(hotScore) 내림차순으로 정렬하여 순차 fade-in 렌더링한다 */
   private renderTags() {
     const tagContainer = this.querySelector('.tag-container') as HTMLElement;
-    tagContainer.innerHTML = '';
+    // AI 스켈레톤은 남기고 일반 스켈레톤만 제거
+    tagContainer.querySelectorAll('.tag.skeleton:not(.skeleton-ai)').forEach((el) => el.remove());
 
     const groupNameMap = new Map(this.tagGroups.map((g) => [g.id, g.name]));
     const sortedTags = [...this.tags].sort((a, b) => {
@@ -500,7 +511,13 @@ export class FlayFlix extends HTMLElement {
     scrollRight.addEventListener('click', () => flaysContainer.scrollTo({ left: flaysContainer.scrollWidth, behavior: 'smooth' }));
 
     if (prepend) {
-      tagContainer.prepend(row);
+      // AI 스켈레톤이 있으면 그 다음에, 없으면 맨 앞에 삽입
+      const aiSkeleton = tagContainer.querySelector('.skeleton-ai');
+      if (aiSkeleton) {
+        aiSkeleton.after(row);
+      } else {
+        tagContainer.prepend(row);
+      }
     } else {
       tagContainer.appendChild(row);
     }
@@ -570,8 +587,10 @@ export class FlayFlix extends HTMLElement {
 
     this.renderTagRow('Basket', flays, true);
     const tagContainer = this.querySelector('.tag-container') as HTMLElement;
-    const basketRow = tagContainer.firstElementChild as HTMLElement | null;
-    if (basketRow) basketRow.classList.add('tag-basket');
+    // renderTagRow가 삽입한 행(AI 스켈레톤 다음 또는 맨 앞)에 tag-basket 클래스 추가
+    const aiSkeleton = tagContainer.querySelector('.skeleton-ai');
+    const inserted = (aiSkeleton ? aiSkeleton.nextElementSibling : tagContainer.firstElementChild) as HTMLElement | null;
+    if (inserted) inserted.classList.add('tag-basket');
   }
 
   /** 바스켓 변경 시 Basket 행을 실시간으로 갱신한다. 기존 행이 있으면 커버만 업데이트 */
@@ -609,8 +628,10 @@ export class FlayFlix extends HTMLElement {
       if (countEl) countEl.textContent = `(${flays.length})`;
     } else {
       this.renderTagRow('Basket', flays, true);
-      const basketRow = tagContainer.firstElementChild as HTMLElement | null;
-      if (basketRow) basketRow.classList.add('tag-basket');
+      const tagContainer2 = this.querySelector('.tag-container') as HTMLElement;
+      const aiSkeleton = tagContainer2.querySelector('.skeleton-ai');
+      const inserted = (aiSkeleton ? aiSkeleton.nextElementSibling : tagContainer2.firstElementChild) as HTMLElement | null;
+      if (inserted) inserted.classList.add('tag-basket');
     }
   }
 
@@ -671,6 +692,8 @@ export class FlayFlix extends HTMLElement {
         if (unique.length === 0) return;
 
         const flays = await this.cachedGetFlayList(...unique);
+        // AI 스켈레톤 제거 후 실제 AI 추천 행 삽입
+        this.querySelector('.skeleton-ai')?.remove();
         this.renderTagRow('AI 추천', flays, true);
         return;
       } catch (error) {

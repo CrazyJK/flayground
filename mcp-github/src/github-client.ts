@@ -1,6 +1,47 @@
 import OpenAI from 'openai';
 import { config } from './config.js';
 
+/** 모델별 통계: 모델명 -> { times, slowCount, errors } */
+const modelStatsMap = new Map<string, { times: number[]; slowCount: number; errors: number }>();
+
+/**
+ * 모델 응답 결과를 기록하고 통계를 콘솔에 출력
+ * @param model - 사용된 모델명
+ * @param ms - 응답 시간(밀리초), 오류 시 null
+ * @param error - 오류 객체 (오류 시에만 전달)
+ */
+function trackModel(model: string, ms: number | null, error?: any): void {
+  if (!modelStatsMap.has(model)) {
+    modelStatsMap.set(model, { times: [], slowCount: 0, errors: 0 });
+  }
+  const stats = modelStatsMap.get(model)!;
+
+  if (error !== undefined) {
+    stats.errors += 1;
+    console.error(`[AI 오류] ${model} | ${error?.message ?? String(error)}`);
+  } else if (ms !== null) {
+    stats.times.push(ms);
+    if (ms >= 10_000) stats.slowCount += 1;
+  }
+
+  const rows = [...modelStatsMap.entries()].map(([m, s]) => {
+    const cnt = s.times.length + s.errors;
+    const avg = s.times.length > 0 ? Math.round(s.times.reduce((a, b) => a + b, 0) / s.times.length) : 0;
+    const max = s.times.length > 0 ? Math.max(...s.times) : 0;
+    return {
+      모델: m,
+      요청: cnt,
+      정상: cnt - s.errors,
+      에러: s.errors,
+      '지금(ms)': m === model ? (ms !== null ? ms.toLocaleString() : '에러') : '-',
+      '평균(ms)': avg ? avg.toLocaleString() : '-',
+      '최대(ms)': max ? max.toLocaleString() : '-',
+      '10초↑': s.slowCount,
+    };
+  });
+  console.table(rows);
+}
+
 /**
  * 셔플 백(Shuffle Bag): 가방에서 랜덤으로 꺼내고, 모두 소진되면 다시 채움
  */
@@ -45,17 +86,25 @@ export class ChatSession {
   async sendMessage(message: string): Promise<{ response: { text: () => string } }> {
     this.history.push({ role: 'user', content: message });
 
-    const completion = await this.client.chat.completions.create({
-      messages: this.history,
-      model: pickRandomModel(),
-      max_tokens: config.ai.maxOutputTokens,
-      temperature: config.ai.temperature,
-    });
+    const model = pickRandomModel();
+    const start = Date.now();
+    try {
+      const completion = await this.client.chat.completions.create({
+        messages: this.history,
+        model,
+        max_tokens: config.ai.maxOutputTokens,
+        temperature: config.ai.temperature,
+      });
 
-    const responseText = completion.choices[0]?.message?.content ?? '';
-    this.history.push({ role: 'assistant', content: responseText });
+      trackModel(model, Date.now() - start);
+      const responseText = completion.choices[0]?.message?.content ?? '';
+      this.history.push({ role: 'assistant', content: responseText });
 
-    return { response: { text: () => responseText } };
+      return { response: { text: () => responseText } };
+    } catch (error: any) {
+      trackModel(model, null, error);
+      throw error;
+    }
   }
 }
 
@@ -82,8 +131,9 @@ export class GitHubModelsClient {
    * @returns 생성된 텍스트와 사용된 모델명
    */
   async generateText(prompt: string, options: GenerateOptions = {}): Promise<{ text: string; model: string }> {
+    const model = pickRandomModel();
+    const start = Date.now();
     try {
-      const model = pickRandomModel();
       const completion = await this.client.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
         model,
@@ -91,9 +141,10 @@ export class GitHubModelsClient {
         temperature: options.temperature ?? config.ai.temperature,
       });
 
+      trackModel(model, Date.now() - start);
       return { text: completion.choices[0]?.message?.content ?? '', model };
     } catch (error: any) {
-      console.error('GitHub Models API 오류:', error);
+      trackModel(model, null, error);
       throw new Error(`텍스트 생성 실패: ${error.message}`);
     }
   }
@@ -104,10 +155,12 @@ export class GitHubModelsClient {
    * @param onChunk - 청크 수신 콜백
    */
   async generateTextStream(prompt: string, onChunk: (text: string) => void): Promise<void> {
+    const model = pickRandomModel();
+    const start = Date.now();
     try {
       const stream = await this.client.chat.completions.create({
         messages: [{ role: 'user', content: prompt }],
-        model: pickRandomModel(),
+        model,
         stream: true,
       });
 
@@ -117,8 +170,9 @@ export class GitHubModelsClient {
           onChunk(text);
         }
       }
+      trackModel(model, Date.now() - start);
     } catch (error: any) {
-      console.error('GitHub Models 스트리밍 오류:', error);
+      trackModel(model, null, error);
       throw new Error(`스트리밍 생성 실패: ${error.message}`);
     }
   }

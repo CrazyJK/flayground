@@ -25,8 +25,9 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.expand": false,
   "explorer.fileNesting.patterns": {
-    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.scss, ${capture}.html, ${capture}.css,, ${capture}.json",
-    "*.ts": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.scss, ${capture}.html, ${capture}.md",
+    "*.ts": "${capture}.scss, ${capture}.html, ${capture}.md",
+    "*.js": "${capture}.js.map, ${capture}.html, ${capture}.css, ${capture}.css.map, ${capture}.json",
+    "*.css": "${capture}.css.map",
     "webpack.common.cjs": "webpack.*.cjs"
   },
   "js/ts.preferences.includePackageJsonAutoImports": "on",

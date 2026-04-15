@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="ko" theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>파일 비밀번호 확인</title>
+    <link rel="icon" type="image/png" href="./favicon/flay.png" />
+    <!-- HtmlWebpackPlugin이 자동으로 CSS와 JS를 주입합니다 -->
+  </head>
+  <body>
+    <header class="sticky">
+      <div class="head-group">
+        <h1>파일 비밀번호 확인</h1>
+        <p class="subtitle">HWP, HWPX, DOC, DOCX, XLS, XLSX, PPT, PPTX, ZIP, PDF 파일의 비밀번호 설정 여부를 확인합니다.</p>
+      </div>
+    </header>
+
+    <main>
+      <!-- 파일 드롭존 -->
+      <section id="drop-zone" class="drop-zone">
+        <input type="file" id="file-input" accept=".hwp,.hwpx,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.zip,.pdf" multiple hidden />
+        <div class="drop-zone__icon">📂</div>
+        <p class="drop-zone__text">파일을 여기에 드래그하거나 클릭하여 선택</p>
+        <p class="drop-zone__hint">HWP · HWPX · DOC · DOCX · XLS · XLSX · PPT · PPTX · ZIP · PDF</p>
+      </section>
+
+      <!-- 결과 영역 -->
+      <section id="result-section" class="result-section hidden">
+        <div class="result-header">
+          <h2>검사 결과 <span id="result-count"></span></h2>
+          <button type="button" id="clear-btn" class="clear-btn">초기화</button>
+        </div>
+        <div class="result-table-wrap">
+          <table id="result-table">
+            <thead>
+              <tr>
+                <th class="col-name">파일명</th>
+                <th class="col-format">형식</th>
+                <th class="col-size">크기</th>
+                <th class="col-status">비밀번호</th>
+              </tr>
+            </thead>
+            <tbody id="result-tbody"></tbody>
+          </table>
+        </div>
+      </section>
+    </main>
+  </body>
+</html>

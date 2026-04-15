@@ -56,6 +56,9 @@ const entryPoints = {
   spa: {
     'pension.planner': './src/view/pension.planner.ts',
   },
+  tools: {
+    'page.file-check': './src/view/page.file-check.ts',
+  },
 };
 
 // 모든 엔트리 포인트를 하나의 객체로 병합

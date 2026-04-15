@@ -112,3 +112,13 @@ kimberlygeswein
 Wagesreiter
 Impallari
 Nonty
+OOXML
+HWPX
+FILEPASS
+Boundsheet
+DIFAT
+ENDOFCHAIN
+FREESECT
+FATSECT
+DIFSECT
+startxref

@@ -29,14 +29,14 @@ function trackModel(model: string, ms: number | null, error?: any): void {
     const avg = s.times.length > 0 ? Math.round(s.times.reduce((a, b) => a + b, 0) / s.times.length) : 0;
     const max = s.times.length > 0 ? Math.max(...s.times) : 0;
     return {
-      모델: m,
-      요청: cnt,
-      정상: cnt - s.errors,
-      에러: s.errors,
-      '지금(ms)': m === model ? (ms !== null ? ms.toLocaleString() : '에러') : '-',
-      '평균(ms)': avg ? avg.toLocaleString() : '-',
-      '최대(ms)': max ? max.toLocaleString() : '-',
-      '10초↑': s.slowCount,
+      Model: m,
+      Requests: cnt,
+      Success: cnt - s.errors,
+      Errors: s.errors,
+      Current: m === model ? (ms !== null ? ms.toLocaleString() : 'Error') : '-',
+      Average: avg ? avg.toLocaleString() : '-',
+      Max: max ? max.toLocaleString() : '-',
+      '10s+': s.slowCount,
     };
   });
   console.table(rows);

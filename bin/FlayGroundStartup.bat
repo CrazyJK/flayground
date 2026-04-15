@@ -48,7 +48,7 @@ echo MCP-Gemini HTTP Server started in background
 echo --------------------------------------------------------------------------------------------------------------------
 cd "%FLAY_GROUND_HOME%\mcp-gemini"
 start /wait /b cmd /c yarn install
-start /b cmd /c "yarn http > %FLAY_GROUND_HOME%\mcp-gemini\logs\mcp-gemini.log 2>&1"
+start /b cmd /c "yarn start:http > %FLAY_GROUND_HOME%\mcp-gemini\logs\mcp-gemini.log 2>&1"
 echo MCP-Gemini logs: %FLAY_GROUND_HOME%\mcp-gemini\logs\mcp-gemini.log
 
 title FLAY_GROUND Start MCP-Github HTTP Server
@@ -58,7 +58,7 @@ echo MCP-Github HTTP Server started in background
 echo --------------------------------------------------------------------------------------------------------------------
 cd "%FLAY_GROUND_HOME%\mcp-github"
 start /wait /b cmd /c yarn install
-start /b cmd /c "yarn http > %FLAY_GROUND_HOME%\mcp-github\logs\mcp-github.log 2>&1"
+start /b cmd /c "yarn start:http > %FLAY_GROUND_HOME%\mcp-github\logs\mcp-github.log 2>&1"
 echo MCP-Github logs: %FLAY_GROUND_HOME%\mcp-github\logs\mcp-github.log
 
 title FLAY_GROUND

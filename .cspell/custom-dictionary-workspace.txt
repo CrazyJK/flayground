@@ -122,3 +122,8 @@ FREESECT
 FATSECT
 DIFSECT
 startxref
+recyclebin
+DAUM
+wekyb
+bbwe
+mspaint

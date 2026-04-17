@@ -48,6 +48,14 @@ yarn.lock
 
 # webpack dist
 client-web/dist
+
+# certificates
+*.key
+*.pem
+*.crt
+*.cer
+*.p12
+*.pfx
 src/main/resources/static/dist*
 
 #diablo4

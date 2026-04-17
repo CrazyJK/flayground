@@ -1,18 +1,67 @@
+import fs from 'fs';
 import OpenAI from 'openai';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config } from './config.js';
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+/** 통계 파일 경로 */
+const STATS_FILE = path.join(__dirname, '../logs/model-stats.json');
+
+/** 모델 통계 타입 */
+interface ModelStats {
+  successCount: number;
+  totalTime: number;
+  maxMs: number;
+  slowCount: number;
+  errors: number;
+}
+
 /** 모델별 통계: 모델명 -> { times, slowCount, errors } */
-const modelStatsMap = new Map<string, { times: number[]; slowCount: number; errors: number }>();
+const modelStatsMap = new Map<string, ModelStats>();
+
+// 앱 시작 시 파일에서 통계 로드
+try {
+  if (fs.existsSync(STATS_FILE)) {
+    const parsed: Record<string, any> = JSON.parse(fs.readFileSync(STATS_FILE, 'utf-8'));
+    for (const [model, s] of Object.entries(parsed)) {
+      // 구버전(times 배열) 마이그레이션
+      if (Array.isArray(s.times)) {
+        const times: number[] = s.times;
+        modelStatsMap.set(model, {
+          successCount: times.length,
+          totalTime: times.reduce((a: number, b: number) => a + b, 0),
+          maxMs: times.length > 0 ? Math.max(...times) : 0,
+          slowCount: s.slowCount ?? 0,
+          errors: s.errors ?? 0,
+        });
+      } else {
+        modelStatsMap.set(model, {
+          successCount: s.successCount ?? 0,
+          totalTime: s.totalTime ?? 0,
+          maxMs: s.maxMs ?? 0,
+          slowCount: s.slowCount ?? 0,
+          errors: s.errors ?? 0,
+        });
+      }
+    }
+    console.log(`[AI] 통계 파일 로드 완료: ${modelStatsMap.size}개 모델`);
+  }
+} catch {
+  // 파싱 실패 시 빈 Map으로 시작
+}
 
 /**
- * 모델 응답 결과를 기록하고 통계를 콘솔에 출력
+ * 모델 응답 결과를 기록하고 통계를 콘솔에 출력, 파일에 저장
  * @param model - 사용된 모델명
  * @param ms - 응답 시간(밀리초), 오류 시 null
  * @param error - 오류 객체 (오류 시에만 전달)
  */
 function trackModel(model: string, ms: number | null, error?: any): void {
   if (!modelStatsMap.has(model)) {
-    modelStatsMap.set(model, { times: [], slowCount: 0, errors: 0 });
+    modelStatsMap.set(model, { successCount: 0, totalTime: 0, maxMs: 0, slowCount: 0, errors: 0 });
   }
   const stats = modelStatsMap.get(model)!;
 
@@ -20,26 +69,44 @@ function trackModel(model: string, ms: number | null, error?: any): void {
     stats.errors += 1;
     console.error(`[AI 오류] ${model} | ${error?.message ?? String(error)}`);
   } else if (ms !== null) {
-    stats.times.push(ms);
+    stats.successCount += 1;
+    stats.totalTime += ms;
+    if (ms > stats.maxMs) stats.maxMs = ms;
     if (ms >= 10_000) stats.slowCount += 1;
   }
 
   const rows = [...modelStatsMap.entries()].map(([m, s]) => {
-    const cnt = s.times.length + s.errors;
-    const avg = s.times.length > 0 ? Math.round(s.times.reduce((a, b) => a + b, 0) / s.times.length) : 0;
-    const max = s.times.length > 0 ? Math.max(...s.times) : 0;
+    const cnt = s.successCount + s.errors;
+    const avg = s.successCount > 0 ? Math.round(s.totalTime / s.successCount) : 0;
     return {
       Model: m,
       Requests: cnt,
-      Success: cnt - s.errors,
+      Success: s.successCount,
       Errors: s.errors,
       Current: m === model ? (ms !== null ? ms.toLocaleString() : 'Error') : '-',
       Average: avg ? avg.toLocaleString() : '-',
-      Max: max ? max.toLocaleString() : '-',
+      Max: s.maxMs ? s.maxMs.toLocaleString() : '-',
       '10s+': s.slowCount,
     };
   });
   console.table(rows);
+
+  // 통계를 파일에 저장
+  try {
+    const obj: Record<string, ModelStats> = {};
+    for (const [m, s] of modelStatsMap.entries()) {
+      obj[m] = s;
+    }
+    fs.writeFileSync(STATS_FILE, JSON.stringify(obj, null, 2), 'utf-8');
+  } catch {
+    // 파일 저장 실패는 무시
+  }
+
+  // SSE 리스너들에게 최신 통계 push
+  const currentStats = getModelStats();
+  for (const fn of statsListeners) {
+    fn(currentStats);
+  }
 }
 
 /**
@@ -184,4 +251,40 @@ export class GitHubModelsClient {
   startChat(): ChatSession {
     return new ChatSession(this.client);
   }
+}
+
+/** 통계 변경 리스너 타입 */
+type StatsListener = (stats: ReturnType<typeof getModelStats>) => void;
+
+/** SSE 클라이언트 리스너 Set */
+const statsListeners = new Set<StatsListener>();
+
+/**
+ * 통계 변경 리스너 등록
+ * @param fn - 통계 업데이트 시 호출될 콜백
+ */
+export function addStatsListener(fn: StatsListener): void {
+  statsListeners.add(fn);
+}
+
+/**
+ * 통계 변경 리스너 제거
+ * @param fn - 제거할 콜백
+ */
+export function removeStatsListener(fn: StatsListener): void {
+  statsListeners.delete(fn);
+}
+export function getModelStats(): Record<string, { requests: number; success: number; errors: number; avgMs: number; maxMs: number; slowCount: number }> {
+  const result: Record<string, { requests: number; success: number; errors: number; avgMs: number; maxMs: number; slowCount: number }> = {};
+  for (const [model, s] of modelStatsMap.entries()) {
+    result[model] = {
+      requests: s.successCount + s.errors,
+      success: s.successCount,
+      errors: s.errors,
+      avgMs: s.successCount > 0 ? Math.round(s.totalTime / s.successCount) : 0,
+      maxMs: s.maxMs,
+      slowCount: s.slowCount,
+    };
+  }
+  return result;
 }

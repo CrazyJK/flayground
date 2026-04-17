@@ -1,8 +1,13 @@
 import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
 import { Server } from 'http';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import { config, validateConfig } from './config.js';
-import { ChatSession, GitHubModelsClient } from './github-client.js';
+import { ChatSession, GitHubModelsClient, addStatsListener, getModelStats, removeStatsListener } from './github-client.js';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * 채팅 세션 정보
@@ -70,6 +75,9 @@ class HTTPServer {
     );
 
     this.app.use(express.json({ limit: '10mb' }));
+
+    // public 폴더 정적 파일 서빙
+    this.app.use(express.static(path.join(__dirname, '../public')));
 
     this.app.use((req: Request, res: Response, next: NextFunction) => {
       console.error(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
@@ -210,6 +218,32 @@ class HTTPServer {
       }
     });
 
+    // 모델 통계 조회
+    this.app.get('/api/stats', (req: Request, res: Response) => {
+      res.json({ success: true, stats: getModelStats() });
+    });
+
+    // 모델 통계 실시간 스트림 (SSE)
+    this.app.get('/api/stats/stream', (req: Request, res: Response) => {
+      res.setHeader('Content-Type', 'text/event-stream');
+      res.setHeader('Cache-Control', 'no-cache');
+      res.setHeader('Connection', 'keep-alive');
+      res.flushHeaders();
+
+      // 연결 즉시 현재 통계 전송
+      res.write(`data: ${JSON.stringify(getModelStats())}\n\n`);
+
+      const listener = (stats: ReturnType<typeof getModelStats>) => {
+        res.write(`data: ${JSON.stringify(stats)}\n\n`);
+      };
+
+      addStatsListener(listener);
+
+      req.on('close', () => {
+        removeStatsListener(listener);
+      });
+    });
+
     // 활성 세션 목록
     this.app.get('/api/sessions', (req: Request, res: Response) => {
       const sessions = Array.from(this.chatSessions.keys()).map((sessionId) => ({
@@ -293,6 +327,7 @@ class HTTPServer {
         console.error(`🚀 MCP GitHub Models HTTP 서버가 http://localhost:${port}에서 실행 중입니다`);
         console.error(`📊 API 정보: http://localhost:${port}/api/info`);
         console.error(`💚 헬스 체크: http://localhost:${port}/health`);
+        console.error(`📈 모델 통계: http://localhost:${port}/stats.html`);
         resolve();
       });
     });

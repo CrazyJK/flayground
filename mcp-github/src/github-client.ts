@@ -75,22 +75,6 @@ function trackModel(model: string, ms: number | null, error?: any): void {
     if (ms >= 10_000) stats.slowCount += 1;
   }
 
-  const rows = [...modelStatsMap.entries()].map(([m, s]) => {
-    const cnt = s.successCount + s.errors;
-    const avg = s.successCount > 0 ? Math.round(s.totalTime / s.successCount) : 0;
-    return {
-      Model: m,
-      Requests: cnt,
-      Success: s.successCount,
-      Errors: s.errors,
-      Current: m === model ? (ms !== null ? ms.toLocaleString() : 'Error') : '-',
-      Average: avg ? avg.toLocaleString() : '-',
-      Max: s.maxMs ? s.maxMs.toLocaleString() : '-',
-      '10s+': s.slowCount,
-    };
-  });
-  console.table(rows);
-
   // 통계를 파일에 저장
   try {
     const obj: Record<string, ModelStats> = {};

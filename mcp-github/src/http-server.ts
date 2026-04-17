@@ -1,6 +1,8 @@
 import cors from 'cors';
 import express, { Application, NextFunction, Request, Response } from 'express';
+import fs from 'fs';
 import { Server } from 'http';
+import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { config, validateConfig } from './config.js';
@@ -48,7 +50,7 @@ class HTTPServer {
   private aiClient: GitHubModelsClient;
   private chatSessions: Map<string, ChatSessionInfo>;
   private app: Application;
-  private server?: Server;
+  private server?: Server | https.Server;
 
   /**
    * @param aiClient - GitHub Models 클라이언트
@@ -323,13 +325,26 @@ class HTTPServer {
    */
   start(port: number = 3001): Promise<void> {
     return new Promise((resolve) => {
-      this.server = this.app.listen(port, () => {
-        console.error(`🚀 MCP GitHub Models HTTP 서버가 http://localhost:${port}에서 실행 중입니다`);
-        console.error(`📊 API 정보: http://localhost:${port}/api/info`);
-        console.error(`💚 헬스 체크: http://localhost:${port}/health`);
-        console.error(`📈 모델 통계: http://localhost:${port}/stats.html`);
+      const certDir = path.resolve(__dirname, '../../cert');
+      const keyPath = path.join(certDir, 'kamoru.jk.key');
+      const certPath = path.join(certDir, 'kamoru.jk.pem');
+      const hasCert = fs.existsSync(keyPath) && fs.existsSync(certPath);
+
+      const onListening = (protocol: string) => {
+        console.error(`🚀 MCP GitHub Models HTTP 서버가 ${protocol}://flay.kamoru.jk:${port}에서 실행 중입니다`);
+        console.error(`📊 API 정보: ${protocol}://flay.kamoru.jk:${port}/api/info`);
+        console.error(`💚 헬스 체크: ${protocol}://flay.kamoru.jk:${port}/health`);
+        console.error(`📈 모델 통계: ${protocol}://flay.kamoru.jk:${port}/stats.html`);
         resolve();
-      });
+      };
+
+      if (hasCert) {
+        this.server = https.createServer({ key: fs.readFileSync(keyPath), cert: fs.readFileSync(certPath) }, this.app);
+        this.server.listen(port, () => onListening('https'));
+      } else {
+        console.warn('[MCP-GitHub] 인증서를 찾을 수 없습니다. HTTP 모드로 시작합니다.');
+        this.server = this.app.listen(port, () => onListening('http'));
+      }
     });
   }
 

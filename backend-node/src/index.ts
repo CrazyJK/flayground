@@ -123,7 +123,7 @@ function createApp(): express.Application {
 function startServer(app: express.Application): void {
   const { port, http2: useHttp2 } = config.server;
 
-  const certDir = path.resolve(__dirname, '..', 'cert');
+  const certDir = path.resolve(__dirname, '..', '..', 'cert');
   const keyPath = path.join(certDir, 'kamoru.jk.key');
   const certPath = path.join(certDir, 'kamoru.jk.pem');
 

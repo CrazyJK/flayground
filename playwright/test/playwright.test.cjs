@@ -40,7 +40,7 @@ test('interact with flay.kamoru.jk page', async ({ page }) => {
   console.log(`Flay Title after space key: ${titleText}`);
 
   // 화면 캡처
-  await page.screenshot({ path: 'flay-page-after-space.png', fullPage: true });
+  await page.screenshot({ path: 'test/screenshots/flay-page-after-space.png', fullPage: true });
 
   expect(titleText).toBeDefined();
 });

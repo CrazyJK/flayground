@@ -155,22 +155,57 @@ export interface RouteResult {
 }
 
 /**
+ * 모델 실행 함수 타입
+ */
+type ModelExecutor = (entry: ModelEntry) => Promise<string>;
+
+/**
+ * 활성 모델 수만큼 자동 재시도하며 텍스트를 생성
+ * @param operationName - 로그/오류 메시지에 사용할 동작 이름
+ * @param executor - 모델별 실제 실행 로직
+ * @returns 생성 결과
+ */
+async function executeWithFallback(operationName: string, executor: ModelExecutor): Promise<RouteResult> {
+  const maxAttempts = getAvailableModels().length;
+
+  if (maxAttempts === 0) {
+    throw new Error('활성화된 모델이 없습니다. API 키 설정을 확인하세요.');
+  }
+
+  const errors: string[] = [];
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    const entry = pickRandomModel();
+    const start = Date.now();
+
+    try {
+      const text = await executor(entry);
+      trackModel(entry.name, Date.now() - start);
+
+      if (attempt > 1) {
+        console.warn(`[Nexus] ${operationName} 폴백 성공: ${entry.name} (${entry.provider}) [시도 ${attempt}/${maxAttempts}]`);
+      }
+
+      return { text, model: entry.name, provider: entry.provider };
+    } catch (error: any) {
+      trackModel(entry.name, null, error);
+      const message = error?.message ?? String(error);
+      errors.push(`[${entry.name}] ${message}`);
+      console.warn(`[Nexus] ${operationName} 실패: ${entry.name} (${entry.provider}) [시도 ${attempt}/${maxAttempts}]`);
+    }
+  }
+
+  throw new Error(`${operationName} 실패: 활성 모델 ${maxAttempts}개 재시도 모두 실패 | ${errors.join(' | ')}`);
+}
+
+/**
  * 셔플 백으로 모델 선택 후 텍스트 생성
  * @param prompt - 입력 프롬프트
  * @param options - 생성 옵션
  * @returns 생성 결과
  */
 export async function generateText(prompt: string, options?: GenerateOptions): Promise<RouteResult> {
-  const entry = pickRandomModel();
-  const start = Date.now();
-  try {
-    const text = await resolveProvider(entry).generateText(prompt, entry.name, options);
-    trackModel(entry.name, Date.now() - start);
-    return { text, model: entry.name, provider: entry.provider };
-  } catch (error: any) {
-    trackModel(entry.name, null, error);
-    throw new Error(`[${entry.name}] 텍스트 생성 실패: ${error.message}`);
-  }
+  return executeWithFallback('텍스트 생성', (entry) => resolveProvider(entry).generateText(prompt, entry.name, options));
 }
 
 /**
@@ -180,16 +215,7 @@ export async function generateText(prompt: string, options?: GenerateOptions): P
  * @returns 생성 결과
  */
 export async function generateWithHistory(history: Array<{ role: 'user' | 'assistant'; content: string }>, options?: GenerateOptions): Promise<RouteResult> {
-  const entry = pickRandomModel();
-  const start = Date.now();
-  try {
-    const text = await resolveProvider(entry).generateWithHistory(history, entry.name, options);
-    trackModel(entry.name, Date.now() - start);
-    return { text, model: entry.name, provider: entry.provider };
-  } catch (error: any) {
-    trackModel(entry.name, null, error);
-    throw new Error(`[${entry.name}] 채팅 생성 실패: ${error.message}`);
-  }
+  return executeWithFallback('채팅 생성', (entry) => resolveProvider(entry).generateWithHistory(history, entry.name, options));
 }
 
 /**

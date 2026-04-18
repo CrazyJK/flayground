@@ -41,25 +41,15 @@ start /wait /b cmd /c yarn build:schema
 echo.
 start /wait /b cmd /c yarn build
 
-title FLAY_GROUND Start MCP-Gemini HTTP Server
+title FLAY_GROUND Start MCP-Nexus HTTP Server
 echo.
 echo ====================================================================================================================
-echo MCP-Gemini HTTP Server started in background
+echo MCP-Nexus HTTP Server started in background
 echo --------------------------------------------------------------------------------------------------------------------
-cd "%FLAY_GROUND_HOME%\mcp-gemini"
+cd "%FLAY_GROUND_HOME%\mcp-nexus"
 start /wait /b cmd /c yarn install
-start /b cmd /c "yarn start:http > %FLAY_GROUND_HOME%\mcp-gemini\logs\mcp-gemini.log 2>&1"
-echo MCP-Gemini logs: %FLAY_GROUND_HOME%\mcp-gemini\logs\mcp-gemini.log
-
-title FLAY_GROUND Start MCP-Github HTTP Server
-echo.
-echo ====================================================================================================================
-echo MCP-Github HTTP Server started in background
-echo --------------------------------------------------------------------------------------------------------------------
-cd "%FLAY_GROUND_HOME%\mcp-github"
-start /wait /b cmd /c yarn install
-start /b cmd /c "yarn start:http > %FLAY_GROUND_HOME%\mcp-github\logs\mcp-github.log 2>&1"
-echo MCP-Github logs: %FLAY_GROUND_HOME%\mcp-github\logs\mcp-github.log
+start /b cmd /c "yarn start:http > %FLAY_GROUND_HOME%\mcp-nexus\logs\mcp-nexus.log 2>&1"
+echo MCP-Nexus logs: %FLAY_GROUND_HOME%\mcp-nexus\logs\mcp-nexus.log
 
 title FLAY_GROUND
 echo.

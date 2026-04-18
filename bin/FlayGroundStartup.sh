@@ -34,25 +34,15 @@ yarn install
 yarn build:schema
 yarn build
 
-# Start MCP-Gemini HTTP Server
+# Start MCP-Nexus HTTP Server
 echo ""
 echo "===================================================================================================================="
-echo "MCP-Gemini HTTP Server started in background"
+echo "MCP-Nexus HTTP Server started in background"
 echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/mcp-gemini"
+cd "$FLAY_GROUND_HOME/mcp-nexus"
 yarn install
-nohup yarn http > "$FLAY_GROUND_HOME/mcp-gemini/logs/mcp-gemini.log" 2>&1 &
-echo "MCP-Gemini logs: $FLAY_GROUND_HOME/mcp-gemini/logs/mcp-gemini.log"
-
-# Start MCP-Github HTTP Server
-echo ""
-echo "===================================================================================================================="
-echo "MCP-Github HTTP Server started in background"
-echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/mcp-github"
-yarn install
-nohup yarn http > "$FLAY_GROUND_HOME/mcp-github/logs/mcp-github.log" 2>&1 &
-echo "MCP-Github logs: $FLAY_GROUND_HOME/mcp-github/logs/mcp-github.log"
+nohup yarn http > "$FLAY_GROUND_HOME/mcp-nexus/logs/mcp-nexus.log" 2>&1 &
+echo "MCP-Nexus logs: $FLAY_GROUND_HOME/mcp-nexus/logs/mcp-nexus.log"
 
 # Start backend-node
 echo ""

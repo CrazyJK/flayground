@@ -43,7 +43,7 @@ export function createSseConnection(req: Request, res: Response): void {
 
   const client: SseClient = { id: clientId, res };
   clients.push(client);
-  console.log(`[SSE] #${clientId} 연결. 총 ${clients.length}개`);
+  // console.log(`[SSE] #${clientId} 연결. 총 ${clients.length}개`);
 
   // CONNECT 이벤트 전송
   sendToClient(client, 'CONNECT', 'connected');
@@ -59,7 +59,7 @@ export function createSseConnection(req: Request, res: Response): void {
   req.on('close', () => {
     clearTimeout(timeout);
     removeClient(client);
-    console.log(`[SSE] #${clientId} 연결 종료. 총 ${clients.length}개`);
+    // console.log(`[SSE] #${clientId} 연결 종료. 총 ${clients.length}개`);
   });
 }
 

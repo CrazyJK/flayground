@@ -2,24 +2,6 @@
   "configurations": [
     {
       "type": "node",
-      "name": "[Ground] mcp-gemini dev:http",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/mcp-gemini",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["dev:http"],
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
-      "name": "[Ground] mcp-github dev:http",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/mcp-github",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["dev:http"],
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
       "name": "[Ground] mcp-nexus dev:http",
       "request": "launch",
       "cwd": "${workspaceFolder}/mcp-nexus",

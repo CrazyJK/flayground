@@ -3,7 +3,8 @@
     "**/dependencies-viewer.json": true,
     "**/node_modules": true,
     "**/dist": true,
-    "**/*.log": true
+    "**/*.log": true,
+    ".archive": true
   },
   "files.exclude": {
     "**/node_modules": true

@@ -20,6 +20,15 @@
     },
     {
       "type": "node",
+      "name": "[Ground] mcp-nexus dev:http",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/mcp-nexus",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["dev:http"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
       "name": "[Ground] client-web dev",
       "request": "launch",
       "cwd": "${workspaceFolder}/client-web",

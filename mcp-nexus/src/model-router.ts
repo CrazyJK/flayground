@@ -49,7 +49,7 @@ try {
         });
       }
     }
-    console.log(`[Nexus] 통계 파일 로드 완료: ${modelStatsMap.size}개 모델`);
+    console.info(`[Nexus] 통계 파일 로드 완료: ${modelStatsMap.size}개 모델`);
   }
 } catch {
   // 파싱 실패 시 빈 Map으로 시작
@@ -111,7 +111,7 @@ function refillBag(): void {
     return false;
   });
   modelBag.push(...activeModels);
-  console.log(`[Nexus] 모델 가방 재충전: [${activeModels.map((m) => m.name).join(', ')}]`);
+  console.info(`[Nexus] 모델 가방 재충전: [${activeModels.map((m) => m.name).join(', ')}]`);
 }
 
 /**
@@ -136,11 +136,11 @@ function pickRandomModel(): ModelEntry {
 export function initProviders(): void {
   if (config.geminiApiKey) {
     geminiProvider = new GeminiProvider(config.geminiApiKey);
-    console.log('[Nexus] Gemini 제공자 초기화 완료');
+    console.info('[Nexus] Gemini 제공자 초기화 완료');
   }
   if (config.githubToken) {
     githubProvider = new GitHubProvider(config.githubToken);
-    console.log('[Nexus] GitHub 제공자 초기화 완료');
+    console.info('[Nexus] GitHub 제공자 초기화 완료');
   }
   refillBag();
 }

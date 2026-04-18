@@ -121,6 +121,6 @@ export class MCPServer {
   async run(): Promise<void> {
     const transport = new StdioServerTransport();
     await this.server.connect(transport);
-    console.error('MCP Nexus 서버가 시작되었습니다 (stdio 모드)');
+    console.info('MCP Nexus 서버가 시작되었습니다 (stdio 모드)');
   }
 }

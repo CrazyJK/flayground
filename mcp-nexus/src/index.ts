@@ -13,7 +13,7 @@ async function main(): Promise<void> {
 
     const activeProviders = [config.geminiApiKey ? 'Gemini' : null, config.githubToken ? 'GitHub' : null].filter(Boolean).join(', ');
 
-    console.error(`[Nexus] 활성 제공자: ${activeProviders}`);
+    console.info(`[Nexus] 활성 제공자: ${activeProviders}`);
 
     const mcpServer = new MCPServer();
     await mcpServer.run();

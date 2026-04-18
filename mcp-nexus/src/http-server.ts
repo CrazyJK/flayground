@@ -68,7 +68,7 @@ class HTTPServer {
     this.app.use(express.static(path.join(__dirname, '../public')));
 
     this.app.use((req: Request, res: Response, next: NextFunction) => {
-      console.error(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+      console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
       next();
     });
   }
@@ -137,7 +137,7 @@ class HTTPServer {
         const { text, model, provider } = await generateText(prompt, { temperature, maxOutputTokens: maxTokens });
         const duration = Date.now() - startTime;
 
-        console.error(`텍스트 생성 완료: ${duration}ms, ${text.length}자, 모델: ${model} (${provider})`);
+        console.info(`텍스트 생성 완료: ${duration}ms, ${text.length}자, 모델: ${model} (${provider})`);
 
         res.json({
           success: true,
@@ -182,7 +182,7 @@ class HTTPServer {
         const { text: translation, model, provider } = await generateText(prompt, { temperature: 0.3 });
         const duration = Date.now() - startTime;
 
-        console.error(`번역 완료: ${duration}ms, ${text.length}자 → ${translation.length}자`);
+        console.info(`번역 완료: ${duration}ms, ${text.length}자 → ${translation.length}자`);
 
         res.json({
           success: true,
@@ -283,7 +283,7 @@ class HTTPServer {
           createdAt: new Date().toISOString(),
           messageCount: 0,
         });
-        console.error(`새 채팅 세션 생성: ${sessionId}`);
+        console.info(`새 채팅 세션 생성: ${sessionId}`);
       }
 
       const session = this.chatSessions.get(sessionId)!;
@@ -294,7 +294,7 @@ class HTTPServer {
       const duration = Date.now() - startTime;
 
       session.messageCount++;
-      console.error(`채팅 응답 완료 [${sessionId}]: ${duration}ms, ${response.length}자, 모델: ${result.model} (${result.provider})`);
+      console.info(`채팅 응답 완료 [${sessionId}]: ${duration}ms, ${response.length}자, 모델: ${result.model} (${result.provider})`);
 
       res.json({
         success: true,
@@ -329,10 +329,10 @@ class HTTPServer {
       const hasCert = fs.existsSync(keyPath) && fs.existsSync(certPath);
 
       const onListening = (protocol: string) => {
-        console.error(`🚀 MCP Nexus HTTP 서버가 ${protocol}://flay.kamoru.jk:${port}에서 실행 중입니다`);
-        console.error(`📊 API 정보: ${protocol}://flay.kamoru.jk:${port}/api/info`);
-        console.error(`💚 헬스 체크: ${protocol}://flay.kamoru.jk:${port}/health`);
-        console.error(`📈 모델 통계: ${protocol}://flay.kamoru.jk:${port}/stats.html`);
+        console.info(`🚀 MCP Nexus HTTP 서버가 ${protocol}://flay.kamoru.jk:${port}에서 실행 중입니다`);
+        console.info(`📊 API 정보: ${protocol}://flay.kamoru.jk:${port}/api/info`);
+        console.info(`💚 헬스 체크: ${protocol}://flay.kamoru.jk:${port}/health`);
+        console.info(`📈 모델 통계: ${protocol}://flay.kamoru.jk:${port}/stats.html`);
         resolve();
       };
 
@@ -352,7 +352,7 @@ class HTTPServer {
   stop(): void {
     if (this.server) {
       this.server.close();
-      console.error('HTTP 서버가 종료되었습니다');
+      console.info('HTTP 서버가 종료되었습니다');
     }
   }
 }
@@ -370,13 +370,13 @@ async function main(): Promise<void> {
     await httpServer.start(port);
 
     process.on('SIGINT', () => {
-      console.error('종료 신호 수신...');
+      console.info('종료 신호 수신...');
       httpServer.stop();
       process.exit(0);
     });
 
     process.on('SIGTERM', () => {
-      console.error('종료 신호 수신...');
+      console.info('종료 신호 수신...');
       httpServer.stop();
       process.exit(0);
     });

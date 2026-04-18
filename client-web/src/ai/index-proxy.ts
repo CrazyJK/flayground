@@ -15,10 +15,8 @@ import type { AIResponse, AIVendor, GenerateOptions } from './types';
  * ```
  */
 
-// AI 서비스 선택: 'gemini' (port 3000) | 'github' (port 3001)
-const AI_PROVIDER = 'github' as 'gemini' | 'github';
-
-const API_BASE = AI_PROVIDER === 'github' ? 'https://flay.kamoru.jk:3001/api' : 'https://flay.kamoru.jk:3000/api';
+// AI 서비스: mcp-nexus (port 3002) - Gemini + GitHub Models 통합 셔플 백
+const API_BASE = 'https://flay.kamoru.jk:3002/api';
 
 /**
  * AI 텍스트 생성

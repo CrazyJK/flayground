@@ -76,8 +76,8 @@ export class FlayShotDailyPanel extends GroundFlay {
    * @returns yyyy-mm-dd 형식의 날짜
    */
   #getDate(priorDay: number): string {
-    const date = new Date(new Date().setDate(new Date().getDate() - priorDay));
-    return date.toISOString().substring(0, 10);
+    const d = DateUtils.addDays(new Date(), -priorDay);
+    return DateUtils.format(d, DateUtils.FORMATS.DATE);
   }
 
   /**
@@ -89,7 +89,7 @@ export class FlayShotDailyPanel extends GroundFlay {
   #getRefDate(date: string | number): string {
     const refDate = new Date(date);
     refDate.setHours(refDate.getHours() - 9);
-    return refDate.toISOString().substring(0, 10);
+    return DateUtils.format(refDate, DateUtils.FORMATS.DATE);
   }
 
   /**

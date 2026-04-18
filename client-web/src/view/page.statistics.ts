@@ -1,6 +1,7 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import VideoDatePanel from '@flay/panel/VideoDatePanel';
 import { createHistogramChart } from '@lib/ChartUtils';
+import DateUtils from '@lib/DateUtils';
 import FileUtils from '@lib/FileUtils';
 import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
 import { popupActress, popupFlay, popupStudio } from '@lib/FlaySearch';
@@ -245,7 +246,7 @@ function startTimeline() {
 
   const dates = [];
   while (firstDate <= lastDate) {
-    dates.push(firstDate.toISOString().substring(0, 7).replace('-', '.'));
+    dates.push(DateUtils.format(firstDate, 'yyyy.MM'));
     firstDate.setMonth(firstDate.getMonth() + 1);
   }
   // console.log('dates', dates);

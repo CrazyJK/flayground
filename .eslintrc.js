@@ -1,5 +1,5 @@
 const tsParser = require.resolve('@typescript-eslint/parser', {
-  paths: [require('path').join(__dirname, 'client-web')],
+  paths: [require('path').join(__dirname, 'web-frontend')],
 });
 
 const commonTsOverride = {
@@ -54,11 +54,11 @@ const tsRules = {
 
 module.exports = {
   root: true,
-  ignorePatterns: ['**/node_modules/**', '**/dist/**', '**/target/**', '**/*.js', '**/*.jsx', 'client-web/webpack.*.cjs', 'client-web/madge.cjs'],
+  ignorePatterns: ['**/node_modules/**', '**/dist/**', '**/target/**', '**/*.js', '**/*.jsx', 'web-frontend/webpack.*.cjs', 'web-frontend/madge.cjs'],
   overrides: [
     {
       ...commonTsOverride,
-      files: ['client-web/src/**/*.{ts,tsx}'],
+      files: ['web-frontend/src/**/*.{ts,tsx}'],
       env: {
         browser: true,
         node: true,
@@ -66,7 +66,7 @@ module.exports = {
       },
       parserOptions: {
         ...commonTsOverride.parserOptions,
-        project: './client-web/tsconfig.json',
+        project: './web-frontend/tsconfig.json',
       },
       rules: {
         ...baseRules,
@@ -75,14 +75,14 @@ module.exports = {
     },
     {
       ...commonTsOverride,
-      files: ['mcp-gemini/src/**/*.ts'],
+      files: ['mcp-nexus/src/**/*.ts'],
       env: {
         node: true,
         es2022: true,
       },
       parserOptions: {
         ...commonTsOverride.parserOptions,
-        project: './mcp-gemini/tsconfig.json',
+        project: './mcp-nexus/tsconfig.json',
       },
       rules: {
         ...baseRules,

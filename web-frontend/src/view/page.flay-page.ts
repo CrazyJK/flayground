@@ -28,7 +28,7 @@ flayPagination.addEventListener('change', async () => {
 });
 
 /**
- * mcp-gemini API를 사용하여 opus 목록에서 하나를 선택하도록 AI에 요청하고
+ * mcp API를 사용하여 opus 목록에서 하나를 선택하도록 AI에 요청하고
  * 선택된 opus를 화면에 버튼으로 표시하고, 사용자가 클릭하면
  * `flayPagination`에 opus를 설정하여 페이지를 업데이트합니다.
  * @param opusList - 전체 opus 목록

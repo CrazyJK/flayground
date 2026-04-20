@@ -241,7 +241,7 @@ export class UnifiedChatSession {
   /**
    * 메시지 전송 및 응답 수신
    * @param message - 사용자 메시지
-   * @returns 응답 객체 (mcp-gemini/mcp-github 호환 형태)
+   * @returns 응답 객체 (gemini/github 호환 형태)
    */
   async sendMessage(message: string): Promise<{ response: { text: () => string }; model: string; provider: string }> {
     this.history.push({ role: 'user', content: message });

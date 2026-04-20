@@ -69,7 +69,7 @@ export const config: Config = {
       { name: 'Mistral-small-2503', provider: 'github', displayName: 'Mistral Small', description: 'Mistral Small 3.1' },
       // Google Gemini Models
       { name: 'gemini-2.5-flash', provider: 'gemini', displayName: 'Gemini 2.5 Flash', description: 'Google Gemini 2.5 Flash' },
-      { name: 'gemini-2.0-flash', provider: 'gemini', displayName: 'Gemini 2.0 Flash', description: 'Google Gemini 2.0 Flash' },
+      // { name: 'gemini-2.0-flash', provider: 'gemini', displayName: 'Gemini 2.0 Flash', description: 'Google Gemini 2.0 Flash' },
     ],
   },
 };

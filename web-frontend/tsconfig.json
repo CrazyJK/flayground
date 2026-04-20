@@ -58,7 +58,7 @@
       "@ui/*": ["src/ui/*"],
       "@spa/*": ["src/spa/*"],
       "@ai/*": ["src/ai/*"],
-      "@domain/*": ["../backend-node/src/domain/*"]
+      "@domain/*": ["../web-backend/src/domain/*"]
     },
 
     // 라이브러리

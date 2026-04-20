@@ -8,7 +8,7 @@
 
 import ApiClient from '@lib/ApiClient';
 
-// backend-node 도메인에서 공유 타입 import & re-export
+// 서버 도메인에서 공유 타입 import & re-export
 export type { Actress } from '@domain/actress';
 export type { Flay, FlayFiles, FullyFlay } from '@domain/flay';
 export type { FlayHistory } from '@domain/history';

@@ -146,3 +146,7 @@ body {
 #video-section > div.relative.h-full.w-full.bg-black {
   padding-top: 1%;
 }
+
+.video-js .vjs-tech {
+  object-fit: cover;
+}

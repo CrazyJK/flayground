@@ -55,9 +55,6 @@ dist
 *.p12
 *.pfx
 
-#diablo4
-doc/diablo4
-
 # res webm
 **/res/*.webm
 
@@ -75,6 +72,7 @@ screenshots
 .playwright-mcp
 
 # data
+data/
 model-stats.json
 dependencies-viewer.json
 push-subscriptions.db

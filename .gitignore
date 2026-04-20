@@ -39,15 +39,13 @@ target/
 
 # node.js
 node_modules
-# yarn
-yarn.lock
 
 # TypeScript
 *.tsbuildinfo
 .tscache/
 
 # webpack dist
-client-web/dist
+dist
 
 # certificates
 *.key
@@ -56,11 +54,9 @@ client-web/dist
 *.cer
 *.p12
 *.pfx
-src/main/resources/static/dist*
 
 #diablo4
 doc/diablo4
-dependencies-viewer.json
 
 # res webm
 **/res/*.webm
@@ -71,11 +67,14 @@ screenshots
 
 # mcp-gemini
 .env
-dist/
+
+# cert folder
+.cert
 
 # playwright test result
 .playwright-mcp
 
-# server_node
-backend-node/cert/
-backend-node/data/
+# data
+model-stats.json
+dependencies-viewer.json
+push-subscriptions.db

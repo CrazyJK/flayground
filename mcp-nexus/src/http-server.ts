@@ -323,7 +323,7 @@ class HTTPServer {
    */
   start(port: number = 3002): Promise<void> {
     return new Promise((resolve) => {
-      const certDir = path.resolve(__dirname, '../../cert');
+      const certDir = path.resolve(__dirname, '../../.cert');
       const keyPath = path.join(certDir, 'kamoru.jk.key');
       const certPath = path.join(certDir, 'kamoru.jk.pem');
       const hasCert = fs.existsSync(keyPath) && fs.existsSync(certPath);

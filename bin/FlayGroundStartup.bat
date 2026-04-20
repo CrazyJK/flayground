@@ -8,33 +8,33 @@ title FLAY_GROUND
 @REM Guess FLAY_GROUND_HOME
 set "CURRENT_DIR=%cd%"
 set "FLAY_GROUND_HOME=%CURRENT_DIR%"
-if exist "%FLAY_GROUND_HOME%\backend-node\src" goto foundHome
+if exist "%FLAY_GROUND_HOME%\web-backend\src" goto foundHome
 cd ..
 set "FLAY_GROUND_HOME=%cd%"
-if exist "%FLAY_GROUND_HOME%\backend-node\src" goto foundHome
+if exist "%FLAY_GROUND_HOME%\web-backend\src" goto foundHome
 echo invalid FLAY_GROUND_HOME: %FLAY_GROUND_HOME%
 goto end
 
 :foundHome
 
-title FLAY_GROUND Build client-web
+title FLAY_GROUND Build web-frontend
 echo.
 echo ====================================================================================================================
-echo Build client-web
+echo Build web-frontend
 echo --------------------------------------------------------------------------------------------------------------------
-cd "%FLAY_GROUND_HOME%\client-web"
+cd "%FLAY_GROUND_HOME%\web-frontend"
 start /wait /b cmd /c yarn install
 echo.
 start /wait /b cmd /c node madge.cjs
 echo.
 start /wait /b cmd /c yarn run build
 
-title FLAY_GROUND Build backend-node
+title FLAY_GROUND Build web-backend
 echo.
 echo ====================================================================================================================
-echo Build backend-node
+echo Build web-backend
 echo --------------------------------------------------------------------------------------------------------------------
-cd "%FLAY_GROUND_HOME%\backend-node"
+cd "%FLAY_GROUND_HOME%\web-backend"
 start /wait /b cmd /c yarn install
 echo.
 start /wait /b cmd /c yarn build:schema
@@ -54,11 +54,11 @@ echo MCP-Nexus logs: %FLAY_GROUND_HOME%\mcp-nexus\logs\mcp-nexus.log
 title FLAY_GROUND
 echo.
 echo ====================================================================================================================
-echo Start FLAY_GROUND (backend-node)
+echo Start FLAY_GROUND (web-backend)
 echo.
 echo Using FLAY_GROUND: %FLAY_GROUND_HOME%
 echo --------------------------------------------------------------------------------------------------------------------
-cd "%FLAY_GROUND_HOME%\backend-node"
+cd "%FLAY_GROUND_HOME%\web-backend"
 node dist\index.js
 
 :end

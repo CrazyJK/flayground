@@ -11,18 +11,18 @@
     },
     {
       "type": "node",
-      "name": "[Ground] client-web dev",
+      "name": "[Ground] web-frontend dev",
       "request": "launch",
-      "cwd": "${workspaceFolder}/client-web",
+      "cwd": "${workspaceFolder}/web-frontend",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"
     },
     {
       "type": "node",
-      "name": "[Ground] backend-node dev",
+      "name": "[Ground] web-backend dev",
       "request": "launch",
-      "cwd": "${workspaceFolder}/backend-node",
+      "cwd": "${workspaceFolder}/web-backend",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"

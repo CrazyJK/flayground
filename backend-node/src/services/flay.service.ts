@@ -177,7 +177,8 @@ export function playFlay(opus: string, seekTime: number): void {
   const flay = getInstanceFlay(opus);
   actionHandler.play(flay, seekTime);
 
-  flay.video.play++;
+  flay.video.play++; // 재생 횟수 증가
+  flay.video.lastPlay = Date.now(); // lastPlayed 업데이트
   videoInfoSource.update(flay.video);
   historyRepository.save(createHistory(opus, 'PLAY', toFullname(flay)));
 }

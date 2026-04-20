@@ -1,5 +1,10 @@
 import Database from 'better-sqlite3';
+import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** Push 구독 정보 */
 export interface PushSubscription {
@@ -31,7 +36,6 @@ function init(): void {
   const dbPath = path.resolve(__dirname, '..', '..', 'data', 'push-subscriptions.db');
 
   // data 디렉토리 생성
-  const fs = require('fs');
   const dataDir = path.dirname(dbPath);
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });

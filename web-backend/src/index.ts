@@ -5,6 +5,7 @@ import fs from 'fs';
 import https from 'https';
 import path from 'path';
 import swaggerUi from 'swagger-ui-express';
+import { fileURLToPath } from 'url';
 
 import { config } from './config';
 import { errorHandler } from './middleware/error-handler';
@@ -41,6 +42,9 @@ import tagGroupRoutes from './routes/tag-group.routes';
 import tagRoutes from './routes/tag.routes';
 import todayisRoutes from './routes/todayis.routes';
 import videoRoutes from './routes/video.routes';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const API_PREFIX = '/api/v1';
 

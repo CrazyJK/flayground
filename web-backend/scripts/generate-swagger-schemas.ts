@@ -9,6 +9,10 @@
 import fs from 'fs';
 import path from 'path';
 import { createGenerator } from 'ts-json-schema-generator';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /** 도메인 타입명 → OpenAPI 스키마명 매핑 (이름이 다른 경우만 명시) */
 const RENAME_MAP: Record<string, string> = {

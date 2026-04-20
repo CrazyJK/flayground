@@ -1,6 +1,10 @@
 import fs from 'fs';
 import morgan from 'morgan';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 /**
  * 파일 로깅 미들웨어.

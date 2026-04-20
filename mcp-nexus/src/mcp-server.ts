@@ -1,8 +1,8 @@
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
 import { CallToolRequestSchema, CallToolResult, ListToolsRequestSchema } from '@modelcontextprotocol/sdk/types.js';
-import { config } from './config.js';
-import { UnifiedChatSession, generateText, startChat } from './model-router.js';
+import { config } from './config';
+import { UnifiedChatSession, generateText, startChat } from './model-router';
 
 /** 텍스트 생성 도구 인자 */
 interface GenerateTextArgs {

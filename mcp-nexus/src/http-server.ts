@@ -5,8 +5,8 @@ import { Server } from 'http';
 import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { config, validateConfig } from './config.js';
-import { UnifiedChatSession, addStatsListener, generateText, getAvailableModels, getModelStats, initProviders, removeStatsListener, startChat } from './model-router.js';
+import { config, validateConfig } from './config';
+import { UnifiedChatSession, addStatsListener, generateText, getAvailableModels, getModelStats, initProviders, removeStatsListener, startChat } from './model-router';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

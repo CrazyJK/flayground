@@ -1,6 +1,6 @@
 import OpenAI from 'openai';
-import { config } from '../config.js';
-import { AIProvider, GenerateOptions } from './provider.interface.js';
+import { config } from '../config';
+import { AIProvider, GenerateOptions } from './provider.interface';
 
 /**
  * GitHub Models AI 제공자 (OpenAI SDK 호환)

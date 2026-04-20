@@ -1,10 +1,10 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { ModelEntry, config } from './config.js';
-import { GeminiProvider } from './providers/gemini-provider.js';
-import { GitHubProvider } from './providers/github-provider.js';
-import { GenerateOptions } from './providers/provider.interface.js';
+import { ModelEntry, config } from './config';
+import { GeminiProvider } from './providers/gemini-provider';
+import { GitHubProvider } from './providers/github-provider';
+import { GenerateOptions } from './providers/provider.interface';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

@@ -1,6 +1,6 @@
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { config } from '../config.js';
-import { AIProvider, GenerateOptions } from './provider.interface.js';
+import { config } from '../config';
+import { AIProvider, GenerateOptions } from './provider.interface';
 
 /**
  * Google Gemini AI 제공자

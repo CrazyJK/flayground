@@ -1,6 +1,6 @@
-import { config, validateConfig } from './config.js';
-import { MCPServer } from './mcp-server.js';
-import { initProviders } from './model-router.js';
+import { config, validateConfig } from './config';
+import { MCPServer } from './mcp-server';
+import { initProviders } from './model-router';
 
 /**
  * 메인 함수 (MCP stdio 모드)

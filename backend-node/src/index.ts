@@ -80,10 +80,6 @@ function createApp(): express.Application {
 
   // API 라우트 등록
   app.use(API_PREFIX, flayRoutes);
-
-  // Swagger UI
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
-  app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
   app.use(API_PREFIX, flayArchiveRoutes);
   app.use(API_PREFIX, streamRoutes);
   app.use(API_PREFIX, videoRoutes);
@@ -104,6 +100,10 @@ function createApp(): express.Application {
   app.use(API_PREFIX, crawlingRoutes);
   app.use(API_PREFIX, downloadRoutes);
   app.use(API_PREFIX, pushRoutes);
+
+  // Swagger UI
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+  app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
 
   // 헬스체크
   app.get(`${API_PREFIX}/health`, (_req, res) => {

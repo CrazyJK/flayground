@@ -13,6 +13,7 @@ import { createFileLogger } from './middleware/logger';
 import { startDirectoryWatcher } from './services/directory-watcher';
 import { initWebPush } from './services/web-push.service';
 import { diarySource } from './sources/diary-source';
+import { financialNoteRepository } from './sources/financial-note-repository';
 import { loadAllFlaySources } from './sources/flay-source';
 import { historyRepository } from './sources/history-repository';
 import { imageSource } from './sources/image-source';
@@ -27,6 +28,7 @@ import batchRoutes from './routes/batch.routes';
 import crawlingRoutes from './routes/crawling.routes';
 import diaryRoutes from './routes/diary.routes';
 import downloadRoutes from './routes/download.routes';
+import financialNoteRoutes from './routes/financial-note.routes';
 import flayArchiveRoutes from './routes/flay-archive.routes';
 import flayRoutes from './routes/flay.routes';
 import groundRoutes from './routes/ground.routes';
@@ -61,7 +63,7 @@ function createApp(): express.Application {
         if (req.path === '/api/v1/sse') return false;
         return compression.filter(req, res);
       },
-    })
+    }) as unknown as express.RequestHandler
   );
   app.use(cors());
   app.use(express.json());
@@ -104,9 +106,11 @@ function createApp(): express.Application {
   app.use(API_PREFIX, crawlingRoutes);
   app.use(API_PREFIX, downloadRoutes);
   app.use(API_PREFIX, pushRoutes);
+  app.use(API_PREFIX, financialNoteRoutes);
 
   // Swagger UI
-  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  app.use('/api-docs', swaggerUi.serve as any, swaggerUi.setup(swaggerSpec, { explorer: true }) as any);
   app.get('/api-docs.json', (_req, res) => res.json(swaggerSpec));
 
   // 헬스체크
@@ -182,6 +186,9 @@ function bootstrap(): void {
 
   // 6. Push Subscription DB 초기화
   pushSubscriptionRepo.init();
+
+  // 6-1. FinancialNote DB 초기화
+  financialNoteRepository.init();
 
   // 7. Web Push 초기화
   initWebPush();

@@ -134,3 +134,4 @@ CODEF
 MIRAE
 dotenv
 OAEP
+inputmode

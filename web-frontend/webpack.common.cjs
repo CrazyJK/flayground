@@ -53,14 +53,12 @@ const entryPoints = {
     'popup.monitor': './src/view/popup.monitor.ts',
     'popup.image': './src/view/popup.image.ts',
   },
-  spa: {
-    'pension.planner': './src/view/pension.planner.ts',
-  },
   tools: {
     'page.file-check': './src/view/page.file-check.ts',
   },
   finance: {
-    'page.finance': './src/view/page.finance.ts',
+    'pension.planner': './src/view/pension.planner.ts',
+    'financial.note': './src/view/financial.note.ts',
   },
 };
 

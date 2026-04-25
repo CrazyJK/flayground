@@ -2,6 +2,15 @@
   "configurations": [
     {
       "type": "node",
+      "name": "[Ground] finance-hub dev",
+      "request": "launch",
+      "cwd": "${workspaceFolder}/finance-hub",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["dev"],
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "node",
       "name": "[Ground] web-frontend dev",
       "request": "launch",
       "cwd": "${workspaceFolder}/web-frontend",

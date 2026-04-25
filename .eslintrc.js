@@ -1,6 +1,16 @@
-const tsParser = require.resolve('@typescript-eslint/parser', {
-  paths: [require('path').join(__dirname, 'web-frontend')],
-});
+const path = require('path');
+// 플러그인/파서는 web-frontend/node_modules에 설치되어 있으므로 해당 경로를 우선 탐색
+const pluginPaths = [path.join(__dirname, 'web-frontend'), path.join(__dirname, 'web-backend'), __dirname];
+const tsParser = require.resolve('@typescript-eslint/parser', { paths: pluginPaths });
+// ESLint가 루트에서 플러그인을 찾을 수 있도록 require path를 확장
+const Module = require('module');
+const _resolveFilename = Module._resolveFilename.bind(Module);
+Module._resolveFilename = function (request, parent, isMain, options) {
+  if (request.startsWith('@typescript-eslint/')) {
+    return _resolveFilename(request, { ...parent, paths: pluginPaths.concat(parent?.paths ?? []) }, isMain, options);
+  }
+  return _resolveFilename(request, parent, isMain, options);
+};
 
 const commonTsOverride = {
   extends: ['eslint:recommended'],

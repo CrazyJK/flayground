@@ -1,6 +1,6 @@
-import BalancePanel from './BalancePanel.js';
+import BalancePanel from './BalancePanel';
 import './FinancePage.scss';
-import TransactionPanel from './TransactionPanel.js';
+import TransactionPanel from './TransactionPanel';
 
 /**
  * 금융 계좌 조회 페이지 커스텀 엘리먼트.

@@ -58,6 +58,7 @@
       "@ui/*": ["src/ui/*"],
       "@spa/*": ["src/spa/*"],
       "@ai/*": ["src/ai/*"],
+      "@finance/*": ["src/finance/*"],
       "@domain/*": ["../web-backend/src/domain/*"]
     },
 

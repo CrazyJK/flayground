@@ -1,5 +1,5 @@
-import { BalanceResult, fetchBalance, formatCurrency, formatRate, StockItem } from './FinanceApi.js';
 import './BalancePanel.scss';
+import { BalanceResult, fetchBalance, formatCurrency, formatRate, StockItem } from './FinanceApi';
 
 /**
  * 주식잔고 패널 커스텀 엘리먼트.
@@ -19,7 +19,7 @@ export default class BalancePanel extends HTMLElement {
       </div>
     `;
 
-    this.#load();
+    void this.#load();
   }
 
   async #load(): Promise<void> {

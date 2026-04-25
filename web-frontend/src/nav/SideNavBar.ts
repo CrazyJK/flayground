@@ -57,6 +57,7 @@ export class SideNavBar extends GroundNav {
     {},
     { url: 'page.kamoru-diary.html', name: 'diary' },
     { url: 'pension.planner.html', name: 'pension' },
+    { url: 'page.finance.html', name: 'finance' },
     {},
     { url: 'style.html', name: 'style' },
     { url: 'test.html', name: 'test' },

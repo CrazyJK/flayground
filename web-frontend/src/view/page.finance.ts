@@ -1,4 +1,4 @@
-import FinancePage from '../finance/FinancePage.js';
+import FinancePage from '@finance/FinancePage';
 import './inc/Page';
 import './page.finance.scss';
 

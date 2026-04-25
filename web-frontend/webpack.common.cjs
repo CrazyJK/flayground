@@ -92,6 +92,7 @@ module.exports = {
       '@ui': path.resolve(__dirname, 'src/ui'),
       '@spa': path.resolve(__dirname, 'src/spa'),
       '@ai': path.resolve(__dirname, 'src/ai'),
+      '@finance': path.resolve(__dirname, 'src/finance'),
       '@domain': path.resolve(__dirname, '../web-backend/src/domain'),
     },
   },

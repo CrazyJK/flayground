@@ -1,4 +1,4 @@
-import { daysAgoStr, fetchTransactions, formatCurrency, formatDate, formatTime, todayStr, TransactionItem, TransactionResult } from './FinanceApi.js';
+import { daysAgoStr, fetchTransactions, formatCurrency, formatDate, formatTime, todayStr, TransactionItem, TransactionResult } from './FinanceApi';
 import './TransactionPanel.scss';
 
 /**

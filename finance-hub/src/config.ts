@@ -14,6 +14,24 @@ function requireEnv(key: string): string {
   return value;
 }
 
+/** 선택 환경변수. 값이 없으면 빈 문자열을 반환한다. */
+function optionalEnv(key: string): string {
+  return process.env[key] ?? '';
+}
+
+type CodefEnv = 'sandbox' | 'demo' | 'production';
+
+const codefEnv = (process.env['CODEF_ENV'] ?? 'sandbox') as CodefEnv;
+
+/** CODEF_ENV에 따라 환경별 자격증명 키 접두사를 반환한다. */
+function envPrefix(env: CodefEnv): string {
+  if (env === 'production') return 'CODEF_PROD';
+  if (env === 'demo') return 'CODEF_DEMO';
+  return 'CODEF_SANDBOX';
+}
+
+const prefix = envPrefix(codefEnv);
+
 /**
  * finance-hub 서버 설정
  */
@@ -21,11 +39,11 @@ export const config = {
   port: Number(process.env['PORT'] ?? 4000),
 
   codef: {
-    clientId: requireEnv('CODEF_CLIENT_ID'),
-    clientSecret: requireEnv('CODEF_CLIENT_SECRET'),
+    clientId: requireEnv(`${prefix}_CLIENT_ID`),
+    clientSecret: requireEnv(`${prefix}_CLIENT_SECRET`),
     publicKey: requireEnv('CODEF_PUBLIC_KEY'),
     /** sandbox: 샌드박스, demo: 개발용, production: 정식 엔드포인트 */
-    env: (process.env['CODEF_ENV'] ?? 'sandbox') as 'sandbox' | 'demo' | 'production',
+    env: codefEnv,
     /** 환경에 따른 API 베이스 URL */
     get apiBaseUrl(): string {
       if (this.env === 'production') return 'https://api.codef.io';
@@ -33,7 +51,7 @@ export const config = {
       return 'https://sandbox.codef.io'; // sandbox
     },
     oauthUrl: 'https://oauth.codef.io/oauth/token',
-    connectedId: process.env['CODEF_CONNECTED_ID'] ?? '',
+    connectedId: optionalEnv(`${prefix}_CONNECTED_ID`),
   },
 
   mirae: {

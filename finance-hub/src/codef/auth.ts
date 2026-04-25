@@ -10,7 +10,8 @@ interface TokenCache {
 
 let memoryCache: TokenCache | null = null;
 
-const CACHE_FILE = path.join(config.dataDir, 'token-cache.json');
+// 환경별로 토큰 캐시 파일을 분리하여 환경 전환 시 크로스 오염 방지
+const CACHE_FILE = path.join(config.dataDir, `token-cache.${config.codef.env}.json`);
 
 /** 캐시 파일에서 토큰을 불러온다. */
 function loadFromFile(): TokenCache | null {

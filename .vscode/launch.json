@@ -11,15 +11,6 @@
     },
     {
       "type": "node",
-      "name": "[Ground] finance-hub dev",
-      "request": "launch",
-      "cwd": "${workspaceFolder}/finance-hub",
-      "runtimeExecutable": "yarn",
-      "runtimeArgs": ["dev"],
-      "console": "integratedTerminal"
-    },
-    {
-      "type": "node",
       "name": "[Ground] mcp-nexus dev",
       "request": "launch",
       "cwd": "${workspaceFolder}/mcp-nexus",

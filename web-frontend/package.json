@@ -8,7 +8,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "cross-env NODE_ENV=development webpack -w",
+    "dev": "cross-env NODE_ENV=development webpack && cross-env NODE_ENV=development webpack -w",
     "build": "cross-env NODE_ENV=production webpack",
     "lint": "eslint --config ../.eslintrc.js --resolve-plugins-relative-to . --fix src/**/*.ts",
     "lint:check": "eslint --config ../.eslintrc.js --resolve-plugins-relative-to . src/**/*.ts",

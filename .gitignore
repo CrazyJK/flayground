@@ -62,7 +62,7 @@ dist
 test-results
 screenshots
 
-# mcp
+# 비공개 설정 파일
 .env
 
 # cert folder
@@ -76,3 +76,8 @@ data/
 model-stats.json
 dependencies-viewer.json
 push-subscriptions.db
+token-cache.json
+
+# private
+private-memo.md
+

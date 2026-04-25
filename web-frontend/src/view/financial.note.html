@@ -3,9 +3,32 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Finance</title>
+    <title>Financial Note</title>
     <link rel="icon" type="image/png" href="./favicon/flay.png" />
     <!-- HtmlWebpackPlugin이 자동으로 CSS와 JS를 주입합니다 -->
   </head>
-  <body></body>
+  <body>
+    <div class="fn-page">
+      <!-- 헤더 -->
+      <header class="fn-page-header">
+        <span>💰 Financial Note</span>
+      </header>
+
+      <!-- 메인 영역: 기관/계좌 목록 + 폼 -->
+      <div class="fn-main-area">
+        <fn-institution-form></fn-institution-form>
+        <fn-institution-list></fn-institution-list>
+      </div>
+
+      <!-- 사이드 영역: 스냅샷 저장/조회 -->
+      <aside class="fn-side-area">
+        <fn-snapshot-panel></fn-snapshot-panel>
+      </aside>
+
+      <!-- 차트 영역 -->
+      <section class="fn-chart-area">
+        <fn-snapshot-chart></fn-snapshot-chart>
+      </section>
+    </div>
+  </body>
 </html>

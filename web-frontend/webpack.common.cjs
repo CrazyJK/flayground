@@ -59,6 +59,9 @@ const entryPoints = {
   tools: {
     'page.file-check': './src/view/page.file-check.ts',
   },
+  finance: {
+    'page.finance': './src/view/page.finance.ts',
+  },
 };
 
 // 모든 엔트리 포인트를 하나의 객체로 병합

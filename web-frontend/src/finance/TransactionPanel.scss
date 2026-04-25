@@ -1,0 +1,122 @@
+:host,
+finance-transaction {
+  display: block;
+  width: 100%;
+}
+
+.transaction-filter {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: var(--color-bg-card, var(--color-dark-charcoal));
+  border: 1px solid var(--color-border, var(--color-dark-light));
+  border-radius: var(--border-radius-largest);
+  margin-bottom: 1.25rem;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: var(--size-small);
+  }
+
+  input[type='date'],
+  select {
+    background-color: var(--color-bg, var(--color-dark));
+    border: 1px solid var(--color-border, var(--color-dark-light));
+    border-radius: var(--border-radius-large);
+    padding: 0.3rem 0.5rem;
+    font-size: var(--size-small);
+  }
+
+  button {
+    padding: 0.4rem 1.25rem;
+    background-color: var(--color-primary, #5c9ae0);
+    color: #fff;
+    border: none;
+    border-radius: var(--border-radius-large);
+    cursor: pointer;
+    font-size: var(--size-small);
+    font-weight: bold;
+
+    &:hover {
+      opacity: 0.85;
+    }
+  }
+}
+
+.tx-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem;
+  font-size: var(--size-small);
+  margin-bottom: 0.75rem;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid var(--color-border, var(--color-dark-light));
+
+  span {
+    color: var(--color-gray-dark);
+  }
+
+  strong {
+    color: var(--color-text);
+  }
+}
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.tx-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--size-small);
+
+  th,
+  td {
+    padding: 0.45rem 0.75rem;
+    border-bottom: 1px solid var(--color-border, var(--color-dark-light));
+    white-space: nowrap;
+  }
+
+  th {
+    background-color: var(--color-bg-header, var(--color-dark));
+    font-weight: bold;
+    text-align: left;
+  }
+
+  tr:hover td {
+    background-color: var(--color-bg-hover, rgba(255, 255, 255, 0.04));
+  }
+
+  .right {
+    text-align: right;
+  }
+
+  .mono {
+    font-family: var(--font-family-monospace);
+  }
+
+  .in {
+    color: var(--color-red, #e05c5c);
+  }
+
+  .out {
+    color: var(--color-blue, #5c9ae0);
+  }
+}
+
+.loading-msg,
+.empty-msg,
+.info-msg {
+  color: var(--color-gray-medium);
+  text-align: center;
+  padding: 2rem;
+}
+
+.error-msg {
+  color: var(--color-red, #e05c5c);
+  padding: 1rem;
+}

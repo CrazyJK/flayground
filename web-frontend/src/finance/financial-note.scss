@@ -1,13 +1,13 @@
-@import '../view/style/1.theme.scss';
-
-/* ══════════════════════════════════════
-   Financial Note - 전체 레이아웃
+﻿/* ══════════════════════════════════════
+    Financial Note - 전체 레이아웃
 ══════════════════════════════════════ */
 
 .fn-page {
+  --td-width: 92px;
+
   display: grid;
-  grid-template-columns: 1fr 320px;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: auto 1fr auto;
+  grid-template-columns: 1fr;
   gap: var(--size-small);
   padding: var(--size-small);
   height: 100vh;
@@ -15,47 +15,56 @@
   overflow: hidden;
   font-family: var(--font-family);
   font-size: var(--size-small);
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 .fn-page-header {
-  grid-column: 1 / -1;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--size-normal);
-  padding: var(--size-small) var(--size-normal);
-  background: var(--color-bg-secondary, #f8f8f8);
+  padding: 0.5rem 0.8rem;
+  background: var(--color-bg-elevated);
+  border: 1px solid var(--color-border-window);
   border-radius: var(--border-radius-largest);
-  font-size: var(--size-large);
+  font-size: var(--size-medium);
   font-weight: bold;
+  min-width: 0;
+  overflow: hidden;
+
+  .fn-header-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 }
 
 .fn-main-area {
+  overflow: hidden;
+  min-width: 0;
+  min-height: 0;
   display: flex;
   flex-direction: column;
-  gap: var(--size-small);
-  overflow-y: auto;
-}
-
-.fn-side-area {
-  display: flex;
-  flex-direction: column;
-  gap: var(--size-small);
-  overflow-y: auto;
 }
 
 .fn-chart-area {
-  grid-column: 1 / -1;
+  min-width: 0;
+  overflow: hidden;
 }
 
 /* ══════════════════════════════════════
-   공통 버튼
+    공통 버튼
 ══════════════════════════════════════ */
 
 .fn-btn {
   padding: 0.25rem 0.6rem;
-  border: 1px solid var(--color-border, #ccc);
+  border: 1px solid var(--color-border-window);
   border-radius: var(--border-radius-large);
-  background: var(--color-bg, #fff);
+  background: var(--color-bg-elevated);
+  color: var(--color-text);
   cursor: pointer;
   font-size: var(--size-smaller);
   line-height: 1.4;
@@ -63,17 +72,34 @@
   transition: background 0.15s;
 
   &:hover {
-    background: var(--color-light-dark, #ddd);
+    background: var(--color-bg-hover);
+    color: var(--color-white);
   }
 }
 
+.fn-btn-xs {
+  padding: 0.1rem 0.4rem;
+  font-size: var(--size-smallest);
+}
+
 .fn-btn-primary {
-  background: var(--color-primary, #3b82f6);
+  background: var(--color-primary);
   color: #fff;
-  border-color: var(--color-primary, #3b82f6);
+  border-color: var(--color-primary);
 
   &:hover {
-    background: var(--color-primary-dark, #2563eb);
+    background: var(--color-primary-dark);
+  }
+}
+
+.fn-btn-danger {
+  background: transparent;
+  color: var(--color-text-danger);
+  border-color: var(--color-text-danger);
+
+  &:hover {
+    background: var(--color-text-danger);
+    color: #fff;
   }
 }
 
@@ -87,13 +113,19 @@
   input,
   select {
     padding: 0.25rem 0.4rem;
-    border: 1px solid var(--color-border, #ccc);
+    border: 1px solid var(--color-border-window);
     border-radius: var(--border-radius-large);
     font-size: var(--size-smaller);
-    background: var(--color-bg, #fff);
-    color: var(--color-text, #333);
+    background: var(--color-bg-input);
+    color: var(--color-text);
     min-width: 0;
     flex: 1 1 100px;
+
+    &:focus {
+      outline: none;
+      background: var(--color-bg-input-focus);
+      border-color: var(--color-primary);
+    }
   }
 
   input[type='date'] {
@@ -105,7 +137,7 @@
 }
 
 .fn-empty {
-  color: var(--color-gray-dark, #aaa);
+  color: var(--color-text-secondary);
   font-size: var(--size-smaller);
   padding: 0.4rem;
 }
@@ -113,111 +145,331 @@
 .fn-num {
   text-align: right;
   font-variant-numeric: tabular-nums;
+  font-family: var(--font-family-monospace);
 }
 
 /* ══════════════════════════════════════
-   fn-institution-list
+    fn-asset-table (엑셀형 통합 뷰)
 ══════════════════════════════════════ */
 
-.fn-institution-list {
-  .fn-total-asset {
-    font-size: var(--size-medium);
+.fn-asset-table {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color-border-window);
+  border-radius: var(--border-radius-largest);
+}
+
+.fn-asset-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.4rem 0.7rem;
+  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border-window);
+  border-radius: var(--border-radius-largest) var(--border-radius-largest) 0 0;
+  flex-shrink: 0;
+
+  .fn-total-badge {
+    font-size: var(--size-small);
     font-weight: bold;
-    padding: 0.4rem 0;
-    border-bottom: 2px solid var(--color-border, #ccc);
-    margin-bottom: 0.5rem;
+    flex: 1;
   }
 
   .fn-total-value {
-    color: var(--color-primary, #3b82f6);
-    font-size: var(--size-large);
+    color: var(--color-primary);
+    font-size: var(--size-medium);
   }
 
-  .fn-institution-block {
-    border: 1px solid var(--color-border, #ddd);
-    border-radius: var(--border-radius-largest);
-    margin-bottom: 0.6rem;
-    overflow: hidden;
+  .fn-total-date {
+    font-size: var(--size-smallest);
+    color: var(--color-text-secondary);
+    font-weight: normal;
   }
 
-  .fn-institution-header {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.4rem 0.6rem;
-    background: var(--color-bg-secondary, #f5f5f5);
-    border-bottom: 1px solid var(--color-border, #ddd);
-
-    .fn-inst-icon {
-      font-size: 1.1rem;
-    }
-    .fn-inst-name {
-      flex: 1;
-      font-weight: bold;
-      font-size: var(--size-small);
-    }
-    .fn-inst-type-badge {
-      font-size: var(--size-smallest);
-      padding: 0.1rem 0.4rem;
-      border-radius: var(--border-radius-large);
-      background: var(--color-light-dark, #ddd);
-    }
+  .fn-save-result {
+    font-size: var(--size-smallest);
+    color: var(--color-text-secondary);
   }
 
-  .fn-account-row {
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
-    padding: 0.25rem 0.6rem;
-    border-bottom: 1px solid var(--color-light-mist, #eee);
-
-    &:last-child {
-      border-bottom: none;
-    }
-
-    .fn-account-name {
-      flex: 1;
-      font-size: var(--size-small);
-    }
-
-    .fn-amount-input {
-      width: 110px;
-      text-align: right;
-      padding: 0.2rem 0.3rem;
-      border: 1px solid var(--color-border, #ccc);
-      border-radius: var(--border-radius-large);
-      font-size: var(--size-smaller);
-      background: var(--color-bg, #fff);
-      color: var(--color-text, #333);
-      font-variant-numeric: tabular-nums;
-
-      &[readonly] {
-        background: var(--color-light, #f1f1f1);
-        color: var(--color-gray-medium, #999);
-      }
-    }
-  }
-
-  .fn-subtotal {
-    padding: 0.25rem 0.6rem;
-    text-align: right;
+  input[type='date'] {
+    padding: 0.25rem 0.4rem;
+    border: 1px solid var(--color-border-window);
+    border-radius: var(--border-radius-large);
     font-size: var(--size-smaller);
-    background: var(--color-bg-secondary, #f8f8f8);
-    color: var(--color-gray-dim, #777);
+    background: var(--color-bg-input);
+    color: var(--color-text);
 
-    strong {
-      color: var(--color-text, #333);
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
     }
   }
 }
 
+// 테이블 접으면 차트가 1fr 차지
+.fn-page:has(.fn-table-collapsed) {
+  grid-template-rows: auto auto 1fr;
+
+  fn-snapshot-chart .fn-chart-container {
+    height: 100%;
+    min-height: 200px;
+  }
+}
+
+.fn-asset-table.fn-table-collapsed {
+  height: auto;
+
+  .fn-table-wrapper {
+    display: none;
+  }
+}
+
+.fn-snapshot-bottom-bar {
+  display: none; // 삭제됨 (저장 버튼은 툴바로 이동)
+}
+
+// 테이블 접기/펼치기 → 상태에 따라 레이아웃 조정
+.fn-asset-table.fn-table-collapsed {
+  height: auto;
+
+  .fn-table-wrapper {
+    display: none;
+  }
+}
+
+.fn-page:has(.fn-table-collapsed) {
+  grid-template-rows: auto auto 1fr;
+
+  .fn-chart-area {
+    min-height: 0;
+  }
+
+  fn-snapshot-chart .fn-chart-container {
+    height: 100%;
+    min-height: 200px;
+  }
+}
+
+.fn-table-wrapper {
+  overflow: auto;
+  flex: 1;
+}
+
+.fn-asset-tbl {
+  border-collapse: collapse;
+  font-size: var(--size-smaller);
+
+  th,
+  td {
+    border: 1px solid var(--color-border-window);
+    padding: 0.2rem 0.4rem;
+    white-space: nowrap;
+
+    &:first-child {
+      border-left: 0;
+    }
+    &:last-child {
+      border-right: 0;
+    }
+  }
+
+  // ── 열 너비 고정 ──
+  .fn-th-date {
+    width: var(--td-width);
+    min-width: var(--td-width);
+  }
+  .fn-th-acc {
+    width: var(--td-width);
+    min-width: var(--td-width);
+  }
+  .fn-th-sub {
+    width: var(--td-width);
+    min-width: var(--td-width);
+  }
+  .fn-th-grand-total {
+    width: var(--td-width);
+    min-width: var(--td-width);
+  }
+
+  // ── 기본 헤더 스타일 ──
+  thead tr th {
+    font-size: var(--size-smaller);
+  }
+  // ── 헤더 행 1 (기관 그룹) ──
+  thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+    border-top: 1px solid var(--color-bg);
+    font-weight: bold;
+    text-align: center;
+  }
+
+  // ── 헤더 행 2 (계좌명) ──
+  thead tr:last-child th {
+    position: sticky;
+    top: 30px;
+    z-index: 2;
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+
+    .fn-acc-name {
+      display: block;
+      font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: var(--td-width);
+    }
+  }
+
+  // ── sticky 콜럼 ──
+  // left 값은 JS에서 inline style로 설정
+  thead th.fn-sticky-col {
+    position: sticky;
+    top: 0;
+    z-index: 5 !important;
+    background: var(--color-bg-elevated);
+  }
+
+  tbody .fn-sticky-col {
+    position: sticky;
+    z-index: 2 !important;
+    background: var(--color-bg-elevated);
+  }
+
+  // ── 왼쪽 sticky 콜럼 (소계, 총합계 등 좌측의 모든 컴포넌트) ──
+  .fn-sticky-left {
+    position: sticky;
+    background: var(--color-bg-elevated);
+    z-index: 2;
+  }
+  thead th.fn-sticky-left {
+    z-index: 4;
+  }
+
+  // ── 기관 유형 컴러 (그룹 헤더 및 소계 헤더 공통 적용) ──
+  .fn-inst-bank {
+    background: rgba(66, 133, 244, 0.18);
+  }
+  .fn-inst-insurance {
+    background: rgba(52, 168, 83, 0.18);
+  }
+  .fn-inst-stock {
+    background: rgba(255, 165, 0, 0.18);
+  }
+  .fn-inst-other {
+    background: rgba(150, 150, 150, 0.18);
+  }
+
+  // ── 기관 그룹 헤더 (colspan, 오른쪽 영역) ──
+  .fn-th-inst-group {
+    text-align: center;
+    padding: 0.3rem 0.4rem;
+
+    .fn-inst-group-name {
+      margin-right: 0.3rem;
+    }
+  }
+
+  // ── 소계 / 총합계 콘열 강조 ──
+  .fn-th-sub,
+  .fn-snap-subtotal,
+  .fn-subtotal-cell {
+    background: rgba(0, 0, 0, 0.05);
+    font-weight: bold;
+  }
+
+  .fn-th-grand-total,
+  .fn-snap-grand,
+  .fn-total-now {
+    background: rgba(0, 0, 0, 0.08);
+    font-weight: bold;
+    color: var(--color-primary);
+    border-right: 2px solid var(--color-border-window) !important;
+  }
+
+  // ── 현재 행 (편집 가능) ──
+  .fn-current-tr {
+    td {
+      border-bottom: 2px solid var(--color-border-window);
+    }
+
+    .fn-current-label {
+      font-weight: bold;
+      font-size: var(--size-smaller);
+    }
+
+    .fn-current-cell {
+      padding: 0.1rem 0.2rem;
+      vertical-align: middle;
+
+      .fn-current-cell-inner {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.2rem;
+      }
+
+      .fn-amount-input {
+        width: 100%;
+        text-align: right;
+        padding: 0.1rem 0.25rem;
+        border: 1px solid var(--color-border-window);
+        border-radius: var(--border-radius-large);
+        font-size: var(--size-smaller);
+        font-family: var(--font-family-monospace);
+        background: var(--color-bg-input);
+        color: var(--color-text);
+
+        &:focus {
+          outline: none;
+          background: var(--color-bg-input-focus);
+          border-color: var(--color-primary);
+        }
+
+        &[readonly] {
+          opacity: 0.6;
+          cursor: default;
+        }
+      }
+    }
+  }
+  .fn-negative {
+    color: #e57373 !important;
+  }
+
+  // ── 스냅샷 행 ──
+  .fn-snap-tr {
+    &:hover td {
+      background: var(--color-bg-hover);
+      color: var(--color-white);
+    }
+
+    .fn-snap-cell {
+      font-family: var(--font-family-monospace);
+      color: var(--color-text);
+    }
+  }
+
+  .fn-date-cell {
+    font-family: var(--font-family-monospace);
+    font-size: var(--size-smaller);
+    color: var(--color-text);
+    text-align: center;
+  }
+}
+
 /* ══════════════════════════════════════
-   fn-institution-form
+    fn-institution-form (모달 내부)
 ══════════════════════════════════════ */
 
 .fn-institution-form {
   .fn-form-section {
-    border: 1px solid var(--color-border, #ddd);
+    border: 1px solid var(--color-border-window);
     border-radius: var(--border-radius-largest);
     margin-bottom: 0.5rem;
     overflow: hidden;
@@ -225,13 +477,15 @@
     summary {
       padding: 0.4rem 0.6rem;
       cursor: pointer;
-      background: var(--color-bg-secondary, #f5f5f5);
+      background: var(--color-bg-elevated);
+      color: var(--color-text);
       font-weight: bold;
       font-size: var(--size-small);
       user-select: none;
 
       &:hover {
-        background: var(--color-light-dark, #ddd);
+        background: var(--color-bg-hover);
+        color: var(--color-white);
       }
     }
 
@@ -245,23 +499,131 @@
       flex-wrap: wrap;
       gap: 0.4rem;
       align-items: center;
-      border-top: 1px solid var(--color-light-mist, #eee);
+      border-top: 1px solid var(--color-border-window);
 
       label {
         font-size: var(--size-smaller);
         min-width: 80px;
+        color: var(--color-text-secondary);
+      }
+
+      input[type='file'] {
+        font-size: var(--size-smallest);
+        flex: 1 1 100px;
+        min-width: 0;
+        padding: 0;
+
+        &::file-selector-button {
+          padding: 0.1rem 0.4rem;
+          margin-right: 0.3rem;
+          font-size: var(--size-smallest);
+          border: 1px solid var(--color-border-window);
+          border-radius: var(--border-radius-large);
+          background: var(--color-bg-elevated);
+          color: var(--color-text);
+          cursor: pointer;
+
+          &:hover {
+            background: var(--color-bg-hover);
+            color: var(--color-white);
+          }
+        }
       }
     }
 
     .fn-import-result {
       font-size: var(--size-smallest);
-      color: var(--color-gray-dim, #777);
+      color: var(--color-text-secondary);
     }
+  }
+
+  .fn-reset-section {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.5rem 0;
+    margin-top: 0.4rem;
+    border-top: 1px solid var(--color-border-window);
+
+    .fn-reset-desc {
+      font-size: var(--size-smallest);
+      color: var(--color-text-secondary);
+    }
+  }
+
+  // ── 기관/계좌 관리 목록 ──
+  .fn-inst-mgmt-list {
+    padding: 0.4rem 0.6rem;
+    max-height: 280px;
+    overflow-y: auto;
+  }
+
+  .fn-mgmt-inst-block {
+    border: 1px solid var(--color-border-window);
+    border-radius: var(--border-radius-large);
+    margin-bottom: 0.4rem;
+    overflow: hidden;
+  }
+
+  .fn-mgmt-inst-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0.6rem;
+    background: var(--color-bg-elevated);
+    border-bottom: 1px solid var(--color-border-window);
+
+    .fn-mgmt-inst-name {
+      flex: 1;
+      font-weight: bold;
+      font-size: var(--size-smaller);
+
+      small {
+        font-weight: normal;
+        color: var(--color-text-secondary);
+      }
+    }
+
+    .fn-mgmt-acc-count {
+      font-size: var(--size-smallest);
+      color: var(--color-text-secondary);
+    }
+  }
+
+  .fn-mgmt-accs {
+    padding: 0.2rem 0.6rem;
+  }
+
+  .fn-mgmt-acc-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.15rem 0;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+
+    &:last-child {
+      border-bottom: none;
+    }
+
+    .fn-mgmt-acc-name {
+      flex: 1;
+      font-size: var(--size-smaller);
+
+      small {
+        color: var(--color-text-secondary);
+        font-size: var(--size-smallest);
+      }
+    }
+  }
+
+  .fn-empty-sm {
+    padding: 0.2rem 0;
+    font-size: var(--size-smallest);
   }
 }
 
 /* ══════════════════════════════════════
-   fn-stock-items
+    fn-stock-items
 ══════════════════════════════════════ */
 
 .fn-stock-items {
@@ -282,11 +644,16 @@
     th,
     td {
       padding: 0.25rem 0.4rem;
-      border: 1px solid var(--color-border, #ddd);
+      border: 1px solid var(--color-border-window);
     }
 
     th {
-      background: var(--color-bg-secondary, #f5f5f5);
+      background: var(--color-bg-elevated);
+      color: var(--color-text);
+    }
+
+    td {
+      color: var(--color-text);
     }
   }
 
@@ -294,6 +661,7 @@
     text-align: right;
     padding: 0.3rem 0;
     font-size: var(--size-small);
+    color: var(--color-text);
   }
 
   .fn-add-item-row {
@@ -305,133 +673,18 @@
 }
 
 /* ══════════════════════════════════════
-   fn-snapshot-panel
-══════════════════════════════════════ */
-
-.fn-snapshot-panel {
-  .fn-snapshot-save {
-    border: 1px solid var(--color-border, #ddd);
-    border-radius: var(--border-radius-largest);
-    padding: 0.5rem 0.6rem;
-    margin-bottom: 0.5rem;
-
-    h4 {
-      margin: 0 0 0.4rem;
-      font-size: var(--size-small);
-    }
-  }
-
-  .fn-save-result {
-    font-size: var(--size-smallest);
-    color: var(--color-gray-dim, #777);
-    margin-left: 0.4rem;
-  }
-
-  .fn-snapshot-list-wrap {
-    border: 1px solid var(--color-border, #ddd);
-    border-radius: var(--border-radius-largest);
-    padding: 0.5rem 0.6rem;
-    margin-bottom: 0.5rem;
-
-    h4 {
-      margin: 0 0 0.4rem;
-      font-size: var(--size-small);
-    }
-  }
-
-  .fn-snap-date-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    max-height: 250px;
-    overflow-y: auto;
-  }
-
-  .fn-snap-date-item {
-    border-bottom: 1px solid var(--color-light-mist, #eee);
-    &:last-child {
-      border-bottom: none;
-    }
-  }
-
-  .fn-snap-date-btn {
-    width: 100%;
-    text-align: left;
-    background: none;
-    border: none;
-    padding: 0.3rem 0.2rem;
-    cursor: pointer;
-    font-size: var(--size-smaller);
-    font-family: var(--font-family-monospace);
-    color: var(--color-primary, #3b82f6);
-
-    &:hover {
-      background: var(--color-light-mist, #eee);
-    }
-  }
-
-  .fn-snap-detail {
-    border: 1px solid var(--color-border, #ddd);
-    border-radius: var(--border-radius-largest);
-    padding: 0.5rem 0.6rem;
-  }
-
-  .fn-snap-detail-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 0.4rem;
-
-    h4 {
-      margin: 0;
-      flex: 1;
-      font-size: var(--size-small);
-    }
-  }
-
-  .fn-snap-total {
-    font-size: var(--size-medium);
-    font-weight: bold;
-    margin-bottom: 0.4rem;
-  }
-
-  .fn-snap-group {
-    margin-bottom: 0.5rem;
-
-    .fn-snap-group-name {
-      font-weight: bold;
-      font-size: var(--size-small);
-      margin-bottom: 0.2rem;
-    }
-
-    .fn-snap-subtotal {
-      text-align: right;
-      font-size: var(--size-smaller);
-      color: var(--color-gray-dim, #777);
-      padding-right: 0.4rem;
-    }
-  }
-
-  .fn-snap-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--size-smaller);
-
-    td {
-      padding: 0.2rem 0.4rem;
-      border: 1px solid var(--color-light-mist, #eee);
-    }
-  }
-}
-
-/* ══════════════════════════════════════
-   fn-snapshot-chart
+    fn-snapshot-chart
 ══════════════════════════════════════ */
 
 .fn-snapshot-chart {
-  border: 1px solid var(--color-border, #ddd);
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--color-border-window);
   border-radius: var(--border-radius-largest);
   padding: 0.5rem 0.6rem;
+  box-sizing: border-box;
+  background: var(--color-bg);
 
   .fn-chart-header {
     display: flex;
@@ -443,22 +696,80 @@
       flex: 1;
       font-weight: bold;
       font-size: var(--size-small);
+      color: var(--color-text);
+    }
+
+    .fn-chart-mode-btn {
+      opacity: 0.5;
+      &.fn-chart-mode-active {
+        opacity: 1;
+        background: var(--color-primary);
+        color: #fff;
+        border-color: var(--color-primary);
+      }
     }
   }
 
   .fn-chart-container {
     width: 100%;
+    height: 230px;
+  }
+
+  &.fn-collapsed {
+    .fn-chart-container {
+      display: none;
+    }
   }
 }
 
 /* ══════════════════════════════════════
-   Modal overlay for stock items
+    모달 오버레이 (기관/계좌 관리 폼)
+══════════════════════════════════════ */
+
+.fn-form-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-transparent);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+  z-index: 1000;
+
+  .fn-form-modal {
+    background: var(--color-bg);
+    border: 1px solid var(--color-border-window);
+    border-radius: var(--border-radius-huge);
+    padding: 1rem;
+    width: 580px;
+    max-width: 95vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: var(--box-shadow-large);
+
+    .fn-modal-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 0.8rem;
+
+      h3 {
+        flex: 1;
+        margin: 0;
+        font-size: var(--size-medium);
+        color: var(--color-text);
+      }
+    }
+  }
+}
+
+/* ══════════════════════════════════════
+    모달 오버레이 (증권 종목)
 ══════════════════════════════════════ */
 
 .fn-stock-modal-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--color-bg-transparent);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -466,14 +777,15 @@
 }
 
 .fn-stock-modal {
-  background: var(--color-bg, #fff);
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-window);
   border-radius: var(--border-radius-huge);
   padding: 1rem;
   min-width: 560px;
   max-width: 90vw;
   max-height: 80vh;
   overflow-y: auto;
-  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+  box-shadow: var(--box-shadow-large);
 
   .fn-modal-header {
     display: flex;
@@ -484,6 +796,7 @@
       flex: 1;
       margin: 0;
       font-size: var(--size-medium);
+      color: var(--color-text);
     }
   }
 }

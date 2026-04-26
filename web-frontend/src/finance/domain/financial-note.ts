@@ -82,5 +82,8 @@ export const saveSnapshot = (date: string, entries: SnapshotEntry[]): Promise<{ 
 export const importInstitutionsCsv = (csv: string): Promise<{ message: string; created: number; skipped: number }> => fetch(`${BASE}/import/institutions`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csv }) }).then((r) => r.json());
 export const importSnapshotsCsv = (csv: string): Promise<{ message: string; imported: number; failed: number }> => fetch(`${BASE}/import/snapshots`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ csv }) }).then((r) => r.json());
 
+/* ── 전체 초기화 ── */
+export const resetAll = (): Promise<{ message: string }> => fetch(`${BASE}/reset`, { method: 'DELETE' }).then((r) => r.json());
+
 /** 숫자를 한국어 천단위 포맷으로 변환 */
 export const fmtKrw = (n: number): string => Math.round(n).toLocaleString('ko-KR');

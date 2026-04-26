@@ -13,15 +13,19 @@ echarts.use([LineChart, GridComponent, LegendComponent, TooltipComponent, DataZo
 export class FnSnapshotChart extends HTMLElement {
   #chart: echarts.ECharts | null = null;
   #resizeObserver: ResizeObserver | null = null;
+  #chartMode: 'normal' | 'stacked' = 'normal';
+  #lastSummaries: SnapshotSummary[] = [];
 
   connectedCallback(): void {
     this.classList.add('fn-snapshot-chart');
     this.innerHTML = /* html */ `
       <div class="fn-chart-header">
         <span class="fn-chart-title">자산 추이</span>
-        <button id="fn-chart-refresh" class="fn-btn">새로고침</button>
+        <button id="fn-chart-mode-normal" class="fn-btn fn-btn-xs fn-chart-mode-btn fn-chart-mode-active">꺽은선</button>
+        <button id="fn-chart-mode-stacked" class="fn-btn fn-btn-xs fn-chart-mode-btn">누적 꺽은선</button>
+        <button id="fn-chart-collapse" class="fn-btn fn-btn-xs">▲ 접기</button>
       </div>
-      <div class="fn-chart-container" style="width:100%;height:400px;"></div>`;
+      <div class="fn-chart-container"></div>`;
 
     const container = this.querySelector<HTMLElement>('.fn-chart-container')!;
     this.#chart = echarts.init(container);
@@ -29,8 +33,28 @@ export class FnSnapshotChart extends HTMLElement {
     this.#resizeObserver = new ResizeObserver(() => this.#chart?.resize());
     this.#resizeObserver.observe(container);
 
-    this.querySelector('#fn-chart-refresh')?.addEventListener('click', () => this.load());
-    this.load();
+    // 차트 모드 토글
+    this.querySelector('#fn-chart-mode-normal')?.addEventListener('click', () => {
+      this.#chartMode = 'normal';
+      this.querySelector('#fn-chart-mode-normal')?.classList.add('fn-chart-mode-active');
+      this.querySelector('#fn-chart-mode-stacked')?.classList.remove('fn-chart-mode-active');
+      this.#renderChart(this.#lastSummaries);
+    });
+    this.querySelector('#fn-chart-mode-stacked')?.addEventListener('click', () => {
+      this.#chartMode = 'stacked';
+      this.querySelector('#fn-chart-mode-stacked')?.classList.add('fn-chart-mode-active');
+      this.querySelector('#fn-chart-mode-normal')?.classList.remove('fn-chart-mode-active');
+      this.#renderChart(this.#lastSummaries);
+    });
+
+    const collapseBtn = this.querySelector<HTMLButtonElement>('#fn-chart-collapse')!;
+    collapseBtn.addEventListener('click', () => {
+      const collapsed = this.classList.toggle('fn-collapsed');
+      collapseBtn.textContent = collapsed ? '▼ 펼치기' : '▲ 접기';
+      if (!collapsed) setTimeout(() => this.#chart?.resize(), 0);
+    });
+
+    void this.load();
   }
 
   disconnectedCallback(): void {
@@ -41,6 +65,7 @@ export class FnSnapshotChart extends HTMLElement {
   /** 서버에서 스냅샷 요약을 로드하고 차트를 렌더링한다 */
   async load(): Promise<void> {
     const summaries = await fetchSnapshotSummaries();
+    this.#lastSummaries = summaries;
     this.#renderChart(summaries);
   }
 
@@ -62,19 +87,37 @@ export class FnSnapshotChart extends HTMLElement {
     // 총합계 시리즈
     const totalSeries: (number | null)[] = dates.map((d) => {
       const m = dataMap.get(d);
-      if (!m) return null;
+      if (!m) return 0;
       return [...m.values()].reduce((a, b) => a + b, 0);
     });
 
     // 기관별 시리즈
+    const isStacked = this.#chartMode === 'stacked';
     const instSeriesList = instNames.map((name) => ({
       name,
       type: 'line' as const,
-      data: dates.map((d) => dataMap.get(d)?.get(name) ?? null),
+      stack: isStacked ? 'total' : undefined,
+      areaStyle: isStacked ? { opacity: 0.3 } : undefined,
+      data: dates.map((d) => dataMap.get(d)?.get(name) ?? 0),
       connectNulls: true,
       lineStyle: { width: 1.5 },
       symbolSize: 4,
     }));
+
+    const series: echarts.EChartsCoreOption['series'] = isStacked
+      ? instSeriesList // 누적 모드: 총합계 숨김 (스택 높이가 총합계)
+      : [
+          {
+            name: '총합계',
+            type: 'line' as const,
+            data: totalSeries,
+            connectNulls: true,
+            lineStyle: { width: 3, type: 'solid' as const },
+            symbolSize: 6,
+            z: 10,
+          },
+          ...instSeriesList,
+        ];
 
     const option: echarts.EChartsCoreOption = {
       backgroundColor: 'transparent',
@@ -120,18 +163,7 @@ export class FnSnapshotChart extends HTMLElement {
         { type: 'inside', start: 0, end: 100 },
         { type: 'slider', bottom: 0, height: 20 },
       ],
-      series: [
-        {
-          name: '총합계',
-          type: 'line',
-          data: totalSeries,
-          connectNulls: true,
-          lineStyle: { width: 3, type: 'solid' },
-          symbolSize: 6,
-          z: 10,
-        },
-        ...instSeriesList,
-      ],
+      series,
     };
 
     this.#chart.setOption(option, true);

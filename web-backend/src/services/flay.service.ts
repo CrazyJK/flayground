@@ -1,3 +1,4 @@
+import path from 'path';
 import { config } from '../config';
 import { Flay } from '../domain/flay';
 import { createHistory } from '../domain/history';
@@ -148,12 +149,12 @@ export function acceptCandidates(opus: string): void {
   for (const file of candiList) {
     if (isVideoFile(file)) {
       moveFileToDirectory(file, stagePath);
-      flay.files.movie.push(require('path').join(stagePath, require('path').basename(file)));
+      flay.files.movie.push(path.join(stagePath, path.basename(file)));
     } else if (isSubtitlesFile(file)) {
       // 비디오 파일이 있으면 그 위치로
-      const baseFolder = flay.files.movie.length > 0 ? require('path').dirname(flay.files.movie[0]) : stagePath;
+      const baseFolder = flay.files.movie.length > 0 ? path.dirname(flay.files.movie[0]) : stagePath;
       moveFileToDirectory(file, baseFolder);
-      flay.files.subtitles.push(require('path').join(baseFolder, require('path').basename(file)));
+      flay.files.subtitles.push(path.join(baseFolder, path.basename(file)));
     } else {
       throw new Error('알 수 없는 파일 확장자: ' + file);
     }

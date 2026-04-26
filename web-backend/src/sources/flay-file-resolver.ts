@@ -1,3 +1,4 @@
+import fs from 'fs';
 import path from 'path';
 
 /** 파일명 파싱 결과 */
@@ -46,7 +47,6 @@ export function resolveFlayFile(filePath: string): FlayFileResult {
   const normalizedFilename = `[${studio}][${opus}][${title}][${actress}][${release}]${extra}.${ext}`;
 
   if (fileName !== normalizedFilename) {
-    const fs = require('fs');
     const destPath = path.join(path.dirname(filePath), normalizedFilename);
     try {
       fs.renameSync(filePath, destPath);

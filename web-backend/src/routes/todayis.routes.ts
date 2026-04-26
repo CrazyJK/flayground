@@ -1,3 +1,4 @@
+import { spawn } from 'child_process';
 import crypto from 'crypto';
 import { Request, Response, Router } from 'express';
 import fs from 'fs';
@@ -124,7 +125,6 @@ router.post('/today-picks/play', (req, res) => {
     return;
   }
 
-  const { spawn } = require('child_process');
   const child = spawn(config.flay.playerApp, [todayis.filePath], { detached: true, stdio: 'ignore' });
   child.unref();
 

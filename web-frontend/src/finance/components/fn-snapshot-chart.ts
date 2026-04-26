@@ -13,8 +13,6 @@ echarts.use([LineChart, GridComponent, LegendComponent, TooltipComponent, DataZo
 export class FnSnapshotChart extends HTMLElement {
   #chart: echarts.ECharts | null = null;
   #resizeObserver: ResizeObserver | null = null;
-  #chartMode: 'normal' | 'stacked' = 'normal';
-  #lastSummaries: SnapshotSummary[] = [];
 
   connectedCallback(): void {
     this.classList.add('fn-snapshot-chart');
@@ -49,7 +47,6 @@ export class FnSnapshotChart extends HTMLElement {
   /** 서버에서 스냅샷 요약을 로드하고 차트를 렌더링한다 */
   async load(): Promise<void> {
     const summaries = await fetchSnapshotSummaries();
-    this.#lastSummaries = summaries;
     this.#renderChart(summaries);
   }
 

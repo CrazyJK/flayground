@@ -437,4 +437,16 @@ router.post('/financial-note/import/snapshots', (req, res) => {
   res.json({ message: `스냅샷 import 완료`, imported, failed });
 });
 
+/**
+ * @openapi
+ * /financial-note/reset:
+ *   delete:
+ *     tags: [FinancialNote]
+ *     summary: 전체 데이터 초기화 (기관/계좌/종목/스냅샷 모두 삭제)
+ */
+router.delete('/financial-note/reset', (_req, res) => {
+  repo.reset();
+  res.json({ message: '전체 데이터 초기화 완료' });
+});
+
 export default router;

@@ -184,6 +184,17 @@ function getDb(): Database.Database {
   return db;
 }
 
+/** 전체 데이터 초기화 (기관/계좌/종목/스냅샷 전체 삭제) */
+function reset(): void {
+  db.exec(`
+    DELETE FROM fn_snapshot_entry;
+    DELETE FROM fn_snapshot;
+    DELETE FROM fn_stock_item;
+    DELETE FROM fn_account;
+    DELETE FROM fn_institution;
+  `);
+}
+
 export const financialNoteRepository = {
   init,
   getInstitutions,
@@ -202,4 +213,5 @@ export const financialNoteRepository = {
   getSnapshotSummaries,
   saveSnapshot,
   getDb,
+  reset,
 };

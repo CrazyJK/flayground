@@ -172,37 +172,6 @@ router.delete('/financial-note/stock-items/:id', (req, res) => {
 });
 
 /* ══════════════════════════════════
-   주식 현재가 프록시
-══════════════════════════════════ */
-
-/**
- * @openapi
- * /financial-note/stock-price/{code}:
- *   get:
- *     tags: [FinancialNote]
- *     summary: 네이버 주식 현재가 조회 (CORS 우회 프록시)
- */
-router.get('/financial-note/stock-price/:code', async (req, res) => {
-  const { code } = req.params;
-  if (!/^\d{6}$/.test(code)) {
-    res.status(400).json({ error: '종목코드는 6자리 숫자' });
-    return;
-  }
-  try {
-    const response = await fetch(`https://m.stock.naver.com/api/stock/${code}/integration`);
-    if (!response.ok) {
-      res.status(502).json({ error: '네이버 API 오류' });
-      return;
-    }
-    const data = (await response.json()) as any;
-    const price = Number(data?.stockInfo?.closePrice ?? data?.stockInfo?.currentPrice ?? 0);
-    res.json({ code, price });
-  } catch {
-    res.status(502).json({ error: '주가 조회 실패' });
-  }
-});
-
-/* ══════════════════════════════════
    스냅샷
 ══════════════════════════════════ */
 

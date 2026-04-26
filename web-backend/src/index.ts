@@ -38,6 +38,7 @@ import memoRoutes from './routes/memo.routes';
 import pushRoutes from './routes/push.routes';
 import sseRoutes from './routes/sse.routes';
 import staticFileRoutes from './routes/static-file.routes';
+import stockPriceRoutes from './routes/stock-price.routes';
 import streamRoutes from './routes/stream.routes';
 import studioRoutes from './routes/studio.routes';
 import tagGroupRoutes from './routes/tag-group.routes';
@@ -107,6 +108,7 @@ function createApp(): express.Application {
   app.use(API_PREFIX, downloadRoutes);
   app.use(API_PREFIX, pushRoutes);
   app.use(API_PREFIX, financialNoteRoutes);
+  app.use(API_PREFIX, stockPriceRoutes);
 
   // Swagger UI
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

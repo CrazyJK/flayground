@@ -21,8 +21,6 @@ export class FnSnapshotChart extends HTMLElement {
     this.innerHTML = /* html */ `
       <div class="fn-chart-header">
         <span class="fn-chart-title">자산 추이</span>
-        <button id="fn-chart-mode-normal" class="fn-btn fn-btn-xs fn-chart-mode-btn fn-chart-mode-active">꺽은선</button>
-        <button id="fn-chart-mode-stacked" class="fn-btn fn-btn-xs fn-chart-mode-btn">누적 꺽은선</button>
         <button id="fn-chart-collapse" class="fn-btn fn-btn-xs">▲ 접기</button>
       </div>
       <div class="fn-chart-container"></div>`;
@@ -32,20 +30,6 @@ export class FnSnapshotChart extends HTMLElement {
 
     this.#resizeObserver = new ResizeObserver(() => this.#chart?.resize());
     this.#resizeObserver.observe(container);
-
-    // 차트 모드 토글
-    this.querySelector('#fn-chart-mode-normal')?.addEventListener('click', () => {
-      this.#chartMode = 'normal';
-      this.querySelector('#fn-chart-mode-normal')?.classList.add('fn-chart-mode-active');
-      this.querySelector('#fn-chart-mode-stacked')?.classList.remove('fn-chart-mode-active');
-      this.#renderChart(this.#lastSummaries);
-    });
-    this.querySelector('#fn-chart-mode-stacked')?.addEventListener('click', () => {
-      this.#chartMode = 'stacked';
-      this.querySelector('#fn-chart-mode-stacked')?.classList.add('fn-chart-mode-active');
-      this.querySelector('#fn-chart-mode-normal')?.classList.remove('fn-chart-mode-active');
-      this.#renderChart(this.#lastSummaries);
-    });
 
     const collapseBtn = this.querySelector<HTMLButtonElement>('#fn-chart-collapse')!;
     collapseBtn.addEventListener('click', () => {
@@ -92,32 +76,27 @@ export class FnSnapshotChart extends HTMLElement {
     });
 
     // 기관별 시리즈
-    const isStacked = this.#chartMode === 'stacked';
     const instSeriesList = instNames.map((name) => ({
       name,
       type: 'line' as const,
-      stack: isStacked ? 'total' : undefined,
-      areaStyle: isStacked ? { opacity: 0.3 } : undefined,
       data: dates.map((d) => dataMap.get(d)?.get(name) ?? 0),
       connectNulls: true,
       lineStyle: { width: 1.5 },
       symbolSize: 4,
     }));
 
-    const series: echarts.EChartsCoreOption['series'] = isStacked
-      ? instSeriesList // 누적 모드: 총합계 숨김 (스택 높이가 총합계)
-      : [
-          {
-            name: '총합계',
-            type: 'line' as const,
-            data: totalSeries,
-            connectNulls: true,
-            lineStyle: { width: 3, type: 'solid' as const },
-            symbolSize: 6,
-            z: 10,
-          },
-          ...instSeriesList,
-        ];
+    const series: echarts.EChartsCoreOption['series'] = [
+      {
+        name: '총합계',
+        type: 'line' as const,
+        data: totalSeries,
+        connectNulls: true,
+        lineStyle: { width: 3, type: 'solid' as const },
+        symbolSize: 6,
+        z: 10,
+      },
+      ...instSeriesList,
+    ];
 
     const option: echarts.EChartsCoreOption = {
       backgroundColor: 'transparent',
@@ -127,9 +106,25 @@ export class FnSnapshotChart extends HTMLElement {
           const date = params[0]?.axisValue ?? '';
           const lines = params
             .filter((p: any) => p.value !== null)
-            .map((p: any) => `<div>${p.marker}${p.seriesName}: <strong>${fmtKrw(p.value)}</strong></div>`)
+            .map(
+              (p: any) => `
+              <tr>
+                <td>${p.marker}${p.seriesName}</td>
+                <td style="text-align:right"><strong>${fmtKrw(p.value)}</strong></td>
+              </tr>`
+            )
             .join('');
-          return `<div style="font-size:12px"><strong>${date}</strong>${lines}</div>`;
+          return `
+            <table style="font-size:12px; background:var(--color-bg-elevated); color:var(--color-text); border:1px solid var(--color-border-window); padding:4px 8px; border-radius:4px;">
+              <thead>
+                <tr>
+                  <th colspan="2"><strong>${date}</strong></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${lines}
+              </tbody>
+            </table>`;
         },
       },
       legend: {
@@ -142,7 +137,7 @@ export class FnSnapshotChart extends HTMLElement {
         type: 'category',
         data: dates,
         axisLabel: {
-          rotate: 30,
+          rotate: 0,
           fontSize: 10,
           formatter: (val: string) => val.slice(0, 7), // YYYY-MM
         },
@@ -150,6 +145,8 @@ export class FnSnapshotChart extends HTMLElement {
       },
       yAxis: {
         type: 'value',
+        axisLine: { show: false },
+        splitLine: { show: false }, // 내부 격자선 숨기기
         axisLabel: {
           fontSize: 10,
           formatter: (val: number) => {

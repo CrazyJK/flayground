@@ -135,3 +135,5 @@ MIRAE
 dotenv
 OAEP
 inputmode
+rowspan
+mgmt

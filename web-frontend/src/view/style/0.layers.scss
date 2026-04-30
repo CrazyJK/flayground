@@ -1,0 +1,4 @@
+// CSS Cascade Layers 순서 선언
+// 나중에 선언된 레이어가 더 높은 우선순위를 가짐 (page > component > base)
+// 이 파일이 가장 먼저 @forward 되어야 layer 순서가 올바르게 확정됨
+@layer base, component, page;

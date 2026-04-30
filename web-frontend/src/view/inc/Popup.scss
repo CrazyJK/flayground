@@ -1,4 +1,8 @@
-/* Popup 전용 스타일 */
-body {
-  background-color: var(--color-bg-window) !important;
-}
+﻿@layer base, component, page;
+
+@layer page {
+  /* Popup 전용 스타일 */
+  body {
+    background-color: var(--color-bg-window);
+  }
+} // end @layer page

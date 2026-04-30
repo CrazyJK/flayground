@@ -1,300 +1,304 @@
+﻿@layer base, component, page;
+
 /*
  * 4. Component Settings
  * - 기본 HTML 요소 및 컴포넌트의 스타일 정의
  * - 폼 요소, 레이블, 버튼 등의 공통 스타일
  */
+// style.scss에서 선언된 @layer 순서에 따라 page 레이어보다 낮은 우선순위를 가짐
+@layer component {
+  /* 기본 박스 모델 설정 */
+  *,
+  ::after,
+  ::before {
+    box-sizing: border-box;
+  }
 
-/* 기본 박스 모델 설정 */
-*,
-::after,
-::before {
-  box-sizing: border-box;
-}
+  /* 기본 바디 스타일 */
+  body {
+    position: relative;
+    margin: 0;
+    padding: 0;
+    color: var(--color-text);
+    line-height: 1.5;
+    background-color: var(--color-bg);
+  }
 
-/* 기본 바디 스타일 */
-body {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  color: var(--color-text);
-  line-height: 1.5;
-  background-color: var(--color-bg);
-}
+  /* 헤더 요소 크기 */
+  h1 {
+    font-size: var(--size-huge);
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  h2 {
+    font-size: var(--size-larger);
+    margin-top: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  h3 {
+    font-size: var(--size-large);
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+  }
+  h4 {
+    font-size: var(--size-normal);
+    margin-top: 0.5rem;
+    margin-bottom: 0.25rem;
+  }
+  h5 {
+    font-size: var(--size-small);
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
+  h6 {
+    font-size: var(--size-smallest);
+    margin-top: 0.25rem;
+    margin-bottom: 0.25rem;
+  }
 
-/* 헤더 요소 크기 */
-h1 {
-  font-size: var(--size-huge);
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
-}
-h2 {
-  font-size: var(--size-larger);
-  margin-top: 0.75rem;
-  margin-bottom: 0.5rem;
-}
-h3 {
-  font-size: var(--size-large);
-  margin-top: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-h4 {
-  font-size: var(--size-normal);
-  margin-top: 0.5rem;
-  margin-bottom: 0.25rem;
-}
-h5 {
-  font-size: var(--size-small);
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
-}
-h6 {
-  font-size: var(--size-smallest);
-  margin-top: 0.25rem;
-  margin-bottom: 0.25rem;
-}
+  /* 기본 요소 공통 스타일 */
+  header,
+  main,
+  article,
+  footer,
+  div,
+  pre,
+  nav,
+  ul,
+  ol,
+  span,
+  label,
+  a,
+  button,
+  input,
+  select,
+  option,
+  textarea,
+  video {
+    position: relative;
+    color: var(--color-text);
+  }
 
-/* 기본 요소 공통 스타일 */
-header,
-main,
-article,
-footer,
-div,
-pre,
-nav,
-ul,
-ol,
-span,
-label,
-a,
-button,
-input,
-select,
-option,
-textarea,
-video {
-  position: relative;
-  color: var(--color-text);
-}
-
-/* 상호작용 요소 기본 스타일 */
-a,
-button,
-select,
-textarea,
-input,
-input + label {
-  background-color: transparent;
-  cursor: pointer;
-  display: inline;
-  margin: 0;
-  border: 0;
-  padding: 0;
-  font-family: inherit;
-  font-size: var(--size-large);
-  font-weight: 700;
-  text-shadow: var(--text-shadow);
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-/* 텍스트 입력 필드 스타일 */
-input[type='url'],
-input[type='date'],
-input[type='text'],
-input[type='search'],
-input[type='number'] {
-  cursor: initial;
-  padding: 0.25rem 0;
-  text-align: center;
-  background-color: var(--color-bg-input);
-  border-radius: var(--border-radius);
-
-  &:focus {
-    background-color: var(--color-bg-input-focus);
+  /* 상호작용 요소 기본 스타일 */
+  a,
+  button,
+  select,
+  textarea,
+  input,
+  input + label {
+    background-color: transparent;
+    cursor: pointer;
+    display: inline;
+    margin: 0;
+    border: 0;
+    padding: 0;
+    font-family: inherit;
+    font-size: var(--size-large);
+    font-weight: 700;
+    text-shadow: var(--text-shadow);
     outline: none;
-  }
-}
-
-/* 체크박스와 라디오 버튼 스타일 */
-input[type='checkbox'],
-input[type='radio'] {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  margin: -1px;
-  border: 0;
-  padding: 0;
-  clip: rect(0, 0, 0, 0);
-
-  &:checked + label {
-    color: var(--color-checked);
+    transition: all 0.2s ease;
   }
 
-  & + label {
-    transition: 0.4s;
-    &.border {
-      background-color: var(--color-bg);
-      border: 1px solid var(--color-border);
-      border-radius: var(--border-radius-large);
-      padding: 0.125rem 0.5rem 0.25rem;
+  /* 텍스트 입력 필드 스타일 */
+  input[type='url'],
+  input[type='date'],
+  input[type='text'],
+  input[type='search'],
+  input[type='number'] {
+    cursor: initial;
+    padding: 0.25rem 0;
+    text-align: center;
+    background-color: var(--color-bg-input);
+    border-radius: var(--border-radius);
+
+    &:focus {
+      background-color: var(--color-bg-input-focus);
+      outline: none;
+    }
+  }
+
+  /* 체크박스와 라디오 버튼 스타일 */
+  input[type='checkbox'],
+  input[type='radio'] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    margin: -1px;
+    border: 0;
+    padding: 0;
+    clip: rect(0, 0, 0, 0);
+
+    &:checked + label {
+      color: var(--color-checked);
+    }
+
+    & + label {
+      transition: 0.4s;
+      &.border {
+        background-color: var(--color-bg);
+        border: 1px solid var(--color-border);
+        border-radius: var(--border-radius-large);
+        padding: 0.125rem 0.5rem 0.25rem;
+        &:hover {
+          box-shadow: var(--box-shadow-small);
+        }
+      }
       &:hover {
-        box-shadow: var(--box-shadow-small);
+        text-shadow: var(--text-shadow-hover);
+      }
+      svg {
+        height: var(--size-large);
+        width: var(--size-large);
       }
     }
-    &:hover {
+  }
+
+  /* 링크 스타일 */
+  a {
+    text-decoration: none;
+    &:not(.disable):hover {
+      text-shadow: var(--text-shadow-hover);
+    }
+  }
+
+  /* 버튼 스타일 */
+  button {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+
+    &:not(.disable):hover {
       text-shadow: var(--text-shadow-hover);
     }
     svg {
-      height: var(--size-large);
-      width: var(--size-large);
+      width: 1.75rem;
+    }
+    span {
+      color: inherit;
     }
   }
-}
 
-/* 링크 스타일 */
-a {
-  text-decoration: none;
-  &:not(.disable):hover {
-    text-shadow: var(--text-shadow-hover);
+  /* 선택 요소 스타일 */
+  select {
+    padding: 0.25rem 0;
+    option {
+      background-color: var(--color-bg);
+      font-size: var(--size-normal);
+    }
   }
-}
 
-/* 버튼 스타일 */
-button {
-  display: inline-flex;
-  justify-content: center;
-  align-items: center;
+  /* 텍스트 영역 스타일 */
+  textarea {
+    cursor: initial;
+    padding: 0.25rem 0;
+    width: 100%;
+    background-color: var(--color-bg-input);
+    border-radius: var(--border-radius);
 
-  &:not(.disable):hover {
-    text-shadow: var(--text-shadow-hover);
+    &:focus {
+      background-color: var(--color-bg-input-focus);
+    }
   }
-  svg {
-    width: 1.75rem;
-  }
-  span {
-    color: inherit;
-  }
-}
 
-/* 선택 요소 스타일 */
-select {
-  padding: 0.25rem 0;
-  option {
+  /* 이미지 스타일 */
+  img {
+    position: relative;
+    display: block;
+    margin: auto;
+    height: 100%;
+    max-width: 100%;
+  }
+
+  /* 코드 블록 스타일 */
+  pre {
+    font-family: var(--font-family-monospace);
+    background-color: var(--color-bg-input);
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    overflow-x: auto;
+  }
+
+  /* 목록 스타일 초기화 */
+  ul,
+  ol {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* 레이블 스타일 */
+  label {
+    font-size: var(--size-large);
+    font-weight: 700;
+  }
+
+  /* 맞춤법 오류 스타일 제거 */
+  input::spelling-error,
+  textarea::spelling-error {
+    text-decoration: none;
+  }
+
+  /* 유틸리티 클래스 */
+  .disable {
+    color: var(--color-text-secondary) !important;
+    cursor: initial !important;
+    opacity: 0.7;
+  }
+  .hide {
+    display: none !important;
+  }
+  .error {
+    color: var(--color-text-danger) !important;
+  }
+  .warn {
+    color: var(--color-text-warn) !important;
+  }
+  .small {
+    font-size: small;
+  }
+
+  /* 배지 스타일 */
+  .badge {
+    float: right;
+    margin: 0 0 0 0.25rem;
+    font-size: var(--size-small);
+    font-style: normal;
+    font-weight: 400;
+    min-width: 1rem;
+    background-color: transparent;
+    border-radius: var(--border-radius);
+    padding: 0 0.25rem;
+  }
+
+  /* 카드 컴포넌트 스타일 */
+  .card {
     background-color: var(--color-bg);
-    font-size: var(--size-normal);
-  }
-}
+    border-radius: var(--border-radius-large);
+    box-shadow: var(--box-shadow-smallest);
+    padding: 1rem;
+    transition: box-shadow 0.3s ease;
 
-/* 텍스트 영역 스타일 */
-textarea {
-  cursor: initial;
-  padding: 0.25rem 0;
-  width: 100%;
-  background-color: var(--color-bg-input);
-  border-radius: var(--border-radius);
+    &:hover {
+      box-shadow: var(--box-shadow-small);
+    }
 
-  &:focus {
-    background-color: var(--color-bg-input-focus);
-  }
-}
-
-/* 이미지 스타일 */
-img {
-  position: relative;
-  display: block;
-  margin: auto;
-  height: 100%;
-  max-width: 100%;
-}
-
-/* 코드 블록 스타일 */
-pre {
-  font-family: var(--font-family-monospace);
-  background-color: var(--color-bg-input);
-  padding: 0.5rem;
-  border-radius: var(--border-radius);
-  overflow-x: auto;
-}
-
-/* 목록 스타일 초기화 */
-ul,
-ol {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-/* 레이블 스타일 */
-label {
-  font-size: var(--size-large);
-  font-weight: 700;
-}
-
-/* 맞춤법 오류 스타일 제거 */
-input::spelling-error,
-textarea::spelling-error {
-  text-decoration: none;
-}
-
-/* 유틸리티 클래스 */
-.disable {
-  color: var(--color-text-secondary) !important;
-  cursor: initial !important;
-  opacity: 0.7;
-}
-.hide {
-  display: none !important;
-}
-.error {
-  color: var(--color-text-danger) !important;
-}
-.warn {
-  color: var(--color-text-warn) !important;
-}
-.small {
-  font-size: small;
-}
-
-/* 배지 스타일 */
-.badge {
-  float: right;
-  margin: 0 0 0 0.25rem;
-  font-size: var(--size-small);
-  font-style: normal;
-  font-weight: 400;
-  min-width: 1rem;
-  background-color: transparent;
-  border-radius: var(--border-radius);
-  padding: 0 0.25rem;
-}
-
-/* 카드 컴포넌트 스타일 */
-.card {
-  background-color: var(--color-bg);
-  border-radius: var(--border-radius-large);
-  box-shadow: var(--box-shadow-smallest);
-  padding: 1rem;
-  transition: box-shadow 0.3s ease;
-
-  &:hover {
-    box-shadow: var(--box-shadow-small);
+    label,
+    a,
+    button {
+      font-size: var(--size-normal) !important;
+    }
   }
 
-  label,
-  a,
-  button {
-    font-size: var(--size-normal) !important;
+  /* 작은 요소 스타일 */
+  .small {
+    label,
+    a,
+    button {
+      font-size: var(--size-small) !important;
+      text-shadow: none;
+      padding: 0.125rem !important;
+    }
   }
-}
-
-/* 작은 요소 스타일 */
-.small {
-  label,
-  a,
-  button {
-    font-size: var(--size-small) !important;
-    text-shadow: none;
-    padding: 0.125rem !important;
-  }
-}
+} // end @layer component

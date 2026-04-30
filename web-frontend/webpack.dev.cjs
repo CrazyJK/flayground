@@ -56,11 +56,13 @@ function getEntryHtmlPlugins() {
   const { entry } = require('./webpack.common.cjs');
   const plugins = [];
   Object.keys(entry).forEach((entryName) => {
+    // popup.* 엔트리는 common-popup, 그 외는 common-page 청크만 포함
+    const commonChunk = entryName.startsWith('popup.') ? 'common-popup' : 'common-page';
     plugins.push(
       new HtmlWebpackPlugin({
         filename: `${entryName}.html`,
         template: `src/view/${entryName}.html`,
-        chunks: ['runtime', 'vendors', 'vendor.echarts', 'vendor.toast-ui', 'common', entryName], // 런타임, 벤더 청크 및 엔트리 포인트 청크 포함
+        chunks: ['runtime', 'vendors', 'vendor.echarts', 'vendor.toast-ui', commonChunk, entryName],
         inject: true, // JS와 CSS 자동 주입 활성화
       })
     );
@@ -127,8 +129,27 @@ module.exports = {
           priority: 10,
           reuseExistingChunk: true,
         },
+        // Page 기반 모듈을 별도 청크로 분리 (page.* 엔트리에만 포함)
+        pageBase: {
+          test: /[\\/]view[\\/]inc[\\/]Page/,
+          name: 'common-page',
+          chunks: 'all',
+          priority: 10,
+          enforce: true,
+          reuseExistingChunk: true,
+        },
+        // Popup 기반 모듈을 별도 청크로 분리 (popup.* 엔트리에만 포함)
+        popupBase: {
+          test: /[\\/]view[\\/]inc[\\/]Popup/,
+          name: 'common-popup',
+          chunks: 'all',
+          priority: 10,
+          enforce: true,
+          reuseExistingChunk: true,
+        },
+        // pageBase/popupBase를 제외한 나머지 공통 모듈
         common: {
-          minChunks: 2, // 최소 2개 이상의 청크에서 사용되는 모듈 분리
+          minChunks: 2,
           priority: -20,
           reuseExistingChunk: true,
           name: 'common',

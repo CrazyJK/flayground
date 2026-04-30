@@ -27,11 +27,13 @@ function getEntryHtmlPlugins() {
   const { entry } = require('./webpack.common.cjs');
   const plugins = [];
   Object.keys(entry).forEach((entryName) => {
+    // popup.* 엔트리는 common-popup, 그 외는 common-page 청크만 포함
+    const commonChunk = entryName.startsWith('popup.') ? 'common-popup' : 'common-page';
     plugins.push(
       new HtmlWebpackPlugin({
         filename: `${entryName}.html`,
         template: `src/view/${entryName}.html`,
-        chunks: [entryName],
+        chunks: [entryName, commonChunk],
         inject: true,
         minify: {
           collapseWhitespace: true,
@@ -150,6 +152,24 @@ module.exports = {
           name: 'vendor.echarts',
           chunks: 'all',
           priority: 10,
+          reuseExistingChunk: true,
+        },
+        // Page 기반 모듈을 별도 청크로 분리 (page.* 엔트리에만 포함)
+        pageBase: {
+          test: /[\\/]view[\\/]inc[\\/]Page/,
+          name: 'common-page',
+          chunks: 'all',
+          priority: 25,
+          enforce: true,
+          reuseExistingChunk: true,
+        },
+        // Popup 기반 모듈을 별도 청크로 분리 (popup.* 엔트리에만 포함)
+        popupBase: {
+          test: /[\\/]view[\\/]inc[\\/]Popup/,
+          name: 'common-popup',
+          chunks: 'all',
+          priority: 25,
+          enforce: true,
           reuseExistingChunk: true,
         },
         // 내부 유틸리티 라이브러리 분리

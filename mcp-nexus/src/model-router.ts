@@ -1,16 +1,12 @@
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { ModelEntry, config } from './config';
 import { GeminiProvider } from './providers/gemini-provider';
 import { GitHubProvider } from './providers/github-provider';
 import { GenerateOptions } from './providers/provider.interface';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
 /** 통계 파일 경로 */
-const STATS_FILE = path.join(__dirname, '../logs/model-stats.json');
+const STATS_FILE = path.join(process.cwd(), 'logs', 'model-stats.json');
 
 /** 모델 통계 내부 저장 타입 */
 interface ModelStats {

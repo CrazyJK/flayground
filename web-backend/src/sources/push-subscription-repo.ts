@@ -1,10 +1,6 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 /** Push 구독 정보 */
 export interface PushSubscription {
@@ -33,7 +29,7 @@ let db: Database.Database;
  * Java H2 + JPA PushSubscriptionRepository 대응
  */
 function init(): void {
-  const dbPath = path.resolve(__dirname, '..', '..', 'data', 'push-subscriptions.db');
+  const dbPath = path.resolve(process.cwd(), 'data', 'push-subscriptions.db');
 
   // data 디렉토리 생성
   const dataDir = path.dirname(dbPath);

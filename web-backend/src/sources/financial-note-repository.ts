@@ -1,11 +1,7 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { Account, Institution, InstitutionType, Snapshot, SnapshotEntry, StockItem } from '../domain/financial-note';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 let db: Database.Database;
 
@@ -13,7 +9,7 @@ let db: Database.Database;
  * SQLite DB를 초기화하고 테이블을 생성한다.
  */
 function init(): void {
-  const dbPath = path.resolve(__dirname, '..', '..', 'data', 'financial-note.db');
+  const dbPath = path.resolve(process.cwd(), 'data', 'financial-note.db');
   const dataDir = path.dirname(dbPath);
   if (!fs.existsSync(dataDir)) {
     fs.mkdirSync(dataDir, { recursive: true });

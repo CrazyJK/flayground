@@ -11,6 +11,28 @@ document.addEventListener('DOMContentLoaded', () => {
   const table = document.querySelector<FnAssetTable>('fn-asset-table');
   const snapChart = document.querySelector<FnSnapshotChart>('fn-snapshot-chart');
 
+  // ── 포트폴리오 현황 모달 ──
+  document.querySelector('#fn-portfolio-btn')?.addEventListener('click', () => {
+    if (document.querySelector('.fn-portfolio-modal-overlay')) return;
+
+    const overlay = document.createElement('div');
+    overlay.className = 'fn-portfolio-modal-overlay';
+    overlay.innerHTML = /* html */ `
+      <div class="fn-portfolio-modal">
+        <div class="fn-modal-header">
+          <h3>📊 포트폴리오 현황</h3>
+          <button class="fn-btn fn-modal-close">닫기</button>
+        </div>
+        <fn-portfolio-viewer></fn-portfolio-viewer>
+      </div>`;
+    document.body.appendChild(overlay);
+
+    overlay.querySelector('.fn-modal-close')?.addEventListener('click', () => overlay.remove());
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) overlay.remove();
+    });
+  });
+
   // ── 기관/계좌 관리 모달 ──
   document.querySelector('#fn-manage-btn')?.addEventListener('click', () => {
     if (document.querySelector('.fn-form-modal-overlay')) return;
@@ -35,7 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 폼에서 데이터 변경 시 테이블 새로고침
     overlay.querySelector<FnInstitutionForm>('fn-institution-form')?.addEventListener('fn:data-changed', () => {
       table?.refresh();
-      snapChart?.load();
+      void snapChart?.load();
     });
   });
 
@@ -72,11 +94,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── 데이터 변경 → 차트 새로고침 ──
   document.addEventListener('fn:data-changed', () => {
-    snapChart?.load();
+    void snapChart?.load();
   });
 
   // ── 스냅샷 저장 → 차트 새로고침 ──
   document.addEventListener('fn:snapshot-saved', () => {
-    snapChart?.load();
+    void snapChart?.load();
   });
 });

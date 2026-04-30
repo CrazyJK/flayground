@@ -800,3 +800,95 @@
     }
   }
 }
+
+/* ══════════════════════════════════════
+    모달 오버레이 (포트폴리오 현황)
+══════════════════════════════════════ */
+
+.fn-portfolio-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--color-bg-transparent);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 8vh;
+  z-index: 1000;
+}
+
+.fn-portfolio-modal {
+  background: var(--color-bg);
+  border: 1px solid var(--color-border-window);
+  border-radius: var(--border-radius-huge);
+  padding: 1rem;
+  width: 680px;
+  max-width: 95vw;
+  max-height: 84vh;
+  overflow-y: auto;
+  box-shadow: var(--box-shadow-large);
+
+  .fn-modal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
+
+    h3 {
+      flex: 1;
+      margin: 0;
+      font-size: var(--size-medium);
+      color: var(--color-text);
+    }
+  }
+}
+
+/* ── fn-portfolio-viewer 내부 ── */
+
+fn-portfolio-viewer.fn-portfolio-viewer {
+  display: block;
+}
+
+.fn-pv-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.fn-pv-section-title {
+  margin: 0 0 0.4rem;
+  font-size: var(--size-normal);
+  color: var(--color-text);
+}
+
+.fn-pv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--size-smaller);
+
+  th,
+  td {
+    padding: 0.3rem 0.5rem;
+    border: 1px solid var(--color-border-window);
+  }
+
+  thead th {
+    background: var(--color-bg-elevated);
+    font-weight: 600;
+  }
+
+  tfoot th {
+    background: var(--color-bg-elevated);
+    font-weight: 600;
+  }
+
+  tbody tr:hover td {
+    background: var(--color-bg-hover-subtle, var(--color-bg-elevated));
+  }
+}
+
+.fn-pv-fail {
+  color: var(--color-text-danger);
+}
+
+.fn-pv-loading {
+  color: var(--color-text-secondary);
+}

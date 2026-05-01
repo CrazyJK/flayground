@@ -178,14 +178,8 @@ export class SideNavBar extends GroundNav {
       const features = `width=${window.innerWidth}px,height=${window.innerHeight}px`;
       switch (target.id) {
         case 'pip': {
-          const element = document.createElement('div');
-          element.innerHTML = `
-            <div class="pip-container">
-              <div class="pip-header">PIP Content</div>
-              <div class="pip-content">This is a sample PIP window.</div>
-            </div>`;
           const pip = new FlayPIP();
-          void pip.open(element, { width: 300, height: 400 });
+          void pip.open(`PIP Content`, { width: 300, height: 400 });
           return;
         }
         case 'facade':

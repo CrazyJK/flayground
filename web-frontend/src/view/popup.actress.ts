@@ -3,7 +3,7 @@ import FlayAction from '@lib/services/FlayAction';
 import FlayFetch, { Actress, Flay } from '@lib/services/FlayFetch';
 import FlaySearch from '@lib/services/FlaySearch';
 import favoriteSVG from '@svg/favorite';
-import GridControl from '@ui/GridControl';
+import GridControl from '@lib/components/GridControl';
 import { generate } from '../ai/index-proxy';
 import './inc/Popup';
 import './popup.actress.scss';

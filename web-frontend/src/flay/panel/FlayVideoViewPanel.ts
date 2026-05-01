@@ -6,7 +6,7 @@ import RandomUtils from '@lib/common/RandomUtils';
 import TimeUtils from '@lib/common/TimeUtils';
 import basketSVG from '@svg/basket';
 import controlsSVG from '@svg/controls';
-import { ModalWindow } from '@ui/ModalWindow';
+import { ModalWindow } from '@lib/components/ModalWindow';
 import './FlayVideoViewPanel.scss';
 
 /** Window 객체에 알림 함수 추가 */

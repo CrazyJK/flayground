@@ -1,7 +1,7 @@
 import GroundUI from '@base/GroundUI';
 import FlayStorage from '@lib/storage/FlayStorage';
 import windowButton from '@svg/windowButton';
-import { ModalWindow } from '@ui/ModalWindow';
+import { ModalWindow } from '@lib/components/ModalWindow';
 
 export class BrowserPanel extends GroundUI {
   #input: HTMLInputElement;

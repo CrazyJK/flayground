@@ -4,7 +4,7 @@ import ApiClient from '@lib/services/ApiClient';
 import DateUtils from '@lib/common/DateUtils';
 import FileUtils from '@lib/media/FileUtils';
 import FlayStorage from '@lib/storage/FlayStorage';
-import { ModalWindow } from '@ui/ModalWindow';
+import { ModalWindow } from '@lib/components/ModalWindow';
 import './FlayMemoEditor.scss';
 
 const MEMO_STORAGE_KEY = 'flay-memo';

@@ -87,7 +87,6 @@ module.exports = {
       '@movie': path.resolve(__dirname, 'src/movie'),
       '@nav': path.resolve(__dirname, 'src/nav'),
       '@svg': path.resolve(__dirname, 'src/svg'),
-      '@ui': path.resolve(__dirname, 'src/ui'),
       '@spa': path.resolve(__dirname, 'src/spa'),
       '@ai': path.resolve(__dirname, 'src/ai'),
       '@finance': path.resolve(__dirname, 'src/finance'),

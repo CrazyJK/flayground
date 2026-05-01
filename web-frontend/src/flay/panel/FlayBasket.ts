@@ -5,7 +5,7 @@ import FlayStorage from '@lib/storage/FlayStorage';
 import RandomUtils from '@lib/common/RandomUtils';
 import trashBinSVG from '@svg/trashBin';
 import vaginaSVG from '@svg/vagina';
-import GridControl from '@ui/GridControl';
+import GridControl from '@lib/components/GridControl';
 import './FlayBasket.scss';
 
 const BASKET_KEY = 'flay-basket';

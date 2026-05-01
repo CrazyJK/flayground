@@ -4,8 +4,8 @@ import { toggleDebug } from '@lib/browser/DebugOutline';
 import FlayStorage from '@lib/storage/FlayStorage';
 import PushNotification from '@lib/browser/PushNotification';
 import { getServiceWorkerStatus } from '@lib/browser/ServiceWorkerManager';
-import { FlayPIP } from '@ui/FlayPIP';
-import { ModalWindow } from '@ui/ModalWindow';
+import { FlayPIP } from '@lib/components/FlayPIP';
+import { ModalWindow } from '@lib/components/ModalWindow';
 import './part/ThemeController';
 import './SideNavBar.scss';
 

@@ -1,6 +1,6 @@
 import FlayFetch, { Flay } from '@lib/services/FlayFetch';
 import FlayStorage from '@lib/storage/FlayStorage';
-import GridControl from '@ui/GridControl';
+import GridControl from '@lib/components/GridControl';
 import FlayMarker from '../flay/domain/FlayMarker';
 import './inc/Page';
 import './page.flay-tag.scss';

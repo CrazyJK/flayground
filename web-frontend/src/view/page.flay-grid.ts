@@ -5,7 +5,7 @@ import FlayArticle from '@flay/domain/FlayArticle';
 import FlayCondition from '@flay/panel/FlayCondition';
 import FlayFetch from '@lib/services/FlayFetch';
 import { addResizeListener } from '@lib/browser/windowAddEventListener';
-import GridControl from '@ui/GridControl';
+import GridControl from '@lib/components/GridControl';
 
 class Page {
   #opusList: string[];

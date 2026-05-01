@@ -7,16 +7,7 @@
   "singleQuote": true,
   "code": 360,
   "printWidth": 360,
-  "importOrder": [
-    "^@/(.*)$",
-    "^@lib/(.*)$",
-    "^@ui/(.*)$",
-    "^@svg/(.*)$",
-    "^@flay/(.*)$",
-    "^@image/(.*)$",
-    "^@movie/(.*)$",
-    "^[./]"
-  ],
+  "importOrder": ["^@/(.*)$", "^@lib/(.*)$", "^@svg/(.*)$", "^@flay/(.*)$", "^@image/(.*)$", "^@movie/(.*)$", "^[./]"],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true
 }

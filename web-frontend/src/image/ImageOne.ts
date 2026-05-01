@@ -3,7 +3,7 @@ import GroundImage from '@base/GroundImage';
 import { getDominatedColors } from '@lib/media/dominatedColor';
 import FlayFetch from '@lib/services/FlayFetch';
 import RandomUtils from '@lib/common/RandomUtils';
-import { Countdown, EVENT_COUNTDOWN_END } from '@ui/Countdown';
+import { Countdown, EVENT_COUNTDOWN_END } from '@lib/components/Countdown';
 import './ImageOne.scss';
 import './part/FlayImage';
 

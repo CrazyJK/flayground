@@ -1,9 +1,9 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import RandomUtils from '@lib/common/RandomUtils';
 import fetchJsonp from '@lib/services/fetchJsonp';
-import { Countdown } from '@ui/Countdown';
-import { ModalWindow } from '@ui/ModalWindow';
-import { TickTimer } from '@ui/TickTimer';
+import { Countdown } from '@lib/components/Countdown';
+import { ModalWindow } from '@lib/components/ModalWindow';
+import { TickTimer } from '@lib/components/TickTimer';
 import './inc/Page';
 import './test.scss';
 
@@ -137,7 +137,7 @@ class Page {
   }
 
   #browserWindow(wUnit: number) {
-    void import(/* webpackChunkName: "BrowserPanel" */ '@ui/BrowserPanel').then(({ BrowserPanel }) => {
+    void import(/* webpackChunkName: "BrowserPanel" */ '@lib/components/BrowserPanel').then(({ BrowserPanel }) => {
       document
         .querySelector('body > main')!
         .appendChild(

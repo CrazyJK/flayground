@@ -3,7 +3,7 @@ import ApiClient from '@lib/services/ApiClient';
 import { popupFlay } from '@lib/services/FlaySearch';
 import { OpusProvider } from '@lib/services/OpusProvider';
 import RandomUtils from '@lib/common/RandomUtils';
-import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '@ui/Countdown';
+import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '@lib/components/Countdown';
 
 export default class CoverPopout extends GroundFlay {
   #품번제공기;

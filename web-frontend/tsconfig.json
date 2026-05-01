@@ -55,7 +55,6 @@
       "@movie/*": ["src/movie/*"],
       "@nav/*": ["src/nav/*"],
       "@svg/*": ["src/svg/*"],
-      "@ui/*": ["src/ui/*"],
       "@spa/*": ["src/spa/*"],
       "@ai/*": ["src/ai/*"],
       "@finance/*": ["src/finance/*"],

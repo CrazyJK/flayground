@@ -9,7 +9,7 @@ import { initProviders } from './model-router';
 async function main(): Promise<void> {
   try {
     validateConfig();
-    initProviders();
+    await initProviders();
 
     const activeProviders = [config.geminiApiKey ? 'Gemini' : null, config.githubToken ? 'GitHub' : null].filter(Boolean).join(', ');
 

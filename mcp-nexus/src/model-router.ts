@@ -97,6 +97,21 @@ const modelBag: ModelEntry[] = [];
 let geminiProvider: GeminiProvider | undefined;
 let githubProvider: GitHubProvider | undefined;
 
+/** 제공자별 기본 검증 모델 */
+const DEFAULT_VALIDATE_MODELS: Record<'gemini' | 'github', string> = {
+  gemini: 'gemini-2.5-flash',
+  github: 'gpt-4o-mini',
+};
+
+/**
+ * 제공자별 검증용 모델명을 조회
+ * @param provider - 제공자 식별자
+ * @returns 검증에 사용할 모델명
+ */
+function getValidationModel(provider: 'gemini' | 'github'): string {
+  return config.ai.availableModels.find((m) => m.provider === provider)?.name ?? DEFAULT_VALIDATE_MODELS[provider];
+}
+
 /**
  * 활성 모델로 셔플 백을 채움
  */
@@ -129,15 +144,38 @@ function pickRandomModel(): ModelEntry {
 /**
  * 제공자 초기화. validateConfig() 호출 후 실행
  */
-export function initProviders(): void {
+export async function initProviders(): Promise<void> {
+  geminiProvider = undefined;
+  githubProvider = undefined;
+
   if (config.geminiApiKey) {
-    geminiProvider = new GeminiProvider(config.geminiApiKey);
-    console.info('[Nexus] Gemini 제공자 초기화 완료');
+    const provider = new GeminiProvider(config.geminiApiKey);
+    const modelName = getValidationModel('gemini');
+    try {
+      await provider.validateAccess(modelName);
+      geminiProvider = provider;
+      console.info(`[Nexus] Gemini 제공자 검증 완료 (${modelName})`);
+    } catch (error: any) {
+      console.warn(`[Nexus] Gemini 토큰 검증 실패 - 비활성화됩니다. ${error?.message ?? String(error)}`);
+    }
   }
+
   if (config.githubToken) {
-    githubProvider = new GitHubProvider(config.githubToken);
-    console.info('[Nexus] GitHub 제공자 초기화 완료');
+    const provider = new GitHubProvider(config.githubToken);
+    const modelName = getValidationModel('github');
+    try {
+      await provider.validateAccess(modelName);
+      githubProvider = provider;
+      console.info(`[Nexus] GitHub 제공자 검증 완료 (${modelName})`);
+    } catch (error: any) {
+      console.warn(`[Nexus] GitHub 토큰 검증 실패 - 비활성화됩니다. ${error?.message ?? String(error)}`);
+    }
   }
+
+  if (!geminiProvider && !githubProvider) {
+    throw new Error('사용 가능한 AI 제공자가 없습니다. API 키 유효성/권한을 확인하세요.');
+  }
+
   refillBag();
 }
 

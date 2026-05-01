@@ -21,6 +21,19 @@ export class GitHubProvider implements AIProvider {
   }
 
   /**
+   * 토큰 유효성/권한을 경량 요청으로 사전 검증
+   * @param modelName - 검증에 사용할 GitHub 모델명
+   */
+  async validateAccess(modelName: string): Promise<void> {
+    await this.client.chat.completions.create({
+      messages: [{ role: 'user', content: 'ping' }],
+      model: modelName,
+      max_tokens: 1,
+      temperature: 0,
+    });
+  }
+
+  /**
    * 단일 프롬프트로 텍스트 생성
    * @param prompt - 입력 프롬프트
    * @param modelName - 사용할 GitHub 모델명

@@ -18,6 +18,21 @@ export class GeminiProvider implements AIProvider {
   }
 
   /**
+   * API 키의 유효성/권한을 경량 요청으로 사전 검증
+   * @param modelName - 검증에 사용할 Gemini 모델명
+   */
+  async validateAccess(modelName: string): Promise<void> {
+    const model = this.genAI.getGenerativeModel({ model: modelName });
+    await model.generateContent({
+      contents: [{ role: 'user', parts: [{ text: 'ping' }] }],
+      generationConfig: {
+        maxOutputTokens: 1,
+        temperature: 0,
+      },
+    });
+  }
+
+  /**
    * 단일 프롬프트로 텍스트 생성
    * @param prompt - 입력 프롬프트
    * @param modelName - 사용할 Gemini 모델명

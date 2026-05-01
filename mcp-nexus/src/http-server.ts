@@ -363,7 +363,7 @@ class HTTPServer {
 async function main(): Promise<void> {
   try {
     validateConfig();
-    initProviders();
+    await initProviders();
 
     const httpServer = new HTTPServer();
     const port = parseInt(process.env.PORT || '3002', 10);

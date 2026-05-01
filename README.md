@@ -169,7 +169,7 @@ GITHUB_TOKEN=...
 
 | 파일                    | 설명             |
 | ----------------------- | ---------------- |
-| `logs/model-stats.json` | 모델별 호출 통계 |
+| `data/model-stats.json` | 모델별 호출 통계 |
 
 ---
 

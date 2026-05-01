@@ -14,7 +14,7 @@ flay-tag {
     margin-bottom: 0.25rem;
 
     &:hover {
-      label {
+      input[type='checkbox'] + label {
         background-color: rgba(165, 181, 255, 0.125);
         border-color: rgba(165, 181, 255, 0.25);
 
@@ -24,7 +24,7 @@ flay-tag {
       }
     }
 
-    label {
+    input[type='checkbox'] + label {
       font-size: var(--size-medium);
       padding: 0.25rem;
       transition: box-shadow 0.4s 0.2s;
@@ -35,6 +35,10 @@ flay-tag {
       &.candidate {
         text-shadow: var(--text-shadow-active);
       }
+    }
+    input[type='checkbox']:checked + label {
+      color: var(--color-checked);
+      text-shadow: var(--text-shadow-active);
     }
   }
 

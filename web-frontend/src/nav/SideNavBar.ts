@@ -1,11 +1,11 @@
 import GroundNav from '@base/GroundNav';
 import '@flay/panel/FlayMonitor';
 import { toggleDebug } from '@lib/browser/DebugOutline';
-import FlayStorage from '@lib/storage/FlayStorage';
 import PushNotification from '@lib/browser/PushNotification';
 import { getServiceWorkerStatus } from '@lib/browser/ServiceWorkerManager';
 import { FlayPIP } from '@lib/components/FlayPIP';
 import { ModalWindow } from '@lib/components/ModalWindow';
+import FlayStorage from '@lib/storage/FlayStorage';
 import './part/ThemeController';
 import './SideNavBar.scss';
 
@@ -178,9 +178,6 @@ export class SideNavBar extends GroundNav {
       const features = `width=${window.innerWidth}px,height=${window.innerHeight}px`;
       switch (target.id) {
         case 'pip': {
-          const pipInfo = FlayPIP.getGlobalPIPInfo();
-          console.log('현재 PIP 상태:', pipInfo);
-
           const element = document.createElement('div');
           element.innerHTML = '<h1>PIP Content</h1><p>This is a sample PIP window.</p>';
           const pip = new FlayPIP();

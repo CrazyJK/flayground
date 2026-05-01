@@ -45,19 +45,19 @@
     // 경로 별칭
     "baseUrl": ".",
     "paths": {
+      "@ai/*": ["src/ai/*"],
       "@attach/*": ["src/attach/*"],
       "@base/*": ["src/base/*"],
       "@diary/*": ["src/diary/*"],
       "@editor/*": ["src/editor/*"],
+      "@finance/*": ["src/finance/*"],
       "@flay/*": ["src/flay/*"],
       "@image/*": ["src/image/*"],
       "@lib/*": ["src/lib/*"],
       "@movie/*": ["src/movie/*"],
       "@nav/*": ["src/nav/*"],
-      "@svg/*": ["src/svg/*"],
       "@spa/*": ["src/spa/*"],
-      "@ai/*": ["src/ai/*"],
-      "@finance/*": ["src/finance/*"],
+      "@svg/*": ["src/svg/*"],
       "@domain/*": ["../web-backend/src/domain/*"]
     },
 

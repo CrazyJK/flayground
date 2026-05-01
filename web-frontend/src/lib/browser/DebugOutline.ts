@@ -1,4 +1,4 @@
-import FlayStorage from '@lib/FlayStorage';
+import FlayStorage from '@lib/storage/FlayStorage';
 
 const DEBUG_KEY = 'debug.web';
 

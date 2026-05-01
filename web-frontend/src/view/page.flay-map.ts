@@ -1,6 +1,6 @@
-import ApiClient from '@lib/ApiClient';
-import FlayFetch, { type Flay } from '@lib/FlayFetch';
-import { popupActress, popupFlay, popupStudio, popupTag } from '@lib/FlaySearch';
+import ApiClient from '@lib/services/ApiClient';
+import FlayFetch, { type Flay } from '@lib/services/FlayFetch';
+import { popupActress, popupFlay, popupStudio, popupTag } from '@lib/services/FlaySearch';
 import { packEnclose, packSiblings } from 'd3-hierarchy';
 import { GraphChart } from 'echarts/charts';
 import { TooltipComponent } from 'echarts/components';

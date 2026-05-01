@@ -1,7 +1,7 @@
 import FlayArticle from '@flay/domain/FlayArticle';
 import FlayCondition from '@flay/panel/FlayCondition';
-import FlayFetch from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
+import FlayFetch from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
 import './inc/Page';
 import './page.flay-one.scss';
 

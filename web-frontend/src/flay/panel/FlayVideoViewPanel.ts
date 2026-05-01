@@ -1,9 +1,9 @@
 import GroundFlay from '@base/GroundFlay';
 import { FlayVideoPlayer } from '@flay/panel/FlayVideoPlayer';
-import { FlayProvider } from '@lib/FlayProvider';
-import FlayStorage from '@lib/FlayStorage';
-import RandomUtils from '@lib/RandomUtils';
-import TimeUtils from '@lib/TimeUtils';
+import { FlayProvider } from '@lib/services/FlayProvider';
+import FlayStorage from '@lib/storage/FlayStorage';
+import RandomUtils from '@lib/common/RandomUtils';
+import TimeUtils from '@lib/common/TimeUtils';
 import basketSVG from '@svg/basket';
 import controlsSVG from '@svg/controls';
 import { ModalWindow } from '@ui/ModalWindow';

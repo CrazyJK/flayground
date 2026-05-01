@@ -1,6 +1,6 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
 import './FlayTag.scss';
 
 /**

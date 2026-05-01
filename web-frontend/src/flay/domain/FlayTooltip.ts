@@ -1,5 +1,5 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
 import './FlayTooltip.scss';
 
 export class FlayTooltip extends GroundFlay {

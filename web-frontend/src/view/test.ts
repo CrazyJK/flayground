@@ -1,6 +1,6 @@
 import FlayMarker from '@flay/domain/FlayMarker';
-import RandomUtils from '@lib/RandomUtils';
-import fetchJsonp from '@lib/fetchJsonp';
+import RandomUtils from '@lib/common/RandomUtils';
+import fetchJsonp from '@lib/services/fetchJsonp';
 import { Countdown } from '@ui/Countdown';
 import { ModalWindow } from '@ui/ModalWindow';
 import { TickTimer } from '@ui/TickTimer';

@@ -1,9 +1,9 @@
 import { EventCode } from '@base/GroundConstant';
 import GroundImage from '@base/GroundImage';
-import FlayFetch from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
-import StyleUtils from '@lib/StyleUtils';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import FlayFetch from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
+import StyleUtils from '@lib/ui/StyleUtils';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 
 export class ImageThumbnail extends GroundImage {
   private static readonly ThumbnailDimensions = [3, 4];

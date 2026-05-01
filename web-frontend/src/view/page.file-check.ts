@@ -1,5 +1,5 @@
-import FilePasswordChecker, { PasswordCheckResult } from '@lib/FilePasswordChecker';
-import FileUtils from '@lib/FileUtils';
+import FilePasswordChecker, { PasswordCheckResult } from '@lib/security/FilePasswordChecker';
+import FileUtils from '@lib/media/FileUtils';
 import './inc/Page';
 import './page.file-check.scss';
 

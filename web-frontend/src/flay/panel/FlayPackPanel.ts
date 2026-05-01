@@ -1,8 +1,8 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import PackUtils, { PackStrategies, PackStrategy } from '@lib/PackUtils';
-import RandomUtils from '@lib/RandomUtils';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import PackUtils, { PackStrategies, PackStrategy } from '@lib/media/PackUtils';
+import RandomUtils from '@lib/common/RandomUtils';
 import './FlayPackPanel.scss';
 
 /**

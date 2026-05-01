@@ -1,6 +1,6 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayFetch, { type Actress, type Archive, type Flay } from '@lib/FlayFetch';
-import { popupActress, popupStudio } from '@lib/FlaySearch';
+import FlayFetch, { type Actress, type Archive, type Flay } from '@lib/services/FlayFetch';
+import { popupActress, popupStudio } from '@lib/services/FlaySearch';
 import { BarChart, PieChart, TreemapChart } from 'echarts/charts';
 import { GridComponent, LegendComponent, TitleComponent, TooltipComponent } from 'echarts/components';
 import * as echarts from 'echarts/core';

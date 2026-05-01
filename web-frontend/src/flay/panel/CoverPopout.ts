@@ -1,8 +1,8 @@
 import GroundFlay from '@base/GroundFlay';
-import ApiClient from '@lib/ApiClient';
-import { popupFlay } from '@lib/FlaySearch';
-import { OpusProvider } from '@lib/OpusProvider';
-import RandomUtils from '@lib/RandomUtils';
+import ApiClient from '@lib/services/ApiClient';
+import { popupFlay } from '@lib/services/FlaySearch';
+import { OpusProvider } from '@lib/services/OpusProvider';
+import RandomUtils from '@lib/common/RandomUtils';
 import { Countdown, EVENT_COUNTDOWN_END, EVENT_COUNTDOWN_START } from '@ui/Countdown';
 
 export default class CoverPopout extends GroundFlay {

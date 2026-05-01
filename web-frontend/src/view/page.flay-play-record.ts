@@ -1,7 +1,7 @@
 import PlayTimeDB, { PlayTimeRecord } from '@flay/idb/PlayTimeDB';
-import DateUtils from '@lib/DateUtils';
-import FlayFetch from '@lib/FlayFetch';
-import TimeUtils from '@lib/TimeUtils';
+import DateUtils from '@lib/common/DateUtils';
+import FlayFetch from '@lib/services/FlayFetch';
+import TimeUtils from '@lib/common/TimeUtils';
 import './inc/Page';
 import './page.flay-play-record.scss';
 

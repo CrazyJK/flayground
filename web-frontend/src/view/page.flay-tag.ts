@@ -1,5 +1,5 @@
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import FlayStorage from '@lib/FlayStorage';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import FlayStorage from '@lib/storage/FlayStorage';
 import GridControl from '@ui/GridControl';
 import FlayMarker from '../flay/domain/FlayMarker';
 import './inc/Page';

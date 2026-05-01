@@ -1,7 +1,7 @@
 import FlayCard from '@flay/domain/FlayCard';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
-import FlaySearch from '@lib/FlaySearch';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { Actress, Flay } from '@lib/services/FlayFetch';
+import FlaySearch from '@lib/services/FlaySearch';
 import favoriteSVG from '@svg/favorite';
 import GridControl from '@ui/GridControl';
 import { generate } from '../ai/index-proxy';

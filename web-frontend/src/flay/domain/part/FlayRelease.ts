@@ -1,6 +1,6 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
-import DateUtils from '@lib/DateUtils';
-import { Flay } from '@lib/FlayFetch';
+import DateUtils from '@lib/common/DateUtils';
+import { Flay } from '@lib/services/FlayFetch';
 import './FlayRelease.scss';
 
 /**

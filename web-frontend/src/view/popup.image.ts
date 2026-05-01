@@ -1,7 +1,7 @@
 import FlayImage from '@image/part/FlayImage';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { ImageDomain } from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { ImageDomain } from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
 import folderSVG from '@svg/folder';
 import trashBin from '@svg/trashBin';
 import './popup.image.scss';

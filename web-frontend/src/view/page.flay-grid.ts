@@ -3,8 +3,8 @@ import './page.flay-grid.scss';
 
 import FlayArticle from '@flay/domain/FlayArticle';
 import FlayCondition from '@flay/panel/FlayCondition';
-import FlayFetch from '@lib/FlayFetch';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import FlayFetch from '@lib/services/FlayFetch';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import GridControl from '@ui/GridControl';
 
 class Page {

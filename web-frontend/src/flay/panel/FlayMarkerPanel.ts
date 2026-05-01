@@ -1,8 +1,8 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayMarker, { ShapeType } from '@flay/domain/FlayMarker';
-import FlayFetch from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import FlayFetch from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import { EVENT_TIMER_END, EVENT_TIMER_START, EVENT_TIMER_TICK, TickTimer } from '@ui/TickTimer';
 import './FlayMarkerPanel.scss';
 

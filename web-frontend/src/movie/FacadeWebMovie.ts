@@ -1,6 +1,6 @@
 import GroundMovie from '@base/GroundMovie';
-import ApiClient from '@lib/ApiClient';
-import RandomUtils from '@lib/RandomUtils';
+import ApiClient from '@lib/services/ApiClient';
+import RandomUtils from '@lib/common/RandomUtils';
 import './FacadeWebMovie.scss';
 
 interface TodayItem {

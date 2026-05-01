@@ -1,4 +1,4 @@
-import FlayStorage from '@lib/FlayStorage';
+import FlayStorage from '@lib/storage/FlayStorage';
 
 // 테마 타입 정의
 type ThemeSetting = 'os' | 'light' | 'dark';

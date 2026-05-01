@@ -1,11 +1,11 @@
 import GroundImage from '@base/GroundImage';
 import '@image/part/ImageFrame';
 import ImageFrame from '@image/part/ImageFrame';
-import ApiClient from '@lib/ApiClient';
-import DateUtils from '@lib/DateUtils';
-import FileUtils from '@lib/FileUtils';
-import FlayFetch, { ImageDomain } from '@lib/FlayFetch';
-import { lazyLoadBackgroundImage } from '@lib/ImageLazyLoad';
+import ApiClient from '@lib/services/ApiClient';
+import DateUtils from '@lib/common/DateUtils';
+import FileUtils from '@lib/media/FileUtils';
+import FlayFetch, { ImageDomain } from '@lib/services/FlayFetch';
+import { lazyLoadBackgroundImage } from '@lib/ui/ImageLazyLoad';
 import './ImagePage.scss';
 
 // 이미지 정보 타입 정의 (사용하지 않음 - ImageDomain 사용)

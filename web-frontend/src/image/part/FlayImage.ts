@@ -1,8 +1,8 @@
 import GroundImage from '@base/GroundImage';
-import ApiClient from '@lib/ApiClient';
-import DateUtils from '@lib/DateUtils';
-import FileUtils from '@lib/FileUtils';
-import FlayFetch, { ImageDomain } from '@lib/FlayFetch';
+import ApiClient from '@lib/services/ApiClient';
+import DateUtils from '@lib/common/DateUtils';
+import FileUtils from '@lib/media/FileUtils';
+import FlayFetch, { ImageDomain } from '@lib/services/FlayFetch';
 import './FlayImage.scss';
 
 export interface FlayImageOptions {

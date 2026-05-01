@@ -1,7 +1,7 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
-import DateUtils from '@lib/DateUtils';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
+import DateUtils from '@lib/common/DateUtils';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
 import rankSVG from '@svg/ranks';
 import './FlayRank.scss';
 

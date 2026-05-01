@@ -1,5 +1,5 @@
-import ApiClient from '@lib/ApiClient';
-import StringUtils from '@lib/StringUtils';
+import ApiClient from '@lib/services/ApiClient';
+import StringUtils from '@lib/common/StringUtils';
 import windowButton from '@svg/windowButton';
 import './FlayAttach.scss';
 

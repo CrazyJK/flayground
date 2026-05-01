@@ -1,7 +1,7 @@
 import { nextWindowzIndex } from '@base/GroundConstant';
 import GroundUI from '@base/GroundUI';
-import FlayStorage from '@lib/FlayStorage';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import FlayStorage from '@lib/storage/FlayStorage';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import windowButton from '@svg/windowButton';
 import './ModalWindow.scss';
 

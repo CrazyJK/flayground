@@ -1,6 +1,6 @@
-import FlayFetch, { Actress } from '@lib/FlayFetch';
-import { popupActress, popupActressInfo } from '@lib/FlaySearch';
-import StringUtils from '@lib/StringUtils';
+import FlayFetch, { Actress } from '@lib/services/FlayFetch';
+import { popupActress, popupActressInfo } from '@lib/services/FlaySearch';
+import StringUtils from '@lib/common/StringUtils';
 import favoriteSVG from '@svg/favorite';
 import noFavoriteSVG from '@svg/noFavorite';
 import './inc/Page';

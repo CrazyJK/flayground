@@ -8,10 +8,10 @@ import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
 import PlayTimeDB, { PlayTimeRecord } from '@flay/idb/PlayTimeDB';
 import FlayVideo from '@flay/panel/FlayVideoElement';
-import ApiClient from '@lib/ApiClient';
-import FlayFetch, { Actress, BlankFlay, Flay } from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import ApiClient from '@lib/services/ApiClient';
+import FlayFetch, { Actress, BlankFlay, Flay } from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import './FlayVideoPlayer.scss';
 
 const db = new PlayTimeDB();

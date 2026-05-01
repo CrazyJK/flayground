@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayCard from '@flay/domain/FlayCard';
-import DateUtils from '@lib/DateUtils';
-import FlayFetch, { FlayHistory } from '@lib/FlayFetch';
+import DateUtils from '@lib/common/DateUtils';
+import FlayFetch, { FlayHistory } from '@lib/services/FlayFetch';
 import './FlayShotDailyPanel.scss';
 
 /**

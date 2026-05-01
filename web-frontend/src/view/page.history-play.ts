@@ -1,5 +1,5 @@
-import DateUtils from '@lib/DateUtils';
-import FlayFetch, { FlayHistory } from '@lib/FlayFetch';
+import DateUtils from '@lib/common/DateUtils';
+import FlayFetch, { FlayHistory } from '@lib/services/FlayFetch';
 import './inc/Page';
 import './page.history-play.scss';
 

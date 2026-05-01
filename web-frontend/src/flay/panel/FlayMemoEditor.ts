@@ -1,9 +1,9 @@
 import GroundFlay from '@base/GroundFlay';
 import { ToastHtmlEditor } from '@editor/ToastHtmlEditor';
-import ApiClient from '@lib/ApiClient';
-import DateUtils from '@lib/DateUtils';
-import FileUtils from '@lib/FileUtils';
-import FlayStorage from '@lib/FlayStorage';
+import ApiClient from '@lib/services/ApiClient';
+import DateUtils from '@lib/common/DateUtils';
+import FileUtils from '@lib/media/FileUtils';
+import FlayStorage from '@lib/storage/FlayStorage';
 import { ModalWindow } from '@ui/ModalWindow';
 import './FlayMemoEditor.scss';
 

@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayFetch from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import FlayFetch from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import './FlayPagination.scss';
 
 const NEXT = 'NEXT' as const;

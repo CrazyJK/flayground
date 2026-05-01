@@ -1,5 +1,5 @@
-import FlayFetch, { type SearchCondition } from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
+import FlayFetch, { type SearchCondition } from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
 
 // Type definitions
 export interface OpusProviderOptions extends Partial<SearchCondition> {}

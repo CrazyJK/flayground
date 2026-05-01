@@ -1,5 +1,5 @@
 import GroundNav from '@base/GroundNav';
-import FlayStorage from '@lib/FlayStorage';
+import FlayStorage from '@lib/storage/FlayStorage';
 import themeSVG from '@svg/themes';
 import './ThemeController.scss';
 

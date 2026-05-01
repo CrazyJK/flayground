@@ -1,9 +1,9 @@
 import { translate, type AIResponse } from '@ai/index-proxy';
 import GroundFlay from '@base/GroundFlay';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Actress } from '@lib/FlayFetch';
-import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '@lib/FlaySearch';
-import FlayStorage from '@lib/FlayStorage';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { Actress } from '@lib/services/FlayFetch';
+import FlaySearch, { popupFlay, URL_NONOJAV_PAGE } from '@lib/services/FlaySearch';
+import FlayStorage from '@lib/storage/FlayStorage';
 import favoriteSVG from '@svg/favorite';
 import './FlayRegister.scss';
 

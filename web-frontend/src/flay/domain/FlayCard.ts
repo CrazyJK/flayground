@@ -9,8 +9,8 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/FlayFetch';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/services/FlayFetch';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import './FlayCard.scss';
 
 /**

@@ -1,5 +1,5 @@
 import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
-import FlayFetch, { Flay, Tag } from '@lib/FlayFetch';
+import FlayFetch, { Flay, Tag } from '@lib/services/FlayFetch';
 
 const storeName = 'Flay';
 

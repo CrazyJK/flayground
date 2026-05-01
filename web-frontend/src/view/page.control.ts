@@ -4,7 +4,7 @@ import '@flay/panel/FlayFinder';
 import '@flay/panel/FlayRegister';
 import '@flay/panel/FlayTagManager';
 import '@flay/panel/SubtitlesFinder';
-import { tabUI } from '@lib/TabUI';
+import { tabUI } from '@lib/ui/TabUI';
 import './inc/Page';
 import './page.control.scss';
 

@@ -1,5 +1,5 @@
 import GroundUI from '@base/GroundUI';
-import FlayStorage from '@lib/FlayStorage';
+import FlayStorage from '@lib/storage/FlayStorage';
 import './GridControl.scss';
 
 const MAX = 7;

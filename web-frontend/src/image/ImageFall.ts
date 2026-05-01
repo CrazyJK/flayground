@@ -1,7 +1,7 @@
 import GroundImage from '@base/GroundImage';
-import FlayFetch from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import FlayFetch from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import './ImageFall.scss';
 
 const PANE_WIDTH = 360;

@@ -9,7 +9,7 @@ import FlayRelease from '@flay/domain/part/FlayRelease';
 import FlayStudio from '@flay/domain/part/FlayStudio';
 import FlayTag from '@flay/domain/part/FlayTag';
 import FlayTitle from '@flay/domain/part/FlayTitle';
-import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/FlayFetch';
+import FlayFetch, { Actress, BlankFlay, Flay, FullyFlay } from '@lib/services/FlayFetch';
 import './FlayPage.scss';
 
 export default class FlayPage extends GroundFlay {

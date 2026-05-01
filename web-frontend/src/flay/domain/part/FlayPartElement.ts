@@ -1,5 +1,5 @@
 import GroundFlay from '@base/GroundFlay';
-import { BlankFlay, Flay } from '@lib/FlayFetch';
+import { BlankFlay, Flay } from '@lib/services/FlayFetch';
 
 export default class FlayPartElement extends GroundFlay {
   flay: Flay = BlankFlay;

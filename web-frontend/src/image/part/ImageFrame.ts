@@ -1,6 +1,6 @@
 import GroundImage from '@base/GroundImage';
-import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
-import FlayFetch, { ImageData } from '@lib/FlayFetch';
+import { ColorFrequency, getDominatedColors } from '@lib/media/dominatedColor';
+import FlayFetch, { ImageData } from '@lib/services/FlayFetch';
 import './ImageFrame.scss';
 
 export default class ImageFrame extends GroundImage {

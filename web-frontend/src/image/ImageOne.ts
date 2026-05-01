@@ -1,8 +1,8 @@
 import { EventCode } from '@base/GroundConstant';
 import GroundImage from '@base/GroundImage';
-import { getDominatedColors } from '@lib/dominatedColor';
-import FlayFetch from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
+import { getDominatedColors } from '@lib/media/dominatedColor';
+import FlayFetch from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
 import { Countdown, EVENT_COUNTDOWN_END } from '@ui/Countdown';
 import './ImageOne.scss';
 import './part/FlayImage';

@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayArticle from '@flay/domain/FlayArticle';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch from '@lib/FlayFetch';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch from '@lib/services/FlayFetch';
 import './FlayCandidate.scss';
 
 /**

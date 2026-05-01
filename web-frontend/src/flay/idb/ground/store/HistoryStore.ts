@@ -1,5 +1,5 @@
 import FlayGroundDB from '@flay/idb/ground/db/FlayGroundDB';
-import { FlayHistory } from '@lib/FlayFetch';
+import { FlayHistory } from '@lib/services/FlayFetch';
 
 const storeName = 'History';
 

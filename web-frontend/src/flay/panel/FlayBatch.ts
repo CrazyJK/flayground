@@ -1,9 +1,9 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
-import ApiClient from '@lib/ApiClient';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import { popupActress, popupFlay } from '@lib/FlaySearch';
+import ApiClient from '@lib/services/ApiClient';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import { popupActress, popupFlay } from '@lib/services/FlaySearch';
 import './FlayBatch.scss';
 
 const HTML = `

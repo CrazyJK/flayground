@@ -8,8 +8,8 @@
  * @since 2024
  */
 
-import FlayStorage from '@lib/FlayStorage';
-import { addBeforeunloadListener, addLoadListener, addMouseoutToNullListener, addResizeListener, addVisibilitychangeListener } from '@lib/windowAddEventListener';
+import FlayStorage from '@lib/storage/FlayStorage';
+import { addBeforeunloadListener, addLoadListener, addMouseoutToNullListener, addResizeListener, addVisibilitychangeListener } from '@lib/browser/windowAddEventListener';
 
 /** 위치 정보를 저장할 localStorage 키 */
 export const STORAGE_KEY = 'flay.position.info' as const;

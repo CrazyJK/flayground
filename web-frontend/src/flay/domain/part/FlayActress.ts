@@ -1,8 +1,8 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
-import { popupActress } from '@lib/FlaySearch';
-import StringUtils from '@lib/StringUtils';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { Actress, Flay } from '@lib/services/FlayFetch';
+import { popupActress } from '@lib/services/FlaySearch';
+import StringUtils from '@lib/common/StringUtils';
 import favoriteSVG from '@svg/favorite';
 import './FlayActress.scss';
 

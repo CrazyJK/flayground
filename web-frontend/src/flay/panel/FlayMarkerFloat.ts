@@ -1,9 +1,9 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import { OpusProvider } from '@lib/OpusProvider';
-import RandomUtils from '@lib/RandomUtils';
-import StyleUtils from '@lib/StyleUtils';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import { OpusProvider } from '@lib/services/OpusProvider';
+import RandomUtils from '@lib/common/RandomUtils';
+import StyleUtils from '@lib/ui/StyleUtils';
 import './FlayMarkerFloat.scss';
 
 export class FlayMarkerFloat extends GroundFlay {

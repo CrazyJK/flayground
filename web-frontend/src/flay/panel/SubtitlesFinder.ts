@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import { popupFlayCard } from '@lib/FlaySearch';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import { popupFlayCard } from '@lib/services/FlaySearch';
 import './SubtitlesFinder.scss';
 
 const HTML = `

@@ -1,6 +1,6 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayFetch, { Flay, SearchCondition } from '@lib/FlayFetch';
-import FlayStorage from '@lib/FlayStorage';
+import FlayFetch, { Flay, SearchCondition } from '@lib/services/FlayFetch';
+import FlayStorage from '@lib/storage/FlayStorage';
 import favoriteSVG from '@svg/favorite';
 import noFavoriteSVG from '@svg/noFavorite';
 import rankSVG from '@svg/ranks';

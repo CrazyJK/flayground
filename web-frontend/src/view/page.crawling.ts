@@ -1,8 +1,8 @@
 import NanoStore from '@flay/idb/nano/store/NanoStore';
-import ApiClient from '@lib/ApiClient';
-import DateUtils from '@lib/DateUtils';
-import FlayFetch from '@lib/FlayFetch';
-import FlaySearch, { popupActress, popupFlay } from '@lib/FlaySearch';
+import ApiClient from '@lib/services/ApiClient';
+import DateUtils from '@lib/common/DateUtils';
+import FlayFetch from '@lib/services/FlayFetch';
+import FlaySearch, { popupActress, popupFlay } from '@lib/services/FlaySearch';
 import './inc/Page';
 import './page.crawling.scss';
 

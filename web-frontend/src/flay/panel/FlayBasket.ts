@@ -1,8 +1,8 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import { popupActress, popupFlay, popupTag } from '@lib/FlaySearch';
-import FlayStorage from '@lib/FlayStorage';
-import RandomUtils from '@lib/RandomUtils';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import { popupActress, popupFlay, popupTag } from '@lib/services/FlaySearch';
+import FlayStorage from '@lib/storage/FlayStorage';
+import RandomUtils from '@lib/common/RandomUtils';
 import trashBinSVG from '@svg/trashBin';
 import vaginaSVG from '@svg/vagina';
 import GridControl from '@ui/GridControl';

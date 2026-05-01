@@ -1,7 +1,7 @@
 import GroundImage from '@base/GroundImage';
-import DateUtils from '@lib/DateUtils';
-import FlayFetch, { ImageData } from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
+import DateUtils from '@lib/common/DateUtils';
+import FlayFetch, { ImageData } from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
 import './ImageMask.scss';
 
 const SECOND = 1000;

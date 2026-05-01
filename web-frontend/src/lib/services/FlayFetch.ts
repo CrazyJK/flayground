@@ -6,7 +6,7 @@
  * - flay count of actress
  */
 
-import ApiClient from '@lib/ApiClient';
+import ApiClient from '@lib/services/ApiClient';
 
 // 서버 도메인에서 공유 타입 import & re-export
 export type { Actress } from '@domain/actress';

@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import { popupActress, popupFlay } from '@lib/FlaySearch';
-import FlayStorage from '@lib/FlayStorage';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import { popupActress, popupFlay } from '@lib/services/FlaySearch';
+import FlayStorage from '@lib/storage/FlayStorage';
 import './FlayAll.scss';
 
 /**

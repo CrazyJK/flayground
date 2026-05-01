@@ -1,13 +1,13 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import VideoDatePanel from '@flay/panel/VideoDatePanel';
-import { createHistogramChart } from '@lib/ChartUtils';
-import DateUtils from '@lib/DateUtils';
-import FileUtils from '@lib/FileUtils';
-import FlayFetch, { Actress, Flay } from '@lib/FlayFetch';
-import { popupActress, popupFlay, popupStudio } from '@lib/FlaySearch';
-import StringUtils from '@lib/StringUtils';
-import { tabUI } from '@lib/TabUI';
-import { sortable } from '@lib/TableUtils';
+import { createHistogramChart } from '@lib/ui/ChartUtils';
+import DateUtils from '@lib/common/DateUtils';
+import FileUtils from '@lib/media/FileUtils';
+import FlayFetch, { Actress, Flay } from '@lib/services/FlayFetch';
+import { popupActress, popupFlay, popupStudio } from '@lib/services/FlaySearch';
+import StringUtils from '@lib/common/StringUtils';
+import { tabUI } from '@lib/ui/TabUI';
+import { sortable } from '@lib/ui/TableUtils';
 import './inc/Page';
 import './page.statistics.scss';
 

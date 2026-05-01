@@ -1,8 +1,8 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
-import FileUtils from '@lib/FileUtils';
-import FlayAction from '@lib/FlayAction';
-import { Flay } from '@lib/FlayFetch';
-import FlaySearch from '@lib/FlaySearch';
+import FileUtils from '@lib/media/FileUtils';
+import FlayAction from '@lib/services/FlayAction';
+import { Flay } from '@lib/services/FlayFetch';
+import FlaySearch from '@lib/services/FlaySearch';
 import folderSVG from '@svg/folder';
 import torrentSVG from '@svg/torrent';
 import youtubeSVG from '@svg/youtube';

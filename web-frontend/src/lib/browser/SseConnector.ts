@@ -1,7 +1,7 @@
-import ApiClient from '@lib/ApiClient';
-import FlayFetch, { Actress, Flay, Studio, Tag, Video } from '@lib/FlayFetch';
-import '@lib/SseConnector.scss';
-import { addBeforeunloadListener } from '@lib/windowAddEventListener';
+import ApiClient from '@lib/services/ApiClient';
+import FlayFetch, { Actress, Flay, Studio, Tag, Video } from '@lib/services/FlayFetch';
+import '@lib/browser/SseConnector.scss';
+import { addBeforeunloadListener } from '@lib/browser/windowAddEventListener';
 
 /**
  * Server-Sent Events를 통한 실시간 데이터 동기화 모듈

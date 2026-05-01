@@ -1,6 +1,6 @@
 import FlayArticle from '@flay/domain/FlayArticle';
 import FlayPagination from '@flay/panel/FlayPagination';
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch from '@lib/services/FlayFetch';
 import './inc/Page';
 import './page.archive.scss';
 

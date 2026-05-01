@@ -1,6 +1,6 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
-import { Flay } from '@lib/FlayFetch';
-import FlaySearch, { popupFlayInfo } from '@lib/FlaySearch';
+import { Flay } from '@lib/services/FlayFetch';
+import FlaySearch, { popupFlayInfo } from '@lib/services/FlaySearch';
 import basketSVG from '@svg/basket';
 import jsonSVG from '@svg/json';
 import './FlayOpus.scss';

@@ -1,6 +1,6 @@
 import FlayCard from '@flay/domain/FlayCard';
-import flayAction from '@lib/FlayAction';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
+import flayAction from '@lib/services/FlayAction';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
 import GridControl from '@ui/GridControl';
 import './inc/Popup';
 import './popup.studio.scss';

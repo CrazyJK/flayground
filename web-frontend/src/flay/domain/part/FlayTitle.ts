@@ -1,6 +1,6 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
-import { Flay } from '@lib/FlayFetch';
-import { popupFlay } from '@lib/FlaySearch';
+import { Flay } from '@lib/services/FlayFetch';
+import { popupFlay } from '@lib/services/FlaySearch';
 import './FlayTitle.scss';
 
 /**

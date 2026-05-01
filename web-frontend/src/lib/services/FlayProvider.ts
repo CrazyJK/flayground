@@ -1,5 +1,5 @@
-import FlayFetch, { type Actress, type Flay } from '@lib/FlayFetch';
-import { OpusProvider, type OpusProviderOptions } from '@lib/OpusProvider';
+import FlayFetch, { type Actress, type Flay } from '@lib/services/FlayFetch';
+import { OpusProvider, type OpusProviderOptions } from '@lib/services/OpusProvider';
 
 // Type definitions
 export interface FlayData {

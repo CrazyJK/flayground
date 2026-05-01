@@ -1,8 +1,8 @@
 import FlayAttach from '@attach/FlayAttach';
 import { ToastHtmlEditor } from '@editor/ToastHtmlEditor';
 import { ToastHtmlViewer } from '@editor/ToastHtmlViewer';
-import ApiClient from '@lib/ApiClient';
-import DateUtils from '@lib/DateUtils';
+import ApiClient from '@lib/services/ApiClient';
+import DateUtils from '@lib/common/DateUtils';
 import weatherSVG from '@svg/weathers';
 import windowButton from '@svg/windowButton';
 import './KamoruDiary.scss';

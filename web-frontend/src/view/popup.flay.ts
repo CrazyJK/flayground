@@ -1,5 +1,5 @@
 import FlayPage from '@flay/domain/FlayPage';
-import snapLayouts from '@lib/snapLayouts';
+import snapLayouts from '@lib/ui/snapLayouts';
 import './inc/Popup';
 import './popup.flay.scss';
 

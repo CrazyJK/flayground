@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 
 /**
  * 밤하늘의 별(FlayMarker)을 표현하는 커스텀 엘리먼트입니다.

@@ -2,10 +2,10 @@
  * 이미지 원형 표시 컴포넌트
  */
 import GroundImage from '@base/GroundImage';
-import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
-import FlayFetch, { ImageData } from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
-import StyleUtils from '@lib/StyleUtils';
+import { ColorFrequency, getDominatedColors } from '@lib/media/dominatedColor';
+import FlayFetch, { ImageData } from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
+import StyleUtils from '@lib/ui/StyleUtils';
 import './imageCircle.scss';
 
 // 타입 정의

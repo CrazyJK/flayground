@@ -1,6 +1,6 @@
 import GroundFlay from '@base/GroundFlay';
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
-import ApiClient from '@lib/ApiClient';
+import ApiClient from '@lib/services/ApiClient';
 import './FlayVideoElement.scss';
 
 // 싱글톤 패턴으로 변경하여 메모리 사용 최적화

@@ -1,6 +1,6 @@
 import GroundFlay from '@base/GroundFlay';
-import FlayStorage from '@lib/FlayStorage';
-import { STORAGE_KEY } from '@lib/UpdateMyPosition';
+import FlayStorage from '@lib/storage/FlayStorage';
+import { STORAGE_KEY } from '@lib/browser/UpdateMyPosition';
 import './FlayMonitor.scss';
 
 const MonitorBackgroundColor = 'lightgray';

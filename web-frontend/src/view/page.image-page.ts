@@ -1,5 +1,5 @@
-import FlayStorage from '@lib/FlayStorage';
-import { tabUI } from '@lib/TabUI';
+import FlayStorage from '@lib/storage/FlayStorage';
+import { tabUI } from '@lib/ui/TabUI';
 import './inc/Page';
 import './page.image-page.scss';
 

@@ -1,9 +1,9 @@
 import FlayPartElement from '@flay/domain/part/FlayPartElement';
-import { ColorFrequency, getDominatedColors } from '@lib/dominatedColor';
-import FlayFetch, { Flay } from '@lib/FlayFetch';
-import { popupCover } from '@lib/FlaySearch';
-import FlayStorage from '@lib/FlayStorage';
-import RandomUtils from '@lib/RandomUtils';
+import { ColorFrequency, getDominatedColors } from '@lib/media/dominatedColor';
+import FlayFetch, { Flay } from '@lib/services/FlayFetch';
+import { popupCover } from '@lib/services/FlaySearch';
+import FlayStorage from '@lib/storage/FlayStorage';
+import RandomUtils from '@lib/common/RandomUtils';
 import newWindowSVG from '@svg/newWindow';
 import './FlayCover.scss';
 

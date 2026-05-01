@@ -1,8 +1,8 @@
 import GroundFlay from '@base/GroundFlay';
-import ApiClient from '@lib/ApiClient';
-import DateUtils from '@lib/DateUtils';
-import { Actress, Flay, FlayHistory, Video } from '@lib/FlayFetch';
-import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '@lib/FlaySearch';
+import ApiClient from '@lib/services/ApiClient';
+import DateUtils from '@lib/common/DateUtils';
+import { Actress, Flay, FlayHistory, Video } from '@lib/services/FlayFetch';
+import { popupActress, popupActressInfo, popupFlay, popupVideoInfo } from '@lib/services/FlaySearch';
 import './FlayFinder.scss';
 
 const HTML = `

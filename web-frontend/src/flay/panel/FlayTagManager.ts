@@ -1,8 +1,8 @@
-import * as DragDrop from '@lib/Drag&Drop';
-import FlayAction from '@lib/FlayAction';
-import FlayFetch, { Tag } from '@lib/FlayFetch';
-import { popupTag } from '@lib/FlaySearch';
-import { addResizeListener } from '@lib/windowAddEventListener';
+import * as DragDrop from '@lib/ui/Drag&Drop';
+import FlayAction from '@lib/services/FlayAction';
+import FlayFetch, { Tag } from '@lib/services/FlayFetch';
+import { popupTag } from '@lib/services/FlaySearch';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import tagSVG from '@svg/tag';
 import './FlayTagManager.scss';
 

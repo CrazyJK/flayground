@@ -1,5 +1,5 @@
-import FlayFetch from '@lib/FlayFetch';
-import { popupTag } from '@lib/FlaySearch';
+import FlayFetch from '@lib/services/FlayFetch';
+import { popupTag } from '@lib/services/FlaySearch';
 import './FlayHotTag.scss';
 
 /**

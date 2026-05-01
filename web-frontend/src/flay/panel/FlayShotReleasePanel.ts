@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
-import FlayFetch from '@lib/FlayFetch';
-import PackUtils, { PackOptions } from '@lib/PackUtils';
+import FlayFetch from '@lib/services/FlayFetch';
+import PackUtils, { PackOptions } from '@lib/media/PackUtils';
 import './FlayShotReleasePanel.scss';
 
 export class FlayShotReleasePanel extends GroundFlay {

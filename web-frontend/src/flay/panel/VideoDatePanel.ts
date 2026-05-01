@@ -1,7 +1,7 @@
 import GroundFlay from '@base/GroundFlay';
 import FlayMarker from '@flay/domain/FlayMarker';
-import DateUtils from '@lib/DateUtils';
-import { Flay } from '@lib/FlayFetch';
+import DateUtils from '@lib/common/DateUtils';
+import { Flay } from '@lib/services/FlayFetch';
 import './VideoDatePanel.scss';
 
 /**

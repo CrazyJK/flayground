@@ -1,9 +1,9 @@
 import GroundFlay from '@base/GroundFlay';
 import { FlayTooltip } from '@flay/domain/FlayTooltip';
-import ApiClient from '@lib/ApiClient';
-import { BlankFlay, Flay } from '@lib/FlayFetch';
-import { popupFlay } from '@lib/FlaySearch';
-import StyleUtils from '@lib/StyleUtils';
+import ApiClient from '@lib/services/ApiClient';
+import { BlankFlay, Flay } from '@lib/services/FlayFetch';
+import { popupFlay } from '@lib/services/FlaySearch';
+import StyleUtils from '@lib/ui/StyleUtils';
 import favorite from '@svg/favorite';
 import ranks from '@svg/ranks';
 import './FlayMarker.scss';

@@ -1,8 +1,8 @@
 import GroundFlay from '@base/GroundFlay';
-import DateUtils from '@lib/DateUtils';
-import FlayFetch, { BlankFlay, Flay } from '@lib/FlayFetch';
-import { popupActress, popupFlay, popupFlayInfo } from '@lib/FlaySearch';
-import StringUtils from '@lib/StringUtils';
+import DateUtils from '@lib/common/DateUtils';
+import FlayFetch, { BlankFlay, Flay } from '@lib/services/FlayFetch';
+import { popupActress, popupFlay, popupFlayInfo } from '@lib/services/FlaySearch';
+import StringUtils from '@lib/common/StringUtils';
 import './FlayArticle.scss';
 
 export default class FlayArticle extends GroundFlay {

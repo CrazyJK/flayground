@@ -1,9 +1,9 @@
 import { generate } from '@ai/index-proxy';
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import { FlayBasket } from '@flay/panel/FlayBasket';
-import ApiClient from '@lib/ApiClient';
-import FlayFetch, { Flay, Tag, TagGroup } from '@lib/FlayFetch';
-import { popupFlay } from '@lib/FlaySearch';
+import ApiClient from '@lib/services/ApiClient';
+import FlayFetch, { Flay, Tag, TagGroup } from '@lib/services/FlayFetch';
+import { popupFlay } from '@lib/services/FlaySearch';
 import basketSVG from '@svg/basket';
 import controlsSVG from '@svg/controls';
 import './FlayFlix.scss';

@@ -1,6 +1,6 @@
-import DateUtils from '@lib/DateUtils';
-import '@lib/SseConnector';
-import '@lib/UpdateMyPosition';
+import DateUtils from '@lib/common/DateUtils';
+import '@lib/browser/SseConnector';
+import '@lib/browser/UpdateMyPosition';
 import '../style/style.scss';
 import './Page.scss';
 

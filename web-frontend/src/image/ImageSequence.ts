@@ -1,7 +1,7 @@
 import GroundImage from '@base/GroundImage';
 import FlayImage from '@image/part/FlayImage';
-import FlayFetch from '@lib/FlayFetch';
-import RandomUtils from '@lib/RandomUtils';
+import FlayFetch from '@lib/services/FlayFetch';
+import RandomUtils from '@lib/common/RandomUtils';
 import './ImageSequence.scss';
 
 export class ImageSequence extends GroundImage {

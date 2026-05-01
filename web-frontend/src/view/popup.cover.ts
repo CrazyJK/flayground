@@ -1,4 +1,4 @@
-import FlayFetch from '@lib/FlayFetch';
+import FlayFetch from '@lib/services/FlayFetch';
 import './inc/Popup';
 import './popup.cover.scss';
 

@@ -4,7 +4,7 @@
  * - 구독 상태 표시 및 관리
  */
 
-import PushNotification from '@lib/PushNotification';
+import PushNotification from '@lib/browser/PushNotification';
 import './NotificationPermission.scss';
 
 export class NotificationPermission extends HTMLElement {

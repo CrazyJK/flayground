@@ -85,3 +85,9 @@ fn-portfolio-viewer.fn-portfolio-viewer {
 .fn-pv-loading {
   color: var(--color-text-secondary);
 }
+
+.fn-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-family: var(--font-family-monospace);
+}

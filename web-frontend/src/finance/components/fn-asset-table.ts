@@ -66,17 +66,29 @@ export class FnAssetTable extends HTMLElement {
     }
   }
 
+  /**
+   * 기관 ID를 기준으로 계좌를 그룹화한다.
+   * @returns {Map<number, Account[]>} 기관별 계좌 맵
+   */
+  #groupAccountsByInstitution(): Map<number, Account[]> {
+    const grouped = new Map<number, Account[]>();
+    for (const institution of this.#institutions) {
+      grouped.set(
+        institution.id,
+        this.#accounts.filter((account) => account.institutionId === institution.id)
+      );
+    }
+    return grouped;
+  }
+
+  /**
+   * 테이블 전체를 렌더링한다.
+   * @returns {void}
+   */
   private render(): void {
     const today = new Date().toISOString().slice(0, 10);
 
-    // 기관별 계좌 그룹화
-    const grouped = new Map<number, Account[]>();
-    for (const inst of this.#institutions) {
-      grouped.set(
-        inst.id,
-        this.#accounts.filter((a) => a.institutionId === inst.id)
-      );
-    }
+    const grouped = this.#groupAccountsByInstitution();
 
     // sticky left 위치 계산 (px): this.#tdWidth (날짜) + this.#tdWidth (소계) * instIndex
     const subLefts = this.#institutions.map((_, i) => this.#tdWidth + i * this.#tdWidth);
@@ -205,6 +217,10 @@ export class FnAssetTable extends HTMLElement {
     this.#bindEvents();
   }
 
+  /**
+   * 사용자 액션 이벤트를 바인딩한다.
+   * @returns {void}
+   */
   #bindEvents(): void {
     // 금액 입력 처리
     this.querySelectorAll<HTMLInputElement>('.fn-amount-input').forEach((input) => {
@@ -257,7 +273,10 @@ export class FnAssetTable extends HTMLElement {
     });
   }
 
-  /** 합계/소계 DOM만 재계산 (서버 재로드 없이) */
+  /**
+   * 합계/소계 DOM만 재계산한다.
+   * @returns {void}
+   */
   #updateTotals(): void {
     let total = 0;
     const instTotals = new Map<number, number>();

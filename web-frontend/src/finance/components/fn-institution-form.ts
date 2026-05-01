@@ -1,7 +1,7 @@
 import { Account, Institution, InstitutionType, addAccount, addInstitution, deleteAccount, deleteInstitution, fetchAllAccounts, fetchInstitutions, importInstitutionsCsv, importSnapshotsCsv, resetAll } from '../domain/financial-note';
 
-const INST_ICON: Record<string, string> = { bank: '🏦', insurance: '🛡', stock: '📈' };
-const INST_LABEL: Record<string, string> = { bank: '은행', insurance: '보험', stock: '증권' };
+const INST_ICON: Record<InstitutionType, string> = { bank: '🏦', insurance: '🛡', stock: '📈' };
+const INST_LABEL: Record<InstitutionType, string> = { bank: '은행', insurance: '보험', stock: '증권' };
 
 /**
  * 금융기관/계좌 추가 폼 및 CSV import, 기관/계좌 관리 커스텀 엘리먼트.
@@ -15,6 +15,10 @@ export class FnInstitutionForm extends HTMLElement {
     this.render();
   }
 
+  /**
+   * 컴포넌트 초기 DOM을 렌더링한다.
+   * @returns {void}
+   */
   private render(): void {
     this.innerHTML = /* html */ `
       <details class="fn-form-section" open>
@@ -69,20 +73,66 @@ export class FnInstitutionForm extends HTMLElement {
       </div>`;
 
     this.#bindEvents();
-    this.#loadAll();
+    void this.#loadAll();
   }
 
+  /**
+   * 기관/계좌 데이터를 로드하고 화면을 갱신한다.
+   * @returns {Promise<void>} 완료 Promise
+   */
   async #loadAll(): Promise<void> {
     [this.#institutions, this.#accounts] = await Promise.all([fetchInstitutions(), fetchAllAccounts()]);
     this.#renderInstList();
     this.#refreshInstSelect();
   }
 
+  /**
+   * 계좌 추가용 기관 선택 박스를 갱신한다.
+   * @returns {void}
+   */
   #refreshInstSelect(): void {
     const sel = this.querySelector<HTMLSelectElement>('#fn-acc-inst-sel')!;
     if (sel) sel.innerHTML = '<option value="">-- 기관 선택 --</option>' + this.#institutions.map((i) => `<option value="${i.id}">${i.name}</option>`).join('');
   }
 
+  /**
+   * 기관별 계좌 그룹 맵을 생성한다.
+   * @returns {Map<number, Account[]>} 기관 ID 기준 계좌 그룹
+   */
+  #groupAccountsByInstitution(): Map<number, Account[]> {
+    const grouped = new Map<number, Account[]>();
+    for (const inst of this.#institutions) {
+      grouped.set(
+        inst.id,
+        this.#accounts.filter((account) => account.institutionId === inst.id)
+      );
+    }
+    return grouped;
+  }
+
+  /**
+   * 데이터 변경 이벤트를 상위로 전달한다.
+   * @returns {void}
+   */
+  #emitDataChanged(): void {
+    this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
+  }
+
+  /**
+   * 변경 작업 후 공통 후처리를 수행한다.
+   * @param {() => Promise<void>} action 변경 작업
+   * @returns {Promise<void>} 완료 Promise
+   */
+  async #runMutation(action: () => Promise<void>): Promise<void> {
+    await action();
+    this.#emitDataChanged();
+    await this.#loadAll();
+  }
+
+  /**
+   * 기관/계좌 관리 목록을 렌더링한다.
+   * @returns {void}
+   */
   #renderInstList(): void {
     const container = this.querySelector<HTMLElement>('#fn-inst-mgmt-list');
     if (!container) return;
@@ -92,19 +142,13 @@ export class FnInstitutionForm extends HTMLElement {
       return;
     }
 
-    const grouped = new Map<number, Account[]>();
-    for (const inst of this.#institutions) {
-      grouped.set(
-        inst.id,
-        this.#accounts.filter((a) => a.institutionId === inst.id)
-      );
-    }
+    const grouped = this.#groupAccountsByInstitution();
 
     container.innerHTML = this.#institutions
       .map((inst) => {
         const accounts = grouped.get(inst.id) ?? [];
-        const icon = INST_ICON[inst.type] ?? '🏛';
-        const label = INST_LABEL[inst.type] ?? inst.type;
+        const icon = INST_ICON[inst.type];
+        const label = INST_LABEL[inst.type];
         const accRows = accounts
           .map(
             (acc) => `<div class="fn-mgmt-acc-row">
@@ -128,9 +172,7 @@ export class FnInstitutionForm extends HTMLElement {
     container.querySelectorAll<HTMLButtonElement>('.fn-mgmt-del-inst').forEach((btn) => {
       btn.addEventListener('click', async () => {
         if (!confirm(`'${btn.dataset.name}' 기관과 모든 계좌를 삭제합니다. 계속하시겠습니까?`)) return;
-        await deleteInstitution(Number(btn.dataset.id));
-        this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
-        await this.#loadAll();
+        await this.#runMutation(() => deleteInstitution(Number(btn.dataset.id)));
       });
     });
 
@@ -138,13 +180,15 @@ export class FnInstitutionForm extends HTMLElement {
     container.querySelectorAll<HTMLButtonElement>('.fn-mgmt-del-acc').forEach((btn) => {
       btn.addEventListener('click', async () => {
         if (!confirm(`'${btn.dataset.name}' 계좌를 삭제합니다. 계속하시겠습니까?`)) return;
-        await deleteAccount(Number(btn.dataset.id));
-        this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
-        await this.#loadAll();
+        await this.#runMutation(() => deleteAccount(Number(btn.dataset.id)));
       });
     });
   }
 
+  /**
+   * 사용자 액션 이벤트를 바인딩한다.
+   * @returns {void}
+   */
   #bindEvents(): void {
     // 기관 추가
     this.querySelector('#fn-add-inst-btn')?.addEventListener('click', async () => {
@@ -155,10 +199,8 @@ export class FnInstitutionForm extends HTMLElement {
         alert('금융기관명을 입력하세요');
         return;
       }
-      await addInstitution(name, typeEl.value as InstitutionType);
+      await this.#runMutation(() => addInstitution(name, typeEl.value as InstitutionType).then(() => undefined));
       nameEl.value = '';
-      this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
-      await this.#loadAll();
     });
 
     // 계좌 추가
@@ -176,11 +218,9 @@ export class FnInstitutionForm extends HTMLElement {
         alert('계좌명을 입력하세요');
         return;
       }
-      await addAccount(institutionId, name, numEl.value.trim());
+      await this.#runMutation(() => addAccount(institutionId, name, numEl.value.trim()).then(() => undefined));
       nameEl.value = '';
       numEl.value = '';
-      this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
-      await this.#loadAll();
     });
 
     // CSV import: 기관/계좌
@@ -197,7 +237,7 @@ export class FnInstitutionForm extends HTMLElement {
       try {
         const result = await importInstitutionsCsv(csv);
         resultEl.textContent = `완료: ${result.message}`;
-        this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
+        this.#emitDataChanged();
         await this.#loadAll();
       } catch {
         resultEl.textContent = 'import 실패';
@@ -218,7 +258,7 @@ export class FnInstitutionForm extends HTMLElement {
       try {
         const result = await importSnapshotsCsv(csv);
         resultEl.textContent = `완료: ${result.imported}건 저장, ${result.failed}건 실패`;
-        this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
+        this.#emitDataChanged();
       } catch {
         resultEl.textContent = 'import 실패';
       }
@@ -227,9 +267,7 @@ export class FnInstitutionForm extends HTMLElement {
     // 전체 초기화
     this.querySelector('#fn-reset-all-btn')?.addEventListener('click', async () => {
       if (!confirm('기관 · 계좌 · 스냅샷을 포함한 모든 데이터를 삭제합니다.\n정말 초기화하시겠습니까?')) return;
-      await resetAll();
-      this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
-      await this.#loadAll();
+      await this.#runMutation(() => resetAll().then(() => undefined));
       alert('전체 초기화 완료');
     });
   }

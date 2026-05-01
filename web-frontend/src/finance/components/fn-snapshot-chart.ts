@@ -6,6 +6,11 @@ import { SnapshotSummary, fetchSnapshotSummaries, fmtKrw } from '../domain/finan
 
 echarts.use([LineChart, GridComponent, LegendComponent, TooltipComponent, DataZoomComponent, CanvasRenderer]);
 
+interface SnapshotSeriesPoint {
+  date: string;
+  instTotals: Map<string, number>;
+}
+
 /**
  * 스냅샷 날짜별 자산 추이 ECharts 라인 차트 커스텀 엘리먼트.
  * X축: 스냅샷 날짜, Y축: 금액(원), 시리즈: 금융기관별 + 총합계
@@ -14,6 +19,10 @@ export class FnSnapshotChart extends HTMLElement {
   #chart: echarts.ECharts | null = null;
   #resizeObserver: ResizeObserver | null = null;
 
+  /**
+   * 컴포넌트 연결 시 차트 컨테이너를 구성하고 데이터를 로드한다.
+   * @returns {void}
+   */
   connectedCallback(): void {
     this.classList.add('fn-snapshot-chart');
     this.innerHTML = /* html */ `
@@ -39,6 +48,10 @@ export class FnSnapshotChart extends HTMLElement {
     void this.load();
   }
 
+  /**
+   * 컴포넌트 해제 시 리소스를 정리한다.
+   * @returns {void}
+   */
   disconnectedCallback(): void {
     this.#resizeObserver?.disconnect();
     this.#chart?.dispose();
@@ -50,33 +63,74 @@ export class FnSnapshotChart extends HTMLElement {
     this.#renderChart(summaries);
   }
 
+  /**
+   * 날짜별 기관 합계 맵을 생성한다.
+   * @param {SnapshotSummary[]} summaries 요약 목록
+   * @returns {SnapshotSeriesPoint[]} 날짜별 기관 합계
+   */
+  #buildSeriesPoints(summaries: SnapshotSummary[]): SnapshotSeriesPoint[] {
+    const dataMap = new Map<string, Map<string, number>>();
+    for (const summary of summaries) {
+      if (!dataMap.has(summary.date)) {
+        dataMap.set(summary.date, new Map());
+      }
+      const instTotals = dataMap.get(summary.date)!;
+      instTotals.set(summary.instName, (instTotals.get(summary.instName) ?? 0) + summary.total);
+    }
+
+    return [...dataMap.entries()].sort(([dateA], [dateB]) => dateA.localeCompare(dateB)).map(([date, instTotals]) => ({ date, instTotals }));
+  }
+
+  /**
+   * 툴팁 HTML 문자열을 생성한다.
+   * @param {Array<{ axisValue?: string; marker?: string; seriesName?: string; value?: number | null }>} params 툴팁 파라미터
+   * @returns {string} 렌더링할 HTML 문자열
+   */
+  #buildTooltipHtml(params: Array<{ axisValue?: string; marker?: string; seriesName?: string; value?: number | null }>): string {
+    const date = params[0]?.axisValue ?? '';
+    const lines = params
+      .filter((param) => param.value !== null && param.value !== undefined)
+      .map(
+        (param) => `
+              <tr>
+                <td>${param.marker ?? ''}${param.seriesName ?? ''}</td>
+                <td style="text-align:right"><strong>${fmtKrw(param.value as number)}</strong></td>
+              </tr>`
+      )
+      .join('');
+    return `
+            <table style="font-size:12px; background:var(--color-bg-elevated); color:var(--color-text); border:1px solid var(--color-border-window); padding:4px 8px; border-radius:4px;">
+              <thead>
+                <tr>
+                  <th colspan="2"><strong>${date}</strong></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${lines}
+              </tbody>
+            </table>`;
+  }
+
+  /**
+   * 스냅샷 요약 데이터를 차트 옵션으로 변환해 렌더링한다.
+   * @param {SnapshotSummary[]} summaries 스냅샷 요약 목록
+   * @returns {void}
+   */
   #renderChart(summaries: SnapshotSummary[]): void {
     if (!this.#chart) return;
 
-    // 날짜 목록 (정렬)
-    const dates = [...new Set(summaries.map((s) => s.date))].sort();
-    // 기관명 목록
+    const points = this.#buildSeriesPoints(summaries);
+    const dates = points.map((point) => point.date);
     const instNames = [...new Set(summaries.map((s) => s.instName))];
 
-    // 날짜 → 기관별 합계 매핑
-    const dataMap = new Map<string, Map<string, number>>();
-    for (const s of summaries) {
-      if (!dataMap.has(s.date)) dataMap.set(s.date, new Map());
-      dataMap.get(s.date)!.set(s.instName, (dataMap.get(s.date)!.get(s.instName) ?? 0) + s.total);
-    }
-
     // 총합계 시리즈
-    const totalSeries: (number | null)[] = dates.map((d) => {
-      const m = dataMap.get(d);
-      if (!m) return 0;
-      return [...m.values()].reduce((a, b) => a + b, 0);
-    });
+    const totalSeries: (number | null)[] = points.map((point) => [...point.instTotals.values()].reduce((sum, value) => sum + value, 0));
 
     // 기관별 시리즈
     const instSeriesList = instNames.map((name) => ({
       name,
       type: 'line' as const,
-      data: dates.map((d) => dataMap.get(d)?.get(name) ?? 0),
+      data: points.map((point) => point.instTotals.get(name) ?? 0),
       connectNulls: true,
       lineStyle: { width: 1.5 },
       symbolSize: 4,
@@ -99,29 +153,9 @@ export class FnSnapshotChart extends HTMLElement {
       backgroundColor: 'transparent',
       tooltip: {
         trigger: 'axis',
-        formatter: (params: any) => {
-          const date = params[0]?.axisValue ?? '';
-          const lines = params
-            .filter((p: any) => p.value !== null)
-            .map(
-              (p: any) => `
-              <tr>
-                <td>${p.marker}${p.seriesName}</td>
-                <td style="text-align:right"><strong>${fmtKrw(p.value)}</strong></td>
-              </tr>`
-            )
-            .join('');
-          return `
-            <table style="font-size:12px; background:var(--color-bg-elevated); color:var(--color-text); border:1px solid var(--color-border-window); padding:4px 8px; border-radius:4px;">
-              <thead>
-                <tr>
-                  <th colspan="2"><strong>${date}</strong></th>
-                </tr>
-              </thead>
-              <tbody>
-                ${lines}
-              </tbody>
-            </table>`;
+        formatter: (params: unknown) => {
+          const rows = Array.isArray(params) ? (params as Array<{ axisValue?: string; marker?: string; seriesName?: string; value?: number | null }>) : [];
+          return this.#buildTooltipHtml(rows);
         },
       },
       legend: {

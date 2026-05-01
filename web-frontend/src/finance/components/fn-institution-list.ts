@@ -1,7 +1,7 @@
-import { Account, Institution, deleteAccount, deleteInstitution, fetchAllAccounts, fetchInstitutions, fmtKrw, updateAccountAmount } from '../domain/financial-note';
+import { Account, Institution, InstitutionType, deleteAccount, deleteInstitution, fetchAllAccounts, fetchInstitutions, fmtKrw, updateAccountAmount } from '../domain/financial-note';
 
-const INST_ICON: Record<string, string> = { bank: '🏦', insurance: '🛡', stock: '📈' };
-const INST_LABEL: Record<string, string> = { bank: '은행', insurance: '보험', stock: '증권' };
+const INST_ICON: Record<InstitutionType, string> = { bank: '🏦', insurance: '🛡', stock: '📈' };
+const INST_LABEL: Record<InstitutionType, string> = { bank: '은행', insurance: '보험', stock: '증권' };
 
 /**
  * 금융기관 목록 + 계좌 목록 커스텀 엘리먼트.
@@ -14,50 +14,53 @@ export class FnInstitutionList extends HTMLElement {
 
   connectedCallback(): void {
     this.classList.add('fn-institution-list');
-    this.load();
+    void this.load();
   }
 
-  /** 서버에서 데이터를 로드하고 렌더링한다 */
+  /**
+   * 서버에서 데이터를 로드하고 렌더링한다.
+   * @returns {Promise<void>} 완료 Promise
+   */
   async load(): Promise<void> {
     [this.#institutions, this.#accounts] = await Promise.all([fetchInstitutions(), fetchAllAccounts()]);
     this.render();
   }
 
-  /** 외부에서 새로고침 트리거 */
+  /**
+   * 외부에서 새로고침을 트리거한다.
+   * @returns {void}
+   */
   refresh(): void {
-    this.load();
+    void this.load();
   }
 
-  /** 증권 계좌 평가금액을 Naver API로 갱신한다 */
-  async refreshStockAmounts(): Promise<void> {
-    const stockAccounts = this.#accounts.filter((a) => {
-      const inst = this.#institutions.find((i) => i.id === a.institutionId);
-      return inst?.type === 'stock';
-    });
+  /**
+   * 증권 계좌 평가금액 갱신 이벤트를 상위로 전달한다.
+   * @returns {void}
+   */
+  refreshStockAmounts(): void {
+    const institutionMap = new Map<number, Institution>(this.#institutions.map((inst) => [inst.id, inst]));
+    const stockAccounts = this.#accounts.filter((account) => institutionMap.get(account.institutionId)?.type === 'stock');
     // 종목별 현재가를 가져오기 위해 fn-stock-items 이벤트를 통해 합산된 값을 받음
     // 간단하게 각 stock 계좌에 대해 계산 요청 이벤트를 발생
     this.dispatchEvent(new CustomEvent('fn:refresh-stock', { bubbles: true, detail: { accounts: stockAccounts } }));
   }
 
+  /**
+   * 기관/계좌 목록을 렌더링한다.
+   * @returns {void}
+   */
   private render(): void {
-    // 기관별 계좌 그룹화
-    const grouped = new Map<number, Account[]>();
-    for (const inst of this.#institutions) {
-      grouped.set(
-        inst.id,
-        this.#accounts.filter((a) => a.institutionId === inst.id)
-      );
-    }
+    const grouped = this.#groupAccountsByInstitution();
 
-    let totalAsset = 0;
-    for (const acc of this.#accounts) totalAsset += acc.amount;
+    const totalAsset = this.#accounts.reduce((sum, account) => sum + account.amount, 0);
 
     const instHtml = this.#institutions
       .map((inst) => {
         const accounts = grouped.get(inst.id) ?? [];
         const subtotal = accounts.reduce((s, a) => s + a.amount, 0);
-        const icon = INST_ICON[inst.type] ?? '🏛';
-        const label = INST_LABEL[inst.type] ?? inst.type;
+        const icon = INST_ICON[inst.type];
+        const label = INST_LABEL[inst.type];
         const accountsHtml = accounts
           .map(
             (acc) => /* html */ `
@@ -95,6 +98,58 @@ export class FnInstitutionList extends HTMLElement {
     this.#bindEvents();
   }
 
+  /**
+   * 기관별 계좌 그룹 맵을 생성한다.
+   * @returns {Map<number, Account[]>} 기관 ID 기준 계좌 목록
+   */
+  #groupAccountsByInstitution(): Map<number, Account[]> {
+    const grouped = new Map<number, Account[]>();
+    for (const inst of this.#institutions) {
+      grouped.set(
+        inst.id,
+        this.#accounts.filter((account) => account.institutionId === inst.id)
+      );
+    }
+    return grouped;
+  }
+
+  /**
+   * 금액 입력 문자열을 숫자로 파싱한다.
+   * @param {string} value 입력 문자열
+   * @returns {number} 파싱된 금액
+   */
+  #parseAmount(value: string): number {
+    return parseFloat(value.replace(/,/g, '')) || 0;
+  }
+
+  /**
+   * 계좌 금액을 내부 상태와 입력 DOM에 동기화한다.
+   * @param {number} accountId 계좌 ID
+   * @param {number} amount 금액
+   * @returns {void}
+   */
+  #syncAccountAmount(accountId: number, amount: number): void {
+    const account = this.#accounts.find((item) => item.id === accountId);
+    if (account) account.amount = amount;
+
+    const input = this.querySelector<HTMLInputElement>(`.fn-amount-input[data-id="${accountId}"]`);
+    if (!input) return;
+    input.dataset.raw = String(amount);
+    input.value = fmtKrw(amount);
+  }
+
+  /**
+   * 데이터 변경 이벤트를 상위로 전달한다.
+   * @returns {void}
+   */
+  #emitDataChanged(): void {
+    this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
+  }
+
+  /**
+   * 사용자 액션 이벤트를 바인딩한다.
+   * @returns {void}
+   */
   #bindEvents(): void {
     // 금액 입력 포커스 → 콤마 제거
     this.querySelectorAll<HTMLInputElement>('.fn-amount-input').forEach((input) => {
@@ -102,13 +157,12 @@ export class FnInstitutionList extends HTMLElement {
         input.value = input.dataset.raw ?? '0';
       });
       input.addEventListener('blur', async () => {
-        const raw = parseFloat(input.value.replace(/,/g, '')) || 0;
+        const raw = this.#parseAmount(input.value);
         const id = Number(input.dataset.id);
-        input.dataset.raw = String(raw);
-        input.value = fmtKrw(raw);
         await updateAccountAmount(id, raw);
+        this.#syncAccountAmount(id, raw);
         this.#updateTotals();
-        this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
+        this.#emitDataChanged();
       });
       input.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Enter') (e.target as HTMLInputElement).blur();
@@ -121,7 +175,7 @@ export class FnInstitutionList extends HTMLElement {
         if (!confirm('기관과 모든 계좌를 삭제합니다. 계속하겠습니까?')) return;
         await deleteInstitution(Number(btn.dataset.id));
         await this.load();
-        this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
+        this.#emitDataChanged();
       });
     });
 
@@ -131,7 +185,7 @@ export class FnInstitutionList extends HTMLElement {
         if (!confirm('계좌를 삭제합니다. 계속하겠습니까?')) return;
         await deleteAccount(Number(btn.dataset.id));
         await this.load();
-        this.dispatchEvent(new CustomEvent('fn:data-changed', { bubbles: true }));
+        this.#emitDataChanged();
       });
     });
 
@@ -143,7 +197,10 @@ export class FnInstitutionList extends HTMLElement {
     });
   }
 
-  /** 합계만 재계산하여 DOM 업데이트 (서버 재로드 없이) */
+  /**
+   * 합계만 재계산하여 DOM을 업데이트한다.
+   * @returns {void}
+   */
   #updateTotals(): void {
     let total = 0;
     this.querySelectorAll<HTMLInputElement>('.fn-amount-input').forEach((input) => {
@@ -168,11 +225,7 @@ export class FnInstitutionList extends HTMLElement {
   /** 증권 계좌 금액을 외부에서 갱신 (fn-stock-items 콜백) */
   async updateStockAmount(accountId: number, evalAmount: number): Promise<void> {
     await updateAccountAmount(accountId, evalAmount);
-    const input = this.querySelector<HTMLInputElement>(`.fn-amount-input[data-id="${accountId}"]`);
-    if (input) {
-      input.dataset.raw = String(evalAmount);
-      input.value = fmtKrw(evalAmount);
-    }
+    this.#syncAccountAmount(accountId, evalAmount);
     this.#updateTotals();
   }
 }

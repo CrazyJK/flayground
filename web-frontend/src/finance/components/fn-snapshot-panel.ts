@@ -1,21 +1,37 @@
 import { Account, Institution, SnapshotEntry, fetchAllAccounts, fetchInstitutions, fetchSnapshot, fetchSnapshotDates, fmtKrw, saveSnapshot } from '../domain/financial-note';
 
+interface SnapshotGroup {
+  instType: string;
+  entries: SnapshotEntry[];
+}
+
 /**
  * 스냅샷 저장/조회 패널 커스텀 엘리먼트.
  * 현재 계좌 정보를 특정 날짜에 스냅샷으로 저장하고, 저장된 스냅샷을 조회한다.
  */
 export class FnSnapshotPanel extends HTMLElement {
+  /**
+   * 컴포넌트 연결 시 렌더링하고 날짜 목록을 로드한다.
+   * @returns {void}
+   */
   connectedCallback(): void {
     this.classList.add('fn-snapshot-panel');
     this.render();
-    this.#loadDates();
+    void this.#loadDates();
   }
 
-  /** 외부에서 날짜 목록 새로고침 */
+  /**
+   * 외부에서 날짜 목록을 새로고침한다.
+   * @returns {void}
+   */
   refresh(): void {
-    this.#loadDates();
+    void this.#loadDates();
   }
 
+  /**
+   * 패널 기본 UI를 렌더링한다.
+   * @returns {void}
+   */
   private render(): void {
     const today = new Date().toISOString().slice(0, 10);
     this.innerHTML = /* html */ `
@@ -42,6 +58,50 @@ export class FnSnapshotPanel extends HTMLElement {
     this.#bindEvents();
   }
 
+  /**
+   * 스냅샷 저장 완료 이벤트를 전달한다.
+   * @returns {void}
+   */
+  #emitSnapshotSaved(): void {
+    this.dispatchEvent(new CustomEvent('fn:snapshot-saved', { bubbles: true }));
+  }
+
+  /**
+   * 현재 기관/계좌 상태를 스냅샷 엔트리로 변환한다.
+   * @param {Account[]} accounts 계좌 목록
+   * @param {Institution[]} institutions 기관 목록
+   * @returns {SnapshotEntry[]} 스냅샷 엔트리 목록
+   */
+  #buildSnapshotEntries(accounts: Account[], institutions: Institution[]): SnapshotEntry[] {
+    const instMap = new Map<number, Institution>(institutions.map((institution) => [institution.id, institution]));
+    return accounts
+      .filter((account) => account.amount !== 0)
+      .map((account) => {
+        const inst = instMap.get(account.institutionId)!;
+        return { accountId: account.id, name: account.name, amount: account.amount, instName: inst.name, instType: inst.type };
+      });
+  }
+
+  /**
+   * 스냅샷 엔트리를 기관명 기준으로 그룹화한다.
+   * @param {SnapshotEntry[]} entries 스냅샷 엔트리 목록
+   * @returns {Map<string, SnapshotGroup>} 기관명 기준 그룹 맵
+   */
+  #groupEntriesByInstitution(entries: SnapshotEntry[]): Map<string, SnapshotGroup> {
+    const groups = new Map<string, SnapshotGroup>();
+    for (const entry of entries) {
+      if (!groups.has(entry.instName)) {
+        groups.set(entry.instName, { instType: entry.instType, entries: [] });
+      }
+      groups.get(entry.instName)!.entries.push(entry);
+    }
+    return groups;
+  }
+
+  /**
+   * 저장된 스냅샷 날짜 목록을 로드해 렌더링한다.
+   * @returns {Promise<void>} 완료 Promise
+   */
   async #loadDates(): Promise<void> {
     const dates = await fetchSnapshotDates();
     const list = this.querySelector<HTMLUListElement>('#fn-snap-dates')!;
@@ -63,6 +123,11 @@ export class FnSnapshotPanel extends HTMLElement {
     });
   }
 
+  /**
+   * 특정 날짜 스냅샷 상세를 표시한다.
+   * @param {string} date 조회 날짜
+   * @returns {Promise<void>} 완료 Promise
+   */
   async #showDetail(date: string): Promise<void> {
     const snap = await fetchSnapshot(date);
     const detailEl = this.querySelector<HTMLElement>('#fn-snap-detail')!;
@@ -71,12 +136,7 @@ export class FnSnapshotPanel extends HTMLElement {
 
     titleEl.textContent = `${date} 스냅샷`;
 
-    // 기관별 그룹화
-    const groups = new Map<string, { instType: string; entries: typeof snap.entries }>();
-    for (const entry of snap.entries) {
-      if (!groups.has(entry.instName)) groups.set(entry.instName, { instType: entry.instType, entries: [] });
-      groups.get(entry.instName)!.entries.push(entry);
-    }
+    const groups = this.#groupEntriesByInstitution(snap.entries);
 
     let total = 0;
     let groupHtml = '';
@@ -96,6 +156,10 @@ export class FnSnapshotPanel extends HTMLElement {
     detailEl.style.display = '';
   }
 
+  /**
+   * 사용자 액션 이벤트를 바인딩한다.
+   * @returns {void}
+   */
   #bindEvents(): void {
     // 스냅샷 저장
     this.querySelector('#fn-save-snap-btn')?.addEventListener('click', async () => {
@@ -110,18 +174,12 @@ export class FnSnapshotPanel extends HTMLElement {
       try {
         // 현재 계좌 정보 + 기관 정보를 가져와서 스냅샷 생성
         const [accounts, institutions] = await Promise.all([fetchAllAccounts(), fetchInstitutions()]);
-        const instMap = new Map<number, Institution>(institutions.map((i) => [i.id, i]));
-        const entries: SnapshotEntry[] = accounts
-          .filter((a) => a.amount !== 0)
-          .map((a: Account) => {
-            const inst = instMap.get(a.institutionId)!;
-            return { accountId: a.id, name: a.name, amount: a.amount, instName: inst.name, instType: inst.type };
-          });
+        const entries = this.#buildSnapshotEntries(accounts, institutions);
 
         await saveSnapshot(date, entries);
         resultEl.textContent = `${date} 저장 완료`;
         await this.#loadDates();
-        this.dispatchEvent(new CustomEvent('fn:snapshot-saved', { bubbles: true }));
+        this.#emitSnapshotSaved();
       } catch {
         resultEl.textContent = '저장 실패';
       }

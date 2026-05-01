@@ -3,6 +3,7 @@ import { DataZoomComponent, GridComponent, LegendComponent, TooltipComponent } f
 import * as echarts from 'echarts/core';
 import { CanvasRenderer } from 'echarts/renderers';
 import { SnapshotSummary, fetchSnapshotSummaries, fmtKrw } from '../domain/financial-note';
+import './fn-snapshot-chart.scss';
 
 echarts.use([LineChart, GridComponent, LegendComponent, TooltipComponent, DataZoomComponent, CanvasRenderer]);
 

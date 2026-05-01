@@ -1,0 +1,303 @@
+/* fn-asset-table 전용 스타일 */
+
+.fn-asset-table {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  border: 1px solid var(--color-border-window);
+  border-radius: var(--border-radius-largest);
+}
+
+.fn-asset-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  padding: 0.4rem 0.7rem;
+  background: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border-window);
+  border-radius: var(--border-radius-largest) var(--border-radius-largest) 0 0;
+  flex-shrink: 0;
+
+  .fn-total-badge {
+    font-size: var(--size-small);
+    font-weight: bold;
+    flex: 1;
+  }
+
+  .fn-total-value {
+    color: var(--color-primary);
+    font-size: var(--size-medium);
+  }
+
+  .fn-total-date {
+    font-size: var(--size-smallest);
+    color: var(--color-text-secondary);
+    font-weight: normal;
+  }
+
+  .fn-save-result {
+    font-size: var(--size-smallest);
+    color: var(--color-text-secondary);
+  }
+
+  input[type='date'] {
+    padding: 0.25rem 0.4rem;
+    border: 1px solid var(--color-border-window);
+    border-radius: var(--border-radius-large);
+    font-size: var(--size-smaller);
+    background: var(--color-bg-input);
+    color: var(--color-text);
+
+    &:focus {
+      outline: none;
+      border-color: var(--color-primary);
+    }
+  }
+}
+
+// 테이블 접으면 차트가 1fr 차지
+.fn-page:has(.fn-table-collapsed) {
+  grid-template-rows: auto auto 1fr;
+
+  fn-snapshot-chart .fn-chart-container {
+    height: 100%;
+    min-height: 200px;
+  }
+}
+
+.fn-asset-table.fn-table-collapsed {
+  height: auto;
+
+  .fn-table-wrapper {
+    display: none;
+  }
+}
+
+.fn-snapshot-bottom-bar {
+  display: none; // 삭제됨 (저장 버튼은 툴바로 이동)
+}
+
+// 테이블 접기/펼치기 → 상태에 따라 레이아웃 조정
+.fn-asset-table.fn-table-collapsed {
+  height: auto;
+
+  .fn-table-wrapper {
+    display: none;
+  }
+}
+
+.fn-page:has(.fn-table-collapsed) {
+  grid-template-rows: auto auto 1fr;
+
+  .fn-chart-area {
+    min-height: 0;
+  }
+
+  fn-snapshot-chart .fn-chart-container {
+    height: 100%;
+    min-height: 200px;
+  }
+}
+
+.fn-table-wrapper {
+  overflow: auto;
+  flex: 1;
+}
+
+.fn-asset-tbl {
+  border-collapse: collapse;
+  font-size: var(--size-smaller);
+
+  th,
+  td {
+    border: 1px solid var(--color-border-window);
+    padding: 0.2rem 0.4rem;
+    white-space: nowrap;
+
+    &:first-child {
+      border-left: 0;
+    }
+    &:last-child {
+      border-right: 0;
+    }
+  }
+
+  .fn-th-date {
+    width: var(--td-width);
+    min-width: var(--td-width);
+  }
+  .fn-th-acc {
+    width: var(--td-width);
+    min-width: var(--td-width);
+  }
+  .fn-th-sub {
+    width: var(--td-width);
+    min-width: var(--td-width);
+  }
+  .fn-th-grand-total {
+    width: var(--td-width);
+    min-width: var(--td-width);
+  }
+
+  thead tr th {
+    font-size: var(--size-smaller);
+  }
+
+  thead tr:first-child th {
+    position: sticky;
+    top: 0;
+    z-index: 3;
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+    border-top: 1px solid var(--color-bg);
+    font-weight: bold;
+    text-align: center;
+  }
+
+  thead tr:last-child th {
+    position: sticky;
+    top: 30px;
+    z-index: 2;
+    background: var(--color-bg-elevated);
+    color: var(--color-text);
+
+    .fn-acc-name {
+      display: block;
+      font-weight: bold;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-width: var(--td-width);
+    }
+  }
+
+  thead th.fn-sticky-col {
+    position: sticky;
+    top: 0;
+    z-index: 5 !important;
+    background: var(--color-bg-elevated);
+  }
+
+  tbody .fn-sticky-col {
+    position: sticky;
+    z-index: 2 !important;
+    background: var(--color-bg-elevated);
+  }
+
+  .fn-sticky-left {
+    position: sticky;
+    background: var(--color-bg-elevated);
+    z-index: 2;
+  }
+
+  thead th.fn-sticky-left {
+    z-index: 4;
+  }
+
+  .fn-inst-bank {
+    background: rgba(66, 133, 244, 0.18);
+  }
+  .fn-inst-insurance {
+    background: rgba(52, 168, 83, 0.18);
+  }
+  .fn-inst-stock {
+    background: rgba(255, 165, 0, 0.18);
+  }
+  .fn-inst-other {
+    background: rgba(150, 150, 150, 0.18);
+  }
+
+  .fn-th-inst-group {
+    text-align: center;
+    padding: 0.3rem 0.4rem;
+
+    .fn-inst-group-name {
+      margin-right: 0.3rem;
+    }
+  }
+
+  .fn-th-sub,
+  .fn-snap-subtotal,
+  .fn-subtotal-cell {
+    background: rgba(0, 0, 0, 0.05);
+    font-weight: bold;
+  }
+
+  .fn-th-grand-total,
+  .fn-snap-grand,
+  .fn-total-now {
+    background: rgba(0, 0, 0, 0.08);
+    font-weight: bold;
+    color: var(--color-primary);
+    border-right: 2px solid var(--color-border-window) !important;
+  }
+
+  .fn-current-tr {
+    td {
+      border-bottom: 2px solid var(--color-border-window);
+    }
+
+    .fn-current-label {
+      font-weight: bold;
+      font-size: var(--size-smaller);
+    }
+
+    .fn-current-cell {
+      padding: 0.1rem 0.2rem;
+      vertical-align: middle;
+
+      .fn-current-cell-inner {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.2rem;
+      }
+
+      .fn-amount-input {
+        width: 100%;
+        text-align: right;
+        padding: 0.1rem 0.25rem;
+        border: 1px solid var(--color-border-window);
+        border-radius: var(--border-radius-large);
+        font-size: var(--size-smaller);
+        font-family: var(--font-family-monospace);
+        background: var(--color-bg-input);
+        color: var(--color-text);
+
+        &:focus {
+          outline: none;
+          background: var(--color-bg-input-focus);
+          border-color: var(--color-primary);
+        }
+
+        &[readonly] {
+          opacity: 0.6;
+          cursor: default;
+        }
+      }
+    }
+  }
+
+  .fn-negative {
+    color: #e57373 !important;
+  }
+
+  .fn-snap-tr {
+    &:hover td {
+      background: var(--color-bg-hover);
+      color: var(--color-white);
+    }
+
+    .fn-snap-cell {
+      font-family: var(--font-family-monospace);
+      color: var(--color-text);
+    }
+  }
+
+  .fn-date-cell {
+    font-family: var(--font-family-monospace);
+    font-size: var(--size-smaller);
+    color: var(--color-text);
+    text-align: center;
+  }
+}

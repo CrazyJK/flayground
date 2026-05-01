@@ -1,4 +1,5 @@
 import { Account, Institution, InstitutionType, addAccount, addInstitution, deleteAccount, deleteInstitution, fetchAllAccounts, fetchInstitutions, importInstitutionsCsv, importSnapshotsCsv, resetAll } from '../domain/financial-note';
+import './fn-institution-form.scss';
 
 const INST_ICON: Record<InstitutionType, string> = { bank: '🏦', insurance: '🛡', stock: '📈' };
 const INST_LABEL: Record<InstitutionType, string> = { bank: '은행', insurance: '보험', stock: '증권' };

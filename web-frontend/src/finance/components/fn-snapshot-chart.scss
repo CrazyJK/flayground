@@ -1,0 +1,48 @@
+/* fn-snapshot-chart 전용 스타일 */
+
+.fn-snapshot-chart {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 1px solid var(--color-border-window);
+  border-radius: var(--border-radius-largest);
+  padding: 0.5rem 0.6rem;
+  box-sizing: border-box;
+  background: var(--color-bg);
+
+  .fn-chart-header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.4rem;
+
+    .fn-chart-title {
+      flex: 1;
+      font-weight: bold;
+      font-size: var(--size-small);
+      color: var(--color-text);
+    }
+
+    .fn-chart-mode-btn {
+      opacity: 0.5;
+
+      &.fn-chart-mode-active {
+        opacity: 1;
+        background: var(--color-primary);
+        color: #fff;
+        border-color: var(--color-primary);
+      }
+    }
+  }
+
+  .fn-chart-container {
+    width: 100%;
+    height: 230px;
+  }
+
+  &.fn-collapsed {
+    .fn-chart-container {
+      display: none;
+    }
+  }
+}

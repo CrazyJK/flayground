@@ -1,4 +1,5 @@
 import { Account, Institution, SnapshotEntry, fetchAllAccounts, fetchInstitutions, fetchSnapshot, fetchSnapshotDates, fmtKrw, saveSnapshot, updateAccountAmount } from '../domain/financial-note';
+import './fn-asset-table.scss';
 
 const INST_ICON: Record<string, string> = { bank: '🏦', insurance: '🛡', stock: '📈' };
 const INST_TYPE_CLASS: Record<string, string> = { bank: 'fn-inst-bank', insurance: 'fn-inst-insurance', stock: 'fn-inst-stock' };

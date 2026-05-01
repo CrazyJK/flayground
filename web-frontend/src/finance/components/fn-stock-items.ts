@@ -1,4 +1,5 @@
 import { StockItem, addStockItem, deleteStockItem, fetchStockItems, fetchStockPrice, fmtKrw } from '../domain/financial-note';
+import './fn-stock-items.scss';
 
 /**
  * 증권 계좌 종목 편집 커스텀 엘리먼트.

@@ -1,4 +1,6 @@
-﻿/** 포트폴리오 종목 항목 타입 */
+﻿import './fn-portfolio-viewer.scss';
+
+/** 포트폴리오 종목 항목 타입 */
 interface PortfolioItem {
   market: string;
   stockCode: string;

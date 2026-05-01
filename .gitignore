@@ -5,9 +5,6 @@
 *.log
 *.log.*.gz
 
-# log folder
-logs/
-
 # BlueJ files
 *.ctxt
 
@@ -71,12 +68,14 @@ screenshots
 # playwright test result
 .playwright-mcp
 
-# data
-data/
+# json data files
 model-stats.json
 dependencies-viewer.json
-push-subscriptions.db
 token-cache.json
+
+# db files
+push-subscriptions.db
+financial-note.db
 
 # private
 private-memo.md

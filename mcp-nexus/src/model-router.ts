@@ -6,7 +6,7 @@ import { GitHubProvider } from './providers/github-provider';
 import { GenerateOptions } from './providers/provider.interface';
 
 /** 통계 파일 경로 */
-const STATS_FILE = path.join(process.cwd(), 'logs', 'model-stats.json');
+const STATS_FILE = path.join(process.cwd(), 'data', 'model-stats.json');
 
 /** 모델 통계 내부 저장 타입 */
 interface ModelStats {

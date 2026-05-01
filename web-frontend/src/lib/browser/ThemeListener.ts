@@ -45,14 +45,14 @@ darkMediaQuery.addEventListener('change', (e: MediaQueryListEvent) => {
 /**
  * 현재 테마 설정에 따라 다크/라이트 모드 적용
  */
-const applyTheme = (): ThemeValue => {
+const applyTheme = (doc: Document = document): ThemeValue => {
   if (theme === OS) {
     isDark = darkMediaQuery.matches;
   } else {
     isDark = theme === DARK;
   }
 
-  document.documentElement.setAttribute('theme', isDark ? DARK : LIGHT);
+  doc.documentElement.setAttribute('theme', isDark ? DARK : LIGHT);
   return isDark ? DARK : LIGHT;
 };
 
@@ -112,4 +112,4 @@ const isSystemTheme = (): boolean => {
 applyTheme();
 
 // 모듈 내보내기
-export { DARK, getCurrentTheme, getThemeSetting, isDarkMode, isSystemTheme, LIGHT, OS, setTheme, toggleTheme };
+export { applyTheme, DARK, getCurrentTheme, getThemeSetting, isDarkMode, isSystemTheme, LIGHT, OS, setTheme, toggleTheme };

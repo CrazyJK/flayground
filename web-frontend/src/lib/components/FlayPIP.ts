@@ -1,4 +1,5 @@
 import { applyTheme } from '../browser/ThemeListener';
+import './FlayPIP.scss';
 
 /**
  * PIP 옵션 인터페이스

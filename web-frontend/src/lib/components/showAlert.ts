@@ -1,4 +1,4 @@
-import { buildDialog, destroyDialog } from '../../base/GroundDialog';
+import { buildDialog, destroyDialog } from '@base/GroundDialog';
 import './showAlert.scss';
 
 /** alert 대화상자 옵션 */

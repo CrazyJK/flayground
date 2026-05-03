@@ -1,4 +1,4 @@
-import { buildDialog, destroyDialog } from '../../base/GroundDialog';
+import { buildDialog, destroyDialog } from '@base/GroundDialog';
 import './showConfirm.scss';
 
 /** confirm 대화상자 옵션 */

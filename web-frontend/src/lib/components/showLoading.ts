@@ -1,4 +1,4 @@
-import { destroyDialog, escapeHtml } from '../../base/GroundDialog';
+import { destroyDialog, escapeHtml } from '@base/GroundDialog';
 import './showLoading.scss';
 
 /**

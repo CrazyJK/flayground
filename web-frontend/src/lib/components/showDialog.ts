@@ -1,4 +1,4 @@
-import { destroyDialog, escapeHtml } from '../../base/GroundDialog';
+import { destroyDialog, escapeHtml } from '@base/GroundDialog';
 import './showDialog.scss';
 
 /** showDialog 버튼 정의 */

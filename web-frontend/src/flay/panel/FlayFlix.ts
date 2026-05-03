@@ -1,4 +1,5 @@
 import { generate } from '@ai/index-proxy';
+import GroundFlay from '@base/GroundFlay';
 import PlayTimeDB from '@flay/idb/PlayTimeDB';
 import { FlayBasket } from '@flay/panel/FlayBasket';
 import ApiClient from '@lib/services/ApiClient';
@@ -12,7 +13,7 @@ import './FlayFlix.scss';
  * FlayFlix용 커버 커스텀 엘리먼트.
  * 이미지 + 호버 시 하단에 겹쳐 보이는 정보 패널 (title, opus, actress)
  */
-class FlixCover extends HTMLElement {
+class FlixCover extends GroundFlay {
   private img!: HTMLImageElement;
 
   constructor() {
@@ -64,7 +65,7 @@ const SKELETON_COVER_COUNT = 8;
  * - 태그별 flay 목록을 순차 fade-in 렌더링 (IntersectionObserver lazy-load)
  * - AI 추천 행을 태그 맨 위에 비동기 삽입
  */
-export class FlayFlix extends HTMLElement {
+export class FlayFlix extends GroundFlay {
   private opusList: string[] = [];
   private tagGroups: TagGroup[] = [];
   private tags: Tag[] = [];
@@ -152,7 +153,7 @@ export class FlayFlix extends HTMLElement {
     // 바스켓 변경 감지 → Basket 행 실시간 업데이트
     document.addEventListener(FlayBasket.EVENT_BASKET_ADD, () => this.refreshBasketRow());
     window.addEventListener('storage', (e) => {
-      if (e.key === 'flay-basket') this.refreshBasketRow();
+      if (e.key === 'flay-basket') void this.refreshBasketRow();
     });
 
     this.flayTitle.style.cursor = 'pointer';
@@ -216,7 +217,7 @@ export class FlayFlix extends HTMLElement {
           if (!entry.isIntersecting) return;
           const tagEl = entry.target as HTMLElement;
           this.lazyObserver.unobserve(tagEl);
-          this.loadTagFlays(tagEl);
+          void this.loadTagFlays(tagEl);
         });
       },
       { root: this.querySelector('.tag-container'), rootMargin: '200px 0px' }
@@ -331,7 +332,7 @@ export class FlayFlix extends HTMLElement {
     this.video.src = ApiClient.buildUrl(`/flays/${opus}/stream/movie/0`);
 
     // 저장된 재생 위치가 있으면 이어재생
-    this.playTimeDB.select(opus).then((record) => {
+    void this.playTimeDB.select(opus).then((record) => {
       console.log('저장된 재생 위치', opus, record);
       if (record && record.time > 0 && record.duration > 0 && record.time < record.duration - 5) {
         this.video.currentTime = record.time;
@@ -343,7 +344,7 @@ export class FlayFlix extends HTMLElement {
     // 캐시에서 먼저 찾고, 없으면 서버에서 조회
     const cached = this.flayCache.get(opus);
     const flayPromise = cached ? Promise.resolve(cached) : FlayFetch.getFlay(opus);
-    flayPromise.then((flay) => {
+    void flayPromise.then((flay) => {
       if (!flay) return;
       this.flayTitle.textContent = flay.title;
       this.flayActress.textContent = flay.actressList.join(', ');
@@ -366,7 +367,7 @@ export class FlayFlix extends HTMLElement {
   /** 재생/일시정지를 토글한다 */
   private togglePlayPause() {
     if (this.video.paused) {
-      this.video.play();
+      void this.video.play();
       this.playPauseBtn.innerHTML = controlsSVG.pause;
     } else {
       this.video.pause();
@@ -599,7 +600,7 @@ export class FlayFlix extends HTMLElement {
     if (!tagContainer) return;
 
     const basket = FlayBasket.getAll();
-    const existingRow = tagContainer.querySelector('.tag-basket') as HTMLElement | null;
+    const existingRow = tagContainer.querySelector('.tag-basket');
 
     if (basket.size === 0) {
       existingRow?.remove();

@@ -1,8 +1,9 @@
-import * as DragDrop from '@lib/ui/Drag&Drop';
+import GroundFlay from '@base/GroundFlay';
+import { addResizeListener } from '@lib/browser/windowAddEventListener';
 import FlayAction from '@lib/services/FlayAction';
 import FlayFetch, { Tag } from '@lib/services/FlayFetch';
 import { popupTag } from '@lib/services/FlaySearch';
-import { addResizeListener } from '@lib/browser/windowAddEventListener';
+import * as DragDrop from '@lib/ui/Drag&Drop';
 import tagSVG from '@svg/tag';
 import './FlayTagManager.scss';
 
@@ -10,7 +11,7 @@ import './FlayTagManager.scss';
  * 태그 정보 표시용 커스텀 엘리먼트.
  * 태그 이름, 설명, 사용 횟수를 표시하며 드래그 앤 드롭을 지원한다.
  */
-class FlayTagInfo extends HTMLElement {
+class FlayTagInfo extends GroundFlay {
   tag!: Tag;
 
   constructor(tag: Tag) {
@@ -41,7 +42,7 @@ customElements.define('flay-tag-info', FlayTagInfo);
  * 태그 관리 페이지 커스텀 엘리먼트.
  * 태그 CRUD, 그룹 간 드래그 앤 드롭 이동, 해상도별 폰트 크기 조정을 지원한다.
  */
-export class FlayTagManager extends HTMLElement {
+export class FlayTagManager extends GroundFlay {
   private tagIdInput!: HTMLInputElement;
   private tagGroupInput!: HTMLInputElement;
   private tagNameInput!: HTMLInputElement;

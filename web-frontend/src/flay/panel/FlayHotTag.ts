@@ -1,3 +1,4 @@
+import GroundFlay from '@base/GroundFlay';
 import FlayFetch from '@lib/services/FlayFetch';
 import { popupTag } from '@lib/services/FlaySearch';
 import './FlayHotTag.scss';
@@ -6,7 +7,7 @@ import './FlayHotTag.scss';
  * 핫 태그 통계 페이지 커스텀 엘리먼트.
  * likes가 있는 Flay를 태그별로 그룹화하여 태그 정보, 전체 flay 수, liked flay 수를 리스트로 보여준다.
  */
-export class FlayHotTag extends HTMLElement {
+export class FlayHotTag extends GroundFlay {
   constructor() {
     super();
     this.innerHTML = `<div class="loading">로딩 중...</div>`;
@@ -33,7 +34,7 @@ export class FlayHotTag extends HTMLElement {
     // 로그 가중 점수(ln(1 + likedCount) × rate)로 내림차순 정렬
     const sorted = allTags
       .map((tag) => {
-        const { totalCount, likedCount } = tagMap.get(tag.id) || { totalCount: 0, likedCount: 0 };
+        const { totalCount, likedCount } = tagMap.get(tag.id) ?? { totalCount: 0, likedCount: 0 };
         const rate = totalCount > 0 ? likedCount / totalCount : 0;
         const hotScore = Math.log(1 + likedCount) * rate;
         return { tag, totalCount, likedCount, hotScore };

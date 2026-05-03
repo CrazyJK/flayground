@@ -89,3 +89,138 @@ export function destroyDialog(dialog: HTMLDialogElement, callback: () => void): 
 export function escapeHtml(text: string): string {
   return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
 }
+
+/** 리사이즈 핸들 방향 목록 */
+const RESIZE_DIRS = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
+
+/**
+ * dialog header를 드래그하여 dialog를 이동
+ *
+ * @param dialog - 이동 대상 HTMLDialogElement
+ */
+function makeDraggable(dialog: HTMLDialogElement): void {
+  const header = dialog.querySelector<HTMLElement>('.flay-dialog__header');
+  if (!header) return;
+
+  header.addEventListener('mousedown', (e: MouseEvent) => {
+    if ((e.target as HTMLElement).closest('button')) return;
+
+    const rect = dialog.getBoundingClientRect();
+    dialog.style.margin = '0';
+    dialog.style.left = `${rect.left}px`;
+    dialog.style.top = `${rect.top}px`;
+
+    const offsetX = e.clientX - rect.left;
+    const offsetY = e.clientY - rect.top;
+    document.body.style.userSelect = 'none';
+
+    const onMove = (ev: MouseEvent) => {
+      const maxLeft = window.innerWidth - dialog.offsetWidth;
+      const maxTop = window.innerHeight - dialog.offsetHeight;
+      dialog.style.left = `${Math.max(0, Math.min(ev.clientX - offsetX, maxLeft))}px`;
+      dialog.style.top = `${Math.max(0, Math.min(ev.clientY - offsetY, maxTop))}px`;
+    };
+
+    const onUp = () => {
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+      document.body.style.userSelect = '';
+    };
+
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+    e.preventDefault();
+  });
+}
+
+/**
+ * dialog 외곽에 리사이즈 핸들을 추가하여 크기 조정
+ *
+ * 8방향(n, s, e, w, ne, nw, se, sw) 핸들 지원
+ *
+ * @param dialog - 크기 조정 대상 HTMLDialogElement
+ */
+function makeResizable(dialog: HTMLDialogElement): void {
+  RESIZE_DIRS.forEach((dir) => {
+    const handle = document.createElement('div');
+    handle.className = `flay-dialog__resize-handle flay-dialog__resize-handle--${dir}`;
+
+    handle.addEventListener('mousedown', (e: MouseEvent) => {
+      const rect = dialog.getBoundingClientRect();
+      const inner = dialog.querySelector<HTMLElement>('.flay-dialog__inner');
+
+      dialog.style.margin = '0';
+      dialog.style.left = `${rect.left}px`;
+      dialog.style.top = `${rect.top}px`;
+      dialog.style.width = `${rect.width}px`;
+      dialog.style.maxWidth = 'none';
+      dialog.style.minWidth = '280px';
+
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startLeft = rect.left;
+      const startTop = rect.top;
+      const startW = rect.width;
+      const startH = rect.height;
+      document.body.style.userSelect = 'none';
+
+      const onMove = (ev: MouseEvent) => {
+        const dx = ev.clientX - startX;
+        const dy = ev.clientY - startY;
+        let newLeft = startLeft,
+          newTop = startTop,
+          newW = startW,
+          newH = startH;
+
+        if (dir.includes('e')) newW = Math.max(280, startW + dx);
+        if (dir.includes('w')) {
+          newW = Math.max(280, startW - dx);
+          newLeft = startLeft + startW - newW;
+        }
+        if (dir.includes('s')) newH = Math.max(120, startH + dy);
+        if (dir.includes('n')) {
+          newH = Math.max(120, startH - dy);
+          newTop = startTop + startH - newH;
+        }
+
+        dialog.style.left = `${newLeft}px`;
+        dialog.style.top = `${newTop}px`;
+        dialog.style.width = `${newW}px`;
+        dialog.style.height = `${newH}px`;
+        if (inner) inner.style.height = '100%';
+      };
+
+      const onUp = () => {
+        document.removeEventListener('mousemove', onMove);
+        document.removeEventListener('mouseup', onUp);
+        document.body.style.userSelect = '';
+      };
+
+      document.addEventListener('mousemove', onMove);
+      document.addEventListener('mouseup', onUp);
+      e.preventDefault();
+      e.stopPropagation();
+    });
+
+    dialog.appendChild(handle);
+  });
+}
+
+/* ── MutationObserver: .flay-dialog가 body에 추가되면 drag·resize 자동 적용 ── */
+const _observer = new MutationObserver((mutations) => {
+  for (const mutation of mutations) {
+    for (const node of mutation.addedNodes) {
+      if (node instanceof HTMLDialogElement && node.classList.contains('flay-dialog')) {
+        makeDraggable(node);
+        makeResizable(node);
+      }
+    }
+  }
+});
+
+const _startObserver = () => _observer.observe(document.body, { childList: true });
+if (document.body) {
+  _startObserver();
+} else {
+  document.addEventListener('DOMContentLoaded', _startObserver);
+}

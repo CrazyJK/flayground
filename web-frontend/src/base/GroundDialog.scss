@@ -90,6 +90,8 @@
     padding: 0.75rem 1rem 0.6rem;
     border-bottom: 1px solid var(--color-border-window);
     background-color: var(--color-bg-elevated);
+    cursor: move;
+    user-select: none;
   }
 
   .flay-dialog__icon {
@@ -192,6 +194,69 @@
       color: var(--color-text);
       border-color: var(--color-border-active);
       box-shadow: var(--box-shadow-small);
+    }
+  }
+
+  /* ── 리사이즈 핸들 ── */
+  .flay-dialog__resize-handle {
+    position: absolute;
+    z-index: 1;
+
+    &--n {
+      top: -5px;
+      left: 10px;
+      right: 10px;
+      height: 10px;
+      cursor: n-resize;
+    }
+    &--s {
+      bottom: -5px;
+      left: 10px;
+      right: 10px;
+      height: 10px;
+      cursor: s-resize;
+    }
+    &--e {
+      right: -5px;
+      top: 10px;
+      bottom: 10px;
+      width: 10px;
+      cursor: e-resize;
+    }
+    &--w {
+      left: -5px;
+      top: 10px;
+      bottom: 10px;
+      width: 10px;
+      cursor: w-resize;
+    }
+    &--ne {
+      top: -5px;
+      right: -5px;
+      width: 14px;
+      height: 14px;
+      cursor: ne-resize;
+    }
+    &--nw {
+      top: -5px;
+      left: -5px;
+      width: 14px;
+      height: 14px;
+      cursor: nw-resize;
+    }
+    &--se {
+      bottom: -5px;
+      right: -5px;
+      width: 14px;
+      height: 14px;
+      cursor: se-resize;
+    }
+    &--sw {
+      bottom: -5px;
+      left: -5px;
+      width: 14px;
+      height: 14px;
+      cursor: sw-resize;
     }
   }
 }

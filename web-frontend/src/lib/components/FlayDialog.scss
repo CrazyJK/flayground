@@ -1,7 +1,6 @@
 /*
  * FlayDialog
  * HTMLDialogElement 기반 alert / confirm 대화상자 컴포넌트
- * - 라이트 / 다크 테마 지원
  * - 열기 / 닫기 애니메이션
  */
 
@@ -72,16 +71,11 @@
     animation: flay-dialog-backdrop-in 0.22s ease both;
   }
 
-  /* 다크 테마 backdrop */
-  &[data-theme='dark']::backdrop {
-    background-color: rgba(0, 0, 0, 0.65);
-  }
-
   /* ────────────────────────────────────────
      내부 컨테이너
   ──────────────────────────────────────── */
   .flay-dialog__inner {
-    background-color: var(--color-bg-window);
+    background-color: var(--color-bg-dialog);
     border: 2px solid var(--color-border-window);
     border-radius: var(--border-radius-hugest);
     box-shadow: var(--box-shadow-large);
@@ -280,23 +274,5 @@
     text-align: center;
     color: var(--color-text-secondary);
     font-size: var(--size-small);
-  }
-}
-
-/* ────────────────────────────────────────
-   다크 테마 보완 스타일
-   - CSS 변수로 대부분 처리되지만 세부 조정
-──────────────────────────────────────── */
-[theme='dark'] {
-  .flay-dialog {
-    .flay-dialog__btn--ok {
-      color: var(--color-dark-dark);
-    }
-
-    .flay-dialog__btn--cancel {
-      &:hover {
-        background-color: var(--color-gray-b3);
-      }
-    }
   }
 }

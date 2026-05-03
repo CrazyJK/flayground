@@ -1,4 +1,4 @@
-import { showConfirm } from '@lib/components/FlayDialog';
+import { showConfirm } from '@lib/components/showConfirm';
 import { Account, Institution, InstitutionType, deleteAccount, deleteInstitution, fetchAllAccounts, fetchInstitutions, fmtKrw, updateAccountAmount } from '../domain/financial-note';
 
 const INST_ICON: Record<InstitutionType, string> = { bank: '🏦', insurance: '🛡', stock: '📈' };

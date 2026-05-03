@@ -1,4 +1,5 @@
-import { showAlert, showConfirm } from '@lib/components/FlayDialog';
+import { showAlert } from '@lib/components/showAlert';
+import { showConfirm } from '@lib/components/showConfirm';
 import { Account, Institution, InstitutionType, addAccount, addInstitution, deleteAccount, deleteInstitution, fetchAllAccounts, fetchInstitutions, importInstitutionsCsv, importSnapshotsCsv, resetAll } from '../domain/financial-note';
 import './fn-institution-form.scss';
 

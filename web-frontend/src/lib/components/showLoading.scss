@@ -1,0 +1,45 @@
+/* showLoading 전용: 스피너 애니메이션 및 레이아웃 */
+@keyframes flay-dialog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.flay-dialog--loading {
+  /* 버튼이 없으므로 너비를 좁게 */
+  min-width: 220px;
+  max-width: min(320px, 92vw);
+
+  /* 열기 애니메이션은 튀지 않게 단순 페이드 */
+  animation: flay-dialog-backdrop-in 0.2s ease both;
+
+  .flay-dialog__inner {
+    border-radius: var(--border-radius-hugest);
+  }
+
+  .flay-dialog__loading-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .flay-dialog__spinner {
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 3px solid var(--color-border-window);
+    border-top-color: var(--color-checked);
+    animation: flay-dialog-spin 0.75s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .flay-dialog__message {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--size-small);
+  }
+}

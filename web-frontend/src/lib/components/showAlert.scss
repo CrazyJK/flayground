@@ -1,0 +1,11 @@
+/* showAlert 전용: 경고 아이콘/제목 색상 */
+.flay-dialog--alert {
+  .flay-dialog__icon {
+    background-color: var(--color-text-warn);
+    color: var(--color-white);
+  }
+
+  .flay-dialog__title {
+    color: var(--color-text-warn);
+  }
+}

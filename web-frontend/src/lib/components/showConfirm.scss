@@ -1,0 +1,11 @@
+/* showConfirm 전용: 정보 아이콘/제목 색상 */
+.flay-dialog--confirm {
+  .flay-dialog__icon {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+  }
+
+  .flay-dialog__title {
+    color: var(--color-primary);
+  }
+}

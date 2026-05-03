@@ -46,6 +46,14 @@ user-invocable: true
 - 분리 권장: 재사용 가능 로직, 50줄 이상 복잡 로직, 독립 테스트 필요 로직
 - 분리 지양: 단순 계산/포맷팅, 5줄 이하 유틸리티, 단순 템플릿
 
+## 프런트엔드 import 경로
+
+- web-frontend/src 하위에서 import 시 `web-frontend/tsconfig.json`의 `paths` 별칭을 사용한다.
+  - `@ai/*`, `@attach/*`, `@base/*`, `@diary/*`, `@editor/*`, `@finance/*`, `@flay/*`
+  - `@image/*`, `@lib/*`, `@movie/*`, `@nav/*`, `@spa/*`, `@svg/*`, `@domain/*`
+  - 예: `import { showAlert } from '@lib/components/showAlert';`
+  - 상대 경로(`../../base/...`) 대신 별칭 경로를 우선 사용한다.
+
 ## 프런트엔드 스타일 작업
 
 - 스타일 수정 전 web-frontend/src/view/style 디렉토리를 먼저 참조한다.

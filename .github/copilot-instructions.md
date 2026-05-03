@@ -40,7 +40,15 @@
 - 인라인 처리가 더 명확한 경우 굳이 함수로 분리하지 말 것
 - Utils 함수는 web-frontend\src\lib\common 의 함수를 활용하거나, 필요시 해당 디렉토리에 새 함수 추가
 
-## web-frontend 프로젝트 스타일 작업 지침
+## web-frontend 작업 지침
+
+### import 경로
+
+- `web-frontend/src` 하위 소스에서 import 시 `web-frontend/tsconfig.json`의 `paths` 별칭을 사용한다.
+  - `@ai/*`, `@attach/*`, `@base/*`, `@diary/*`, `@editor/*`, `@finance/*`, `@flay/*`
+  - `@image/*`, `@lib/*`, `@movie/*`, `@nav/*`, `@spa/*`, `@svg/*`, `@domain/*`
+  - 예: `import { showAlert } from '@lib/components/showAlert';`
+  - 상대 경로(`../../base/...`) 대신 별칭 경로를 우선 사용한다.
 
 ### 스타일 참조
 

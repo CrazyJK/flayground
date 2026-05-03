@@ -1,3 +1,4 @@
+import { showAlert, showConfirm } from '@lib/components/FlayDialog';
 import { Account, Institution, InstitutionType, addAccount, addInstitution, deleteAccount, deleteInstitution, fetchAllAccounts, fetchInstitutions, importInstitutionsCsv, importSnapshotsCsv, resetAll } from '../domain/financial-note';
 import './fn-institution-form.scss';
 
@@ -172,7 +173,7 @@ export class FnInstitutionForm extends HTMLElement {
     // 기관 삭제
     container.querySelectorAll<HTMLButtonElement>('.fn-mgmt-del-inst').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        if (!confirm(`'${btn.dataset.name}' 기관과 모든 계좌를 삭제합니다. 계속하시겠습니까?`)) return;
+        if (!(await showConfirm(`'${btn.dataset.name}' 기관과 모든 계좌를 삭제합니다. 계속하시겠습니까?`))) return;
         await this.#runMutation(() => deleteInstitution(Number(btn.dataset.id)));
       });
     });
@@ -180,7 +181,7 @@ export class FnInstitutionForm extends HTMLElement {
     // 계좌 삭제
     container.querySelectorAll<HTMLButtonElement>('.fn-mgmt-del-acc').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        if (!confirm(`'${btn.dataset.name}' 계좌를 삭제합니다. 계속하시겠습니까?`)) return;
+        if (!(await showConfirm(`'${btn.dataset.name}' 계좌를 삭제합니다. 계속하시겠습니까?`))) return;
         await this.#runMutation(() => deleteAccount(Number(btn.dataset.id)));
       });
     });
@@ -197,7 +198,7 @@ export class FnInstitutionForm extends HTMLElement {
       const typeEl = this.querySelector<HTMLSelectElement>('#fn-inst-type')!;
       const name = nameEl.value.trim();
       if (!name) {
-        alert('금융기관명을 입력하세요');
+        await showAlert('금융기관명을 입력하세요');
         return;
       }
       await this.#runMutation(() => addInstitution(name, typeEl.value as InstitutionType).then(() => undefined));
@@ -212,11 +213,11 @@ export class FnInstitutionForm extends HTMLElement {
       const institutionId = Number(instSel.value);
       const name = nameEl.value.trim();
       if (!institutionId) {
-        alert('기관을 선택하세요');
+        await showAlert('기관을 선택하세요');
         return;
       }
       if (!name) {
-        alert('계좌명을 입력하세요');
+        await showAlert('계좌명을 입력하세요');
         return;
       }
       await this.#runMutation(() => addAccount(institutionId, name, numEl.value.trim()).then(() => undefined));
@@ -230,7 +231,7 @@ export class FnInstitutionForm extends HTMLElement {
       const resultEl = this.querySelector<HTMLSpanElement>('#fn-import-inst-result')!;
       const file = fileInput.files?.[0];
       if (!file) {
-        alert('CSV 파일을 선택하세요');
+        await showAlert('CSV 파일을 선택하세요');
         return;
       }
       const csv = await file.text();
@@ -251,7 +252,7 @@ export class FnInstitutionForm extends HTMLElement {
       const resultEl = this.querySelector<HTMLSpanElement>('#fn-import-snap-result')!;
       const file = fileInput.files?.[0];
       if (!file) {
-        alert('CSV 파일을 선택하세요');
+        await showAlert('CSV 파일을 선택하세요');
         return;
       }
       const csv = await file.text();
@@ -267,9 +268,9 @@ export class FnInstitutionForm extends HTMLElement {
 
     // 전체 초기화
     this.querySelector('#fn-reset-all-btn')?.addEventListener('click', async () => {
-      if (!confirm('기관 · 계좌 · 스냅샷을 포함한 모든 데이터를 삭제합니다.\n정말 초기화하시겠습니까?')) return;
+      if (!(await showConfirm('기관 · 계좌 · 스냅샷을 포함한 모든 데이터를 삭제합니다.\n정말 초기화하시겠습니까?'))) return;
       await this.#runMutation(() => resetAll().then(() => undefined));
-      alert('전체 초기화 완료');
+      await showAlert('전체 초기화 완료');
     });
   }
 }

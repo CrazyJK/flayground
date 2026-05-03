@@ -1,3 +1,4 @@
+import { showConfirm } from '@lib/components/FlayDialog';
 import { Account, Institution, InstitutionType, deleteAccount, deleteInstitution, fetchAllAccounts, fetchInstitutions, fmtKrw, updateAccountAmount } from '../domain/financial-note';
 
 const INST_ICON: Record<InstitutionType, string> = { bank: '🏦', insurance: '🛡', stock: '📈' };
@@ -35,18 +36,6 @@ export class FnInstitutionList extends HTMLElement {
   }
 
   /**
-   * 증권 계좌 평가금액 갱신 이벤트를 상위로 전달한다.
-   * @returns {void}
-   */
-  refreshStockAmounts(): void {
-    const institutionMap = new Map<number, Institution>(this.#institutions.map((inst) => [inst.id, inst]));
-    const stockAccounts = this.#accounts.filter((account) => institutionMap.get(account.institutionId)?.type === 'stock');
-    // 종목별 현재가를 가져오기 위해 fn-stock-items 이벤트를 통해 합산된 값을 받음
-    // 간단하게 각 stock 계좌에 대해 계산 요청 이벤트를 발생
-    this.dispatchEvent(new CustomEvent('fn:refresh-stock', { bubbles: true, detail: { accounts: stockAccounts } }));
-  }
-
-  /**
    * 기관/계좌 목록을 렌더링한다.
    * @returns {void}
    */
@@ -68,10 +57,7 @@ export class FnInstitutionList extends HTMLElement {
                 <span class="fn-account-name">${acc.name}</span>
                 <input class="fn-amount-input" type="text" value="${fmtKrw(acc.amount)}"
                   data-raw="${acc.amount}" data-id="${acc.id}"
-                  ${inst.type === 'stock' ? 'readonly title="증권 계좌는 종목 편집에서 평가금액이 자동 계산됩니다"' : ''}
                 />
-                <button class="fn-btn fn-btn-edit-stock" data-id="${acc.id}" data-inst-type="${inst.type}"
-                  style="${inst.type !== 'stock' ? 'display:none' : ''}">종목</button>
                 <button class="fn-btn fn-btn-del-account" data-id="${acc.id}">✕</button>
               </div>`
           )
@@ -172,7 +158,7 @@ export class FnInstitutionList extends HTMLElement {
     // 기관 삭제
     this.querySelectorAll<HTMLButtonElement>('.fn-btn-del-inst').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        if (!confirm('기관과 모든 계좌를 삭제합니다. 계속하겠습니까?')) return;
+        if (!(await showConfirm('기관과 모든 계좌를 삭제합니다. 계속하겠습니까?'))) return;
         await deleteInstitution(Number(btn.dataset.id));
         await this.load();
         this.#emitDataChanged();
@@ -182,17 +168,10 @@ export class FnInstitutionList extends HTMLElement {
     // 계좌 삭제
     this.querySelectorAll<HTMLButtonElement>('.fn-btn-del-account').forEach((btn) => {
       btn.addEventListener('click', async () => {
-        if (!confirm('계좌를 삭제합니다. 계속하겠습니까?')) return;
+        if (!(await showConfirm('계좌를 삭제합니다. 계속하겠습니까?'))) return;
         await deleteAccount(Number(btn.dataset.id));
         await this.load();
         this.#emitDataChanged();
-      });
-    });
-
-    // 증권 종목 편집
-    this.querySelectorAll<HTMLButtonElement>('.fn-btn-edit-stock').forEach((btn) => {
-      btn.addEventListener('click', () => {
-        this.dispatchEvent(new CustomEvent('fn:edit-stock', { bubbles: true, detail: { accountId: Number(btn.dataset.id) } }));
       });
     });
   }
@@ -220,13 +199,6 @@ export class FnInstitutionList extends HTMLElement {
 
     const totalEl = this.querySelector<HTMLElement>('.fn-total-value');
     if (totalEl) totalEl.textContent = fmtKrw(total);
-  }
-
-  /** 증권 계좌 금액을 외부에서 갱신 (fn-stock-items 콜백) */
-  async updateStockAmount(accountId: number, evalAmount: number): Promise<void> {
-    await updateAccountAmount(accountId, evalAmount);
-    this.#syncAccountAmount(accountId, evalAmount);
-    this.#updateTotals();
   }
 }
 

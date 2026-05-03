@@ -55,18 +55,6 @@ export class FnAssetTable extends HTMLElement {
     void this.load();
   }
 
-  /** 증권 계좌 평가금액을 외부에서 업데이트한다 */
-  updateStockAmount(accountId: number, evalAmount: number): void {
-    const input = this.querySelector<HTMLInputElement>(`.fn-amount-input[data-id="${accountId}"]`);
-    if (input) {
-      input.dataset.raw = String(evalAmount);
-      input.value = fmtKrw(evalAmount);
-      const acc = this.#accounts.find((a) => a.id === accountId);
-      if (acc) acc.amount = evalAmount;
-      this.#updateTotals();
-    }
-  }
-
   /**
    * 기관 ID를 기준으로 계좌를 그룹화한다.
    * @returns {Map<number, Account[]>} 기관별 계좌 맵

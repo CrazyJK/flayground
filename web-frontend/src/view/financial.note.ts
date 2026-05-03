@@ -1,7 +1,6 @@
 import { FnAssetTable } from '../finance/components/fn-asset-table';
 import { FnInstitutionForm } from '../finance/components/fn-institution-form';
 import { FnSnapshotChart } from '../finance/components/fn-snapshot-chart';
-import { FnStockItems } from '../finance/components/fn-stock-items';
 import '../finance/financial-note.scss';
 import '../finance/index';
 import './inc/Page';
@@ -13,83 +12,47 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // ── 포트폴리오 현황 모달 ──
   document.querySelector('#fn-portfolio-btn')?.addEventListener('click', () => {
-    if (document.querySelector('.fn-portfolio-modal-overlay')) return;
+    if (document.querySelector('dialog.fn-portfolio-dialog[open]')) return;
 
-    const overlay = document.createElement('div');
-    overlay.className = 'fn-portfolio-modal-overlay';
-    overlay.innerHTML = /* html */ `
-      <div class="fn-portfolio-modal">
-        <div class="fn-modal-header">
-          <h3>📊 포트폴리오 현황</h3>
-          <button class="fn-btn fn-modal-close">닫기</button>
-        </div>
-        <fn-portfolio-viewer></fn-portfolio-viewer>
-      </div>`;
-    document.body.appendChild(overlay);
+    const dialog = document.createElement('dialog');
+    dialog.className = 'fn-portfolio-dialog';
+    dialog.innerHTML = /* html */ `
+      <div class="fn-modal-header">
+        <h3>📊 포트폴리오 현황</h3>
+        <button class="fn-btn fn-modal-close">닫기</button>
+      </div>
+      <fn-portfolio-viewer></fn-portfolio-viewer>`;
+    document.body.appendChild(dialog);
 
-    overlay.querySelector('.fn-modal-close')?.addEventListener('click', () => overlay.remove());
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) overlay.remove();
-    });
+    dialog.querySelector('.fn-modal-close')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => dialog.remove());
+    dialog.showModal();
   });
 
   // ── 기관/계좌 관리 모달 ──
   document.querySelector('#fn-manage-btn')?.addEventListener('click', () => {
-    if (document.querySelector('.fn-form-modal-overlay')) return;
+    if (document.querySelector('dialog.fn-institution-dialog[open]')) return;
 
-    const overlay = document.createElement('div');
-    overlay.className = 'fn-form-modal-overlay';
-    overlay.innerHTML = /* html */ `
-      <div class="fn-form-modal">
-        <div class="fn-modal-header">
-          <h3>⚙️ 기관/계좌 관리</h3>
-          <button class="fn-btn fn-modal-close">닫기</button>
-        </div>
-        <fn-institution-form></fn-institution-form>
-      </div>`;
-    document.body.appendChild(overlay);
+    const dialog = document.createElement('dialog');
+    dialog.className = 'fn-institution-dialog';
+    dialog.innerHTML = /* html */ `
+      <div class="fn-modal-header">
+        <h3>⚙️ 기관/계좌 관리</h3>
+        <button class="fn-btn fn-modal-close">닫기</button>
+      </div>
+      <fn-institution-form></fn-institution-form>`;
+    document.body.appendChild(dialog);
 
-    overlay.querySelector('.fn-modal-close')?.addEventListener('click', () => overlay.remove());
-    overlay.addEventListener('click', (e) => {
-      if (e.target === overlay) overlay.remove();
-    });
+    dialog.querySelector('.fn-modal-close')?.addEventListener('click', () => dialog.close());
+    dialog.addEventListener('close', () => dialog.remove());
 
     // 폼에서 데이터 변경 시 테이블 새로고침
-    overlay.querySelector<FnInstitutionForm>('fn-institution-form')?.addEventListener('fn:data-changed', () => {
+    dialog.querySelector<FnInstitutionForm>('fn-institution-form')?.addEventListener('fn:data-changed', () => {
       table?.refresh();
       void snapChart?.load();
     });
-  });
 
-  // ── 증권 종목 편집 모달 ──
-  document.addEventListener('fn:edit-stock', (e: Event) => {
-    const { accountId } = (e as CustomEvent).detail as { accountId: number };
-    let overlay = document.querySelector<HTMLElement>('.fn-stock-modal-overlay');
-    if (!overlay) {
-      overlay = document.createElement('div');
-      overlay.className = 'fn-stock-modal-overlay';
-      overlay.innerHTML = /* html */ `
-        <div class="fn-stock-modal">
-          <div class="fn-modal-header">
-            <h3>📈 증권 종목 편집</h3>
-            <button class="fn-btn fn-modal-close">닫기</button>
-          </div>
-          <fn-stock-items></fn-stock-items>
-        </div>`;
-      document.body.appendChild(overlay);
-      overlay.querySelector('.fn-modal-close')?.addEventListener('click', () => overlay!.remove());
-      overlay.addEventListener('click', (ev) => {
-        if (ev.target === overlay) overlay!.remove();
-      });
-    }
-    const stockItems = overlay.querySelector<FnStockItems>('fn-stock-items')!;
-    stockItems.setAttribute('account-id', String(accountId));
-  });
-
-  // ── 증권 평가금액 갱신 ──
-  document.addEventListener('fn:stock-eval-updated', (e: Event) => {
-    const { accountId, evalAmount } = (e as CustomEvent).detail as { accountId: number; evalAmount: number };
-    table?.updateStockAmount(accountId, evalAmount);
+    dialog.showModal();
   });
 
   // ── 데이터 변경 → 차트 새로고침 ──

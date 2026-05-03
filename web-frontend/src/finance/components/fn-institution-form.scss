@@ -154,38 +154,31 @@
   }
 }
 
-.fn-form-modal-overlay {
-  position: fixed;
-  inset: 0;
-  background: var(--color-bg-transparent);
-  display: flex;
-  align-items: flex-start;
-  justify-content: center;
-  padding-top: 10vh;
-  z-index: 1000;
+dialog.fn-institution-dialog {
+  padding: 1rem;
+  width: 580px;
+  max-width: 95vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  border: 1px solid var(--color-border-window);
+  border-radius: var(--border-radius-huge);
+  background: var(--color-bg);
+  box-shadow: var(--box-shadow-large);
 
-  .fn-form-modal {
-    background: var(--color-bg);
-    border: 1px solid var(--color-border-window);
-    border-radius: var(--border-radius-huge);
-    padding: 1rem;
-    width: 580px;
-    max-width: 95vw;
-    max-height: 80vh;
-    overflow-y: auto;
-    box-shadow: var(--box-shadow-large);
+  &::backdrop {
+    background: var(--color-bg-transparent);
+  }
 
-    .fn-modal-header {
-      display: flex;
-      align-items: center;
-      margin-bottom: 0.8rem;
+  .fn-modal-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0.8rem;
 
-      h3 {
-        flex: 1;
-        margin: 0;
-        font-size: var(--size-medium);
-        color: var(--color-text);
-      }
+    h3 {
+      flex: 1;
+      margin: 0;
+      font-size: var(--size-medium);
+      color: var(--color-text);
     }
   }
 }

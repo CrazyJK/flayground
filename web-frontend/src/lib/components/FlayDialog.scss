@@ -1,0 +1,302 @@
+/*
+ * FlayDialog
+ * HTMLDialogElement 기반 alert / confirm 대화상자 컴포넌트
+ * - 라이트 / 다크 테마 지원
+ * - 열기 / 닫기 애니메이션
+ */
+
+/* ── 열기 애니메이션 ── */
+@keyframes flay-dialog-open {
+  from {
+    opacity: 0;
+    transform: scale(0.88) translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── 닫기 애니메이션 ── */
+@keyframes flay-dialog-close {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.88) translateY(-12px);
+  }
+}
+
+/* ── backdrop 페이드인 ── */
+@keyframes flay-dialog-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* ────────────────────────────────────────
+   dialog 루트 엘리먼트
+──────────────────────────────────────── */
+.flay-dialog {
+  /* 브라우저 기본 스타일 리셋 */
+  position: fixed;
+  margin: auto;
+  padding: 0;
+  border: none;
+  background: transparent;
+  overflow: visible;
+  outline: none;
+
+  /* 최소/최대 너비 */
+  min-width: 280px;
+  max-width: min(480px, 92vw);
+  width: max-content;
+
+  /* 열기 애니메이션 */
+  animation: flay-dialog-open 0.22s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+
+  /* ── 닫기 애니메이션 상태 ── */
+  &.flay-dialog--closing {
+    animation: flay-dialog-close 0.18s ease-in both;
+  }
+
+  /* ── backdrop 스타일 ── */
+  &::backdrop {
+    background-color: rgba(0, 0, 0, 0.45);
+    backdrop-filter: blur(3px);
+    animation: flay-dialog-backdrop-in 0.22s ease both;
+  }
+
+  /* 다크 테마 backdrop */
+  &[data-theme='dark']::backdrop {
+    background-color: rgba(0, 0, 0, 0.65);
+  }
+
+  /* ────────────────────────────────────────
+     내부 컨테이너
+  ──────────────────────────────────────── */
+  .flay-dialog__inner {
+    background-color: var(--color-bg-window);
+    border: 2px solid var(--color-border-window);
+    border-radius: var(--border-radius-hugest);
+    box-shadow: var(--box-shadow-large);
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow: hidden;
+  }
+
+  /* ────────────────────────────────────────
+     헤더 (아이콘 + 제목)
+  ──────────────────────────────────────── */
+  .flay-dialog__header {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem 0.6rem;
+    border-bottom: 1px solid var(--color-border-window);
+    background-color: var(--color-bg-elevated);
+  }
+
+  .flay-dialog__icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    border-radius: 50%;
+    font-size: var(--size-small);
+    font-weight: 900;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+
+  .flay-dialog__title {
+    font-size: var(--size-normal);
+    font-weight: 700;
+    color: var(--color-text-window);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ────────────────────────────────────────
+     본문
+  ──────────────────────────────────────── */
+  .flay-dialog__body {
+    padding: 1.25rem 1.25rem 1rem;
+  }
+
+  .flay-dialog__message {
+    margin: 0;
+    font-size: var(--size-normal);
+    color: var(--color-text);
+    line-height: 1.7;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+
+  /* ────────────────────────────────────────
+     푸터 (버튼 영역)
+  ──────────────────────────────────────── */
+  .flay-dialog__footer {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-top: 1px solid var(--color-border-window);
+    background-color: var(--color-bg-elevated);
+  }
+
+  /* ── 공통 버튼 ── */
+  .flay-dialog__btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.4rem 1.2rem;
+    min-width: 5rem;
+    border-radius: var(--border-radius-largest);
+    font-size: var(--size-small);
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease,
+      box-shadow 0.15s ease,
+      transform 0.1s ease;
+    border: 1.5px solid transparent;
+    outline: none;
+
+    &:active {
+      transform: scale(0.96);
+    }
+
+    &:focus-visible {
+      box-shadow: 0 0 0 3px var(--color-pink-medium);
+    }
+  }
+
+  /* ── 확인 버튼 ── */
+  .flay-dialog__btn--ok {
+    background-color: var(--color-checked);
+    color: var(--color-dark-dark);
+    border-color: var(--color-checked);
+
+    &:hover {
+      background-color: var(--color-orangered);
+      border-color: var(--color-orangered);
+      box-shadow: var(--box-shadow-small);
+    }
+  }
+
+  /* ── 취소 버튼 ── */
+  .flay-dialog__btn--cancel {
+    background-color: transparent;
+    color: var(--color-text-secondary);
+    border-color: var(--color-border);
+
+    &:hover {
+      background-color: var(--color-bg-hover);
+      color: var(--color-text);
+      border-color: var(--color-border-active);
+      box-shadow: var(--box-shadow-small);
+    }
+  }
+
+  /* ────────────────────────────────────────
+     타입별 아이콘 색상
+  ──────────────────────────────────────── */
+
+  /* alert: 경고 주황 */
+  &.flay-dialog--alert {
+    .flay-dialog__icon {
+      background-color: var(--color-text-warn);
+      color: var(--color-white);
+    }
+    .flay-dialog__title {
+      color: var(--color-text-warn);
+    }
+  }
+
+  /* confirm: 정보 파랑 */
+  &.flay-dialog--confirm {
+    .flay-dialog__icon {
+      background-color: var(--color-primary);
+      color: var(--color-white);
+    }
+    .flay-dialog__title {
+      color: var(--color-primary);
+    }
+  }
+}
+
+/* ── 스피너 회전 애니메이션 ── */
+@keyframes flay-dialog-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── 로딩 타입 전용 스타일 ── */
+.flay-dialog--loading {
+  /* 버튼이 없으므로 너비를 좁게 */
+  min-width: 220px;
+  max-width: min(320px, 92vw);
+
+  /* 열기 애니메이션은 튀지 않게 단순 페이드 */
+  animation: flay-dialog-backdrop-in 0.2s ease both;
+
+  .flay-dialog__inner {
+    border-radius: var(--border-radius-hugest);
+  }
+
+  .flay-dialog__loading-body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    padding: 2rem 1.5rem;
+  }
+
+  .flay-dialog__spinner {
+    display: block;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    border: 3px solid var(--color-border-window);
+    border-top-color: var(--color-checked);
+    animation: flay-dialog-spin 0.75s linear infinite;
+    flex-shrink: 0;
+  }
+
+  .flay-dialog__message {
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: var(--size-small);
+  }
+}
+
+/* ────────────────────────────────────────
+   다크 테마 보완 스타일
+   - CSS 변수로 대부분 처리되지만 세부 조정
+──────────────────────────────────────── */
+[theme='dark'] {
+  .flay-dialog {
+    .flay-dialog__btn--ok {
+      color: var(--color-dark-dark);
+    }
+
+    .flay-dialog__btn--cancel {
+      &:hover {
+        background-color: var(--color-gray-b3);
+      }
+    }
+  }
+}

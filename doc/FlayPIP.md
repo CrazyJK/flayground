@@ -45,7 +45,7 @@ FlayPIP는 Document Picture-in-Picture API를 이용해 별도 PIP 문서 창을
 - `clone = true`: HTMLElement 전달 시 `cloneNode(true)` 후 붙임
 - `clone = false`: 전달된 원본 노드를 그대로 이동/추가
 
-### `closePIP(): void`
+### `close(): void`
 
 - PIP 창이 열려 있으면 닫고 내부 상태를 정리한다.
 

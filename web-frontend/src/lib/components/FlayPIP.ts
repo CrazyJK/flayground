@@ -127,7 +127,7 @@ export class FlayPIP {
   /**
    * PIP 창 닫기
    */
-  public closePIP(): void {
+  public close(): void {
     if (this.isOpen()) {
       this.pipWindow!.close();
       this.handlePIPClose();

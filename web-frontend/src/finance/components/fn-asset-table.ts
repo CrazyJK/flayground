@@ -155,26 +155,24 @@ export class FnAssetTable extends HTMLElement {
     // ── 현재 행 (오늘 날짜, 직접 입력 가능) ──
     let currentLeftCells = '';
     let currentRightCells = '';
-    let currentTotal = 0;
+    const currentTotal = 0;
     let firstCurrentRight = true;
     this.#institutions.forEach((inst, i) => {
       const accounts = grouped.get(inst.id) ?? [];
-      let instSub = 0;
+      const instSub = 0;
       for (const acc of accounts) {
-        currentTotal += acc.amount;
-        instSub += acc.amount;
         const secClass = firstCurrentRight ? ' fn-section-start' : '';
         firstCurrentRight = false;
         currentRightCells += `<td class="fn-current-cell${secClass}" title="${inst.name}: ${acc.name}">
           <span class="fn-current-cell-inner">
-            <input class="fn-amount-input${acc.amount < 0 ? ' fn-negative' : ''}" type="text"
-              value="${fmtKrw(acc.amount)}" data-raw="${acc.amount}"
+            <input class="fn-amount-input" type="text"
+              value="" data-raw="0"
               data-id="${acc.id}" data-inst-id="${inst.id}"
             />
           </span>
         </td>`;
       }
-      currentLeftCells += `<td class="fn-subtotal-cell fn-num fn-sticky-col${instSub < 0 ? ' fn-negative' : ''}" data-inst-subtotal="${inst.id}" style="left:${subLefts[i]}px">${fmtKrw(instSub)}</td>`;
+      currentLeftCells += `<td class="fn-subtotal-cell fn-num fn-sticky-col" data-inst-subtotal="${inst.id}" style="left:${subLefts[i]}px">${fmtKrw(instSub)}</td>`;
     });
 
     const negLastSnap = lastSnapTotal < 0 ? ' fn-negative' : '';

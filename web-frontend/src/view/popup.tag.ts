@@ -1,7 +1,8 @@
 import FlayCard from '@flay/domain/FlayCard';
+import GridControl from '@lib/components/GridControl';
+import { showConfirm } from '@lib/components/showConfirm';
 import FlayAction from '@lib/services/FlayAction';
 import FlayFetch, { Actress, Tag } from '@lib/services/FlayFetch';
-import GridControl from '@lib/components/GridControl';
 import './inc/Popup';
 import './popup.tag.scss';
 
@@ -65,8 +66,8 @@ saveBtn.addEventListener('click', () => {
   void FlayAction.putTag(parseInt(tagId.textContent!), tagGroup.value, tagName.value, tagDesc.value);
 });
 
-delBtn.addEventListener('click', () => {
-  if (confirm('A U sure?')) {
+delBtn.addEventListener('click', async () => {
+  if (await showConfirm('A U sure?')) {
     void FlayAction.deleteTag(parseInt(tagId.textContent!), tagName.value, tagDesc.value);
   }
 });

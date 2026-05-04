@@ -1,12 +1,12 @@
+import PushNotification from '@lib/browser/PushNotification';
+import { showAlert } from '@lib/components/showAlert';
+import './NotificationPermission.scss';
+
 /**
  * Web Push 알림 권한 요청 UI 컴포넌트
  * - 사용자에게 알림 권한 요청
  * - 구독 상태 표시 및 관리
  */
-
-import PushNotification from '@lib/browser/PushNotification';
-import './NotificationPermission.scss';
-
 export class NotificationPermission extends HTMLElement {
   private pushNotification: PushNotification;
   private statusElement: HTMLElement | null = null;
@@ -103,7 +103,7 @@ export class NotificationPermission extends HTMLElement {
       const granted = await this.pushNotification.requestPermission();
 
       if (!granted) {
-        alert('알림 권한이 거부되었습니다.');
+        await showAlert('알림 권한이 거부되었습니다.');
         await this.updateStatus();
         return;
       }
@@ -112,14 +112,14 @@ export class NotificationPermission extends HTMLElement {
       const subscription = await this.pushNotification.subscribe();
 
       if (subscription) {
-        alert('Push 알림이 활성화되었습니다.');
+        await showAlert('Push 알림이 활성화되었습니다.');
         await this.updateStatus();
       } else {
-        alert('Push 알림 구독에 실패했습니다.');
+        await showAlert('Push 알림 구독에 실패했습니다.', '오류');
       }
     } catch (error) {
       console.error('[NotificationPermission] Enable failed:', error);
-      alert('알림 활성화 중 오류가 발생했습니다.');
+      await showAlert('알림 활성화 중 오류가 발생했습니다.', '오류');
     }
   }
 
@@ -128,14 +128,14 @@ export class NotificationPermission extends HTMLElement {
       const success = await this.pushNotification.unsubscribe();
 
       if (success) {
-        alert('Push 알림이 비활성화되었습니다.');
+        await showAlert('Push 알림이 비활성화되었습니다.');
         await this.updateStatus();
       } else {
-        alert('알림 비활성화에 실패했습니다.');
+        await showAlert('알림 비활성화에 실패했습니다.', '오류');
       }
     } catch (error) {
       console.error('[NotificationPermission] Disable failed:', error);
-      alert('알림 비활성화 중 오류가 발생했습니다.');
+      await showAlert('알림 비활성화 중 오류가 발생했습니다.', '오류');
     }
   }
 
@@ -151,7 +151,7 @@ export class NotificationPermission extends HTMLElement {
       });
     } catch (error) {
       console.error('[NotificationPermission] Test notification failed:', error);
-      alert('테스트 알림 표시에 실패했습니다.');
+      await showAlert('테스트 알림 표시에 실패했습니다.', '오류');
     }
   }
 }

@@ -1,5 +1,6 @@
 import GroundFlay from '@base/GroundFlay';
 import { addResizeListener } from '@lib/browser/windowAddEventListener';
+import { showConfirm } from '@lib/components/showConfirm';
 import FlayAction from '@lib/services/FlayAction';
 import FlayFetch, { Tag } from '@lib/services/FlayFetch';
 import { popupTag } from '@lib/services/FlaySearch';
@@ -86,9 +87,9 @@ export class FlayTagManager extends GroundFlay {
     });
 
     // Delete 버튼: 태그 삭제
-    this.querySelector('.delete-btn')!.addEventListener('click', () => {
+    this.querySelector('.delete-btn')!.addEventListener('click', async () => {
       const [id, name, desc] = [this.tagIdInput.value, this.tagNameInput.value, this.tagDescInput.value];
-      if (id !== '') if (confirm('A U sure?')) void FlayAction.deleteTag(parseInt(id), name, desc, () => this.renderTagList());
+      if (id !== '') if (await showConfirm('A U sure?')) void FlayAction.deleteTag(parseInt(id), name, desc, () => this.renderTagList());
     });
   }
 

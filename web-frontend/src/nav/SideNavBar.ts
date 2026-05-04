@@ -5,6 +5,7 @@ import PushNotification from '@lib/browser/PushNotification';
 import { getServiceWorkerStatus } from '@lib/browser/ServiceWorkerManager';
 import { FlayPIP } from '@lib/components/FlayPIP';
 import { ModalWindow } from '@lib/components/ModalWindow';
+import { showAlert } from '@lib/components/showAlert';
 import FlayStorage from '@lib/storage/FlayStorage';
 import './part/ThemeController';
 import './SideNavBar.scss';
@@ -297,7 +298,7 @@ export class SideNavBar extends GroundNav {
         const granted = await this.#pushNotification.requestPermission();
         if (!granted) {
           checkbox.checked = false;
-          alert('알림 권한이 거부되었습니다.');
+          await showAlert('알림 권한이 거부되었습니다.', '오류');
           return;
         }
 
@@ -309,13 +310,13 @@ export class SideNavBar extends GroundNav {
           console.log('[SideNavBar] Push subscribed');
         } else {
           checkbox.checked = false;
-          alert('Push 알림 구독에 실패했습니다.');
+          await showAlert('Push 알림 구독에 실패했습니다.', '오류');
         }
       }
     } catch (error) {
       console.error('[SideNavBar] Failed to toggle push:', error);
       checkbox.checked = false;
-      alert('알림 설정 중 오류가 발생했습니다.');
+      await showAlert('알림 설정 중 오류가 발생했습니다.', '오류');
     }
   }
 

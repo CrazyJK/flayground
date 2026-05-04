@@ -1,7 +1,9 @@
 import FlayImage from '@image/part/FlayImage';
+import RandomUtils from '@lib/common/RandomUtils';
+import { showAlert } from '@lib/components/showAlert';
+import { showConfirm } from '@lib/components/showConfirm';
 import FlayAction from '@lib/services/FlayAction';
 import FlayFetch, { ImageDomain } from '@lib/services/FlayFetch';
-import RandomUtils from '@lib/common/RandomUtils';
 import folderSVG from '@svg/folder';
 import trashBin from '@svg/trashBin';
 import './popup.image.scss';
@@ -107,7 +109,7 @@ const keyNavigationHandler = (e: KeyboardEvent) => {
 };
 
 const imageRemover = async () => {
-  const confirmed = confirm('Are you sure you want to delete this image?');
+  const confirmed = await showConfirm('Are you sure you want to delete this image?');
   if (!confirmed) return;
 
   try {
@@ -115,7 +117,7 @@ const imageRemover = async () => {
     Go.next();
   } catch (error) {
     console.error('Error removing image:', error);
-    alert('Failed to remove the image. Please try again later.');
+    await showAlert('Failed to remove the image. Please try again later.', '오류');
   }
 };
 

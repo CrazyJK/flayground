@@ -1,11 +1,12 @@
 import GroundFlay from '@base/GroundFlay';
+import RandomUtils from '@lib/common/RandomUtils';
+import GridControl from '@lib/components/GridControl';
+import { showConfirm } from '@lib/components/showConfirm';
 import FlayFetch, { Flay } from '@lib/services/FlayFetch';
 import { popupActress, popupFlay, popupTag } from '@lib/services/FlaySearch';
 import FlayStorage from '@lib/storage/FlayStorage';
-import RandomUtils from '@lib/common/RandomUtils';
 import trashBinSVG from '@svg/trashBin';
 import vaginaSVG from '@svg/vagina';
-import GridControl from '@lib/components/GridControl';
 import './FlayBasket.scss';
 
 const BASKET_KEY = 'flay-basket';
@@ -72,7 +73,7 @@ export class FlayBasket extends GroundFlay {
 
     // 모두 비우기 이벤트
     this.emptyAllEl.addEventListener('click', async () => {
-      if (confirm('A U Sure?')) {
+      if (await showConfirm('A U Sure?')) {
         FlayBasket.clear();
         await this.render();
       }

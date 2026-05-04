@@ -1,11 +1,13 @@
 import GroundMovie from '@base/GroundMovie';
-import ApiClient from '@lib/services/ApiClient';
 import RandomUtils from '@lib/common/RandomUtils';
+import ApiClient from '@lib/services/ApiClient';
 import './FacadeWebMovie.scss';
 
 interface TodayItem {
-  name: string;
   uuid: string;
+  fileName: string;
+  filePath: string;
+  fileLength: number;
 }
 
 interface FacadeWebMovieOptions {
@@ -257,9 +259,9 @@ export class FacadeWebMovie extends GroundMovie {
    */
   private toggleFullscreen(): void {
     if (document.fullscreenElement) {
-      document.exitFullscreen();
+      void document.exitFullscreen();
     } else {
-      this.video.requestFullscreen();
+      void this.video.requestFullscreen();
     }
   }
 
@@ -281,7 +283,7 @@ export class FacadeWebMovie extends GroundMovie {
       this.video.loop = !this.video.loop;
       if (this.video.paused) {
         this.show();
-        this.video.play();
+        void this.video.play();
       }
     } else if (deltaY < 0) {
       // 위 ↑ 볼륨 증가
@@ -315,10 +317,10 @@ export class FacadeWebMovie extends GroundMovie {
    */
   private setDescription(): void {
     if (!this.currentItem) return;
-
+    console.log(this.currentItem);
     const flags = [this.video.muted && 'muted', this.video.loop && 'loop'].filter(Boolean).join(', ');
     const status = `Vol. ${Math.round(this.video.volume * 100)}${flags ? `, ${flags}` : ''}`;
-    this.description.innerHTML = `${this.currentItem.name}<br>${status}`;
+    this.description.innerHTML = `${this.currentItem.fileName}<br>${status}`;
     this.show(true, this.description);
     clearTimeout(this.descriptionTimeout ?? undefined);
     this.descriptionTimeout = setTimeout(() => this.show(false, this.description), 3000);

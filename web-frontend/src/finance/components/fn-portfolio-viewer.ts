@@ -1,4 +1,4 @@
-﻿import './fn-portfolio-viewer.scss';
+import './fn-portfolio-viewer.scss';
 
 /** 포트폴리오 종목 항목 타입 */
 interface PortfolioItem {
@@ -7,6 +7,7 @@ interface PortfolioItem {
   stockName: string;
   averagePrice: number;
   quantityHeld: number;
+  currentPrice?: number; // TDF용 현재가 (평가 금액 계산 시 사용)
 }
 
 /** 종목코드 기준 현재가 맵 */
@@ -22,10 +23,10 @@ const DOMESTIC: PortfolioItem[] = [
 
 /** 퇴직연금 포트폴리오 */
 const PENSION: PortfolioItem[] = [
+  { market: 'TDF', stockCode: 'TDF', stockName: 'TDF2050', averagePrice: 500015, quantityHeld: 1, currentPrice: 783353 },
   { market: 'KS', stockCode: '0162Z0', stockName: 'RISE 삼성전자SK하이닉스채권혼합50', averagePrice: 10437, quantityHeld: 4172 },
   { market: 'KS', stockCode: '0163Y0', stockName: 'KoAct 코스닥액티브', averagePrice: 12684, quantityHeld: 1182 },
   { market: 'KS', stockCode: '102110', stockName: 'TIGER 200', averagePrice: 85087, quantityHeld: 987 },
-  { market: 'TDF', stockCode: 'TDF', stockName: 'TDF2050', averagePrice: 1, quantityHeld: 783353 },
   { market: 'RP', stockCode: 'RP2', stockName: '현금성 자산', averagePrice: 1, quantityHeld: 7286 },
 ];
 
@@ -78,7 +79,11 @@ export class FnPortfolioViewer extends HTMLElement {
     // RP, TDF는 API 조회 없이 현재가 1로 설정
     const nonFetchItems = items.filter((item) => ['RP', 'TDF'].includes(item.market));
     nonFetchItems.forEach((item) => {
-      priceMap.set(item.stockCode, 1);
+      if (item.market === 'TDF' && item.currentPrice !== undefined) {
+        priceMap.set(item.stockCode, item.currentPrice);
+      } else {
+        priceMap.set(item.stockCode, 1);
+      }
     });
     return priceMap;
   }
@@ -106,21 +111,29 @@ export class FnPortfolioViewer extends HTMLElement {
     const buildRows = (list: PortfolioItem[]) =>
       list
         .map((item) => {
-          const isRPorTDF = item.market === 'RP' || item.market === 'TDF';
+          const isRP = item.market === 'RP';
+          const isTDF = item.market === 'TDF';
           const price = priceMap?.get(item.stockCode) ?? NaN;
+          const returnRate = isRP ? NaN : priceMap ? ((price - item.averagePrice) / item.averagePrice) * 100 : NaN;
           const evalAmt = price * item.quantityHeld;
           return `
             <tr>
-              <td>${item.stockName}</td>
-              <td class="fn-num">${isRPorTDF ? '' : item.averagePrice.toLocaleString()}</td>
-              <td class="fn-num">${isRPorTDF ? '' : item.quantityHeld.toLocaleString()}</td>
-              <td class="fn-num ${isNaN(price) ? 'fn-pv-fail' : ''}">${isRPorTDF ? '' : priceMap ? fmtNum(price) : loading}</td>
+              <td title="${item.stockCode}">${item.stockName}</td>
+              <td class="fn-num">${isRP ? '' : item.averagePrice.toLocaleString()}</td>
+              <td class="fn-num">${isRP || isTDF ? '' : item.quantityHeld.toLocaleString()}</td>
+              <td class="fn-num ${isNaN(price) ? 'fn-pv-fail' : ''}">${isRP ? '' : priceMap ? fmtNum(price) : loading}</td>
+              <td class="fn-num ${isNaN(returnRate) ? 'fn-pv-fail' : ''}">${isRP ? '' : priceMap ? returnRate.toFixed(2) : loading}</td>
               <td class="fn-num ${isNaN(evalAmt) ? 'fn-pv-fail' : ''}">${priceMap ? fmtNum(evalAmt) : loading}</td>
             </tr>`;
         })
         .join('');
 
-    const buildTotal = (list: PortfolioItem[]) => {
+    /**
+     * 총 평가 금액 계산: 각 종목의 (현재가 * 보유 수량)의 합
+     * @param list
+     * @returns
+     */
+    const buildEvalTotal = (list: PortfolioItem[]) => {
       if (!priceMap) return loading;
       const total = list.reduce((sum, item) => {
         const price = priceMap.get(item.stockCode) ?? NaN;
@@ -130,28 +143,58 @@ export class FnPortfolioViewer extends HTMLElement {
       return total.toLocaleString();
     };
 
+    /**
+     * 전체 손익률 계산: (총 평가 금액 / 총 매수 금액) * 100
+     * - 총 평가 금액: 각 종목의 (현재가 * 보유 수량)의 합
+     * - 총 매수 금액: 각 종목의 (평균 단가 * 보유 수량)의 합
+     * - RP, TDF는 평가 금액과 매수 금액 모두 0으로 처리하여 손익률 계산에서 제외
+     */
+    const buildReturnRateTotal = (list: PortfolioItem[]) => {
+      if (!priceMap) return loading;
+      let totalEvalAmt = 0;
+      let totalBuyAmt = 0;
+      list.forEach((item) => {
+        const price = priceMap.get(item.stockCode) ?? NaN;
+        const evalAmt = price * item.quantityHeld;
+        const buyAmt = item.averagePrice * item.quantityHeld;
+        if (!isNaN(evalAmt) && !isNaN(buyAmt)) {
+          totalEvalAmt += evalAmt;
+          totalBuyAmt += buyAmt;
+        }
+      });
+      if (totalBuyAmt === 0) return 'N/A';
+      return ((totalEvalAmt / totalBuyAmt - 1) * 100).toFixed(2);
+    };
+
     const buildTable = (title: string, list: PortfolioItem[]) =>
       `<h3 class="fn-pv-section-title">${title}</h3>
       <table class="fn-pv-table">
         <thead>
           <tr>
             <th>종목명</th>
-            <th class="fn-num">평균 단가</th>
-            <th class="fn-num">보유 수량</th>
-            <th class="fn-num">현재가</th>
-            <th class="fn-num">평가 금액</th>
+            <th>평균 단가</th>
+            <th>보유 수량</th>
+            <th>현재가</th>
+            <th>손익률(%)</th>
+            <th>평가 금액</th>
           </tr>
         </thead>
         <tbody>${buildRows(list)}</tbody>
         <tfoot>
           <tr>
-            <th colspan="4" class="fn-num">총 평가 금액</th>
-            <th class="fn-num">${buildTotal(list)}</th>
+            <th colspan="4"></th>
+            <th class="fn-num">${buildReturnRateTotal(list)}</th>
+            <th class="fn-num">${buildEvalTotal(list)}</th>
           </tr>
         </tfoot>
       </table>`;
 
     this.innerHTML = `<div class="fn-pv-wrap">` + buildTable('📈 국내 주식', DOMESTIC) + buildTable('🏦 퇴직연금', PENSION) + `</div>`;
+    this.querySelectorAll('.fn-num').forEach((el) => {
+      if (parseFloat(el.textContent) < 0) {
+        el.classList.add('fn-num-minus');
+      }
+    });
   }
 }
 

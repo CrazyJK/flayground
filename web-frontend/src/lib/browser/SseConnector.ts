@@ -1,7 +1,8 @@
-import ApiClient from '@lib/services/ApiClient';
-import FlayFetch, { Actress, Flay, Studio, Tag, Video } from '@lib/services/FlayFetch';
 import '@lib/browser/SseConnector.scss';
 import { addBeforeunloadListener } from '@lib/browser/windowAddEventListener';
+import ApiClient from '@lib/services/ApiClient';
+import FlayFetch, { Actress, Flay, Studio, Tag, Video } from '@lib/services/FlayFetch';
+import { showAlert } from '../components/showAlert';
 
 /**
  * Server-Sent Events를 통한 실시간 데이터 동기화 모듈
@@ -179,27 +180,7 @@ window.emitNotice = (data: string, warn: boolean = false): void => {
  */
 window.emitMessage = (...datas: unknown[]): void => {
   const messages = datas.map((data) => JSON.stringify(data).replace(/"/g, '')).join('<br>');
-
-  let messageWrapper = document.querySelector('#message-wrapper') as HTMLElement;
-  if (messageWrapper === null) {
-    messageWrapper = document.body.appendChild(document.createElement('div'));
-    messageWrapper.id = 'message-wrapper';
-    messageWrapper.appendChild(document.createElement('div')).id = 'message';
-    messageWrapper.addEventListener('click', (e: Event) => {
-      e.stopPropagation();
-      const target = e.target as HTMLElement;
-      target.classList.remove('show');
-      const messageElement = target.querySelector('#message') as HTMLElement;
-      if (messageElement) {
-        messageElement.textContent = '';
-      }
-    });
-  }
-  const messageElement = messageWrapper.querySelector('#message') as HTMLElement;
-  if (messageElement) {
-    messageElement.innerHTML += `<label>${messages}</label>`;
-  }
-  messageWrapper.classList.add('show');
+  void showAlert(messages, '알림');
 };
 
 /**

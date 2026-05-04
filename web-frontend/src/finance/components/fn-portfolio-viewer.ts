@@ -17,6 +17,7 @@ const DOMESTIC: PortfolioItem[] = [
   { market: 'KS', stockCode: '066570', stockName: 'LG전자', averagePrice: 144000, quantityHeld: 1 },
   { market: 'KS', stockCode: '069500', stockName: 'KODEX 200', averagePrice: 79033, quantityHeld: 2 },
   { market: 'KS', stockCode: '395160', stockName: 'KODEX AI반도체', averagePrice: 27350, quantityHeld: 4866 },
+  { market: 'RP', stockCode: 'RP1', stockName: '현금성 자산', averagePrice: 1, quantityHeld: 41962 },
 ];
 
 /** 퇴직연금 포트폴리오 */
@@ -24,6 +25,8 @@ const PENSION: PortfolioItem[] = [
   { market: 'KS', stockCode: '0162Z0', stockName: 'RISE 삼성전자SK하이닉스채권혼합50', averagePrice: 10437, quantityHeld: 4172 },
   { market: 'KS', stockCode: '0163Y0', stockName: 'KoAct 코스닥액티브', averagePrice: 12684, quantityHeld: 1182 },
   { market: 'KS', stockCode: '102110', stockName: 'TIGER 200', averagePrice: 85087, quantityHeld: 987 },
+  { market: 'TDF', stockCode: 'TDF', stockName: 'TDF2050', averagePrice: 1, quantityHeld: 783353 },
+  { market: 'RP', stockCode: 'RP2', stockName: '현금성 자산', averagePrice: 1, quantityHeld: 7286 },
 ];
 
 /**
@@ -60,14 +63,22 @@ export class FnPortfolioViewer extends HTMLElement {
 
   /**
    * 포트폴리오 목록의 현재가 맵을 생성한다.
+   * - RP, TDF는 API 조회 없이 현재가 1로 설정
    * @param {PortfolioItem[]} items 조회 대상 목록
    * @returns {Promise<PriceMap>} 종목코드 기준 현재가 맵
    */
   async #buildPriceMap(items: PortfolioItem[]): Promise<PriceMap> {
-    const prices = await Promise.all(items.map((item) => this.#fetchPrice(item.stockCode, item.market)));
+    const requiredFetchItems = items.filter((item) => !['RP', 'TDF'].includes(item.market));
+    const priceFetchPromises = requiredFetchItems.map((item) => this.#fetchPrice(item.stockCode, item.market));
+    const resolvedPrices = await Promise.all(priceFetchPromises);
     const priceMap: PriceMap = new Map<string, number>();
-    items.forEach((item, index) => {
-      priceMap.set(item.stockCode, prices[index] ?? NaN);
+    requiredFetchItems.forEach((item, index) => {
+      priceMap.set(item.stockCode, resolvedPrices[index] ?? NaN);
+    });
+    // RP, TDF는 API 조회 없이 현재가 1로 설정
+    const nonFetchItems = items.filter((item) => ['RP', 'TDF'].includes(item.market));
+    nonFetchItems.forEach((item) => {
+      priceMap.set(item.stockCode, 1);
     });
     return priceMap;
   }
@@ -94,15 +105,16 @@ export class FnPortfolioViewer extends HTMLElement {
 
     const buildRows = (list: PortfolioItem[]) =>
       list
-        .map((s) => {
-          const price = priceMap?.get(s.stockCode) ?? NaN;
-          const evalAmt = price * s.quantityHeld;
+        .map((item) => {
+          const isRPorTDF = item.market === 'RP' || item.market === 'TDF';
+          const price = priceMap?.get(item.stockCode) ?? NaN;
+          const evalAmt = price * item.quantityHeld;
           return `
             <tr>
-              <td>${s.stockName}</td>
-              <td class="fn-num">${s.averagePrice.toLocaleString()}</td>
-              <td class="fn-num">${s.quantityHeld.toLocaleString()}</td>
-              <td class="fn-num ${isNaN(price) ? 'fn-pv-fail' : ''}">${priceMap ? fmtNum(price) : loading}</td>
+              <td>${item.stockName}</td>
+              <td class="fn-num">${isRPorTDF ? '' : item.averagePrice.toLocaleString()}</td>
+              <td class="fn-num">${isRPorTDF ? '' : item.quantityHeld.toLocaleString()}</td>
+              <td class="fn-num ${isNaN(price) ? 'fn-pv-fail' : ''}">${isRPorTDF ? '' : priceMap ? fmtNum(price) : loading}</td>
               <td class="fn-num ${isNaN(evalAmt) ? 'fn-pv-fail' : ''}">${priceMap ? fmtNum(evalAmt) : loading}</td>
             </tr>`;
         })
@@ -110,9 +122,9 @@ export class FnPortfolioViewer extends HTMLElement {
 
     const buildTotal = (list: PortfolioItem[]) => {
       if (!priceMap) return loading;
-      const total = list.reduce((sum, s) => {
-        const price = priceMap.get(s.stockCode) ?? NaN;
-        const evalAmt = price * s.quantityHeld;
+      const total = list.reduce((sum, item) => {
+        const price = priceMap.get(item.stockCode) ?? NaN;
+        const evalAmt = price * item.quantityHeld;
         return sum + (isNaN(evalAmt) ? 0 : evalAmt);
       }, 0);
       return total.toLocaleString();

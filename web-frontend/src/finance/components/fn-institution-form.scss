@@ -155,15 +155,15 @@
 }
 
 dialog.fn-institution-dialog {
-  padding: 1rem;
+  // padding: 1rem;
   width: 580px;
   max-width: 95vw;
-  max-height: 80vh;
-  overflow-y: auto;
-  border: 1px solid var(--color-border-window);
-  border-radius: var(--border-radius-huge);
-  background: var(--color-bg);
-  box-shadow: var(--box-shadow-large);
+  // max-height: 80vh;
+  // overflow-y: auto;
+  // border: 1px solid var(--color-border-window);
+  // border-radius: var(--border-radius-huge);
+  // background: var(--color-bg);
+  // box-shadow: var(--box-shadow-large);
 
   &::backdrop {
     background: var(--color-bg-transparent);

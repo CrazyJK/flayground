@@ -31,7 +31,8 @@ side-nav-bar {
     linear left 0.4s 0.4s,
     box-shadow 0.8s;
 
-  &.open {
+  &.pinned {
+    background-color: var(--color-bg-side-nav-pinned);
     box-shadow: var(--box-shadow-small);
   }
 
@@ -88,7 +89,7 @@ side-nav-bar {
 
 side-nav-opener:hover + side-nav-bar,
 side-nav-bar:hover,
-side-nav-bar.open {
+side-nav-bar.pinned {
   left: 0;
   transition:
     left 0.4s,

@@ -21,7 +21,7 @@ class SideNavOpener extends GroundNav {}
 customElements.define('side-nav-opener', SideNavOpener);
 
 export class SideNavBar extends GroundNav {
-  static readonly OPEN_STORAGE_KEY = 'SideNavBar.open';
+  static readonly PIN_STORAGE_KEY = 'SideNavBar.pin';
 
   // 정적 메뉴 리스트를 클래스 속성으로 이동
   static readonly #MENU_LIST: readonly MenuItemType[] = [
@@ -122,7 +122,7 @@ export class SideNavBar extends GroundNav {
 
   connectedCallback() {
     this.parentElement!.insertBefore(new SideNavOpener(), this);
-    this.classList.toggle('open', FlayStorage.local.getBoolean(SideNavBar.OPEN_STORAGE_KEY, false));
+    this.classList.toggle('pinned', FlayStorage.local.getBoolean(SideNavBar.PIN_STORAGE_KEY, false));
 
     this.#setActiveMenu();
     this.#setWindowSize();
@@ -205,8 +205,8 @@ export class SideNavBar extends GroundNav {
     } else if (target.closest('flay-monitor')) {
       window.open('popup.monitor.html', 'popup.monitor', 'width=1200,height=410');
     } else {
-      const toggleState = this.classList.toggle('open');
-      FlayStorage.local.set(SideNavBar.OPEN_STORAGE_KEY, toggleState.toString());
+      const toggleState = this.classList.toggle('pinned');
+      FlayStorage.local.set(SideNavBar.PIN_STORAGE_KEY, toggleState.toString());
     }
   }
 

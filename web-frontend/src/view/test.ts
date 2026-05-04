@@ -277,7 +277,7 @@ function newHTMLButtonElement(type: 'button' | 'submit' | 'reset', text: string,
 }
 
 document.addEventListener('DOMContentLoaded', () => {
-  document.body.innerHTML = /* html */ `
+  document.body.querySelector('header')!.innerHTML = /* html */ `
     <div class="dialog-test">
       <h2>FlayDialog 테스트</h2>
       <div class="dialog-test__buttons">

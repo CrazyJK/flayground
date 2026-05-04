@@ -128,50 +128,6 @@ router.delete('/financial-note/accounts/:id', (req, res) => {
 });
 
 /* ══════════════════════════════════
-   증권 종목
-══════════════════════════════════ */
-
-/**
- * @openapi
- * /financial-note/accounts/{id}/stock-items:
- *   get:
- *     tags: [FinancialNote]
- *     summary: 계좌별 종목 목록
- */
-router.get('/financial-note/accounts/:id/stock-items', (req, res) => {
-  res.json(repo.getStockItems(Number(req.params.id)));
-});
-
-/**
- * @openapi
- * /financial-note/accounts/{id}/stock-items:
- *   post:
- *     tags: [FinancialNote]
- *     summary: 종목 추가
- */
-router.post('/financial-note/accounts/:id/stock-items', (req, res) => {
-  const accountId = Number(req.params.id);
-  const { code, name, buyPrice, buyQty } = req.body as { code: string; name?: string; buyPrice: number; buyQty: number };
-  if (!code || buyPrice === undefined || buyQty === undefined) {
-    res.status(400).json({ error: 'code, buyPrice, buyQty 필수' });
-    return;
-  }
-  res.status(201).json(repo.addStockItem(accountId, code, name ?? '', buyPrice, buyQty));
-});
-
-/**
- * @openapi
- * /financial-note/stock-items/{id}:
- *   delete:
- *     tags: [FinancialNote]
- *     summary: 종목 삭제
- */
-router.delete('/financial-note/stock-items/:id', (req, res) => {
-  repo.deleteStockItem(Number(req.params.id));
-  res.status(204).send();
-});
-
-/* ══════════════════════════════════
    스냅샷
 ══════════════════════════════════ */
 

@@ -19,16 +19,6 @@ export interface Account {
   sort: number;
 }
 
-/** 증권 종목 */
-export interface StockItem {
-  id: number;
-  accountId: number;
-  code: string;
-  name: string;
-  buyPrice: number;
-  buyQty: number;
-}
-
 /** 스냅샷 항목 (계좌별 금액 기록) */
 export interface SnapshotEntry {
   accountId: number;

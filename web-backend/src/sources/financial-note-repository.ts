@@ -1,7 +1,7 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-import { Account, Institution, InstitutionType, Snapshot, SnapshotEntry, StockItem } from '../domain/financial-note';
+import { Account, Institution, InstitutionType, Snapshot, SnapshotEntry } from '../domain/financial-note';
 
 let db: Database.Database;
 
@@ -29,14 +29,6 @@ function init(): void {
       account_number TEXT NOT NULL DEFAULT '',
       amount         REAL NOT NULL DEFAULT 0,
       sort           INTEGER NOT NULL DEFAULT 0
-    );
-    CREATE TABLE IF NOT EXISTS fn_stock_item (
-      id         INTEGER PRIMARY KEY AUTOINCREMENT,
-      account_id INTEGER NOT NULL REFERENCES fn_account(id),
-      code       TEXT NOT NULL,
-      name       TEXT NOT NULL DEFAULT '',
-      buy_price  REAL NOT NULL DEFAULT 0,
-      buy_qty    REAL NOT NULL DEFAULT 0
     );
     CREATE TABLE IF NOT EXISTS fn_snapshot (
       id         INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -70,12 +62,9 @@ function addInstitution(name: string, type: InstitutionType, sort = 0): Institut
   return { id: result.lastInsertRowid as number, name, type, sort };
 }
 
-/** 금융기관 삭제 (연관 계좌/종목/스냅샷 항목도 삭제) */
+/** 금융기관 삭제 (연관 계좌/스냅샷 항목도 삭제) */
 function deleteInstitution(id: number): void {
   const accounts = db.prepare('SELECT id FROM fn_account WHERE institution_id = ?').all(id) as { id: number }[];
-  for (const acc of accounts) {
-    db.prepare('DELETE FROM fn_stock_item WHERE account_id = ?').run(acc.id);
-  }
   db.prepare('DELETE FROM fn_account WHERE institution_id = ?').run(id);
   db.prepare('DELETE FROM fn_institution WHERE id = ?').run(id);
 }
@@ -105,26 +94,7 @@ function updateAccountAmount(id: number, amount: number): void {
 
 /** 계좌 삭제 */
 function deleteAccount(id: number): void {
-  db.prepare('DELETE FROM fn_stock_item WHERE account_id = ?').run(id);
   db.prepare('DELETE FROM fn_account WHERE id = ?').run(id);
-}
-
-/* ── 증권 종목 ── */
-
-/** 계좌별 종목 목록 */
-function getStockItems(accountId: number): StockItem[] {
-  return db.prepare('SELECT id, account_id as accountId, code, name, buy_price as buyPrice, buy_qty as buyQty FROM fn_stock_item WHERE account_id = ?').all(accountId) as StockItem[];
-}
-
-/** 종목 추가 */
-function addStockItem(accountId: number, code: string, name: string, buyPrice: number, buyQty: number): StockItem {
-  const result = db.prepare('INSERT INTO fn_stock_item (account_id, code, name, buy_price, buy_qty) VALUES (?, ?, ?, ?, ?)').run(accountId, code, name, buyPrice, buyQty);
-  return { id: result.lastInsertRowid as number, accountId, code, name, buyPrice, buyQty };
-}
-
-/** 종목 삭제 */
-function deleteStockItem(id: number): void {
-  db.prepare('DELETE FROM fn_stock_item WHERE id = ?').run(id);
 }
 
 /* ── 스냅샷 ── */
@@ -180,12 +150,11 @@ function getDb(): Database.Database {
   return db;
 }
 
-/** 전체 데이터 초기화 (기관/계좌/종목/스냅샷 전체 삭제) */
+/** 전체 데이터 초기화 (기관/계좌/스냅샷 전체 삭제) */
 function reset(): void {
   db.exec(`
     DELETE FROM fn_snapshot_entry;
     DELETE FROM fn_snapshot;
-    DELETE FROM fn_stock_item;
     DELETE FROM fn_account;
     DELETE FROM fn_institution;
   `);
@@ -201,9 +170,6 @@ export const financialNoteRepository = {
   addAccount,
   updateAccountAmount,
   deleteAccount,
-  getStockItems,
-  addStockItem,
-  deleteStockItem,
   getSnapshotDates,
   getSnapshot,
   getSnapshotSummaries,

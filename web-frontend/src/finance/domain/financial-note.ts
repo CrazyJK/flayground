@@ -19,16 +19,6 @@ export interface Account {
   sort: number;
 }
 
-/** 증권 종목 */
-export interface StockItem {
-  id: number;
-  accountId: number;
-  code: string;
-  name: string;
-  buyPrice: number;
-  buyQty: number;
-}
-
 /** 스냅샷 항목 */
 export interface SnapshotEntry {
   accountId: number;
@@ -166,39 +156,6 @@ export const updateAccountAmount = (id: number, amount: number): Promise<{ id: n
  * @returns {Promise<void>} 완료 Promise
  */
 export const deleteAccount = (id: number): Promise<void> => requestVoid(`${BASE}/accounts/${id}`, { method: 'DELETE' });
-
-/* ── 증권 종목 ── */
-/**
- * 계좌의 증권 종목 목록을 조회한다.
- * @param {number} accountId 계좌 ID
- * @returns {Promise<StockItem[]>} 종목 목록
- */
-export const fetchStockItems = (accountId: number): Promise<StockItem[]> => requestJson<StockItem[]>(`${BASE}/accounts/${accountId}/stock-items`);
-
-/**
- * 증권 종목을 추가한다.
- * @param {number} accountId 계좌 ID
- * @param {string} code 종목 코드
- * @param {string} name 종목명
- * @param {number} buyPrice 매입 단가
- * @param {number} buyQty 매입 수량
- * @returns {Promise<StockItem>} 생성된 종목
- */
-export const addStockItem = (accountId: number, code: string, name: string, buyPrice: number, buyQty: number): Promise<StockItem> => requestJson<StockItem>(`${BASE}/accounts/${accountId}/stock-items`, jsonRequest('POST', { code, name, buyPrice, buyQty }));
-
-/**
- * 증권 종목을 삭제한다.
- * @param {number} id 종목 ID
- * @returns {Promise<void>} 완료 Promise
- */
-export const deleteStockItem = (id: number): Promise<void> => requestVoid(`${BASE}/stock-items/${id}`, { method: 'DELETE' });
-
-/**
- * 증권 종목 현재가를 조회한다.
- * @param {string} code 종목 코드
- * @returns {Promise<{ code: string; price: number }>} 종목 코드와 현재가
- */
-export const fetchStockPrice = (code: string): Promise<{ code: string; price: number }> => requestJson<{ code: string; price: number }>(`${BASE}/stock-price/${code}`);
 
 /* ── 스냅샷 ── */
 /**

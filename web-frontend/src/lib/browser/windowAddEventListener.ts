@@ -204,7 +204,6 @@ export const clearListeners = (eventType?: EventType): void => {
  */
 function executeListeners(e: Event, listeners: EventListener[]): void {
   if (listeners.length > 0) {
-    console.debug(e.type, listeners);
     for (const listener of listeners) {
       try {
         listener(e);

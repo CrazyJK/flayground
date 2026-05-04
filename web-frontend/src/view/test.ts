@@ -1,9 +1,13 @@
 import FlayMarker from '@flay/domain/FlayMarker';
 import RandomUtils from '@lib/common/RandomUtils';
-import fetchJsonp from '@lib/services/fetchJsonp';
 import { Countdown } from '@lib/components/Countdown';
 import { ModalWindow } from '@lib/components/ModalWindow';
+import { showAlert } from '@lib/components/showAlert';
+import { showConfirm } from '@lib/components/showConfirm';
+import { showDialog } from '@lib/components/showDialog';
+import { showLoading } from '@lib/components/showLoading';
 import { TickTimer } from '@lib/components/TickTimer';
+import fetchJsonp from '@lib/services/fetchJsonp';
 import './inc/Page';
 import './test.scss';
 
@@ -271,3 +275,63 @@ function newHTMLButtonElement(type: 'button' | 'submit' | 'reset', text: string,
   button.addEventListener('click', callback);
   return button;
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.body.innerHTML = /* html */ `
+    <div class="dialog-test">
+      <h2>FlayDialog 테스트</h2>
+      <div class="dialog-test__buttons">
+        <button id="btn-alert" class="dialog-test__btn">showAlert</button>
+        <button id="btn-confirm" class="dialog-test__btn">showConfirm</button>
+        <button id="btn-confirm-opts" class="dialog-test__btn">showConfirm (옵션)</button>
+        <button id="btn-loading" class="dialog-test__btn">showLoading (3초)</button>
+        <button id="btn-dialog" class="dialog-test__btn">showDialog</button>
+      </div>
+      <pre id="dialog-test-result" class="dialog-test__result"></pre>
+    </div>
+  `;
+
+  const result = document.querySelector<HTMLPreElement>('#dialog-test-result')!;
+  const log = (text: string) => (result.textContent = text);
+
+  document.querySelector('#btn-alert')?.addEventListener('click', async () => {
+    await showAlert('저장이 완료되었습니다.', '알림');
+    log('alert 닫힘');
+  });
+
+  document.querySelector('#btn-confirm')?.addEventListener('click', async () => {
+    const ok = await showConfirm('삭제하시겠습니까?', '삭제');
+    log(`confirm 결과: ${ok ? '확인' : '취소'}`);
+  });
+
+  document.querySelector('#btn-confirm-opts')?.addEventListener('click', async () => {
+    const ok = await showConfirm({
+      message: '계속 진행하시겠습니까?',
+      title: '진행 확인',
+      okLabel: '계속',
+      cancelLabel: '중단',
+    });
+    log(`confirm(옵션) 결과: ${ok ? '계속' : '중단'}`);
+  });
+
+  document.querySelector('#btn-loading')?.addEventListener('click', async () => {
+    log('로딩 중...');
+    const hide = showLoading('처리 중입니다...');
+    await new Promise((resolve) => setTimeout(resolve, 3000));
+    hide();
+    log('로딩 종료');
+  });
+
+  document.querySelector('#btn-dialog')?.addEventListener('click', async () => {
+    const result = await showDialog<string>({
+      title: '저장 방식 선택',
+      content: '<p>어떤 방식으로 저장할까요?</p>',
+      buttons: [
+        { label: '덮어쓰기', value: 'overwrite', primary: true },
+        { label: '새 파일', value: 'new' },
+        { label: '취소', value: 'cancel' },
+      ],
+    });
+    log(`dialog 결과: ${result ?? '닫힘(null)'}`);
+  });
+});

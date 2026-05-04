@@ -192,7 +192,6 @@ export class SideNavBar extends GroundNav {
         case 'mcpStats':
           return window.open('https://flay.kamoru.jk:3002/stats.html', target.id, 'width=1000,height=460');
         case 'swagger':
-          // return window.open('/swagger-ui/index.html', target.id, features); JAVA에서 사용하던 swagger-ui를 그대로 열도록 유지 (새 창에서 열림)
           return window.open('/api-docs', target.id, features);
         case 'dependencies':
           return window.open('dependencies-viewer.html', target.id, features);

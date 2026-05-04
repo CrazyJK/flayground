@@ -4,7 +4,7 @@ import './GroundDialog.scss';
 export let dialogIdCounter = 0;
 
 /**
- * dialog DOM 엘리먼트를 생성하여 반환
+ * dialog DOM 엘리먼트를 생성하여 반환 (alert / confirm 타입)
  *
  * @param type - 'alert' 또는 'confirm'
  * @param message - 본문 메시지
@@ -13,29 +13,69 @@ export let dialogIdCounter = 0;
  * @param cancelLabel - 취소 버튼 라벨 (confirm 타입에만 사용)
  * @returns 생성된 HTMLDialogElement
  */
-export function buildDialog(type: 'alert' | 'confirm', message: string, title: string, okLabel: string, cancelLabel?: string): HTMLDialogElement {
+export function buildDialog(type: 'alert' | 'confirm', message: string, title: string, okLabel: string, cancelLabel?: string): HTMLDialogElement;
+/**
+ * dialog DOM 엘리먼트를 생성하여 반환 (custom 타입)
+ *
+ * - 본문은 raw HTML을 그대로 사용하므로 호출자가 XSS 이스케이프 처리 필요
+ * - 버튼은 `data-index` 속성으로 순서가 지정되며, 이벤트 바인딩은 호출자가 담당
+ *
+ * @param type - 'custom'
+ * @param title - 제목
+ * @param content - 본문 HTML 문자열
+ * @param buttons - 버튼 목록 `{ label, primary? }`
+ * @returns 생성된 HTMLDialogElement
+ */
+export function buildDialog(type: 'custom', title: string, content: string, buttons: Array<{ label: string; primary?: boolean }>): HTMLDialogElement;
+export function buildDialog(type: 'alert' | 'confirm' | 'custom', messageOrTitle: string, titleOrContent: string, okLabelOrButtons: string | Array<{ label: string; primary?: boolean }>, cancelLabel?: string): HTMLDialogElement {
   const id = ++dialogIdCounter;
   const dialog = document.createElement('dialog');
   dialog.className = `flay-dialog flay-dialog--${type}`;
 
-  const iconHtml = `<span class="flay-dialog__icon" aria-hidden="true">${type === 'alert' ? '!' : '?'}</span>`;
-  const cancelBtnHtml = cancelLabel != null ? `<button class="flay-dialog__btn flay-dialog__btn--cancel" type="button">${escapeHtml(cancelLabel)}</button>` : '';
+  if (type === 'custom') {
+    const title = messageOrTitle;
+    const content = titleOrContent;
+    const buttons = okLabelOrButtons as Array<{ label: string; primary?: boolean }>;
 
-  dialog.innerHTML = `
-    <div class="flay-dialog__inner" role="document">
-      <header class="flay-dialog__header">
-        ${iconHtml}
-        <span class="flay-dialog__title" id="flay-dialog-title-${id}">${escapeHtml(title)}</span>
-      </header>
-      <div class="flay-dialog__body" id="flay-dialog-body-${id}">
-        <p class="flay-dialog__message">${escapeHtml(message)}</p>
+    const buttonsHtml = buttons.map((btn, i) => `<button class="flay-dialog__btn ${btn.primary ? 'flay-dialog__btn--ok' : 'flay-dialog__btn--cancel'}" type="button" data-index="${i}">${escapeHtml(btn.label)}</button>`).join('');
+
+    dialog.innerHTML = `
+      <div class="flay-dialog__inner" role="document">
+        <header class="flay-dialog__header">
+          <span class="flay-dialog__title" id="flay-dialog-title-${id}">${escapeHtml(title)}</span>
+        </header>
+        <div class="flay-dialog__body" id="flay-dialog-body-${id}">
+          ${content}
+        </div>
+        <footer class="flay-dialog__footer">
+          ${buttonsHtml}
+        </footer>
       </div>
-      <footer class="flay-dialog__footer">
-        ${cancelBtnHtml}
-        <button class="flay-dialog__btn flay-dialog__btn--ok" type="button">${escapeHtml(okLabel)}</button>
-      </footer>
-    </div>
-  `;
+    `;
+  } else {
+    const message = messageOrTitle;
+    const title = titleOrContent;
+    const okLabel = okLabelOrButtons as string;
+
+    const iconHtml = `<span class="flay-dialog__icon" aria-hidden="true">${type === 'alert' ? '!' : '?'}</span>`;
+    const cancelBtnHtml = cancelLabel != null ? `<button class="flay-dialog__btn flay-dialog__btn--cancel" type="button">${escapeHtml(cancelLabel)}</button>` : '';
+
+    dialog.innerHTML = `
+      <div class="flay-dialog__inner" role="document">
+        <header class="flay-dialog__header">
+          ${iconHtml}
+          <span class="flay-dialog__title" id="flay-dialog-title-${id}">${escapeHtml(title)}</span>
+        </header>
+        <div class="flay-dialog__body" id="flay-dialog-body-${id}">
+          <p class="flay-dialog__message">${escapeHtml(message)}</p>
+        </div>
+        <footer class="flay-dialog__footer">
+          ${cancelBtnHtml}
+          <button class="flay-dialog__btn flay-dialog__btn--ok" type="button">${escapeHtml(okLabel)}</button>
+        </footer>
+      </div>
+    `;
+  }
 
   dialog.setAttribute('aria-labelledby', `flay-dialog-title-${id}`);
   dialog.setAttribute('aria-describedby', `flay-dialog-body-${id}`);
@@ -94,31 +134,41 @@ export function escapeHtml(text: string): string {
 const RESIZE_DIRS = ['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'] as const;
 
 /**
- * dialog header를 드래그하여 dialog를 이동
+ * dialog header를 드래그하여 엘리먼트를 이동
  *
- * @param dialog - 이동 대상 HTMLDialogElement
+ * `.flay-dialog__header` 자식을 드래그 핸들로 사용
+ *
+ * @param el - 이동 대상 HTMLElement
  */
-function makeDraggable(dialog: HTMLDialogElement): void {
-  const header = dialog.querySelector<HTMLElement>('.flay-dialog__header');
+function makeDraggable(el: HTMLElement): void {
+  const header = el.querySelector<HTMLElement>('.flay-dialog__header');
   if (!header) return;
 
   header.addEventListener('mousedown', (e: MouseEvent) => {
     if ((e.target as HTMLElement).closest('button')) return;
 
-    const rect = dialog.getBoundingClientRect();
-    dialog.style.margin = '0';
-    dialog.style.left = `${rect.left}px`;
-    dialog.style.top = `${rect.top}px`;
-
-    const offsetX = e.clientX - rect.left;
-    const offsetY = e.clientY - rect.top;
+    const rect = el.getBoundingClientRect();
+    const startLeft = rect.left;
+    const startTop = rect.top;
+    const startMouseX = e.clientX;
+    const startMouseY = e.clientY;
+    let dragging = false;
     document.body.style.userSelect = 'none';
 
     const onMove = (ev: MouseEvent) => {
-      const maxLeft = window.innerWidth - dialog.offsetWidth;
-      const maxTop = window.innerHeight - dialog.offsetHeight;
-      dialog.style.left = `${Math.max(0, Math.min(ev.clientX - offsetX, maxLeft))}px`;
-      dialog.style.top = `${Math.max(0, Math.min(ev.clientY - offsetY, maxTop))}px`;
+      if (!dragging) {
+        dragging = true;
+        el.style.margin = '0';
+        el.style.left = `${startLeft}px`;
+        el.style.right = 'auto';
+        el.style.top = `${startTop}px`;
+      }
+      const dx = ev.clientX - startMouseX;
+      const dy = ev.clientY - startMouseY;
+      const maxLeft = window.innerWidth - el.offsetWidth;
+      const maxTop = window.innerHeight - el.offsetHeight;
+      el.style.left = `${Math.max(0, Math.min(startLeft + dx, maxLeft))}px`;
+      el.style.top = `${Math.max(0, Math.min(startTop + dy, maxTop))}px`;
     };
 
     const onUp = () => {
@@ -134,27 +184,20 @@ function makeDraggable(dialog: HTMLDialogElement): void {
 }
 
 /**
- * dialog 외곽에 리사이즈 핸들을 추가하여 크기 조정
+ * 엘리먼트 외곽에 리사이즈 핸들을 추가하여 크기 조정
  *
  * 8방향(n, s, e, w, ne, nw, se, sw) 핸들 지원
  *
- * @param dialog - 크기 조정 대상 HTMLDialogElement
+ * @param el - 크기 조정 대상 HTMLElement
  */
-function makeResizable(dialog: HTMLDialogElement): void {
+function makeResizable(el: HTMLElement): void {
   RESIZE_DIRS.forEach((dir) => {
     const handle = document.createElement('div');
     handle.className = `flay-dialog__resize-handle flay-dialog__resize-handle--${dir}`;
 
     handle.addEventListener('mousedown', (e: MouseEvent) => {
-      const rect = dialog.getBoundingClientRect();
-      const inner = dialog.querySelector<HTMLElement>('.flay-dialog__inner');
-
-      dialog.style.margin = '0';
-      dialog.style.left = `${rect.left}px`;
-      dialog.style.top = `${rect.top}px`;
-      dialog.style.width = `${rect.width}px`;
-      dialog.style.maxWidth = 'none';
-      dialog.style.minWidth = '280px';
+      const rect = el.getBoundingClientRect();
+      const inner = el.querySelector<HTMLElement>('.flay-dialog__inner');
 
       const startX = e.clientX;
       const startY = e.clientY;
@@ -162,9 +205,20 @@ function makeResizable(dialog: HTMLDialogElement): void {
       const startTop = rect.top;
       const startW = rect.width;
       const startH = rect.height;
+      let resizing = false;
       document.body.style.userSelect = 'none';
 
       const onMove = (ev: MouseEvent) => {
+        if (!resizing) {
+          resizing = true;
+          el.style.margin = '0';
+          el.style.left = `${startLeft}px`;
+          el.style.right = 'auto';
+          el.style.top = `${startTop}px`;
+          el.style.width = `${startW}px`;
+          el.style.maxWidth = 'none';
+          el.style.minWidth = '280px';
+        }
         const dx = ev.clientX - startX;
         const dy = ev.clientY - startY;
         let newLeft = startLeft,
@@ -183,10 +237,10 @@ function makeResizable(dialog: HTMLDialogElement): void {
           newTop = startTop + startH - newH;
         }
 
-        dialog.style.left = `${newLeft}px`;
-        dialog.style.top = `${newTop}px`;
-        dialog.style.width = `${newW}px`;
-        dialog.style.height = `${newH}px`;
+        el.style.left = `${newLeft}px`;
+        el.style.top = `${newTop}px`;
+        el.style.width = `${newW}px`;
+        el.style.height = `${newH}px`;
         if (inner) inner.style.height = '100%';
       };
 
@@ -202,15 +256,16 @@ function makeResizable(dialog: HTMLDialogElement): void {
       e.stopPropagation();
     });
 
-    dialog.appendChild(handle);
+    el.appendChild(handle);
   });
 }
 
-/* ── MutationObserver: .flay-dialog가 body에 추가되면 drag·resize 자동 적용 ── */
+/* ── MutationObserver: .flay-dialog가 DOM에 추가되면 drag·resize 자동 적용 ──
+   HTMLDialogElement 외에 div 같은 일반 모달도 .flay-dialog 클래스를 적용하면 자동 지원 ── */
 const _observer = new MutationObserver((mutations) => {
   for (const mutation of mutations) {
     for (const node of mutation.addedNodes) {
-      if (node instanceof HTMLDialogElement && node.classList.contains('flay-dialog')) {
+      if (node instanceof HTMLElement && node.classList.contains('flay-dialog')) {
         makeDraggable(node);
         makeResizable(node);
       }

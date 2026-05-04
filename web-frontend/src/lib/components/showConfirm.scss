@@ -1,11 +1,79 @@
-/* showConfirm 전용: 정보 아이콘/제목 색상 */
+/* showConfirm: Edge 스타일 확인 대화상자 */
+
+@keyframes flay-dialog-confirm-open {
+  from {
+    opacity: 0;
+    transform: translateY(-16px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes flay-dialog-confirm-close {
+  from {
+    opacity: 1;
+    transform: none;
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-12px) scale(0.96);
+  }
+}
+
 .flay-dialog--confirm {
+  /* 상단 중앙 고정 - transform 없이 margin:auto 로 centering */
+  top: 5vh;
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  min-width: 320px;
+  max-width: min(400px, 92vw);
+  width: fit-content;
+  animation-name: flay-dialog-confirm-open;
+  animation-duration: 0.2s;
+  animation-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  animation-fill-mode: both;
+
+  &.flay-dialog--closing {
+    animation-name: flay-dialog-confirm-close;
+    animation-duration: 0.15s;
+    animation-timing-function: ease-in;
+  }
+
+  .flay-dialog__inner {
+    border-radius: 8px;
+  }
+
+  .flay-dialog__header {
+    padding: 1.25rem 1.25rem 0.75rem;
+    border-bottom: none;
+    background: none;
+    gap: 0.75rem;
+  }
+
   .flay-dialog__icon {
+    width: 2rem;
+    height: 2rem;
+    font-size: var(--size-normal);
     background-color: var(--color-primary);
     color: var(--color-white);
   }
 
   .flay-dialog__title {
+    font-size: var(--size-medium);
     color: var(--color-primary);
+  }
+
+  .flay-dialog__body {
+    padding: 0 1.25rem 0.5rem;
+  }
+
+  .flay-dialog__footer {
+    border-top: none;
+    background: none;
+    padding: 0.5rem 1.25rem 1.25rem;
+    justify-content: flex-end;
   }
 }

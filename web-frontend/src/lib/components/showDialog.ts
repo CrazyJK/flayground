@@ -1,4 +1,4 @@
-import { destroyDialog, escapeHtml } from '@base/GroundDialog';
+import { buildDialog, destroyDialog } from '@base/GroundDialog';
 import './showDialog.scss';
 
 /** showDialog 버튼 정의 */
@@ -48,25 +48,7 @@ export function showDialog<T = string>(options: DialogOptions<T>): Promise<T | n
   const { title = '알림', content, buttons } = options;
 
   return new Promise((resolve) => {
-    const dialog = document.createElement('dialog');
-    dialog.className = 'flay-dialog flay-dialog--custom';
-    dialog.setAttribute('aria-modal', 'true');
-
-    const buttonsHtml = buttons.map((btn, i) => `<button class="flay-dialog__btn ${btn.primary ? 'flay-dialog__btn--ok' : 'flay-dialog__btn--cancel'}" type="button" data-index="${i}">${escapeHtml(btn.label)}</button>`).join('');
-
-    dialog.innerHTML = `
-      <div class="flay-dialog__inner" role="document">
-        <header class="flay-dialog__header">
-          <span class="flay-dialog__title">${escapeHtml(title)}</span>
-        </header>
-        <div class="flay-dialog__body">
-          ${content}
-        </div>
-        <footer class="flay-dialog__footer">
-          ${buttonsHtml}
-        </footer>
-      </div>
-    `;
+    const dialog = buildDialog('custom', title, content, buttons);
 
     const btnEls = [...dialog.querySelectorAll<HTMLButtonElement>('.flay-dialog__btn[data-index]')];
 

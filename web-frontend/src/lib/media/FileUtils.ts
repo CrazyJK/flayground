@@ -30,7 +30,7 @@ export default class FileUtils {
   static prettySize(length: number, unit?: SizeUnit): [string, string] {
     // 유효성 검사
     if (isNaN(length) || length < 0) {
-      throw new Error('유효한 파일 크기를 입력해주세요.');
+      throw new Error(`유효한 파일 크기를 입력해주세요. 입력값: ${length}`);
     }
 
     if (unit) {
@@ -47,7 +47,7 @@ export default class FileUtils {
         case 'B':
           return this.#b(length);
         default:
-          console.warn(`지원하지 않는 단위입니다: ${unit}, 바이트(B)로 표시합니다.`);
+          console.warn(`지원하지 않는 단위입니다: ${unit}, 바이트(B)로 표시합니다. 입력값: ${length}`);
           return this.#b(length);
       }
     } else {

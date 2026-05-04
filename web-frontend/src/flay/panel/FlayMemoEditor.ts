@@ -1,18 +1,16 @@
 import GroundFlay from '@base/GroundFlay';
 import { ToastHtmlEditor } from '@editor/ToastHtmlEditor';
-import ApiClient from '@lib/services/ApiClient';
 import DateUtils from '@lib/common/DateUtils';
-import FileUtils from '@lib/media/FileUtils';
-import FlayStorage from '@lib/storage/FlayStorage';
 import { ModalWindow } from '@lib/components/ModalWindow';
+import ApiClient from '@lib/services/ApiClient';
+import FlayStorage from '@lib/storage/FlayStorage';
 import './FlayMemoEditor.scss';
 
 const MEMO_STORAGE_KEY = 'flay-memo';
 
 interface Memo {
   html: string;
-  date: string;
-  size: number;
+  lastModified: string;
 }
 
 /**
@@ -50,7 +48,7 @@ export class FlayMemoEditor extends GroundFlay {
     const formData = new FormData();
     formData.set('html', this.htmlEditor.getHTML());
     const memo: Memo = (await ApiClient.post('/memos', formData))!;
-    FlayStorage.local.set(MEMO_STORAGE_KEY, memo.date); // Save memo date
+    FlayStorage.local.set(MEMO_STORAGE_KEY, memo.lastModified); // Save memo last modified date
     this.#successCallback(memo);
   }
 
@@ -59,7 +57,8 @@ export class FlayMemoEditor extends GroundFlay {
    * @param memo
    */
   #successCallback(memo: Memo) {
-    this.dispatchEvent(new CustomEvent(ModalWindow.EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.date, 'M/d HH:mm')} ${FileUtils.prettySize(memo.size).join('')}</span>` } }));
+    console.log('Memo saved/loaded successfully:', memo);
+    this.dispatchEvent(new CustomEvent(ModalWindow.EVENT_CHANGE_TITLE, { detail: { title: `Memo <span style="font-size: var(--size-smallest); font-weight: 400">updated: ${DateUtils.format(memo.lastModified, 'M/d HH:mm')} ${memo.html.length} characters</span>` } }));
   }
 }
 

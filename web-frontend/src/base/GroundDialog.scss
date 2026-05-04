@@ -39,7 +39,7 @@
 }
 
 /* ────────────────────────────────────────
-   dialog 루트 엘리먼트
+    dialog 루트 엘리먼트
 ──────────────────────────────────────── */
 .flay-dialog {
   /* 브라우저 기본 스타일 리셋 */
@@ -67,7 +67,7 @@
   /* ── backdrop 스타일 ── */
   &::backdrop {
     background-color: rgba(0, 0, 0, 0.45);
-    backdrop-filter: blur(3px);
+    // backdrop-filter: blur(3px);
     animation: flay-dialog-backdrop-in 0.22s ease both;
   }
 

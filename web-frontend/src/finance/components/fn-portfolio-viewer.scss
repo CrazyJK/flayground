@@ -1,15 +1,9 @@
 /* fn-portfolio-viewer 및 포트폴리오 모달 전용 스타일 */
 
 dialog.fn-portfolio-dialog {
-  // padding: 1rem;
-  width: 680px;
+  width: 800px;
   max-width: 95vw;
   max-height: 84vh;
-  // overflow-y: auto;
-  // border: 1px solid var(--color-border-window);
-  // border-radius: var(--border-radius-huge);
-  // background: var(--color-bg);
-  // box-shadow: var(--box-shadow-large);
 
   &::backdrop {
     background: var(--color-bg-transparent);
@@ -31,56 +25,72 @@ dialog.fn-portfolio-dialog {
 
 fn-portfolio-viewer.fn-portfolio-viewer {
   display: block;
-}
 
-.fn-pv-wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-}
-
-.fn-pv-section-title {
-  margin: 0 0 0.4rem;
-  font-size: var(--size-normal);
-  color: var(--color-text);
-}
-
-.fn-pv-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: var(--size-smaller);
-
-  th,
-  td {
-    padding: 0.3rem 0.5rem;
-    border: 1px solid var(--color-border-window);
+  .fn-pv-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
   }
 
-  thead th {
-    background: var(--color-bg-elevated);
-    font-weight: 600;
+  .fn-pv-section-title {
+    margin: 0 0 0.4rem;
+    font-size: var(--size-large);
+    color: var(--color-text);
   }
 
-  tfoot th {
-    background: var(--color-bg-elevated);
-    font-weight: 600;
+  .fn-pv-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--size-small);
+
+    th,
+    td {
+      padding: 0.3rem 0.5rem;
+      border: 1px solid var(--color-border-window);
+    }
+
+    thead th,
+    tfoot th {
+      background: var(--color-bg-elevated);
+      font-weight: 600;
+      font-size: var(--size-normal);
+    }
+
+    tbody {
+      tr {
+        td:first-child {
+          font-size: var(--size-normal);
+        }
+        // 2열 이상부터 너비 고정
+        td:nth-child(n + 2) {
+          width: 90px;
+        }
+        // 마지막 열 너비 고정
+        td:last-child {
+          width: 110px;
+        }
+        &:hover td {
+          background: var(--color-bg-hover);
+        }
+      }
+    }
   }
 
-  tbody tr:hover td {
-    background: var(--color-bg-hover-subtle, var(--color-bg-elevated));
+  .fn-pv-fail {
+    color: var(--color-text-danger);
   }
-}
 
-.fn-pv-fail {
-  color: var(--color-text-danger);
-}
+  .fn-pv-loading {
+    color: var(--color-text-secondary);
+  }
 
-.fn-pv-loading {
-  color: var(--color-text-secondary);
-}
+  .fn-num {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+    font-family: var(--font-family-monospace);
 
-.fn-num {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-  font-family: var(--font-family-monospace);
+    &.fn-num-minus {
+      color: var(--color-text-danger);
+    }
+  }
 }

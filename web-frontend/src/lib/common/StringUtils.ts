@@ -69,6 +69,18 @@ export default class StringUtils {
   }
 
   /**
+   * XSS 방지를 위한 HTML 이스케이프 처리
+   *
+   * `&`, `<`, `>`, `"`, `'` 를 HTML 엔티티로 변환
+   *
+   * @param text - 이스케이프할 문자열
+   * @returns 이스케이프된 문자열
+   */
+  static escapeHtml(text: string): string {
+    return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
+  }
+
+  /**
    * 두 문자열이 동일한지 비교 (대소문자 무시)
    * @param text1 - 첫 번째 문자열
    * @param text2 - 두 번째 문자열

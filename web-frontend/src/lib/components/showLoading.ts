@@ -1,5 +1,9 @@
-import { destroyDialog, escapeHtml } from '@base/GroundDialog';
+import { destroyDialog } from '@base/GroundDialog';
+import StringUtils from '@lib/common/StringUtils';
 import './showLoading.scss';
+
+/** @internal escapeHtml 단축 참조 */
+const escapeHtml = (text: string) => StringUtils.escapeHtml(text);
 
 /**
  * HTMLDialogElement 기반 로딩 대화상자 표시

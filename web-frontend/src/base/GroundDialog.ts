@@ -1,4 +1,8 @@
+import StringUtils from '@lib/common/StringUtils';
 import './GroundDialog.scss';
+
+/** @internal escapeHtml 단축 참조 */
+const escapeHtml = (text: string) => StringUtils.escapeHtml(text);
 
 /** aria ID 중복 방지용 카운터 */
 export let dialogIdCounter = 0;
@@ -7,13 +11,13 @@ export let dialogIdCounter = 0;
  * dialog DOM 엘리먼트를 생성하여 반환 (alert / confirm 타입)
  *
  * @param type - 'alert' 또는 'confirm'
- * @param message - 본문 메시지
  * @param title - 제목
+ * @param message - 본문 메시지
  * @param okLabel - 확인 버튼 라벨
  * @param cancelLabel - 취소 버튼 라벨 (confirm 타입에만 사용)
  * @returns 생성된 HTMLDialogElement
  */
-export function buildDialog(type: 'alert' | 'confirm', message: string, title: string, okLabel: string, cancelLabel?: string): HTMLDialogElement;
+export function buildDialog(type: 'alert' | 'confirm', title: string, message: string, okLabel: string, cancelLabel?: string): HTMLDialogElement;
 /**
  * dialog DOM 엘리먼트를 생성하여 반환 (custom 타입)
  *
@@ -27,14 +31,13 @@ export function buildDialog(type: 'alert' | 'confirm', message: string, title: s
  * @returns 생성된 HTMLDialogElement
  */
 export function buildDialog(type: 'custom', title: string, content: string, buttons: Array<{ label: string; primary?: boolean }>): HTMLDialogElement;
-export function buildDialog(type: 'alert' | 'confirm' | 'custom', messageOrTitle: string, titleOrContent: string, okLabelOrButtons: string | Array<{ label: string; primary?: boolean }>, cancelLabel?: string): HTMLDialogElement {
+export function buildDialog(type: 'alert' | 'confirm' | 'custom', title: string, messageOrContent: string, okLabelOrButtons: string | Array<{ label: string; primary?: boolean }>, cancelLabel?: string): HTMLDialogElement {
   const id = ++dialogIdCounter;
   const dialog = document.createElement('dialog');
   dialog.className = `flay-dialog flay-dialog--${type}`;
 
   if (type === 'custom') {
-    const title = messageOrTitle;
-    const content = titleOrContent;
+    const content = messageOrContent;
     const buttons = okLabelOrButtons as Array<{ label: string; primary?: boolean }>;
 
     const buttonsHtml = buttons.map((btn, i) => `<button class="flay-dialog__btn ${btn.primary ? 'flay-dialog__btn--ok' : 'flay-dialog__btn--cancel'}" type="button" data-index="${i}">${escapeHtml(btn.label)}</button>`).join('');
@@ -53,8 +56,7 @@ export function buildDialog(type: 'alert' | 'confirm' | 'custom', messageOrTitle
       </div>
     `;
   } else {
-    const message = messageOrTitle;
-    const title = titleOrContent;
+    const message = messageOrContent;
     const okLabel = okLabelOrButtons as string;
 
     const iconHtml = `<span class="flay-dialog__icon" aria-hidden="true">${type === 'alert' ? '!' : '?'}</span>`;
@@ -118,16 +120,6 @@ export function destroyDialog(dialog: HTMLDialogElement, callback: () => void): 
       finish();
     }
   });
-}
-
-/**
- * XSS 방지를 위한 HTML 이스케이프 처리
- *
- * @param text - 이스케이프할 문자열
- * @returns 이스케이프된 문자열
- */
-export function escapeHtml(text: string): string {
-  return text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#x27;');
 }
 
 /** 리사이즈 핸들 방향 목록 */

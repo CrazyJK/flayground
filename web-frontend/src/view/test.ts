@@ -305,12 +305,7 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.querySelector('#btn-confirm-opts')?.addEventListener('click', async () => {
-    const ok = await showConfirm({
-      message: '계속 진행하시겠습니까?',
-      title: '진행 확인',
-      okLabel: '계속',
-      cancelLabel: '중단',
-    });
+    const ok = await showConfirm('계속 진행하시겠습니까?', '진행 확인', '계속', '중단');
     log(`confirm(옵션) 결과: ${ok ? '계속' : '중단'}`);
   });
 

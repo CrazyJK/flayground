@@ -1,8 +1,10 @@
 import NanoStore from '@flay/idb/nano/store/NanoStore';
-import ApiClient from '@lib/services/ApiClient';
 import DateUtils from '@lib/common/DateUtils';
+import ApiClient from '@lib/services/ApiClient';
 import FlayFetch from '@lib/services/FlayFetch';
 import FlaySearch, { popupActress, popupFlay } from '@lib/services/FlaySearch';
+import FlayRegister from '../flay/panel/FlayRegister';
+import { FlayPIP } from '../lib/components/FlayPIP';
 import './inc/Page';
 import './page.crawling.scss';
 
@@ -213,6 +215,7 @@ class Page {
 
   article: HTMLElement;
   retryBtn: HTMLButtonElement;
+  registerBtn: HTMLButtonElement;
   itemRepository: HTMLElement;
 
   constructor() {
@@ -247,6 +250,13 @@ class Page {
     this.retryBtn.addEventListener('click', () => {
       console.log(`🔄 [Retry] 재시도 버튼 클릭`);
       this.#callCrawling();
+    });
+
+    this.registerBtn = document.querySelector('body > main > footer > #registerBtn')!;
+    this.registerBtn.addEventListener('click', () => {
+      // pip에 FlayRegister 추가해서 열기
+      const flayPIP = new FlayPIP();
+      flayPIP.open(new FlayRegister(), { width: 900, height: 600 }).catch(console.error);
     });
 
     this.itemRepository = document.querySelector('#itemRepository')!;

@@ -129,18 +129,22 @@ body {
   top: 64px;
 }
 /* 추천, 즐겨찾기 제외한 다른 버튼 제거 */
-[data-sentry-component='PlayerItemListContainer'] > button:nth-child(2),
-[data-sentry-component='PlayerItemListContainer'] > button:nth-child(3),
-[data-sentry-component='PlayerItemListContainer'] > button:nth-child(5),
-[data-sentry-component='PlayerItemListContainer'] > button:nth-child(6) {
+#player-area > div:nth-child(2) > section > div > div.relative.flex.items-end > button:nth-child(2),
+#player-area > div:nth-child(2) > section > div > div.relative.flex.items-end > button:nth-child(3),
+#player-area > div:nth-child(2) > section > div > div.relative.flex.items-end > button:nth-child(5),
+#player-area > div:nth-child(2) > section > div > div.relative.flex.items-end > button:nth-child(6) {
   display: none;
 }
 /* #player-area > section > div > div.relative.flex.items-end, */
-[data-sentry-component='PlayerItemListContainer'] {
+#player-area > div:nth-child(2) > section > div > div.relative.flex.items-end {
+  position: fixed;
   top: 96px;
-  padding: 10px 0;
+  left: -19px;
+  padding: 5px 0;
+  background-color: #0009 !important;
   display: flex;
   align-items: center;
+  z-index: 1111;
 }
 
 #video-section > div.relative.h-full.w-full.bg-black {

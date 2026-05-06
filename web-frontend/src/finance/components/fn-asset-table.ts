@@ -123,10 +123,14 @@ export class FnAssetTable extends HTMLElement {
     }
     headerRow2 += '</tr>';
 
+    // 오늘 날짜 스냅샷 존재 여부
+    const todaySnapped = this.#snapDates.includes(today);
+
     // ── 스냅샷 행들 ──
     let snapRows = '';
     for (const date of this.#snapDates) {
       const snapMap = this.#snapData.get(date);
+      const isToday = date === today;
       let rowTotal = 0;
       let leftCells = '';
       let rightCells = '';
@@ -140,40 +144,73 @@ export class FnAssetTable extends HTMLElement {
           instSub += amt;
           const secClass = firstRightCell ? ' fn-section-start' : '';
           firstRightCell = false;
-          rightCells += `<td class="fn-snap-cell fn-num${secClass}${amt < 0 ? ' fn-negative' : ''}">${amt !== 0 ? fmtKrw(amt) : '-'}</td>`;
+          if (isToday) {
+            rightCells += `<td class="fn-current-cell${secClass}" title="${inst.name}: ${acc.name}">
+              <span class="fn-current-cell-inner">
+                <input class="fn-amount-input" type="text"
+                  value="${fmtKrw(amt)}" data-raw="${amt}"
+                  data-id="${acc.id}" data-inst-id="${inst.id}"
+                />
+              </span>
+            </td>`;
+          } else {
+            rightCells += `<td class="fn-snap-cell fn-num${secClass}${amt < 0 ? ' fn-negative' : ''}">${amt !== 0 ? fmtKrw(amt) : '-'}</td>`;
+          }
         }
-        leftCells += `<td class="fn-snap-subtotal fn-num fn-sticky-col${instSub < 0 ? ' fn-negative' : ''}" style="left:${subLefts[i]}px">${fmtKrw(instSub)}</td>`;
+        if (isToday) {
+          leftCells += `<td class="fn-subtotal-cell fn-num fn-sticky-col" data-inst-subtotal="${inst.id}" style="left:${subLefts[i]}px">${fmtKrw(instSub)}</td>`;
+        } else {
+          leftCells += `<td class="fn-snap-subtotal fn-num fn-sticky-col${instSub < 0 ? ' fn-negative' : ''}" style="left:${subLefts[i]}px">${fmtKrw(instSub)}</td>`;
+        }
       });
-      snapRows += `<tr class="fn-snap-tr">
-        <td class="fn-date-cell fn-sticky-col" style="left:0">${date}</td>
-        ${leftCells}
-        <td class="fn-snap-grand fn-num fn-sticky-col${rowTotal < 0 ? ' fn-negative' : ''}" style="left:${grandLeft}px">${fmtKrw(rowTotal)}</td>
-        ${rightCells}
-      </tr>`;
+      if (isToday) {
+        snapRows += `<tr class="fn-snap-tr fn-current-tr">
+          <td class="fn-date-cell fn-current-label fn-sticky-col" style="left:0">${date}</td>
+          ${leftCells}
+          <td class="fn-total-now fn-num fn-sticky-col${rowTotal < 0 ? ' fn-negative' : ''}" id="fn-grand-total" style="left:${grandLeft}px">${fmtKrw(rowTotal)}</td>
+          ${rightCells}
+        </tr>`;
+      } else {
+        snapRows += `<tr class="fn-snap-tr">
+          <td class="fn-date-cell fn-sticky-col" style="left:0">${date}</td>
+          ${leftCells}
+          <td class="fn-snap-grand fn-num fn-sticky-col${rowTotal < 0 ? ' fn-negative' : ''}" style="left:${grandLeft}px">${fmtKrw(rowTotal)}</td>
+          ${rightCells}
+        </tr>`;
+      }
     }
 
-    // ── 현재 행 (오늘 날짜, 직접 입력 가능) ──
-    let currentLeftCells = '';
-    let currentRightCells = '';
-    const currentTotal = 0;
-    let firstCurrentRight = true;
-    this.#institutions.forEach((inst, i) => {
-      const accounts = grouped.get(inst.id) ?? [];
-      const instSub = 0;
-      for (const acc of accounts) {
-        const secClass = firstCurrentRight ? ' fn-section-start' : '';
-        firstCurrentRight = false;
-        currentRightCells += `<td class="fn-current-cell${secClass}" title="${inst.name}: ${acc.name}">
-          <span class="fn-current-cell-inner">
-            <input class="fn-amount-input" type="text"
-              value="" data-raw="0"
-              data-id="${acc.id}" data-inst-id="${inst.id}"
-            />
-          </span>
-        </td>`;
-      }
-      currentLeftCells += `<td class="fn-subtotal-cell fn-num fn-sticky-col" data-inst-subtotal="${inst.id}" style="left:${subLefts[i]}px">${fmtKrw(instSub)}</td>`;
-    });
+    // ── 현재 행 (오늘 날짜, 직접 입력 가능) - 오늘 날짜 스냅샷이 없을 때만 표시 ──
+    let currentTrHtml = '';
+    if (!todaySnapped) {
+      let currentLeftCells = '';
+      let currentRightCells = '';
+      const currentTotal = 0;
+      let firstCurrentRight = true;
+      this.#institutions.forEach((inst, i) => {
+        const accounts = grouped.get(inst.id) ?? [];
+        const instSub = 0;
+        for (const acc of accounts) {
+          const secClass = firstCurrentRight ? ' fn-section-start' : '';
+          firstCurrentRight = false;
+          currentRightCells += `<td class="fn-current-cell${secClass}" title="${inst.name}: ${acc.name}">
+            <span class="fn-current-cell-inner">
+              <input class="fn-amount-input" type="text"
+                value="" data-raw="0"
+                data-id="${acc.id}" data-inst-id="${inst.id}"
+              />
+            </span>
+          </td>`;
+        }
+        currentLeftCells += `<td class="fn-subtotal-cell fn-num fn-sticky-col" data-inst-subtotal="${inst.id}" style="left:${subLefts[i]}px">${fmtKrw(instSub)}</td>`;
+      });
+      currentTrHtml = `<tr class="fn-current-tr">
+        <td class="fn-date-cell fn-current-label fn-sticky-col" style="left:0">${today}</td>
+        ${currentLeftCells}
+        <td class="fn-total-now fn-num fn-sticky-col${currentTotal < 0 ? ' fn-negative' : ''}" id="fn-grand-total" style="left:${grandLeft}px">${fmtKrw(currentTotal)}</td>
+        ${currentRightCells}
+      </tr>`;
+    }
 
     const negLastSnap = lastSnapTotal < 0 ? ' fn-negative' : '';
     this.innerHTML = /* html */ `
@@ -191,12 +228,7 @@ export class FnAssetTable extends HTMLElement {
           </thead>
           <tbody>
             ${snapRows}
-            <tr class="fn-current-tr">
-              <td class="fn-date-cell fn-current-label fn-sticky-col" style="left:0">${today}</td>
-              ${currentLeftCells}
-              <td class="fn-total-now fn-num fn-sticky-col${currentTotal < 0 ? ' fn-negative' : ''}" id="fn-grand-total" style="left:${grandLeft}px">${fmtKrw(currentTotal)}</td>
-              ${currentRightCells}
-            </tr>
+            ${currentTrHtml}
           </tbody>
         </table>
       </div>`;
@@ -237,12 +269,17 @@ export class FnAssetTable extends HTMLElement {
       const date = new Date().toISOString().slice(0, 10);
       try {
         const instMap = new Map<number, Institution>(this.#institutions.map((i) => [i.id, i]));
-        const entries: SnapshotEntry[] = this.#accounts
-          .filter((a) => a.amount !== 0)
-          .map((a) => {
-            const inst = instMap.get(a.institutionId)!;
-            return { accountId: a.id, name: a.name, amount: a.amount, instName: inst.name, instType: inst.type };
-          });
+        // DOM의 input 값을 직접 읽어서 entries 구성 (this.#accounts.amount는 서버 캐시값이므로 사용 안 함)
+        const entries: SnapshotEntry[] = [];
+        this.querySelectorAll<HTMLInputElement>('.fn-amount-input').forEach((input) => {
+          const raw = parseFloat(input.dataset.raw ?? '0') || 0;
+          if (raw === 0) return;
+          const id = Number(input.dataset.id);
+          const acc = this.#accounts.find((a) => a.id === id);
+          if (!acc) return;
+          const inst = instMap.get(acc.institutionId)!;
+          entries.push({ accountId: id, name: acc.name, amount: raw, instName: inst.name, instType: inst.type });
+        });
         await saveSnapshot(date, entries);
         resultEl.textContent = `${date} 저장 완료`;
         await this.load();

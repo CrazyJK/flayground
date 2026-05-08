@@ -195,6 +195,15 @@ export class FnPortfolioViewer extends HTMLElement {
         el.classList.add('fn-num-minus');
       }
     });
+
+    if (priceMap) {
+      const grandTotal = [...DOMESTIC, ...PENSION].reduce((sum, item) => {
+        const price = priceMap.get(item.stockCode) ?? NaN;
+        const evalAmt = price * item.quantityHeld;
+        return sum + (isNaN(evalAmt) ? 0 : evalAmt);
+      }, 0);
+      this.dispatchEvent(new CustomEvent('fn:total-loaded', { detail: { total: grandTotal }, bubbles: true }));
+    }
   }
 }
 

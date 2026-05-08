@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     dialog.innerHTML = /* html */ `
       <div class="flay-dialog__inner" role="document">
         <div class="flay-dialog__header fn-modal-header">
-          <h3>📊 포트폴리오 현황</h3>
+          <h3>📊 포트폴리오 현황 <span class="fn-pv-total-display"></span></h3>
           <button class="fn-btn fn-modal-close">닫기</button>
         </div>
         <div class="flay-dialog__body">
@@ -30,6 +30,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     dialog.querySelector('.fn-modal-close')?.addEventListener('click', () => dialog.close());
     dialog.addEventListener('close', () => dialog.remove());
+    dialog.addEventListener('fn:total-loaded', (e: Event) => {
+      const { total } = (e as CustomEvent<{ total: number }>).detail;
+      const display = dialog.querySelector<HTMLElement>('.fn-pv-total-display');
+      if (display) display.textContent = total.toLocaleString() + ' 원';
+    });
     dialog.showModal();
   });
 

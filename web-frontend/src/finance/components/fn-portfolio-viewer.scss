@@ -83,7 +83,18 @@ fn-portfolio-viewer.fn-portfolio-viewer {
   .fn-pv-loading {
     color: var(--color-text-secondary);
   }
+}
 
+dialog.fn-portfolio-dialog .fn-modal-header h3 .fn-pv-total-display {
+  margin-left: 0.8rem;
+  font-size: var(--size-normal);
+  font-family: var(--font-family-monospace);
+  font-weight: normal;
+  color: var(--color-text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+
+fn-portfolio-viewer.fn-portfolio-viewer {
   .fn-num {
     text-align: right;
     font-variant-numeric: tabular-nums;

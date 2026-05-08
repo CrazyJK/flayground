@@ -1,4 +1,12 @@
 import { NextFunction, Request, Response } from 'express';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const ERROR_PAGE_DIR = path.resolve(__dirname, '..', '..', '..', 'web-frontend', 'public', 'error');
 
 /**
  * API 에러 응답 형식
@@ -34,6 +42,15 @@ export function errorHandler(err: Error, req: Request, res: Response, _next: Nex
   console.error(`[ERROR] ${req.method} ${req.path} - ${status} ${message}`);
   if (status === 500) {
     console.error(err.stack);
+  }
+
+  // 브라우저 요청(HTML 수락)인 경우 에러 페이지 HTML 반환
+  if (req.accepts('html')) {
+    const errorPagePath = path.join(ERROR_PAGE_DIR, `${status}.html`);
+    if (fs.existsSync(errorPagePath)) {
+      res.status(status).sendFile(errorPagePath);
+      return;
+    }
   }
 
   const body: ErrorResponse = {

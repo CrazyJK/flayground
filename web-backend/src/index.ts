@@ -8,7 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 import { fileURLToPath } from 'url';
 
 import { config } from './config';
-import { errorHandler } from './middleware/error-handler';
+import { HttpError, errorHandler } from './middleware/error-handler';
 import { createFileLogger } from './middleware/logger';
 import { startDirectoryWatcher } from './services/directory-watcher';
 import { initWebPush } from './services/web-push.service';
@@ -118,6 +118,11 @@ function createApp(): express.Application {
   // 헬스체크
   app.get(`${API_PREFIX}/health`, (_req, res) => {
     res.json({ status: 'UP', timestamp: new Date().toISOString() });
+  });
+
+  // 404 catch-all: 매칭되지 않는 모든 요청
+  app.use((_req, _res, next) => {
+    next(new HttpError(404, 'Not Found'));
   });
 
   // 글로벌 에러 핸들러 (라우트 등록 후 마지막에 위치)

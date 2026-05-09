@@ -1,24 +1,212 @@
 .flay-shot-release-panel {
-  .year-panel {
-    position: relative;
-    width: 100%;
-    border-bottom: 1px solid var(--color-border);
-    padding: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  padding: 0.5rem 0;
+
+  // ─────────────────────────────────────────────
+  // Hero (통계 + 연도 네비게이션)
+  // ─────────────────────────────────────────────
+  .release-hero {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(280px, 1.5fr);
+    grid-template-rows: auto auto;
+    grid-template-areas:
+      'title stats'
+      'nav nav';
+    gap: 0.75rem 1.25rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--border-radius-largest);
+    background: linear-gradient(135deg, var(--color-bg-elevated), var(--color-bg));
+    box-shadow: var(--box-shadow-smallest);
+
+    @media (max-width: 760px) {
+      grid-template-columns: 1fr;
+      grid-template-areas: 'title' 'stats' 'nav';
+    }
+
+    .hero-title {
+      grid-area: title;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.25rem;
+
+      h3 {
+        margin: 0;
+        font-size: var(--size-largest);
+        background: linear-gradient(90deg, var(--color-orange), var(--color-pink));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+      }
+      p {
+        margin: 0;
+        font-size: var(--size-small);
+        color: var(--color-text-secondary);
+      }
+    }
+
+    .hero-stats {
+      grid-area: stats;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+
+      .stat {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 0.125rem;
+        padding: 0.5rem 0.25rem;
+        border: 1px dashed var(--color-border);
+        border-radius: var(--border-radius-large);
+        transition: 0.3s;
+
+        b {
+          font-size: var(--size-larger);
+          color: var(--color-orange);
+        }
+        span {
+          font-size: var(--size-smaller);
+          color: var(--color-text-secondary);
+          text-align: center;
+        }
+
+        &:hover {
+          border-style: solid;
+          border-color: var(--color-orange);
+          box-shadow: var(--box-shadow-smallest);
+        }
+      }
+    }
+
+    .year-nav {
+      grid-area: nav;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.35rem;
+
+      .year-chip {
+        display: inline-flex;
+        align-items: baseline;
+        gap: 0.3rem;
+        padding: 0.25rem 0.6rem;
+        border: 1px solid var(--color-border);
+        border-radius: 999px;
+        background: var(--color-bg);
+        color: var(--color-text);
+        cursor: pointer;
+        transition: 0.2s;
+        font-family: inherit;
+
+        .y {
+          font-size: var(--size-small);
+          font-weight: 600;
+        }
+        .c {
+          font-size: var(--size-smaller);
+          color: var(--color-text-secondary);
+        }
+
+        &:hover {
+          border-color: var(--color-orange);
+          color: var(--color-orange);
+          .c { color: var(--color-orange); }
+        }
+      }
+    }
+  }
+
+  // ─────────────────────────────────────────────
+  // 연도별 섹션
+  // ─────────────────────────────────────────────
+  .year-section {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 1rem;
+    padding: 1rem 0.5rem;
+    border-top: 1px solid var(--color-border);
+    scroll-margin-top: 4rem;
+    transition: background 0.3s;
 
     &:hover {
-      box-shadow: var(--box-shadow) inset;
+      background: var(--color-bg-input);
     }
 
-    h3 {
-      margin: 0;
-      padding-bottom: 0.5rem;
-      font-size: 1.2rem;
+    @media (max-width: 600px) {
+      grid-template-columns: 1fr;
     }
-    .year-shot-list {
-      position: relative; // 명시적 설정
-      width: 100%;
-      height: 100%;
+
+    .year-aside {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.5rem;
+      position: sticky;
+      top: 4rem;
+      align-self: start;
+
+      .year-badge {
+        font-size: var(--size-huge);
+        line-height: 1;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--color-orange), var(--color-pink));
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        letter-spacing: -0.02em;
+      }
+
+      .year-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 0.3rem;
+        font-size: var(--size-smaller);
+        color: var(--color-text-secondary);
+
+        .m-flay,
+        .m-shot {
+          display: inline-block;
+          padding: 0.1rem 0.5rem;
+          border-radius: 999px;
+          background: var(--color-bg-input);
+        }
+        .m-shot { color: var(--color-orange); }
+
+        .m-bar {
+          position: relative;
+          display: block;
+          width: 110px;
+          height: 4px;
+          border-radius: 999px;
+          background: var(--color-bg-input);
+          margin-top: 0.15rem;
+
+          i {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            border-radius: 999px;
+            background: linear-gradient(90deg, var(--color-orange), var(--color-pink));
+          }
+        }
+      }
+    }
+
+    .year-canvas {
+      position: relative;
       min-height: 100px;
+
+      .year-shot-list {
+        position: relative;
+        width: 100%;
+        height: 100%;
+        min-height: 100px;
+      }
     }
   }
 }

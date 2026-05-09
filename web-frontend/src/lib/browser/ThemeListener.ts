@@ -14,7 +14,7 @@ const DARK: ThemeValue = 'dark';
 const darkMediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
 
 // 상태 변수
-let theme: ThemeSetting = FlayStorage.local.get(THEME_KEY, OS) as ThemeSetting;
+let theme: ThemeSetting = FlayStorage.local.get(THEME_KEY, DARK) as ThemeSetting;
 let isDark = false;
 
 /**

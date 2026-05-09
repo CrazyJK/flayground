@@ -1,6 +1,6 @@
 ## 코딩 전 사고
 
-**암묵적 가정을 하지 말 것. 혼란을 숨기지 말 것. 트레이드오프를 명확히 표면화할 것.**
+**암묵적 가정을 하지 말 것. 혼란스러운 점이 있다면 명확히 밝힐 것. 트레이드오프를 명확히 표면화할 것.**
 
 구현 전:
 
@@ -23,7 +23,11 @@
 
 ## 코드 구조 및 리팩토링 원칙
 
+**규칙 적용 순서**: ① 단순한가? → ② 변경 범위가 최소인가? → ③ 함수가 응집되어 있는가? 셋 모두 만족하면 진행한다.
+
 > **핵심 우선순위**: 단순함 > 변경 범위 최소화 > 함수 응집도. 아래 규칙은 이 순서로 적용한다.
+>
+> 규칙이 충돌할 때는 우선순위가 높은 쪽을 따른다. 예) 함수 분리가 응집도를 높이더라도, 변경 범위가 불필요하게 넓어지면 분리하지 않는다. 단순함이 최우선이므로, 분리·리팩토링은 코드가 단순해질 때만 적용한다.
 
 ### 함수 분리 원칙
 
@@ -86,6 +90,20 @@
 
 ## web-frontend 작업 지침
 
+### UI/UX 화면 기준
+
+UI/UX 작업 시 아래 순서로 화면을 고려한다.
+
+| 우선순위     | 모니터 | 방향 | 비고                   |
+| ------------ | ------ | ---- | ---------------------- |
+| **1 (기본)** | 24인치 | 세로 | 기준 해상도로 설계     |
+| 2            | 32인치 | 세로 | 1번 기준에서 확장 대응 |
+| 3            | 32인치 | 가로 | 와이드 레이아웃 대응   |
+
+- 레이아웃·간격·폰트 크기는 **24인치 세로**에서 최적으로 보여야 한다.
+- 세로 모니터에서는 스크롤보다 수직 공간 활용을 우선한다.
+- 가로 모니터 대응은 `@media` 또는 CSS Grid/Flex의 자연스러운 흐름으로 처리하되, 별도 대응이 필요한 경우에만 breakpoint를 추가한다.
+
 ### import 경로
 
 - `web-frontend/src` 하위 소스에서 import 시 `web-frontend/tsconfig.json`의 `paths` 별칭을 사용한다.
@@ -129,3 +147,20 @@
 URL은 https://flay.kamoru.jk/dist/를 베이스로 webpack의 엔트리 포인트의 html로 접근해야 합니다. (예: https://flay.kamoru.jk/dist/page.history-shot.html)
 
 웹펙은 web-frontend\package.json의 "scripts" 섹션에 정의된 'dev'가 실행중일 가능성이 높습니다. 'dev'는 웹펙 개발 서버를 실행하여 변경 사항을 자동으로 반영하므로, 테스트를 실행하기 전에 'dev'가 실행 중인지 확인해야 합니다.
+
+### 스크린샷 규칙
+
+MCP playwright의 `--output-dir .playwright-mcp` 설정은 자동 생성되는 스냅샷(`.yml`)과 콘솔 로그(`.log`)에만 적용된다. `mcp_playwright_browser_take_screenshot`의 `filename`은 이 설정과 무관하게 동작한다.
+
+스크린샷 저장 시 반드시 지켜야 할 두 가지:
+
+1. **저장 경로**: `filename`은 항상 `.playwright-mcp/` 하위로 지정한다.
+
+- 올바른 예: `filename: ".playwright-mcp/screenshot.png"`
+- 잘못된 예: `filename: "screenshot.png"` (워크스페이스 루트에 저장됨)
+
+2. **확장자와 type 일치**: `filename` 확장자와 `type` 파라미터를 반드시 일치시킨다.
+
+- `type: "png"` → `filename: "...screenshot.png"`
+- `type: "jpeg"` → `filename: "...screenshot.jpeg"`
+- 불일치 시 Claude API가 `400 invalid_request_error` 오류를 반환함

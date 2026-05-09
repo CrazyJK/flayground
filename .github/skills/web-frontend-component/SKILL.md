@@ -146,11 +146,16 @@ export default class MyComponent extends GroundFlay {
 
   /**
    * 데이터 로드 및 렌더링
+   * API 호출 실패 시 컴포넌트 본문에 오류 메시지를 표시한다.
    */
   async load(opus: string): Promise<void> {
-    const flay = await FlayFetch.get(opus);
-    this.#data = flay;
-    this.#render();
+    try {
+      const flay = await FlayFetch.get(opus);
+      this.#data = flay;
+      this.#render();
+    } catch (e) {
+      this.#bodyEl.textContent = '데이터를 불러오지 못했습니다.';
+    }
   }
 
   #render(): void {
@@ -251,11 +256,23 @@ const val = FlayStorage.get<MyType>('key');
 
 ## 검증 체크리스트
 
+### 파일 구조
+
 - [ ] 베이스 클래스가 도메인/역할에 맞게 선택됨
-- [ ] import는 모두 별칭(`@lib/`, `@base/` 등) 사용 (상대 경로 금지)
 - [ ] SCSS 파일이 동반 생성되어 TS에서 import됨
+- [ ] `customElements.define()` 등록 완료
+
+### Import
+
+- [ ] import는 모두 별칭(`@lib/`, `@base/` 등) 사용 (상대 경로 금지)
+- [ ] 새 유틸리티 로직은 `@lib/common/`에 이미 있는지 먼저 확인
+
+### 스타일
+
 - [ ] SCSS에서 글로벌 변수(`--size-*`, `--color-*`) 활용
+
+### 코딩 관행
+
 - [ ] 이벤트 리스너는 `connectedCallback`에서 등록, `disconnectedCallback`에서 해제
 - [ ] 프라이빗 메서드/필드는 `#` 접두어 사용
-- [ ] `customElements.define()` 등록 완료
-- [ ] 새 유틸리티 로직은 `@lib/common/`에 이미 있는지 먼저 확인
+- [ ] API 호출 실패 시 오류 메시지를 컴포넌트 본문에 표시

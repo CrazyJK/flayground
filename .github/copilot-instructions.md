@@ -144,6 +144,11 @@ UI/UX 작업 시 아래 순서로 화면을 고려한다.
 이전 수행된 브라우저가 닫혀 있을 가능성이 높음.
 브라우저가 닫혀 있을 때는 새 브라우저를 열어서 테스트를 수행해야 합니다.
 
+### 테마 설정
+
+MCP Playwright는 `.vscode/mcp.json`에 `--color-scheme dark`가 설정되어 있어 다크 테마가 기본 적용된다.
+이 설정으로 `prefers-color-scheme: dark` 미디어 쿼리가 활성화되어 ThemeListener의 OS 테마 감지가 정상 동작한다.
+
 URL은 https://flay.kamoru.jk/dist/를 베이스로 webpack의 엔트리 포인트의 html로 접근해야 합니다. (예: https://flay.kamoru.jk/dist/page.history-shot.html)
 
 웹펙은 web-frontend\package.json의 "scripts" 섹션에 정의된 'dev'가 실행중일 가능성이 높습니다. 'dev'는 웹펙 개발 서버를 실행하여 변경 사항을 자동으로 반영하므로, 테스트를 실행하기 전에 'dev'가 실행 중인지 확인해야 합니다.

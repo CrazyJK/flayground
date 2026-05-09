@@ -29,7 +29,8 @@ side-nav-bar {
 
   transition:
     linear left 0.4s 0.4s,
-    box-shadow 0.8s;
+    box-shadow 0.8s,
+    background-color 0.4s;
 
   &.pinned {
     background-color: var(--color-bg-side-nav-pinned);
@@ -93,5 +94,6 @@ side-nav-bar.pinned {
   left: 0;
   transition:
     left 0.4s,
-    box-shadow 0.8s;
+    box-shadow 0.8s,
+    background-color 0.4s;
 }

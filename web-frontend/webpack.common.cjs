@@ -55,6 +55,7 @@ const entryPoints = {
   },
   tools: {
     'page.file-check': './src/view/page.file-check.ts',
+    'page.collatz': './src/view/page.collatz.ts',
   },
   finance: {
     'pension.planner': './src/view/pension.planner.ts',

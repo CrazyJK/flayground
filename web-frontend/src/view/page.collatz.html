@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="ko" theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>콜라츠 추측</title>
+    <link rel="icon" type="image/png" href="./favicon/flay.png" />
+    <!-- HtmlWebpackPlugin이 자동으로 CSS와 JS를 주입합니다 -->
+  </head>
+  <body>
+    <header class="sticky">
+      <div class="head-group">
+        <h1>콜라츠 추측 <span class="subtitle">Collatz Conjecture</span></h1>
+        <div class="input-group">
+          <input type="number" id="numberInput" placeholder="양의 정수를 입력하세요" min="1" step="1" />
+          <button type="button" id="calculateBtn">계산</button>
+          <button type="button" id="randomBtn">랜덤</button>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <section class="info-section" id="infoSection" hidden>
+        <div class="info-card">
+          <span class="info-label">시작값</span>
+          <span class="info-value" id="startValue">-</span>
+        </div>
+        <div class="info-card">
+          <span class="info-label">단계 수</span>
+          <span class="info-value" id="stepCount">-</span>
+        </div>
+        <div class="info-card">
+          <span class="info-label">최댓값</span>
+          <span class="info-value" id="maxValue">-</span>
+        </div>
+        <div class="info-card">
+          <span class="info-label">최댓값 단계</span>
+          <span class="info-value" id="maxStep">-</span>
+        </div>
+      </section>
+
+      <section class="chart-section">
+        <canvas id="collatzCanvas"></canvas>
+        <div class="empty-message" id="emptyMessage">숫자를 입력하고 계산 버튼을 누르세요</div>
+      </section>
+
+      <section class="sequence-section" id="sequenceSection" hidden>
+        <h2>수열</h2>
+        <div class="sequence-list" id="sequenceList"></div>
+      </section>
+    </main>
+  </body>
+</html>

@@ -12,6 +12,7 @@ argument-hint: '구현할 컴포넌트명 또는 도메인 (예: FlayCard, Kamor
 - **컴포넌트**: Web Components (Custom HTML Elements)
 - **스타일**: SCSS (컴포넌트별 동반 파일)
 - **번들러**: Webpack
+- **주요 라이브러리**: ECharts, Toast UI Editor, D3 Hierarchy
 
 ---
 

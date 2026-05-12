@@ -1,3 +1,32 @@
+# Flay-Ground — AI 코딩 지침
+
+영화 콘텐츠 관리 및 스트리밍 웹 애플리케이션. Node.js 풀스택 프로젝트.
+
+## 프로젝트 구조
+
+```
+flayground/
+├── web-backend/     # Node.js + Express REST API (TypeScript, tsx/tsup)
+├── web-frontend/    # Webpack + TypeScript 멀티 엔트리 SPA (Web Components)
+├── mcp-nexus/       # MCP AI 라우터 (Gemini / GitHub Models)
+├── playwright/      # E2E 테스트
+├── bin/             # 실행 스크립트
+└── doc/             # 문서
+```
+
+## 폴더별 지침
+
+각 서브 프로젝트의 기술 스택·디렉토리 구조·코딩 관행은 별도 지침 파일에서 관리한다.
+VS Code Copilot은 해당 경로 작업 시 자동으로 로드하며, 다른 AI 도구는 필요 시 직접 참조한다.
+
+| 작업 대상       | 지침 파일                                           |
+| --------------- | --------------------------------------------------- |
+| `web-frontend/` | `.github/instructions/web-frontend.instructions.md` |
+| `web-backend/`  | `.github/instructions/web-backend.instructions.md`  |
+| `mcp-nexus/`    | `.github/instructions/mcp-nexus.instructions.md`    |
+
+web-frontend 컴포넌트 구현은 추가로 `.github/skills/web-frontend-component/SKILL.md`를 참조한다.
+
 ## 코딩 전 사고
 
 **암묵적 가정을 하지 말 것. 혼란스러운 점이 있다면 명확히 밝힐 것. 트레이드오프를 명확히 표면화할 것.**
@@ -88,37 +117,6 @@
 
 기준: 변경된 모든 줄이 사용자의 요청과 직접 연결되어야 한다.
 
-## web-frontend 작업 지침
-
-### UI/UX 화면 기준
-
-UI/UX 작업 시 아래 순서로 화면을 고려한다.
-
-| 우선순위     | 모니터 | 방향 | 비고                   |
-| ------------ | ------ | ---- | ---------------------- |
-| **1 (기본)** | 24인치 | 세로 | 기준 해상도로 설계     |
-| 2            | 32인치 | 세로 | 1번 기준에서 확장 대응 |
-| 3            | 32인치 | 가로 | 와이드 레이아웃 대응   |
-
-- 레이아웃·간격·폰트 크기는 **24인치 세로**에서 최적으로 보여야 한다.
-- 세로 모니터에서는 스크롤보다 수직 공간 활용을 우선한다.
-- 가로 모니터 대응은 `@media` 또는 CSS Grid/Flex의 자연스러운 흐름으로 처리하되, 별도 대응이 필요한 경우에만 breakpoint를 추가한다.
-
-### import 경로
-
-- `web-frontend/src` 하위 소스에서 import 시 `web-frontend/tsconfig.json`의 `paths` 별칭을 사용한다.
-  - `@ai/*`, `@attach/*`, `@base/*`, `@diary/*`, `@editor/*`, `@finance/*`, `@flay/*`
-  - `@image/*`, `@lib/*`, `@movie/*`, `@nav/*`, `@spa/*`, `@svg/*`, `@domain/*`
-  - 예: `import { showAlert } from '@lib/components/showAlert';`
-  - 상대 경로(`../../base/...`) 대신 별칭 경로를 우선 사용한다.
-
-### 스타일 참조
-
-- `web-frontend/src` 하위 소스에서 스타일 작업 시 `web-frontend/src/view/style` 디렉토리를 먼저 참조할 것
-  - 공통 변수, 믹스인, 테마, 크기 값 등이 정의되어 있으므로 중복 선언 없이 재사용
-  - 새 스타일 추가 전 해당 디렉토리에 이미 정의된 것이 있는지 확인
-  - 필요시 기존 스타일을 확장하거나 수정하여 사용
-
 ## 목표 지향 실행
 
 **성공 기준을 정의하고, 검증될 때까지 반복할 것.**
@@ -138,35 +136,3 @@ UI/UX 작업 시 아래 순서로 화면을 고려한다.
 ```
 
 명확한 성공 기준은 독립적인 반복을 가능하게 한다. 모호한 기준("되게 만들기")은 지속적인 재확인을 유발한다.
-
-## playwright
-
-이전 수행된 브라우저가 닫혀 있을 가능성이 높음.
-브라우저가 닫혀 있을 때는 새 브라우저를 열어서 테스트를 수행해야 합니다.
-
-웹펙은 web-frontend\package.json의 "scripts" 섹션에 정의된 'dev'가 실행중일 가능성이 높습니다. 'dev'는 웹펙 개발 서버를 실행하여 변경 사항을 자동으로 반영하므로, 테스트를 실행하기 전에 'dev'가 실행 중인지 확인해야 합니다.
-
-### URL 접근
-
-URL은 https://flay.kamoru.jk/dist/를 베이스로 webpack의 엔트리 포인트의 html로 접근해야 합니다. (예: https://flay.kamoru.jk/dist/page.history-shot.html)
-
-### 테마 설정
-
-MCP Playwright는 다크 테마로 실행된다. `<html theme="dark">`이 적용된 상태로 테스트가 진행되므로, 테마 관련 테스트를 작성할 때는 이 점을 고려해야 합니다.
-
-### 스크린샷 규칙
-
-MCP playwright의 `--output-dir .playwright-mcp` 설정은 자동 생성되는 스냅샷(`.yml`)과 콘솔 로그(`.log`)에만 적용된다. `mcp_playwright_browser_take_screenshot`의 `filename`은 이 설정과 무관하게 동작한다.
-
-스크린샷 저장 시 반드시 지켜야 할 두 가지:
-
-1. **저장 경로**: `filename`은 항상 `.playwright-mcp/` 하위로 지정한다.
-
-- 올바른 예: `filename: ".playwright-mcp/screenshot.png"`
-- 잘못된 예: `filename: "screenshot.png"` (워크스페이스 루트에 저장됨)
-
-2. **확장자와 type 일치**: `filename` 확장자와 `type` 파라미터를 반드시 일치시킨다.
-
-- `type: "png"` → `filename: "...screenshot.png"`
-- `type: "jpeg"` → `filename: "...screenshot.jpeg"`
-- 불일치 시 Claude API가 `400 invalid_request_error` 오류를 반환함

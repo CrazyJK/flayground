@@ -80,3 +80,6 @@ financial-note.db
 # private
 private-memo.md
 
+# portfolio data (private)
+web-frontend/src/finance/data/portfolio.json
+

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Scraping</title>
+    <title>크롤링</title>
     <link rel="icon" type="image/png" href="./favicon/flay_2.png" />
     <!-- HtmlWebpackPlugin이 자동으로 CSS와 JS를 주입합니다 -->
   </head>
@@ -11,26 +11,37 @@
     <main>
       <article></article>
       <footer>
+        <button type="button" id="prevBtn" class="nav" title="이전 (← / ↑)" aria-label="이전">‹</button>
         <label>
           <span id="currentItemNo">0</span> / <span id="totalItemNo">0</span> Posts
 
           <span id="currentPageNo">0</span> / <span id="loadedPageNo">0</span> <a id="srcPageURL" target="_blank">Pages</a>
         </label>
-        <button type="button" id="retryBtn" disabled>Retry</button>
-        <button type="button" id="registerBtn">Register</button>
+        <button type="button" id="nextBtn" class="nav" title="다음 (→ / ↓)" aria-label="다음">›</button>
+        <ul id="legend" title="카드 테두리/배경 색상 의미">
+          <li class="has-video">보유</li>
+          <li class="record-viewed">시청함</li>
+          <li class="record-updated">갱신됨</li>
+        </ul>
+        <span id="footerLoading" class="hide"><span class="spinner"></span><span id="footerLoadingMsg"></span></span>
+        <button type="button" id="restartBtn" title="처음으로">↺</button>
       </footer>
     </main>
     <aside id="itemRepository" class="hide"></aside>
     <div id="starter">
       <div>
         <label>시작할 페이지 번호를 정해주세요</label>
-        <input type="number" id="srcPageNo" min="1" step="1" value="1" />
-        <button type="button" id="startBtn">시작</button>
+        <div class="row">
+          <input type="number" id="srcPageNo" min="1" step="1" value="1" />
+          <button type="button" id="startBtn">시작</button>
+        </div>
+        <small class="hint">스크롤 또는 ← → 키로 카드를 넘깁니다</small>
       </div>
     </div>
     <div id="notice" class="hide">
       <div>
         <label id="noticeMessage"></label>
+        <button type="button" id="noticeRetryBtn" class="hide">재시도</button>
       </div>
     </div>
   </body>

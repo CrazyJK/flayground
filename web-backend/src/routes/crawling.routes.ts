@@ -74,11 +74,13 @@ router.get('/crawling/curl', (req, res) => {
   console.log(`[Crawling] curl 시작: ${url}`);
   const startTime = Date.now();
 
-  // 비동기로 curl 실행, 즉시 204 응답
-  exec(`curl -s "${url}"`, { maxBuffer: 10 * 1024 * 1024 }, (error, stdout) => {
+  // 비동기로 curl 실행, 즉시 204 응답. 대상이 원래 매우 느린 페이지라 타임아웃은 두지 않는다.
+  // --compressed로 gzip 응답을 요청해 전송량만 줄인다.
+  exec(`curl -s --compressed "${url}"`, { maxBuffer: 10 * 1024 * 1024 }, (error, stdout) => {
     if (error) {
       console.error(`[Crawling] curl 오류: ${url} - ${error.message} (${Date.now() - startTime}ms)`);
-      sseSend({ type: 'CURL', message: `curl error: ${error.message}` });
+      // 실패는 error 필드로 구분해 전달한다(프런트가 자동 재시도 판단에 사용).
+      sseSend({ type: 'CURL', message: '', error: error.message });
       return;
     }
     console.log(`[Crawling] curl 완료: ${url} (${stdout.length} bytes, ${Date.now() - startTime}ms)`);

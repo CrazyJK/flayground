@@ -1,10 +1,9 @@
 import NanoStore from '@flay/idb/nano/store/NanoStore';
 import DateUtils from '@lib/common/DateUtils';
+import { showConfirm } from '@lib/components/showConfirm';
 import ApiClient from '@lib/services/ApiClient';
 import FlayFetch from '@lib/services/FlayFetch';
 import FlaySearch, { popupActress, popupFlay } from '@lib/services/FlaySearch';
-import FlayRegister from '../flay/panel/FlayRegister';
-import { FlayPIP } from '../lib/components/FlayPIP';
 import './inc/Page';
 import './page.crawling.scss';
 
@@ -46,10 +45,12 @@ interface CrawlingItem {
  */
 const CONFIG = {
   DOMAIN: 'https://www.nanojav.com',
-  PREFETCH_THRESHOLD: 10, // 10개 남으면 크롤링
+  PREFETCH_THRESHOLD: 20, // 남은 항목이 이 값 미만이면 다음 페이지 프리페치(약 2페이지 버퍼)
   ITEMS_PER_PAGE: 15,
   CACHE_SIZE_LIMIT: 1000,
   ANIMATION_DURATION: 500,
+  MAX_RETRY: 3, // 크롤링 실패 시 자동 재시도 최대 횟수
+  RETRY_DELAYS: [1000, 2000, 4000], // 재시도 백오프 지연(ms)
   SELECTORS: {
     CONTENT: '#content > div > div > div:nth-child(2) > div > div',
     COVER_IMG: 'img.cover',
@@ -200,22 +201,30 @@ class Page {
     srcPageNo: 0,
     itemIndex: 0,
     itemLength: 0,
-    needCrawling: (): boolean => {
-      // CONFIG.PREFETCH_THRESHOLD개 남으면 크롤링
-      return this.#paging.itemLength - this.#paging.itemIndex === CONFIG.PREFETCH_THRESHOLD;
-    },
   };
   #crawlingStartTime = 0; // 크롤링 시작 시간
   #isSearchMode = false; // 검색 모드 여부
   #searchQuery = ''; // 검색어
+
+  // 크롤링 요청 상태 관리
+  #isFetching = false; // 크롤링 요청 진행 중 여부(중복 요청 방지)
+  #retryCount = 0; // 현재 페이지 자동 재시도 횟수
+  #crawlTimer: ReturnType<typeof setTimeout> | null = null; // 재시도 지연 타이머
+  #firstItemShown = false; // 첫 아이템 표시 완료 여부
+  #noMoreData = false; // 더 이상 가져올 데이터 없음(마지막 페이지 도달)
+  #loadedPageNo = 0; // 데이터 수신이 완료된 마지막 소스 페이지(진행 중인 srcPageNo와 구분)
+  #coverPrefetchPool = new Set<HTMLImageElement>(); // 커버 이미지 백그라운드 프리페치(로드 완료 전까지 참조 유지)
+
+  // 휠 내비게이션 잠금(관성 스크롤로 여러 카드 건너뛰는 것 방지)
+  #wheelLocked = false;
+  #wheelIdleTimer: ReturnType<typeof setTimeout> | null = null;
 
   // 의존성 주입을 통한 유틸리티 클래스 사용
   private domManager = new DOMManager();
   private cacheManager = new CacheManager();
 
   article: HTMLElement;
-  retryBtn: HTMLButtonElement;
-  registerBtn: HTMLButtonElement;
+  noticeRetryBtn: HTMLButtonElement;
   itemRepository: HTMLElement;
 
   constructor() {
@@ -236,6 +245,8 @@ class Page {
       this.#startPageNo = parseInt((document.querySelector('#srcPageNo') as HTMLInputElement).value);
       this.#paging.srcPageNo = this.#startPageNo;
       console.log(`📄 [Start] 시작 페이지: ${this.#startPageNo}`);
+      this.#firstItemShown = false;
+      this.#retryCount = 0;
       this.#callCrawling();
       document.querySelector('#starter')!.classList.add('hide');
     });
@@ -246,17 +257,24 @@ class Page {
     this.article.addEventListener('wheel', this.#handleWheel.bind(this), { passive: true });
     window.addEventListener('keyup', this.#handleKeyUp.bind(this));
 
-    this.retryBtn = document.querySelector('body > main > footer > #retryBtn')!;
-    this.retryBtn.addEventListener('click', () => {
-      console.log(`🔄 [Retry] 재시도 버튼 클릭`);
+    this.noticeRetryBtn = document.querySelector('#noticeRetryBtn')!;
+    this.noticeRetryBtn.addEventListener('click', () => {
+      console.log(`🔄 [Retry] 수동 재시도 버튼 클릭`);
+      this.#retryCount = 0;
+      this.#clearCrawlTimer();
+      this.#notice('', true); // 알림/버튼 숨김
       this.#callCrawling();
     });
 
-    this.registerBtn = document.querySelector('body > main > footer > #registerBtn')!;
-    this.registerBtn.addEventListener('click', () => {
-      // pip에 FlayRegister 추가해서 열기
-      const flayPIP = new FlayPIP();
-      flayPIP.open(new FlayRegister(), { width: 900, height: 600 }).catch(console.error);
+    // 이전/다음 내비게이션 버튼(휠·화살표 외 명시적 조작 수단)
+    document.querySelector('#prevBtn')!.addEventListener('click', () => this.#prev());
+    document.querySelector('#nextBtn')!.addEventListener('click', () => this.#next());
+
+    // 처음으로: 목록을 초기화하고 시작 화면으로 되돌림
+    document.querySelector('#restartBtn')!.addEventListener('click', () => {
+      void showConfirm('처음 화면으로 돌아갈까요? 현재 목록은 초기화됩니다.').then((ok) => {
+        if (ok) location.reload();
+      });
     });
 
     this.itemRepository = document.querySelector('#itemRepository')!;
@@ -273,22 +291,33 @@ class Page {
     }
   }
 
-  // Throttled wheel event handler
+  /**
+   * 휠 내비게이션. 관성/트랙패드 스크롤은 한 제스처에 수십 개의 wheel 이벤트를 발생시키므로,
+   * 한 번 이동한 뒤 휠이 멈출 때까지(150ms 유휴) 잠가 한 제스처당 한 칸만 이동한다.
+   */
   #handleWheel(e: WheelEvent) {
-    if (e.deltaY > 0) {
-      this.#next();
-    } else {
-      this.#prev();
-    }
+    // 휠이 계속 들어오는 동안 잠금 유지, 멈추면 해제
+    if (this.#wheelIdleTimer) clearTimeout(this.#wheelIdleTimer);
+    this.#wheelIdleTimer = setTimeout(() => {
+      this.#wheelLocked = false;
+    }, 150);
+
+    if (this.#wheelLocked) return;
+    this.#wheelLocked = true;
+
+    if (e.deltaY > 0) this.#next();
+    else this.#prev();
   }
 
   // Handle keyboard events
   #handleKeyUp(e: KeyboardEvent) {
     switch (e.code) {
       case 'ArrowRight':
+      case 'ArrowDown':
         this.#next();
         break;
       case 'ArrowLeft':
+      case 'ArrowUp':
         this.#prev();
         break;
     }
@@ -299,13 +328,21 @@ class Page {
     const target = e.target as HTMLElement;
 
     // Handle different click targets
-    if (target.closest('.opus label, .title label')) {
+    if (target.matches('.cover img')) {
+      // 커버 이미지를 새 탭에서 원본 크기로 확대
+      const src = (target as HTMLImageElement).src;
+      if (src) window.open(src, '_blank', 'noopener');
+    } else if (target.closest('.opus label, .title label')) {
       this.#copyToClipboard(target);
     } else if (target.closest('.download-list label')) {
       const label = target.closest('.download-list label') as HTMLElement;
       this.#download(label, CONFIG.DOMAIN + label.dataset.href);
-    } else if (target.closest('.actress-list label span')) {
+    } else if (target.closest('.actress-list label .eng')) {
+      // 영어 이름: 배우 검색 팝업
       popupActress(target.textContent!);
+    } else if (target.closest('.actress-list label .jap')) {
+      // 일어 이름: 클립보드 복사
+      this.#copyToClipboard(target);
     } else if (target.closest('.video label')) {
       const div = target.closest('div[data-opus]') as HTMLElement;
       if (div?.dataset.opus) popupFlay(div.dataset.opus);
@@ -316,25 +353,73 @@ class Page {
   }
 
   #next() {
+    // 마지막으로 로드된 카드를 넘어가려 하면 인덱스를 고정하고 다음 페이지 상태를 안내
+    if (this.#paging.itemIndex >= this.#paging.itemLength - 1) {
+      this.#maybeCrawl();
+      if (this.#isFetching) {
+        this.#setLoading('다음 페이지 불러오는 중...');
+      } else if (this.#noMoreData) {
+        this.#notice('마지막 카드입니다', false, false);
+      }
+      return;
+    }
+
     console.group(`🔄 [Next] 다음 아이템으로 이동: ${this.#paging.itemIndex} → ${this.#paging.itemIndex + 1}`);
     ++this.#paging.itemIndex;
-
     this.#showItem();
     console.groupEnd();
 
-    // 추가 크롤링이 필요한 경우
-    if (this.#paging.needCrawling()) {
-      console.log(`🚀 [Crawling] 추가 크롤링 필요 - 남은 아이템: ${this.#paging.itemLength - this.#paging.itemIndex}개`);
-      if (this.#isSearchMode) {
-        // 검색 모드에서는 페이지 번호를 포함한 검색 URL로 크롤링
-        ++this.#paging.srcPageNo;
-        console.log(`🔍 [Search] 검색 모드 - 다음 페이지: ${this.#paging.srcPageNo}`);
-      } else {
-        // 일반 모드에서는 페이지 번호만 증가
-        ++this.#paging.srcPageNo;
-        console.log(`📄 [Page] 일반 모드 - 다음 페이지: ${this.#paging.srcPageNo}`);
-      }
-      this.#callCrawling();
+    // 버퍼가 부족하면 다음 페이지를 미리 가져온다(프리페치)
+    this.#maybeCrawl();
+  }
+
+  /**
+   * 남은 버퍼가 임계값(PREFETCH_THRESHOLD) 미만이면 다음 페이지를 프리페치한다.
+   * 이미 요청 중이거나 마지막 페이지에 도달했으면 아무것도 하지 않는다.
+   * 외부 사이트 응답 지연을 사용자의 읽는 시간 뒤로 숨기는 것이 목적이다.
+   */
+  #maybeCrawl(): void {
+    if (this.#isFetching || this.#noMoreData) return;
+    const remaining = this.#paging.itemLength - this.#paging.itemIndex;
+    if (remaining >= CONFIG.PREFETCH_THRESHOLD) return;
+
+    ++this.#paging.srcPageNo;
+    console.log(`🚀 [Prefetch] 버퍼 부족(남은 ${remaining}개) - 다음 페이지 프리페치: ${this.#paging.srcPageNo}`);
+    this.#callCrawling();
+  }
+
+  /**
+   * 재시도 지연 타이머를 해제한다.
+   */
+  #clearCrawlTimer(): void {
+    if (this.#crawlTimer) {
+      clearTimeout(this.#crawlTimer);
+      this.#crawlTimer = null;
+    }
+  }
+
+  /**
+   * 크롤링 실패(에러·타임아웃) 처리.
+   * MAX_RETRY까지 백오프 재시도하고, 모두 실패하면 수동 재시도 버튼을 노출한다.
+   * @param reason 실패 사유(로그·알림용)
+   */
+  #handleCrawlFailure(reason: string): void {
+    this.#clearCrawlTimer();
+
+    if (this.#retryCount < CONFIG.MAX_RETRY) {
+      const delay = CONFIG.RETRY_DELAYS[this.#retryCount] ?? 4000;
+      ++this.#retryCount;
+      console.warn(`⚠️ [Retry] 크롤링 실패(${reason}) - ${this.#retryCount}/${CONFIG.MAX_RETRY} 재시도 (${delay}ms 후)`);
+      this.#setLoading(`응답 지연, 재시도 중 (${this.#retryCount}/${CONFIG.MAX_RETRY})...`);
+      // #isFetching은 true로 유지해 재시도 중 중복 프리페치를 막는다
+      this.#crawlTimer = setTimeout(() => this.#callCrawling(), delay);
+    } else {
+      console.error(`❌ [Crawling] 재시도 모두 실패(${reason})`);
+      this.#setLoading(null); // footer 로딩 종료
+      this.#notice('데이터를 구하지 못함', false, true); // 알림을 보이게 표시
+      this.noticeRetryBtn.classList.remove('hide'); // 수동 재시도 버튼 노출
+      this.#isFetching = false;
+      this.#retryCount = 0;
     }
   }
 
@@ -355,7 +440,13 @@ class Page {
     const data = this.#itemList[this.#paging.itemIndex];
     if (!data) {
       console.warn(`⚠️ [ShowItem] 데이터가 없습니다 - 인덱스: ${this.#paging.itemIndex}`);
-      this.#notice('데이터가 없습니다.', false, true);
+      if (this.#isFetching) {
+        this.#setLoading('다음 페이지 불러오는 중...');
+      } else if (this.#noMoreData) {
+        this.#notice('마지막 카드입니다', false, false);
+      } else {
+        this.#notice('데이터가 없습니다.', false, true);
+      }
       return;
     }
 
@@ -381,6 +472,7 @@ class Page {
     // Update store in background, don't wait for it
     nanoStore.update(data.opus.text, Date.now()).catch((err) => console.error('❌ [Store] 저장소 업데이트 실패:', err));
 
+    this.#notice('', true); // 카드를 표시했으면 잔존 로딩/안내 메시지 숨김
     this.#updateFootMessage();
   }
 
@@ -460,6 +552,22 @@ class Page {
 
     // 모든 Promise를 병렬로 실행
     await Promise.all([Promise.all(videoPromises), Promise.all(actressPromises), Promise.all(recordPromises)]);
+  }
+
+  /**
+   * 아직 보지 않은 대기 카드의 커버(포스터) 이미지를 백그라운드에서 미리 받아둔다.
+   * 메타데이터 프리페치·렌더보다 먼저 다운로드를 시작하므로, 렌더 시 생성되는
+   * <img>가 같은 URL을 브라우저 캐시에서 즉시 사용한다.
+   * 로드/실패 전까지 풀에 참조를 유지해 GC로 인한 요청 취소를 방지한다.
+   */
+  #prefetchCovers(itemList: CrawlingItem[]): void {
+    for (const data of itemList) {
+      if (!data.cover) continue;
+      const img = new Image();
+      img.onload = img.onerror = () => this.#coverPrefetchPool.delete(img);
+      this.#coverPrefetchPool.add(img);
+      img.src = data.cover;
+    }
   }
 
   /**
@@ -564,7 +672,7 @@ class Page {
         ${data.tagList.map((tag: LinkItem) => `<label data-href="${tag.href}">${tag.text}</label>`).join('')}
       </div>
       <div class="actress-list" title="actress">
-        ${data.actressList.map((actress: ActressItem) => `<label data-href="${actress.href}" title="${actress.text}">${actress.fav}<span title="english name">${actress.eng}</span> <span title="japanese name">${actress.jap}</span></label>`).join('')}
+        ${data.actressList.map((actress: ActressItem) => `<label data-href="${actress.href}" title="${actress.text}">${actress.fav}<span class="eng" title="english name. click to search">${actress.eng}</span> <span class="jap" title="japanese name. click to copy">${actress.jap}</span></label>`).join('')}
       </div>
       <div class="download-list" title="download. click to copy">
         ${data.downloadList.map((download: DownloadItem) => `<label data-href="${download.href}">${download.type} ${download.text}</label>`).join('')}
@@ -614,7 +722,13 @@ class Page {
   /**
    * 파싱 완료 후 DOM 업데이트 및 상태 관리
    */
-  async parseOfNanojav(data: { message?: string }): Promise<void> {
+  async parseOfNanojav(data: { message?: string; error?: unknown }): Promise<void> {
+    // 진행 중인 요청이 없으면(중복 결과/다른 탭 브로드캐스트) 무시
+    if (!this.#isFetching) {
+      console.debug(`🚫 [Parse] 진행 중인 요청 없음 - 결과 무시`);
+      return;
+    }
+
     console.log(`📥 [Parse] 크롤링 데이터 수신 시작`);
 
     // 크롤링 완료 시간 측정 및 소요시간 계산
@@ -625,10 +739,18 @@ class Page {
       console.log(`⏱️ [Performance] 크롤링 소요시간: ${crawlingDuration.toFixed(2)}ms (${(crawlingDuration / 1000).toFixed(2)}초)`);
     }
 
-    if (!data.message) {
-      console.warn(`⚠️ [Parse] 데이터 메시지가 없습니다`);
+    // 결과 도착: 대기 중인 재시도 타이머가 있으면 해제
+    this.#clearCrawlTimer();
+
+    // 실패(백엔드 curl 에러/타임아웃 또는 빈 응답) → 자동 재시도
+    const errorReason = typeof data.error === 'string' ? data.error : '';
+    if (errorReason || !data.message) {
+      this.#handleCrawlFailure(errorReason || '응답 없음');
       return;
     }
+
+    // 결과 도착(성공/빈 결과 공통): footer 로딩 종료
+    this.#setLoading(null);
 
     console.log(`🔍 [Parse] HTML 파싱 시작 - 데이터 크기: ${data.message.length}자`);
     const doc = domParser.parseFromString(data.message, 'text/html');
@@ -636,15 +758,25 @@ class Page {
     const postList = Array.from(doc.querySelectorAll('#content > div > div > div:nth-child(2) > div > div'));
     console.log(`📊 [Parse] 파싱된 아이템 수: ${postList.length}개`);
 
-    if (postList.length > 0) {
-      console.log(`✅ [Parse] 아이템 파싱 성공 - ${postList.length}개 아이템 발견`);
-      this.#notice(postList.length + '개 아이템 구함');
-    } else {
-      console.error(`❌ [Parse] 아이템을 찾을 수 없습니다`);
-      this.#notice('데이터를 구하지 못함', true, true);
-      this.retryBtn.disabled = false; // 수동으로 다시 요청하도록 버튼 노출
+    // 유효한 HTML이지만 결과 0건 → 마지막 페이지/검색 결과 없음(전송 오류가 아니므로 재시도하지 않음)
+    if (postList.length === 0) {
+      console.log(`🔚 [Parse] 추가 데이터 없음`);
+      this.#noMoreData = true;
+      this.#retryCount = 0;
+      this.#isFetching = false;
+      if (this.#firstItemShown) {
+        this.#notice('마지막 페이지입니다', true);
+      } else {
+        this.#notice('결과가 없습니다', false, true);
+        this.noticeRetryBtn.classList.remove('hide'); // 수동 재시도 버튼 노출
+      }
       return;
     }
+
+    console.log(`✅ [Parse] 아이템 파싱 성공 - ${postList.length}개 아이템 발견`);
+    this.#retryCount = 0;
+    this.#loadedPageNo = this.#paging.srcPageNo; // 이 페이지의 데이터 수신 완료
+    this.#notice(postList.length + '개 아이템 구함');
 
     const itemList = postList.map((div) => {
       const elementOfImg = div.querySelector('img.cover') as HTMLImageElement;
@@ -684,6 +816,9 @@ class Page {
       };
     });
 
+    // 아직 보지 않은 대기 카드의 커버(포스터) 이미지를 즉시 백그라운드 다운로드 시작
+    this.#prefetchCovers(itemList);
+
     console.log(`📝 [Data] 아이템 리스트에 추가: ${itemList.length}개`);
     this.#itemList.push(...itemList);
     this.#paging.itemLength += postList.length;
@@ -697,10 +832,17 @@ class Page {
     this.#notice('', true); // Hide notice
     this.#updateFootMessage();
 
-    if (this.#paging.itemIndex === 0) {
+    // 소비 완료: 다음 프리페치가 가능하도록 플래그 해제
+    this.#isFetching = false;
+
+    if (!this.#firstItemShown) {
       console.log(`🏠 [Init] 첫 번째 아이템 표시`);
+      this.#firstItemShown = true;
       this.#showItem();
     }
+
+    // 버퍼가 여전히 부족하면 다음 페이지를 이어서 프리페치(2페이지 버퍼 유지)
+    this.#maybeCrawl();
   }
 
   /**
@@ -712,15 +854,20 @@ class Page {
     this.#paging.srcPageNo = 1;
     this.#isSearchMode = true;
     this.#searchQuery = query;
+    this.#firstItemShown = false;
+    this.#retryCount = 0;
     this.#callCrawling();
     document.querySelector('#starter')!.classList.add('hide');
 
     // 검색 모드임을 표시
-    this.#notice(`"${query}" 검색 중...`);
+    this.#setLoading(`"${query}" 검색 중...`);
   }
 
   #callCrawling() {
     console.group(`🚀 [Crawling] 크롤링 시작 - 모드: ${this.#isSearchMode ? '검색' : '일반'}, 페이지: ${this.#paging.srcPageNo}`);
+    this.#clearCrawlTimer();
+    this.#isFetching = true;
+    this.#noMoreData = false;
     this.#crawlingStartTime = performance.now();
 
     let url: string;
@@ -746,19 +893,19 @@ class Page {
       크롤링 결과는 SSE를 통해 받아서 emitCurl로 전달됨.
      */
     void ApiClient.get(`/crawling/curl?url=${encodeURIComponent(url)}`).catch((err) => {
-      console.error(`❌ [Crawling] 크롤링 실패:`, err);
-      this.#notice('데이터를 구하지 못함', true, true);
-      this.retryBtn.disabled = false; // 수동으로 다시 요청하도록 버튼 노출
+      // 요청(204) 자체 실패 → 자동 재시도
+      console.error(`❌ [Crawling] 요청 실패:`, err);
+      this.#handleCrawlFailure(err?.message ?? '요청 실패');
     });
 
     if (this.#isSearchMode && this.#searchQuery) {
       if (this.#paging.srcPageNo === 1) {
-        this.#notice(`"${this.#searchQuery}" 검색 중...`);
+        this.#setLoading(`"${this.#searchQuery}" 검색 중...`);
       } else {
-        this.#notice(`"${this.#searchQuery}" 검색 중... (${this.#paging.srcPageNo}페이지)`);
+        this.#setLoading(`"${this.#searchQuery}" 검색 중... (${this.#paging.srcPageNo}페이지)`);
       }
     } else {
-      this.#notice(this.#paging.srcPageNo + '페이지 크롤링 중...');
+      this.#setLoading(this.#paging.srcPageNo + '페이지 크롤링 중...');
     }
 
     (document.querySelector('#srcPageURL') as HTMLAnchorElement).href = url;
@@ -771,6 +918,21 @@ class Page {
     noticeEl.querySelector('#noticeMessage')!.innerHTML = message;
     noticeEl.classList.toggle('hide', hide);
     noticeEl.classList.toggle('error', isError);
+    this.noticeRetryBtn.classList.add('hide'); // 재시도 버튼은 기본 숨김(실패 시에만 노출)
+  }
+
+  /**
+   * 크롤링/검색 진행 상태를 footer에 스피너와 함께 표시한다.
+   * @param message 표시할 메시지. null이면 숨긴다.
+   */
+  #setLoading(message: string | null): void {
+    const el = document.querySelector('#footerLoading')!;
+    if (message) {
+      el.querySelector('#footerLoadingMsg')!.innerHTML = message;
+      el.classList.remove('hide');
+    } else {
+      el.classList.add('hide');
+    }
   }
 
   #updateFootMessage() {
@@ -778,10 +940,10 @@ class Page {
     const currentItemNo = this.#paging.itemIndex + 1;
     const totalItemNo = this.#paging.itemLength;
 
-    console.log(`📊 [Footer] 상태 업데이트 - 현재: ${currentItemNo}/${totalItemNo} (페이지: ${currentPageNo}/${this.#paging.srcPageNo})`);
+    console.log(`📊 [Footer] 상태 업데이트 - 현재: ${currentItemNo}/${totalItemNo} (페이지: ${currentPageNo}/${this.#loadedPageNo})`);
 
     document.querySelector('#currentPageNo')!.innerHTML = String(currentPageNo);
-    document.querySelector('#loadedPageNo')!.innerHTML = String(this.#paging.srcPageNo);
+    document.querySelector('#loadedPageNo')!.innerHTML = String(this.#loadedPageNo);
     document.querySelector('#currentItemNo')!.innerHTML = String(currentItemNo);
     document.querySelector('#totalItemNo')!.innerHTML = String(totalItemNo);
   }

@@ -16,6 +16,8 @@ export type SseMessageType = 'Batch' | 'Notice' | 'CURL';
 export interface SseMessage {
   type: SseMessageType;
   message: string;
+  /** CURL 등 실패 시 오류 사유(선택). 수신 측 자동 재시도 판단에 사용 */
+  error?: string;
 }
 
 /** SSE 클라이언트 */

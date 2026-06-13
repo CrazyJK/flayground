@@ -142,3 +142,9 @@ labelledby
 describedby
 sentencewise
 NLLB
+Ollama
+huihui
+qwen
+abliterate
+abliterated
+exaone

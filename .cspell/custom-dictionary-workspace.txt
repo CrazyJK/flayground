@@ -140,3 +140,5 @@ mgmt
 KODEX
 labelledby
 describedby
+sentencewise
+NLLB

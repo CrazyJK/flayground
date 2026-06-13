@@ -1,4 +1,5 @@
 import OpenAI from 'openai';
+import { execFile } from 'node:child_process';
 import { config } from '../config';
 import { AIProvider, GenerateOptions } from './provider.interface';
 
@@ -41,6 +42,7 @@ export class LocalProvider implements AIProvider {
    * 메인 사용자(flayAI)의 작업을 방해하지 않기 위한 'best-effort' 게이트.
    *
    * - Ollama가 idle(로드된 모델 없음): 요청 모델을 로드해도 방해 없음 → 요청 모델 사용
+   *   (단, PyTorch 등이 VRAM 점유 중일 수 있으므로 nvidia-smi free VRAM이 임계값 미만이면 보류)
    * - 요청 모델이 이미 로드됨: 스왑 불필요 → 요청 모델 사용
    * - 다른 모델이 로드 중이지만 허용 목록(acceptableModels)에 있음: 스왑 없이 그 모델 재사용
    * - 그 외(허용되지 않은 모델 사용 중) 또는 확인 실패: 보류(null)
@@ -57,12 +59,42 @@ export class LocalProvider implements AIProvider {
       const loaded = Array.isArray(data.models) ? data.models : [];
       const loadedNames = loaded.map((m) => m.name ?? m.model).filter((n): n is string => !!n);
 
-      if (loadedNames.length === 0) return preferredModel;
+      // idle: 새 모델을 로드해도 스왕 방해는 없지만, PyTorch 등이 VRAM을 점유 중일 수 있으므로
+      // free VRAM이 충분할 때만 로드를 허용한다(nvidia-smi 조회 실패 시엔 기존대로 진행).
+      if (loadedNames.length === 0) {
+        const freeVram = await this.getFreeVramMB();
+        if (freeVram !== null && freeVram < config.ai.localMinFreeVramMB) return null;
+        return preferredModel;
+      }
       if (loadedNames.includes(preferredModel)) return preferredModel;
       return loadedNames.find((n) => acceptableModels.includes(n)) ?? null;
     } catch {
       return null;
     }
+  }
+
+  /**
+   * `nvidia-smi`로 현재 여유 VRAM(MB)을 조회.
+   * 멀티 GPU면 가장 여유가 많은 GPU 기준. nvidia-smi 부재·실패 시 null을 반환한다(best-effort).
+   * @returns 여유 VRAM(MB), 조회 불가 시 null
+   */
+  private getFreeVramMB(): Promise<number | null> {
+    return new Promise((resolve) => {
+      execFile(
+        'nvidia-smi',
+        ['--query-gpu=memory.free', '--format=csv,noheader,nounits'],
+        { timeout: 1000, windowsHide: true },
+        (err, stdout) => {
+          if (err) return resolve(null);
+          const values = stdout
+            .split('\n')
+            .map((line) => parseInt(line.trim(), 10))
+            .filter((n) => Number.isFinite(n));
+          if (values.length === 0) return resolve(null);
+          resolve(Math.max(...values));
+        },
+      );
+    });
   }
 
   /**

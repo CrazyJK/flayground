@@ -51,6 +51,12 @@ export interface Config {
      * 메인 사용자(flayAI)의 모델을 내리지 않고 그 모델을 그대로 사용한다.
      */
     localChatModels: string[];
+    /**
+     * 로컬 모델을 새로 로드해도 되는 최소 여유 VRAM(MB).
+     * Ollama가 idle이어도 PyTorch 등 다른 프로세스가 VRAM을 점유 중일 수 있으므로,
+     * `nvidia-smi`의 free VRAM이 이 값 미만이면 로컬 로드를 보류한다(best-effort).
+     */
+    localMinFreeVramMB: number;
   };
 }
 
@@ -90,6 +96,7 @@ export const config: Config = {
       'huihui_ai/qwen2.5-abliterate:7b', //
       'huihui_ai/exaone3.5-abliterated:7.8b',
     ],
+    localMinFreeVramMB: 6000,
   },
 };
 

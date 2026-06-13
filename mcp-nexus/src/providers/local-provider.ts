@@ -1,5 +1,5 @@
-import OpenAI from 'openai';
 import { execFile } from 'node:child_process';
+import OpenAI from 'openai';
 import { config } from '../config';
 import { AIProvider, GenerateOptions } from './provider.interface';
 
@@ -80,20 +80,15 @@ export class LocalProvider implements AIProvider {
    */
   private getFreeVramMB(): Promise<number | null> {
     return new Promise((resolve) => {
-      execFile(
-        'nvidia-smi',
-        ['--query-gpu=memory.free', '--format=csv,noheader,nounits'],
-        { timeout: 1000, windowsHide: true },
-        (err, stdout) => {
-          if (err) return resolve(null);
-          const values = stdout
-            .split('\n')
-            .map((line) => parseInt(line.trim(), 10))
-            .filter((n) => Number.isFinite(n));
-          if (values.length === 0) return resolve(null);
-          resolve(Math.max(...values));
-        },
-      );
+      execFile('nvidia-smi', ['--query-gpu=memory.free', '--format=csv,noheader,nounits'], { timeout: 1000, windowsHide: true }, (err, stdout) => {
+        if (err) return resolve(null);
+        const values = stdout
+          .split('\n')
+          .map((line) => parseInt(line.trim(), 10))
+          .filter((n) => Number.isFinite(n));
+        if (values.length === 0) return resolve(null);
+        resolve(Math.max(...values));
+      });
     });
   }
 

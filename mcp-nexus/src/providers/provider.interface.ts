@@ -14,7 +14,7 @@ export interface GenerateOptions {
  */
 export interface AIProvider {
   /** 제공자 식별자 */
-  readonly providerName: 'gemini' | 'github';
+  readonly providerName: 'gemini' | 'github' | 'local';
 
   /**
    * 단일 프롬프트로 텍스트 생성

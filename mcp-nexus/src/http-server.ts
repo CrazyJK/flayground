@@ -86,6 +86,7 @@ class HTTPServer {
         providers: {
           gemini: !!config.geminiApiKey,
           github: !!config.githubToken,
+          local: !!config.localEndpoint,
         },
       });
     });
@@ -98,6 +99,7 @@ class HTTPServer {
         providers: {
           gemini: !!config.geminiApiKey,
           github: !!config.githubToken,
+          local: !!config.localEndpoint,
         },
         activeModels: getAvailableModels().map((m) => m.name),
         endpoints: [
@@ -116,7 +118,7 @@ class HTTPServer {
 
     // 활성 모델 목록 (제공자별 필터 지원: ?provider=gemini|github)
     this.app.get('/api/models', (req: Request, res: Response) => {
-      const providerFilter = req.query.provider as 'gemini' | 'github' | undefined;
+      const providerFilter = req.query.provider as 'gemini' | 'github' | 'local' | undefined;
       const models = getAvailableModels(providerFilter);
       res.json({ success: true, models });
     });

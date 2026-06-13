@@ -9,7 +9,7 @@ export interface ModelEntry {
   /** 모델 식별자 */
   name: string;
   /** AI 제공자 */
-  provider: 'gemini' | 'github';
+  provider: 'gemini' | 'github' | 'local';
   /** 표시 이름 */
   displayName: string;
   /** 설명 */
@@ -24,6 +24,10 @@ export interface Config {
   geminiApiKey: string | undefined;
   /** GitHub Personal Access Token (없으면 GitHub 모델 비활성화) */
   githubToken: string | undefined;
+  /** 로컬 Ollama OpenAI 호환 엔드포인트 (없으면 로컬 모델 비활성화) */
+  localEndpoint: string | undefined;
+  /** 로컬 제공자용 더미 API 키 (Ollama는 무시) */
+  localApiKey: string;
 
   /** MCP 서버 설정 */
   mcp: {
@@ -50,6 +54,8 @@ export interface Config {
 export const config: Config = {
   geminiApiKey: process.env.GEMINI_API_KEY,
   githubToken: process.env.GITHUB_TOKEN,
+  localEndpoint: process.env.LOCAL_AI_ENDPOINT,
+  localApiKey: process.env.LOCAL_AI_API_KEY || 'ollama',
 
   mcp: {
     serverName: process.env.MCP_SERVER_NAME || 'nexus-server',
@@ -70,23 +76,29 @@ export const config: Config = {
       // Google Gemini Models
       { name: 'gemini-2.5-flash', provider: 'gemini', displayName: 'Gemini 2.5 Flash', description: 'Google Gemini 2.5 Flash' },
       // { name: 'gemini-2.0-flash', provider: 'gemini', displayName: 'Gemini 2.0 Flash', description: 'Google Gemini 2.0 Flash' },
+      // 로컬 Ollama Models (OpenAI 호환 API)
+      { name: 'huihui_ai/qwen2.5-abliterate:7b', provider: 'local', displayName: 'Qwen2.5 7B (Local)', description: 'Local Ollama Qwen2.5 Abliterate 7B' },
+      // { name: 'huihui_ai/exaone3.5-abliterated:7.8b', provider: 'local', displayName: 'EXAONE 3.5 7.8B (Local)', description: 'Local Ollama EXAONE 3.5 Abliterated 7.8B' },
     ],
   },
 };
 
 /**
  * 설정 유효성 검사.
- * GEMINI_API_KEY 또는 GITHUB_TOKEN 중 하나 이상이 있어야 함
- * @throws {Error} 두 API 키가 모두 없을 경우
+ * GEMINI_API_KEY, GITHUB_TOKEN, LOCAL_AI_ENDPOINT 중 하나 이상이 있어야 함
+ * @throws {Error} 세 설정이 모두 없을 경우
  */
 export function validateConfig(): void {
-  if (!config.geminiApiKey && !config.githubToken) {
-    throw new Error('GEMINI_API_KEY 또는 GITHUB_TOKEN 중 하나 이상을 .env 파일에 설정해야 합니다.');
+  if (!config.geminiApiKey && !config.githubToken && !config.localEndpoint) {
+    throw new Error('GEMINI_API_KEY, GITHUB_TOKEN, LOCAL_AI_ENDPOINT 중 하나 이상을 .env 파일에 설정해야 합니다.');
   }
   if (!config.geminiApiKey) {
     console.warn('[Nexus] GEMINI_API_KEY 없음 - Gemini 모델이 비활성화됩니다.');
   }
   if (!config.githubToken) {
     console.warn('[Nexus] GITHUB_TOKEN 없음 - GitHub 모델이 비활성화됩니다.');
+  }
+  if (!config.localEndpoint) {
+    console.warn('[Nexus] LOCAL_AI_ENDPOINT 없음 - 로컬 모델이 비활성화됩니다.');
   }
 }

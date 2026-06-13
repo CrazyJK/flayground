@@ -181,7 +181,7 @@ export class FnPortfolioViewer extends HTMLElement {
 
     this.innerHTML = `<div class="fn-pv-wrap">` + buildTable('📈 국내 주식', DOMESTIC) + buildTable('🏦 퇴직연금', PENSION) + `</div>`;
     this.querySelectorAll('.fn-num').forEach((el) => {
-      if (parseFloat(el.textContent) < 0) {
+      if (parseFloat(el.textContent ?? '') < 0) {
         el.classList.add('fn-num-minus');
       }
     });

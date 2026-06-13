@@ -45,6 +45,12 @@ export interface Config {
     temperature: number;
     /** 셔플 백에 포함할 전체 모델 목록 */
     availableModels: ModelEntry[];
+    /**
+     * 로컬(Ollama)에서 스왑 없이 재사용 가능한 채팅 모델 목록.
+     * 셔플 백이 로컬을 선택했을 때, 이 중 이미 로드된 모델이 있으면
+     * 메인 사용자(flayAI)의 모델을 내리지 않고 그 모델을 그대로 사용한다.
+     */
+    localChatModels: string[];
   };
 }
 
@@ -79,6 +85,10 @@ export const config: Config = {
       // 로컬 Ollama Models (OpenAI 호환 API)
       { name: 'huihui_ai/qwen2.5-abliterate:7b', provider: 'local', displayName: 'Qwen2.5 7B (Local)', description: 'Local Ollama Qwen2.5 Abliterate 7B' },
       // { name: 'huihui_ai/exaone3.5-abliterated:7.8b', provider: 'local', displayName: 'EXAONE 3.5 7.8B (Local)', description: 'Local Ollama EXAONE 3.5 Abliterated 7.8B' },
+    ],
+    localChatModels: [
+      'huihui_ai/qwen2.5-abliterate:7b', //
+      'huihui_ai/exaone3.5-abliterated:7.8b',
     ],
   },
 };

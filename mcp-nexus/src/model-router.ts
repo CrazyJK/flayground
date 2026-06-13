@@ -208,7 +208,7 @@ export interface RouteResult {
 /**
  * 모델 실행 함수 타입
  */
-type ModelExecutor = (entry: ModelEntry) => Promise<string>;
+type ModelExecutor = (entry: ModelEntry, modelName: string) => Promise<string>;
 
 /**
  * 활성 모델 수만큼 자동 재시도하며 텍스트를 생성
@@ -227,22 +227,38 @@ async function executeWithFallback(operationName: string, executor: ModelExecuto
 
   for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     const entry = pickRandomModel();
+    let modelName = entry.name;
+
+    // 로컬은 'best-effort': 스왑(=메인 사용자 방해)을 피한다.
+    // 다른 로컬 모델이 이미 로드돼 있고 허용 목록에 있으면 그 모델을 그대로 재사용한다.
+    if (entry.provider === 'local' && localProvider) {
+      const usable = await localProvider.resolveUsableModel(entry.name, config.ai.localChatModels);
+      if (!usable) {
+        console.info(`[Nexus] 로컬 모델 보류(GPU 사용 중, 스왑 회피): ${entry.name} [시도 ${attempt}/${maxAttempts}]`);
+        continue;
+      }
+      if (usable !== entry.name) {
+        console.info(`[Nexus] 로컬 로드된 모델 재사용(스왑 회피): ${usable} (요청 ${entry.name})`);
+      }
+      modelName = usable;
+    }
+
     const start = Date.now();
 
     try {
-      const text = await executor(entry);
-      trackModel(entry.name, Date.now() - start);
+      const text = await executor(entry, modelName);
+      trackModel(modelName, Date.now() - start);
 
       if (attempt > 1) {
-        console.warn(`[Nexus] ${operationName} 폴백 성공: ${entry.name} (${entry.provider}) [시도 ${attempt}/${maxAttempts}]`);
+        console.warn(`[Nexus] ${operationName} 폴백 성공: ${modelName} (${entry.provider}) [시도 ${attempt}/${maxAttempts}]`);
       }
 
-      return { text, model: entry.name, provider: entry.provider };
+      return { text, model: modelName, provider: entry.provider };
     } catch (error: any) {
-      trackModel(entry.name, null, error);
+      trackModel(modelName, null, error);
       const message = error?.message ?? String(error);
-      errors.push(`[${entry.name}] ${message}`);
-      console.warn(`[Nexus] ${operationName} 실패: ${entry.name} (${entry.provider}) [시도 ${attempt}/${maxAttempts}]`);
+      errors.push(`[${modelName}] ${message}`);
+      console.warn(`[Nexus] ${operationName} 실패: ${modelName} (${entry.provider}) [시도 ${attempt}/${maxAttempts}]`);
     }
   }
 
@@ -256,7 +272,7 @@ async function executeWithFallback(operationName: string, executor: ModelExecuto
  * @returns 생성 결과
  */
 export async function generateText(prompt: string, options?: GenerateOptions): Promise<RouteResult> {
-  return executeWithFallback('텍스트 생성', (entry) => resolveProvider(entry).generateText(prompt, entry.name, options));
+  return executeWithFallback('텍스트 생성', (entry, modelName) => resolveProvider(entry).generateText(prompt, modelName, options));
 }
 
 /**
@@ -266,7 +282,7 @@ export async function generateText(prompt: string, options?: GenerateOptions): P
  * @returns 생성 결과
  */
 export async function generateWithHistory(history: Array<{ role: 'user' | 'assistant'; content: string }>, options?: GenerateOptions): Promise<RouteResult> {
-  return executeWithFallback('채팅 생성', (entry) => resolveProvider(entry).generateWithHistory(history, entry.name, options));
+  return executeWithFallback('채팅 생성', (entry, modelName) => resolveProvider(entry).generateWithHistory(history, modelName, options));
 }
 
 /**

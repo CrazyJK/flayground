@@ -12,6 +12,8 @@ export class LocalProvider implements AIProvider {
   readonly providerName = 'local' as const;
 
   private client: OpenAI;
+  /** Ollama 네이티브 `/api/ps` URL (OpenAI baseURL에서 `/v1` 제거 후 생성) */
+  private psUrl: string;
 
   /**
    * @param baseURL - Ollama OpenAI 호환 엔드포인트 (예: http://127.0.0.1:11434/v1)
@@ -22,6 +24,7 @@ export class LocalProvider implements AIProvider {
       baseURL,
       apiKey,
     });
+    this.psUrl = baseURL.replace(/\/v1\/?$/, '') + '/api/ps';
   }
 
   /**
@@ -31,6 +34,35 @@ export class LocalProvider implements AIProvider {
    */
   async validateAccess(_modelName: string): Promise<void> {
     await this.client.models.list();
+  }
+
+  /**
+   * 모델 스왑을 유발하지 않고 사용할 로컬 모델명을 결정.
+   * 메인 사용자(flayAI)의 작업을 방해하지 않기 위한 'best-effort' 게이트.
+   *
+   * - Ollama가 idle(로드된 모델 없음): 요청 모델을 로드해도 방해 없음 → 요청 모델 사용
+   * - 요청 모델이 이미 로드됨: 스왑 불필요 → 요청 모델 사용
+   * - 다른 모델이 로드 중이지만 허용 목록(acceptableModels)에 있음: 스왑 없이 그 모델 재사용
+   * - 그 외(허용되지 않은 모델 사용 중) 또는 확인 실패: 보류(null)
+   *
+   * @param preferredModel - 셔플 백이 선택한 로컬 모델명
+   * @param acceptableModels - 스왑 없이 재사용 가능한 로컬 모델 목록
+   * @returns 사용할 모델명, 보류 시 null
+   */
+  async resolveUsableModel(preferredModel: string, acceptableModels: string[]): Promise<string | null> {
+    try {
+      const res = await fetch(this.psUrl);
+      if (!res.ok) return null;
+      const data = (await res.json()) as { models?: Array<{ name?: string; model?: string }> };
+      const loaded = Array.isArray(data.models) ? data.models : [];
+      const loadedNames = loaded.map((m) => m.name ?? m.model).filter((n): n is string => !!n);
+
+      if (loadedNames.length === 0) return preferredModel;
+      if (loadedNames.includes(preferredModel)) return preferredModel;
+      return loadedNames.find((n) => acceptableModels.includes(n)) ?? null;
+    } catch {
+      return null;
+    }
   }
 
   /**

@@ -355,7 +355,8 @@ export default function DiaryPage() {
   const [histLoading, setHistLoading] = useState(false);
   const [histLoaded, setHistLoaded] = useState(false); // 한 번이라도 불러왔는지
   const seenSessions = useRef<Set<number>>(new Set()); // 중복 세션 방지
-  const histAdjustRef = useRef<number | null>(null); // prepend 전 scrollHeight(위치 보존)
+  const anchorIdRef = useRef<number | null>(null); // prepend 위치 보존 기준(현재 맨 위 세션) id
+  const anchorTopRef = useRef(0); // 그 세션의 뷰포트 상단 기준 오프셋(이 위치로 복원)
   const histToBottomRef = useRef(false); // 첫 로드 후 초기 위치 결정
   const initialPinRef = useRef(false); // 첫 로드 초기 배치 중(이미지 로드마다 재정렬) 여부
 
@@ -420,8 +421,18 @@ export default function DiaryPage() {
     if (histLoading || !histHasMore) return;
     const first = !histLoaded;
     if (!first) {
+      // 위치 보존: 현재 맨 위(가장 과거) 세션을 기준으로 잡아, prepend 후 그 세션이
+      // 같은 화면 위치로 돌아오게 한다(scrollHeight 차이 방식은 브라우저 스크롤 앵커링과
+      // 충돌하고 이미지 지연 로드로 어긋나므로 요소 기준으로 변경).
       const c = scrollRef.current;
-      if (c) histAdjustRef.current = c.scrollHeight; // 위로 쌓기 전 높이 기억(위치 보존)
+      const top = history[0];
+      if (c && top) {
+        const el = c.querySelector<HTMLElement>(`[data-session="${top.session_id}"]`);
+        if (el) {
+          anchorIdRef.current = top.session_id;
+          anchorTopRef.current = el.getBoundingClientRect().top - c.getBoundingClientRect().top;
+        }
+      }
     }
     setHistLoading(true);
     try {
@@ -443,7 +454,19 @@ export default function DiaryPage() {
     } finally {
       setHistLoading(false);
     }
-  }, [histLoading, histHasMore, histLoaded, histOffset, sessionId]);
+  }, [histLoading, histHasMore, histLoaded, histOffset, sessionId, history]);
+
+  // prepend 후(그리고 새로 들어온 이미지 로드 시마다) 기준 세션을 원래 화면 위치로 복원
+  const reAnchor = useCallback(() => {
+    const c = scrollRef.current;
+    const id = anchorIdRef.current;
+    if (!c || id == null) return;
+    const el = c.querySelector<HTMLElement>(`[data-session="${id}"]`);
+    if (!el) return;
+    const cur = el.getBoundingClientRect().top - c.getBoundingClientRect().top;
+    const delta = cur - anchorTopRef.current;
+    if (delta) c.scrollTop += delta;
+  }, []);
 
   // 이전 일기 prepend 후 스크롤 위치 보존 / 첫 로드 후 초기 위치 결정
   useLayoutEffect(() => {
@@ -451,7 +474,6 @@ export default function DiaryPage() {
     if (!c) return;
     if (histToBottomRef.current) {
       histToBottomRef.current = false;
-      histAdjustRef.current = null;
       // 직전(가장 최근) 일기 세션이 화면보다 길면 그 날짜(상단)를 맨 위에 맞추고,
       // 화면 안에 들어오면 맨 아래(최신이 컴포저 근처)에 둔다.
       const pin = () => {
@@ -483,11 +505,27 @@ export default function DiaryPage() {
       }
       return;
     }
-    if (histAdjustRef.current != null) {
-      c.scrollTop += c.scrollHeight - histAdjustRef.current;
-      histAdjustRef.current = null;
+    if (anchorIdRef.current != null) {
+      // prepend 직후 기준 세션을 원래 위치로 복원, 이후 옛 일기 이미지가 실리며 위가
+      // 늘어나는 것도 load 마다 재복원해 현재 읽던 일기가 밀리지 않게 한다.
+      reAnchor();
+      const imgs = Array.from(c.querySelectorAll("img")).filter((im) => !im.complete);
+      if (imgs.length) {
+        let waiting = imgs.length;
+        const onDone = () => {
+          reAnchor();
+          waiting -= 1;
+          if (waiting <= 0) anchorIdRef.current = null; // 이미지 다 실리면 보정 종료
+        };
+        imgs.forEach((im) => {
+          im.addEventListener("load", onDone, { once: true });
+          im.addEventListener("error", onDone, { once: true });
+        });
+      } else {
+        anchorIdRef.current = null;
+      }
     }
-  }, [history]);
+  }, [history, reAnchor]);
 
   // 위로 스크롤 시 더 과거 로드(이미 한 번 불러온 뒤에만 자동)
   const onThreadScroll = useCallback(() => {
@@ -824,6 +862,7 @@ export default function DiaryPage() {
           <div
             ref={scrollRef}
             onScroll={onThreadScroll}
+            style={{ overflowAnchor: "none" }}
             className="flex-1 min-h-0 overflow-y-auto w-full"
           >
             <div className="max-w-[720px] mx-auto px-6 pt-6 pb-2 flex flex-col gap-[18px]">

@@ -356,7 +356,8 @@ export default function DiaryPage() {
   const [histLoaded, setHistLoaded] = useState(false); // 한 번이라도 불러왔는지
   const seenSessions = useRef<Set<number>>(new Set()); // 중복 세션 방지
   const histAdjustRef = useRef<number | null>(null); // prepend 전 scrollHeight(위치 보존)
-  const histToBottomRef = useRef(false); // 첫 로드 후 맨 아래(최신)로
+  const histToBottomRef = useRef(false); // 첫 로드 후 초기 위치 결정
+  const initialPinRef = useRef(false); // 첫 로드 초기 배치 중(이미지 로드마다 재정렬) 여부
 
   const readAsDataUrl = (file: File) =>
     new Promise<string>((resolve, reject) => {
@@ -453,14 +454,32 @@ export default function DiaryPage() {
       histAdjustRef.current = null;
       // 직전(가장 최근) 일기 세션이 화면보다 길면 그 날짜(상단)를 맨 위에 맞추고,
       // 화면 안에 들어오면 맨 아래(최신이 컴포저 근처)에 둔다.
-      const last = history[history.length - 1];
-      const el = last
-        ? (c.querySelector(`[data-session="${last.session_id}"]`) as HTMLElement | null)
-        : null;
-      if (el && el.offsetHeight > c.clientHeight) {
-        c.scrollTop = el.getBoundingClientRect().top - c.getBoundingClientRect().top + c.scrollTop;
-      } else {
-        c.scrollTop = c.scrollHeight;
+      const pin = () => {
+        const sessions = c.querySelectorAll<HTMLElement>("[data-session]");
+        const el = sessions.length ? sessions[sessions.length - 1] : null;
+        if (el && el.offsetHeight > c.clientHeight) {
+          c.scrollTop =
+            el.getBoundingClientRect().top - c.getBoundingClientRect().top + c.scrollTop;
+        } else {
+          c.scrollTop = c.scrollHeight;
+        }
+      };
+      pin();
+      // 일기 속 이미지가 아직 안 실리면 높이가 작게 잡혀 위치가 어긋남 →
+      // 미완료 이미지가 로드될 때마다 재정렬해 최종적으로 날짜 헤더가 맨 위에 오게 한다.
+      const imgs = Array.from(c.querySelectorAll("img")).filter((im) => !im.complete);
+      if (imgs.length) {
+        initialPinRef.current = true;
+        let waiting = imgs.length;
+        const onDone = () => {
+          if (initialPinRef.current) pin();
+          waiting -= 1;
+          if (waiting <= 0) initialPinRef.current = false;
+        };
+        imgs.forEach((im) => {
+          im.addEventListener("load", onDone, { once: true });
+          im.addEventListener("error", onDone, { once: true });
+        });
       }
       return;
     }
@@ -474,7 +493,10 @@ export default function DiaryPage() {
   const onThreadScroll = useCallback(() => {
     const c = scrollRef.current;
     if (!c || !histLoaded || histLoading || !histHasMore) return;
-    if (c.scrollTop < 80) void loadHistory();
+    if (c.scrollTop < 80) {
+      initialPinRef.current = false; // 사용자가 위로 스크롤하면 초기 자동 재정렬 중단
+      void loadHistory();
+    }
   }, [histLoaded, histLoading, histHasMore, loadHistory]);
 
   const newConversation = useCallback(() => {

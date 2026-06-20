@@ -162,10 +162,10 @@ function WeatherIcon({ weather, size = 15 }: { weather?: string | null; size?: n
 // 배경(반투명+blur)으로 아래 글이 비치지 않게 마스킹, -mx-6 px-6 로 내부 폭 전체를 덮는다.
 function DateDivider({ label }: { label: string }) {
   return (
-    <div className="sticky top-0 z-10 -mx-6 px-6 py-2 bg-background/90 backdrop-blur-sm">
-      <div className="flex items-center gap-4">
+    <div className="sticky top-0 z-10 -mx-6 px-6 py-2.5 bg-background/95 backdrop-blur-sm">
+      <div className="flex items-center gap-3">
         <div className="flex-1 h-px bg-border" />
-        <span className="font-sans text-xs uppercase tracking-[0.14em] text-muted-foreground">
+        <span className="font-sans inline-flex items-center rounded-full bg-[var(--diary-accent-soft)] px-3.5 py-1 text-[13px] font-semibold tracking-[0.02em] text-[var(--diary-accent)] ring-1 ring-[var(--diary-accent)]/25">
           {label}
         </span>
         <div className="flex-1 h-px bg-border" />

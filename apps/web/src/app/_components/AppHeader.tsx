@@ -38,9 +38,10 @@ export default function AppHeader({
           <Link
             key={n.key}
             href={n.href}
+            aria-current={n.key === active ? "page" : undefined}
             className={
               n.key === active
-                ? "text-foreground"
+                ? "text-primary font-semibold"
                 : "text-muted-foreground hover:text-foreground"
             }
           >
@@ -50,9 +51,10 @@ export default function AppHeader({
         <span aria-hidden className="h-3 w-px bg-border" />
         <Link
           href="/diary"
+          aria-current={active === "diary" ? "page" : undefined}
           className={`flex items-center gap-1 ${
             active === "diary"
-              ? "text-amber-600 dark:text-amber-400"
+              ? "text-amber-600 dark:text-amber-400 font-semibold"
               : "text-amber-700/60 hover:text-amber-600 dark:text-amber-500/70 dark:hover:text-amber-400"
           }`}
         >

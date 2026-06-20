@@ -325,7 +325,7 @@ function PastMessage({ m }: { m: RecallMessage }) {
 // 이전 일기 한 세션 — 날짜 구분선 + 그날의 글/노트(시간순)
 function PastSession({ s }: { s: RecallSession }) {
   return (
-    <div className="flex flex-col gap-[18px]">
+    <div data-session={s.session_id} className="flex flex-col gap-[18px]">
       <DateDivider label={dateLabel(s.date)} />
       {s.messages.map((m, i) => (
         <PastMessage key={i} m={m} />
@@ -444,14 +444,24 @@ export default function DiaryPage() {
     }
   }, [histLoading, histHasMore, histLoaded, histOffset, sessionId]);
 
-  // 이전 일기 prepend 후 스크롤 위치 보존 / 첫 로드 후 맨 아래(최신)로
+  // 이전 일기 prepend 후 스크롤 위치 보존 / 첫 로드 후 초기 위치 결정
   useLayoutEffect(() => {
     const c = scrollRef.current;
     if (!c) return;
     if (histToBottomRef.current) {
-      c.scrollTop = c.scrollHeight;
       histToBottomRef.current = false;
       histAdjustRef.current = null;
+      // 직전(가장 최근) 일기 세션이 화면보다 길면 그 날짜(상단)를 맨 위에 맞추고,
+      // 화면 안에 들어오면 맨 아래(최신이 컴포저 근처)에 둔다.
+      const last = history[history.length - 1];
+      const el = last
+        ? (c.querySelector(`[data-session="${last.session_id}"]`) as HTMLElement | null)
+        : null;
+      if (el && el.offsetHeight > c.clientHeight) {
+        c.scrollTop = el.getBoundingClientRect().top - c.getBoundingClientRect().top + c.scrollTop;
+      } else {
+        c.scrollTop = c.scrollHeight;
+      }
       return;
     }
     if (histAdjustRef.current != null) {

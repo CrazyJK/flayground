@@ -42,7 +42,9 @@ async def convert(
     file: UploadFile = File(...),
     radius: float = Form(0.5),  # 모서리 둥글기 0.0(각진 사각)~0.5(원형)
     feather: float = Form(0.0),  # 가장자리 페더 0.0(또렷)~0.5(부드럽게)
-    anchor: str = Form("center"),  # 정사각 크롭 위치 center | top | bottom
+    zoom: float = Form(1.0),  # 확대/축소 1.0=꽉 참, >1 확대, <1 축소
+    offx: float = Form(0.0),  # 가로 위치 -1~1(0=가운데)
+    offy: float = Form(0.0),  # 세로 위치 -1~1(0=가운데)
     sizes: str | None = Form(None),  # "256,128,..." (생략 시 6종 전부)
 ) -> Response:
     _localhost_only(request)
@@ -59,8 +61,10 @@ async def convert(
             data,
             radius=radius,
             feather=feather,
+            zoom=zoom,
+            offx=offx,
+            offy=offy,
             sizes=_parse_sizes(sizes),
-            anchor=anchor,
         )
     except IcoError as e:
         raise HTTPException(400, str(e)) from e

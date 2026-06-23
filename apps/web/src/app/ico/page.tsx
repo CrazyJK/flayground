@@ -8,17 +8,8 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000"
 
 const ALL_SIZES = [256, 128, 64, 48, 32, 16] as const;
 const PREVIEW = 256; // 미리보기 캔버스 한 변(px)
-
-type Anchor = "center" | "top" | "bottom";
-type Orient = "square" | "portrait" | "landscape";
-
-const ANCHOR_KEYS: Anchor[] = ["top", "center", "bottom"];
-// 크롭 위치 라벨은 '잘려나가는 축'에 따라 달라진다(코어 _square_box 와 동일 규칙).
-const ANCHOR_LABELS: Record<Orient, [string, string, string]> = {
-  portrait: ["위", "중앙", "아래"],
-  landscape: ["왼쪽", "중앙", "오른쪽"],
-  square: ["—", "중앙", "—"],
-};
+const ZOOM_MIN = 0.5;
+const ZOOM_MAX = 4;
 
 // 둥글기 프리셋(슬라이더 값을 빠르게 설정). 0=각진 사각, 0.5=원형.
 const ROUND_PRESETS: { label: string; v: number }[] = [
@@ -26,6 +17,8 @@ const ROUND_PRESETS: { label: string; v: number }[] = [
   { label: "둥근사각", v: 0.25 },
   { label: "원형", v: 0.5 },
 ];
+
+const clamp = (v: number, a: number, b: number) => (v < a ? a : v > b ? b : v);
 
 /** 다운로드 파일명 접미사 — 현재 둥글기/페더에서 모양을 사람이 읽을 수 있게. */
 function shapeSuffix(radius: number, feather: number): string {
@@ -39,17 +32,23 @@ export default function IcoPage() {
   const [img, setImg] = useState<HTMLImageElement | null>(null);
   const [radius, setRadius] = useState(0.5); // 0=각진 사각 ~ 0.5=원형
   const [feather, setFeather] = useState(0.0); // 0=또렷 ~ 0.5=부드럽게
-  const [anchor, setAnchor] = useState<Anchor>("center");
+  const [zoom, setZoom] = useState(1.0); // 1=꽉 참, >1 확대, <1 축소
+  const [offx, setOffx] = useState(0.0); // -1~1 가로 위치
+  const [offy, setOffy] = useState(0.0); // -1~1 세로 위치
   const [sizes, setSizes] = useState<number[]>([...ALL_SIZES]);
   const [busy, setBusy] = useState(false);
   const [err, setErr] = useState<string | null>(null);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
+  const dragRef = useRef<{ x: number; y: number } | null>(null);
 
   function onPick(f: File | null) {
     setErr(null);
     setFile(f);
+    setZoom(1.0);
+    setOffx(0.0);
+    setOffy(0.0);
     setImgUrl((prev) => {
       if (prev) URL.revokeObjectURL(prev);
       return f ? URL.createObjectURL(f) : null;
@@ -70,7 +69,7 @@ export default function IcoPage() {
   }, [imgUrl]);
 
   // 옵션/이미지 변경 시 캔버스 미리보기 다시 그림(클라이언트 즉시 반영).
-  // 서버 shape_mask 와 동일한 둥근사각 SDF 로 알파를 곱해 결과와 일치시킨다.
+  // 크롭(zoom/offx/offy)·모양(SDF)을 서버 core 와 동일 수식으로 적용해 결과와 일치.
   const draw = useCallback(() => {
     const cv = canvasRef.current;
     if (!cv) return;
@@ -79,27 +78,21 @@ export default function IcoPage() {
     ctx.clearRect(0, 0, PREVIEW, PREVIEW);
     if (!img) return;
 
-    // 정사각 크롭. anchor 는 잘려나가는 축에만 적용(코어 _square_box 와 동일).
+    // 크롭 영역(원본 px) -> 캔버스로 forward 매핑(범위 밖은 투명 패딩).
     const nw = img.naturalWidth;
     const nh = img.naturalHeight;
-    const side = Math.min(nw, nh);
-    let sx = (nw - side) / 2;
-    let sy = (nh - side) / 2;
-    if (nh >= nw) {
-      if (anchor === "top") sy = 0;
-      else if (anchor === "bottom") sy = nh - side;
-    } else {
-      if (anchor === "top") sx = 0;
-      else if (anchor === "bottom") sx = nw - side;
-    }
-    ctx.drawImage(img, sx, sy, side, side, 0, 0, PREVIEW, PREVIEW);
+    const cropSide = Math.min(nw, nh) / zoom;
+    const left = ((nw - cropSide) / 2) * (1 + offx);
+    const top = ((nh - cropSide) / 2) * (1 + offy);
+    const ds = PREVIEW / cropSide; // 캔버스 px / 원본 px
+    ctx.drawImage(img, -left * ds, -top * ds, nw * ds, nh * ds);
 
     // 둥근사각 SDF 알파(코어 shape_mask 와 동일 수식). d<0 내부, d>0 외부.
     const S = PREVIEW;
-    const r = Math.max(0, Math.min(0.5, radius)) * S;
+    const r = clamp(radius, 0, 0.5) * S;
     const half = S / 2;
     const c = (S - 1) / 2;
-    const band = Math.max(0, Math.min(0.5, feather)) * half;
+    const band = clamp(feather, 0, 0.5) * half;
     const id = ctx.getImageData(0, 0, S, S);
     const data = id.data;
     for (let y = 0; y < S; y++) {
@@ -119,11 +112,37 @@ export default function IcoPage() {
       }
     }
     ctx.putImageData(id, 0, 0);
-  }, [img, radius, feather, anchor]);
+  }, [img, radius, feather, zoom, offx, offy]);
 
   useEffect(() => {
     draw();
   }, [draw]);
+
+  // 미리보기 드래그 -> 위치(offx/offy). 슬랙(여유)이 있는 축에서만 동작.
+  function onPointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!img) return;
+    e.currentTarget.setPointerCapture(e.pointerId);
+    dragRef.current = { x: e.clientX, y: e.clientY };
+  }
+  function onPointerMove(e: React.PointerEvent<HTMLCanvasElement>) {
+    if (!dragRef.current || !img) return;
+    const cv = canvasRef.current;
+    if (!cv) return;
+    const rect = cv.getBoundingClientRect();
+    const scale = PREVIEW / rect.width; // client px -> canvas px
+    const dxc = (e.clientX - dragRef.current.x) * scale;
+    const dyc = (e.clientY - dragRef.current.y) * scale;
+    dragRef.current = { x: e.clientX, y: e.clientY };
+    const cropSide = Math.min(img.naturalWidth, img.naturalHeight) / zoom;
+    const slackX = (img.naturalWidth - cropSide) / 2;
+    const slackY = (img.naturalHeight - cropSide) / 2;
+    // 이미지를 포인터와 같이 끌면 crop 은 반대로 이동 -> left/top 감소.
+    if (slackX > 0.5) setOffx((v) => clamp(v + (-dxc * (cropSide / PREVIEW)) / slackX, -1, 1));
+    if (slackY > 0.5) setOffy((v) => clamp(v + (-dyc * (cropSide / PREVIEW)) / slackY, -1, 1));
+  }
+  function onPointerUp() {
+    dragRef.current = null;
+  }
 
   // 드래그&드롭 / 붙여넣기 업로드
   const { dragOver, dropProps } = useImageDropPaste((f) => {
@@ -150,7 +169,9 @@ export default function IcoPage() {
       fd.append("file", file);
       fd.append("radius", String(radius));
       fd.append("feather", String(feather));
-      fd.append("anchor", anchor);
+      fd.append("zoom", String(zoom));
+      fd.append("offx", String(offx));
+      fd.append("offy", String(offy));
       fd.append("sizes", sizes.join(","));
       const r = await fetch(`${API_BASE}/api/ico/convert`, { method: "POST", body: fd });
       if (!r.ok) throw new Error(await r.text());
@@ -171,15 +192,12 @@ export default function IcoPage() {
     }
   }
 
-  // 원본 방향: 잘리는 축(=anchor 가 의미를 갖는 축)을 결정. 정사각이면 크롭 불필요.
-  const orient: Orient = !img
-    ? "square"
-    : img.naturalWidth === img.naturalHeight
-      ? "square"
-      : img.naturalHeight > img.naturalWidth
-        ? "portrait"
-        : "landscape";
-  const cropDisabled = orient === "square";
+  // 화질 경고: 가장 큰 해상도보다 잘라낼 원본 영역이 작으면 업스케일 발생.
+  const maxSize = sizes.length ? Math.max(...sizes) : 0;
+  const cropSidePx = img ? Math.round(Math.min(img.naturalWidth, img.naturalHeight) / zoom) : 0;
+  const lowQuality = img !== null && cropSidePx > 0 && cropSidePx < maxSize;
+  const canPan =
+    img !== null && Math.min(img.naturalWidth, img.naturalHeight) / zoom < Math.max(img.naturalWidth, img.naturalHeight);
 
   return (
     <div className="relative flex-1 flex flex-col" {...dropProps}>
@@ -200,7 +218,7 @@ export default function IcoPage() {
                 className="text-sm w-full"
               />
               <p className="text-xs text-muted-foreground">
-                파일 선택 · 드래그&드롭 · 붙여넣기. 중앙을 정사각으로 잘라 변환합니다.
+                파일 선택 · 드래그&드롭 · 붙여넣기. 정사각으로 잘라 변환합니다.
               </p>
             </div>
 
@@ -265,32 +283,45 @@ export default function IcoPage() {
               </div>
             </div>
 
+            {/* 확대/위치 */}
             <div className="space-y-2">
-              <h2 className="text-sm font-semibold tracking-tight">크롭 위치</h2>
-              <div className="flex gap-2 text-sm">
-                {ANCHOR_KEYS.map((key, i) => (
-                  <button
-                    key={key}
-                    onClick={() => setAnchor(key)}
-                    disabled={cropDisabled}
-                    className={`px-3 py-1 rounded-full active:scale-95 transition-transform disabled:opacity-40 ${
-                      anchor === key && !cropDisabled
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-foreground"
-                    }`}
-                  >
-                    {ANCHOR_LABELS[orient][i]}
-                  </button>
-                ))}
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold tracking-tight">확대 · 위치</h2>
+                <button
+                  onClick={() => {
+                    setZoom(1);
+                    setOffx(0);
+                    setOffy(0);
+                  }}
+                  className="text-xs rounded-lg border border-border px-2 py-0.5 active:scale-95 transition-transform"
+                >
+                  1:1 초기화
+                </button>
               </div>
-              {img && (
-                <p className="text-xs text-muted-foreground">
-                  원본 {img.naturalWidth}×{img.naturalHeight} ·{" "}
-                  {orient === "square"
-                    ? "정사각 — 크롭 위치는 비정사각 이미지에서만 적용됩니다"
-                    : orient === "portrait"
-                      ? "세로형 — 위/중앙/아래로 남길 위치 선택"
-                      : "가로형 — 왼쪽/중앙/오른쪽으로 남길 위치 선택"}
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>확대</span>
+                <span className="tabular-nums">{zoom.toFixed(2)}x</span>
+              </div>
+              <input
+                type="range"
+                min={ZOOM_MIN}
+                max={ZOOM_MAX}
+                step={0.05}
+                value={zoom}
+                onChange={(e) => setZoom(Number(e.target.value))}
+                className="w-full accent-primary"
+              />
+              <p className="text-xs text-muted-foreground">
+                {img
+                  ? canPan
+                    ? "미리보기를 드래그해 위치를 맞추세요."
+                    : "정사각 1.0x — 확대하면 미리보기를 드래그해 위치를 옮길 수 있습니다."
+                  : "이미지를 올리면 확대·위치를 조절할 수 있습니다."}
+              </p>
+              {lowQuality && (
+                <p className="text-xs text-destructive">
+                  ⚠ 원본이 작아 이 확대에서는 화질이 떨어질 수 있습니다(잘라낼 영역 {cropSidePx}px &lt;{" "}
+                  {maxSize}px).
                 </p>
               )}
             </div>
@@ -324,8 +355,11 @@ export default function IcoPage() {
                   ref={canvasRef}
                   width={PREVIEW}
                   height={PREVIEW}
-                  className="max-w-full h-auto"
-                  style={{ imageRendering: "auto" }}
+                  onPointerDown={onPointerDown}
+                  onPointerMove={onPointerMove}
+                  onPointerUp={onPointerUp}
+                  onPointerCancel={onPointerUp}
+                  className={`max-w-full h-auto touch-none ${canPan ? "cursor-grab active:cursor-grabbing" : ""}`}
                 />
               ) : (
                 <span className="text-xs text-muted-foreground">
@@ -343,6 +377,7 @@ export default function IcoPage() {
             </button>
 
             <p className="text-xs text-muted-foreground">
+              {img && `원본 ${img.naturalWidth}×${img.naturalHeight} · `}
               {sizes.length}개 해상도({[...sizes].sort((a, b) => b - a).join(", ")})를 담은 단일 .ico
               파일로 저장됩니다.
             </p>

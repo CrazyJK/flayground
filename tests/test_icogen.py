@@ -95,25 +95,39 @@ def test_sizes_subset():
     assert avail == {(64, 64), (32, 32)}
 
 
-def test_anchor_top_vs_bottom_differ_portrait():
-    src = _png_bytes(120, 200)  # 세로로 긴 이미지 -> 위/아래 크롭 위치가 결과를 바꾼다
-    top = _frame(convert_to_ico(src, radius=0.0, anchor="top"), 64)
-    bottom = _frame(convert_to_ico(src, radius=0.0, anchor="bottom"), 64)
+def test_zoom_in_changes_output():
+    src = _png_bytes(256, 256)
+    z1 = _frame(convert_to_ico(src, radius=0.0, zoom=1.0), 64)
+    z2 = _frame(convert_to_ico(src, radius=0.0, zoom=2.0), 64)
+    assert z1.tobytes() != z2.tobytes()  # 확대하면 더 좁은 영역이 채워진다
+
+
+def test_pan_offy_replaces_anchor_portrait():
+    src = _png_bytes(120, 200)  # 세로로 긴 이미지 -> 세로 슬랙 존재(위/아래 이동)
+    top = _frame(convert_to_ico(src, radius=0.0, offy=-1.0), 64)
+    bottom = _frame(convert_to_ico(src, radius=0.0, offy=1.0), 64)
     assert top.tobytes() != bottom.tobytes()
 
 
-def test_anchor_left_vs_right_differ_landscape():
-    src = _png_bytes(200, 120)  # 가로로 긴 이미지 -> top/bottom 이 좌/우 크롭으로 작동
-    left = _frame(convert_to_ico(src, radius=0.0, anchor="top"), 64)
-    right = _frame(convert_to_ico(src, radius=0.0, anchor="bottom"), 64)
+def test_pan_offx_when_zoomed_in():
+    src = _png_bytes(200, 200)  # 정사각이라도 확대하면 좌우 슬랙이 생긴다
+    left = _frame(convert_to_ico(src, radius=0.0, zoom=2.0, offx=-1.0), 64)
+    right = _frame(convert_to_ico(src, radius=0.0, zoom=2.0, offx=1.0), 64)
     assert left.tobytes() != right.tobytes()
 
 
-def test_anchor_noop_on_square():
-    src = _png_bytes(150, 150)  # 정사각 -> 잘릴 영역이 없어 anchor 와 무관하게 동일
-    a = _frame(convert_to_ico(src, radius=0.0, anchor="top"), 64)
-    b = _frame(convert_to_ico(src, radius=0.0, anchor="bottom"), 64)
+def test_pan_noop_when_no_slack():
+    src = _png_bytes(150, 150)  # 정사각 + zoom=1 -> 슬랙 0 이라 offx 무효
+    a = _frame(convert_to_ico(src, radius=0.0, zoom=1.0, offx=-1.0), 64)
+    b = _frame(convert_to_ico(src, radius=0.0, zoom=1.0, offx=1.0), 64)
     assert a.tobytes() == b.tobytes()
+
+
+def test_zoom_out_pads_transparent():
+    src = _png_bytes(200, 200)  # 축소 -> 영역이 원본보다 커져 가장자리 투명 패딩
+    big = _frame(convert_to_ico(src, radius=0.0, feather=0.0, zoom=0.5), 256)
+    assert _alpha(big, 1, 1) == 0  # 축소 패딩 영역은 투명(각진 사각이라도)
+    assert _alpha(big, 128, 128) == 255  # 가운데 이미지 불투명
 
 
 # --- 입력 검증 ------------------------------------------------------

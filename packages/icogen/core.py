@@ -36,35 +36,38 @@ class IcoError(ValueError):
     """입력 검증 실패 등 변환 불가 사유(웹에서 400 으로 변환)."""
 
 
-def _square_box(w: int, h: int, side: int, anchor: str) -> tuple[int, int, int, int]:
-    """정사각 크롭 박스. anchor 는 '잘려나가는 축'에만 적용된다.
+def _crop_box(w: int, h: int, zoom: float, offx: float, offy: float) -> tuple[int, int, int, int]:
+    """원본에서 잘라낼 정사각 영역(box). zoom 으로 크기, offx/offy 로 위치 지정.
 
-    세로로 긴 이미지(h>w)는 세로를 자르므로 top/center/bottom = 위/중앙/아래,
-    가로로 긴 이미지(w>h)는 가로를 자르므로 top/center/bottom = 왼쪽/중앙/오른쪽.
-    정사각(w==h)은 버릴 영역이 없어 anchor 와 무관하게 (0, 0) 기준.
+    - zoom=1.0: 짧은 변이 꽉 차는 정사각(=cover, 기존 center 크롭과 동일).
+      zoom>1 확대(더 좁게 크롭 → 피사체 크게), zoom<1 축소(영역이 원본보다
+      커져 가장자리는 투명 패딩).
+    - offx/offy: -1~1, 0=가운데. 여유 공간(슬랙) 안에서 좌우/상하로 이동.
+      비정사각이면 긴 축에 슬랙이 생겨 기존 anchor(위/중앙/아래)를 대체한다.
+
+    화질: 영역(side)은 원본 픽셀 기준이라, 각 ICO 해상도로 리샘플할 때 항상
+    원본에서 직접 다운샘플된다(축소본 재확대 없음).
     """
-
-    def offset(extent: int) -> int:
-        if anchor == "top":
-            return 0
-        if anchor == "bottom":
-            return extent - side
-        return (extent - side) // 2
-
-    if h >= w:  # 세로(또는 정사각)를 자른다 -> 가로는 항상 중앙
-        left = (w - side) // 2
-        top = offset(h)
-    else:  # 가로를 자른다 -> 세로는 항상 중앙
-        left = offset(w)
-        top = (h - side) // 2
-    return (left, top, left + side, top + side)
+    zoom = max(0.1, min(10.0, zoom))
+    offx = max(-1.0, min(1.0, offx))
+    offy = max(-1.0, min(1.0, offy))
+    side = min(w, h) / zoom
+    left = (w - side) / 2.0 * (1.0 + offx)  # 슬랙(w-side)>0 일 때만 실제 이동
+    top = (h - side) / 2.0 * (1.0 + offy)
+    s = max(1, int(round(side)))
+    li, ti = int(round(left)), int(round(top))
+    return (li, ti, li + s, ti + s)
 
 
-def center_square(img: Image.Image, anchor: str = "center") -> Image.Image:
-    """이미지를 정사각형으로 크롭한다(min(w,h) 기준, anchor 로 잘리는 축 위치 선택)."""
+def crop_square(
+    img: Image.Image, zoom: float = 1.0, offx: float = 0.0, offy: float = 0.0
+) -> Image.Image:
+    """원본을 정사각으로 크롭한다(zoom/offx/offy). 영역이 원본을 벗어나면 투명 패딩.
+
+    RGBA 이미지를 가정한다 — 범위 밖 crop 영역은 (0,0,0,0)으로 채워진다.
+    """
     w, h = img.size
-    side = min(w, h)
-    return img.crop(_square_box(w, h, side, anchor))
+    return img.crop(_crop_box(w, h, zoom, offx, offy))
 
 
 def shape_mask(size: int, radius: float = 0.5, feather: float = 0.0) -> Image.Image:
@@ -123,8 +126,10 @@ def convert_to_ico(
     *,
     radius: float = 0.5,
     feather: float = 0.0,
+    zoom: float = 1.0,
+    offx: float = 0.0,
+    offy: float = 0.0,
     sizes: Iterable[int] | None = None,
-    anchor: str = "center",
 ) -> bytes:
     """이미지 바이트를 멀티 해상도 ICO 바이트로 변환한다.
 
@@ -132,9 +137,10 @@ def convert_to_ico(
         data: 원본 이미지 바이트(jpg/png/webp 등).
         radius: 모서리 둥글기 0.0(각진 사각) ~ 0.5(완전한 원).
         feather: 가장자리 페더 0.0(또렷) ~ 0.5(부드럽게).
+        zoom: 확대/축소 배율. 1.0=짧은 변 꽉 참, >1 확대, <1 축소(투명 패딩).
+        offx: 가로 위치 -1~1(0=가운데). 슬랙 안에서 좌우 이동.
+        offy: 세로 위치 -1~1(0=가운데). 슬랙 안에서 상하 이동.
         sizes: 포함할 해상도 부분집합(None 이면 ICON_SIZES 전부).
-        anchor: 정사각 크롭 위치(center | top | bottom). 잘려나가는 축에만 적용된다
-            (세로형=위/중앙/아래, 가로형=왼쪽/중앙/오른쪽, 정사각=무관).
 
     Raises:
         IcoError: 입력 검증 실패(크기/디코딩/해상도).
@@ -158,7 +164,7 @@ def convert_to_ico(
     # EXIF 방향만 반영하고 RGBA 로 변환(이 과정에서 메타데이터는 버려진다).
     src = ImageOps.exif_transpose(src) or src
     src = src.convert("RGBA")
-    src = center_square(src, anchor)
+    src = crop_square(src, zoom, offx, offy)
 
     frames = [make_frame(src, s, radius, feather) for s in norm_sizes]
     buf = io.BytesIO()

@@ -42,6 +42,8 @@ export default function IcoPage() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const dragRef = useRef<{ x: number; y: number } | null>(null);
+  // 휠 핸들러(네이티브 리스너)가 항상 최신 zoom/offx/offy 를 읽도록 ref 로 미러링.
+  const viewRef = useRef({ zoom, offx, offy });
 
   function onPick(f: File | null) {
     setErr(null);
@@ -117,6 +119,46 @@ export default function IcoPage() {
   useEffect(() => {
     draw();
   }, [draw]);
+
+  // 휠 핸들러가 읽을 최신 뷰 상태를 ref 에 동기화(렌더 중 ref 쓰기 금지 회피).
+  useEffect(() => {
+    viewRef.current = { zoom, offx, offy };
+  }, [zoom, offx, offy]);
+
+  // 마우스 휠로 확대/축소(커서 위치 기준 — 스크롤한 지점이 고정되도록 offx/offy 보정).
+  // React onWheel 은 passive 라 preventDefault 가 안 먹어 네이티브 비-passive 로 건다.
+  useEffect(() => {
+    const cv = canvasRef.current;
+    if (!cv || !img) return;
+    const onWheel = (e: WheelEvent) => {
+      e.preventDefault();
+      const { zoom: z, offx: ox, offy: oy } = viewRef.current;
+      const rect = cv.getBoundingClientRect();
+      const sc = PREVIEW / rect.width; // client px -> 캔버스 px
+      const cxp = (e.clientX - rect.left) * sc;
+      const cyp = (e.clientY - rect.top) * sc;
+      let dy = e.deltaY;
+      if (e.deltaMode === 1) dy *= 16; // 라인 단위 -> px 근사
+      dy = clamp(dy, -120, 120);
+      const nz = clamp(z * Math.exp(-dy * 0.0015), ZOOM_MIN, ZOOM_MAX); // 위로=확대
+      if (nz === z) return;
+      const nw = img.naturalWidth;
+      const nh = img.naturalHeight;
+      const base = Math.min(nw, nh);
+      const cropOld = base / z;
+      const cropNew = base / nz;
+      // 커서 아래의 원본 점을 구해, 새 zoom 에서도 같은 화면 위치에 오도록 역산.
+      const srcX = ((nw - cropOld) / 2) * (1 + ox) + (cxp * cropOld) / PREVIEW;
+      const srcY = ((nh - cropOld) / 2) * (1 + oy) + (cyp * cropOld) / PREVIEW;
+      const slackX = (nw - cropNew) / 2;
+      const slackY = (nh - cropNew) / 2;
+      setZoom(nz);
+      setOffx(slackX > 0.5 ? clamp((srcX - (cxp * cropNew) / PREVIEW) / slackX - 1, -1, 1) : 0);
+      setOffy(slackY > 0.5 ? clamp((srcY - (cyp * cropNew) / PREVIEW) / slackY - 1, -1, 1) : 0);
+    };
+    cv.addEventListener("wheel", onWheel, { passive: false });
+    return () => cv.removeEventListener("wheel", onWheel);
+  }, [img]);
 
   // 미리보기 드래그 -> 위치(offx/offy). 슬랙(여유)이 있는 축에서만 동작.
   function onPointerDown(e: React.PointerEvent<HTMLCanvasElement>) {
@@ -314,8 +356,8 @@ export default function IcoPage() {
               <p className="text-xs text-muted-foreground">
                 {img
                   ? canPan
-                    ? "미리보기를 드래그해 위치를 맞추세요."
-                    : "정사각 1.0x — 확대하면 미리보기를 드래그해 위치를 옮길 수 있습니다."
+                    ? "미리보기에서 스크롤로 확대 · 드래그로 위치 이동."
+                    : "미리보기에서 스크롤로 확대(확대하면 드래그로 위치 이동)."
                   : "이미지를 올리면 확대·위치를 조절할 수 있습니다."}
               </p>
               {lowQuality && (

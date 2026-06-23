@@ -9,24 +9,9 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000"
 const ALL_SIZES = [256, 128, 64, 48, 32, 16] as const;
 const PREVIEW = 256; // 미리보기 캔버스 한 변(px)
 
-type Mode = "round" | "feather" | "square" | "rounded";
 type Anchor = "center" | "top" | "bottom";
-
-const MODES: { key: Mode; label: string }[] = [
-  { key: "round", label: "원형" },
-  { key: "feather", label: "페더" },
-  { key: "square", label: "사각" },
-  { key: "rounded", label: "둥근사각" },
-];
-
-const MODE_SUFFIX: Record<Mode, string> = {
-  round: "_round",
-  feather: "_feather",
-  square: "_square",
-  rounded: "_rounded",
-};
-
 type Orient = "square" | "portrait" | "landscape";
+
 const ANCHOR_KEYS: Anchor[] = ["top", "center", "bottom"];
 // 크롭 위치 라벨은 '잘려나가는 축'에 따라 달라진다(코어 _square_box 와 동일 규칙).
 const ANCHOR_LABELS: Record<Orient, [string, string, string]> = {
@@ -35,32 +20,25 @@ const ANCHOR_LABELS: Record<Orient, [string, string, string]> = {
   square: ["—", "중앙", "—"],
 };
 
-/** 캔버스에 둥근사각형 경로를 그린다(채우기는 호출 측에서). */
-function roundedRectPath(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number,
-) {
-  const rr = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + rr, y);
-  ctx.arcTo(x + w, y, x + w, y + h, rr);
-  ctx.arcTo(x + w, y + h, x, y + h, rr);
-  ctx.arcTo(x, y + h, x, y, rr);
-  ctx.arcTo(x, y, x + w, y, rr);
-  ctx.closePath();
+// 둥글기 프리셋(슬라이더 값을 빠르게 설정). 0=각진 사각, 0.5=원형.
+const ROUND_PRESETS: { label: string; v: number }[] = [
+  { label: "사각", v: 0 },
+  { label: "둥근사각", v: 0.25 },
+  { label: "원형", v: 0.5 },
+];
+
+/** 다운로드 파일명 접미사 — 현재 둥글기/페더에서 모양을 사람이 읽을 수 있게. */
+function shapeSuffix(radius: number, feather: number): string {
+  const shape = radius >= 0.45 ? "round" : radius <= 0.05 ? "square" : "rounded";
+  return "_" + shape + (feather > 0.02 ? "-soft" : "");
 }
 
 export default function IcoPage() {
   const [file, setFile] = useState<File | null>(null);
   const [imgUrl, setImgUrl] = useState<string | null>(null);
   const [img, setImg] = useState<HTMLImageElement | null>(null);
-  const [mode, setMode] = useState<Mode>("round");
-  const [feather, setFeather] = useState(0.18);
-  const [radius, setRadius] = useState(0.2);
+  const [radius, setRadius] = useState(0.5); // 0=각진 사각 ~ 0.5=원형
+  const [feather, setFeather] = useState(0.0); // 0=또렷 ~ 0.5=부드럽게
   const [anchor, setAnchor] = useState<Anchor>("center");
   const [sizes, setSizes] = useState<number[]>([...ALL_SIZES]);
   const [busy, setBusy] = useState(false);
@@ -92,13 +70,12 @@ export default function IcoPage() {
   }, [imgUrl]);
 
   // 옵션/이미지 변경 시 캔버스 미리보기 다시 그림(클라이언트 즉시 반영).
-  // 정식 멀티해상도 .ico 는 서버가 생성하며, 여기서는 모양만 동일하게 보여준다.
+  // 서버 shape_mask 와 동일한 둥근사각 SDF 로 알파를 곱해 결과와 일치시킨다.
   const draw = useCallback(() => {
     const cv = canvasRef.current;
     if (!cv) return;
     const ctx = cv.getContext("2d");
     if (!ctx) return;
-    ctx.globalCompositeOperation = "source-over";
     ctx.clearRect(0, 0, PREVIEW, PREVIEW);
     if (!img) return;
 
@@ -117,32 +94,32 @@ export default function IcoPage() {
     }
     ctx.drawImage(img, sx, sy, side, side, 0, 0, PREVIEW, PREVIEW);
 
-    if (mode === "square") return; // 마스크 없음
-
-    // destination-in: 그려둔 이미지에서 마스크 알파만 남긴다
-    ctx.globalCompositeOperation = "destination-in";
-    const R = PREVIEW / 2;
-    if (mode === "round") {
-      ctx.fillStyle = "#fff";
-      ctx.beginPath();
-      ctx.arc(R, R, R, 0, Math.PI * 2);
-      ctx.fill();
-    } else if (mode === "rounded") {
-      const r = Math.max(0, Math.min(0.5, radius)) * PREVIEW;
-      ctx.fillStyle = "#fff";
-      roundedRectPath(ctx, 0, 0, PREVIEW, PREVIEW, r);
-      ctx.fill();
-    } else if (mode === "feather") {
-      const f = Math.max(0, Math.min(0.5, feather));
-      const inner = Math.min(R - 0.5, R * (1 - f));
-      const g = ctx.createRadialGradient(R, R, inner, R, R, R);
-      g.addColorStop(0, "rgba(255,255,255,1)");
-      g.addColorStop(1, "rgba(255,255,255,0)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, PREVIEW, PREVIEW);
+    // 둥근사각 SDF 알파(코어 shape_mask 와 동일 수식). d<0 내부, d>0 외부.
+    const S = PREVIEW;
+    const r = Math.max(0, Math.min(0.5, radius)) * S;
+    const half = S / 2;
+    const c = (S - 1) / 2;
+    const band = Math.max(0, Math.min(0.5, feather)) * half;
+    const id = ctx.getImageData(0, 0, S, S);
+    const data = id.data;
+    for (let y = 0; y < S; y++) {
+      const qy = Math.abs(y - c) - half + r;
+      for (let x = 0; x < S; x++) {
+        const qx = Math.abs(x - c) - half + r;
+        const ox = qx > 0 ? qx : 0;
+        const oy = qy > 0 ? qy : 0;
+        const outside = Math.sqrt(ox * ox + oy * oy);
+        const mxy = qx > qy ? qx : qy;
+        const inside = mxy < 0 ? mxy : 0;
+        const d = outside + inside - r;
+        let a = band > 0 ? -d / band : 0.5 - d;
+        a = a < 0 ? 0 : a > 1 ? 1 : a;
+        const idx = ((y * S + x) << 2) + 3;
+        data[idx] = Math.round(data[idx] * a);
+      }
     }
-    ctx.globalCompositeOperation = "source-over";
-  }, [img, mode, feather, radius, anchor]);
+    ctx.putImageData(id, 0, 0);
+  }, [img, radius, feather, anchor]);
 
   useEffect(() => {
     draw();
@@ -171,9 +148,8 @@ export default function IcoPage() {
     try {
       const fd = new FormData();
       fd.append("file", file);
-      fd.append("mode", mode);
-      fd.append("feather", String(feather));
       fd.append("radius", String(radius));
+      fd.append("feather", String(feather));
       fd.append("anchor", anchor);
       fd.append("sizes", sizes.join(","));
       const r = await fetch(`${API_BASE}/api/ico/convert`, { method: "POST", body: fd });
@@ -183,7 +159,7 @@ export default function IcoPage() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${base}${MODE_SUFFIX[mode]}.ico`;
+      a.download = `${base}${shapeSuffix(radius, feather)}.ico`;
       document.body.appendChild(a);
       a.click();
       a.remove();
@@ -228,31 +204,55 @@ export default function IcoPage() {
               </p>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-4">
               <h2 className="text-sm font-semibold tracking-tight">모양</h2>
-              <div className="flex flex-wrap gap-2 text-sm">
-                {MODES.map((m) => (
-                  <button
-                    key={m.key}
-                    onClick={() => setMode(m.key)}
-                    className={`px-3 py-1 rounded-full active:scale-95 transition-transform ${
-                      mode === m.key
-                        ? "bg-primary text-primary-foreground"
-                        : "bg-muted text-foreground"
-                    }`}
-                  >
-                    {m.label}
-                  </button>
-                ))}
-              </div>
-            </div>
 
-            {mode === "feather" && (
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground flex justify-between">
-                  <span>페더 강도</span>
-                  <span className="tabular-nums">{feather.toFixed(2)}</span>
-                </label>
+              {/* 모서리 둥글기: 0=각진 사각 ~ 0.5=원형 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>모서리 둥글기</span>
+                  <span className="tabular-nums">
+                    {radius <= 0.001
+                      ? "각진 사각"
+                      : radius >= 0.499
+                        ? "원형"
+                        : `${Math.round((radius / 0.5) * 100)}%`}
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={0.5}
+                  step={0.01}
+                  value={radius}
+                  onChange={(e) => setRadius(Number(e.target.value))}
+                  className="w-full accent-primary"
+                />
+                <div className="flex gap-2 text-xs">
+                  {ROUND_PRESETS.map((p) => (
+                    <button
+                      key={p.label}
+                      onClick={() => setRadius(p.v)}
+                      className={`px-3 py-1 rounded-full active:scale-95 transition-transform ${
+                        Math.abs(radius - p.v) < 0.001
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-foreground"
+                      }`}
+                    >
+                      {p.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* 가장자리 페더: 0=또렷 ~ 0.5=부드럽게 */}
+              <div className="space-y-1.5">
+                <div className="flex items-center justify-between text-xs text-muted-foreground">
+                  <span>가장자리 페더</span>
+                  <span className="tabular-nums">
+                    {feather <= 0.001 ? "또렷" : `${Math.round((feather / 0.5) * 100)}%`}
+                  </span>
+                </div>
                 <input
                   type="range"
                   min={0}
@@ -263,25 +263,7 @@ export default function IcoPage() {
                   className="w-full accent-primary"
                 />
               </div>
-            )}
-
-            {mode === "rounded" && (
-              <div className="space-y-1">
-                <label className="text-xs text-muted-foreground flex justify-between">
-                  <span>모서리 반경</span>
-                  <span className="tabular-nums">{radius.toFixed(2)}</span>
-                </label>
-                <input
-                  type="range"
-                  min={0}
-                  max={0.5}
-                  step={0.01}
-                  value={radius}
-                  onChange={(e) => setRadius(Number(e.target.value))}
-                  className="w-full accent-primary"
-                />
-              </div>
-            )}
+            </div>
 
             <div className="space-y-2">
               <h2 className="text-sm font-semibold tracking-tight">크롭 위치</h2>
@@ -346,7 +328,9 @@ export default function IcoPage() {
                   style={{ imageRendering: "auto" }}
                 />
               ) : (
-                <span className="text-xs text-muted-foreground">이미지를 올리면 여기에 미리보기가 표시됩니다</span>
+                <span className="text-xs text-muted-foreground">
+                  이미지를 올리면 여기에 미리보기가 표시됩니다
+                </span>
               )}
             </div>
 

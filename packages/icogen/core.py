@@ -1,13 +1,19 @@
 """이미지 -> 멀티 해상도 ICO 변환 코어 라이브러리.
 
-원본 검증 스크립트(make_round_ico.py)의 로직을 라이브러리화하면서 다음을 개선했다:
-- feather(가장자리 페더) 마스크를 numpy 로 벡터화(픽셀 단위 파이썬 루프 제거)
-- round/feather 외에 square(정사각)/rounded(둥근사각) 마스크 추가
-- 입력 검증(파일 크기, 디코딩 가능 여부, 압축폭탄 방지)과
-  EXIF 회전만 반영 후 메타데이터 제거
-- BytesIO 입출력(디스크 미사용) — 웹에서 그대로 스트리밍
+원본 검증 스크립트(make_round_ico.py)의 로직을 라이브러리화하면서, 4개 모드
+(round/feather/square/rounded)를 직교하는 연속 파라미터 2개로 통합했다:
 
-CLI 와 웹(apps/api/routers/ico.py)의 공용 진입점은 convert_to_ico().
+- radius(모서리 둥글기): 0.0=각진 사각 ~ 0.5=완전한 원 (CSS border-radius 와 동일 개념)
+- feather(가장자리 페더): 0.0=또렷 ~ 0.5=부드럽게
+
+둥근 사각형의 부호거리장(SDF, signed distance field) 하나로 두 효과를 동시에
+계산하므로 모드 분기가 없다. 기존 모드는 (radius, feather) 조합으로 환원된다:
+원형=(0.5, 0), 사각=(0, 0), 둥근사각=(r, 0), 부드러운 원=(0.5, f).
+부드러운 둥근사각/사각 같은 새 조합도 자연스럽게 표현된다.
+
+그 밖의 개선: 입력 검증(파일 크기/디코딩/압축폭탄), EXIF 회전만 반영 후 메타
+제거, BytesIO 입출력. CLI 와 웹(apps/api/routers/ico.py)의 공용 진입점은
+convert_to_ico().
 """
 
 from __future__ import annotations
@@ -16,13 +22,10 @@ import io
 from collections.abc import Iterable
 
 import numpy as np
-from PIL import Image, ImageDraw, ImageOps
+from PIL import Image, ImageOps
 
 # ICO 파일에 담을 해상도들(큰 것부터). 한 파일에 여러 장 포함된다.
 ICON_SIZES: tuple[int, ...] = (256, 128, 64, 48, 32, 16)
-
-# 지원하는 마스크 모드.
-MODES: tuple[str, ...] = ("round", "feather", "square", "rounded")
 
 # 입력 검증 한계.
 MAX_BYTES = 10 * 1024 * 1024  # 업로드 파일 크기 상한 10MB
@@ -64,67 +67,42 @@ def center_square(img: Image.Image, anchor: str = "center") -> Image.Image:
     return img.crop(_square_box(w, h, side, anchor))
 
 
-def round_mask(size: int, supersample: int = 4) -> Image.Image:
-    """또렷한 원형 마스크. 계단현상 방지를 위해 슈퍼샘플링 후 축소."""
-    ss = size * supersample
-    mask = Image.new("L", (ss, ss), 0)
-    ImageDraw.Draw(mask).ellipse((0, 0, ss - 1, ss - 1), fill=255)
-    return mask.resize((size, size), Image.Resampling.LANCZOS)
+def shape_mask(size: int, radius: float = 0.5, feather: float = 0.0) -> Image.Image:
+    """둥근 사각형(반경 radius) + 가장자리 페더(feather)를 한 번에 표현하는 알파 마스크.
 
+    radius: 모서리 반경 비율 0.0(각진 사각) ~ 0.5(완전한 원). 변 길이 대비.
+    feather: 가장자리 페더 비율 0.0(또렷) ~ 0.5(부드럽게). 반지름 R 대비 흐림 폭.
 
-def rounded_mask(size: int, radius: float = 0.2, supersample: int = 4) -> Image.Image:
-    """둥근 사각형 마스크. radius 는 변 길이 대비 모서리 반경 비율(0.0~0.5)."""
-    radius = max(0.0, min(0.5, radius))
-    ss = size * supersample
-    r = int(round(ss * radius))
-    mask = Image.new("L", (ss, ss), 0)
-    ImageDraw.Draw(mask).rounded_rectangle((0, 0, ss - 1, ss - 1), radius=r, fill=255)
-    return mask.resize((size, size), Image.Resampling.LANCZOS)
-
-
-def feather_mask(size: int, feather: float = 0.18) -> Image.Image:
-    """가장자리가 점점 투명해지는 방사형 그라디언트 마스크(numpy 벡터화).
-
-    중심에서 (1-feather)*R 까지는 불투명(255), 그 바깥부터 원 둘레(R)까지
-    선형으로 0 까지 감소. 원본 스크립트의 픽셀 루프와 동일한 결과(반올림 오차 ±1).
+    둥근 사각형 SDF(inigo quilez)로 경계까지의 부호거리 d 를 구해(<0 내부, >0 외부),
+    feather=0 이면 1px 안티에일리어싱 또렷한 경계, feather>0 이면 경계 안쪽
+    feather*R 폭에서 1->0 으로 선형 감쇠시킨다. radius=0.5 이면 원, 0 이면 사각.
     """
+    radius = max(0.0, min(0.5, radius))
     feather = max(0.0, min(0.5, feather))
-    c = (size - 1) / 2.0
-    radius = size / 2.0
-    inner = radius * (1.0 - feather)
+    r = radius * size  # 모서리 반경(px). size/2 이면 반쪽변이라 완전한 원이 된다.
+    half = size / 2.0  # 정사각 반변(=원의 반지름 R)
+    c = (size - 1) / 2.0  # 픽셀 좌표계 중심
     ys, xs = np.ogrid[0:size, 0:size]
-    dist = np.hypot(xs - c, ys - c)
-    if radius > inner:
-        alpha = np.clip((radius - dist) / (radius - inner), 0.0, 1.0)
-    else:  # feather 0 -> 사실상 또렷한 원
-        alpha = (dist <= radius).astype(np.float64)
+    px = np.abs(xs - c)
+    py = np.abs(ys - c)
+    # 둥근 사각형 SDF: q = |p| - half + r;  d = |max(q,0)| + min(max(qx,qy),0) - r
+    qx = px - half + r
+    qy = py - half + r
+    outside = np.hypot(np.maximum(qx, 0.0), np.maximum(qy, 0.0))
+    inside = np.minimum(np.maximum(qx, qy), 0.0)
+    dist = outside + inside - r
+    if feather > 0:
+        alpha = np.clip(-dist / (feather * half), 0.0, 1.0)
+    else:
+        alpha = np.clip(0.5 - dist, 0.0, 1.0)  # 1px 안티에일리어싱(또렷한 경계)
     arr = (alpha * 255.0 + 0.5).astype(np.uint8)
     return Image.fromarray(arr, mode="L")
 
 
-def _mask_for(size: int, mode: str, feather: float, radius: float) -> Image.Image | None:
-    """모드별 알파 마스크. square 는 마스크 없음(전체 불투명)을 뜻해 None 반환."""
-    if mode == "feather":
-        return feather_mask(size, feather)
-    if mode == "rounded":
-        return rounded_mask(size, radius)
-    if mode == "square":
-        return None
-    return round_mask(size)
-
-
-def make_frame(
-    src_square: Image.Image,
-    size: int,
-    mode: str,
-    feather: float,
-    radius: float,
-) -> Image.Image:
+def make_frame(src_square: Image.Image, size: int, radius: float, feather: float) -> Image.Image:
     """주어진 해상도의 투명 처리된 RGBA 프레임 1장 생성."""
     im = src_square.resize((size, size), Image.Resampling.LANCZOS)
-    mask = _mask_for(size, mode, feather, radius)
-    if mask is None:  # square: 마스크 없이 그대로
-        return im.convert("RGBA")
+    mask = shape_mask(size, radius, feather)
     out = Image.new("RGBA", (size, size), (0, 0, 0, 0))
     out.paste(im, (0, 0), mask)
     return out
@@ -143,9 +121,8 @@ def _normalize_sizes(sizes: Iterable[int] | None) -> list[int]:
 def convert_to_ico(
     data: bytes,
     *,
-    mode: str = "round",
-    feather: float = 0.18,
-    radius: float = 0.2,
+    radius: float = 0.5,
+    feather: float = 0.0,
     sizes: Iterable[int] | None = None,
     anchor: str = "center",
 ) -> bytes:
@@ -153,18 +130,15 @@ def convert_to_ico(
 
     Args:
         data: 원본 이미지 바이트(jpg/png/webp 등).
-        mode: round | feather | square | rounded.
-        feather: feather 모드의 흐림 강도(0.0~0.5).
-        radius: rounded 모드의 모서리 반경 비율(0.0~0.5).
+        radius: 모서리 둥글기 0.0(각진 사각) ~ 0.5(완전한 원).
+        feather: 가장자리 페더 0.0(또렷) ~ 0.5(부드럽게).
         sizes: 포함할 해상도 부분집합(None 이면 ICON_SIZES 전부).
         anchor: 정사각 크롭 위치(center | top | bottom). 잘려나가는 축에만 적용된다
             (세로형=위/중앙/아래, 가로형=왼쪽/중앙/오른쪽, 정사각=무관).
 
     Raises:
-        IcoError: 입력 검증 실패(모드/크기/디코딩/해상도).
+        IcoError: 입력 검증 실패(크기/디코딩/해상도).
     """
-    if mode not in MODES:
-        raise IcoError(f"mode 는 {MODES} 중 하나여야 합니다: {mode!r}")
     if len(data) > MAX_BYTES:
         raise IcoError(f"파일이 너무 큽니다(최대 {MAX_BYTES // (1024 * 1024)}MB)")
     norm_sizes = _normalize_sizes(sizes)
@@ -186,7 +160,7 @@ def convert_to_ico(
     src = src.convert("RGBA")
     src = center_square(src, anchor)
 
-    frames = [make_frame(src, s, mode, feather, radius) for s in norm_sizes]
+    frames = [make_frame(src, s, radius, feather) for s in norm_sizes]
     buf = io.BytesIO()
     frames[0].save(
         buf,

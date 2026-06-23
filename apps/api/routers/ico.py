@@ -40,9 +40,8 @@ def _parse_sizes(raw: str | None) -> list[int] | None:
 async def convert(
     request: Request,
     file: UploadFile = File(...),
-    mode: str = Form("round"),  # round | feather | square | rounded
-    feather: float = Form(0.18),  # feather 모드 흐림 강도 0.0~0.5
-    radius: float = Form(0.2),  # rounded 모드 모서리 반경 비율 0.0~0.5
+    radius: float = Form(0.5),  # 모서리 둥글기 0.0(각진 사각)~0.5(원형)
+    feather: float = Form(0.0),  # 가장자리 페더 0.0(또렷)~0.5(부드럽게)
     anchor: str = Form("center"),  # 정사각 크롭 위치 center | top | bottom
     sizes: str | None = Form(None),  # "256,128,..." (생략 시 6종 전부)
 ) -> Response:
@@ -58,9 +57,8 @@ async def convert(
         ico = await asyncio.to_thread(
             convert_to_ico,
             data,
-            mode=mode,
-            feather=feather,
             radius=radius,
+            feather=feather,
             sizes=_parse_sizes(sizes),
             anchor=anchor,
         )

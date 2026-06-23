@@ -275,6 +275,11 @@ def create_app() -> FastAPI:
 
     app.include_router(subtitle_router)
 
+    # ---- ICO 변환(이미지 → 멀티 해상도 아이콘) ----
+    from apps.api.routers.ico import router as ico_router
+
+    app.include_router(ico_router)
+
     # ---- 일기 첨부 이미지 서빙 (레거시 base64 추출분) ----
     @app.get("/static/diary-assets/{name}")
     def diary_asset(name: str):

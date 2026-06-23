@@ -15,6 +15,7 @@ description: "Next.js 16 + React 19 + Tailwind 4 프론트 규칙"
 | `/image` | `src/app/image/page.tsx` | CLIP 텍스트/이미지 → 포스터 검색 |
 | `/face` | `src/app/face/page.tsx` | 얼굴 사진 → 배우 매칭 → 출연작 |
 | `/labels` | `src/app/labels/page.tsx` | 얼굴 클러스터 수동 라벨링 |
+| `/ico` | `src/app/ico/page.tsx` | 이미지 → 원형/페더/사각/둥근사각 멀티해상도 ICO 생성 |
 | `/admin` | `src/app/admin/page.tsx` | 시스템 모니터링 + 인덱서 작업 트리거 |
 
 새 페이지 추가 시 우측 상단 네비게이션 링크도 함께 추가.

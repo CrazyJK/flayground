@@ -34,19 +34,31 @@ class IcoError(ValueError):
 
 
 def _square_box(w: int, h: int, side: int, anchor: str) -> tuple[int, int, int, int]:
-    """정사각 크롭 박스를 계산한다. 가로는 항상 중앙, 세로는 anchor 로 선택."""
-    left = (w - side) // 2
-    if anchor == "top":
-        top = 0
-    elif anchor == "bottom":
-        top = h - side
-    else:  # center(기본)
+    """정사각 크롭 박스. anchor 는 '잘려나가는 축'에만 적용된다.
+
+    세로로 긴 이미지(h>w)는 세로를 자르므로 top/center/bottom = 위/중앙/아래,
+    가로로 긴 이미지(w>h)는 가로를 자르므로 top/center/bottom = 왼쪽/중앙/오른쪽.
+    정사각(w==h)은 버릴 영역이 없어 anchor 와 무관하게 (0, 0) 기준.
+    """
+
+    def offset(extent: int) -> int:
+        if anchor == "top":
+            return 0
+        if anchor == "bottom":
+            return extent - side
+        return (extent - side) // 2
+
+    if h >= w:  # 세로(또는 정사각)를 자른다 -> 가로는 항상 중앙
+        left = (w - side) // 2
+        top = offset(h)
+    else:  # 가로를 자른다 -> 세로는 항상 중앙
+        left = offset(w)
         top = (h - side) // 2
     return (left, top, left + side, top + side)
 
 
 def center_square(img: Image.Image, anchor: str = "center") -> Image.Image:
-    """이미지를 정사각형으로 크롭한다(min(w,h) 기준, anchor 로 세로 위치 선택)."""
+    """이미지를 정사각형으로 크롭한다(min(w,h) 기준, anchor 로 잘리는 축 위치 선택)."""
     w, h = img.size
     side = min(w, h)
     return img.crop(_square_box(w, h, side, anchor))
@@ -145,7 +157,8 @@ def convert_to_ico(
         feather: feather 모드의 흐림 강도(0.0~0.5).
         radius: rounded 모드의 모서리 반경 비율(0.0~0.5).
         sizes: 포함할 해상도 부분집합(None 이면 ICON_SIZES 전부).
-        anchor: 정사각 크롭 세로 위치(center | top | bottom).
+        anchor: 정사각 크롭 위치(center | top | bottom). 잘려나가는 축에만 적용된다
+            (세로형=위/중앙/아래, 가로형=왼쪽/중앙/오른쪽, 정사각=무관).
 
     Raises:
         IcoError: 입력 검증 실패(모드/크기/디코딩/해상도).

@@ -26,11 +26,14 @@ const MODE_SUFFIX: Record<Mode, string> = {
   rounded: "_rounded",
 };
 
-const ANCHORS: { key: Anchor; label: string }[] = [
-  { key: "top", label: "위" },
-  { key: "center", label: "중앙" },
-  { key: "bottom", label: "아래" },
-];
+type Orient = "square" | "portrait" | "landscape";
+const ANCHOR_KEYS: Anchor[] = ["top", "center", "bottom"];
+// 크롭 위치 라벨은 '잘려나가는 축'에 따라 달라진다(코어 _square_box 와 동일 규칙).
+const ANCHOR_LABELS: Record<Orient, [string, string, string]> = {
+  portrait: ["위", "중앙", "아래"],
+  landscape: ["왼쪽", "중앙", "오른쪽"],
+  square: ["—", "중앙", "—"],
+};
 
 /** 캔버스에 둥근사각형 경로를 그린다(채우기는 호출 측에서). */
 function roundedRectPath(
@@ -99,12 +102,19 @@ export default function IcoPage() {
     ctx.clearRect(0, 0, PREVIEW, PREVIEW);
     if (!img) return;
 
-    // 중앙 기준 정사각 크롭(anchor 로 세로 위치 선택)
-    const side = Math.min(img.width, img.height);
-    const sx = (img.width - side) / 2;
-    let sy = (img.height - side) / 2;
-    if (anchor === "top") sy = 0;
-    else if (anchor === "bottom") sy = img.height - side;
+    // 정사각 크롭. anchor 는 잘려나가는 축에만 적용(코어 _square_box 와 동일).
+    const nw = img.naturalWidth;
+    const nh = img.naturalHeight;
+    const side = Math.min(nw, nh);
+    let sx = (nw - side) / 2;
+    let sy = (nh - side) / 2;
+    if (nh >= nw) {
+      if (anchor === "top") sy = 0;
+      else if (anchor === "bottom") sy = nh - side;
+    } else {
+      if (anchor === "top") sx = 0;
+      else if (anchor === "bottom") sx = nw - side;
+    }
     ctx.drawImage(img, sx, sy, side, side, 0, 0, PREVIEW, PREVIEW);
 
     if (mode === "square") return; // 마스크 없음
@@ -184,6 +194,16 @@ export default function IcoPage() {
       setBusy(false);
     }
   }
+
+  // 원본 방향: 잘리는 축(=anchor 가 의미를 갖는 축)을 결정. 정사각이면 크롭 불필요.
+  const orient: Orient = !img
+    ? "square"
+    : img.naturalWidth === img.naturalHeight
+      ? "square"
+      : img.naturalHeight > img.naturalWidth
+        ? "portrait"
+        : "landscape";
+  const cropDisabled = orient === "square";
 
   return (
     <div className="relative flex-1 flex flex-col" {...dropProps}>
@@ -266,20 +286,31 @@ export default function IcoPage() {
             <div className="space-y-2">
               <h2 className="text-sm font-semibold tracking-tight">크롭 위치</h2>
               <div className="flex gap-2 text-sm">
-                {ANCHORS.map((a) => (
+                {ANCHOR_KEYS.map((key, i) => (
                   <button
-                    key={a.key}
-                    onClick={() => setAnchor(a.key)}
-                    className={`px-3 py-1 rounded-full active:scale-95 transition-transform ${
-                      anchor === a.key
+                    key={key}
+                    onClick={() => setAnchor(key)}
+                    disabled={cropDisabled}
+                    className={`px-3 py-1 rounded-full active:scale-95 transition-transform disabled:opacity-40 ${
+                      anchor === key && !cropDisabled
                         ? "bg-primary text-primary-foreground"
                         : "bg-muted text-foreground"
                     }`}
                   >
-                    {a.label}
+                    {ANCHOR_LABELS[orient][i]}
                   </button>
                 ))}
               </div>
+              {img && (
+                <p className="text-xs text-muted-foreground">
+                  원본 {img.naturalWidth}×{img.naturalHeight} ·{" "}
+                  {orient === "square"
+                    ? "정사각 — 크롭 위치는 비정사각 이미지에서만 적용됩니다"
+                    : orient === "portrait"
+                      ? "세로형 — 위/중앙/아래로 남길 위치 선택"
+                      : "가로형 — 왼쪽/중앙/오른쪽으로 남길 위치 선택"}
+                </p>
+              )}
             </div>
 
             <div className="space-y-2">

@@ -81,11 +81,25 @@ def test_sizes_subset():
     assert avail == {(64, 64), (32, 32)}
 
 
-def test_anchor_top_vs_bottom_differ():
-    src = _png_bytes(120, 200)  # 세로로 긴 이미지 -> 크롭 위치가 결과를 바꾼다
+def test_anchor_top_vs_bottom_differ_portrait():
+    src = _png_bytes(120, 200)  # 세로로 긴 이미지 -> 위/아래 크롭 위치가 결과를 바꾼다
     top = _frame(convert_to_ico(src, mode="square", anchor="top"), 64)
     bottom = _frame(convert_to_ico(src, mode="square", anchor="bottom"), 64)
     assert top.tobytes() != bottom.tobytes()
+
+
+def test_anchor_left_vs_right_differ_landscape():
+    src = _png_bytes(200, 120)  # 가로로 긴 이미지 -> top/bottom 이 좌/우 크롭으로 작동
+    left = _frame(convert_to_ico(src, mode="square", anchor="top"), 64)
+    right = _frame(convert_to_ico(src, mode="square", anchor="bottom"), 64)
+    assert left.tobytes() != right.tobytes()
+
+
+def test_anchor_noop_on_square():
+    src = _png_bytes(150, 150)  # 정사각 -> 잘릴 영역이 없어 anchor 와 무관하게 동일
+    a = _frame(convert_to_ico(src, mode="square", anchor="top"), 64)
+    b = _frame(convert_to_ico(src, mode="square", anchor="bottom"), 64)
+    assert a.tobytes() == b.tobytes()
 
 
 def test_invalid_mode_raises():

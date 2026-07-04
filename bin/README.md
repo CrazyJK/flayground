@@ -13,6 +13,8 @@ flayAI 프로세스별 .bat 1개 + 전체 일괄 제어 .bat 1개.
 | ollama.bat | 로컬 LLM 서버              | 11434  | `ollama serve`                                 |
 | all.bat    | 위 4개 일괄 제어 + status  | -      | qdrant → ollama → api → web (종료는 역순)      |
 | reindex.bat| 인덱싱 파이프라인 (CLI 묶음)| -      | `packages.indexer.cli` 의 load/scan/.../ocr-posters |
+| backup-tier1.ps1 | 데이터 백업 1단계 (일간) | -  | SQLite+일기자산+개인 오버라이드 → `J:\Backup\flayAI\tier1` |
+| backup-tier2.ps1 | 데이터 백업 2단계 (주간) | -  | Qdrant 풀 스냅샷(API) → `J:\Backup\flayAI\tier2` |
 
 ## 사용법
 
@@ -53,6 +55,20 @@ bin\reindex.bat clean apply:: 고아 실제 삭제
 - **clean**: ① 파일이 사라진 포스터, ② `video.json` 원본에서 사라진 videos,
   ③ Qdrant 만 단독으로 남은 opus 를 탐지. 기본은 dry-run 으로 개수만 보고,
   `bin\reindex.bat clean apply` 로 실제 삭제 (SQLite + Qdrant 모두).
+
+## 백업 (backup-tier1/2.ps1)
+
+작업 스케줄러에 등록되어 자동 실행된다(놓친 실행은 다음 부팅 후 보충, `StartWhenAvailable`).
+
+| 작업 | 일정 | 대상 | 보관 |
+|------|------|------|------|
+| flayAI Backup Tier1 | 매일 03:30 | `flay.db`(VACUUM INTO 온라인 백업) + `data/diary_assets` + `state.json` + gitignore 개인 파일(.cert, diary_prompts.yaml, favicon 등) → zip | 최근 14개 |
+| flayAI Backup Tier2 | 일요일 04:00 | Qdrant 풀 스냅샷 — POST `/snapshots` 후 다운로드 API 로 수신(도커 네임드 볼륨이라 파일 직접 접근 불가), 서버측 스냅샷은 삭제 | 최근 4개 |
+
+- 로그: `J:\Backup\flayAI\backup.log`
+- 수동 실행: `powershell -NoProfile -File bin\backup-tier1.ps1` (tier2 동일)
+- Tier2 는 Qdrant(도커)가 떠 있어야 한다 — 내려가 있으면 실패로 기록되고 다음 주기에 재시도.
+- 복원: Tier1 은 zip 을 풀어 원위치, Qdrant 는 `--storage-snapshot <파일>` 로 기동하거나 스냅샷 업로드 API 사용.
 
 ## 동작 규칙
 

@@ -168,6 +168,9 @@ diary_prompts.yaml
 
 # 자막 번역 프롬프트(말투·용어 조정) — git 에 올리지 않음. 예시는 subtitle_prompts.example.yaml
 subtitle_prompts.yaml
+
+# 파비콘(개인 이미지) — git 에 올리지 않음. 기본값은 favicon.default.ico (predev/prebuild 가 없으면 복사)
+apps/web/src/app/favicon.ico
 *.sqlite
 *.sqlite3
 *.db

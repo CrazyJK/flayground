@@ -21,7 +21,7 @@ const RENAME_MAP: Record<string, string> = {
 };
 
 /** 생성 대상 도메인 타입 목록 */
-const TARGET_TYPES = ['Tag', 'Video', 'Flay', 'FlayFiles', 'FullyFlay', 'FlayCondition', 'Actress', 'TagGroup', 'Studio', 'FlayHistory', 'Diary', 'DiaryMeta', 'ImageDomain'];
+const TARGET_TYPES = ['Tag', 'Video', 'Flay', 'FlayFiles', 'FullyFlay', 'FlayCondition', 'Actress', 'TagGroup', 'Studio', 'FlayHistory', 'ImageDomain'];
 
 const generator = createGenerator({
   path: path.resolve(__dirname, '../src/domain/index.ts'),

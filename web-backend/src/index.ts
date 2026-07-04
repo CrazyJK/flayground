@@ -12,7 +12,6 @@ import { HttpError, errorHandler } from './middleware/error-handler';
 import { createFileLogger } from './middleware/logger';
 import { startDirectoryWatcher } from './services/directory-watcher';
 import { initWebPush } from './services/web-push.service';
-import { diarySource } from './sources/diary-source';
 import { financialNoteRepository } from './sources/financial-note-repository';
 import { loadAllFlaySources } from './sources/flay-source';
 import { historyRepository } from './sources/history-repository';
@@ -26,7 +25,6 @@ import actressRoutes from './routes/actress.routes';
 import attachRoutes from './routes/attach.routes';
 import batchRoutes from './routes/batch.routes';
 import crawlingRoutes from './routes/crawling.routes';
-import diaryRoutes from './routes/diary.routes';
 import downloadRoutes from './routes/download.routes';
 import financialNoteRoutes from './routes/financial-note.routes';
 import flayArchiveRoutes from './routes/flay-archive.routes';
@@ -95,7 +93,6 @@ function createApp(): express.Application {
   app.use(API_PREFIX, tagGroupRoutes);
   app.use(API_PREFIX, studioRoutes);
   app.use(API_PREFIX, historyRoutes);
-  app.use(API_PREFIX, diaryRoutes);
   app.use(API_PREFIX, imageRoutes);
   app.use(API_PREFIX, staticFileRoutes);
   app.use(API_PREFIX, sseRoutes);
@@ -185,26 +182,23 @@ function bootstrap(): void {
   // 3. Flay Sources 로드 (파일시스템 스캔, Info Sources 참조)
   loadAllFlaySources();
 
-  // 4. Diary 로드
-  diarySource.load();
-
-  // 5. Image 로드
+  // 4. Image 로드
   imageSource.load();
 
-  // 6. Push Subscription DB 초기화
+  // 5. Push Subscription DB 초기화
   pushSubscriptionRepo.init();
 
-  // 6-1. FinancialNote DB 초기화
+  // 5-1. FinancialNote DB 초기화
   financialNoteRepository.init();
 
-  // 7. Web Push 초기화
+  // 6. Web Push 초기화
   initWebPush();
 
-  // 8. Express 앱 생성 및 서버 시작
+  // 7. Express 앱 생성 및 서버 시작
   const app = createApp();
   startServer(app);
 
-  // 9. 디렉토리 감시 시작
+  // 8. 디렉토리 감시 시작
   startDirectoryWatcher();
 
   // 이미지 변경 감시 (30초마다)

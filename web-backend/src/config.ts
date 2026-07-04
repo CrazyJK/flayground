@@ -36,7 +36,6 @@ export interface FlayConfig {
   imagePaths: string[];
   backupPath: string;
   attachPath: string;
-  diaryPath: string;
 
   playerApp: string;
   editorApp: string;

@@ -48,7 +48,6 @@
       "@ai/*": ["src/ai/*"],
       "@attach/*": ["src/attach/*"],
       "@base/*": ["src/base/*"],
-      "@diary/*": ["src/diary/*"],
       "@editor/*": ["src/editor/*"],
       "@finance/*": ["src/finance/*"],
       "@flay/*": ["src/flay/*"],

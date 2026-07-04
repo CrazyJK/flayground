@@ -40,7 +40,6 @@ const options: swaggerJsdoc.Options = {
       { name: 'TagGroup', description: 'TagGroup 관리' },
       { name: 'Studio', description: 'Studio 관리' },
       { name: 'History', description: '이력 조회' },
-      { name: 'Diary', description: '일기 관리' },
       { name: 'Image', description: '이미지 관리' },
       { name: 'StaticFile', description: '정적 파일 (커버, 이미지)' },
       { name: 'SSE', description: 'Server-Sent Events' },

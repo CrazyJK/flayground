@@ -40,9 +40,6 @@ const entryPoints = {
     'page.image-page': './src/view/page.image-page.ts',
     'page.image-download': './src/view/page.image-download.ts',
   },
-  diary: {
-    'page.kamoru-diary': './src/view/page.kamoru-diary.ts',
-  },
   popups: {
     'popup.cover': './src/view/popup.cover.ts',
     'popup.flay': './src/view/popup.flay.ts',
@@ -81,7 +78,6 @@ module.exports = {
       '@ai': path.resolve(__dirname, 'src/ai'),
       '@attach': path.resolve(__dirname, 'src/attach'),
       '@base': path.resolve(__dirname, 'src/base'),
-      '@diary': path.resolve(__dirname, 'src/diary'),
       '@editor': path.resolve(__dirname, 'src/editor'),
       '@finance': path.resolve(__dirname, 'src/finance'),
       '@flay': path.resolve(__dirname, 'src/flay'),

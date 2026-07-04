@@ -417,57 +417,6 @@
     ],
     "description": "FlayHistory 도메인"
   },
-  "Diary": {
-    "type": "object",
-    "properties": {
-      "meta": {
-        "$ref": "#/components/schemas/DiaryMeta"
-      },
-      "content": {
-        "type": "string"
-      }
-    },
-    "required": [
-      "meta",
-      "content"
-    ],
-    "description": "Diary 도메인"
-  },
-  "DiaryMeta": {
-    "type": "object",
-    "properties": {
-      "date": {
-        "type": "string"
-      },
-      "weather": {
-        "type": "string"
-      },
-      "title": {
-        "type": "string"
-      },
-      "created": {
-        "type": "string"
-      },
-      "lastModified": {
-        "type": [
-          "string",
-          "null"
-        ]
-      },
-      "attachId": {
-        "type": "string"
-      }
-    },
-    "required": [
-      "date",
-      "weather",
-      "title",
-      "created",
-      "lastModified",
-      "attachId"
-    ],
-    "description": "Diary 메타 정보"
-  },
   "ImageInfo": {
     "type": "object",
     "properties": {

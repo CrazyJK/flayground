@@ -1,7 +1,7 @@
 ---
 name: web-frontend-component
-description: 'web-frontend 컴포넌트 구현 패턴. Use when: 새 컴포넌트 생성, Web Component 구현, HTMLElement 상속 패턴, TypeScript 커스텀 엘리먼트, SCSS 스타일 작성, import 별칭(@lib, @flay, @base 등) 사용, 공통 유틸리티 활용, SPA 컴포넌트, 도메인 컴포넌트(flay, diary, finance, image, movie)'
-argument-hint: '구현할 컴포넌트명 또는 도메인 (예: FlayCard, KamoruDiary, finance)'
+description: 'web-frontend 컴포넌트 구현 패턴. Use when: 새 컴포넌트 생성, Web Component 구현, HTMLElement 상속 패턴, TypeScript 커스텀 엘리먼트, SCSS 스타일 작성, import 별칭(@lib, @flay, @base 등) 사용, 공통 유틸리티 활용, SPA 컴포넌트, 도메인 컴포넌트(flay, finance, image, movie)'
+argument-hint: '구현할 컴포넌트명 또는 도메인 (예: FlayCard, finance)'
 ---
 
 # web-frontend 컴포넌트 구현 패턴
@@ -25,7 +25,6 @@ web-frontend/src/
 │   ├── domain/     # 단일 카드/아이템 수준
 │   │   └── part/   # 서브 컴포넌트
 │   └── panel/      # 복합 패널
-├── diary/          # 다이어리 모듈
 ├── finance/        # 금융 모듈
 ├── image/          # 이미지 컴포넌트
 ├── movie/          # 영화 모듈
@@ -65,7 +64,6 @@ import { Flay } from '@domain/flay'; // 백엔드 도메인 타입 공유
 | `@ai/*`      | `src/ai/*`                    |
 | `@attach/*`  | `src/attach/*`                |
 | `@base/*`    | `src/base/*`                  |
-| `@diary/*`   | `src/diary/*`                 |
 | `@editor/*`  | `src/editor/*`                |
 | `@finance/*` | `src/finance/*`               |
 | `@flay/*`    | `src/flay/*`                  |

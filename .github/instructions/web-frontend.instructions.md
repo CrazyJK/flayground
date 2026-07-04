@@ -20,7 +20,6 @@ Webpack 5 + TypeScript 멀티 엔트리 SPA. 프레임워크 없이 Web Componen
 src/
 ├── base/           # 베이스 클래스 (GroundFlay, GroundUI, GroundNav 등)
 ├── flay/           # Flay 도메인 컴포넌트
-├── diary/          # 다이어리 모듈
 ├── finance/        # 금융 노트 (기관·계좌·스냅샷·포트폴리오)
 ├── image/          # 이미지 갤러리
 ├── movie/          # 영상 재생
@@ -57,7 +56,7 @@ UI/UX 작업 시 아래 순서로 화면을 고려한다.
 ## import 경로
 
 - `web-frontend/src` 하위 소스에서 import 시 `web-frontend/tsconfig.json`의 `paths` 별칭을 사용한다.
-  - `@ai/*`, `@attach/*`, `@base/*`, `@diary/*`, `@editor/*`, `@finance/*`, `@flay/*`
+  - `@ai/*`, `@attach/*`, `@base/*`, `@editor/*`, `@finance/*`, `@flay/*`
   - `@image/*`, `@lib/*`, `@movie/*`, `@nav/*`, `@spa/*`, `@svg/*`, `@domain/*`
   - 예: `import { showAlert } from '@lib/components/showAlert';`
   - 상대 경로(`../../base/...`) 대신 별칭 경로를 우선 사용한다.

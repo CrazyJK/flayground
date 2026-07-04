@@ -90,7 +90,7 @@ user-invocable: true
 ## 프런트엔드 import 경로
 
 - web-frontend/src 하위에서 import 시 `web-frontend/tsconfig.json`의 `paths` 별칭을 사용한다.
-  - `@ai/*`, `@attach/*`, `@base/*`, `@diary/*`, `@editor/*`, `@finance/*`, `@flay/*`
+  - `@ai/*`, `@attach/*`, `@base/*`, `@editor/*`, `@finance/*`, `@flay/*`
   - `@image/*`, `@lib/*`, `@movie/*`, `@nav/*`, `@spa/*`, `@svg/*`, `@domain/*`
   - 예: `import { showAlert } from '@lib/components/showAlert';`
   - 상대 경로(`../../base/...`) 대신 별칭 경로를 우선 사용한다.

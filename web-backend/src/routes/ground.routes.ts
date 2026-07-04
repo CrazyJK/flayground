@@ -29,7 +29,6 @@ router.get('/config', (_req, res) => {
     imagePaths: flay.imagePaths,
     backupPath: flay.backupPath,
     attachPath: flay.attachPath,
-    diaryPath: flay.diaryPath,
     playerApp: flay.playerApp,
     editorApp: flay.editorApp,
     paintApp: flay.paintApp,

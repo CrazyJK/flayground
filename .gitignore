@@ -159,6 +159,7 @@ data/state.json
 data/diary_assets/
 data/stabilize/
 data/subtitle/
+data/enhance/
 
 # 다운로드된 모델 가중치 (YOLO11-seg 등) — 재생성 가능, git 제외
 yolo*.pt

@@ -12,8 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
-    // 배포 스크립트 — Next.js 앱 소스가 아님
+    // 배포/빌드 스크립트 — Next.js 앱 소스가 아님(Node CJS)
     "server.js",
+    "scripts/**",
   ]),
 ]);
 

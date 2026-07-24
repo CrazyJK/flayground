@@ -152,6 +152,23 @@ stabilize:
     smooth:   40
     lock:     250
 
+enhance:
+  # 영상 화질 개선 — 업스케일·슬로모션·RIFE 보간 (docs/video-enhance-plan.md).
+  # 잡 산출물은 data/enhance/ (.gitignore). 바이너리는 외부 폴더 — config 로만 참조.
+  work_dir:          "data/enhance"
+  realesrgan_bin:    "C:/kamoru/Apps/realesrgan/realesrgan-ncnn-vulkan.exe"
+  rife_bin:          "C:/kamoru/Apps/rife/rife-ncnn-vulkan.exe"
+  rife_model:        "rife-v4.6"     # -n(임의 프레임수) 지원은 v4 계열만
+  target_height:     2160            # 4k 옵션 목표(짧은 변). 세로 영상은 자동 2160x3840
+  max_input_seconds: 30              # 업스케일 비용(프레임당 ~4.5초) 때문에 짧게 시작
+  min_free_gb:       30              # 중간 PNG(장당 30~50MB) 대비 시작 전 여유 검사
+  encoder:           "h264_nvenc"    # 폴백 libx264 (stabilizer 와 동일 패턴)
+  retain_hours:      72
+  # 업스케일 모델(실사/애니) — realesrgan 바이너리 옆 models/ 폴더의 이름
+  esrgan_models:
+    photo: "realesrgan-x4plus"
+    anime: "realesrgan-x4plus-anime"
+
 subtitle:
   # 자막 생성 (docs/subtitle-plan.md). 외부에서 opus 로 신청 → 야간 드레인이 처리.
   # 산출물은 영상 옆 사이드카 <stem>.srt. 야간 배치 + VRAM 양보 불필요 → 최고 품질.

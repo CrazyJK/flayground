@@ -4,8 +4,9 @@
 > 화질과 부드러움을 개선한 영상을 돌려주는 서버 기능. 안정화([video-stabilization-plan.md](video-stabilization-plan.md))와
 > 같은 방식의 새 서브시스템으로 통합한다.
 >
-> 이 문서는 **초기 계획(제안)** 이다. 파이프라인 자체는 2026-07-24 별도 세션에서
-> 실제 영상(iPhone 세로 1080p 30fps, 3초·5초)으로 끝까지 검증했다(§2 실측).
+> 파이프라인 자체는 2026-07-24 별도 세션에서 실제 영상(iPhone 세로 1080p 30fps, 3초·5초)으로
+> 끝까지 검증했다(§2 실측). **P1~P3(코어 파이프라인·API·웹 UI)은 2026-07-24 구현 완료** — §8 구현 현황.
+> P4(체이닝·60fps 등)는 별도 합의 후 진행.
 
 ---
 
@@ -116,24 +117,24 @@ enhance:
 
 ## 6. 단계별 구현 계획
 
-**P1 — 코어 파이프라인 (CLI 로 end-to-end)**
+**P1 — 코어 파이프라인 (CLI 로 end-to-end)** ✅ 완료
 - `packages/enhancer/` 골격: `config.py`(config.yaml 로드·바이너리 존재 검증), `pipeline.py`(§1 단계),
   `plan.py`(옵션→프레임수·RIFE 배수·출력 fps 산출 순수 함수)
 - stabilizer `job.py` 재사용 검토 — 그대로 쓸 수 있으면 import, 결합이 어색하면 최소 복제 후 후속 공용화
 - CLI: `python -m packages.enhancer.cli run <입력> [옵션]` (pyproject `flay-enhance` 스크립트)
 - 단위 테스트: `tests/test_enhancer.py` — `plan.py` 수식(배속×보간 조합, 세로/가로 해상도), 바이너리는 mock
 
-**P2 — API 잡 통합**
+**P2 — API 잡 통합** ✅ 완료
 - `apps/api/routers/enhance.py`: POST/GET `jobs`, `result`(Range 지원), `cancel`, DELETE — stabilize 라우터 준용
 - localhost-only + 동시 1잡 + **인덱서·안정화 상호배제**(기존 배제 로직에 enhance 추가)
 - 진행률: 단계 가중치(extract 5% / upscale 70% / interpolate 15% / encode 10%) + PNG 개수 폴링
 
-**P3 — 웹 UI**
+**P3 — 웹 UI** ✅ 완료
 - `apps/web/src/app/enhance/page.tsx`: stabilize 페이지 구조 재사용 — 업로드, 옵션(프리셋+상세),
   진행(단계 불빛 + 예상 남은 시간 = 남은 프레임 × 실측 초/프레임), 결과 전후 비교 + 다운로드
 - 예상 소요 시간을 **업로드 직후** 보여준다(§2 근사식) — 긴 영상의 비용을 사용자가 미리 알게
 
-**P4 — 후속(별도 합의 후)**
+**P4 — 후속(별도 합의 후)** ⏳ 미착수
 - **안정화 → 화질 개선 체이닝**: stabilize 결과를 enhance 입력으로 잇는 원클릭
 - 0.25x 배속(RIFE 4배) 품질 검증, 60fps 출력 옵션
 - 사람 없는 프레임 자동 제거 옵션(YOLO 보유 — 프레임 추출 산출물용, 영상 출력과는 별개 기능)
@@ -146,3 +147,46 @@ enhance:
   OOM 이 아니라 **속도 저하**로 나타나므로 감지 어려움 → 잡 시작 시 기존 잡 상태 검사 철저히.
 - **바이너리 미설치 환경**: config 검증 단계에서 명확한 에러(설치 안내 링크 포함)로 조기 실패.
 - **RIFE 모델 버전**: v4.6 검증됨. 상위 버전(4.x대)은 품질/속도 트레이드오프 확인 후 교체.
+
+## 8. 구현 현황 (2026-07-24)
+
+### 구현됨
+
+- **`packages/enhancer/`** — `config.py`(enhance 블록+기본값 병합, `check_binaries` 조기 검증),
+  `plan.py`(§1 수식 순수 함수: RIFE 목표 프레임수·출력 fps(유리수)·목표 해상도(짧은변 2160, h264
+  4096 상한 캡)·**단계 진행 구간을 예상 소요 시간 비례로 배분**·총 예상 초), `job.py`(status.json
+  잡 저장소 — stabilizer 패턴 최소 복제), `pipeline.py`, `cli.py`(`run <job_id>` | `local <파일> [옵션]`
+  | `cleanup`, pyproject `flay-enhance`).
+- **파이프라인 증분·멱등**: extract/interpolate 는 `.done` 마커, **upscale 은 누락·불완전 프레임만
+  재처리**(PNG 꼬리 IEND 검사 O(1) — 중단된 쓰기 감지). 각 단계 후 프레임수 일치 검증(§3).
+  실측 검증: 훼손 프레임만 재생성되고 완성 프레임은 mtime 불변.
+- **§3 함정 반영**: 해상도는 probe 값이 아니라 **추출 PNG 실측 크기**(회전 적용 후)로 재계획.
+  진행률은 출력 폴더 PNG 개수 폴링. ncnn/ffmpeg stderr 는 `logs/<단계>.log`(파이프 데드락 방지).
+  시작 전 디스크 여유(min_free_gb)·입력 길이(max_input_seconds) 검사.
+- **오디오 정책**: 배속 1x + 원본에 오디오 있으면 aac 로 합류, 배속 변경 시 제거(+status.note 안내).
+- **인코딩**: `h264_nvenc`(p5·vbr·cq19) → 실패 시 `libx264 slow crf18` 자동 폴백. PNG 시퀀스
+  `-framerate <유리수>` 입력, lanczos 스케일 + yuv420p.
+- **API `apps/api/routers/enhance.py`**: POST/GET `jobs`, `result`(GET+HEAD, `?variant=original`),
+  `cancel`, **`retry`(실패/취소 잡을 멈춘 단계부터 재개 — 증분이라 안전)**, DELETE.
+  업로드 직후 동기 ffprobe 로 길이 제한을 **잡 시작 전에** 거부. localhost-only.
+- **GPU 상호배제 공용화 `apps/api/routers/_gpu.py`**: `gpu_busy()` 가 안정화·화질개선·인덱싱
+  셋을 모두 검사 — stabilize 라우터도 이걸 쓰도록 교체(양방향 배제). `kill_tree()` 는
+  `taskkill /F /T` 로 워커의 ncnn/ffmpeg 자식까지 종료(고아 GPU 프로세스 방지) — stabilize
+  취소/삭제에도 적용.
+- **웹 UI `apps/web/src/app/enhance/page.tsx`** (+ 헤더 "화질" 메뉴): stabilize 페이지 골격 재사용
+  (가로 3열 반응형·드래그&드롭·최근 작업·전체 삭제). 프리셋(4K 슬로모션/화질만 개선/부드럽게만) +
+  상세 옵션(업스케일·배속·보간 체크·실사/애니). **파일 선택 직후 예상 처리 시간**(§2 근사식 클라이언트판,
+  30초 초과 사전 경고). 진행: plan.stages 순서대로 단계 불빛 + 남은 시간(예상 총소요 × 남은 비율).
+  결과: 원본·결과 나란히 + **동시 비교 재생 — 원본을 결과 배속(½× 등)으로 낮춰 장면을 맞춰,
+  보간 없는 끊김 vs RIFE 부드러움이 그대로 대비**. 실패 잡 "이어서 재시도" 버튼.
+- **검증**: 단위 테스트 `tests/test_enhancer.py` 12개(plan 수식·잡 모델·설정). 합성 클립 E2E 2회
+  (1x 패스스루=오디오 유지 / 4k·0.5x·smooth=3840×2160·96프레임·4초) + 브라우저 실업로드 왕복.
+
+### 남은 할 일
+
+- [ ] **P4 항목**(별도 합의 후): 안정화→화질개선 체이닝, 0.25x 품질 검증, 60fps 출력,
+      사람 없는 프레임 제거, 배속 변경 시 오디오 처리 옵션(atempo/무음 선택)
+- [ ] 잡 저장소 공용화 — stabilizer/enhancer `job.py` 중복(최소 복제)을 공용 모듈로 승격
+- [ ] encode 단계 진행률 세분화(현재는 시작→끝 점프. ffmpeg `-progress` 파싱)
+- [ ] 실사 x2 전용 모델 검토(현재 2x 는 x4 후 다운스케일 — 품질은 좋으나 비용 동일)
+- [ ] 예상 소요(estimates.\*\_spf)를 실측 누적으로 자동 보정

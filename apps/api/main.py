@@ -270,6 +270,11 @@ def create_app() -> FastAPI:
 
     app.include_router(stabilize_router)
 
+    # ---- 영상 화질 개선(업스케일·슬로모션·보간) ----
+    from apps.api.routers.enhance import router as enhance_router
+
+    app.include_router(enhance_router)
+
     # ---- 자막 생성(STT→번역) ----
     from apps.api.routers.subtitle import router as subtitle_router
 

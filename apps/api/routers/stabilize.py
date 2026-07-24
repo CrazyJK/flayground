@@ -23,6 +23,7 @@ from typing import Any
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse
 
+from apps.api.routers._gpu import gpu_busy, kill_tree
 from packages.settings import REPO_ROOT
 from packages.stabilizer import job as J
 
@@ -40,19 +41,8 @@ def _localhost_only(request: Request) -> None:
 
 
 def _busy() -> str | None:
-    """동시 1잡 + 인덱싱과 상호배제. 실행 중이면 사유 문자열, 아니면 None."""
-    for s in J.list_jobs():
-        if s.get("status") == "running":
-            return f"안정화 잡 {s['job_id']} 가 실행 중입니다(동시 1개)."
-    try:
-        from apps.api.routers.admin import PIPELINE_DEFS, _running_jobs
-        for pj in PIPELINE_DEFS:
-            info = _running_jobs.get(pj)
-            if info and info.get("status") == "running":
-                return f"인덱싱 '{pj}' 파이프라인 실행 중 — 완료 후 시도하세요."
-    except Exception:  # noqa: BLE001 — admin 미가용이어도 진행
-        pass
-    return None
+    """동시 1잡 + 화질개선·인덱싱과 상호배제(공용 _gpu.gpu_busy)."""
+    return gpu_busy()
 
 
 def _wait(job_id: str, proc: subprocess.Popen) -> None:
@@ -165,8 +155,8 @@ def cancel_job(job_id: str, request: Request) -> dict[str, Any]:
     if not J.get_status(job_id):
         raise HTTPException(404, "job not found")
     p = _procs.get(job_id)
-    if p and p.poll() is None:
-        p.terminate()
+    if p:
+        kill_tree(p)  # 워커가 띄운 ffmpeg 자식까지 종료(고아 방지)
     J.set_status(job_id, status="canceled")
     return {"status": "canceled", "job_id": job_id}
 
@@ -175,8 +165,8 @@ def cancel_job(job_id: str, request: Request) -> dict[str, Any]:
 def delete_job(job_id: str, request: Request) -> dict[str, Any]:
     _localhost_only(request)
     p = _procs.get(job_id)
-    if p and p.poll() is None:
-        p.terminate()
+    if p:
+        kill_tree(p)
     _procs.pop(job_id, None)
     d = J.job_path(job_id)
     if d.exists():

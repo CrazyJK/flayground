@@ -90,6 +90,21 @@ def _log_tail(log_file: Path, n: int = 400) -> str:
         return ""
 
 
+def _check_vulkan_errors(logf: Path, what: str) -> None:
+    """ncnn 로그에서 Vulkan 실패 감지 — VRAM 고갈 시 ncnn 은 에러 종료 대신
+    검은 프레임을 쓰고 exit 0 으로 끝난다(실측: 4K RIFE 4배 보간). 로그가 진실."""
+    try:
+        txt = logf.read_text(encoding="utf-8", errors="replace")
+    except OSError:
+        return
+    for sig in ("vkAllocateMemory failed", "vkQueueSubmit failed", "vkWaitForFences failed"):
+        if sig in txt:
+            raise RuntimeError(
+                f"{what} 중 GPU 메모리 부족/디바이스 오류({sig}) — 결과에 검은 프레임이"
+                " 섞였을 수 있어 중단합니다. 영상 시청 등 다른 GPU 사용을 줄인 뒤"
+                " '이어서 재시도'하세요(완료된 업스케일은 보존됩니다).")
+
+
 def _prog(set_status: Callable[..., Any], stage: str, lo: int, hi: int) -> Callable[[float], None]:
     """단계 내 진행 비율(0~1) → 전체 진행률 [lo,hi] 보고 콜백."""
     def cb(frac: float) -> None:
@@ -203,6 +218,7 @@ def _upscale(cfg: dict, src: Path, dst: Path, model: str, jdir: Path,
             shutil.rmtree(in_dir, ignore_errors=True)
         if rc != 0:
             raise RuntimeError(f"업스케일 실패(exit {rc}): {_log_tail(logf)}")
+        _check_vulkan_errors(logf, "업스케일")
     got = _count_png(dst)
     if got != len(names):
         raise RuntimeError(f"업스케일 프레임수 불일치: {got}/{len(names)}")
@@ -224,9 +240,16 @@ def _rife(cfg: dict, src: Path, dst: Path, n_out: int,
     bin_ = Path(cfg["rife_bin"])
     cmd = [bin_, "-i", src, "-o", dst, "-m", bin_.parent / cfg["rife_model"],
            "-n", n_out, "-f", "%08d.png"]
+    # 4K 급 프레임: UHD 모드(-u, 플로 추정 절반 해상도) + 추론 스레드 1 — VRAM 피크를
+    # 크게 낮춘다. 기본 설정은 2160x3840 에서 vkAllocateMemory 실패 → 검은 프레임(실측).
+    thr = int(cfg.get("rife_uhd_long_side", 3000) or 0)
+    fw, fh = _png_size(next(iter(sorted(src.glob("*.png")))))
+    if thr and max(fw, fh) >= thr:
+        cmd += ["-u", "-j", "1:1:2"]
     rc = _run_logged(cmd, logf, on_poll=lambda: prog(_count_png(dst) / max(n_out, 1)))
     if rc != 0:
         raise RuntimeError(f"프레임 보간 실패(exit {rc}): {_log_tail(logf)}")
+    _check_vulkan_errors(logf, "프레임 보간")
     got = _count_png(dst)
     if got != n_out:
         raise RuntimeError(f"보간 프레임수 불일치: {got}/{n_out}")

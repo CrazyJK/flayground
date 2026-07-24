@@ -159,6 +159,7 @@ enhance:
   realesrgan_bin:    "C:/kamoru/Apps/realesrgan/realesrgan-ncnn-vulkan.exe"
   rife_bin:          "C:/kamoru/Apps/rife/rife-ncnn-vulkan.exe"
   rife_model:        "rife-v4.6"     # -n(임의 프레임수) 지원은 v4 계열만
+  rife_uhd_long_side: 3000           # 프레임 긴 변 >= 이 값이면 RIFE UHD 모드+스레드1 (4K VRAM 보호)
   target_height:     2160            # 4k 옵션 목표(짧은 변). 세로 영상은 자동 2160x3840
   max_input_seconds: 30              # 업스케일 비용(프레임당 ~4.5초) 때문에 짧게 시작
   min_free_gb:       30              # 중간 PNG(장당 30~50MB) 대비 시작 전 여유 검사

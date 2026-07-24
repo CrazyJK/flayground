@@ -32,6 +32,9 @@ _DEFAULTS: dict[str, Any] = {
     "realesrgan_bin": "C:/kamoru/Apps/realesrgan/realesrgan-ncnn-vulkan.exe",
     "rife_bin": "C:/kamoru/Apps/rife/rife-ncnn-vulkan.exe",
     "rife_model": "rife-v4.6",       # -n(임의 프레임수) 지원은 v4 계열만
+    # 프레임 긴 변이 이 값 이상이면 RIFE 를 UHD 모드(-u) + 추론 스레드 1로 실행.
+    # 4K(2160x3840) 기본 설정은 12GB VRAM 을 넘겨 vkAllocateMemory 실패 → 검은 프레임(실측).
+    "rife_uhd_long_side": 3000,
     "esrgan_models": dict(_DEFAULT_MODELS),
     "target_height": 2160,           # 4k 옵션 목표(짧은 변). 세로 영상은 자동 2160x3840
     "max_input_seconds": 30,         # 업스케일 비용(프레임당 초 단위) 때문에 짧게 시작

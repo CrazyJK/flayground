@@ -86,6 +86,48 @@ def test_build_plan_4k_slowmo():
     assert pl["total_seconds"] > 150 * 4  # 업스케일 지배(≈ 150×4.5초)
 
 
+def test_build_plan_fps60():
+    cfg = enhance_config()
+    meta = {"frame_w": 1920, "frame_h": 1080, "fps": 30.0,
+            "fps_rat": "30/1", "n_frames": 90}
+    # 30→60fps, 1배속: 프레임 2배 생성, fps 60, 길이 유지(3초) → 소리도 유지 가능
+    pl = P.build_plan(meta, {"upscale": "none", "speed": 1,
+                             "interpolate": "smooth", "fps": 60}, cfg)
+    assert pl["n_out"] == 180 and pl["rife_on"]
+    assert pl["out_fps"] == 60.0 and pl["out_fps_rat"] == "60/1"
+    assert pl["out_duration"] == 3.0
+
+    # 29.97fps 입력도 60/1 정수 유리수로 (180.2 → 180프레임)
+    meta2 = {"frame_w": 1920, "frame_h": 1080, "fps": 29.97,
+             "fps_rat": "30000/1001", "n_frames": 90}
+    pl2 = P.build_plan(meta2, {"upscale": "none", "speed": 1,
+                               "interpolate": "smooth", "fps": 60}, cfg)
+    assert pl2["out_fps_rat"] == "60/1" and pl2["n_out"] == 180
+
+    # 60fps + 0.5배속: (60/30)/0.5 = 4배 생성, 60fps 슬로모션 6초
+    pl3 = P.build_plan(meta, {"upscale": "none", "speed": 0.5,
+                              "interpolate": "smooth", "fps": 60}, cfg)
+    assert pl3["n_out"] == 360 and pl3["out_fps"] == 60.0
+    assert pl3["out_duration"] == 6.0
+
+
+def test_build_plan_fps60_ignored():
+    cfg = enhance_config()
+    # 입력이 이미 60fps → 다운/재생성 없이 무시(그대로 60fps)
+    meta = {"frame_w": 1920, "frame_h": 1080, "fps": 60.0,
+            "fps_rat": "60/1", "n_frames": 180}
+    pl = P.build_plan(meta, {"upscale": "none", "speed": 1,
+                             "interpolate": "smooth", "fps": 60}, cfg)
+    assert not pl["rife_on"] and pl["n_out"] == 180 and pl["out_fps"] == 60.0
+
+    # 보간 off → 생성할 프레임이 없어 무시(기존 off 동작 유지)
+    meta2 = {"frame_w": 1920, "frame_h": 1080, "fps": 30.0,
+             "fps_rat": "30/1", "n_frames": 90}
+    pl2 = P.build_plan(meta2, {"upscale": "none", "speed": 0.5,
+                               "interpolate": "off", "fps": 60}, cfg)
+    assert not pl2["rife_on"] and pl2["out_fps"] == 15.0
+
+
 def test_build_plan_noop_combo():
     cfg = enhance_config()
     meta = {"frame_w": 1920, "frame_h": 1080, "fps": 30.0,

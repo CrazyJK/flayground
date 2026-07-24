@@ -8,11 +8,12 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000"
 // 서버 config(enhance.max_input_seconds)와 맞춘 안내용 상수 — 초과 시 서버가 거부
 const MAX_INPUT_SECONDS = 30;
 
-// 목표 중심 프리셋 — 누르면 업스케일·배속·보간을 한 번에
+// 목표 중심 프리셋 — 누르면 업스케일·배속·보간·fps 를 한 번에
 const PRESETS = [
-  { key: "slowmo4k", label: "4K 슬로모션", upscale: "4k", speed: 0.5, interp: "smooth" },
-  { key: "quality", label: "화질만 개선", upscale: "4k", speed: 1, interp: "off" },
-  { key: "smoothonly", label: "부드럽게만", upscale: "none", speed: 0.5, interp: "smooth" },
+  { key: "slowmo4k", label: "4K 슬로모션", upscale: "4k", speed: 0.5, interp: "smooth", fps: 0 },
+  { key: "quality4k60", label: "4K + 60fps", upscale: "4k", speed: 1, interp: "smooth", fps: 60 },
+  { key: "quality", label: "화질만 개선", upscale: "4k", speed: 1, interp: "off", fps: 0 },
+  { key: "smoothonly", label: "부드럽게만", upscale: "none", speed: 0.5, interp: "smooth", fps: 0 },
 ] as const;
 
 const UPSCALES = [
@@ -46,7 +47,7 @@ const STAGE_LABEL: Record<string, string> = {
   encode: "인코딩",
 };
 
-type Params = { upscale: string; speed: number; interpolate: string; model: string };
+type Params = { upscale: string; speed: number; interpolate: string; model: string; fps?: number };
 type Plan = {
   n_in: number;
   n_out: number;
@@ -105,18 +106,26 @@ function fmtDur(sec: number): string {
 }
 
 // 서버 plan 근사식의 클라이언트판 — 파일 선택 직후 예상 소요를 미리 보여준다(30fps 가정)
-function estimateSeconds(dur: number, upscale: string, speed: number, interp: string): number {
+function estimateSeconds(
+  dur: number,
+  upscale: string,
+  speed: number,
+  interp: string,
+  fps: number,
+): number {
   const f = dur * 30;
-  const fout = interp === "smooth" ? f / speed : f;
+  const ratio = interp === "smooth" && fps > 30 ? fps / 30 : 1; // 60fps → 프레임 2배
+  const fout = interp === "smooth" ? (f * ratio) / speed : f;
   let t = f * 0.02 + fout * 0.08;
   if (upscale !== "none") t += f * 4.5; // 업스케일이 지배 비용(프레임당 ~4.5초 실측)
-  if (interp === "smooth" && speed < 1) t += fout * 0.3;
+  if (interp === "smooth" && fout > f) t += fout * 0.3;
   return Math.round(t);
 }
 
 function paramSummary(p?: Params): string {
   if (!p) return "";
   const parts = [UPSCALE_LABEL[p.upscale] ?? p.upscale, SPEED_LABEL[String(p.speed)] ?? `${p.speed}×`];
+  if (p.fps === 60) parts.push("60fps");
   if (p.interpolate === "smooth" && p.speed < 1) parts.push("보간");
   if (p.model === "anime") parts.push("애니");
   return parts.join(" · ");
@@ -174,6 +183,7 @@ export default function EnhancePage() {
   const [speed, setSpeed] = useState<number>(0.5);
   const [interp, setInterp] = useState<string>("smooth");
   const [model, setModel] = useState<string>("photo");
+  const [fps, setFps] = useState<number>(0); // 0=유지 | 60
 
   const [jobId, setJobId] = useState<string | null>(null);
   const [status, setStatus] = useState<JobStatus | null>(null);
@@ -272,6 +282,7 @@ export default function EnhancePage() {
       fd.append("speed", String(speed));
       fd.append("interpolate", interp);
       fd.append("model", model);
+      fd.append("fps", fps === 60 ? "60" : "keep");
       const r = await fetch(`${API_BASE}/api/enhance/jobs`, { method: "POST", body: fd });
       if (!r.ok) throw new Error(await r.text());
       const j = await r.json();
@@ -332,6 +343,7 @@ export default function EnhancePage() {
     setUpscale(p.upscale);
     setSpeed(p.speed);
     setInterp(p.interp);
+    setFps(p.fps);
   }
 
   // ── 전후 동시 비교: 원본을 결과와 같은 배속으로 낮춰 내용 시점을 맞춘다.
@@ -384,9 +396,9 @@ export default function EnhancePage() {
   const resultUrl = jobId ? `${API_BASE}/api/enhance/jobs/${jobId}/result` : null;
   const isImage = !!file && file.type.startsWith("image"); // gif — 원본을 img 로
   const activePreset = PRESETS.find(
-    (p) => p.upscale === upscale && p.speed === speed && p.interp === interp,
+    (p) => p.upscale === upscale && p.speed === speed && p.interp === interp && p.fps === fps,
   );
-  const est = duration ? estimateSeconds(duration, upscale, speed, interp) : null;
+  const est = duration ? estimateSeconds(duration, upscale, speed, interp, fps) : null;
   const tooLong = duration != null && duration > MAX_INPUT_SECONDS + 0.5;
   const outs = doneJob?.outputs ?? [];
   const m = outs[0]?.metrics;
@@ -508,18 +520,51 @@ export default function EnhancePage() {
                 </p>
               </div>
 
+              <div className="space-y-1.5">
+                <span className="text-sm font-semibold">출력 fps</span>
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setFps(0)}
+                    className={`px-3 py-1.5 rounded-lg text-sm active:scale-95 transition-transform ${
+                      fps === 0 ? "bg-primary text-primary-foreground" : "bg-muted"
+                    }`}
+                  >
+                    원본 유지
+                  </button>
+                  <button
+                    onClick={() => {
+                      setFps(60);
+                      setInterp("smooth"); // 60fps 는 보간으로 만들어지므로 자동 켬
+                    }}
+                    className={`px-3 py-1.5 rounded-lg text-sm active:scale-95 transition-transform ${
+                      fps === 60 ? "bg-primary text-primary-foreground" : "bg-muted"
+                    }`}
+                  >
+                    60fps
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {fps === 60
+                    ? "AI 보간으로 초당 60프레임 — 움직임이 매끄러워집니다(입력이 60fps 이상이면 그대로)."
+                    : "입력 fps 를 유지합니다."}
+                </p>
+              </div>
+
               <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer">
                 <input
                   type="checkbox"
                   checked={interp === "smooth"}
-                  onChange={(e) => setInterp(e.target.checked ? "smooth" : "off")}
+                  onChange={(e) => {
+                    setInterp(e.target.checked ? "smooth" : "off");
+                    if (!e.target.checked) setFps(0); // 보간 없인 60fps 불가
+                  }}
                   className="accent-primary"
                 />
-                AI 프레임 보간(RIFE) — 슬로모션 중간 프레임을 생성해 부드럽게
+                AI 프레임 보간(RIFE) — 슬로모션·60fps 중간 프레임을 생성해 부드럽게
               </label>
-              {interp === "smooth" && speed === 1 && (
+              {interp === "smooth" && speed === 1 && fps === 0 && (
                 <p className="text-xs text-muted-foreground -mt-2">
-                  1× 에서는 보간이 적용되지 않습니다(생성할 중간 프레임 없음).
+                  1×·fps 유지에서는 보간이 적용되지 않습니다(생성할 중간 프레임 없음).
                 </p>
               )}
 

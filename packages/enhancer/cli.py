@@ -14,7 +14,7 @@ import sys
 def _local(args: list[str]) -> None:
     """로컬 파일로 잡을 만들어 인라인 실행(end-to-end 검증용).
 
-    usage: local <file> [none|2x|4k] [1|0.5|0.25] [off|smooth] [photo|anime]
+    usage: local <file> [none|2x|4k] [1|0.5|0.25] [off|smooth] [photo|anime] [keep|60]
     """
     import shutil
     from pathlib import Path
@@ -33,6 +33,8 @@ def _local(args: list[str]) -> None:
         "speed": float(args[2]) if len(args) > 2 else float(cfg["default_speed"]),
         "interpolate": args[3] if len(args) > 3 else cfg["default_interpolate"],
         "model": args[4] if len(args) > 4 else cfg["default_model"],
+        # 출력 fps 목표(0=유지). smooth 보간 + 입력 fps 미만일 때만 적용됨
+        "fps": 60 if len(args) > 5 and args[5] == "60" else 0,
     }
     job_id = J.new_job(params)
     shutil.copy2(src, J.input_path(job_id))
@@ -65,7 +67,7 @@ def main(argv: list[str] | None = None) -> None:
         return
     sys.stderr.write(
         "usage: python -m packages.enhancer.cli run <job_id>\n"
-        "     | local <file> [none|2x|4k] [1|0.5|0.25] [off|smooth] [photo|anime]\n"
+        "     | local <file> [none|2x|4k] [1|0.5|0.25] [off|smooth] [photo|anime] [keep|60]\n"
         "     | cleanup\n")
     sys.exit(2)
 

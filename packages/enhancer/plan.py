@@ -28,11 +28,14 @@ def _even(x: float) -> int:
     return max(2, (int(x) // 2) * 2)  # 내림 짝수 보정(ffmpeg scale=-2 관례)
 
 
-def rife_target(n_frames: int, speed: float, interp: str) -> int:
-    """RIFE 목표 프레임수. 입력과 같으면 보간 생략(배수 1)."""
+def rife_target(n_frames: int, speed: float, interp: str, fps_ratio: float = 1.0) -> int:
+    """RIFE 목표 프레임수 = 입력 × (출력fps/입력fps) / 배속. 입력과 같으면 보간 생략.
+
+    fps_ratio: 출력fps/입력fps (60fps 옵션 등. 1=fps 유지). 다운샘플은 하지 않는다.
+    """
     if interp != "smooth":
         return n_frames
-    return max(n_frames, round(n_frames / speed))
+    return max(n_frames, round(n_frames * max(fps_ratio, 1.0) / speed))
 
 
 def out_fps(fps: float, speed: float, interp: str) -> float:
@@ -105,10 +108,15 @@ def build_plan(meta: dict[str, Any], params: dict[str, Any], cfg: dict[str, Any]
     n_in = max(1, int(meta["n_frames"]))
     fps = float(meta.get("fps") or 30.0)
 
-    n_out = rife_target(n_in, speed, interp)
+    # 출력 fps 목표(60fps 옵션) — smooth 보간 + 입력 fps 보다 높을 때만 유효.
+    # 입력이 이미 목표 이상이면 무시(다운샘플 안 함), 보간 off 면 생성할 프레임이 없어 무시.
+    target_fps = float(params.get("fps") or 0)
+    eff_fps = target_fps if (interp == "smooth" and target_fps > fps) else 0.0
+
+    n_out = rife_target(n_in, speed, interp, fps_ratio=(eff_fps / fps) if eff_fps else 1.0)
     rife_on = n_out != n_in
     upscale_on = upscale in ("2x", "4k")
-    ofps = out_fps(fps, speed, interp)
+    ofps = eff_fps if eff_fps else out_fps(fps, speed, interp)
     ow, oh = encode_size(int(meta["frame_w"]), int(meta["frame_h"]), upscale,
                          int(cfg.get("target_height", 2160)))
     st = build_stages(n_in, n_out, upscale_on, rife_on, cfg.get("estimates"))
@@ -120,6 +128,8 @@ def build_plan(meta: dict[str, Any], params: dict[str, Any], cfg: dict[str, Any]
         "out_duration": round(n_out / ofps, 2) if ofps else 0.0,
         **st,
     }
-    if meta.get("fps_rat"):
+    if eff_fps:
+        plan["out_fps_rat"] = f"{int(eff_fps)}/1"  # 60fps 목표는 정수 유리수로 고정
+    elif meta.get("fps_rat"):
         plan["out_fps_rat"] = out_fps_rat(str(meta["fps_rat"]), speed, interp)
     return plan

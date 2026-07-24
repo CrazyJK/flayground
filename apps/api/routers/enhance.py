@@ -84,6 +84,7 @@ async def create_job(
     speed: str = Form("0.5"),         # 1 | 0.5 | 0.25
     interpolate: str = Form("smooth"),  # off | smooth
     model: str = Form("photo"),       # photo | anime
+    fps: str = Form("keep"),          # keep | 60 (smooth 보간 + 입력 fps 미만일 때만 적용)
 ) -> dict[str, Any]:
     _localhost_only(request)
     if upscale not in UPSCALE_MODES:
@@ -96,6 +97,8 @@ async def create_job(
         raise HTTPException(400, "speed 는 1 | 0.5 | 0.25")
     if interpolate not in INTERP_MODES:
         raise HTTPException(400, "interpolate 는 off | smooth")
+    if fps not in ("keep", "60"):
+        raise HTTPException(400, "fps 는 keep | 60")
     cfg = enhance_config()
     if model not in cfg["esrgan_models"]:
         raise HTTPException(400, f"model 은 {' | '.join(cfg['esrgan_models'])}")
@@ -110,7 +113,8 @@ async def create_job(
         pass
 
     params = {"upscale": upscale, "speed": speed_f,
-              "interpolate": interpolate, "model": model}
+              "interpolate": interpolate, "model": model,
+              "fps": 60 if fps == "60" else 0}
     job_id = J.new_job(params)
     dest = J.input_path(job_id)
     try:

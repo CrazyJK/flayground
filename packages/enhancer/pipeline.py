@@ -34,6 +34,15 @@ def _count_png(d: Path) -> int:
     return sum(1 for _ in d.glob("*.png")) if d.exists() else 0
 
 
+def _marker(d: Path) -> Path:
+    """단계 완료 마커 — 반드시 프레임 폴더 **밖**(형제 파일)에 둔다.
+
+    ncnn 바이너리(realesrgan/rife)는 입력 폴더의 모든 파일을 프레임으로 집기 때문에,
+    폴더 안에 .done 을 두면 가짜 프레임으로 오인돼 보간 산출물이 깨진다(실측).
+    """
+    return d.parent / (d.name + ".done")
+
+
 def _png_ok(p: Path) -> bool:
     """PNG 완결성 검사 — 꼬리에 IEND 청크가 있으면 완성본(중단된 쓰기 감지, O(1))."""
     try:
@@ -153,9 +162,10 @@ def _check_disk(cfg: dict[str, Any], root: Path) -> None:
 def _extract(cfg: dict, inp: Path, dst: Path, fps_rat: str, expected: int,
              prog: Callable[[float], None], logf: Path) -> None:
     """프레임 → PNG. 자동 회전 적용됨. 부분 추출은 재시작(추출은 빠름)."""
-    done = dst / ".done"
+    done = _marker(dst)
     if done.exists() and _count_png(dst) > 0:
         return
+    done.unlink(missing_ok=True)
     if dst.exists():
         shutil.rmtree(dst, ignore_errors=True)
     dst.mkdir(parents=True, exist_ok=True)
@@ -196,14 +206,18 @@ def _upscale(cfg: dict, src: Path, dst: Path, model: str, jdir: Path,
     got = _count_png(dst)
     if got != len(names):
         raise RuntimeError(f"업스케일 프레임수 불일치: {got}/{len(names)}")
+    bad = [n for n in names if not _png_ok(dst / n)]
+    if bad:
+        raise RuntimeError(f"업스케일 산출 프레임 {len(bad)}개 불완전(예: {bad[0]}) — 재실행 시 해당 프레임만 재처리")
 
 
 def _rife(cfg: dict, src: Path, dst: Path, n_out: int,
           prog: Callable[[float], None], logf: Path) -> None:
     """RIFE 보간 — 균일 재타이밍이라 부분 이어가기 불가, 완료 마커 없으면 전체 재실행."""
-    done = dst / ".done"
+    done = _marker(dst)
     if done.exists() and _count_png(dst) == n_out:
         return
+    done.unlink(missing_ok=True)
     if dst.exists():
         shutil.rmtree(dst, ignore_errors=True)
     dst.mkdir(parents=True, exist_ok=True)
@@ -216,6 +230,9 @@ def _rife(cfg: dict, src: Path, dst: Path, n_out: int,
     got = _count_png(dst)
     if got != n_out:
         raise RuntimeError(f"보간 프레임수 불일치: {got}/{n_out}")
+    bad = sum(1 for f in dst.glob("*.png") if not _png_ok(f))
+    if bad:
+        raise RuntimeError(f"보간 산출 프레임 {bad}개 불완전: {_log_tail(logf)}")
     done.touch()
 
 
@@ -328,9 +345,10 @@ def run_job(job_id: str) -> None:
         out_mp4 = jdir / "out.mp4"
         _encode(cfg, cur, inp, out_mp4, pl, with_audio, logs / "encode.log")
 
-        # 완료 — 중간 프레임 정리(§3 디스크: 장당 30~50MB)
+        # 완료 — 중간 프레임·마커 정리(§3 디스크: 장당 30~50MB)
         for d in (jdir / "frames_in", jdir / "frames_up", jdir / "frames_rife"):
             shutil.rmtree(d, ignore_errors=True)
+            _marker(d).unlink(missing_ok=True)
         note = None
         if meta.get("has_audio") and not with_audio:
             note = "배속을 바꿔 소리는 제거했습니다(원본 속도(1x)에서만 소리 유지)."

@@ -21,6 +21,9 @@
 신규 서브시스템 [`video-stabilization-plan.md`](video-stabilization-plan.md) — 흔들린 영상을 **배경/인물** 기준으로
 안정화(클릭→SAM2 추적·자동 강도·여백 블러/크롭). **배경·인물 모드 + 전체 UI 동작.** 계획 + 구현 현황 + 남은 할 일을 한 문서에 정리.
 
+신규 서브시스템(계획) [`video-enhance-plan.md`](video-enhance-plan.md) — 영상 **AI 업스케일(4K) + 슬로모션 + RIFE
+프레임 보간**. 파이프라인은 실제 영상으로 검증 완료, flayAI 통합은 미착수(초기 계획 문서).
+
 ## 한 줄 요약
 
 > 내 PC에 있는 비디오 컬렉션 메타데이터(JSON·CSV)와 포스터 이미지를 LLM 챗봇으로 자연어 검색하기.

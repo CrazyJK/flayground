@@ -43,7 +43,7 @@ export default function DiaryMediaPage() {
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
   const [total, setTotal] = useState(0);
-  const [viewer, setViewer] = useState<MediaItem | null>(null); // 라이트박스 대상
+  const [viewerIdx, setViewerIdx] = useState<number | null>(null); // 라이트박스 대상(items 인덱스)
   const offsetRef = useRef(0);
   const startedRef = useRef(false);
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -75,15 +75,31 @@ export default function DiaryMediaPage() {
     }
   }, [load]);
 
-  // 라이트박스 ESC 닫기
+  // 라이트박스 이전/다음(경계에서 멈춤). 다음(과거) 끝에 다다르면 다음 페이지 미리 로드.
+  const step = useCallback(
+    (delta: number) => {
+      setViewerIdx((cur) => {
+        if (cur == null) return cur;
+        const next = cur + delta;
+        if (next < 0 || next >= items.length) return cur;
+        if (next >= items.length - 3) void load(); // 끝 근처 → 미리 더 불러오기
+        return next;
+      });
+    },
+    [items.length, load]
+  );
+
+  // 라이트박스 키보드 — ESC 닫기, ←(최신)/→(과거) 이동
   useEffect(() => {
-    if (!viewer) return;
+    if (viewerIdx == null) return;
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setViewer(null);
+      if (e.key === "Escape") setViewerIdx(null);
+      else if (e.key === "ArrowLeft") step(-1);
+      else if (e.key === "ArrowRight") step(1);
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [viewer]);
+  }, [viewerIdx, step]);
 
   // 아래로 스크롤 → 더 과거 미디어 로드
   const onScroll = useCallback(() => {
@@ -92,13 +108,14 @@ export default function DiaryMediaPage() {
     if (c.scrollTop + c.clientHeight > c.scrollHeight - 400) void load();
   }, [load]);
 
-  // 날짜별 그룹(도착 순서 = 최신순 유지)
-  const groups: { date: string; items: MediaItem[] }[] = [];
-  for (const it of items) {
+  // 날짜별 그룹(도착 순서 = 최신순 유지). idx = items 전역 인덱스(라이트박스 탐색용)
+  const groups: { date: string; items: { it: MediaItem; idx: number }[] }[] = [];
+  items.forEach((it, idx) => {
     const g = groups[groups.length - 1];
-    if (g && g.date === it.date) g.items.push(it);
-    else groups.push({ date: it.date, items: [it] });
-  }
+    if (g && g.date === it.date) g.items.push({ it, idx });
+    else groups.push({ date: it.date, items: [{ it, idx }] });
+  });
+  const viewer = viewerIdx != null ? items[viewerIdx] : null;
 
   return (
     <main className="flex-1 flex flex-col w-full min-h-0">
@@ -122,11 +139,11 @@ export default function DiaryMediaPage() {
             <section key={g.date}>
               <DateHeader label={dateLabel(g.date)} />
               <div className="grid grid-cols-[repeat(auto-fill,minmax(160px,1fr))] gap-3 mt-1">
-                {g.items.map((it) => (
+                {g.items.map(({ it, idx }) => (
                   <button
                     key={it.url}
                     type="button"
-                    onClick={() => setViewer(it)}
+                    onClick={() => setViewerIdx(idx)}
                     title={dateLabel(it.date)}
                     className="group relative aspect-square overflow-hidden rounded-[10px] border border-border bg-muted cursor-pointer"
                   >
@@ -186,30 +203,64 @@ export default function DiaryMediaPage() {
         </div>
       </div>
 
-      {/* 라이트박스 — 원본 보기/재생 (배경 클릭·ESC 닫기) */}
-      {viewer && (
+      {/* 라이트박스 — 원본 보기/재생 (배경 클릭·ESC 닫기, ←→·버튼으로 이전/다음) */}
+      {viewer && viewerIdx != null && (
         <div
           className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 p-6"
-          onClick={() => setViewer(null)}
+          onClick={() => setViewerIdx(null)}
         >
           <button
             type="button"
             aria-label="닫기"
-            onClick={() => setViewer(null)}
+            onClick={() => setViewerIdx(null)}
             className="absolute top-4 right-5 text-white/80 hover:text-white text-2xl leading-none"
           >
             ×
           </button>
+          {/* 이전(최신 쪽) */}
+          {viewerIdx > 0 && (
+            <button
+              type="button"
+              aria-label="이전"
+              onClick={(e) => {
+                e.stopPropagation();
+                step(-1);
+              }}
+              className="absolute left-3 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="15 18 9 12 15 6" />
+              </svg>
+            </button>
+          )}
+          {/* 다음(과거 쪽) */}
+          {viewerIdx < items.length - 1 && (
+            <button
+              type="button"
+              aria-label="다음"
+              onClick={(e) => {
+                e.stopPropagation();
+                step(1);
+              }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 flex h-11 w-11 items-center justify-center rounded-full bg-white/10 text-white/80 hover:bg-white/20 hover:text-white"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <polyline points="9 18 15 12 9 6" />
+              </svg>
+            </button>
+          )}
           <div className="max-h-full max-w-full" onClick={(e) => e.stopPropagation()}>
             {viewer.kind === "image" ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
+                key={viewer.url}
                 src={`${API_BASE}${viewer.url}`}
                 alt=""
                 className="max-h-[88vh] max-w-[92vw] rounded-lg object-contain"
               />
             ) : (
               <video
+                key={viewer.url}
                 src={`${API_BASE}${viewer.url}`}
                 controls
                 autoPlay
@@ -217,7 +268,7 @@ export default function DiaryMediaPage() {
               />
             )}
             <div className="mt-2 text-center font-sans text-xs text-neutral-300">
-              {dateLabel(viewer.date)}
+              {dateLabel(viewer.date)} · {viewerIdx + 1}/{total || items.length}
             </div>
           </div>
         </div>

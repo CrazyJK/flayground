@@ -1,9 +1,9 @@
 import FlayCard from '@flay/domain/FlayCard';
+import GridControl from '@lib/components/GridControl';
 import FlayAction from '@lib/services/FlayAction';
 import FlayFetch, { Actress, Flay } from '@lib/services/FlayFetch';
 import FlaySearch from '@lib/services/FlaySearch';
 import favoriteSVG from '@svg/favorite';
-import GridControl from '@lib/components/GridControl';
 import { generate } from '../ai/index-proxy';
 import './inc/Popup';
 import './popup.actress.scss';
@@ -151,7 +151,7 @@ class PopupActress {
     this.favorite.checked = this.actress.favorite;
     this.actressName.value = this.actress.name;
     this.localName.value = this.actress.localName;
-    this.otherNames.value = this.actress.otherNames.join(', ');
+    this.otherNames.value = this.actress.otherNames?.join(', ') || '';
     this.birth.value = this.actress.birth;
     this.age.value = calcAge(this.actress.birth) + 'y';
     this.body.value = this.actress.body;
@@ -164,7 +164,7 @@ class PopupActress {
     const prompt = `다음 배우에 대한 최근 소식을 알려주세요.
     이름: ${this.actress.name}
     현지 이름: ${this.actress.localName}
-    다른 이름: ${this.actress.otherNames.join(', ')}
+    다른 이름: ${this.actress.otherNames?.join(', ') || ''}
     생년월일: ${this.actress.birth}
     신체 정보: ${this.actress.body}, ${this.actress.height}cm
     데뷔 연도: ${this.actress.debut}
@@ -186,7 +186,7 @@ class PopupActress {
   async #fetchFlay() {
     this.allFlayList = [];
 
-    for (const name of [this.name, ...this.actress.otherNames]) {
+    for (const name of [this.name, ...(this.actress.otherNames ?? [])]) {
       const instanceFlayList = await FlayFetch.getFlayListByActress(name);
       const archiveFlayList = await FlayFetch.getArchiveListByActress(name);
 

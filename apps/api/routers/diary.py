@@ -4,6 +4,7 @@
 - POST /api/diary/upload        동영상 업로드(multipart 스트리밍) → asset URL
 - GET  /api/diary/sessions      세션 목록(요약, 히스토리)
 - GET  /api/diary/history       이전 일기 열람(메시지 포함, 페이지네이션 + has_more)
+- GET  /api/diary/media         첨부 미디어 모아보기(이미지/동영상, 최신순 페이지네이션)
 - GET  /api/diary/sessions/{id} 세션 transcript(회상 카드·열람 공용)
 """
 
@@ -24,7 +25,7 @@ from pydantic import BaseModel, Field
 
 from packages.diary import store
 from packages.diary.chat import _looks_like_recall, route_diary_chat
-from packages.diary.htmlutil import build_message_html, save_upload_image
+from packages.diary.htmlutil import asset_names_from_html, build_message_html, save_upload_image
 from packages.diary.vision import describe_images, describe_video
 from packages.indexer.db import connect
 from packages.settings import load_config, repo_path
@@ -254,6 +255,48 @@ def diary_history(limit: int = 5, offset: int = 0) -> dict[str, Any]:
         return {"items": items, "has_more": has_more}
     finally:
         conn.close()
+
+
+_VIDEO_EXTS = {"mp4", "webm", "mov"}
+
+
+@router.get("/api/diary/media")
+def diary_media(limit: int = 60, offset: int = 0) -> dict[str, Any]:
+    """일기에 첨부된 미디어(이미지/동영상) 모아보기 — 최신순.
+
+    raw_html 에서 asset 이름을 추출해 평탄화(중복 asset 은 최신 1회만). 개인 규모
+    (수백~수천 메시지)라 전량 추출 후 메모리에서 offset/limit 페이지네이션.
+    """
+    conn = connect()
+    try:
+        rows = conn.execute(
+            "SELECT m.session_id, m.raw_html, m.created_at, s.source_key, s.started_at "
+            "FROM diary_messages m JOIN diary_sessions s ON s.id = m.session_id "
+            "WHERE m.raw_html IS NOT NULL AND m.raw_html != '' "
+            "ORDER BY m.id DESC"
+        ).fetchall()
+    finally:
+        conn.close()
+    items: list[dict[str, Any]] = []
+    seen: set[str] = set()
+    for r in rows:
+        date = r["source_key"] or (r["started_at"] or "")[:10]
+        for name in asset_names_from_html(r["raw_html"]):
+            if name in seen:
+                continue
+            seen.add(name)
+            ext = name.rsplit(".", 1)[-1].lower()
+            items.append(
+                {
+                    "url": f"{_ASSET_URL_PREFIX}{name}",
+                    "kind": "video" if ext in _VIDEO_EXTS else "image",
+                    "date": date,
+                    "session_id": int(r["session_id"]),
+                    "created_at": r["created_at"],
+                }
+            )
+    page = items[offset : offset + limit]
+    return {"items": page, "has_more": offset + limit < len(items), "total": len(items)}
 
 
 @router.get("/api/diary/sessions/{session_id}")

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import {
   memo,
   useCallback,
@@ -902,15 +903,23 @@ export default function DiaryPage() {
       <AppHeader
         active="diary"
         actions={
-          showThread ? (
-            <button
-              type="button"
-              onClick={newConversation}
+          <span className="flex items-baseline gap-3">
+            {showThread && (
+              <button
+                type="button"
+                onClick={newConversation}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                + 새 대화
+              </button>
+            )}
+            <Link
+              href="/diary/media"
               className="text-xs text-muted-foreground hover:text-foreground"
             >
-              + 새 대화
-            </button>
-          ) : undefined
+              미디어
+            </Link>
+          </span>
         }
       />
 

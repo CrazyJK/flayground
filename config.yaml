@@ -108,6 +108,8 @@ server:
     - png
     - webp
     - gif
+  # 일기 동영상 업로드 상한(짧은 클립용, multipart 스트리밍 저장)
+  upload_video_max_bytes: 104857600   # 100MB
 
 diary:
   # 응답 생성 온도 + top_p. 온도가 높으면(>1) '짧게' 지시를 무시하고 길게 채우는 경향.

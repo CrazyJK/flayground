@@ -85,7 +85,7 @@ apps/web /diary  ──SSE──▶  POST /api/diary/chat
 
 - 일기 챗 모델(EXAONE)은 텍스트 전용이라, **이미지가 붙은 턴은 비전 모델**
   (`config.models.vision` = gemma-4-abliterated, 무검열 멀티모달)로 라우팅한다.
-- 흐름(`packages/diary/vision.describe_images` + 라우터 `_prepare_images`):
+- 흐름(`packages/diary/vision.describe_images` + 라우터 `_prepare_media`):
   1. 첨부 이미지를 `data/diary_assets/`로 추출(raw_html 의 `<img>`).
   2. 비전 모델이 한국어로 1~2문장 **사실 묘사**(caption) 생성.
   3. caption 을 검색용 `content` 에 `[사진: …]`로 합류 → **나중에 사진 내용으로도 회상** 가능.
@@ -96,6 +96,25 @@ apps/web /diary  ──SSE──▶  POST /api/diary/chat
   같은 지시를 넣으면 (어보리터레이트 모델이라도) "사진을 첨부해주세요"로 회피한다(이미지를
   못 본 척). 묘사는 중립으로 시키고, 거친 말투는 `person_subs`(_crudify) 후처리에 맡긴다.
 - 사진은 사용자 버블·회상 카드에 그대로 보인다(레거시 일기 사진과 동일 경로로 서빙).
+
+## 동영상 첨부 (짧은 클립)
+
+사진과 달리 동영상은 용량이 커서(base64 JSON 부적합) **multipart 업로드 경로**를 쓴다.
+
+- 업로드: `POST /api/diary/upload` (multipart, mp4/webm/mov, 상한
+  `config.server.upload_video_max_bytes` = 100MB). 스트리밍 저장이라 서버 메모리 안전.
+  파일명은 내용 SHA1(이미지와 동일 규칙, 멱등) → `data/diary_assets/`에 저장,
+  `{url}` 반환.
+- 전송: 프론트는 동영상 선택/드롭 즉시 업로드하고, `POST /api/diary/chat` 의
+  `videos[]`(asset URL, 최대 4개)로 URL 만 보낸다. 이미지(`images[]`, dataURL) 계약은
+  그대로. 라우터는 URL 이 실제 diary_assets 파일(sha1.확장자)인지 검증한다.
+- 표시: `raw_html` 에 `<video controls preload="metadata">` 로 합류 — 사용자 글·회상
+  카드·이전 일기 열람 모두 그대로 재생. 서빙(`/static/diary-assets/{name}`)은
+  starlette `FileResponse` 가 Range(206) 를 지원해 시킹 가능.
+- 회상: `describe_video`(packages/diary/vision.py)가 ffmpeg 로 키프레임 3장
+  (10%/50%/90% 지점)을 뽑아 비전 모델에 한 번에 넣어 묘사 → `content` 에
+  `[동영상: …]`으로 합류(임베딩·FTS 검색 가능). ffmpeg 부재·실패 시 `[동영상]`
+  마커만 남는다(첨부 자체는 정상). 지연을 묶기 위해 메시지당 앞 2개만 묘사.
 
 ## 회상 시 사진 보고 답하기
 

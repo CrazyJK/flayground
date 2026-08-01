@@ -14,6 +14,8 @@ import AppHeader from "../_components/AppHeader";
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000";
 const MAX_IMAGES = 8;
 const MAX_IMAGE_BYTES = 10 * 1024 * 1024; // 10MB (config.upload_max_bytes 와 일치)
+const MAX_VIDEO_BYTES = 100 * 1024 * 1024; // 100MB (config.upload_video_max_bytes 와 일치)
+const MAX_VIDEOS = 4; // 한 메시지당 동영상 상한(백엔드 MAX_VIDEOS 와 일치)
 const HIST_PAGE = 5; // 이전 일기 한 번에 불러올 세션 수(화면 채울 만큼)
 const PIN_TOP = 44; // 보낸 글 상단 정렬 위치(sticky 날짜 헤더 높이만큼 내려 가리지 않게)
 
@@ -38,10 +40,16 @@ type Message = {
   role: "user" | "assistant";
   text: string;
   images?: string[]; // 사용자 첨부 이미지(미리보기 dataURL)
+  videos?: string[]; // 사용자 첨부 동영상(업로드된 asset URL)
   recall?: RecallSession[];
   status: "streaming" | "done" | "error" | "aborted";
   error?: string;
 };
+
+// 전송 대기 첨부 — 이미지는 dataURL(기존 계약), 동영상은 즉시 업로드된 asset URL + 로컬 미리보기
+type PendingItem =
+  | { kind: "image"; data: string }
+  | { kind: "video"; url: string; preview: string };
 
 // 레거시 일기 HTML 의 이미지 src(/static/diary-assets/..)를 API 절대경로로 치환
 function withImageHost(html: string): string {
@@ -246,7 +254,7 @@ const RecallCard = memo(function RecallCard({ s, last }: { s: RecallSession; las
             m.raw_html ? (
               <div
                 key={i}
-                className="diary-html text-[15px] leading-[1.7] text-foreground [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2 [&_h3]:font-semibold [&_p]:my-1"
+                className="diary-html text-[15px] leading-[1.7] text-foreground [&_img]:max-w-full [&_img]:rounded-lg [&_img]:my-2 [&_video]:max-w-full [&_video]:rounded-lg [&_video]:my-2 [&_h3]:font-semibold [&_p]:my-1"
                 dangerouslySetInnerHTML={{ __html: withImageHost(m.raw_html) }}
               />
             ) : m.role === "user" ? (
@@ -307,7 +315,7 @@ function PastMessage({ m }: { m: RecallMessage }) {
       )}
       {m.raw_html ? (
         <div
-          className="diary-html text-[20px] leading-[1.75] text-foreground [&_img]:max-w-[360px] [&_img]:rounded-[10px] [&_img]:my-2 [&_h3]:font-semibold [&_p]:my-1"
+          className="diary-html text-[20px] leading-[1.75] text-foreground [&_img]:max-w-[360px] [&_img]:rounded-[10px] [&_img]:my-2 [&_video]:max-w-[360px] [&_video]:rounded-[10px] [&_video]:my-2 [&_h3]:font-semibold [&_p]:my-1"
           dangerouslySetInnerHTML={{ __html: withImageHost(m.raw_html) }}
         />
       ) : (
@@ -337,7 +345,8 @@ function PastSession({ s }: { s: RecallSession }) {
 export default function DiaryPage() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
-  const [pending, setPending] = useState<string[]>([]); // 전송 대기 첨부 이미지(dataURL)
+  const [pending, setPending] = useState<PendingItem[]>([]); // 전송 대기 첨부(이미지/동영상)
+  const [uploading, setUploading] = useState(0); // 진행 중 동영상 업로드 수(전송 잠금)
   const [busy, setBusy] = useState(false);
   const [sessionId, setSessionId] = useState<number | null>(null);
   const [dragOver, setDragOver] = useState(false); // 이미지 드래그 오버 표시
@@ -368,29 +377,73 @@ export default function DiaryPage() {
       fr.readAsDataURL(file);
     });
 
-  const addFiles = useCallback(async (files: FileList | File[] | null) => {
-    if (!files) return;
-    const imgs = Array.from(files).filter((f) => f.type.startsWith("image/"));
-    const urls: string[] = [];
-    for (const f of imgs) {
-      if (f.size > MAX_IMAGE_BYTES) {
-        alert(`${f.name || "이미지"} 은(는) 10MB 를 넘어 건너뜁니다.`);
-        continue;
+  // 동영상 1개를 multipart 로 즉시 업로드 → asset URL (100MB 급이라 base64 JSON 부적합)
+  const uploadVideo = useCallback(async (f: File): Promise<string | null> => {
+    const fd = new FormData();
+    fd.append("file", f);
+    setUploading((n) => n + 1);
+    try {
+      const r = await fetch(`${API_BASE}/api/diary/upload`, { method: "POST", body: fd });
+      if (!r.ok) {
+        const detail = await r.json().then((j) => j.detail).catch(() => `HTTP ${r.status}`);
+        alert(`${f.name || "동영상"} 업로드 실패: ${detail}`);
+        return null;
       }
-      urls.push(await readAsDataUrl(f));
+      const j = await r.json();
+      return typeof j.url === "string" ? j.url : null;
+    } catch (e) {
+      alert(`${f.name || "동영상"} 업로드 실패: ${(e as Error).message}`);
+      return null;
+    } finally {
+      setUploading((n) => n - 1);
     }
-    if (urls.length) setPending((prev) => [...prev, ...urls].slice(0, MAX_IMAGES));
   }, []);
 
-  // 클립보드에서 이미지(스샷 등) 붙여넣기 → 첨부
+  const addFiles = useCallback(
+    async (files: FileList | File[] | null) => {
+      if (!files) return;
+      const items: PendingItem[] = [];
+      for (const f of Array.from(files)) {
+        if (f.type.startsWith("image/")) {
+          if (f.size > MAX_IMAGE_BYTES) {
+            alert(`${f.name || "이미지"} 은(는) 10MB 를 넘어 건너뜁니다.`);
+            continue;
+          }
+          items.push({ kind: "image", data: await readAsDataUrl(f) });
+        } else if (f.type.startsWith("video/")) {
+          if (f.size > MAX_VIDEO_BYTES) {
+            alert(`${f.name || "동영상"} 은(는) 100MB 를 넘어 건너뜁니다.`);
+            continue;
+          }
+          const url = await uploadVideo(f);
+          if (url) items.push({ kind: "video", url, preview: URL.createObjectURL(f) });
+        }
+      }
+      if (items.length) {
+        setPending((prev) => {
+          const merged = [...prev, ...items].slice(0, MAX_IMAGES);
+          // 동영상은 백엔드 상한(MAX_VIDEOS)에 맞춰 초과분 제거
+          let v = 0;
+          return merged.filter((p) => (p.kind !== "video" ? true : ++v <= MAX_VIDEOS));
+        });
+      }
+    },
+    [uploadVideo]
+  );
+
+  // 클립보드에서 이미지/동영상 붙여넣기 → 첨부
   const onPaste = useCallback(
     (e: React.ClipboardEvent) => {
       const files = Array.from(e.clipboardData?.items ?? [])
-        .filter((it) => it.kind === "file" && it.type.startsWith("image/"))
+        .filter(
+          (it) =>
+            it.kind === "file" &&
+            (it.type.startsWith("image/") || it.type.startsWith("video/"))
+        )
         .map((it) => it.getAsFile())
         .filter((f): f is File => !!f);
       if (files.length) {
-        e.preventDefault(); // 이미지일 때만 텍스트 입력 대신 첨부
+        e.preventDefault(); // 미디어일 때만 텍스트 입력 대신 첨부
         void addFiles(files);
       }
     },
@@ -541,7 +594,10 @@ export default function DiaryPage() {
     abortRef.current?.abort();
     setMessages([]);
     setSessionId(null);
-    setPending([]);
+    setPending((prev) => {
+      prev.forEach((p) => p.kind === "video" && URL.revokeObjectURL(p.preview));
+      return [];
+    });
     setHistory([]);
     setHistOffset(0);
     setHistHasMore(true);
@@ -550,13 +606,14 @@ export default function DiaryPage() {
   }, []);
 
   const send = useCallback(
-    async (query: string, images: string[] = []) => {
-      if ((!query.trim() && images.length === 0) || busy) return;
+    async (query: string, images: string[] = [], videos: string[] = []) => {
+      if ((!query.trim() && images.length === 0 && videos.length === 0) || busy) return;
       const userMsg: Message = {
         id: `u-${Date.now()}`,
         role: "user",
         text: query,
         images: images.length ? images : undefined,
+        videos: videos.length ? videos : undefined,
         status: "done",
       };
       pendingTopRef.current = userMsg.id; // 보낸 질문을 화면 상단으로(회상 도착까지 잠깐 재시도)
@@ -576,6 +633,7 @@ export default function DiaryPage() {
             query,
             session_id: sessionId ?? undefined,
             images: images.length ? images : undefined,
+            videos: videos.length ? videos : undefined,
           }),
           signal: ac.signal,
         });
@@ -665,12 +723,15 @@ export default function DiaryPage() {
       className={hero ? "w-full max-w-[600px] mx-auto" : "shrink-0 w-full max-w-[720px] mx-auto px-4 py-3"}
       onSubmit={(e) => {
         e.preventDefault();
+        if (uploading > 0) return; // 동영상 업로드 중엔 전송 대기
         const q = input;
-        const imgs = pending;
+        const imgs = pending.filter((p) => p.kind === "image").map((p) => p.data);
+        const vids = pending.filter((p) => p.kind === "video").map((p) => p.url);
+        pending.forEach((p) => p.kind === "video" && URL.revokeObjectURL(p.preview));
         setInput("");
         setPending([]);
         if (taRef.current) taRef.current.style.height = "auto";
-        void send(q, imgs);
+        void send(q, imgs, vids);
       }}
     >
       <div
@@ -679,20 +740,36 @@ export default function DiaryPage() {
           (hero ? "px-5 pt-5 pb-3.5" : "px-[18px] pt-4 pb-3")
         }
       >
-        {/* 첨부 이미지 미리보기 — 박스 안, 강조 룰 위에 배치 */}
-        {pending.length > 0 && (
+        {/* 첨부 미리보기(이미지/동영상) — 박스 안, 강조 룰 위에 배치 */}
+        {(pending.length > 0 || uploading > 0) && (
           <div className="flex flex-wrap gap-2 mb-3">
-            {pending.map((src, i) => (
+            {pending.map((p, i) => (
               <div key={i} className="relative">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={src}
-                  alt="첨부 미리보기"
-                  className="h-64 w-64 object-cover rounded-md border border-border"
-                />
+                {p.kind === "image" ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img
+                    src={p.data}
+                    alt="첨부 미리보기"
+                    className="h-64 w-64 object-cover rounded-md border border-border"
+                  />
+                ) : (
+                  <video
+                    src={p.preview}
+                    muted
+                    playsInline
+                    className="h-64 w-64 object-cover rounded-md border border-border"
+                  />
+                )}
                 <button
                   type="button"
-                  onClick={() => setPending((prev) => prev.filter((_, j) => j !== i))}
+                  onClick={() =>
+                    setPending((prev) =>
+                      prev.filter((x, j) => {
+                        if (j === i && x.kind === "video") URL.revokeObjectURL(x.preview);
+                        return j !== i;
+                      })
+                    )
+                  }
                   aria-label="첨부 제거"
                   className="absolute -top-1.5 -right-1.5 h-5 w-5 rounded-full bg-black/70 text-white text-xs leading-none flex items-center justify-center hover:bg-black"
                 >
@@ -700,6 +777,12 @@ export default function DiaryPage() {
                 </button>
               </div>
             ))}
+            {uploading > 0 && (
+              <div className="h-64 w-64 rounded-md border border-dashed border-border flex flex-col items-center justify-center gap-2 font-sans text-xs text-muted-foreground">
+                <span className="h-5 w-5 rounded-full border-2 border-[var(--diary-accent)] border-t-transparent animate-spin" />
+                동영상 업로드 중…
+              </div>
+            )}
           </div>
         )}
         {/* 상단 얇은 강조 룰 */}
@@ -709,7 +792,7 @@ export default function DiaryPage() {
         <input
           ref={fileRef}
           type="file"
-          accept="image/*"
+          accept="image/*,video/mp4,video/webm,video/quicktime"
           multiple
           className="hidden"
           onChange={(e) => {
@@ -744,13 +827,13 @@ export default function DiaryPage() {
           }}
         />
         <div className="flex items-center mt-2">
-          {/* 사진 첨부 */}
+          {/* 사진·동영상 첨부 */}
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
             disabled={busy || pending.length >= MAX_IMAGES}
-            title="사진 첨부"
-            aria-label="사진 첨부"
+            title="사진·동영상 첨부"
+            aria-label="사진·동영상 첨부"
             className="p-1 text-muted-foreground hover:text-[var(--diary-accent)] disabled:opacity-30"
           >
             <ImageIco size={19} />
@@ -773,7 +856,7 @@ export default function DiaryPage() {
               type="submit"
               title="기록"
               aria-label="기록"
-              disabled={!input.trim() && pending.length === 0}
+              disabled={(!input.trim() && pending.length === 0) || uploading > 0}
               className="p-1 text-[var(--diary-accent)] hover:opacity-80 disabled:opacity-30"
             >
               <SendIco size={19} />
@@ -812,7 +895,7 @@ export default function DiaryPage() {
       {dragOver && (
         <div className="absolute inset-0 z-50 m-2 flex items-center justify-center rounded-2xl border-2 border-dashed border-[var(--diary-accent)] bg-[var(--diary-accent-soft)] backdrop-blur-[1px] pointer-events-none">
           <div className="rounded-xl bg-card px-5 py-3 text-sm font-semibold text-[var(--diary-accent)] shadow-lg">
-            여기에 놓으면 사진 첨부
+            여기에 놓으면 사진·동영상 첨부
           </div>
         </div>
       )}
@@ -909,6 +992,19 @@ export default function DiaryPage() {
                             src={src}
                             alt="첨부 이미지"
                             className="w-[180px] max-h-[240px] object-cover rounded-[10px] border border-border"
+                          />
+                        ))}
+                      </div>
+                    )}
+                    {m.videos && m.videos.length > 0 && (
+                      <div className="flex flex-wrap gap-3 mt-4">
+                        {m.videos.map((url, i) => (
+                          <video
+                            key={i}
+                            controls
+                            preload="metadata"
+                            src={`${API_BASE}${url}`}
+                            className="w-[360px] max-w-full rounded-[10px] border border-border"
                           />
                         ))}
                       </div>

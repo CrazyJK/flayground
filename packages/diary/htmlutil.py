@@ -31,6 +31,7 @@ _DATA_IMG_RE = re.compile(
     re.IGNORECASE,
 )
 _IMG_TAG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+_VIDEO_TAG_RE = re.compile(r"<video\b.*?</video>|<video\b[^>]*/?>", re.IGNORECASE | re.DOTALL)
 _BLOCK_BR_RE = re.compile(r"<\s*br\s*/?\s*>", re.IGNORECASE)
 _BLOCK_END_RE = re.compile(r"</\s*(p|div|h[1-6]|li|tr)\s*>", re.IGNORECASE)
 _TAG_RE = re.compile(r"<[^>]+>")
@@ -44,7 +45,8 @@ def html_to_text(html: str) -> str:
     """HTML → 검색/임베딩용 평문. 이미지는 '[사진]' 으로, 블록 경계는 줄바꿈으로."""
     if not html:
         return ""
-    s = _IMG_TAG_RE.sub(" [사진] ", html)
+    s = _VIDEO_TAG_RE.sub(" [동영상] ", html)
+    s = _IMG_TAG_RE.sub(" [사진] ", s)
     s = _BLOCK_BR_RE.sub("\n", s)
     s = _BLOCK_END_RE.sub("\n", s)
     s = _TAG_RE.sub("", s)
@@ -133,12 +135,19 @@ def asset_names_from_html(html: str) -> list[str]:
     return seen
 
 
-def build_message_html(text: str, image_urls: list[str]) -> str:
-    """사용자 텍스트 + 첨부 이미지 → 표시용 HTML(raw_html)."""
+def build_message_html(
+    text: str, image_urls: list[str], video_urls: list[str] | None = None
+) -> str:
+    """사용자 텍스트 + 첨부 이미지/동영상 → 표시용 HTML(raw_html)."""
     parts: list[str] = []
     if text.strip():
         safe = _html.escape(text).replace("\n", "<br>")
         parts.append(f"<p>{safe}</p>")
     for u in image_urls:
         parts.append(f'<img src="{_html.escape(u, quote=True)}">')
+    for u in video_urls or []:
+        # preload=metadata: 목록에 여러 개 있어도 첫 프레임/길이만 받아오게(대역 절약)
+        parts.append(
+            f'<video controls preload="metadata" src="{_html.escape(u, quote=True)}"></video>'
+        )
     return "".join(parts)

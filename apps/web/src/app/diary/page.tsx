@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import {
   memo,
   useCallback,
@@ -11,6 +10,7 @@ import {
   type ReactNode,
 } from "react";
 import AppHeader from "../_components/AppHeader";
+import MediaPane from "./MediaPane";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000";
 const MAX_IMAGES = 8;
@@ -344,6 +344,9 @@ function PastSession({ s }: { s: RecallSession }) {
 }
 
 export default function DiaryPage() {
+  // 일기/미디어 뷰 전환 — 두 패널을 모두 마운트한 채 visibility 로만 전환해
+  // 각 화면의 스크롤·로드 상태·입력이 서로 오갈 때 그대로 유지된다.
+  const [view, setView] = useState<"diary" | "media">("diary");
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [pending, setPending] = useState<PendingItem[]>([]); // 전송 대기 첨부(이미지/동영상)
@@ -872,21 +875,21 @@ export default function DiaryPage() {
     <main
       className="relative flex-1 flex flex-col w-full min-h-0"
       onDragEnter={(e) => {
-        if (!hasFiles(e)) return;
+        if (view !== "diary" || !hasFiles(e)) return; // 첨부는 일기 뷰에서만
         e.preventDefault();
         dragDepth.current += 1;
         setDragOver(true);
       }}
       onDragOver={(e) => {
-        if (hasFiles(e)) e.preventDefault(); // drop 허용
+        if (view === "diary" && hasFiles(e)) e.preventDefault(); // drop 허용
       }}
       onDragLeave={(e) => {
-        if (!hasFiles(e)) return;
+        if (view !== "diary" || !hasFiles(e)) return;
         dragDepth.current = Math.max(0, dragDepth.current - 1);
         if (dragDepth.current === 0) setDragOver(false);
       }}
       onDrop={(e) => {
-        if (!hasFiles(e)) return;
+        if (view !== "diary" || !hasFiles(e)) return;
         e.preventDefault();
         dragDepth.current = 0;
         setDragOver(false);
@@ -904,7 +907,7 @@ export default function DiaryPage() {
         active="diary"
         actions={
           <span className="flex items-baseline gap-3">
-            {showThread && (
+            {view === "diary" && showThread && (
               <button
                 type="button"
                 onClick={newConversation}
@@ -913,16 +916,35 @@ export default function DiaryPage() {
                 + 새 대화
               </button>
             )}
-            <Link
-              href="/diary/media"
-              className="text-xs text-muted-foreground hover:text-foreground"
-            >
-              미디어
-            </Link>
+            {view === "diary" ? (
+              <button
+                type="button"
+                onClick={() => setView("media")}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                미디어
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setView("diary")}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                ← 일기
+              </button>
+            )}
           </span>
         }
       />
 
+      {/* 두 패널을 겹쳐 두고 visibility 로만 전환 — 숨겨진 쪽 상태·스크롤 유지 */}
+      <div className="relative flex-1 min-h-0">
+        <div
+          className={
+            "absolute inset-0 flex flex-col " +
+            (view === "diary" ? "" : "invisible pointer-events-none")
+          }
+        >
       {!showThread ? (
         // 빈 상태 = 글쓰기 초대. 중앙에 hero 컴포저 + '이전 일기 불러오기'.
         <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-6 px-6 pb-16">
@@ -1030,6 +1052,18 @@ export default function DiaryPage() {
           {composer(false)}
         </>
       )}
+        </div>
+
+        {/* 미디어 패널 — 첫 활성화 때 로드, 이후 상태 유지 */}
+        <div
+          className={
+            "absolute inset-0 flex flex-col " +
+            (view === "media" ? "" : "invisible pointer-events-none")
+          }
+        >
+          <MediaPane active={view === "media"} onWrite={() => setView("diary")} />
+        </div>
+      </div>
     </main>
   );
 }

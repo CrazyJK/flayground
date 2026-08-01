@@ -1,8 +1,10 @@
 "use client";
 
-import Link from "next/link";
+// 일기 첨부 미디어 모아보기 패널 — /diary 페이지 안에서 뷰 전환으로 표시(라우트 아님).
+// 항상 마운트되어 있고 visibility 로만 숨겨지므로 스크롤·로드 상태가 유지된다.
+// 데이터는 첫 활성화(active=true) 때 처음 불러온다.
+
 import { useCallback, useEffect, useRef, useState } from "react";
-import AppHeader from "../../_components/AppHeader";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000";
 const PAGE = 60; // 한 번에 불러올 미디어 수(화면 채울 만큼)
@@ -38,7 +40,13 @@ function DateHeader({ label }: { label: string }) {
   );
 }
 
-export default function DiaryMediaPage() {
+export default function MediaPane({
+  active,
+  onWrite,
+}: {
+  active: boolean;
+  onWrite: () => void; // 빈 상태에서 '일기 쓰러 가기' → 일기 뷰로 전환
+}) {
   const [items, setItems] = useState<MediaItem[]>([]);
   const [hasMore, setHasMore] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -67,13 +75,13 @@ export default function DiaryMediaPage() {
     }
   }, [loading, hasMore]);
 
-  // 최초 1회 로드(load 참조가 바뀌어도 재실행 방지)
+  // 첫 활성화 때 1회 로드(일기 뷰에만 머무는 동안은 불러오지 않음)
   useEffect(() => {
-    if (!startedRef.current) {
+    if (active && !startedRef.current) {
       startedRef.current = true;
       void load();
     }
-  }, [load]);
+  }, [active, load]);
 
   // 라이트박스 이전/다음(경계에서 멈춤). 다음(과거) 끝에 다다르면 다음 페이지 미리 로드.
   const step = useCallback(
@@ -89,9 +97,9 @@ export default function DiaryMediaPage() {
     [items.length, load]
   );
 
-  // 라이트박스 키보드 — ESC 닫기, ←(최신)/→(과거) 이동
+  // 라이트박스 키보드 — ESC 닫기, ←(최신)/→(과거) 이동. 미디어 뷰가 활성일 때만.
   useEffect(() => {
-    if (viewerIdx == null) return;
+    if (!active || viewerIdx == null) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") setViewerIdx(null);
       else if (e.key === "ArrowLeft") step(-1);
@@ -99,7 +107,7 @@ export default function DiaryMediaPage() {
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [viewerIdx, step]);
+  }, [active, viewerIdx, step]);
 
   // 아래로 스크롤 → 더 과거 미디어 로드
   const onScroll = useCallback(() => {
@@ -118,23 +126,14 @@ export default function DiaryMediaPage() {
   const viewer = viewerIdx != null ? items[viewerIdx] : null;
 
   return (
-    <main className="flex-1 flex flex-col w-full min-h-0">
-      <AppHeader
-        active="diary"
-        actions={
-          <span className="flex items-baseline gap-3">
-            <Link href="/diary" className="text-xs text-muted-foreground hover:text-foreground">
-              ← 일기
-            </Link>
-            {total > 0 && (
-              <span className="text-xs text-muted-foreground">미디어 {total}개</span>
-            )}
-          </span>
-        }
-      />
-
+    <>
       <div ref={scrollRef} onScroll={onScroll} className="flex-1 min-h-0 overflow-y-auto w-full">
         <div className="max-w-[960px] mx-auto px-6 pt-4 pb-8 flex flex-col gap-4">
+          {total > 0 && (
+            <div className="font-sans text-center text-xs text-muted-foreground">
+              사진·동영상 {total}개
+            </div>
+          )}
           {groups.map((g) => (
             <section key={g.date}>
               <DateHeader label={dateLabel(g.date)} />
@@ -185,14 +184,19 @@ export default function DiaryMediaPage() {
               불러오는 중…
             </div>
           )}
-          {!loading && items.length === 0 && (
+          {/* 로드가 끝났는데(hasMore=false) 아무것도 없으면 빈 상태 */}
+          {!loading && !hasMore && items.length === 0 && (
             <div className="flex-1 flex flex-col items-center justify-center gap-2 py-24 text-center">
               <div className="text-lg text-muted-foreground">
                 아직 일기에 첨부한 사진·동영상이 없어요.
               </div>
-              <Link href="/diary" className="font-sans text-sm text-[var(--diary-accent)] hover:opacity-80">
+              <button
+                type="button"
+                onClick={onWrite}
+                className="font-sans text-sm text-[var(--diary-accent)] hover:opacity-80"
+              >
                 일기 쓰러 가기 →
-              </Link>
+              </button>
             </div>
           )}
           {!hasMore && items.length > 0 && (
@@ -273,6 +277,6 @@ export default function DiaryMediaPage() {
           </div>
         </div>
       )}
-    </main>
+    </>
   );
 }

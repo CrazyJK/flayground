@@ -81,7 +81,7 @@ export function startBatch(operation: BatchOperation): void {
           await archiveBatch();
           break;
         case 'B':
-          await backup();
+          await runBackupScript();
           break;
         default:
           throw new Error(`알 수 없는 배치 오퍼레이션: ${operation}`);
@@ -353,10 +353,52 @@ async function cleanEmptySubdirs(rootDir: string, currentDir: string): Promise<v
 }
 
 /**
+ * 백업 스크립트(bin/backup/flay-backup.ps1)를 실행하고 출력을 SSE 로그로 중계한다.
+ * 스크립트는 config를 읽어 인스턴스/아카이브 zip 2개를 iCloud 폴더에 생성한다.
+ *
+ * @returns 스크립트 종료 시 resolve되는 Promise
+ */
+async function runBackupScript(): Promise<void> {
+  const scriptPath = config.flay.backup.scriptPath;
+  if (!fs.existsSync(scriptPath)) {
+    await batchLogger(`[Backup] 스크립트를 찾을 수 없습니다: ${scriptPath}`);
+    return;
+  }
+
+  await batchLogger(`[Backup] 스크립트 실행 ${scriptPath}`);
+
+  // PowerShell 출력이 파이프로 리다이렉트될 때 ANSI로 인코딩되지 않도록 UTF-8을 강제한다
+  const command = `[Console]::OutputEncoding = [System.Text.Encoding]::UTF8; & '${scriptPath}'; exit $LASTEXITCODE`;
+
+  const exitCode = await new Promise<number>((resolve, reject) => {
+    const proc = spawn('powershell.exe', ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-Command', command]);
+    // stdout/stderr 라인을 SSE 배치 로그로 중계
+    const relay = (chunk: Buffer) => {
+      for (const line of chunk.toString('utf-8').split(/\r?\n/)) {
+        if (line.trim()) void batchLogger(line);
+      }
+    };
+    proc.stdout.on('data', relay);
+    proc.stderr.on('data', relay);
+    proc.on('close', (code) => resolve(code ?? -1));
+    proc.on('error', reject);
+  });
+
+  if (exitCode === 0) {
+    await noticeLogger('backup Completed');
+  } else {
+    await batchLogger(`[Backup] 실패 - 종료 코드 ${exitCode}`);
+  }
+}
+
+/**
  * 백업 실행.
  * Java BatchExecutor.backup() 대응
  * 임시 폴더에 CSV/Info/Instance 파일을 모은 뒤 jar로 압축한다.
+ *
+ * @deprecated bin/backup/flay-backup.ps1 스크립트 방식으로 대체됨 ({@link runBackupScript} 참조). 보존용.
  */
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function backup(): Promise<void> {
   const backupPath = config.flay.backupPath;
   if (!fs.existsSync(backupPath)) {
@@ -458,6 +500,8 @@ async function backup(): Promise<void> {
 /**
  * jar 명령어로 폴더를 압축한다.
  * Java BatchExecutor.compress() 대응
+ *
+ * @deprecated {@link backup}과 함께 flay-backup.ps1(내장 tar) 방식으로 대체됨. 보존용.
  */
 async function compress(destJarPath: string, targetFolder: string): Promise<void> {
   const jarFileName = path.basename(destJarPath);

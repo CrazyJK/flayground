@@ -38,7 +38,8 @@
       "instanceJarFilename": "flay-instance.jar",
       "archiveJarFilename": "flay-archive.jar",
       "instanceCsvFilename": "flay-instance.csv",
-      "archiveCsvFilename": "flay-archive.csv"
+      "archiveCsvFilename": "flay-archive.csv",
+      "scriptPath": "C:/kamoru/Workspace/git/flayground/bin/backup/flay-backup.ps1"
     },
 
     "automaticallyCertificatedIp": ["localhost", "127.0.0.1", "0:0:0:0:0:0:0:1", "192.168.0.156"],

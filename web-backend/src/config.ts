@@ -11,6 +11,8 @@ export interface BackupConfig {
   archiveJarFilename: string;
   instanceCsvFilename: string;
   archiveCsvFilename: string;
+  /** 백업 PowerShell 스크립트 경로 (bin/backup/flay-backup.ps1) */
+  scriptPath: string;
 }
 
 /** 점수 가중치 설정 */

@@ -83,3 +83,6 @@ private-memo.md
 # portfolio data (private)
 web-frontend/src/finance/data/portfolio.json
 
+
+# backup script logs
+bin/backup/logs/

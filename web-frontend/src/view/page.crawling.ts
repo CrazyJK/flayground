@@ -38,6 +38,7 @@ interface CrawlingItem {
   actressList: ActressItem[];
   downloadList: DownloadItem[];
   tagList: LinkItem[];
+  srcPageNo: number; // 이 아이템을 가져온 소스 페이지 번호(다시 요청 시 교체 범위 식별용)
 }
 
 /**
@@ -212,6 +213,7 @@ class Page {
   #crawlTimer: ReturnType<typeof setTimeout> | null = null; // 재시도 지연 타이머
   #firstItemShown = false; // 첫 아이템 표시 완료 여부
   #noMoreData = false; // 더 이상 가져올 데이터 없음(마지막 페이지 도달)
+  #reloadPageNo: number | null = null; // 다시 요청 중인 소스 페이지 번호(null이면 일반 크롤링)
   #loadedPageNo = 0; // 데이터 수신이 완료된 마지막 소스 페이지(진행 중인 srcPageNo와 구분)
   #coverPrefetchPool = new Set<HTMLImageElement>(); // 커버 이미지 백그라운드 프리페치(로드 완료 전까지 참조 유지)
 
@@ -269,6 +271,9 @@ class Page {
     // 이전/다음 내비게이션 버튼(휠·화살표 외 명시적 조작 수단)
     document.querySelector('#prevBtn')!.addEventListener('click', () => this.#prev());
     document.querySelector('#nextBtn')!.addEventListener('click', () => this.#next());
+
+    // 현재 페이지 다시 요청: 보고 있는 카드의 소스 페이지를 재크롤링해 교체
+    document.querySelector('#reloadBtn')!.addEventListener('click', () => this.#reloadCurrentPage());
 
     // 처음으로: 목록을 초기화하고 시작 화면으로 되돌림
     document.querySelector('#restartBtn')!.addEventListener('click', () => {
@@ -389,6 +394,21 @@ class Page {
   }
 
   /**
+   * 현재 카드가 속한 소스 페이지를 다시 크롤링해 해당 페이지의 아이템을 교체한다.
+   * 크롤링 요청이 진행 중이거나 표시된 카드가 없으면 무시한다.
+   */
+  #reloadCurrentPage(): void {
+    if (this.#isFetching) return;
+    const current = this.#itemList[this.#paging.itemIndex];
+    if (!current) return;
+
+    console.log(`🔁 [Reload] ${current.srcPageNo}페이지 다시 요청`);
+    this.#reloadPageNo = current.srcPageNo;
+    this.#retryCount = 0;
+    this.#callCrawling();
+  }
+
+  /**
    * 재시도 지연 타이머를 해제한다.
    */
   #clearCrawlTimer(): void {
@@ -420,6 +440,7 @@ class Page {
       this.noticeRetryBtn.classList.remove('hide'); // 수동 재시도 버튼 노출
       this.#isFetching = false;
       this.#retryCount = 0;
+      this.#reloadPageNo = null; // 다시 요청 실패 시 상태 해제(이후 프리페치가 오인하지 않도록)
     }
   }
 
@@ -760,6 +781,15 @@ class Page {
 
     // 유효한 HTML이지만 결과 0건 → 마지막 페이지/검색 결과 없음(전송 오류가 아니므로 재시도하지 않음)
     if (postList.length === 0) {
+      // 다시 요청 결과가 비어 있으면 기존 아이템을 유지하고 종료
+      if (this.#reloadPageNo !== null) {
+        console.log(`🔚 [Reload] 다시 요청한 ${this.#reloadPageNo}페이지에 결과 없음 - 기존 아이템 유지`);
+        this.#reloadPageNo = null;
+        this.#retryCount = 0;
+        this.#isFetching = false;
+        this.#notice('다시 요청한 페이지에 결과가 없습니다', false, true);
+        return;
+      }
       console.log(`🔚 [Parse] 추가 데이터 없음`);
       this.#noMoreData = true;
       this.#retryCount = 0;
@@ -775,7 +805,10 @@ class Page {
 
     console.log(`✅ [Parse] 아이템 파싱 성공 - ${postList.length}개 아이템 발견`);
     this.#retryCount = 0;
-    this.#loadedPageNo = this.#paging.srcPageNo; // 이 페이지의 데이터 수신 완료
+    const srcPageNo = this.#reloadPageNo ?? this.#paging.srcPageNo; // 이 결과가 속한 소스 페이지
+    if (this.#reloadPageNo === null) {
+      this.#loadedPageNo = this.#paging.srcPageNo; // 이 페이지의 데이터 수신 완료
+    }
     this.#notice(postList.length + '개 아이템 구함');
 
     const itemList = postList.map((div) => {
@@ -813,11 +846,21 @@ class Page {
           text: this.domManager.getText(a as HTMLElement),
           href: this.domManager.getHref(a as HTMLElement),
         })),
+        srcPageNo,
       };
     });
 
     // 아직 보지 않은 대기 카드의 커버(포스터) 이미지를 즉시 백그라운드 다운로드 시작
     this.#prefetchCovers(itemList);
+
+    // 다시 요청 결과: 해당 페이지의 기존 아이템을 새 결과로 교체하고 종료
+    if (this.#reloadPageNo !== null) {
+      console.log(`🔁 [Reload] ${srcPageNo}페이지 아이템 ${itemList.length}개로 교체`);
+      await this.#replacePageItems(srcPageNo, itemList);
+      this.#reloadPageNo = null;
+      this.#isFetching = false;
+      return;
+    }
 
     console.log(`📝 [Data] 아이템 리스트에 추가: ${itemList.length}개`);
     this.#itemList.push(...itemList);
@@ -846,6 +889,29 @@ class Page {
   }
 
   /**
+   * 다시 요청한 페이지의 기존 아이템과 카드 DOM을 새 크롤링 결과로 교체하고 현재 카드를 갱신한다.
+   * @param pageNo 교체 대상 소스 페이지 번호
+   * @param newItems 새로 크롤링된 아이템 목록
+   */
+  async #replacePageItems(pageNo: number, newItems: CrawlingItem[]): Promise<void> {
+    // 교체 범위 산정: 같은 소스 페이지에서 가져온 아이템은 연속 구간에 존재
+    const startIdx = this.#itemList.findIndex((item) => item.srcPageNo === pageNo);
+    const oldItems = this.#itemList.filter((item) => item.srcPageNo === pageNo);
+
+    // 기존 카드 DOM 제거(화면에 표시 중인 카드 포함)
+    for (const item of oldItems) {
+      document.querySelector(`div[data-opus="${item.opus.text}"]`)?.remove();
+    }
+
+    this.#itemList.splice(startIdx, oldItems.length, ...newItems);
+    this.#paging.itemLength += newItems.length - oldItems.length;
+    this.#paging.itemIndex = Math.min(this.#paging.itemIndex, this.#paging.itemLength - 1);
+
+    await this.#renderItemList(newItems);
+    this.#showItem(); // 현재 인덱스의 카드를 다시 표시
+  }
+
+  /**
    * 검색어로 크롤링 시작
    * @param query 검색어
    */
@@ -864,26 +930,28 @@ class Page {
   }
 
   #callCrawling() {
-    console.group(`🚀 [Crawling] 크롤링 시작 - 모드: ${this.#isSearchMode ? '검색' : '일반'}, 페이지: ${this.#paging.srcPageNo}`);
+    // 다시 요청 중이면 해당 페이지를, 아니면 진행 중인 소스 페이지를 대상으로 한다
+    const pageNo = this.#reloadPageNo ?? this.#paging.srcPageNo;
+    console.group(`🚀 [Crawling] 크롤링 시작 - 모드: ${this.#isSearchMode ? '검색' : '일반'}, 페이지: ${pageNo}`);
     this.#clearCrawlTimer();
     this.#isFetching = true;
-    this.#noMoreData = false;
+    if (this.#reloadPageNo === null) this.#noMoreData = false; // 다시 요청은 목록 확장이 아니므로 마지막 페이지 상태 유지
     this.#crawlingStartTime = performance.now();
 
     let url: string;
     if (this.#isSearchMode && this.#searchQuery) {
       // 검색 모드인 경우 - 페이지 번호 포함
-      if (this.#paging.srcPageNo === 1) {
+      if (pageNo === 1) {
         url = SEARCH_URL + encodeURIComponent(this.#searchQuery);
         console.log(`🔍 [Search] 첫 검색 페이지: "${this.#searchQuery}"`);
       } else {
-        url = SEARCH_URL + encodeURIComponent(this.#searchQuery) + `&page=${this.#paging.srcPageNo}`;
-        console.log(`🔍 [Search] 추가 검색 페이지: "${this.#searchQuery}" - ${this.#paging.srcPageNo}페이지`);
+        url = SEARCH_URL + encodeURIComponent(this.#searchQuery) + `&page=${pageNo}`;
+        console.log(`🔍 [Search] 추가 검색 페이지: "${this.#searchQuery}" - ${pageNo}페이지`);
       }
     } else {
       // 일반 페이지 크롤링
-      url = LIST_URL + this.#paging.srcPageNo;
-      console.log(`📄 [Page] 일반 페이지 크롤링: ${this.#paging.srcPageNo}페이지`);
+      url = LIST_URL + pageNo;
+      console.log(`📄 [Page] 일반 페이지 크롤링: ${pageNo}페이지`);
     }
 
     console.log(`🌐 [URL] 크롤링 대상: ${url}`);
@@ -898,14 +966,16 @@ class Page {
       this.#handleCrawlFailure(err?.message ?? '요청 실패');
     });
 
-    if (this.#isSearchMode && this.#searchQuery) {
-      if (this.#paging.srcPageNo === 1) {
+    if (this.#reloadPageNo !== null) {
+      this.#setLoading(pageNo + '페이지 다시 요청 중...');
+    } else if (this.#isSearchMode && this.#searchQuery) {
+      if (pageNo === 1) {
         this.#setLoading(`"${this.#searchQuery}" 검색 중...`);
       } else {
-        this.#setLoading(`"${this.#searchQuery}" 검색 중... (${this.#paging.srcPageNo}페이지)`);
+        this.#setLoading(`"${this.#searchQuery}" 검색 중... (${pageNo}페이지)`);
       }
     } else {
-      this.#setLoading(this.#paging.srcPageNo + '페이지 크롤링 중...');
+      this.#setLoading(pageNo + '페이지 크롤링 중...');
     }
 
     (document.querySelector('#srcPageURL') as HTMLAnchorElement).href = url;

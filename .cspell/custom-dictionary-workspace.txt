@@ -148,3 +148,4 @@ qwen
 abliterate
 abliterated
 exaone
+noopener

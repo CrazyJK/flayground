@@ -20,12 +20,14 @@ import asyncio
 import logging
 import shutil
 import subprocess
+import time
 from typing import Any
 
 from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, StreamingResponse
 
 from apps.api.routers._gpu import gpu_busy, kill_tree
+from apps.api.sse import SSE_HEADERS, poll_stream
 from packages.enhancer import job as J
 from packages.enhancer.config import enhance_config
 from packages.enhancer.plan import INTERP_MODES, SPEEDS, UPSCALE_MODES
@@ -152,6 +154,30 @@ def job_status(job_id: str, request: Request) -> dict[str, Any]:
     if not st:
         raise HTTPException(404, "job not found")
     return st
+
+
+_TERMINAL_STATUSES = {"done", "failed", "canceled"}
+
+
+@router.get("/jobs/{job_id}/events")
+async def job_events(job_id: str, request: Request) -> StreamingResponse:
+    """잡 상태 SSE 스트림 — 변화 시만 push, 종료 상태 push 후 스트림 종료.
+
+    폴링(GET /jobs/{id})의 대체. 잡이 삭제되면 {"type":"gone"} 후 종료.
+    """
+    _localhost_only(request)
+    if not J.get_status(job_id):
+        raise HTTPException(404, "job not found")
+    return StreamingResponse(
+        poll_stream(
+            lambda: asyncio.to_thread(J.get_status, job_id),
+            lambda st: {"type": "status", "ts": time.time(), "job": st},
+            interval=1.0,
+            is_terminal=lambda st: st.get("status") in _TERMINAL_STATUSES,
+        ),
+        media_type="text/event-stream",
+        headers=SSE_HEADERS,
+    )
 
 
 @router.api_route("/jobs/{job_id}/result", methods=["GET", "HEAD"])

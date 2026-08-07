@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useId, useState } from "react";
 import AppHeader from "../_components/AppHeader";
 import SectionCard from "../_components/SectionCard";
+import { useEventStream } from "../_components/useEventStream";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000";
 // 각 단계/버튼의 측정 수행시간(초) 저장 키 — 다음 방문에도 표시
@@ -1256,14 +1257,24 @@ function SystemSection({ sys, history }: { sys?: SystemData; history: MetricHist
 // 메인 페이지
 // ---------------------------------------------------------------------------
 
-const MONITOR_POLL_MS = 1000; // system 지표(로컬) — 1초 (차트용)
-const SERVICES_POLL_MS = 5000; // Qdrant/Ollama/인덱서 — 평소 5초 (느리게 변함)
-const SERVICES_POLL_BUSY_MS = 2000; // 작업 실행 중에는 2초 (진행률 갱신)
-const MAX_HISTORY = 60; // 차트 롤링 버퍼 길이 (1초 × 60 = 최근 약 1분)
+const MAX_HISTORY = 60; // 차트 롤링 버퍼 길이 (서버 push 1초 격자 × 60 = 최근 약 1분)
+
+// SSE(/api/admin/events) 이벤트 — 서버가 monitor(1초)·services(5초/작업중 2초)를 push
+type AdminEvent =
+  | { type: "monitor"; system?: SystemData }
+  | {
+      type: "services";
+      qdrant?: QdrantData;
+      ollama?: OllamaData;
+      indexer?: IndexerData;
+      jobs?: Record<string, JobInfo>;
+    };
 
 export default function AdminPage() {
   const [data, setData] = useState<Dashboard | null>(null);
   const [monitor, setMonitor] = useState<MonitorData | null>(null);
+  // SSE services 이벤트의 인덱서·작업 상태 — dashboard(수동 로드)와 독립으로 갱신
+  const [svc, setSvc] = useState<{ indexer?: IndexerData; jobs?: Record<string, JobInfo> }>({});
   const [history, setHistory] = useState<MetricHistory>({ cpu: [], ram: [], gpu: [], vram: [] });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -1285,13 +1296,17 @@ export default function AdminPage() {
     }
   }, []);
 
-  // /monitor: 시스템 지표(CPU/RAM/GPU/VRAM)만 — 1초. 차트 버퍼에 누적.
-  const loadMonitor = useCallback(async () => {
-    try {
-      const r = await fetch(`${API_BASE}/api/admin/monitor`);
-      if (!r.ok) return;
-      const m = (await r.json()) as { system?: SystemData };
-      const s = m.system ?? ({} as SystemData);
+  // 진입 시 자동으로 한 번 로드 (새로고침 버튼을 누르지 않아도 데이터 표시)
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void load();
+  }, [load]);
+
+  // SSE 구독 — 서버가 monitor(1초 격자)·services(5초/작업중 2초, 작업 제어 직후 즉시)를
+  // push 한다. 탭이 숨겨지면 훅이 연결을 닫고(서버 샘플러 정지), 복귀 시 재연결.
+  useEventStream<AdminEvent>(`${API_BASE}/api/admin/events`, (ev) => {
+    if (ev.type === "monitor") {
+      const s = ev.system ?? ({} as SystemData);
       setMonitor((prev) => ({ ...prev, system: s }));
       const vramPct =
         s.vram_total_mib && s.vram_used_mib != null
@@ -1304,76 +1319,14 @@ export default function AdminPage() {
         gpu: cap(h.gpu, s.gpu_percent ?? 0),
         vram: cap(h.vram, vramPct),
       }));
-    } catch {
-      /* 모니터 폴링 실패는 조용히 무시 */
+    } else if (ev.type === "services") {
+      setMonitor((prev) => ({ ...prev, qdrant: ev.qdrant, ollama: ev.ollama }));
+      setSvc({ indexer: ev.indexer, jobs: ev.jobs });
     }
-  }, []);
-
-  // /services: Qdrant·Ollama 카드 + 인덱서 진행 + 작업 상태 — 평소 5초/작업중 2초.
-  const loadServices = useCallback(async () => {
-    try {
-      const r = await fetch(`${API_BASE}/api/admin/services`);
-      if (!r.ok) return;
-      const sv = (await r.json()) as {
-        qdrant?: QdrantData;
-        ollama?: OllamaData;
-        indexer?: IndexerData;
-        jobs?: Record<string, JobInfo>;
-      };
-      setMonitor((prev) => ({ ...prev, qdrant: sv.qdrant, ollama: sv.ollama }));
-      setData((prev) =>
-        prev
-          ? { ...prev, indexer: sv.indexer ?? prev.indexer, jobs: sv.jobs ?? prev.jobs }
-          : prev,
-      );
-    } catch {
-      /* 무시 */
-    }
-  }, []);
-
-  // 진입 시 자동으로 한 번 로드 (새로고침 버튼을 누르지 않아도 데이터 표시)
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void load();
-  }, [load]);
-
-  // 시스템 지표: 1초 폴링. 탭이 안 보이면(document.hidden) 네트워크 호출 생략(가시성 게이팅).
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void loadMonitor();
-    const t = setInterval(() => {
-      if (!document.hidden) void loadMonitor();
-    }, MONITOR_POLL_MS);
-    const onVis = () => {
-      if (!document.hidden) void loadMonitor();
-    };
-    document.addEventListener("visibilitychange", onVis);
-    return () => {
-      clearInterval(t);
-      document.removeEventListener("visibilitychange", onVis);
-    };
-  }, [loadMonitor]);
-
-  // 작업 실행 중이면 서비스 폴링을 2초로(진행률), 평소엔 5초. 안 보이면 생략.
-  const jobRunning = !!data && Object.values(data.jobs).some((j) => j.status === "running");
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void loadServices();
-    const ms = jobRunning ? SERVICES_POLL_BUSY_MS : SERVICES_POLL_MS;
-    const t = setInterval(() => {
-      if (!document.hidden) void loadServices();
-    }, ms);
-    const onVis = () => {
-      if (!document.hidden) void loadServices();
-    };
-    document.addEventListener("visibilitychange", onVis);
-    return () => {
-      clearInterval(t);
-      document.removeEventListener("visibilitychange", onVis);
-    };
-  }, [loadServices, jobRunning]);
+  });
 
   // 인덱서 작업 POST 공통 (start / pause / resume). action 빈 문자열이면 시작.
+  // 상태 반영은 서버가 작업 전이 시 services 이벤트를 즉시 push 하므로 별도 재조회 불필요.
   async function postJob(job: string, action: "" | "/pause" | "/resume") {
     const r = await fetch(`${API_BASE}/api/admin/jobs/${encodeURIComponent(job)}${action}`, {
       method: "POST",
@@ -1382,12 +1335,15 @@ export default function AdminPage() {
       const body = (await r.json().catch(() => ({}))) as { detail?: string };
       throw new Error(body.detail ?? `HTTP ${r.status}`);
     }
-    // 곧바로 서비스 폴링을 한 번 돌려 상태를 띄우면 위 폴링이 이어받음
-    setTimeout(() => void loadServices(), 600);
   }
   const startJob = (job: string) => postJob(job, "");
   const pauseJob = (job: string) => postJob(job, "/pause");
   const resumeJob = (job: string) => postJob(job, "/resume");
+
+  // 인덱서·작업 상태 — SSE(services)가 최신, 없으면 dashboard(수동 로드) 값으로 표시.
+  // SSE 가 dashboard 선행 로드에 의존하지 않도록 독립 state(svc)를 우선한다.
+  const indexerData = svc.indexer ?? data?.indexer;
+  const jobsData = svc.jobs ?? data?.jobs ?? {};
 
   return (
     <main className="flex-1 flex flex-col w-full min-h-0">
@@ -1413,10 +1369,11 @@ export default function AdminPage() {
           </div>
         )}
 
-        {/* 모니터링 — 실시간(3초) */}
+        {/* 모니터링 — 실시간(SSE push) */}
         <section className="space-y-3">
           <h2 className="text-lg font-semibold">
-            모니터링 <span className="text-xs font-normal text-muted-foreground">· 실시간 (1초)</span>
+            모니터링{" "}
+            <span className="text-xs font-normal text-muted-foreground">· 실시간 (SSE)</span>
           </h2>
           {/* 시스템·Qdrant·Ollama: 세로 모니터(portrait)는 폭과 무관하게 세로로 쌓고(1열, 24·32" 동일),
               가로 모니터(landscape, xl↑)에서만 3열로 가로 배치. 등높이 카드 */}
@@ -1441,16 +1398,18 @@ export default function AdminPage() {
               {lastRefresh ? `· 갱신 ${lastRefresh.toLocaleTimeString("ko-KR")}` : ""}
             </span>
           </h2>
-          {data ? (
+          {data || indexerData ? (
             <>
-              <SqliteSection data={data.sqlite} />
-              <IndexerSection
-                data={data.indexer}
-                jobs={data.jobs}
-                onStartJob={startJob}
-                onPauseJob={pauseJob}
-                onResumeJob={resumeJob}
-              />
+              {data && <SqliteSection data={data.sqlite} />}
+              {indexerData && (
+                <IndexerSection
+                  data={indexerData}
+                  jobs={jobsData}
+                  onStartJob={startJob}
+                  onPauseJob={pauseJob}
+                  onResumeJob={resumeJob}
+                />
+              )}
             </>
           ) : (
             <div className="text-base text-muted-foreground animate-pulse">데이터 로딩 중…</div>

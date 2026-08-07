@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import AppHeader from "../_components/AppHeader";
+import { useEventStream } from "../_components/useEventStream";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000";
 
@@ -84,6 +85,9 @@ type JobStatus = {
 };
 
 const TERMINAL = new Set(["done", "failed", "canceled"]);
+
+// SSE(/jobs/{id}/events) 이벤트 — 변화 시만 push, 종료 상태 후 서버가 스트림을 닫는다
+type JobEvent = { type: "status"; job: JobStatus } | { type: "gone" };
 
 function relTime(ts?: number): string {
   if (!ts) return "";
@@ -215,35 +219,22 @@ export default function StabilizePage() {
     };
   }, []);
 
-  useEffect(() => {
-    if (!jobId) return;
-    let alive = true;
-    let timer: ReturnType<typeof setTimeout>;
-    const tick = async () => {
-      try {
-        const r = await fetch(`${API_BASE}/api/stabilize/jobs/${jobId}`);
-        if (r.ok) {
-          const s: JobStatus = await r.json();
-          if (!alive) return;
-          setStatus(s);
-          if (!TERMINAL.has(s.status)) {
-            timer = setTimeout(tick, 1500);
-          } else {
-            loadJobs();
-          }
-          return;
-        }
-      } catch {
-        /* 재시도 */
+  // 잡 상태 SSE 구독 — 실행 중일 때만 연결. 종료 상태를 받으면 url 이 null 이 되어
+  // 클라이언트가 먼저 닫는다(EventSource 는 서버가 닫아도 자동 재연결하므로 1차 방어).
+  const streaming = !!jobId && !(status && TERMINAL.has(status.status));
+  useEventStream<JobEvent>(
+    streaming ? `${API_BASE}/api/stabilize/jobs/${jobId}/events` : null,
+    (ev) => {
+      if (ev.type === "status") {
+        setStatus(ev.job);
+        if (TERMINAL.has(ev.job.status)) loadJobs();
+      } else if (ev.type === "gone") {
+        setJobId(null);
+        setStatus(null);
+        loadJobs();
       }
-      if (alive) timer = setTimeout(tick, 2500);
-    };
-    tick();
-    return () => {
-      alive = false;
-      clearTimeout(timer);
-    };
-  }, [jobId, loadJobs]);
+    },
+  );
 
   async function submit() {
     if (!file || submitting) return;

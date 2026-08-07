@@ -85,6 +85,20 @@ _running_jobs: dict[str, dict[str, Any]] = {}
 _pipeline_procs: dict[str, subprocess.Popen] = {}
 
 
+def _kick_services() -> None:
+    """SSE services 스트림에 즉시 재샘플을 요청한다(작업 상태 전이 시).
+
+    admin_events 가 이 모듈을 import 하므로 순환 방지를 위해 지연 import.
+    executor 스레드에서도 안전(call_soon_threadsafe).
+    """
+    try:
+        from apps.api.routers.admin_events import kick_services_threadsafe
+
+        kick_services_threadsafe()
+    except Exception:
+        pass
+
+
 def _localhost_only(request: Request) -> None:
     client_host = request.client.host if request.client else ""
     if client_host not in ("127.0.0.1", "localhost", "::1", "ai.kamoru.jk"):
@@ -200,6 +214,7 @@ async def start_job(job: str, request: Request) -> dict[str, Any]:
             "steps": [{"step": s, "args": a, "status": "pending"} for s, a in PIPELINE_DEFS[job]],
         }
         asyncio.get_event_loop().run_in_executor(None, _run_pipeline_sync, job, venv_python, 0)
+        _kick_services()
         return {"status": "started", "job": job, "pipeline": True}
 
     # 단일 작업
@@ -217,6 +232,7 @@ async def start_job(job: str, request: Request) -> dict[str, Any]:
         "started_at": time.time(),
     }
     asyncio.get_event_loop().run_in_executor(None, _wait_job_sync, job, proc)
+    _kick_services()
     return {"status": "started", "job": job, "pid": proc.pid}
 
 
@@ -240,6 +256,7 @@ async def pause_job(job: str, request: Request) -> dict[str, Any]:
             proc.terminate()  # Windows: TerminateProcess. 미커밋분만 롤백(WAL) → 안전.
         except Exception as e:
             log.warning("pause terminate failed: %s", e)
+    _kick_services()
     return {"status": "pausing", "job": job}
 
 
@@ -264,6 +281,7 @@ async def resume_job(job: str, request: Request) -> dict[str, Any]:
         st["status"] = "pending"
     venv_python = str(REPO_ROOT / ".venv" / "Scripts" / "python.exe")
     asyncio.get_event_loop().run_in_executor(None, _run_pipeline_sync, job, venv_python, start)
+    _kick_services()
     return {"status": "resumed", "job": job, "from_step": start}
 
 
@@ -282,6 +300,7 @@ def _wait_job_sync(job: str, proc: subprocess.Popen) -> None:
         )
     except Exception as e:
         _running_jobs[job].update({"status": "error", "error": str(e)})
+    _kick_services()
 
 
 def _mark_paused(job: str, step_idx: int) -> None:
@@ -298,6 +317,7 @@ def _mark_paused(job: str, step_idx: int) -> None:
     info["pause_requested"] = False
     info["paused_at"] = time.time()
     _pipeline_procs.pop(job, None)
+    _kick_services()
 
 
 def _run_pipeline_sync(job: str, venv_python: str, start_step: int = 0) -> None:
@@ -321,6 +341,7 @@ def _run_pipeline_sync(job: str, venv_python: str, start_step: int = 0) -> None:
         st["status"] = "running"
         st["started_at"] = time.time()
         st.pop("finished_at", None)
+        _kick_services()  # 단계 시작을 SSE 로 즉시 반영
         try:
             proc = subprocess.Popen(
                 [venv_python, "-m", "packages.indexer.cli", st["step"], *st["args"]],
@@ -341,11 +362,13 @@ def _run_pipeline_sync(job: str, venv_python: str, start_step: int = 0) -> None:
                 return
             if proc.returncode == 0:
                 st["status"] = "done"
+                _kick_services()  # 단계 완료를 SSE 로 즉시 반영
             else:
                 st["status"] = "failed"
                 st["stderr"] = err.decode("utf-8", errors="replace")[-2000:]
                 info["status"] = "failed"
                 info["finished_at"] = time.time()
+                _kick_services()
                 return
         except Exception as e:
             _pipeline_procs.pop(job, None)
@@ -353,15 +376,61 @@ def _run_pipeline_sync(job: str, venv_python: str, start_step: int = 0) -> None:
             info["status"] = "error"
             info["error"] = str(e)
             info["finished_at"] = time.time()
+            _kick_services()
             return
     info["status"] = "done"
     info["paused_step"] = None
     info["finished_at"] = time.time()
+    _kick_services()
 
 
 # ---------------------------------------------------------------------------
 # 내부 수집 함수
 # ---------------------------------------------------------------------------
+
+# Qdrant 클라이언트 캐시 — SSE 샘플러가 초 단위로 재사용하므로 매 호출 생성 금지.
+# 조회 실패 시 _reset_qdrant_client() 로 버리고 다음 호출에서 재연결한다.
+_qdrant_client_cache: Any = None
+
+
+def _qdrant_client():
+    global _qdrant_client_cache
+    if _qdrant_client_cache is None:
+        from qdrant_client import QdrantClient
+
+        cfg = load_config()
+        _qdrant_client_cache = QdrantClient(url=cfg["server"]["qdrant"])
+    return _qdrant_client_cache
+
+
+def _reset_qdrant_client() -> None:
+    global _qdrant_client_cache
+    qc, _qdrant_client_cache = _qdrant_client_cache, None
+    if qc is not None:
+        try:
+            qc.close()
+        except Exception:
+            pass
+
+
+# Ollama용 httpx 클라이언트 캐시 — 커넥션 재사용(keep-alive)
+_ollama_client_cache: httpx.AsyncClient | None = None
+
+
+def _ollama_http() -> httpx.AsyncClient:
+    global _ollama_client_cache
+    if _ollama_client_cache is None or _ollama_client_cache.is_closed:
+        _ollama_client_cache = httpx.AsyncClient(timeout=5.0)
+    return _ollama_client_cache
+
+
+async def close_cached_clients() -> None:
+    """lifespan 종료 시 캐시된 클라이언트를 정리한다."""
+    global _ollama_client_cache
+    c, _ollama_client_cache = _ollama_client_cache, None
+    if c is not None and not c.is_closed:
+        await c.aclose()
+    _reset_qdrant_client()
 
 
 def _qdrant_stats() -> dict[str, Any]:
@@ -373,11 +442,7 @@ def _qdrant_stats() -> dict[str, Any]:
     둘 다 없으면 points_count 를 대신 사용한다.
     """
     try:
-        from qdrant_client import QdrantClient
-
-        cfg = load_config()
-        url: str = cfg["server"]["qdrant"]
-        qc = QdrantClient(url=url)
+        qc = _qdrant_client()
         cols = qc.get_collections().collections
         result: list[dict[str, Any]] = []
         for col in cols:
@@ -418,6 +483,7 @@ def _qdrant_stats() -> dict[str, Any]:
         return {"available": True, "collections": result}
     except Exception as e:
         log.warning("qdrant stats error: %s", e)
+        _reset_qdrant_client()
         return {"available": False, "error": str(e), "collections": []}
 
 
@@ -509,31 +575,31 @@ async def _ollama_stats() -> dict[str, Any]:
     try:
         cfg = load_config()
         base_url: str = cfg["server"]["ollama"]
-        async with httpx.AsyncClient(timeout=5.0) as client:
-            tags_resp = await client.get(f"{base_url}/api/tags")
-            models: list[dict] = []
-            if tags_resp.status_code == 200:
-                models = tags_resp.json().get("models", [])
+        client = _ollama_http()  # 캐시된 AsyncClient (keep-alive 재사용)
+        tags_resp = await client.get(f"{base_url}/api/tags")
+        models: list[dict] = []
+        if tags_resp.status_code == 200:
+            models = tags_resp.json().get("models", [])
 
-            running: list[dict] = []
-            try:
-                ps_resp = await client.get(f"{base_url}/api/ps")
-                if ps_resp.status_code == 200:
-                    running = ps_resp.json().get("models", [])
-            except Exception:
-                pass
+        running: list[dict] = []
+        try:
+            ps_resp = await client.get(f"{base_url}/api/ps")
+            if ps_resp.status_code == 200:
+                running = ps_resp.json().get("models", [])
+        except Exception:
+            pass
 
-            # capabilities: 캐시에 없는 모델만 /api/show 1회 조회 (정적 정보)
-            for m in models:
-                nm = m.get("name", "")
-                if nm and nm not in _OLLAMA_CAPS:
-                    try:
-                        sh = await client.post(f"{base_url}/api/show", json={"model": nm})
-                        _OLLAMA_CAPS[nm] = (
-                            sh.json().get("capabilities") or [] if sh.status_code == 200 else []
-                        )
-                    except Exception:
-                        _OLLAMA_CAPS[nm] = []
+        # capabilities: 캐시에 없는 모델만 /api/show 1회 조회 (정적 정보)
+        for m in models:
+            nm = m.get("name", "")
+            if nm and nm not in _OLLAMA_CAPS:
+                try:
+                    sh = await client.post(f"{base_url}/api/show", json={"model": nm})
+                    _OLLAMA_CAPS[nm] = (
+                        sh.json().get("capabilities") or [] if sh.status_code == 200 else []
+                    )
+                except Exception:
+                    _OLLAMA_CAPS[nm] = []
 
         # 로드된 모델은 **정확한 이름**으로만 매칭한다.
         # (base 이름 매칭은 같은 모델의 다른 태그 e2b/e4b 를 서로 오탐해 둘 다 '로드중'으로
@@ -634,10 +700,7 @@ def _system_stats() -> dict[str, Any]:
 def _qdrant_points_counts() -> dict[str, int]:
     """Qdrant 컬렉션별 points_count를 {컬렉션명: 포인트수} 딕셔너리로 반환."""
     try:
-        from qdrant_client import QdrantClient
-
-        cfg = load_config()
-        qc = QdrantClient(url=cfg["server"]["qdrant"])
+        qc = _qdrant_client()
         result: dict[str, int] = {}
         for name in ("videos", "posters_clip", "poster_ocr", "faces"):
             try:
@@ -647,6 +710,7 @@ def _qdrant_points_counts() -> dict[str, int]:
                 result[name] = 0
         return result
     except Exception:
+        _reset_qdrant_client()
         return {}
 
 

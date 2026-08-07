@@ -172,6 +172,8 @@ enhance:
 - **API `apps/api/routers/enhance.py`**: POST/GET `jobs`, `result`(GET+HEAD, `?variant=original`),
   `cancel`, **`retry`(실패/취소 잡을 멈춘 단계부터 재개 — 증분이라 안전)**, DELETE.
   업로드 직후 동기 ffprobe 로 길이 제한을 **잡 시작 전에** 거부. localhost-only.
+  `GET /jobs/{id}/events` — **SSE 스트림**(웹 화면의 기본 갱신 경로): 변화 시만
+  `{"type":"status","job":{…}}` push, 종료 상태 후 스트림 종료. 공용 유틸 `apps/api/sse.py`.
 - **GPU 상호배제 공용화 `apps/api/routers/_gpu.py`**: `gpu_busy()` 가 안정화·화질개선·인덱싱
   셋을 모두 검사 — stabilize 라우터도 이걸 쓰도록 교체(양방향 배제). `kill_tree()` 는
   `taskkill /F /T` 로 워커의 ncnn/ffmpeg 자식까지 종료(고아 GPU 프로세스 방지) — stabilize

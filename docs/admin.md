@@ -9,7 +9,11 @@ flayAI 시스템 상태를 한눈에 확인하고 인덱서 배치 작업을 시
 
 ## 화면 구성
 
-4개 섹션이 1열(세로)로 배치됩니다. 데이터는 **수동 새로고침**으로만 갱신됩니다 (자동 폴링 없음 — 서버 부하 절약).
+4개 섹션이 1열(세로)로 배치됩니다. 데이터 갱신은 **SSE push** 방식입니다:
+
+- 페이지가 `GET /api/admin/events` 스트림 하나를 구독하면, 서버가 `monitor`(시스템 지표, 1초 격자)와 `services`(Qdrant·Ollama·인덱서·작업, 평소 5초/작업중 2초/작업 제어 직후 즉시) 이벤트를 push 합니다. 브라우저 주기 폴링은 없습니다.
+- 서버 샘플러는 **구독자(탭)가 있을 때만** 동작하고, 탭이 여러 개여도 수집은 1회만 하여 팬아웃합니다. 탭이 숨겨지면(`document.hidden`) 클라이언트가 연결을 닫아 수집이 완전히 멈춥니다.
+- 무거운 SQLite 전체 집계는 `GET /api/admin/dashboard`(초기 1회 + 수동 새로고침 버튼) 전용으로 유지됩니다.
 
 ---
 
@@ -104,11 +108,25 @@ Qdrant 컬렉션별 현황을 카드 형태로 표시합니다.
 
 모든 엔드포인트는 localhost-only (127.0.0.1 / localhost / ai.kamoru.jk):
 
-| 메서드 | 경로                    | 설명                                                |
-| ------ | ----------------------- | --------------------------------------------------- |
-| `GET`  | `/api/admin/dashboard`  | 전체 시스템 현황 (Qdrant·SQLite·Ollama·인덱서)      |
-| `GET`  | `/api/admin/jobs`       | 실행 중·완료 작업 목록                              |
-| `POST` | `/api/admin/jobs/{job}` | 인덱서 CLI 작업 시작 (`packages.indexer.cli {job}`) |
+| 메서드 | 경로                           | 설명                                                |
+| ------ | ------------------------------ | --------------------------------------------------- |
+| `GET`  | `/api/admin/events`            | **SSE 스트림** — `monitor`(1초)·`services`(5초/작업중 2초) 이벤트 push. 화면 갱신의 기본 경로 |
+| `GET`  | `/api/admin/dashboard`         | 전체 시스템 현황 (Qdrant·SQLite·Ollama·인덱서) — 초기·수동 전용 |
+| `GET`  | `/api/admin/monitor`           | 시스템 지표만 (SSE 의 monitor 와 동일 — curl 디버깅·폴백용) |
+| `GET`  | `/api/admin/services`          | Qdrant·Ollama·인덱서·작업 (SSE 의 services 와 동일 — 폴백용) |
+| `GET`  | `/api/admin/jobs`              | 실행 중·완료 작업 목록                              |
+| `POST` | `/api/admin/jobs/{job}`        | 인덱서 CLI 작업 시작 (`packages.indexer.cli {job}`) |
+| `POST` | `/api/admin/jobs/{job}/pause`  | 파이프라인 일시정지 (현재 단계 terminate)           |
+| `POST` | `/api/admin/jobs/{job}/resume` | 일시정지된 파이프라인을 멈춘 단계부터 재개          |
+
+### SSE 이벤트 형식
+
+프레임은 채팅 SSE 와 동일한 `data: <JSON>\n\n` (타입은 JSON 안 `type` 필드), 유휴 시 15초 간격 코멘트 하트비트(`: ping`):
+
+```json
+{ "type": "monitor",  "ts": 1786100000.0, "system": { "cpu_percent": 12.3, "...": "..." } }
+{ "type": "services", "ts": 1786100000.0, "qdrant": {}, "ollama": {}, "indexer": {}, "jobs": {} }
+```
 
 ### 허용된 job 값
 
@@ -193,7 +211,10 @@ Qdrant 컬렉션별 현황을 카드 형태로 표시합니다.
 | 파일                                                                  | 역할                                   |
 | --------------------------------------------------------------------- | -------------------------------------- |
 | [apps/api/routers/admin.py](../apps/api/routers/admin.py)             | FastAPI 라우터 — 데이터 수집·작업 실행 |
+| [apps/api/routers/admin_events.py](../apps/api/routers/admin_events.py) | SSE 스트림 — 샘플러(1초/5초) + 팬아웃 + kick |
+| [apps/api/sse.py](../apps/api/sse.py)                                 | 공용 SSE 유틸 — Broadcaster·poll_stream·프레임 인코딩 |
 | [apps/web/src/app/admin/page.tsx](../apps/web/src/app/admin/page.tsx) | Next.js 관리자 페이지                  |
+| [apps/web/src/app/_components/useEventStream.ts](../apps/web/src/app/_components/useEventStream.ts) | SSE 구독 공용 훅 (가시성 게이팅·자동 재연결) |
 
 ---
 

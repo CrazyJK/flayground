@@ -107,7 +107,8 @@ floor 를 0.35→0.15 로 낮춰도 매칭률 불변. 즉 매칭률 ≈ (JP 세�
 
 **API** (`apps/api/routers/subtitle.py`, `apps/api/main.py`)
 - `POST /api/subtitle/requests {opus, task}` — 외부 신청(opus 검증, 개방) · `POST /requests/bulk {opuses[], task}` — 다중 선택 신청
-- `GET /api/subtitle/requests` · `GET /requests/{id}` — 큐/상태 폴링(stage·progress 포함)
+- `GET /api/subtitle/requests` · `GET /requests/{id}` — 큐/상태 조회(stage·progress 포함)
+- `GET /api/subtitle/requests/events` — **SSE 스트림**(웹 화면의 기본 갱신 경로) — 서버가 활성 2초/유휴 6초로 큐를 샘플링해 변화 시만 `{"type":"requests","jobs":[…]}` push. 공용 유틸 `apps/api/sse.py`
 - `GET /api/subtitle/candidates` — 무자막 목록(생성 대상, 검색/정렬/페이지) · `GET /subbed` — 자막 보유 목록(resync 대상 + 최근 resync 결과)
 - `POST /api/subtitle/scan` — 자막 유무 디스크 스캔→`subtitle_status` 캐시 · `POST /enqueue-all {task}` — 카테고리 전체 적재 (둘 다 localhost 전용)
 - `POST /api/subtitle/drain` — 수동 드레인(서브프로세스) · `DELETE /requests/{id}` — 삭제 (둘 다 localhost 전용)

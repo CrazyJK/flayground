@@ -18,13 +18,17 @@
 
 from __future__ import annotations
 
+import asyncio
 import logging
 import subprocess
+import time
 from typing import Any
 
 from fastapi import APIRouter, HTTPException, Request
+from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
+from apps.api.sse import SSE_HEADERS, poll_stream
 from packages.indexer.db import connect
 from packages.settings import REPO_ROOT
 from packages.subtitler import candidates as C
@@ -101,6 +105,37 @@ def list_requests(limit: int = 100) -> dict[str, Any]:
         return {"jobs": Q.list_jobs(conn, limit=limit)}
     finally:
         conn.close()
+
+
+# 주의: /requests/{job_id} 보다 먼저 등록해야 "events" 가 job_id 로 매칭되지 않는다.
+@router.get("/requests/events")
+async def request_events(limit: int = 80) -> StreamingResponse:
+    """큐/이력 목록 SSE 스트림 — 변화 시만 push(폴링 GET /requests 의 대체).
+
+    샘플링 주기는 서버가 적응: 활성(queued/running) 잡 있으면 2초, 없으면 6초.
+    갱신 주체(드레인)는 별도 서브프로세스라 DB 를 서버 내부에서 폴링한다.
+    """
+
+    def _snapshot() -> list[dict[str, Any]]:
+        conn = _conn()
+        try:
+            return Q.list_jobs(conn, limit=limit)
+        finally:
+            conn.close()
+
+    def _interval(jobs: list[dict[str, Any]]) -> float:
+        active = any(j.get("status") in ("queued", "running") for j in jobs)
+        return 2.0 if active else 6.0
+
+    return StreamingResponse(
+        poll_stream(
+            lambda: asyncio.to_thread(_snapshot),
+            lambda jobs: {"type": "requests", "ts": time.time(), "jobs": jobs},
+            interval=_interval,
+        ),
+        media_type="text/event-stream",
+        headers=SSE_HEADERS,
+    )
 
 
 @router.get("/requests/{job_id}")

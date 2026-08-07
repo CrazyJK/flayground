@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from "react";
 import AppHeader from "../_components/AppHeader";
 import SectionCard from "../_components/SectionCard";
+import { useEventStream } from "../_components/useEventStream";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000";
 
@@ -579,12 +580,13 @@ function QueueSection({ jobs, onReload }: { jobs: SubtitleJob[]; onReload: () =>
 }
 
 // ---------------------------------------------------------------------------
-// 페이지 — 화면 높이를 3등분(각 섹션 flex-1, 내부 목록만 스크롤). 큐 폴링은 상위 소유.
+// 페이지 — 화면 높이를 3등분(각 섹션 flex-1, 내부 목록만 스크롤). 큐 구독은 상위 소유.
 // ---------------------------------------------------------------------------
 
 export default function SubtitlePage() {
   const [jobs, setJobs] = useState<SubtitleJob[]>([]);
 
+  // 신청 직후 즉시 반영용 원샷 조회 (평상시 갱신은 SSE 가 담당)
   const loadJobs = useCallback(async () => {
     try {
       const r = await fetch(`${API_BASE}/api/subtitle/requests?limit=80`);
@@ -592,20 +594,17 @@ export default function SubtitlePage() {
       const j = (await r.json()) as { jobs: SubtitleJob[] };
       setJobs(j.jobs ?? []);
     } catch {
-      /* 폴링 실패는 조용히 무시 */
+      /* 조회 실패는 조용히 무시 */
     }
   }, []);
 
-  const active = jobs.some((j) => j.status === "running" || j.status === "queued");
-  useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
-    void loadJobs();
-    const ms = active ? 2000 : 6000;
-    const t = setInterval(() => {
-      if (!document.hidden) void loadJobs();
-    }, ms);
-    return () => clearInterval(t);
-  }, [loadJobs, active]);
+  // 큐 목록 SSE 구독 — 변화 시만 push. 주기 적응(활성 2초/유휴 6초)은 서버가 담당.
+  useEventStream<{ type: "requests"; jobs: SubtitleJob[] }>(
+    `${API_BASE}/api/subtitle/requests/events?limit=80`,
+    (ev) => {
+      if (ev.type === "requests") setJobs(ev.jobs ?? []);
+    },
+  );
 
   return (
     <main className="flex-1 flex flex-col w-full min-h-0">

@@ -127,11 +127,22 @@ async def _lifespan(app: FastAPI):
         ensure_diary_collection(_qdrant())
     except Exception as e:
         log.warning("diary 초기화 건너뜀(첫 요청 때 재시도): %s", e)
+    # 관리자 SSE — executor 스레드에서 kick 할 때 쓸 이벤트 루프 참조를 잡아둔다
+    from apps.api.routers import admin as _admin
+    from apps.api.routers import admin_events as _admin_events
+
+    _admin_events.bind_loop()
     # 백그라운드 워밍업 — 기동을 막지 않음
     asyncio.create_task(_warmup_face_model())
     # 채팅 LLM(qwen)은 상주시키지 않는다 — 첫 사용 시 로드되고 Ollama 기본(5분) 유휴 후 해제.
     # (영상 시청 등 다른 GPU 작업에 VRAM 양보. 인덱싱 진입 시엔 ollama_vram 훅이 언로드.)
     yield
+    # 종료 정리 — SSE 샘플러 태스크·캐시 클라이언트
+    try:
+        await _admin_events.shutdown()
+        await _admin.close_cached_clients()
+    except Exception as e:
+        log.warning("shutdown cleanup failed: %s", e)
 
 
 def create_app() -> FastAPI:
@@ -259,6 +270,11 @@ def create_app() -> FastAPI:
     from apps.api.routers.admin import router as admin_router
 
     app.include_router(admin_router)
+
+    # ---- 관리자 SSE 스트림 (폴링 대체) ----
+    from apps.api.routers.admin_events import router as admin_events_router
+
+    app.include_router(admin_events_router)
 
     # ---- 일기형 대화 ----
     from apps.api.routers.diary import router as diary_router

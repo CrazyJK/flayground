@@ -280,7 +280,8 @@ RAFT·torch·numpy 는 이미 있음.
 |---|---|---|
 | POST | `/api/stabilize/jobs` | multipart 업로드(mp4) + 옵션(mode·강도 등) → 잡 생성, `{job_id, status:"queued"}`. 다른 잡/인덱싱 중이면 409 |
 | GET | `/api/stabilize/jobs` | 잡 목록(상태·단계·진행률) |
-| GET | `/api/stabilize/jobs/{id}` | 단일 잡 상태(폴링) — status.json + metrics + 산출물 목록 |
+| GET | `/api/stabilize/jobs/{id}` | 단일 잡 상태 조회 — status.json + metrics + 산출물 목록 |
+| GET | `/api/stabilize/jobs/{id}/events` | **SSE 스트림**(웹 화면의 기본 갱신 경로) — 변화 시만 `{"type":"status","job":{…}}` push, 종료 상태 후 스트림 종료. 잡 삭제 시 `{"type":"gone"}`. 공용 유틸 `apps/api/sse.py` |
 | GET | `/api/stabilize/jobs/{id}/result?variant=background\|person` | 완료 시 결과 mp4 다운로드/재생(`FileResponse`, Range 지원). 단일 모드는 variant 생략 |
 | POST | `/api/stabilize/jobs/{id}/cancel` | 현재 단계 서브프로세스 terminate(인덱서 pause 와 동일 기법) |
 | DELETE | `/api/stabilize/jobs/{id}` | 잡 디렉토리 삭제 |

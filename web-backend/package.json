@@ -8,6 +8,9 @@
   "private": true,
   "type": "module",
   "main": "dist/index.js",
+  "resolutions": {
+    "@types/express": "^4.17.21"
+  },
   "scripts": {
     "start": "node dist/index.js",
     "dev": "tsx watch src/index.ts",

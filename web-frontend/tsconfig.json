@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
     // Deprecated 경고 무시
-    "ignoreDeprecations": "6.0",
+    "ignoreDeprecations": "5.0",
 
     // 최신 타겟으로 업데이트
     "target": "ES2022",

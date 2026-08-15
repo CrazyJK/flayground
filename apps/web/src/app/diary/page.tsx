@@ -590,6 +590,24 @@ export default function DiaryPage() {
     if (delta) c.scrollTop += delta;
   }, []);
 
+  // 콘텐츠 높이가 뒤늦게 변하는 동안(이미지 로드·동영상 metadata·폰트 스왑) 잠깐
+  // 위치를 계속 다시 잡는 공용 도우미 — img load 리스너만으론 동영상/폰트를 놓쳐
+  // 마지막 일기가 화면 밖으로 밀리던 문제의 해법(ResizeObserver 가 전부 커버).
+  const observeSettle = useCallback((c: HTMLDivElement, fn: () => void, ms = 2500) => {
+    const inner = c.firstElementChild;
+    if (!inner) return;
+    const deadline = performance.now() + ms;
+    const ro = new ResizeObserver(() => {
+      if (performance.now() > deadline) {
+        ro.disconnect();
+        return;
+      }
+      fn();
+    });
+    ro.observe(inner);
+    window.setTimeout(() => ro.disconnect(), ms + 100);
+  }, []);
+
   // 이전 일기 prepend 후 스크롤 위치 보존 / 첫 로드 후 초기 위치 결정
   useLayoutEffect(() => {
     const c = scrollRef.current;
@@ -609,45 +627,22 @@ export default function DiaryPage() {
         }
       };
       pin();
-      // 일기 속 이미지가 아직 안 실리면 높이가 작게 잡혀 위치가 어긋남 →
-      // 미완료 이미지가 로드될 때마다 재정렬해 최종적으로 날짜 헤더가 맨 위에 오게 한다.
-      const imgs = Array.from(c.querySelectorAll("img")).filter((im) => !im.complete);
-      if (imgs.length) {
-        initialPinRef.current = true;
-        let waiting = imgs.length;
-        const onDone = () => {
-          if (initialPinRef.current) pin();
-          waiting -= 1;
-          if (waiting <= 0) initialPinRef.current = false;
-        };
-        imgs.forEach((im) => {
-          im.addEventListener("load", onDone, { once: true });
-          im.addEventListener("error", onDone, { once: true });
-        });
-      }
+      initialPinRef.current = true;
+      observeSettle(c, () => {
+        if (initialPinRef.current) pin(); // 사용자가 위로 스크롤하면 중단(onThreadScroll)
+      });
       return;
     }
     if (anchorIdRef.current != null) {
-      // prepend 직후 기준 세션을 원래 위치로 복원, 이후 옛 일기 이미지가 실리며 위가
-      // 늘어나는 것도 load 마다 재복원해 현재 읽던 일기가 밀리지 않게 한다.
+      // prepend 직후 기준 세션을 원래 위치로 복원하고, 옛 일기의 이미지·동영상이
+      // 실리며 위가 늘어나는 동안에도 재복원해 현재 읽던 일기가 밀리지 않게 한다.
       reAnchor();
-      const imgs = Array.from(c.querySelectorAll("img")).filter((im) => !im.complete);
-      if (imgs.length) {
-        let waiting = imgs.length;
-        const onDone = () => {
-          reAnchor();
-          waiting -= 1;
-          if (waiting <= 0) anchorIdRef.current = null; // 이미지 다 실리면 보정 종료
-        };
-        imgs.forEach((im) => {
-          im.addEventListener("load", onDone, { once: true });
-          im.addEventListener("error", onDone, { once: true });
-        });
-      } else {
-        anchorIdRef.current = null;
-      }
+      observeSettle(c, reAnchor);
+      window.setTimeout(() => {
+        anchorIdRef.current = null; // 관찰 종료와 함께 보정도 종료
+      }, 2600);
     }
-  }, [history, reAnchor]);
+  }, [history, reAnchor, observeSettle]);
 
   // 위로 스크롤 시 더 과거 로드(이미 한 번 불러온 뒤에만 자동)
   const onThreadScroll = useCallback(() => {
@@ -1044,7 +1039,7 @@ export default function DiaryPage() {
             style={{ overflowAnchor: "none" }}
             className="flex-1 min-h-0 overflow-y-auto w-full"
           >
-            <div className="max-w-[720px] mx-auto px-6 pt-6 pb-2 flex flex-col gap-[18px]">
+            <div className="max-w-[720px] mx-auto px-6 pt-6 pb-6 flex flex-col gap-[18px]">
               {/* 위로 더 불러오기 상태 표시(맨 위) */}
               {history.length > 0 && histLoading && (
                 <div className="font-sans text-center text-xs text-muted-foreground py-1">

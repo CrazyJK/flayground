@@ -331,11 +331,76 @@ function PastMessage({ m }: { m: RecallMessage }) {
   );
 }
 
-// 이전 일기 한 세션 — 날짜 구분선 + 그날의 글/노트(시간순)
+// 이전 일기 한 세션 — 날짜 구분선 + 요약 버튼 + 그날의 글/노트(시간순).
+// 요약은 온디맨드 생성(저장 안 함 — 품질 확인 단계), 받은 결과는 컴포넌트 상태에 캐시.
 function PastSession({ s }: { s: RecallSession }) {
+  const [sumText, setSumText] = useState<string | null>(null);
+  const [sumOpen, setSumOpen] = useState(false);
+  const [sumLoading, setSumLoading] = useState(false);
+  const [sumNote, setSumNote] = useState<string | null>(null);
+
+  const toggleSummary = useCallback(async () => {
+    if (sumOpen) {
+      setSumOpen(false);
+      return;
+    }
+    if (sumText != null) {
+      setSumOpen(true);
+      return;
+    }
+    setSumLoading(true);
+    setSumNote(null);
+    try {
+      const r = await fetch(`${API_BASE}/api/diary/sessions/${s.session_id}/summary`, {
+        method: "POST",
+      });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const j = await r.json();
+      if (j.too_short) {
+        setSumNote("요약이 필요할 만큼 길지 않아요.");
+        return;
+      }
+      setSumText(String(j.summary ?? ""));
+      setSumOpen(true);
+    } catch {
+      setSumNote("요약 생성에 실패했어요. 잠시 후 다시 시도해 주세요.");
+    } finally {
+      setSumLoading(false);
+    }
+  }, [sumOpen, sumText, s.session_id]);
+
   return (
     <div data-session={s.session_id} className="flex flex-col gap-[18px]">
       <DateDivider label={dateLabel(s.date)} />
+      {/* 요약 버튼 — 구분선 바로 아래 우측, 조용한 톤 */}
+      <div className="flex justify-end -mt-3">
+        <button
+          type="button"
+          onClick={() => void toggleSummary()}
+          disabled={sumLoading}
+          className="font-sans inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[var(--diary-accent)] disabled:opacity-50"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M4 6h16M4 12h10M4 18h6" />
+          </svg>
+          {sumLoading ? "요약 중…" : sumOpen ? "요약 닫기" : "요약"}
+        </button>
+      </div>
+      {sumNote && (
+        <div className="-mt-3 text-right font-sans text-xs text-muted-foreground opacity-80">
+          {sumNote}
+        </div>
+      )}
+      {sumOpen && sumText && (
+        <div className="-mt-1 border-l-2 border-[var(--diary-accent)]/50 pl-3.5 py-0.5">
+          <div className="font-sans text-[11px] tracking-[0.08em] text-[var(--diary-accent)] mb-1.5">
+            요약
+          </div>
+          <div className="text-base leading-[1.7] text-foreground/90 whitespace-pre-wrap">
+            {sumText}
+          </div>
+        </div>
+      )}
       {s.messages.map((m, i) => (
         <PastMessage key={i} m={m} />
       ))}

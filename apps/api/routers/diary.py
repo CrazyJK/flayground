@@ -5,6 +5,7 @@
 - GET  /api/diary/sessions      세션 목록(요약, 히스토리)
 - GET  /api/diary/history       이전 일기 열람(메시지 포함, 페이지네이션 + has_more)
 - GET  /api/diary/media         첨부 미디어 모아보기(이미지/동영상, 최신순 페이지네이션)
+- POST /api/diary/sessions/{id}/summary  세션 일기 요약(30% 분량, 온디맨드·비저장)
 - GET  /api/diary/sessions/{id} 세션 transcript(회상 카드·열람 공용)
 """
 
@@ -24,7 +25,7 @@ from fastapi.responses import StreamingResponse
 from pydantic import BaseModel, Field
 
 from packages.diary import store
-from packages.diary.chat import _looks_like_recall, route_diary_chat
+from packages.diary.chat import _looks_like_recall, route_diary_chat, summarize_session
 from packages.diary.htmlutil import asset_names_from_html, build_message_html, save_upload_image
 from packages.diary.vision import describe_images, describe_video
 from packages.indexer.db import connect
@@ -297,6 +298,21 @@ def diary_media(limit: int = 60, offset: int = 0) -> dict[str, Any]:
             )
     page = items[offset : offset + limit]
     return {"items": page, "has_more": offset + limit < len(items), "total": len(items)}
+
+
+@router.post("/api/diary/sessions/{session_id}/summary")
+async def diary_session_summary(session_id: int) -> dict[str, Any]:
+    """세션 일기 요약(약 30% 분량, 첨부 설명 포함) — 이전 일기 '요약' 버튼. 저장 안 함."""
+    conn = connect()
+    try:
+        res = await summarize_session(conn, session_id)
+    finally:
+        conn.close()
+    if res is None:
+        raise HTTPException(404, "session not found")
+    if not res.get("too_short") and not res.get("summary"):
+        raise HTTPException(502, "요약 생성 실패")
+    return res
 
 
 @router.get("/api/diary/sessions/{session_id}")

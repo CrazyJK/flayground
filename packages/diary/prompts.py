@@ -7,7 +7,8 @@
 
 키: system(일상 대화 페르소나) / recall_system(회상 답변 페르소나 — 차분한 톤)
     / recall_answer(회상 답변 지시) / recall_not_found(회상 실패 멘트)
-    / vision_describe(첨부 사진 묘사 지시) / person_subs(사람 지칭 등 거친 치환 규칙, 선택)
+    / vision_describe(첨부 사진 묘사 지시) / summarize(일기 요약 지시, {chars} 자리표시자)
+    / person_subs(사람 지칭 등 거친 치환 규칙, 선택)
 
 회상 경로는 system 이 아니라 recall_system 을 쓴다 — 일상 대화는 수위 높은 페르소나라도
 과거 기록을 보여주는 답은 톤 다운(담백)되게 분리.
@@ -52,6 +53,14 @@ _DEFAULTS: dict[str, Any] = {
         "이 사진에 보이는 것을 한국어로 1~2문장으로 구체적으로 묘사해줘. "
         "사람이 있으면 옷차림·자세·상황을, 장소·사물·분위기도 사실대로. "
         "추측이나 평가·미사여구는 빼고 보이는 것만."
+    ),
+    # 일기 요약(이전 일기 '요약' 버튼). {chars} 는 목표 글자 수로 치환됨.
+    "summarize": (
+        "아래는 사용자가 쓴 하루치 일기다. 전체를 약 {chars}자(원문의 30% 정도)로 요약해라.\n"
+        "- 일기를 쓴 사람의 1인칭 어투(반말 평서문)를 유지해라.\n"
+        "- 원문에 없는 내용·해석·평가를 덧붙이지 마라.\n"
+        "- '[사진: …]'/'[동영상: …]' 설명이 있으면 장면 묘사로 자연스럽게 녹여라.\n"
+        "- 한국어 문장으로만. 목록·이모지·마크다운 금지.\n"
     ),
     # 사람 지칭 등 거친 치환(정규식). [[패턴, 치환], ...] — 비어있으면 치환 안 함.
     "person_subs": [],
@@ -105,6 +114,11 @@ def recall_not_found_message() -> str:
 
 def vision_describe_prompt() -> str:
     return str(_load()["vision_describe"])
+
+
+def summarize_prompt() -> str:
+    """일기 요약 지시문(틀). {chars} 자리표시자는 호출부에서 목표 글자 수로 치환."""
+    return str(_load()["summarize"])
 
 
 def person_subs() -> list[tuple[str, str | list[str]]]:

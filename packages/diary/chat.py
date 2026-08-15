@@ -297,6 +297,71 @@ def _diary_model() -> str:
     return load_config()["models"]["diary_llm"]
 
 
+# 이보다 짧은 일기는 요약 생략(30% 요약이 무의미)
+_SUMMARY_MIN_CHARS = 120
+
+
+async def summarize_session(conn: sqlite3.Connection, session_id: int) -> dict[str, Any] | None:
+    """세션의 사용자 일기(첨부 설명 포함)를 원문의 약 30% 분량으로 요약. 저장 안 함.
+
+    이전 일기 열람의 '요약' 버튼용(온디맨드 — 품질 확인 단계라 DB 저장은 차후).
+    미디어 설명 비용 원칙:
+    - 새 일기는 작성 시 캡션이 content 의 '[사진: …]/[동영상: …]' 마커로 이미 있음 → 무비용.
+    - 레거시 일기([사진] 마커만)는 diary_image_captions 캐시 우선, 미스만 제한 생성(max_new)
+      후 캐시 — 회상(_recall_image_context)과 같은 원칙. 동영상 재분석은 하지 않는다.
+    세션이 없으면 None, 너무 짧으면 {"too_short": True}.
+    """
+    tr = store.get_session_transcript(conn, session_id)
+    if not tr:
+        return None
+    parts = [
+        (m.get("content") or "").strip()
+        for m in tr["messages"]
+        if m["role"] == "user" and (m.get("content") or "").strip()
+    ]
+    text = "\n\n".join(parts)
+    if len(text) < _SUMMARY_MIN_CHARS:
+        return {"summary": "", "too_short": True, "source_chars": len(text)}
+    # 캡션 없는 레거시 첨부만 보강(새 일기는 content 에 이미 포함 — 중복 생성 방지 가드)
+    if "[사진:" not in text:
+        media = await _recall_image_context(
+            conn, [{"session_id": session_id, "transcript": tr}], max_new=3
+        )
+        extra = media.get(session_id)
+        if extra:
+            text += f"\n(첨부 사진 설명: {extra})"
+
+    target = max(80, int(len(text) * 0.3))
+    system = prompts.summarize_prompt().format(chars=target)
+    payload = {
+        "model": _diary_model(),
+        "messages": [
+            {"role": "system", "content": system},
+            {"role": "user", "content": text},
+        ],
+        "stream": False,
+        "options": {
+            "temperature": 0.3,  # 요약은 낮은 온도로 사실 위주
+            "top_p": 0.9,
+            "repeat_penalty": 1.1,
+            # 한국어는 대략 1토큰≈1자 내외 — 목표 분량 + 여유, 과생성 하드 캡
+            "num_predict": max(160, min(800, int(target * 1.5))),
+        },
+    }
+    async with httpx.AsyncClient() as client:
+        r = await client.post(_ollama_url("/api/chat"), json=payload, timeout=180.0)
+        r.raise_for_status()
+        msg = r.json().get("message") or {}
+    summary = (msg.get("content") or "").strip()
+    return {
+        "summary": summary,
+        "too_short": False,
+        "source_chars": len(text),
+        "summary_chars": len(summary),
+        "date": _date_of(tr),
+    }
+
+
 async def _chat(
     client: httpx.AsyncClient,
     messages: list[dict],

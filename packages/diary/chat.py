@@ -180,7 +180,7 @@ def _extract_recent_cond(query: str) -> tuple[bool, int | None, str]:
 
 # 출력 노이즈 정리: 모델이 컨텍스트의 '[사진]' 마커를 'image1' 등으로 받아 코드스위칭하는
 # 잔재(_image1, [사진], 떠도는 밑줄, 끝의 +/· 등)와 이모지를 제거한다.
-_MARKER_RE = re.compile(r"\[\s*사진[^\]]*\]")
+_MARKER_RE = re.compile(r"\[\s*(?:사진|동영상)[^\]]*\]")
 _IMG_NOISE_RE = re.compile(r"_?image\s*\d*", re.IGNORECASE)
 # 이모지/그림문자(친구 톤에 안 맞음 — 글자로만)
 _EMOJI_RE = re.compile(
@@ -198,6 +198,7 @@ def _sanitize(text: str) -> str:
     s = _EMOJI_RE.sub("", s)
     s = _JAMO_RE.sub("", s)
     s = s.replace("_", " ")  # 떠도는 밑줄(마크다운 잔재)
+    s = re.sub(r"\*+", "", s)  # 인라인 볼드/이탤릭 별표(마크다운 금지인데 가끔 새어 나옴)
     s = re.sub(r"[ \t]{2,}", " ", s)
     s = re.sub(r"\s+([,.!?…])", r"\1", s)
     return s.strip(" \t\n+·-*_~`")
@@ -216,6 +217,20 @@ def _clip_sentences(text: str, n: int) -> str:
     if len(parts) <= n:
         return (text or "").strip()
     return "".join(parts[:n]).strip()
+
+
+def _clip_chars(text: str, limit: int) -> str:
+    """문장 경계를 지키며 limit 자 근처에서 자른다(요약 분량 강제). 최소 1문장은 남긴다."""
+    t = (text or "").strip()
+    if len(t) <= limit:
+        return t
+    parts = _SENT_RE.findall(t)
+    out = ""
+    for p in parts:
+        if out and len(out) + len(p) > limit:
+            break
+        out += p
+    return (out or t[:limit]).strip()
 
 
 def _crudify(text: str) -> str:
@@ -341,18 +356,23 @@ async def summarize_session(conn: sqlite3.Connection, session_id: int) -> dict[s
         ],
         "stream": False,
         "options": {
-            "temperature": 0.3,  # 요약은 낮은 온도로 사실 위주
+            "temperature": 0.5,  # 사실 유지하되 원문 어투 재현이 굳지 않을 정도
             "top_p": 0.9,
             "repeat_penalty": 1.1,
-            # 한국어는 대략 1토큰≈1자 내외 — 목표 분량 + 여유, 과생성 하드 캡
-            "num_predict": max(160, min(800, int(target * 1.5))),
+            # 한국어는 대략 1토큰≈1자 내외 — 목표 분량 + 약간의 여유(초과분은 후처리로 클립)
+            "num_predict": max(120, min(600, int(target * 1.3))),
         },
     }
     async with httpx.AsyncClient() as client:
         r = await client.post(_ollama_url("/api/chat"), json=payload, timeout=180.0)
         r.raise_for_status()
         msg = r.json().get("message") or {}
+    # 프롬프트 지시가 안 지켜지는 것(마커 재출력·이모지·분량 초과)은 코드로 강제:
+    # 리액션과 동일한 _sanitize(마커·이모지 제거) → 문장 경계 분량 클립 → person_subs 치환
     summary = (msg.get("content") or "").strip()
+    summary = _sanitize(summary)
+    summary = _clip_chars(summary, int(target * 1.4))
+    summary = _crudify(summary).strip()
     return {
         "summary": summary,
         "too_short": False,

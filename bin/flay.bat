@@ -35,7 +35,7 @@ call "%BIN%ai\all.bat" start
 echo.
 echo [flay start] done.
 echo   web : https://flay.kamoru.jk
-echo   mcp : http://localhost:3002
+echo   mcp : https://flay.kamoru.jk:3002/health
 echo   ai  : https://ai.kamoru.jk:3000
 goto :eof
 
@@ -60,7 +60,7 @@ if not exist "%DIR%\logs" mkdir "%DIR%\logs"
 pushd "%DIR%"
 start /b cmd /c "yarn start > "%LOG%" 2>&1"
 popd
-timeout /t 3 /nobreak >nul
+"%SystemRoot%\System32\timeout.exe" /t 3 /nobreak >nul
 exit /b 0
 
 :stop

@@ -66,8 +66,16 @@
       "console": "integratedTerminal"
     }
   ],
-  // ── 복합 구성: Ctrl+Shift+D 드롭다운에서 선택 후 F5 ──
+  // ── 복합 구성: Ctrl+Shift+D 드롭다운에서 선택 후 F5 (정지 버튼 한 번으로 전부 종료) ──
   "compounds": [
+    {
+      // web(frontend watch + backend tsx) + mcp + ai(FastAPI + Next.js) 를 개발 모드로 동시 기동.
+      // Qdrant 는 preLaunchTask 로 먼저 띄우고, Ollama 는 Windows 상시 서비스 전제.
+      "name": "[All] 전체 개발 모드",
+      "configurations": ["[Web] frontend dev", "[Web] backend dev", "[MCP] flay-mcp dev", "[AI] FastAPI", "[AI] Next.js"],
+      "preLaunchTask": "ai qdrant: start",
+      "stopAll": true
+    },
     {
       "name": "[AI] 전체 서비스",
       "configurations": ["[AI] FastAPI", "[AI] Next.js"],

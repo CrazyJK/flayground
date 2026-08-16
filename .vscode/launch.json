@@ -1,5 +1,25 @@
 {
   "version": "0.2.0",
+  // 드롭다운 순서는 presentation.order 로 결정 (compounds 는 기본적으로 configurations 뒤에 붙으므로 명시).
+  // 운영 기동은 bin\flay.bat / bin\ai\prod.bat — 여기는 개발 모드 전용.
+  "compounds": [
+    {
+      // web(frontend watch + backend tsx) + mcp + ai(FastAPI + Next.js) 를 개발 모드로 동시 기동.
+      // Qdrant 는 preLaunchTask 로 먼저 띄우고, Ollama 는 Windows 상시 서비스 전제. 정지 버튼 한 번으로 전부 종료.
+      "name": "[All] 전체 개발 모드",
+      "configurations": ["[Web] frontend dev", "[Web] backend dev", "[MCP] flay-mcp dev", "[AI] FastAPI", "[AI] Next.js"],
+      "preLaunchTask": "ai qdrant: start",
+      "stopAll": true,
+      "presentation": { "order": 1 }
+    },
+    {
+      "name": "[AI] 개발 모드 (FastAPI + Next.js)",
+      "configurations": ["[AI] FastAPI", "[AI] Next.js"],
+      "preLaunchTask": "ai qdrant: start",
+      "stopAll": true,
+      "presentation": { "order": 2 }
+    }
+  ],
   "configurations": [
     // ── flay-web ─────────────────────────────────────────
     {
@@ -9,7 +29,8 @@
       "cwd": "${workspaceFolder}/flay-web/frontend",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "presentation": { "order": 10 }
     },
     {
       "type": "node",
@@ -18,7 +39,8 @@
       "cwd": "${workspaceFolder}/flay-web/backend",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "presentation": { "order": 11 }
     },
     // ── flay-mcp ─────────────────────────────────────────
     {
@@ -28,7 +50,8 @@
       "cwd": "${workspaceFolder}/flay-mcp",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
-      "console": "integratedTerminal"
+      "console": "integratedTerminal",
+      "presentation": { "order": 20 }
     },
     // ── flay-ai ──────────────────────────────────────────
     // subProcess:true → uvicorn --reload 가 자식 프로세스를 재생성해도 VS Code 가 계속 추적
@@ -54,7 +77,8 @@
       "console": "integratedTerminal",
       "env": { "PYTHONPATH": "${workspaceFolder}/flay-ai" },
       "justMyCode": true,
-      "subProcess": true
+      "subProcess": true,
+      "presentation": { "order": 30 }
     },
     {
       "name": "[AI] Next.js",
@@ -63,24 +87,8 @@
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "cwd": "${workspaceFolder}/flay-ai/apps/web",
-      "console": "integratedTerminal"
-    }
-  ],
-  // ── 복합 구성: Ctrl+Shift+D 드롭다운에서 선택 후 F5 (정지 버튼 한 번으로 전부 종료) ──
-  "compounds": [
-    {
-      // web(frontend watch + backend tsx) + mcp + ai(FastAPI + Next.js) 를 개발 모드로 동시 기동.
-      // Qdrant 는 preLaunchTask 로 먼저 띄우고, Ollama 는 Windows 상시 서비스 전제.
-      "name": "[All] 전체 개발 모드",
-      "configurations": ["[Web] frontend dev", "[Web] backend dev", "[MCP] flay-mcp dev", "[AI] FastAPI", "[AI] Next.js"],
-      "preLaunchTask": "ai qdrant: start",
-      "stopAll": true
-    },
-    {
-      "name": "[AI] 전체 서비스",
-      "configurations": ["[AI] FastAPI", "[AI] Next.js"],
-      "preLaunchTask": "ai qdrant: start",
-      "stopAll": true
+      "console": "integratedTerminal",
+      "presentation": { "order": 31 }
     }
   ]
 }

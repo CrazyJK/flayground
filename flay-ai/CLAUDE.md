@@ -1,19 +1,20 @@
-# CLAUDE.md
+# flay-ai — 지침
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+로컬 비디오 컬렉션(`K:\Crazy\*`)의 메타데이터·포스터를 로컬 LLM 챗봇으로 자연어 검색하는 **완전 로컬** 서브프로젝트. Python 3.11(FastAPI + 인덱서 + RAG) + Next.js 16 프론트. **모든 명령은 `flay-ai/` 를 cwd 로** 실행한다.
 
-이 저장소는 **GitHub Copilot 과 Claude Code 를 함께** 사용하며, AI 보조 지침의 단일 진실 소스(SoT)는 `.github/` 의 Copilot 문서다. Claude Code 도 아래 문서를 그대로 따른다(중복 작성 금지).
+동작 설명서: `docs/flay-ai/` ([README](../docs/flay-ai/README.md) · overview · architecture · indexing-pipeline · chat-and-rag · api-reference · dev-guide · admin). 미해결 작업: [docs/flay-ai/TODO.md](../docs/flay-ai/TODO.md). 실제 모델/컬렉션/포트 값은 추정하지 말고 **`config.yaml` 과 코드에서 확인**한다(문서마다 표기가 엇갈릴 수 있음).
 
-## 먼저 읽을 것 (우선순위 순)
+## 컴포넌트 및 포트
 
-1. **[.github/copilot-instructions.md](.github/copilot-instructions.md)** — 저장소 전역 기본 지침: 응답 언어(한국어), 문서 작성 규칙, 빌드/테스트 명령, 핵심 함정, **개발 모드(에이전트 인앱 구동)**, Git 워크플로. **항상 적용.**
-2. **[.github/instructions/](.github/instructions/)** — 경로별 세부 지침. 작업 파일에 해당하는 것을 연다: `python` / `indexer`(`packages/indexer/**`) / `rag`(`packages/rag/**`) / `frontend`(`apps/web/**`) / `scripts`(`bin/**`,`scripts/**`).
-3. **[.github/prompts/](.github/prompts/)** — 반복 작업 절차(재인덱싱·서비스 재시작·RAG 도구 추가·API 엔드포인트 추가·문서 동기화). Claude Code 에선 해당 파일을 열어 절차를 따른다.
-4. **[docs/](docs/README.md)** — 구현 기준 동작 설명서. 미해결 작업은 **[docs/TODO.md](docs/TODO.md)**.
+| 컴포넌트 | 기술 | 포트 |
+| --- | --- | --- |
+| 백엔드 | FastAPI + uvicorn (`apps/api/`) | 8000 (`https://ai.kamoru.jk:8000`) |
+| 프론트 | Next.js 16 + React 19 + Tailwind 4 (`apps/web/`) | 3000 (`https://ai.kamoru.jk:3000`) |
+| 벡터 DB | Qdrant (Docker, `docker-compose.yml`) | 6333 |
+| LLM | Ollama (`config.yaml.models.*`) | 11434 |
+| 관계 DB | SQLite `data/sqlite/flay.db` + FTS5(trigram) | — |
 
-## 프로젝트 한 줄 요약
-
-로컬 비디오 컬렉션(`K:\Crazy\*`)의 메타데이터·포스터를 로컬 LLM 챗봇으로 자연어 검색하는 **완전 로컬** 개인 프로젝트(인터넷 노출 금지, LAN + 자체 TLS). 사용자는 JS/TS/Java 에 능숙하나 AI/ML 은 입문 단계 → AI 개념은 첫 등장 시 한 단락 정의를 덧붙인다.
+호스팅: 로컬 도메인 `ai.kamoru.jk`(hosts 매핑) + 루트 `../.cert/kamoru.jk.{key,pem}` 자체 서명 **HTTPS**. `config.yaml.server.host`, CORS 화이트리스트, `main.py` 호스트 검증 모두 `127.0.0.1`/`localhost`/`::1`/`ai.kamoru.jk` 만 허용 — 공용 인터넷 노출 금지.
 
 ## 아키텍처 (빅 픽처)
 
@@ -32,48 +33,69 @@ K:\Crazy\Info\*.json,*.csv  +  K:\Crazy\{Storage,Archive}\**.jpg
 │ Ollama: chat LLM + vision(캡션) 모델          │  ← 생성/캡션 (외부 프로세스)
 └──────────────────────────────────────────────┘
         │  packages/rag (검색·라우팅)  →  apps/api (FastAPI)
-        ▼  apps/web (Next.js, https://ai.kamoru.jk:3000)
+        ▼  apps/web (Next.js)
 ```
 
-- **인덱서 파이프라인** (`packages/indexer`): 12단계 순차 실행. 순서가 중요(`caption-posters` 가 `embed` 보다 먼저라야 캡션이 videos 임베딩 `[장면]` 블록에 합류). 관리자 일괄 버튼은 **각 단계를 별도 서브프로세스**(`cli <stage>`)로 띄운다(단계 사이 VRAM 해제). 단계 순서: `load → scan → history → fts → translate → caption-posters → embed → embed-clip → extract-faces → cluster-faces → ocr-posters → sync-payload`. 거의 모든 단계가 **증분·멱등**(완료분 skip)이고 SQLite 는 **WAL + 배치 단위 commit**(예: OCR 20건마다) → 중단/강제종료해도 데이터 손상 없이 재실행 시 이어진다. 임베딩 단계(`embed`/`embed-clip`)도 `embed_state(collection,opus,sig)` 시그니처로 증분 — 문서(videos) 또는 `path|mtime|타일구성`(posters_clip, 포스터당 전체+절반2+4분면 7타일 점)가 바뀐 것만 재임베딩(첫 실행은 기존 Qdrant 점 시드해 스킵, `--force` 로 전량). 가변 payload 는 `sync-payload` 가 따로 갱신. 상세: [docs/indexing-pipeline.md](docs/indexing-pipeline.md).
-- **RAG 채팅** (`packages/rag`): **2차 LLM 답변 생성을 쓰지 않는다.** 흐름 = ① 1회 LLM tool-call(라우팅) → ② `router._extract_meta` 가 정규식으로 메타 필터를 코드 추출(year/month/kind/playable/min_rank/rank/min_likes/min_play/max_play/sort) + `_extract_tags` 가 DB 태그명을 (겹치지 않게) **복수** 사전 매칭(최장 우선, 최대 4개) → search_videos args 에 `tags` 로 주입(복수 태그는 모두 포함=AND) + `_extract_count_tags` 가 남녀 명수('여러 남자'·'여자 2명' 등)를 카운트 태그(`M:N`=앞 남자수·뒤 여자수, 값 1/2/n)로 환산해 `tag_any`(같은 차원 후보를 OR)로 주입. 태그 필터는 `Filters.tag_groups`(그룹내 OR·그룹간 AND)로 적용(LLM 누락 방어) → ③ `retriever.hybrid_search` = Qdrant bge-m3 의미검색 + SQLite FTS5(BM25) → **RRF 결합**(RRF_K=60) → ④ `ranker.rank` 가중치 정렬 → ⑤ 코드가 "건수+필터" 한 줄 요약. 결과는 SSE 로 스트리밍. 상세: [docs/chat-and-rag.md](docs/chat-and-rag.md).
-- **관리자/모니터링** (`apps/api/routers/admin.py`·`admin_events.py` + `apps/web/src/app/admin/page.tsx`): 갱신은 **SSE push** — 프론트가 `GET /api/admin/events` 하나를 구독(`_components/useEventStream.ts`)하면 서버 샘플러가 `monitor`(시스템 지표, 1초)·`services`(Qdrant·Ollama·인덱서·작업, 5초/작업중 2초/작업 전이 시 즉시 kick) 이벤트를 push. 샘플러는 **구독자 있을 때만** 동작(탭 숨김 시 클라이언트가 연결 닫음), 탭 N개여도 수집 1회 팬아웃. `/dashboard`(무거운 SQLite 집계)는 초기·수동 전용, `/monitor`·`/services`는 폴백·디버깅용으로 유지. enhance·stabilize(`/jobs/{id}/events`)·subtitle(`/requests/events`)도 같은 방식(공용 `apps/api/sse.py`의 `poll_stream` — 변화 시만 push, 종료 상태 후 스트림 닫힘). 파이프라인 **일시정지/재개**(`/jobs/{job}/pause|resume`) 지원 — 현재 단계 서브프로세스를 terminate 하고 재개 시 멈춘 단계부터(증분이라 안전). 상세: [docs/admin.md](docs/admin.md).
+- **인덱서 파이프라인** (`packages/indexer`, 상세 지침 `packages/indexer/CLAUDE.md`): 12단계 순차 실행 `load → scan → history → fts → translate → caption-posters → embed → embed-clip → extract-faces → cluster-faces → ocr-posters → sync-payload`. 순서가 중요(`caption-posters` 가 `embed` 보다 먼저라야 캡션이 videos 임베딩 `[장면]` 블록에 합류). 관리자 일괄 버튼은 **각 단계를 별도 서브프로세스**(`cli <stage>`)로 띄운다(단계 사이 VRAM 해제). 거의 모든 단계가 **증분·멱등**(완료분 skip)이고 SQLite 는 **WAL + 배치 단위 commit** → 중단/강제종료해도 재실행 시 이어진다. 임베딩 단계도 `embed_state(collection,opus,sig)` 시그니처로 증분(`--force` 로 전량). 가변 payload 는 `sync-payload` 가 따로 갱신. 상세: [indexing-pipeline.md](../docs/flay-ai/indexing-pipeline.md).
+- **RAG 채팅** (`packages/rag`, 상세 지침 `packages/rag/CLAUDE.md`): **2차 LLM 답변 생성을 쓰지 않는다.** ① 1회 LLM tool-call(라우팅) → ② `router._extract_meta`(정규식 메타 필터) + `_extract_tags`(DB 태그명 복수 사전 매칭, AND) + `_extract_count_tags`(남녀 명수 → 카운트 태그 `M:N`, OR 그룹) 를 `search_videos` args 에 주입 → ③ `retriever.hybrid_search` = Qdrant bge-m3 의미검색 + SQLite FTS5(BM25) → RRF 결합 → ④ `ranker.rank` 가중치 정렬 → ⑤ 코드가 "건수+필터" 한 줄 요약. 결과는 SSE 스트리밍. 상세: [chat-and-rag.md](../docs/flay-ai/chat-and-rag.md).
+- **관리자/모니터링** (`apps/api/routers/admin.py`·`admin_events.py` + `apps/web/src/app/admin/page.tsx`): 갱신은 **SSE push** — 프론트가 `GET /api/admin/events` 하나를 구독하면 서버 샘플러가 `monitor`(1초)·`services`(5초/작업중 2초) 이벤트를 push. 샘플러는 구독자 있을 때만 동작. enhance·stabilize·subtitle 도 같은 방식(공용 `apps/api/sse.py` 의 `poll_stream`). 파이프라인 일시정지/재개(`/jobs/{job}/pause|resume`) 지원. 상세: [admin.md](../docs/flay-ai/admin.md).
 
-> 실제 모델/컬렉션 값은 추정하지 말고 **`config.yaml` 과 코드에서 확인**한다(문서마다 표기가 엇갈릴 수 있음 — [docs/TODO.md](docs/TODO.md)).
-
-## 자주 쓰는 명령
+## 자주 쓰는 명령 (cwd = `flay-ai/`)
 
 ```powershell
-.\.venv\Scripts\python.exe -m pytest -q                      # 전체 테스트
+.\.venv\Scripts\python.exe -m pytest -q                            # 전체 테스트
 .\.venv\Scripts\python.exe -m pytest tests/test_rag_ranker.py -q   # 단일 파일
-.\.venv\Scripts\python.exe -m pytest -k ranker -q            # 이름 필터로 단일 테스트
-.\.venv\Scripts\python.exe -m ruff check .                   # 파이썬 린트
-.\.venv\Scripts\python.exe -m packages.indexer.cli <stage>   # 인덱서 단계 직접 실행 (load/scan/embed/...)
-cd apps\web ; npm run build ; npm run lint                   # 프론트 빌드·린트
+.\.venv\Scripts\python.exe -m pytest -k ranker -q                  # 이름 필터
+.\.venv\Scripts\python.exe -m ruff check .                         # 파이썬 린트
+.\.venv\Scripts\python.exe -m packages.indexer.cli <stage>         # 인덱서 단계 직접 실행
+cd apps\web ; yarn build ; yarn lint                               # 프론트 빌드·린트
 ```
 
 ```cmd
-bin\prod.bat                                        :: 운영 HTTPS 일괄 기동(독립 유지)
-bin\all.bat start | status | stop                   :: 개발 일괄 제어(별도 창)
-bin\api.bat restart                                 :: API 재시작(별도 콘솔 창 방식)
-bin\reindex.bat <quick|sync|full|clean>             :: 재인덱싱
+..\bin\ai\prod.bat                          :: 운영 HTTPS 일괄 기동(앱과 독립 유지)
+..\bin\ai\all.bat start | status | stop     :: 개발 일괄 제어(별도 창)
+..\bin\ai\api.bat restart                   :: API 재시작(별도 콘솔 창)
+..\bin\ai\reindex.bat <quick|sync|full|clean>
 ```
 
-**개발 모드(에이전트가 직접 띄울 때)** — 별도 창(`bin\*.bat` 의 `start cmd /k`) 대신 **클로드 앱 내부 백그라운드 프로세스**로 실행해 로그를 실시간으로 본다(상세는 copilot-instructions §개발 모드):
+### 개발 모드 — 에이전트가 직접 띄울 때
+
+별도 창(`bin\ai\*.bat` 의 `start cmd /k`) 대신 **클로드 앱 내부 백그라운드 프로세스**로 실행해 stdout 로그를 실시간으로 본다. 사용자가 "서버 띄워줘/재시작해줘" 류로 요청하면 이 방식.
 
 ```
-.venv\Scripts\python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile .cert/kamoru.jk.key --ssl-certfile .cert/kamoru.jk.pem
-cd apps/web && npm run dev   # https://ai.kamoru.jk:3000
+.venv\Scripts\python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile ../.cert/kamoru.jk.key --ssl-certfile ../.cert/kamoru.jk.pem
+cd apps/web && yarn dev   # https://ai.kamoru.jk:3000 (hot-reload)
 ```
 
-## 절대 잊지 말 것
+- 선행 의존성 qdrant(6333)·ollama(11434)는 먼저 떠 있어야 한다 — 없으면 `bin\ai\qdrant.bat start` / `bin\ai\ollama.bat start`.
+- **API 재시작은 수동**: FastAPI 자동 reload 없음 → 코드 변경 시 8000 포트 PID 를 `taskkill /F` 후 다시 띄운다. **`uvicorn --reload` 금지** — torch 무거운 import 로 reload 가 멈추고 WatchFiles 가 편집을 놓치며 워커 고아 소켓으로 포트 정리가 꼬인다(검증됨). 백엔드 변경을 모아 재시작 1회로 최소화. `taskkill /F` 로 끝낸 백그라운드 작업은 'exit 1 실패'로 표시되지만 강제종료 흔적일 뿐이다.
+- 포트 정리 시 `Get-NetTCPConnection -LocalPort 8000` 의 OwningProcess 가 죽은 PID 면 자식 워커가 소켓을 상속한 것 — `Win32_Process` 로 자식 python(PPID=그 PID)을 찾아 `taskkill /F`.
+- 인앱 프로세스는 클로드 앱 종료/업데이트 시 함께 죽는다 → 독립 유지는 `bin\ai\prod.bat`.
+- 프론트 변경의 실제 동작 확인은 브라우저 도구로 `https://ai.kamoru.jk:3000` 을 직접 띄워 확인해도 된다(자체 서명 경고 무시). 불가능할 때만 빌드/lint/HTTP 200 으로 대체하고 시각 확인이 안 됐음을 알린다.
 
-- **대화 어투**: 사용자와 대화할 때 사용자를 지칭하는 2인칭은 '당신'('님' 쓰지 말 것), 말투는 사무적이고 정중한 표현으로. **반말 금지** — "~했다/~한다"가 아니라 "~했습니다/~합니다" 존댓말로.
-- **Python 실행**: `.\.venv\Scripts\python.exe` (Python 3.11). `python`/`uv run` 은 PATH 부재·torch DLL 잠금 위험.
-- **API 재시작은 수동**: FastAPI 자동 reload 없음 → 코드 변경 시 인앱 백그라운드 프로세스를 종료(8000 포트 PID `taskkill /F`) 후 다시 띄운다. **`uvicorn --reload` 는 쓰지 말 것** — torch 무거운 import 로 reload 가 멈추고 WatchFiles 가 편집을 놓치며 워커 고아 소켓으로 포트 정리가 꼬인다(검증됨). 대신 백엔드 변경을 모아 재시작 1회로 최소화. (인앱 프로세스를 `taskkill /F` 하면 그 백그라운드 작업이 'exit 1 실패'로 뜨는데, 시작 실패가 아니라 강제종료 흔적이다.) 인앱 프로세스는 클로드 앱 종료/업데이트 시 함께 죽는다 → 독립 유지는 `bin\prod.bat`.
-- **Git**: `main` 에서 직접 작업, **작업 완료 시 묻지 말고 자동으로 커밋**(Conventional Commits, 제목·본문 한국어). 피처 브랜치·PR 금지. **`git push`·배포는 사용자가 직접** — 에이전트는 로컬 커밋까지만.
-- **노골적·사적 콘텐츠 git 분리**: 비속어·성적·개인 수위가 담긴 프롬프트/문구/치환 규칙은 코드·문서·커밋 메시지에 직접 박지 말고 **gitignore 된 오버라이드 파일**로 분리(커밋 코드엔 점잖은 기본값만). 예: `diary_prompts.yaml`(ignore) ↔ `diary_prompts.example.yaml`(커밋 틀). 상세는 copilot-instructions §Git 워크플로.
-- **`.bat`/`.cmd`/`.ps1` 은 비ASCII 금지**(주석 포함, Windows CP949 파싱 오류 방지). 소스 코드 주석은 한국어.
-- **문서 갱신**: 코드 변경이 문서에 영향을 주면 같은 디렉토리 README → 없으면 `docs/` 관련 파일 갱신. 새 문서는 함부로 만들지 않는다.
-- **PowerShell 도구는 Windows PowerShell 5.1** — `??`(null 병합), 삼항 연산자 미지원. `if/else` 로 작성.
-- **인터넷 노출 금지**(로컬/LAN + 자체 TLS 전제).
+## Python 규칙 (ruff: E,F,W,I,UP / ignore E501, line-length 100)
+
+- 항상 `.\.venv\Scripts\python.exe` 로 실행. 설정은 `packages/settings.py` 의 `load_config()`(lru_cache) 로만 읽고 경로는 `repo_path()` 로 절대화(`REPO_ROOT` = `flay-ai/`). `config.yaml` 값을 코드에 하드코딩하지 말 것.
+- `from typing import Iterable | AsyncGenerator` 금지 → `from collections.abc import ...` (UP035). 미사용 import 금지(F401). `.encode("utf-8")` → `.encode()` (UP012). `from __future__ import annotations` 가 있으면 어노테이션에 문자열 리터럴 금지(UP037) — 새 모듈도 이 import 를 둔다. async generator 반환 타입은 `AsyncGenerator[bytes, None]` 처럼 정확히. import 정렬 first-party 는 `apps`, `packages`.
+- 타입 어노테이션 권장, `X | None` 표기. DB 접근은 `packages/indexer/db.py` 의 `connect()` (Row factory + WAL + busy_timeout) — 직접 `sqlite3.connect` 금지. 연결은 `try/finally` close.
+- AI 관련 변경에는 "무엇을 / 왜 / 어떤 입출력" 을 docstring 또는 주석에 남긴다.
+
+## 핵심 함정
+
+- **GPU 빌드는 uv 설정으로 고정** (NVIDIA + CUDA 12.4 단일 PC 전제): `pyproject.toml [tool.uv]` 가 torch/torchvision 을 cu124 인덱스로, onnxruntime 은 CPU판 제외로 잡아 둠 → `uv sync` 안전. onnxruntime CPU/GPU 는 같은 모듈명이라 공존 불가 — 항상 `onnxruntime-gpu` 만 유지(CPU 가 덮어쓰면 InsightFace 가 CPU 로 떨어짐).
+- **OCR** 은 `rapidocr-onnxruntime` (`packages/indexer/ocr.py`). PaddleOCR 계열은 제거됨.
+- **Qdrant v1.18+**: `collection.search()` 삭제 → `client.query_points(collection_name, query=vec, limit=N, with_payload=True)`, 결과는 `resp.points`.
+- **FTS5(trigram)**: 토큰을 `"phrase"` 로 감싸 `OR` 결합(`packages/rag/retriever.py._fts_query`). 생 키워드는 CJK/짧은 토큰에서 `syntax error near "?"`.
+- **Qdrant 포인트 ID**: opus 의 SHA1 앞 8바이트(uint63) — 컬렉션 공통(`embed_text.opus_to_id`). 직접 만들지 말 것.
+- **번역 모델**: `facebook/nllb-200-distilled-600M`, `src_lang=jpn_Jpan`, `forced_bos_token_id` → `kor_Hang`.
+- **스튜디오 alias**: DB 에 `"S1"` 대신 `"sone"`, `"s1no1style"` 등으로 저장될 수 있음 → alias 없는 필터는 0건.
+- **GPU 12GB**: LLM·CLIP·InsightFace 동시 로드 금지. 야간 스크립트가 단계 사이 unload 를 조정.
+- 코드 변경 후 FastAPI 는 새 라우터/모듈을 자동 반영하지 않는다 → 재시작 필요. 변경 후 **어떤 프로세스를 재시작할지** 알려준다(`bin\ai\api.bat restart` 등).
+
+## 문서
+
+코드 변경이 문서에 영향을 주면 같은 폴더 README → 없으면 `docs/flay-ai/` 관련 파일을 갱신한다. 새 문서는 함부로 만들지 않는다.
+
+## 반복 절차 스킬 (`.claude/skills/`)
+
+재인덱싱 `ai-reindex` · 서비스 재시작 `ai-restart-services` · RAG 도구 추가 `ai-add-rag-tool` · API 엔드포인트 추가 `ai-add-api-endpoint` · 문서 동기화 점검 `ai-docs-sync-check`. 프론트 디자인 시스템은 `flayai-design`.

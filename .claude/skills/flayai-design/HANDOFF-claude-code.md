@@ -2,13 +2,13 @@
 
 이 문서를 Claude Code에 그대로 전달하세요. 목표: **flayAI 코드베이스를 apple.com 에디토리얼 디자인 언어(DESIGN.md)에 맞춰 리스타일**. 도구 화면 레이아웃은 유지하고, 토큰·컴포넌트 스타일만 Apple화합니다.
 
-- **코드베이스**: https://github.com/CrazyJK/flayAI/tree/main/apps/web (Next.js 16 / React 19 / Tailwind v4)
+- **코드베이스**: flay-ai/apps/web (Next.js 16 / React 19 / Tailwind v4)
 - **참조 디자인 시스템(스킬)**: `.claude/skills/flayai-design/` — `SKILL.md` → `README.md` → `tokens/`, `components/*.prompt.md`
 - **핵심 원칙**: 단일 액센트 **Action Blue `#0066cc`**(라이트) / **Sky Link `#2997ff`**(다크). primary는 **풀 pill**, press는 **scale(0.95)**. 그림자는 제품/포스터 이미지에만 1개. 그라데이션 금지. 시스템 폰트(SF Pro 스택) 유지. 한국어·다크모드 유지.
 
 ---
 
-## 1) `apps/web/src/app/globals.css` 토큰 교체
+## 1) `flay-ai/apps/web/src/app/globals.css` 토큰 교체
 
 `:root`와 `.dark` 블록의 컬러 토큰을 아래 값으로 변경하세요. **가장 중요한 변경은 `--primary`** (라이트 `#0071e3`→`#0066cc`, 다크 `#0a84ff`→`#2997ff`). 나머지는 apple.com 표면(near-black 타일, hairline 보더)에 정렬.
 
@@ -58,7 +58,7 @@
 
 ## 2) 컴포넌트 레벨 규칙 (Tailwind 클래스 — globals.css 밖)
 
-토큰만으로는 안 되는 부분. `apps/web/src/app/_components/` 및 각 화면의 버튼/카드/입력에 적용:
+토큰만으로는 안 되는 부분. `flay-ai/apps/web/src/app/_components/` 및 각 화면의 버튼/카드/입력에 적용:
 
 - **Primary 버튼 = 풀 pill**: `rounded-full bg-primary text-primary-foreground px-[22px] py-[11px] active:scale-95 transition-transform`. (Tailwind `rounded-full` = 9999px)
 - **유틸리티/secondary 버튼 = 8px**: `rounded-lg bg-muted text-foreground border border-border active:scale-95`. (`rounded-lg` = 8px)

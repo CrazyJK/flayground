@@ -10,10 +10,10 @@ theming that defaults to the OS, and a soft, low-contrast shadow language.
 
 ## Sources
 
-- **Codebase** (primary source of truth): <https://github.com/CrazyJK/flayAI/tree/main/apps/web>
+- **Codebase** (primary source of truth): `flay-ai/apps/web`
   — the flayAI Next.js 16 / React 19 / Tailwind v4 app (chat, image, face, labels,
   stabilize, subtitle, admin, and diary surfaces). Tokens here are lifted directly
-  from `apps/web/src/app/globals.css`.
+  from `flay-ai/apps/web/src/app/globals.css`.
 - **GitHub**: <https://github.com/CrazyJK/flayAI-design> — currently a stub
   (README only). Explore it for future updates to the brand.
 

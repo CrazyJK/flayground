@@ -1,10 +1,10 @@
 ---
 name: web-frontend-component
-description: 'web-frontend 컴포넌트 구현 패턴. Use when: 새 컴포넌트 생성, Web Component 구현, HTMLElement 상속 패턴, TypeScript 커스텀 엘리먼트, SCSS 스타일 작성, import 별칭(@lib, @flay, @base 등) 사용, 공통 유틸리티 활용, SPA 컴포넌트, 도메인 컴포넌트(flay, finance, image, movie)'
+description: 'flay-web/frontend 컴포넌트 구현 패턴. Use when: 새 컴포넌트 생성, Web Component 구현, HTMLElement 상속 패턴, TypeScript 커스텀 엘리먼트, SCSS 스타일 작성, import 별칭(@lib, @flay, @base 등) 사용, 공통 유틸리티 활용, SPA 컴포넌트, 도메인 컴포넌트(flay, finance, image, movie)'
 argument-hint: '구현할 컴포넌트명 또는 도메인 (예: FlayCard, finance)'
 ---
 
-# web-frontend 컴포넌트 구현 패턴
+# flay-web/frontend 컴포넌트 구현 패턴
 
 ## 기술 스택
 
@@ -19,7 +19,7 @@ argument-hint: '구현할 컴포넌트명 또는 도메인 (예: FlayCard, finan
 ## 디렉토리 구조
 
 ```
-web-frontend/src/
+flay-web/frontend/src/
 ├── base/           # 베이스 클래스 (GroundFlay, GroundUI, GroundNav 등)
 ├── flay/           # Flay 도메인 컴포넌트
 │   ├── domain/     # 단일 카드/아이템 수준
@@ -73,7 +73,7 @@ import { Flay } from '@domain/flay'; // 백엔드 도메인 타입 공유
 | `@nav/*`     | `src/nav/*`                   |
 | `@spa/*`     | `src/spa/*`                   |
 | `@svg/*`     | `src/svg/*`                   |
-| `@domain/*`  | `../web-backend/src/domain/*` |
+| `@domain/*`  | `../backend/src/domain/*` |
 
 ---
 

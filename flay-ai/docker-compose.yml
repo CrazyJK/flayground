@@ -1,3 +1,7 @@
+# 프로젝트명 고정 — 기본값은 디렉토리명(flay-ai)이라 기존 컨테이너(flayai-qdrant, 프로젝트 flayai)와
+# 이름 충돌이 난다. 디렉토리를 어디로 옮겨도 같은 컨테이너·볼륨을 재사용하도록 명시한다.
+name: flayai
+
 services:
   qdrant:
     image: qdrant/qdrant:latest

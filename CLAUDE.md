@@ -54,7 +54,18 @@ bin\ai\reindex.bat <quick|sync|full|clean>
 
 ### 개발 모드 기동
 
-사용자가 "개발 모드 기동", "서버 기동/띄워줘/재시작"이라고 하면 별도 지정이 없는 한 **web·mcp·ai 세 컴포넌트를 모두 개발 모드**로 띄운다 — flay-web/frontend `yarn dev`(webpack watch), flay-web/backend `yarn dev`(tsx), flay-mcp `yarn dev`, flay-ai uvicorn(`../.cert` 인증서, `--reload` 없이) + `apps/web` `yarn dev`. 방식은 별도 창(`bin\*.bat`)이 아니라 **클로드 앱 내부 백그라운드 프로세스**(로그 실시간 확인). 선행 Qdrant(6333)·Ollama(11434)는 떠 있는지 확인만. 이미 LISTEN 중인 포트는 건너뛰고, 기동 후 포트·헬스(443, 3002, 8000, 3000)를 보고한다. flay-ai 쪽 명령·재시작 주의는 `flay-ai/CLAUDE.md`.
+사용자가 "개발 모드 기동", "서버 기동/띄워줘/재시작"이라고 하면 별도 지정이 없는 한 **web·mcp·ai 세 컴포넌트를 모두 개발 모드**로 띄운다. 방식은 별도 창(`bin\*.bat`)이 아니라 **클로드 앱 내부 백그라운드 프로세스**(Bash 도구 `run_in_background`, 로그 실시간 확인). 절차는 정해져 있으므로 **확인 질문·중간 설명 없이 아래를 그대로 수행하고 결과 표만 응답**한다.
+
+1. 포트 확인: `Get-NetTCPConnection -State Listen` 으로 443·3002·8000·3000·6333·11434 를 본다. 선행 Qdrant(6333)·Ollama(11434)는 떠 있는지 확인만(없으면 `bin\ai\qdrant.bat start` / `bin\ai\ollama.bat start`). 이미 LISTEN 중인 컴포넌트 포트는 건너뛴다.
+2. 다섯 프로세스를 각각 백그라운드로 기동(cwd 는 각 프로젝트 폴더):
+   - flay-web/frontend: `tail -f /dev/null | yarn dev` — webpack `watchOptions.stdin: true` 라 stdin 이 닫히면 watch 가 종료되므로 반드시 stdin 을 열어 둔 채 띄운다.
+   - flay-web/backend: `yarn dev` (tsx watch, :443)
+   - flay-mcp: `yarn dev` (tsx watch, :3002)
+   - flay-ai: `./.venv/Scripts/python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile ../.cert/kamoru.jk.key --ssl-certfile ../.cert/kamoru.jk.pem` (`--reload` 금지)
+   - flay-ai/apps/web: `yarn dev` (next dev, :3000)
+3. 대기: `until curl -sk … ; do sleep 2; done` 형태의 백그라운드 명령으로 8000·3000·443 이 응답할 때까지 기다린다(포그라운드 `sleep` 금지).
+4. 헬스 점검(HTTP 코드): `https://flay.kamoru.jk/`, `https://flay.kamoru.jk:3002/health`, `https://ai.kamoru.jk:8000/docs`, `https://ai.kamoru.jk:3000/`. 실패한 것만 해당 백그라운드 로그를 읽어 원인을 적는다.
+5. 응답: 컴포넌트·포트·상태 표 한 개 + 이상 징후(로그의 오류·비활성 메시지)만 한두 줄. flay-ai API 는 자동 reload 가 없어 코드 변경 시 8000 프로세스를 종료 후 재기동해야 함을 필요할 때만 덧붙인다. 상세 주의는 `flay-ai/CLAUDE.md`.
 
 ## 문서 규칙
 

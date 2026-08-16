@@ -72,10 +72,8 @@ yarn lint         # ESLint 자동 수정 (루트 .eslintrc.js)
 yarn format       # Prettier 포맷
 ```
 
-## Playwright 테스트 (`flay-web/playwright/`)
+## 화면 확인·E2E (`flay-web/playwright/`)
 
-- 이전에 띄운 브라우저는 닫혀 있을 가능성이 높다 — 닫혀 있으면 새 브라우저를 열어 테스트한다.
+- 화면 동작 확인은 클로드의 브라우저 도구(크롬)로 페이지를 직접 열어서 한다(자체 서명 인증서 경고 무시). E2E 테스트는 `flay-web/playwright/`.
 - 웹팩 dev 서버(`yarn dev`)와 backend 가 실행 중인지 먼저 확인한다.
 - URL 은 `https://flay.kamoru.jk/dist/` 를 베이스로 webpack 엔트리 html 로 접근한다 (예: `https://flay.kamoru.jk/dist/page.history-shot.html`).
-- MCP Playwright 는 다크 테마(`<html theme="dark">`)로 실행된다 — 테마 관련 테스트 시 고려.
-- 스크린샷 `filename` 은 항상 `.playwright-mcp/` 하위로 지정하고(`--output-dir` 설정은 스냅샷·로그에만 적용됨), 확장자와 `type` 파라미터를 일치시킨다(`type: "png"` ↔ `.png`). 불일치 시 API 400 오류.

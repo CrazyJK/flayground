@@ -65,9 +65,6 @@ screenshots
 # cert folder
 .cert
 
-# playwright test result
-.playwright-mcp
-
 # json data files
 model-stats.json
 dependencies-viewer.json

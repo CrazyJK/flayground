@@ -52,6 +52,8 @@ SYSTEM_PROMPT = (
     "- 연도/월/제작사가 명시되면 search_videos(year=, month=, studio=) 메타 필터.\n"
     "- '지금 볼 수 있는' / '재생 가능한' → search_videos(kind='instance', playable=true).\n"
     "- '옛날 / 예전에 갖고 있던' → search_videos(kind='archive').\n"
+    "- '아무거나 / 랜덤 / 무작위로 N개' 처럼 조건 없이 고르라는 요청 → "
+    "search_videos(query='', sort='random', limit=N). 검색어·연도·제작사를 지어내지 말 것.\n"
     "- 통계/집계 질문은 stats.\n"
     "\n"
     "[출력 언어 — 절대 규칙]\n"
@@ -97,6 +99,55 @@ _PLAY_MAX_BON_RE = re.compile(r"(\d{1,4})\s*번\s*이하\s*본")
 # 마지막 재생(last_play) 정렬: 최근 본 → recent, 오래 안 본 → oldest
 _SORT_RECENT_RE = re.compile(r"(?:최근|마지막|방금|요즘|얼마\s*전).{0,4}(?:본|봤|재생)")
 _SORT_OLDEST_RE = re.compile(r"오래.{0,4}안.{0,3}(?:본|봤)|오랫동안.{0,4}안.{0,3}(?:본|봤)|본\s*지.{0,3}오래")
+# 무작위 의도: "아무거나 / 아무 것이나 / 랜덤 / 무작위 / 임의로 / 되는대로 / 닥치는대로" → sort=random.
+# 이런 질의는 문장 자체를 검색어로 쓰면 의미검색이 잡음(예: '10' 이 든 제목)을 끌어오므로
+# 검색어를 비우고(핵심어만 남기고) 필터 범위 안에서 진짜 무작위로 뽑는다.
+_RANDOM_RE = re.compile(
+    r"아무\s*(?:거나|것이나|것|영상이나|작품이나|거라도|것이라도)"
+    r"|(?:랜덤|무작위)(?:으로|로|하게|한|의|이나|)|임의(?:로|의|대로)?"
+    r"|되는\s*대로|닥치는\s*대로"
+)
+# 결과 개수: "10개만 / 5편 / 3건 / 20작품" → limit. 평점·별점 표현("별점 4개 이상")과 구분하려고
+# _extract_count 에서 평점 표현을 먼저 지운 뒤 매칭한다.
+_COUNT_RE = re.compile(r"(?<!\d)(\d{1,3})\s*(?:개|편|건|작품)")
+_RANK_PHRASE_RE = re.compile(r"(?:평점|별점|랭크|등급)\D{0,4}[1-5]\s*(?:점|개|성|등급)?")
+# 무작위 모드에서 검색어로 남길 가치가 없는 요청 동사·불용어(핵심 명사만 남기기 위해 제거)
+_FILLER_RE = re.compile(
+    r"추천\s*(?:해\s*줘|해\s*주세요|해|좀|해봐|부탁)?|골라\s*(?:줘|주세요|봐)?|뽑아\s*(?:줘|주세요|봐)?"
+    r"|보여\s*(?:줘|주세요)?|알려\s*(?:줘|주세요)?|찾아\s*(?:줘|주세요|봐)?|틀어\s*(?:줘|주세요)?"
+    r"|주세요|줘|좀|볼\s*만\s*한|볼만한|보고\s*싶(?:은|어|다)?"
+)
+_STOPWORDS = {
+    "작품", "영상", "비디오", "동영상", "것", "거", "것들", "거들", "중", "중에", "중에서", "에서",
+    "하나", "한", "개", "건", "편", "만", "만한", "그냥", "대충", "적당히", "알아서", "아무", "이나",
+    "지금", "볼", "수", "있는", "재생", "가능한", "예전", "옛날", "보관", "아카이브",
+    # 홀로 남은 조사
+    "으로", "로", "에", "의", "을", "를", "이", "가", "은", "는", "도", "와", "과", "랑", "하고",
+}
+
+
+def _extract_count(query: str) -> int | None:
+    """'N개/N편/N건/N작품' → 결과 개수 N(1..100). 평점 표현('별점 4개 이상')의 숫자는 제외."""
+    m = _COUNT_RE.search(_RANK_PHRASE_RE.sub(" ", query or ""))
+    if not m:
+        return None
+    return max(1, min(100, int(m.group(1))))
+
+
+def _strip_for_random(query: str) -> str:
+    """무작위 모드용 핵심어 추출: 무작위어·개수·요청 동사·메타 표현(연도/월/평점/좋아요/재생/kind)·
+    불용어를 걷어내고 남는 명사(테마·배우·제작사 등)만 돌려준다. 남는 게 없으면 ''(순수 무작위).
+    """
+    s = query or ""
+    for rx in (
+        _RANDOM_RE, _COUNT_RE, _RANK_PHRASE_RE, _FILLER_RE, _YEAR_RE, _MONTH_RE, _YEAR_ONLY_RE,
+        _LIKES_RE, _PLAY_MIN_RE, _PLAY_MIN_BON_RE, _PLAY_MAX_RE, _PLAY_MAX_BON_RE,
+        _SORT_RECENT_RE, _SORT_OLDEST_RE, _INSTANCE_RE, _ARCHIVE_RE,
+    ):
+        s = rx.sub(" ", s)
+    toks = [t for t in re.split(r"[\s,.!?~·、。]+", s) if t and t not in _STOPWORDS]
+    core = " ".join(toks).strip()
+    return core if len(core) >= 2 else ""
 
 
 def _extract_meta(query: str) -> dict:
@@ -104,6 +155,7 @@ def _extract_meta(query: str) -> dict:
 
     LLM 이 인자를 빠뜨리거나 tool_call 자체를 안 하는 경우(폴백)에 대비한 코드 레벨
     방어 장치. 이 값을 search_videos 인자에 주입해 LLM 품질과 무관하게 결과를 정확히 만든다.
+    sort 는 무작위(random) > 최근 본(recent) > 오래 안 본(oldest) 순으로 우선한다.
     """
     out: dict = {}
     m = _YEAR_RE.search(query)
@@ -132,7 +184,9 @@ def _extract_meta(query: str) -> dict:
     px = _PLAY_MAX_RE.search(query) or _PLAY_MAX_BON_RE.search(query)
     if px:
         out["max_play"] = int(px.group(1))
-    if _SORT_RECENT_RE.search(query):
+    if _RANDOM_RE.search(query):
+        out["sort"] = "random"
+    elif _SORT_RECENT_RE.search(query):
         out["sort"] = "recent"
     elif _SORT_OLDEST_RE.search(query):
         out["sort"] = "oldest"
@@ -314,6 +368,8 @@ def _summarize_results(tool_calls: list[dict], results: list[dict]) -> str:
             parts.append("최근 본 순")
         elif a.get("sort") == "oldest":
             parts.append("오래된 순")
+        elif a.get("sort") == "random":
+            parts.append("무작위")
         if a.get("kind") in _KIND_LABEL:
             parts.append(_KIND_LABEL[a["kind"]])
         elif a.get("playable"):
@@ -464,29 +520,7 @@ async def route_chat(
         count_tags = _extract_count_tags(user_query)
         if count_tags:
             meta.setdefault("tag_any", count_tags)
-        if meta:
-            for c in tool_calls:
-                fn = c.get("function") or {}
-                if fn.get("name") != "search_videos":
-                    continue
-                args = fn.get("arguments") or {}
-                if isinstance(args, str):
-                    try:
-                        args = json.loads(args)
-                    except json.JSONDecodeError:
-                        args = {}
-                changed = False
-                for k, v in meta.items():
-                    if not args.get(k):
-                        args[k] = v
-                        changed = True
-                if changed:
-                    log.info("router meta boost: search_videos args <- %s", meta)
-                    fn["arguments"] = args
-                    c["function"] = fn
-
-        # 프론트에서 지정한 limit 을 search_videos 에 강제 주입 (LLM 기본값 무시).
-        # kind 가 instance/archive 면 사용자가 UI 에서 명시적으로 고른 것이므로 강제 주입(전체="" 면 미적용).
+        is_random = meta.get("sort") == "random"
         for c in tool_calls:
             fn = c.get("function") or {}
             if fn.get("name") != "search_videos":
@@ -497,7 +531,43 @@ async def route_chat(
                     args = json.loads(args)
                 except json.JSONDecodeError:
                     args = {}
-            args["limit"] = limit
+            # LLM 이 지어낸 연도/월 폐기: 질문 원문에 그 표현이 없으면(정규식 미검출) 근거 없는 인자.
+            # (모호한 질의에서 7B 모델이 year=2023 등을 환각하는 사례 방어)
+            for k in ("year", "month"):
+                if args.get(k) and k not in meta:
+                    log.info("router drop hallucinated %s=%r (not in query)", k, args[k])
+                    args.pop(k, None)
+            # 메타/태그 보강: LLM 이 빠뜨린 인자만 채운다.
+            changed = False
+            for k, v in meta.items():
+                if not args.get(k):
+                    args[k] = v
+                    changed = True
+            if changed:
+                log.info("router meta boost: search_videos args <- %s", meta)
+            # 무작위 모드: 문장 전체를 검색어로 쓰면 의미검색 잡음이 후보를 정하므로,
+            # 무작위어·개수·요청 동사·메타 표현을 걷어낸 핵심어만 남긴다(없으면 '' → 순수 무작위).
+            if is_random:
+                args["query"] = _strip_for_random(user_query)
+                args["sort"] = "random"
+                log.info("router random mode: query=%r", args["query"])
+            fn["arguments"] = args
+            c["function"] = fn
+
+        # limit: 질문에 '10개만' 처럼 개수가 명시되면 그것을, 아니면 프론트 설정값을 강제 주입
+        # (LLM 기본값 무시). kind 가 instance/archive 면 UI 에서 명시적으로 고른 것이므로 강제 주입.
+        eff_limit = _extract_count(user_query) or limit
+        for c in tool_calls:
+            fn = c.get("function") or {}
+            if fn.get("name") != "search_videos":
+                continue
+            args = fn.get("arguments") or {}
+            if isinstance(args, str):
+                try:
+                    args = json.loads(args)
+                except json.JSONDecodeError:
+                    args = {}
+            args["limit"] = eff_limit
             if kind in ("instance", "archive"):
                 args["kind"] = kind
             fn["arguments"] = args

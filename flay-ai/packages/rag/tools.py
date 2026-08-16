@@ -12,6 +12,7 @@ AI_PLAN.md §7.3.
 from __future__ import annotations
 
 import logging
+import random
 from typing import Any, Literal
 
 from packages.indexer.actress_merge import normalize_actress
@@ -119,7 +120,9 @@ def search_videos(
     min_rank: 평점 N 이상(rank >= N). rank: 정확히 평점 N(rank == N).
     min_likes: 좋아요 N 이상(like_count >= N).
     min_play/max_play: 재생 횟수 N 이상/이하.
-    sort: "recent"(마지막 재생 최신순) / "oldest"(오래 본 순, 미시청 제외) / None(관련도순).
+    sort: "recent"(마지막 재생 최신순) / "oldest"(오래 본 순, 미시청 제외) /
+          "random"(무작위 — query 가 있으면 관련도 상위 풀에서, 없으면 필터 범위 전체에서 무작위) /
+          None(관련도순).
     """
     conn = connect()
     try:
@@ -158,11 +161,12 @@ def search_videos(
             max_play=max_play,
         )
         if query.strip():
-            # 정렬 지정 시 후보 풀을 넓혀(관련도 top-N 안에서 시간순 재정렬) 충분히 확보.
-            top_k = max(limit * 5, 50) if sort in ("recent", "oldest") else max(limit * 3, 30)
+            # 정렬 지정 시 후보 풀을 넓혀(관련도 top-N 안에서 시간순/무작위 재정렬) 충분히 확보.
+            resort = sort in ("recent", "oldest", "random")
+            top_k = max(limit * 5, 50) if resort else max(limit * 3, 30)
             cands = hybrid_search(query, top_k=top_k, filters=filt, conn=conn)
             scored = rerank(cands)
-            take = scored if sort in ("recent", "oldest") else scored[:limit]
+            take = scored if resort else scored[:limit]
             hits: list[dict] = []
             for s in take:
                 h = _video_to_hit(conn, s.opus, scored=s)
@@ -176,12 +180,14 @@ def search_videos(
 
 
 def _apply_sort(hits: list[dict], sort: str | None) -> list[dict]:
-    """last_play(ms epoch) 기준 재정렬. recent=최신순(미시청 뒤로), oldest=오래된순(미시청 제외)."""
+    """재정렬. recent=마지막 재생 최신순(미시청 뒤로), oldest=오래된순(미시청 제외), random=무작위 섞기."""
     if sort == "recent":
         return sorted(hits, key=lambda h: (h.get("last_play") or -1), reverse=True)
     if sort == "oldest":
         watched = [h for h in hits if h.get("last_play")]
         return sorted(watched, key=lambda h: h["last_play"])
+    if sort == "random":
+        return random.sample(hits, len(hits))
     return hits
 
 
@@ -233,12 +239,14 @@ def _meta_only_search(conn, f: Filters, limit: int, sort: str | None = None) -> 
         where.append(
             "EXISTS (SELECT 1 FROM posters p WHERE p.opus = v.opus AND p.video_path IS NOT NULL)"
         )
-    # 정렬: recent=마지막 재생 최신순, oldest=오래된순(미시청 제외), 기본=평점 후 최근 재생.
+    # 정렬: recent=마지막 재생 최신순, oldest=오래된순(미시청 제외), random=무작위, 기본=평점 후 최근 재생.
     if sort == "recent":
         order_sql = "ORDER BY v.last_play DESC NULLS LAST, v.rank DESC"
     elif sort == "oldest":
         where.append("v.last_play IS NOT NULL")
         order_sql = "ORDER BY v.last_play ASC"
+    elif sort == "random":
+        order_sql = "ORDER BY RANDOM()"
     else:
         order_sql = "ORDER BY v.rank DESC, v.last_play DESC NULLS LAST"
     where_sql = ("WHERE " + " AND ".join(where)) if where else ""
@@ -414,8 +422,9 @@ TOOL_SCHEMA: list[dict] = [
                     "max_play": {"type": "integer", "description": "재생 횟수 N 이하(play <= N)"},
                     "sort": {
                         "type": "string",
-                        "enum": ["recent", "oldest"],
-                        "description": "정렬: recent=마지막 재생 최신순(최근 본 것), oldest=오래된순(오래 안 본 것).",
+                        "enum": ["recent", "oldest", "random"],
+                        "description": "정렬: recent=마지막 재생 최신순(최근 본 것), oldest=오래된순(오래 안 본 것), "
+                        "random=무작위('아무거나/랜덤/무작위' 요청 — query 는 비우고 필터만).",
                     },
                     "limit": {"type": "integer", "default": 10},
                 },

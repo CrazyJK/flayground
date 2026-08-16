@@ -3,7 +3,7 @@
   Flay 주간 백업 스크립트 — 인스턴스/아카이브 2개 zip 파일 생성
 
 .DESCRIPTION
-  web-backend 설정(default.json)에서 백업 대상 경로를 읽어
+  flay-web/backend 설정(default.json)에서 백업 대상 경로를 읽어
   Windows 내장 tar(bsdtar)로 압축한 뒤 iCloud 공유 폴더에 저장한다.
 
   - flay-instance.zip : Info 폴더 + Storage/Stage/Cover의 이미지·자막 파일 (동영상 제외)
@@ -13,7 +13,7 @@
   (iCloud가 작성 중인 미완성 파일을 동기화하는 것을 방지)
 
 .PARAMETER ConfigPath
-  web-backend 설정 파일 경로 (기본: 저장소의 default.json)
+  flay-web/backend 설정 파일 경로 (기본: 저장소의 default.json)
 
 .PARAMETER DestDir
   백업 목적지 폴더 (기본: iCloud 공유 폴더)
@@ -22,7 +22,7 @@
   powershell -NoProfile -ExecutionPolicy Bypass -File flay-backup.ps1
 #>
 param(
-  [string]$ConfigPath = 'C:\kamoru\Workspace\git\flayground\web-backend\config\default.json',
+  [string]$ConfigPath = (Join-Path $PSScriptRoot '..\..\flay-web\backend\config\default.json'),
   [string]$DestDir = 'C:\Users\namjk\iCloudDrive\Flay'
 )
 

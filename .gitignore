@@ -81,7 +81,7 @@ financial-note.db
 private-memo.md
 
 # portfolio data (private)
-web-frontend/src/finance/data/portfolio.json
+flay-web/frontend/src/finance/data/portfolio.json
 
 
 # backup script logs

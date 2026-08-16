@@ -1,35 +1,31 @@
 #!/bin/sh
 
-CURRENT_DIR=${PWD}
-FLAY_GROUND_HOME="$CURRENT_DIR"
+# FLAY_GROUND_HOME = repo root (this script lives in <root>/bin/web)
+FLAY_GROUND_HOME="$(cd "$(dirname "$0")/../.." && pwd)"
 
-if [ ! -d "$FLAY_GROUND_HOME/web-backend/src" ]; then
-  FLAY_GROUND_HOME="$(cd .. && pwd)"
-fi
-
-if [ ! -d "$FLAY_GROUND_HOME/web-backend/src" ]; then
+if [ ! -d "$FLAY_GROUND_HOME/flay-web/backend/src" ]; then
   echo "invalid FLAY_GROUND_HOME: $FLAY_GROUND_HOME"
   exit 1
 fi
 
 echo "Using FLAY_GROUND: $FLAY_GROUND_HOME"
 
-# Build web-frontend
+# Build flay-web/frontend
 echo ""
 echo "===================================================================================================================="
-echo "Build web-frontend"
+echo "Build flay-web/frontend"
 echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/web-frontend"
+cd "$FLAY_GROUND_HOME/flay-web/frontend"
 yarn install
 node madge.cjs
 yarn run build
 
-# Build web-backend
+# Build flay-web/backend
 echo ""
 echo "===================================================================================================================="
-echo "Build web-backend"
+echo "Build flay-web/backend"
 echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/web-backend"
+cd "$FLAY_GROUND_HOME/flay-web/backend"
 yarn install
 yarn build:schema
 yarn build
@@ -39,15 +35,15 @@ echo ""
 echo "===================================================================================================================="
 echo "MCP-Nexus HTTP Server started in background"
 echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/mcp-nexus"
+cd "$FLAY_GROUND_HOME/flay-mcp"
 yarn install
-nohup yarn http > "$FLAY_GROUND_HOME/mcp-nexus/logs/mcp-nexus.log" 2>&1 &
-echo "MCP-Nexus logs: $FLAY_GROUND_HOME/mcp-nexus/logs/mcp-nexus.log"
+nohup yarn http > "$FLAY_GROUND_HOME/flay-mcp/logs/mcp-nexus.log" 2>&1 &
+echo "MCP-Nexus logs: $FLAY_GROUND_HOME/flay-mcp/logs/mcp-nexus.log"
 
-# Start web-backend
+# Start flay-web/backend
 echo ""
 echo "===================================================================================================================="
-echo "Start FLAY_GROUND (web-backend)"
+echo "Start FLAY_GROUND (flay-web/backend)"
 echo "--------------------------------------------------------------------------------------------------------------------"
-cd "$FLAY_GROUND_HOME/web-backend"
+cd "$FLAY_GROUND_HOME/flay-web/backend"
 node dist/index.js

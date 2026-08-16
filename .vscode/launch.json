@@ -2,27 +2,27 @@
   "configurations": [
     {
       "type": "node",
-      "name": "[Ground] web-frontend dev",
+      "name": "[Web] frontend dev",
       "request": "launch",
-      "cwd": "${workspaceFolder}/web-frontend",
+      "cwd": "${workspaceFolder}/flay-web/frontend",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"
     },
     {
       "type": "node",
-      "name": "[Ground] mcp-nexus dev",
+      "name": "[Web] backend dev",
       "request": "launch",
-      "cwd": "${workspaceFolder}/mcp-nexus",
+      "cwd": "${workspaceFolder}/flay-web/backend",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"
     },
     {
       "type": "node",
-      "name": "[Ground] web-backend dev",
+      "name": "[MCP] flay-mcp dev",
       "request": "launch",
-      "cwd": "${workspaceFolder}/web-backend",
+      "cwd": "${workspaceFolder}/flay-mcp",
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"

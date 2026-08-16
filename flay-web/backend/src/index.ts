@@ -70,8 +70,8 @@ function createApp(): express.Application {
   app.use(createFileLogger());
 
   // 정적 파일 서빙
-  const wwwDistPath = path.resolve(__dirname, '..', '..', 'web-frontend', 'dist');
-  const wwwPublicPath = path.resolve(__dirname, '..', '..', 'web-frontend', 'public');
+  const wwwDistPath = path.resolve(__dirname, '..', '..', 'frontend', 'dist');
+  const wwwPublicPath = path.resolve(__dirname, '..', '..', 'frontend', 'public');
 
   // 루트 정적 파일 (index.html, manifest.webmanifest, service-worker.js 등)
   if (fs.existsSync(wwwPublicPath)) {
@@ -135,7 +135,7 @@ function createApp(): express.Application {
 function startServer(app: express.Application): void {
   const { port, http2: useHttp2 } = config.server;
 
-  const certDir = path.resolve(__dirname, '..', '..', '.cert');
+  const certDir = path.resolve(__dirname, '..', '..', '..', '.cert');
   const keyPath = path.join(certDir, 'kamoru.jk.key');
   const certPath = path.join(certDir, 'kamoru.jk.pem');
 

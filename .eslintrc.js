@@ -1,6 +1,6 @@
 const path = require('path');
-// 플러그인/파서는 web-frontend/node_modules에 설치되어 있으므로 해당 경로를 우선 탐색
-const pluginPaths = [path.join(__dirname, 'web-frontend'), path.join(__dirname, 'web-backend'), __dirname];
+// 플러그인/파서는 flay-web/frontend/node_modules에 설치되어 있으므로 해당 경로를 우선 탐색
+const pluginPaths = [path.join(__dirname, 'flay-web', 'frontend'), path.join(__dirname, 'flay-web', 'backend'), __dirname];
 const tsParser = require.resolve('@typescript-eslint/parser', { paths: pluginPaths });
 // ESLint가 루트에서 플러그인을 찾을 수 있도록 require path를 확장
 const Module = require('module');
@@ -64,11 +64,11 @@ const tsRules = {
 
 module.exports = {
   root: true,
-  ignorePatterns: ['**/node_modules/**', '**/dist/**', '**/target/**', '**/*.js', '**/*.jsx', 'web-frontend/webpack.*.cjs', 'web-frontend/madge.cjs'],
+  ignorePatterns: ['**/node_modules/**', '**/dist/**', '**/target/**', '**/*.js', '**/*.jsx', 'flay-web/frontend/webpack.*.cjs', 'flay-web/frontend/madge.cjs', 'flay-ai/**'],
   overrides: [
     {
       ...commonTsOverride,
-      files: ['web-frontend/src/**/*.{ts,tsx}'],
+      files: ['flay-web/frontend/src/**/*.{ts,tsx}'],
       env: {
         browser: true,
         node: true,
@@ -76,7 +76,7 @@ module.exports = {
       },
       parserOptions: {
         ...commonTsOverride.parserOptions,
-        project: './web-frontend/tsconfig.json',
+        project: './flay-web/frontend/tsconfig.json',
       },
       rules: {
         ...baseRules,
@@ -85,14 +85,14 @@ module.exports = {
     },
     {
       ...commonTsOverride,
-      files: ['mcp-nexus/src/**/*.ts'],
+      files: ['flay-mcp/src/**/*.ts'],
       env: {
         node: true,
         es2022: true,
       },
       parserOptions: {
         ...commonTsOverride.parserOptions,
-        project: './mcp-nexus/tsconfig.json',
+        project: './flay-mcp/tsconfig.json',
       },
       rules: {
         ...baseRules,

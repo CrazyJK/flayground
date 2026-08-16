@@ -87,7 +87,7 @@ module.exports = {
       '@nav': path.resolve(__dirname, 'src/nav'),
       '@spa': path.resolve(__dirname, 'src/spa'),
       '@svg': path.resolve(__dirname, 'src/svg'),
-      '@domain': path.resolve(__dirname, '../web-backend/src/domain'),
+      '@domain': path.resolve(__dirname, '../backend/src/domain'),
     },
   },
   plugins: [

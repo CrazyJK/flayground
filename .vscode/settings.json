@@ -39,7 +39,7 @@
   "js/ts.format.enabled": false,
   "eslint.validate": ["typescript"],
   "eslint.options": {
-    "resolvePluginsRelativeTo": "./web-frontend"
+    "resolvePluginsRelativeTo": "./flay-web/frontend"
   },
   "[typescript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",

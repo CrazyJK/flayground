@@ -6,7 +6,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const ERROR_PAGE_DIR = path.resolve(__dirname, '..', '..', '..', 'web-frontend', 'public', 'error');
+const ERROR_PAGE_DIR = path.resolve(__dirname, '..', '..', '..', 'frontend', 'public', 'error');
 
 /**
  * API 에러 응답 형식

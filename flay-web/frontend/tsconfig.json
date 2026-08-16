@@ -57,7 +57,7 @@
       "@nav/*": ["src/nav/*"],
       "@spa/*": ["src/spa/*"],
       "@svg/*": ["src/svg/*"],
-      "@domain/*": ["../web-backend/src/domain/*"]
+      "@domain/*": ["../backend/src/domain/*"]
     },
 
     // 라이브러리

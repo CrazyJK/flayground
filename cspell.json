@@ -1,0 +1,53 @@
+{
+  // cSpell 설정 — VS Code 확장(Code Spell Checker)과 CLI(cspell) 가 공유하는 단일 설정.
+  //   전체 스캔: cspell --no-progress --unique --words-only "**" | sort -u
+  //   내장 사전은 파일 타입과 무관하게 전역으로 켠다(.md/.yaml/.ps1 에서도 venv·uvicorn·tsup 등 인식).
+  //   어떤 내장 사전에도 없는 프로젝트 고유어(qdrant, Ollama, Flayground …)만 커스텀 사전에 추가한다.
+  "version": "0.2",
+  "language": "en",
+  "dictionaries": [
+    "python",
+    "node",
+    "npm",
+    "typescript",
+    "html",
+    "css",
+    "fonts",
+    "powershell",
+    "bash",
+    "docker",
+    "sql",
+    "fullstack",
+    "data-science",
+    "custom-dictionary-workspace"
+  ],
+  "dictionaryDefinitions": [
+    {
+      "name": "custom-dictionary-workspace",
+      "path": ".cspell/custom-dictionary-workspace.txt",
+      "addWords": true,
+      "scope": "workspace"
+    }
+  ],
+  "useGitignore": true,
+  "ignorePaths": [
+    "**/node_modules/**",
+    "**/dist/**",
+    "**/.next/**",
+    "**/.venv/**",
+    "**/logs/**",
+    "**/*.lock",
+    "**/*.min.*",
+    "**/*.map",
+    "**/*.svg",
+    "**/*.ico",
+    "**/*.png",
+    "**/*.jpg",
+    ".cspell/**",
+    ".git/**",
+    "docs/plans/**",
+    "docs/flay-ai/_planbuild/**"
+  ],
+  // URL 인코딩된 SVG data URI(%3Csvg%3E…)는 단어로 취급하지 않는다
+  "ignoreRegExpList": ["/data:image\\/svg\\+xml[^\"')\\s]*/g"]
+}

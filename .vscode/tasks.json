@@ -17,7 +17,7 @@
       "command": "ollama serve",
       "isBackground": true,
       "problemMatcher": {
-        "pattern": [{ "regexp": "^.*$", "message": 1 }],
+        "pattern": { "regexp": ".", "file": 1, "location": 2, "message": 3 },
         "background": { "activeOnStart": true, "beginsPattern": ".", "endsPattern": "Listening on" }
       },
       "presentation": { "reveal": "always", "panel": "dedicated" }
@@ -30,7 +30,7 @@
       "options": { "cwd": "${workspaceFolder}/flay-ai" },
       "isBackground": true,
       "problemMatcher": {
-        "pattern": [{ "regexp": "^.*$", "message": 1 }],
+        "pattern": { "regexp": ".", "file": 1, "location": 2, "message": 3 },
         "background": { "activeOnStart": true, "beginsPattern": ".", "endsPattern": "Application startup complete" }
       },
       "presentation": { "reveal": "always", "panel": "dedicated" }
@@ -43,7 +43,7 @@
       "options": { "cwd": "${workspaceFolder}/flay-ai/apps/web" },
       "isBackground": true,
       "problemMatcher": {
-        "pattern": [{ "regexp": "^.*$", "message": 1 }],
+        "pattern": { "regexp": ".", "file": 1, "location": 2, "message": 3 },
         "background": { "activeOnStart": true, "beginsPattern": ".", "endsPattern": "Ready in" }
       },
       "presentation": { "reveal": "always", "panel": "dedicated" }

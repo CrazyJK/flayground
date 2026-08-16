@@ -202,7 +202,7 @@ RRF (Reciprocal Rank Fusion) = `Σ 1 / (k + rank_i)`. 점수 스케일이 다른
 
 GPU 12GB 한정이라 모두 동시 로드 불가. 정책:
 
-- **LLM**: Ollama 가 keep-alive 후 자동 unload (`scripts/nightly_index.ps1` 에서 명시적 unload 가능).
+- **LLM**: Ollama 가 keep-alive 후 자동 unload (`bin/ai/nightly_index.ps1` 에서 명시적 unload 가능).
 - **BGE-M3, CLIP, InsightFace**: 첫 요청 시 lazy load, 이후 process 종료까지 유지.
 - 야간 인덱싱 단계 사이에는 큰 모델을 unload 하도록 nightly 스크립트가 순서 조정.
 

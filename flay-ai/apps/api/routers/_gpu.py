@@ -2,7 +2,7 @@
 
 단일 GPU(RTX 4070 Ti 12GB)를 CUDA(인덱서·안정화)와 Vulkan(화질개선 ncnn)이 나눠 쓰므로
 무거운 잡은 동시 1개만 허용한다. 배제 실패는 OOM 이 아니라 속도 저하로 나타나
-감지가 어렵다(docs/video-enhance-plan.md §7) — 잡 시작 전에 여기서 막는 게 전부다.
+감지가 어렵다(docs/flay-ai/video-enhance-plan.md §7) — 잡 시작 전에 여기서 막는 게 전부다.
 """
 
 from __future__ import annotations

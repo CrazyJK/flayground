@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "predev": "node scripts/ensure-favicon.js",
-    "dev": "next dev -H ai.kamoru.jk -p 3000 --experimental-https --experimental-https-key ../../.cert/kamoru.jk.key --experimental-https-cert ../../.cert/kamoru.jk.pem",
+    "dev": "next dev -H ai.kamoru.jk -p 3000 --experimental-https --experimental-https-key ../../../.cert/kamoru.jk.key --experimental-https-cert ../../../.cert/kamoru.jk.pem",
     "prebuild": "node scripts/ensure-favicon.js",
     "build": "next build",
     "start": "node server.js",

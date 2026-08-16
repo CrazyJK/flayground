@@ -1,6 +1,6 @@
 """자막 서브시스템 — instance 영상의 일본어 음성을 한국어 자막(.srt)으로.
 
-흐름(상세: docs/subtitle-plan.md):
+흐름(상세: docs/flay-ai/subtitle-plan.md):
   외부에서 opus 로 신청 → subtitle_jobs 큐 적재 → 야간 드레인(cli drain)이 순차 처리.
   영상 1개당: Whisper(JP, VAD) 전사 → 번역(JP→KO) → <stem>.srt 사이드카 기록.
 

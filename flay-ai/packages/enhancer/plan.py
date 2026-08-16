@@ -1,6 +1,6 @@
 """옵션 → 실행 계획 산출 (순수 함수 — 단위 테스트 대상, 외부 의존 없음).
 
-docs/video-enhance-plan.md §1 수식:
+docs/flay-ai/video-enhance-plan.md §1 수식:
     출력 길이     = 입력 길이 / 배속
     필요 프레임수 = 입력 프레임수 × (출력 fps / 입력 fps) / 배속
     RIFE 배수     = 필요 프레임수 / 입력 프레임수   (1이면 보간 생략)

@@ -9,9 +9,9 @@
 # 보존 정책: 최근 7개 일일 백업 + 매주 일요일 1개 (보관 무한)
 #
 # 사용:
-#   .\scripts\backup.ps1                    # 기본 K:\Backup\flayAI
-#   .\scripts\backup.ps1 -DstRoot D:\Backup
-#   .\scripts\backup.ps1 -SkipQdrant        # SQLite 만
+#   .\bin\backup\flayai-backup.ps1                    # 기본 K:\Backup\flayAI
+#   .\bin\backup\flayai-backup.ps1 -DstRoot D:\Backup
+#   .\bin\backup\flayai-backup.ps1 -SkipQdrant        # SQLite 만
 
 [CmdletBinding()]
 param(
@@ -25,7 +25,7 @@ param(
 $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
-$root = Split-Path -Parent $PSScriptRoot
+$root = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "flay-ai"
 Set-Location $root
 
 $ts  = Get-Date -Format "yyyyMMdd-HHmmss"

@@ -1,6 +1,6 @@
 // Production HTTPS custom server for Next.js.
-// Reads TLS certificate from project root .cert/ directory.
-// Usage: node server.js  (called via npm run start)
+// Reads TLS certificate from repository root .cert/ directory.
+// Usage: node server.js  (called via yarn start)
 const { createServer } = require("https");
 const { readFileSync } = require("fs");
 const { parse } = require("url");
@@ -13,8 +13,8 @@ const port = parseInt(process.env.PORT || "3000", 10);
 const app = next({ dev: false, hostname, port });
 const handle = app.getRequestHandler();
 
-// Cert files are at <repo-root>/.cert/ (two directories above apps/web/)
-const certRoot = path.join(__dirname, "..", "..", ".cert");
+// Cert files are at <repo-root>/.cert/ (three directories above flay-ai/apps/web/)
+const certRoot = path.join(__dirname, "..", "..", "..", ".cert");
 
 let httpsOptions;
 try {

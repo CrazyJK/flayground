@@ -7,7 +7,7 @@
 # ============================================================
 $ErrorActionPreference = "Stop"
 
-$Root    = Split-Path -Parent $PSScriptRoot
+$Root    = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "flay-ai"
 $Dest    = "J:\Backup\flayAI\tier2"
 $Keep    = 4
 $Stamp   = Get-Date -Format "yyyyMMdd"

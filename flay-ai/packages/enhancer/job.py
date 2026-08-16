@@ -1,7 +1,7 @@
 """화질 개선 잡 모델 — 잡 디렉토리 + status.json(단일 진실 소스).
 
 packages/stabilizer/job.py 패턴의 최소 복제(잡 파라미터 스키마가 달라 params dict 로 통일).
-후속: 두 서브시스템 공용 잡 저장소로 승격(docs/video-enhance-plan.md 남은 할 일).
+후속: 두 서브시스템 공용 잡 저장소로 승격(docs/flay-ai/video-enhance-plan.md 남은 할 일).
 
 레이아웃: {work_dir}/{job_id}/ ── in.mp4, frames_*/, logs/, out.mp4, status.json
 """

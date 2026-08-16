@@ -1,6 +1,6 @@
 """영상 화질 개선 API 라우터 — 업로드 → 비동기 잡 → 폴링 → 결과 다운로드.
 
-설계: docs/video-enhance-plan.md. stabilize 라우터 준용 — localhost-only,
+설계: docs/flay-ai/video-enhance-plan.md. stabilize 라우터 준용 — localhost-only,
 잡은 서브프로세스(packages.enhancer.cli)로 실행하고 status.json 으로 추적한다.
 GPU 상호배제(안정화·인덱싱과 동시 1잡)는 routers/_gpu.gpu_busy 공용.
 

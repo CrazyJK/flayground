@@ -17,9 +17,9 @@ echo Usage: api.bat ^<start^|stop^|restart^>
 exit /b 1
 
 :start
-pushd "%~dp0.."
+pushd "%~dp0..\..\flay-ai"
 echo [api start] FastAPI on https://ai.kamoru.jk:8000
-start "flayAI-API" cmd /k ".venv\Scripts\python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile .cert/kamoru.jk.key --ssl-certfile .cert/kamoru.jk.pem"
+start "flayAI-API" cmd /k ".venv\Scripts\python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile ../.cert/kamoru.jk.key --ssl-certfile ../.cert/kamoru.jk.pem"
 popd
 goto :eof
 

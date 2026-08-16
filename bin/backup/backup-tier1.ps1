@@ -8,7 +8,8 @@
 # ============================================================
 $ErrorActionPreference = "Stop"
 
-$Root    = Split-Path -Parent $PSScriptRoot
+$RepoRoot = Split-Path -Parent (Split-Path -Parent $PSScriptRoot)
+$Root    = Join-Path $RepoRoot "flay-ai"
 $Dest    = "J:\Backup\flayAI\tier1"
 $Keep    = 14
 $Stamp   = Get-Date -Format "yyyyMMdd"
@@ -32,7 +33,7 @@ try {
     $Py  = Join-Path $Root ".venv\Scripts\python.exe"
     $Src = Join-Path $Root "data\sqlite\flay.db"
     $Dst = Join-Path $Staging "flay.db"
-    & $Py (Join-Path $Root "bin\sqlite_backup.py") $Src $Dst
+    & $Py (Join-Path $PSScriptRoot "sqlite_backup.py") $Src $Dst
     if ($LASTEXITCODE -ne 0) { throw "sqlite backup failed (exit $LASTEXITCODE)" }
     Write-Log ("flay.db backed up: " + [math]::Round((Get-Item $Dst).Length / 1MB, 1) + " MB")
 
@@ -44,18 +45,18 @@ try {
         Copy-Item (Join-Path $Root "data\state.json") $Staging
     }
 
-    # 3) Gitignored private overrides (only what exists)
+    # 3) Gitignored private overrides (only what exists), relative to repo root
     $Overrides = @(
         ".cert",
-        "diary_prompts.yaml",
-        "subtitle_prompts.yaml",
-        ".env",
-        "apps\web\src\app\favicon.ico"
+        "flay-ai\diary_prompts.yaml",
+        "flay-ai\subtitle_prompts.yaml",
+        "flay-ai\.env",
+        "flay-ai\apps\web\src\app\favicon.ico"
     )
     $OvDir = Join-Path $Staging "overrides"
     New-Item -ItemType Directory -Force -Path $OvDir | Out-Null
     foreach ($rel in $Overrides) {
-        $p = Join-Path $Root $rel
+        $p = Join-Path $RepoRoot $rel
         if (Test-Path $p) {
             $flat = $rel -replace "[\\/]", "__"
             Copy-Item $p (Join-Path $OvDir $flat) -Recurse

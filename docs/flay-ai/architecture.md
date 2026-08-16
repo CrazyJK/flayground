@@ -127,7 +127,7 @@ flayAI/
 | 데이터 | 위치 | 백업 대상? |
 |--------|------|------------|
 | 원본 영상 JSON, 포스터 | `K:\Crazy\*` | (원본이므로 별도) |
-| SQLite | `data/sqlite/flay.db` | ✓ `scripts/backup.ps1` |
+| SQLite | `data/sqlite/flay.db` | ✓ `bin/backup/flayai-backup.ps1` |
 | Qdrant | `data/qdrant/` (도커 볼륨) | ✓ snapshot API |
 | 모델 캐시 | `~/.cache/huggingface` | ✗ 재다운로드 가능 |
 | 인덱싱 진행 cursor | `data/state.json` | ✓ |

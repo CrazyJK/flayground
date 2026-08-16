@@ -2,9 +2,9 @@
 REM ============================================================
 REM  flayAI - Web frontend (Next.js dev)
 REM    Port     : 127.0.0.1:3000
-REM    Location : apps/web
+REM    Location : flay-ai/apps/web
 REM    Depends  : API(8000)
-REM    Prereq   : run `npm install` once in apps/web
+REM    Prereq   : run `yarn install` once in flay-ai/apps/web
 REM
 REM  Usage: web.bat <start|stop|restart>
 REM ============================================================
@@ -17,9 +17,9 @@ echo Usage: web.bat ^<start^|stop^|restart^>
 exit /b 1
 
 :start
-pushd "%~dp0..\apps\web"
+pushd "%~dp0..\..\flay-ai\apps\web"
 echo [web start] Next.js dev on https://ai.kamoru.jk:3000
-start "flayAI-Web" cmd /k "npm run dev"
+start "flayAI-Web" cmd /k "yarn dev"
 popd
 goto :eof
 

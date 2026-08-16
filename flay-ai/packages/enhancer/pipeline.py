@@ -1,6 +1,6 @@
 """화질 개선 잡 파이프라인 — probe → extract → upscale → interpolate → encode.
 
-설계: docs/video-enhance-plan.md. 각 단계는 프레임 파일 단위로 증분·멱등:
+설계: docs/flay-ai/video-enhance-plan.md. 각 단계는 프레임 파일 단위로 증분·멱등:
 - extract/interpolate: 완료 마커(.done)가 있으면 skip, 부분 산출물은 처음부터(빠른 단계)
 - upscale: 누락/불완전 프레임만 재처리(PNG IEND 꼬리 검사) — 지배 비용이라 이어가기 필수
 진행률은 출력 폴더 PNG 개수 폴링(§3 — ncnn stderr % 파싱보다 단순·정확).

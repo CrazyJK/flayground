@@ -210,11 +210,11 @@ Qdrant 컬렉션별 현황을 카드 형태로 표시합니다.
 
 | 파일                                                                  | 역할                                   |
 | --------------------------------------------------------------------- | -------------------------------------- |
-| [apps/api/routers/admin.py](../apps/api/routers/admin.py)             | FastAPI 라우터 — 데이터 수집·작업 실행 |
-| [apps/api/routers/admin_events.py](../apps/api/routers/admin_events.py) | SSE 스트림 — 샘플러(1초/5초) + 팬아웃 + kick |
-| [apps/api/sse.py](../apps/api/sse.py)                                 | 공용 SSE 유틸 — Broadcaster·poll_stream·프레임 인코딩 |
-| [apps/web/src/app/admin/page.tsx](../apps/web/src/app/admin/page.tsx) | Next.js 관리자 페이지                  |
-| [apps/web/src/app/_components/useEventStream.ts](../apps/web/src/app/_components/useEventStream.ts) | SSE 구독 공용 훅 (가시성 게이팅·자동 재연결) |
+| [apps/api/routers/admin.py](../../flay-ai/apps/api/routers/admin.py)             | FastAPI 라우터 — 데이터 수집·작업 실행 |
+| [apps/api/routers/admin_events.py](../../flay-ai/apps/api/routers/admin_events.py) | SSE 스트림 — 샘플러(1초/5초) + 팬아웃 + kick |
+| [apps/api/sse.py](../../flay-ai/apps/api/sse.py)                                 | 공용 SSE 유틸 — Broadcaster·poll_stream·프레임 인코딩 |
+| [apps/web/src/app/admin/page.tsx](../../flay-ai/apps/web/src/app/admin/page.tsx) | Next.js 관리자 페이지                  |
+| [apps/web/src/app/_components/useEventStream.ts](../../flay-ai/apps/web/src/app/_components/useEventStream.ts) | SSE 구독 공용 훅 (가시성 게이팅·자동 재연결) |
 
 ---
 
@@ -223,5 +223,5 @@ Qdrant 컬렉션별 현황을 카드 형태로 표시합니다.
 변경 사항 반영:
 
 ```bat
-bin\api.bat restart
+bin\ai\api.bat restart
 ```

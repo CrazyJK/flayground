@@ -6,7 +6,7 @@
 > 외부 플레이어(flay 팝업/PotPlayer/VLC 등)가 동일 stem 규칙으로 자동 로드한다.
 >
 > 이 문서는 **확정된 계획**이며 일부는 **구현 완료**(아래 §구현 현황)다. flayAI 컨벤션
-> ([CLAUDE.md](../CLAUDE.md), `.github/copilot-instructions.md`)에 맞춰 구현한다.
+> ([CLAUDE.md](../../flay-ai/CLAUDE.md))에 맞춰 구현한다.
 
 ---
 
@@ -114,7 +114,7 @@ floor 를 0.35→0.15 로 낮춰도 매칭률 불변. 즉 매칭률 ≈ (JP 세�
 - `POST /api/subtitle/drain` — 수동 드레인(서브프로세스) · `DELETE /requests/{id}` — 삭제 (둘 다 localhost 전용)
 - 목록 데이터는 `packages/subtitler/candidates.py`(무자막=videos/posters 조인, 자막보유=subtitle_corpus + 최근 resync 잡). 무자막 판정은 `subtitle_status`(사이드카 .srt/.smi 존재) 캐시 — 스캔으로 채움.
 
-**운영** — `scripts/nightly_subtitle.ps1`(작업 스케줄러용, ASCII), `config.yaml subtitle:`, `.gitignore data/subtitle/`
+**운영** — `bin/ai/nightly_subtitle.ps1`(작업 스케줄러용, ASCII), `config.yaml subtitle:`, `.gitignore data/subtitle/`
 
 ### 처리 흐름 (영상 1개, generate)
 1. `posters.video_path` 로 영상 경로 해소(오프라인/부재면 실패 처리).
@@ -132,7 +132,7 @@ floor 를 0.35→0.15 로 낮춰도 매칭률 불변. 즉 매칭률 ≈ (JP 세�
      CPU/GPU 충돌 전례가 있어 **`uv sync` 후 GPU 인식 검증 권장**(`WhisperModel(..., device="cuda")`).
    - 정 깨지면 torch/CUDA 와 독립적인 `whisper.cpp`(ffmpeg 처럼 바이너리 의존)로 대체 가능.
 2. **모델**: 최초 1회 HuggingFace 자동 다운로드(large-v3 ≈ 3GB). 빠르게: `config.yaml` `subtitle.model: large-v3-turbo`.
-3. **야간 스케줄러 등록**: `scripts/nightly_subtitle.ps1` — nightly_index 와 시간을 어긋나게(예: 04:30)
+3. **야간 스케줄러 등록**: `bin/ai/nightly_subtitle.ps1` — nightly_index 와 시간을 어긋나게(예: 04:30)
    등록해 같은 GPU 동시 사용을 피한다. 스크립트 상단 schtasks 예시 참고.
 
 ## 사용 예

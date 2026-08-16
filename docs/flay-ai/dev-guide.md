@@ -13,7 +13,7 @@
 
 ```powershell
 # 1) Python 환경
-cd C:\Handyground\Workspace\git\flayAI
+cd C:\kamoru\Workspace\git\flayground\flay-ai
 uv venv
 .\.venv\Scripts\Activate.ps1
 uv pip install -e ".[dev]"     # pyproject.toml 의 의존성 일괄 설치
@@ -31,7 +31,7 @@ npm install
 cd ..\..
 ```
 
-자동화: `scripts/bootstrap.ps1` 가 위 단계들을 한 번에 한다.
+자동화: `bin/ai/bootstrap.ps1` 가 위 단계들을 한 번에 한다.
 
 ## 데이터 인덱싱 (최초 1회 또는 데이터 갱신 시)
 
@@ -59,9 +59,9 @@ python -m packages.indexer.cli ocr-posters
 
 ## 일상 실행
 
-두 개의 터미널 또는 [`scripts/overnight.ps1`](../scripts/overnight.ps1) 같은 헬퍼 사용.
+두 개의 터미널 또는 [`bin/ai/overnight.ps1`](../../bin/ai/overnight.ps1) 같은 헬퍼 사용.
 
-> 표준 기동은 `bin\all.bat start`(개발) / `bin\prod.bat`(운영)이며, `config.yaml.server.host = ai.kamoru.jk` + 자체 서명 TLS(`.cert/`)로 **HTTPS** 서빙한다. 아래 수동 `--host 127.0.0.1` 명령은 TLS 없이 로컬에서 직접 띄우는 대안이다.
+> 표준 기동은 `bin\ai\all.bat start`(개발) / `bin\ai\prod.bat`(운영)이며, `config.yaml.server.host = ai.kamoru.jk` + 자체 서명 TLS(`.cert/`)로 **HTTPS** 서빙한다. 아래 수동 `--host 127.0.0.1` 명령은 TLS 없이 로컬에서 직접 띄우는 대안이다.
 
 ```powershell
 # 터미널 1 — Qdrant 가 이미 떠 있다고 가정
@@ -124,8 +124,8 @@ python eval/run_eval.py --tag actress -v
 
 ```powershell
 # 백업 (SQLite + Qdrant snapshot)
-.\scripts\backup.ps1                   # 기본 K:\Backup\flayAI\{ts}
-.\scripts\backup.ps1 -DstRoot D:\Backup
+.\bin\backup\flayai-backup.ps1                   # 기본 K:\Backup\flayAI\{ts}
+.\bin\backup\flayai-backup.ps1 -DstRoot D:\Backup
 ```
 
 자동 회전: 최근 7일 + 매주 일요일 분 보관.
@@ -135,13 +135,13 @@ python eval/run_eval.py --tag actress -v
 
 ## 야간 자동 인덱싱
 
-[`scripts/nightly_index.ps1`](../scripts/nightly_index.ps1) — translate → embed → (주1) 이미지/얼굴/ocr → backup.
+[`bin/ai/nightly_index.ps1`](../../bin/ai/nightly_index.ps1) — translate → embed → (주1) 이미지/얼굴/ocr → backup.
 
 Windows Task Scheduler 등록 예:
 
 ```powershell
 schtasks /Create /SC DAILY /ST 03:00 /TN flayAI-Nightly `
-  /TR "powershell.exe -ExecutionPolicy Bypass -File C:\Handyground\Workspace\git\flayAI\scripts\nightly_index.ps1"
+  /TR "powershell.exe -ExecutionPolicy Bypass -File C:\kamoru\Workspace\git\flayground\bin\ai\nightly_index.ps1"
 ```
 
 ## 디버그 / 진단 스크립트
@@ -170,10 +170,10 @@ schtasks /Create /SC DAILY /ST 03:00 /TN flayAI-Nightly `
 
 ## 파일 한 장 컨닝페이퍼
 
-- 설정: [`config.yaml`](../config.yaml) — 경로, 모델, 가중치
-- 스키마: [`packages/indexer/db.py`](../packages/indexer/db.py)
-- API 엔트리: [`apps/api/main.py`](../apps/api/main.py)
-- RAG 라우터: [`packages/rag/router.py`](../packages/rag/router.py)
-- 도구: [`packages/rag/tools.py`](../packages/rag/tools.py)
-- 검색기: [`packages/rag/retriever.py`](../packages/rag/retriever.py)
-- CLI: [`packages/indexer/cli.py`](../packages/indexer/cli.py)
+- 설정: [`config.yaml`](../../flay-ai/config.yaml) — 경로, 모델, 가중치
+- 스키마: [`packages/indexer/db.py`](../../flay-ai/packages/indexer/db.py)
+- API 엔트리: [`apps/api/main.py`](../../flay-ai/apps/api/main.py)
+- RAG 라우터: [`packages/rag/router.py`](../../flay-ai/packages/rag/router.py)
+- 도구: [`packages/rag/tools.py`](../../flay-ai/packages/rag/tools.py)
+- 검색기: [`packages/rag/retriever.py`](../../flay-ai/packages/rag/retriever.py)
+- CLI: [`packages/indexer/cli.py`](../../flay-ai/packages/indexer/cli.py)

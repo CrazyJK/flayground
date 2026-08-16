@@ -9,7 +9,7 @@
 # Register with Windows Task Scheduler (run after nightly_index so they do not
 # share the GPU at the same time), e.g.:
 #   schtasks /Create /SC DAILY /ST 04:30 /TN flayAI-Subtitle `
-#            /TR "powershell.exe -ExecutionPolicy Bypass -File C:\kamoru\Workspace\git\flayAI\scripts\nightly_subtitle.ps1"
+#            /TR "powershell.exe -ExecutionPolicy Bypass -File C:\kamoru\Workspace\git\flayground\bin\ai\nightly_subtitle.ps1"
 
 [CmdletBinding()]
 param(
@@ -20,7 +20,7 @@ param(
 $ErrorActionPreference = "Continue"
 $ProgressPreference = "SilentlyContinue"
 
-$root = Split-Path -Parent $PSScriptRoot
+$root = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "flay-ai"
 Set-Location $root
 
 New-Item -ItemType Directory -Path $LogDir -Force | Out-Null

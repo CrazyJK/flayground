@@ -10,7 +10,7 @@
 #
 # Windows Task Scheduler 등록 예:
 #   schtasks /Create /SC DAILY /ST 03:00 /TN flayAI-Nightly `
-#            /TR "powershell.exe -ExecutionPolicy Bypass -File C:\kamoru\Workspace\git\flayAI\scripts\nightly_index.ps1"
+#            /TR "powershell.exe -ExecutionPolicy Bypass -File C:\kamoru\Workspace\git\flayground\bin\ai\nightly_index.ps1"
 
 [CmdletBinding()]
 param(
@@ -23,7 +23,7 @@ param(
 $ErrorActionPreference = "Continue"
 $ProgressPreference = "SilentlyContinue"
 
-$root = Split-Path -Parent $PSScriptRoot
+$root = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "flay-ai"
 Set-Location $root
 
 New-Item -ItemType Directory -Path $LogDir -Force | Out-Null
@@ -94,7 +94,7 @@ Log "[5/6] reload: noop (lazy)"
 # 6) 백업
 if (-not $SkipBackup) {
     Log "[6/6] backup"
-    & "$PSScriptRoot\backup.ps1" 2>&1 | Tee-Object -Append $log | Out-Null
+    & "$PSScriptRoot\..\backup\flayai-backup.ps1" 2>&1 | Tee-Object -Append $log | Out-Null
     Log "    backup exit=$LASTEXITCODE"
 } else {
     Log "[6/6] backup skipped"

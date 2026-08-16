@@ -1,11 +1,11 @@
 <#
 .SYNOPSIS  flayAI M0 bootstrap script
-.USAGE     cd C:\kamoru\Workspace\git\flayAI ; .\scripts\bootstrap.ps1
+.USAGE     .\bin\ai\bootstrap.ps1   (run from anywhere; operates on <repo>\flay-ai)
 #>
 Set-StrictMode -Version Latest
 $ErrorActionPreference = "Stop"
 
-$ROOT = Split-Path $PSScriptRoot -Parent
+$ROOT = Join-Path (Split-Path (Split-Path $PSScriptRoot -Parent) -Parent) "flay-ai"
 Set-Location $ROOT
 
 function Write-Step($msg)  { Write-Host "`n=== $msg ===" -ForegroundColor Cyan }

@@ -7,14 +7,14 @@ REM    Processes run in background; logs written to logs\*.log.
 REM
 REM    vs. all.bat (dev):
 REM      api : uvicorn without --reload
-REM      web : npm run build -> next start  (no hot-reload)
+REM      web : yarn build -> next start  (no hot-reload)
 REM
 REM  Usage: prod.bat [--skip-build]
 REM    --skip-build  skip Next.js build (reuse existing .next)
 REM ============================================================
 setlocal enabledelayedexpansion
 
-set "ROOT=%~dp0.."
+set "ROOT=%~dp0..\..\flay-ai"
 set "SKIP_BUILD=0"
 if /i "%~1"=="--skip-build" set "SKIP_BUILD=1"
 
@@ -39,7 +39,7 @@ REM ---- 3. Next.js build (skippable) ------------------------
 if "%SKIP_BUILD%"=="0" (
     echo [3/5] Next.js build... ^(logs\web-build.log^)
     pushd "%ROOT%\apps\web"
-    call npm run build > "%ROOT%\logs\web-build.log" 2>&1
+    call yarn build > "%ROOT%\logs\web-build.log" 2>&1
     if errorlevel 1 (
         echo   ERROR: build failed. see logs\web-build.log
         popd
@@ -53,7 +53,7 @@ if "%SKIP_BUILD%"=="0" (
 
 REM ---- 4. API (FastAPI, no --reload) ------------------------
 echo [4/5] API ^(FastAPI^)... ^(logs\api.log^)
-start /b cmd /c "cd /d %ROOT% && .venv\Scripts\python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile .cert/kamoru.jk.key --ssl-certfile .cert/kamoru.jk.pem > logs\api.log 2>&1"
+start /b cmd /c "cd /d %ROOT% && .venv\Scripts\python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile ../.cert/kamoru.jk.key --ssl-certfile ../.cert/kamoru.jk.pem > logs\api.log 2>&1"
 timeout /t 3 /nobreak >nul
 
 REM ---- 5. Web (Next.js production server) ------------------
@@ -68,5 +68,5 @@ echo    Web  : https://ai.kamoru.jk:3000
 echo    Logs : %ROOT%\logs\
 echo ====================================================
 echo  Processes are running in background.
-echo  To stop all : bin\all.bat stop
-echo  To tail log : powershell Get-Content logs\api.log -Wait
+echo  To stop all : bin\ai\all.bat stop
+echo  To tail log : powershell Get-Content flay-ai\logs\api.log -Wait

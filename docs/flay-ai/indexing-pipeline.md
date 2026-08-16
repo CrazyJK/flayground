@@ -1,7 +1,7 @@
 # Indexing Pipeline — 원본 데이터 → 검색 가능한 인덱스
 
 > 모든 단계는 `python -m packages.indexer.cli <command>` 로 실행합니다.
-> 야간 자동 실행은 [`scripts/nightly_index.ps1`](../scripts/nightly_index.ps1).
+> 야간 자동 실행은 [`bin/ai/nightly_index.ps1`](../../bin/ai/nightly_index.ps1).
 
 ## 전체 흐름
 

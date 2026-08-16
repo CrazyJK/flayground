@@ -6,7 +6,7 @@
   python -m packages.subtitler.cli drain                      # 야간 배치: 큐를 비울 때까지
   python -m packages.subtitler.cli build-tm [limit]           # phase2: 팬자막 → JP↔KO 번역메모리
 
-drain 은 Windows 작업 스케줄러가 야간에 호출(scripts/nightly_subtitle.ps1).
+drain 은 Windows 작업 스케줄러가 야간에 호출(bin/ai/nightly_subtitle.ps1).
 (typer 인자 흡수 모호성을 피해 argv 를 직접 파싱 — stabilizer.cli 와 동일 패턴.)
 """
 

@@ -1,6 +1,6 @@
 """자막 생성 API — 외부에서 opus 로 신청 → 큐 적재 → 야간 드레인이 처리.
 
-설계: docs/subtitle-plan.md. 신청(POST)은 외부 진입점이라 개방(opus 검증)하고,
+설계: docs/flay-ai/subtitle-plan.md. 신청(POST)은 외부 진입점이라 개방(opus 검증)하고,
 제어(드레인 트리거/삭제)는 admin 과 동일하게 localhost 전용.
 
 엔드포인트(prefix=/api/subtitle):

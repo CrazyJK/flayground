@@ -91,9 +91,9 @@ server:
   web_port: 3000
   qdrant:   "http://127.0.0.1:6333"
   ollama:   "http://127.0.0.1:11434"
-  # TLS 인증서 (.cert/ 폴더, .gitignore 등록됨)
-  ssl_keyfile:  ".cert/kamoru.jk.key"
-  ssl_certfile: ".cert/kamoru.jk.pem"
+  # TLS 인증서 (저장소 루트 .cert/ 폴더, .gitignore 등록됨) — flay-ai/ 를 cwd 로 실행
+  ssl_keyfile:  "../.cert/kamoru.jk.key"
+  ssl_certfile: "../.cert/kamoru.jk.pem"
   # CORS 허용 origin 목록
   cors_origins:
     - "https://ai.kamoru.jk:3000"
@@ -131,7 +131,7 @@ diary:
   recall_min_semantic: 0.5
 
 stabilize:
-  # 영상 안정화 (docs/video-stabilization-plan.md). 잡 산출물은 data/stabilize/ (.gitignore).
+  # 영상 안정화 (docs/flay-ai/video-stabilization-plan.md). 잡 산출물은 data/stabilize/ (.gitignore).
   work_dir:        "data/stabilize"
   ffmpeg:          "ffmpeg"          # 바이너리(PATH). vidstab/NVENC 빌드 필요
   ffprobe:         "ffprobe"
@@ -155,7 +155,7 @@ stabilize:
     lock:     250
 
 enhance:
-  # 영상 화질 개선 — 업스케일·슬로모션·RIFE 보간 (docs/video-enhance-plan.md).
+  # 영상 화질 개선 — 업스케일·슬로모션·RIFE 보간 (docs/flay-ai/video-enhance-plan.md).
   # 잡 산출물은 data/enhance/ (.gitignore). 바이너리는 외부 폴더 — config 로만 참조.
   work_dir:          "data/enhance"
   realesrgan_bin:    "C:/kamoru/Apps/realesrgan/realesrgan-ncnn-vulkan.exe"
@@ -173,7 +173,7 @@ enhance:
     anime: "realesrgan-x4plus-anime"
 
 subtitle:
-  # 자막 생성 (docs/subtitle-plan.md). 외부에서 opus 로 신청 → 야간 드레인이 처리.
+  # 자막 생성 (docs/flay-ai/subtitle-plan.md). 외부에서 opus 로 신청 → 야간 드레인이 처리.
   # 산출물은 영상 옆 사이드카 <stem>.srt. 야간 배치 + VRAM 양보 불필요 → 최고 품질.
   work_dir:        "data/subtitle"   # 잡 로그/임시 (.gitignore)
   model:           "large-v3"        # faster-whisper STT. 빠르게: large-v3-turbo

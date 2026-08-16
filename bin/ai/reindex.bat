@@ -39,7 +39,7 @@ if /i "%MODE%"=="clean" goto :ok
 goto :usage
 :ok
 
-pushd "%~dp0.."
+pushd "%~dp0..\..\flay-ai"
 set "PY=.venv\Scripts\python.exe"
 set "CLI=%PY% -m packages.indexer.cli"
 set "T0=%TIME%"

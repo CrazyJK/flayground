@@ -1,6 +1,6 @@
 """영상 안정화 API 라우터 — 업로드 → 비동기 잡 → 폴링 → 결과 다운로드.
 
-설계: docs/video-stabilization-plan.md. 인덱서 admin 과 동일하게 localhost-only,
+설계: docs/flay-ai/video-stabilization-plan.md. 인덱서 admin 과 동일하게 localhost-only,
 잡은 서브프로세스(packages.stabilizer.cli)로 실행하고 status.json 으로 추적한다.
 
 엔드포인트(prefix=/api/stabilize):

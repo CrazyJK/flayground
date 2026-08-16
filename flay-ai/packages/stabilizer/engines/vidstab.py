@@ -1,6 +1,6 @@
 """배경 안정화 엔진 (v1) — ffmpeg vidstab.
 
-검증(docs/video-stabilization-plan.md §실측)에서 dense+robust+시간평활 방식이 군중·저텍스처
+검증(docs/flay-ai/video-stabilization-plan.md §실측)에서 dense+robust+시간평활 방식이 군중·저텍스처
 영상에서도 무크롭 캔버스 ~x1.12 로 안정화됨을 확인 → v1 배경 엔진으로 vidstab 채택.
 2패스: vidstabdetect(흔들림 검출) → vidstabtransform(보정). 무크롭=optzoom=0:crop=black.
 강도(strength)는 smoothing(프레임)으로 매핑. 후속 RAFT+마스킹 엔진은 별도 모듈로 추가.

@@ -1,8 +1,8 @@
 # 밤샘 잡: translate(전체) -> fts 재빌드 -> embed 재실행
 # 사용법:
-#   .\scripts\overnight.ps1
+#   .\bin\ai\overnight.ps1
 # 또는 백그라운드:
-#   Start-Process powershell -ArgumentList "-NoExit","-File","scripts\overnight.ps1"
+#   Start-Process powershell -ArgumentList "-NoExit","-File","bin\ai\overnight.ps1"
 #
 # 모든 단계가 멱등: 캐시/state 가 있어 중간에 끊겨도 재실행 안전.
 # 출력은 logs\overnight_*.log 에 저장.
@@ -11,7 +11,7 @@ $ErrorActionPreference = "Continue"   # 중간에 죽지 않도록
 $env:PYTHONIOENCODING  = "utf-8"
 $env:PYTHONPATH        = "."
 
-$repo = "C:\kamoru\Workspace\git\flayAI"
+$repo = Join-Path (Split-Path -Parent (Split-Path -Parent $PSScriptRoot)) "flay-ai"
 Set-Location $repo
 
 $logDir = Join-Path $repo "logs"

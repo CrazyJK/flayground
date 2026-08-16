@@ -11,7 +11,7 @@ REM  Usage: qdrant.bat <start|stop|restart>
 REM ============================================================
 setlocal
 set "ACTION=%~1"
-pushd "%~dp0.."
+pushd "%~dp0..\..\flay-ai"
 if /i "%ACTION%"=="start" (
     echo [qdrant start] docker compose up -d qdrant
     docker compose up -d qdrant

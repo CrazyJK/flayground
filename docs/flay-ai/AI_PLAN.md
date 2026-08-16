@@ -661,7 +661,7 @@ OpenAPI 스펙은 `/docs` 자동 생성, 외부 웹앱이 그대로 호출.
 - [ ] K: 드라이브 미마운트 시 fail-fast
 - [ ] 개인 문서 RAG는 별도 Qdrant 컬렉션 + 라우트 격리
 
-### 9.2 백업 (`scripts/backup.ps1`)
+### 9.2 백업 (`bin/backup/flayai-backup.ps1`)
 
 ```powershell
 $ts  = Get-Date -Format "yyyyMMdd-HHmmss"
@@ -686,7 +686,7 @@ Copy-Item data/state.json,config.yaml "$dst/"
 
 ### 9.4 야간 인덱싱
 
-- `scripts/nightly_index.ps1` → Windows Task Scheduler 등록
+- `bin/ai/nightly_index.ps1` → Windows Task Scheduler 등록
 - 절차: LLM unload → translate → embed_text → (이미지 단계는 주 1회) → reload
 
 ---
@@ -697,7 +697,7 @@ Copy-Item data/state.json,config.yaml "$dst/"
 
 ### M0 — 환경 부트스트랩
 
-**산출물**: `scripts/bootstrap.ps1`, `docker-compose.yml`, `pyproject.toml`, `config.yaml`
+**산출물**: `bin/ai/bootstrap.ps1`, `docker-compose.yml`, `pyproject.toml`, `config.yaml`
 **수락**:
 
 - `nvidia-smi` GPU 인식
@@ -781,7 +781,7 @@ Copy-Item data/state.json,config.yaml "$dst/"
 
 ### M6 — 운영 안정화
 
-**산출물**: `eval/golden.yaml`(30건) + `eval/run_eval.py`, `scripts/backup.ps1`, `scripts/nightly_index.ps1`, structlog + query_log, README
+**산출물**: `eval/golden.yaml`(30건) + `eval/run_eval.py`, `bin/backup/flayai-backup.ps1`, `bin/ai/nightly_index.ps1`, structlog + query_log, README
 **수락**:
 
 - 정답률 ≥ 85%

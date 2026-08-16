@@ -11,8 +11,10 @@
     "ms-python.debugpy",
     "ms-python.black-formatter",
     "charliermarsh.ruff",
+    // ── 필수: AI 보조 — 이 저장소의 지침(CLAUDE.md)은 Claude Code 전제 ──
+    "anthropic.claude-code",
 
-    // ── 선택: 이 저장소 작업에 유용 (bin/*.ps1, config.yaml·docker-compose, pyproject.toml, playwright, SQLite, .env, svg, Web Components) ──
+    // ── 선택: 이 저장소 작업에 유용 (bin/*.ps1, config.yaml·docker-compose, pyproject.toml, playwright, SQLite, .env, svg, csv, REST 테스트, Web Components) ──
     "ms-vscode.powershell",
     "redhat.vscode-yaml",
     "tamasfe.even-better-toml",
@@ -22,6 +24,8 @@
     "njpwerner.autodocstring",
     "ms-python.vscode-python-envs",
     "mikestead.dotenv",
+    "mechatroner.rainbow-csv",
+    "rangav.vscode-thunder-client",
     "ms-vscode.vscode-typescript-next",
     "jock.svg",
     "ecmel.vscode-html-css",
@@ -31,11 +35,13 @@
     "aaron-bond.better-comments",
     "oderwat.indent-rainbow",
 
-    // ── 선택: 개인 취향(편집기 외형·언어) ──
+    // ── 선택: 개인 취향(편집기 외형·언어·git 보조) ──
     "vscode-icons-team.vscode-icons",
     "github.github-vscode-theme",
+    "mgwg.light-pink-theme",
     "hoovercj.vscode-power-mode",
-    "ms-ceintl.vscode-language-pack-ko"
+    "ms-ceintl.vscode-language-pack-ko",
+    "donjayamanne.githistory"
   ],
   "unwantedRecommendations": [
     // ── 불필요: Copilot·AI 보조 (이 저장소는 Claude Code 만 사용) ──
@@ -57,6 +63,22 @@
     "ritwickdey.liveserver",
     "ms-azuretools.vscode-containers",
     "typescriptteam.native-preview",
+    "tomoki1207.pdf",
+
+    // ── 불필요: Java/Spring 도구 — 저장소에 Java 코드 없음 (Extension Pack for Java·Spring Boot Extension Pack 구성원 포함) ──
+    "vscjava.vscode-java-pack",
+    "redhat.java",
+    "vscjava.vscode-java-debug",
+    "vscjava.vscode-java-test",
+    "vscjava.vscode-java-dependency",
+    "vscjava.vscode-maven",
+    "vscjava.vscode-gradle",
+    "vscjava.vscode-lombok",
+    "vmware.vscode-boot-dev-pack",
+    "vmware.vscode-spring-boot",
+    "vscjava.vscode-spring-initializr",
+    "vscjava.vscode-spring-boot-dashboard",
+    "redhat.vscode-commons",
 
     // ── 불필요(프로젝트 무관): 원격/컨테이너 개발 환경 도구 — 개인 환경용으로 설치는 자유 ──
     "ms-vscode-remote.remote-ssh",

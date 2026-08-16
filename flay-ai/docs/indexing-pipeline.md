@@ -1,0 +1,171 @@
+# Indexing Pipeline — 원본 데이터 → 검색 가능한 인덱스
+
+> 모든 단계는 `python -m packages.indexer.cli <command>` 로 실행합니다.
+> 야간 자동 실행은 [`scripts/nightly_index.ps1`](../scripts/nightly_index.ps1).
+
+## 전체 흐름
+
+```
+                K:\Crazy\Info\video.json          K:\Crazy\Storage\**.jpg
+                K:\Crazy\Info\history.csv         K:\Crazy\Archive\**.jpg
+                         │                                   │
+                  flay-index load                    flay-index scan
+                         ▼                                   ▼
+                ┌─────────────────────────────────────────────────┐
+                │  SQLite: videos, actresses, posters, ...        │
+                └─────────────────────────────────────────────────┘
+                         │
+        ┌────────────────┼────────────────┬────────────────┬────────────────┐
+        ▼                ▼                ▼                ▼                ▼
+   translate         embed (text)    embed-clip      extract-faces      ocr-posters
+   (JP→KO, NLLB)     BGE-M3 → Q      CLIP → Q        InsightFace → Q    RapidOCR → Q
+        │                │                │                │                │
+        └─→ title_ko     └─→ videos       └─→ posters_clip│                └─→ poster_ocr
+            desc_ko          (1024d)          (768d)      ▼                    (1024d)
+                                                    cluster-faces
+                                                    (NN + Union-Find, GPU)
+                                                          │
+                                                          ▼
+                                                    face_clusters
+                                                    (자동 라벨링)
+```
+
+각 단계는 **증분(incremental)** 이 기본. 이미 처리된 행은 건너뜀.
+`--rebuild` / `--force` 로 강제 재처리 가능.
+
+## 단계별 상세
+
+### 1. `load` — JSON 로드 (M1)
+
+- 입력: `K:\Crazy\Info\video.json`, `K:\Crazy\Info\history.csv`
+- 출력 테이블: `videos`, `actresses`, `actress_aliases`, `video_actresses`, `studios`, `tags`, `video_tags`, `likes`, `history`
+- 핵심 로직: **배우 별칭 병합**.
+  `Alice`, `Alice S.`, `앨리스` 같은 표기를 하나의 `canonical_name` 으로 합치고 별칭 테이블에 풀어둘
+  (`packages/indexer/actress_merge.py`).
+
+### 2. `scan` — 포스터 스캔 (M1)
+
+- 입력: `K:\Crazy\Storage`, `K:\Crazy\Archive`, ...
+- 출력: `posters(opus, path, video_path, kind)` 행
+- `kind` 판정:
+  - `K:\Crazy\Archive\...` 하위 → `archive` (메타만 보존, 영상 파일 없음)
+  - 그 외 + 같은 폴더에 영상 파일이 있으면 → `instance` (지금 볼 수 있음)
+- 파일명 `[Studio][OPUS][제목][배우][날짜].jpg` 패턴을 `poster_parser.py` 가 파싱.
+
+### 3. `history` — 시청 기록 (M1)
+
+- `history.csv` → `history` 테이블. last_play 갱신.
+
+### 4. `fts` — FTS5 인덱스 (M1)
+
+- 가상 테이블 `videos_fts` (title_jp, title_ko, desc_jp, desc_ko, comment, **caption**) — trigram.
+- caption(포스터 VLM 캡션)도 인덱싱 → "소파/수영복/교실/해변" 같은 **시각 키워드**를 BM25 정확 매칭으로 검색(의미검색 희석 보완). `posters.caption` 을 LEFT JOIN 해 채운다.
+- 사용처: 키워드 매칭 (BM25). 의미 검색만으론 약한 정확한 이름·시각 키워드 매칭에 강함.
+- ⚠️ trigram 한계: **2글자 미만 키워드는 매칭 불가**(소파·교실 등 2자어는 의미검색 경로가 담당). 3자+ 키워드(수영복·비키니 등)에 특히 강함.
+
+### 5. `translate` — JP → KO 번역 (M2)
+
+- 모델: `facebook/nllb-200-distilled-600M` (`jpn_Jpan` → `kor_Hang`)
+- 길이 비율 필터 (0.30 ~ 3.00) 벗어나면 LLM 폴백.
+- 결과: `videos.title_ko`, `videos.desc_ko`. 결과 사본은 `translations` 테이블에 캐싱.
+
+### 6. `embed` — 영상 텍스트 임베딩 (M2)
+
+- 모델: BGE-M3 (Sentence Transformers, 1024d, multilingual)
+- 입력 문서: 영상 1개당 "title_jp + title_ko + desc_ko + studio + 배우목록 + 태그" 합본 텍스트.
+- 출력: Qdrant `videos` 컬렉션. payload 에 opus, kind, year, studio, canonical_actresses 등 메타 포함 (필터링용).
+- **증분**: 문서 해시를 `embed_state(collection='videos')` 에 저장 → 다음 실행 때 문서가 바뀐 영상만 재임베딩(태그·캡션·배우 변경 시 자동 감지). payload 의 가변 수치(play/like/rank)는 `sync-payload` 가 별도 갱신하므로 벡터는 안 건드림. 첫 실행은 기존 Qdrant 점을 시드해 스킵, `--force` 로 전량 재임베딩.
+
+### 7. `embed-clip` — 포스터 이미지 임베딩 (M4a)
+
+- 모델: OpenCLIP `ViT-L-14` (`laion2b_s32b_b82k`, 768d)
+- 입력: `posters.path` 의 모든 이미지.
+- 출력: Qdrant `posters_clip`. 텍스트 ↔ 이미지 cross-modal 검색 가능 (CLIP 의 핵심).
+- **타일링(7벡터/장)**: 포스터당 전체 + 좌/우 절반 + 4분면을 각각 임베딩(`TILE_SCHEME="tiles7"`). CLIP 전역 임베딩은 잘린 이미지를 못 잡으므로, 절반·1/4 조각 질의가 대응 타일과 직접 매칭되게 한다. 점 id 는 full=`SHA1(opus)`(레거시 단일점 자리 덮어쓰기), 나머지=`SHA1(opus#tile)`. payload 에 `tile` 필드 포함. 검색 측은 `query_points_groups(group_by="opus")` 로 포스터당 최고점 1개만 사용.
+- 성능: 장당 약 111ms (7타일, 4070 Ti) → 20K 전량 약 38분. GPU 인코딩은 `clip_batch_size` 단위 미니배치라 타일 7배수여도 VRAM 사용량은 동일.
+- **증분**: 포스터 `path|mtime|타일구성` 해시를 `embed_state(collection='posters_clip')` 에 저장 → 신규·교체된 포스터만 7타일 재인코딩(이미지는 opus 당 불변). `TILE_SCHEME` 변경 시 시그니처가 달라져 다음 실행 때 자동 전량 재임베딩. 첫 실행 시드는 7타일 점이 모두 있는 opus 만 스킵, `--force` 로 전량 재임베딩.
+
+### 8. `extract-faces` — 얼굴 추출 (M4b)
+
+- 모델: InsightFace `buffalo_l` (RetinaFace + ArcFace, 512d)
+- 입력: 포스터 이미지.
+- 출력:
+  - SQLite `poster_faces(id, opus, bbox, embedding_blob, cluster_id)`
+  - Qdrant `faces` 컬렉션 — 개별 얼굴 단위.
+- 성능: 20,305 포스터 → 208,215 얼굴 / 79분.
+
+### 9. `cluster-faces` — 얼굴 클러스터링 (M4b)
+
+이 프로젝트에서 가장 까다로운 단계.
+
+- 목표: 비슷한 얼굴 임베딩을 그룹으로 묶고, 그 그룹에 배우 이름을 자동 부여.
+- 알고리즘 (HDBSCAN 대체, `packages/indexer/cluster_faces.py`):
+  1. 모든 얼굴 임베딩(208K) 을 fp16 텐서로 GPU 에 올림.
+  2. 블록 단위(4096) 로 `X @ X.T` 코사인 유사도 계산.
+  3. 각 행에서 top-K(16) 이웃 추출.
+  4. **상호 kNN (mutual-kNN)** 필터: i 가 j 의 top-K 에 있고 **동시에** j 가 i 의 top-K 에 있을 때만 엣지로 인정. 거대 sink 클러스터 방지.
+  5. 유사도 ≥ 0.6 인 엣지를 Union-Find 로 합치기.
+  6. 컴포넌트 크기 ≥ `min_cluster_size` 만 클러스터로 유지.
+- 라벨링: 클러스터 내 얼굴들의 opus 중 "단일 배우 영상" 다수결 → 신뢰도 ≥ 임계값이면 자동 부여.
+- 결과 (현재): 2834 클러스터, 1834개 자동 라벨 (64.7%), 77초.
+
+### 10. `ocr-posters` — 포스터 OCR (M5a)
+
+- 모델: RapidOCR (PP-OCR ONNX, CPU). PaddleOCR 의존성 지옥 회피 차원에서 채택.
+- 출력:
+  - SQLite `posters.ocr_text` (실패는 빈 문자열로 저장 → 재시도 방지)
+  - Qdrant `poster_ocr` (BGE-M3 임베딩)
+- 성능: 약 0.7 it/s (CPU) → 20K 포스터 약 8시간. 야간/백그라운드용.
+
+### 11. `caption-posters` — 포스터 VLM 캡션 (검색 강화)
+
+- 모델: `config.models.vision` (예: `huihui_ai/gemma-4-abliterated:e4b`). Ollama `/api/chat`, `think=False` (gemma 계열은 thinking 을 꺼야 빠름).
+- 비전 모델이 포스터를 보고 **한국어 변별 속성**을 `장소/의상/인원/특징` 4줄 형식으로 생성. 거의 모든 포스터에 참인 일반어(화보·포즈·다양한·여성·스튜디오 등)는 프롬프트에서 **금지**해 검색 신호를 높이고, 특징이 없으면 `불명/없음`으로 두게 한 뒤 저장 시 그 줄을 제거(`_clean_caption`)해 문서를 깔끔히 유지. 의상 종류(교복/란제리/수영복/정장 등)·소품·인원/성별 구성이 안정적으로 잡혀 시각 질의에 강함.
+- 출력 (두 곳):
+  - SQLite `posters.caption` (실패/빈 결과도 빈 문자열로 저장 → 재시도 방지).
+  - Qdrant `poster_caption` (bge-m3 임베딩) — 이미지 화면 텍스트→포스터 하이브리드 검색용. (생성과 동시에 인라인 임베딩)
+- **검색 반영**:
+  - **채팅**: 캡션은 이후 `embed` 단계에서 videos 임베딩 문서의 `[장면]` 블록으로 합류 → "해변/교실/야외/분위기" 시각 질의를 잡게 됨. **caption-posters 후 `embed` 재실행 필요.**
+  - **이미지 화면(텍스트→포스터)**: `poster_caption` 컬렉션은 즉시 사용됨 — `/api/image/search/text` 가 CLIP(`posters_clip`) + 캡션(`poster_caption`)을 RRF 로 결합. CLIP 의 약한 한국어를 bge-m3 캡션이 보완.
+- 성능: 약 1 it/s(워밍 후, e4b GPU) → 20K 포스터 약 15~18시간. 야간/백그라운드용. 증분(이미 캡션된 것 skip, `--force` 로 전체).
+
+## 진행 추적
+
+모든 잡은 `data/state.json` 의 `stage` 항목에 진행률을 기록 (`packages/indexer/state.py`):
+
+```json
+{
+  "ocr_posters": { "total": 20324, "processed": 250, "ts": "..." }
+}
+```
+
+로그는 `logs/<job>.log` 에 50건마다 한 줄.
+
+## CLI 명령 요약
+
+```powershell
+# 전체 순차 (load → scan → history → fts)
+python -m packages.indexer.cli all
+
+# 단계별
+python -m packages.indexer.cli load
+python -m packages.indexer.cli scan
+python -m packages.indexer.cli translate
+python -m packages.indexer.cli embed
+python -m packages.indexer.cli embed-clip
+python -m packages.indexer.cli extract-faces
+python -m packages.indexer.cli cluster-faces
+python -m packages.indexer.cli ocr-posters
+python -m packages.indexer.cli caption-posters   # VLM 포스터 캡션 → posters.caption (이후 embed 재실행)
+
+# 옵션 공통
+#   -n / --limit N    처음 N건만
+#   --rebuild         이미 처리한 것도 다시
+#   -v                상세 로그
+```
+
+> **관리자 화면의 일괄 버튼**(`증분 인덱싱` / `전체 재인덱싱`)은 위 전체 파이프라인(메타 + AI)을
+> **순서대로 각각 별도 서브프로세스로** 실행한다(단계 사이 모델 VRAM 자동 해제). 순서상 `caption-posters`
+> 가 `embed` 보다 먼저라 캡션이 videos `[장면]` 임베딩에 반영된다. `전체 재인덱싱` 은 AI 단계에
+> `--force`/`--rebuild` 를 붙여 전부 다시 처리(확인창). (CLI 의 `refresh`/`rebuild` 는 메타 전용 단축
+> 명령으로, 관리자 버튼과 범위가 다름.)

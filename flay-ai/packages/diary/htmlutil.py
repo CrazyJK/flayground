@@ -1,0 +1,153 @@
+"""레거시 일기 HTML 처리: 평문화 + base64 인라인 이미지 추출.
+
+레거시 일기 content 는 리치텍스트 HTML(<p>,<br>,<h3>,<span style>...)이며,
+사진이 `<img src="data:image/jpeg;base64,...">` 로 인라인 박혀 있다.
+
+- html_to_text: 검색·임베딩·FTS 용 평문 추출(태그 제거, 이미지는 '[사진]' 표식).
+- extract_images: base64 이미지를 디스크로 추출하고 src 를 서빙 URL 로 치환한 HTML 반환.
+  → DB 에는 가벼운 HTML 만 남고(거대한 base64 제거), 웹은 추출된 파일을 <img> 로 렌더.
+"""
+
+from __future__ import annotations
+
+import base64
+import binascii
+import hashlib
+import html as _html
+import logging
+import re
+from pathlib import Path
+
+log = logging.getLogger(__name__)
+
+# data:image/<subtype>;base64,<payload> (업로드 data URL 분해용)
+_DATA_URL_RE = re.compile(
+    r"^data:image/(?P<ext>[a-zA-Z0-9.+-]+);base64,(?P<data>.+)$", re.IGNORECASE | re.DOTALL
+)
+
+# data:image/<subtype>;base64,<payload>  (img src 안)
+_DATA_IMG_RE = re.compile(
+    r'src\s*=\s*"data:image/(?P<ext>[a-zA-Z0-9.+-]+);base64,(?P<data>[^"]+)"',
+    re.IGNORECASE,
+)
+_IMG_TAG_RE = re.compile(r"<img\b[^>]*>", re.IGNORECASE)
+_VIDEO_TAG_RE = re.compile(r"<video\b.*?</video>|<video\b[^>]*/?>", re.IGNORECASE | re.DOTALL)
+_BLOCK_BR_RE = re.compile(r"<\s*br\s*/?\s*>", re.IGNORECASE)
+_BLOCK_END_RE = re.compile(r"</\s*(p|div|h[1-6]|li|tr)\s*>", re.IGNORECASE)
+_TAG_RE = re.compile(r"<[^>]+>")
+_MULTI_NL_RE = re.compile(r"\n{3,}")
+
+# 확장자 정규화(서브타입 → 파일 확장자)
+_EXT_MAP = {"jpeg": "jpg", "jpg": "jpg", "png": "png", "gif": "gif", "webp": "webp", "svg+xml": "svg"}
+
+
+def html_to_text(html: str) -> str:
+    """HTML → 검색/임베딩용 평문. 이미지는 '[사진]' 으로, 블록 경계는 줄바꿈으로."""
+    if not html:
+        return ""
+    s = _VIDEO_TAG_RE.sub(" [동영상] ", html)
+    s = _IMG_TAG_RE.sub(" [사진] ", s)
+    s = _BLOCK_BR_RE.sub("\n", s)
+    s = _BLOCK_END_RE.sub("\n", s)
+    s = _TAG_RE.sub("", s)
+    s = _html.unescape(s)
+    # 줄 단위 공백 정리 + 과도한 빈 줄 축약
+    s = "\n".join(line.strip() for line in s.splitlines())
+    s = _MULTI_NL_RE.sub("\n\n", s)
+    return s.strip()
+
+
+def extract_images(html: str, assets_dir: Path, url_prefix: str = "/static/diary-assets") -> str:
+    """base64 인라인 이미지를 assets_dir 로 추출하고 src 를 '{url_prefix}/{name}' 로 치환.
+
+    파일명은 내용 해시(SHA1) 기반 → 같은 이미지 중복 저장 방지(멱등). 추출 실패한
+    src 는 원본 그대로 둔다. 추출된 HTML(가벼움)을 반환.
+    """
+    if not html or "data:image" not in html:
+        return html
+    assets_dir.mkdir(parents=True, exist_ok=True)
+
+    def _repl(m: re.Match) -> str:
+        ext = _EXT_MAP.get(m.group("ext").lower(), "bin")
+        raw = m.group("data").strip()
+        try:
+            blob = base64.b64decode(raw, validate=False)
+        except (binascii.Error, ValueError) as e:
+            log.warning("base64 이미지 디코드 실패(원본 유지): %s", e)
+            return m.group(0)
+        name = f"{hashlib.sha1(blob).hexdigest()}.{ext}"
+        out = assets_dir / name
+        if not out.exists():
+            out.write_bytes(blob)
+        return f'src="{url_prefix}/{name}"'
+
+    return _DATA_IMG_RE.sub(_repl, html)
+
+
+def _split_data_url(data: str) -> tuple[str, str]:
+    """업로드 이미지(data URL 또는 순수 base64) → (ext, base64payload)."""
+    m = _DATA_URL_RE.match(data.strip())
+    if m:
+        return _EXT_MAP.get(m.group("ext").lower(), "bin"), m.group("data").strip()
+    return "jpg", data.strip()  # 접두사 없는 순수 base64 는 jpg 가정
+
+
+def save_upload_image(
+    data: str, assets_dir: Path, url_prefix: str = "/static/diary-assets"
+) -> str | None:
+    """업로드 이미지(data URL/base64)를 assets_dir 로 저장하고 '{url_prefix}/{name}' 반환.
+
+    파일명은 내용 해시(SHA1) — 중복 저장 방지(멱등). 디코드 실패 시 None.
+    """
+    ext, payload = _split_data_url(data)
+    try:
+        blob = base64.b64decode(payload, validate=False)
+    except (binascii.Error, ValueError) as e:
+        log.warning("업로드 이미지 디코드 실패: %s", e)
+        return None
+    if not blob:
+        return None
+    assets_dir.mkdir(parents=True, exist_ok=True)
+    name = f"{hashlib.sha1(blob).hexdigest()}.{ext}"
+    out = assets_dir / name
+    if not out.exists():
+        out.write_bytes(blob)
+    return f"{url_prefix}/{name}"
+
+
+def to_base64_payload(data: str) -> str:
+    """data URL 이면 base64 본문만, 순수 base64 면 그대로 — Ollama images 인자용."""
+    return _split_data_url(data)[1]
+
+
+_ASSET_RE = re.compile(r"/static/diary-assets/([A-Za-z0-9._-]+)")
+
+
+def asset_names_from_html(html: str) -> list[str]:
+    """raw_html 에서 첨부 이미지 파일명(diary_assets) 목록을 순서대로(중복 제거) 추출."""
+    if not html:
+        return []
+    seen: list[str] = []
+    for m in _ASSET_RE.finditer(html):
+        name = m.group(1)
+        if name not in seen:
+            seen.append(name)
+    return seen
+
+
+def build_message_html(
+    text: str, image_urls: list[str], video_urls: list[str] | None = None
+) -> str:
+    """사용자 텍스트 + 첨부 이미지/동영상 → 표시용 HTML(raw_html)."""
+    parts: list[str] = []
+    if text.strip():
+        safe = _html.escape(text).replace("\n", "<br>")
+        parts.append(f"<p>{safe}</p>")
+    for u in image_urls:
+        parts.append(f'<img src="{_html.escape(u, quote=True)}">')
+    for u in video_urls or []:
+        # preload=metadata: 목록에 여러 개 있어도 첫 프레임/길이만 받아오게(대역 절약)
+        parts.append(
+            f'<video controls preload="metadata" src="{_html.escape(u, quote=True)}"></video>'
+        )
+    return "".join(parts)

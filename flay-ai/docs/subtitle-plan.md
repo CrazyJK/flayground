@@ -1,0 +1,194 @@
+# 자막 생성(Subtitle) — flayAI 통합 계획
+
+> instance 영상의 **일본어 음성을 한국어 자막(.srt)으로** 만든다. 외부에서 opus 로 신청하면
+> 큐에 쌓이고, **야간(사용자 취침 중)에 배치로 처리**한다. 야간 + GPU 양보 불필요 전제라
+> 최고 품질 모델(faster-whisper large-v3)을 쓴다. 산출물은 **영상 옆 사이드카 `<stem>.srt`** —
+> 외부 플레이어(flay 팝업/PotPlayer/VLC 등)가 동일 stem 규칙으로 자동 로드한다.
+>
+> 이 문서는 **확정된 계획**이며 일부는 **구현 완료**(아래 §구현 현황)다. flayAI 컨벤션
+> ([CLAUDE.md](../CLAUDE.md), `.github/copilot-instructions.md`)에 맞춰 구현한다.
+
+---
+
+## 핵심 통찰 — Whisper 패스 하나가 셋을 떠받친다
+
+영상에 Whisper 를 돌리면 **오디오에 정확히 박힌 일본어 발화 구간(타임스탬프)**이 나온다.
+이 전사 결과 하나가 세 기능의 공통 토대다(전사는 `transcripts` 테이블에 캐시 → 재실행 회피):
+
+```
+                            ┌─ (A) 생성   : JP 텍스트 → KO 번역 → <stem>.srt
+ video → Whisper(JP, VAD) ──┼─ (B) 싱크수정: 기존 KO 대사를 발화구간에 재정렬 → 타이밍 교정
+   [transcripts 캐시]        └─ (C) 품질보정: JP↔(기존 KO) 정렬 → 번역메모리/용어집/평가셋
+```
+
+기존 instance 영상 중 **159개에 사람이 만든 한국어 팬자막**(아브자막/AVJAMAK 등)이 있다.
+이게 단순 참조를 넘어 (C) **번역메모리(TM)·용어집·평가셋**이 되고, (B) 싱크수정의 정렬 기준이 된다.
+
+---
+
+## 구현 현황 (2026-06-15 기준)
+
+**상태: phase 1(생성 파이프라인 + 신청 큐 + 야간 드레인) 구현·단위테스트 통과.**
+환경 의존(faster-whisper 설치·모델 다운로드·GPU 실행)은 사용자 실행 필요(아래 §환경 단계).
+
+### 확정 설계 (사용자 합의)
+- 출력 = **영상 옆 사이드카 `<stem>.srt`**(기존 159개 관례 = 평범한 `.srt`). 한국어 단독.
+- 워크플로 = **외부에서 opus 로 신청(큐 적재) → 야간 드레인이 순차 처리**. 즉시 처리 아님.
+- 야간 배치 + **VRAM 양보 불필요** → STT 는 large-v3(최고 품질), 번역도 시간 들여 품질 우선.
+- 사람 팬자막 보호: generate 는 **기존 `.srt` 있으면 건너뜀**. 싱크수정(resync)이 그쪽 담당.
+
+### 단계(페이즈)
+| 페이즈 | 내용 | 상태 |
+|---|---|---|
+| **1. 생성 + 큐 + 야간** | opus → 전사 → 번역(NLLB 재사용) → `.srt`. 신청 API + drain CLI + 야간 스크립트 | ✅ 구현 |
+| **2. 번역 품질 보정** | ① JP↔KO 번역메모리 ✅ → ② LLM+few-shot 번역 ✅ → ③ 평가 하네스 ✅ | 🔶 코퍼스 후 본실행 |
+| **3. 싱크 드리프트 수정** | KO 큐를 Whisper 발화구간에 의미(DP) 재정렬 → 타이밍 교정 | ✅ 구현 |
+
+> 실측: 팬자막 보유 instance = **137편**(온라인+DB 기준). 1편(ABW-061) 시범 구축: JP 1085세그먼트 ×
+> KO 1356큐 → **756쌍 채택 / 526 탈락**(유사도·길이 필터). 팬자막이 의역체라 sim 0.5~0.7대 —
+> 이 "현지화된 말투"가 ②의 few-shot 학습 대상이다.
+
+### 1회차 일괄 배치 실측 (2026-06-16)
+
+`run_subtitle_tonight.bat`(build-tm → enqueue-all resync → drain)로 137편 일괄 처리.
+
+- **build-tm**: 137편 전부 구축, **번역메모리 78,839쌍**, 전사 137편 캐시.
+- **resync**: 136/137 완료(1건 SSNI-647 빈/깨진 srt 파싱 실패). 전사 캐시 재사용으로 편당 수 초.
+- **매칭률**: median 37%, 136편 중 **51편 <30%**.
+
+**진단 — 매칭률은 `resync_floor`가 아니라 Whisper 세그먼트 수가 좌우한다.**
+floor 를 0.35→0.15 로 낮춰도 매칭률 불변. 즉 매칭률 ≈ (JP 세그먼트 수 / KO 큐 수):
+
+| opus | KO 큐 | JP 세그먼트 | 매칭률 |
+|---|---|---|---|
+| SSNI-889 | 815 | 147 | 18% |
+| STARS-372 | 513 | 100 | 19% |
+| SSNI-948 | 960 | 568 | 59% |
+| VAGU-221 | 804 | 946 | 98% |
+
+원인 둘: ① **VAD** 가 이 장르(숨소리·짧은 발화)를 비발화로 많이 버려 세그먼트가 적음. ② Whisper
+세그먼트가 팬자막 큐보다 **굵음**(1 세그먼트 ↔ 여러 큐) — DP 는 큐당 최대 1 세그먼트만 매칭하므로
+나머지는 보간으로 채워짐.
+
+**주의**: 매칭률 낮음 ≠ 싱크 실패. 앵커가 시간축에 고루 퍼지면 보간으로 충분히 맞을 수 있음 —
+실제 판단은 **플레이어 확인**(원본은 `<stem>.orig.srt` 백업 → 되돌리기 가능).
+
+**튜닝 레버(향후, 플레이어 확인 결과에 따라)**:
+- **VAD 완화 + 재전사**: 세그먼트↑ → 앵커↑. **새 자막 생성의 완전성에도 직결**(완화 시 더 촘촘).
+  대가: 재전사 GPU 비용 + 비발화 환각 위험.
+- **retime 다대일 분배**: 한 발화 구간에 걸린 여러 큐를 그 구간 안에 펴서 배치. **재전사 불필요**
+  (전사 캐시 재사용 → resync 재실행 수 분).
+- ⚠ 전사 캐시는 `(opus, model)` 키라 **VAD 설정은 키에 없음** — VAD 바꿔 재전사하려면 해당 opus 의
+  `transcripts` 행을 비우거나 캐시 시그니처에 VAD 를 포함해야 한다.
+
+### 보정 (2026-06-17) — 클램프 + 저매칭 원본 복원
+
+플레이어 확인 결과 ① 고매칭 영상에서 "다음 대사 겹침" ② 저매칭 영상에서 자막이 좁은 구간에 몰려
+"화면 가득" 증상. 대응:
+
+- **VAD 완화 무효 확인**: SSNI-889 완화 VAD 실측 147→170(+16%)뿐 → 재전사 경로 폐기. 저매칭은
+  Whisper 발화 수 자체가 자막 큐보다 훨씬 적은 **입자도 한계**(재전사로 못 늘림).
+- **retime 끝시각 클램프**: 각 큐 끝을 다음 큐 시작 직전으로 잘라 **겹침 0**(겹침보다 짧은 표시 우선).
+- **resync_min_match(0.30) + 원본 복원**: 매칭률이 이 미만이면 보간이 자막을 몰아 오히려 나빠지므로
+  resync 미적용 + `.orig.srt` 복원(status=skipped). resync 소스는 **항상 원본 우선(멱등)** — 이전엔
+  직전 resync 결과를 다시 읽어 타이밍이 누적 오염됐다.
+- **최종(137편 재실행)**: resync 유지 **84** · 원본 복원 **52** · 실패 1(빈 srt). 유지분 겹침 1~8개(무시
+  수준), 복원분은 원본 그대로(SSNI-889 298→2). 즉 **앵커 충분(≥30%)=오디오 싱크, 부족=원본 유지**.
+
+### 구현됨 ✅ (phase 1)
+**서브시스템** (`packages/subtitler/`)
+- `config.py` — `subtitle:` 블록 + 기본값 병합(stabilizer 패턴)
+- `srt_io.py` — 인코딩 자동감지(UTF-8/CP949/EUC-KR) SRT 파싱·작성, 타임스탬프 변환, 크레딧 제거
+- `db.py` — `subtitle_jobs`(신청 큐) + `transcripts`(전사 캐시) 스키마·CRUD. 인덱서 DB 공유
+- `whisper_stt.py` — faster-whisper 래퍼(모듈 싱글톤·lazy, VAD, 진행콜백, unload)
+- `translate.py` — 세그먼트 번역. phase1=기존 인덱서 NLLB(`translate_text`) 재사용(캐시 활용)
+- `core.py` — 오케스트레이션(opus 해소 → 전사캐시 → generate). resync 는 phase 3 스텁
+- `cli.py` — `enqueue` / `run`(단건 즉시) / `drain`(야간 배치)
+
+**API** (`apps/api/routers/subtitle.py`, `apps/api/main.py`)
+- `POST /api/subtitle/requests {opus, task}` — 외부 신청(opus 검증, 개방) · `POST /requests/bulk {opuses[], task}` — 다중 선택 신청
+- `GET /api/subtitle/requests` · `GET /requests/{id}` — 큐/상태 조회(stage·progress 포함)
+- `GET /api/subtitle/requests/events` — **SSE 스트림**(웹 화면의 기본 갱신 경로) — 서버가 활성 2초/유휴 6초로 큐를 샘플링해 변화 시만 `{"type":"requests","jobs":[…]}` push. 공용 유틸 `apps/api/sse.py`
+- `GET /api/subtitle/candidates` — 무자막 목록(생성 대상, 검색/정렬/페이지) · `GET /subbed` — 자막 보유 목록(resync 대상 + 최근 resync 결과)
+- `POST /api/subtitle/scan` — 자막 유무 디스크 스캔→`subtitle_status` 캐시 · `POST /enqueue-all {task}` — 카테고리 전체 적재 (둘 다 localhost 전용)
+- `POST /api/subtitle/drain` — 수동 드레인(서브프로세스) · `DELETE /requests/{id}` — 삭제 (둘 다 localhost 전용)
+- 목록 데이터는 `packages/subtitler/candidates.py`(무자막=videos/posters 조인, 자막보유=subtitle_corpus + 최근 resync 잡). 무자막 판정은 `subtitle_status`(사이드카 .srt/.smi 존재) 캐시 — 스캔으로 채움.
+
+**운영** — `scripts/nightly_subtitle.ps1`(작업 스케줄러용, ASCII), `config.yaml subtitle:`, `.gitignore data/subtitle/`
+
+### 처리 흐름 (영상 1개, generate)
+1. `posters.video_path` 로 영상 경로 해소(오프라인/부재면 실패 처리).
+2. 기존 `.srt` 있으면 **건너뜀**(사람 팬자막 보호).
+3. 전사: faster-whisper(language=ja, vad_filter) → 세그먼트. `transcripts`(opus+model+mtime) 캐시.
+4. 번역: 세그먼트별 JP→KO(`translate_text`, `translations` 캐시 → 반복 대사 1회만 번역).
+5. 작성: `<stem>.srt` 원자적 기록. 출력 위치에 기존 파일 있으면 `<stem>.orig.srt` 로 1회 백업.
+
+---
+
+## 환경 단계 (사용자 실행 필요)
+
+1. **의존성**: `pyproject.toml` 에 `faster-whisper>=1.1` 추가됨 → `uv lock` 후 사용자 `uv sync`.
+   - CTranslate2 가 자체 CUDA12 libs(`nvidia-cublas/cudnn-cu12`)를 끌어온다. 과거 onnxruntime
+     CPU/GPU 충돌 전례가 있어 **`uv sync` 후 GPU 인식 검증 권장**(`WhisperModel(..., device="cuda")`).
+   - 정 깨지면 torch/CUDA 와 독립적인 `whisper.cpp`(ffmpeg 처럼 바이너리 의존)로 대체 가능.
+2. **모델**: 최초 1회 HuggingFace 자동 다운로드(large-v3 ≈ 3GB). 빠르게: `config.yaml` `subtitle.model: large-v3-turbo`.
+3. **야간 스케줄러 등록**: `scripts/nightly_subtitle.ps1` — nightly_index 와 시간을 어긋나게(예: 04:30)
+   등록해 같은 GPU 동시 사용을 피한다. 스크립트 상단 schtasks 예시 참고.
+
+## 사용 예
+
+```powershell
+# 단건 즉시 처리(수동 테스트 — 큐 안 거침)
+.\.venv\Scripts\python.exe -m packages.subtitler.cli run <OPUS>
+
+# 신청 적재 → 야간 드레인
+.\.venv\Scripts\python.exe -m packages.subtitler.cli enqueue <OPUS>
+.\.venv\Scripts\python.exe -m packages.subtitler.cli drain
+```
+
+```bash
+# 외부 신청(API)
+curl -X POST https://ai.kamoru.jk:8000/api/subtitle/requests \
+     -H "Content-Type: application/json" -d '{"opus":"FSDSS-037"}'
+```
+
+---
+
+## 품질·한계 (기대치 합의)
+
+- 이 도메인은 대사가 적고 비발화 구간이 많아 **VAD 필터 필수**(없으면 무음에서 헛자막 — Whisper 환각).
+  그래도 결과는 "방송 자막"이 아니라 **"대략의 뜻"** 수준. phase 1 단건으로 실제 영상에 돌려 판단.
+- phase 1 번역은 NLLB(문장 단위) — 짧은 자막 조각은 문맥이 부족해 어색할 수 있다. phase 2 의
+  LLM+번역메모리 few-shot 이 159개 팬자막 말투/용어에 맞춰 품질을 끌어올리는 단계다.
+- 언어는 일본어 고정 가정. Whisper 가 다른 언어를 감지하면 note 로 남기되 번역은 JP 전제로 진행.
+
+## 남은 작업 (phase 2/3)
+
+- **phase 2 ① 번역메모리 (구현됨)**: `align.py`(시간정렬 + bge-m3 교차언어 유사도 필터) ·
+  `tm.py`(전사→KO파싱→정렬→필터→`subtitle_tm`/`subtitle_corpus`) · CLI `build-tm [limit]`.
+  증분(자막 mtime). 전체 137편 구축은 야간 1회(`build-tm`).
+- **phase 2 ② LLM 번역 (구현됨)**: `translate.py mode="llm"` — `subtitle_tm` 을 bge-m3 로 임베딩
+  (Qdrant `subtitle_tm` 컬렉션) → 번역할 JP 와 유사 예시 K개 검색 → 무검열 LLM(`translator_llm`,
+  기본 `huihui_ai/qwen2.5-abliterate:14b`) 에 few-shot+용어집 주입, 세그먼트 12개씩 묶어 번역.
+  깨진 줄(`_looks_bad`: 라틴 누출·한자 다수)은 NLLB 로 폴백. 프롬프트는 `prompts.py`(점잖은 기본값)
+  + `subtitle_prompts.yaml`(gitignore 오버라이드, 예시 `subtitle_prompts.example.yaml`).
+  실측(FSDSS-951 15세그먼트): NLLB 의 환각·오역·쓰레기를 LLM 이 교정 — 문맥·말투 대폭 개선 확인.
+  `translator: "llm"` 로 켠다(기본은 아직 nllb — ③ 평가 후 전환 권장).
+- **phase 2 ③ 평가 (구현됨)**: `evaluate.py` — subtitle_tm 의 (jp, 사람 ko)가 정답셋. jp 를
+  NLLB·LLM 으로 번역해 chrF + LLM-judge(둘 중 나은 쪽) 비교. LLM 은 해당 opus 를 retrieval 에서
+  제외(leakage). CLI `eval [opus] [n]`.
+  - **발견**: 팬자막이 의역체라 **chrF 는 박한 지표**(정확한 번역도 0.07대) — **LLM-judge 가 신뢰
+    지표**다. 스모크(ABW-061, few-shot 없이): chrF +0.015 에 그치나 judge 는 **LLM 5승/NLLB 0승/무1**.
+  - 본실행: 코퍼스 전체 구축 후 held-out 여러 편에 `eval` → judge 승률로 모델·K·청크 확정 → `translator: "llm"` 전환.
+- **phase 3 싱크 수정 (구현됨)**: `align.align_semantic`(KO↔JP bge-m3 교차언어 유사도로 단조 DP
+  정렬 — 시간이 틀렸으므로 의미로 맞춤) + `align.retime`(매칭 큐는 발화 시각에 앵커, 미매칭은 인접
+  앵커 보간, 텍스트·읽기길이 보존). `core.resync` 가 원본을 `<stem>.orig.srt` 백업 후 제자리 교정.
+  `task="resync"`(또는 `both`)로 신청. 실측(ABW-061): 1047/1358(77%) 오디오 매칭, 지연된 자막을
+  발화 시점으로 당김 확인. 미세 튜닝 여지: `resync_floor`, 다대일 분배.
+- **자막 화면 (구현됨)**: `/subtitle` 단독 페이지(헤더 네비 '자막'), 3섹션 구성.
+  ① 새 자막 생성 — 무자막 목록(포스터 썸네일·제목·스튜디오·연도·재생/♥·캡션 유무)에서
+     검색/정렬(인기·재생·최신·opus)·페이지네이션으로 골라 다중 선택 → 일괄 신청, "무자막 전체 신청",
+     "목록 스캔"(디스크 재확인). ② 싱크 수정 — opus 직접 입력 + 자막 보유 목록(포맷·TM쌍수·최근
+     resync 결과 배지+매칭률), "원본복원만" 필터 + 전체 재시도. ③ 처리 큐 — 진행 막대(stage·%)·삭제·
+     지금 처리. 카드 래퍼는 공용 `_components/SectionCard.tsx`. 큐 폴링은 활성 2초·평소 6초,
+     `document.hidden` 시 생략. 미세 개선 여지: 스튜디오/태그 필터 드롭다운, 자막 미리보기, 야간 예정 시각 표시.

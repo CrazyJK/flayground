@@ -1,0 +1,204 @@
+data:
+  # K: 드라이브 JSON 메타데이터 디렉토리
+  info_dir: "K:/Crazy/Info"
+
+  # 포스터 스캔 루트 목록 (재귀 탐색)
+  poster_roots:
+    - "K:/Crazy/Storage"
+    - "K:/Crazy/Stage"
+    - "K:/Crazy/Cover"
+    - "J:/Crazy/Stage"
+    # 추가 폴더가 있으면 여기에 계속 추가
+
+  # Archive 루트: 이 경로 하위 포스터는 kind=archive
+  archive_root: "K:/Crazy/Archive"
+
+  # 포스터 파일 확장자
+  poster_extensions:
+    - jpg
+    - jpeg
+    - png
+    - gif
+    - webp
+
+  # 영상 파일 확장자 (instance 판정에 사용)
+  video_extensions:
+    - mp4
+    - mkv
+    - avi
+    - wmv
+    - mov
+    - m4v
+    - ts
+    - webm
+
+  # 히스토리 CSV
+  history_csv: "K:/Crazy/Info/history.csv"
+
+  # 개인 문서 RAG 루트 (Phase 5)
+  personal_docs_roots: ["C:\\Users\\namjk\\OneDrive"]
+
+  # 로컬 데이터 경로
+  db_path:         "data/sqlite/flay.db"
+  state_path:      "data/state.json"
+
+  # 일기형 대화: 레거시 일기 파일(.diary, JSON) 디렉토리 — 일회성 임포트 소스
+  diary_dir:       "K:/Crazy/Diary"
+  # 일기 첨부 이미지(레거시 base64 추출분) 저장 경로 — /static/diary-assets 로 서빙
+  diary_assets:    "data/diary_assets"
+
+models:
+  llm:            "huihui_ai/qwen2.5-abliterate:7b"
+  # 일기형 대화(일상 챗) 전용 LLM. 한국어 특화 EXAONE 3.5 의 무검열(abliterated) 판.
+  # 영상 검색 채팅(llm)과 분리 — 페르소나(수동적 경청자)와 도구셋이 전혀 다름.
+  diary_llm:      "huihui_ai/exaone3.5-abliterated:7.8b"
+  # 포스터 캡션용 비전(VLM) 모델. think 를 끌 수 있는 gemma 계열(무검열) 사용.
+  # 배치 캡션 전용 — 채팅엔 미사용. 교체 시 이 한 줄만 변경(파이프라인은 모델 비종속).
+  vision:         "huihui_ai/gemma-4-abliterated:e4b"
+  embedding:      "BAAI/bge-m3"
+  clip_model:     "ViT-L-14"
+  clip_pretrained: "laion2b_s32b_b82k"
+  ocr_lang:       ["ch", "en", "japan"]   # (레거시) PaddleOCR 시절 언어 설정. 현재 OCR 은 RapidOCR(onnxruntime) — 이 값 미사용
+  translator:     "facebook/nllb-200-distilled-600M"   # JP(jpn_Jpan) -> KO(kor_Hang)
+  face_model:     "buffalo_l"
+
+indexing:
+  # 번역 품질 필터: 결과 길이가 원문의 이 비율 밖이면 LLM 폴백
+  translate_min_ratio: 0.30
+  translate_max_ratio: 3.00
+  # 배치 크기
+  embed_batch_size: 64
+  ocr_batch_size: 8
+  clip_batch_size: 32
+  # 얼굴 클러스터링 파라미터 (구현은 HDBSCAN 이 아닌 mutual-kNN + Union-Find; 키명은 레거시)
+  hdbscan_min_cluster_size: 3
+  hdbscan_min_samples: 1
+  # 얼굴 자동 매핑 신뢰도 임계값
+  face_mapping_confidence_threshold: 0.80
+  # GPU idle 후 CLIP/InsightFace 해제 시간 (초)
+  model_idle_timeout_sec: 60
+
+ranking:
+  semantic_weight:       0.70
+  fts_weight:            0.15
+  usage_weight:          0.10
+  recency_weight:        0.05
+  recency_half_life_days: 180
+
+server:
+  host:     "ai.kamoru.jk"
+  api_port: 8000
+  web_port: 3000
+  qdrant:   "http://127.0.0.1:6333"
+  ollama:   "http://127.0.0.1:11434"
+  # TLS 인증서 (.cert/ 폴더, .gitignore 등록됨)
+  ssl_keyfile:  ".cert/kamoru.jk.key"
+  ssl_certfile: ".cert/kamoru.jk.pem"
+  # CORS 허용 origin 목록
+  cors_origins:
+    - "https://ai.kamoru.jk:3000"
+    - "http://ai.kamoru.jk:3000"
+    - "http://localhost:3000"
+    - "https://localhost:3000"
+  # 업로드 제한
+  upload_max_bytes: 10485760   # 10MB
+  upload_allowed_extensions:
+    - jpg
+    - jpeg
+    - png
+    - webp
+    - gif
+  # 일기 동영상 업로드 상한(짧은 클립용, multipart 스트리밍 저장)
+  upload_video_max_bytes: 104857600   # 100MB
+
+diary:
+  # 응답 생성 온도 + top_p. 온도가 높으면(>1) '짧게' 지시를 무시하고 길게 채우는 경향.
+  # 거친 말투는 프롬프트가 만들므로 온도와 무관 — 0.8 정도가 짧고 또렷함.
+  temperature: 0.8
+  top_p: 0.95
+  # 답변 최대 토큰(하드 캡). 문장 중간이 잘려도 아래 max_sentences 가 깔끔히 정리.
+  max_tokens: 120
+  # 답변을 앞 N문장만 남김(EXAONE 이 길게 채우고 꼬리 질문 다는 걸 잘라 짧게). 0=무제한.
+  max_sentences: 2
+  # 새 세션 시작 기준: 마지막 메시지가 이 시간(시) 넘게 지났으면 새 세션, 아니면 이어감
+  idle_hours: 6
+  # 채팅 컨텍스트에 넣을 현재 세션 최근 메시지 수(단기 연속성)
+  context_messages: 12
+  # 회상 검색 기본 반환 세션 수(상한 — 관련도 컷오프로 더 적게 나올 수 있음)
+  recall_top_k: 5
+  # 관련도 컷오프: 키워드 매칭이 없을 때 이 의미 유사도(코사인) 미만이면 무관으로 보고 제외.
+  # 높일수록 엄격(무관한 일기 덜 나옴), 낮출수록 관대. 0~1.
+  recall_min_semantic: 0.5
+
+stabilize:
+  # 영상 안정화 (docs/video-stabilization-plan.md). 잡 산출물은 data/stabilize/ (.gitignore).
+  work_dir:        "data/stabilize"
+  ffmpeg:          "ffmpeg"          # 바이너리(PATH). vidstab/NVENC 빌드 필요
+  ffprobe:         "ffprobe"
+  max_height:      1920              # 처리/출력 세로 상한(4K 입력은 다운스케일). 0=원본유지
+  decode_hwaccel:  "cuda"            # 디코딩 가속: cuda(NVDEC) | none. 실패 시 소프트웨어 폴백
+  interpolate_fps: 30                # 저fps 입력 보간 목표(잡 옵션 interpolate 켤 때만). 0=비활성
+  max_input_seconds: 120
+  background_engine: "vidstab"       # v1=vidstab(robust, 군중·저텍스처 검증). raft=후속
+  segment_model:   "yolo11x-seg.pt"  # 인물 모드 검출/추적(YOLO11-seg, 클릭 시드 그리디). SAM2=후속
+  segment_imgsz:   640               # YOLO 추론 입력 긴변 px
+  default_mode:    "background"      # background | person
+  default_strength: "smooth"         # dejitter(흔들림만) | smooth | lock(완전고정) | auto
+  edge:            "blur"            # 여백 처리 기본값: blur(흐린 확대 채움) | black | crop(여백 잘라냄). 잡별 옵션으로 덮어씀
+  encoder:         "h264_nvenc"      # 폴백 libx264
+  retain_hours:    48
+  concurrency:     1                 # 12GB GPU 공유 → 동시 1잡 + 인덱싱과 상호배제
+  # 강도 프리셋 → vidstab smoothing(프레임 수). 클수록 강하게 고정.
+  smoothing_presets:
+    dejitter: 12
+    smooth:   40
+    lock:     250
+
+enhance:
+  # 영상 화질 개선 — 업스케일·슬로모션·RIFE 보간 (docs/video-enhance-plan.md).
+  # 잡 산출물은 data/enhance/ (.gitignore). 바이너리는 외부 폴더 — config 로만 참조.
+  work_dir:          "data/enhance"
+  realesrgan_bin:    "C:/kamoru/Apps/realesrgan/realesrgan-ncnn-vulkan.exe"
+  rife_bin:          "C:/kamoru/Apps/rife/rife-ncnn-vulkan.exe"
+  rife_model:        "rife-v4.6"     # -n(임의 프레임수) 지원은 v4 계열만
+  rife_uhd_long_side: 3000           # 프레임 긴 변 >= 이 값이면 RIFE UHD 모드+스레드1 (4K VRAM 보호)
+  target_height:     2160            # 4k 옵션 목표(짧은 변). 세로 영상은 자동 2160x3840
+  max_input_seconds: 30              # 업스케일 비용(프레임당 ~4.5초) 때문에 짧게 시작
+  min_free_gb:       30              # 중간 PNG(장당 30~50MB) 대비 시작 전 여유 검사
+  encoder:           "h264_nvenc"    # 폴백 libx264 (stabilizer 와 동일 패턴)
+  retain_hours:      72
+  # 업스케일 모델(실사/애니) — realesrgan 바이너리 옆 models/ 폴더의 이름
+  esrgan_models:
+    photo: "realesrgan-x4plus"
+    anime: "realesrgan-x4plus-anime"
+
+subtitle:
+  # 자막 생성 (docs/subtitle-plan.md). 외부에서 opus 로 신청 → 야간 드레인이 처리.
+  # 산출물은 영상 옆 사이드카 <stem>.srt. 야간 배치 + VRAM 양보 불필요 → 최고 품질.
+  work_dir:        "data/subtitle"   # 잡 로그/임시 (.gitignore)
+  model:           "large-v3"        # faster-whisper STT. 빠르게: large-v3-turbo
+  device:          "cuda"            # cuda | cpu
+  compute_type:    "float16"         # float16(GPU) | int8_float16 | int8
+  language:        "ja"              # 원음 언어(일본어 고정 — 번역도 JP 전제)
+  vad_filter:      true              # 무음/비발화 구간 제거(환각 억제) — 필수
+  beam_size:       5
+  translator:      "llm"             # nllb(빠름) | llm(품질·번역메모리 few-shot) — 평가로 llm 우세 확정
+  translator_llm:  "huihui_ai/qwen2.5-abliterate:14b"  # llm 모드 번역 모델(무검열, 야간 12GB 풀가용)
+  llm_fewshot_k:   6                 # 청크당 주입할 번역메모리 예시 수
+  llm_chunk_size:  12                # 한 번에 번역할 세그먼트 수(문맥·속도 균형)
+  out_suffix:      ""                # ""=<stem>.srt (기존 159개 관례), "ko"=<stem>.ko.srt
+  backup_existing: true              # 출력 위치에 기존 파일 있으면 <stem>.orig.srt 로 1회 백업
+  skip_if_exists:  true              # generate: 기존 자막 있으면 건너뜀(사람 팬자막 보호)
+  # 번역메모리(TM, phase 2) — 기존 팬자막으로 JP↔KO 코퍼스 구축
+  tm_min_overlap:  0.2               # KO 큐가 JP 발화로 이 비율 이상 덮여야 정렬 후보
+  tm_min_sim:      0.50              # JP↔KO 교차언어 코사인(bge-m3) 미만이면 오정렬로 탈락
+  # 싱크 수정(resync, phase 3)
+  resync_floor:    0.35              # KO↔JP 의미 매칭 최소 코사인(미만이면 미매칭→앵커 보간)
+  resync_min_match: 0.30             # 매칭률 미만이면 보간이 자막을 몰아 나빠짐 → 원본 복원(건너뜀)
+
+logging:
+  log_dir:        "logs"
+  log_file:       "logs/flayai.log"
+  max_bytes:      104857600    # 100MB
+  backup_count:   10
+  level:          "INFO"

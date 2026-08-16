@@ -1,0 +1,198 @@
+# 일기형 대화 (Diary)
+
+flayAI 의 로컬 인프라를 재활용한 **일상 대화이자 영구 일기** 기능. 영상 검색(`/`)과
+한 앱에 공존하되, 데이터·라우터·페이지는 완전히 분리되어 있다.
+
+## 무엇인가
+
+- **수동적 경청자**: 챗봇이 먼저 말 걸지 않는다. 내 말에 공감·맞장구·동의만 한다.
+  훈계·거부가 없도록 **무검열(abliterated) 한국어 모델**(EXAONE 3.5)을 쓴다.
+- **영구 저장**: 모든 대화를 영구 보관. 메시지를 **세션(한 자리 대화)** 단위로 묶는다.
+- **회상**: "저번에 똥 싼 게 언제였지?" 처럼 과거를 물으면, 그때 **세션 대화 원문 전체**
+  (레거시 일기는 사진 포함)를 카드로 보여주고 한 줄로 답한다.
+- **일기장 무드 UI**: 일기는 컬렉션 도구가 아니라 사적 공간이라 화면도 구분한다 —
+  헤더 네비에서 도구 메뉴와 구분선으로 분리(앰버색 + 책 아이콘), `/diary` 는
+  `diary/layout.tsx` 가 `.diary-mood`(globals.css) 를 부착해 세리프 글꼴 +
+  따뜻한 색조로 표시(라이트=크림 캔버스, 다크=표준 캔버스에 난색 카드).
+  시맨틱 CSS 변수만 덮어쓰는 방식이라
+  페이지 코드는 그대로다(헤더는 `font-sans` 로 세리프 상속 차단).
+
+## 아키텍처
+
+```
+apps/web /diary  ──SSE──▶  POST /api/diary/chat
+                                  │  packages/diary/chat.route_diary_chat
+                                  ▼
+        ┌─ 회상 의도 감지(코드 정규식 _looks_like_recall)
+        │      회상이면 ▶ store.recall_sessions ─ 그때 일기 원문 + 한 줄 답
+        │      아니면   ▶ 맞장구/공감 스트리밍
+        ▼
+ 데이터 저장소(영상과 공유, 테이블·컬렉션은 분리):
+   SQLite: diary_sessions / diary_messages / diary_messages_fts(trigram)
+   Qdrant: diary_messages 컬렉션(bge-m3 1024d) — user 발화만 임베딩
+```
+
+**회상 의도 감지는 코드(정규식)로 한다.** diary_llm(EXAONE 3.5)은 Ollama tool-calling 을
+지원하지 않아(`tools` 인자에 400) tool-call 라우팅이 불가능하다. `_looks_like_recall` 이
+검색/조회 명령·기억/시점 질문·명시적 회상어("보여줘/찾아줘/기억나?/언제였지?/회상")를 잡고,
+`_recall_search_query` 가 명령어를 떼어 주제만 검색어로 만든다. 자기지시어 "일기"도
+주제에서 제거한다 — 본문에 '일기'가 든 무관한 글(짧을수록 BM25 높음)이 상위로 오염되는 것 방지.
+
+**조건 표현은 메타 필터로**(영상 RAG `_extract_meta` 와 같은 발상) — 주제 텍스트로 검색하면
+안 되는 표현을 코드가 질의에서 분리해 `recall_sessions` 의 필터로 넘긴다:
+
+- **사진**(`_extract_photo_cond`): "사진(이미지/짤)이 있는/올린/찍은 …" → `has_image=True`,
+  `raw_html` 에 `<img>` 가 있는 세션만.
+- **날짜**(`_extract_date_cond`): "2026-06-09"·"2026년 6월 9일" → 그 날,
+  "2026년 6월" → 그 달 범위, 연도 없는 "6월 9일"/"6월" → `date_like`(`____-06-09`,
+  모든 연도). 상대 날짜 "오늘/어제/그저께/N일 전/이번·지난 주/이번·지난 달/올해/작년"도
+  범위로 환산(주는 월요일 시작). "오늘 **쓴** 일기"의 '쓴/적은' 류 자기지시 동사는
+  `_RECALL_STRIP` 이 제거. 세션 대표 날짜 = `COALESCE(source_key, substr(started_at,1,10))`.
+- **최근**(`_extract_recent_cond`): "최근/요즘 (N개)" → 최근순 나열, N 이 있으면 top_k 로.
+
+주제가 비면("사진 있는 일기"·"2026년 6월 일기"·"최근 일기 3개") 텍스트 검색 없이
+조건만으로 세션을 최근순 top_k 선별(`_list_sessions_meta`), 표시는 늘 시간순.
+주제가 남으면 하이브리드 검색 결과에 조건을 교집합으로 적용.
+
+**회상 답변 톤은 일상 대화와 분리**: 회상 경로는 `system` 대신 **`recall_system`**
+(차분·담백, 기본값은 코드), 못 찾았을 땐 **`recall_not_found`** 멘트를 쓴다. 일상
+맞장구 페르소나(`diary_prompts.yaml` 의 `system`)가 아무리 거칠어도 과거 기록을
+보여주는 답은 톤 다운된다. 두 키 모두 `diary_prompts.yaml` 로 오버라이드 가능.
+
+회상 검색은 영상 retriever 와 같은 **RRF(K=60)** 패턴: Qdrant 의미검색 + FTS5(BM25)
+\+ 짧은 한글 키워드용 LIKE 부분매칭 결합. Qdrant 가 없으면 FTS+LIKE 단독으로 graceful degrade.
+
+- **LIKE 부분매칭은 단일 글자(똥·꿈·비)나 질의 전체가 짧은 2글자(온천)만** 대상.
+  긴 질의의 2글자 토큰(회사·행사·여행)은 노이즈라 제외.
+- **관련도 컷오프**(`diary.recall_min_semantic`, 기본 0.5): 실제 키워드 매칭이 없고 의미
+  유사도도 임계 미만이면 무관으로 보고 버린다. 의미검색은 무관해도 최근접을 늘 돌려주므로,
+  이 컷이 없으면 top_k 까지 무관한 일기로 채워진다. 매칭이 없으면 0건 → "못 찾겠어" 응답.
+- **표시는 시간순**: 선택은 관련도 상위 top_k 로 하되, 일기이므로 카드는 날짜 오름차순
+  (오래된→최근)으로 보여준다(`recall_sessions`).
+
+**색인 정책(회상 정확도):**
+- 레거시 일기는 **제목을 검색용 content 에 포함**해 임베딩/FTS(제목은 고신호인데 본문엔
+  없을 수 있음 — 예: 본문에 "크리스마스"가 없어도 제목 "크리스마스 소원 이벤트"로 회상).
+- **회상 질문·답변은 저장 자체를 하지 않는다**(라우터에서 생략). 질문은 기억이 아니라
+  물음 — 저장하면 일기 뷰와 '최근 일기' 목록을 오염시키고, 색인되면 과거 질문이
+  새 질문과 매칭돼 회상도 오염시킨다. 화면에는 스트림으로 보이고 새로고침하면
+  조회 흔적만 사라진다(일기엔 기록만, 조회는 휘발).
+- 재임포트/정리: `import_legacy --reset` 로 전량 삭제 후 다시 적재(`store.reset_diary`).
+
+## 이미지 첨부 + 비전 분석
+
+대화에 사진을 첨부할 수 있고, 비전 모델이 그 사진을 분석해 반응한다.
+
+- 일기 챗 모델(EXAONE)은 텍스트 전용이라, **이미지가 붙은 턴은 비전 모델**
+  (`config.models.vision` = gemma-4-abliterated, 무검열 멀티모달)로 라우팅한다.
+- 흐름(`packages/diary/vision.describe_images` + 라우터 `_prepare_media`):
+  1. 첨부 이미지를 `data/diary_assets/`로 추출(raw_html 의 `<img>`).
+  2. 비전 모델이 한국어로 1~2문장 **사실 묘사**(caption) 생성.
+  3. caption 을 검색용 `content` 에 `[사진: …]`로 합류 → **나중에 사진 내용으로도 회상** 가능.
+  4. 일기 텍스트 모델이 caption 을 컨텍스트로 받아 사진에 **공감하는 답**을 한다.
+- 전송: 프론트가 base64 data URL 을 `POST /api/diary/chat` 의 `images[]`(최대 8장,
+  장당 10MB)로 실어 보낸다. 비전 호출은 블로킹이라 `asyncio.to_thread` 로 처리.
+- **함정: 비전 프롬프트(`vision_describe`)는 중립적이어야 한다.** "거칠게/노골적으로 묘사해"
+  같은 지시를 넣으면 (어보리터레이트 모델이라도) "사진을 첨부해주세요"로 회피한다(이미지를
+  못 본 척). 묘사는 중립으로 시키고, 거친 말투는 `person_subs`(_crudify) 후처리에 맡긴다.
+- 사진은 사용자 버블·회상 카드에 그대로 보인다(레거시 일기 사진과 동일 경로로 서빙).
+
+## 동영상 첨부 (짧은 클립)
+
+사진과 달리 동영상은 용량이 커서(base64 JSON 부적합) **multipart 업로드 경로**를 쓴다.
+
+- 업로드: `POST /api/diary/upload` (multipart, mp4/webm/mov, 상한
+  `config.server.upload_video_max_bytes` = 100MB). 스트리밍 저장이라 서버 메모리 안전.
+  파일명은 내용 SHA1(이미지와 동일 규칙, 멱등) → `data/diary_assets/`에 저장,
+  `{url}` 반환.
+- 전송: 프론트는 동영상 선택/드롭 즉시 업로드하고, `POST /api/diary/chat` 의
+  `videos[]`(asset URL, 최대 4개)로 URL 만 보낸다. 이미지(`images[]`, dataURL) 계약은
+  그대로. 라우터는 URL 이 실제 diary_assets 파일(sha1.확장자)인지 검증한다.
+- 표시: `raw_html` 에 `<video controls preload="metadata">` 로 합류 — 사용자 글·회상
+  카드·이전 일기 열람 모두 그대로 재생. 서빙(`/static/diary-assets/{name}`)은
+  starlette `FileResponse` 가 Range(206) 를 지원해 시킹 가능.
+- 회상: `describe_video`(packages/diary/vision.py)가 ffmpeg 로 키프레임 3장
+  (10%/50%/90% 지점)을 뽑아 비전 모델에 한 번에 넣어 묘사 → `content` 에
+  `[동영상: …]`으로 합류(임베딩·FTS 검색 가능). ffmpeg 부재·실패 시 `[동영상]`
+  마커만 남는다(첨부 자체는 정상). 지연을 묶기 위해 메시지당 앞 2개만 묘사.
+
+## 회상 시 사진 보고 답하기
+
+회상한 일기에 **첨부 사진이 있으면, 비전 모델이 그 사진을 보고 묘사**해 LLM 컨텍스트에
+넣는다. 그래서 답이 `[사진]` 마커가 아니라 "체크무늬 원피스를 입고 있었네" 처럼 **사진을
+직접 본 것처럼** 나온다(`chat._recall_image_context`).
+
+- 회상된 세션의 `raw_html` 에서 이미지 파일명을 뽑아(`asset_names_from_html`),
+  `config.models.vision` 으로 한국어 묘사 생성.
+- **캡션 캐시**(`diary_image_captions` 테이블, 파일명=내용 해시 키): 같은 사진은 한 번만
+  묘사하고 재사용 → 첫 회상만 느리고(비전 호출) 이후는 즉시. 한 요청의 신규 생성은 4장으로
+  제한(`max_new`)해 첫 회상 지연을 억제.
+- DB 접근은 메인(async) 스레드, 블로킹인 비전 호출만 `asyncio.to_thread`(SQLite 스레드 공유 불가).
+
+## 데이터 모델
+
+- `diary_sessions(id, started_at, ended_at, title, weather, summary, source_key)`
+  - `source_key`: 레거시 일기 임포트 멱등 키(=날짜). 라이브 챗 세션은 NULL.
+- `diary_messages(id, session_id, role, content, raw_html, created_at, source)`
+  - `content`: 검색·임베딩용 평문. `raw_html`: 표시용 원본(레거시 일기·이미지 포함).
+  - `source`: `'chat'` | `'diary_import'`.
+- `diary_messages_fts`: trigram FTS5(한글 부분매칭).
+- Qdrant `diary_messages`: point id = `diary_messages.id`, payload `{message_id, session_id,
+  role, created_at_epoch, content}`. **user 발화만** 임베딩(회상 대상은 내가 한 말).
+
+## 세션 수명
+
+`get_or_create_session` 은 마지막 메시지가 `config.diary.idle_hours`(기본 6h) 이내면 최근
+세션을 이어가고, 넘으면 새 세션을 연다. 프론트는 첫 응답의 `session` 이벤트로 받은
+`session_id` 를 이후 요청에 실어 같은 세션을 이어쓴다. 헤더의 `+ 새 대화` 로 초기화.
+
+## 레거시 일기 임포트 (일회성)
+
+기존 일기 앱이 남긴 `K:/Crazy/Diary/*.diary`(JSON) 를 과거 기억으로 적재한다.
+
+```powershell
+.\.venv\Scripts\python.exe -m packages.diary.import_legacy
+.\.venv\Scripts\python.exe -m packages.diary.import_legacy --no-embed   # 임베딩 생략(FTS+LIKE만)
+```
+
+- **정본만**: 정확히 `YYYY-MM-DD.diary` 형식만 임포트. `.diary.N`(자동저장 버전)은 스킵.
+  무접미사 `.diary` 가 최신 편집본이라 가장 길고 정확하다.
+- 한 파일 = 세션 1개 + user 메시지 1개. `meta.created/lastModified/title/weather` 를 세션에,
+  HTML 평문을 `content`, 이미지 추출된 원본을 `raw_html` 에 저장.
+- **base64 인라인 이미지**는 `data/diary_assets/<sha1>.<ext>` 로 추출(중복 제거)하고 src 를
+  `/static/diary-assets/<name>` 로 치환 → DB 는 가볍게, 웹은 `<img>` 로 렌더.
+- **멱등**: `source_key`(=날짜) 가 이미 있으면 스킵 → 재실행 안전.
+
+## API
+
+| 메서드 | 경로 | 설명 |
+|--------|------|------|
+| POST | `/api/diary/chat` | (SSE) 일상 대화 + 회상 + 이미지. `{query, session_id?, images?[]}` |
+| GET | `/api/diary/sessions` | 세션 목록(히스토리) |
+| GET | `/api/diary/sessions/{id}` | 세션 transcript |
+| GET | `/static/diary-assets/{name}` | 임포트된 일기 이미지 서빙 |
+
+SSE 이벤트: `session`(session_id) → (`recall` 그때 일기 원문) → `token`* → `done`.
+
+## 프롬프트 커스터마이징 (말투·수위)
+
+LLM 페르소나/말투/사진묘사 지시는 **`diary_prompts.yaml`(repo 루트, gitignore 됨)** 에서
+조정한다. 개인 취향·수위가 git 에 올라가지 않도록 한 구조:
+
+- 코드(`packages/diary/prompts.py`)에는 **점잖은 기본값**만 있고(공개 저장소엔 순화본),
+  `diary_prompts.yaml` 이 있으면 그 값으로 키별 덮어쓴다(없으면 기본값 → 신규 클론도 동작).
+- 키: `system`(페르소나) · `recall_answer`(회상 답변 지시) · `not_found` · `vision_describe`.
+- 시작 틀은 `diary_prompts.example.yaml` 복사 → `diary_prompts.yaml` 로 저장 후 수정.
+- `diary_prompts.yaml` 은 저장하면 **다음 대화부터 자동 반영**(mtime 감지, 재시작 불필요).
+  단, `config.diary.*`(temperature 등)·코드 변경은 여전히 API 재시작 필요.
+- 캡션 캐시는 **설정 시그니처(`sig`)로 자동 무효화**된다: 비전 모델(`config.models.vision`)·
+  `vision_describe`·`person_subs` 중 하나라도 바뀌면 `sig` 가 달라져 다음 회상 때 캐시 미스 →
+  자동 재생성(수동 `DELETE` 불필요). `diary_image_captions.sig` = 이 셋의 해시.
+
+## 설정 (config.yaml)
+
+- `models.diary_llm`: `huihui_ai/exaone3.5-abliterated:7.8b` (영상 채팅 `llm` 과 분리)
+- `data.diary_dir` / `data.diary_assets`
+- `diary.idle_hours` / `diary.context_messages` / `diary.recall_top_k`
+
+모델은 사용자가 직접 받는다: `ollama pull huihui_ai/exaone3.5-abliterated:7.8b`.

@@ -1,0 +1,200 @@
+"""영상 안정화 API 라우터 — 업로드 → 비동기 잡 → 폴링 → 결과 다운로드.
+
+설계: docs/video-stabilization-plan.md. 인덱서 admin 과 동일하게 localhost-only,
+잡은 서브프로세스(packages.stabilizer.cli)로 실행하고 status.json 으로 추적한다.
+
+엔드포인트(prefix=/api/stabilize):
+  POST /jobs                  업로드 + 옵션 -> 잡 생성
+  GET  /jobs                  잡 목록
+  GET  /jobs/{id}             잡 상태(폴링)
+  GET  /jobs/{id}/result      결과 mp4 다운로드/재생
+  POST /jobs/{id}/cancel      취소(서브프로세스 terminate)
+  DELETE /jobs/{id}           잡 삭제
+"""
+
+from __future__ import annotations
+
+import asyncio
+import logging
+import shutil
+import subprocess
+import time
+from typing import Any
+
+from fastapi import APIRouter, File, Form, HTTPException, Request, UploadFile
+from fastapi.responses import FileResponse, StreamingResponse
+
+from apps.api.routers._gpu import gpu_busy, kill_tree
+from apps.api.sse import SSE_HEADERS, poll_stream
+from packages.settings import REPO_ROOT
+from packages.stabilizer import job as J
+
+router = APIRouter(prefix="/api/stabilize", tags=["stabilize"])
+log = logging.getLogger(__name__)
+
+# 실행 중 워커 서브프로세스 (취소/삭제용 — JSON 직렬화 대상 아님)
+_procs: dict[str, subprocess.Popen] = {}
+
+
+def _localhost_only(request: Request) -> None:
+    client_host = request.client.host if request.client else ""
+    if client_host not in ("127.0.0.1", "localhost", "::1", "ai.kamoru.jk"):
+        raise HTTPException(403, "stabilize endpoints are localhost-only")
+
+
+def _busy() -> str | None:
+    """동시 1잡 + 화질개선·인덱싱과 상호배제(공용 _gpu.gpu_busy)."""
+    return gpu_busy()
+
+
+def _wait(job_id: str, proc: subprocess.Popen) -> None:
+    proc.wait()
+    _procs.pop(job_id, None)
+    st = J.get_status(job_id)
+    if st and st.get("status") == "running":
+        J.set_status(job_id, status="failed",
+                     error=f"워커 비정상 종료(exit {proc.returncode})")
+
+
+@router.post("/jobs")
+async def create_job(
+    request: Request,
+    file: UploadFile = File(...),
+    mode: str = Form("background"),
+    strength: str = Form("smooth"),
+    subject: str | None = Form(None),  # 인물 모드 지정(클릭 좌표/박스 등) — JSON 문자열
+    edge: str | None = Form(None),  # 여백 처리: blur | black | crop
+    interpolate: str | None = Form(None),  # 저fps 보간(부드럽게)
+    scale_lock: str | None = Form(None),  # 인물 모드 — 주인공 크기까지 고정
+) -> dict[str, Any]:
+    _localhost_only(request)
+    if mode not in ("background", "person", "both"):
+        raise HTTPException(400, "mode 는 background | person | both")
+    busy = _busy()
+    if busy:
+        raise HTTPException(409, busy)
+
+    # 보존기간 지난 잡 정리(기회적 — 새 잡 받을 때마다)
+    try:
+        J.cleanup_old_jobs()
+    except Exception:  # noqa: BLE001 — 정리 실패가 잡 생성을 막지 않게
+        pass
+
+    options: dict[str, Any] = {}
+    if subject:
+        options["subject"] = subject
+    if edge:
+        options["edge"] = edge
+    if interpolate and interpolate not in ("0", "false", "False"):
+        options["interpolate"] = True
+    if mode in ("person", "both") and scale_lock and scale_lock not in ("0", "false", "False"):
+        options["scale_lock"] = True
+    job_id = J.new_job(mode, strength, options)
+
+    dest = J.input_path(job_id)
+    try:
+        with dest.open("wb") as f:
+            shutil.copyfileobj(file.file, f)
+    finally:
+        await file.close()
+
+    venv_python = str(REPO_ROOT / ".venv" / "Scripts" / "python.exe")
+    proc = subprocess.Popen(
+        [venv_python, "-m", "packages.stabilizer.cli", "run", job_id],
+        cwd=str(REPO_ROOT),
+    )
+    _procs[job_id] = proc
+    asyncio.get_event_loop().run_in_executor(None, _wait, job_id, proc)
+    return {"job_id": job_id, "status": "queued", "mode": mode, "strength": strength}
+
+
+@router.get("/jobs")
+def list_jobs(request: Request) -> dict[str, Any]:
+    _localhost_only(request)
+    return {"jobs": J.list_jobs()}
+
+
+@router.get("/jobs/{job_id}")
+def job_status(job_id: str, request: Request) -> dict[str, Any]:
+    _localhost_only(request)
+    st = J.get_status(job_id)
+    if not st:
+        raise HTTPException(404, "job not found")
+    return st
+
+
+_TERMINAL_STATUSES = {"done", "failed", "canceled"}
+
+
+@router.get("/jobs/{job_id}/events")
+async def job_events(job_id: str, request: Request) -> StreamingResponse:
+    """잡 상태 SSE 스트림 — 변화 시만 push, 종료 상태 push 후 스트림 종료.
+
+    폴링(GET /jobs/{id})의 대체. 잡이 삭제되면 {"type":"gone"} 후 종료.
+    """
+    _localhost_only(request)
+    if not J.get_status(job_id):
+        raise HTTPException(404, "job not found")
+    return StreamingResponse(
+        poll_stream(
+            lambda: asyncio.to_thread(J.get_status, job_id),
+            lambda st: {"type": "status", "ts": time.time(), "job": st},
+            interval=1.0,
+            is_terminal=lambda st: st.get("status") in _TERMINAL_STATUSES,
+        ),
+        media_type="text/event-stream",
+        headers=SSE_HEADERS,
+    )
+
+
+@router.api_route("/jobs/{job_id}/result", methods=["GET", "HEAD"])
+def job_result(job_id: str, request: Request, variant: str | None = None) -> FileResponse:
+    _localhost_only(request)
+    st = J.get_status(job_id)
+    if not st:
+        raise HTTPException(404, "job not found")
+    if st.get("status") != "done":
+        raise HTTPException(409, "아직 결과가 준비되지 않았습니다")
+    # 원본(작업본 h264) — 최근 작업에서 다시 열 때 비교용. work.mp4 없으면 업로드 원본
+    if variant == "original":
+        wm = J.job_path(job_id) / "work" / "work.mp4"
+        src = wm if wm.exists() else J.input_path(job_id)
+        if not src.exists():
+            raise HTTPException(409, "원본 없음")
+        return FileResponse(str(src), media_type="video/mp4", filename=f"original_{job_id}.mp4")
+    # variant 로 출력 선택('둘 다' 모드의 out_background/out_person). 없으면 첫 출력 또는 out.mp4
+    outs = st.get("outputs") or []
+    fname = None
+    if variant:
+        fname = next((o.get("file") for o in outs if o.get("variant") == variant), None)
+    if not fname:
+        fname = outs[0].get("file") if outs else "out.mp4"
+    out = J.job_path(job_id) / fname
+    if not out.exists():
+        raise HTTPException(409, "결과 파일 없음")
+    return FileResponse(str(out), media_type="video/mp4", filename=f"stabilized_{job_id}.mp4")
+
+
+@router.post("/jobs/{job_id}/cancel")
+def cancel_job(job_id: str, request: Request) -> dict[str, Any]:
+    _localhost_only(request)
+    if not J.get_status(job_id):
+        raise HTTPException(404, "job not found")
+    p = _procs.get(job_id)
+    if p:
+        kill_tree(p)  # 워커가 띄운 ffmpeg 자식까지 종료(고아 방지)
+    J.set_status(job_id, status="canceled")
+    return {"status": "canceled", "job_id": job_id}
+
+
+@router.delete("/jobs/{job_id}")
+def delete_job(job_id: str, request: Request) -> dict[str, Any]:
+    _localhost_only(request)
+    p = _procs.get(job_id)
+    if p:
+        kill_tree(p)
+    _procs.pop(job_id, None)
+    d = J.job_path(job_id)
+    if d.exists():
+        shutil.rmtree(d, ignore_errors=True)
+    return {"status": "deleted", "job_id": job_id}

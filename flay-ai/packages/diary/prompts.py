@@ -1,0 +1,141 @@
+"""일기 프롬프트 로더.
+
+실제로 쓰는(노골적일 수 있는) 프롬프트는 git 에 올리지 않는다:
+- 코드(여기)에는 **점잖은 기본값**만 둔다 → 공개 저장소엔 순화본만 남음 + 신규 클론도 동작.
+- repo 루트의 `diary_prompts.yaml`(gitignore 대상)이 있으면 그 값으로 덮어쓴다.
+  → 개인 취향/수위 조정은 그 파일에서. 구조는 `diary_prompts.example.yaml` 참고.
+
+키: system(일상 대화 페르소나) / recall_system(회상 답변 페르소나 — 차분한 톤)
+    / recall_answer(회상 답변 지시) / recall_not_found(회상 실패 멘트)
+    / vision_describe(첨부 사진 묘사 지시) / summarize(일기 요약 지시, {chars} 자리표시자)
+    / person_subs(사람 지칭 등 거친 치환 규칙, 선택)
+
+회상 경로는 system 이 아니라 recall_system 을 쓴다 — 일상 대화는 수위 높은 페르소나라도
+과거 기록을 보여주는 답은 톤 다운(담백)되게 분리.
+"""
+
+from __future__ import annotations
+
+from typing import Any
+
+import yaml
+
+from packages.settings import repo_path
+
+# 점잖은 기본값(폴백). 실제 수위 조정은 diary_prompts.yaml 에서.
+_DEFAULTS: dict[str, Any] = {
+    "system": (
+        "너는 사용자의 일기를 들어주는 친구다.\n"
+        "- 먼저 화제를 꺼내지 말고 사용자가 한 말에 반응만 한다.\n"
+        "- 공감하고 맞장구치고 동의하라. 판단·훈계·거절은 하지 마라.\n"
+        "- 반말로 짧게. 사용자 길이에 맞춰 보통 1문장, 길어도 2문장. 분량을 채우거나 "
+        "되묻는 질문을 억지로 덧붙이지 마라.\n"
+        "- 한국어로만. 한자·일본어·영어 단어 금지. 이모지·기호·마크다운 금지.\n"
+    ),
+    "recall_system": (
+        "너는 사용자의 일기를 함께 들춰보는 차분한 친구다.\n"
+        "- 회상 질문에는 찾은 기록을 근거로 담백하게 답한다. 과장·거친 말·호들갑 금지.\n"
+        "- 찾은 기록에 없는 내용은 지어내지 마라. 특히 '이 날 사진:' 표시가 없으면 "
+        "사진 얘기를 하지 마라.\n"
+        "- 반말로 짧게, 1~2문장.\n"
+        "- 한국어로만. 이모지·기호·마크다운 금지.\n"
+    ),
+    "recall_answer": (
+        "아래는 사용자의 과거 일기에서 찾은 관련 기록이다. 이걸 근거로 사용자의 질문에 "
+        "반말로 짧고 따뜻하게 답해라. 날짜를 자연스럽게 언급하고, '이 날 사진:' 으로 표시된 "
+        "사진이 있으면 그 사진에 보이는 모습을 직접 본 것처럼 짚어줘. 내용을 길게 나열하진 "
+        "말 것(원문은 이미 화면에 보임). 한국어 문장으로만, 이모지·기호 금지."
+    ),
+    "recall_not_found": "음, 그 조건으론 일기를 못 찾았어. 날짜나 키워드를 바꿔서 물어봐 줄래?",
+    # 비전엔 '중립적' 묘사만 시킨다. 거친 지시를 넣으면 모델이 '사진을 첨부해주세요'로
+    # 회피하므로, 거친 말투는 person_subs(_crudify) 후처리가 담당.
+    "vision_describe": (
+        "이 사진에 보이는 것을 한국어로 1~2문장으로 구체적으로 묘사해줘. "
+        "사람이 있으면 옷차림·자세·상황을, 장소·사물·분위기도 사실대로. "
+        "추측이나 평가·미사여구는 빼고 보이는 것만."
+    ),
+    # 일기 요약(이전 일기 '요약' 버튼). {chars} 는 목표 글자 수로 치환됨.
+    # 어투는 순화하지 않고 원문을 그대로 따른다 — 수위 조정은 diary_prompts.yaml 에서.
+    "summarize": (
+        "아래는 사용자가 쓴 하루치 일기다. 전체를 약 {chars}자(원문의 30% 정도)로 요약해라.\n"
+        "- 요약도 본인이 쓴 일기처럼 1인칭 반말로 써라. 원문의 어투·분위기·표현 수위를 "
+        "그대로 따라 하고, 원문이 거친 표현을 쓰면 순화하거나 완곡하게 바꾸지 말고 그 말투 "
+        "그대로 써라. '~했다네/~였단다' 같은 남 얘기하는 화자 말투 금지.\n"
+        "- 원문에 없는 내용·해석·평가를 덧붙이지 마라.\n"
+        "- '[사진: …]'/'[동영상: …]' 설명이 있으면 그 장면을 **반드시 한 번은 언급**해라. "
+        "단 마커 형식 그대로 옮기지 말고 '…한 사진도 찍었다'처럼 문장에 녹여서.\n"
+        "- 한국어 문장으로만. 목록·이모지·마크다운 금지.\n"
+    ),
+    # 사람 지칭 등 거친 치환(정규식). [[패턴, 치환], ...] — 비어있으면 치환 안 함.
+    "person_subs": [],
+}
+
+
+# 파일 수정시각(mtime) 기반 캐시 — diary_prompts.yaml 을 저장하면 다음 호출에서 자동 반영
+# (재시작 불필요). 호출당 stat() 한 번이라 부담 없음.
+_cache: dict[str, Any] | None = None
+_cache_mtime: float = -1.0
+
+
+def _load() -> dict[str, Any]:
+    global _cache, _cache_mtime
+    path = repo_path("diary_prompts.yaml")
+    try:
+        mtime = path.stat().st_mtime if path.exists() else 0.0
+    except OSError:
+        mtime = 0.0
+    if _cache is not None and mtime == _cache_mtime:
+        return _cache
+
+    merged = dict(_DEFAULTS)
+    if path.exists():
+        try:
+            data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+            for k in _DEFAULTS:
+                if k in data:
+                    merged[k] = data[k]
+        except (yaml.YAMLError, OSError):
+            pass
+    _cache, _cache_mtime = merged, mtime
+    return merged
+
+
+def system_prompt() -> str:
+    return str(_load()["system"])
+
+
+def recall_system_prompt() -> str:
+    return str(_load()["recall_system"])
+
+
+def recall_answer_prompt() -> str:
+    return str(_load()["recall_answer"])
+
+
+def recall_not_found_message() -> str:
+    return str(_load()["recall_not_found"])
+
+
+def vision_describe_prompt() -> str:
+    return str(_load()["vision_describe"])
+
+
+def summarize_prompt() -> str:
+    """일기 요약 지시문(틀). {chars} 자리표시자는 호출부에서 목표 글자 수로 치환."""
+    return str(_load()["summarize"])
+
+
+def person_subs() -> list[tuple[str, str | list[str]]]:
+    """[(정규식 패턴, 치환)] — 캡션·답변의 사람 지칭 등을 거칠게 바꾸는 규칙.
+
+    치환은 문자열(고정) 또는 문자열 리스트(매칭마다 무작위 선택). 패턴의 '|'만 OR 이고,
+    치환 문자열은 리터럴이라 '|' 가 그대로 박힌다 — 여러 후보를 쓰려면 리스트로.
+    """
+    raw = _load().get("person_subs") or []
+    out: list[tuple[str, str | list[str]]] = []
+    for item in raw:
+        if isinstance(item, (list, tuple)) and len(item) == 2:
+            pat, repl = item[0], item[1]
+            opts = [str(x) for x in repl] if isinstance(repl, list) else str(repl)
+            out.append((str(pat), opts))
+    return out

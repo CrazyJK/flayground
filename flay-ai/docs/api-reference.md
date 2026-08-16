@@ -1,0 +1,229 @@
+# API Reference
+
+베이스 URL: `https://ai.kamoru.jk:8000` (자체 서명 TLS). 모든 엔드포인트는 로컬 전용 (127.0.0.1 / localhost / ::1 / ai.kamoru.jk) — 공용 인터넷 노출 금지.
+
+## 채팅
+
+### `POST /api/chat`
+
+SSE 스트리밍. RAG + LLM 응답. UI 의 메인 흐름.
+
+요청:
+
+```json
+{
+  "query": "Alice 출연작",
+  "history": [
+    { "role": "user", "content": "..." },
+    { "role": "assistant", "content": "..." }
+  ]
+}
+```
+
+응답: `text/event-stream`. `data:` 줄 마다 JSON 1건.
+
+이벤트 타입:
+
+- `tool_call`  — `{type, name, args}`
+- `tool_result` — `{type, name, result: {items: [hit, ...]}}`
+- `token`       — `{type, text}`
+- `done`        — `{type, message}`
+- `error`       — `{type, message}`
+
+`hit` 구조 (자주 등장):
+
+```ts
+{
+  opus: string,
+  title: string|null,        // ko 우선, 없으면 jp
+  title_jp: string|null,
+  title_ko: string|null,
+  studio: string|null,
+  release_date: string|null, // "YYYY-MM-DD"
+  year: number|null,
+  month: number|null,
+  kind: "instance" | "archive",
+  rank: number,
+  play: number,
+  like_count: number,
+  actresses: string[],       // canonical 이름들
+  poster_path: string|null,
+  video_path: string|null,
+  playable: boolean,
+  score?: number,
+  // 컨텍스트별 추가 필드 (예: ocr_text)
+}
+```
+
+## 메타 검색
+
+### `POST /api/search/videos`
+
+채팅을 거치지 않고 직접 도구 호출.
+
+```json
+{
+  "query": "회사 일상",
+  "actress": "alice",
+  "studio": "StudioA",
+  "year": 2023, "month": 7,
+  "kind": "instance",
+  "playable": true,
+  "min_rank": 4,
+  "tag": "office",
+  "limit": 10
+}
+```
+
+응답: `{ "items": [hit, ...] }`
+
+### `GET /api/videos/{opus}`
+
+영상 단일 조회.
+
+### `GET /api/actresses/{name}`
+
+배우 메타 + 대표작.
+
+### `GET /api/similar/{opus}?exclude_watched=true&limit=10`
+
+의미적으로 비슷한 영상.
+
+## 번역
+
+### `POST /api/translate`
+
+```json
+{ "text": "...", "target": "ko", "sentencewise": true }
+```
+
+응답: `{ "text": "..." }`
+
+> 일본어→한국어/영어 전용(소스는 일본어로 가정). 외부 시스템 연동 상세(계약·예시·제약·CORS)는
+> [translate-api.md](translate-api.md) 참고.
+
+## 이미지 검색 (CLIP)
+
+### `POST /api/image/search/text`
+
+텍스트 → 포스터 검색. **CLIP cross-modal(`posters_clip`) + VLM 캡션 의미검색(`poster_caption`, bge-m3)을 RRF 로 결합한 하이브리드.** CLIP 의 약한 한국어 자연어를 캡션이 보완한다. (`poster_caption` 은 `caption-posters` 단계로 채워짐. 없으면 CLIP 단독으로 자동 폴백.)
+
+```json
+{ "query": "해변 교복", "limit": 10, "kind": "instance" }
+```
+
+### `POST /api/image/search`
+
+이미지 업로드 → 비슷한 포스터.
+
+```
+multipart/form-data:
+  image: <file>
+  limit: 10
+  kind:  instance | archive   (옵션)
+```
+
+## 얼굴 검색
+
+### `POST /api/face/search`
+
+이미지에서 얼굴 검출 → 클러스터 매칭 → 출연작.
+
+```
+multipart/form-data:
+  image: <file>
+  limit: 5
+```
+
+응답:
+
+```json
+{
+  "faces": [
+    { "bbox": [...], "matches": [ { "cluster_id": 12, "label": "alice", "votes": 152, "confidence": 1.0 }, ... ] }
+  ],
+  "items": [hit, ...]
+}
+```
+
+## 얼굴 라벨링 (관리)
+
+### `GET /api/face/clusters?min_size=5&labeled=auto|manual|none&page=...`
+
+얼굴 클러스터 목록. 라벨링 UI 가 사용.
+
+### `GET /api/face/clusters/{cluster_id}/samples?limit=12`
+
+클러스터 대표 얼굴 샘플 (썸네일).
+
+### `POST /api/face/clusters/{cluster_id}/label`
+
+```json
+{ "label": "alice" }
+```
+
+사람이 직접 라벨 부여. (`null` 로 보내면 제거)
+
+## 포스터 OCR 검색
+
+### `POST /api/search/poster-ocr`
+
+```json
+{ "query": "S Model", "limit": 10, "kind": "instance" }
+```
+
+응답: `{ "items": [hit + ocr_text, ...] }`
+
+## 관리
+
+### `GET /api/admin/stats`
+
+요청자 IP 가 127.0.0.1 / localhost / ::1 / ai.kamoru.jk 가 아니면 403.
+
+```json
+{ "videos": 20818, "actresses": ..., "posters": ..., ... }
+```
+
+### `GET /healthz` — `{ "status": "ok" }`
+
+### `GET /static/posters/{opus}` — 포스터 파일 직접 서빙
+
+## 인증 / 보안 메모
+
+- CORS: `config.yaml` 의 `server.cors_origins` 화이트리스트만 (기본 localhost:3000).
+- 인증 없음. **로컬 전용 운영 전제.** 외부로 절대 노출 금지.
+- `/api/admin/*` 는 추가로 client IP 검증.
+- LLM 도구는 read-only. write 는 별도 라우트 (`/api/face/clusters/.../label` 처럼 명시적).
+
+## 클라이언트 코드 예시
+
+```ts
+// 채팅 스트리밍
+async function* chat(query: string) {
+  const r = await fetch("https://ai.kamoru.jk:8000/api/chat", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ query }),
+  });
+  const dec = new TextDecoder();
+  const reader = r.body!.getReader();
+  let buf = "";
+  for (;;) {
+    const { value, done } = await reader.read();
+    if (done) break;
+    buf += dec.decode(value, { stream: true });
+    const lines = buf.split("\n");
+    buf = lines.pop()!;
+    for (const line of lines) {
+      if (line.startsWith("data:")) yield JSON.parse(line.slice(5));
+    }
+  }
+}
+
+// 메타 검색
+const { items } = await fetch("https://ai.kamoru.jk:8000/api/search/videos", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ actress: "alice", year: 2023, limit: 5 }),
+}).then(r => r.json());
+```

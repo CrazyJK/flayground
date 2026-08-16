@@ -58,9 +58,7 @@ cd apps\web ; yarn build ; yarn lint                               # 프론트 �
 ..\bin\ai\reindex.bat <quick|sync|full|clean>
 ```
 
-### 개발 모드 — 에이전트가 직접 띄울 때
-
-별도 창(`bin\ai\*.bat` 의 `start cmd /k`) 대신 **클로드 앱 내부 백그라운드 프로세스**로 실행해 stdout 로그를 실시간으로 본다. 사용자가 "서버 띄워줘/재시작해줘" 류로 요청하면 이 방식.
+### 인앱 기동 명령·주의 (기동 범위·방식은 루트 CLAUDE.md "개발 모드 기동")
 
 ```
 .venv\Scripts\python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile ../.cert/kamoru.jk.key --ssl-certfile ../.cert/kamoru.jk.pem

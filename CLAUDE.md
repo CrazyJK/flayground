@@ -52,6 +52,10 @@ bin\ai\reindex.bat <quick|sync|full|clean>
 
 각 Node 프로젝트: `yarn dev` / `yarn build` / `yarn start` (상세는 폴더 CLAUDE.md).
 
+### 개발 모드 기동
+
+사용자가 "개발 모드 기동", "서버 기동/띄워줘/재시작"이라고 하면 별도 지정이 없는 한 **web·mcp·ai 세 컴포넌트를 모두 개발 모드**로 띄운다 — flay-web/frontend `yarn dev`(webpack watch), flay-web/backend `yarn dev`(tsx), flay-mcp `yarn dev`, flay-ai uvicorn(`../.cert` 인증서, `--reload` 없이) + `apps/web` `yarn dev`. 방식은 별도 창(`bin\*.bat`)이 아니라 **클로드 앱 내부 백그라운드 프로세스**(로그 실시간 확인). 선행 Qdrant(6333)·Ollama(11434)는 떠 있는지 확인만. 이미 LISTEN 중인 포트는 건너뛰고, 기동 후 포트·헬스(443, 3002, 8000, 3000)를 보고한다. flay-ai 쪽 명령·재시작 주의는 `flay-ai/CLAUDE.md`.
+
 ## 문서 규칙
 
 - 문서는 `docs/` 에만 둔다. 공용 계획·설계는 `docs/plans/`, `docs/design/`, 컴포넌트 전용은 `docs/<컴포넌트>/`.

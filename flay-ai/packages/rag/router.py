@@ -54,6 +54,7 @@ SYSTEM_PROMPT = (
     "- '옛날 / 예전에 갖고 있던' → search_videos(kind='archive').\n"
     "- '아무거나 / 랜덤 / 무작위로 N개' 처럼 조건 없이 고르라는 요청 → "
     "search_videos(query='', sort='random', limit=N). 검색어·연도·제작사를 지어내지 말 것.\n"
+    "- '가장 인기 있는 / 많이 본 / 베스트 / TOP N' → search_videos(query='', sort='popular', limit=N).\n"
     "- 통계/집계 질문은 stats.\n"
     "\n"
     "[출력 언어 — 절대 규칙]\n"
@@ -107,6 +108,13 @@ _RANDOM_RE = re.compile(
     r"|(?:랜덤|무작위)(?:으로|로|하게|한|의|이나|)|임의(?:로|의|대로)?"
     r"|되는\s*대로|닥치는\s*대로"
 )
+# 인기 정렬 의도: "가장 인기 있는 / 인기순 / 많이 본 / 자주 본 / 베스트 / TOP / 핫한 / 좋아요 많은 / 평점 높은"
+# → sort=popular. 랭커의 usage 식(ln(1+play) + 0.5*rank/5 + 0.3*ln(1+like)) 내림차순.
+_POPULAR_RE = re.compile(
+    r"인기|많이\s*(?:본|재생|플레이|시청)|자주\s*(?:본|재생|플레이|시청)|베스트|최고\s*(?:의|인)?"
+    r"|\bTOP\b|톱|핫\s*한|좋아요\s*(?:가\s*)?많은|평점\s*(?:이\s*)?높은|별점\s*(?:이\s*)?높은|명작|인기작|히트",
+    re.IGNORECASE,
+)
 # 결과 개수: "10개만 / 5편 / 3건 / 20작품" → limit. 평점·별점 표현("별점 4개 이상")과 구분하려고
 # _extract_count 에서 평점 표현을 먼저 지운 뒤 매칭한다.
 _COUNT_RE = re.compile(r"(?<!\d)(\d{1,3})\s*(?:개|편|건|작품)")
@@ -120,6 +128,7 @@ _FILLER_RE = re.compile(
 _STOPWORDS = {
     "작품", "영상", "비디오", "동영상", "것", "거", "것들", "거들", "중", "중에", "중에서", "에서",
     "하나", "한", "개", "건", "편", "만", "만한", "그냥", "대충", "적당히", "알아서", "아무", "이나",
+    "가장", "제일", "제일로", "가장으로", "순", "순으로", "순서로", "위주로", "위주",
     "지금", "볼", "수", "있는", "재생", "가능한", "예전", "옛날", "보관", "아카이브",
     # 홀로 남은 조사
     "으로", "로", "에", "의", "을", "를", "이", "가", "은", "는", "도", "와", "과", "랑", "하고",
@@ -134,13 +143,14 @@ def _extract_count(query: str) -> int | None:
     return max(1, min(100, int(m.group(1))))
 
 
-def _strip_for_random(query: str) -> str:
-    """무작위 모드용 핵심어 추출: 무작위어·개수·요청 동사·메타 표현(연도/월/평점/좋아요/재생/kind)·
-    불용어를 걷어내고 남는 명사(테마·배우·제작사 등)만 돌려준다. 남는 게 없으면 ''(순수 무작위).
+def _core_terms(query: str) -> str:
+    """정렬 의도(무작위/인기) 질의용 핵심어 추출: 무작위어·인기어·개수·요청 동사·메타 표현(연도/월/평점/
+    좋아요/재생/kind)·불용어를 걷어내고 남는 명사(테마·배우·제작사 등)만 돌려준다.
+    남는 게 없으면 ''(필터 범위 전체를 대상으로 정렬).
     """
     s = query or ""
     for rx in (
-        _RANDOM_RE, _COUNT_RE, _RANK_PHRASE_RE, _FILLER_RE, _YEAR_RE, _MONTH_RE, _YEAR_ONLY_RE,
+        _RANDOM_RE, _POPULAR_RE, _COUNT_RE, _RANK_PHRASE_RE, _FILLER_RE, _YEAR_RE, _MONTH_RE, _YEAR_ONLY_RE,
         _LIKES_RE, _PLAY_MIN_RE, _PLAY_MIN_BON_RE, _PLAY_MAX_RE, _PLAY_MAX_BON_RE,
         _SORT_RECENT_RE, _SORT_OLDEST_RE, _INSTANCE_RE, _ARCHIVE_RE,
     ):
@@ -155,7 +165,7 @@ def _extract_meta(query: str) -> dict:
 
     LLM 이 인자를 빠뜨리거나 tool_call 자체를 안 하는 경우(폴백)에 대비한 코드 레벨
     방어 장치. 이 값을 search_videos 인자에 주입해 LLM 품질과 무관하게 결과를 정확히 만든다.
-    sort 는 무작위(random) > 최근 본(recent) > 오래 안 본(oldest) 순으로 우선한다.
+    sort 는 무작위(random) > 인기(popular) > 최근 본(recent) > 오래 안 본(oldest) 순으로 우선한다.
     """
     out: dict = {}
     m = _YEAR_RE.search(query)
@@ -186,6 +196,8 @@ def _extract_meta(query: str) -> dict:
         out["max_play"] = int(px.group(1))
     if _RANDOM_RE.search(query):
         out["sort"] = "random"
+    elif _POPULAR_RE.search(query):
+        out["sort"] = "popular"
     elif _SORT_RECENT_RE.search(query):
         out["sort"] = "recent"
     elif _SORT_OLDEST_RE.search(query):
@@ -370,6 +382,8 @@ def _summarize_results(tool_calls: list[dict], results: list[dict]) -> str:
             parts.append("오래된 순")
         elif a.get("sort") == "random":
             parts.append("무작위")
+        elif a.get("sort") == "popular":
+            parts.append("인기순")
         if a.get("kind") in _KIND_LABEL:
             parts.append(_KIND_LABEL[a["kind"]])
         elif a.get("playable"):
@@ -520,7 +534,9 @@ async def route_chat(
         count_tags = _extract_count_tags(user_query)
         if count_tags:
             meta.setdefault("tag_any", count_tags)
-        is_random = meta.get("sort") == "random"
+        # 정렬 의도(무작위/인기) 질의: 문장 전체를 검색어로 쓰면 의미검색 잡음이 후보를 정하므로
+        # 핵심어만 남긴다(없으면 '' → 필터 범위 전체에서 정렬).
+        intent_sort = meta.get("sort") if meta.get("sort") in ("random", "popular") else None
         for c in tool_calls:
             fn = c.get("function") or {}
             if fn.get("name") != "search_videos":
@@ -545,12 +561,10 @@ async def route_chat(
                     changed = True
             if changed:
                 log.info("router meta boost: search_videos args <- %s", meta)
-            # 무작위 모드: 문장 전체를 검색어로 쓰면 의미검색 잡음이 후보를 정하므로,
-            # 무작위어·개수·요청 동사·메타 표현을 걷어낸 핵심어만 남긴다(없으면 '' → 순수 무작위).
-            if is_random:
-                args["query"] = _strip_for_random(user_query)
-                args["sort"] = "random"
-                log.info("router random mode: query=%r", args["query"])
+            if intent_sort:
+                args["query"] = _core_terms(user_query)
+                args["sort"] = intent_sort
+                log.info("router %s mode: query=%r", intent_sort, args["query"])
             fn["arguments"] = args
             c["function"] = fn
 

@@ -69,7 +69,7 @@ LLM 응답:  { "tool_calls": [
    │
    ▼ 코드 필터 보강 (_extract_meta + _extract_tags): year/month/kind/playable/min_rank/rank/min_likes/min_play/max_play/sort + DB 태그명 복수 추출(AND) → args 주입
    │   (LLM 이 tool_call 을 빠뜨려도 폴백 + 이 보강으로 결과가 정확)
-   │   + LLM 이 지어낸 year/month(질문에 없음)는 폐기 · '아무거나/랜덤' 이면 sort=random + query 는 핵심어만 · 'N개' 는 limit 우선
+   │   + LLM 이 지어낸 year/month(질문에 없음)는 폐기 · '아무거나/랜덤' 이면 sort=random, '인기/많이 본/베스트' 면 sort=popular + query 는 핵심어만 · 'N개' 는 limit 우선
    │
    ▼ SSE 로 클라이언트에 tool_call / tool_result 이벤트 즉시 push
    │
@@ -118,7 +118,7 @@ for (;;) {
 
 | 도구 | 시그니처 (요약) | 언제 호출되도록 시켰는가 |
 |------|----------------|------------------------|
-| `search_videos` | `query?, actress?, studio?, year?, month?, kind?, tag?, min_rank?, rank?, min_likes?, min_play?, max_play?, sort?, playable?, limit=10` | 자연어 검색의 기본. 거의 대부분이 여기. `min_rank`=평점≥N, `rank`=정확히 N, `min_likes`=좋아요≥N, `min_play`/`max_play`=재생횟수 N 이상/이하, `sort`=`recent`(최근 본 순)/`oldest`(오래 안 본 순)/`random`(무작위 — query 있으면 관련도 top-K 안에서, 없으면 필터 범위 전체에서 `ORDER BY RANDOM()`). |
+| `search_videos` | `query?, actress?, studio?, year?, month?, kind?, tag?, min_rank?, rank?, min_likes?, min_play?, max_play?, sort?, playable?, limit=10` | 자연어 검색의 기본. 거의 대부분이 여기. `min_rank`=평점≥N, `rank`=정확히 N, `min_likes`=좋아요≥N, `min_play`/`max_play`=재생횟수 N 이상/이하, `sort`=`recent`(최근 본 순)/`oldest`(오래 안 본 순)/`random`(무작위 — query 있으면 관련도 top-K 안에서, 없으면 필터 범위 전체에서 `ORDER BY RANDOM()`)/`popular`(인기순 — 랭커 usage 식 `ln(1+play)+0.5*rank/5+0.3*ln(1+like)` 내림차순, 범위는 random 과 동일). |
 | `similar_to` | `opus, exclude_watched=true, limit=10` | 품번이 명시되어 있을 때 유사 영상 |
 | `get_video` | `opus` | 품번 단일 조회 |
 | `get_actress` | `name` | 배우 메타 + 대표작 |
@@ -139,12 +139,13 @@ for (;;) {
      질문에서 정규식으로 추출해 search_videos 인자에 주입한다(LLM 누락 방어). "평점 N 이상"→min_rank(≥),
      "랭크 N"·"별점 N"(수식어 없이)→rank(정확히 N), "좋아요/하트/찜 N"→min_likes(≥), "재생(횟수) N 이상/이하"·
      "N번 이상/이하 본"→min_play/max_play, "최근/마지막에 본"→sort=recent·"오래 안 본"→sort=oldest(last_play
-     정렬), "아무거나/랜덤/무작위/임의로/되는대로"→sort=random(recent/oldest 보다 우선). studio/actress 는
+     정렬), "아무거나/랜덤/무작위/임의로/되는대로"→sort=random, "인기/많이 본/자주 본/베스트/TOP/핫한/좋아요 많은/평점 높은"→sort=popular(우선순위 random > popular > recent > oldest). studio/actress 는
      query 로 semantic+FTS 매칭. LLM 이 넘긴 year/month 가 질문에서 검출되지 않으면 환각으로 보고 폐기.
-   ※ 무작위 모드(sort=random): 문장을 그대로 검색어로 쓰면 의미검색 잡음(예: '10' 이 든 제목)이 후보를 정하므로
-     _strip_for_random 이 무작위어·개수·요청 동사(추천해줘/골라줘…)·메타 표현·불용어를 걷어낸 핵심어만 query 로
+   ※ 정렬 의도 모드(sort=random|popular): 문장을 그대로 검색어로 쓰면 의미검색 잡음(예: '10'·'인기' 가 든 제목)이 후보를
+     정하므로 _core_terms 가 무작위어·인기어·개수·요청 동사(추천해줘/골라줘…)·메타 표현·불용어를 걷어낸 핵심어만 query 로
      남긴다(없으면 ''). 예: "아무거나 10개만 추천해"→query='' sort=random limit=10(순수 무작위, kind 등 필터 유지),
-     "온천 나오는 거 아무거나 5개"→query='온천 나오는' tags=[온천] sort=random(관련도 top-K 안에서 무작위).
+     "온천 나오는 거 아무거나 5개"→query='온천 나오는' tags=[온천] sort=random(관련도 top-K 안에서 무작위),
+     "가장 인기 있는 10개 보여줘"→query='' sort=popular limit=10(필터 범위 전체를 usage 식으로 정렬).
    ※ _extract_count: "N개/N편/N건/N작품"(1..100, '별점 4개' 같은 평점 표현 제외)이 있으면 그 N 이 UI limit 보다 우선.
    ※ _extract_tags: DB tags.name(2자+, 10분 캐시)이 질문에 그대로 들어 있으면 겹치지 않는 매칭을 최장 우선·
      최대 4개까지 tags 로 주입(복수 태그는 AND=모두 포함). 예: "온천 며느리"→tags=[온천,며느리].

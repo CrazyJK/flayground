@@ -17,6 +17,7 @@ from typing import Any, Literal
 
 from packages.indexer.actress_merge import normalize_actress
 from packages.indexer.db import connect
+from packages.rag.ranker import _usage_boost
 from packages.rag.ranker import rank as rerank
 from packages.rag.retriever import Filters, hybrid_search
 
@@ -122,6 +123,7 @@ def search_videos(
     min_play/max_play: 재생 횟수 N 이상/이하.
     sort: "recent"(마지막 재생 최신순) / "oldest"(오래 본 순, 미시청 제외) /
           "random"(무작위 — query 가 있으면 관련도 상위 풀에서, 없으면 필터 범위 전체에서 무작위) /
+          "popular"(인기순 — 랭커 usage 식 ln(1+play)+0.5*rank/5+0.3*ln(1+like) 내림차순, 범위는 random 과 동일) /
           None(관련도순).
     """
     conn = connect()
@@ -162,7 +164,7 @@ def search_videos(
         )
         if query.strip():
             # 정렬 지정 시 후보 풀을 넓혀(관련도 top-N 안에서 시간순/무작위 재정렬) 충분히 확보.
-            resort = sort in ("recent", "oldest", "random")
+            resort = sort in ("recent", "oldest", "random", "popular")
             top_k = max(limit * 5, 50) if resort else max(limit * 3, 30)
             cands = hybrid_search(query, top_k=top_k, filters=filt, conn=conn)
             scored = rerank(cands)
@@ -180,7 +182,8 @@ def search_videos(
 
 
 def _apply_sort(hits: list[dict], sort: str | None) -> list[dict]:
-    """재정렬. recent=마지막 재생 최신순(미시청 뒤로), oldest=오래된순(미시청 제외), random=무작위 섞기."""
+    """재정렬. recent=마지막 재생 최신순(미시청 뒤로), oldest=오래된순(미시청 제외),
+    random=무작위 섞기, popular=usage(재생·평점·좋아요) 내림차순."""
     if sort == "recent":
         return sorted(hits, key=lambda h: (h.get("last_play") or -1), reverse=True)
     if sort == "oldest":
@@ -188,6 +191,8 @@ def _apply_sort(hits: list[dict], sort: str | None) -> list[dict]:
         return sorted(watched, key=lambda h: h["last_play"])
     if sort == "random":
         return random.sample(hits, len(hits))
+    if sort == "popular":
+        return sorted(hits, key=_usage_boost, reverse=True)
     return hits
 
 
@@ -247,6 +252,12 @@ def _meta_only_search(conn, f: Filters, limit: int, sort: str | None = None) -> 
         order_sql = "ORDER BY v.last_play ASC"
     elif sort == "random":
         order_sql = "ORDER BY RANDOM()"
+    elif sort == "popular":
+        # ranker._usage_boost 와 같은 식 (SQLite 내장 ln(); rank 는 -1 이 있을 수 있어 그대로 둔다)
+        order_sql = (
+            "ORDER BY (ln(1 + COALESCE(v.play, 0)) + 0.5 * COALESCE(v.rank, 0) / 5.0"
+            " + 0.3 * ln(1 + COALESCE(v.like_count, 0))) DESC, v.last_play DESC NULLS LAST"
+        )
     else:
         order_sql = "ORDER BY v.rank DESC, v.last_play DESC NULLS LAST"
     where_sql = ("WHERE " + " AND ".join(where)) if where else ""
@@ -422,9 +433,10 @@ TOOL_SCHEMA: list[dict] = [
                     "max_play": {"type": "integer", "description": "재생 횟수 N 이하(play <= N)"},
                     "sort": {
                         "type": "string",
-                        "enum": ["recent", "oldest", "random"],
+                        "enum": ["recent", "oldest", "random", "popular"],
                         "description": "정렬: recent=마지막 재생 최신순(최근 본 것), oldest=오래된순(오래 안 본 것), "
-                        "random=무작위('아무거나/랜덤/무작위' 요청 — query 는 비우고 필터만).",
+                        "random=무작위('아무거나/랜덤/무작위' 요청 — query 는 비우고 필터만), "
+                        "popular=인기순('가장 인기 있는/많이 본/베스트' 요청 — 재생·평점·좋아요 기준).",
                     },
                     "limit": {"type": "integer", "default": 10},
                 },

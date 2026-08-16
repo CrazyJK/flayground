@@ -1,9 +1,9 @@
 """rag/router 코드 레벨 보강(정규식 추출) 단위 테스트 — LLM/DB 없이 순수 함수만."""
 
 from packages.rag.router import (
+    _core_terms,
     _extract_count,
     _extract_meta,
-    _strip_for_random,
     _summarize_results,
 )
 from packages.rag.tools import _apply_sort
@@ -14,17 +14,29 @@ def test_random_intent_sets_sort_random():
         assert _extract_meta(q).get("sort") == "random", q
 
 
-def test_random_wins_over_recent():
+def test_popular_intent_sets_sort_popular():
+    for q in ("가장 인기 있는 10개 보여줘", "인기순으로 5개", "많이 본 영상", "베스트 20개", "TOP 10",
+              "좋아요 많은 것", "평점 높은 순으로"):
+        assert _extract_meta(q).get("sort") == "popular", q
+
+
+def test_sort_precedence():
     assert _extract_meta("최근 본 것 중 아무거나")["sort"] == "random"
+    assert _extract_meta("인기 있는 것 중 아무거나 3개")["sort"] == "random"
+    assert _extract_meta("요즘 많이 본 영상")["sort"] == "popular"
 
 
-def test_non_random_queries_unaffected():
+def test_non_intent_queries_unaffected():
     assert "sort" not in _extract_meta("2023년 7월 S1 평점 4 이상")
     assert _extract_meta("최근에 본 거")["sort"] == "recent"
+    # '재생 5회 이상' 은 min_play 이지 popular 가 아니다
+    m = _extract_meta("재생 5회 이상")
+    assert m.get("min_play") == 5 and "sort" not in m
 
 
 def test_extract_count():
     assert _extract_count("아무거나 10개만 추천해") == 10
+    assert _extract_count("가장 인기 있는 10개 보여줘") == 10
     assert _extract_count("랜덤 5편") == 5
     assert _extract_count("3건만") == 3
     assert _extract_count("추천해줘") is None
@@ -35,20 +47,25 @@ def test_extract_count():
     assert _extract_count("999개") == 100
 
 
-def test_strip_for_random_leaves_only_core_terms():
-    assert _strip_for_random("아무거나 10개만 추천해") == ""
-    assert _strip_for_random("랜덤으로 5편 골라줘") == ""
-    assert _strip_for_random("2023년 작품 중에서 아무거나") == ""
-    assert _strip_for_random("지금 볼 수 있는 것 중 무작위 3개") == ""
+def test_core_terms_leaves_only_core_nouns():
+    assert _core_terms("아무거나 10개만 추천해") == ""
+    assert _core_terms("랜덤으로 5편 골라줘") == ""
+    assert _core_terms("2023년 작품 중에서 아무거나") == ""
+    assert _core_terms("지금 볼 수 있는 것 중 무작위 3개") == ""
+    assert _core_terms("가장 인기 있는 10개 보여줘") == ""
+    assert _core_terms("많이 본 영상 순으로 5개") == ""
     # 테마·배우 같은 핵심 명사는 남는다
-    assert _strip_for_random("온천 나오는 거 아무거나 5개") == "온천 나오는"
-    assert _strip_for_random("아무거나 며느리") == "며느리"
+    assert _core_terms("온천 나오는 거 아무거나 5개") == "온천 나오는"
+    assert _core_terms("아무거나 며느리") == "며느리"
+    assert _core_terms("가장 인기 있는 온천 영상 5개") == "온천"
 
 
-def test_summarize_random_label():
-    calls = [{"function": {"name": "search_videos", "arguments": {"query": "", "sort": "random", "limit": 10}}}]
+def test_summarize_labels():
+    def call(sort):
+        return [{"function": {"name": "search_videos", "arguments": {"query": "", "sort": sort, "limit": 10}}}]
     results = [{"name": "search_videos", "args": {}, "result": [{"opus": "A"}] * 10}]
-    assert _summarize_results(calls, results) == "10건을 찾았어요. · 조건: 무작위"
+    assert _summarize_results(call("random"), results) == "10건을 찾았어요. · 조건: 무작위"
+    assert _summarize_results(call("popular"), results) == "10건을 찾았어요. · 조건: 인기순"
 
 
 def test_apply_sort_random_is_permutation():
@@ -56,3 +73,12 @@ def test_apply_sort_random_is_permutation():
     out = _apply_sort(hits, "random")
     assert len(out) == 20
     assert sorted(h["opus"] for h in out) == sorted(h["opus"] for h in hits)
+
+
+def test_apply_sort_popular_by_usage():
+    hits = [
+        {"opus": "low", "play": 1, "rank": 0, "like_count": 0},
+        {"opus": "high", "play": 40, "rank": 5, "like_count": 12},
+        {"opus": "mid", "play": 5, "rank": 3, "like_count": 1},
+    ]
+    assert [h["opus"] for h in _apply_sort(hits, "popular")] == ["high", "mid", "low"]

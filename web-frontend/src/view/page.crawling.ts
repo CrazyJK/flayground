@@ -395,6 +395,8 @@ class Page {
 
   /**
    * 현재 카드가 속한 소스 페이지를 다시 크롤링해 해당 페이지의 아이템을 교체한다.
+   * 단, 현재 카드가 마지막으로 로드된 페이지에 속하면 이미 가진 데이터를 다시 받는 대신
+   * 다음 페이지를 요청해 목록을 확장한다(새로 추가된 데이터 확인 용도).
    * 크롤링 요청이 진행 중이거나 표시된 카드가 없으면 무시한다.
    */
   #reloadCurrentPage(): void {
@@ -402,9 +404,18 @@ class Page {
     const current = this.#itemList[this.#paging.itemIndex];
     if (!current) return;
 
+    this.#retryCount = 0;
+
+    // 마지막 로드 페이지면 다음 페이지 요청(일반 크롤링 경로 - noMoreData도 해제됨)
+    if (current.srcPageNo === this.#loadedPageNo) {
+      this.#paging.srcPageNo = this.#loadedPageNo + 1;
+      console.log(`🔁 [Reload] 마지막 로드 페이지(${this.#loadedPageNo}) - 다음 ${this.#paging.srcPageNo}페이지 요청`);
+      this.#callCrawling();
+      return;
+    }
+
     console.log(`🔁 [Reload] ${current.srcPageNo}페이지 다시 요청`);
     this.#reloadPageNo = current.srcPageNo;
-    this.#retryCount = 0;
     this.#callCrawling();
   }
 

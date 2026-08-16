@@ -83,6 +83,90 @@ private-memo.md
 # portfolio data (private)
 flay-web/frontend/src/finance/data/portfolio.json
 
-
 # backup script logs
 bin/backup/logs/
+
+# ============================================================
+# flay-ai (Python + Qdrant + Next.js)
+# ============================================================
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+.venv/
+
+# Local secrets / env
+.env.*
+!.env.example
+
+# Hugging Face / model caches
+hf_cache/
+models_cache/
+.huggingface/
+
+# 런타임 데이터 (재생성 가능 또는 개인 데이터)
+flay-ai/data/qdrant/
+flay-ai/data/sqlite/
+flay-ai/data/state.json
+flay-ai/data/diary_assets/
+flay-ai/data/stabilize/
+flay-ai/data/subtitle/
+flay-ai/data/enhance/
+
+# 다운로드된 모델 가중치 (YOLO11-seg 등) — 재생성 가능
+yolo*.pt
+
+# 개인 프롬프트 오버라이드 — 예시는 *_prompts.example.yaml
+diary_prompts.yaml
+subtitle_prompts.yaml
+
+# 파비콘(개인 이미지) — 기본값은 favicon.default.ico
+flay-ai/apps/web/src/app/favicon.ico
+
+# SQLite
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+*.db-journal
+
+# 런타임 로그
+logs/
+!logs/.gitkeep
+
+# Next.js
+flay-ai/apps/web/.next/
+flay-ai/apps/web/out/
+flay-ai/apps/web/.turbo/
+flay-ai/apps/web/next-env.d.ts
+flay-ai/apps/web/src/app/examples.json
+flay-ai/apps/web/.swc/
+flay-ai/apps/web/coverage/
+.vercel
+
+# IDE
+.idea/
+*.iml
+*.swp
+*.swo
+
+# 평가 결과 (런타임 산출물)
+flay-ai/eval/results/
+
+# 임시 테스트 페이로드
+_q.json
+_*.json
+*.tmp
+
+# 기획서 빌드 산출물·입력 자산 (재생성 가능/대용량; gen.js·mockup.py 만 추적)
+docs/flay-ai/_planbuild/*.png
+docs/flay-ai/_planbuild/*.jpg
+docs/flay-ai/_planbuild/*.jpeg
+docs/flay-ai/_planbuild/*.ai

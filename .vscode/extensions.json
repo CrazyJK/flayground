@@ -1,28 +1,70 @@
 {
   "recommendations": [
-    "aaron-bond.better-comments",
-    "christian-kohler.npm-intellisense",
-    "DavidAnson.vscode-markdownlint",
-    "dbaeumer.vscode-eslint",
-    "DotJoshJohnson.xml",
-    "ecmel.vscode-html-css",
-    "EditorConfig.EditorConfig",
+    // ── 필수: 저장소 설정(.editorconfig·.prettierrc·.eslintrc.js·.vscode/settings.json·launch.json·.markdownlint.json·.cspell)이 직접 의존 ──
+    "editorconfig.editorconfig",
     "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "streetsidesoftware.code-spell-checker",
+    "davidanson.vscode-markdownlint",
+    "ms-python.python",
+    "ms-python.vscode-pylance",
+    "ms-python.debugpy",
+    "ms-python.black-formatter",
+    "charliermarsh.ruff",
+
+    // ── 선택: 이 저장소 작업에 유용 (bin/*.ps1, config.yaml·docker-compose, pyproject.toml, playwright, SQLite, .env, svg, Web Components) ──
+    "ms-vscode.powershell",
+    "redhat.vscode-yaml",
+    "tamasfe.even-better-toml",
+    "ms-azuretools.vscode-docker",
+    "ms-playwright.playwright",
+    "qwtel.sqlite-viewer",
+    "njpwerner.autodocstring",
+    "ms-python.vscode-python-envs",
+    "mikestead.dotenv",
+    "ms-vscode.vscode-typescript-next",
+    "jock.svg",
+    "ecmel.vscode-html-css",
     "formulahendry.auto-rename-tag",
+    "christian-kohler.npm-intellisense",
+    "jeremyrajan.webpack",
+    "aaron-bond.better-comments",
+    "oderwat.indent-rainbow",
+
+    // ── 선택: 개인 취향(편집기 외형·언어) ──
+    "vscode-icons-team.vscode-icons",
+    "github.github-vscode-theme",
+    "hoovercj.vscode-power-mode",
+    "ms-ceintl.vscode-language-pack-ko"
+  ],
+  "unwantedRecommendations": [
+    // ── 불필요: Copilot·AI 보조 (이 저장소는 Claude Code 만 사용) ──
     "github.copilot",
     "github.copilot-chat",
-    "GitHub.github-vscode-theme",
-    "hoovercj.vscode-power-mode",
-    "jeremyrajan.webpack",
-    "jock.svg",
-    "ms-vscode.vscode-json",
-    "ms-vscode.vscode-typescript-next",
-    "oderwat.indent-rainbow",
+    "ms-vscode.vscode-chat-customizations-evaluations",
+    "visualstudioexptteam.vscodeintellicode",
+    "visualstudioexptteam.intellicode-api-usage-examples",
+
+    // ── 불필요: 저장소에 대상 파일이 없거나 내장 기능과 중복 ──
+    "ms-toolsai.jupyter",
+    "ms-toolsai.jupyter-keymap",
+    "ms-toolsai.jupyter-renderers",
+    "ms-toolsai.vscode-jupyter-cell-tags",
+    "ms-toolsai.vscode-jupyter-slideshow",
+    "dotjoshjohnson.xml",
     "redhat.vscode-xml",
-    "ritwickdey.LiveServer",
-    "streetsidesoftware.code-spell-checker",
-    "VisualStudioExptTeam.intellicode-api-usage-examples",
-    "VisualStudioExptTeam.vscodeintellicode",
-    "vscode-icons-team.vscode-icons"
+    "ms-vscode.vscode-json",
+    "ritwickdey.liveserver",
+    "ms-azuretools.vscode-containers",
+    "typescriptteam.native-preview",
+
+    // ── 불필요(프로젝트 무관): 원격/컨테이너 개발 환경 도구 — 개인 환경용으로 설치는 자유 ──
+    "ms-vscode-remote.remote-ssh",
+    "ms-vscode-remote.remote-ssh-edit",
+    "ms-vscode-remote.remote-wsl",
+    "ms-vscode-remote.remote-containers",
+    "ms-vscode-remote.vscode-remote-extensionpack",
+    "ms-vscode.remote-explorer",
+    "ms-vscode.remote-server"
   ]
 }

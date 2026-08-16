@@ -1,5 +1,7 @@
 {
+  "version": "0.2.0",
   "configurations": [
+    // ── flay-web ─────────────────────────────────────────
     {
       "type": "node",
       "name": "[Web] frontend dev",
@@ -18,6 +20,7 @@
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"
     },
+    // ── flay-mcp ─────────────────────────────────────────
     {
       "type": "node",
       "name": "[MCP] flay-mcp dev",
@@ -26,6 +29,50 @@
       "runtimeExecutable": "yarn",
       "runtimeArgs": ["dev"],
       "console": "integratedTerminal"
+    },
+    // ── flay-ai ──────────────────────────────────────────
+    // subProcess:true → uvicorn --reload 가 자식 프로세스를 재생성해도 VS Code 가 계속 추적
+    {
+      "name": "[AI] FastAPI",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "apps.api.main:app",
+        "--host",
+        "ai.kamoru.jk",
+        "--port",
+        "8000",
+        "--reload",
+        "--ssl-keyfile",
+        "../.cert/kamoru.jk.key",
+        "--ssl-certfile",
+        "../.cert/kamoru.jk.pem"
+      ],
+      "python": "${workspaceFolder}\\flay-ai\\.venv\\Scripts\\python.exe",
+      "cwd": "${workspaceFolder}/flay-ai",
+      "console": "integratedTerminal",
+      "env": { "PYTHONPATH": "${workspaceFolder}/flay-ai" },
+      "justMyCode": true,
+      "subProcess": true
+    },
+    {
+      "name": "[AI] Next.js",
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "yarn",
+      "runtimeArgs": ["dev"],
+      "cwd": "${workspaceFolder}/flay-ai/apps/web",
+      "console": "integratedTerminal"
+    }
+  ],
+  // ── 복합 구성: Ctrl+Shift+D 드롭다운에서 선택 후 F5 ──
+  "compounds": [
+    {
+      "name": "[AI] 전체 서비스",
+      "configurations": ["[AI] FastAPI", "[AI] Next.js"],
+      "preLaunchTask": "ai qdrant: start",
+      "stopAll": true
     }
   ]
 }

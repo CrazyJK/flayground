@@ -7,7 +7,8 @@
     ".archive": true
   },
   "files.exclude": {
-    "**/node_modules": true
+    "**/node_modules": true,
+    "**/__pycache__": true
     // "**/*.js.map": true,
     // "**/dist": true
   },
@@ -37,17 +38,34 @@
   "js/ts.updateImportsOnFileMove.enabled": "always",
   "js/ts.preferences.importModuleSpecifier": "relative",
   "js/ts.format.enabled": false,
-  "eslint.validate": ["typescript"],
+  "eslint.validate": ["typescript", "typescriptreact", "javascript", "javascriptreact"],
   "eslint.options": {
     "resolvePluginsRelativeTo": "./flay-web/frontend"
   },
+  "eslint.workingDirectories": [
+    { "directory": "flay-ai/apps/web", "changeProcessCWD": true }
+  ],
   "[typescript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.tabSize": 2
+  },
+  "[typescriptreact]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "editor.tabSize": 2
   },
   "[scss]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
+  // ── Python (flay-ai): Black 포맷터 + Ruff 린터 ─────────────
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true
+  },
+  "black-formatter.args": ["--line-length", "100"],
+  "python.defaultInterpreterPath": "${workspaceFolder}/flay-ai/.venv/Scripts/python.exe",
+  "ruff.enable": true,
+  "ruff.organizeImports": true,
+  "ruff.fixAll": true,
   "cSpell.customDictionaries": {
     "custom-dictionary-workspace": {
       "name": "custom-dictionary-workspace",

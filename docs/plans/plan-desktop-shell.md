@@ -13,7 +13,7 @@
 
 ## 현재 구조 (전제)
 
-- **flayground**: Express 백엔드가 API + 정적 프론트 서빙. `.cert` 자체 서명 인증서로 `https://flay.kamoru.jk[:port]` 기동 (`web-backend/config/default.json`).
+- **flayground**: Express 백엔드가 API + 정적 프론트 서빙. `.cert` 자체 서명 인증서로 `https://flay.kamoru.jk[:port]` 기동 (`flay-web/backend/config/default.json`).
 - **flayAI**: FastAPI(`:8000`) + Next.js(`:3000`) + Qdrant(Docker `:6333`) + Ollama(`:11434`). `bin\all.bat start|stop|status`로 제어.
 - 둘 다 localhost 웹앱이므로 **프론트엔드 코드 이식 없이** 셸이 기존 URL을 로드한다. 브라우저로 쓰던 방식도 그대로 유지된다(셸은 부가 레이어).
 
@@ -51,7 +51,7 @@ desktop-shell/
 ### 프로세스 오케스트레이션
 
 - 앱 시작 → 포트 점유 확인 → 미기동 서비스만 기동:
-  - flayground: `node web-backend/dist/index.js` (또는 개발 모드 시 기존 실행 재사용)
+  - flayground: `node flay-web/backend/dist/index.js` (또는 개발 모드 시 기존 실행 재사용)
   - flayAI: `bin\all.bat start` 호출 (Qdrant는 Docker Desktop 의존 → 미실행 시 기동하지 않고 상태만 표시)
 - 헬스체크 폴링 후 탭 로드. 앱 종료 시 **셸이 직접 띄운 프로세스만** 정리(기존 실행 중이던 것은 유지).
 - 트레이 메뉴에서 서비스별 상태 확인 / 재시작.

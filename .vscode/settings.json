@@ -66,6 +66,23 @@
   "ruff.enable": true,
   "ruff.organizeImports": true,
   "ruff.fixAll": true,
+  // 내장 사전을 파일 타입과 무관하게 전역으로 활성화 — .md/.yaml/.ps1 에서도 python·npm 용어(venv, uvicorn, tsup …)를 인식.
+  // 어떤 내장 사전에도 없는 프로젝트 고유어(qdrant, Ollama, Flayground …)만 커스텀 사전에 추가한다.
+  "cSpell.dictionaries": [
+    "python",
+    "node",
+    "npm",
+    "typescript",
+    "html",
+    "css",
+    "fonts",
+    "powershell",
+    "bash",
+    "docker",
+    "sql",
+    "fullstack",
+    "data-science"
+  ],
   "cSpell.customDictionaries": {
     "custom-dictionary-workspace": {
       "name": "custom-dictionary-workspace",

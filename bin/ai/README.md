@@ -8,7 +8,7 @@ flayAI 프로세스별 .bat 1개 + 전체 일괄 제어 .bat 1개.
 | 파일       | 대상                       | 포트   | 진입점                                         |
 |------------|----------------------------|--------|------------------------------------------------|
 | api.bat    | FastAPI / uvicorn          | 8000   | `apps.api.main:app` (Python, .venv)            |
-| web.bat    | Next.js dev                | 3000   | `apps/web` (`npm run dev`)                     |
+| web.bat    | Next.js dev                | 3000   | `apps/web` (`yarn dev`)                     |
 | qdrant.bat | Qdrant 벡터 DB (Docker)    | 6333   | `docker compose up -d qdrant` (flayai-qdrant)  |
 | ollama.bat | 로컬 LLM 서버              | 11434  | `ollama serve`                                 |
 | all.bat    | 위 4개 일괄 제어 + status  | -      | qdrant → ollama → api → web (종료는 역순)      |
@@ -81,6 +81,6 @@ bin\reindex.bat clean apply:: 고아 실제 삭제
 ## 주의
 
 - **Docker Desktop** 실행 중이어야 qdrant 동작.
-- **Node/npm** PATH 필요 (web).
+- **Node/yarn** PATH 필요 (web).
 - **Ollama** 트레이 앱이 자동 재기동하는 경우 트레이 아이콘에서 Quit 필요.
 - 각 프로세스 로그는 자체 기록 (`logs/`).

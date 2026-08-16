@@ -6,7 +6,7 @@
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/) (Qdrant 컨테이너)
 - [Ollama for Windows](https://ollama.com/download/windows)
 - Python 3.11 + [uv](https://docs.astral.sh/uv/) — `pip install uv`
-- Node.js 20+ + npm (Next.js 16)
+- Node.js 22+ + yarn (Next.js 16)
 - 데이터: `K:\Crazy\` 가 마운트되어 있고 `K:\Crazy\Info\video.json` 등이 있어야 함
 
 ## 첫 셋업 (한 번만)
@@ -27,7 +27,7 @@ ollama pull huihui_ai/qwen2.5-abliterate:7b
 
 # 4) 웹 의존성
 cd apps\web
-npm install
+yarn install
 cd ..\..
 ```
 
@@ -79,7 +79,7 @@ Start-Process -FilePath .\.venv\Scripts\python.exe `
 ```powershell
 # 터미널 2 — Next.js
 cd apps\web
-npm run dev          # https://ai.kamoru.jk:3000 (자체 TLS)
+yarn dev          # https://ai.kamoru.jk:3000 (자체 TLS)
 ```
 
 ## 자주 쓰는 명령 모음

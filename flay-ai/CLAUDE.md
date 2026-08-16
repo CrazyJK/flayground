@@ -58,7 +58,7 @@ cd apps\web ; yarn build ; yarn lint                               # 프론트 �
 ..\bin\ai\reindex.bat <quick|sync|full|clean>
 ```
 
-### 인앱 기동 명령·주의 (기동 범위·방식은 루트 CLAUDE.md "개발 모드 기동")
+### 인앱 기동 명령·주의 (기동 범위·절차는 `bin/CLAUDE.md` "인앱 개발 모드 기동·중지")
 
 ```
 .venv\Scripts\python.exe -m uvicorn apps.api.main:app --host ai.kamoru.jk --port 8000 --ssl-keyfile ../.cert/kamoru.jk.key --ssl-certfile ../.cert/kamoru.jk.pem

@@ -222,6 +222,6 @@ Qdrant 컬렉션별 현황을 카드 형태로 표시합니다.
 
 변경 사항 반영:
 
-```bat
-bin\ai\api.bat restart
+```powershell
+bin\ai\api.ps1 restart
 ```

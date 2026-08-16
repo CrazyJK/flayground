@@ -13,17 +13,17 @@ description: 'flay-ai 재인덱싱. Use when: 원본 데이터(K:\Crazy\* — vi
 
 | 모드 | 명령 | 단계 | 용도 |
 | --- | --- | --- | --- |
-| quick | `bin\ai\reindex.bat quick` | load→scan→history→fts→sync-payload | 메타만, AI 없음, 빠름 |
-| sync | `bin\ai\reindex.bat sync` | quick + translate + embed | 일상 텍스트 동기화 |
-| full | `bin\ai\reindex.bat full` | sync + embed-clip + extract-faces + cluster-faces + ocr-posters | 야간/주말 풀 인덱싱 (이미지/얼굴/OCR, 수 시간) |
-| clean | `bin\ai\reindex.bat clean` | 고아 dry-run (`clean apply` 로 실제 삭제) | 사라진 포스터/영상/Qdrant 고아 정리 |
+| quick | `bin\ai\reindex.ps1 quick` | load→scan→history→fts→sync-payload | 메타만, AI 없음, 빠름 |
+| sync | `bin\ai\reindex.ps1 sync` | quick + translate + embed | 일상 텍스트 동기화 |
+| full | `bin\ai\reindex.ps1 full` | sync + embed-clip + extract-faces + cluster-faces + ocr-posters | 야간/주말 풀 인덱싱 (이미지/얼굴/OCR, 수 시간) |
+| clean | `bin\ai\reindex.ps1 clean` | 고아 dry-run (`clean apply` 로 실제 삭제) | 사라진 포스터/영상/Qdrant 고아 정리 |
 
 단계별 직접 실행: `flay-ai/` 에서 `.\.venv\Scripts\python.exe -m packages.indexer.cli <load|scan|...>` (`-n N` 처음 N건, `--rebuild`/`--force` 강제, `-v` 상세).
 
 ## 절차
 
 1. 무엇이 바뀌었는지 묻거나 추정 → 모드 추천.
-2. 사전 조건 확인: Qdrant(Docker) · (AI 단계면) Ollama 기동 여부 — `bin\ai\all.bat status`. 없으면 `bin\ai\qdrant.bat start` / `bin\ai\ollama.bat start`.
+2. 사전 조건 확인: Qdrant(Docker) · (AI 단계면) Ollama 기동 여부 — `bin\flay.ps1 status`. 없으면 `bin\ai\qdrant.ps1 start` / `bin\ai\ollama.ps1 start`.
 3. 명령 제시 또는 실행(사용자 요청 시). 장시간 작업은 백그라운드로 띄우고 진행을 보고.
 4. 진행 확인: `Get-Content flay-ai\data\state.json | ConvertFrom-Json`, `/admin` 대시보드, `flay-ai\logs\<job>.log`.
 

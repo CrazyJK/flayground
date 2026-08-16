@@ -46,5 +46,5 @@ Next.js 16 (App Router) + React 19 + Tailwind 4 + TypeScript. Prettier(2 space, 
 ## 실행 / HTTPS
 
 - 개발: `yarn dev` → `next dev -H ai.kamoru.jk --experimental-https` (인증서 `../../../.cert/`).
-- 운영: `yarn build` → `node server.js` (커스텀 HTTPS 서버, `bin\ai\prod.bat` 이 호출).
+- 운영: `yarn build` → `node server.js` (커스텀 HTTPS 서버, `bin\ai\web.ps1` / `bin\flay.ps1` 이 호출).
 - `predev`/`prebuild` 가 `scripts/ensure-favicon.js` 로 개인 `favicon.ico`(gitignore) 없으면 기본값 복사.

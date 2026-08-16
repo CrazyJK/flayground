@@ -16,7 +16,7 @@ flayground/
 ├── flay-web/            # frontend/ (Webpack+TS) · backend/ (Express) · playwright/ (E2E)
 ├── flay-mcp/            # MCP AI 라우터
 ├── flay-ai/             # apps/{api,web} · packages/{indexer,rag,diary,enhancer,stabilizer,subtitler,icogen} · tests · eval
-├── bin/                 # 실행·운영 스크립트 — flay.bat(전체) · web/ · ai/ · backup/
+├── bin/                 # 실행·운영 스크립트(PowerShell) — flay.ps1(전체) · common.ps1 · web/ · ai/ · backup/
 ├── docs/                # 문서 — plans/·design/(공용) · flay-web/ · flay-ai/
 ├── .claude/skills/      # Claude Code 스킬
 ├── .cert/               # kamoru.jk.{key,pem} 자체 서명 인증서 (gitignore, 세 컴포넌트 공유)
@@ -34,22 +34,25 @@ flayground/
 
 ## 빠른 시작
 
-```cmd
-bin\flay.bat start        :: web + mcp + ai 전체 기동
-bin\flay.bat status       :: 포트별 상태
-bin\flay.bat stop         :: 전체 종료
+운영 모드(빌드 → 기동, 현재 터미널 백그라운드, 새 창 없음):
+
+```powershell
+bin\flay.ps1 start        # web + mcp + ai 전체 기동 (mcp·web·ai-web 은 빌드 후 기동)
+bin\flay.ps1 status       # 포트·헬스 상태
+bin\flay.ps1 stop         # 전체 종료
 ```
 
-컴포넌트별:
+`-SkipBuild` 를 붙이면 기존 빌드 산출물로 바로 띄운다. cmd.exe 에서는 `powershell -NoProfile -File bin\flay.ps1 start`.
 
-```cmd
-bin\web\FlayGroundStartup.bat              :: flay-web: mcp → frontend → backend 빌드 후 mcp·backend 기동
-bin\ai\all.bat <start|stop|restart|status> :: flay-ai 개발 일괄 (qdrant → ollama → api → web, 별도 창)
-bin\ai\prod.bat [--skip-build]             :: flay-ai 운영 HTTPS 일괄 기동 (단일 터미널 백그라운드)
-bin\ai\reindex.bat <quick|sync|full|clean> :: flay-ai 재인덱싱
+컴포넌트별 운영 기동:
+
+```powershell
+bin\web\mcp.ps1 | web.ps1 <start|stop|restart|status> [-SkipBuild]                        # web = frontend(webpack)+backend(tsup) 빌드 후 기동
+bin\ai\api.ps1 | web.ps1 | qdrant.ps1 | ollama.ps1 <start|stop|restart|status> [-SkipBuild] # web = next build 후 node server.js
+bin\ai\reindex.ps1 <quick|sync|full|clean> # flay-ai 재인덱싱
 ```
 
-각 Node 프로젝트(`flay-web/frontend`, `flay-web/backend`, `flay-mcp`, `flay-ai/apps/web`)에서 `yarn install` → `yarn dev` / `yarn build` / `yarn start`. 상세는 [`bin/ai/README.md`](bin/ai/README.md), [`docs/flay-ai/dev-guide.md`](docs/flay-ai/dev-guide.md).
+개발 모드(핫리로드)는 `.vscode/launch.json` 의 구성으로 띄우거나, 각 Node 프로젝트(`flay-web/frontend`, `flay-web/backend`, `flay-mcp`, `flay-ai/apps/web`)에서 `yarn install` → `yarn dev`. 상세는 [`bin/ai/README.md`](bin/ai/README.md), [`docs/flay-ai/dev-guide.md`](docs/flay-ai/dev-guide.md).
 
 ---
 

@@ -64,7 +64,7 @@ try {
         # Live data lives in the Docker named volume (flayai_qdrant_storage),
         # NOT in ./data/qdrant (stale pre-migration copy). Without the API
         # there is no safe copy path, so fail loudly and retry next schedule.
-        throw "qdrant is not running; start it (bin\qdrant.bat start) and rerun"
+        throw "qdrant is not running; start it (bin\ai\qdrant.ps1 start) and rerun"
     }
 
     # Rotation: newest N kept

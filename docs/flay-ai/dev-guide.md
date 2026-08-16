@@ -61,7 +61,7 @@ python -m packages.indexer.cli ocr-posters
 
 두 개의 터미널 또는 [`bin/ai/overnight.ps1`](../../bin/ai/overnight.ps1) 같은 헬퍼 사용.
 
-> 표준 기동은 `bin\ai\all.bat start`(개발) / `bin\ai\prod.bat`(운영)이며, `config.yaml.server.host = ai.kamoru.jk` + 자체 서명 TLS(`.cert/`)로 **HTTPS** 서빙한다. 아래 수동 `--host 127.0.0.1` 명령은 TLS 없이 로컬에서 직접 띄우는 대안이다.
+> 표준 기동은 `.vscode/launch.json`(개발) / `bin\flay.ps1 start` 또는 `bin\ai\{api,web}.ps1 start`(운영)이며, `config.yaml.server.host = ai.kamoru.jk` + 자체 서명 TLS(`.cert/`)로 **HTTPS** 서빙한다. 아래 수동 `--host 127.0.0.1` 명령은 TLS 없이 로컬에서 직접 띄우는 대안이다.
 
 ```powershell
 # 터미널 1 — Qdrant 가 이미 떠 있다고 가정

@@ -13,18 +13,18 @@ FastAPI 는 `--reload` 를 쓰지 않으므로(torch 무거운 import·WatchFile
 
 | 변경 영역 | 재시작 |
 | --- | --- |
-| `flay-ai/apps/api/**`, `flay-ai/packages/**`, `flay-ai/config.yaml` | API — 별도 창: `bin\ai\api.bat restart` / 인앱: 8000 포트 PID `taskkill /F` 후 uvicorn 재기동 |
-| `flay-ai/apps/web/**` (개발 모드) | dev 서버는 핫리로드 — 보통 불필요. `next.config`/의존성 변경 시 `bin\ai\web.bat restart` |
-| `flay-ai/apps/web/**` (운영 빌드) | `bin\ai\prod.bat` (재빌드) |
-| `flay-ai/docker-compose.yml` (Qdrant) | `bin\ai\qdrant.bat restart` |
-| 전체 | `bin\ai\all.bat restart` |
+| `flay-ai/apps/api/**`, `flay-ai/packages/**`, `flay-ai/config.yaml` | API — 스크립트: `bin\ai\api.ps1 restart` / 인앱: 8000 포트 PID `taskkill /F` 후 uvicorn 재기동 |
+| `flay-ai/apps/web/**` (개발 모드) | dev 서버는 핫리로드 — 보통 불필요. `next.config`/의존성 변경 시 `bin\ai\web.ps1 restart` |
+| `flay-ai/apps/web/**` (운영 빌드) | `bin\ai\web.ps1 restart` (next build 포함) |
+| `flay-ai/docker-compose.yml` (Qdrant) | `bin\ai\qdrant.ps1 restart` |
+| 전체 | `bin\flay.ps1 restart` (web·mcp 포함, `-SkipBuild` 로 빌드 생략) |
 
 ## 절차
 
 1. 변경 파일 목록 확인(`git status` / 방금 편집한 경로).
 2. 위 표로 최소 범위의 재시작 대상 결정. 여러 백엔드 변경은 모아서 재시작 1회로.
 3. 명령을 제시하거나(사용자 요청 시) 실행. 선행 프로세스(Qdrant/Ollama) 기동 여부도 함께 안내.
-4. 확인: `bin\ai\all.bat status`, `Invoke-RestMethod https://ai.kamoru.jk:8000/healthz` (API 는 HTTPS).
+4. 확인: `bin\flay.ps1 status`(포트·헬스 코드 표시), 필요 시 `Invoke-RestMethod https://ai.kamoru.jk:8000/healthz` (API 는 HTTPS).
 
 인앱 uvicorn 재기동 명령(cwd `flay-ai/`):
 

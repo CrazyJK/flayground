@@ -15,7 +15,7 @@ description: 'flay-ai 문서 ↔ 구현 동기화 점검. Use when: docs/flay-ai
 | --- | --- | --- |
 | LLM 모델 | `config.yaml.models.llm` | README, docs, 지침 — 7b/14b 혼동 주의 |
 | Python 버전 | `.python-version`, `pyproject.toml requires-python` | README, dev-guide |
-| 호스트/포트/HTTPS | `config.yaml.server`, `apps/api/main.py`, `apps/web/server.js`, `bin/ai/prod.bat` | "localhost only" 표현 vs `ai.kamoru.jk`+TLS |
+| 호스트/포트/HTTPS | `config.yaml.server`, `apps/api/main.py`, `apps/web/server.js`, `bin/common.ps1` | "localhost only" 표현 vs `ai.kamoru.jk`+TLS |
 | OCR/임베딩/번역/캡션 모델 | `config.yaml.models`, `packages/indexer/*.py` import | architecture, indexing-pipeline |
 | 의존성 | `pyproject.toml` / `uv.lock` vs 실제 import | 미선언/미사용 패키지 |
 | CLI 커맨드 | `packages/indexer/cli.py`, admin `ALLOWED_JOBS` | indexing-pipeline, admin |

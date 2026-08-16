@@ -9,7 +9,7 @@ flayground/
 ├── flay-web/          # 영화 콘텐츠 웹 (Node.js) — frontend/(Webpack+TS Web Components) · backend/(Express) · playwright/(E2E)
 ├── flay-mcp/          # MCP AI 라우터 (Node.js) — Gemini / GitHub Models / 로컬 Ollama
 ├── flay-ai/           # 로컬 LLM + RAG 검색 (Python 3.11 + FastAPI + Next.js) — apps/{api,web} · packages/*
-├── bin/               # 실행·운영 스크립트 전부 — flay.bat(전체) · web/ · ai/ · backup/
+├── bin/               # 실행·운영 스크립트 전부(PowerShell) — flay.ps1(전체) · common.ps1 · web/ · ai/ · backup/
 ├── docs/              # 문서 전부 — plans/·design/(공용) · flay-web/ · flay-ai/ (컴포넌트별)
 ├── .claude/skills/    # 스킬 (web-frontend-component, flayai-design, ai-* 절차 스킬)
 ├── .cert/             # kamoru.jk.{key,pem} 자체 서명 인증서 (gitignore, 세 컴포넌트가 공유)
@@ -28,7 +28,7 @@ flayground/
 ## 대화·언어
 
 - **모든 답변·주석·커밋 메시지는 한국어.** 사용자를 지칭하는 2인칭은 '당신'('님' 금지). 사무적이고 정중한 **존댓말**("~했습니다/~합니다"), 반말 금지.
-- 소스 코드 주석은 한국어. 단 **`.bat`/`.cmd`/`.ps1`은 비ASCII 금지**(주석도 영어) — Windows CP949 파싱 오류 방지.
+- 소스 코드 주석은 한국어. 단 **`bin/` 의 `.ps1` 은 비ASCII 금지**(주석도 영어) — Windows CP949 콘솔 파싱 오류 방지. `.bat`/`.cmd` 는 만들지 않는다.
 - 사용자는 JS/TS/Java 에 능숙하나 AI/ML 은 입문 단계 → AI/ML 개념(임베딩·벡터 DB·RAG·토크나이저 등)이 처음 등장하면 한 단락 이내로 정의를 덧붙인다. 일반 프로그래밍 개념은 부연 없이 코드·명령 중심으로 간결하게.
 
 ## 도구·환경
@@ -42,7 +42,7 @@ flayground/
 
 ## 실행·운영
 
-- 실행 스크립트(`flay.bat`, `web/`, `ai/`, `backup/`)와 운영 절차는 전부 `bin/` — 상세는 `bin/CLAUDE.md`. 각 Node 프로젝트는 `yarn dev` / `yarn build` / `yarn start`(상세는 폴더 CLAUDE.md).
+- 실행 스크립트(PowerShell: `flay.ps1`, `common.ps1`, `web/`, `ai/`, `backup/`)와 운영 절차는 전부 `bin/` — 상세는 `bin/CLAUDE.md`. 각 Node 프로젝트는 `yarn dev` / `yarn build` / `yarn start`(상세는 폴더 CLAUDE.md).
 - 사용자가 **"개발 모드 기동", "서버 기동/띄워줘/재시작", "기동 중지", "서버 내려/꺼줘"** 라고 하면 `bin/CLAUDE.md` 의 "인앱 개발 모드 기동·중지" 절차를 읽고 **확인 질문·중간 설명 없이 그대로 수행한 뒤 결과 표만 응답**한다.
 
 ## 문서 규칙

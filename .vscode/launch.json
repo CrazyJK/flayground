@@ -1,7 +1,7 @@
 {
   "version": "0.2.0",
   // 드롭다운 순서는 presentation.order 로 결정 (compounds 는 기본적으로 configurations 뒤에 붙으므로 명시).
-  // 운영 기동은 bin\flay.bat / bin\ai\prod.bat — 여기는 개발 모드 전용.
+  // 운영 기동은 bin\flay.ps1(전체) / bin\{web,ai}\*.ps1(개별) — 여기는 개발 모드 전용.
   "compounds": [
     {
       // web(frontend watch + backend tsx) + mcp + ai(FastAPI + Next.js) 를 개발 모드로 동시 기동.

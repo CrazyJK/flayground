@@ -51,12 +51,15 @@ K:\Crazy\Info\*.json,*.csv  +  K:\Crazy\{Storage,Archive}\**.jpg
 cd apps\web ; yarn build ; yarn lint                               # 프론트 빌드·린트
 ```
 
-```cmd
-..\bin\ai\prod.bat                          :: 운영 HTTPS 일괄 기동(앱과 독립 유지)
-..\bin\ai\all.bat start | status | stop     :: 개발 일괄 제어(별도 창)
-..\bin\ai\api.bat restart                   :: API 재시작(별도 콘솔 창)
-..\bin\ai\reindex.bat <quick|sync|full|clean>
+```powershell
+..\bin\flay.ps1 <start|stop|restart|status> [-SkipBuild]   # 전체 운영 기동(web·mcp 포함, 현재 터미널 백그라운드, 앱과 독립 유지)
+..\bin\ai\api.ps1 restart                   # API 재시작(운영, uvicorn no-reload)
+..\bin\ai\web.ps1 restart [-SkipBuild]      # 프론트 next build → node server.js
+..\bin\ai\qdrant.ps1 | ollama.ps1 <start|stop|restart|status>
+..\bin\ai\reindex.ps1 <quick|sync|full|clean>
 ```
+
+개발 모드(핫리로드)는 `.vscode/launch.json` 또는 아래 인앱 기동으로만 띄운다 — `bin/` 에는 운영 스크립트만 있다.
 
 ### 인앱 기동 명령·주의 (기동 범위·절차는 `bin/CLAUDE.md` "인앱 개발 모드 기동·중지")
 
@@ -65,10 +68,10 @@ cd apps\web ; yarn build ; yarn lint                               # 프론트 �
 cd apps/web && yarn dev   # https://ai.kamoru.jk:3000 (hot-reload)
 ```
 
-- 선행 의존성 qdrant(6333)·ollama(11434)는 먼저 떠 있어야 한다 — 없으면 `bin\ai\qdrant.bat start` / `bin\ai\ollama.bat start`.
+- 선행 의존성 qdrant(6333)·ollama(11434)는 먼저 떠 있어야 한다 — 없으면 `bin\ai\qdrant.ps1 start` / `bin\ai\ollama.ps1 start`.
 - **API 재시작은 수동**: FastAPI 자동 reload 없음 → 코드 변경 시 8000 포트 PID 를 `taskkill /F` 후 다시 띄운다. **`uvicorn --reload` 금지** — torch 무거운 import 로 reload 가 멈추고 WatchFiles 가 편집을 놓치며 워커 고아 소켓으로 포트 정리가 꼬인다(검증됨). 백엔드 변경을 모아 재시작 1회로 최소화. `taskkill /F` 로 끝낸 백그라운드 작업은 'exit 1 실패'로 표시되지만 강제종료 흔적일 뿐이다.
 - 포트 정리 시 `Get-NetTCPConnection -LocalPort 8000` 의 OwningProcess 가 죽은 PID 면 자식 워커가 소켓을 상속한 것 — `Win32_Process` 로 자식 python(PPID=그 PID)을 찾아 `taskkill /F`.
-- 인앱 프로세스는 클로드 앱 종료/업데이트 시 함께 죽는다 → 독립 유지는 `bin\ai\prod.bat`.
+- 인앱 프로세스는 클로드 앱 종료/업데이트 시 함께 죽는다 → 독립 유지는 운영 모드 `bin\flay.ps1 start`.
 - 프론트 변경의 실제 동작 확인은 브라우저 도구로 `https://ai.kamoru.jk:3000` 을 직접 띄워 확인해도 된다(자체 서명 경고 무시). 불가능할 때만 빌드/lint/HTTP 200 으로 대체하고 시각 확인이 안 됐음을 알린다.
 
 ## Python 규칙 (ruff: E,F,W,I,UP / ignore E501, line-length 100)
@@ -88,7 +91,7 @@ cd apps/web && yarn dev   # https://ai.kamoru.jk:3000 (hot-reload)
 - **번역 모델**: `facebook/nllb-200-distilled-600M`, `src_lang=jpn_Jpan`, `forced_bos_token_id` → `kor_Hang`.
 - **스튜디오 alias**: DB 에 `"S1"` 대신 `"sone"`, `"s1no1style"` 등으로 저장될 수 있음 → alias 없는 필터는 0건.
 - **GPU 12GB**: LLM·CLIP·InsightFace 동시 로드 금지. 야간 스크립트가 단계 사이 unload 를 조정.
-- 코드 변경 후 FastAPI 는 새 라우터/모듈을 자동 반영하지 않는다 → 재시작 필요. 변경 후 **어떤 프로세스를 재시작할지** 알려준다(`bin\ai\api.bat restart` 등).
+- 코드 변경 후 FastAPI 는 새 라우터/모듈을 자동 반영하지 않는다 → 재시작 필요. 변경 후 **어떤 프로세스를 재시작할지** 알려준다(`bin\ai\api.ps1 restart` 등).
 
 ## 문서
 

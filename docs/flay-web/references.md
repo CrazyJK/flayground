@@ -16,7 +16,7 @@ yarn run build
 yarn upgrade --latest
 
 패키지 추가
-yarn add @tiptap/core
+yarn add <package>
 
 dev 패키지 추가
 yarn add -D webpack

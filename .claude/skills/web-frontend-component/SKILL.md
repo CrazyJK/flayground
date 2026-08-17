@@ -12,7 +12,7 @@ argument-hint: '구현할 컴포넌트명 또는 도메인 (예: FlayCard, finan
 - **컴포넌트**: Web Components (Custom HTML Elements)
 - **스타일**: SCSS (컴포넌트별 동반 파일)
 - **번들러**: Webpack
-- **주요 라이브러리**: ECharts, TipTap(메모 에디터, `src/editor/HtmlEditor.ts`), D3 Hierarchy
+- **주요 라이브러리**: ECharts, D3 Hierarchy. 메모 에디터(`src/editor/HtmlEditor.ts`)는 라이브러리 없이 contenteditable + execCommand 로 구현
 
 ---
 

@@ -129,14 +129,6 @@ module.exports = {
           priority: 10,
           reuseExistingChunk: true,
         },
-        // 에디터(TipTap + ProseMirror)는 메모 에디터에서만 동적 import 되므로 공용 vendors 에 섞이지 않게 분리
-        tiptap: {
-          test: /[\\/]node_modules[\\/](prosemirror-.*|@tiptap)[\\/]/,
-          name: 'vendor.tiptap',
-          chunks: 'all',
-          priority: 10,
-          reuseExistingChunk: true,
-        },
         // Page 기반 모듈을 별도 청크로 분리 (page.* 엔트리에만 포함)
         pageBase: {
           test: /[\\/]view[\\/]inc[\\/]Page/,

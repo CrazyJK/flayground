@@ -137,13 +137,6 @@ module.exports = {
           priority: -10,
           reuseExistingChunk: true,
         },
-        // 에디터(TipTap + ProseMirror)는 메모 에디터에서만 동적 import 되므로 한 청크로 묶는다
-        tiptap: {
-          test: /[\\/]node_modules[\\/](prosemirror-.*|@tiptap)[\\/]/,
-          name: 'vendor.tiptap',
-          priority: 10, // vendor보다 높은 우선순위
-          reuseExistingChunk: true,
-        },
         echarts: {
           test: /[\\/]node_modules[\\/](echarts|zrender)[\\/]/,
           name: 'vendor.echarts',

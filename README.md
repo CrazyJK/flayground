@@ -62,7 +62,7 @@ Express 백엔드가 REST API 와 정적 프론트(`frontend/dist`, `frontend/pu
 
 ### frontend
 
-Webpack 5 + TypeScript 멀티 엔트리 SPA, 프레임워크 없이 Web Components. SCSS, ECharts, TipTap(메모 에디터), D3 Hierarchy.
+Webpack 5 + TypeScript 멀티 엔트리 SPA, 프레임워크 없이 Web Components. SCSS, ECharts, D3 Hierarchy(메모 에디터는 라이브러리 없이 contenteditable 자체 구현).
 
 | 명령 | 설명 |
 | --- | --- |

@@ -5,7 +5,7 @@ import { Server } from 'http';
 import https from 'https';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { config, validateConfig } from './config';
+import { ProviderId, config, hasOpenaiCompat, validateConfig } from './config';
 import { UnifiedChatSession, addStatsListener, generateText, getAvailableModels, getModelStats, initProviders, removeStatsListener, startChat } from './model-router';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -37,7 +37,7 @@ interface TranslateRequestBody {
 
 /**
  * MCP Nexus HTTP API 서버.
- * Gemini와 GitHub Models를 셔플 백으로 통합 제공
+ * Gemini·외부 OpenAI 호환 API·로컬 Ollama 모델을 셔플 백으로 통합 제공
  */
 class HTTPServer {
   private chatSessions: Map<string, ChatSessionInfo>;
@@ -85,7 +85,7 @@ class HTTPServer {
         version: '1.0.0',
         providers: {
           gemini: !!config.geminiApiKey,
-          github: !!config.githubToken,
+          openai: hasOpenaiCompat(),
           local: !!config.localEndpoint,
         },
       });
@@ -98,7 +98,7 @@ class HTTPServer {
         version: '1.0.0',
         providers: {
           gemini: !!config.geminiApiKey,
-          github: !!config.githubToken,
+          openai: hasOpenaiCompat(),
           local: !!config.localEndpoint,
         },
         activeModels: getAvailableModels().map((m) => m.name),
@@ -116,9 +116,9 @@ class HTTPServer {
       });
     });
 
-    // 활성 모델 목록 (제공자별 필터 지원: ?provider=gemini|github)
+    // 활성 모델 목록 (제공자별 필터 지원: ?provider=gemini|openai|local)
     this.app.get('/api/models', (req: Request, res: Response) => {
-      const providerFilter = req.query.provider as 'gemini' | 'github' | 'local' | undefined;
+      const providerFilter = req.query.provider as ProviderId | undefined;
       const models = getAvailableModels(providerFilter);
       res.json({ success: true, models });
     });

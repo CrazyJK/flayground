@@ -1,4 +1,4 @@
-import { config, validateConfig } from './config';
+import { config, hasOpenaiCompat, validateConfig } from './config';
 import { MCPServer } from './mcp-server';
 import { initProviders } from './model-router';
 
@@ -11,7 +11,7 @@ async function main(): Promise<void> {
     validateConfig();
     await initProviders();
 
-    const activeProviders = [config.geminiApiKey ? 'Gemini' : null, config.githubToken ? 'GitHub' : null].filter(Boolean).join(', ');
+    const activeProviders = [config.geminiApiKey ? 'Gemini' : null, hasOpenaiCompat() ? 'OpenAI-compat' : null, config.localEndpoint ? 'Local' : null].filter(Boolean).join(', ');
 
     console.info(`[Nexus] 활성 제공자: ${activeProviders}`);
 

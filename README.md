@@ -6,7 +6,7 @@
 | 컴포넌트 | 역할 | 스택 | 서비스 |
 | --- | --- | --- | --- |
 | [`flay-web/`](#flay-web) | 영화 콘텐츠 관리·스트리밍 웹 (이미지 갤러리·다이어리·금융 노트·Web Push 포함) | Node.js 22 · Express · Webpack + TS Web Components | `https://flay.kamoru.jk` |
-| [`flay-mcp/`](#flay-mcp) | MCP AI 라우터 (Gemini / GitHub Models / 로컬 Ollama, Shuffle Bag 로드 밸런싱) | Node.js · TypeScript · Express | `:3002` (HTTP), MCP stdio |
+| [`flay-mcp/`](#flay-mcp) | MCP AI 라우터 (Gemini / 외부 OpenAI 호환 API / 로컬 Ollama, Shuffle Bag 로드 밸런싱) | Node.js · TypeScript · Express | `:3002` (HTTP), MCP stdio |
 | [`flay-ai/`](#flay-ai) | 로컬 LLM + RAG 자연어 검색, 얼굴·OCR·CLIP 인덱싱, 일기형 대화, 영상 안정화·화질 개선·자막 | Python 3.11 · FastAPI · Qdrant · Ollama · Next.js 16 | `https://ai.kamoru.jk:8000` (API), `:3000` (Web) |
 
 ## 저장소 구조
@@ -90,7 +90,7 @@ E2E 테스트. dev 서버 기동 후 `https://flay.kamoru.jk/dist/page.*.html` �
 
 ## flay-mcp
 
-Google Gemini · GitHub Models · 로컬 Ollama 를 통합하는 MCP(Model Context Protocol) AI 라우터(package `mcp-nexus`). Shuffle Bag 방식으로 요청을 분산한다.
+Google Gemini · 외부 OpenAI 호환 API(OpenRouter 등) · 로컬 Ollama 를 통합하는 MCP(Model Context Protocol) AI 라우터(package `mcp-nexus`). Shuffle Bag 방식으로 요청을 분산한다.
 
 | 명령 | 설명 |
 | --- | --- |
@@ -98,7 +98,7 @@ Google Gemini · GitHub Models · 로컬 Ollama 를 통합하는 MCP(Model Conte
 | `yarn dev:stdio` / `yarn start:stdio` | MCP stdio 서버 |
 | `yarn build` | tsup 빌드 |
 
-환경 변수 `.env`: `GEMINI_API_KEY`, `GITHUB_TOKEN`. 데이터 `data/model-stats.json`.
+환경 변수 `.env`: `GEMINI_API_KEY`, `OPENAI_COMPAT_BASE_URL`/`OPENAI_COMPAT_API_KEY`/`OPENAI_COMPAT_MODELS`, `LOCAL_AI_ENDPOINT`. 데이터 `data/model-stats.json`.
 
 ## flay-ai
 

@@ -7,7 +7,7 @@
 ```
 flayground/
 ├── flay-web/          # 영화 콘텐츠 웹 (Node.js) — frontend/(Webpack+TS Web Components) · backend/(Express) · playwright/(E2E)
-├── flay-mcp/          # MCP AI 라우터 (Node.js) — Gemini / GitHub Models / 로컬 Ollama
+├── flay-mcp/          # MCP AI 라우터 (Node.js) — Gemini / 외부 OpenAI 호환 API / 로컬 Ollama
 ├── flay-ai/           # 로컬 LLM + RAG 검색 (Python 3.11 + FastAPI + Next.js) — apps/{api,web} · packages/*
 ├── bin/               # 실행·운영 스크립트 전부(PowerShell) — flay.ps1(전체) · common.ps1 · web/ · ai/ · backup/
 ├── docs/              # 문서 전부 — plans/·design/(공용) · flay-web/ · flay-ai/ (컴포넌트별)

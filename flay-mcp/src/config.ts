@@ -5,11 +5,14 @@ dotenv.config();
 /**
  * 통합 모델 항목 (제공자 정보 포함)
  */
+/** 제공자 식별자. openai = 외부 OpenAI 호환 API(OpenRouter 등, 엔드포인트·키·모델은 .env) */
+export type ProviderId = 'gemini' | 'openai' | 'local';
+
 export interface ModelEntry {
   /** 모델 식별자 */
   name: string;
   /** AI 제공자 */
-  provider: 'gemini' | 'github' | 'local';
+  provider: ProviderId;
   /** 표시 이름 */
   displayName: string;
   /** 설명 */
@@ -22,8 +25,15 @@ export interface ModelEntry {
 export interface Config {
   /** Gemini API 키 (없으면 Gemini 모델 비활성화) */
   geminiApiKey: string | undefined;
-  /** GitHub Personal Access Token (없으면 GitHub 모델 비활성화) */
-  githubToken: string | undefined;
+  /**
+   * 외부 OpenAI 호환 API(OpenRouter·Groq 등). baseUrl·apiKey·models 가 모두 있어야 활성화.
+   * 모델 ID 는 해당 서비스 표기 그대로(예: OpenRouter `nvidia/nemotron-3-super-120b-a12b:free`).
+   */
+  openaiCompat: {
+    baseUrl: string | undefined;
+    apiKey: string | undefined;
+    models: string[];
+  };
   /** 로컬 Ollama OpenAI 호환 엔드포인트 (없으면 로컬 모델 비활성화) */
   localEndpoint: string | undefined;
   /** 로컬 제공자용 더미 API 키 (Ollama는 무시) */
@@ -37,8 +47,6 @@ export interface Config {
 
   /** AI 공통 설정 */
   ai: {
-    /** GitHub Models 엔드포인트 */
-    githubEndpoint: string;
     /** 기본 최대 출력 토큰 */
     maxOutputTokens: number;
     /** 기본 생성 온도 */
@@ -60,12 +68,22 @@ export interface Config {
   };
 }
 
+/** OPENAI_COMPAT_MODELS(쉼표 구분 모델 ID) → 모델 항목. displayName 은 ID 그대로(서비스 표기 유지). */
+const openaiCompatModels = (process.env.OPENAI_COMPAT_MODELS || '')
+  .split(',')
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 /**
  * 애플리케이션 설정
  */
 export const config: Config = {
   geminiApiKey: process.env.GEMINI_API_KEY,
-  githubToken: process.env.GITHUB_TOKEN,
+  openaiCompat: {
+    baseUrl: process.env.OPENAI_COMPAT_BASE_URL,
+    apiKey: process.env.OPENAI_COMPAT_API_KEY,
+    models: openaiCompatModels,
+  },
   localEndpoint: process.env.LOCAL_AI_ENDPOINT,
   localApiKey: process.env.LOCAL_AI_API_KEY || 'ollama',
 
@@ -75,16 +93,11 @@ export const config: Config = {
   },
 
   ai: {
-    githubEndpoint: 'https://models.inference.ai.azure.com',
     maxOutputTokens: 8192,
     temperature: 0.7,
     availableModels: [
-      // GitHub Models (OpenAI 호환 API)
-      { name: 'gpt-4o-mini', provider: 'github', displayName: 'GPT-4o Mini', description: 'OpenAI GPT-4o Mini' },
-      { name: 'gpt-4o', provider: 'github', displayName: 'GPT-4o', description: 'OpenAI GPT-4o' },
-      { name: 'Phi-4', provider: 'github', displayName: 'Phi-4', description: 'Microsoft Phi-4' },
-      { name: 'Llama-3.3-70B-Instruct', provider: 'github', displayName: 'Llama 3.3 70B', description: 'Meta Llama 3.3 70B Instruct' },
-      { name: 'Mistral-small-2503', provider: 'github', displayName: 'Mistral Small', description: 'Mistral Small 3.1' },
+      // 외부 OpenAI 호환 API 모델 (.env OPENAI_COMPAT_MODELS)
+      ...openaiCompatModels.map((name): ModelEntry => ({ name, provider: 'openai', displayName: name, description: `OpenAI 호환 API 모델 ${name}` })),
       // Google Gemini Models
       { name: 'gemini-2.5-flash', provider: 'gemini', displayName: 'Gemini 2.5 Flash', description: 'Google Gemini 2.5 Flash' },
       // { name: 'gemini-2.0-flash', provider: 'gemini', displayName: 'Gemini 2.0 Flash', description: 'Google Gemini 2.0 Flash' },
@@ -101,19 +114,27 @@ export const config: Config = {
 };
 
 /**
+ * 외부 OpenAI 호환 제공자 활성 조건: baseUrl·apiKey·모델 1개 이상
+ */
+export function hasOpenaiCompat(): boolean {
+  const c = config.openaiCompat;
+  return !!(c.baseUrl && c.apiKey && c.models.length > 0);
+}
+
+/**
  * 설정 유효성 검사.
- * GEMINI_API_KEY, GITHUB_TOKEN, LOCAL_AI_ENDPOINT 중 하나 이상이 있어야 함
+ * GEMINI_API_KEY, OPENAI_COMPAT_*(BASE_URL+API_KEY+MODELS), LOCAL_AI_ENDPOINT 중 하나 이상이 있어야 함
  * @throws {Error} 세 설정이 모두 없을 경우
  */
 export function validateConfig(): void {
-  if (!config.geminiApiKey && !config.githubToken && !config.localEndpoint) {
-    throw new Error('GEMINI_API_KEY, GITHUB_TOKEN, LOCAL_AI_ENDPOINT 중 하나 이상을 .env 파일에 설정해야 합니다.');
+  if (!config.geminiApiKey && !hasOpenaiCompat() && !config.localEndpoint) {
+    throw new Error('GEMINI_API_KEY, OPENAI_COMPAT_BASE_URL/API_KEY/MODELS, LOCAL_AI_ENDPOINT 중 하나 이상을 .env 파일에 설정해야 합니다.');
   }
   if (!config.geminiApiKey) {
     console.warn('[Nexus] GEMINI_API_KEY 없음 - Gemini 모델이 비활성화됩니다.');
   }
-  if (!config.githubToken) {
-    console.warn('[Nexus] GITHUB_TOKEN 없음 - GitHub 모델이 비활성화됩니다.');
+  if (!hasOpenaiCompat()) {
+    console.warn('[Nexus] OPENAI_COMPAT_BASE_URL/API_KEY/MODELS 미완성 - 외부 OpenAI 호환 모델이 비활성화됩니다.');
   }
   if (!config.localEndpoint) {
     console.warn('[Nexus] LOCAL_AI_ENDPOINT 없음 - 로컬 모델이 비활성화됩니다.');

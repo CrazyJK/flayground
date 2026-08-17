@@ -17,7 +17,7 @@ interface ChatArgs {
 
 /**
  * MCP 프로토콜 서버 (stdio 모드).
- * 셔플 백을 통해 Gemini/GitHub 모델을 균등하게 사용
+ * 셔플 백을 통해 Gemini/OpenAI 호환/로컬 모델을 균등하게 사용
  */
 export class MCPServer {
   private server: Server;
@@ -37,7 +37,7 @@ export class MCPServer {
       tools: [
         {
           name: 'generate_text',
-          description: '셔플 백으로 선택된 AI 모델(Gemini/GitHub)을 사용하여 텍스트 생성',
+          description: '셔플 백으로 선택된 AI 모델(Gemini/OpenAI 호환/로컬)을 사용하여 텍스트 생성',
           inputSchema: {
             type: 'object',
             properties: {

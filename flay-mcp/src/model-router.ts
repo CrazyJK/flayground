@@ -1,9 +1,9 @@
 import fs from 'fs';
 import path from 'path';
-import { ModelEntry, config } from './config';
+import { ModelEntry, ProviderId, config, hasOpenaiCompat } from './config';
 import { GeminiProvider } from './providers/gemini-provider';
-import { GitHubProvider } from './providers/github-provider';
 import { LocalProvider } from './providers/local-provider';
+import { OpenAICompatProvider } from './providers/openai-compat-provider';
 import { GenerateOptions } from './providers/provider.interface';
 
 /** 통계 파일 경로 */
@@ -96,13 +96,13 @@ const modelBag: ModelEntry[] = [];
 
 /** 활성화된 제공자 (초기화 여부에 따라 결정) */
 let geminiProvider: GeminiProvider | undefined;
-let githubProvider: GitHubProvider | undefined;
+let openaiProvider: OpenAICompatProvider | undefined;
 let localProvider: LocalProvider | undefined;
 
 /** 제공자별 기본 검증 모델 */
-const DEFAULT_VALIDATE_MODELS: Record<'gemini' | 'github' | 'local', string> = {
+const DEFAULT_VALIDATE_MODELS: Record<ProviderId, string> = {
   gemini: 'gemini-2.5-flash',
-  github: 'gpt-4o-mini',
+  openai: '', // 외부 OpenAI 호환 API 는 .env 모델 목록의 첫 항목으로만 검증(기본값 없음)
   local: 'huihui_ai/qwen2.5-abliterate:7b',
 };
 
@@ -111,7 +111,7 @@ const DEFAULT_VALIDATE_MODELS: Record<'gemini' | 'github' | 'local', string> = {
  * @param provider - 제공자 식별자
  * @returns 검증에 사용할 모델명
  */
-function getValidationModel(provider: 'gemini' | 'github' | 'local'): string {
+function getValidationModel(provider: ProviderId): string {
   return config.ai.availableModels.find((m) => m.provider === provider)?.name ?? DEFAULT_VALIDATE_MODELS[provider];
 }
 
@@ -121,7 +121,7 @@ function getValidationModel(provider: 'gemini' | 'github' | 'local'): string {
 function refillBag(): void {
   const activeModels = config.ai.availableModels.filter((m) => {
     if (m.provider === 'gemini') return !!geminiProvider;
-    if (m.provider === 'github') return !!githubProvider;
+    if (m.provider === 'openai') return !!openaiProvider;
     if (m.provider === 'local') return !!localProvider;
     return false;
   });
@@ -150,7 +150,7 @@ function pickRandomModel(): ModelEntry {
  */
 export async function initProviders(): Promise<void> {
   geminiProvider = undefined;
-  githubProvider = undefined;
+  openaiProvider = undefined;
   localProvider = undefined;
 
   if (config.geminiApiKey) {
@@ -165,15 +165,16 @@ export async function initProviders(): Promise<void> {
     }
   }
 
-  if (config.githubToken) {
-    const provider = new GitHubProvider(config.githubToken);
-    const modelName = getValidationModel('github');
+  if (hasOpenaiCompat()) {
+    const { baseUrl, apiKey } = config.openaiCompat;
+    const provider = new OpenAICompatProvider(baseUrl!, apiKey!);
+    const modelName = getValidationModel('openai');
     try {
       await provider.validateAccess(modelName);
-      githubProvider = provider;
-      console.info(`[Nexus] GitHub 제공자 검증 완료 (${modelName})`);
+      openaiProvider = provider;
+      console.info(`[Nexus] OpenAI 호환 제공자 검증 완료 (${baseUrl}, ${modelName})`);
     } catch (error: any) {
-      console.warn(`[Nexus] GitHub 토큰 검증 실패 - 비활성화됩니다. ${error?.message ?? String(error)}`);
+      console.warn(`[Nexus] OpenAI 호환 제공자 검증 실패 - 비활성화됩니다. ${error?.message ?? String(error)}`);
     }
   }
 
@@ -189,7 +190,7 @@ export async function initProviders(): Promise<void> {
     }
   }
 
-  if (!geminiProvider && !githubProvider && !localProvider) {
+  if (!geminiProvider && !openaiProvider && !localProvider) {
     throw new Error('사용 가능한 AI 제공자가 없습니다. API 키 유효성/권한을 확인하세요.');
   }
 
@@ -202,7 +203,7 @@ export async function initProviders(): Promise<void> {
 export interface RouteResult {
   text: string;
   model: string;
-  provider: 'gemini' | 'github' | 'local';
+  provider: ProviderId;
 }
 
 /**
@@ -291,7 +292,7 @@ export async function generateWithHistory(history: Array<{ role: 'user' | 'assis
  */
 function resolveProvider(entry: ModelEntry) {
   if (entry.provider === 'gemini' && geminiProvider) return geminiProvider;
-  if (entry.provider === 'github' && githubProvider) return githubProvider;
+  if (entry.provider === 'openai' && openaiProvider) return openaiProvider;
   if (entry.provider === 'local' && localProvider) return localProvider;
   throw new Error(`제공자 ${entry.provider}가 초기화되지 않았습니다`);
 }
@@ -301,7 +302,7 @@ function resolveProvider(entry: ModelEntry) {
 /**
  * 통합 채팅 세션.
  * 대화 히스토리를 직접 관리하며, 메시지마다 셔플 백으로 모델을 선택.
- * Gemini/GitHub 제공자 간 자유롭게 전환하면서도 대화 맥락을 유지
+ * 제공자(Gemini/OpenAI 호환/로컬) 간 자유롭게 전환하면서도 대화 맥락을 유지
  */
 export class UnifiedChatSession {
   private history: Array<{ role: 'user' | 'assistant'; content: string }> = [];
@@ -309,7 +310,7 @@ export class UnifiedChatSession {
   /**
    * 메시지 전송 및 응답 수신
    * @param message - 사용자 메시지
-   * @returns 응답 객체 (gemini/github 호환 형태)
+   * @returns 응답 객체 (gemini 호환 형태)
    */
   async sendMessage(message: string): Promise<{ response: { text: () => string }; model: string; provider: string }> {
     this.history.push({ role: 'user', content: message });
@@ -379,10 +380,10 @@ export function getModelStats(): Record<string, { requests: number; success: num
  * 활성화된 모델 목록 반환 (제공자별 필터링 지원)
  * @param providerFilter - 특정 제공자만 반환 (없으면 전체)
  */
-export function getAvailableModels(providerFilter?: 'gemini' | 'github' | 'local'): ModelEntry[] {
+export function getAvailableModels(providerFilter?: ProviderId): ModelEntry[] {
   const active = config.ai.availableModels.filter((m) => {
     if (m.provider === 'gemini') return !!geminiProvider;
-    if (m.provider === 'github') return !!githubProvider;
+    if (m.provider === 'openai') return !!openaiProvider;
     if (m.provider === 'local') return !!localProvider;
     return false;
   });

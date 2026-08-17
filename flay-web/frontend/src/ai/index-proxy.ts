@@ -15,7 +15,7 @@ import type { AIResponse, AIVendor, GenerateOptions } from './types';
  * ```
  */
 
-// AI 서비스: mcp-nexus (port 3002) - Gemini + GitHub Models 통합 셔플 백
+// AI 서비스: mcp-nexus (port 3002) - Gemini + 외부 OpenAI 호환 API + 로컬 Ollama 통합 셔플 백
 const API_BASE = 'https://flay.kamoru.jk:3002/api';
 
 /**

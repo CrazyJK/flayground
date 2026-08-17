@@ -98,8 +98,9 @@ export const config: Config = {
     availableModels: [
       // 외부 OpenAI 호환 API 모델 (.env OPENAI_COMPAT_MODELS)
       ...openaiCompatModels.map((name): ModelEntry => ({ name, provider: 'openai', displayName: name, description: `OpenAI 호환 API 모델 ${name}` })),
-      // Google Gemini Models
+      // Google Gemini API Models (무료 티어 한도: gemini-2.5-flash 20 요청/일, gemma-4-26b 14,400 요청/일)
       { name: 'gemini-2.5-flash', provider: 'gemini', displayName: 'Gemini 2.5 Flash', description: 'Google Gemini 2.5 Flash' },
+      { name: 'gemma-4-26b-a4b-it', provider: 'gemini', displayName: 'Gemma 4 26B (Gemini API)', description: 'Google Gemma 4 26B A4B Instruct via Gemini API' },
       // { name: 'gemini-2.0-flash', provider: 'gemini', displayName: 'Gemini 2.0 Flash', description: 'Google Gemini 2.0 Flash' },
       // 로컬 Ollama Models (OpenAI 호환 API)
       { name: 'huihui_ai/qwen2.5-abliterate:7b', provider: 'local', displayName: 'Qwen2.5 7B (Local)', description: 'Local Ollama Qwen2.5 Abliterate 7B' },

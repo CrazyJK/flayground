@@ -32,6 +32,12 @@ LOCAL_AI_ENDPOINT=http://127.0.0.1:11434/v1
 
 제공자 ID 는 `gemini | openai | local` (`config.ts` `ProviderId`). 셔플 백은 기동 시 검증에 성공한 제공자의 모델만 담는다. `.env` 를 바꾸면 dev 서버(tsx watch)는 자동 반영되지 않으므로 재기동한다.
 
+## Gemini API 무료 한도 주의
+
+- 무료 티어는 **프로젝트·모델별 일일 요청 한도**가 있다: `gemini-2.5-flash` **20/일**(RPM 5), `gemma-4-26b-a4b-it` **14,400/일**(RPM 30). 그래서 Gemini 제공자 모델 목록에 Gemma 4 를 함께 둔다(같은 키·같은 SDK). 사용량은 [aistudio.google.com/rate-limit](https://aistudio.google.com/rate-limit).
+- 기동 시 검증(`GeminiProvider.validateAccess`)은 `generateContent` 가 아니라 **모델 메타 조회(`GET models/{model}`)** 로 한다 — 생성 한도를 소모하지 않으므로 재기동을 반복해도 한도가 줄지 않는다. 검증에 `generateContent` 를 다시 쓰지 말 것.
+- Gemma 계열은 기본으로 사고 과정(thinking)을 만들어 응답 파트에 `thought: true` 로 섞어 보내고 출력 토큰을 소모한다 → `generationConfigFor()` 가 `thinkingConfig.thinkingLevel='minimal'` 로 끄고(gemini-2.5-* 는 이 옵션 미지원이라 기본값), `answerText()` 가 사고 파트를 걸러 본문만 돌려준다. `response.text()` 를 직접 쓰지 말 것.
+
 ## 데이터 파일 (항상 `flay-mcp/` 기준)
 
 | 파일 | 설명 |

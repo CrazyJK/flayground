@@ -136,14 +136,11 @@ module.exports = {
           name: 'vendors',
           priority: -10,
           reuseExistingChunk: true,
-        }, // 주요 라이브러리 개별 청크로 분리
-        defaultVendors: {
-          test: /[\\/]node_modules[\\/](prosemirror-.*|@toast-ui|tui-color-picker)[\\/]/,
-          name(module) {
-            // 라이브러리 이름에 따라 개별 청크 이름 생성
-            const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
-            return `vendor.${packageName.replace('@', '')}`;
-          },
+        },
+        // 에디터(TipTap + ProseMirror)는 메모 에디터에서만 동적 import 되므로 한 청크로 묶는다
+        tiptap: {
+          test: /[\\/]node_modules[\\/](prosemirror-.*|@tiptap)[\\/]/,
+          name: 'vendor.tiptap',
           priority: 10, // vendor보다 높은 우선순위
           reuseExistingChunk: true,
         },

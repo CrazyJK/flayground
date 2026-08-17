@@ -2,6 +2,8 @@
 
 `flay-web/frontend` 의 `FlayMemoEditor`(사이드 내비 "memo" 모달)가 쓰는 WYSIWYG 에디터를 Toast UI Editor 에서 TipTap 으로 교체한다.
 
+> 상태: **완료**(2026-08-17). 구현은 `src/editor/HtmlEditor.ts`. 실측: `FlayMemoEditor.css` 763KB → 9KB, 공용 `vendors.js` 2.04MB → 0.39MB, 에디터는 별도 `vendor.tiptap.js`(메모 열 때만 로드). 아래 4.1 의 `Color` 는 `@tiptap/extension-text-style` 에서 import(별도 패키지 불필요), Link `autolink` 는 로드 시 콘텐츠가 바뀌지 않도록 끔. 추가로 `FlayMemoEditor.save()` 가 `FormData` 를 JSON 전송 API 에 넘겨 빈 본문이 저장되던 버그(2호)도 함께 수정.
+
 ## 1. 현황
 
 | 항목 | 내용 |

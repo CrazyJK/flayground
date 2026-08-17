@@ -1,5 +1,5 @@
 import GroundFlay from '@base/GroundFlay';
-import { ToastHtmlEditor } from '@editor/ToastHtmlEditor';
+import { HtmlEditor } from '@editor/HtmlEditor';
 import DateUtils from '@lib/common/DateUtils';
 import { ModalWindow } from '@lib/components/ModalWindow';
 import ApiClient from '@lib/services/ApiClient';
@@ -18,7 +18,7 @@ interface Memo {
  * @extends {HTMLDivElement}
  */
 export class FlayMemoEditor extends GroundFlay {
-  private htmlEditor: ToastHtmlEditor;
+  private htmlEditor: HtmlEditor;
 
   constructor() {
     super();
@@ -29,7 +29,7 @@ export class FlayMemoEditor extends GroundFlay {
         await this.load();
       }
     };
-    this.htmlEditor = this.appendChild(new ToastHtmlEditor({ load: async () => await this.load(), blur: async () => await this.save() })); // ToastHtmlEditor instance
+    this.htmlEditor = this.appendChild(new HtmlEditor({ load: async () => await this.load(), blur: async () => await this.save() }));
   }
 
   /**
@@ -45,9 +45,8 @@ export class FlayMemoEditor extends GroundFlay {
    * Save memo
    */
   async save() {
-    const formData = new FormData();
-    formData.set('html', this.htmlEditor.getHTML());
-    const memo: Memo = (await ApiClient.post('/memos', formData))!;
+    // 백엔드는 express.json 으로 받으므로 JSON 본문으로 전송
+    const memo: Memo = (await ApiClient.post('/memos', { html: this.htmlEditor.getEditorHTML() }))!;
     FlayStorage.local.set(MEMO_STORAGE_KEY, memo.lastModified); // Save memo last modified date
     this.#successCallback(memo);
   }

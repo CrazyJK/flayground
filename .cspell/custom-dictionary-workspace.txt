@@ -56,7 +56,6 @@ framereceived
 serviceworker
 requestfinished
 requestfailed
-toastui
 modelcontextprotocol
 Precaching
 webpush

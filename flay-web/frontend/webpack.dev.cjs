@@ -62,7 +62,7 @@ function getEntryHtmlPlugins() {
       new HtmlWebpackPlugin({
         filename: `${entryName}.html`,
         template: `src/view/${entryName}.html`,
-        chunks: ['runtime', 'vendors', 'vendor.echarts', 'vendor.toast-ui', commonChunk, entryName],
+        chunks: ['runtime', 'vendors', 'vendor.echarts', commonChunk, entryName],
         inject: true, // JS와 CSS 자동 주입 활성화
       })
     );
@@ -113,7 +113,7 @@ module.exports = {
         },
         // 주요 라이브러리 개별 청크로 분리
         defaultVendors: {
-          test: /[\\/]node_modules[\\/](react|react-dom|lodash|moment|@toast-ui)[\\/]/,
+          test: /[\\/]node_modules[\\/](react|react-dom|lodash|moment)[\\/]/,
           name(module) {
             // 라이브러리 이름에 따라 개별 청크 이름 생성
             const packageName = module.context.match(/[\\/]node_modules[\\/](.*?)([\\/]|$)/)[1];
@@ -125,6 +125,14 @@ module.exports = {
         echarts: {
           test: /[\\/]node_modules[\\/](echarts|zrender)[\\/]/,
           name: 'vendor.echarts',
+          chunks: 'all',
+          priority: 10,
+          reuseExistingChunk: true,
+        },
+        // 에디터(TipTap + ProseMirror)는 메모 에디터에서만 동적 import 되므로 공용 vendors 에 섞이지 않게 분리
+        tiptap: {
+          test: /[\\/]node_modules[\\/](prosemirror-.*|@tiptap)[\\/]/,
+          name: 'vendor.tiptap',
           chunks: 'all',
           priority: 10,
           reuseExistingChunk: true,

@@ -107,29 +107,28 @@
         color: #8b949e;
       }
 
-      .provider-gemini {
+      /* 제공자 배지: 공통 모양 + 제공자별 색 (기록에만 남은 제공자도 표시) */
+      .provider {
         display: inline-block;
         padding: 1px 6px;
         border-radius: 4px;
         font-size: 0.7rem;
         font-weight: 600;
-        background: #1e3a5f;
-        color: #58a6ff;
         margin-left: 6px;
         vertical-align: middle;
+        background: #21262d;
+        color: #8b949e;
       }
+      .provider-gemini { background: #1e3a5f; color: #58a6ff; }
+      .provider-openai { background: #1b3a2a; color: #3fb950; }
+      .provider-local  { background: #3b2a5f; color: #bc8cff; }
+      .provider-github { background: #2d2d2d; color: #a0a0a0; }
 
-      .provider-openai {
-        display: inline-block;
-        padding: 1px 6px;
-        border-radius: 4px;
-        font-size: 0.7rem;
-        font-weight: 600;
-        background: #1b3a2a;
-        color: #3fb950;
-        margin-left: 6px;
-        vertical-align: middle;
-      }
+      /* 현재 사용 가능 여부 */
+      .avail { font-size: 0.8rem; white-space: nowrap; }
+      .avail-on  { color: #3fb950; }
+      .avail-off { color: #6e7681; }
+      tr.inactive td.model { color: #8b949e; }
 
       .conn-ok {
         color: #3fb950;
@@ -179,19 +178,21 @@
           return;
         }
 
-        // 요청수 기준 내림차순 정렬
-        entries.sort((a, b) => b[1].requests - a[1].requests);
+        // 사용 가능한 모델 먼저, 그 안에서 요청수 내림차순
+        entries.sort((a, b) => Number(!!b[1].active) - Number(!!a[1].active) || b[1].requests - a[1].requests);
 
         const rows = entries
           .map(([model, s]) => {
             const successRate = s.requests > 0 ? Math.round((s.success / s.requests) * 100) : 0;
             const rateBadge = s.errors === 0 ? `<span class="badge badge-green">${successRate}%</span>` : s.success === 0 ? `<span class="badge badge-red">${successRate}%</span>` : `<span class="badge badge-gray">${successRate}%</span>`;
 
-            const providerBadge = s.provider ? `<span class="provider-${s.provider}">${s.provider}</span>` : '';
+            const providerBadge = s.provider ? `<span class="provider provider-${s.provider}">${s.provider}</span>` : '';
+            const avail = s.active ? '<span class="avail avail-on">● 사용 가능</span>' : '<span class="avail avail-off">○ 비활성</span>';
 
             return `
-              <tr>
+              <tr class="${s.active ? '' : 'inactive'}">
                 <td class="model">${model}${providerBadge}</td>
+                <td>${avail}</td>
                 <td class="num">${s.requests.toLocaleString()}</td>
                 <td class="num success">${s.success.toLocaleString()}</td>
                 <td class="num ${s.errors > 0 ? 'error' : ''}">${s.errors.toLocaleString()}</td>
@@ -208,6 +209,7 @@
             <thead>
               <tr>
                 <th>모델</th>
+                <th>상태</th>
                 <th style="text-align:right">요청수</th>
                 <th style="text-align:right">성공</th>
                 <th style="text-align:right">오류</th>

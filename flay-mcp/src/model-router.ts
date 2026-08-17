@@ -16,6 +16,8 @@ interface ModelStats {
   maxMs: number;
   slowCount: number;
   errors: number;
+  /** 기록 당시 제공자 — 모델이 설정에서 빠져도(서비스 종료 등) 통계 화면에 제공자를 계속 표시하기 위해 보존 */
+  provider?: string;
 }
 
 /** 모델별 통계 Map */
@@ -35,6 +37,7 @@ try {
           maxMs: times.length > 0 ? Math.max(...times) : 0,
           slowCount: s.slowCount ?? 0,
           errors: s.errors ?? 0,
+          provider: s.provider,
         });
       } else {
         modelStatsMap.set(model, {
@@ -43,6 +46,7 @@ try {
           maxMs: s.maxMs ?? 0,
           slowCount: s.slowCount ?? 0,
           errors: s.errors ?? 0,
+          provider: s.provider,
         });
       }
     }
@@ -55,14 +59,16 @@ try {
 /**
  * 모델 응답 결과를 기록하고 통계를 저장
  * @param model - 사용된 모델명
+ * @param provider - 모델의 제공자(통계에 보존)
  * @param ms - 응답 시간(밀리초), 오류 시 null
  * @param error - 오류 객체
  */
-function trackModel(model: string, ms: number | null, error?: any): void {
+function trackModel(model: string, provider: ProviderId, ms: number | null, error?: any): void {
   if (!modelStatsMap.has(model)) {
     modelStatsMap.set(model, { successCount: 0, totalTime: 0, maxMs: 0, slowCount: 0, errors: 0 });
   }
   const stats = modelStatsMap.get(model)!;
+  stats.provider = provider;
 
   if (error !== undefined) {
     stats.errors += 1;
@@ -248,7 +254,7 @@ async function executeWithFallback(operationName: string, executor: ModelExecuto
 
     try {
       const text = await executor(entry, modelName);
-      trackModel(modelName, Date.now() - start);
+      trackModel(modelName, entry.provider, Date.now() - start);
 
       if (attempt > 1) {
         console.warn(`[Nexus] ${operationName} 폴백 성공: ${modelName} (${entry.provider}) [시도 ${attempt}/${maxAttempts}]`);
@@ -256,7 +262,7 @@ async function executeWithFallback(operationName: string, executor: ModelExecuto
 
       return { text, model: modelName, provider: entry.provider };
     } catch (error: any) {
-      trackModel(modelName, null, error);
+      trackModel(modelName, entry.provider, null, error);
       const message = error?.message ?? String(error);
       errors.push(`[${modelName}] ${message}`);
       console.warn(`[Nexus] ${operationName} 실패: ${modelName} (${entry.provider}) [시도 ${attempt}/${maxAttempts}]`);
@@ -356,11 +362,26 @@ export function removeStatsListener(fn: StatsListener): void {
   statsListeners.delete(fn);
 }
 
+/** 통계 API 응답 항목 */
+export interface ModelStatView {
+  requests: number;
+  success: number;
+  errors: number;
+  avgMs: number;
+  maxMs: number;
+  slowCount: number;
+  /** 제공자: 설정의 현재 값 > 기록 당시 값 > 'unknown' */
+  provider: string;
+  /** 지금 셔플 백에 들어 있어 사용 가능한 모델인지 (설정에서 빠졌거나 제공자 검증 실패면 false) */
+  active: boolean;
+}
+
 /**
- * 전체 모델 통계 반환
+ * 전체 모델 통계 반환. 기록은 지우지 않으며(설정에서 빠진 모델도 포함) 제공자와 현재 사용 가능 여부를 함께 준다.
  */
-export function getModelStats(): Record<string, { requests: number; success: number; errors: number; avgMs: number; maxMs: number; slowCount: number; provider: string }> {
-  const result: Record<string, { requests: number; success: number; errors: number; avgMs: number; maxMs: number; slowCount: number; provider: string }> = {};
+export function getModelStats(): Record<string, ModelStatView> {
+  const result: Record<string, ModelStatView> = {};
+  const activeNames = new Set(getAvailableModels().map((m) => m.name));
   for (const [model, s] of modelStatsMap.entries()) {
     const entry = config.ai.availableModels.find((m) => m.name === model);
     result[model] = {
@@ -370,7 +391,8 @@ export function getModelStats(): Record<string, { requests: number; success: num
       avgMs: s.successCount > 0 ? Math.round(s.totalTime / s.successCount) : 0,
       maxMs: s.maxMs,
       slowCount: s.slowCount,
-      provider: entry?.provider ?? 'unknown',
+      provider: entry?.provider ?? s.provider ?? 'unknown',
+      active: activeNames.has(model),
     };
   }
   return result;

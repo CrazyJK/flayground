@@ -42,7 +42,7 @@ LOCAL_AI_ENDPOINT=http://127.0.0.1:11434/v1
 
 | 파일 | 설명 |
 | --- | --- |
-| `data/model-stats.json` | 모델별 호출 통계 (gitignore) |
+| `data/model-stats.json` | 모델별 호출 통계 (gitignore). 기록 당시 `provider` 를 함께 저장해 설정에서 빠진 모델(서비스 종료 등)도 `stats.html` 에 제공자 배지와 함께 남는다. `/api/stats` 의 `active` 가 현재 셔플 백 포함 여부. 통계는 지우지 않는다(기록) |
 | `logs/mcp-nexus.log` | 실행 로그 |
 
 ## 스크립트

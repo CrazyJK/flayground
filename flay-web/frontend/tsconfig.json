@@ -42,27 +42,26 @@
     "declaration": false,
     "skipLibCheck": true,
 
-    // 경로 별칭
-    "baseUrl": ".",
+    // 경로 별칭 (baseUrl 없이 tsconfig.json 위치 기준으로 해석 — TS 6 에서 baseUrl 폐기)
     "paths": {
-      "@ai/*": ["src/ai/*"],
-      "@attach/*": ["src/attach/*"],
-      "@base/*": ["src/base/*"],
-      "@editor/*": ["src/editor/*"],
-      "@finance/*": ["src/finance/*"],
-      "@flay/*": ["src/flay/*"],
-      "@image/*": ["src/image/*"],
-      "@lib/*": ["src/lib/*"],
-      "@movie/*": ["src/movie/*"],
-      "@nav/*": ["src/nav/*"],
-      "@spa/*": ["src/spa/*"],
-      "@svg/*": ["src/svg/*"],
+      "@ai/*": ["./src/ai/*"],
+      "@attach/*": ["./src/attach/*"],
+      "@base/*": ["./src/base/*"],
+      "@editor/*": ["./src/editor/*"],
+      "@finance/*": ["./src/finance/*"],
+      "@flay/*": ["./src/flay/*"],
+      "@image/*": ["./src/image/*"],
+      "@lib/*": ["./src/lib/*"],
+      "@movie/*": ["./src/movie/*"],
+      "@nav/*": ["./src/nav/*"],
+      "@spa/*": ["./src/spa/*"],
+      "@svg/*": ["./src/svg/*"],
       "@domain/*": ["../backend/src/domain/*"]
     },
 
     // 라이브러리
     "lib": ["DOM", "DOM.Iterable", "ES2022", "WebWorker"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
+  "include": ["./src/**/*.ts", "src/**/*.tsx", "src/**/*.d.ts"],
   "exclude": ["node_modules", "dist", "../src", "**/*.js", "**/*.jsx"]
 }

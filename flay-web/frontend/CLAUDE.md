@@ -72,6 +72,8 @@ yarn lint         # ESLint 자동 수정 (루트 .eslintrc.js)
 yarn format       # Prettier 포맷
 ```
 
+- **`yarn dev`(watch) 가 떠 있는 동안 `yarn build` 를 돌리지 말 것.** 둘 다 같은 `dist/` 를 쓰는데, 프로덕션 빌드가 `dist/` 를 비우고 해시 이름 산출물을 쓰면 이후 개발 watch 의 증분 빌드는 JS/CSS 를 "cached" 로 보고 다시 쓰지 않아 페이지가 `runtime.js` 등 404 로 깨진다. 코드 변경 검증은 `yarn type-check` 로 하고, 프로덕션 빌드가 꼭 필요하면 빌드 후 watch 를 재기동한다(인앱 개발 모드면 frontend 백그라운드 작업 중지 → 다시 `tail -f /dev/null | yarn dev`).
+
 ## 화면 확인·E2E (`flay-web/playwright/`)
 
 - 화면 동작 확인은 클로드의 브라우저 도구(크롬)로 페이지를 직접 열어서 한다(자체 서명 인증서 경고 무시). E2E 테스트는 `flay-web/playwright/`.

@@ -474,7 +474,8 @@ export default function ChatPage() {
   const send = useCallback(
     async (query: string) => {
       if (!query.trim() || busy) return;
-      pushRecent(query);
+      // 검색 결과(hit)가 1건이라도 있어야 최근 질의로 저장 — 스트림 종료 후 판정
+      let gotHits = false;
       const userMsg: Message = {
         id: `u-${Date.now()}`,
         role: "user",
@@ -546,6 +547,7 @@ export default function ChatPage() {
                 }));
                 break;
               case "tool_result":
+                if (extractHits(ev.result).length > 0) gotHits = true;
                 updateAssistant(asstId, (m) => ({
                   ...m,
                   toolResults: [
@@ -575,6 +577,7 @@ export default function ChatPage() {
           }
         }
         updateAssistant(asstId, (m) => (m.status === "streaming" ? { ...m, status: "done" } : m));
+        if (gotHits) pushRecent(query);
       } catch (e) {
         const aborted = ac.signal.aborted;
         updateAssistant(asstId, (m) => ({

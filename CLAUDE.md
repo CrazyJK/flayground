@@ -36,6 +36,7 @@ flayground/
 - **패키지 매니저는 yarn 1.x** — 모든 Node 프로젝트(`flay-web/frontend`, `flay-web/backend`, `flay-mcp`, `flay-ai/apps/web`, `flay-web/playwright`). npm 사용 금지. 각 프로젝트는 독립 `package.json`+`yarn.lock`(workspaces 미사용).
 - **Python 은 `flay-ai/.venv/Scripts/python.exe`** (3.11, uv 로 관리). `python`/`uv run` 직접 호출 금지(PATH 부재·torch DLL 잠금). flay-ai 명령은 **`flay-ai/` 를 cwd 로** 실행한다.
 - PowerShell 은 **Windows PowerShell 5.1** — `??`, 삼항 연산자, `&&` 미지원. `if/else` 로 작성.
+- 줄바꿈은 **LF**(`.editorconfig` 기준). 파일을 고칠 때 줄바꿈을 CRLF 로 바꾸지 않는다 — 전체 줄이 변경으로 잡혀 diff 가 파일 재작성처럼 보이고 리뷰가 불가능해진다. 파일 전체를 다시 쓴 뒤에는 `git diff --stat` 이 실제 변경 분량과 맞는지 확인한다.
 - 인증서는 루트 `.cert/` 하나. 각 컴포넌트는 상대 경로(`../.cert`, `../../.cert` 등)로 참조한다.
 - `git push`·서버 배포는 사용자가 직접 한다.
 - 노골적·사적 콘텐츠(비속어·성적·개인 수위 프롬프트/문구)는 코드·문서·커밋 메시지에 직접 넣지 말고 **gitignore 된 오버라이드 파일**로 분리한다(커밋 코드엔 점잖은 기본값). 예: `flay-ai/diary_prompts.yaml`(ignore) ↔ `diary_prompts.example.yaml`(커밋).

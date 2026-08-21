@@ -7,7 +7,9 @@ flayAI 의 로컬 인프라를 재활용한 **일상 대화이자 영구 일기*
 
 - **수동적 경청자**: 챗봇이 먼저 말 걸지 않는다. 내 말에 공감·맞장구·동의만 한다.
   훈계·거부가 없도록 **무검열(abliterated) 한국어 모델**(EXAONE 3.5)을 쓴다.
-- **영구 저장**: 모든 대화를 영구 보관. 메시지를 **세션(한 자리 대화)** 단위로 묶는다.
+- **영구 저장**: 모든 글을 영구 보관. **세션 = 일기 한 편** — 첫 작성 시각부터
+  `diary.entry_hours`(기본 1h) 안에 엔터로 보낸 글은 같은 일기에 누적(user 행 1개로 병합)
+  되고, LLM 노트는 엔터마다 답하되 **일기 전체에 대한 최종 답 하나만** 저장된다.
 - **회상**: "저번에 똥 싼 게 언제였지?" 처럼 과거를 물으면, 그때 **세션 대화 원문 전체**
   (레거시 일기는 사진 포함)를 카드로 보여주고 한 줄로 답한다.
 - **일기장 무드 UI**: 일기는 컬렉션 도구가 아니라 사적 공간이라 화면도 구분한다 —
@@ -136,15 +138,38 @@ apps/web /diary  ──SSE──▶  POST /api/diary/chat
 - `diary_messages(id, session_id, role, content, raw_html, created_at, source)`
   - `content`: 검색·임베딩용 평문. `raw_html`: 표시용 원본(레거시 일기·이미지 포함).
   - `source`: `'chat'` | `'diary_import'`.
+  - **세션당 user 행 1개 + assistant 행 최대 1개**(레거시·라이브 공통). 라이브 일기는
+    `store.append_entry` 가 엔터마다 기존 user 행에 글을 이어 붙이고(`content` 줄바꿈 연결,
+    `raw_html` 은 첨부가 있을 때만 텍스트 행을 `<p>` 로 바꿔 순서대로 연결) FTS·Qdrant 를
+    같은 id 로 재색인한다. `created_at` 은 첫 글 시각 유지. 노트는 `store.set_reply` 가
+    기존 assistant 행을 지우고 새 행(맨 뒤 id)으로 교체.
 - `diary_messages_fts`: trigram FTS5(한글 부분매칭).
 - Qdrant `diary_messages`: point id = `diary_messages.id`, payload `{message_id, session_id,
   role, created_at_epoch, content}`. **user 발화만** 임베딩(회상 대상은 내가 한 말).
 
-## 세션 수명
+## 세션 수명 (일기 한 편)
 
-`get_or_create_session` 은 마지막 메시지가 `config.diary.idle_hours`(기본 6h) 이내면 최근
-세션을 이어가고, 넘으면 새 세션을 연다. 프론트는 첫 응답의 `session` 이벤트로 받은
-`session_id` 를 이후 요청에 실어 같은 세션을 이어쓴다. 헤더의 `+ 새 대화` 로 초기화.
+`store.open_session` 은 가장 최근 라이브 세션의 **시작 시각**이 `config.diary.entry_hours`
+(기본 1h) 이내면 그 세션을 돌려주고, 넘었으면 None → `get_or_create_session` 이 새 세션을
+연다(마지막 글 시각이 아니라 첫 글 시각 기준 — 한 시간 창 안에 쓴 글이 한 편). 세션 결정은
+서버가 하며 프론트는 첫 응답의 `session` 이벤트로 id 만 받는다(같은 id 면 이전 노트를 화면에서
+내리고 최신 노트로 교체). 회상 질문은 일기를 열지 않는다(열린 일기가 없으면 `session` 이벤트
+생략). 헤더의 `+ 새 대화` 는 화면만 비운다.
+
+**LLM 노트(누적 답변)**: 엔터마다 답하되, 프롬프트에는 이 일기에 지금까지 쓴 글 + 방금 글을
+합친 **일기 전체**를 한 user 메시지로 넣는다(`route_diary_chat` 의 `history` = 기존 본문).
+저장은 최종 답 하나만(`set_reply`).
+
+## 일기 병합 마이그레이션
+
+엔터마다 행이 따로 쌓인 라이브 세션을 위 모델(user 1행 + 노트 1행)로 맞추는 일회성 도구.
+user 행은 첫 행에 이어 붙이고(FTS·Qdrant 재색인, 나머지 행·포인트 삭제), 노트는 내용을
+줄바꿈으로 누적한 하나로 교체한다. 멱등(재실행 시 대상 0건). 실행 전 DB 백업 권장.
+
+```powershell
+.\.venv\Scripts\python.exe -m packages.diary.merge_entries --dry-run   # 대상만 확인
+.\.venv\Scripts\python.exe -m packages.diary.merge_entries             # 병합(--no-embed 로 Qdrant 생략)
+```
 
 ## 레거시 일기 임포트 (일회성)
 
@@ -167,12 +192,12 @@ apps/web /diary  ──SSE──▶  POST /api/diary/chat
 
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
-| POST | `/api/diary/chat` | (SSE) 일상 대화 + 회상 + 이미지. `{query, session_id?, images?[]}` |
+| POST | `/api/diary/chat` | (SSE) 일기 쓰기 + 회상 + 첨부. `{query, images?[], videos?[]}` (세션은 서버가 결정) |
 | GET | `/api/diary/sessions` | 세션 목록(히스토리) |
 | GET | `/api/diary/sessions/{id}` | 세션 transcript |
 | GET | `/static/diary-assets/{name}` | 임포트된 일기 이미지 서빙 |
 
-SSE 이벤트: `session`(session_id) → (`recall` 그때 일기 원문) → `token`* → `done`.
+SSE 이벤트: `session`(session_id, 회상만일 때 생략 가능) → (`recall` 그때 일기 원문) → `token`* → `done`.
 
 ## 프롬프트 커스터마이징 (말투·수위)
 
@@ -193,6 +218,6 @@ LLM 페르소나/말투/사진묘사 지시는 **`diary_prompts.yaml`(repo 루�
 
 - `models.diary_llm`: `huihui_ai/exaone3.5-abliterated:7.8b` (영상 채팅 `llm` 과 분리)
 - `data.diary_dir` / `data.diary_assets`
-- `diary.idle_hours` / `diary.context_messages` / `diary.recall_top_k`
+- `diary.entry_hours`(일기 한 편의 시간 창) / `diary.recall_top_k`
 
 모델은 사용자가 직접 받는다: `ollama pull huihui_ai/exaone3.5-abliterated:7.8b`.

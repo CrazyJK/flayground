@@ -82,16 +82,91 @@ def test_build_message_html_escapes_text_and_appends_img():
 # --- 세션/메시지 -------------------------------------------------
 
 
-def test_session_continue_within_idle_and_split_after(conn):
-    s1 = store.get_or_create_session(conn, idle_hours=6)
+def test_session_window_from_first_entry(conn):
+    # 열린 일기가 없으면 None, get_or_create 는 새 세션
+    assert store.open_session(conn, entry_hours=1) is None
+    s1 = store.get_or_create_session(conn, entry_hours=1)
     store.add_message(conn, s1, "user", "안녕", embed=False)
-    # idle 0 → 무조건 새 세션
-    s2 = store.get_or_create_session(conn, idle_hours=0)
+    # 시작 시각 기준: 창이 0 이면 바로 새 세션, 넓으면 최근(열린) 세션 이어감
+    s2 = store.get_or_create_session(conn, entry_hours=0)
     assert s2 != s1
-    # 큰 idle → 같은(최근) 세션 이어감
-    store.add_message(conn, s2, "user", "또 왔어", embed=False)
-    s3 = store.get_or_create_session(conn, idle_hours=99999)
-    assert s3 == s2
+    assert store.get_or_create_session(conn, entry_hours=99999) == s2
+    # 마지막 글이 방금이라도 '첫 작성'이 창을 넘었으면 새 일기(idle 이 아니라 시작 기준)
+    from datetime import datetime, timedelta
+
+    old_start = (datetime.now() - timedelta(hours=2)).isoformat(timespec="seconds")
+    s3 = store.create_session(conn, started_at=old_start)
+    store.add_message(conn, s3, "user", "방금 쓴 글", embed=False)
+    assert store.open_session(conn, entry_hours=1) is None
+    # 레거시 임포트 세션은 이어쓰기 대상이 아님
+    store.create_session(conn, source_key="2020-01-01")
+    assert store.open_session(conn, entry_hours=1) is None
+
+
+def test_append_entry_merges_into_single_row_and_reindexes(conn):
+    s = store.create_session(conn)
+    m1 = store.append_entry(conn, s, "아침에 온천 갔다", embed=False)
+    m2 = store.append_entry(conn, s, "점심은 국수", embed=False)
+    assert m1 == m2  # user 행 1개 유지
+    e = store.session_entry(conn, s)
+    assert e["content"] == "아침에 온천 갔다\n점심은 국수"
+    assert e["raw_html"] is None  # 텍스트만이면 raw_html 없음
+    # 병합된 본문으로 FTS 재색인 → 두 번째 글의 키워드도 같은 행으로 회상
+    hits = store.recall(conn, "국수")
+    assert hits and hits[0]["message_id"] == m1 and "온천" in hits[0]["content"]
+    assert conn.execute(
+        "SELECT COUNT(*) FROM diary_messages_fts WHERE message_id = ?", (m1,)
+    ).fetchone()[0] == 1
+    # 첨부가 섞이면 텍스트 행은 <p> 로 변환해 순서대로 이어 붙임
+    store.append_entry(
+        conn, s, "사진도 [사진]", raw_html='<p>사진도</p><img src="/static/diary-assets/a.png">',
+        embed=False,
+    )
+    e = store.session_entry(conn, s)
+    assert e["raw_html"].startswith("<p>아침에 온천 갔다<br>점심은 국수</p><p>사진도</p>")
+    assert e["raw_html"].endswith('<img src="/static/diary-assets/a.png">')
+
+
+def test_set_reply_keeps_only_final_note(conn):
+    s = store.create_session(conn)
+    store.append_entry(conn, s, "첫 줄", embed=False)
+    store.set_reply(conn, s, "첫 노트")
+    store.append_entry(conn, s, "둘째 줄", embed=False)
+    store.set_reply(conn, s, "최종 노트")
+    tr = store.get_session_transcript(conn, s)
+    roles = [(m["role"], m["content"]) for m in tr["messages"]]
+    assert roles == [("user", "첫 줄\n둘째 줄"), ("assistant", "최종 노트")]
+
+
+def test_merge_session_entries_migration(conn):
+    s = store.create_session(conn)
+    u1 = store.add_message(conn, s, "user", "줄1", created_at="2026-06-05T23:36:00", embed=False)
+    store.add_message(conn, s, "assistant", "노트1", created_at="2026-06-05T23:36:10", embed=False)
+    store.add_message(
+        conn, s, "user", "줄2 [사진]", raw_html='<p>줄2</p><img src="/static/diary-assets/b.png">',
+        created_at="2026-06-05T23:40:00", embed=False,
+    )
+    store.add_message(conn, s, "assistant", "노트2", created_at="2026-06-05T23:40:10", embed=False)
+    legacy = store.create_session(conn, source_key="2020-01-01")
+    store.add_message(conn, legacy, "user", "옛 일기", source="diary_import", embed=False)
+
+    assert store.merge_session_entries(conn, s, embed=False) is True
+    tr = store.get_session_transcript(conn, s)
+    msgs = tr["messages"]
+    assert [m["role"] for m in msgs] == ["user", "assistant"]
+    assert msgs[0]["id"] == u1 and msgs[0]["created_at"] == "2026-06-05T23:36:00"  # 첫 행 유지
+    assert msgs[0]["content"] == "줄1\n줄2 [사진]"
+    assert msgs[0]["raw_html"] == '<p>줄1</p><p>줄2</p><img src="/static/diary-assets/b.png">'
+    assert msgs[1]["content"] == "노트1\n노트2" and msgs[1]["created_at"] == "2026-06-05T23:40:10"
+    # FTS 에는 병합 행 하나만 남고 삭제된 행은 사라짐
+    assert conn.execute(
+        "SELECT COUNT(*) FROM diary_messages_fts WHERE session_id = ?", (s,)
+    ).fetchone()[0] == 1
+    assert store.recall(conn, "줄2") and store.recall(conn, "줄2")[0]["message_id"] == u1
+    # 멱등: 이미 1행씩이면 False
+    assert store.merge_session_entries(conn, s, embed=False) is False
+    # 레거시 세션은 그대로
+    assert len(store.get_session_transcript(conn, legacy)["messages"]) == 1
 
 
 def test_recall_finds_keyword_and_groups_session(conn):

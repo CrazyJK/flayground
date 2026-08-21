@@ -463,6 +463,8 @@ async def route_diary_chat(
 ) -> AsyncIterator[dict]:
     """async generator. event dict 시리즈를 yield.
 
+    history: 이 일기(세션)에 지금까지 쓴 글 [{role:'user', content}] — 맞장구 답은 이 본문 +
+    user_query 를 합친 일기 전체에 대해 생성한다(일기 단위 누적 답변). 회상 판정은 user_query 만.
     이벤트: {"type":"recall","sessions":[...]} / {"type":"token","text":...}
            / {"type":"done","message":...}
     """
@@ -524,10 +526,13 @@ async def route_diary_chat(
                 return
         else:
             # --- 맞장구 경로 ---
+            # 일기 한 편 단위로 누적 답변: 이 일기에 지금까지 쓴 글(history 의 user 본문) 뒤에
+            # 방금 쓴 글을 이어 붙인 전체를 한 user 메시지로 넣는다(답은 최종본만 저장됨).
+            so_far = [m["content"] for m in history if m.get("role") == "user" and m.get("content")]
+            body = "\n".join([*so_far, user_query])
             answer_msgs = [
                 {"role": "system", "content": prompts.system_prompt()},
-                *history,
-                {"role": "user", "content": user_query},
+                {"role": "user", "content": body},
             ]
 
         # 공통: 스트리밍 응답(라이브 토큰) + 종료 시 정리된 최종본 전달

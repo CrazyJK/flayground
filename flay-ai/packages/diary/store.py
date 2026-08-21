@@ -1,6 +1,7 @@
 """일기 세션·메시지 저장소 + 회상(hybrid 검색).
 
-- 세션: '한 자리 대화'. idle_hours 넘게 끊기면 새 세션, 아니면 최근 세션 이어감.
+- 세션 = 일기 한 편. 첫 작성 시각부터 entry_hours(기본 1h) 안에 쓴 글은 같은 일기에 누적
+  (append_entry: user 행 1개에 병합), 넘으면 새 일기. LLM 노트는 일기당 최종 1개(set_reply).
 - 메시지 저장 시 user 발화는 FTS 인덱싱 + bge-m3 임베딩 + Qdrant upsert(동기, 즉시 회상 가능).
 - 회상: Qdrant 의미검색 + SQLite FTS5(BM25) → RRF 결합(영상 retriever 와 동일 패턴, RRF_K=60).
   Qdrant 가 없거나 실패하면 FTS 단독으로 graceful degrade(테스트·오프라인 대비).
@@ -43,25 +44,32 @@ def _iso_to_epoch(iso: str) -> int:
 # --- 세션 --------------------------------------------------------
 
 
-def get_or_create_session(conn: sqlite3.Connection, idle_hours: float | None = None) -> int:
-    """가장 최근 세션을 이어가거나(마지막 메시지가 idle_hours 이내), 새 세션 생성.
+def open_session(conn: sqlite3.Connection, entry_hours: float | None = None) -> int | None:
+    """지금 이어 쓸 수 있는 '열린' 일기 세션 id. 없으면 None(생성하지 않음).
 
-    레거시 임포트 세션(source_key 존재)은 이어쓰지 않는다(라이브 챗 세션만 대상).
+    가장 최근 라이브 세션(source_key NULL)의 시작 시각이 entry_hours 이내면 그 세션.
+    레거시 임포트 세션은 대상이 아니다.
     """
-    if idle_hours is None:
-        idle_hours = float(load_config().get("diary", {}).get("idle_hours", 6))
+    if entry_hours is None:
+        entry_hours = float(load_config().get("diary", {}).get("entry_hours", 1))
     row = conn.execute(
-        "SELECT id, ended_at FROM diary_sessions "
+        "SELECT id, started_at FROM diary_sessions "
         "WHERE source_key IS NULL ORDER BY id DESC LIMIT 1"
     ).fetchone()
-    if row and row["ended_at"]:
+    if row and row["started_at"]:
         try:
-            last = datetime.fromisoformat(row["ended_at"])
-            if datetime.now() - last <= timedelta(hours=idle_hours):
+            started = datetime.fromisoformat(row["started_at"])
+            if datetime.now() - started <= timedelta(hours=entry_hours):
                 return int(row["id"])
         except ValueError:
             pass
-    return create_session(conn)
+    return None
+
+
+def get_or_create_session(conn: sqlite3.Connection, entry_hours: float | None = None) -> int:
+    """열린 일기 세션을 이어가거나(첫 작성부터 entry_hours 이내), 새 세션 생성."""
+    sid = open_session(conn, entry_hours)
+    return sid if sid is not None else create_session(conn)
 
 
 def create_session(
@@ -203,6 +211,144 @@ def _embed_message(msg_id: int, session_id: int, role: str, content: str, epoch:
         )
     except Exception as e:
         log.warning("diary 임베딩/업서트 실패(msg %s): %s", msg_id, e)
+
+
+def _delete_embeddings(msg_ids: list[int]) -> None:
+    """Qdrant diary 컬렉션에서 메시지 포인트 삭제(병합으로 사라진 행). 실패는 경고만."""
+    if not msg_ids:
+        return
+    try:
+        from packages.indexer.embed_text import _qdrant
+
+        _qdrant().delete(
+            collection_name=DIARY_COLLECTION,
+            points_selector=qm.PointIdsList(points=list(msg_ids)),
+            wait=False,
+        )
+    except Exception as e:
+        log.warning("diary 임베딩 삭제 실패(%s): %s", msg_ids, e)
+
+
+def _as_html(content: str, raw_html: str | None) -> str:
+    """행의 표시용 HTML — raw_html 이 있으면 그대로, 없으면(텍스트만) content 를 <p> 로."""
+    if raw_html:
+        return raw_html
+    from packages.diary.htmlutil import build_message_html
+
+    return build_message_html(content, [])
+
+
+def _merge_rows(rows: list[sqlite3.Row | dict]) -> tuple[str, str | None]:
+    """여러 user 행을 한 일기로 병합 → (content, raw_html).
+
+    content 는 줄바꿈으로 이어 붙이고, raw_html 은 하나라도 있을 때만(텍스트 행은 <p> 변환)
+    순서대로 이어 붙인다(첨부 사진·동영상 보존).
+    """
+    content = "\n".join(r["content"] for r in rows if r["content"])
+    if any(r["raw_html"] for r in rows):
+        return content, "".join(_as_html(r["content"], r["raw_html"]) for r in rows)
+    return content, None
+
+
+def _reindex_entry(
+    conn: sqlite3.Connection, msg_id: int, session_id: int, content: str, ts: str, embed: bool
+) -> None:
+    """병합으로 내용이 바뀐 user 행의 FTS 재등록 + (embed 시) 임베딩 재업서트(같은 point id)."""
+    conn.execute("DELETE FROM diary_messages_fts WHERE message_id = ?", (msg_id,))
+    conn.execute(
+        "INSERT INTO diary_messages_fts(content, message_id, session_id) VALUES(?,?,?)",
+        (content, msg_id, session_id),
+    )
+    conn.commit()
+    if embed:
+        _embed_message(msg_id, session_id, "user", content, _iso_to_epoch(ts))
+
+
+def session_entry(conn: sqlite3.Connection, session_id: int) -> dict[str, Any] | None:
+    """세션의 일기 본문(user 행). 라이브 세션은 user 행이 1개(append_entry 가 병합 유지)."""
+    row = conn.execute(
+        "SELECT id, content, raw_html, created_at FROM diary_messages "
+        "WHERE session_id = ? AND role = 'user' ORDER BY id ASC LIMIT 1",
+        (session_id,),
+    ).fetchone()
+    return dict(row) if row else None
+
+
+def append_entry(
+    conn: sqlite3.Connection,
+    session_id: int,
+    content: str,
+    raw_html: str | None = None,
+    embed: bool = True,
+) -> int:
+    """일기 글 한 줄 추가 — 세션의 user 행이 있으면 거기에 이어 붙이고(재색인), 없으면 새 행.
+
+    반환: user 행 id. 작성 시각(created_at)은 첫 글 시각을 유지하고 세션 ended_at 만 갱신.
+    """
+    prev = session_entry(conn, session_id)
+    if prev is None:
+        return add_message(conn, session_id, "user", content, raw_html=raw_html, embed=embed)
+    merged, merged_html = _merge_rows([prev, {"content": content, "raw_html": raw_html}])
+    conn.execute(
+        "UPDATE diary_messages SET content = ?, raw_html = ?, indexed = 1 WHERE id = ?",
+        (merged, merged_html, prev["id"]),
+    )
+    conn.execute("UPDATE diary_sessions SET ended_at = ? WHERE id = ?", (_now_iso(), session_id))
+    _reindex_entry(conn, int(prev["id"]), session_id, merged, prev["created_at"], embed)
+    return int(prev["id"])
+
+
+def set_reply(conn: sqlite3.Connection, session_id: int, content: str) -> int:
+    """세션의 LLM 노트를 최종본 하나로 교체 — 기존 assistant 행 삭제 후 새 행(맨 뒤 id)."""
+    conn.execute(
+        "DELETE FROM diary_messages WHERE session_id = ? AND role = 'assistant'", (session_id,)
+    )
+    return add_message(conn, session_id, "assistant", content, embed=False)
+
+
+def merge_session_entries(conn: sqlite3.Connection, session_id: int, embed: bool = True) -> bool:
+    """마이그레이션: 세션의 여러 user 행을 한 일기로, 여러 assistant 행을 노트 하나로 병합.
+
+    user 행은 첫 행(id·created_at 유지)에 나머지를 이어 붙이고 나머지 행은 삭제(FTS·Qdrant 포함).
+    assistant 행은 내용을 줄바꿈으로 누적해 마지막 시각의 새 행 하나로 교체.
+    이미 1행씩이면 아무것도 하지 않고 False.
+    """
+    users = conn.execute(
+        "SELECT id, content, raw_html, created_at FROM diary_messages "
+        "WHERE session_id = ? AND role = 'user' ORDER BY id ASC",
+        (session_id,),
+    ).fetchall()
+    asst = conn.execute(
+        "SELECT id, content, created_at FROM diary_messages "
+        "WHERE session_id = ? AND role = 'assistant' ORDER BY id ASC",
+        (session_id,),
+    ).fetchall()
+    if len(users) <= 1 and len(asst) <= 1:
+        return False
+    if len(users) > 1:
+        merged, merged_html = _merge_rows(users)
+        keep = int(users[0]["id"])
+        drop = [int(r["id"]) for r in users[1:]]
+        ph = ",".join("?" * len(drop))
+        conn.execute(
+            "UPDATE diary_messages SET content = ?, raw_html = ?, indexed = 1 WHERE id = ?",
+            (merged, merged_html, keep),
+        )
+        conn.execute(f"DELETE FROM diary_messages WHERE id IN ({ph})", drop)
+        conn.execute(f"DELETE FROM diary_messages_fts WHERE message_id IN ({ph})", drop)
+        _reindex_entry(conn, keep, session_id, merged, users[0]["created_at"], embed)
+        if embed:
+            _delete_embeddings(drop)
+    if len(asst) > 1:
+        note = "\n".join(r["content"] for r in asst if r["content"])
+        conn.execute(
+            "DELETE FROM diary_messages WHERE session_id = ? AND role = 'assistant'", (session_id,)
+        )
+        add_message(
+            conn, session_id, "assistant", note, created_at=asst[-1]["created_at"], embed=False
+        )
+    conn.commit()
+    return True
 
 
 def get_session_transcript(conn: sqlite3.Connection, session_id: int) -> dict[str, Any] | None:

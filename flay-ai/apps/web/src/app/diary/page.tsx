@@ -695,7 +695,6 @@ export default function DiaryPage() {
           headers: { "content-type": "application/json", accept: "text/event-stream" },
           body: JSON.stringify({
             query,
-            session_id: sessionId ?? undefined,
             images: images.length ? images : undefined,
             videos: videos.length ? videos : undefined,
           }),
@@ -726,9 +725,20 @@ export default function DiaryPage() {
               continue;
             }
             switch (ev.type) {
-              case "session":
-                setSessionId(Number(ev.session_id));
+              case "session": {
+                // 세션(=일기 한 편)은 서버가 첫 작성부터 1시간 창으로 결정한다. 같은 일기를
+                // 이어 쓰는 중이면 노트는 최종 하나만 남으므로(서버도 교체 저장) 이전 일반
+                // 노트를 화면에서도 내린다 — 회상 카드(recall)는 조회 결과라 그대로 둔다.
+                const sid = Number(ev.session_id);
+                if (sid === sessionId)
+                  setMessages((prev) =>
+                    prev.filter(
+                      (m) => m.id === asstId || m.role !== "assistant" || (m.recall?.length ?? 0) > 0
+                    )
+                  );
+                setSessionId(sid);
                 break;
+              }
               case "recall":
                 updateAssistant(asstId, (m) => ({
                   ...m,

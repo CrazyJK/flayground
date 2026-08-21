@@ -1,6 +1,7 @@
 """일기형 대화 API 라우터.
 
-- POST /api/diary/chat          (SSE) 일상 대화 + 회상. 세션 자동 이어가기/생성.
+- POST /api/diary/chat          (SSE) 일기 쓰기 + 회상. 세션(=일기 한 편)은 서버가 결정:
+                                첫 작성부터 entry_hours 안이면 이어 쓰고 넘으면 새 일기.
 - POST /api/diary/upload        동영상 업로드(multipart 스트리밍) → asset URL
 - GET  /api/diary/sessions      세션 목록(요약, 히스토리)
 - GET  /api/diary/history       이전 일기 열람(메시지 포함, 페이지네이션 + has_more)
@@ -46,7 +47,6 @@ _ASSET_URL_PREFIX = "/static/diary-assets/"
 
 class DiaryChatRequest(BaseModel):
     query: str = Field("", description="사용자 발화(이미지만 보낼 땐 비어도 됨)")
-    session_id: int | None = Field(None, description="이어쓸 세션. 없으면 자동 결정")
     images: list[str] = Field(
         default_factory=list, description="첨부 이미지(data URL 또는 base64), 최대 8장"
     )
@@ -54,16 +54,6 @@ class DiaryChatRequest(BaseModel):
         default_factory=list,
         description="업로드된 동영상 asset URL(/static/diary-assets/..), 최대 4개",
     )
-
-
-def _recent_history(conn, session_id: int, limit: int) -> list[dict]:
-    """현재 세션 최근 메시지를 LLM 컨텍스트용 [{role, content}] 로(시간순)."""
-    rows = conn.execute(
-        "SELECT role, content FROM diary_messages WHERE session_id = ? "
-        "ORDER BY id DESC LIMIT ?",
-        (session_id, limit),
-    ).fetchall()
-    return [{"role": r["role"], "content": r["content"]} for r in reversed(rows)]
 
 
 def _valid_video_urls(cfg: dict, videos: list[str]) -> list[str]:
@@ -130,30 +120,34 @@ async def _prepare_media(
 @router.post("/api/diary/chat")
 async def diary_chat(req: DiaryChatRequest):
     cfg = load_config()
-    ctx_n = int(cfg.get("diary", {}).get("context_messages", 12))
-
     conn = connect()
-    # 세션 확보(이어가기/생성) + 직전 컨텍스트
-    session_id = req.session_id or store.get_or_create_session(conn)
-    history = _recent_history(conn, session_id, ctx_n)
-
     text = (req.query or "").strip()
-    if req.images or req.videos:
-        store_content, raw_html, reply_query = await _prepare_media(
-            cfg, text, req.images, req.videos
-        )
-    else:
-        store_content, raw_html, reply_query = text, None, text
 
     # 회상 질문(첨부 없는 순수 회상 요청)은 '기억'이 아니라 '물음' — 색인은 물론
-    # 저장도 하지 않는다(질문·답이 일기 뷰와 '최근 일기' 목록을 오염). 조회는 휘발,
-    # 일기엔 기록만 남는다. 화면에는 스트림으로 평소처럼 보인다.
+    # 저장도 하지 않고 일기(세션)를 새로 열지도 않는다(질문·답이 일기 뷰와 '최근 일기'
+    # 목록을 오염). 조회는 휘발, 일기엔 기록만 남는다. 화면에는 스트림으로 평소처럼 보인다.
     is_recall = not req.images and not req.videos and _looks_like_recall(text)
+    history: list[dict] = []
     user_msg_id: int | None = None
-    if not is_recall:
-        # 사용자 메시지 저장(임베딩까지). 이미지 묘사가 content 에 합류해 회상 가능.
-        user_msg_id = store.add_message(
-            conn, session_id, "user", store_content, raw_html=raw_html, embed=True
+    if is_recall:
+        session_id = store.open_session(conn)  # 열린 일기가 있으면 그 id 만 알림(없으면 None)
+        reply_query = text
+    else:
+        # 세션(=일기 한 편)은 서버가 결정: 첫 작성부터 entry_hours 안이면 이어 쓰고 넘으면 새로.
+        session_id = store.get_or_create_session(conn)
+        prev = store.session_entry(conn, session_id)  # 이 일기에 지금까지 쓴 글(누적 답변 컨텍스트)
+        if prev:
+            history = [{"role": "user", "content": prev["content"]}]
+        if req.images or req.videos:
+            store_content, raw_html, reply_query = await _prepare_media(
+                cfg, text, req.images, req.videos
+            )
+        else:
+            store_content, raw_html, reply_query = text, None, text
+        # 일기 본문에 이어 붙여 저장(user 행 1개 유지, 재색인·재임베딩). 이미지 묘사가
+        # content 에 합류해 회상 가능.
+        user_msg_id = store.append_entry(
+            conn, session_id, store_content, raw_html=raw_html, embed=True
         )
 
     async def sse() -> AsyncGenerator[bytes, None]:
@@ -162,8 +156,9 @@ async def diary_chat(req: DiaryChatRequest):
                 "utf-8"
             )
 
-        # 세션 식별자를 먼저 알려 프론트가 이어쓰기 가능하게
-        yield _emit({"type": "session", "session_id": session_id})
+        # 세션 식별자를 먼저 알려 프론트가 같은 일기인지 판단하게(회상만 한 경우 생략될 수 있음)
+        if session_id is not None:
+            yield _emit({"type": "session", "session_id": session_id})
         full = ""
         final = ""
         try:
@@ -180,11 +175,11 @@ async def diary_chat(req: DiaryChatRequest):
             log.exception("diary chat error: %s", e)
             yield _emit({"type": "error", "message": str(e)})
         finally:
-            # 어시스턴트 응답 저장 — 정리된 최종본(done) 우선(임베딩 안 함: 회상 대상은 내 말 위주).
-            # 회상 답은 질문과 함께 저장하지 않는다.
+            # LLM 노트 저장 — 정리된 최종본(done) 우선(임베딩 안 함: 회상 대상은 내 말 위주).
+            # 일기 한 편에 노트는 최종 1개만(이전 노트 교체). 회상 답은 저장하지 않는다.
             saved = (final or full).strip()
-            if saved and not is_recall:
-                store.add_message(conn, session_id, "assistant", saved, embed=False)
+            if saved and not is_recall and session_id is not None:
+                store.set_reply(conn, session_id, saved)
             conn.close()
 
     return StreamingResponse(

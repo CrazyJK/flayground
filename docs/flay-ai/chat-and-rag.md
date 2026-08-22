@@ -67,7 +67,7 @@ LLM 응답:  { "tool_calls": [
    │  → [hit, hit, hit, ...]                   │
    └──────────────────────────────────────────┘
    │
-   ▼ 코드 필터 보강 (_extract_meta + _extract_tags): year/month/kind/playable/min_rank/rank/min_likes/min_play/max_play/sort + DB 태그명 복수 추출(AND) → args 주입
+   ▼ 코드 필터 보강 (_extract_meta + _extract_tags): year/month/kind/playable/min_rank/rank/min_likes/min_play/max_play/sort + DB 태그명 복수 추출(선택 접속어는 OR 그룹, 그 외 AND) → args 주입
    │   (LLM 이 tool_call 을 빠뜨려도 폴백 + 이 보강으로 결과가 정확)
    │   + LLM 이 지어낸 year/month(질문에 없음)는 폐기 · '아무거나/랜덤' 이면 sort=random, '인기/많이 본/베스트' 면 sort=popular + query 는 핵심어만 · 'N개' 는 limit 우선
    │
@@ -148,7 +148,11 @@ for (;;) {
      "가장 인기 있는 10개 보여줘"→query='' sort=popular limit=10(필터 범위 전체를 usage 식으로 정렬).
    ※ _extract_count: "N개/N편/N건/N작품"(1..100, '별점 4개' 같은 평점 표현 제외)이 있으면 그 N 이 UI limit 보다 우선.
    ※ _extract_tags: DB tags.name(2자+, 10분 캐시)이 질문에 그대로 들어 있으면 겹치지 않는 매칭을 최장 우선·
-     최대 4개까지 tags 로 주입(복수 태그는 AND=모두 포함). 예: "온천 며느리"→tags=[온천,며느리].
+     최대 4개까지 찾아 OR 그룹 목록으로 반환한다. 두 태그 사이가 선택 접속어(이나/나/아니면/또는/혹은/
+     거나/든지/든가)뿐이면 같은 그룹, 아니면 새 그룹 — 그룹 내부 OR · 그룹 간 AND.
+     단독 그룹은 tags(AND), 2개 이상인 그룹은 tag_any_groups 로 주입.
+     예: "온천 며느리"→tags=[온천,며느리], "사무실이나 온천에서 음란하게"→tags=[음란]
+     tag_any_groups=[[사무실,온천]] = (사무실 OR 온천) AND 음란.
      한국어 어미·조사 변형('웃고 있는' vs 태그 '웃는')은
      부분문자열로 못 잡으므로 그땐 의미검색에 의존.
    ※ _extract_count_tags: 남녀 명수 → 카운트 태그(M:N=앞 남자·뒤 여자, 값 1/2/n). '여러 남자'→남=n→

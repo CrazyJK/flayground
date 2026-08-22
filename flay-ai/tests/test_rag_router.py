@@ -1,9 +1,11 @@
 """rag/router 코드 레벨 보강(정규식 추출) 단위 테스트 — LLM/DB 없이 순수 함수만."""
 
+import packages.rag.router as router
 from packages.rag.router import (
     _core_terms,
     _extract_count,
     _extract_meta,
+    _extract_tags,
     _summarize_results,
 )
 from packages.rag.tools import _apply_sort
@@ -82,3 +84,20 @@ def test_apply_sort_popular_by_usage():
         {"opus": "mid", "play": 5, "rank": 3, "like_count": 1},
     ]
     assert [h["opus"] for h in _apply_sort(hits, "popular")] == ["high", "mid", "low"]
+
+
+def test_extract_tags_groups_or_connectives(monkeypatch):
+    # DB 대신 고정 태그 목록(길이 내림차순)으로 대체 — 순수 문자열 로직만 검증
+    monkeypatch.setattr(router, "_known_tags", lambda: ["사무실", "온천", "음란", "질펀"])
+    # 선택 접속어로 이어진 태그는 한 OR 그룹, 그 외는 각각 AND 그룹
+    assert _extract_tags("사무실이나 온천에서 음란하고 질펀하게") == [
+        ["사무실", "온천"],
+        ["음란"],
+        ["질펀"],
+    ]
+    for q in ("사무실 또는 온천", "사무실 혹은 온천", "사무실이거나 온천", "사무실이든지 온천"):
+        assert _extract_tags(q) == [["사무실", "온천"]], q
+    # 접속어 뒤에 태그가 아닌 말이 끼면 짝이 없으므로 묶지 않는다
+    assert _extract_tags("온천 아니면 집에서 음란하게") == [["온천"], ["음란"]]
+    # 접속어가 없으면 종전대로 전부 AND
+    assert _extract_tags("온천 음란") == [["온천"], ["음란"]]

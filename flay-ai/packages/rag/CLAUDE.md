@@ -32,8 +32,8 @@
 - **정렬 의도 모드**(`sort=random|popular`): 문장을 그대로 검색어로 쓰면 의미검색 잡음(예: '10' 이 든 제목, '인기' 가 든 제목)이 후보를 정하므로, `_core_terms()` 가 무작위어·인기어·개수·요청 동사(추천해줘/골라줘…)·메타 표현·불용어(가장/순으로/영상/작품…)·홀로 남은 조사를 걷어낸 **핵심어만** `query` 로 남긴다(없으면 `""`). `search_videos` 는 query 가 있으면 관련도 top-K(≥50) 안에서 재정렬(random=`random.sample`, popular=`ranker._usage_boost` 내림차순), 없으면 SQL 로 필터 범위 전체에서 정렬(random=`ORDER BY RANDOM()`, popular=`ln(1+play)+0.5*rank/5+0.3*ln(1+like)` 내림차순 — 랭커 usage 식과 동일, SQLite 내장 `ln()`).
 - **개수**: `_extract_count()` 가 "N개/N편/N건/N작품"(1..100, 평점 표현 '별점 4개' 제외)을 잡으면 그 N 이 UI limit 보다 우선한다.
 - **LLM 환각 인자 폐기**: LLM 이 넘긴 `year/month` 가 `_extract_meta` 로 질문에서 검출되지 않으면 버린다(7B 모델이 모호한 질의에서 `year=2023` 을 지어내는 사례 방어). studio/actress 는 검증하지 않는다.
-- `_extract_tags()` 로 DB `tags.name`(2자+, 10분 캐시 `_known_tags`)이 질문에 그대로 포함되면 겹치지 않는 모든 매칭을 **최장 우선·최대 4개**까지 `tags` 로 주입. 복수 태그는 **AND**. 한국어 어미·조사 변형은 부분문자열로 못 잡음 → 의미검색 의존.
-- `_extract_count_tags()` 로 남녀 명수 표현을 **카운트 태그**(`M:N` = 앞 남자수·뒤 여자수, 값 1/2/n)로 환산해 `tag_any`(OR 한 그룹)로 주입. 태그 필터는 `Filters.tag_groups`(그룹 내부 OR·그룹 간 AND): Qdrant 는 그룹마다 `should` 중첩, SQLite 는 그룹마다 `tag_id IN (...)` EXISTS.
+- `_extract_tags()` 로 DB `tags.name`(2자+, 10분 캐시 `_known_tags`)이 질문에 그대로 포함되면 겹치지 않는 모든 매칭을 **최장 우선·최대 4개**까지 찾아 **OR 그룹 목록**으로 반환. 인접 태그 사이가 선택 접속어(`_OR_JOIN_RE`: 이나/나/아니면/또는/혹은/거나/든지/든가)뿐이면 같은 그룹, 아니면 새 그룹 — **그룹 내부 OR · 그룹 간 AND**. 라우터가 단독 그룹은 `tags`(AND), 2개 이상인 그룹은 `tag_any_groups` 로 주입한다(예: '사무실이나 온천에서 음란하게' → `tags=[음란]` + `tag_any_groups=[[사무실,온천]]`). 접속어 뒤에 태그가 아닌 말이 끼면(예: '온천 아니면 집에서 음란') 묶지 않는다. 한국어 어미·조사 변형은 부분문자열로 못 잡음 → 의미검색 의존.
+- `_extract_count_tags()` 로 남녀 명수 표현을 **카운트 태그**(`M:N` = 앞 남자수·뒤 여자수, 값 1/2/n)로 환산해 `tag_any`(OR 한 그룹)로 주입. 태그 필터는 `Filters.tag_groups`(그룹 내부 OR·그룹 간 AND): Qdrant 는 그룹마다 `should` 중첩, SQLite 는 그룹마다 `tag_id IN (...)` EXISTS. `search_videos` 의 `tags`(AND)·`tag_any`(OR 한 그룹)·`tag_any_groups`(OR 그룹 여러 개)가 모두 이 `tag_groups` 로 합쳐진다 — `tag_any_groups` 는 `TOOL_SCHEMA` 에 노출하지 않는 **라우터 주입 전용** 인자.
 - 결과 요약은 `_summarize_results()` 가 "건수+필터" 한 줄을 만들어 `token` 이벤트로 한 번 push.
 
 ## 검색 / 랭킹

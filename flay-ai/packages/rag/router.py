@@ -240,19 +240,30 @@ def _known_tags() -> list[str]:
     return _TAG_CACHE
 
 
-def _extract_tags(query: str, max_tags: int = 4) -> list[str]:
-    """질문에 DB 태그명이 그대로 포함되면 (겹치지 않는) 모든 매칭을 최장 우선으로 반환.
+# 태그 사이가 이 접속어(+공백)만으로 이어지면 선택 관계로 보고 한 OR 그룹으로 묶는다.
+# 예: '사무실이나 온천' → 이나 / '온천 또는 집' → 또는. 접속어 뒤에 다른 말이 끼면
+# (예: '온천 아니면 집에서 음란') 그 접속어의 짝은 태그가 아니므로 묶지 않는다.
+_OR_JOIN_RE = re.compile(r"(?:이?나|아니면|또는|혹은|이?거나|이?든지|이?든가)+")
+
+
+def _extract_tags(query: str, max_tags: int = 4) -> list[list[str]]:
+    """질문에 DB 태그명이 그대로 포함되면 (겹치지 않는) 모든 매칭을 최장 우선으로 찾아
+    OR 그룹 목록으로 반환.
 
     테마 명사(온천·며느리·간호사 등)는 보통 원형 그대로 등장하므로 부분문자열 매칭이
     실용적. 최장 매칭 우선 + 이미 매칭된 글자 구간은 재사용하지 않아 '온천' 매칭 시
-    부분 태그('천')가 중복 추가되는 것을 막는다. 복수 태그는 search_videos 에서 AND
-    (모두 포함하는 영상만)로 적용. max_tags 로 과도한 필터링 방지.
+    부분 태그('천')가 중복 추가되는 것을 막는다. max_tags 로 과도한 필터링 방지.
+
+    반환값은 그룹 목록으로, **그룹 내부는 OR · 그룹 간은 AND** 로 적용된다. 질문에서
+    두 태그 사이가 선택 접속어(`_OR_JOIN_RE`)뿐이면 같은 그룹, 아니면 새 그룹이다.
+    예: '사무실이나 온천에서 음란하게' → [['사무실', '온천'], ['음란']]
+        = (사무실 OR 온천) AND 음란.
     """
     q = query or ""
     if not q:
         return []
     claimed = [False] * len(q)
-    out: list[str] = []
+    found: list[tuple[int, str]] = []  # (질문 내 시작 위치, 태그명)
     for name in _known_tags():  # 길이 내림차순
         start = 0
         while True:
@@ -262,12 +273,23 @@ def _extract_tags(query: str, max_tags: int = 4) -> list[str]:
             if not any(claimed[idx : idx + len(name)]):
                 for i in range(idx, idx + len(name)):
                     claimed[i] = True
-                out.append(name)
+                found.append((idx, name))
                 break
             start = idx + 1
-        if len(out) >= max_tags:
+        if len(found) >= max_tags:
             break
-    return out
+    if not found:
+        return []
+    # 질문에 나온 순서로 훑으며 인접 태그 사이의 접속 표현을 보고 OR 그룹을 만든다.
+    found.sort()
+    groups: list[list[str]] = [[found[0][1]]]
+    for (prev_idx, prev_name), (idx, name) in zip(found, found[1:]):
+        gap = re.sub(r"\s+", "", q[prev_idx + len(prev_name) : idx])
+        if gap and _OR_JOIN_RE.fullmatch(gap):
+            groups[-1].append(name)
+        else:
+            groups.append([name])
+    return groups
 
 
 # --- 남녀 명수 → 카운트 태그(앞=남자 수, 뒤=여자 수) ----------------
@@ -366,6 +388,8 @@ def _summarize_results(tool_calls: list[dict], results: list[dict]) -> str:
             parts.extend(f"#{t}" for t in a["tags"])
         if a.get("tag_any"):
             parts.append("#" + "|".join(str(t) for t in a["tag_any"]))
+        for g in a.get("tag_any_groups") or []:
+            parts.append("#" + "|".join(str(t) for t in g))
         if a.get("min_rank"):
             parts.append(f"평점 {a['min_rank']}+")
         if a.get("rank"):
@@ -526,10 +550,16 @@ async def route_chat(
         # 메타 필터 보강: 질문에서 year/month 가 명확히 추출되면 search_videos args 에 강제 주입
         # (LLM 이 메타 인자를 빠뜨리거나 query 만 보내는 경우 방어)
         meta = _extract_meta(user_query)
-        # 태그명 사전 매칭: 질문에 DB 태그명이 그대로 있으면 (복수) tags 필터로 주입(테마 질의 정확도↑).
-        tags = _extract_tags(user_query)
-        if tags:
-            meta.setdefault("tags", tags)
+        # 태그명 사전 매칭: 질문에 DB 태그명이 그대로 있으면 태그 필터로 주입(테마 질의 정확도↑).
+        # 단독 태그는 tags(AND), '사무실이나 온천'처럼 선택 접속어로 이어진 태그는
+        # tag_any_groups(그룹 내부 OR)로 보낸다 — 모두 AND 로 걸면 0건이 되기 때문.
+        tag_groups = _extract_tags(user_query)
+        and_tags = [g[0] for g in tag_groups if len(g) == 1]
+        or_groups = [g for g in tag_groups if len(g) > 1]
+        if and_tags:
+            meta.setdefault("tags", and_tags)
+        if or_groups:
+            meta.setdefault("tag_any_groups", or_groups)
         # 남녀 명수(예: '여러 남자', '여자 2명') → 카운트 태그 OR 그룹으로 주입
         count_tags = _extract_count_tags(user_query)
         if count_tags:

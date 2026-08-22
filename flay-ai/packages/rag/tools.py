@@ -105,6 +105,7 @@ def search_videos(
     tag: str | None = None,
     tags: list[str] | None = None,
     tag_any: list[str] | None = None,
+    tag_any_groups: list[list[str]] | None = None,
     studio: str | None = None,
     kind: Literal["instance", "archive", "any"] = "any",
     playable: bool | None = None,
@@ -118,6 +119,8 @@ def search_videos(
 ) -> list[dict]:
     """자연어 검색 + 메타 필터. query 비어있고 필터만 있어도 동작 (메타 only).
 
+    tag_any_groups: OR 그룹 여러 개(그룹 내부 OR · 그룹 간 AND). LLM 이 아니라 라우터가
+          '사무실이나 온천' 같은 선택 표현을 풀어 넣는 코드 전용 인자(TOOL_SCHEMA 미노출).
     min_rank: 평점 N 이상(rank >= N). rank: 정확히 평점 N(rank == N).
     min_likes: 좋아요 N 이상(like_count >= N).
     min_play/max_play: 재생 횟수 N 이상/이하.
@@ -134,8 +137,8 @@ def search_videos(
         if actress and actress_canon is None:
             query = f"{query} {actress}".strip()
             log.info("search_videos: unresolved actress %r -> query 로 흡수", actress)
-        # tag/tags = AND(각각 반드시 포함, 단일 그룹들), tag_any = OR 한 그룹(하나라도 포함).
-        # 미해석 태그명은 조용히 무시.
+        # tag/tags = AND(각각 반드시 포함, 단일 그룹들), tag_any = OR 한 그룹(하나라도 포함),
+        # tag_any_groups = OR 그룹 여러 개(그룹 간에는 AND). 미해석 태그명은 조용히 무시.
         tag_groups: list[list[int]] = []
         and_names: list[str] = [t for t in (tags or []) if t]
         if tag and tag not in and_names:
@@ -144,8 +147,11 @@ def search_videos(
             tid = _resolve_tag_id(conn, n)
             if tid is not None:
                 tag_groups.append([tid])
+        or_groups: list[list[str]] = list(tag_any_groups or [])
         if tag_any:
-            any_ids = [tid for n in tag_any if (tid := _resolve_tag_id(conn, n)) is not None]
+            or_groups.insert(0, tag_any)
+        for group in or_groups:
+            any_ids = [tid for n in group if (tid := _resolve_tag_id(conn, n)) is not None]
             if any_ids:
                 tag_groups.append(any_ids)
         filt = Filters(

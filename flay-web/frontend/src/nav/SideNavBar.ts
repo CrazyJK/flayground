@@ -52,6 +52,7 @@ export class SideNavBar extends GroundNav {
     {},
     { url: 'page.control.html', name: 'control' },
     { url: 'page.crawling.html', name: 'crawling' },
+    { url: 'page.flay-ai.html', name: 'flay ai' },
     {},
     { url: 'page.image-page.html', name: 'image page' },
     { url: 'page.image-download.html', name: 'pic download' },

@@ -35,6 +35,7 @@ const entryPoints = {
     'page.statistics': './src/view/page.statistics.ts',
     'page.flay-all': './src/view/page.flay-all.ts',
     'page.crawling': './src/view/page.crawling.ts',
+    'page.flay-ai': './src/view/page.flay-ai.ts',
   },
   images: {
     'page.image-page': './src/view/page.image-page.ts',

@@ -28,6 +28,7 @@ export class SideNavBar extends GroundNav {
     { url: 'page.dashboard.html', name: 'dashboard' },
     { url: 'page.flay-page.html', name: 'flay page' },
     { url: 'page.flay-flix.html', name: 'flay flix' },
+    { url: 'page.flay-ai.html', name: 'flay ai' },
     {},
     { url: 'page.flay-one.html', name: 'flay one' },
     { url: 'page.flay-grid.html', name: 'flay grid' },
@@ -52,7 +53,6 @@ export class SideNavBar extends GroundNav {
     {},
     { url: 'page.control.html', name: 'control' },
     { url: 'page.crawling.html', name: 'crawling' },
-    { url: 'page.flay-ai.html', name: 'flay ai' },
     {},
     { url: 'page.image-page.html', name: 'image page' },
     { url: 'page.image-download.html', name: 'pic download' },
@@ -161,7 +161,7 @@ export class SideNavBar extends GroundNav {
     for (const anchor of anchors) {
       if (anchor.href.includes(location.pathname)) {
         anchor.parentElement!.classList.add('active');
-        this.#currentMenuName = anchor.textContent!.replace(/\s+/g, '');
+        this.#currentMenuName = anchor.textContent.replace(/\s+/g, '');
         break; // 첫 번째 매치에서 중단
       }
     }

@@ -1,7 +1,7 @@
+import { chat, extractHits } from '@ai/flayAiChat';
+import GroundFlay from '@base/GroundFlay';
 import FlayCard from '@flay/domain/FlayCard';
 import FlayStorage from '@lib/storage/FlayStorage';
-import GroundFlay from '@base/GroundFlay';
-import { chat, extractHits } from '@ai/flayAiChat';
 import './FlayAiChatPanel.scss';
 
 const LIMIT_STORAGE_KEY = 'flay-ai-chat.limit';
@@ -34,7 +34,7 @@ export default class FlayAiChatPanel extends GroundFlay {
 
     this.innerHTML = `
       <div class="chat-log">
-        <div class="chat-intro">flay-ai 에게 자연어로 검색을 요청하세요. 예) 온천에서 노는 영상 5개</div>
+        <div class="chat-intro"></div>
       </div>
       <form class="composer">
         <div class="composer-box">
@@ -55,13 +55,14 @@ export default class FlayAiChatPanel extends GroundFlay {
 
   connectedCallback() {
     this.querySelector('form')!.addEventListener('submit', this.#handleSubmit);
-    this.#limitEl.addEventListener('change', this.#handleLimitChange);
+    // change 는 blur 전까지 발생하지 않아 값을 바꾸고 바로 떠나면 유실 → input 으로 즉시 저장
+    this.#limitEl.addEventListener('input', this.#handleLimitChange);
     this.#inputEl.focus();
   }
 
   disconnectedCallback() {
     this.querySelector('form')!.removeEventListener('submit', this.#handleSubmit);
-    this.#limitEl.removeEventListener('change', this.#handleLimitChange);
+    this.#limitEl.removeEventListener('input', this.#handleLimitChange);
     this.#abortController?.abort();
   }
 
@@ -75,7 +76,11 @@ export default class FlayAiChatPanel extends GroundFlay {
   };
 
   #handleLimitChange = (): void => {
-    FlayStorage.local.set(LIMIT_STORAGE_KEY, this.#limitEl.value);
+    // 입력 중 빈 값·0 같은 일시적 값은 저장하지 않는다 (재진입 시 0개로 복원되는 것 방지)
+    const n = Number(this.#limitEl.value);
+    if (Number.isFinite(n) && n >= 1) {
+      FlayStorage.local.set(LIMIT_STORAGE_KEY, String(Math.min(MAX_LIMIT, n)));
+    }
   };
 
   /**
@@ -103,10 +108,13 @@ export default class FlayAiChatPanel extends GroundFlay {
     exchangeEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
     const seenOpus = new Set<string>();
+    // 실제 사용한 개수를 저장해 재진입 시 복원 (input 저장의 안전망)
+    const limit = Math.min(MAX_LIMIT, Math.max(1, Number(this.#limitEl.value) || DEFAULT_LIMIT));
+    FlayStorage.local.set(LIMIT_STORAGE_KEY, String(limit));
     this.#abortController = new AbortController();
     try {
       await chat(query, {
-        limit: Math.min(MAX_LIMIT, Math.max(1, Number(this.#limitEl.value) || DEFAULT_LIMIT)),
+        limit,
         signal: this.#abortController.signal,
         onEvent: (ev) => {
           switch (ev.type) {

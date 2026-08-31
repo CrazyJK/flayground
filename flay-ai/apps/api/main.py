@@ -291,6 +291,11 @@ def create_app() -> FastAPI:
 
     app.include_router(enhance_router)
 
+    # ---- 연출 클립(구간 트림 → 안정화 → 화질 개선 체인) ----
+    from apps.api.routers.showcase import router as showcase_router
+
+    app.include_router(showcase_router)
+
     # ---- 자막 생성(STT→번역) ----
     from apps.api.routers.subtitle import router as subtitle_router
 

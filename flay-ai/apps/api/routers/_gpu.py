@@ -12,13 +12,22 @@ import subprocess
 
 def gpu_busy() -> str | None:
     """실행 중인 GPU 잡이 있으면 사유 문자열, 없으면 None."""
+    # showcase 를 먼저 검사 — 체인 잡의 서브 잡(stabilize/enhance)보다 상위 잡으로 안내
+    try:
+        from packages.showcase import job as CJ
+
+        for s in CJ.list_jobs():
+            if s.get("status") == "running":
+                return f"연출 클립 잡 {s['job_id']} 실행 중 — 완료 후 시도하세요."
+    except Exception:  # noqa: BLE001 — 한 서브시스템 오류가 검사 전체를 막지 않게
+        pass
     try:
         from packages.stabilizer import job as SJ
 
         for s in SJ.list_jobs():
             if s.get("status") == "running":
                 return f"영상 안정화 잡 {s['job_id']} 실행 중 — 완료 후 시도하세요."
-    except Exception:  # noqa: BLE001 — 한 서브시스템 오류가 검사 전체를 막지 않게
+    except Exception:  # noqa: BLE001
         pass
     try:
         from packages.enhancer import job as EJ

@@ -115,6 +115,7 @@ flay-ai/data/diary_assets/
 flay-ai/data/stabilize/
 flay-ai/data/subtitle/
 flay-ai/data/enhance/
+flay-ai/data/showcase/
 
 # 다운로드된 모델 가중치 (YOLO11-seg 등) — 재생성 가능
 yolo*.pt

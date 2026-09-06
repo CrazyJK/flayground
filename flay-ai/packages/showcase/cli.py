@@ -10,13 +10,20 @@ from __future__ import annotations
 import logging
 import sys
 
+_LOCAL_USAGE = (
+    "usage: local <file> <start> <end> [key=value ...]\n"
+    "  keys: stabilize=off|background|person  strength=dejitter|smooth|lock|auto\n"
+    "        edge=crop|blur|black  scale_lock=1  lowfps=1  mute=1\n"
+    "        enhance=0|1  upscale=none|2x|4k  speed=1|0.5|0.25  interpolate=off|smooth\n"
+    "        model=photo|anime  fps=0|60  region=x,y,w,h(0~1)  subject=t,x,y\n"
+    "  start=0 end=0 이면 전체 구간(트림 생략).\n")
+
 
 def _local(args: list[str]) -> None:
     """로컬 파일로 잡을 만들어 인라인 실행(end-to-end 검증용).
 
-    usage: local <file> <start> <end> [dejitter|smooth|lock] [crop|blur|black] [x,y,w,h]
-    안정화는 person 모드(주인공 자동 지정), 화질은 4k·0.5배·smooth 기본.
-    x,y,w,h 는 처리 구역(0~1 상대 사각형) — 지정 시 그 구역만 잘라 처리.
+    기본값은 연출 클립(person·smooth·crop·4k·0.5배·smooth). key=value 로 단계·옵션을 바꿔
+    안정화만(enhance=0)·화질만(stabilize=off) 조합도 검증할 수 있다.
     """
     import shutil
     from pathlib import Path
@@ -25,23 +32,37 @@ def _local(args: list[str]) -> None:
     from .pipeline import run_job
 
     if len(args) < 3:
-        sys.stderr.write("usage: local <file> <start> <end> [strength] [edge] [x,y,w,h]\n")
+        sys.stderr.write(_LOCAL_USAGE)
         sys.exit(2)
     src = Path(args[0])
     if not src.exists():
         sys.stderr.write(f"input not found: {src}\n")
         sys.exit(2)
-    params = {
+    params: dict = {
         "start": float(args[1]), "end": float(args[2]),
-        "mode": "person",
-        "strength": args[3] if len(args) > 3 else "smooth",
-        "edge": args[4] if len(args) > 4 else "crop",
-        "upscale": "4k", "speed": 0.5, "interpolate": "smooth",
+        "stabilize": "person", "strength": "smooth", "edge": "crop",
+        "enhance": True, "upscale": "4k", "speed": 0.5, "interpolate": "smooth",
         "model": "photo", "fps": 0,
     }
-    if len(args) > 5:
-        x, y, w, h = (float(v) for v in args[5].split(","))
-        params["region"] = {"x": x, "y": y, "w": w, "h": h}
+    for kv in args[3:]:
+        k, _, v = kv.partition("=")
+        if k == "region":
+            x, y, w, h = (float(t) for t in v.split(","))
+            params["region"] = {"x": x, "y": y, "w": w, "h": h}
+        elif k == "subject":  # 주인공 클릭 t,x,y (원본 기준 초·상대좌표)
+            t, x, y = (float(s) for s in v.split(","))
+            params["subject"] = {"t": t, "x": x, "y": y}
+        elif k in ("enhance", "scale_lock", "lowfps", "mute"):
+            params[k] = v.lower() not in ("0", "false", "off", "no")
+        elif k == "speed":
+            params[k] = float(v)
+        elif k == "fps":
+            params[k] = int(v)
+        elif k in ("stabilize", "strength", "edge", "upscale", "interpolate", "model"):
+            params[k] = v
+        else:
+            sys.stderr.write(f"unknown option: {kv}\n{_LOCAL_USAGE}")
+            sys.exit(2)
     job_id = J.new_job(params)
     shutil.copy2(src, J.input_path(job_id))
     sys.stderr.write(f"job {job_id} -> {J.job_path(job_id)}\n")
@@ -74,8 +95,8 @@ def main(argv: list[str] | None = None) -> None:
         return
     sys.stderr.write(
         "usage: python -m packages.showcase.cli run <job_id>\n"
-        "     | local <file> <start> <end> [dejitter|smooth|lock] [crop|blur|black]\n"
-        "     | cleanup\n")
+        "     | local <file> <start> <end> [key=value ...]\n"
+        "     | cleanup\n" + _LOCAL_USAGE)
     sys.exit(2)
 
 

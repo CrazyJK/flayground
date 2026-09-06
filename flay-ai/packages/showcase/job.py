@@ -105,6 +105,42 @@ def list_jobs() -> list[dict[str, Any]]:
     return out
 
 
+def result_name(st: dict[str, Any]) -> str:
+    """결과 다운로드 파일명 — 활성 단계와 설정을 이름에 명시(ASCII 안전).
+
+    예: showcase_2.4-7.2s_person-dejitter_4k_0.5x_60fps_region_827a70.mp4
+        showcase_0-8s_background-auto_noenh_abc123.mp4
+    """
+    p = st.get("params") or {}
+    parts = [f"{float(p.get('start', 0)):g}-{float(p.get('end', 0)):g}s"]
+    stab = p.get("stabilize") or p.get("mode") or "person"
+    if stab == "off":
+        parts.append("nostab")
+    else:
+        parts.append(f"{stab}-{p.get('strength', 'smooth')}")
+    enh = p.get("enhance", True)
+    if isinstance(enh, str):
+        enh = enh.lower() not in ("0", "false", "off", "no")
+    if not enh:
+        parts.append("noenh")
+    else:
+        up = p.get("upscale")
+        if up and up != "none":
+            parts.append(str(up))
+        sp = float(p.get("speed", 1) or 1)
+        if sp != 1:
+            parts.append(f"{sp:g}x")
+        if int(p.get("fps") or 0) == 60:
+            parts.append("60fps")
+        if p.get("interpolate") == "off":
+            parts.append("nointerp")
+    if p.get("region"):
+        parts.append("region")
+    if p.get("mute"):
+        parts.append("mute")
+    return "showcase_" + "_".join(parts) + f"_{st.get('job_id', '')[:6]}.mp4"
+
+
 def cleanup_old_jobs(retain_hours: float | None = None) -> int:
     """보존기간 지난 완료/실패/취소 잡 디렉토리를 삭제. 삭제 개수 반환.
 

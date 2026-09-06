@@ -1,9 +1,11 @@
-"""연출 클립 잡 파이프라인 — trim → stabilize(서브 잡) → enhance(서브 잡) → finalize.
+"""연출 클립(영상 스튜디오) 잡 파이프라인 — trim → stabilize(서브 잡) → enhance(서브 잡) → finalize.
 
-기존 stabilizer·enhancer 를 수정 없이 재사용한다: 각각의 잡을 생성해 별도
-프로세스(python -m packages.<pkg>.cli run)로 순차 실행하고 status.json 을 폴링해
-진행률을 하나로 매핑한다. 별도 프로세스로 돌리는 이유는 stabilizer 설계와 동일 —
-CUDA(YOLO)·Vulkan(ncnn) 자원이 단계 사이에 완전히 해제되게 한다(12GB GPU 공유).
+각 단계는 선택 가능하다: 구간이 전체이고 구역이 없으면 trim 생략, `stabilize=off` 면 안정화
+생략, `enhance=off` 면 화질 개선 생략. 안정화만 = 기존 안정화 화면, 화질만 = 기존 화질 화면,
+둘 다 = 연출 클립. 기존 stabilizer·enhancer 는 수정 없이 재사용한다: 각각의 잡을 생성해 별도
+프로세스(python -m packages.<pkg>.cli run)로 순차 실행하고 status.json 을 폴링해 진행률을
+하나로 매핑한다. 별도 프로세스로 돌리는 이유는 stabilizer 설계와 동일 — CUDA(YOLO)·Vulkan(ncnn)
+자원이 단계 사이에 완전히 해제되게 한다(12GB GPU 공유).
 
 재개(retry): 서브 잡 id 를 status(stab_job/enh_job)에 남겨 두므로, 완료된 서브 잡은
 건너뛰고 실패한 서브 잡은 같은 id 로 재실행한다(enhancer 는 단계 증분·멱등).
@@ -30,8 +32,54 @@ log = logging.getLogger(__name__)
 
 _POLL_SEC = 2.0
 
-# 전체 진행률에서 각 단계가 차지하는 구간 — enhance(업스케일)가 지배 비용
-_STAGES = {"trim": (0, 5), "stabilize": (5, 25), "enhance": (25, 99)}
+STABILIZE_MODES = ("off", "background", "person")
+
+# 단계별 상대 비용(진행률 배분용). enhance(업스케일)가 지배 비용, 안정화만이면 안정화가 대부분.
+_STAGE_WEIGHT = {"trim": 5, "stabilize": 20, "enhance": 70}
+
+
+def stabilize_mode(params: dict[str, Any]) -> str:
+    """params 의 안정화 모드 — 신 키 `stabilize`, 구 키 `mode`(person 고정 시절) 순으로 읽는다."""
+    m = params.get("stabilize") or params.get("mode") or "person"
+    return m if m in STABILIZE_MODES else "person"
+
+
+def enhance_on(params: dict[str, Any]) -> bool:
+    """params 의 화질 개선 단계 사용 여부(기본 켬)."""
+    v = params.get("enhance", True)
+    if isinstance(v, str):
+        return v.lower() not in ("0", "false", "off", "no")
+    return bool(v)
+
+
+def plan_stages(params: dict[str, Any], duration: float) -> dict[str, tuple[int, int]]:
+    """활성 단계와 진행률 구간(0~99) — 삽입 순서가 실행 순서.
+
+    Args:
+        params: 잡 파라미터(start/end/region/stabilize/enhance).
+        duration: 입력 길이(초). 구간이 이를 덮고 구역이 없으면 trim 을 생략한다.
+
+    Returns:
+        {단계명: (lo, hi)} — 아무 단계도 없으면 빈 dict(호출측이 거부).
+    """
+    start = float(params.get("start", 0) or 0)
+    end = float(params.get("end", 0) or 0)
+    full = start <= 0 and (end <= 0 or end >= duration - 0.05)
+    active: list[str] = []
+    if not full or params.get("region"):
+        active.append("trim")
+    if stabilize_mode(params) != "off":
+        active.append("stabilize")
+    if enhance_on(params):
+        active.append("enhance")
+    total = sum(_STAGE_WEIGHT[s] for s in active) or 1
+    out: dict[str, tuple[int, int]] = {}
+    acc = 0
+    for s in active:
+        lo = round(99 * acc / total)
+        acc += _STAGE_WEIGHT[s]
+        out[s] = (lo, round(99 * acc / total))
+    return out
 
 
 def _venv_python() -> str:
@@ -39,20 +87,21 @@ def _venv_python() -> str:
 
 
 def _run_sub(module: str, jobmod: Any, sub_id: str, stage: str,
-             set_status: Any) -> dict[str, Any]:
+             rng: tuple[int, int], set_status: Any) -> dict[str, Any]:
     """서브 잡을 별도 프로세스로 실행하고 완료까지 폴링. done 이 아니면 예외.
 
     Args:
         module: 워커 모듈 경로(예: "packages.stabilizer.cli").
         jobmod: 해당 패키지의 job 모듈(get_status 사용).
         sub_id: 서브 잡 id.
-        stage: showcase 단계명(진행률 구간 키).
+        stage: showcase 단계명.
+        rng: 이 단계가 차지하는 전체 진행률 구간 (lo, hi).
         set_status: showcase status 갱신 콜백.
 
     Returns:
         완료된 서브 잡의 status dict.
     """
-    lo, hi = _STAGES[stage]
+    lo, hi = rng
     proc = subprocess.Popen([_venv_python(), "-m", module, "run", sub_id],
                             cwd=str(REPO_ROOT))
     while proc.poll() is None:
@@ -85,8 +134,12 @@ def _region_crop(region: dict[str, Any], fw: int, fh: int) -> str:
     y = min(max(float(region.get("y", 0)), 0.0), 1.0)
     w = min(max(float(region.get("w", 1)), 0.0), 1.0 - x)
     h = min(max(float(region.get("h", 1)), 0.0), 1.0 - y)
-    cw = max((round(w * fw) // 2) * 2, 240)  # 최소 240px — 과도한 초소형 크롭 방지
-    ch = max((round(h * fh) // 2) * 2, 240)
+    # 하한은 UI 와 같은 상대값(한 변 5%, 최소 16px) — 절대 px 하한을 두면 저해상도 소스에서
+    # 사용자가 잡은 구역이 말없이 넓어진다(640x360 에서 240px 하한 = 가로 37%).
+    min_w = max(16, (round(0.05 * fw) // 2) * 2)
+    min_h = max(16, (round(0.05 * fh) // 2) * 2)
+    cw = min(max((round(w * fw) // 2) * 2, min_w), (fw // 2) * 2)
+    ch = min(max((round(h * fh) // 2) * 2, min_h), (fh // 2) * 2)
     cx = min((round(x * fw) // 2) * 2, max(fw - cw, 0))
     cy = min((round(y * fh) // 2) * 2, max(fh - ch, 0))
     return f"crop={cw}:{ch}:{cx}:{cy}"
@@ -116,13 +169,34 @@ def _trim(cfg: dict, inp: Path, out: Path, start: float, dur: float,
         raise RuntimeError(f"구간 트림 실패: {(p.stderr or '')[-500:]}")
 
 
+def _stab_options(params: dict[str, Any], start: float, dur: float) -> dict[str, Any]:
+    """stabilizer 서브 잡 options — 클릭 좌표는 트림(시간)·구역(공간) 기준으로 변환."""
+    options: dict[str, Any] = {"edge": params.get("edge", "crop")}
+    region = params.get("region")
+    subject = params.get("subject")
+    if subject:
+        t = min(max(float(subject.get("t", 0)) - start, 0.0), dur)
+        sx, sy = float(subject.get("x", 0.5)), float(subject.get("y", 0.5))
+        if region:  # 원본 기준 클릭 → 크롭된 프레임 기준 상대좌표
+            rw = max(float(region.get("w", 1)), 1e-6)
+            rh = max(float(region.get("h", 1)), 1e-6)
+            sx = min(max((sx - float(region.get("x", 0))) / rw, 0.0), 1.0)
+            sy = min(max((sy - float(region.get("y", 0))) / rh, 0.0), 1.0)
+        options["subject"] = {"t": round(t, 3), "x": round(sx, 4), "y": round(sy, 4)}
+    if params.get("scale_lock"):
+        options["scale_lock"] = True
+    if params.get("lowfps"):  # 저fps(gif 등) 입력 보간 — stabilizer 의 interpolate 옵션
+        options["interpolate"] = True
+    return options
+
+
 def run_job(job_id: str) -> None:
     """showcase 잡 실행 — cli(서브프로세스)가 호출. 실패는 status 에 남긴다."""
     st = J.get_status(job_id)
     if st is None:
         raise SystemExit(f"job not found: {job_id}")
     cfg = showcase_config()
-    J.set_status(job_id, status="running", stage="trim", progress=0, error=None)
+    J.set_status(job_id, status="running", stage="probe", progress=0, error=None)
 
     def _set(**kw: Any) -> None:
         J.set_status(job_id, **kw)
@@ -132,7 +206,7 @@ def run_job(job_id: str) -> None:
         jdir = J.job_path(job_id)
         inp = J.input_path(job_id)
 
-        # ── probe + 구간 검증
+        # ── probe + 구간 검증 + 단계 계획
         meta = probe_input(cfg["ffprobe"], inp)
         if meta["duration"] <= 0:
             raise RuntimeError("영상 정보를 읽을 수 없습니다(지원하지 않는 파일?)")
@@ -143,76 +217,90 @@ def run_job(job_id: str) -> None:
         dur = end - start
         if start < 0 or dur <= 0:
             raise RuntimeError(f"구간이 잘못되었습니다: {start:.1f}~{end:.1f}초")
+        stages = plan_stages(params, meta["duration"])
+        if not stages:
+            raise RuntimeError("실행할 단계가 없습니다(구간·구역·안정화·화질 중 하나는 지정)")
         maxs = float(cfg.get("max_clip_seconds", 0) or 0)
-        if maxs and dur > maxs:
+        if "enhance" in stages and maxs and dur > maxs:
             raise RuntimeError(
                 f"구간이 너무 깁니다({dur:.1f}초 > 제한 {maxs:.0f}초) — "
                 "업스케일 비용이 프레임당 초 단위라 짧은 구간만 받습니다")
-        _set(input=meta)
+        _set(input=meta, stages=list(stages))
 
         # ── ① trim (+ 구역 크롭 — 지정 시 원본 해상도에서 해당 사각형만 잘라냄)
-        region = params.get("region")
-        crop = _region_crop(region, meta["width"], meta["height"]) if region else None
-        trim_mp4 = jdir / "trim.mp4"
-        _set(stage="trim", progress=1)
-        _trim(cfg, inp, trim_mp4, start, dur, bool(meta.get("has_audio")), crop)
-        _set(progress=_STAGES["trim"][1])
+        cur = inp
+        if "trim" in stages:
+            region = params.get("region")
+            crop = _region_crop(region, meta["width"], meta["height"]) if region else None
+            trim_mp4 = jdir / "trim.mp4"
+            _set(stage="trim", progress=stages["trim"][0] + 1)
+            _trim(cfg, inp, trim_mp4, start, dur, bool(meta.get("has_audio")), crop)
+            _set(progress=stages["trim"][1])
+            cur = trim_mp4
 
-        # ── ② stabilize (person 모드 — 피사체 추적 고정 + 여백 크롭)
+        # ── ② stabilize (background=vidstab | person=피사체 추적 고정)
         sid = st.get("stab_job")
-        stab = SJ.get_status(sid) if sid else None
-        if not stab or stab.get("status") != "done":
-            if not stab:  # 새 서브 잡 — 클릭 좌표는 트림(시간)·구역(공간) 기준으로 변환해 전달
-                options: dict[str, Any] = {"edge": params.get("edge", "crop")}
-                subject = params.get("subject")
-                if subject:
-                    t = min(max(float(subject.get("t", 0)) - start, 0.0), dur)
-                    sx, sy = float(subject.get("x", 0.5)), float(subject.get("y", 0.5))
-                    if region:  # 원본 기준 클릭 → 크롭된 프레임 기준 상대좌표
-                        rw = max(float(region.get("w", 1)), 1e-6)
-                        rh = max(float(region.get("h", 1)), 1e-6)
-                        sx = min(max((sx - float(region.get("x", 0))) / rw, 0.0), 1.0)
-                        sy = min(max((sy - float(region.get("y", 0))) / rh, 0.0), 1.0)
-                    options["subject"] = {"t": round(t, 3),
-                                          "x": round(sx, 4), "y": round(sy, 4)}
-                if params.get("scale_lock"):
-                    options["scale_lock"] = True
-                sid = SJ.new_job(params.get("mode", "person"),
-                                 params.get("strength", "smooth"), options)
-                _set(stab_job=sid)
-            if not SJ.input_path(sid).exists():
-                shutil.copy2(trim_mp4, SJ.input_path(sid))
-            stab = _run_sub("packages.stabilizer.cli", SJ, sid, "stabilize", _set)
-        stab_out = SJ.job_path(sid) / ((stab.get("outputs") or [{}])[0].get("file") or "out.mp4")
-        if not stab_out.exists():
-            raise RuntimeError("안정화 결과 파일이 없습니다")
+        if "stabilize" in stages:
+            stab = SJ.get_status(sid) if sid else None
+            if not stab or stab.get("status") != "done":
+                if not stab:
+                    sid = SJ.new_job(stabilize_mode(params), params.get("strength", "smooth"),
+                                     _stab_options(params, start, dur))
+                    _set(stab_job=sid)
+                if not SJ.input_path(sid).exists():
+                    shutil.copy2(cur, SJ.input_path(sid))
+                stab = _run_sub("packages.stabilizer.cli", SJ, sid, "stabilize",
+                                stages["stabilize"], _set)
+            stab_out = SJ.job_path(sid) / ((stab.get("outputs") or [{}])[0].get("file") or "out.mp4")
+            if not stab_out.exists():
+                raise RuntimeError("안정화 결과 파일이 없습니다")
+            cur = stab_out
 
         # ── ③ enhance (업스케일·슬로모션·보간)
         eid = st.get("enh_job")
-        enh = EJ.get_status(eid) if eid else None
-        if not enh or enh.get("status") != "done":
-            if not enh:
-                eid = EJ.new_job({
-                    "upscale": params.get("upscale", "4k"),
-                    "speed": float(params.get("speed", 0.5)),
-                    "interpolate": params.get("interpolate", "smooth"),
-                    "model": params.get("model", "photo"),
-                    "fps": int(params.get("fps", 0) or 0),
-                })
-                _set(enh_job=eid)
-            if not EJ.input_path(eid).exists():
-                shutil.copy2(stab_out, EJ.input_path(eid))
-            enh = _run_sub("packages.enhancer.cli", EJ, eid, "enhance", _set)
+        note = None
+        metrics: dict[str, Any] = {}
+        if "enhance" in stages:
+            enh = EJ.get_status(eid) if eid else None
+            if not enh or enh.get("status") != "done":
+                if not enh:
+                    eid = EJ.new_job({
+                        "upscale": params.get("upscale", "4k"),
+                        "speed": float(params.get("speed", 0.5)),
+                        "interpolate": params.get("interpolate", "smooth"),
+                        "model": params.get("model", "photo"),
+                        "fps": int(params.get("fps", 0) or 0),
+                    })
+                    _set(enh_job=eid)
+                if not EJ.input_path(eid).exists():
+                    shutil.copy2(cur, EJ.input_path(eid))
+                enh = _run_sub("packages.enhancer.cli", EJ, eid, "enhance",
+                               stages["enhance"], _set)
+            cur = EJ.job_path(eid) / "out.mp4"
+            metrics = (enh.get("outputs") or [{}])[0].get("metrics") or {}
+            note = enh.get("note")
 
         # ── ④ finalize — 결과를 showcase 잡 폴더로 가져오고 서브 잡 정리
         out_mp4 = jdir / "out.mp4"
-        shutil.copy2(EJ.job_path(eid) / "out.mp4", out_mp4)
-        enh_out = (enh.get("outputs") or [{}])[0]
-        outputs = [{"variant": "showcase", "file": "out.mp4",
-                    "metrics": enh_out.get("metrics") or {}}]
-        note = enh.get("note")
-        for sub_dir in (SJ.job_path(sid), EJ.job_path(eid)):
-            shutil.rmtree(sub_dir, ignore_errors=True)
+        if cur != out_mp4:
+            shutil.copy2(cur, out_mp4)
+        if params.get("mute"):  # 오디오 제거 — 재인코딩 없이 비디오만 리먹스
+            muted = jdir / "out_mute.mp4"
+            p = subprocess.run([cfg["ffmpeg"], "-hide_banner", "-v", "error", "-y",
+                                "-i", str(out_mp4), "-an", "-c:v", "copy",
+                                "-movflags", "+faststart", str(muted)],
+                               capture_output=True, text=True)
+            if p.returncode != 0 or not muted.exists():
+                raise RuntimeError(f"오디오 제거 실패: {(p.stderr or '')[-300:]}")
+            muted.replace(out_mp4)
+        if not metrics:  # 화질 단계가 없으면 결과 파일을 직접 측정
+            m = probe_input(cfg["ffprobe"], out_mp4)
+            metrics = {"out_w": m["width"], "out_h": m["height"], "out_fps": m["fps"],
+                       "duration": m["duration"]}
+        outputs = [{"variant": "showcase", "file": "out.mp4", "metrics": metrics}]
+        for sub_dir in (SJ.job_path(sid) if sid else None, EJ.job_path(eid) if eid else None):
+            if sub_dir:
+                shutil.rmtree(sub_dir, ignore_errors=True)
         _set(status="done", stage="done", progress=100, outputs=outputs,
              note=note, sub=None, stab_job=None, enh_job=None)
     except Exception as e:  # noqa: BLE001 — 실패를 status 에 남기고 종료

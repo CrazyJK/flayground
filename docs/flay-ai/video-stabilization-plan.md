@@ -129,7 +129,7 @@ data/stabilize/{job_id}/  ── 서브프로세스 잡(packages.stabilizer.cli)
   ▲                                                                           │
   └── GET /api/stabilize/jobs/{id} (폴링) ── status.json ──────────────────────┘
                                                        │
-  apps/web /stabilize 화면 ── 업로드·옵션·진행·결과(전후 비교) ──────────────────┘  → 결과 재생/다운로드
+  apps/web /studio/video 화면(② 안정화 단계) ── 업로드·옵션·진행·결과(전후 비교) ──────────────────┘  → 결과 재생/다운로드
 ```
 
 ---
@@ -353,7 +353,7 @@ stabilize:
 
 ## 11. 프론트엔드 UI (`apps/web`)
 
-기존 Next.js 16 + React 19 + Tailwind 4 웹에 `/stabilize` 경로를 추가한다. localhost + 자체 TLS 전제.
+기존 Next.js 16 + React 19 + Tailwind 4 웹의 영상 스튜디오(`/studio/video`, ② 안정화 단계)에서 제공한다. localhost + 자체 TLS 전제.
 
 **① 업로드 + 옵션 화면**
 - 영상 업로드(드래그&드롭 / 파일 선택). 길이·해상도 상한 안내, 클라이언트 1차 검증.
@@ -434,7 +434,7 @@ stabilize:
 | **M2** | 세그 + 모션 | `segment`(YOLO11+트래커), `flow`(배경=RAFT+마스크 제외+RANSAC, 인물=track) → transforms.json | 인물 픽셀이 배경 추정에서 빠짐, 인물 track 변환 산출(단위) |
 | **M3** | 평활화 + 무크롭 워프 | `smooth`(가우시안), `warp`(캔버스 확장, 검은 여백) | 합성 흔들림 클립 잔여 모션↓, 전 픽셀 보존 확인 |
 | **M4** | 잡 견고화 | 단계 재개·취소·상호배제(인덱싱 교차), `retain_hours` 정리, status.json 원자 갱신, "둘 다" 2산출 | 강제종료 후 재실행 이어감, 동시 잡 거부 |
-| **M5** | 프론트엔드 | `/stabilize` 업로드+옵션 / 진행 / 결과(전후 비교) 화면 | 브라우저에서 업로드→선택→다운로드, 둘 다 모드 두 결과 |
+| **M5** | 프론트엔드 | 업로드+옵션 / 진행 / 결과(전후 비교) 화면(현재 `/studio/video` 에 통합) | 브라우저에서 업로드→선택→다운로드, 둘 다 모드 두 결과 |
 | **M6** | 품질·옵션 | `metrics`, L1 평활화 옵션, SAM2 백엔드, A/B 비교 | 지표로 백엔드·평활화 확정 |
 
 ---

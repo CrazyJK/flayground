@@ -18,18 +18,19 @@
 이 폴더는 **이미 구현된 것을 기준으로 한 동작 설명서**입니다.
 검토로 드러난 문서·구현 불일치와 남은 작업은 [`TODO.md`](TODO.md) 에 정리되어 있습니다.
 
-신규 서브시스템 [`video-stabilization-plan.md`](video-stabilization-plan.md) — 흔들린 영상을 **배경/인물** 기준으로
-안정화(클릭→SAM2 추적·자동 강도·여백 블러/크롭). **배경·인물 모드 + 전체 UI 동작.** 계획 + 구현 현황 + 남은 할 일을 한 문서에 정리.
+**flayAI 스튜디오**(`/studio`, 전용 헤더) — 컬렉션 검색과 무관한 영상·이미지 도구 영역. flayAI 헤더의
+"스튜디오" 링크로 진입하며, 옛 경로(`/stabilize`·`/enhance`·`/showcase`·`/ico`)는 영구 리다이렉트된다.
 
-신규 서브시스템 [`video-enhance-plan.md`](video-enhance-plan.md) — 영상 **AI 업스케일(4K) + 슬로모션 + RIFE
-프레임 보간**(`/enhance`). **P1~P3(코어·API·UI) 구현 완료.** 계획 + 구현 현황 + 남은 할 일을 한 문서에 정리.
-
-신규 서브시스템 **연출 클립**(`packages/showcase` + `/api/showcase` + `/showcase`) — 원본 영상에서 **구간을
-잘라(trim)** 안정화(person 모드, 피사체 고정·여백 크롭)와 화질 개선(업스케일·슬로모션·보간)을 **서브 잡으로
-순차 실행**하는 체인. 두 서브시스템을 수정 없이 재사용하며, 잡 모델·SSE·API 형태는 enhance 와 동일하다.
-구간 상한은 `config.yaml` `showcase.max_clip_seconds`(기본 10초). 미리보기에서 **처리 구역**(사각형 드래그,
-`region`)을 지정하면 원본 해상도에서 그 구역만 잘라 처리한다 — 피사체가 커지고 안정화 다운스케일을 피해
-업스케일 효과가 뚜렷해진다.
+- **영상 스튜디오** `/studio/video` — [`video-studio-plan.md`](video-studio-plan.md). 구간 추출(0.1초)·처리 구역(사각형
+  핸들 + 설정 패널 % 수치 입력, 파일별 기억)·오디오 제거 → **② 안정화**(끔/배경/인물, 강도·여백·주인공 클릭·크기 고정·저fps
+  보간; 인물 모드는 **중앙 고정(pin)** — 화면 정중앙을 목표로 이동 전체를 상쇄하고, 잘라내기와 함께 쓰면 고정 크기 창이
+  주인공을 따라가는 **추적 크롭**) → **③ 화질 개선**(끔/켬, 업스케일·배속·AI 보간·60fps·실사/애니) → 결과(원본↔결과 비교,
+  설정 명시 파일명)를 한 화면에서 단계별로 켜고 끈다. 백엔드는 `packages/showcase` + `/api/showcase` — 단계 선택형 체인 잡으로, 아래 두 서브시스템을 서브 잡으로
+  재사용한다(안정화만 = stabilizer, 화질만 = enhancer, 둘 다 = 연출 클립). 구간 상한은 화질 단계 켬 10초
+  (`showcase.max_clip_seconds`), 끔 120초(`stabilize.max_input_seconds`).
+  - 안정화 엔진 [`video-stabilization-plan.md`](video-stabilization-plan.md) — 배경(vidstab)/인물(클릭→추적 고정), 자동 강도, 여백 블러/크롭.
+  - 화질 엔진 [`video-enhance-plan.md`](video-enhance-plan.md) — Real-ESRGAN 업스케일(4K) + 슬로모션 + RIFE 프레임 보간.
+- **ICO 변환** `/studio/ico` — 이미지 → 멀티 해상도 아이콘(동기 처리).
 
 ## 한 줄 요약
 

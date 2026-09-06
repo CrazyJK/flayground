@@ -4,7 +4,47 @@ from __future__ import annotations
 
 from packages.showcase import job as J
 from packages.showcase.config import showcase_config
-from packages.showcase.pipeline import _region_crop
+from packages.showcase.pipeline import _region_crop, plan_stages
+
+
+def test_plan_stages_combos():
+    # 연출: 구간+인물 고정+화질 → 세 단계, 0→99 단조 분할, enhance 가 가장 넓음
+    st = plan_stages({"start": 2, "end": 6, "stabilize": "person", "enhance": True}, 22.0)
+    assert list(st) == ["trim", "stabilize", "enhance"]
+    prev = 0
+    for lo, hi in st.values():
+        assert lo == prev and hi >= lo
+        prev = hi
+    assert prev == 99
+    widths = {k: hi - lo for k, (lo, hi) in st.items()}
+    assert widths["enhance"] == max(widths.values())
+    # 안정화만(전체 구간, 구역 없음) → 트림 생략
+    st2 = plan_stages({"start": 0, "end": 0, "stabilize": "background", "enhance": False}, 22.0)
+    assert list(st2) == ["stabilize"] and st2["stabilize"] == (0, 99)
+    # 화질만 + 구역 → 트림(크롭)은 유지
+    st3 = plan_stages({"start": 0, "end": 22, "stabilize": "off", "enhance": True,
+                       "region": {"x": 0, "y": 0.3, "w": 1, "h": 0.5}}, 22.0)
+    assert list(st3) == ["trim", "enhance"]
+    # 아무 단계도 없음 → 빈 계획(라우터가 거부)
+    assert plan_stages({"start": 0, "end": 0, "stabilize": "off", "enhance": False}, 22.0) == {}
+    # 구 파라미터(mode=person, enhance 미지정)도 person+enhance 로 해석
+    st4 = plan_stages({"start": 2.4, "end": 7.2, "mode": "person"}, 22.0)
+    assert list(st4) == ["trim", "stabilize", "enhance"]
+
+
+def test_result_name():
+    st = {"job_id": "827a704eb7c542ba", "params": {
+        "start": 2.4, "end": 7.2, "stabilize": "person", "strength": "dejitter",
+        "enhance": True, "upscale": "4k", "speed": 0.5, "interpolate": "smooth", "fps": 60,
+        "region": {"x": 0, "y": 0.3, "w": 1, "h": 0.5}}}
+    assert J.result_name(st) == "showcase_2.4-7.2s_person-dejitter_4k_0.5x_60fps_region_827a70.mp4"
+    st2 = {"job_id": "abc123def", "params": {
+        "start": 0, "end": 8, "stabilize": "background", "strength": "auto", "enhance": False}}
+    assert J.result_name(st2) == "showcase_0-8s_background-auto_noenh_abc123.mp4"
+    st3 = {"job_id": "ffeedd0011", "params": {
+        "start": 0, "end": 0, "stabilize": "off", "enhance": True,
+        "upscale": "none", "speed": 0.5, "interpolate": "off", "mute": True}}
+    assert J.result_name(st3) == "showcase_0-0s_nostab_0.5x_nointerp_mute_ffeedd.mp4"
 
 
 def test_region_crop():
@@ -13,10 +53,13 @@ def test_region_crop():
         == "crop=1080:1920:540:960"
     # 경계 밖으로 나가는 값은 프레임 안으로 보정
     assert _region_crop({"x": 0.9, "y": 0.9, "w": 0.5, "h": 0.5}, 2160, 3840) \
-        == "crop=240:384:1920:3456"
-    # 초소형 구역은 최소 240px 보장
-    f = _region_crop({"x": 0.5, "y": 0.5, "w": 0.01, "h": 0.01}, 2160, 3840)
-    assert f.startswith("crop=240:240:")
+        == "crop=216:384:1944:3456"
+    # 초소형 구역은 한 변 5% 하한(2160→108, 3840→192)
+    assert _region_crop({"x": 0.5, "y": 0.5, "w": 0.01, "h": 0.01}, 2160, 3840) \
+        == "crop=108:192:1080:1920"
+    # 저해상도(640x360)에서도 사용자 구역이 그대로 — 절대 px 하한으로 넓어지지 않는다
+    assert _region_crop({"x": 0, "y": 0.128, "w": 0.206, "h": 0.791}, 640, 360) \
+        == "crop=132:284:0:46"
 
 
 def test_config_defaults():

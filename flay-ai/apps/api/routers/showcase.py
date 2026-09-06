@@ -1,8 +1,11 @@
-"""연출 클립 API 라우터 — 업로드+구간 → 비동기 체인 잡 → 폴링 → 결과 다운로드.
+"""연출 클립(영상 스튜디오) API 라우터 — 업로드+구간 → 비동기 체인 잡 → 폴링 → 결과 다운로드.
 
 enhance 라우터 준용 — localhost-only, 잡은 서브프로세스(packages.showcase.cli)로
 실행하고 status.json 으로 추적한다. 체인 고유 사항: 취소/삭제/워커 비정상 종료 시
 서브 잡(stab_job/enh_job)이 running 으로 남으면 gpu_busy 가 영구 잠기므로 함께 정리한다.
+
+단계는 선택 가능(stabilize=off|background|person, enhance=on|off, 전체 구간이면 트림 생략).
+구간 상한은 화질 단계가 켜졌을 때 showcase.max_clip_seconds, 꺼졌을 때 stabilize.max_input_seconds.
 
 엔드포인트(prefix=/api/showcase):
   POST /jobs                  업로드 + 구간/옵션 -> 잡 생성(구간 즉시 검증)
@@ -35,13 +38,22 @@ from packages.enhancer.plan import INTERP_MODES, SPEEDS, UPSCALE_MODES
 from packages.settings import REPO_ROOT
 from packages.showcase import job as J
 from packages.showcase.config import showcase_config
+from packages.showcase.pipeline import STABILIZE_MODES, plan_stages
 from packages.stabilizer import job as SJ
+from packages.stabilizer.config import stabilize_config
 
 router = APIRouter(prefix="/api/showcase", tags=["showcase"])
 log = logging.getLogger(__name__)
 
 # 실행 중 워커 서브프로세스 (취소/삭제용 — JSON 직렬화 대상 아님)
 _procs: dict[str, subprocess.Popen] = {}
+
+_FALSY = ("0", "false", "off", "no", "")
+
+
+def _flag(v: str | None) -> bool:
+    """폼 불리언 — "1"/"true"/"on" 등은 참, None/"0"/"false"/"off" 는 거짓."""
+    return v is not None and v.strip().lower() not in _FALSY
 
 
 def _localhost_only(request: Request) -> None:
@@ -97,25 +109,46 @@ def _quick_duration(path: str) -> float:
         return 0.0
 
 
+def _parse_json(raw: str | None, what: str, keys: tuple[str, ...]) -> dict[str, Any] | None:
+    if not raw:
+        return None
+    try:
+        v = json.loads(raw)
+    except json.JSONDecodeError:
+        raise HTTPException(400, f"{what} 은(는) {{{','.join(keys)}}} JSON") from None
+    if not isinstance(v, dict):
+        raise HTTPException(400, f"{what} 은(는) JSON 객체여야 합니다")
+    return v
+
+
 @router.post("/jobs")
 async def create_job(
     request: Request,
     file: UploadFile = File(...),
-    start: float = Form(...),         # 추출 구간 시작(초, 원본 기준)
-    end: float = Form(...),           # 추출 구간 끝(초, 원본 기준)
+    start: float = Form(0),           # 추출 구간 시작(초, 원본 기준). 0~끝이면 트림 생략
+    end: float = Form(0),             # 추출 구간 끝(초). 0=영상 끝
     subject: str | None = Form(None),  # 주인공 클릭 {"t","x","y"} JSON (원본 기준 t)
     region: str | None = Form(None),   # 처리 구역 {"x","y","w","h"} JSON (0~1 상대 사각형)
-    strength: str = Form("smooth"),   # dejitter | smooth | lock
+    stabilize: str = Form("person"),  # off | background | person
+    strength: str = Form("smooth"),   # dejitter | smooth | lock | auto | pin(person 전용 중앙 고정)
     edge: str = Form("crop"),         # crop | blur | black
+    scale_lock: str | None = Form(None),  # 인물 모드 — 주인공 크기까지 고정
+    lowfps: str | None = Form(None),  # 저fps(gif) 입력 보간(안정화 단계)
+    enhance: str = Form("1"),         # 화질 개선 단계 on/off
     upscale: str = Form("4k"),        # none | 2x | 4k
     speed: str = Form("0.5"),         # 1 | 0.5 | 0.25
     interpolate: str = Form("smooth"),  # off | smooth
     model: str = Form("photo"),       # photo | anime
     fps: str = Form("keep"),          # keep | 60
+    mute: str | None = Form(None),    # 결과 오디오 제거(무음 출력)
 ) -> dict[str, Any]:
     _localhost_only(request)
-    if strength not in ("dejitter", "smooth", "lock"):
-        raise HTTPException(400, "strength 는 dejitter | smooth | lock")
+    if stabilize not in STABILIZE_MODES:
+        raise HTTPException(400, "stabilize 는 off | background | person")
+    if strength not in ("dejitter", "smooth", "lock", "auto", "pin"):
+        raise HTTPException(400, "strength 는 dejitter | smooth | lock | auto | pin")
+    if strength == "pin" and stabilize != "person":
+        raise HTTPException(400, "pin(중앙 고정)은 stabilize=person 에서만 쓸 수 있습니다")
     if edge not in ("crop", "blur", "black"):
         raise HTTPException(400, "edge 는 crop | blur | black")
     if upscale not in UPSCALE_MODES:
@@ -132,30 +165,17 @@ async def create_job(
         raise HTTPException(400, "model 은 photo | anime")
     if fps not in ("keep", "60"):
         raise HTTPException(400, "fps 는 keep | 60")
-    subj: dict[str, Any] | None = None
-    if subject:
-        try:
-            subj = json.loads(subject)
-        except json.JSONDecodeError:
-            raise HTTPException(400, "subject 는 {\"t\",\"x\",\"y\"} JSON") from None
-    regn: dict[str, Any] | None = None
-    if region:
-        try:
-            regn = json.loads(region)
-        except json.JSONDecodeError:
-            raise HTTPException(400, "region 은 {\"x\",\"y\",\"w\",\"h\"} JSON") from None
+    subj = _parse_json(subject, "subject", ("t", "x", "y"))
+    regn = _parse_json(region, "region", ("x", "y", "w", "h"))
+    if regn:
         try:
             if float(regn.get("w", 0)) <= 0 or float(regn.get("h", 0)) <= 0:
                 raise HTTPException(400, "region 의 w/h 는 0 보다 커야 합니다")
         except (TypeError, ValueError):
             raise HTTPException(400, "region 좌표는 숫자여야 합니다") from None
-    cfg = showcase_config()
-    maxs = float(cfg.get("max_clip_seconds", 0) or 0)
-    if start < 0 or end <= start:
+    if start < 0 or (end > 0 and end <= start):
         raise HTTPException(400, "구간이 잘못되었습니다(start < end 여야 합니다)")
-    if maxs and end - start > maxs:
-        raise HTTPException(
-            400, f"구간이 너무 깁니다({end - start:.1f}초 > 제한 {maxs:.0f}초)")
+    enh = _flag(enhance)
     busy = gpu_busy()
     if busy:
         raise HTTPException(409, busy)
@@ -167,10 +187,12 @@ async def create_job(
         pass
 
     params: dict[str, Any] = {
-        "start": start, "end": end, "mode": "person",
-        "strength": strength, "edge": edge,
-        "upscale": upscale, "speed": speed_f, "interpolate": interpolate,
-        "model": model, "fps": 60 if fps == "60" else 0,
+        "start": start, "end": end,
+        "stabilize": stabilize, "strength": strength, "edge": edge,
+        "scale_lock": _flag(scale_lock), "lowfps": _flag(lowfps),
+        "enhance": enh, "upscale": upscale, "speed": speed_f,
+        "interpolate": interpolate, "model": model, "fps": 60 if fps == "60" else 0,
+        "mute": _flag(mute),
     }
     if subj:
         params["subject"] = subj
@@ -184,7 +206,7 @@ async def create_job(
     finally:
         await file.close()
 
-    # 구간이 실제 길이 안에 있는지 업로드 직후 동기 검증
+    # 업로드 직후 동기 검증 — 구간·활성 단계·길이 상한
     dur = _quick_duration(str(dest))
     if dur <= 0:
         shutil.rmtree(J.job_path(job_id), ignore_errors=True)
@@ -192,9 +214,23 @@ async def create_job(
     if start >= dur:
         shutil.rmtree(J.job_path(job_id), ignore_errors=True)
         raise HTTPException(400, f"시작 지점({start:.1f}초)이 영상 길이({dur:.1f}초)를 벗어납니다")
+    stages = plan_stages(params, dur)
+    if not stages:
+        shutil.rmtree(J.job_path(job_id), ignore_errors=True)
+        raise HTTPException(400, "실행할 단계가 없습니다 — 구간·구역·안정화·화질 중 하나는 지정하세요")
+    clip = (end if end > 0 else dur) - start
+    if enh:
+        maxs = float(showcase_config().get("max_clip_seconds", 0) or 0)
+        why = "업스케일 비용이 프레임당 초 단위라 짧은 구간만 받습니다"
+    else:
+        maxs = float(stabilize_config().get("max_input_seconds", 0) or 0)
+        why = "안정화 처리 상한"
+    if maxs and clip > maxs:
+        shutil.rmtree(J.job_path(job_id), ignore_errors=True)
+        raise HTTPException(400, f"구간이 너무 깁니다({clip:.1f}초 > 제한 {maxs:.0f}초) — {why}")
 
     _spawn_worker(job_id)
-    return {"job_id": job_id, "status": "queued", "params": params}
+    return {"job_id": job_id, "status": "queued", "params": params, "stages": list(stages)}
 
 
 @router.get("/jobs")
@@ -233,29 +269,6 @@ async def job_events(job_id: str, request: Request) -> StreamingResponse:
     )
 
 
-def _result_name(st: dict[str, Any]) -> str:
-    """결과 다운로드 파일명 — 구간·강도 등 설정을 이름에 명시(ASCII 안전).
-
-    예: showcase_2.4-7.2s_dejitter_4k_0.5x_60fps_region_827a70.mp4
-    """
-    p = st.get("params") or {}
-    parts = [f"{float(p.get('start', 0)):g}-{float(p.get('end', 0)):g}s",
-             str(p.get("strength", "smooth"))]
-    up = p.get("upscale")
-    if up and up != "none":
-        parts.append(str(up))
-    sp = float(p.get("speed", 1) or 1)
-    if sp != 1:
-        parts.append(f"{sp:g}x")
-    if int(p.get("fps") or 0) == 60:
-        parts.append("60fps")
-    if p.get("interpolate") == "off":
-        parts.append("nointerp")
-    if p.get("region"):
-        parts.append("region")
-    return "showcase_" + "_".join(parts) + f"_{st.get('job_id', '')[:6]}.mp4"
-
-
 @router.api_route("/jobs/{job_id}/result", methods=["GET", "HEAD"])
 def job_result(job_id: str, request: Request, variant: str | None = None) -> FileResponse:
     _localhost_only(request)
@@ -267,13 +280,15 @@ def job_result(job_id: str, request: Request, variant: str | None = None) -> Fil
         src = J.input_path(job_id)
         if not src.exists():
             raise HTTPException(409, "원본 없음")
-        return FileResponse(str(src), media_type="video/mp4", filename=f"original_{job_id}")
+        fmt = (st.get("input") or {}).get("format") or ""
+        media = "image/gif" if "gif" in fmt else "video/mp4"
+        return FileResponse(str(src), media_type=media, filename=f"original_{job_id}")
     if st.get("status") != "done":
         raise HTTPException(409, "아직 결과가 준비되지 않았습니다")
     out = J.job_path(job_id) / "out.mp4"
     if not out.exists():
         raise HTTPException(409, "결과 파일 없음")
-    return FileResponse(str(out), media_type="video/mp4", filename=_result_name(st))
+    return FileResponse(str(out), media_type="video/mp4", filename=J.result_name(st))
 
 
 @router.post("/jobs/{job_id}/cancel")

@@ -3,19 +3,17 @@
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 
-// 전 페이지 공용 네비게이션 항목 (채팅 헤더 기준).
+// 전 페이지 공용 네비게이션 항목 (채팅 헤더 기준) — 컬렉션 검색·관리 기능만.
+// 영상·이미지 도구(안정화·화질·연출·ICO)는 별도 영역 "스튜디오"(/studio, StudioHeader)로 분리.
 // 일기는 컬렉션 도구가 아니라 사적 공간이라 NAV 에서 빼고 구분선 뒤에 따로 그린다.
 const NAV = [
   { key: "chat", href: "/", label: "채팅" },
   { key: "image", href: "/image", label: "이미지" },
   { key: "face", href: "/face", label: "얼굴" },
   { key: "labels", href: "/labels", label: "라벨링" },
-  { key: "stabilize", href: "/stabilize", label: "안정화" },
-  { key: "enhance", href: "/enhance", label: "화질" },
-  { key: "showcase", href: "/showcase", label: "연출" },
   { key: "subtitle", href: "/subtitle", label: "자막" },
-  { key: "ico", href: "/ico", label: "ICO" },
   { key: "admin", href: "/admin", label: "관리자" },
+  { key: "studio", href: "/studio", label: "스튜디오" },
 ] as const;
 
 export type NavKey = (typeof NAV)[number]["key"] | "diary";

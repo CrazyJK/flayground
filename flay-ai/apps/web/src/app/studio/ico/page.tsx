@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import AppHeader from "../_components/AppHeader";
-import { DropOverlay, useImageDropPaste } from "../_components/useImageDropPaste";
+import StudioHeader from "../../_components/StudioHeader";
+import { DropOverlay, useImageDropPaste } from "../../_components/useImageDropPaste";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000";
 
@@ -244,7 +244,7 @@ export default function IcoPage() {
   return (
     <div className="relative flex-1 flex flex-col" {...dropProps}>
       {dragOver && <DropOverlay />}
-      <AppHeader active="ico" />
+      <StudioHeader active="ico" />
 
       <main className="flex-1 overflow-y-auto">
         <div className="mx-auto w-full max-w-[900px] px-4 py-6 grid gap-8 md:grid-cols-2">

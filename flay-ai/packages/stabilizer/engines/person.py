@@ -257,15 +257,27 @@ def run_person(jdir: Path, strength: str, options: dict, cfg: dict,
         eff = "lock" if exc < 0.3 else "smooth" if exc < 0.7 else "dejitter"
         auto_info = {"excursion": round(exc, 2), "chosen": eff}
         set_status(note=f"자동: 주인공 이동 {exc:.2f}×화면 → '{eff}'")
-    sigma = float(presets.get(eff, 40))
-    # shift = gauss(궤적,σ_강도) − gauss(궤적,σ_denoise) (밴드패스).
-    # σ_denoise 보다 빠른 떨림은 보정 대상에서 제외 → 추적 노이즈가 배경 미세 튐으로 새지 않게.
-    sden = min(float(cfg.get("track_denoise_sigma", 4)), sigma)
-    refx, refy = _gauss(cen[:, 0], sden), _gauss(cen[:, 1], sden)
-    tx = _gauss(cen[:, 0], sigma) - refx
-    ty = _gauss(cen[:, 1], sigma) - refy
+    if eff == "pin":
+        # 중앙 고정: 궤적 평활 대신 화면 정중앙을 목표로 이동 전체를 상쇄 → 주인공을 못 박는다.
+        # lock(σ 큰 평활)은 가장자리 패딩 때문에 주인공이 가로지르는 구간에서 목표점이
+        # 시작→끝 위치로 미끄러져 진짜 고정이 되지 않는다.
+        sigma = 0.0
+        sden = float(cfg.get("track_denoise_sigma", 4))
+        refx, refy = _gauss(cen[:, 0], sden), _gauss(cen[:, 1], sden)
+        tx = W / 2.0 - refx
+        ty = H / 2.0 - refy
+    else:
+        sigma = float(presets.get(eff, 40))
+        # shift = gauss(궤적,σ_강도) − gauss(궤적,σ_denoise) (밴드패스).
+        # σ_denoise 보다 빠른 떨림은 보정 대상에서 제외 → 추적 노이즈가 배경 미세 튐으로 새지 않게.
+        sden = min(float(cfg.get("track_denoise_sigma", 4)), sigma)
+        refx, refy = _gauss(cen[:, 0], sden), _gauss(cen[:, 1], sden)
+        tx = _gauss(cen[:, 0], sigma) - refx
+        ty = _gauss(cen[:, 1], sigma) - refy
 
     edge = (options or {}).get("edge") or cfg.get("edge", "blur")
+    pin = eff == "pin"
+    winx = winy = None  # 추적 크롭(pin+crop) 프레임별 창 원점
     # 스케일 고정: 주인공 크기까지 일정하게(앵커 기준 줌). 거리 변화 큰 영상은 배경 줌 손실 큼.
     scale_lock = bool((options or {}).get("scale_lock")) and size is not None
     cl = ct = cr = cb = 0
@@ -283,15 +295,25 @@ def run_person(jdir: Path, strength: str, options: dict, cfg: dict,
         miny, maxy = int(np.floor(ty.min())), int(np.ceil(ty.max()))
         offx = np.round(tx - minx).astype(int)
         offy = np.round(ty - miny).astype(int)
-        if edge == "crop":
+        if edge == "crop" and pin:
+            # 추적 크롭(가상 카메라): 고정 크기 창을 주인공 중심에 두고 프레임 안에서만 이동.
+            # 창 크기 = 이동 범위를 뺀 크기(주인공이 늘 정중앙), 단 한 변 40% 이상 보장 —
+            # 범위가 그보다 크면 가장자리에서만 창이 멈춰 주인공이 살짝 벗어난다(여백·확장 없음).
+            rng_x = float(refx.max() - refx.min())
+            rng_y = float(refy.max() - refy.min())
+            Wout = int(min(max(W - rng_x, 0.4 * W), W)) & ~1
+            Hout = int(min(max(H - rng_y, 0.4 * H), H)) & ~1
+            winx = np.clip(np.round(refx - Wout / 2), 0, W - Wout).astype(int)
+            winy = np.clip(np.round(refy - Hout / 2), 0, H - Hout).astype(int)
+        elif edge == "crop":
             cl, ct = int(offx.max()), int(offy.max())
             cr, cb = int((offx + W).min()), int((offy + H).min())
             if (cr - cl) < W * 0.3 or (cb - ct) < H * 0.3:
                 set_status(note="잘라낼 공통영역이 너무 작아 블러 채움으로 전환")
                 edge = "blur"
-        if edge == "crop":
+        if edge == "crop" and winx is None:
             Wout, Hout = max((cr - cl) & ~1, 2), max((cb - ct) & ~1, 2)
-        else:
+        elif edge != "crop":
             Wout = (W + (maxx - minx) + 1) & ~1  # 캔버스 확장(짝수)
             Hout = (H + (maxy - miny) + 1) & ~1
 
@@ -337,7 +359,11 @@ def run_person(jdir: Path, strength: str, options: dict, cfg: dict,
                         canvas = cv2.warpAffine(frame, M, (Wout, Hout))
                 else:
                     oy, ox = int(offy[k]), int(offx[k])
-                    if edge == "crop":
+                    if edge == "crop" and winx is not None:
+                        # 추적 크롭: 주인공 중심 고정 창(프레임 경계에서 클램프)
+                        wx, wy = int(winx[k]), int(winy[k])
+                        canvas = frame[wy:wy + Hout, wx:wx + Wout]
+                    elif edge == "crop":
                         # 공통영역만: 프레임에서 안정화된 위치의 사각형을 잘라냄(여백 없음)
                         canvas = frame[ct - oy:ct - oy + Hout, cl - ox:cl - ox + Wout]
                     elif edge == "blur":
@@ -378,6 +404,7 @@ def run_person(jdir: Path, strength: str, options: dict, cfg: dict,
         "tracker": tracker_used,
         "edge": edge,
         "scale_lock": scale_lock,
+        "tracking_crop": winx is not None,
         "frames": nframes,
     }
     if auto_info:

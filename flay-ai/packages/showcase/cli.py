@@ -16,6 +16,7 @@ _LOCAL_USAGE = (
     "        edge=crop|blur|black  scale_lock=1  lowfps=1  mute=1\n"
     "        enhance=0|1  upscale=none|2x|4k  speed=1|0.5|0.25  interpolate=off|smooth\n"
     "        model=photo|anime  fps=0|60  region=x,y,w,h(0~1)  subject=t,x,y\n"
+    "        output=video|photos  photo_n=5  photo_gap=0.3   (사진 모드: 선명 상위 N장 → PNG+ZIP)\n"
     "  start=0 end=0 이면 전체 구간(트림 생략).\n")
 
 
@@ -54,11 +55,11 @@ def _local(args: list[str]) -> None:
             params["subject"] = {"t": t, "x": x, "y": y}
         elif k in ("enhance", "scale_lock", "lowfps", "mute"):
             params[k] = v.lower() not in ("0", "false", "off", "no")
-        elif k == "speed":
+        elif k in ("speed", "photo_gap"):
             params[k] = float(v)
-        elif k == "fps":
+        elif k in ("fps", "photo_n"):
             params[k] = int(v)
-        elif k in ("stabilize", "strength", "edge", "upscale", "interpolate", "model"):
+        elif k in ("stabilize", "strength", "edge", "upscale", "interpolate", "model", "output"):
             params[k] = v
         else:
             sys.stderr.write(f"unknown option: {kv}\n{_LOCAL_USAGE}")
@@ -70,7 +71,8 @@ def _local(args: list[str]) -> None:
     st = J.get_status(job_id) or {}
     sys.stderr.write(f"status={st.get('status')} error={st.get('error')}\n")
     if st.get("status") == "done":
-        sys.stderr.write(f"output: {J.job_path(job_id) / 'out.mp4'}\n")
+        main_out = "photos.zip" if params.get("output") == "photos" else "out.mp4"
+        sys.stderr.write(f"output: {J.job_path(job_id) / main_out}\n")
 
 
 def main(argv: list[str] | None = None) -> None:

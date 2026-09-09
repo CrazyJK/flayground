@@ -113,6 +113,14 @@ def result_name(st: dict[str, Any]) -> str:
     """
     p = st.get("params") or {}
     parts = [f"{float(p.get('start', 0)):g}-{float(p.get('end', 0)):g}s"]
+    if p.get("output") == "photos":  # 사진 모드: showcase_<구간>_photos<N>[_<업스케일>][_region]_<id>.zip
+        parts.append(f"photos{int(p.get('photo_n', 5) or 5)}")
+        up = p.get("upscale")
+        if up and up != "none":
+            parts.append(str(up))
+        if p.get("region"):
+            parts.append("region")
+        return "showcase_" + "_".join(parts) + f"_{st.get('job_id', '')[:6]}.zip"
     stab = p.get("stabilize") or p.get("mode") or "person"
     if stab == "off":
         parts.append("nostab")

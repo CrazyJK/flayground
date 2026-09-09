@@ -16,6 +16,7 @@ _DEFAULTS: dict[str, Any] = {
     "ffmpeg": "ffmpeg",
     "ffprobe": "ffprobe",
     "max_clip_seconds": 10,   # 트림 구간 상한(초) — 업스케일 비용이 프레임당 초 단위
+    "max_photo_seconds": 60,  # 사진 출력 모드 구간 상한(초) — 전 프레임 디코딩·점수 계산 시간
     "trim_crf": 12,           # 트림 중간본 x264 CRF(시각적 무손실 수준)
     "retain_hours": 72,
 }

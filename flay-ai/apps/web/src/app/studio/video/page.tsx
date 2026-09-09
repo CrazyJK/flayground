@@ -9,6 +9,7 @@ const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "https://ai.kamoru.jk:8000"
 // 서버 config 와 맞춘 안내용 상수 — 초과 시 서버가 거부
 const MAX_CLIP_ENHANCE = 10; // showcase.max_clip_seconds (화질 단계 켬)
 const MAX_CLIP_STAB = 120; // stabilize.max_input_seconds (화질 단계 끔)
+const MAX_CLIP_PHOTOS = 60; // showcase.max_photo_seconds (사진 모드)
 
 // 파일별 구역 기억 키 — 같은 영상으로 조건을 바꿔 비교할 때 사각형 재사용
 const regionKey = (f: File) => `showcase.region:${f.name}:${f.size}`;
@@ -83,6 +84,8 @@ const STAGE_LABEL: Record<string, string> = {
   trim: "구간 추출",
   stabilize: "안정화",
   enhance: "화질 개선",
+  photos: "선명 프레임 선별",
+  upscale: "사진 업스케일",
 };
 const SUB_STAGE_LABEL: Record<string, string> = {
   decode: "디코딩",
@@ -119,6 +122,9 @@ type Params = {
   subject?: { t: number; x: number; y: number };
   region?: Region;
   mute?: boolean;
+  output?: "video" | "photos";
+  photo_n?: number;
+  photo_gap?: number;
 };
 type Sub = {
   kind: string;
@@ -128,9 +134,14 @@ type Sub = {
   plan?: { total_seconds?: number } | null;
 };
 type JobOutput = {
-  variant: string;
+  variant: string; // showcase(영상) | photo | zip
   file: string;
   metrics?: { out_w?: number; out_h?: number; out_fps?: number; duration?: number };
+  t?: number; // photo: 원본 기준 시각(초)
+  score?: number; // photo: 선명도
+  w?: number;
+  h?: number;
+  count?: number; // zip: 장수
 };
 type JobStatus = {
   job_id: string;
@@ -211,6 +222,12 @@ function paramSummary(p?: Params): string {
   if (!p) return "";
   const parts: string[] = [];
   if (p.start > 0 || p.end > 0) parts.push(`${p.start.toFixed(1)}~${p.end.toFixed(1)}s`);
+  if (p.output === "photos") {
+    parts.push(`사진 ${p.photo_n ?? 5}장`);
+    if (p.upscale && p.upscale !== "none") parts.push(UPSCALE_LABEL[p.upscale] ?? p.upscale);
+    if (p.region) parts.push("구역");
+    return parts.join(" · ");
+  }
   const stab = stabOf(p);
   parts.push(stab === "off" ? "안정화 없음" : `${STAB_LABEL[stab]}·${STRENGTH_LABEL[p.strength] ?? p.strength}`);
   if (enhOf(p)) {
@@ -324,6 +341,10 @@ export default function VideoStudioPage() {
   const [fps60, setFps60] = useState(false);
   const [model, setModel] = useState<string>("photo");
   const [mute, setMute] = useState(false); // 결과 오디오 제거
+  // 출력 모드 — 영상 클립 | 베스트 사진 N장(선명도 상위, PNG+ZIP)
+  const [output, setOutput] = useState<"video" | "photos">("video");
+  const [photoN, setPhotoN] = useState(5);
+  const [photoGap, setPhotoGap] = useState(0.3);
 
   const [jobId, setJobId] = useState<string | null>(null);
   const [status, setStatus] = useState<JobStatus | null>(null);
@@ -500,6 +521,9 @@ export default function VideoStudioPage() {
     setFps60(p.fps === 60);
     if (p.model) setModel(p.model);
     setMute(!!p.mute);
+    setOutput(p.output === "photos" ? "photos" : "video");
+    if (p.photo_n) setPhotoN(p.photo_n);
+    if (p.photo_gap != null) setPhotoGap(p.photo_gap);
   }
 
   function applyPreset(p: Preset) {
@@ -589,6 +613,9 @@ export default function VideoStudioPage() {
       fd.append("model", model);
       fd.append("fps", interp && fps60 ? "60" : "keep");
       fd.append("mute", mute ? "1" : "0");
+      fd.append("output", output);
+      fd.append("photo_n", String(photoN));
+      fd.append("photo_gap", String(photoGap));
       if (stab === "person" && subject) fd.append("subject", JSON.stringify(subject));
       if (region) fd.append("region", JSON.stringify(region));
       const r = await fetch(`${API_BASE}/api/showcase/jobs`, { method: "POST", body: fd });
@@ -687,11 +714,19 @@ export default function VideoStudioPage() {
   const done = status?.status === "done";
   const doneJob = status && status.status === "done" ? status : null;
   const resultUrl = jobId ? `${API_BASE}/api/showcase/jobs/${jobId}/result` : null;
+  const photos = output === "photos";
   const clipSec = Math.max((end > 0 ? end : videoDur) - start, 0);
-  const maxClip = enh ? MAX_CLIP_ENHANCE : MAX_CLIP_STAB;
-  const noStage = stab === "off" && !enh && !region && start <= 0 && (end <= 0 || end >= videoDur - 0.05);
+  const maxClip = photos ? MAX_CLIP_PHOTOS : enh ? MAX_CLIP_ENHANCE : MAX_CLIP_STAB;
+  const noStage =
+    !photos && stab === "off" && !enh && !region && start <= 0 && (end <= 0 || end >= videoDur - 0.05);
   const clipValid = clipSec > 0 && clipSec <= maxClip && !noStage;
-  const est = clipValid ? estimateSeconds(clipSec, stab, enh, upscale, speed, interp) : 0;
+  // 사진 모드 예상: 전 프레임 점수(60fps 가정) + 선택 N장 업스케일(장당 ~6초)
+  const est = !clipValid
+    ? 0
+    : photos
+      ? Math.round(15 + clipSec * 60 * 0.03 + (upscale !== "none" ? photoN * 6 : 0))
+      : estimateSeconds(clipSec, stab, enh, upscale, speed, interp);
+  const photoOuts = (doneJob?.outputs ?? []).filter((o) => o.variant === "photo");
   const metrics = doneJob?.outputs?.[0]?.metrics;
   const activePreset = PRESETS.find(
     (p) => p.stab === stab && p.strength === strength && p.edge === edge && p.enh === enh &&
@@ -747,7 +782,26 @@ export default function VideoStudioPage() {
                 </button>
               )}
 
-              {/* 프리셋 */}
+              {/* 출력 모드 — 영상 클립 | 베스트 사진 */}
+              <div className="space-y-1.5">
+                <span className="text-sm font-semibold">출력</span>
+                <Pills
+                  items={[
+                    { key: "video", label: "영상 클립" },
+                    { key: "photos", label: "베스트 사진 N장" },
+                  ] as const}
+                  value={output}
+                  onChange={setOutput}
+                />
+                {photos && (
+                  <p className="text-xs text-muted-foreground">
+                    구간에서 가장 선명한 프레임 N장을 PNG 로 뽑아 업스케일합니다(안정화·화질 단계는 쓰지 않음).
+                  </p>
+                )}
+              </div>
+
+              {/* 프리셋(영상 모드) */}
+              {!photos && (
               <div className="space-y-1.5">
                 <span className="text-sm font-semibold">프리셋</span>
                 <div className="flex flex-wrap gap-1.5">
@@ -769,6 +823,7 @@ export default function VideoStudioPage() {
                   <p className="text-xs text-amber-600 dark:text-amber-400">→ {activePreset.hint}</p>
                 )}
               </div>
+              )}
 
               {/* ① 구간 */}
               <div className="space-y-1.5">
@@ -832,18 +887,71 @@ export default function VideoStudioPage() {
                   </div>
                 )}
 
-                <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer pt-1">
-                  <input
-                    type="checkbox"
-                    checked={mute}
-                    onChange={(e) => setMute(e.target.checked)}
-                    className="accent-primary"
-                  />
-                  오디오 제거(무음 출력) — 슬로모션(½×·¼×)은 항상 무음
-                </label>
+                {!photos && (
+                  <label className="flex items-center gap-2 text-xs text-muted-foreground cursor-pointer pt-1">
+                    <input
+                      type="checkbox"
+                      checked={mute}
+                      onChange={(e) => setMute(e.target.checked)}
+                      className="accent-primary"
+                    />
+                    오디오 제거(무음 출력) — 슬로모션(½×·¼×)은 항상 무음
+                  </label>
+                )}
               </div>
 
+              {/* 사진 모드 옵션 */}
+              {photos && (
+                <div className="space-y-1.5">
+                  <span className="text-sm font-semibold">② 베스트 사진</span>
+                  <div className="flex items-center gap-3 text-sm flex-wrap">
+                    <label className="flex items-center gap-1.5">
+                      <span className="text-xs text-muted-foreground">장수</span>
+                      <input
+                        type="number"
+                        min={1}
+                        max={20}
+                        step={1}
+                        value={photoN}
+                        onChange={(e) =>
+                          setPhotoN(Math.min(20, Math.max(1, Math.round(Number(e.target.value) || 1))))
+                        }
+                        className="w-16 rounded border border-border bg-background px-2 py-1 tabular-nums"
+                      />
+                    </label>
+                    <label className="flex items-center gap-1.5">
+                      <span className="text-xs text-muted-foreground">최소 간격(초)</span>
+                      <input
+                        type="number"
+                        min={0}
+                        max={10}
+                        step={0.1}
+                        value={photoGap}
+                        onChange={(e) => setPhotoGap(Math.min(10, Math.max(0, Number(e.target.value) || 0)))}
+                        className="w-20 rounded border border-border bg-background px-2 py-1 tabular-nums"
+                      />
+                    </label>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    모든 프레임을 선명도(라플라시안 분산)로 점수 매기고 과노출 컷을 제외한 뒤, 서로 최소 간격 이상
+                    떨어진 상위 N장을 고릅니다. 처리 구역을 지정하면 그 구역만 잘라 뽑습니다.
+                  </p>
+                  <span className="text-xs font-semibold">업스케일</span>
+                  <Pills items={UPSCALES} value={upscale} onChange={setUpscale} />
+                  <span className="text-xs font-semibold">소스 종류</span>
+                  <Pills
+                    items={[
+                      { key: "photo", label: "실사" },
+                      { key: "anime", label: "애니" },
+                    ] as const}
+                    value={model}
+                    onChange={setModel}
+                  />
+                </div>
+              )}
+
               {/* ② 안정화 */}
+              {!photos && (
               <div className="space-y-1.5">
                 <span className="text-sm font-semibold">② 안정화</span>
                 <Pills
@@ -900,8 +1008,10 @@ export default function VideoStudioPage() {
                   </div>
                 )}
               </div>
+              )}
 
               {/* ③ 화질 */}
+              {!photos && (
               <div className="space-y-1.5">
                 <span className="text-sm font-semibold">③ 화질 개선</span>
                 <Pills
@@ -953,6 +1063,7 @@ export default function VideoStudioPage() {
                   </div>
                 )}
               </div>
+              )}
 
               {file && clipValid && !running && (
                 <p className="text-xs text-muted-foreground">예상 소요: 약 {fmtDur(est)}</p>
@@ -1017,7 +1128,57 @@ export default function VideoStudioPage() {
 
           {/* ===== 가운데: 미리보기/결과 ===== */}
           <div className="min-w-0">
-            {doneJob && resultUrl ? (
+            {doneJob && resultUrl && doneJob.params.output === "photos" ? (
+              // 결과(사진 모드) — 갤러리 + 개별/ZIP 다운로드
+              <section className="rounded-lg border border-border bg-card p-4 space-y-3">
+                <div
+                  className="grid gap-3"
+                  style={{ gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))" }}
+                >
+                  {photoOuts.map((o) => {
+                    const href = `${resultUrl}?file=${encodeURIComponent(o.file)}`;
+                    return (
+                      <figure key={o.file} className="space-y-1 min-w-0">
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={href} alt={o.file} className="block w-full rounded border border-border bg-black" />
+                        <figcaption className="flex items-center gap-2 text-xs text-muted-foreground">
+                          <span className="tabular-nums">
+                            {o.t?.toFixed(2)}s · 선명도 {o.score} · {o.w}×{o.h}
+                          </span>
+                          <a href={href} download className="ml-auto hover:text-foreground" title="PNG 다운로드">
+                            ⬇
+                          </a>
+                        </figcaption>
+                      </figure>
+                    );
+                  })}
+                </div>
+                <div className="flex items-center gap-2 flex-wrap">
+                  <a
+                    href={resultUrl}
+                    download
+                    className="px-3 py-1.5 rounded-full text-sm active:scale-95 transition-transform bg-primary text-primary-foreground hover:bg-primary/90"
+                  >
+                    ⬇ ZIP 다운로드 ({photoOuts.length}장)
+                  </a>
+                  <span className="text-xs text-muted-foreground">{paramSummary(doneJob.params)}</span>
+                  <div className="ml-auto flex items-center gap-3">
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="px-3 py-1.5 rounded-lg text-sm active:scale-95 transition-transform bg-muted hover:bg-muted/80"
+                    >
+                      ＋ 새 영상
+                    </button>
+                    <button
+                      onClick={backToSetup}
+                      className="px-3 py-1.5 rounded-lg text-sm active:scale-95 transition-transform bg-muted hover:bg-muted/80"
+                    >
+                      ↩ 다시 설정
+                    </button>
+                  </div>
+                </div>
+              </section>
+            ) : doneJob && resultUrl ? (
               // 결과 — 원본↔결과 비교(1× 이면 동시 재생), 다운로드
               <section className="rounded-lg border border-border bg-card p-4 space-y-3">
                 <div className="flex justify-center items-start gap-2">

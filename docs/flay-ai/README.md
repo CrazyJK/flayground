@@ -25,7 +25,9 @@
   핸들 + 설정 패널 % 수치 입력, 파일별 기억)·오디오 제거 → **② 안정화**(끔/배경/인물, 강도·여백·주인공 클릭·크기 고정·저fps
   보간; 인물 모드는 **중앙 고정(pin)** — 화면 정중앙을 목표로 이동 전체를 상쇄하고, 잘라내기와 함께 쓰면 고정 크기 창이
   주인공을 따라가는 **추적 크롭**) → **③ 화질 개선**(끔/켬, 업스케일·배속·AI 보간·60fps·실사/애니) → 결과(원본↔결과 비교,
-  설정 명시 파일명)를 한 화면에서 단계별로 켜고 끈다. 백엔드는 `packages/showcase` + `/api/showcase` — 단계 선택형 체인 잡으로, 아래 두 서브시스템을 서브 잡으로
+  설정 명시 파일명)를 한 화면에서 단계별로 켜고 끈다. 출력 모드를 **베스트 사진 N장**으로 바꾸면 안정화·화질 대신
+  구간의 모든 프레임을 선명도(라플라시안 분산)로 점수 매겨 과노출을 제외하고 최소 간격 이상 떨어진 상위 N장을
+  PNG(+ZIP)로 뽑아 Real-ESRGAN 으로 업스케일한다(`output=photos`, 구간 상한 `showcase.max_photo_seconds` 60초). 백엔드는 `packages/showcase` + `/api/showcase` — 단계 선택형 체인 잡으로, 아래 두 서브시스템을 서브 잡으로
   재사용한다(안정화만 = stabilizer, 화질만 = enhancer, 둘 다 = 연출 클립). 구간 상한은 화질 단계 켬 10초
   (`showcase.max_clip_seconds`), 끔 120초(`stabilize.max_input_seconds`).
   - 안정화 엔진 [`video-stabilization-plan.md`](video-stabilization-plan.md) — 배경(vidstab)/인물(클릭→추적 고정), 자동 강도, 여백 블러/크롭.

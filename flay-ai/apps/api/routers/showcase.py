@@ -141,8 +141,17 @@ async def create_job(
     model: str = Form("photo"),       # photo | anime
     fps: str = Form("keep"),          # keep | 60
     mute: str | None = Form(None),    # 결과 오디오 제거(무음 출력)
+    output: str = Form("video"),      # video | photos(선명 상위 N장 → PNG+ZIP)
+    photo_n: int = Form(5),           # 사진 모드 장수(1~20)
+    photo_gap: float = Form(0.3),     # 사진 모드 선택 프레임 최소 간격(초)
 ) -> dict[str, Any]:
     _localhost_only(request)
+    if output not in ("video", "photos"):
+        raise HTTPException(400, "output 은 video | photos")
+    if not 1 <= photo_n <= 20:
+        raise HTTPException(400, "photo_n 은 1~20")
+    if not 0 <= photo_gap <= 10:
+        raise HTTPException(400, "photo_gap 은 0~10초")
     if stabilize not in STABILIZE_MODES:
         raise HTTPException(400, "stabilize 는 off | background | person")
     if strength not in ("dejitter", "smooth", "lock", "auto", "pin"):
@@ -193,6 +202,7 @@ async def create_job(
         "enhance": enh, "upscale": upscale, "speed": speed_f,
         "interpolate": interpolate, "model": model, "fps": 60 if fps == "60" else 0,
         "mute": _flag(mute),
+        "output": output, "photo_n": photo_n, "photo_gap": photo_gap,
     }
     if subj:
         params["subject"] = subj
@@ -219,7 +229,10 @@ async def create_job(
         shutil.rmtree(J.job_path(job_id), ignore_errors=True)
         raise HTTPException(400, "실행할 단계가 없습니다 — 구간·구역·안정화·화질 중 하나는 지정하세요")
     clip = (end if end > 0 else dur) - start
-    if enh:
+    if output == "photos":
+        maxs = float(showcase_config().get("max_photo_seconds", 0) or 0)
+        why = "사진 모드는 전 프레임을 디코딩해 점수를 매깁니다"
+    elif enh:
         maxs = float(showcase_config().get("max_clip_seconds", 0) or 0)
         why = "업스케일 비용이 프레임당 초 단위라 짧은 구간만 받습니다"
     else:
@@ -269,12 +282,26 @@ async def job_events(job_id: str, request: Request) -> StreamingResponse:
     )
 
 
+_MEDIA = {".png": "image/png", ".zip": "application/zip", ".mp4": "video/mp4"}
+
+
 @router.api_route("/jobs/{job_id}/result", methods=["GET", "HEAD"])
-def job_result(job_id: str, request: Request, variant: str | None = None) -> FileResponse:
+def job_result(job_id: str, request: Request, variant: str | None = None,
+               file: str | None = None) -> FileResponse:
+    """결과 파일. 기본은 대표 결과(영상 out.mp4 / 사진 모드 photos.zip),
+    `?file=` 은 outputs 에 등록된 개별 파일(사진 PNG 등), `?variant=original` 은 업로드 원본."""
     _localhost_only(request)
     st = J.get_status(job_id)
     if not st:
         raise HTTPException(404, "job not found")
+    if file:  # outputs 에 등록된 파일만 — 경로 탈출 방지
+        if not any(o.get("file") == file for o in st.get("outputs") or []):
+            raise HTTPException(404, "등록되지 않은 결과 파일")
+        p = J.job_path(job_id) / file
+        if not p.exists():
+            raise HTTPException(409, "결과 파일 없음")
+        return FileResponse(str(p), media_type=_MEDIA.get(p.suffix.lower(), "application/octet-stream"),
+                            filename=p.name)
     # 원본 — 전후 비교용(업로드 파일 그대로)
     if variant == "original":
         src = J.input_path(job_id)
@@ -285,10 +312,12 @@ def job_result(job_id: str, request: Request, variant: str | None = None) -> Fil
         return FileResponse(str(src), media_type=media, filename=f"original_{job_id}")
     if st.get("status") != "done":
         raise HTTPException(409, "아직 결과가 준비되지 않았습니다")
-    out = J.job_path(job_id) / "out.mp4"
+    photos = (st.get("params") or {}).get("output") == "photos"
+    out = J.job_path(job_id) / ("photos.zip" if photos else "out.mp4")
     if not out.exists():
         raise HTTPException(409, "결과 파일 없음")
-    return FileResponse(str(out), media_type="video/mp4", filename=J.result_name(st))
+    return FileResponse(str(out), media_type="application/zip" if photos else "video/mp4",
+                        filename=J.result_name(st))
 
 
 @router.post("/jobs/{job_id}/cancel")

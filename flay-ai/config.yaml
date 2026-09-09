@@ -176,6 +176,7 @@ showcase:
   # 연출 클립 — 구간 트림 → 안정화(person) → 화질 개선 체인. 세부는 stabilize:/enhance: 를 따름.
   work_dir:         "data/showcase"  # 잡 산출물 (.gitignore)
   max_clip_seconds: 10               # 트림 구간 상한(초) — 업스케일 비용이 프레임당 초 단위
+  max_photo_seconds: 60              # 사진 출력 모드(베스트 N장) 구간 상한(초)
   trim_crf:         12               # 트림 중간본 x264 CRF(시각적 무손실 수준)
   retain_hours:     72
 

@@ -4,7 +4,28 @@ from __future__ import annotations
 
 from packages.showcase import job as J
 from packages.showcase.config import showcase_config
+from packages.showcase.photos import select_best
 from packages.showcase.pipeline import _region_crop, plan_stages
+
+
+def test_select_best():
+    # (idx, sharp, blown) — 선명도 상위이면서 서로 min_gap 이상 떨어진 것만, 시간순 반환
+    scored = [(0, 50, 0), (1, 90, 0), (2, 95, 0), (3, 40, 0), (10, 80, 0), (11, 85, 0), (30, 60, 0)]
+    assert [s[0] for s in select_best(scored, 3, min_gap=5)] == [2, 11, 30]
+    # 간격 0 이면 순수 상위 N
+    assert [s[0] for s in select_best(scored, 2, min_gap=0)] == [1, 2]
+    # 과노출 프레임은 제외, 전부 과노출이면 기준 무시
+    blown = [(0, 100, 0.5), (1, 20, 0.0)]
+    assert [s[0] for s in select_best(blown, 1, 0)] == [1]
+    assert [s[0] for s in select_best([(0, 100, 0.5), (1, 20, 0.6)], 1, 0)] == [0]
+    assert select_best([], 3, 0) == [] and select_best(scored, 0, 0) == []
+
+
+def test_plan_stages_photos():
+    st = plan_stages({"start": 2.7, "end": 5.0, "output": "photos", "upscale": "2x",
+                      "stabilize": "person", "enhance": True}, 22.0)
+    assert list(st) == ["trim", "photos", "upscale"]  # 안정화·화질 단계는 사진 모드에서 무시
+    assert list(plan_stages({"start": 0, "end": 0, "output": "photos", "upscale": "none"}, 22.0)) == ["photos"]
 
 
 def test_plan_stages_combos():
@@ -45,21 +66,22 @@ def test_result_name():
         "start": 0, "end": 0, "stabilize": "off", "enhance": True,
         "upscale": "none", "speed": 0.5, "interpolate": "off", "mute": True}}
     assert J.result_name(st3) == "showcase_0-0s_nostab_0.5x_nointerp_mute_ffeedd.mp4"
+    st4 = {"job_id": "aa11bb22cc", "params": {
+        "start": 2.7, "end": 5, "output": "photos", "photo_n": 5, "upscale": "2x",
+        "region": {"x": 0, "y": 0.3, "w": 1, "h": 0.5}}}
+    assert J.result_name(st4) == "showcase_2.7-5s_photos5_2x_region_aa11bb.zip"
 
 
 def test_region_crop():
-    # 세로 4K(2160x3840) 표시 프레임에서 중앙 절반 구역
-    assert _region_crop({"x": 0.25, "y": 0.25, "w": 0.5, "h": 0.5}, 2160, 3840) \
-        == "crop=1080:1920:540:960"
-    # 경계 밖으로 나가는 값은 프레임 안으로 보정
-    assert _region_crop({"x": 0.9, "y": 0.9, "w": 0.5, "h": 0.5}, 2160, 3840) \
-        == "crop=216:384:1944:3456"
-    # 초소형 구역은 한 변 5% 하한(2160→108, 3840→192)
-    assert _region_crop({"x": 0.5, "y": 0.5, "w": 0.01, "h": 0.01}, 2160, 3840) \
-        == "crop=108:192:1080:1920"
-    # 저해상도(640x360)에서도 사용자 구역이 그대로 — 절대 px 하한으로 넓어지지 않는다
-    assert _region_crop({"x": 0, "y": 0.128, "w": 0.206, "h": 0.791}, 640, 360) \
-        == "crop=132:284:0:46"
+    # iw/ih 비율 표현식 — 실제 디코딩 프레임(회전·클린 애퍼처 적용 후) 기준으로 평가된다
+    f = _region_crop({"x": 0.25, "y": 0.25, "w": 0.5, "h": 0.5})
+    assert f == ("crop=min(max(floor(iw*0.5000/2)*2\\,floor(iw*0.05/2)*2)\\,floor(iw/2)*2)"
+                 ":min(max(floor(ih*0.5000/2)*2\\,floor(ih*0.05/2)*2)\\,floor(ih/2)*2)"
+                 ":min(floor(iw*0.2500/2)*2\\,iw-out_w):min(floor(ih*0.2500/2)*2\\,ih-out_h)")
+    # 경계 밖으로 나가는 w/h 는 프레임 안으로 미리 잘라 넣는다(0.9+0.5 → w=0.1)
+    assert "iw*0.1000/2" in _region_crop({"x": 0.9, "y": 0.9, "w": 0.5, "h": 0.5})
+    # 좌표는 0~1 로 클램프
+    assert "iw*0.0000/2" in _region_crop({"x": -1, "y": 0, "w": 1, "h": 1})
 
 
 def test_config_defaults():

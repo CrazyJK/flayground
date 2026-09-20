@@ -6,7 +6,7 @@
     "predev": "node scripts/ensure-favicon.js",
     "dev": "next dev -H ai.kamoru.jk -p 3000 --experimental-https --experimental-https-key ../../../.cert/kamoru.jk.key --experimental-https-cert ../../../.cert/kamoru.jk.pem",
     "prebuild": "node scripts/ensure-favicon.js",
-    "build": "next build",
+    "build": "node -e \"require('fs').rmSync('.next/dev',{recursive:true,force:true})\" && next build",
     "start": "node server.js",
     "lint": "eslint"
   },

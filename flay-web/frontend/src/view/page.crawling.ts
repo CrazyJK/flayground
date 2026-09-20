@@ -746,7 +746,16 @@ class Page {
         a.click();
         window.URL.revokeObjectURL(url); // 메모리 해제
       })
-      .catch((error) => {
+      .catch((error: Error) => {
+        // 403/503 은 원본 사이트의 Cloudflare 봇 챌린지 — 서버(자동화 크롬 포함)로는 통과할 수 없다.
+        // 사용자의 브라우저에서 새 탭으로 연다. 직접 연 다운로드 URL 은 챌린지 통과 후 작품 상세 페이지로
+        // 되돌아가므로(참조 페이지 없는 접근 거부), 거기서 다운로드 버튼을 한 번 눌러야 파일이 받아진다.
+        if (/API 요청 실패: (403|503)/.test(error.message)) {
+          console.warn(`[Download] 원본 사이트 차단(Cloudflare) → 새 탭에서 직접 다운로드: ${url}`);
+          window.open(url, '_blank', 'noopener');
+          this.#notice('원본 사이트가 서버 요청을 차단해 새 탭을 열었습니다 — 새 탭의 다운로드 버튼을 눌러 주세요.');
+          return;
+        }
         console.error('파일 다운로드 실패:', error);
       });
   }

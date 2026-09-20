@@ -1,5 +1,6 @@
 import { exec } from 'child_process';
 import { Router } from 'express';
+import { fetchHtmlWithBrowser, isChallengePage } from '../services/browser-fetch.service';
 import { sseSend } from '../services/sse-emitters';
 
 const router = Router();
@@ -83,8 +84,22 @@ router.get('/crawling/curl', (req, res) => {
       sseSend({ type: 'CURL', message: '', error: error.message });
       return;
     }
-    console.log(`[Crawling] curl 완료: ${url} (${stdout.length} bytes, ${Date.now() - startTime}ms)`);
-    sseSend({ type: 'CURL', message: stdout });
+    if (!isChallengePage(stdout)) {
+      console.log(`[Crawling] curl 완료: ${url} (${stdout.length} bytes, ${Date.now() - startTime}ms)`);
+      sseSend({ type: 'CURL', message: stdout });
+      return;
+    }
+    // Cloudflare 챌린지 페이지 — curl 로는 통과 불가. 실제 크롬(전용 프로필)으로 다시 받는다.
+    console.log(`[Crawling] curl 차단(Cloudflare 챌린지) → 크롬으로 재시도: ${url}`);
+    fetchHtmlWithBrowser(url)
+      .then((html) => {
+        console.log(`[Crawling] 크롬 완료: ${url} (${html.length} bytes, ${Date.now() - startTime}ms)`);
+        sseSend({ type: 'CURL', message: html });
+      })
+      .catch((e: Error) => {
+        console.error(`[Crawling] 크롬 오류: ${url} - ${e.message} (${Date.now() - startTime}ms)`);
+        sseSend({ type: 'CURL', message: '', error: `Cloudflare 차단 — ${e.message}` });
+      });
   });
 
   res.status(204).end();

@@ -73,6 +73,8 @@ token-cache.json
 # db files
 push-subscriptions.db
 financial-note.db
+# flay-web backend: 크롤링용 전용 크롬 프로필(Cloudflare 통과 쿠키 보관)
+flay-web/backend/data/chrome-profile/
 
 # private
 private-memo.md

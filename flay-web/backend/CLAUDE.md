@@ -33,6 +33,7 @@ src/
 | `/api/v1/stream` | 비디오 스트리밍 |
 | `/api/v1/push` | Web Push |
 | `/api/v1/sse` | Server-Sent Events |
+| `/api/v1/crawling` | 외부 페이지 수집 — `curl` 로 받되 Cloudflare 챌린지 페이지면 실제 크롬(전용 프로필, `services/browser-fetch.service.ts`)으로 다시 받아 SSE(`CURL`)로 전달 |
 
 ## 데이터 파일 경로 (항상 `flay-web/backend/` 기준)
 
@@ -41,6 +42,7 @@ src/
 | `config/default.json` | 경로·포트·SSL·백업 설정 |
 | `data/financial-note.db` | 금융 노트 SQLite DB |
 | `data/push-subscriptions.db` | Web Push 구독 SQLite DB |
+| `data/chrome-profile/` | 크롤링용 전용 크롬 프로필(gitignore) — Cloudflare 통과 쿠키 보관. 첫 요청(또는 쿠키 만료 후)에는 크롬 창이 뜨며 확인이 필요할 수 있다 |
 | `logs/access.log` | HTTP 접근 로그 |
 
 ## 코딩 관행

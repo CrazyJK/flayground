@@ -748,12 +748,31 @@ class Page {
       })
       .catch((error: Error) => {
         // 403/503 은 원본 사이트의 Cloudflare 봇 챌린지 — 서버(자동화 크롬 포함)로는 통과할 수 없다.
-        // 사용자의 브라우저에서 새 탭으로 연다. 직접 연 다운로드 URL 은 챌린지 통과 후 작품 상세 페이지로
-        // 되돌아가므로(참조 페이지 없는 접근 거부), 거기서 다운로드 버튼을 한 번 눌러야 파일이 받아진다.
+        // 사용자의 브라우저에서 팝업 창으로 연다(iframe 은 챌린지 페이지의 X-Frame-Options: SAMEORIGIN 으로 불가).
+        // 직접 연 다운로드 URL 은 챌린지 통과 후 작품 상세 페이지로 되돌아가므로(참조 페이지 없는 접근 거부),
+        // 거기서 다운로드 버튼을 한 번 눌러야 파일이 받아진다. 창 이름을 고정해 여러 번 다운로드해도 같은 창을 재사용한다.
         if (/API 요청 실패: (403|503)/.test(error.message)) {
-          console.warn(`[Download] 원본 사이트 차단(Cloudflare) → 새 탭에서 직접 다운로드: ${url}`);
-          window.open(url, '_blank', 'noopener');
-          this.#notice('원본 사이트가 서버 요청을 차단해 새 탭을 열었습니다 — 새 탭의 다운로드 버튼을 눌러 주세요.');
+          console.warn(`[Download] 원본 사이트 차단(Cloudflare) → 팝업 창에서 직접 다운로드: ${url}`);
+          // 닫힘 감지를 위해 참조가 필요하므로 noopener 대신 열자마자 opener 를 끊는다(새 창은 아직 about:blank 라 동일 출처).
+          // 재사용된 창은 이미 교차 출처라 대입이 SecurityError 를 던지지만, 처음 열 때 끊었으므로 무시한다.
+          const popup = window.open(url, 'nanojav-download', 'popup,width=900,height=700');
+          if (!popup) {
+            this.#notice('팝업이 차단되었습니다 — 이 사이트의 팝업을 허용해 주세요.', false, true);
+            return;
+          }
+          try {
+            popup.opener = null;
+          } catch {
+            /* 재사용된 교차 출처 창 */
+          }
+          popup.focus();
+          this.#notice('원본 사이트가 서버 요청을 차단해 팝업 창을 열었습니다 — 팝업의 다운로드 버튼을 누른 뒤 창을 닫아 주세요.');
+          // 팝업을 닫으면 안내 메시지를 숨긴다
+          const timer = window.setInterval(() => {
+            if (!popup.closed) return;
+            window.clearInterval(timer);
+            this.#notice('', true);
+          }, 1000);
           return;
         }
         console.error('파일 다운로드 실패:', error);

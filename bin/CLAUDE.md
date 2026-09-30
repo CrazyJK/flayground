@@ -7,6 +7,7 @@ bin\flay.ps1 <start|stop|restart|status> [-SkipBuild]   # 전체 운영 기동: 
 bin\web\mcp.ps1 | web.ps1 <start|stop|restart|status> [-SkipBuild]        # flay-mcp · flay-web 개별 (start = 빌드 → dist 기동)
 bin\ai\api.ps1 | web.ps1 | qdrant.ps1 | ollama.ps1 <start|stop|restart|status> [-SkipBuild]   # flay-ai 개별 (web = next build → node server.js)
 bin\ai\reindex.ps1 <quick|sync|full|clean> [apply]
+powershell -NoProfile -WindowStyle Hidden -File bin\monitor.ps1 [-NoAutoStart]   # 모니터: http://localhost:7777 + Edge --app 창. 컴포넌트별 상태·헬스·CPU·RAM·업타임·로그, 시스템 CPU/RAM/GPU/디스크, start/stop/restart. 기동 시 flay.ps1 start -SkipBuild 자동 실행
 ```
 
 cmd.exe 에서는 `powershell -NoProfile -File bin\flay.ps1 start` 처럼 호출한다(실행 정책 RemoteSigned, 로컬 파일이라 그대로 실행 가능).
@@ -15,6 +16,10 @@ cmd.exe 에서는 `powershell -NoProfile -File bin\flay.ps1 start` 처럼 호출
 bin/
 ├── common.ps1               # 공용 라이브러리 — 컴포넌트 표($Components: 포트·명령·빌드 단계·로그·헬스 URL) + Invoke-Flay/Start-Component/Stop-Component/Show-Status
 ├── flay.ps1                 # 전체 start|stop|restart|status
+├── monitor.ps1 · monitor/index.html · flay.ico
+│                            # 모니터 — HttpListener(localhost:7777, / · /api/status · /api/action · /api/log) + 수집 runspace(3초: 포트 LISTEN·헬스·프로세스 트리 CPU/RAM·업타임) + 트레이.
+│                            # 화면은 index.html(도커 데스크톱 스타일), Edge/Chrome --app 창으로 열림. 액션은 bin\*.ps1 을 숨김 콘솔로 실행(FLAY_DETACH=1),
+│                            # 출력은 monitor\logs\<id>.log 로 받아 화면의 작업 패널·Logs 뷰에 표시
 ├── web/                     # mcp.ps1 · web.ps1(flay-web backend; start 시 frontend webpack + backend tsup 빌드)
 ├── ai/                      # api/web/qdrant/ollama.ps1, reindex.ps1,
 │                            # bootstrap.ps1(첫 셋업), nightly_index.ps1, nightly_subtitle.ps1, overnight.ps1, README.md
@@ -38,7 +43,7 @@ bin/
 ## 프로세스 제어 (`common.ps1` 규칙)
 
 - 컴포넌트 키: `mcp`(3002) · `web`(443, flay-web backend) · `qdrant`(6333, docker) · `ollama`(11434) · `api`(8000) · `aiweb`(3000, 표시명 `ai-web`). 명령·빌드 단계·로그·헬스 URL 은 `$Components` 한 곳에만 둔다(uvicorn 명령줄도 여기 하나뿐). 모두 **운영 모드** 명령이다: `mcp` `yarn start`(dist) · `web` `yarn start`(dist) · `api` uvicorn no-reload · `aiweb` `node server.js`(.next).
-- `start`: 포트가 이미 LISTEN 이면 `[SKIP]`. `Build` 단계가 있는 컴포넌트는 먼저 순서대로 빌드 — `mcp` = `yarn install`·`yarn run build`(→ `dist/`) / `web` = frontend `yarn install`·`node madge.cjs`·`yarn run build`(webpack → `frontend/dist`, backend 가 `/dist` 로 서빙) + backend `yarn install`·`yarn build:schema`·`yarn build`(tsup → `dist/`) / `aiweb` = `yarn install`·`yarn build`(next → `.next`). 표시는 `[....] build i/n: <명령>`, 출력 → `<로그 폴더>\build.log`, 실패 시 `[FAIL]` 중단. `-SkipBuild` 면 기존 산출물(`dist/` 또는 `BuildOut`=`.next`)로 바로 기동, 없으면 거부. 그다음 `Start-Process cmd /c "<명령> > <로그> 2>&1" -NoNewWindow` 로 **현재 터미널의 백그라운드**(새 창 없음, 터미널을 닫으면 함께 종료)로 띄우고, 포트가 LISTEN 될 때까지 `[....] waiting Ns` 를 제자리 갱신 → `[ OK ] built Ns, up in N.Ns pid P health 200` / 타임아웃 시 `[FAIL]`. 로그: `flay-mcp\logs\mcp-nexus.log`, `flay-web\backend\logs\web-backend.log`, `flay-ai\logs\{ollama,api,web}.log`.
+- `start`: 포트가 이미 LISTEN 이면 `[SKIP]`. `Build` 단계가 있는 컴포넌트는 먼저 순서대로 빌드 — `mcp` = `yarn install`·`yarn run build`(→ `dist/`) / `web` = frontend `yarn install`·`node madge.cjs`·`yarn run build`(webpack → `frontend/dist`, backend 가 `/dist` 로 서빙) + backend `yarn install`·`yarn build:schema`·`yarn build`(tsup → `dist/`) / `aiweb` = `yarn install`·`yarn build`(next → `.next`). 표시는 `[....] build i/n: <명령>`, 출력 → `<로그 폴더>\build.log`, 실패 시 `[FAIL]` 중단. `-SkipBuild` 면 기존 산출물(`dist/` 또는 `BuildOut`=`.next`)로 바로 기동, 없으면 거부. 그다음 `Start-Process cmd /c "<명령> > <로그> 2>&1" -NoNewWindow` 로 **현재 터미널의 백그라운드**(새 창 없음, 터미널을 닫으면 함께 종료)로 띄우고(환경변수 `FLAY_DETACH=1` 이면 `-WindowStyle Hidden` 으로 독립 숨김 콘솔 — `monitor.ps1` 이 설정해 런처 창·모니터를 닫아도 프로세스가 유지된다), 포트가 LISTEN 될 때까지 `[....] waiting Ns` 를 제자리 갱신 → `[ OK ] built Ns, up in N.Ns pid P health 200` / 타임아웃 시 `[FAIL]`. 로그: `flay-mcp\logs\mcp-nexus.log`, `flay-web\backend\logs\web-backend.log`, `flay-ai\logs\{ollama,api,web}.log`.
 - `stop`: 포트 LISTEN PID 를 `taskkill /F /T`(PID 가 이미 죽었으면 `Win32_Process` 에서 그 PID 를 부모로 둔 자식을 종료), 포트 닫힘 확인 후 `[STOP]`. qdrant 만 `docker compose stop`. `flay.ps1 stop` 은 qdrant·ollama 도 내린다(Ollama 는 트레이가 자동 재기동).
 - `status`: 컴포넌트별 `[ UP ] pid health` / `[DOWN]`, qdrant 는 docker 상태 병기.
 - reindex 모드: `quick` = load→scan→history→fts→sync-payload(AI 없음) · `sync` = quick + translate + embed · `full` = sync + embed-clip + extract-faces + cluster-faces + ocr-posters · `clean` = cleanup dry-run(`apply` 시 실제 삭제). 단계별 소요 시간 출력, 첫 실패에서 중단.

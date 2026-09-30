@@ -32,9 +32,10 @@ $script:FlayAi = Join-Path $Root 'flay-ai'
 #            skipped with -SkipBuild, which requires Dir\<BuildOut> (default 'dist') to exist.
 $script:Components = [ordered]@{
     qdrant = @{ Label = 'qdrant'; Port = 6333;  Kind = 'docker'; Timeout = 60
-                Url = 'http://localhost:6333/dashboard' }
+                Health = 'http://localhost:6333/healthz'; Url = 'http://localhost:6333/dashboard' }
     ollama = @{ Label = 'ollama'; Port = 11434; Cmd = 'ollama serve'; Dir = $FlayAi; Timeout = 60
-                Log = (Join-Path $FlayAi 'logs\ollama.log') }
+                Log = (Join-Path $FlayAi 'logs\ollama.log')
+                Health = 'http://localhost:11434/' }
     mcp    = @{ Label = 'mcp';    Port = 3002;  Cmd = 'yarn start'; Timeout = 60
                 Dir = (Join-Path $Root 'flay-mcp')
                 Log = (Join-Path $Root 'flay-mcp\logs\mcp-nexus.log')
@@ -112,7 +113,12 @@ function Start-Background {
         return $p.ExitCode
     }
     $inner = '"{0} > "{1}" 2>&1"' -f $Cmd, $Log
-    Start-Process -FilePath $env:ComSpec -ArgumentList '/c', $inner -WorkingDirectory $Dir -NoNewWindow | Out-Null
+    if ($env:FLAY_DETACH -eq '1') {
+        # set by monitor.ps1: own hidden console, so the process outlives the launcher window
+        Start-Process -FilePath $env:ComSpec -ArgumentList '/c', $inner -WorkingDirectory $Dir -WindowStyle Hidden | Out-Null
+    } else {
+        Start-Process -FilePath $env:ComSpec -ArgumentList '/c', $inner -WorkingDirectory $Dir -NoNewWindow | Out-Null
+    }
 }
 
 # ---- component operations -----------------------------------------------

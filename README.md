@@ -44,6 +44,12 @@ bin\flay.ps1 stop         # 전체 종료
 
 `-SkipBuild` 를 붙이면 기존 빌드 산출물로 바로 띄운다. cmd.exe 에서는 `powershell -NoProfile -File bin\flay.ps1 start`.
 
+모니터(도커 데스크톱 스타일 창 — 컴포넌트별 상태·헬스·CPU·RAM·업타임·로그, 시스템 CPU/RAM/GPU/디스크, start/stop/restart 버튼, 트레이 아이콘; `http://localhost:7777` 을 Edge `--app` 창으로 열고, 기동 시 전체 컴포넌트를 기존 빌드 산출물로 자동 기동한다 — 끄려면 `-NoAutoStart`):
+
+```powershell
+powershell -NoProfile -WindowStyle Hidden -File bin\monitor.ps1
+```
+
 컴포넌트별 운영 기동:
 
 ```powershell

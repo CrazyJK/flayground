@@ -1,0 +1,299 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Flay-Ground Monitor</title>
+<link rel="icon" type="image/x-icon" href="/favicon.ico?v=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<style>
+  /* 도커 데스크톱 다크 테마에 맞춘 토큰 */
+  :root {
+    --bg: #0f1419; --side: #0b1016; --panel: #161c25; --panel2: #1c2430; --border: #2a3441;
+    --text: #e6edf3; --muted: #8b97a6; --accent: #3b82f6; --accent2: #2563eb;
+    --green: #22c55e; --red: #ef4444; --orange: #f59e0b; --link: #60a5fa;
+  }
+  * { box-sizing: border-box; }
+  html, body { height: 100%; margin: 0; }
+  body { background: var(--bg); color: var(--text); font: 14px/1.4 "Segoe UI", system-ui, sans-serif; display: flex; flex-direction: column; }
+  a { color: var(--link); text-decoration: none; } a:hover { text-decoration: underline; }
+  button { font: inherit; cursor: pointer; }
+
+  /* 상단 바 */
+  .top { height: 56px; background: #0a0f15; border-bottom: 1px solid var(--border); display: flex; align-items: center; padding: 0 20px; gap: 14px; }
+  .brand { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 600; letter-spacing: .2px; }
+  .brand .logo { width: 26px; height: 26px; border-radius: 6px; background: linear-gradient(135deg, #ef4444, #f97316); display: grid; place-items: center; font-weight: 800; color: #fff; font-size: 15px; }
+  .brand b { font-weight: 300; color: var(--muted); }
+  .badge { font-size: 10px; font-weight: 700; letter-spacing: .6px; padding: 3px 8px; border-radius: 999px; background: #1f2937; color: #cbd5e1; }
+  .top .right { margin-left: auto; color: var(--muted); font-size: 12px; display: flex; align-items: center; gap: 8px; }
+  .nav { display: flex; align-self: stretch; margin-left: 28px; }
+  .nav a { display: flex; align-items: center; padding: 0 16px; color: var(--muted); font-weight: 500; border-bottom: 2px solid transparent; }
+  .nav a:hover { color: var(--text); text-decoration: none; }
+  .nav a.active { color: var(--text); border-bottom-color: var(--accent); }
+
+  /* 본문: 한 화면(컴포넌트 → 로그) */
+  main { flex: 1; overflow: auto; padding: 20px 24px; min-width: 0; }
+  h1 { font-size: 20px; margin: 0 0 18px; font-weight: 600; }
+  h2 { font-size: 16px; margin: 26px 0 10px; font-weight: 600; }
+
+  /* 통계 카드 */
+  .cards { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 20px; }
+  .card { background: var(--panel); border: 1px solid var(--border); border-radius: 10px; padding: 12px 14px; min-width: 0; }
+  .card .k { color: var(--muted); font-size: 12px; margin-bottom: 8px; }
+  .card .v { font-size: 18px; font-weight: 600; color: var(--green); }
+  .card .v small { font-size: 13px; font-weight: 400; color: var(--muted); margin-left: 4px; }
+  .card .bar { height: 4px; background: #253041; border-radius: 2px; margin-top: 10px; overflow: hidden; }
+  .card .bar i { display: block; height: 100%; background: var(--green); width: 0; transition: width .4s; }
+  .card .bar i.warn { background: var(--orange); } .card .bar i.hot { background: var(--red); }
+  .card .disks { display: flex; flex-direction: column; gap: 6px; }
+  .card .disks div { display: flex; justify-content: space-between; font-size: 13px; }
+  .card .disks span { color: var(--muted); }
+
+  /* 툴바 */
+  .toolbar { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
+  .toolbar .grow { flex: 1; }
+  .switch { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; color: var(--text); }
+  .switch input { display: none; }
+  .switch span { width: 36px; height: 20px; border-radius: 999px; background: #334155; position: relative; transition: background .2s; }
+  .switch span::after { content: ""; position: absolute; top: 2px; left: 2px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left .2s; }
+  .switch input:checked + span { background: var(--accent); }
+  .switch input:checked + span::after { left: 18px; }
+  .btn { border: 1px solid var(--border); background: var(--panel2); color: var(--text); padding: 7px 14px; border-radius: 8px; font-weight: 500; }
+  .btn:hover { background: #243044; }
+  .btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; } .btn.primary:hover { background: var(--accent2); }
+  .btn.danger { color: #fca5a5; } .btn.danger:hover { background: #3b1d1d; border-color: #7f1d1d; }
+
+  /* 작업 패널(start/stop/restart 진행 상황) */
+  .tasks { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; }
+  .task { display: flex; align-items: center; gap: 10px; background: var(--panel); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: 8px; padding: 7px 12px; font-size: 13px; }
+  .task.ok { border-left-color: var(--green); } .task.fail { border-left-color: var(--red); }
+  .task .spin { width: 14px; height: 14px; border: 2px solid #334155; border-top-color: var(--accent); border-radius: 50%; animation: spin .8s linear infinite; flex: none; }
+  .task .mark { width: 14px; text-align: center; flex: none; font-weight: 700; }
+  .task.ok .mark { color: var(--green); } .task.fail .mark { color: var(--red); }
+  .task b { flex: none; } .task .tlast { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-family: Consolas, monospace; font-size: 12px; color: var(--muted); }
+  .task .tel { flex: none; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .task a { flex: none; } .task .x { flex: none; background: none; border: 0; color: var(--muted); font-size: 16px; line-height: 1; padding: 0 2px; } .task .x:hover { color: var(--text); }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* 표 */
+  table { width: 100%; border-collapse: collapse; background: var(--panel); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  th, td { text-align: left; padding: 10px 10px; border-bottom: 1px solid var(--border); white-space: nowrap; }
+  th { color: var(--muted); font-weight: 500; font-size: 12px; background: #131a23; }
+  tr:last-child td { border-bottom: 0; }
+  tbody tr:hover { background: #1a2330; }
+  td.num { font-variant-numeric: tabular-nums; }
+  .dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; background: #475569; box-shadow: 0 0 0 3px rgba(255,255,255,.04); }
+  .dot.up { background: var(--green); } .dot.warn { background: var(--orange); } .dot.down { background: var(--red); }
+  .name { font-weight: 600; }
+  .state { font-size: 12px; color: var(--muted); }
+  .muted { color: var(--muted); }
+  .actions { display: flex; gap: 2px; }
+  .icon { width: 28px; height: 28px; border-radius: 6px; border: 0; background: transparent; color: var(--link); display: grid; place-items: center; }
+  .icon:hover { background: #24304a; } .icon:disabled { color: #3f4a5a; cursor: default; background: transparent; }
+  .icon.red { color: #f87171; }
+  .icon svg { width: 16px; height: 16px; }
+  svg.ext { width: 12px; height: 12px; vertical-align: -1px; margin-left: 2px; }
+
+  /* 로그 뷰 */
+  .logbar { display: flex; align-items: flex-end; gap: 12px; margin-bottom: 12px; border-bottom: 1px solid var(--border); }
+  .logbar .hint { margin-left: auto; padding-bottom: 8px; }
+  .tabs { display: flex; gap: 2px; overflow-x: auto; }
+  .tab { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; color: var(--muted); border-bottom: 2px solid transparent; cursor: pointer; white-space: nowrap; user-select: none; }
+  .tab:hover { color: var(--text); } .tab.active { color: var(--text); border-bottom-color: var(--accent); }
+  .tab.task { font-family: Consolas, monospace; font-size: 12px; }
+  .tab .x { background: none; border: 0; color: var(--muted); font-size: 14px; line-height: 1; padding: 0 2px; } .tab .x:hover { color: var(--text); }
+  pre.log { background: #0a0e13; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin: 0; height: calc(100vh - 180px); overflow: auto; font: 12px/1.5 Consolas, "Cascadia Mono", monospace; color: #cbd5e1; white-space: pre-wrap; word-break: break-all; }
+
+  /* 하단 상태 바 */
+  .status { height: 30px; background: #0a0f15; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 16px; padding: 0 16px; font-size: 12px; color: var(--muted); }
+  .status .dot { width: 8px; height: 8px; box-shadow: none; }
+</style>
+</head>
+<body>
+  <header class="top">
+    <div class="brand"><span class="logo">F</span>flay<b>ground</b><span class="badge">MONITOR</span></div>
+    <nav class="nav"><a href="#" data-view="components" class="active">Components</a><a href="#" data-view="logs">Logs</a></nav>
+    <div class="right"><span id="updated">connecting...</span></div>
+  </header>
+
+    <main>
+      <section id="view-components">
+        <div class="cards">
+          <div class="card"><div class="k">System CPU usage</div><div class="v"><span id="cpu">-</span><small id="cpuT"></small></div><div class="bar"><i id="cpuB"></i></div></div>
+          <div class="card"><div class="k">System memory usage</div><div class="v"><span id="ram">-</span><small id="ramT"></small></div><div class="bar"><i id="ramB"></i></div></div>
+          <div class="card" id="gpuCard" hidden><div class="k">GPU usage / memory</div><div class="v"><span id="gpu">-</span><small id="gpuT"></small></div><div class="bar"><i id="gpuB"></i></div></div>
+          <div class="card"><div class="k">Disk free</div><div class="disks" id="disks"></div></div>
+        </div>
+
+        <div class="toolbar">
+          <label class="switch"><input type="checkbox" id="skip"><span></span>Skip build</label>
+          <div class="grow"></div>
+          <button class="btn primary" onclick="act('all','start')">Start all</button>
+          <button class="btn danger" onclick="act('all','stop')">Stop all</button>
+        </div>
+
+        <div class="tasks" id="tasks"></div>
+
+        <table>
+          <thead><tr><th style="width:36px"></th><th>Name</th><th>Port</th><th>PID</th><th>Health</th><th>CPU %</th><th>RAM</th><th>Uptime</th><th style="width:130px">Actions</th></tr></thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </section>
+
+      <section id="view-logs" hidden>
+        <div class="logbar"><div class="tabs" id="logTabs"></div><span class="muted hint">last 300 lines, refreshes every 3s</span></div>
+        <pre class="log" id="logBody"></pre>
+      </section>
+    </main>
+
+  <footer class="status"><span class="dot up" id="srvDot"></span><span id="srvText">Monitor running</span><span id="upCount"></span></footer>
+
+<script>
+  // 아이콘(도커 액션 버튼 스타일의 단순 SVG)
+  const I = {
+    start:   '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M7 5v14l11-7z"/></svg>',
+    stop:    '<svg viewBox="0 0 24 24" fill="currentColor"><rect x="6" y="6" width="12" height="12" rx="2"/></svg>',
+    restart: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/></svg>',
+    log:     '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M5 6h14M5 12h14M5 18h8"/></svg>',
+    ext:     '<svg class="ext" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>',
+  };
+  const $ = id => document.getElementById(id);
+  const fmtG = n => n == null ? '-' : n.toFixed(1) + ' GB';
+  const fmtRam = b => b == null ? '-' : (b >= 2 ** 30 ? (b / 2 ** 30).toFixed(2) + ' GB' : Math.round(b / 2 ** 20) + ' MB');
+  const fmtUp = s => {
+    if (s == null) return '-';
+    const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), sec = s % 60;
+    const p = n => String(n).padStart(2, '0');
+    return d > 0 ? `${d}d ${p(h)}:${p(m)}` : `${p(h)}:${p(m)}:${p(sec)}`;
+  };
+  const bar = (el, pct) => { el.style.width = Math.min(100, pct) + '%'; el.className = pct >= 90 ? 'hot' : pct >= 70 ? 'warn' : ''; };
+
+  // 액션: 백엔드가 bin\*.ps1 을 새 콘솔 창으로 실행
+  async function act(key, action) {
+    const skip = $('skip').checked ? 1 : 0;
+    await fetch(`/api/action?key=${key}&action=${action}&skip=${skip}`, { method: 'POST' });
+  }
+
+  // 행은 처음 한 번 만들고 이후에는 셀만 갱신(버튼 클릭 중 DOM 교체 방지)
+  const rowEls = {};
+  function ensureRow(r) {
+    if (rowEls[r.key]) return rowEls[r.key];
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="dot"></span></td>
+      <td><div class="name">${r.label}</div><div class="state"></div></td>
+      <td class="num">${r.url ? `<a href="${r.url}" target="_blank" title="${r.url}">${r.port} ${I.ext}</a>` : r.port}</td>
+      <td class="num pid"></td><td class="num health"></td>
+      <td class="num cpu"></td><td class="num ram"></td><td class="num uptime"></td>
+      <td><div class="actions">
+        <button class="icon start" title="Start" onclick="act('${r.key}','start')">${I.start}</button>
+        <button class="icon stop" title="Stop" onclick="act('${r.key}','stop')">${I.stop}</button>
+        <button class="icon restart" title="Restart" onclick="act('${r.key}','restart')">${I.restart}</button>
+        <button class="icon log" title="Logs" onclick="showLog('${r.key}')" ${r.hasLog ? '' : 'disabled'}>${I.log}</button>
+      </div></td>`;
+    $('rows').appendChild(tr);
+    if (r.hasLog) addTab(r.key, r.label, false);
+    return rowEls[r.key] = tr;
+  }
+
+  function render(d) {
+    const s = d.sys;
+    if (s) {
+      $('cpu').textContent = s.cpu + '%'; $('cpuT').textContent = `/ ${s.cores} CPUs`; bar($('cpuB'), s.cpu);
+      $('ram').textContent = fmtG(s.ramUsed); $('ramT').textContent = '/ ' + fmtG(s.ramTotal); bar($('ramB'), s.ramUsed / s.ramTotal * 100);
+      if (s.gpu) { $('gpuCard').hidden = false; $('gpu').textContent = s.gpu.util + '%'; $('gpuT').textContent = `${fmtG(s.gpu.used)} / ${fmtG(s.gpu.total)}`; bar($('gpuB'), s.gpu.used / s.gpu.total * 100); }
+      $('disks').innerHTML = s.disks.map(x => `<div><b>${x.name}</b><span>${Math.round(x.free)} / ${Math.round(x.total)} GB</span></div>`).join('');
+    }
+    let up = 0;
+    for (const r of d.rows) {
+      const tr = ensureRow(r);
+      const isUp = !!r.pid, warn = isUp && r.health !== '200';   // 모든 컴포넌트에 헬스 URL 이 있다(common.ps1)
+      if (isUp) up++;
+      tr.querySelector('.dot').className = 'dot ' + (isUp ? (warn ? 'warn' : 'up') : 'down');
+      tr.querySelector('.state').textContent = isUp ? (warn ? 'Running - health ' + (r.health || 'n/a') : 'Running') : 'Stopped';
+      tr.querySelector('.pid').textContent = r.pid || '';
+      tr.querySelector('.health').textContent = r.health || '';
+      tr.querySelector('.cpu').textContent = r.cpu == null ? '' : r.cpu.toFixed(1);
+      tr.querySelector('.ram').textContent = r.ram == null ? '' : fmtRam(r.ram);
+      tr.querySelector('.uptime').textContent = r.up == null ? '' : fmtUp(r.up);
+      tr.querySelector('.start').disabled = isUp;
+      tr.querySelector('.stop').disabled = !isUp;
+    }
+    $('upCount').textContent = `${up} / ${d.rows.length} running`;
+    renderTasks(d.tasks || []);
+    $('updated').textContent = (d.error ? 'collector error: ' + d.error + ' - ' : '') + 'updated ' + new Date().toLocaleTimeString();
+  }
+
+  async function tick() {
+    try {
+      const d = await (await fetch('/api/status')).json();
+      render(d);
+      $('srvDot').className = 'dot up'; $('srvText').textContent = 'Monitor running';
+    } catch (e) {
+      $('srvDot').className = 'dot down'; $('srvText').textContent = 'Monitor not reachable - it was closed from the tray?';
+    }
+  }
+
+  // 작업 패널: 진행 중 + 최근 5개, 끝난 것은 x 로 숨길 수 있다
+  const hiddenTasks = new Set();
+  const fmtEl = s => s >= 60 ? `${Math.floor(s / 60)}m ${s % 60}s` : `${s}s`;
+  function renderTasks(tasks) {
+    const box = $('tasks');
+    const list = tasks.filter(t => !hiddenTasks.has(t.id)).slice(0, 5);
+    box.innerHTML = list.map(t => {
+      const cls = t.done ? (t.exit === 0 ? 'ok' : 'fail') : 'running';
+      const icon = t.done ? `<span class="mark">${t.exit === 0 ? '✓' : '✗'}</span>` : '<span class="spin"></span>';
+      return `<div class="task ${cls}">${icon}<b>${t.action} · ${t.key}</b><span class="tlast" title="${t.last.replace(/"/g, '&quot;')}">${t.last}</span>
+        <span class="tel">${fmtEl(t.elapsed)}</span><a href="#" onclick="showTaskLog('${t.id}','${t.action} · ${t.key} ${t.started}');return false">log</a>
+        ${t.done ? `<button class="x" title="Dismiss" onclick="hiddenTasks.add('${t.id}');renderTasks([])">×</button>` : ''}</div>`;
+    }).join('');
+    if (!list.length && tasks.length) box.innerHTML = '';
+  }
+
+  // 로그 뷰: 탭(컴포넌트 로그 + 닫을 수 있는 작업 출력 탭). 선택된 탭을 3초마다 갱신, 스크롤이 바닥이면 따라간다
+  let logCur = null;
+  function addTab(value, label, closable) {
+    const tabs = $('logTabs');
+    let t = tabs.querySelector(`[data-v="${value}"]`);
+    if (t) return t;
+    t = document.createElement('span');
+    t.className = 'tab' + (closable ? ' task' : ''); t.dataset.v = value; t.textContent = label;
+    t.onclick = () => selectTab(value);
+    if (closable) {
+      const x = document.createElement('button'); x.className = 'x'; x.title = 'Close'; x.textContent = '×';
+      x.onclick = e => { e.stopPropagation(); t.remove(); if (logCur === value) selectTab(tabs.firstElementChild ? tabs.firstElementChild.dataset.v : null); };
+      t.appendChild(x);
+    }
+    tabs.appendChild(t);
+    if (!logCur) selectTab(value);                 // 첫 탭은 바로 표시
+    return t;
+  }
+  function selectTab(value) {
+    logCur = value;
+    document.querySelectorAll('#logTabs .tab').forEach(t => t.classList.toggle('active', t.dataset.v === value));
+    $('logBody').textContent = '';
+    loadLog().then(() => { $('logBody').scrollTop = $('logBody').scrollHeight; });
+  }
+  async function loadLog() {
+    if (!logCur) return;
+    const pre = $('logBody');
+    const atBottom = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 8;
+    const q = logCur.startsWith('task:') ? 'task=' + logCur.slice(5) : 'key=' + logCur;
+    pre.textContent = await (await fetch('/api/log?' + q)).text();
+    if (atBottom) pre.scrollTop = pre.scrollHeight;
+  }
+  // 상단 탭(Components / Logs) 전환. 표의 ≡ / 작업의 log 는 Logs 뷰를 열고 해당 탭을 고른다
+  function showView(v) {
+    document.querySelectorAll('.nav a').forEach(a => a.classList.toggle('active', a.dataset.view === v));
+    $('view-components').hidden = v !== 'components';
+    $('view-logs').hidden = v !== 'logs';
+    if (v === 'logs') loadLog().then(() => { $('logBody').scrollTop = $('logBody').scrollHeight; });
+  }
+  function showLog(key) { showView('logs'); selectTab(key); }
+  function showTaskLog(id, label) { addTab('task:' + id, label, true); showLog('task:' + id); }
+  document.querySelectorAll('.nav a').forEach(a => a.onclick = e => { e.preventDefault(); showView(a.dataset.view); });
+  setInterval(() => { if (!$('view-logs').hidden) loadLog(); }, 3000);
+
+  tick(); setInterval(tick, 2000);
+</script>
+</body>
+</html>

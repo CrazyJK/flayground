@@ -85,6 +85,9 @@
   .dot.up { background: var(--green); } .dot.warn { background: var(--orange); } .dot.down { background: var(--red); }
   .name { font-weight: 600; }
   .state { font-size: 12px; color: var(--muted); }
+  .mode { display: inline-block; margin-left: 6px; padding: 1px 6px; border-radius: 999px; font-size: 10px; font-weight: 700; letter-spacing: .4px; vertical-align: 1px; }
+  .mode.prod { background: #14532d; color: #86efac; } .mode.dev { background: #78350f; color: #fcd34d; }
+  .mode.ext, .mode.docker { background: #1e293b; color: #94a3b8; }
   .muted { color: var(--muted); }
   .actions { display: flex; gap: 2px; }
   .icon { width: 28px; height: 28px; border-radius: 6px; border: 0; background: transparent; color: var(--link); display: grid; place-items: center; }
@@ -141,6 +144,7 @@
 
       <section id="view-logs" hidden>
         <div class="logbar"><div class="tabs" id="logTabs"></div><span class="muted hint">last 300 lines, refreshes every 3s</span></div>
+        <div class="muted" id="logHint" style="margin-bottom:8px" hidden></div>
         <pre class="log" id="logBody"></pre>
       </section>
     </main>
@@ -167,8 +171,15 @@
   };
   const bar = (el, pct) => { el.style.width = Math.min(100, pct) + '%'; el.className = pct >= 90 ? 'hot' : pct >= 70 ? 'warn' : ''; };
 
-  // 액션: 백엔드가 bin\*.ps1 을 새 콘솔 창으로 실행
+  // 액션: 백엔드가 bin\*.ps1 을 숨김 콘솔로 실행. 개발 모드(dev) 프로세스는 스크립트 밖에서 띄운 것이라
+  // Stop 은 그 프로세스를 죽이고 Start/Restart 는 운영 모드로 띄우므로 먼저 확인한다
+  const modes = {};
   async function act(key, action) {
+    const devKeys = key === 'all' ? Object.keys(modes).filter(k => modes[k] === 'dev') : (modes[key] === 'dev' ? [key] : []);
+    if (devKeys.length && action !== 'start') {
+      const what = action === 'stop' ? 'will be killed' : 'will be killed and started again in PRODUCTION mode';
+      if (!confirm(`${devKeys.join(', ')}: running in dev mode (started outside bin\\*.ps1).\nThe dev process ${what}. Continue?`)) return;
+    }
     const skip = $('skip').checked ? 1 : 0;
     await fetch(`/api/action?key=${key}&action=${action}&skip=${skip}`, { method: 'POST' });
   }
@@ -209,7 +220,9 @@
       const isUp = !!r.pid, warn = isUp && r.health !== '200';   // 모든 컴포넌트에 헬스 URL 이 있다(common.ps1)
       if (isUp) up++;
       tr.querySelector('.dot').className = 'dot ' + (isUp ? (warn ? 'warn' : 'up') : 'down');
-      tr.querySelector('.state').textContent = isUp ? (warn ? 'Running - health ' + (r.health || 'n/a') : 'Running') : 'Stopped';
+      modes[r.key] = isUp ? r.mode : '';
+      const badge = isUp && r.mode ? ` <span class="mode ${r.mode}">${r.mode}</span>` : '';
+      tr.querySelector('.state').innerHTML = (isUp ? (warn ? 'Running - health ' + (r.health || 'n/a') : 'Running') : 'Stopped') + badge;
       tr.querySelector('.pid').textContent = r.pid || '';
       tr.querySelector('.health').textContent = r.health || '';
       tr.querySelector('.cpu').textContent = r.cpu == null ? '' : r.cpu.toFixed(1);
@@ -276,6 +289,10 @@
   async function loadLog() {
     if (!logCur) return;
     const pre = $('logBody');
+    // 개발 모드 프로세스는 터미널로 출력하므로 이 파일은 마지막 운영 실행 기록이다
+    const hint = $('logHint');
+    hint.hidden = modes[logCur] !== 'dev';
+    hint.textContent = `${logCur} is running in dev mode - its output goes to the terminal; this file is the last production run.`;
     const atBottom = pre.scrollTop + pre.clientHeight >= pre.scrollHeight - 8;
     const q = logCur.startsWith('task:') ? 'task=' + logCur.slice(5) : 'key=' + logCur;
     pre.textContent = await (await fetch('/api/log?' + q)).text();

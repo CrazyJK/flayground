@@ -15,9 +15,10 @@
    window  : Edge (or Chrome) --app window without browser chrome; closing it
              leaves the monitor in the tray. Tray menu: Open / Exit.
 
-   Processes started from here get their own hidden console (FLAY_DETACH=1 ->
-   Start-Background uses -WindowStyle Hidden), so they survive when the
-   launcher window or this monitor closes. Stop kills the LISTENING pid tree.
+   The monitor re-launches itself with no console (Start-Hidden, CREATE_NO_WINDOW)
+   and so does everything it starts (FLAY_DETACH=1 -> Start-Background uses
+   Start-Hidden): no terminal window ever appears and the processes survive
+   when the launcher or this monitor closes. Stop kills the LISTENING pid tree.
 
    On launch every component is started from the existing build output
    (flay.ps1 start -SkipBuild, shown as a task in the UI; components already
@@ -27,11 +28,21 @@
    ASCII only. Windows PowerShell 5.1 (no ??, no ternary, no &&).
 ============================================================
 #>
-param([switch]$NoAutoStart)
+param([switch]$NoAutoStart, [switch]$Detached)
+
+. (Join-Path $PSScriptRoot 'common.ps1')
+
+# re-launch myself with no console at all and return: -WindowStyle Hidden is not enough when
+# Windows Terminal is the default terminal (it shows an empty tab that would host - and on close kill - the monitor)
+if (-not $Detached) {
+    $a = '-NoProfile -ExecutionPolicy Bypass -File "{0}" -Detached' -f $PSCommandPath
+    if ($NoAutoStart) { $a += ' -NoAutoStart' }
+    Start-Hidden -File 'powershell.exe' -Arguments $a -Dir $Root | Out-Null
+    exit
+}
 
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -AssemblyName System.Drawing
-. (Join-Path $PSScriptRoot 'common.ps1')
 
 $script:Port    = 7777
 $script:Url     = "http://localhost:$Port/"
@@ -94,10 +105,12 @@ $collector = New-Worker {
             $procs = @{}
             foreach ($p in Get-Process) { $procs[[int]$p.Id] = $p }
             $kids = @{}                                    # parent pid -> child pids
-            foreach ($w in Get-CimInstance Win32_Process -Property ProcessId, ParentProcessId) {
+            $parentOf = @{}; $cmdOf = @{}                  # pid -> parent pid / command line (mode detection)
+            foreach ($w in Get-CimInstance Win32_Process -Property ProcessId, ParentProcessId, CommandLine) {
                 $pp = [int]$w.ParentProcessId
                 if (-not $kids.ContainsKey($pp)) { $kids[$pp] = New-Object Collections.ArrayList }
                 [void]$kids[$pp].Add([int]$w.ProcessId)
+                $parentOf[[int]$w.ProcessId] = $pp; $cmdOf[[int]$w.ProcessId] = "$($w.CommandLine)"
             }
 
             # -- per component
@@ -106,9 +119,25 @@ $collector = New-Worker {
             foreach ($k in $Keys) {
                 $c = $Components[$k]
                 $owner = $listen[[int]$c.Port]
-                $row = @{ Pid = $owner; Health = ''; Cpu = $null; Ram = $null; Up = $null }
+                $row = @{ Pid = $owner; Health = ''; Cpu = $null; Ram = $null; Up = $null; Mode = '' }
                 if ($owner) {
                     if ($c.Health) { $row.Health = Test-Health $c.Health }
+                    if ($c.Kind -eq 'docker') { $row.Mode = 'docker' }
+                    else {
+                        # mode from the ancestor command lines (up to 6 hops):
+                        #   prod = started by bin\*.ps1  -> an ancestor cmd.exe redirects to the component log ('> "...\<log>"')
+                        #   dev  = tsx watch / next dev / webpack in the chain; api has the same uvicorn line in both modes,
+                        #          so a non-script api counts as dev; anything else (ollama tray, manual) = ext
+                        $dev = $false; $prod = $false; $p = $owner; $hops = 0
+                        $logLeaf = ''; if ($c.Log) { $logLeaf = Split-Path -Leaf $c.Log }
+                        while ($p -and $hops -lt 6 -and $cmdOf.ContainsKey($p)) {
+                            $cl = $cmdOf[$p]
+                            if ($cl -match 'tsx watch|next dev|webpack') { $dev = $true }
+                            if ($logLeaf -and $cl -like "*> *$logLeaf*") { $prod = $true }
+                            $p = $parentOf[$p]; $hops++
+                        }
+                        if ($dev) { $row.Mode = 'dev' } elseif ($prod) { $row.Mode = 'prod' } elseif ($k -eq 'api') { $row.Mode = 'dev' } else { $row.Mode = 'ext' }
+                    }
                     if ($c.Kind -ne 'docker') {            # docker owner is the Docker backend - not measured
                         # process tree: owner + descendants (ollama -> runner, next.js workers)
                         $tree = New-Object Collections.ArrayList
@@ -170,8 +199,7 @@ $server = New-Worker {
         $log = Join-Path $logDir "$id.log"
         $line = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "{0}" {1}' -f (Join-Path $BinDir $Scripts[$Key]), $Action
         if ($SkipBuild) { $line += ' -SkipBuild' }
-        $p = Start-Process -FilePath $env:ComSpec -ArgumentList '/c', ('{0} > "{1}" 2>&1' -f $line, $log) `
-            -WorkingDirectory $Root -WindowStyle Hidden -PassThru
+        $p = Start-Hidden -File $env:ComSpec -Arguments ('/c {0} > "{1}" 2>&1' -f $line, $log) -Dir $Root
         $tasks.Insert(0, @{ id = $id; key = $Key; action = $Action; started = Get-Date; ended = $null; log = $log; proc = $p })
         if ($tasks.Count -gt 20) { $tasks.RemoveRange(20, $tasks.Count - 20) }
     }
@@ -237,7 +265,7 @@ $server = New-Worker {
                         $r = @{}; if ($snap) { $r = $snap[$k] }
                         # ollama: the tray app owns the process, its log file only holds old failed 'ollama serve' attempts -> no log tab
                         @{ key = $k; label = $c.Label; port = $c.Port; url = $c.Url; hasLog = ([bool]$c.Log -and $k -ne 'ollama'); kind = "$($c.Kind)"
-                           pid = $r.Pid; health = $r.Health; cpu = $r.Cpu; ram = $r.Ram; up = $r.Up }
+                           pid = $r.Pid; health = $r.Health; cpu = $r.Cpu; ram = $r.Ram; up = $r.Up; mode = "$($r.Mode)" }
                     }
                     $body = @{ seq = $Shared.Seq; error = $Shared.Error; sys = $Shared.Sys; rows = @($rows); tasks = @(Get-TaskList) } | ConvertTo-Json -Depth 5 -Compress
                     Send-Text $res $body 'application/json; charset=utf-8'

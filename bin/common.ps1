@@ -99,6 +99,18 @@ function Test-Health {
     return "$code"
 }
 
+function Start-Hidden {
+    <#
+      start $File $Arguments in $Dir with NO console window (CREATE_NO_WINDOW) and return the Process.
+      -WindowStyle Hidden is not enough: when Windows Terminal is the default terminal it still opens an empty tab.
+    #>
+    param([string]$File, [string]$Arguments, [string]$Dir)
+    $psi = New-Object Diagnostics.ProcessStartInfo
+    $psi.FileName = $File; $psi.Arguments = $Arguments; $psi.WorkingDirectory = $Dir
+    $psi.UseShellExecute = $false; $psi.CreateNoWindow = $true
+    return [Diagnostics.Process]::Start($psi)
+}
+
 function Start-Background {
     <#
       run $Cmd through cmd /c in $Dir with stdout+stderr -> $Log, no new window.
@@ -114,8 +126,8 @@ function Start-Background {
     }
     $inner = '"{0} > "{1}" 2>&1"' -f $Cmd, $Log
     if ($env:FLAY_DETACH -eq '1') {
-        # set by monitor.ps1: own hidden console, so the process outlives the launcher window
-        Start-Process -FilePath $env:ComSpec -ArgumentList '/c', $inner -WorkingDirectory $Dir -WindowStyle Hidden | Out-Null
+        # set by monitor.ps1: no console at all, so the process outlives the launcher and no window can appear
+        Start-Hidden -File $env:ComSpec -Arguments ('/c ' + $inner) -Dir $Dir | Out-Null
     } else {
         Start-Process -FilePath $env:ComSpec -ArgumentList '/c', $inner -WorkingDirectory $Dir -NoNewWindow | Out-Null
     }

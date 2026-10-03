@@ -48,3 +48,13 @@ Next.js 16 (App Router) + React 19 + Tailwind 4 + TypeScript. Prettier(2 space, 
 - 개발: `yarn dev` → `next dev -H ai.kamoru.jk --experimental-https` (인증서 `../../../.cert/`).
 - 운영: `yarn build` → `node server.js` (커스텀 HTTPS 서버, `bin\ai\web.ps1` / `bin\flay.ps1` 이 호출). `build` 는 먼저 `.next/dev`(개발 서버 캐시)를 지운다 — `tsconfig` 가 `.next/dev/types/**` 까지 타입 검사에 포함하므로, 개발 서버가 남긴 손상된 `routes.d.ts` 가 운영 빌드를 막지 않게 한다.
 - `predev`/`prebuild` 가 `scripts/ensure-favicon.js` 로 개인 `favicon.ico`(gitignore) 없으면 기본값 복사.
+
+<!-- BEGIN:nextjs-agent-rules -->
+
+# This is NOT the Next.js you know
+
+This version has breaking changes — APIs, conventions, and file structure may all differ from your training data. Read the relevant guide in `node_modules/next/dist/docs/` (resolved from this file's directory; in monorepos the `next` package may not be visible from the repo root) before writing any code. Heed deprecation notices.
+
+This block is written and re-added by `next dev` — verify at `node_modules/next/dist/server/lib/generate-agent-files.js`. Removing it from a diff only re-creates the uncommitted change; committing it with your work keeps the tree clean.
+
+<!-- END:nextjs-agent-rules -->

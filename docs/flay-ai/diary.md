@@ -138,11 +138,11 @@ apps/web /diary  ──SSE──▶  POST /api/diary/chat
 - `diary_messages(id, session_id, role, content, raw_html, created_at, source)`
   - `content`: 검색·임베딩용 평문. `raw_html`: 표시용 원본(레거시 일기·이미지 포함).
   - `source`: `'chat'` | `'diary_import'`.
-  - **세션당 user 행 1개 + assistant 행 최대 1개**(레거시·라이브 공통). 라이브 일기는
+  - **세션당 user 행 1개**(레거시·라이브 공통). 라이브 일기는
     `store.append_entry` 가 엔터마다 기존 user 행에 글을 이어 붙이고(`content` 줄바꿈 연결,
     `raw_html` 은 첨부가 있을 때만 텍스트 행을 `<p>` 로 바꿔 순서대로 연결) FTS·Qdrant 를
-    같은 id 로 재색인한다. `created_at` 은 첫 글 시각 유지. 노트는 `store.set_reply` 가
-    기존 assistant 행을 지우고 새 행(맨 뒤 id)으로 교체.
+    같은 id 로 재색인한다. `created_at` 은 첫 글 시각 유지. `role='assistant'` 행은 더 쓰지
+    않는다(맞장구는 비저장 — `store.set_reply` 는 남아 있지만 호출처 없음).
 - `diary_messages_fts`: trigram FTS5(한글 부분매칭).
 - Qdrant `diary_messages`: point id = `diary_messages.id`, payload `{message_id, session_id,
   role, created_at_epoch, content}`. **user 발화만** 임베딩(회상 대상은 내가 한 말).
@@ -184,10 +184,10 @@ JSON 모드)으로 뽑는다. 범주 없이 평면 `#태그`. 사람 이름만 `
 내리고 최신 노트로 교체). 회상 질문은 일기를 열지 않는다(열린 일기가 없으면 `session` 이벤트
 생략). 헤더의 `+ 새 대화` 는 화면만 비운다.
 
-**LLM 노트(반응)**: 자동으로 만들지 않는다. 화면의 **'반응' 버튼**이
+**맞장구**: 자동으로 만들지 않고 저장하지도 않는다(요약과 같은 휘발성). 화면의 **'맞장구' 버튼**이
 `POST /api/diary/sessions/{id}/react`(SSE) 를 부르면 그 일기 전체를 한 user 메시지로 넣어
-맞장구를 생성하고(`route_diary_chat` 의 `history` = 본문), 최종본 하나만 노트로 저장(`set_reply`,
-이전 노트 교체). 일기 저장 응답은 대신 태그(`tags` 이벤트)를 돌려준다.
+맞장구를 생성해 스트리밍만 한다(`route_diary_chat` 의 `history` = 본문). 화면은 결과를 컴포넌트
+상태에만 두고 새로고침하면 사라진다. 일기 저장 응답은 대신 태그(`tags` 이벤트)를 돌려준다.
 
 ## 일기 병합 마이그레이션
 
@@ -222,7 +222,7 @@ user 행은 첫 행에 이어 붙이고(FTS·Qdrant 재색인, 나머지 행·�
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
 | POST | `/api/diary/chat` | (SSE) 일기 쓰기 + 회상 + 첨부. `{query, images?[], videos?[]}` (세션은 서버가 결정) |
-| POST | `/api/diary/sessions/{id}/react` | (SSE) 그 일기에 대한 LLM 반응 — 화면 '반응' 버튼. 최종본을 노트로 저장 |
+| POST | `/api/diary/sessions/{id}/react` | (SSE) 그 일기에 대한 LLM 맞장구 — 화면 '맞장구' 버튼. 요청 때만 생성, 비저장 |
 | GET | `/api/diary/sessions` | 세션 목록(히스토리) |
 | GET | `/api/diary/sessions/{id}` | 세션 transcript |
 | GET | `/api/diary/history?limit&offset&tag=` | 이전 일기 열람(user 메시지에 `tags` 포함, `tag` 로 필터) |

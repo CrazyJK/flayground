@@ -4,8 +4,8 @@
                                 첫 작성부터 entry_hours 안이면 이어 쓰고 넘으면 새 일기.
                                 일기 저장 뒤 LLM 반응은 만들지 않고 태그를 추출해 tags 이벤트로
                                 보낸다. 회상 질문은 저장 없이 답만 스트리밍.
-- POST /api/diary/sessions/{id}/react  (SSE) 그 일기에 대한 LLM 반응(맞장구) — 화면 '반응' 버튼.
-                                최종본은 세션 노트(assistant 행)로 저장.
+- POST /api/diary/sessions/{id}/react  (SSE) 그 일기에 대한 LLM 맞장구 — 화면 '맞장구' 버튼.
+                                요약처럼 요청 때만 생성, 저장하지 않음.
 - POST /api/diary/upload        동영상 업로드(multipart 스트리밍) → asset URL
 - GET  /api/diary/sessions      세션 목록(요약, 히스토리)
 - GET  /api/diary/history       이전 일기 열람(메시지 포함, 페이지네이션 + has_more, ?tag= 필터)
@@ -201,9 +201,9 @@ def _sse_bytes(ev: dict[str, Any]) -> bytes:
 
 @router.post("/api/diary/sessions/{session_id}/react")
 async def diary_session_react(session_id: int):
-    """(SSE) 그 일기에 대한 LLM 반응(맞장구) — 화면의 '반응' 버튼. 자동으로는 만들지 않는다.
+    """(SSE) 그 일기에 대한 LLM 맞장구 — 화면의 '맞장구' 버튼. 요약처럼 요청 때만 만들고 저장하지 않는다.
 
-    이벤트: token / done(정리된 최종본) / error. 최종본은 세션 노트(assistant 행, 1개)로 저장.
+    이벤트: token / done(정리된 최종본) / error.
     """
     conn = connect()
     entry = store.session_entry(conn, session_id)
@@ -213,23 +213,13 @@ async def diary_session_react(session_id: int):
     history = [{"role": "user", "content": entry["content"]}]
 
     async def sse() -> AsyncGenerator[bytes, None]:
-        full = ""
-        final = ""
         try:
             async for ev in route_diary_chat(conn, "", history=history):
-                t = ev.get("type")
-                if t == "token":
-                    full += str(ev.get("text") or "")
-                elif t == "done":
-                    final = str(ev.get("message") or "")
                 yield _sse_bytes(ev)
         except Exception as e:
             log.exception("diary react error: %s", e)
             yield _sse_bytes({"type": "error", "message": str(e)})
         finally:
-            saved = (final or full).strip()
-            if saved:
-                store.set_reply(conn, session_id, saved)
             conn.close()
 
     return StreamingResponse(

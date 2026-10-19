@@ -60,4 +60,4 @@ yarn start         # node dist/index.js 실행
 yarn build:schema  # Swagger 스키마 자동 생성
 ```
 
-빌드 결과는 단일 `dist/index.js` 로 번들된다 — `__dirname` 기준 상대 경로를 쓸 때 `src/` 와 `dist/` 양쪽에서 맞는지 확인한다.
+빌드 결과는 단일 `dist/index.js` 로 번들된다 — 번들 뒤에는 모든 모듈의 `__dirname` 이 `dist/` 라서 하위 폴더(`services/`·`middleware/` 등) 모듈의 `__dirname` 상대 경로는 운영에서 틀어진다. 루트 기준 경로는 `config.ts` 의 `BACKEND_ROOT`(= `flay-web/backend`)에서 잡는다(`src/config.ts`·`src/index.ts` 처럼 루트 바로 아래 파일만 `__dirname` 상대가 양쪽에서 같다).

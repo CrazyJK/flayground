@@ -1,12 +1,10 @@
 import { NextFunction, Request, Response } from 'express';
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
+import { BACKEND_ROOT } from '../config';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const ERROR_PAGE_DIR = path.resolve(__dirname, '..', '..', '..', 'frontend', 'public', 'error');
+// 백엔드 루트 기준(개발 src/·운영 dist/ 번들 양쪽에서 flay-web/frontend/public/error)
+const ERROR_PAGE_DIR = path.resolve(BACKEND_ROOT, '..', 'frontend', 'public', 'error');
 
 /**
  * API 에러 응답 형식

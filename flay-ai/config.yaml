@@ -129,6 +129,9 @@ diary:
   # 관련도 컷오프: 키워드 매칭이 없을 때 이 의미 유사도(코사인) 미만이면 무관으로 보고 제외.
   # 높일수록 엄격(무관한 일기 덜 나옴), 낮출수록 관대. 0~1.
   recall_min_semantic: 0.5
+  # 태그 제외 임계값: 화면에서 이 횟수 이상 지운 태그는 LLM 이 내놓아도 코드가 걸러 낸다.
+  # (1회 이상 지운 태그는 프롬프트에 '제외 태그' 힌트로만 전달)
+  tag_reject_block: 2
 
 stabilize:
   # 영상 안정화 (docs/flay-ai/video-stabilization-plan.md). 잡 산출물은 data/stabilize/ (.gitignore).

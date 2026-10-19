@@ -390,26 +390,35 @@ def list_sessions(conn: sqlite3.Connection, limit: int = 50, offset: int = 0) ->
 
 
 def list_history(
-    conn: sqlite3.Connection, limit: int = 5, offset: int = 0
+    conn: sqlite3.Connection, limit: int = 5, offset: int = 0, tag: str | None = None
 ) -> tuple[list[dict], bool]:
     """과거 세션을 메시지까지 포함해 최신순으로 한 페이지 조회(이전 일기 열람용).
 
     각 항목은 회상 카드와 동일한 shape:
-        {session_id, date, title, weather, messages:[{role, content, raw_html, created_at}]}
+        {session_id, date, title, weather, messages:[{id, role, content, raw_html, created_at}]}
+    tag 를 주면 그 태그가 붙은 일기(user 행, 거부 태그 제외)가 있는 세션만.
     반환은 (items, has_more). items 는 최신→과거 순(프론트가 뒤집어 화면 위로 쌓는다).
     has_more 는 limit+1 조회로 다음 페이지 존재 여부 판정.
     """
+    where = ""
+    params: list = []
+    if tag:
+        where = (
+            "WHERE id IN (SELECT m.session_id FROM diary_tags t JOIN diary_messages m "
+            "ON m.id = t.message_id WHERE t.tag = ? AND t.source != 'rejected') "
+        )
+        params.append(tag)
     rows = conn.execute(
-        "SELECT id, started_at, title, weather, source_key FROM diary_sessions "
+        f"SELECT id, started_at, title, weather, source_key FROM diary_sessions {where}"
         "ORDER BY ended_at DESC, id DESC LIMIT ? OFFSET ?",
-        (limit + 1, offset),
+        (*params, limit + 1, offset),
     ).fetchall()
     has_more = len(rows) > limit
     rows = rows[:limit]
     out: list[dict] = []
     for s in rows:
         msgs = conn.execute(
-            "SELECT role, content, raw_html, created_at FROM diary_messages "
+            "SELECT id, role, content, raw_html, created_at FROM diary_messages "
             "WHERE session_id = ? ORDER BY id ASC",
             (s["id"],),
         ).fetchall()

@@ -146,6 +146,34 @@ apps/web /diary  ──SSE──▶  POST /api/diary/chat
 - `diary_messages_fts`: trigram FTS5(한글 부분매칭).
 - Qdrant `diary_messages`: point id = `diary_messages.id`, payload `{message_id, session_id,
   role, created_at_epoch, content}`. **user 발화만** 임베딩(회상 대상은 내가 한 말).
+- `diary_tags(message_id, tag, source)`: 일기(user 행)의 #태그. `source` = `llm`(자동) |
+  `manual`(화면에서 추가) | `rejected`(화면에서 지운 LLM 태그 — 행을 남겨 기억).
+  `diary_tag_runs(message_id, sig)` 는 어떤 설정(모델·프롬프트 해시)으로 뽑았는지.
+- `diary_persons(alias, canonical)`: 사람 이름 사전(소현·소현이 → 최소현).
+  `diary_tag_aliases(alias, canonical)`: 태그 별칭(화면의 '합치기' 결과, 이후 추출에 자동 적용).
+
+## 태그 (packages/diary/tags.py)
+
+일기 본문(user 행 `content`, `[사진: …]` 마커 제외)에서 검색용 태그를 LLM(`models.diary_llm`,
+JSON 모드)으로 뽑는다. 범주 없이 평면 `#태그`. 사람 이름만 `persons` 로 따로 받아 사전으로
+표기를 통일한다(성+이름이 한 번이라도 나오면 대표, 이름만 나오면 대표의 뒷부분과 맞춤,
+호칭·조사 제거). 검증 규칙(코드): 사람 이름은 본문에 있어야 통과, 본문에 없는 태그(감정·분위기)는
+2개까지, 공백·대소문자 무시 중복 제거, 길이 12자·개수 30 상한.
+
+표기 변형 대책: ① 기존 태그(건수순 300개)·② 지운 태그('제외 태그')를 프롬프트에 넣어 같은 표기를
+쓰게 하고, ③ `config.diary.tag_reject_block`(기본 2)회 이상 지운 태그는 코드가 걸러 내며,
+④ 별칭 사전으로 합친 표기는 자동 치환된다. 수동 태그는 재추출 때 보존.
+
+추출 시점: 일기 저장(`/api/diary/chat`)마다 그 일기 전체를 다시 뽑아 교체(SSE `tags` 이벤트),
+화면의 재추출(`/retag`), 그리고 배치:
+
+```powershell
+.\.venv\Scripts\python.exe -m packages.diary.tags --latest 2 --dry-run   # 결과만 보기
+.\.venv\Scripts\python.exe -m packages.diary.tags --all [--force]        # 전체(같은 sig 면 skip)
+```
+
+프롬프트는 `diary_prompts.yaml` 의 `tags` 키로 오버라이드. 모델·프롬프트가 바뀌면 `sig` 가 달라져
+`--all` 이 재추출 대상으로 잡는다.
 
 ## 세션 수명 (일기 한 편)
 
@@ -156,9 +184,10 @@ apps/web /diary  ──SSE──▶  POST /api/diary/chat
 내리고 최신 노트로 교체). 회상 질문은 일기를 열지 않는다(열린 일기가 없으면 `session` 이벤트
 생략). 헤더의 `+ 새 대화` 는 화면만 비운다.
 
-**LLM 노트(누적 답변)**: 엔터마다 답하되, 프롬프트에는 이 일기에 지금까지 쓴 글 + 방금 글을
-합친 **일기 전체**를 한 user 메시지로 넣는다(`route_diary_chat` 의 `history` = 기존 본문).
-저장은 최종 답 하나만(`set_reply`).
+**LLM 노트(반응)**: 자동으로 만들지 않는다. 화면의 **'반응' 버튼**이
+`POST /api/diary/sessions/{id}/react`(SSE) 를 부르면 그 일기 전체를 한 user 메시지로 넣어
+맞장구를 생성하고(`route_diary_chat` 의 `history` = 본문), 최종본 하나만 노트로 저장(`set_reply`,
+이전 노트 교체). 일기 저장 응답은 대신 태그(`tags` 이벤트)를 돌려준다.
 
 ## 일기 병합 마이그레이션
 
@@ -193,11 +222,21 @@ user 행은 첫 행에 이어 붙이고(FTS·Qdrant 재색인, 나머지 행·�
 | 메서드 | 경로 | 설명 |
 |--------|------|------|
 | POST | `/api/diary/chat` | (SSE) 일기 쓰기 + 회상 + 첨부. `{query, images?[], videos?[]}` (세션은 서버가 결정) |
+| POST | `/api/diary/sessions/{id}/react` | (SSE) 그 일기에 대한 LLM 반응 — 화면 '반응' 버튼. 최종본을 노트로 저장 |
 | GET | `/api/diary/sessions` | 세션 목록(히스토리) |
 | GET | `/api/diary/sessions/{id}` | 세션 transcript |
+| GET | `/api/diary/history?limit&offset&tag=` | 이전 일기 열람(user 메시지에 `tags` 포함, `tag` 로 필터) |
+| GET | `/api/diary/tags` | 태그 목록 `[{tag, count, person}]` |
+| POST | `/api/diary/tags/merge` | 태그 합치기 `{alias, canonical}` → 기존 일기 치환 + 별칭 기록 |
+| POST | `/api/diary/messages/{id}/tags` | 수동 태그 추가 `{tag}` |
+| PUT | `/api/diary/messages/{id}/tags/{tag}` | 태그 rename `{tag}` — 사람 이름이면 사전 등록 + 모든 일기 적용(`scope: all`), 아니면 이 일기만 |
+| DELETE | `/api/diary/messages/{id}/tags/{tag}` | 태그 삭제(LLM 태그는 `rejected` 로 기억) |
+| POST | `/api/diary/messages/{id}/retag` | 그 일기 태그 재추출 |
 | GET | `/static/diary-assets/{name}` | 임포트된 일기 이미지 서빙 |
 
-SSE 이벤트: `session`(session_id, 회상만일 때 생략 가능) → (`recall` 그때 일기 원문) → `token`* → `done`.
+SSE 이벤트: 일기 저장 = `session` → `tags`(message_id, tags[]) → `done`(message 빈 문자열).
+회상 = `session`(열린 일기가 있을 때만) → `recall`(그때 일기 원문) → `token`* → `done`.
+반응(`/react`) = `token`* → `done`(정리된 최종본).
 
 ## 프롬프트 커스터마이징 (말투·수위)
 
@@ -206,7 +245,8 @@ LLM 페르소나/말투/사진묘사 지시는 **`diary_prompts.yaml`(repo 루�
 
 - 코드(`packages/diary/prompts.py`)에는 **점잖은 기본값**만 있고(공개 저장소엔 순화본),
   `diary_prompts.yaml` 이 있으면 그 값으로 키별 덮어쓴다(없으면 기본값 → 신규 클론도 동작).
-- 키: `system`(페르소나) · `recall_answer`(회상 답변 지시) · `not_found` · `vision_describe`.
+- 키: `system`(페르소나) · `recall_system` · `recall_answer`(회상 답변 지시) · `recall_not_found` ·
+  `vision_describe` · `summarize` · `tags`(태그 추출 지시) · `person_subs`.
 - 시작 틀은 `diary_prompts.example.yaml` 복사 → `diary_prompts.yaml` 로 저장 후 수정.
 - `diary_prompts.yaml` 은 저장하면 **다음 대화부터 자동 반영**(mtime 감지, 재시작 불필요).
   단, `config.diary.*`(temperature 등)·코드 변경은 여전히 API 재시작 필요.

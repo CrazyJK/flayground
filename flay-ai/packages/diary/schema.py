@@ -57,6 +57,37 @@ CREATE TABLE IF NOT EXISTS diary_image_captions (
   caption  TEXT NOT NULL,
   sig      TEXT NOT NULL DEFAULT ''
 );
+
+-- 일기 태그(검색용) — user 행(일기 본문) 하나에 태그 여러 개. 범주 없이 평면 #태그 ------
+-- source = 'llm'(자동 추출) | 'manual'(화면에서 추가) | 'rejected'(화면에서 삭제한 LLM 태그).
+-- rejected 행은 그 일기의 재추출에서 같은 태그가 돌아오지 않게 하고, 태그별 거부 횟수가
+-- 제외 목록(프롬프트 힌트 + 임계값 이상이면 코드 필터)이 된다. 수동 태그는 재추출 때 보존.
+CREATE TABLE IF NOT EXISTS diary_tags (
+  message_id  INTEGER NOT NULL REFERENCES diary_messages(id),
+  tag         TEXT NOT NULL,
+  source      TEXT NOT NULL DEFAULT 'llm',
+  PRIMARY KEY (message_id, tag)
+);
+CREATE INDEX IF NOT EXISTS idx_diary_tags_tag ON diary_tags(tag);
+
+-- 태그 추출 상태: 어떤 설정(모델·프롬프트 해시 = sig)으로 뽑았는지. 설정이 바뀌면 재추출 대상.
+CREATE TABLE IF NOT EXISTS diary_tag_runs (
+  message_id  INTEGER PRIMARY KEY REFERENCES diary_messages(id),
+  sig         TEXT NOT NULL,
+  updated_at  TEXT NOT NULL
+);
+
+-- 사람 이름 정규화 사전: alias(본문 표기: 소현·소현이·최소현) → canonical(대표 표기: 최소현) ----
+CREATE TABLE IF NOT EXISTS diary_persons (
+  alias      TEXT PRIMARY KEY,
+  canonical  TEXT NOT NULL
+);
+
+-- 태그 별칭 사전: 화면에서 'A 를 B 로 합치기' 하면 alias=A, canonical=B. 이후 추출에서 A → B 자동 ----
+CREATE TABLE IF NOT EXISTS diary_tag_aliases (
+  alias      TEXT PRIMARY KEY,
+  canonical  TEXT NOT NULL
+);
 """
 
 

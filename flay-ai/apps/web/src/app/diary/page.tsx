@@ -21,11 +21,15 @@ const HIST_PAGE = 5; // 이전 일기 한 번에 불러올 세션 수(화면 채
 const PIN_TOP = 44; // 보낸 글 상단 정렬 위치(sticky 날짜 헤더 높이만큼 내려 가리지 않게)
 
 // 회상된 과거 세션(그때 일기 원문 전체)
+// 일기 태그 — source: llm(자동) | manual(직접 추가). person 은 사람 사전에 있는 이름.
+type TagItem = { tag: string; source: string; person: boolean };
 type RecallMessage = {
+  id?: number;
   role: string;
   content: string;
   raw_html?: string | null;
   created_at: string;
+  tags?: TagItem[];
 };
 type RecallSession = {
   session_id: number;
@@ -43,14 +47,15 @@ type Message = {
   images?: string[]; // 사용자 첨부 이미지(미리보기 dataURL)
   videos?: string[]; // 사용자 첨부 동영상(업로드된 asset URL)
   recall?: RecallSession[];
+  messageId?: number; // 서버 user 행 id(태그 편집용, tags 이벤트로 수신)
+  tags?: TagItem[];
   status: "streaming" | "done" | "error" | "aborted";
   error?: string;
 };
 
 // 전송 대기 첨부 — 이미지는 dataURL(기존 계약), 동영상은 즉시 업로드된 asset URL + 로컬 미리보기
 type PendingItem =
-  | { kind: "image"; data: string }
-  | { kind: "video"; url: string; preview: string };
+  { kind: "image"; data: string } | { kind: "video"; url: string; preview: string };
 
 // 레거시 일기 HTML 의 이미지 src(/static/diary-assets/..)를 API 절대경로로 치환
 function withImageHost(html: string): string {
@@ -88,7 +93,15 @@ function dateLabel(date?: string | null): string {
 }
 
 /* ---------- 라인 아이콘(stroke 1.6, currentColor) ---------- */
-function Ico({ size = 16, sw = 1.6, children }: { size?: number; sw?: number; children: ReactNode }) {
+function Ico({
+  size = 16,
+  sw = 1.6,
+  children,
+}: {
+  size?: number;
+  sw?: number;
+  children: ReactNode;
+}) {
   return (
     <svg
       width={size}
@@ -197,6 +210,20 @@ function Companion({ children }: { children: ReactNode }) {
   );
 }
 
+// 나타날 때 보이는 위치로 스크롤하는 래퍼 — 맞장구·요약 결과가 하단 컴포저 뒤에 숨지 않게.
+// minH 면 글이 오기 전에도 100px 자리를 잡아 두고(레이아웃 점프 방지), 글이 오면 그 자리에 채워진다.
+function Reveal({ children, minH }: { children: ReactNode; minH?: boolean }) {
+  const ref = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    ref.current?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, []);
+  return (
+    <div ref={ref} className={minH ? "min-h-[100px]" : undefined}>
+      {children}
+    </div>
+  );
+}
+
 // 타이핑 인디케이터(점 3개 + 경과초) — 동행 노트와 같은 거터/강조색
 function TypingDots() {
   const [sec, setSec] = useState(0);
@@ -220,7 +247,9 @@ function TypingDots() {
             />
           ))}
         </span>
-        {sec >= 1 && <span className="font-sans text-xs tabular-nums text-muted-foreground">{sec}s</span>}
+        {sec >= 1 && (
+          <span className="font-sans text-xs tabular-nums text-muted-foreground">{sec}s</span>
+        )}
       </div>
     </div>
   );
@@ -259,7 +288,10 @@ const RecallCard = memo(function RecallCard({ s, last }: { s: RecallSession; las
                 dangerouslySetInnerHTML={{ __html: withImageHost(m.raw_html) }}
               />
             ) : m.role === "user" ? (
-              <p key={i} className="m-0 text-[15px] leading-[1.7] text-foreground whitespace-pre-wrap">
+              <p
+                key={i}
+                className="m-0 text-[15px] leading-[1.7] text-foreground whitespace-pre-wrap"
+              >
                 {m.content}
               </p>
             ) : (
@@ -304,9 +336,376 @@ function AssistantBlock({ msg }: { msg: Message }) {
   );
 }
 
-// 이전 일기 한 메시지 — 사용자 = 세리프 본문(또는 raw_html), 어시스턴트 = 동행 노트
+// SSE 본문 읽기 — data: 줄마다 JSON 1건을 onEvent 로 전달(반응 스트림용; 일기 전송은 send 안의 인라인 파서)
+async function readSse(
+  body: ReadableStream<Uint8Array>,
+  onEvent: (ev: { type?: string; [k: string]: unknown }) => void
+) {
+  const reader = body.getReader();
+  const decoder = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    buf += decoder.decode(value, { stream: true });
+    const parts = buf.split(/\r?\n\r?\n/);
+    buf = parts.pop() ?? "";
+    for (const block of parts) {
+      const payload = block
+        .split(/\r?\n/)
+        .filter((l) => l.startsWith("data:"))
+        .map((l) => l.slice(5).trimStart())
+        .join("\n")
+        .trim();
+      if (!payload) continue;
+      try {
+        onEvent(JSON.parse(payload));
+      } catch {
+        /* 깨진 조각은 무시 */
+      }
+    }
+  }
+}
+
+// 일기 한 편의 #태그 칩 — 클릭 = 그 태그로 이전 일기 필터, × = 삭제(LLM 태그는 '거부'로 기억되어
+// 앞으로 덜 뽑힘), + = 직접 추가. 사람 이름은 강조색.
+function TagChips({
+  messageId,
+  tags,
+  onChange,
+}: {
+  messageId: number;
+  tags: TagItem[];
+  onChange: (tags: TagItem[]) => void;
+}) {
+  // editing: "" = 새 태그 입력 중, 태그 문자열 = 그 태그를 고치는 중, null = 입력 없음
+  const [editing, setEditing] = useState<string | null>(null);
+  const [draft, setDraft] = useState("");
+  const [busy, setBusy] = useState(false);
+
+  const api = async (path: string, init?: RequestInit) => {
+    const r = await fetch(`${API_BASE}/api/diary/messages/${messageId}/tags${path}`, init);
+    if (r.ok) onChange(((await r.json()).tags ?? []) as TagItem[]);
+  };
+  const remove = (tag: string) => api(`/${encodeURIComponent(tag)}`, { method: "DELETE" });
+  const add = (tag: string) =>
+    api("", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ tag }),
+    });
+
+  // 입력 확정: 새 태그면 추가, 기존 태그를 고친 것이면 rename(거부 아님 — 사람 이름이면 사전 등록 +
+  // 모든 일기에 적용, 그 외는 이 일기만. 다른 일기의 칩은 다시 불러올 때 반영)
+  const commit = async () => {
+    const tag = draft.trim().replace(/^#/, "");
+    const prev = editing;
+    setEditing(null);
+    setDraft("");
+    if (!tag || prev === null || tag === prev) return;
+    setBusy(true);
+    try {
+      if (prev)
+        await api(`/${encodeURIComponent(prev)}`, {
+          method: "PUT",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ tag }),
+        });
+      else await add(tag);
+    } finally {
+      setBusy(false);
+    }
+  };
+  const input = (
+    <input
+      autoFocus
+      value={draft}
+      disabled={busy}
+      onChange={(e) => setDraft(e.target.value)}
+      onBlur={() => void commit()}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" && !e.nativeEvent.isComposing) {
+          e.preventDefault();
+          void commit();
+        } else if (e.key === "Escape") {
+          setEditing(null);
+          setDraft("");
+        }
+      }}
+      placeholder="태그"
+      className="w-24 border-b border-border bg-transparent px-1 py-[2px] text-[12.5px] outline-none focus:border-[var(--diary-accent)]"
+    />
+  );
+
+  return (
+    <div className="font-sans flex flex-wrap items-center gap-x-1.5 gap-y-1 mt-3 text-[12.5px]">
+      {tags.map((t) =>
+        editing === t.tag ? (
+          <span key={t.tag}>{input}</span>
+        ) : (
+          <span
+            key={t.tag}
+            className={
+              "group inline-flex items-center gap-0.5 leading-[18px] " +
+              (t.person ? "text-[var(--diary-accent)]" : "text-muted-foreground")
+            }
+          >
+            <button
+              type="button"
+              title="태그 수정"
+              disabled={busy}
+              onClick={() => {
+                setEditing(t.tag);
+                setDraft(t.tag);
+              }}
+              className="cursor-text hover:underline"
+            >
+              #{t.tag}
+            </button>
+            <button
+              type="button"
+              title="태그 삭제"
+              disabled={busy}
+              onClick={() => void remove(t.tag)}
+              className="ml-0.5 px-1 text-[14px] leading-none cursor-pointer opacity-35 transition-opacity hover:opacity-100 hover:text-destructive"
+            >
+              ×
+            </button>
+          </span>
+        )
+      )}
+      {editing === "" ? (
+        input
+      ) : (
+        <button
+          type="button"
+          title="태그 추가"
+          onClick={() => {
+            setEditing("");
+            setDraft("");
+          }}
+          className="px-1 leading-[18px] text-muted-foreground opacity-50 hover:opacity-100"
+        >
+          +
+        </button>
+      )}
+    </div>
+  );
+}
+
+// '반응' 버튼 — 누를 때만 LLM 맞장구를 받아 동행 노트로 보여준다(자동 생성 없음). 최종본은 서버가 저장.
+function ReactButton({
+  sessionId,
+  note,
+  onNote,
+  below,
+  extra,
+}: {
+  sessionId: number;
+  note: string | null;
+  onNote: (text: string) => void;
+  below?: ReactNode; // 노트 아래, 액션 줄 위에 끼울 내용(이전 일기의 요약 블록)
+  extra?: ReactNode; // 액션 줄에 함께 둘 버튼(요약)
+}) {
+  const [streaming, setStreaming] = useState(false);
+  const [live, setLive] = useState("");
+  const [err, setErr] = useState<string | null>(null);
+  const [open, setOpen] = useState(false); // 요약처럼 기본은 접힘 — 버튼으로 펼치고 닫는다
+  const [runId, setRunId] = useState(0); // 요청마다 증가 → Reveal 이 다시 마운트되어 스크롤
+
+  const run = async () => {
+    setRunId((n) => n + 1);
+    setOpen(true);
+    setStreaming(true);
+    setLive("");
+    setErr(null);
+    let text = "";
+    try {
+      const r = await fetch(`${API_BASE}/api/diary/sessions/${sessionId}/react`, {
+        method: "POST",
+        headers: { accept: "text/event-stream" },
+      });
+      if (!r.ok || !r.body) throw new Error(`HTTP ${r.status}`);
+      await readSse(r.body, (ev) => {
+        if (ev.type === "token") {
+          text += String(ev.text ?? "");
+          setLive(text);
+        } else if (ev.type === "done") {
+          text = String(ev.message ?? text);
+        } else if (ev.type === "error") {
+          setErr(String(ev.message ?? "unknown error"));
+        }
+      });
+      if (text) onNote(text);
+    } catch (e) {
+      setErr((e as Error).message);
+    } finally {
+      setStreaming(false);
+      setLive("");
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-3">
+      {streaming ? (
+        // 요청 즉시 100px 자리를 잡고 보이는 위치로 스크롤 → 글이 오면 그 자리에 채워진다
+        <Reveal key={runId} minH>
+          {live ? <Companion>{live}</Companion> : <TypingDots />}
+        </Reveal>
+      ) : (
+        open &&
+        note && (
+          <Reveal key={`n-${runId}`}>
+            <Companion>{note}</Companion>
+          </Reveal>
+        )
+      )}
+      {open && err && <div className="font-sans text-xs text-destructive">⚠ {err}</div>}
+      {below}
+      {/* 액션은 한 줄에 모아 우측 정렬(반응 · 요약 …) */}
+      <div className="flex items-center justify-end gap-4">
+        {open && note && !streaming && (
+          <button
+            type="button"
+            onClick={() => void run()}
+            className="font-sans text-xs text-muted-foreground opacity-70 hover:opacity-100 hover:text-[var(--diary-accent)]"
+          >
+            맞장구
+          </button>
+        )}
+        <button
+          type="button"
+          onClick={() => {
+            if (streaming) return;
+            if (open)
+              setOpen(false); // 닫기
+            else if (note)
+              setOpen(true); // 저장된 노트가 있으면 펼치기만
+            else void run(); // 없으면 생성
+          }}
+          disabled={streaming}
+          className="font-sans inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[var(--diary-accent)] disabled:opacity-50"
+        >
+          <span className="w-1.5 h-1.5 rounded-full bg-[var(--diary-accent)] opacity-80" />
+          {streaming ? "맞장구 치는 중…" : open ? "맞장구 닫기" : "맞장구"}
+        </button>
+        {extra}
+      </div>
+    </div>
+  );
+}
+
+// 태그 관리 패널 — 전체 태그(건수순) 클릭 = 필터, 합치기(alias → canonical) 로 표기 통일
+function TagPanel({ onFilter, onClose }: { onFilter: (tag: string) => void; onClose: () => void }) {
+  const [items, setItems] = useState<{ tag: string; count: number; person: boolean }[]>([]);
+  const [q, setQ] = useState("");
+  const [alias, setAlias] = useState("");
+  const [canonical, setCanonical] = useState("");
+  const [msg, setMsg] = useState<string | null>(null);
+
+  const load = useCallback(async () => {
+    const r = await fetch(`${API_BASE}/api/diary/tags`);
+    if (r.ok) setItems(((await r.json()).items ?? []) as typeof items);
+  }, []);
+  useEffect(() => {
+    // 패널이 열릴 때 목록 로드(데이터 로딩 패턴)
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    void load();
+  }, [load]);
+
+  const merge = async () => {
+    if (!alias.trim() || !canonical.trim()) return;
+    const r = await fetch(`${API_BASE}/api/diary/tags/merge`, {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({ alias: alias.trim(), canonical: canonical.trim() }),
+    });
+    if (!r.ok) {
+      setMsg("합치기 실패");
+      return;
+    }
+    const j = await r.json();
+    setItems((j.items ?? []) as typeof items);
+    setMsg(`${alias} → ${canonical} (${j.changed}편 변경)`);
+    setAlias("");
+    setCanonical("");
+  };
+
+  const shown = q ? items.filter((t) => t.tag.includes(q)) : items;
+  return (
+    <div className="font-sans absolute right-4 top-14 z-40 w-[360px] max-h-[70vh] overflow-y-auto rounded-[18px] border border-border bg-card p-4 flex flex-col gap-3 text-sm">
+      <div className="flex items-center gap-2">
+        <input
+          value={q}
+          onChange={(e) => setQ(e.target.value)}
+          placeholder="태그 찾기"
+          className="flex-1 border-b border-border bg-transparent px-1 py-1 outline-none focus:border-[var(--diary-accent)]"
+        />
+        <button
+          type="button"
+          onClick={onClose}
+          className="text-muted-foreground hover:text-foreground"
+        >
+          닫기
+        </button>
+      </div>
+      <div className="flex flex-wrap gap-1.5">
+        {shown.map((t) => (
+          <span
+            key={t.tag}
+            className={
+              "inline-flex items-center gap-1 mr-2 text-[12.5px] " +
+              (t.person ? "text-[var(--diary-accent)]" : "text-muted-foreground")
+            }
+          >
+            <button type="button" onClick={() => onFilter(t.tag)} className="hover:underline">
+              #{t.tag}
+            </button>
+            <span className="opacity-60">{t.count}</span>
+            <button
+              type="button"
+              title="이 태그를 다른 태그로 합치기"
+              onClick={() => setAlias(t.tag)}
+              className="opacity-50 hover:opacity-100"
+            >
+              →
+            </button>
+          </span>
+        ))}
+        {shown.length === 0 && <span className="text-muted-foreground">태그 없음</span>}
+      </div>
+      <div className="flex items-center gap-1.5 border-t border-border pt-3">
+        <input
+          value={alias}
+          onChange={(e) => setAlias(e.target.value)}
+          placeholder="없앨 표기"
+          className="w-28 border-b border-border bg-transparent px-1 py-1 outline-none focus:border-[var(--diary-accent)]"
+        />
+        <span className="text-muted-foreground">→</span>
+        <input
+          value={canonical}
+          onChange={(e) => setCanonical(e.target.value)}
+          placeholder="남길 표기"
+          className="w-28 border-b border-border bg-transparent px-1 py-1 outline-none focus:border-[var(--diary-accent)]"
+        />
+        <button
+          type="button"
+          onClick={() => void merge()}
+          disabled={!alias.trim() || !canonical.trim()}
+          className="rounded-lg border border-border px-2.5 py-1 active:scale-95 disabled:opacity-40"
+        >
+          합치기
+        </button>
+      </div>
+      {msg && <div className="text-xs text-muted-foreground">{msg}</div>}
+    </div>
+  );
+}
+
+// 이전 일기 한 메시지 — 사용자 = 세리프 본문(또는 raw_html) + 태그 칩
 function PastMessage({ m }: { m: RecallMessage }) {
-  if (m.role !== "user") return <Companion>{m.content}</Companion>;
+  const [tags, setTags] = useState<TagItem[]>(m.tags ?? []);
+  if (m.role !== "user") return null;
   return (
     <article className="px-0.5 pt-1 pb-2">
       {timeLabel(m.created_at) && (
@@ -327,17 +726,26 @@ function PastMessage({ m }: { m: RecallMessage }) {
           {m.content}
         </div>
       )}
+      {m.id != null && <TagChips messageId={m.id} tags={tags} onChange={setTags} />}
     </article>
   );
 }
 
-// 이전 일기 한 세션 — 날짜 구분선 + 요약 버튼 + 그날의 글/노트(시간순).
+// 이전 일기 한 세션 — 날짜 구분선 + 요약·반응 버튼 + 그날의 글(태그 포함) + 노트 1개.
 // 요약은 온디맨드 생성(저장 안 함 — 품질 확인 단계), 받은 결과는 컴포넌트 상태에 캐시.
+// 노트(LLM 반응)는 저장된 것이 있으면 보여주고, '반응' 버튼으로 새로 받으면 교체(서버도 교체 저장).
 function PastSession({ s }: { s: RecallSession }) {
   const [sumText, setSumText] = useState<string | null>(null);
   const [sumOpen, setSumOpen] = useState(false);
   const [sumLoading, setSumLoading] = useState(false);
   const [sumNote, setSumNote] = useState<string | null>(null);
+  const [note, setNote] = useState<string | null>(
+    () =>
+      s.messages
+        .filter((m) => m.role === "assistant")
+        .map((m) => m.content)
+        .join("\n") || null
+  );
 
   const toggleSummary = useCallback(async () => {
     if (sumOpen) {
@@ -372,38 +780,62 @@ function PastSession({ s }: { s: RecallSession }) {
   return (
     <div data-session={s.session_id} className="flex flex-col gap-[18px]">
       <DateDivider label={dateLabel(s.date)} />
-      {/* 요약 버튼 — 구분선 바로 아래 우측, 조용한 톤 */}
-      <div className="flex justify-end -mt-3">
-        <button
-          type="button"
-          onClick={() => void toggleSummary()}
-          disabled={sumLoading}
-          className="font-sans inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[var(--diary-accent)] disabled:opacity-50"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M4 6h16M4 12h10M4 18h6" />
-          </svg>
-          {sumLoading ? "요약 중…" : sumOpen ? "요약 닫기" : "요약"}
-        </button>
-      </div>
-      {sumNote && (
-        <div className="-mt-3 text-right font-sans text-xs text-muted-foreground opacity-80">
-          {sumNote}
-        </div>
-      )}
-      {sumOpen && sumText && (
-        <div className="-mt-1 border-l-2 border-[var(--diary-accent)]/50 pl-3.5 py-0.5">
-          <div className="font-sans text-[11px] tracking-[0.08em] text-[var(--diary-accent)] mb-1.5">
-            요약
-          </div>
-          <div className="text-base leading-[1.7] text-foreground/90 whitespace-pre-wrap">
-            {sumText}
-          </div>
-        </div>
-      )}
+      {/* 순서: 글(+태그) → 반응 노트 → 요약 → 액션 한 줄(반응 · 요약). 노트와 요약은 같은 거터 레이아웃 */}
       {s.messages.map((m, i) => (
         <PastMessage key={i} m={m} />
       ))}
+      <ReactButton
+        sessionId={s.session_id}
+        note={note}
+        onNote={setNote}
+        below={
+          sumLoading ? (
+            <Reveal minH>
+              <TypingDots />
+            </Reveal>
+          ) : sumOpen && sumText ? (
+            <Reveal key={sumText}>
+              <div className="flex gap-3.5 pl-1 pr-0.5 py-0.5">
+                <div className="shrink-0 w-[22px] flex justify-center pt-[8px]">
+                  <span className="font-sans text-[10px] tracking-[0.06em] text-[var(--diary-accent)]">
+                    요약
+                  </span>
+                </div>
+                <div className="text-base leading-[1.7] text-foreground/90 whitespace-pre-wrap max-w-[560px]">
+                  {sumText}
+                </div>
+              </div>
+            </Reveal>
+          ) : null
+        }
+        extra={
+          <>
+            {sumNote && (
+              <span className="font-sans text-xs text-muted-foreground opacity-80">{sumNote}</span>
+            )}
+            <button
+              type="button"
+              onClick={() => void toggleSummary()}
+              disabled={sumLoading}
+              className="font-sans inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-[var(--diary-accent)] disabled:opacity-50"
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="1.8"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M4 6h16M4 12h10M4 18h6" />
+              </svg>
+              {sumLoading ? "요약 중…" : sumOpen ? "요약 닫기" : "요약"}
+            </button>
+          </>
+        }
+      />
     </div>
   );
 }
@@ -418,6 +850,9 @@ export default function DiaryPage() {
   const [uploading, setUploading] = useState(0); // 진행 중 동영상 업로드 수(전송 잠금)
   const [busy, setBusy] = useState(false);
   const [sessionId, setSessionId] = useState<number | null>(null);
+  const [curNote, setCurNote] = useState<string | null>(null); // 현재 일기의 LLM 노트('반응' 버튼 결과)
+  const [tagFilter, setTagFilter] = useState<string | null>(null); // 이전 일기 태그 필터
+  const [tagPanel, setTagPanel] = useState(false); // 태그 관리 패널 표시
   const [dragOver, setDragOver] = useState(false); // 이미지 드래그 오버 표시
   const dragDepth = useRef(0); // 자식 위를 지날 때 dragleave 오작동 방지(깊이 카운트)
   const abortRef = useRef<AbortController | null>(null);
@@ -454,7 +889,10 @@ export default function DiaryPage() {
     try {
       const r = await fetch(`${API_BASE}/api/diary/upload`, { method: "POST", body: fd });
       if (!r.ok) {
-        const detail = await r.json().then((j) => j.detail).catch(() => `HTTP ${r.status}`);
+        const detail = await r
+          .json()
+          .then((j) => j.detail)
+          .catch(() => `HTTP ${r.status}`);
         alert(`${f.name || "동영상"} 업로드 실패: ${detail}`);
         return null;
       }
@@ -506,8 +944,7 @@ export default function DiaryPage() {
       const files = Array.from(e.clipboardData?.items ?? [])
         .filter(
           (it) =>
-            it.kind === "file" &&
-            (it.type.startsWith("image/") || it.type.startsWith("video/"))
+            it.kind === "file" && (it.type.startsWith("image/") || it.type.startsWith("video/"))
         )
         .map((it) => it.getAsFile())
         .filter((f): f is File => !!f);
@@ -558,7 +995,10 @@ export default function DiaryPage() {
     }
     setHistLoading(true);
     try {
-      const r = await fetch(`${API_BASE}/api/diary/history?limit=${HIST_PAGE}&offset=${histOffset}`);
+      const tagQ = tagFilter ? `&tag=${encodeURIComponent(tagFilter)}` : "";
+      const r = await fetch(
+        `${API_BASE}/api/diary/history?limit=${HIST_PAGE}&offset=${histOffset}${tagQ}`
+      );
       if (!r.ok) throw new Error(`HTTP ${r.status}`);
       const j = await r.json();
       const items = (Array.isArray(j.items) ? j.items : []) as RecallSession[];
@@ -576,7 +1016,7 @@ export default function DiaryPage() {
     } finally {
       setHistLoading(false);
     }
-  }, [histLoading, histHasMore, histLoaded, histOffset, sessionId, history]);
+  }, [histLoading, histHasMore, histLoaded, histOffset, sessionId, history, tagFilter]);
 
   // prepend 후(그리고 새로 들어온 이미지 로드 시마다) 기준 세션을 원래 화면 위치로 복원
   const reAnchor = useCallback(() => {
@@ -654,20 +1094,44 @@ export default function DiaryPage() {
     }
   }, [histLoaded, histLoading, histHasMore, loadHistory]);
 
-  const newConversation = useCallback(() => {
-    abortRef.current?.abort();
-    setMessages([]);
-    setSessionId(null);
-    setPending((prev) => {
-      prev.forEach((p) => p.kind === "video" && URL.revokeObjectURL(p.preview));
-      return [];
-    });
+  const resetHistory = useCallback(() => {
     setHistory([]);
     setHistOffset(0);
     setHistHasMore(true);
     setHistLoaded(false);
     seenSessions.current.clear();
   }, []);
+
+  const newConversation = useCallback(() => {
+    abortRef.current?.abort();
+    setMessages([]);
+    setSessionId(null);
+    setCurNote(null);
+    setTagFilter(null);
+    setPending((prev) => {
+      prev.forEach((p) => p.kind === "video" && URL.revokeObjectURL(p.preview));
+      return [];
+    });
+    resetHistory();
+  }, [resetHistory]);
+
+  // 태그 필터: 이전 일기 목록을 그 태그가 붙은 일기로만 다시 불러온다(현재 쓰는 일기는 그대로).
+  // loadHistory 가 tagFilter 를 읽으므로 상태 반영 뒤(다음 렌더) 자동 첫 로드.
+  const applyTagFilter = useCallback(
+    (tag: string | null) => {
+      setTagPanel(false);
+      setTagFilter(tag);
+      resetHistory();
+      pendingFilterLoad.current = true;
+    },
+    [resetHistory]
+  );
+  const pendingFilterLoad = useRef(false);
+  useEffect(() => {
+    if (!pendingFilterLoad.current || histLoaded || histLoading) return;
+    pendingFilterLoad.current = false;
+    void loadHistory();
+  }, [tagFilter, histLoaded, histLoading, loadHistory]);
 
   const send = useCallback(
     async (query: string, images: string[] = [], videos: string[] = []) => {
@@ -733,9 +1197,11 @@ export default function DiaryPage() {
                 if (sid === sessionId)
                   setMessages((prev) =>
                     prev.filter(
-                      (m) => m.id === asstId || m.role !== "assistant" || (m.recall?.length ?? 0) > 0
+                      (m) =>
+                        m.id === asstId || m.role !== "assistant" || (m.recall?.length ?? 0) > 0
                     )
                   );
+                else setCurNote(null); // 새 일기 — 이전 일기의 노트는 내린다
                 setSessionId(sid);
                 break;
               }
@@ -748,13 +1214,32 @@ export default function DiaryPage() {
               case "token":
                 updateAssistant(asstId, (m) => ({ ...m, text: m.text + String(ev.text ?? "") }));
                 break;
+              case "tags":
+                // 일기 저장 후 서버가 뽑은 태그(이 일기 전체 기준) — 이어 쓴 경우 이전 글의 칩은 지우고
+                // 방금 글 아래에만 보여준다(태그는 일기 한 편 단위).
+                setMessages((prev) =>
+                  prev.map((m) =>
+                    m.role !== "user"
+                      ? m
+                      : m.id === userMsg.id
+                        ? { ...m, messageId: Number(ev.message_id), tags: ev.tags as TagItem[] }
+                        : { ...m, tags: undefined }
+                  )
+                );
+                break;
               case "done":
-                // 정리된 최종본으로 교체(스트리밍 중 섞인 노이즈를 done 에서 정정)
+                // 정리된 최종본으로 교체(스트리밍 중 섞인 노이즈를 done 에서 정정).
+                // 일기 저장은 반응 없이 끝나므로(message 빈 문자열) 빈 노트 자리는 치운다.
                 updateAssistant(asstId, (m) => ({
                   ...m,
                   text: String(ev.message ?? m.text),
                   status: "done",
                 }));
+                setMessages((prev) =>
+                  prev.filter(
+                    (m) => m.id !== asstId || m.text || (m.recall?.length ?? 0) > 0 || ev.message
+                  )
+                );
                 break;
               case "error":
                 updateAssistant(asstId, (m) => ({
@@ -794,7 +1279,9 @@ export default function DiaryPage() {
   // 종이 면: rounded-[18px] + 상단 얇은 강조 룰 + 세리프 입력 + 강조색 포커스 링.
   const composer = (hero: boolean) => (
     <form
-      className={hero ? "w-full max-w-[600px] mx-auto" : "shrink-0 w-full max-w-[720px] mx-auto px-4 py-3"}
+      className={
+        hero ? "w-full max-w-[600px] mx-auto" : "shrink-0 w-full max-w-[720px] mx-auto px-4 py-3"
+      }
       onSubmit={(e) => {
         e.preventDefault();
         if (uploading > 0) return; // 동영상 업로드 중엔 전송 대기
@@ -977,6 +1464,25 @@ export default function DiaryPage() {
         active="diary"
         actions={
           <span className="flex items-baseline gap-3">
+            {view === "diary" && tagFilter && (
+              <button
+                type="button"
+                onClick={() => applyTagFilter(null)}
+                title="필터 해제"
+                className="text-xs text-[var(--diary-accent)] hover:opacity-80"
+              >
+                #{tagFilter} ×
+              </button>
+            )}
+            {view === "diary" && (
+              <button
+                type="button"
+                onClick={() => setTagPanel((v) => !v)}
+                className="text-xs text-muted-foreground hover:text-foreground"
+              >
+                태그
+              </button>
+            )}
             {view === "diary" && showThread && (
               <button
                 type="button"
@@ -1007,6 +1513,10 @@ export default function DiaryPage() {
         }
       />
 
+      {tagPanel && view === "diary" && (
+        <TagPanel onFilter={(t) => applyTagFilter(t)} onClose={() => setTagPanel(false)} />
+      )}
+
       {/* 두 패널을 겹쳐 두고 visibility 로만 전환 — 숨겨진 쪽 상태·스크롤 유지 */}
       <div className="relative flex-1 min-h-0">
         <div
@@ -1015,113 +1525,128 @@ export default function DiaryPage() {
             (view === "diary" ? "" : "invisible pointer-events-none")
           }
         >
-      {!showThread ? (
-        // 빈 상태 = 글쓰기 초대. 중앙에 hero 컴포저 + '이전 일기 불러오기'.
-        <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-6 px-6 pb-16">
-          <div className="text-center">
-            <div className="text-[32px] font-semibold text-foreground tracking-[0.01em]">
-              오늘은 어땠어?
-            </div>
-            <div className="text-base italic text-muted-foreground mt-2.5">
-              그냥 떠오르는 대로 적어. 예전 일이 궁금하면 물어봐도 돼.
-            </div>
-          </div>
-          {composer(true)}
-          <button
-            type="button"
-            onClick={() => void loadHistory()}
-            disabled={histLoading || (histLoaded && !histHasMore)}
-            className="font-sans inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[var(--diary-accent)] disabled:opacity-40"
-          >
-            <ClockIco size={15} />
-            {histLoading
-              ? "불러오는 중…"
-              : histLoaded && !histHasMore
-                ? "이전 일기 없음"
-                : "이전 일기 불러오기"}
-          </button>
-        </div>
-      ) : (
-        <>
-          <div
-            ref={scrollRef}
-            onScroll={onThreadScroll}
-            style={{ overflowAnchor: "none" }}
-            className="flex-1 min-h-0 overflow-y-auto w-full"
-          >
-            <div className="max-w-[720px] mx-auto px-6 pt-6 pb-6 flex flex-col gap-[18px]">
-              {/* 위로 더 불러오기 상태 표시(맨 위) */}
-              {history.length > 0 && histLoading && (
-                <div className="font-sans text-center text-xs text-muted-foreground py-1">
-                  이전 일기 불러오는 중…
+          {!showThread ? (
+            // 빈 상태 = 글쓰기 초대. 중앙에 hero 컴포저 + '이전 일기 불러오기'.
+            <div className="flex-1 min-h-0 flex flex-col items-center justify-center gap-6 px-6 pb-16">
+              <div className="text-center">
+                <div className="text-[32px] font-semibold text-foreground tracking-[0.01em]">
+                  오늘은 어땠어?
                 </div>
-              )}
-              {history.length > 0 && !histHasMore && !histLoading && (
-                <div className="font-sans text-center text-xs text-muted-foreground opacity-70 py-1">
-                  — 더 이전 일기가 없어요 —
+                <div className="text-base italic text-muted-foreground mt-2.5">
+                  그냥 떠오르는 대로 적어. 예전 일이 궁금하면 물어봐도 돼.
                 </div>
-              )}
-              {/* 이전 일기(과거→최신) */}
-              {history.map((s) => (
-                <PastSession key={s.session_id} s={s} />
-              ))}
-              {/* 오늘(현재 대화) */}
-              {messages.length > 0 && <DateDivider label={todayLabel()} />}
-              {messages.map((m) =>
-                m.role === "user" ? (
-                  // 사용자 글 = 페이지의 주인공(민무늬 — 캔버스 위 세리프 본문)
-                  <article key={m.id} data-mid={m.id} className="px-0.5 pt-1 pb-2">
-                    {msgTime(m.id) && (
-                      <div className="font-sans flex items-center gap-2 mb-3 text-[12.5px] tracking-[0.02em] text-muted-foreground">
-                        <span>{msgTime(m.id)}</span>
-                      </div>
-                    )}
-                    {m.text && (
-                      <div
-                        className="whitespace-pre-wrap text-[20px] leading-[1.75] text-foreground"
-                        style={{ letterSpacing: "0.005em" }}
-                      >
-                        {m.text}
-                      </div>
-                    )}
-                    {m.images && m.images.length > 0 && (
-                      <div className="flex flex-wrap gap-3 mt-4">
-                        {m.images.map((src, i) => (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            key={i}
-                            src={src}
-                            alt="첨부 이미지"
-                            className="w-[180px] max-h-[240px] object-cover rounded-[10px] border border-border"
-                          />
-                        ))}
-                      </div>
-                    )}
-                    {m.videos && m.videos.length > 0 && (
-                      <div className="flex flex-wrap gap-3 mt-4">
-                        {m.videos.map((url, i) => (
-                          <video
-                            key={i}
-                            controls
-                            preload="metadata"
-                            src={`${API_BASE}${url}`}
-                            className="w-[360px] max-w-full rounded-[10px] border border-border"
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </article>
-                ) : (
-                  <div key={m.id}>
-                    <AssistantBlock msg={m} />
-                  </div>
-                )
-              )}
+              </div>
+              {composer(true)}
+              <button
+                type="button"
+                onClick={() => void loadHistory()}
+                disabled={histLoading || (histLoaded && !histHasMore)}
+                className="font-sans inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-[var(--diary-accent)] disabled:opacity-40"
+              >
+                <ClockIco size={15} />
+                {histLoading
+                  ? "불러오는 중…"
+                  : histLoaded && !histHasMore
+                    ? "이전 일기 없음"
+                    : "이전 일기 불러오기"}
+              </button>
             </div>
-          </div>
-          {composer(false)}
-        </>
-      )}
+          ) : (
+            <>
+              <div
+                ref={scrollRef}
+                onScroll={onThreadScroll}
+                style={{ overflowAnchor: "none" }}
+                className="flex-1 min-h-0 overflow-y-auto w-full"
+              >
+                <div className="max-w-[720px] mx-auto px-6 pt-6 pb-6 flex flex-col gap-[18px]">
+                  {/* 위로 더 불러오기 상태 표시(맨 위) */}
+                  {history.length > 0 && histLoading && (
+                    <div className="font-sans text-center text-xs text-muted-foreground py-1">
+                      이전 일기 불러오는 중…
+                    </div>
+                  )}
+                  {history.length > 0 && !histHasMore && !histLoading && (
+                    <div className="font-sans text-center text-xs text-muted-foreground opacity-70 py-1">
+                      — 더 이전 일기가 없어요 —
+                    </div>
+                  )}
+                  {/* 이전 일기(과거→최신) */}
+                  {history.map((s) => (
+                    <PastSession key={s.session_id} s={s} />
+                  ))}
+                  {/* 오늘(현재 대화) */}
+                  {messages.length > 0 && <DateDivider label={todayLabel()} />}
+                  {messages.map((m) =>
+                    m.role === "user" ? (
+                      // 사용자 글 = 페이지의 주인공(민무늬 — 캔버스 위 세리프 본문)
+                      <article key={m.id} data-mid={m.id} className="px-0.5 pt-1 pb-2">
+                        {msgTime(m.id) && (
+                          <div className="font-sans flex items-center gap-2 mb-3 text-[12.5px] tracking-[0.02em] text-muted-foreground">
+                            <span>{msgTime(m.id)}</span>
+                          </div>
+                        )}
+                        {m.text && (
+                          <div
+                            className="whitespace-pre-wrap text-[20px] leading-[1.75] text-foreground"
+                            style={{ letterSpacing: "0.005em" }}
+                          >
+                            {m.text}
+                          </div>
+                        )}
+                        {m.images && m.images.length > 0 && (
+                          <div className="flex flex-wrap gap-3 mt-4">
+                            {m.images.map((src, i) => (
+                              // eslint-disable-next-line @next/next/no-img-element
+                              <img
+                                key={i}
+                                src={src}
+                                alt="첨부 이미지"
+                                className="w-[180px] max-h-[240px] object-cover rounded-[10px] border border-border"
+                              />
+                            ))}
+                          </div>
+                        )}
+                        {m.videos && m.videos.length > 0 && (
+                          <div className="flex flex-wrap gap-3 mt-4">
+                            {m.videos.map((url, i) => (
+                              <video
+                                key={i}
+                                controls
+                                preload="metadata"
+                                src={`${API_BASE}${url}`}
+                                className="w-[360px] max-w-full rounded-[10px] border border-border"
+                              />
+                            ))}
+                          </div>
+                        )}
+                        {m.messageId != null && m.tags && (
+                          <TagChips
+                            messageId={m.messageId}
+                            tags={m.tags}
+                            onChange={(tags) =>
+                              setMessages((prev) =>
+                                prev.map((x) => (x.id === m.id ? { ...x, tags } : x))
+                              )
+                            }
+                          />
+                        )}
+                      </article>
+                    ) : (
+                      <div key={m.id}>
+                        <AssistantBlock msg={m} />
+                      </div>
+                    )
+                  )}
+                  {/* 현재 일기의 반응은 버튼으로만(자동 생성 없음) */}
+                  {sessionId != null && messages.some((m) => m.role === "user") && !busy && (
+                    <ReactButton sessionId={sessionId} note={curNote} onNote={setCurNote} />
+                  )}
+                </div>
+              </div>
+              {composer(false)}
+            </>
+          )}
         </div>
 
         {/* 미디어 패널 — 첫 활성화 때 로드, 이후 상태 유지 */}

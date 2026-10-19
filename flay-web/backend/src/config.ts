@@ -5,6 +5,13 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+/**
+ * 백엔드 프로젝트 루트(flay-web/backend). 개발(src/config.ts)·운영(dist/index.js 로 번들) 모두
+ * 이 파일이 루트 바로 아래 한 단계라 `..` 로 같은 곳을 가리킨다. 하위 폴더 모듈(services/* 등)은
+ * 번들 뒤 __dirname 이 dist 로 바뀌어 상대 깊이가 틀어지므로, 루트 기준 경로는 이 상수를 쓴다.
+ */
+export const BACKEND_ROOT = path.resolve(__dirname, '..');
+
 /** 백업 설정 */
 export interface BackupConfig {
   instanceJarFilename: string;

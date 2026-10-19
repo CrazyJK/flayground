@@ -1,8 +1,6 @@
 import path from 'path';
-import { fileURLToPath } from 'url';
 import { BrowserContext, chromium, Page } from 'playwright-core';
-
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
+import { BACKEND_ROOT } from '../config';
 
 /**
  * 실제 크롬(설치된 Chrome, 비-headless)으로 페이지를 열어 HTML·파일을 가져온다.
@@ -13,7 +11,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  * 크롬 창이 뜨고 챌린지 체크가 필요할 수 있다 — 창에서 확인을 누르면 이어서 진행된다.
  */
 
-const PROFILE_DIR = path.resolve(__dirname, '../../data/chrome-profile');
+// 백엔드 루트 기준(개발 src/·운영 dist/ 번들 양쪽에서 flay-web/backend/data/chrome-profile)
+const PROFILE_DIR = path.join(BACKEND_ROOT, 'data', 'chrome-profile');
 /** 챌린지 통과 대기 상한(ms) — 사용자가 체크박스를 눌러야 하는 경우를 감안 */
 const CHALLENGE_WAIT_MS = 60_000;
 const POLL_MS = 500;

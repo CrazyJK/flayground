@@ -17,7 +17,8 @@ bin/
 ├── common.ps1               # 공용 라이브러리 — 컴포넌트 표($Components: 포트·명령·빌드 단계·로그·헬스 URL) + Invoke-Flay/Start-Component/Stop-Component/Show-Status
 ├── flay.ps1                 # 전체 start|stop|restart|status
 ├── monitor.ps1 · monitor/index.html · flay.ico
-│                            # 모니터 — HttpListener(localhost:7777, / · /api/status · /api/action · /api/log) + 수집 runspace(3초: 포트 LISTEN·헬스·프로세스 트리 CPU/RAM·업타임) + 트레이.
+│                            # 모니터 — HttpListener(localhost:7777, / · /api/status · /api/action · /api/log) + 수집 runspace(3초: 포트 LISTEN·헬스·프로세스 트리 CPU/RAM·업타임,
+│                            # GPU 카드에 Ollama /api/ps 의 로드된 LLM 이름 — 127.0.0.1 로 호출: localhost 는 ::1 해석으로 지연) + 트레이.
 │                            # 화면은 index.html(도커 데스크톱 스타일), Edge/Chrome --app 창으로 열림. 액션은 bin\*.ps1 을 숨김 콘솔로 실행(FLAY_DETACH=1),
 │                            # 출력은 monitor\logs\<id>.log 로 받아 화면의 작업 패널·Logs 뷰에 표시.
 │                            # 포트 소유 프로세스의 조상 명령줄로 모드 판별 — prod(스크립트가 띄움: cmd 가 '> <로그>' 로 리다이렉트) ·

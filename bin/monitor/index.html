@@ -44,6 +44,8 @@
   .card .bar { height: 4px; background: #253041; border-radius: 2px; margin-top: 10px; overflow: hidden; }
   .card .bar i { display: block; height: 100%; background: var(--green); width: 0; transition: width .4s; }
   .card .bar i.warn { background: var(--orange); } .card .bar i.hot { background: var(--red); }
+  .card .sub { margin-top: 8px; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .card .sub b { font-weight: 600; color: var(--text); }
   .card .disks { display: flex; flex-direction: column; gap: 6px; }
   .card .disks div { display: flex; justify-content: space-between; font-size: 13px; }
   .card .disks span { color: var(--muted); }
@@ -123,7 +125,7 @@
         <div class="cards">
           <div class="card"><div class="k">System CPU usage</div><div class="v"><span id="cpu">-</span><small id="cpuT"></small></div><div class="bar"><i id="cpuB"></i></div></div>
           <div class="card"><div class="k">System memory usage</div><div class="v"><span id="ram">-</span><small id="ramT"></small></div><div class="bar"><i id="ramB"></i></div></div>
-          <div class="card" id="gpuCard" hidden><div class="k">GPU usage / memory</div><div class="v"><span id="gpu">-</span><small id="gpuT"></small></div><div class="bar"><i id="gpuB"></i></div></div>
+          <div class="card" id="gpuCard" hidden><div class="k">GPU usage / memory</div><div class="v"><span id="gpu">-</span><small id="gpuT"></small></div><div class="bar"><i id="gpuB"></i></div><div class="sub" id="gpuLlm"></div></div>
           <div class="card"><div class="k">Disk free</div><div class="disks" id="disks"></div></div>
         </div>
 
@@ -211,7 +213,13 @@
     if (s) {
       $('cpu').textContent = s.cpu + '%'; $('cpuT').textContent = `/ ${s.cores} CPUs`; bar($('cpuB'), s.cpu);
       $('ram').textContent = fmtG(s.ramUsed); $('ramT').textContent = '/ ' + fmtG(s.ramTotal); bar($('ramB'), s.ramUsed / s.ramTotal * 100);
-      if (s.gpu) { $('gpuCard').hidden = false; $('gpu').textContent = s.gpu.util + '%'; $('gpuT').textContent = `${fmtG(s.gpu.used)} / ${fmtG(s.gpu.total)}`; bar($('gpuB'), s.gpu.used / s.gpu.total * 100); }
+      if (s.gpu) {
+        $('gpuCard').hidden = false; $('gpu').textContent = s.gpu.util + '%'; $('gpuT').textContent = `${fmtG(s.gpu.used)} / ${fmtG(s.gpu.total)}`; bar($('gpuB'), s.gpu.used / s.gpu.total * 100);
+        // 하단: Ollama 에 로드된 LLM 이름(없으면 빈 상태 문구)
+        const llm = s.llm || [];
+        $('gpuLlm').innerHTML = llm.length ? 'LLM <b>' + llm.join('</b>, <b>') + '</b>' : 'LLM none loaded';
+        $('gpuLlm').title = llm.length ? llm.join(', ') : 'Ollama: no model loaded';   // 잘려도 툴팁으로 전체 이름
+      }
       $('disks').innerHTML = s.disks.map(x => `<div><b>${x.name}</b><span>${Math.round(x.free)} / ${Math.round(x.total)} GB</span></div>`).join('');
     }
     let up = 0;

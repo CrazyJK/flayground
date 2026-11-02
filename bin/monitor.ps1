@@ -91,6 +91,12 @@ $collector = New-Worker {
             if ($hasGpu) {
                 $g = (& nvidia-smi.exe --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits 2>$null) -split ','
                 if ($g.Count -ge 3) { $sys.gpu = @{ util = [int]$g[0]; used = [int]$g[1] / 1024; total = [int]$g[2] / 1024 } }
+                # LLMs currently loaded by Ollama (GET /api/ps) - short names without the namespace ('huihui_ai/')
+                $sys.llm = @()
+                try {
+                    $ps = Invoke-RestMethod 'http://127.0.0.1:11434/api/ps' -TimeoutSec 2   # 127.0.0.1: 'localhost' resolves to ::1 first and stalls
+                    $sys.llm = @($ps.models | ForEach-Object { ("$($_.name)" -split '/')[-1] })
+                } catch { }
             }
             $sys.disks = @([IO.DriveInfo]::GetDrives() | Where-Object { $_.DriveType -eq 'Fixed' -and $_.IsReady } |
                 ForEach-Object { @{ name = $_.Name.TrimEnd('\'); free = $_.AvailableFreeSpace / 1GB; total = $_.TotalSize / 1GB } })

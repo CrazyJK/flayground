@@ -15,10 +15,12 @@
    window  : Edge (or Chrome) --app window without browser chrome; closing it
              leaves the monitor in the tray. Tray menu: Open / Exit.
 
-   The monitor re-launches itself with no console (Start-Hidden, CREATE_NO_WINDOW)
-   and so does everything it starts (FLAY_DETACH=1 -> Start-Background uses
-   Start-Hidden): no terminal window ever appears and the processes survive
-   when the launcher or this monitor closes. Stop kills the LISTENING pid tree.
+   The monitor re-launches itself through WMI (so it is not a child of whatever
+   started it - a terminal, or the Claude desktop app whose update kills its tree)
+   and then with no console (Start-Hidden, CREATE_NO_WINDOW); everything it starts
+   also runs without a console (FLAY_DETACH=1 -> Start-Background uses Start-Hidden).
+   No terminal window ever appears and the processes survive when the launcher or
+   this monitor closes. Stop kills the LISTENING pid tree.
 
    On launch every component is started from the existing build output
    (flay.ps1 start -SkipBuild, shown as a task in the UI; components already
@@ -28,16 +30,34 @@
    ASCII only. Windows PowerShell 5.1 (no ??, no ternary, no &&).
 ============================================================
 #>
-param([switch]$NoAutoStart, [switch]$Detached)
+param([switch]$NoAutoStart, [switch]$Launcher, [switch]$Detached)
 
 . (Join-Path $PSScriptRoot 'common.ps1')
 
-# re-launch myself with no console at all and return: -WindowStyle Hidden is not enough when
-# Windows Terminal is the default terminal (it shows an empty tab that would host - and on close kill - the monitor)
-if (-not $Detached) {
-    $a = '-NoProfile -ExecutionPolicy Bypass -File "{0}" -Detached' -f $PSCommandPath
-    if ($NoAutoStart) { $a += ' -NoAutoStart' }
-    Start-Hidden -File 'powershell.exe' -Arguments $a -Dir $Root | Out-Null
+# Three stages so the monitor ends up with no console AND outside the caller's process tree:
+#   stage 0 (how you run it)  -> WMI Win32_Process.Create starts stage 1. WMI creates the process from the
+#                                WMI provider host, so it is NOT a descendant of the caller (a terminal job,
+#                                or the Claude desktop app, whose update/exit kills its whole tree).
+#   stage 1 (-Launcher, hidden) -> Start-Hidden (CREATE_NO_WINDOW) starts stage 2 and exits right away.
+#                                -WindowStyle Hidden alone is not enough: with Windows Terminal as the
+#                                default terminal it shows an empty tab that would host the monitor.
+#   stage 2 (-Detached)         -> the monitor itself.
+$flags = ''
+if ($NoAutoStart) { $flags = ' -NoAutoStart' }
+if (-not $Detached -and -not $Launcher) {
+    $cmd = 'powershell.exe -NoProfile -ExecutionPolicy Bypass -File "{0}" -Launcher{1}' -f $PSCommandPath, $flags
+    try {
+        $startup = New-CimInstance -ClassName Win32_ProcessStartup -ClientOnly -Property @{ ShowWindow = [uint16]0 }   # SW_HIDE
+        $r = Invoke-CimMethod -ClassName Win32_Process -MethodName Create -Arguments @{ CommandLine = $cmd; CurrentDirectory = $Root; ProcessStartupInformation = $startup }
+        if ($r.ReturnValue -ne 0) { throw "Win32_Process.Create returned $($r.ReturnValue)" }
+    } catch {
+        # no WMI: fall back to a plain hidden child (still works, just stays inside the caller's tree)
+        Start-Hidden -File 'powershell.exe' -Arguments ('-NoProfile -ExecutionPolicy Bypass -File "{0}" -Detached{1}' -f $PSCommandPath, $flags) -Dir $Root | Out-Null
+    }
+    exit
+}
+if ($Launcher) {
+    Start-Hidden -File 'powershell.exe' -Arguments ('-NoProfile -ExecutionPolicy Bypass -File "{0}" -Detached{1}' -f $PSCommandPath, $flags) -Dir $Root | Out-Null
     exit
 }
 

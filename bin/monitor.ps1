@@ -79,18 +79,38 @@ $collector = New-Worker {
     $cpuCounter = New-Object Diagnostics.PerformanceCounter('Processor', '% Processor Time', '_Total')
     [void]$cpuCounter.NextValue()                      # first sample is always 0
     $prevCpu = @{}                                     # pid -> total processor ms at the previous pass
+    $prevAll = @{}                                     # same for every process (top CPU consumer)
     $prevAt  = Get-Date
+    # CPU name / base clock once (Win32_Processor takes ~1s); effective clock = base * '% Processor Performance'
+    $cpuName = ''; $cpuBase = 0
+    try {
+        $cpuInfo = Get-CimInstance Win32_Processor -Property Name, MaxClockSpeed | Select-Object -First 1
+        $cpuName = ("$($cpuInfo.Name)" -replace '\(R\)|\(TM\)|\s*CPU\s*|\s*@.*$', '' -replace '^\d+th Gen\s+', '').Trim()
+        $cpuBase = [int]$cpuInfo.MaxClockSpeed
+    } catch { }
+    $perfCounter = New-Object Diagnostics.PerformanceCounter('Processor Information', '% Processor Performance', '_Total')
+    try { [void]$perfCounter.NextValue() } catch { $perfCounter = $null }
 
     while (-not $Shared.Stop) {
         try {
             # -- system
-            $os = Get-CimInstance Win32_OperatingSystem -Property TotalVisibleMemorySize, FreePhysicalMemory
-            $sys = @{ cpu = [int]$cpuCounter.NextValue(); cores = $cores
+            $os = Get-CimInstance Win32_OperatingSystem -Property TotalVisibleMemorySize, FreePhysicalMemory, TotalVirtualMemorySize, FreeVirtualMemory
+            $clock = 0
+            if ($perfCounter -and $cpuBase) { try { $clock = [int]($cpuBase * $perfCounter.NextValue() / 100) } catch { } }
+            $sys = @{ cpu = [int]$cpuCounter.NextValue(); cores = $cores; cpuName = $cpuName; cpuClock = $clock
                       ramUsed = ($os.TotalVisibleMemorySize - $os.FreePhysicalMemory) / 1MB; ramTotal = $os.TotalVisibleMemorySize / 1MB
-                      gpu = $null; disks = @() }
+                      # commit charge (RAM + page file) - the limit that actually bites when it fills up
+                      commitUsed = ($os.TotalVirtualMemorySize - $os.FreeVirtualMemory) / 1MB; commitTotal = $os.TotalVirtualMemorySize / 1MB
+                      topCpu = $null; topMem = $null; gpu = $null; disks = @() }
             if ($hasGpu) {
-                $g = (& nvidia-smi.exe --query-gpu=utilization.gpu,memory.used,memory.total --format=csv,noheader,nounits 2>$null) -split ','
-                if ($g.Count -ge 3) { $sys.gpu = @{ util = [int]$g[0]; used = [int]$g[1] / 1024; total = [int]$g[2] / 1024 } }
+                # util/memory + temperature(C), power draw/limit(W), fan(%), SM clock/max(MHz), name
+                $g = (& nvidia-smi.exe --query-gpu=utilization.gpu,memory.used,memory.total,temperature.gpu,power.draw,power.limit,fan.speed,clocks.sm,clocks.max.sm,name --format=csv,noheader,nounits 2>$null) -split ','
+                if ($g.Count -ge 10) {
+                    $num = { param($s) $v = 0.0; if ([double]::TryParse("$s".Trim(), [ref]$v)) { $v } else { 0 } }   # '[N/A]' -> 0
+                    $sys.gpu = @{ util = [int](& $num $g[0]); used = (& $num $g[1]) / 1024; total = (& $num $g[2]) / 1024
+                                  temp = [int](& $num $g[3]); power = (& $num $g[4]); powerMax = (& $num $g[5]); fan = [int](& $num $g[6])
+                                  clock = [int](& $num $g[7]); clockMax = [int](& $num $g[8]); name = "$($g[9])".Trim() }
+                }
                 # LLMs currently loaded by Ollama (GET /api/ps) - short names without the namespace ('huihui_ai/')
                 $sys.llm = @()
                 try {
@@ -110,6 +130,20 @@ $collector = New-Worker {
             foreach ($t in Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue) { if (-not $listen.ContainsKey([int]$t.LocalPort)) { $listen[[int]$t.LocalPort] = [int]$t.OwningProcess } }
             $procs = @{}
             foreach ($p in Get-Process) { $procs[[int]$p.Id] = $p }
+            # top consumers across all processes (CPU: delta since the previous pass; memory: working set),
+            # skipping kernel pseudo-processes
+            $curAll = @{}; $topCpuMs = 0.0; $topCpuName = ''; $topMemBytes = 0; $topMemName = ''
+            foreach ($p in $procs.Values) {
+                if ($p.ProcessName -in 'Idle', 'System', 'Memory Compression', 'Registry', 'Secure System') { continue }
+                try { $t = $p.TotalProcessorTime.TotalMilliseconds } catch { continue }
+                $curAll[[int]$p.Id] = $t
+                if ($prevAll.ContainsKey([int]$p.Id)) { $d = $t - $prevAll[[int]$p.Id]; if ($d -gt $topCpuMs) { $topCpuMs = $d; $topCpuName = $p.ProcessName } }
+                if ($p.WorkingSet64 -gt $topMemBytes) { $topMemBytes = $p.WorkingSet64; $topMemName = $p.ProcessName }
+            }
+            $prevAll = $curAll
+            if ($topCpuName -and $elapsed -gt 0) { $sys.topCpu = @{ name = $topCpuName; pct = [Math]::Round($topCpuMs / $elapsed / $cores * 100, 1) } }
+            if ($topMemName) { $sys.topMem = @{ name = $topMemName; bytes = $topMemBytes } }
+            $Shared.Sys = $sys
             $kids = @{}                                    # parent pid -> child pids
             $parentOf = @{}; $cmdOf = @{}                  # pid -> parent pid / command line (mode detection)
             foreach ($w in Get-CimInstance Win32_Process -Property ProcessId, ParentProcessId, CommandLine) {

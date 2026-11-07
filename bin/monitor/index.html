@@ -46,9 +46,6 @@
   .card .bar i.warn { background: var(--orange); } .card .bar i.hot { background: var(--red); }
   .card .sub { margin-top: 8px; font-size: 12px; color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .card .sub b { font-weight: 600; color: var(--text); }
-  .card .disks { display: flex; flex-direction: column; gap: 6px; }
-  .card .disks div { display: flex; justify-content: space-between; font-size: 13px; }
-  .card .disks span { color: var(--muted); }
 
   /* 툴바 */
   .toolbar { display: flex; align-items: center; gap: 14px; margin-bottom: 12px; }
@@ -111,6 +108,8 @@
   /* 하단 상태 바 */
   .status { height: 30px; background: #0a0f15; border-top: 1px solid var(--border); display: flex; align-items: center; gap: 16px; padding: 0 16px; font-size: 12px; color: var(--muted); }
   .status .dot { width: 8px; height: 8px; box-shadow: none; }
+  .status .disks { margin-left: auto; display: flex; gap: 14px; font-variant-numeric: tabular-nums; }
+  .status .disks b { font-weight: 600; color: var(--text); margin-right: 4px; }
 </style>
 </head>
 <body>
@@ -123,10 +122,10 @@
     <main>
       <section id="view-components">
         <div class="cards">
-          <div class="card"><div class="k">System CPU usage</div><div class="v"><span id="cpu">-</span><small id="cpuT"></small></div><div class="bar"><i id="cpuB"></i></div></div>
-          <div class="card"><div class="k">System memory usage</div><div class="v"><span id="ram">-</span><small id="ramT"></small></div><div class="bar"><i id="ramB"></i></div></div>
-          <div class="card" id="gpuCard" hidden><div class="k">GPU usage / memory</div><div class="v"><span id="gpu">-</span><small id="gpuT"></small></div><div class="bar"><i id="gpuB"></i></div><div class="sub" id="gpuLlm"></div></div>
-          <div class="card"><div class="k">Disk free</div><div class="disks" id="disks"></div></div>
+          <div class="card"><div class="k">System CPU usage</div><div class="v"><span id="cpu">-</span><small id="cpuT"></small></div><div class="bar"><i id="cpuB"></i></div><div class="sub" id="cpuInfo"></div></div>
+          <div class="card"><div class="k">System memory usage</div><div class="v"><span id="ram">-</span><small id="ramT"></small></div><div class="bar"><i id="ramB"></i></div><div class="sub" id="ramInfo"></div></div>
+          <div class="card" id="gpuCard" hidden><div class="k">GPU usage</div><div class="v"><span id="gpu">-</span><small id="gpuT"></small></div><div class="bar"><i id="gpuB"></i></div><div class="sub" id="gpuInfo"></div></div>
+          <div class="card" id="gpuMemCard" hidden><div class="k">GPU memory</div><div class="v"><span id="gpuMem">-</span><small id="gpuMemT"></small></div><div class="bar"><i id="gpuMemB"></i></div><div class="sub" id="gpuLlm"></div></div>
         </div>
 
         <div class="toolbar">
@@ -151,7 +150,7 @@
       </section>
     </main>
 
-  <footer class="status"><span class="dot up" id="srvDot"></span><span id="srvText">Monitor running</span><span id="upCount"></span></footer>
+  <footer class="status"><span class="dot up" id="srvDot"></span><span id="srvText">Monitor running</span><span id="upCount"></span><span class="disks" id="disks" title="Disk free / total"></span></footer>
 
 <script>
   // 아이콘(도커 액션 버튼 스타일의 단순 SVG)
@@ -213,14 +212,33 @@
     if (s) {
       $('cpu').textContent = s.cpu + '%'; $('cpuT').textContent = `/ ${s.cores} CPUs`; bar($('cpuB'), s.cpu);
       $('ram').textContent = fmtG(s.ramUsed); $('ramT').textContent = '/ ' + fmtG(s.ramTotal); bar($('ramB'), s.ramUsed / s.ramTotal * 100);
+      // CPU 카드 하단: 모델명 · 현재 클럭 · CPU 를 가장 많이 쓰는 프로세스
+      // (카드 폭이 좁아 30자 안쪽으로: 제조사 접두 제거, 단위 축약. 전체 내용은 툴팁)
+      const cpuShort = (s.cpuName || '').replace(/^(Intel|AMD)\s+(Core|Ryzen)\s*/, '');
+      const tc = s.topCpu ? ` · <b>${s.topCpu.name}</b> ${s.topCpu.pct}%` : '';
+      $('cpuInfo').innerHTML = `${cpuShort}${s.cpuClock ? ` · ${(s.cpuClock / 1000).toFixed(1)}GHz` : ''}${tc}`;
+      $('cpuInfo').title = `${s.cpuName || ''} · ${s.cpuClock} MHz now` + (s.topCpu ? ` · top CPU: ${s.topCpu.name} ${s.topCpu.pct}%` : '');
+      // 메모리 카드 하단: 커밋(RAM+페이지 파일, 90% 이상 강조) · 메모리를 가장 많이 쓰는 프로세스
+      const cHot = s.commitTotal && s.commitUsed / s.commitTotal >= 0.9;
+      const tm = s.topMem ? ` · <b>${s.topMem.name}</b> ${(s.topMem.bytes / 2 ** 30).toFixed(1)}G` : '';
+      $('ramInfo').innerHTML = `commit <b${cHot ? ' style="color:var(--red)"' : ''}>${s.commitUsed.toFixed(1)}</b>/${s.commitTotal.toFixed(1)}G${tm}`;
+      $('ramInfo').title = `commit(RAM + page file) ${fmtG(s.commitUsed)} / ${fmtG(s.commitTotal)}` + (s.topMem ? ` · top memory: ${s.topMem.name} ${fmtRam(s.topMem.bytes)}` : '');
       if (s.gpu) {
-        $('gpuCard').hidden = false; $('gpu').textContent = s.gpu.util + '%'; $('gpuT').textContent = `${fmtG(s.gpu.used)} / ${fmtG(s.gpu.total)}`; bar($('gpuB'), s.gpu.used / s.gpu.total * 100);
-        // 하단: Ollama 에 로드된 LLM 이름(없으면 빈 상태 문구)
+        // 사용률 카드와 메모리 카드로 분리 — 각 바는 그 카드의 큰 숫자와 같은 기준
+        $('gpuCard').hidden = false; $('gpu').textContent = s.gpu.util + '%'; bar($('gpuB'), s.gpu.util);
+        // 사용률 카드 하단: 온도(80도 이상 강조) · 전력 · 팬 · SM 클럭. 큰 숫자 옆엔 모델명, 툴팁에 전체 이름
+        const g = s.gpu, hot = g.temp >= 80;
+        $('gpuT').textContent = (g.name || '').replace(/^NVIDIA (GeForce )?/, '');
+        $('gpuInfo').innerHTML = `<b${hot ? ' style="color:var(--red)"' : ''}>${g.temp}°C</b> · ${Math.round(g.power)}W · fan ${g.fan}% · ${g.clock}MHz`;
+        $('gpuInfo').title = `${g.name} · power ${Math.round(g.power)} / ${Math.round(g.powerMax)} W · SM clock ${g.clock} / ${g.clockMax} MHz`;
+        $('gpuMemCard').hidden = false; $('gpuMem').textContent = fmtG(s.gpu.used); $('gpuMemT').textContent = '/ ' + fmtG(s.gpu.total); bar($('gpuMemB'), s.gpu.used / s.gpu.total * 100);
+        // 메모리 카드 하단: Ollama 에 로드된 LLM 이름(VRAM 을 차지하는 주체). 잘려도 툴팁으로 전체 이름
         const llm = s.llm || [];
         $('gpuLlm').innerHTML = llm.length ? 'LLM <b>' + llm.join('</b>, <b>') + '</b>' : 'LLM none loaded';
-        $('gpuLlm').title = llm.length ? llm.join(', ') : 'Ollama: no model loaded';   // 잘려도 툴팁으로 전체 이름
+        $('gpuLlm').title = llm.length ? llm.join(', ') : 'Ollama: no model loaded';
       }
-      $('disks').innerHTML = s.disks.map(x => `<div><b>${x.name}</b><span>${Math.round(x.free)} / ${Math.round(x.total)} GB</span></div>`).join('');
+      // 디스크 여유는 하단 상태 바에 간단히
+      $('disks').innerHTML = s.disks.map(x => `<span><b>${x.name}</b>${Math.round(x.free)} / ${Math.round(x.total)} GB</span>`).join('');
     }
     let up = 0;
     for (const r of d.rows) {
